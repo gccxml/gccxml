@@ -125,7 +125,8 @@ const gxDocumentationEntry gxDocumentationSettings[] =
    "GCC-XML will attempt to automatically determine how to simulate "
    "the compiler specified by this setting.  The compiler is specified "
    "by its executable name (such as \"g++\").  For Visual Studio, the "
-   "compiler is specified by \"msvc6\" or \"msvc7\"."},
+   "compiler is specified by \"msvc6\" or \"msvc7\" (if \"cl\" is given, "
+   "GCC-XML usually chooses msvc6 or msvc7 correctly)."},
   {"GCCXML_CXXFLAGS", "The flags for the C++ compiler to be simulated.",
    "The behavior of most compilers can be adjusted by specifying flags on "
    "the command line.  When GCC-XML attempts to automatically determine "
