@@ -57,10 +57,9 @@ echo "__GNUC__" | ${CXX} -v -x c++ -E ${CXXFLAGS} - 2>/dev/null |
 # For GCC versions before 3, some special options are needed.
 if test $MAJOR_VERSION -lt 3 ; then
   HONOR_STD="-fxml-no-honor-std "
-  STRICT_INCLUDES="-I- "
   INCLUDES="-I$SELFPATH/2_95 $INCLUDES"
 fi
 
 # Format and print out the options.
-OPTIONS="$STRICT_INCLUDES $MACROS $INCLUDES $HONOR_STD"
+OPTIONS="$MACROS $INCLUDES $HONOR_STD"
 echo $OPTIONS
