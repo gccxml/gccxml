@@ -581,6 +581,12 @@ bool gxConfiguration::FindConfigFile()
       }
     }
   // Check for a configuration file in the executable root directory.
+  config = m_ExecutableRoot+"/gccxml_config";
+  if(gxSystemTools::FileExists(config.c_str()))
+    {
+    m_GCCXML_CONFIG = config;
+    return true;
+    }
   config = m_ExecutableRoot+"/config";
   if(gxSystemTools::FileExists(config.c_str()))
     {
@@ -588,6 +594,12 @@ bool gxConfiguration::FindConfigFile()
     return true;
     }
   // Check for a configuration file in the data root directory.
+  config = m_DataRoot+"/gccxml_config";
+  if(gxSystemTools::FileExists(config.c_str()))
+    {
+    m_GCCXML_CONFIG = config;
+    return true;
+    }
   config = m_DataRoot+"/config";
   if(gxSystemTools::FileExists(config.c_str()))
     {

@@ -105,14 +105,14 @@ ENDIF(UNIX)
 
 # Create a configuration file for use from the build directory.
 CONFIGURE_FILE(${GCCXML_SOURCE_DIR}/GXFront/config_build.in
-               ${GCCXML_EXECUTABLE_DIR}/config)
+               ${GCCXML_EXECUTABLE_DIR}/gccxml_config)
 
 IF(UNIX)
   # Create a configuration file for use from the install directory.
   CONFIGURE_FILE(${GCCXML_SOURCE_DIR}/GXFront/config_install.in
-                 ${GCCXML_BINARY_DIR}/GXFront/InstallOnly/config)
+                 ${GCCXML_BINARY_DIR}/GXFront/InstallOnly/gccxml_config)
   IF(${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION} GREATER 1.4)
     INSTALL_FILES(${GCCXML_INSTALL_ROOT}${GCCXML_SHARE} FILES
-                  ${GCCXML_BINARY_DIR}/GXFront/InstallOnly/config)
+                  ${GCCXML_BINARY_DIR}/GXFront/InstallOnly/gccxml_config)
   ENDIF(${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION} GREATER 1.4)
 ENDIF(UNIX)
