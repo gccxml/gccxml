@@ -341,12 +341,18 @@ static void
 print_converter_begin_tag (FILE* file, unsigned long indent, tree fd)
 {
   const char* access = "";
+  int is_const;
   int is_virtual;
   int is_pure_virtual;
 
   if (TREE_PRIVATE (fd))        access = "private";
   else if (TREE_PROTECTED (fd)) access = "protected";
   else                          access = "public";  
+
+  if (DECL_CONST_MEMFUNC_P (fd))
+    is_const = 1;
+  else
+    is_const = 0;
 
   if (DECL_VIRTUAL_P (fd))
     is_virtual = 1;
@@ -360,8 +366,8 @@ print_converter_begin_tag (FILE* file, unsigned long indent, tree fd)
   
   print_indent (file, indent);
   fprintf (file,
-           "<Converter access=\"%s\" virtual=\"%d\" pure_virtual=\"%d\">\n",
-           access, is_virtual, is_pure_virtual);
+           "<Converter access=\"%s\" const=\"%d\" virtual=\"%d\" pure_virtual=\"%d\">\n",
+           access, is_const, is_virtual, is_pure_virtual);
 }
 
 
@@ -404,12 +410,18 @@ print_operator_method_begin_tag (FILE* file, unsigned long indent, tree fd)
 {
   const char* name = xml_get_encoded_string (reverse_opname_lookup (DECL_NAME (fd)) );
   const char* access = "";
+  int is_const;
   int is_virtual;
   int is_pure_virtual;
 
   if (TREE_PRIVATE (fd))        access = "private";
   else if (TREE_PROTECTED (fd)) access = "protected";
   else                          access = "public";  
+
+  if (DECL_CONST_MEMFUNC_P (fd))
+    is_const = 1;
+  else
+    is_const = 0;
 
   if (DECL_VIRTUAL_P (fd))
     is_virtual = 1;
@@ -423,8 +435,8 @@ print_operator_method_begin_tag (FILE* file, unsigned long indent, tree fd)
 
   print_indent (file, indent);
   fprintf (file,
-           "<OperatorMethod name=\"%s\" access=\"%s\" virtual=\"%d\" pure_virtual=\"%d\">\n",
-           name, access, is_virtual, is_pure_virtual);
+           "<OperatorMethod name=\"%s\" access=\"%s\" const=\"%d\" virtual=\"%d\" pure_virtual=\"%d\">\n",
+           name, access, is_const, is_virtual, is_pure_virtual);
 }
 
 
@@ -445,6 +457,7 @@ print_method_begin_tag (FILE* file, unsigned long indent, tree fd)
   const char* name = xml_get_encoded_string (DECL_NAME (fd));
   const char* access = "";
   int is_static;
+  int is_const;
   int is_virtual;
   int is_pure_virtual;
 
@@ -456,6 +469,11 @@ print_method_begin_tag (FILE* file, unsigned long indent, tree fd)
     is_static = 0;
   else
     is_static = 1;
+
+  if (DECL_CONST_MEMFUNC_P (fd))
+    is_const = 1;
+  else
+    is_const = 0;
 
   if (DECL_VIRTUAL_P (fd))
     is_virtual = 1;
@@ -469,8 +487,8 @@ print_method_begin_tag (FILE* file, unsigned long indent, tree fd)
 
   print_indent (file, indent);
   fprintf (file,
-           "<Method name=\"%s\" access=\"%s\" static=\"%d\" virtual=\"%d\" pure_virtual=\"%d\">\n",
-           name, access, is_static, is_virtual, is_pure_virtual);
+           "<Method name=\"%s\" access=\"%s\" static=\"%d\" const=\"%d\" virtual=\"%d\" pure_virtual=\"%d\">\n",
+           name, access, is_static, is_const, is_virtual, is_pure_virtual);
 }
 
 
