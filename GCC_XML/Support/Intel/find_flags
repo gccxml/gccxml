@@ -49,6 +49,8 @@ SELFPATH=`echo $0 | sed -n '/\//{s/\/find_flags//;p;}'`
 if test "x$SELFPATH" = "x" ; then SELFPATH="." ; fi
 SELFPATH=`cd "$SELFPATH" ; pwd`
 
+INCLUDES="-iwrapper$SELFPATH $INCLUDES"
+
 # Format and print out the options.
 OPTIONS="$MACROS -D_WCHAR_T $INCLUDES"
 echo $OPTIONS
