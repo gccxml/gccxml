@@ -1,3 +1,4 @@
+? t
 Index: Make-lang.in
 ===================================================================
 RCS file: /cvs/gcc/egcs/gcc/cp/Make-lang.in,v
@@ -34,27 +35,26 @@ diff -r1.429 decl2.c
 > 
 > int flag_xml = 0;
 > 
-525c529,530
-<   {"xref", &flag_gnu_xref, 1}
----
->   {"xref", &flag_gnu_xref, 1},
->   {"xml", &flag_xml, 1}
+524a529
+>   {"xml", &flag_xml, 1},
 Index: lang-options.h
 ===================================================================
 RCS file: /cvs/gcc/egcs/gcc/cp/lang-options.h,v
 retrieving revision 1.37
 diff -r1.37 lang-options.h
-113a114
->   { "-fxml", "Output XML and quit" },
+114c114,116
+< 
+---
+>   { "-fxml", "Enable XML output (use with -fsyntax-only)" },
+>   { "-fno-xml", "" },
+>   
 Index: semantics.c
 ===================================================================
 RCS file: /cvs/gcc/egcs/gcc/cp/semantics.c,v
 retrieving revision 1.186
 diff -r1.186 semantics.c
-1657a1658,1663
+1657a1658,1661
 > 
->   /* If XML output is enabled, do the output and exit.  */
+>   /* Do XML output if enabled.  */
 >   if (flag_xml)
->     {
 >       do_xml_output ();
->     }
