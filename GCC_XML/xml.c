@@ -1021,7 +1021,7 @@ print_qualified_name_empty_tag (file, indent, name)
 {
   print_indent (file, indent);
   fprintf (file,
-           "<Name name=\"%s\"/>\n",
+           "<QualifiedName name=\"%s\"/>\n",
            IDENTIFIER_POINTER (name));
 }
 
