@@ -9,8 +9,8 @@
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt for details.
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -18,9 +18,9 @@
 /* Organization of this source:
    The entry point is do_xml_output(), which is called from the end of
    finish_translation_unit() in semantics.c.
-   
+
    xml_output_* functions are called to actually write the XML output.
-   
+
    xml_print_*_attribute functions are used to write out the XML attributes
    for common attribute name/pair values.
 */
@@ -113,10 +113,10 @@ typedef struct xml_dump_info
 {
   /* Output file stream of dump.  */
   FILE* file;
-  
+
   /* Which pass of the loop we are doing (1=complete or 0=incomplete).  */
   int require_complete;
-  
+
   /* Next available index to identify node.  */
   unsigned int next_index;
 
@@ -125,10 +125,10 @@ typedef struct xml_dump_info
 
   /* The last node in the queue of complete nodes.  */
   xml_dump_queue_p queue_end;
-  
+
   /* List of free xml_dump_queue nodes.  */
   xml_dump_queue_p queue_free;
-  
+
   /* All nodes that have been encountered.  */
   splay_tree dump_nodes;
 
@@ -183,7 +183,7 @@ do_xml_output (const char* filename)
 {
   FILE* file;
   struct xml_dump_info xdi;
-  
+
   /* Do not dump if errors occurred during parsing.  */
   if(errorcount)
     {
@@ -191,7 +191,7 @@ do_xml_output (const char* filename)
     unlink(filename);
     return;
     }
-  
+
   /* Open the XML output file.  */
   file = fopen (filename, "w");
   if (!file)
@@ -199,21 +199,21 @@ do_xml_output (const char* filename)
     XML_CP_ERROR ("could not open xml-dump file `%s'", filename);
     return;
     }
-  
+
   /* Prepare dump.  */
   xdi.file = file;
   xdi.queue = 0;
   xdi.queue_end = 0;
   xdi.queue_free = 0;
   xdi.next_index = 1;
-  xdi.dump_nodes = splay_tree_new (splay_tree_compare_pointers, 0, 
+  xdi.dump_nodes = splay_tree_new (splay_tree_compare_pointers, 0,
                                    (splay_tree_delete_value_fn) &free);
   xdi.file_queue = 0;
   xdi.file_queue_end = 0;
   xdi.file_index = 0;
   xdi.file_nodes = splay_tree_new (splay_tree_compare_pointers, 0, 0);
   xdi.require_complete = 1;
-  
+
   /* Add the starting nodes for the dump.  */
   if (flag_xml_start)
     {
@@ -231,7 +231,7 @@ do_xml_output (const char* filename)
       xml_add_node (&xdi, std_node, 1);
       }
     }
-  
+
   /* Start dump.  */
   fprintf (file, "<?xml version=\"1.0\"?>\n");
 #if defined(GCCXML_VERSION_FULL)
@@ -239,24 +239,24 @@ do_xml_output (const char* filename)
 #else
   fprintf (file, "<GCC_XML>\n");
 #endif
-  
+
   /* Dump the complete nodes.  */
-  xml_dump (&xdi);  
-  
+  xml_dump (&xdi);
+
   /* Queue all the incomplete nodes.  */
   splay_tree_foreach (xdi.dump_nodes,
                       &xml_queue_incomplete_dump_nodes, &xdi);
-  
+
   /* Dump the incomplete nodes.  */
   xdi.require_complete = 0;
   xml_dump (&xdi);
-  
+
   /* Dump the filename queue.  */
   xml_dump_files (&xdi);
-  
+
   /* Finish dump.  */
   fprintf (file, "</GCC_XML>\n");
-  
+
   /* Clean up.  */
   {
   xml_dump_queue_p dq = xdi.queue_free;
@@ -303,7 +303,7 @@ static void
 xml_queue_node (xml_dump_info_p xdi, tree t, xml_dump_node_p dn)
 {
   xml_dump_queue_p dq;
-  
+
   /* Obtain a new queue node.  */
   if (xdi->queue_free)
     {
@@ -314,12 +314,12 @@ xml_queue_node (xml_dump_info_p xdi, tree t, xml_dump_node_p dn)
     {
     dq = (xml_dump_queue_p) xmalloc (sizeof (struct xml_dump_queue));
     }
-  
+
   /* Point the queue node at its corresponding tree node and dump node.  */
   dq->next = 0;
   dq->tree_node = t;
   dq->dump_node = dn;
-  
+
   /* Add it to the end of the queue.  */
   if (!xdi->queue_end)
     {
@@ -350,7 +350,7 @@ xml_add_node_real (xml_dump_info_p xdi, tree n, int complete)
     /* Return node's index.  */
     return dn->index;
     }
-  
+
   /* This is a new node.  Assign it an index.  */
   dn->index = xdi->next_index++;
   dn->complete = complete;
@@ -359,7 +359,7 @@ xml_add_node_real (xml_dump_info_p xdi, tree n, int complete)
     /* Node is complete.  Queue it.  */
     xml_queue_node (xdi, n, dn);
     }
-  
+
   if(!xdi->require_complete && complete)
     {
     XML_CP_ERROR ("XML dump bug: complete node added during incomplete phase.\n");
@@ -394,18 +394,18 @@ xml_dump (xml_dump_info_p xdi)
     xml_dump_queue_p dq = xdi->queue;
     tree t = dq->tree_node;
     xml_dump_node_p dn = dq->dump_node;
-    
+
     /* Remove the entry from the queue.  */
     xdi->queue = dq->next;
     if(!xdi->queue)
       {
       xdi->queue_end = 0;
       }
-    
+
     /* Put the entry on the free list.  */
     dq->next = xdi->queue_free;
     xdi->queue_free = dq;
-    
+
     /* Dump the node.  */
     xml_dump_tree_node(xdi, t, dn);
     }
@@ -418,7 +418,7 @@ static unsigned int
 xml_queue_file (xml_dump_info_p xdi, const char* filename)
 {
   tree t = xml_get_encoded_identifier_from_string (filename);
-  
+
   /* See if we've already queued this file.  */
   splay_tree_node n = splay_tree_lookup (xdi->file_nodes, (splay_tree_key) t);
   if (n)
@@ -438,9 +438,9 @@ xml_queue_file (xml_dump_info_p xdi, const char* filename)
     fq = (xml_file_queue_p) xmalloc (sizeof (struct xml_file_queue));
 
     /* Create a new entry in the splay-tree.  */
-    fq->tree_node = splay_tree_insert (xdi->file_nodes, (splay_tree_key) t, 
+    fq->tree_node = splay_tree_insert (xdi->file_nodes, (splay_tree_key) t,
                                        (splay_tree_value) index);
-    
+
     /* Add it to the end of the queue.  */
     fq->next = 0;
     if (!xdi->file_queue_end)
@@ -452,7 +452,7 @@ xml_queue_file (xml_dump_info_p xdi, const char* filename)
       xdi->file_queue_end->next = fq;
       }
     xdi->file_queue_end = fq;
-    
+
     /* Return the index.  */
     return index;
     }
@@ -466,7 +466,7 @@ xml_print_location_attribute (xml_dump_info_p xdi, tree d)
 {
   unsigned int source_file = xml_queue_file (xdi, DECL_SOURCE_FILE (d));
   unsigned int source_line = DECL_SOURCE_LINE (d);
-  
+
   fprintf (xdi->file, " location=\"f%d:%d\"", source_file, source_line);
 }
 
@@ -492,44 +492,57 @@ xml_print_name_attribute (xml_dump_info_p xdi, tree n)
   fprintf (xdi->file, " name=\"%s\"", name);
 }
 
+/* Print an attribute value referencing the given type.  If the type
+   has top-level cv-qualifiers, they are appended to the type's id as
+   single characters (c=const, v=volatile, r=restrict), and a
+   CvQualifiedType element is generated to create a valid XML
+   reference.  */
+static void
+xml_print_type_idref (xml_dump_info_p xdi, tree t, int complete)
+{
+  /* Add the unqualified node.  */
+  int id = xml_add_node (xdi, TYPE_MAIN_VARIANT(t), complete);
+
+  /* Check cv-qualificiation.  */
+  const char* c = CP_TYPE_CONST_P (t)?"c":"";
+  const char* v = CP_TYPE_VOLATILE_P (t)?"v":"";
+  const char* r = CP_TYPE_RESTRICT_P (t)?"r":"";
+
+  /* If there are any qualifiers, add the qualified node.  */
+  if(*c || *v || *r)
+    {
+    xml_add_node (xdi, t, complete);
+    }
+
+  /* Print the reference.  */
+  fprintf (xdi->file, "_%d%s%s%s", id, c, v, r);
+}
+
 /* Print the XML attribute type="..." for the given type.  If the type
    has cv-qualifiers, they are appended to the type's id as single
    characters (c=const, v=volatile, r=restrict).  */
 static void
 xml_print_type_attribute (xml_dump_info_p xdi, tree t, int complete)
 {
-  const char* ch_const = "";
-  const char* ch_volatile = "";
-  const char* ch_restrict = "";
-  int id = xml_add_node (xdi, TYPE_MAIN_VARIANT(t), complete);
-  if (CP_TYPE_CONST_P (t)) { ch_const = "c"; }
-  if (CP_TYPE_VOLATILE_P (t)) { ch_volatile = "v"; }
-  if (CP_TYPE_RESTRICT_P (t)) { ch_restrict = "r"; }  
-  fprintf (xdi->file, " type=\"_%d%s%s%s\"",
-           id, ch_const, ch_volatile, ch_restrict);
+  fprintf (xdi->file, " type=\"");
+  xml_print_type_idref (xdi, t, complete);
+  fprintf (xdi->file, "\"");
 }
 
 /* Print the XML attribute returns="tid" for the given function type.  */
 static void
 xml_print_returns_attribute (xml_dump_info_p xdi, tree t, int complete)
 {
-  const char* ch_const = "";
-  const char* ch_volatile = "";
-  const char* ch_restrict = "";
-  int id = xml_add_node (xdi, TYPE_MAIN_VARIANT(t), complete);
-  if (CP_TYPE_CONST_P (t)) { ch_const = "c"; }
-  if (CP_TYPE_VOLATILE_P (t)) { ch_volatile = "v"; }
-  if (CP_TYPE_RESTRICT_P (t)) { ch_restrict = "r"; }  
-  fprintf (xdi->file, " returns=\"_%d%s%s%s\"",
-           id, ch_const, ch_volatile, ch_restrict);
+  fprintf (xdi->file, " returns=\"");
+  xml_print_type_idref (xdi, t, complete);
+  fprintf (xdi->file, "\"");
 }
 
 /* Print XML attribute basetype="..." with the given type.  */
 static void
 xml_print_base_type_attribute (xml_dump_info_p xdi, tree t, int complete)
 {
-  int id = xml_add_node (xdi, t, complete);
-  fprintf (xdi->file, " basetype=\"_%d\"", id);
+  fprintf (xdi->file, " basetype=\"_%d\"", xml_add_node (xdi, t, complete));
 }
 
 /* Print the XML attribute context="..." for the given node.  */
@@ -569,7 +582,7 @@ xml_print_access_attribute (xml_dump_info_p xdi, tree d)
 /* Print XML attribute const="1" for const methods.  */
 static void
 xml_print_const_method_attribute (xml_dump_info_p xdi, tree fd)
-{  
+{
   if (DECL_CONST_MEMFUNC_P (fd))
     {
     fprintf (xdi->file, " const=\"1\"");
@@ -589,12 +602,12 @@ xml_print_static_method_attribute (xml_dump_info_p xdi, tree fd)
 /* Print XML attributes virtual="" and pure_virtual="" for a decl.  */
 static void
 xml_print_virtual_method_attributes (xml_dump_info_p xdi, tree d)
-{  
+{
   if (DECL_VIRTUAL_P (d))
     {
     fprintf (xdi->file, " virtual=\"1\"");
     }
-  
+
   if (DECL_PURE_VIRTUAL_P (d))
     {
     fprintf (xdi->file, " pure_virtual=\"1\"");
@@ -644,9 +657,9 @@ static void
 xml_print_init_attribute (xml_dump_info_p xdi, tree t)
 {
   const char* value;
-  
+
   if (!t || (t == error_mark_node)) return;
-  
+
   value = xml_get_encoded_string_from_string (expr_as_string (t, 0));
   fprintf (xdi->file, " init=\"%s\"", value);
 }
@@ -684,7 +697,7 @@ static void
 xml_print_array_attributes (xml_dump_info_p xdi, tree at)
 {
   const char* length = "";
-  
+
   if (TYPE_DOMAIN (at))
     length = xml_get_encoded_string_from_string (
       expr_as_string (TYPE_MAX_VALUE (TYPE_DOMAIN (at)), 0));
@@ -705,17 +718,9 @@ xml_print_throw_attribute (xml_dump_info_p xdi, tree ft, int complete)
       for (;
            raises != NULL_TREE; raises = TREE_CHAIN (raises))
         {
-        tree t = TREE_VALUE (raises);
-        const char* ch_const = "";
-        const char* ch_volatile = "";
-        const char* ch_restrict = "";
-        int id = xml_add_node (xdi, TYPE_MAIN_VARIANT (t), complete);
-        if (CP_TYPE_CONST_P (t)) { ch_const = "c"; }
-        if (CP_TYPE_VOLATILE_P (t)) { ch_volatile = "v"; }
-        if (CP_TYPE_RESTRICT_P (t)) { ch_restrict = "r"; }
-        fprintf (xdi->file, "%s_%d%s%s%s",
-                 (raises == TYPE_RAISES_EXCEPTIONS (ft))?"":" ",
-                 id, ch_const, ch_volatile, ch_restrict);
+        fprintf (xdi->file, "%s",
+                 (raises == TYPE_RAISES_EXCEPTIONS (ft))?"":" ");
+        xml_print_type_idref (xdi, TREE_VALUE (raises), complete);
         }
       }
     fprintf (xdi->file, "\"");
@@ -794,7 +799,7 @@ xml_output_namespace_decl (xml_dump_info_p xdi, tree ns, xml_dump_node_p dn)
     xml_print_name_attribute (xdi, DECL_NAME (ns));
     xml_print_context_attribute (xdi, ns);
     xml_print_attributes_attribute (xdi, GCC_XML_DECL_ATTRIBUTES(ns), 0);
-    
+
     /* If complete dump, walk the namespace.  */
     if(dn->complete)
       {
@@ -827,10 +832,10 @@ xml_output_namespace_decl (xml_dump_info_p xdi, tree ns, xml_dump_node_p dn)
           }
         }
 #endif
-      
+
       fprintf (xdi->file, "\"");
       }
-    
+
     fprintf (xdi->file, "/>\n");
     }
   /* If it is a namespace alias, just indicate that.  */
@@ -842,7 +847,7 @@ xml_output_namespace_decl (xml_dump_info_p xdi, tree ns, xml_dump_node_p dn)
       {
       real_ns = DECL_NAMESPACE_ALIAS (real_ns);
       }
-    
+
     fprintf (xdi->file, "  <NamespaceAlias");
     xml_print_id_attribute (xdi, dn);
     xml_print_name_attribute (xdi, DECL_NAME (ns));
@@ -860,7 +865,7 @@ xml_output_typedef (xml_dump_info_p xdi, tree td, xml_dump_node_p dn)
   fprintf (xdi->file, "  <Typedef");
   xml_print_id_attribute (xdi, dn);
   xml_print_name_attribute (xdi, DECL_NAME (td));
-  
+
   /* Get the original type out of the typedef, if any.  */
   if (DECL_ORIGINAL_TYPE (td))
     {
@@ -870,7 +875,7 @@ xml_output_typedef (xml_dump_info_p xdi, tree td, xml_dump_node_p dn)
     {
     xml_print_type_attribute (xdi, TREE_TYPE (td), dn->complete);
     }
-  
+
   xml_print_context_attribute (xdi, td);
   xml_print_location_attribute (xdi, td);
   fprintf (xdi->file, "/>\n");
@@ -883,13 +888,13 @@ xml_output_argument (xml_dump_info_p xdi, tree pd, tree tl, int complete)
   /* Don't process any compiler-generated arguments.  These occur for
      things like constructors of classes with virtual inheritance.  */
   if (pd && DECL_ARTIFICIAL (pd)) return;
-  
+
   fprintf (xdi->file, "    <Argument");
   if(pd && DECL_NAME (pd))
     {
     xml_print_name_attribute (xdi, DECL_NAME (pd));
     }
-  
+
   if (pd && DECL_ARG_TYPE_AS_WRITTEN (pd))
     {
     xml_print_type_attribute (xdi, DECL_ARG_TYPE_AS_WRITTEN (pd), complete);
@@ -902,7 +907,7 @@ xml_output_argument (xml_dump_info_p xdi, tree pd, tree tl, int complete)
     {
     xml_print_type_attribute (xdi, TREE_VALUE (tl), complete);
     }
-  
+
   if (TREE_PURPOSE (tl))
     {
     xml_print_default_argument_attribute (xdi, TREE_PURPOSE (tl));
@@ -931,7 +936,7 @@ xml_reverse_opname_lookup (tree name)
     else if (ansi_assopname(i) == name)
       return get_identifier (assignment_operator_name_info[i].name);
     }
-  
+
   return get_identifier (unknown_operator);
 }
 
@@ -1027,7 +1032,7 @@ xml_output_function_decl (xml_dump_info_p xdi, tree fd, xml_dump_node_p dn)
   xml_print_function_extern_attribute (xdi, fd);
   xml_print_attributes_attribute (xdi, GCC_XML_DECL_ATTRIBUTES(fd),
                                   TYPE_ATTRIBUTES(TREE_TYPE(fd)));
-  
+
   /* Prepare to iterator through argument list.  */
   arg = DECL_ARGUMENTS (fd);
   arg_type = TYPE_ARG_TYPES (TREE_TYPE (fd));
@@ -1037,7 +1042,7 @@ xml_output_function_decl (xml_dump_info_p xdi, tree fd, xml_dump_node_p dn)
     if(arg) arg = TREE_CHAIN (arg);
     arg_type = TREE_CHAIN (arg_type);
     }
-  
+
   /* If there are no arguments, finish the element.  */
   if (arg_type == void_list_node)
     {
@@ -1048,7 +1053,7 @@ xml_output_function_decl (xml_dump_info_p xdi, tree fd, xml_dump_node_p dn)
     {
     fprintf (xdi->file, ">\n");
     }
-  
+
   /* Print out the argument list for this function.  */
   while (arg_type && (arg_type != void_list_node))
     {
@@ -1056,13 +1061,13 @@ xml_output_function_decl (xml_dump_info_p xdi, tree fd, xml_dump_node_p dn)
     if(arg) arg = TREE_CHAIN (arg);
     arg_type = TREE_CHAIN (arg_type);
     }
-  
+
   if(!arg_type)
     {
     /* Function has variable number of arguments.  Print ellipsis.  */
     xml_output_ellipsis (xdi);
     }
-  
+
   fprintf (xdi->file, "  </%s>\n", tag);
 }
 
@@ -1113,14 +1118,14 @@ xml_output_record_type (xml_dump_info_p xdi, tree rt, xml_dump_node_p dn)
   tree field;
   tree func;
   const char* tag;
-  
+
   if (TREE_CODE(rt) == RECORD_TYPE)
     {
     if (CLASSTYPE_DECLARED_CLASS (rt)) { tag = "Class"; }
     else { tag = "Struct"; }
     }
   else { tag = "Union"; }
-  
+
   fprintf (xdi->file, "  <%s", tag);
   xml_print_id_attribute (xdi, dn);
   xml_print_name_attribute (xdi, DECL_NAME (TYPE_NAME (rt)));
@@ -1130,7 +1135,7 @@ xml_output_record_type (xml_dump_info_p xdi, tree rt, xml_dump_node_p dn)
   xml_print_incomplete_attribute (xdi, rt);
   xml_print_location_attribute (xdi, TYPE_NAME (rt));
   xml_print_attributes_attribute (xdi, TYPE_ATTRIBUTES(rt), 0);
-  
+
   if (dn->complete && COMPLETE_TYPE_P (rt))
     {
     fprintf (xdi->file, " members=\"");
@@ -1155,7 +1160,7 @@ xml_output_record_type (xml_dump_info_p xdi, tree rt, xml_dump_node_p dn)
           }
         }
       }
-    
+
     /* Output all the method declarations in the class.  */
     for (func = TYPE_METHODS (rt) ; func ; func = TREE_CHAIN (func))
       {
@@ -1163,13 +1168,13 @@ xml_output_record_type (xml_dump_info_p xdi, tree rt, xml_dump_node_p dn)
 
       /* Don't process any internally generated declarations.  */
       if (DECL_INTERNAL_P (func)) continue;
-      
+
       /* Don't process any compiler-generated functions except constructors
          and destructors.  */
       if (DECL_ARTIFICIAL(func)
           && !DECL_CONSTRUCTOR_P (func)
           && !DECL_DESTRUCTOR_P (func)) continue;
-      
+
       /* Don't output the cloned functions.  */
       if (DECL_CLONED_FUNCTION_P (func)) continue;
 
@@ -1179,12 +1184,12 @@ xml_output_record_type (xml_dump_info_p xdi, tree rt, xml_dump_node_p dn)
         fprintf (xdi->file, "_%d ", id);
         }
       }
-    
+
     /* TODO: List member template instantiations as members.  */
 
     fprintf (xdi->file, "\"");
-    }  
-  
+    }
+
   /* Output all the base classes.  */
   if (dn->complete && COMPLETE_TYPE_P (rt))
     {
@@ -1195,7 +1200,7 @@ xml_output_record_type (xml_dump_info_p xdi, tree rt, xml_dump_node_p dn)
     tree accesses = BINFO_BASEACCESSES (binfo);
 #endif
     int i;
-    
+
     fprintf (xdi->file, " bases=\"");
     for (i = 0; i < n_baselinks; i++)
       {
@@ -1215,14 +1220,14 @@ xml_output_record_type (xml_dump_info_p xdi, tree rt, xml_dump_node_p dn)
         if (n_access == access_protected_node) { access = "protected:"; }
         else if (n_access == access_private_node) { access = "private:"; }
 #endif
-        
+
         fprintf (xdi->file, "%s_%d ", access,
                  xml_add_node (xdi, BINFO_TYPE (base_binfo), 1));
         }
       }
     fprintf (xdi->file, "\"");
     }
-  
+
   fprintf (xdi->file, "/>\n");
 }
 
@@ -1244,13 +1249,13 @@ static void
 xml_output_function_type (xml_dump_info_p xdi, tree t, xml_dump_node_p dn)
 {
   tree arg_type;
-  
+
   fprintf (xdi->file, "  <FunctionType");
   xml_print_id_attribute (xdi, dn);
   xml_print_returns_attribute (xdi, TREE_TYPE (t), dn->complete);
   xml_print_attributes_attribute (xdi, TYPE_ATTRIBUTES(t), 0);
   fprintf (xdi->file, ">\n");
-  
+
   /* Prepare to iterator through argument list.  */
   arg_type = TYPE_ARG_TYPES (t);
 
@@ -1260,13 +1265,13 @@ xml_output_function_type (xml_dump_info_p xdi, tree t, xml_dump_node_p dn)
     xml_output_argument (xdi, NULL, arg_type, dn->complete);
     arg_type = TREE_CHAIN (arg_type);
     }
-  
+
   if(arg_type != void_list_node)
     {
     /* Function has variable number of arguments.  */
     xml_output_ellipsis (xdi);
     }
-  
+
   fprintf (xdi->file, "  </FunctionType>\n");
 }
 
@@ -1276,13 +1281,13 @@ xml_output_method_type (xml_dump_info_p xdi, tree t, xml_dump_node_p dn)
 {
   tree arg_type;
   tree this_type;
-  
+
   fprintf (xdi->file, "  <MethodType");
   xml_print_id_attribute (xdi, dn);
   xml_print_base_type_attribute (xdi, TYPE_METHOD_BASETYPE (t), dn->complete);
   xml_print_returns_attribute (xdi, TREE_TYPE (t), dn->complete);
   xml_print_attributes_attribute (xdi, TYPE_ATTRIBUTES(t), 0);
-  
+
   /* Prepare to iterator through argument list.  */
   arg_type = TYPE_ARG_TYPES (t);
 
@@ -1300,25 +1305,25 @@ xml_output_method_type (xml_dump_info_p xdi, tree t, xml_dump_node_p dn)
       fprintf (xdi->file, " volatile=\"1\"");
       }
     }
-  
+
   fprintf (xdi->file, ">\n");
-  
+
   /* Skip "this" argument.  */
   arg_type = TREE_CHAIN (arg_type);
-  
+
   /* Print out the argument list for this method.  */
   while (arg_type && (arg_type != void_list_node))
     {
     xml_output_argument (xdi, NULL, arg_type, dn->complete);
     arg_type = TREE_CHAIN (arg_type);
     }
-  
+
   if(arg_type != void_list_node)
     {
     /* Method has variable number of arguments.  */
     xml_output_ellipsis (xdi);
     }
-  
+
   fprintf (xdi->file, "  </MethodType>\n");
 }
 
@@ -1373,7 +1378,7 @@ static void
 xml_output_enumeral_type (xml_dump_info_p xdi, tree t, xml_dump_node_p dn)
 {
   tree tv;
-  
+
   fprintf (xdi->file, "  <Enumeration");
   xml_print_id_attribute (xdi, dn);
   xml_print_name_attribute (xdi, DECL_NAME (TYPE_NAME (t)));
@@ -1382,7 +1387,7 @@ xml_output_enumeral_type (xml_dump_info_p xdi, tree t, xml_dump_node_p dn)
   xml_print_location_attribute (xdi, TYPE_NAME (t));
   xml_print_attributes_attribute (xdi, TYPE_ATTRIBUTES(t), 0);
   fprintf (xdi->file, ">\n");
-  
+
   /* Output the list of possible values for the enumeration type.  */
   for (tv = TYPE_VALUES (t); tv ; tv = TREE_CHAIN (tv))
     {
@@ -1391,8 +1396,87 @@ xml_output_enumeral_type (xml_dump_info_p xdi, tree t, xml_dump_node_p dn)
              "    <EnumValue name=\"%s\" init=\"%d\"/>\n",
              xml_get_encoded_string ( TREE_PURPOSE(tv)), value);
     }
-  
+
   fprintf (xdi->file, "  </Enumeration>\n");
+}
+
+/* Output for a cv-qualified type.  */
+static void
+xml_output_cv_qualified_type (xml_dump_info_p xdi, tree t, xml_dump_node_p dn)
+{
+  if (t == TYPE_MAIN_VARIANT(t))
+    {
+    switch (TREE_CODE(t))
+      {
+      case UNION_TYPE:
+      case RECORD_TYPE:
+        xml_output_record_type (xdi, t, dn);
+        break;
+      case ARRAY_TYPE:
+        xml_output_array_type (xdi, t, dn);
+        break;
+      case POINTER_TYPE:
+        xml_output_pointer_type (xdi, t, dn);
+        break;
+      case REFERENCE_TYPE:
+        xml_output_reference_type (xdi, t, dn);
+        break;
+      case FUNCTION_TYPE:
+        xml_output_function_type (xdi, t, dn);
+        break;
+      case METHOD_TYPE:
+        xml_output_method_type (xdi, t, dn);
+        break;
+      case OFFSET_TYPE:
+        xml_output_offset_type (xdi, t, dn);
+        break;
+      case ENUMERAL_TYPE:
+        xml_output_enumeral_type (xdi, t, dn);
+        break;
+      case LANG_TYPE:
+      case INTEGER_TYPE:
+      case BOOLEAN_TYPE:
+      case REAL_TYPE:
+      case VOID_TYPE:
+      case COMPLEX_TYPE:
+        xml_output_fundamental_type (xdi, t, dn);
+        break;
+      default:
+        break;
+      }
+    }
+  else
+    {
+    /* Create a special CvQualifiedType element to hold top-level
+       cv-qualifiers for a real type node. */
+    fprintf (xdi->file, "  <CvQualifiedType");
+
+    /* Ignore the real index of this node and use the index of the
+       unqualified version of the node with the extra characters.  */
+    int id = xml_add_node (xdi, TYPE_MAIN_VARIANT(t), dn->complete);
+    const char* c = CP_TYPE_CONST_P (t)?"c":"";
+    const char* v = CP_TYPE_VOLATILE_P (t)?"v":"";
+    const char* r = CP_TYPE_RESTRICT_P (t)?"r":"";
+    fprintf (xdi->file, " id=\"_%d%s%s%s\"", id, c, v, r);
+
+    /* Refer to the unqualified type.  */
+    xml_print_type_attribute (xdi, TYPE_MAIN_VARIANT(t), dn->complete);
+
+    /* Add the cv-qualification attributes. */
+    if (*c)
+      {
+      fprintf (xdi->file, " const=\"1\"");
+      }
+    if (*v)
+      {
+      fprintf (xdi->file, " volatile=\"1\"");
+      }
+    if (*r)
+      {
+      fprintf (xdi->file, " restrict=\"1\"");
+      }
+    fprintf (xdi->file, "/>\n");
+    }
 }
 
 /* ------------------------------------------------------------------------ */
@@ -1425,7 +1509,7 @@ static int
 xml_add_typedef (xml_dump_info_p xdi, tree td, int complete)
 {
   tree t;
-  
+
   /* If the typedef points to its own name in the same context, ignore
      it.  */
   if(!DECL_ORIGINAL_TYPE (td)
@@ -1435,7 +1519,7 @@ xml_add_typedef (xml_dump_info_p xdi, tree td, int complete)
     {
     return 0;
     }
-  
+
   /* Find the typedef's real target type.  */
   if (DECL_ORIGINAL_TYPE (td))
     {
@@ -1445,12 +1529,12 @@ xml_add_typedef (xml_dump_info_p xdi, tree td, int complete)
     {
     t = TREE_TYPE (td);
     }
-  
+
   if (TYPE_MAIN_VARIANT (t))
     {
     t = TYPE_MAIN_VARIANT (t);
     }
-  
+
   /* Only add the typedef if its target will be dumped.  */
   if (xml_add_node (xdi, t, complete))
     {
@@ -1470,7 +1554,7 @@ xml_add_type_decl (xml_dump_info_p xdi, tree td, int complete)
   /* Get the type from the TYPE_DECL.  We don't want to use complete_type
      because it may modify something.  We are doing a read-only dump.  */
   tree t = TREE_TYPE (td);
-  
+
   switch (TREE_CODE (t))
     {
     case ARRAY_TYPE:
@@ -1507,11 +1591,11 @@ xml_add_type_decl (xml_dump_info_p xdi, tree td, int complete)
          4.  typedef struct A {} B;           "struct A" "typedef A B"
          5.  typedef struct A {} A;           "struct A"
          6.  struct A {}; typedef struct A A; "struct A"
-         
+
          DECL_IMPLICIT_TYPEDEF_P will recognize the TYPE_DECL that
          points to the real class definition for cases 1, 2, 3, and 4,
          and is sufficient to make the decision.
-         
+
          For cases 5 and 6, the second test makes sure the context of
          the TYPE_DECL matches the context of the RECORD_TYPE, which
          can only happen for a TYPE_DECL in the same scope as the
@@ -1560,7 +1644,7 @@ static int
 xml_add_template_decl (xml_dump_info_p xdi, tree td, int complete)
 {
   tree tl;
-  
+
   /* Dump the template specializations.  */
   for (tl = DECL_TEMPLATE_SPECIALIZATIONS (td);
        tl ; tl = TREE_CHAIN (tl))
@@ -1579,7 +1663,7 @@ xml_add_template_decl (xml_dump_info_p xdi, tree td, int complete)
         break;
       }
     }
-  
+
   /* Dump the template instantiations.  */
   for (tl = DECL_TEMPLATE_INSTANTIATIONS (td);
        tl ; tl = TREE_CHAIN (tl))
@@ -1600,7 +1684,7 @@ xml_add_template_decl (xml_dump_info_p xdi, tree td, int complete)
         break;
       }
     }
-  
+
   /* Dump any member template instantiations.  */
   if (complete)
     {
@@ -1612,7 +1696,7 @@ xml_add_template_decl (xml_dump_info_p xdi, tree td, int complete)
         }
       }
     }
-  
+
   return 0;
 }
 
@@ -1627,7 +1711,7 @@ xml_dump_tree_node (xml_dump_info_p xdi, tree n, xml_dump_node_p dn)
       break;
     case TYPE_DECL:
       xml_output_typedef (xdi, n, dn);
-      break;          
+      break;
     case FUNCTION_DECL:
       xml_output_function_decl (xdi, n, dn);
       break;
@@ -1639,38 +1723,22 @@ xml_dump_tree_node (xml_dump_info_p xdi, tree n, xml_dump_node_p dn)
       break;
     case UNION_TYPE:
     case RECORD_TYPE:
-      xml_output_record_type (xdi, n, dn);
-      break;
     case ARRAY_TYPE:
-      xml_output_array_type (xdi, n, dn);
-      break;
     case POINTER_TYPE:
-      xml_output_pointer_type (xdi, n, dn);
-      break;
     case REFERENCE_TYPE:
-      xml_output_reference_type (xdi, n, dn);
-      break;
     case FUNCTION_TYPE:
-      xml_output_function_type (xdi, n, dn);
-      break;
     case METHOD_TYPE:
-      xml_output_method_type (xdi, n, dn);
-      break;
     case OFFSET_TYPE:
-      xml_output_offset_type (xdi, n, dn);
-      break;
     case ENUMERAL_TYPE:
-      xml_output_enumeral_type (xdi, n, dn);
-      break;
     case LANG_TYPE:
     case INTEGER_TYPE:
     case BOOLEAN_TYPE:
     case REAL_TYPE:
     case VOID_TYPE:
     case COMPLEX_TYPE:
-      xml_output_fundamental_type (xdi, n, dn);
+      xml_output_cv_qualified_type (xdi, n, dn);
       break;
-      
+
     /* Let the following fall through to unimplemented for now.  */
     case RESULT_DECL:
     case USING_DECL:
@@ -1747,15 +1815,15 @@ xml_add_node (xml_dump_info_p xdi, tree n, int complete)
       /* This node must really be added.  */
       return xml_add_node_real (xdi, n, complete);
     }
-  
+
   return 0;
-}  
+}
 
 /* Dump the queue of file names.  */
 void xml_dump_files (xml_dump_info_p xdi)
 {
   xml_file_queue_p fq;
-  xml_file_queue_p next_fq; 
+  xml_file_queue_p next_fq;
   for(fq = xdi->file_queue; fq ; fq = next_fq)
     {
     fprintf (xdi->file, "  <File id=\"f%d\" name=\"%s\"/>\n",
@@ -1776,7 +1844,7 @@ xml_lookup_start_node (tree scope, const char* qualified_name)
   char* name = 0;
   int pos = 0;
   tree id;
-  
+
   /* Parse off the first qualifier.  */
   while (qualified_name[pos] && (qualified_name[pos] != ':')) { ++pos; }
   name = xmalloc(pos+1);
@@ -1795,12 +1863,12 @@ xml_lookup_start_node (tree scope, const char* qualified_name)
     {
     node = lookup_member (TREE_TYPE (scope), id, 2, 0);
     }
-  
+
   if (!node) { return 0; }
-  
+
   /* Find the start of the next qualifier, if any.  */
   while (qualified_name[pos] && (qualified_name[pos] == ':')) { ++pos; }
-  
+
   /* If that was not the last qualifier, lookup the rest recursively.  */
   if (qualified_name[pos])
     {
@@ -1845,7 +1913,7 @@ xml_add_start_nodes (xml_dump_info_p xdi, const char* in_start_list)
   char* cur_start = start_list;
   tree node = 0;
   strcpy(start_list, in_start_list);
-  
+
   /* Parse out the comma-separated list.  */
   while (start_list[pos])
     {
@@ -1853,27 +1921,27 @@ xml_add_start_nodes (xml_dump_info_p xdi, const char* in_start_list)
     if (start_list[pos] == ',')
       {
       start_list[pos] = 0;
-      
+
       /* Add the node for this list entry.  */
-      node = xml_lookup_start_node (global_namespace, cur_start);      
+      node = xml_lookup_start_node (global_namespace, cur_start);
       if (node)
         {
         xml_add_start_node (xdi, node);
         }
-      
+
       /* Start the next list entry.  */
       cur_start = start_list+pos+1;
       }
     ++pos;
-    }  
-  
+    }
+
   /* Add the node for the last list entry.  */
   node = xml_lookup_start_node (global_namespace, cur_start);
   if (node)
     {
     xml_add_start_node (xdi, node);
     }
-  
+
   free (start_list);
 }
 
@@ -1943,7 +2011,7 @@ xml_get_encoded_identifier_from_string (const char* in_str)
       case '"': strcpy (outCh, XML_DOUBLE_QUOTE);  outCh += strlen(XML_DOUBLE_QUOTE); break;
       default: *outCh++ = *inCh;
       }
-    }  
+    }
 
   *outCh = '\0';
 
