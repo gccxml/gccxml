@@ -1,0 +1,68 @@
+#!/bin/sh
+
+# Find the compiler executable name.
+if test "x$1" == "x" ; then
+  if test "x$GCCXML_COMPILER" == "x"; then
+    if test "x${CXX}" != "x" ; then
+      GCCXML_COMPILER="${CXX}"
+    else
+      echo "Need to specify compiler name or set GCCXML_COMPILER or CXX."
+      exit 1
+    fi
+  fi
+else 
+  GCCXML_COMPILER="$1"
+fi
+
+# Use the compiler's preprocessor to identify the compiler.
+cat > "/tmp/gccxml_identify_compiler.cc" <<!
+#if defined(__GNUC__)
+GCCXML_SUPPORT="GccInclude"
+GCCXML_FLAGS_SCRIPT="find_gcc_options"
+#elif defined(__sgi)
+GCCXML_SUPPORT="MproInclude"
+GCCXML_FLAGS_SCRIPT="find_mpro_options"
+#else
+GCCXML_SUPPORT=""
+GCCXML_FLAGS_SCRIPT=""
+#endif
+!
+
+# Run the compiler's preprocessor on the above code to identify it.
+if ! (${GCCXML_COMPILER} -E "/tmp/gccxml_identify_compiler.cc" \
+                          > "/tmp/gccxml_identify_compiler.pp";
+      rm -f "/tmp/gccxml_identify_compiler.cc") ; then
+  echo "Error running \"${GCCXML_COMPILER} -E\""
+  exit 1
+fi
+
+# Source the result to get the settings found.
+source "/tmp/gccxml_identify_compiler.pp"
+rm -f  "/tmp/gccxml_identify_compiler.pp"
+
+# Check if a supported compiler was identified.
+if test "x$GCCXML_SUPPORT" == "x" ; then
+  echo "Compiler \"${GCCXML_COMPILER}\" is not supported by GCC-XML."
+  exit 1
+fi
+
+# The support directories are located near this script.
+SELFPATH=`echo $0 | sed -n '/\//{s/\/gccxml_find_flags$//;p;}'`
+if test "x$SELFPATH" = "x" ; then SELFPATH="." ; fi
+SELFPATH=`cd $SELFPATH ; pwd`
+
+# Find the compiler-specific support directory.
+if test -d "${SELFPATH}/${GCCXML_SUPPORT}" ; then
+  GCCXML_SUPPORT_DIR="${SELFPATH}/${GCCXML_SUPPORT}"
+elif test -d "${SELFPATH}/../share/GCC_XML/${GCCXML_SUPPORT}" ; then
+  GCCXML_SUPPORT_DIR="${SELFPATH}/../share/GCC_XML/${GCCXML_SUPPORT}"
+else
+  echo "Cannot find GCC_XML compiler support directory ${GCCXML_SUPPORT}."
+  exit 1
+fi
+
+# Run the compiler-specific flag finding script.
+GCCXML_FLAGS=`${GCCXML_SUPPORT_DIR}/${GCCXML_FLAGS_SCRIPT} ${GCCXML_COMPILER}`
+
+# Display the output.
+echo ${GCCXML_FLAGS}
