@@ -1,3 +1,7 @@
+# Restore the real executable output path.  We want to put our executable
+# there.
+SET(EXECUTABLE_OUTPUT_PATH ${GCC_EXECUTABLE_OUTPUT_PATH})
+
 #-----------------------------------------------------------------------------
 # C++ Compiler Executable
 
