@@ -213,6 +213,7 @@ print_class_begin_tag (FILE* file, unsigned long indent, tree rt)
 {
   const char* name = xml_get_encoded_string (DECL_NAME (TYPE_NAME (rt)));  
   const char* access = "";
+  const char* mangled_name = mangle_type_string (rt);
   int is_abstract = (CLASSTYPE_PURE_VIRTUALS (rt) != 0);
 
   if (TREE_PRIVATE (TYPE_NAME (rt)))        access = "private";
@@ -225,21 +226,21 @@ print_class_begin_tag (FILE* file, unsigned long indent, tree rt)
     if (CLASSTYPE_DECLARED_CLASS (rt))
       {
       fprintf (file,
-               "<Class name=\"%s\" access=\"%s\" abstract=\"%d\">\n",
-               name, access, is_abstract);
+               "<Class name=\"%s\" access=\"%s\" abstract=\"%d\" mangled_name=\"%s\">\n",
+               name, access, is_abstract, mangled_name);
       }
     else
       {
       fprintf (file,
-               "<Struct name=\"%s\" access=\"%s\" abstract=\"%d\">\n",
-               name, access, is_abstract);
+               "<Struct name=\"%s\" access=\"%s\" abstract=\"%d\" mangled_name=\"%s\">\n",
+               name, access, is_abstract, mangled_name);
       }
     }
   else
     {
       fprintf (file,
-               "<Union name=\"%s\" access=\"%s\" abstract=\"%d\">\n",
-               name, access, is_abstract);
+               "<Union name=\"%s\" access=\"%s\" abstract=\"%d\" mangled_name=\"%s\">\n",
+               name, access, is_abstract, mangled_name);
     }
 }
 
