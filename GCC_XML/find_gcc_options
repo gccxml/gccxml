@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # These options are always needed.
-echo -n "-quiet -o /dev/null -nostdinc "
+echo -n "-quiet -o /dev/null -nostdinc -fsyntax-only "
 
 # Find the include path options.
 echo "" | gcc -v -x c++ -E -o /dev/null - 2>&1 |
