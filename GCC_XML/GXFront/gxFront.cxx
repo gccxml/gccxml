@@ -9,8 +9,8 @@
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt for details.
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -38,48 +38,48 @@ inline int GXSpawn(const char* cmd, char** argv)
 int main(int argc, char** argv)
 {
   gxConfiguration configuration;
-  
+
   // Do initial configuration.
   if(!configuration.Configure(argc, argv))
     {
     std::cerr << "Error during configuration.  Aborting.\n";
     return 1;
     }
-  
+
   // Check for any simple flags.
   if(configuration.GetManFlag())
     {
     gxDocumentation::PrintManPage(std::cout);
     return 0;
     }
-  
+
   if(configuration.GetCopyrightFlag())
     {
     gxDocumentation::PrintCopyright(std::cout);
     return 0;
     }
-  
+
   if(configuration.GetHelpHTMLFlag())
     {
     gxDocumentation::PrintHelpHTML(std::cout);
     return 0;
     }
-  
+
   if(configuration.GetHelpFlag())
     {
     gxDocumentation::PrintHelp(std::cout);
     return 0;
     }
-  
+
   if(configuration.GetVersionFlag())
     {
     std::cout << "GCC-XML version " GCCXML_VERSION_FULL "\n";
     return 0;
     }
-  
+
   // Find the GCCXML_FLAGS setting.
   bool cfr = configuration.ConfigureFlags();
-  
+
   // Print the configuration if it was requested.
   if(configuration.GetPrintFlag())
     {
@@ -87,7 +87,7 @@ int main(int argc, char** argv)
     configuration.PrintConfiguration(std::cout);
     return cfr? 0:1;
     }
-  
+
   // Check if there is anything to do.
   if(configuration.GetArguments().empty())
     {
@@ -97,29 +97,29 @@ int main(int argc, char** argv)
     gxDocumentation::PrintUsage(std::cout);
     return 0;
     }
-  
+
   // We have something to do.  Make sure the GCCXML_FLAGS setting is
   // valid.
   if(!cfr)
     {
     return 1;
-    }  
-  
+    }
+
   // Get the configuration settings.
   std::string cGCCXML_EXECUTABLE = configuration.GetGCCXML_EXECUTABLE();
   std::string cGCCXML_FLAGS = configuration.GetGCCXML_FLAGS();
   std::string cGCCXML_USER_FLAGS = configuration.GetGCCXML_USER_FLAGS();
-  
+
   // Parse the flags.
   gxFlagsParser parser;
   parser.Parse(cGCCXML_FLAGS.c_str());
   parser.Parse(cGCCXML_USER_FLAGS.c_str());
-  
+
   // Create the set of flags.
   std::vector<std::string> flags;
   configuration.AddArguments(flags);
   parser.AddParsedFlags(flags);
-  
+
   // List set of flags if debugging.
   if(configuration.GetDebugFlag())
     {
@@ -139,7 +139,7 @@ int main(int argc, char** argv)
     std::cerr << "Could not determine GCCXML_EXECUTABLE setting.\n";
     return 1;
     }
-  
+
 #if defined(_WIN32) && !defined(__CYGWIN__) && !defined(GCCXML_NATIVE_CC1PLUS)
   // Make sure a cygwin1.dll is available.
   std::string cyg = gxSystemTools::GetFilenamePath(cGCCXML_EXECUTABLE.c_str());
@@ -149,7 +149,7 @@ int main(int argc, char** argv)
     {
     // There is no cygwin1.dll in the directory with gccxml_cc1plus or
     // in the system search path.  Look for a cygwin installation.
-    
+
     // The registry key to use to find cygwin.
     const char* cygwinRegistry =
       "HKEY_LOCAL_MACHINE\\SOFTWARE\\Cygnus Solutions\\Cygwin\\mounts v2\\/usr/bin;native";
@@ -175,12 +175,12 @@ int main(int argc, char** argv)
       return 1;
       }
     }
-#endif  
-  
+#endif
+
   // Convert the program path to a platform-dependent format.
   std::string cge =
     gxSystemTools::ConvertToOutputPath(cGCCXML_EXECUTABLE.c_str());
-  
+
   // Prepare list of arguments for exec call.
   char** args = new char*[flags.size()+2];
   args[0] = strdup(cge.c_str());
@@ -189,7 +189,7 @@ int main(int argc, char** argv)
     args[i+1] = strdup(flags[i].c_str());
     }
   args[flags.size()+1] = 0;
-  
+
   // Run the patched GCC C++ parser.
   int result = 0;
   if((result = GXSpawn(cge.c_str(), args)) < 0)
@@ -197,13 +197,13 @@ int main(int argc, char** argv)
     result = errno;
     std::cerr << "Error executing " << cGCCXML_EXECUTABLE.c_str() << "\n";
     }
-  
+
   // Free the arguments' memory.
   for(char** a = args; *a; ++a)
     {
     free(*a);
     }
   delete [] args;
-  
+
   return result;
 }

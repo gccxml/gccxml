@@ -9,8 +9,8 @@
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt for details.
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -263,7 +263,7 @@ void gxDocumentationPrintManSection(std::ostream& os,
       os << ".PP\n"
          << op->brief << "\n";
       }
-    }  
+    }
 }
 
 //----------------------------------------------------------------------------
@@ -291,7 +291,7 @@ void gxDocumentationPrintHelpSection(std::ostream& os,
       os << "\n";
       }
     os << "\n";
-    }  
+    }
 }
 
 //----------------------------------------------------------------------------
@@ -377,7 +377,7 @@ void gxDocumentationPrintUsageSection(std::ostream& os,
       gxDocumentation::PrintColumn(os, 74, "", op->brief);
       os << "\n";
       }
-    }  
+    }
   os.setf(flags);
 }
 
@@ -490,7 +490,7 @@ void gxDocumentation::PrintColumn(std::ostream& os, int width,
     // Parse the next word.
     const char* r = l;
     while(*r && (*r != '\n') && (*r != ' ')) { ++r; }
-    
+
     // Does it fit on this line?
     if(r-l < (width-column-(newSentence?1:0)))
       {
@@ -518,12 +518,12 @@ void gxDocumentation::PrintColumn(std::ostream& os, int width,
           // first line.
           os << (first?"":indent);
           }
-        
+
         // Print the word.
         os.write(l, static_cast<long>(r-l));
         newSentence = (*(r-1) == '.');
         }
-      
+
       if(*r == '\n')
         {
         // Text provided a newline.  Start a new line.
@@ -551,9 +551,9 @@ void gxDocumentation::PrintColumn(std::ostream& os, int width,
         newSentence = (*(r-1) == '.');
         }
       }
-    
+
     // Move to beginning of next word.  Skip over whitespace.
     l = r;
-    while(*l && (*l == ' ')) { ++l; }    
+    while(*l && (*l == ' ')) { ++l; }
     }
 }

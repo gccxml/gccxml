@@ -9,8 +9,8 @@
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt for details.
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -30,10 +30,10 @@ public:
 
   /** Add the set of arguments to the given vector.  */
   void AddParsedFlags(std::vector<std::string>& resultArgs);
-  
+
 private:
   void AddFlag(const std::string&);
-  
+
   std::vector<std::string> m_Flags;
 };
 

@@ -9,8 +9,8 @@
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt for details.
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -74,17 +74,17 @@ bool gxSystemTools::ReadRegistryValue(const char* key, std::string& result)
 {
   // Adapted from CMake's cmSystemTools.h: ReadAValue
   // Get the data of key value.
-  // Example : 
+  // Example :
   //      HKEY_LOCAL_MACHINE\SOFTWARE\Python\PythonCore\2.1\InstallPath
   //      =>  will return the data of the "default" value of the key
   //      HKEY_LOCAL_MACHINE\SOFTWARE\Scriptics\Tcl\8.4;Root
   //      =>  will return the data of the "Root" value of the key
-  
+
   // find the primary key
   std::string primary = key;
   std::string second;
   std::string valuename;
- 
+
   size_t start = primary.find("\\");
   if(start == std::string::npos)
     {
@@ -97,7 +97,7 @@ bool gxSystemTools::ReadRegistryValue(const char* key, std::string& result)
     }
   second = primary.substr(start+1, valuenamepos-start-1);
   primary = primary.substr(0, start);
-  
+
   HKEY primaryKey;
   if(primary == "HKEY_CURRENT_USER")
     {
@@ -119,7 +119,7 @@ bool gxSystemTools::ReadRegistryValue(const char* key, std::string& result)
     {
     primaryKey = HKEY_USERS;
     }
-  
+
   HKEY hKey;
   if(RegOpenKeyEx(primaryKey, second.c_str(),
                   0, KEY_READ, &hKey) != ERROR_SUCCESS)
@@ -131,7 +131,7 @@ bool gxSystemTools::ReadRegistryValue(const char* key, std::string& result)
     DWORD dwType, dwSize;
     dwSize = 1023;
     char data[1024];
-    if(RegQueryValueEx(hKey, (LPTSTR)valuename.c_str(), NULL, &dwType, 
+    if(RegQueryValueEx(hKey, (LPTSTR)valuename.c_str(), NULL, &dwType,
                        (BYTE *)data, &dwSize) == ERROR_SUCCESS)
       {
       if (dwType == REG_SZ)
@@ -148,7 +148,7 @@ bool gxSystemTools::ReadRegistryValue(const char* key, std::string& result)
 bool gxSystemTools::ReadRegistryValue(const char*, std::string&)
 {
   return false;
-}  
+}
 #endif
 
 //----------------------------------------------------------------------------
@@ -168,7 +168,7 @@ bool gxSystemTools::FileCopy(const char* source, const char* destination)
 #endif
                      std::ios::out | std::ios::trunc);
   if(!fout) { return false; }
-  
+
   // This copy loop is very sensitive on certain platforms with
   // slightly broken stream libraries (like HPUX).  Normally, it is
   // incorrect to not check the error condition on the fin.read()
@@ -182,7 +182,7 @@ bool gxSystemTools::FileCopy(const char* source, const char* destination)
       fout.write(buffer, fin.gcount());
       }
     }
-  
+
   return true;
 }
 
@@ -224,7 +224,7 @@ std::string gxSystemTools::GetFilenamePath(const char* filename)
 {
   std::string fn = filename;
   gxSystemTools::ConvertToUnixSlashes(fn);
-  
+
   std::string::size_type slash_pos = fn.rfind("/");
   if(slash_pos != std::string::npos)
     {
@@ -241,7 +241,7 @@ std::string gxSystemTools::GetFilenameName(const char* filename)
 {
   std::string fn = filename;
   gxSystemTools::ConvertToUnixSlashes(fn);
-  
+
   std::string::size_type slash_pos = fn.rfind("/");
   if(slash_pos != std::string::npos)
     {
@@ -257,7 +257,7 @@ std::string gxSystemTools::GetFilenameName(const char* filename)
 bool gxSystemTools::FileExists(const char* filename)
 {
   struct stat fs;
-  if(stat(filename, &fs) != 0) 
+  if(stat(filename, &fs) != 0)
     {
     return false;
     }
@@ -269,7 +269,7 @@ bool gxSystemTools::FileExists(const char* filename)
 
 //----------------------------------------------------------------------------
 bool gxSystemTools::FileIsDirectory(const char* name)
-{  
+{
   struct stat fs;
   if(stat(name, &fs) == 0)
     {
@@ -298,7 +298,7 @@ bool gxSystemTools::MakeDirectory(const char* name)
   gxSystemTools::ConvertToUnixSlashes(dir);
   std::string::size_type pos = std::string::npos;
   std::vector<std::string> dirs;
-  
+
   while(!gxSystemTools::FileIsDirectory(dir.substr(0, pos).c_str()))
     {
     dirs.push_back(dir.substr(0, pos).c_str());
@@ -407,7 +407,7 @@ bool gxSystemTools::RunCommand(const char* command,  std::string& output,
   commandToFile += " > ";
   std::string tempFile;
   tempFile += _tempnam(0, "gccxml");
-  
+
   commandToFile += tempFile;
   retVal = system(commandToFile.c_str());
   std::ifstream fin(tempFile.c_str());
@@ -464,7 +464,7 @@ std::string gxSystemTools::ConvertToOutputPath(const char* path)
 
 //----------------------------------------------------------------------------
 std::string gxSystemTools::ConvertToWindowsOutputPath(const char* path)
-{  
+{
   // remove double slashes not at the start
   std::string ret = path;
   std::string::size_type pos = 0;
@@ -504,7 +504,7 @@ std::string gxSystemTools::ConvertToUnixOutputPath(const char* path)
 {
   // change // to /, and escape any spaces in the path
   std::string ret = path;
-  
+
   // remove // except at the beginning might be a cygwin drive
   std::string::size_type pos = 1;
   while((pos = ret.find("//", pos)) != std::string::npos)
@@ -542,7 +542,7 @@ void gxSystemToolsGetPath(std::vector<std::string>& path)
 #endif
   std::string pathEnv;
   if(!gxSystemTools::GetEnv("PATH", pathEnv)) { return; }
-  // A hack to make the below algorithm work.  
+  // A hack to make the below algorithm work.
   if(pathEnv[pathEnv.length()-1] != pathSep[0])
     {
     pathEnv += pathSep;
@@ -575,7 +575,7 @@ std::string gxSystemTools::FindProgram(const char* name)
   // Find the executable with the given name.  Searches the system
   // path.  Returns the full path to the executable if it is found.
   // Otherwise, the empty string is returned.
-  
+
   // See if the executable exists as written.
   if(gxSystemTools::FileExists(name) && !gxSystemTools::FileIsDirectory(name))
     {
@@ -587,7 +587,7 @@ std::string gxSystemTools::FindProgram(const char* name)
     fullName = fileDir+"/"+fileName;
     return fullName;
     }
-  
+
   std::string tryPath = name;
 #ifdef _WIN32
   tryPath += ".exe";
@@ -601,7 +601,7 @@ std::string gxSystemTools::FindProgram(const char* name)
   // Get the system search path.
   std::vector<std::string> path;
   gxSystemToolsGetPath(path);
-  
+
   for(std::vector<std::string>::const_iterator p = path.begin();
       p != path.end(); ++p)
     {
@@ -643,17 +643,17 @@ bool gxSystemTools::SameFile(const char* file1, const char* file2)
 #ifdef _WIN32
   HANDLE hFile1, hFile2;
 
-  hFile1 = CreateFile( file1, 
-                      GENERIC_READ, 
+  hFile1 = CreateFile( file1,
+                      GENERIC_READ,
                       FILE_SHARE_READ ,
                       NULL,
                       OPEN_EXISTING,
                       FILE_FLAG_BACKUP_SEMANTICS,
                       NULL
     );
-  hFile2 = CreateFile( file2, 
-                      GENERIC_READ, 
-                      FILE_SHARE_READ, 
+  hFile2 = CreateFile( file2,
+                      GENERIC_READ,
+                      FILE_SHARE_READ,
                       NULL,
                       OPEN_EXISTING,
                       FILE_FLAG_BACKUP_SEMANTICS,
@@ -686,10 +686,10 @@ bool gxSystemTools::SameFile(const char* file1, const char* file2)
     {
     // see if the files are the same file
     // check the device inode and size
-    if(memcmp(&fileStat2.st_dev, &fileStat1.st_dev, sizeof(fileStat1.st_dev)) == 0 && 
+    if(memcmp(&fileStat2.st_dev, &fileStat1.st_dev, sizeof(fileStat1.st_dev)) == 0 &&
        memcmp(&fileStat2.st_ino, &fileStat1.st_ino, sizeof(fileStat1.st_ino)) == 0 &&
-       fileStat2.st_size == fileStat1.st_size 
-      ) 
+       fileStat2.st_size == fileStat1.st_size
+      )
       {
       return true;
       }

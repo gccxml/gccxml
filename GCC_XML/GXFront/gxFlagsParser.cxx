@@ -9,8 +9,8 @@
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt for details.
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -21,9 +21,9 @@ void gxFlagsParser::Parse(const char* in_flags)
 {
   // Prepare a work string for searching.
   std::string flags = in_flags;
-  
+
   // Look for " -" separating arguments.
-  
+
   // The first argument starts at the first "-" character.
   std::string::size_type leftPos = flags.find_first_of("-");
   if(leftPos == std::string::npos) { return; }
@@ -32,7 +32,7 @@ void gxFlagsParser::Parse(const char* in_flags)
     {
     // Pull out and store this argument.
     this->AddFlag(flags.substr(leftPos, rightPos-leftPos));
-    
+
     // The next argument starts at the '-' from the previously found " -".
     leftPos = rightPos+1;
     rightPos = flags.find(" -", leftPos);
@@ -58,7 +58,7 @@ void gxFlagsParser::AddFlag(const std::string& flag)
   // whitespace from the argument.
   if(flag.substr(0, 8) == "-include")
     {
-    m_Flags.push_back("-include");    
+    m_Flags.push_back("-include");
     m_Flags.push_back(flag.substr(9, flag.find_last_not_of(" \t")-8));
     }
   else
