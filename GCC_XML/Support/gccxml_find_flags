@@ -62,7 +62,7 @@ fi
 
 # Source the result to get the settings found.
 . "/tmp/gccxml_identify_compiler$GCCXML_PID.pp"
-rm -f  "/tmp/gccxml_identify_compiler$GCCXML_PID.pp"
+rm -f "/tmp/gccxml_identify_compiler$GCCXML_PID.pp"
 
 # Check if a supported compiler was identified.
 if test "x$GCCXML_SUPPORT" = "x" ; then
@@ -71,8 +71,7 @@ if test "x$GCCXML_SUPPORT" = "x" ; then
 fi
 
 # The support directories are located near this script.
-SP1=`echo $0 | sed -n '/\//{s/\/[^\/]*$//;p;}'`
-SELFPATH=`cd $SP1;pwd`
+SELFPATH=`cd "\`echo $0 | sed -n '/\//{s/\/[^\/]*$//;p;}'\`";pwd`
 
 # Find the compiler-specific support directory.
 if test -d "${SELFPATH}/${GCCXML_SUPPORT}" ; then
@@ -83,7 +82,7 @@ else
 fi
 
 # Run the compiler-specific flag finding script.
-GCCXML_FLAGS=`${GCCXML_SUPPORT_DIR}/find_flags ${GCCXML_COMPILER} ${GCCXML_CXXFLAGS}`
+GCCXML_FLAGS=`"${GCCXML_SUPPORT_DIR}/find_flags" ${GCCXML_COMPILER} ${GCCXML_CXXFLAGS}`
 
 # Display the output.
 echo ${GCCXML_FLAGS}
