@@ -1501,10 +1501,18 @@ xml_output_enumeral_type (xml_dump_info_p xdi, tree t, xml_dump_node_p dn)
   /* Output the list of possible values for the enumeration type.  */
   for (tv = TYPE_VALUES (t); tv ; tv = TREE_CHAIN (tv))
     {
-    int value = TREE_INT_CST_LOW (TREE_VALUE (tv));
-    fprintf (xdi->file,
-             "    <EnumValue name=\"%s\" init=\"%d\"/>\n",
-             xml_get_encoded_string ( TREE_PURPOSE(tv)), value);
+    if(TREE_CODE (TREE_VALUE (tv)) == INTEGER_CST)
+      {
+      int value = TREE_INT_CST_LOW (TREE_VALUE (tv));
+      fprintf (xdi->file,
+               "    <EnumValue name=\"%s\" init=\"%d\"/>\n",
+               xml_get_encoded_string ( TREE_PURPOSE(tv)), value);
+      }
+    else
+      {
+      fprintf (xdi->file, "  ");
+      xml_output_unimplemented (xdi, TREE_VALUE (tv), dn, "xml_output_enumeral_type");
+      }
     }
 
   fprintf (xdi->file, "  </Enumeration>\n");
