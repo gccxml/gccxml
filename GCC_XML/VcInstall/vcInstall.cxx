@@ -2,6 +2,8 @@
  * Program to copy and patch MSVC header files to work with GCC-XML.
  */
 
+#include "gxWinSystem.h"
+
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -9,9 +11,6 @@
 #include <process.h>
 #include <windows.h>
 #include <direct.h>
-
-bool readRegistryValue(const char *key, std::string& result);
-bool copyFile(const char* source, const char* destination);
 
 int main(int argc, char* argv[])
 {
@@ -37,7 +36,7 @@ int main(int argc, char* argv[])
   // If the source_path argument was not given, look it up in the registry.
   if(argc < 4)
     {
-    if(!readRegistryValue(vcRegistry, sourcePath))
+    if(!gxWinSystem::ReadRegistryValue(vcRegistry, sourcePath))
       {
       std::cerr << "source_path not specified and VC98 could not be found in the registry!" << std::endl;
       return 1;
@@ -71,7 +70,7 @@ int main(int argc, char* argv[])
       source += "/"+line.substr(7);
       std::string dest = destPath.c_str();
       dest += "/"+line.substr(7);
-      copyFile(source.c_str(), dest.c_str());
+      gxWinSystem::gxCopyFile(source.c_str(), dest.c_str());
       }
     }
 
@@ -104,6 +103,7 @@ int main(int argc, char* argv[])
   // The arguments for executing the patch program.
   const char* patchOptions[] =
   {
+    "patch",
     "-p0",
     "-t",
     "-d ", destPath.c_str(),
@@ -118,132 +118,4 @@ int main(int argc, char* argv[])
     }
 
   return 0;
-}
-
-
-/**
- * Adapted from CMake's cmSystemTools.h: ReadAValue
- * Get the data of key value.
- * Example : 
- *      HKEY_LOCAL_MACHINE\SOFTWARE\Python\PythonCore\2.1\InstallPath
- *      =>  will return the data of the "default" value of the key
- *      HKEY_LOCAL_MACHINE\SOFTWARE\Scriptics\Tcl\8.4;Root
- *      =>  will return the data of the "Root" value of the key
- */
-bool readRegistryValue(const char *key, std::string& result)
-{
-  // find the primary key
-  std::string primary = key;
-  std::string second;
-  std::string valuename;
- 
-  size_t start = primary.find("\\");
-  if(start == std::string::npos)
-    {
-    return false;
-    }
-  size_t valuenamepos = primary.find(";");
-  if (valuenamepos != std::string::npos)
-    {
-    valuename = primary.substr(valuenamepos+1);
-    }
-  second = primary.substr(start+1, valuenamepos-start-1);
-  primary = primary.substr(0, start);
-  
-  HKEY primaryKey;
-  if(primary == "HKEY_CURRENT_USER")
-    {
-    primaryKey = HKEY_CURRENT_USER;
-    }
-  else if(primary == "HKEY_CURRENT_CONFIG")
-    {
-    primaryKey = HKEY_CURRENT_CONFIG;
-    }
-  else if(primary == "HKEY_CLASSES_ROOT")
-    {
-    primaryKey = HKEY_CLASSES_ROOT;
-    }
-  else if(primary == "HKEY_LOCAL_MACHINE")
-    {
-    primaryKey = HKEY_LOCAL_MACHINE;
-    }
-  else if(primary == "HKEY_USERS")
-    {
-    primaryKey = HKEY_USERS;
-    }
-  
-  HKEY hKey;
-  if(RegOpenKeyEx(primaryKey, second.c_str(),
-                  0, KEY_READ, &hKey) != ERROR_SUCCESS)
-    {
-    return false;
-    }
-  else
-    {
-    DWORD dwType, dwSize;
-    dwSize = 1023;
-    char data[1024];
-    if(RegQueryValueEx(hKey, (LPTSTR)valuename.c_str(), NULL, &dwType, 
-                       (BYTE *)data, &dwSize) == ERROR_SUCCESS)
-      {
-      if (dwType == REG_SZ)
-        {
-        result = data;
-        return true;
-        }
-      }
-    }
-  return false;
-}
-
-
-/**
- * Copy a file named by "source" to the file named by "destination".  This
- * implementation makes correct use of the C++ standard file streams to
- * perfectly copy any file with lines of any length (even binary files).
- */
-bool copyFile(const char* source,
-              const char* destination)
-{
-  // Buffer length is only for block size.  Any file would still be copied
-  // correctly if this were as small as 2.
-  const int buffer_length = 4096;
-  char buffer[buffer_length];
-  std::ifstream fin(source,
-                    std::ios::binary | std::ios::in);
-  if(!fin)
-    {
-    return false;
-    }
-  std::ofstream fout(destination,
-                     std::ios::binary | std::ios::out | std::ios::trunc);
-  if(!fout)
-    {
-    return false;
-    }
-  while(fin.getline(buffer, buffer_length, '\n') || fin.gcount())
-    {
-    std::streamsize count = fin.gcount();
-    if(fin.eof())
-      {
-      // Final line, but with no newline.
-      fout.write(buffer, count);
-      }
-    else if(fin.fail())
-      {
-      // Part of a line longer than our buffer, clear the fail bit of
-      // the stream so that we can continue.
-      fin.clear(fin.rdstate() & ~std::ios::failbit);
-      fout.write(buffer, count);
-      }
-    else
-      {
-      // Line on which a newline was encountered.  It was read from
-      // the stream, but not stored.
-      --count;
-      fout.write(buffer, count);
-      fout << '\n';
-      }
-    }
-  return true;
 }
