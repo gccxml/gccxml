@@ -1,0 +1,7 @@
+PROJECT(GCCXMLComplete)
+
+SET(GCCXML_NATIVE_CC1PLUS 1)
+SET(EXECUTABLE_OUTPUT_PATH "${GCCXMLComplete_BINARY_DIR}/bin" CACHE PATH
+  "Single output directory for all executables.")
+
+SUBDIRS(GCC GCC_XML)
