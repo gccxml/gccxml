@@ -1,5 +1,5 @@
-#ifndef __SGI_STL_STRING_B
-#define __SGI_STL_STRING_B
+#ifndef __SGI_STL_STRING_GCCXML
+#define __SGI_STL_STRING_GCCXML
 
 #include <stl_config.h>
 
@@ -14,5 +14,5 @@ __STL_END_NAMESPACE
 
 #include_next <string>
 
-#endif /* __SGI_STL_STRING_B */
+#endif
 

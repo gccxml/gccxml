@@ -1,0 +1,20 @@
+#ifndef __STL_CONFIG_H_GCCXML
+#define __STL_CONFIG_H_GCCXML
+
+#define _WCHAR_T
+#define _BOOL
+#define _TYPENAME_IS_KEYWORD
+#define _NAMESPACES
+#define _MEMBER_TEMPLATES
+#define _MEMBER_TEMPLATE_KEYWORD
+#define _EXPLICIT_IS_KEYWORD
+#define _WCHAR_T_IS_KEYWORD
+#define __STL_HAS_NAMESPACES
+#define __STL_USE_NEW_IOSTREAMS
+#define __STL_EXPLICIT_FUNCTION_TMPL_ARGS
+#define _PARTIAL_SPECIALIZATION_OF_CLASS_TEMPLATES
+
+#include_next <stl_config.h>
+
+#endif
+

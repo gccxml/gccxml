@@ -1,5 +1,5 @@
-#ifndef __SGI_STL_INTERNAL_LOCALE_H_B
-#define __SGI_STL_INTERNAL_LOCALE_H_B
+#ifndef __SGI_STL_INTERNAL_LOCALE_H_GCCXML
+#define __SGI_STL_INTERNAL_LOCALE_H_GCCXML
 
 #include <stl_config.h>
 
@@ -12,5 +12,5 @@ __STL_END_NAMESPACE
 
 #include_next <stl_locale.h>
 
-#endif /* __SGI_STL_INTERNAL_LOCALE_H_B */
+#endif
 
