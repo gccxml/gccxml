@@ -23,15 +23,15 @@ ADD_EXECUTABLE(gccxml
 SET(GCCXML_CXX_COMPILER "${CMAKE_CXX_COMPILER}")
 SET(GCCXML_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 
+IF(CMAKE_BUILD_TOOL MATCHES "nmake")
+  SET(GCCXML_CXX_COMPILER "cl")
+ENDIF(CMAKE_BUILD_TOOL MATCHES "nmake")
+
 IF(CMAKE_BUILD_TOOL MATCHES "msdev")
-  SET(GCCXML_VCINSTALL 1)
-  SET(GCCXML_VCINSTALL_VC6 1)
   SET(GCCXML_CXX_COMPILER "msvc6")
 ENDIF(CMAKE_BUILD_TOOL MATCHES "msdev")
 
 IF(CMAKE_BUILD_TOOL MATCHES "devenv")
-  SET(GCCXML_VCINSTALL 1)
-  SET(GCCXML_VCINSTALL_VC7 1)
   SET(GCCXML_CXX_COMPILER "msvc7")
 ENDIF(CMAKE_BUILD_TOOL MATCHES "devenv")
 
@@ -42,49 +42,20 @@ IF(UNIX)
   INSTALL_TARGETS(/bin gccxml)
   INSTALL_PROGRAMS(/share/GCC_XML gccxml_find_flags)
   SUBDIRS (GccInclude MproInclude)
-ENDIF(UNIX)
-
-IF(GCCXML_VCINSTALL)
+ELSE(UNIX)
   # Include file patch program for Windows.
-  SET(GCCXML_VCINSTALL_DIR "${GCCXML_SOURCE_DIR}/VcInstall")
   SET(GCCXML_ROOT ${GCCXML_EXECUTABLE_DIR})
   INCLUDE_DIRECTORIES(${GCCXML_SOURCE_DIR}/GXFront)
   ADD_EXECUTABLE(vcInstall VcInstall/vcInstall.cxx GXFront/gxSystemTools.cxx)
   UTILITY_SOURCE(GCCXML_VCINSTALL_EXE vcInstall .)
 
-  IF(GCCXML_VCINSTALL_VC6)
-    # Create patched MSVC6 header directory.
-    ADD_CUSTOM_COMMAND(SOURCE ${GCCXML_VCINSTALL_DIR}/vc6Include.patch
-                       COMMAND ${GCCXML_VCINSTALL_EXE}
-                       ARGS ${GCCXML_VCINSTALL_DIR}/vc6Include.patch
-                            ${GCCXML_EXECUTABLE_DIR}/Vc6/Include
-                       TARGET gccxml
-                       DEPENDS ${GCCXML_VCINSTALL_EXE}
-                       OUTPUTS ${GCCXML_EXECUTABLE_DIR}/Vc6/Include/xstring)
-  ENDIF(GCCXML_VCINSTALL_VC6)
-
-  IF(GCCXML_VCINSTALL_VC7)
-    # Create patched MSVC7 header directory.
-    # Need to make directories now to prevent MSVC7 from creating them
-    # with lower-case names.
-    MAKE_DIRECTORY("${GCCXML_EXECUTABLE_DIR}/Vc7/Include")
-    MAKE_DIRECTORY("${GCCXML_EXECUTABLE_DIR}/Vc7/PlatformSDK")
-    ADD_CUSTOM_COMMAND(SOURCE ${GCCXML_VCINSTALL_DIR}/vc7Include.patch
-                       COMMAND ${GCCXML_VCINSTALL_EXE}
-                       ARGS ${GCCXML_VCINSTALL_DIR}/vc7Include.patch
-                            ${GCCXML_EXECUTABLE_DIR}/Vc7/Include
-                       TARGET gccxml
-                       DEPENDS ${GCCXML_VCINSTALL_EXE}
-                       OUTPUTS ${GCCXML_EXECUTABLE_DIR}/Vc7/Include/xstddef)
-    ADD_CUSTOM_COMMAND(SOURCE ${GCCXML_VCINSTALL_DIR}/vc7PlatformSDK.patch
-                       COMMAND ${GCCXML_VCINSTALL_EXE}
-                       ARGS ${GCCXML_VCINSTALL_DIR}/vc7PlatformSDK.patch
-                            ${GCCXML_EXECUTABLE_DIR}/Vc7/PlatformSDK
-                       TARGET gccxml
-                       DEPENDS ${GCCXML_VCINSTALL_EXE}
-                       OUTPUTS ${GCCXML_EXECUTABLE_DIR}/Vc7/PlatformSDK/winnt.h)
-  ENDIF(GCCXML_VCINSTALL_VC7)
-ENDIF(GCCXML_VCINSTALL)
+  # Create the MSVC support directories.
+  # This will just execute on every build until CMake improves.
+  ADD_CUSTOM_TARGET(VcInstallPatch ALL
+                    ${GCCXML_VCINSTALL_EXE}
+                    ${GCCXML_SOURCE_DIR}/VcInstall
+                    ${GCCXML_ROOT})
+ENDIF(UNIX)
 
 # Create a configuration file for use from the build directory.
 CONFIGURE_FILE(${GCCXML_SOURCE_DIR}/GXFront/config_build.in
@@ -96,3 +67,16 @@ IF(UNIX)
                  ${GCCXML_BINARY_DIR}/Install/Hide/config)
   INSTALL_FILES(/share/GCC_XML "" Install/Hide/config)
 ENDIF(UNIX)
+
+#  ADD_CUSTOM_COMMAND(SOURCE ${GCCXML_VCINSTALL_EXE}
+#                     COMMAND ${GCCXML_VCINSTALL_EXE}
+#                     ARGS
+#                       ${GCCXML_SOURCE_DIR}/VcInstall
+#                       ${GCCXML_ROOT}
+#                       > ${GCCXML_ROOT}/vcInstall.log
+#                     DEPENDS
+#                       ${GCCXML_SOURCE_DIR}/VcInstall/vc6Include.patch
+#                       ${GCCXML_SOURCE_DIR}/VcInstall/vc7Include.patch
+#                       ${GCCXML_SOURCE_DIR}/VcInstall/vc7PlatformSDK.patch
+#                     TARGET gccxml
+#                     OUTPUTS ${GCCXML_ROOT}/vcInstall.log)
