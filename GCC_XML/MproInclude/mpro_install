@@ -1,7 +1,7 @@
 #!/bin/sh
 # Installation script for MipsPro compiler support headers and programs.
 
-. install_helper
+. $2/install_helper
 
 install_directory "MproInclude" \
   "stddef.h stl_config.h stl_monetary.h stl_threads.h ostream

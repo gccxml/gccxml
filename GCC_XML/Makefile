@@ -63,11 +63,11 @@ uninstall_main:
 
 # Installation of MipsPro header support.
 install_mpro: install_main
-	@MproInclude/mpro_install $(PREFIX)
+	@MproInclude/mpro_install $(PREFIX) `pwd`
 
 # Installation of GCC header support.
 install_gcc: install_main
-	@GccInclude/gcc_install $(PREFIX)
+	@GccInclude/gcc_install $(PREFIX) `pwd`
 
 # Main installation target.
 install: install_mpro install_gcc

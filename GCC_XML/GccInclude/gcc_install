@@ -1,7 +1,7 @@
 #!/bin/sh
 # Installation script for GCC compiler support headers and programs.
 
-. install_helper
+. $2/install_helper
 
 install_directory "GccInclude" "" "find_gcc_options"
 install_directory "GccInclude/std" "complext.h" ""
