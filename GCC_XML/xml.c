@@ -1406,6 +1406,7 @@ xml_dump_tree_node (xml_dump_info_p xdi, tree n, xml_dump_node_p dn)
     case FIELD_DECL:
       xml_output_field_decl (xdi, n, dn);
       break;
+    case UNION_TYPE:
     case RECORD_TYPE:
       xml_output_record_type (xdi, n, dn);
       break;
@@ -1448,7 +1449,6 @@ xml_dump_tree_node (xml_dump_info_p xdi, tree n, xml_dump_node_p dn)
     case SCOPE_REF:
     case TEMPLATE_PARM_INDEX:
     case INTEGER_CST:
-    case UNION_TYPE:
     case TYPENAME_TYPE:
     case TEMPLATE_TYPE_PARM:
     default:
