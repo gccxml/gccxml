@@ -272,6 +272,7 @@ print_destructor_begin_tag (FILE* file, unsigned long indent, tree fd)
 {
   const char* access = "";
   int is_virtual;
+  int is_pure_virtual;
 
   if (TREE_PRIVATE (fd))        access = "private";
   else if (TREE_PROTECTED (fd)) access = "protected";
@@ -282,10 +283,15 @@ print_destructor_begin_tag (FILE* file, unsigned long indent, tree fd)
   else
     is_virtual = 0;
 
+  if (DECL_PURE_VIRTUAL_P (fd))
+    is_pure_virtual = 1;
+  else
+    is_pure_virtual = 0;
+  
   print_indent (file, indent);
   fprintf (file,
-           "<Destructor access=\"%s\" virtual=\"%d\">\n",
-           access, is_virtual);
+           "<Destructor access=\"%s\" virtual=\"%d\" pure_virtual=\"%d\">\n",
+           access, is_virtual, is_pure_virtual);
 }
 
 
