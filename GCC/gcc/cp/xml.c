@@ -74,7 +74,7 @@
 # define XML_PRE_3_4_TREE_VIA_PUBLIC
 #endif
 
-#define GCC_XML_C_VERSION "$Revision: 1.86 $"
+#define GCC_XML_C_VERSION "$Revision: 1.87 $"
 
 /* A "dump node" corresponding to a particular tree node.  */
 typedef struct xml_dump_node
@@ -525,6 +525,16 @@ xml_print_mangled_attribute (xml_dump_info_p xdi, tree n)
     {
     const char* name = xml_get_encoded_string (DECL_ASSEMBLER_NAME (n));
     fprintf (xdi->file, " mangled=\"%s\"", name);
+    }
+}
+
+/* Print the XML attribute mutable="..." for the given node.  */
+static void
+xml_print_mutable_attribute (xml_dump_info_p xdi, tree n)
+{
+  if (DECL_MUTABLE_P (n))
+    {
+    fprintf (xdi->file, " mutable=\"1\"");
     }
 }
 
@@ -1314,6 +1324,7 @@ xml_output_field_decl (xml_dump_info_p xdi, tree fd, xml_dump_node_p dn)
     }
   xml_print_context_attribute (xdi, fd);
   xml_print_mangled_attribute (xdi, fd);
+  xml_print_mutable_attribute(xdi, fd);
   xml_print_location_attribute (xdi, fd);
   xml_print_attributes_attribute (xdi, GCC_XML_DECL_ATTRIBUTES(fd), 0);
   fprintf (xdi->file, "/>\n");
