@@ -56,9 +56,9 @@ ELSE(UNIX)
   MARK_AS_ADVANCED(GCCXML_VCINSTALL_EXE)
 
   # Create the MSVC support directories.
-  # This will just execute on every build until CMake improves.
-  ADD_CUSTOM_TARGET(VcInstallPatch ALL
-                    ${GCCXML_VCINSTALL_EXE}
+  # This will just execute on every build because we don't know
+  # what files and directories it may create.
+  ADD_CUSTOM_TARGET(vcInstallPatch ALL ${GCCXML_VCINSTALL_EXE}
                     ${GCCXML_SOURCE_DIR}/VcInstall
                     ${GCCXML_ROOT})
 ENDIF(UNIX)
@@ -73,16 +73,3 @@ IF(UNIX)
                  ${GCCXML_BINARY_DIR}/Install/Hide/config)
   INSTALL_FILES(/share/GCC_XML "" Install/Hide/config)
 ENDIF(UNIX)
-
-#  ADD_CUSTOM_COMMAND(SOURCE ${GCCXML_VCINSTALL_EXE}
-#                     COMMAND ${GCCXML_VCINSTALL_EXE}
-#                     ARGS
-#                       ${GCCXML_SOURCE_DIR}/VcInstall
-#                       ${GCCXML_ROOT}
-#                       > ${GCCXML_ROOT}/vcInstall.log
-#                     DEPENDS
-#                       ${GCCXML_SOURCE_DIR}/VcInstall/vc6Include.patch
-#                       ${GCCXML_SOURCE_DIR}/VcInstall/vc7Include.patch
-#                       ${GCCXML_SOURCE_DIR}/VcInstall/vc7PlatformSDK.patch
-#                     TARGET gccxml
-#                     OUTPUTS ${GCCXML_ROOT}/vcInstall.log)
