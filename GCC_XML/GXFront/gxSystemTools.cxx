@@ -237,6 +237,23 @@ std::string gxSystemTools::GetFilenamePath(const char* filename)
 }
 
 //----------------------------------------------------------------------------
+std::string gxSystemTools::GetFilenameName(const char* filename)
+{
+  std::string fn = filename;
+  gxSystemTools::ConvertToUnixSlashes(fn);
+  
+  std::string::size_type slash_pos = fn.rfind("/");
+  if(slash_pos != std::string::npos)
+    {
+    return fn.substr(slash_pos+1);
+    }
+  else
+    {
+    return filename;
+    }
+}
+
+//----------------------------------------------------------------------------
 bool gxSystemTools::FileExists(const char* filename)
 {
   struct stat fs;
@@ -562,7 +579,13 @@ std::string gxSystemTools::FindProgram(const char* name)
   // See if the executable exists as written.
   if(gxSystemTools::FileExists(name) && !gxSystemTools::FileIsDirectory(name))
     {
-    return name;
+    // Yes.  Convert it to a full path.
+    std::string fullName = gxSystemTools::GetCWD()+"/"+name;
+    std::string fileName = gxSystemTools::GetFilenameName(fullName.c_str());
+    std::string fileDir = gxSystemTools::GetFilenamePath(fullName.c_str());
+    fileDir = gxSystemTools::CollapseDirectory(fileDir.c_str());
+    fullName = fileDir+"/"+fileName;
+    return fullName;
     }
   
   std::string tryPath = name;

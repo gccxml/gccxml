@@ -49,6 +49,9 @@ public:
   /** Return everything up to the last path name delimeter.  */
   static std::string GetFilenamePath(const char* filename);
   
+  /** Return everything after the last path name delimeter.  */
+  static std::string GetFilenameName(const char* filename);
+  
   /** Check if a file exists.  */
   static bool FileExists(const char* filename);
   
