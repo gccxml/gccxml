@@ -220,6 +220,23 @@ bool gxSystemTools::GetEnv(const char* key, std::string& result)
 }
 
 //----------------------------------------------------------------------------
+std::string gxSystemTools::GetFilenamePath(const char* filename)
+{
+  std::string fn = filename;
+  gxSystemTools::ConvertToUnixSlashes(fn);
+  
+  std::string::size_type slash_pos = fn.rfind("/");
+  if(slash_pos != std::string::npos)
+    {
+    return fn.substr(0, slash_pos);
+    }
+  else
+    {
+    return "";
+    }
+}
+
+//----------------------------------------------------------------------------
 bool gxSystemTools::FileExists(const char* filename)
 {
   struct stat fs;

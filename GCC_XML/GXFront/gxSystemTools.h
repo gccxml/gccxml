@@ -46,6 +46,9 @@ public:
   static const char* GetEnv(const char* key);
   static bool GetEnv(const char* key, std::string& result);
   
+  /** Return everything up to the last path name delimeter.  */
+  static std::string GetFilenamePath(const char* filename);
+  
   /** Check if a file exists.  */
   static bool FileExists(const char* filename);
   
