@@ -77,6 +77,7 @@ uninstall: uninstall_main
 
 GXFRONT_OBJS=GXFront/gxSystemTools.o \
              GXFront/gxConfiguration.o \
+             GXFront/gxFlagsParser.o \
              GXFront/gxFront.o
 
 gccxml: $(GXFRONT_OBJS)
@@ -87,6 +88,9 @@ GXFront/gxSystemTools.o: GXFront/gxSystemTools.cxx
 
 GXFront/gxConfiguration.o: GXFront/gxConfiguration.cxx
 	$(CXX) $(CXX_FLAGS) -I GXFront -o GXFront/gxConfiguration.o -c GXFront/gxConfiguration.cxx
+
+GXFront/gxFlagsParser.o: GXFront/gxFlagsParser.cxx
+	$(CXX) $(CXX_FLAGS) -I GXFront -o GXFront/gxFlagsParser.o -c GXFront/gxFlagsParser.cxx
 
 GXFront/gxFront.o: GXFront/gxFront.cxx
 	$(CXX) $(CXX_FLAGS) -I GXFront -o GXFront/gxFront.o -c GXFront/gxFront.cxx

@@ -15,6 +15,11 @@
 
 =========================================================================*/
 #include "gxConfiguration.h"
+#include "gxFlagsParser.h"
+
+#include <string.h>
+#include <unistd.h>
+#include <errno.h>
 
 #define GCCXML_VERSION_STRING "0.2"
 
@@ -79,6 +84,7 @@ int main(int argc, char** argv)
     }
   if(!cfr) { return 1; }
   
+  // Check if there is anything to do.
   if(configuration.GetArguments().empty())
     {
     std::cout
@@ -86,20 +92,47 @@ int main(int argc, char** argv)
     return 0;
     }
   
-  // Run the real GCC-XML program.
-  std::string command = configuration.GetCommand();
-  std::string output;
-  int result;
-  if(!gxSystemTools::RunCommand(command.c_str(), output, result))
+  // Get the configuration settings.
+  std::string cGCCXML_EXECUTABLE = configuration.GetGCCXML_EXECUTABLE();
+  std::string cGCCXML_FLAGS = configuration.GetGCCXML_FLAGS();
+  std::string cGCCXML_USER_FLAGS = configuration.GetGCCXML_USER_FLAGS();
+  
+  // Parse the flags.
+  gxFlagsParser parser;
+  parser.Parse(cGCCXML_FLAGS.c_str());
+  parser.Parse(cGCCXML_USER_FLAGS.c_str());
+  
+  // Create the set of flags.
+  std::vector<std::string> flags;
+  parser.AddParsedFlags(flags);
+  configuration.AddArguments(flags);
+  
+  // List set of flags if debugging.
+  if(configuration.GetDebugFlag())
     {
-    std::cerr << "Error executing:\n"
-              << command.c_str() << "\n";
-    return 1;
+    std::cout << "Using \"" << cGCCXML_EXECUTABLE.c_str()
+              << "\" as GCC-XML executable.\n";
+    std::cout << "Using the following arguments to GCC-XML executable:\n";
+    for(std::vector<std::string>::const_iterator i = flags.begin();
+        i != flags.end(); ++i)
+      {
+      std::cout << "  \"" << i->c_str() << "\"\n";
+      }
     }
   
-  // Display the program's output.
-  std::cout << output.c_str() << std::endl;  
+  char** args = new char*[flags.size()+2];
+  args[0] = strdup(cGCCXML_EXECUTABLE.c_str());
+  for(unsigned int i=0; i < flags.size(); ++i)
+    {
+    args[i+1] = strdup(flags[i].c_str());
+    }
+  args[flags.size()+1] = 0;
   
-  // Use the real program's result code.
-  return result;
+  if(execvp(cGCCXML_EXECUTABLE.c_str(), args) < 0)
+    {
+    std::cerr << "Error executing " << cGCCXML_EXECUTABLE.c_str() << "\n";
+    exit(errno);
+    }
+  
+  return 0;
 }

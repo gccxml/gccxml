@@ -22,6 +22,7 @@ gxConfiguration::gxConfiguration()
   m_HelpFlag = false;
   m_VersionFlag = false;
   m_PrintFlag = false;
+  m_DebugFlag = false;
 }
 
 //----------------------------------------------------------------------------
@@ -97,6 +98,16 @@ const std::vector<std::string>& gxConfiguration::GetArguments() const
 }
 
 //----------------------------------------------------------------------------
+void gxConfiguration::AddArguments(std::vector<std::string>& arguments) const
+{
+  for(std::vector<std::string>::const_iterator i=m_Arguments.begin();
+      i != m_Arguments.end(); ++i)
+    {
+    arguments.push_back(*i);
+    }
+}
+
+//----------------------------------------------------------------------------
 bool gxConfiguration::GetHelpFlag() const
 {
   return m_HelpFlag;
@@ -115,22 +126,28 @@ bool gxConfiguration::GetPrintFlag() const
 }
 
 //----------------------------------------------------------------------------
-std::string gxConfiguration::GetCommand() const
+bool gxConfiguration::GetDebugFlag() const
 {
-  std::string command = m_GCCXML_EXECUTABLE;
-  command += " ";
-  command += m_GCCXML_FLAGS;
-  command += " ";
-  command += m_GCCXML_USER_FLAGS;
-  
-  for(std::vector<std::string>::const_iterator i = m_Arguments.begin();
-      i != m_Arguments.end(); ++i)
-    {
-    command += " ";
-    command += *i;
-    }
-  return command;
+  return m_DebugFlag;
 }
+
+//----------------------------------------------------------------------------
+const std::string& gxConfiguration::GetGCCXML_EXECUTABLE() const
+{
+  return m_GCCXML_EXECUTABLE;
+}
+  
+//----------------------------------------------------------------------------
+const std::string& gxConfiguration::GetGCCXML_FLAGS() const
+{
+  return m_GCCXML_FLAGS;
+}
+  
+//----------------------------------------------------------------------------
+const std::string& gxConfiguration::GetGCCXML_USER_FLAGS() const
+{
+  return m_GCCXML_USER_FLAGS;
+} 
 
 //----------------------------------------------------------------------------
 void gxConfiguration::FindRoots(const char* argv0)
@@ -232,6 +249,11 @@ bool gxConfiguration::ProcessCommandLine(int argc, const char*const* argv)
             (strcmp(argv[i], "-print") == 0))
       {
       m_PrintFlag = true;
+      }
+    else if((strcmp(argv[i], "--debug") == 0) ||
+            (strcmp(argv[i], "-debug") == 0))
+      {
+      m_DebugFlag = true;
       }
     else
       {
