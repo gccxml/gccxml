@@ -1,7 +1,15 @@
 #!/bin/sh
 
-# Source the config file if it exists.
-# It can contain hard-coded settings for:
+# This program gets its configuration from several places.  Each has
+# lower precedence than the previous.
+#
+#  1.) The command line:
+#  2.) A configuration shell script ~/.gccxml/config is sourced.
+#  3.) The environment in which this script is running.
+#  4.) Automatic detection and guessing.
+#
+#  The settings are:
+#
 #   GCCXML_EXECUTABLE = The path to the real gccxml executable.
 #   GCCXML_FLAGS      = The set of flags to use when running GCC-XML.
 #   GCCXML_COMPILER   = The path to the compiler that GCC-XML is
@@ -10,9 +18,36 @@
 #   GCCXML_USER_FLAGS = Additional flags to use when running GCC-XML.
 #                       These can be set and the script will still try
 #                       to detect GCCXML_FLAGS.
+#
+#  On the command line, use
+#   "-gccxml-compiler xxx" to set "xxx" as the GCCXML_COMPILER.
+#   "-gccxml-executable xxx" to set "xxx" as the GCCXML_EXECUTABLE.
+
+# Source the config file if it exists.
 if test -r ~/.gccxml/config ; then
   . ~/.gccxml/config
 fi
+
+# Use a procedure to process the command line so we don't lose our
+# arguments from shift operation.
+gccxml_processCommandLine()
+{
+  GCCXML_ARGUMENTS=""
+  while test "x$1" != "x" ; do
+    if test "$1" = "-gccxml-compiler" ; then
+      GCCXML_COMPILER="$2"
+      shift ; shift
+    elif test "$1" = "-gccxml-executable" ; then
+      GCCXML_EXECUTABLE="$2"
+      shift ; shift
+    else
+      GCCXML_ARGUMENTS="${GCCXML_ARGUMENTS} $1"
+      shift
+    fi
+  done
+}
+
+gccxml_processCommandLine $@
 
 # The real gccxml executable is located next to this script.
 SELFPATH=`echo $0 | sed -n '/\//{s/\/gccxml//;p;}'`
@@ -47,10 +82,10 @@ if test "x$GCCXML_FLAGS" = "x" ; then
 fi
 
 # Check if we were given any arguments.
-if test "x$*" = "x" ; then
+if test "x${GCCXML_ARGUMENTS}" = "x" ; then
   echo "No arguments given.  Not running GCC-XML executable."
   exit 1
 fi
 
 # Run the GCC-XML executable.
-${GCCXML_EXECUTABLE} ${GCCXML_FLAGS} ${GCCXML_USER_FLAGS} $*
+${GCCXML_EXECUTABLE} ${GCCXML_FLAGS} ${GCCXML_USER_FLAGS} ${GCCXML_ARGUMENTS}
