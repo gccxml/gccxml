@@ -1,0 +1,15 @@
+#!/bin/sh
+# Installation script for GCC compiler support headers and programs.
+
+# The name of this compiler-specific support subdirectory.
+SUBDIR=GccInclude
+
+# Programs to be installed from this directory are listed here.
+PROGRAMS="find_gcc_options"
+
+# Headers to be installed from this directory are listed here.
+HEADERS=""
+
+# Source the subdirectory installation utility script.
+RUNNING_SUBDIR_INSTALL="yes"
+. ../subdir_install
