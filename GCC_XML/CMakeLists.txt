@@ -71,6 +71,8 @@ CONFIGURE_FILE(${GCCXML_SOURCE_DIR}/GXFront/config_build.in
 IF(UNIX)
   # Create a configuration file for use from the install directory.
   CONFIGURE_FILE(${GCCXML_SOURCE_DIR}/GXFront/config_install.in
-                 ${GCCXML_BINARY_DIR}/Install/Hide/config)
-  INSTALL_FILES(/share/GCC_XML "" Install/Hide/config)
+                 ${GCCXML_BINARY_DIR}/Install/config)
+  IF(${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION} GREATER 1.4)
+    INSTALL_FILES(/share/GCC_XML FILES ${GCCXML_BINARY_DIR}/Install/config)
+  ENDIF(${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION} GREATER 1.4)
 ENDIF(UNIX)
