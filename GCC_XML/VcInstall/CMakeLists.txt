@@ -1,0 +1,3 @@
+PROJECT(VCINSTALL)
+ADD_EXECUTABLE(vcInstall vcInstall)
+
