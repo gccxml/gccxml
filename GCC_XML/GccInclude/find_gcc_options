@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # These options are always needed.
-STANDARD="-quiet -o /dev/null -nostdinc -I- -w -fsyntax-only"
+STANDARD="-quiet -o /dev/null -w -fsyntax-only -nostdinc "
 
 # Find the macro definition options.
 MACROS=`
@@ -22,14 +22,20 @@ awk '/^\#include <.*$/   {f=1}
 SELFPATH=`echo $0 | sed -n '/\//{s/\/find_gcc_options$//;p;}'`
 if test "x$SELFPATH" = "x" ; then SELFPATH="." ; fi
 SELFPATH=`cd $SELFPATH ; pwd`
-INCLUDES="-I$SELFPATH $INCLUDES"
 
-# See if extra -fno-honor-std is needed.
-EXTRA=`
+# Determine the major version number.
+MAJOR_VERSION=`
 gcc --version |
 sed 's/[^0-9.]*//g' |
-awk -F "\." '{ if ($1 < 3) {printf("-fno-honor-std ") } }'`
+awk -F "\." '{ print $1 }'`
+
+# For GCC versions before 3, some special options are needed.
+if test $MAJOR_VERSION -lt 3 ; then
+  HONOR_STD="-fno-honor-std "
+  STRICT_INCLUDES="-I- "
+  INCLUDES="-I$SELFPATH $INCLUDES"
+fi
 
 # Format and print out the options.
-OPTIONS="$STANDARD $MACROS $INCLUDES $EXTRA"
+OPTIONS="$STANDARD $STRICT_INCLUDES $MACROS $INCLUDES $HONOR_STD"
 echo $OPTIONS
