@@ -1361,8 +1361,8 @@ xml_add_template_decl (xml_dump_info_p xdi, tree td, int complete)
       case TEMPLATE_DECL:
         break;
       default:
-        xml_output_unimplemented (xdi, ts, 0,
-                                       "xml_dump_template_decl SPECIALIZATIONS");
+        /* xml_output_unimplemented (xdi, ts, 0,
+          "xml_dump_template_decl SPECIALIZATIONS");  */
       }
     }
   
@@ -1377,8 +1377,8 @@ xml_add_template_decl (xml_dump_info_p xdi, tree td, int complete)
         xml_add_node (xdi, ts, complete);
         break;
       default:
-        xml_output_unimplemented (xdi, ts, 0,
-                                       "xml_dump_template_decl INSTANTIATIONS");
+        /* xml_output_unimplemented (xdi, ts, 0,
+           "xml_dump_template_decl INSTANTIATIONS");  */
       }
     }
   
