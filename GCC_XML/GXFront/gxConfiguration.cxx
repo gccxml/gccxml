@@ -23,6 +23,7 @@ gxConfiguration::gxConfiguration()
   m_VersionFlag = false;
   m_PrintFlag = false;
   m_DebugFlag = false;
+  m_HaveGCCXML_CXXFLAGS = false;
 }
 
 //----------------------------------------------------------------------------
@@ -51,6 +52,10 @@ bool gxConfiguration::Configure(int argc, const char*const * argv)
     {
     this->CheckEnvironment();
     }
+  
+  // Check the alternative environment settings for "CXX" and
+  // "CXXFLAGS" as a last resort to get the compiler setting.
+  this->CheckCxxEnvironment();
   
   // If no root has been set, use the data root.
   if(m_GCCXML_ROOT.length() == 0)
@@ -88,6 +93,7 @@ void gxConfiguration::PrintConfiguration(std::ostream& os) const
   os << "Configuration settings:\n"
      << "  GCCXML_CONFIG=\"" << m_GCCXML_CONFIG.c_str() << "\"\n"
      << "  GCCXML_COMPILER=\"" << m_GCCXML_COMPILER.c_str() << "\"\n"
+     << "  GCCXML_CXXFLAGS=\"" << m_GCCXML_CXXFLAGS.c_str() << "\"\n"
      << "  GCCXML_EXECUTABLE=\"" << m_GCCXML_EXECUTABLE.c_str() << "\"\n"
      << "  GCCXML_FLAGS=\"" << m_GCCXML_FLAGS.c_str() << "\"\n"
      << "  GCCXML_USER_FLAGS=\"" << m_GCCXML_USER_FLAGS.c_str() << "\"\n"
@@ -240,6 +246,19 @@ bool gxConfiguration::ProcessCommandLine(int argc, const char*const* argv)
         return false;
         }
       }
+    else if(strcmp(argv[i], "--gccxml-cxxflags") == 0)
+      {
+      if(++i < argc)
+        {
+        m_GCCXML_CXXFLAGS = argv[i];
+        m_HaveGCCXML_CXXFLAGS = true;
+        }
+      else
+        {
+        std::cerr << "Option --gccxml-cxxflags requires an argument.\n";
+        return false;
+        }
+      }
     else if(strcmp(argv[i], "--gccxml-executable") == 0)
       {
       if(++i < argc)
@@ -320,6 +339,11 @@ void gxConfiguration::CheckEnvironment()
     {
     gxSystemTools::GetEnv("GCCXML_COMPILER", m_GCCXML_COMPILER);
     }
+  if(!m_HaveGCCXML_CXXFLAGS)
+    {
+    m_HaveGCCXML_CXXFLAGS =
+      gxSystemTools::GetEnv("GCCXML_CXXFLAGS", m_GCCXML_CXXFLAGS);
+    }
   if(m_GCCXML_EXECUTABLE.length() == 0)
     {
     gxSystemTools::GetEnv("GCCXML_EXECUTABLE", m_GCCXML_EXECUTABLE);
@@ -335,6 +359,20 @@ void gxConfiguration::CheckEnvironment()
   if(m_GCCXML_USER_FLAGS.length() == 0)
     {
     gxSystemTools::GetEnv("GCCXML_USER_FLAGS", m_GCCXML_USER_FLAGS);
+    }
+}
+
+//----------------------------------------------------------------------------
+void gxConfiguration::CheckCxxEnvironment()
+{
+  if(m_GCCXML_COMPILER.length() == 0)
+    {
+    gxSystemTools::GetEnv("CXX", m_GCCXML_COMPILER);
+    }
+  if(!m_HaveGCCXML_CXXFLAGS)
+    {
+    m_HaveGCCXML_CXXFLAGS =
+      gxSystemTools::GetEnv("CXXFLAGS", m_GCCXML_CXXFLAGS);
     }
 }
 
@@ -421,6 +459,14 @@ bool gxConfiguration::ReadConfigFile()
         {
         if(m_GCCXML_COMPILER.length() == 0) { m_GCCXML_COMPILER = value; }
         }
+      else if(key == "GCCXML_CXXFLAGS")
+        {
+        if(!m_HaveGCCXML_CXXFLAGS)
+          {
+          m_GCCXML_CXXFLAGS = value;
+          m_HaveGCCXML_CXXFLAGS = true;
+          }
+        }
       else if(key == "GCCXML_EXECUTABLE")
         {
         if(m_GCCXML_EXECUTABLE.length() == 0) { m_GCCXML_EXECUTABLE = value; }
@@ -496,13 +542,8 @@ bool gxConfiguration::ParseConfigLine(const char* in_line, std::string& key,
 //----------------------------------------------------------------------------
 bool gxConfiguration::CheckCompiler()
 {
-  // If no compiler has yet been configured, use the CXX environment
-  // variable.
+  // Make sure a compiler has been selected.
   if(m_GCCXML_COMPILER.length() > 0) { return true; }
-  if(gxSystemTools::GetEnv("CXX", m_GCCXML_COMPILER))
-    {
-    return true;
-    }
   std::cerr << "Could not determine compiler setting.\n";
   return false;
 }
@@ -556,6 +597,8 @@ bool gxConfiguration::FindFlags()
   std::string gccxmlFindFlags = m_GCCXML_ROOT+"/gccxml_find_flags";
   gccxmlFindFlags += " ";
   gccxmlFindFlags += m_GCCXML_COMPILER;
+  gccxmlFindFlags += " ";
+  gccxmlFindFlags += m_GCCXML_CXXFLAGS;
   int err;
   std::string flags;
   if(!gxSystemTools::RunCommand(gccxmlFindFlags.c_str(), flags, err) || err)
