@@ -34,6 +34,27 @@ install_main:
            chmod 755 $(PREFIX)/share/GCC_XML; \
          else true; \
          fi
+	@if [ ! -d $(PREFIX)/bin ] ; then \
+           echo "Making directory $(PREFIX)/bin "; \
+           mkdir -p $(PREFIX)/bin; \
+           chmod 755 $(PREFIX)/bin; \
+         else true; \
+         fi
+	@$(INSTALL_PROGRAM) gccxml_find_flags $(PREFIX)/bin
+
+# Uninstallation of main GCC-XML support library directory.
+uninstall_main:
+	@echo "Uninstalling with PREFIX="$(PREFIX)" ..."
+	@if [ -d $(PREFIX)/share/GCC_XML ] ; then \
+           echo "Removing directory $(PREFIX)/share/GCC_XML "; \
+           rm -rf $(PREFIX)/share/GCC_XML; \
+         else true; \
+         fi
+	@if [ -f $(PREFIX)/bin/gccxml_find_flags ] ; then \
+	   echo "Removing $(PREFIX)/bin/gccxml_find_flags "; \
+           rm -f $(PREFIX)/bin/gccxml_find_flags; \
+         else true; \
+         fi
 
 # Installation of MipsPro header support.
 install_mpro: install_main
@@ -45,3 +66,6 @@ install_gcc: install_main
 
 # Main installation target.
 install: install_mpro install_gcc
+
+# Main uninstallation target.
+uninstall: uninstall_main
