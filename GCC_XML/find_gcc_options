@@ -4,7 +4,7 @@
 echo -n "-quiet -o /dev/null -nostdinc -fsyntax-only "
 
 # Find the include path options.
-echo "" | gcc -v -x c++ -E -o /dev/null - 2>&1 |
+echo "" | gcc -v -x c++ -E ${CXXFLAGS} -o /dev/null - 2>&1 |
  awk '/^\#include <.*$/   {f=1}
       /^ \/.*$/           { if (f) { printf("-I%s ",$0) } }
       /^End of search.*$/ {exit}' -
