@@ -56,22 +56,5 @@ void gxFlagsParser::AddFlag(const std::string& flag)
 {
   // Used by Parse() to insert a parsed flag.  Strips trailing
   // whitespace from the argument.
-  //
-  // Includes a hack to split "-o /dev/null" into two arguments since
-  // the parser only splits arguments with " -" occurrences.
-  std::string tmp = flag.substr(0, flag.find_last_not_of(" \t")+1);
-  if(tmp == "-o /dev/null")
-    {
-    m_Flags.push_back("-o");
-    m_Flags.push_back("/dev/null");
-    }
-  else if(tmp == "-o NUL")
-    {
-    m_Flags.push_back("-o");
-    m_Flags.push_back("NUL");
-    }
-  else
-    {
-    m_Flags.push_back(tmp);
-    }
+  m_Flags.push_back(flag.substr(0, flag.find_last_not_of(" \t")+1));
 }

@@ -27,9 +27,6 @@ else
   CXXFLAGS="$@"
 fi
 
-# These options are always needed.
-STANDARD="-quiet -o /dev/null -w -fsyntax-only -nostdinc "
-
 # Find the macro definition options.
 MACROS=`
 echo "" | ${CXX} -v -x c++ -E ${CXXFLAGS} - 2>&1 |
@@ -65,5 +62,5 @@ if test $MAJOR_VERSION -lt 3 ; then
 fi
 
 # Format and print out the options.
-OPTIONS="$STANDARD $STRICT_INCLUDES $MACROS $INCLUDES $HONOR_STD"
+OPTIONS="$STRICT_INCLUDES $MACROS $INCLUDES $HONOR_STD"
 echo $OPTIONS

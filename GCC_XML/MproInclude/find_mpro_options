@@ -27,9 +27,6 @@ else
   CXXFLAGS="$@"
 fi
 
-# These options are always needed.
-STANDARD="-quiet -o /dev/null -nostdinc -I- -w -fsyntax-only"
-
 GCCXML_PID="$$"
 TESTFILE="find_mpro_options_temp$GCCXML_PID"
 touch /tmp/$TESTFILE.cxx
@@ -70,5 +67,5 @@ INCLUDES="-I$SELFPATH/7_3 $INCLUDES"
 rm -f /tmp/$TESTFILE.cxx
 
 # Format and print out the options.
-OPTIONS="$STANDARD $MACROS $LANGSTD $INCLUDES"
+OPTIONS="$MACROS $LANGSTD $INCLUDES"
 echo $OPTIONS
