@@ -78,6 +78,16 @@ const gxDocumentationEntry gxDocumentationOptions[] =
    "This option causes GCC-XML to print the executable name and "
    "command-line arguments used to execute the patched GCC C++ parser.  "
    "This is useful when attempting to simulate an unsupported compiler."},
+  {"-fxml=<output-file>", "Specify the XML output file.",
+   "This option is passed directly on to the patched GCC C++ parser.  It "
+   "enables the XML dump and specifies the output file name."},
+  {"-fxml-start=<xxx>[,...]", "Specify a list of starting declarations.",
+   "This option is passed directly on to the patched GCC C++ parser.  It "
+   "is meaningful only if -fxml=... is also specified.  This specifies a "
+   "comma-separated list of named starting declarations.  GCC-XML will "
+   "dump only the subset of the declarations in the translation unit that "
+   "is reachable through a sequence of source references from one of the "
+   "specified starting declarations."},
   {"--gccxml-compiler <xxx>", "Set GCCXML_COMPILER to \"xxx\".", 0},
   {"--gccxml-cxxflags <xxx>", "Set GCCXML_CXXFLAGS to \"xxx\".", 0},
   {"--gccxml-executable <xxx>", "Set GCCXML_EXECUTABLE to \"xxx\".", 0},
