@@ -77,10 +77,13 @@ ELSE(UNIX)
   # Create the MSVC support directories.
   # This will just execute on every build because we don't know
   # what files and directories it may create.
-  ADD_CUSTOM_TARGET(vcInstallPatch ${GCCXML_VCINSTALL_EXE}
+  ADD_CUSTOM_TARGET(vcInstallPatch ALL ${GCCXML_VCINSTALL_EXE}
     ${GCCXML_SOURCE_DIR}/VcInstall
     ${GCCXML_ROOT})
+
+  ADD_DEPENDENCIES(vcInstallPatch vcInstall)
   ADD_DEPENDENCIES(gccxml vcInstallPatch)
+  ADD_DEPENDENCIES(gccxml gccxml_cc1plus)
 ENDIF(UNIX)
 
 # Create a configuration file for use from the build directory.
