@@ -43,6 +43,19 @@ Boston, MA 02111-1307, USA.  */
 
 #include "splay-tree.h"
 
+/* Use GCC_XML_GCC_VERSION to modify code based on the version of GCC
+   in which we are being built.  This is set in the patched version of
+   cp-tree.h.  The format is 0xMMmmpp, where MM is the major version
+   number, mm is the minor version number, and pp is the patch level.
+   Examples:  gcc 3.0.4 = 0x030004
+              gcc 3.2.0 = 0x030200  */
+#if defined(GCC_XML_GCC_VERSION) && (GCC_XML_GCC_VERSION >= 0x030200)
+# define XML_CP_ERROR cp_error_at
+#else
+# define XML_CP_ERROR cp_error
+# define XML_HAVE_FAKE_STD_NODE
+#endif
+
 /* A "dump node" corresponding to a particular tree node.  */
 typedef struct xml_dump_node
 {
@@ -143,7 +156,7 @@ do_xml_output (const char* filename)
   file = fopen (filename, "w");
   if (!file)
     {
-    cp_error ("could not open xml-dump file `%s'", filename);
+    XML_CP_ERROR ("could not open xml-dump file `%s'", filename);
     return;
     }
   
@@ -299,7 +312,7 @@ xml_add_node_real (xml_dump_info_p xdi, tree n, int complete)
   
   if(!xdi->require_complete && complete)
     {
-    cp_error ("XML dump bug: complete node added during incomplete phase.\n");
+    XML_CP_ERROR ("XML dump bug: complete node added during incomplete phase.\n");
     }
 
   /* Return node's index.  */
@@ -1478,7 +1491,9 @@ xml_add_node (xml_dump_info_p xdi, tree n, int complete)
   switch (TREE_CODE (n))
     {
     case NAMESPACE_DECL:
+#if defined(XML_HAVE_FAKE_STD_NODE)
       if(n != fake_std_node)
+#endif
         {
         return xml_add_node_real (xdi, n, complete);
         }
