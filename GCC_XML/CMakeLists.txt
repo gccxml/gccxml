@@ -43,9 +43,6 @@ IF(CMAKE_GENERATOR MATCHES "Visual Studio 7 .NET 2003")
   SET(GCCXML_CXX_COMPILER "msvc71")
 ENDIF(CMAKE_GENERATOR MATCHES "Visual Studio 7 .NET 2003")
 
-# Directory to build gccxml executable.
-SUBDIRS(GXFront)
-
 IF(UNIX)
   # Installation rules for UNIX.
   SET(GCCXML_ROOT ${GCCXML_SOURCE_DIR}/Support)
@@ -59,10 +56,13 @@ ELSE(UNIX)
   # Include file patch program for Windows.
   SET(GCCXML_ROOT ${GCCXML_EXECUTABLE_DIR})
   INCLUDE_DIRECTORIES(${GCCXML_SOURCE_DIR}/GXFront)
-  ADD_EXECUTABLE(vcInstall VcInstall/vcInstall.cxx GXFront/gxSystemTools.cxx)
-  UTILITY_SOURCE(GCCXML_VCINSTALL_EXE vcInstall .)
+  SUBDIRS(VcInstall)
+  UTILITY_SOURCE(GCCXML_VCINSTALL_EXE vcInstall VcInstall)
   MARK_AS_ADVANCED(GCCXML_VCINSTALL_EXE)
 ENDIF(UNIX)
+
+# Directory to build gccxml executable.
+SUBDIRS(GXFront)
 
 # Create a configuration file for use from the build directory.
 CONFIGURE_FILE(${GCCXML_SOURCE_DIR}/GXFront/config_build.in
