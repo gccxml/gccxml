@@ -18,8 +18,21 @@
 #include "gxFlagsParser.h"
 
 #include <string.h>
-#include <unistd.h>
 #include <errno.h>
+
+#if defined(_WIN32) && !defined(__CYGWIN__)
+#include <process.h>
+inline int Execvp(const char* cmd, char** argv)
+{
+  return _execvp(cmd, argv);
+}
+#else
+#include <unistd.h>
+inline int Execvp(const char* cmd, char** argv)
+{
+  return execvp(cmd, argv);
+}
+#endif
 
 #define GCCXML_VERSION_STRING "0.2"
 
@@ -128,7 +141,7 @@ int main(int argc, char** argv)
     }
   args[flags.size()+1] = 0;
   
-  if(execvp(cGCCXML_EXECUTABLE.c_str(), args) < 0)
+  if(Execvp(cGCCXML_EXECUTABLE.c_str(), args) < 0)
     {
     std::cerr << "Error executing " << cGCCXML_EXECUTABLE.c_str() << "\n";
     exit(errno);

@@ -311,7 +311,7 @@ bool gxSystemTools::RunCommand(const char* command,  std::string& output,
     output += buffer;
     }
   fin.close();
-  cmSystemTools::RemoveFile(tempFile.c_str());
+  gxSystemTools::RemoveFile(tempFile.c_str());
   return true;
 #else
   fflush(stdout);
