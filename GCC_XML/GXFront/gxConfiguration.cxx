@@ -173,7 +173,7 @@ void gxConfiguration::FindRoots(const char* argv0)
   
   // If we are running from the build directory, use the source
   // directory as the data root.
-  if(selfPath == GCCXML_BINARY_DIR)
+  if(selfPath == GCCXML_EXECUTABLE_DIR)
     {
     m_DataRoot = GCCXML_SOURCE_DIR;
     }
