@@ -32,16 +32,18 @@ Boston, MA 02111-1307, USA.  */
 
 #define MY_TYPEDEF_TEST(d) \
   (DECL_NAME ((d)) != DECL_NAME (TYPE_NAME (TREE_TYPE ((d)))))
+/*#define MY_TYPEDEF_TEST(d) \
+  (DECL_ORIGINAL_TYPE (d) && (DECL_ORIGINAL_TYPE (d) != TREE_TYPE (d)))*/
 
 #define MY_DECL_INTERNAL(d) (strcmp (DECL_SOURCE_FILE (d), "<internal>")==0)
-//#define MY_DECL_INTERNAL(d) 0
+/*#define MY_DECL_INTERNAL(d) 0 */
 
 /* Useful debug macro.  Will be removed.  */
 #define DEBUG_LINE(f) \
   fprintf ((f), "%s: %d\n", __FILE__, __LINE__)
 
 
-void do_xml_output                            PARAMS ((void));
+void do_xml_output                            PARAMS ((const char*));
     
 static void xml_output_headers                PARAMS ((FILE*));
 static void xml_output_namespace_decl         PARAMS ((FILE*, unsigned long, tree));
@@ -57,6 +59,7 @@ static void xml_output_template_info          PARAMS ((FILE*, unsigned long, tre
 static void xml_output_typedef                PARAMS ((FILE*, unsigned long, tree));
 static void xml_output_type                   PARAMS ((FILE*, unsigned long, tree));
 static void xml_output_named_type             PARAMS ((FILE*, unsigned long, tree));
+static void xml_output_void_type              PARAMS ((FILE*, unsigned long, tree));
 static void xml_output_function_type          PARAMS ((FILE*, unsigned long, tree));
 static void xml_output_method_type            PARAMS ((FILE*, unsigned long, tree));
 static void xml_output_pointer_type           PARAMS ((FILE*, unsigned long, tree));
@@ -85,10 +88,19 @@ static tree reverse_opname_lookup          PARAMS ((tree));
    unit.  Walk the entire translation unit starting at the global
    namespace.  Output all declarations.  */
 void
-do_xml_output (void)
+do_xml_output (const char* filename)
 {
-  xml_output_headers (stdout);
-  xml_output_namespace_decl (stdout, 0, global_namespace);
+  FILE *file;
+
+  file = fopen (filename, "w");
+  if (!file)
+    cp_error ("could not open xml-dump file `%s'", filename);
+  else
+    {
+    xml_output_headers (file);
+    xml_output_namespace_decl (file, 0, global_namespace);
+    fclose (file);
+    }
 }
 
 
@@ -923,7 +935,7 @@ void
 xml_output_headers (FILE* file)
 {
   fprintf (file,
-           "<?xml version=\"1.0\"?>\n");// encoding="ISO-8859-1"?>
+           "<?xml version=\"1.0\"?>\n");/* encoding="ISO-8859-1"?> */
 }
 
 
@@ -1320,7 +1332,7 @@ xml_output_field_decl (FILE* file, unsigned long indent, tree fd)
 
   print_field_begin_tag (file, indent, fd);
   print_location_empty_tag (file, indent+XML_NESTED_INDENT, fd);
-  // TODO: handle bit field case.
+  /* TODO: handle bit field case.  */
   xml_output_type (file, indent+XML_NESTED_INDENT, TREE_TYPE (fd));
   print_field_end_tag (file, indent);
 }
@@ -1416,7 +1428,28 @@ xml_output_typedef (FILE* file, unsigned long indent, tree td)
 {
   print_typedef_begin_tag (file, indent, td);
   print_location_empty_tag (file, indent+XML_NESTED_INDENT, td);
-  xml_output_type (file, indent+XML_NESTED_INDENT, TREE_TYPE (td));
+  
+/*  if(TYPE_CONTEXT(TREE_TYPE(td)))
+    {
+    // REMOVE THIS
+    fprintf(file, "%s\n",
+            IDENTIFIER_POINTER(DECL_NAME(TYPE_CONTEXT(TREE_TYPE(td)))));
+            }*/
+/*
+  if(CP_DECL_CONTEXT(td))
+    {
+    // REMOVE THIS
+    fprintf(file, "%s\n",
+            IDENTIFIER_POINTER(DECL_NAME(CP_DECL_CONTEXT(td))));
+    }
+*/
+  /* Get the original type out of the typedef, if any.  */
+  if (DECL_ORIGINAL_TYPE (td))
+    xml_output_type (file, indent+XML_NESTED_INDENT,
+                     DECL_ORIGINAL_TYPE (td));
+  else
+    xml_output_type (file, indent+XML_NESTED_INDENT,
+                     TREE_TYPE (td));
   print_typedef_end_tag (file, indent);
 }
 
@@ -1456,13 +1489,15 @@ xml_output_type (FILE* file, unsigned long indent, tree t)
       break;
     case LANG_TYPE:
     case INTEGER_TYPE:
-    case VOID_TYPE:
     case BOOLEAN_TYPE:
     case REAL_TYPE:
     case COMPLEX_TYPE:
     case ENUMERAL_TYPE:
     case UNION_TYPE:
       xml_output_named_type (file, indent, t);
+      break;
+    case VOID_TYPE:
+      xml_output_void_type (file, indent, t);
       break;
     default:
       print_unimplemented_empty_tag (file, indent, t, "xml_output_type");
@@ -1473,11 +1508,23 @@ xml_output_type (FILE* file, unsigned long indent, tree t)
 /* Output for a normal named type.  */
 void
 xml_output_named_type (FILE* file, unsigned long indent, tree t)
-{  
+{
+  print_named_type_begin_tag (file, indent);
+  print_cv_qualifiers_empty_tag (file, indent+XML_NESTED_INDENT, t);
+  xml_output_qualified_name (file, indent+XML_NESTED_INDENT, t);
+  print_named_type_end_tag (file, indent);
+}
+
+
+
+/* Output for a void type.  */
+void
+xml_output_void_type (FILE* file, unsigned long indent, tree t)
+{
   print_named_type_begin_tag (file, indent);
   print_cv_qualifiers_empty_tag (file, indent+XML_NESTED_INDENT, t);
   xml_output_qualified_name (file, indent+XML_NESTED_INDENT,
-                                   TYPE_MAIN_VARIANT (t));
+                             TYPE_MAIN_VARIANT (t));
   print_named_type_end_tag (file, indent);
 }
 
@@ -1627,12 +1674,17 @@ xml_output_argument (FILE* file, unsigned long indent, tree pd, tree tl)
 {
   print_argument_begin_tag (file, indent, pd);
 
-  xml_output_type (file, indent+XML_NESTED_INDENT, TREE_VALUE (tl));
+  /* Output something for DECL_ARG_TYPE (pd)  ??  */
+  if (DECL_ARG_TYPE_AS_WRITTEN (pd))
+    xml_output_type (file, indent+XML_NESTED_INDENT,
+                     DECL_ARG_TYPE_AS_WRITTEN (pd));
+  else
+    xml_output_type (file, indent+XML_NESTED_INDENT, TREE_VALUE (tl));
+    
   
   if (TREE_PURPOSE (tl))
     print_default_argument_empty_tag (file, indent+XML_NESTED_INDENT,
                                  TREE_PURPOSE (tl));
-  // Output something for DECL_ARG_TYPE (pd)  ??
   print_argument_end_tag (file, indent);
 }
 

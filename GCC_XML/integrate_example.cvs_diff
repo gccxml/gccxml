@@ -1,41 +1,47 @@
 Index: Make-lang.in
 ===================================================================
 RCS file: /cvs/gcc/egcs/gcc/cp/Make-lang.in,v
-retrieving revision 1.73
-diff -r1.73 Make-lang.in
-100c100
+retrieving revision 1.77
+diff -r1.77 Make-lang.in
+103c103
 <  cp/optimize.o cp/mangle.o
 ---
 >  cp/optimize.o cp/mangle.o cp/xml.o
-294a295
+297a298
 > cp/xml.o: cp/xml.c $(CXX_TREE_H) toplev.h
 Index: cp-tree.h
 ===================================================================
 RCS file: /cvs/gcc/egcs/gcc/cp/cp-tree.h,v
-retrieving revision 1.565
-diff -r1.565 cp-tree.h
-1164a1165,1169
-> /* Nonzero means XML output mode.  */
+retrieving revision 1.572
+diff -r1.572 cp-tree.h
+1160a1161,1164
+> /* Filename for xml dump of translation unit.  */
 > 
-> extern int flag_xml;
+> extern const char* flag_xml;
 > 
-> 
-4561a4567,4569
+4551a4556,4558
 > 
 > /* in xml.c */
-> extern void do_xml_output                       PARAMS ((void));
+> extern void do_xml_output                       PARAMS((const char *));
 Index: decl2.c
 ===================================================================
 RCS file: /cvs/gcc/egcs/gcc/cp/decl2.c,v
-retrieving revision 1.431
-diff -r1.431 decl2.c
-476a477,480
-> /* Nonzero means XML output mode.  */
+retrieving revision 1.437
+diff -r1.437 decl2.c
+464a465,468
+> /* Filename for xml dump of translation unit.  */
 > 
-> int flag_xml = 0;
+> const char* flag_xml = 0;
 > 
-532a537
->   {"xml", &flag_xml, 1},
+633a638,645
+> 	}
+>       else if ((option_value
+>                 = skip_leading_substring (p, "xml=")))
+> 	{
+> 	  if (!*option_value)
+> 	    error ("no file specified with -fxml");
+> 	  else
+> 	    flag_xml = option_value;
 Index: lang-options.h
 ===================================================================
 RCS file: /cvs/gcc/egcs/gcc/cp/lang-options.h,v
@@ -44,16 +50,16 @@ diff -r1.37 lang-options.h
 114c114,116
 < 
 ---
->   { "-fxml", "Enable XML output (use with -fsyntax-only)" },
+>   { "-fxml=", "Enable XML output to a file (use with -fsyntax-only)" },
 >   { "-fno-xml", "" },
 >   
 Index: semantics.c
 ===================================================================
 RCS file: /cvs/gcc/egcs/gcc/cp/semantics.c,v
-retrieving revision 1.188
-diff -r1.188 semantics.c
+retrieving revision 1.189
+diff -r1.189 semantics.c
 1657a1658,1661
 > 
->   /* Do XML output if enabled.  */
+>   /* Do XML output if output file was given.  */
 >   if (flag_xml)
->       do_xml_output ();
+>       do_xml_output (flag_xml);
