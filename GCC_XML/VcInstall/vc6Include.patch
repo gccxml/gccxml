@@ -851,9 +851,10 @@ Index: signal.h
 ===================================================================
 RCS file: /cvsroot/GxInclude/VcInclude/signal.h,v
 retrieving revision 1.1.1.1
-diff -c -3 -p -r1.1.1.1 signal.h
+retrieving revision 1.2
+diff -c -3 -p -r1.1.1.1 -r1.2
 *** signal.h	13 Jun 2001 19:31:52 -0000	1.1.1.1
---- signal.h	17 May 2004 17:34:13 -0000
+--- signal.h	17 May 2004 17:34:46 -0000	1.2
 *************** extern void * _pxcptinfoptrs;
 *** 99,105 ****
   
@@ -1083,8 +1084,38 @@ Index: typeinfo
 ===================================================================
 RCS file: /cvsroot/GxInclude/VcInclude/typeinfo,v
 retrieving revision 1.1.1.1
-retrieving revision 1.4
-diff -c -3 -p -r1.1.1.1 -r1.4
+retrieving revision 1.5
+diff -c -3 -p -r1.1.1.1 -r1.5
+*** typeinfo	13 Jun 2001 19:32:04 -0000	1.1.1.1
+--- typeinfo	3 Jun 2004 12:41:16 -0000	1.5
+***************
+*** 51,56 ****
+--- 51,57 ----
+  #pragma pack(push,8)
+  #endif  /* _MSC_VER */
+  
++ namespace std {
+  class type_info {
+  public:
+      _CRTIMP virtual ~type_info();
+*************** private:
+*** 65,71 ****
+      type_info(const type_info& rhs);
+      type_info& operator=(const type_info& rhs);
+  };
+! 
+  
+  // This include must occur below the definition of class type_info
+   #include <exception>
+--- 66,73 ----
+      type_info(const type_info& rhs);
+      type_info& operator=(const type_info& rhs);
+  };
+! }
+! using std::type_info;
+  
+  // This include must occur below the definition of class type_info
+   #include <exception>
 Index: typeinfo.h
 ===================================================================
 RCS file: /cvsroot/GxInclude/VcInclude/typeinfo.h,v
