@@ -5385,6 +5385,16 @@ instantiate_class_template (type)
       tree pbases = TYPE_BINFO_BASETYPES (pattern);
       int i;
 
+/* BEGIN GCC-XML MODIFICATIONS (2003/12/19 19:52:30) */
+      /* Including 1.758 to 1.759 changes to this source file from GCC CVS.
+         This addresses http://gcc.gnu.org/bugzilla/show_bug.cgi?id=13445.  */
+      /* We must enter the scope containing the type, as that is where
+         the accessibility of types named in dependent bases are
+         looked up from.  */
+      tree context = TYPE_CONTEXT (type);
+      push_scope (context ? context : global_namespace);
+/* END GCC-XML MODIFICATIONS (2003/12/19 19:52:30) */
+
       /* Substitute into each of the bases to determine the actual
          basetypes.  */
       for (i = 0; i < TREE_VEC_LENGTH (pbases); ++i)
@@ -5429,6 +5439,12 @@ instantiate_class_template (type)
       /* Now call xref_basetypes to set up all the base-class
          information.  */
       xref_basetypes (type, base_list);
+
+/* BEGIN GCC-XML MODIFICATIONS (2003/12/19 19:52:30) */
+      /* Including 1.758 to 1.759 changes to this source file from GCC CVS.
+         This addresses http://gcc.gnu.org/bugzilla/show_bug.cgi?id=13445.  */
+      pop_scope (context ? context : global_namespace);
+/* END GCC-XML MODIFICATIONS (2003/12/19 19:52:30) */
     }
 
   /* Now that our base classes are set up, enter the scope of the
