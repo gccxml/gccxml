@@ -224,8 +224,12 @@ void gxConfiguration::FindRoots(const char* argv0)
   gxSystemTools::ConvertToUnixSlashes(selfPath);  
 
   // Make sure executable and self paths are represented the same way.
-  std::string ePath = gxSystemTools::CollapseDirectory(GCCXML_EXECUTABLE_DIR);
-  gxSystemTools::ConvertToUnixSlashes(ePath);
+  std::string ePath="<GCCXML_EXECUTABLE_DIR-DOES-NOT-EXIST>";
+  if(gxSystemTools::FileIsDirectory(GCCXML_EXECUTABLE_DIR))
+    {
+    ePath = gxSystemTools::CollapseDirectory(GCCXML_EXECUTABLE_DIR);
+    gxSystemTools::ConvertToUnixSlashes(ePath);
+    }
   std::string sPath = selfPath;
 #if defined(_WIN32)
   ePath = gxSystemTools::LowerCase(ePath.c_str());
@@ -866,7 +870,7 @@ bool gxConfiguration::FindFlagsMSVC7()
     "-D__w64= -D__int64='long long' "
     "-I\""+vcIncludePath1+"\" "
     "-I\""+vcIncludePath2+"\" "
-    "-I\""+msvcPath1+"\" ";
+    "-I\""+msvcPath1+"\" "
     "-I\""+msvcPath2+"\" ";
   return true;
 }
