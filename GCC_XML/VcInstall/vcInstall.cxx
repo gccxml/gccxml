@@ -34,7 +34,7 @@ int main(int argc, char* argv[])
   if(argc >= 3)
     {
     gccxmlRoot = argv[2];
-    
+
     // Make sure the output directory exists.
     gxSystemTools::MakeDirectory(gccxmlRoot.c_str());
     }
@@ -42,7 +42,7 @@ int main(int argc, char* argv[])
     {
     timestamp = argv[3];
     }
-  
+
   // Clean up the paths.
   patchDir = gxSystemTools::CollapseDirectory(patchDir.c_str());
   gccxmlRoot = gxSystemTools::CollapseDirectory(gccxmlRoot.c_str());
@@ -57,7 +57,7 @@ int main(int argc, char* argv[])
     "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\VisualStudio\\7.0;InstallDir";
   const char* vc71Registry =
     "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\VisualStudio\\7.1;InstallDir";
-  
+
   // Check which versions of MSVC are installed.
   std::string msvc6;
   std::string msvc7;
@@ -65,14 +65,14 @@ int main(int argc, char* argv[])
   bool have6 = gxSystemTools::ReadRegistryValue(vc6Registry, msvc6);
   bool have7 = gxSystemTools::ReadRegistryValue(vc7Registry, msvc7);
   bool have71 = gxSystemTools::ReadRegistryValue(vc71Registry, msvc71);
-  
+
   // See if there is anything to do.
   if(!have6 && !have7 && !have71)
     {
     std::cout << "None of MSVC 6, 7, or 7.1 is installed.\n";
     return 0;
     }
-  
+
   // Need to install at least one of the support directories.  We need
   // to find the patch executable.
   std::string patchCommand;
@@ -81,7 +81,7 @@ int main(int argc, char* argv[])
     std::cerr << "Cannot find patch executable.\n";
     return 1;
     }
-  
+
   int result = 0;
   if(have6)
     {
@@ -102,7 +102,7 @@ int main(int argc, char* argv[])
       result = 1;
       }
     }
-  
+
   if(have7)
     {
     std::string msvc7i = msvc7 + "/../../Vc7/Include";
@@ -177,7 +177,7 @@ int main(int argc, char* argv[])
       result = 1;
       }
     }
-  
+
   // If we succeeded, write the timestamp file.
   if(result == 0 && (timestamp.length() > 0))
     {
@@ -190,7 +190,7 @@ int main(int argc, char* argv[])
       result = 1;
       }
     }
-  
+
   return result;
 }
 
@@ -205,11 +205,11 @@ bool InstallSupport(const char* patchCommand, const char* patchFile,
     std::cerr << "Error opening patch file " << patchFile << std::endl;
     return false;
     }
-  
+
   // Make sure the destination path exists before trying to put files
   // there.
   gxSystemTools::MakeDirectory(destPath);
-  
+
   // Copy the files over before patching.
   char buf[4096];
   for(patch.getline(buf, 4096); !patch.eof(); patch.getline(buf, 4096))
@@ -224,14 +224,14 @@ bool InstallSupport(const char* patchCommand, const char* patchFile,
       gxSystemTools::FileCopy(source.c_str(), dest.c_str());
       }
     }
-  
+
   std::string patchCmd = "type ";
   patchCmd += gxSystemTools::ConvertToOutputPath(patchFile);
   patchCmd += " | ";
   patchCmd += gxSystemTools::ConvertToOutputPath(patchCommand);
   patchCmd += " -p0 -t -d ";
   patchCmd += gxSystemTools::ConvertToOutputPath(destPath);
-  
+
   // Patch the copies of the header files.
   std::cout << "Executing " << patchCmd.c_str() << std::endl;
   std::string output;
@@ -241,7 +241,7 @@ bool InstallSupport(const char* patchCommand, const char* patchFile,
     {
     return true;
     }
-  
+
   std::cerr << "Error running patch.\n";
   return false;
 }
@@ -292,6 +292,6 @@ bool FindPatch(std::string& result, const char* patchDir)
         }
       }
     }
-  
+
   return false;
 }
