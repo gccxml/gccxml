@@ -26,6 +26,6 @@ rem Change back to the original working directory.
 cd /D "%cwd%"
 
 rem Run the installer executable to do the rest of the work.
-"%vc_dir%\VcInstall\vcInstall" "%vc_dir%\VcInstall" "%vc_dir%\bin"
+"%vc_dir%\VcInstall\vcInstall" "%vc_dir%\VcInstall" "%vc_dir%\share\gccxml-@GCCXML_VERSION@"
 
 if errorlevel 1 pause
