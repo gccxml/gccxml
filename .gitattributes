@@ -1,5 +1,2 @@
 .git*            export-ignore
 
-gcc_install      crlf=input
-install-sh       crlf=input
-mpro_install     crlf=input
