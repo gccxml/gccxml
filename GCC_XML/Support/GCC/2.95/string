@@ -15,7 +15,7 @@ namespace std
   using ::operator>;
   using ::operator<=;
   using ::operator>=;
-  using ::swap;
+  //using ::swap;
   using ::operator>>;
   using ::operator<<;
   using ::getline;
