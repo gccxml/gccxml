@@ -72,15 +72,17 @@ Boston, MA 02111-1307, USA.  */
 #endif
 #include "prefix.h"
 
-static const char *std_prefix = PREFIX;
+/* BEGIN GCC-XML MODIFICATIONS (2003/11/21 23:42:46) */
+static const char *std_prefix = GCC_TO_STRING(PREFIX);
+/* END GCC-XML MODIFICATIONS (2003/11/21 23:42:46) */
 
-static const char *get_key_value	PARAMS ((char *));
-static char *translate_name		PARAMS ((char *));
-static char *save_string		PARAMS ((const char *, int));
-static void tr				PARAMS ((char *, int, int));
+static const char *get_key_value        PARAMS ((char *));
+static char *translate_name             PARAMS ((char *));
+static char *save_string                PARAMS ((const char *, int));
+static void tr                          PARAMS ((char *, int, int));
 
 #if defined(_WIN32) && defined(ENABLE_WIN32_REGISTRY)
-static char *lookup_key		PARAMS ((char *));
+static char *lookup_key         PARAMS ((char *));
 static HKEY reg_key = (HKEY) INVALID_HANDLE_VALUE;
 #endif
 
@@ -139,21 +141,21 @@ lookup_key (key)
   if (reg_key == (HKEY) INVALID_HANDLE_VALUE)
     {
       res = RegOpenKeyExA (HKEY_LOCAL_MACHINE, "SOFTWARE", 0,
-			   KEY_READ, &reg_key);
+                           KEY_READ, &reg_key);
 
       if (res == ERROR_SUCCESS)
-	res = RegOpenKeyExA (reg_key, "Free Software Foundation", 0,
-			     KEY_READ, &reg_key);
+        res = RegOpenKeyExA (reg_key, "Free Software Foundation", 0,
+                             KEY_READ, &reg_key);
 
       if (res == ERROR_SUCCESS)
-	res = RegOpenKeyExA (reg_key, WIN32_REGISTRY_KEY, 0,
-			     KEY_READ, &reg_key);
+        res = RegOpenKeyExA (reg_key, WIN32_REGISTRY_KEY, 0,
+                             KEY_READ, &reg_key);
 
       if (res != ERROR_SUCCESS)
-	{
-	  reg_key = (HKEY) INVALID_HANDLE_VALUE;
-	  return 0;
-	}
+        {
+          reg_key = (HKEY) INVALID_HANDLE_VALUE;
+          return 0;
+        }
     }
 
   size = 32;
@@ -193,33 +195,35 @@ translate_name (name)
     {
       code = name[0];
       if (code != '@' && code != '$')
-	break;
+        break;
 
       for (keylen = 0;
-	   (name[keylen + 1] != 0 && !IS_DIR_SEPARATOR (name[keylen + 1]));
-	   keylen++)
-	;
+           (name[keylen + 1] != 0 && !IS_DIR_SEPARATOR (name[keylen + 1]));
+           keylen++)
+        ;
 
       key = (char *) alloca (keylen + 1);
       strncpy (key, &name[1], keylen);
       key[keylen] = 0;
 
       if (code == '@')
-	{
-	  prefix = get_key_value (key);
-	  if (prefix == 0)
-	    prefix = std_prefix;
-	}
+        {
+          prefix = get_key_value (key);
+          if (prefix == 0)
+            prefix = std_prefix;
+        }
       else
-	prefix = getenv (key);
+        prefix = getenv (key);
 
       if (prefix == 0)
-	prefix = PREFIX;
+/* BEGIN GCC-XML MODIFICATIONS (2003/11/21 23:42:46) */
+        prefix = GCC_TO_STRING(PREFIX);
+/* END GCC-XML MODIFICATIONS (2003/11/21 23:42:46) */
 
       /* We used to strip trailing DIR_SEPARATORs here, but that can
-	 sometimes yield a result with no separator when one was coded
-	 and intended by the user, causing two path components to run
-	 together.  */
+         sometimes yield a result with no separator when one was coded
+         and intended by the user, causing two path components to run
+         together.  */
 
       old_name = name;
       name = concat (prefix, &name[keylen + 1], NULL);
@@ -238,7 +242,7 @@ tr (string, c1, c2)
   do
     {
       if (*string == c1)
-	*string = c2;
+        *string = c2;
     }
   while (*string++);
 }
@@ -259,14 +263,14 @@ update_path (path, key)
       bool free_key = false;
 
       if (key[0] != '$')
-	{
-	  key = concat ("@", key, NULL);
-	  free_key = true;
-	}
+        {
+          key = concat ("@", key, NULL);
+          free_key = true;
+        }
 
       result = concat (key, &path[strlen (std_prefix)], NULL);
       if (free_key)
-	free ((char *) key);
+        free ((char *) key);
       result = translate_name (result);
     }
   else
@@ -283,50 +287,50 @@ update_path (path, key)
 
       p = strchr (p, '.');
       if (p == NULL)
-	break;
+        break;
       /* Look for `/../'  */
       if (p[1] == '.'
-	  && IS_DIR_SEPARATOR (p[2])
-	  && (p != result && IS_DIR_SEPARATOR (p[-1])))
-	{
-	  *p = 0;
-	  if (!ALWAYS_STRIP_DOTDOT && access (result, X_OK) == 0)
-	    {
-	      *p = '.';
-	      break;
-	    }
-	  else
-	    {
-	      /* We can't access the dir, so we won't be able to
-		 access dir/.. either.  Strip out `dir/../'.  If `dir'
-		 turns out to be `.', strip one more path component.  */
-	      dest = p;
-	      do
-		{
-		  --dest;
-		  while (dest != result && IS_DIR_SEPARATOR (*dest))
-		    --dest;
-		  while (dest != result && !IS_DIR_SEPARATOR (dest[-1]))
-		    --dest;
-		}
-	      while (dest != result && *dest == '.');
-	      /* If we have something like `./..' or `/..', don't
-		 strip anything more.  */
-	      if (*dest == '.' || IS_DIR_SEPARATOR (*dest))
-		{
-		  *p = '.';
-		  break;
-		}
-	      src = p + 3;
-	      while (IS_DIR_SEPARATOR (*src))
-		++src;
-	      p = dest;
-	      while ((*dest++ = *src++) != 0)
-		;
-	    }
-	}
+          && IS_DIR_SEPARATOR (p[2])
+          && (p != result && IS_DIR_SEPARATOR (p[-1])))
+        {
+          *p = 0;
+          if (!ALWAYS_STRIP_DOTDOT && access (result, X_OK) == 0)
+            {
+              *p = '.';
+              break;
+            }
+          else
+            {
+              /* We can't access the dir, so we won't be able to
+                 access dir/.. either.  Strip out `dir/../'.  If `dir'
+                 turns out to be `.', strip one more path component.  */
+              dest = p;
+              do
+                {
+                  --dest;
+                  while (dest != result && IS_DIR_SEPARATOR (*dest))
+                    --dest;
+                  while (dest != result && !IS_DIR_SEPARATOR (dest[-1]))
+                    --dest;
+                }
+              while (dest != result && *dest == '.');
+              /* If we have something like `./..' or `/..', don't
+                 strip anything more.  */
+              if (*dest == '.' || IS_DIR_SEPARATOR (*dest))
+                {
+                  *p = '.';
+                  break;
+                }
+              src = p + 3;
+              while (IS_DIR_SEPARATOR (*src))
+                ++src;
+              p = dest;
+              while ((*dest++ = *src++) != 0)
+                ;
+            }
+        }
       else
-	++p;
+        ++p;
     }
 
 #ifdef UPDATE_PATH_HOST_CANONICALIZE

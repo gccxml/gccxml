@@ -539,3 +539,6 @@
 #  define read _read
 # endif
 #endif
+
+#define GCC_TO_STRING(x) GCC_TO_STRING0(x)
+#define GCC_TO_STRING0(x) #x

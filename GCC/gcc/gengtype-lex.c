@@ -324,7 +324,9 @@ void yyfree (void *  );
 
 /* Begin user sect3 */
 
-#define yywrap(n) 1
+/* BEGIN GCC-XML MODIFICATIONS (2003/11/21 23:42:46) */
+#define yywrap() 1
+/* END GCC-XML MODIFICATIONS (2003/11/21 23:42:46) */
 #define YY_SKIP_YYWRAP
 
 typedef unsigned char YY_CHAR;

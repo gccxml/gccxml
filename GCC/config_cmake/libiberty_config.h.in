@@ -334,3 +334,8 @@
 
 /* Define if canonicalize_file_name is not declared in system header files. */
 #cmakedefine NEED_DECLARATION_CANONICALIZE_FILE_NAME @NEED_DECLARATION_CANONICALIZE_FILE_NAME@
+
+#if defined(__BORLANDC__)
+# define _spawnvp spawnvp
+# define _spawnv spawnv
+#endif

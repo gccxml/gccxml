@@ -74,13 +74,13 @@ typedef struct
   DWORDLONG ullAvailExtendedVirtual;
 } lMEMORYSTATUSEX;
 
-/* BEGIN GCC-XML MODIFICATIONS (2003/11/21 21:16:39) */
-# if !defined(_MSC_VER)
+/* BEGIN GCC-XML MODIFICATIONS (2003/11/21 23:42:47) */
+# if !defined(_MSC_VER) && !defined(__BORLANDC__)
 typedef WINBOOL (WINAPI *PFN_MS_EX) (lMEMORYSTATUSEX*);
 # else
 typedef BOOL (WINAPI *PFN_MS_EX) (lMEMORYSTATUSEX*);
 # endif
-/* END GCC-XML MODIFICATIONS (2003/11/21 21:16:39) */
+/* END GCC-XML MODIFICATIONS (2003/11/21 23:42:47) */
 #endif
 
 #include "libiberty.h"
@@ -171,13 +171,13 @@ physmem_total ()
         lms_ex.dwLength = sizeof lms_ex;
         if (!pfnex (&lms_ex))
           return 0.0;
-/* BEGIN GCC-XML MODIFICATIONS (2003/11/21 21:16:39) */
+/* BEGIN GCC-XML MODIFICATIONS (2003/11/21 23:42:47) */
 #if !defined(_MSC_VER)
         return (double) lms_ex.ullTotalPhys;
 #else
         return (double)(signed __int64) lms_ex.ullTotalPhys;
 #endif
-/* END GCC-XML MODIFICATIONS (2003/11/21 21:16:39) */
+/* END GCC-XML MODIFICATIONS (2003/11/21 23:42:47) */
       }
 
     /*  Fall back to GlobalMemoryStatus which is always available.
@@ -186,13 +186,13 @@ physmem_total ()
       {
         MEMORYSTATUS ms;
         GlobalMemoryStatus (&ms);
-/* BEGIN GCC-XML MODIFICATIONS (2003/11/21 21:16:39) */
+/* BEGIN GCC-XML MODIFICATIONS (2003/11/21 23:42:47) */
 #if !defined(_MSC_VER)
         return (double) ms.dwTotalPhys;
 #else
         return (double)(signed __int64) ms.dwTotalPhys;
 #endif
-/* END GCC-XML MODIFICATIONS (2003/11/21 21:16:39) */
+/* END GCC-XML MODIFICATIONS (2003/11/21 23:42:47) */
       }
   }
 #endif
@@ -284,13 +284,13 @@ physmem_available ()
         lms_ex.dwLength = sizeof lms_ex;
         if (!pfnex (&lms_ex))
           return 0.0;
-/* BEGIN GCC-XML MODIFICATIONS (2003/11/21 21:16:39) */
+/* BEGIN GCC-XML MODIFICATIONS (2003/11/21 23:42:47) */
 #if !defined(_MSC_VER)
         return (double) lms_ex.ullAvailPhys;
 #else
         return (double)(signed __int64) lms_ex.ullAvailPhys;
 #endif
-/* END GCC-XML MODIFICATIONS (2003/11/21 21:16:39) */
+/* END GCC-XML MODIFICATIONS (2003/11/21 23:42:47) */
       }
 
     /*  Fall back to GlobalMemoryStatus which is always available.
@@ -299,13 +299,13 @@ physmem_available ()
       {
         MEMORYSTATUS ms;
         GlobalMemoryStatus (&ms);
-/* BEGIN GCC-XML MODIFICATIONS (2003/11/21 21:16:39) */
+/* BEGIN GCC-XML MODIFICATIONS (2003/11/21 23:42:47) */
 #if !defined(_MSC_VER)
         return (double) ms.dwAvailPhys;
 #else
         return (double)(signed __int64) ms.dwAvailPhys;
 #endif
-/* END GCC-XML MODIFICATIONS (2003/11/21 21:16:39) */
+/* END GCC-XML MODIFICATIONS (2003/11/21 23:42:47) */
       }
   }
 #endif

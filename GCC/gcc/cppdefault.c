@@ -60,7 +60,9 @@ const struct default_include cpp_include_defaults[]
 #endif
 #ifdef TOOL_INCLUDE_DIR
     /* Another place the target system's headers might be.  */
-    { TOOL_INCLUDE_DIR, "BINUTILS", 0, 1 },
+/* BEGIN GCC-XML MODIFICATIONS (2003/11/21 23:42:46) */
+    { GCC_TO_STRING(TOOL_INCLUDE_DIR), "BINUTILS", 0, 1 },
+/* END GCC-XML MODIFICATIONS (2003/11/21 23:42:46) */
 #endif
 #ifdef SYSTEM_INCLUDE_DIR
     /* Some systems have an extra dir of include files.  */

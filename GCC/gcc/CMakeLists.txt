@@ -348,10 +348,10 @@ SET(cpp_SRCS cpplib.c cpplex.c cppmacro.c cppexp.c cppfiles.c
   cpptrad.c cpphash.c cpperror.c cppinit.c cppdefault.c cppmain.c
   hashtable.c line-map.c mkdeps.c prefix.c mbchar.c)
 SET_SOURCE_FILES_PROPERTIES(prefix.c
-  PROPERTIES COMPILE_FLAGS "-DPREFIX=\\\"${CMAKE_INSTALL_PREFIX}\\\"")
+  PROPERTIES COMPILE_FLAGS "-DPREFIX=\"${CMAKE_INSTALL_PREFIX}\"")
 IF(CYGWIN)
   SET_SOURCE_FILES_PROPERTIES(cppdefault.c PROPERTIES
-    COMPILE_FLAGS "-DTOOL_INCLUDE_DIR=\\\"/usr/include\\\"")
+    COMPILE_FLAGS "-DTOOL_INCLUDE_DIR=/usr/include")
 ENDIF(CYGWIN)
 ADD_LIBRARY(cpp ${cpp_SRCS})
 
@@ -417,7 +417,7 @@ SET(backend_OBJDEPS
 SET_SOURCE_FILES_PROPERTIES(${backend_STANDARD_SRCS} ${backend_GENERATED_SRCS}
   PROPERTIES OBJECT_DEPENDS "${backend_OBJDEPS}")
 SET_SOURCE_FILES_PROPERTIES(toplev.c
-  PROPERTIES COMPILE_FLAGS "-DTARGET_NAME=\\\"${target}\\\"")
+  PROPERTIES COMPILE_FLAGS "-DTARGET_NAME=${target}")
 
 #-----------------------------------------------------------------------------
 # C Compiler Executable.  This is not needed by GCC-XML, so we do not

@@ -68,7 +68,9 @@ function will be called to print an error message and terminate execution.
 
 #include <stdio.h>
 
-#ifdef __STDC__
+/* BEGIN GCC-XML MODIFICATIONS (2003/11/21 23:42:47) */
+#if defined(__STDC__) || defined(ALMOST_STDC)
+/* END GCC-XML MODIFICATIONS (2003/11/21 23:42:47) */
 #include <stddef.h>
 #else
 #define size_t unsigned long
@@ -120,14 +122,14 @@ xmalloc_failed (size)
   else
     allocated = (char *) sbrk (0) - (char *) &environ;
   fprintf (stderr,
-	   "\n%s%sout of memory allocating %lu bytes after a total of %lu bytes\n",
-	   name, *name ? ": " : "",
-	   (unsigned long) size, (unsigned long) allocated);
+           "\n%s%sout of memory allocating %lu bytes after a total of %lu bytes\n",
+           name, *name ? ": " : "",
+           (unsigned long) size, (unsigned long) allocated);
 #else /* HAVE_SBRK */
   fprintf (stderr,
-	   "\n%s%sout of memory allocating %lu bytes\n",
-	   name, *name ? ": " : "",
-	   (unsigned long) size);
+           "\n%s%sout of memory allocating %lu bytes\n",
+           name, *name ? ": " : "",
+           (unsigned long) size);
 #endif /* HAVE_SBRK */
   xexit (1);
 }  
