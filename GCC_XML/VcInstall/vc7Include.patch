@@ -181,10 +181,10 @@ Index: yvals.h
 ===================================================================
 RCS file: /cvsroot/GxInclude/Vc7/Include/yvals.h,v
 retrieving revision 1.1
-retrieving revision 1.2
-diff -c -3 -p -r1.1 -r1.2
+retrieving revision 1.3
+diff -c -3 -p -r1.1 -r1.3
 *** yvals.h	1 Nov 2002 14:00:28 -0000	1.1
---- yvals.h	24 Jan 2004 18:03:00 -0000	1.2
+--- yvals.h	18 Mar 2005 22:21:50 -0000	1.3
 *************** _STD_END
 *** 93,100 ****
   		/* VC++ COMPILER PARAMETERS */
@@ -199,8 +199,8 @@ diff -c -3 -p -r1.1 -r1.2
   		/* VC++ COMPILER PARAMETERS */
   #define _LONGLONG	__int64
   #define _ULONGLONG	unsigned __int64
-! #define _LLONG_MAX	0x7fffffffffffffffLL
-! #define _ULLONG_MAX	0xffffffffffffffffLL
+! #define _LLONG_MAX	0x7fffffffffffffffi64
+! #define _ULLONG_MAX	0xffffffffffffffffui64
   
   		/* INTEGER PROPERTIES */
   #define _C2			1	/* 0 if not 2's complement */
