@@ -117,8 +117,8 @@ int main(int argc, char** argv)
   
   // Create the set of flags.
   std::vector<std::string> flags;
-  parser.AddParsedFlags(flags);
   configuration.AddArguments(flags);
+  parser.AddParsedFlags(flags);
   
   // List set of flags if debugging.
   if(configuration.GetDebugFlag())
