@@ -988,15 +988,16 @@ print_cv_qualifiers_empty_tag (file, indent, t)
 
 /* Print XML begin tag for a name qualifier element.  */
 static void
-print_name_qualifier_begin_tag (file, indent, name)
+print_name_qualifier_begin_tag (file, indent, t)
   FILE* file;
   unsigned long indent;
-  tree name;
+  tree t;
 {
+  char* name = xml_get_encoded_string(t);
   print_indent (file, indent);
   fprintf (file,
            "<NameQualifier name=\"%s\">\n",
-           IDENTIFIER_POINTER (name));
+           name);
 }
 
 
@@ -1014,15 +1015,16 @@ print_name_qualifier_end_tag (file, indent)
 
 /* Print XML empty tag for a qualified name element.  */
 static void
-print_qualified_name_empty_tag (file, indent, name)
+print_qualified_name_empty_tag (file, indent, t)
   FILE* file;
   unsigned long indent;
-  tree name;
+  tree t;
 {
+  char* name = xml_get_encoded_string(t);
   print_indent (file, indent);
   fprintf (file,
            "<QualifiedName name=\"%s\"/>\n",
-           IDENTIFIER_POINTER (name));
+           name);
 }
 
 
