@@ -15,8 +15,8 @@ bool copyTextFile(const char* source, const char* destination);
 
 int main(int argc, char* argv[])
 {
-  const char* patchFile = argv[1];
-  const char* destPath = argv[2];
+  std::string patchFile = argv[1];
+  std::string destPath = argv[2];
   
   // Use an extra enclosing scope to make sure all destructors are called
   // before the exec occurs to run the patch program.
@@ -25,7 +25,6 @@ int main(int argc, char* argv[])
   // MSVC include files.
   const char* vcRegistry =
     "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\DevStudio\\6.0\\Products\\Microsoft Visual C++;ProductDir";
-  std::string vcPath;
 
   if(argc < 3)
     {
@@ -36,18 +35,17 @@ int main(int argc, char* argv[])
     return 0;
     }
   
-  const char* sourcePath;
+  std::string sourcePath;
 
   // If the source_path argument was not given, look it up in the registry.
   if(argc < 4)
     {
-    if(!readRegistryValue(vcRegistry, vcPath))
+    if(!readRegistryValue(vcRegistry, sourcePath))
       {
       std::cerr << "source_path not specified and VC98 could not be found in the registry!" << std::endl;
       return 1;
       }
-    vcPath += "/Include";
-    sourcePath = vcPath.c_str();
+    sourcePath += "/Include";
     }
   else
     {
@@ -56,10 +54,10 @@ int main(int argc, char* argv[])
 
   // Make sure the destination path exists before trying to put files
   // there.
-  _mkdir(destPath);
+  _mkdir(destPath.c_str());
   
   // Look at the patch file to see what headers need to be copied.
-  std::ifstream patch(patchFile);
+  std::ifstream patch(patchFile.c_str());
   if(!patch)
     {
     std::cerr << "Error opening patch file." << std::endl;
@@ -74,20 +72,23 @@ int main(int argc, char* argv[])
       {
       std::string source = sourcePath;
       source += "/"+line.substr(7);
-      std::string dest = destPath;
+      std::string dest = destPath.c_str();
       dest += "/"+line.substr(7);
       copyTextFile(source.c_str(), dest.c_str());
       }
     }
   }
   
+  destPath = "\""+destPath+"\"";
+  patchFile = "\""+patchFile+"\"";
+  
   // The arguments for executing the patch program.
   const char* patchOptions[] =
   {
     "-p0",
     "-t",
-    "-d ", destPath,
-    "-i ", patchFile,
+    "-d ", destPath.c_str(),
+    "-i ", patchFile.c_str(),
     0
   };
   
