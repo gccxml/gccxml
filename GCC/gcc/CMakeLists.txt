@@ -201,12 +201,12 @@ TARGET_LINK_LIBRARIES(gengtype iberty)
 SET_SOURCE_FILES_PROPERTIES(${gengtype_SRCS} PROPERTIES
   COMPILE_FLAGS "-DGENERATOR_FILE -DYY_NO_UNISTD_H")
 
-ADD_CUSTOM_COMMAND(OUTPUT ${GCC_BINARY_DIR}/gcc/gtype-desc.h
+ADD_CUSTOM_COMMAND(OUTPUT ${GCC_BINARY_DIR}/gcc/gtype-desc.c
   COMMAND echo
-  DEPENDS ${GCC_BINARY_DIR}/gcc/gtype-desc.c
+  DEPENDS ${GCC_BINARY_DIR}/gcc/gtype-desc.h
   )
 
-ADD_CUSTOM_COMMAND(OUTPUT ${GCC_BINARY_DIR}/gcc/gtype-desc.c
+ADD_CUSTOM_COMMAND(OUTPUT ${GCC_BINARY_DIR}/gcc/gtype-desc.h
   COMMAND ${GCC_gengtype_EXE}
   DEPENDS ${GCC_gengtype_EXE}
   )
@@ -246,17 +246,12 @@ ADD_CUSTOM_COMMAND(OUTPUT ${GCC_BINARY_DIR}/gcc/tree-check.h
 #-----------------------------------------------------------------------------
 # Sources used in several generator executables.
 
+SET(GEN_SRCS rtl.c read-rtl.c bitmap.c ggc-none.c gensupport.c
+  dummy-conditions.c errors.c)
 SET(GEN_OBJDEPS
   ${GCC_BINARY_DIR}/gcc/genrtl.h
   ${GCC_BINARY_DIR}/gcc/gtype-desc.h)
-SET(GEN0_SRCS rtl.c bitmap.c)
-SET(GEN1_SRCS read-rtl.c ggc-none.c gensupport.c
-  dummy-conditions.c errors.c)
-ADD_LIBRARY(gen0 ${GEN0_SRCS})
-ADD_LIBRARY(gen1 ${GEN1_SRCS})
-TARGET_LINK_LIBRARIES(gen0 iberty)
-TARGET_LINK_LIBRARIES(gen1 gen0)
-SET_SOURCE_FILES_PROPERTIES(${GEN0_SRCS} ${GEN1_SRCS} PROPERTIES
+SET_SOURCE_FILES_PROPERTIES(${GEN_SRCS} PROPERTIES
   COMPILE_FLAGS -DGENERATOR_FILE
   OBJECT_DEPENDS "${GEN_OBJDEPS}")
 
@@ -265,9 +260,9 @@ SET_SOURCE_FILES_PROPERTIES(${GEN0_SRCS} ${GEN1_SRCS} PROPERTIES
 
 FOREACH(tgt constants flags)
   SET(gen${tgt}_SRCS gen${tgt}.c)
-  ADD_EXECUTABLE(gen${tgt} ${gen${tgt}_SRCS})
+  ADD_EXECUTABLE(gen${tgt} ${gen${tgt}_SRCS} ${GEN_SRCS})
   SET(GCC_gen${tgt}_EXE "${GCC_GEN_DIR}/gen${tgt}${GCC_EXE_EXT}")
-  TARGET_LINK_LIBRARIES(gen${tgt} gen1)
+  TARGET_LINK_LIBRARIES(gen${tgt} iberty)
   SET_SOURCE_FILES_PROPERTIES(${gen${tgt}_SRCS} PROPERTIES
     COMPILE_FLAGS -DGENERATOR_FILE
     OBJECT_DEPENDS "${GEN_OBJDEPS}")
@@ -289,20 +284,15 @@ SET(printrtl1_OBJDEPS ${GCC_BINARY_DIR}/gcc/insn-constants.h
 SET_SOURCE_FILES_PROPERTIES(print-rtl1.c PROPERTIES
   COMPILE_FLAGS -DGENERATOR_FILE
   OBJECT_DEPENDS "${printrtl1_OBJDEPS}")
-ADD_LIBRARY(gen2 print-rtl1.c)
-TARGET_LINK_LIBRARIES(gen2 gen1)
-
-ADD_LIBRARY(varraylib varray.c)
-TARGET_LINK_LIBRARIES(varraylib iberty)
 
 #-----------------------------------------------------------------------------
 # Rules to generate insn-config.h, insn-codes.h, and insn-attr.h.
 
 FOREACH(tgt config codes attr)
   SET(gen${tgt}_SRCS gen${tgt}.c)
-  ADD_EXECUTABLE(gen${tgt} ${gen${tgt}_SRCS})
+  ADD_EXECUTABLE(gen${tgt} ${gen${tgt}_SRCS} ${GEN_SRCS} print-rtl1.c)
   SET(GCC_gen${tgt}_EXE "${GCC_GEN_DIR}/gen${tgt}${GCC_EXE_EXT}")
-  TARGET_LINK_LIBRARIES(gen${tgt} gen2)
+  TARGET_LINK_LIBRARIES(gen${tgt} iberty)
   SET(gen${tgt}_OBJDEPS ${GCC_BINARY_DIR}/gcc/insn-constants.h
     ${GCC_BINARY_DIR}/gcc/insn-flags.h)
   SET_SOURCE_FILES_PROPERTIES(${gen${tgt}_SRCS} PROPERTIES
@@ -322,25 +312,22 @@ ENDFOREACH(tgt)
 # insn-opinit.c, insn-peep.c, insn-output.c, insn-recog.c, and
 # insn-attrtab.c.
 
-SET(genattrtab_EXTRA_SRCS genautomata.c)
-SET(genattrtab_EXTRA_LIBS varraylib m)
+SET(genattrtab_EXTRA_SRCS varray.c genautomata.c)
+SET(genattrtab_EXTRA_LIBS m)
 IF(WIN32)
   IF(NOT MINGW)
-    SET(genattrtab_EXTRA_LIBS varraylib)
+    SET(genattrtab_EXTRA_LIBS)
   ENDIF(NOT MINGW)
 ENDIF(WIN32)
 FOREACH(tgt emit extract opinit peep output recog attrtab)
-  SET(gen${tgt}_LIB gen2)
+  SET(gen${tgt}_PRINTRTL_SRC print-rtl1.c)
 ENDFOREACH(tgt)
 FOREACH(tgt conditions emit extract opinit peep output recog attrtab)
   SET(gen${tgt}_SRCS gen${tgt}.c ${gen${tgt}_EXTRA_SRCS})
-  ADD_EXECUTABLE(gen${tgt} ${gen${tgt}_SRCS})
+  ADD_EXECUTABLE(gen${tgt} ${gen${tgt}_SRCS} ${GEN_SRCS}
+    ${gen${tgt}_PRINTRTL_SRC})
   SET(GCC_gen${tgt}_EXE "${GCC_GEN_DIR}/gen${tgt}${GCC_EXE_EXT}")
-  IF(gen${tgt}_LIB)
-    TARGET_LINK_LIBRARIES(gen${tgt} ${gen${tgt}_LIB} ${gen${tgt}_EXTRA_LIBS})
-  ELSE(gen${tgt}_LIB)
-    TARGET_LINK_LIBRARIES(gen${tgt} gen1 ${gen${tgt}_EXTRA_LIBS})
-  ENDIF(gen${tgt}_LIB)
+  TARGET_LINK_LIBRARIES(gen${tgt} iberty ${gen${tgt}_EXTRA_LIBS})
   SET_SOURCE_FILES_PROPERTIES(${gen${tgt}_SRCS} PROPERTIES
     COMPILE_FLAGS -DGENERATOR_FILE
     OBJECT_DEPENDS ${GCC_BINARY_DIR}/gcc/insn-config.h)
@@ -359,7 +346,7 @@ ENDFOREACH(tgt)
 
 SET(cpp_SRCS cpplib.c cpplex.c cppmacro.c cppexp.c cppfiles.c
   cpptrad.c cpphash.c cpperror.c cppinit.c cppdefault.c cppmain.c
-  line-map.c mkdeps.c prefix.c)
+  hashtable.c line-map.c mkdeps.c prefix.c mbchar.c)
 SET_SOURCE_FILES_PROPERTIES(prefix.c
   PROPERTIES COMPILE_FLAGS "-DPREFIX=\"${CMAKE_INSTALL_PREFIX}\"")
 IF(CYGWIN)
@@ -388,7 +375,7 @@ SET(backend_STANDARD_SRCS
   rtl-error.c sbitmap.c sched-deps.c sched-ebb.c sched-rgn.c sched-vis.c
   sdbout.c sibcall.c simplify-rtx.c ssa.c ssa-ccp.c ssa-dce.c stmt.c
   stor-layout.c stringpool.c timevar.c toplev.c tracer.c tree.c
-  tree-dump.c tree-inline.c unroll.c varasm.c version.c
+  tree-dump.c tree-inline.c unroll.c varasm.c varray.c version.c
   vmsdbgout.c xcoffout.c et-forest.c ggc-page.c main.c
   ${extra_srcs}
   )
@@ -410,7 +397,7 @@ SET(backend_GENERATED_SRCS
 )
 
 # Sources shared with the generator executables.
-SET(backend_GEN_SRCS print-rtl.c)
+SET(backend_GEN_SRCS rtl.c bitmap.c print-rtl.c)
 
 # Add the library.
 ADD_LIBRARY(backend
@@ -418,7 +405,6 @@ ADD_LIBRARY(backend
   ${backend_GENERATED_SRCS}
   ${backend_GEN_SRCS}
 )
-TARGET_LINK_LIBRARIES(backend gen0 varraylib)
 
 # Add dependencies on generated headers.
 SET(backend_OBJDEPS
@@ -451,5 +437,5 @@ IF(GCC_BUILD_C)
     ${c_target_srcs}
     )
 
-  TARGET_LINK_LIBRARIES(cc1 cpp backend iberty)
+  TARGET_LINK_LIBRARIES(cc1 backend cpp iberty)
 ENDIF(GCC_BUILD_C)
