@@ -238,10 +238,9 @@ void gxConfiguration::FindRoots(const char* argv0)
   // Use our own location as the executable root.
   m_ExecutableRoot = selfPath;
   
-  
   // Find the data files.
-  std::string sharePath = selfPath+"/../share/GCC_XML";
-   
+  std::string sharePath = selfPath+"/../share/gccxml-" GCCXML_VERSION_STRING;
+  
   // If we are running from the build directory, use the source
   // directory as the data root.
   if(sPath == ePath)
