@@ -42,7 +42,7 @@ void printUsage(std::ostream& os)
   os <<
     "Usage:\n"
     "\n"
-    "  gccxml [options] input.cxx -fxml=output.xml [-fxml-start=foo]\n"
+    "  gccxml [options] input.cxx -fxml=output.xml [-fxml-start=foo[,...]]\n"
     "\n"
     "This program is a wrapper around a real GCC-XML executable.  It will\n"
     "help the user to find the proper GCCXML_FLAGS setting and then run\n"
