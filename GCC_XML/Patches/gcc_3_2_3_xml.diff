@@ -1,0 +1,156 @@
+Index: gcc/cp/Make-lang.in
+===================================================================
+RCS file: /cvsroot/gcc/gcc/gcc/cp/Make-lang.in,v
+retrieving revision 1.108.2.2.2.1
+diff -c -3 -p -r1.108.2.2.2.1 Make-lang.in
+*** gcc/cp/Make-lang.in	28 Jan 2003 21:53:12 -0000	1.108.2.2.2.1
+--- gcc/cp/Make-lang.in	27 Aug 2003 14:56:29 -0000
+*************** CXX_OBJS = cp/call.o cp/decl.o cp/expr.o
+*** 103,109 ****
+   cp/class.o cp/decl2.o cp/error.o cp/lex.o cp/parse.o cp/ptree.o cp/rtti.o \
+   cp/spew.o cp/typeck.o cp/cvt.o cp/except.o cp/friend.o cp/init.o cp/method.o \
+   cp/search.o cp/semantics.o cp/tree.o cp/repo.o cp/dump.o \
+!  cp/optimize.o cp/mangle.o cp/cp-lang.o
+  
+  # Use loose warnings for this front end.
+  cp-warn =
+--- 103,109 ----
+   cp/class.o cp/decl2.o cp/error.o cp/lex.o cp/parse.o cp/ptree.o cp/rtti.o \
+   cp/spew.o cp/typeck.o cp/cvt.o cp/except.o cp/friend.o cp/init.o cp/method.o \
+   cp/search.o cp/semantics.o cp/tree.o cp/repo.o cp/dump.o \
+!  cp/optimize.o cp/mangle.o cp/cp-lang.o cp/xml.o
+  
+  # Use loose warnings for this front end.
+  cp-warn =
+*************** cp/dump.o: cp/dump.c $(CXX_TREE_H) tree-
+*** 296,301 ****
+--- 296,302 ----
+  cp/optimize.o: cp/optimize.c $(CXX_TREE_H) rtl.h integrate.h insn-config.h \
+    input.h $(PARAMS_H) debug.h tree-inline.h
+  cp/mangle.o: cp/mangle.c $(CXX_TREE_H) toplev.h
++ cp/xml.o: cp/xml.c $(CXX_TREE_H) toplev.h
+  
+  cp/parse.o: cp/parse.c $(CXX_TREE_H) flags.h cp/lex.h except.h output.h \
+  	$(SYSTEM_H) toplev.h $(GGC_H)
+Index: gcc/cp/cp-tree.h
+===================================================================
+RCS file: /cvsroot/gcc/gcc/gcc/cp/cp-tree.h,v
+retrieving revision 1.681.2.12.2.11
+diff -c -3 -p -r1.681.2.12.2.11 cp-tree.h
+*** gcc/cp/cp-tree.h	21 Jan 2003 19:00:26 -0000	1.681.2.12.2.11
+--- gcc/cp/cp-tree.h	27 Aug 2003 14:56:32 -0000
+*************** extern tree mangle_ref_init_variable    
+*** 4396,4401 ****
+--- 4396,4417 ----
+  /* in dump.c */
+  extern int cp_dump_tree                         PARAMS ((void *, tree));
+  
++ /* Filename for xml dump of translation unit.  */
++ extern const char* flag_xml;
++ 
++ /* Start locations for dump of translation unit.  */
++ extern const char* flag_xml_start;
++ 
++ /* Tell xml.c what version of GCC is being built.  Format is 0xMMmmpp,
++    where MM is the major version number, mm is the minor version
++    number, and pp is the patch level.  
++    Examples:  gcc 3.0.4 = 0x030004
++               gcc 3.2.0 = 0x030200 */
++ #define GCC_XML_GCC_VERSION 0x030200
++ 
++ /* in xml.c */
++ extern void do_xml_output                       PARAMS ((const char *));
++ 
+  /* -- end of C++ */
+  
+  #endif /* ! GCC_CP_TREE_H */
+Index: gcc/cp/decl2.c
+===================================================================
+RCS file: /cvsroot/gcc/gcc/gcc/cp/decl2.c,v
+retrieving revision 1.520.2.7.2.12
+diff -c -3 -p -r1.520.2.7.2.12 decl2.c
+*** gcc/cp/decl2.c	15 Apr 2003 16:26:44 -0000	1.520.2.7.2.12
+--- gcc/cp/decl2.c	27 Aug 2003 14:56:33 -0000
+*************** int flag_permissive;
+*** 405,410 ****
+--- 405,419 ----
+  
+  int flag_enforce_eh_specs = 1;
+  
++ /* Filename for xml dump of translation unit.  */
++ 
++ const char* flag_xml = 0;
++ 
++ /* Start locations for dump of translation unit.  */
++ 
++ const char* flag_xml_start = 0;
++ 
++ 
+  /* Table of language-dependent -f options.
+     STRING is the option name.  VARIABLE is the address of the variable.
+     ON_VALUE is the value to store in VARIABLE
+*************** cxx_decode_option (argc, argv)
+*** 566,571 ****
+--- 575,596 ----
+  	  warning ("-fname-mangling-version is no longer supported");
+  	  return 1;
+  	}
++       else if ((option_value
++                 = skip_leading_substring (p, "xml=")))
++         {
++         if (*option_value == '\0')
++           error ("no file specified with -fxml");
++         else
++           flag_xml = option_value;
++         }
++       else if ((option_value
++                 = skip_leading_substring (p, "xml-start=")))
++       {
++         if (*option_value == '\0')
++           error ("no location specified with -fxml-start");
++         else
++           flag_xml_start = option_value;
++       }
+        else if (dump_switch_p (p))
+  	;
+        else 
+Index: gcc/cp/lang-options.h
+===================================================================
+RCS file: /cvsroot/gcc/gcc/gcc/cp/Attic/lang-options.h,v
+retrieving revision 1.43
+diff -c -3 -p -r1.43 lang-options.h
+*** gcc/cp/lang-options.h	15 Dec 2001 20:06:12 -0000	1.43
+--- gcc/cp/lang-options.h	27 Aug 2003 14:56:33 -0000
+*************** DEFINE_LANG_NAME ("C++")
+*** 117,122 ****
+--- 117,126 ----
+    { "-fxref", 
+      N_("Emit cross referencing information") },
+    { "-fno-xref", "" },
++   { "-fxml=",
++     N_("Enable XML output to a file (use with -fsyntax-only)") },
++   { "-fno-xml", "" },
++   { "-fxml-start=", "Specify start locations for XML dump (use with -fxml)" },
+  
+    { "-Wreturn-type", 
+      N_("Warn about inconsistent return types") },
+Index: gcc/cp/semantics.c
+===================================================================
+RCS file: /cvsroot/gcc/gcc/gcc/cp/semantics.c,v
+retrieving revision 1.252.2.6.4.2
+diff -c -3 -p -r1.252.2.6.4.2 semantics.c
+*** gcc/cp/semantics.c	23 Jan 2003 00:30:23 -0000	1.252.2.6.4.2
+--- gcc/cp/semantics.c	27 Aug 2003 14:56:34 -0000
+*************** finish_translation_unit ()
+*** 1593,1598 ****
+--- 1593,1602 ----
+    finish_fname_decls ();
+    
+    finish_file ();
++   
++   /* Do XML output if enabled.  */
++   if (flag_xml)
++     do_xml_output (flag_xml);
+  }
+  
+  /* Finish a template type parameter, specified as AGGR IDENTIFIER.
