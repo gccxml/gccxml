@@ -1,0 +1,4 @@
+# Install ./ header file wrappers.
+FILE(GLOB HEADERS [a-z]*)
+INSTALL_FILES(${GCCXML_INSTALL_ROOT}${GCCXML_DATA_DIR}/GCC/3.4
+  FILES ${HEADERS})
