@@ -1256,6 +1256,9 @@ xml_output_record_type (file, indent, rt)
       case FUNCTION_DECL:
         xml_output_function_decl (file, indent+XML_NESTED_INDENT, func);
         break;
+      case TEMPLATE_DECL:
+        xml_output_template_decl (file, indent+XML_NESTED_INDENT, func);
+        break;
       default:
         print_unimplemented_empty_tag (file, indent+XML_NESTED_INDENT, func);
       }
@@ -1507,6 +1510,8 @@ xml_output_template_decl (file, indent, td)
       {
       case FUNCTION_DECL:
         xml_output_function_decl (file, indent, ts);
+        break;
+      case TEMPLATE_DECL:
         break;
       default:
         print_unimplemented_empty_tag (file, indent, ts);
