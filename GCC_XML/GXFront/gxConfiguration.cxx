@@ -22,6 +22,8 @@ const char* gxConfigurationVc6Registry =
 "DevStudio\\6.0\\Products\\Microsoft Visual C++;ProductDir";
 const char* gxConfigurationVc7Registry =
 "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\VisualStudio\\7.0;InstallDir";
+const char* gxConfigurationVc71Registry =
+"HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\VisualStudio\\7.1;InstallDir";
 
 //----------------------------------------------------------------------------
 gxConfiguration::gxConfiguration()
@@ -678,44 +680,61 @@ bool gxConfiguration::FindFlags()
     {
     return this->FindFlagsMSVC7();
     }
+  else if(compilerName == "msvc71")
+    {
+    return this->FindFlagsMSVC71();
+    }
   else if(compilerName == "cl")
     {
-    // We must decide if this is MSVC 6 or 7.
+    // We must decide if this is MSVC 6, 7, or 7.1.
     std::string loc;
     bool have6 = gxSystemTools::ReadRegistryValue(gxConfigurationVc6Registry,
                                                   loc);
     bool have7 = gxSystemTools::ReadRegistryValue(gxConfigurationVc7Registry,
                                                   loc);
+    bool have71 = gxSystemTools::ReadRegistryValue(gxConfigurationVc71Registry,
+                                                   loc);
     bool support6 =
       gxSystemTools::FileIsDirectory((m_GCCXML_ROOT+"/Vc6").c_str());
     bool support7 =
       gxSystemTools::FileIsDirectory((m_GCCXML_ROOT+"/Vc7").c_str());
+    bool support71 =
+      gxSystemTools::FileIsDirectory((m_GCCXML_ROOT+"/Vc71").c_str());
     
     // See if only one is installed.
-    if(have6 && !have7)
+    if(have6 && !have7 && !have71)
       {
       return this->FindFlagsMSVC6();
       }
-    else if(!have6 && have7)
+    else if(!have6 && have7 && !have71)
       {
       return this->FindFlagsMSVC7();
       }
-    else if(have6 && have7)
+    else if(!have6 && !have7 && have71)
       {
-      // Have both.  See if only one has the support directory available.  
-      if(support6 && !support7)
+      return this->FindFlagsMSVC71();
+      }
+    else if(have6 || have7 || have71)
+      {
+      // Have more than one.  See if only one has the support
+      // directory available.
+      if(support6 && !support7 && !support71)
         {
         return this->FindFlagsMSVC6();
         }      
-      else if(!support6 && support7)
+      else if(!support6 && support7 && !support71)
         {
         return this->FindFlagsMSVC7();
         }
-      else if(!support6 && !support7)
+      else if(!support6 && !support7 && support71)
+        {
+        return this->FindFlagsMSVC71();
+        }
+      else if(!support6 && !support7 && !support71)
         {
         std::cerr << "Compiler \"" << m_GCCXML_COMPILER 
-                  << "\" is not supported by GCC_XML because neither\n"
-                  << "the Vc6 or Vc7 support directories exist.\n";
+                  << "\" is not supported by GCC_XML because none of \n"
+                  << "the Vc6, Vc7, or Vc71 support directories exists.\n";
         return false;
         }
       
@@ -735,7 +754,15 @@ bool gxConfiguration::FindFlags()
                 (cl.find("/vc7/") != std::string::npos) ||
                 (cl.find("/Vc7/") != std::string::npos))
           {
-          return this->FindFlagsMSVC7();
+          // This is a cl from 7 or 7.1.  Use one if we have it.
+          if(have7 && !have71)
+            {
+            return this->FindFlagsMSVC7();
+            }
+          else if(!have7 && have71)
+            {
+            return this->FindFlagsMSVC71();
+            }
           }
         
         // Couldn't tell from program location.  Try running it.
@@ -748,9 +775,13 @@ bool gxConfiguration::FindFlags()
             {
             return this->FindFlagsMSVC6();
             }
-          else if(output.find("Compiler Version 13.") != std::string::npos)
+          else if(output.find("Compiler Version 13.0") != std::string::npos)
             {
             return this->FindFlagsMSVC7();
+            }
+          else if(output.find("Compiler Version 13.1") != std::string::npos)
+            {
+            return this->FindFlagsMSVC71();
             }
           }
         // Couldn't tell by running the compiler.
@@ -758,20 +789,25 @@ bool gxConfiguration::FindFlags()
       // Couldn't tell by finding the compiler.  Guess based on which
       // was used to build this executable.
       const char* const clText =
-        "Compiler \"cl\" specified, but both "
-        "MSVC 6 and MSVC 7 are installed.\n"
-        "Please specify \"msvc6\" or \"msvc7\" for "
+        "Compiler \"cl\" specified, but more than one of "
+        "MSVC 6, 7, and 7.1 are installed.\n"
+        "Please specify \"msvc6\", \"msvc7\", or \"msvc71\" for "
         "the GCCXML_COMPILER setting.\n";
 #if defined(_MSC_VER) && ((_MSC_VER >= 1200) && (_MSC_VER < 1300))
       std::cout << "Warning:\n" << clText
                 << "Using MSVC 6 because it was used to build GCC-XML.\n"
                 << "\n";
       return this->FindFlagsMSVC6();
-#elif defined(_MSC_VER) && ((_MSC_VER >= 1300) && (_MSC_VER < 1400))
+#elif defined(_MSC_VER) && ((_MSC_VER >= 1300) && (_MSC_VER < 1310))
       std::cout << "Warning:\n" << clText
                 << "Using MSVC 7 because it was used to build GCC-XML.\n"
                 << "\n";
       return this->FindFlagsMSVC7();
+#elif defined(_MSC_VER) && ((_MSC_VER >= 1310) && (_MSC_VER < 1400))
+      std::cout << "Warning:\n" << clText
+                << "Using MSVC 7.1 because it was used to build GCC-XML.\n"
+                << "\n";
+      return this->FindFlagsMSVC71();
 #else
       // Give up.  The user must specify one.
       std::cerr << clText;
@@ -782,7 +818,7 @@ bool gxConfiguration::FindFlags()
       {
       std::cerr << "Compiler \"" << m_GCCXML_COMPILER 
                 << "\" is not supported by GCC_XML because "
-                << "neither MSVC 6 or MSVC 7 is installed.\n";
+                << "none of MSVC 6, 7, or 7.1 is installed.\n";
       return false;
       }
     }
@@ -904,3 +940,52 @@ bool gxConfiguration::FindFlagsMSVC7()
   return true;
 }
 
+//----------------------------------------------------------------------------
+bool gxConfiguration::FindFlagsMSVC71()
+{
+  // The registry key to use when attempting to automatically find the
+  // MSVC include files.
+  std::string msvcPath;
+  if(!gxSystemTools::ReadRegistryValue(gxConfigurationVc7Registry, msvcPath))
+    {
+    std::cerr << "Error finding MSVC 7.1 from registry.\n";
+    return false;
+    }
+  std::string msvcPath1 = msvcPath+"/../../Vc7/Include";
+  std::string msvcPath2 = msvcPath+"/../../Vc7/PlatformSDK/Include";
+  msvcPath1 = gxSystemTools::CollapseDirectory(msvcPath1.c_str());
+  msvcPath2 = gxSystemTools::CollapseDirectory(msvcPath2.c_str());
+  gxSystemTools::ConvertToUnixSlashes(msvcPath1);
+  gxSystemTools::ConvertToUnixSlashes(msvcPath2);
+  std::string vcIncludePath1 = m_GCCXML_ROOT+"/Vc71/Include";
+  std::string vcIncludePath2 = m_GCCXML_ROOT+"/Vc71/PlatformSDK";
+  gxSystemTools::ConvertToUnixSlashes(vcIncludePath1);
+  gxSystemTools::ConvertToUnixSlashes(vcIncludePath2);
+  
+  // Make sure the support directories exist.
+  if(!gxSystemTools::FileIsDirectory(vcIncludePath1.c_str()))
+    {
+    std::cerr << "Vc71/Include support directory is not available.\n";
+    std::cerr << "Checked \"" << vcIncludePath1.c_str() << "\".\n";
+    return false;
+    }
+  if(!gxSystemTools::FileIsDirectory(vcIncludePath2.c_str()))
+    {
+    std::cerr << "Vc71/PlatformSDK support directory is not available.\n";
+    std::cerr << "Checked \"" << vcIncludePath2.c_str() << "\".\n";
+    return false;
+    }
+  
+  m_GCCXML_FLAGS =
+    "-D__stdcall= -D__cdecl= -D_stdcall= -D_cdecl= -D__cplusplus "
+    "-D_inline=inline -D__forceinline=__inline "
+    "-D_MSC_VER=1310 -D_MSC_EXTENSIONS -D_WIN32 -D_M_IX86 "
+    "-D_WCHAR_T_DEFINED -DPASCAL= -DRPC_ENTRY= -DSHSTDAPI=HRESULT "
+    "-D__declspec(x)= -D__uuidof(x)=IID() -DSHSTDAPI_(x)=x "
+    "-D__w64= \"-D__int64=long long\" "
+    "-I\""+vcIncludePath1+"\" "
+    "-I\""+vcIncludePath2+"\" "
+    "-I\""+msvcPath1+"\" "
+    "-I\""+msvcPath2+"\" ";
+  return true;
+}

@@ -49,17 +49,21 @@ int main(int argc, char* argv[])
     "DevStudio\\6.0\\Products\\Microsoft Visual C++;ProductDir";
   const char* vc7Registry =
     "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\VisualStudio\\7.0;InstallDir";
+  const char* vc71Registry =
+    "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\VisualStudio\\7.1;InstallDir";
   
   // Check which versions of MSVC are installed.
   std::string msvc6;
   std::string msvc7;
+  std::string msvc71;
   bool have6 = gxSystemTools::ReadRegistryValue(vc6Registry, msvc6);
   bool have7 = gxSystemTools::ReadRegistryValue(vc7Registry, msvc7);
+  bool have71 = gxSystemTools::ReadRegistryValue(vc71Registry, msvc71);
   
   // See if there is anything to do.
-  if(!have6 && !have7)
+  if(!have6 && !have7 && !have71)
     {
-    std::cout << "Neither MSVC 6 or MSVC 7 are installed.\n";
+    std::cout << "None of MSVC 6, 7, or 7.1 is installed.\n";
     return 0;
     }
   
@@ -127,6 +131,43 @@ int main(int argc, char* argv[])
     else
       {
       std::cerr << "Have MSVC 7, but cannot find vc7PlatformSDK.patch.\n";
+      result = 1;
+      }
+    }
+  if(have71)
+    {
+    std::string msvc71i = msvc71 + "/../../Vc7/Include";
+    std::string msvc71p = msvc71 + "/../../Vc7/PlatformSDK/Include";
+    msvc71i = gxSystemTools::CollapseDirectory(msvc71i.c_str());
+    msvc71p = gxSystemTools::CollapseDirectory(msvc71p.c_str());
+    std::string patchI = patchDir + "/vc71Include.patch";
+    std::string patchP = patchDir + "/vc71PlatformSDK.patch";
+    std::string destPathI = gccxmlRoot+"/Vc71/Include";
+    std::string destPathP = gccxmlRoot+"/Vc71/PlatformSDK";
+    if(gxSystemTools::FileExists(patchI.c_str()))
+      {
+      if(!InstallSupport(patchCommand.c_str(), patchI.c_str(),
+                         msvc71i.c_str(), destPathI.c_str()))
+        {
+        result = 1;
+        }
+      }
+    else
+      {
+      std::cerr << "Have MSVC 7.1, but cannot find vc71Include.patch.\n";
+      result = 1;
+      }
+    if(gxSystemTools::FileExists(patchP.c_str()))
+      {
+      if(!InstallSupport(patchCommand.c_str(), patchP.c_str(),
+                         msvc71p.c_str(), destPathP.c_str()))
+        {
+        result = 1;
+        }
+      }
+    else
+      {
+      std::cerr << "Have MSVC 7.1, but cannot find vc71PlatformSDK.patch.\n";
       result = 1;
       }
     }

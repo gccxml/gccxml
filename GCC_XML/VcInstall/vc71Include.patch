@@ -1,0 +1,108 @@
+Index: assert.h
+===================================================================
+RCS file: /cvsroot/GxInclude/Vc71/Include/assert.h,v
+retrieving revision 1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
+*** assert.h	10 Jun 2003 16:12:29 -0000	1.1
+--- assert.h	10 Jun 2003 17:36:05 -0000	1.2
+*************** _CRTIMP void __cdecl _assert(const char 
+*** 53,58 ****
+  }
+  #endif
+  
+! #define assert(exp) (void)( (exp) || (_assert(#exp, __FILE__, __LINE__), 0) )
+  
+  #endif  /* NDEBUG */
+--- 53,58 ----
+  }
+  #endif
+  
+! #define assert(exp) (void)( (exp) || (_assert((void*)#exp, __FILE__, __LINE__), 0) )
+  
+  #endif  /* NDEBUG */
+Index: typeinfo
+===================================================================
+RCS file: /cvsroot/GxInclude/Vc71/Include/typeinfo,v
+retrieving revision 1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
+*** typeinfo	10 Jun 2003 16:12:29 -0000	1.1
+--- typeinfo	10 Jun 2003 17:36:05 -0000	1.2
+***************
+*** 31,38 ****
+   #include <typeinfo.h>
+  
+   _STD_BEGIN
+   #if _HAS_EXCEPTIONS
+- using ::type_info;
+  using ::bad_cast;
+  using ::bad_typeid;
+  using ::__non_rtti_object;
+--- 31,51 ----
+   #include <typeinfo.h>
+  
+   _STD_BEGIN
++ class type_info {
++ public:
++     _CRTIMP virtual ~type_info();
++     _CRTIMP int operator==(const type_info& rhs) const;
++     _CRTIMP int operator!=(const type_info& rhs) const;
++     _CRTIMP int before(const type_info& rhs) const;
++     _CRTIMP const char* name() const;
++     _CRTIMP const char* raw_name() const;
++ private:
++     void *_m_data;
++     char _m_d_name[1];
++     type_info(const type_info& rhs);
++     type_info& operator=(const type_info& rhs);
++ };
+   #if _HAS_EXCEPTIONS
+  using ::bad_cast;
+  using ::bad_typeid;
+  using ::__non_rtti_object;
+Index: xlocale
+===================================================================
+RCS file: /cvsroot/GxInclude/Vc71/Include/xlocale,v
+retrieving revision 1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
+*** xlocale	10 Jun 2003 16:12:29 -0000	1.1
+--- xlocale	10 Jun 2003 17:36:05 -0000	1.2
+***************
+*** 13,18 ****
+--- 13,21 ----
+  #pragma warning(push,3)
+  
+  _STD_BEGIN
++ class _CRTIMP2 locale;
++ template<class _Elem> class collate;
++ template<class _Facet> const _Facet& __cdecl use_facet(const locale& _Loc);
+  
+  		// TEMPLATE CLASS _Locbase
+  template<class _Dummy>
+Index: xstddef
+===================================================================
+RCS file: /cvsroot/GxInclude/Vc71/Include/xstddef,v
+retrieving revision 1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
+*** xstddef	10 Jun 2003 16:12:29 -0000	1.1
+--- xstddef	10 Jun 2003 17:36:05 -0000	1.2
+*************** _STD_BEGIN
+*** 24,30 ****
+   #define _RERAISE	throw
+  
+   #define _THROW0()	throw ()
+!  #define _THROW1(x)	throw (...)
+   #define _THROW(x, y)	throw x(y)
+  
+   #else /* _HAS_EXCEPTIONS */
+--- 24,30 ----
+   #define _RERAISE	throw
+  
+   #define _THROW0()	throw ()
+!  #define _THROW1(x)	throw (x)
+   #define _THROW(x, y)	throw x(y)
+  
+   #else /* _HAS_EXCEPTIONS */

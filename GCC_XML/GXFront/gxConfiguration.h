@@ -131,6 +131,7 @@ protected:
   bool FindFlags();
   bool FindFlagsMSVC6();
   bool FindFlagsMSVC7();
+  bool FindFlagsMSVC71();
 };
 
 #endif
