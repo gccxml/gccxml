@@ -23,7 +23,7 @@
 #include <stdio.h>
 #include <errno.h>
 
-#ifndef _WIN32
+#if !defined(_WIN32) || defined(__CYGWIN__)
 #include <limits.h>
 #include <stdlib.h>
 #include <sys/param.h>
