@@ -699,7 +699,7 @@ xml_output_typedef (xml_dump_info_p xdi, tree td, xml_dump_node_p dn)
   /* Get the original type out of the typedef, if any.  */
   if (DECL_ORIGINAL_TYPE (td))
     {
-    xml_print_type_attribute (xdi, DECL_ORIGINAL_TYPE (td), dn->complete); 
+    xml_print_type_attribute (xdi, DECL_ORIGINAL_TYPE (td), dn->complete);
     }
   else
     {
@@ -1217,6 +1217,7 @@ xml_add_typedef (xml_dump_info_p xdi, tree td, int complete)
     return 0;
     }
   
+  /* Find the typedef's real target type.  */
   if (DECL_ORIGINAL_TYPE (td))
     {
     t = DECL_ORIGINAL_TYPE (td);
@@ -1224,6 +1225,11 @@ xml_add_typedef (xml_dump_info_p xdi, tree td, int complete)
   else
     {
     t = TREE_TYPE (td);
+    }
+  
+  if (TYPE_MAIN_VARIANT (t))
+    {
+    t = TYPE_MAIN_VARIANT (t);
     }
   
   /* Only add the typedef if its target will be dumped.  */
