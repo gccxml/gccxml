@@ -1,3 +1,26 @@
+Index: assert.h
+===================================================================
+RCS file: /cvsroot/GxInclude/Vc7/Include/assert.h,v
+retrieving revision 1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
+*** assert.h	1 Nov 2002 14:00:28 -0000	1.1
+--- assert.h	31 Mar 2003 14:52:29 -0000	1.2
+*************** _CRTIMP void __cdecl _assert(void *, voi
+*** 53,58 ****
+  }
+  #endif
+  
+! #define assert(exp) (void)( (exp) || (_assert(#exp, __FILE__, __LINE__), 0) )
+  
+  #endif  /* NDEBUG */
+--- 53,58 ----
+  }
+  #endif
+  
+! #define assert(exp) (void)( (exp) || (_assert((void*)#exp, __FILE__, __LINE__), 0) )
+  
+  #endif  /* NDEBUG */
 Index: typeinfo
 ===================================================================
 RCS file: /cvsroot/GxInclude/Vc7/Include/typeinfo,v
