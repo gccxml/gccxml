@@ -17,6 +17,13 @@
 #include "gxConfiguration.h"
 
 //----------------------------------------------------------------------------
+const char* gxConfigurationVc6Registry =
+"HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\"
+"DevStudio\\6.0\\Products\\Microsoft Visual C++;ProductDir";
+const char* gxConfigurationVc7Registry =
+"HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\VisualStudio\\7.0;InstallDir";
+
+//----------------------------------------------------------------------------
 gxConfiguration::gxConfiguration()
 {
   m_HelpFlag = false;
@@ -623,12 +630,119 @@ bool gxConfiguration::FindFlags()
     {
     return this->FindFlagsMSVC7();
     }
-  else
+  else if(compilerName == "cl")
     {
-    std::cerr << "Compiler \"" << m_GCCXML_COMPILER 
-              << "\" is not supported by GCC_XML.\n";
-    return false;
+    // We must decide if this is MSVC 6 or 7.
+    std::string loc;
+    bool have6 = gxSystemTools::ReadRegistryValue(gxConfigurationVc6Registry,
+                                                  loc);
+    bool have7 = gxSystemTools::ReadRegistryValue(gxConfigurationVc7Registry,
+                                                  loc);
+    bool support6 =
+      gxSystemTools::FileIsDirectory((m_GCCXML_ROOT+"/Vc6").c_str());
+    bool support7 =
+      gxSystemTools::FileIsDirectory((m_GCCXML_ROOT+"/Vc7").c_str());
+    
+    // See if only one is installed.
+    if(have6 && !have7)
+      {
+      return this->FindFlagsMSVC6();
+      }
+    else if(!have6 && have7)
+      {
+      return this->FindFlagsMSVC7();
+      }
+    else if(have6 && have7)
+      {
+      // Have both.  See if only one has the support directory available.  
+      if(support6 && !support7)
+        {
+        return this->FindFlagsMSVC6();
+        }      
+      else if(!support6 && support7)
+        {
+        return this->FindFlagsMSVC7();
+        }
+      else if(!support6 && !support7)
+        {
+        std::cerr << "Compiler \"" << m_GCCXML_COMPILER 
+                  << "\" is not supported by GCC_XML because "
+                  << "neither the Vc6 or Vc7 support directories exist.\n";
+        return false;
+        }
+      
+      // Can support either.  See if one is found in the path.
+      std::string cl = gxSystemTools::FindProgram("cl");
+      if(cl.length() > 0)
+        {
+        // Found cl in the path.  Look at full location.
+        gxSystemTools::ConvertToUnixSlashes(cl);
+        if((cl.find("/VC98/") != std::string::npos) ||
+           (cl.find("/vc98/") != std::string::npos) ||
+           (cl.find("/Vc98/") != std::string::npos))
+          {
+          return this->FindFlagsMSVC6();
+          }
+        else if((cl.find("/VC7/") != std::string::npos) ||
+                (cl.find("/vc7/") != std::string::npos) ||
+                (cl.find("/Vc7/") != std::string::npos))
+          {
+          return this->FindFlagsMSVC7();
+          }
+        
+        // Couldn't tell from program location.  Try running it.
+        std::string output;
+        int retVal=0;
+        if(gxSystemTools::RunCommand("cl", output, retVal) && (retVal == 0))
+          {
+          // The compiler ran.  Get version from output.
+          if(output.find("Compiler Version 12.") != std::string::npos)
+            {
+            return this->FindFlagsMSVC6();
+            }
+          else if(output.find("Compiler Version 13.") != std::string::npos)
+            {
+            return this->FindFlagsMSVC7();
+            }
+          }
+        // Couldn't tell by running the compiler.
+        }
+      // Couldn't tell by finding the compiler.  Guess based on which
+      // was used to build this executable.
+      const char* const clText =
+        "Compiler \"cl\" specified, but both "
+        "MSVC 6 and MSVC 7 are installed.\n"
+        "Please specify \"msvc6\" or \"msvc7\" for "
+        "the GCCXML_COMPILER setting.\n";
+#if defined(_MSC_VER) && ((_MSC_VER >= 1200) && (_MSC_VER < 1300))
+      std::cout << "Warning:\n" << clText
+                << "Using MSVC 6 because it was used to build GCC-XML.\n"
+                << "\n";
+      return this->FindFlagsMSVC6();
+#elif defined(_MSC_VER) && ((_MSC_VER >= 1300) && (_MSC_VER < 1400))
+      std::cout << "Warning:\n" << clText
+                << "Using MSVC 7 because it was used to build GCC-XML.\n"
+                << "\n";
+      return this->FindFlagsMSVC7();
+#else
+      // Give up.  The user must specify one.
+      std::cerr << clText;
+      return false;
+#endif
+      }
+    else
+      {
+      std::cerr << "Compiler \"" << m_GCCXML_COMPILER 
+                << "\" is not supported by GCC_XML because "
+                << "neither MSVC 6 or MSVC 7 is installed.\n";
+      return false;
+      }
     }
+  
+  // Didn't find supported compiler.
+  std::cerr << "Compiler \"" << m_GCCXML_COMPILER 
+            << "\" is not supported by GCC_XML.\n";
+  return false;
 #else
   // This is a UNIX environment.  Use the gccxml_find_flags script.  
   std::string gccxmlFindFlags = m_GCCXML_ROOT+"/gccxml_find_flags";
@@ -662,10 +776,8 @@ bool gxConfiguration::FindFlagsMSVC6()
 {
   // The registry key to use when attempting to automatically find the
   // MSVC include files.
-  const char* vc6Registry =
-    "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\DevStudio\\6.0\\Products\\Microsoft Visual C++;ProductDir";
   std::string msvcPath;
-  if(!gxSystemTools::ReadRegistryValue(vc6Registry, msvcPath))
+  if(!gxSystemTools::ReadRegistryValue(gxConfigurationVc6Registry, msvcPath))
     {
     std::cerr << "Error finding MSVC 6.0 from registry.\n";
     return false;
@@ -674,6 +786,14 @@ bool gxConfiguration::FindFlagsMSVC6()
   gxSystemTools::ConvertToUnixSlashes(msvcPath);
   std::string vcIncludePath = m_GCCXML_ROOT+"/Vc6/Include";
   gxSystemTools::ConvertToUnixSlashes(vcIncludePath);
+  
+  // Make sure the support directory exists.
+  if(!gxSystemTools::FileIsDirectory(vcIncludePath.c_str()))
+    {
+    std::cerr << "Vc6/Include support directory is not available.\n";
+    std::cerr << "Checked \"" << vcIncludePath.c_str() << "\".\n";
+    return false;
+    }
   
   m_GCCXML_FLAGS =
     "-quiet -o /dev/null -nostdinc -I- -w -fsyntax-only "
@@ -692,10 +812,8 @@ bool gxConfiguration::FindFlagsMSVC7()
 {
   // The registry key to use when attempting to automatically find the
   // MSVC include files.
-  const char* vc7Registry =
-    "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\VisualStudio\\7.0;InstallDir";
   std::string msvcPath;
-  if(!gxSystemTools::ReadRegistryValue(vc7Registry, msvcPath))
+  if(!gxSystemTools::ReadRegistryValue(gxConfigurationVc7Registry, msvcPath))
     {
     std::cerr << "Error finding MSVC 7.0 from registry.\n";
     return false;
@@ -710,6 +828,20 @@ bool gxConfiguration::FindFlagsMSVC7()
   std::string vcIncludePath2 = m_GCCXML_ROOT+"/Vc7/PlatformSDK";
   gxSystemTools::ConvertToUnixSlashes(vcIncludePath1);
   gxSystemTools::ConvertToUnixSlashes(vcIncludePath2);
+  
+  // Make sure the support directories exist.
+  if(!gxSystemTools::FileIsDirectory(vcIncludePath1.c_str()))
+    {
+    std::cerr << "Vc7/Include support directory is not available.\n";
+    std::cerr << "Checked \"" << vcIncludePath1.c_str() << "\".\n";
+    return false;
+    }
+  if(!gxSystemTools::FileIsDirectory(vcIncludePath2.c_str()))
+    {
+    std::cerr << "Vc7/PlatformSDK support directory is not available.\n";
+    std::cerr << "Checked \"" << vcIncludePath2.c_str() << "\".\n";
+    return false;
+    }
   
   m_GCCXML_FLAGS =
     "-quiet -o /dev/null -nostdinc -I- -w -fsyntax-only "
