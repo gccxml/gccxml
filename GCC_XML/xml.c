@@ -74,7 +74,7 @@
 # define XML_PRE_3_4_TREE_VIA_PUBLIC
 #endif
 
-#define GCC_XML_C_VERSION "$Revision: 1.94 $"
+#define GCC_XML_C_VERSION "$Revision: 1.95 $"
 
 /* A "dump node" corresponding to a particular tree node.  */
 typedef struct xml_dump_node
@@ -1287,7 +1287,7 @@ xml_output_function_decl (xml_dump_info_p xdi, tree fd, xml_dump_node_p dn)
     }
 
   /* If there are no arguments, finish the element.  */
-  if (arg_type == void_list_node || (arg && DECL_ARTIFICIAL (arg)))
+  if (arg_type == void_list_node)
     {
     fprintf (xdi->file, "/>\n");
     return;
