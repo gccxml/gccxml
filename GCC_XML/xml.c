@@ -1340,6 +1340,9 @@ xml_output_function_decl (FILE* file, unsigned long indent, tree fd)
   if (DECL_INTERNAL_P (fd)) return;
   if (DECL_ARTIFICIAL (fd)) return;
 
+  /* Don't output the cloned functions.  */
+  if (DECL_CLONED_FUNCTION_P (fd)) return;
+
   /* Print out the begin tag for this type of function.  */
   if (DECL_CONSTRUCTOR_P (fd))
     {
@@ -1351,7 +1354,10 @@ xml_output_function_decl (FILE* file, unsigned long indent, tree fd)
     {
     /* A class destructor.  */
     print_destructor_begin_tag (file, indent, fd);
-    end_tag_print = print_destructor_end_tag;
+
+    /* Don't print any arguments for a destructor.  */
+    print_destructor_end_tag (file, indent);
+    return;
     }
   else if (DECL_OVERLOADED_OPERATOR_P (fd))
     {
