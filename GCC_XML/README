@@ -1,74 +1,11 @@
-GCC-XML - This program dumps an XML description of C++ source code
-using an extension on the GCC C++ compiler.
+The directory containing this README is no longer the top-level of the
+GCC-XML source tree.  Please see ../README for more instructions.  If
+this README is already in the top-most GCC-XML directory you have
+obtained, a full source tree may be retrieved from CVS like this:
 
-This README is intended as supplement to the documentation on the
-GCC-XML homepage at http://www.gccxml.org.
+cvs -d :pserver:anoncvs@www.gccxml.org:/cvsroot/GCC_XML login
+(empty password)
+cvs -d :pserver:anoncvs@www.gccxml.org:/cvsroot/GCC_XML co gccxml
 
-------------------------------------------------------------------------------
-Build/Install:
-
-There are two parts to GCC-XML, each of which must be built separately:
-  1.)  The GCC exectutable with the GCC-XML extension (gccxml_cc1plus).
-  2.)  A front-end executable that makes GCC-XML easy to run.
-
-This README is intended to document the front-end executable.  See the
-web page for instructions to build the patched GCC executable.
-
-The standard way to build the GCC-XML front-end is to use CMake (see
-links at bottom to get it).  CMake will generate an appropriate build
-system for your platform and compiler.  There are separate
-instructions for UNIX and Windows users.
-
-UNIX & Cygwin:
-These instructions assume that the front-end will be built
-out-of-source (recommended), but an in-source build should also work.
-
-$ mkdir GCC_XML-build
-$ cd GCC_XML-build
-$ cmake ../GCC_XML -DCMAKE_INSTALL_PREFIX:PATH=/installation/path
-$ make
-$ make install
-
-  (The "-D..." option can be left off if you want
-   to use "/usr/local" as the installation prefix.)
-
-This will install an executable called "gccxml" in PREFIX/bin.  You
-should place the "gccxml_cc1plus" executable next to it in this
-directory.  Support library files will also be placed in
-PREFIX/share/GCC_XML.
-
-Windows:
-Run the CMakeSetup GUI to generate the build system for your compiler.
-Load the resulting project file and build it.  You should be able to
-run the executable directly from the build directory.
-
-------------------------------------------------------------------------------
-Running:
-
-Once GCC-XML has been properly configured, it can be run from the
-command line like this:
-
-  gccxml input.cxx -fxml=output.xml
-
-Use "gccxml --help" for a full list of options and configuration help.
-
-------------------------------------------------------------------------------
-Links:
-
-GCC-XML homepage:
-
-  http://www.gccxml.org
-
-CMake homepage:
-
-  http://www.cmake.org
-
-GCC-XML mailing list address:
-
-  gccxml@www.gccxml.org
-
-GCC-XML mailing list page:
-
-  http://www.gccxml.org/mailman/listinfo/gccxml
-
-end-of-file
+More detailed instructions are provided on the GCC-XML homepage at
+http://www.gccxml.org.

@@ -1,0 +1,69 @@
+GCC-XML - This program dumps an XML description of C++ source code
+using an extension on the GCC C++ compiler.
+
+This README is intended as supplement to the documentation on the
+GCC-XML homepage at http://www.gccxml.org.  More extensive
+instructions may be found there.
+
+------------------------------------------------------------------------------
+Build/Install:
+
+The standard way to build the GCC-XML front-end is to use CMake (see
+links at bottom to get it).  CMake will generate an appropriate build
+system for your platform and compiler.  There are separate
+instructions for UNIX and Windows users.
+
+UNIX & Cygwin:
+These instructions assume that the front-end will be built
+out-of-source (recommended), but an in-source build should also work.
+
+$ mkdir gccxml-build
+$ cd gccxml-build
+$ cmake ../gccxml -DCMAKE_INSTALL_PREFIX:PATH=/installation/path
+$ make
+$ make install
+
+  (The "-D..." option can be left off if you want
+   to use "/usr/local" as the installation prefix.)
+
+This will install executables called "gccxml" and "gccxml_cc1plus" in
+PREFIX/bin.  Support library files will also be placed in
+PREFIX/share/gccxml-(version).
+
+Windows:
+Run the CMakeSetup GUI to generate the build system for your compiler.
+Load the resulting project file and build it.  You should be able to
+run the executable directly from the build directory.  It will be
+located in gccxml-build/bin, gccxml-build/bin/Debug, or
+gccxml-build/bin/Release depending on the build system chosen.
+
+------------------------------------------------------------------------------
+Running:
+
+Once GCC-XML has been properly configured, it can be run from the
+command line like this:
+
+  gccxml input.cxx -fxml=output.xml
+
+Use "gccxml --help" for a full list of options and configuration help.
+
+------------------------------------------------------------------------------
+Links:
+
+GCC-XML homepage:
+
+  http://www.gccxml.org
+
+CMake homepage:
+
+  http://www.cmake.org
+
+GCC-XML mailing list address:
+
+  gccxml@www.gccxml.org
+
+GCC-XML mailing list page:
+
+  http://www.gccxml.org/mailman/listinfo/gccxml
+
+end-of-file
