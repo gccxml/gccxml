@@ -77,13 +77,15 @@ int main(int argc, char* argv[])
   // Need to install at least one of the support directories.  We need
   // to find the cat and patch executables.
   std::string patchCommand;
-  if(!FindTool(patchDir.c_str(), "patch", patchCommand))
+  if(!FindTool(patchDir.c_str(), "patch", patchCommand) &&
+     (have6||have7||have71))
     {
     std::cerr << "Cannot find patch executable.\n";
     return 1;
     }
   std::string catCommand;
-  if(!FindTool(patchDir.c_str(), "cat", catCommand))
+  if(!FindTool(patchDir.c_str(), "cat", catCommand) &&
+     (have6||have7||have71))
     {
     std::cerr << "Cannot find cat executable.\n";
     return 1;
