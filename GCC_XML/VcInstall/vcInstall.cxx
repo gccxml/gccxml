@@ -4,13 +4,14 @@
 
 #include "gxSystemTools.h"
 
-#include <iostream>
-#include <fstream>
-#include <string>
-#include <errno.h>
-#include <process.h>
-#include <windows.h>
 #include <direct.h>
+#include <errno.h>
+#include <fstream>
+#include <iostream>
+#include <process.h>
+#include <string>
+#include <vector>
+#include <windows.h>
 
 int main(int argc, char* argv[])
 {
@@ -26,33 +27,9 @@ int main(int argc, char* argv[])
   std::string patchFile = argv[1];
   std::string destPath = argv[2];
   
-  // The registry key to use when attempting to automatically find the
-  // MSVC include files.
-  const char* vcRegistry =
-    "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\DevStudio\\6.0\\Products\\Microsoft Visual C++;ProductDir";
-  
-  std::string sourcePath;
-
-  // If the source_path argument was not given, look it up in the registry.
-  if(argc < 4)
-    {
-    if(!gxSystemTools::ReadRegistryValue(vcRegistry, sourcePath))
-      {
-      std::cerr << "source_path not specified and VC98 could not be found in the registry!" << std::endl;
-      return 1;
-      }
-    sourcePath += "/Include";
-    }
-  else
-    {
-    sourcePath = argv[3];
-    }
-
-  // Make sure the destination path exists before trying to put files
-  // there.
-  _mkdir(destPath.c_str());
-  
   // Look at the patch file to see what headers need to be copied.
+  // Also extract the version of Visual Studio for which this patch is
+  // intended.
   std::ifstream patch(patchFile.c_str());
   if(!patch)
     {
@@ -60,22 +37,99 @@ int main(int argc, char* argv[])
     return 1;
     }
   
+  std::string vcVersion;
+  std::vector<std::string> files;
   char buf[4096];
   for(patch.getline(buf, 4096); !patch.eof(); patch.getline(buf, 4096))
     {
     std::string line = buf;
     if(line.substr(0,6) == "Index:")
       {
-      std::string source = sourcePath;
-      source += "/"+line.substr(7);
-      std::string dest = destPath.c_str();
-      dest += "/"+line.substr(7);
-      gxSystemTools::FileCopy(source.c_str(), dest.c_str());
+      files.push_back(line.substr(7));
+      }
+    else if((vcVersion.length() == 0) && (line.substr(0, 29) == "RCS file: /cvsroot/GxInclude/"))
+      {
+      vcVersion = line.substr(29);
       }
     }
 
-  destPath = "\""+destPath+"\"";
-  patchFile = "\""+patchFile+"\"";
+  // The registry key to use when attempting to automatically find the
+  // MSVC include files.
+  const char* vc6Registry =
+    "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\DevStudio\\6.0\\Products\\Microsoft Visual C++;ProductDir";
+  const char* vc7Registry =
+    "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\VisualStudio\\7.0;InstallDir";
+  // "C:\Program Files\Microsoft Visual Studio .NET\Common7\IDE\"
+  
+  // If the source_path argument was not given, look it up in the registry.
+  std::string sourcePath;  
+  if(argc < 4)
+    {  
+    std::string spLookup;
+    if(vcVersion.substr(0, 9) == "VcInclude")
+      {
+      if(!gxSystemTools::ReadRegistryValue(vc6Registry, spLookup))
+        {
+        std::cerr << "source_path not specified "
+                  << "and MSVC6 could not be found in the registry!"
+                  << std::endl;
+        return 1;
+        }
+      spLookup += "/Include";
+      }
+    else if(vcVersion.substr(0, 11) == "Vc7/Include")
+      {
+      if(!gxSystemTools::ReadRegistryValue(vc7Registry, spLookup))
+        {
+        std::cerr << "source_path not specified "
+                  << "and MSVC7 could not be found in the registry!"
+                  << std::endl;
+        return 1;
+        }
+      spLookup += "/../../Vc7/Include";
+      }
+    else if(vcVersion.substr(0, 15) == "Vc7/PlatformSDK")
+      {
+      if(!gxSystemTools::ReadRegistryValue(vc7Registry, spLookup))
+        {
+        std::cerr << "source_path not specified "
+                  << "and MSVC7 could not be found in the registry!"
+                  << std::endl;
+        return 1;
+        }
+      spLookup += "/../../Vc7/PlatformSDK/Include";
+      }
+    else
+      {
+      std::cerr << "source_path not specified "
+                << "and cannot determine MSVC version from patch file!\n";
+      return 1;
+      }
+    
+    // Collapse to a simplified form of the directory.
+    sourcePath = gxSystemTools::CollapseDirectory(spLookup.c_str());
+    }
+  else
+    {
+    // Use the directory as specified on the command line.
+    sourcePath = argv[3];
+    }
+
+  // Make sure the destination path exists before trying to put files
+  // there.
+  gxSystemTools::MakeDirectory(destPath.c_str());
+  
+  // Copy the files over before patching.
+  for(unsigned int i=0; i < files.size(); ++i)
+    {
+    std::string source = sourcePath;
+    source += "/"+files[i];
+    std::string dest = destPath;
+    dest += "/"+files[i];
+    gxSystemTools::FileCopy(source.c_str(), dest.c_str());
+    }
+  
+  destPath = "\""+destPath+"\"";  patchFile = "\""+patchFile+"\"";
 
   // Find the patch executable.
   std::string patchCommand = "patch.exe";
