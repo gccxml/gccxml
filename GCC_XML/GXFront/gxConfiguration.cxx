@@ -72,9 +72,25 @@ bool gxConfiguration::Configure(int argc, const char*const * argv)
     {
     m_GCCXML_ROOT = m_DataRoot;
     }
-  
   // If no executable has been set, see if there is one in the
   // executable root.
+
+  // try intdir debug,release, etc first
+#ifdef CMAKE_INTDIR
+  if(m_GCCXML_EXECUTABLE.length() == 0)
+    {
+    std::string loc = m_ExecutableRoot+"/"+CMAKE_INTDIR+"/gccxml_cc1plus";
+#ifdef _WIN32
+    loc += ".exe";
+#endif
+    if(gxSystemTools::FileExists(loc.c_str()) &&
+       !gxSystemTools::FileIsDirectory(loc.c_str()))
+      {
+      m_GCCXML_EXECUTABLE = loc;
+      }
+    }
+#endif
+  
   if(m_GCCXML_EXECUTABLE.length() == 0)
     {
     std::string loc = m_ExecutableRoot+"/gccxml_cc1plus";
@@ -87,6 +103,7 @@ bool gxConfiguration::Configure(int argc, const char*const * argv)
       m_GCCXML_EXECUTABLE = loc;
       }
     }
+
   // If no executable has been set, try looking in the system path.
   if(m_GCCXML_EXECUTABLE.length() == 0)
     {
@@ -828,7 +845,7 @@ bool gxConfiguration::FindFlagsMSVC6()
   
   m_GCCXML_FLAGS =
     "-D__stdcall= -D__cdecl= -D_stdcall= -D_cdecl= -D__declspec(x)= "
-    "-D_inline=inline -D__uuidof(x)=IID() -D__int64='long long' "
+    "-D_inline=inline -D__uuidof(x)=IID() \"-D__int64=long long\" "
     "-D__cplusplus "
     "-D_MSC_VER=1200 -D_MSC_EXTENSIONS "
     "-D_WIN32 -D_M_IX86 -D_WCHAR_T_DEFINED "
@@ -879,7 +896,7 @@ bool gxConfiguration::FindFlagsMSVC7()
     "-D_MSC_VER=1300 -D_MSC_EXTENSIONS -D_WIN32 -D_M_IX86 "
     "-D_WCHAR_T_DEFINED -DPASCAL= -DRPC_ENTRY= -DSHSTDAPI=HRESULT "
     "-D__declspec(x)= -D__uuidof(x)=IID() -DSHSTDAPI_(x)=x "
-    "-D__w64= -D__int64='long long' "
+    "-D__w64= \"-D__int64=long long\" "
     "-I\""+vcIncludePath1+"\" "
     "-I\""+vcIncludePath2+"\" "
     "-I\""+msvcPath1+"\" "
