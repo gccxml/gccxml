@@ -1,4 +1,4 @@
-GCC_SOURCE_DIR=`cd \`echo $0 | sed -n '/\//{s/\/[^\/]*$//;p;}'\`;cd ..;pwd`
+GCC_SOURCE_DIR=`cd "\`echo \"$0\" | sed -n '/\//{s/\/[^\/]*$//;p;}'\`";cd ..;pwd`
 srcdir="${GCC_SOURCE_DIR}/gcc"
 
 outfile="$1"
@@ -7,7 +7,7 @@ cmake_command="$2"
 # Determine the host platforms.
 config_sub="${GCC_SOURCE_DIR}/config.sub"
 host_alias=`"${GCC_SOURCE_DIR}/config.guess"`
-host=`${GCC_SOURCE_DIR}/config.sub $host_alias`
+host=`"${GCC_SOURCE_DIR}/config.sub" $host_alias`
 machine="${host}"
 
 # Collect target-machine-specific information.

@@ -337,12 +337,12 @@ tic4x-*-*)
 esac
 
 tm_file=${cpu_type}/${cpu_type}.h
-if test -f ${srcdir}/config/${cpu_type}/${cpu_type}-protos.h
+if test -f "${srcdir}/config/${cpu_type}/${cpu_type}-protos.h"
 then
 	tm_p_file=${cpu_type}/${cpu_type}-protos.h
 fi
 extra_modes=
-if test -f ${srcdir}/config/${cpu_type}/${cpu_type}-modes.def
+if test -f "${srcdir}/config/${cpu_type}/${cpu_type}-modes.def"
 then
 	extra_modes=${cpu_type}/${cpu_type}-modes.def
 fi
@@ -503,13 +503,13 @@ case $machine in
 *local*)
 	rest=`echo $machine | sed -e "s/$cpu_type-//"`
 	tm_file=${cpu_type}/$rest.h
-	if test -f $srcdir/config/${cpu_type}/xm-$rest.h
+	if test -f "$srcdir/config/${cpu_type}/xm-$rest.h"
 	then xm_file=${cpu_type}/xm-$rest.h
 	fi
-	if test -f $srcdir/config/${cpu_type}/x-$rest
+	if test -f "$srcdir/config/${cpu_type}/x-$rest"
 	then xmake_file=${cpu_type}/x-$rest
 	fi
-	if test -f $srcdir/config/${cpu_type}/t-$rest
+	if test -f "$srcdir/config/${cpu_type}/t-$rest"
 	then tmake_file=${cpu_type}/t-$rest
 	fi
 	;;
