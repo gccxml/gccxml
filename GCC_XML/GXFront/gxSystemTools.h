@@ -68,6 +68,11 @@ public:
   
   /** Delete the file with the given name.  */
   static bool RemoveFile(const char* source);
+  
+  /** Convert a file path to a suitable output format.  */
+  static std::string ConvertToOutputPath(const char* path);
+  static std::string ConvertToWindowsOutputPath(const char* path);
+  static std::string ConvertToUnixOutputPath(const char* path);
 };
 
 #endif
