@@ -213,6 +213,7 @@ print_class_begin_tag (FILE* file, unsigned long indent, tree rt)
 {
   const char* name = xml_get_encoded_string (DECL_NAME (TYPE_NAME (rt)));  
   const char* access = "";
+  int is_abstract = (CLASSTYPE_PURE_VIRTUALS (rt) != 0);
 
   if (TREE_PRIVATE (TYPE_NAME (rt)))        access = "private";
   else if (TREE_PROTECTED (TYPE_NAME (rt))) access = "protected";
@@ -224,21 +225,21 @@ print_class_begin_tag (FILE* file, unsigned long indent, tree rt)
     if (CLASSTYPE_DECLARED_CLASS (rt))
       {
       fprintf (file,
-               "<Class name=\"%s\" access=\"%s\">\n",
-               name, access);
+               "<Class name=\"%s\" access=\"%s\" abstract=\"%d\">\n",
+               name, access, is_abstract);
       }
     else
       {
       fprintf (file,
-               "<Struct name=\"%s\" access=\"%s\">\n",
-               name, access);
+               "<Struct name=\"%s\" access=\"%s\" abstract=\"%d\">\n",
+               name, access, is_abstract);
       }
     }
   else
     {
       fprintf (file,
-               "<Union name=\"%s\" access=\"%s\">\n",
-               name, access);
+               "<Union name=\"%s\" access=\"%s\" abstract=\"%d\">\n",
+               name, access, is_abstract);
     }
 }
 
@@ -1869,8 +1870,9 @@ xml_output_argument (FILE* file, unsigned long indent, tree pd, tree tl)
 
   /* Output something for DECL_ARG_TYPE (pd)  ??  */
   if (pd && DECL_ARG_TYPE_AS_WRITTEN (pd))
-    xml_output_type (file, indent+XML_NESTED_INDENT,
-                     DECL_ARG_TYPE_AS_WRITTEN (pd));
+    xml_output_type (file, indent+XML_NESTED_INDENT, DECL_ARG_TYPE_AS_WRITTEN (pd));
+  else if (pd && DECL_ARG_TYPE (pd))
+    xml_output_type (file, indent+XML_NESTED_INDENT, DECL_ARG_TYPE (pd));
   else
     xml_output_type (file, indent+XML_NESTED_INDENT, TREE_VALUE (tl));
     
