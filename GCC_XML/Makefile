@@ -1,8 +1,11 @@
 # Installation makefile for GCC-XML's support library.
 # Run just "make" for usage information.
 
-# Default prefix setting.
+# Default settings.
+CXX=g++
 PREFIX=/usr/local
+EXE=
+#EXE=.exe
 
 # Setup installation program for anything installed directly by this
 # makefile.
@@ -45,7 +48,7 @@ install_main: gccxml
            chmod 755 $(PREFIX)/bin; \
          else true; \
          fi
-	@$(INSTALL_PROGRAM) gccxml $(PREFIX)/bin
+	@$(INSTALL_PROGRAM) gccxml$(EXE) $(PREFIX)/bin
 
 # Uninstallation of main GCC-XML support library directory.
 uninstall_main:
@@ -80,8 +83,8 @@ GXFRONT_OBJS=GXFront/gxSystemTools.o \
              GXFront/gxFlagsParser.o \
              GXFront/gxFront.o
 
-gccxml: $(GXFRONT_OBJS)
-	$(CXX) -o gccxml $(GXFRONT_OBJS)
+gccxml$(EXE): $(GXFRONT_OBJS)
+	$(CXX) $(CXX_FLAGS) -o gccxml$(EXE) $(GXFRONT_OBJS)
 
 GXFront/gxSystemTools.o: GXFront/gxSystemTools.cxx
 	$(CXX) $(CXX_FLAGS) -I GXFront -o GXFront/gxSystemTools.o -c GXFront/gxSystemTools.cxx
@@ -96,4 +99,4 @@ GXFront/gxFront.o: GXFront/gxFront.cxx
 	$(CXX) $(CXX_FLAGS) -I GXFront -o GXFront/gxFront.o -c GXFront/gxFront.cxx
 
 clean:
-	$(RM) $(GXFRONT_OBJS) gccxml
+	$(RM) $(GXFRONT_OBJS) gccxml$(EXE)
