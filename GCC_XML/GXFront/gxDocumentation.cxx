@@ -58,7 +58,7 @@ const gxDocumentationEntry gxDocumentationDescription[] =
 const gxDocumentationEntry gxDocumentationCompilers[] =
 {
   {0, "GCC-XML can simulate any of the following compilers:", 0},
-  {"GCC", "Versions 2.95.x, 3.0.x, 3.1.x, 3.2.x", 0},
+  {"GCC", "Versions 3.2.x, 3.1.x, 3.0.x, and 2.95.x", 0},
   {"SGI MIPSpro", "Version 7.3x", 0},
   {"Visual C++", "Versions 7 and 6 (sp5)", 0},
   {"Intel C++", "Version 5.x (plugin to Visual Studio 6)", 0},
@@ -399,6 +399,8 @@ void gxDocumentation::PrintHelp(std::ostream& os)
   gxDocumentationPrintHelpSection(os, gxDocumentationOptions);
   os << "----------------------------------------------------------\n";
   gxDocumentationPrintHelpSection(os, gxDocumentationSettings);
+  os << "----------------------------------------------------------\n";
+  gxDocumentationPrintHelpSection(os, gxDocumentationCompilers);
 }
 
 //----------------------------------------------------------------------------
@@ -415,6 +417,8 @@ void gxDocumentation::PrintHelpHTML(std::ostream& os)
   gxDocumentationPrintHelpHTMLSection(os, gxDocumentationOptions);
   os << "<h2>Configuration Settings</h2>\n";
   gxDocumentationPrintHelpHTMLSection(os, gxDocumentationSettings);
+  os << "<h2>Supported Compilers</h2>\n";
+  gxDocumentationPrintHelpHTMLSection(os, gxDocumentationCompilers);
   os << "</body>\n"
      << "</html>\n";
 }
