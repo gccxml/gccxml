@@ -1,0 +1,54 @@
+#!/bin/sh
+#=============================================================================
+#
+#  Program:   GCC-XML
+#  Module:    find_flags
+#  Language:  C++
+#  Date:      $Date$
+#  Version:   $Revision$
+#
+#  Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
+#  See Copyright.txt for details.
+#
+#     This software is distributed WITHOUT ANY WARRANTY; without even 
+#     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+#     PURPOSE.  See the above copyright notices for more information.
+#
+#=============================================================================
+
+# Find the GCC executable name.
+if test "x$1" = "x" ; then
+  if test "x${CXX}" = "x" ; then
+    CXX=gcc
+  fi
+else 
+  CXX="$1"
+  shift
+  CXXFLAGS="$@"
+fi
+
+# Find the macro definition options.
+MACROS=`echo "" | ${CXX} -x c++ -E -dM ${CXXFLAGS} - 2>/dev/null |
+  sed -n '
+/^#define / {s/#define \([A-Za-z_][A-Za-z0-9_]*\) \(.*\)/-D\1=\2/;p;}
+' |
+  awk '
+BEGIN { first=1 }
+/./ { if(first) { printf("%s", $0); first=0 } else { printf(" %s", $0) } }
+'`
+
+# Find the include path options.
+INCLUDES=`
+  echo "" | ${CXX} -v -x c++ -E ${CXXFLAGS} - 2>&1 |
+  awk '/^[ \t]*-I\/.* \\\\$/ { printf("%s ",$1) }
+       END {printf("\n")}' -
+`
+
+# The support headers are located where this script is.
+SELFPATH=`echo $0 | sed -n '/\//{s/\/find_flags//;p;}'`
+if test "x$SELFPATH" = "x" ; then SELFPATH="." ; fi
+SELFPATH=`cd $SELFPATH ; pwd`
+
+# Format and print out the options.
+OPTIONS="$MACROS -D_WCHAR_T $INCLUDES"
+echo $OPTIONS

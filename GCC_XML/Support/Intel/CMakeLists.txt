@@ -1,0 +1,1 @@
+INSTALL_PROGRAMS(${GCCXML_SHARE}/Intel find_flags)
