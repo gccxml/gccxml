@@ -219,6 +219,50 @@ const gxDocumentationEntry gxDocumentationSettings[] =
 };
 
 //----------------------------------------------------------------------------
+// This documentation contributed by Steven Kilthau - May 2004.
+const gxDocumentationEntry gxDocumentationMetaInfo[] =
+{
+  {0,"GCC-XML has added a new attribute to the legal set of C/C++ attributes.  "
+   "The attribute is used to attach meta information to C/C++ source code, which "
+   "will then appear in the XML output.  The syntax for declaring an attribute is "
+   "as follows:", 0},
+  {"__attribute((gccxml(<string>, <string>, ...)))",
+   "Here <string> is a quoted string.  There must be at least one argument to the "
+   "'gccxml' attribute, but there is no upper limit to the total number of "
+   "arguments.  Each argument is verified to be a string - if a non-string "
+   "argument is found, the attribute is ignored.", 0},
+  {0, "The XML output for the code element that is tagged with the attribute will "
+   "then contain the following:", 0},
+  {"attributes=\" ... gccxml(<string>,<string>,<string> ...) ... \"",
+   "The 'attributes' XML attribute contains all attributes applied to the "
+   "code element.  Each argument of the attribute is printed without enclosing "
+   "quotes, so if an argument contains the ',' character, the argument will appear "
+   "to be multiple arguments.", 0},
+  {0, "The 'gccxml' attribute can be applied to any declaration including structs, "
+   "classes, fields, parameters, methods, functions, variables, and typedefs.  The "
+   "only exception is that GCC's handling of the '__attribute' language element is "
+   "currently broken for enumerations and constructors with an inlined body.  The "
+   "'gccxml' attribute can be used any number of times on a given declaration.", 0},
+  {0, "As an example of how this attribute can be used to attach meta information to "
+   "C++ declarations, consider the following macro:", 0},
+  {"#define _out_    __attribute((gccxml(\"out\")))",
+   "Here '_out_' has been defined to be the gccxml attribute where the first "
+   "argument is the string \"out\".  It is recommended that the first argument "
+   "be used as a unique string name for the type of meta information begin "
+   "applied.", 0},
+  {0, "Now a method declaration can be written as follows:", 0},
+  {"void getInteger(_out_ int& i);",
+   "This will cause the XML output to contain meta information for the '_out_' "
+   "attribute, in the form \"gccxml(out)\".", 0},
+  {0, "Using the 'gccxml' attribute enables meta information to be included directly "
+   "within C++ source code, without the need for a custom parser to extract the "
+   "meta information.  The 'gccxml' attribute is provided for convenience only - there "
+   "is no guarantee that future versions of GCC will accept the '__attribute' language "
+   "element in a bug-free manner.", 0},
+  {0,0,0}
+};
+
+//----------------------------------------------------------------------------
 const gxDocumentationEntry gxDocumentationCopyright[] =
 {
   {0,
@@ -416,6 +460,8 @@ void gxDocumentation::PrintHelp(std::ostream& os)
   gxDocumentationPrintHelpSection(os, gxDocumentationSettings);
   os << "----------------------------------------------------------\n";
   gxDocumentationPrintHelpSection(os, gxDocumentationCompilers);
+  os << "----------------------------------------------------------\n";
+  gxDocumentationPrintHelpSection(os, gxDocumentationMetaInfo);
 }
 
 //----------------------------------------------------------------------------
@@ -434,6 +480,8 @@ void gxDocumentation::PrintHelpHTML(std::ostream& os)
   gxDocumentationPrintHelpHTMLSection(os, gxDocumentationSettings);
   os << "<h2>Supported Compilers</h2>\n";
   gxDocumentationPrintHelpHTMLSection(os, gxDocumentationCompilers);
+  os << "<h2>C++ Meta Information</h2>\n";
+  gxDocumentationPrintHelpHTMLSection(os, gxDocumentationMetaInfo);
   os << "</body>\n"
      << "</html>\n";
 }
@@ -456,6 +504,8 @@ void gxDocumentation::PrintManPage(std::ostream& os)
   gxDocumentationPrintManSection(os, gxDocumentationSettings);
   os << ".SH COMPILERS\n";
   gxDocumentationPrintManSection(os, gxDocumentationCompilers);
+  os << ".SH METAINFO\n";
+  gxDocumentationPrintManSection(os, gxDocumentationMetaInfo);
   os << ".SH COPYRIGHT\n";
   gxDocumentationPrintManSection(os, gxDocumentationCopyright);
   os << ".SH MAILING LIST\n";
