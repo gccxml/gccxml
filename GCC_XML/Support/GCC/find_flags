@@ -69,5 +69,5 @@ elif [ "$MAJOR_VERSION" = 3 -a "$MINOR_VERSION" -ge 3 ]; then
 fi
 
 # Format and print out the options.
-OPTIONS="$MACROS -D__declspec(x)= $INCLUDES $SPECIAL"
+OPTIONS="$MACROS -D__declspec(x)= -D__attribute__(x)= $INCLUDES $SPECIAL"
 echo $OPTIONS
