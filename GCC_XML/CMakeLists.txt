@@ -48,6 +48,7 @@ ELSE(UNIX)
   INCLUDE_DIRECTORIES(${GCCXML_SOURCE_DIR}/GXFront)
   ADD_EXECUTABLE(vcInstall VcInstall/vcInstall.cxx GXFront/gxSystemTools.cxx)
   UTILITY_SOURCE(GCCXML_VCINSTALL_EXE vcInstall .)
+  MARK_AS_ADVANCED(GCCXML_VCINSTALL_EXE)
 
   # Create the MSVC support directories.
   # This will just execute on every build until CMake improves.
