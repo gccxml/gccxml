@@ -89,7 +89,6 @@ int main(int argc, char** argv)
     configuration.PrintConfiguration(std::cout);
     return cfr? 0:1;
     }
-  if(!cfr) { return 1; }
   
   // Check if there is anything to do.
   if(configuration.GetArguments().empty())
@@ -100,6 +99,13 @@ int main(int argc, char** argv)
     gxDocumentation::PrintUsage(std::cout);
     return 0;
     }
+  
+  // We have something to do.  Make sure the GCCXML_FLAGS setting is
+  // valid.
+  if(!cfr)
+    {
+    return 1;
+    }  
   
   // Get the configuration settings.
   std::string cGCCXML_EXECUTABLE = configuration.GetGCCXML_EXECUTABLE();
