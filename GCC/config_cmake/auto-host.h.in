@@ -540,5 +540,10 @@
 # endif
 #endif
 
+/* Disable optimizations for MSVC.  They cause bugs.  */
+#if defined(_MSC_VER)
+# pragma optimize("", off)
+#endif
+
 #define GCC_TO_STRING(x) GCC_TO_STRING0(x)
 #define GCC_TO_STRING0(x) #x
