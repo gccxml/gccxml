@@ -101,6 +101,11 @@ const gxDocumentationEntry gxDocumentationOptions[] =
   {"--gccxml-cpp <xxx>", "Set GCCXML_CPP to \"xxx\".", 0},
   {"--gccxml-config <xxx>", "Set GCCXML_CONFIG to \"xxx\".", 0},
   {"--gccxml-root <xxx>", "Set GCCXML_ROOT to \"xxx\".", 0},
+  {"--gccxml-gcc-options <xxx>", "Read GCC options from file \"xxx\".",
+   "This option specifies a file from which to read options to pass to "
+   "the patched GCC C++ parser.  This is useful for specifying a long "
+   "list of include directories.  Each line in the file becomes one option.  "
+   "Empty lines and lines beginning in '#' are ignored."},
   {"--help", "Print full help and exit.",
    "Full help displays most of the documentation provided by the UNIX "
    "man page.  It is provided for use on non-UNIX platforms, but is "

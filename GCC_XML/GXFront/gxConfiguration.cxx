@@ -478,6 +478,23 @@ bool gxConfiguration::ProcessCommandLine(int argc, const char*const* argv)
         return false;
         }
       }
+    else if(strcmp(argv[i], "--gccxml-gcc-options") == 0)
+      {
+      if(++i < argc)
+        {
+        if(!this->ReadArgumentFile(argv[i]))
+          {
+          std::cerr << "Error reading options from file \""
+                    << argv[i] << "\".\n";
+          return false;
+          }
+        }
+      else
+        {
+        std::cerr << "Option --gccxml-gcc-options requires an argument.\n";
+        return false;
+        }
+      }
     else if(strcmp(argv[i], "--help") == 0)
       {
       m_HelpFlag = true;
@@ -514,6 +531,37 @@ bool gxConfiguration::ProcessCommandLine(int argc, const char*const* argv)
     else
       {
       m_Arguments.push_back(argv[i]);
+      }
+    }
+
+  return true;
+}
+
+//----------------------------------------------------------------------------
+bool gxConfiguration::ReadArgumentFile(const char* fname)
+{
+  std::ifstream fin(fname, std::ios::in);
+  if(!fin)
+    {
+    return false;
+    }
+
+  std::string option;
+  while(std::getline(fin, option))
+    {
+    // Remove leading and trailing whitespace.
+    std::string::size_type first = option.find_first_not_of(" \t");
+    std::string::size_type last = option.find_last_not_of(" \t");
+    if(first != std::string::npos && last != std::string::npos)
+      {
+      // There is at least one non-whitespace character.
+      option = option.substr(first, last-first+1);
+
+      // Look for comments.
+      if(option[0] != '#')
+        {
+        m_Arguments.push_back(option);
+        }
       }
     }
 

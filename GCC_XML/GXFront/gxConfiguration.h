@@ -119,6 +119,9 @@ protected:
   // Parse settings off the command line.
   bool ProcessCommandLine(int argc, const char*const* argv);
 
+  // Read arguments for gccxml_cc1plus from a file.
+  bool ReadArgumentFile(const char* fname);
+
   // Check the environment for any settings that we do not yet have.
   void CheckEnvironment();
 
