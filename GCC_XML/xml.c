@@ -30,18 +30,13 @@ Boston, MA 02111-1307, USA.  */
 #include "rtl.h"
 #include "varray.h"
 
-#define MY_TYPEDEF_TEST(d) \
+/* Return non-zero if the given TYPE_DECL is a typedef to another type.  */
+#define DECL_TYPEDEF_P(d) \
   (DECL_NAME ((d)) != DECL_NAME (TYPE_NAME (TREE_TYPE ((d)))))
-/*#define MY_TYPEDEF_TEST(d) \
-  (DECL_ORIGINAL_TYPE (d) && (DECL_ORIGINAL_TYPE (d) != TREE_TYPE (d)))*/
 
-#define MY_DECL_INTERNAL(d) (strcmp (DECL_SOURCE_FILE (d), "<internal>")==0)
-/*#define MY_DECL_INTERNAL(d) 0 */
-
-/* Useful debug macro.  Will be removed.  */
-#define DEBUG_LINE(f) \
-  fprintf ((f), "%s: %d\n", __FILE__, __LINE__)
-
+/* Return non-zero if the given _DECL is an internally generated decl.  */
+#define DECL_INTERNAL_P(d) (DECL_SOURCE_LINE(d) == 0)
+/*#define DECL_INTERNAL_P(d) (strcmp (DECL_SOURCE_FILE (d), "<internal>")==0)*/
 
 void do_xml_output                            PARAMS ((const char*));
     
@@ -66,6 +61,7 @@ static void xml_output_pointer_type           PARAMS ((FILE*, unsigned long, tre
 static void xml_output_reference_type         PARAMS ((FILE*, unsigned long, tree));
 static void xml_output_offset_type            PARAMS ((FILE*, unsigned long, tree));
 static void xml_output_array_type             PARAMS ((FILE*, unsigned long, tree));
+static void xml_output_enumeral_type          PARAMS ((FILE*, unsigned long, tree));
 static void xml_output_base_class             PARAMS ((FILE*, unsigned long, tree));
 static void xml_output_base_type              PARAMS ((FILE*, unsigned long, tree));
 static void xml_output_argument               PARAMS ((FILE*, unsigned long, tree, tree));
@@ -739,6 +735,34 @@ print_array_type_end_tag (FILE* file, unsigned long indent)
 }
 
 
+/* Print XML begin tag for an enumeration type element.  */
+static void
+print_enumeral_type_begin_tag (FILE* file, unsigned long indent, tree et)
+{
+  const char* name = xml_get_encoded_string (DECL_NAME (TYPE_NAME (et)));  
+  const char* access = "";
+
+  if (TREE_PRIVATE (TYPE_NAME (et)))        access = "private";
+  else if (TREE_PROTECTED (TYPE_NAME (et))) access = "protected";
+  else                          access = "public";  
+
+  print_indent (file, indent);
+  fprintf (file,
+           "<EnumType name=\"%s\" access=\"%s\">\n",
+           name, access);
+}
+
+
+/* Print XML end tag for an enumeration type element.  */
+static void
+print_enumeral_type_end_tag (FILE* file, unsigned long indent)
+{
+  print_indent (file, indent);
+  fprintf (file,
+           "</EnumType>\n");
+}
+
+
 /* Print XML begin element tag for a base type element.  */
 static void
 print_base_type_begin_tag (FILE* file, unsigned long indent)
@@ -871,6 +895,7 @@ print_cv_qualifiers_empty_tag (FILE* file, unsigned long indent, tree t)
   int is_volatile = CP_TYPE_VOLATILE_P (t);
   int is_restrict = CP_TYPE_RESTRICT_P (t);  
   
+  /* If there are no qualifiers, don't bother with the output.  */
   if (!is_const && !is_volatile && !is_restrict) return;
   
   print_indent (file, indent);
@@ -1019,7 +1044,7 @@ xml_output_type_decl (FILE* file, unsigned long indent, tree td)
   tree t = complete_type (TREE_TYPE (td));
 
   /* Don't process any internally generated declarations.  */
-  if (MY_DECL_INTERNAL (td)) return;
+  if (DECL_INTERNAL_P (td)) return;
 
   switch (TREE_CODE (t))
     {
@@ -1032,38 +1057,49 @@ xml_output_type_decl (FILE* file, unsigned long indent, tree td)
     case BOOLEAN_TYPE:
     case REAL_TYPE:
     case COMPLEX_TYPE:
-    case ENUMERAL_TYPE:
     case FUNCTION_TYPE:
       /* A typedef to a predefined type.  */
-      xml_output_typedef(file, indent, td);
+      xml_output_typedef (file, indent, td);
+      break;
+    case ENUMERAL_TYPE:
+      if (DECL_ORIGINAL_TYPE (td))
+        {
+        /* A typedef to an existing type.  */
+        xml_output_typedef (file, indent, td);
+        }
+      else
+        {
+        /* This is the declaration of a new enumeration type.  */
+        xml_output_enumeral_type (file, indent, t);
+        }
       break;
     case RECORD_TYPE:
       if (TYPE_PTRMEMFUNC_P (t))
         {
         /* A typedef to a pointer to member.  */
-        xml_output_typedef(file, indent, td);
+        xml_output_typedef (file, indent, td);
         }
-      else if (MY_TYPEDEF_TEST (td))
+      else if (DECL_TYPEDEF_P (td))
         {
         /* A typedef to an existing type.  */
-        xml_output_typedef(file, indent, td);
+        xml_output_typedef (file, indent, td);
         }
       else
         {
         /* A new type definition.  */
-        xml_output_record_type(file, indent, t);
+        xml_output_record_type (file, indent, t);
         }
       break;
     case UNION_TYPE:
-      if (MY_TYPEDEF_TEST (td))
+      if (DECL_TYPEDEF_P (td))
         {
         /* A typedef to an existing type.  */
-        xml_output_typedef(file, indent, td);
+        xml_output_typedef (file, indent, td);
         }
       else
         {
         /* A new type definition.  */
-        xml_output_record_type(file, indent, t);
+        xml_output_record_type (file, indent, t);
         }
       break;
     default:
@@ -1103,8 +1139,7 @@ xml_output_record_type (FILE* file, unsigned long indent, tree rt)
       {
       case TYPE_DECL:
         /* A class or struct internally typedefs itself.  */
-        if ((TREE_TYPE (field) == rt)
-            && (DECL_NAME (field) == DECL_NAME (TYPE_NAME (rt))))
+        if (TREE_TYPE (field) == rt)
           xml_output_typedef (file, indent+XML_NESTED_INDENT, field);
         else
           xml_output_type_decl (file, indent+XML_NESTED_INDENT, field);
@@ -1177,7 +1212,7 @@ xml_output_function_decl (FILE* file, unsigned long indent, tree fd)
   tree arg_type;
 
   /* Don't process any internally generated declarations.  */
-  if (MY_DECL_INTERNAL (fd)) return;
+  if (DECL_INTERNAL_P (fd)) return;
   if (DECL_ARTIFICIAL (fd)) return;
 
   /* Print out the begin tag for this type of function.  */
@@ -1303,7 +1338,7 @@ void
 xml_output_var_decl (FILE* file, unsigned long indent, tree vd)
 {
   /* Don't process any internally generated declarations.  */
-  if (MY_DECL_INTERNAL (vd)) return;
+  if (DECL_INTERNAL_P (vd)) return;
 
   print_variable_begin_tag (file, indent, vd);
 
@@ -1328,7 +1363,7 @@ void
 xml_output_field_decl (FILE* file, unsigned long indent, tree fd)
 {
   /* Don't process any internally generated declarations.  */
-  if (MY_DECL_INTERNAL (fd)) return;
+  if (DECL_INTERNAL_P (fd)) return;
 
   print_field_begin_tag (file, indent, fd);
   print_location_empty_tag (file, indent+XML_NESTED_INDENT, fd);
@@ -1344,7 +1379,7 @@ void
 xml_output_const_decl (FILE* file, unsigned long indent, tree cd)
 {
   /* Don't process any internally generated declarations.  */
-  if (MY_DECL_INTERNAL (cd)) return;
+  if (DECL_INTERNAL_P (cd)) return;
 
   print_enum_begin_tag (file, indent, cd);
   print_location_empty_tag (file, indent+XML_NESTED_INDENT, cd);
@@ -1363,7 +1398,7 @@ xml_output_template_decl (FILE* file, unsigned long indent, tree td)
   tree tl;
   
   /* Don't process any internally generated declarations.  */
-  if (MY_DECL_INTERNAL (td)) return;
+  if (DECL_INTERNAL_P (td)) return;
 
   for (tl = DECL_TEMPLATE_SPECIALIZATIONS (td);
        tl ; tl = TREE_CHAIN (tl))
@@ -1429,20 +1464,6 @@ xml_output_typedef (FILE* file, unsigned long indent, tree td)
   print_typedef_begin_tag (file, indent, td);
   print_location_empty_tag (file, indent+XML_NESTED_INDENT, td);
   
-/*  if(TYPE_CONTEXT(TREE_TYPE(td)))
-    {
-    // REMOVE THIS
-    fprintf(file, "%s\n",
-            IDENTIFIER_POINTER(DECL_NAME(TYPE_CONTEXT(TREE_TYPE(td)))));
-            }*/
-/*
-  if(CP_DECL_CONTEXT(td))
-    {
-    // REMOVE THIS
-    fprintf(file, "%s\n",
-            IDENTIFIER_POINTER(DECL_NAME(CP_DECL_CONTEXT(td))));
-    }
-*/
   /* Get the original type out of the typedef, if any.  */
   if (DECL_ORIGINAL_TYPE (td))
     xml_output_type (file, indent+XML_NESTED_INDENT,
@@ -1476,16 +1497,20 @@ xml_output_type (FILE* file, unsigned long indent, tree t)
     case METHOD_TYPE:
       xml_output_method_type (file, indent, t);
       break;
-    case RECORD_TYPE:
-      if (TYPE_PTRMEMFUNC_P (t))
-        xml_output_type (file, indent, TYPE_PTRMEMFUNC_FN_TYPE (t));
-      else
-        {
-        xml_output_named_type (file, indent, t);
-        }
-      break;
     case OFFSET_TYPE:
       xml_output_offset_type (file, indent, t);
+      break;
+    case RECORD_TYPE:
+      if (TYPE_PTRMEMFUNC_P (t))
+        {
+        /* Pointer-to-member-functions are stored ina RECORD_TYPE.  */
+        xml_output_type (file, indent, TYPE_PTRMEMFUNC_FN_TYPE (t));
+        }
+      else
+        {
+        /* This is a struct or class type, just output its name.  */
+        xml_output_named_type (file, indent, t);
+        }
       break;
     case LANG_TYPE:
     case INTEGER_TYPE:
@@ -1644,6 +1669,16 @@ xml_output_array_type (FILE* file, unsigned long indent, tree t)
   print_cv_qualifiers_empty_tag (file, indent+XML_NESTED_INDENT, t);
   xml_output_type (file, indent+XML_NESTED_INDENT, TREE_TYPE (t));
   print_array_type_end_tag (file, indent);
+}
+
+
+/* Output for an ENUMERAL_TYPE.  */
+void
+xml_output_enumeral_type (FILE* file, unsigned long indent, tree t)
+{
+  print_enumeral_type_begin_tag (file, indent, t);
+  print_location_empty_tag (file, indent+XML_NESTED_INDENT, TYPE_NAME (t));
+  print_enumeral_type_end_tag (file, indent);
 }
 
 
@@ -1872,60 +1907,3 @@ reverse_opname_lookup (tree name)
   return get_identifier (unknown_operator);
 }
 
-
-
-#if 0
-static char* xml_concat_3_strings          PARAMS ((char*, char*, char*));
-static tree  xml_get_qualified_type_name   PARAMS ((tree));
-
-/* Concatenate input strings into new memory.  Caller must free memory.  */
-char*
-xml_concat_3_strings (const char* s1, const char* s2, const char* s3)
-{
-  char* ns = (char*) malloc (strlen (s1) +  strlen (s2) + strlen (s3) + 1);
-  strcpy (ns, s1);
-  strcat (ns, s2);
-  strcat (ns, s3);
-  return ns;
-}
-
-/* Given a type, return an identifier node with the fully qualified type
-   name. */
-tree
-xml_get_qualified_type_name (tree t)
-{
-  const char* temp_name;
-  const char* name;
-  tree context = t;
-  tree result;
-  
-  if (!TYPE_NAME (t)) return get_identifier("{anonymous type}");
-
-  name = strdup (IDENTIFIER_POINTER (DECL_NAME (TYPE_NAME (t))));
-
-  /* Walk down nested classes/structs/unions.  */
-  context = CP_DECL_CONTEXT (TYPE_NAME (t));
-  while (TREE_CODE (context) != NAMESPACE_DECL)
-    {
-    temp_name = xml_concat_3_strings (
-      IDENTIFIER_POINTER (DECL_NAME (TYPE_NAME (context))), "::", name);
-    free (name);
-    name = temp_name;
-    context = CP_DECL_CONTEXT (TYPE_NAME (context));
-    }
-  
-  /* Walk down nested namespaces.  */
-  while (context != global_namespace)
-    {
-    temp_name = xml_concat_3_strings (
-      IDENTIFIER_POINTER (DECL_NAME (context)), "::", name);
-    free (name);
-    name = temp_name;
-    context = CP_DECL_CONTEXT (context);
-    }
-  
-  result = get_identifier (name);
-  free (name);
-  return result;
-}
-#endif
