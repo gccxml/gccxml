@@ -22,6 +22,7 @@
 #include <sys/stat.h>
 #include <stdio.h>
 #include <errno.h>
+#include <time.h>
 
 #if !defined(_WIN32) || defined(__CYGWIN__)
 #include <limits.h>
@@ -535,4 +536,14 @@ std::string gxSystemTools::FindProgram(const char* name)
 
   // Couldn't find the program.
   return "";
+}
+
+//----------------------------------------------------------------------------
+std::string gxSystemTools::GetCurrentDateTime(const char* format)
+{
+  char buf[1024];
+  time_t t;
+  time(&t);
+  strftime(buf, sizeof(buf), format, localtime(&t));
+  return buf;
 }

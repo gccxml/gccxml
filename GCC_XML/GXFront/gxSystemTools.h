@@ -76,6 +76,9 @@ public:
   
   /** Find a program in the system search path.  */
   static std::string FindProgram(const char* name);
+  
+  /** Format date/time string with the current time.  */
+  static std::string GetCurrentDateTime(const char* format);
 };
 
 #endif
