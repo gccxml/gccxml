@@ -7,11 +7,6 @@ SET(GCCXML_VERSION_PATCH 0)
 SET(GCCXML_VERSION "${GCCXML_VERSION_MAJOR}.${GCCXML_VERSION_MINOR}")
 SET(GCCXML_VERSION_FULL "${GCCXML_VERSION}.${GCCXML_VERSION_PATCH}")
 
-IF(CableSwig_SOURCE_DIR)
-  ADD_DEFINITIONS(-DGCCXML_NATIVE_BUILD)
-ENDIF(CableSwig_SOURCE_DIR)
-
-
 # Configure the build.
 IF(EXECUTABLE_OUTPUT_PATH)
   SET(GCCXML_EXECUTABLE_DIR ${EXECUTABLE_OUTPUT_PATH})
@@ -100,9 +95,12 @@ ELSE(UNIX)
     )
   
   ADD_DEPENDENCIES(gccxml vcInstallPatch)
-  IF(CableSwig_SOURCE_DIR)
+  
+  # If we are inside a project that is building gccxml_cc1plus for us,
+  # add the dependency to build it first.
+  IF(GCCXML_NATIVE_CC1PLUS)
     ADD_DEPENDENCIES(gccxml gccxml_cc1plus)
-  ENDIF(CableSwig_SOURCE_DIR)
+  ENDIF(GCCXML_NATIVE_CC1PLUS)
 ENDIF(UNIX)
 
 # Create a configuration file for use from the build directory.

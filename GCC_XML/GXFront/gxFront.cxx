@@ -140,7 +140,7 @@ int main(int argc, char** argv)
     return 1;
     }
   
-#if defined(_WIN32) && !defined(__CYGWIN__) && !defined(GCCXML_NATIVE_BUILD)
+#if defined(_WIN32) && !defined(__CYGWIN__) && !defined(GCCXML_NATIVE_CC1PLUS)
   // Make sure a cygwin1.dll is available.
   std::string cyg = gxSystemTools::GetFilenamePath(cGCCXML_EXECUTABLE.c_str());
   cyg += "/cygwin1.dll";
