@@ -568,8 +568,17 @@ xml_print_function_extern_attribute (xml_dump_info_p xdi, tree fd)
 static void
 xml_print_default_argument_attribute (xml_dump_info_p xdi, tree t)
 {
-  const char* value =
-    xml_get_encoded_string_from_string (expr_as_string (t, 0));  
+  const char* value;
+
+  switch (TREE_CODE(t))
+    {
+    case CAST_EXPR:
+      value = xml_get_encoded_string_from_string ("<gccxml-cast-expr>");
+      break;
+    default:
+      value = xml_get_encoded_string_from_string (expr_as_string (t, 0));
+      break;
+    };
   fprintf (xdi->file, " default=\"%s\"", value);
 }
 
