@@ -2,7 +2,7 @@
  * Program to copy and patch MSVC header files to work with GCC-XML.
  */
 
-#include "gxWinSystem.h"
+#include "gxSystemTools.h"
 
 #include <iostream>
 #include <fstream>
@@ -36,7 +36,7 @@ int main(int argc, char* argv[])
   // If the source_path argument was not given, look it up in the registry.
   if(argc < 4)
     {
-    if(!gxWinSystem::ReadRegistryValue(vcRegistry, sourcePath))
+    if(!gxSystemTools::ReadRegistryValue(vcRegistry, sourcePath))
       {
       std::cerr << "source_path not specified and VC98 could not be found in the registry!" << std::endl;
       return 1;
@@ -70,33 +70,10 @@ int main(int argc, char* argv[])
       source += "/"+line.substr(7);
       std::string dest = destPath.c_str();
       dest += "/"+line.substr(7);
-      gxWinSystem::gxCopyFile(source.c_str(), dest.c_str());
+      gxSystemTools::FileCopy(source.c_str(), dest.c_str());
       }
     }
 
-  std::string msvcFlagsFile = destPath+"/FLAGS.txt";
-  std::ofstream msvcFlags(msvcFlagsFile.c_str());
-  if(msvcFlags)
-    {
-    msvcFlags <<
-      "-quiet -o /dev/null -nostdinc -I- -w -fsyntax-only "
-      "-D__stdcall= -D__cdecl= -D_stdcall= -D_cdecl= -D__declspec(x)= "
-      "-D_inline=inline -D__uuidof(x)=IID() -D__int64='long long' "
-      "-D__cplusplus "
-      "-D_MSC_VER=1200 -D_MSC_EXTENSIONS "
-      "-D_WIN32 -D_M_IX86 -D_WCHAR_T_DEFINED "
-      "-DPASCAL= -DRPC_ENTRY= -DSHSTDAPI=HRESULT -DSHSTDAPI_(x)=x ";
-      msvcFlags <<
-        " -I\"" << destPath.c_str() << "\"" <<
-        " -I\"" << sourcePath.c_str() << "\"";
-      msvcFlags << std::endl;
-    }
-  else
-    {
-    std::cerr << "Error opening MSVC flags FLAGS readme file, skipping: "
-              << msvcFlagsFile.c_str() << std::endl;
-    }
-  
   destPath = "\""+destPath+"\"";
   patchFile = "\""+patchFile+"\"";
   
