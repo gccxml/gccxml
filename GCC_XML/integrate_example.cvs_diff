@@ -1,56 +1,60 @@
-? t
-Index: Makefile.in
+Index: Make-lang.in
 ===================================================================
-RCS file: /cvs/gcc/egcs/gcc/cp/Makefile.in,v
-retrieving revision 1.101
-diff -r1.101 Makefile.in
-182c182
-<  repo.o dump.o optimize.o mangle.o @extra_cxx_objs@
+RCS file: /cvs/gcc/egcs/gcc/cp/Make-lang.in,v
+retrieving revision 1.73
+diff -r1.73 Make-lang.in
+100c100
+<  cp/optimize.o cp/mangle.o
 ---
->  repo.o dump.o optimize.o mangle.o xml.o @extra_cxx_objs@
-294a295,296
-> xml.o : xml.c $(CXX_TREE_H) \
->   $(srcdir)/../toplev.h
+>  cp/optimize.o cp/mangle.o cp/xml.o
+294a295
+> cp/xml.o: cp/xml.c $(CXX_TREE_H) toplev.h
 Index: cp-tree.h
 ===================================================================
 RCS file: /cvs/gcc/egcs/gcc/cp/cp-tree.h,v
-retrieving revision 1.534
-diff -r1.534 cp-tree.h
-226a227,230
-> /* Nonzero to enable XML dump.  */
+retrieving revision 1.563
+diff -r1.563 cp-tree.h
+1164a1165,1169
+> /* Nonzero means XML output mode.  */
 > 
 > extern int flag_xml;
 > 
-4573a4578,4580
+> 
+4560a4566,4568
 > 
 > /* in xml.c */
 > extern void do_xml_output                       PARAMS ((void));
 Index: decl2.c
 ===================================================================
 RCS file: /cvs/gcc/egcs/gcc/cp/decl2.c,v
-retrieving revision 1.401
-diff -r1.401 decl2.c
-448a449,452
-> /* Nonzero to enable XML dump.  */
+retrieving revision 1.429
+diff -r1.429 decl2.c
+468a469,472
+> /* Nonzero means XML output mode.  */
 > 
 > int flag_xml = 0;
 > 
-532a537
->   {"xml", &flag_xml, 1},
+525c529,530
+<   {"xref", &flag_gnu_xref, 1}
+---
+>   {"xref", &flag_gnu_xref, 1},
+>   {"xml", &flag_xml, 1}
 Index: lang-options.h
 ===================================================================
 RCS file: /cvs/gcc/egcs/gcc/cp/lang-options.h,v
-retrieving revision 1.36
-diff -r1.36 lang-options.h
-63a64,65
->   { "-fxml", "Dump translation unit's declarations in XML." },
->   { "-fno-xml", "" },
+retrieving revision 1.37
+diff -r1.37 lang-options.h
+113a114
+>   { "-fxml", "Output XML and quit" },
 Index: semantics.c
 ===================================================================
 RCS file: /cvs/gcc/egcs/gcc/cp/semantics.c,v
-retrieving revision 1.178
-diff -r1.178 semantics.c
-1652a1653,1655
+retrieving revision 1.186
+diff -r1.186 semantics.c
+1657a1658,1663
 > 
+>   /* If XML output is enabled, do the output and exit.  */
 >   if (flag_xml)
->     do_xml_output();
+>     {
+>       do_xml_output ();
+>     }
