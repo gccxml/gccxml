@@ -498,7 +498,7 @@ print_array_attributes (xml_dump_info_p xdi, tree at)
     length = xml_get_encoded_string_from_string (
       expr_as_string (TYPE_MAX_VALUE (TYPE_DOMAIN (at)), 0));
 
-  fprintf (xdi->file, " min=\"0\" max=\"%s\">\n", length);
+  fprintf (xdi->file, " min=\"0\" max=\"%s\"", length);
 }
 
 /* Print XML attribute basetype="..." with the given type.  */
