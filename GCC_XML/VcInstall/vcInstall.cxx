@@ -23,8 +23,7 @@ int main(int argc, char* argv[])
   if(argc < 2)
     {
     std::cout << "Usage:" << std::endl
-              << "  " << argv[0] << " patch_dir [gccxml_root]" << std::endl
-              << "All arguments should be given as full paths." << std::endl;
+              << "  " << argv[0] << " patch_dir [gccxml_root]" << std::endl;
     return 0;
     }
 
