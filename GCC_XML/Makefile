@@ -18,12 +18,16 @@ all:
         "  make install PREFIX=/path/to/prefix\n\n" \
         "If PREFIX= is not given, the default is /usr/local.\n" \
         "The files will be placed in PREFIX/share/GCC_XML.\n" \
-        "You should place the gccxml executable in PREFIX/bin.\n\n" \
+        "You should place the gccxml_cc1plus executable in PREFIX/bin.\n\n" \
         "This will install support libraries for all supported compilers.\n" \
         "If you would like to install support for only one compiler, use one\n" \
         "of these targets instead of \"install\":\n" \
         "  install_gcc  = Install GCC support.\n" \
-        "  install_mpro = Install MipsPro support.\n"
+        "  install_mpro = Install MipsPro support.\n\n" \
+        "You may also use:\n\n" \
+        "  make uninstall PREFIX=/path/to/prefix\n\n" \
+	"to uninstall the GCC-XML support library.  You must remove the\n" \
+        "gccxml_cc1plus executable by hand (since it is installed by hand).\n"
 
 # Installation of main GCC-XML support library directory.
 install_main:
@@ -34,13 +38,14 @@ install_main:
            chmod 755 $(PREFIX)/share/GCC_XML; \
          else true; \
          fi
+	@$(INSTALL_PROGRAM) gccxml_find_flags $(PREFIX)/share/GCC_XML
 	@if [ ! -d $(PREFIX)/bin ] ; then \
            echo "Making directory $(PREFIX)/bin "; \
            mkdir -p $(PREFIX)/bin; \
            chmod 755 $(PREFIX)/bin; \
          else true; \
          fi
-	@$(INSTALL_PROGRAM) gccxml_find_flags $(PREFIX)/bin
+	@$(INSTALL_PROGRAM) gccxml $(PREFIX)/bin
 
 # Uninstallation of main GCC-XML support library directory.
 uninstall_main:
@@ -50,9 +55,9 @@ uninstall_main:
            rm -rf $(PREFIX)/share/GCC_XML; \
          else true; \
          fi
-	@if [ -f $(PREFIX)/bin/gccxml_find_flags ] ; then \
-	   echo "Removing $(PREFIX)/bin/gccxml_find_flags "; \
-           rm -f $(PREFIX)/bin/gccxml_find_flags; \
+	@if [ -f $(PREFIX)/bin/gccxml ] ; then \
+	   echo "Removing $(PREFIX)/bin/gccxml "; \
+           rm -f $(PREFIX)/bin/gccxml; \
          else true; \
          fi
 
