@@ -291,7 +291,7 @@ void gxConfiguration::FindRoots(const char* argv0)
   // directory as the data root.
   if(sPath == ePath)
     {
-    m_DataRoot = GCCXML_SOURCE_DIR;
+    m_DataRoot = GCCXML_SOURCE_DIR "/Support";
     }
   else if(gxSystemTools::FileIsDirectory(sharePath.c_str()))
     {

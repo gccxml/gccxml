@@ -41,14 +41,13 @@ fi
 GCCXML_PID="$$"
 cat > "/tmp/gccxml_identify_compiler$GCCXML_PID.cc" <<!
 #if defined(__GNUC__)
-GCCXML_SUPPORT="GccInclude"
-GCCXML_FLAGS_SCRIPT="find_gcc_options"
-#elif defined(__sgi)
-GCCXML_SUPPORT="MproInclude"
-GCCXML_FLAGS_SCRIPT="find_mpro_options"
+GCCXML_SUPPORT="GCC"
+#elif defined(__sgi) && defined(_COMPILER_VERSION)
+GCCXML_SUPPORT="MIPSpro"
+#elif defined(__INTEL_COMPILER) && (__INTEL_COMPILER >= 700)
+GCCXML_SUPPORT="Intel"
 #else
 GCCXML_SUPPORT=""
-GCCXML_FLAGS_SCRIPT=""
 #endif
 !
 
@@ -78,15 +77,13 @@ SELFPATH=`cd $SP1;pwd`
 # Find the compiler-specific support directory.
 if test -d "${SELFPATH}/${GCCXML_SUPPORT}" ; then
   GCCXML_SUPPORT_DIR="${SELFPATH}/${GCCXML_SUPPORT}"
-elif test -d "${SELFPATH}/../share/GCC_XML/${GCCXML_SUPPORT}" ; then
-  GCCXML_SUPPORT_DIR="${SELFPATH}/../share/GCC_XML/${GCCXML_SUPPORT}"
 else
   echo "Cannot find GCC_XML compiler support directory ${GCCXML_SUPPORT}."
   exit 1
 fi
 
 # Run the compiler-specific flag finding script.
-GCCXML_FLAGS=`${GCCXML_SUPPORT_DIR}/${GCCXML_FLAGS_SCRIPT} ${GCCXML_COMPILER} ${GCCXML_CXXFLAGS}`
+GCCXML_FLAGS=`${GCCXML_SUPPORT_DIR}/find_flags ${GCCXML_COMPILER} ${GCCXML_CXXFLAGS}`
 
 # Display the output.
 echo ${GCCXML_FLAGS}

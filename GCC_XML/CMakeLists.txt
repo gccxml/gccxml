@@ -59,14 +59,13 @@ ENDIF(CMAKE_GENERATOR MATCHES "Visual Studio 7 .NET 2003")
 
 IF(UNIX)
   # Installation rules for UNIX.
-  SET(GCCXML_ROOT ${GCCXML_SOURCE_DIR})
+  SET(GCCXML_ROOT ${GCCXML_SOURCE_DIR}/Support)
   SET(GCCXML_SHARE "/share/gccxml-${GCCXML_VERSION}")
   SET(GCCXML_DOC "/share/doc/gccxml-${GCCXML_VERSION}")
   INSTALL_TARGETS(/bin gccxml)
-  INSTALL_PROGRAMS(${GCCXML_SHARE} gccxml_find_flags)
   INSTALL_FILES(/man/man1 .1 gccxml)
   INSTALL_FILES(${GCCXML_DOC} .txt Copyright)
-  SUBDIRS (GccInclude MproInclude)
+  SUBDIRS (Support)
 ELSE(UNIX)
   # Include file patch program for Windows.
   SET(GCCXML_ROOT ${GCCXML_EXECUTABLE_DIR})
