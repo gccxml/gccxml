@@ -39,6 +39,12 @@ ELSE(UNIX)
 ENDIF(UNIX)
 
 # Create a configuration file for use from the build directory.
-CONFIGURE_FILE(${GCCXML_SOURCE_DIR}/config.in
+CONFIGURE_FILE(${GCCXML_SOURCE_DIR}/GXFront/config_build.in
                ${GCCXML_EXECUTABLE_DIR}/config)
 
+IF(UNIX)
+  # Create a configuration file for use from the install directory.
+  CONFIGURE_FILE(${GCCXML_SOURCE_DIR}/GXFront/config_install.in
+                 ${GCCXML_BINARY_DIR}/Install/Hide/config)
+  INSTALL_FILES(/share/GCC_XML "" Install/Hide/config)
+ENDIF(UNIX)
