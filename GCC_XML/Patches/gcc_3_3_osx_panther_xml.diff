@@ -1,0 +1,206 @@
+Index: gcc/c-common.c
+===================================================================
+RCS file: /cvs/root/gcc3/gcc/c-common.c,v
+retrieving revision 1.88.2.15
+diff -c -3 -p -r1.88.2.15 c-common.c
+*** gcc/c-common.c	2003/07/17 19:24:26	1.88.2.15
+--- gcc/c-common.c	2003/08/28 19:31:50
+*************** int warn_deprecated = 1;
+*** 760,766 ****
+--- 760,772 ----
+  
+  int max_tinst_depth = 500;
+  
++ /* Filename for xml dump of translation unit.  */
+  
++ const char* flag_xml = 0;
++ 
++ /* Start locations for dump of translation unit.  */
++ 
++ const char* flag_xml_start = 0;
+  
+  /* The elements of `ridpointers' are identifier nodes for the reserved
+     type names and storage classes.  It is indexed by a RID_... value.  */
+Index: gcc/c-common.h
+===================================================================
+RCS file: /cvs/root/gcc3/gcc/c-common.h,v
+retrieving revision 1.62.2.7
+diff -c -3 -p -r1.62.2.7 c-common.h
+*** gcc/c-common.h	2003/05/14 20:08:50	1.62.2.7
+--- gcc/c-common.h	2003/08/28 19:31:51
+*************** extern int max_tinst_depth;
+*** 985,990 ****
+--- 985,996 ----
+  
+  extern int skip_evaluation;
+  
++ /* Filename for xml dump of translation unit.  */
++ extern const char* flag_xml;
++ 
++ /* Start locations for dump of translation unit.  */
++ extern const char* flag_xml_start;
++ 
+  /* C types are partitioned into three subsets: object, function, and
+     incomplete types.  */
+  #define C_TYPE_OBJECT_P(type) \
+Index: gcc/c-opts.c
+===================================================================
+RCS file: /cvs/root/gcc3/gcc/c-opts.c,v
+retrieving revision 1.11.2.12
+diff -c -3 -p -r1.11.2.12 c-opts.c
+*** gcc/c-opts.c	2003/07/07 20:59:05	1.11.2.12
+--- gcc/c-opts.c	2003/08/28 19:31:52
+*************** static void sanitize_cpp_opts PARAMS ((v
+*** 312,317 ****
+--- 312,319 ----
+    OPT("fvtable-gc",		CL_CXX,   OPT_fvtable_gc)		     \
+    OPT("fvtable-thunks",		CL_CXX,   OPT_fvtable_thunks)		     \
+    OPT("fweak",			CL_CXX,   OPT_fweak)			     \
++   OPT("fxml-start=",	        CL_CXX | CL_JOINED, OPT_fxml_start)          \
++   OPT("fxml=",	                CL_CXX | CL_JOINED, OPT_fxml)                \
+    OPT("fxref",			CL_CXX,   OPT_fxref)			     \
+    /* APPLE LOCAL Panther ObjC enhancements */   \
+    OPT("fzero-link",		CL_ALL,   OPT_fzero_link)		     \
+*************** missing_arg (opt_index)
+*** 419,424 ****
+--- 421,431 ----
+        error ("missing argument to \"-%s\"", opt_text);
+        break;
+  
++     case OPT_fxml:
++     case OPT_fxml_start:
++       error ("missing argument to \"=%s\"", opt_text);
++       break;
++ 
+      case OPT_fconstant_string_class:
+        error ("no class name specified with \"-%s\"", opt_text);
+        break;
+*************** c_common_decode_option (argc, argv)
+*** 1490,1495 ****
+--- 1497,1522 ----
+  
+      case OPT_fweak:
+        flag_weak = on;
++       break;
++ 
++     case OPT_fxml:
++       if (!flag_xml)
++ 	flag_xml = arg;
++       else
++ 	{
++ 	  error ("-fxml= specified twice");
++ 	  result = argc;
++ 	}
++       break;
++ 
++     case OPT_fxml_start:
++       if (!flag_xml_start)
++ 	flag_xml_start = arg;
++       else
++ 	{
++ 	  error ("-fxml-start= specified twice");
++ 	  result = argc;
++ 	}
+        break;
+  
+      case OPT_gen_decls:
+Index: gcc/cp/Make-lang.in
+===================================================================
+RCS file: /cvs/root/gcc3/gcc/cp/Make-lang.in,v
+retrieving revision 1.54.2.4
+diff -c -3 -p -r1.54.2.4 Make-lang.in
+*** gcc/cp/Make-lang.in	2003/05/06 23:58:30	1.54.2.4
+--- gcc/cp/Make-lang.in	2003/08/28 19:31:52
+*************** CXX_AND_OBJCP_OBJS = \
+*** 102,108 ****
+   cp/class.o cp/decl2.o cp/error.o cp/lex.o cp/ptree.o cp/rtti.o \
+   cp/spew.o cp/typeck.o cp/cvt.o cp/except.o cp/friend.o cp/init.o cp/method.o \
+   cp/search.o cp/semantics.o cp/tree.o cp/repo.o cp/dump.o \
+!  cp/optimize.o cp/mangle.o
+  
+  # APPLE LOCAL begin Objective-C++
+  CXX_OBJS = $(CXX_AND_OBJCP_OBJS) cp/cp-parse.o cp/cp-lang.o cp/cp-idebug.o \
+--- 102,108 ----
+   cp/class.o cp/decl2.o cp/error.o cp/lex.o cp/ptree.o cp/rtti.o \
+   cp/spew.o cp/typeck.o cp/cvt.o cp/except.o cp/friend.o cp/init.o cp/method.o \
+   cp/search.o cp/semantics.o cp/tree.o cp/repo.o cp/dump.o \
+!  cp/optimize.o cp/mangle.o cp/xml.o
+  
+  # APPLE LOCAL begin Objective-C++
+  CXX_OBJS = $(CXX_AND_OBJCP_OBJS) cp/cp-parse.o cp/cp-lang.o cp/cp-idebug.o \
+*************** cp/dump.o: cp/dump.c $(CXX_TREE_H) tree-
+*** 319,324 ****
+--- 319,325 ----
+  cp/optimize.o: cp/optimize.c $(CXX_TREE_H) rtl.h integrate.h insn-config.h \
+    input.h $(PARAMS_H) debug.h tree-inline.h
+  cp/mangle.o: cp/mangle.c $(CXX_TREE_H) toplev.h real.h gt-cp-mangle.h
++ cp/xml.o: cp/xml.c $(CXX_TREE_H) toplev.h real.h
+  # APPLE LOCAL debugging
+  # Suppress all warnings explicitly for the idebug builds since there can be
+  # many when, and if, -traditional-cpp is used.
+Index: gcc/cp/cp-tree.h
+===================================================================
+RCS file: /cvs/root/gcc3/gcc/cp/cp-tree.h,v
+retrieving revision 1.80.2.8
+diff -c -3 -p -r1.80.2.8 cp-tree.h
+*** gcc/cp/cp-tree.h	2003/07/14 17:34:25	1.80.2.8
+--- gcc/cp/cp-tree.h	2003/08/28 19:31:56
+*************** extern int  cxx_dump_lineno_p 			PARAMS 
+*** 4500,4505 ****
+--- 4500,4515 ----
+  extern int  cxx_dmp_tree3			PARAMS ((FILE *, tree, int));
+  /* APPLE LOCAL end new tree dump */
+  
++ /* Tell xml.c what version of GCC is being built.  Format is 0xMMmmpp,
++    where MM is the major version number, mm is the minor version
++    number, and pp is the patch level.
++    Examples:  gcc 3.0.4 = 0x030004
++               gcc 3.2.0 = 0x030200 */
++ #define GCC_XML_GCC_VERSION 0x030300
++ 
++ /* in xml.c */
++ extern void do_xml_output                       PARAMS ((const char *));
++ 
+  /* -- end of C++ */
+  
+  #endif /* ! GCC_CP_TREE_H */
+Index: gcc/cp/lang-options.h
+===================================================================
+RCS file: /cvs/root/gcc3/gcc/cp/lang-options.h,v
+retrieving revision 1.5.22.1
+diff -c -3 -p -r1.5.22.1 lang-options.h
+*** gcc/cp/lang-options.h	2003/05/14 20:08:58	1.5.22.1
+--- gcc/cp/lang-options.h	2003/08/28 19:31:56
+*************** DEFINE_LANG_NAME ("C++")
+*** 122,127 ****
+--- 122,131 ----
+    { "-fxref", 
+      N_("Emit cross referencing information") },
+    { "-fno-xref", "" },
++   { "-fxml=",
++     N_("Enable XML output to a file (use with -fsyntax-only)") },
++   { "-fno-xml", "" },
++   { "-fxml-start=", "Specify start locations for XML dump (use with -fxml)" },
+  
+    { "-Wreturn-type", 
+      N_("Warn about inconsistent return types") },
+Index: gcc/cp/semantics.c
+===================================================================
+RCS file: /cvs/root/gcc3/gcc/cp/semantics.c,v
+retrieving revision 1.46.2.1
+diff -c -3 -p -r1.46.2.1 semantics.c
+*** gcc/cp/semantics.c	2003/03/10 21:43:11	1.46.2.1
+--- gcc/cp/semantics.c	2003/08/28 19:31:59
+*************** finish_translation_unit ()
+*** 1608,1613 ****
+--- 1608,1617 ----
+    
+    /* APPLE LOCAL Objective-C++ */  
+    (*lang_hooks.finish_file) ();
++ 
++   /* Do XML output if enabled.  */
++   if (flag_xml)
++     do_xml_output (flag_xml);
+  }
+  
+  /* Finish a template type parameter, specified as AGGR IDENTIFIER.
