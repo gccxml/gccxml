@@ -23,15 +23,6 @@ IF(CMAKE_ANSI_CXXFLAGS)
   SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CMAKE_ANSI_CXXFLAGS}")
 ENDIF(CMAKE_ANSI_CXXFLAGS)
 
-# The GCC-XML wrapper exectuable.
-ADD_EXECUTABLE(gccxml
-  GXFront/gxSystemTools.cxx
-  GXFront/gxConfiguration.cxx
-  GXFront/gxDocumentation.cxx
-  GXFront/gxFlagsParser.cxx
-  GXFront/gxFront.cxx
-)
-
 # Figure out what is being used to build GCC-XML.
 SET(GCCXML_CXX_COMPILER "${CMAKE_CXX_COMPILER}")
 SET(GCCXML_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
@@ -51,6 +42,9 @@ ENDIF(CMAKE_GENERATOR MATCHES "Visual Studio 7$")
 IF(CMAKE_GENERATOR MATCHES "Visual Studio 7 .NET 2003")
   SET(GCCXML_CXX_COMPILER "msvc71")
 ENDIF(CMAKE_GENERATOR MATCHES "Visual Studio 7 .NET 2003")
+
+# Directory to build gccxml executable.
+SUBDIRS(GXFront)
 
 IF(UNIX)
   # Installation rules for UNIX.
