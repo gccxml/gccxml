@@ -45,70 +45,12 @@ run the executable directly from the build directory.
 ------------------------------------------------------------------------------
 Running:
 
-Once GCC-XML has been properly configured, it can be run on a command line
-like this:
+Once GCC-XML has been properly configured, it can be run from the
+command line like this:
 
   gccxml input.cxx -fxml=output.xml
 
-The front-end executable will find the proper flags and run the real
-GCC-XML executable (see below).  Use "gccxml --help" to get a full
-list of available options.
-
-GCC-XML works with an entire translation unit just as your compiler
-sees it.  Therefore, it must be properly configured to simulate your
-compiler's preprocessor and use its library's header files.  The
-front-end executable does most of this work automatically, but there
-are several customization options:
-
-GCCXML_EXECUTABLE = The path to the real GCC-XML executable (gccxml_cc1plus).
-                    By default, the executable is found next to the
-                    gccxml front-end executable.
-GCCXML_COMPILER   = The compiler that the real GCC-XML executable is to
-                    simulate.  This setting is used only for automatic
-                    detection of the GCCXML_FLAGS setting.
-GCCXML_FLAGS      = The set of flags to pass to the real GCC-XML executable
-                    to make it simulate a particular compiler.  This setting
-                    is automatically detected, but can be configured for
-                    very customized runs by experts.
-GCCXML_USER_FLAGS = Flags to add when the real GCC-XML executable is run.
-                    These can be set while still allowing the front-end
-                    executable to automatically detect the main GCCXML_FLAGS
-                    setting.
-GCCXML_ROOT       = The path to the support library containing patched
-                    headers for supported compilers.
-GCCXML_CONFIG     = The path to a configuration file from which to read
-                    settings for other values.
-
-Most users should not have to adjust the defaults for these settings.
-There is a GCCXML_CONFIG file provided by default in the support
-library directory after installation.  It configures GCC-XML to
-simulate the compiler that was used to build it.
-
-For those who wish to change them, there are several ways to do it.
-They are listed here in order of precedence.
-
-1.) Command line options:
-     Use "--gccxml-executable xxx" to set GCCXML_EXECUTABLE.
-     Use "--gccxml-compiler xxx" to set GCCXML_COMPILER.
-     Use "--gccxml-config xxx" to set GCCXML_CONFIG.
-     Use "--gccxml-root xxx" to set GCCXML_ROOT.
-    If GCCXML_CONFIG is set on the command line, the settings read from
-    the config file take precedence equal to command line settings.
-2.) Environment variables.  Any of the settings will be read from the
-    environment.  If GCCXML_CONFIG is set, settings read from the config
-    file will take precedence equal to environment variable settings.
-3.) If GCCXML_CONFIG is not set by now, an attempt is made to find
-    a configuration file automatically.  First, if the file
-    $HOME/.gccxml/config exists, it will be used.  Second, if the
-    front-end is being run from its build directory, a config file
-    from that directory will be used.  Finally, if a config file is found
-    in the installation's support library directory, it will be used.
-4.) Guesses will be made based on other settings that have found.  This is
-    the usual way to get the GCCXML_FLAGS setting.
-
-To see the configuration settings that will be used when running
-GCC-XML, use the "--print" command-line option.  It will list the
-settings found and then exit.
+Use "gccxml --help" for a full list of options and configuration help.
 
 ------------------------------------------------------------------------------
 Links:
@@ -123,10 +65,10 @@ CMake homepage:
 
 GCC-XML mailing list address:
 
-  gccxml@public.kitware.com
+  gccxml@www.gccxml.org
 
 GCC-XML mailing list page:
 
-  http://public.kitware.com/mailman/listinfo/gccxml
+  http://www.gccxml.org/mailman/listinfo/gccxml
 
 end-of-file
