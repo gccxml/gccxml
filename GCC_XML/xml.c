@@ -74,7 +74,7 @@
 # define XML_PRE_3_4_TREE_VIA_PUBLIC
 #endif
 
-#define GCC_XML_C_VERSION "$Revision: 1.83 $"
+#define GCC_XML_C_VERSION "$Revision: 1.84 $"
 
 /* A "dump node" corresponding to a particular tree node.  */
 typedef struct xml_dump_node
@@ -1496,7 +1496,6 @@ xml_output_record_type (xml_dump_info_p xdi, tree rt, xml_dump_node_p dn)
                  access, is_virtual);
         }
       }
-    fprintf (xdi->file, "\"");
     }
 
   fprintf (xdi->file, "  </%s>\n", tag);
