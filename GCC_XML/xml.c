@@ -49,7 +49,7 @@ Boston, MA 02111-1307, USA.  */
    number, mm is the minor version number, and pp is the patch level.
    Examples:  gcc 3.0.4 = 0x030004
               gcc 3.2.0 = 0x030200  */
-#if defined(GCC_XML_GCC_VERSION) && (GCC_XML_GCC_VERSION >= 0x030200)
+#if defined(GCC_XML_GCC_VERSION) && (GCC_XML_GCC_VERSION >= 0x030100)
 # define XML_CP_ERROR cp_error_at
 #else
 # define XML_CP_ERROR cp_error
