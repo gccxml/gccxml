@@ -180,7 +180,10 @@ do_xml_output (const char* filename)
     xml_add_node (&xdi, global_namespace, 1);
 
     /* Also add std namespace because it is not always referenced.  */
-    xml_add_node (&xdi, std_node, 1);
+    if(std_node)
+      {
+      xml_add_node (&xdi, std_node, 1);
+      }
     }
   
   /* Start dump.  */
