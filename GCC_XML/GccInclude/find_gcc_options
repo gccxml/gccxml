@@ -40,10 +40,12 @@ sed -n 'H;${g;s/\n/ /g;p;}'`
 
 # Find the include path options.
 INCLUDES=`
-echo "" | ${CXX} -v -x c++ -E ${CXXFLAGS} - 2>&1 |
-awk '/^\#include <.*$/   {f=1}
-     /^ \/.*$/           { if (f) { printf("-I%s ",$0) } }
-     /^End of search.*$/ {exit}' - | sed 's/^-I /-I/;s/ -I / -I/g'`
+  echo "" | ${CXX} -v -x c++ -E ${CXXFLAGS} - 2>&1 |
+  awk '/^\#include <.*$/   {f=1}
+       /^ \/.*$/           { if (f) { printf("-I%s ",$0) } }
+       /^End of search.*$/ {printf("\n"); exit}' - |
+  sed 's/^-I /-I/;s/ -I / -I/g'
+`
 
 # The support headers are located where this script is.
 SELFPATH=`echo $0 | sed -n '/\//{s/\/find_gcc_options$//;p;}'`
