@@ -1,7 +1,9 @@
 /**
  * GCC-XML wrapper program for Windows.
  *
- * This is a really ugly hack implementation.
+ * This is a really ugly hack implementation.  It should be replaced
+ * with a more robust version supporting config file and environment
+ * variable reading.
  */
 
 #include "gxWinSystem.h"
@@ -83,6 +85,8 @@ int main(int argc, const char* argv[])
   std::vector<std::string> gccxmlFlags;
   if(!findGccXmlFlags(gccxmlCompiler, gccxmlFlags))
     {
+    std::cerr << "Error getting GCCXML_FLAGS for compiler \""
+              << gccxmlCompiler.c_str() << "\".\n";
     return 1;
     }
   
@@ -180,23 +184,19 @@ bool findGccXmlFlags(const std::string& gccxmlCompiler,
 // Find gccxml flags for MSVC 6.
 bool find_MSVC6_flags(std::vector<std::string>& gccxmlFlags)
 {
-  const char* gccxmlRegistry = "HKEY_CURRENT_USER\\Software\\Kitware\\GCC_XML;loc";
   std::string gccxmlPath;
-  if(!gxWinSystem::ReadRegistryValue(gccxmlRegistry, gccxmlPath))
+  // Must get our location.
+  char fname[1024];
+  ::GetModuleFileName(NULL, fname, 1023);
+  std::string pname = fname;
+  std::string::size_type pos = pname.find_last_of("/\\");
+  if(pos != std::string::npos)
     {
-    // Must get our location.
-    char fname[1024];
-    ::GetModuleFileName(NULL, fname, 1023);
-    std::string pname = fname;
-    std::string::size_type pos = pname.find_last_of("/\\");
-    if(pos != std::string::npos)
-      {
-      gccxmlPath = pname.substr(0, pos);
-      }
-    else
-      {
-      return false;
-      }
+    gccxmlPath = pname.substr(0, pos);
+    }
+  else
+    {
+    return false;
     }
   
   // Read the flags file.
