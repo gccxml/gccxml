@@ -239,9 +239,12 @@ bool FindPatch(std::string& result)
     {
     // The registry key to use to find the patch executable from
     // cygwin.
-    const char* cygwinRegistry =
+    const char* cygwinRegistry1 =
       "HKEY_LOCAL_MACHINE\\SOFTWARE\\Cygnus Solutions\\Cygwin\\mounts v2\\/usr/bin;native";
-    if(gxSystemTools::ReadRegistryValue(cygwinRegistry, patchCommand) &&
+    const char* cygwinRegistry2 =
+      "HKEY_CURRENT_USER\\Software\\Cygnus Solutions\\Cygwin\\mounts v2\\/usr/bin;native";
+    if((gxSystemTools::ReadRegistryValue(cygwinRegistry1, patchCommand) ||
+        gxSystemTools::ReadRegistryValue(cygwinRegistry2, patchCommand)) &&
        gxSystemTools::FileExists((patchCommand+"/patch.exe").c_str()))
       {
       // Found the binary location from cygwin's registry entry.
@@ -249,7 +252,7 @@ bool FindPatch(std::string& result)
       result = patchCommand;
       return true;
       }
-    else
+   else
       {
       // Try to find it in the path.
       patchCommand = gxSystemTools::FindProgram("patch");
