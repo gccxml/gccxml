@@ -54,4 +54,11 @@ namespace std
   using ::mem_fun_ref;
 }
 
+// Non-standard, but present:
+namespace std
+{
+  using ::select1st;
+  using ::select2nd;
+}
+
 #endif
