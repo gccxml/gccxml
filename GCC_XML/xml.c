@@ -36,12 +36,12 @@
 #include "system.h"
 #include "sys/stat.h"
 
-/* GCC 3.3 and above need these headers here.  The GCC-XML patches for
+/* GCC 3.4 and above need these headers here.  The GCC-XML patches for
    these versions define GCC_XML_GCC_VERSION in config.h instead of
    cp-tree.h, so the macro is available here.  The patches for older
    versions may provide the macro in cp-tree.h, but in that case
    we don't need these headers anyway.  */
-#if defined(GCC_XML_GCC_VERSION) && (GCC_XML_GCC_VERSION >= 0x030300)
+#if defined(GCC_XML_GCC_VERSION) && (GCC_XML_GCC_VERSION >= 0x030400)
 # include "coretypes.h"
 # include "tm.h"
 #endif
@@ -62,9 +62,16 @@
 # define XML_HAVE_FAKE_STD_NODE
 #endif
 
+/* Decide how to get the attributes node from a declaration.  */
+#if defined(GCC_XML_GCC_VERSION) && (GCC_XML_GCC_VERSION >= 0x030100)
+# define GCC_XML_DECL_ATTRIBUTES(n) DECL_ATTRIBUTES(n)
+#else
+# define GCC_XML_DECL_ATTRIBUTES(n) DECL_MACHINE_ATTRIBUTES(n)
+#endif
+
 /* Decide how to access base classes.  */
-#if !defined(GCC_XML_GCC_VERSION) || (GCC_XML_GCC_VERSION < 0x030300)
-# define XML_PRE_3_3_TREE_VIA_PUBLIC
+#if !defined(GCC_XML_GCC_VERSION) || (GCC_XML_GCC_VERSION < 0x030400)
+# define XML_PRE_3_4_TREE_VIA_PUBLIC
 #endif
 
 /* A "dump node" corresponding to a particular tree node.  */
@@ -155,7 +162,11 @@ static const char* xml_get_encoded_string PARAMS ((tree));
 static const char* xml_get_encoded_string_from_string PARAMS ((const char*));
 static tree xml_get_encoded_identifier_from_string PARAMS ((const char*));
 
+#if defined(GCC_XML_GCC_VERSION) && (GCC_XML_GCC_VERSION >= 0x030100)
+# include "diagnostic.h"
+#else
 extern int errorcount;
+#endif
 
 /* Switch to 1 to enable debugging of dump node selection.  */
 #if 0
@@ -772,7 +783,7 @@ xml_output_namespace_decl (xml_dump_info_p xdi, tree ns, xml_dump_node_p dn)
     xml_print_id_attribute (xdi, dn);
     xml_print_name_attribute (xdi, DECL_NAME (ns));
     xml_print_context_attribute (xdi, ns);
-    xml_print_attributes_attribute (xdi, DECL_MACHINE_ATTRIBUTES(ns), 0);
+    xml_print_attributes_attribute (xdi, GCC_XML_DECL_ATTRIBUTES(ns), 0);
     
     /* If complete dump, walk the namespace.  */
     if(dn->complete)
@@ -986,7 +997,7 @@ xml_output_function_decl (xml_dump_info_p xdi, tree fd, xml_dump_node_p dn)
     xml_print_endline_attribute (xdi, body);
     }
   xml_print_function_extern_attribute (xdi, fd);
-  xml_print_attributes_attribute (xdi, DECL_MACHINE_ATTRIBUTES(fd),
+  xml_print_attributes_attribute (xdi, GCC_XML_DECL_ATTRIBUTES(fd),
                                   TYPE_ATTRIBUTES(TREE_TYPE(fd)));
   
   /* Prepare to iterator through argument list.  */
@@ -1044,7 +1055,7 @@ xml_output_var_decl (xml_dump_info_p xdi, tree vd, xml_dump_node_p dn)
   xml_print_access_attribute (xdi, vd);
   xml_print_location_attribute (xdi, vd);
   xml_print_extern_attribute (xdi, vd);
-  xml_print_attributes_attribute (xdi, DECL_MACHINE_ATTRIBUTES(vd), 0);
+  xml_print_attributes_attribute (xdi, GCC_XML_DECL_ATTRIBUTES(vd), 0);
   fprintf (xdi->file, "/>\n");
 }
 
@@ -1061,7 +1072,7 @@ xml_output_field_decl (xml_dump_info_p xdi, tree fd, xml_dump_node_p dn)
   xml_print_type_attribute (xdi, TREE_TYPE (fd), dn->complete);
   xml_print_context_attribute (xdi, fd);
   xml_print_location_attribute (xdi, fd);
-  xml_print_attributes_attribute (xdi, DECL_MACHINE_ATTRIBUTES(fd), 0);
+  xml_print_attributes_attribute (xdi, GCC_XML_DECL_ATTRIBUTES(fd), 0);
   fprintf (xdi->file, "/>\n");
 }
 
@@ -1152,7 +1163,7 @@ xml_output_record_type (xml_dump_info_p xdi, tree rt, xml_dump_node_p dn)
     tree binfo = TYPE_BINFO (rt);
     tree binfos = BINFO_BASETYPES (binfo);
     int n_baselinks = binfos? TREE_VEC_LENGTH (binfos) : 0;
-#if !defined (XML_PRE_3_3_TREE_VIA_PUBLIC)
+#if !defined (XML_PRE_3_4_TREE_VIA_PUBLIC)
     tree accesses = BINFO_BASEACCESSES (binfo);
 #endif
     int i;
@@ -1164,7 +1175,7 @@ xml_output_record_type (xml_dump_info_p xdi, tree rt, xml_dump_node_p dn)
       if (base_binfo)
         {
         /* Output this base class.  Default is public access.  */
-#if defined (XML_PRE_3_3_TREE_VIA_PUBLIC)
+#if defined (XML_PRE_3_4_TREE_VIA_PUBLIC)
         const char* access = 0;
         if (TREE_VIA_PUBLIC (base_binfo)) { access = ""; }
         else if (TREE_VIA_PROTECTED (base_binfo)) { access = "protected:"; }
