@@ -1318,11 +1318,11 @@ close_output_files ()
     {
       FILE * newfile;
 
-/* BEGIN GCC-XML MODIFICATIONS (2003/11/21 21:27:57) */
+/* BEGIN GCC-XML MODIFICATIONS (2004/01/12 23:19:15) */
 /* Do not avoid changing modification time.  The CMake build system
    handles the dependencies correctly.  */
 #if 0
-/* END GCC-XML MODIFICATIONS (2003/11/21 21:27:57) */
+/* END GCC-XML MODIFICATIONS (2004/01/12 23:19:15) */
       newfile = fopen (of->name, "r");
       if (newfile != NULL )
         {
@@ -1342,9 +1342,9 @@ close_output_files ()
           if (no_write_p)
             continue;
         }
-/* BEGIN GCC-XML MODIFICATIONS (2003/11/21 21:27:57) */
+/* BEGIN GCC-XML MODIFICATIONS (2004/01/12 23:19:15) */
 #endif
-/* END GCC-XML MODIFICATIONS (2003/11/21 21:27:57) */
+/* END GCC-XML MODIFICATIONS (2004/01/12 23:19:15) */
 
       newfile = fopen (of->name, "w");
       if (newfile == NULL)
@@ -2029,8 +2029,11 @@ write_gc_types (structures, param_structs)
   
         if (s->u.s.line.file == NULL)
           {
-            fprintf (stderr, "warning: structure `%s' used but not defined\n", 
-                     s->u.s.tag);
+/* BEGIN GCC-XML MODIFICATIONS (2004/01/12 23:19:15) */
+            /* Do not produce this warning message:
+            fprintf (stderr, "warning: structure `%s' used but not defined\n",
+                     s->u.s.tag); */
+/* END GCC-XML MODIFICATIONS (2004/01/12 23:19:15) */
             continue;
           }
   
@@ -2057,8 +2060,11 @@ write_gc_types (structures, param_structs)
   
         if (stru->u.s.line.file == NULL)
           {
-            fprintf (stderr, "warning: structure `%s' used but not defined\n", 
-                     s->u.s.tag);
+/* BEGIN GCC-XML MODIFICATIONS (2004/01/12 23:19:15) */
+            /* Do not produce this warning message:
+            fprintf (stderr, "warning: structure `%s' used but not defined\n",
+                     s->u.s.tag); */
+/* END GCC-XML MODIFICATIONS (2004/01/12 23:19:15) */
             continue;
           }
   
