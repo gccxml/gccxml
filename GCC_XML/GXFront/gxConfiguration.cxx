@@ -970,7 +970,18 @@ bool gxConfiguration::FindFlags()
   return false;
 #else
   // This is a UNIX environment.  Use the gccxml_find_flags script.
-  std::string gccxmlFindFlags = m_GCCXML_ROOT+"/gccxml_find_flags";
+  std::string gccxmlFindFlags;
+  if(m_GCCXML_ROOT.find(" ") != m_GCCXML_ROOT.npos)
+    {
+    gccxmlFindFlags = "\"";
+    gccxmlFindFlags += m_GCCXML_ROOT;
+    gccxmlFindFlags += "/gccxml_find_flags\"";
+    }
+  else
+    {
+    gccxmlFindFlags = m_GCCXML_ROOT;
+    gccxmlFindFlags += "/gccxml_find_flags";
+    }
   gccxmlFindFlags += " ";
   gccxmlFindFlags += m_GCCXML_COMPILER;
   gccxmlFindFlags += " ";
