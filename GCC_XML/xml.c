@@ -25,9 +25,26 @@
    for common attribute name/pair values.
 */
 
+/* Use GCC_XML_GCC_VERSION to modify code based on the version of GCC
+   in which we are being built.  This is set in the patched version of
+   cp-tree.h.  The format is 0xMMmmpp, where MM is the major version
+   number, mm is the minor version number, and pp is the patch level.
+   Examples:  gcc 3.0.4 = 0x030004
+              gcc 3.2.0 = 0x030200  */
+
 #include "config.h"
 #include "system.h"
 #include "sys/stat.h"
+
+/* GCC 3.3 and above need these headers here.  The GCC-XML patches for
+   these versions define GCC_XML_GCC_VERSION in config.h instead of
+   cp-tree.h, so the macro is available here.  The patches for older
+   versions may provide the macro in cp-tree.h, but in that case
+   we don't need these headers anyway.  */
+#if defined(GCC_XML_GCC_VERSION) && (GCC_XML_GCC_VERSION >= 0x030300)
+# include "coretypes.h"
+# include "tm.h"
+#endif
 
 #include "tree.h"
 #include "cp-tree.h"
@@ -37,17 +54,17 @@
 
 #include "splay-tree.h"
 
-/* Use GCC_XML_GCC_VERSION to modify code based on the version of GCC
-   in which we are being built.  This is set in the patched version of
-   cp-tree.h.  The format is 0xMMmmpp, where MM is the major version
-   number, mm is the minor version number, and pp is the patch level.
-   Examples:  gcc 3.0.4 = 0x030004
-              gcc 3.2.0 = 0x030200  */
+/* Decide how to call cp_error.  */
 #if defined(GCC_XML_GCC_VERSION) && (GCC_XML_GCC_VERSION >= 0x030100)
 # define XML_CP_ERROR cp_error_at
 #else
 # define XML_CP_ERROR cp_error
 # define XML_HAVE_FAKE_STD_NODE
+#endif
+
+/* Decide how to access base classes.  */
+#if !defined(GCC_XML_GCC_VERSION) || (GCC_XML_GCC_VERSION < 0x030300)
+# define XML_PRE_3_3_TREE_VIA_PUBLIC
 #endif
 
 /* A "dump node" corresponding to a particular tree node.  */
@@ -64,7 +81,7 @@ typedef struct xml_dump_node
 typedef struct xml_dump_queue
 {
   /* The queued tree node.  */
-  tree node;
+  tree tree_node;
 
   /* The corresponding dump node.  */
   xml_dump_node_p dump_node;
@@ -77,7 +94,7 @@ typedef struct xml_dump_queue
 typedef struct xml_file_queue
 {
   /* The queued file name.  */
-  splay_tree_node node;
+  splay_tree_node tree_node;
 
   /* The next node in the queue.  */
   struct xml_file_queue *next;
@@ -267,7 +284,7 @@ xml_queue_node (xml_dump_info_p xdi, tree t, xml_dump_node_p dn)
   
   /* Point the queue node at its corresponding tree node and dump node.  */
   dq->next = 0;
-  dq->node = t;
+  dq->tree_node = t;
   dq->dump_node = dn;
   
   /* Add it to the end of the queue.  */
@@ -342,7 +359,7 @@ xml_dump (xml_dump_info_p xdi)
     {
     /* Get the next queue entry.  */
     xml_dump_queue_p dq = xdi->queue;
-    tree t = dq->node;
+    tree t = dq->tree_node;
     xml_dump_node_p dn = dq->dump_node;
     
     /* Remove the entry from the queue.  */
@@ -388,8 +405,8 @@ xml_queue_file (xml_dump_info_p xdi, const char* filename)
     fq = (xml_file_queue_p) xmalloc (sizeof (struct xml_file_queue));
 
     /* Create a new entry in the splay-tree.  */
-    fq->node = splay_tree_insert (xdi->file_nodes, (splay_tree_key) t, 
-                                  (splay_tree_value) index);
+    fq->tree_node = splay_tree_insert (xdi->file_nodes, (splay_tree_key) t, 
+                                       (splay_tree_value) index);
     
     /* Add it to the end of the queue.  */
     fq->next = 0;
@@ -1036,6 +1053,9 @@ xml_output_record_type (xml_dump_info_p xdi, tree rt, xml_dump_node_p dn)
     tree binfo = TYPE_BINFO (rt);
     tree binfos = BINFO_BASETYPES (binfo);
     int n_baselinks = binfos? TREE_VEC_LENGTH (binfos) : 0;
+#if !defined (XML_PRE_3_3_TREE_VIA_PUBLIC)
+    tree accesses = BINFO_BASEACCESSES (binfo);
+#endif
     int i;
     
     fprintf (xdi->file, " bases=\"");
@@ -1045,10 +1065,18 @@ xml_output_record_type (xml_dump_info_p xdi, tree rt, xml_dump_node_p dn)
       if (base_binfo)
         {
         /* Output this base class.  Default is public access.  */
+#if defined (XML_PRE_3_3_TREE_VIA_PUBLIC)
         const char* access = 0;
         if (TREE_VIA_PUBLIC (base_binfo)) { access = ""; }
         else if (TREE_VIA_PROTECTED (base_binfo)) { access = "protected:"; }
         else { access="private:"; }
+#else
+        tree n_access = (accesses ? TREE_VEC_ELT (accesses, i)
+                                  : access_public_node);
+        const char* access = "";
+        if (n_access == access_protected_node) { access = "protected:"; }
+        else if (n_access == access_private_node) { access = "private:"; }
+#endif
         
         fprintf (xdi->file, "%s_%d ", access,
                  xml_add_node (xdi, BINFO_TYPE (base_binfo), 1));
@@ -1556,8 +1584,8 @@ void xml_dump_files (xml_dump_info_p xdi)
   for(fq = xdi->file_queue; fq ; fq = next_fq)
     {
     fprintf (xdi->file, "  <File id=\"f%d\" name=\"%s\"/>\n",
-             (unsigned int) fq->node->value,
-             IDENTIFIER_POINTER ((tree) fq->node->key));
+             (unsigned int) fq->tree_node->value,
+             IDENTIFIER_POINTER ((tree) fq->tree_node->key));
     next_fq = fq->next;
     free (fq);
     }
