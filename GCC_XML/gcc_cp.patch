@@ -4,7 +4,7 @@ RCS file: /cvs/gcc/gcc/gcc/cp/Make-lang.in,v
 retrieving revision 1.77.2.3
 diff -c -3 -p -r1.77.2.3 Make-lang.in
 *** Make-lang.in	2001/05/12 20:32:52	1.77.2.3
---- Make-lang.in	2001/06/14 14:31:17
+--- Make-lang.in	2001/07/03 14:16:04
 *************** CXX_OBJS = cp/call.o cp/decl.o cp/errfn.
 *** 100,106 ****
    cp/class.o cp/decl2.o cp/error.o cp/lex.o cp/parse.o cp/ptree.o cp/rtti.o \
@@ -35,10 +35,10 @@ diff -c -3 -p -r1.77.2.3 Make-lang.in
 Index: cp-tree.h
 ===================================================================
 RCS file: /cvs/gcc/gcc/gcc/cp/cp-tree.h,v
-retrieving revision 1.572.2.29
-diff -c -3 -p -r1.572.2.29 cp-tree.h
-*** cp-tree.h	2001/06/06 21:51:10	1.572.2.29
---- cp-tree.h	2001/06/14 14:31:27
+retrieving revision 1.572.2.30
+diff -c -3 -p -r1.572.2.30 cp-tree.h
+*** cp-tree.h	2001/06/12 18:03:29	1.572.2.30
+--- cp-tree.h	2001/07/03 14:16:10
 *************** extern int flag_check_new;
 *** 1142,1147 ****
 --- 1142,1151 ----
@@ -53,8 +53,8 @@ diff -c -3 -p -r1.572.2.29 cp-tree.h
   /* C++ language-specific tree codes.  */
   #define DEFTREECODE(SYM, NAME, TYPE, LENGTH) SYM,
 *************** extern tree mangle_guard_variable       
-*** 4577,4582 ****
---- 4581,4589 ----
+*** 4581,4586 ****
+--- 4585,4593 ----
   
   /* in dump.c */
   extern int cp_dump_tree                         PARAMS ((dump_info_p, tree));
@@ -70,7 +70,7 @@ RCS file: /cvs/gcc/gcc/gcc/cp/decl2.c,v
 retrieving revision 1.437.2.25
 diff -c -3 -p -r1.437.2.25 decl2.c
 *** decl2.c	2001/06/06 21:51:11	1.437.2.25
---- decl2.c	2001/06/14 14:31:38
+--- decl2.c	2001/07/03 14:16:20
 *************** int flag_permissive;
 *** 436,441 ****
 --- 436,445 ----
@@ -107,7 +107,7 @@ RCS file: /cvs/gcc/gcc/gcc/cp/lang-options.h,v
 retrieving revision 1.37.4.3
 diff -c -3 -p -r1.37.4.3 lang-options.h
 *** lang-options.h	2001/06/11 21:20:06	1.37.4.3
---- lang-options.h	2001/06/14 14:31:38
+--- lang-options.h	2001/07/03 14:16:21
 *************** DEFINE_LANG_NAME ("C++")
 *** 117,122 ****
 --- 117,125 ----
@@ -126,7 +126,7 @@ RCS file: /cvs/gcc/gcc/gcc/cp/semantics.c,v
 retrieving revision 1.189.2.15
 diff -c -3 -p -r1.189.2.15 semantics.c
 *** semantics.c	2001/06/06 21:51:11	1.189.2.15
---- semantics.c	2001/06/14 14:31:44
+--- semantics.c	2001/07/03 14:16:24
 *************** finish_translation_unit ()
 *** 1663,1668 ****
 --- 1663,1672 ----
