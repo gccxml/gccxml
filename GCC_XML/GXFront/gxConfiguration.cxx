@@ -615,9 +615,13 @@ bool gxConfiguration::FindFlags()
     }
 
   // Dispatch to find compiler.
-  if(compilerName == "cl")
+  if(compilerName == "msvc6")
     {
     return this->FindFlagsMSVC6();
+    }
+  else if(compilerName == "msvc7")
+    {
+    return this->FindFlagsMSVC7();
     }
   else
     {
@@ -658,17 +662,17 @@ bool gxConfiguration::FindFlagsMSVC6()
 {
   // The registry key to use when attempting to automatically find the
   // MSVC include files.
-  const char* vcRegistry =
+  const char* vc6Registry =
     "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\DevStudio\\6.0\\Products\\Microsoft Visual C++;ProductDir";
   std::string msvcPath;
-  if(!gxSystemTools::ReadRegistryValue(vcRegistry, msvcPath))
+  if(!gxSystemTools::ReadRegistryValue(vc6Registry, msvcPath))
     {
     std::cerr << "Error finding MSVC 6.0 from registry.\n";
     return false;
     }
   msvcPath += "/Include";
   gxSystemTools::ConvertToUnixSlashes(msvcPath);
-  std::string vcIncludePath = m_GCCXML_ROOT+"/VcInclude";
+  std::string vcIncludePath = m_GCCXML_ROOT+"/Vc6/Include";
   gxSystemTools::ConvertToUnixSlashes(vcIncludePath);
   
   m_GCCXML_FLAGS =
@@ -680,6 +684,45 @@ bool gxConfiguration::FindFlagsMSVC6()
     "-D_WIN32 -D_M_IX86 -D_WCHAR_T_DEFINED "
     "-DPASCAL= -DRPC_ENTRY= -DSHSTDAPI=HRESULT -DSHSTDAPI_(x)=x "
     "-I\""+vcIncludePath+"\" -I\""+msvcPath+"\" ";
+  return true;
+}
+
+//----------------------------------------------------------------------------
+bool gxConfiguration::FindFlagsMSVC7()
+{
+  // The registry key to use when attempting to automatically find the
+  // MSVC include files.
+  const char* vc7Registry =
+    "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\VisualStudio\\7.0;InstallDir";
+  std::string msvcPath;
+  if(!gxSystemTools::ReadRegistryValue(vc7Registry, msvcPath))
+    {
+    std::cerr << "Error finding MSVC 7.0 from registry.\n";
+    return false;
+    }
+  std::string msvcPath1 = msvcPath+"/../../Vc7/Include";
+  std::string msvcPath2 = msvcPath+"/../../Vc7/PlatformSDK/Include";
+  msvcPath1 = gxSystemTools::CollapseDirectory(msvcPath1.c_str());
+  msvcPath2 = gxSystemTools::CollapseDirectory(msvcPath2.c_str());
+  gxSystemTools::ConvertToUnixSlashes(msvcPath1);
+  gxSystemTools::ConvertToUnixSlashes(msvcPath2);
+  std::string vcIncludePath1 = m_GCCXML_ROOT+"/Vc7/Include";
+  std::string vcIncludePath2 = m_GCCXML_ROOT+"/Vc7/PlatformSDK";
+  gxSystemTools::ConvertToUnixSlashes(vcIncludePath1);
+  gxSystemTools::ConvertToUnixSlashes(vcIncludePath2);
+  
+  m_GCCXML_FLAGS =
+    "-quiet -o /dev/null -nostdinc -I- -w -fsyntax-only "
+    "-D__stdcall= -D__cdecl= -D_stdcall= -D_cdecl= -D__cplusplus "
+    "-D_inline=inline -D__forceinline=__inline "
+    "-D_MSC_VER=1300 -D_MSC_EXTENSIONS -D_WIN32 -D_M_IX86 "
+    "-D_WCHAR_T_DEFINED -DPASCAL= -DRPC_ENTRY= -DSHSTDAPI=HRESULT "
+    "-D__declspec(x)= -D__uuidof(x)=IID() -DSHSTDAPI_(x)=x "
+    "-D__w64= -D__int64='long long' "
+    "-I\""+vcIncludePath1+"\" "
+    "-I\""+vcIncludePath2+"\" "
+    "-I\""+msvcPath1+"\" ";
+    "-I\""+msvcPath2+"\" ";
   return true;
 }
 
