@@ -119,6 +119,30 @@ interpret_int_suffix (s, len)
 
   u = l = i = 0;
 
+/* BEGIN GCC-XML MODIFICATIONS (2005/03/17 22:18:25) */
+  if(len >= 2 && len < 10)
+    {
+    char buf[10];
+    const uchar* p = s;
+    size_t plen = len;
+    int bits;
+    if(p[0] == 'u')
+      {
+      u = 1;
+      ++p;
+      --plen;
+      }
+    memcpy(buf, p, plen);
+    buf[len] = 0;
+    if(sscanf(buf, "i%d", &bits) == 1)
+      {
+      return ((u ? CPP_N_UNSIGNED : 0)
+              | ((bits < 32) ? CPP_N_SMALL
+                 : (bits < 64) ? CPP_N_MEDIUM : CPP_N_LARGE));
+      }
+    }
+/* END GCC-XML MODIFICATIONS (2005/03/17 22:18:25) */
+
   while (len--)
     switch (s[len])
       {
