@@ -96,9 +96,9 @@ struct include_file {
   unsigned short include_count; /* number of times file has been read */
   unsigned short refcnt;        /* number of stacked buffers using this file */
   unsigned char mapped;         /* file buffer is mmapped */
-/* BEGIN GCC-XML MODIFICATIONS (2003/12/16 20:03:59) */
-  const struct search_path wrapperfound; /* hack for supporting -iwrapper */
-/* END GCC-XML MODIFICATIONS (2003/12/16 20:03:59) */
+/* BEGIN GCC-XML MODIFICATIONS (2003/12/16 20:27:41) */
+  struct search_path wrapperfound; /* hack for supporting -iwrapper */
+/* END GCC-XML MODIFICATIONS (2003/12/16 20:27:41) */
 };
 
 /* Variable length record files on VMS will have a stat size that includes
@@ -602,7 +602,7 @@ find_include_file (pfile, header, type)
   /* Search directory path for the file.  */
   name = (char *) alloca (strlen (fname) + pfile->max_include_len + 2);
 
-/* BEGIN GCC-XML MODIFICATIONS (2003/12/16 20:03:59) */
+/* BEGIN GCC-XML MODIFICATIONS (2003/12/16 20:27:41) */
   /* Search the wrapper path first in all cases except include_next.  */
   if(!(type == IT_INCLUDE_NEXT && pfile->buffer->inc->foundhere))
     {
@@ -629,14 +629,14 @@ find_include_file (pfile, header, type)
         /* This is a header wrapper.  Hack include_next to look
            through full search path.  */
         file->foundhere = &file->wrapperfound;
-        memcpy(file->foundhere, path, sizeof(*path));
-        file->foundhere->next = path_orig;
+        memcpy(&file->wrapperfound, path, sizeof(*path));
+        file->wrapperfound.next = path_orig;
         return file;
         }
       }
     path = path_orig;
     }
-/* END GCC-XML MODIFICATIONS (2003/12/16 20:03:59) */
+/* END GCC-XML MODIFICATIONS (2003/12/16 20:27:41) */
 
   for (; path; path = path->next)
     {
