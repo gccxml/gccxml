@@ -54,13 +54,28 @@ INCLUDE_DIRECTORIES(${GCCXML_BINARY_DIR})
 SUBDIRS(KWSys)
 
 IF(UNIX)
+  # Installation directories.
+  IF(NOT GCCXML_DATA_DIR)
+    SET(GCCXML_DATA_DIR "/share/gccxml-${GCCXML_VERSION}" CACHE STRING
+      "Install location for data (relative to prefix).")
+    MARK_AS_ADVANCED(GCCXML_DATA_DIR)
+  ENDIF(NOT GCCXML_DATA_DIR)
+  IF(NOT GCCXML_DOC_DIR)
+    SET(GCCXML_DOC_DIR "/share/doc/gccxml-${GCCXML_VERSION}" CACHE STRING
+      "Install location for documentation (relative to prefix).")
+    MARK_AS_ADVANCED(GCCXML_DOC_DIR)
+  ENDIF(NOT GCCXML_DOC_DIR)
+  IF(NOT GCCXML_MAN_DIR)
+    SET(GCCXML_MAN_DIR "/share/man" CACHE STRING
+      "Install location for man pages (relative to prefix).")
+    MARK_AS_ADVANCED(GCCXML_MAN_DIR)
+  ENDIF(NOT GCCXML_MAN_DIR)
+
   # Installation rules for UNIX.
   SET(GCCXML_ROOT ${GCCXML_SOURCE_DIR}/Support)
-  SET(GCCXML_SHARE "/share/gccxml-${GCCXML_VERSION}")
-  SET(GCCXML_DOC "/share/doc/gccxml-${GCCXML_VERSION}")
   INSTALL_TARGETS(${GCCXML_INSTALL_ROOT}/bin gccxml)
-  INSTALL_FILES(${GCCXML_INSTALL_ROOT}/man/man1 .1 gccxml)
-  INSTALL_FILES(${GCCXML_INSTALL_ROOT}${GCCXML_DOC} .txt Copyright)
+  INSTALL_FILES(${GCCXML_INSTALL_ROOT}${GCCXML_MAN_DIR}/man1 .1 gccxml)
+  INSTALL_FILES(${GCCXML_INSTALL_ROOT}${GCCXML_DOC_DIR} .txt Copyright)
   SUBDIRS (Support)
 ELSE(UNIX)
   # Include file patch program for Windows.
@@ -83,7 +98,7 @@ IF(UNIX)
   CONFIGURE_FILE(${GCCXML_SOURCE_DIR}/GXFront/config_install.in
                  ${GCCXML_BINARY_DIR}/GXFront/InstallOnly/gccxml_config)
   IF(${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION} GREATER 1.4)
-    INSTALL_FILES(${GCCXML_INSTALL_ROOT}${GCCXML_SHARE} FILES
+    INSTALL_FILES(${GCCXML_INSTALL_ROOT}${GCCXML_DATA_DIR} FILES
                   ${GCCXML_BINARY_DIR}/GXFront/InstallOnly/gccxml_config)
   ENDIF(${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION} GREATER 1.4)
 ENDIF(UNIX)

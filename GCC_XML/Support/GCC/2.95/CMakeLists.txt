@@ -6,7 +6,7 @@ FOREACH(f
     new numeric queue set sstream stack stdexcept string strstream
     typeinfo utility valarray vector
     )
-  INSTALL_FILES(${GCCXML_INSTALL_ROOT}${GCCXML_SHARE}/GCC/2.95 FILES
+  INSTALL_FILES(${GCCXML_INSTALL_ROOT}${GCCXML_DATA_DIR}/GCC/2.95 FILES
     ${GCCXML_SUPPORT}/GCC/2.95/${f})
 ENDFOREACH(f)
 
@@ -16,6 +16,6 @@ FOREACH(f
     indirect_array.h mask_array.h slice_array.h
     std_valarray.h valarray_meta.h
     )
-  INSTALL_FILES(${GCCXML_INSTALL_ROOT}${GCCXML_SHARE}/GCC/2.95/std FILES
+  INSTALL_FILES(${GCCXML_INSTALL_ROOT}${GCCXML_DATA_DIR}/GCC/2.95/std FILES
     ${GCCXML_SUPPORT}/GCC/2.95/std/${f})
 ENDFOREACH(f)
