@@ -802,6 +802,22 @@ xml_output_namespace_decl (xml_dump_info_p xdi, tree ns, xml_dump_node_p dn)
             }
           }
         }
+#if defined(GCC_XML_GCC_VERSION) && (GCC_XML_GCC_VERSION >= 0x030300)
+      // Add child namespaces
+      for (cur_decl = cp_namespace_namespaces(ns); cur_decl;
+           cur_decl = TREE_CHAIN (cur_decl))
+        {
+        if (!DECL_INTERNAL_P (cur_decl))
+          {
+          int id = xml_add_node (xdi, cur_decl, 1);
+          if (id)
+            {
+            fprintf (xdi->file, "_%d ", id);
+            }
+          }
+        }
+#endif
+      
       fprintf (xdi->file, "\"");
       }
     
@@ -1247,16 +1263,33 @@ static void
 xml_output_method_type (xml_dump_info_p xdi, tree t, xml_dump_node_p dn)
 {
   tree arg_type;
+  tree this_type;
   
   fprintf (xdi->file, "  <MethodType");
   xml_print_id_attribute (xdi, dn);
   xml_print_base_type_attribute (xdi, TYPE_METHOD_BASETYPE (t), dn->complete);
   xml_print_returns_attribute (xdi, TREE_TYPE (t), dn->complete);
   xml_print_attributes_attribute (xdi, TYPE_ATTRIBUTES(t), 0);
-  fprintf (xdi->file, ">\n");
   
   /* Prepare to iterator through argument list.  */
   arg_type = TYPE_ARG_TYPES (t);
+
+  /* We need to find out if the implicity argument points to a CV
+     qualified type. */
+  this_type = TREE_TYPE(TREE_VALUE (arg_type));
+  if (this_type)
+    {
+    if (TYPE_READONLY (this_type))
+      {
+      fprintf (xdi->file, " const=\"1\"");
+      }
+    if (TYPE_VOLATILE (this_type))
+      {
+      fprintf (xdi->file, " volatile=\"1\"");
+      }
+    }
+  
+  fprintf (xdi->file, ">\n");
   
   /* Skip "this" argument.  */
   arg_type = TREE_CHAIN (arg_type);

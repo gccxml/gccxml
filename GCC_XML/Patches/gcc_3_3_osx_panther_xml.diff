@@ -1,10 +1,11 @@
+? gcc/cp/xml.c
 Index: gcc/c-common.c
 ===================================================================
 RCS file: /cvs/root/gcc3/gcc/c-common.c,v
 retrieving revision 1.88.2.15
 diff -c -3 -p -r1.88.2.15 c-common.c
-*** gcc/c-common.c	2003/07/17 19:24:26	1.88.2.15
---- gcc/c-common.c	2003/08/28 19:31:50
+*** c-common.c	2003/07/17 19:24:26	1.88.2.15
+--- c-common.c	2003/09/05 15:45:56
 *************** int warn_deprecated = 1;
 *** 760,766 ****
 --- 760,772 ----
@@ -26,8 +27,8 @@ Index: gcc/c-common.h
 RCS file: /cvs/root/gcc3/gcc/c-common.h,v
 retrieving revision 1.62.2.7
 diff -c -3 -p -r1.62.2.7 c-common.h
-*** gcc/c-common.h	2003/05/14 20:08:50	1.62.2.7
---- gcc/c-common.h	2003/08/28 19:31:51
+*** c-common.h	2003/05/14 20:08:50	1.62.2.7
+--- c-common.h	2003/09/05 15:45:57
 *************** extern int max_tinst_depth;
 *** 985,990 ****
 --- 985,996 ----
@@ -48,8 +49,8 @@ Index: gcc/c-opts.c
 RCS file: /cvs/root/gcc3/gcc/c-opts.c,v
 retrieving revision 1.11.2.12
 diff -c -3 -p -r1.11.2.12 c-opts.c
-*** gcc/c-opts.c	2003/07/07 20:59:05	1.11.2.12
---- gcc/c-opts.c	2003/08/28 19:31:52
+*** c-opts.c	2003/07/07 20:59:05	1.11.2.12
+--- c-opts.c	2003/09/05 15:45:58
 *************** static void sanitize_cpp_opts PARAMS ((v
 *** 312,317 ****
 --- 312,319 ----
@@ -109,8 +110,8 @@ Index: gcc/cp/Make-lang.in
 RCS file: /cvs/root/gcc3/gcc/cp/Make-lang.in,v
 retrieving revision 1.54.2.4
 diff -c -3 -p -r1.54.2.4 Make-lang.in
-*** gcc/cp/Make-lang.in	2003/05/06 23:58:30	1.54.2.4
---- gcc/cp/Make-lang.in	2003/08/28 19:31:52
+*** Make-lang.in	2003/05/06 23:58:30	1.54.2.4
+--- Make-lang.in	2003/09/05 15:46:09
 *************** CXX_AND_OBJCP_OBJS = \
 *** 102,108 ****
    cp/class.o cp/decl2.o cp/error.o cp/lex.o cp/ptree.o cp/rtti.o \
@@ -143,14 +144,25 @@ Index: gcc/cp/cp-tree.h
 RCS file: /cvs/root/gcc3/gcc/cp/cp-tree.h,v
 retrieving revision 1.80.2.8
 diff -c -3 -p -r1.80.2.8 cp-tree.h
-*** gcc/cp/cp-tree.h	2003/07/14 17:34:25	1.80.2.8
---- gcc/cp/cp-tree.h	2003/08/28 19:31:56
-*************** extern int  cxx_dump_lineno_p 			PARAMS 
-*** 4500,4505 ****
+*** cp-tree.h	2003/07/14 17:34:25	1.80.2.8
+--- cp-tree.h	2003/09/05 15:46:11
+*************** extern int walk_namespaces              
+*** 3839,3844 ****
+--- 3839,3845 ----
+  						       void *));
+  extern int wrapup_globals_for_namespace         PARAMS ((tree, void *));
+  extern tree cp_namespace_decls                  PARAMS ((tree));
++ extern tree cp_namespace_namespaces             PARAMS ((tree));
+  extern tree create_implicit_typedef             PARAMS ((tree, tree));
+  extern tree maybe_push_decl                     PARAMS ((tree));
+  extern tree build_target_expr_with_type         PARAMS ((tree, tree));
+*************** extern int  cxx_dump_blank_line_p 		PARA
+*** 4499,4504 ****
 --- 4500,4515 ----
+  extern int  cxx_dump_lineno_p 			PARAMS ((FILE *, tree));
   extern int  cxx_dmp_tree3			PARAMS ((FILE *, tree, int));
   /* APPLE LOCAL end new tree dump */
-  
++ 
 + /* Tell xml.c what version of GCC is being built.  Format is 0xMMmmpp,
 +    where MM is the major version number, mm is the minor version
 +    number, and pp is the patch level.
@@ -160,17 +172,41 @@ diff -c -3 -p -r1.80.2.8 cp-tree.h
 + 
 + /* in xml.c */
 + extern void do_xml_output                       PARAMS ((const char *));
-+ 
+  
   /* -- end of C++ */
   
-  #endif /* ! GCC_CP_TREE_H */
+Index: gcc/cp/decl.c
+===================================================================
+RCS file: /cvs/root/gcc3/gcc/cp/decl.c,v
+retrieving revision 1.129.2.9
+diff -c -3 -p -r1.129.2.9 decl.c
+*** decl.c	2003/07/21 17:51:29	1.129.2.9
+--- decl.c	2003/09/05 15:46:14
+*************** cp_namespace_decls (ns)
+*** 1849,1854 ****
+--- 1849,1863 ----
+    return NAMESPACE_LEVEL (ns)->names;
+  }
+  
++ /* Return the namespace declarations that are members of the namespace NS.  */
++ 
++ tree
++ cp_namespace_namespaces(ns)
++      tree ns;
++ {
++   return NAMESPACE_LEVEL (ns)->namespaces;
++ }
++ 
+  struct walk_globals_data {
+    walk_globals_pred p;
+    walk_globals_fn f;
 Index: gcc/cp/lang-options.h
 ===================================================================
 RCS file: /cvs/root/gcc3/gcc/cp/lang-options.h,v
 retrieving revision 1.5.22.1
 diff -c -3 -p -r1.5.22.1 lang-options.h
-*** gcc/cp/lang-options.h	2003/05/14 20:08:58	1.5.22.1
---- gcc/cp/lang-options.h	2003/08/28 19:31:56
+*** lang-options.h	2003/05/14 20:08:58	1.5.22.1
+--- lang-options.h	2003/09/05 15:46:15
 *************** DEFINE_LANG_NAME ("C++")
 *** 122,127 ****
 --- 122,131 ----
@@ -189,8 +225,8 @@ Index: gcc/cp/semantics.c
 RCS file: /cvs/root/gcc3/gcc/cp/semantics.c,v
 retrieving revision 1.46.2.1
 diff -c -3 -p -r1.46.2.1 semantics.c
-*** gcc/cp/semantics.c	2003/03/10 21:43:11	1.46.2.1
---- gcc/cp/semantics.c	2003/08/28 19:31:59
+*** semantics.c	2003/03/10 21:43:11	1.46.2.1
+--- semantics.c	2003/09/05 15:46:16
 *************** finish_translation_unit ()
 *** 1608,1613 ****
 --- 1608,1617 ----

@@ -4,7 +4,7 @@ RCS file: /cvsroot/gcc/gcc/gcc/c-common.c,v
 retrieving revision 1.393.2.5
 diff -c -3 -p -r1.393.2.5 c-common.c
 *** gcc/c-common.c	7 Jun 2003 22:13:24 -0000	1.393.2.5
---- gcc/c-common.c	27 Aug 2003 14:53:43 -0000
+--- gcc/c-common.c	5 Sep 2003 15:42:48 -0000
 *************** int flag_permissive;
 *** 568,573 ****
 --- 568,582 ----
@@ -29,7 +29,7 @@ RCS file: /cvsroot/gcc/gcc/gcc/c-common.h,v
 retrieving revision 1.164
 diff -c -3 -p -r1.164 c-common.h
 *** gcc/c-common.h	1 Dec 2002 17:51:44 -0000	1.164
---- gcc/c-common.h	27 Aug 2003 14:53:44 -0000
+--- gcc/c-common.h	5 Sep 2003 15:42:50 -0000
 *************** extern int flag_permissive;
 *** 732,737 ****
 --- 732,745 ----
@@ -53,7 +53,7 @@ RCS file: /cvsroot/gcc/gcc/gcc/c-opts.c,v
 retrieving revision 1.24.6.3
 diff -c -3 -p -r1.24.6.3 c-opts.c
 *** gcc/c-opts.c	12 Jun 2003 11:58:31 -0000	1.24.6.3
---- gcc/c-opts.c	27 Aug 2003 14:53:44 -0000
+--- gcc/c-opts.c	5 Sep 2003 15:42:52 -0000
 *************** static void sanitize_cpp_opts PARAMS ((v
 *** 253,258 ****
 --- 253,260 ----
@@ -94,7 +94,7 @@ RCS file: /cvsroot/gcc/gcc/gcc/cp/Make-lang.in,v
 retrieving revision 1.125.4.6
 diff -c -3 -p -r1.125.4.6 Make-lang.in
 *** gcc/cp/Make-lang.in	23 Jun 2003 20:31:53 -0000	1.125.4.6
---- gcc/cp/Make-lang.in	27 Aug 2003 14:53:44 -0000
+--- gcc/cp/Make-lang.in	5 Sep 2003 15:42:56 -0000
 *************** CXX_OBJS = cp/call.o cp/decl.o cp/expr.o
 *** 86,92 ****
    cp/class.o cp/decl2.o cp/error.o cp/lex.o cp/parse.o cp/ptree.o cp/rtti.o \
@@ -128,13 +128,24 @@ RCS file: /cvsroot/gcc/gcc/gcc/cp/cp-tree.h,v
 retrieving revision 1.776.2.30
 diff -c -3 -p -r1.776.2.30 cp-tree.h
 *** gcc/cp/cp-tree.h	25 Jul 2003 00:30:59 -0000	1.776.2.30
---- gcc/cp/cp-tree.h	27 Aug 2003 14:53:45 -0000
+--- gcc/cp/cp-tree.h	5 Sep 2003 15:43:06 -0000
+*************** extern int walk_namespaces              
+*** 3845,3850 ****
+--- 3845,3851 ----
+  						       void *));
+  extern int wrapup_globals_for_namespace         PARAMS ((tree, void *));
+  extern tree cp_namespace_decls                  PARAMS ((tree));
++ extern tree cp_namespace_namespaces             PARAMS ((tree));
+  extern tree create_implicit_typedef             PARAMS ((tree, tree));
+  extern tree maybe_push_decl                     PARAMS ((tree));
+  extern tree build_target_expr_with_type         PARAMS ((tree, tree));
 *************** extern tree mangle_ref_init_variable    
-*** 4485,4490 ****
+*** 4484,4489 ****
 --- 4485,4506 ----
+  
   /* in dump.c */
   extern int cp_dump_tree                         PARAMS ((void *, tree));
-  
++ 
 + /* Filename for xml dump of translation unit.  */
 + extern const char* flag_xml;
 + 
@@ -150,17 +161,40 @@ diff -c -3 -p -r1.776.2.30 cp-tree.h
 + 
 + /* in xml.c */
 + extern void do_xml_output                       PARAMS ((const char *));
-+ 
+  
   /* -- end of C++ */
   
-  #endif /* ! GCC_CP_TREE_H */
+Index: gcc/cp/decl.c
+===================================================================
+RCS file: /cvsroot/gcc/gcc/gcc/cp/decl.c,v
+retrieving revision 1.965.2.58
+diff -c -3 -p -r1.965.2.58 decl.c
+*** gcc/cp/decl.c	25 Jul 2003 00:31:00 -0000	1.965.2.58
+--- gcc/cp/decl.c	5 Sep 2003 15:43:20 -0000
+*************** cp_namespace_decls (ns)
+*** 2020,2025 ****
+--- 2020,2033 ----
+    return NAMESPACE_LEVEL (ns)->names;
+  }
+  
++ /* Return the namespace declarations that are members of the namespace NS.  */
++ tree
++ cp_namespace_namespaces (ns)
++      tree ns;
++ {
++   return NAMESPACE_LEVEL (ns)->namespaces;
++ }
++ 
+  struct walk_globals_data {
+    walk_globals_pred p;
+    walk_globals_fn f;
 Index: gcc/cp/lang-options.h
 ===================================================================
 RCS file: /cvsroot/gcc/gcc/gcc/cp/Attic/lang-options.h,v
 retrieving revision 1.43.38.1
 diff -c -3 -p -r1.43.38.1 lang-options.h
 *** gcc/cp/lang-options.h	29 Apr 2003 14:31:52 -0000	1.43.38.1
---- gcc/cp/lang-options.h	27 Aug 2003 14:53:45 -0000
+--- gcc/cp/lang-options.h	5 Sep 2003 15:43:20 -0000
 *************** DEFINE_LANG_NAME ("C++")
 *** 117,122 ****
 --- 117,126 ----
@@ -180,7 +214,7 @@ RCS file: /cvsroot/gcc/gcc/gcc/cp/semantics.c,v
 retrieving revision 1.282.4.6
 diff -c -3 -p -r1.282.4.6 semantics.c
 *** gcc/cp/semantics.c	6 Jul 2003 22:02:17 -0000	1.282.4.6
---- gcc/cp/semantics.c	27 Aug 2003 14:53:45 -0000
+--- gcc/cp/semantics.c	5 Sep 2003 15:43:21 -0000
 *************** finish_translation_unit ()
 *** 1598,1603 ****
 --- 1598,1607 ----
