@@ -8,8 +8,8 @@ SUBDIR=MproInclude
 PROGRAMS="find_mpro_options"
 
 # Headers to be installed from this directory are listed here.
-HEADERS="iosfwd stl_config.h stl_monetary.h stl_threads.h ostream stl_locale.h
-         stl_numeric_facets.h string"
+HEADERS="stddef.h stl_config.h stl_monetary.h stl_threads.h ostream
+         stl_locale.h stl_numeric_facets.h string"
 
 # Source the subdirectory installation utility script.
 RUNNING_SUBDIR_INSTALL="yes"

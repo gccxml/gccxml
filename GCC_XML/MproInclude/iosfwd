@@ -1,9 +1,0 @@
-#ifndef __SGI_STL_IOSFWD_GCCXML
-#define __SGI_STL_IOSFWD_GCCXML
-
-#define _STANDARD_C_PLUS_PLUS
-
-#include_next <iosfwd>
-
-#endif
-

@@ -5,6 +5,7 @@
 
 __STL_BEGIN_NAMESPACE
 
+class locale;
 template <class _CharT> class collate;
 template <class _Facet> inline const _Facet& use_facet(const locale& __loc);
 

@@ -14,6 +14,15 @@ s/ -/\\
 sed -n '/^-D.*$/{s/-D\([^=]*\)=\([^ ]\{1,\} .*\)/-D\1='\''\2'\''/;p;}' |
 sed -n 'H;${g;s/\n/ /g;p;}'`
 
+# Find and translate the -LANG:std option into -D_STANDARD_C_PLUS_PLUS
+LANGSTD=`
+CC ${CXXFLAGS} -E -v /tmp/find_mpro_options_temp.cxx 2>&1 |
+sed -n '/_COMPILER_VERSION/{s/ \/tmp\/find_mpro_options_temp.cxx.*$//
+s/ -/\\
+-/g;p;}' |
+sed -n '/^-LANG:std.*$/{s/-LANG:std/-D_STANDARD_C_PLUS_PLUS/;p;}' |
+sed -n 'H;${g;s/\n/ /g;p;}'`
+
 # Find the include path options.
 INCLUDES=`
 CC ${CXXFLAGS} -E -v /tmp/find_mpro_options_temp.cxx 2>&1 |
@@ -25,4 +34,4 @@ sed -n 'H;${g;s/\n/ /g;p;}'`
 
 rm -f /tmp/find_mpro_options_temp.cxx
 
-echo $STANDARD $MACROS $INCLUDES
+echo $STANDARD $MACROS $LANGSTD $INCLUDES
