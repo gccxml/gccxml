@@ -1029,7 +1029,7 @@ print_scope_ref_empty_tag (FILE* file, unsigned long indent, tree t)
 
 
 /* Print XML empty tag for an integer literal element (INTEGER_CST).  */
-void
+static void
 print_integer_cst_empty_tag (FILE * file, unsigned long indent, tree t)
 {
   print_indent (file, indent);
@@ -1937,15 +1937,11 @@ xml_get_encoded_string (tree in_id)
     return "";
 }
 
-/*
-  #define XML_AMPERSAND     "&#x0026;"
-  #define XML_LESS_THAN     "&#x003C;"
-  #define XML_GREATER_THAN  "&#x003E;"
-*/
-
 #define XML_AMPERSAND     "&amp;"
 #define XML_LESS_THAN     "&lt;"
 #define XML_GREATER_THAN  "&gt;"
+#define XML_SINGLE_QUOTE  "&apos;"
+#define XML_DOUBLE_QUOTE  "&quot;"
 
 /* Convert the name IN_STR to an XML encoded form.
    This replaces '&', '<', and '>'
@@ -1968,6 +1964,8 @@ xml_get_encoded_string_from_string (const char* in_str)
       case '&': length_increase += strlen(XML_AMPERSAND)-1; break;
       case '<': length_increase += strlen(XML_LESS_THAN)-1; break;
       case '>': length_increase += strlen(XML_GREATER_THAN)-1; break;
+      case '\'': length_increase += strlen(XML_SINGLE_QUOTE)-1; break;
+      case '"': length_increase += strlen(XML_DOUBLE_QUOTE)-1; break;
       }
     }
 
@@ -1982,6 +1980,8 @@ xml_get_encoded_string_from_string (const char* in_str)
       case '&': strcpy (outCh, XML_AMPERSAND); outCh += strlen(XML_AMPERSAND); break;
       case '<': strcpy (outCh, XML_LESS_THAN);  outCh += strlen(XML_LESS_THAN); break;
       case '>': strcpy (outCh, XML_GREATER_THAN);  outCh += strlen(XML_GREATER_THAN); break;
+      case '\'': strcpy (outCh, XML_SINGLE_QUOTE);  outCh += strlen(XML_SINGLE_QUOTE); break;
+      case '"': strcpy (outCh, XML_DOUBLE_QUOTE);  outCh += strlen(XML_DOUBLE_QUOTE); break;
       default: *outCh++ = *inCh;
       }
     }  
@@ -1998,6 +1998,8 @@ xml_get_encoded_string_from_string (const char* in_str)
 #undef XML_AMPERSAND
 #undef XML_LESS_THAN
 #undef XML_GREATER_THAN
+#undef XML_SINGLE_QUOTE
+#undef XML_DOUBLE_QUOTE
 
 /* Print N spaces to FILE.  Used for indentation of XML output.  */
 void
