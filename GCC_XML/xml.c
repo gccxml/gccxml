@@ -652,6 +652,36 @@ xml_print_array_attributes (xml_dump_info_p xdi, tree at)
   fprintf (xdi->file, " min=\"0\" max=\"%s\"", length);
 }
 
+/* Print XML attribute listing types that this type can throw.  */
+static void
+xml_print_throw_attribute(xml_dump_info_p xdi, tree ft, int complete)
+{
+  tree raises = TYPE_RAISES_EXCEPTIONS (ft);
+  if(raises)
+    {
+    fprintf (xdi->file, " throw=\"");
+    if(TREE_VALUE (raises))
+      {
+      for (;
+           raises != NULL_TREE; raises = TREE_CHAIN (raises))
+        {
+        tree t = TREE_VALUE (raises);
+        const char* ch_const = "";
+        const char* ch_volatile = "";
+        const char* ch_restrict = "";
+        int id = xml_add_node (xdi, TYPE_MAIN_VARIANT (t), complete);
+        if (CP_TYPE_CONST_P (t)) { ch_const = "c"; }
+        if (CP_TYPE_VOLATILE_P (t)) { ch_volatile = "v"; }
+        if (CP_TYPE_RESTRICT_P (t)) { ch_restrict = "r"; }
+        fprintf (xdi->file, "%s_%d%s%s%s",
+                 (raises == TYPE_RAISES_EXCEPTIONS (ft))?"":" ",
+                 id, ch_const, ch_volatile, ch_restrict);
+        }
+      }
+    fprintf (xdi->file, "\"");
+    }
+}
+
 /* Print XML empty tag describing an unimplemented TREE_CODE that has been
    encountered.  */
 static void
@@ -888,6 +918,7 @@ xml_output_function_decl (xml_dump_info_p xdi, tree fd, xml_dump_node_p dn)
   if(do_const)   xml_print_const_method_attribute (xdi, fd);
   if(do_virtual) xml_print_virtual_method_attributes (xdi, fd);
   if(do_static)  xml_print_static_method_attribute (xdi, fd);
+  xml_print_throw_attribute (xdi, TREE_TYPE (fd), dn->complete);
   xml_print_context_attribute (xdi, fd);
   xml_print_location_attribute (xdi, fd);
   xml_print_function_extern_attribute (xdi, fd);
