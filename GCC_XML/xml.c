@@ -1447,7 +1447,7 @@ xml_add_type_decl (xml_dump_info_p xdi, tree td, int complete)
 static int
 xml_add_overload (xml_dump_info_p xdi, tree o, int complete)
 {
-  tree cur_overload = TREE_VALUE (o);
+  tree cur_overload = o;
   while (cur_overload)
     {
     xml_add_node (xdi, OVL_CURRENT (cur_overload), complete);
@@ -1615,6 +1615,9 @@ xml_add_node (xml_dump_info_p xdi, tree n, int complete)
       return xml_add_type_decl(xdi, n, complete);
       break;
     case TREE_LIST:
+      return xml_add_overload (xdi, TREE_VALUE (n), complete);
+      break;
+    case OVERLOAD:
       return xml_add_overload (xdi, n, complete);
       break;
     case TEMPLATE_DECL:
