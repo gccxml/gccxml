@@ -271,15 +271,21 @@ static void
 print_destructor_begin_tag (FILE* file, unsigned long indent, tree fd)
 {
   const char* access = "";
+  int is_virtual;
 
   if (TREE_PRIVATE (fd))        access = "private";
   else if (TREE_PROTECTED (fd)) access = "protected";
-  else                          access = "public";  
+  else                          access = "public";
+
+  if (DECL_VIRTUAL_P (fd))
+    is_virtual = 1;
+  else
+    is_virtual = 0;
 
   print_indent (file, indent);
   fprintf (file,
-           "<Destructor access=\"%s\">\n",
-           access);
+           "<Destructor access=\"%s\" virtual=\"%d\">\n",
+           access, is_virtual);
 }
 
 
@@ -299,15 +305,27 @@ static void
 print_converter_begin_tag (FILE* file, unsigned long indent, tree fd)
 {
   const char* access = "";
-  
+  int is_virtual;
+  int is_pure_virtual;
+
   if (TREE_PRIVATE (fd))        access = "private";
   else if (TREE_PROTECTED (fd)) access = "protected";
   else                          access = "public";  
+
+  if (DECL_VIRTUAL_P (fd))
+    is_virtual = 1;
+  else
+    is_virtual = 0;
+
+  if (DECL_PURE_VIRTUAL_P (fd))
+    is_pure_virtual = 1;
+  else
+    is_pure_virtual = 0;
   
   print_indent (file, indent);
   fprintf (file,
-           "<Converter access=\"%s\">\n",
-           access);
+           "<Converter access=\"%s\" virtual=\"%d\" pure_virtual=\"%d\">\n",
+           access, is_virtual, is_pure_virtual);
 }
 
 
@@ -350,15 +368,27 @@ print_operator_method_begin_tag (FILE* file, unsigned long indent, tree fd)
 {
   const char* name = xml_get_encoded_string (reverse_opname_lookup (DECL_NAME (fd)) );
   const char* access = "";
+  int is_virtual;
+  int is_pure_virtual;
 
   if (TREE_PRIVATE (fd))        access = "private";
   else if (TREE_PROTECTED (fd)) access = "protected";
   else                          access = "public";  
 
+  if (DECL_VIRTUAL_P (fd))
+    is_virtual = 1;
+  else
+    is_virtual = 0;
+
+  if (DECL_PURE_VIRTUAL_P (fd))
+    is_pure_virtual = 1;
+  else
+    is_pure_virtual = 0;
+
   print_indent (file, indent);
   fprintf (file,
-           "<OperatorMethod name=\"%s\" access=\"%s\">\n",
-           name, access);
+           "<OperatorMethod name=\"%s\" access=\"%s\" virtual=\"%d\" pure_virtual=\"%d\">\n",
+           name, access, is_virtual, is_pure_virtual);
 }
 
 
@@ -379,6 +409,8 @@ print_method_begin_tag (FILE* file, unsigned long indent, tree fd)
   const char* name = xml_get_encoded_string (DECL_NAME (fd));
   const char* access = "";
   int is_static;
+  int is_virtual;
+  int is_pure_virtual;
 
   if (TREE_PRIVATE (fd))        access = "private";
   else if (TREE_PROTECTED (fd)) access = "protected";
@@ -389,10 +421,20 @@ print_method_begin_tag (FILE* file, unsigned long indent, tree fd)
   else
     is_static = 1;
 
+  if (DECL_VIRTUAL_P (fd))
+    is_virtual = 1;
+  else
+    is_virtual = 0;
+
+  if (DECL_PURE_VIRTUAL_P (fd))
+    is_pure_virtual = 1;
+  else
+    is_pure_virtual = 0;
+
   print_indent (file, indent);
   fprintf (file,
-           "<Method name=\"%s\" access=\"%s\" static=\"%d\">\n",
-           name, access, is_static);
+           "<Method name=\"%s\" access=\"%s\" static=\"%d\" virtual=\"%d\" pure_virtual=\"%d\">\n",
+           name, access, is_static, is_virtual, is_pure_virtual);
 }
 
 
