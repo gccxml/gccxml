@@ -1156,7 +1156,7 @@ xml_output_enumeral_type (xml_dump_info_p xdi, tree t, xml_dump_node_p dn)
 {
   tree tv;
   
-  fprintf (xdi->file, "  <EnumerationType");
+  fprintf (xdi->file, "  <Enumeration");
   xml_print_id_attribute(xdi, dn);
   xml_print_name_attribute (xdi, DECL_NAME (TYPE_NAME (t)));
   xml_print_access_attribute (xdi, TYPE_NAME (t));
@@ -1172,7 +1172,7 @@ xml_output_enumeral_type (xml_dump_info_p xdi, tree t, xml_dump_node_p dn)
              xml_get_encoded_string ( TREE_PURPOSE(tv)), value);
     }
   
-  fprintf (xdi->file, "  </EnumerationType>\n");
+  fprintf (xdi->file, "  </Enumeration>\n");
 }
 
 /* ------------------------------------------------------------------------ */
