@@ -277,6 +277,32 @@ std::string gxSystemTools::CollapseDirectory(const char* in_dir)
 }
 
 //----------------------------------------------------------------------------
+void gxSystemTools::ConvertToUnixSlashes(std::string& path)
+{
+  std::string::size_type pos = 0;
+  while((pos = path.find('\\', pos)) != std::string::npos)
+    {
+    path[pos] = '/';
+    pos++;
+    }
+  // remove any trailing slash
+  if(path.size() && path[path.size()-1] == '/')
+    {
+    path = path.substr(0, path.size()-1);
+    }
+
+  // if there is a tilda ~ then replace it with HOME
+  if(path.find("~") == 0)
+    {
+    std::string home;
+    if(gxSystemTools::GetEnv("HOME", home))
+      {
+      path = home + path.substr(1);
+      }
+    }
+}
+
+//----------------------------------------------------------------------------
 std::string gxSystemTools::GetCWD()
 {
   char buf[2048];
