@@ -1,32 +1,25 @@
 Index: Make-lang.in
 ===================================================================
-RCS file: /cvs/gcc/gcc/gcc/cp/Make-lang.in,v
-retrieving revision 1.77.2.3
-diff -c -3 -p -r1.77.2.3 Make-lang.in
-*** Make-lang.in	2001/05/12 20:32:52	1.77.2.3
---- Make-lang.in	2001/07/03 14:16:04
-*************** CXX_OBJS = cp/call.o cp/decl.o cp/errfn.
-*** 100,106 ****
+RCS file: /cvsroot/gcc/gcc/gcc/cp/Make-lang.in,v
+retrieving revision 1.77.2.7
+diff -c -3 -p -r1.77.2.7 Make-lang.in
+*** Make-lang.in	14 Nov 2001 22:33:42 -0000	1.77.2.7
+--- Make-lang.in	12 Mar 2002 21:41:09 -0000
+*************** CXX_C_OBJS = c-common.o c-format.o c-pra
+*** 98,103 ****
+--- 98,104 ----
+  # Language-specific object files.
+  CXX_OBJS = cp/call.o cp/decl.o cp/errfn.o cp/expr.o cp/pt.o cp/typeck2.o \
    cp/class.o cp/decl2.o cp/error.o cp/lex.o cp/parse.o cp/ptree.o cp/rtti.o \
++  cp/xml.o \
    cp/spew.o cp/typeck.o cp/cvt.o cp/except.o cp/friend.o cp/init.o cp/method.o \
    cp/search.o cp/semantics.o cp/tree.o cp/xref.o cp/repo.o cp/dump.o \
-!  cp/optimize.o cp/mangle.o
-  
-  # Use loose warnings for this front end.
-  cp-warn =
---- 100,106 ----
-   cp/class.o cp/decl2.o cp/error.o cp/lex.o cp/parse.o cp/ptree.o cp/rtti.o \
-   cp/spew.o cp/typeck.o cp/cvt.o cp/except.o cp/friend.o cp/init.o cp/method.o \
-   cp/search.o cp/semantics.o cp/tree.o cp/xref.o cp/repo.o cp/dump.o \
-!  cp/optimize.o cp/mangle.o cp/xml.o
-  
-  # Use loose warnings for this front end.
-  cp-warn =
+   cp/optimize.o cp/mangle.o
 *************** cp/dump.o: cp/dump.c $(CXX_TREE_H) c-dum
-*** 275,280 ****
---- 275,281 ----
+*** 276,281 ****
+--- 277,283 ----
   cp/optimize.o: cp/optimize.c $(CXX_TREE_H) rtl.h integrate.h insn-config.h \
-    input.h params.h
+    input.h $(PARAMS_H)
   cp/mangle.o: cp/mangle.c $(CXX_TREE_H) toplev.h
 + cp/xml.o: cp/xml.c $(CXX_TREE_H) toplev.h
   
@@ -34,59 +27,58 @@ diff -c -3 -p -r1.77.2.3 Make-lang.in
   	system.h toplev.h $(GGC_H)
 Index: cp-tree.h
 ===================================================================
-RCS file: /cvs/gcc/gcc/gcc/cp/cp-tree.h,v
-retrieving revision 1.572.2.30
-diff -c -3 -p -r1.572.2.30 cp-tree.h
-*** cp-tree.h	2001/06/12 18:03:29	1.572.2.30
---- cp-tree.h	2001/07/03 14:16:10
-*************** extern int flag_check_new;
-*** 1142,1147 ****
---- 1142,1151 ----
-  
-  extern const char *flag_dump_class_layout;
+RCS file: /cvsroot/gcc/gcc/gcc/cp/cp-tree.h,v
+retrieving revision 1.572.2.36
+diff -c -3 -p -r1.572.2.36 cp-tree.h
+*** cp-tree.h	8 Dec 2001 16:12:51 -0000	1.572.2.36
+--- cp-tree.h	12 Mar 2002 21:41:17 -0000
+*************** extern tree mangle_guard_variable       
+*** 4586,4591 ****
+--- 4586,4602 ----
+  /* in dump.c */
+  extern int cp_dump_tree                         PARAMS ((dump_info_p, tree));
   
 + /* Filename for xml dump of translation unit.  */
 + 
 + extern const char* flag_xml;
 + 
-  
-  /* C++ language-specific tree codes.  */
-  #define DEFTREECODE(SYM, NAME, TYPE, LENGTH) SYM,
-*************** extern tree mangle_guard_variable       
-*** 4581,4586 ****
---- 4585,4593 ----
-  
-  /* in dump.c */
-  extern int cp_dump_tree                         PARAMS ((dump_info_p, tree));
++ /* Start locations for dump of translation unit.  */
++ 
++ extern const char* flag_xml_start;
 + 
 + /* in xml.c */
 + extern void do_xml_output                       PARAMS((const char *));
-  
++ 
   /* -- end of C++ */
   
+  #endif /* not _CP_TREE_H */
 Index: decl2.c
 ===================================================================
-RCS file: /cvs/gcc/gcc/gcc/cp/decl2.c,v
-retrieving revision 1.437.2.25
-diff -c -3 -p -r1.437.2.25 decl2.c
-*** decl2.c	2001/06/06 21:51:11	1.437.2.25
---- decl2.c	2001/07/03 14:16:20
-*************** int flag_permissive;
-*** 436,441 ****
---- 436,445 ----
+RCS file: /cvsroot/gcc/gcc/gcc/cp/decl2.c,v
+retrieving revision 1.437.2.29
+diff -c -3 -p -r1.437.2.29 decl2.c
+*** decl2.c	30 Nov 2001 03:12:42 -0000	1.437.2.29
+--- decl2.c	12 Mar 2002 21:41:27 -0000
+*************** int flag_enforce_eh_specs = 1;
+*** 440,445 ****
+--- 440,453 ----
   
-  int flag_enforce_eh_specs = 1;
+  c_language_kind c_language = clk_cplusplus;
   
 + /* Filename for xml dump of translation unit.  */
 + 
 + const char* flag_xml = 0;
 + 
-  /* The variant of the C language being processed.  */
-  
-  c_language_kind c_language = clk_cplusplus;
++ /* Start locations for dump of translation unit.  */
++ 
++ const char* flag_xml_start = 0;
++ 
+  /* Table of language-dependent -f options.
+     STRING is the option name.  VARIABLE is the address of the variable.
+     ON_VALUE is the value to store in VARIABLE
 *************** cxx_decode_option (argc, argv)
 *** 601,606 ****
---- 605,618 ----
+--- 609,630 ----
   	  warning ("-fname-mangling-version is no longer supported");
   	  return 1;
   	}
@@ -98,38 +90,47 @@ diff -c -3 -p -r1.437.2.25 decl2.c
 +         else
 +           flag_xml = option_value;
 +   	}
++       else if ((option_value
++                 = skip_leading_substring (p, "xml-start=")))
++  	{
++         if (*option_value == '\0')
++           error ("no location specified with -fxml-start");
++         else
++           flag_xml_start = option_value;
++   	}
         else if (dump_switch_p (p))
   	;
         else 
 Index: lang-options.h
 ===================================================================
-RCS file: /cvs/gcc/gcc/gcc/cp/lang-options.h,v
-retrieving revision 1.37.4.3
-diff -c -3 -p -r1.37.4.3 lang-options.h
-*** lang-options.h	2001/06/11 21:20:06	1.37.4.3
---- lang-options.h	2001/07/03 14:16:21
+RCS file: /cvsroot/gcc/gcc/gcc/cp/lang-options.h,v
+retrieving revision 1.37.4.4
+diff -c -3 -p -r1.37.4.4 lang-options.h
+*** lang-options.h	2 Aug 2001 14:23:12 -0000	1.37.4.4
+--- lang-options.h	12 Mar 2002 21:41:27 -0000
 *************** DEFINE_LANG_NAME ("C++")
-*** 117,122 ****
---- 117,125 ----
+*** 114,119 ****
+--- 114,123 ----
     { "-fweak", 
       N_("Emit common-like symbols as weak symbols") },
     { "-fno-weak", "" },
 +   { "-fxml=",
 +     N_("Enable XML output to a file (use with -fsyntax-only)") },
 +   { "-fno-xml", "" },
++   { "-fxml-start=", "Specify start locations for XML dump (use with -fxml)" },
     { "-fxref", 
       N_("Emit cross referencing information") },
     { "-fno-xref", "" },
 Index: semantics.c
 ===================================================================
-RCS file: /cvs/gcc/gcc/gcc/cp/semantics.c,v
-retrieving revision 1.189.2.15
-diff -c -3 -p -r1.189.2.15 semantics.c
-*** semantics.c	2001/06/06 21:51:11	1.189.2.15
---- semantics.c	2001/07/03 14:16:24
+RCS file: /cvsroot/gcc/gcc/gcc/cp/semantics.c,v
+retrieving revision 1.189.2.19
+diff -c -3 -p -r1.189.2.19 semantics.c
+*** semantics.c	31 Jan 2002 22:46:46 -0000	1.189.2.19
+--- semantics.c	12 Mar 2002 21:41:31 -0000
 *************** finish_translation_unit ()
-*** 1663,1668 ****
---- 1663,1672 ----
+*** 1703,1708 ****
+--- 1703,1712 ----
     while (current_namespace != global_namespace)
       pop_namespace ();
     finish_file ();

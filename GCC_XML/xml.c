@@ -25,22 +25,10 @@ Boston, MA 02111-1307, USA.  */
    The entry point is do_xml_output(), which is called from the end of
    finish_translation_unit() in semantics.c.
    
-   xml_output_* functions are used to output tree nodes that require
-   non-trivial processing (like RECORD_TYPE).  This includes any nodes
-   whose XML elements have beginning and ending tags (not empty elements)
-   and have other elements nested inside them.
-
-   print_*_begin_tag functions are used to write out the XML begin tags
-   with their attributes.  The functions are responsible for extracting the
-   details from a tree node needed specifically for the XML attributes on
-   the begin tag.
-
-   print_*_end_tag functions print the corresponding XML end tags for
-   each of the print_*_begin_tag functions.
-
-   print_*_empty_tag functions print simple tree nodes whose XML elements
-   are empty (have nothing nested inside them, and use the special <.../>
-   syntax.  These elements may have attributes in the tags.
+   xml_output_* functions are called to actually write the XML output.
+   
+   xml_print_*_attribute functions are used to write out the XML attributes
+   for common attribute name/pair values.
 */
 
 #include "config.h"
@@ -55,15 +43,30 @@ Boston, MA 02111-1307, USA.  */
 
 #include "splay-tree.h"
 
-typedef struct xml_type_queue
+/* A "dump node" corresponding to a particular tree node.  */
+typedef struct xml_dump_node
 {
-  /* The queued type node.  */
-  splay_tree_node node;
+  /* The index for the node.  */
+  unsigned int index;
+
+  /* Whether the node is complete.  */
+  unsigned int complete;
+} *xml_dump_node_p;
+
+/* A node on the queue of dump nodes.  */
+typedef struct xml_dump_queue
+{
+  /* The queued tree node.  */
+  tree node;
+
+  /* The corresponding dump node.  */
+  xml_dump_node_p dump_node;
 
   /* The next node in the queue.  */
-  struct xml_type_queue *next;
-} *xml_type_queue_p;
+  struct xml_dump_queue *next;
+} *xml_dump_queue_p;
 
+/* A node on the queue of file names.  */
 typedef struct xml_file_queue
 {
   /* The queued file name.  */
@@ -73,27 +76,30 @@ typedef struct xml_file_queue
   struct xml_file_queue *next;
 } *xml_file_queue_p;
 
+/* Dump control structure.  A pointer one instance of this is passed
+   to nearly every function.  */
 typedef struct xml_dump_info
 {
   /* Output file stream of dump.  */
   FILE* file;
+  
+  /* Which pass of the loop we are doing (1=complete or 0=incomplete).  */
+  int require_complete;
+  
+  /* Next available index to identify node.  */
+  unsigned int next_index;
 
-  /* Number of spaces to indent each nested element in XML output.  */
-  unsigned int indent;
+  /* The first node in the queue of complete nodes.  */
+  xml_dump_queue_p queue;
 
-
-  /* Index of the next available type queue position.  */
-  unsigned int type_index;
-
-  /* The first type in the queue of types.  */
-  xml_type_queue_p type_queue;
-
-  /* The last type in the queue of types.  */
-  xml_type_queue_p type_queue_end;
-
-  /* All types that have been queued.  */
-  splay_tree type_nodes;
-
+  /* The last node in the queue of complete nodes.  */
+  xml_dump_queue_p queue_end;
+  
+  /* List of free xml_dump_queue nodes.  */
+  xml_dump_queue_p queue_free;
+  
+  /* All nodes that have been encountered.  */
+  splay_tree dump_nodes;
 
   /* Index of the next available file queue position.  */
   unsigned int file_index;
@@ -110,54 +116,20 @@ typedef struct xml_dump_info
 
 /* Return non-zero if the given _DECL is an internally generated decl.  */
 #define DECL_INTERNAL_P(d) (DECL_SOURCE_LINE(d) == 0)
-/*#define DECL_INTERNAL_P(d) (strcmp (DECL_SOURCE_FILE (d), "<internal>")==0)*/
 
-void do_xml_output                            PARAMS ((const char*));
+void do_xml_output PARAMS ((const char*));
 
-static unsigned int xml_queue_type PARAMS((xml_dump_info_p, tree));
-static unsigned int xml_queue_file PARAMS((xml_dump_info_p, const char*));
+static int xml_add_node PARAMS((xml_dump_info_p, tree, int));
+static void xml_dump PARAMS((xml_dump_info_p));
+static int xml_queue_incomplete_dump_nodes PARAMS((splay_tree_node, void*));
+static void xml_dump_tree_node PARAMS((xml_dump_info_p, tree, xml_dump_node_p));
+static void xml_dump_files PARAMS((xml_dump_info_p));
 
-static void xml_output_headers                PARAMS ((xml_dump_info_p));
-static void xml_output_namespace_decl         PARAMS ((xml_dump_info_p, unsigned long, tree));
-static void xml_output_type_decl              PARAMS ((xml_dump_info_p, unsigned long, tree));
-static void xml_output_record_type            PARAMS ((xml_dump_info_p, unsigned long, tree));
-static void xml_output_function_decl          PARAMS ((xml_dump_info_p, unsigned long, tree));
-static void xml_output_overload               PARAMS ((xml_dump_info_p, unsigned long, tree));
-static void xml_output_var_decl               PARAMS ((xml_dump_info_p, unsigned long, tree));
-static void xml_output_field_decl             PARAMS ((xml_dump_info_p, unsigned long, tree));
-static void xml_output_const_decl             PARAMS ((xml_dump_info_p, unsigned long, tree));
-static void xml_output_template_decl          PARAMS ((xml_dump_info_p, unsigned long, tree));
-static void xml_output_template_info          PARAMS ((xml_dump_info_p, unsigned long, tree));
-static void xml_output_typedef                PARAMS ((xml_dump_info_p, unsigned long, tree));
-static void xml_output_type                   PARAMS ((xml_dump_info_p, unsigned long, tree));
-static void xml_output_named_type             PARAMS ((xml_dump_info_p, unsigned long, tree));
-static void xml_output_void_type              PARAMS ((xml_dump_info_p, unsigned long, tree));
-static void xml_output_function_type          PARAMS ((xml_dump_info_p, unsigned long, tree));
-static void xml_output_method_type            PARAMS ((xml_dump_info_p, unsigned long, tree));
-static void xml_output_pointer_type           PARAMS ((xml_dump_info_p, unsigned long, tree));
-static void xml_output_reference_type         PARAMS ((xml_dump_info_p, unsigned long, tree));
-static void xml_output_offset_type            PARAMS ((xml_dump_info_p, unsigned long, tree));
-static void xml_output_array_type             PARAMS ((xml_dump_info_p, unsigned long, tree));
-static void xml_output_enumeral_type          PARAMS ((xml_dump_info_p, unsigned long, tree));
-static void xml_output_base_class             PARAMS ((xml_dump_info_p, unsigned long, tree));
-static void xml_output_argument               PARAMS ((xml_dump_info_p, unsigned long, tree, tree));
-static void xml_output_template_argument      PARAMS ((xml_dump_info_p, unsigned long, tree));
+static void xml_add_start_nodes PARAMS((xml_dump_info_p, const char*));
 
-static void xml_dump_types PARAMS((xml_dump_info_p, unsigned long));
-static void xml_dump_files PARAMS((xml_dump_info_p, unsigned long));
-
-static const char* xml_get_qualified_name            PARAMS((tree t));
-
-static const char* xml_get_encoded_string             PARAMS ((tree));
+static const char* xml_get_encoded_string PARAMS ((tree));
 static const char* xml_get_encoded_string_from_string PARAMS ((const char*));
 static tree xml_get_encoded_identifier_from_string PARAMS ((const char*));
-
-static char* xml_concat_3_strings          PARAMS ((const char*, const char*, const char*));
-
-static void print_indent                   PARAMS ((FILE*, unsigned long));
-static tree reverse_opname_lookup          PARAMS ((tree));
-
-
 
 /* Main XML output function.  Called by parser at the end of a translation
    unit.  Walk the entire translation unit starting at the global
@@ -165,98 +137,225 @@ static tree reverse_opname_lookup          PARAMS ((tree));
 void
 do_xml_output (const char* filename)
 {
-  FILE *file;
-
+  FILE* file;
+  struct xml_dump_info xdi;
+  
   file = fopen (filename, "w");
   if (!file)
+    {
     cp_error ("could not open xml-dump file `%s'", filename);
+    return;
+    }
+  
+  /* Prepare dump.  */
+  xdi.file = file;
+  xdi.queue = 0;
+  xdi.queue_end = 0;
+  xdi.queue_free = 0;
+  xdi.next_index = 1;
+  xdi.dump_nodes = splay_tree_new (splay_tree_compare_pointers, 0, 
+                                   (splay_tree_delete_value_fn) &free);
+  xdi.file_queue = 0;
+  xdi.file_queue_end = 0;
+  xdi.file_index = 0;
+  xdi.file_nodes = splay_tree_new (splay_tree_compare_pointers, 0, 0);
+  
+  /* Add the starting nodes for the dump.  */
+  if (flag_xml_start)
+    {
+    /* Use the specified starting locations.  */
+    xml_add_start_nodes (&xdi, flag_xml_start);
+    }
   else
     {
-    /* Prepare dump.  */
-    struct xml_dump_info xdi;
-    xdi.file = file;
-    xdi.indent = 2;
-    xdi.type_queue = 0;
-    xdi.type_queue_end = 0;
-    xdi.type_index = 0;
-    xdi.type_nodes = splay_tree_new (splay_tree_compare_pointers, 0, 0);
-    xdi.file_queue = 0;
-    xdi.file_queue_end = 0;
-    xdi.file_index = 0;
-    xdi.file_nodes = splay_tree_new (splay_tree_compare_pointers, 0, 0);
-
-    /* Do dump.  */
-    xml_output_headers (&xdi);
-    fprintf (file, "<GCC_XML>\n");
-    xml_output_namespace_decl (&xdi, 0, global_namespace);
-    fprintf (file, "<Types>\n");
-    xml_dump_types(&xdi, xdi.indent);
-    fprintf (file, "</Types>\n");
-    fprintf (file, "<Files>\n");
-    xml_dump_files(&xdi, xdi.indent);
-    fprintf (file, "</Files>\n");
-    fprintf (file, "</GCC_XML>\n");
-
-    /* Clean up.  */
-    splay_tree_delete (xdi.type_nodes);
-    splay_tree_delete (xdi.file_nodes);
-    fclose (file);
+    /* No start specified.  Use global namespace.  */
+    xml_add_node (&xdi, global_namespace, 1);
     }
+  
+  /* Start dump.  */
+  fprintf (file, "<?xml version=\"1.0\"?>\n");
+  fprintf (file, "<GCC_XML>\n");
+  
+  /* Dump the complete nodes.  */
+  xdi.require_complete = 1;
+  xml_dump (&xdi);  
+  
+  /* Queue all the incomplete nodes.  */
+  splay_tree_foreach (xdi.dump_nodes,
+                      &xml_queue_incomplete_dump_nodes, &xdi);
+  
+  /* Dump the incomplete nodes.  */
+  xdi.require_complete = 0;
+  xml_dump (&xdi);
+  
+  /* Dump the filename queue.  */
+  xml_dump_files (&xdi);
+  
+  /* Finish dump.  */
+  fprintf (file, "</GCC_XML>\n");
+  
+  /* Clean up.  */
+  {
+  xml_dump_queue_p dq = xdi.queue_free;
+  while(dq)
+    {
+    xml_dump_queue_p nq = dq->next;
+    free(dq);
+    dq = nq;
+    }
+  }
+  splay_tree_delete (xdi.dump_nodes);
+  splay_tree_delete (xdi.file_nodes);
+  fclose (file);
 }
 
-/* Queue a type for later output.  If the type has already been queued, it
-   is not queued again.  In either case, the queue index assigned to the
-   type is returned.  */
-unsigned int
-xml_queue_type (xml_dump_info_p xdi, tree t)
+/* Return the xml_dump_node corresponding to tree node T.  If none exists,
+   one will be created with an index of 0.  */
+static xml_dump_node_p
+xml_get_dump_node(xml_dump_info_p xdi, tree t)
 {
-  /* See if we've already queued this type.  */
-  splay_tree_node n = splay_tree_lookup (xdi->type_nodes, (splay_tree_key) t);
-  if (n)
+  /* See if the node has already been inserted.  */
+  splay_tree_node n = splay_tree_lookup (xdi->dump_nodes, (splay_tree_key) t);
+  if(!n)
     {
-    /* Type was already queued.  Return its index.  */
-    return n->value;
+    /* Need to add the node, create it.  */
+    xml_dump_node_p v =
+      (xml_dump_node_p) xmalloc (sizeof (struct xml_dump_node));
+
+    /* Initialize it.  */
+    v->index = 0;
+    v->complete = 0;
+
+    /* Insert the node.  */
+    n = splay_tree_insert (xdi->dump_nodes, (splay_tree_key) t,
+                           (splay_tree_value) v);
+    }
+
+  /* Return a pointer to the dump node.  */
+  return (xml_dump_node_p)n->value;
+}
+
+/* Queue the given tree node for output as a complete node.  */
+static void
+xml_queue_node (xml_dump_info_p xdi, tree t, xml_dump_node_p dn)
+{
+  xml_dump_queue_p dq;
+  
+  /* Obtain a new queue node.  */
+  if (xdi->queue_free)
+    {
+    dq = xdi->queue_free;
+    xdi->queue_free = dq->next;
     }
   else
     {
-    /* Type needs to be queued.  */
-    xml_type_queue_p tq;
+    dq = (xml_dump_queue_p) xmalloc (sizeof (struct xml_dump_queue));
+    }
+  
+  /* Point the queue node at its corresponding tree node and dump node.  */
+  dq->next = 0;
+  dq->node = t;
+  dq->dump_node = dn;
+  
+  /* Add it to the end of the queue.  */
+  if (!xdi->queue_end)
+    {
+    xdi->queue = dq;
+    }
+  else
+    {
+    xdi->queue_end->next = dq;
+    }
+  xdi->queue_end = dq;
+}
 
-    /* Assign the next available index.  */
-    unsigned int index = xdi->type_index++;
-
-    /* Obtain a new queue node.  */
-    tq = (xml_type_queue_p) xmalloc (sizeof (struct xml_type_queue));
-
-    /* Create a new entry in the splay-tree.  */
-    tq->node = splay_tree_insert (xdi->type_nodes, (splay_tree_key) t, 
-                                  (splay_tree_value) index);
-    
-    /* Add it to the end of the queue.  */
-    tq->next = 0;
-    if (!xdi->type_queue_end)
+/* Add tree node N to those encountered.  Return its index.  */
+static int
+xml_add_node_real (xml_dump_info_p xdi, tree n, int complete)
+{
+  /* Get the dump node for this tree node.  */
+  xml_dump_node_p dn = xml_get_dump_node (xdi, n);
+  if (dn->index)
+    {
+    /* Node was already encountered.  See if it is now complete.  */
+    if(complete && !dn->complete)
       {
-      xdi->type_queue = tq;
+      /* Node is now complete, but wasn't before.  Queue it.  */
+      dn->complete = 1;
+      xml_queue_node (xdi, n, dn);
       }
-    else
-      {
-      xdi->type_queue_end->next = tq;
-      }
-    xdi->type_queue_end = tq;
+    /* Return node's index.  */
+    return dn->index;
+    }
+  
+  /* This is a new node.  Assign it an index.  */
+  dn->index = xdi->next_index++;
+  dn->complete = complete;
+  if(complete || !xdi->require_complete)
+    {
+    /* Node is complete.  Queue it.  */
+    xml_queue_node (xdi, n, dn);
+    }
+  
+  if(!xdi->require_complete && complete)
+    {
+    cp_error ("XML dump bug: complete node added during incomplete phase.\n");
+    }
+
+  /* Return node's index.  */
+  return dn->index;
+}
+
+/* Called for each node in the splay tree of dump nodes.  Queues
+   a dump node if it is incomplete.  */
+int xml_queue_incomplete_dump_nodes (splay_tree_node n, void* in_xdi)
+{
+  tree key = (tree)n->key;
+  xml_dump_node_p dn = (xml_dump_node_p)n->value;
+  xml_dump_info_p xdi = (xml_dump_info_p)in_xdi;
+  if (!dn->complete)
+    {
+    xml_queue_node (xdi, key, dn);
+    }
+  return 0;
+}
+
+/* The xml dump loop.  */
+void
+xml_dump (xml_dump_info_p xdi)
+{
+  /* Dump the complete nodes.  */
+  while(xdi->queue)
+    {
+    /* Get the next queue entry.  */
+    xml_dump_queue_p dq = xdi->queue;
+    tree t = dq->node;
+    xml_dump_node_p dn = dq->dump_node;
     
-    /* Return the index.  */
-    return index;
+    /* Remove the entry from the queue.  */
+    xdi->queue = dq->next;
+    if(!xdi->queue)
+      {
+      xdi->queue_end = 0;
+      }
+    
+    /* Put the entry on the free list.  */
+    dq->next = xdi->queue_free;
+    xdi->queue_free = dq;
+    
+    /* Dump the node.  */
+    xml_dump_tree_node(xdi, t, dn);
     }
 }
 
 /* Queue a filename for later output.  If the file has already been
    queued, it is not queued again.  In either case, the queue index
    assigned to the file is returned.  */
-unsigned int
+static unsigned int
 xml_queue_file (xml_dump_info_p xdi, const char* filename)
 {
   tree t = xml_get_encoded_identifier_from_string (filename);
-
+  
   /* See if we've already queued this file.  */
   splay_tree_node n = splay_tree_lookup (xdi->file_nodes, (splay_tree_key) t);
   if (n)
@@ -296,36 +395,11 @@ xml_queue_file (xml_dump_info_p xdi, const char* filename)
     }
 }
 
-/* Print the XML attribute id="tid" for the given type. */
-static void
-print_id_attribute (xml_dump_info_p xdi, tree t)
-{
-  fprintf (xdi->file, " id=\"t%d\"", xml_queue_type (xdi, t));
-}
+/* ------------------------------------------------------------------------ */
 
-/* Print the XML attribute extern="1" if the given decl is external. */
+/* Print the XML attribute location="fid:line" for the given decl.  */
 static void
-print_extern_attribute (xml_dump_info_p xdi, tree d)
-{
-  if (DECL_EXTERNAL (d))
-    {
-    fprintf (xdi->file, " extern=\"1\"");
-    }
-}
-
-/* Print the XML attribute extern="1" if the given decl is external. */
-static void
-print_function_extern_attribute (xml_dump_info_p xdi, tree fd)
-{
-  if (DECL_REALLY_EXTERN (fd))
-    {
-    fprintf (xdi->file, " extern=\"1\"");
-    }
-}
-
-/* Print the XML attribute location="fid:line" for the given decl. */
-static void
-print_location_attribute (xml_dump_info_p xdi, tree d)
+xml_print_location_attribute (xml_dump_info_p xdi, tree d)
 {
   unsigned int source_file = xml_queue_file (xdi, DECL_SOURCE_FILE (d));
   unsigned int source_line = DECL_SOURCE_LINE (d);
@@ -333,119 +407,98 @@ print_location_attribute (xml_dump_info_p xdi, tree d)
   fprintf (xdi->file, " location=\"f%d:%d\"", source_file, source_line);
 }
 
-/* Print the XML attribute type="tid" for the given type. */
+/* Print the XML attribute id="..." for the given node.  */
 static void
-print_type_attribute (xml_dump_info_p xdi, tree t)
+xml_print_id_attribute (xml_dump_info_p xdi, xml_dump_node_p dn)
 {
-  unsigned int type = xml_queue_type (xdi, t);
-  fprintf (xdi->file, " type=\"t%d\"", type);
+  fprintf (xdi->file, " id=\"_%d\"", dn->index);
 }
 
-/* Print the XML attribute name="..." for the given node. */
+/* Print the XML attribute name="..." for the given node.  */
 static void
-print_name_attribute (xml_dump_info_p xdi, tree t)
+xml_print_name_attribute (xml_dump_info_p xdi, tree n)
 {
-  const char* name = xml_get_encoded_string (t);  
+  const char* name = xml_get_encoded_string (n);
   fprintf (xdi->file, " name=\"%s\"", name);
 }
 
-/* Print the XML attribute returns="tid" for the given function type. */
+/* Print the XML attribute type="..." for the given type.  If the type
+   has cv-qualifiers, they are appended to the type's id as single
+   characters (c=const, v=volatile, r=restrict).  */
 static void
-print_returns_attribute (xml_dump_info_p xdi, tree ft)
+xml_print_type_attribute (xml_dump_info_p xdi, tree t, int complete)
 {
-  unsigned int type = xml_queue_type (xdi, TREE_TYPE (ft));
-  fprintf (xdi->file, " returns=\"t%d\"", type);
+  const char* ch_const = "";
+  const char* ch_volatile = "";
+  const char* ch_restrict = "";
+  int id = xml_add_node (xdi, TYPE_MAIN_VARIANT(t), complete);
+  if (CP_TYPE_CONST_P (t)) { ch_const = "c"; }
+  if (CP_TYPE_VOLATILE_P (t)) { ch_volatile = "v"; }
+  if (CP_TYPE_RESTRICT_P (t)) { ch_restrict = "r"; }  
+  fprintf (xdi->file, " type=\"_%d%s%s%s\"",
+           id, ch_const, ch_volatile, ch_restrict);
 }
 
-/* Print the XML attribute access="..." for the given decl. */
+/* Print the XML attribute returns="tid" for the given function type.  */
 static void
-print_access_attribute (xml_dump_info_p xdi, tree d)
+xml_print_returns_attribute (xml_dump_info_p xdi, tree t, int complete)
 {
-  if (TREE_PRIVATE (d))
-    {
-    fprintf (xdi->file, " access=\"private\"");
-    }
-  else if (TREE_PROTECTED (d))
-    {
-    fprintf (xdi->file, " access=\"protected\"");
-    }
-  else
-    {
-    fprintf (xdi->file, " access=\"public\"");
-    }
+  const char* ch_const = "";
+  const char* ch_volatile = "";
+  const char* ch_restrict = "";
+  int id = xml_add_node (xdi, TYPE_MAIN_VARIANT(t), complete);
+  if (CP_TYPE_CONST_P (t)) { ch_const = "c"; }
+  if (CP_TYPE_VOLATILE_P (t)) { ch_volatile = "v"; }
+  if (CP_TYPE_RESTRICT_P (t)) { ch_restrict = "r"; }  
+  fprintf (xdi->file, " returns=\"_%d%s%s%s\"",
+           id, ch_const, ch_volatile, ch_restrict);
 }
 
-/* Print the XML attribute access="..." for the given binfo. */
+/* Print XML attribute basetype="..." with the given type.  */
 static void
-print_base_access_attribute (xml_dump_info_p xdi, tree binfo)
+xml_print_base_type_attribute (xml_dump_info_p xdi, tree t, int complete)
 {
-  if (TREE_VIA_PUBLIC (binfo))
-    {
-    fprintf (xdi->file, " access=\"public\"");
-    }
-  else if (TREE_VIA_PROTECTED (binfo))
-    {
-    fprintf (xdi->file, " access=\"protected\"");
-    }
-  else
-    {
-    fprintf (xdi->file, " access=\"private\"");
-    }
+  int id = xml_add_node (xdi, t, complete);
+  fprintf (xdi->file, " basetype=\"_%d\"", id);
 }
 
-/* Print the XML attribute incomplete="..." for the given type. */
+/* Print the XML attribute context="..." for the given node.  */
 static void
-print_incomplete_attribute (xml_dump_info_p xdi, tree t)
+xml_print_context_attribute (xml_dump_info_p xdi, tree n)
 {
-  if (!COMPLETE_TYPE_P (t))
+  if(n != global_namespace)
     {
-    fprintf (xdi->file, " incomplete=\"1\"");
+    fprintf (xdi->file, " context=\"_%d\"",
+             xml_add_node (xdi, CP_DECL_CONTEXT (n), 0));
     }
 }
 
-/* Print the XML attribute abstract="..." for the given type. */
+/* Print the XML attribute access="..." for the given decl.  */
 static void
-print_abstract_attribute (xml_dump_info_p xdi, tree t)
+xml_print_access_attribute (xml_dump_info_p xdi, tree d)
 {
-  if (CLASSTYPE_PURE_VIRTUALS (t) != 0)
+  tree context = CP_DECL_CONTEXT (d);
+  if (context && TYPE_P(context))
     {
-    fprintf (xdi->file, " abstract=\"1\"");
-    }
-}
-
-/* Print XML attribute init="..." for a variable initializer.  */
-static void
-print_init_attribute (xml_dump_info_p xdi, tree t)
-{
-  const char* value;
-  
-  if (!t || (t == error_mark_node)) return;
-  
-  value = xml_get_encoded_string_from_string (expr_as_string (t, 0));
-  fprintf (xdi->file, " init=\"%s\"", value);
-}
-
-/* Print XML attributes describing the cv-qualifiers of a type.  */
-static void
-print_cv_attributes (xml_dump_info_p xdi, tree t)
-{  
-  if (CP_TYPE_CONST_P (t))
-    {
-    fprintf (xdi->file, " const=\"1\"");
-    }
-  if (CP_TYPE_VOLATILE_P (t))
-    {
-    fprintf (xdi->file, " volatile=\"1\"");
-    }
-  if (CP_TYPE_RESTRICT_P (t))
-    {
-    fprintf (xdi->file, " restrict=\"1\"");
+    if (TREE_PRIVATE (d))
+      {
+      fprintf (xdi->file, " access=\"private\"");
+      }
+    else if (TREE_PROTECTED (d))
+      {
+      fprintf (xdi->file, " access=\"protected\"");
+      }
+    else
+      {
+      /* Default for access attribute is public.  */
+      /* fprintf (xdi->file, " access=\"public\"");  */
+      }
     }
 }
 
 /* Print XML attribute const="1" for const methods.  */
 static void
-print_const_method_attribute (xml_dump_info_p xdi, tree fd)
+xml_print_const_method_attribute (xml_dump_info_p xdi, tree fd)
 {  
   if (DECL_CONST_MEMFUNC_P (fd))
     {
@@ -455,7 +508,7 @@ print_const_method_attribute (xml_dump_info_p xdi, tree fd)
 
 /* Print XML attribute static="1" for static methods.  */
 static void
-print_static_method_attribute (xml_dump_info_p xdi, tree fd)
+xml_print_static_method_attribute (xml_dump_info_p xdi, tree fd)
 {
   if (!DECL_NONSTATIC_MEMBER_FUNCTION_P (fd))
     {
@@ -465,7 +518,7 @@ print_static_method_attribute (xml_dump_info_p xdi, tree fd)
 
 /* Print XML attributes virtual="" and pure_virtual="" for a decl.  */
 static void
-print_virtual_method_attributes (xml_dump_info_p xdi, tree d)
+xml_print_virtual_method_attributes (xml_dump_info_p xdi, tree d)
 {  
   if (DECL_VIRTUAL_P (d))
     {
@@ -478,19 +531,78 @@ print_virtual_method_attributes (xml_dump_info_p xdi, tree d)
     }
 }
 
+/* Print the XML attribute extern="1" if the given decl is external.  */
+static void
+xml_print_extern_attribute (xml_dump_info_p xdi, tree d)
+{
+  if (DECL_EXTERNAL (d))
+    {
+    fprintf (xdi->file, " extern=\"1\"");
+    }
+}
+
+/* Print the XML attribute extern="1" if the given decl is external.  */
+static void
+xml_print_function_extern_attribute (xml_dump_info_p xdi, tree fd)
+{
+  if (DECL_REALLY_EXTERN (fd))
+    {
+    fprintf (xdi->file, " extern=\"1\"");
+    }
+}
+
 /* Print XML attribute for a default argument.  */
 static void
-print_default_argument_attribute (xml_dump_info_p xdi, tree t)
+xml_print_default_argument_attribute (xml_dump_info_p xdi, tree t)
 {
   const char* value =
     xml_get_encoded_string_from_string (expr_as_string (t, 0));  
   fprintf (xdi->file, " default=\"%s\"", value);
 }
 
+/* Print XML attribute init="..." for a variable initializer.  */
+static void
+xml_print_init_attribute (xml_dump_info_p xdi, tree t)
+{
+  const char* value;
+  
+  if (!t || (t == error_mark_node)) return;
+  
+  value = xml_get_encoded_string_from_string (expr_as_string (t, 0));
+  fprintf (xdi->file, " init=\"%s\"", value);
+}
+
+/* Print the XML attribute incomplete="..." for the given type.  */
+static void
+xml_print_incomplete_attribute (xml_dump_info_p xdi, tree t)
+{
+  if (!COMPLETE_TYPE_P (t))
+    {
+    fprintf (xdi->file, " incomplete=\"1\"");
+    }
+}
+
+/* Print the XML attribute abstract="..." for the given type.  */
+static void
+xml_print_abstract_attribute (xml_dump_info_p xdi, tree t)
+{
+  if (CLASSTYPE_PURE_VIRTUALS (t) != 0)
+    {
+    fprintf (xdi->file, " abstract=\"1\"");
+    }
+}
+
+/* Print XML empty tag for an ellipsis at the end of an argument list.  */
+static void
+xml_output_ellipsis (xml_dump_info_p xdi)
+{
+  fprintf (xdi->file,
+           "    <Ellipsis/>\n");
+}
 
 /* Print XML attributes min="0" max="..." for an array type.  */
 static void
-print_array_attributes (xml_dump_info_p xdi, tree at)
+xml_print_array_attributes (xml_dump_info_p xdi, tree at)
 {
   const char* length = "";
   
@@ -501,270 +613,60 @@ print_array_attributes (xml_dump_info_p xdi, tree at)
   fprintf (xdi->file, " min=\"0\" max=\"%s\"", length);
 }
 
-/* Print XML attribute basetype="..." with the given type.  */
+/* Print XML empty tag describing an unimplemented TREE_CODE that has been
+   encountered.  */
 static void
-print_base_type_attribute (xml_dump_info_p xdi, tree t)
+xml_output_unimplemented (xml_dump_info_p xdi, tree t, xml_dump_node_p dn,
+                          const char* where)
 {
-  fprintf (xdi->file, " basetype=\"%s\"", xml_get_qualified_name (t));
+  int tree_code = TREE_CODE (t);
+  fprintf (xdi->file,
+           "  <Unimplemented id=\"_%d\" tree_code=\"%d\""
+           " tree_code_name=\"%s\" node=\"%p\"",
+           (dn? dn->index : 0),
+           tree_code, tree_code_name [tree_code], t);
+  if (where)
+    {
+    fprintf (xdi->file, " function=\"%s\"", where);
+    }
+  fprintf (xdi->file, "/>\n");
 }
 
 /* ------------------------------------------------------------------------ */
 
-/* Print XML begin tag for a namespace element.  */
+/* Dump a NAMESPACE_DECL.  */
 static void
-print_namespace_begin_tag (xml_dump_info_p xdi, unsigned long indent, tree ns)
+xml_output_namespace_decl (xml_dump_info_p xdi, tree ns, xml_dump_node_p dn)
 {
-  print_indent (xdi->file, indent);
-  if(ns == global_namespace)
-    {
-    fprintf (xdi->file, "<GlobalNamespace>\n");
-    }
-  else
-    {
-    const char* name = xml_get_encoded_string (DECL_NAME (ns));
-
-    fprintf (xdi->file, "<Namespace name=\"%s\">\n", name);
-    }
-}
-
-
-/* Print XML end tag for a namespace element.  */
-static void
-print_namespace_end_tag (xml_dump_info_p xdi, unsigned long indent, tree ns)
-{
-  print_indent (xdi->file, indent);
-  if(ns == global_namespace)
-    {
-    fprintf (xdi->file, "</GlobalNamespace>\n");
-    }
-  else
-    {
-    fprintf (xdi->file, "</Namespace>\n");
-    }
-}
-
-
-/* Print XML begin tag for a class, struct, or union element.  */
-static void
-print_class_begin_tag (xml_dump_info_p xdi, unsigned long indent, tree rt)
-{
-  print_indent (xdi->file, indent);
-  if (TREE_CODE(rt) == RECORD_TYPE)
-    {
-    if (CLASSTYPE_DECLARED_CLASS (rt))
-      {
-      fprintf (xdi->file, "<Class");
-      }
-    else
-      {
-      fprintf (xdi->file, "<Struct");
-      }
-    }
-  else
-    {
-    fprintf (xdi->file, "<Union");
-    }
-
-  print_name_attribute (xdi, DECL_NAME (TYPE_NAME (rt)));
-  print_access_attribute (xdi, TYPE_NAME (rt));
-  print_abstract_attribute (xdi, rt);
-  print_incomplete_attribute (xdi, rt);
-  print_location_attribute (xdi, TYPE_NAME (rt));
-  fprintf (xdi->file, ">\n");
-}
-
-
-/* Print XML end tag for a class, struct, or union element.  */
-static void
-print_class_end_tag (xml_dump_info_p xdi, unsigned long indent, tree rt)
-{
-  print_indent (xdi->file, indent);
-  if (TREE_CODE(rt) == RECORD_TYPE)
-    {
-    if (CLASSTYPE_DECLARED_CLASS (rt))
-      {
-      fprintf (xdi->file,
-               "</Class>\n");
-      }
-    else
-      {
-      fprintf (xdi->file,
-               "</Struct>\n");
-      }
-    }
-  else
-    {
-      fprintf (xdi->file,
-               "</Union>\n");
-    }
-}
-
-/* Print XML empty tag for an ellipsis at the end of an argument list.  */
-static void
-print_ellipsis_empty_tag (xml_dump_info_p xdi, unsigned long indent)
-{
-  print_indent (xdi->file, indent);
-  fprintf (xdi->file,
-           "<Ellipsis/>\n");
-}
-
-
-/* Print XML begin tag for a template instantiation element.  */
-static void
-print_instantiation_begin_tag (xml_dump_info_p xdi, unsigned long indent)
-{
-  print_indent (xdi->file, indent);
-  fprintf (xdi->file,
-           "<Instantiation>\n");
-}
-
-
-/* Print XML end tag for a template instantiation element.  */
-static void
-print_instantiation_end_tag (xml_dump_info_p xdi, unsigned long indent)
-{
-  print_indent (xdi->file, indent);
-  fprintf (xdi->file,
-           "</Instantiation>\n");
-}
-
-
-/* Print XML begin tag for a template argument element.  */
-static void
-print_template_argument_begin_tag (xml_dump_info_p xdi, unsigned long indent)
-{
-  print_indent (xdi->file, indent);
-  fprintf (xdi->file,
-           "<TemplateArgument>\n");
-}
-
-
-/* Print XML end tag for a template argument element.  */
-static void
-print_template_argument_end_tag (xml_dump_info_p xdi, unsigned long indent)
-{
-  print_indent (xdi->file, indent);
-  fprintf (xdi->file,
-           "</TemplateArgument>\n");
-}
-
-/* Print XML empty tag for a scope reference element (SCOPE_REF).  */
-static void
-print_scope_ref_empty_tag (xml_dump_info_p xdi, unsigned long indent, tree t)
-{
-  const char* class_name =
-    xml_get_encoded_string (DECL_NAME (TYPE_NAME (TREE_OPERAND (t, 0))));
-  const char* field_name =
-    xml_get_encoded_string (TREE_OPERAND (t, 1));
-  print_indent (xdi->file, indent);
-  fprintf (xdi->file,
-           "<ScopeRef class=\"%s\" field=\"%s\"/>\n",
-           class_name, field_name);
-}
-
-
-/* Print XML empty tag for an integer literal element (INTEGER_CST).  */
-static void
-print_integer_cst_empty_tag (xml_dump_info_p xdi, unsigned long indent, tree t)
-{
-  print_indent (xdi->file, indent);
-  fprintf (xdi->file, "<Integer value=\"");
-  if (TREE_INT_CST_HIGH (t) == 0)
-    {
-    fprintf (xdi->file, HOST_WIDE_INT_PRINT_UNSIGNED, TREE_INT_CST_LOW (t));
-    }
-  else if ((TREE_INT_CST_HIGH (t) == -1) && (TREE_INT_CST_LOW (t) != 0))
-    {
-    fprintf (xdi->file, "-");
-    fprintf (xdi->file, HOST_WIDE_INT_PRINT_UNSIGNED, -TREE_INT_CST_LOW (t));
-    }
-  else
-    {
-    fprintf (xdi->file, HOST_WIDE_INT_PRINT_DOUBLE_HEX,
-             TREE_INT_CST_HIGH (t), TREE_INT_CST_LOW (t));
-    }
-  fprintf (xdi->file, "\"/>\n");
-}
-
-
-/* Print XML empty tag describing an unimplemented TREE_CODE that has been
-   encountered.  */
-static void
-print_unimplemented_empty_tag (xml_dump_info_p xdi, unsigned long indent, tree t,
-                               const char* func)
-{
-  int tree_code = TREE_CODE (t);
-  
-  print_indent (xdi->file, indent);
-  fprintf (xdi->file,
-           "<Unimplemented tree_code=\"%d\" tree_code_name=\"%s\""
-           " xml_c_location=\"%s\"/>\n",
-           tree_code, tree_code_name [tree_code], func);
-}
-
-
-/* Output the XML file's headers.  */
-void
-xml_output_headers (xml_dump_info_p xdi)
-{
-  fprintf (xdi->file,
-           "<?xml version=\"1.0\"?>\n");/* encoding="ISO-8859-1"?> */
-}
-
-
-/* Output a NAMESPACE_DECL.  Prints beginning and ending tags, and all
-   the namespace's member declarations in between.  */
-void
-xml_output_namespace_decl (xml_dump_info_p xdi, unsigned long indent, tree ns)
-{
-  if(ns == fake_std_node) return;
-    
   /* Only walk a real namespace.  */
   if (!DECL_NAMESPACE_ALIAS (ns))
     {
-    tree cur_decl;
-
-    print_namespace_begin_tag(xdi, indent, ns);
-
-    for (cur_decl = cp_namespace_decls(ns); cur_decl;
-         cur_decl = TREE_CHAIN (cur_decl))
+    fprintf (xdi->file, "  <Namespace");
+    xml_print_id_attribute (xdi, dn);
+    xml_print_name_attribute (xdi, DECL_NAME (ns));
+    xml_print_context_attribute (xdi, ns);
+    
+    /* If complete dump, walk the namespace.  */
+    if(dn->complete)
       {
-      switch (TREE_CODE (cur_decl))
+      tree cur_decl;
+      fprintf (xdi->file, " members=\"");
+      for (cur_decl = cp_namespace_decls(ns); cur_decl;
+           cur_decl = TREE_CHAIN (cur_decl))
         {
-        case NAMESPACE_DECL:
-          xml_output_namespace_decl(xdi, indent+xdi->indent, cur_decl);
-          break;
-        case TYPE_DECL:
-          xml_output_type_decl(xdi, indent+xdi->indent, cur_decl);
-          break;          
-        case FUNCTION_DECL:
-          xml_output_function_decl (xdi, indent+xdi->indent, cur_decl);
-          break;
-        case VAR_DECL:
-          xml_output_var_decl (xdi, indent+xdi->indent, cur_decl);
-          break;
-        case TREE_LIST:
-          xml_output_overload (xdi, indent+xdi->indent,
-                               TREE_VALUE (cur_decl));
-          break;
-        case CONST_DECL:
-          xml_output_const_decl (xdi, indent+xdi->indent, cur_decl);
-          break;
-        case TEMPLATE_DECL:
-          xml_output_template_decl (xdi, indent+xdi->indent, cur_decl);
-          break;
-        case RESULT_DECL:
-        case USING_DECL:
-          /* case THUNK_DECL: */
-          /* This is compiler-generated.  Just ignore it.  */
-          break;
-        default:
-          print_unimplemented_empty_tag (xdi, indent+xdi->indent,
-                                         cur_decl, "xml_output_namespace_decl");
+        if (!DECL_INTERNAL_P (cur_decl))
+          {
+          int id = xml_add_node (xdi, cur_decl, 1);
+          if (id)
+            {
+            fprintf (xdi->file, "_%d ", id);
+            }
+          }
         }
+      fprintf (xdi->file, "\"");
       }
     
-    print_namespace_end_tag(xdi, indent, ns);
+    fprintf (xdi->file, "/>\n");
     }
   /* If it is a namespace alias, just indicate that.  */
   else
@@ -775,242 +677,102 @@ xml_output_namespace_decl (xml_dump_info_p xdi, unsigned long indent, tree ns)
       {
       real_ns = DECL_NAMESPACE_ALIAS (real_ns);
       }
-
-    print_indent (xdi->file, indent);
-    fprintf (xdi->file, "<NamespaceAlias");
-    print_name_attribute (xdi, DECL_NAME (ns));
-    fprintf (xdi->file, " namespace=\"%s\"", xml_get_qualified_name (real_ns));
+    
+    fprintf (xdi->file, "  <NamespaceAlias");
+    xml_print_id_attribute (xdi, dn);
+    xml_print_name_attribute (xdi, DECL_NAME (ns));
+    xml_print_context_attribute (xdi, ns);
+    fprintf (xdi->file, " namespace=\"_%d\"",
+             xml_add_node (xdi, real_ns, 0));
     fprintf (xdi->file, "/>\n");
     }
 }
 
-/* When a class, struct, or union type is defined, it is automatically
-   given a member typedef to itself.  Given a RECORD_TYPE or
-   UNION_TYPE, this returns that field's name.  Although this should
-   never happen, 0 is returned when the field cannot be found.  */
+/* Output for a typedef.  The name and associated type are output.  */
+static void
+xml_output_typedef (xml_dump_info_p xdi, tree td, xml_dump_node_p dn)
+{
+  fprintf (xdi->file, "  <Typedef");
+  xml_print_id_attribute (xdi, dn);
+  xml_print_name_attribute (xdi, DECL_NAME (td));
+  
+  /* Get the original type out of the typedef, if any.  */
+  if (DECL_ORIGINAL_TYPE (td))
+    {
+    xml_print_type_attribute (xdi, DECL_ORIGINAL_TYPE (td), dn->complete); 
+    }
+  else
+    {
+    xml_print_type_attribute (xdi, TREE_TYPE (td), dn->complete);
+    }
+  
+  xml_print_context_attribute (xdi, td);
+  xml_print_location_attribute (xdi, td);
+  fprintf (xdi->file, "/>\n");
+}
+
+/* Output for a PARM_DECL / TREE_LIST corresponding to a function argument.  */
+static void
+xml_output_argument (xml_dump_info_p xdi, tree pd, tree tl, int complete)
+{
+  /* Don't process any compiler-generated arguments.  These occur for
+     things like constructors of classes with virtual inheritance.  */
+  if (pd && DECL_ARTIFICIAL (pd)) return;
+  
+  fprintf (xdi->file, "    <Argument");
+  if(pd && DECL_NAME (pd))
+    {
+    xml_print_name_attribute (xdi, DECL_NAME (pd));
+    }
+  
+  if (pd && DECL_ARG_TYPE_AS_WRITTEN (pd))
+    {
+    xml_print_type_attribute (xdi, DECL_ARG_TYPE_AS_WRITTEN (pd), complete);
+    }
+  else if (pd && TREE_TYPE (pd))
+    {
+    xml_print_type_attribute (xdi, TREE_TYPE (pd), complete);
+    }
+  else
+    {
+    xml_print_type_attribute (xdi, TREE_VALUE (tl), complete);
+    }
+  
+  if (TREE_PURPOSE (tl))
+    {
+    xml_print_default_argument_attribute (xdi, TREE_PURPOSE (tl));
+    }
+
+  fprintf (xdi->file, "/>\n");
+}
+
+/* Lookup the real name of an operator whose ansi_opname or ansi_assopname
+   is NAME.  */
 static tree
-xml_find_self_typedef_name (tree rt)
+xml_reverse_opname_lookup (tree name)
 {
-  tree field;
-  for (field = TYPE_FIELDS (rt) ; field ; field = TREE_CHAIN (field))
-    {
-    /* The field must be artificial because someone could have written
-       their own typedef of the class's name.  */
-    if ((TREE_CODE (field) == TYPE_DECL)
-        && (TREE_TYPE (field) == rt)
-        && DECL_ARTIFICIAL (field))
-      {
-      return DECL_NAME (field);
-      }
-    }
-
-  return 0;
-}
-
-
-/* Dispatch output of a TYPE_DECL.  This is either a typedef, or a new
-   type (class/struct/union) definition.  */
-void
-xml_output_type_decl (xml_dump_info_p xdi, unsigned long indent, tree td)
-{
-  /* Get the type from the TYPE_DECL.  We don't want to use complete_type
-     because it may modify something.  We are doing a read-only dump.  */
-  tree t = TREE_TYPE (td);
-
-  /* Don't process any internally generated declarations.  */
-  if (DECL_INTERNAL_P (td)) return;
-
-  switch (TREE_CODE (t))
-    {
-    case ARRAY_TYPE:
-    case LANG_TYPE:
-    case POINTER_TYPE:
-    case REFERENCE_TYPE:
-    case INTEGER_TYPE:
-    case VOID_TYPE:
-    case BOOLEAN_TYPE:
-    case REAL_TYPE:
-    case COMPLEX_TYPE:
-    case FUNCTION_TYPE:
-    case TYPENAME_TYPE:
-    case TEMPLATE_TYPE_PARM:
-      /* A typedef to a predefined type.  */
-      xml_output_typedef (xdi, indent, td);
-      break;
-    case ENUMERAL_TYPE:
-      if (DECL_ORIGINAL_TYPE (td))
-        {
-        /* A typedef to an existing enumeral type.  */
-        xml_output_typedef (xdi, indent, td);
-        }
-      else
-        {
-        /* This is the declaration of a new enumeration type.  */
-        xml_output_enumeral_type (xdi, indent, t);
-        }
-      break;
-    case UNION_TYPE:
-    case RECORD_TYPE:
-      if ((TREE_CODE (t) == RECORD_TYPE) && TYPE_PTRMEMFUNC_P (t))
-        {
-        /* A typedef to a pointer to member.  */
-        xml_output_typedef (xdi, indent, td);
-        }
-      /* This is a complicated test to tell apart a real class declaration
-         or definition from a typedef to it.  This must be able to detect
-         the difference for the following cases:
-
-            Code:                           Meaning:
-         1.  struct A {};                    "struct A"
-         2.  struct A {}; typedef A B;       "struct A" "typedef A B"
-         3.  typedef struct {} A;            "struct A"
-         4.  typedef struct A {} A;          "struct A"
-         5.  typedef struct A {} B;          "struct A" "typedef A B"
-
-         DECL_IMPLICIT_TYPEDEF_P will recognize type TYPE_DECL that
-         points to the real class definition for cases 1, 2, and 5,
-         and is sufficient to make the decision.
-
-         For cases 3 and 4, the second test makes sure the context of
-         the TYPE_DECL matches the context of the RECORD_TYPE, which
-         can only happen for a TYPE_DECL in the same scope as the
-         class.  It then looks at the RECORD_TYPE to find its
-         artificial member that is a typedef to its own class.  The
-         name of this field is compared to the name of the original
-         TYPE_DECL.  If it matches, then it is assumed that the
-         TYPE_DECL corresponds to the class's definition.  Otherwise,
-         it is assumed that it is simply a typedef.  */
-      else if (DECL_IMPLICIT_TYPEDEF_P (td)
-               || (((DECL_CONTEXT (td) == TYPE_CONTEXT (t))
-                    && (xml_find_self_typedef_name (t) == DECL_NAME (td)))))
-        {
-        /* A new type definition.  */
-        xml_output_record_type (xdi, indent, t);
-        }
-      else
-        {
-        /* A typedef to an existing class, struct, or union type.  */
-        xml_output_typedef (xdi, indent, td);
-        }
-      break;
-    default:
-      print_unimplemented_empty_tag (xdi, indent, t,
-                                     "xml_output_type_decl");
-    }
-}
-
-
-/* Output a RECORD_TYPE that is not a pointer-to-member-function.  Prints
-   beginning and ending tags, and all class member declarations between.
-   Also handles a UNION_TYPE.  */
-void
-xml_output_record_type (xml_dump_info_p xdi, unsigned long indent, tree rt)
-{
-  tree field;
-  tree func;
-  int destructorFound = 0;
-
-  print_class_begin_tag (xdi, indent, rt);
-  
-  if (CLASSTYPE_TEMPLATE_INFO (rt))
-    {
-    xml_output_template_info (xdi, indent+xdi->indent,
-                              CLASSTYPE_TEMPLATE_INFO (rt));
-    }  
-  
-  /* Output all the non-method declarations in the class.  */
-  for (field = TYPE_FIELDS (rt) ; field ; field = TREE_CHAIN (field))
-    {
-    switch(TREE_CODE(field))
-      {
-      case TYPE_DECL:
-        if (TREE_TYPE (field) == rt)
-          {
-          /* A class or struct internally typedefs itself.  */
-          xml_output_typedef (xdi, indent+xdi->indent, field);
-          }
-        else
-          {
-          /* A nested type declaration.  */
-          xml_output_type_decl (xdi, indent+xdi->indent, field);
-          }
-        break;          
-      case FIELD_DECL:
-        xml_output_field_decl (xdi, indent+xdi->indent, field);
-        break;          
-      case VAR_DECL:
-        xml_output_var_decl (xdi, indent+xdi->indent, field);
-        break;
-      case CONST_DECL:
-        xml_output_const_decl (xdi, indent+xdi->indent, field);
-        break;
-      case TEMPLATE_DECL:
-        xml_output_template_decl (xdi, indent+xdi->indent, field);
-        break;
-      case USING_DECL:
-        /* Ignore the using decl.  */
-        break;
-      case RESULT_DECL:
-      default:
-        print_unimplemented_empty_tag (xdi, indent+xdi->indent, field,
-                                       "xml_output_record_type fields");
-      }
-    }
-
-  /* Output all the method declarations in the class.  */
-  for (func = TYPE_METHODS (rt) ; func ; func = TREE_CHAIN (func))
-    {
-    switch (TREE_CODE (func))
-      {
-      case FUNCTION_DECL:
-        if (DECL_DESTRUCTOR_P (func)) 
-          destructorFound = 1;
-        xml_output_function_decl (xdi, indent+xdi->indent, func);
-        break;
-      case TEMPLATE_DECL:
-        xml_output_template_decl (xdi, indent+xdi->indent, func);
-        break;
-      default:
-        print_unimplemented_empty_tag (xdi, indent+xdi->indent, func,
-                                       "xml_output_record_type methods");
-      }
-    }
-
-  /* If no destructor was encountered, then the class has a trivial destructor.
-     For some reason, the implicit declaration was not there, so we catch
-     the case here.  */
-  if(!destructorFound && TYPE_HAS_TRIVIAL_DESTRUCTOR (rt))
-    {
-    print_indent (xdi->file, indent+xdi->indent);
-    fprintf (xdi->file, "<Destructor access=\"public\"/>\n");
-    }
-  
-  /* Output all the base classes.  */
-  {
-  tree binfo = TYPE_BINFO (rt);
-  tree binfos = BINFO_BASETYPES (binfo);
-  int n_baselinks = binfos? TREE_VEC_LENGTH (binfos) : 0;
+  static const char* unknown_operator = "{unknown operator}";
   int i;
 
-  for (i = 0; i < n_baselinks; i++)
+  /* Make sure we know about this internal name.  */
+  if (!IDENTIFIER_OPNAME_P (name))
+    return get_identifier (unknown_operator);
+
+  /* Search the list of internal anmes */
+  for (i=0; i < LAST_CPLUS_TREE_CODE ; ++i)
     {
-    tree base_binfo = TREE_VEC_ELT (binfos, i);
-    if (base_binfo)
-      {
-      /* Output this base class.  */
-      xml_output_base_class (xdi, indent+xdi->indent, base_binfo);
-      }
+    if (ansi_opname(i) == name)
+      return get_identifier (operator_name_info[i].name);
+    else if (ansi_assopname(i) == name)
+      return get_identifier (assignment_operator_name_info[i].name);
     }
-  }
   
-  print_class_end_tag (xdi, indent, rt);
+  return get_identifier (unknown_operator);
 }
 
-
-/* Output for a FUNCTION_DECL.  Prints beginning and ending tags, and
-   the argument list between them.  */
-void
-xml_output_function_decl (xml_dump_info_p xdi, unsigned long indent, tree fd)
+/* Output for a FUNCTION_DECL.  */
+static void
+xml_output_function_decl (xml_dump_info_p xdi, tree fd, xml_dump_node_p dn)
 {
   tree arg;
   tree arg_type;
@@ -1021,18 +783,6 @@ xml_output_function_decl (xml_dump_info_p xdi, unsigned long indent, tree fd)
   int do_const = 0;
   int do_virtual = 0;
   int do_static = 0;
-
-  /* Don't process any internally generated declarations.  */
-  if (DECL_INTERNAL_P (fd)) return;
-
-  /* Don't process any compiler-generated functions except constructors
-     and destructors.  */
-  if (DECL_ARTIFICIAL(fd)
-      && !DECL_CONSTRUCTOR_P (fd)
-      && !DECL_DESTRUCTOR_P (fd)) return;
-
-  /* Don't output the cloned functions.  */
-  if (DECL_CLONED_FUNCTION_P (fd)) return;
 
   /* Print out the begin tag for this type of function.  */
   if (DECL_CONSTRUCTOR_P (fd))
@@ -1059,7 +809,7 @@ xml_output_function_decl (xml_dump_info_p xdi, unsigned long indent, tree fd)
         {
         /* An operator in a class.  */
         tag = "OperatorMethod";
-        name = reverse_opname_lookup (DECL_NAME (fd));
+        name = xml_reverse_opname_lookup (DECL_NAME (fd));
         do_returns = 1; do_access = 1; do_const = 1; do_virtual = 1;
         do_static = 1;
         }
@@ -1067,7 +817,7 @@ xml_output_function_decl (xml_dump_info_p xdi, unsigned long indent, tree fd)
         {
         /* An operator in a namespace.  */
         tag = "OperatorFunction";
-        name = reverse_opname_lookup (DECL_NAME (fd));
+        name = xml_reverse_opname_lookup (DECL_NAME (fd));
         do_returns = 1;
         }
       }
@@ -1087,23 +837,21 @@ xml_output_function_decl (xml_dump_info_p xdi, unsigned long indent, tree fd)
       }
     }
 
-  print_indent (xdi->file, indent);
-  fprintf (xdi->file, "<%s", tag);
-  print_name_attribute (xdi, name);
-  if(do_returns) print_returns_attribute (xdi, TREE_TYPE (fd));
-  if(do_access)  print_access_attribute (xdi, fd);
-  if(do_const)   print_const_method_attribute (xdi, fd);
-  if(do_virtual) print_virtual_method_attributes (xdi, fd);
-  if(do_static)  print_static_method_attribute (xdi, fd);
-  print_location_attribute (xdi, fd);
-  print_function_extern_attribute (xdi, fd);
-  fprintf (xdi->file, ">\n");
+  fprintf (xdi->file, "  <%s", tag);
+  xml_print_id_attribute (xdi, dn);
+  xml_print_name_attribute (xdi, name);
 
-  if (DECL_TEMPLATE_INFO (fd))
+  if(do_returns)
     {
-    xml_output_template_info (xdi, indent+xdi->indent,
-                              DECL_TEMPLATE_INFO (fd));
+    xml_print_returns_attribute (xdi, TREE_TYPE (TREE_TYPE (fd)), dn->complete);
     }
+  if(do_access)  xml_print_access_attribute (xdi, fd);
+  if(do_const)   xml_print_const_method_attribute (xdi, fd);
+  if(do_virtual) xml_print_virtual_method_attributes (xdi, fd);
+  if(do_static)  xml_print_static_method_attribute (xdi, fd);
+  xml_print_context_attribute (xdi, fd);
+  xml_print_location_attribute (xdi, fd);
+  xml_print_function_extern_attribute (xdi, fd);
   
   /* Prepare to iterator through argument list.  */
   arg = DECL_ARGUMENTS (fd);
@@ -1113,108 +861,457 @@ xml_output_function_decl (xml_dump_info_p xdi, unsigned long indent, tree fd)
     /* Skip "this" argument.  */
     if(arg) arg = TREE_CHAIN (arg);
     arg_type = TREE_CHAIN (arg_type);
-    }  
+    }
+  
+  /* If there are no arguments, finish the element.  */
+  if (arg_type == void_list_node)
+    {
+    fprintf (xdi->file, "/>\n");
+    return;
+    }
+  else
+    {
+    fprintf (xdi->file, ">\n");
+    }
   
   /* Print out the argument list for this function.  */
   while (arg_type && (arg_type != void_list_node))
     {
-    xml_output_argument (xdi, indent+xdi->indent, arg, arg_type);
+    xml_output_argument (xdi, arg, arg_type, dn->complete);
     if(arg) arg = TREE_CHAIN (arg);
     arg_type = TREE_CHAIN (arg_type);
     }
-
+  
   if(!arg_type)
     {
-    /* Function has variable number of arguments.  */
-    print_ellipsis_empty_tag(xdi, indent+xdi->indent);
+    /* Function has variable number of arguments.  Print ellipsis.  */
+    xml_output_ellipsis (xdi);
     }
-
-  /* Print out the end tag for this type of function.  */
-  print_indent (xdi->file, indent);
-  fprintf (xdi->file, "</%s>\n", tag);
+  
+  fprintf (xdi->file, "  </%s>\n", tag);
 }
-
-
-/* Output for an OVERLOAD.  Output all the functions in the overload list.   */
-void
-xml_output_overload (xml_dump_info_p xdi, unsigned long indent, tree o)
-{
-  tree cur_overload = o;
-  while (cur_overload)
-    {
-    xml_output_function_decl (xdi, indent, OVL_CURRENT (cur_overload));
-    cur_overload = OVL_NEXT (cur_overload);
-    }
-}
-
 
 /* Output for a VAR_DECL.  The name and type of the variable are output,
    as well as the initializer if it exists.  */
-void
-xml_output_var_decl (xml_dump_info_p xdi, unsigned long indent, tree vd)
+static void
+xml_output_var_decl (xml_dump_info_p xdi, tree vd, xml_dump_node_p dn)
 {
-  /* Don't process any internally generated declarations.  */
-  if (DECL_INTERNAL_P (vd)) return;
-
-  print_indent (xdi->file, indent);  
-  fprintf (xdi->file, "<Variable");
-  print_name_attribute (xdi, DECL_NAME (vd));
-  print_type_attribute (xdi, TREE_TYPE (vd));
-  print_init_attribute (xdi, DECL_INITIAL (vd));
-  print_access_attribute (xdi, vd);
-  print_location_attribute (xdi, vd);
-  print_extern_attribute (xdi, vd);
+  tree type = TREE_TYPE (vd);
+  fprintf (xdi->file, "  <Variable");
+  xml_print_id_attribute (xdi, dn);
+  xml_print_name_attribute (xdi, DECL_NAME (vd));
+  if(TYPE_NAME (type) && DECL_ORIGINAL_TYPE (TYPE_NAME (type)))
+    type = DECL_ORIGINAL_TYPE (TYPE_NAME (type));
+  xml_print_type_attribute (xdi, type, dn->complete);
+  xml_print_init_attribute (xdi, DECL_INITIAL (vd));
+  xml_print_context_attribute (xdi, vd);
+  xml_print_access_attribute (xdi, vd);
+  xml_print_location_attribute (xdi, vd);
+  xml_print_extern_attribute (xdi, vd);
   fprintf (xdi->file, "/>\n");
 }
 
 
 /* Output for a FIELD_DECL.  The name and type of the variable are output,
    as well as the initializer if it exists.  */
-void
-xml_output_field_decl (xml_dump_info_p xdi, unsigned long indent, tree fd)
+static void
+xml_output_field_decl (xml_dump_info_p xdi, tree fd, xml_dump_node_p dn)
 {
-  /* Don't process any internally generated declarations.  */
-  if (DECL_INTERNAL_P (fd)) return;
-  
-  print_indent (xdi->file, indent);
-  fprintf (xdi->file, "<Field");
-  print_name_attribute (xdi, DECL_NAME (fd));
-  print_access_attribute (xdi, fd);
+  fprintf (xdi->file, "  <Field");
+  xml_print_id_attribute (xdi, dn);
+  xml_print_name_attribute (xdi, DECL_NAME (fd));
+  xml_print_access_attribute (xdi, fd);
   /* TODO: handle bit field case.  */
-  print_type_attribute (xdi, TREE_TYPE (fd));
-  print_location_attribute (xdi, fd);
+  xml_print_type_attribute (xdi, TREE_TYPE (fd), dn->complete);
+  xml_print_context_attribute (xdi, fd);
+  xml_print_location_attribute (xdi, fd);
   fprintf (xdi->file, "/>\n");
 }
 
-
-/* Output for a CONST_DECL.  The name and type of the constant are output,
-   as well as the value.  */
-void
-xml_output_const_decl (xml_dump_info_p xdi, unsigned long indent, tree cd)
+/* Output a RECORD_TYPE that is not a pointer-to-member-function.
+   Prints beginning and ending tags, and all class member declarations
+   between.  Also handles a UNION_TYPE.  */
+static void
+xml_output_record_type (xml_dump_info_p xdi, tree rt, xml_dump_node_p dn)
 {
-  /* Don't process any internally generated declarations.  */
-  if (DECL_INTERNAL_P (cd)) return;
+  tree field;
+  tree func;
+  const char* tag;
+  
+  if (TREE_CODE(rt) == RECORD_TYPE)
+    {
+    if (CLASSTYPE_DECLARED_CLASS (rt)) { tag = "Class"; }
+    else { tag = "Struct"; }
+    }
+  else { tag = "Union"; }
+  
+  fprintf (xdi->file, "  <%s", tag);
+  xml_print_id_attribute (xdi, dn);
+  xml_print_name_attribute (xdi, DECL_NAME (TYPE_NAME (rt)));
+  xml_print_context_attribute (xdi, TYPE_NAME (rt));
+  xml_print_access_attribute (xdi, TYPE_NAME (rt));
+  xml_print_abstract_attribute (xdi, rt);
+  xml_print_incomplete_attribute (xdi, rt);
+  xml_print_location_attribute (xdi, TYPE_NAME (rt));
+  
+  if (dn->complete && COMPLETE_TYPE_P (rt))
+    {
+    fprintf (xdi->file, " members=\"");
+    /* Output all the non-method declarations in the class.  */
+    for (field = TYPE_FIELDS (rt) ; field ; field = TREE_CHAIN (field))
+      {
+      /* A class or struct internally typedefs itself.  Don't
+         output this extra typedef.  */
+      if (!((TREE_CODE (field) == TYPE_DECL)
+            && (TREE_TYPE (field) == rt)))
+        {
+        int id = xml_add_node (xdi, field, 1);
+        if (id)
+          {
+          fprintf (xdi->file, "_%d ", id);
+          }
+        }
+      }
+    
+    /* Output all the method declarations in the class.  */
+    for (func = TYPE_METHODS (rt) ; func ; func = TREE_CHAIN (func))
+      {
+      int id;
 
-  print_indent (xdi->file, indent);
-  fprintf (xdi->file, "<Enum");
-  print_name_attribute (xdi, DECL_NAME (cd));
-  print_type_attribute (xdi, TREE_TYPE (cd));
-  print_init_attribute (xdi, DECL_INITIAL (cd));
-  print_location_attribute (xdi, cd);
+      /* Don't process any internally generated declarations.  */
+      if (DECL_INTERNAL_P (func)) continue;
+      
+      /* Don't process any compiler-generated functions except constructors
+         and destructors.  */
+      if (DECL_ARTIFICIAL(func)
+          && !DECL_CONSTRUCTOR_P (func)
+          && !DECL_DESTRUCTOR_P (func)) continue;
+      
+      /* Don't output the cloned functions.  */
+      if (DECL_CLONED_FUNCTION_P (func)) continue;
+
+      id = xml_add_node (xdi, func, 1);
+      if(id)
+        {
+        fprintf (xdi->file, "_%d ", id);
+        }
+      }
+    fprintf (xdi->file, "\"");
+    }  
+  
+  /* Output all the base classes.  */
+  if (dn->complete && COMPLETE_TYPE_P (rt))
+    {
+    tree binfo = TYPE_BINFO (rt);
+    tree binfos = BINFO_BASETYPES (binfo);
+    int n_baselinks = binfos? TREE_VEC_LENGTH (binfos) : 0;
+    int i;
+    
+    fprintf (xdi->file, " bases=\"");
+    for (i = 0; i < n_baselinks; i++)
+      {
+      tree base_binfo = TREE_VEC_ELT (binfos, i);
+      if (base_binfo)
+        {
+        /* Output this base class.  */
+        const char* access = 0;
+        if (TREE_VIA_PUBLIC (base_binfo)) { access = "public"; }
+        else if (TREE_VIA_PROTECTED (base_binfo)) { access = "protected"; }
+        else { access="private"; }
+
+        fprintf (xdi->file, "%s:_%d ", access,
+                 xml_add_node (xdi, BINFO_TYPE (base_binfo), 1));        
+        }
+      }
+    fprintf (xdi->file, "\"");
+    }
+  
   fprintf (xdi->file, "/>\n");
 }
 
+/* Output for a fundamental type.  */
+static void
+xml_output_fundamental_type (xml_dump_info_p xdi, tree t, xml_dump_node_p dn)
+{
+  fprintf (xdi->file, "  <FundamentalType");
+  xml_print_id_attribute (xdi, dn);
+  /*xml_print_name_attribute (
+    xdi, DECL_NAME (TYPE_NAME (TYPE_MAIN_VARIANT (t))));*/
+  xml_print_name_attribute (xdi, DECL_NAME (TYPE_NAME (t)));
+  fprintf (xdi->file, "/>\n");
+}
 
-/* Output for a TEMPLATE_DECL.  The set of specializations (including
-   instantiations) is output.  */
-void
-xml_output_template_decl (xml_dump_info_p xdi, unsigned long indent, tree td)
+/* Output for a FUNCTION_TYPE.  */
+static void
+xml_output_function_type (xml_dump_info_p xdi, tree t, xml_dump_node_p dn)
+{
+  tree arg_type;
+  
+  fprintf (xdi->file, "  <FunctionType");
+  xml_print_id_attribute (xdi, dn);
+  xml_print_returns_attribute (xdi, TREE_TYPE (t), dn->complete);
+  fprintf (xdi->file, ">\n");
+  
+  /* Prepare to iterator through argument list.  */
+  arg_type = TYPE_ARG_TYPES (t);
+
+  /* Print out the argument list for this function.  */
+  while (arg_type && (arg_type != void_list_node))
+    {
+    xml_output_argument (xdi, NULL, arg_type, dn->complete);
+    arg_type = TREE_CHAIN (arg_type);
+    }
+  
+  if(arg_type != void_list_node)
+    {
+    /* Function has variable number of arguments.  */
+    xml_output_ellipsis (xdi);
+    }
+  
+  fprintf (xdi->file, "  </FunctionType>\n");
+}
+
+/* Output for a METHOD_TYPE.  */
+static void
+xml_output_method_type (xml_dump_info_p xdi, tree t, xml_dump_node_p dn)
+{
+  tree arg_type;
+  
+  fprintf (xdi->file, "  <MethodType");
+  xml_print_id_attribute (xdi, dn);
+  xml_print_base_type_attribute (xdi, TYPE_METHOD_BASETYPE (t), dn->complete);
+  xml_print_returns_attribute (xdi, TREE_TYPE (t), dn->complete);
+  fprintf (xdi->file, ">\n");
+  
+  /* Prepare to iterator through argument list.  */
+  arg_type = TYPE_ARG_TYPES (t);
+  
+  /* Skip "this" argument.  */
+  arg_type = TREE_CHAIN (arg_type);
+  
+  /* Print out the argument list for this method.  */
+  while (arg_type && (arg_type != void_list_node))
+    {
+    xml_output_argument (xdi, NULL, arg_type, dn->complete);
+    arg_type = TREE_CHAIN (arg_type);
+    }
+  
+  if(arg_type != void_list_node)
+    {
+    /* Method has variable number of arguments.  */
+    xml_output_ellipsis (xdi);
+    }
+  
+  fprintf (xdi->file, "  </MethodType>\n");
+}
+
+/* Output for a POINTER_TYPE.  */
+static void
+xml_output_pointer_type (xml_dump_info_p xdi, tree t, xml_dump_node_p dn)
+{
+  fprintf (xdi->file, "  <PointerType");
+  xml_print_id_attribute (xdi, dn);
+  xml_print_type_attribute (xdi, TREE_TYPE (t), 0);
+  fprintf (xdi->file, "/>\n");
+}
+
+/* Output for a REFERENCE_TYPE.  */
+static void
+xml_output_reference_type (xml_dump_info_p xdi, tree t, xml_dump_node_p dn)
+{
+  fprintf (xdi->file, "  <ReferenceType");
+  xml_print_id_attribute (xdi, dn);
+  xml_print_type_attribute (xdi, TREE_TYPE (t), 0);
+  fprintf (xdi->file, "/>\n");
+}
+
+/* Output for an OFFSET_TYPE.  */
+static void
+xml_output_offset_type (xml_dump_info_p xdi, tree t, xml_dump_node_p dn)
+{
+  fprintf (xdi->file, "  <OffsetType");
+  xml_print_id_attribute (xdi, dn);
+  xml_print_base_type_attribute (xdi, TYPE_OFFSET_BASETYPE (t), dn->complete);
+  xml_print_type_attribute (xdi, TREE_TYPE (t), dn->complete);
+  fprintf (xdi->file, "/>\n");
+}
+
+/* Output for an ARRAY_TYPE.  */
+static void
+xml_output_array_type (xml_dump_info_p xdi, tree t, xml_dump_node_p dn)
+{
+  fprintf (xdi->file, "  <ArrayType");
+  xml_print_id_attribute(xdi, dn);
+  xml_print_array_attributes (xdi, t);
+  xml_print_type_attribute (xdi, TREE_TYPE (t), dn->complete);
+  fprintf (xdi->file, "/>\n");
+}
+
+/* Output for an ENUMERAL_TYPE.  */
+static void
+xml_output_enumeral_type (xml_dump_info_p xdi, tree t, xml_dump_node_p dn)
+{
+  tree tv;
+  
+  fprintf (xdi->file, "  <EnumerationType");
+  xml_print_id_attribute(xdi, dn);
+  xml_print_name_attribute (xdi, DECL_NAME (TYPE_NAME (t)));
+  xml_print_access_attribute (xdi, TYPE_NAME (t));
+  xml_print_location_attribute (xdi, TYPE_NAME (t));
+  fprintf (xdi->file, ">\n");
+
+  /* Output the list of possible values for the enumeration type.  */
+  for (tv = TYPE_VALUES (t); tv ; tv = TREE_CHAIN (tv))
+    {
+    int value = TREE_INT_CST_LOW (TREE_VALUE (tv));
+    fprintf (xdi->file,
+             "    <EnumValue name=\"%s\" init=\"%d\"/>\n",
+             xml_get_encoded_string ( TREE_PURPOSE(tv)), value);
+    }
+  
+  fprintf (xdi->file, "  </EnumerationType>\n");
+}
+
+/* ------------------------------------------------------------------------ */
+
+/* When a class, struct, or union type is defined, it is automatically
+   given a member typedef to itself.  Given a RECORD_TYPE or
+   UNION_TYPE, this returns that field's name.  Although this should
+   never happen, 0 is returned when the field cannot be found.  */
+static tree
+xml_find_self_typedef_name (tree rt)
+{
+  tree field;
+  for (field = TYPE_FIELDS (rt) ; field ; field = TREE_CHAIN (field))
+    {
+    /* The field must be artificial because someone could have written
+       their own typedef of the class's name.  */
+    if ((TREE_CODE (field) == TYPE_DECL)
+        && (TREE_TYPE (field) == rt)
+        && DECL_ARTIFICIAL (field))
+      {
+      return DECL_NAME (field);
+      }
+    }
+
+  return 0;
+}
+
+/* Add the given typedef if it really came from user code.  */
+static int
+xml_add_typedef (xml_dump_info_p xdi, tree td, int complete)
+{
+  /* If the typedef points to its own name in the same context, ignore
+     it.  */
+  if(!DECL_ORIGINAL_TYPE (td)
+     && TREE_TYPE (td) && TYPE_NAME (TREE_TYPE (td))
+     && (DECL_NAME (td) == DECL_NAME (TYPE_NAME (TREE_TYPE (td))))
+     && (DECL_CONTEXT (td) == DECL_CONTEXT (TYPE_NAME (TREE_TYPE (td)))))
+    {
+    return 0;
+    }
+  return xml_add_node_real (xdi, td, complete);
+}
+
+/* Dispatch output of a TYPE_DECL.  This is either a typedef, or a new
+   type (class/struct/union) definition.  */
+static int
+xml_add_type_decl (xml_dump_info_p xdi, tree td, int complete)
+{
+  /* Get the type from the TYPE_DECL.  We don't want to use complete_type
+     because it may modify something.  We are doing a read-only dump.  */
+  tree t = TREE_TYPE (td);
+  
+  switch (TREE_CODE (t))
+    {
+    case ARRAY_TYPE:
+    case LANG_TYPE:
+    case POINTER_TYPE:
+    case REFERENCE_TYPE:
+    case INTEGER_TYPE:
+    case VOID_TYPE:
+    case BOOLEAN_TYPE:
+    case REAL_TYPE:
+    case COMPLEX_TYPE:
+    case FUNCTION_TYPE:
+    case TYPENAME_TYPE:
+    case TEMPLATE_TYPE_PARM:
+      /* A typedef to a predefined type.  */
+      return xml_add_typedef (xdi, td, complete);
+      break;
+    case ENUMERAL_TYPE:
+    case UNION_TYPE:
+    case RECORD_TYPE:
+      if ((TREE_CODE (t) == RECORD_TYPE) && TYPE_PTRMEMFUNC_P (t))
+        {
+        /* A typedef to a pointer to member.  */
+        return xml_add_typedef (xdi, td, complete);
+        }
+      /* This is a complicated test to tell apart a real class declaration
+         or definition from a typedef to it.  This must be able to detect
+         the difference for the following cases:
+
+            Code:                            Meaning:
+         1.  struct A {};                     "struct A"
+         2.  struct A {}; typedef A B;        "struct A" "typedef A B"
+         3.  typedef struct {} A;             "struct A"
+         4.  typedef struct A {} B;           "struct A" "typedef A B"
+         5.  typedef struct A {} A;           "struct A"
+         6.  struct A {}; typedef struct A A; "struct A"
+         
+         DECL_IMPLICIT_TYPEDEF_P will recognize the TYPE_DECL that
+         points to the real class definition for cases 1, 2, 3, and 4,
+         and is sufficient to make the decision.
+         
+         For cases 5 and 6, the second test makes sure the context of
+         the TYPE_DECL matches the context of the RECORD_TYPE, which
+         can only happen for a TYPE_DECL in the same scope as the
+         class.  It then looks at the RECORD_TYPE to find its
+         artificial member that is a typedef to its own class.  The
+         name of this field is compared to the name of the original
+         TYPE_DECL.  If it matches and the type's TYPE_NAME node is
+         this TYPE_DECL, then we have found the class's definition.
+         Otherwise, it is assumed that it is simply a typedef.  */
+      else if (DECL_IMPLICIT_TYPEDEF_P (td)
+               || (((DECL_CONTEXT (td) == TYPE_CONTEXT (t))
+                     && (xml_find_self_typedef_name (t) == DECL_NAME (td))
+                     && (TYPE_NAME (t) == td))))
+        {
+        /* This is a new class or enumeration type.  */
+        return xml_add_node (xdi, t, complete);
+        }
+      else
+        {
+        /* A typedef to an existing class or enumeration type.  */
+        return xml_add_typedef (xdi, td, complete);
+        }
+      break;
+    default:
+      xml_output_unimplemented (xdi, t, 0, "xml_add_type_decl");
+    }
+  return 0;
+}
+
+/* Dump for an OVERLOAD.  Dump all the functions in the overload list.   */
+static int
+xml_add_overload (xml_dump_info_p xdi, tree o, int complete)
+{
+  tree cur_overload = TREE_VALUE (o);
+  while (cur_overload)
+    {
+    xml_add_node (xdi, OVL_CURRENT (cur_overload), complete);
+    cur_overload = OVL_NEXT (cur_overload);
+    }
+  return 0;
+}
+
+/* Dump for a TEMPLATE_DECL.  The set of specializations (including
+   instantiations) is dumped.  */
+static int
+xml_add_template_decl (xml_dump_info_p xdi, tree td, int complete)
 {
   tree tl;
   
-  /* Don't process any internally generated declarations.  */
-  if (DECL_INTERNAL_P (td)) return;
-
   for (tl = DECL_TEMPLATE_SPECIALIZATIONS (td);
        tl ; tl = TREE_CHAIN (tl))
     {
@@ -1222,16 +1319,16 @@ xml_output_template_decl (xml_dump_info_p xdi, unsigned long indent, tree td)
     switch (TREE_CODE (ts))
       {
       case FUNCTION_DECL:
-        xml_output_function_decl (xdi, indent, ts);
+        xml_add_node (xdi, ts, complete);
         break;
       case TEMPLATE_DECL:
         break;
       default:
-        print_unimplemented_empty_tag (xdi, indent, ts,
-                                       "xml_output_template_decl SPECIALIZATIONS");
+        xml_output_unimplemented (xdi, ts, 0,
+                                       "xml_dump_template_decl SPECIALIZATIONS");
       }
     }
-
+  
   for (tl = DECL_TEMPLATE_INSTANTIATIONS (td);
        tl ; tl = TREE_CHAIN (tl))
     {
@@ -1239,393 +1336,142 @@ xml_output_template_decl (xml_dump_info_p xdi, unsigned long indent, tree td)
     switch (TREE_CODE (ts))
       {
       case TYPE_DECL:
-        xml_output_type_decl (xdi, indent, ts);
+        xml_add_node (xdi, ts, complete);
         break;
       default:
-        print_unimplemented_empty_tag (xdi, indent, ts,
-                                       "xml_output_template_decl INSTANTIATIONS");
+        xml_output_unimplemented (xdi, ts, 0,
+                                       "xml_dump_template_decl INSTANTIATIONS");
       }
     }
+  return 0;
 }
 
-
-/* Output for TEMPLATE_INFO.  The set of template parameters used
-   is output.  */
+/* Dump the given tree node.  */
 void
-xml_output_template_info (xml_dump_info_p xdi, unsigned long indent, tree ti)
+xml_dump_tree_node (xml_dump_info_p xdi, tree n, xml_dump_node_p dn)
 {
-  tree arg_vec;
-  int num_args;
-  int i;
-
-  print_instantiation_begin_tag (xdi, indent);
-
-  arg_vec = TI_ARGS (ti);
-  num_args = TREE_VEC_LENGTH (arg_vec);
-  for (i=0 ; i < num_args ; ++i)
+  switch (TREE_CODE (n))
     {
-    tree arg = TREE_VEC_ELT (arg_vec, i);
-    xml_output_template_argument (xdi, indent+xdi->indent, arg);
-    }
-
-  print_instantiation_end_tag (xdi, indent);  
-}
-
-
-/* Output for a typedef.  The name and associated type are output.  */
-void
-xml_output_typedef (xml_dump_info_p xdi, unsigned long indent, tree td)
-{
-  /* If the typedef points to its own name in the same context, ignore
-     it.  This can happen for code like "typedef struct {} A;".  */
-  if(!DECL_ORIGINAL_TYPE (td)
-     && TREE_TYPE (td) && TYPE_NAME (TREE_TYPE (td))
-     && (DECL_NAME (td) == DECL_NAME (TYPE_NAME (TREE_TYPE (td))))
-     && (DECL_CONTEXT (td) == DECL_CONTEXT (TYPE_NAME (TREE_TYPE (td)))))
-     return;
-
-  print_indent (xdi->file, indent);
-  fprintf (xdi->file, "<Typedef");
-  print_name_attribute (xdi, DECL_NAME (td));
-
-  /* Get the original type out of the typedef, if any.  */
-  if (DECL_ORIGINAL_TYPE (td))
-    print_type_attribute (xdi, DECL_ORIGINAL_TYPE (td));
-  else
-    print_type_attribute (xdi, TREE_TYPE (td));
-
-  print_location_attribute (xdi, td);
-  fprintf (xdi->file, "/>\n");
-}
-
-/* Output for a *_TYPE.  */
-void
-xml_output_type (xml_dump_info_p xdi, unsigned long indent, tree t)
-{
-  switch (TREE_CODE (t))
-    {
-    case ARRAY_TYPE:
-      xml_output_array_type (xdi, indent, t);
+    case NAMESPACE_DECL:
+      xml_output_namespace_decl (xdi, n, dn);
       break;
-    case POINTER_TYPE:
-      xml_output_pointer_type (xdi, indent, t);
+    case TYPE_DECL:
+      xml_output_typedef (xdi, n, dn);
+      break;          
+    case FUNCTION_DECL:
+      xml_output_function_decl (xdi, n, dn);
       break;
-    case REFERENCE_TYPE:
-      xml_output_reference_type (xdi, indent, t);
+    case VAR_DECL:
+      xml_output_var_decl (xdi, n, dn);
       break;
-    case FUNCTION_TYPE:
-      xml_output_function_type (xdi, indent, t);
-      break;
-    case METHOD_TYPE:
-      xml_output_method_type (xdi, indent, t);
-      break;
-    case OFFSET_TYPE:
-      xml_output_offset_type (xdi, indent, t);
+    case FIELD_DECL:
+      xml_output_field_decl (xdi, n, dn);
       break;
     case RECORD_TYPE:
-      if (TYPE_PTRMEMFUNC_P (t))
-        {
-        /* Pointer-to-member-functions are stored ina RECORD_TYPE.  */
-        xml_output_type (xdi, indent, TYPE_PTRMEMFUNC_FN_TYPE (t));
-        }
-      else
-        {
-        /* This is a struct or class type, just output its name.  */
-        xml_output_named_type (xdi, indent, t);
-        }
+      xml_output_record_type (xdi, n, dn);
+      break;
+    case ARRAY_TYPE:
+      xml_output_array_type (xdi, n, dn);
+      break;
+    case POINTER_TYPE:
+      xml_output_pointer_type (xdi, n, dn);
+      break;
+    case REFERENCE_TYPE:
+      xml_output_reference_type (xdi, n, dn);
+      break;
+    case FUNCTION_TYPE:
+      xml_output_function_type (xdi, n, dn);
+      break;
+    case METHOD_TYPE:
+      xml_output_method_type (xdi, n, dn);
+      break;
+    case OFFSET_TYPE:
+      xml_output_offset_type (xdi, n, dn);
+      break;
+    case ENUMERAL_TYPE:
+      xml_output_enumeral_type (xdi, n, dn);
       break;
     case LANG_TYPE:
     case INTEGER_TYPE:
     case BOOLEAN_TYPE:
     case REAL_TYPE:
+    case VOID_TYPE:
     case COMPLEX_TYPE:
-    case ENUMERAL_TYPE:
+      xml_output_fundamental_type (xdi, n, dn);
+      break;
+      
+    /* Let the following fall through to unimplemented for now.  */
+    case RESULT_DECL:
+    case USING_DECL:
+      /* case THUNK_DECL: */
+      /* This is compiler-generated.  Just ignore it.  */
+      /* break; */
+    case SCOPE_REF:
+    case TEMPLATE_PARM_INDEX:
+    case INTEGER_CST:
     case UNION_TYPE:
     case TYPENAME_TYPE:
     case TEMPLATE_TYPE_PARM:
-      xml_output_named_type (xdi, indent, t);
-      break;
-    case SCOPE_REF:
-      print_scope_ref_empty_tag (xdi, indent, t);
-      break;
-    case TEMPLATE_PARM_INDEX:
-      xml_output_type (xdi, indent, TREE_TYPE (t));
-      break;
-    case VOID_TYPE:
-      xml_output_void_type (xdi, indent, t);
-      break;
-    case INTEGER_CST:
-      print_integer_cst_empty_tag (xdi, indent, t);
-      break;
     default:
-      print_unimplemented_empty_tag (xdi, indent, t, "xml_output_type");
+      xml_output_unimplemented (xdi, n, dn, 0);
     }
 }
 
-
-/* Output for a normal named type.  */
-void
-xml_output_named_type (xml_dump_info_p xdi, unsigned long indent, tree t)
+/* Add tree node N to those encountered.  Return its index.  */
+int
+xml_add_node (xml_dump_info_p xdi, tree n, int complete)
 {
-  print_indent (xdi->file, indent);
-  fprintf (xdi->file, "<NamedType");
-  print_id_attribute (xdi, t);
-  fprintf (xdi->file, " name=\"%s\"", xml_get_qualified_name (t));
-  print_cv_attributes (xdi, t);
-  fprintf (xdi->file, "/>\n");
-}
-
-
-/* Output for a void type.  */
-void
-xml_output_void_type (xml_dump_info_p xdi, unsigned long indent, tree t)
-{
-  print_indent (xdi->file, indent);
-  fprintf (xdi->file, "<NamedType");
-  print_id_attribute (xdi, t);
-  fprintf (xdi->file, " name=\"%s\"",
-           xml_get_qualified_name (TYPE_MAIN_VARIANT (t)));
-  print_cv_attributes (xdi, t);
-  fprintf (xdi->file, "/>\n");
-}
-
-
-/* Output for a FUNCTION_TYPE.  */
-void
-xml_output_function_type (xml_dump_info_p xdi, unsigned long indent, tree t)
-{
-  tree arg_type;
-  
-  print_indent (xdi->file, indent);
-  fprintf (xdi->file, "<FunctionType");
-  print_id_attribute (xdi, t);
-  print_returns_attribute (xdi, t);
-  print_cv_attributes (xdi, t);
-  fprintf (xdi->file, ">\n");
-  
-  /* Prepare to iterator through argument list.  */
-  arg_type = TYPE_ARG_TYPES (t);
-
-  /* Print out the argument list for this function.  */
-  while (arg_type && (arg_type != void_list_node))
+  /* Some nodes don't need to be dumped and just refer to other nodes.
+     These nodes should can have index zero because they should never
+     be referenced.  */
+  switch (TREE_CODE (n))
     {
-    xml_output_argument (xdi, indent+xdi->indent, NULL, arg_type);
-    arg_type = TREE_CHAIN (arg_type);
-    }
-
-  if(arg_type != void_list_node)
-    {
-    /* Function has variable number of arguments.  */
-    print_ellipsis_empty_tag(xdi, indent+xdi->indent);
-    }
-
-  print_indent (xdi->file, indent);
-  fprintf (xdi->file, "</FunctionType>\n");
-}
-
-
-/* Output for a METHOD_TYPE.  */
-void
-xml_output_method_type (xml_dump_info_p xdi, unsigned long indent, tree t)
-{
-  tree arg_type;
-  
-  print_indent (xdi->file, indent);
-  fprintf (xdi->file, "<MethodType");
-  print_id_attribute (xdi, t);
-  print_base_type_attribute (xdi, TYPE_METHOD_BASETYPE (t));
-  print_returns_attribute (xdi, t);
-  print_cv_attributes (xdi, t);
-  fprintf (xdi->file, ">\n");
-  
-  /* Prepare to iterator through argument list.  */
-  arg_type = TYPE_ARG_TYPES (t);
-
-  /* Skip "this" argument.  */
-  arg_type = TREE_CHAIN (arg_type);
-
-  /* Print out the argument list for this method.  */
-  while (arg_type && (arg_type != void_list_node))
-    {
-    xml_output_argument (xdi, indent+xdi->indent, NULL, arg_type);
-    arg_type = TREE_CHAIN (arg_type);
-    }
-
-  if(arg_type != void_list_node)
-    {
-    /* Method has variable number of arguments.  */
-    print_ellipsis_empty_tag(xdi, indent+xdi->indent);
-    }
-
-  print_indent (xdi->file, indent);
-  fprintf (xdi->file, "</MethodType>\n");
-}
-
-
-/* Output for a POINTER_TYPE.  */
-void
-xml_output_pointer_type (xml_dump_info_p xdi, unsigned long indent, tree t)
-{
-  print_indent (xdi->file, indent);
-  fprintf (xdi->file, "<PointerType");
-  print_id_attribute (xdi, t);
-  print_cv_attributes (xdi, t);
-  print_type_attribute (xdi, TREE_TYPE (t));
-  fprintf (xdi->file, "/>\n");
-}
-
-
-/* Output for a REFERENCE_TYPE.  */
-void
-xml_output_reference_type (xml_dump_info_p xdi, unsigned long indent, tree t)
-{
-  print_indent (xdi->file, indent);
-  fprintf (xdi->file, "<ReferenceType");
-  print_id_attribute (xdi, t);
-  print_cv_attributes (xdi, t);
-  print_type_attribute (xdi, TREE_TYPE (t));
-  fprintf (xdi->file, "/>\n");
-}
-
-
-/* Output for an OFFSET_TYPE.  */
-void
-xml_output_offset_type (xml_dump_info_p xdi, unsigned long indent, tree t)
-{
-  print_indent (xdi->file, indent);
-  fprintf (xdi->file, "<OffsetType");
-  print_id_attribute (xdi, t);
-  print_base_type_attribute (xdi, TYPE_OFFSET_BASETYPE (t));
-  print_cv_attributes (xdi, t);
-  print_type_attribute (xdi, TREE_TYPE (t));
-  fprintf (xdi->file, "/>\n");
-}
-
-
-/* Output for an ARRAY_TYPE.  */
-void
-xml_output_array_type (xml_dump_info_p xdi, unsigned long indent, tree t)
-{
-  print_indent (xdi->file, indent);
-  fprintf (xdi->file, "<ArrayType");
-  print_id_attribute(xdi, t);
-  print_array_attributes (xdi, t);
-  print_cv_attributes (xdi, t);
-  print_type_attribute (xdi, TREE_TYPE (t));
-  fprintf (xdi->file, "/>\n");
-}
-
-
-/* Output for an ENUMERAL_TYPE.  */
-void
-xml_output_enumeral_type (xml_dump_info_p xdi, unsigned long indent, tree t)
-{
-  tree tv;
-
-  print_indent (xdi->file, indent);
-  fprintf (xdi->file, "<Enumeration");
-  print_name_attribute (xdi, DECL_NAME (TYPE_NAME (t)));
-  print_access_attribute (xdi, TYPE_NAME (t));
-  print_location_attribute (xdi, TYPE_NAME (t));
-  fprintf (xdi->file, ">\n");
-
-  /* Output the list of possible values for the enumeration type.  */
-  for (tv = TYPE_VALUES (t); tv ; tv = TREE_CHAIN (tv))
-    {
-    int value = TREE_INT_CST_LOW (TREE_VALUE (tv));
-    print_indent (xdi->file, indent+xdi->indent);
-    fprintf (xdi->file,
-             "<EnumValue name=\"%s\" init=\"%d\"/>\n",
-             xml_get_encoded_string ( TREE_PURPOSE(tv)),
-             value);
-    }
-
-  print_indent (xdi->file, indent);
-  fprintf (xdi->file, "</Enumeration>\n");
-}
-
-
-/* Output a base class for a RECORD_TYPE or UNION_TYPE.  */
-void
-xml_output_base_class (xml_dump_info_p xdi, unsigned long indent, tree binfo)
-{
-  print_indent (xdi->file, indent);
-  fprintf (xdi->file, "<BaseClass");
-  print_base_access_attribute (xdi, binfo);
-  fprintf (xdi->file, " name=\"%s\"",
-           xml_get_qualified_name (BINFO_TYPE (binfo)));
-  fprintf (xdi->file, "/>\n");
-}
-
-
-/* Output for a PARM_DECL / TREE_LIST corresponding to a function argument.  */
-void
-xml_output_argument (xml_dump_info_p xdi, unsigned long indent, tree pd, tree tl)
-{
-  /* Don't process any compiler-generated arguments.  These occur for
-     things like constructors of classes with virtual inheritance.  */
-  if (pd && DECL_ARTIFICIAL (pd)) return;
-
-  print_indent (xdi->file, indent);  
-  fprintf (xdi->file, "<Argument");
-  if(pd && DECL_NAME (pd))
-    {
-    print_name_attribute (xdi, DECL_NAME (pd));
-    }
-
-  if (pd && DECL_ARG_TYPE_AS_WRITTEN (pd))
-    {
-    print_type_attribute (xdi, DECL_ARG_TYPE_AS_WRITTEN (pd));
-    }
-  else if (pd && TREE_TYPE (pd))
-    {
-    print_type_attribute (xdi, TREE_TYPE (pd));
-    }
-  else
-    {
-    print_type_attribute (xdi, TREE_VALUE (tl));
+    case NAMESPACE_DECL:
+      if(n != fake_std_node)
+        {
+        return xml_add_node_real (xdi, n, complete);
+        }
+      break;
+    case TYPE_DECL:
+      return xml_add_type_decl(xdi, n, complete);
+      break;
+    case TREE_LIST:
+      return xml_add_overload (xdi, n, complete);
+      break;
+    case TEMPLATE_DECL:
+      return xml_add_template_decl (xdi, n, complete);
+      break;
+    case RECORD_TYPE:
+      if (TYPE_PTRMEMFUNC_P (n))
+        {
+        /* Pointer-to-member-functions are stored in a RECORD_TYPE.  */
+        return xml_add_node (xdi, TYPE_PTRMEMFUNC_FN_TYPE (n), complete);
+        }
+      else
+        {
+        /* This is a struct or class type.  */
+        return xml_add_node_real (xdi, n, complete);
+        }
+      break;
+    case CONST_DECL:
+      /* Enumeration value constant.  Dumped by the enumeration type.  */
+      return 0; break;
+    default:
+      /* This node must really be added.  */
+      return xml_add_node_real (xdi, n, complete);
     }
   
-  if (TREE_PURPOSE (tl))
-    {
-    print_default_argument_attribute (xdi, TREE_PURPOSE (tl));
-    }
-
-  fprintf (xdi->file, "/>\n");
-}
-
-
-/* Output the given template argument.  */
-void
-xml_output_template_argument (xml_dump_info_p xdi, unsigned long indent, tree arg)
-{
-  print_template_argument_begin_tag (xdi, indent);
-  xml_output_type (xdi, indent + xdi->indent, arg);
-  print_template_argument_end_tag (xdi, indent);
-}
-
-/* Dump the queue of types.  */
-void xml_dump_types (xml_dump_info_p xdi, unsigned long indent)
-{
-  xml_type_queue_p tq;
-  xml_type_queue_p next_tq; 
-  for(tq = xdi->type_queue; tq ; tq = next_tq)
-    {
-    xml_output_type (xdi, indent, (tree) tq->node->key);
-    next_tq = tq->next;
-    free (tq);
-    }
-}
+  return 0;
+}  
 
 /* Dump the queue of file names.  */
-void xml_dump_files (xml_dump_info_p xdi, unsigned long indent)
+void xml_dump_files (xml_dump_info_p xdi)
 {
   xml_file_queue_p fq;
   xml_file_queue_p next_fq; 
   for(fq = xdi->file_queue; fq ; fq = next_fq)
     {
-    print_indent (xdi->file, indent);
-    fprintf (xdi->file, "<File id=\"f%d\" name=\"%s\"/>\n",
+    fprintf (xdi->file, "  <File id=\"f%d\" name=\"%s\"/>\n",
              (unsigned int) fq->node->value,
              IDENTIFIER_POINTER ((tree) fq->node->key));
     next_fq = fq->next;
@@ -1633,50 +1479,116 @@ void xml_dump_files (xml_dump_info_p xdi, unsigned long indent)
     }
 }
 
-/* Given any _DECL, return a string with the fully qualified form of
-   its name.  */
-const char*
-xml_get_qualified_name (tree t)
+/* ------------------------------------------------------------------------ */
+
+/* Starting in the given scope, look for the qualified name.  */
+static tree
+xml_lookup_start_node (tree scope, const char* qualified_name)
 {
-  tree context;
-  tree qualifiers = NULL_TREE;
-  tree n;
+  tree node = 0;
+  char* name = 0;
+  int pos = 0;
+  tree id;
   
-  /* Build a list of all the qualifying contexts out to the global
-     namespace.  */
-  context = t;
-  while (context && (context != global_namespace))
+  /* Parse off the first qualifier.  */
+  while (qualified_name[pos] && (qualified_name[pos] != ':')) { ++pos; }
+  name = xmalloc(pos+1);
+  strncpy (name, qualified_name, pos);
+  name[pos] = 0;
+  id = get_identifier (name);
+  free (name);
+
+  /* Lookup the first qualifier.  */
+  if (TREE_CODE (scope) == NAMESPACE_DECL)
     {
-    if (TYPE_P (context)) context = TYPE_NAME (context);
-
-    qualifiers = tree_cons (NULL_TREE, context, qualifiers);
-
-    context = CP_DECL_CONTEXT (context);
+    node = lookup_namespace_name (scope, id);
+    }
+  else if ((TREE_CODE (scope) == TYPE_DECL)
+           && (TREE_CODE (TREE_TYPE (scope)) == RECORD_TYPE))
+    {
+    node = lookup_member (TREE_TYPE (scope), id, 2, 0);
     }
   
-  qualifiers = nreverse(qualifiers);
-  if(qualifiers)
+  if (!node) { return 0; }
+  
+  /* Find the start of the next qualifier, if any.  */
+  while (qualified_name[pos] && (qualified_name[pos] == ':')) { ++pos; }
+  
+  /* If that was not the last qualifier, lookup the rest recursively.  */
+  if (qualified_name[pos])
     {
-    char* temp_name;
-    tree q = qualifiers;
-    char* name =
-      strdup (IDENTIFIER_POINTER (DECL_NAME (TREE_VALUE (q))));
-    for (q = TREE_CHAIN(q); q ; q = TREE_CHAIN (q))
-      {
-      temp_name = xml_concat_3_strings (
-        IDENTIFIER_POINTER (DECL_NAME (TREE_VALUE (q))), "::", name);
-      free (name);
-      name = temp_name;
-      }
-    n = get_identifier (name);
-    free (name);
+    return xml_lookup_start_node (node, qualified_name+pos);
     }
   else
     {
-    n = get_identifier("");
+    return node;
     }
-  return IDENTIFIER_POINTER (n);
 }
+
+/* Add the given node as a starting node.  */
+static void
+xml_add_start_node (xml_dump_info_p xdi, tree n)
+{
+  /* If a list was returned (from lookup_member), add all
+     candidates.  */
+  if ((TREE_CODE (n) == TREE_LIST)
+      && (TREE_TYPE (n) == error_mark_node))
+    {
+    tree l = n;
+    while (l)
+      {
+      xml_add_node (xdi, TREE_VALUE (l), 1);
+      l = TREE_CHAIN (l);
+      }
+    }
+  else
+    {
+    xml_add_node (xdi, n, 1);
+    }
+}
+
+/* Parse the comma-separated list of start nodes.  Lookup and add each
+   one.  */
+void
+xml_add_start_nodes (xml_dump_info_p xdi, const char* in_start_list)
+{
+  int pos=0;
+  char* start_list = strdup(in_start_list);
+  char* cur_start = start_list;
+  tree node = 0;
+  
+  /* Parse out the comma-separated list.  */
+  while (start_list[pos])
+    {
+    /* Split the list at each comma.  */
+    if (start_list[pos] == ',')
+      {
+      start_list[pos] = 0;
+      
+      /* Add the node for this list entry.  */
+      node = xml_lookup_start_node (global_namespace, cur_start);      
+      if (node)
+        {
+        xml_add_start_node (xdi, node);
+        }
+      
+      /* Start the next list entry.  */
+      cur_start = start_list+pos+1;
+      }
+    ++pos;
+    }  
+  
+  /* Add the node for the last list entry.  */
+  node = xml_lookup_start_node (global_namespace, cur_start);
+  if (node)
+    {
+    xml_add_start_node (xdi, node);
+    }
+  
+  free (start_list);
+}
+
+/* ------------------------------------------------------------------------ */
 
 /* Convert the identifier IN_ID to an XML encoded form by passing its string
    to xml_get_encoded_string_from_string().  */
@@ -1758,58 +1670,3 @@ xml_get_encoded_identifier_from_string (const char* in_str)
 #undef XML_GREATER_THAN
 #undef XML_SINGLE_QUOTE
 #undef XML_DOUBLE_QUOTE
-
-
-/* Concatenate input strings into new memory.  Caller must free memory.  */
-char*
-xml_concat_3_strings (const char* s1, const char* s2, const char* s3)
-{
-  char* ns = (char*) malloc (strlen (s1) +  strlen (s2) + strlen (s3) + 1);
-  strcpy (ns, s1);
-  strcat (ns, s2);
-  strcat (ns, s3);
-  return ns;
-}
-
-/* Print N spaces to FILE.  Used for indentation of XML output.  */
-void
-print_indent (FILE* file, unsigned long n)
-{
-  unsigned long left = n;
-  while(left >= 10)
-    {
-    fprintf (file, "          ");
-    left -= 10;
-    }
-  while(left > 0)
-    {
-    fprintf (file, " ");
-    left -= 1;
-    }
-}
-
-
-/* Lookup the real name of an operator whose ansi_opname or ansi_assopname
-   is NAME.  */
-tree
-reverse_opname_lookup (tree name)
-{
-  static const char* unknown_operator = "{unknown operator}";
-  int i;
-
-  /* Make sure we know about this internal name.  */
-  if (!IDENTIFIER_OPNAME_P (name))
-    return get_identifier (unknown_operator);
-
-  /* Search the list of internal anmes */
-  for (i=0; i < LAST_CPLUS_TREE_CODE ; ++i)
-    {
-    if (ansi_opname(i) == name)
-      return get_identifier (operator_name_info[i].name);
-    else if (ansi_assopname(i) == name)
-      return get_identifier (assignment_operator_name_info[i].name);
-    }
-  
-  return get_identifier (unknown_operator);
-}
-
