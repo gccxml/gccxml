@@ -64,10 +64,17 @@ echo "__GNUC_MINOR__" | ${CXX} -v -x c++ -E ${CXXFLAGS} - 2>/dev/null |
 if [ "$MAJOR_VERSION" -lt 3 ]; then
   INCLUDES="-iwrapper$SELFPATH/2.95 $INCLUDES"
   if [ "$MINOR_VERSION" = 96 ]; then
-  INCLUDES="-iwrapper$SELFPATH/2.96 $INCLUDES"
+    INCLUDES="-iwrapper$SELFPATH/2.96 $INCLUDES"
   fi
 elif [ "$MAJOR_VERSION" = 3 -a "$MINOR_VERSION" -ge 3 ]; then
+  INCLUDES="-iwrapper$SELFPATH/3.3 $INCLUDES"
   SPECIAL="-include $SELFPATH/3.3/gccxml_builtins.h"
+elif [ "$MAJOR_VERSION" = 3 -a "$MINOR_VERSION" -e 2 ]; then
+  INCLUDES="-iwrapper$SELFPATH/3.2 $INCLUDES"
+elif [ "$MAJOR_VERSION" = 3 -a "$MINOR_VERSION" -e 1 ]; then
+  INCLUDES="-iwrapper$SELFPATH/3.1 $INCLUDES"
+elif [ "$MAJOR_VERSION" = 3 -a "$MINOR_VERSION" -e 0 ]; then
+  INCLUDES="-iwrapper$SELFPATH/3.0 $INCLUDES"
 fi
 
 # Format and print out the options.
