@@ -16,6 +16,7 @@
 =========================================================================*/
 #include "gxConfiguration.h"
 #include "gxFlagsParser.h"
+#include "gxDocumentation.h"
 
 #include <string.h>
 #include <errno.h>
@@ -36,31 +37,6 @@ inline int GXSpawn(const char* cmd, char** argv)
 
 #define GCCXML_VERSION_STRING "0.3 - development"
 
-/** Print the program's usage.  */
-void printUsage(std::ostream& os)
-{
-  os <<
-    "Usage:\n"
-    "\n"
-    "  gccxml [options] input.cxx -fxml=output.xml [-fxml-start=foo[,...]]\n"
-    "\n"
-    "This program is a wrapper around a real GCC-XML executable.  It will\n"
-    "help the user to find the proper GCCXML_FLAGS setting and then run\n"
-    "the real executable.  Configuration settings are described below.\n"
-    "\n"
-    "Options include:\n"
-    "  --help                  = Print this usage information and exit.\n"
-    "  --version               = Print the version line and exit.\n"
-    "  --print                 = Print the configuration settings and exit.\n"
-    "  --gccxml-executable xxx = Use \"xxx\" as the real gccxml executable.\n"
-    "  --gccxml-compiler xxx   = Use \"xxx\" compiler to find GCCXML_FLAGS.\n"
-    "  --gccxml-cxxflags xxx   = Use \"xxx\" C++ flags to find GCCXML_FLAGS.\n"
-    "  --gccxml-config xxx     = Read file \"xxx\" for configuration.\n"
-    "  --gccxml-root xxx       = Use directory \"xxx\" to find supprot library.\n"
-    "\n"
-    "  Additional -I and -D compiler flags can also be given.\n";
-}
-
 int main(int argc, char** argv)
 {
   gxConfiguration configuration;
@@ -73,9 +49,27 @@ int main(int argc, char** argv)
     }
   
   // Check for any simple flags.
+  if(configuration.GetManFlag())
+    {
+    gxDocumentation::PrintManPage(std::cout);
+    return 0;
+    }
+  
+  if(configuration.GetCopyrightFlag())
+    {
+    gxDocumentation::PrintCopyright(std::cout);
+    return 0;
+    }
+  
+  if(configuration.GetHelpHTMLFlag())
+    {
+    gxDocumentation::PrintHelpHTML(std::cout);
+    return 0;
+    }
+  
   if(configuration.GetHelpFlag())
     {
-    printUsage(std::cout);
+    gxDocumentation::PrintHelp(std::cout);
     return 0;
     }
   
@@ -100,9 +94,10 @@ int main(int argc, char** argv)
   // Check if there is anything to do.
   if(configuration.GetArguments().empty())
     {
+    std::cout << "GCC-XML version " GCCXML_VERSION_STRING "\n";
     std::cout
-      << "No arguments given for real GCC-XML executable.  Not running it.\n";
-    printUsage(std::cout);
+      << "No arguments given for GCC C++ parser.  Not running it.\n";
+    gxDocumentation::PrintUsage(std::cout);
     return 0;
     }
   

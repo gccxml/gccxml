@@ -14,6 +14,7 @@ INCLUDE_DIRECTORIES(${GCCXML_BINARY_DIR}/GXFront)
 ADD_EXECUTABLE(gccxml
   GXFront/gxSystemTools.cxx
   GXFront/gxConfiguration.cxx
+  GXFront/gxDocumentation.cxx
   GXFront/gxFlagsParser.cxx
   GXFront/gxFront.cxx
 )

@@ -23,6 +23,9 @@ gxConfiguration::gxConfiguration()
   m_VersionFlag = false;
   m_PrintFlag = false;
   m_DebugFlag = false;
+  m_ManFlag = false;
+  m_CopyrightFlag = false;
+  m_HelpHTMLFlag = false;
   m_HaveGCCXML_CXXFLAGS = false;
 }
 
@@ -138,6 +141,24 @@ bool gxConfiguration::GetPrintFlag() const
 bool gxConfiguration::GetDebugFlag() const
 {
   return m_DebugFlag;
+}
+
+//----------------------------------------------------------------------------
+bool gxConfiguration::GetManFlag() const
+{
+  return m_ManFlag;
+}
+
+//----------------------------------------------------------------------------
+bool gxConfiguration::GetCopyrightFlag() const
+{
+  return m_CopyrightFlag;
+}
+
+//----------------------------------------------------------------------------
+bool gxConfiguration::GetHelpHTMLFlag() const
+{
+  return m_HelpHTMLFlag;
 }
 
 //----------------------------------------------------------------------------
@@ -310,6 +331,18 @@ bool gxConfiguration::ProcessCommandLine(int argc, const char*const* argv)
     else if(strcmp(argv[i], "--debug") == 0)
       {
       m_DebugFlag = true;
+      }
+    else if(strcmp(argv[i], "--man") == 0)
+      {
+      m_ManFlag = true;
+      }
+    else if(strcmp(argv[i], "--copyright") == 0)
+      {
+      m_CopyrightFlag = true;
+      }
+    else if(strcmp(argv[i], "--help-html") == 0)
+      {
+      m_HelpHTMLFlag = true;
       }
     else
       {
