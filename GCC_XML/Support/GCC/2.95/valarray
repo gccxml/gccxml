@@ -1,0 +1,52 @@
+#ifndef GCCXML_VALARRAY
+#define GCCXML_VALARRAY
+
+#include_next <valarray>
+
+// 26.3.1
+namespace std
+{
+  using ::valarray;
+  using ::slice;
+  using ::slice_array;
+  using ::gslice;
+  using ::gslice_array;
+  using ::mask_array;
+  using ::indirect_array;
+  using ::operator*;
+  using ::operator/;
+  using ::operator%;
+  using ::operator+;
+  using ::operator-;
+  using ::operator^;
+  using ::operator&;
+  using ::operator|;
+  using ::operator<<;
+  using ::operator>>;
+  using ::operator&&;
+  using ::operator||;
+  using ::operator==;
+  using ::operator!=;
+  using ::operator<;
+  using ::operator>;
+  using ::operator<=;
+  using ::operator>=;
+  using ::abs;
+  using ::acos;
+  using ::asin;
+  using ::atan;
+  using ::atan2;
+  using ::cos;
+  using ::cosh;
+  using ::exp;
+  using ::log;
+  using ::log10;
+  using ::pow;
+  using ::sin;
+  using ::sinh;
+  using ::sqrt;
+  using ::tan;
+  using ::tanh;
+}
+
+#endif

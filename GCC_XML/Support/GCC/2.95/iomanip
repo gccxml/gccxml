@@ -1,0 +1,14 @@
+#ifndef GCCXML_IOMANIP
+#define GCCXML_IOMANIP
+
+#include_next <iomanip>
+
+// GCC 2.95 does not conform.
+namespace std
+{
+  using ::dec;
+  using ::hex;
+  using ::oct;
+}
+
+#endif

@@ -1,0 +1,57 @@
+#ifndef GCCXML_FUNCTIONAL
+#define GCCXML_FUNCTIONAL
+
+#include_next <functional>
+
+// 20.3/1
+namespace std
+{
+  using ::unary_function;
+  using ::binary_function;
+
+  using ::plus;
+  using ::minus;
+  using ::multiplies;
+  using ::divides;
+  using ::modulus;
+  using ::negate;
+
+  using ::equal_to;
+  using ::not_equal_to;
+  using ::greater;
+  using ::less;
+  using ::greater_equal;
+  using ::less_equal;
+
+  using ::logical_and;
+  using ::logical_or;
+  using ::logical_not;
+
+  using ::unary_negate;
+  using ::not1;
+  using ::binary_negate;
+  using ::not2;
+
+  using ::binder1st;
+  using ::bind1st;
+  using ::binder2nd;
+  using ::bind2nd;
+
+  using ::pointer_to_unary_function;
+  using ::ptr_fun;
+  using ::pointer_to_binary_function;
+
+  using ::mem_fun_t;
+  using ::mem_fun1_t;
+  using ::mem_fun_ref_t;
+  using ::mem_fun1_ref_t;
+
+  using ::const_mem_fun_t;
+  using ::const_mem_fun1_t;
+  using ::mem_fun;
+  using ::const_mem_fun_ref_t;
+  using ::const_mem_fun1_ref_t;
+  using ::mem_fun_ref;
+}
+
+#endif

@@ -1,0 +1,17 @@
+#ifndef GCCXML_BITSET
+#define GCCXML_BITSET
+
+#include_next <bitset>
+
+// 23.3.5
+namespace std
+{
+  using ::bitset;
+  using ::operator&;
+  using ::operator|;
+  using ::operator^;
+  using ::operator>>;
+  using ::operator<<;
+}
+
+#endif

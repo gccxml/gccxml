@@ -1,0 +1,19 @@
+#ifndef GCCXML_DEQUE
+#define GCCXML_DEQUE
+
+#include_next <deque>
+
+// 23.2
+namespace std
+{
+  using ::deque;
+  using ::operator==;
+  using ::operator!=;
+  using ::operator<;
+  using ::operator>;
+  using ::operator<=;
+  using ::operator>=;
+  using ::swap;
+}
+
+#endif

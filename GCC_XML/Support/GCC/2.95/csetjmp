@@ -1,0 +1,13 @@
+#ifndef GCCXML_CSETJMP
+#define GCCXML_CSETJMP
+
+#include_next <csetjmp>
+
+// 18.7/1
+namespace std
+{
+  using ::jmp_buf;
+  using ::longjmp;
+}
+
+#endif

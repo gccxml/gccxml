@@ -1,0 +1,20 @@
+#ifndef GCCXML_MAP
+#define GCCXML_MAP
+
+#include_next <map>
+
+// 23.3/1
+namespace std
+{
+  using ::map;
+  using ::operator==;
+  using ::operator!=;
+  using ::operator<;
+  using ::operator>;
+  using ::operator<=;
+  using ::operator>=;
+  using ::swap;
+  using ::multimap;
+}
+
+#endif

@@ -1,0 +1,23 @@
+#ifndef GCCXML_FSTREAM
+#define GCCXML_FSTREAM
+
+#include_next <fstream>
+
+// GCC 2.95 does not conform.
+namespace std
+{
+  using ::ios;
+  using ::streamoff;
+  using ::streampos;
+  using ::streamsize;
+  using ::streambuf;
+  using ::istream;
+  using ::ostream;
+  using ::iostream;
+  using ::filebuf;
+  using ::ifstream;
+  using ::ofstream;
+  using ::fstream;
+}
+
+#endif

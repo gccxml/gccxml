@@ -1,0 +1,20 @@
+#ifndef GCCXML_EXCEPTION
+#define GCCXML_EXCEPTION
+
+#include_next <exception>
+
+// 18.6
+using std::exception;
+using std::bad_exception;
+
+using std::unexpected_handler;
+using std::set_unexpected;
+using std::unexpected;
+
+using std::terminate_handler;
+using std::set_terminate;
+using std::terminate;
+
+using std::uncaught_exception;
+
+#endif

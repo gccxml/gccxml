@@ -1,0 +1,11 @@
+#ifndef GCCXML_TYPEINFO
+#define GCCXML_TYPEINFO
+
+#include_next <typeinfo>
+
+// 18.5/1
+using std::type_info;
+using std::bad_cast;
+using std::bad_typeid;
+
+#endif

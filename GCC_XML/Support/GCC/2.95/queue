@@ -1,0 +1,20 @@
+#ifndef GCCXML_QUEUE
+#define GCCXML_QUEUE
+
+#include_next <queue>
+
+// 23.2
+namespace std
+{
+  using ::queue;
+  using ::operator==;
+  using ::operator!=;
+  using ::operator<;
+  using ::operator>;
+  using ::operator<=;
+  using ::operator>=;
+  using ::swap;
+  using ::priority_queue;
+}
+
+#endif

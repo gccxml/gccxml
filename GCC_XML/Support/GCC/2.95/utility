@@ -1,0 +1,25 @@
+#ifndef GCCXML_UTILITY
+#define GCCXML_UTILITY
+
+#include_next <utility>
+
+// 20.2/1
+namespace std
+{
+  namespace rel_ops
+  {
+    using ::operator!=;
+    using ::operator>;
+    using ::operator<=;
+    using ::operator>=;
+  }
+  using ::pair;
+  using ::operator==;
+  using ::operator!=;
+  using ::operator<;
+  using ::operator>;
+  using ::operator<=;
+  using ::operator>=;
+}
+
+#endif

@@ -1,0 +1,24 @@
+#ifndef GCCXML_CCTYPE
+#define GCCXML_CCTYPE
+
+#include_next <cctype>
+
+// 21.4/1
+namespace std
+{
+  using ::isalnum;
+  using ::isdigit;
+  using ::isprint;
+  using ::isupper;
+  using ::tolower;
+  using ::isalpha;
+  using ::isgraph;
+  using ::ispunct;
+  using ::isxdigit;
+  using ::toupper;
+  using ::iscntrl;
+  using ::islower;
+  using ::isspace;
+}
+
+#endif

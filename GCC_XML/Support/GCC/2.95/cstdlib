@@ -1,0 +1,66 @@
+#ifndef GCCXML_CSTDLIB
+#define GCCXML_CSTDLIB
+
+#include_next <cstdlib>
+
+// 18.3/1
+namespace std
+{
+  using ::abort;
+  using ::atexit;
+  using ::exit;
+}
+
+// 18.7/1
+namespace std
+{
+  using ::getenv;
+  using ::system;
+}
+
+// 20.4.6/1
+namespace std
+{
+  using ::calloc;
+  using ::malloc;
+  using ::free;
+  using ::realloc;
+}
+
+// 21.4/1
+namespace std
+{
+  using ::atol;
+  using ::atof;
+  using ::atoi;
+  using ::mblen;
+  using ::mbstowcs;
+  using ::mbtowc;
+  using ::strtod;
+  using ::strtol;
+  using ::strtoul;
+  using ::wctomb;
+  using ::wcstombs;
+}
+
+// 25.4/1
+namespace std
+{
+  using ::bsearch;
+  using ::qsort;
+}
+
+// 26.5/1
+namespace std
+{
+  using ::div_t;
+  using ::ldiv_t;
+  using ::abs;
+  using ::div;
+  using ::labs;
+  using ::ldiv;
+  using ::srand;
+  using ::rand;
+}
+
+#endif

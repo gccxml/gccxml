@@ -1,0 +1,12 @@
+#ifndef GCCXML_CSTDARG
+#define GCCXML_CSTDARG
+
+#include_next <cstdarg>
+
+// 18.7/1
+namespace std
+{
+  using ::va_list;
+}
+
+#endif

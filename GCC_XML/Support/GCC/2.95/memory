@@ -1,0 +1,21 @@
+#ifndef GCCXML_MEMORY
+#define GCCXML_MEMORY
+
+#include_next <memory>
+
+// 20.4
+namespace std
+{
+  using ::allocator;
+  using ::operator==;
+  using ::operator!=;
+  using ::raw_storage_iterator;
+  using ::get_temporary_buffer;
+  using ::return_temporary_buffer;
+  using ::uninitialized_copy;
+  using ::uninitialized_fill;
+  using ::uninitialized_fill_n;
+  using ::auto_ptr;
+}
+
+#endif

@@ -1,0 +1,76 @@
+#ifndef GCCXML_ALGORITHM
+#define GCCXML_ALGORITHM
+
+#include_next <algorithm>
+
+// 25/2
+namespace std
+{
+  using ::for_each;
+  using ::find;
+  using ::find_if;
+  using ::find_end;
+  using ::find_first_of;
+  using ::adjacent_find;
+  using ::count;
+  using ::count_if;
+  using ::mismatch;
+  using ::equal;
+  using ::search;
+  using ::search_n;
+  using ::copy;
+  using ::copy_backward;
+  using ::swap;
+  using ::swap_ranges;
+  using ::iter_swap;
+  using ::transform;
+  using ::replace;
+  using ::replace_if;
+  using ::replace_copy;
+  using ::replace_copy_if;
+  using ::fill;
+  using ::fill_n;
+  using ::generate;
+  using ::generate_n;
+  using ::remove;
+  using ::remove_if;
+  using ::remove_copy;
+  using ::remove_copy_if;
+  using ::unique;
+  using ::unique_copy;
+  using ::reverse;
+  using ::reverse_copy;
+  using ::rotate;
+  using ::rotate_copy;
+  using ::random_shuffle;
+  using ::partition;
+  using ::stable_partition;
+  using ::stable_sort;
+  using ::partial_sort;
+  using ::partial_sort_copy;
+  using ::nth_element;
+  using ::lower_bound;
+  using ::upper_bound;
+  using ::equal_range;
+  using ::binary_search;
+  using ::merge;
+  using ::inplace_merge;
+  using ::includes;
+  using ::set_union;
+  using ::set_intersection;
+  using ::set_difference;
+  using ::set_symmetric_difference;
+  using ::push_heap;
+  using ::pop_heap;
+  using ::make_heap;
+  using ::sort_heap;
+  using ::min;
+  using ::max;
+  using ::min_element;
+  using ::max_element;
+  using ::lexicographical_compare;
+  using ::next_permutation;
+  using ::prev_permutation;
+}
+
+#endif

@@ -1,0 +1,19 @@
+#ifndef GCCXML_STACK
+#define GCCXML_STACK
+
+#include_next <stack>
+
+// 23.2
+namespace std
+{
+  using ::stack;
+  using ::operator==;
+  using ::operator!=;
+  using ::operator<;
+  using ::operator>;
+  using ::operator<=;
+  using ::operator>=;
+  using ::swap;
+}
+
+#endif

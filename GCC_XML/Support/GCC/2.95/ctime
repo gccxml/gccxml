@@ -1,0 +1,24 @@
+#ifndef GCCXML_CTIME
+#define GCCXML_CTIME
+
+#include_next <ctime>
+
+// 18.7/1, 20.5
+namespace std
+{
+  using ::clock_t;
+  using ::size_t;
+  using ::time_t;
+  using ::asctime;
+  using ::clock;
+  using ::difftime;
+  using ::localtime;
+  using ::strftime;
+  using ::ctime;
+  using ::gmtime;
+  using ::mktime;
+  using ::time;
+  using ::tm;
+}
+
+#endif

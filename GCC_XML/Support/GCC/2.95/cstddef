@@ -1,0 +1,13 @@
+#ifndef GCCXML_CSTDDEF
+#define GCCXML_CSTDDEF
+
+#include_next <cstddef>
+
+// 18.1/2
+namespace std
+{
+  using ::ptrdiff_t;
+  using ::size_t;
+}
+
+#endif

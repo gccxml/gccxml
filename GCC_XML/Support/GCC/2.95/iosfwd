@@ -1,0 +1,20 @@
+#ifndef GCCXML_IOSFWD
+#define GCCXML_IOSFWD
+
+#include_next <iosfwd>
+
+// GCC 2.95 does not conform.
+namespace std
+{
+  using ::ios;
+  using ::streambuf;
+  using ::istream;
+  using ::ostream;
+  using ::iostream;
+  using ::filebuf;
+  using ::ifstream;
+  using ::ofstream;
+  using ::fstream;
+}
+
+#endif

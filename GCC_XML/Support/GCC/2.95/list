@@ -1,0 +1,19 @@
+#ifndef GCCXML_LIST
+#define GCCXML_LIST
+
+#include_next <list>
+
+// 23.2
+namespace std
+{
+  using ::list;
+  using ::operator==;
+  using ::operator!=;
+  using ::operator<;
+  using ::operator>;
+  using ::operator<=;
+  using ::operator>=;
+  using ::swap;
+}
+
+#endif

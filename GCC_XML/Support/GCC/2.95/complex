@@ -1,0 +1,38 @@
+#ifndef GCCXML_COMPLEX
+#define GCCXML_COMPLEX
+
+#include_next <complex>
+
+// 26.2.1
+namespace std
+{
+  using ::complex;
+  using ::operator+;
+  using ::operator-;
+  using ::operator*;
+  using ::operator/;
+  using ::operator==;
+  using ::operator!=;
+  using ::operator>>;
+  using ::operator<<;
+  using ::real;
+  using ::imag;
+  using ::abs;
+  using ::arg;
+  using ::norm;
+  using ::conj;
+  using ::polar;
+  using ::cos;
+  using ::cosh;
+  using ::exp;
+  using ::log;
+  using ::log10;
+  using ::pow;
+  using ::sin;
+  using ::sinh;
+  using ::sqrt;
+  using ::tan;
+  using ::tanh;
+}
+
+#endif

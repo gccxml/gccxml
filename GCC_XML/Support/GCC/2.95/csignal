@@ -1,0 +1,14 @@
+#ifndef GCCXML_CSIGNAL
+#define GCCXML_CSIGNAL
+
+#include_next <csignal>
+
+// 18.7/1
+namespace std
+{
+  using ::sig_atomic_t;
+  using ::raise;
+  using ::signal;
+}
+
+#endif

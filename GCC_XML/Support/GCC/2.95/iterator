@@ -1,0 +1,39 @@
+#ifndef GCCXML_ITERATOR
+#define GCCXML_ITERATOR
+
+#include_next <iterator>
+
+// 24.2
+namespace std
+{
+  using ::iterator_traits;
+  //using ::iterator;
+  using ::input_iterator_tag;
+  using ::output_iterator_tag;
+  using ::forward_iterator_tag;
+  using ::bidirectional_iterator_tag;
+  using ::random_access_iterator_tag;
+  using ::advance;
+  using ::distance;
+  using ::reverse_iterator;
+  using ::operator==;
+  using ::operator!=;
+  using ::operator<;
+  using ::operator>;
+  using ::operator<=;
+  using ::operator>=;
+  using ::operator+;
+  using ::operator-;
+  using ::back_insert_iterator;
+  using ::back_inserter;
+  using ::front_insert_iterator;
+  using ::front_inserter;
+  using ::insert_iterator;
+  using ::inserter;
+  using ::istream_iterator;
+  using ::ostream_iterator;
+  //using ::istreambuf_iterator;
+  //using ::ostreambuf_iterator;
+}
+
+#endif

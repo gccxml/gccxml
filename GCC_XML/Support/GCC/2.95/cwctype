@@ -1,0 +1,31 @@
+#ifndef GCCXML_CWCTYPE
+#define GCCXML_CWCTYPE
+
+#include_next <cwctype>
+
+// 21.4/1
+namespace std
+{
+  using ::wctrans_t;
+  using ::wctype_t;
+  using ::wint_t;
+  using ::iswalnum;
+  using ::iswctype;
+  using ::iswlower;
+  using ::iswspace;
+  using ::towctrans;
+  using ::wctrans;
+  using ::iswalpha;
+  using ::iswdigit;
+  using ::iswprint;
+  using ::iswupper;
+  using ::towlower;
+  using ::wctype;
+  using ::iswcntrl;
+  using ::iswgraph;
+  using ::iswpunct;
+  using ::iswxdigit;
+  using ::towupper;
+}
+
+#endif

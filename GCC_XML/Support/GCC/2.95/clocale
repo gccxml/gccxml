@@ -1,0 +1,14 @@
+#ifndef GCCXML_CLOCALE
+#define GCCXML_CLOCALE
+
+#include_next <clocale>
+
+// 22.3/1
+namespace std
+{
+  //using ::lonv;
+  using ::localeconv;
+  using ::setlocale;
+}
+
+#endif

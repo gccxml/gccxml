@@ -1,0 +1,19 @@
+#ifndef GCCXML_VECTOR
+#define GCCXML_VECTOR
+
+#include_next <vector>
+
+// 23.2
+namespace std
+{
+  using ::vector;
+  using ::operator==;
+  using ::operator!=;
+  using ::operator<;
+  using ::operator>;
+  using ::operator<=;
+  using ::operator>=;
+  using ::swap;
+}
+
+#endif

@@ -1,0 +1,13 @@
+#ifndef GCCXML_NEW
+#define GCCXML_NEW
+
+#include_next <new>
+
+// 18.4
+using std::bad_alloc;
+using std::nothrow_t;
+using std::nothrow;
+using std::new_handler;
+using std::set_new_handler;
+
+#endif

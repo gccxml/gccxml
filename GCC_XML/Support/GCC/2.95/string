@@ -1,0 +1,26 @@
+#ifndef GCCXML_STRING
+#define GCCXML_STRING
+
+#include_next <string>
+
+// 21.2/2
+namespace std
+{
+  //using ::char_traits;
+  using ::basic_string;
+  using ::operator+;
+  using ::operator==;
+  using ::operator!=;
+  using ::operator<;
+  using ::operator>;
+  using ::operator<=;
+  using ::operator>=;
+  using ::swap;
+  using ::operator>>;
+  using ::operator<<;
+  using ::getline;
+  using ::string;
+  //using ::wstring;
+}
+
+#endif

@@ -1,0 +1,15 @@
+#ifndef GCCXML_NUMERIC
+#define GCCXML_NUMERIC
+
+#include_next <numeric>
+
+// 26.4
+namespace std
+{
+  using ::accumulate;
+  using ::inner_product;
+  using ::partial_sum;
+  using ::adjacent_difference;
+}
+
+#endif
