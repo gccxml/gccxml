@@ -73,7 +73,12 @@ bool gxConfiguration::Configure(int argc, const char*const * argv)
     m_GCCXML_ROOT = m_DataRoot;
     }
   
-  // If no executable has been set, use the one in the executable root.
+  // If no executable has been set, try looking in the system path.
+  if(m_GCCXML_EXECUTABLE.length() == 0)
+    {
+    m_GCCXML_EXECUTABLE = gxSystemTools::FindProgram("gccxml_cc1plus");
+    }
+  // Otherwise, assume there is one in the executable root.
   if(m_GCCXML_EXECUTABLE.length() == 0)
     {
     m_GCCXML_EXECUTABLE = m_ExecutableRoot+"/gccxml_cc1plus";
