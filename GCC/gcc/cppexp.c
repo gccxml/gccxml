@@ -30,8 +30,8 @@ Boston, MA 02111-1307, USA.  */
 
 struct op
 {
-  const cpp_token *token;	/* The token forming op (for diagnostics).  */
-  cpp_num value;		/* The value logically "right" of op.  */
+  const cpp_token *token;       /* The token forming op (for diagnostics).  */
+  cpp_num value;                /* The value logically "right" of op.  */
   enum cpp_ttype op;
 };
 
@@ -45,17 +45,17 @@ static cpp_num num_part_mul PARAMS ((cpp_num_part, cpp_num_part));
 
 static cpp_num num_unary_op PARAMS ((cpp_reader *, cpp_num, enum cpp_ttype));
 static cpp_num num_binary_op PARAMS ((cpp_reader *, cpp_num, cpp_num,
-				      enum cpp_ttype));
+                                      enum cpp_ttype));
 static cpp_num num_negate PARAMS ((cpp_num, size_t));
 static cpp_num num_bitwise_op PARAMS ((cpp_reader *, cpp_num, cpp_num,
-				       enum cpp_ttype));
+                                       enum cpp_ttype));
 static cpp_num num_inequality_op PARAMS ((cpp_reader *, cpp_num, cpp_num,
-					  enum cpp_ttype));
+                                          enum cpp_ttype));
 static cpp_num num_equality_op PARAMS ((cpp_reader *, cpp_num, cpp_num,
-					enum cpp_ttype));
+                                        enum cpp_ttype));
 static cpp_num num_mul PARAMS ((cpp_reader *, cpp_num, cpp_num));
 static cpp_num num_div_op PARAMS ((cpp_reader *, cpp_num, cpp_num,
-				   enum cpp_ttype));
+                                   enum cpp_ttype));
 static cpp_num num_lshift PARAMS ((cpp_num, size_t, size_t));
 static cpp_num num_rshift PARAMS ((cpp_num, size_t, size_t));
 
@@ -96,15 +96,15 @@ interpret_float_suffix (s, len)
       case 'i': case 'I':
       case 'j': case 'J': i++; break;
       default:
-	return 0;
+        return 0;
       }
 
   if (f + l > 1 || i > 1)
     return 0;
 
   return ((i ? CPP_N_IMAGINARY : 0)
-	  | (f ? CPP_N_SMALL :
-	     l ? CPP_N_LARGE : CPP_N_MEDIUM));
+          | (f ? CPP_N_SMALL :
+             l ? CPP_N_LARGE : CPP_N_MEDIUM));
 }
 
 /* Subroutine of cpp_classify_number.  S points to an integer suffix
@@ -122,25 +122,25 @@ interpret_int_suffix (s, len)
   while (len--)
     switch (s[len])
       {
-      case 'u': case 'U':	u++; break;
+      case 'u': case 'U':       u++; break;
       case 'i': case 'I':
-      case 'j': case 'J':	i++; break;
-      case 'l': case 'L':	l++;
-	/* If there are two Ls, they must be adjacent and the same case.  */
-	if (l == 2 && s[len] != s[len + 1])
-	  return 0;
-	break;
+      case 'j': case 'J':       i++; break;
+      case 'l': case 'L':       l++;
+        /* If there are two Ls, they must be adjacent and the same case.  */
+        if (l == 2 && s[len] != s[len + 1])
+          return 0;
+        break;
       default:
-	return 0;
+        return 0;
       }
 
   if (l > 2 || u > 1 || i > 1)
     return 0;
 
   return ((i ? CPP_N_IMAGINARY : 0)
-	  | (u ? CPP_N_UNSIGNED : 0)
-	  | ((l == 0) ? CPP_N_SMALL
-	     : (l == 1) ? CPP_N_MEDIUM : CPP_N_LARGE));
+          | (u ? CPP_N_UNSIGNED : 0)
+          | ((l == 0) ? CPP_N_SMALL
+             : (l == 1) ? CPP_N_MEDIUM : CPP_N_LARGE));
 }
 
 /* Categorize numeric constants according to their field (integer,
@@ -174,10 +174,10 @@ cpp_classify_number (pfile, token)
 
       /* Require at least one hex digit to classify it as hex.  */
       if ((*str == 'x' || *str == 'X') && ISXDIGIT (str[1]))
-	{
-	  radix = 16;
-	  str++;
-	}
+        {
+          radix = 16;
+          str++;
+        }
     }
 
   /* Now scan for a well-formed integer or float.  */
@@ -186,30 +186,30 @@ cpp_classify_number (pfile, token)
       unsigned int c = *str++;
 
       if (ISDIGIT (c) || (ISXDIGIT (c) && radix == 16))
-	{
-	  c = hex_value (c);
-	  if (c > max_digit)
-	    max_digit = c;
-	}
+        {
+          c = hex_value (c);
+          if (c > max_digit)
+            max_digit = c;
+        }
       else if (c == '.')
-	{
-	  if (float_flag == NOT_FLOAT)
-	    float_flag = AFTER_POINT;
-	  else
-	    SYNTAX_ERROR ("too many decimal points in number");
-	}
+        {
+          if (float_flag == NOT_FLOAT)
+            float_flag = AFTER_POINT;
+          else
+            SYNTAX_ERROR ("too many decimal points in number");
+        }
       else if ((radix <= 10 && (c == 'e' || c == 'E'))
-	       || (radix == 16 && (c == 'p' || c == 'P')))
-	{
-	  float_flag = AFTER_EXPON;
-	  break;
-	}
+               || (radix == 16 && (c == 'p' || c == 'P')))
+        {
+          float_flag = AFTER_EXPON;
+          break;
+        }
       else
-	{
-	  /* Start of suffix.  */
-	  str--;
-	  break;
-	}
+        {
+          /* Start of suffix.  */
+          str--;
+          break;
+        }
     }
 
   if (float_flag != NOT_FLOAT && radix == 8)
@@ -221,41 +221,41 @@ cpp_classify_number (pfile, token)
   if (float_flag != NOT_FLOAT)
     {
       if (radix == 16 && CPP_PEDANTIC (pfile) && !CPP_OPTION (pfile, c99))
-	cpp_error (pfile, DL_PEDWARN,
-		   "use of C99 hexadecimal floating constant");
+        cpp_error (pfile, DL_PEDWARN,
+                   "use of C99 hexadecimal floating constant");
 
       if (float_flag == AFTER_EXPON)
-	{
-	  if (*str == '+' || *str == '-')
-	    str++;
+        {
+          if (*str == '+' || *str == '-')
+            str++;
 
-	  /* Exponent is decimal, even if string is a hex float.  */
-	  if (!ISDIGIT (*str))
-	    SYNTAX_ERROR ("exponent has no digits");
+          /* Exponent is decimal, even if string is a hex float.  */
+          if (!ISDIGIT (*str))
+            SYNTAX_ERROR ("exponent has no digits");
 
-	  do
-	    str++;
-	  while (ISDIGIT (*str));
-	}
+          do
+            str++;
+          while (ISDIGIT (*str));
+        }
       else if (radix == 16)
-	SYNTAX_ERROR ("hexadecimal floating constants require an exponent");
+        SYNTAX_ERROR ("hexadecimal floating constants require an exponent");
 
       result = interpret_float_suffix (str, limit - str);
       if (result == 0)
-	{
-	  cpp_error (pfile, DL_ERROR,
-		     "invalid suffix \"%.*s\" on floating constant",
-		     (int) (limit - str), str);
-	  return CPP_N_INVALID;
-	}
+        {
+          cpp_error (pfile, DL_ERROR,
+                     "invalid suffix \"%.*s\" on floating constant",
+                     (int) (limit - str), str);
+          return CPP_N_INVALID;
+        }
 
       /* Traditional C didn't accept any floating suffixes.  */
       if (limit != str
-	  && CPP_WTRADITIONAL (pfile)
-	  && ! cpp_sys_macro_p (pfile))
-	cpp_error (pfile, DL_WARNING,
-		   "traditional C rejects the \"%.*s\" suffix",
-		   (int) (limit - str), str);
+          && CPP_WTRADITIONAL (pfile)
+          && ! cpp_sys_macro_p (pfile))
+        cpp_error (pfile, DL_WARNING,
+                   "traditional C rejects the \"%.*s\" suffix",
+                   (int) (limit - str), str);
 
       result |= CPP_N_FLOATING;
     }
@@ -263,30 +263,30 @@ cpp_classify_number (pfile, token)
     {
       result = interpret_int_suffix (str, limit - str);
       if (result == 0)
-	{
-	  cpp_error (pfile, DL_ERROR,
-		     "invalid suffix \"%.*s\" on integer constant",
-		     (int) (limit - str), str);
-	  return CPP_N_INVALID;
-	}
+        {
+          cpp_error (pfile, DL_ERROR,
+                     "invalid suffix \"%.*s\" on integer constant",
+                     (int) (limit - str), str);
+          return CPP_N_INVALID;
+        }
 
       /* Traditional C only accepted the 'L' suffix.
          Suppress warning about 'LL' with -Wno-long-long.  */
       if (CPP_WTRADITIONAL (pfile) && ! cpp_sys_macro_p (pfile))
-	{
-	  int u_or_i = (result & (CPP_N_UNSIGNED|CPP_N_IMAGINARY));
-	  int large = (result & CPP_N_WIDTH) == CPP_N_LARGE;
+        {
+          int u_or_i = (result & (CPP_N_UNSIGNED|CPP_N_IMAGINARY));
+          int large = (result & CPP_N_WIDTH) == CPP_N_LARGE;
 
-	  if (u_or_i || (large && CPP_OPTION (pfile, warn_long_long)))
-	    cpp_error (pfile, DL_WARNING,
-		       "traditional C rejects the \"%.*s\" suffix",
-		       (int) (limit - str), str);
-	}
+          if (u_or_i || (large && CPP_OPTION (pfile, warn_long_long)))
+            cpp_error (pfile, DL_WARNING,
+                       "traditional C rejects the \"%.*s\" suffix",
+                       (int) (limit - str), str);
+        }
 
       if ((result & CPP_N_WIDTH) == CPP_N_LARGE
-	  && ! CPP_OPTION (pfile, c99)
-	  && CPP_OPTION (pfile, warn_long_long))
-	cpp_error (pfile, DL_PEDWARN, "use of C99 long long integer constant");
+          && ! CPP_OPTION (pfile, c99)
+          && CPP_OPTION (pfile, warn_long_long))
+        cpp_error (pfile, DL_PEDWARN, "use of C99 long long integer constant");
 
       result |= CPP_N_INTEGER;
     }
@@ -341,60 +341,60 @@ cpp_interpret_integer (pfile, token, type)
       bool overflow = false;
 
       if ((type & CPP_N_RADIX) == CPP_N_OCTAL)
-	{
-	  base = 8;
-	  p++;
-	}
+        {
+          base = 8;
+          p++;
+        }
       else if ((type & CPP_N_RADIX) == CPP_N_HEX)
-	{
-	  base = 16;
-	  p += 2;
-	}
+        {
+          base = 16;
+          p += 2;
+        }
 
       /* We can add a digit to numbers strictly less than this without
-	 needing the precision and slowness of double integers.  */
+         needing the precision and slowness of double integers.  */
       max = ~(cpp_num_part) 0;
       if (precision < PART_PRECISION)
-	max >>= PART_PRECISION - precision;
+        max >>= PART_PRECISION - precision;
       max = (max - base + 1) / base + 1;
 
       for (; p < end; p++)
-	{
-	  c = *p;
+        {
+          c = *p;
 
-	  if (ISDIGIT (c) || (base == 16 && ISXDIGIT (c)))
-	    c = hex_value (c);
-	  else
-	    break;
+          if (ISDIGIT (c) || (base == 16 && ISXDIGIT (c)))
+            c = hex_value (c);
+          else
+            break;
 
-	  /* Strict inequality for when max is set to zero.  */
-	  if (result.low < max)
-	    result.low = result.low * base + c;
-	  else
-	    {
-	      result = append_digit (result, c, base, precision);
-	      overflow |= result.overflow;
-	      max = 0;
-	    }
-	}
+          /* Strict inequality for when max is set to zero.  */
+          if (result.low < max)
+            result.low = result.low * base + c;
+          else
+            {
+              result = append_digit (result, c, base, precision);
+              overflow |= result.overflow;
+              max = 0;
+            }
+        }
 
       if (overflow)
-	cpp_error (pfile, DL_PEDWARN,
-		   "integer constant is too large for its type");
+        cpp_error (pfile, DL_PEDWARN,
+                   "integer constant is too large for its type");
       /* If too big to be signed, consider it unsigned.  Only warn for
-	 decimal numbers.  Traditional numbers were always signed (but
-	 we still honor an explicit U suffix); but we only have
-	 traditional semantics in directives.  */
+         decimal numbers.  Traditional numbers were always signed (but
+         we still honor an explicit U suffix); but we only have
+         traditional semantics in directives.  */
       else if (!result.unsignedp
-	       && !(CPP_OPTION (pfile, traditional)
-		    && pfile->state.in_directive)
-	       && !num_positive (result, precision))
-	{
-	  if (base == 10)
-	    cpp_error (pfile, DL_WARNING,
-		       "integer constant is so large that it is unsigned");
-	  result.unsignedp = true;
-	}
+               && !(CPP_OPTION (pfile, traditional)
+                    && pfile->state.in_directive)
+               && !num_positive (result, precision))
+        {
+          if (base == 10)
+            cpp_error (pfile, DL_WARNING,
+                       "integer constant is so large that it is unsigned");
+          result.unsignedp = true;
+        }
     }
 
   return result;
@@ -478,38 +478,38 @@ parse_defined (pfile)
     {
       node = token->val.node;
       if (paren && cpp_get_token (pfile)->type != CPP_CLOSE_PAREN)
-	{
-	  cpp_error (pfile, DL_ERROR, "missing ')' after \"defined\"");
-	  node = 0;
-	}
+        {
+          cpp_error (pfile, DL_ERROR, "missing ')' after \"defined\"");
+          node = 0;
+        }
     }
   else
     {
       cpp_error (pfile, DL_ERROR,
-		 "operator \"defined\" requires an identifier");
+                 "operator \"defined\" requires an identifier");
       if (token->flags & NAMED_OP)
-	{
-	  cpp_token op;
+        {
+          cpp_token op;
 
-	  op.flags = 0;
-	  op.type = token->type;
-	  cpp_error (pfile, DL_ERROR,
-		     "(\"%s\" is an alternative token for \"%s\" in C++)",
-		     cpp_token_as_text (pfile, token),
-		     cpp_token_as_text (pfile, &op));
-	}
+          op.flags = 0;
+          op.type = token->type;
+          cpp_error (pfile, DL_ERROR,
+                     "(\"%s\" is an alternative token for \"%s\" in C++)",
+                     cpp_token_as_text (pfile, token),
+                     cpp_token_as_text (pfile, &op));
+        }
     }
 
   if (node)
     {
       if (pfile->context != initial_context && CPP_PEDANTIC (pfile))
-	cpp_error (pfile, DL_WARNING,
-		   "this use of \"defined\" may not be portable");
+        cpp_error (pfile, DL_WARNING,
+                   "this use of \"defined\" may not be portable");
 
       _cpp_mark_macro_used (node);
 
       /* A possible controlling macro of the form #if !defined ().
-	 _cpp_parse_expr checks there was no other junk on the line.  */
+         _cpp_parse_expr checks there was no other junk on the line.  */
       pfile->mi_ind_cmacro = node;
     }
 
@@ -539,71 +539,71 @@ eval_token (pfile, token)
     case CPP_NUMBER:
       temp = cpp_classify_number (pfile, token);
       switch (temp & CPP_N_CATEGORY)
-	{
-	case CPP_N_FLOATING:
-	  cpp_error (pfile, DL_ERROR,
-		     "floating constant in preprocessor expression");
-	  break;
-	case CPP_N_INTEGER:
-	  if (!(temp & CPP_N_IMAGINARY))
-	    return cpp_interpret_integer (pfile, token, temp);
-	  cpp_error (pfile, DL_ERROR,
-		     "imaginary number in preprocessor expression");
-	  break;
+        {
+        case CPP_N_FLOATING:
+          cpp_error (pfile, DL_ERROR,
+                     "floating constant in preprocessor expression");
+          break;
+        case CPP_N_INTEGER:
+          if (!(temp & CPP_N_IMAGINARY))
+            return cpp_interpret_integer (pfile, token, temp);
+          cpp_error (pfile, DL_ERROR,
+                     "imaginary number in preprocessor expression");
+          break;
 
-	case CPP_N_INVALID:
-	  /* Error already issued.  */
-	  break;
-	}
+        case CPP_N_INVALID:
+          /* Error already issued.  */
+          break;
+        }
       result.high = result.low = 0;
       break;
 
     case CPP_WCHAR:
     case CPP_CHAR:
       {
-	cppchar_t cc = cpp_interpret_charconst (pfile, token,
-						&temp, &unsignedp);
+        cppchar_t cc = cpp_interpret_charconst (pfile, token,
+                                                &temp, &unsignedp);
 
-	result.high = 0;
-	result.low = cc;
-	/* Sign-extend the result if necessary.  */
-	if (!unsignedp && (cppchar_signed_t) cc < 0)
-	  {
-	    if (PART_PRECISION > BITS_PER_CPPCHAR_T)
-	      result.low |= ~(~(cpp_num_part) 0
-			      >> (PART_PRECISION - BITS_PER_CPPCHAR_T));
-	    result.high = ~(cpp_num_part) 0;
-	    result = num_trim (result, CPP_OPTION (pfile, precision));
-	  }
+        result.high = 0;
+        result.low = cc;
+        /* Sign-extend the result if necessary.  */
+        if (!unsignedp && (cppchar_signed_t) cc < 0)
+          {
+            if (PART_PRECISION > BITS_PER_CPPCHAR_T)
+              result.low |= ~(~(cpp_num_part) 0
+                              >> (PART_PRECISION - BITS_PER_CPPCHAR_T));
+            result.high = ~(cpp_num_part) 0;
+            result = num_trim (result, CPP_OPTION (pfile, precision));
+          }
       }
       break;
 
     case CPP_NAME:
       if (token->val.node == pfile->spec_nodes.n_defined)
-	return parse_defined (pfile);
+        return parse_defined (pfile);
       else if (CPP_OPTION (pfile, cplusplus)
-	       && (token->val.node == pfile->spec_nodes.n_true
-		   || token->val.node == pfile->spec_nodes.n_false))
-	{
-	  result.high = 0;
-	  result.low = (token->val.node == pfile->spec_nodes.n_true);
+               && (token->val.node == pfile->spec_nodes.n_true
+                   || token->val.node == pfile->spec_nodes.n_false))
+        {
+          result.high = 0;
+          result.low = (token->val.node == pfile->spec_nodes.n_true);
 
-	  /* Warn about use of true or false in #if when pedantic
-	     and stdbool.h has not been included.  */
-	  if (CPP_PEDANTIC (pfile)
-	      && ! cpp_defined (pfile, DSC("__bool_true_false_are_defined")))
-	    cpp_error (pfile, DL_PEDWARN,
-		       "ISO C++ does not permit \"%s\" in #if",
-		       NODE_NAME (token->val.node));
-	}
+          /* Warn about use of true or false in #if when pedantic
+             and stdbool.h has not been included.  */
+          if (CPP_PEDANTIC (pfile)
+              && ! cpp_defined (pfile, DSC("__bool_true_false_are_defined")))
+            cpp_error (pfile, DL_PEDWARN,
+                       "ISO C++ does not permit \"%s\" in #if",
+                       NODE_NAME (token->val.node));
+        }
       else
-	{
-	  result.high = 0;
-	  result.low = 0;
-	  if (CPP_OPTION (pfile, warn_undef) && !pfile->state.skip_eval)
-	    cpp_error (pfile, DL_WARNING, "\"%s\" is not defined",
-		       NODE_NAME (token->val.node));
-	}
+        {
+          result.high = 0;
+          result.low = 0;
+          if (CPP_OPTION (pfile, warn_undef) && !pfile->state.skip_eval)
+            cpp_error (pfile, DL_WARNING, "\"%s\" is not defined",
+                       NODE_NAME (token->val.node));
+        }
       break;
 
     default: /* CPP_HASH */
@@ -641,9 +641,9 @@ extra semantics need to be handled with operator-specific code.  */
 
 /* Flags.  If CHECK_PROMOTION, we warn if the effective sign of an
    operand changes because of integer promotions.  */
-#define NO_L_OPERAND	(1 << 0)
-#define LEFT_ASSOC	(1 << 1)
-#define CHECK_PROMOTION	(1 << 2)
+#define NO_L_OPERAND    (1 << 0)
+#define LEFT_ASSOC      (1 << 1)
+#define CHECK_PROMOTION (1 << 2)
 
 /* Operator to priority map.  Must be in the same order as the first
    N entries of enum cpp_ttype.  */
@@ -653,39 +653,39 @@ static const struct operator
   uchar flags;
 } optab[] =
 {
-  /* EQ */		{0, 0},	/* Shouldn't happen.  */
-  /* NOT */		{16, NO_L_OPERAND},
-  /* GREATER */		{12, LEFT_ASSOC | CHECK_PROMOTION},
-  /* LESS */		{12, LEFT_ASSOC | CHECK_PROMOTION},
-  /* PLUS */		{14, LEFT_ASSOC | CHECK_PROMOTION},
-  /* MINUS */		{14, LEFT_ASSOC | CHECK_PROMOTION},
-  /* MULT */		{15, LEFT_ASSOC | CHECK_PROMOTION},
-  /* DIV */		{15, LEFT_ASSOC | CHECK_PROMOTION},
-  /* MOD */		{15, LEFT_ASSOC | CHECK_PROMOTION},
-  /* AND */		{9, LEFT_ASSOC | CHECK_PROMOTION},
-  /* OR */		{7, LEFT_ASSOC | CHECK_PROMOTION},
-  /* XOR */		{8, LEFT_ASSOC | CHECK_PROMOTION},
-  /* RSHIFT */		{13, LEFT_ASSOC},
-  /* LSHIFT */		{13, LEFT_ASSOC},
+  /* EQ */              {0, 0}, /* Shouldn't happen.  */
+  /* NOT */             {16, NO_L_OPERAND},
+  /* GREATER */         {12, LEFT_ASSOC | CHECK_PROMOTION},
+  /* LESS */            {12, LEFT_ASSOC | CHECK_PROMOTION},
+  /* PLUS */            {14, LEFT_ASSOC | CHECK_PROMOTION},
+  /* MINUS */           {14, LEFT_ASSOC | CHECK_PROMOTION},
+  /* MULT */            {15, LEFT_ASSOC | CHECK_PROMOTION},
+  /* DIV */             {15, LEFT_ASSOC | CHECK_PROMOTION},
+  /* MOD */             {15, LEFT_ASSOC | CHECK_PROMOTION},
+  /* AND */             {9, LEFT_ASSOC | CHECK_PROMOTION},
+  /* OR */              {7, LEFT_ASSOC | CHECK_PROMOTION},
+  /* XOR */             {8, LEFT_ASSOC | CHECK_PROMOTION},
+  /* RSHIFT */          {13, LEFT_ASSOC},
+  /* LSHIFT */          {13, LEFT_ASSOC},
 
-  /* MIN */		{10, LEFT_ASSOC | CHECK_PROMOTION},
-  /* MAX */		{10, LEFT_ASSOC | CHECK_PROMOTION},
+  /* MIN */             {10, LEFT_ASSOC | CHECK_PROMOTION},
+  /* MAX */             {10, LEFT_ASSOC | CHECK_PROMOTION},
 
-  /* COMPL */		{16, NO_L_OPERAND},
-  /* AND_AND */		{6, LEFT_ASSOC},
-  /* OR_OR */		{5, LEFT_ASSOC},
-  /* QUERY */		{3, 0},
-  /* COLON */		{4, LEFT_ASSOC | CHECK_PROMOTION},
-  /* COMMA */		{2, LEFT_ASSOC},
-  /* OPEN_PAREN */	{1, NO_L_OPERAND},
-  /* CLOSE_PAREN */	{0, 0},
-  /* EOF */		{0, 0},
-  /* EQ_EQ */		{11, LEFT_ASSOC},
-  /* NOT_EQ */		{11, LEFT_ASSOC},
-  /* GREATER_EQ */	{12, LEFT_ASSOC | CHECK_PROMOTION},
-  /* LESS_EQ */		{12, LEFT_ASSOC | CHECK_PROMOTION},
-  /* UPLUS */		{16, NO_L_OPERAND},
-  /* UMINUS */		{16, NO_L_OPERAND}
+  /* COMPL */           {16, NO_L_OPERAND},
+  /* AND_AND */         {6, LEFT_ASSOC},
+  /* OR_OR */           {5, LEFT_ASSOC},
+  /* QUERY */           {3, 0},
+  /* COLON */           {4, LEFT_ASSOC | CHECK_PROMOTION},
+  /* COMMA */           {2, LEFT_ASSOC},
+  /* OPEN_PAREN */      {1, NO_L_OPERAND},
+  /* CLOSE_PAREN */     {0, 0},
+  /* EOF */             {0, 0},
+  /* EQ_EQ */           {11, LEFT_ASSOC},
+  /* NOT_EQ */          {11, LEFT_ASSOC},
+  /* GREATER_EQ */      {12, LEFT_ASSOC | CHECK_PROMOTION},
+  /* LESS_EQ */         {12, LEFT_ASSOC | CHECK_PROMOTION},
+  /* UPLUS */           {16, NO_L_OPERAND},
+  /* UMINUS */          {16, NO_L_OPERAND}
 };
 
 /* Parse and evaluate a C expression, reading from PFILE.
@@ -726,104 +726,104 @@ _cpp_parse_expr (pfile)
       op.op = op.token->type;
 
       switch (op.op)
-	{
-	  /* These tokens convert into values.  */
-	case CPP_NUMBER:
-	case CPP_CHAR:
-	case CPP_WCHAR:
-	case CPP_NAME:
-	case CPP_HASH:
-	  if (!want_value)
-	    SYNTAX_ERROR2 ("missing binary operator before token \"%s\"",
-			   cpp_token_as_text (pfile, op.token));
-	  want_value = false;
-	  top->value = eval_token (pfile, op.token);
-	  continue;
+        {
+          /* These tokens convert into values.  */
+        case CPP_NUMBER:
+        case CPP_CHAR:
+        case CPP_WCHAR:
+        case CPP_NAME:
+        case CPP_HASH:
+          if (!want_value)
+            SYNTAX_ERROR2 ("missing binary operator before token \"%s\"",
+                           cpp_token_as_text (pfile, op.token));
+          want_value = false;
+          top->value = eval_token (pfile, op.token);
+          continue;
 
-	case CPP_NOT:
-	  saw_leading_not = lex_count == 1;
-	  break;
-	case CPP_PLUS:
-	  if (want_value)
-	    op.op = CPP_UPLUS;
-	  break;
-	case CPP_MINUS:
-	  if (want_value)
-	    op.op = CPP_UMINUS;
-	  break;
-	case CPP_OTHER:
-	  if (ISGRAPH (op.token->val.c))
-	    SYNTAX_ERROR2 ("invalid character '%c' in #if", op.token->val.c);
-	  else
-	    SYNTAX_ERROR2 ("invalid character '\\%03o' in #if",
-			   op.token->val.c);
+        case CPP_NOT:
+          saw_leading_not = lex_count == 1;
+          break;
+        case CPP_PLUS:
+          if (want_value)
+            op.op = CPP_UPLUS;
+          break;
+        case CPP_MINUS:
+          if (want_value)
+            op.op = CPP_UMINUS;
+          break;
+        case CPP_OTHER:
+          if (ISGRAPH (op.token->val.c))
+            SYNTAX_ERROR2 ("invalid character '%c' in #if", op.token->val.c);
+          else
+            SYNTAX_ERROR2 ("invalid character '\\%03o' in #if",
+                           op.token->val.c);
 
-	default:
-	  if ((int) op.op <= (int) CPP_EQ || (int) op.op >= (int) CPP_PLUS_EQ)
-	    SYNTAX_ERROR2 ("token \"%s\" is not valid in preprocessor expressions",
-			   cpp_token_as_text (pfile, op.token));
-	  break;
-	}
+        default:
+          if ((int) op.op <= (int) CPP_EQ || (int) op.op >= (int) CPP_PLUS_EQ)
+            SYNTAX_ERROR2 ("token \"%s\" is not valid in preprocessor expressions",
+                           cpp_token_as_text (pfile, op.token));
+          break;
+        }
 
       /* Check we have a value or operator as appropriate.  */
       if (optab[op.op].flags & NO_L_OPERAND)
-	{
-	  if (!want_value)
-	    SYNTAX_ERROR2 ("missing binary operator before token \"%s\"",
-			   cpp_token_as_text (pfile, op.token));
-	}
+        {
+          if (!want_value)
+            SYNTAX_ERROR2 ("missing binary operator before token \"%s\"",
+                           cpp_token_as_text (pfile, op.token));
+        }
       else if (want_value)
-	{
-	  /* Ordering here is subtle and intended to favor the
-	     missing parenthesis diagnostics over alternatives.  */
-	  if (op.op == CPP_CLOSE_PAREN)
-	    {
-	      if (top->op == CPP_OPEN_PAREN)
-		SYNTAX_ERROR ("void expression between '(' and ')'");
-	    }
-	  else if (top->op == CPP_EOF)
-	    SYNTAX_ERROR ("#if with no expression");
-	  if (top->op != CPP_EOF && top->op != CPP_OPEN_PAREN)
-	    SYNTAX_ERROR2 ("operator '%s' has no right operand",
-			   cpp_token_as_text (pfile, top->token));
-	}
+        {
+          /* Ordering here is subtle and intended to favor the
+             missing parenthesis diagnostics over alternatives.  */
+          if (op.op == CPP_CLOSE_PAREN)
+            {
+              if (top->op == CPP_OPEN_PAREN)
+                SYNTAX_ERROR ("void expression between '(' and ')'");
+            }
+          else if (top->op == CPP_EOF)
+            SYNTAX_ERROR ("#if with no expression");
+          if (top->op != CPP_EOF && top->op != CPP_OPEN_PAREN)
+            SYNTAX_ERROR2 ("operator '%s' has no right operand",
+                           cpp_token_as_text (pfile, top->token));
+        }
 
       top = reduce (pfile, top, op.op);
       if (!top)
-	goto syntax_error;
+        goto syntax_error;
 
       if (op.op == CPP_EOF)
-	break;
+        break;
 
       switch (op.op)
-	{
-	case CPP_CLOSE_PAREN:
-	  continue;
-	case CPP_OR_OR:
-	  if (!num_zerop (top->value))
-	    pfile->state.skip_eval++;
-	  break;
-	case CPP_AND_AND:
-	case CPP_QUERY:
-	  if (num_zerop (top->value))
-	    pfile->state.skip_eval++;
-	  break;
-	case CPP_COLON:
-	  if (top->op != CPP_QUERY)
-	    SYNTAX_ERROR (" ':' without preceding '?'");
-	  if (!num_zerop (top[-1].value)) /* Was '?' condition true?  */
-	    pfile->state.skip_eval++;
-	  else
-	    pfile->state.skip_eval--;
-	default:
-	  break;
-	}
+        {
+        case CPP_CLOSE_PAREN:
+          continue;
+        case CPP_OR_OR:
+          if (!num_zerop (top->value))
+            pfile->state.skip_eval++;
+          break;
+        case CPP_AND_AND:
+        case CPP_QUERY:
+          if (num_zerop (top->value))
+            pfile->state.skip_eval++;
+          break;
+        case CPP_COLON:
+          if (top->op != CPP_QUERY)
+            SYNTAX_ERROR (" ':' without preceding '?'");
+          if (!num_zerop (top[-1].value)) /* Was '?' condition true?  */
+            pfile->state.skip_eval++;
+          else
+            pfile->state.skip_eval--;
+        default:
+          break;
+        }
 
       want_value = true;
 
       /* Check for and handle stack overflow.  */
       if (++top == pfile->op_limit)
-	top = _cpp_expand_op_stack (pfile);
+        top = _cpp_expand_op_stack (pfile);
 
       top->op = op.op;
       top->token = op.token;
@@ -872,117 +872,117 @@ reduce (pfile, top, op)
   while (prio < optab[top->op].prio)
     {
       if (CPP_OPTION (pfile, warn_num_sign_change)
-	  && optab[top->op].flags & CHECK_PROMOTION)
-	check_promotion (pfile, top);
+          && optab[top->op].flags & CHECK_PROMOTION)
+        check_promotion (pfile, top);
 
       switch (top->op)
-	{
-	case CPP_UPLUS:
-	case CPP_UMINUS:
-	case CPP_NOT:
-	case CPP_COMPL:
-	  top[-1].value = num_unary_op (pfile, top->value, top->op);
-	  break;
+        {
+        case CPP_UPLUS:
+        case CPP_UMINUS:
+        case CPP_NOT:
+        case CPP_COMPL:
+          top[-1].value = num_unary_op (pfile, top->value, top->op);
+          break;
 
-	case CPP_PLUS:
-	case CPP_MINUS:
-	case CPP_RSHIFT:
-	case CPP_LSHIFT:
-	case CPP_MIN:
-	case CPP_MAX:
-	case CPP_COMMA:
-	  top[-1].value = num_binary_op (pfile, top[-1].value,
-					 top->value, top->op);
-	  break;
+        case CPP_PLUS:
+        case CPP_MINUS:
+        case CPP_RSHIFT:
+        case CPP_LSHIFT:
+        case CPP_MIN:
+        case CPP_MAX:
+        case CPP_COMMA:
+          top[-1].value = num_binary_op (pfile, top[-1].value,
+                                         top->value, top->op);
+          break;
 
-	case CPP_GREATER:
-	case CPP_LESS:
-	case CPP_GREATER_EQ:
-	case CPP_LESS_EQ:
-	  top[-1].value
-	    = num_inequality_op (pfile, top[-1].value, top->value, top->op);
-	  break;
+        case CPP_GREATER:
+        case CPP_LESS:
+        case CPP_GREATER_EQ:
+        case CPP_LESS_EQ:
+          top[-1].value
+            = num_inequality_op (pfile, top[-1].value, top->value, top->op);
+          break;
 
-	case CPP_EQ_EQ:
-	case CPP_NOT_EQ:
-	  top[-1].value
-	    = num_equality_op (pfile, top[-1].value, top->value, top->op);
-	  break;
+        case CPP_EQ_EQ:
+        case CPP_NOT_EQ:
+          top[-1].value
+            = num_equality_op (pfile, top[-1].value, top->value, top->op);
+          break;
 
-	case CPP_AND:
-	case CPP_OR:
-	case CPP_XOR:
-	  top[-1].value
-	    = num_bitwise_op (pfile, top[-1].value, top->value, top->op);
-	  break;
+        case CPP_AND:
+        case CPP_OR:
+        case CPP_XOR:
+          top[-1].value
+            = num_bitwise_op (pfile, top[-1].value, top->value, top->op);
+          break;
 
-	case CPP_MULT:
-	  top[-1].value = num_mul (pfile, top[-1].value, top->value);
-	  break;
+        case CPP_MULT:
+          top[-1].value = num_mul (pfile, top[-1].value, top->value);
+          break;
 
-	case CPP_DIV:
-	case CPP_MOD:
-	  top[-1].value = num_div_op (pfile, top[-1].value,
-				      top->value, top->op);
-	  break;
+        case CPP_DIV:
+        case CPP_MOD:
+          top[-1].value = num_div_op (pfile, top[-1].value,
+                                      top->value, top->op);
+          break;
 
-	case CPP_OR_OR:
-	  top--;
-	  if (!num_zerop (top->value))
-	    pfile->state.skip_eval--;
-	  top->value.low = (!num_zerop (top->value)
-			    || !num_zerop (top[1].value));
-	  top->value.high = 0;
-	  top->value.unsignedp = false;
-	  top->value.overflow = false;
-	  continue;
+        case CPP_OR_OR:
+          top--;
+          if (!num_zerop (top->value))
+            pfile->state.skip_eval--;
+          top->value.low = (!num_zerop (top->value)
+                            || !num_zerop (top[1].value));
+          top->value.high = 0;
+          top->value.unsignedp = false;
+          top->value.overflow = false;
+          continue;
 
-	case CPP_AND_AND:
-	  top--;
-	  if (num_zerop (top->value))
-	    pfile->state.skip_eval--;
-	  top->value.low = (!num_zerop (top->value)
-			    && !num_zerop (top[1].value));
-	  top->value.high = 0;
-	  top->value.unsignedp = false;
-	  top->value.overflow = false;
-	  continue;
+        case CPP_AND_AND:
+          top--;
+          if (num_zerop (top->value))
+            pfile->state.skip_eval--;
+          top->value.low = (!num_zerop (top->value)
+                            && !num_zerop (top[1].value));
+          top->value.high = 0;
+          top->value.unsignedp = false;
+          top->value.overflow = false;
+          continue;
 
-	case CPP_OPEN_PAREN:
-	  if (op != CPP_CLOSE_PAREN)
-	    {
-	      cpp_error (pfile, DL_ERROR, "missing ')' in expression");
-	      return 0;
-	    }
-	  top--;
-	  top->value = top[1].value;
-	  return top;
+        case CPP_OPEN_PAREN:
+          if (op != CPP_CLOSE_PAREN)
+            {
+              cpp_error (pfile, DL_ERROR, "missing ')' in expression");
+              return 0;
+            }
+          top--;
+          top->value = top[1].value;
+          return top;
 
-	case CPP_COLON:
-	  top -= 2;
-	  if (!num_zerop (top->value))
-	    {
-	      pfile->state.skip_eval--;
-	      top->value = top[1].value;
-	    }
-	  else
-	    top->value = top[2].value;
-	  top->value.unsignedp = (top[1].value.unsignedp
-				  || top[2].value.unsignedp);
-	  continue;
+        case CPP_COLON:
+          top -= 2;
+          if (!num_zerop (top->value))
+            {
+              pfile->state.skip_eval--;
+              top->value = top[1].value;
+            }
+          else
+            top->value = top[2].value;
+          top->value.unsignedp = (top[1].value.unsignedp
+                                  || top[2].value.unsignedp);
+          continue;
 
-	case CPP_QUERY:
-	  cpp_error (pfile, DL_ERROR, "'?' without following ':'");
-	  return 0;
+        case CPP_QUERY:
+          cpp_error (pfile, DL_ERROR, "'?' without following ':'");
+          return 0;
 
-	default:
-	  goto bad_op;
-	}
+        default:
+          goto bad_op;
+        }
 
       top--;
       if (top->value.overflow && !pfile->state.skip_eval)
-	cpp_error (pfile, DL_PEDWARN,
-		   "integer overflow in preprocessor expression");
+        cpp_error (pfile, DL_PEDWARN,
+                   "integer overflow in preprocessor expression");
     }
 
   if (op == CPP_CLOSE_PAREN)
@@ -1003,7 +1003,7 @@ _cpp_expand_op_stack (pfile)
   size_t new_size = old_size * 2 + 20;
 
   pfile->op_stack = (struct op *) xrealloc (pfile->op_stack,
-					    new_size * sizeof (struct op));
+                                            new_size * sizeof (struct op));
   pfile->op_limit = pfile->op_stack + new_size;
 
   return pfile->op_stack + old_size;
@@ -1022,14 +1022,14 @@ check_promotion (pfile, op)
   if (op->value.unsignedp)
     {
       if (!num_positive (op[-1].value, CPP_OPTION (pfile, precision)))
-	cpp_error (pfile, DL_WARNING,
-		   "the left operand of \"%s\" changes sign when promoted",
-		   cpp_token_as_text (pfile, op->token));
+        cpp_error (pfile, DL_WARNING,
+                   "the left operand of \"%s\" changes sign when promoted",
+                   cpp_token_as_text (pfile, op->token));
     }
   else if (!num_positive (op->value, CPP_OPTION (pfile, precision)))
     cpp_error (pfile, DL_WARNING,
-	       "the right operand of \"%s\" changes sign when promoted",
-	       cpp_token_as_text (pfile, op->token));
+               "the right operand of \"%s\" changes sign when promoted",
+               cpp_token_as_text (pfile, op->token));
 }
 
 /* Clears the unused high order bits of the number pointed to by PNUM.  */
@@ -1042,12 +1042,12 @@ num_trim (num, precision)
     {
       precision -= PART_PRECISION;
       if (precision < PART_PRECISION)
-	num.high &= ((cpp_num_part) 1 << precision) - 1;
+        num.high &= ((cpp_num_part) 1 << precision) - 1;
     }
   else
     {
       if (precision < PART_PRECISION)
-	num.low &= ((cpp_num_part) 1 << precision) - 1;
+        num.low &= ((cpp_num_part) 1 << precision) - 1;
       num.high = 0;
     }
 
@@ -1079,18 +1079,18 @@ cpp_num_sign_extend (num, precision)
   if (!num.unsignedp)
     {
       if (precision > PART_PRECISION)
-	{
-	  precision -= PART_PRECISION;
-	  if (precision < PART_PRECISION
-	      && (num.high & (cpp_num_part) 1 << (precision - 1)))
-	    num.high |= ~(~(cpp_num_part) 0 >> (PART_PRECISION - precision));
-	}
+        {
+          precision -= PART_PRECISION;
+          if (precision < PART_PRECISION
+              && (num.high & (cpp_num_part) 1 << (precision - 1)))
+            num.high |= ~(~(cpp_num_part) 0 >> (PART_PRECISION - precision));
+        }
       else if (num.low & (cpp_num_part) 1 << (precision - 1))
-	{
-	  if (precision < PART_PRECISION)
-	    num.low |= ~(~(cpp_num_part) 0 >> (PART_PRECISION - precision));
-	  num.high = ~(cpp_num_part) 0;
-	}
+        {
+          if (precision < PART_PRECISION)
+            num.low |= ~(~(cpp_num_part) 0 >> (PART_PRECISION - precision));
+          num.high = ~(cpp_num_part) 0;
+        }
     }
 
   return num;
@@ -1132,7 +1132,7 @@ num_greater_eq (pa, pb, precision)
       unsignedp = num_positive (pa, precision);
 
       if (unsignedp != num_positive (pb, precision))
-	return unsignedp;
+        return unsignedp;
 
       /* Otherwise we can do an unsigned comparison.  */
     }
@@ -1232,22 +1232,22 @@ num_rshift (num, precision, n)
     {
       /* Sign-extend.  */
       if (precision < PART_PRECISION)
-	num.high = sign_mask, num.low |= sign_mask << precision;
+        num.high = sign_mask, num.low |= sign_mask << precision;
       else if (precision < 2 * PART_PRECISION)
-	num.high |= sign_mask << (precision - PART_PRECISION);
+        num.high |= sign_mask << (precision - PART_PRECISION);
 
       if (n >= PART_PRECISION)
-	{
-	  n -= PART_PRECISION;
-	  num.low = num.high;
-	  num.high = sign_mask;
-	}
+        {
+          n -= PART_PRECISION;
+          num.low = num.high;
+          num.high = sign_mask;
+        }
 
       if (n)
-	{
-	  num.low = (num.low >> n) | (num.high << (PART_PRECISION - n));
-	  num.high = (num.high >> n) | (sign_mask << (PART_PRECISION - n));
-	}
+        {
+          num.low = (num.low >> n) | (num.high << (PART_PRECISION - n));
+          num.high = (num.high >> n) | (sign_mask << (PART_PRECISION - n));
+        }
     }
 
   num = num_trim (num, precision);
@@ -1273,25 +1273,25 @@ num_lshift (num, precision, n)
 
       orig = num;
       if (m >= PART_PRECISION)
-	{
-	  m -= PART_PRECISION;
-	  num.high = num.low;
-	  num.low = 0;
-	}
+        {
+          m -= PART_PRECISION;
+          num.high = num.low;
+          num.low = 0;
+        }
       if (m)
-	{
-	  num.high = (num.high << m) | (num.low >> (PART_PRECISION - m));
-	  num.low <<= m;
-	}
+        {
+          num.high = (num.high << m) | (num.low >> (PART_PRECISION - m));
+          num.low <<= m;
+        }
       num = num_trim (num, precision);
 
       if (num.unsignedp)
-	num.overflow = false;
+        num.overflow = false;
       else
-	{
-	  maybe_orig = num_rshift (num, precision, n);
-	  num.overflow = !num_eq (orig, maybe_orig);
-	}
+        {
+          maybe_orig = num_rshift (num, precision, n);
+          num.overflow = !num_eq (orig, maybe_orig);
+        }
     }
 
   return num;
@@ -1308,8 +1308,8 @@ num_unary_op (pfile, num, op)
     {
     case CPP_UPLUS:
       if (CPP_WTRADITIONAL (pfile) && !pfile->state.skip_eval)
-	cpp_error (pfile, DL_WARNING,
-		   "traditional C rejects the unary plus operator");
+        cpp_error (pfile, DL_WARNING,
+                   "traditional C rejects the unary plus operator");
       num.overflow = false;
       break;
 
@@ -1353,36 +1353,36 @@ num_binary_op (pfile, lhs, rhs, op)
     case CPP_LSHIFT:
     case CPP_RSHIFT:
       if (!rhs.unsignedp && !num_positive (rhs, precision))
-	{
-	  /* A negative shift is a positive shift the other way.  */
-	  if (op == CPP_LSHIFT)
-	    op = CPP_RSHIFT;
-	  else
-	    op = CPP_LSHIFT;
-	  rhs = num_negate (rhs, precision);
-	}
+        {
+          /* A negative shift is a positive shift the other way.  */
+          if (op == CPP_LSHIFT)
+            op = CPP_RSHIFT;
+          else
+            op = CPP_LSHIFT;
+          rhs = num_negate (rhs, precision);
+        }
       if (rhs.high)
-	n = ~0;			/* Maximal.  */
+        n = ~0;                 /* Maximal.  */
       else
-	n = rhs.low;
+        n = rhs.low;
       if (op == CPP_LSHIFT)
-	lhs = num_lshift (lhs, precision, n);
+        lhs = num_lshift (lhs, precision, n);
       else
-	lhs = num_rshift (lhs, precision, n);
+        lhs = num_rshift (lhs, precision, n);
       break;
 
       /* Min / Max.  */
     case CPP_MIN:
     case CPP_MAX:
       {
-	bool unsignedp = lhs.unsignedp || rhs.unsignedp;
+        bool unsignedp = lhs.unsignedp || rhs.unsignedp;
 
-	gte = num_greater_eq (lhs, rhs, precision);
-	if (op == CPP_MIN)
-	  gte = !gte;
-	if (!gte)
-	  lhs = rhs;
-	lhs.unsignedp = unsignedp;
+        gte = num_greater_eq (lhs, rhs, precision);
+        if (op == CPP_MIN)
+          gte = !gte;
+        if (!gte)
+          lhs = rhs;
+        lhs.unsignedp = unsignedp;
       }
       break;
 
@@ -1393,25 +1393,25 @@ num_binary_op (pfile, lhs, rhs, op)
       result.low = lhs.low + rhs.low;
       result.high = lhs.high + rhs.high;
       if (result.low < lhs.low)
-	result.high++;
+        result.high++;
 
       result = num_trim (result, precision);
       result.unsignedp = lhs.unsignedp || rhs.unsignedp;
       if (result.unsignedp)
-	result.overflow = false;
+        result.overflow = false;
       else
-	{
-	  bool lhsp = num_positive (lhs, precision);
-	  result.overflow = (lhsp == num_positive (rhs, precision)
-			     && lhsp != num_positive (result, precision));
-	}
+        {
+          bool lhsp = num_positive (lhs, precision);
+          result.overflow = (lhsp == num_positive (rhs, precision)
+                             && lhsp != num_positive (result, precision));
+        }
       return result;
 
       /* Comma.  */
     default: /* case CPP_COMMA: */
       if (CPP_PEDANTIC (pfile) && !pfile->state.skip_eval)
-	cpp_error (pfile, DL_PEDWARN,
-		   "comma operator in operand of #if");
+        cpp_error (pfile, DL_PEDWARN,
+                   "comma operator in operand of #if");
       lhs = rhs;
       break;
     }
@@ -1466,9 +1466,9 @@ num_mul (pfile, lhs, rhs)
   if (!unsignedp)
     {
       if (!num_positive (lhs, precision))
-	negate = !negate, lhs = num_negate (lhs, precision);
+        negate = !negate, lhs = num_negate (lhs, precision);
       if (!num_positive (rhs, precision))
-	negate = !negate, rhs = num_negate (rhs, precision);
+        negate = !negate, rhs = num_negate (rhs, precision);
     }
 
   overflow = lhs.high && rhs.high;
@@ -1496,7 +1496,7 @@ num_mul (pfile, lhs, rhs)
     result.overflow = false;
   else
     result.overflow = overflow || (num_positive (result, precision) ^ !negate
-				   && !num_zerop (result));
+                                   && !num_zerop (result));
   result.unsignedp = unsignedp;
 
   return result;
@@ -1520,9 +1520,9 @@ num_div_op (pfile, lhs, rhs, op)
   if (!unsignedp)
     {
       if (!num_positive (lhs, precision))
-	negate = !negate, lhs_neg = true, lhs = num_negate (lhs, precision);
+        negate = !negate, lhs_neg = true, lhs = num_negate (lhs, precision);
       if (!num_positive (rhs, precision))
-	negate = !negate, rhs = num_negate (rhs, precision);
+        negate = !negate, rhs = num_negate (rhs, precision);
     }
 
   /* Find the high bit.  */
@@ -1531,24 +1531,24 @@ num_div_op (pfile, lhs, rhs, op)
       i = precision - 1;
       mask = (cpp_num_part) 1 << (i - PART_PRECISION);
       for (; ; i--, mask >>= 1)
-	if (rhs.high & mask)
-	  break;
+        if (rhs.high & mask)
+          break;
     }
   else if (rhs.low)
     {
       if (precision > PART_PRECISION)
-	i = precision - PART_PRECISION - 1;
+        i = precision - PART_PRECISION - 1;
       else
-	i = precision - 1;
+        i = precision - 1;
       mask = (cpp_num_part) 1 << i;
       for (; ; i--, mask >>= 1)
-	if (rhs.low & mask)
-	  break;
+        if (rhs.low & mask)
+          break;
     }
   else
     {
       if (!pfile->state.skip_eval)
-	cpp_error (pfile, DL_ERROR, "division by zero in #if");
+        cpp_error (pfile, DL_ERROR, "division by zero in #if");
       return lhs;
     }
 
@@ -1566,15 +1566,15 @@ num_div_op (pfile, lhs, rhs, op)
   for (;;)
     {
       if (num_greater_eq (lhs, sub, precision))
-	{
-	  lhs = num_binary_op (pfile, lhs, sub, CPP_MINUS);
-	  if (i >= PART_PRECISION)
-	    result.high |= (cpp_num_part) 1 << (i - PART_PRECISION);
-	  else
-	    result.low |= (cpp_num_part) 1 << i;
-	}
+        {
+          lhs = num_binary_op (pfile, lhs, sub, CPP_MINUS);
+          if (i >= PART_PRECISION)
+            result.high |= (cpp_num_part) 1 << (i - PART_PRECISION);
+          else
+            result.low |= (cpp_num_part) 1 << i;
+        }
       if (i-- == 0)
-	break;
+        break;
       sub.low = (sub.low >> 1) | (sub.high << (PART_PRECISION - 1));
       sub.high >>= 1;
     }
@@ -1584,13 +1584,13 @@ num_div_op (pfile, lhs, rhs, op)
     {
       result.unsignedp = unsignedp;
       if (unsignedp)
-	result.overflow = false;
+        result.overflow = false;
       else
-	{
-	  if (negate)
-	    result = num_negate (result, precision);
-	  result.overflow = num_positive (result, precision) ^ !negate;
-	}
+        {
+          if (negate)
+            result = num_negate (result, precision);
+          result.overflow = num_positive (result, precision) ^ !negate;
+        }
 
       return result;
     }
