@@ -63,6 +63,9 @@ echo "__GNUC_MINOR__" | ${CXX} -v -x c++ -E ${CXXFLAGS} - 2>/dev/null |
 # For GCC versions before 3, some special options are needed.
 if [ "$MAJOR_VERSION" -lt 3 ]; then
   INCLUDES="-iwrapper$SELFPATH/2.95 $INCLUDES"
+  if [ "$MINOR_VERSION" = 96 ]; then
+  INCLUDES="-iwrapper$SELFPATH/2.96 $INCLUDES"
+  fi
 elif [ "$MAJOR_VERSION" = 3 -a "$MINOR_VERSION" -ge 3 ]; then
   SPECIAL="-include $SELFPATH/3.3/gccxml_builtins.h"
 fi
