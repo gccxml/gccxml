@@ -751,6 +751,16 @@ xml_print_attributes_attribute (xml_dump_info_p xdi, tree attributes1,
     }
 }
 
+/* Print XML attribute artificial="1" for compiler generated methods.  */
+static void
+xml_print_artificial_attribute(xml_dump_info_p xdi, tree d)
+{
+  if (DECL_ARTIFICIAL (d))
+    {
+    fprintf (xdi->file, " artificial=\"1\"");
+    }
+}
+
 /* Print XML empty tag describing an unimplemented TREE_CODE that has been
    encountered.  */
 static void
@@ -939,17 +949,18 @@ xml_output_function_decl (xml_dump_info_p xdi, tree fd, xml_dump_node_p dn)
   int do_const = 0;
   int do_virtual = 0;
   int do_static = 0;
+  int do_artificial = 0;
 
   /* Print out the begin tag for this type of function.  */
   if (DECL_CONSTRUCTOR_P (fd))
     {
     /* A class constructor.  */
-    tag = "Constructor"; do_access = 1;
+    tag = "Constructor"; do_access = 1; do_artificial = 1;
     }
   else if (DECL_DESTRUCTOR_P (fd))
     {
     /* A class destructor.  */
-    tag = "Destructor"; do_access = 1; do_virtual = 1;
+    tag = "Destructor"; do_access = 1; do_virtual = 1; do_artificial = 1;
     }
   else if (DECL_OVERLOADED_OPERATOR_P (fd))
     {
@@ -1005,6 +1016,7 @@ xml_output_function_decl (xml_dump_info_p xdi, tree fd, xml_dump_node_p dn)
   if(do_const)   xml_print_const_method_attribute (xdi, fd);
   if(do_virtual) xml_print_virtual_method_attributes (xdi, fd);
   if(do_static)  xml_print_static_method_attribute (xdi, fd);
+  if(do_artificial)  xml_print_artificial_attribute (xdi, fd);
   xml_print_throw_attribute (xdi, TREE_TYPE (fd), dn->complete);
   xml_print_context_attribute (xdi, fd);
   xml_print_location_attribute (xdi, fd);
