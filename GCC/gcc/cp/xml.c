@@ -882,7 +882,7 @@ xml_output_namespace_decl (xml_dump_info_p xdi, tree ns, xml_dump_node_p dn)
           }
         }
 #if defined(GCC_XML_GCC_VERSION) && (GCC_XML_GCC_VERSION >= 0x030300)
-      // Add child namespaces
+      /* Add child namespaces.  */
       for (cur_decl = cp_namespace_namespaces(ns); cur_decl;
            cur_decl = TREE_CHAIN (cur_decl))
         {
