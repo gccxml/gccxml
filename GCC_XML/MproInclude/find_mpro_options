@@ -12,12 +12,12 @@ fi
 # These options are always needed.
 STANDARD="-quiet -o /dev/null -nostdinc -I- -w -fsyntax-only"
 
-touch /tmp/find_mpro_options_temp.cxx 
+touch /tmp/find_mpro_options_temp.cxx$$
 
 # Find the macro definition options.
 MACROS=`
-${CXX} ${CXXFLAGS} -E -v /tmp/find_mpro_options_temp.cxx 2>&1 |
-sed -n '/_COMPILER_VERSION/{s/ \/tmp\/find_mpro_options_temp.cxx.*$//
+${CXX} ${CXXFLAGS} -E -v /tmp/find_mpro_options_temp.cxx$$ 2>&1 |
+sed -n '/_COMPILER_VERSION/{s/ \/tmp\/find_mpro_options_temp.cxx$$.*$//
 s/ -/\\
 -/g;p;}' |
 sed -n '/^-D.*$/{s/-D\([^=]*\)=\([^ ]\{1,\} .*\)/-D\1='\''\2'\''/;p;}' |
@@ -25,8 +25,8 @@ sed -n 'H;${g;s/\n/ /g;p;}'`
 
 # Find and translate the -LANG:std option into -D_STANDARD_C_PLUS_PLUS
 LANGSTD=`
-${CXX} ${CXXFLAGS} -E -v /tmp/find_mpro_options_temp.cxx 2>&1 |
-sed -n '/_COMPILER_VERSION/{s/ \/tmp\/find_mpro_options_temp.cxx.*$//
+${CXX} ${CXXFLAGS} -E -v /tmp/find_mpro_options_temp.cxx$$ 2>&1 |
+sed -n '/_COMPILER_VERSION/{s/ \/tmp\/find_mpro_options_temp.cxx$$.*$//
 s/ -/\\
 -/g;p;}' |
 sed -n '/^-LANG:std.*$/{s/-LANG:std/-D_STANDARD_C_PLUS_PLUS/;p;}' |
@@ -34,8 +34,8 @@ sed -n 'H;${g;s/\n/ /g;p;}'`
 
 # Find the include path options.
 INCLUDES=`
-${CXX} ${CXXFLAGS} -E -v /tmp/find_mpro_options_temp.cxx 2>&1 |
-sed -n '/_COMPILER_VERSION/{s/ \/tmp\/find_mpro_options_temp.cxx.*$//
+${CXX} ${CXXFLAGS} -E -v /tmp/find_mpro_options_temp.cxx$$ 2>&1 |
+sed -n '/_COMPILER_VERSION/{s/ \/tmp\/find_mpro_options_temp.cxx$$.*$//
 s/ -/\\
 -/g;p;}' |
 sed -n '/^-I.*$/{p;}' |
@@ -47,7 +47,7 @@ if test "x$SELFPATH" = "x" ; then SELFPATH="." ; fi
 SELFPATH=`cd $SELFPATH ; pwd`
 INCLUDES="-I$SELFPATH $INCLUDES"
 
-rm -f /tmp/find_mpro_options_temp.cxx
+rm -f /tmp/find_mpro_options_temp.cxx$$
 
 # Format and print out the options.
 OPTIONS="$STANDARD $MACROS $LANGSTD $INCLUDES"
