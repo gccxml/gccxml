@@ -1,4 +1,3 @@
-? t
 Index: Make-lang.in
 ===================================================================
 RCS file: /cvs/gcc/egcs/gcc/cp/Make-lang.in,v
@@ -13,29 +12,29 @@ diff -r1.73 Make-lang.in
 Index: cp-tree.h
 ===================================================================
 RCS file: /cvs/gcc/egcs/gcc/cp/cp-tree.h,v
-retrieving revision 1.563
-diff -r1.563 cp-tree.h
+retrieving revision 1.565
+diff -r1.565 cp-tree.h
 1164a1165,1169
 > /* Nonzero means XML output mode.  */
 > 
 > extern int flag_xml;
 > 
 > 
-4560a4566,4568
+4561a4567,4569
 > 
 > /* in xml.c */
 > extern void do_xml_output                       PARAMS ((void));
 Index: decl2.c
 ===================================================================
 RCS file: /cvs/gcc/egcs/gcc/cp/decl2.c,v
-retrieving revision 1.429
-diff -r1.429 decl2.c
-468a469,472
+retrieving revision 1.431
+diff -r1.431 decl2.c
+476a477,480
 > /* Nonzero means XML output mode.  */
 > 
 > int flag_xml = 0;
 > 
-524a529
+532a537
 >   {"xml", &flag_xml, 1},
 Index: lang-options.h
 ===================================================================
@@ -51,8 +50,8 @@ diff -r1.37 lang-options.h
 Index: semantics.c
 ===================================================================
 RCS file: /cvs/gcc/egcs/gcc/cp/semantics.c,v
-retrieving revision 1.186
-diff -r1.186 semantics.c
+retrieving revision 1.188
+diff -r1.188 semantics.c
 1657a1658,1661
 > 
 >   /* Do XML output if enabled.  */
