@@ -172,12 +172,6 @@ void gxConfiguration::FindRoots(const char* argv0)
     }
   gxSystemTools::ConvertToUnixSlashes(selfPath);  
 
-  // Use our own location as the executable root.
-  m_ExecutableRoot = selfPath;
-  
-  // Find the data files.
-  std::string sharePath = selfPath+"/../share/GCC_XML";
-   
   // Make sure executable and self paths are represented the same way.
   std::string ePath = gxSystemTools::CollapseDirectory(GCCXML_EXECUTABLE_DIR);
   gxSystemTools::ConvertToUnixSlashes(ePath);
@@ -186,22 +180,32 @@ void gxConfiguration::FindRoots(const char* argv0)
   ePath = gxSystemTools::LowerCase(ePath.c_str());
   sPath = gxSystemTools::LowerCase(sPath.c_str());
 #endif
+#if defined(_MSC_VER)
+  if((sPath == (ePath+"/debug")) ||
+     (sPath == (ePath+"/release")) ||
+     (sPath == (ePath+"/relwithdebinfo")) ||
+     (sPath == (ePath+"/minsizerel")))
+    {
+    // Strip off the build configuration subdirectory name.
+    std::string::size_type pos = selfPath.rfind("/");
+    selfPath = selfPath.substr(0, pos);
+    sPath = sPath.substr(0, pos);
+    }
+#endif
+
+  // Use our own location as the executable root.
+  m_ExecutableRoot = selfPath;
   
+  
+  // Find the data files.
+  std::string sharePath = selfPath+"/../share/GCC_XML";
+   
   // If we are running from the build directory, use the source
   // directory as the data root.
   if(sPath == ePath)
     {
     m_DataRoot = GCCXML_SOURCE_DIR;
     }
-#if defined(_MSC_VER)
-  else if((sPath == (ePath+"/debug")) ||
-          (sPath == (ePath+"/release")) ||
-          (sPath == (ePath+"/relwithdebinfo")) ||
-          (sPath == (ePath+"/minsizerel")))
-    {
-    m_DataRoot = GCCXML_SOURCE_DIR;
-    }
-#endif
   else if(gxSystemTools::FileIsDirectory(sharePath.c_str()))
     {
     // The data files are in the share path next to the bin path.
@@ -362,6 +366,13 @@ bool gxConfiguration::FindConfigFile()
       m_GCCXML_CONFIG = config;
       return true;
       }
+    }
+  // Check for a configuration file in the executable root directory.
+  config = m_ExecutableRoot+"/config";
+  if(gxSystemTools::FileExists(config.c_str()))
+    {
+    m_GCCXML_CONFIG = config;
+    return true;
     }
   // Check for a configuration file in the data root directory.
   config = m_DataRoot+"/config";
