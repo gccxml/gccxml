@@ -60,7 +60,7 @@ public:
   static std::string GetCWD();
   
   /** Convert the given path to one with forward slashes.  */
-  static void gxSystemTools::ConvertToUnixSlashes(std::string& path);
+  static void ConvertToUnixSlashes(std::string& path);
 
   /** Run the given command and get back the output and the result value.  */
   static bool RunCommand(const char* command, std::string& output,
