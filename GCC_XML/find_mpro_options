@@ -1,0 +1,23 @@
+#!/bin/sh
+
+# These options are always needed.
+STANDARD="-quiet -o /dev/null -nostdinc -fsyntax-only"
+
+# Find the macro definition options and include path settings.
+MACRO_AND_INCLUDE=`
+touch /tmp/find_mpro_options_temp.cxx &&
+CC -LANG:std -E -v /tmp/find_mpro_options_temp.cxx 2>&1 | sed -n '
+/_COMPILER_VERSION/{
+  s/^[^ ]*//
+  s/ -A[^ ]*//g
+  s/ -X[^ ]*//g
+  s/ -E//
+  s/ -LANG:std//
+  s/ \/tmp\/find_mpro_options_temp.cxx.*$//
+  p
+}
+'
+rm -f /tmp/find_mpro_options_temp.cxx
+`
+
+echo $STANDARD $MACRO_AND_INCLUDE

@@ -1,3 +1,4 @@
 .git*            export-ignore
 
 find_gcc_options  crlf=input
+find_mpro_options  crlf=input
