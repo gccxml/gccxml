@@ -791,6 +791,32 @@ diff -c -3 -p -r1.1.1.1 -r1.2
   	class basic_ostream : virtual public basic_ios<_E, _Tr> {
   public:
   	typedef basic_ostream<_E, _Tr> _Myt;
+Index: process.h
+===================================================================
+RCS file: /cvsroot/GxInclude/VcInclude/process.h,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1.1.1 -r1.2
+*** process.h	13 Jun 2001 19:31:45 -0000	1.1.1.1
+--- process.h	1 Feb 2005 20:45:06 -0000	1.2
+*************** _CRTIMP int __cdecl _wsystem(const wchar
+*** 183,189 ****
+   */
+  int __cdecl _loaddll(char *);
+  int __cdecl _unloaddll(int);
+! int (__cdecl * __cdecl _getdllprocaddr(int, char *, int))();
+  /* --------- The preceding functions are OBSOLETE --------- */
+  
+  
+--- 183,190 ----
+   */
+  int __cdecl _loaddll(char *);
+  int __cdecl _unloaddll(int);
+! typedef int (__cdecl * _getdllprocaddr_type)();
+! _getdllprocaddr_type __cdecl _getdllprocaddr(intptr_t, char *, intptr_t);
+  /* --------- The preceding functions are OBSOLETE --------- */
+  
+  
 Index: queue
 ===================================================================
 RCS file: /cvsroot/GxInclude/VcInclude/queue,v
