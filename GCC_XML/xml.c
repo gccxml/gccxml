@@ -1088,6 +1088,7 @@ xml_output_var_decl (xml_dump_info_p xdi, tree vd, xml_dump_node_p dn)
   xml_print_access_attribute (xdi, vd);
   xml_print_location_attribute (xdi, vd);
   xml_print_extern_attribute (xdi, vd);
+  xml_print_artificial_attribute (xdi, vd);
   xml_print_attributes_attribute (xdi, GCC_XML_DECL_ATTRIBUTES(vd), 0);
   fprintf (xdi->file, "/>\n");
 }
