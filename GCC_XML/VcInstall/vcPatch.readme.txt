@@ -1,0 +1,7 @@
+We use a version of the celebrated Larry Wall "GNU patch" program as ported to Windows. 
+The executable comes from the port by Karl M. Syring in his nice 
+UnxUtils( http://unxutils.sourceforge.net/ ) package.   We have renamed the executable
+from patch.exe to vcPatch.exe to avoid conflicts.
+
+
+

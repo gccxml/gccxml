@@ -15,7 +15,7 @@
 
 bool InstallSupport(const char* patchCommand, const char* patchFile,
                     const char* sourcePath, const char* destPath);
-bool FindPatch(std::string& result);
+bool FindPatch(std::string& result, const char* patchDir);
 
 //----------------------------------------------------------------------------
 int main(int argc, char* argv[])
@@ -70,7 +70,7 @@ int main(int argc, char* argv[])
   // Need to install at least one of the support directories.  We need
   // to find the patch executable.
   std::string patchCommand;
-  if(!FindPatch(patchCommand))
+  if(!FindPatch(patchCommand, patchDir.c_str()))
     {
     std::cerr << "Cannot find patch executable.\n";
     return 1;
@@ -226,10 +226,18 @@ bool InstallSupport(const char* patchCommand, const char* patchFile,
 }
 
 //----------------------------------------------------------------------------
-bool FindPatch(std::string& result)
+bool FindPatch(std::string& result, const char* patchDir)
 {
+  // check for vcPatch.exe in the source directory
+  std::string patchCommand = patchDir;
+  patchCommand += "/vcPatch.exe";
+  if(gxSystemTools::FileExists(patchCommand.c_str()))
+    {
+    result = patchCommand;
+    return true;
+    }
   // Find the patch executable.
-  std::string patchCommand = "patch.exe";
+  patchCommand = "patch.exe";
   if(gxSystemTools::FileExists(patchCommand.c_str()))
     {
     result = patchCommand;
@@ -263,5 +271,6 @@ bool FindPatch(std::string& result)
         }
       }
     }
+  
   return false;
 }
