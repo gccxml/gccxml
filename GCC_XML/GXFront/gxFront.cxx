@@ -30,7 +30,7 @@ inline int GXSpawn(const char* cmd, char** argv)
 #include <unistd.h>
 inline int GXSpawn(const char* cmd, char** argv)
 {
-  return spawnvp(P_WAIT, cmd, argv);
+  return execvp(cmd, argv);
 }
 #endif
 
