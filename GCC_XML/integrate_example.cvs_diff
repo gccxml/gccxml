@@ -1,0 +1,56 @@
+? t
+Index: Makefile.in
+===================================================================
+RCS file: /cvs/gcc/egcs/gcc/cp/Makefile.in,v
+retrieving revision 1.101
+diff -r1.101 Makefile.in
+182c182
+<  repo.o dump.o optimize.o mangle.o @extra_cxx_objs@
+---
+>  repo.o dump.o optimize.o mangle.o xml.o @extra_cxx_objs@
+294a295,296
+> xml.o : xml.c $(CXX_TREE_H) \
+>   $(srcdir)/../toplev.h
+Index: cp-tree.h
+===================================================================
+RCS file: /cvs/gcc/egcs/gcc/cp/cp-tree.h,v
+retrieving revision 1.534
+diff -r1.534 cp-tree.h
+226a227,230
+> /* Nonzero to enable XML dump.  */
+> 
+> extern int flag_xml;
+> 
+4573a4578,4580
+> 
+> /* in xml.c */
+> extern void do_xml_output                       PARAMS ((void));
+Index: decl2.c
+===================================================================
+RCS file: /cvs/gcc/egcs/gcc/cp/decl2.c,v
+retrieving revision 1.401
+diff -r1.401 decl2.c
+448a449,452
+> /* Nonzero to enable XML dump.  */
+> 
+> int flag_xml = 0;
+> 
+532a537
+>   {"xml", &flag_xml, 1},
+Index: lang-options.h
+===================================================================
+RCS file: /cvs/gcc/egcs/gcc/cp/lang-options.h,v
+retrieving revision 1.36
+diff -r1.36 lang-options.h
+63a64,65
+>   { "-fxml", "Dump translation unit's declarations in XML." },
+>   { "-fno-xml", "" },
+Index: semantics.c
+===================================================================
+RCS file: /cvs/gcc/egcs/gcc/cp/semantics.c,v
+retrieving revision 1.178
+diff -r1.178 semantics.c
+1652a1653,1655
+> 
+>   if (flag_xml)
+>     do_xml_output();
