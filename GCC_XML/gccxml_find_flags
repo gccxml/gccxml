@@ -15,7 +15,8 @@ else
 fi
 
 # Use the compiler's preprocessor to identify the compiler.
-cat > "/tmp/gccxml_identify_compiler.cc$$" <<!
+GCCXML_PID="$$"
+cat > "/tmp/gccxml_identify_compiler$GCCXML_PID.cc" <<!
 #if defined(__GNUC__)
 GCCXML_SUPPORT="GccInclude"
 GCCXML_FLAGS_SCRIPT="find_gcc_options"
@@ -29,16 +30,16 @@ GCCXML_FLAGS_SCRIPT=""
 !
 
 # Run the compiler's preprocessor on the above code to identify it.
-if ! (${GCCXML_COMPILER} -E "/tmp/gccxml_identify_compiler.cc$$" \
-                          > "/tmp/gccxml_identify_compiler.pp$$";
-      rm -f "/tmp/gccxml_identify_compiler.cc$$") ; then
+if ! (${GCCXML_COMPILER} -E "/tmp/gccxml_identify_compiler$GCCXML_PID.cc" \
+                          > "/tmp/gccxml_identify_compiler$GCCXML_PID.pp";
+      rm -f "/tmp/gccxml_identify_compiler$GCCXML_PID.cc") ; then
   echo "Error running \"${GCCXML_COMPILER} -E\""
   exit 1
 fi
 
 # Source the result to get the settings found.
-. "/tmp/gccxml_identify_compiler.pp$$"
-rm -f  "/tmp/gccxml_identify_compiler.pp$$"
+. "/tmp/gccxml_identify_compiler$GCCXML_PID.pp"
+rm -f  "/tmp/gccxml_identify_compiler$GCCXML_PID.pp"
 
 # Check if a supported compiler was identified.
 if test "x$GCCXML_SUPPORT" = "x" ; then

@@ -42,7 +42,7 @@ awk -F "\." '{ print $1 }'`
 if test $MAJOR_VERSION -lt 3 ; then
   HONOR_STD="-fxml-no-honor-std "
   STRICT_INCLUDES="-I- "
-  INCLUDES="-I$SELFPATH $INCLUDES"
+  INCLUDES="-I$SELFPATH/2_95 $INCLUDES"
 fi
 
 # Format and print out the options.
