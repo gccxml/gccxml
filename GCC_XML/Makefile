@@ -30,7 +30,7 @@ all:
         "gccxml_cc1plus executable by hand (since it is installed by hand).\n"
 
 # Installation of main GCC-XML support library directory.
-install_main:
+install_main: gccxml
 	@echo "Installing with PREFIX="$(PREFIX)" ..."
 	@if [ ! -d $(PREFIX)/share/GCC_XML ] ; then \
            echo "Making directory $(PREFIX)/share/GCC_XML "; \
@@ -74,3 +74,22 @@ install: install_mpro install_gcc
 
 # Main uninstallation target.
 uninstall: uninstall_main
+
+GXFRONT_OBJS=GXFront/gxSystemTools.o \
+             GXFront/gxConfiguration.o \
+             GXFront/gxFront.o
+
+gccxml: $(GXFRONT_OBJS)
+	$(CXX) -o gccxml $(GXFRONT_OBJS)
+
+GXFront/gxSystemTools.o: GXFront/gxSystemTools.cxx
+	$(CXX) $(CXX_FLAGS) -I GXFront -o GXFront/gxSystemTools.o -c GXFront/gxSystemTools.cxx
+
+GXFront/gxConfiguration.o: GXFront/gxConfiguration.cxx
+	$(CXX) $(CXX_FLAGS) -I GXFront -o GXFront/gxConfiguration.o -c GXFront/gxConfiguration.cxx
+
+GXFront/gxFront.o: GXFront/gxFront.cxx
+	$(CXX) $(CXX_FLAGS) -I GXFront -o GXFront/gxFront.o -c GXFront/gxFront.cxx
+
+clean:
+	$(RM) $(GXFRONT_OBJS) gccxml
