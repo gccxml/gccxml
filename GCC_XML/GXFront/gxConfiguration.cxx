@@ -31,6 +31,7 @@ gxConfiguration::gxConfiguration()
   m_HelpFlag = false;
   m_VersionFlag = false;
   m_PrintFlag = false;
+  m_PreprocessFlag = false;
   m_DebugFlag = false;
   m_ManFlag = false;
   m_CopyrightFlag = false;
@@ -117,6 +118,31 @@ bool gxConfiguration::Configure(int argc, const char*const * argv)
   gxSystemTools::ConvertToUnixSlashes(m_GCCXML_CONFIG);
   gxSystemTools::ConvertToUnixSlashes(m_GCCXML_COMPILER);
 
+  // If no preprocessor has been set, see if there is one next to the
+  // gccxml_cc1plus executable.
+  if(m_GCCXML_CPP.length() == 0 && m_GCCXML_EXECUTABLE.length() > 0)
+    {
+    std::string loc =
+      gxSystemTools::GetFilenamePath(m_GCCXML_EXECUTABLE.c_str());
+    loc += "/gccxml_cpp0";
+#ifdef _WIN32
+    loc += ".exe";
+#endif
+    if(gxSystemTools::FileExists(loc.c_str()) &&
+       !gxSystemTools::FileIsDirectory(loc.c_str()))
+      {
+      m_GCCXML_CPP = loc;
+      }
+    }
+
+  // If no preprocessor has been set, try looking in the system path.
+  if(m_GCCXML_CPP.length() == 0)
+    {
+    m_GCCXML_CPP = gxSystemTools::FindProgram("gccxml_cpp0");
+    }
+
+  gxSystemTools::ConvertToUnixSlashes(m_GCCXML_CPP);
+
   return true;
 }
 
@@ -138,6 +164,7 @@ void gxConfiguration::PrintConfiguration(std::ostream& os) const
      << "  GCCXML_COMPILER=\"" << m_GCCXML_COMPILER.c_str() << "\"\n"
      << "  GCCXML_CXXFLAGS=\"" << m_GCCXML_CXXFLAGS.c_str() << "\"\n"
      << "  GCCXML_EXECUTABLE=\"" << m_GCCXML_EXECUTABLE.c_str() << "\"\n"
+     << "  GCCXML_CPP=\"" << m_GCCXML_CPP.c_str() << "\"\n"
      << "  GCCXML_FLAGS=\"" << m_GCCXML_FLAGS.c_str() << "\"\n"
      << "  GCCXML_USER_FLAGS=\"" << m_GCCXML_USER_FLAGS.c_str() << "\"\n"
      << "  GCCXML_ROOT=\"" << m_GCCXML_ROOT.c_str() << "\"\n";
@@ -153,17 +180,21 @@ const std::vector<std::string>& gxConfiguration::GetArguments() const
 void gxConfiguration::AddArguments(std::vector<std::string>& arguments) const
 {
   // Add standard arguments.
-  arguments.push_back("-quiet");
-  arguments.push_back("-o");
+  if(!this->GetPreprocessFlag())
+    {
+    // These arguments are not for the preprocessor.
+    arguments.push_back("-quiet");
+    arguments.push_back("-o");
 #if defined(_WIN32) && !defined(__CYGWIN__)
-  arguments.push_back("NUL");
+    arguments.push_back("NUL");
 #else
-  arguments.push_back("/dev/null");
+    arguments.push_back("/dev/null");
 #endif
+    arguments.push_back("-fsyntax-only");
+    arguments.push_back("-w");
+    }
   arguments.push_back("-nostdinc");
   arguments.push_back("-I-");
-  arguments.push_back("-w");
-  arguments.push_back("-fsyntax-only");
 
   // Add user arguments.
   for(std::vector<std::string>::const_iterator i=m_Arguments.begin();
@@ -189,6 +220,12 @@ bool gxConfiguration::GetVersionFlag() const
 bool gxConfiguration::GetPrintFlag() const
 {
   return m_PrintFlag;
+}
+
+//----------------------------------------------------------------------------
+bool gxConfiguration::GetPreprocessFlag() const
+{
+  return m_PreprocessFlag;
 }
 
 //----------------------------------------------------------------------------
@@ -219,6 +256,12 @@ bool gxConfiguration::GetHelpHTMLFlag() const
 const std::string& gxConfiguration::GetGCCXML_EXECUTABLE() const
 {
   return m_GCCXML_EXECUTABLE;
+}
+
+//----------------------------------------------------------------------------
+const std::string& gxConfiguration::GetGCCXML_CPP() const
+{
+  return m_GCCXML_CPP;
 }
 
 //----------------------------------------------------------------------------
@@ -364,6 +407,18 @@ bool gxConfiguration::ProcessCommandLine(int argc, const char*const* argv)
         return false;
         }
       }
+    else if(strcmp(argv[i], "--gccxml-cpp") == 0)
+      {
+      if(++i < argc)
+        {
+        m_GCCXML_CPP = argv[i];
+        }
+      else
+        {
+        std::cerr << "Option --gccxml-cpp requires an argument.\n";
+        return false;
+        }
+      }
     else if(strcmp(argv[i], "--gccxml-config") == 0)
       {
       if(++i < argc)
@@ -399,6 +454,11 @@ bool gxConfiguration::ProcessCommandLine(int argc, const char*const* argv)
     else if(strcmp(argv[i], "--print") == 0)
       {
       m_PrintFlag = true;
+      }
+    else if((strcmp(argv[i], "--preprocess") == 0) ||
+            (strcmp(argv[i], "-E") == 0))
+      {
+      m_PreprocessFlag = true;
       }
     else if(strcmp(argv[i], "--debug") == 0)
       {
@@ -452,6 +512,10 @@ void gxConfiguration::CheckEnvironment()
   if(m_GCCXML_EXECUTABLE.length() == 0)
     {
     gxSystemTools::GetEnv("GCCXML_EXECUTABLE", m_GCCXML_EXECUTABLE);
+    }
+  if(m_GCCXML_CPP.length() == 0)
+    {
+    gxSystemTools::GetEnv("GCCXML_CPP", m_GCCXML_CPP);
     }
   if(m_GCCXML_ROOT.length() == 0)
     {
@@ -575,6 +639,10 @@ bool gxConfiguration::ReadConfigFile()
       else if(key == "GCCXML_EXECUTABLE")
         {
         if(m_GCCXML_EXECUTABLE.length() == 0) { m_GCCXML_EXECUTABLE = value; }
+        }
+      else if(key == "GCCXML_CPP")
+        {
+        if(m_GCCXML_CPP.length() == 0) { m_GCCXML_CPP = value; }
         }
       else if(key == "GCCXML_ROOT")
         {

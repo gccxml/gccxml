@@ -92,6 +92,7 @@ const gxDocumentationEntry gxDocumentationOptions[] =
   {"--gccxml-compiler <xxx>", "Set GCCXML_COMPILER to \"xxx\".", 0},
   {"--gccxml-cxxflags <xxx>", "Set GCCXML_CXXFLAGS to \"xxx\".", 0},
   {"--gccxml-executable <xxx>", "Set GCCXML_EXECUTABLE to \"xxx\".", 0},
+  {"--gccxml-cpp <xxx>", "Set GCCXML_CPP to \"xxx\".", 0},
   {"--gccxml-config <xxx>", "Set GCCXML_CONFIG to \"xxx\".", 0},
   {"--gccxml-root <xxx>", "Set GCCXML_ROOT to \"xxx\".", 0},
   {"--help", "Print full help and exit.",
@@ -107,6 +108,12 @@ const gxDocumentationEntry gxDocumentationOptions[] =
    "compiler.  Using this option will cause GCC-XML to configure itself "
    "as if it were going to parse the C++ source, but stop and print the "
    "configuration found.  This is useful for checking the configuration."},
+  {"--preprocess", "Preprocess the input and exit.",
+   "GCC-XML simulates the proprocessor of another compiler.  Using this "
+   "option will cause GCC-XML to configure itself as if it were going to "
+   "parse the C++ source, but stop after preprocessing.  This is useful "
+   "for debugging problems related to simulation of the other compiler."},
+  {"-E", "Alias for --preprocess.", 0},
   {"--version", "Show program name/version banner and exit.", 0},
   {0,
    "Other flags, such as -I and -D, are passed on to the patched GCC C++ "
@@ -144,6 +151,12 @@ const gxDocumentationEntry gxDocumentationSettings[] =
    "simulate another compiler.  This setting specifies the real executable "
    "to run once the flags have been determined.  Users should rarely need "
    "to change this value from its default."},
+  {"GCCXML_CPP", "Specify the GCC C preprocessor executable.",
+   "The GCC-XML program as seen by the user is actually a front-end that "
+   "determines the flags needed to configure the patched GCC C++ parser to "
+   "simulate another compiler.  This setting specifies the a preprocessor "
+   "to run with the flags that have been determined for debugging purposes.  "
+   "Users should rarely need to change this value from its default."},
   {"GCCXML_ROOT", "The GCC-XML support library directory.",
    "Since GCC-XML is only one C++ parser, it cannot exactly duplicate the "
    "functionality of every compiler it tries to simulate.  Some compilers "
@@ -208,7 +221,7 @@ const gxDocumentationEntry gxDocumentationSettings[] =
 const gxDocumentationEntry gxDocumentationCopyright[] =
 {
   {0,
-   "Copyright (c) 2002 Kitware, Inc., Insight Consortium.\n"
+   "Copyright (c) 2002-2003 Kitware, Inc., Insight Consortium.\n"
    "All rights reserved.\n", 0},
   {0,
    "Redistribution and use in source and binary forms, with or without "

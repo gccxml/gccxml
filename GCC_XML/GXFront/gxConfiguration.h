@@ -53,6 +53,9 @@ public:
   /** Ask whether the --print argument was given.  */
   bool GetPrintFlag() const;
 
+  /** Ask whether the --preprocess argument was given.  */
+  bool GetPreprocessFlag() const;
+
   /** Ask whether the --debug argument was given.  */
   bool GetDebugFlag() const;
 
@@ -68,6 +71,9 @@ public:
   /** Get the GCCXML_EXECUTABLE setting.  */
   const std::string& GetGCCXML_EXECUTABLE() const;
 
+  /** Get the GCCXML_CPP setting.  */
+  const std::string& GetGCCXML_CPP() const;
+
   /** Get the GCCXML_FLAGS setting.  */
   const std::string& GetGCCXML_FLAGS() const;
 
@@ -80,6 +86,7 @@ protected:
   std::string m_GCCXML_COMPILER;
   std::string m_GCCXML_CXXFLAGS;
   std::string m_GCCXML_EXECUTABLE;
+  std::string m_GCCXML_CPP;
   std::string m_GCCXML_FLAGS;
   std::string m_GCCXML_USER_FLAGS;
   std::string m_GCCXML_ROOT;
@@ -97,6 +104,7 @@ protected:
   bool m_HelpFlag;
   bool m_VersionFlag;
   bool m_PrintFlag;
+  bool m_PreprocessFlag;
   bool m_DebugFlag;
   bool m_ManFlag;
   bool m_CopyrightFlag;

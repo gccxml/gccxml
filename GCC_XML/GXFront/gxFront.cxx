@@ -107,6 +107,7 @@ int main(int argc, char** argv)
 
   // Get the configuration settings.
   std::string cGCCXML_EXECUTABLE = configuration.GetGCCXML_EXECUTABLE();
+  std::string cGCCXML_CPP = configuration.GetGCCXML_CPP();
   std::string cGCCXML_FLAGS = configuration.GetGCCXML_FLAGS();
   std::string cGCCXML_USER_FLAGS = configuration.GetGCCXML_USER_FLAGS();
 
@@ -123,9 +124,18 @@ int main(int argc, char** argv)
   // List set of flags if debugging.
   if(configuration.GetDebugFlag())
     {
-    std::cout << "Using \"" << cGCCXML_EXECUTABLE.c_str()
-              << "\" as GCC-XML executable.\n";
-    std::cout << "Using the following arguments to GCC-XML executable:\n";
+    if(configuration.GetPreprocessFlag())
+      {
+      std::cout << "Using \"" << cGCCXML_CPP.c_str()
+                << "\" as GCC-XML preprocessor.\n";
+      std::cout << "Using the following arguments to GCC-XML preprocessor:\n";
+      }
+    else
+      {
+      std::cout << "Using \"" << cGCCXML_EXECUTABLE.c_str()
+                << "\" as GCC-XML executable.\n";
+      std::cout << "Using the following arguments to GCC-XML executable:\n";
+      }
     for(std::vector<std::string>::const_iterator i = flags.begin();
         i != flags.end(); ++i)
       {
@@ -133,11 +143,22 @@ int main(int argc, char** argv)
       }
     }
 
-  // Make sure we have the GCC parser executable.
-  if(cGCCXML_EXECUTABLE.length() == 0)
+  // Make sure we have the GCC parser or preprocessor executable.
+  if(configuration.GetPreprocessFlag())
     {
-    std::cerr << "Could not determine GCCXML_EXECUTABLE setting.\n";
-    return 1;
+    if(cGCCXML_CPP.length() == 0)
+      {
+      std::cerr << "Could not determine GCCXML_CPP setting.\n";
+      return 1;
+      }
+    }
+  else
+    {
+    if(cGCCXML_EXECUTABLE.length() == 0)
+      {
+      std::cerr << "Could not determine GCCXML_EXECUTABLE setting.\n";
+      return 1;
+      }
     }
 
 #if defined(_WIN32) && !defined(__CYGWIN__) && !defined(GCCXML_NATIVE_CC1PLUS)
@@ -169,17 +190,31 @@ int main(int argc, char** argv)
       }
     else
       {
-      std::cerr << "GCC-XML cannot find cygwin1.dll, so "
-                << cGCCXML_EXECUTABLE.c_str()
-                << " will fail to run.  Aborting.\n";
+      std::cerr << "GCC-XML cannot find cygwin1.dll, so ";
+      if(configuration.GetPreprocessFlag())
+        {
+        std::cerr << cGCCXML_CPP.c_str();
+        }
+      else
+        {
+        std::cerr << cGCCXML_EXECUTABLE.c_str();
+        }
+      std::cerr << " will fail to run.  Aborting.\n";
       return 1;
       }
     }
 #endif
 
   // Convert the program path to a platform-dependent format.
-  std::string cge =
-    gxSystemTools::ConvertToOutputPath(cGCCXML_EXECUTABLE.c_str());
+  std::string cge;
+  if(configuration.GetPreprocessFlag())
+    {
+    cge = gxSystemTools::ConvertToOutputPath(cGCCXML_CPP.c_str());
+    }
+  else
+    {
+    cge = gxSystemTools::ConvertToOutputPath(cGCCXML_EXECUTABLE.c_str());
+    }
 
   // Prepare list of arguments for exec call.
   char** args = new char*[flags.size()+2];
@@ -195,7 +230,7 @@ int main(int argc, char** argv)
   if((result = GXSpawn(cge.c_str(), args)) < 0)
     {
     result = errno;
-    std::cerr << "Error executing " << cGCCXML_EXECUTABLE.c_str() << "\n";
+    std::cerr << "Error executing " << cge.c_str() << "\n";
     }
 
   // Free the arguments' memory.
