@@ -47,7 +47,7 @@ INCLUDES=`
 # The support headers are located where this script is.
 SELFPATH=`echo $0 | sed -n '/\//{s/\/find_flags//;p;}'`
 if test "x$SELFPATH" = "x" ; then SELFPATH="." ; fi
-SELFPATH=`cd $SELFPATH ; pwd`
+SELFPATH=`cd "$SELFPATH" ; pwd`
 
 # Format and print out the options.
 OPTIONS="$MACROS -D_WCHAR_T $INCLUDES"

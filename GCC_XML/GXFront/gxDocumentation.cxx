@@ -222,7 +222,7 @@ const gxDocumentationEntry gxDocumentationSettings[] =
 const gxDocumentationEntry gxDocumentationCopyright[] =
 {
   {0,
-   "Copyright (c) 2002-2003 Kitware, Inc., Insight Consortium.\n"
+   "Copyright (c) 2002-2004 Kitware, Inc., Insight Consortium.\n"
    "All rights reserved.\n", 0},
   {0,
    "Redistribution and use in source and binary forms, with or without "

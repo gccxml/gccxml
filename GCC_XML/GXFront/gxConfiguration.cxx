@@ -214,7 +214,6 @@ void gxConfiguration::AddArguments(std::vector<std::string>& arguments) const
 #endif
     }
   arguments.push_back("-nostdinc");
-  arguments.push_back("-I-");
 
   // Add user arguments.
   for(std::vector<std::string>::const_iterator i=m_Arguments.begin();
@@ -1026,7 +1025,7 @@ bool gxConfiguration::FindFlagsMSVC6()
     "-D__cplusplus -D_MSC_VER=1200 -D_MSC_EXTENSIONS "
     "-D_WIN32 -D_M_IX86 -D_WCHAR_T_DEFINED -D_INTEGRAL_MAX_BITS=64 "
     "-DPASCAL= -DRPC_ENTRY= -DSHSTDAPI=HRESULT -DSHSTDAPI_(x)=x "
-    "-I"+vcIncludePath+" -I"+msvcPath+" ";
+    "-iwrapper"+vcIncludePath+" -I"+msvcPath+" ";
  return true;
 }
 
@@ -1079,8 +1078,8 @@ bool gxConfiguration::FindFlagsMSVC7()
     "-D_WCHAR_T_DEFINED -DPASCAL= -DRPC_ENTRY= -DSHSTDAPI=HRESULT "
     "-D_INTEGRAL_MAX_BITS=64 "
     "-D__uuidof(x)=IID() -DSHSTDAPI_(x)=x -D__w64= -D__int64=long long "
-    "-I"+vcIncludePath1+" "
-    "-I"+vcIncludePath2+" "
+    "-iwrapper"+vcIncludePath1+" "
+    "-iwrapper"+vcIncludePath2+" "
     "-I"+msvcPath1+" "
     "-I"+msvcPath2+" ";
   return true;
@@ -1135,8 +1134,8 @@ bool gxConfiguration::FindFlagsMSVC71()
     "-D_WCHAR_T_DEFINED -DPASCAL= -DRPC_ENTRY= -DSHSTDAPI=HRESULT "
     "-D_INTEGRAL_MAX_BITS=64 "
     "-D__uuidof(x)=IID() -DSHSTDAPI_(x)=x -D__w64= -D__int64=long long "
-    "-I"+vcIncludePath1+" "
-    "-I"+vcIncludePath2+" "
+    "-iwrapper"+vcIncludePath1+" "
+    "-iwrapper"+vcIncludePath2+" "
     "-I"+msvcPath1+" "
     "-I"+msvcPath2+" ";
   return true;
@@ -1195,8 +1194,8 @@ bool gxConfiguration::FindFlagsBCC55(const char* inBcc32)
     "-D__uuidof(x)=IID() -DSHSTDAPI_(x)=x -D__w64= -D__int64=long long "
     "-D__TURBOC__=0x0551 -D__BORLANDC__=0x0551 "
     "-U__STDC__ -U__PTRDIFF_TYPE__ -U__SIZE_TYPE__ "
-    "-I"+include1+" "
-    "-I"+include2+" "
+    "-iwrapper"+include1+" "
+    "-iwrapper"+include2+" "
     "-I"+include3+" ";
   return true;
 }
