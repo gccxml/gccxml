@@ -507,6 +507,52 @@ xml_print_mangled_attribute (xml_dump_info_p xdi, tree n)
     }
 }
 
+/* Get the id of the node referenced by the given type after
+   accounting for the special CvQualifiedType element.  This is the id
+   that should be printed when referencing the type in an IDREF
+   attribute.  The integers to which QC, QV, and QR point are set to 1
+   or 0 depending on whether the IDREF should include the const,
+   volatile, or restrict qualifier.  */
+static int
+xml_get_idref(xml_dump_info_p xdi, tree t, int complete,
+              int* qc, int* qv, int* qr)
+{
+  /* Get the unqualified node for the type.  */
+  int id = xml_add_node (xdi, TYPE_MAIN_VARIANT(t), complete);
+
+  /* Determine the qualifiers that should be added by the IDREF.  */
+  *qc = CP_TYPE_CONST_P (t);
+  *qv = CP_TYPE_VOLATILE_P (t);
+  *qr = CP_TYPE_RESTRICT_P (t);
+
+  if (TYPE_NAME (t))
+    {
+    /* This type is named by a typedef.  */
+    int id2 = xml_add_node (xdi, TYPE_NAME(t), complete);
+    if(id2)
+      {
+      /* The IDREF should reference the typedef.  */
+      id = id2;
+
+      /* The IDREF does not need to include cv-qualifiers that
+         are contained in the typedef.  */
+      if(*qc && CP_TYPE_CONST_P (TREE_TYPE (TYPE_NAME (t))))
+        {
+        *qc = 0;
+        }
+      if(*qv && CP_TYPE_VOLATILE_P (TREE_TYPE (TYPE_NAME (t))))
+        {
+        *qv = 0;
+        }
+      if(*qr && CP_TYPE_RESTRICT_P (TREE_TYPE (TYPE_NAME (t))))
+        {
+        *qr = 0;
+        }
+      }
+    }
+  return id;
+}
+
 /* Print an attribute value referencing the given type.  If the type
    has top-level cv-qualifiers, they are appended to the type's id as
    single characters (c=const, v=volatile, r=restrict), and a
@@ -516,15 +562,18 @@ static void
 xml_print_type_idref (xml_dump_info_p xdi, tree t, int complete)
 {
   /* Add the unqualified node.  */
-  int id = xml_add_node (xdi, TYPE_MAIN_VARIANT(t), complete);
+  int qc = 0;
+  int qv = 0;
+  int qr = 0;
+  int id = xml_get_idref(xdi, t, complete, &qc, &qv, &qr);
 
   /* Check cv-qualificiation.  */
-  const char* c = CP_TYPE_CONST_P (t)?"c":"";
-  const char* v = CP_TYPE_VOLATILE_P (t)?"v":"";
-  const char* r = CP_TYPE_RESTRICT_P (t)?"r":"";
+  const char* c = qc? "c" : "";
+  const char* v = qv? "v" : "";
+  const char* r = qr? "r" : "";
 
   /* If there are any qualifiers, add the qualified node.  */
-  if(*c || *v || *r)
+  if(qc || qv || qr)
     {
     xml_add_node (xdi, t, complete);
     }
@@ -907,16 +956,12 @@ xml_output_argument (xml_dump_info_p xdi, tree pd, tree tl, int complete)
   if (pd && DECL_ARTIFICIAL (pd)) return;
 
   fprintf (xdi->file, "    <Argument");
-  if(pd && DECL_NAME (pd))
+
+  if (pd && DECL_NAME (pd))
     {
     xml_print_name_attribute (xdi, DECL_NAME (pd));
     }
-
-  if (pd && DECL_ARG_TYPE_AS_WRITTEN (pd))
-    {
-    xml_print_type_attribute (xdi, DECL_ARG_TYPE_AS_WRITTEN (pd), complete);
-    }
-  else if (pd && TREE_TYPE (pd))
+  if (pd && TREE_TYPE (pd))
     {
     xml_print_type_attribute (xdi, TREE_TYPE (pd), complete);
     }
@@ -1098,8 +1143,6 @@ xml_output_var_decl (xml_dump_info_p xdi, tree vd, xml_dump_node_p dn)
   fprintf (xdi->file, "  <Variable");
   xml_print_id_attribute (xdi, dn);
   xml_print_name_attribute (xdi, DECL_NAME (vd));
-  if(TYPE_NAME (type) && DECL_ORIGINAL_TYPE (TYPE_NAME (type)))
-    type = DECL_ORIGINAL_TYPE (TYPE_NAME (type));
   xml_print_type_attribute (xdi, type, dn->complete);
   xml_print_init_attribute (xdi, DECL_INITIAL (vd));
   xml_print_context_attribute (xdi, vd);
@@ -1469,10 +1512,14 @@ xml_output_cv_qualified_type (xml_dump_info_p xdi, tree t, xml_dump_node_p dn)
     {
     /* Ignore the real index of this node and use the index of the
        unqualified version of the node with the extra characters.  */
-    int id = xml_add_node (xdi, TYPE_MAIN_VARIANT(t), dn->complete);
-    const char* c = CP_TYPE_CONST_P (t)?"c":"";
-    const char* v = CP_TYPE_VOLATILE_P (t)?"v":"";
-    const char* r = CP_TYPE_RESTRICT_P (t)?"r":"";
+    int qc = 0;
+    int qv = 0;
+    int qr = 0;
+    int id = xml_get_idref(xdi, t, dn->complete, &qc, &qv, &qr);
+
+    const char* c = qc? "c" : "";
+    const char* v = qv? "v" : "";
+    const char* r = qr? "r" : "";
 
     /* Create a special CvQualifiedType element to hold top-level
        cv-qualifiers for a real type node. */
@@ -1480,18 +1527,18 @@ xml_output_cv_qualified_type (xml_dump_info_p xdi, tree t, xml_dump_node_p dn)
     fprintf (xdi->file, " id=\"_%d%s%s%s\"", id, c, v, r);
 
     /* Refer to the unqualified type.  */
-    xml_print_type_attribute (xdi, TYPE_MAIN_VARIANT(t), dn->complete);
+    fprintf (xdi->file, " type=\"_%d\"", id);
 
     /* Add the cv-qualification attributes. */
-    if (*c)
+    if (qc)
       {
       fprintf (xdi->file, " const=\"1\"");
       }
-    if (*v)
+    if (qv)
       {
       fprintf (xdi->file, " volatile=\"1\"");
       }
-    if (*r)
+    if (qr)
       {
       fprintf (xdi->file, " restrict=\"1\"");
       }
