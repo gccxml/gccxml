@@ -64,6 +64,11 @@ bool gxConfiguration::Configure(int argc, const char*const * argv)
     m_GCCXML_EXECUTABLE = m_ExecutableRoot+"/gccxml_cc1plus";
     }
   
+  gxSystemTools::ConvertToUnixSlashes(m_GCCXML_ROOT);
+  gxSystemTools::ConvertToUnixSlashes(m_GCCXML_EXECUTABLE);
+  gxSystemTools::ConvertToUnixSlashes(m_GCCXML_CONFIG);
+  gxSystemTools::ConvertToUnixSlashes(m_GCCXML_COMPILER);
+
   return true;
 }
 
@@ -154,7 +159,8 @@ void gxConfiguration::FindRoots(const char* argv0)
 {
   // Find our own executable's location.
   std::string av0 = argv0;
-  std::string::size_type pos = av0.find_last_of("/\\");
+  gxSystemTools::ConvertToUnixSlashes(av0);
+  std::string::size_type pos = av0.find_last_of("/");
   std::string selfPath;
   if(pos != std::string::npos)
     {
@@ -502,8 +508,34 @@ bool gxConfiguration::CheckFlags()
 //----------------------------------------------------------------------------
 bool gxConfiguration::FindFlags()
 {
-#if !defined(_WIN32) || defined(__CYGWIN__)
-  // If in a UNIX environment, use the gccxml_find_flags script.  
+#if defined(_WIN32) && !defined(__CYGWIN__)
+  // This is a Windows environment.  We must check the compiler name.
+  std::string compilerName = m_GCCXML_COMPILER;
+  compilerName = gxSystemTools::LowerCase(compilerName.c_str());
+  std::string::size_type pos = compilerName.find_last_of("/");
+  if(pos != std::string::npos)
+    {
+    compilerName = compilerName.substr(pos+1);
+    }
+  pos = compilerName.rfind(".exe");
+  if(pos != std::string::npos)
+    {
+    compilerName = compilerName.substr(0, pos);
+    }
+
+  // Dispatch to find compiler.
+  if(compilerName == "cl")
+    {
+    return this->FindFlagsMSVC6();
+    }
+  else
+    {
+    std::cerr << "Compiler \"" << m_GCCXML_COMPILER 
+              << "\" is not supported by GCC_XML.\n";
+    return false;
+    }
+#else
+  // This is a UNIX environment.  Use the gccxml_find_flags script.  
   std::string gccxmlFindFlags = m_GCCXML_ROOT+"/gccxml_find_flags";
   gccxmlFindFlags += " ";
   gccxmlFindFlags += m_GCCXML_COMPILER;
@@ -515,6 +547,7 @@ bool gxConfiguration::FindFlags()
     return false;
     }
   
+  // Remove newlines from the flags. 
   std::string::size_type pos = flags.find_first_of("\r\n");
   while(pos != std::string::npos)
     {
@@ -524,7 +557,36 @@ bool gxConfiguration::FindFlags()
   
   m_GCCXML_FLAGS = flags;
   return true;
-#else
-  return false;
 #endif
 }
+
+//----------------------------------------------------------------------------
+bool gxConfiguration::FindFlagsMSVC6()
+{
+  // The registry key to use when attempting to automatically find the
+  // MSVC include files.
+  const char* vcRegistry =
+    "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\DevStudio\\6.0\\Products\\Microsoft Visual C++;ProductDir";
+  std::string msvcPath;
+  if(!gxSystemTools::ReadRegistryValue(vcRegistry, msvcPath))
+    {
+    std::cerr << "Error finding MSVC 6.0 from registry.\n";
+    return false;
+    }
+  msvcPath += "/Include";
+  gxSystemTools::ConvertToUnixSlashes(msvcPath);
+  std::string vcIncludePath = m_GCCXML_ROOT+"/VcInclude";
+  gxSystemTools::ConvertToUnixSlashes(vcIncludePath);
+  
+  m_GCCXML_FLAGS =
+    "-quiet -o /dev/null -nostdinc -I- -w -fsyntax-only "
+    "-D__stdcall= -D__cdecl= -D_stdcall= -D_cdecl= -D__declspec(x)= "
+    "-D_inline=inline -D__uuidof(x)=IID() -D__int64='long long' "
+    "-D__cplusplus "
+    "-D_MSC_VER=1200 -D_MSC_EXTENSIONS "
+    "-D_WIN32 -D_M_IX86 -D_WCHAR_T_DEFINED "
+    "-DPASCAL= -DRPC_ENTRY= -DSHSTDAPI=HRESULT -DSHSTDAPI_(x)=x "
+    "-I\""+vcIncludePath+"\" -I\""+msvcPath+"\" ";
+  return true;
+}
+

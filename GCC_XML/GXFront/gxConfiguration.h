@@ -112,6 +112,7 @@ protected:
   
   // Find flags based on compiler setting.
   bool FindFlags();
+  bool FindFlagsMSVC6();
 };
 
 #endif
