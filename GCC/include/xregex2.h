@@ -518,6 +518,13 @@ extern int re_exec _RE_ARGS ((const char *));
 # endif
 #endif
 
+/* BEGIN GCC-XML MODIFICATIONS (2004/01/09 14:50:29) */
+/* Fix for building with Intel compiler.  */
+#if defined(__INTEL_COMPILER) && __INTEL_COMPILER <= 700
+# define __restrict
+#endif
+/* END GCC-XML MODIFICATIONS (2004/01/09 14:50:29) */
+
 /* GCC 2.95 and later have "__restrict"; C99 compilers have
    "restrict", and "configure" may have defined "restrict".  */
 #ifndef __restrict
