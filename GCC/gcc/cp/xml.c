@@ -1402,7 +1402,7 @@ xml_output_method_type (xml_dump_info_p xdi, tree t, xml_dump_node_p dn)
   /* Prepare to iterator through argument list.  */
   arg_type = TYPE_ARG_TYPES (t);
 
-  /* We need to find out if the implicity argument points to a CV
+  /* We need to find out if the implicit argument points to a CV
      qualified type. */
   this_type = TREE_TYPE(TREE_VALUE (arg_type));
   if (this_type)
@@ -1766,6 +1766,74 @@ xml_add_overload (xml_dump_info_p xdi, tree o, int complete)
   return 0;
 }
 
+/* Recursively search a type node for template parameters.  */
+static int
+xml_find_template_parm (tree t)
+{
+  if(!t)
+    {
+    return 0;
+    }
+
+  switch (TREE_CODE (t))
+    {
+    /* A vector of template arguments on a instantiation.  */
+    case TREE_VEC:
+      {
+      int i;
+      for(i=0; i < TREE_VEC_LENGTH (t); ++i)
+        {
+        if(xml_find_template_parm (TREE_VEC_ELT (t, i)))
+          {
+          return 1;
+          }
+        }
+      } break;
+
+    /* Template parameter types.  */
+    case TEMPLATE_TYPE_PARM: return 1;
+    case TEMPLATE_PARM_INDEX: return 1;
+
+    /* Types with nested types.  */
+    case METHOD_TYPE:
+    case FUNCTION_TYPE:
+      {
+      tree arg_type = TYPE_ARG_TYPES (t);
+      if(xml_find_template_parm (TREE_TYPE (t)))
+        {
+        return 1;
+        }
+      while (arg_type && (arg_type != void_list_node))
+        {
+        if(xml_find_template_parm (arg_type))
+          {
+          return 1;
+          }
+        arg_type = TREE_CHAIN (arg_type);
+        }
+      } break;
+    case UNION_TYPE: return xml_find_template_parm (CLASSTYPE_TI_ARGS (t));
+    case RECORD_TYPE: return xml_find_template_parm (CLASSTYPE_TI_ARGS (t));
+    case REFERENCE_TYPE: return xml_find_template_parm (TREE_TYPE (t));
+    case POINTER_TYPE: return xml_find_template_parm (TREE_TYPE (t));
+    case ARRAY_TYPE: return xml_find_template_parm (TREE_TYPE (t));
+    case OFFSET_TYPE: return xml_find_template_parm (TREE_TYPE (t));
+
+    /* Fundamental types have no nested types.  */
+    case BOOLEAN_TYPE: return 0;
+    case COMPLEX_TYPE: return 0;
+    case ENUMERAL_TYPE: return 0;
+    case INTEGER_TYPE: return 0;
+    case LANG_TYPE: return 0;
+    case REAL_TYPE: return 0;
+    case VOID_TYPE: return 0;
+    default:
+      fprintf(stderr, "xml_find_template_parm encountered unsupported type %s\n",
+              tree_code_name[TREE_CODE (t)]);
+    }
+  return 0;
+}
+
 /* Dump for a TEMPLATE_DECL.  The set of specializations (including
    instantiations) is dumped.  */
 static int
@@ -1801,8 +1869,7 @@ xml_add_template_decl (xml_dump_info_p xdi, tree td, int complete)
       {
       case TYPE_DECL:
         /* Add the instantiation only if it is real.  */
-        if (TREE_CODE(TREE_VEC_ELT(TYPE_TI_ARGS(TREE_TYPE(ts)), 0)) != TEMPLATE_TYPE_PARM &&
-            TREE_CODE(TREE_VEC_ELT(TYPE_TI_ARGS(TREE_TYPE(ts)), 0)) != TEMPLATE_PARM_INDEX)
+        if (!xml_find_template_parm (TYPE_TI_ARGS(TREE_TYPE(ts))))
           {
           xml_add_node (xdi, ts, complete);
           }
