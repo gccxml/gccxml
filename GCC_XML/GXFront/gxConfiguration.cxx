@@ -164,23 +164,42 @@ void gxConfiguration::FindRoots(const char* argv0)
     {
     selfPath = gxSystemTools::CollapseDirectory(".");
     }
-  
+  gxSystemTools::ConvertToUnixSlashes(selfPath);  
+
   // Use our own location as the executable root.
   m_ExecutableRoot = selfPath;
   
   // Find the data files.
   std::string sharePath = selfPath+"/../share/GCC_XML";
+   
+  // Make sure executable and self paths are represented the same way.
+  std::string ePath = gxSystemTools::CollapseDirectory(GCCXML_EXECUTABLE_DIR);
+  gxSystemTools::ConvertToUnixSlashes(ePath);
+  std::string sPath = selfPath;
+#if defined(_WIN32)
+  ePath = gxSystemTools::LowerCase(ePath.c_str());
+  sPath = gxSystemTools::LowerCase(sPath.c_str());
+#endif
   
   // If we are running from the build directory, use the source
   // directory as the data root.
-  if(selfPath == GCCXML_EXECUTABLE_DIR)
+  if(sPath == ePath)
     {
     m_DataRoot = GCCXML_SOURCE_DIR;
     }
+#if defined(_MSC_VER)
+  else if((sPath == (ePath+"/debug")) ||
+          (sPath == (ePath+"/release")) ||
+          (sPath == (ePath+"/relwithdebinfo")) ||
+          (sPath == (ePath+"/minsizerel")))
+    {
+    m_DataRoot = GCCXML_SOURCE_DIR;
+    }
+#endif
   else if(gxSystemTools::FileIsDirectory(sharePath.c_str()))
     {
     // The data files are in the share path next to the bin path.
-    m_DataRoot = sharePath;
+    m_DataRoot = gxSystemTools::CollapseDirectory(sharePath.c_str());
     }
   else
     {
@@ -188,6 +207,7 @@ void gxConfiguration::FindRoots(const char* argv0)
     // intallation.
     m_DataRoot = m_ExecutableRoot;
     }
+  gxSystemTools::ConvertToUnixSlashes(m_DataRoot);
 }
 
 //----------------------------------------------------------------------------
