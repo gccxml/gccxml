@@ -494,6 +494,19 @@ xml_print_name_attribute (xml_dump_info_p xdi, tree n)
   fprintf (xdi->file, " name=\"%s\"", name);
 }
 
+/* Print the XML attribute mangled="..." for the given node.  */
+static void
+xml_print_mangled_attribute (xml_dump_info_p xdi, tree n)
+{
+  if (DECL_NAME (n) &&
+      DECL_ASSEMBLER_NAME (n) &&
+      DECL_ASSEMBLER_NAME (n) != DECL_NAME (n))
+    {
+    const char* name = xml_get_encoded_string (DECL_ASSEMBLER_NAME (n));
+    fprintf (xdi->file, " mangled=\"%s\"", name);
+    }
+}
+
 /* Print an attribute value referencing the given type.  If the type
    has top-level cv-qualifiers, they are appended to the type's id as
    single characters (c=const, v=volatile, r=restrict), and a
@@ -838,6 +851,7 @@ xml_output_namespace_decl (xml_dump_info_p xdi, tree ns, xml_dump_node_p dn)
       fprintf (xdi->file, "\"");
       }
 
+    xml_print_mangled_attribute (xdi, ns);
     fprintf (xdi->file, "/>\n");
     }
   /* If it is a namespace alias, just indicate that.  */
@@ -856,6 +870,7 @@ xml_output_namespace_decl (xml_dump_info_p xdi, tree ns, xml_dump_node_p dn)
     xml_print_context_attribute (xdi, ns);
     fprintf (xdi->file, " namespace=\"_%d\"",
              xml_add_node (xdi, real_ns, 0));
+    xml_print_mangled_attribute (xdi, ns);
     fprintf (xdi->file, "/>\n");
     }
 }
@@ -1026,6 +1041,7 @@ xml_output_function_decl (xml_dump_info_p xdi, tree fd, xml_dump_node_p dn)
   if(do_artificial)  xml_print_artificial_attribute (xdi, fd);
   xml_print_throw_attribute (xdi, TREE_TYPE (fd), dn->complete);
   xml_print_context_attribute (xdi, fd);
+  xml_print_mangled_attribute (xdi, fd);
   xml_print_location_attribute (xdi, fd);
   if(body)
     {
@@ -1088,6 +1104,7 @@ xml_output_var_decl (xml_dump_info_p xdi, tree vd, xml_dump_node_p dn)
   xml_print_init_attribute (xdi, DECL_INITIAL (vd));
   xml_print_context_attribute (xdi, vd);
   xml_print_access_attribute (xdi, vd);
+  xml_print_mangled_attribute (xdi, vd);
   xml_print_location_attribute (xdi, vd);
   xml_print_extern_attribute (xdi, vd);
   xml_print_artificial_attribute (xdi, vd);
@@ -1107,6 +1124,7 @@ xml_output_field_decl (xml_dump_info_p xdi, tree fd, xml_dump_node_p dn)
   /* TODO: handle bit field case.  */
   xml_print_type_attribute (xdi, TREE_TYPE (fd), dn->complete);
   xml_print_context_attribute (xdi, fd);
+  xml_print_mangled_attribute (xdi, fd);
   xml_print_location_attribute (xdi, fd);
   xml_print_attributes_attribute (xdi, GCC_XML_DECL_ATTRIBUTES(fd), 0);
   fprintf (xdi->file, "/>\n");
@@ -1136,6 +1154,7 @@ xml_output_record_type (xml_dump_info_p xdi, tree rt, xml_dump_node_p dn)
   xml_print_access_attribute (xdi, TYPE_NAME (rt));
   xml_print_abstract_attribute (xdi, rt);
   xml_print_incomplete_attribute (xdi, rt);
+  xml_print_mangled_attribute (xdi, TYPE_NAME (rt));
   xml_print_location_attribute (xdi, TYPE_NAME (rt));
   xml_print_attributes_attribute (xdi, TYPE_ATTRIBUTES(rt), 0);
 
@@ -1240,8 +1259,6 @@ xml_output_fundamental_type (xml_dump_info_p xdi, tree t, xml_dump_node_p dn)
 {
   fprintf (xdi->file, "  <FundamentalType");
   xml_print_id_attribute (xdi, dn);
-  /*xml_print_name_attribute (
-    xdi, DECL_NAME (TYPE_NAME (TYPE_MAIN_VARIANT (t))));*/
   xml_print_name_attribute (xdi, DECL_NAME (TYPE_NAME (t)));
   xml_print_attributes_attribute (xdi, TYPE_ATTRIBUTES(t), 0);
   fprintf (xdi->file, "/>\n");
