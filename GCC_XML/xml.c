@@ -1016,14 +1016,14 @@ xml_output_record_type (xml_dump_info_p xdi, tree rt, xml_dump_node_p dn)
       tree base_binfo = TREE_VEC_ELT (binfos, i);
       if (base_binfo)
         {
-        /* Output this base class.  */
+        /* Output this base class.  Default is public access.  */
         const char* access = 0;
-        if (TREE_VIA_PUBLIC (base_binfo)) { access = "public"; }
-        else if (TREE_VIA_PROTECTED (base_binfo)) { access = "protected"; }
-        else { access="private"; }
-
-        fprintf (xdi->file, "%s:_%d ", access,
-                 xml_add_node (xdi, BINFO_TYPE (base_binfo), 1));        
+        if (TREE_VIA_PUBLIC (base_binfo)) { access = ""; }
+        else if (TREE_VIA_PROTECTED (base_binfo)) { access = "protected:"; }
+        else { access="private:"; }
+        
+        fprintf (xdi->file, "%s_%d ", access,
+                 xml_add_node (xdi, BINFO_TYPE (base_binfo), 1));
         }
       }
     fprintf (xdi->file, "\"");
