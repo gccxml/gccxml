@@ -1448,9 +1448,6 @@ xml_output_cv_qualified_type (xml_dump_info_p xdi, tree t, xml_dump_node_p dn)
     }
   else
     {
-    /* Create a special CvQualifiedType element to hold top-level
-       cv-qualifiers for a real type node. */
-    fprintf (xdi->file, "  <CvQualifiedType");
 
     /* Ignore the real index of this node and use the index of the
        unqualified version of the node with the extra characters.  */
@@ -1458,6 +1455,10 @@ xml_output_cv_qualified_type (xml_dump_info_p xdi, tree t, xml_dump_node_p dn)
     const char* c = CP_TYPE_CONST_P (t)?"c":"";
     const char* v = CP_TYPE_VOLATILE_P (t)?"v":"";
     const char* r = CP_TYPE_RESTRICT_P (t)?"r":"";
+
+    /* Create a special CvQualifiedType element to hold top-level
+       cv-qualifiers for a real type node. */
+    fprintf (xdi->file, "  <CvQualifiedType");
     fprintf (xdi->file, " id=\"_%d%s%s%s\"", id, c, v, r);
 
     /* Refer to the unqualified type.  */
