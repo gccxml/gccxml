@@ -349,7 +349,6 @@ void gxDocumentationPrintHelpHTMLSection(std::ostream& os,
       }
     else
       {
-      os << "<p>\n";
       gxDocumentationPrintHTMLEscapes(os, op->brief);
       os << "\n";
       ++op;
