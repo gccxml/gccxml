@@ -1159,10 +1159,11 @@ xml_output_enumeral_type (xml_dump_info_p xdi, tree t, xml_dump_node_p dn)
   fprintf (xdi->file, "  <Enumeration");
   xml_print_id_attribute(xdi, dn);
   xml_print_name_attribute (xdi, DECL_NAME (TYPE_NAME (t)));
+  xml_print_context_attribute (xdi, TYPE_NAME (t));
   xml_print_access_attribute (xdi, TYPE_NAME (t));
   xml_print_location_attribute (xdi, TYPE_NAME (t));
   fprintf (xdi->file, ">\n");
-
+  
   /* Output the list of possible values for the enumeration type.  */
   for (tv = TYPE_VALUES (t); tv ; tv = TREE_CHAIN (tv))
     {
