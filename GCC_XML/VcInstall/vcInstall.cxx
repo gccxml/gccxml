@@ -11,29 +11,26 @@
 #include <direct.h>
 
 bool readRegistryValue(const char *key, std::string& result);
-bool copyTextFile(const char* source, const char* destination);
+bool copyFile(const char* source, const char* destination);
 
 int main(int argc, char* argv[])
 {
-  std::string patchFile = argv[1];
-  std::string destPath = argv[2];
-  
-  // Use an extra enclosing scope to make sure all destructors are called
-  // before the exec occurs to run the patch program.
-  {
-  // The registry key to use when attempting to automatically find the
-  // MSVC include files.
-  const char* vcRegistry =
-    "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\DevStudio\\6.0\\Products\\Microsoft Visual C++;ProductDir";
-
   if(argc < 3)
     {
     std::cout << "Usage:" << std::endl
               << "  " << argv[0] << " patch_file destination_path [source_path]" << std::endl
-	      << "The source_path will be guessed from the registry if it is not given." << std::endl
-	      << "All arguments should be given as full paths." << std::endl;
+              << "The source_path will be guessed from the registry if it is not given." << std::endl
+              << "All arguments should be given as full paths." << std::endl;
     return 0;
     }
+
+  std::string patchFile = argv[1];
+  std::string destPath = argv[2];
+  
+  // The registry key to use when attempting to automatically find the
+  // MSVC include files.
+  const char* vcRegistry =
+    "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\DevStudio\\6.0\\Products\\Microsoft Visual C++;ProductDir";
   
   std::string sourcePath;
 
@@ -74,10 +71,28 @@ int main(int argc, char* argv[])
       source += "/"+line.substr(7);
       std::string dest = destPath.c_str();
       dest += "/"+line.substr(7);
-      copyTextFile(source.c_str(), dest.c_str());
+      copyFile(source.c_str(), dest.c_str());
       }
     }
-  }
+
+  std::string msvcFlagsFile = destPath+"/FLAGS.txt";
+  std::ofstream msvcFlags(msvcFlagsFile.c_str());
+  if(msvcFlags)
+    {
+      msvcFlags << "-quiet -o /dev/null -nostdinc -fsyntax-only "
+                << "-D_inline=inline -D__stdcall= -D__int64='long long' "
+                << "-D_M_IX86 -DRPC_ENTRY= -DSHSTDAPI=HRESULT "
+                << "-DSHSTDAPI_(x)=x -D_WIN32 -D_WCHAR_T_DEFINED "
+                << "-DPASCAL= -D__cdecl= -Wno-ctor-dtor-privacy";
+      msvcFlags << " -I\"" << destPath.c_str() << "\""
+                << " -I\"" << sourcePath.c_str() << "\"";
+      msvcFlags << std::endl;
+    }
+  else
+    {
+    std::cerr << "Error opening MSVC flags FLAGS readme file, skipping: "
+              << msvcFlagsFile.c_str() << std::endl;
+    }
   
   destPath = "\""+destPath+"\"";
   patchFile = "\""+patchFile+"\"";
@@ -179,25 +194,52 @@ bool readRegistryValue(const char *key, std::string& result)
 
 
 /**
- * Copy a text file.  This is a hack implementation.
+ * Copy a file named by "source" to the file named by "destination".  This
+ * implementation makes correct use of the C++ standard file streams to
+ * perfectly copy any file with lines of any length (even binary files).
  */
-bool copyTextFile(const char* source,
-                  const char* destination)
+bool copyFile(const char* source,
+              const char* destination)
 {
-  std::ifstream fin(source);
+  // Buffer length is only for block size.  Any file would still be copied
+  // correctly if this were as small as 2.
+  const int buffer_length = 4096;
+  char buffer[buffer_length];
+  std::ifstream fin(source,
+                    std::ios::binary | std::ios::in);
   if(!fin)
     {
     return false;
     }
-  char buf[4096];
-  std::ofstream fout(destination);
-  if(!fout )
+  std::ofstream fout(destination,
+                     std::ios::binary | std::ios::out | std::ios::trunc);
+  if(!fout)
     {
     return false;
-    }  
-  for(fin.getline(buf, 4096); !fin.eof(); fin.getline(buf, 4096))
+    }
+  while(fin.getline(buffer, buffer_length, '\n') || fin.gcount())
     {
-    fout << buf << std::endl;
+    std::streamsize count = fin.gcount();
+    if(fin.eof())
+      {
+      // Final line, but with no newline.
+      fout.write(buffer, count);
+      }
+    else if(fin.fail())
+      {
+      // Part of a line longer than our buffer, clear the fail bit of
+      // the stream so that we can continue.
+      fin.clear(fin.rdstate() & ~std::ios::failbit);
+      fout.write(buffer, count);
+      }
+    else
+      {
+      // Line on which a newline was encountered.  It was read from
+      // the stream, but not stored.
+      --count;
+      fout.write(buffer, count);
+      fout << '\n';
+      }
     }
   return true;
 }
