@@ -65,6 +65,11 @@ void gxFlagsParser::AddFlag(const std::string& flag)
     m_Flags.push_back("-o");
     m_Flags.push_back("/dev/null");
     }
+  else if(tmp == "-o NUL")
+    {
+    m_Flags.push_back("-o");
+    m_Flags.push_back("NUL");
+    }
   else
     {
     m_Flags.push_back(tmp);

@@ -809,7 +809,7 @@ bool gxConfiguration::FindFlagsMSVC6()
     }
   
   m_GCCXML_FLAGS =
-    "-quiet -o /dev/null -nostdinc -I- -w -fsyntax-only "
+    "-quiet -o NUL -nostdinc -I- -w -fsyntax-only "
     "-D__stdcall= -D__cdecl= -D_stdcall= -D_cdecl= -D__declspec(x)= "
     "-D_inline=inline -D__uuidof(x)=IID() -D__int64='long long' "
     "-D__cplusplus "
@@ -857,7 +857,7 @@ bool gxConfiguration::FindFlagsMSVC7()
     }
   
   m_GCCXML_FLAGS =
-    "-quiet -o /dev/null -nostdinc -I- -w -fsyntax-only "
+    "-quiet -o NUL -nostdinc -I- -w -fsyntax-only "
     "-D__stdcall= -D__cdecl= -D_stdcall= -D_cdecl= -D__cplusplus "
     "-D_inline=inline -D__forceinline=__inline "
     "-D_MSC_VER=1300 -D_MSC_EXTENSIONS -D_WIN32 -D_M_IX86 "
