@@ -36,7 +36,7 @@ SELFPATH=`cd $SELFPATH ; pwd`
 MAJOR_VERSION=`
 ${CXX} --version |
 sed 's/[^0-9.]*//g' |
-awk -F "\." '{ print $1 }'`
+awk -F "." '{ print $1 }'`
 
 # For GCC versions before 3, some special options are needed.
 if test $MAJOR_VERSION -lt 3 ; then
