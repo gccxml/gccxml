@@ -28,16 +28,16 @@ Boston, MA 02111-1307, USA.  */
 #include "splay-tree.h"
 #include "varray.h"
 
-/* BEGIN GCC-XML MODIFICATIONS (2003/11/21 21:29:54) */
+/* BEGIN GCC-XML MODIFICATIONS (2003/11/24 01:34:02) */
 /* This source has been modified to build with more than just GCC.  */
 #if 0
-/* END GCC-XML MODIFICATIONS (2003/11/21 21:29:54) */
+/* END GCC-XML MODIFICATIONS (2003/11/24 01:34:02) */
 #ifndef __GNUC__
 #error "You should be using 'make bootstrap' -- see installation instructions"
 #endif
-/* BEGIN GCC-XML MODIFICATIONS (2003/11/21 21:29:54) */
+/* BEGIN GCC-XML MODIFICATIONS (2003/11/24 01:34:02) */
 #endif
-/* END GCC-XML MODIFICATIONS (2003/11/21 21:29:54) */
+/* END GCC-XML MODIFICATIONS (2003/11/24 01:34:02) */
 
 #include "c-common.h"
 
@@ -1613,10 +1613,10 @@ struct lang_type GTY(())
    : (void)(TREE_LANG_FLAG_0 (NODE) = 0))
 
 /* Nonzero means that this class is on a path leading to a new vtable.  */
-/* BEGIN GCC-XML MODIFICATIONS (2003/11/21 21:29:54) */
+/* BEGIN GCC-XML MODIFICATIONS (2003/11/24 01:34:02) */
 #define BINFO_VTABLE_PATH_MARKED(NODE)          \
   (TREE_VIA_VIRTUAL (NODE)                      \
-   ? (CLASSTYPE_MARKED3 (BINFO_TYPE (NODE)), 0) \
+   ? CLASSTYPE_MARKED3 (BINFO_TYPE (NODE))      \
    : TREE_LANG_FLAG_3 (NODE))
 #define SET_BINFO_VTABLE_PATH_MARKED(NODE)      \
   (TREE_VIA_VIRTUAL(NODE)                       \
@@ -1626,7 +1626,7 @@ struct lang_type GTY(())
   (TREE_VIA_VIRTUAL (NODE)                      \
    ? (CLEAR_CLASSTYPE_MARKED3 (BINFO_TYPE (NODE)), 0) \
    : (TREE_LANG_FLAG_3 (NODE) = 0))
-/* END GCC-XML MODIFICATIONS (2003/11/21 21:29:54) */
+/* END GCC-XML MODIFICATIONS (2003/11/24 01:34:02) */
 
 /* Nonzero means B (a BINFO) has its own vtable.  Under the old ABI,
    secondary vtables are sometimes shared.  Any copies will not have
@@ -3806,9 +3806,9 @@ extern tree start_decl                          PARAMS ((tree, tree, int, tree, 
 extern void start_decl_1                        PARAMS ((tree));
 extern void cp_finish_decl                      PARAMS ((tree, tree, tree, int));
 extern void finish_decl                         PARAMS ((tree, tree, tree));
-/* BEGIN GCC-XML MODIFICATIONS (2003/11/21 21:29:54) */
+/* BEGIN GCC-XML MODIFICATIONS (2003/11/24 01:34:02) */
 extern int maybe_inject_for_scope_var           PARAMS ((tree));
-/* END GCC-XML MODIFICATIONS (2003/11/21 21:29:54) */
+/* END GCC-XML MODIFICATIONS (2003/11/24 01:34:02) */
 extern tree start_handler_parms                 PARAMS ((tree, tree));
 extern int complete_array_type                  PARAMS ((tree, tree, int));
 extern tree build_ptrmemfunc_type               PARAMS ((tree));
@@ -3861,9 +3861,9 @@ extern int walk_namespaces                      PARAMS ((walk_namespaces_fn,
                                                        void *));
 extern int wrapup_globals_for_namespace         PARAMS ((tree, void *));
 extern tree cp_namespace_decls                  PARAMS ((tree));
-/* BEGIN GCC-XML MODIFICATIONS (2003/11/21 21:29:54) */
+/* BEGIN GCC-XML MODIFICATIONS (2003/11/24 01:34:02) */
 extern tree cp_namespace_namespaces             PARAMS ((tree));
-/* END GCC-XML MODIFICATIONS (2003/11/21 21:29:54) */
+/* END GCC-XML MODIFICATIONS (2003/11/24 01:34:02) */
 extern tree create_implicit_typedef             PARAMS ((tree, tree));
 extern tree maybe_push_decl                     PARAMS ((tree));
 extern tree build_target_expr_with_type         PARAMS ((tree, tree));
@@ -4503,7 +4503,7 @@ extern tree mangle_ref_init_variable            PARAMS ((tree));
 /* in dump.c */
 extern int cp_dump_tree                         PARAMS ((void *, tree));
 
-/* BEGIN GCC-XML MODIFICATIONS (2003/11/21 21:29:54) */
+/* BEGIN GCC-XML MODIFICATIONS (2003/11/24 01:34:02) */
 /* Filename for xml dump of translation unit.  */
 extern const char* flag_xml;
 
@@ -4519,7 +4519,7 @@ extern const char* flag_xml_start;
 
 /* in xml.c */
 extern void do_xml_output                       PARAMS ((const char *));
-/* END GCC-XML MODIFICATIONS (2003/11/21 21:29:54) */
+/* END GCC-XML MODIFICATIONS (2003/11/24 01:34:02) */
 
 /* -- end of C++ */
 
