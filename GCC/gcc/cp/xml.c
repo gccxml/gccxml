@@ -74,7 +74,7 @@
 # define XML_PRE_3_4_TREE_VIA_PUBLIC
 #endif
 
-#define GCC_XML_C_VERSION "$Revision: 1.90 $"
+#define GCC_XML_C_VERSION "$Revision: 1.91 $"
 
 /* A "dump node" corresponding to a particular tree node.  */
 typedef struct xml_dump_node
@@ -681,8 +681,8 @@ xml_print_size_attribute (xml_dump_info_p xdi, tree t)
   tree size_tree = TYPE_SIZE (t);
   if (size_tree && host_integerp (size_tree, 1))
     {
-    unsigned int size = tree_low_cst (size_tree, 1);
-    fprintf (xdi->file, " size=\"%u\"", size);
+    unsigned HOST_WIDE_INT size = tree_low_cst (size_tree, 1);
+    fprintf (xdi->file, " size=\"" HOST_WIDE_INT_PRINT_UNSIGNED "\"", size);
     }
 }
 
@@ -704,7 +704,8 @@ xml_print_offset_attribute (xml_dump_info_p xdi, tree d)
     {
     unsigned HOST_WIDE_INT bit_ofs = tree_low_cst (tree_bit_ofs, 1);
     unsigned HOST_WIDE_INT byte_ofs = tree_low_cst (tree_byte_ofs, 1);
-    fprintf(xdi->file, " offset=\"%u\"", byte_ofs * 8 + bit_ofs);
+    fprintf(xdi->file, " offset=\"" HOST_WIDE_INT_PRINT_UNSIGNED "\"",
+            byte_ofs * 8 + bit_ofs);
     }
 }
 
@@ -989,11 +990,7 @@ xml_print_bits_attribute (xml_dump_info_p xdi, tree d)
     if (size_tree && host_integerp (size_tree, 1))
       {
       unsigned HOST_WIDE_INT bits = tree_low_cst(size_tree, 1);
-      fprintf (xdi->file, " bits=\"%u\"", bits);
-      }
-    else
-      {
-      fprintf (xdi->file, " bits=\"0\"");
+      fprintf (xdi->file, " bits=\"" HOST_WIDE_INT_PRINT_UNSIGNED "\"", bits);
       }
     }
 }
