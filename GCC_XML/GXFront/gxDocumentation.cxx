@@ -61,8 +61,9 @@ const gxDocumentationEntry gxDocumentationCompilers[] =
   {0, "GCC-XML can simulate any of the following compilers:", 0},
   {"GCC", "Versions 3.3.x, 3.2.x, 3.1.x, 3.0.x, and 2.95.x", 0},
   {"SGI MIPSpro", "Version 7.3x", 0},
-  {"Visual C++", "Versions 7 and 6 (sp5)", 0},
-  {"Intel C++", "Version 5.x (plugin to Visual Studio 6)", 0},
+  {"Visual C++", "Versions 7.1, 7.0, and 6 (sp5)", 0},
+  {"Intel C++", "Versions 7.0 and 7.1 for Linux", 0},
+  {"Borland C++", "Version 5.5.x for Windows", 0}
   {0,
    "Advanced users can simulate other compilers by manually configuring "
    "the GCCXML_FLAGS setting.  Contact the mailing list for help.", 0},
