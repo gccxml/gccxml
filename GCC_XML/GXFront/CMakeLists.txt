@@ -46,3 +46,56 @@ IF(NOT UNIX)
 
   ADD_DEPENDENCIES(gccxml vcInstallPatch)
 ENDIF(NOT UNIX)
+
+#-----------------------------------------------------------------------------
+# Generate documentation.
+SET(CMD_DIR ${GCCXML_EXECUTABLE_DIR}/${CMAKE_CFG_INTDIR})
+IF(WIN32)
+  SET(CMD_EXT ".exe")
+ELSE(WIN32)
+  SET(CMD_EXT "")
+ENDIF(WIN32)
+SET(CMD ${CMD_DIR}/gccxml${CMD_EXE})
+
+MAKE_DIRECTORY(${GCCXML_EXECUTABLE_DIR}/doc)
+
+ADD_CUSTOM_TARGET(documentation ALL DEPENDS
+  ${GCCXML_EXECUTABLE_DIR}/doc/gccxml.1
+  ${GCCXML_EXECUTABLE_DIR}/doc/gccxml.txt
+  ${GCCXML_EXECUTABLE_DIR}/doc/gccxml.html
+  ${GCCXML_EXECUTABLE_DIR}/doc/Copyright.txt)
+ADD_DEPENDENCIES(documentation gccxml)
+
+ADD_CUSTOM_COMMAND(OUTPUT ${GCCXML_EXECUTABLE_DIR}/doc/gccxml.1
+  COMMAND ${CMD}
+  ARGS --man > ${GCCXML_EXECUTABLE_DIR}/doc/gccxml.1
+  DEPENDS ${CMD}
+  )
+
+ADD_CUSTOM_COMMAND(OUTPUT ${GCCXML_EXECUTABLE_DIR}/doc/gccxml.txt
+  COMMAND ${CMD}
+  ARGS --help > ${GCCXML_EXECUTABLE_DIR}/doc/gccxml.txt
+  DEPENDS ${CMD}
+  )
+
+ADD_CUSTOM_COMMAND(OUTPUT ${GCCXML_EXECUTABLE_DIR}/doc/gccxml.html
+  COMMAND ${CMD}
+  ARGS --help-html > ${GCCXML_EXECUTABLE_DIR}/doc/gccxml.html
+  DEPENDS ${CMD}
+  )
+
+ADD_CUSTOM_COMMAND(OUTPUT ${GCCXML_EXECUTABLE_DIR}/doc/Copyright.txt
+  COMMAND ${CMD}
+  ARGS --copyright > ${GCCXML_EXECUTABLE_DIR}/doc/Copyright.txt
+  DEPENDS ${CMD}
+  )
+
+IF(UNIX)
+  INSTALL_TARGETS(${GCCXML_INSTALL_ROOT}/bin gccxml)
+  INSTALL_FILES(${GCCXML_INSTALL_ROOT}${GCCXML_MAN_DIR}/man1 FILES
+    ${GCCXML_EXECUTABLE_DIR}/doc/gccxml.1)
+  INSTALL_FILES(${GCCXML_INSTALL_ROOT}${GCCXML_DOC_DIR} FILES
+    ${GCCXML_EXECUTABLE_DIR}/doc/gccxml.txt
+    ${GCCXML_EXECUTABLE_DIR}/doc/gccxml.html
+    ${GCCXML_EXECUTABLE_DIR}/doc/Copyright.txt)
+ENDIF(UNIX)

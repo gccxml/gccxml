@@ -73,9 +73,6 @@ IF(UNIX)
 
   # Installation rules for UNIX.
   SET(GCCXML_ROOT ${GCCXML_SOURCE_DIR}/Support)
-  INSTALL_TARGETS(${GCCXML_INSTALL_ROOT}/bin gccxml)
-  INSTALL_FILES(${GCCXML_INSTALL_ROOT}${GCCXML_MAN_DIR}/man1 .1 gccxml)
-  INSTALL_FILES(${GCCXML_INSTALL_ROOT}${GCCXML_DOC_DIR} .txt Copyright)
   SUBDIRS (Support)
 ELSE(UNIX)
   # Include file patch program for Windows.
