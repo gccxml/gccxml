@@ -74,7 +74,7 @@
 # define XML_PRE_3_4_TREE_VIA_PUBLIC
 #endif
 
-#define GCC_XML_C_VERSION "$Revision: 1.91 $"
+#define GCC_XML_C_VERSION "$Revision: 1.92 $"
 
 /* A "dump node" corresponding to a particular tree node.  */
 typedef struct xml_dump_node
@@ -1793,6 +1793,14 @@ xml_output_cv_qualified_type (xml_dump_info_p xdi, tree t, xml_dump_node_p dn)
     const char* c = qc? "c" : "";
     const char* v = qv? "v" : "";
     const char* r = qr? "r" : "";
+
+    /* If for some reason there are no cv-qualifiers then just do not
+       output the type.  Any reference to it will skip to the
+       unqualified type anyway.  */
+    if(!(qc||qv||qr))
+      {
+      return;
+      }
 
     /* Create a special CvQualifiedType element to hold top-level
        cv-qualifiers for a real type node. */
