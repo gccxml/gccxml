@@ -12,28 +12,28 @@ diff -r1.77 Make-lang.in
 Index: cp-tree.h
 ===================================================================
 RCS file: /cvs/gcc/egcs/gcc/cp/cp-tree.h,v
-retrieving revision 1.572
-diff -r1.572 cp-tree.h
+retrieving revision 1.575
+diff -r1.575 cp-tree.h
 1160a1161,1164
 > /* Filename for xml dump of translation unit.  */
 > 
 > extern const char* flag_xml;
 > 
-4551a4556,4558
+4546a4551,4553
 > 
 > /* in xml.c */
 > extern void do_xml_output                       PARAMS((const char *));
 Index: decl2.c
 ===================================================================
 RCS file: /cvs/gcc/egcs/gcc/cp/decl2.c,v
-retrieving revision 1.437
-diff -r1.437 decl2.c
-464a465,468
+retrieving revision 1.438
+diff -r1.438 decl2.c
+459a460,463
 > /* Filename for xml dump of translation unit.  */
 > 
 > const char* flag_xml = 0;
 > 
-633a638,645
+628a633,640
 > 	}
 >       else if ((option_value
 >                 = skip_leading_substring (p, "xml=")))
