@@ -1675,7 +1675,7 @@ xml_output_argument (FILE* file, unsigned long indent, tree pd, tree tl)
   print_argument_begin_tag (file, indent, pd);
 
   /* Output something for DECL_ARG_TYPE (pd)  ??  */
-  if (DECL_ARG_TYPE_AS_WRITTEN (pd))
+  if (pd && DECL_ARG_TYPE_AS_WRITTEN (pd))
     xml_output_type (file, indent+XML_NESTED_INDENT,
                      DECL_ARG_TYPE_AS_WRITTEN (pd));
   else
