@@ -102,6 +102,9 @@ protected:
   bool m_CopyrightFlag;
   bool m_HelpHTMLFlag;
   
+  // Bool whether executable is running in its build tree.
+  bool m_RunningInBuildTree;
+  
   // Find executable and data locations of GCC-XML.
   void FindRoots(const char* argv0);
   
@@ -132,6 +135,7 @@ protected:
   bool FindFlagsMSVC6();
   bool FindFlagsMSVC7();
   bool FindFlagsMSVC71();
+  bool FindFlagsBCC55(const char* inBcc32);
 };
 
 #endif

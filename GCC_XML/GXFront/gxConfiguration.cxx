@@ -36,6 +36,7 @@ gxConfiguration::gxConfiguration()
   m_CopyrightFlag = false;
   m_HelpHTMLFlag = false;
   m_HaveGCCXML_CXXFLAGS = false;
+  m_RunningInBuildTree = false;
 }
 
 //----------------------------------------------------------------------------
@@ -292,6 +293,7 @@ void gxConfiguration::FindRoots(const char* argv0)
   if(sPath == ePath)
     {
     m_DataRoot = GCCXML_SOURCE_DIR "/Support";
+    m_RunningInBuildTree = true;
     }
   else if(gxSystemTools::FileIsDirectory(sharePath.c_str()))
     {
@@ -822,6 +824,33 @@ bool gxConfiguration::FindFlags()
       return false;
       }
     }
+  else if(compilerName == "bcc32")
+    {
+    // Compiler must be in the path.  Find it.
+    std::string bcc32 = gxSystemTools::FindProgram("bcc32");
+    if(bcc32.length() > 0)
+      {
+      // Check if the compiler location gives its version.
+      if((bcc32.find("BCC55/") != bcc32.npos) ||
+         (bcc32.find("Bcc55/") != bcc32.npos) ||
+         (bcc32.find("bcc55/") != bcc32.npos))
+        {
+        return this->FindFlagsBCC55(bcc32.c_str());
+        }
+      
+      // Couldn't tell from program location.  Try running it.
+      std::string output;
+      int retVal=0;
+      if(gxSystemTools::RunCommand("bcc32", output, retVal) && (retVal == 0))
+        {
+        // The compiler ran.  Get version from output.
+        if(output.find("Borland C++ 5.5") != std::string::npos)
+          {
+          return this->FindFlagsBCC55(bcc32.c_str());
+          }
+        }
+      }
+    }
   
   // Didn't find supported compiler.
   std::cerr << "Compiler \"" << m_GCCXML_COMPILER 
@@ -987,5 +1016,59 @@ bool gxConfiguration::FindFlagsMSVC71()
     "-I\""+vcIncludePath2+"\" "
     "-I\""+msvcPath1+"\" "
     "-I\""+msvcPath2+"\" ";
+  return true;
+}
+
+//----------------------------------------------------------------------------
+bool gxConfiguration::FindFlagsBCC55(const char* inBcc32)
+{
+  // Find the support include directory.
+  std::string include2 = m_GCCXML_ROOT+"/Borland/5.5";
+  if(!gxSystemTools::FileIsDirectory(include2.c_str()))
+    {
+    // If we are running in the build tree, we can use the support
+    // directory from the source tree.
+    if(m_RunningInBuildTree)
+      {
+      include2 = GCCXML_SOURCE_DIR "/Support/Borland/5.5";
+      }
+    else
+      {
+      std::cerr << "Borland/5.5 support directory is not available.\n";
+      std::cerr << "Checked \"" << include2.c_str() << "\".\n";
+      return false;
+      }
+    }
+  std::string include1 = include2;
+  include1 += "/Wrappers";
+  
+  // Find the compiler's include directory.
+  std::string include3 = inBcc32;
+  include3 = include3.substr(0, include3.rfind('/'));
+  include3 = include3.substr(0, include3.rfind('/'));
+  include3 += "/Include";
+  
+  if(!gxSystemTools::FileIsDirectory(include3.c_str()))
+    {
+    std::cerr << "Borland C++ 5.5 include directory cannot be found.\n";
+    std::cerr << "Checked \"" << include3.c_str()
+              << "\" because it is the standard location relative to the "
+              << "executable, which is located at \""
+              << inBcc32 << "\".\n";
+    return false;
+    }
+  
+  m_GCCXML_FLAGS =
+    "-D__stdcall= -D__cdecl= -D_stdcall= -D_cdecl= -D__cplusplus=1 "
+    "-D_inline=inline -D__forceinline=__inline "
+    "-D__rtti= -D_WIN32=1 -D__WIN32__=1 -D_M_IX86 "
+    "-D_WCHAR_T_DEFINED -DPASCAL= -DRPC_ENTRY= -DSHSTDAPI=HRESULT "
+    "-D__declspec(x)= -D__uuidof(x)=IID() -DSHSTDAPI_(x)=x "
+    "-D__w64= \"-D__int64=long long\" "
+    "-D__TURBOC__=0x0551 -D__BORLANDC__=0x0551 "
+    "-U__STDC__ -U__PTRDIFF_TYPE__ -U__SIZE_TYPE__ "
+    "-I\""+include1+"\" "
+    "-I\""+include2+"\" "
+    "-I\""+include3+"\" ";
   return true;
 }
