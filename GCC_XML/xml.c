@@ -74,7 +74,7 @@
 # define XML_PRE_3_4_TREE_VIA_PUBLIC
 #endif
 
-#define GCC_XML_C_VERSION "$Revision: 1.96 $"
+#define GCC_XML_C_VERSION "$Revision: 1.97 $"
 
 /* A "dump node" corresponding to a particular tree node.  */
 typedef struct xml_dump_node
@@ -2080,6 +2080,40 @@ xml_find_template_parm (tree t)
 
     /* Other types that have no nested types.  */
     case INTEGER_CST: return 0;
+    case SIZEOF_EXPR: return 0;
+    case ADDR_EXPR: return 0;
+    case BIT_AND_EXPR: return 0;
+    case BIT_IOR_EXPR: return 0;
+    case BIT_NOT_EXPR: return 0;
+    case BIT_XOR_EXPR: return 0;
+    case COMPOUND_EXPR: return 0;
+    case COND_EXPR: return 0;
+    case CONVERT_EXPR: return 0;
+    case EQ_EXPR: return 0;
+    case GE_EXPR: return 0;
+    case GT_EXPR: return 0;
+    case LE_EXPR: return 0;
+    case LSHIFT_EXPR: return 0;
+    case LT_EXPR: return 0;
+    case MAX_EXPR: return 0;
+    case MINUS_EXPR: return 0;
+    case MIN_EXPR: return 0;
+    case MODIFY_EXPR: return 0;
+    case MULT_EXPR: return 0;
+    case NEGATE_EXPR: return 0;
+    case NE_EXPR: return 0;
+    case NOP_EXPR: return 0;
+    case PLUS_EXPR: return 0;
+    case POSTDECREMENT_EXPR: return 0;
+    case POSTINCREMENT_EXPR: return 0;
+    case PREDECREMENT_EXPR: return 0;
+    case PREINCREMENT_EXPR: return 0;
+    case RSHIFT_EXPR: return 0;
+    case TRUNC_DIV_EXPR: return 0;
+    case TRUNC_MOD_EXPR: return 0;
+    case TRUTH_ANDIF_EXPR: return 0;
+    case TRUTH_NOT_EXPR: return 0;
+    case TRUTH_ORIF_EXPR: return 0;
     default:
       fprintf(stderr, "xml_find_template_parm encountered unsupported type %s\n",
               tree_code_name[TREE_CODE (t)]);
