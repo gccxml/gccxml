@@ -4,14 +4,18 @@
 #include_next <sstream>
 
 // GCC 2.95 does not conform.
-//using std::ios;
-//using std::streamoff;
-//using std::streampos;
-//using std::streamsize;
-//using std::streambuf;
-//using std::istream;
-//using std::ostream;
-//using std::iostream;
+namespace std
+{
+  using ::ios;
+  using ::streamoff;
+  using ::streampos;
+  using ::streamsize;
+  using ::streambuf;
+  using ::istream;
+  using ::ostream;
+  using ::iostream;
+}
+
 using std::stringbuf;
 using std::istringstream;
 using std::ostringstream;
