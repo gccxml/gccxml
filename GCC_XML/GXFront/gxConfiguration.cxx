@@ -198,6 +198,13 @@ void gxConfiguration::AddArguments(std::vector<std::string>& arguments) const
     arguments.push_back("-quiet");
     arguments.push_back("-fsyntax-only");
     arguments.push_back("-w");
+
+#if !defined(GCCXML_NATIVE_CC1PLUS)
+    // If gccxml_cc1plus is provided separately, it will not have the
+    // gccxml-specific -iwrapper option.  We need the -I- option
+    // instead.
+    arguments.push_back("-I-");
+#endif
     }
   if(this->GetPreprocessFlag() && ppIsCC)
     {

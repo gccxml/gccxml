@@ -56,11 +56,19 @@ void gxFlagsParser::AddFlag(const std::string& flag)
 {
   // Used by Parse() to insert a parsed flag.  Strips trailing
   // whitespace from the argument.
-  if(flag.substr(0, 8) == "-include")
+  if(flag.substr(0, 9) == "-include ")
     {
     m_Flags.push_back("-include");
     m_Flags.push_back(flag.substr(9, flag.find_last_not_of(" \t")-8));
     }
+#if !defined(GCCXML_NATIVE_CC1PLUS)
+    // If gccxml_cc1plus is provided separately, it will not have the
+    // gccxml-specific -iwrapper option.  Change it to -I.
+  else if(flag.substr(0, 9) == "-iwrapper")
+    {
+    m_Flags.push_back("-I"+flag.substr(9, flag.find_last_not_of(" \t")-8));
+    }
+#endif
   else
     {
     m_Flags.push_back(flag.substr(0, flag.find_last_not_of(" \t")+1));
