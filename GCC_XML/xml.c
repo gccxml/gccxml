@@ -74,7 +74,7 @@
 # define XML_PRE_3_4_TREE_VIA_PUBLIC
 #endif
 
-#define GCC_XML_C_VERSION "$Revision: 1.87 $"
+#define GCC_XML_C_VERSION "$Revision: 1.88 $"
 
 /* A "dump node" corresponding to a particular tree node.  */
 typedef struct xml_dump_node
@@ -1810,6 +1810,8 @@ xml_add_typedef (xml_dump_info_p xdi, tree td, int complete)
      && (DECL_NAME (td) == DECL_NAME (TYPE_NAME (TREE_TYPE (td))))
      && (DECL_CONTEXT (td) == DECL_CONTEXT (TYPE_NAME (TREE_TYPE (td)))))
     {
+    /* Add the node that the typedef references instead.  */
+    xml_add_node(xdi, TREE_TYPE (td), complete);
     return 0;
     }
 
