@@ -53,10 +53,10 @@ GCCXML_FLAGS_SCRIPT=""
 !
 
 # Run the compiler's preprocessor on the above code to identify it.
-if ! (${GCCXML_COMPILER} ${GCCXML_CXXFLAGS} \
+if (${GCCXML_COMPILER} ${GCCXML_CXXFLAGS} \
                          -E "/tmp/gccxml_identify_compiler$GCCXML_PID.cc" \
                           > "/tmp/gccxml_identify_compiler$GCCXML_PID.pp";
-      rm -f "/tmp/gccxml_identify_compiler$GCCXML_PID.cc") ; then
+      rm -f "/tmp/gccxml_identify_compiler$GCCXML_PID.cc") ; then : ; else
   echo "Error running \"${GCCXML_COMPILER} -E\""
   exit 1
 fi
