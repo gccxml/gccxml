@@ -1161,6 +1161,7 @@ xml_output_var_decl (xml_dump_info_p xdi, unsigned long indent, tree vd)
   print_name_attribute (xdi, DECL_NAME (vd));
   print_type_attribute (xdi, TREE_TYPE (vd));
   print_init_attribute (xdi, DECL_INITIAL (vd));
+  print_access_attribute (xdi, vd);
   print_location_attribute (xdi, vd);
   print_extern_attribute (xdi, vd);
   fprintf (xdi->file, "/>\n");
@@ -1530,10 +1531,12 @@ xml_output_enumeral_type (xml_dump_info_p xdi, unsigned long indent, tree t)
   /* Output the list of possible values for the enumeration type.  */
   for (tv = TYPE_VALUES (t); tv ; tv = TREE_CHAIN (tv))
     {
+    int value = TREE_INT_CST_LOW (TREE_VALUE (tv));
     print_indent (xdi->file, indent+xdi->indent);
     fprintf (xdi->file,
-             "<EnumValue name=\"%s\"/>\n",
-             xml_get_encoded_string ( TREE_PURPOSE(tv)));
+             "<EnumValue name=\"%s\" init=\"%d\"/>\n",
+             xml_get_encoded_string ( TREE_PURPOSE(tv)),
+             value);
     }
 
   print_indent (xdi->file, indent);
