@@ -75,17 +75,16 @@ bool gxConfiguration::Configure(int argc, const char*const * argv)
     {
     m_GCCXML_ROOT = m_DataRoot;
     }
-  // If no executable has been set, see if there is one in the
-  // executable root.
 
-  // try intdir debug,release, etc first
+  // If no executable has been set, see if there is one in the
+  // executable root.  Try intdir (Debug, Release,...) first.
 #ifdef CMAKE_INTDIR
   if(m_GCCXML_EXECUTABLE.length() == 0)
     {
     std::string loc = m_ExecutableRoot+"/"+CMAKE_INTDIR+"/gccxml_cc1plus";
-#ifdef _WIN32
+# ifdef _WIN32
     loc += ".exe";
-#endif
+# endif
     if(gxSystemTools::FileExists(loc.c_str()) &&
        !gxSystemTools::FileIsDirectory(loc.c_str()))
       {
@@ -256,55 +255,69 @@ void gxConfiguration::FindRoots(const char* argv0)
     selfPath = gxSystemTools::CollapseDirectory(".");
     }
   gxSystemTools::ConvertToUnixSlashes(selfPath);  
-
-  // Make sure executable and self paths are represented the same way.
+  
+  // Construct the name of the executable.
+  std::string exeName = argv0;
+  if(pos != std::string::npos)
+    {
+    exeName = av0.substr(pos+1).c_str();
+    }
+#ifdef _WIN32  
+  exeName = gxSystemTools::LowerCase(exeName.c_str());
+  if(exeName.length() < 4 || exeName.substr(exeName.length()-4) != ".exe")
+    {
+    exeName += ".exe";
+    }
+#endif
+  
+  // Construct the full path to this executable as if it were in the
+  // build tree, if it exists there.
   std::string ePath="<GCCXML_EXECUTABLE_DIR-DOES-NOT-EXIST>";
   if(gxSystemTools::FileIsDirectory(GCCXML_EXECUTABLE_DIR))
     {
     ePath = gxSystemTools::CollapseDirectory(GCCXML_EXECUTABLE_DIR);
     gxSystemTools::ConvertToUnixSlashes(ePath);
+#ifdef CMAKE_INTDIR
+    ePath += "/" CMAKE_INTDIR;
+#endif
+    ePath += "/";
+    ePath += exeName;
     }
+  
+  // Construct the full path to the executable from argv[0].
   std::string sPath = selfPath;
-#if defined(_WIN32)
-  ePath = gxSystemTools::LowerCase(ePath.c_str());
-  sPath = gxSystemTools::LowerCase(sPath.c_str());
-#endif
-#if defined(_MSC_VER)
-  if((sPath == (ePath+"/debug")) ||
-     (sPath == (ePath+"/release")) ||
-     (sPath == (ePath+"/relwithdebinfo")) ||
-     (sPath == (ePath+"/minsizerel")))
-    {
-    // Strip off the build configuration subdirectory name.
-    std::string::size_type pos = selfPath.rfind("/");
-    selfPath = selfPath.substr(0, pos);
-    sPath = sPath.substr(0, pos);
-    }
-#endif
-
-  // Use our own location as the executable root.
-  m_ExecutableRoot = selfPath;
+  sPath += "/";
+  sPath += exeName;
   
   // Find the data files.
-  std::string sharePath = selfPath+"/../share/gccxml-" GCCXML_VERSION;
+  std::string sharePath = selfPath+"/../share/gccxml-" GCCXML_VERSION;  
   
   // If we are running from the build directory, use the source
   // directory as the data root.
-  if(sPath == ePath)
+  if(gxSystemTools::SameFile(sPath.c_str(), ePath.c_str()))
     {
+    // The build location of the executable and the argv[0] are the
+    // same file.  We are running from the build tree.
+    m_ExecutableRoot = GCCXML_EXECUTABLE_DIR;
     m_DataRoot = GCCXML_SOURCE_DIR "/Support";
     m_RunningInBuildTree = true;
     }
-  else if(gxSystemTools::FileIsDirectory(sharePath.c_str()))
-    {
-    // The data files are in the share path next to the bin path.
-    m_DataRoot = gxSystemTools::CollapseDirectory(sharePath.c_str());
-    }
   else
     {
-    // Just assume that the data are next to the executable in the
-    // intallation.
-    m_DataRoot = m_ExecutableRoot;
+    // Use our own location as the executable root.
+    m_ExecutableRoot = selfPath;
+    
+    if(gxSystemTools::FileIsDirectory(sharePath.c_str()))
+      {
+      // The data files are in the share path next to the bin path.
+      m_DataRoot = gxSystemTools::CollapseDirectory(sharePath.c_str());
+      }
+    else
+      {
+      // Just assume that the data are next to the executable in the
+      // intallation.
+      m_DataRoot = m_ExecutableRoot;
+      }
     }
   gxSystemTools::ConvertToUnixSlashes(m_DataRoot);
 }

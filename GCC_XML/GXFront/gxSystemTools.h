@@ -88,6 +88,9 @@ public:
   
   /** Format date/time string with the current time.  */
   static std::string GetCurrentDateTime(const char* format);
+  
+  /** Return true if the two given files exist and are the same file.  */
+  static bool SameFile(const char* file1, const char* file2);
 };
 
 #endif
