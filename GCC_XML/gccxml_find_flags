@@ -48,7 +48,8 @@ if test "x$GCCXML_SUPPORT" = "x" ; then
 fi
 
 # The support directories are located near this script.
-SELFPATH=$(cd $(echo $0 | sed -n '/\//{s/\/[^\/]*$//;p;}');pwd)
+SP1=`echo $0 | sed -n '/\//{s/\/[^\/]*$//;p;}'`
+SELFPATH=`cd $SP1;pwd`
 
 # Find the compiler-specific support directory.
 if test -d "${SELFPATH}/${GCCXML_SUPPORT}" ; then
