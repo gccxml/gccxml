@@ -4,7 +4,7 @@ RCS file: /cvs/gcc/egcs/gcc/cp/Make-lang.in,v
 retrieving revision 1.78
 diff -c -3 -p -r1.78 Make-lang.in
 *** Make-lang.in	2001/02/16 03:54:00	1.78
---- Make-lang.in	2001/02/27 15:23:09
+--- Make-lang.in	2001/03/01 15:02:48
 *************** CXX_OBJS = cp/call.o cp/decl.o cp/errfn.
 *** 100,106 ****
    cp/class.o cp/decl2.o cp/error.o cp/lex.o cp/parse.o cp/ptree.o cp/rtti.o \
@@ -38,7 +38,7 @@ RCS file: /cvs/gcc/egcs/gcc/cp/cp-tree.h,v
 retrieving revision 1.582
 diff -c -3 -p -r1.582 cp-tree.h
 *** cp-tree.h	2001/02/27 13:12:16	1.582
---- cp-tree.h	2001/02/27 15:23:18
+--- cp-tree.h	2001/03/01 15:03:07
 *************** extern int flag_check_new;
 *** 1150,1155 ****
 --- 1150,1159 ----
@@ -67,10 +67,10 @@ diff -c -3 -p -r1.582 cp-tree.h
 Index: decl2.c
 ===================================================================
 RCS file: /cvs/gcc/egcs/gcc/cp/decl2.c,v
-retrieving revision 1.443
-diff -c -3 -p -r1.443 decl2.c
-*** decl2.c	2001/02/19 21:47:08	1.443
---- decl2.c	2001/02/27 15:23:26
+retrieving revision 1.445
+diff -c -3 -p -r1.445 decl2.c
+*** decl2.c	2001/03/01 14:01:36	1.445
+--- decl2.c	2001/03/01 15:03:24
 *************** int flag_permissive;
 *** 446,451 ****
 --- 446,455 ----
@@ -107,7 +107,7 @@ RCS file: /cvs/gcc/egcs/gcc/cp/lang-options.h,v
 retrieving revision 1.37
 diff -c -3 -p -r1.37 lang-options.h
 *** lang-options.h	2001/01/05 19:12:19	1.37
---- lang-options.h	2001/02/27 15:23:26
+--- lang-options.h	2001/03/01 15:03:24
 *************** DEFINE_LANG_NAME ("C++")
 *** 111,117 ****
     { "-fno-weak", "" },
@@ -133,7 +133,7 @@ RCS file: /cvs/gcc/egcs/gcc/cp/semantics.c,v
 retrieving revision 1.191
 diff -c -3 -p -r1.191 semantics.c
 *** semantics.c	2001/02/18 05:59:45	1.191
---- semantics.c	2001/02/27 15:23:30
+--- semantics.c	2001/03/01 15:03:34
 *************** finish_translation_unit ()
 *** 1670,1675 ****
 --- 1670,1679 ----
