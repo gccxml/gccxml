@@ -18,9 +18,27 @@ ADD_EXECUTABLE(gccxml
   GXFront/gxFront.cxx
 )
 
-# Installation rules for UNIX.
 IF(UNIX)
+  # Installation rules for UNIX.
+  SET(GCCXML_ROOT ${GCCXML_SOURCE_DIR})
   INSTALL_TARGETS(/bin gccxml)
   INSTALL_PROGRAMS(/share/GCC_XML gccxml_find_flags)
   SUBDIRS (GccInclude MproInclude)
+ELSE(UNIX)
+  # Include file patch program for Windows (MSVC 6).
+  SET(GCCXML_ROOT ${GCCXML_EXECUTABLE_DIR})
+  INCLUDE_DIRECTORIES(${GCCXML_SOURCE_DIR}/GXFront)
+  ADD_EXECUTABLE(vcInstall VcInstall/vcInstall.cxx GXFront/gxSystemTools.cxx)
+  UTILITY_SOURCE(GCCXML_VCINSTALL_EXE vcInstall .)
+  ADD_CUSTOM_COMMAND(SOURCE ${GCCXML_SOURCE_DIR}/VcInstall/vcInclude.patch
+                     COMMAND ${GCCXML_VCINSTALL_EXE}
+                     ARGS ${GCCXML_SOURCE_DIR}/VcInstall/vcInclude.patch
+                          ${GCCXML_EXECUTABLE_DIR}/VcInclude
+                     TARGET gccxml
+                     OUTPUTS ${GCCXML_EXECUTABLE_DIR}/VcInclude/xstring)
 ENDIF(UNIX)
+
+# Create a configuration file for use from the build directory.
+CONFIGURE_FILE(${GCCXML_SOURCE_DIR}/config.in
+               ${GCCXML_EXECUTABLE_DIR}/config)
+
