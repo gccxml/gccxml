@@ -192,7 +192,7 @@ int main(int argc, char** argv)
   
   // Run the patched GCC C++ parser.
   int result = 0;
-  if(GXSpawn(cGCCXML_EXECUTABLE.c_str(), args) < 0)
+  if((result = GXSpawn(cGCCXML_EXECUTABLE.c_str(), args)) < 0)
     {
     result = errno;
     std::cerr << "Error executing " << cGCCXML_EXECUTABLE.c_str() << "\n";

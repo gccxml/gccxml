@@ -424,7 +424,7 @@ bool gxSystemTools::RunCommand(const char* command,  std::string& output,
     }
   fin.close();
   gxSystemTools::RemoveFile(tempFile.c_str());
-  return true;
+  return (retVal == 0);
 #else
   fflush(stdout);
   fflush(stderr);
@@ -442,7 +442,7 @@ bool gxSystemTools::RunCommand(const char* command,  std::string& output,
 
   retVal = pclose(cpipe);
   retVal = WEXITSTATUS(retVal);
-  return true;
+  return (retVal == 0);
 #endif
 }
 
