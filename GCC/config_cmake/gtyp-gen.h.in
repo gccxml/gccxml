@@ -1,0 +1,8 @@
+static const char *const srcdir = "@GCC_SOURCE_DIR@/gcc";
+static const char *const lang_files[] = {
+@GTYP_GEN_LANG_FILES@0};
+static const char *const langs_for_lang_files[] = {
+@GTYP_GEN_LANGS_FOR_LANG_FILES@0};
+static const char *const all_files[] = {
+@GTYP_GEN_ALL_FILES@0};
+static const char *const lang_dir_names[] = {"c", "cp", 0};

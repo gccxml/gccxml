@@ -1,0 +1,22 @@
+#-----------------------------------------------------------------------------
+# C++ Compiler Executable
+
+IF(CMAKE_SYSTEM MATCHES "HP-UX")
+  IF(CMAKE_C_COMPILER MATCHES "(^cc$|/cc$)")
+    SET_SOURCE_FILES_PROPERTIES(../c-opts.c PROPERTIES COMPILE_FLAGS "-Wp,-H,11000")
+  ENDIF(CMAKE_C_COMPILER MATCHES "(^cc$|/cc$)")
+ENDIF(CMAKE_SYSTEM MATCHES "HP-UX")
+
+ADD_EXECUTABLE(cc1plus
+  call.c decl.c expr.c pt.c typeck2.c class.c decl2.c error.c lex.c
+  parse.c ptree.c rtti.c spew.c typeck.c cvt.c except.c friend.c init.c
+  method.c search.c semantics.c tree.c repo.c dump.c optimize.c mangle.c
+  cp-lang.c
+  ../attribs.c ../c-common.c ../c-format.c ../c-pragma.c
+  ../c-semantics.c ../c-lex.c ../c-dump.c ../c-pretty-print.c
+  ../c-opts.c
+  ${cxx_target_srcs}
+  xml.c
+  )
+
+TARGET_LINK_LIBRARIES(cc1plus backend cpp iberty)
