@@ -46,6 +46,7 @@ IF(UNIX)
   SET(GCCXML_ROOT ${GCCXML_SOURCE_DIR})
   INSTALL_TARGETS(/bin gccxml)
   INSTALL_PROGRAMS(/share/GCC_XML gccxml_find_flags)
+  INSTALL_FILES(/man/man1 .1 gccxml)
   SUBDIRS (GccInclude MproInclude)
 ELSE(UNIX)
   # Include file patch program for Windows.
