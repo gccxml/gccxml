@@ -17,6 +17,7 @@ namespace std
   using ::istrstream;
   using ::ostrstream;
   using ::strstream;
+  using ::ends;
 }
 
 #endif
