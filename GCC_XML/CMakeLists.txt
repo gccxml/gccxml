@@ -57,9 +57,9 @@ IF(UNIX)
   SET(GCCXML_ROOT ${GCCXML_SOURCE_DIR}/Support)
   SET(GCCXML_SHARE "/share/gccxml-${GCCXML_VERSION}")
   SET(GCCXML_DOC "/share/doc/gccxml-${GCCXML_VERSION}")
-  INSTALL_TARGETS(/bin gccxml)
-  INSTALL_FILES(/man/man1 .1 gccxml)
-  INSTALL_FILES(${GCCXML_DOC} .txt Copyright)
+  INSTALL_TARGETS(${GCCXML_INSTALL_ROOT}/bin gccxml)
+  INSTALL_FILES(${GCCXML_INSTALL_ROOT}/man/man1 .1 gccxml)
+  INSTALL_FILES(${GCCXML_INSTALL_ROOT}${GCCXML_DOC} .txt Copyright)
   SUBDIRS (Support)
 ELSE(UNIX)
   # Include file patch program for Windows.
@@ -110,8 +110,9 @@ CONFIGURE_FILE(${GCCXML_SOURCE_DIR}/GXFront/config_build.in
 IF(UNIX)
   # Create a configuration file for use from the install directory.
   CONFIGURE_FILE(${GCCXML_SOURCE_DIR}/GXFront/config_install.in
-                 ${GCCXML_BINARY_DIR}/Install/config)
+                 ${GCCXML_BINARY_DIR}/GXFront/InstallOnly/config)
   IF(${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION} GREATER 1.4)
-    INSTALL_FILES(${GCCXML_SHARE} FILES ${GCCXML_BINARY_DIR}/Install/config)
+    INSTALL_FILES(${GCCXML_INSTALL_ROOT}${GCCXML_SHARE} FILES
+                  ${GCCXML_BINARY_DIR}/GXFront/InstallOnly/config)
   ENDIF(${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION} GREATER 1.4)
 ENDIF(UNIX)
