@@ -1213,29 +1213,27 @@ xml_output_type_decl (FILE* file, unsigned long indent, tree td)
         /* A typedef to a pointer to member.  */
         xml_output_typedef (file, indent, td);
         }
-      else if (DECL_ORIGINAL_TYPE (td)
-               || (DECL_NAME (td) != DECL_NAME (TYPE_NAME (TREE_TYPE (td)))))
+      else if(DECL_IMPLICIT_TYPEDEF_P (td))
+        {
+        /* A new type definition.  */
+        xml_output_record_type (file, indent, t);
+        }
+      else
         {
         /* A typedef to an existing class or struct type.  */
         xml_output_typedef (file, indent, td);
         }
-      else
+      break;
+    case UNION_TYPE:
+      if(DECL_IMPLICIT_TYPEDEF_P (td))
         {
         /* A new type definition.  */
         xml_output_record_type (file, indent, t);
         }
-      break;
-    case UNION_TYPE:
-      if (DECL_ORIGINAL_TYPE (td)
-          || (DECL_NAME (td) != DECL_NAME (TYPE_NAME (TREE_TYPE (td)))))
+      else
         {
         /* A typedef to an existing union type.  */
         xml_output_typedef (file, indent, td);
-        }
-      else
-        {
-        /* A new type definition.  */
-        xml_output_record_type (file, indent, t);
         }
       break;
     default:
