@@ -50,8 +50,12 @@ bool gxSystemTools::RunCommand(const char* command,  std::string& output,
   std::string commandToFile = command;
   commandToFile += " > ";
   std::string tempFile;
-  tempFile += _tempnam(0, "gccxml");
-
+  char* temp =  _tempnam(0, "gccxml");
+  if(!temp)
+    {
+    temp = "gccxmltemp";
+    }
+  tempFile += temp;
   commandToFile += tempFile;
   retVal = system(commandToFile.c_str());
   std::ifstream fin(tempFile.c_str());
