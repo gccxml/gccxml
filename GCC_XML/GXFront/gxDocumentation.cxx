@@ -429,7 +429,7 @@ void gxDocumentation::PrintManPage(std::ostream& os)
 {
   os << ".TH GCC-XML 1 \""
      << gxSystemTools::GetCurrentDateTime("%B %d, %Y").c_str()
-     << "\" \"GCC-XML " GCCXML_VERSION_STRING "\"\n";
+     << "\" \"GCC-XML " GCCXML_VERSION_FULL "\"\n";
   os << ".SH NAME\n";
   gxDocumentationPrintManSection(os, gxDocumentationName);
   os << ".SH SYNOPSIS\n";
@@ -458,7 +458,7 @@ void gxDocumentation::PrintManPage(std::ostream& os)
 //----------------------------------------------------------------------------
 void gxDocumentation::PrintCopyright(std::ostream& os)
 {
-  os << "GCC-XML version " GCCXML_VERSION_STRING "\n";
+  os << "GCC-XML version " GCCXML_VERSION_FULL "\n";
   for(const gxDocumentationEntry* op = gxDocumentationCopyright;
       op->brief; ++op)
     {

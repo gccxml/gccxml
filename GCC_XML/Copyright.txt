@@ -1,4 +1,4 @@
-GCC-XML version 0.5.development
+GCC-XML version 0.5.0
 Copyright (c) 2002 Kitware, Inc., Insight Consortium.
 All rights reserved.
 

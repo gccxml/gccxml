@@ -73,7 +73,7 @@ int main(int argc, char** argv)
   
   if(configuration.GetVersionFlag())
     {
-    std::cout << "GCC-XML version " GCCXML_VERSION_STRING "\n";
+    std::cout << "GCC-XML version " GCCXML_VERSION_FULL "\n";
     return 0;
     }
   
@@ -83,7 +83,7 @@ int main(int argc, char** argv)
   // Print the configuration if it was requested.
   if(configuration.GetPrintFlag())
     {
-    std::cout << "GCC-XML version " GCCXML_VERSION_STRING "\n";
+    std::cout << "GCC-XML version " GCCXML_VERSION_FULL "\n";
     configuration.PrintConfiguration(std::cout);
     return cfr? 0:1;
     }
@@ -91,7 +91,7 @@ int main(int argc, char** argv)
   // Check if there is anything to do.
   if(configuration.GetArguments().empty())
     {
-    std::cout << "GCC-XML version " GCCXML_VERSION_STRING "\n";
+    std::cout << "GCC-XML version " GCCXML_VERSION_FULL "\n";
     std::cout
       << "No arguments given for GCC C++ parser.  Not running it.\n";
     gxDocumentation::PrintUsage(std::cout);
