@@ -306,20 +306,32 @@ print_destructor_begin_tag (FILE* file, unsigned long indent, tree fd)
   int is_virtual;
   int is_pure_virtual;
 
-  if (TREE_PRIVATE (fd))        access = "private";
-  else if (TREE_PROTECTED (fd)) access = "protected";
-  else                          access = "public";
-
-  if (DECL_VIRTUAL_P (fd))
-    is_virtual = 1;
+  /* xml_output_record_type may call this with fd=0 if a trivial
+     destructor is encountered.  In this case, set the values
+     explicitly.  */
+  if (fd)
+    {
+    if (TREE_PRIVATE (fd))        access = "private";
+    else if (TREE_PROTECTED (fd)) access = "protected";
+    else                          access = "public";
+    
+    if (DECL_VIRTUAL_P (fd))
+      is_virtual = 1;
+    else
+      is_virtual = 0;
+    
+    if (DECL_PURE_VIRTUAL_P (fd))
+      is_pure_virtual = 1;
+    else
+      is_pure_virtual = 0;
+    }
   else
+    {
+    access = "public";
     is_virtual = 0;
-
-  if (DECL_PURE_VIRTUAL_P (fd))
-    is_pure_virtual = 1;
-  else
     is_pure_virtual = 0;
-  
+    }
+
   print_indent (file, indent);
   fprintf (file,
            "<Destructor access=\"%s\" virtual=\"%d\" pure_virtual=\"%d\">\n",
@@ -1186,6 +1198,30 @@ xml_output_namespace_decl (FILE* file, unsigned long indent, tree ns)
 }
 
 
+/* When a class, struct, or union type is defined, it is automatically
+   given a member typedef to itself.  Given a RECORD_TYPE or
+   UNION_TYPE, this returns that field's name.  Although this should
+   never happen, 0 is returned when the field cannot be found.  */
+static tree
+xml_find_self_typedef_name (tree rt)
+{
+  tree field;
+  for (field = TYPE_FIELDS (rt) ; field ; field = TREE_CHAIN (field))
+    {
+    /* The field must be artificial because someone could have written
+       their own typedef of the class's name.  */
+    if ((TREE_CODE (field) == TYPE_DECL)
+        && (TREE_TYPE (field) == rt)
+        && DECL_ARTIFICIAL (field))
+      {
+      return DECL_NAME (field);
+      }
+    }
+
+  return 0;
+}
+
+
 /* Dispatch output of a TYPE_DECL.  This is either a typedef, or a new
    type (class/struct/union) definition.  */
 void
@@ -1227,32 +1263,47 @@ xml_output_type_decl (FILE* file, unsigned long indent, tree td)
         xml_output_enumeral_type (file, indent, t);
         }
       break;
+    case UNION_TYPE:
     case RECORD_TYPE:
-      if (TYPE_PTRMEMFUNC_P (t))
+      if ((TREE_CODE (t) == RECORD_TYPE) && TYPE_PTRMEMFUNC_P (t))
         {
         /* A typedef to a pointer to member.  */
         xml_output_typedef (file, indent, td);
         }
-      else if(DECL_IMPLICIT_TYPEDEF_P (td))
+      /* This is a complicated test to tell apart a real class declaration
+         or definition from a typedef to it.  This must be able to detect
+         the difference for the following cases:
+
+            Code:                           Meaning:
+         1.  struct A {};                    "struct A"
+         2.  struct A {}; typedef A B;       "struct A" "typedef A B"
+         3.  typedef struct {} A;            "struct A"
+         4.  typedef struct A {} A;          "struct A"
+         5.  typedef struct A {} B;          "struct A" "typedef A B"
+
+         DECL_IMPLICIT_TYPEDEF_P will recognize type TYPE_DECL that
+         points to the real class definition for cases 1, 2, and 5,
+         and is sufficient to make the decision.
+
+         For cases 3 and 4, the second test makes sure the context of
+         the TYPE_DECL matches the context of the RECORD_TYPE, which
+         can only happen for a TYPE_DECL in the same scope as the
+         class.  It then looks at the RECORD_TYPE to find its
+         artificial member that is a typedef to its own class.  The
+         name of this field is compared to the name of the original
+         TYPE_DECL.  If it matches, then it is assumed that the
+         TYPE_DECL corresponds to the class's definition.  Otherwise,
+         it is assumed that it is simply a typedef.  */
+      else if (DECL_IMPLICIT_TYPEDEF_P (td)
+               || (((DECL_CONTEXT (td) == TYPE_CONTEXT (t))
+                    && (xml_find_self_typedef_name (t) == DECL_NAME (td)))))
         {
         /* A new type definition.  */
         xml_output_record_type (file, indent, t);
         }
       else
         {
-        /* A typedef to an existing class or struct type.  */
-        xml_output_typedef (file, indent, td);
-        }
-      break;
-    case UNION_TYPE:
-      if(DECL_IMPLICIT_TYPEDEF_P (td))
-        {
-        /* A new type definition.  */
-        xml_output_record_type (file, indent, t);
-        }
-      else
-        {
-        /* A typedef to an existing union type.  */
+        /* A typedef to an existing class, struct, or union type.  */
         xml_output_typedef (file, indent, td);
         }
       break;
@@ -1271,6 +1322,7 @@ xml_output_record_type (FILE* file, unsigned long indent, tree rt)
 {
   tree field;
   tree func;
+  int destructorFound = 0;
 
   print_class_begin_tag (file, indent, rt);
   print_location_empty_tag (file, indent+XML_NESTED_INDENT, TYPE_NAME (rt));
@@ -1331,6 +1383,8 @@ xml_output_record_type (FILE* file, unsigned long indent, tree rt)
     switch (TREE_CODE (func))
       {
       case FUNCTION_DECL:
+        if (DECL_DESTRUCTOR_P (func)) 
+          destructorFound = 1;
         xml_output_function_decl (file, indent+XML_NESTED_INDENT, func);
         break;
       case TEMPLATE_DECL:
@@ -1342,6 +1396,15 @@ xml_output_record_type (FILE* file, unsigned long indent, tree rt)
       }
     }
 
+  /* If no destructor was encountered, then the class has a trivial destructor.
+     For some reason, the implicit declaration was not there, so we catch
+     the case here.  */
+  if(!destructorFound && TYPE_HAS_TRIVIAL_DESTRUCTOR (rt))
+    {
+    print_destructor_begin_tag (file, indent+XML_NESTED_INDENT, 0);
+    print_destructor_end_tag (file, indent+XML_NESTED_INDENT);
+    }
+  
   /* Output all the base classes.  */
   {
   tree binfo = TYPE_BINFO (rt);
@@ -1634,6 +1697,14 @@ xml_output_template_info (FILE* file, unsigned long indent, tree ti)
 void
 xml_output_typedef (FILE* file, unsigned long indent, tree td)
 {
+  /* If the typedef points to its own name in the same context, ignore
+     it.  This can happen for code like "typedef struct {} A;".  */
+  if(!DECL_ORIGINAL_TYPE (td)
+     && TREE_TYPE (td) && TYPE_NAME (TREE_TYPE (td))
+     && (DECL_NAME (td) == DECL_NAME (TYPE_NAME (TREE_TYPE (td))))
+     && (DECL_CONTEXT (td) == DECL_CONTEXT (TYPE_NAME (TREE_TYPE (td)))))
+     return;
+
   print_typedef_begin_tag (file, indent, td);
   print_location_empty_tag (file, indent+XML_NESTED_INDENT, td);
   
