@@ -533,12 +533,12 @@ validate_pattern (pattern, insn, set, set_code)
 #ifdef PREDICATE_CODES
                 /* If the port has a list of the predicates it uses but
                    omits one, warn.  */
-/* BEGIN GCC-XML MODIFICATIONS (2004/01/12 23:19:15) */
+/* BEGIN GCC-XML MODIFICATIONS (2004/01/15 19:45:18) */
             /* Do not produce this warning message:
                 message_with_line (pattern_lineno,
                                    "warning: `%s' not in PREDICATE_CODES",
                                    pred_name); */
-/* END GCC-XML MODIFICATIONS (2004/01/12 23:19:15) */
+/* END GCC-XML MODIFICATIONS (2004/01/15 19:45:18) */
 #endif
               }
 
@@ -562,13 +562,13 @@ validate_pattern (pattern, insn, set, set_code)
                 || GET_CODE (insn) == DEFINE_SPLIT
                 || GET_CODE (insn) == DEFINE_PEEPHOLE2)
               {
-/* BEGIN GCC-XML MODIFICATIONS (2004/01/12 23:19:15) */
+/* BEGIN GCC-XML MODIFICATIONS (2004/01/15 19:45:18) */
             /* Do not produce this warning message:
                 if (constraints0)
                   message_with_line (pattern_lineno,
                                      "warning: constraints not supported in %s",
                                      rtx_name[GET_CODE (insn)]); */
-/* END GCC-XML MODIFICATIONS (2004/01/12 23:19:15) */
+/* END GCC-XML MODIFICATIONS (2004/01/15 19:45:18) */
               }
               
             /* A MATCH_OPERAND that is a SET should have an output reload.  */
@@ -608,12 +608,12 @@ validate_pattern (pattern, insn, set, set_code)
             && pred_name[0] != '\0'
             && allows_non_lvalue)
           {
-/* BEGIN GCC-XML MODIFICATIONS (2004/01/12 23:19:15) */
+/* BEGIN GCC-XML MODIFICATIONS (2004/01/15 19:45:18) */
             /* Do not produce this warning message:
             message_with_line (pattern_lineno,
                         "warning: destination operand %d allows non-lvalue",
                         XINT (pattern, 0)); */
-/* END GCC-XML MODIFICATIONS (2004/01/12 23:19:15) */
+/* END GCC-XML MODIFICATIONS (2004/01/15 19:45:18) */
           }
 
         /* A modeless MATCH_OPERAND can be handy when we can
@@ -636,12 +636,12 @@ validate_pattern (pattern, insn, set, set_code)
                   && GET_CODE (set) == SET
                   && GET_CODE (SET_SRC (set)) == CALL))
           {
-/* BEGIN GCC-XML MODIFICATIONS (2004/01/12 23:19:15) */
+/* BEGIN GCC-XML MODIFICATIONS (2004/01/15 19:45:18) */
             /* Do not produce this warning message:
             message_with_line (pattern_lineno,
                                "warning: operand %d missing mode?",
                                XINT (pattern, 0)); */
-/* END GCC-XML MODIFICATIONS (2004/01/12 23:19:15) */
+/* END GCC-XML MODIFICATIONS (2004/01/15 19:45:18) */
           }
         return;
       }
@@ -699,13 +699,13 @@ validate_pattern (pattern, insn, set, set_code)
                  && GET_CODE (src) != CC0
                  && GET_CODE (src) != CONST_INT)
           {
-/* BEGIN GCC-XML MODIFICATIONS (2004/01/12 23:19:15) */
+/* BEGIN GCC-XML MODIFICATIONS (2004/01/15 19:45:18) */
             /* Do not produce this warning message:
             const char *which;
             which = (dmode == VOIDmode ? "destination" : "source");
             message_with_line (pattern_lineno,
                                "warning: %s missing a mode?", which); */
-/* END GCC-XML MODIFICATIONS (2004/01/12 23:19:15) */
+/* END GCC-XML MODIFICATIONS (2004/01/15 19:45:18) */
           }
 
         if (dest != SET_DEST (pattern))
@@ -2424,6 +2424,16 @@ write_header ()
 #include \"toplev.h\"\n\
 #include \"reload.h\"\n\
 \n");
+
+  /* BEGIN GCC-XML MODIFICATIONS (2004/01/15 19:45:18) */
+  /* Disable optimizations for building the generated source file
+     with MSVC 6.  If optimization is on, the compiler ICEs.  */
+  puts ("\
+#if defined(_MSC_VER) && _MSC_VER < 1300\n\
+# pragma optimize(\"\", off)\n\
+#endif\n\
+\n");
+  /* END GCC-XML MODIFICATIONS (2004/01/15 19:45:18) */
 
   puts ("\n\
 /* `recog' contains a decision tree that recognizes whether the rtx\n\
