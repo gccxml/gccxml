@@ -724,6 +724,25 @@ xml_print_init_attribute (xml_dump_info_p xdi, tree t)
 
   if (!t || (t == error_mark_node)) return;
 
+#if defined(GCC_XML_GCC_VERSION) && (GCC_XML_GCC_VERSION >= 0x030300)
+  /* GCC 3.3 uses a constructor to initialize a list of elements.  */
+  if (TREE_CODE (t) == CONSTRUCTOR)
+    {
+    tree elt;
+    const char* comma = "";
+    fprintf (xdi->file, " init=\"{");
+    for(elt = CONSTRUCTOR_ELTS (t); elt; elt = TREE_CHAIN (elt))
+      {
+      value = xml_get_encoded_string_from_string (
+        expr_as_string (TREE_VALUE(elt), 0));
+      fprintf (xdi->file, "%s%s", comma, value);
+      comma = ", ";
+      }
+    fprintf (xdi->file, "}\"");
+    return;
+    }
+#endif
+
   value = xml_get_encoded_string_from_string (expr_as_string (t, 0));
   fprintf (xdi->file, " init=\"%s\"", value);
 }
