@@ -35,8 +35,6 @@ inline int GXSpawn(const char* cmd, char** argv)
 }
 #endif
 
-#define GCCXML_VERSION_STRING "0.3 - development"
-
 int main(int argc, char** argv)
 {
   gxConfiguration configuration;

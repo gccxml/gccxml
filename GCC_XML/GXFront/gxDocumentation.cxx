@@ -15,6 +15,7 @@
 
 =========================================================================*/
 #include "gxDocumentation.h"
+#include "gxConfigure.h"
 
 //----------------------------------------------------------------------------
 struct gxDocumentationEntry
@@ -428,7 +429,7 @@ void gxDocumentation::PrintManPage(std::ostream& os)
 {
   os << ".TH GCC-XML 1 \""
      << gxSystemTools::GetCurrentDateTime("%B %d, %Y").c_str()
-     << "\"\n";
+     << "\" \"GCC-XML " GCCXML_VERSION_STRING "\"\n";
   os << ".SH NAME\n";
   gxDocumentationPrintManSection(os, gxDocumentationName);
   os << ".SH SYNOPSIS\n";
