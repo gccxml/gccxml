@@ -60,7 +60,7 @@ const gxDocumentationEntry gxDocumentationCompilers[] =
   {0, "GCC-XML can simulate any of the following compilers:", 0},
   {"GCC", "Versions 2.95.x, 3.0.x, 3.1.x, 3.2.x", 0},
   {"SGI MIPSpro", "Version 7.3x", 0},
-  {"Visual C++", "Version 6.0 (sp5)", 0},
+  {"Visual C++", "Versions 7 and 6 (sp5)", 0},
   {"Intel C++", "Version 5.x (plugin to Visual Studio 6)", 0},
   {0,
    "Advanced users can simulate other compilers by manually configuring "
@@ -83,7 +83,7 @@ const gxDocumentationEntry gxDocumentationOptions[] =
    "enables the XML dump and specifies the output file name."},
   {"-fxml-start=<xxx>[,...]", "Specify a list of starting declarations.",
    "This option is passed directly on to the patched GCC C++ parser.  It "
-   "is meaningful only if -fxml=... is also specified.  This specifies a "
+   "is meaningful only if -fxml= is also specified.  This specifies a "
    "comma-separated list of named starting declarations.  GCC-XML will "
    "dump only the subset of the declarations in the translation unit that "
    "is reachable through a sequence of source references from one of the "
@@ -124,7 +124,8 @@ const gxDocumentationEntry gxDocumentationSettings[] =
   {"GCCXML_COMPILER", "The C++ compiler to be simulated.",
    "GCC-XML will attempt to automatically determine how to simulate "
    "the compiler specified by this setting.  The compiler is specified "
-   "by its executable name (such as \"g++\")."},
+   "by its executable name (such as \"g++\").  For Visual Studio, the "
+   "compiler is specified by \"msvc6\" or \"msvc7\"."},
   {"GCCXML_CXXFLAGS", "The flags for the C++ compiler to be simulated.",
    "The behavior of most compilers can be adjusted by specifying flags on "
    "the command line.  When GCC-XML attempts to automatically determine "
@@ -476,6 +477,7 @@ void gxDocumentation::PrintColumn(std::ostream& os, int width,
   // "indent" text.
   const char* l = text;
   int column = 0;
+  bool newSentence = false;
   bool first = true;
   while(*l)
     {
@@ -484,7 +486,7 @@ void gxDocumentation::PrintColumn(std::ostream& os, int width,
     while(*r && (*r != '\n') && (*r != ' ')) { ++r; }
     
     // Does it fit on this line?
-    if(r-l < (width-column))
+    if(r-l < (width-column-(newSentence?1:0)))
       {
       // Word fits on this line.
       if(r > l)
@@ -492,9 +494,17 @@ void gxDocumentation::PrintColumn(std::ostream& os, int width,
         if(column)
           {
           // Not first word on line.  Separate from the previous word
-          // by a space.
-          os << " ";
-          column += 1;
+          // by a space, or two if this is a new sentence.
+          if(newSentence)
+            {
+            os << "  ";
+            column += 2;
+            }
+          else
+            {
+            os << " ";
+            column += 1;
+            }
           }
         else
           {
@@ -502,10 +512,11 @@ void gxDocumentation::PrintColumn(std::ostream& os, int width,
           // first line.
           os << (first?"":indent);
           }
+        
+        // Print the word.
+        os.write(l, static_cast<long>(r-l));
+        newSentence = (*(r-1) == '.');
         }
-      
-      // Print the word.
-      os.write(l, static_cast<long>(r-l));
       
       if(*r == '\n')
         {
@@ -531,6 +542,7 @@ void gxDocumentation::PrintColumn(std::ostream& os, int width,
         os << indent;
         os.write(l, static_cast<long>(r-l));
         column = static_cast<long>(r-l);
+        newSentence = (*(r-1) == '.');
         }
       }
     
