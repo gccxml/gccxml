@@ -23,18 +23,24 @@ int main(int argc, char* argv[])
   if(argc < 2)
     {
     std::cout << "Usage:" << std::endl
-              << "  " << argv[0] << " patch_dir [gccxml_root]" << std::endl;
+              << "  " << argv[0]
+              << " patch_dir [gccxml_root] [timestamp_file]" << std::endl;
     return 0;
     }
 
   std::string patchDir = argv[1];
   std::string gccxmlRoot = ".";
+  std::string timestamp;
   if(argc >= 3)
     {
     gccxmlRoot = argv[2];
     
     // Make sure the output directory exists.
     gxSystemTools::MakeDirectory(gccxmlRoot.c_str());
+    }
+  if(argc >= 4)
+    {
+    timestamp = argv[3];
     }
   
   // Clean up the paths.
@@ -171,6 +177,20 @@ int main(int argc, char* argv[])
       result = 1;
       }
     }
+  
+  // If we succeeded, write the timestamp file.
+  if(result == 0 && (timestamp.length() > 0))
+    {
+    std::ofstream tfile(timestamp.c_str(), std::ios::out | std::ios::binary);
+    tfile << "int main() { return 0; }\n";
+    if(!tfile)
+      {
+      std::cerr << "Error writing timestamp file \""
+                << timestamp.c_str() << "\".\n";
+      result = 1;
+      }
+    }
+  
   return result;
 }
 
@@ -205,11 +225,12 @@ bool InstallSupport(const char* patchCommand, const char* patchFile,
       }
     }
   
-  std::string patchCmd = gxSystemTools::ConvertToOutputPath(patchCommand);
+  std::string patchCmd = "type ";
+  patchCmd += gxSystemTools::ConvertToOutputPath(patchFile);
+  patchCmd += " | ";
+  patchCmd += gxSystemTools::ConvertToOutputPath(patchCommand);
   patchCmd += " -p0 -t -d ";
   patchCmd += gxSystemTools::ConvertToOutputPath(destPath);
-  patchCmd += " -i ";
-  patchCmd += gxSystemTools::ConvertToOutputPath(patchFile);
   
   // Patch the copies of the header files.
   std::cout << "Executing " << patchCmd.c_str() << std::endl;
