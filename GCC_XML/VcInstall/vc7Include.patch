@@ -21,13 +21,40 @@ diff -c -3 -p -r1.1 -r1.2
 ! #define assert(exp) (void)( (exp) || (_assert((void*)#exp, __FILE__, __LINE__), 0) )
   
   #endif  /* NDEBUG */
+Index: process.h
+===================================================================
+RCS file: /cvsroot/GxInclude/Vc7/Include/process.h,v
+retrieving revision 1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
+*** process.h	1 Nov 2002 14:00:28 -0000	1.1
+--- process.h	1 Feb 2005 20:40:08 -0000	1.2
+*************** _CRTIMP int __cdecl _wsystem(const wchar
+*** 177,183 ****
+   */
+  intptr_t __cdecl _loaddll(char *);
+  int __cdecl _unloaddll(intptr_t);
+! int (__cdecl * __cdecl _getdllprocaddr(intptr_t, char *, intptr_t))();
+  /* --------- The preceding functions are OBSOLETE --------- */
+  
+  
+--- 177,184 ----
+   */
+  intptr_t __cdecl _loaddll(char *);
+  int __cdecl _unloaddll(intptr_t);
+! typedef int (__cdecl * _getdllprocaddr_type)();
+! _getdllprocaddr_type __cdecl _getdllprocaddr(intptr_t, char *, intptr_t);
+  /* --------- The preceding functions are OBSOLETE --------- */
+  
+  
 Index: signal.h
 ===================================================================
 RCS file: /cvsroot/GxInclude/Vc7/Include/signal.h,v
 retrieving revision 1.1
-diff -c -3 -p -r1.1 signal.h
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
 *** signal.h	1 Nov 2002 14:00:28 -0000	1.1
---- signal.h	17 May 2004 17:34:24 -0000
+--- signal.h	17 May 2004 17:34:46 -0000	1.2
 *************** extern void * _pxcptinfoptrs;
 *** 89,95 ****
   
