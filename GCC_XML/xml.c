@@ -74,7 +74,7 @@
 # define XML_PRE_3_4_TREE_VIA_PUBLIC
 #endif
 
-#define GCC_XML_C_VERSION "$Revision: 1.81 $"
+#define GCC_XML_C_VERSION "$Revision: 1.82 $"
 
 /* A "dump node" corresponding to a particular tree node.  */
 typedef struct xml_dump_node
@@ -1325,6 +1325,7 @@ xml_output_field_decl (xml_dump_info_p xdi, tree fd, xml_dump_node_p dn)
 static void
 xml_output_record_type (xml_dump_info_p xdi, tree rt, xml_dump_node_p dn)
 {
+  int has_bases = 0;
   tree field;
   tree func;
   const char* tag;
@@ -1401,7 +1402,7 @@ xml_output_record_type (xml_dump_info_p xdi, tree rt, xml_dump_node_p dn)
     fprintf (xdi->file, "\"");
     }
 
-  /* Output all the base classes.  */
+  /* Output all the base classes (compatibility with gccxml 0.6).  */
   if (dn->complete && COMPLETE_TYPE_P (rt))
     {
     tree binfo = TYPE_BINFO (rt);
@@ -1412,6 +1413,7 @@ xml_output_record_type (xml_dump_info_p xdi, tree rt, xml_dump_node_p dn)
 #endif
     int i;
 
+    has_bases = (n_baselinks > 0)? 1:0;
     fprintf (xdi->file, " bases=\"");
     for (i = 0; i < n_baselinks; i++)
       {
@@ -1439,7 +1441,62 @@ xml_output_record_type (xml_dump_info_p xdi, tree rt, xml_dump_node_p dn)
     fprintf (xdi->file, "\"");
     }
 
-  fprintf (xdi->file, "/>\n");
+  /* If there were no base classes, end the element now.  */
+  if(!has_bases)
+    {
+    fprintf (xdi->file, "/>\n");
+    return;
+    }
+
+  /* There are base classes.  Open the element for nested elements.  */
+  fprintf (xdi->file, ">\n");
+
+  /* Output all the base classes.  */
+  if (dn->complete && COMPLETE_TYPE_P (rt))
+    {
+    tree binfo = TYPE_BINFO (rt);
+    tree binfos = BINFO_BASETYPES (binfo);
+    int n_baselinks = binfos? TREE_VEC_LENGTH (binfos) : 0;
+#if !defined (XML_PRE_3_4_TREE_VIA_PUBLIC)
+    tree accesses = BINFO_BASEACCESSES (binfo);
+#endif
+    int i;
+
+    for (i = 0; i < n_baselinks; i++)
+      {
+      tree base_binfo = TREE_VEC_ELT (binfos, i);
+      if (base_binfo)
+        {
+        /* Output this base class.  Default is public access.  */
+#if defined (XML_PRE_3_4_TREE_VIA_PUBLIC)
+        int is_virtual = TREE_VIA_VIRTUAL (base_binfo)? 1:0;
+        const char* access = "private";
+        if (TREE_VIA_PUBLIC (base_binfo)) { access = "public"; }
+        else if (TREE_VIA_PROTECTED (base_binfo)) { access = "protected"; }
+#else
+        tree n_access = (accesses ? TREE_VEC_ELT (accesses, i)
+                                  : access_public_node);
+        int is_virtual = 0;
+        const char* access = "public";
+        if (n_access == access_protected_node) { access = "protected"; }
+        else if (n_access == access_private_node) { access = "private"; }
+        else if (n_access == access_public_virtual_node) { is_virtual = 1; }
+        else if (n_access == access_protected_virtual_node)
+          { access = "protected"; is_virtual = 1; }
+        else if (n_access == access_private_virtual_node)
+          { access = "private"; is_virtual = 1; }
+#endif
+
+        fprintf (xdi->file,
+                 "    <Base type=\"_%d\" access=\"%s\" virtual=\"%d\"/>\n",
+                 xml_add_node (xdi, BINFO_TYPE (base_binfo), 1),
+                 access, is_virtual);
+        }
+      }
+    fprintf (xdi->file, "\"");
+    }
+
+  fprintf (xdi->file, "  </%s>\n", tag);
 }
 
 /* Output for a fundamental type.  */
