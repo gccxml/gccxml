@@ -459,6 +459,13 @@ xml_print_location_attribute (xml_dump_info_p xdi, tree d)
   fprintf (xdi->file, " location=\"f%d:%d\"", source_file, source_line);
 }
 
+/* Print the XML attribute endline="line" for the given COMPOUND_STMT.  */
+static void
+xml_print_endline_attribute (xml_dump_info_p xdi, tree stmt)
+{
+  fprintf (xdi->file, " endline=\"%d\"", STMT_LINENO(stmt));
+}
+
 /* Print the XML attribute id="..." for the given node.  */
 static void
 xml_print_id_attribute (xml_dump_info_p xdi, xml_dump_node_p dn)
@@ -869,6 +876,7 @@ xml_output_function_decl (xml_dump_info_p xdi, tree fd, xml_dump_node_p dn)
   tree arg_type;
   const char* tag;
   tree name = DECL_NAME (fd);
+  tree body = DECL_SAVED_TREE(fd);
   int do_returns = 0;
   int do_access = 0;
   int do_const = 0;
@@ -943,6 +951,10 @@ xml_output_function_decl (xml_dump_info_p xdi, tree fd, xml_dump_node_p dn)
   xml_print_throw_attribute (xdi, TREE_TYPE (fd), dn->complete);
   xml_print_context_attribute (xdi, fd);
   xml_print_location_attribute (xdi, fd);
+  if(body)
+    {
+    xml_print_endline_attribute (xdi, body);
+    }
   xml_print_function_extern_attribute (xdi, fd);
   
   /* Prepare to iterator through argument list.  */
