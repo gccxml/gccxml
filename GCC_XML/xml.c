@@ -460,14 +460,16 @@ xml_queue_file (xml_dump_info_p xdi, const char* filename)
 
 /* ------------------------------------------------------------------------ */
 
-/* Print the XML attribute location="fid:line" for the given decl.  */
+/* Print the XML attributes location="fid:line" file="fid" line="line"
+   for the given decl.  */
 static void
 xml_print_location_attribute (xml_dump_info_p xdi, tree d)
 {
   unsigned int source_file = xml_queue_file (xdi, DECL_SOURCE_FILE (d));
   unsigned int source_line = DECL_SOURCE_LINE (d);
 
-  fprintf (xdi->file, " location=\"f%d:%d\"", source_file, source_line);
+  fprintf (xdi->file, " location=\"f%d:%d\" file=\"f%d\" line=\"%d\"",
+           source_file, source_line, source_file, source_line);
 }
 
 /* Print the XML attribute endline="line" for the given COMPOUND_STMT.  */
@@ -1448,7 +1450,6 @@ xml_output_cv_qualified_type (xml_dump_info_p xdi, tree t, xml_dump_node_p dn)
     }
   else
     {
-
     /* Ignore the real index of this node and use the index of the
        unqualified version of the node with the extra characters.  */
     int id = xml_add_node (xdi, TYPE_MAIN_VARIANT(t), dn->complete);
