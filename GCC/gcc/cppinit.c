@@ -63,6 +63,9 @@ struct cpp_pending
 {
   struct pending_option *directive_head, *directive_tail;
 
+/* BEGIN GCC-XML MODIFICATIONS (2003/12/16 20:03:59) */
+  struct search_path *wrapr_head, *wrapr_tail;
+/* END GCC-XML MODIFICATIONS (2003/12/16 20:03:59) */
   struct search_path *quote_head, *quote_tail;
   struct search_path *brack_head, *brack_tail;
   struct search_path *systm_head, *systm_tail;
@@ -72,9 +75,9 @@ struct cpp_pending
   struct pending_option *include_head, *include_tail;
 };
 
-/* BEGIN GCC-XML MODIFICATIONS (2003/11/21 21:28:04) */
+/* BEGIN GCC-XML MODIFICATIONS (2003/12/16 20:03:59) */
 #if defined(__STDC__) || defined(ALMOST_STDC)
-/* END GCC-XML MODIFICATIONS (2003/11/21 21:28:04) */
+/* END GCC-XML MODIFICATIONS (2003/12/16 20:03:59) */
 #define APPEND(pend, list, elt) \
   do {  if (!(pend)->list##_head) (pend)->list##_head = (elt); \
         else (pend)->list##_tail->next = (elt); \
@@ -115,9 +118,11 @@ static void new_pending_directive       PARAMS ((struct cpp_pending *,
 static int parse_option                 PARAMS ((const char *));
 static void post_options                PARAMS ((cpp_reader *));
 
+/* BEGIN GCC-XML MODIFICATIONS (2003/12/16 20:03:59) */
 /* Fourth argument to append_include_chain: chain to use.
    Note it's never asked to append to the quote chain.  */
-enum { BRACKET = 0, SYSTEM, AFTER };
+enum { BRACKET = 0, SYSTEM, AFTER, WRAPPER };
+/* END GCC-XML MODIFICATIONS (2003/12/16 20:03:59) */
 
 /* If we have designated initializers (GCC >2.7) these tables can be
    initialized, constant data.  Otherwise, they have to be filled in at
@@ -259,6 +264,9 @@ append_include_chain (pfile, dir, path, cxx_aware)
     case BRACKET:       APPEND (pend, brack, new); break;
     case SYSTEM:        APPEND (pend, systm, new); break;
     case AFTER:         APPEND (pend, after, new); break;
+/* BEGIN GCC-XML MODIFICATIONS (2003/12/16 20:03:59) */
+    case WRAPPER:       APPEND (pend, wrapr, new); break;
+/* END GCC-XML MODIFICATIONS (2003/12/16 20:03:59) */
     }
 }
 
@@ -425,6 +433,14 @@ merge_include_chains (pfile)
 
   CPP_OPTION (pfile, quote_include) = quote;
   CPP_OPTION (pfile, bracket_include) = brack;
+
+/* BEGIN GCC-XML MODIFICATIONS (2003/12/16 20:03:59) */
+  {
+  struct search_path *wrapper = pend->wrapr_head;
+  remove_dup_dirs (pfile, &wrapper);
+  CPP_OPTION (pfile, wrapper_include) = wrapper;
+  }
+/* END GCC-XML MODIFICATIONS (2003/12/16 20:03:59) */
 }
 
 /* A set of booleans indicating what CPP features each source language
@@ -971,6 +987,13 @@ cpp_read_main_file (pfile, fname, table)
   if (CPP_OPTION (pfile, verbose))
     {
       struct search_path *l;
+/* BEGIN GCC-XML MODIFICATIONS (2003/12/16 20:03:59) */
+      fprintf (stderr, _("#include wrapper search starts here:\n"));
+      for (l = CPP_OPTION (pfile, wrapper_include); l; l = l->next)
+        {
+          fprintf (stderr, " %s\n", l->name);
+        }
+/* END GCC-XML MODIFICATIONS (2003/12/16 20:03:59) */
       fprintf (stderr, _("#include \"...\" search starts here:\n"));
       for (l = CPP_OPTION (pfile, quote_include); l; l = l->next)
         {
@@ -1169,6 +1192,7 @@ new_pending_directive (pend, text, handler)
 #define no_mac N_("macro name missing after %s")
 #define no_pth N_("path name missing after %s")
 
+/* BEGIN GCC-XML MODIFICATIONS (2003/12/16 20:03:59) */
 /* This is the list of all command line options, with the leading
    "-" removed.  It must be sorted in ASCII collating order.  */
 #define COMMAND_LINE_OPTIONS                                                  \
@@ -1182,7 +1206,9 @@ new_pending_directive (pend, text, handler)
   DEF_OPT("iprefix",                  no_pth, OPT_iprefix)                    \
   DEF_OPT("isystem",                  no_dir, OPT_isystem)                    \
   DEF_OPT("iwithprefix",              no_dir, OPT_iwithprefix)                \
-  DEF_OPT("iwithprefixbefore",        no_dir, OPT_iwithprefixbefore)
+  DEF_OPT("iwithprefixbefore",        no_dir, OPT_iwithprefixbefore)          \
+  DEF_OPT("iwrapper",                 no_dir, OPT_iwrapper)
+/* END GCC-XML MODIFICATIONS (2003/12/16 20:03:59) */
 
 #define DEF_OPT(text, msg, code) code,
 enum opt_code
@@ -1359,6 +1385,12 @@ cpp_handle_option (pfile, argc, argv)
           else
             append_include_chain (pfile, xstrdup (arg), BRACKET, 0);
           break;
+/* BEGIN GCC-XML MODIFICATIONS (2003/12/16 20:03:59) */
+        case OPT_iwrapper:
+          /* Add directory to end of the wrapper include path.  */
+          append_include_chain (pfile, xstrdup (arg), WRAPPER, 0);
+          break;
+/* END GCC-XML MODIFICATIONS (2003/12/16 20:03:59) */
         case OPT_isystem:
           /* Add directory to beginning of system include path, as a system
              include directory.  */

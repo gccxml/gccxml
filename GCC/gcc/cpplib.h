@@ -230,6 +230,9 @@ struct cpp_options
   /* Search paths for include files.  */
   struct search_path *quote_include;    /* "" */
   struct search_path *bracket_include;  /* <> */
+/* BEGIN GCC-XML MODIFICATIONS (2003/12/16 20:03:59) */
+  struct search_path *wrapper_include;
+/* END GCC-XML MODIFICATIONS (2003/12/16 20:03:59) */
 
   /* Map between header names and file names, used only on DOS where
      file names are limited in length.  */
