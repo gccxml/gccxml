@@ -1,0 +1,7 @@
+#if defined(__USING_STD_NAMES__)
+# include_next <locale.h>
+#else
+# define __USING_STD_NAMES__
+# include_next <locale.h>
+# undef __USING_STD_NAMES__
+#endif
