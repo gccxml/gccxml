@@ -683,7 +683,7 @@ xml_print_array_attributes (xml_dump_info_p xdi, tree at)
 
 /* Print XML attribute listing types that this type can throw.  */
 static void
-xml_print_throw_attribute(xml_dump_info_p xdi, tree ft, int complete)
+xml_print_throw_attribute (xml_dump_info_p xdi, tree ft, int complete)
 {
   tree raises = TYPE_RAISES_EXCEPTIONS (ft);
   if(raises)
@@ -714,19 +714,27 @@ xml_print_throw_attribute(xml_dump_info_p xdi, tree ft, int complete)
 /* Print XML attribute listing the contents of the __attribute__ node
    given.  */
 static void
-xml_print_attribute_node(xml_dump_info_p xdi, const char* name,
-                         tree attributes)
+xml_print_attributes_attribute (xml_dump_info_p xdi, tree attributes1,
+                                tree attributes2)
 {
-  if(attributes)
+  if(attributes1 || attributes2)
     {
-    tree attribute = attributes;
-    fprintf(xdi->file, " %s=\"%s", name,
-            xml_get_encoded_string(TREE_PURPOSE (attribute)));
-    for(attribute = TREE_CHAIN(attribute); attribute;
+    const char* space = "";
+    tree attribute;
+    fprintf(xdi->file, " attributes=\"");
+    for(attribute = attributes1; attribute;
         attribute = TREE_CHAIN(attribute))
       {
-      fprintf(xdi->file, " %s",
+      fprintf(xdi->file, "%s%s", space,
               xml_get_encoded_string(TREE_PURPOSE (attribute)));
+      space = " ";
+      }
+    for(attribute = attributes2; attribute;
+        attribute = TREE_CHAIN(attribute))
+      {
+      fprintf(xdi->file, "%s%s", space,
+              xml_get_encoded_string(TREE_PURPOSE (attribute)));
+      space = " ";
       }
     fprintf(xdi->file, "\"");
     }
@@ -764,8 +772,7 @@ xml_output_namespace_decl (xml_dump_info_p xdi, tree ns, xml_dump_node_p dn)
     xml_print_id_attribute (xdi, dn);
     xml_print_name_attribute (xdi, DECL_NAME (ns));
     xml_print_context_attribute (xdi, ns);
-    xml_print_attribute_node(xdi, "decl_attributes",
-                             DECL_MACHINE_ATTRIBUTES(ns));
+    xml_print_attributes_attribute (xdi, DECL_MACHINE_ATTRIBUTES(ns), 0);
     
     /* If complete dump, walk the namespace.  */
     if(dn->complete)
@@ -979,10 +986,8 @@ xml_output_function_decl (xml_dump_info_p xdi, tree fd, xml_dump_node_p dn)
     xml_print_endline_attribute (xdi, body);
     }
   xml_print_function_extern_attribute (xdi, fd);
-  xml_print_attribute_node(xdi, "decl_attributes",
-                           DECL_MACHINE_ATTRIBUTES(fd));
-  xml_print_attribute_node(xdi, "type_attributes",
-                           TYPE_ATTRIBUTES(TREE_TYPE(fd)));
+  xml_print_attributes_attribute (xdi, DECL_MACHINE_ATTRIBUTES(fd),
+                                  TYPE_ATTRIBUTES(TREE_TYPE(fd)));
   
   /* Prepare to iterator through argument list.  */
   arg = DECL_ARGUMENTS (fd);
@@ -1039,11 +1044,9 @@ xml_output_var_decl (xml_dump_info_p xdi, tree vd, xml_dump_node_p dn)
   xml_print_access_attribute (xdi, vd);
   xml_print_location_attribute (xdi, vd);
   xml_print_extern_attribute (xdi, vd);
-  xml_print_attribute_node(xdi, "decl_attributes",
-                           DECL_MACHINE_ATTRIBUTES(vd));
+  xml_print_attributes_attribute (xdi, DECL_MACHINE_ATTRIBUTES(vd), 0);
   fprintf (xdi->file, "/>\n");
 }
-
 
 /* Output for a FIELD_DECL.  The name and type of the variable are output,
    as well as the initializer if it exists.  */
@@ -1058,8 +1061,7 @@ xml_output_field_decl (xml_dump_info_p xdi, tree fd, xml_dump_node_p dn)
   xml_print_type_attribute (xdi, TREE_TYPE (fd), dn->complete);
   xml_print_context_attribute (xdi, fd);
   xml_print_location_attribute (xdi, fd);
-  xml_print_attribute_node(xdi, "decl_attributes",
-                           DECL_MACHINE_ATTRIBUTES(fd));
+  xml_print_attributes_attribute (xdi, DECL_MACHINE_ATTRIBUTES(fd), 0);
   fprintf (xdi->file, "/>\n");
 }
 
@@ -1088,7 +1090,7 @@ xml_output_record_type (xml_dump_info_p xdi, tree rt, xml_dump_node_p dn)
   xml_print_abstract_attribute (xdi, rt);
   xml_print_incomplete_attribute (xdi, rt);
   xml_print_location_attribute (xdi, TYPE_NAME (rt));
-  xml_print_attribute_node(xdi, "type_attributes", TYPE_ATTRIBUTES(rt));
+  xml_print_attributes_attribute (xdi, TYPE_ATTRIBUTES(rt), 0);
   
   if (dn->complete && COMPLETE_TYPE_P (rt))
     {
@@ -1194,7 +1196,7 @@ xml_output_fundamental_type (xml_dump_info_p xdi, tree t, xml_dump_node_p dn)
   /*xml_print_name_attribute (
     xdi, DECL_NAME (TYPE_NAME (TYPE_MAIN_VARIANT (t))));*/
   xml_print_name_attribute (xdi, DECL_NAME (TYPE_NAME (t)));
-  xml_print_attribute_node(xdi, "type_attributes", TYPE_ATTRIBUTES(t));
+  xml_print_attributes_attribute (xdi, TYPE_ATTRIBUTES(t), 0);
   fprintf (xdi->file, "/>\n");
 }
 
@@ -1207,7 +1209,7 @@ xml_output_function_type (xml_dump_info_p xdi, tree t, xml_dump_node_p dn)
   fprintf (xdi->file, "  <FunctionType");
   xml_print_id_attribute (xdi, dn);
   xml_print_returns_attribute (xdi, TREE_TYPE (t), dn->complete);
-  xml_print_attribute_node(xdi, "type_attributes", TYPE_ATTRIBUTES(t));
+  xml_print_attributes_attribute (xdi, TYPE_ATTRIBUTES(t), 0);
   fprintf (xdi->file, ">\n");
   
   /* Prepare to iterator through argument list.  */
@@ -1239,7 +1241,7 @@ xml_output_method_type (xml_dump_info_p xdi, tree t, xml_dump_node_p dn)
   xml_print_id_attribute (xdi, dn);
   xml_print_base_type_attribute (xdi, TYPE_METHOD_BASETYPE (t), dn->complete);
   xml_print_returns_attribute (xdi, TREE_TYPE (t), dn->complete);
-  xml_print_attribute_node(xdi, "type_attributes", TYPE_ATTRIBUTES(t));
+  xml_print_attributes_attribute (xdi, TYPE_ATTRIBUTES(t), 0);
   fprintf (xdi->file, ">\n");
   
   /* Prepare to iterator through argument list.  */
@@ -1271,7 +1273,7 @@ xml_output_pointer_type (xml_dump_info_p xdi, tree t, xml_dump_node_p dn)
   fprintf (xdi->file, "  <PointerType");
   xml_print_id_attribute (xdi, dn);
   xml_print_type_attribute (xdi, TREE_TYPE (t), 0);
-  xml_print_attribute_node(xdi, "type_attributes", TYPE_ATTRIBUTES(t));
+  xml_print_attributes_attribute (xdi, TYPE_ATTRIBUTES(t), 0);
   fprintf (xdi->file, "/>\n");
 }
 
@@ -1282,7 +1284,7 @@ xml_output_reference_type (xml_dump_info_p xdi, tree t, xml_dump_node_p dn)
   fprintf (xdi->file, "  <ReferenceType");
   xml_print_id_attribute (xdi, dn);
   xml_print_type_attribute (xdi, TREE_TYPE (t), 0);
-  xml_print_attribute_node(xdi, "type_attributes", TYPE_ATTRIBUTES(t));
+  xml_print_attributes_attribute (xdi, TYPE_ATTRIBUTES(t), 0);
   fprintf (xdi->file, "/>\n");
 }
 
@@ -1294,7 +1296,7 @@ xml_output_offset_type (xml_dump_info_p xdi, tree t, xml_dump_node_p dn)
   xml_print_id_attribute (xdi, dn);
   xml_print_base_type_attribute (xdi, TYPE_OFFSET_BASETYPE (t), dn->complete);
   xml_print_type_attribute (xdi, TREE_TYPE (t), dn->complete);
-  xml_print_attribute_node(xdi, "type_attributes", TYPE_ATTRIBUTES(t));
+  xml_print_attributes_attribute (xdi, TYPE_ATTRIBUTES(t), 0);
   fprintf (xdi->file, "/>\n");
 }
 
@@ -1303,10 +1305,10 @@ static void
 xml_output_array_type (xml_dump_info_p xdi, tree t, xml_dump_node_p dn)
 {
   fprintf (xdi->file, "  <ArrayType");
-  xml_print_id_attribute(xdi, dn);
+  xml_print_id_attribute (xdi, dn);
   xml_print_array_attributes (xdi, t);
   xml_print_type_attribute (xdi, TREE_TYPE (t), dn->complete);
-  xml_print_attribute_node(xdi, "type_attributes", TYPE_ATTRIBUTES(t));
+  xml_print_attributes_attribute (xdi, TYPE_ATTRIBUTES(t), 0);
   fprintf (xdi->file, "/>\n");
 }
 
@@ -1317,12 +1319,12 @@ xml_output_enumeral_type (xml_dump_info_p xdi, tree t, xml_dump_node_p dn)
   tree tv;
   
   fprintf (xdi->file, "  <Enumeration");
-  xml_print_id_attribute(xdi, dn);
+  xml_print_id_attribute (xdi, dn);
   xml_print_name_attribute (xdi, DECL_NAME (TYPE_NAME (t)));
   xml_print_context_attribute (xdi, TYPE_NAME (t));
   xml_print_access_attribute (xdi, TYPE_NAME (t));
   xml_print_location_attribute (xdi, TYPE_NAME (t));
-  xml_print_attribute_node(xdi, "type_attributes", TYPE_ATTRIBUTES(t));
+  xml_print_attributes_attribute (xdi, TYPE_ATTRIBUTES(t), 0);
   fprintf (xdi->file, ">\n");
   
   /* Output the list of possible values for the enumeration type.  */
