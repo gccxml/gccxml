@@ -19,6 +19,7 @@
 #include "gxDocumentation.h"
 
 #include <gxsys/Process.h>
+#include <gxsys/ios/sstream>
 
 int main(int argc, char** argv)
 {
@@ -185,9 +186,16 @@ int main(int argc, char** argv)
     }
 #endif
 
+  // Allow source code to be aware of GCC-XML.
+  gxsys_ios::ostringstream version;
+  version << "-D__GCCXML__=" << int(GCCXML_VERSION_MAJOR*10000 +
+                                    GCCXML_VERSION_MINOR*100 +
+                                    GCCXML_VERSION_PATCH);
+
   // Prepare list of arguments for exec call.
   std::vector<const char*> args;
   args.push_back(cge.c_str());
+  args.push_back(version.str().c_str());
   for(unsigned int i=0; i < flags.size(); ++i)
     {
     args.push_back(flags[i].c_str());
