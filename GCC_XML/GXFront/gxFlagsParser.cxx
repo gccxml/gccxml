@@ -56,5 +56,13 @@ void gxFlagsParser::AddFlag(const std::string& flag)
 {
   // Used by Parse() to insert a parsed flag.  Strips trailing
   // whitespace from the argument.
-  m_Flags.push_back(flag.substr(0, flag.find_last_not_of(" \t")+1));
+  if(flag.substr(0, 8) == "-include")
+    {
+    m_Flags.push_back("-include");    
+    m_Flags.push_back(flag.substr(9, flag.find_last_not_of(" \t")-8));
+    }
+  else
+    {
+    m_Flags.push_back(flag.substr(0, flag.find_last_not_of(" \t")+1));
+    }
 }
