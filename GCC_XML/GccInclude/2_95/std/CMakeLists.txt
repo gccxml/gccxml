@@ -1,1 +1,1 @@
-INSTALL_FILES(/share/GCC_XML/GccInclude/2_95/std "complext\\.h")
+INSTALL_FILES(${GCCXML_SHARE}/GccInclude/2_95/std "complext\\.h")

@@ -133,6 +133,13 @@ int main(int argc, char** argv)
       }
     }
 
+  // Make sure we have the GCC parser executable.
+  if(cGCCXML_EXECUTABLE.length() == 0)
+    {
+    std::cerr << "Could not determine GCCXML_EXECUTABLE setting.\n";
+    return 1;
+    }
+  
 #if defined(_WIN32) && !defined(__CYGWIN__)
   // Make sure a cygwin1.dll is available.
   std::string cyg = gxSystemTools::GetFilenamePath(cGCCXML_EXECUTABLE.c_str());

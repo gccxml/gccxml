@@ -73,15 +73,24 @@ bool gxConfiguration::Configure(int argc, const char*const * argv)
     m_GCCXML_ROOT = m_DataRoot;
     }
   
+  // If no executable has been set, see if there is one in the
+  // executable root.
+  if(m_GCCXML_EXECUTABLE.length() == 0)
+    {
+    std::string loc = m_ExecutableRoot+"/gccxml_cc1plus";
+#ifdef _WIN32
+    loc += ".exe";
+#endif
+    if(gxSystemTools::FileExists(loc.c_str()) &&
+       !gxSystemTools::FileIsDirectory(loc.c_str()))
+      {
+      m_GCCXML_EXECUTABLE = loc;
+      }
+    }
   // If no executable has been set, try looking in the system path.
   if(m_GCCXML_EXECUTABLE.length() == 0)
     {
     m_GCCXML_EXECUTABLE = gxSystemTools::FindProgram("gccxml_cc1plus");
-    }
-  // Otherwise, assume there is one in the executable root.
-  if(m_GCCXML_EXECUTABLE.length() == 0)
-    {
-    m_GCCXML_EXECUTABLE = m_ExecutableRoot+"/gccxml_cc1plus";
     }
   
   gxSystemTools::ConvertToUnixSlashes(m_GCCXML_ROOT);
@@ -238,10 +247,9 @@ void gxConfiguration::FindRoots(const char* argv0)
   // Use our own location as the executable root.
   m_ExecutableRoot = selfPath;
   
-  
   // Find the data files.
-  std::string sharePath = selfPath+"/../share/GCC_XML";
-   
+  std::string sharePath = selfPath+"/../share/gccxml-" GCCXML_VERSION_STRING;
+  
   // If we are running from the build directory, use the source
   // directory as the data root.
   if(sPath == ePath)

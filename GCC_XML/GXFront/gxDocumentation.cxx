@@ -458,6 +458,7 @@ void gxDocumentation::PrintManPage(std::ostream& os)
 //----------------------------------------------------------------------------
 void gxDocumentation::PrintCopyright(std::ostream& os)
 {
+  os << "GCC-XML version " GCCXML_VERSION_STRING "\n";
   for(const gxDocumentationEntry* op = gxDocumentationCopyright;
       op->brief; ++op)
     {
