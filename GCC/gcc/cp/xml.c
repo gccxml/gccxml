@@ -74,7 +74,7 @@
 # define XML_PRE_3_4_TREE_VIA_PUBLIC
 #endif
 
-#define GCC_XML_C_VERSION "$Revision: 1.88 $"
+#define GCC_XML_C_VERSION "$Revision: 1.89 $"
 
 /* A "dump node" corresponding to a particular tree node.  */
 typedef struct xml_dump_node
@@ -1360,6 +1360,7 @@ xml_output_record_type (xml_dump_info_p xdi, tree rt, xml_dump_node_p dn)
   xml_print_incomplete_attribute (xdi, rt);
   xml_print_mangled_attribute (xdi, TYPE_NAME (rt));
   xml_print_location_attribute (xdi, TYPE_NAME (rt));
+  xml_print_artificial_attribute (xdi, TYPE_NAME (rt));
   xml_print_attributes_attribute (xdi, TYPE_ATTRIBUTES(rt), 0);
 
   if (dn->complete && COMPLETE_TYPE_P (rt))
