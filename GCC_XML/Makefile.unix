@@ -1,9 +1,14 @@
+# NOTE: This makefile is provided only to help UNIX users who don't
+# want to install CMake build the GCC-XML front-end.  It is not supported.
+# Please see README for the standard build instructions.
+#
 # Installation makefile for GCC-XML's support library.
 # Run just "make" for usage information.
 
 # Default settings.
 CXX=g++
 PREFIX=/usr/local
+# Use EXE=.exe on cygwin.
 EXE=
 #EXE=.exe
 
