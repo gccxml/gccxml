@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # These options are always needed.
-STANDARD="-quiet -o /dev/null -nostdinc -fsyntax-only"
+STANDARD="-quiet -o /dev/null -nostdinc -w -fsyntax-only"
 
 # Find the macro definition options.
 MACROS=`
