@@ -1,10 +1,10 @@
 Index: Make-lang.in
 ===================================================================
 RCS file: /cvs/gcc/egcs/gcc/cp/Make-lang.in,v
-retrieving revision 1.80
-diff -c -3 -p -r1.80 Make-lang.in
-*** Make-lang.in	2001/03/22 18:47:21	1.80
---- Make-lang.in	2001/03/26 15:47:54
+retrieving revision 1.82
+diff -c -3 -p -r1.82 Make-lang.in
+*** Make-lang.in	2001/03/27 22:57:30	1.82
+--- Make-lang.in	2001/04/09 20:24:54
 *************** CXX_OBJS = cp/call.o cp/decl.o cp/errfn.
 *** 100,106 ****
    cp/class.o cp/decl2.o cp/error.o cp/lex.o cp/parse.o cp/ptree.o cp/rtti.o \
@@ -26,19 +26,19 @@ diff -c -3 -p -r1.80 Make-lang.in
 *** 299,304 ****
 --- 299,305 ----
   cp/optimize.o: cp/optimize.c $(CXX_TREE_H) rtl.h integrate.h insn-config.h \
-    input.h
+    input.h params.h
   cp/mangle.o: cp/mangle.c $(CXX_TREE_H) toplev.h
 + cp/xml.o: cp/xml.c $(CXX_TREE_H) toplev.h
   
   cp/parse.o: cp/parse.c $(CXX_TREE_H) flags.h cp/lex.h except.h output.h \
-  	system.h toplev.h $(GGC_H)
+  	$(SYSTEM_H) toplev.h $(GGC_H)
 Index: cp-tree.h
 ===================================================================
 RCS file: /cvs/gcc/egcs/gcc/cp/cp-tree.h,v
-retrieving revision 1.590
-diff -c -3 -p -r1.590 cp-tree.h
-*** cp-tree.h	2001/03/26 08:37:24	1.590
---- cp-tree.h	2001/03/26 15:47:57
+retrieving revision 1.594
+diff -c -3 -p -r1.594 cp-tree.h
+*** cp-tree.h	2001/04/06 06:33:07	1.594
+--- cp-tree.h	2001/04/09 20:24:58
 *************** extern int flag_check_new;
 *** 1149,1154 ****
 --- 1149,1158 ----
@@ -53,8 +53,8 @@ diff -c -3 -p -r1.590 cp-tree.h
   /* C++ language-specific tree codes.  */
   #define DEFTREECODE(SYM, NAME, TYPE, LENGTH) SYM,
 *************** extern tree mangle_guard_variable       
-*** 4540,4545 ****
---- 4544,4552 ----
+*** 4542,4547 ****
+--- 4546,4554 ----
   
   /* in dump.c */
   extern int cp_dump_tree                         PARAMS ((dump_info_p, tree));
@@ -67,10 +67,10 @@ diff -c -3 -p -r1.590 cp-tree.h
 Index: decl2.c
 ===================================================================
 RCS file: /cvs/gcc/egcs/gcc/cp/decl2.c,v
-retrieving revision 1.448
-diff -c -3 -p -r1.448 decl2.c
-*** decl2.c	2001/03/22 00:55:11	1.448
---- decl2.c	2001/03/26 15:47:59
+retrieving revision 1.451
+diff -c -3 -p -r1.451 decl2.c
+*** decl2.c	2001/04/06 06:33:07	1.451
+--- decl2.c	2001/04/09 20:25:00
 *************** int flag_permissive;
 *** 443,448 ****
 --- 443,452 ----
@@ -107,7 +107,7 @@ RCS file: /cvs/gcc/egcs/gcc/cp/lang-options.h,v
 retrieving revision 1.37
 diff -c -3 -p -r1.37 lang-options.h
 *** lang-options.h	2001/01/05 19:12:19	1.37
---- lang-options.h	2001/03/26 15:47:59
+--- lang-options.h	2001/04/09 20:25:00
 *************** DEFINE_LANG_NAME ("C++")
 *** 111,117 ****
     { "-fno-weak", "" },
@@ -130,13 +130,13 @@ diff -c -3 -p -r1.37 lang-options.h
 Index: semantics.c
 ===================================================================
 RCS file: /cvs/gcc/egcs/gcc/cp/semantics.c,v
-retrieving revision 1.195
-diff -c -3 -p -r1.195 semantics.c
-*** semantics.c	2001/03/26 08:37:25	1.195
---- semantics.c	2001/03/26 15:48:00
+retrieving revision 1.200
+diff -c -3 -p -r1.200 semantics.c
+*** semantics.c	2001/04/06 06:33:07	1.200
+--- semantics.c	2001/04/09 20:25:01
 *************** finish_translation_unit ()
-*** 1695,1700 ****
---- 1695,1704 ----
+*** 1706,1711 ****
+--- 1706,1715 ----
     while (current_namespace != global_namespace)
       pop_namespace ();
     finish_file ();
