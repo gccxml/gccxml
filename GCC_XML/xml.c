@@ -996,6 +996,9 @@ xml_output_record_type (xml_dump_info_p xdi, tree rt, xml_dump_node_p dn)
         fprintf (xdi->file, "_%d ", id);
         }
       }
+    
+    /* TODO: List member template instantiations as members.  */
+
     fprintf (xdi->file, "\"");
     }  
   
@@ -1201,6 +1204,8 @@ xml_find_self_typedef_name (tree rt)
 static int
 xml_add_typedef (xml_dump_info_p xdi, tree td, int complete)
 {
+  tree t;
+  
   /* If the typedef points to its own name in the same context, ignore
      it.  */
   if(!DECL_ORIGINAL_TYPE (td)
@@ -1210,7 +1215,25 @@ xml_add_typedef (xml_dump_info_p xdi, tree td, int complete)
     {
     return 0;
     }
-  return xml_add_node_real (xdi, td, complete);
+  
+  if (DECL_ORIGINAL_TYPE (td))
+    {
+    t = DECL_ORIGINAL_TYPE (td);
+    }
+  else
+    {
+    t = TREE_TYPE (td);
+    }
+  
+  /* Only add the typedef if its target will be dumped.  */
+  if (xml_add_node (xdi, t, complete))
+    {
+    return xml_add_node_real (xdi, td, complete);
+    }
+  else
+    {
+    return 0;
+    }
 }
 
 /* Dispatch output of a TYPE_DECL.  This is either a typedef, or a new
@@ -1312,6 +1335,7 @@ xml_add_template_decl (xml_dump_info_p xdi, tree td, int complete)
 {
   tree tl;
   
+  /* Dump the template specializations.  */
   for (tl = DECL_TEMPLATE_SPECIALIZATIONS (td);
        tl ; tl = TREE_CHAIN (tl))
     {
@@ -1329,6 +1353,7 @@ xml_add_template_decl (xml_dump_info_p xdi, tree td, int complete)
       }
     }
   
+  /* Dump the template instantiations.  */
   for (tl = DECL_TEMPLATE_INSTANTIATIONS (td);
        tl ; tl = TREE_CHAIN (tl))
     {
@@ -1343,6 +1368,19 @@ xml_add_template_decl (xml_dump_info_p xdi, tree td, int complete)
                                        "xml_dump_template_decl INSTANTIATIONS");
       }
     }
+  
+  /* Dump any member template instantiations.  */
+  if (complete)
+    {
+    for (tl = TYPE_FIELDS (TREE_TYPE (td)); tl; tl = TREE_CHAIN (tl))
+      {
+      if (TREE_CODE (tl) == TEMPLATE_DECL)
+        {
+        xml_add_template_decl (xdi, tl, 1);
+        }
+      }
+    }
+  
   return 0;
 }
 
@@ -1441,21 +1479,28 @@ xml_add_node (xml_dump_info_p xdi, tree n, int complete)
     case TEMPLATE_DECL:
       return xml_add_template_decl (xdi, n, complete);
       break;
+    case UNION_TYPE:
     case RECORD_TYPE:
-      if (TYPE_PTRMEMFUNC_P (n))
+      if ((TREE_CODE (n) == RECORD_TYPE) && TYPE_PTRMEMFUNC_P (n))
         {
         /* Pointer-to-member-functions are stored in a RECORD_TYPE.  */
         return xml_add_node (xdi, TYPE_PTRMEMFUNC_FN_TYPE (n), complete);
         }
-      else
+      else if (!CLASSTYPE_IS_TEMPLATE (n))
         {
         /* This is a struct or class type.  */
         return xml_add_node_real (xdi, n, complete);
         }
+      else
+        {
+        /* This is a class template.  We don't want to dump it.  */
+        return 0;
+        }
       break;
     case CONST_DECL:
       /* Enumeration value constant.  Dumped by the enumeration type.  */
-      return 0; break;
+      return 0;
+      break;
     default:
       /* This node must really be added.  */
       return xml_add_node_real (xdi, n, complete);
