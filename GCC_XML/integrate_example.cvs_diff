@@ -4,7 +4,7 @@ RCS file: /cvs/gcc/egcs/gcc/cp/Make-lang.in,v
 retrieving revision 1.78
 diff -c -3 -p -r1.78 Make-lang.in
 *** Make-lang.in	2001/02/16 03:54:00	1.78
---- Make-lang.in	2001/02/20 14:09:05
+--- Make-lang.in	2001/02/27 15:23:09
 *************** CXX_OBJS = cp/call.o cp/decl.o cp/errfn.
 *** 100,106 ****
    cp/class.o cp/decl2.o cp/error.o cp/lex.o cp/parse.o cp/ptree.o cp/rtti.o \
@@ -35,10 +35,10 @@ diff -c -3 -p -r1.78 Make-lang.in
 Index: cp-tree.h
 ===================================================================
 RCS file: /cvs/gcc/egcs/gcc/cp/cp-tree.h,v
-retrieving revision 1.579
-diff -c -3 -p -r1.579 cp-tree.h
-*** cp-tree.h	2001/02/18 20:31:42	1.579
---- cp-tree.h	2001/02/20 14:09:07
+retrieving revision 1.582
+diff -c -3 -p -r1.582 cp-tree.h
+*** cp-tree.h	2001/02/27 13:12:16	1.582
+--- cp-tree.h	2001/02/27 15:23:18
 *************** extern int flag_check_new;
 *** 1150,1155 ****
 --- 1150,1159 ----
@@ -53,8 +53,8 @@ diff -c -3 -p -r1.579 cp-tree.h
   /* C++ language-specific tree codes.  */
   #define DEFTREECODE(SYM, NAME, TYPE, LENGTH) SYM,
 *************** extern tree mangle_guard_variable       
-*** 4538,4543 ****
---- 4542,4550 ----
+*** 4547,4552 ****
+--- 4551,4559 ----
   
   /* in dump.c */
   extern int cp_dump_tree                         PARAMS ((dump_info_p, tree));
@@ -70,7 +70,7 @@ RCS file: /cvs/gcc/egcs/gcc/cp/decl2.c,v
 retrieving revision 1.443
 diff -c -3 -p -r1.443 decl2.c
 *** decl2.c	2001/02/19 21:47:08	1.443
---- decl2.c	2001/02/20 14:09:09
+--- decl2.c	2001/02/27 15:23:26
 *************** int flag_permissive;
 *** 446,451 ****
 --- 446,455 ----
@@ -107,7 +107,7 @@ RCS file: /cvs/gcc/egcs/gcc/cp/lang-options.h,v
 retrieving revision 1.37
 diff -c -3 -p -r1.37 lang-options.h
 *** lang-options.h	2001/01/05 19:12:19	1.37
---- lang-options.h	2001/02/20 14:09:09
+--- lang-options.h	2001/02/27 15:23:26
 *************** DEFINE_LANG_NAME ("C++")
 *** 111,117 ****
     { "-fno-weak", "" },
@@ -133,7 +133,7 @@ RCS file: /cvs/gcc/egcs/gcc/cp/semantics.c,v
 retrieving revision 1.191
 diff -c -3 -p -r1.191 semantics.c
 *** semantics.c	2001/02/18 05:59:45	1.191
---- semantics.c	2001/02/20 14:09:10
+--- semantics.c	2001/02/27 15:23:30
 *************** finish_translation_unit ()
 *** 1670,1675 ****
 --- 1670,1679 ----
