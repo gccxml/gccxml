@@ -568,7 +568,7 @@ int flag_permissive;
 
 int flag_enforce_eh_specs = 1;
 
-/* BEGIN GCC-XML MODIFICATIONS (2003/11/21 21:29:54) */
+/* BEGIN GCC-XML MODIFICATIONS (2004/05/06 13:41:47) */
 /* Filename for xml dump of translation unit.  */
 
 const char* flag_xml = 0;
@@ -576,7 +576,7 @@ const char* flag_xml = 0;
 /* Start locations for dump of translation unit.  */
 
 const char* flag_xml_start = 0;
-/* END GCC-XML MODIFICATIONS (2003/11/21 21:29:54) */
+/* END GCC-XML MODIFICATIONS (2004/05/06 13:41:47) */
 
 /*  The version of the C++ ABI in use.  The following values are
     allowed:
@@ -781,6 +781,12 @@ static tree handle_nothrow_attribute    PARAMS ((tree *, tree, tree, int,
                                                  bool *));
 static tree handle_cleanup_attribute    PARAMS ((tree *, tree, tree, int,
                                                  bool *));
+/* BEGIN GCC-XML MODIFICATIONS (2004/05/06 13:41:47) */
+/* Contributed by Steven Kilthau - May 2004.  */
+/* Declare the function that verifies the syntax of the gccxml attribute. */
+static tree handle_gccxml_attribute PARAMS ((tree *, tree, tree, int, bool *));
+/* END GCC-XML MODIFICATIONS (2004/05/06 13:41:47) */
+
 static tree vector_size_helper PARAMS ((tree, tree));
 
 static void check_function_nonnull      PARAMS ((tree, tree));
@@ -871,6 +877,13 @@ const struct attribute_spec c_common_attribute_table[] =
   { "may_alias",              0, 0, false, true, false, NULL },
   { "cleanup",                1, 1, true, false, false,
                               handle_cleanup_attribute },
+/* BEGIN GCC-XML MODIFICATIONS (2004/05/06 13:41:47) */
+/* Contributed by Steven Kilthau - May 2004.  */
+/* Register the function to handle the gccxml attribute.  It must be
+   given at least 1 argument, but can have more. */
+  { "gccxml",                 1, -1, false, false, false,
+                              handle_gccxml_attribute },
+/* END GCC-XML MODIFICATIONS (2004/05/06 13:41:47) */
   { NULL,                     0, 0, false, false, false, NULL }
 };
 
@@ -6138,6 +6151,47 @@ handle_cleanup_attribute (node, name, args, flags, no_add_attrs)
 
   return NULL_TREE;
 }
+
+/* BEGIN GCC-XML MODIFICATIONS (2004/05/06 13:41:47) */
+/* Contributed by Steven Kilthau - May 2004.  */
+
+/* Verify the syntax of the gccxml attribute. */
+static tree handle_gccxml_attribute (tree* node, tree name, tree args,
+                                     int flags, bool* no_add_attrs)
+{
+  /* The attribute can be applied to declarations of parameters,
+     fields, variables, functions, and types. */
+  *no_add_attrs = false;
+  if ((TREE_CODE (*node) == PARM_DECL) ||
+      (TREE_CODE (*node) == FIELD_DECL) ||
+      (TREE_CODE (*node) == VAR_DECL) ||
+      (TREE_CODE (*node) == FUNCTION_DECL) ||
+      (TREE_CODE (*node) == TYPE_DECL) ||
+      (TREE_CODE (*node) == RECORD_TYPE) ||
+      (TREE_CODE (*node) == UNION_TYPE) ||
+      (TREE_CODE (*node) == ENUMERAL_TYPE))
+    {
+    /* Go through the arguments and verify that each is a string */
+    int i=0;
+    for(;args && (TREE_CODE (args) == TREE_LIST); args = TREE_CHAIN (args),++i)
+      {
+      tree cst = TREE_VALUE(args);
+      if (TREE_CODE(cst) != STRING_CST)
+        {
+        warning ("`%s' attribute - argument %i must be a string",
+                 IDENTIFIER_POINTER(name), i);
+        *no_add_attrs = true;
+        }
+      }
+    }
+  else
+    {
+    warning ("`%s' attribute can't be used here", IDENTIFIER_POINTER (name));
+    *no_add_attrs = true;
+    }
+  return NULL_TREE;
+}
+/* END GCC-XML MODIFICATIONS (2004/05/06 13:41:47) */
 
 /* Handle a "deprecated" attribute; arguments as in
    struct attribute_spec.handler.  */

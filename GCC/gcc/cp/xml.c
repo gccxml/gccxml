@@ -74,7 +74,7 @@
 # define XML_PRE_3_4_TREE_VIA_PUBLIC
 #endif
 
-#define GCC_XML_C_VERSION "$Revision: 1.80 $"
+#define GCC_XML_C_VERSION "$Revision: 1.81 $"
 
 /* A "dump node" corresponding to a particular tree node.  */
 typedef struct xml_dump_node
@@ -831,6 +831,44 @@ xml_print_throw_attribute (xml_dump_info_p xdi, tree ft, int complete)
     }
 }
 
+/* Given an attribute node, set "arg" to the string value of the first
+   argument, and return the first argument node.  */
+tree xml_get_first_attrib_arg(tree attrib_node, char** arg)
+{
+  /* This function contributed by Steven Kilthau - May 2004.  */
+  tree arg_node = TREE_VALUE (attrib_node);
+  *arg = "";
+  if (arg_node && (TREE_CODE (arg_node) == TREE_LIST))
+    {
+    tree cst = TREE_VALUE (arg_node);
+    if (TREE_CODE (cst) == STRING_CST)
+      {
+      *arg = TREE_STRING_POINTER (cst);
+      }
+    return arg_node;
+    }
+  return 0;
+}
+
+/* Given an argument node, set "arg" to the string value of the next
+   argument, and return the next argument node.  */
+tree xml_get_next_attrib_arg(tree arg_node, char** arg)
+{
+  /* This function contributed by Steven Kilthau - May 2004.  */
+  arg_node = TREE_CHAIN (arg_node);
+  *arg = "";
+  if (arg_node && (TREE_CODE (arg_node) == TREE_LIST))
+    {
+    tree cst = TREE_VALUE (arg_node);
+    if (TREE_CODE (cst) == STRING_CST)
+      {
+      *arg = TREE_STRING_POINTER (cst);
+      }
+    return arg_node;
+    }
+  return 0;
+}
+
 /* Print XML attribute listing the contents of the __attribute__ node
    given.  */
 static void
@@ -841,6 +879,8 @@ xml_print_attributes_attribute (xml_dump_info_p xdi, tree attributes1,
     {
     const char* space = "";
     tree attribute;
+    tree arg_node;
+    char* arg;
     fprintf(xdi->file, " attributes=\"");
     for(attribute = attributes1; attribute;
         attribute = TREE_CHAIN(attribute))
@@ -848,6 +888,18 @@ xml_print_attributes_attribute (xml_dump_info_p xdi, tree attributes1,
       fprintf(xdi->file, "%s%s", space,
               xml_get_encoded_string(TREE_PURPOSE (attribute)));
       space = " ";
+
+      /* Format and print the string arguments to the attribute
+         (contributed by Steven Kilthau - May 2004).  */
+      if ((arg_node = xml_get_first_attrib_arg(attribute, &arg)) != 0)
+        {
+        fprintf(xdi->file, "(%s", xml_get_encoded_string_from_string(arg));
+        while((arg_node = xml_get_next_attrib_arg(arg_node, &arg)) != 0)
+          {
+          fprintf(xdi->file, ",%s", xml_get_encoded_string_from_string(arg));
+          }
+        fprintf(xdi->file, ")");
+        }
       }
     for(attribute = attributes2; attribute;
         attribute = TREE_CHAIN(attribute))
@@ -855,6 +907,18 @@ xml_print_attributes_attribute (xml_dump_info_p xdi, tree attributes1,
       fprintf(xdi->file, "%s%s", space,
               xml_get_encoded_string(TREE_PURPOSE (attribute)));
       space = " ";
+
+      /* Format and print the string arguments to the attribute
+         (contributed by Steven Kilthau - May 2004).  */
+      if ((arg_node = xml_get_first_attrib_arg(attribute, &arg)) != 0)
+        {
+        fprintf(xdi->file, "(%s", xml_get_encoded_string_from_string(arg));
+        while((arg_node = xml_get_next_attrib_arg(arg_node, &arg)) != 0)
+          {
+          fprintf(xdi->file, ",%s", xml_get_encoded_string_from_string(arg));
+          }
+        fprintf(xdi->file, ")");
+        }
       }
     fprintf(xdi->file, "\"");
     }
@@ -1006,6 +1070,13 @@ xml_output_typedef (xml_dump_info_p xdi, tree td, xml_dump_node_p dn)
 
   xml_print_context_attribute (xdi, td);
   xml_print_location_attribute (xdi, td);
+
+  /* Output typedef attributes (contributed by Steven Kilthau - May 2004).  */
+  if (td)
+    {
+    xml_print_attributes_attribute (xdi, GCC_XML_DECL_ATTRIBUTES(td), 0);
+    }
+
   fprintf (xdi->file, "/>\n");
 }
 
@@ -1035,6 +1106,12 @@ xml_output_argument (xml_dump_info_p xdi, tree pd, tree tl, int complete)
   if (TREE_PURPOSE (tl))
     {
     xml_print_default_argument_attribute (xdi, TREE_PURPOSE (tl));
+    }
+
+  /* Output argument attributes (contributed by Steven Kilthau - May 2004).  */
+  if (pd)
+    {
+    xml_print_attributes_attribute (xdi, GCC_XML_DECL_ATTRIBUTES(pd), 0);
     }
 
   fprintf (xdi->file, "/>\n");
