@@ -986,7 +986,6 @@ print_location_empty_tag (FILE* file, unsigned long indent, tree d)
 }
 
 
-
 /* Print XML empty tag describing the cv-qualifiers of a type.  */
 static void
 print_cv_qualifiers_empty_tag (FILE* file, unsigned long indent, tree t)
@@ -1075,6 +1074,19 @@ print_integer_cst_empty_tag (FILE * file, unsigned long indent, tree t)
              TREE_INT_CST_HIGH (t), TREE_INT_CST_LOW (t));
     }
   fprintf(file, "\"/>\n");
+}
+
+
+/* Print XML empty tag naming an enumeration value.  */
+static void
+print_enum_value_empty_tag (FILE* file, unsigned long indent, tree v)
+{  
+  const char* value =  xml_get_encoded_string (v);
+  
+  print_indent (file, indent);
+  fprintf (file,
+           "<EnumValue name=\"%s\"/>\n",
+           value);
 }
 
 
@@ -1363,7 +1375,10 @@ xml_output_function_decl (FILE* file, unsigned long indent, tree fd)
 
   /* Don't process any internally generated declarations.  */
   if (DECL_INTERNAL_P (fd)) return;
-  if (DECL_ARTIFICIAL (fd)
+
+  /* Don't process any compiler-generated functions except constructors
+     and destructors.  */
+  if (DECL_ARTIFICIAL(fd)
       && !DECL_CONSTRUCTOR_P (fd)
       && !DECL_DESTRUCTOR_P (fd)) return;
 
@@ -1844,8 +1859,16 @@ xml_output_array_type (FILE* file, unsigned long indent, tree t)
 void
 xml_output_enumeral_type (FILE* file, unsigned long indent, tree t)
 {
+  tree tv;
   print_enumeral_type_begin_tag (file, indent, t);
   print_location_empty_tag (file, indent+XML_NESTED_INDENT, TYPE_NAME (t));
+
+  /* Output the list of possible values for the enumeration type.  */
+  for (tv = TYPE_VALUES (t); tv ; tv = TREE_CHAIN (tv))
+    {
+    print_enum_value_empty_tag(file, indent+XML_NESTED_INDENT,
+                               TREE_PURPOSE (tv));
+    }
   print_enumeral_type_end_tag (file, indent);
 }
 
@@ -1875,6 +1898,10 @@ xml_output_base_type (FILE* file, unsigned long indent, tree t)
 void
 xml_output_argument (FILE* file, unsigned long indent, tree pd, tree tl)
 {
+  /* Don't process any compiler-generated arguments.  These occur for
+     things like constructors of classes with virtual inheritance.  */
+  if (pd && DECL_ARTIFICIAL (pd)) return;
+
   print_argument_begin_tag (file, indent, pd);
 
   if (pd && DECL_ARG_TYPE_AS_WRITTEN (pd))
