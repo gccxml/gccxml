@@ -223,7 +223,11 @@ do_xml_output (const char* filename)
   
   /* Start dump.  */
   fprintf (file, "<?xml version=\"1.0\"?>\n");
+#if defined(GCCXML_VERSION_FULL)
+  fprintf (file, "<GCC_XML version=\"" GCCXML_VERSION_FULL "\">\n");
+#else
   fprintf (file, "<GCC_XML>\n");
+#endif
   
   /* Dump the complete nodes.  */
   xml_dump (&xdi);  
