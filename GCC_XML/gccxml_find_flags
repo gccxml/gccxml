@@ -1,8 +1,8 @@
 #!/bin/sh
 
 # Find the compiler executable name.
-if test "x$1" == "x" ; then
-  if test "x$GCCXML_COMPILER" == "x"; then
+if test "x$1" = "x" ; then
+  if test "x$GCCXML_COMPILER" = "x"; then
     if test "x${CXX}" != "x" ; then
       GCCXML_COMPILER="${CXX}"
     else
@@ -37,11 +37,11 @@ if ! (${GCCXML_COMPILER} -E "/tmp/gccxml_identify_compiler.cc" \
 fi
 
 # Source the result to get the settings found.
-source "/tmp/gccxml_identify_compiler.pp"
+. "/tmp/gccxml_identify_compiler.pp"
 rm -f  "/tmp/gccxml_identify_compiler.pp"
 
 # Check if a supported compiler was identified.
-if test "x$GCCXML_SUPPORT" == "x" ; then
+if test "x$GCCXML_SUPPORT" = "x" ; then
   echo "Compiler \"${GCCXML_COMPILER}\" is not supported by GCC-XML."
   exit 1
 fi

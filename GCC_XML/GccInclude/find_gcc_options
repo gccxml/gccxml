@@ -1,8 +1,8 @@
 #!/bin/sh
 
 # Find the GCC executable name.
-if test "x$1" == "x" ; then
-  if test "x${CXX}" == "x" ; then
+if test "x$1" = "x" ; then
+  if test "x${CXX}" = "x" ; then
     CXX=gcc
   fi
 else 
