@@ -184,7 +184,7 @@ extern int errno;
    It is necessary at least when t == time_t.  */
 #define INTTYPE_MINIMUM(t) ((t) (INTTYPE_SIGNED (t) \
                              ? ~ (t) 0 << (sizeof(t) * CHAR_BIT - 1) : (t) 0))
-#define INTTYPE_MAXIMUM(t) ((t) (~ (t) 0 - INTTYPE_MINIMUM (t)))
+#define INTTYPE_MAXIMUM(t) ((t) (~ (t) (0 - INTTYPE_MINIMUM (t))))
 
 /* Use that infrastructure to provide a few constants.  */
 #ifndef UCHAR_MAX
