@@ -154,7 +154,7 @@ const gxDocumentationEntry gxDocumentationSettings[] =
   {"GCCXML_CPP", "Specify the GCC C preprocessor executable.",
    "The GCC-XML program as seen by the user is actually a front-end that "
    "determines the flags needed to configure the patched GCC C++ parser to "
-   "simulate another compiler.  This setting specifies the a preprocessor "
+   "simulate another compiler.  This setting specifies the preprocessor "
    "to run with the flags that have been determined for debugging purposes.  "
    "Users should rarely need to change this value from its default."},
   {"GCCXML_ROOT", "The GCC-XML support library directory.",

@@ -141,6 +141,14 @@ bool gxConfiguration::Configure(int argc, const char*const * argv)
     m_GCCXML_CPP = gxSystemTools::FindProgram("gccxml_cpp0");
     }
 
+  // As a last resort, assume the preprocessor is built into the
+  // gccxml_cc1plus executable.  This is the case when gccxml_cc1plus
+  // is gcc 3.3 or higher.
+  if(m_GCCXML_CPP.length() == 0)
+    {
+    m_GCCXML_CPP = m_GCCXML_EXECUTABLE;
+    }
+
   gxSystemTools::ConvertToUnixSlashes(m_GCCXML_CPP);
 
   return true;
@@ -179,19 +187,31 @@ const std::vector<std::string>& gxConfiguration::GetArguments() const
 //----------------------------------------------------------------------------
 void gxConfiguration::AddArguments(std::vector<std::string>& arguments) const
 {
+  // Decide whether the preprocessor is built into a cc1plus
+  // executable or is given separately.
+  bool ppIsCC = (m_GCCXML_CPP.find("cpp0") == m_GCCXML_CPP.npos);
+
   // Add standard arguments.
+  if(!this->GetPreprocessFlag() || ppIsCC)
+    {
+    // These arguments should not be used for a separate preprocessor.
+    arguments.push_back("-quiet");
+    arguments.push_back("-fsyntax-only");
+    arguments.push_back("-w");
+    }
+  if(this->GetPreprocessFlag() && ppIsCC)
+    {
+    arguments.push_back("-E");
+    }
   if(!this->GetPreprocessFlag())
     {
-    // These arguments are not for the preprocessor.
-    arguments.push_back("-quiet");
+    // Thse arguments should not be used while preprocessing.
     arguments.push_back("-o");
 #if defined(_WIN32) && !defined(__CYGWIN__)
     arguments.push_back("NUL");
 #else
     arguments.push_back("/dev/null");
 #endif
-    arguments.push_back("-fsyntax-only");
-    arguments.push_back("-w");
     }
   arguments.push_back("-nostdinc");
   arguments.push_back("-I-");
