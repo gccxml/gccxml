@@ -91,9 +91,7 @@ void gxConfiguration::PrintConfiguration(std::ostream& os) const
      << "  GCCXML_EXECUTABLE=\"" << m_GCCXML_EXECUTABLE.c_str() << "\"\n"
      << "  GCCXML_FLAGS=\"" << m_GCCXML_FLAGS.c_str() << "\"\n"
      << "  GCCXML_USER_FLAGS=\"" << m_GCCXML_USER_FLAGS.c_str() << "\"\n"
-     << "  GCCXML_ROOT=\"" << m_GCCXML_ROOT.c_str() << "\"\n"
-     << "  ExecutableRoot=\"" << m_ExecutableRoot.c_str() << "\"\n"
-     << "  DataRoot=\"" << m_DataRoot.c_str() << "\"\n";
+     << "  GCCXML_ROOT=\"" << m_GCCXML_ROOT.c_str() << "\"\n";
 }
 
 //----------------------------------------------------------------------------
@@ -225,7 +223,7 @@ bool gxConfiguration::ProcessCommandLine(int argc, const char*const* argv)
 {
   for(int i=1; i < argc;++i)
     {
-    if(strcmp(argv[i], "-gccxml-compiler") == 0)
+    if(strcmp(argv[i], "--gccxml-compiler") == 0)
       {
       if(++i < argc)
         {
@@ -233,11 +231,11 @@ bool gxConfiguration::ProcessCommandLine(int argc, const char*const* argv)
         }
       else
         {
-        std::cerr << "Option -gccxml-compiler requires an argument.\n";
+        std::cerr << "Option --gccxml-compiler requires an argument.\n";
         return false;
         }
       }
-    else if(strcmp(argv[i], "-gccxml-executable") == 0)
+    else if(strcmp(argv[i], "--gccxml-executable") == 0)
       {
       if(++i < argc)
         {
@@ -245,11 +243,11 @@ bool gxConfiguration::ProcessCommandLine(int argc, const char*const* argv)
         }
       else
         {
-        std::cerr << "Option -gccxml-executable requires an argument.\n";
+        std::cerr << "Option --gccxml-executable requires an argument.\n";
         return false;
         }
       }
-    else if(strcmp(argv[i], "-gccxml-config") == 0)
+    else if(strcmp(argv[i], "--gccxml-config") == 0)
       {
       if(++i < argc)
         {
@@ -257,11 +255,11 @@ bool gxConfiguration::ProcessCommandLine(int argc, const char*const* argv)
         }
       else
         {
-        std::cerr << "Option -gccxml-config requires an argument.\n";
+        std::cerr << "Option --gccxml-config requires an argument.\n";
         return false;
         }      
       }
-    else if(strcmp(argv[i], "-gccxml-root") == 0)
+    else if(strcmp(argv[i], "--gccxml-root") == 0)
       {
       if(++i < argc)
         {
@@ -269,27 +267,23 @@ bool gxConfiguration::ProcessCommandLine(int argc, const char*const* argv)
         }
       else
         {
-        std::cerr << "Option -gccxml-root requires an argument.\n";
+        std::cerr << "Option --gccxml-root requires an argument.\n";
         return false;
         }      
       }
-    else if((strcmp(argv[i], "--help") == 0) ||
-            (strcmp(argv[i], "-help") == 0))
+    else if(strcmp(argv[i], "--help") == 0)
       {
       m_HelpFlag = true;
       }
-    else if((strcmp(argv[i], "--version") == 0) ||
-            (strcmp(argv[i], "-version") == 0))
+    else if(strcmp(argv[i], "--version") == 0)
       {
       m_VersionFlag = true;
       }
-    else if((strcmp(argv[i], "--print") == 0) ||
-            (strcmp(argv[i], "-print") == 0))
+    else if(strcmp(argv[i], "--print") == 0)
       {
       m_PrintFlag = true;
       }
-    else if((strcmp(argv[i], "--debug") == 0) ||
-            (strcmp(argv[i], "-debug") == 0))
+    else if(strcmp(argv[i], "--debug") == 0)
       {
       m_DebugFlag = true;
       }
