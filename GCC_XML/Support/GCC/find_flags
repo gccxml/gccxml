@@ -56,14 +56,18 @@ MAJOR_VERSION=`
 echo "__GNUC__" | ${CXX} -v -x c++ -E ${CXXFLAGS} - 2>/dev/null |
   sed -n '/^[0-9]/{p;}'`
 
+MINOR_VERSION=`
+echo "__GNUC_MINOR__" | ${CXX} -v -x c++ -E ${CXXFLAGS} - 2>/dev/null |
+  sed -n '/^[0-9]/{p;}'`
+
 # For GCC versions before 3, some special options are needed.
 if [ "$MAJOR_VERSION" -lt 3 ]; then
   SPECIAL="-fxml-no-honor-std "
   INCLUDES="-I$SELFPATH/2.95 $INCLUDES"
-elif [ "$MAJOR_VERSION" = 3 -a "$MAJOR_VERSION" -ge 3 ]; then
+elif [ "$MAJOR_VERSION" = 3 -a "$MINOR_VERSION" -ge 3 ]; then
   SPECIAL="-include $SELFPATH/3.3/gccxml_builtins.h"
 fi
 
 # Format and print out the options.
-OPTIONS="$MACROS $INCLUDES $SPECIAL"
+OPTIONS="$MACROS -D__declspec(x)= $INCLUDES $SPECIAL"
 echo $OPTIONS
