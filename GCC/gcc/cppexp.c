@@ -119,29 +119,43 @@ interpret_int_suffix (s, len)
 
   u = l = i = 0;
 
-/* BEGIN GCC-XML MODIFICATIONS (2005/03/17 22:18:25) */
+/* BEGIN GCC-XML MODIFICATIONS (2005/03/27 15:08:09) */
+  /* Special support for MSVC integer suffixes.  */
   if(len >= 2 && len < 10)
     {
-    char buf[10];
+    /* Duplicate input to avoid corrupting it.  */
     const uchar* p = s;
     size_t plen = len;
-    int bits;
-    if(p[0] == 'u')
+    int pu = 0;
+
+    /* Check for unsigned part.  */
+    if(p[0] == 'u' || p[0] == 'U')
       {
-      u = 1;
+      pu = 1;
       ++p;
       --plen;
       }
-    memcpy(buf, p, plen);
-    buf[len] = 0;
-    if(sscanf(buf, "i%d", &bits) == 1)
+
+    /* Check for integer part.  */
+    if(p[0] == 'i' || p[0] == 'I')
       {
-      return ((u ? CPP_N_UNSIGNED : 0)
-              | ((bits < 32) ? CPP_N_SMALL
-                 : (bits < 64) ? CPP_N_MEDIUM : CPP_N_LARGE));
+      /* Copy the rest of the buffer and null-terminate it.  */
+      int bits;
+      char buf[10];
+      memcpy(buf, p+1, plen-1);
+      buf[plen] = 0;
+
+      /* Try to parse the integer bit count.  */
+      if(sscanf(buf, "%d", &bits) == 1)
+        {
+        /* Encode the integer type and return it.  */
+        return ((pu ? CPP_N_UNSIGNED : 0)
+                | ((bits < 32) ? CPP_N_SMALL
+                   : (bits < 64) ? CPP_N_MEDIUM : CPP_N_LARGE));
+        }
       }
     }
-/* END GCC-XML MODIFICATIONS (2005/03/17 22:18:25) */
+/* END GCC-XML MODIFICATIONS (2005/03/27 15:08:09) */
 
   while (len--)
     switch (s[len])
