@@ -1376,6 +1376,7 @@ xml_add_template_decl (xml_dump_info_p xdi, tree td, int complete)
       default:
         /* xml_output_unimplemented (xdi, ts, 0,
           "xml_dump_template_decl SPECIALIZATIONS");  */
+        break;
       }
     }
   
@@ -1392,6 +1393,7 @@ xml_add_template_decl (xml_dump_info_p xdi, tree td, int complete)
       default:
         /* xml_output_unimplemented (xdi, ts, 0,
            "xml_dump_template_decl INSTANTIATIONS");  */
+        break;
       }
     }
   
@@ -1625,8 +1627,10 @@ xml_add_start_node (xml_dump_info_p xdi, tree n)
 void
 xml_add_start_nodes (xml_dump_info_p xdi, const char* in_start_list)
 {
+  size_t len = strlen(in_start_list);
   int pos=0;
-  char* start_list = strdup(in_start_list);
+  char* start_list = (char*)xmalloc(len+1);
+  strcpy(start_list, in_start_list);
   char* cur_start = start_list;
   tree node = 0;
   
