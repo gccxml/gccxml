@@ -52,6 +52,9 @@ public:
   /** Check if a file exists and is a directory.  */
   static bool FileIsDirectory(const char* name);
   
+  /** Create the given directory.  */
+  static bool MakeDirectory(const char* name);
+  
   /** Given a path to a directory, convert it to a full path.  This
    * collapses away relative paths.  The full path is returned.  */
   static std::string CollapseDirectory(const char* in_dir);

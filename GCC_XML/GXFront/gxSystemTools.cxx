@@ -34,6 +34,10 @@
 #if defined(_WIN32) && !defined(__CYGWIN__)
 #include <windows.h>
 #include <direct.h>
+inline int Mkdir(const char* dir)
+{
+  return _mkdir(dir);
+}
 inline const char* Getcwd(char* buf, unsigned int len)
 {
   return _getcwd(buf, len);
@@ -50,6 +54,10 @@ inline int Chdir(const char* dir)
 #include <sys/types.h>
 #include <fcntl.h>
 #include <unistd.h>
+inline int Mkdir(const char* dir)
+{
+  return mkdir(dir, 00777);
+}
 inline const char* Getcwd(char* buf, unsigned int len)
 {
   return getcwd(buf, len);
@@ -241,6 +249,47 @@ bool gxSystemTools::FileIsDirectory(const char* name)
     {
     return false;
     }
+}
+
+//----------------------------------------------------------------------------
+bool gxSystemTools::MakeDirectory(const char* name)
+{
+  std::string dir = name;
+  if(dir.length() == 0)
+    {
+    return false;
+    }
+#ifdef _WIN32
+  // The MSVC7 _mkdir function can only add one directory at a time.
+  gxSystemTools::ConvertToUnixSlashes(dir);
+  std::string::size_type pos = std::string::npos;
+  std::vector<std::string> dirs;
+  
+  while(!gxSystemTools::FileIsDirectory(dir.substr(0, pos).c_str()))
+    {
+    dirs.push_back(dir.substr(0, pos).c_str());
+    if(pos != std::string::npos)
+      {
+      pos = pos-1;
+      }
+    pos = dir.find_last_of("/", pos);
+    if(pos == std::string::npos)
+      {
+      break;
+      }
+    }
+  for(std::vector<std::string>::reverse_iterator i = dirs.rbegin();
+      i != dirs.rend(); ++i)
+    {
+    if(Mkdir(i->c_str()) != 0)
+      {
+      return false;
+      }
+    }
+  return true;
+#else
+  return (Mkdir(dir.c_str()) == 0);
+#endif
 }
 
 //----------------------------------------------------------------------------
