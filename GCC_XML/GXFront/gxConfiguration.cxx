@@ -666,8 +666,8 @@ bool gxConfiguration::FindFlags()
       else if(!support6 && !support7)
         {
         std::cerr << "Compiler \"" << m_GCCXML_COMPILER 
-                  << "\" is not supported by GCC_XML because "
-                  << "neither the Vc6 or Vc7 support directories exist.\n";
+                  << "\" is not supported by GCC_XML because neither\n"
+                  << "the Vc6 or Vc7 support directories exist.\n";
         return false;
         }
       
