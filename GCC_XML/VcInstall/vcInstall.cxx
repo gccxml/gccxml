@@ -76,6 +76,26 @@ int main(int argc, char* argv[])
 
   destPath = "\""+destPath+"\"";
   patchFile = "\""+patchFile+"\"";
+
+  // Find the patch executable.
+  std::string patchCommand = "patch.exe";
+  if(!gxSystemTools::FileExists(patchCommand.c_str()))
+    {
+    // The registry key to use to find the patch executable.
+    const char* cygwinRegistry =
+      "HKEY_LOCAL_MACHINE\\SOFTWARE\\Cygnus Solutions\\Cygwin\\mounts v2\\/usr/bin;native";
+    if(gxSystemTools::ReadRegistryValue(cygwinRegistry, patchCommand) &&
+       gxSystemTools::FileExists((patchCommand+"/patch.exe").c_str()))
+      {
+      // Found the binary location from cygwin's registry entry.
+      patchCommand += "/patch.exe";
+      }
+    else
+      {
+      // Just hope the command will be found in the path.
+      patchCommand = "patch";
+      }
+    }
   
   // The arguments for executing the patch program.
   const char* patchOptions[] =
@@ -88,8 +108,9 @@ int main(int argc, char* argv[])
     0
   };
   
+  std::cout << "Executing " << patchCommand.c_str() << std::endl;
   // Patch the copies of the header files.
-  if(_execvp("patch", patchOptions) < 0)
+  if(_execvp(patchCommand.c_str(), patchOptions) < 0)
     {
     exit(errno);
     }
