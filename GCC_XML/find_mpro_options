@@ -3,21 +3,26 @@
 # These options are always needed.
 STANDARD="-quiet -o /dev/null -nostdinc -fsyntax-only"
 
-# Find the macro definition options and include path settings.
-MACRO_AND_INCLUDE=`
-touch /tmp/find_mpro_options_temp.cxx &&
-CC -LANG:std -E -v /tmp/find_mpro_options_temp.cxx 2>&1 | sed -n '
-/_COMPILER_VERSION/{
-  s/^[^ ]*//
-  s/ -A[^ ]*//g
-  s/ -X[^ ]*//g
-  s/ -E//
-  s/ -LANG:std//
-  s/ \/tmp\/find_mpro_options_temp.cxx.*$//
-  p
-}
-'
-rm -f /tmp/find_mpro_options_temp.cxx
-`
+touch /tmp/find_mpro_options_temp.cxx 
 
-echo $STANDARD $MACRO_AND_INCLUDE
+# Find the macro definition options.
+MACROS=`
+CC ${CXXFLAGS} -E -v /tmp/find_mpro_options_temp.cxx 2>&1 |
+sed -n '/_COMPILER_VERSION/{s/ \/tmp\/find_mpro_options_temp.cxx.*$//
+s/ -/\\
+-/g;p;}' |
+sed -n '/^-D.*$/{s/-D\([^=]*\)=\([^ ]\{1,\} .*\)/-D\1='\''\2'\''/;p;}' |
+sed -n 'H;${g;s/\n/ /g;p;}'`
+
+# Find the include path options.
+INCLUDES=`
+CC ${CXXFLAGS} -E -v /tmp/find_mpro_options_temp.cxx 2>&1 |
+sed -n '/_COMPILER_VERSION/{s/ \/tmp\/find_mpro_options_temp.cxx.*$//
+s/ -/\\
+-/g;p;}' |
+sed -n '/^-I.*$/{p;}' |
+sed -n 'H;${g;s/\n/ /g;p;}'`
+
+rm -f /tmp/find_mpro_options_temp.cxx
+
+echo $STANDARD $MACROS $INCLUDES
