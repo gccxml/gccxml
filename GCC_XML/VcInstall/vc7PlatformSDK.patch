@@ -1,0 +1,146 @@
+Index: oaidl.h
+===================================================================
+RCS file: /cvsroot/GxInclude/Vc7/PlatformSDK/oaidl.h,v
+retrieving revision 1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
+*** oaidl.h	1 Nov 2002 15:39:58 -0000	1.1
+--- oaidl.h	1 Nov 2002 16:02:29 -0000	1.2
+*************** struct tagVARIANT
+*** 438,444 ****
+                  FLOAT fltVal;
+                  DOUBLE dblVal;
+                  VARIANT_BOOL boolVal;
+!                 _VARIANT_BOOL bool;
+                  SCODE scode;
+                  CY cyVal;
+                  DATE date;
+--- 438,444 ----
+                  FLOAT fltVal;
+                  DOUBLE dblVal;
+                  VARIANT_BOOL boolVal;
+! //                _VARIANT_BOOL bool;
+                  SCODE scode;
+                  CY cyVal;
+                  DATE date;
+*************** struct tagVARIANT
+*** 453,459 ****
+                  FLOAT *pfltVal;
+                  DOUBLE *pdblVal;
+                  VARIANT_BOOL *pboolVal;
+!                 _VARIANT_BOOL *pbool;
+                  SCODE *pscode;
+                  CY *pcyVal;
+                  DATE *pdate;
+--- 453,459 ----
+                  FLOAT *pfltVal;
+                  DOUBLE *pdblVal;
+                  VARIANT_BOOL *pboolVal;
+! //                _VARIANT_BOOL *pbool;
+                  SCODE *pscode;
+                  CY *pcyVal;
+                  DATE *pdate;
+Index: propidl.h
+===================================================================
+RCS file: /cvsroot/GxInclude/Vc7/PlatformSDK/propidl.h,v
+retrieving revision 1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
+*** propidl.h	1 Nov 2002 15:39:58 -0000	1.1
+--- propidl.h	1 Nov 2002 16:02:29 -0000	1.2
+*************** struct tag_inner_PROPVARIANT
+*** 306,312 ****
+          /* [case()] */ FLOAT fltVal;
+          /* [case()] */ DOUBLE dblVal;
+          /* [case()] */ VARIANT_BOOL boolVal;
+!         /* [case()] */ _VARIANT_BOOL bool;
+          /* [case()] */ SCODE scode;
+          /* [case()] */ CY cyVal;
+          /* [case()] */ DATE date;
+--- 306,312 ----
+          /* [case()] */ FLOAT fltVal;
+          /* [case()] */ DOUBLE dblVal;
+          /* [case()] */ VARIANT_BOOL boolVal;
+! //        /* [case()] */ _VARIANT_BOOL bool;
+          /* [case()] */ SCODE scode;
+          /* [case()] */ CY cyVal;
+          /* [case()] */ DATE date;
+Index: winnt.h
+===================================================================
+RCS file: /cvsroot/GxInclude/Vc7/PlatformSDK/winnt.h,v
+retrieving revision 1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
+*** winnt.h	1 Nov 2002 15:39:59 -0000	1.1
+--- winnt.h	1 Nov 2002 16:02:40 -0000	1.2
+*************** Int64ShllMod32 (
+*** 631,643 ****
+      DWORD ShiftCount
+      )
+  {
+-     __asm    {
+-         mov     ecx, ShiftCount
+-         mov     eax, dword ptr [Value]
+-         mov     edx, dword ptr [Value+4]
+-         shld    edx, eax, cl
+-         shl     eax, cl
+-     }
+  }
+  
+  __inline LONGLONG
+--- 631,636 ----
+*************** Int64ShraMod32 (
+*** 647,659 ****
+      DWORD ShiftCount
+      )
+  {
+-     __asm {
+-         mov     ecx, ShiftCount
+-         mov     eax, dword ptr [Value]
+-         mov     edx, dword ptr [Value+4]
+-         shrd    eax, edx, cl
+-         sar     edx, cl
+-     }
+  }
+  
+  __inline ULONGLONG
+--- 640,645 ----
+*************** Int64ShrlMod32 (
+*** 663,675 ****
+      DWORD ShiftCount
+      )
+  {
+-     __asm    {
+-         mov     ecx, ShiftCount
+-         mov     eax, dword ptr [Value]
+-         mov     edx, dword ptr [Value+4]
+-         shrd    eax, edx, cl
+-         shr     edx, cl
+-     }
+  }
+  
+  #if _MSC_VER >= 1200
+--- 649,654 ----
+*************** __jump_unwind (
+*** 1922,1933 ****
+  #pragma warning(push)
+  #endif
+  #pragma warning (disable:4035)        // disable 4035 (function must return something)
+! _inline PVOID GetFiberData( void ) { __asm {
+!                                         mov eax, fs:[0x10]
+!                                         mov eax,[eax]
+!                                         }
+!                                      }
+! _inline PVOID GetCurrentFiber( void ) { __asm mov eax, fs:[0x10] }
+  
+  #if _MSC_VER >= 1200
+  #pragma warning(pop)
+--- 1901,1908 ----
+  #pragma warning(push)
+  #endif
+  #pragma warning (disable:4035)        // disable 4035 (function must return something)
+! _inline PVOID GetFiberData( void ) {}
+! _inline PVOID GetCurrentFiber( void ) {}
+  
+  #if _MSC_VER >= 1200
+  #pragma warning(pop)

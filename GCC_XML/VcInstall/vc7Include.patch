@@ -1,0 +1,70 @@
+Index: typeinfo
+===================================================================
+RCS file: /cvsroot/GxInclude/Vc7/Include/typeinfo,v
+retrieving revision 1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
+*** typeinfo	1 Nov 2002 14:00:28 -0000	1.1
+--- typeinfo	1 Nov 2002 16:01:52 -0000	1.2
+***************
+*** 32,38 ****
+  
+   _STD_BEGIN
+   #if _HAS_EXCEPTIONS
+! using ::type_info;
+  using ::bad_cast;
+  using ::bad_typeid;
+  using ::__non_rtti_object;
+--- 32,38 ----
+  
+   _STD_BEGIN
+   #if _HAS_EXCEPTIONS
+! //using ::type_info;
+  using ::bad_cast;
+  using ::bad_typeid;
+  using ::__non_rtti_object;
+Index: xlocale
+===================================================================
+RCS file: /cvsroot/GxInclude/Vc7/Include/xlocale,v
+retrieving revision 1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
+*** xlocale	1 Nov 2002 14:00:28 -0000	1.1
+--- xlocale	1 Nov 2002 16:01:12 -0000	1.2
+***************
+*** 13,18 ****
+--- 13,21 ----
+  #pragma warning(push,3)
+  
+  _STD_BEGIN
++ class _CRTIMP2 locale;
++ template<class _Elem> class collate;
++ template<class _Facet> const _Facet& __cdecl use_facet(const locale& _Loc);
+  
+  		// TEMPLATE CLASS _Locbase
+  template<class _Dummy>
+Index: xstddef
+===================================================================
+RCS file: /cvsroot/GxInclude/Vc7/Include/xstddef,v
+retrieving revision 1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
+*** xstddef	1 Nov 2002 14:00:28 -0000	1.1
+--- xstddef	1 Nov 2002 16:01:29 -0000	1.2
+*************** _STD_BEGIN
+*** 22,28 ****
+   #define _RERAISE	throw
+  
+   #define _THROW0()	throw ()
+!  #define _THROW1(x)	throw (...)
+   #define _THROW(x, y)	throw x(y)
+   #else /* no exceptions */
+   #define _TRY_BEGIN	{{
+--- 22,28 ----
+   #define _RERAISE	throw
+  
+   #define _THROW0()	throw ()
+!  #define _THROW1(x)	throw (x)
+   #define _THROW(x, y)	throw x(y)
+   #else /* no exceptions */
+   #define _TRY_BEGIN	{{
