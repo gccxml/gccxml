@@ -1356,7 +1356,9 @@ xml_output_function_decl (FILE* file, unsigned long indent, tree fd)
 
   /* Don't process any internally generated declarations.  */
   if (DECL_INTERNAL_P (fd)) return;
-  if (DECL_ARTIFICIAL (fd)) return;
+  if (DECL_ARTIFICIAL (fd)
+      && !DECL_CONSTRUCTOR_P (fd)
+      && !DECL_DESTRUCTOR_P (fd)) return;
 
   /* Don't output the cloned functions.  */
   if (DECL_CLONED_FUNCTION_P (fd)) return;
@@ -1868,18 +1870,19 @@ xml_output_argument (FILE* file, unsigned long indent, tree pd, tree tl)
 {
   print_argument_begin_tag (file, indent, pd);
 
-  /* Output something for DECL_ARG_TYPE (pd)  ??  */
   if (pd && DECL_ARG_TYPE_AS_WRITTEN (pd))
     xml_output_type (file, indent+XML_NESTED_INDENT, DECL_ARG_TYPE_AS_WRITTEN (pd));
-  else if (pd && DECL_ARG_TYPE (pd))
-    xml_output_type (file, indent+XML_NESTED_INDENT, DECL_ARG_TYPE (pd));
+/*  else if (pd && DECL_ARG_TYPE (pd))
+      xml_output_type (file, indent+XML_NESTED_INDENT, DECL_ARG_TYPE (pd)); */
+  else if (pd && TREE_TYPE (pd))
+    xml_output_type (file, indent+XML_NESTED_INDENT, TREE_TYPE (pd));
   else
     xml_output_type (file, indent+XML_NESTED_INDENT, TREE_VALUE (tl));
-    
   
   if (TREE_PURPOSE (tl))
     print_default_argument_empty_tag (file, indent+XML_NESTED_INDENT,
-                                 TREE_PURPOSE (tl));
+                                      TREE_PURPOSE (tl));
+
   print_argument_end_tag (file, indent);
 }
 
