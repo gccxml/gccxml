@@ -17,6 +17,11 @@ CONFIGURE_FILE(${GCCXML_SOURCE_DIR}/GXFront/gxConfigure.h.in
                ${GCCXML_BINARY_DIR}/GXFront/gxConfigure.h)
 INCLUDE_DIRECTORIES(${GCCXML_BINARY_DIR}/GXFront)
 
+# Be sure to use ANSI compiler flags.
+IF(CMAKE_ANSI_CXXFLAGS)
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CMAKE_ANSI_CXXFLAGS}")
+ENDIF(CMAKE_ANSI_CXXFLAGS)
+
 # The GCC-XML wrapper exectuable.
 ADD_EXECUTABLE(gccxml
   GXFront/gxSystemTools.cxx
