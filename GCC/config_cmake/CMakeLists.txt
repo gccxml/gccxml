@@ -29,10 +29,10 @@ MACRO(PERFORM_C_TEST var description invert)
       -DSTDC_HEADERS=${STDC_HEADERS}
       )
     IF(${var}_COMPILED)
-      FILE(APPEND ${CMAKE_BINARY_DIR}/CMakeOutput.log 
+      FILE(APPEND ${CMAKE_BINARY_DIR}/CMakeOutput.log
         "${description} compiled with the following output:\n${OUTPUT}\n\n")
     ELSE(${var}_COMPILED)
-      FILE(APPEND ${CMAKE_BINARY_DIR}/CMakeError.log 
+      FILE(APPEND ${CMAKE_BINARY_DIR}/CMakeError.log
         "${description} failed to compile with the following output:\n${OUTPUT}\n\n")
     ENDIF(${var}_COMPILED)
     IF(${invert} MATCHES INVERT)
@@ -70,6 +70,7 @@ MACRO(PERFORM_C_TEST_RUN var description zero nonzero invert)
     TRY_RUN(${var}_RESULT ${var}_COMPILED
       ${GCCCONFIG_BINARY_DIR}
       ${GCCCONFIG_SOURCE_DIR}/gcc_c_tests.c
+      OUTPUT_VARIABLE OUTPUT
       COMPILE_DEFINITIONS
       -DTEST_${var}
       -DHAVE_GETPAGESIZE=${HAVE_GETPAGESIZE}
@@ -86,6 +87,8 @@ MACRO(PERFORM_C_TEST_RUN var description zero nonzero invert)
       -DSTDC_HEADERS=${STDC_HEADERS}
       )
     IF(${var}_COMPILED)
+      FILE(APPEND ${CMAKE_BINARY_DIR}/CMakeOutput.log
+        "${description} compiled with the following output:\n${OUTPUT}\n\n")
       IF(${invert} MATCHES INVERT)
         IF(${var}_RESULT)
           MESSAGE(STATUS "${description} - ${zero}")
@@ -100,6 +103,8 @@ MACRO(PERFORM_C_TEST_RUN var description zero nonzero invert)
         ENDIF(${var}_RESULT)
       ENDIF(${invert} MATCHES INVERT)
     ELSE(${var}_COMPILED)
+      FILE(APPEND ${CMAKE_BINARY_DIR}/CMakeError.log
+        "${description} failed to compile with the following output:\n${OUTPUT}\n\n")
       MESSAGE(STATUS "${description} - test compilation failed")
     ENDIF(${var}_COMPILED)
   ENDIF(${var}_RESULT MATCHES "^${var}_RESULT$")
@@ -431,11 +436,15 @@ MACRO(CHECK_DECL_EXISTS symbol var)
       ${GCCCONFIG_BINARY_DIR}
       ${GCCCONFIG_BINARY_DIR}/gcc_check_decl.c
       OUTPUT_VARIABLE OUTPUT
-      COMPILE_DEFINITIONS -I${GCC_SOURCE_DIR}/gcc -I${GCC_SOURCE_DIR}/include
+      COMPILE_DEFINITIONS -I\"${GCC_SOURCE_DIR}/gcc\" -I\"${GCC_SOURCE_DIR}/include\"
       )
     IF(${var}_COMPILED)
+      FILE(APPEND ${CMAKE_BINARY_DIR}/CMakeOutput.log
+        "Check for ${symbol} compiled with the following output:\n${OUTPUT}\n\n")
       MESSAGE(STATUS "Looking for declaration of ${symbol} - found")
     ELSE(${var}_COMPILED)
+      FILE(APPEND ${CMAKE_BINARY_DIR}/CMakeError.log
+        "Check for ${symbol} failed to compile with the following output:\n${OUTPUT}\n\n")
       MESSAGE(STATUS "Looking for declaration of ${symbol} - not found")
     ENDIF(${var}_COMPILED)
   ENDIF("${var}_COMPILED" MATCHES "^${var}_COMPILED$")
@@ -510,14 +519,19 @@ MACRO(CHECK_TYPE_EXISTS symbol var)
     TRY_COMPILE(${var}_COMPILED
       ${GCCCONFIG_BINARY_DIR}
       ${GCCCONFIG_SOURCE_DIR}/gcc_c_tests.c
+      OUTPUT_VARIABLE OUTPUT
       COMPILE_DEFINITIONS
       -DTEST_${var}
-      -I${GCC_SOURCE_DIR}/gcc -I${GCC_SOURCE_DIR}/include
-      -I${GCCCONFIG_BINARY_DIR}
+      -I\"${GCC_SOURCE_DIR}/gcc\" -I\"${GCC_SOURCE_DIR}/include\"
+      -I\"${GCCCONFIG_BINARY_DIR}\"
       )
     IF(${var}_COMPILED)
+      FILE(APPEND ${CMAKE_BINARY_DIR}/CMakeOutput.log
+        "Check for ${symbol} compiled with the following output:\n${OUTPUT}\n\n")
       MESSAGE(STATUS "Checking for ${symbol} - found")
     ELSE(${var}_COMPILED)
+      FILE(APPEND ${CMAKE_BINARY_DIR}/CMakeError.log
+        "Check for ${symbol} failed to compile with the following output:\n${OUTPUT}\n\n")
       MESSAGE(STATUS "Checking for ${symbol} - not found")
     ENDIF(${var}_COMPILED)
   ENDIF("${var}_COMPILED" MATCHES "^${var}_COMPILED$")
