@@ -1089,6 +1089,7 @@ bool gxConfiguration::FindFlagsMSVC6()
     }
 
   m_GCCXML_FLAGS =
+    "-U__STDC__ -U__MINGW32__"
     "-D__stdcall=__attribute__((__stdcall__)) "
     "-D__cdecl=__attribute__((__cdecl__)) "
     "-D__fastcall=__attribute__((__fastcall__)) "
@@ -1141,6 +1142,7 @@ bool gxConfiguration::FindFlagsMSVC7()
     }
 
   m_GCCXML_FLAGS =
+    "-U__STDC__ -U__MINGW32__"
     "-D__stdcall=__attribute__((__stdcall__)) "
     "-D__cdecl=__attribute__((__cdecl__)) "
     "-D__fastcall=__attribute__((__fastcall__)) "
@@ -1197,6 +1199,7 @@ bool gxConfiguration::FindFlagsMSVC71()
     }
 
   m_GCCXML_FLAGS =
+    "-U__STDC__ -U__MINGW32__"
     "-D__stdcall=__attribute__((__stdcall__)) "
     "-D__cdecl=__attribute__((__cdecl__)) "
     "-D__fastcall=__attribute__((__fastcall__)) "
