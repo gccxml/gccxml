@@ -70,8 +70,8 @@ static void xml_output_returns                PARAMS ((FILE*, unsigned long, tre
 static void xml_output_template_argument      PARAMS ((FILE*, unsigned long, tree));
 static void xml_output_qualified_name         PARAMS ((FILE*, unsigned long, tree));
 
-static char* xml_get_encoded_string             PARAMS ((tree));
-static char* xml_get_encoded_string_from_string PARAMS ((const char*));
+static const char* xml_get_encoded_string             PARAMS ((tree));
+static const char* xml_get_encoded_string_from_string PARAMS ((const char*));
 
 static void print_indent                   PARAMS ((FILE*, unsigned long));
 static tree reverse_opname_lookup          PARAMS ((tree));
@@ -95,10 +95,7 @@ do_xml_output (void)
 
 /* Print XML begin tag for a namespace element.  */
 static void
-print_namespace_begin_tag (file, indent, ns)
-  FILE* file;
-  unsigned long indent;
-  tree ns;
+print_namespace_begin_tag (FILE* file, unsigned long indent, tree ns)
 {
   print_indent (file, indent);
   if(ns == global_namespace)
@@ -107,7 +104,7 @@ print_namespace_begin_tag (file, indent, ns)
     }
   else
     {
-    char* name = xml_get_encoded_string (DECL_NAME (ns));
+    const char* name = xml_get_encoded_string (DECL_NAME (ns));
 
     fprintf (file, "<Namespace name=\"%s\">\n", name);
     }
@@ -116,10 +113,7 @@ print_namespace_begin_tag (file, indent, ns)
 
 /* Print XML end tag for a namespace element.  */
 static void
-print_namespace_end_tag (file, indent, ns)
-  FILE* file;
-  unsigned long indent;
-  tree ns;
+print_namespace_end_tag (FILE* file, unsigned long indent, tree ns)
 {
   print_indent (file, indent);
   if(ns == global_namespace)
@@ -135,12 +129,9 @@ print_namespace_end_tag (file, indent, ns)
 
 /* Print XML begin tag for a namespace alias element.  */
 static void
-print_namespace_alias_begin_tag (file, indent, ns)
-  FILE* file;
-  unsigned long indent;
-  tree ns;
+print_namespace_alias_begin_tag (FILE* file, unsigned long indent, tree ns)
 {
-  char* name = xml_get_encoded_string (DECL_NAME (ns));
+  const char* name = xml_get_encoded_string (DECL_NAME (ns));
 
   print_indent (file, indent);
   fprintf (file,
@@ -151,9 +142,7 @@ print_namespace_alias_begin_tag (file, indent, ns)
 
 /* Print XML end tag for a namespace alias element.  */
 static void
-print_namespace_alias_end_tag (file, indent)
-  FILE* file;
-  unsigned long indent;
+print_namespace_alias_end_tag (FILE* file, unsigned long indent)
 {
   print_indent (file, indent);
   fprintf (file,
@@ -163,12 +152,9 @@ print_namespace_alias_end_tag (file, indent)
 
 /* Print XML begin tag for a typedef element.  */
 static void
-print_typedef_begin_tag (file, indent, td)
-  FILE* file;
-  unsigned long indent;
-  tree td;
+print_typedef_begin_tag (FILE* file, unsigned long indent, tree td)
 {
-  char* name = xml_get_encoded_string (DECL_NAME (td));
+  const char* name = xml_get_encoded_string (DECL_NAME (td));
 
   print_indent (file, indent);
   fprintf (file,
@@ -179,9 +165,7 @@ print_typedef_begin_tag (file, indent, td)
 
 /* Print XML end tag for a typedef element.  */
 static void
-print_typedef_end_tag (file, indent)
-  FILE* file;
-  unsigned long indent;
+print_typedef_end_tag (FILE* file, unsigned long indent)
 {
   print_indent (file, indent);
   fprintf (file,
@@ -191,13 +175,10 @@ print_typedef_end_tag (file, indent)
 
 /* Print XML begin tag for a class, struct, or union element.  */
 static void
-print_class_begin_tag (file, indent, rt)
-  FILE* file;
-  unsigned long indent;
-  tree rt;
+print_class_begin_tag (FILE* file, unsigned long indent, tree rt)
 {
-  char* name = xml_get_encoded_string (DECL_NAME (TYPE_NAME (rt)));  
-  char* access = "";
+  const char* name = xml_get_encoded_string (DECL_NAME (TYPE_NAME (rt)));  
+  const char* access = "";
 
   if (TREE_PRIVATE (TYPE_NAME (rt)))        access = "private";
   else if (TREE_PROTECTED (TYPE_NAME (rt))) access = "protected";
@@ -230,10 +211,7 @@ print_class_begin_tag (file, indent, rt)
 
 /* Print XML end tag for a class, struct, or union element.  */
 static void
-print_class_end_tag (file, indent, rt)
-  FILE* file;
-  unsigned long indent;
-  tree rt;
+print_class_end_tag (FILE* file, unsigned long indent, tree rt)
 {
   print_indent (file, indent);
   if (TREE_CODE(rt) == RECORD_TYPE)
@@ -259,12 +237,9 @@ print_class_end_tag (file, indent, rt)
 
 /* Print XML begin tag for a constructor element.  */
 static void
-print_constructor_begin_tag (file, indent, fd)
-  FILE* file;
-  unsigned long indent;
-  tree fd;
+print_constructor_begin_tag (FILE* file, unsigned long indent, tree fd)
 {
-  char* access = "";
+  const char* access = "";
 
   if (TREE_PRIVATE (fd))        access = "private";
   else if (TREE_PROTECTED (fd)) access = "protected";
@@ -279,9 +254,7 @@ print_constructor_begin_tag (file, indent, fd)
 
 /* Print XML end tag for a constructor element.  */
 static void
-print_constructor_end_tag (file, indent)
-  FILE* file;
-  unsigned long indent;
+print_constructor_end_tag (FILE* file, unsigned long indent)
 {
   print_indent (file, indent);
   fprintf (file,
@@ -291,12 +264,9 @@ print_constructor_end_tag (file, indent)
 
 /* Print XML begin tag for a destructor element.  */
 static void
-print_destructor_begin_tag (file, indent, fd)
-  FILE* file;
-  unsigned long indent;
-  tree fd;
+print_destructor_begin_tag (FILE* file, unsigned long indent, tree fd)
 {
-  char* access = "";
+  const char* access = "";
 
   if (TREE_PRIVATE (fd))        access = "private";
   else if (TREE_PROTECTED (fd)) access = "protected";
@@ -311,9 +281,7 @@ print_destructor_begin_tag (file, indent, fd)
 
 /* Print XML end tag for a destructor element.  */
 static void
-print_destructor_end_tag (file, indent)
-  FILE* file;
-  unsigned long indent;
+print_destructor_end_tag (FILE* file, unsigned long indent)
 {
   print_indent (file, indent);
   fprintf (file,
@@ -324,12 +292,9 @@ print_destructor_end_tag (file, indent)
 /* Print XML begin tag for a converter (type-conversion operator)
    element.  */
 static void
-print_converter_begin_tag (file, indent, fd)
-  FILE* file;
-  unsigned long indent;
-  tree fd;
+print_converter_begin_tag (FILE* file, unsigned long indent, tree fd)
 {
-  char* access = "";
+  const char* access = "";
   
   if (TREE_PRIVATE (fd))        access = "private";
   else if (TREE_PROTECTED (fd)) access = "protected";
@@ -344,9 +309,7 @@ print_converter_begin_tag (file, indent, fd)
 
 /* Print XML end tag for a converter (type-conversion operator) element.  */
 static void
-print_converter_end_tag (file, indent)
-  FILE* file;
-  unsigned long indent;
+print_converter_end_tag (FILE* file, unsigned long indent)
 {
   print_indent (file, indent);
   fprintf (file,
@@ -356,12 +319,9 @@ print_converter_end_tag (file, indent)
 
 /* Print XML begin tag for an operator function element.  */
 static void
-print_operator_function_begin_tag (file, indent, fd)
-  FILE* file;
-  unsigned long indent;
-  tree fd;
+print_operator_function_begin_tag (FILE* file, unsigned long indent, tree fd)
 {
-  char* name = xml_get_encoded_string (reverse_opname_lookup (DECL_NAME (fd)) );
+  const char* name = xml_get_encoded_string (reverse_opname_lookup (DECL_NAME (fd)) );
 
   print_indent (file, indent);
   fprintf (file,
@@ -372,9 +332,7 @@ print_operator_function_begin_tag (file, indent, fd)
 
 /* Print XML end tag for an operator function element.  */
 static void
-print_operator_function_end_tag (file, indent)
-  FILE* file;
-  unsigned long indent;
+print_operator_function_end_tag (FILE* file, unsigned long indent)
 {
   print_indent (file, indent);
   fprintf (file,
@@ -384,13 +342,10 @@ print_operator_function_end_tag (file, indent)
 
 /* Print XML begin tag for an operator method element.  */
 static void
-print_operator_method_begin_tag (file, indent, fd)
-  FILE* file;
-  unsigned long indent;
-  tree fd;
+print_operator_method_begin_tag (FILE* file, unsigned long indent, tree fd)
 {
-  char* name = xml_get_encoded_string (reverse_opname_lookup (DECL_NAME (fd)) );
-  char* access = "";
+  const char* name = xml_get_encoded_string (reverse_opname_lookup (DECL_NAME (fd)) );
+  const char* access = "";
 
   if (TREE_PRIVATE (fd))        access = "private";
   else if (TREE_PROTECTED (fd)) access = "protected";
@@ -405,9 +360,7 @@ print_operator_method_begin_tag (file, indent, fd)
 
 /* Print XML end tag for an operator method element.  */
 static void
-print_operator_method_end_tag (file, indent)
-  FILE* file;
-  unsigned long indent;
+print_operator_method_end_tag (FILE* file, unsigned long indent)
 {
   print_indent (file, indent);
   fprintf (file,
@@ -417,13 +370,10 @@ print_operator_method_end_tag (file, indent)
 
 /* Print XML begin tag for a method element.  */
 static void
-print_method_begin_tag (file, indent, fd)
-  FILE* file;
-  unsigned long indent;
-  tree fd;
+print_method_begin_tag (FILE* file, unsigned long indent, tree fd)
 {
-  char* name = xml_get_encoded_string (DECL_NAME (fd));
-  char* access = "";
+  const char* name = xml_get_encoded_string (DECL_NAME (fd));
+  const char* access = "";
   int is_static;
 
   if (TREE_PRIVATE (fd))        access = "private";
@@ -444,9 +394,7 @@ print_method_begin_tag (file, indent, fd)
 
 /* Print XML end tag for a method element.  */
 static void
-print_method_end_tag (file, indent)
-  FILE* file;
-  unsigned long indent;
+print_method_end_tag (FILE* file, unsigned long indent)
 {
   print_indent (file, indent);
   fprintf (file,
@@ -456,12 +404,9 @@ print_method_end_tag (file, indent)
 
 /* Print XML begin tag for a function element.  */
 static void
-print_function_begin_tag (file, indent, fd)
-  FILE* file;
-  unsigned long indent;
-  tree fd;
+print_function_begin_tag (FILE* file, unsigned long indent, tree fd)
 {
-  char* name = xml_get_encoded_string (DECL_NAME (fd));
+  const char* name = xml_get_encoded_string (DECL_NAME (fd));
 
   print_indent (file, indent);
   fprintf (file,
@@ -472,9 +417,7 @@ print_function_begin_tag (file, indent, fd)
 
 /* Print XML end tag for a function element.  */
 static void
-print_function_end_tag (file, indent)
-  FILE* file;
-  unsigned long indent;
+print_function_end_tag (FILE* file, unsigned long indent)
 {
   print_indent (file, indent);
   fprintf (file,
@@ -484,12 +427,9 @@ print_function_end_tag (file, indent)
 
 /* Print XML begin tag for a function argument element.  */
 static void
-print_argument_begin_tag (file, indent, arg)
-  FILE* file;
-  unsigned long indent;
-  tree arg;
+print_argument_begin_tag (FILE* file, unsigned long indent, tree arg)
 {
-  char* name = "";
+  const char* name = "";
 
   if(arg && DECL_NAME (arg))
     name = IDENTIFIER_POINTER (DECL_NAME (arg));
@@ -503,9 +443,7 @@ print_argument_begin_tag (file, indent, arg)
 
 /* Print XML end tag for a function argument element.  */
 static void
-print_argument_end_tag (file, indent)
-  FILE* file;
-  unsigned long indent;
+print_argument_end_tag (FILE* file, unsigned long indent)
 {
   print_indent (file, indent);
   fprintf (file,
@@ -515,9 +453,7 @@ print_argument_end_tag (file, indent)
 
 /* Print XML begin tag for a function return type element.  */
 static void
-print_returns_begin_tag (file, indent)
-  FILE* file;
-  unsigned long indent;
+print_returns_begin_tag (FILE* file, unsigned long indent)
 {
   print_indent (file, indent);
   fprintf (file,
@@ -527,9 +463,7 @@ print_returns_begin_tag (file, indent)
 
 /* Print XML end tag for a function return type element.  */
 static void
-print_returns_end_tag (file, indent)
-  FILE* file;
-  unsigned long indent;
+print_returns_end_tag (FILE* file, unsigned long indent)
 {
   print_indent (file, indent);
   fprintf (file,
@@ -539,12 +473,9 @@ print_returns_end_tag (file, indent)
 
 /* Print XML empty tag for a default argument element.  */
 static void
-print_default_argument_empty_tag (file, indent, t)
-  FILE* file;
-  unsigned long indent;
-  tree t;
+print_default_argument_empty_tag (FILE* file, unsigned long indent, tree t)
 {
-  char* value;
+  const char* value;
 
   value = xml_get_encoded_string_from_string (
     expr_as_string (t, 0));
@@ -558,9 +489,7 @@ print_default_argument_empty_tag (file, indent, t)
 
 /* Print XML empty tag for an ellipsis at the end of an argument list.  */
 static void
-print_ellipsis_empty_tag (file, indent)
-  FILE* file;
-  unsigned long indent;
+print_ellipsis_empty_tag (FILE* file, unsigned long indent)
 {
   print_indent (file, indent);
   fprintf (file,
@@ -570,12 +499,9 @@ print_ellipsis_empty_tag (file, indent)
 
 /* Print XML begin tag for a variable declaration element.  */
 static void
-print_variable_begin_tag (file, indent, vd)
-  FILE* file;
-  unsigned long indent;
-  tree vd;
+print_variable_begin_tag (FILE* file, unsigned long indent, tree vd)
 {
-  char* name = IDENTIFIER_POINTER (DECL_NAME (vd));
+  const char* name = IDENTIFIER_POINTER (DECL_NAME (vd));
   
   print_indent (file, indent);
   fprintf (file,
@@ -586,9 +512,7 @@ print_variable_begin_tag (file, indent, vd)
 
 /* Print XML end tag for a variable declaration element.  */
 static void
-print_variable_end_tag (file, indent)
-  FILE* file;
-  unsigned long indent;
+print_variable_end_tag (FILE* file, unsigned long indent)
 {
   print_indent (file, indent);
   fprintf (file,
@@ -598,12 +522,9 @@ print_variable_end_tag (file, indent)
 
 /* Print XML empty tag for a variable initializer element.  */
 static void
-print_initializer_empty_tag (file, indent, t)
-  FILE* file;
-  unsigned long indent;
-  tree t;
+print_initializer_empty_tag (FILE* file, unsigned long indent, tree t)
 {
-  char* value;
+  const char* value;
   
   if (!t || (t == error_mark_node)) return;
   
@@ -617,12 +538,9 @@ print_initializer_empty_tag (file, indent, t)
 
 /* Print XML begin tag for a field declaration element.  */
 static void
-print_field_begin_tag (file, indent, vd)
-  FILE* file;
-  unsigned long indent;
-  tree vd;
+print_field_begin_tag (FILE* file, unsigned long indent, tree vd)
 {
-  char* name = IDENTIFIER_POINTER (DECL_NAME (vd));
+  const char* name = IDENTIFIER_POINTER (DECL_NAME (vd));
   
   print_indent (file, indent);
   fprintf (file,
@@ -633,9 +551,7 @@ print_field_begin_tag (file, indent, vd)
 
 /* Print XML end tag for a field declaration element.  */
 static void
-print_field_end_tag (file, indent)
-  FILE* file;
-  unsigned long indent;
+print_field_end_tag (FILE* file, unsigned long indent)
 {
   print_indent (file, indent);
   fprintf (file,
@@ -645,12 +561,9 @@ print_field_end_tag (file, indent)
 
 /* Print XML begin tag for a const declaration element.  */
 static void
-print_enum_begin_tag (file, indent, vd)
-  FILE* file;
-  unsigned long indent;
-  tree vd;
+print_enum_begin_tag (FILE* file, unsigned long indent, tree vd)
 {
-  char* name = IDENTIFIER_POINTER (DECL_NAME (vd));
+  const char* name = IDENTIFIER_POINTER (DECL_NAME (vd));
   
   print_indent (file, indent);
   fprintf (file,
@@ -661,9 +574,7 @@ print_enum_begin_tag (file, indent, vd)
 
 /* Print XML end tag for a const declaration element.  */
 static void
-print_enum_end_tag (file, indent)
-  FILE* file;
-  unsigned long indent;
+print_enum_end_tag (FILE* file, unsigned long indent)
 {
   print_indent (file, indent);
   fprintf (file,
@@ -673,9 +584,7 @@ print_enum_end_tag (file, indent)
 
 /* Print XML begin tag for a type element.  */
 static void
-print_named_type_begin_tag (file, indent)
-  FILE* file;
-  unsigned long indent;
+print_named_type_begin_tag (FILE* file, unsigned long indent)
 {
   print_indent (file, indent);  
   fprintf (file,
@@ -685,9 +594,7 @@ print_named_type_begin_tag (file, indent)
 
 /* Print XML end tag for a type element.  */
 static void
-print_named_type_end_tag (file, indent)
-  FILE* file;
-  unsigned long indent;
+print_named_type_end_tag (FILE* file, unsigned long indent)
 {
   print_indent (file, indent);  
   fprintf (file,
@@ -697,9 +604,7 @@ print_named_type_end_tag (file, indent)
 
 /* Print XML begin tag for a pointer type element.  */
 static void
-print_pointer_type_begin_tag (file, indent)
-  FILE* file;
-  unsigned long indent;
+print_pointer_type_begin_tag (FILE* file, unsigned long indent)
 {
   print_indent (file, indent);
   fprintf (file,
@@ -709,9 +614,7 @@ print_pointer_type_begin_tag (file, indent)
 
 /* Print XML end tag for a pointer type element.  */
 static void
-print_pointer_type_end_tag (file, indent)
-  FILE* file;
-  unsigned long indent;
+print_pointer_type_end_tag (FILE* file, unsigned long indent)
 {
   print_indent (file, indent);
   fprintf (file, "</PointerType>\n");
@@ -720,9 +623,7 @@ print_pointer_type_end_tag (file, indent)
 
 /* Print XML begin tag for a reference type element.  */
 static void
-print_reference_type_begin_tag (file, indent)
-  FILE* file;
-  unsigned long indent;
+print_reference_type_begin_tag (FILE* file, unsigned long indent)
 {
   print_indent (file, indent);
   fprintf (file,
@@ -732,9 +633,7 @@ print_reference_type_begin_tag (file, indent)
 
 /* Print XML end tag for a reference type element.  */
 static void
-print_reference_type_end_tag (file, indent)
-  FILE* file;
-  unsigned long indent;
+print_reference_type_end_tag (FILE* file, unsigned long indent)
 {
   print_indent (file, indent);
   fprintf (file, "</ReferenceType>\n");
@@ -743,9 +642,7 @@ print_reference_type_end_tag (file, indent)
 
 /* Print XML begin tag for a function type element.  */
 static void
-print_function_type_begin_tag (file, indent)
-  FILE* file;
-  unsigned long indent;
+print_function_type_begin_tag (FILE* file, unsigned long indent)
 {
   print_indent (file, indent);
   fprintf (file,
@@ -755,9 +652,7 @@ print_function_type_begin_tag (file, indent)
 
 /* Print XML end tag for a function type element.  */
 static void
-print_function_type_end_tag (file, indent)
-  FILE* file;
-  unsigned long indent;
+print_function_type_end_tag (FILE* file, unsigned long indent)
 {
   print_indent (file, indent);
   fprintf (file,
@@ -767,9 +662,7 @@ print_function_type_end_tag (file, indent)
 
 /* Print XML begin tag for a method type element.  */
 static void
-print_method_type_begin_tag (file, indent)
-  FILE* file;
-  unsigned long indent;
+print_method_type_begin_tag (FILE* file, unsigned long indent)
 {
   print_indent (file, indent);
   fprintf (file,
@@ -779,9 +672,7 @@ print_method_type_begin_tag (file, indent)
 
 /* Print XML end tag for a method type element.  */
 static void
-print_method_type_end_tag (file, indent)
-  FILE* file;
-  unsigned long indent;
+print_method_type_end_tag (FILE* file, unsigned long indent)
 {
   print_indent (file, indent);
   fprintf (file,
@@ -791,9 +682,7 @@ print_method_type_end_tag (file, indent)
 
 /* Print XML begin tag for a offset type element.  */
 static void
-print_offset_type_begin_tag (file, indent)
-  FILE* file;
-  unsigned long indent;
+print_offset_type_begin_tag (FILE* file, unsigned long indent)
 {
   print_indent (file, indent);
   fprintf (file,
@@ -803,9 +692,7 @@ print_offset_type_begin_tag (file, indent)
 
 /* Print XML end tag for a offset type element.  */
 static void
-print_offset_type_end_tag (file, indent)
-  FILE* file;
-  unsigned long indent;
+print_offset_type_end_tag (FILE* file, unsigned long indent)
 {
   print_indent (file, indent);
   fprintf (file,
@@ -815,12 +702,9 @@ print_offset_type_end_tag (file, indent)
 
 /* Print XML begin tag for a array type element.  */
 static void
-print_array_type_begin_tag (file, indent, at)
-  FILE* file;
-  unsigned long indent;
-  tree at;
+print_array_type_begin_tag (FILE* file, unsigned long indent, tree at)
 {
-  char* length = "";
+  const char* length = "";
   
   if (TYPE_DOMAIN (at))
     length = xml_get_encoded_string_from_string (
@@ -835,9 +719,7 @@ print_array_type_begin_tag (file, indent, at)
 
 /* Print XML end tag for a array type element.  */
 static void
-print_array_type_end_tag (file, indent)
-  FILE* file;
-  unsigned long indent;
+print_array_type_end_tag (FILE* file, unsigned long indent)
 {
   print_indent (file, indent);
   fprintf (file,
@@ -847,9 +729,7 @@ print_array_type_end_tag (file, indent)
 
 /* Print XML begin element tag for a base type element.  */
 static void
-print_base_type_begin_tag (file, indent)
-  FILE* file;
-  unsigned long indent;
+print_base_type_begin_tag (FILE* file, unsigned long indent)
 {
   print_indent (file, indent);
   fprintf (file,
@@ -859,9 +739,7 @@ print_base_type_begin_tag (file, indent)
 
 /* Print XML end element tag for a base type element.  */
 static void
-print_base_type_end_tag (file, indent)
-  FILE* file;
-  unsigned long indent;
+print_base_type_end_tag (FILE* file, unsigned long indent)
 {
   print_indent (file, indent);
   fprintf (file,
@@ -871,12 +749,9 @@ print_base_type_end_tag (file, indent)
 
 /* Print XML begin element tag for a base class element.  */
 static void
-print_base_class_begin_tag (file, indent, binfo)
-  FILE* file;
-  unsigned long indent;
-  tree binfo;
+print_base_class_begin_tag (FILE* file, unsigned long indent, tree binfo)
 {
-  char* access = "";
+  const char* access = "";
 
   if (TREE_VIA_PUBLIC (binfo))         access = "public";
   else if (TREE_VIA_PROTECTED (binfo)) access = "protected";
@@ -891,9 +766,7 @@ print_base_class_begin_tag (file, indent, binfo)
 
 /* Print XML end element tag for a base class element.  */
 static void
-print_base_class_end_tag (file, indent)
-  FILE* file;
-  unsigned long indent;
+print_base_class_end_tag (FILE* file, unsigned long indent)
 {
   print_indent (file, indent);
   fprintf (file,
@@ -903,9 +776,7 @@ print_base_class_end_tag (file, indent)
 
 /* Print XML begin tag for a template instantiation element.  */
 static void
-print_instantiation_begin_tag (file, indent)
-  FILE* file;
-  unsigned long indent;
+print_instantiation_begin_tag (FILE* file, unsigned long indent)
 {
   print_indent (file, indent);
   fprintf (file,
@@ -915,9 +786,7 @@ print_instantiation_begin_tag (file, indent)
 
 /* Print XML end tag for a template instantiation element.  */
 static void
-print_instantiation_end_tag (file, indent)
-  FILE* file;
-  unsigned long indent;
+print_instantiation_end_tag (FILE* file, unsigned long indent)
 {
   print_indent (file, indent);
   fprintf (file,
@@ -927,9 +796,7 @@ print_instantiation_end_tag (file, indent)
 
 /* Print XML begin tag for a template argument element.  */
 static void
-print_template_argument_begin_tag (file, indent)
-  FILE* file;
-  unsigned long indent;
+print_template_argument_begin_tag (FILE* file, unsigned long indent)
 {
   print_indent (file, indent);
   fprintf (file,
@@ -939,9 +806,7 @@ print_template_argument_begin_tag (file, indent)
 
 /* Print XML end tag for a template argument element.  */
 static void
-print_template_argument_end_tag (file, indent)
-  FILE* file;
-  unsigned long indent;
+print_template_argument_end_tag (FILE* file, unsigned long indent)
 {
   print_indent (file, indent);
   fprintf (file,
@@ -952,9 +817,7 @@ print_template_argument_end_tag (file, indent)
 /* Print XML empty tag indicating that the current declaration is
    external.  */
 static void
-print_external_empty_tag (file, indent)
-  FILE* file;
-  unsigned long indent;
+print_external_empty_tag (FILE* file, unsigned long indent)
 {
   print_indent (file, indent);
   fprintf (file,
@@ -964,9 +827,7 @@ print_external_empty_tag (file, indent)
 
 /* Print XML empty tag indicating that the current type is incomplete.  */
 static void
-print_incomplete_type_empty_tag (file, indent)
-  FILE* file;
-  unsigned long indent;
+print_incomplete_type_empty_tag (FILE* file, unsigned long indent)
 {
   print_indent (file, indent);
   fprintf (file,
@@ -977,10 +838,7 @@ print_incomplete_type_empty_tag (file, indent)
 /* Print XML empty tag describing the location of a declaration in the
    source.  */
 static void
-print_location_empty_tag (file, indent, d)
-  FILE* file;
-  unsigned long indent;
-  tree d;
+print_location_empty_tag (FILE* file, unsigned long indent, tree d)
 {  
   const char* source_file = DECL_SOURCE_FILE (d);
   unsigned int source_line = DECL_SOURCE_LINE (d);
@@ -995,10 +853,7 @@ print_location_empty_tag (file, indent, d)
 
 /* Print XML empty tag describing the cv-qualifiers of a type.  */
 static void
-print_cv_qualifiers_empty_tag (file, indent, t)
-  FILE* file;
-  unsigned long indent;
-  tree t;
+print_cv_qualifiers_empty_tag (FILE* file, unsigned long indent, tree t)
 {  
   int is_const = CP_TYPE_CONST_P (t);
   int is_volatile = CP_TYPE_VOLATILE_P (t);
@@ -1015,12 +870,9 @@ print_cv_qualifiers_empty_tag (file, indent, t)
 
 /* Print XML begin tag for a name qualifier element.  */
 static void
-print_name_qualifier_begin_tag (file, indent, t)
-  FILE* file;
-  unsigned long indent;
-  tree t;
+print_name_qualifier_begin_tag (FILE* file, unsigned long indent, tree t)
 {
-  char* name = xml_get_encoded_string(t);
+  const char* name = xml_get_encoded_string(t);
   print_indent (file, indent);
   fprintf (file,
            "<NameQualifier name=\"%s\">\n",
@@ -1030,9 +882,7 @@ print_name_qualifier_begin_tag (file, indent, t)
 
 /* Print XML end tag for a name qualifier element.  */
 static void
-print_name_qualifier_end_tag (file, indent)
-  FILE* file;
-  unsigned long indent;
+print_name_qualifier_end_tag (FILE* file, unsigned long indent)
 {
   print_indent (file, indent);
   fprintf (file,
@@ -1042,12 +892,9 @@ print_name_qualifier_end_tag (file, indent)
 
 /* Print XML empty tag for a qualified name element.  */
 static void
-print_qualified_name_empty_tag (file, indent, t)
-  FILE* file;
-  unsigned long indent;
-  tree t;
+print_qualified_name_empty_tag (FILE* file, unsigned long indent, tree t)
 {
-  char* name = xml_get_encoded_string(t);
+  const char* name = xml_get_encoded_string(t);
   print_indent (file, indent);
   fprintf (file,
            "<QualifiedName name=\"%s\"/>\n",
@@ -1058,11 +905,8 @@ print_qualified_name_empty_tag (file, indent, t)
 /* Print XML empty tag describing an unimplemented TREE_CODE that has been
    encountered.  */
 static void
-print_unimplemented_empty_tag (file, indent, t, func)
-  FILE* file;
-  unsigned long indent;
-  tree t;
-  char* func;
+print_unimplemented_empty_tag (FILE* file, unsigned long indent, tree t,
+                               const char* func)
 {
   int tree_code = TREE_CODE (t);
   
@@ -1076,8 +920,7 @@ print_unimplemented_empty_tag (file, indent, t, func)
 
 /* Output the XML file's headers.  */
 void
-xml_output_headers (file)
-  FILE* file;
+xml_output_headers (FILE* file)
 {
   fprintf (file,
            "<?xml version=\"1.0\"?>\n");// encoding="ISO-8859-1"?>
@@ -1087,10 +930,7 @@ xml_output_headers (file)
 /* Output a NAMESPACE_DECL.  Prints beginning and ending tags, and all
    the namespace's member declarations in between.  */
 void
-xml_output_namespace_decl (file, indent, ns)
-  FILE* file;
-  unsigned long indent;
-  tree ns;
+xml_output_namespace_decl (FILE* file, unsigned long indent, tree ns)
 {
   if(ns == std_node) return;
     
@@ -1130,7 +970,7 @@ xml_output_namespace_decl (file, indent, ns)
           break;
         case RESULT_DECL:
         case USING_DECL:
-//        case THUNK_DECL:
+          /* case THUNK_DECL: */
           /* This is compiler-generated.  Just ignore it.  */
           break;
         default:
@@ -1161,10 +1001,7 @@ xml_output_namespace_decl (file, indent, ns)
 /* Dispatch output of a TYPE_DECL.  This is either a typedef, or a new
    type (class/struct/union) definition.  */
 void
-xml_output_type_decl (file, indent, td)
-  FILE* file;
-  unsigned long indent;
-  tree td;
+xml_output_type_decl (FILE* file, unsigned long indent, tree td)
 {
   /* Get the type as completely as possible.  */
   tree t = complete_type (TREE_TYPE (td));
@@ -1228,10 +1065,7 @@ xml_output_type_decl (file, indent, td)
    beginning and ending tags, and all class member declarations between.
    Also handles a UNION_TYPE.  */
 void
-xml_output_record_type (file, indent, rt)
-  FILE* file;
-  unsigned long indent;
-  tree rt;
+xml_output_record_type (FILE* file, unsigned long indent, tree rt)
 {
   tree field;
   tree func;
@@ -1324,10 +1158,7 @@ xml_output_record_type (file, indent, rt)
 /* Output for a FUNCTION_DECL.  Prints beginning and ending tags, and
    the argument list between them.  */
 void
-xml_output_function_decl (file, indent, fd)
-  FILE* file;
-  unsigned long indent;
-  tree fd;
+xml_output_function_decl (FILE* file, unsigned long indent, tree fd)
 {
   void (*end_tag_print)(FILE*, unsigned long) = NULL;
   tree arg;
@@ -1443,10 +1274,7 @@ xml_output_function_decl (file, indent, fd)
 
 /* Output for an OVERLOAD.  Output all the functions in the overload list.   */
 void
-xml_output_overload (file, indent, o)
-  FILE* file;
-  unsigned long indent;
-  tree o;
+xml_output_overload (FILE* file, unsigned long indent, tree o)
 {
   tree cur_overload = o;
   while (cur_overload)
@@ -1460,10 +1288,7 @@ xml_output_overload (file, indent, o)
 /* Output for a VAR_DECL.  The name and type of the variable are output,
    as well as the initializer if it exists.  */
 void
-xml_output_var_decl (file, indent, vd)
-  FILE* file;
-  unsigned long indent;
-  tree vd;
+xml_output_var_decl (FILE* file, unsigned long indent, tree vd)
 {
   /* Don't process any internally generated declarations.  */
   if (MY_DECL_INTERNAL (vd)) return;
@@ -1488,10 +1313,7 @@ xml_output_var_decl (file, indent, vd)
 /* Output for a FIELD_DECL.  The name and type of the variable are output,
    as well as the initializer if it exists.  */
 void
-xml_output_field_decl (file, indent, fd)
-  FILE* file;
-  unsigned long indent;
-  tree fd;
+xml_output_field_decl (FILE* file, unsigned long indent, tree fd)
 {
   /* Don't process any internally generated declarations.  */
   if (MY_DECL_INTERNAL (fd)) return;
@@ -1507,10 +1329,7 @@ xml_output_field_decl (file, indent, fd)
 /* Output for a CONST_DECL.  The name and type of the constant are output,
    as well as the value.  */
 void
-xml_output_const_decl (file, indent, cd)
-  FILE* file;
-  unsigned long indent;
-  tree cd;
+xml_output_const_decl (FILE* file, unsigned long indent, tree cd)
 {
   /* Don't process any internally generated declarations.  */
   if (MY_DECL_INTERNAL (cd)) return;
@@ -1527,10 +1346,7 @@ xml_output_const_decl (file, indent, cd)
 /* Output for a TEMPLATE_DECL.  The set of specializations (including
    instantiations) is output.  */
 void
-xml_output_template_decl (file, indent, td)
-  FILE* file;
-  unsigned long indent;
-  tree td;
+xml_output_template_decl (FILE* file, unsigned long indent, tree td)
 {
   tree tl;
   
@@ -1574,16 +1390,13 @@ xml_output_template_decl (file, indent, td)
 /* Output for TEMPLATE_INFO.  The set of template parameters used
    is output.  */
 void
-xml_output_template_info (file, indent, ti)
-  FILE* file;
-  unsigned long indent;
-  tree ti;
+xml_output_template_info (FILE* file, unsigned long indent, tree ti)
 {
   tree arg_vec;
   int num_args;
   int i;
 
-  print_instantiation_begin_tag (file, indent, ti);
+  print_instantiation_begin_tag (file, indent);
 
   arg_vec = TI_ARGS (ti);
   num_args = TREE_VEC_LENGTH (arg_vec);
@@ -1599,10 +1412,7 @@ xml_output_template_info (file, indent, ti)
 
 /* Output for a typedef.  The name and associated type are output.  */
 void
-xml_output_typedef (file, indent, td)
-  FILE* file;
-  unsigned long indent;
-  tree td;
+xml_output_typedef (FILE* file, unsigned long indent, tree td)
 {
   print_typedef_begin_tag (file, indent, td);
   print_location_empty_tag (file, indent+XML_NESTED_INDENT, td);
@@ -1614,10 +1424,7 @@ xml_output_typedef (file, indent, td)
 /* Output for a *_TYPE.  This nests type definitions that contain other
    types (like pointers, references, functions, method, and arrays).  */
 void
-xml_output_type (file, indent, t)
-  FILE* file;
-  unsigned long indent;
-  tree t;
+xml_output_type (FILE* file, unsigned long indent, tree t)
 {
   switch (TREE_CODE (t))
     {
@@ -1665,12 +1472,9 @@ xml_output_type (file, indent, t)
 
 /* Output for a normal named type.  */
 void
-xml_output_named_type (file, indent, t)
-  FILE* file;
-  unsigned long indent;
-  tree t;
+xml_output_named_type (FILE* file, unsigned long indent, tree t)
 {  
-  print_named_type_begin_tag (file, indent, t);
+  print_named_type_begin_tag (file, indent);
   print_cv_qualifiers_empty_tag (file, indent+XML_NESTED_INDENT, t);
   xml_output_qualified_name (file, indent+XML_NESTED_INDENT,
                                    TYPE_MAIN_VARIANT (t));
@@ -1680,14 +1484,11 @@ xml_output_named_type (file, indent, t)
 
 /* Output for a FUNCTION_TYPE.  */
 void
-xml_output_function_type (file, indent, t)
-  FILE* file;
-  unsigned long indent;
-  tree t;
+xml_output_function_type (FILE* file, unsigned long indent, tree t)
 {
   tree arg_type;
   
-  print_function_type_begin_tag (file, indent, t);  
+  print_function_type_begin_tag (file, indent);
 
   /* Print out the return type information for this function.  */
   xml_output_returns (file, indent+XML_NESTED_INDENT,
@@ -1715,10 +1516,7 @@ xml_output_function_type (file, indent, t)
 
 /* Output for a METHOD_TYPE.  */
 void
-xml_output_method_type (file, indent, t)
-  FILE* file;
-  unsigned long indent;
-  tree t;
+xml_output_method_type (FILE* file, unsigned long indent, tree t)
 {
   tree arg_type;
   
@@ -1758,12 +1556,9 @@ xml_output_method_type (file, indent, t)
 
 /* Output for a POINTER_TYPE.  */
 void
-xml_output_pointer_type (file, indent, t)
-  FILE* file;
-  unsigned long indent;
-  tree t;
+xml_output_pointer_type (FILE* file, unsigned long indent, tree t)
 {
-  print_pointer_type_begin_tag (file, indent, t);
+  print_pointer_type_begin_tag (file, indent);
   print_cv_qualifiers_empty_tag (file, indent+XML_NESTED_INDENT, t);
   xml_output_type (file, indent+XML_NESTED_INDENT, TREE_TYPE (t));
   print_pointer_type_end_tag (file, indent);
@@ -1772,12 +1567,9 @@ xml_output_pointer_type (file, indent, t)
 
 /* Output for a REFERENCE_TYPE.  */
 void
-xml_output_reference_type (file, indent, t)
-  FILE* file;
-  unsigned long indent;
-  tree t;
+xml_output_reference_type (FILE* file, unsigned long indent, tree t)
 {
-  print_reference_type_begin_tag (file, indent, t);
+  print_reference_type_begin_tag (file, indent);
   print_cv_qualifiers_empty_tag (file, indent+XML_NESTED_INDENT, t);
   xml_output_type (file, indent+XML_NESTED_INDENT, TREE_TYPE (t));
   print_reference_type_end_tag (file, indent);
@@ -1786,10 +1578,7 @@ xml_output_reference_type (file, indent, t)
 
 /* Output for an OFFSET_TYPE.  */
 void
-xml_output_offset_type (file, indent, t)
-  FILE* file;
-  unsigned long indent;
-  tree t;
+xml_output_offset_type (FILE* file, unsigned long indent, tree t)
 {
   print_offset_type_begin_tag (file, indent);
   xml_output_base_type (file, indent+XML_NESTED_INDENT,
@@ -1802,10 +1591,7 @@ xml_output_offset_type (file, indent, t)
 
 /* Output for an ARRAY_TYPE.  */
 void
-xml_output_array_type (file, indent, t)
-  FILE* file;
-  unsigned long indent;
-  tree t;
+xml_output_array_type (FILE* file, unsigned long indent, tree t)
 {
   print_array_type_begin_tag (file, indent, t);
   print_cv_qualifiers_empty_tag (file, indent+XML_NESTED_INDENT, t);
@@ -1816,10 +1602,7 @@ xml_output_array_type (file, indent, t)
 
 /* Output a base class for a RECORD_TYPE or UNION_TYPE.  */
 void
-xml_output_base_class (file, indent, binfo)
-  FILE* file;
-  unsigned long indent;
-  tree binfo;
+xml_output_base_class (FILE* file, unsigned long indent, tree binfo)
 {
   print_base_class_begin_tag (file, indent, binfo);
   xml_output_qualified_name (file, indent+XML_NESTED_INDENT,
@@ -1830,10 +1613,7 @@ xml_output_base_class (file, indent, binfo)
 
 /* Output a base type for a METHOD_TYPE or OFFSET_TYPE.  */
 void
-xml_output_base_type (file, indent, t)
-  FILE* file;
-  unsigned long indent;
-  tree t;
+xml_output_base_type (FILE* file, unsigned long indent, tree t)
 {
   print_base_type_begin_tag (file, indent);
   xml_output_qualified_name (file, indent+XML_NESTED_INDENT, t);
@@ -1843,11 +1623,7 @@ xml_output_base_type (file, indent, t)
 
 /* Output for a PARM_DECL / TREE_LIST corresponding to a function argument.  */
 void
-xml_output_argument (file, indent, pd, tl)
-  FILE* file;
-  unsigned long indent;
-  tree pd;
-  tree tl;
+xml_output_argument (FILE* file, unsigned long indent, tree pd, tree tl)
 {
   print_argument_begin_tag (file, indent, pd);
 
@@ -1863,10 +1639,7 @@ xml_output_argument (file, indent, pd, tl)
 
 /* Output the return type of a function.  */
 void
-xml_output_returns (file, indent, t)
-  FILE* file;
-  unsigned long indent;
-  tree t;
+xml_output_returns (FILE* file, unsigned long indent, tree t)
 {
   print_returns_begin_tag (file, indent);
   xml_output_type (file, indent+XML_NESTED_INDENT, t);
@@ -1876,10 +1649,7 @@ xml_output_returns (file, indent, t)
 
 /* Output the given template argument.  */
 void
-xml_output_template_argument (file, indent, arg)
-  FILE* file;
-  unsigned long indent;
-  tree arg;
+xml_output_template_argument (FILE* file, unsigned long indent, tree arg)
 {
   print_template_argument_begin_tag (file, indent);
   print_unimplemented_empty_tag (file, indent+XML_NESTED_INDENT, arg,
@@ -1891,10 +1661,7 @@ xml_output_template_argument (file, indent, arg)
 /* Given a list of qualifiers, walk it recursively, and output it in
    nested form.  */
 static void
-output_qualifier_list (file, indent, qualifiers)
-  FILE* file;
-  unsigned long indent;
-  tree qualifiers;
+output_qualifier_list (FILE* file, unsigned long indent, tree qualifiers)
 {
   tree next = TREE_CHAIN (qualifiers);
   tree decl = TREE_VALUE (qualifiers);
@@ -1915,10 +1682,7 @@ output_qualifier_list (file, indent, qualifiers)
 /* Given any _DECL, output the tags of the fully qualified form of its
    name.  */
 void
-xml_output_qualified_name (file, indent, t)
-  FILE* file;
-  unsigned long indent;
-  tree t;
+xml_output_qualified_name (FILE* file, unsigned long indent, tree t)
 {
   tree context;
   tree qualifiers = NULL_TREE;
@@ -1943,9 +1707,8 @@ xml_output_qualified_name (file, indent, t)
 
 /* Convert the identifier IN_ID to an XML encoded form by passing its string
    to xml_get_encoded_string_from_string().  */
-char*
-xml_get_encoded_string (in_id)
-  tree in_id;
+const char*
+xml_get_encoded_string (tree in_id)
 {
   if(in_id)
     return xml_get_encoded_string_from_string (IDENTIFIER_POINTER (in_id));
@@ -1966,9 +1729,8 @@ xml_get_encoded_string (in_id)
 /* Convert the name IN_STR to an XML encoded form.
    This replaces '&', '<', and '>'
    with their corresponding unicode character references.  */
-char*
-xml_get_encoded_string_from_string (in_str)
-  const char* in_str;
+const char*
+xml_get_encoded_string_from_string (const char* in_str)
 {
   int length_increase = 0;
   const char* inCh;
@@ -2018,9 +1780,7 @@ xml_get_encoded_string_from_string (in_str)
 
 /* Print N spaces to FILE.  Used for indentation of XML output.  */
 void
-print_indent (file, n)
-  FILE* file;
-  unsigned long n;
+print_indent (FILE* file, unsigned long n)
 {
   unsigned long left = n;
   while(left >= 10)
@@ -2039,8 +1799,7 @@ print_indent (file, n)
 /* Lookup the real name of an operator whose ansi_opname or ansi_assopname
    is NAME.  */
 tree
-reverse_opname_lookup (name)
-  tree name;
+reverse_opname_lookup (tree name)
 {
   static const char* unknown_operator = "{unknown operator}";
   int i;
@@ -2069,10 +1828,7 @@ static tree  xml_get_qualified_type_name   PARAMS ((tree));
 
 /* Concatenate input strings into new memory.  Caller must free memory.  */
 char*
-xml_concat_3_strings (s1, s2, s3)
-  char* s1;
-  char* s2;
-  char* s3;
+xml_concat_3_strings (const char* s1, const char* s2, const char* s3)
 {
   char* ns = (char*) malloc (strlen (s1) +  strlen (s2) + strlen (s3) + 1);
   strcpy (ns, s1);
@@ -2084,11 +1840,10 @@ xml_concat_3_strings (s1, s2, s3)
 /* Given a type, return an identifier node with the fully qualified type
    name. */
 tree
-xml_get_qualified_type_name (t)
-  tree t;
+xml_get_qualified_type_name (tree t)
 {
-  char* temp_name;
-  char* name;
+  const char* temp_name;
+  const char* name;
   tree context = t;
   tree result;
   
