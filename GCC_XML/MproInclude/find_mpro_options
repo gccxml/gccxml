@@ -32,6 +32,14 @@ s/ -/\\
 sed -n '/^-I.*$/{p;}' |
 sed -n 'H;${g;s/\n/ /g;p;}'`
 
+# The support headers are located where this script is.
+SELFPATH=`echo $0 | sed -n '/\//{s/\/find_mpro_options$//;p;}'`
+if test "x$SELFPATH" = "x" ; then SELFPATH="." ; fi
+SELFPATH=`cd $SELFPATH ; pwd`
+INCLUDES="-I$SELFPATH $INCLUDES"
+
 rm -f /tmp/find_mpro_options_temp.cxx
 
-echo $STANDARD $MACROS $LANGSTD $INCLUDES
+# Format and print out the options.
+OPTIONS="$STANDARD $MACROS $LANGSTD $INCLUDES"
+echo $OPTIONS
