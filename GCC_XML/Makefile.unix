@@ -88,20 +88,27 @@ GXFRONT_OBJS=GXFront/gxSystemTools.o \
              GXFront/gxFlagsParser.o \
              GXFront/gxFront.o
 
-gccxml$(EXE): $(GXFRONT_OBJS)
+gccxml$(EXE): $(GXFRONT_OBJS) config
 	$(CXX) $(CXX_FLAGS) -o gccxml$(EXE) $(GXFRONT_OBJS)
 
-GXFront/gxSystemTools.o: GXFront/gxSystemTools.cxx
+GXFront/gxSystemTools.o: GXFront/gxSystemTools.cxx GXFront/gxConfigure.h
 	$(CXX) $(CXX_FLAGS) -I GXFront -o GXFront/gxSystemTools.o -c GXFront/gxSystemTools.cxx
 
-GXFront/gxConfiguration.o: GXFront/gxConfiguration.cxx
+GXFront/gxConfiguration.o: GXFront/gxConfiguration.cxx GXFront/gxConfigure.h
 	$(CXX) $(CXX_FLAGS) -I GXFront -o GXFront/gxConfiguration.o -c GXFront/gxConfiguration.cxx
 
-GXFront/gxFlagsParser.o: GXFront/gxFlagsParser.cxx
+GXFront/gxFlagsParser.o: GXFront/gxFlagsParser.cxx GXFront/gxConfigure.h
 	$(CXX) $(CXX_FLAGS) -I GXFront -o GXFront/gxFlagsParser.o -c GXFront/gxFlagsParser.cxx
 
-GXFront/gxFront.o: GXFront/gxFront.cxx
+GXFront/gxFront.o: GXFront/gxFront.cxx GXFront/gxConfigure.h
 	$(CXX) $(CXX_FLAGS) -I GXFront -o GXFront/gxFront.o -c GXFront/gxFront.cxx
 
+GXFront/gxConfigure.h:
+	@echo -e "#define GCCXML_SOURCE_DIR \"`pwd`\"" > GXFront/gxConfigure.h
+	@echo -e "#define GCCXML_EXECUTABLE_DIR \"`pwd`\"" >> GXFront/gxConfigure.h
+
+config:
+	@echo -e "GCCXML_COMPILER=\"$(CXX)\"" > config
+
 clean:
-	$(RM) $(GXFRONT_OBJS) gccxml$(EXE)
+	$(RM) $(GXFRONT_OBJS) gccxml$(EXE) GXFront/gxConfigure.h

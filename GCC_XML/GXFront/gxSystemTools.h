@@ -73,6 +73,9 @@ public:
   static std::string ConvertToOutputPath(const char* path);
   static std::string ConvertToWindowsOutputPath(const char* path);
   static std::string ConvertToUnixOutputPath(const char* path);
+  
+  /** Find a program in the system search path.  */
+  static std::string FindProgram(const char* name);
 };
 
 #endif

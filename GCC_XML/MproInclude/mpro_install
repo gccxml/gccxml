@@ -3,8 +3,8 @@
 
 . $2/install_helper
 
-install_directory "MproInclude" \
-  "stddef.h stl_config.h stl_monetary.h stl_threads.h ostream
-   stl_locale.h stl_numeric_facets.h string" \
-  "find_mpro_options"
+install_directory "MproInclude" "" "find_mpro_options"
 
+install_directory "MproInclude/7_3" \
+  "stddef.h stl_config.h stl_monetary.h stl_threads.h ostream
+   stl_locale.h stl_numeric_facets.h string" ""

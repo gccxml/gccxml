@@ -1,9 +1,0 @@
-#ifndef __SGI_STL_OSTREAM_GCCXML
-#define __SGI_STL_OSTREAM_GCCXML
-
-extern bool uncaught_exception();
-
-#include_next <ostream>
-
-#endif
-

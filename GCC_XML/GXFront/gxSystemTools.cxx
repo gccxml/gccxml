@@ -16,12 +16,14 @@
 =========================================================================*/
 #include "gxSystemTools.h"
 
+#include <vector>
+
 #include <ctype.h>
 #include <sys/stat.h>
 #include <stdio.h>
 #include <errno.h>
 
-#ifndef _WIN32
+#if !defined(_WIN32) || defined(__CYGWIN__)
 #include <limits.h>
 #include <stdlib.h>
 #include <sys/param.h>
@@ -443,4 +445,94 @@ std::string gxSystemTools::ConvertToUnixOutputPath(const char* path)
     ret = result;
     }
   return ret;
+}
+
+//----------------------------------------------------------------------------
+void gxSystemToolsGetPath(std::vector<std::string>& path)
+{
+  // adds the elements of the env variable path to the arg passed in
+#if defined(_WIN32) && !defined(__CYGWIN__)
+  const char* pathSep = ";";
+#else
+  const char* pathSep = ":";
+#endif
+  std::string pathEnv;
+  if(!gxSystemTools::GetEnv("PATH", pathEnv)) { return; }
+  // A hack to make the below algorithm work.  
+  if(pathEnv[pathEnv.length()-1] != pathSep[0])
+    {
+    pathEnv += pathSep;
+    }
+  std::string::size_type start =0;
+  bool done = false;
+  while(!done)
+    {
+    std::string::size_type endpos = pathEnv.find(pathSep, start);
+    if(endpos != std::string::npos)
+      {
+      path.push_back(pathEnv.substr(start, endpos-start));
+      start = endpos+1;
+      }
+    else
+      {
+      done = true;
+      }
+    }
+  for(std::vector<std::string>::iterator i = path.begin();
+      i != path.end(); ++i)
+    {
+    gxSystemTools::ConvertToUnixSlashes(*i);
+    }
+}
+
+//----------------------------------------------------------------------------
+std::string gxSystemTools::FindProgram(const char* name)
+{
+  // Find the executable with the given name.  Searches the system
+  // path.  Returns the full path to the executable if it is found.
+  // Otherwise, the empty string is returned.
+  
+  // See if the executable exists as written.
+  if(gxSystemTools::FileExists(name) && !gxSystemTools::FileIsDirectory(name))
+    {
+    return name;
+    }
+  
+  std::string tryPath = name;
+#ifdef _WIN32
+  tryPath += ".exe";
+  if(gxSystemTools::FileExists(tryPath.c_str()) &&
+     !gxSystemTools::FileIsDirectory(tryPath.c_str()))
+    {
+    return tryPath.c_str();
+    }
+#endif
+
+  // Get the system search path.
+  std::vector<std::string> path;
+  gxSystemToolsGetPath(path);
+  
+  for(std::vector<std::string>::const_iterator p = path.begin();
+      p != path.end(); ++p)
+    {
+    tryPath = *p;
+    tryPath += "/";
+    tryPath += name;
+    if(gxSystemTools::FileExists(tryPath.c_str()) &&
+      !gxSystemTools::FileIsDirectory(tryPath.c_str()))
+      {
+      return tryPath.c_str();
+      }
+#ifdef _WIN32
+    tryPath += ".exe";
+    if(gxSystemTools::FileExists(tryPath.c_str()) &&
+       !gxSystemTools::FileIsDirectory(tryPath.c_str()))
+      {
+      return tryPath.c_str();
+      }
+#endif
+    }
+
+  // Couldn't find the program.
+  return "";
 }
