@@ -37,11 +37,11 @@ install_main:
 
 # Installation of MipsPro header support.
 install_mpro: install_main
-	@(cd MproInclude; ./mpro_install $(PREFIX))
+	@MproInclude/mpro_install $(PREFIX)
 
 # Installation of GCC header support.
 install_gcc: install_main
-	@(cd GccInclude; ./gcc_install $(PREFIX))
+	@GccInclude/gcc_install $(PREFIX)
 
 # Main installation target.
 install: install_mpro install_gcc

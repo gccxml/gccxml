@@ -1,16 +1,10 @@
 #!/bin/sh
 # Installation script for MipsPro compiler support headers and programs.
 
-# The name of this compiler-specific support subdirectory.
-SUBDIR=MproInclude
+. install_helper
 
-# Programs to be installed from this directory are listed here.
-PROGRAMS="find_mpro_options"
+install_directory "MproInclude" \
+  "stddef.h stl_config.h stl_monetary.h stl_threads.h ostream
+   stl_locale.h stl_numeric_facets.h string" \
+  "find_mpro_options"
 
-# Headers to be installed from this directory are listed here.
-HEADERS="stddef.h stl_config.h stl_monetary.h stl_threads.h ostream
-         stl_locale.h stl_numeric_facets.h string"
-
-# Source the subdirectory installation utility script.
-RUNNING_SUBDIR_INSTALL="yes"
-. ../subdir_install
