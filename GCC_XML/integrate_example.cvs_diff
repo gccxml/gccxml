@@ -2,64 +2,148 @@ Index: Make-lang.in
 ===================================================================
 RCS file: /cvs/gcc/egcs/gcc/cp/Make-lang.in,v
 retrieving revision 1.78
-diff -r1.78 Make-lang.in
-103c103
-<  cp/optimize.o cp/mangle.o
----
->  cp/optimize.o cp/mangle.o cp/xml.o
-297a298
-> cp/xml.o: cp/xml.c $(CXX_TREE_H) toplev.h
+diff -c -3 -p -r1.78 Make-lang.in
+*** Make-lang.in	2001/02/16 03:54:00	1.78
+--- Make-lang.in	2001/02/20 14:09:05
+*************** CXX_OBJS = cp/call.o cp/decl.o cp/errfn.
+*** 100,106 ****
+   cp/class.o cp/decl2.o cp/error.o cp/lex.o cp/parse.o cp/ptree.o cp/rtti.o \
+   cp/spew.o cp/typeck.o cp/cvt.o cp/except.o cp/friend.o cp/init.o cp/method.o \
+   cp/search.o cp/semantics.o cp/tree.o cp/xref.o cp/repo.o cp/dump.o \
+!  cp/optimize.o cp/mangle.o
+  
+  # Use loose warnings for this front end.
+  cp-warn =
+--- 100,106 ----
+   cp/class.o cp/decl2.o cp/error.o cp/lex.o cp/parse.o cp/ptree.o cp/rtti.o \
+   cp/spew.o cp/typeck.o cp/cvt.o cp/except.o cp/friend.o cp/init.o cp/method.o \
+   cp/search.o cp/semantics.o cp/tree.o cp/xref.o cp/repo.o cp/dump.o \
+!  cp/optimize.o cp/mangle.o cp/xml.o
+  
+  # Use loose warnings for this front end.
+  cp-warn =
+*************** cp/dump.o: cp/dump.c $(CXX_TREE_H) c-dum
+*** 295,300 ****
+--- 295,301 ----
+  cp/optimize.o: cp/optimize.c $(CXX_TREE_H) rtl.h integrate.h insn-config.h \
+    input.h
+  cp/mangle.o: cp/mangle.c $(CXX_TREE_H) toplev.h
++ cp/xml.o: cp/xml.c $(CXX_TREE_H) toplev.h
+  
+  cp/parse.o: cp/parse.c $(CXX_TREE_H) flags.h cp/lex.h except.h output.h \
+  	system.h toplev.h $(GGC_H)
 Index: cp-tree.h
 ===================================================================
 RCS file: /cvs/gcc/egcs/gcc/cp/cp-tree.h,v
-retrieving revision 1.575
-diff -r1.575 cp-tree.h
-1160a1161,1164
-> /* Filename for xml dump of translation unit.  */
-> 
-> extern const char* flag_xml;
-> 
-4546a4551,4553
-> 
-> /* in xml.c */
-> extern void do_xml_output                       PARAMS((const char *));
+retrieving revision 1.579
+diff -c -3 -p -r1.579 cp-tree.h
+*** cp-tree.h	2001/02/18 20:31:42	1.579
+--- cp-tree.h	2001/02/20 14:09:07
+*************** extern int flag_check_new;
+*** 1150,1155 ****
+--- 1150,1159 ----
+  
+  extern const char *flag_dump_class_layout;
+  
++ /* Filename for xml dump of translation unit.  */
++ 
++ extern const char* flag_xml;
++ 
+  
+  /* C++ language-specific tree codes.  */
+  #define DEFTREECODE(SYM, NAME, TYPE, LENGTH) SYM,
+*************** extern tree mangle_guard_variable       
+*** 4538,4543 ****
+--- 4542,4550 ----
+  
+  /* in dump.c */
+  extern int cp_dump_tree                         PARAMS ((dump_info_p, tree));
++ 
++ /* in xml.c */
++ extern void do_xml_output                       PARAMS((const char *));
+  
+  /* -- end of C++ */
+  
 Index: decl2.c
 ===================================================================
 RCS file: /cvs/gcc/egcs/gcc/cp/decl2.c,v
-retrieving revision 1.438
-diff -r1.438 decl2.c
-459a460,463
-> /* Filename for xml dump of translation unit.  */
-> 
-> const char* flag_xml = 0;
-> 
-628a633,640
-> 	}
->       else if ((option_value
->                 = skip_leading_substring (p, "xml=")))
-> 	{
-> 	  if (!*option_value)
-> 	    error ("no file specified with -fxml");
-> 	  else
-> 	    flag_xml = option_value;
+retrieving revision 1.443
+diff -c -3 -p -r1.443 decl2.c
+*** decl2.c	2001/02/19 21:47:08	1.443
+--- decl2.c	2001/02/20 14:09:09
+*************** int flag_permissive;
+*** 446,451 ****
+--- 446,455 ----
+  
+  int flag_enforce_eh_specs = 1;
+  
++ /* Filename for xml dump of translation unit.  */
++ 
++ const char* flag_xml = 0;
++ 
+  /* The variant of the C language being processed.  */
+  
+  c_language_kind c_language = clk_cplusplus;
+*************** cxx_decode_option (argc, argv)
+*** 617,622 ****
+--- 621,634 ----
+  	    error ("no file specified with -fdump-translation-unit");
+  	  else
+  	    flag_dump_translation_unit = option_value;
++ 	}
++       else if ((option_value
++                 = skip_leading_substring (p, "xml=")))
++ 	{
++ 	  if (!*option_value)
++ 	    error ("no file specified with -fxml");
++ 	  else
++ 	    flag_xml = option_value;
+  	}
+        else if ((option_value
+                  = skip_leading_substring (p, "dump-class-layout=")))
 Index: lang-options.h
 ===================================================================
 RCS file: /cvs/gcc/egcs/gcc/cp/lang-options.h,v
 retrieving revision 1.37
-diff -r1.37 lang-options.h
-114c114,116
-< 
----
->   { "-fxml=", "Enable XML output to a file (use with -fsyntax-only)" },
->   { "-fno-xml", "" },
->   
+diff -c -3 -p -r1.37 lang-options.h
+*** lang-options.h	2001/01/05 19:12:19	1.37
+--- lang-options.h	2001/02/20 14:09:09
+*************** DEFINE_LANG_NAME ("C++")
+*** 111,117 ****
+    { "-fno-weak", "" },
+    { "-fxref", "Emit cross referencing information" },
+    { "-fno-xref", "" },
+! 
+    { "-Wreturn-type", "Warn about inconsistent return types" },
+    { "-Wno-return-type", "" },
+    { "-Woverloaded-virtual", "Warn about overloaded virtual function names" },
+--- 111,119 ----
+    { "-fno-weak", "" },
+    { "-fxref", "Emit cross referencing information" },
+    { "-fno-xref", "" },
+!   { "-fxml=", "Enable XML output to a file (use with -fsyntax-only)" },
+!   { "-fno-xml", "" },
+!   
+    { "-Wreturn-type", "Warn about inconsistent return types" },
+    { "-Wno-return-type", "" },
+    { "-Woverloaded-virtual", "Warn about overloaded virtual function names" },
 Index: semantics.c
 ===================================================================
 RCS file: /cvs/gcc/egcs/gcc/cp/semantics.c,v
-retrieving revision 1.190
-diff -r1.190 semantics.c
-1672a1673,1676
-> 
->   /* Do XML output if output file was given.  */
->   if (flag_xml)
->       do_xml_output (flag_xml);
+retrieving revision 1.191
+diff -c -3 -p -r1.191 semantics.c
+*** semantics.c	2001/02/18 05:59:45	1.191
+--- semantics.c	2001/02/20 14:09:10
+*************** finish_translation_unit ()
+*** 1670,1675 ****
+--- 1670,1679 ----
+    while (current_namespace != global_namespace)
+      pop_namespace ();
+    finish_file ();
++ 
++   /* Do XML output if output file was given.  */
++   if (flag_xml)
++       do_xml_output (flag_xml);
+  }
+  
+  /* Finish a template type parameter, specified as AGGR IDENTIFIER.
