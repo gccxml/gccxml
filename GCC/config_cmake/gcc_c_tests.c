@@ -646,71 +646,58 @@ int main()
 #ifdef TEST_HAVE_SYS_ERRLIST_IN_STDLIB_H
 #include <stdlib.h>
 
-void gcc_require_symbol(void* dummy) { (void)dummy; }
-
 int main()
 {
-  gcc_require_symbol(&sys_errlist);
-  return 0;
+  return *(int*)&sys_errlist;
 }
 #endif
 
 /*--------------------------------------------------------------------------*/
 #ifdef TEST_HAVE__SYSTEM_CONFIGURATION
-void gcc_require_symbol(void* dummy) { (void)dummy; }
 extern int _system_configuration;
 
 int main()
 {
-  gcc_require_symbol(&_system_configuration);
-  return 0;
+  return _system_configuration;
 }
 #endif
 
 /*--------------------------------------------------------------------------*/
 #ifdef TEST_HAVE_SYS_ERRLIST
-void gcc_require_symbol(void* dummy) { (void)dummy; }
 extern int sys_errlist;
 
 int main()
 {
-  gcc_require_symbol(&sys_errlist);
-  return 0;
+  return sys_errlist;
 }
 #endif
 
 /*--------------------------------------------------------------------------*/
 #ifdef TEST_HAVE_SYS_NERR
-void gcc_require_symbol(void* dummy) { (void)dummy; }
 extern int sys_nerr;
 
 int main()
 {
-  gcc_require_symbol(&sys_nerr);
-  return 0;
+  return sys_nerr;
 }
 #endif
 
 /*--------------------------------------------------------------------------*/
 #ifdef TEST_HAVE_SYS_SIGLIST
-void gcc_require_symbol(void* dummy) { (void)dummy; }
 extern int sys_siglist;
 
 int main()
 {
-  gcc_require_symbol(&sys_siglist);
-  return 0;
+  return sys_siglist;
 }
 #endif
 
 /*--------------------------------------------------------------------------*/
 #ifdef TEST_HAVE__DOPRNT
-void gcc_require_symbol(void* dummy) { (void)dummy; }
 extern int _doprnt;
 
 int main()
 {
-  gcc_require_symbol(&_doprnt);
-  return 0;
+  return _doprnt;
 }
 #endif
