@@ -4,7 +4,7 @@ RCS file: /cvsroot/gcc/gcc/gcc/cp/Make-lang.in,v
 retrieving revision 1.77.2.7
 diff -c -3 -p -r1.77.2.7 Make-lang.in
 *** gcc/cp/Make-lang.in	14 Nov 2001 22:33:42 -0000	1.77.2.7
---- gcc/cp/Make-lang.in	27 Aug 2003 14:38:55 -0000
+--- gcc/cp/Make-lang.in	6 Nov 2003 00:53:34 -0000
 *************** CXX_C_OBJS = c-common.o c-format.o c-pra
 *** 98,103 ****
 --- 98,104 ----
@@ -31,7 +31,7 @@ RCS file: /cvsroot/gcc/gcc/gcc/cp/cp-tree.h,v
 retrieving revision 1.572.2.36
 diff -c -3 -p -r1.572.2.36 cp-tree.h
 *** gcc/cp/cp-tree.h	8 Dec 2001 16:12:51 -0000	1.572.2.36
---- gcc/cp/cp-tree.h	27 Aug 2003 14:39:00 -0000
+--- gcc/cp/cp-tree.h	6 Nov 2003 00:53:34 -0000
 *************** extern tree mangle_guard_variable       
 *** 4586,4591 ****
 --- 4586,4602 ----
@@ -58,7 +58,7 @@ RCS file: /cvsroot/gcc/gcc/gcc/cp/decl2.c,v
 retrieving revision 1.437.2.29
 diff -c -3 -p -r1.437.2.29 decl2.c
 *** gcc/cp/decl2.c	30 Nov 2001 03:12:42 -0000	1.437.2.29
---- gcc/cp/decl2.c	27 Aug 2003 14:39:05 -0000
+--- gcc/cp/decl2.c	6 Nov 2003 00:53:35 -0000
 *************** int flag_enforce_eh_specs = 1;
 *** 440,445 ****
 --- 440,453 ----
@@ -76,19 +76,9 @@ diff -c -3 -p -r1.437.2.29 decl2.c
   /* Table of language-dependent -f options.
      STRING is the option name.  VARIABLE is the address of the variable.
      ON_VALUE is the value to store in VARIABLE
-*************** lang_f_options[] =
-*** 483,488 ****
---- 491,497 ----
-    {"permissive", &flag_permissive, 1},
-    {"repo", &flag_use_repository, 1},
-    {"rtti", &flag_rtti, 1},
-+   {"xml-no-honor-std", &flag_honor_std, 0},
-    {"stats", &flag_detailed_statistics, 1},
-    {"use-cxa-atexit", &flag_use_cxa_atexit, 1},
-    {"weak", &flag_weak, 1}
 *************** cxx_decode_option (argc, argv)
 *** 601,606 ****
---- 610,631 ----
+--- 609,630 ----
   	  warning ("-fname-mangling-version is no longer supported");
   	  return 1;
   	}
@@ -117,10 +107,10 @@ RCS file: /cvsroot/gcc/gcc/gcc/cp/Attic/lang-options.h,v
 retrieving revision 1.37.4.4
 diff -c -3 -p -r1.37.4.4 lang-options.h
 *** gcc/cp/lang-options.h	2 Aug 2001 14:23:12 -0000	1.37.4.4
---- gcc/cp/lang-options.h	27 Aug 2003 14:39:05 -0000
+--- gcc/cp/lang-options.h	6 Nov 2003 00:53:35 -0000
 *************** DEFINE_LANG_NAME ("C++")
 *** 114,119 ****
---- 114,125 ----
+--- 114,123 ----
     { "-fweak", 
       N_("Emit common-like symbols as weak symbols") },
     { "-fno-weak", "" },
@@ -128,8 +118,6 @@ diff -c -3 -p -r1.37.4.4 lang-options.h
 +     N_("Enable XML output to a file (use with -fsyntax-only)") },
 +   { "-fno-xml", "" },
 +   { "-fxml-start=", "Specify start locations for XML dump (use with -fxml)" },
-+   { "-fxml-no-honor-std=",
-+     N_("GCC-XML name for old -fno-honor-std flag.") },
     { "-fxref", 
       N_("Emit cross referencing information") },
     { "-fno-xref", "" },
@@ -139,7 +127,7 @@ RCS file: /cvsroot/gcc/gcc/gcc/cp/semantics.c,v
 retrieving revision 1.189.2.19
 diff -c -3 -p -r1.189.2.19 semantics.c
 *** gcc/cp/semantics.c	31 Jan 2002 22:46:46 -0000	1.189.2.19
---- gcc/cp/semantics.c	27 Aug 2003 14:39:11 -0000
+--- gcc/cp/semantics.c	6 Nov 2003 00:53:36 -0000
 *************** finish_translation_unit ()
 *** 1703,1708 ****
 --- 1703,1712 ----
