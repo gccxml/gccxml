@@ -24,3 +24,6 @@ ADD_EXECUTABLE(gccxml_cc1plus
   )
 
 TARGET_LINK_LIBRARIES(gccxml_cc1plus backend cpp iberty)
+
+# Install gccxml_cc1plus next to the gccxml executable.
+INSTALL_TARGETS(${GCCXML_INSTALL_ROOT}/bin gccxml_cc1plus)

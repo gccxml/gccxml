@@ -8,5 +8,8 @@ SET(GCCXML_NATIVE_CC1PLUS 1)
 SET(EXECUTABLE_OUTPUT_PATH "${GCCXMLComplete_BINARY_DIR}/bin" CACHE PATH
   "Single output directory for all executables.")
 
+# Tell GCC and GCC-XML where to install relative to the CMAKE_INSTALL_PREFIX.
+SET(GCCXML_INSTALL_ROOT)
+
 # Build GCC and GCC_XML.
 SUBDIRS(GCC GCC_XML)
