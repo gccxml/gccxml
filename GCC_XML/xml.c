@@ -74,7 +74,7 @@
 # define XML_PRE_3_4_TREE_VIA_PUBLIC
 #endif
 
-#define GCC_XML_C_VERSION "$Revision: 1.92 $"
+#define GCC_XML_C_VERSION "$Revision: 1.93 $"
 
 /* A "dump node" corresponding to a particular tree node.  */
 typedef struct xml_dump_node
@@ -2002,7 +2002,7 @@ xml_find_template_parm (tree t)
 
   switch (TREE_CODE (t))
     {
-    /* A vector of template arguments on a instantiation.  */
+    /* A vector of template arguments on an instantiation.  */
     case TREE_VEC:
       {
       int i;
@@ -2013,6 +2013,16 @@ xml_find_template_parm (tree t)
           return 1;
           }
         }
+      } break;
+
+    /* A type list has nested types.  */
+    case TREE_LIST:
+      {
+      if(xml_find_template_parm (TREE_PURPOSE (t)))
+        {
+        return 1;
+        }
+      return xml_find_template_parm (TREE_VALUE (t));
       } break;
 
     /* Template parameter types.  */
@@ -2067,7 +2077,7 @@ xml_find_template_parm (tree t)
     case REAL_TYPE: return 0;
     case VOID_TYPE: return 0;
 
-    /* Other types that have not nested types.  */
+    /* Other types that have no nested types.  */
     case INTEGER_CST: return 0;
     default:
       fprintf(stderr, "xml_find_template_parm encountered unsupported type %s\n",
