@@ -415,6 +415,7 @@ print_operator_method_begin_tag (FILE* file, unsigned long indent, tree fd)
   int is_const;
   int is_virtual;
   int is_pure_virtual;
+  int is_static;
 
   if (TREE_PRIVATE (fd))        access = "private";
   else if (TREE_PROTECTED (fd)) access = "protected";
@@ -435,10 +436,15 @@ print_operator_method_begin_tag (FILE* file, unsigned long indent, tree fd)
   else
     is_pure_virtual = 0;
 
+  if (DECL_NONSTATIC_MEMBER_FUNCTION_P (fd))
+    is_static = 0;
+  else
+    is_static = 1;
+
   print_indent (file, indent);
   fprintf (file,
-           "<OperatorMethod name=\"%s\" access=\"%s\" const=\"%d\" virtual=\"%d\" pure_virtual=\"%d\">\n",
-           name, access, is_const, is_virtual, is_pure_virtual);
+           "<OperatorMethod name=\"%s\" access=\"%s\" const=\"%d\" virtual=\"%d\" pure_virtual=\"%d\" static=\"%d\">\n",
+           name, access, is_const, is_virtual, is_pure_virtual, is_static);
 }
 
 
