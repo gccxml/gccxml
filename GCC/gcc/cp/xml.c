@@ -74,7 +74,7 @@
 # define XML_PRE_3_4_TREE_VIA_PUBLIC
 #endif
 
-#define GCC_XML_C_VERSION "$Revision: 1.84 $"
+#define GCC_XML_C_VERSION "$Revision: 1.85 $"
 
 /* A "dump node" corresponding to a particular tree node.  */
 typedef struct xml_dump_node
@@ -1997,6 +1997,9 @@ xml_find_template_parm (tree t)
     case LANG_TYPE: return 0;
     case REAL_TYPE: return 0;
     case VOID_TYPE: return 0;
+
+    /* Other types that have not nested types.  */
+    case INTEGER_CST: return 0;
     default:
       fprintf(stderr, "xml_find_template_parm encountered unsupported type %s\n",
               tree_code_name[TREE_CODE (t)]);
