@@ -432,7 +432,7 @@ print_argument_begin_tag (FILE* file, unsigned long indent, tree arg)
   const char* name = "";
 
   if(arg && DECL_NAME (arg))
-    name = IDENTIFIER_POINTER (DECL_NAME (arg));
+    name = xml_get_encoded_string (DECL_NAME (arg));
   
   print_indent (file, indent);
   fprintf (file,
@@ -501,7 +501,7 @@ print_ellipsis_empty_tag (FILE* file, unsigned long indent)
 static void
 print_variable_begin_tag (FILE* file, unsigned long indent, tree vd)
 {
-  const char* name = IDENTIFIER_POINTER (DECL_NAME (vd));
+  const char* name = xml_get_encoded_string (DECL_NAME (vd));
   
   print_indent (file, indent);
   fprintf (file,
@@ -540,7 +540,7 @@ print_initializer_empty_tag (FILE* file, unsigned long indent, tree t)
 static void
 print_field_begin_tag (FILE* file, unsigned long indent, tree vd)
 {
-  const char* name = IDENTIFIER_POINTER (DECL_NAME (vd));
+  const char* name = xml_get_encoded_string (DECL_NAME (vd));
   
   print_indent (file, indent);
   fprintf (file,
@@ -563,7 +563,7 @@ print_field_end_tag (FILE* file, unsigned long indent)
 static void
 print_enum_begin_tag (FILE* file, unsigned long indent, tree vd)
 {
-  const char* name = IDENTIFIER_POINTER (DECL_NAME (vd));
+  const char* name = xml_get_encoded_string (DECL_NAME (vd));
   
   print_indent (file, indent);
   fprintf (file,
