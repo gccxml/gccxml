@@ -19,6 +19,8 @@
 
 #include "gxConfigure.h"
 
+#include <gxsys/SystemTools.hxx>
+
 #if defined(_MSC_VER)
 #pragma warning (disable: 4786)
 #endif
@@ -28,69 +30,20 @@
 #include <string>
 
 /** Utility methods to hide platform differences.  */
-class gxSystemTools
+class gxSystemTools: public gxsys::SystemTools
 {
 public:
-  /** Read a registry value with the given key.  Return whether it was
-      found.  */
-  static bool ReadRegistryValue(const char *key, std::string& result);
+  /** Run the given command and get back the output and the result value.  */
+  static bool RunCommand(const char* command, std::string& output,
+                         int &retVal);
 
   /** Copy a file named by "source" to the file named by
       "destination". */
   static bool FileCopy(const char* source, const char* destination);
 
-  /** Get a lower case string.  */
-  static std::string LowerCase(const std::string& s);
-
-  /** Read an environment variable.  */
-  static const char* GetEnv(const char* key);
-  static bool GetEnv(const char* key, std::string& result);
-
-  /** Return everything up to the last path name delimeter.  */
-  static std::string GetFilenamePath(const char* filename);
-
-  /** Return everything after the last path name delimeter.  */
-  static std::string GetFilenameName(const char* filename);
-
-  /** Check if a file exists.  */
-  static bool FileExists(const char* filename);
-
-  /** Check if a file exists and is a directory.  */
-  static bool FileIsDirectory(const char* name);
-
-  /** Create the given directory.  */
-  static bool MakeDirectory(const char* name);
-
   /** Given a path to a directory, convert it to a full path.  This
    * collapses away relative paths.  The full path is returned.  */
   static std::string CollapseDirectory(const char* in_dir);
-
-  /** Get the current working directory.  */
-  static std::string GetCWD();
-
-  /** Convert the given path to one with forward slashes.  */
-  static void ConvertToUnixSlashes(std::string& path);
-
-  /** Run the given command and get back the output and the result value.  */
-  static bool RunCommand(const char* command, std::string& output,
-                         int &retVal);
-
-  /** Delete the file with the given name.  */
-  static bool RemoveFile(const char* source);
-
-  /** Convert a file path to a suitable output format.  */
-  static std::string ConvertToOutputPath(const char* path);
-  static std::string ConvertToWindowsOutputPath(const char* path);
-  static std::string ConvertToUnixOutputPath(const char* path);
-
-  /** Find a program in the system search path.  */
-  static std::string FindProgram(const char* name);
-
-  /** Format date/time string with the current time.  */
-  static std::string GetCurrentDateTime(const char* format);
-
-  /** Return true if the two given files exist and are the same file.  */
-  static bool SameFile(const char* file1, const char* file2);
 };
 
 #endif

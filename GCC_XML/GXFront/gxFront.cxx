@@ -18,22 +18,7 @@
 #include "gxFlagsParser.h"
 #include "gxDocumentation.h"
 
-#include <string.h>
-#include <errno.h>
-
-#if defined(_WIN32) && !defined(__CYGWIN__)
-#include <process.h>
-inline int GXSpawn(const char* cmd, char** argv)
-{
-  return static_cast<int>(_spawnvp(_P_WAIT, cmd, argv));
-}
-#else
-#include <unistd.h>
-inline int GXSpawn(const char* cmd, char** argv)
-{
-  return execvp(cmd, argv);
-}
-#endif
+#include <gxsys/Process.h>
 
 int main(int argc, char** argv)
 {
@@ -143,7 +128,8 @@ int main(int argc, char** argv)
       }
     }
 
-  // Make sure we have the GCC parser or preprocessor executable.
+  // Select a program to run and make sure it is available.
+  std::string cge;
   if(configuration.GetPreprocessFlag())
     {
     if(cGCCXML_CPP.length() == 0)
@@ -151,6 +137,7 @@ int main(int argc, char** argv)
       std::cerr << "Could not determine GCCXML_CPP setting.\n";
       return 1;
       }
+    cge = cGCCXML_CPP;
     }
   else
     {
@@ -159,6 +146,7 @@ int main(int argc, char** argv)
       std::cerr << "Could not determine GCCXML_EXECUTABLE setting.\n";
       return 1;
       }
+    cge = cGCCXML_EXECUTABLE;
     }
 
 #if defined(_WIN32) && !defined(__CYGWIN__) && !defined(GCCXML_NATIVE_CC1PLUS)
@@ -190,55 +178,59 @@ int main(int argc, char** argv)
       }
     else
       {
-      std::cerr << "GCC-XML cannot find cygwin1.dll, so ";
-      if(configuration.GetPreprocessFlag())
-        {
-        std::cerr << cGCCXML_CPP.c_str();
-        }
-      else
-        {
-        std::cerr << cGCCXML_EXECUTABLE.c_str();
-        }
-      std::cerr << " will fail to run.  Aborting.\n";
+      std::cerr << "GCC-XML cannot find cygwin1.dll, so " << cge.c_str()
+                << " will fail to run.  Aborting.\n";
       return 1;
       }
     }
 #endif
 
-  // Convert the program path to a platform-dependent format.
-  std::string cge;
-  if(configuration.GetPreprocessFlag())
-    {
-    cge = gxSystemTools::ConvertToOutputPath(cGCCXML_CPP.c_str());
-    }
-  else
-    {
-    cge = gxSystemTools::ConvertToOutputPath(cGCCXML_EXECUTABLE.c_str());
-    }
-
   // Prepare list of arguments for exec call.
-  char** args = new char*[flags.size()+2];
-  args[0] = strdup(cge.c_str());
+  std::vector<const char*> args;
+  args.push_back(cge.c_str());
   for(unsigned int i=0; i < flags.size(); ++i)
     {
-    args[i+1] = strdup(flags[i].c_str());
+    args.push_back(flags[i].c_str());
     }
-  args[flags.size()+1] = 0;
+  args.push_back(0);
 
   // Run the patched GCC C++ parser.
-  int result = 0;
-  if((result = GXSpawn(cge.c_str(), args)) < 0)
-    {
-    result = errno;
-    std::cerr << "Error executing " << cge.c_str() << "\n";
-    }
+  gxsysProcess* gp = gxsysProcess_New();
+  gxsysProcess_SetPipeShared(gp, gxsysProcess_Pipe_STDOUT, 1);
+  gxsysProcess_SetPipeShared(gp, gxsysProcess_Pipe_STDERR, 1);
+  gxsysProcess_SetCommand(gp, &*args.begin());
+  gxsysProcess_Execute(gp);
+  gxsysProcess_WaitForExit(gp, 0);
 
-  // Free the arguments' memory.
-  for(char** a = args; *a; ++a)
+  int result = 1;
+  switch(gxsysProcess_GetState(gp))
     {
-    free(*a);
+    case gxsysProcess_State_Exited:
+      {
+      result = gxsysProcess_GetExitValue(gp);
+      } break;
+    case gxsysProcess_State_Error:
+      {
+      std::cerr << "Error: Could not run " << cge.c_str() << ":\n";
+      std::cerr << gxsysProcess_GetErrorString(gp) << "\n";
+      } break;
+    case gxsysProcess_State_Exception:
+      {
+      std::cerr << "Error: " << cge.c_str()
+                << " terminated with an exception: "
+                << gxsysProcess_GetExceptionString(gp) << "\n";
+      } break;
+    case gxsysProcess_State_Starting:
+    case gxsysProcess_State_Executing:
+    case gxsysProcess_State_Expired:
+    case gxsysProcess_State_Killed:
+      {
+      // Should not get here.
+      std::cerr << "Unexpected ending state after running " << cge.c_str()
+                << std::endl;
+      } break;
     }
-  delete [] args;
+  gxsysProcess_Delete(gp);
 
   return result;
 }

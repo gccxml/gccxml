@@ -498,14 +498,7 @@ bool gxConfiguration::ProcessCommandLine(int argc, const char*const* argv)
       }
     else
       {
-#if defined(_WIN32)
-      std::string arg = "\"";
-      arg += argv[i];
-      arg += "\"";
-#else
-      std::string arg = argv[i];
-#endif
-      m_Arguments.push_back(arg);
+      m_Arguments.push_back(argv[i]);
       }
     }
 
@@ -909,17 +902,17 @@ bool gxConfiguration::FindFlags()
         "Please specify \"msvc6\", \"msvc7\", or \"msvc71\" for "
         "the GCCXML_COMPILER setting.\n";
 #if defined(_MSC_VER) && ((_MSC_VER >= 1200) && (_MSC_VER < 1300))
-      std::cout << "Warning:\n" << clText
+      std::cerr << "Warning:\n" << clText
                 << "Using MSVC 6 because it was used to build GCC-XML.\n"
                 << "\n";
       return this->FindFlagsMSVC6();
 #elif defined(_MSC_VER) && ((_MSC_VER >= 1300) && (_MSC_VER < 1310))
-      std::cout << "Warning:\n" << clText
+      std::cerr << "Warning:\n" << clText
                 << "Using MSVC 7 because it was used to build GCC-XML.\n"
                 << "\n";
       return this->FindFlagsMSVC7();
 #elif defined(_MSC_VER) && ((_MSC_VER >= 1310) && (_MSC_VER < 1400))
-      std::cout << "Warning:\n" << clText
+      std::cerr << "Warning:\n" << clText
                 << "Using MSVC 7.1 because it was used to build GCC-XML.\n"
                 << "\n";
       return this->FindFlagsMSVC71();
@@ -1029,11 +1022,11 @@ bool gxConfiguration::FindFlagsMSVC6()
     "-D_cdecl=__attribute__((__cdecl__)) "
     "-D_fastcall=__attribute__((__fastcall__)) "
     "-D__declspec(x)=__attribute__((x)) "
-    "-D_inline=inline -D__uuidof(x)=IID() \"-D__int64=long long\" "
+    "-D_inline=inline -D__uuidof(x)=IID() -D__int64=long long "
     "-D__cplusplus -D_MSC_VER=1200 -D_MSC_EXTENSIONS "
     "-D_WIN32 -D_M_IX86 -D_WCHAR_T_DEFINED -D_INTEGRAL_MAX_BITS=64 "
     "-DPASCAL= -DRPC_ENTRY= -DSHSTDAPI=HRESULT -DSHSTDAPI_(x)=x "
-    "-I\""+vcIncludePath+"\" -I\""+msvcPath+"\" ";
+    "-I"+vcIncludePath+" -I"+msvcPath+" ";
  return true;
 }
 
@@ -1085,11 +1078,11 @@ bool gxConfiguration::FindFlagsMSVC7()
     "-D_MSC_VER=1300 -D_MSC_EXTENSIONS -D_WIN32 -D_M_IX86 "
     "-D_WCHAR_T_DEFINED -DPASCAL= -DRPC_ENTRY= -DSHSTDAPI=HRESULT "
     "-D_INTEGRAL_MAX_BITS=64 "
-    "-D__uuidof(x)=IID() -DSHSTDAPI_(x)=x -D__w64= \"-D__int64=long long\" "
-    "-I\""+vcIncludePath1+"\" "
-    "-I\""+vcIncludePath2+"\" "
-    "-I\""+msvcPath1+"\" "
-    "-I\""+msvcPath2+"\" ";
+    "-D__uuidof(x)=IID() -DSHSTDAPI_(x)=x -D__w64= -D__int64=long long "
+    "-I"+vcIncludePath1+" "
+    "-I"+vcIncludePath2+" "
+    "-I"+msvcPath1+" "
+    "-I"+msvcPath2+" ";
   return true;
 }
 
@@ -1141,11 +1134,11 @@ bool gxConfiguration::FindFlagsMSVC71()
     "-D_MSC_VER=1310 -D_MSC_EXTENSIONS -D_WIN32 -D_M_IX86 "
     "-D_WCHAR_T_DEFINED -DPASCAL= -DRPC_ENTRY= -DSHSTDAPI=HRESULT "
     "-D_INTEGRAL_MAX_BITS=64 "
-    "-D__uuidof(x)=IID() -DSHSTDAPI_(x)=x -D__w64= \"-D__int64=long long\" "
-    "-I\""+vcIncludePath1+"\" "
-    "-I\""+vcIncludePath2+"\" "
-    "-I\""+msvcPath1+"\" "
-    "-I\""+msvcPath2+"\" ";
+    "-D__uuidof(x)=IID() -DSHSTDAPI_(x)=x -D__w64= -D__int64=long long "
+    "-I"+vcIncludePath1+" "
+    "-I"+vcIncludePath2+" "
+    "-I"+msvcPath1+" "
+    "-I"+msvcPath2+" ";
   return true;
 }
 
@@ -1199,11 +1192,11 @@ bool gxConfiguration::FindFlagsBCC55(const char* inBcc32)
     "-D__cplusplus=1 -D_inline=inline -D__forceinline=__inline "
     "-D__rtti= -D_WIN32=1 -D__WIN32__=1 -D_M_IX86 "
     "-D_WCHAR_T_DEFINED -DPASCAL= -DRPC_ENTRY= -DSHSTDAPI=HRESULT "
-    "-D__uuidof(x)=IID() -DSHSTDAPI_(x)=x -D__w64= \"-D__int64=long long\" "
+    "-D__uuidof(x)=IID() -DSHSTDAPI_(x)=x -D__w64= -D__int64=long long "
     "-D__TURBOC__=0x0551 -D__BORLANDC__=0x0551 "
     "-U__STDC__ -U__PTRDIFF_TYPE__ -U__SIZE_TYPE__ "
-    "-I\""+include1+"\" "
-    "-I\""+include2+"\" "
-    "-I\""+include3+"\" ";
+    "-I"+include1+" "
+    "-I"+include2+" "
+    "-I"+include3+" ";
   return true;
 }

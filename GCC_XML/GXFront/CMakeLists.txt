@@ -7,6 +7,8 @@ ADD_EXECUTABLE(gccxml
   gxFront.cxx
 )
 
+TARGET_LINK_LIBRARIES(gccxml gxsys)
+
 IF(UNIX)
   INSTALL_TARGETS(${GCCXML_INSTALL_ROOT}/bin gccxml)
 ENDIF(UNIX)
