@@ -232,7 +232,14 @@ bool InstallSupport(const char* patchCommand, const char* catCommand,
       gxSystemTools::FileCopy(source.c_str(), dest.c_str());
       }
     }
-
+  std::string cmd = catCommand;
+  if(cmd.find(" ") != cmd.npos)
+    {
+    if(gxSystemTools::GetShortPath(catCommand, cmd))
+      {
+      catCommand = cmd.c_str();
+      }
+    }
   std::string patchCmd = gxSystemTools::ConvertToOutputPath(catCommand);
   patchCmd += " ";
   patchCmd += gxSystemTools::ConvertToOutputPath(patchFile);
