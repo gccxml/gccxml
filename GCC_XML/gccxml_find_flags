@@ -10,8 +10,15 @@ if test "x$1" = "x" ; then
       exit 1
     fi
   fi
+  if test "x$GCCXML_CXXFLAGS" = "x"; then
+    if test "x${CXXFLAGS}" != "x" ; then
+      GCCXML_CXXFLAGS="${CXXFLAGS}"
+    fi
+  fi
 else 
   GCCXML_COMPILER="$1"
+  shift
+  GCCXML_CXXFLAGS="$@"
 fi
 
 # Use the compiler's preprocessor to identify the compiler.
@@ -30,7 +37,8 @@ GCCXML_FLAGS_SCRIPT=""
 !
 
 # Run the compiler's preprocessor on the above code to identify it.
-if ! (${GCCXML_COMPILER} -E "/tmp/gccxml_identify_compiler$GCCXML_PID.cc" \
+if ! (${GCCXML_COMPILER} ${GCCXML_CXXFLAGS} \
+                         -E "/tmp/gccxml_identify_compiler$GCCXML_PID.cc" \
                           > "/tmp/gccxml_identify_compiler$GCCXML_PID.pp";
       rm -f "/tmp/gccxml_identify_compiler$GCCXML_PID.cc") ; then
   echo "Error running \"${GCCXML_COMPILER} -E\""
@@ -62,7 +70,7 @@ else
 fi
 
 # Run the compiler-specific flag finding script.
-GCCXML_FLAGS=`${GCCXML_SUPPORT_DIR}/${GCCXML_FLAGS_SCRIPT} ${GCCXML_COMPILER}`
+GCCXML_FLAGS=`${GCCXML_SUPPORT_DIR}/${GCCXML_FLAGS_SCRIPT} ${GCCXML_COMPILER} ${GCCXML_CXXFLAGS}`
 
 # Display the output.
 echo ${GCCXML_FLAGS}

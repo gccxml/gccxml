@@ -6,7 +6,9 @@ if test "x$1" = "x" ; then
     CXX=gcc
   fi
 else 
-  CXX=$1
+  CXX="$1"
+  shift
+  CXXFLAGS="$@"
 fi
 
 # These options are always needed.
