@@ -1,0 +1,9 @@
+#ifndef __SGI_STL_OSTREAM_B
+#define __SGI_STL_OSTREAM_B
+
+extern bool uncaught_exception();
+
+#include_next <ostream>
+
+#endif /* __SGI_STL_OSTREAM_B */
+

@@ -1,0 +1,18 @@
+#ifndef __SGI_STL_STRING_B
+#define __SGI_STL_STRING_B
+
+#include <stl_config.h>
+
+__STL_BEGIN_NAMESPACE
+
+class locale;
+template <class charT> class ctype;
+template <class _Facet> inline const _Facet& use_facet(const locale& __loc);
+class ctype_base;
+
+__STL_END_NAMESPACE
+
+#include_next <string>
+
+#endif /* __SGI_STL_STRING_B */
+
