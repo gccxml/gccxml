@@ -964,7 +964,7 @@ xml_output_record_type (xml_dump_info_p xdi, tree rt, xml_dump_node_p dn)
       if (DECL_INTERNAL_P (field)) continue;
 
       /* Don't process any compiler-generated fields.  */
-      if (DECL_ARTIFICIAL(field)) continue;
+      if (DECL_ARTIFICIAL(field) && !DECL_IMPLICIT_TYPEDEF_P(field)) continue;
 
       /* A class or struct internally typedefs itself.  Don't
          output this extra typedef.  */
