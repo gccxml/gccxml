@@ -960,6 +960,12 @@ xml_output_record_type (xml_dump_info_p xdi, tree rt, xml_dump_node_p dn)
     /* Output all the non-method declarations in the class.  */
     for (field = TYPE_FIELDS (rt) ; field ; field = TREE_CHAIN (field))
       {
+      /* Don't process any internally generated declarations.  */
+      if (DECL_INTERNAL_P (field)) continue;
+
+      /* Don't process any compiler-generated fields.  */
+      if (DECL_ARTIFICIAL(field)) continue;
+
       /* A class or struct internally typedefs itself.  Don't
          output this extra typedef.  */
       if (!((TREE_CODE (field) == TYPE_DECL)
