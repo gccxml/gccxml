@@ -34,7 +34,7 @@ inline int GXSpawn(const char* cmd, char** argv)
 }
 #endif
 
-#define GCCXML_VERSION_STRING "0.2"
+#define GCCXML_VERSION_STRING "0.3 - development"
 
 /** Print the program's usage.  */
 void printUsage(std::ostream& os)
