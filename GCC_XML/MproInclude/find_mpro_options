@@ -1,4 +1,20 @@
 #!/bin/sh
+#=============================================================================
+#
+#  Program:   GCC-XML
+#  Module:    find_mpro_options
+#  Language:  C++
+#  Date:      $Date$
+#  Version:   $Revision$
+#
+#  Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
+#  See Copyright.txt for details.
+#
+#     This software is distributed WITHOUT ANY WARRANTY; without even 
+#     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+#     PURPOSE.  See the above copyright notices for more information.
+#
+#=============================================================================
 
 # Find the MIPSPro executable name.
 if test "x$1" = "x" ; then
