@@ -1179,6 +1179,7 @@ xml_output_field_decl (xml_dump_info_p xdi, unsigned long indent, tree fd)
   print_indent (xdi->file, indent);
   fprintf (xdi->file, "<Field");
   print_name_attribute (xdi, DECL_NAME (fd));
+  print_access_attribute (xdi, fd);
   /* TODO: handle bit field case.  */
   print_type_attribute (xdi, TREE_TYPE (fd));
   print_location_attribute (xdi, fd);
