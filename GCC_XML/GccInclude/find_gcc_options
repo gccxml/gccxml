@@ -18,10 +18,18 @@ awk '/^\#include <.*$/   {f=1}
      /^ \/.*$/           { if (f) { printf("-I%s ",$0) } }
      /^End of search.*$/ {exit}' - | sed 's/^-I /-I/;s/ -I / -I/g'`
 
+# The support headers are located where this script is.
+SELFPATH=`echo $0 | sed -n '/\//{s/\/find_gcc_options$//;p;}'`
+if test "x$SELFPATH" = "x" ; then SELFPATH="." ; fi
+SELFPATH=`cd $SELFPATH ; pwd`
+INCLUDES="-I$SELFPATH $INCLUDES"
+
 # See if extra -fno-honor-std is needed.
 EXTRA=`
 gcc --version |
 sed 's/[^0-9.]*//g' |
 awk -F "\." '{ if ($1 < 3) {printf("-fno-honor-std ") } }'`
 
-echo $STANDARD $MACROS $INCLUDES $EXTRA
+# Format and print out the options.
+OPTIONS="$STANDARD $MACROS $INCLUDES $EXTRA"
+echo $OPTIONS
