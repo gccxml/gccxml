@@ -9,6 +9,12 @@ namespace std
   using ::dec;
   using ::hex;
   using ::oct;
+  using ::setw;
+  using ::setfill;
+  using ::setprecision;
+  using ::setbase;
+  using ::setiosflags;
+  using ::resetiosflags;
 }
 
 #endif
