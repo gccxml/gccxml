@@ -1623,7 +1623,10 @@ xml_add_type_decl (xml_dump_info_p xdi, tree td, int complete)
         }
       break;
     default:
-      xml_output_unimplemented (xdi, t, 0, "xml_add_type_decl");
+      {
+      /* Add the node even though it is unimplemented.  */
+      return xml_add_node_real (xdi, td, complete);
+      }
     }
   return 0;
 }
