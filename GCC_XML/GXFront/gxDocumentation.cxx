@@ -505,7 +505,7 @@ void gxDocumentation::PrintColumn(std::ostream& os, int width,
         }
       
       // Print the word.
-      os.write(l, r-l);
+      os.write(l, static_cast<long>(r-l));
       
       if(*r == '\n')
         {
@@ -518,7 +518,7 @@ void gxDocumentation::PrintColumn(std::ostream& os, int width,
       else
         {
         // No provided newline.  Continue this line.
-        column += (r-l);
+        column += static_cast<long>(r-l);
         }
       }
     else
@@ -529,8 +529,8 @@ void gxDocumentation::PrintColumn(std::ostream& os, int width,
       if(r > l)
         {
         os << indent;
-        os.write(l, r-l);
-        column = r-l;
+        os.write(l, static_cast<long>(r-l));
+        column = static_cast<long>(r-l);
         }
       }
     

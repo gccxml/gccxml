@@ -25,7 +25,7 @@
 #include <process.h>
 inline int GXSpawn(const char* cmd, char** argv)
 {
-  return _spawnvp(_P_WAIT, cmd, argv);
+  return static_cast<int>(_spawnvp(_P_WAIT, cmd, argv));
 }
 #else
 #include <unistd.h>
