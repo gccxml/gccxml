@@ -2,7 +2,7 @@
 #=============================================================================
 #
 #  Program:   GCC-XML
-#  Module:    find_gcc_options
+#  Module:    find_flags
 #  Language:  C++
 #  Date:      $Date$
 #  Version:   $Revision$
@@ -47,7 +47,7 @@ INCLUDES=`
 `
 
 # The support headers are located where this script is.
-SELFPATH=`echo $0 | sed -n '/\//{s/\/find_gcc_options$//;p;}'`
+SELFPATH=`echo $0 | sed -n '/\//{s/\/find_flags//;p;}'`
 if test "x$SELFPATH" = "x" ; then SELFPATH="." ; fi
 SELFPATH=`cd $SELFPATH ; pwd`
 
@@ -59,9 +59,9 @@ echo "__GNUC__" | ${CXX} -v -x c++ -E ${CXXFLAGS} - 2>/dev/null |
 # For GCC versions before 3, some special options are needed.
 if [ "$MAJOR_VERSION" -lt 3 ]; then
   SPECIAL="-fxml-no-honor-std "
-  INCLUDES="-I$SELFPATH/2_95 $INCLUDES"
+  INCLUDES="-I$SELFPATH/2.95 $INCLUDES"
 elif [ "$MAJOR_VERSION" = 3 -a "$MAJOR_VERSION" -ge 3 ]; then
-  SPECIAL="-include $SELFPATH/3_3/gccxml_builtins.h"
+  SPECIAL="-include $SELFPATH/3.3/gccxml_builtins.h"
 fi
 
 # Format and print out the options.

@@ -2,7 +2,7 @@
 #=============================================================================
 #
 #  Program:   GCC-XML
-#  Module:    find_mpro_options
+#  Module:    find_flags
 #  Language:  C++
 #  Date:      $Date$
 #  Version:   $Revision$
@@ -28,7 +28,7 @@ else
 fi
 
 GCCXML_PID="$$"
-TESTFILE="find_mpro_options_temp$GCCXML_PID"
+TESTFILE="find_flags_temp$GCCXML_PID"
 touch /tmp/$TESTFILE.cxx
 
 # Find the macro definition options.
@@ -59,7 +59,7 @@ sed -n '/^-I.*$/{p;}' |
 sed -n 'H;${g;s/\n/ /g;p;}'`
 
 # The support headers are located where this script is.
-SELFPATH=`echo $0 | sed -n '/\//{s/\/find_mpro_options$//;p;}'`
+SELFPATH=`echo $0 | sed -n '/\//{s/\/find_flags//;p;}'`
 if test "x$SELFPATH" = "x" ; then SELFPATH="." ; fi
 SELFPATH=`cd $SELFPATH ; pwd`
 INCLUDES="-I$SELFPATH/7_3 $INCLUDES"
