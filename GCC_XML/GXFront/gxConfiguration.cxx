@@ -16,6 +16,8 @@
 =========================================================================*/
 #include "gxConfiguration.h"
 
+#include <gxsys/ios/sstream>
+
 //----------------------------------------------------------------------------
 const char* gxConfigurationVc6Registry =
 "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\"
@@ -221,6 +223,13 @@ void gxConfiguration::AddArguments(std::vector<std::string>& arguments) const
 #endif
     }
   arguments.push_back("-nostdinc");
+
+  // Allow source code to be aware of GCC-XML.
+  gxsys_ios::ostringstream version;
+  version << "-D__GCCXML__=" << int(GCCXML_VERSION_MAJOR*10000 +
+                                    GCCXML_VERSION_MINOR*100 +
+                                    GCCXML_VERSION_PATCH);
+  arguments.push_back(version.str().c_str());
 
   // Add user arguments.
   for(std::vector<std::string>::const_iterator i=m_Arguments.begin();
