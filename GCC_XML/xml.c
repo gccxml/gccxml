@@ -830,6 +830,26 @@ xml_print_artificial_attribute(xml_dump_info_p xdi, tree d)
     }
 }
 
+/* Print the XML attribute bits="..." for a bitfield.  */
+static void
+xml_print_bits_attribute (xml_dump_info_p xdi, tree d)
+{
+  if (DECL_BIT_FIELD_TYPE (d))
+    {
+    tree size_tree = DECL_SIZE (d);
+
+    if (size_tree && host_integerp (size_tree, 1))
+      {
+      unsigned HOST_WIDE_INT bits = tree_low_cst(size_tree, 1);
+      fprintf (xdi->file, " bits=\"%u\"", bits);
+      }
+    else
+      {
+      fprintf (xdi->file, " bits=\"0\"");
+      }
+    }
+}
+
 /* Print XML empty tag describing an unimplemented TREE_CODE that has been
    encountered.  */
 static void
@@ -1164,8 +1184,15 @@ xml_output_field_decl (xml_dump_info_p xdi, tree fd, xml_dump_node_p dn)
   xml_print_id_attribute (xdi, dn);
   xml_print_name_attribute (xdi, DECL_NAME (fd));
   xml_print_access_attribute (xdi, fd);
-  /* TODO: handle bit field case.  */
-  xml_print_type_attribute (xdi, TREE_TYPE (fd), dn->complete);
+  xml_print_bits_attribute(xdi, fd);
+  if (DECL_BIT_FIELD_TYPE (fd))
+    {
+    xml_print_type_attribute (xdi, DECL_BIT_FIELD_TYPE (fd), dn->complete);
+    }
+  else
+    {
+    xml_print_type_attribute (xdi, TREE_TYPE (fd), dn->complete);
+    }
   xml_print_context_attribute (xdi, fd);
   xml_print_mangled_attribute (xdi, fd);
   xml_print_location_attribute (xdi, fd);
