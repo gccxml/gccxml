@@ -74,7 +74,7 @@
 # define XML_PRE_3_4_TREE_VIA_PUBLIC
 #endif
 
-#define GCC_XML_C_VERSION "$Revision: 1.79 $"
+#define GCC_XML_C_VERSION "$Revision: 1.80 $"
 
 /* A "dump node" corresponding to a particular tree node.  */
 typedef struct xml_dump_node
@@ -1833,13 +1833,26 @@ xml_find_template_parm (tree t)
         arg_type = TREE_CHAIN (arg_type);
         }
       } break;
-    case UNION_TYPE: return xml_find_template_parm (CLASSTYPE_TI_ARGS (t));
-    case RECORD_TYPE: return xml_find_template_parm (CLASSTYPE_TI_ARGS (t));
+    case UNION_TYPE:
+    case RECORD_TYPE:
+      {
+      if ((TREE_CODE (t) == RECORD_TYPE) && TYPE_PTRMEMFUNC_P (t))
+        {
+        return xml_find_template_parm(TYPE_PTRMEMFUNC_FN_TYPE (t));
+        }
+      if (CLASSTYPE_TEMPLATE_INFO (t))
+        {
+        return xml_find_template_parm (CLASSTYPE_TI_ARGS (t));
+        }
+      }
     case REFERENCE_TYPE: return xml_find_template_parm (TREE_TYPE (t));
     case POINTER_TYPE: return xml_find_template_parm (TREE_TYPE (t));
     case ARRAY_TYPE: return xml_find_template_parm (TREE_TYPE (t));
-    case OFFSET_TYPE: return xml_find_template_parm (TREE_TYPE (t));
-
+    case OFFSET_TYPE:
+      {
+      return (xml_find_template_parm(TYPE_OFFSET_BASETYPE (t)) ||
+              xml_find_template_parm (TREE_TYPE (t)));
+      }
     /* Fundamental types have no nested types.  */
     case BOOLEAN_TYPE: return 0;
     case COMPLEX_TYPE: return 0;
