@@ -1,0 +1,17 @@
+#!/bin/sh
+
+# These options are always needed.
+echo -n "-quiet -o /dev/null -nostdinc "
+
+# Find the include path options.
+echo "" | gcc -v -x c++ -E -o /dev/null - 2>&1 |
+ awk '/^\#include <.*$/   {f=1}
+      /^ \/.*$/           { if (f) { printf("-I%s ",$0) } }
+      /^End of search.*$/ {exit}' -
+
+# Find the GCC version options.
+gcc --version |
+  sed 's/[^0-9.]*//g' |
+  awk -F "\." '{ printf("-D__GNUG__=%d -D__GNUC__=%d -D__GNUC_MINOR__=%d ",$1,$1,$2);
+                 if ($1 < 3) {print "-fno-honor-std "}
+                 else {print "-D_GNU_SOURCE "} }'

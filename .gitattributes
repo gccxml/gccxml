@@ -1,2 +1,3 @@
 .git*            export-ignore
 
+find_gcc_options  crlf=input
