@@ -17,6 +17,8 @@
 #ifndef _gxSystemTools_h
 #define _gxSystemTools_h
 
+#include "gxConfigure.h"
+
 #include <iostream>
 #include <fstream>
 #include <string>
