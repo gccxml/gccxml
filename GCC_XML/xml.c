@@ -174,29 +174,34 @@ print_class_begin_tag (file, indent, rt)
   unsigned long indent;
   tree rt;
 {
-  char* name = xml_get_encoded_string (DECL_NAME (TYPE_NAME (rt)));
-  
+  char* name = xml_get_encoded_string (DECL_NAME (TYPE_NAME (rt)));  
+  char* access = "";
+
+  if (TREE_PRIVATE (TYPE_NAME (rt)))        access = "private";
+  else if (TREE_PROTECTED (TYPE_NAME (rt))) access = "protected";
+  else                          access = "public";  
+
   print_indent (file, indent);
   if (TREE_CODE(rt) == RECORD_TYPE)
     {
     if (CLASSTYPE_DECLARED_CLASS (rt))
       {
       fprintf (file,
-               "<Class name=\"%s\">\n",
-               name);
+               "<Class name=\"%s\" access=\"%s\">\n",
+               name, access);
       }
     else
       {
       fprintf (file,
-               "<Struct name=\"%s\">\n",
-               name);
+               "<Struct name=\"%s\" access=\"%s\">\n",
+               name, access);
       }
     }
   else
     {
       fprintf (file,
-               "<Union name=\"%s\">\n",
-               name);
+               "<Union name=\"%s\" access=\"%s\">\n",
+               name, access);
     }
 }
 
@@ -1031,17 +1036,19 @@ print_qualified_name_empty_tag (file, indent, t)
 /* Print XML empty tag describing an unimplemented TREE_CODE that has been
    encountered.  */
 static void
-print_unimplemented_empty_tag (file, indent, t)
+print_unimplemented_empty_tag (file, indent, t, func)
   FILE* file;
   unsigned long indent;
   tree t;
+  char* func;
 {
   int tree_code = TREE_CODE (t);
   
   print_indent (file, indent);
   fprintf (file,
-           "<Unimplemented tree_code=\"%d\" tree_code_name=\"%s\"/>\n",
-           tree_code, tree_code_name [tree_code]);
+           "<Unimplemented tree_code=\"%d\" tree_code_name=\"%s\""
+           " xml_c_location=\"%s\"/>\n",
+           tree_code, tree_code_name [tree_code], func);
 }
 
 
@@ -1105,7 +1112,8 @@ xml_output_namespace_decl (file, indent, ns)
           /* This is compiler-generated.  Just ignore it.  */
           break;
         default:
-          print_unimplemented_empty_tag (file, indent+XML_NESTED_INDENT, cur_decl);
+          print_unimplemented_empty_tag (file, indent+XML_NESTED_INDENT,
+                                         cur_decl, "xml_output_namespace_decl");
         }
       }
     
@@ -1186,9 +1194,10 @@ xml_output_type_decl (file, indent, td)
         /* A new type definition.  */
         xml_output_record_type(file, indent, t);
         }
-      break;      
+      break;
     default:
-      print_unimplemented_empty_tag (file, indent, t);
+      print_unimplemented_empty_tag (file, indent, t,
+                                     "xml_output_type_decl");
     }
 }
 
@@ -1246,7 +1255,8 @@ xml_output_record_type (file, indent, rt)
         break;
       case RESULT_DECL:
       default:
-        print_unimplemented_empty_tag (file, indent+XML_NESTED_INDENT, field);
+        print_unimplemented_empty_tag (file, indent+XML_NESTED_INDENT, field,
+                                       "xml_output_record_type fields");
       }
     }
 
@@ -1262,7 +1272,8 @@ xml_output_record_type (file, indent, rt)
         xml_output_template_decl (file, indent+XML_NESTED_INDENT, func);
         break;
       default:
-        print_unimplemented_empty_tag (file, indent+XML_NESTED_INDENT, func);
+        print_unimplemented_empty_tag (file, indent+XML_NESTED_INDENT, func,
+                                       "xml_output_record_type methods");
       }
     }
 
@@ -1516,7 +1527,8 @@ xml_output_template_decl (file, indent, td)
       case TEMPLATE_DECL:
         break;
       default:
-        print_unimplemented_empty_tag (file, indent, ts);
+        print_unimplemented_empty_tag (file, indent, ts,
+                                       "xml_output_template_decl SPECIALIZATIONS");
       }
     }
 
@@ -1530,7 +1542,8 @@ xml_output_template_decl (file, indent, td)
         xml_output_type_decl (file, indent, ts);
         break;
       default:
-        print_unimplemented_empty_tag (file, indent, ts);
+        print_unimplemented_empty_tag (file, indent, ts,
+                                       "xml_output_template_decl INSTANTIATIONS");
       }
     }
 }
@@ -1623,7 +1636,7 @@ xml_output_type (file, indent, t)
       xml_output_named_type (file, indent, t);
       break;
     default:
-      print_unimplemented_empty_tag (file, indent, t);
+      print_unimplemented_empty_tag (file, indent, t, "xml_output_type");
     }
 }
 
@@ -1847,7 +1860,8 @@ xml_output_template_argument (file, indent, arg)
   tree arg;
 {
   print_template_argument_begin_tag (file, indent);
-  print_unimplemented_empty_tag (file, indent+XML_NESTED_INDENT, arg);
+  print_unimplemented_empty_tag (file, indent+XML_NESTED_INDENT, arg,
+                                 "xml_output_template_argument");
   print_template_argument_end_tag (file, indent);
 }
 
