@@ -49,16 +49,15 @@ void printUsage(std::ostream& os)
     "the real executable.  Configuration settings are described below.\n"
     "\n"
     "Options include:\n"
-    "  --help                 = Print this usage information and exit.\n"
-    "  --version              = Print the version line and exit.\n"
-    "  --print                = Print the configuration settings and exit.\n"
-    "  -gccxml-executable xxx = Use \"xxx\" as the real gccxml executable.\n"
-    "  -gccxml-compiler xxx   = Use \"xxx\" to find GCCXML_FLAGS setting.\n"
-    "  -gccxml-config xxx     = Read file \"xxx\" for configuration.\n"
-    "  -gccxml-root xxx       = Use directory \"xxx\" to find supprot library.\n"
+    "  --help                  = Print this usage information and exit.\n"
+    "  --version               = Print the version line and exit.\n"
+    "  --print                 = Print the configuration settings and exit.\n"
+    "  --gccxml-executable xxx = Use \"xxx\" as the real gccxml executable.\n"
+    "  --gccxml-compiler xxx   = Use \"xxx\" to find GCCXML_FLAGS setting.\n"
+    "  --gccxml-config xxx     = Read file \"xxx\" for configuration.\n"
+    "  --gccxml-root xxx       = Use directory \"xxx\" to find supprot library.\n"
     "\n"
-    "  Additional -I and -D compiler flags can also be given.\n"
-    "(incomplete documentation...)\n";
+    "  Additional -I and -D compiler flags can also be given.\n";
 }
 
 int main(int argc, char** argv)
@@ -102,6 +101,7 @@ int main(int argc, char** argv)
     {
     std::cout
       << "No arguments given for real GCC-XML executable.  Not running it.\n";
+    printUsage(std::cout);
     return 0;
     }
   
