@@ -3,7 +3,7 @@
 # It is sourced by other install scripts.
 
 # Protect against accidental execution.
-if [ x"$RUNNING_SUBDIR_INSTALL" == x ] ; then
+if [ "$RUNNING_SUBDIR_INSTALL" != "yes" ] ; then
   echo -e "This script should not be run directly!\n" \
           "It is designed to be sourced by other installation scripts.\n" \
           "Run \"make\" for installation instructions."
