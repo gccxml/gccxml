@@ -1,8 +1,8 @@
 Index: Make-lang.in
 ===================================================================
 RCS file: /cvs/gcc/egcs/gcc/cp/Make-lang.in,v
-retrieving revision 1.77
-diff -r1.77 Make-lang.in
+retrieving revision 1.78
+diff -r1.78 Make-lang.in
 103c103
 <  cp/optimize.o cp/mangle.o
 ---
@@ -56,9 +56,9 @@ diff -r1.37 lang-options.h
 Index: semantics.c
 ===================================================================
 RCS file: /cvs/gcc/egcs/gcc/cp/semantics.c,v
-retrieving revision 1.189
-diff -r1.189 semantics.c
-1657a1658,1661
+retrieving revision 1.190
+diff -r1.190 semantics.c
+1672a1673,1676
 > 
 >   /* Do XML output if output file was given.  */
 >   if (flag_xml)
