@@ -21,6 +21,7 @@ namespace std
   using ::cout;
   using ::cerr;
   using ::clog;
+  using ::endl;
 }
 
 #endif
