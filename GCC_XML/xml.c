@@ -41,13 +41,6 @@ Boston, MA 02111-1307, USA.  */
    print_*_empty_tag functions print simple tree nodes whose XML elements
    are empty (have nothing nested inside them, and use the special <.../>
    syntax.  These elements may have attributes in the tags.
-
-   All the print_*_*_tag functions are called from xml_output_* functions
-   to do the actual text output.  They are responsible for printing the
-   indentation spaces, and for printing newlines after each tag.
-   print_*_*_tag functions should never call each other.  If you need to
-   do this, create an xml_output_* function to do all the print_*_*_tag
-   calls instead.
 */
 
 #include "config.h"
@@ -60,49 +53,109 @@ Boston, MA 02111-1307, USA.  */
 #include "rtl.h"
 #include "varray.h"
 
+#include "splay-tree.h"
+
+typedef struct xml_type_queue
+{
+  /* The queued type node.  */
+  splay_tree_node node;
+
+  /* The next node in the queue.  */
+  struct xml_type_queue *next;
+} *xml_type_queue_p;
+
+typedef struct xml_file_queue
+{
+  /* The queued file name.  */
+  splay_tree_node node;
+
+  /* The next node in the queue.  */
+  struct xml_file_queue *next;
+} *xml_file_queue_p;
+
+typedef struct xml_dump_info
+{
+  /* Output file stream of dump.  */
+  FILE* file;
+
+  /* Number of spaces to indent each nested element in XML output.  */
+  unsigned int indent;
+
+
+  /* Index of the next available type queue position.  */
+  unsigned int type_index;
+
+  /* The first type in the queue of types.  */
+  xml_type_queue_p type_queue;
+
+  /* The last type in the queue of types.  */
+  xml_type_queue_p type_queue_end;
+
+  /* All types that have been queued.  */
+  splay_tree type_nodes;
+
+
+  /* Index of the next available file queue position.  */
+  unsigned int file_index;
+
+  /* The first file in the queue of filenames.  */
+  xml_file_queue_p file_queue;
+
+  /* The last file in the queue of filenames.  */
+  xml_file_queue_p file_queue_end;
+
+  /* All files that have been queued.  */
+  splay_tree file_nodes;
+} *xml_dump_info_p;
+
 /* Return non-zero if the given _DECL is an internally generated decl.  */
 #define DECL_INTERNAL_P(d) (DECL_SOURCE_LINE(d) == 0)
 /*#define DECL_INTERNAL_P(d) (strcmp (DECL_SOURCE_FILE (d), "<internal>")==0)*/
 
 void do_xml_output                            PARAMS ((const char*));
-    
-static void xml_output_headers                PARAMS ((FILE*));
-static void xml_output_namespace_decl         PARAMS ((FILE*, unsigned long, tree));
-static void xml_output_type_decl              PARAMS ((FILE*, unsigned long, tree));
-static void xml_output_record_type            PARAMS ((FILE*, unsigned long, tree));
-static void xml_output_function_decl          PARAMS ((FILE*, unsigned long, tree));
-static void xml_output_overload               PARAMS ((FILE*, unsigned long, tree));
-static void xml_output_var_decl               PARAMS ((FILE*, unsigned long, tree));
-static void xml_output_field_decl             PARAMS ((FILE*, unsigned long, tree));
-static void xml_output_const_decl             PARAMS ((FILE*, unsigned long, tree));
-static void xml_output_template_decl          PARAMS ((FILE*, unsigned long, tree));
-static void xml_output_template_info          PARAMS ((FILE*, unsigned long, tree));
-static void xml_output_typedef                PARAMS ((FILE*, unsigned long, tree));
-static void xml_output_type                   PARAMS ((FILE*, unsigned long, tree));
-static void xml_output_named_type             PARAMS ((FILE*, unsigned long, tree));
-static void xml_output_void_type              PARAMS ((FILE*, unsigned long, tree));
-static void xml_output_function_type          PARAMS ((FILE*, unsigned long, tree));
-static void xml_output_method_type            PARAMS ((FILE*, unsigned long, tree));
-static void xml_output_pointer_type           PARAMS ((FILE*, unsigned long, tree));
-static void xml_output_reference_type         PARAMS ((FILE*, unsigned long, tree));
-static void xml_output_offset_type            PARAMS ((FILE*, unsigned long, tree));
-static void xml_output_array_type             PARAMS ((FILE*, unsigned long, tree));
-static void xml_output_enumeral_type          PARAMS ((FILE*, unsigned long, tree));
-static void xml_output_base_class             PARAMS ((FILE*, unsigned long, tree));
-static void xml_output_base_type              PARAMS ((FILE*, unsigned long, tree));
-static void xml_output_argument               PARAMS ((FILE*, unsigned long, tree, tree));
-static void xml_output_returns                PARAMS ((FILE*, unsigned long, tree));
-static void xml_output_template_argument      PARAMS ((FILE*, unsigned long, tree));
-static void xml_output_qualified_name         PARAMS ((FILE*, unsigned long, tree));
+
+static unsigned int xml_queue_type PARAMS((xml_dump_info_p, tree));
+static unsigned int xml_queue_file PARAMS((xml_dump_info_p, const char*));
+
+static void xml_output_headers                PARAMS ((xml_dump_info_p));
+static void xml_output_namespace_decl         PARAMS ((xml_dump_info_p, unsigned long, tree));
+static void xml_output_type_decl              PARAMS ((xml_dump_info_p, unsigned long, tree));
+static void xml_output_record_type            PARAMS ((xml_dump_info_p, unsigned long, tree));
+static void xml_output_function_decl          PARAMS ((xml_dump_info_p, unsigned long, tree));
+static void xml_output_overload               PARAMS ((xml_dump_info_p, unsigned long, tree));
+static void xml_output_var_decl               PARAMS ((xml_dump_info_p, unsigned long, tree));
+static void xml_output_field_decl             PARAMS ((xml_dump_info_p, unsigned long, tree));
+static void xml_output_const_decl             PARAMS ((xml_dump_info_p, unsigned long, tree));
+static void xml_output_template_decl          PARAMS ((xml_dump_info_p, unsigned long, tree));
+static void xml_output_template_info          PARAMS ((xml_dump_info_p, unsigned long, tree));
+static void xml_output_typedef                PARAMS ((xml_dump_info_p, unsigned long, tree));
+static void xml_output_type                   PARAMS ((xml_dump_info_p, unsigned long, tree));
+static void xml_output_named_type             PARAMS ((xml_dump_info_p, unsigned long, tree));
+static void xml_output_void_type              PARAMS ((xml_dump_info_p, unsigned long, tree));
+static void xml_output_function_type          PARAMS ((xml_dump_info_p, unsigned long, tree));
+static void xml_output_method_type            PARAMS ((xml_dump_info_p, unsigned long, tree));
+static void xml_output_pointer_type           PARAMS ((xml_dump_info_p, unsigned long, tree));
+static void xml_output_reference_type         PARAMS ((xml_dump_info_p, unsigned long, tree));
+static void xml_output_offset_type            PARAMS ((xml_dump_info_p, unsigned long, tree));
+static void xml_output_array_type             PARAMS ((xml_dump_info_p, unsigned long, tree));
+static void xml_output_enumeral_type          PARAMS ((xml_dump_info_p, unsigned long, tree));
+static void xml_output_base_class             PARAMS ((xml_dump_info_p, unsigned long, tree));
+static void xml_output_argument               PARAMS ((xml_dump_info_p, unsigned long, tree, tree));
+static void xml_output_template_argument      PARAMS ((xml_dump_info_p, unsigned long, tree));
+
+static void xml_dump_types PARAMS((xml_dump_info_p, unsigned long));
+static void xml_dump_files PARAMS((xml_dump_info_p, unsigned long));
+
+static const char* xml_get_qualified_name            PARAMS((tree t));
 
 static const char* xml_get_encoded_string             PARAMS ((tree));
 static const char* xml_get_encoded_string_from_string PARAMS ((const char*));
+static tree xml_get_encoded_identifier_from_string PARAMS ((const char*));
+
+static char* xml_concat_3_strings          PARAMS ((const char*, const char*, const char*));
 
 static void print_indent                   PARAMS ((FILE*, unsigned long));
 static tree reverse_opname_lookup          PARAMS ((tree));
-
-/* Number of spaces to indent each nested element in XML output.  */
-#define XML_NESTED_INDENT 2
 
 
 
@@ -119,710 +172,325 @@ do_xml_output (const char* filename)
     cp_error ("could not open xml-dump file `%s'", filename);
   else
     {
-    xml_output_headers (file);
-    xml_output_namespace_decl (file, 0, global_namespace);
+    /* Prepare dump.  */
+    struct xml_dump_info xdi;
+    xdi.file = file;
+    xdi.indent = 2;
+    xdi.type_queue = 0;
+    xdi.type_queue_end = 0;
+    xdi.type_index = 0;
+    xdi.type_nodes = splay_tree_new (splay_tree_compare_pointers, 0, 0);
+    xdi.file_queue = 0;
+    xdi.file_queue_end = 0;
+    xdi.file_index = 0;
+    xdi.file_nodes = splay_tree_new (splay_tree_compare_pointers, 0, 0);
+
+    /* Do dump.  */
+    xml_output_headers (&xdi);
+    fprintf (file, "<GCC_XML>\n");
+    xml_output_namespace_decl (&xdi, 0, global_namespace);
+    fprintf (file, "<Types>\n");
+    xml_dump_types(&xdi, xdi.indent);
+    fprintf (file, "</Types>\n");
+    fprintf (file, "<Files>\n");
+    xml_dump_files(&xdi, xdi.indent);
+    fprintf (file, "</Files>\n");
+    fprintf (file, "</GCC_XML>\n");
+
+    /* Clean up.  */
+    splay_tree_delete (xdi.type_nodes);
+    splay_tree_delete (xdi.file_nodes);
     fclose (file);
     }
 }
 
-
-
-/* Print XML begin tag for a namespace element.  */
-static void
-print_namespace_begin_tag (FILE* file, unsigned long indent, tree ns)
+/* Queue a type for later output.  If the type has already been queued, it
+   is not queued again.  In either case, the queue index assigned to the
+   type is returned.  */
+unsigned int
+xml_queue_type (xml_dump_info_p xdi, tree t)
 {
-  print_indent (file, indent);
-  if(ns == global_namespace)
+  /* See if we've already queued this type.  */
+  splay_tree_node n = splay_tree_lookup (xdi->type_nodes, (splay_tree_key) t);
+  if (n)
     {
-    fprintf (file, "<GlobalNamespace>\n");
+    /* Type was already queued.  Return its index.  */
+    return n->value;
     }
   else
     {
-    const char* name = xml_get_encoded_string (DECL_NAME (ns));
+    /* Type needs to be queued.  */
+    xml_type_queue_p tq;
 
-    fprintf (file, "<Namespace name=\"%s\">\n", name);
-    }
-}
+    /* Assign the next available index.  */
+    unsigned int index = xdi->type_index++;
 
+    /* Obtain a new queue node.  */
+    tq = (xml_type_queue_p) xmalloc (sizeof (struct xml_type_queue));
 
-/* Print XML end tag for a namespace element.  */
-static void
-print_namespace_end_tag (FILE* file, unsigned long indent, tree ns)
-{
-  print_indent (file, indent);
-  if(ns == global_namespace)
-    {
-    fprintf (file, "</GlobalNamespace>\n");
-    }
-  else
-    {
-    fprintf (file, "</Namespace>\n");
-    }
-}
-
-
-/* Print XML begin tag for a namespace alias element.  */
-static void
-print_namespace_alias_begin_tag (FILE* file, unsigned long indent, tree ns)
-{
-  const char* name = xml_get_encoded_string (DECL_NAME (ns));
-
-  print_indent (file, indent);
-  fprintf (file,
-           "<NamespaceAlias name=\"%s\">\n",
-           name);
-}
-
-
-/* Print XML end tag for a namespace alias element.  */
-static void
-print_namespace_alias_end_tag (FILE* file, unsigned long indent)
-{
-  print_indent (file, indent);
-  fprintf (file,
-           "</NamespaceAlias>\n");
-}
-
-
-/* Print XML begin tag for a typedef element.  */
-static void
-print_typedef_begin_tag (FILE* file, unsigned long indent, tree td)
-{
-  const char* name = xml_get_encoded_string (DECL_NAME (td));
-
-  print_indent (file, indent);
-  fprintf (file,
-           "<Typedef name=\"%s\">\n",
-           name);
-}
-
-
-/* Print XML end tag for a typedef element.  */
-static void
-print_typedef_end_tag (FILE* file, unsigned long indent)
-{
-  print_indent (file, indent);
-  fprintf (file,
-           "</Typedef>\n");  
-}
-
-
-/* Print XML begin tag for a class, struct, or union element.  */
-static void
-print_class_begin_tag (FILE* file, unsigned long indent, tree rt)
-{
-  const char* name = xml_get_encoded_string (DECL_NAME (TYPE_NAME (rt)));  
-  const char* access = "";
-  const char* mangled_name = mangle_type_string (rt);
-  int is_abstract = (CLASSTYPE_PURE_VIRTUALS (rt) != 0);
-
-  if (TREE_PRIVATE (TYPE_NAME (rt)))        access = "private";
-  else if (TREE_PROTECTED (TYPE_NAME (rt))) access = "protected";
-  else                          access = "public";  
-
-  print_indent (file, indent);
-  if (TREE_CODE(rt) == RECORD_TYPE)
-    {
-    if (CLASSTYPE_DECLARED_CLASS (rt))
-      {
-      fprintf (file,
-               "<Class name=\"%s\" access=\"%s\" abstract=\"%d\" mangled_name=\"%s\">\n",
-               name, access, is_abstract, mangled_name);
-      }
-    else
-      {
-      fprintf (file,
-               "<Struct name=\"%s\" access=\"%s\" abstract=\"%d\" mangled_name=\"%s\">\n",
-               name, access, is_abstract, mangled_name);
-      }
-    }
-  else
-    {
-      fprintf (file,
-               "<Union name=\"%s\" access=\"%s\" abstract=\"%d\" mangled_name=\"%s\">\n",
-               name, access, is_abstract, mangled_name);
-    }
-}
-
-
-/* Print XML end tag for a class, struct, or union element.  */
-static void
-print_class_end_tag (FILE* file, unsigned long indent, tree rt)
-{
-  print_indent (file, indent);
-  if (TREE_CODE(rt) == RECORD_TYPE)
-    {
-    if (CLASSTYPE_DECLARED_CLASS (rt))
-      {
-      fprintf (file,
-               "</Class>\n");
-      }
-    else
-      {
-      fprintf (file,
-               "</Struct>\n");
-      }
-    }
-  else
-    {
-      fprintf (file,
-               "</Union>\n");
-    }
-}
-
-
-/* Print XML begin tag for a constructor element.  */
-static void
-print_constructor_begin_tag (FILE* file, unsigned long indent, tree fd)
-{
-  const char* access = "";
-
-  if (TREE_PRIVATE (fd))        access = "private";
-  else if (TREE_PROTECTED (fd)) access = "protected";
-  else                          access = "public";  
-
-  print_indent (file, indent);
-  fprintf (file,
-           "<Constructor access=\"%s\">\n",
-           access);
-}
-
-
-/* Print XML end tag for a constructor element.  */
-static void
-print_constructor_end_tag (FILE* file, unsigned long indent)
-{
-  print_indent (file, indent);
-  fprintf (file,
-           "</Constructor>\n");
-}
-
-
-/* Print XML begin tag for a destructor element.  */
-static void
-print_destructor_begin_tag (FILE* file, unsigned long indent, tree fd)
-{
-  const char* access = "";
-  int is_virtual;
-  int is_pure_virtual;
-
-  /* xml_output_record_type may call this with fd=0 if a trivial
-     destructor is encountered.  In this case, set the values
-     explicitly.  */
-  if (fd)
-    {
-    if (TREE_PRIVATE (fd))        access = "private";
-    else if (TREE_PROTECTED (fd)) access = "protected";
-    else                          access = "public";
+    /* Create a new entry in the splay-tree.  */
+    tq->node = splay_tree_insert (xdi->type_nodes, (splay_tree_key) t, 
+                                  (splay_tree_value) index);
     
-    if (DECL_VIRTUAL_P (fd))
-      is_virtual = 1;
+    /* Add it to the end of the queue.  */
+    tq->next = 0;
+    if (!xdi->type_queue_end)
+      {
+      xdi->type_queue = tq;
+      }
     else
-      is_virtual = 0;
+      {
+      xdi->type_queue_end->next = tq;
+      }
+    xdi->type_queue_end = tq;
     
-    if (DECL_PURE_VIRTUAL_P (fd))
-      is_pure_virtual = 1;
-    else
-      is_pure_virtual = 0;
+    /* Return the index.  */
+    return index;
+    }
+}
+
+/* Queue a filename for later output.  If the file has already been
+   queued, it is not queued again.  In either case, the queue index
+   assigned to the file is returned.  */
+unsigned int
+xml_queue_file (xml_dump_info_p xdi, const char* filename)
+{
+  tree t = xml_get_encoded_identifier_from_string (filename);
+
+  /* See if we've already queued this file.  */
+  splay_tree_node n = splay_tree_lookup (xdi->file_nodes, (splay_tree_key) t);
+  if (n)
+    {
+    /* File was already queued.  Return its index.  */
+    return n->value;
     }
   else
     {
-    access = "public";
-    is_virtual = 0;
-    is_pure_virtual = 0;
+    /* File needs to be queued.  */
+    xml_file_queue_p fq;
+
+    /* Assign the next available index.  */
+    unsigned int index = xdi->file_index++;
+
+    /* Obtain a new queue node.  */
+    fq = (xml_file_queue_p) xmalloc (sizeof (struct xml_file_queue));
+
+    /* Create a new entry in the splay-tree.  */
+    fq->node = splay_tree_insert (xdi->file_nodes, (splay_tree_key) t, 
+                                  (splay_tree_value) index);
+    
+    /* Add it to the end of the queue.  */
+    fq->next = 0;
+    if (!xdi->file_queue_end)
+      {
+      xdi->file_queue = fq;
+      }
+    else
+      {
+      xdi->file_queue_end->next = fq;
+      }
+    xdi->file_queue_end = fq;
+    
+    /* Return the index.  */
+    return index;
     }
-
-  print_indent (file, indent);
-  fprintf (file,
-           "<Destructor access=\"%s\" virtual=\"%d\" pure_virtual=\"%d\">\n",
-           access, is_virtual, is_pure_virtual);
 }
 
-
-/* Print XML end tag for a destructor element.  */
+/* Print the XML attribute id="tid" for the given type. */
 static void
-print_destructor_end_tag (FILE* file, unsigned long indent)
+print_id_attribute (xml_dump_info_p xdi, tree t)
 {
-  print_indent (file, indent);
-  fprintf (file,
-           "</Destructor>\n");
+  fprintf (xdi->file, " id=\"t%d\"", xml_queue_type (xdi, t));
 }
 
-
-/* Print XML begin tag for a converter (type-conversion operator)
-   element.  */
+/* Print the XML attribute extern="1" if the given decl is external. */
 static void
-print_converter_begin_tag (FILE* file, unsigned long indent, tree fd)
+print_extern_attribute (xml_dump_info_p xdi, tree d)
 {
-  const char* access = "";
-  int is_const;
-  int is_virtual;
-  int is_pure_virtual;
+  if (DECL_EXTERNAL (d))
+    {
+    fprintf (xdi->file, " extern=\"1\"");
+    }
+}
 
-  if (TREE_PRIVATE (fd))        access = "private";
-  else if (TREE_PROTECTED (fd)) access = "protected";
-  else                          access = "public";  
+/* Print the XML attribute extern="1" if the given decl is external. */
+static void
+print_function_extern_attribute (xml_dump_info_p xdi, tree fd)
+{
+  if (DECL_REALLY_EXTERN (fd))
+    {
+    fprintf (xdi->file, " extern=\"1\"");
+    }
+}
 
-  if (DECL_CONST_MEMFUNC_P (fd))
-    is_const = 1;
-  else
-    is_const = 0;
-
-  if (DECL_VIRTUAL_P (fd))
-    is_virtual = 1;
-  else
-    is_virtual = 0;
-
-  if (DECL_PURE_VIRTUAL_P (fd))
-    is_pure_virtual = 1;
-  else
-    is_pure_virtual = 0;
+/* Print the XML attribute location="fid:line" for the given decl. */
+static void
+print_location_attribute (xml_dump_info_p xdi, tree d)
+{
+  unsigned int source_file = xml_queue_file (xdi, DECL_SOURCE_FILE (d));
+  unsigned int source_line = DECL_SOURCE_LINE (d);
   
-  print_indent (file, indent);
-  fprintf (file,
-           "<Converter access=\"%s\" const=\"%d\" virtual=\"%d\" pure_virtual=\"%d\">\n",
-           access, is_const, is_virtual, is_pure_virtual);
+  fprintf (xdi->file, " location=\"f%d:%d\"", source_file, source_line);
 }
 
-
-/* Print XML end tag for a converter (type-conversion operator) element.  */
+/* Print the XML attribute type="tid" for the given type. */
 static void
-print_converter_end_tag (FILE* file, unsigned long indent)
+print_type_attribute (xml_dump_info_p xdi, tree t)
 {
-  print_indent (file, indent);
-  fprintf (file,
-           "</Converter>\n");
+  unsigned int type = xml_queue_type (xdi, t);
+  fprintf (xdi->file, " type=\"t%d\"", type);
 }
 
-
-/* Print XML begin tag for an operator function element.  */
+/* Print the XML attribute name="..." for the given node. */
 static void
-print_operator_function_begin_tag (FILE* file, unsigned long indent, tree fd)
+print_name_attribute (xml_dump_info_p xdi, tree t)
 {
-  const char* name = xml_get_encoded_string (reverse_opname_lookup (DECL_NAME (fd)) );
-
-  print_indent (file, indent);
-  fprintf (file,
-           "<OperatorFunction name=\"%s\">\n",
-           name);
+  const char* name = xml_get_encoded_string (t);  
+  fprintf (xdi->file, " name=\"%s\"", name);
 }
 
-
-/* Print XML end tag for an operator function element.  */
+/* Print the XML attribute returns="tid" for the given function type. */
 static void
-print_operator_function_end_tag (FILE* file, unsigned long indent)
+print_returns_attribute (xml_dump_info_p xdi, tree ft)
 {
-  print_indent (file, indent);
-  fprintf (file,
-           "</OperatorFunction>\n");
+  unsigned int type = xml_queue_type (xdi, TREE_TYPE (ft));
+  fprintf (xdi->file, " returns=\"t%d\"", type);
 }
 
-
-/* Print XML begin tag for an operator method element.  */
+/* Print the XML attribute access="..." for the given decl. */
 static void
-print_operator_method_begin_tag (FILE* file, unsigned long indent, tree fd)
+print_access_attribute (xml_dump_info_p xdi, tree d)
 {
-  const char* name = xml_get_encoded_string (reverse_opname_lookup (DECL_NAME (fd)) );
-  const char* access = "";
-  int is_const;
-  int is_virtual;
-  int is_pure_virtual;
-  int is_static;
-
-  if (TREE_PRIVATE (fd))        access = "private";
-  else if (TREE_PROTECTED (fd)) access = "protected";
-  else                          access = "public";  
-
-  if (DECL_CONST_MEMFUNC_P (fd))
-    is_const = 1;
+  if (TREE_PRIVATE (d))
+    {
+    fprintf (xdi->file, " access=\"private\"");
+    }
+  else if (TREE_PROTECTED (d))
+    {
+    fprintf (xdi->file, " access=\"protected\"");
+    }
   else
-    is_const = 0;
+    {
+    fprintf (xdi->file, " access=\"public\"");
+    }
+}
 
-  if (DECL_VIRTUAL_P (fd))
-    is_virtual = 1;
+/* Print the XML attribute access="..." for the given binfo. */
+static void
+print_base_access_attribute (xml_dump_info_p xdi, tree binfo)
+{
+  if (TREE_VIA_PUBLIC (binfo))
+    {
+    fprintf (xdi->file, " access=\"public\"");
+    }
+  else if (TREE_VIA_PROTECTED (binfo))
+    {
+    fprintf (xdi->file, " access=\"protected\"");
+    }
   else
-    is_virtual = 0;
-
-  if (DECL_PURE_VIRTUAL_P (fd))
-    is_pure_virtual = 1;
-  else
-    is_pure_virtual = 0;
-
-  if (DECL_NONSTATIC_MEMBER_FUNCTION_P (fd))
-    is_static = 0;
-  else
-    is_static = 1;
-
-  print_indent (file, indent);
-  fprintf (file,
-           "<OperatorMethod name=\"%s\" access=\"%s\" const=\"%d\" virtual=\"%d\" pure_virtual=\"%d\" static=\"%d\">\n",
-           name, access, is_const, is_virtual, is_pure_virtual, is_static);
+    {
+    fprintf (xdi->file, " access=\"private\"");
+    }
 }
 
-
-/* Print XML end tag for an operator method element.  */
+/* Print the XML attribute incomplete="..." for the given type. */
 static void
-print_operator_method_end_tag (FILE* file, unsigned long indent)
+print_incomplete_attribute (xml_dump_info_p xdi, tree t)
 {
-  print_indent (file, indent);
-  fprintf (file,
-           "</OperatorMethod>\n");
+  if (!COMPLETE_TYPE_P (t))
+    {
+    fprintf (xdi->file, " incomplete=\"1\"");
+    }
 }
 
-
-/* Print XML begin tag for a method element.  */
+/* Print the XML attribute abstract="..." for the given type. */
 static void
-print_method_begin_tag (FILE* file, unsigned long indent, tree fd)
+print_abstract_attribute (xml_dump_info_p xdi, tree t)
 {
-  const char* name = xml_get_encoded_string (DECL_NAME (fd));
-  const char* access = "";
-  int is_static;
-  int is_const;
-  int is_virtual;
-  int is_pure_virtual;
-
-  if (TREE_PRIVATE (fd))        access = "private";
-  else if (TREE_PROTECTED (fd)) access = "protected";
-  else                          access = "public";  
-
-  if (DECL_NONSTATIC_MEMBER_FUNCTION_P (fd))
-    is_static = 0;
-  else
-    is_static = 1;
-
-  if (DECL_CONST_MEMFUNC_P (fd))
-    is_const = 1;
-  else
-    is_const = 0;
-
-  if (DECL_VIRTUAL_P (fd))
-    is_virtual = 1;
-  else
-    is_virtual = 0;
-
-  if (DECL_PURE_VIRTUAL_P (fd))
-    is_pure_virtual = 1;
-  else
-    is_pure_virtual = 0;
-
-  print_indent (file, indent);
-  fprintf (file,
-           "<Method name=\"%s\" access=\"%s\" static=\"%d\" const=\"%d\" virtual=\"%d\" pure_virtual=\"%d\">\n",
-           name, access, is_static, is_const, is_virtual, is_pure_virtual);
+  if (CLASSTYPE_PURE_VIRTUALS (t) != 0)
+    {
+    fprintf (xdi->file, " abstract=\"1\"");
+    }
 }
 
-
-/* Print XML end tag for a method element.  */
+/* Print XML attribute init="..." for a variable initializer.  */
 static void
-print_method_end_tag (FILE* file, unsigned long indent)
-{
-  print_indent (file, indent);
-  fprintf (file,
-           "</Method>\n");
-}
-
-
-/* Print XML begin tag for a function element.  */
-static void
-print_function_begin_tag (FILE* file, unsigned long indent, tree fd)
-{
-  const char* name = xml_get_encoded_string (DECL_NAME (fd));
-
-  print_indent (file, indent);
-  fprintf (file,
-           "<Function name=\"%s\">\n",
-           name);
-}
-
-
-/* Print XML end tag for a function element.  */
-static void
-print_function_end_tag (FILE* file, unsigned long indent)
-{
-  print_indent (file, indent);
-  fprintf (file,
-           "</Function>\n");
-}
-
-
-/* Print XML begin tag for a function argument element.  */
-static void
-print_argument_begin_tag (FILE* file, unsigned long indent, tree arg)
-{
-  const char* name = "";
-
-  if(arg && DECL_NAME (arg))
-    name = xml_get_encoded_string (DECL_NAME (arg));
-  
-  print_indent (file, indent);
-  fprintf (file,
-           "<Argument name=\"%s\">\n",
-           name);  
-}
-
-
-/* Print XML end tag for a function argument element.  */
-static void
-print_argument_end_tag (FILE* file, unsigned long indent)
-{
-  print_indent (file, indent);
-  fprintf (file,
-           "</Argument>\n");
-}
-
-
-/* Print XML begin tag for a function return type element.  */
-static void
-print_returns_begin_tag (FILE* file, unsigned long indent)
-{
-  print_indent (file, indent);
-  fprintf (file,
-           "<Returns>\n");
-}
-
-
-/* Print XML end tag for a function return type element.  */
-static void
-print_returns_end_tag (FILE* file, unsigned long indent)
-{
-  print_indent (file, indent);
-  fprintf (file,
-           "</Returns>\n");
-}
-
-
-/* Print XML empty tag for a default argument element.  */
-static void
-print_default_argument_empty_tag (FILE* file, unsigned long indent, tree t)
-{
-  const char* value;
-
-  value = xml_get_encoded_string_from_string (
-    expr_as_string (t, 0));
-  
-  print_indent (file, indent);
-  fprintf (file,
-           "<DefaultArgument value=\"%s\"/>\n",
-           value);
-}
-
-
-/* Print XML empty tag for an ellipsis at the end of an argument list.  */
-static void
-print_ellipsis_empty_tag (FILE* file, unsigned long indent)
-{
-  print_indent (file, indent);
-  fprintf (file,
-           "<Ellipsis/>\n");
-}
-
-
-/* Print XML begin tag for a variable declaration element.  */
-static void
-print_variable_begin_tag (FILE* file, unsigned long indent, tree vd)
-{
-  const char* name = xml_get_encoded_string (DECL_NAME (vd));
-  
-  print_indent (file, indent);
-  fprintf (file,
-           "<Variable name=\"%s\">\n",
-           name);
-}
-
-
-/* Print XML end tag for a variable declaration element.  */
-static void
-print_variable_end_tag (FILE* file, unsigned long indent)
-{
-  print_indent (file, indent);
-  fprintf (file,
-           "</Variable>\n");
-}
-
-
-/* Print XML empty tag for a variable initializer element.  */
-static void
-print_initializer_empty_tag (FILE* file, unsigned long indent, tree t)
+print_init_attribute (xml_dump_info_p xdi, tree t)
 {
   const char* value;
   
   if (!t || (t == error_mark_node)) return;
   
   value = xml_get_encoded_string_from_string (expr_as_string (t, 0));
-  print_indent (file, indent);
-  fprintf (file,
-           "<Initializer value=\"%s\"/>\n",
-           value);
+  fprintf (xdi->file, " init=\"%s\"", value);
 }
 
-
-/* Print XML begin tag for a field declaration element.  */
+/* Print XML attributes describing the cv-qualifiers of a type.  */
 static void
-print_field_begin_tag (FILE* file, unsigned long indent, tree vd)
+print_cv_attributes (xml_dump_info_p xdi, tree t)
+{  
+  if (CP_TYPE_CONST_P (t))
+    {
+    fprintf (xdi->file, " const=\"1\"");
+    }
+  if (CP_TYPE_VOLATILE_P (t))
+    {
+    fprintf (xdi->file, " volatile=\"1\"");
+    }
+  if (CP_TYPE_RESTRICT_P (t))
+    {
+    fprintf (xdi->file, " restrict=\"1\"");
+    }
+}
+
+/* Print XML attribute const="1" for const methods.  */
+static void
+print_const_method_attribute (xml_dump_info_p xdi, tree fd)
+{  
+  if (DECL_CONST_MEMFUNC_P (fd))
+    {
+    fprintf (xdi->file, " const=\"1\"");
+    }
+}
+
+/* Print XML attribute static="1" for static methods.  */
+static void
+print_static_method_attribute (xml_dump_info_p xdi, tree fd)
 {
-  const char* name = xml_get_encoded_string (DECL_NAME (vd));
+  if (!DECL_NONSTATIC_MEMBER_FUNCTION_P (fd))
+    {
+    fprintf (xdi->file, " static=\"1\"");
+    }
+}
+
+/* Print XML attributes virtual="" and pure_virtual="" for a decl.  */
+static void
+print_virtual_method_attributes (xml_dump_info_p xdi, tree d)
+{  
+  if (DECL_VIRTUAL_P (d))
+    {
+    fprintf (xdi->file, " virtual=\"1\"");
+    }
   
-  print_indent (file, indent);
-  fprintf (file,
-           "<Field name=\"%s\">\n",
-           name);
+  if (DECL_PURE_VIRTUAL_P (d))
+    {
+    fprintf (xdi->file, " pure_virtual=\"1\"");
+    }
 }
 
-
-/* Print XML end tag for a field declaration element.  */
+/* Print XML attribute for a default argument.  */
 static void
-print_field_end_tag (FILE* file, unsigned long indent)
+print_default_argument_attribute (xml_dump_info_p xdi, tree t)
 {
-  print_indent (file, indent);
-  fprintf (file,
-           "</Field>\n");
+  const char* value =
+    xml_get_encoded_string_from_string (expr_as_string (t, 0));  
+  fprintf (xdi->file, " default=\"%s\"", value);
 }
 
 
-/* Print XML begin tag for a const declaration element.  */
+/* Print XML attributes min="0" max="..." for an array type.  */
 static void
-print_enum_begin_tag (FILE* file, unsigned long indent, tree vd)
-{
-  const char* name = xml_get_encoded_string (DECL_NAME (vd));
-  
-  print_indent (file, indent);
-  fprintf (file,
-           "<Enum name=\"%s\">\n",
-           name);
-}
-
-
-/* Print XML end tag for a const declaration element.  */
-static void
-print_enum_end_tag (FILE* file, unsigned long indent)
-{
-  print_indent (file, indent);
-  fprintf (file,
-           "</Enum>\n");
-}
-
-
-/* Print XML begin tag for a type element.  */
-static void
-print_named_type_begin_tag (FILE* file, unsigned long indent)
-{
-  print_indent (file, indent);  
-  fprintf (file,
-           "<NamedType>\n");
-}
-
-
-/* Print XML end tag for a type element.  */
-static void
-print_named_type_end_tag (FILE* file, unsigned long indent)
-{
-  print_indent (file, indent);  
-  fprintf (file,
-           "</NamedType>\n");
-}
-
-
-/* Print XML begin tag for a pointer type element.  */
-static void
-print_pointer_type_begin_tag (FILE* file, unsigned long indent)
-{
-  print_indent (file, indent);
-  fprintf (file,
-           "<PointerType>\n");
-}
-
-
-/* Print XML end tag for a pointer type element.  */
-static void
-print_pointer_type_end_tag (FILE* file, unsigned long indent)
-{
-  print_indent (file, indent);
-  fprintf (file, "</PointerType>\n");
-}
-
-
-/* Print XML begin tag for a reference type element.  */
-static void
-print_reference_type_begin_tag (FILE* file, unsigned long indent)
-{
-  print_indent (file, indent);
-  fprintf (file,
-           "<ReferenceType>\n");
-}
-
-
-/* Print XML end tag for a reference type element.  */
-static void
-print_reference_type_end_tag (FILE* file, unsigned long indent)
-{
-  print_indent (file, indent);
-  fprintf (file, "</ReferenceType>\n");
-}
-
-
-/* Print XML begin tag for a function type element.  */
-static void
-print_function_type_begin_tag (FILE* file, unsigned long indent)
-{
-  print_indent (file, indent);
-  fprintf (file,
-           "<FunctionType>\n");
-}
-
-
-/* Print XML end tag for a function type element.  */
-static void
-print_function_type_end_tag (FILE* file, unsigned long indent)
-{
-  print_indent (file, indent);
-  fprintf (file,
-           "</FunctionType>\n");
-}
-
-
-/* Print XML begin tag for a method type element.  */
-static void
-print_method_type_begin_tag (FILE* file, unsigned long indent)
-{
-  print_indent (file, indent);
-  fprintf (file,
-           "<MethodType>\n");
-}
-
-
-/* Print XML end tag for a method type element.  */
-static void
-print_method_type_end_tag (FILE* file, unsigned long indent)
-{
-  print_indent (file, indent);
-  fprintf (file,
-           "</MethodType>\n");
-}
-
-
-/* Print XML begin tag for a offset type element.  */
-static void
-print_offset_type_begin_tag (FILE* file, unsigned long indent)
-{
-  print_indent (file, indent);
-  fprintf (file,
-           "<OffsetType>\n");
-}
-
-
-/* Print XML end tag for a offset type element.  */
-static void
-print_offset_type_end_tag (FILE* file, unsigned long indent)
-{
-  print_indent (file, indent);
-  fprintf (file,
-           "</OffsetType>\n");
-}
-
-
-/* Print XML begin tag for a array type element.  */
-static void
-print_array_type_begin_tag (FILE* file, unsigned long indent, tree at)
+print_array_attributes (xml_dump_info_p xdi, tree at)
 {
   const char* length = "";
   
@@ -830,236 +498,166 @@ print_array_type_begin_tag (FILE* file, unsigned long indent, tree at)
     length = xml_get_encoded_string_from_string (
       expr_as_string (TYPE_MAX_VALUE (TYPE_DOMAIN (at)), 0));
 
-  print_indent (file, indent);
-  fprintf (file,
-           "<ArrayType min=\"0\" max=\"%s\">\n",
-           length);
+  fprintf (xdi->file, " min=\"0\" max=\"%s\">\n", length);
+}
+
+/* Print XML attribute basetype="..." with the given type.  */
+static void
+print_base_type_attribute (xml_dump_info_p xdi, tree t)
+{
+  fprintf (xdi->file, " basetype=\"%s\"", xml_get_qualified_name (t));
+}
+
+/* ------------------------------------------------------------------------ */
+
+/* Print XML begin tag for a namespace element.  */
+static void
+print_namespace_begin_tag (xml_dump_info_p xdi, unsigned long indent, tree ns)
+{
+  print_indent (xdi->file, indent);
+  if(ns == global_namespace)
+    {
+    fprintf (xdi->file, "<GlobalNamespace>\n");
+    }
+  else
+    {
+    const char* name = xml_get_encoded_string (DECL_NAME (ns));
+
+    fprintf (xdi->file, "<Namespace name=\"%s\">\n", name);
+    }
 }
 
 
-/* Print XML end tag for a array type element.  */
+/* Print XML end tag for a namespace element.  */
 static void
-print_array_type_end_tag (FILE* file, unsigned long indent)
+print_namespace_end_tag (xml_dump_info_p xdi, unsigned long indent, tree ns)
 {
-  print_indent (file, indent);
-  fprintf (file,
-           "</ArrayType>\n");
+  print_indent (xdi->file, indent);
+  if(ns == global_namespace)
+    {
+    fprintf (xdi->file, "</GlobalNamespace>\n");
+    }
+  else
+    {
+    fprintf (xdi->file, "</Namespace>\n");
+    }
 }
 
 
-/* Print XML begin tag for an enumeration type element.  */
+/* Print XML begin tag for a class, struct, or union element.  */
 static void
-print_enumeral_type_begin_tag (FILE* file, unsigned long indent, tree et)
+print_class_begin_tag (xml_dump_info_p xdi, unsigned long indent, tree rt)
 {
-  const char* name = xml_get_encoded_string (DECL_NAME (TYPE_NAME (et)));  
-  const char* access = "";
+  print_indent (xdi->file, indent);
+  if (TREE_CODE(rt) == RECORD_TYPE)
+    {
+    if (CLASSTYPE_DECLARED_CLASS (rt))
+      {
+      fprintf (xdi->file, "<Class");
+      }
+    else
+      {
+      fprintf (xdi->file, "<Struct");
+      }
+    }
+  else
+    {
+    fprintf (xdi->file, "<Union");
+    }
 
-  if (TREE_PRIVATE (TYPE_NAME (et)))        access = "private";
-  else if (TREE_PROTECTED (TYPE_NAME (et))) access = "protected";
-  else                          access = "public";  
-
-  print_indent (file, indent);
-  fprintf (file,
-           "<EnumType name=\"%s\" access=\"%s\">\n",
-           name, access);
+  print_name_attribute (xdi, DECL_NAME (TYPE_NAME (rt)));
+  print_access_attribute (xdi, TYPE_NAME (rt));
+  print_abstract_attribute (xdi, rt);
+  print_incomplete_attribute (xdi, rt);
+  print_location_attribute (xdi, TYPE_NAME (rt));
+  fprintf (xdi->file, ">\n");
 }
 
 
-/* Print XML end tag for an enumeration type element.  */
+/* Print XML end tag for a class, struct, or union element.  */
 static void
-print_enumeral_type_end_tag (FILE* file, unsigned long indent)
+print_class_end_tag (xml_dump_info_p xdi, unsigned long indent, tree rt)
 {
-  print_indent (file, indent);
-  fprintf (file,
-           "</EnumType>\n");
+  print_indent (xdi->file, indent);
+  if (TREE_CODE(rt) == RECORD_TYPE)
+    {
+    if (CLASSTYPE_DECLARED_CLASS (rt))
+      {
+      fprintf (xdi->file,
+               "</Class>\n");
+      }
+    else
+      {
+      fprintf (xdi->file,
+               "</Struct>\n");
+      }
+    }
+  else
+    {
+      fprintf (xdi->file,
+               "</Union>\n");
+    }
 }
 
-
-/* Print XML begin element tag for a base type element.  */
+/* Print XML empty tag for an ellipsis at the end of an argument list.  */
 static void
-print_base_type_begin_tag (FILE* file, unsigned long indent)
+print_ellipsis_empty_tag (xml_dump_info_p xdi, unsigned long indent)
 {
-  print_indent (file, indent);
-  fprintf (file,
-           "<BaseType>\n");
-}
-
-
-/* Print XML end element tag for a base type element.  */
-static void
-print_base_type_end_tag (FILE* file, unsigned long indent)
-{
-  print_indent (file, indent);
-  fprintf (file,
-           "</BaseType>\n");
-}
-
-
-/* Print XML begin element tag for a base class element.  */
-static void
-print_base_class_begin_tag (FILE* file, unsigned long indent, tree binfo)
-{
-  const char* access = "";
-
-  if (TREE_VIA_PUBLIC (binfo))         access = "public";
-  else if (TREE_VIA_PROTECTED (binfo)) access = "protected";
-  else                                 access = "private";
-
-  print_indent (file, indent);
-  fprintf (file,
-           "<BaseClass access=\"%s\">\n",
-           access);
-}
-
-
-/* Print XML end element tag for a base class element.  */
-static void
-print_base_class_end_tag (FILE* file, unsigned long indent)
-{
-  print_indent (file, indent);
-  fprintf (file,
-           "</BaseClass>\n");
+  print_indent (xdi->file, indent);
+  fprintf (xdi->file,
+           "<Ellipsis/>\n");
 }
 
 
 /* Print XML begin tag for a template instantiation element.  */
 static void
-print_instantiation_begin_tag (FILE* file, unsigned long indent)
+print_instantiation_begin_tag (xml_dump_info_p xdi, unsigned long indent)
 {
-  print_indent (file, indent);
-  fprintf (file,
+  print_indent (xdi->file, indent);
+  fprintf (xdi->file,
            "<Instantiation>\n");
 }
 
 
 /* Print XML end tag for a template instantiation element.  */
 static void
-print_instantiation_end_tag (FILE* file, unsigned long indent)
+print_instantiation_end_tag (xml_dump_info_p xdi, unsigned long indent)
 {
-  print_indent (file, indent);
-  fprintf (file,
+  print_indent (xdi->file, indent);
+  fprintf (xdi->file,
            "</Instantiation>\n");
 }
 
 
 /* Print XML begin tag for a template argument element.  */
 static void
-print_template_argument_begin_tag (FILE* file, unsigned long indent)
+print_template_argument_begin_tag (xml_dump_info_p xdi, unsigned long indent)
 {
-  print_indent (file, indent);
-  fprintf (file,
+  print_indent (xdi->file, indent);
+  fprintf (xdi->file,
            "<TemplateArgument>\n");
 }
 
 
 /* Print XML end tag for a template argument element.  */
 static void
-print_template_argument_end_tag (FILE* file, unsigned long indent)
+print_template_argument_end_tag (xml_dump_info_p xdi, unsigned long indent)
 {
-  print_indent (file, indent);
-  fprintf (file,
+  print_indent (xdi->file, indent);
+  fprintf (xdi->file,
            "</TemplateArgument>\n");
 }
 
-
-/* Print XML empty tag indicating that the current declaration is
-   external.  */
-static void
-print_external_empty_tag (FILE* file, unsigned long indent)
-{
-  print_indent (file, indent);
-  fprintf (file,
-           "<External/>\n");
-}
-
-
-/* Print XML empty tag indicating that the current type is incomplete.  */
-static void
-print_incomplete_type_empty_tag (FILE* file, unsigned long indent)
-{
-  print_indent (file, indent);
-  fprintf (file,
-           "<IncompleteType/>\n");
-}
-
-
-/* Print XML empty tag describing the location of a declaration in the
-   source.  */
-static void
-print_location_empty_tag (FILE* file, unsigned long indent, tree d)
-{  
-  const char* source_file = DECL_SOURCE_FILE (d);
-  unsigned int source_line = DECL_SOURCE_LINE (d);
-  
-  print_indent (file, indent);
-  fprintf (file,
-           "<Location file=\"%s\" line=\"%d\"/>\n",
-           source_file, source_line);
-}
-
-
-/* Print XML empty tag describing the cv-qualifiers of a type.  */
-static void
-print_cv_qualifiers_empty_tag (FILE* file, unsigned long indent, tree t)
-{  
-  int is_const = CP_TYPE_CONST_P (t);
-  int is_volatile = CP_TYPE_VOLATILE_P (t);
-  int is_restrict = CP_TYPE_RESTRICT_P (t);  
-  
-  /* If there are no qualifiers, don't bother with the output.  */
-  if (!is_const && !is_volatile && !is_restrict) return;
-  
-  print_indent (file, indent);
-  fprintf (file,
-           "<CvQualifiers const=\"%d\" volatile=\"%d\" restrict=\"%d\"/>\n",
-           is_const, is_volatile, is_restrict);
-}
-
-
-/* Print XML begin tag for a name qualifier element.  */
-static void
-print_name_qualifier_begin_tag (FILE* file, unsigned long indent, tree t)
-{
-  const char* name = xml_get_encoded_string(t);
-  print_indent (file, indent);
-  fprintf (file,
-           "<NameQualifier name=\"%s\">\n",
-           name);
-}
-
-
-/* Print XML end tag for a name qualifier element.  */
-static void
-print_name_qualifier_end_tag (FILE* file, unsigned long indent)
-{
-  print_indent (file, indent);
-  fprintf (file,
-           "</NameQualifier>\n");
-}
-
-
-/* Print XML empty tag for a qualified name element.  */
-static void
-print_qualified_name_empty_tag (FILE* file, unsigned long indent, tree t)
-{
-  const char* name = xml_get_encoded_string(t);
-  print_indent (file, indent);
-  fprintf (file,
-           "<QualifiedName name=\"%s\"/>\n",
-           name);
-}
-
-
 /* Print XML empty tag for a scope reference element (SCOPE_REF).  */
 static void
-print_scope_ref_empty_tag (FILE* file, unsigned long indent, tree t)
+print_scope_ref_empty_tag (xml_dump_info_p xdi, unsigned long indent, tree t)
 {
   const char* class_name =
     xml_get_encoded_string (DECL_NAME (TYPE_NAME (TREE_OPERAND (t, 0))));
   const char* field_name =
     xml_get_encoded_string (TREE_OPERAND (t, 1));
-  print_indent (file, indent);
-  fprintf (file,
+  print_indent (xdi->file, indent);
+  fprintf (xdi->file,
            "<ScopeRef class=\"%s\" field=\"%s\"/>\n",
            class_name, field_name);
 }
@@ -1067,51 +665,38 @@ print_scope_ref_empty_tag (FILE* file, unsigned long indent, tree t)
 
 /* Print XML empty tag for an integer literal element (INTEGER_CST).  */
 static void
-print_integer_cst_empty_tag (FILE * file, unsigned long indent, tree t)
+print_integer_cst_empty_tag (xml_dump_info_p xdi, unsigned long indent, tree t)
 {
-  print_indent (file, indent);
-  fprintf (file, "<Integer value=\"");
+  print_indent (xdi->file, indent);
+  fprintf (xdi->file, "<Integer value=\"");
   if (TREE_INT_CST_HIGH (t) == 0)
     {
-    fprintf (file, HOST_WIDE_INT_PRINT_UNSIGNED, TREE_INT_CST_LOW (t));
+    fprintf (xdi->file, HOST_WIDE_INT_PRINT_UNSIGNED, TREE_INT_CST_LOW (t));
     }
   else if ((TREE_INT_CST_HIGH (t) == -1) && (TREE_INT_CST_LOW (t) != 0))
     {
-    fprintf (file, "-");
-    fprintf (file, HOST_WIDE_INT_PRINT_UNSIGNED, -TREE_INT_CST_LOW (t));
+    fprintf (xdi->file, "-");
+    fprintf (xdi->file, HOST_WIDE_INT_PRINT_UNSIGNED, -TREE_INT_CST_LOW (t));
     }
   else
     {
-    fprintf (file, HOST_WIDE_INT_PRINT_DOUBLE_HEX,
+    fprintf (xdi->file, HOST_WIDE_INT_PRINT_DOUBLE_HEX,
              TREE_INT_CST_HIGH (t), TREE_INT_CST_LOW (t));
     }
-  fprintf(file, "\"/>\n");
-}
-
-
-/* Print XML empty tag naming an enumeration value.  */
-static void
-print_enum_value_empty_tag (FILE* file, unsigned long indent, tree v)
-{  
-  const char* value =  xml_get_encoded_string (v);
-  
-  print_indent (file, indent);
-  fprintf (file,
-           "<EnumValue name=\"%s\"/>\n",
-           value);
+  fprintf (xdi->file, "\"/>\n");
 }
 
 
 /* Print XML empty tag describing an unimplemented TREE_CODE that has been
    encountered.  */
 static void
-print_unimplemented_empty_tag (FILE* file, unsigned long indent, tree t,
+print_unimplemented_empty_tag (xml_dump_info_p xdi, unsigned long indent, tree t,
                                const char* func)
 {
   int tree_code = TREE_CODE (t);
   
-  print_indent (file, indent);
-  fprintf (file,
+  print_indent (xdi->file, indent);
+  fprintf (xdi->file,
            "<Unimplemented tree_code=\"%d\" tree_code_name=\"%s\""
            " xml_c_location=\"%s\"/>\n",
            tree_code, tree_code_name [tree_code], func);
@@ -1120,9 +705,9 @@ print_unimplemented_empty_tag (FILE* file, unsigned long indent, tree t,
 
 /* Output the XML file's headers.  */
 void
-xml_output_headers (FILE* file)
+xml_output_headers (xml_dump_info_p xdi)
 {
-  fprintf (file,
+  fprintf (xdi->file,
            "<?xml version=\"1.0\"?>\n");/* encoding="ISO-8859-1"?> */
 }
 
@@ -1130,7 +715,7 @@ xml_output_headers (FILE* file)
 /* Output a NAMESPACE_DECL.  Prints beginning and ending tags, and all
    the namespace's member declarations in between.  */
 void
-xml_output_namespace_decl (FILE* file, unsigned long indent, tree ns)
+xml_output_namespace_decl (xml_dump_info_p xdi, unsigned long indent, tree ns)
 {
   if(ns == fake_std_node) return;
     
@@ -1139,7 +724,7 @@ xml_output_namespace_decl (FILE* file, unsigned long indent, tree ns)
     {
     tree cur_decl;
 
-    print_namespace_begin_tag(file, indent, ns);
+    print_namespace_begin_tag(xdi, indent, ns);
 
     for (cur_decl = cp_namespace_decls(ns); cur_decl;
          cur_decl = TREE_CHAIN (cur_decl))
@@ -1147,26 +732,26 @@ xml_output_namespace_decl (FILE* file, unsigned long indent, tree ns)
       switch (TREE_CODE (cur_decl))
         {
         case NAMESPACE_DECL:
-          xml_output_namespace_decl(file, indent+XML_NESTED_INDENT, cur_decl);
+          xml_output_namespace_decl(xdi, indent+xdi->indent, cur_decl);
           break;
         case TYPE_DECL:
-          xml_output_type_decl(file, indent+XML_NESTED_INDENT, cur_decl);
+          xml_output_type_decl(xdi, indent+xdi->indent, cur_decl);
           break;          
         case FUNCTION_DECL:
-          xml_output_function_decl (file, indent+XML_NESTED_INDENT, cur_decl);
+          xml_output_function_decl (xdi, indent+xdi->indent, cur_decl);
           break;
         case VAR_DECL:
-          xml_output_var_decl (file, indent+XML_NESTED_INDENT, cur_decl);
+          xml_output_var_decl (xdi, indent+xdi->indent, cur_decl);
           break;
         case TREE_LIST:
-          xml_output_overload (file, indent+XML_NESTED_INDENT,
+          xml_output_overload (xdi, indent+xdi->indent,
                                TREE_VALUE (cur_decl));
           break;
         case CONST_DECL:
-          xml_output_const_decl (file, indent+XML_NESTED_INDENT, cur_decl);
+          xml_output_const_decl (xdi, indent+xdi->indent, cur_decl);
           break;
         case TEMPLATE_DECL:
-          xml_output_template_decl (file, indent+XML_NESTED_INDENT, cur_decl);
+          xml_output_template_decl (xdi, indent+xdi->indent, cur_decl);
           break;
         case RESULT_DECL:
         case USING_DECL:
@@ -1174,12 +759,12 @@ xml_output_namespace_decl (FILE* file, unsigned long indent, tree ns)
           /* This is compiler-generated.  Just ignore it.  */
           break;
         default:
-          print_unimplemented_empty_tag (file, indent+XML_NESTED_INDENT,
+          print_unimplemented_empty_tag (xdi, indent+xdi->indent,
                                          cur_decl, "xml_output_namespace_decl");
         }
       }
     
-    print_namespace_end_tag(file, indent, ns);
+    print_namespace_end_tag(xdi, indent, ns);
     }
   /* If it is a namespace alias, just indicate that.  */
   else
@@ -1191,12 +776,13 @@ xml_output_namespace_decl (FILE* file, unsigned long indent, tree ns)
       real_ns = DECL_NAMESPACE_ALIAS (real_ns);
       }
 
-    print_namespace_alias_begin_tag (file, indent, ns);
-    xml_output_qualified_name (file, indent+XML_NESTED_INDENT, real_ns);
-    print_namespace_alias_end_tag (file, indent);
+    print_indent (xdi->file, indent);
+    fprintf (xdi->file, "<NamespaceAlias");
+    print_name_attribute (xdi, DECL_NAME (ns));
+    fprintf (xdi->file, " namespace=\"%s\"", xml_get_qualified_name (real_ns));
+    fprintf (xdi->file, "/>\n");
     }
 }
-
 
 /* When a class, struct, or union type is defined, it is automatically
    given a member typedef to itself.  Given a RECORD_TYPE or
@@ -1225,7 +811,7 @@ xml_find_self_typedef_name (tree rt)
 /* Dispatch output of a TYPE_DECL.  This is either a typedef, or a new
    type (class/struct/union) definition.  */
 void
-xml_output_type_decl (FILE* file, unsigned long indent, tree td)
+xml_output_type_decl (xml_dump_info_p xdi, unsigned long indent, tree td)
 {
   /* Get the type from the TYPE_DECL.  We don't want to use complete_type
      because it may modify something.  We are doing a read-only dump.  */
@@ -1249,18 +835,18 @@ xml_output_type_decl (FILE* file, unsigned long indent, tree td)
     case TYPENAME_TYPE:
     case TEMPLATE_TYPE_PARM:
       /* A typedef to a predefined type.  */
-      xml_output_typedef (file, indent, td);
+      xml_output_typedef (xdi, indent, td);
       break;
     case ENUMERAL_TYPE:
       if (DECL_ORIGINAL_TYPE (td))
         {
         /* A typedef to an existing enumeral type.  */
-        xml_output_typedef (file, indent, td);
+        xml_output_typedef (xdi, indent, td);
         }
       else
         {
         /* This is the declaration of a new enumeration type.  */
-        xml_output_enumeral_type (file, indent, t);
+        xml_output_enumeral_type (xdi, indent, t);
         }
       break;
     case UNION_TYPE:
@@ -1268,7 +854,7 @@ xml_output_type_decl (FILE* file, unsigned long indent, tree td)
       if ((TREE_CODE (t) == RECORD_TYPE) && TYPE_PTRMEMFUNC_P (t))
         {
         /* A typedef to a pointer to member.  */
-        xml_output_typedef (file, indent, td);
+        xml_output_typedef (xdi, indent, td);
         }
       /* This is a complicated test to tell apart a real class declaration
          or definition from a typedef to it.  This must be able to detect
@@ -1299,16 +885,16 @@ xml_output_type_decl (FILE* file, unsigned long indent, tree td)
                     && (xml_find_self_typedef_name (t) == DECL_NAME (td)))))
         {
         /* A new type definition.  */
-        xml_output_record_type (file, indent, t);
+        xml_output_record_type (xdi, indent, t);
         }
       else
         {
         /* A typedef to an existing class, struct, or union type.  */
-        xml_output_typedef (file, indent, td);
+        xml_output_typedef (xdi, indent, td);
         }
       break;
     default:
-      print_unimplemented_empty_tag (file, indent, t,
+      print_unimplemented_empty_tag (xdi, indent, t,
                                      "xml_output_type_decl");
     }
 }
@@ -1318,23 +904,17 @@ xml_output_type_decl (FILE* file, unsigned long indent, tree td)
    beginning and ending tags, and all class member declarations between.
    Also handles a UNION_TYPE.  */
 void
-xml_output_record_type (FILE* file, unsigned long indent, tree rt)
+xml_output_record_type (xml_dump_info_p xdi, unsigned long indent, tree rt)
 {
   tree field;
   tree func;
   int destructorFound = 0;
 
-  print_class_begin_tag (file, indent, rt);
-  print_location_empty_tag (file, indent+XML_NESTED_INDENT, TYPE_NAME (rt));
-
-  if (!COMPLETE_TYPE_P (rt))
-    {
-    print_incomplete_type_empty_tag (file, indent+XML_NESTED_INDENT);
-    }
+  print_class_begin_tag (xdi, indent, rt);
   
   if (CLASSTYPE_TEMPLATE_INFO (rt))
     {
-    xml_output_template_info (file, indent+XML_NESTED_INDENT,
+    xml_output_template_info (xdi, indent+xdi->indent,
                               CLASSTYPE_TEMPLATE_INFO (rt));
     }  
   
@@ -1347,32 +927,32 @@ xml_output_record_type (FILE* file, unsigned long indent, tree rt)
         if (TREE_TYPE (field) == rt)
           {
           /* A class or struct internally typedefs itself.  */
-          xml_output_typedef (file, indent+XML_NESTED_INDENT, field);
+          xml_output_typedef (xdi, indent+xdi->indent, field);
           }
         else
           {
           /* A nested type declaration.  */
-          xml_output_type_decl (file, indent+XML_NESTED_INDENT, field);
+          xml_output_type_decl (xdi, indent+xdi->indent, field);
           }
         break;          
       case FIELD_DECL:
-        xml_output_field_decl (file, indent+XML_NESTED_INDENT, field);
+        xml_output_field_decl (xdi, indent+xdi->indent, field);
         break;          
       case VAR_DECL:
-        xml_output_var_decl (file, indent+XML_NESTED_INDENT, field);
+        xml_output_var_decl (xdi, indent+xdi->indent, field);
         break;
       case CONST_DECL:
-        xml_output_const_decl (file, indent+XML_NESTED_INDENT, field);
+        xml_output_const_decl (xdi, indent+xdi->indent, field);
         break;
       case TEMPLATE_DECL:
-        xml_output_template_decl (file, indent+XML_NESTED_INDENT, field);
+        xml_output_template_decl (xdi, indent+xdi->indent, field);
         break;
       case USING_DECL:
         /* Ignore the using decl.  */
-	break;
+        break;
       case RESULT_DECL:
       default:
-        print_unimplemented_empty_tag (file, indent+XML_NESTED_INDENT, field,
+        print_unimplemented_empty_tag (xdi, indent+xdi->indent, field,
                                        "xml_output_record_type fields");
       }
     }
@@ -1385,13 +965,13 @@ xml_output_record_type (FILE* file, unsigned long indent, tree rt)
       case FUNCTION_DECL:
         if (DECL_DESTRUCTOR_P (func)) 
           destructorFound = 1;
-        xml_output_function_decl (file, indent+XML_NESTED_INDENT, func);
+        xml_output_function_decl (xdi, indent+xdi->indent, func);
         break;
       case TEMPLATE_DECL:
-        xml_output_template_decl (file, indent+XML_NESTED_INDENT, func);
+        xml_output_template_decl (xdi, indent+xdi->indent, func);
         break;
       default:
-        print_unimplemented_empty_tag (file, indent+XML_NESTED_INDENT, func,
+        print_unimplemented_empty_tag (xdi, indent+xdi->indent, func,
                                        "xml_output_record_type methods");
       }
     }
@@ -1401,8 +981,8 @@ xml_output_record_type (FILE* file, unsigned long indent, tree rt)
      the case here.  */
   if(!destructorFound && TYPE_HAS_TRIVIAL_DESTRUCTOR (rt))
     {
-    print_destructor_begin_tag (file, indent+XML_NESTED_INDENT, 0);
-    print_destructor_end_tag (file, indent+XML_NESTED_INDENT);
+    print_indent (xdi->file, indent+xdi->indent);
+    fprintf (xdi->file, "<Destructor access=\"public\"/>\n");
     }
   
   /* Output all the base classes.  */
@@ -1418,23 +998,29 @@ xml_output_record_type (FILE* file, unsigned long indent, tree rt)
     if (base_binfo)
       {
       /* Output this base class.  */
-      xml_output_base_class (file, indent+XML_NESTED_INDENT, base_binfo);
+      xml_output_base_class (xdi, indent+xdi->indent, base_binfo);
       }
     }
   }
   
-  print_class_end_tag (file, indent, rt);
+  print_class_end_tag (xdi, indent, rt);
 }
 
 
 /* Output for a FUNCTION_DECL.  Prints beginning and ending tags, and
    the argument list between them.  */
 void
-xml_output_function_decl (FILE* file, unsigned long indent, tree fd)
+xml_output_function_decl (xml_dump_info_p xdi, unsigned long indent, tree fd)
 {
-  void (*end_tag_print)(FILE*, unsigned long) = NULL;
   tree arg;
   tree arg_type;
+  const char* tag;
+  tree name = DECL_NAME (fd);
+  int do_returns = 0;
+  int do_access = 0;
+  int do_const = 0;
+  int do_virtual = 0;
+  int do_static = 0;
 
   /* Don't process any internally generated declarations.  */
   if (DECL_INTERNAL_P (fd)) return;
@@ -1452,39 +1038,37 @@ xml_output_function_decl (FILE* file, unsigned long indent, tree fd)
   if (DECL_CONSTRUCTOR_P (fd))
     {
     /* A class constructor.  */
-    print_constructor_begin_tag (file, indent, fd);
-    end_tag_print = print_constructor_end_tag;
+    tag = "Constructor"; do_access = 1;
     }
   else if (DECL_DESTRUCTOR_P (fd))
     {
     /* A class destructor.  */
-    print_destructor_begin_tag (file, indent, fd);
-
-    /* Don't print any arguments for a destructor.  */
-    print_destructor_end_tag (file, indent);
-    return;
+    tag = "Destructor"; do_access = 1; do_virtual = 1;
     }
   else if (DECL_OVERLOADED_OPERATOR_P (fd))
     {
     if (DECL_CONV_FN_P (fd))
       {
       /* A type-conversion operator in a class.  */
-      print_converter_begin_tag (file, indent, fd);
-      end_tag_print = print_converter_end_tag;
+      tag = "Converter";
+      do_returns = 1; do_access = 1; do_const = 1; do_virtual = 1;
       }
     else
       {
       if (DECL_FUNCTION_MEMBER_P (fd))
         {
         /* An operator in a class.  */
-        print_operator_method_begin_tag (file, indent, fd);
-        end_tag_print = print_operator_method_end_tag;
+        tag = "OperatorMethod";
+        name = reverse_opname_lookup (DECL_NAME (fd));
+        do_returns = 1; do_access = 1; do_const = 1; do_virtual = 1;
+        do_static = 1;
         }
       else
         {
         /* An operator in a namespace.  */
-        print_operator_function_begin_tag (file, indent, fd);
-        end_tag_print = print_operator_function_end_tag;
+        tag = "OperatorFunction";
+        name = reverse_opname_lookup (DECL_NAME (fd));
+        do_returns = 1;
         }
       }
     }
@@ -1493,36 +1077,32 @@ xml_output_function_decl (FILE* file, unsigned long indent, tree fd)
     if (DECL_FUNCTION_MEMBER_P (fd))
       {
       /* A member of a class.  */
-      print_method_begin_tag (file, indent, fd);
-      end_tag_print = print_method_end_tag;
+      tag = "Method"; do_returns = 1; do_access = 1; do_const = 1;
+      do_virtual = 1; do_static = 1;
       }
     else
       {
       /* A member of a namespace.  */
-      print_function_begin_tag (file, indent, fd);
-      end_tag_print = print_function_end_tag;
+      tag = "Function"; do_returns = 1;
       }
     }
 
-  /* Print the location information for this function.  */
-  print_location_empty_tag (file, indent+XML_NESTED_INDENT, fd);
+  print_indent (xdi->file, indent);
+  fprintf (xdi->file, "<%s", tag);
+  print_name_attribute (xdi, name);
+  if(do_returns) print_returns_attribute (xdi, TREE_TYPE (fd));
+  if(do_access)  print_access_attribute (xdi, fd);
+  if(do_const)   print_const_method_attribute (xdi, fd);
+  if(do_virtual) print_virtual_method_attributes (xdi, fd);
+  if(do_static)  print_static_method_attribute (xdi, fd);
+  print_location_attribute (xdi, fd);
+  print_function_extern_attribute (xdi, fd);
+  fprintf (xdi->file, ">\n");
 
   if (DECL_TEMPLATE_INFO (fd))
     {
-    xml_output_template_info (file, indent+XML_NESTED_INDENT,
+    xml_output_template_info (xdi, indent+xdi->indent,
                               DECL_TEMPLATE_INFO (fd));
-    }
-
-  if (DECL_REALLY_EXTERN (fd))
-    {
-    print_external_empty_tag (file, indent+XML_NESTED_INDENT);
-    }
-
-  if (!DECL_CONSTRUCTOR_P (fd) && !DECL_DESTRUCTOR_P (fd))
-    {
-    /* Print out the return type information for this function.  */
-    xml_output_returns (file, indent+XML_NESTED_INDENT,
-                        TREE_TYPE (TREE_TYPE (fd)));
     }
   
   /* Prepare to iterator through argument list.  */
@@ -1538,7 +1118,7 @@ xml_output_function_decl (FILE* file, unsigned long indent, tree fd)
   /* Print out the argument list for this function.  */
   while (arg_type && (arg_type != void_list_node))
     {
-    xml_output_argument (file, indent+XML_NESTED_INDENT, arg, arg_type);
+    xml_output_argument (xdi, indent+xdi->indent, arg, arg_type);
     if(arg) arg = TREE_CHAIN (arg);
     arg_type = TREE_CHAIN (arg_type);
     }
@@ -1546,23 +1126,23 @@ xml_output_function_decl (FILE* file, unsigned long indent, tree fd)
   if(!arg_type)
     {
     /* Function has variable number of arguments.  */
-    print_ellipsis_empty_tag(file, indent+XML_NESTED_INDENT);
+    print_ellipsis_empty_tag(xdi, indent+xdi->indent);
     }
 
   /* Print out the end tag for this type of function.  */
-  if(end_tag_print)
-    end_tag_print (file, indent);
+  print_indent (xdi->file, indent);
+  fprintf (xdi->file, "</%s>\n", tag);
 }
 
 
 /* Output for an OVERLOAD.  Output all the functions in the overload list.   */
 void
-xml_output_overload (FILE* file, unsigned long indent, tree o)
+xml_output_overload (xml_dump_info_p xdi, unsigned long indent, tree o)
 {
   tree cur_overload = o;
   while (cur_overload)
     {
-    xml_output_function_decl (file, indent, OVL_CURRENT (cur_overload));
+    xml_output_function_decl (xdi, indent, OVL_CURRENT (cur_overload));
     cur_overload = OVL_NEXT (cur_overload);
     }
 }
@@ -1571,65 +1151,62 @@ xml_output_overload (FILE* file, unsigned long indent, tree o)
 /* Output for a VAR_DECL.  The name and type of the variable are output,
    as well as the initializer if it exists.  */
 void
-xml_output_var_decl (FILE* file, unsigned long indent, tree vd)
+xml_output_var_decl (xml_dump_info_p xdi, unsigned long indent, tree vd)
 {
   /* Don't process any internally generated declarations.  */
   if (DECL_INTERNAL_P (vd)) return;
 
-  print_variable_begin_tag (file, indent, vd);
-
-  print_location_empty_tag (file, indent+XML_NESTED_INDENT, vd);
-
-  if (DECL_EXTERNAL (vd))
-    {
-    print_external_empty_tag (file, indent+XML_NESTED_INDENT);
-    }
-
-  xml_output_type (file, indent+XML_NESTED_INDENT, TREE_TYPE (vd));
-
-  print_initializer_empty_tag (file, indent+XML_NESTED_INDENT, DECL_INITIAL (vd));
-
-  print_variable_end_tag (file, indent);
+  print_indent (xdi->file, indent);  
+  fprintf (xdi->file, "<Variable");
+  print_name_attribute (xdi, DECL_NAME (vd));
+  print_type_attribute (xdi, TREE_TYPE (vd));
+  print_init_attribute (xdi, DECL_INITIAL (vd));
+  print_location_attribute (xdi, vd);
+  print_extern_attribute (xdi, vd);
+  fprintf (xdi->file, "/>\n");
 }
 
 
 /* Output for a FIELD_DECL.  The name and type of the variable are output,
    as well as the initializer if it exists.  */
 void
-xml_output_field_decl (FILE* file, unsigned long indent, tree fd)
+xml_output_field_decl (xml_dump_info_p xdi, unsigned long indent, tree fd)
 {
   /* Don't process any internally generated declarations.  */
   if (DECL_INTERNAL_P (fd)) return;
-
-  print_field_begin_tag (file, indent, fd);
-  print_location_empty_tag (file, indent+XML_NESTED_INDENT, fd);
+  
+  print_indent (xdi->file, indent);
+  fprintf (xdi->file, "<Field");
+  print_name_attribute (xdi, DECL_NAME (fd));
   /* TODO: handle bit field case.  */
-  xml_output_type (file, indent+XML_NESTED_INDENT, TREE_TYPE (fd));
-  print_field_end_tag (file, indent);
+  print_type_attribute (xdi, TREE_TYPE (fd));
+  print_location_attribute (xdi, fd);
+  fprintf (xdi->file, "/>\n");
 }
 
 
 /* Output for a CONST_DECL.  The name and type of the constant are output,
    as well as the value.  */
 void
-xml_output_const_decl (FILE* file, unsigned long indent, tree cd)
+xml_output_const_decl (xml_dump_info_p xdi, unsigned long indent, tree cd)
 {
   /* Don't process any internally generated declarations.  */
   if (DECL_INTERNAL_P (cd)) return;
 
-  print_enum_begin_tag (file, indent, cd);
-  print_location_empty_tag (file, indent+XML_NESTED_INDENT, cd);
-  xml_output_type (file, indent+XML_NESTED_INDENT, TREE_TYPE (cd));
-  print_initializer_empty_tag (file, indent+XML_NESTED_INDENT,
-                          DECL_INITIAL (cd));
-  print_enum_end_tag (file, indent);
+  print_indent (xdi->file, indent);
+  fprintf (xdi->file, "<Enum");
+  print_name_attribute (xdi, DECL_NAME (cd));
+  print_type_attribute (xdi, TREE_TYPE (cd));
+  print_init_attribute (xdi, DECL_INITIAL (cd));
+  print_location_attribute (xdi, cd);
+  fprintf (xdi->file, "/>\n");
 }
 
 
 /* Output for a TEMPLATE_DECL.  The set of specializations (including
    instantiations) is output.  */
 void
-xml_output_template_decl (FILE* file, unsigned long indent, tree td)
+xml_output_template_decl (xml_dump_info_p xdi, unsigned long indent, tree td)
 {
   tree tl;
   
@@ -1643,12 +1220,12 @@ xml_output_template_decl (FILE* file, unsigned long indent, tree td)
     switch (TREE_CODE (ts))
       {
       case FUNCTION_DECL:
-        xml_output_function_decl (file, indent, ts);
+        xml_output_function_decl (xdi, indent, ts);
         break;
       case TEMPLATE_DECL:
         break;
       default:
-        print_unimplemented_empty_tag (file, indent, ts,
+        print_unimplemented_empty_tag (xdi, indent, ts,
                                        "xml_output_template_decl SPECIALIZATIONS");
       }
     }
@@ -1660,10 +1237,10 @@ xml_output_template_decl (FILE* file, unsigned long indent, tree td)
     switch (TREE_CODE (ts))
       {
       case TYPE_DECL:
-        xml_output_type_decl (file, indent, ts);
+        xml_output_type_decl (xdi, indent, ts);
         break;
       default:
-        print_unimplemented_empty_tag (file, indent, ts,
+        print_unimplemented_empty_tag (xdi, indent, ts,
                                        "xml_output_template_decl INSTANTIATIONS");
       }
     }
@@ -1673,29 +1250,29 @@ xml_output_template_decl (FILE* file, unsigned long indent, tree td)
 /* Output for TEMPLATE_INFO.  The set of template parameters used
    is output.  */
 void
-xml_output_template_info (FILE* file, unsigned long indent, tree ti)
+xml_output_template_info (xml_dump_info_p xdi, unsigned long indent, tree ti)
 {
   tree arg_vec;
   int num_args;
   int i;
 
-  print_instantiation_begin_tag (file, indent);
+  print_instantiation_begin_tag (xdi, indent);
 
   arg_vec = TI_ARGS (ti);
   num_args = TREE_VEC_LENGTH (arg_vec);
   for (i=0 ; i < num_args ; ++i)
     {
     tree arg = TREE_VEC_ELT (arg_vec, i);
-    xml_output_template_argument (file, indent+XML_NESTED_INDENT, arg);
+    xml_output_template_argument (xdi, indent+xdi->indent, arg);
     }
 
-  print_instantiation_end_tag (file, indent);  
+  print_instantiation_end_tag (xdi, indent);  
 }
 
 
 /* Output for a typedef.  The name and associated type are output.  */
 void
-xml_output_typedef (FILE* file, unsigned long indent, tree td)
+xml_output_typedef (xml_dump_info_p xdi, unsigned long indent, tree td)
 {
   /* If the typedef points to its own name in the same context, ignore
      it.  This can happen for code like "typedef struct {} A;".  */
@@ -1705,55 +1282,54 @@ xml_output_typedef (FILE* file, unsigned long indent, tree td)
      && (DECL_CONTEXT (td) == DECL_CONTEXT (TYPE_NAME (TREE_TYPE (td)))))
      return;
 
-  print_typedef_begin_tag (file, indent, td);
-  print_location_empty_tag (file, indent+XML_NESTED_INDENT, td);
-  
+  print_indent (xdi->file, indent);
+  fprintf (xdi->file, "<Typedef");
+  print_name_attribute (xdi, DECL_NAME (td));
+
   /* Get the original type out of the typedef, if any.  */
   if (DECL_ORIGINAL_TYPE (td))
-    xml_output_type (file, indent+XML_NESTED_INDENT,
-                     DECL_ORIGINAL_TYPE (td));
+    print_type_attribute (xdi, DECL_ORIGINAL_TYPE (td));
   else
-    xml_output_type (file, indent+XML_NESTED_INDENT,
-                     TREE_TYPE (td));
-  print_typedef_end_tag (file, indent);
+    print_type_attribute (xdi, TREE_TYPE (td));
+
+  print_location_attribute (xdi, td);
+  fprintf (xdi->file, "/>\n");
 }
 
-
-/* Output for a *_TYPE.  This nests type definitions that contain other
-   types (like pointers, references, functions, method, and arrays).  */
+/* Output for a *_TYPE.  */
 void
-xml_output_type (FILE* file, unsigned long indent, tree t)
+xml_output_type (xml_dump_info_p xdi, unsigned long indent, tree t)
 {
   switch (TREE_CODE (t))
     {
     case ARRAY_TYPE:
-      xml_output_array_type (file, indent, t);
+      xml_output_array_type (xdi, indent, t);
       break;
     case POINTER_TYPE:
-      xml_output_pointer_type (file, indent, t);
+      xml_output_pointer_type (xdi, indent, t);
       break;
     case REFERENCE_TYPE:
-      xml_output_reference_type (file, indent, t);
+      xml_output_reference_type (xdi, indent, t);
       break;
     case FUNCTION_TYPE:
-      xml_output_function_type (file, indent, t);
+      xml_output_function_type (xdi, indent, t);
       break;
     case METHOD_TYPE:
-      xml_output_method_type (file, indent, t);
+      xml_output_method_type (xdi, indent, t);
       break;
     case OFFSET_TYPE:
-      xml_output_offset_type (file, indent, t);
+      xml_output_offset_type (xdi, indent, t);
       break;
     case RECORD_TYPE:
       if (TYPE_PTRMEMFUNC_P (t))
         {
         /* Pointer-to-member-functions are stored ina RECORD_TYPE.  */
-        xml_output_type (file, indent, TYPE_PTRMEMFUNC_FN_TYPE (t));
+        xml_output_type (xdi, indent, TYPE_PTRMEMFUNC_FN_TYPE (t));
         }
       else
         {
         /* This is a struct or class type, just output its name.  */
-        xml_output_named_type (file, indent, t);
+        xml_output_named_type (xdi, indent, t);
         }
       break;
     case LANG_TYPE:
@@ -1765,60 +1341,65 @@ xml_output_type (FILE* file, unsigned long indent, tree t)
     case UNION_TYPE:
     case TYPENAME_TYPE:
     case TEMPLATE_TYPE_PARM:
-      xml_output_named_type (file, indent, t);
+      xml_output_named_type (xdi, indent, t);
       break;
     case SCOPE_REF:
-      print_scope_ref_empty_tag (file, indent, t);
+      print_scope_ref_empty_tag (xdi, indent, t);
       break;
     case TEMPLATE_PARM_INDEX:
-      xml_output_type (file, indent, TREE_TYPE (t));
+      xml_output_type (xdi, indent, TREE_TYPE (t));
       break;
     case VOID_TYPE:
-      xml_output_void_type (file, indent, t);
+      xml_output_void_type (xdi, indent, t);
       break;
     case INTEGER_CST:
-      print_integer_cst_empty_tag (file, indent, t);
+      print_integer_cst_empty_tag (xdi, indent, t);
       break;
     default:
-      print_unimplemented_empty_tag (file, indent, t, "xml_output_type");
+      print_unimplemented_empty_tag (xdi, indent, t, "xml_output_type");
     }
 }
 
 
 /* Output for a normal named type.  */
 void
-xml_output_named_type (FILE* file, unsigned long indent, tree t)
+xml_output_named_type (xml_dump_info_p xdi, unsigned long indent, tree t)
 {
-  print_named_type_begin_tag (file, indent);
-  print_cv_qualifiers_empty_tag (file, indent+XML_NESTED_INDENT, t);
-  xml_output_qualified_name (file, indent+XML_NESTED_INDENT, t);
-  print_named_type_end_tag (file, indent);
+  print_indent (xdi->file, indent);
+  fprintf (xdi->file, "<NamedType");
+  print_id_attribute (xdi, t);
+  fprintf (xdi->file, " name=\"%s\"", xml_get_qualified_name (t));
+  print_cv_attributes (xdi, t);
+  fprintf (xdi->file, "/>\n");
 }
 
 
 /* Output for a void type.  */
 void
-xml_output_void_type (FILE* file, unsigned long indent, tree t)
+xml_output_void_type (xml_dump_info_p xdi, unsigned long indent, tree t)
 {
-  print_named_type_begin_tag (file, indent);
-  print_cv_qualifiers_empty_tag (file, indent+XML_NESTED_INDENT, t);
-  xml_output_qualified_name (file, indent+XML_NESTED_INDENT,
-                             TYPE_MAIN_VARIANT (t));
-  print_named_type_end_tag (file, indent);
+  print_indent (xdi->file, indent);
+  fprintf (xdi->file, "<NamedType");
+  print_id_attribute (xdi, t);
+  fprintf (xdi->file, " name=\"%s\"",
+           xml_get_qualified_name (TYPE_MAIN_VARIANT (t)));
+  print_cv_attributes (xdi, t);
+  fprintf (xdi->file, "/>\n");
 }
 
 
 /* Output for a FUNCTION_TYPE.  */
 void
-xml_output_function_type (FILE* file, unsigned long indent, tree t)
+xml_output_function_type (xml_dump_info_p xdi, unsigned long indent, tree t)
 {
   tree arg_type;
   
-  print_function_type_begin_tag (file, indent);
-
-  /* Print out the return type information for this function.  */
-  xml_output_returns (file, indent+XML_NESTED_INDENT,
-                      TREE_TYPE (t));
+  print_indent (xdi->file, indent);
+  fprintf (xdi->file, "<FunctionType");
+  print_id_attribute (xdi, t);
+  print_returns_attribute (xdi, t);
+  print_cv_attributes (xdi, t);
+  fprintf (xdi->file, ">\n");
   
   /* Prepare to iterator through argument list.  */
   arg_type = TYPE_ARG_TYPES (t);
@@ -1826,34 +1407,34 @@ xml_output_function_type (FILE* file, unsigned long indent, tree t)
   /* Print out the argument list for this function.  */
   while (arg_type && (arg_type != void_list_node))
     {
-    xml_output_argument (file, indent+XML_NESTED_INDENT, NULL, arg_type);
+    xml_output_argument (xdi, indent+xdi->indent, NULL, arg_type);
     arg_type = TREE_CHAIN (arg_type);
     }
 
   if(arg_type != void_list_node)
     {
     /* Function has variable number of arguments.  */
-    print_ellipsis_empty_tag(file, indent+XML_NESTED_INDENT);
+    print_ellipsis_empty_tag(xdi, indent+xdi->indent);
     }
 
-  print_function_type_end_tag (file, indent);
+  print_indent (xdi->file, indent);
+  fprintf (xdi->file, "</FunctionType>\n");
 }
 
 
 /* Output for a METHOD_TYPE.  */
 void
-xml_output_method_type (FILE* file, unsigned long indent, tree t)
+xml_output_method_type (xml_dump_info_p xdi, unsigned long indent, tree t)
 {
   tree arg_type;
   
-  print_method_type_begin_tag (file, indent);
-
-  xml_output_base_type (file, indent+XML_NESTED_INDENT,
-                        TYPE_METHOD_BASETYPE (t));                         
-
-  /* Print out the return type information for this method.  */
-  xml_output_returns (file, indent+XML_NESTED_INDENT,
-                      TREE_TYPE (t));
+  print_indent (xdi->file, indent);
+  fprintf (xdi->file, "<MethodType");
+  print_id_attribute (xdi, t);
+  print_base_type_attribute (xdi, TYPE_METHOD_BASETYPE (t));
+  print_returns_attribute (xdi, t);
+  print_cv_attributes (xdi, t);
+  fprintf (xdi->file, ">\n");
   
   /* Prepare to iterator through argument list.  */
   arg_type = TYPE_ARG_TYPES (t);
@@ -1864,182 +1445,198 @@ xml_output_method_type (FILE* file, unsigned long indent, tree t)
   /* Print out the argument list for this method.  */
   while (arg_type && (arg_type != void_list_node))
     {
-    xml_output_argument (file, indent+XML_NESTED_INDENT, NULL, arg_type);
+    xml_output_argument (xdi, indent+xdi->indent, NULL, arg_type);
     arg_type = TREE_CHAIN (arg_type);
     }
 
   if(arg_type != void_list_node)
     {
     /* Method has variable number of arguments.  */
-    print_ellipsis_empty_tag(file, indent+XML_NESTED_INDENT);
+    print_ellipsis_empty_tag(xdi, indent+xdi->indent);
     }
 
-  print_cv_qualifiers_empty_tag (file, indent+XML_NESTED_INDENT, t);
-
-  print_method_type_end_tag (file, indent);
+  print_indent (xdi->file, indent);
+  fprintf (xdi->file, "</MethodType>\n");
 }
 
 
 /* Output for a POINTER_TYPE.  */
 void
-xml_output_pointer_type (FILE* file, unsigned long indent, tree t)
+xml_output_pointer_type (xml_dump_info_p xdi, unsigned long indent, tree t)
 {
-  print_pointer_type_begin_tag (file, indent);
-  print_cv_qualifiers_empty_tag (file, indent+XML_NESTED_INDENT, t);
-  xml_output_type (file, indent+XML_NESTED_INDENT, TREE_TYPE (t));
-  print_pointer_type_end_tag (file, indent);
+  print_indent (xdi->file, indent);
+  fprintf (xdi->file, "<PointerType");
+  print_id_attribute (xdi, t);
+  print_cv_attributes (xdi, t);
+  print_type_attribute (xdi, TREE_TYPE (t));
+  fprintf (xdi->file, "/>\n");
 }
 
 
 /* Output for a REFERENCE_TYPE.  */
 void
-xml_output_reference_type (FILE* file, unsigned long indent, tree t)
+xml_output_reference_type (xml_dump_info_p xdi, unsigned long indent, tree t)
 {
-  print_reference_type_begin_tag (file, indent);
-  print_cv_qualifiers_empty_tag (file, indent+XML_NESTED_INDENT, t);
-  xml_output_type (file, indent+XML_NESTED_INDENT, TREE_TYPE (t));
-  print_reference_type_end_tag (file, indent);
+  print_indent (xdi->file, indent);
+  fprintf (xdi->file, "<ReferenceType");
+  print_id_attribute (xdi, t);
+  print_cv_attributes (xdi, t);
+  print_type_attribute (xdi, TREE_TYPE (t));
+  fprintf (xdi->file, "/>\n");
 }
 
 
 /* Output for an OFFSET_TYPE.  */
 void
-xml_output_offset_type (FILE* file, unsigned long indent, tree t)
+xml_output_offset_type (xml_dump_info_p xdi, unsigned long indent, tree t)
 {
-  print_offset_type_begin_tag (file, indent);
-  xml_output_base_type (file, indent+XML_NESTED_INDENT,
-                        TYPE_OFFSET_BASETYPE (t));
-  print_cv_qualifiers_empty_tag (file, indent+XML_NESTED_INDENT, t);
-  xml_output_type (file, indent+XML_NESTED_INDENT, TREE_TYPE (t));
-  print_offset_type_end_tag (file, indent);
+  print_indent (xdi->file, indent);
+  fprintf (xdi->file, "<OffsetType");
+  print_id_attribute (xdi, t);
+  print_base_type_attribute (xdi, TYPE_OFFSET_BASETYPE (t));
+  print_cv_attributes (xdi, t);
+  print_type_attribute (xdi, TREE_TYPE (t));
+  fprintf (xdi->file, "/>\n");
 }
 
 
 /* Output for an ARRAY_TYPE.  */
 void
-xml_output_array_type (FILE* file, unsigned long indent, tree t)
+xml_output_array_type (xml_dump_info_p xdi, unsigned long indent, tree t)
 {
-  print_array_type_begin_tag (file, indent, t);
-  print_cv_qualifiers_empty_tag (file, indent+XML_NESTED_INDENT, t);
-  xml_output_type (file, indent+XML_NESTED_INDENT, TREE_TYPE (t));
-  print_array_type_end_tag (file, indent);
+  print_indent (xdi->file, indent);
+  fprintf (xdi->file, "<ArrayType");
+  print_id_attribute(xdi, t);
+  print_array_attributes (xdi, t);
+  print_cv_attributes (xdi, t);
+  print_type_attribute (xdi, TREE_TYPE (t));
+  fprintf (xdi->file, "/>\n");
 }
 
 
 /* Output for an ENUMERAL_TYPE.  */
 void
-xml_output_enumeral_type (FILE* file, unsigned long indent, tree t)
+xml_output_enumeral_type (xml_dump_info_p xdi, unsigned long indent, tree t)
 {
   tree tv;
-  print_enumeral_type_begin_tag (file, indent, t);
-  print_location_empty_tag (file, indent+XML_NESTED_INDENT, TYPE_NAME (t));
+
+  print_indent (xdi->file, indent);
+  fprintf (xdi->file, "<Enumeration");
+  print_name_attribute (xdi, DECL_NAME (TYPE_NAME (t)));
+  print_access_attribute (xdi, TYPE_NAME (t));
+  print_location_attribute (xdi, TYPE_NAME (t));
+  fprintf (xdi->file, ">\n");
 
   /* Output the list of possible values for the enumeration type.  */
   for (tv = TYPE_VALUES (t); tv ; tv = TREE_CHAIN (tv))
     {
-    print_enum_value_empty_tag(file, indent+XML_NESTED_INDENT,
-                               TREE_PURPOSE (tv));
+    print_indent (xdi->file, indent+xdi->indent);
+    fprintf (xdi->file,
+             "<EnumValue name=\"%s\"/>\n",
+             xml_get_encoded_string ( TREE_PURPOSE(tv)));
     }
-  print_enumeral_type_end_tag (file, indent);
+
+  print_indent (xdi->file, indent);
+  fprintf (xdi->file, "</Enumeration>\n");
 }
 
 
 /* Output a base class for a RECORD_TYPE or UNION_TYPE.  */
 void
-xml_output_base_class (FILE* file, unsigned long indent, tree binfo)
+xml_output_base_class (xml_dump_info_p xdi, unsigned long indent, tree binfo)
 {
-  print_base_class_begin_tag (file, indent, binfo);
-  xml_output_qualified_name (file, indent+XML_NESTED_INDENT,
-                                   BINFO_TYPE (binfo));
-  print_base_class_end_tag (file, indent);
-}
-
-
-/* Output a base type for a METHOD_TYPE or OFFSET_TYPE.  */
-void
-xml_output_base_type (FILE* file, unsigned long indent, tree t)
-{
-  print_base_type_begin_tag (file, indent);
-  xml_output_qualified_name (file, indent+XML_NESTED_INDENT, t);
-  print_base_type_end_tag (file, indent);
+  print_indent (xdi->file, indent);
+  fprintf (xdi->file, "<BaseClass");
+  print_base_access_attribute (xdi, binfo);
+  fprintf (xdi->file, " name=\"%s\"",
+           xml_get_qualified_name (BINFO_TYPE (binfo)));
+  fprintf (xdi->file, "/>\n");
 }
 
 
 /* Output for a PARM_DECL / TREE_LIST corresponding to a function argument.  */
 void
-xml_output_argument (FILE* file, unsigned long indent, tree pd, tree tl)
+xml_output_argument (xml_dump_info_p xdi, unsigned long indent, tree pd, tree tl)
 {
   /* Don't process any compiler-generated arguments.  These occur for
      things like constructors of classes with virtual inheritance.  */
   if (pd && DECL_ARTIFICIAL (pd)) return;
 
-  print_argument_begin_tag (file, indent, pd);
+  print_indent (xdi->file, indent);  
+  fprintf (xdi->file, "<Argument");
+  if(pd && DECL_NAME (pd))
+    {
+    print_name_attribute (xdi, DECL_NAME (pd));
+    }
 
   if (pd && DECL_ARG_TYPE_AS_WRITTEN (pd))
-    xml_output_type (file, indent+XML_NESTED_INDENT, DECL_ARG_TYPE_AS_WRITTEN (pd));
-/*  else if (pd && DECL_ARG_TYPE (pd))
-      xml_output_type (file, indent+XML_NESTED_INDENT, DECL_ARG_TYPE (pd)); */
+    {
+    print_type_attribute (xdi, DECL_ARG_TYPE_AS_WRITTEN (pd));
+    }
   else if (pd && TREE_TYPE (pd))
-    xml_output_type (file, indent+XML_NESTED_INDENT, TREE_TYPE (pd));
+    {
+    print_type_attribute (xdi, TREE_TYPE (pd));
+    }
   else
-    xml_output_type (file, indent+XML_NESTED_INDENT, TREE_VALUE (tl));
+    {
+    print_type_attribute (xdi, TREE_VALUE (tl));
+    }
   
   if (TREE_PURPOSE (tl))
-    print_default_argument_empty_tag (file, indent+XML_NESTED_INDENT,
-                                      TREE_PURPOSE (tl));
+    {
+    print_default_argument_attribute (xdi, TREE_PURPOSE (tl));
+    }
 
-  print_argument_end_tag (file, indent);
-}
-
-
-/* Output the return type of a function.  */
-void
-xml_output_returns (FILE* file, unsigned long indent, tree t)
-{
-  print_returns_begin_tag (file, indent);
-  xml_output_type (file, indent+XML_NESTED_INDENT, t);
-  print_returns_end_tag (file, indent);
+  fprintf (xdi->file, "/>\n");
 }
 
 
 /* Output the given template argument.  */
 void
-xml_output_template_argument (FILE* file, unsigned long indent, tree arg)
+xml_output_template_argument (xml_dump_info_p xdi, unsigned long indent, tree arg)
 {
-  print_template_argument_begin_tag (file, indent);
-  xml_output_type (file, indent + XML_NESTED_INDENT, arg);
-  print_template_argument_end_tag (file, indent);
+  print_template_argument_begin_tag (xdi, indent);
+  xml_output_type (xdi, indent + xdi->indent, arg);
+  print_template_argument_end_tag (xdi, indent);
 }
 
-
-/* Given a list of qualifiers, walk it recursively, and output it in
-   nested form.  */
-static void
-output_qualifier_list (FILE* file, unsigned long indent, tree qualifiers)
+/* Dump the queue of types.  */
+void xml_dump_types (xml_dump_info_p xdi, unsigned long indent)
 {
-  tree next = TREE_CHAIN (qualifiers);
-  tree decl = TREE_VALUE (qualifiers);
-  
-  if (next)
+  xml_type_queue_p tq;
+  xml_type_queue_p next_tq; 
+  for(tq = xdi->type_queue; tq ; tq = next_tq)
     {
-    print_name_qualifier_begin_tag (file, indent, DECL_NAME (decl));
-    output_qualifier_list (file, indent+XML_NESTED_INDENT, next);
-    print_name_qualifier_end_tag (file, indent);
-    }
-  else
-    {
-    print_qualified_name_empty_tag (file, indent, DECL_NAME (decl));
+    xml_output_type (xdi, indent, (tree) tq->node->key);
+    next_tq = tq->next;
+    free (tq);
     }
 }
 
+/* Dump the queue of file names.  */
+void xml_dump_files (xml_dump_info_p xdi, unsigned long indent)
+{
+  xml_file_queue_p fq;
+  xml_file_queue_p next_fq; 
+  for(fq = xdi->file_queue; fq ; fq = next_fq)
+    {
+    print_indent (xdi->file, indent);
+    fprintf (xdi->file, "<File id=\"f%d\" name=\"%s\"/>\n",
+             (unsigned int) fq->node->value,
+             IDENTIFIER_POINTER ((tree) fq->node->key));
+    next_fq = fq->next;
+    free (fq);
+    }
+}
 
-/* Given any _DECL, output the tags of the fully qualified form of its
-   name.  */
-void
-xml_output_qualified_name (FILE* file, unsigned long indent, tree t)
+/* Given any _DECL, return a string with the fully qualified form of
+   its name.  */
+const char*
+xml_get_qualified_name (tree t)
 {
   tree context;
   tree qualifiers = NULL_TREE;
+  tree n;
   
   /* Build a list of all the qualifying contexts out to the global
      namespace.  */
@@ -2053,11 +1650,29 @@ xml_output_qualified_name (FILE* file, unsigned long indent, tree t)
     context = CP_DECL_CONTEXT (context);
     }
   
-  /* Output the qualifiers in the list.  */
-  if (qualifiers)
-    output_qualifier_list (file, indent, qualifiers);
+  qualifiers = nreverse(qualifiers);
+  if(qualifiers)
+    {
+    char* temp_name;
+    tree q = qualifiers;
+    char* name =
+      strdup (IDENTIFIER_POINTER (DECL_NAME (TREE_VALUE (q))));
+    for (q = TREE_CHAIN(q); q ; q = TREE_CHAIN (q))
+      {
+      temp_name = xml_concat_3_strings (
+        IDENTIFIER_POINTER (DECL_NAME (TREE_VALUE (q))), "::", name);
+      free (name);
+      name = temp_name;
+      }
+    n = get_identifier (name);
+    free (name);
+    }
+  else
+    {
+    n = get_identifier("");
+    }
+  return IDENTIFIER_POINTER (n);
 }
-
 
 /* Convert the identifier IN_ID to an XML encoded form by passing its string
    to xml_get_encoded_string_from_string().  */
@@ -2076,11 +1691,17 @@ xml_get_encoded_string (tree in_id)
 #define XML_SINGLE_QUOTE  "&apos;"
 #define XML_DOUBLE_QUOTE  "&quot;"
 
+const char*
+xml_get_encoded_string_from_string (const char* in_str)
+{
+  return IDENTIFIER_POINTER (xml_get_encoded_identifier_from_string (in_str));
+}
+
 /* Convert the name IN_STR to an XML encoded form.
    This replaces '&', '<', and '>'
    with their corresponding unicode character references.  */
-const char*
-xml_get_encoded_string_from_string (const char* in_str)
+tree
+xml_get_encoded_identifier_from_string (const char* in_str)
 {
   int length_increase = 0;
   const char* inCh;
@@ -2102,7 +1723,7 @@ xml_get_encoded_string_from_string (const char* in_str)
       }
     }
 
-  newStr = (char*) malloc (strlen (in_str) + length_increase + 1);
+  newStr = (char*) xmalloc (strlen (in_str) + length_increase + 1);
   outCh = newStr;
 
   /* Create encoded form of string.  */
@@ -2125,7 +1746,7 @@ xml_get_encoded_string_from_string (const char* in_str)
      memory.  */
   id = get_identifier(newStr);
   free(newStr);
-  return IDENTIFIER_POINTER (id);
+  return id;
 }
 
 #undef XML_AMPERSAND
@@ -2134,6 +1755,18 @@ xml_get_encoded_string_from_string (const char* in_str)
 #undef XML_SINGLE_QUOTE
 #undef XML_DOUBLE_QUOTE
 
+
+/* Concatenate input strings into new memory.  Caller must free memory.  */
+char*
+xml_concat_3_strings (const char* s1, const char* s2, const char* s3)
+{
+  char* ns = (char*) malloc (strlen (s1) +  strlen (s2) + strlen (s3) + 1);
+  strcpy (ns, s1);
+  strcat (ns, s2);
+  strcat (ns, s3);
+  return ns;
+}
+
 /* Print N spaces to FILE.  Used for indentation of XML output.  */
 void
 print_indent (FILE* file, unsigned long n)
@@ -2141,12 +1774,12 @@ print_indent (FILE* file, unsigned long n)
   unsigned long left = n;
   while(left >= 10)
     {
-    fprintf(file, "          ");
+    fprintf (file, "          ");
     left -= 10;
     }
   while(left > 0)
     {
-    fprintf(file, " ");
+    fprintf (file, " ");
     left -= 1;
     }
 }
