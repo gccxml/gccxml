@@ -1100,7 +1100,7 @@ xml_output_headers (FILE* file)
 void
 xml_output_namespace_decl (FILE* file, unsigned long indent, tree ns)
 {
-  if(ns == std_node) return;
+  if(ns == fake_std_node) return;
     
   /* Only walk a real namespace.  */
   if (!DECL_NAMESPACE_ALIAS (ns))
@@ -1171,8 +1171,9 @@ xml_output_namespace_decl (FILE* file, unsigned long indent, tree ns)
 void
 xml_output_type_decl (FILE* file, unsigned long indent, tree td)
 {
-  /* Get the type as completely as possible.  */
-  tree t = complete_type (TREE_TYPE (td));
+  /* Get the type from the TYPE_DECL.  We don't want to use complete_type
+     because it may modify something.  We are doing a read-only dump.  */
+  tree t = TREE_TYPE (td);
 
   /* Don't process any internally generated declarations.  */
   if (DECL_INTERNAL_P (td)) return;
