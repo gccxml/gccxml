@@ -847,6 +847,31 @@ diff -c -3 -p -r1.1.1.1 -r1.3
   	explicit priority_queue(const _Pr& _X = _Pr(),
   		const allocator_type& _Al = allocator_type())
   		: c(_Al), comp(_X) {}
+Index: signal.h
+===================================================================
+RCS file: /cvsroot/GxInclude/VcInclude/signal.h,v
+retrieving revision 1.1.1.1
+diff -c -3 -p -r1.1.1.1 signal.h
+*** signal.h	13 Jun 2001 19:31:52 -0000	1.1.1.1
+--- signal.h	17 May 2004 17:34:13 -0000
+*************** extern void * _pxcptinfoptrs;
+*** 99,105 ****
+  
+  /* Function prototypes */
+  
+! _CRTIMP void (__cdecl * __cdecl signal(int, void (__cdecl *)(int)))(int);
+  _CRTIMP int __cdecl raise(int);
+  
+  
+--- 99,106 ----
+  
+  /* Function prototypes */
+  
+! typedef void (__cdecl * __signal_handler_t)(int);
+! _CRTIMP __signal_handler_t __cdecl signal(int, __signal_handler_t);
+  _CRTIMP int __cdecl raise(int);
+  
+  
 Index: sstream
 ===================================================================
 RCS file: /cvsroot/GxInclude/VcInclude/sstream,v
@@ -1054,13 +1079,20 @@ diff -c -3 -p -r1.1.1.1 -r1.2
           for (; ; _C = _I.rdbuf()->snextc())
               if (_Tr::eq_int_type(_Tr::eof(), _C))
                   {_St |= ios_base::eofbit;
+Index: typeinfo
+===================================================================
+RCS file: /cvsroot/GxInclude/VcInclude/typeinfo,v
+retrieving revision 1.1.1.1
+retrieving revision 1.4
+diff -c -3 -p -r1.1.1.1 -r1.4
 Index: typeinfo.h
 ===================================================================
 RCS file: /cvsroot/GxInclude/VcInclude/typeinfo.h,v
 retrieving revision 1.1.1.1
-diff -c -3 -p -r1.1.1.1 typeinfo.h
+retrieving revision 1.2
+diff -c -3 -p -r1.1.1.1 -r1.2
 *** typeinfo.h	13 Jun 2001 19:32:04 -0000	1.1.1.1
---- typeinfo.h	17 May 2004 14:24:58 -0000
+--- typeinfo.h	17 May 2004 14:29:56 -0000	1.2
 ***************
 *** 37,42 ****
 --- 37,43 ----

@@ -21,13 +21,45 @@ diff -c -3 -p -r1.1 -r1.2
 ! #define assert(exp) (void)( (exp) || (_assert((void*)#exp, __FILE__, __LINE__), 0) )
   
   #endif  /* NDEBUG */
+Index: signal.h
+===================================================================
+RCS file: /cvsroot/GxInclude/Vc7/Include/signal.h,v
+retrieving revision 1.1
+diff -c -3 -p -r1.1 signal.h
+*** signal.h	1 Nov 2002 14:00:28 -0000	1.1
+--- signal.h	17 May 2004 17:34:24 -0000
+*************** extern void * _pxcptinfoptrs;
+*** 89,95 ****
+  
+  /* Function prototypes */
+  
+! _CRTIMP void (__cdecl * __cdecl signal(int, void (__cdecl *)(int)))(int);
+  _CRTIMP int __cdecl raise(int);
+  
+  
+--- 89,96 ----
+  
+  /* Function prototypes */
+  
+! typedef void (__cdecl * __signal_handler_t)(int);
+! _CRTIMP __signal_handler_t __cdecl signal(int, __signal_handler_t);
+  _CRTIMP int __cdecl raise(int);
+  
+  
+Index: typeinfo
+===================================================================
+RCS file: /cvsroot/GxInclude/Vc7/Include/typeinfo,v
+retrieving revision 1.1
+retrieving revision 1.4
+diff -c -3 -p -r1.1 -r1.4
 Index: typeinfo.h
 ===================================================================
 RCS file: /cvsroot/GxInclude/Vc7/Include/typeinfo.h,v
 retrieving revision 1.1
-diff -c -3 -p -r1.1 typeinfo.h
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
 *** typeinfo.h	1 Nov 2002 14:00:28 -0000	1.1
---- typeinfo.h	17 May 2004 14:28:54 -0000
+--- typeinfo.h	17 May 2004 14:29:56 -0000	1.2
 ***************
 *** 37,42 ****
 --- 37,43 ----
