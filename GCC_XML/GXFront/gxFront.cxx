@@ -134,6 +134,43 @@ int main(int argc, char** argv)
       std::cout << "  \"" << i->c_str() << "\"\n";
       }
     }
+
+#if defined(_WIN32) && !defined(__CYGWIN__)
+  // Make sure a cygwin1.dll is available.
+  std::string cyg = gxSystemTools::GetFilenamePath(cGCCXML_EXECUTABLE.c_str());
+  cyg += "/cygwin1.dll";
+  if((!gxSystemTools::FileExists(cyg.c_str())) &&
+     (gxSystemTools::FindProgram("cygwin1.dll").length() == 0))
+    {
+    // There is no cygwin1.dll in the directory with gccxml_cc1plus or
+    // in the system search path.  Look for a cygwin installation.
+    
+    // The registry key to use to find cygwin.
+    const char* cygwinRegistry =
+      "HKEY_LOCAL_MACHINE\\SOFTWARE\\Cygnus Solutions\\Cygwin\\mounts v2\\/usr/bin;native";
+    if(gxSystemTools::ReadRegistryValue(cygwinRegistry, cyg) &&
+       gxSystemTools::FileExists((cyg+"/cygwin1.dll").c_str()))
+      {
+      // Found the cygwin /usr/bin directory with cygwin1.dll.  Add it
+      // to the end of the system search path.
+      std::string path = "PATH=";
+      path += gxSystemTools::GetEnv("PATH");
+      if(path[path.length()-1] != ';')
+        {
+        path += ";";
+        }
+      path += cyg;
+      _putenv(path.c_str());
+      }
+    else
+      {
+      std::cerr << "GCC-XML cannot find cygwin1.dll, so "
+                << cGCCXML_EXECUTABLE.c_str()
+                << " will fail to run.  Aborting.\n";
+      return 1;
+      }
+    }
+#endif  
   
   // Convert the program path to a platform-dependent format.
   std::string cge =
@@ -148,11 +185,20 @@ int main(int argc, char** argv)
     }
   args[flags.size()+1] = 0;
   
+  // Run the patched GCC C++ parser.
+  int result = 0;
   if(GXSpawn(cGCCXML_EXECUTABLE.c_str(), args) < 0)
     {
+    result = errno;
     std::cerr << "Error executing " << cGCCXML_EXECUTABLE.c_str() << "\n";
-    exit(errno);
     }
   
-  return 0;
+  // Free the arguments' memory.
+  for(char** a = args; *a; ++a)
+    {
+    free(*a);
+    }
+  delete [] args;
+  
+  return result;
 }
