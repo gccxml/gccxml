@@ -30,10 +30,6 @@ Boston, MA 02111-1307, USA.  */
 #include "rtl.h"
 #include "varray.h"
 
-/* Return non-zero if the given TYPE_DECL is a typedef to another type.  */
-#define DECL_TYPEDEF_P(d) \
-  (DECL_NAME ((d)) != DECL_NAME (TYPE_NAME (TREE_TYPE ((d)))))
-
 /* Return non-zero if the given _DECL is an internally generated decl.  */
 #define DECL_INTERNAL_P(d) (DECL_SOURCE_LINE(d) == 0)
 /*#define DECL_INTERNAL_P(d) (strcmp (DECL_SOURCE_FILE (d), "<internal>")==0)*/
@@ -1064,7 +1060,7 @@ xml_output_type_decl (FILE* file, unsigned long indent, tree td)
     case ENUMERAL_TYPE:
       if (DECL_ORIGINAL_TYPE (td))
         {
-        /* A typedef to an existing type.  */
+        /* A typedef to an existing enumeral type.  */
         xml_output_typedef (file, indent, td);
         }
       else
@@ -1079,9 +1075,10 @@ xml_output_type_decl (FILE* file, unsigned long indent, tree td)
         /* A typedef to a pointer to member.  */
         xml_output_typedef (file, indent, td);
         }
-      else if (DECL_TYPEDEF_P (td))
+      else if (DECL_ORIGINAL_TYPE (td)
+               || (DECL_NAME (td) != DECL_NAME (TYPE_NAME (TREE_TYPE (td)))))
         {
-        /* A typedef to an existing type.  */
+        /* A typedef to an existing class or struct type.  */
         xml_output_typedef (file, indent, td);
         }
       else
@@ -1091,9 +1088,10 @@ xml_output_type_decl (FILE* file, unsigned long indent, tree td)
         }
       break;
     case UNION_TYPE:
-      if (DECL_TYPEDEF_P (td))
+      if (DECL_ORIGINAL_TYPE (td)
+          || (DECL_NAME (td) != DECL_NAME (TYPE_NAME (TREE_TYPE (td)))))
         {
-        /* A typedef to an existing type.  */
+        /* A typedef to an existing union type.  */
         xml_output_typedef (file, indent, td);
         }
       else
@@ -1138,11 +1136,16 @@ xml_output_record_type (FILE* file, unsigned long indent, tree rt)
     switch(TREE_CODE(field))
       {
       case TYPE_DECL:
-        /* A class or struct internally typedefs itself.  */
         if (TREE_TYPE (field) == rt)
+          {
+          /* A class or struct internally typedefs itself.  */
           xml_output_typedef (file, indent+XML_NESTED_INDENT, field);
+          }
         else
+          {
+          /* A nested type declaration.  */
           xml_output_type_decl (file, indent+XML_NESTED_INDENT, field);
+          }
         break;          
       case FIELD_DECL:
         xml_output_field_decl (file, indent+XML_NESTED_INDENT, field);
