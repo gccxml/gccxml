@@ -20,6 +20,36 @@ along with GNU CC; see the file COPYING.  If not, write to
 the Free Software Foundation, 59 Temple Place - Suite 330,
 Boston, MA 02111-1307, USA.  */
 
+
+/* Organization of this source:
+   The entry point is do_xml_output(), which is called from the end of
+   finish_translation_unit() in semantics.c.
+   
+   xml_output_* functions are used to output tree nodes that require
+   non-trivial processing (like RECORD_TYPE).  This includes any nodes
+   whose XML elements have beginning and ending tags (not empty elements)
+   and have other elements nested inside them.
+
+   print_*_begin_tag functions are used to write out the XML begin tags
+   with their attributes.  The functions are responsible for extracting the
+   details from a tree node needed specifically for the XML attributes on
+   the begin tag.
+
+   print_*_end_tag functions print the corresponding XML end tags for
+   each of the print_*_begin_tag functions.
+
+   print_*_empty_tag functions print simple tree nodes whose XML elements
+   are empty (have nothing nested inside them, and use the special <.../>
+   syntax.  These elements may have attributes in the tags.
+
+   All the print_*_*_tag functions are called from xml_output_* functions
+   to do the actual text output.  They are responsible for printing the
+   indentation spaces, and for printing newlines after each tag.
+   print_*_*_tag functions should never call each other.  If you need to
+   do this, create an xml_output_* function to do all the print_*_*_tag
+   calls instead.
+*/
+
 #include "config.h"
 #include "system.h"
 #include "sys/stat.h"
@@ -944,7 +974,7 @@ print_cv_qualifiers_empty_tag (FILE* file, unsigned long indent, tree t)
   
   print_indent (file, indent);
   fprintf (file,
-           "<CV_Qualifiers const=\"%d\" volatile=\"%d\" restrict=\"%d\"/>\n",
+           "<CvQualifiers const=\"%d\" volatile=\"%d\" restrict=\"%d\"/>\n",
            is_const, is_volatile, is_restrict);
 }
 
@@ -980,6 +1010,45 @@ print_qualified_name_empty_tag (FILE* file, unsigned long indent, tree t)
   fprintf (file,
            "<QualifiedName name=\"%s\"/>\n",
            name);
+}
+
+
+/* Print XML empty tag for a scope reference element (SCOPE_REF).  */
+static void
+print_scope_ref_empty_tag (FILE* file, unsigned long indent, tree t)
+{
+  const char* class_name =
+    xml_get_encoded_string (DECL_NAME (TYPE_NAME (TREE_OPERAND (t, 0))));
+  const char* field_name =
+    xml_get_encoded_string (TREE_OPERAND (t, 1));
+  print_indent (file, indent);
+  fprintf (file,
+           "<ScopeRef class=\"%s\" field=\"%s\"/>\n",
+           class_name, field_name);
+}
+
+
+/* Print XML empty tag for an integer literal element (INTEGER_CST).  */
+void
+print_integer_cst_empty_tag (FILE * file, unsigned long indent, tree t)
+{
+  print_indent (file, indent);
+  fprintf (file, "<Integer value=\"");
+  if (TREE_INT_CST_HIGH (t) == 0)
+    {
+    fprintf (file, HOST_WIDE_INT_PRINT_UNSIGNED, TREE_INT_CST_LOW (t));
+    }
+  else if ((TREE_INT_CST_HIGH (t) == -1) && (TREE_INT_CST_LOW (t) != 0))
+    {
+    fprintf (file, "-");
+    fprintf (file, HOST_WIDE_INT_PRINT_UNSIGNED, -TREE_INT_CST_LOW (t));
+    }
+  else
+    {
+    fprintf (file, HOST_WIDE_INT_PRINT_DOUBLE_HEX,
+             TREE_INT_CST_HIGH (t), TREE_INT_CST_LOW (t));
+    }
+  fprintf(file, "\"/>\n");
 }
 
 
@@ -1102,6 +1171,8 @@ xml_output_type_decl (FILE* file, unsigned long indent, tree td)
     case REAL_TYPE:
     case COMPLEX_TYPE:
     case FUNCTION_TYPE:
+    case TYPENAME_TYPE:
+    case TEMPLATE_TYPE_PARM:
       /* A typedef to a predefined type.  */
       xml_output_typedef (file, indent, td);
       break;
@@ -1207,6 +1278,9 @@ xml_output_record_type (FILE* file, unsigned long indent, tree rt)
       case TEMPLATE_DECL:
         xml_output_template_decl (file, indent+XML_NESTED_INDENT, field);
         break;
+      case USING_DECL:
+        /* Ignore the using decl.  */
+	break;
       case RESULT_DECL:
       default:
         print_unimplemented_empty_tag (file, indent+XML_NESTED_INDENT, field,
@@ -1570,10 +1644,21 @@ xml_output_type (FILE* file, unsigned long indent, tree t)
     case COMPLEX_TYPE:
     case ENUMERAL_TYPE:
     case UNION_TYPE:
+    case TYPENAME_TYPE:
+    case TEMPLATE_TYPE_PARM:
       xml_output_named_type (file, indent, t);
+      break;
+    case SCOPE_REF:
+      print_scope_ref_empty_tag (file, indent, t);
+      break;
+    case TEMPLATE_PARM_INDEX:
+      xml_output_type (file, indent, TREE_TYPE (t));
       break;
     case VOID_TYPE:
       xml_output_void_type (file, indent, t);
+      break;
+    case INTEGER_CST:
+      print_integer_cst_empty_tag (file, indent, t);
       break;
     default:
       print_unimplemented_empty_tag (file, indent, t, "xml_output_type");
@@ -1590,7 +1675,6 @@ xml_output_named_type (FILE* file, unsigned long indent, tree t)
   xml_output_qualified_name (file, indent+XML_NESTED_INDENT, t);
   print_named_type_end_tag (file, indent);
 }
-
 
 
 /* Output for a void type.  */
@@ -1790,8 +1874,7 @@ void
 xml_output_template_argument (FILE* file, unsigned long indent, tree arg)
 {
   print_template_argument_begin_tag (file, indent);
-  print_unimplemented_empty_tag (file, indent+XML_NESTED_INDENT, arg,
-                                 "xml_output_template_argument");
+  xml_output_type (file, indent + XML_NESTED_INDENT, arg);
   print_template_argument_end_tag (file, indent);
 }
 
