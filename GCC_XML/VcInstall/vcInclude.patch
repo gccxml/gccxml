@@ -1,0 +1,1190 @@
+Index: deque
+===================================================================
+RCS file: /cvsroot/VcInclude/deque,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1.1.1 -r1.2
+*** deque	2001/06/13 19:30:51	1.1.1.1
+--- deque	2001/06/13 21:16:23	1.2
+*************** template<class _Ty, class _A = allocator
+*** 23,36 ****
+  public:
+  	typedef deque<_Ty, _A> _Myt;
+  	typedef _A allocator_type;
+! 	typedef _A::size_type size_type;
+! 	typedef _A::difference_type difference_type;
+! 	typedef _A::pointer _Tptr;
+! 	typedef _A::const_pointer _Ctptr;
+  	typedef _POINTER_X(_Tptr, _A) _Mapptr;
+! 	typedef _A::reference reference;
+! 	typedef _A::const_reference const_reference;
+! 	typedef _A::value_type value_type;
+  		// CLASS const_iterator
+  	class iterator;
+  	class const_iterator : public _Ranit<_Ty, difference_type> {
+--- 23,36 ----
+  public:
+  	typedef deque<_Ty, _A> _Myt;
+  	typedef _A allocator_type;
+! 	typedef typename _A::size_type size_type;
+! 	typedef typename _A::difference_type difference_type;
+! 	typedef typename _A::pointer _Tptr;
+! 	typedef typename _A::const_pointer _Ctptr;
+  	typedef _POINTER_X(_Tptr, _A) _Mapptr;
+! 	typedef typename _A::reference reference;
+! 	typedef typename _A::const_reference const_reference;
+! 	typedef typename _A::value_type value_type;
+  		// CLASS const_iterator
+  	class iterator;
+  	class const_iterator : public _Ranit<_Ty, difference_type> {
+Index: fstream
+===================================================================
+RCS file: /cvsroot/VcInclude/fstream,v
+retrieving revision 1.1.1.1
+retrieving revision 1.3
+diff -c -3 -p -r1.1.1.1 -r1.3
+*** fstream	2001/06/13 19:30:57	1.1.1.1
+--- fstream	2001/06/14 18:20:43	1.3
+*************** inline bool _Ungetc(char _C, _Filet *_Fi
+*** 62,73 ****
+  inline bool _Ungetc(wchar_t _C, _Filet *_Fi)
+  	{return (ungetwc(_C, _Fi) != WEOF); }
+  		// TEMPLATE CLASS basic_filebuf
+! template<class _E, class _Tr = char_traits<_E> >
+  	class basic_filebuf : public basic_streambuf<_E, _Tr> {
+  public:
+  	typedef basic_filebuf<_E, _Tr> _Myt;
+  	typedef basic_streambuf<_E, _Tr> _Mysb;
+! 	typedef codecvt<_E, char, _Tr::state_type> _Cvt;
+  	basic_filebuf(_Filet *_F = 0)
+  		: _Loc(), _Mysb() {_Init(_F, _Newfl); }
+  	basic_filebuf(_Uninitialized)
+--- 62,73 ----
+  inline bool _Ungetc(wchar_t _C, _Filet *_Fi)
+  	{return (ungetwc(_C, _Fi) != WEOF); }
+  		// TEMPLATE CLASS basic_filebuf
+! template<class _E, class _Tr >
+  	class basic_filebuf : public basic_streambuf<_E, _Tr> {
+  public:
+  	typedef basic_filebuf<_E, _Tr> _Myt;
+  	typedef basic_streambuf<_E, _Tr> _Mysb;
+! 	typedef codecvt<_E, char, typename _Tr::state_type> _Cvt;
+  	basic_filebuf(_Filet *_F = 0)
+  		: _Loc(), _Mysb() {_Init(_F, _Newfl); }
+  	basic_filebuf(_Uninitialized)
+*************** protected:
+*** 210,216 ****
+  	virtual int sync()
+  		{return (_File == 0 || 0 <= fflush(_File) ? 0 : -1); }
+  	void _Init(_Filet *_Fp, _Initfl _Which)
+! 		{static _Tr::state_type _Stinit;
+  		_Closef = _Which == _Openfl;
+  		if (_Which == _Newfl)
+  			{_Loc.locale::~locale();
+--- 210,216 ----
+  	virtual int sync()
+  		{return (_File == 0 || 0 <= fflush(_File) ? 0 : -1); }
+  	void _Init(_Filet *_Fp, _Initfl _Which)
+! 		{static typename _Tr::state_type _Stinit;
+  		_Closef = _Which == _Openfl;
+  		if (_Which == _Newfl)
+  			{_Loc.locale::~locale();
+*************** protected:
+*** 235,242 ****
+  			_Str = new string; }
+  private:
+  	_Cvt *_Pcvt;
+! 	_Tr::state_type _State0;
+! 	_Tr::state_type _State;
+  	string *_Str;
+  	bool _Closef;
+  	locale _Loc;
+--- 235,242 ----
+  			_Str = new string; }
+  private:
+  	_Cvt *_Pcvt;
+! 	typename _Tr::state_type _State0;
+! 	typename _Tr::state_type _State;
+  	string *_Str;
+  	bool _Closef;
+  	locale _Loc;
+*************** extern template class _CRTIMP basic_file
+*** 251,257 ****
+  #endif		// _DLL
+  
+  		// TEMPLATE CLASS basic_ifstream
+! template<class _E, class _Tr = char_traits<_E> >
+  	class basic_ifstream : public basic_istream<_E, _Tr> {
+  public:
+  	typedef basic_ifstream<_E, _Tr> _Myt;
+--- 251,257 ----
+  #endif		// _DLL
+  
+  		// TEMPLATE CLASS basic_ifstream
+! template<class _E, class _Tr >
+  	class basic_ifstream : public basic_istream<_E, _Tr> {
+  public:
+  	typedef basic_ifstream<_E, _Tr> _Myt;
+*************** extern template class _CRTIMP basic_ifst
+*** 289,295 ****
+  #endif		// _DLL
+  
+  		// TEMPLATE CLASS basic_ofstream
+! template<class _E, class _Tr = char_traits<_E> >
+  	class basic_ofstream : public basic_ostream<_E, _Tr> {
+  public:
+  	typedef basic_ofstream<_E, _Tr> _Myt;
+--- 289,295 ----
+  #endif		// _DLL
+  
+  		// TEMPLATE CLASS basic_ofstream
+! template<class _E, class _Tr >
+  	class basic_ofstream : public basic_ostream<_E, _Tr> {
+  public:
+  	typedef basic_ofstream<_E, _Tr> _Myt;
+*************** extern template class _CRTIMP basic_ofst
+*** 328,334 ****
+  
+  
+  		// TEMPLATE CLASS basic_fstream
+! template<class _E, class _Tr = char_traits<_E> >
+  	class basic_fstream : public basic_iostream<_E, _Tr> {
+  public:
+  	basic_fstream()
+--- 328,334 ----
+  
+  
+  		// TEMPLATE CLASS basic_fstream
+! template<class _E, class _Tr >
+  	class basic_fstream : public basic_iostream<_E, _Tr> {
+  public:
+  	basic_fstream()
+Index: functional
+===================================================================
+RCS file: /cvsroot/VcInclude/functional,v
+retrieving revision 1.1.1.1
+retrieving revision 1.3
+diff -c -3 -p -r1.1.1.1 -r1.3
+*** functional	2001/06/13 19:30:57	1.1.1.1
+--- functional	2001/06/14 18:20:43	1.3
+*************** template<class _Ty>
+*** 118,128 ****
+  		// TEMPLATE CLASS unary_negate
+  template<class _Ufn>
+  	class unary_negate
+! 	: public unary_function<_Ufn::argument_type, bool> {
+  public:
+  	explicit unary_negate(const _Ufn& _X)
+  		: _Fn(_X) {}
+! 	bool operator()(const _Ufn::argument_type& _X) const
+  		{return (!_Fn(_X)); }
+  protected:
+  	_Ufn _Fn;
+--- 118,128 ----
+  		// TEMPLATE CLASS unary_negate
+  template<class _Ufn>
+  	class unary_negate
+! 	: public unary_function<typename _Ufn::argument_type, bool> {
+  public:
+  	explicit unary_negate(const _Ufn& _X)
+  		: _Fn(_X) {}
+! 	bool operator()(const typename _Ufn::argument_type& _X) const
+  		{return (!_Fn(_X)); }
+  protected:
+  	_Ufn _Fn;
+*************** template<class _Ufn> inline
+*** 134,146 ****
+  		// TEMPLATE CLASS binary_negate
+  template<class _Bfn>
+  	class binary_negate
+! 	: public binary_function<_Bfn::first_argument_type,
+! 		_Bfn::second_argument_type, bool> {
+  public:
+  	explicit binary_negate(const _Bfn& _X)
+  		: _Fn(_X) {}
+! 	bool operator()(const _Bfn::first_argument_type& _X,
+! 		const _Bfn::second_argument_type& _Y) const
+  		{return (!_Fn(_X, _Y)); }
+  protected:
+  	_Bfn _Fn;
+--- 134,146 ----
+  		// TEMPLATE CLASS binary_negate
+  template<class _Bfn>
+  	class binary_negate
+! 	: public binary_function<typename _Bfn::first_argument_type,
+! 		typename _Bfn::second_argument_type, bool> {
+  public:
+  	explicit binary_negate(const _Bfn& _X)
+  		: _Fn(_X) {}
+! 	bool operator()(const typename _Bfn::first_argument_type& _X,
+! 		const typename _Bfn::second_argument_type& _Y) const
+  		{return (!_Fn(_X, _Y)); }
+  protected:
+  	_Bfn _Fn;
+*************** template<class _Bfn> inline
+*** 152,168 ****
+  		// TEMPLATE CLASS binder1st
+  template<class _Bfn>
+  	class binder1st
+! 	: public unary_function<_Bfn::second_argument_type,
+! 		_Bfn::result_type> {
+  public:
+  	binder1st(const _Bfn& _X,
+! 		const _Bfn::first_argument_type& _Y)
+  		: op(_X), value(_Y) {}
+  	result_type operator()(const argument_type& _X) const
+  		{return (op(value, _X)); }
+  protected:
+  	_Bfn op;
+! 	_Bfn::first_argument_type value;
+  	};
+  		// TEMPLATE FUNCTION bind1st
+  template<class _Bfn, class _Ty> inline
+--- 152,168 ----
+  		// TEMPLATE CLASS binder1st
+  template<class _Bfn>
+  	class binder1st
+! 	: public unary_function<typename _Bfn::second_argument_type,
+! 		typename _Bfn::result_type> {
+  public:
+  	binder1st(const _Bfn& _X,
+! 		const typename _Bfn::first_argument_type& _Y)
+  		: op(_X), value(_Y) {}
+  	result_type operator()(const argument_type& _X) const
+  		{return (op(value, _X)); }
+  protected:
+  	_Bfn op;
+! 	typename _Bfn::first_argument_type value;
+  	};
+  		// TEMPLATE FUNCTION bind1st
+  template<class _Bfn, class _Ty> inline
+*************** template<class _Bfn, class _Ty> inline
+*** 172,188 ****
+  		// TEMPLATE CLASS binder2nd
+  template<class _Bfn>
+  	class binder2nd
+! 	: public unary_function<_Bfn::first_argument_type,
+! 		_Bfn::result_type> {
+  public:
+  	binder2nd(const _Bfn& _X,
+! 		const _Bfn::second_argument_type& _Y)
+  		: op(_X), value(_Y) {}
+  	result_type operator()(const argument_type& _X) const
+  		{return (op(_X, value)); }
+  protected:
+  	_Bfn op;
+! 	_Bfn::second_argument_type value;
+  	};
+  		// TEMPLATE FUNCTION bind2nd
+  template<class _Bfn, class _Ty> inline
+--- 172,188 ----
+  		// TEMPLATE CLASS binder2nd
+  template<class _Bfn>
+  	class binder2nd
+! 	: public unary_function<typename _Bfn::first_argument_type,
+! 		typename _Bfn::result_type> {
+  public:
+  	binder2nd(const _Bfn& _X,
+! 		const typename _Bfn::second_argument_type& _Y)
+  		: op(_X), value(_Y) {}
+  	result_type operator()(const argument_type& _X) const
+  		{return (op(_X, value)); }
+  protected:
+  	_Bfn op;
+! 	typename _Bfn::second_argument_type value;
+  	};
+  		// TEMPLATE FUNCTION bind2nd
+  template<class _Bfn, class _Ty> inline
+Index: ios
+===================================================================
+RCS file: /cvsroot/VcInclude/ios,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1.1.1 -r1.2
+*** ios	2001/06/13 19:31:04	1.1.1.1
+--- ios	2001/06/13 21:16:23	1.2
+***************
+*** 13,19 ****
+  #endif  /* _MSC_VER */
+  _STD_BEGIN
+  		// TEMPLATE CLASS basic_ios
+! template<class _E, class _Tr = char_traits<_E> >
+  	class basic_ios : public ios_base {
+  public:
+  	typedef basic_ios<_E, _Tr> _Myt;
+--- 13,19 ----
+  #endif  /* _MSC_VER */
+  _STD_BEGIN
+  		// TEMPLATE CLASS basic_ios
+! template<class _E, class _Tr >
+  	class basic_ios : public ios_base {
+  public:
+  	typedef basic_ios<_E, _Tr> _Myt;
+*************** public:
+*** 28,36 ****
+  		{}
+  	typedef _E char_type;
+  	typedef _Tr traits_type;
+! 	typedef _Tr::int_type int_type;
+! 	typedef _Tr::pos_type pos_type;
+! 	typedef _Tr::off_type off_type;
+  	void clear(iostate _St = goodbit, bool _Ex = false)
+  		{ios_base::clear(_Sb == 0 ? (int)_St | (int)badbit
+  			: (int)_St, _Ex); }
+--- 28,36 ----
+  		{}
+  	typedef _E char_type;
+  	typedef _Tr traits_type;
+! 	typedef typename _Tr::int_type int_type;
+! 	typedef typename _Tr::pos_type pos_type;
+! 	typedef typename _Tr::off_type off_type;
+  	void clear(iostate _St = goodbit, bool _Ex = false)
+  		{ios_base::clear(_Sb == 0 ? (int)_St | (int)badbit
+  			: (int)_St, _Ex); }
+Index: istream
+===================================================================
+RCS file: /cvsroot/VcInclude/istream,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1.1.1 -r1.2
+*** istream	2001/06/13 19:31:05	1.1.1.1
+--- istream	2001/06/13 21:16:23	1.2
+***************
+*** 13,19 ****
+  #endif  /* _MSC_VER */
+  _STD_BEGIN
+  		// TEMPLATE CLASS basic_istream
+! template<class _E, class _Tr = char_traits<_E> >
+  	class basic_istream : virtual public basic_ios<_E, _Tr> {
+  public:
+  	typedef basic_istream<_E, _Tr> _Myt;
+--- 13,19 ----
+  #endif  /* _MSC_VER */
+  _STD_BEGIN
+  		// TEMPLATE CLASS basic_istream
+! template<class _E, class _Tr >
+  	class basic_istream : virtual public basic_ios<_E, _Tr> {
+  public:
+  	typedef basic_istream<_E, _Tr> _Myt;
+*************** extern template class _CRTIMP basic_istr
+*** 430,436 ****
+  #endif		// _DLL
+  
+  		// TEMPLATE CLASS basic_iostream
+! template<class _E, class _Tr = char_traits<_E> >
+  	class basic_iostream : public basic_istream<_E, _Tr>,
+  		public basic_ostream<_E, _Tr> {
+  public:
+--- 430,436 ----
+  #endif		// _DLL
+  
+  		// TEMPLATE CLASS basic_iostream
+! template<class _E, class _Tr >
+  	class basic_iostream : public basic_istream<_E, _Tr>,
+  		public basic_ostream<_E, _Tr> {
+  public:
+*************** template<class _E, class _Tr> inline
+*** 525,531 ****
+  	if (_Ok)
+  		{const _Ctype& _Fac = _USE(_I.getloc(), _Ctype);
+  		_TRY_IO_BEGIN
+! 		for (_Tr::int_type _C = _I.rdbuf()->sgetc(); ;
+  			_C = _I.rdbuf()->snextc())
+  			if (_Tr::eq_int_type(_Tr::eof(), _C))
+  				{_St |= ios_base::eofbit;
+--- 525,531 ----
+  	if (_Ok)
+  		{const _Ctype& _Fac = _USE(_I.getloc(), _Ctype);
+  		_TRY_IO_BEGIN
+! 		for (typename _Tr::int_type _C = _I.rdbuf()->sgetc(); ;
+  			_C = _I.rdbuf()->snextc())
+  			if (_Tr::eq_int_type(_Tr::eof(), _C))
+  				{_St |= ios_base::eofbit;
+Index: iterator
+===================================================================
+RCS file: /cvsroot/VcInclude/iterator,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1.1.1 -r1.2
+*** iterator	2001/06/13 19:31:05	1.1.1.1
+--- iterator	2001/06/13 21:16:23	1.2
+*************** template<class _C>
+*** 74,80 ****
+  		: public iterator<output_iterator_tag, void, void> {
+  public:
+  	typedef _C container_type;
+! 	typedef _C::value_type value_type;
+  	explicit back_insert_iterator(_C& _X)
+  		: container(_X) {}
+  	back_insert_iterator<_C>& operator=(
+--- 74,80 ----
+  		: public iterator<output_iterator_tag, void, void> {
+  public:
+  	typedef _C container_type;
+! 	typedef typename _C::value_type value_type;
+  	explicit back_insert_iterator(_C& _X)
+  		: container(_X) {}
+  	back_insert_iterator<_C>& operator=(
+*************** template<class _C>
+*** 99,105 ****
+  		: public iterator<output_iterator_tag, void, void> {
+  public:
+  	typedef _C container_type;
+! 	typedef _C::value_type value_type;
+  	explicit front_insert_iterator(_C& _X)
+  		: container(_X) {}
+  	front_insert_iterator<_C>& operator=(
+--- 99,105 ----
+  		: public iterator<output_iterator_tag, void, void> {
+  public:
+  	typedef _C container_type;
+! 	typedef typename _C::value_type value_type;
+  	explicit front_insert_iterator(_C& _X)
+  		: container(_X) {}
+  	front_insert_iterator<_C>& operator=(
+*************** template<class _C>
+*** 124,131 ****
+  		: public iterator<output_iterator_tag, void, void> {
+  public:
+  	typedef _C container_type;
+! 	typedef _C::value_type value_type;
+! 	insert_iterator(_C& _X, _C::iterator _I)
+  		: container(_X), iter(_I) {}
+  	insert_iterator<_C>& operator=(
+  		const value_type& _V)
+--- 124,131 ----
+  		: public iterator<output_iterator_tag, void, void> {
+  public:
+  	typedef _C container_type;
+! 	typedef typename _C::value_type value_type;
+! 	insert_iterator(_C& _X, typename _C::iterator _I)
+  		: container(_X), iter(_I) {}
+  	insert_iterator<_C>& operator=(
+  		const value_type& _V)
+*************** public:
+*** 140,146 ****
+  		{return (*this); }
+  protected:
+  	_C& container;
+! 	_C::iterator iter;
+  	};
+  template<class _C, class _XI> inline
+  	insert_iterator<_C> inserter(_C& _X, _XI _I)
+--- 140,146 ----
+  		{return (*this); }
+  protected:
+  	_C& container;
+! 	typename _C::iterator iter;
+  	};
+  template<class _C, class _XI> inline
+  	insert_iterator<_C> inserter(_C& _X, _XI _I)
+Index: list
+===================================================================
+RCS file: /cvsroot/VcInclude/list,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1.1.1 -r1.2
+*** list	2001/06/13 19:31:07	1.1.1.1
+--- list	2001/06/13 21:16:23	1.2
+***************
+*** 18,29 ****
+  #endif  /* _MSC_VER */
+  _STD_BEGIN
+  		// TEMPLATE CLASS list
+! template<class _Ty, class _A = allocator<_Ty> >
+  	class list {
+  protected:
+  	struct _Node;
+  	friend struct _Node;
+! 	typedef _POINTER_X(_Node, _A) _Nodeptr;
+  	struct _Node {
+  		_Nodeptr _Next, _Prev;
+  		_Ty _Value;
+--- 18,29 ----
+  #endif  /* _MSC_VER */
+  _STD_BEGIN
+  		// TEMPLATE CLASS list
+! template<class _Ty, class _AL = allocator<_Ty> >
+  	class list {
+  protected:
+  	struct _Node;
+  	friend struct _Node;
+! 	typedef _POINTER_X(_Node, _AL) _Nodeptr;
+  	struct _Node {
+  		_Nodeptr _Next, _Prev;
+  		_Ty _Value;
+*************** protected:
+*** 31,38 ****
+  	struct _Acc;
+  	friend struct _Acc;
+  	struct _Acc {
+! 		typedef _REFERENCE_X(_Nodeptr, _A) _Nodepref;
+! 		typedef _A::reference _Vref;
+  		static _Nodepref _Next(_Nodeptr _P)
+  			{return ((_Nodepref)(*_P)._Next); }
+  		static _Nodepref _Prev(_Nodeptr _P)
+--- 31,38 ----
+  	struct _Acc;
+  	friend struct _Acc;
+  	struct _Acc {
+! 		typedef _REFERENCE_X(_Nodeptr, _AL) _Nodepref;
+! 		typedef typename _AL::reference _Vref;
+  		static _Nodepref _Next(_Nodeptr _P)
+  			{return ((_Nodepref)(*_P)._Next); }
+  		static _Nodepref _Prev(_Nodeptr _P)
+*************** protected:
+*** 41,55 ****
+  			{return ((_Vref)(*_P)._Value); }
+  		};
+  public:
+! 	typedef list<_Ty, _A> _Myt;
+! 	typedef _A allocator_type;
+! 	typedef _A::size_type size_type;
+! 	typedef _A::difference_type difference_type;
+! 	typedef _A::pointer _Tptr;
+! 	typedef _A::const_pointer _Ctptr;
+! 	typedef _A::reference reference;
+! 	typedef _A::const_reference const_reference;
+! 	typedef _A::value_type value_type;
+  		// CLASS const_iterator
+  	class iterator;
+  	class const_iterator;
+--- 41,55 ----
+  			{return ((_Vref)(*_P)._Value); }
+  		};
+  public:
+! 	typedef list<_Ty, _AL> _Myt;
+! 	typedef _AL allocator_type;
+! 	typedef typename _AL::size_type size_type;
+! 	typedef typename _AL::difference_type difference_type;
+! 	typedef typename _AL::pointer _Tptr;
+! 	typedef typename _AL::const_pointer _Ctptr;
+! 	typedef typename _AL::reference reference;
+! 	typedef typename _AL::const_reference const_reference;
+! 	typedef typename _AL::value_type value_type;
+  		// CLASS const_iterator
+  	class iterator;
+  	class const_iterator;
+*************** public:
+*** 126,136 ****
+  	typedef reverse_bidirectional_iterator<const_iterator,
+  		value_type, const_reference, _Ctptr, difference_type>
+  			const_reverse_iterator;
+! 	explicit list(const _A& _Al = _A())
+  		: allocator(_Al),
+  		_Head(_Buynode()), _Size(0) {}
+  	explicit list(size_type _N, const _Ty& _V = _Ty(),
+! 		const _A& _Al = _A())
+  		: allocator(_Al),
+  		_Head(_Buynode()), _Size(0)
+  		{insert(begin(), _N, _V); }
+--- 126,136 ----
+  	typedef reverse_bidirectional_iterator<const_iterator,
+  		value_type, const_reference, _Ctptr, difference_type>
+  			const_reverse_iterator;
+! 	explicit list(const _AL& _Al = _AL())
+  		: allocator(_Al),
+  		_Head(_Buynode()), _Size(0) {}
+  	explicit list(size_type _N, const _Ty& _V = _Ty(),
+! 		const _AL& _Al = _AL())
+  		: allocator(_Al),
+  		_Head(_Buynode()), _Size(0)
+  		{insert(begin(), _N, _V); }
+*************** public:
+*** 138,149 ****
+  		: allocator(_X.allocator),
+  		_Head(_Buynode()), _Size(0)
+  		{insert(begin(), _X.begin(), _X.end()); }
+! 	list(const _Ty *_F, const _Ty *_L, const _A& _Al = _A())
+  		: allocator(_Al),
+  		_Head(_Buynode()), _Size(0)
+  		{insert(begin(), _F, _L); }
+  	typedef const_iterator _It;
+! 	list(_It _F, _It _L, const _A& _Al = _A())
+  		: allocator(_Al),
+  		_Head(_Buynode()), _Size(0)
+  		{insert(begin(), _F, _L); }
+--- 138,149 ----
+  		: allocator(_X.allocator),
+  		_Head(_Buynode()), _Size(0)
+  		{insert(begin(), _X.begin(), _X.end()); }
+! 	list(const _Ty *_F, const _Ty *_L, const _AL& _Al = _AL())
+  		: allocator(_Al),
+  		_Head(_Buynode()), _Size(0)
+  		{insert(begin(), _F, _L); }
+  	typedef const_iterator _It;
+! 	list(_It _F, _It _L, const _AL& _Al = _AL())
+  		: allocator(_Al),
+  		_Head(_Buynode()), _Size(0)
+  		{insert(begin(), _F, _L); }
+*************** public:
+*** 190,196 ****
+  		{return (allocator.max_size()); }
+  	bool empty() const
+  		{return (size() == 0); }
+! 	_A get_allocator() const
+  		{return (allocator); }
+  	reference front()
+  		{return (*begin()); }
+--- 190,196 ----
+  		{return (allocator.max_size()); }
+  	bool empty() const
+  		{return (size() == 0); }
+! 	_AL get_allocator() const
+  		{return (allocator); }
+  	reference front()
+  		{return (*begin()); }
+*************** protected:
+*** 409,415 ****
+  			_X.erase(_F, _L); }}
+  	void _Xran() const
+  		{_THROW(out_of_range, "invalid list<T> subscript"); }
+! 	_A allocator;
+  	_Nodeptr _Head;
+  	size_type _Size;
+  	};
+--- 409,415 ----
+  			_X.erase(_F, _L); }}
+  	void _Xran() const
+  		{_THROW(out_of_range, "invalid list<T> subscript"); }
+! 	_AL allocator;
+  	_Nodeptr _Head;
+  	size_type _Size;
+  	};
+Index: map
+===================================================================
+RCS file: /cvsroot/VcInclude/map,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1.1.1 -r1.2
+*** map	2001/06/13 19:31:08	1.1.1.1
+--- map	2001/06/13 21:16:23	1.2
+*************** public:
+*** 41,47 ****
+  	typedef _Ty referent_type;
+  	typedef _Pr key_compare;
+  	typedef _A allocator_type;
+! 	typedef _A::reference _Tref;
+  	typedef _Tree<_K, value_type, _Kfn, _Pr, _A> _Imp;
+  	typedef _Imp::size_type size_type;
+  	typedef _Imp::difference_type difference_type;
+--- 41,47 ----
+  	typedef _Ty referent_type;
+  	typedef _Pr key_compare;
+  	typedef _A allocator_type;
+! 	typedef typename _A::reference _Tref;
+  	typedef _Tree<_K, value_type, _Kfn, _Pr, _A> _Imp;
+  	typedef _Imp::size_type size_type;
+  	typedef _Imp::difference_type difference_type;
+Index: ostream
+===================================================================
+RCS file: /cvsroot/VcInclude/ostream,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1.1.1 -r1.2
+*** ostream	2001/06/13 19:31:44	1.1.1.1
+--- ostream	2001/06/13 21:16:23	1.2
+***************
+*** 19,25 ****
+  	(x).setstate(ios_base::badbit, true); _CATCH_END
+  _STD_BEGIN
+  		// TEMPLATE CLASS basic_ostream
+! template<class _E, class _Tr = char_traits<_E> >
+  	class basic_ostream : virtual public basic_ios<_E, _Tr> {
+  public:
+  	typedef basic_ostream<_E, _Tr> _Myt;
+--- 19,25 ----
+  	(x).setstate(ios_base::badbit, true); _CATCH_END
+  _STD_BEGIN
+  		// TEMPLATE CLASS basic_ostream
+! template<class _E, class _Tr >
+  	class basic_ostream : virtual public basic_ios<_E, _Tr> {
+  public:
+  	typedef basic_ostream<_E, _Tr> _Myt;
+Index: queue
+===================================================================
+RCS file: /cvsroot/VcInclude/queue,v
+retrieving revision 1.1.1.1
+retrieving revision 1.3
+diff -c -3 -p -r1.1.1.1 -r1.3
+*** queue	2001/06/13 19:31:46	1.1.1.1
+--- queue	2001/06/14 18:20:43	1.3
+*************** _STD_BEGIN
+*** 19,27 ****
+  template<class _Ty, class _C = deque<_Ty> >
+  	class queue {
+  public:
+! 	typedef _C::allocator_type allocator_type;
+! 	typedef _C::value_type value_type;
+! 	typedef _C::size_type size_type;
+  	explicit queue(const allocator_type& _Al = allocator_type())
+  		: c(_Al) {}
+  	allocator_type get_allocator() const
+--- 19,27 ----
+  template<class _Ty, class _C = deque<_Ty> >
+  	class queue {
+  public:
+! 	typedef typename _C::allocator_type allocator_type;
+! 	typedef typename _C::value_type value_type;
+! 	typedef typename _C::size_type size_type;
+  	explicit queue(const allocator_type& _Al = allocator_type())
+  		: c(_Al) {}
+  	allocator_type get_allocator() const
+*************** protected:
+*** 59,70 ****
+  	};
+  		// TEMPLATE CLASS priority_queue
+  template<class _Ty, class _C = vector<_Ty>,
+! 	class _Pr = less<_C::value_type> >
+  	class priority_queue {
+  public:
+! 	typedef _C::allocator_type allocator_type;
+! 	typedef _C::value_type value_type;
+! 	typedef _C::size_type size_type;
+  	explicit priority_queue(const _Pr& _X = _Pr(),
+  		const allocator_type& _Al = allocator_type())
+  		: c(_Al), comp(_X) {}
+--- 59,70 ----
+  	};
+  		// TEMPLATE CLASS priority_queue
+  template<class _Ty, class _C = vector<_Ty>,
+! 	class _Pr = less<typename _C::value_type> >
+  	class priority_queue {
+  public:
+! 	typedef typename _C::allocator_type allocator_type;
+! 	typedef typename _C::value_type value_type;
+! 	typedef typename _C::size_type size_type;
+  	explicit priority_queue(const _Pr& _X = _Pr(),
+  		const allocator_type& _Al = allocator_type())
+  		: c(_Al), comp(_X) {}
+Index: sstream
+===================================================================
+RCS file: /cvsroot/VcInclude/sstream,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1.1.1 -r1.2
+*** sstream	2001/06/13 19:31:56	1.1.1.1
+--- sstream	2001/06/13 21:16:23	1.2
+*************** _BITMASK(__Strstate, _Strstate);
+*** 17,24 ****
+  _BITMASK_OPS(__Strstate)
+  		// TEMPLATE CLASS basic_stringbuf
+  template<class _E,
+! 	class _Tr = char_traits<_E>,
+! 	class _A = allocator<_E> >
+  	class basic_stringbuf : public basic_streambuf<_E, _Tr> {
+  public:
+  	typedef basic_string<_E, _Tr, _A> _Mystr;
+--- 17,24 ----
+  _BITMASK_OPS(__Strstate)
+  		// TEMPLATE CLASS basic_stringbuf
+  template<class _E,
+! 	class _Tr,
+! 	class _A >
+  	class basic_stringbuf : public basic_streambuf<_E, _Tr> {
+  public:
+  	typedef basic_string<_E, _Tr, _A> _Mystr;
+*************** private:
+*** 196,203 ****
+  	};
+  		// TEMPLATE CLASS basic_istringstream
+  template<class _E,
+! 	class _Tr = char_traits<_E>,
+! 	class _A = allocator<_E> >
+  	class basic_istringstream : public basic_istream<_E, _Tr> {
+  public:
+  	typedef basic_stringbuf<_E, _Tr, _A> _Mysb;
+--- 196,203 ----
+  	};
+  		// TEMPLATE CLASS basic_istringstream
+  template<class _E,
+! 	class _Tr,
+! 	class _A >
+  	class basic_istringstream : public basic_istream<_E, _Tr> {
+  public:
+  	typedef basic_stringbuf<_E, _Tr, _A> _Mysb;
+*************** private:
+*** 220,227 ****
+  	};
+  		// TEMPLATE CLASS basic_ostringstream
+  template<class _E,
+! 	class _Tr = char_traits<_E>,
+! 	class _A = allocator<_E> >
+  	class basic_ostringstream : public basic_ostream<_E, _Tr> {
+  public:
+  	typedef basic_stringbuf<_E, _Tr, _A> _Mysb;
+--- 220,227 ----
+  	};
+  		// TEMPLATE CLASS basic_ostringstream
+  template<class _E,
+! 	class _Tr,
+! 	class _A >
+  	class basic_ostringstream : public basic_ostream<_E, _Tr> {
+  public:
+  	typedef basic_stringbuf<_E, _Tr, _A> _Mysb;
+*************** private:
+*** 244,251 ****
+  	};
+  		// TEMPLATE CLASS basic_stringstream
+  template<class _E,
+! 	class _Tr = char_traits<_E>,
+! 	class _A = allocator<_E> >
+  	class basic_stringstream : public basic_iostream<_E, _Tr> {
+  public:
+  	typedef basic_string<_E, _Tr, _A> _Mystr;
+--- 244,251 ----
+  	};
+  		// TEMPLATE CLASS basic_stringstream
+  template<class _E,
+! 	class _Tr,
+! 	class _A >
+  	class basic_stringstream : public basic_iostream<_E, _Tr> {
+  public:
+  	typedef basic_string<_E, _Tr, _A> _Mystr;
+Index: stack
+===================================================================
+RCS file: /cvsroot/VcInclude/stack,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1.1.1 -r1.2
+*** stack	2001/06/13 19:31:56	1.1.1.1
+--- stack	2001/06/13 21:16:23	1.2
+*************** _STD_BEGIN
+*** 16,24 ****
+  template<class _Ty, class _C = deque<_Ty> >
+  	class stack {
+  public:
+! 	typedef _C::allocator_type allocator_type;
+! 	typedef _C::value_type value_type;
+! 	typedef _C::size_type size_type;
+  	explicit stack(const allocator_type& _Al = allocator_type())
+  		: c(_Al) {}
+  	allocator_type get_allocator() const
+--- 16,24 ----
+  template<class _Ty, class _C = deque<_Ty> >
+  	class stack {
+  public:
+! 	typedef typename _C::allocator_type allocator_type;
+! 	typedef typename _C::value_type value_type;
+! 	typedef typename _C::size_type size_type;
+  	explicit stack(const allocator_type& _Al = allocator_type())
+  		: c(_Al) {}
+  	allocator_type get_allocator() const
+Index: streambuf
+===================================================================
+RCS file: /cvsroot/VcInclude/streambuf,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1.1.1 -r1.2
+*** streambuf	2001/06/13 19:31:57	1.1.1.1
+--- streambuf	2001/06/13 21:16:23	1.2
+***************
+*** 13,19 ****
+  #endif  /* _MSC_VER */
+  _STD_BEGIN
+  		// TEMPLATE CLASS basic_streambuf
+! template<class _E, class _Tr = char_traits<_E> >
+  	class basic_streambuf {
+  protected:
+  	basic_streambuf()
+--- 13,19 ----
+  #endif  /* _MSC_VER */
+  _STD_BEGIN
+  		// TEMPLATE CLASS basic_streambuf
+! template<class _E, class _Tr >
+  	class basic_streambuf {
+  protected:
+  	basic_streambuf()
+*************** public:
+*** 26,34 ****
+  	typedef _Tr traits_type;
+  	virtual ~basic_streambuf()
+  		{}
+! 	typedef _Tr::int_type int_type;
+! 	typedef _Tr::pos_type pos_type;
+! 	typedef _Tr::off_type off_type;
+  	pos_type pubseekoff(off_type _O, ios_base::seekdir _W,
+  		ios_base::openmode _M = ios_base::in | ios_base::out)
+  		{return (seekoff(_O, _W, _M)); }
+--- 26,34 ----
+  	typedef _Tr traits_type;
+  	virtual ~basic_streambuf()
+  		{}
+! 	typedef typename _Tr::int_type int_type;
+! 	typedef typename _Tr::pos_type pos_type;
+! 	typedef typename _Tr::off_type off_type;
+  	pos_type pubseekoff(off_type _O, ios_base::seekdir _W,
+  		ios_base::openmode _M = ios_base::in | ios_base::out)
+  		{return (seekoff(_O, _W, _M)); }
+Index: string
+===================================================================
+RCS file: /cvsroot/VcInclude/string,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1.1.1 -r1.2
+*** string	2001/06/13 19:31:57	1.1.1.1
+--- string	2001/06/13 21:16:23	1.2
+*************** template<class _E, class _Tr, class _A> 
+*** 121,130 ****
+      if (_Ok)
+          {const _Ctype& _Fac = _USE(_I.getloc(), _Ctype);
+          _TRY_IO_BEGIN
+!         _A::size_type _N = 0 < _I.width()
+              && _I.width() < _X.max_size()
+                  ? _I.width() : _X.max_size();
+!         _Tr::int_type _C = _I.rdbuf()->sgetc();
+          for (; 0 < --_N; _C = _I.rdbuf()->snextc())
+              if(_Tr::eq_int_type(_Tr::eof(), _C))
+                  {_St |= ios_base::eofbit;
+--- 121,130 ----
+      if (_Ok)
+          {const _Ctype& _Fac = _USE(_I.getloc(), _Ctype);
+          _TRY_IO_BEGIN
+!         typename _A::size_type _N = 0 < _I.width()
+              && _I.width() < _X.max_size()
+                  ? _I.width() : _X.max_size();
+!         typename _Tr::int_type _C = _I.rdbuf()->sgetc();
+          for (; 0 < --_N; _C = _I.rdbuf()->snextc())
+              if(_Tr::eq_int_type(_Tr::eof(), _C))
+                  {_St |= ios_base::eofbit;
+*************** template<class _E, class _Tr, class _A> 
+*** 155,161 ****
+      const _Myis::sentry _Ok(_I, true);
+      if (_Ok)
+          {_TRY_IO_BEGIN
+!         _Tr::int_type _C = _I.rdbuf()->sgetc();
+          for (; ; _C = _I.rdbuf()->snextc())
+              if (_Tr::eq_int_type(_Tr::eof(), _C))
+                  {_St |= ios_base::eofbit;
+--- 155,161 ----
+      const _Myis::sentry _Ok(_I, true);
+      if (_Ok)
+          {_TRY_IO_BEGIN
+!         typename _Tr::int_type _C = _I.rdbuf()->sgetc();
+          for (; ; _C = _I.rdbuf()->snextc())
+              if (_Tr::eq_int_type(_Tr::eof(), _C))
+                  {_St |= ios_base::eofbit;
+Index: typeinfo
+===================================================================
+RCS file: /cvsroot/VcInclude/typeinfo,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1.1.1 -r1.2
+*** typeinfo	2001/06/13 19:32:04	1.1.1.1
+--- typeinfo	2001/06/13 21:16:23	1.2
+*************** class _CRTIMP __non_rtti_object : public
+*** 98,104 ****
+  public:
+      __non_rtti_object(const char * what_arg) : bad_typeid(what_arg) {}
+  };
+! using ::type_info;
+   _STD_END
+  using std::__non_rtti_object;
+  
+--- 98,104 ----
+  public:
+      __non_rtti_object(const char * what_arg) : bad_typeid(what_arg) {}
+  };
+! //using ::type_info;
+   _STD_END
+  using std::__non_rtti_object;
+  
+Index: utility
+===================================================================
+RCS file: /cvsroot/VcInclude/utility,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1.1.1 -r1.2
+*** utility	2001/06/13 19:32:05	1.1.1.1
+--- utility	2001/06/13 21:16:23	1.2
+*************** template<class _Ty, class _D>
+*** 78,86 ****
+  		// TEMPLATE CLASS iterator_traits (from <iterator>)
+  template<class _It>
+  	struct iterator_traits {
+! 	typedef _It::iterator_category iterator_category;
+! 	typedef _It::value_type value_type;
+! 	typedef _It::distance_type distance_type;
+  	};
+  		// TEMPLATE FUNCTION _Iter_cat (from <iterator>)
+  template<class _C, class _Ty, class _D> inline
+--- 78,86 ----
+  		// TEMPLATE CLASS iterator_traits (from <iterator>)
+  template<class _It>
+  	struct iterator_traits {
+! 	typedef typename _It::iterator_category iterator_category;
+! 	typedef typename _It::value_type value_type;
+! 	typedef typename _It::distance_type distance_type;
+  	};
+  		// TEMPLATE FUNCTION _Iter_cat (from <iterator>)
+  template<class _C, class _Ty, class _D> inline
+*************** template<class _RI, class _Ty, class _Rt
+*** 221,234 ****
+  	{return (reverse_iterator<_RI, _Ty, _Rt, _Pt, _D>(
+  		_Y.base() - _N)); }
+  		// TEMPLATE CLASS istreambuf_iterator (from <iterator>)
+! template<class _E, class _Tr = char_traits<_E> >
+  	class istreambuf_iterator
+! 		: public iterator<input_iterator_tag, _E, _Tr::off_type> {
+  public:
+  	typedef istreambuf_iterator<_E, _Tr> _Myt;
+  	typedef _E char_type;
+  	typedef _Tr traits_type;
+! 	typedef _Tr::int_type int_type;
+  	typedef basic_streambuf<_E, _Tr> streambuf_type;
+  	typedef basic_istream<_E, _Tr> istream_type;
+  	istreambuf_iterator(streambuf_type *_Sb = 0) _THROW0()
+--- 221,234 ----
+  	{return (reverse_iterator<_RI, _Ty, _Rt, _Pt, _D>(
+  		_Y.base() - _N)); }
+  		// TEMPLATE CLASS istreambuf_iterator (from <iterator>)
+! template<class _E, class _Tr >
+  	class istreambuf_iterator
+! 		: public iterator<input_iterator_tag, _E, typename _Tr::off_type> {
+  public:
+  	typedef istreambuf_iterator<_E, _Tr> _Myt;
+  	typedef _E char_type;
+  	typedef _Tr traits_type;
+! 	typedef typename _Tr::int_type int_type;
+  	typedef basic_streambuf<_E, _Tr> streambuf_type;
+  	typedef basic_istream<_E, _Tr> istream_type;
+  	istreambuf_iterator(streambuf_type *_Sb = 0) _THROW0()
+*************** template<class _E, class _Tr> inline
+*** 286,292 ****
+  		const istreambuf_iterator<_E, _Tr>& _Y)
+  	{return (!(_X == _Y)); }
+  		// TEMPLATE CLASS ostreambuf_iterator (from <iterator>)
+! template<class _E, class _Tr = char_traits<_E> >
+  	class ostreambuf_iterator
+  		: public iterator<output_iterator_tag, void, void> {
+  	typedef ostreambuf_iterator<_E, _Tr> _Myt;
+--- 286,292 ----
+  		const istreambuf_iterator<_E, _Tr>& _Y)
+  	{return (!(_X == _Y)); }
+  		// TEMPLATE CLASS ostreambuf_iterator (from <iterator>)
+! template<class _E, class _Tr >
+  	class ostreambuf_iterator
+  		: public iterator<output_iterator_tag, void, void> {
+  	typedef ostreambuf_iterator<_E, _Tr> _Myt;
+Index: vector
+===================================================================
+RCS file: /cvsroot/VcInclude/vector,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1.1.1 -r1.2
+*** vector	2001/06/13 19:32:07	1.1.1.1
+--- vector	2001/06/13 21:16:23	1.2
+*************** template<class _Ty, class _A = allocator
+*** 21,33 ****
+  public:
+  	typedef vector<_Ty, _A> _Myt;
+  	typedef _A allocator_type;
+! 	typedef _A::size_type size_type;
+! 	typedef _A::difference_type difference_type;
+! 	typedef _A::pointer _Tptr;
+! 	typedef _A::const_pointer _Ctptr;
+! 	typedef _A::reference reference;
+! 	typedef _A::const_reference const_reference;
+! 	typedef _A::value_type value_type;
+  	typedef _Tptr iterator;
+  	typedef _Ctptr const_iterator;
+  	typedef reverse_iterator<const_iterator, value_type,
+--- 21,33 ----
+  public:
+  	typedef vector<_Ty, _A> _Myt;
+  	typedef _A allocator_type;
+! 	typedef typename _A::size_type size_type;
+! 	typedef typename _A::difference_type difference_type;
+! 	typedef typename _A::pointer _Tptr;
+! 	typedef typename _A::const_pointer _Ctptr;
+! 	typedef typename _A::reference reference;
+! 	typedef typename _A::const_reference const_reference;
+! 	typedef typename _A::value_type value_type;
+  	typedef _Tptr iterator;
+  	typedef _Ctptr const_iterator;
+  	typedef reverse_iterator<const_iterator, value_type,
+Index: xstring
+===================================================================
+RCS file: /cvsroot/VcInclude/xstring,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1.1.1 -r1.2
+*** xstring	2001/06/13 19:32:20	1.1.1.1
+--- xstring	2001/06/13 21:16:23	1.2
+*************** template<class _E,
+*** 22,36 ****
+  	class basic_string {
+  public:
+  	typedef basic_string<_E, _Tr, _A> _Myt;
+! 	typedef _A::size_type size_type;
+! 	typedef _A::difference_type difference_type;
+! 	typedef _A::pointer pointer;
+! 	typedef _A::const_pointer const_pointer;
+! 	typedef _A::reference reference;
+! 	typedef _A::const_reference const_reference;
+! 	typedef _A::value_type value_type;
+! 	typedef _A::pointer iterator;
+! 	typedef _A::const_pointer const_iterator;
+  	typedef reverse_iterator<const_iterator, value_type,
+  		const_reference, const_pointer, difference_type>
+  			const_reverse_iterator;
+--- 22,36 ----
+  	class basic_string {
+  public:
+  	typedef basic_string<_E, _Tr, _A> _Myt;
+! 	typedef typename _A::size_type size_type;
+! 	typedef typename _A::difference_type difference_type;
+! 	typedef typename _A::pointer pointer;
+! 	typedef typename _A::const_pointer const_pointer;
+! 	typedef typename _A::reference reference;
+! 	typedef typename _A::const_reference const_reference;
+! 	typedef typename _A::value_type value_type;
+! 	typedef typename _A::pointer iterator;
+! 	typedef typename _A::const_pointer const_iterator;
+  	typedef reverse_iterator<const_iterator, value_type,
+  		const_reference, const_pointer, difference_type>
+  			const_reverse_iterator;
+Index: xtree
+===================================================================
+RCS file: /cvsroot/VcInclude/xtree,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1.1.1 -r1.2
+*** xtree	2001/06/13 19:32:20	1.1.1.1
+--- xtree	2001/06/13 21:16:23	1.2
+*************** protected:
+*** 35,41 ****
+          static _Rbref _Color(_Nodeptr _P)
+                  {return ((_Rbref)(*_P)._Color); }
+          static _Keyref _Key(_Nodeptr _P)
+!                 {return (_Kfn()(_Value(_P))); }
+          static _Nodepref _Left(_Nodeptr _P)
+                  {return ((_Nodepref)(*_P)._Left); }
+          static _Nodepref _Parent(_Nodeptr _P)
+--- 35,41 ----
+          static _Rbref _Color(_Nodeptr _P)
+                  {return ((_Rbref)(*_P)._Color); }
+          static _Keyref _Key(_Nodeptr _P)
+!                 {return ((_Kfn())(_Value(_P))); }
+          static _Nodepref _Left(_Nodeptr _P)
+                  {return ((_Nodepref)(*_P)._Left); }
+          static _Nodepref _Parent(_Nodeptr _P)
+*************** public:
+*** 48,55 ****
+          typedef _Tree<_K, _Ty, _Kfn, _Pr, _A> _Myt;
+          typedef _K key_type;
+          typedef _Ty value_type;
+!         typedef _A::size_type size_type;
+!         typedef _A::difference_type difference_type;
+          typedef _POINTER_X(_Ty, _A) _Tptr;
+          typedef _POINTER_X(const _Ty, _A) _Ctptr;
+          typedef _REFERENCE_X(_Ty, _A) reference;
+--- 48,55 ----
+          typedef _Tree<_K, _Ty, _Kfn, _Pr, _A> _Myt;
+          typedef _K key_type;
+          typedef _Ty value_type;
+!         typedef typename _A::size_type size_type;
+!         typedef typename _A::difference_type difference_type;
+          typedef _POINTER_X(_Ty, _A) _Tptr;
+          typedef _POINTER_X(const _Ty, _A) _Ctptr;
+          typedef _REFERENCE_X(_Ty, _A) reference;
