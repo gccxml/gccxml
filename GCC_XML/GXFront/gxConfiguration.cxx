@@ -294,7 +294,7 @@ bool gxConfiguration::ProcessCommandLine(int argc, const char*const* argv)
       }
     else
       {
-#if defined(WIN32)
+#if defined(_WIN32)
       std::string arg = "\"";
       arg += argv[i];
       arg += "\"";
