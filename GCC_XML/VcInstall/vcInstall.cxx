@@ -80,7 +80,7 @@ int main(int argc, char* argv[])
   if(msvcFlags)
     {
     msvcFlags <<
-      "-quiet -o /dev/null -nostdinc -I- -w -fsyntax-only "
+      "-quiet -o/dev/null -nostdinc -I- -w -fsyntax-only "
       "-D__stdcall= -D__cdecl= -D_stdcall= -D_cdecl= -D__declspec(x)= "
       "-D_inline=inline -D__uuidof(x)=IID() -D__int64='long long' "
       "-D__cplusplus "
