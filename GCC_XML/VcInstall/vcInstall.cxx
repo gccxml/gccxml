@@ -83,7 +83,9 @@ int main(int argc, char* argv[])
       "-quiet -o /dev/null -nostdinc -w -fsyntax-only "
       "-D__stdcall= -D__cdecl= -D_stdcall= -D_cdecl= -D__declspec(x)= "
       "-D_inline=inline -D__uuidof(x)=IID() -D__int64='long long' "
-      "-D_MSC_VER=1200 -D_WIN32 -D_M_IX86 -D_WCHAR_T_DEFINED "
+      "-D__cplusplus "
+      "-D_MSC_VER=1200 -D_MSC_EXTENSIONS "
+      "-D_WIN32 -D_M_IX86 -D_WCHAR_T_DEFINED "
       "-DPASCAL= -DRPC_ENTRY= -DSHSTDAPI=HRESULT -DSHSTDAPI_(x)=x ";
       msvcFlags <<
         " -I\"" << destPath.c_str() << "\"" <<
