@@ -28,12 +28,14 @@ else
 fi
 
 # Find the macro definition options.
-MACROS=`
-echo "" | ${CXX} -v -x c++ -E ${CXXFLAGS} - 2>&1 |
-sed -n '/__GNUC__/{s/ -/\\
--/g;p;}' |
-sed -n '/^-D.*$/{s/-D\([^=]*\)=\([^ ]\{1,\} .*\)/-D\1='\''\2'\''/;p;}' |
-sed -n 'H;${g;s/\n/ /g;p;}'`
+MACROS=`echo "" | ${CXX} -x c++ -E -dM ${CXXFLAGS} - 2>/dev/null |
+  sed -n '
+/^#define / {s/#define \([A-Za-z_][A-Za-z0-9_]*\) \(.*\)/-D\1=\2/;p;}
+' |
+  awk '
+BEGIN { first=1 }
+/./ { if(first) { printf("%s", $0); first=0 } else { printf(" %s", $0) } }
+'`
 
 # Find the include path options.
 INCLUDES=`
@@ -55,11 +57,13 @@ echo "__GNUC__" | ${CXX} -v -x c++ -E ${CXXFLAGS} - 2>/dev/null |
   sed -n '/^[0-9]/{p;}'`
 
 # For GCC versions before 3, some special options are needed.
-if test $MAJOR_VERSION -lt 3 ; then
-  HONOR_STD="-fxml-no-honor-std "
+if [ "$MAJOR_VERSION" -lt 3 ]; then
+  SPECIAL="-fxml-no-honor-std "
   INCLUDES="-I$SELFPATH/2_95 $INCLUDES"
+elif [ "$MAJOR_VERSION" = 3 -a "$MAJOR_VERSION" -ge 3 ]; then
+  SPECIAL="-include $SELFPATH/3_3/gccxml_builtins.h"
 fi
 
 # Format and print out the options.
-OPTIONS="$MACROS $INCLUDES $HONOR_STD"
+OPTIONS="$MACROS $INCLUDES $SPECIAL"
 echo $OPTIONS
