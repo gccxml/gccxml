@@ -1,0 +1,3 @@
+The executable comes from the port by Karl M. Syring in his nice
+UnxUtils( http://unxutils.sourceforge.net/ ) package.  We have renamed
+the executable from cat.exe to vcCat.exe to avoid conflicts.

@@ -13,9 +13,10 @@
 #include <vector>
 #include <windows.h>
 
-bool InstallSupport(const char* patchCommand, const char* patchFile,
-                    const char* sourcePath, const char* destPath);
-bool FindPatch(std::string& result, const char* patchDir);
+bool InstallSupport(const char* patchCommand, const char* catCommand,
+                    const char* patchFile, const char* sourcePath,
+                    const char* destPath);
+bool FindTool(const char* vcDir, const char* name, std::string& result);
 
 //----------------------------------------------------------------------------
 int main(int argc, char* argv[])
@@ -74,11 +75,17 @@ int main(int argc, char* argv[])
     }
 
   // Need to install at least one of the support directories.  We need
-  // to find the patch executable.
+  // to find the cat and patch executables.
   std::string patchCommand;
-  if(!FindPatch(patchCommand, patchDir.c_str()))
+  if(!FindTool(patchDir.c_str(), "patch", patchCommand))
     {
     std::cerr << "Cannot find patch executable.\n";
+    return 1;
+    }
+  std::string catCommand;
+  if(!FindTool(patchDir.c_str(), "cat", catCommand))
+    {
+    std::cerr << "Cannot find cat executable.\n";
     return 1;
     }
 
@@ -90,8 +97,8 @@ int main(int argc, char* argv[])
     std::string destPath = gccxmlRoot+"/Vc6/Include";
     if(gxSystemTools::FileExists(patchFile.c_str()))
       {
-      if(!InstallSupport(patchCommand.c_str(), patchFile.c_str(),
-                         msvc6.c_str(), destPath.c_str()))
+      if(!InstallSupport(patchCommand.c_str(), catCommand.c_str(),
+                         patchFile.c_str(), msvc6.c_str(), destPath.c_str()))
         {
         result = 1;
         }
@@ -115,8 +122,8 @@ int main(int argc, char* argv[])
     std::string destPathP = gccxmlRoot+"/Vc7/PlatformSDK";
     if(gxSystemTools::FileExists(patchI.c_str()))
       {
-      if(!InstallSupport(patchCommand.c_str(), patchI.c_str(),
-                         msvc7i.c_str(), destPathI.c_str()))
+      if(!InstallSupport(patchCommand.c_str(), catCommand.c_str(),
+                         patchI.c_str(), msvc7i.c_str(), destPathI.c_str()))
         {
         result = 1;
         }
@@ -128,8 +135,8 @@ int main(int argc, char* argv[])
       }
     if(gxSystemTools::FileExists(patchP.c_str()))
       {
-      if(!InstallSupport(patchCommand.c_str(), patchP.c_str(),
-                         msvc7p.c_str(), destPathP.c_str()))
+      if(!InstallSupport(patchCommand.c_str(), catCommand.c_str(),
+                         patchP.c_str(), msvc7p.c_str(), destPathP.c_str()))
         {
         result = 1;
         }
@@ -152,8 +159,8 @@ int main(int argc, char* argv[])
     std::string destPathP = gccxmlRoot+"/Vc71/PlatformSDK";
     if(gxSystemTools::FileExists(patchI.c_str()))
       {
-      if(!InstallSupport(patchCommand.c_str(), patchI.c_str(),
-                         msvc71i.c_str(), destPathI.c_str()))
+      if(!InstallSupport(patchCommand.c_str(), catCommand.c_str(),
+                         patchI.c_str(), msvc71i.c_str(), destPathI.c_str()))
         {
         result = 1;
         }
@@ -165,8 +172,8 @@ int main(int argc, char* argv[])
       }
     if(gxSystemTools::FileExists(patchP.c_str()))
       {
-      if(!InstallSupport(patchCommand.c_str(), patchP.c_str(),
-                         msvc71p.c_str(), destPathP.c_str()))
+      if(!InstallSupport(patchCommand.c_str(), catCommand.c_str(),
+                         patchP.c_str(), msvc71p.c_str(), destPathP.c_str()))
         {
         result = 1;
         }
@@ -195,8 +202,9 @@ int main(int argc, char* argv[])
 }
 
 //----------------------------------------------------------------------------
-bool InstallSupport(const char* patchCommand, const char* patchFile,
-                    const char* sourcePath, const char* destPath)
+bool InstallSupport(const char* patchCommand, const char* catCommand,
+                    const char* patchFile, const char* sourcePath,
+                    const char* destPath)
 {
   // Look at the patch file to see what headers need to be copied.
   std::ifstream patch(patchFile);
@@ -225,7 +233,8 @@ bool InstallSupport(const char* patchCommand, const char* patchFile,
       }
     }
 
-  std::string patchCmd = "type ";
+  std::string patchCmd = gxSystemTools::ConvertToOutputPath(catCommand);
+  patchCmd += " ";
   patchCmd += gxSystemTools::ConvertToOutputPath(patchFile);
   patchCmd += " | ";
   patchCmd += gxSystemTools::ConvertToOutputPath(patchCommand);
@@ -247,51 +256,54 @@ bool InstallSupport(const char* patchCommand, const char* patchFile,
 }
 
 //----------------------------------------------------------------------------
-bool FindPatch(std::string& result, const char* patchDir)
+bool FindTool(const char* vcDir, const char* name, std::string& result)
 {
-  // check for vcPatch.exe in the source directory
-  std::string patchCommand = patchDir;
-  patchCommand += "/vcPatch.exe";
-  if(gxSystemTools::FileExists(patchCommand.c_str()))
+  // check for executable in the source directory
+  std::string command = vcDir;
+  command += "/vc";
+  command += name;
+  command += ".exe";
+  if(gxSystemTools::FileExists(command.c_str()))
     {
-    result = patchCommand;
+    result = command;
     return true;
     }
-  // Find the patch executable.
-  patchCommand = "patch.exe";
-  if(gxSystemTools::FileExists(patchCommand.c_str()))
+  // Find the executable.
+  command = name;
+  command += ".exe";
+  if(gxSystemTools::FileExists(command.c_str()))
     {
-    result = patchCommand;
+    result = command;
     return true;
     }
   else
     {
-    // The registry key to use to find the patch executable from
-    // cygwin.
+    // The registry key to use to find the executable from cygwin.
     const char* cygwinRegistry1 =
       "HKEY_LOCAL_MACHINE\\SOFTWARE\\Cygnus Solutions\\Cygwin\\mounts v2\\/usr/bin;native";
     const char* cygwinRegistry2 =
       "HKEY_CURRENT_USER\\Software\\Cygnus Solutions\\Cygwin\\mounts v2\\/usr/bin;native";
-    if((gxSystemTools::ReadRegistryValue(cygwinRegistry1, patchCommand) ||
-        gxSystemTools::ReadRegistryValue(cygwinRegistry2, patchCommand)) &&
-       gxSystemTools::FileExists((patchCommand+"/patch.exe").c_str()))
+    if((gxSystemTools::ReadRegistryValue(cygwinRegistry1, command) ||
+        gxSystemTools::ReadRegistryValue(cygwinRegistry2, command)) &&
+       gxSystemTools::FileExists((command+"/"+name+".exe").c_str()))
       {
       // Found the binary location from cygwin's registry entry.
-      patchCommand += "/patch.exe";
-      result = patchCommand;
+      command += "/";
+      command += name;
+      command += ".exe";
+      result = command;
       return true;
       }
    else
       {
       // Try to find it in the path.
-      patchCommand = gxSystemTools::FindProgram("patch");
-      if(patchCommand.length() > 0)
+      command = gxSystemTools::FindProgram(name);
+      if(command.length() > 0)
         {
-        result = patchCommand;
+        result = command;
         return true;
         }
       }
     }
-
   return false;
 }
