@@ -115,10 +115,6 @@ int main(int argc, char** argv)
   parser.Parse(cGCCXML_FLAGS.c_str());
   parser.Parse(cGCCXML_USER_FLAGS.c_str());
   
-  // Convert the program path to a platform-dependent format.
-  cGCCXML_EXECUTABLE =
-    gxSystemTools::ConvertToOutputPath(cGCCXML_EXECUTABLE.c_str());
-  
   // Create the set of flags.
   std::vector<std::string> flags;
   parser.AddParsedFlags(flags);
@@ -137,8 +133,13 @@ int main(int argc, char** argv)
       }
     }
   
+  // Convert the program path to a platform-dependent format.
+  std::string cge =
+    gxSystemTools::ConvertToOutputPath(cGCCXML_EXECUTABLE.c_str());
+  
+  // Prepare list of arguments for exec call.
   char** args = new char*[flags.size()+2];
-  args[0] = strdup(cGCCXML_EXECUTABLE.c_str());
+  args[0] = strdup(cge.c_str());
   for(unsigned int i=0; i < flags.size(); ++i)
     {
     args[i+1] = strdup(flags[i].c_str());
