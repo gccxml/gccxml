@@ -294,7 +294,10 @@ bool gxConfiguration::ProcessCommandLine(int argc, const char*const* argv)
       }
     else
       {
-      m_Arguments.push_back(argv[i]);
+      std::string arg = "\"";
+      arg += argv[i];
+      arg += "\"";
+      m_Arguments.push_back(arg);
       }
     }
   
