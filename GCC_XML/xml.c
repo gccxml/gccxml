@@ -172,6 +172,7 @@ do_xml_output (const char* filename)
   xdi.file_queue_end = 0;
   xdi.file_index = 0;
   xdi.file_nodes = splay_tree_new (splay_tree_compare_pointers, 0, 0);
+  xdi.require_complete = 1;
   
   /* Add the starting nodes for the dump.  */
   if (flag_xml_start)
@@ -190,7 +191,6 @@ do_xml_output (const char* filename)
   fprintf (file, "<GCC_XML>\n");
   
   /* Dump the complete nodes.  */
-  xdi.require_complete = 1;
   xml_dump (&xdi);  
   
   /* Queue all the incomplete nodes.  */
