@@ -3,7 +3,6 @@
 find_gcc_options  crlf=input
 find_mpro_options  crlf=input
 gcc_install      crlf=input
-gccxml           crlf=input
 gccxml_find_flags  crlf=input
 install-sh       crlf=input
 mpro_install     crlf=input
