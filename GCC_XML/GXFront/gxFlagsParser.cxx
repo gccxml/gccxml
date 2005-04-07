@@ -37,7 +37,7 @@ static int gxFlags_CommandLineParse(const char* in, char*** pargv)
   int argc = gxFlagsCommandLineParseInternal(in, buffer);
 
   /* Allocate the resulting arguments array.  */
-  char** argv = (char**)malloc(sizeof(char*)*argc + 1);
+  char** argv = (char**)malloc(sizeof(char*) * (argc+1));
 
   /* Loop through the arguments in the working space.  */
   char* begin = buffer;
