@@ -71,7 +71,6 @@ int main(int argc, char* argv[])
   if(!have6 && !have7 && !have71)
     {
     std::cout << "None of MSVC 6, 7, or 7.1 is installed.\n";
-    return 0;
     }
 
   // Need to install at least one of the support directories.  We need
