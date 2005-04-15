@@ -187,11 +187,8 @@ CHECK_FUNCTION_EXISTS(getpagesize HAVE_GETPAGESIZE)
 CHECK_FUNCTION_EXISTS(index HAVE_INDEX)
 CHECK_FUNCTION_EXISTS(insque HAVE_INSQUE)
 CHECK_FUNCTION_EXISTS(memchr HAVE_MEMCHR)
-CHECK_FUNCTION_EXISTS(memcmp HAVE_MEMCMP)
-CHECK_FUNCTION_EXISTS(memcpy HAVE_MEMCPY)
 CHECK_FUNCTION_EXISTS(memmove HAVE_MEMMOVE)
 CHECK_FUNCTION_EXISTS(mempcpy HAVE_MEMPCPY)
-CHECK_FUNCTION_EXISTS(memset HAVE_MEMSET)
 CHECK_FUNCTION_EXISTS(mkstemps HAVE_MKSTEMPS)
 CHECK_FUNCTION_EXISTS(putenv HAVE_PUTENV)
 CHECK_FUNCTION_EXISTS(random HAVE_RANDOM)
@@ -219,6 +216,21 @@ CHECK_FUNCTION_EXISTS(vprintf HAVE_VPRINTF)
 CHECK_FUNCTION_EXISTS(vsnprintf HAVE_VSNPRINTF)
 CHECK_FUNCTION_EXISTS(vsprintf HAVE_VSPRINTF)
 CHECK_FUNCTION_EXISTS(waitpid HAVE_WAITPID)
+
+#-----------------------------------------------------------------------------
+# Fake that these functions always exist until CMake bug #1775 is fixed.
+#
+# Workaround for CMake's existence testing problem with intrinsic functions
+# on Windows with cl and /O2. If we don't do this, we get "intrinsic function,
+# cannot be defined" errors when building optimized builds with cl on Windows.
+# Change back to CHECK_FUNCTION_EXISTS calls when bug is fixed.
+#
+# CHECK_FUNCTION_EXISTS(memcmp HAVE_MEMCMP)
+# CHECK_FUNCTION_EXISTS(memcpy HAVE_MEMCPY)
+# CHECK_FUNCTION_EXISTS(memset HAVE_MEMSET)
+SET(HAVE_MEMCMP 1 CACHE INTERNAL "Always have memcmp when building CableSwig...")
+SET(HAVE_MEMCPY 1 CACHE INTERNAL "Always have memcpy when building CableSwig...")
+SET(HAVE_MEMSET 1 CACHE INTERNAL "Always have memset when building CableSwig...")
 
 CHECK_FUNCTION_EXISTS(canonicalize_file_name HAVE_CANONICALIZE_FILE_NAME)
 CHECK_FUNCTION_EXISTS(getrusage HAVE_GETRUSAGE)
