@@ -74,7 +74,7 @@
 # define XML_PRE_3_4_TREE_VIA_PUBLIC
 #endif
 
-#define GCC_XML_C_VERSION "$Revision: 1.98 $"
+#define GCC_XML_C_VERSION "$Revision: 1.99 $"
 
 /* A "dump node" corresponding to a particular tree node.  */
 typedef struct xml_dump_node
@@ -2028,6 +2028,7 @@ xml_find_template_parm (tree t)
 
     /* Template parameter types.  */
     case TEMPLATE_TYPE_PARM: return 1;
+    case TEMPLATE_TEMPLATE_PARM: return 1;
     case TEMPLATE_PARM_INDEX: return 1;
     case TYPENAME_TYPE: return 1;
 
@@ -2080,6 +2081,10 @@ xml_find_template_parm (tree t)
     case LANG_TYPE: return 0;
     case REAL_TYPE: return 0;
     case VOID_TYPE: return 0;
+
+    /* Template declarations are part of instantiations of template
+       template parameters.  */
+    case TEMPLATE_DECL: return 0;
 
     /* Other types that have no nested types.  */
     case INTEGER_CST: return 0;
