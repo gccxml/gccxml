@@ -62,9 +62,9 @@ typedef struct priority_info_s {
 static void mark_vtable_entries PARAMS ((tree));
 static void grok_function_init PARAMS ((tree, tree));
 static int maybe_emit_vtables (tree);
-/* BEGIN GCC-XML MODIFICATIONS (2003/11/21 21:28:34) */
+/* BEGIN GCC-XML MODIFICATIONS (2005/05/03 13:46:05) */
 static int add_using_namespace PARAMS ((tree, tree, int));
-/* END GCC-XML MODIFICATIONS (2003/11/21 21:28:34) */
+/* END GCC-XML MODIFICATIONS (2005/05/03 13:46:05) */
 static cxx_binding *ambiguous_decl (tree, cxx_binding *, cxx_binding *,int);
 static tree build_anon_union_vars PARAMS ((tree, tree*, int, int));
 static int acceptable_java_type PARAMS ((tree));
@@ -1498,8 +1498,9 @@ coerce_new_type (type)
   if (!same_type_p (TREE_TYPE (type), ptr_type_node))
     e = 1, error ("`operator new' must return type `%T'", ptr_type_node);
 
-  if (!args || args == void_list_node
-      || !same_type_p (TREE_VALUE (args), size_type_node))
+/* BEGIN GCC-XML MODIFICATIONS (2005/05/03 13:46:05) */
+  if (!args || args == void_list_node)
+/* END GCC-XML MODIFICATIONS (2005/05/03 13:46:05) */
     {
       e = 2;
       if (args && args != void_list_node)
@@ -3713,9 +3714,9 @@ namespace_ancestor (ns1, ns2)
 /* Insert used into the using list of user. Set indirect_flag if this
    directive is not directly from the source. Also find the common
    ancestor and let our users know about the new namespace */
-/* BEGIN GCC-XML MODIFICATIONS (2003/11/21 21:28:34) */
+/* BEGIN GCC-XML MODIFICATIONS (2005/05/03 13:46:05) */
 static int
-/* END GCC-XML MODIFICATIONS (2003/11/21 21:28:34) */
+/* END GCC-XML MODIFICATIONS (2005/05/03 13:46:05) */
 add_using_namespace (user, used, indirect)
      tree user;
      tree used;
@@ -3725,9 +3726,9 @@ add_using_namespace (user, used, indirect)
   timevar_push (TV_NAME_LOOKUP);
   /* Using oneself is a no-op.  */
   if (user == used)
-/* BEGIN GCC-XML MODIFICATIONS (2003/11/21 21:28:34) */
+/* BEGIN GCC-XML MODIFICATIONS (2005/05/03 13:46:05) */
     POP_TIMEVAR_AND_RETURN (TV_NAME_LOOKUP, 0);
-/* END GCC-XML MODIFICATIONS (2003/11/21 21:28:34) */
+/* END GCC-XML MODIFICATIONS (2005/05/03 13:46:05) */
   my_friendly_assert (TREE_CODE (user) == NAMESPACE_DECL, 380);
   my_friendly_assert (TREE_CODE (used) == NAMESPACE_DECL, 380);
   /* Check if we already have this.  */
@@ -3737,9 +3738,9 @@ add_using_namespace (user, used, indirect)
       if (!indirect)
         /* Promote to direct usage.  */
         TREE_INDIRECT_USING (t) = 0;
-/* BEGIN GCC-XML MODIFICATIONS (2003/11/21 21:28:34) */
+/* BEGIN GCC-XML MODIFICATIONS (2005/05/03 13:46:05) */
       POP_TIMEVAR_AND_RETURN (TV_NAME_LOOKUP, 0);
-/* END GCC-XML MODIFICATIONS (2003/11/21 21:28:34) */
+/* END GCC-XML MODIFICATIONS (2005/05/03 13:46:05) */
     }
 
   /* Add used to the user's using list.  */
@@ -3762,9 +3763,9 @@ add_using_namespace (user, used, indirect)
   for (t = DECL_NAMESPACE_USERS (user); t; t = TREE_CHAIN (t))
     add_using_namespace (TREE_PURPOSE (t), used, 1);
   timevar_pop (TV_NAME_LOOKUP);
-/* BEGIN GCC-XML MODIFICATIONS (2003/11/21 21:28:34) */
+/* BEGIN GCC-XML MODIFICATIONS (2005/05/03 13:46:05) */
   return 0;
-/* END GCC-XML MODIFICATIONS (2003/11/21 21:28:34) */
+/* END GCC-XML MODIFICATIONS (2005/05/03 13:46:05) */
 }
 
 /* Combines two sets of overloaded functions into an OVERLOAD chain, removing
