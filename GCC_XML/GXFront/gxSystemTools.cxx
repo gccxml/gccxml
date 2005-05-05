@@ -57,6 +57,7 @@ bool gxSystemTools::RunCommand(const char* command,  std::string& output,
     }
   tempFile += temp;
   commandToFile += tempFile;
+  commandToFile += " 2>&1";
   retVal = system(commandToFile.c_str());
   std::ifstream fin(tempFile.c_str());
   if(!fin)
