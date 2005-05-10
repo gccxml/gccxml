@@ -74,7 +74,7 @@
 # define XML_PRE_3_4_TREE_VIA_PUBLIC
 #endif
 
-#define GCC_XML_C_VERSION "$Revision: 1.100 $"
+#define GCC_XML_C_VERSION "$Revision: 1.101 $"
 
 /* A "dump node" corresponding to a particular tree node.  */
 typedef struct xml_dump_node
@@ -754,6 +754,16 @@ xml_print_extern_attribute (xml_dump_info_p xdi, tree d)
     }
 }
 
+/* Print the XML attribute inline="1" if the given decl is inline.  */
+static void
+xml_print_inline_attribute (xml_dump_info_p xdi, tree d)
+{
+  if (DECL_DECLARED_INLINE_P (d))
+    {
+    fprintf (xdi->file, " inline=\"1\"");
+    }
+}
+
 /* Print the XML attribute extern="1" if the given decl is external.  */
 static void
 xml_print_function_extern_attribute (xml_dump_info_p xdi, tree fd)
@@ -1274,6 +1284,7 @@ xml_output_function_decl (xml_dump_info_p xdi, tree fd, xml_dump_node_p dn)
     xml_print_endline_attribute (xdi, body);
     }
   xml_print_function_extern_attribute (xdi, fd);
+  xml_print_inline_attribute (xdi, fd);
   xml_print_attributes_attribute (xdi, GCC_XML_DECL_ATTRIBUTES(fd),
                                   TYPE_ATTRIBUTES(TREE_TYPE(fd)));
 
