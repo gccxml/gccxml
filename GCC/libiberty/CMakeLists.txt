@@ -1,6 +1,8 @@
 ADD_DEFINITIONS(-DHAVE_CONFIG_H=1)
-INCLUDE_DIRECTORIES(${GCC_SOURCE_DIR}/include)
-INCLUDE_DIRECTORIES(${GCC_BINARY_DIR}/libiberty)
+INCLUDE_DIRECTORIES(BEFORE
+  ${GCC_SOURCE_DIR}/include
+  ${GCC_BINARY_DIR}/libiberty
+)
 
 SET(iberty_SRCS
   regex.c cplus-dem.c cp-demangle.c md5.c alloca.c argv.c choose-temp.c

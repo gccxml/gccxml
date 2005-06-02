@@ -1,7 +1,7 @@
 #-----------------------------------------------------------------------------
 INCLUDE("${GCCCONFIG_SOURCE_DIR}/gcc_make_config_h.cmake")
 
-INCLUDE_DIRECTORIES(
+INCLUDE_DIRECTORIES(BEFORE
   ${GCC_SOURCE_DIR}/include
   ${GCC_SOURCE_DIR}/gcc
   ${GCC_SOURCE_DIR}/gcc/config
