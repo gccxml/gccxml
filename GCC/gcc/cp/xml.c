@@ -74,7 +74,7 @@
 # define XML_PRE_3_4_TREE_VIA_PUBLIC
 #endif
 
-#define GCC_XML_C_VERSION "$Revision: 1.101 $"
+#define GCC_XML_C_VERSION "$Revision: 1.102 $"
 
 /* A "dump node" corresponding to a particular tree node.  */
 typedef struct xml_dump_node
@@ -2052,6 +2052,12 @@ xml_find_template_parm (tree t)
 
     /* A template deferred lookup expression.  */
     case LOOKUP_EXPR: return 1;
+
+    /* A template deferred scoped lookup.  */
+    case SCOPE_REF: return 1;
+
+    /* A cast of a dependent expression.  */
+    case CAST_EXPR: return 1;
 
     /* Types with nested types.  */
     case METHOD_TYPE:
