@@ -1,4 +1,4 @@
-#if defined(__APPLE__)
+#if defined(__APPLE__) && (__GLIBCXX__ < 20050421)
 // Components for manipulating sequences of characters -*- C++ -*-
 
 // Copyright (C) 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004
