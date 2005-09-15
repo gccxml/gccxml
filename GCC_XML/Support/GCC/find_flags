@@ -60,6 +60,14 @@ MINOR_VERSION=`
 echo "__GNUC_MINOR__" | ${CXX} -v -x c++ -E ${CXXFLAGS} - 2>/dev/null |
   sed -n '/^[0-9]/{s/[^0-9]//g;p;}'`
 
+# hack to handle bad gcc 4.0 on RedHat
+if [ "$MAJOR_VERSION" = 4 ]; then
+  if echo "$INCLUDES" | grep "c++/3\.4" > /dev/null 2>&1; then
+    MAJOR_VERSION=3
+    MINOR_VERSION=4
+  fi
+fi
+
 # For GCC versions before 3, some special options are needed.
 if [ "$MAJOR_VERSION" -lt 3 ]; then
   INCLUDES="-iwrapper\"$SELFPATH/2.95\" $INCLUDES"
