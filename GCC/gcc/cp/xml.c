@@ -74,7 +74,7 @@
 # define XML_PRE_3_4_TREE_VIA_PUBLIC
 #endif
 
-#define GCC_XML_C_VERSION "$Revision: 1.102 $"
+#define GCC_XML_C_VERSION "$Revision: 1.103 $"
 
 /* A "dump node" corresponding to a particular tree node.  */
 typedef struct xml_dump_node
@@ -674,6 +674,16 @@ xml_print_access_attribute (xml_dump_info_p xdi, tree d)
     }
 }
 
+/* Print the XML attribute explicit="..." for the given decl.  */
+static void
+xml_print_explicit_attribute (xml_dump_info_p xdi, tree d)
+{
+  if (DECL_NONCONVERTING_P (d))
+    {
+    fprintf (xdi->file, " explicit=\"1\"");
+    }
+}
+
 /* Print the XML attribute size="..." for the given type.  */
 static void
 xml_print_size_attribute (xml_dump_info_p xdi, tree t)
@@ -1208,12 +1218,14 @@ xml_output_function_decl (xml_dump_info_p xdi, tree fd, xml_dump_node_p dn)
   int do_virtual = 0;
   int do_static = 0;
   int do_artificial = 0;
+  int do_explicit = 0;
 
   /* Print out the begin tag for this type of function.  */
   if (DECL_CONSTRUCTOR_P (fd))
     {
     /* A class constructor.  */
     tag = "Constructor"; do_access = 1; do_artificial = 1;
+    do_explicit = 1;
     }
   else if (DECL_DESTRUCTOR_P (fd))
     {
@@ -1271,6 +1283,7 @@ xml_output_function_decl (xml_dump_info_p xdi, tree fd, xml_dump_node_p dn)
     xml_print_returns_attribute (xdi, TREE_TYPE (TREE_TYPE (fd)), dn->complete);
     }
   if(do_access)  xml_print_access_attribute (xdi, fd);
+  if(do_explicit) xml_print_explicit_attribute (xdi, fd);
   if(do_const)   xml_print_const_method_attribute (xdi, fd);
   if(do_virtual) xml_print_virtual_method_attributes (xdi, fd);
   if(do_static)  xml_print_static_method_attribute (xdi, fd);
