@@ -74,7 +74,10 @@
 # define XML_PRE_3_4_TREE_VIA_PUBLIC
 #endif
 
-#define GCC_XML_C_VERSION "$Revision: 1.103 $"
+#define GCC_XML_C_VERSION "$Revision: 1.104 $"
+
+/*--------------------------------------------------------------------------*/
+/* Data structures for the actual XML dump.  */
 
 /* A "dump node" corresponding to a particular tree node.  */
 typedef struct xml_dump_node
@@ -147,10 +150,152 @@ typedef struct xml_dump_info
   splay_tree file_nodes;
 } *xml_dump_info_p;
 
+/*--------------------------------------------------------------------------*/
+/* Data structures for generating documentation.  */
+
+typedef struct xml_document_subelement_s xml_document_subelement;
+typedef struct xml_document_attribute_s xml_document_attribute;
+typedef struct xml_document_element_s xml_document_element;
+typedef struct xml_document_info_s xml_document_info;
+typedef xml_document_subelement* xml_document_subelement_p;
+typedef xml_document_attribute* xml_document_attribute_p;
+typedef xml_document_element* xml_document_element_p;
+typedef xml_document_info* xml_document_info_p;
+
+/* Maximum document specification sizes.  */
+enum { xml_document_max_elements = 256,
+       xml_document_max_attributes = 64,
+       xml_document_max_subelements = 256 };
+
+/* Document format types.  */
+typedef enum xml_document_format_e
+{ xml_document_format_dtd,
+  xml_document_format_schema
+} xml_document_format;
+
+/* The modes of attribute use.  */
+typedef enum xml_document_attribute_use_e
+{ xml_document_attribute_use_optional,
+  xml_document_attribute_use_required
+} xml_document_attribute_use;
+static const char* xml_document_dtd_uses[] = {"IMPLIED", "REQUIRED"};
+static const char* xml_document_schema_uses[] = {"optional", "required"};
+
+/* The set of attribute types.  */
+typedef enum xml_document_attribute_type_e
+{ xml_document_attribute_type_id,
+  xml_document_attribute_type_idref,
+  xml_document_attribute_type_idrefs,
+  xml_document_attribute_type_integer,
+  xml_document_attribute_type_boolean,
+  xml_document_attribute_type_string,
+  xml_document_attribute_type_enum_access
+} xml_document_attribute_type;
+static const char* xml_document_dtd_types[] =
+{"ID", "IDREF", "IDREFS", "CDATA", "CDATA", "CDATA",
+ "(public|protected|private)"};
+static const char* xml_document_schema_types[] =
+{"xs:ID", "xs:IDREF", "xs:IDREFS", "xs:integer", "xs:boolean", "xs:string",
+ "????"};
+
+/* Represent one element attribute.  */
+struct xml_document_attribute_s
+{
+  /* The name of the attribute.  */
+  const char* name;
+
+  /* The type of the attribute.  */
+  xml_document_attribute_type type;
+
+  /* Usage requirements in the containing element (optional, required).  */
+  xml_document_attribute_use use;
+
+  /* The value of the attribute, if any.  When the usage is required
+     this specifies the required value.  When the usage is optional
+     this specifies the default value.  */
+  const char* value;
+};
+
+/* Represent a reference to a nested element.  */
+struct xml_document_subelement_s
+{
+  /* The element that may be nested.  */
+  xml_document_element_p element;
+
+  /* Whether the subelement is required to be present (at least once).  */
+  int required;
+
+  /* Whether the subelement is allowed to be repeated (more than once).  */
+  int repeatable;
+};
+
+/* Represent an element specification.  */
+struct xml_document_element_s
+{
+  /* The name of the element.  */
+  const char* name;
+
+  /* The attribute specification.  */
+  int num_attributes;
+  xml_document_attribute attributes[xml_document_max_attributes];
+
+  /* The subelement specification.  */
+  int num_subelements;
+  xml_document_subelement subelements[xml_document_max_subelements];
+};
+
+/* Represent a full document specification.  */
+struct xml_document_info_s
+{
+  /* The set of allowed elements.  The first one is the root which
+     references the others.  */
+  int num_elements;
+  xml_document_element elements[xml_document_max_elements];
+
+  /* The format of the documentation to be generated.  */
+  xml_document_format format;
+
+  /* Output file stream for document.  */
+  FILE* file;
+};
+
+static void
+xml_document_add_attribute(xml_document_element_p element,
+                           const char* name,
+                           xml_document_attribute_type type,
+                           xml_document_attribute_use use,
+                           const char* value)
+{
+  xml_document_attribute_p attribute =
+    &element->attributes[element->num_attributes++];
+  attribute->name = name;
+  attribute->type = type;
+  attribute->use = use;
+  attribute->value = value;
+}
+
+static xml_document_element_p
+xml_document_add_subelement(xml_document_info_p xdi,
+                            xml_document_element_p parent,
+                            int required, int repeatable)
+{
+  xml_document_element_p element = &xdi->elements[xdi->num_elements++];
+  xml_document_subelement_p subelement =
+    &parent->subelements[parent->num_subelements++];
+  subelement->element = element;
+  subelement->required = required;
+  subelement->repeatable = repeatable;
+  return element;
+}
+
+/*--------------------------------------------------------------------------*/
+/* Dump utility declarations.  */
+
 /* Return non-zero if the given _DECL is an internally generated decl.  */
 #define DECL_INTERNAL_P(d) (DECL_SOURCE_LINE(d) == 0)
 
 void do_xml_output PARAMS ((const char*));
+void do_xml_document PARAMS ((const char*, const char*));
 
 static int xml_add_node PARAMS((xml_dump_info_p, tree, int));
 static void xml_dump PARAMS((xml_dump_info_p));
@@ -479,8 +624,7 @@ xml_queue_file (xml_dump_info_p xdi, const char* filename)
     }
 }
 
-/* ------------------------------------------------------------------------ */
-
+/*--------------------------------------------------------------------------*/
 /* Print the XML attributes location="fid:line" file="fid" line="line"
    for the given decl.  */
 static void
@@ -493,6 +637,20 @@ xml_print_location_attribute (xml_dump_info_p xdi, tree d)
            source_file, source_line, source_file, source_line);
 }
 
+static void
+xml_document_add_attribute_location(xml_document_element_p element,
+                                    xml_document_attribute_use use)
+{
+  xml_document_add_attribute(element, "location",
+                             xml_document_attribute_type_string,
+                             xml_document_attribute_use_optional, 0);
+  xml_document_add_attribute(element, "file",
+                             xml_document_attribute_type_string, use, 0);
+  xml_document_add_attribute(element, "line",
+                             xml_document_attribute_type_integer, use, 0);
+}
+
+/*--------------------------------------------------------------------------*/
 /* Print the XML attribute endline="line" for the given COMPOUND_STMT.  */
 static void
 xml_print_endline_attribute (xml_dump_info_p xdi, tree stmt)
@@ -500,6 +658,15 @@ xml_print_endline_attribute (xml_dump_info_p xdi, tree stmt)
   fprintf (xdi->file, " endline=\"%d\"", STMT_LINENO(stmt));
 }
 
+static void
+xml_document_add_attribute_endline(xml_document_element_p element,
+                                   xml_document_attribute_use use)
+{
+  xml_document_add_attribute(element, "endline",
+                             xml_document_attribute_type_integer, use, 0);
+}
+
+/*--------------------------------------------------------------------------*/
 /* Print the XML attribute id="..." for the given node.  */
 static void
 xml_print_id_attribute (xml_dump_info_p xdi, xml_dump_node_p dn)
@@ -507,6 +674,15 @@ xml_print_id_attribute (xml_dump_info_p xdi, xml_dump_node_p dn)
   fprintf (xdi->file, " id=\"_%d\"", dn->index);
 }
 
+static void
+xml_document_add_attribute_id(xml_document_element_p element)
+{
+  xml_document_add_attribute(element, "id",
+                             xml_document_attribute_type_id,
+                             xml_document_attribute_use_required, 0);
+}
+
+/*--------------------------------------------------------------------------*/
 /* Print the XML attribute name="..." for the given node.  */
 static void
 xml_print_name_attribute (xml_dump_info_p xdi, tree n)
@@ -515,6 +691,15 @@ xml_print_name_attribute (xml_dump_info_p xdi, tree n)
   fprintf (xdi->file, " name=\"%s\"", name);
 }
 
+static void
+xml_document_add_attribute_name(xml_document_element_p element,
+                                xml_document_attribute_use use)
+{
+  xml_document_add_attribute(element, "name",
+                             xml_document_attribute_type_string, use, 0);
+}
+
+/*--------------------------------------------------------------------------*/
 /* Print the XML attribute mangled="..." for the given node.  */
 static void
 xml_print_mangled_attribute (xml_dump_info_p xdi, tree n)
@@ -528,6 +713,15 @@ xml_print_mangled_attribute (xml_dump_info_p xdi, tree n)
     }
 }
 
+static void
+xml_document_add_attribute_mangled(xml_document_element_p element)
+{
+  xml_document_add_attribute(element, "mangled",
+                             xml_document_attribute_type_string,
+                             xml_document_attribute_use_required, 0);
+}
+
+/*--------------------------------------------------------------------------*/
 /* Print the XML attribute mutable="..." for the given node.  */
 static void
 xml_print_mutable_attribute (xml_dump_info_p xdi, tree n)
@@ -538,6 +732,15 @@ xml_print_mutable_attribute (xml_dump_info_p xdi, tree n)
     }
 }
 
+static void
+xml_document_add_attribute_mutable(xml_document_element_p element)
+{
+  xml_document_add_attribute(element, "mutable",
+                             xml_document_attribute_type_boolean,
+                             xml_document_attribute_use_optional, "0");
+}
+
+/*--------------------------------------------------------------------------*/
 /* Get the id of the node referenced by the given type after
    accounting for the special CvQualifiedType element.  This is the id
    that should be printed when referencing the type in an IDREF
@@ -613,6 +816,7 @@ xml_print_type_idref (xml_dump_info_p xdi, tree t, int complete)
   fprintf (xdi->file, "_%d%s%s%s", id, c, v, r);
 }
 
+/*--------------------------------------------------------------------------*/
 /* Print the XML attribute type="..." for the given type.  If the type
    has cv-qualifiers, they are appended to the type's id as single
    characters (c=const, v=volatile, r=restrict).  */
@@ -624,6 +828,15 @@ xml_print_type_attribute (xml_dump_info_p xdi, tree t, int complete)
   fprintf (xdi->file, "\"");
 }
 
+static void
+xml_document_add_attribute_type(xml_document_element_p element)
+{
+  xml_document_add_attribute(element, "type",
+                             xml_document_attribute_type_idref,
+                             xml_document_attribute_use_required, 0);
+}
+
+/*--------------------------------------------------------------------------*/
 /* Print the XML attribute returns="tid" for the given function type.  */
 static void
 xml_print_returns_attribute (xml_dump_info_p xdi, tree t, int complete)
@@ -633,6 +846,15 @@ xml_print_returns_attribute (xml_dump_info_p xdi, tree t, int complete)
   fprintf (xdi->file, "\"");
 }
 
+static void
+xml_document_add_attribute_returns(xml_document_element_p element)
+{
+  xml_document_add_attribute(element, "returns",
+                             xml_document_attribute_type_idref,
+                             xml_document_attribute_use_required, 0);
+}
+
+/*--------------------------------------------------------------------------*/
 /* Print XML attribute basetype="..." with the given type.  */
 static void
 xml_print_base_type_attribute (xml_dump_info_p xdi, tree t, int complete)
@@ -640,6 +862,15 @@ xml_print_base_type_attribute (xml_dump_info_p xdi, tree t, int complete)
   fprintf (xdi->file, " basetype=\"_%d\"", xml_add_node (xdi, t, complete));
 }
 
+static void
+xml_document_add_attribute_base_type(xml_document_element_p element)
+{
+  xml_document_add_attribute(element, "basetype",
+                             xml_document_attribute_type_idref,
+                             xml_document_attribute_use_required, 0);
+}
+
+/*--------------------------------------------------------------------------*/
 /* Print the XML attribute context="..." for the given node.  */
 static void
 xml_print_context_attribute (xml_dump_info_p xdi, tree n)
@@ -651,6 +882,15 @@ xml_print_context_attribute (xml_dump_info_p xdi, tree n)
     }
 }
 
+static void
+xml_document_add_attribute_context(xml_document_element_p element,
+                                   xml_document_attribute_use use)
+{
+  xml_document_add_attribute(element, "context",
+                             xml_document_attribute_type_idref, use, 0);
+}
+
+/*--------------------------------------------------------------------------*/
 /* Print the XML attribute access="..." for the given decl.  */
 static void
 xml_print_access_attribute (xml_dump_info_p xdi, tree d)
@@ -674,6 +914,15 @@ xml_print_access_attribute (xml_dump_info_p xdi, tree d)
     }
 }
 
+static void
+xml_document_add_attribute_access(xml_document_element_p element)
+{
+  xml_document_add_attribute(element, "access",
+                             xml_document_attribute_type_enum_access,
+                             xml_document_attribute_use_optional, "public");
+}
+
+/*--------------------------------------------------------------------------*/
 /* Print the XML attribute explicit="..." for the given decl.  */
 static void
 xml_print_explicit_attribute (xml_dump_info_p xdi, tree d)
@@ -684,6 +933,15 @@ xml_print_explicit_attribute (xml_dump_info_p xdi, tree d)
     }
 }
 
+static void
+xml_document_add_attribute_explicit(xml_document_element_p element)
+{
+  xml_document_add_attribute(element, "explicit",
+                             xml_document_attribute_type_integer,
+                             xml_document_attribute_use_optional, "1");
+}
+
+/*--------------------------------------------------------------------------*/
 /* Print the XML attribute size="..." for the given type.  */
 static void
 xml_print_size_attribute (xml_dump_info_p xdi, tree t)
@@ -696,6 +954,15 @@ xml_print_size_attribute (xml_dump_info_p xdi, tree t)
     }
 }
 
+static void
+xml_document_add_attribute_size(xml_document_element_p element)
+{
+  xml_document_add_attribute(element, "size",
+                             xml_document_attribute_type_integer,
+                             xml_document_attribute_use_optional, 0);
+}
+
+/*--------------------------------------------------------------------------*/
 /* Print the XML attribute align="..." for the given type.  */
 static void
 xml_print_align_attribute (xml_dump_info_p xdi, tree t)
@@ -703,6 +970,15 @@ xml_print_align_attribute (xml_dump_info_p xdi, tree t)
   fprintf (xdi->file, " align=\"%d\"", TYPE_ALIGN (t));
 }
 
+static void
+xml_document_add_attribute_align(xml_document_element_p element)
+{
+  xml_document_add_attribute(element, "align",
+                             xml_document_attribute_type_integer,
+                             xml_document_attribute_use_required, 0);
+}
+
+/*--------------------------------------------------------------------------*/
 /* Print the XML attribute offset="..." for the given decl.  */
 static void
 xml_print_offset_attribute (xml_dump_info_p xdi, tree d)
@@ -719,6 +995,15 @@ xml_print_offset_attribute (xml_dump_info_p xdi, tree d)
     }
 }
 
+static void
+xml_document_add_attribute_offset(xml_document_element_p element)
+{
+  xml_document_add_attribute(element, "offset",
+                             xml_document_attribute_type_integer,
+                             xml_document_attribute_use_optional, 0);
+}
+
+/*--------------------------------------------------------------------------*/
 /* Print XML attribute const="1" for const methods.  */
 static void
 xml_print_const_method_attribute (xml_dump_info_p xdi, tree fd)
@@ -729,6 +1014,15 @@ xml_print_const_method_attribute (xml_dump_info_p xdi, tree fd)
     }
 }
 
+static void
+xml_document_add_attribute_const_method(xml_document_element_p element)
+{
+  xml_document_add_attribute(element, "const",
+                             xml_document_attribute_type_boolean,
+                             xml_document_attribute_use_optional, "0");
+}
+
+/*--------------------------------------------------------------------------*/
 /* Print XML attribute static="1" for static methods.  */
 static void
 xml_print_static_method_attribute (xml_dump_info_p xdi, tree fd)
@@ -739,6 +1033,15 @@ xml_print_static_method_attribute (xml_dump_info_p xdi, tree fd)
     }
 }
 
+static void
+xml_document_add_attribute_static_method(xml_document_element_p element)
+{
+  xml_document_add_attribute(element, "static",
+                             xml_document_attribute_type_boolean,
+                             xml_document_attribute_use_optional, "0");
+}
+
+/*--------------------------------------------------------------------------*/
 /* Print XML attributes virtual="" and pure_virtual="" for a decl.  */
 static void
 xml_print_virtual_method_attributes (xml_dump_info_p xdi, tree d)
@@ -754,6 +1057,18 @@ xml_print_virtual_method_attributes (xml_dump_info_p xdi, tree d)
     }
 }
 
+static void
+xml_document_add_attribute_virtual_method(xml_document_element_p element)
+{
+  xml_document_add_attribute(element, "virtual",
+                             xml_document_attribute_type_boolean,
+                             xml_document_attribute_use_optional, "0");
+  xml_document_add_attribute(element, "pure_virtual",
+                             xml_document_attribute_type_boolean,
+                             xml_document_attribute_use_optional, "0");
+}
+
+/*--------------------------------------------------------------------------*/
 /* Print the XML attribute extern="1" if the given decl is external.  */
 static void
 xml_print_extern_attribute (xml_dump_info_p xdi, tree d)
@@ -764,6 +1079,15 @@ xml_print_extern_attribute (xml_dump_info_p xdi, tree d)
     }
 }
 
+static void
+xml_document_add_attribute_extern(xml_document_element_p element)
+{
+  xml_document_add_attribute(element, "extern",
+                             xml_document_attribute_type_boolean,
+                             xml_document_attribute_use_optional, "0");
+}
+
+/*--------------------------------------------------------------------------*/
 /* Print the XML attribute inline="1" if the given decl is inline.  */
 static void
 xml_print_inline_attribute (xml_dump_info_p xdi, tree d)
@@ -774,6 +1098,15 @@ xml_print_inline_attribute (xml_dump_info_p xdi, tree d)
     }
 }
 
+static void
+xml_document_add_attribute_inline(xml_document_element_p element)
+{
+  xml_document_add_attribute(element, "inline",
+                             xml_document_attribute_type_boolean,
+                             xml_document_attribute_use_optional, "0");
+}
+
+/*--------------------------------------------------------------------------*/
 /* Print the XML attribute extern="1" if the given decl is external.  */
 static void
 xml_print_function_extern_attribute (xml_dump_info_p xdi, tree fd)
@@ -784,6 +1117,15 @@ xml_print_function_extern_attribute (xml_dump_info_p xdi, tree fd)
     }
 }
 
+static void
+xml_document_add_attribute_function_extern(xml_document_element_p element)
+{
+  xml_document_add_attribute(element, "extern",
+                             xml_document_attribute_type_boolean,
+                             xml_document_attribute_use_optional, "0");
+}
+
+/*--------------------------------------------------------------------------*/
 /* Print XML attribute for a default argument.  */
 static void
 xml_print_default_argument_attribute (xml_dump_info_p xdi, tree t)
@@ -802,6 +1144,15 @@ xml_print_default_argument_attribute (xml_dump_info_p xdi, tree t)
   fprintf (xdi->file, " default=\"%s\"", value);
 }
 
+static void
+xml_document_add_attribute_default_argument(xml_document_element_p element,
+                                            xml_document_attribute_use use)
+{
+  xml_document_add_attribute(element, "default",
+                             xml_document_attribute_type_string, use, 0);
+}
+
+/*--------------------------------------------------------------------------*/
 /* Print XML attribute init="..." for a variable initializer.  */
 static void
 xml_print_init_attribute (xml_dump_info_p xdi, tree t)
@@ -833,6 +1184,15 @@ xml_print_init_attribute (xml_dump_info_p xdi, tree t)
   fprintf (xdi->file, " init=\"%s\"", value);
 }
 
+static void
+xml_document_add_attribute_init(xml_document_element_p element)
+{
+  xml_document_add_attribute(element, "init",
+                             xml_document_attribute_type_string,
+                             xml_document_attribute_use_optional, 0);
+}
+
+/*--------------------------------------------------------------------------*/
 /* Print the XML attribute incomplete="..." for the given type.  */
 static void
 xml_print_incomplete_attribute (xml_dump_info_p xdi, tree t)
@@ -843,6 +1203,15 @@ xml_print_incomplete_attribute (xml_dump_info_p xdi, tree t)
     }
 }
 
+static void
+xml_document_add_attribute_incomplete(xml_document_element_p element)
+{
+  xml_document_add_attribute(element, "init",
+                             xml_document_attribute_type_boolean,
+                             xml_document_attribute_use_optional, "0");
+}
+
+/*--------------------------------------------------------------------------*/
 /* Print the XML attribute abstract="..." for the given type.  */
 static void
 xml_print_abstract_attribute (xml_dump_info_p xdi, tree t)
@@ -853,6 +1222,15 @@ xml_print_abstract_attribute (xml_dump_info_p xdi, tree t)
     }
 }
 
+static void
+xml_document_add_attribute_abstract(xml_document_element_p element)
+{
+  xml_document_add_attribute(element, "abstract",
+                             xml_document_attribute_type_boolean,
+                             xml_document_attribute_use_optional, "0");
+}
+
+/*--------------------------------------------------------------------------*/
 /* Print XML empty tag for an ellipsis at the end of an argument list.  */
 static void
 xml_output_ellipsis (xml_dump_info_p xdi)
@@ -861,6 +1239,15 @@ xml_output_ellipsis (xml_dump_info_p xdi)
            "    <Ellipsis/>\n");
 }
 
+static void
+xml_document_add_element_ellipsis (xml_document_info_p xdi,
+                                   xml_document_element_p parent)
+{
+  xml_document_element_p e = xml_document_add_subelement(xdi, parent, 0, 0);
+  e->name = "Ellipsis";
+}
+
+/*--------------------------------------------------------------------------*/
 /* Print XML attributes min="0" max="..." for an array type.  */
 static void
 xml_print_array_attributes (xml_dump_info_p xdi, tree at)
@@ -874,6 +1261,18 @@ xml_print_array_attributes (xml_dump_info_p xdi, tree at)
   fprintf (xdi->file, " min=\"0\" max=\"%s\"", length);
 }
 
+static void
+xml_document_add_attribute_array(xml_document_element_p element)
+{
+  xml_document_add_attribute(element, "min",
+                             xml_document_attribute_type_integer,
+                             xml_document_attribute_use_required, "0");
+  xml_document_add_attribute(element, "max",
+                             xml_document_attribute_type_integer,
+                             xml_document_attribute_use_required, 0);
+}
+
+/*--------------------------------------------------------------------------*/
 /* Print XML attribute listing types that this type can throw.  */
 static void
 xml_print_throw_attribute (xml_dump_info_p xdi, tree ft, int complete)
@@ -896,6 +1295,15 @@ xml_print_throw_attribute (xml_dump_info_p xdi, tree ft, int complete)
     }
 }
 
+static void
+xml_document_add_attribute_throw(xml_document_element_p element)
+{
+  xml_document_add_attribute(element, "throw",
+                             xml_document_attribute_type_idrefs,
+                             xml_document_attribute_use_optional, 0);
+}
+
+/*--------------------------------------------------------------------------*/
 /* Given an attribute node, set "arg" to the string value of the first
    argument, and return the first argument node.  */
 tree xml_get_first_attrib_arg(tree attrib_node, char** arg)
@@ -989,6 +1397,15 @@ xml_print_attributes_attribute (xml_dump_info_p xdi, tree attributes1,
     }
 }
 
+static void
+xml_document_add_attribute_attributes(xml_document_element_p element)
+{
+  xml_document_add_attribute(element, "attributes",
+                             xml_document_attribute_type_string,
+                             xml_document_attribute_use_optional, 0);
+}
+
+/*--------------------------------------------------------------------------*/
 /* Print XML attribute artificial="1" for compiler generated methods.  */
 static void
 xml_print_artificial_attribute(xml_dump_info_p xdi, tree d)
@@ -999,6 +1416,15 @@ xml_print_artificial_attribute(xml_dump_info_p xdi, tree d)
     }
 }
 
+static void
+xml_document_add_attribute_artificial(xml_document_element_p element)
+{
+  xml_document_add_attribute(element, "artificial",
+                             xml_document_attribute_type_boolean,
+                             xml_document_attribute_use_optional, "0");
+}
+
+/*--------------------------------------------------------------------------*/
 /* Print the XML attribute bits="..." for a bitfield.  */
 static void
 xml_print_bits_attribute (xml_dump_info_p xdi, tree d)
@@ -1015,6 +1441,15 @@ xml_print_bits_attribute (xml_dump_info_p xdi, tree d)
     }
 }
 
+static void
+xml_document_add_attribute_bits(xml_document_element_p element)
+{
+  xml_document_add_attribute(element, "bits",
+                             xml_document_attribute_type_integer,
+                             xml_document_attribute_use_optional, 0);
+}
+
+/*--------------------------------------------------------------------------*/
 /* Print XML empty tag describing an unimplemented TREE_CODE that has been
    encountered.  */
 static void
@@ -1036,7 +1471,28 @@ xml_output_unimplemented (xml_dump_info_p xdi, tree t, xml_dump_node_p dn,
   fprintf (xdi->file, "/>\n");
 }
 
-/* ------------------------------------------------------------------------ */
+static void
+xml_document_add_element_unimplemented (xml_document_info_p xdi,
+                                        xml_document_element_p parent)
+{
+  xml_document_element_p e = xml_document_add_subelement(xdi, parent, 0, 1);
+  e->name = "Unimplemented";
+  xml_document_add_attribute_id(e);
+  xml_document_add_attribute(e, "tree_code",
+                             xml_document_attribute_type_integer,
+                             xml_document_attribute_use_required, 0);
+  xml_document_add_attribute(e, "tree_code_name",
+                             xml_document_attribute_type_string,
+                             xml_document_attribute_use_required, 0);
+  xml_document_add_attribute(e, "node",
+                             xml_document_attribute_type_string,
+                             xml_document_attribute_use_required, 0);
+  xml_document_add_attribute(e, "function",
+                             xml_document_attribute_type_string,
+                             xml_document_attribute_use_optional, 0);
+}
+
+/*--------------------------------------------------------------------------*/
 
 /* Dump a NAMESPACE_DECL.  */
 static void
@@ -1111,6 +1567,36 @@ xml_output_namespace_decl (xml_dump_info_p xdi, tree ns, xml_dump_node_p dn)
     }
 }
 
+static void
+xml_document_add_element_namespace_decl (xml_document_info_p xdi,
+                                         xml_document_element_p parent)
+{
+  {
+  xml_document_element_p e = xml_document_add_subelement(xdi, parent, 0, 1);
+  e->name = "Namespace";
+  xml_document_add_attribute_id(e);
+  xml_document_add_attribute_name(e, xml_document_attribute_use_required);
+  xml_document_add_attribute_context(e, xml_document_attribute_use_required);
+  xml_document_add_attribute_attributes(e);
+  xml_document_add_attribute(e, "members",
+                             xml_document_attribute_type_idrefs,
+                             xml_document_attribute_use_optional, 0);
+  xml_document_add_attribute_mangled(e);
+  }
+  {
+  xml_document_element_p e = xml_document_add_subelement(xdi, parent, 0, 1);
+  e->name = "NamespaceAlias";
+  xml_document_add_attribute_id(e);
+  xml_document_add_attribute_name(e, xml_document_attribute_use_required);
+  xml_document_add_attribute_context(e, xml_document_attribute_use_required);
+  xml_document_add_attribute(e, "namespace",
+                             xml_document_attribute_type_idref,
+                             xml_document_attribute_use_required, 0);
+  xml_document_add_attribute_mangled(e);
+  }
+}
+
+/*--------------------------------------------------------------------------*/
 /* Output for a typedef.  The name and associated type are output.  */
 static void
 xml_output_typedef (xml_dump_info_p xdi, tree td, xml_dump_node_p dn)
@@ -1141,6 +1627,21 @@ xml_output_typedef (xml_dump_info_p xdi, tree td, xml_dump_node_p dn)
   fprintf (xdi->file, "/>\n");
 }
 
+static void
+xml_document_add_element_typedef (xml_document_info_p xdi,
+                                  xml_document_element_p parent)
+{
+  xml_document_element_p e = xml_document_add_subelement(xdi, parent, 0, 1);
+  e->name = "Typedef";
+  xml_document_add_attribute_id(e);
+  xml_document_add_attribute_name(e, xml_document_attribute_use_required);
+  xml_document_add_attribute_type(e);
+  xml_document_add_attribute_context(e, xml_document_attribute_use_required);
+  xml_document_add_attribute_location(e, xml_document_attribute_use_required);
+  xml_document_add_attribute_attributes(e);
+}
+
+/*--------------------------------------------------------------------------*/
 /* Output for a PARM_DECL / TREE_LIST corresponding to a function argument.  */
 static void
 xml_output_argument (xml_dump_info_p xdi, tree pd, tree tl, int complete)
@@ -1179,6 +1680,21 @@ xml_output_argument (xml_dump_info_p xdi, tree pd, tree tl, int complete)
   fprintf (xdi->file, "/>\n");
 }
 
+static void
+xml_document_add_element_argument (xml_document_info_p xdi,
+                                   xml_document_element_p parent)
+{
+  xml_document_element_p e = xml_document_add_subelement(xdi, parent, 0, 1);
+  e->name = "Argument";
+  xml_document_add_attribute_name(e, xml_document_attribute_use_optional);
+  xml_document_add_attribute_type(e);
+  xml_document_add_attribute_location(e, xml_document_attribute_use_optional);
+  xml_document_add_attribute_default_argument(
+    e, xml_document_attribute_use_optional);
+  xml_document_add_attribute_attributes(e);
+}
+
+/*--------------------------------------------------------------------------*/
 /* Lookup the real name of an operator whose ansi_opname or ansi_assopname
    is NAME.  */
 static tree
@@ -1339,6 +1855,105 @@ xml_output_function_decl (xml_dump_info_p xdi, tree fd, xml_dump_node_p dn)
   fprintf (xdi->file, "  </%s>\n", tag);
 }
 
+static void
+xml_document_add_element_function_helper (xml_document_info_p xdi,
+                                          xml_document_element_p parent,
+                                          const char* tag,
+                                          int do_returns,
+                                          int do_access,
+                                          int do_const,
+                                          int do_virtual,
+                                          int do_static,
+                                          int do_artificial,
+                                          int do_explicit,
+                                          int allow_arguments,
+                                          int allow_ellipsis)
+{
+  xml_document_element_p e = xml_document_add_subelement(xdi, parent, 0, 1);
+  e->name = tag;
+  xml_document_add_attribute_id(e);
+  xml_document_add_attribute_name(e, xml_document_attribute_use_required);
+  if(do_returns)
+    {
+    xml_document_add_attribute_returns(e);
+    }
+  if(do_access)
+    {
+    xml_document_add_attribute_access(e);
+    }
+  if(do_const)
+    {
+    xml_document_add_attribute_const_method(e);
+    }
+  if(do_virtual)
+    {
+    xml_document_add_attribute_virtual_method(e);
+    }
+  if(do_static)
+    {
+    xml_document_add_attribute_static_method(e);
+    }
+  if(do_artificial)
+    {
+    xml_document_add_attribute_artificial(e);
+    }
+  if(do_explicit)
+    {
+    xml_document_add_attribute_explicit(e);
+    }
+  xml_document_add_attribute_throw(e);
+  xml_document_add_attribute_context(e, xml_document_attribute_use_required);
+  xml_document_add_attribute_mangled(e);
+  xml_document_add_attribute_location(e, xml_document_attribute_use_required);
+  xml_document_add_attribute_endline(e, xml_document_attribute_use_optional);
+  xml_document_add_attribute_extern(e);
+  xml_document_add_attribute_inline(e);
+  xml_document_add_attribute_attributes(e);
+  if(allow_arguments)
+    {
+    xml_document_add_element_argument (xdi, e);
+    }
+  if(allow_ellipsis)
+    {
+    xml_document_add_element_ellipsis (xdi, e);
+    }
+}
+
+static void
+xml_document_add_element_function (xml_document_info_p xdi,
+                                   xml_document_element_p parent)
+{
+  xml_document_add_element_function_helper(
+    xdi, parent, "Constructor", /*do_returns*/ 0, /*do_access*/ 1,
+    /*do_const*/ 0, /*do_virtual*/ 0, /*do_static*/ 0, /*do_artificial*/ 1,
+    /*do_explicit*/ 1, /*allow_arguments*/ 1, /*allow_ellipsis*/ 1);
+  xml_document_add_element_function_helper(
+    xdi, parent, "Destructor", /*do_returns*/ 0, /*do_access*/ 1,
+    /*do_const*/ 0, /*do_virtual*/ 1, /*do_static*/ 0, /*do_artificial*/ 1,
+    /*do_explicit*/ 0, /*allow_arguments*/ 0, /*allow_ellipsis*/ 0);
+  xml_document_add_element_function_helper(
+    xdi, parent, "Converter", /*do_returns*/ 1, /*do_access*/ 1,
+    /*do_const*/ 1, /*do_virtual*/ 1, /*do_static*/ 0, /*do_artificial*/ 0,
+    /*do_explicit*/ 0, /*allow_arguments*/ 0, /*allow_ellipsis*/ 0);
+  xml_document_add_element_function_helper(
+    xdi, parent, "OperatorMethod", /*do_returns*/ 1, /*do_access*/ 1,
+    /*do_const*/ 1, /*do_virtual*/ 1, /*do_static*/ 1, /*do_artificial*/ 0,
+    /*do_explicit*/ 0, /*allow_arguments*/ 1, /*allow_ellipsis*/ 0);
+  xml_document_add_element_function_helper(
+    xdi, parent, "OperatorFunction", /*do_returns*/ 1, /*do_access*/ 0,
+    /*do_const*/ 0, /*do_virtual*/ 0, /*do_static*/ 0, /*do_artificial*/ 0,
+    /*do_explicit*/ 0, /*allow_arguments*/ 1, /*allow_ellipsis*/ 0);
+  xml_document_add_element_function_helper(
+    xdi, parent, "Method", /*do_returns*/ 1, /*do_access*/ 1,
+    /*do_const*/ 1, /*do_virtual*/ 1, /*do_static*/ 1, /*do_artificial*/ 0,
+    /*do_explicit*/ 0, /*allow_arguments*/ 1, /*allow_ellipsis*/ 1);
+  xml_document_add_element_function_helper(
+    xdi, parent, "Function", /*do_returns*/ 1, /*do_access*/ 0,
+    /*do_const*/ 0, /*do_virtual*/ 0, /*do_static*/ 0, /*do_artificial*/ 0,
+    /*do_explicit*/ 0, /*allow_arguments*/ 1, /*allow_ellipsis*/ 1);
+}
+
+/*--------------------------------------------------------------------------*/
 /* Output for a VAR_DECL.  The name and type of the variable are output,
    as well as the initializer if it exists.  */
 static void
@@ -1360,6 +1975,26 @@ xml_output_var_decl (xml_dump_info_p xdi, tree vd, xml_dump_node_p dn)
   fprintf (xdi->file, "/>\n");
 }
 
+static void
+xml_document_add_element_var_decl (xml_document_info_p xdi,
+                                   xml_document_element_p parent)
+{
+  xml_document_element_p e = xml_document_add_subelement(xdi, parent, 0, 1);
+  e->name = "Variable";
+  xml_document_add_attribute_id(e);
+  xml_document_add_attribute_name(e, xml_document_attribute_use_required);
+  xml_document_add_attribute_type(e);
+  xml_document_add_attribute_init(e);
+  xml_document_add_attribute_context(e, xml_document_attribute_use_required);
+  xml_document_add_attribute_access(e);
+  xml_document_add_attribute_mangled(e);
+  xml_document_add_attribute_location(e, xml_document_attribute_use_required);
+  xml_document_add_attribute_extern(e);
+  xml_document_add_attribute_artificial(e);
+  xml_document_add_attribute_attributes(e);
+}
+
+/*--------------------------------------------------------------------------*/
 /* Output for a FIELD_DECL.  The name and type of the variable are output,
    as well as the initializer if it exists.  */
 static void
@@ -1387,6 +2022,26 @@ xml_output_field_decl (xml_dump_info_p xdi, tree fd, xml_dump_node_p dn)
   fprintf (xdi->file, "/>\n");
 }
 
+static void
+xml_document_add_element_field_decl (xml_document_info_p xdi,
+                                     xml_document_element_p parent)
+{
+  xml_document_element_p e = xml_document_add_subelement(xdi, parent, 0, 1);
+  e->name = "Field";
+  xml_document_add_attribute_id(e);
+  xml_document_add_attribute_name(e, xml_document_attribute_use_required);
+  xml_document_add_attribute_access(e);
+  xml_document_add_attribute_bits(e);
+  xml_document_add_attribute_type(e);
+  xml_document_add_attribute_offset(e);
+  xml_document_add_attribute_context(e, xml_document_attribute_use_required);
+  xml_document_add_attribute_mangled(e);
+  xml_document_add_attribute_mutable(e);
+  xml_document_add_attribute_location(e, xml_document_attribute_use_required);
+  xml_document_add_attribute_attributes(e);
+}
+
+/*--------------------------------------------------------------------------*/
 /* Output a RECORD_TYPE that is not a pointer-to-member-function.
    Prints beginning and ending tags, and all class member declarations
    between.  Also handles a UNION_TYPE.  */
@@ -1572,6 +2227,57 @@ xml_output_record_type (xml_dump_info_p xdi, tree rt, xml_dump_node_p dn)
   fprintf (xdi->file, "  </%s>\n", tag);
 }
 
+static void
+xml_document_add_element_record_type_base (xml_document_info_p xdi,
+                                           xml_document_element_p parent)
+{
+  xml_document_element_p e = xml_document_add_subelement(xdi, parent, 0, 1);
+  e->name = "Base";
+  xml_document_add_attribute_type(e);
+  xml_document_add_attribute_access(e);
+  xml_document_add_attribute(e, "virtual",
+                             xml_document_attribute_type_boolean,
+                             xml_document_attribute_use_optional, "0");
+}
+
+static void
+xml_document_add_element_record_type_helper (xml_document_info_p xdi,
+                                             xml_document_element_p parent,
+                                             const char* tag)
+{
+  xml_document_element_p e = xml_document_add_subelement(xdi, parent, 0, 1);
+  e->name = tag;
+  xml_document_add_attribute_id(e);
+  xml_document_add_attribute_name(e, xml_document_attribute_use_optional);
+  xml_document_add_attribute_context(e, xml_document_attribute_use_required);
+  xml_document_add_attribute_access(e);
+  xml_document_add_attribute_abstract(e);
+  xml_document_add_attribute_incomplete(e);
+  xml_document_add_attribute_mangled(e);
+  xml_document_add_attribute_location(e, xml_document_attribute_use_required);
+  xml_document_add_attribute_artificial(e);
+  xml_document_add_attribute_attributes(e);
+  xml_document_add_attribute_size(e);
+  xml_document_add_attribute_align(e);
+  xml_document_add_attribute(e, "members",
+                             xml_document_attribute_type_idrefs,
+                             xml_document_attribute_use_optional, 0);
+  xml_document_add_attribute(e, "bases",
+                             xml_document_attribute_type_string,
+                             xml_document_attribute_use_optional, 0);
+  xml_document_add_element_record_type_base(xdi, e);
+}
+
+static void
+xml_document_add_element_record_type (xml_document_info_p xdi,
+                                      xml_document_element_p parent)
+{
+  xml_document_add_element_record_type_helper(xdi, parent, "Class");
+  xml_document_add_element_record_type_helper(xdi, parent, "Struct");
+  xml_document_add_element_record_type_helper(xdi, parent, "Union");
+}
+
+/*--------------------------------------------------------------------------*/
 /* Output for a fundamental type.  */
 static void
 xml_output_fundamental_type (xml_dump_info_p xdi, tree t, xml_dump_node_p dn)
@@ -1585,6 +2291,20 @@ xml_output_fundamental_type (xml_dump_info_p xdi, tree t, xml_dump_node_p dn)
   fprintf (xdi->file, "/>\n");
 }
 
+static void
+xml_document_add_element_fundamental_type (xml_document_info_p xdi,
+                                           xml_document_element_p parent)
+{
+  xml_document_element_p e = xml_document_add_subelement(xdi, parent, 0, 1);
+  e->name = "FundamentalType";
+  xml_document_add_attribute_id(e);
+  xml_document_add_attribute_name(e, xml_document_attribute_use_required);
+  xml_document_add_attribute_attributes(e);
+  xml_document_add_attribute_size(e);
+  xml_document_add_attribute_align(e);
+}
+
+/*--------------------------------------------------------------------------*/
 /* Output for a FUNCTION_TYPE.  */
 static void
 xml_output_function_type (xml_dump_info_p xdi, tree t, xml_dump_node_p dn)
@@ -1616,6 +2336,20 @@ xml_output_function_type (xml_dump_info_p xdi, tree t, xml_dump_node_p dn)
   fprintf (xdi->file, "  </FunctionType>\n");
 }
 
+static void
+xml_document_add_element_function_type (xml_document_info_p xdi,
+                                        xml_document_element_p parent)
+{
+  xml_document_element_p e = xml_document_add_subelement(xdi, parent, 0, 1);
+  e->name = "FunctionType";
+  xml_document_add_attribute_id(e);
+  xml_document_add_attribute_returns(e);
+  xml_document_add_attribute_attributes(e);
+  xml_document_add_element_argument(xdi, e);
+  xml_document_add_element_ellipsis(xdi, e);
+}
+
+/*--------------------------------------------------------------------------*/
 /* Output for a METHOD_TYPE.  */
 static void
 xml_output_method_type (xml_dump_info_p xdi, tree t, xml_dump_node_p dn)
@@ -1668,6 +2402,27 @@ xml_output_method_type (xml_dump_info_p xdi, tree t, xml_dump_node_p dn)
   fprintf (xdi->file, "  </MethodType>\n");
 }
 
+static void
+xml_document_add_element_method_type (xml_document_info_p xdi,
+                                      xml_document_element_p parent)
+{
+  xml_document_element_p e = xml_document_add_subelement(xdi, parent, 0, 1);
+  e->name = "MethodType";
+  xml_document_add_attribute_id(e);
+  xml_document_add_attribute_base_type(e);
+  xml_document_add_attribute_returns(e);
+  xml_document_add_attribute_attributes(e);
+  xml_document_add_attribute(e, "const",
+                             xml_document_attribute_type_boolean,
+                             xml_document_attribute_use_optional, "0");
+  xml_document_add_attribute(e, "volatile",
+                             xml_document_attribute_type_boolean,
+                             xml_document_attribute_use_optional, "0");
+  xml_document_add_element_argument(xdi, e);
+  xml_document_add_element_ellipsis(xdi, e);
+}
+
+/*--------------------------------------------------------------------------*/
 /* Output for a POINTER_TYPE.  */
 static void
 xml_output_pointer_type (xml_dump_info_p xdi, tree t, xml_dump_node_p dn)
@@ -1681,6 +2436,20 @@ xml_output_pointer_type (xml_dump_info_p xdi, tree t, xml_dump_node_p dn)
   fprintf (xdi->file, "/>\n");
 }
 
+static void
+xml_document_add_element_pointer_type (xml_document_info_p xdi,
+                                       xml_document_element_p parent)
+{
+  xml_document_element_p e = xml_document_add_subelement(xdi, parent, 0, 1);
+  e->name = "PointerType";
+  xml_document_add_attribute_id(e);
+  xml_document_add_attribute_type(e);
+  xml_document_add_attribute_attributes(e);
+  xml_document_add_attribute_size(e);
+  xml_document_add_attribute_align(e);
+}
+
+/*--------------------------------------------------------------------------*/
 /* Output for a REFERENCE_TYPE.  */
 static void
 xml_output_reference_type (xml_dump_info_p xdi, tree t, xml_dump_node_p dn)
@@ -1694,6 +2463,20 @@ xml_output_reference_type (xml_dump_info_p xdi, tree t, xml_dump_node_p dn)
   fprintf (xdi->file, "/>\n");
 }
 
+static void
+xml_document_add_element_reference_type (xml_document_info_p xdi,
+                                         xml_document_element_p parent)
+{
+  xml_document_element_p e = xml_document_add_subelement(xdi, parent, 0, 1);
+  e->name = "ReferenceType";
+  xml_document_add_attribute_id(e);
+  xml_document_add_attribute_type(e);
+  xml_document_add_attribute_attributes(e);
+  xml_document_add_attribute_size(e);
+  xml_document_add_attribute_align(e);
+}
+
+/*--------------------------------------------------------------------------*/
 /* Output for an OFFSET_TYPE.  */
 static void
 xml_output_offset_type (xml_dump_info_p xdi, tree t, xml_dump_node_p dn)
@@ -1708,6 +2491,21 @@ xml_output_offset_type (xml_dump_info_p xdi, tree t, xml_dump_node_p dn)
   fprintf (xdi->file, "/>\n");
 }
 
+static void
+xml_document_add_element_offset_type (xml_document_info_p xdi,
+                                      xml_document_element_p parent)
+{
+  xml_document_element_p e = xml_document_add_subelement(xdi, parent, 0, 1);
+  e->name = "OffsetType";
+  xml_document_add_attribute_id(e);
+  xml_document_add_attribute_base_type(e);
+  xml_document_add_attribute_type(e);
+  xml_document_add_attribute_attributes(e);
+  xml_document_add_attribute_size(e);
+  xml_document_add_attribute_align(e);
+}
+
+/*--------------------------------------------------------------------------*/
 /* Output for an ARRAY_TYPE.  */
 static void
 xml_output_array_type (xml_dump_info_p xdi, tree t, xml_dump_node_p dn)
@@ -1722,6 +2520,21 @@ xml_output_array_type (xml_dump_info_p xdi, tree t, xml_dump_node_p dn)
   fprintf (xdi->file, "/>\n");
 }
 
+static void
+xml_document_add_element_array_type (xml_document_info_p xdi,
+                                     xml_document_element_p parent)
+{
+  xml_document_element_p e = xml_document_add_subelement(xdi, parent, 0, 1);
+  e->name = "ArrayType";
+  xml_document_add_attribute_id(e);
+  xml_document_add_attribute_array(e);
+  xml_document_add_attribute_type(e);
+  xml_document_add_attribute_attributes(e);
+  xml_document_add_attribute_size(e);
+  xml_document_add_attribute_align(e);
+}
+
+/*--------------------------------------------------------------------------*/
 /* Output for an ENUMERAL_TYPE.  */
 static void
 xml_output_enumeral_type (xml_dump_info_p xdi, tree t, xml_dump_node_p dn)
@@ -1761,6 +2574,36 @@ xml_output_enumeral_type (xml_dump_info_p xdi, tree t, xml_dump_node_p dn)
   fprintf (xdi->file, "  </Enumeration>\n");
 }
 
+static void
+xml_document_add_element_enum_value (xml_document_info_p xdi,
+                                     xml_document_element_p parent)
+{
+  xml_document_element_p e = xml_document_add_subelement(xdi, parent, 0, 1);
+  e->name = "EnumValue";
+  xml_document_add_attribute_name(e, xml_document_attribute_use_required);
+  xml_document_add_attribute_init(e);
+}
+
+static void
+xml_document_add_element_enumeral_type (xml_document_info_p xdi,
+                                        xml_document_element_p parent)
+{
+  xml_document_element_p e = xml_document_add_subelement(xdi, parent, 0, 1);
+  e->name = "Enumeration";
+  xml_document_add_attribute_id(e);
+  xml_document_add_attribute_name(e, xml_document_attribute_use_required);
+  xml_document_add_attribute_context(e, xml_document_attribute_use_required);
+  xml_document_add_attribute_access(e);
+  xml_document_add_attribute_location(e, xml_document_attribute_use_required);
+  xml_document_add_attribute_attributes(e);
+  xml_document_add_attribute_artificial(e);
+  xml_document_add_attribute_size(e);
+  xml_document_add_attribute_align(e);
+  xml_document_add_element_enum_value(xdi, e);
+  xml_document_add_element_unimplemented(xdi, e);
+}
+
+/*--------------------------------------------------------------------------*/
 /* Output for a cv-qualified type.  */
 static void
 xml_output_cv_qualified_type (xml_dump_info_p xdi, tree t, xml_dump_node_p dn)
@@ -1852,7 +2695,26 @@ xml_output_cv_qualified_type (xml_dump_info_p xdi, tree t, xml_dump_node_p dn)
     }
 }
 
-/* ------------------------------------------------------------------------ */
+static void
+xml_document_add_element_cv_qualified_type (xml_document_info_p xdi,
+                                            xml_document_element_p parent)
+{
+  xml_document_element_p e = xml_document_add_subelement(xdi, parent, 0, 1);
+  e->name = "CvQualifiedType";
+  xml_document_add_attribute_id(e);
+  xml_document_add_attribute_type(e);
+  xml_document_add_attribute(e, "const",
+                             xml_document_attribute_type_boolean,
+                             xml_document_attribute_use_optional, "0");
+  xml_document_add_attribute(e, "volatile",
+                             xml_document_attribute_type_boolean,
+                             xml_document_attribute_use_optional, "0");
+  xml_document_add_attribute(e, "restrict",
+                             xml_document_attribute_type_boolean,
+                             xml_document_attribute_use_optional, "0");
+}
+
+/*--------------------------------------------------------------------------*/
 
 /* When a class, struct, or union type is defined, it is automatically
    given a member typedef to itself.  Given a RECORD_TYPE or
@@ -2362,7 +3224,7 @@ void xml_dump_files (xml_dump_info_p xdi)
     }
 }
 
-/* ------------------------------------------------------------------------ */
+/*--------------------------------------------------------------------------*/
 
 /* Starting in the given scope, look for the qualified name.  */
 static tree
@@ -2473,7 +3335,7 @@ xml_add_start_nodes (xml_dump_info_p xdi, const char* in_start_list)
   free (start_list);
 }
 
-/* ------------------------------------------------------------------------ */
+/*--------------------------------------------------------------------------*/
 
 /* Convert the identifier IN_ID to an XML encoded form by passing its string
    to xml_get_encoded_string_from_string().  */
@@ -2555,3 +3417,181 @@ xml_get_encoded_identifier_from_string (const char* in_str)
 #undef XML_GREATER_THAN
 #undef XML_SINGLE_QUOTE
 #undef XML_DOUBLE_QUOTE
+
+/*--------------------------------------------------------------------------*/
+/* Check at
+
+http://tools.decisionsoft.com/schemaValidate.html
+http://www.xmlfiles.com/dtd/dtd_attributes.asp
+http://www.w3schools.com/schema/schema_complex_subst.asp
+
+*/
+/*
+<?xml version="1.0"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           targetNamespace="http://www.w3schools.com"
+           xmlns="http://www.w3schools.com"
+           elementFormDefault="qualified">
+ <xs:element name="to" type="xs:string"/>
+ <xs:element name="note">
+  <xs:complexType>
+   <xs:sequence><!-- How to specify zero or more in any order? -->
+    <xs:element ref="to"/>
+    <xs:element name="from" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+   </xs:sequence>
+   <xs:attribute name="lang1" type="xs:ID" use="required"/>
+   <xs:attribute name="lang2" type="xs:IDREF" use="optional"/>
+  </xs:complexType>
+ </xs:element>
+</xs:schema>
+
+   <xs:element name="note" type="xs:string" minOccurs="0"/>
+   <xs:group ref="xs:facets" minOccurs="0" maxOccurs="unbounded"/>
+*/
+
+static void
+xml_document_generate_indent(xml_document_info_p xdi, int indent)
+{
+  int i;
+  for (i=0; i < indent; ++i)
+    {
+    fprintf (xdi->file, " ");
+    }
+}
+
+static void
+xml_document_generate_attribute(xml_document_info_p xdi,
+                                xml_document_element_p element,
+                                xml_document_attribute_p attribute,
+                                int indent)
+{
+  if(xdi->format == xml_document_format_dtd)
+    {
+    fprintf (xdi->file, "<!ATTLIST %s %s %s #%s>\n",
+             element->name, attribute->name,
+             xml_document_dtd_types[attribute->type],
+             xml_document_dtd_uses[attribute->use]);
+    }
+  else if(xdi->format == xml_document_format_schema)
+    {
+    xml_document_generate_indent(xdi, indent);
+    fprintf (xdi->file, "<xs:attribute name=\"%s\" type=\"%s\" use=\"%s\"/>",
+             attribute->name,
+             xml_document_schema_types[attribute->type],
+             xml_document_schema_uses[attribute->use]);
+    }
+}
+
+static void
+xml_document_generate_element(xml_document_info_p xdi,
+                              xml_document_element_p element, int indent)
+{
+  int i;
+  if(xdi->format == xml_document_format_dtd)
+    {
+    fprintf (xdi->file, "<!ELEMENT %s (", element->name);
+    if(element->num_subelements > 0)
+      {
+      char next[] = ",\n                                                    ";
+      const char* pnext = "";
+      next[strlen(element->name) + 12 + 2] = '\0';
+      for(i=0; i < element->num_subelements; ++i)
+        {
+        fprintf (xdi->file, "%s%s", pnext,
+                 element->subelements[i].element->name);
+        if(element->subelements[i].required &&
+           element->subelements[i].repeatable)
+          {
+          fprintf (xdi->file, "+");
+          }
+        else if(element->subelements[i].repeatable)
+          {
+          fprintf (xdi->file, "*");
+          }
+        else if(!element->subelements[i].required)
+          {
+          fprintf (xdi->file, "?");
+          }
+        pnext = next;
+        }
+      }
+    else
+      {
+      fprintf (xdi->file, "EMPTY", element);
+      }
+    fprintf (xdi->file, ")>\n");
+    }
+  else if(xdi->format == xml_document_format_schema)
+    {
+    xml_document_generate_indent(xdi, indent);
+    fprintf (xdi->file, "<xs:element name=\"%s\">\n", element);
+    xml_document_generate_indent(xdi, indent);
+    fprintf (xdi->file, " <xs:complexType>\n");
+    }
+
+  for(i=0; i < element->num_attributes; ++i)
+    {
+    xml_document_generate_attribute(xdi, element, &element->attributes[i],
+                                    indent+3);
+    }
+
+  for(i=0; i < element->num_subelements; ++i)
+    {
+    xml_document_generate_element(xdi, element->subelements[i].element,
+                                  indent+3);
+    }
+
+  if(xdi->format == xml_document_format_schema)
+    {
+    xml_document_generate_indent(xdi, indent);
+    fprintf (xdi->file, " </xs:complexType>\n");
+    xml_document_generate_indent(xdi, indent);
+    fprintf (xdi->file, "</xs:element>\n");
+    }
+}
+
+/* Main XML documentation generation function.  */
+void
+do_xml_document (const char* dtd_name, const char* schema_name)
+{
+  /* Record the documentation specification.  */
+  xml_document_info xdi;
+  xml_document_element_p element;
+  xml_document_subelement_p subelement;
+  memset(&xdi, 0, sizeof(xdi));
+
+  element = &xdi.elements[xdi.num_elements++];
+  element->name = "GCC-XML";
+  xml_document_add_element_fundamental_type (&xdi, element);
+  xml_document_add_element_unimplemented (&xdi, element);
+  xml_document_add_element_namespace_decl (&xdi, element);
+  xml_document_add_element_typedef (&xdi, element);
+  xml_document_add_element_function (&xdi, element);
+  xml_document_add_element_var_decl (&xdi, element);
+  xml_document_add_element_field_decl (&xdi, element);
+  xml_document_add_element_record_type (&xdi, element);
+  xml_document_add_element_fundamental_type (&xdi, element);
+  xml_document_add_element_function_type (&xdi, element);
+  xml_document_add_element_method_type (&xdi, element);
+  xml_document_add_element_pointer_type (&xdi, element);
+  xml_document_add_element_reference_type (&xdi, element);
+  xml_document_add_element_offset_type (&xdi, element);
+  xml_document_add_element_array_type (&xdi, element);
+  xml_document_add_element_enumeral_type (&xdi, element);
+  xml_document_add_element_cv_qualified_type (&xdi, element);
+
+  if(dtd_name)
+    {
+    /* Generate the DTD file.  */
+    xdi.file = fopen (dtd_name, "w");
+    xdi.format = xml_document_format_dtd;
+    if (xdi.file)
+      {
+      xml_document_generate_element(&xdi, &xdi.elements[0], 0);
+      }
+    else
+      {
+      XML_CP_ERROR ("could not open xml-dtd file `%s'", dtd_name);
+      }
+    }
+}
