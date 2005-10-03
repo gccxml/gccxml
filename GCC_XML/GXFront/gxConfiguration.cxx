@@ -761,7 +761,7 @@ bool gxConfiguration::ParseConfigLine(const char* in_line, std::string& key,
   std::string line = in_line;
   std::string::size_type lpos;
   std::string::size_type rpos;
-  lpos = line.find_first_not_of(" \t");
+  lpos = line.find_first_not_of(" \t\r");
 
   // Ignore comments and blank lines.
   if(lpos == std::string::npos) { return false; }
@@ -780,8 +780,8 @@ bool gxConfiguration::ParseConfigLine(const char* in_line, std::string& key,
   std::string rawValue = line.substr(rpos+1);
 
   // Pull off the value with no leading or trailing whitespace.
-  lpos = rawValue.find_first_not_of(" \t");
-  rpos = rawValue.find_last_not_of(" \t");
+  lpos = rawValue.find_first_not_of(" \t\r");
+  rpos = rawValue.find_last_not_of(" \t\r");
   if((lpos == std::string::npos) || (rpos == std::string::npos))
     {
     value = "";
