@@ -1,6 +1,7 @@
 .git*            export-ignore
 
 *.bat.in        -crlf
+*.bin           -crlf
 *.sh             crlf=input
 config.*         crlf=input
 configure        crlf=input
