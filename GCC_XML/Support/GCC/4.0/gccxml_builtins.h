@@ -9,6 +9,7 @@
 #define __builtin_types_compatible_p(x,y) 0
 #define __builtin_choose_expr(x,y,z) int
 #define __builtin_constant_p(x) 0
+#define __builtin_offsetof(x,y) 0
 void __builtin_return (void *RESULT);
 void * __builtin_return_address (unsigned int LEVEL);
 void * __builtin_frame_address (unsigned int LEVEL);
