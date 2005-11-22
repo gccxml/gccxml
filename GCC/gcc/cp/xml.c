@@ -74,7 +74,7 @@
 # define XML_PRE_3_4_TREE_VIA_PUBLIC
 #endif
 
-#define GCC_XML_C_VERSION "$Revision: 1.104 $"
+#define GCC_XML_C_VERSION "$Revision: 1.105 $"
 
 /*--------------------------------------------------------------------------*/
 /* Data structures for the actual XML dump.  */
@@ -871,45 +871,38 @@ xml_document_add_attribute_base_type(xml_document_element_p element)
 }
 
 /*--------------------------------------------------------------------------*/
-/* Print the XML attribute context="..." for the given node.  */
+/* Print the XML attribute context="..." for the given node.  If the
+   context is a type also print the XML attribute access="..." for the
+   given decl.  */
 static void
 xml_print_context_attribute (xml_dump_info_p xdi, tree n)
 {
   if(n != global_namespace)
     {
-    fprintf (xdi->file, " context=\"_%d\"",
-             xml_add_node (xdi, CP_DECL_CONTEXT (n), 0));
-    }
-}
+    tree context = CP_DECL_CONTEXT (n);
+    if(context)
+      {
+      /* Print the context attribute.  */
+      fprintf (xdi->file, " context=\"_%d\"",
+               xml_add_node (xdi, context, 0));
 
-static void
-xml_document_add_attribute_context(xml_document_element_p element,
-                                   xml_document_attribute_use use)
-{
-  xml_document_add_attribute(element, "context",
-                             xml_document_attribute_type_idref, use, 0);
-}
-
-/*--------------------------------------------------------------------------*/
-/* Print the XML attribute access="..." for the given decl.  */
-static void
-xml_print_access_attribute (xml_dump_info_p xdi, tree d)
-{
-  tree context = CP_DECL_CONTEXT (d);
-  if (context && TYPE_P(context))
-    {
-    if (TREE_PRIVATE (d))
-      {
-      fprintf (xdi->file, " access=\"private\"");
-      }
-    else if (TREE_PROTECTED (d))
-      {
-      fprintf (xdi->file, " access=\"protected\"");
-      }
-    else
-      {
-      /* Default for access attribute is public.  */
-      /* fprintf (xdi->file, " access=\"public\"");  */
+      /* If the context is a type, print the access attribute.  */
+      if (TYPE_P(context))
+        {
+        if (TREE_PRIVATE (n))
+          {
+          fprintf (xdi->file, " access=\"private\"");
+          }
+        else if (TREE_PROTECTED (n))
+          {
+          fprintf (xdi->file, " access=\"protected\"");
+          }
+        else
+          {
+          /* Default for access attribute is public.  */
+          /* fprintf (xdi->file, " access=\"public\"");  */
+          }
+        }
       }
     }
 }
@@ -920,6 +913,19 @@ xml_document_add_attribute_access(xml_document_element_p element)
   xml_document_add_attribute(element, "access",
                              xml_document_attribute_type_enum_access,
                              xml_document_attribute_use_optional, "public");
+}
+
+static void
+xml_document_add_attribute_context(xml_document_element_p element,
+                                   xml_document_attribute_use use,
+                                   int do_access)
+{
+  xml_document_add_attribute(element, "context",
+                             xml_document_attribute_type_idref, use, 0);
+  if(do_access)
+    {
+    xml_document_add_attribute_access(element);
+    }
 }
 
 /*--------------------------------------------------------------------------*/
@@ -1576,7 +1582,8 @@ xml_document_add_element_namespace_decl (xml_document_info_p xdi,
   e->name = "Namespace";
   xml_document_add_attribute_id(e);
   xml_document_add_attribute_name(e, xml_document_attribute_use_required);
-  xml_document_add_attribute_context(e, xml_document_attribute_use_required);
+  xml_document_add_attribute_context(e, xml_document_attribute_use_required,
+                                     0);
   xml_document_add_attribute_attributes(e);
   xml_document_add_attribute(e, "members",
                              xml_document_attribute_type_idrefs,
@@ -1588,7 +1595,8 @@ xml_document_add_element_namespace_decl (xml_document_info_p xdi,
   e->name = "NamespaceAlias";
   xml_document_add_attribute_id(e);
   xml_document_add_attribute_name(e, xml_document_attribute_use_required);
-  xml_document_add_attribute_context(e, xml_document_attribute_use_required);
+  xml_document_add_attribute_context(e, xml_document_attribute_use_required,
+                                     0);
   xml_document_add_attribute(e, "namespace",
                              xml_document_attribute_type_idref,
                              xml_document_attribute_use_required, 0);
@@ -1636,7 +1644,8 @@ xml_document_add_element_typedef (xml_document_info_p xdi,
   xml_document_add_attribute_id(e);
   xml_document_add_attribute_name(e, xml_document_attribute_use_required);
   xml_document_add_attribute_type(e);
-  xml_document_add_attribute_context(e, xml_document_attribute_use_required);
+  xml_document_add_attribute_context(e, xml_document_attribute_use_required,
+                                     1);
   xml_document_add_attribute_location(e, xml_document_attribute_use_required);
   xml_document_add_attribute_attributes(e);
 }
@@ -1729,7 +1738,6 @@ xml_output_function_decl (xml_dump_info_p xdi, tree fd, xml_dump_node_p dn)
   tree name = DECL_NAME (fd);
   tree body = DECL_SAVED_TREE(fd);
   int do_returns = 0;
-  int do_access = 0;
   int do_const = 0;
   int do_virtual = 0;
   int do_static = 0;
@@ -1740,13 +1748,13 @@ xml_output_function_decl (xml_dump_info_p xdi, tree fd, xml_dump_node_p dn)
   if (DECL_CONSTRUCTOR_P (fd))
     {
     /* A class constructor.  */
-    tag = "Constructor"; do_access = 1; do_artificial = 1;
+    tag = "Constructor"; do_artificial = 1;
     do_explicit = 1;
     }
   else if (DECL_DESTRUCTOR_P (fd))
     {
     /* A class destructor.  */
-    tag = "Destructor"; do_access = 1; do_virtual = 1; do_artificial = 1;
+    tag = "Destructor"; do_virtual = 1; do_artificial = 1;
     }
   else if (DECL_OVERLOADED_OPERATOR_P (fd))
     {
@@ -1754,7 +1762,7 @@ xml_output_function_decl (xml_dump_info_p xdi, tree fd, xml_dump_node_p dn)
       {
       /* A type-conversion operator in a class.  */
       tag = "Converter";
-      do_returns = 1; do_access = 1; do_const = 1; do_virtual = 1;
+      do_returns = 1; do_const = 1; do_virtual = 1;
       }
     else
       {
@@ -1763,7 +1771,7 @@ xml_output_function_decl (xml_dump_info_p xdi, tree fd, xml_dump_node_p dn)
         /* An operator in a class.  */
         tag = "OperatorMethod";
         name = xml_reverse_opname_lookup (DECL_NAME (fd));
-        do_returns = 1; do_access = 1; do_const = 1; do_virtual = 1;
+        do_returns = 1; do_const = 1; do_virtual = 1;
         do_static = 1;
         }
       else
@@ -1780,7 +1788,7 @@ xml_output_function_decl (xml_dump_info_p xdi, tree fd, xml_dump_node_p dn)
     if (DECL_FUNCTION_MEMBER_P (fd))
       {
       /* A member of a class.  */
-      tag = "Method"; do_returns = 1; do_access = 1; do_const = 1;
+      tag = "Method"; do_returns = 1; do_const = 1;
       do_virtual = 1; do_static = 1;
       }
     else
@@ -1798,7 +1806,6 @@ xml_output_function_decl (xml_dump_info_p xdi, tree fd, xml_dump_node_p dn)
     {
     xml_print_returns_attribute (xdi, TREE_TYPE (TREE_TYPE (fd)), dn->complete);
     }
-  if(do_access)  xml_print_access_attribute (xdi, fd);
   if(do_explicit) xml_print_explicit_attribute (xdi, fd);
   if(do_const)   xml_print_const_method_attribute (xdi, fd);
   if(do_virtual) xml_print_virtual_method_attributes (xdi, fd);
@@ -1877,10 +1884,6 @@ xml_document_add_element_function_helper (xml_document_info_p xdi,
     {
     xml_document_add_attribute_returns(e);
     }
-  if(do_access)
-    {
-    xml_document_add_attribute_access(e);
-    }
   if(do_const)
     {
     xml_document_add_attribute_const_method(e);
@@ -1902,7 +1905,8 @@ xml_document_add_element_function_helper (xml_document_info_p xdi,
     xml_document_add_attribute_explicit(e);
     }
   xml_document_add_attribute_throw(e);
-  xml_document_add_attribute_context(e, xml_document_attribute_use_required);
+  xml_document_add_attribute_context(e, xml_document_attribute_use_required,
+                                     do_access);
   xml_document_add_attribute_mangled(e);
   xml_document_add_attribute_location(e, xml_document_attribute_use_required);
   xml_document_add_attribute_endline(e, xml_document_attribute_use_optional);
@@ -1966,7 +1970,6 @@ xml_output_var_decl (xml_dump_info_p xdi, tree vd, xml_dump_node_p dn)
   xml_print_type_attribute (xdi, type, dn->complete);
   xml_print_init_attribute (xdi, DECL_INITIAL (vd));
   xml_print_context_attribute (xdi, vd);
-  xml_print_access_attribute (xdi, vd);
   xml_print_mangled_attribute (xdi, vd);
   xml_print_location_attribute (xdi, vd);
   xml_print_extern_attribute (xdi, vd);
@@ -1985,8 +1988,8 @@ xml_document_add_element_var_decl (xml_document_info_p xdi,
   xml_document_add_attribute_name(e, xml_document_attribute_use_required);
   xml_document_add_attribute_type(e);
   xml_document_add_attribute_init(e);
-  xml_document_add_attribute_context(e, xml_document_attribute_use_required);
-  xml_document_add_attribute_access(e);
+  xml_document_add_attribute_context(e, xml_document_attribute_use_required,
+                                     1);
   xml_document_add_attribute_mangled(e);
   xml_document_add_attribute_location(e, xml_document_attribute_use_required);
   xml_document_add_attribute_extern(e);
@@ -2003,7 +2006,6 @@ xml_output_field_decl (xml_dump_info_p xdi, tree fd, xml_dump_node_p dn)
   fprintf (xdi->file, "  <Field");
   xml_print_id_attribute (xdi, dn);
   xml_print_name_attribute (xdi, DECL_NAME (fd));
-  xml_print_access_attribute (xdi, fd);
   xml_print_bits_attribute(xdi, fd);
   if (DECL_BIT_FIELD_TYPE (fd))
     {
@@ -2030,11 +2032,11 @@ xml_document_add_element_field_decl (xml_document_info_p xdi,
   e->name = "Field";
   xml_document_add_attribute_id(e);
   xml_document_add_attribute_name(e, xml_document_attribute_use_required);
-  xml_document_add_attribute_access(e);
   xml_document_add_attribute_bits(e);
   xml_document_add_attribute_type(e);
   xml_document_add_attribute_offset(e);
-  xml_document_add_attribute_context(e, xml_document_attribute_use_required);
+  xml_document_add_attribute_context(e, xml_document_attribute_use_required,
+                                     1);
   xml_document_add_attribute_mangled(e);
   xml_document_add_attribute_mutable(e);
   xml_document_add_attribute_location(e, xml_document_attribute_use_required);
@@ -2067,7 +2069,6 @@ xml_output_record_type (xml_dump_info_p xdi, tree rt, xml_dump_node_p dn)
     xml_print_name_attribute (xdi, DECL_NAME (TYPE_NAME (rt)));
     }
   xml_print_context_attribute (xdi, TYPE_NAME (rt));
-  xml_print_access_attribute (xdi, TYPE_NAME (rt));
   xml_print_abstract_attribute (xdi, rt);
   xml_print_incomplete_attribute (xdi, rt);
   xml_print_mangled_attribute (xdi, TYPE_NAME (rt));
@@ -2249,8 +2250,8 @@ xml_document_add_element_record_type_helper (xml_document_info_p xdi,
   e->name = tag;
   xml_document_add_attribute_id(e);
   xml_document_add_attribute_name(e, xml_document_attribute_use_optional);
-  xml_document_add_attribute_context(e, xml_document_attribute_use_required);
-  xml_document_add_attribute_access(e);
+  xml_document_add_attribute_context(e, xml_document_attribute_use_required,
+                                     1);
   xml_document_add_attribute_abstract(e);
   xml_document_add_attribute_incomplete(e);
   xml_document_add_attribute_mangled(e);
@@ -2545,7 +2546,6 @@ xml_output_enumeral_type (xml_dump_info_p xdi, tree t, xml_dump_node_p dn)
   xml_print_id_attribute (xdi, dn);
   xml_print_name_attribute (xdi, DECL_NAME (TYPE_NAME (t)));
   xml_print_context_attribute (xdi, TYPE_NAME (t));
-  xml_print_access_attribute (xdi, TYPE_NAME (t));
   xml_print_location_attribute (xdi, TYPE_NAME (t));
   xml_print_attributes_attribute (xdi, TYPE_ATTRIBUTES(t), 0);
   xml_print_artificial_attribute (xdi, TYPE_NAME (t));
@@ -2592,8 +2592,8 @@ xml_document_add_element_enumeral_type (xml_document_info_p xdi,
   e->name = "Enumeration";
   xml_document_add_attribute_id(e);
   xml_document_add_attribute_name(e, xml_document_attribute_use_required);
-  xml_document_add_attribute_context(e, xml_document_attribute_use_required);
-  xml_document_add_attribute_access(e);
+  xml_document_add_attribute_context(e, xml_document_attribute_use_required,
+                                     1);
   xml_document_add_attribute_location(e, xml_document_attribute_use_required);
   xml_document_add_attribute_attributes(e);
   xml_document_add_attribute_artificial(e);
