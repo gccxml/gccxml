@@ -74,7 +74,7 @@
 # define XML_PRE_3_4_TREE_VIA_PUBLIC
 #endif
 
-#define GCC_XML_C_VERSION "$Revision: 1.105 $"
+#define GCC_XML_C_VERSION "$Revision: 1.106 $"
 
 /*--------------------------------------------------------------------------*/
 /* Data structures for the actual XML dump.  */
@@ -899,8 +899,7 @@ xml_print_context_attribute (xml_dump_info_p xdi, tree n)
           }
         else
           {
-          /* Default for access attribute is public.  */
-          /* fprintf (xdi->file, " access=\"public\"");  */
+          fprintf (xdi->file, " access=\"public\"");
           }
         }
       }
