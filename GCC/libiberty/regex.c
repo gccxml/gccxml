@@ -8172,12 +8172,12 @@ weak_alias (__regexec, regexec)
 /* Returns a message corresponding to an error code, ERRCODE, returned
    from either regcomp or regexec.   We don't use PREG here.  */
 
+/* BEGIN GCC-XML MODIFICATIONS (2005/12/13 15:35:04) */
+/* Removed use of old-style declaration to make VS8 happy.  For some
+   reason it was unhappy only with this specific function.  */
 size_t
-regerror (errcode, preg, errbuf, errbuf_size)
-    int errcode;
-    const regex_t *preg;
-    char *errbuf;
-    size_t errbuf_size;
+regerror (int errcode, const regex_t* preg, char* errbuf, size_t errbuf_size)
+/* END GCC-XML MODIFICATIONS (2005/12/13 15:35:04) */
 {
   const char *msg;
   size_t msg_size;

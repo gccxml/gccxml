@@ -20,6 +20,14 @@
 #include <stdio.h>
 #include <errno.h>
 
+/* BEGIN GCC-XML MODIFICATIONS (2005/12/13 15:35:04) */
+/* VS8 defines sys_errlist inside stdlib.h so we need to include it
+   inside this sys_errlist macro hack region.  */
+#if defined(_MSC_VER) && _MSC_VER >= 1400
+# include <stdlib.h>
+#endif
+/* END GCC-XML MODIFICATIONS (2005/12/13 15:35:04) */
+
 #ifdef HAVE_SYS_ERRLIST
 #undef sys_nerr
 #undef sys_errlist
