@@ -58,33 +58,37 @@ int main(int argc, char* argv[])
     "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\VisualStudio\\7.0;InstallDir";
   const char* vc71Registry =
     "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\VisualStudio\\7.1;InstallDir";
+  const char* vc8Registry =
+    "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\VisualStudio\\8.0;InstallDir";
 
   // Check which versions of MSVC are installed.
   std::string msvc6;
   std::string msvc7;
   std::string msvc71;
+  std::string msvc8;
   bool have6 = gxSystemTools::ReadRegistryValue(vc6Registry, msvc6);
   bool have7 = gxSystemTools::ReadRegistryValue(vc7Registry, msvc7);
   bool have71 = gxSystemTools::ReadRegistryValue(vc71Registry, msvc71);
+  bool have8 = gxSystemTools::ReadRegistryValue(vc8Registry, msvc8);
 
   // See if there is anything to do.
-  if(!have6 && !have7 && !have71)
+  if(!have6 && !have7 && !have71 && !have8)
     {
-    std::cout << "None of MSVC 6, 7, or 7.1 is installed.\n";
+    std::cout << "None of MSVC 6, 7, 7.1, or 8 is installed.\n";
     }
 
   // Need to install at least one of the support directories.  We need
   // to find the cat and patch executables.
   std::string patchCommand;
   if(!FindTool(patchDir.c_str(), "patch", patchCommand) &&
-     (have6||have7||have71))
+     (have6||have7||have71||have8))
     {
     std::cerr << "Cannot find patch executable.\n";
     return 1;
     }
   std::string catCommand;
   if(!FindTool(patchDir.c_str(), "cat", catCommand) &&
-     (have6||have7||have71))
+     (have6||have7||have71||have8))
     {
     std::cerr << "Cannot find cat executable.\n";
     return 1;
@@ -182,6 +186,43 @@ int main(int argc, char* argv[])
     else
       {
       std::cerr << "Have MSVC 7.1, but cannot find vc71PlatformSDK.patch.\n";
+      result = 1;
+      }
+    }
+  if(have8)
+    {
+    std::string msvc8i = msvc8 + "/../../Vc/Include";
+    std::string msvc8p = msvc8 + "/../../Vc/PlatformSDK/Include";
+    msvc8i = gxSystemTools::CollapseDirectory(msvc8i.c_str());
+    msvc8p = gxSystemTools::CollapseDirectory(msvc8p.c_str());
+    std::string patchI = patchDir + "/vc8Include.patch";
+    std::string patchP = patchDir + "/vc8PlatformSDK.patch";
+    std::string destPathI = gccxmlRoot+"/Vc8/Include";
+    std::string destPathP = gccxmlRoot+"/Vc8/PlatformSDK";
+    if(gxSystemTools::FileExists(patchI.c_str()))
+      {
+      if(!InstallSupport(patchCommand.c_str(), catCommand.c_str(),
+                         patchI.c_str(), msvc8i.c_str(), destPathI.c_str()))
+        {
+        result = 1;
+        }
+      }
+    else
+      {
+      std::cerr << "Have MSVC 8, but cannot find vc8Include.patch.\n";
+      result = 1;
+      }
+    if(gxSystemTools::FileExists(patchP.c_str()))
+      {
+      if(!InstallSupport(patchCommand.c_str(), catCommand.c_str(),
+                         patchP.c_str(), msvc8p.c_str(), destPathP.c_str()))
+        {
+        result = 1;
+        }
+      }
+    else
+      {
+      std::cerr << "Have MSVC 8, but cannot find vc8PlatformSDK.patch.\n";
       result = 1;
       }
     }
