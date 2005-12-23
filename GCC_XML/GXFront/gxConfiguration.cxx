@@ -28,6 +28,8 @@ const char* gxConfigurationVc71Registry =
 "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\VisualStudio\\7.1;InstallDir";
 const char* gxConfigurationVc8Registry =
 "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\VisualStudio\\8.0;InstallDir";
+const char* gxConfigurationVc8RegistryVersion =
+"HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\VisualStudio\\8.0;CLR Version";
 
 //----------------------------------------------------------------------------
 gxConfiguration::gxConfiguration()
@@ -871,8 +873,27 @@ bool gxConfiguration::FindFlags()
                                                   loc);
     bool have71 = gxSystemTools::ReadRegistryValue(gxConfigurationVc71Registry,
                                                    loc);
-    bool have8 = gxSystemTools::ReadRegistryValue(gxConfigurationVc8Registry,
-                                                  loc);
+
+    // Look for a VS8 that is not the beta release.
+    bool have8 = false;
+    if(gxSystemTools::ReadRegistryValue(gxConfigurationVc8Registry, loc))
+      {
+      // The "CLR Version" registry entry in VS 8 has value "v2.0.40607"
+      // for the beta and "v2.0.50727" for the release.
+      std::string version;
+      if(gxSystemTools::ReadRegistryValue(gxConfigurationVc8RegistryVersion,
+                                          version))
+        {
+        int vnum;
+        if((sscanf(version.c_str(), "v2.0.%d", &vnum) == 1) &&
+           vnum >= 50727)
+          {
+          have8 = true;
+          }
+        }
+      }
+
+    // Find available support directories.
     bool support6 =
       gxSystemTools::FileIsDirectory((m_GCCXML_ROOT+"/Vc6").c_str());
     bool support7 =

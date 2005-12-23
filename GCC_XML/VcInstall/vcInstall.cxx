@@ -69,7 +69,26 @@ int main(int argc, char* argv[])
   bool have6 = gxSystemTools::ReadRegistryValue(vc6Registry, msvc6);
   bool have7 = gxSystemTools::ReadRegistryValue(vc7Registry, msvc7);
   bool have71 = gxSystemTools::ReadRegistryValue(vc71Registry, msvc71);
-  bool have8 = gxSystemTools::ReadRegistryValue(vc8Registry, msvc8);
+  bool have8 = false;
+
+  // Look for a VS8 that is not the beta release.
+  if(gxSystemTools::ReadRegistryValue(vc8Registry, msvc8))
+    {
+    // The "CLR Version" registry entry in VS 8 has value "v2.0.40607"
+    // for the beta and "v2.0.50727" for the release.
+    const char* vc8RegistryVersion =
+      "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\VisualStudio\\8.0;CLR Version";
+    std::string version;
+    if(gxSystemTools::ReadRegistryValue(vc8RegistryVersion, version))
+      {
+      int vnum;
+      if((sscanf(version.c_str(), "v2.0.%d", &vnum) == 1) &&
+         vnum >= 50727)
+        {
+        have8 = true;
+        }
+      }
+    }
 
   // See if there is anything to do.
   if(!have6 && !have7 && !have71 && !have8)
@@ -300,7 +319,8 @@ bool InstallSupport(const char* patchCommand, const char* catCommand,
     return true;
     }
 
-  std::cerr << "Error running patch.\n";
+  std::cerr << "Error running patch.  Output is ["
+            << output.c_str() << "]\n";
   return false;
 }
 
