@@ -234,6 +234,9 @@ void gxConfiguration::AddArguments(std::vector<std::string>& arguments) const
                                     GCCXML_VERSION_MINOR*100 +
                                     GCCXML_VERSION_PATCH);
   arguments.push_back(version.str().c_str());
+  arguments.push_back("-D__GCCXML_GNUC__=3");
+  arguments.push_back("-D__GCCXML_GNUC_MINOR__=3");
+  arguments.push_back("-D__GCCXML_GNUC_PATCHLEVEL__=2");
 
   // Add user arguments.
   for(std::vector<std::string>::const_iterator i=m_Arguments.begin();
