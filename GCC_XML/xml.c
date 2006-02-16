@@ -74,7 +74,7 @@
 # define XML_PRE_3_4_TREE_VIA_PUBLIC
 #endif
 
-#define GCC_XML_C_VERSION "$Revision: 1.106 $"
+#define GCC_XML_C_VERSION "$Revision: 1.107 $"
 
 /*--------------------------------------------------------------------------*/
 /* Data structures for the actual XML dump.  */
@@ -3020,6 +3020,7 @@ xml_find_template_parm (tree t)
     case TRUTH_ANDIF_EXPR: return 0;
     case TRUTH_NOT_EXPR: return 0;
     case TRUTH_ORIF_EXPR: return 0;
+    case STATIC_CAST_EXPR: return 0;
     default:
       fprintf(stderr, "xml_find_template_parm encountered unsupported type %s\n",
               tree_code_name[TREE_CODE (t)]);
