@@ -61,7 +61,7 @@ const gxDocumentationEntry gxDocumentationCompilers[] =
   {0, "GCC-XML can simulate any of the following compilers:", 0},
   {"GCC", "Versions 4.0, 3.x, and 2.95.x", 0},
   {"SGI MIPSpro", "Version 7.3x", 0},
-  {"Visual C++", "Versions 7.1, 7.0, and 6 (sp5)", 0},
+  {"Visual C++", "Versions 8, 7.1, 7.0, and 6 (sp5)", 0},
   {"Intel C++", "Versions 7.0 and 7.1 for Linux", 0},
   {"Borland C++", "Version 5.5.x for Windows", 0},
   {0, "The following extra C preprocessor definitions are provided:", 0},
@@ -69,11 +69,11 @@ const gxDocumentationEntry gxDocumentationCompilers[] =
    "patch versions of GCC-XML.  This preprocessor symbol identifies "
    "GCC-XML to the source code as it is preprocessed.  It can be used "
    "to enable GCC-XML-specific information.", 0},
-  {"-D__GCCXML_GNUC__=3",
+  {"-D__GCCXML_GNUC__=M",
    "Defined to internal GCC parser major version.", 0},
-  {"-D__GCCXML_GNUC_MINOR__=3",
+  {"-D__GCCXML_GNUC_MINOR__=m",
    "Defined to internal GCC parser minor version.", 0},
-  {"-D__GCCXML_GNUC_PATCHLEVEL__=2",
+  {"-D__GCCXML_GNUC_PATCHLEVEL__=p",
    "Defined to internal GCC parser patchlevel.", 0},
   {0,
    "Advanced users can simulate other compilers by manually configuring "
@@ -150,8 +150,9 @@ const gxDocumentationEntry gxDocumentationSettings[] =
    "GCC-XML will attempt to automatically determine how to simulate "
    "the compiler specified by this setting.  The compiler is specified "
    "by its executable name (such as \"g++\").  For Visual Studio, the "
-   "compiler is specified by \"msvc6\" or \"msvc7\" (if \"cl\" is given, "
-   "GCC-XML usually chooses msvc6 or msvc7 correctly)."},
+   "compiler is specified by "
+   "\"msvc6\", \"msvc7\", \"msvc71\", or \"msvc8\" "
+   "(if \"cl\" is given, GCC-XML attempts to guess which VS to use)."},
   {"GCCXML_CXXFLAGS", "The flags for the C++ compiler to be simulated.",
    "The behavior of most compilers can be adjusted by specifying flags on "
    "the command line.  When GCC-XML attempts to automatically determine "
