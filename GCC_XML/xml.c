@@ -74,7 +74,7 @@
 # define XML_PRE_3_4_TREE_VIA_PUBLIC
 #endif
 
-#define GCC_XML_C_VERSION "$Revision: 1.107 $"
+#define GCC_XML_C_VERSION "$Revision: 1.108 $"
 
 /*--------------------------------------------------------------------------*/
 /* Data structures for the actual XML dump.  */
@@ -2217,9 +2217,11 @@ xml_output_record_type (xml_dump_info_p xdi, tree rt, xml_dump_node_p dn)
 #endif
 
         fprintf (xdi->file,
-                 "    <Base type=\"_%d\" access=\"%s\" virtual=\"%d\"/>\n",
+                 "    <Base type=\"_%d\" access=\"%s\" virtual=\"%d\""
+                 " offset=\"%d\"/>\n",
                  xml_add_node (xdi, BINFO_TYPE (base_binfo), 1),
-                 access, is_virtual);
+                 access, is_virtual,
+                 tree_low_cst (BINFO_OFFSET (base_binfo), 0));
         }
       }
     }
@@ -2237,6 +2239,9 @@ xml_document_add_element_record_type_base (xml_document_info_p xdi,
   xml_document_add_attribute_access(e);
   xml_document_add_attribute(e, "virtual",
                              xml_document_attribute_type_boolean,
+                             xml_document_attribute_use_optional, "0");
+  xml_document_add_attribute(e, "offset",
+                             xml_document_attribute_type_integer,
                              xml_document_attribute_use_optional, "0");
 }
 
