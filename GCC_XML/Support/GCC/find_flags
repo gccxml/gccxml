@@ -74,6 +74,9 @@ if [ "$MAJOR_VERSION" -lt 3 ]; then
   if [ "$MINOR_VERSION" = 96 ]; then
     INCLUDES="-iwrapper\"$SELFPATH/2.96\" $INCLUDES"
   fi
+elif [ "$MAJOR_VERSION" = 4 -a "$MINOR_VERSION" -ge 1 ]; then
+  INCLUDES="-iwrapper\"$SELFPATH/4.1\" $INCLUDES"
+  SPECIAL="-include \"$SELFPATH/4.1/gccxml_builtins.h\""
 elif [ "$MAJOR_VERSION" = 4 -a "$MINOR_VERSION" -ge 0 ]; then
   INCLUDES="-iwrapper\"$SELFPATH/4.0\" $INCLUDES"
   SPECIAL="-include \"$SELFPATH/4.0/gccxml_builtins.h\""
