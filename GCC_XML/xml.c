@@ -74,7 +74,7 @@
 # define XML_PRE_3_4_TREE_VIA_PUBLIC
 #endif
 
-#define GCC_XML_C_VERSION "$Revision: 1.109 $"
+#define GCC_XML_C_VERSION "$Revision: 1.110 $"
 
 /*--------------------------------------------------------------------------*/
 /* Data structures for the actual XML dump.  */
@@ -1508,7 +1508,10 @@ xml_output_namespace_decl (xml_dump_info_p xdi, tree ns, xml_dump_node_p dn)
     {
     fprintf (xdi->file, "  <Namespace");
     xml_print_id_attribute (xdi, dn);
-    xml_print_name_attribute (xdi, DECL_NAME (ns));
+    if(DECL_NAME (ns) != anonymous_namespace_name)
+      {
+      xml_print_name_attribute (xdi, DECL_NAME (ns));
+      }
     xml_print_context_attribute (xdi, ns);
     xml_print_attributes_attribute (xdi, GCC_XML_DECL_ATTRIBUTES(ns), 0);
 
