@@ -74,7 +74,7 @@
 # define XML_PRE_3_4_TREE_VIA_PUBLIC
 #endif
 
-#define GCC_XML_C_VERSION "$Revision: 1.108 $"
+#define GCC_XML_C_VERSION "$Revision: 1.109 $"
 
 /*--------------------------------------------------------------------------*/
 /* Data structures for the actual XML dump.  */
@@ -1736,6 +1736,7 @@ xml_output_function_decl (xml_dump_info_p xdi, tree fd, xml_dump_node_p dn)
   const char* tag;
   tree name = DECL_NAME (fd);
   tree body = DECL_SAVED_TREE(fd);
+  int do_name = 1;
   int do_returns = 0;
   int do_const = 0;
   int do_virtual = 0;
@@ -1749,6 +1750,10 @@ xml_output_function_decl (xml_dump_info_p xdi, tree fd, xml_dump_node_p dn)
     /* A class constructor.  */
     tag = "Constructor"; do_artificial = 1;
     do_explicit = 1;
+    if(TYPE_ANONYMOUS_P (DECL_CONTEXT (fd)))
+      {
+      do_name = 0;
+      }
     }
   else if (DECL_DESTRUCTOR_P (fd))
     {
@@ -1799,7 +1804,10 @@ xml_output_function_decl (xml_dump_info_p xdi, tree fd, xml_dump_node_p dn)
 
   fprintf (xdi->file, "  <%s", tag);
   xml_print_id_attribute (xdi, dn);
-  xml_print_name_attribute (xdi, name);
+  if(do_name)
+    {
+    xml_print_name_attribute (xdi, name);
+    }
 
   if(do_returns)
     {
