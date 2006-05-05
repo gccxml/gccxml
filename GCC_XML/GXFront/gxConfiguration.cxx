@@ -868,7 +868,17 @@ bool gxConfiguration::FindFlags()
     }
   else if(compilerName == "msvc8")
     {
-    return this->FindFlagsMSVC8();
+    std::string loc;
+    bool have8ex =
+      gxSystemTools::ReadRegistryValue(gxConfigurationVc8exRegistry, loc);
+    if(have8ex)
+      {
+      return this->FindFlagsMSVC8ex();
+      }
+    else
+      {
+      return this->FindFlagsMSVC8();
+      }
     }
   else if(compilerName == "cl")
     {
