@@ -30,6 +30,10 @@ const char* gxConfigurationVc8Registry =
 "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\VisualStudio\\8.0;InstallDir";
 const char* gxConfigurationVc8RegistryVersion =
 "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\VisualStudio\\8.0;CLR Version";
+const char* gxConfigurationVc8exRegistry =
+"HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\VCExpress\\8.0;InstallDir";
+const char* gxConfigurationVc8sdkRegistry =
+"HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\MicrosoftSDK\\InstalledSDKs\\8F9E5EF3-A9A5-491B-A889-C58EFFECE8B3;Install Dir";
 
 //----------------------------------------------------------------------------
 gxConfiguration::gxConfiguration()
@@ -876,6 +880,10 @@ bool gxConfiguration::FindFlags()
                                                   loc);
     bool have71 = gxSystemTools::ReadRegistryValue(gxConfigurationVc71Registry,
                                                    loc);
+    bool have8ex =
+      gxSystemTools::ReadRegistryValue(gxConfigurationVc8exRegistry, loc);
+    bool have8sdk =
+      gxSystemTools::ReadRegistryValue(gxConfigurationVc8sdkRegistry, loc);
 
     // Look for a VS8 that is not the beta release.
     bool have8 = false;
@@ -905,49 +913,59 @@ bool gxConfiguration::FindFlags()
       gxSystemTools::FileIsDirectory((m_GCCXML_ROOT+"/Vc71").c_str());
     bool support8 =
       gxSystemTools::FileIsDirectory((m_GCCXML_ROOT+"/Vc8").c_str());
+    bool support8ex =
+      gxSystemTools::FileIsDirectory((m_GCCXML_ROOT+"/Vc8ex").c_str());
 
     // See if only one is installed.
-    if(have6 && !have7 && !have71 && !have8)
+    if(have6 && !have7 && !have71 && !have8 && !have8ex)
       {
       return this->FindFlagsMSVC6();
       }
-    else if(!have6 && have7 && !have71 && !have8)
+    else if(!have6 && have7 && !have71 && !have8 && !have8ex)
       {
       return this->FindFlagsMSVC7();
       }
-    else if(!have6 && !have7 && have71 && !have8)
+    else if(!have6 && !have7 && have71 && !have8 && !have8ex)
       {
       return this->FindFlagsMSVC71();
       }
-    else if(!have6 && !have7 && !have71 && have8)
+    else if(!have6 && !have7 && !have71 && have8 && !have8ex)
       {
       return this->FindFlagsMSVC8();
       }
-    else if(have6 || have7 || have71 || have8)
+    else if(!have6 && !have7 && !have71 && !have8 && have8ex)
+      {
+      return this->FindFlagsMSVC8ex();
+      }
+    else if(have6 || have7 || have71 || have8 || have8ex)
       {
       // Have more than one.  See if only one has the support
       // directory available.
-      if(support6 && !support7 && !support71 && !support8)
+      if(support6 && !support7 && !support71 && !support8 && !support8ex)
         {
         return this->FindFlagsMSVC6();
         }
-      else if(!support6 && support7 && !support71 && !support8)
+      else if(!support6 && support7 && !support71 && !support8 && !support8ex)
         {
         return this->FindFlagsMSVC7();
         }
-      else if(!support6 && !support7 && support71 && !support8)
+      else if(!support6 && !support7 && support71 && !support8 && !support8ex)
         {
         return this->FindFlagsMSVC71();
         }
-      else if(!support6 && !support7 && !support71 && support8)
+      else if(!support6 && !support7 && !support71 && support8 && !support8ex)
         {
         return this->FindFlagsMSVC8();
         }
-      else if(!support6 && !support7 && !support71 && !support8)
+      else if(!support6 && !support7 && !support71 && !support8 && support8ex)
+        {
+        return this->FindFlagsMSVC8ex();
+        }
+      else if(!support6 && !support7 && !support71 && !support8 && !support8ex)
         {
         std::cerr << "Compiler \"" << m_GCCXML_COMPILER
                   << "\" is not supported by GCC_XML because none of \n"
-                  << "the Vc6, Vc7, Vc71, or Vc8 "
+                  << "the Vc6, Vc7, Vc71, Vc8, or Vc8ex "
                   << "support directories exists.\n";
         return false;
         }
@@ -999,7 +1017,14 @@ bool gxConfiguration::FindFlags()
             }
           else if(output.find("Compiler Version 14.") != std::string::npos)
             {
-            return this->FindFlagsMSVC8();
+            if(have8)
+              {
+              return this->FindFlagsMSVC8();
+              }
+            else if(have8ex)
+              {
+              return this->FindFlagsMSVC8ex();
+              }
             }
           }
         // Couldn't tell by running the compiler.
@@ -1030,7 +1055,18 @@ bool gxConfiguration::FindFlags()
       std::cerr << "Warning:\n" << clText
                 << "Using MSVC 8 because it was used to build GCC-XML.\n"
                 << "\n";
-      return this->FindFlagsMSVC8();
+      if(have8)
+        {
+        return this->FindFlagsMSVC8();
+        }
+      else if(have8ex)
+        {
+        return this->FindFlagsMSVC8ex();
+        }
+      else
+        {
+        std::cerr << "No installed version of MSVC 8 was found!\n";
+        }
 #else
       // Give up.  The user must specify one.
       std::cerr << clText;
@@ -1345,6 +1381,98 @@ bool gxConfiguration::FindFlagsMSVC8()
     "-iwrapper\""+vcIncludePath2+"\" "
     "-I\""+msvcPath1+"\" "
     "-I\""+msvcPath2+"\" ";
+  return true;
+}
+
+//----------------------------------------------------------------------------
+bool gxConfiguration::FindFlagsMSVC8ex()
+{
+  // The registry key to use when attempting to automatically find the
+  // MSVC include files.
+  std::string msvcPath;
+  if(!gxSystemTools::ReadRegistryValue(gxConfigurationVc8exRegistry, msvcPath))
+    {
+    std::cerr << "Error finding MSVC 8 Express from registry.\n";
+    return false;
+    }
+  std::string msvcPath1 = msvcPath+"/../../Vc/Include";
+  msvcPath1 = gxSystemTools::CollapseDirectory(msvcPath1.c_str());
+  gxSystemTools::ConvertToUnixSlashes(msvcPath1);
+  std::string vcIncludePath1 = m_GCCXML_ROOT+"/Vc8ex/Include";
+  gxSystemTools::ConvertToUnixSlashes(vcIncludePath1);
+
+  std::string psdkPath;
+  bool havePSDK =
+    gxSystemTools::ReadRegistryValue(gxConfigurationVc8sdkRegistry, psdkPath);
+  std::string msvcPath2;
+  std::string vcIncludePath2;
+  if(havePSDK)
+    {
+    msvcPath2 = psdkPath+"/Include";
+    msvcPath2 = gxSystemTools::CollapseDirectory(msvcPath2.c_str());
+    gxSystemTools::ConvertToUnixSlashes(msvcPath2);
+    vcIncludePath2 = m_GCCXML_ROOT+"/Vc8ex/PlatformSDK";
+    gxSystemTools::ConvertToUnixSlashes(vcIncludePath2);
+    }
+
+  // Make sure the support directories exist.
+  if(!gxSystemTools::FileIsDirectory(vcIncludePath1.c_str()))
+    {
+    std::cerr << "Vc8ex/Include support directory is not available.\n";
+    std::cerr << "Checked \"" << vcIncludePath1.c_str() << "\".\n";
+    return false;
+    }
+  if(havePSDK && !gxSystemTools::FileIsDirectory(vcIncludePath2.c_str()))
+    {
+    std::cerr << "Vc8ex/PlatformSDK support directory is not available.\n";
+    std::cerr << "Checked \"" << vcIncludePath2.c_str() << "\".\n";
+    return false;
+    }
+
+  m_GCCXML_FLAGS =
+    "-U__STDC__ -U__MINGW32__"
+    "-D__stdcall=__attribute__((__stdcall__)) "
+    "-D__cdecl=__attribute__((__cdecl__)) "
+    "-D__fastcall=__attribute__((__fastcall__)) "
+    "-D__thiscall=__attribute__((__thiscall__)) "
+    "-D_stdcall=__attribute__((__stdcall__)) "
+    "-D_cdecl=__attribute__((__cdecl__)) "
+    "-D_fastcall=__attribute__((__fastcall__)) "
+    "-D_thiscall=__attribute__((__thiscall__)) "
+    "-D__declspec(x)=__attribute__((x)) -D__pragma(x)= "
+    "-D__cplusplus -D_inline=inline -D__forceinline=__inline "
+    "-D_MSC_VER=1400 -D_MSC_EXTENSIONS -D_WIN32 "
+    "-D_M_IX86 "
+    "-D_WCHAR_T_DEFINED -DPASCAL= -DRPC_ENTRY= -DSHSTDAPI=HRESULT "
+    "-D_INTEGRAL_MAX_BITS=64 "
+    "-D__uuidof(x)=IID() -DSHSTDAPI_(x)=x "
+    "-D__w64= "
+    "-D__int8=char "
+    "-D__int16=short "
+    "-D__int32=int "
+    "-D__int64=\"long long\" "
+    "-D__ptr64= "
+    "-DSTRSAFE_NO_DEPRECATE "
+    "-D_CRT_FAR_MAPPINGS_NO_DEPRECATE "
+    "-D_CRT_MANAGED_FP_NO_DEPRECATE "
+    "-D_CRT_MANAGED_HEAP_NO_DEPRECATE "
+    "-D_CRT_NONSTDC_NO_DEPRECATE "
+    "-D_CRT_OBSOLETE_NO_DEPRECATE "
+    "-D_CRT_SECURE_NO_DEPRECATE "
+    "-D_CRT_SECURE_NO_DEPRECATE_GLOBALS "
+    "-D_CRT_VCCLRIT_NO_DEPRECATE "
+    "-D_SCL_SECURE_NO_DEPRECATE "
+    "-D_WINDOWS_SECURE_NO_DEPRECATE ";
+  m_GCCXML_FLAGS += "-iwrapper\""+vcIncludePath1+"\" ";
+  if(havePSDK)
+    {
+    m_GCCXML_FLAGS += "-iwrapper\""+vcIncludePath2+"\" ";
+    }
+  m_GCCXML_FLAGS += "-I\""+msvcPath1+"\" ";
+  if(havePSDK)
+    {
+    m_GCCXML_FLAGS += "-I\""+msvcPath2+"\" ";
+    }
   return true;
 }
 

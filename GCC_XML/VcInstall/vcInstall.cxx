@@ -60,16 +60,25 @@ int main(int argc, char* argv[])
     "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\VisualStudio\\7.1;InstallDir";
   const char* vc8Registry =
     "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\VisualStudio\\8.0;InstallDir";
+  const char* vc8exRegistry =
+    "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\VCExpress\\8.0;InstallDir";
+  const char* vc8sdkRegistry =
+    "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\MicrosoftSDK\\InstalledSDKs\\8F9E5EF3-A9A5-491B-A889-C58EFFECE8B3;Install Dir";
 
   // Check which versions of MSVC are installed.
   std::string msvc6;
   std::string msvc7;
   std::string msvc71;
   std::string msvc8;
+  std::string msvc8ex;
+  std::string msvc8sdk;
   bool have6 = gxSystemTools::ReadRegistryValue(vc6Registry, msvc6);
   bool have7 = gxSystemTools::ReadRegistryValue(vc7Registry, msvc7);
   bool have71 = gxSystemTools::ReadRegistryValue(vc71Registry, msvc71);
   bool have8 = false;
+  bool have8ex = gxSystemTools::ReadRegistryValue(vc8exRegistry, msvc8ex);
+  bool have8sdk =
+    have8ex && gxSystemTools::ReadRegistryValue(vc8sdkRegistry, msvc8sdk);
 
   // Look for a VS8 that is not the beta release.
   if(gxSystemTools::ReadRegistryValue(vc8Registry, msvc8))
@@ -91,7 +100,7 @@ int main(int argc, char* argv[])
     }
 
   // See if there is anything to do.
-  if(!have6 && !have7 && !have71 && !have8)
+  if(!have6 && !have7 && !have71 && !have8 && !have8ex)
     {
     std::cout << "None of MSVC 6, 7, 7.1, or 8 is installed.\n";
     }
@@ -100,14 +109,14 @@ int main(int argc, char* argv[])
   // to find the cat and patch executables.
   std::string patchCommand;
   if(!FindTool(patchDir.c_str(), "patch", patchCommand) &&
-     (have6||have7||have71||have8))
+     (have6||have7||have71||have8||have8ex))
     {
     std::cerr << "Cannot find patch executable.\n";
     return 1;
     }
   std::string catCommand;
   if(!FindTool(patchDir.c_str(), "cat", catCommand) &&
-     (have6||have7||have71||have8))
+     (have6||have7||have71||have8||have8ex))
     {
     std::cerr << "Cannot find cat executable.\n";
     return 1;
@@ -242,6 +251,48 @@ int main(int argc, char* argv[])
     else
       {
       std::cerr << "Have MSVC 8, but cannot find vc8PlatformSDK.patch.\n";
+      result = 1;
+      }
+    }
+  if(have8ex)
+    {
+    std::string msvc8i = msvc8ex + "/../../Vc/Include";
+    msvc8i = gxSystemTools::CollapseDirectory(msvc8i.c_str());
+    std::string patchI = patchDir + "/vc8ExpressInclude.patch";
+    std::string destPathI = gccxmlRoot+"/Vc8ex/Include";
+    if(gxSystemTools::FileExists(patchI.c_str()))
+      {
+      if(!InstallSupport(patchCommand.c_str(), catCommand.c_str(),
+                         patchI.c_str(), msvc8i.c_str(), destPathI.c_str()))
+        {
+        result = 1;
+        }
+      }
+    else
+      {
+      std::cerr
+        << "Have MSVC 8 Express, but cannot find vc8ExpressInclude.patch.\n";
+      result = 1;
+      }
+    }
+  if(have8sdk)
+    {
+    std::string msvc8p = msvc8sdk + "/Include";
+    msvc8p = gxSystemTools::CollapseDirectory(msvc8p.c_str());
+    std::string patchP = patchDir + "/vc8ExpressPlatformSDK.patch";
+    std::string destPathP = gccxmlRoot+"/Vc8ex/PlatformSDK";
+    if(gxSystemTools::FileExists(patchP.c_str()))
+      {
+      if(!InstallSupport(patchCommand.c_str(), catCommand.c_str(),
+                         patchP.c_str(), msvc8p.c_str(), destPathP.c_str()))
+        {
+        result = 1;
+        }
+      }
+    else
+      {
+      std::cerr << "Have MSVC 8 Express Platform SDK, but "
+                << "cannot find vc8ExpressPlatformSDK.patch.\n";
       result = 1;
       }
     }
