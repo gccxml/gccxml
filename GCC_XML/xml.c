@@ -54,6 +54,8 @@
 
 #include "splay-tree.h"
 
+#include "demangle.h"
+
 /* Decide how to call cp_error.  */
 #if defined(GCC_XML_GCC_VERSION) && (GCC_XML_GCC_VERSION >= 0x030100)
 # define XML_CP_ERROR cp_error_at
@@ -74,7 +76,7 @@
 # define XML_PRE_3_4_TREE_VIA_PUBLIC
 #endif
 
-#define GCC_XML_C_VERSION "$Revision: 1.111 $"
+#define GCC_XML_C_VERSION "$Revision: 1.112 $"
 
 /*--------------------------------------------------------------------------*/
 /* Data structures for the actual XML dump.  */
@@ -308,6 +310,7 @@ static void xml_add_start_nodes PARAMS((xml_dump_info_p, const char*));
 static const char* xml_get_encoded_string PARAMS ((tree));
 static const char* xml_get_encoded_string_from_string PARAMS ((const char*));
 static tree xml_get_encoded_identifier_from_string PARAMS ((const char*));
+static const char* xml_escape_string PARAMS ((const char* in_str));
 
 #if defined(GCC_XML_GCC_VERSION) && (GCC_XML_GCC_VERSION >= 0x030100)
 # include "diagnostic.h"
@@ -719,6 +722,53 @@ xml_document_add_attribute_mangled(xml_document_element_p element)
   xml_document_add_attribute(element, "mangled",
                              xml_document_attribute_type_string,
                              xml_document_attribute_use_required, 0);
+}
+
+/*--------------------------------------------------------------------------*/
+/* Print the XML attribute demangled="..." for the given node.  */
+static void
+xml_print_demangled_attribute (xml_dump_info_p xdi, tree n)
+{
+  if (DECL_NAME (n) &&
+      DECL_ASSEMBLER_NAME (n) &&
+      DECL_ASSEMBLER_NAME (n) != DECL_NAME (n))
+    {
+    const char* INTERNAL = " *INTERNAL* ";
+    const int demangle_opt = DMGL_STYLE_MASK | DMGL_PARAMS | DMGL_TYPES;
+
+    const char* name = xml_get_encoded_string (DECL_ASSEMBLER_NAME (n));
+    /*demangled name*/
+    char* dename = 0;
+    /*duplicated name, used to remove " *INTERNAL* " if found*/
+    char* dupl_name = 0;
+    /*pointer to found " *INTERNAL* " string*/
+    char* internal_found = 0;
+
+    dupl_name = (char*)xmalloc(strlen(name)+1);
+    strcpy(dupl_name, name);
+
+    internal_found = strstr( dupl_name, INTERNAL );
+    if(internal_found)
+      {
+      *internal_found = '\0';
+      }
+
+    dename = cplus_demangle(dupl_name, demangle_opt);
+    if(dename)
+      {
+      const char* encoded_dename = xml_escape_string(dename);
+      fprintf (xdi->file, " demangled=\"%s\"", encoded_dename);
+      }
+    free(dupl_name);
+    }
+}
+
+static void
+xml_document_add_attribute_demangled(xml_document_element_p element)
+{
+  xml_document_add_attribute(element, "demangled",
+                             xml_document_attribute_type_string,
+                             xml_document_attribute_use_optional, 0);
 }
 
 /*--------------------------------------------------------------------------*/
@@ -1552,6 +1602,7 @@ xml_output_namespace_decl (xml_dump_info_p xdi, tree ns, xml_dump_node_p dn)
       }
 
     xml_print_mangled_attribute (xdi, ns);
+    xml_print_demangled_attribute (xdi, ns);
     fprintf (xdi->file, "/>\n");
     }
   /* If it is a namespace alias, just indicate that.  */
@@ -1571,6 +1622,7 @@ xml_output_namespace_decl (xml_dump_info_p xdi, tree ns, xml_dump_node_p dn)
     fprintf (xdi->file, " namespace=\"_%d\"",
              xml_add_node (xdi, real_ns, 0));
     xml_print_mangled_attribute (xdi, ns);
+    xml_print_demangled_attribute (xdi, ns );
     fprintf (xdi->file, "/>\n");
     }
 }
@@ -1591,6 +1643,7 @@ xml_document_add_element_namespace_decl (xml_document_info_p xdi,
                              xml_document_attribute_type_idrefs,
                              xml_document_attribute_use_optional, 0);
   xml_document_add_attribute_mangled(e);
+  xml_document_add_attribute_demangled(e);
   }
   {
   xml_document_element_p e = xml_document_add_subelement(xdi, parent, 0, 1);
@@ -1603,6 +1656,7 @@ xml_document_add_element_namespace_decl (xml_document_info_p xdi,
                              xml_document_attribute_type_idref,
                              xml_document_attribute_use_required, 0);
   xml_document_add_attribute_mangled(e);
+  xml_document_add_attribute_demangled(e);
   }
 }
 
@@ -1824,6 +1878,7 @@ xml_output_function_decl (xml_dump_info_p xdi, tree fd, xml_dump_node_p dn)
   xml_print_throw_attribute (xdi, TREE_TYPE (fd), dn->complete);
   xml_print_context_attribute (xdi, fd);
   xml_print_mangled_attribute (xdi, fd);
+  xml_print_demangled_attribute (xdi, fd);
   xml_print_location_attribute (xdi, fd);
   if(body)
     {
@@ -1918,6 +1973,7 @@ xml_document_add_element_function_helper (xml_document_info_p xdi,
   xml_document_add_attribute_context(e, xml_document_attribute_use_required,
                                      do_access);
   xml_document_add_attribute_mangled(e);
+  xml_document_add_attribute_demangled(e);
   xml_document_add_attribute_location(e, xml_document_attribute_use_required);
   xml_document_add_attribute_endline(e, xml_document_attribute_use_optional);
   xml_document_add_attribute_extern(e);
@@ -1981,6 +2037,7 @@ xml_output_var_decl (xml_dump_info_p xdi, tree vd, xml_dump_node_p dn)
   xml_print_init_attribute (xdi, DECL_INITIAL (vd));
   xml_print_context_attribute (xdi, vd);
   xml_print_mangled_attribute (xdi, vd);
+  xml_print_demangled_attribute (xdi, vd );
   xml_print_location_attribute (xdi, vd);
   xml_print_extern_attribute (xdi, vd);
   xml_print_artificial_attribute (xdi, vd);
@@ -2001,6 +2058,7 @@ xml_document_add_element_var_decl (xml_document_info_p xdi,
   xml_document_add_attribute_context(e, xml_document_attribute_use_required,
                                      1);
   xml_document_add_attribute_mangled(e);
+  xml_document_add_attribute_demangled(e);
   xml_document_add_attribute_location(e, xml_document_attribute_use_required);
   xml_document_add_attribute_extern(e);
   xml_document_add_attribute_artificial(e);
@@ -2028,6 +2086,7 @@ xml_output_field_decl (xml_dump_info_p xdi, tree fd, xml_dump_node_p dn)
   xml_print_offset_attribute (xdi, fd);
   xml_print_context_attribute (xdi, fd);
   xml_print_mangled_attribute (xdi, fd);
+  xml_print_demangled_attribute (xdi, fd);
   xml_print_mutable_attribute(xdi, fd);
   xml_print_location_attribute (xdi, fd);
   xml_print_attributes_attribute (xdi, GCC_XML_DECL_ATTRIBUTES(fd), 0);
@@ -2048,6 +2107,7 @@ xml_document_add_element_field_decl (xml_document_info_p xdi,
   xml_document_add_attribute_context(e, xml_document_attribute_use_required,
                                      1);
   xml_document_add_attribute_mangled(e);
+  xml_document_add_attribute_demangled(e);
   xml_document_add_attribute_mutable(e);
   xml_document_add_attribute_location(e, xml_document_attribute_use_required);
   xml_document_add_attribute_attributes(e);
@@ -2082,6 +2142,7 @@ xml_output_record_type (xml_dump_info_p xdi, tree rt, xml_dump_node_p dn)
   xml_print_abstract_attribute (xdi, rt);
   xml_print_incomplete_attribute (xdi, rt);
   xml_print_mangled_attribute (xdi, TYPE_NAME (rt));
+  xml_print_demangled_attribute (xdi, TYPE_NAME (rt));
   xml_print_location_attribute (xdi, TYPE_NAME (rt));
   xml_print_artificial_attribute (xdi, TYPE_NAME (rt));
   xml_print_attributes_attribute (xdi, TYPE_ATTRIBUTES(rt), 0);
@@ -2270,6 +2331,7 @@ xml_document_add_element_record_type_helper (xml_document_info_p xdi,
   xml_document_add_attribute_abstract(e);
   xml_document_add_attribute_incomplete(e);
   xml_document_add_attribute_mangled(e);
+  xml_document_add_attribute_demangled(e);
   xml_document_add_attribute_location(e, xml_document_attribute_use_required);
   xml_document_add_attribute_artificial(e);
   xml_document_add_attribute_attributes(e);
@@ -3380,14 +3442,13 @@ xml_get_encoded_string_from_string (const char* in_str)
 /* Convert the name IN_STR to an XML encoded form.
    This replaces '&', '<', and '>'
    with their corresponding unicode character references.  */
-tree
-xml_get_encoded_identifier_from_string (const char* in_str)
+const char*
+xml_escape_string(const char* in_str)
 {
   int length_increase = 0;
   const char* inCh;
   char* outCh;
   char* newStr;
-  tree id;
 
   /* Count special characters and calculate extra length needed for encoded
      form of string.  */
@@ -3421,6 +3482,18 @@ xml_get_encoded_identifier_from_string (const char* in_str)
     }
 
   *outCh = '\0';
+
+  return newStr;
+}
+
+/* Convert the name IN_STR to an XML encoded form.
+   This replaces '&', '<', and '>'
+   with their corresponding unicode character references.  */
+tree
+xml_get_encoded_identifier_from_string (const char* in_str)
+{
+  char* newStr = xml_escape_string( in_str );
+  tree id;
 
   /* Ask for "identifier" of this string and free our own copy of the
      memory.  */
