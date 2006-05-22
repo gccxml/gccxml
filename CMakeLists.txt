@@ -1,5 +1,7 @@
 PROJECT(GCCXMLComplete)
 
+CMAKE_MINIMUM_REQUIRED(VERSION 2.0)
+
 # Tell GCC_XML that we are providing gccxml_cc1plus for it.
 SET(GCCXML_NATIVE_CC1PLUS 1)
 
