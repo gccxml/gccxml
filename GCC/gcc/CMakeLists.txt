@@ -322,7 +322,7 @@ ENDIF(WIN32)
 FOREACH(tgt emit extract opinit peep output recog attrtab)
   SET(gen${tgt}_PRINTRTL_SRC print-rtl1.c)
 ENDFOREACH(tgt)
-FOREACH(tgt conditions emit extract opinit peep output recog attrtab)
+FOREACH(tgt emit extract opinit peep output recog attrtab)
   SET(gen${tgt}_SRCS gen${tgt}.c ${gen${tgt}_EXTRA_SRCS})
   ADD_EXECUTABLE(gen${tgt} ${gen${tgt}_SRCS} ${GEN_SRCS}
     ${gen${tgt}_PRINTRTL_SRC})
