@@ -648,7 +648,7 @@ int main()
 
 int main()
 {
-  return *(int*)&sys_errlist;
+  return sys_errlist?0:1;
 }
 #endif
 
