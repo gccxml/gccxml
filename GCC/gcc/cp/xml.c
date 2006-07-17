@@ -76,7 +76,7 @@
 # define XML_PRE_3_4_TREE_VIA_PUBLIC
 #endif
 
-#define GCC_XML_C_VERSION "$Revision: 1.112 $"
+#define GCC_XML_C_VERSION "$Revision: 1.113 $"
 
 /*--------------------------------------------------------------------------*/
 /* Data structures for the actual XML dump.  */
@@ -2998,10 +2998,11 @@ xml_find_template_parm (tree t)
 
     /* A constant or variable declaration is encountered when a
        template instantiates another template using an enum or static
-       const value that is not known until the outer tempalte is
+       const value that is not known until the outer template is
        instantiated.  */
     case CONST_DECL: return 1;
     case VAR_DECL: return 1;
+    case FUNCTION_DECL: return 1;
 
     /* A template deferred lookup expression.  */
     case LOOKUP_EXPR: return 1;
@@ -3050,6 +3051,12 @@ xml_find_template_parm (tree t)
       return (xml_find_template_parm(TYPE_OFFSET_BASETYPE (t)) ||
               xml_find_template_parm (TREE_TYPE (t)));
       }
+    case PTRMEM_CST:
+      {
+      return (xml_find_template_parm(PTRMEM_CST_CLASS (t)) ||
+              xml_find_template_parm(PTRMEM_CST_MEMBER(t)));
+      }
+
     /* Fundamental types have no nested types.  */
     case BOOLEAN_TYPE: return 0;
     case COMPLEX_TYPE: return 0;
