@@ -1336,7 +1336,7 @@ diff -c -3 -p -r1.1 -r1.2
 + struct __gccxml_is_base_of
 + {
 +   typedef char(&yes_type)[1];
-+   typedef char(&no_type)[1];
++   typedef char(&no_type)[2];
 +   static yes_type check(_Base*);
 +   static no_type check(const volatile void*);
 +   static _Derived* derived();
