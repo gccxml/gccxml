@@ -76,9 +76,28 @@ int main(int argc, char* argv[])
   bool have7 = gxSystemTools::ReadRegistryValue(vc7Registry, msvc7);
   bool have71 = gxSystemTools::ReadRegistryValue(vc71Registry, msvc71);
   bool have8 = false;
-  bool have8ex = gxSystemTools::ReadRegistryValue(vc8exRegistry, msvc8ex);
+  bool have8ex = false;
+  // Look for a VS8 express that is not the beta release.
+  if(gxSystemTools::ReadRegistryValue(vc8exRegistry, msvc8ex))
+    {
+    // The "CLR Version" registry entry in VS 8 has value "v2.0.40607"
+    // for the beta and "v2.0.50727" for the release.
+    const char* vc8RegistryVersion =
+      "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\VCExpress\\8.0;CLR Version";
+    std::string version;
+    if(gxSystemTools::ReadRegistryValue(vc8RegistryVersion, version))
+      {
+      int vnum;
+      if((sscanf(version.c_str(), "v2.0.%d", &vnum) == 1) &&
+         vnum >= 50727)
+        {
+        have8ex = true;
+        }
+      }
+    }
   bool have8sdk =
     have8ex && gxSystemTools::ReadRegistryValue(vc8sdkRegistry, msvc8sdk);
+
 
   // Look for a VS8 that is not the beta release.
   if(gxSystemTools::ReadRegistryValue(vc8Registry, msvc8))
@@ -326,8 +345,9 @@ bool InstallSupport(const char* patchCommand, const char* catCommand,
     return false;
     }
 
-  // Make sure the destination path exists before trying to put files
-  // there.
+  // Make sure the destination path exists and is clean
+  // before trying to put files there.
+  gxSystemTools::RemoveADirectory(destPath);
   gxSystemTools::MakeDirectory(destPath);
 
   // Copy the files over before patching.
