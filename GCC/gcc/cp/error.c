@@ -60,16 +60,16 @@ static output_buffer *scratch_buffer = &scratch_buffer_rec;
 #define reinit_global_formatting_buffer() \
    output_clear_message_text (scratch_buffer)
 
-static const char *args_to_string		PARAMS ((tree, int));
-static const char *assop_to_string		PARAMS ((enum tree_code, int));
-static const char *code_to_string		PARAMS ((enum tree_code, int));
-static const char *cv_to_string			PARAMS ((tree, int));
-static const char *decl_to_string		PARAMS ((tree, int));
-static const char *expr_to_string		PARAMS ((tree, int));
-static const char *fndecl_to_string		PARAMS ((tree, int));
-static const char *op_to_string			PARAMS ((enum tree_code, int));
-static const char *parm_to_string		PARAMS ((int, int));
-static const char *type_to_string		PARAMS ((tree, int));
+static const char *args_to_string               PARAMS ((tree, int));
+static const char *assop_to_string              PARAMS ((enum tree_code, int));
+static const char *code_to_string               PARAMS ((enum tree_code, int));
+static const char *cv_to_string                 PARAMS ((tree, int));
+static const char *decl_to_string               PARAMS ((tree, int));
+static const char *expr_to_string               PARAMS ((tree, int));
+static const char *fndecl_to_string             PARAMS ((tree, int));
+static const char *op_to_string                 PARAMS ((enum tree_code, int));
+static const char *parm_to_string               PARAMS ((int, int));
+static const char *type_to_string               PARAMS ((tree, int));
 
 static void dump_type PARAMS ((tree, int));
 static void dump_typename PARAMS ((tree, int));
@@ -287,29 +287,29 @@ dump_template_bindings (parms, args)
       int i;
 
       for (i = 0; i < TREE_VEC_LENGTH (p); ++i)
-	{
-	  tree arg = NULL_TREE;
+        {
+          tree arg = NULL_TREE;
 
-	  /* Don't crash if we had an invalid argument list.  */
-	  if (TMPL_ARGS_DEPTH (args) >= lvl)
-	    {
-	      tree lvl_args = TMPL_ARGS_LEVEL (args, lvl);
-	      if (NUM_TMPL_ARGS (lvl_args) > arg_idx)
-		arg = TREE_VEC_ELT (lvl_args, arg_idx);
-	    }
+          /* Don't crash if we had an invalid argument list.  */
+          if (TMPL_ARGS_DEPTH (args) >= lvl)
+            {
+              tree lvl_args = TMPL_ARGS_LEVEL (args, lvl);
+              if (NUM_TMPL_ARGS (lvl_args) > arg_idx)
+                arg = TREE_VEC_ELT (lvl_args, arg_idx);
+            }
 
-	  if (need_comma)
-	    separate_with_comma (scratch_buffer);
-	  dump_template_parameter (TREE_VEC_ELT (p, i), TFF_PLAIN_IDENTIFIER);
-	  output_add_string (scratch_buffer, " = ");
-	  if (arg)
-	    dump_template_argument (arg, TFF_PLAIN_IDENTIFIER);
-	  else
-	    print_identifier (scratch_buffer, "<missing>");
+          if (need_comma)
+            separate_with_comma (scratch_buffer);
+          dump_template_parameter (TREE_VEC_ELT (p, i), TFF_PLAIN_IDENTIFIER);
+          output_add_string (scratch_buffer, " = ");
+          if (arg)
+            dump_template_argument (arg, TFF_PLAIN_IDENTIFIER);
+          else
+            print_identifier (scratch_buffer, "<missing>");
 
-	  ++arg_idx;
-	  need_comma = 1;
-	}
+          ++arg_idx;
+          need_comma = 1;
+        }
 
       parms = TREE_CHAIN (parms);
     }
@@ -376,69 +376,69 @@ dump_type (t, flags)
     case VECTOR_TYPE:
       output_add_string (scratch_buffer, "vector ");
       {
-	/* The subtype of a VECTOR_TYPE is something like intQI_type_node,
-	   which has no name and is not very useful for diagnostics.  So
-	   look up the equivalent C type and print its name.  */
-	tree elt = TREE_TYPE (t);
-	elt = c_common_type_for_mode (TYPE_MODE (elt), TREE_UNSIGNED (elt));
-	dump_type (elt, flags);
+        /* The subtype of a VECTOR_TYPE is something like intQI_type_node,
+           which has no name and is not very useful for diagnostics.  So
+           look up the equivalent C type and print its name.  */
+        tree elt = TREE_TYPE (t);
+        elt = c_common_type_for_mode (TYPE_MODE (elt), TREE_UNSIGNED (elt));
+        dump_type (elt, flags);
       }
       break;
 
     case INTEGER_TYPE:
       if (!TREE_UNSIGNED (TYPE_MAIN_VARIANT (t)) && TREE_UNSIGNED (t))
-	output_add_string (scratch_buffer, "unsigned ");
+        output_add_string (scratch_buffer, "unsigned ");
       else if (TREE_UNSIGNED (TYPE_MAIN_VARIANT (t)) && !TREE_UNSIGNED (t))
-	output_add_string (scratch_buffer, "signed ");
+        output_add_string (scratch_buffer, "signed ");
 
       /* fall through.  */
     case REAL_TYPE:
     case VOID_TYPE:
     case BOOLEAN_TYPE:
       {
-	tree type;
-	dump_qualifiers (t, after);
-	type = flags & TFF_CHASE_TYPEDEF ? TYPE_MAIN_VARIANT (t) : t;
-	if (TYPE_NAME (type) && TYPE_IDENTIFIER (type))
-	  print_tree_identifier (scratch_buffer, TYPE_IDENTIFIER (type));
-	else
-	  /* Types like intQI_type_node and friends have no names.
-	     These don't come up in user error messages, but it's nice
-	     to be able to print them from the debugger.  */
-	  print_identifier (scratch_buffer, "<anonymous>");
+        tree type;
+        dump_qualifiers (t, after);
+        type = flags & TFF_CHASE_TYPEDEF ? TYPE_MAIN_VARIANT (t) : t;
+        if (TYPE_NAME (type) && TYPE_IDENTIFIER (type))
+          print_tree_identifier (scratch_buffer, TYPE_IDENTIFIER (type));
+        else
+          /* Types like intQI_type_node and friends have no names.
+             These don't come up in user error messages, but it's nice
+             to be able to print them from the debugger.  */
+          print_identifier (scratch_buffer, "<anonymous>");
       }
       break;
 
     case TEMPLATE_TEMPLATE_PARM:
       /* For parameters inside template signature.  */
       if (TYPE_IDENTIFIER (t))
-	print_tree_identifier (scratch_buffer, TYPE_IDENTIFIER (t));
+        print_tree_identifier (scratch_buffer, TYPE_IDENTIFIER (t));
       else
-	print_identifier
+        print_identifier
           (scratch_buffer, "<anonymous template template parameter>");
       break;
 
     case BOUND_TEMPLATE_TEMPLATE_PARM:
       {
-	tree args = TYPE_TI_ARGS (t);
-	print_tree_identifier (scratch_buffer, TYPE_IDENTIFIER (t));
-	print_template_argument_list_start (scratch_buffer);
+        tree args = TYPE_TI_ARGS (t);
+        print_tree_identifier (scratch_buffer, TYPE_IDENTIFIER (t));
+        print_template_argument_list_start (scratch_buffer);
         dump_template_argument_list (args, flags);
-	print_template_argument_list_end (scratch_buffer);
+        print_template_argument_list_end (scratch_buffer);
       }
       break;
 
     case TEMPLATE_TYPE_PARM:
       dump_qualifiers (t, after);
       if (TYPE_IDENTIFIER (t))
-	print_tree_identifier (scratch_buffer, TYPE_IDENTIFIER (t));
+        print_tree_identifier (scratch_buffer, TYPE_IDENTIFIER (t));
       else
-	print_identifier
+        print_identifier
           (scratch_buffer, "<anonymous template type parameter>");
       break;
 
       /* This is not always necessary for pointers and such, but doing this
-	 reduces code size.  */
+         reduces code size.  */
     case ARRAY_TYPE:
     case POINTER_TYPE:
     case REFERENCE_TYPE:
@@ -610,35 +610,35 @@ dump_type_prefix (t, flags)
     case POINTER_TYPE:
     case REFERENCE_TYPE:
       {
-	tree sub = TREE_TYPE (t);
+        tree sub = TREE_TYPE (t);
 
-	padding = dump_type_prefix (sub, flags);
-	/* A tree for a member pointer looks like pointer to offset,
-	   so let the OFFSET_TYPE case handle it.  */
-	if (!TYPE_PTRMEM_P (t))
-	  {
-	    if (TREE_CODE (sub) == ARRAY_TYPE)
+        padding = dump_type_prefix (sub, flags);
+        /* A tree for a member pointer looks like pointer to offset,
+           so let the OFFSET_TYPE case handle it.  */
+        if (!TYPE_PTRMEM_P (t))
+          {
+            if (TREE_CODE (sub) == ARRAY_TYPE)
               {
                 output_add_space (scratch_buffer);
                 print_left_paren (scratch_buffer);
               }
             output_add_character
               (scratch_buffer, "&*"[TREE_CODE (t) == POINTER_TYPE]);
-	    padding = dump_qualifiers (t, before);
-	  }
+            padding = dump_qualifiers (t, before);
+          }
       }
       break;
 
     case OFFSET_TYPE:
     offset_type:
       padding = dump_type_prefix (TREE_TYPE (t), flags);
-      if (TREE_CODE (t) == OFFSET_TYPE)	/* pmfs deal with this in d_t_p */
-	{
-	  if (padding != none)
-	    output_add_space (scratch_buffer);
-	  dump_type (TYPE_OFFSET_BASETYPE (t), flags);
-	  print_scope_operator (scratch_buffer);
-	}
+      if (TREE_CODE (t) == OFFSET_TYPE) /* pmfs deal with this in d_t_p */
+        {
+          if (padding != none)
+            output_add_space (scratch_buffer);
+          dump_type (TYPE_OFFSET_BASETYPE (t), flags);
+          print_scope_operator (scratch_buffer);
+        }
       output_add_character (scratch_buffer, '*');
       padding = dump_qualifiers (t, none);
       break;
@@ -717,7 +717,7 @@ dump_type_suffix (t, flags)
     case REFERENCE_TYPE:
     case OFFSET_TYPE:
       if (TREE_CODE (TREE_TYPE (t)) == ARRAY_TYPE)
-	print_right_paren (scratch_buffer);
+        print_right_paren (scratch_buffer);
       dump_type_suffix (TREE_TYPE (t), flags);
       break;
 
@@ -725,41 +725,41 @@ dump_type_suffix (t, flags)
     case FUNCTION_TYPE:
     case METHOD_TYPE:
       {
-	tree arg;
+        tree arg;
         print_right_paren (scratch_buffer);
-	arg = TYPE_ARG_TYPES (t);
-	if (TREE_CODE (t) == METHOD_TYPE)
-	  arg = TREE_CHAIN (arg);
+        arg = TYPE_ARG_TYPES (t);
+        if (TREE_CODE (t) == METHOD_TYPE)
+          arg = TREE_CHAIN (arg);
 
-	/* Function pointers don't have default args.  Not in standard C++,
-	   anyway; they may in g++, but we'll just pretend otherwise.  */
-	dump_parameters (arg, flags & ~TFF_FUNCTION_DEFAULT_ARGUMENTS);
+        /* Function pointers don't have default args.  Not in standard C++,
+           anyway; they may in g++, but we'll just pretend otherwise.  */
+        dump_parameters (arg, flags & ~TFF_FUNCTION_DEFAULT_ARGUMENTS);
 
-	if (TREE_CODE (t) == METHOD_TYPE)
-	  dump_qualifiers
-	    (TREE_TYPE (TREE_VALUE (TYPE_ARG_TYPES (t))), before);
-	dump_exception_spec (TYPE_RAISES_EXCEPTIONS (t), flags);
-	dump_type_suffix (TREE_TYPE (t), flags);
-	break;
+        if (TREE_CODE (t) == METHOD_TYPE)
+          dump_qualifiers
+            (TREE_TYPE (TREE_VALUE (TYPE_ARG_TYPES (t))), before);
+        dump_exception_spec (TYPE_RAISES_EXCEPTIONS (t), flags);
+        dump_type_suffix (TREE_TYPE (t), flags);
+        break;
       }
 
     case ARRAY_TYPE:
       print_left_bracket (scratch_buffer);
       if (TYPE_DOMAIN (t))
-	{
-	  if (host_integerp (TYPE_MAX_VALUE (TYPE_DOMAIN (t)), 0))
-	    print_integer
+        {
+          if (host_integerp (TYPE_MAX_VALUE (TYPE_DOMAIN (t)), 0))
+            print_integer
               (scratch_buffer,
                tree_low_cst (TYPE_MAX_VALUE (TYPE_DOMAIN (t)), 0) + 1);
-	  else if (TREE_CODE (TYPE_MAX_VALUE (TYPE_DOMAIN (t))) == MINUS_EXPR)
-	    dump_expr (TREE_OPERAND (TYPE_MAX_VALUE (TYPE_DOMAIN (t)), 0),
-	               flags & ~TFF_EXPR_IN_PARENS);
-	  else
-	    dump_expr (fold (cp_build_binary_op
-			     (PLUS_EXPR, TYPE_MAX_VALUE (TYPE_DOMAIN (t)),
-			      integer_one_node)),
-	               flags & ~TFF_EXPR_IN_PARENS);
-	}
+          else if (TREE_CODE (TYPE_MAX_VALUE (TYPE_DOMAIN (t))) == MINUS_EXPR)
+            dump_expr (TREE_OPERAND (TYPE_MAX_VALUE (TYPE_DOMAIN (t)), 0),
+                       flags & ~TFF_EXPR_IN_PARENS);
+          else
+            dump_expr (fold (cp_build_binary_op
+                             (PLUS_EXPR, TYPE_MAX_VALUE (TYPE_DOMAIN (t)),
+                              integer_one_node)),
+                       flags & ~TFF_EXPR_IN_PARENS);
+        }
       print_right_bracket (scratch_buffer);
       dump_type_suffix (TREE_TYPE (t), flags);
       break;
@@ -845,33 +845,33 @@ dump_decl (t, flags)
     {
     case TYPE_DECL:
       {
-	/* Don't say 'typedef class A' */
+        /* Don't say 'typedef class A' */
         if (DECL_ARTIFICIAL (t))
-	  {
-	    if ((flags & TFF_DECL_SPECIFIERS)
-	        && TREE_CODE (TREE_TYPE (t)) == TEMPLATE_TYPE_PARM)
-	      /* Say `class T' not just `T'.  */
-	      output_add_string (scratch_buffer, "class ");
+          {
+            if ((flags & TFF_DECL_SPECIFIERS)
+                && TREE_CODE (TREE_TYPE (t)) == TEMPLATE_TYPE_PARM)
+              /* Say `class T' not just `T'.  */
+              output_add_string (scratch_buffer, "class ");
 
-	    dump_type (TREE_TYPE (t), flags);
-	    break;
-	  }
+            dump_type (TREE_TYPE (t), flags);
+            break;
+          }
       }
       if (flags & TFF_DECL_SPECIFIERS)
-	output_add_string (scratch_buffer, "typedef ");
+        output_add_string (scratch_buffer, "typedef ");
       dump_simple_decl (t, DECL_ORIGINAL_TYPE (t)
-			? DECL_ORIGINAL_TYPE (t) : TREE_TYPE (t),
-	                flags);
+                        ? DECL_ORIGINAL_TYPE (t) : TREE_TYPE (t),
+                        flags);
       break;
 
     case VAR_DECL:
       if (DECL_NAME (t) && VTABLE_NAME_P (DECL_NAME (t)))
-	{
-	  output_add_string (scratch_buffer, "vtable for ");
-	  my_friendly_assert (TYPE_P (DECL_CONTEXT (t)), 20010720);
-	  dump_type (DECL_CONTEXT (t), flags);
-	  break;
-	}
+        {
+          output_add_string (scratch_buffer, "vtable for ");
+          my_friendly_assert (TYPE_P (DECL_CONTEXT (t)), 20010720);
+          dump_type (DECL_CONTEXT (t), flags);
+          break;
+        }
       /* else fall through */
     case FIELD_DECL:
     case PARM_DECL:
@@ -886,9 +886,9 @@ dump_decl (t, flags)
     case NAMESPACE_DECL:
       dump_scope (CP_DECL_CONTEXT (t), flags);
       if (DECL_NAME (t) == anonymous_namespace_name)
-	print_identifier (scratch_buffer, "<unnamed>");
+        print_identifier (scratch_buffer, "<unnamed>");
       else
-	print_tree_identifier (scratch_buffer, DECL_NAME (t));
+        print_tree_identifier (scratch_buffer, DECL_NAME (t));
       break;
 
     case SCOPE_REF:
@@ -916,47 +916,47 @@ dump_decl (t, flags)
       break;
 
       /* These special cases are duplicated here so that other functions
-	 can feed identifiers to error and get them demangled properly.  */
+         can feed identifiers to error and get them demangled properly.  */
     case IDENTIFIER_NODE:
       if (IDENTIFIER_TYPENAME_P (t))
-	{
-	  output_add_string (scratch_buffer, "operator ");
-	  /* Not exactly IDENTIFIER_TYPE_VALUE.  */
-	  dump_type (TREE_TYPE (t), flags);
-	  break;
-	}
+        {
+          output_add_string (scratch_buffer, "operator ");
+          /* Not exactly IDENTIFIER_TYPE_VALUE.  */
+          dump_type (TREE_TYPE (t), flags);
+          break;
+        }
       else
-	print_tree_identifier (scratch_buffer, t);
+        print_tree_identifier (scratch_buffer, t);
       break;
 
     case OVERLOAD:
       if (OVL_CHAIN (t))
-	{
-	  t = OVL_CURRENT (t);
-	  if (DECL_CLASS_SCOPE_P (t))
-	    {
-	      dump_type (DECL_CONTEXT (t), flags);
-	      output_add_string (scratch_buffer, "::");
-	    }
-	  else if (DECL_CONTEXT (t))
-	    {
-	      dump_decl (DECL_CONTEXT (t), flags);
-	      output_add_string (scratch_buffer, "::");
-	    }
-	  dump_decl (DECL_NAME (t), flags);
-	  break;
-	}
+        {
+          t = OVL_CURRENT (t);
+          if (DECL_CLASS_SCOPE_P (t))
+            {
+              dump_type (DECL_CONTEXT (t), flags);
+              output_add_string (scratch_buffer, "::");
+            }
+          else if (DECL_CONTEXT (t))
+            {
+              dump_decl (DECL_CONTEXT (t), flags);
+              output_add_string (scratch_buffer, "::");
+            }
+          dump_decl (DECL_NAME (t), flags);
+          break;
+        }
       
       /* If there's only one function, just treat it like an ordinary
-	 FUNCTION_DECL.  */
+         FUNCTION_DECL.  */
       t = OVL_CURRENT (t);
       /* Fall through.  */
 
     case FUNCTION_DECL:
       if (DECL_GLOBAL_CTOR_P (t) || DECL_GLOBAL_DTOR_P (t))
-	dump_global_iord (t);
+        dump_global_iord (t);
       else if (! DECL_LANG_SPECIFIC (t))
-	print_identifier (scratch_buffer, "<internal>");
+        print_identifier (scratch_buffer, "<internal>");
       else
         dump_function_decl (t, flags);
       break;
@@ -967,19 +967,19 @@ dump_decl (t, flags)
 
     case TEMPLATE_ID_EXPR:
       {
-	tree args;
-	tree name = TREE_OPERAND (t, 0);
-	if (is_overloaded_fn (name))
-	  name = DECL_NAME (get_first_fn (name));
-	dump_decl (name, flags);
-	print_template_argument_list_start (scratch_buffer);
-	for (args = TREE_OPERAND (t, 1); args; args = TREE_CHAIN (args))
-	  {
-	    dump_template_argument (TREE_VALUE (args), flags);
-	    if (TREE_CHAIN (args))
-	      separate_with_comma (scratch_buffer);
-	  }
-	print_template_argument_list_end (scratch_buffer);
+        tree args;
+        tree name = TREE_OPERAND (t, 0);
+        if (is_overloaded_fn (name))
+          name = DECL_NAME (get_first_fn (name));
+        dump_decl (name, flags);
+        print_template_argument_list_start (scratch_buffer);
+        for (args = TREE_OPERAND (t, 1); args; args = TREE_CHAIN (args))
+          {
+            dump_template_argument (TREE_VALUE (args), flags);
+            if (TREE_CHAIN (args))
+              separate_with_comma (scratch_buffer);
+          }
+        print_template_argument_list_end (scratch_buffer);
       }
       break;
 
@@ -993,15 +993,15 @@ dump_decl (t, flags)
 
     case CONST_DECL:
       if ((TREE_TYPE (t) != NULL_TREE && NEXT_CODE (t) == ENUMERAL_TYPE)
-	  || (DECL_INITIAL (t) &&
-	      TREE_CODE (DECL_INITIAL (t)) == TEMPLATE_PARM_INDEX))
-	dump_simple_decl (t, TREE_TYPE (t), flags);
+          || (DECL_INITIAL (t) &&
+              TREE_CODE (DECL_INITIAL (t)) == TEMPLATE_PARM_INDEX))
+        dump_simple_decl (t, TREE_TYPE (t), flags);
       else if (DECL_NAME (t))
-	dump_decl (DECL_NAME (t), flags);
+        dump_decl (DECL_NAME (t), flags);
       else if (DECL_INITIAL (t))
-	dump_expr (DECL_INITIAL (t), flags | TFF_EXPR_IN_PARENS);
+        dump_expr (DECL_INITIAL (t), flags | TFF_EXPR_IN_PARENS);
       else
-	print_identifier (scratch_buffer, "enumerator");
+        print_identifier (scratch_buffer, "enumerator");
       break;
 
     case USING_DECL:
@@ -1043,14 +1043,14 @@ dump_template_decl (t, flags)
            parms;
            parms = TREE_CHAIN (parms))
         {
-	  tree inner_parms = INNERMOST_TEMPLATE_PARMS (parms);
+          tree inner_parms = INNERMOST_TEMPLATE_PARMS (parms);
           int len = TREE_VEC_LENGTH (inner_parms);
 
           output_add_string (scratch_buffer, "template<");
 
-	  /* If we've shown the template prefix, we'd better show the
-	     parameters' and decl's type too.  */
-	    flags |= TFF_DECL_SPECIFIERS;
+          /* If we've shown the template prefix, we'd better show the
+             parameters' and decl's type too.  */
+            flags |= TFF_DECL_SPECIFIERS;
 
           for (i = 0; i < len; i++)
             {
@@ -1064,8 +1064,8 @@ dump_template_decl (t, flags)
       nreverse(orig_parms);
 
       if (DECL_TEMPLATE_TEMPLATE_PARM_P (t))
-	/* Say `template<arg> class TT' not just `template<arg> TT'.  */
-	output_add_string (scratch_buffer, "class ");
+        /* Say `template<arg> class TT' not just `template<arg> TT'.  */
+        output_add_string (scratch_buffer, "class ");
     }
 
   if (TREE_CODE (DECL_TEMPLATE_RESULT (t)) == TYPE_DECL)
@@ -1119,10 +1119,10 @@ dump_function_decl (t, flags)
       template_args = DECL_TI_ARGS (t);
       tmpl = most_general_template (t);
       if (tmpl && TREE_CODE (tmpl) == TEMPLATE_DECL)
-	{
-	  template_parms = DECL_TEMPLATE_PARMS (tmpl);
-	  t = tmpl;
-	}
+        {
+          template_parms = DECL_TEMPLATE_PARMS (tmpl);
+          t = tmpl;
+        }
     }
 
   fntype = TREE_TYPE (t);
@@ -1167,14 +1167,14 @@ dump_function_decl (t, flags)
       dump_parameters (parmtypes, flags);
 
       if (TREE_CODE (fntype) == METHOD_TYPE)
-	dump_qualifiers (TREE_TYPE (TREE_VALUE (TYPE_ARG_TYPES (fntype))),
-			 before);
+        dump_qualifiers (TREE_TYPE (TREE_VALUE (TYPE_ARG_TYPES (fntype))),
+                         before);
 
       if (flags & TFF_EXCEPTION_SPECIFICATION)
-	dump_exception_spec (TYPE_RAISES_EXCEPTIONS (fntype), flags);
+        dump_exception_spec (TYPE_RAISES_EXCEPTIONS (fntype), flags);
 
       if (show_return)
-	dump_type_suffix (TREE_TYPE (fntype), flags);
+        dump_type_suffix (TREE_TYPE (fntype), flags);
     }
 
   /* If T is a template instantiation, dump the parameter binding.  */
@@ -1271,11 +1271,11 @@ dump_function_name (t, flags)
   else if (DECL_CONV_FN_P (t))
     {
       /* This cannot use the hack that the operator's return
-	 type is stashed off of its name because it may be
-	 used for error reporting.  In the case of conflicting
-	 declarations, both will have the same name, yet
-	 the types will be different, hence the TREE_TYPE field
-	 of the first name will be clobbered by the second.  */
+         type is stashed off of its name because it may be
+         used for error reporting.  In the case of conflicting
+         declarations, both will have the same name, yet
+         the types will be different, hence the TREE_TYPE field
+         of the first name will be clobbered by the second.  */
       output_add_string (scratch_buffer, "operator ");
       dump_type (TREE_TYPE (TREE_TYPE (t)), flags);
     }
@@ -1287,9 +1287,9 @@ dump_function_name (t, flags)
   if (DECL_LANG_SPECIFIC (t) && DECL_TEMPLATE_INFO (t)
       && !DECL_FRIEND_PSEUDO_TEMPLATE_INSTANTIATION (t)
       && (DECL_TEMPLATE_SPECIALIZATION (t)
-	  || TREE_CODE (DECL_TI_TEMPLATE (t)) != TEMPLATE_DECL
-	  || DECL_TEMPLATE_SPECIALIZATION (DECL_TI_TEMPLATE (t))
-	  || PRIMARY_TEMPLATE_P (DECL_TI_TEMPLATE (t))))
+          || TREE_CODE (DECL_TI_TEMPLATE (t)) != TEMPLATE_DECL
+          || DECL_TEMPLATE_SPECIALIZATION (DECL_TI_TEMPLATE (t))
+          || PRIMARY_TEMPLATE_P (DECL_TI_TEMPLATE (t))))
     dump_template_parms (DECL_TEMPLATE_INFO (t), !DECL_USE_TEMPLATE (t), flags);
 }
 
@@ -1313,7 +1313,7 @@ dump_template_parms (info, primary, flags)
   print_template_argument_list_start (scratch_buffer);
 
   /* Be careful only to print things when we have them, so as not
-	 to crash producing error messages.  */
+         to crash producing error messages.  */
   if (args && !primary)
     {
       int len = 0;
@@ -1323,8 +1323,8 @@ dump_template_parms (info, primary, flags)
       if (TREE_CODE (args) == TREE_VEC)
         {
           if (TREE_VEC_LENGTH (args) > 0
-	      && TREE_CODE (TREE_VEC_ELT (args, 0)) == TREE_VEC)
-	    args = TREE_VEC_ELT (args, TREE_VEC_LENGTH (args) - 1);
+              && TREE_CODE (TREE_VEC_ELT (args, 0)) == TREE_VEC)
+            args = TREE_VEC_ELT (args, TREE_VEC_LENGTH (args) - 1);
 
           len = TREE_VEC_LENGTH (args);
         }
@@ -1413,12 +1413,12 @@ dump_char (c)
       break;
     default:
       if (ISPRINT (c))
-	output_add_character (scratch_buffer, c);
+        output_add_character (scratch_buffer, c);
       else
-	{
-	  sprintf (digit_buffer, "\\%03o", (int) c);
-	  output_add_string (scratch_buffer, digit_buffer);
-	}
+        {
+          sprintf (digit_buffer, "\\%03o", (int) c);
+          output_add_string (scratch_buffer, digit_buffer);
+        }
     }
 }
 
@@ -1434,7 +1434,7 @@ dump_expr_list (l, flags)
       dump_expr (TREE_VALUE (l), flags | TFF_EXPR_IN_PARENS);
       l = TREE_CHAIN (l);
       if (l)
-	separate_with_comma (scratch_buffer);
+        separate_with_comma (scratch_buffer);
     }
 }
 
@@ -1463,81 +1463,81 @@ dump_expr (t, flags)
 
     case INTEGER_CST:
       {
-	tree type = TREE_TYPE (t);
-	my_friendly_assert (type != 0, 81);
+        tree type = TREE_TYPE (t);
+        my_friendly_assert (type != 0, 81);
 
-	/* If it's an enum, output its tag, rather than its value.  */
-	if (TREE_CODE (type) == ENUMERAL_TYPE)
-	  {
-	    tree values = TYPE_VALUES (type);
+        /* If it's an enum, output its tag, rather than its value.  */
+        if (TREE_CODE (type) == ENUMERAL_TYPE)
+          {
+            tree values = TYPE_VALUES (type);
 
-	    for (; values;
-	         values = TREE_CHAIN (values))
-	      if (tree_int_cst_equal (TREE_VALUE (values), t))
-	        break;
+            for (; values;
+                 values = TREE_CHAIN (values))
+              if (tree_int_cst_equal (TREE_VALUE (values), t))
+                break;
 
-	    if (values)
-	      print_tree_identifier (scratch_buffer, TREE_PURPOSE (values));
-	    else
-	      {
+            if (values)
+              print_tree_identifier (scratch_buffer, TREE_PURPOSE (values));
+            else
+              {
                 /* Value must have been cast.  */
                 print_left_paren (scratch_buffer);
                 dump_type (type, flags);
                 print_right_paren (scratch_buffer);
                 goto do_int;
-	      }
-	  }
-	else if (type == boolean_type_node)
-	  {
-	    if (t == boolean_false_node || integer_zerop (t))
-	      print_identifier (scratch_buffer, "false");
-	    else if (t == boolean_true_node)
-	      print_identifier (scratch_buffer, "true");
-	  }
-	else if (type == char_type_node)
-	  {
-	    output_add_character (scratch_buffer, '\'');
-	    if (host_integerp (t, TREE_UNSIGNED (type)))
-	      dump_char (tree_low_cst (t, TREE_UNSIGNED (type)));
-	    else
-	      output_printf (scratch_buffer, "\\x%x",
-			     (unsigned int) TREE_INT_CST_LOW (t));
-	    output_add_character (scratch_buffer, '\'');
-	  }
-	else
-	  {
-	    do_int:
-	    if (! host_integerp (t, 0))
-	      {
-	        tree val = t;
+              }
+          }
+        else if (type == boolean_type_node)
+          {
+            if (t == boolean_false_node || integer_zerop (t))
+              print_identifier (scratch_buffer, "false");
+            else if (t == boolean_true_node)
+              print_identifier (scratch_buffer, "true");
+          }
+        else if (type == char_type_node)
+          {
+            output_add_character (scratch_buffer, '\'');
+            if (host_integerp (t, TREE_UNSIGNED (type)))
+              dump_char (tree_low_cst (t, TREE_UNSIGNED (type)));
+            else
+              output_printf (scratch_buffer, "\\x%x",
+                             (unsigned int) TREE_INT_CST_LOW (t));
+            output_add_character (scratch_buffer, '\'');
+          }
+        else
+          {
+            do_int:
+            if (! host_integerp (t, 0))
+              {
+                tree val = t;
 
-	        if (tree_int_cst_sgn (val) < 0)
-	          {
-		    output_add_character (scratch_buffer, '-');
-		    val = build_int_2 (-TREE_INT_CST_LOW (val),
-				       ~TREE_INT_CST_HIGH (val)
-	                               + !TREE_INT_CST_LOW (val));
-	          }
-	        /* Would "%x%0*x" or "%x%*0x" get zero-padding on all
-	           systems?  */
-	        {
-	          static char format[10]; /* "%x%09999x\0" */
-	          if (!format[0])
-		    sprintf (format, "%%x%%0%dx", HOST_BITS_PER_INT / 4);
-	          sprintf (digit_buffer, format, TREE_INT_CST_HIGH (val),
-		           TREE_INT_CST_LOW (val));
-	          output_add_string (scratch_buffer, digit_buffer);
-	        }
-	      }
-	    else
-	      print_integer (scratch_buffer, TREE_INT_CST_LOW (t));
-	  }
+                if (tree_int_cst_sgn (val) < 0)
+                  {
+                    output_add_character (scratch_buffer, '-');
+                    val = build_int_2 (-TREE_INT_CST_LOW (val),
+                                       ~TREE_INT_CST_HIGH (val)
+                                       + !TREE_INT_CST_LOW (val));
+                  }
+                /* Would "%x%0*x" or "%x%*0x" get zero-padding on all
+                   systems?  */
+                {
+                  static char format[10]; /* "%x%09999x\0" */
+                  if (!format[0])
+                    sprintf (format, "%%x%%0%dx", HOST_BITS_PER_INT / 4);
+                  sprintf (digit_buffer, format, TREE_INT_CST_HIGH (val),
+                           TREE_INT_CST_LOW (val));
+                  output_add_string (scratch_buffer, digit_buffer);
+                }
+              }
+            else
+              print_integer (scratch_buffer, TREE_INT_CST_LOW (t));
+          }
       }
       break;
 
     case REAL_CST:
       real_to_decimal (digit_buffer, &TREE_REAL_CST (t),
-		       sizeof (digit_buffer), 0, 1);
+                       sizeof (digit_buffer), 0, 1);
       output_add_string (scratch_buffer, digit_buffer);
       break;
 
@@ -1551,14 +1551,14 @@ dump_expr (t, flags)
 
     case STRING_CST:
       {
-	const char *p = TREE_STRING_POINTER (t);
-	int len = TREE_STRING_LENGTH (t) - 1;
-	int i;
+        const char *p = TREE_STRING_POINTER (t);
+        int len = TREE_STRING_LENGTH (t) - 1;
+        int i;
 
-	output_add_character (scratch_buffer, '\"');
-	for (i = 0; i < len; i++)
-	  dump_char (p[i]);
-	output_add_character (scratch_buffer, '\"');
+        output_add_character (scratch_buffer, '\"');
+        for (i = 0; i < len; i++)
+          dump_char (p[i]);
+        output_add_character (scratch_buffer, '\"');
       }
       break;
 
@@ -1582,115 +1582,115 @@ dump_expr (t, flags)
 
     case SAVE_EXPR:
       if (TREE_HAS_CONSTRUCTOR (t))
-	{
-	  output_add_string (scratch_buffer, "new ");
-	  dump_type (TREE_TYPE (TREE_TYPE (t)), flags);
-	}
+        {
+          output_add_string (scratch_buffer, "new ");
+          dump_type (TREE_TYPE (TREE_TYPE (t)), flags);
+        }
       else
-	{
-	  dump_expr (TREE_OPERAND (t, 0), flags | TFF_EXPR_IN_PARENS);
-	}
+        {
+          dump_expr (TREE_OPERAND (t, 0), flags | TFF_EXPR_IN_PARENS);
+        }
       break;
 
     case AGGR_INIT_EXPR:
       {
-	tree fn = NULL_TREE;
+        tree fn = NULL_TREE;
 
-	if (TREE_CODE (TREE_OPERAND (t, 0)) == ADDR_EXPR)
-	  fn = TREE_OPERAND (TREE_OPERAND (t, 0), 0);
+        if (TREE_CODE (TREE_OPERAND (t, 0)) == ADDR_EXPR)
+          fn = TREE_OPERAND (TREE_OPERAND (t, 0), 0);
 
-	if (fn && TREE_CODE (fn) == FUNCTION_DECL)
-	  {
-	    if (DECL_CONSTRUCTOR_P (fn))
-	      print_tree_identifier
+        if (fn && TREE_CODE (fn) == FUNCTION_DECL)
+          {
+            if (DECL_CONSTRUCTOR_P (fn))
+              print_tree_identifier
                 (scratch_buffer, TYPE_IDENTIFIER (TREE_TYPE (t)));
-	    else
-	      dump_decl (fn, 0);
-	  }
-	else
-	  dump_expr (TREE_OPERAND (t, 0), 0);
+            else
+              dump_decl (fn, 0);
+          }
+        else
+          dump_expr (TREE_OPERAND (t, 0), 0);
       }
       print_left_paren (scratch_buffer);
       if (TREE_OPERAND (t, 1))
-	dump_expr_list (TREE_CHAIN (TREE_OPERAND (t, 1)), flags);
+        dump_expr_list (TREE_CHAIN (TREE_OPERAND (t, 1)), flags);
       print_right_paren (scratch_buffer);
       break;
 
     case CALL_EXPR:
       {
-	tree fn = TREE_OPERAND (t, 0);
-	tree args = TREE_OPERAND (t, 1);
+        tree fn = TREE_OPERAND (t, 0);
+        tree args = TREE_OPERAND (t, 1);
 
-	if (TREE_CODE (fn) == ADDR_EXPR)
-	  fn = TREE_OPERAND (fn, 0);
+        if (TREE_CODE (fn) == ADDR_EXPR)
+          fn = TREE_OPERAND (fn, 0);
 
-	if (TREE_TYPE (fn) != NULL_TREE && NEXT_CODE (fn) == METHOD_TYPE)
-	  {
-	    tree ob = TREE_VALUE (args);
-	    if (TREE_CODE (ob) == ADDR_EXPR)
-	      {
-		dump_expr (TREE_OPERAND (ob, 0), flags | TFF_EXPR_IN_PARENS);
-		output_add_character (scratch_buffer, '.');
-	      }
-	    else if (TREE_CODE (ob) != PARM_DECL
-		     || strcmp (IDENTIFIER_POINTER (DECL_NAME (ob)), "this"))
-	      {
-		dump_expr (ob, flags | TFF_EXPR_IN_PARENS);
-		output_add_string (scratch_buffer, "->");
-	      }
-	    args = TREE_CHAIN (args);
-	  }
-	dump_expr (fn, flags | TFF_EXPR_IN_PARENS);
-	print_left_paren (scratch_buffer);
-	dump_expr_list (args, flags);
-	print_right_paren (scratch_buffer);
+        if (TREE_TYPE (fn) != NULL_TREE && NEXT_CODE (fn) == METHOD_TYPE)
+          {
+            tree ob = TREE_VALUE (args);
+            if (TREE_CODE (ob) == ADDR_EXPR)
+              {
+                dump_expr (TREE_OPERAND (ob, 0), flags | TFF_EXPR_IN_PARENS);
+                output_add_character (scratch_buffer, '.');
+              }
+            else if (TREE_CODE (ob) != PARM_DECL
+                     || strcmp (IDENTIFIER_POINTER (DECL_NAME (ob)), "this"))
+              {
+                dump_expr (ob, flags | TFF_EXPR_IN_PARENS);
+                output_add_string (scratch_buffer, "->");
+              }
+            args = TREE_CHAIN (args);
+          }
+        dump_expr (fn, flags | TFF_EXPR_IN_PARENS);
+        print_left_paren (scratch_buffer);
+        dump_expr_list (args, flags);
+        print_right_paren (scratch_buffer);
       }
       break;
 
     case NEW_EXPR:
       {
-	tree type = TREE_OPERAND (t, 1);
-	tree init = TREE_OPERAND (t, 2);
-	if (NEW_EXPR_USE_GLOBAL (t))
-	  print_scope_operator (scratch_buffer);
-	output_add_string (scratch_buffer, "new ");
-	if (TREE_OPERAND (t, 0))
-	  {
-	    print_left_paren (scratch_buffer);
-	    dump_expr_list (TREE_OPERAND (t, 0), flags);
-	    output_add_string (scratch_buffer, ") ");
-	  }
-	if (TREE_CODE (type) == ARRAY_REF)
-	  type = build_cplus_array_type
-	    (TREE_OPERAND (type, 0),
-	     build_index_type (fold (build (MINUS_EXPR, integer_type_node,
-					    TREE_OPERAND (type, 1),
-					    integer_one_node))));
-	dump_type (type, flags);
-	if (init)
-	  {
-	    print_left_paren (scratch_buffer);
-	    if (TREE_CODE (init) == TREE_LIST)
-	      dump_expr_list (init, flags);
-	    else if (init == void_zero_node)
-	      /* This representation indicates an empty initializer,
-		 e.g.: "new int()".  */
-	      ;
-	    else
-	      dump_expr (init, flags);
-	    print_right_paren (scratch_buffer);
-	  }
+        tree type = TREE_OPERAND (t, 1);
+        tree init = TREE_OPERAND (t, 2);
+        if (NEW_EXPR_USE_GLOBAL (t))
+          print_scope_operator (scratch_buffer);
+        output_add_string (scratch_buffer, "new ");
+        if (TREE_OPERAND (t, 0))
+          {
+            print_left_paren (scratch_buffer);
+            dump_expr_list (TREE_OPERAND (t, 0), flags);
+            output_add_string (scratch_buffer, ") ");
+          }
+        if (TREE_CODE (type) == ARRAY_REF)
+          type = build_cplus_array_type
+            (TREE_OPERAND (type, 0),
+             build_index_type (fold (build (MINUS_EXPR, integer_type_node,
+                                            TREE_OPERAND (type, 1),
+                                            integer_one_node))));
+        dump_type (type, flags);
+        if (init)
+          {
+            print_left_paren (scratch_buffer);
+            if (TREE_CODE (init) == TREE_LIST)
+              dump_expr_list (init, flags);
+            else if (init == void_zero_node)
+              /* This representation indicates an empty initializer,
+                 e.g.: "new int()".  */
+              ;
+            else
+              dump_expr (init, flags);
+            print_right_paren (scratch_buffer);
+          }
       }
       break;
 
     case TARGET_EXPR:
       /* Note that this only works for G++ target exprs.  If somebody
-	 builds a general TARGET_EXPR, there's no way to represent that
-	 it initializes anything other that the parameter slot for the
-	 default argument.  Note we may have cleared out the first
-	 operand in expand_expr, so don't go killing ourselves.  */
+         builds a general TARGET_EXPR, there's no way to represent that
+         it initializes anything other that the parameter slot for the
+         default argument.  Note we may have cleared out the first
+         operand in expand_expr, so don't go killing ourselves.  */
       if (TREE_OPERAND (t, 1))
-	dump_expr (TREE_OPERAND (t, 1), flags | TFF_EXPR_IN_PARENS);
+        dump_expr (TREE_OPERAND (t, 1), flags | TFF_EXPR_IN_PARENS);
       break;
 
     case INIT_EXPR:
@@ -1734,23 +1734,23 @@ dump_expr (t, flags)
 
     case COMPONENT_REF:
       {
-	tree ob = TREE_OPERAND (t, 0);
-	if (TREE_CODE (ob) == INDIRECT_REF)
-	  {
-	    ob = TREE_OPERAND (ob, 0);
-	    if (TREE_CODE (ob) != PARM_DECL
-		|| strcmp (IDENTIFIER_POINTER (DECL_NAME (ob)), "this"))
-	      {
-		dump_expr (ob, flags | TFF_EXPR_IN_PARENS);
-		output_add_string (scratch_buffer, "->");
-	      }
-	  }
-	else
-	  {
-	    dump_expr (ob, flags | TFF_EXPR_IN_PARENS);
-	    output_add_character (scratch_buffer, '.');
-	  }
-	dump_expr (TREE_OPERAND (t, 1), flags & ~TFF_EXPR_IN_PARENS);
+        tree ob = TREE_OPERAND (t, 0);
+        if (TREE_CODE (ob) == INDIRECT_REF)
+          {
+            ob = TREE_OPERAND (ob, 0);
+            if (TREE_CODE (ob) != PARM_DECL
+                || strcmp (IDENTIFIER_POINTER (DECL_NAME (ob)), "this"))
+              {
+                dump_expr (ob, flags | TFF_EXPR_IN_PARENS);
+                output_add_string (scratch_buffer, "->");
+              }
+          }
+        else
+          {
+            dump_expr (ob, flags | TFF_EXPR_IN_PARENS);
+            output_add_character (scratch_buffer, '.');
+          }
+        dump_expr (TREE_OPERAND (t, 1), flags & ~TFF_EXPR_IN_PARENS);
       }
       break;
 
@@ -1763,48 +1763,48 @@ dump_expr (t, flags)
 
     case CONVERT_EXPR:
       if (TREE_TYPE (t) && VOID_TYPE_P (TREE_TYPE (t)))
-	{
-	  print_left_paren (scratch_buffer);
-	  dump_type (TREE_TYPE (t), flags);
-	  print_right_paren (scratch_buffer);
-	  dump_expr (TREE_OPERAND (t, 0), flags);
-	}
+        {
+          print_left_paren (scratch_buffer);
+          dump_type (TREE_TYPE (t), flags);
+          print_right_paren (scratch_buffer);
+          dump_expr (TREE_OPERAND (t, 0), flags);
+        }
       else
-	dump_unary_op ("+", t, flags);
+        dump_unary_op ("+", t, flags);
       break;
 
     case ADDR_EXPR:
       if (TREE_CODE (TREE_OPERAND (t, 0)) == FUNCTION_DECL
-	  || TREE_CODE (TREE_OPERAND (t, 0)) == STRING_CST
-	  /* An ADDR_EXPR can have reference type.  In that case, we
-	     shouldn't print the `&' doing so indicates to the user
-	     that the expression has pointer type.  */
-	  || (TREE_TYPE (t)
-	      && TREE_CODE (TREE_TYPE (t)) == REFERENCE_TYPE))
-	dump_expr (TREE_OPERAND (t, 0), flags | TFF_EXPR_IN_PARENS);
+          || TREE_CODE (TREE_OPERAND (t, 0)) == STRING_CST
+          /* An ADDR_EXPR can have reference type.  In that case, we
+             shouldn't print the `&' doing so indicates to the user
+             that the expression has pointer type.  */
+          || (TREE_TYPE (t)
+              && TREE_CODE (TREE_TYPE (t)) == REFERENCE_TYPE))
+        dump_expr (TREE_OPERAND (t, 0), flags | TFF_EXPR_IN_PARENS);
       else
-	dump_unary_op ("&", t, flags);
+        dump_unary_op ("&", t, flags);
       break;
 
     case INDIRECT_REF:
       if (TREE_HAS_CONSTRUCTOR (t))
-	{
-	  t = TREE_OPERAND (t, 0);
-	  my_friendly_assert (TREE_CODE (t) == CALL_EXPR, 237);
-	  dump_expr (TREE_OPERAND (t, 0), flags | TFF_EXPR_IN_PARENS);
-	  print_left_paren (scratch_buffer);
-	  dump_expr_list (TREE_CHAIN (TREE_OPERAND (t, 1)), flags);
-	  print_right_paren (scratch_buffer);
-	}
+        {
+          t = TREE_OPERAND (t, 0);
+          my_friendly_assert (TREE_CODE (t) == CALL_EXPR, 237);
+          dump_expr (TREE_OPERAND (t, 0), flags | TFF_EXPR_IN_PARENS);
+          print_left_paren (scratch_buffer);
+          dump_expr_list (TREE_CHAIN (TREE_OPERAND (t, 1)), flags);
+          print_right_paren (scratch_buffer);
+        }
       else
-	{
-	  if (TREE_OPERAND (t,0) != NULL_TREE
-	      && TREE_TYPE (TREE_OPERAND (t, 0))
-	      && NEXT_CODE (TREE_OPERAND (t, 0)) == REFERENCE_TYPE)
-	    dump_expr (TREE_OPERAND (t, 0), flags);
-	  else
-	    dump_unary_op ("*", t, flags);
-	}
+        {
+          if (TREE_OPERAND (t,0) != NULL_TREE
+              && TREE_TYPE (TREE_OPERAND (t, 0))
+              && NEXT_CODE (TREE_OPERAND (t, 0)) == REFERENCE_TYPE)
+            dump_expr (TREE_OPERAND (t, 0), flags);
+          else
+            dump_unary_op ("*", t, flags);
+        }
       break;
 
     case NEGATE_EXPR:
@@ -1826,27 +1826,27 @@ dump_expr (t, flags)
 
     case NON_LVALUE_EXPR:
       /* FIXME: This is a KLUDGE workaround for a parsing problem.  There
-	 should be another level of INDIRECT_REF so that I don't have to do
-	 this.  */
+         should be another level of INDIRECT_REF so that I don't have to do
+         this.  */
       if (TREE_TYPE (t) != NULL_TREE && NEXT_CODE (t) == POINTER_TYPE)
-	{
-	  tree next = TREE_TYPE (TREE_TYPE (t));
+        {
+          tree next = TREE_TYPE (TREE_TYPE (t));
 
-	  while (TREE_CODE (next) == POINTER_TYPE)
-	    next = TREE_TYPE (next);
+          while (TREE_CODE (next) == POINTER_TYPE)
+            next = TREE_TYPE (next);
 
-	  if (TREE_CODE (next) == FUNCTION_TYPE)
-	    {
-	      if (flags & TFF_EXPR_IN_PARENS)
-	        print_left_paren (scratch_buffer);
-	      output_add_character (scratch_buffer, '*');
-	      dump_expr (TREE_OPERAND (t, 0), flags & ~TFF_EXPR_IN_PARENS);
-	      if (flags & TFF_EXPR_IN_PARENS)
-	        print_right_paren (scratch_buffer);
-	      break;
-	    }
-	  /* else FALLTHRU */
-	}
+          if (TREE_CODE (next) == FUNCTION_TYPE)
+            {
+              if (flags & TFF_EXPR_IN_PARENS)
+                print_left_paren (scratch_buffer);
+              output_add_character (scratch_buffer, '*');
+              dump_expr (TREE_OPERAND (t, 0), flags & ~TFF_EXPR_IN_PARENS);
+              if (flags & TFF_EXPR_IN_PARENS)
+                print_right_paren (scratch_buffer);
+              break;
+            }
+          /* else FALLTHRU */
+        }
       dump_expr (TREE_OPERAND (t, 0), flags | TFF_EXPR_IN_PARENS);
       break;
 
@@ -1860,45 +1860,45 @@ dump_expr (t, flags)
 
     case CONSTRUCTOR:
       if (TREE_TYPE (t) && TYPE_PTRMEMFUNC_P (TREE_TYPE (t)))
-	{
-	  tree idx = build_ptrmemfunc_access_expr (t, pfn_identifier);
+        {
+          tree idx = build_ptrmemfunc_access_expr (t, pfn_identifier);
 
-	  if (integer_zerop (idx))
-	    {
-	      /* A NULL pointer-to-member constant.  */
-	      output_add_string (scratch_buffer, "((");
-	      dump_type (TREE_TYPE (t), flags);
-	      output_add_string (scratch_buffer, ") 0)");
-	      break;
-	    }
-	  else if (host_integerp (idx, 0))
-	    {
-	      tree virtuals;
-	      unsigned HOST_WIDE_INT n;
+          if (integer_zerop (idx))
+            {
+              /* A NULL pointer-to-member constant.  */
+              output_add_string (scratch_buffer, "((");
+              dump_type (TREE_TYPE (t), flags);
+              output_add_string (scratch_buffer, ") 0)");
+              break;
+            }
+          else if (host_integerp (idx, 0))
+            {
+              tree virtuals;
+              unsigned HOST_WIDE_INT n;
 
-	      t = TREE_TYPE (TYPE_PTRMEMFUNC_FN_TYPE (TREE_TYPE (t)));
-	      t = TYPE_METHOD_BASETYPE (t);
-	      virtuals = TYPE_BINFO_VIRTUALS (TYPE_MAIN_VARIANT (t));
+              t = TREE_TYPE (TYPE_PTRMEMFUNC_FN_TYPE (TREE_TYPE (t)));
+              t = TYPE_METHOD_BASETYPE (t);
+              virtuals = TYPE_BINFO_VIRTUALS (TYPE_MAIN_VARIANT (t));
 
-	      n = tree_low_cst (idx, 0);
+              n = tree_low_cst (idx, 0);
 
-	      /* Map vtable index back one, to allow for the null pointer to
-		 member.  */
-	      --n;
+              /* Map vtable index back one, to allow for the null pointer to
+                 member.  */
+              --n;
 
-	      while (n > 0 && virtuals)
-		{
-		  --n;
-		  virtuals = TREE_CHAIN (virtuals);
-		}
-	      if (virtuals)
-		{
-		  dump_expr (BV_FN (virtuals),
-	                     flags | TFF_EXPR_IN_PARENS);
-		  break;
-		}
-	    }
-	}
+              while (n > 0 && virtuals)
+                {
+                  --n;
+                  virtuals = TREE_CHAIN (virtuals);
+                }
+              if (virtuals)
+                {
+                  dump_expr (BV_FN (virtuals),
+                             flags | TFF_EXPR_IN_PARENS);
+                  break;
+                }
+            }
+        }
       /* We've gotten an rvalue of the form 'T()'.  */
       else if (TREE_TYPE (t))
         {
@@ -1916,34 +1916,34 @@ dump_expr (t, flags)
 
     case OFFSET_REF:
       {
-	tree ob = TREE_OPERAND (t, 0);
-	if (is_dummy_object (ob))
-	  {
-	    t = TREE_OPERAND (t, 1);
-	    if (TREE_CODE (t) == FUNCTION_DECL)
-	      /* A::f */
-	      dump_expr (t, flags | TFF_EXPR_IN_PARENS);
-	    else if (BASELINK_P (t))
-	      dump_expr (OVL_CURRENT (BASELINK_FUNCTIONS (t)), 
-			 flags | TFF_EXPR_IN_PARENS);
-	    else
-	      dump_decl (t, flags);
-	  }
-	else
-	  {
-	    if (TREE_CODE (ob) == INDIRECT_REF)
-	      {
-		dump_expr (TREE_OPERAND (ob, 0), flags | TFF_EXPR_IN_PARENS);
-		output_add_string (scratch_buffer, "->*");
-	      }
-	    else
-	      {
-		dump_expr (ob, flags | TFF_EXPR_IN_PARENS);
-		output_add_string (scratch_buffer, ".*");
-	      }
-	    dump_expr (TREE_OPERAND (t, 1), flags | TFF_EXPR_IN_PARENS);
-	  }
-	break;
+        tree ob = TREE_OPERAND (t, 0);
+        if (is_dummy_object (ob))
+          {
+            t = TREE_OPERAND (t, 1);
+            if (TREE_CODE (t) == FUNCTION_DECL)
+              /* A::f */
+              dump_expr (t, flags | TFF_EXPR_IN_PARENS);
+            else if (BASELINK_P (t))
+              dump_expr (OVL_CURRENT (BASELINK_FUNCTIONS (t)), 
+                         flags | TFF_EXPR_IN_PARENS);
+            else
+              dump_decl (t, flags);
+          }
+        else
+          {
+            if (TREE_CODE (ob) == INDIRECT_REF)
+              {
+                dump_expr (TREE_OPERAND (ob, 0), flags | TFF_EXPR_IN_PARENS);
+                output_add_string (scratch_buffer, "->*");
+              }
+            else
+              {
+                dump_expr (ob, flags | TFF_EXPR_IN_PARENS);
+                output_add_string (scratch_buffer, ".*");
+              }
+            dump_expr (TREE_OPERAND (t, 1), flags | TFF_EXPR_IN_PARENS);
+          }
+        break;
       }
 
     case TEMPLATE_PARM_INDEX:
@@ -1962,21 +1962,21 @@ dump_expr (t, flags)
 
     case CAST_EXPR:
       if (TREE_OPERAND (t, 0) == NULL_TREE
-	  || TREE_CHAIN (TREE_OPERAND (t, 0)))
-	{
-	  dump_type (TREE_TYPE (t), flags);
-	  print_left_paren (scratch_buffer);
-	  dump_expr_list (TREE_OPERAND (t, 0), flags);
-	  print_right_paren (scratch_buffer);
-	}
+          || TREE_CHAIN (TREE_OPERAND (t, 0)))
+        {
+          dump_type (TREE_TYPE (t), flags);
+          print_left_paren (scratch_buffer);
+          dump_expr_list (TREE_OPERAND (t, 0), flags);
+          print_right_paren (scratch_buffer);
+        }
       else
-	{
-	  print_left_paren (scratch_buffer);
-	  dump_type (TREE_TYPE (t), flags);
+        {
+          print_left_paren (scratch_buffer);
+          dump_type (TREE_TYPE (t), flags);
           output_add_string (scratch_buffer, ")(");
-	  dump_expr_list (TREE_OPERAND (t, 0), flags);
-	  print_right_paren (scratch_buffer);
-	}
+          dump_expr_list (TREE_OPERAND (t, 0), flags);
+          print_right_paren (scratch_buffer);
+        }
       break;
 
     case STATIC_CAST_EXPR:
@@ -2009,16 +2009,16 @@ dump_expr (t, flags)
     case SIZEOF_EXPR:
     case ALIGNOF_EXPR:
       if (TREE_CODE (t) == SIZEOF_EXPR)
-	output_add_string (scratch_buffer, "sizeof (");
+        output_add_string (scratch_buffer, "sizeof (");
       else
-	{
-	  my_friendly_assert (TREE_CODE (t) == ALIGNOF_EXPR, 0);
-	  output_add_string (scratch_buffer, "__alignof__ (");
-	}
+        {
+          my_friendly_assert (TREE_CODE (t) == ALIGNOF_EXPR, 0);
+          output_add_string (scratch_buffer, "__alignof__ (");
+        }
       if (TYPE_P (TREE_OPERAND (t, 0)))
-	dump_type (TREE_OPERAND (t, 0), flags);
+        dump_type (TREE_OPERAND (t, 0), flags);
       else
-	dump_unary_op ("*", t, flags | TFF_EXPR_IN_PARENS);
+        dump_unary_op ("*", t, flags | TFF_EXPR_IN_PARENS);
       print_right_paren (scratch_buffer);
       break;
 
@@ -2046,7 +2046,7 @@ dump_expr (t, flags)
 
     case STMT_EXPR:
       /* We don't yet have a way of dumping statements in a
-	 human-readable format.  */
+         human-readable format.  */
       output_add_string (scratch_buffer, "({...})");
       break;
 
@@ -2074,15 +2074,15 @@ dump_expr (t, flags)
 
     case TREE_LIST:
       if (TREE_VALUE (t) && TREE_CODE (TREE_VALUE (t)) == FUNCTION_DECL)
-	{
-	  print_tree_identifier (scratch_buffer, DECL_NAME (TREE_VALUE (t)));
-	  break;
-	}
+        {
+          print_tree_identifier (scratch_buffer, DECL_NAME (TREE_VALUE (t)));
+          break;
+        }
       /* else fall through */
 
       /*  This list is incomplete, but should suffice for now.
-	  It is very important that `sorry' does not call
-	  `report_error_function'.  That could cause an infinite loop.  */
+          It is very important that `sorry' does not call
+          `report_error_function'.  That could cause an infinite loop.  */
     default:
       sorry_for_unsupported_tree (t);
       /* fall through to ERROR_MARK...  */
@@ -2400,11 +2400,11 @@ args_to_string (p, verbose)
   for (; p; p = TREE_CHAIN (p))
     {
       if (TREE_VALUE (p) == null_node)
-	print_identifier (scratch_buffer, "NULL");
+        print_identifier (scratch_buffer, "NULL");
       else
-	dump_type (error_type (TREE_VALUE (p)), flags);
+        dump_type (error_type (TREE_VALUE (p)), flags);
       if (TREE_CHAIN (p))
-	separate_with_comma (scratch_buffer);
+        separate_with_comma (scratch_buffer);
     }
   return output_finalize_message (scratch_buffer);
 }
@@ -2516,25 +2516,25 @@ print_instantiation_full_context (context)
   if (p)
     {
       if (current_function_decl != TINST_DECL (p)
-	  && current_function_decl != NULL_TREE)
-	/* We can get here during the processing of some synthesized
-	   method.  Then, TINST_DECL (p) will be the function that's causing
-	   the synthesis.  */
-	;
+          && current_function_decl != NULL_TREE)
+        /* We can get here during the processing of some synthesized
+           method.  Then, TINST_DECL (p) will be the function that's causing
+           the synthesis.  */
+        ;
       else
-	{
-	  if (current_function_decl == TINST_DECL (p))
-	    /* Avoid redundancy with the the "In function" line.  */;
-	  else
-	    output_verbatim (&context->buffer,
+        {
+          if (current_function_decl == TINST_DECL (p))
+            /* Avoid redundancy with the the "In function" line.  */;
+          else
+            output_verbatim (&context->buffer,
                              "%s: In instantiation of `%s':\n", file,
                              decl_as_string (TINST_DECL (p),
                                              TFF_DECL_SPECIFIERS | TFF_RETURN_TYPE));
 
-	  line = TINST_LINE (p);
-	  file = TINST_FILE (p);
-	  p = TREE_CHAIN (p);
-	}
+          line = TINST_LINE (p);
+          file = TINST_FILE (p);
+          p = TREE_CHAIN (p);
+        }
     }
 
   print_instantiation_partial_context (context, p, file, line);
@@ -2583,14 +2583,14 @@ print_instantiation_context ()
 /* Called from output_format -- during diagnostic message processing --
    to handle C++ specific format specifier with the following meanings:
    %A   function argument-list.
-   %C	tree code.
+   %C   tree code.
    %D   declaration.
    %E   expression.
    %F   function declaration.
-   %L	language as used in extern "lang".
-   %O	binary operator.
+   %L   language as used in extern "lang".
+   %O   binary operator.
    %P   function parameter whose position is indicated by an integer.
-   %Q	assignment operator.
+   %Q   assignment operator.
    %T   type.
    %V   cv-qualifier.  */
 static bool
@@ -2615,17 +2615,17 @@ cp_printer (buffer, text)
 
   switch (*text->format_spec)
     {
-    case 'A': result = args_to_string (next_tree, verbose);	break;
-    case 'C': result = code_to_string (next_tcode, verbose);	break;
-    case 'D': result = decl_to_string (next_tree, verbose);	break;
-    case 'E': result = expr_to_string (next_tree, verbose);	break;
-    case 'F': result = fndecl_to_string (next_tree, verbose);	break;
+    case 'A': result = args_to_string (next_tree, verbose);     break;
+    case 'C': result = code_to_string (next_tcode, verbose);    break;
+    case 'D': result = decl_to_string (next_tree, verbose);     break;
+    case 'E': result = expr_to_string (next_tree, verbose);     break;
+    case 'F': result = fndecl_to_string (next_tree, verbose);   break;
     case 'L': result = language_to_string (next_lang, verbose); break;
-    case 'O': result = op_to_string (next_tcode, verbose);	break;
-    case 'P': result = parm_to_string (next_int, verbose);	break;
-    case 'Q': result = assop_to_string (next_tcode, verbose);	break;
-    case 'T': result = type_to_string (next_tree, verbose);	break;
-    case 'V': result = cv_to_string (next_tree, verbose);	break;
+    case 'O': result = op_to_string (next_tcode, verbose);      break;
+    case 'P': result = parm_to_string (next_int, verbose);      break;
+    case 'Q': result = assop_to_string (next_tcode, verbose);   break;
+    case 'T': result = type_to_string (next_tree, verbose);     break;
+    case 'V': result = cv_to_string (next_tree, verbose);       break;
  
     default:
       return false;
@@ -2676,43 +2676,43 @@ locate_error (msgid, ap)
     {
       plus = 0;
       if (*f == '%')
-	{
-	  f++;
-	  if (*f == '+')
-	    f++, plus = 1;
-	  if (*f == '#')
-	    f++;
+        {
+          f++;
+          if (*f == '+')
+            f++, plus = 1;
+          if (*f == '#')
+            f++;
 
-	  switch (*f)
-	    {
-	      /* Just ignore these possibilities.  */
-	    case '%':						break;
-	    case 'd':	(void) va_arg (ap, int);		break;
-	    case 's':	(void) va_arg (ap, char *);		break;
-	    case 'L':	(void) va_arg (ap, enum languages);	break;
-	    case 'C':
-	    case 'O':
-	    case 'Q':	(void) va_arg (ap, enum tree_code);	break;
+          switch (*f)
+            {
+              /* Just ignore these possibilities.  */
+            case '%':                                           break;
+            case 'd':   (void) va_arg (ap, int);                break;
+            case 's':   (void) va_arg (ap, char *);             break;
+            case 'L':   (void) va_arg (ap, enum languages);     break;
+            case 'C':
+            case 'O':
+            case 'Q':   (void) va_arg (ap, enum tree_code);     break;
 
-	      /* These take a tree, which may be where the error is
-		 located.  */
-	    case 'A':
-	    case 'D':
-	    case 'E':
-	    case 'F':
-	    case 'P':
-	    case 'T':
-	    case 'V':
-	      t = va_arg (ap, tree);
-	      if (!here || plus)
-		here = t;
-	      break;
+              /* These take a tree, which may be where the error is
+                 located.  */
+            case 'A':
+            case 'D':
+            case 'E':
+            case 'F':
+            case 'P':
+            case 'T':
+            case 'V':
+              t = va_arg (ap, tree);
+              if (!here || plus)
+                here = t;
+              break;
 
-	    default:
-	      errorcount = 0;  /* damn ICE suppression */
-	      internal_error ("unexpected letter `%c' in locate_error\n", *f);
-	    }
-	}
+            default:
+              errorcount = 0;  /* damn ICE suppression */
+              internal_error ("unexpected letter `%c' in locate_error\n", *f);
+            }
+        }
     }
 
   if (here == 0)
