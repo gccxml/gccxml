@@ -76,7 +76,7 @@
 # define XML_PRE_3_4_TREE_VIA_PUBLIC
 #endif
 
-#define GCC_XML_C_VERSION "$Revision: 1.113 $"
+#define GCC_XML_C_VERSION "$Revision: 1.114 $"
 
 /*--------------------------------------------------------------------------*/
 /* Data structures for the actual XML dump.  */
