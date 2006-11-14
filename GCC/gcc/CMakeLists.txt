@@ -347,8 +347,13 @@ ENDFOREACH(tgt)
 SET(cpp_SRCS cpplib.c cpplex.c cppmacro.c cppexp.c cppfiles.c
   cpptrad.c cpphash.c cpperror.c cppinit.c cppdefault.c cppmain.c
   hashtable.c line-map.c mkdeps.c prefix.c mbchar.c)
-SET_SOURCE_FILES_PROPERTIES(prefix.c
-  PROPERTIES COMPILE_FLAGS "-DPREFIX=\"${CMAKE_INSTALL_PREFIX}\"")
+IF(XCODE)
+  SET_SOURCE_FILES_PROPERTIES(prefix.c
+    PROPERTIES COMPILE_FLAGS "-DPREFIX=\\\"${CMAKE_INSTALL_PREFIX}\\\"")
+ELSE(XCODE)
+  SET_SOURCE_FILES_PROPERTIES(prefix.c
+    PROPERTIES COMPILE_FLAGS "-DPREFIX=\"${CMAKE_INSTALL_PREFIX}\"")
+ENDIF(XCODE)
 IF(CYGWIN)
   SET_SOURCE_FILES_PROPERTIES(cppdefault.c PROPERTIES
     COMPILE_FLAGS "-DTOOL_INCLUDE_DIR=/usr/include")
