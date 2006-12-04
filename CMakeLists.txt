@@ -1,6 +1,9 @@
 PROJECT(GCCXMLComplete)
 
-CMAKE_MINIMUM_REQUIRED(VERSION 2.0)
+CMAKE_MINIMUM_REQUIRED(VERSION 2.4)
+
+# We are not using shared libraries.  Skip any RPATH.
+SET(CMAKE_SKIP_RPATH 1)
 
 # Tell GCC_XML that we are providing gccxml_cc1plus for it.
 SET(GCCXML_NATIVE_CC1PLUS 1)

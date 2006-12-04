@@ -83,21 +83,32 @@ SUBDIRS(KWSys)
 
 IF(UNIX)
   # Installation directories.
+  SET(GCCXML_DATA_DIR_HELP "Install location for data (relative to prefix).")
+  SET(GCCXML_DOC_DIR_HELP "Install location for documentation (relative to prefix).")
+  SET(GCCXML_MAN_DIR_HELP "Install location for man pages (relative to prefix).")
   IF(NOT GCCXML_DATA_DIR)
-    SET(GCCXML_DATA_DIR "/share/gccxml-${GCCXML_VERSION}" CACHE STRING
-      "Install location for data (relative to prefix).")
+    SET(GCCXML_DATA_DIR "share/gccxml-${GCCXML_VERSION}" CACHE STRING
+      "${GCCXML_DATA_DIR_HELP}")
     MARK_AS_ADVANCED(GCCXML_DATA_DIR)
   ENDIF(NOT GCCXML_DATA_DIR)
   IF(NOT GCCXML_DOC_DIR)
-    SET(GCCXML_DOC_DIR "/share/doc/gccxml-${GCCXML_VERSION}" CACHE STRING
-      "Install location for documentation (relative to prefix).")
+    SET(GCCXML_DOC_DIR "share/doc/gccxml-${GCCXML_VERSION}" CACHE STRING
+      "${GCCXML_DOC_DIR_HELP}")
     MARK_AS_ADVANCED(GCCXML_DOC_DIR)
   ENDIF(NOT GCCXML_DOC_DIR)
   IF(NOT GCCXML_MAN_DIR)
-    SET(GCCXML_MAN_DIR "/share/man" CACHE STRING
-      "Install location for man pages (relative to prefix).")
+    SET(GCCXML_MAN_DIR "share/man" CACHE STRING
+      "${GCCXML_MAN_DIR_HELP}")
     MARK_AS_ADVANCED(GCCXML_MAN_DIR)
   ENDIF(NOT GCCXML_MAN_DIR)
+
+  # Make sure there are no leading slashes.
+  FOREACH(dir GCCXML_DATA_DIR GCCXML_DOC_DIR GCCXML_MAN_DIR)
+    IF("${dir}" MATCHES "^/")
+      STRING(REGEX REPLACE "^/" "" ${dir} "${${dir}}")
+      SET(${dir} "${${dir}}" CACHE STRING "${${dir}_HELP}" FORCE)
+    ENDIF("${dir}" MATCHES "^/")
+  ENDFOREACH(dir)
 
   # Installation rules for UNIX.
   SET(GCCXML_ROOT ${GCCXML_SOURCE_DIR}/Support)
@@ -123,6 +134,6 @@ IF(UNIX)
   CONFIGURE_FILE(${GCCXML_SOURCE_DIR}/GXFront/config_install.in
     ${GCCXML_BINARY_DIR}/GXFront/InstallOnly/gccxml_config)
   INSTALL(FILES ${GCCXML_BINARY_DIR}/GXFront/InstallOnly/gccxml_config
-    DESTINATION ${GCCXML_INSTALL_ROOT_CM24}${GCCXML_DATA_DIR}
+    DESTINATION ${GCCXML_INSTALL_ROOT}${GCCXML_DATA_DIR}
     COMPONENT Development)
 ENDIF(UNIX)
