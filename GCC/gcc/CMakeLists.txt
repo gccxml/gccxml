@@ -121,13 +121,13 @@ SET_SOURCE_FILES_PROPERTIES(${gengenrtl_SRCS} PROPERTIES
 ADD_CUSTOM_COMMAND(OUTPUT ${GCC_BINARY_DIR}/gcc/genrtl.c
   COMMAND ${GCC_gengenrtl_EXE}
   ARGS > "${GCC_BINARY_DIR}/gcc/genrtl.c"
-  DEPENDS ${GCC_gengenrtl_EXE}
+  DEPENDS gengenrtl
   )
 
 ADD_CUSTOM_COMMAND(OUTPUT ${GCC_BINARY_DIR}/gcc/genrtl.h
   COMMAND ${GCC_gengenrtl_EXE}
   ARGS -h > "${GCC_BINARY_DIR}/gcc/genrtl.h"
-  DEPENDS ${GCC_gengenrtl_EXE}
+  DEPENDS gengenrtl
   )
 
 #-----------------------------------------------------------------------------
@@ -208,7 +208,7 @@ ADD_CUSTOM_COMMAND(OUTPUT ${GCC_BINARY_DIR}/gcc/gtype-desc.h
 
 ADD_CUSTOM_COMMAND(OUTPUT ${GCC_BINARY_DIR}/gcc/gtype-desc.c
   COMMAND ${GCC_gengtype_EXE}
-  DEPENDS ${GCC_gengtype_EXE}
+  DEPENDS gengtype
   )
 
 #-----------------------------------------------------------------------------
@@ -224,7 +224,7 @@ SET_SOURCE_FILES_PROPERTIES(${genpreds_SRCS} PROPERTIES
 ADD_CUSTOM_COMMAND(OUTPUT ${GCC_BINARY_DIR}/gcc/tm-preds.h
   COMMAND ${GCC_genpreds_EXE}
   ARGS > "${GCC_BINARY_DIR}/gcc/tm-preds.h"
-  DEPENDS ${GCC_genpreds_EXE}
+  DEPENDS genpreds
   )
 
 #-----------------------------------------------------------------------------
@@ -240,7 +240,7 @@ SET_SOURCE_FILES_PROPERTIES(${gencheck_SRCS} PROPERTIES
 ADD_CUSTOM_COMMAND(OUTPUT ${GCC_BINARY_DIR}/gcc/tree-check.h
   COMMAND ${GCC_gencheck_EXE}
   ARGS > "${GCC_BINARY_DIR}/gcc/tree-check.h"
-  DEPENDS ${GCC_gencheck_EXE}
+  DEPENDS gencheck
   )
 
 #-----------------------------------------------------------------------------
@@ -271,7 +271,7 @@ FOREACH(tgt constants flags)
     COMMAND ${GCC_gen${tgt}_EXE}
     ARGS "${GCC_SOURCE_DIR}/gcc/config/${md_file}"
     > "${GCC_BINARY_DIR}/gcc/insn-${tgt}.h"
-    DEPENDS ${GCC_gen${tgt}_EXE}
+    DEPENDS gen${tgt}
     ${GCC_SOURCE_DIR}/gcc/config/${md_file}
     )
 ENDFOREACH(tgt)
@@ -303,7 +303,7 @@ FOREACH(tgt config codes attr)
     COMMAND ${GCC_gen${tgt}_EXE}
     ARGS "${GCC_SOURCE_DIR}/gcc/config/${md_file}"
     > "${GCC_BINARY_DIR}/gcc/insn-${tgt}.h"
-    DEPENDS ${GCC_gen${tgt}_EXE}
+    DEPENDS gen${tgt}
     )
 ENDFOREACH(tgt)
 
@@ -336,7 +336,7 @@ FOREACH(tgt emit extract opinit peep output recog attrtab)
     COMMAND ${GCC_gen${tgt}_EXE}
     ARGS "${GCC_SOURCE_DIR}/gcc/config/${md_file}"
     > "${GCC_BINARY_DIR}/gcc/insn-${tgt}.c"
-    DEPENDS ${GCC_gen${tgt}_EXE}
+    DEPENDS gen${tgt}
     ${GCC_SOURCE_DIR}/gcc/config/${md_file}
     )
 ENDFOREACH(tgt)
