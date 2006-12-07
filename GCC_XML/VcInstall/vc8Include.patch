@@ -880,10 +880,10 @@ Index: deque
 ===================================================================
 RCS file: /cvsroot/GxInclude/Vc8/Include/deque,v
 retrieving revision 1.1
-retrieving revision 1.2
-diff -c -3 -p -r1.1 -r1.2
+retrieving revision 1.3
+diff -c -3 -p -r1.1 -r1.3
 *** deque	13 Dec 2005 16:25:33 -0000	1.1
---- deque	13 Dec 2005 23:14:00 -0000	1.2
+--- deque	7 Dec 2006 16:55:49 -0000	1.3
 *************** public:
 *** 47,54 ****
   		_Deque_const_iterator<_Ty, _Alloc, false>,
@@ -894,12 +894,11 @@ diff -c -3 -p -r1.1 -r1.2
   
   	_Deque_const_iterator<_Ty, _Alloc, false> _Checked_iterator_base() const
   	{
---- 47,54 ----
+--- 47,53 ----
   		_Deque_const_iterator<_Ty, _Alloc, false>,
   		_Unchanged_checked_iterator_base_type_tag>::_Result _Checked_iterator_base_type;
   
-! 	friend class _Deque_const_iterator<_Ty, _Alloc, false>;
-! 	friend class _Deque_const_iterator<_Ty, _Alloc, true>;
+! 	friend class _Deque_const_iterator<_Ty, _Alloc, !_SECURE_VALIDATION>;
   
   	_Deque_const_iterator<_Ty, _Alloc, false> _Checked_iterator_base() const
   	{
@@ -913,12 +912,11 @@ diff -c -3 -p -r1.1 -r1.2
   
   	_Deque_iterator<_Ty, _Alloc, false> _Checked_iterator_base() const
   	{
---- 339,346 ----
+--- 338,344 ----
   		_Deque_iterator<_Ty, _Alloc, false>,
   		_Unchanged_checked_iterator_base_type_tag>::_Result _Checked_iterator_base_type;
   
-! 	friend class _Deque_iterator<_Ty, _Alloc, false>;
-! 	friend class _Deque_iterator<_Ty, _Alloc, true>;
+! 	friend class _Deque_iterator<_Ty, _Alloc, !_SECURE_VALIDATION>>;
   
   	_Deque_iterator<_Ty, _Alloc, false> _Checked_iterator_base() const
   	{
@@ -1073,10 +1071,10 @@ Index: list
 ===================================================================
 RCS file: /cvsroot/GxInclude/Vc8/Include/list,v
 retrieving revision 1.1
-retrieving revision 1.2
-diff -c -3 -p -r1.1 -r1.2
+retrieving revision 1.3
+diff -c -3 -p -r1.1 -r1.3
 *** list	13 Dec 2005 16:25:33 -0000	1.1
---- list	13 Dec 2005 23:14:00 -0000	1.2
+--- list	7 Dec 2006 16:55:49 -0000	1.3
 *************** public:
 *** 187,194 ****
   		_Const_iterator<false>,
@@ -1087,12 +1085,11 @@ diff -c -3 -p -r1.1 -r1.2
   
   	_Const_iterator<false> _Checked_iterator_base() const
   	{
---- 187,194 ----
+--- 187,193 ----
   		_Const_iterator<false>,
   		_Unchanged_checked_iterator_base_type_tag>::_Result _Checked_iterator_base_type;
   
-! 	friend class _Const_iterator<false>;
-! 	friend class _Const_iterator<true>;
+! 	friend class _Const_iterator<!_SECURE_VALIDATION>;
   
   	_Const_iterator<false> _Checked_iterator_base() const
   	{
@@ -1106,12 +1103,11 @@ diff -c -3 -p -r1.1 -r1.2
   
   	_Iterator<false> _Checked_iterator_base() const
   	{
---- 367,374 ----
+--- 366,372 ----
   		_Iterator<false>,
   		_Unchanged_checked_iterator_base_type_tag>::_Result _Checked_iterator_base_type;
   
-! 	friend class _Iterator<false>;
-! 	friend class _Iterator<true>;
+! 	friend class _Iterator<!_SECURE_VALIDATION>;
   
   	_Iterator<false> _Checked_iterator_base() const
   	{
@@ -1319,10 +1315,10 @@ Index: xutility
 ===================================================================
 RCS file: /cvsroot/GxInclude/Vc8/Include/xutility,v
 retrieving revision 1.1
-retrieving revision 1.2
-diff -c -3 -p -r1.1 -r1.2
+retrieving revision 1.3
+diff -c -3 -p -r1.1 -r1.3
 *** xutility	13 Dec 2005 16:25:33 -0000	1.1
---- xutility	13 Dec 2005 23:14:00 -0000	1.2
+--- xutility	23 Aug 2006 15:00:35 -0000	1.3
 ***************
 *** 12,17 ****
 --- 12,31 ----
