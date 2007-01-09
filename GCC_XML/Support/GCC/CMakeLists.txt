@@ -5,10 +5,12 @@ INSTALL(PROGRAMS ${CMAKE_CURRENT_SOURCE_DIR}/find_flags
 MACRO(GCCXML_GCC_SUPPORT_DIRECTORY_SIMPLE GCCVersion)
   # Install ./ header file wrappers.
   FILE(GLOB HEADERS [a-z]*)
-  INSTALL(FILES  "${HEADERS}"
-    DESTINATION
-    ${GCCXML_INSTALL_ROOT}${GCCXML_DATA_DIR}/GCC/${GCCVersion}
-    COMPONENT Development)
+  IF(NOT ${f} MATCHES "CVS|CMakeLists.txt")
+    INSTALL(FILES  "${HEADERS}"
+      DESTINATION
+      ${GCCXML_INSTALL_ROOT}${GCCXML_DATA_DIR}/GCC/${GCCVersion}
+      COMPONENT Development)
+  ENDIF(NOT ${f} MATCHES "CVS|CMakeLists.txt")
 ENDMACRO(GCCXML_GCC_SUPPORT_DIRECTORY_SIMPLE GCCVersion)
 
 MACRO(GCCXML_GCC_SUPPORT_DIRECTORY GCCVersion special)
@@ -17,20 +19,24 @@ MACRO(GCCXML_GCC_SUPPORT_DIRECTORY GCCVersion special)
   FOREACH(f ${HEADERS})
     IF("${f}" MATCHES "/${special}$")
     ELSE("${f}" MATCHES "/${special}$")
-      INSTALL(FILES  "${f}"
-        DESTINATION
-        ${GCCXML_INSTALL_ROOT}${GCCXML_DATA_DIR}/GCC/${GCCVersion}
-        COMPONENT Development)
+      IF(NOT ${f} MATCHES "CVS|CMakeLists.txt")
+        INSTALL(FILES  "${f}"
+          DESTINATION
+          ${GCCXML_INSTALL_ROOT}${GCCXML_DATA_DIR}/GCC/${GCCVersion}
+          COMPONENT Development)
+      ENDIF(NOT ${f} MATCHES "CVS|CMakeLists.txt")
     ENDIF("${f}" MATCHES "/${special}$")
   ENDFOREACH(f)
 
   # Install ${special}/ header file wrappers.
   FILE(GLOB HEADERS ${special}/[a-z]*)
   FOREACH(f ${HEADERS})
-    INSTALL(FILES  "${f}"
-      DESTINATION
-      ${GCCXML_INSTALL_ROOT}${GCCXML_DATA_DIR}/GCC/${GCCVersion}/${special}
-      COMPONENT Development)
+    IF(NOT ${f} MATCHES "CVS|CMakeLists.txt")
+      INSTALL(FILES  "${f}"
+        DESTINATION
+        ${GCCXML_INSTALL_ROOT}${GCCXML_DATA_DIR}/GCC/${GCCVersion}/${special}
+        COMPONENT Development)
+    ENDIF(NOT ${f} MATCHES "CVS|CMakeLists.txt")
   ENDFOREACH(f)
 ENDMACRO(GCCXML_GCC_SUPPORT_DIRECTORY)
 
