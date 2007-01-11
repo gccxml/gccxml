@@ -916,7 +916,7 @@ diff -c -3 -p -r1.1.1.1 -r1.3
   		_Deque_iterator<_Ty, _Alloc, false>,
   		_Unchanged_checked_iterator_base_type_tag>::_Result _Checked_iterator_base_type;
   
-! 	friend class _Deque_iterator<_Ty, _Alloc, !_SECURE_VALIDATION>>;
+! 	friend class _Deque_iterator<_Ty, _Alloc, !_SECURE_VALIDATION>;
   
   	_Deque_iterator<_Ty, _Alloc, false> _Checked_iterator_base() const
   	{
