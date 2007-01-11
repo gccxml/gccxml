@@ -64,6 +64,8 @@ int main(int argc, char* argv[])
     "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\VCExpress\\8.0;InstallDir";
   const char* vc8sdkRegistry =
     "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\MicrosoftSDK\\InstalledSDKs\\8F9E5EF3-A9A5-491B-A889-C58EFFECE8B3;Install Dir";
+  const char* vc8sdk2Registry =
+    "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\MicrosoftSDK\\InstalledSDKs\\D2FF9F89-8AA2-4373-8A31-C838BF4DBBE1;Install Dir";
 
   // Check which versions of MSVC are installed.
   std::string msvc6;
@@ -96,8 +98,9 @@ int main(int argc, char* argv[])
       }
     }
   bool have8sdk =
-    have8ex && gxSystemTools::ReadRegistryValue(vc8sdkRegistry, msvc8sdk);
-
+    have8ex &&
+    (gxSystemTools::ReadRegistryValue(vc8sdk2Registry, msvc8sdk) ||
+     gxSystemTools::ReadRegistryValue(vc8sdkRegistry, msvc8sdk));
 
   // Look for a VS8 that is not the beta release.
   if(gxSystemTools::ReadRegistryValue(vc8Registry, msvc8))

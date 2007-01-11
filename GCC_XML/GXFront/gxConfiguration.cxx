@@ -34,6 +34,8 @@ const char* gxConfigurationVc8exRegistry =
 "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\VCExpress\\8.0;InstallDir";
 const char* gxConfigurationVc8sdkRegistry =
 "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\MicrosoftSDK\\InstalledSDKs\\8F9E5EF3-A9A5-491B-A889-C58EFFECE8B3;Install Dir";
+const char* gxConfigurationVc8sdk2Registry =
+"HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\MicrosoftSDK\\InstalledSDKs\\D2FF9F89-8AA2-4373-8A31-C838BF4DBBE1;Install Dir";
 
 //----------------------------------------------------------------------------
 gxConfiguration::gxConfiguration()
@@ -893,6 +895,7 @@ bool gxConfiguration::FindFlags()
     bool have8ex =
       gxSystemTools::ReadRegistryValue(gxConfigurationVc8exRegistry, loc);
     bool have8sdk =
+      gxSystemTools::ReadRegistryValue(gxConfigurationVc8sdk2Registry, loc) ||
       gxSystemTools::ReadRegistryValue(gxConfigurationVc8sdkRegistry, loc);
 
     // Look for a VS8 that is not the beta release.
@@ -1413,7 +1416,10 @@ bool gxConfiguration::FindFlagsMSVC8ex()
 
   std::string psdkPath;
   bool havePSDK =
-    gxSystemTools::ReadRegistryValue(gxConfigurationVc8sdkRegistry, psdkPath);
+    gxSystemTools::ReadRegistryValue(gxConfigurationVc8sdk2Registry,
+                                     psdkPath) ||
+    gxSystemTools::ReadRegistryValue(gxConfigurationVc8sdkRegistry,
+                                     psdkPath);
   std::string msvcPath2;
   std::string vcIncludePath2;
   if(havePSDK)
