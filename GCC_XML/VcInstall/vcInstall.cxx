@@ -50,6 +50,14 @@ int main(int argc, char* argv[])
   gxSystemTools::ConvertToUnixSlashes(patchDir);
   gxSystemTools::ConvertToUnixSlashes(gccxmlRoot);
 
+  // Wipe out any existing VC support directories.  We will create
+  // them from scratch.
+  gxSystemTools::RemoveADirectory((gccxmlRoot+"/Vc6").c_str());
+  gxSystemTools::RemoveADirectory((gccxmlRoot+"/Vc7").c_str());
+  gxSystemTools::RemoveADirectory((gccxmlRoot+"/Vc71").c_str());
+  gxSystemTools::RemoveADirectory((gccxmlRoot+"/Vc8").c_str());
+  gxSystemTools::RemoveADirectory((gccxmlRoot+"/Vc8ex").c_str());
+
   // The registry keys for MSVC install detection.
   const char* vc6Registry =
     "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\"
@@ -348,9 +356,7 @@ bool InstallSupport(const char* patchCommand, const char* catCommand,
     return false;
     }
 
-  // Make sure the destination path exists and is clean
-  // before trying to put files there.
-  gxSystemTools::RemoveADirectory(destPath);
+  // Make sure the destination path exists.
   gxSystemTools::MakeDirectory(destPath);
 
   // Copy the files over before patching.

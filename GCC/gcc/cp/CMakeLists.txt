@@ -30,4 +30,4 @@ TARGET_LINK_LIBRARIES(gccxml_cc1plus backend cpp iberty)
 # Install gccxml_cc1plus next to the gccxml executable.
 INSTALL(TARGETS gccxml_cc1plus
   RUNTIME DESTINATION ${GCCXML_INSTALL_ROOT}bin
-  COMPONENT Development)
+  ${GCCXML_INSTALL_COMPONENT_RUNTIME_EXECUTABLE})

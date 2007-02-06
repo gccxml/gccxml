@@ -1,5 +1,10 @@
 PROJECT(GCC C)
 
+IF(GCCXML_INSTALL_COMPONENT_NAME_RUNTIME_EXECUTABLE)
+  SET(GCCXML_INSTALL_COMPONENT_RUNTIME_EXECUTABLE
+    COMPONENT ${GCCXML_INSTALL_COMPONENT_NAME_RUNTIME_EXECUTABLE})
+ENDIF(GCCXML_INSTALL_COMPONENT_NAME_RUNTIME_EXECUTABLE)
+
 # Do not place internal build-related executables in a parent project
 # executable path.  Backup the real executable output path so it can
 # be restored in gcc/cp for building gccxml_cc1plus.

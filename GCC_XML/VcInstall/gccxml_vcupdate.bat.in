@@ -8,15 +8,15 @@ rem Reference the TEMP directory in a safe way.
 set vc_temp=%TEMP%.
 
 rem Get the current working directory.
-type %0\..\..\VcInstall\vc_helper > "%vc_temp%\vc_env_temp.bat"
+type "%0\..\..\@VC_DATA_DIR@\VcInstall\vc_helper" > "%vc_temp%\vc_env_temp.bat"
 cd >>"%vc_temp%\vc_env_temp.bat"
 call "%vc_temp%\vc_env_temp.bat"
 del "%vc_temp%\vc_env_temp.bat"
 set cwd=%vc_result%
 
 rem Change to the directory containing this script and get its location.
-type %0\..\..\VcInstall\vc_helper > "%vc_temp%\vc_env_temp.bat"
-cd /D "%0\..\.."
+type "%0\..\..\@VC_DATA_DIR@\VcInstall\vc_helper" > "%vc_temp%\vc_env_temp.bat"
+cd /D "%0\..\..\@VC_DATA_DIR@"
 cd >>"%vc_temp%\vc_env_temp.bat"
 call "%vc_temp%\vc_env_temp.bat"
 del "%vc_temp%\vc_env_temp.bat"
@@ -26,6 +26,6 @@ rem Change back to the original working directory.
 cd /D "%cwd%"
 
 rem Run the installer executable to do the rest of the work.
-"%vc_dir%\VcInstall\vcInstall" "%vc_dir%\VcInstall" "%vc_dir%\share\gccxml-@GCCXML_VERSION@"
+"%0\..\gccxml_vcinstall" "%vc_dir%\VcInstall" "%vc_dir%"
 
 if errorlevel 1 pause
