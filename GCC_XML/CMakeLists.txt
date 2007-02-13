@@ -125,12 +125,9 @@ ENDFOREACH(dir)
 
 IF(UNIX)
   # Include unix compiler support directory.
-  SET(GCCXML_ROOT ${GCCXML_SOURCE_DIR}/Support)
   SUBDIRS(Support)
 ELSE(UNIX)
   # Include Visual Studio compiler support directory.
-  SET(GCCXML_ROOT ${GCCXML_EXECUTABLE_DIR})
-  INCLUDE_DIRECTORIES(${GCCXML_SOURCE_DIR}/GXFront)
   SUBDIRS(VcInstall)
 ENDIF(UNIX)
 
@@ -139,7 +136,7 @@ SUBDIRS(GXFront)
 
 # Create a configuration file for use from the build directory.
 CONFIGURE_FILE(${GCCXML_SOURCE_DIR}/GXFront/config_build.in
-               ${GCCXML_EXECUTABLE_DIR}/gccxml_config)
+               ${GCCXML_BINARY_DIR}/Support/gccxml_config)
 
 # Create a configuration file for use from the install directory.
 CONFIGURE_FILE(${GCCXML_SOURCE_DIR}/GXFront/config_install.in

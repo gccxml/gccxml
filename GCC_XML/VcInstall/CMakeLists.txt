@@ -1,3 +1,5 @@
+INCLUDE_DIRECTORIES(${GCCXML_SOURCE_DIR}/GXFront)
+
 # Create an executable to detect VS installations and copy and patch
 # the headers.
 ADD_EXECUTABLE(gccxml_vcinstall vcInstall.cxx
@@ -17,7 +19,7 @@ ADD_CUSTOM_COMMAND(
   OUTPUT ${GCCXML_BINARY_DIR}/vcInstall_stamp.c
 
   COMMAND ${GCCXML_VCINSTALL_EXE}
-  ${GCCXML_SOURCE_DIR}/VcInstall ${GCCXML_ROOT}
+  ${GCCXML_SOURCE_DIR}/VcInstall ${GCCXML_BINARY_DIR}/Support
   ${GCCXML_BINARY_DIR}/vcInstall_stamp.c
 
   DEPENDS gccxml_vcinstall

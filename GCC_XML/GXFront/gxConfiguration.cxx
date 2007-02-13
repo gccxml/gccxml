@@ -16,6 +16,12 @@
 =========================================================================*/
 #include "gxConfiguration.h"
 
+#ifdef CMAKE_INTDIR
+# define GCCXML_EXE_BUILD_DIR GCCXML_EXECUTABLE_DIR "/" CMAKE_INTDIR
+#else
+# define GCCXML_EXE_BUILD_DIR GCCXML_EXECUTABLE_DIR
+#endif
+
 #include <gxsys/ios/sstream>
 
 //----------------------------------------------------------------------------
@@ -49,6 +55,7 @@ gxConfiguration::gxConfiguration()
   m_CopyrightFlag = false;
   m_HelpHTMLFlag = false;
   m_HaveGCCXML_CXXFLAGS = false;
+  m_HaveGCCXML_ROOT = false;
   m_RunningInBuildTree = false;
 }
 
@@ -64,7 +71,7 @@ bool gxConfiguration::Configure(int argc, const char*const * argv)
   // If a config file was not specified on the command line, check the
   // environment now.
   bool checkedEnvironment;
-  if(m_GCCXML_CONFIG.length() == 0)
+  if(m_GCCXML_CONFIG.empty())
     {
     this->CheckEnvironment();
     checkedEnvironment = true;
@@ -84,31 +91,30 @@ bool gxConfiguration::Configure(int argc, const char*const * argv)
   this->CheckCxxEnvironment();
 
   // If no root has been set, use the data root.
-  if(m_GCCXML_ROOT.length() == 0)
+  if(m_GCCXML_ROOT.empty())
     {
+    // The user has not explicitly set a GCCXML_ROOT.
     m_GCCXML_ROOT = m_DataRoot;
+    }
+  else if(!gxSystemTools::SameFile(m_GCCXML_ROOT.c_str(),
+                                   m_DataRoot.c_str()))
+    {
+    // The user has explicitly set a GCCXML_ROOT.
+    m_HaveGCCXML_ROOT = true;
     }
 
   // If no executable has been set, see if there is one in the
-  // executable root.  Try intdir (Debug, Release,...) first.
+  // executable root.
+  if(m_GCCXML_EXECUTABLE.empty())
+    {
+    std::string loc = m_ExecutableRoot;
 #ifdef CMAKE_INTDIR
-  if(m_GCCXML_EXECUTABLE.length() == 0)
-    {
-    std::string loc = m_ExecutableRoot+"/"+CMAKE_INTDIR+"/gccxml_cc1plus";
-# ifdef _WIN32
-    loc += ".exe";
-# endif
-    if(gxSystemTools::FileExists(loc.c_str()) &&
-       !gxSystemTools::FileIsDirectory(loc.c_str()))
+    if(m_RunningInBuildTree)
       {
-      m_GCCXML_EXECUTABLE = loc;
+      loc += "/" CMAKE_INTDIR;
       }
-    }
 #endif
-
-  if(m_GCCXML_EXECUTABLE.length() == 0)
-    {
-    std::string loc = m_ExecutableRoot+"/gccxml_cc1plus";
+    loc += "/gccxml_cc1plus";
 #ifdef _WIN32
     loc += ".exe";
 #endif
@@ -120,7 +126,7 @@ bool gxConfiguration::Configure(int argc, const char*const * argv)
     }
 
   // If no executable has been set, try looking in the system path.
-  if(m_GCCXML_EXECUTABLE.length() == 0)
+  if(m_GCCXML_EXECUTABLE.empty())
     {
     m_GCCXML_EXECUTABLE = gxSystemTools::FindProgram("gccxml_cc1plus");
     }
@@ -132,7 +138,7 @@ bool gxConfiguration::Configure(int argc, const char*const * argv)
 
   // If no preprocessor has been set, see if there is one next to the
   // gccxml_cc1plus executable.
-  if(m_GCCXML_CPP.length() == 0 && m_GCCXML_EXECUTABLE.length() > 0)
+  if(m_GCCXML_CPP.empty() && m_GCCXML_EXECUTABLE.length() > 0)
     {
     std::string loc =
       gxSystemTools::GetFilenamePath(m_GCCXML_EXECUTABLE.c_str());
@@ -148,7 +154,7 @@ bool gxConfiguration::Configure(int argc, const char*const * argv)
     }
 
   // If no preprocessor has been set, try looking in the system path.
-  if(m_GCCXML_CPP.length() == 0)
+  if(m_GCCXML_CPP.empty())
     {
     m_GCCXML_CPP = gxSystemTools::FindProgram("gccxml_cpp0");
     }
@@ -156,7 +162,7 @@ bool gxConfiguration::Configure(int argc, const char*const * argv)
   // As a last resort, assume the preprocessor is built into the
   // gccxml_cc1plus executable.  This is the case when gccxml_cc1plus
   // is gcc 3.3 or higher.
-  if(m_GCCXML_CPP.length() == 0)
+  if(m_GCCXML_CPP.empty())
     {
     m_GCCXML_CPP = m_GCCXML_EXECUTABLE;
     }
@@ -188,6 +194,10 @@ void gxConfiguration::PrintConfiguration(std::ostream& os) const
      << "  GCCXML_FLAGS=\"" << m_GCCXML_FLAGS.c_str() << "\"\n"
      << "  GCCXML_USER_FLAGS=\"" << m_GCCXML_USER_FLAGS.c_str() << "\"\n"
      << "  GCCXML_ROOT=\"" << m_GCCXML_ROOT.c_str() << "\"\n";
+  if(!m_HaveGCCXML_ROOT && m_RunningInBuildTree)
+    {
+    os << "  GCCXML_ROOT_SRC=\"" << GCCXML_SOURCE_DIR "/Support" << "\"\n";
+    }
 }
 
 //----------------------------------------------------------------------------
@@ -345,7 +355,6 @@ void gxConfiguration::FindRoots(const char* argv0)
     {
     selfPath = gxSystemTools::CollapseDirectory(".");
     }
-  gxSystemTools::ConvertToUnixSlashes(selfPath);
 
   // Construct the name of the executable.
   std::string exeName = argv0;
@@ -364,13 +373,9 @@ void gxConfiguration::FindRoots(const char* argv0)
   // Construct the full path to this executable as if it were in the
   // build tree, if it exists there.
   std::string ePath="<GCCXML_EXECUTABLE_DIR-DOES-NOT-EXIST>";
-  if(gxSystemTools::FileIsDirectory(GCCXML_EXECUTABLE_DIR))
+  if(gxSystemTools::FileIsDirectory(GCCXML_EXE_BUILD_DIR))
     {
-    ePath = gxSystemTools::CollapseDirectory(GCCXML_EXECUTABLE_DIR);
-    gxSystemTools::ConvertToUnixSlashes(ePath);
-#ifdef CMAKE_INTDIR
-    ePath += "/" CMAKE_INTDIR;
-#endif
+    ePath = gxSystemTools::CollapseDirectory(GCCXML_EXE_BUILD_DIR);
     ePath += "/";
     ePath += exeName;
     }
@@ -380,23 +385,25 @@ void gxConfiguration::FindRoots(const char* argv0)
   sPath += "/";
   sPath += exeName;
 
-  // Find the data files.
-  std::string sharePath = selfPath+"/../share/gccxml-" GCCXML_VERSION;
-
   // If we are running from the build directory, use the source
   // directory as the data root.
   if(gxSystemTools::SameFile(sPath.c_str(), ePath.c_str()))
     {
     // The build location of the executable and the argv[0] are the
     // same file.  We are running from the build tree.
-    m_ExecutableRoot = GCCXML_EXECUTABLE_DIR;
-    m_DataRoot = GCCXML_SOURCE_DIR "/Support";
+    m_ExecutableRoot =
+      gxSystemTools::CollapseDirectory(GCCXML_EXECUTABLE_DIR);
+    m_DataRoot =
+      gxSystemTools::CollapseDirectory(GCCXML_BINARY_DIR "/Support");
     m_RunningInBuildTree = true;
     }
   else
     {
     // Use our own location as the executable root.
     m_ExecutableRoot = selfPath;
+
+    // Find the data files.
+    std::string sharePath = selfPath+"/../share/gccxml-" GCCXML_VERSION;
 
     if(gxSystemTools::FileIsDirectory(sharePath.c_str()))
       {
@@ -410,7 +417,54 @@ void gxConfiguration::FindRoots(const char* argv0)
       m_DataRoot = m_ExecutableRoot;
       }
     }
-  gxSystemTools::ConvertToUnixSlashes(m_DataRoot);
+}
+
+//----------------------------------------------------------------------------
+bool gxConfiguration::FindData(const char* name)
+{
+  std::string path;
+  return this->FindData(name, path, false);
+}
+
+//----------------------------------------------------------------------------
+bool gxConfiguration::FindData(const char* name, std::string& path,
+                               bool required)
+{
+  std::string loc1;
+  std::string loc2;
+
+  // Look in the configured root directory.
+  loc1 = m_GCCXML_ROOT + "/" + name;
+  if(gxSystemTools::FileExists(loc1.c_str()))
+    {
+    path = gxSystemTools::CollapseDirectory(loc1.c_str());
+    return true;
+    }
+
+  // Check the source tree data directory if the user did not
+  // explicitly configure a root.
+  if(!m_HaveGCCXML_ROOT && m_RunningInBuildTree)
+    {
+    loc2 = GCCXML_SOURCE_DIR "/Support/";
+    loc2 += name;
+    if(gxSystemTools::FileExists(loc2.c_str()))
+      {
+      path = gxSystemTools::CollapseDirectory(loc2.c_str());
+      return true;
+      }
+    }
+
+  // Report an error if the item is required.
+  if(required)
+    {
+    std::cerr << "Support item " << name << " is not available:\n";
+    std::cerr << " checked \"" << loc1 << "\"\n";
+    if(!loc2.empty())
+      {
+      std::cerr << " checked \"" << loc2 << "\"\n";
+      }
+    }
+  return false;
 }
 
 //----------------------------------------------------------------------------
@@ -585,11 +639,11 @@ bool gxConfiguration::ReadArgumentFile(const char* fname)
 void gxConfiguration::CheckEnvironment()
 {
   // Check for any settings we don't yet have in the environment.
-  if(m_GCCXML_CONFIG.length() == 0)
+  if(m_GCCXML_CONFIG.empty())
     {
     gxSystemTools::GetEnv("GCCXML_CONFIG", m_GCCXML_CONFIG);
     }
-  if(m_GCCXML_COMPILER.length() == 0)
+  if(m_GCCXML_COMPILER.empty())
     {
     gxSystemTools::GetEnv("GCCXML_COMPILER", m_GCCXML_COMPILER);
     }
@@ -598,23 +652,23 @@ void gxConfiguration::CheckEnvironment()
     m_HaveGCCXML_CXXFLAGS =
       gxSystemTools::GetEnv("GCCXML_CXXFLAGS", m_GCCXML_CXXFLAGS);
     }
-  if(m_GCCXML_EXECUTABLE.length() == 0)
+  if(m_GCCXML_EXECUTABLE.empty())
     {
     gxSystemTools::GetEnv("GCCXML_EXECUTABLE", m_GCCXML_EXECUTABLE);
     }
-  if(m_GCCXML_CPP.length() == 0)
+  if(m_GCCXML_CPP.empty())
     {
     gxSystemTools::GetEnv("GCCXML_CPP", m_GCCXML_CPP);
     }
-  if(m_GCCXML_ROOT.length() == 0)
+  if(m_GCCXML_ROOT.empty())
     {
     gxSystemTools::GetEnv("GCCXML_ROOT", m_GCCXML_ROOT);
     }
-  if(m_GCCXML_FLAGS.length() == 0)
+  if(m_GCCXML_FLAGS.empty())
     {
     gxSystemTools::GetEnv("GCCXML_FLAGS", m_GCCXML_FLAGS);
     }
-  if(m_GCCXML_USER_FLAGS.length() == 0)
+  if(m_GCCXML_USER_FLAGS.empty())
     {
     gxSystemTools::GetEnv("GCCXML_USER_FLAGS", m_GCCXML_USER_FLAGS);
     }
@@ -623,7 +677,7 @@ void gxConfiguration::CheckEnvironment()
 //----------------------------------------------------------------------------
 void gxConfiguration::CheckCxxEnvironment()
 {
-  if(m_GCCXML_COMPILER.length() == 0)
+  if(m_GCCXML_COMPILER.empty())
     {
     gxSystemTools::GetEnv("CXX", m_GCCXML_COMPILER);
     }
@@ -638,7 +692,7 @@ void gxConfiguration::CheckCxxEnvironment()
 bool gxConfiguration::CheckConfigFile()
 {
   // If we don't have a config file, guess its location.
-  if(m_GCCXML_CONFIG.length() == 0)
+  if(m_GCCXML_CONFIG.empty())
     {
     if(!this->FindConfigFile())
       {
@@ -669,6 +723,7 @@ bool gxConfiguration::FindConfigFile()
       return true;
       }
     }
+
   // Check for a configuration file in the executable root directory.
   config = m_ExecutableRoot+"/gccxml_config";
   if(gxSystemTools::FileExists(config.c_str()))
@@ -682,6 +737,7 @@ bool gxConfiguration::FindConfigFile()
     m_GCCXML_CONFIG = config;
     return true;
     }
+
   // Check for a configuration file in the data root directory.
   config = m_DataRoot+"/gccxml_config";
   if(gxSystemTools::FileExists(config.c_str()))
@@ -727,7 +783,7 @@ bool gxConfiguration::ReadConfigFile()
       {
       if(key == "GCCXML_COMPILER")
         {
-        if(m_GCCXML_COMPILER.length() == 0) { m_GCCXML_COMPILER = value; }
+        if(m_GCCXML_COMPILER.empty()) { m_GCCXML_COMPILER = value; }
         }
       else if(key == "GCCXML_CXXFLAGS")
         {
@@ -739,23 +795,23 @@ bool gxConfiguration::ReadConfigFile()
         }
       else if(key == "GCCXML_EXECUTABLE")
         {
-        if(m_GCCXML_EXECUTABLE.length() == 0) { m_GCCXML_EXECUTABLE = value; }
+        if(m_GCCXML_EXECUTABLE.empty()) { m_GCCXML_EXECUTABLE = value; }
         }
       else if(key == "GCCXML_CPP")
         {
-        if(m_GCCXML_CPP.length() == 0) { m_GCCXML_CPP = value; }
+        if(m_GCCXML_CPP.empty()) { m_GCCXML_CPP = value; }
         }
       else if(key == "GCCXML_ROOT")
         {
-        if(m_GCCXML_ROOT.length() == 0) { m_GCCXML_ROOT = value; }
+        if(m_GCCXML_ROOT.empty()) { m_GCCXML_ROOT = value; }
         }
       else if(key == "GCCXML_FLAGS")
         {
-        if(m_GCCXML_FLAGS.length() == 0) { m_GCCXML_FLAGS = value; }
+        if(m_GCCXML_FLAGS.empty()) { m_GCCXML_FLAGS = value; }
         }
       else if(key == "GCCXML_USER_FLAGS")
         {
-        if(m_GCCXML_USER_FLAGS.length() == 0) { m_GCCXML_USER_FLAGS = value; }
+        if(m_GCCXML_USER_FLAGS.empty()) { m_GCCXML_USER_FLAGS = value; }
         }
       else
         {
@@ -917,18 +973,6 @@ bool gxConfiguration::FindFlags()
         }
       }
 
-    // Find available support directories.
-    bool support6 =
-      gxSystemTools::FileIsDirectory((m_GCCXML_ROOT+"/Vc6").c_str());
-    bool support7 =
-      gxSystemTools::FileIsDirectory((m_GCCXML_ROOT+"/Vc7").c_str());
-    bool support71 =
-      gxSystemTools::FileIsDirectory((m_GCCXML_ROOT+"/Vc71").c_str());
-    bool support8 =
-      gxSystemTools::FileIsDirectory((m_GCCXML_ROOT+"/Vc8").c_str());
-    bool support8ex =
-      gxSystemTools::FileIsDirectory((m_GCCXML_ROOT+"/Vc8ex").c_str());
-
     // See if only one is installed.
     if(have6 && !have7 && !have71 && !have8 && !have8ex)
       {
@@ -952,6 +996,13 @@ bool gxConfiguration::FindFlags()
       }
     else if(have6 || have7 || have71 || have8 || have8ex)
       {
+      // Find available support directories.
+      bool support6 = have6 && this->FindData("Vc6");
+      bool support7 = have7 && this->FindData("Vc7");
+      bool support71 = have71 && this->FindData("Vc71");
+      bool support8 = have8 && this->FindData("Vc8");
+      bool support8ex = have8ex && this->FindData("Vc8ex");
+
       // Have more than one.  See if only one has the support
       // directory available.
       if(support6 && !support7 && !support71 && !support8 && !support8ex)
@@ -1129,16 +1180,20 @@ bool gxConfiguration::FindFlags()
 #else
   // This is a UNIX environment.  Use the gccxml_find_flags script.
   std::string gccxmlFindFlags;
-  if(m_GCCXML_ROOT.find(" ") != m_GCCXML_ROOT.npos)
+  std::string gccxmlFindFlagsScript;
+  if(!this->FindData("gccxml_find_flags", gccxmlFindFlagsScript))
+    {
+    return false;
+    }
+  if(gccxmlFindFlagsScript.find(" ") != std::string::npos)
     {
     gccxmlFindFlags = "\"";
-    gccxmlFindFlags += m_GCCXML_ROOT;
-    gccxmlFindFlags += "/gccxml_find_flags\"";
+    gccxmlFindFlags += gccxmlFindFlagsScript;
+    gccxmlFindFlags += "\"";
     }
   else
     {
-    gccxmlFindFlags = m_GCCXML_ROOT;
-    gccxmlFindFlags += "/gccxml_find_flags";
+    gccxmlFindFlags = gccxmlFindFlagsScript;
     }
   gccxmlFindFlags += " ";
   gccxmlFindFlags += m_GCCXML_COMPILER;
@@ -1178,14 +1233,9 @@ bool gxConfiguration::FindFlagsMSVC6()
     }
   msvcPath += "/Include";
   gxSystemTools::ConvertToUnixSlashes(msvcPath);
-  std::string vcIncludePath = m_GCCXML_ROOT+"/Vc6/Include";
-  gxSystemTools::ConvertToUnixSlashes(vcIncludePath);
-
-  // Make sure the support directory exists.
-  if(!gxSystemTools::FileIsDirectory(vcIncludePath.c_str()))
+  std::string vcIncludePath;
+  if(!this->FindData("Vc6/Include", vcIncludePath))
     {
-    std::cerr << "Vc6/Include support directory is not available.\n";
-    std::cerr << "Checked \"" << vcIncludePath.c_str() << "\".\n";
     return false;
     }
 
@@ -1221,24 +1271,11 @@ bool gxConfiguration::FindFlagsMSVC7()
   std::string msvcPath2 = msvcPath+"/../../Vc7/PlatformSDK/Include";
   msvcPath1 = gxSystemTools::CollapseDirectory(msvcPath1.c_str());
   msvcPath2 = gxSystemTools::CollapseDirectory(msvcPath2.c_str());
-  gxSystemTools::ConvertToUnixSlashes(msvcPath1);
-  gxSystemTools::ConvertToUnixSlashes(msvcPath2);
-  std::string vcIncludePath1 = m_GCCXML_ROOT+"/Vc7/Include";
-  std::string vcIncludePath2 = m_GCCXML_ROOT+"/Vc7/PlatformSDK";
-  gxSystemTools::ConvertToUnixSlashes(vcIncludePath1);
-  gxSystemTools::ConvertToUnixSlashes(vcIncludePath2);
-
-  // Make sure the support directories exist.
-  if(!gxSystemTools::FileIsDirectory(vcIncludePath1.c_str()))
+  std::string vcIncludePath1;
+  std::string vcIncludePath2;
+  if(!this->FindData("Vc7/Include", vcIncludePath1) ||
+     !this->FindData("Vc7/PlatformSDK", vcIncludePath2))
     {
-    std::cerr << "Vc7/Include support directory is not available.\n";
-    std::cerr << "Checked \"" << vcIncludePath1.c_str() << "\".\n";
-    return false;
-    }
-  if(!gxSystemTools::FileIsDirectory(vcIncludePath2.c_str()))
-    {
-    std::cerr << "Vc7/PlatformSDK support directory is not available.\n";
-    std::cerr << "Checked \"" << vcIncludePath2.c_str() << "\".\n";
     return false;
     }
 
@@ -1278,24 +1315,11 @@ bool gxConfiguration::FindFlagsMSVC71()
   std::string msvcPath2 = msvcPath+"/../../Vc7/PlatformSDK/Include";
   msvcPath1 = gxSystemTools::CollapseDirectory(msvcPath1.c_str());
   msvcPath2 = gxSystemTools::CollapseDirectory(msvcPath2.c_str());
-  gxSystemTools::ConvertToUnixSlashes(msvcPath1);
-  gxSystemTools::ConvertToUnixSlashes(msvcPath2);
-  std::string vcIncludePath1 = m_GCCXML_ROOT+"/Vc71/Include";
-  std::string vcIncludePath2 = m_GCCXML_ROOT+"/Vc71/PlatformSDK";
-  gxSystemTools::ConvertToUnixSlashes(vcIncludePath1);
-  gxSystemTools::ConvertToUnixSlashes(vcIncludePath2);
-
-  // Make sure the support directories exist.
-  if(!gxSystemTools::FileIsDirectory(vcIncludePath1.c_str()))
+  std::string vcIncludePath1;
+  std::string vcIncludePath2;
+  if(!this->FindData("Vc71/Include", vcIncludePath1) ||
+     !this->FindData("Vc71/PlatformSDK", vcIncludePath2))
     {
-    std::cerr << "Vc71/Include support directory is not available.\n";
-    std::cerr << "Checked \"" << vcIncludePath1.c_str() << "\".\n";
-    return false;
-    }
-  if(!gxSystemTools::FileIsDirectory(vcIncludePath2.c_str()))
-    {
-    std::cerr << "Vc71/PlatformSDK support directory is not available.\n";
-    std::cerr << "Checked \"" << vcIncludePath2.c_str() << "\".\n";
     return false;
     }
 
@@ -1335,24 +1359,11 @@ bool gxConfiguration::FindFlagsMSVC8()
   std::string msvcPath2 = msvcPath+"/../../Vc/PlatformSDK/Include";
   msvcPath1 = gxSystemTools::CollapseDirectory(msvcPath1.c_str());
   msvcPath2 = gxSystemTools::CollapseDirectory(msvcPath2.c_str());
-  gxSystemTools::ConvertToUnixSlashes(msvcPath1);
-  gxSystemTools::ConvertToUnixSlashes(msvcPath2);
-  std::string vcIncludePath1 = m_GCCXML_ROOT+"/Vc8/Include";
-  std::string vcIncludePath2 = m_GCCXML_ROOT+"/Vc8/PlatformSDK";
-  gxSystemTools::ConvertToUnixSlashes(vcIncludePath1);
-  gxSystemTools::ConvertToUnixSlashes(vcIncludePath2);
-
-  // Make sure the support directories exist.
-  if(!gxSystemTools::FileIsDirectory(vcIncludePath1.c_str()))
+  std::string vcIncludePath1;
+  std::string vcIncludePath2;
+  if(!this->FindData("Vc8/Include", vcIncludePath1) ||
+     !this->FindData("Vc8/PlatformSDK", vcIncludePath2))
     {
-    std::cerr << "Vc8/Include support directory is not available.\n";
-    std::cerr << "Checked \"" << vcIncludePath1.c_str() << "\".\n";
-    return false;
-    }
-  if(!gxSystemTools::FileIsDirectory(vcIncludePath2.c_str()))
-    {
-    std::cerr << "Vc8/PlatformSDK support directory is not available.\n";
-    std::cerr << "Checked \"" << vcIncludePath2.c_str() << "\".\n";
     return false;
     }
 
@@ -1410,9 +1421,11 @@ bool gxConfiguration::FindFlagsMSVC8ex()
     }
   std::string msvcPath1 = msvcPath+"/../../Vc/Include";
   msvcPath1 = gxSystemTools::CollapseDirectory(msvcPath1.c_str());
-  gxSystemTools::ConvertToUnixSlashes(msvcPath1);
-  std::string vcIncludePath1 = m_GCCXML_ROOT+"/Vc8ex/Include";
-  gxSystemTools::ConvertToUnixSlashes(vcIncludePath1);
+  std::string vcIncludePath1;
+  if(!this->FindData("Vc8ex/Include", vcIncludePath1))
+    {
+    return false;
+    }
 
   std::string psdkPath;
   bool havePSDK =
@@ -1426,23 +1439,10 @@ bool gxConfiguration::FindFlagsMSVC8ex()
     {
     msvcPath2 = psdkPath+"/Include";
     msvcPath2 = gxSystemTools::CollapseDirectory(msvcPath2.c_str());
-    gxSystemTools::ConvertToUnixSlashes(msvcPath2);
-    vcIncludePath2 = m_GCCXML_ROOT+"/Vc8ex/PlatformSDK";
-    gxSystemTools::ConvertToUnixSlashes(vcIncludePath2);
-    }
-
-  // Make sure the support directories exist.
-  if(!gxSystemTools::FileIsDirectory(vcIncludePath1.c_str()))
-    {
-    std::cerr << "Vc8ex/Include support directory is not available.\n";
-    std::cerr << "Checked \"" << vcIncludePath1.c_str() << "\".\n";
-    return false;
-    }
-  if(havePSDK && !gxSystemTools::FileIsDirectory(vcIncludePath2.c_str()))
-    {
-    std::cerr << "Vc8ex/PlatformSDK support directory is not available.\n";
-    std::cerr << "Checked \"" << vcIncludePath2.c_str() << "\".\n";
-    return false;
+    if(!this->FindData("Vc8ex/PlatformSDK", vcIncludePath2))
+      {
+      return false;
+      }
     }
 
   m_GCCXML_FLAGS =
@@ -1496,21 +1496,10 @@ bool gxConfiguration::FindFlagsMSVC8ex()
 bool gxConfiguration::FindFlagsBCC55(const char* inBcc32)
 {
   // Find the support include directory.
-  std::string include2 = m_GCCXML_ROOT+"/Borland/5.5";
-  if(!gxSystemTools::FileIsDirectory(include2.c_str()))
+  std::string include2;
+  if(!this->FindData("Borland/5.5", include2))
     {
-    // If we are running in the build tree, we can use the support
-    // directory from the source tree.
-    if(m_RunningInBuildTree)
-      {
-      include2 = GCCXML_SOURCE_DIR "/Support/Borland/5.5";
-      }
-    else
-      {
-      std::cerr << "Borland/5.5 support directory is not available.\n";
-      std::cerr << "Checked \"" << include2.c_str() << "\".\n";
-      return false;
-      }
+    return false;
     }
   std::string include1 = include2;
   include1 += "/Wrappers";
@@ -1549,5 +1538,4 @@ bool gxConfiguration::FindFlagsBCC55(const char* inBcc32)
     "-iwrapper\""+include2+"\" "
     "-I\""+include3+"\" ";
   return true;
-
 }

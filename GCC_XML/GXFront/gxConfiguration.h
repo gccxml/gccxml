@@ -91,6 +91,7 @@ protected:
   std::string m_GCCXML_USER_FLAGS;
   std::string m_GCCXML_ROOT;
   bool m_HaveGCCXML_CXXFLAGS;
+  bool m_HaveGCCXML_ROOT;
 
   // Program and data locations.
   std::string m_ExecutableRoot;
@@ -115,6 +116,13 @@ protected:
 
   // Find executable and data locations of GCC-XML.
   void FindRoots(const char* argv0);
+
+  // Find the data file or directory with the given name.  This
+  // searches the potential roots.  Returns true only if the data
+  // location was found.
+  bool FindData(const char* name);
+  bool FindData(const char* name, std::string& path,
+                bool required = true);
 
   // Parse settings off the command line.
   bool ProcessCommandLine(int argc, const char*const* argv);
