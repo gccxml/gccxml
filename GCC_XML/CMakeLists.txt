@@ -123,13 +123,13 @@ FOREACH(dir GCCXML_DATA_DIR GCCXML_DOC_DIR GCCXML_MAN_DIR)
   ENDIF("${dir}" MATCHES "^/")
 ENDFOREACH(dir)
 
-IF(UNIX)
-  # Include unix compiler support directory.
-  SUBDIRS(Support)
-ELSE(UNIX)
+# Include compiler support directory.
+SUBDIRS(Support)
+
+IF(NOT UNIX)
   # Include Visual Studio compiler support directory.
   SUBDIRS(VcInstall)
-ENDIF(UNIX)
+ENDIF(NOT UNIX)
 
 # Directory to build gccxml executable.
 SUBDIRS(GXFront)
