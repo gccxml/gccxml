@@ -68,6 +68,8 @@ int main(int argc, char* argv[])
     "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\VisualStudio\\7.1;InstallDir";
   const char* vc8Registry =
     "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\VisualStudio\\8.0;InstallDir";
+  const char* vc8sp1Registry =
+    "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\VisualStudio\\8.0\\InstalledProducts\\KB926601;";
   const char* vc8exRegistry =
     "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\VCExpress\\8.0;InstallDir";
   const char* vc8sdkRegistry =
@@ -253,10 +255,20 @@ int main(int argc, char* argv[])
     std::string msvc8p = msvc8 + "/../../Vc/PlatformSDK/Include";
     msvc8i = gxSystemTools::CollapseDirectory(msvc8i.c_str());
     msvc8p = gxSystemTools::CollapseDirectory(msvc8p.c_str());
-    std::string patchI = patchDir + "/vc8Include.patch";
-    std::string patchP = patchDir + "/vc8PlatformSDK.patch";
+    std::string patchIname = "vc8Include.patch";
+    std::string patchPname = "vc8PlatformSDK.patch";
     std::string destPathI = gccxmlRoot+"/Vc8/Include";
     std::string destPathP = gccxmlRoot+"/Vc8/PlatformSDK";
+
+    std::string msvc8sp1;
+    if(gxSystemTools::ReadRegistryValue(vc8sp1Registry, msvc8sp1))
+      {
+      patchIname = "vc8sp1Include.patch";
+      patchPname = "vc8sp1PlatformSDK.patch";
+      }
+    std::string patchI = patchDir + "/" + patchIname;
+    std::string patchP = patchDir + "/" + patchPname;
+
     if(gxSystemTools::FileExists(patchI.c_str()))
       {
       if(!InstallSupport(patchCommand.c_str(), catCommand.c_str(),
@@ -267,7 +279,7 @@ int main(int argc, char* argv[])
       }
     else
       {
-      std::cerr << "Have MSVC 8, but cannot find vc8Include.patch.\n";
+      std::cerr << "Have MSVC 8, but cannot find " << patchIname << ".\n";
       result = 1;
       }
     if(gxSystemTools::FileExists(patchP.c_str()))
@@ -280,7 +292,7 @@ int main(int argc, char* argv[])
       }
     else
       {
-      std::cerr << "Have MSVC 8, but cannot find vc8PlatformSDK.patch.\n";
+      std::cerr << "Have MSVC 8, but cannot find " << patchPname << ".\n";
       result = 1;
       }
     }
