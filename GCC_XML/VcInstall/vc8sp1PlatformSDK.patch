@@ -1,0 +1,252 @@
+Index: OAIdl.h
+===================================================================
+RCS file: /cvsroot/GxInclude/Vc8sp1/PlatformSDK/OAIdl.h,v
+retrieving revision 1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
+*** OAIdl.h	13 Feb 2007 15:03:09 -0000	1.1
+--- OAIdl.h	13 Feb 2007 16:09:18 -0000	1.2
+*************** struct tagVARIANT
+*** 439,445 ****
+                  FLOAT fltVal;
+                  DOUBLE dblVal;
+                  VARIANT_BOOL boolVal;
+!                 _VARIANT_BOOL bool;
+                  SCODE scode;
+                  CY cyVal;
+                  DATE date;
+--- 439,445 ----
+                  FLOAT fltVal;
+                  DOUBLE dblVal;
+                  VARIANT_BOOL boolVal;
+! //                _VARIANT_BOOL bool;
+                  SCODE scode;
+                  CY cyVal;
+                  DATE date;
+*************** struct tagVARIANT
+*** 454,460 ****
+                  FLOAT *pfltVal;
+                  DOUBLE *pdblVal;
+                  VARIANT_BOOL *pboolVal;
+!                 _VARIANT_BOOL *pbool;
+                  SCODE *pscode;
+                  CY *pcyVal;
+                  DATE *pdate;
+--- 454,460 ----
+                  FLOAT *pfltVal;
+                  DOUBLE *pdblVal;
+                  VARIANT_BOOL *pboolVal;
+! //                _VARIANT_BOOL *pbool;
+                  SCODE *pscode;
+                  CY *pcyVal;
+                  DATE *pdate;
+Index: PropIdl.h
+===================================================================
+RCS file: /cvsroot/GxInclude/Vc8sp1/PlatformSDK/PropIdl.h,v
+retrieving revision 1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
+*** PropIdl.h	13 Feb 2007 15:03:09 -0000	1.1
+--- PropIdl.h	13 Feb 2007 16:09:18 -0000	1.2
+*************** struct tag_inner_PROPVARIANT
+*** 307,313 ****
+          /* [case()] */ FLOAT fltVal;
+          /* [case()] */ DOUBLE dblVal;
+          /* [case()] */ VARIANT_BOOL boolVal;
+!         /* [case()] */ _VARIANT_BOOL bool;
+          /* [case()] */ SCODE scode;
+          /* [case()] */ CY cyVal;
+          /* [case()] */ DATE date;
+--- 307,313 ----
+          /* [case()] */ FLOAT fltVal;
+          /* [case()] */ DOUBLE dblVal;
+          /* [case()] */ VARIANT_BOOL boolVal;
+! //        /* [case()] */ _VARIANT_BOOL bool;
+          /* [case()] */ SCODE scode;
+          /* [case()] */ CY cyVal;
+          /* [case()] */ DATE date;
+Index: WinNT.h
+===================================================================
+RCS file: /cvsroot/GxInclude/Vc8sp1/PlatformSDK/WinNT.h,v
+retrieving revision 1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
+*** WinNT.h	13 Feb 2007 15:03:10 -0000	1.1
+--- WinNT.h	13 Feb 2007 16:09:18 -0000	1.2
+*************** Int64ShllMod32 (
+*** 585,597 ****
+      DWORD ShiftCount
+      )
+  {
+-     __asm    {
+-         mov     ecx, ShiftCount
+-         mov     eax, dword ptr [Value]
+-         mov     edx, dword ptr [Value+4]
+-         shld    edx, eax, cl
+-         shl     eax, cl
+-     }
+  }
+  
+  __inline LONGLONG
+--- 585,590 ----
+*************** Int64ShraMod32 (
+*** 601,613 ****
+      DWORD ShiftCount
+      )
+  {
+-     __asm {
+-         mov     ecx, ShiftCount
+-         mov     eax, dword ptr [Value]
+-         mov     edx, dword ptr [Value+4]
+-         shrd    eax, edx, cl
+-         sar     edx, cl
+-     }
+  }
+  
+  __inline ULONGLONG
+--- 594,599 ----
+*************** Int64ShrlMod32 (
+*** 617,629 ****
+      DWORD ShiftCount
+      )
+  {
+-     __asm    {
+-         mov     ecx, ShiftCount
+-         mov     eax, dword ptr [Value]
+-         mov     edx, dword ptr [Value+4]
+-         shrd    eax, edx, cl
+-         shr     edx, cl
+-     }
+  }
+  
+  #if _MSC_VER >= 1200
+--- 603,608 ----
+*************** InterlockedBitTestAndSet (
+*** 2691,2702 ****
+      IN LONG Bit
+      )
+  {
+-     __asm {
+-            mov eax, Bit
+-            mov ecx, Base
+-            lock bts [ecx], eax
+-            setc al
+-     };
+  }
+  
+  BOOLEAN
+--- 2670,2675 ----
+*************** InterlockedBitTestAndReset (
+*** 2706,2717 ****
+      IN LONG Bit
+      )
+  {
+-     __asm {
+-            mov eax, Bit
+-            mov ecx, Base
+-            lock btr [ecx], eax
+-            setc al
+-     };
+  }
+  #pragma warning(pop)
+  
+--- 2679,2684 ----
+*************** InterlockedBitTestAndComplement (
+*** 2728,2739 ****
+      IN LONG Bit
+      )
+  {
+-     __asm {
+-            mov eax, Bit
+-            mov ecx, Base
+-            lock btc [ecx], eax
+-            setc al
+-     };
+  }
+  #pragma warning(pop)
+  #endif	/* _M_CEE_PURE */
+--- 2695,2700 ----
+*************** MemoryBarrier (
+*** 2807,2820 ****
+      VOID
+      )
+  {
+-     LONG Barrier;
+-     __asm {
+-         xchg Barrier, eax
+-     }
+  }
+  #pragma warning( pop )
+  
+! #define YieldProcessor() __asm { rep nop }
+  #endif /* _M_CEE_PURE */
+  //
+  // Prefetch is not supported on all x86 procssors.
+--- 2768,2777 ----
+      VOID
+      )
+  {
+  }
+  #pragma warning( pop )
+  
+! #define YieldProcessor()
+  #endif /* _M_CEE_PURE */
+  //
+  // Prefetch is not supported on all x86 procssors.
+*************** __int2c (
+*** 2847,2853 ****
+  #else
+  #pragma warning( push )
+  #pragma warning( disable : 4793 )
+! FORCEINLINE VOID DbgRaiseAssertionFailure(void) { __asm int 0x2c }
+  #pragma warning( pop )
+  #endif
+  // end_ntddk
+--- 2804,2810 ----
+  #else
+  #pragma warning( push )
+  #pragma warning( disable : 4793 )
+! FORCEINLINE VOID DbgRaiseAssertionFailure(void) {}
+  #pragma warning( pop )
+  #endif
+  // end_ntddk
+*************** __inline PVOID GetCurrentFiber( void ) {
+*** 2862,2873 ****
+  #pragma warning(push)
+  #endif
+  #pragma warning (disable:4035 4793)        // disable 4035 (function must return something)
+! __inline PVOID GetFiberData( void ) { __asm {
+!                                         mov eax, fs:[0x10]
+!                                         mov eax,[eax]
+!                                         }
+!                                      }
+! __inline PVOID GetCurrentFiber( void ) { __asm mov eax, fs:[0x10] }
+  
+  #if _MSC_VER >= 1200
+  #pragma warning(pop)
+--- 2819,2826 ----
+  #pragma warning(push)
+  #endif
+  #pragma warning (disable:4035 4793)        // disable 4035 (function must return something)
+! __inline PVOID GetFiberData( void ) {}
+! __inline PVOID GetCurrentFiber( void ) {}
+  
+  #if _MSC_VER >= 1200
+  #pragma warning(pop)
+*************** __inline struct _TEB * NtCurrentTeb( voi
+*** 9601,9607 ****
+  
+  #pragma warning (disable:4035)        // disable 4035 (function must return something)
+  
+! __inline struct _TEB * NtCurrentTeb( void ) { __asm mov eax, fs:[PcTeb] }
+  
+  #if _MSC_VER >= 1200
+  #pragma warning(pop)
+--- 9554,9560 ----
+  
+  #pragma warning (disable:4035)        // disable 4035 (function must return something)
+  
+! __inline struct _TEB * NtCurrentTeb( void ) {}
+  
+  #if _MSC_VER >= 1200
+  #pragma warning(pop)

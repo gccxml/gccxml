@@ -28,6 +28,8 @@ ADD_CUSTOM_COMMAND(
   ${GCCXML_SOURCE_DIR}/VcInstall/vc71PlatformSDK.patch
   ${GCCXML_SOURCE_DIR}/VcInstall/vc8Include.patch
   ${GCCXML_SOURCE_DIR}/VcInstall/vc8PlatformSDK.patch
+  ${GCCXML_SOURCE_DIR}/VcInstall/vc8sp1Include.patch
+  ${GCCXML_SOURCE_DIR}/VcInstall/vc8sp1PlatformSDK.patch
   ${GCCXML_SOURCE_DIR}/VcInstall/vc8ExpressInclude.patch
   ${GCCXML_SOURCE_DIR}/VcInstall/vc8ExpressPlatformSDK.patch
   )
