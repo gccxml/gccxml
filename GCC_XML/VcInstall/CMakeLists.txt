@@ -52,7 +52,7 @@ INSTALL(
 
 # Install the update script helper files.
 INSTALL(
-  FILES ${VCPATCH_FILES}
+  FILES
     ${GCCXML_SOURCE_DIR}/VcInstall/vcCat.readme.txt
     ${GCCXML_SOURCE_DIR}/VcInstall/vcPatch.readme.txt
     ${GCCXML_SOURCE_DIR}/VcInstall/vc_helper
