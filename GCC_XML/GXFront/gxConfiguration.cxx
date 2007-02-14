@@ -708,15 +708,14 @@ bool gxConfiguration::FindConfigFile()
 {
   std::string home;
   std::string config;
-  // Check for a configuration file in the home directory.
-  if(gxSystemTools::GetEnv("HOME", home) && (home.length() > 0))
+
+  // Check for a configuration file in the home directory if not
+  // running from the build tree.
+  if(!m_RunningInBuildTree &&
+     gxSystemTools::GetEnv("HOME", home) && !home.empty())
     {
-    char last = *(home.end()-1);
-    if((last == '/') || (last == '\\'))
-      {
-      home = home.substr(0, home.length()-1);
-      }
-    config = home+"/.gccxml/config";
+    home += "/.gccxml/config";
+    config = gxSystemTools::CollapseDirectory(home.c_str());
     if(gxSystemTools::FileExists(config.c_str()))
       {
       m_GCCXML_CONFIG = config;
@@ -724,28 +723,8 @@ bool gxConfiguration::FindConfigFile()
       }
     }
 
-  // Check for a configuration file in the executable root directory.
-  config = m_ExecutableRoot+"/gccxml_config";
-  if(gxSystemTools::FileExists(config.c_str()))
-    {
-    m_GCCXML_CONFIG = config;
-    return true;
-    }
-  config = m_ExecutableRoot+"/config";
-  if(gxSystemTools::FileExists(config.c_str()))
-    {
-    m_GCCXML_CONFIG = config;
-    return true;
-    }
-
   // Check for a configuration file in the data root directory.
   config = m_DataRoot+"/gccxml_config";
-  if(gxSystemTools::FileExists(config.c_str()))
-    {
-    m_GCCXML_CONFIG = config;
-    return true;
-    }
-  config = m_DataRoot+"/config";
   if(gxSystemTools::FileExists(config.c_str()))
     {
     m_GCCXML_CONFIG = config;
