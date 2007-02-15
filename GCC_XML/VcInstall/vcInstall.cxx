@@ -72,6 +72,8 @@ int main(int argc, char* argv[])
     "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\VisualStudio\\8.0\\InstalledProducts\\KB926601;";
   const char* vc8exRegistry =
     "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\VCExpress\\8.0;InstallDir";
+  const char* vc8exSP1Registry =
+    "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\VisualStudio\\8.0\\InstalledProducts\\KB926748;";
   const char* vc8sdkRegistry =
     "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\MicrosoftSDK\\InstalledSDKs\\8F9E5EF3-A9A5-491B-A889-C58EFFECE8B3;Install Dir";
   const char* vc8sdk2Registry =
@@ -296,12 +298,21 @@ int main(int argc, char* argv[])
       result = 1;
       }
     }
+
   if(have8ex)
     {
     std::string msvc8i = msvc8ex + "/../../Vc/Include";
     msvc8i = gxSystemTools::CollapseDirectory(msvc8i.c_str());
-    std::string patchI = patchDir + "/vc8ExpressInclude.patch";
+    std::string patchIname = "vc8ExpressInclude.patch";
     std::string destPathI = gccxmlRoot+"/Vc8ex/Include";
+
+    std::string msvc8exSP1;
+    if(gxSystemTools::ReadRegistryValue(vc8exSP1Registry, msvc8exSP1))
+      {
+      patchIname = "vc8sp1ExpressInclude.patch";
+      }
+
+    std::string patchI = patchDir + "/" + patchIname;
     if(gxSystemTools::FileExists(patchI.c_str()))
       {
       if(!InstallSupport(patchCommand.c_str(), catCommand.c_str(),
@@ -312,8 +323,8 @@ int main(int argc, char* argv[])
       }
     else
       {
-      std::cerr
-        << "Have MSVC 8 Express, but cannot find vc8ExpressInclude.patch.\n";
+      std::cerr << "Have MSVC 8 Express, but cannot find "
+                << patchIname << ".\n";
       result = 1;
       }
     }
@@ -321,8 +332,10 @@ int main(int argc, char* argv[])
     {
     std::string msvc8p = msvc8sdk + "/Include";
     msvc8p = gxSystemTools::CollapseDirectory(msvc8p.c_str());
-    std::string patchP = patchDir + "/vc8ExpressPlatformSDK.patch";
+    std::string patchPname = "vc8ExpressPlatformSDK.patch";
     std::string destPathP = gccxmlRoot+"/Vc8ex/PlatformSDK";
+
+    std::string patchP = patchDir + "/" + patchPname;
     if(gxSystemTools::FileExists(patchP.c_str()))
       {
       if(!InstallSupport(patchCommand.c_str(), catCommand.c_str(),
@@ -334,7 +347,7 @@ int main(int argc, char* argv[])
     else
       {
       std::cerr << "Have MSVC 8 Express Platform SDK, but "
-                << "cannot find vc8ExpressPlatformSDK.patch.\n";
+                << "cannot find " << patchPname << ".\n";
       result = 1;
       }
     }
