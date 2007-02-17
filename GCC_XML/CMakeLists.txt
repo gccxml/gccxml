@@ -1,6 +1,8 @@
 PROJECT(GCCXML)
 
-CMAKE_MINIMUM_REQUIRED(VERSION 2.4)
+# We now need at least CMake 2.4.5 to get some custom command fixes
+# and a working INSTALL(DIRECTORY).
+CMAKE_MINIMUM_REQUIRED(VERSION 2.4.5 FATAL_ERROR)
 
 # Set the version number.
 SET(GCCXML_VERSION_MAJOR 0)
