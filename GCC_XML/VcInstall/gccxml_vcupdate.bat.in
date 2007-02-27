@@ -4,19 +4,23 @@ rem This is a driver script to update GCC-XML's support of new Visual Studio
 rem installations.
 rem --------------------------------------------------------------------------
 
+rem Reference this script - strip double quotes if Windows_NT
+set vcupdate=%0
+if "%OS%" equ "Windows_NT" set vcupdate=%~0
+
 rem Reference the TEMP directory in a safe way.
 set vc_temp=%TEMP%.
 
 rem Get the current working directory.
-type "%0\..\..\@VC_DATA_DIR@\VcInstall\vc_helper" > "%vc_temp%\vc_env_temp.bat"
+type "%vcupdate%\..\..\@VC_DATA_DIR@\VcInstall\vc_helper" > "%vc_temp%\vc_env_temp.bat"
 cd >>"%vc_temp%\vc_env_temp.bat"
 call "%vc_temp%\vc_env_temp.bat"
 del "%vc_temp%\vc_env_temp.bat"
 set cwd=%vc_result%
 
 rem Change to the directory containing this script and get its location.
-type "%0\..\..\@VC_DATA_DIR@\VcInstall\vc_helper" > "%vc_temp%\vc_env_temp.bat"
-cd /D "%0\..\..\@VC_DATA_DIR@"
+type "%vcupdate%\..\..\@VC_DATA_DIR@\VcInstall\vc_helper" > "%vc_temp%\vc_env_temp.bat"
+cd /D "%vcupdate%\..\..\@VC_DATA_DIR@"
 cd >>"%vc_temp%\vc_env_temp.bat"
 call "%vc_temp%\vc_env_temp.bat"
 del "%vc_temp%\vc_env_temp.bat"
@@ -26,6 +30,6 @@ rem Change back to the original working directory.
 cd /D "%cwd%"
 
 rem Run the installer executable to do the rest of the work.
-"%0\..\gccxml_vcinstall" "%vc_dir%\VcInstall" "%vc_dir%"
+"%vcupdate%\..\gccxml_vcinstall" "%vc_dir%\VcInstall" "%vc_dir%"
 
 if errorlevel 1 pause

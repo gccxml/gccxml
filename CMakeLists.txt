@@ -24,3 +24,6 @@ SET(GCCXML_INSTALL_COMPONENT_NAME_RUNTIME_LIBRARY RuntimeLibrary)
 
 # Build GCC and GCC_XML.
 SUBDIRS(GCC GCC_XML)
+
+# Use CPack to build a redistributable installer
+INCLUDE("${CMAKE_CURRENT_SOURCE_DIR}/gccxmlCPack.cmake")
