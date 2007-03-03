@@ -51,6 +51,12 @@ main (argc, argv)
     {
     case 1:
       break;
+/* BEGIN GCC-XML MODIFICATIONS (2007/03/03 17:07:07) */
+/* Accept and ignore an extra argument to work around a Borland Make bug
+   with spaces in the path.  */
+    case 2:
+      break;
+/* END GCC-XML MODIFICATIONS (2007/03/03 17:07:07) */
 
     default:
       usage ();

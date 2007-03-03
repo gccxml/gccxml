@@ -355,7 +355,12 @@ main (argc, argv)
   find_formats ();
   genlegend ();
 
-  if (argc == 2 && argv[1][0] == '-' && argv[1][1] == 'h')
+/* BEGIN GCC-XML MODIFICATIONS (2007/03/03 17:07:07) */
+/* Accept and ignore an extra argument to work around a Borland Make bug
+   with spaces in the path.  */
+/*if (argc == 2 && argv[1][0] == '-' && argv[1][1] == 'h')*/
+  if (argc >= 2 && argv[1][0] == '-' && argv[1][1] == 'h')
+/* END GCC-XML MODIFICATIONS (2007/03/03 17:07:07) */
     genheader ();
   else
     gencode ();
