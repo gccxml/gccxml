@@ -27,6 +27,12 @@ ADD_EXECUTABLE(gccxml_cc1plus
 
 TARGET_LINK_LIBRARIES(gccxml_cc1plus backend cpp iberty)
 
+# Use the "-lx" option to disable map file generation on Borland.
+# This avoids the "Fatal: Access violation.  Link terminated." error.
+IF(BORLAND)
+  SET_TARGET_PROPERTIES(gccxml_cc1plus PROPERTIES LINK_FLAGS "-lx")
+ENDIF(BORLAND)
+
 # Install gccxml_cc1plus next to the gccxml executable.
 INSTALL(TARGETS gccxml_cc1plus
   RUNTIME DESTINATION ${GCCXML_INSTALL_ROOT}bin
