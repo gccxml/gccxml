@@ -64,7 +64,7 @@ main (argc, argv)
   for (i = 0; tree_codes[i]; i++)
     {
       printf ("#define %s_CHECK(t)\tTREE_CHECK (t, %s)\n",
-	      tree_codes[i], tree_codes[i]);
+              tree_codes[i], tree_codes[i]);
     }
 
   puts ("\n#endif /* GCC_TREE_CHECK_H */");
