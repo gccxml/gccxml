@@ -24,6 +24,8 @@
 
 #include <gxsys/ios/sstream>
 
+#include <stdio.h>
+
 //----------------------------------------------------------------------------
 const char* gxConfigurationVc6Registry =
 "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\"
@@ -929,9 +931,6 @@ bool gxConfiguration::FindFlags()
                                                    loc);
     bool have8ex =
       gxSystemTools::ReadRegistryValue(gxConfigurationVc8exRegistry, loc);
-    bool have8sdk =
-      gxSystemTools::ReadRegistryValue(gxConfigurationVc8sdk2Registry, loc) ||
-      gxSystemTools::ReadRegistryValue(gxConfigurationVc8sdkRegistry, loc);
 
     // Look for a VS8 that is not the beta release.
     bool have8 = false;
