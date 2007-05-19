@@ -76,7 +76,7 @@
 # define XML_PRE_3_4_TREE_VIA_PUBLIC
 #endif
 
-#define GCC_XML_C_VERSION "$Revision: 1.114 $"
+#define GCC_XML_C_VERSION "$Revision: 1.115 $"
 
 /*--------------------------------------------------------------------------*/
 /* Data structures for the actual XML dump.  */
@@ -1505,6 +1505,46 @@ xml_document_add_attribute_bits(xml_document_element_p element)
 }
 
 /*--------------------------------------------------------------------------*/
+/* Print the XML attribute befriending="..." for a function or class.  */
+static void
+xml_print_befriending_attribute (xml_dump_info_p xdi, tree befriending)
+{
+  int have_befriending = 0;
+  tree frnd;
+  for (frnd = befriending ; frnd && !have_befriending ;
+       frnd = TREE_CHAIN (frnd))
+    {
+    if(TREE_CODE (TREE_VALUE (frnd)) != TEMPLATE_DECL)
+      {
+      have_befriending = 1;
+      }
+    }
+  if(have_befriending)
+    {
+    const char* sep = "";
+    fprintf (xdi->file, " befriending=\"");
+    for (frnd = befriending ; frnd ; frnd = TREE_CHAIN (frnd))
+      {
+      if(TREE_CODE (TREE_VALUE (frnd)) != TEMPLATE_DECL)
+        {
+        fprintf (xdi->file,
+                 "%s_%d", sep, xml_add_node (xdi, TREE_VALUE (frnd), 0));
+        sep = " ";
+        }
+      }
+    fprintf (xdi->file, "\"");
+    }
+}
+
+static void
+xml_document_add_attribute_befriending(xml_document_element_p element)
+{
+  xml_document_add_attribute(element, "befriending",
+                             xml_document_attribute_type_idrefs,
+                             xml_document_attribute_use_optional, 0);
+}
+
+/*--------------------------------------------------------------------------*/
 /* Print XML empty tag describing an unimplemented TREE_CODE that has been
    encountered.  */
 static void
@@ -1888,6 +1928,7 @@ xml_output_function_decl (xml_dump_info_p xdi, tree fd, xml_dump_node_p dn)
   xml_print_inline_attribute (xdi, fd);
   xml_print_attributes_attribute (xdi, GCC_XML_DECL_ATTRIBUTES(fd),
                                   TYPE_ATTRIBUTES(TREE_TYPE(fd)));
+  xml_print_befriending_attribute (xdi, DECL_BEFRIENDING_CLASSES (fd));
 
   /* Prepare to iterator through argument list.  */
   arg = DECL_ARGUMENTS (fd);
@@ -1979,6 +2020,7 @@ xml_document_add_element_function_helper (xml_document_info_p xdi,
   xml_document_add_attribute_extern(e);
   xml_document_add_attribute_inline(e);
   xml_document_add_attribute_attributes(e);
+  xml_document_add_attribute_befriending(e);
   if(allow_arguments)
     {
     xml_document_add_element_argument (xdi, e);
@@ -2148,6 +2190,7 @@ xml_output_record_type (xml_dump_info_p xdi, tree rt, xml_dump_node_p dn)
   xml_print_attributes_attribute (xdi, TYPE_ATTRIBUTES(rt), 0);
   xml_print_size_attribute (xdi, rt);
   xml_print_align_attribute (xdi, rt);
+  xml_print_befriending_attribute (xdi, CLASSTYPE_BEFRIENDING_CLASSES (rt));
 
   if (dn->complete && COMPLETE_TYPE_P (rt))
     {
@@ -2337,6 +2380,7 @@ xml_document_add_element_record_type_helper (xml_document_info_p xdi,
   xml_document_add_attribute_attributes(e);
   xml_document_add_attribute_size(e);
   xml_document_add_attribute_align(e);
+  xml_document_add_attribute_befriending(e);
   xml_document_add_attribute(e, "members",
                              xml_document_attribute_type_idrefs,
                              xml_document_attribute_use_optional, 0);
