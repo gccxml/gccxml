@@ -22,6 +22,7 @@
 # define GCCXML_EXE_BUILD_DIR GCCXML_EXECUTABLE_DIR
 #endif
 
+#include <gxsys/RegularExpression.hxx>
 #include <gxsys/ios/sstream>
 
 #include <stdio.h>
@@ -1151,10 +1152,7 @@ bool gxConfiguration::FindFlags()
       }
     }
 
-  // Didn't find supported compiler.
-  std::cerr << "Compiler \"" << m_GCCXML_COMPILER
-            << "\" is not supported by GCC_XML.\n";
-  return false;
+  return this->FindFlagsBuiltIn();
 #else
   // This is a UNIX environment.  Use the gccxml_find_flags script.
   std::string gccxmlFindFlags;
@@ -1196,6 +1194,659 @@ bool gxConfiguration::FindFlags()
   m_GCCXML_FLAGS = flags;
   return true;
 #endif
+}
+
+//----------------------------------------------------------------------------
+#if defined(__GNUC__)
+  #define GCCXML_SUPPORT_DEFINE "GCC"
+  #define MAJOR_VERSION_DEFINE __GNUC__
+  #define MINOR_VERSION_DEFINE __GNUC_MINOR__
+#elif defined(__INTEL_COMPILER) && (__INTEL_COMPILER >= 700)
+// TODO - finish Intel translation from sh/find_flags to C++
+  #define GCCXML_SUPPORT_DEFINE "Intel"
+  #define MAJOR_VERSION_DEFINE 12345
+  #define MINOR_VERSION_DEFINE 4321
+#elif defined(__sgi) && defined(_COMPILER_VERSION)
+// TODO - finish MIPSPro translation from sh/find_flags to C++
+  #define GCCXML_SUPPORT_DEFINE "MIPSpro"
+  #define MAJOR_VERSION_DEFINE 12345
+  #define MINOR_VERSION_DEFINE 4321
+#else
+  #define GCCXML_SUPPORT_DEFINE ""
+  #define MAJOR_VERSION_DEFINE 22222
+  #define MINOR_VERSION_DEFINE 22222
+#endif
+
+//----------------------------------------------------------------------------
+bool gxConfiguration::FindFlagsBuiltIn()
+{
+  std::string GCCXML_SUPPORT(GCCXML_SUPPORT_DEFINE);
+
+  if(GCCXML_SUPPORT == "GCC")
+    {
+    return this->FindFlagsGCC();
+    }
+  else if(GCCXML_SUPPORT == "Intel")
+    {
+    return this->FindFlagsIntel();
+    }
+  else if(GCCXML_SUPPORT == "MIPSpro")
+    {
+    return this->FindFlagsMIPSpro();
+    }
+
+  // Didn't find supported compiler.
+  std::cerr << "Compiler \"" << m_GCCXML_COMPILER
+            << "\" is not supported by GCC_XML.\n"
+            << "(gxConfiguration::FindFlagsBuiltIn)\n";
+
+  return false;
+}
+
+//----------------------------------------------------------------------------
+bool gxConfiguration::FindFlagsGCC()
+{
+  // C++ translation of the script "GCC_XML/Support/GCC/find_flags"
+  //
+  std::string GCCXML_SUPPORT(GCCXML_SUPPORT_DEFINE);
+
+  if(GCCXML_SUPPORT != "GCC")
+    {
+    return false;
+    }
+
+  long MAJOR_VERSION = MAJOR_VERSION_DEFINE;
+  long MINOR_VERSION = MINOR_VERSION_DEFINE;
+  std::string MACROS;
+  std::string INCLUDES;
+  std::string SPECIAL;
+  gxsys::String s;
+  std::string supportPath;
+
+  // The support headers are located in "${GCCXML_SOURCE_DIR}/Support/${GCCXML_SUPPORT}"
+  //
+  this->FindData(GCCXML_SUPPORT.c_str(), supportPath, true);
+
+  // Run the compiler preprocessor against an empty input file to get the list
+  // of macros that are pre-defined by the compiler:
+  //
+  std::string output;
+  int retVal=0;
+  if(gxSystemTools::RunCommand((std::string("echo \"\" | \"") + m_GCCXML_COMPILER + "\" -x c++ -E -dM " +
+    m_GCCXML_CXXFLAGS + " -").c_str(), output, retVal) && (retVal == 0))
+    {
+    std::vector<gxsys::String> lines = gxSystemTools::SplitString(output.c_str(), '\n');
+
+    gxsys::RegularExpression reDefine;
+    reDefine.compile("#define ([A-Za-z_][A-Za-z0-9_()]*) (.*)");
+
+    std::vector<gxsys::String>::iterator it;
+    for(it = lines.begin(); it != lines.end(); ++it)
+      {
+      if(reDefine.find(it->c_str()))
+        {
+        if (MACROS == "")
+          {
+          MACROS = "-D";
+          }
+        else
+          {
+          MACROS += " -D";
+          }
+
+        MACROS += reDefine.match(1);
+        MACROS += "='";
+        MACROS += reDefine.match(2);
+        MACROS += "'";
+        }
+      }
+    }
+
+  // Run the compiler with "-v" against an empty input file to get the list
+  // of default include paths used by the compiler:
+  //
+  output = "";
+  retVal = 0;
+  if(gxSystemTools::RunCommand((std::string("echo \"\" | \"") + m_GCCXML_COMPILER + "\" -v -x c++ -E " +
+    m_GCCXML_CXXFLAGS + " -").c_str(), output, retVal) && (retVal == 0))
+    {
+    std::vector<gxsys::String> lines = gxSystemTools::SplitString(output.c_str(), '\n');
+
+    bool collecting = false;
+    gxsys::RegularExpression reBeginCollecting;
+    reBeginCollecting.compile("#include <\\.\\.\\.");
+    gxsys::RegularExpression reByeByeWhiteSpace;
+    reByeByeWhiteSpace.compile("^[ ]*(.*)[ ]*$");
+
+    std::vector<gxsys::String>::iterator it;
+    for(it = lines.begin(); it != lines.end(); ++it)
+      {
+        if(collecting)
+          {
+          if(it->c_str()[0] == ' ' || it->c_str()[0] == '/')
+            {
+            if(reByeByeWhiteSpace.find(it->c_str()))
+              {
+              s = reByeByeWhiteSpace.match(1);
+              }
+            else
+              {
+              s = *it;
+              }
+
+            if (INCLUDES != "")
+              {
+              INCLUDES += " ";
+              }
+
+            if (s.find(' ') == s.npos)
+              {
+              INCLUDES += "-I";
+              INCLUDES += s;
+              }
+            else
+              {
+              INCLUDES += "-I\"";
+              INCLUDES += s;
+              INCLUDES += "\"";
+              }
+            }
+          else
+            {
+            collecting = false;
+            }
+          }
+        else if(reBeginCollecting.find(*it))
+          {
+          collecting = true;
+          }
+      }
+    }
+
+  // hack to handle bad gcc 4.0 on RedHat
+  if(4 == MAJOR_VERSION && INCLUDES.find("c++/3.4") != INCLUDES.npos)
+    {
+    MAJOR_VERSION = 3;
+    MINOR_VERSION = 4;
+    }
+
+  // Extra INCLUDES and SPECIAL settings according to GCC version:
+  //
+  if(MAJOR_VERSION < 3)
+    {
+    INCLUDES = "-iwrapper\"" + supportPath + "/2.95\" " + INCLUDES;
+    if(MINOR_VERSION == 96)
+      {
+      INCLUDES = "-iwrapper\"" + supportPath + "/2.96\" " + INCLUDES;
+      }
+    }
+  else if(MAJOR_VERSION == 4 && MINOR_VERSION >= 1)
+    {
+    INCLUDES = "-iwrapper\"" + supportPath + "/4.1\" " + INCLUDES;
+    SPECIAL = "-include \"" + supportPath + "/4.1/gccxml_builtins.h\"";
+    }
+  else if(MAJOR_VERSION == 4 && MINOR_VERSION == 0)
+    {
+    INCLUDES = "-iwrapper\"" + supportPath + "/4.0\" " + INCLUDES;
+    SPECIAL = "-include \"" + supportPath + "/4.0/gccxml_builtins.h\"";
+    }
+  else if(MAJOR_VERSION == 3 && MINOR_VERSION >= 4)
+    {
+    INCLUDES = "-iwrapper\"" + supportPath + "/3.4\" " + INCLUDES;
+    SPECIAL = "-include \"" + supportPath + "/3.4/gccxml_builtins.h\"";
+    }
+  else if(MAJOR_VERSION == 3 && MINOR_VERSION == 3)
+    {
+    INCLUDES = "-iwrapper\"" + supportPath + "/3.3\" " + INCLUDES;
+    SPECIAL = "-include \"" + supportPath + "/3.3/gccxml_builtins.h\"";
+    }
+  else if(MAJOR_VERSION == 3 && MINOR_VERSION == 2)
+    {
+    INCLUDES = "-iwrapper\"" + supportPath + "/3.2\" " + INCLUDES;
+    }
+  else if(MAJOR_VERSION == 3 && MINOR_VERSION == 1)
+    {
+    INCLUDES = "-iwrapper\"" + supportPath + "/3.1\" " + INCLUDES;
+    }
+  else if(MAJOR_VERSION == 3 && MINOR_VERSION == 0)
+    {
+    INCLUDES = "-iwrapper\"" + supportPath + "/3.0\" " + INCLUDES;
+    }
+
+  // Set the full flags string to "$MACROS $INCLUDES $SPECIAL"
+  //
+  std::string flags(MACROS);
+
+  if (INCLUDES != "")
+    {
+    if (flags != "")
+      {
+      flags += " ";
+      }
+
+    flags += INCLUDES;
+    }
+
+  if (SPECIAL != "")
+    {
+    if (flags != "")
+      {
+      flags += " ";
+      }
+
+    flags += SPECIAL;
+    }
+
+  m_GCCXML_FLAGS = flags;
+  return (m_GCCXML_FLAGS != "");
+}
+
+//----------------------------------------------------------------------------
+bool gxConfiguration::FindFlagsIntel()
+{
+  // C++ translation of the script "GCC_XML/Support/Intel/find_flags"
+  //
+  std::string GCCXML_SUPPORT(GCCXML_SUPPORT_DEFINE);
+
+  if(GCCXML_SUPPORT != "Intel")
+    {
+    return false;
+    }
+
+  std::cerr << "gxConfiguration::FindFlagsIntel not implemented yet.\n"
+            << "Use GCC_XML/Support/Intel/find_flags until implemented.\n";
+  return false;
+
+// TODO - finish Intel translation from sh/find_flags to C++
+
+  long MAJOR_VERSION = MAJOR_VERSION_DEFINE;
+  long MINOR_VERSION = MINOR_VERSION_DEFINE;
+  std::string MACROS;
+  std::string INCLUDES;
+  std::string SPECIAL;
+  gxsys::String s;
+  std::string supportPath;
+
+  // The support headers are located in "${GCCXML_SOURCE_DIR}/Support/${GCCXML_SUPPORT}"
+  //
+  this->FindData(GCCXML_SUPPORT.c_str(), supportPath, true);
+
+  // Run the compiler preprocessor against an empty input file to get the list
+  // of macros that are pre-defined by the compiler:
+  //
+  std::string output;
+  int retVal=0;
+  if(gxSystemTools::RunCommand((std::string("echo \"\" | \"") + m_GCCXML_COMPILER + "\" -x c++ -E -dM " +
+    m_GCCXML_CXXFLAGS + " -").c_str(), output, retVal) && (retVal == 0))
+    {
+    std::vector<gxsys::String> lines = gxSystemTools::SplitString(output.c_str(), '\n');
+
+    gxsys::RegularExpression reDefine;
+    reDefine.compile("#define ([A-Za-z_][A-Za-z0-9_()]*) (.*)");
+
+    std::vector<gxsys::String>::iterator it;
+    for(it = lines.begin(); it != lines.end(); ++it)
+      {
+      if(reDefine.find(it->c_str()))
+        {
+        if (MACROS == "")
+          {
+          MACROS = "-D";
+          }
+        else
+          {
+          MACROS += " -D";
+          }
+
+        MACROS += reDefine.match(1);
+        MACROS += "='";
+        MACROS += reDefine.match(2);
+        MACROS += "'";
+        }
+      }
+    }
+
+  // Run the compiler with "-v" against an empty input file to get the list
+  // of default include paths used by the compiler:
+  //
+  output = "";
+  retVal = 0;
+  if(gxSystemTools::RunCommand((std::string("echo \"\" | \"") + m_GCCXML_COMPILER + "\" -v -x c++ -E " +
+    m_GCCXML_CXXFLAGS + " -").c_str(), output, retVal) && (retVal == 0))
+    {
+    std::vector<gxsys::String> lines = gxSystemTools::SplitString(output.c_str(), '\n');
+
+    bool collecting = false;
+    gxsys::RegularExpression reBeginCollecting;
+    reBeginCollecting.compile("#include <\\.\\.\\.");
+    gxsys::RegularExpression reByeByeWhiteSpace;
+    reByeByeWhiteSpace.compile("^[ ]*(.*)[ ]*$");
+
+    std::vector<gxsys::String>::iterator it;
+    for(it = lines.begin(); it != lines.end(); ++it)
+      {
+        if(collecting)
+          {
+          if(it->c_str()[0] == ' ' || it->c_str()[0] == '/')
+            {
+            if(reByeByeWhiteSpace.find(it->c_str()))
+              {
+              s = reByeByeWhiteSpace.match(1);
+              }
+            else
+              {
+              s = *it;
+              }
+
+            if (INCLUDES != "")
+              {
+              INCLUDES += " ";
+              }
+
+            if (s.find(' ') == s.npos)
+              {
+              INCLUDES += "-I";
+              INCLUDES += s;
+              }
+            else
+              {
+              INCLUDES += "-I\"";
+              INCLUDES += s;
+              INCLUDES += "\"";
+              }
+            }
+          else
+            {
+            collecting = false;
+            }
+          }
+        else if(reBeginCollecting.find(*it))
+          {
+          collecting = true;
+          }
+      }
+    }
+
+  // hack to handle bad gcc 4.0 on RedHat
+  if(4 == MAJOR_VERSION && INCLUDES.find("c++/3.4") != INCLUDES.npos)
+    {
+    MAJOR_VERSION = 3;
+    MINOR_VERSION = 4;
+    }
+
+  // Extra INCLUDES and SPECIAL settings according to GCC version:
+  //
+  if(MAJOR_VERSION < 3)
+    {
+    INCLUDES = "-iwrapper\"" + supportPath + "/2.95\" " + INCLUDES;
+    if(MINOR_VERSION == 96)
+      {
+      INCLUDES = "-iwrapper\"" + supportPath + "/2.96\" " + INCLUDES;
+      }
+    }
+  else if(MAJOR_VERSION == 4 && MINOR_VERSION >= 1)
+    {
+    INCLUDES = "-iwrapper\"" + supportPath + "/4.1\" " + INCLUDES;
+    SPECIAL = "-include \"" + supportPath + "/4.1/gccxml_builtins.h\"";
+    }
+  else if(MAJOR_VERSION == 4 && MINOR_VERSION == 0)
+    {
+    INCLUDES = "-iwrapper\"" + supportPath + "/4.0\" " + INCLUDES;
+    SPECIAL = "-include \"" + supportPath + "/4.0/gccxml_builtins.h\"";
+    }
+  else if(MAJOR_VERSION == 3 && MINOR_VERSION >= 4)
+    {
+    INCLUDES = "-iwrapper\"" + supportPath + "/3.4\" " + INCLUDES;
+    SPECIAL = "-include \"" + supportPath + "/3.4/gccxml_builtins.h\"";
+    }
+  else if(MAJOR_VERSION == 3 && MINOR_VERSION == 3)
+    {
+    INCLUDES = "-iwrapper\"" + supportPath + "/3.3\" " + INCLUDES;
+    SPECIAL = "-include \"" + supportPath + "/3.3/gccxml_builtins.h\"";
+    }
+  else if(MAJOR_VERSION == 3 && MINOR_VERSION == 2)
+    {
+    INCLUDES = "-iwrapper\"" + supportPath + "/3.2\" " + INCLUDES;
+    }
+  else if(MAJOR_VERSION == 3 && MINOR_VERSION == 1)
+    {
+    INCLUDES = "-iwrapper\"" + supportPath + "/3.1\" " + INCLUDES;
+    }
+  else if(MAJOR_VERSION == 3 && MINOR_VERSION == 0)
+    {
+    INCLUDES = "-iwrapper\"" + supportPath + "/3.0\" " + INCLUDES;
+    }
+
+  // Set the full flags string to "$MACROS $INCLUDES $SPECIAL"
+  //
+  std::string flags(MACROS);
+
+  if (INCLUDES != "")
+    {
+    if (flags != "")
+      {
+      flags += " ";
+      }
+
+    flags += INCLUDES;
+    }
+
+  if (SPECIAL != "")
+    {
+    if (flags != "")
+      {
+      flags += " ";
+      }
+
+    flags += SPECIAL;
+    }
+
+  m_GCCXML_FLAGS = flags;
+  return (m_GCCXML_FLAGS != "");
+}
+
+//----------------------------------------------------------------------------
+bool gxConfiguration::FindFlagsMIPSpro()
+{
+  // C++ translation of the script "GCC_XML/Support/MIPSpro/find_flags"
+  //
+  std::string GCCXML_SUPPORT(GCCXML_SUPPORT_DEFINE);
+
+  if(GCCXML_SUPPORT != "MIPSpro")
+    {
+    return false;
+    }
+
+  std::cerr << "gxConfiguration::FindFlagsMIPSpro not implemented yet.\n"
+            << "Use GCC_XML/Support/MIPSpro/find_flags until implemented.\n";
+  return false;
+
+// TODO - finish MIPSPro translation from sh/find_flags to C++
+
+  long MAJOR_VERSION = MAJOR_VERSION_DEFINE;
+  long MINOR_VERSION = MINOR_VERSION_DEFINE;
+  std::string MACROS;
+  std::string INCLUDES;
+  std::string SPECIAL;
+  gxsys::String s;
+  std::string supportPath;
+
+  // The support headers are located in "${GCCXML_SOURCE_DIR}/Support/${GCCXML_SUPPORT}"
+  //
+  this->FindData(GCCXML_SUPPORT.c_str(), supportPath, true);
+
+  // Run the compiler preprocessor against an empty input file to get the list
+  // of macros that are pre-defined by the compiler:
+  //
+  std::string output;
+  int retVal=0;
+  if(gxSystemTools::RunCommand((std::string("echo \"\" | \"") + m_GCCXML_COMPILER + "\" -x c++ -E -dM " +
+    m_GCCXML_CXXFLAGS + " -").c_str(), output, retVal) && (retVal == 0))
+    {
+    std::vector<gxsys::String> lines = gxSystemTools::SplitString(output.c_str(), '\n');
+
+    gxsys::RegularExpression reDefine;
+    reDefine.compile("#define ([A-Za-z_][A-Za-z0-9_()]*) (.*)");
+
+    std::vector<gxsys::String>::iterator it;
+    for(it = lines.begin(); it != lines.end(); ++it)
+      {
+      if(reDefine.find(it->c_str()))
+        {
+        if (MACROS == "")
+          {
+          MACROS = "-D";
+          }
+        else
+          {
+          MACROS += " -D";
+          }
+
+        MACROS += reDefine.match(1);
+        MACROS += "='";
+        MACROS += reDefine.match(2);
+        MACROS += "'";
+        }
+      }
+    }
+
+  // Run the compiler with "-v" against an empty input file to get the list
+  // of default include paths used by the compiler:
+  //
+  output = "";
+  retVal = 0;
+  if(gxSystemTools::RunCommand((std::string("echo \"\" | \"") + m_GCCXML_COMPILER + "\" -v -x c++ -E " +
+    m_GCCXML_CXXFLAGS + " -").c_str(), output, retVal) && (retVal == 0))
+    {
+    std::vector<gxsys::String> lines = gxSystemTools::SplitString(output.c_str(), '\n');
+
+    bool collecting = false;
+    gxsys::RegularExpression reBeginCollecting;
+    reBeginCollecting.compile("#include <\\.\\.\\.");
+    gxsys::RegularExpression reByeByeWhiteSpace;
+    reByeByeWhiteSpace.compile("^[ ]*(.*)[ ]*$");
+
+    std::vector<gxsys::String>::iterator it;
+    for(it = lines.begin(); it != lines.end(); ++it)
+      {
+        if(collecting)
+          {
+          if(it->c_str()[0] == ' ' || it->c_str()[0] == '/')
+            {
+            if(reByeByeWhiteSpace.find(it->c_str()))
+              {
+              s = reByeByeWhiteSpace.match(1);
+              }
+            else
+              {
+              s = *it;
+              }
+
+            if (INCLUDES != "")
+              {
+              INCLUDES += " ";
+              }
+
+            if (s.find(' ') == s.npos)
+              {
+              INCLUDES += "-I";
+              INCLUDES += s;
+              }
+            else
+              {
+              INCLUDES += "-I\"";
+              INCLUDES += s;
+              INCLUDES += "\"";
+              }
+            }
+          else
+            {
+            collecting = false;
+            }
+          }
+        else if(reBeginCollecting.find(*it))
+          {
+          collecting = true;
+          }
+      }
+    }
+
+  // hack to handle bad gcc 4.0 on RedHat
+  if(4 == MAJOR_VERSION && INCLUDES.find("c++/3.4") != INCLUDES.npos)
+    {
+    MAJOR_VERSION = 3;
+    MINOR_VERSION = 4;
+    }
+
+  // Extra INCLUDES and SPECIAL settings according to GCC version:
+  //
+  if(MAJOR_VERSION < 3)
+    {
+    INCLUDES = "-iwrapper\"" + supportPath + "/2.95\" " + INCLUDES;
+    if(MINOR_VERSION == 96)
+      {
+      INCLUDES = "-iwrapper\"" + supportPath + "/2.96\" " + INCLUDES;
+      }
+    }
+  else if(MAJOR_VERSION == 4 && MINOR_VERSION >= 1)
+    {
+    INCLUDES = "-iwrapper\"" + supportPath + "/4.1\" " + INCLUDES;
+    SPECIAL = "-include \"" + supportPath + "/4.1/gccxml_builtins.h\"";
+    }
+  else if(MAJOR_VERSION == 4 && MINOR_VERSION == 0)
+    {
+    INCLUDES = "-iwrapper\"" + supportPath + "/4.0\" " + INCLUDES;
+    SPECIAL = "-include \"" + supportPath + "/4.0/gccxml_builtins.h\"";
+    }
+  else if(MAJOR_VERSION == 3 && MINOR_VERSION >= 4)
+    {
+    INCLUDES = "-iwrapper\"" + supportPath + "/3.4\" " + INCLUDES;
+    SPECIAL = "-include \"" + supportPath + "/3.4/gccxml_builtins.h\"";
+    }
+  else if(MAJOR_VERSION == 3 && MINOR_VERSION == 3)
+    {
+    INCLUDES = "-iwrapper\"" + supportPath + "/3.3\" " + INCLUDES;
+    SPECIAL = "-include \"" + supportPath + "/3.3/gccxml_builtins.h\"";
+    }
+  else if(MAJOR_VERSION == 3 && MINOR_VERSION == 2)
+    {
+    INCLUDES = "-iwrapper\"" + supportPath + "/3.2\" " + INCLUDES;
+    }
+  else if(MAJOR_VERSION == 3 && MINOR_VERSION == 1)
+    {
+    INCLUDES = "-iwrapper\"" + supportPath + "/3.1\" " + INCLUDES;
+    }
+  else if(MAJOR_VERSION == 3 && MINOR_VERSION == 0)
+    {
+    INCLUDES = "-iwrapper\"" + supportPath + "/3.0\" " + INCLUDES;
+    }
+
+  // Set the full flags string to "$MACROS $INCLUDES $SPECIAL"
+  //
+  std::string flags(MACROS);
+
+  if (INCLUDES != "")
+    {
+    if (flags != "")
+      {
+      flags += " ";
+      }
+
+    flags += INCLUDES;
+    }
+
+  if (SPECIAL != "")
+    {
+    if (flags != "")
+      {
+      flags += " ";
+      }
+
+    flags += SPECIAL;
+    }
+
+  m_GCCXML_FLAGS = flags;
+  return (m_GCCXML_FLAGS != "");
 }
 
 //----------------------------------------------------------------------------

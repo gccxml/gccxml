@@ -151,6 +151,10 @@ protected:
 
   // Find flags based on compiler setting.
   bool FindFlags();
+  bool FindFlagsBuiltIn();
+  bool FindFlagsGCC();
+  bool FindFlagsIntel();
+  bool FindFlagsMIPSpro();
   bool FindFlagsMSVC6();
   bool FindFlagsMSVC7();
   bool FindFlagsMSVC71();

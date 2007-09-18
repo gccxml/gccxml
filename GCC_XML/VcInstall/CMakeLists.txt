@@ -2,27 +2,28 @@ INCLUDE_DIRECTORIES(${GCCXML_SOURCE_DIR}/GXFront)
 
 # Create an executable to detect VS installations and copy and patch
 # the headers.
-ADD_EXECUTABLE(gccxml_vcinstall vcInstall.cxx
+SET(VCCONFIG_TARGET "gccxml_vcconfig")
+ADD_EXECUTABLE(${VCCONFIG_TARGET} vcInstall.cxx
   ${GCCXML_SOURCE_DIR}/GXFront/gxSystemTools.cxx)
-TARGET_LINK_LIBRARIES(gccxml_vcinstall gxsys)
+TARGET_LINK_LIBRARIES(${VCCONFIG_TARGET} gxsys)
 
-# Install the gccxml_vcinstall executable.
-INSTALL(TARGETS gccxml_vcinstall
+# Install the ${VCCONFIG_TARGET} executable.
+INSTALL(TARGETS ${VCCONFIG_TARGET}
   RUNTIME DESTINATION ${GCCXML_INSTALL_ROOT}bin
   ${GCCXML_INSTALL_COMPONENT_RUNTIME_LIBRARY})
 
 # Create the MSVC support directories.
 # This will just execute on every build because we don't know
 # what files and directories it may create.
-GET_TARGET_PROPERTY(GCCXML_VCINSTALL_EXE gccxml_vcinstall LOCATION)
+GET_TARGET_PROPERTY(GCCXML_VCCONFIG_EXE ${VCCONFIG_TARGET} LOCATION)
 ADD_CUSTOM_COMMAND(
   OUTPUT ${GCCXML_BINARY_DIR}/vcInstall_stamp.c
 
-  COMMAND ${GCCXML_VCINSTALL_EXE}
+  COMMAND ${GCCXML_VCCONFIG_EXE}
   ${GCCXML_SOURCE_DIR}/VcInstall ${GCCXML_BINARY_DIR}/Support
   ${GCCXML_BINARY_DIR}/vcInstall_stamp.c
 
-  DEPENDS gccxml_vcinstall
+  DEPENDS ${VCCONFIG_TARGET}
   ${GCCXML_SOURCE_DIR}/VcInstall/vc6Include.patch
   ${GCCXML_SOURCE_DIR}/VcInstall/vc7Include.patch
   ${GCCXML_SOURCE_DIR}/VcInstall/vc7PlatformSDK.patch
@@ -39,11 +40,11 @@ ADD_CUSTOM_COMMAND(
 ADD_CUSTOM_TARGET(vcInstallPatch DEPENDS
   ${GCCXML_BINARY_DIR}/vcInstall_stamp.c)
 
-# Create a script to run the gccxml_vcinstall executable in an
+# Create a script to run the ${VCCONFIG_TARGET} executable in an
 # already-installed GCC-XML tree.
 STRING(REGEX REPLACE "/" "\\\\" VC_DATA_DIR "${GCCXML_DATA_DIR}")
 CONFIGURE_FILE(${GCCXML_SOURCE_DIR}/VcInstall/gccxml_vcupdate.bat.in
-  ${GCCXML_BINARY_DIR}/VcInstall/gccxml_vcupdate.bat
+  ${GCCXML_BINARY_DIR}/VcInstall/${VCCONFIG_TARGET}.bat
   @ONLY IMMEDIATE)
 
 # Install the patch files.
@@ -69,7 +70,7 @@ INSTALL(
 
 # Install the update script.
 INSTALL(
-  PROGRAMS ${GCCXML_BINARY_DIR}/VcInstall/gccxml_vcupdate.bat
+  PROGRAMS ${GCCXML_BINARY_DIR}/VcInstall/${VCCONFIG_TARGET}.bat
   DESTINATION ${GCCXML_INSTALL_ROOT}bin
   ${GCCXML_INSTALL_COMPONENT_RUNTIME_EXECUTABLE})
 

@@ -1,7 +1,27 @@
-We use a version of the celebrated Larry Wall "GNU patch" program as ported to Windows. 
-The executable comes from the port by Karl M. Syring in his nice 
+We use a version of the celebrated Larry Wall "GNU patch" program as ported to Windows.
+The executable comes from the port by Karl M. Syring in his nice
 UnxUtils( http://unxutils.sourceforge.net/ ) package.   We have renamed the executable
 from patch.exe to vcPatch.exe to avoid conflicts.
 
 
+Updated September 2007
+======================
+Added a manifest resource using Microsoft's mt.exe to allow running this executable
+on Windows Vista without requiring prompting for admin privileges. (Vista automatically
+prompts for admin privileges for executables named like *setup* *install* or *patch*.)
 
+Given a manifest resource file named manifest.xml with contents like this...:
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<assembly xmlns="urn:schemas-microsoft-com:asm.v1" manifestVersion="1.0">
+<trustInfo xmlns="urn:schemas-microsoft-com:asm.v3">
+  <security>
+    <requestedPrivileges>
+      <requestedExecutionLevel level="asInvoker"></requestedExecutionLevel>
+    </requestedPrivileges>
+  </security>
+</trustInfo>
+</assembly>
+
+...you add manifest.xml as a resource to an existing executable using the "mt.exe"
+command line tool like this:
+mt -manifest manifest.xml -outputresource:vcPatch.exe;#1

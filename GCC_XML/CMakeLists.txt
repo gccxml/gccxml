@@ -92,6 +92,7 @@ SET(BUILD_SHARED_LIBS 0)
 SET(LIBRARY_OUTPUT_PATH ${GCCXML_BINARY_DIR}/KWSys)
 SET(KWSYS_NAMESPACE gxsys)
 SET(KWSYS_USE_Process 1)
+SET(KWSYS_USE_RegularExpression 1)
 SET(KWSYS_USE_SystemTools 1)
 SET(KWSYS_HEADER_ROOT ${GCCXML_BINARY_DIR})
 IF("${CMAKE_SYSTEM}" MATCHES "AIX")
@@ -131,10 +132,10 @@ ENDFOREACH(dir)
 # Include compiler support directory.
 SUBDIRS(Support)
 
-IF(NOT UNIX)
+IF(WIN32)
   # Include Visual Studio compiler support directory.
   SUBDIRS(VcInstall)
-ENDIF(NOT UNIX)
+ENDIF(WIN32)
 
 # Directory to build gccxml executable.
 SUBDIRS(GXFront)

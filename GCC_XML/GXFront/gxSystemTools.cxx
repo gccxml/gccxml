@@ -70,6 +70,7 @@ bool gxSystemTools::RunCommand(const char* command,  std::string& output,
     {
     fin.getline(buffer, BUFFER_SIZE);
     output += buffer;
+    output += "\n";
     }
   fin.close();
   gxSystemTools::RemoveFile(tempFile.c_str());

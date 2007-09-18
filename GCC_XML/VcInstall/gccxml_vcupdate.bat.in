@@ -30,6 +30,6 @@ rem Change back to the original working directory.
 cd /D "%cwd%"
 
 rem Run the installer executable to do the rest of the work.
-"%vcupdate%\..\gccxml_vcinstall" "%vc_dir%\VcInstall" "%vc_dir%"
+"%vcupdate%\..\gccxml_vcconfig" "%vc_dir%\VcInstall" "%vc_dir%"
 
 if errorlevel 1 pause
