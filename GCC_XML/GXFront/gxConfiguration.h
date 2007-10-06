@@ -149,9 +149,11 @@ protected:
   // Check if we have a flags setting.  If not, find it.
   bool CheckFlags();
 
+  // Run the compiler to identify it.
+  std::string GetCompilerId();
+
   // Find flags based on compiler setting.
   bool FindFlags();
-  bool FindFlagsBuiltIn();
   bool FindFlagsGCC();
   bool FindFlagsIntel();
   bool FindFlagsMIPSpro();

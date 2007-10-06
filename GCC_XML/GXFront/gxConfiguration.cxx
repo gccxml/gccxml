@@ -876,6 +876,76 @@ bool gxConfiguration::CheckFlags()
 }
 
 //----------------------------------------------------------------------------
+std::string gxConfiguration::GetCompilerId()
+{
+  // This method uses the technique formerly found in the shell script
+  // "${GCCXML_SOURCE_DIR}/Support/gccxml_find_flags" to identify the
+  // compiler whose executable file is m_GCCXML_COMPILER. It presently
+  // depends on the compiler being able to preprocess a ".cpp" input file
+  // via the -E command line argument with no other flags.
+  //
+  // An arguably better approach (but one that is more complex) would be
+  // to mimic what CMake does: compile its Modules/CMakeCXXCompilerId.cpp
+  // file and analyze the resulting compiler produced files for strings.
+  //
+  std::string compilerID("ERROR_unsupported_compiler_in_gxConfiguration_GetCompilerId");
+
+  // Write a temp file such that after preprocessing there should only be
+  // one "<Id>(.*)</Id>" chunk in the output.
+  //
+  std::string cppFile = _tempnam(0, "gx");
+  cppFile += ".cpp";
+
+  std::ofstream ofs(cppFile.c_str());
+
+  ofs << "#if defined(__GNUC__)" << std::endl;
+  ofs << "<Id>GCC</Id>" << std::endl;
+  ofs << "#elif defined(__sgi) && defined(_COMPILER_VERSION)" << std::endl;
+  ofs << "<Id>MIPSpro</Id>" << std::endl;
+  ofs << "#elif defined(__INTEL_COMPILER) && (__INTEL_COMPILER >= 700)" << std::endl;
+  ofs << "<Id>Intel</Id>" << std::endl;
+  ofs << "#else" << std::endl;
+  ofs << "<Id>ERROR_unsupported_compiler_in_gxConfiguration_GetCompilerId</Id>" << std::endl;
+  ofs << "#endif" << std::endl;
+
+  ofs.flush();
+  ofs.close();
+
+  // Try running the compiler against the temp file with -E to preprocess
+  // the input. Then analyze the output looking for the "<Id>(.*)</Id>" chunk.
+  //
+  std::string output;
+  int retVal=0;
+  if(gxSystemTools::RunCommand((m_GCCXML_COMPILER + " -E \"" + cppFile +
+    "\"").c_str(), output, retVal) && (0 == retVal))
+    {
+    gxsys::RegularExpression reId;
+    reId.compile("<Id>(.*)</Id>");
+
+    std::vector<gxsys::String> lines = gxSystemTools::SplitString(output.c_str(), '\n');
+    std::vector<gxsys::String>::iterator it;
+    for(it = lines.begin(); it != lines.end(); ++it)
+      {
+      if(reId.find(it->c_str()))
+        {
+        compilerID = reId.match(1);
+        break;
+        }
+      }
+    }
+  else
+    {
+    std::cerr << "error: could not identify compiler via -E preprocessing" << std::endl;
+    }
+
+  // Clean up:
+  //
+  gxsys::SystemTools::RemoveFile(cppFile.c_str());
+
+  return compilerID;
+}
+
+//----------------------------------------------------------------------------
 bool gxConfiguration::FindFlags()
 {
 #if defined(_WIN32) && !defined(__CYGWIN__)
@@ -1152,7 +1222,31 @@ bool gxConfiguration::FindFlags()
       }
     }
 
-  return this->FindFlagsBuiltIn();
+  std::string compilerID = this->GetCompilerId();
+  if(compilerID == "GCC")
+    {
+    return this->FindFlagsGCC();
+    }
+  else if(compilerID == "Intel")
+    {
+    return this->FindFlagsIntel();
+    }
+  else if(compilerID == "MIPSpro")
+    {
+    return this->FindFlagsMIPSpro();
+    }
+
+  // Didn't find / couldn't identify supported compiler.
+  //
+  std::cerr << std::endl;
+  std::cerr << "m_GCCXML_COMPILER: " << m_GCCXML_COMPILER << std::endl;
+  std::cerr << "compilerName: " << compilerName << std::endl;
+  std::cerr << "compilerID: " << compilerID << std::endl;
+  std::cerr << std::endl;
+  std::cerr << "Compiler \"" << m_GCCXML_COMPILER
+            << "\" is not supported by GCC_XML.\n"
+            << "(gxConfiguration::FindFlags)\n";
+  return false;
 #else
   // This is a UNIX environment.  Use the gccxml_find_flags script.
   std::string gccxmlFindFlags;
@@ -1197,75 +1291,21 @@ bool gxConfiguration::FindFlags()
 }
 
 //----------------------------------------------------------------------------
-#if defined(__GNUC__)
-  #define GCCXML_SUPPORT_DEFINE "GCC"
-  #define MAJOR_VERSION_DEFINE __GNUC__
-  #define MINOR_VERSION_DEFINE __GNUC_MINOR__
-#elif defined(__INTEL_COMPILER) && (__INTEL_COMPILER >= 700)
-// TODO - finish Intel translation from sh/find_flags to C++
-  #define GCCXML_SUPPORT_DEFINE "Intel"
-  #define MAJOR_VERSION_DEFINE 12345
-  #define MINOR_VERSION_DEFINE 4321
-#elif defined(__sgi) && defined(_COMPILER_VERSION)
-// TODO - finish MIPSPro translation from sh/find_flags to C++
-  #define GCCXML_SUPPORT_DEFINE "MIPSpro"
-  #define MAJOR_VERSION_DEFINE 12345
-  #define MINOR_VERSION_DEFINE 4321
-#else
-  #define GCCXML_SUPPORT_DEFINE ""
-  #define MAJOR_VERSION_DEFINE 22222
-  #define MINOR_VERSION_DEFINE 22222
-#endif
-
-//----------------------------------------------------------------------------
-bool gxConfiguration::FindFlagsBuiltIn()
-{
-  std::string GCCXML_SUPPORT(GCCXML_SUPPORT_DEFINE);
-
-  if(GCCXML_SUPPORT == "GCC")
-    {
-    return this->FindFlagsGCC();
-    }
-  else if(GCCXML_SUPPORT == "Intel")
-    {
-    return this->FindFlagsIntel();
-    }
-  else if(GCCXML_SUPPORT == "MIPSpro")
-    {
-    return this->FindFlagsMIPSpro();
-    }
-
-  // Didn't find supported compiler.
-  std::cerr << "Compiler \"" << m_GCCXML_COMPILER
-            << "\" is not supported by GCC_XML.\n"
-            << "(gxConfiguration::FindFlagsBuiltIn)\n";
-
-  return false;
-}
-
-//----------------------------------------------------------------------------
 bool gxConfiguration::FindFlagsGCC()
 {
-  // C++ translation of the script "GCC_XML/Support/GCC/find_flags"
+  // C++ translation of the script "${GCCXML_SOURCE_DIR}/Support/GCC/find_flags"
   //
-  std::string GCCXML_SUPPORT(GCCXML_SUPPORT_DEFINE);
-
-  if(GCCXML_SUPPORT != "GCC")
-    {
-    return false;
-    }
-
-  long MAJOR_VERSION = MAJOR_VERSION_DEFINE;
-  long MINOR_VERSION = MINOR_VERSION_DEFINE;
+  int MAJOR_VERSION = -1;
+  int MINOR_VERSION = -1;
   std::string MACROS;
   std::string INCLUDES;
   std::string SPECIAL;
   gxsys::String s;
   std::string supportPath;
 
-  // The support headers are located in "${GCCXML_SOURCE_DIR}/Support/${GCCXML_SUPPORT}"
+  // The support headers are located in "${GCCXML_SOURCE_DIR}/Support/GCC"
   //
-  this->FindData(GCCXML_SUPPORT.c_str(), supportPath, true);
+  this->FindData("GCC", supportPath, true);
 
   // Run the compiler preprocessor against an empty input file to get the list
   // of macros that are pre-defined by the compiler:
@@ -1298,8 +1338,36 @@ bool gxConfiguration::FindFlagsGCC()
         MACROS += "='";
         MACROS += reDefine.match(2);
         MACROS += "'";
+
+        if (-1 == MAJOR_VERSION)
+          {
+          if (reDefine.match(1) == "__GNUC__")
+            {
+            MAJOR_VERSION = atoi(reDefine.match(2).c_str());
+            }
+          }
+
+        if (-1 == MINOR_VERSION)
+          {
+          if (reDefine.match(1) == "__GNUC_MINOR__")
+            {
+            MINOR_VERSION = atoi(reDefine.match(2).c_str());
+            }
+          }
         }
       }
+    }
+
+  if (-1 == MAJOR_VERSION)
+    {
+    std::cerr << "error: gxConfiguration::FindFlagsGCC did not find __GNUC__ definition.\n";
+    return false;
+    }
+
+  if (-1 == MINOR_VERSION)
+    {
+    std::cerr << "error: gxConfiguration::FindFlagsGCC did not find __GNUC_MINOR__ definition.\n";
+    return false;
     }
 
   // Run the compiler with "-v" against an empty input file to get the list
@@ -1444,14 +1512,10 @@ bool gxConfiguration::FindFlagsGCC()
 //----------------------------------------------------------------------------
 bool gxConfiguration::FindFlagsIntel()
 {
-  // C++ translation of the script "GCC_XML/Support/Intel/find_flags"
+  // C++ translation of the script "${GCCXML_SOURCE_DIR}/Support/Intel/find_flags"
   //
-  std::string GCCXML_SUPPORT(GCCXML_SUPPORT_DEFINE);
-
-  if(GCCXML_SUPPORT != "Intel")
-    {
-    return false;
-    }
+  int MAJOR_VERSION = -1;
+  int MINOR_VERSION = -1;
 
   std::cerr << "gxConfiguration::FindFlagsIntel not implemented yet.\n"
             << "Use GCC_XML/Support/Intel/find_flags until implemented.\n";
@@ -1459,17 +1523,15 @@ bool gxConfiguration::FindFlagsIntel()
 
 // TODO - finish Intel translation from sh/find_flags to C++
 
-  long MAJOR_VERSION = MAJOR_VERSION_DEFINE;
-  long MINOR_VERSION = MINOR_VERSION_DEFINE;
   std::string MACROS;
   std::string INCLUDES;
   std::string SPECIAL;
   gxsys::String s;
   std::string supportPath;
 
-  // The support headers are located in "${GCCXML_SOURCE_DIR}/Support/${GCCXML_SUPPORT}"
+  // The support headers are located in "${GCCXML_SOURCE_DIR}/Support/Intel"
   //
-  this->FindData(GCCXML_SUPPORT.c_str(), supportPath, true);
+  this->FindData("Intel", supportPath, true);
 
   // Run the compiler preprocessor against an empty input file to get the list
   // of macros that are pre-defined by the compiler:
@@ -1502,8 +1564,36 @@ bool gxConfiguration::FindFlagsIntel()
         MACROS += "='";
         MACROS += reDefine.match(2);
         MACROS += "'";
+
+        if (-1 == MAJOR_VERSION)
+          {
+          if (reDefine.match(1) == "__GNUC__")
+            {
+            MAJOR_VERSION = atoi(reDefine.match(2).c_str());
+            }
+          }
+
+        if (-1 == MINOR_VERSION)
+          {
+          if (reDefine.match(1) == "__GNUC_MINOR__")
+            {
+            MINOR_VERSION = atoi(reDefine.match(2).c_str());
+            }
+          }
         }
       }
+    }
+
+  if (-1 == MAJOR_VERSION)
+    {
+    std::cerr << "error: gxConfiguration::FindFlagsIntel did not find __GNUC__ definition.\n";
+    return false;
+    }
+
+  if (-1 == MINOR_VERSION)
+    {
+    std::cerr << "error: gxConfiguration::FindFlagsIntel did not find __GNUC_MINOR__ definition.\n";
+    return false;
     }
 
   // Run the compiler with "-v" against an empty input file to get the list
@@ -1648,14 +1738,10 @@ bool gxConfiguration::FindFlagsIntel()
 //----------------------------------------------------------------------------
 bool gxConfiguration::FindFlagsMIPSpro()
 {
-  // C++ translation of the script "GCC_XML/Support/MIPSpro/find_flags"
+  // C++ translation of the script "${GCCXML_SOURCE_DIR}/Support/MIPSpro/find_flags"
   //
-  std::string GCCXML_SUPPORT(GCCXML_SUPPORT_DEFINE);
-
-  if(GCCXML_SUPPORT != "MIPSpro")
-    {
-    return false;
-    }
+  int MAJOR_VERSION = -1;
+  int MINOR_VERSION = -1;
 
   std::cerr << "gxConfiguration::FindFlagsMIPSpro not implemented yet.\n"
             << "Use GCC_XML/Support/MIPSpro/find_flags until implemented.\n";
@@ -1663,17 +1749,15 @@ bool gxConfiguration::FindFlagsMIPSpro()
 
 // TODO - finish MIPSPro translation from sh/find_flags to C++
 
-  long MAJOR_VERSION = MAJOR_VERSION_DEFINE;
-  long MINOR_VERSION = MINOR_VERSION_DEFINE;
   std::string MACROS;
   std::string INCLUDES;
   std::string SPECIAL;
   gxsys::String s;
   std::string supportPath;
 
-  // The support headers are located in "${GCCXML_SOURCE_DIR}/Support/${GCCXML_SUPPORT}"
+  // The support headers are located in "${GCCXML_SOURCE_DIR}/Support/MIPSpro"
   //
-  this->FindData(GCCXML_SUPPORT.c_str(), supportPath, true);
+  this->FindData("MIPSpro", supportPath, true);
 
   // Run the compiler preprocessor against an empty input file to get the list
   // of macros that are pre-defined by the compiler:
@@ -1706,8 +1790,36 @@ bool gxConfiguration::FindFlagsMIPSpro()
         MACROS += "='";
         MACROS += reDefine.match(2);
         MACROS += "'";
+
+        if (-1 == MAJOR_VERSION)
+          {
+          if (reDefine.match(1) == "__GNUC__")
+            {
+            MAJOR_VERSION = atoi(reDefine.match(2).c_str());
+            }
+          }
+
+        if (-1 == MINOR_VERSION)
+          {
+          if (reDefine.match(1) == "__GNUC_MINOR__")
+            {
+            MINOR_VERSION = atoi(reDefine.match(2).c_str());
+            }
+          }
         }
       }
+    }
+
+  if (-1 == MAJOR_VERSION)
+    {
+    std::cerr << "error: gxConfiguration::FindFlagsMIPSpro did not find __GNUC__ definition.\n";
+    return false;
+    }
+
+  if (-1 == MINOR_VERSION)
+    {
+    std::cerr << "error: gxConfiguration::FindFlagsMIPSpro did not find __GNUC_MINOR__ definition.\n";
+    return false;
     }
 
   // Run the compiler with "-v" against an empty input file to get the list
