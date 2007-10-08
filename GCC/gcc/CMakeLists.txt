@@ -173,6 +173,7 @@ ADD_CUSTOM_TARGET(genoptions ALL DEPENDS
 # Rules to generate insn-modes.h, insn-modes.c, and min-insn-modes.c
 
 ADD_EXECUTABLE(genmodes genmodes.c errors.c)
+ADD_DEPENDENCIES(genmodes genoptions)
 TARGET_LINK_LIBRARIES(genmodes iberty)
 SET_TARGET_PROPERTIES(genmodes PROPERTIES COMPILE_FLAGS -DGENERATOR_FILE)
 
@@ -197,6 +198,7 @@ ADD_CUSTOM_COMMAND(OUTPUT ${GCC_BINARY_DIR}/gcc/min-insn-modes.c
 # Rules to generate genrtl.h and genrtl.c.
 
 ADD_EXECUTABLE(gengenrtl gengenrtl.c errors.c)
+ADD_DEPENDENCIES(gengenrtl genoptions)
 TARGET_LINK_LIBRARIES(gengenrtl iberty)
 SET_TARGET_PROPERTIES(gengenrtl PROPERTIES COMPILE_FLAGS -DGENERATOR_FILE)
 
@@ -348,6 +350,7 @@ ADD_LIBRARY(gen
   ${GCC_BINARY_DIR}/gcc/tree-check.h
   ${GCC_BINARY_DIR}/gcc/gtype-desc.h
   )
+ADD_DEPENDENCIES(gen genoptions)
 TARGET_LINK_LIBRARIES(gen iberty)
 SET_TARGET_PROPERTIES(gen PROPERTIES COMPILE_FLAGS -DGENERATOR_FILE)
 
