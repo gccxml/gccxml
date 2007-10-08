@@ -623,8 +623,10 @@ extern cpp_reader *cpp_create_reader (enum c_lang, struct ht *,
    command line options).  */
 extern void cpp_set_lang (cpp_reader *, enum c_lang);
 
+/* BEGIN GCC-XML MODIFICATIONS (2007/10/08 20:39:52) */
 /* Set the include paths.  */
-extern void cpp_set_include_chains (cpp_reader *, cpp_dir *, cpp_dir *, int);
+extern void cpp_set_include_chains (cpp_reader *, cpp_dir *, cpp_dir *, cpp_dir *, int);
+/* END GCC-XML MODIFICATIONS (2007/10/08 20:39:52) */
 
 /* Call these to get pointers to the options, callback, and deps
    structures for a given reader.  These pointers are good until you

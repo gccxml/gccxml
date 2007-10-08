@@ -340,6 +340,10 @@ struct cpp_reader
   cpp_token directive_result;
 
   /* Search paths for include files.  */
+/* BEGIN GCC-XML MODIFICATIONS (2007/10/08 20:39:52) */
+  struct cpp_dir *wrapper_include; /* header wrappers */
+  struct cpp_dir *wrapper_include_last;
+/* END GCC-XML MODIFICATIONS (2007/10/08 20:39:52) */
   struct cpp_dir *quote_include;        /* "" */
   struct cpp_dir *bracket_include;        /* <> */
   struct cpp_dir no_search_path;        /* No path.  */

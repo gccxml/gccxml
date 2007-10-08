@@ -80,6 +80,10 @@ struct _cpp_file
      header.  */
   cpp_dir *dir;
 
+/* BEGIN GCC-XML MODIFICATIONS (2007/10/08 20:39:52) */
+  struct cpp_dir wrapper_dir; /* hack for supporting -iwrapper */
+/* END GCC-XML MODIFICATIONS (2007/10/08 20:39:52) */
+
   /* As filled in by stat(2) for the file.  */
   struct stat st;
 
@@ -817,7 +821,38 @@ _cpp_stack_include (cpp_reader *pfile, const char *fname, int angle_brackets,
   if (!dir)
     return false;
 
-  file = _cpp_find_file (pfile, fname, dir, false, angle_brackets);
+/* BEGIN GCC-XML MODIFICATIONS (2007/10/08 20:39:52) */
+  /* pfile->buffer is NULL when processing an -include command-line flag.  */
+  file = pfile->buffer == NULL ? pfile->main_file : pfile->buffer->file;
+
+  /* Search the wrapper path first in all cases except include_next.  */
+  if (!(type == IT_INCLUDE_NEXT && file->dir) && pfile->wrapper_include)
+    {
+    struct cpp_dir *wrapper_dir;
+    pfile->wrapper_include_last->next = dir;
+    file = _cpp_find_file (pfile, fname,
+                           pfile->wrapper_include, false,
+                           angle_brackets);
+    pfile->wrapper_include_last->next = 0;
+    for(wrapper_dir = pfile->wrapper_include; wrapper_dir;
+        wrapper_dir = wrapper_dir->next)
+      {
+      if(file->dir == wrapper_dir)
+        {
+        /* This is a header wrapper.  Hack include_next to look
+           through the original search path.  */
+        file->dir = &file->wrapper_dir;
+        memcpy(&file->wrapper_dir, wrapper_dir, sizeof(*wrapper_dir));
+        file->wrapper_dir.next = dir;
+        break;
+        }
+      }
+    }
+  else
+    {
+    file = _cpp_find_file (pfile, fname, dir, false, angle_brackets);
+    }
+/* END GCC-XML MODIFICATIONS (2007/10/08 20:39:52) */
 
   /* Compensate for the increment in linemap_add.  In the case of a
      normal #include, we're currently at the start of the line
@@ -1161,10 +1196,23 @@ _cpp_get_file_stat (_cpp_file *file)
    If BRACKET does not lie in the QUOTE chain, it is set to QUOTE.  */
 void
 cpp_set_include_chains (cpp_reader *pfile, cpp_dir *quote, cpp_dir *bracket,
+/* BEGIN GCC-XML MODIFICATIONS (2007/10/08 20:39:52) */
+                        cpp_dir *wrapper,
+/* END GCC-XML MODIFICATIONS (2007/10/08 20:39:52) */
                         int quote_ignores_source_dir)
 {
   pfile->quote_include = quote;
   pfile->bracket_include = quote;
+/* BEGIN GCC-XML MODIFICATIONS (2007/10/08 20:39:52) */
+  pfile->wrapper_include = wrapper;
+  pfile->wrapper_include_last = 0;
+  for (; wrapper; wrapper = wrapper->next)
+    {
+    wrapper->name_map = NULL;
+    wrapper->len = strlen (wrapper->name);
+    pfile->wrapper_include_last = wrapper;
+    }
+/* END GCC-XML MODIFICATIONS (2007/10/08 20:39:52) */
   pfile->quote_ignores_source_dir = quote_ignores_source_dir;
 
   for (; quote; quote = quote->next)
