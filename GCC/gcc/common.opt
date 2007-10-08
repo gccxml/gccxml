@@ -29,7 +29,7 @@ Display this information
 
 -param
 Common Separate
---param <param>=<value>        Set parameter <param> to value.  See below for a complete list of parameters
+--param <param>=<value>	Set parameter <param> to value.  See below for a complete list of parameters
 
 -target-help
 Common
@@ -39,11 +39,11 @@ Common
 
 G
 Common Joined Separate UInteger
--G<number>        Put global and static data smaller than <number> bytes into a special section (on some targets)
+-G<number>	Put global and static data smaller than <number> bytes into a special section (on some targets)
 
 O
 Common JoinedOrMissing
--O<number>        Set optimization level to <number>
+-O<number>	Set optimization level to <number>
 
 Os
 Common
@@ -95,7 +95,7 @@ Warn when an inlined function cannot be inlined
 
 Wlarger-than-
 Common RejectNegative Joined UInteger
--Wlarger-than-<number>        Warn if an object is larger than <number> bytes
+-Wlarger-than-<number>	Warn if an object is larger than <number> bytes
 
 Wunsafe-loop-optimizations
 Common Var(warn_unsafe_loop_optimizations)
@@ -195,7 +195,7 @@ Warn when a register variable is declared volatile
 
 aux-info
 Common Separate
--aux-info <file>        Emit declaration information into <file>
+-aux-info <file>	Emit declaration information into <file>
 
 aux-info=
 Common Joined
@@ -208,11 +208,11 @@ Common Separate
 
 d
 Common Joined
--d<letters>        Enable dumps from specific passes of the compiler
+-d<letters>	Enable dumps from specific passes of the compiler
 
 dumpbase
 Common Separate
--dumpbase <file>        Set the file basename to be used for dumps
+-dumpbase <file>	Set the file basename to be used for dumps
 
 ; The version of the C++ ABI in use.  The following values are allowed:
 ;
@@ -314,11 +314,11 @@ Restrict target load migration not to re-use registers in any basic block
 
 fcall-saved-
 Common Joined RejectNegative
--fcall-saved-<register>        Mark <register> as being preserved across functions
+-fcall-saved-<register>	Mark <register> as being preserved across functions
 
 fcall-used-
 Common Joined RejectNegative
--fcall-used-<register>        Mark <register> as being corrupted by function calls
+-fcall-used-<register>	Mark <register> as being corrupted by function calls
 
 ; Nonzero for -fcaller-saves: allocate values in regs that need to
 ; be saved across function calls, if that produces overall better code.
@@ -371,7 +371,7 @@ Delete useless null pointer checks
 
 fdiagnostics-show-location=
 Common Joined RejectNegative
--fdiagnostics-show-location=[once|every-line]        How often to emit source location at the beginning of line-wrapped diagnostics
+-fdiagnostics-show-location=[once|every-line]	How often to emit source location at the beginning of line-wrapped diagnostics
 
 fdiagnostics-show-option
 Common
@@ -379,7 +379,7 @@ Amend appropriate diagnostic messages with the command line option that controls
 
 fdump-
 Common Joined RejectNegative
--fdump-<type>        Dump various compiler internals to a file
+-fdump-<type>	Dump various compiler internals to a file
 
 fdump-noaddr
 Common Report Var(flag_dump_noaddr)
@@ -426,7 +426,7 @@ Assume no NaNs or infinities are generated
 
 ffixed-
 Common Joined RejectNegative
--ffixed-<register>        Mark <register> as being unavailable to the compiler
+-ffixed-<register>	Mark <register> as being unavailable to the compiler
 
 ffloat-store
 Common Report Var(flag_float_store)
@@ -527,7 +527,7 @@ Common RejectNegative Joined UInteger
 
 finline-limit=
 Common RejectNegative Joined UInteger
--finline-limit=<number>        Limit the size of inlined functions to <number>
+-finline-limit=<number>	Limit the size of inlined functions to <number>
 
 finstrument-functions
 Common Report Var(flag_instrument_function_entry_exit)
@@ -598,7 +598,7 @@ Attempt to merge identical constants across compilation units
 
 fmessage-length=
 Common RejectNegative Joined UInteger
--fmessage-length=<number>        Limit diagnostics to <number> characters per line.  0 suppresses line-wrapping
+-fmessage-length=<number>	Limit diagnostics to <number> characters per line.  0 suppresses line-wrapping
 
 fmodulo-sched
 Common Report Var(flag_modulo_sched)
@@ -646,7 +646,7 @@ Pack structure members together without holes
 
 fpack-struct=
 Common RejectNegative Joined UInteger
--fpack-struct=<number>        Set initial maximum structure member alignment
+-fpack-struct=<number>	Set initial maximum structure member alignment
 
 fpcc-struct-return
 Common Report Var(flag_pcc_struct_return,1) VarExists
@@ -709,7 +709,7 @@ Common
 
 frandom-seed=
 Common Joined RejectNegative
--frandom-seed=<string>        Make compile reproducible using <string>
+-frandom-seed=<string>	Make compile reproducible using <string>
 
 freg-struct-return
 Common Report Var(flag_pcc_struct_return,0) VarExists
@@ -765,7 +765,7 @@ Allow speculative motion of more loads
 
 fsched-verbose=
 Common RejectNegative Joined
--fsched-verbose=<number>        Set the verbosity level of the scheduler
+-fsched-verbose=<number>	Set the verbosity level of the scheduler
 
 fsched2-use-superblocks
 Common Report Var(flag_sched2_use_superblocks)
@@ -791,7 +791,7 @@ Allow premature scheduling of queued insns
 
 fsched-stalled-insns=
 Common RejectNegative Joined UInteger
--fsched-stalled-insns=<number>        Set number of queued insns that can be prematurely scheduled
+-fsched-stalled-insns=<number>	Set number of queued insns that can be prematurely scheduled
 
 ; sched_stalled_insns_dep controls how many recently scheduled cycles will
 ; be examined for a dependency on a stalled insn that is candidate for
@@ -803,7 +803,7 @@ Set dependence distance checking in premature scheduling of queued insns
 
 fsched-stalled-insns-dep=
 Common RejectNegative Joined UInteger
--fsched-stalled-insns-dep=<number>        Set dependence distance checking in premature scheduling of queued insns
+-fsched-stalled-insns-dep=<number>	Set dependence distance checking in premature scheduling of queued insns
 
 fsection-anchors
 Common Report Var(flag_section_anchors)
@@ -848,11 +848,11 @@ Common
 
 fstack-limit-register=
 Common RejectNegative Joined
--fstack-limit-register=<register>        Trap if the stack goes past <register>
+-fstack-limit-register=<register>	Trap if the stack goes past <register>
 
 fstack-limit-symbol=
 Common RejectNegative Joined
--fstack-limit-symbol=<name>        Trap if the stack goes past symbol <name>
+-fstack-limit-symbol=<name>	Trap if the stack goes past symbol <name>
 
 fstack-protector
 Common Report Var(flag_stack_protect, 1)
@@ -896,7 +896,7 @@ Report the time taken by each compiler pass
 
 ftls-model=
 Common Joined RejectNegative
--ftls-model=[global-dynamic|local-dynamic|initial-exec|local-exec]        Set the default thread-local storage code generation model
+-ftls-model=[global-dynamic|local-dynamic|initial-exec|local-exec]	Set the default thread-local storage code generation model
 
 ftoplevel-reorder
 Common Report Var(flag_toplevel_reorder) Init(1)
@@ -1054,7 +1054,7 @@ Enable loop versioning when doing loop vectorization on trees
 
 ftree-vectorizer-verbose=
 Common RejectNegative Joined
--ftree-vectorizer-verbose=<number>        Set the verbosity level of the vectorizer
+-ftree-vectorizer-verbose=<number>	Set the verbosity level of the vectorizer
 
 ; -fverbose-asm causes extra commentary information to be produced in
 ; the generated assembly code (to make it more readable).  This option
@@ -1068,7 +1068,7 @@ Add extra commentary to assembler output
 
 fvisibility=
 Common Joined RejectNegative
--fvisibility=[default|internal|hidden|protected]        Set the default symbol visibility
+-fvisibility=[default|internal|hidden|protected]	Set the default symbol visibility
 
 
 fvpt
@@ -1129,7 +1129,7 @@ Generate debug information in extended XCOFF format
 
 o
 Common Joined Separate
--o <file>        Place output into <file>
+-o <file>	Place output into <file>
 
 p
 Common Var(profile_flag)

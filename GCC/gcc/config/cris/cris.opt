@@ -163,15 +163,15 @@ Target Report RejectNegative Joined Undocumented Var(cris_cpu_str)
 
 march=
 Target Report RejectNegative Joined Var(cris_cpu_str)
--march=ARCH        Generate code for the specified chip or CPU version
+-march=ARCH	Generate code for the specified chip or CPU version
 
 mtune=
 Target Report RejectNegative Joined Var(cris_tune_str)
--mtune=ARCH        Tune alignment for the specified chip or CPU version
+-mtune=ARCH	Tune alignment for the specified chip or CPU version
 
 mmax-stackframe=
 Target Report RejectNegative Joined Var(cris_max_stackframe_str)
--mmax-stackframe=SIZE        Warn when a stackframe is larger than the specified size
+-mmax-stackframe=SIZE	Warn when a stackframe is larger than the specified size
 
 max-stackframe=
 Target Report RejectNegative Joined Undocumented Var(cris_max_stackframe_str)

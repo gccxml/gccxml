@@ -1,5 +1,5 @@
 # Generate an ELF symbol version map a-la Solaris and GNU ld.
-#        Contributed by Richard Henderson <rth@cygnus.com>
+#	Contributed by Richard Henderson <rth@cygnus.com>
 #
 # This file is part of GCC.
 #
@@ -110,20 +110,20 @@ function output(lib) {
   for (sym in ver)
     if ((ver[sym] == lib) && (sym in def))
       {
-        if (empty)
-          {
-            printf("%s {\n", lib);
-            printf("  global:\n");
-            empty = 0;
-          }
-        printf("\t%s;\n", sym);
+	if (empty)
+	  {
+	    printf("%s {\n", lib);
+	    printf("  global:\n");
+	    empty = 0;
+	  }
+	printf("\t%s;\n", sym);
       }
 
   if (empty)
     {
       for (l in libs)
-        if (inherit[l] == lib)
-          inherit[l] = inherit[lib];
+	if (inherit[l] == lib)
+	  inherit[l] = inherit[lib];
     }
   else if (inherit[lib])
     printf("} %s;\n", inherit[lib]);

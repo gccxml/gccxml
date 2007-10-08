@@ -21,7 +21,7 @@
 
 mabi=
 Target RejectNegative Joined
--mabi=ABI        Generate code that conforms to the given ABI
+-mabi=ABI	Generate code that conforms to the given ABI
 
 mabicalls
 Target Report Mask(ABICALLS)
@@ -33,7 +33,7 @@ Use PMC-style 'mad' instructions
 
 march=
 Target RejectNegative Joined Var(mips_arch_string)
--march=ISA        Generate code for the given ISA
+-march=ISA	Generate code for the given ISA
 
 mbranch-likely
 Target Report Mask(BRANCHLIKELY)
@@ -119,7 +119,7 @@ Use 64-bit floating-point registers
 
 mflush-func=
 Target RejectNegative Joined Var(mips_cache_flush_func) Init(CACHE_FLUSH_FUNC)
--mflush-func=FUNC        Use FUNC to flush the cache before calling stack trampolines
+-mflush-func=FUNC	Use FUNC to flush the cache before calling stack trampolines
 
 mfused-madd
 Target Report Mask(FUSED_MADD)
@@ -139,7 +139,7 @@ Allow the use of hardware floating-point instructions
 
 mips
 Target RejectNegative Joined
--mipsN        Generate code for ISA level N
+-mipsN	Generate code for ISA level N
 
 mips16
 Target Report RejectNegative Mask(MIPS16)
@@ -207,7 +207,7 @@ Assume all symbols have 32-bit values
 
 mtune=
 Target RejectNegative Joined Var(mips_tune_string)
--mtune=PROCESSOR        Optimize the output for PROCESSOR
+-mtune=PROCESSOR	Optimize the output for PROCESSOR
 
 muninit-const-in-rodata
 Target Report Var(TARGET_UNINIT_CONST_IN_RODATA)

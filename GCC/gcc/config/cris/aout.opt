@@ -31,4 +31,4 @@ Compile for the MMU-less Etrax 100-based elinux system
 ;; We might want to do something here someday.
 melinux-stacksize=
 Target Report RejectNegative Joined Var(cris_elinux_stacksize_str)
--melinux-stacksize=SIZE        For elinux, request a specified stack-size for this program
+-melinux-stacksize=SIZE	For elinux, request a specified stack-size for this program

@@ -57,7 +57,7 @@ Use the BK register as a general purpose register
 
 mcpu=
 Target RejectNegative Joined
--mcpu=CPU        Generate code for CPU
+-mcpu=CPU	Generate code for CPU
 
 mdb
 Target Report Mask(DB)
@@ -129,7 +129,7 @@ Enable use of RTPS instruction
 
 mrpts=
 Target RejectNegative Joined UInteger Var(c4x_rpts_cycles)
--mrpts=N        Set the maximum number of iterations for RPTS to N
+-mrpts=N	Set the maximum number of iterations for RPTS to N
 
 msmall
 Target RejectNegative Report Mask(SMALL)

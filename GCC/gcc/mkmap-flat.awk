@@ -1,5 +1,5 @@
 # Generate a flat list of symbols to export.
-#        Contributed by Richard Henderson <rth@cygnus.com>
+#	Contributed by Richard Henderson <rth@cygnus.com>
 #
 # This file is part of GCC.
 #

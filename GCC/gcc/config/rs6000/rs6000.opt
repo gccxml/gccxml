@@ -176,7 +176,7 @@ Generate VRSAVE instructions when generating AltiVec code
 
 mvrsave=
 Target RejectNegative Joined
--mvrsave=yes/no        Deprecated option.  Use -mvrsave/-mno-vrsave instead
+-mvrsave=yes/no	Deprecated option.  Use -mvrsave/-mno-vrsave instead
 
 misel
 Target Var(rs6000_isel)
@@ -184,7 +184,7 @@ Generate isel instructions
 
 misel=
 Target RejectNegative Joined
--misel=yes/no        Deprecated option.  Use -misel/-mno-isel instead
+-misel=yes/no	Deprecated option.  Use -misel/-mno-isel instead
 
 mspe
 Target Var(rs6000_spe)
@@ -192,27 +192,27 @@ Generate SPE SIMD instructions on E500
 
 mspe=
 Target RejectNegative Joined
--mspe=yes/no        Deprecated option.  Use -mspe/-mno-spe instead
+-mspe=yes/no	Deprecated option.  Use -mspe/-mno-spe instead
 
 mdebug=
 Target RejectNegative Joined
--mdebug=        Enable debug output
+-mdebug=	Enable debug output
 
 mabi=
 Target RejectNegative Joined
--mabi=        Specify ABI to use
+-mabi=	Specify ABI to use
 
 mcpu=
 Target RejectNegative Joined
--mcpu=        Use features of and schedule code for given CPU
+-mcpu=	Use features of and schedule code for given CPU
 
 mtune=
 Target RejectNegative Joined
--mtune=        Schedule code for given CPU
+-mtune=	Schedule code for given CPU
 
 mtraceback=
 Target RejectNegative Joined
--mtraceback=        Select full, part, or no traceback table
+-mtraceback=	Select full, part, or no traceback table
 
 mlongcall
 Target Report Var(rs6000_default_long_calls)
@@ -224,11 +224,11 @@ Warn about deprecated 'vector long ...' AltiVec type usage
 
 mfloat-gprs=
 Target RejectNegative Joined
--mfloat-gprs=        Select GPR floating point method
+-mfloat-gprs=	Select GPR floating point method
 
 mlong-double-
 Target RejectNegative Joined UInteger
--mlong-double-<n>        Specify size of long double (64 or 128 bits)
+-mlong-double-<n>	Specify size of long double (64 or 128 bits)
 
 msched-costly-dep=
 Target RejectNegative Joined 

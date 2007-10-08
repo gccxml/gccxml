@@ -39,7 +39,7 @@ C ObjC C++ ObjC++ Joined Separate
 
 A
 C ObjC C++ ObjC++ Joined Separate
--A<question>=<answer>        Assert the <answer> to <question>.  Putting '-' before <question> disables the <answer> to <question>
+-A<question>=<answer>	Assert the <answer> to <question>.  Putting '-' before <question> disables the <answer> to <question>
 
 C
 C ObjC C++ ObjC++
@@ -51,14 +51,14 @@ Do not discard comments in macro expansions
 
 D
 C ObjC C++ ObjC++ Joined Separate
--D<macro>[=<val>]        Define a <macro> with <val> as its value.  If just <macro> is given, <val> is taken to be 1
+-D<macro>[=<val>]	Define a <macro> with <val> as its value.  If just <macro> is given, <val> is taken to be 1
 
 E
 C ObjC C++ ObjC++ Undocumented
 
 F
 C ObjC C++ ObjC++ Joined Separate
--F <dir>        Add <dir> to the end of the main framework include path
+-F <dir>	Add <dir> to the end of the main framework include path
 
 H
 C ObjC C++ ObjC++
@@ -66,7 +66,7 @@ Print the name of header files as they are used
 
 I
 C ObjC C++ ObjC++ Joined Separate
--I <dir>        Add <dir> to the end of the main include path
+-I <dir>	Add <dir> to the end of the main include path
 
 M
 C ObjC C++ ObjC++
@@ -78,7 +78,7 @@ Generate make dependencies and compile
 
 MF
 C ObjC C++ ObjC++ Joined Separate
--MF <file>        Write dependency output to the given file
+-MF <file>	Write dependency output to the given file
 
 MG
 C ObjC C++ ObjC++
@@ -98,11 +98,11 @@ Generate phony targets for all headers
 
 MQ
 C ObjC C++ ObjC++ Joined Separate
--MQ <target>        Add a MAKE-quoted target
+-MQ <target>	Add a MAKE-quoted target
 
 MT
 C ObjC C++ ObjC++ Joined Separate
--MT <target>        Add an unquoted target
+-MT <target>	Add an unquoted target
 
 P
 C ObjC C++ ObjC++
@@ -110,7 +110,7 @@ Do not generate #line directives
 
 U
 C ObjC C++ ObjC++ Joined Separate
--U<macro>        Undefine <macro>
+-U<macro>	Undefine <macro>
 
 Wabi
 C++ ObjC++ Var(warn_abi)
@@ -305,7 +305,7 @@ Warn about NULL being passed to argument slots marked as requiring non-NULL
 
 Wnormalized=
 C ObjC C++ ObjC++ Joined
--Wnormalized=<id|nfc|nfkc>        Warn about non-normalised Unicode strings
+-Wnormalized=<id|nfc|nfkc>	Warn about non-normalised Unicode strings
 
 Wold-style-cast
 C++ ObjC++ Var(warn_old_style_cast)
@@ -479,7 +479,7 @@ Reduce the size of object files
 
 fconstant-string-class=
 ObjC ObjC++ Joined
--fconst-string-class=<name>        Use class <name> for constant strings
+-fconst-string-class=<name>	Use class <name> for constant strings
 
 fdefault-inline
 C++ ObjC++
@@ -501,7 +501,7 @@ C++ ObjC++
 
 fexec-charset=
 C ObjC C++ ObjC++ Joined RejectNegative
--fexec-charset=<cset>        Convert all strings and character constants to character set <cset>
+-fexec-charset=<cset>	Convert all strings and character constants to character set <cset>
 
 fextended-identifiers
 C ObjC C++ ObjC++
@@ -509,7 +509,7 @@ Permit universal character names (\\u and \\U) in identifiers
 
 finput-charset=
 C ObjC C++ ObjC++ Joined RejectNegative
--finput-charset=<cset>        Specify the default character set for source files
+-finput-charset=<cset>	Specify the default character set for source files
 
 
 fexternal-templates
@@ -691,18 +691,18 @@ C++ ObjC++
 
 ftabstop=
 C ObjC C++ ObjC++ Joined RejectNegative UInteger
--ftabstop=<number>        Distance between tab stops for column reporting
+-ftabstop=<number>	Distance between tab stops for column reporting
 
 ftemplate-depth-
 C++ ObjC++ Joined RejectNegative UInteger
--ftemplate-depth-<number>        Specify maximum template instantiation depth
+-ftemplate-depth-<number>	Specify maximum template instantiation depth
 
 fthis-is-variable
 C++ ObjC++
 
 fthreadsafe-statics
 C++ ObjC++
--fno-threadsafe-statics        Do not generate thread-safe code for initializing local statics
+-fno-threadsafe-statics	Do not generate thread-safe code for initializing local statics
 
 funsigned-bitfields
 C ObjC C++ ObjC++
@@ -738,13 +738,13 @@ Emit common-like symbols as weak symbols
 
 fwide-exec-charset=
 C ObjC C++ ObjC++ Joined RejectNegative
--fwide-exec-charset=<cset>        Convert all wide strings and character constants to character set <cset>
+-fwide-exec-charset=<cset>	Convert all wide strings and character constants to character set <cset>
 
 fworking-directory
 C ObjC C++ ObjC++
 Generate a #line directive pointing at the current working directory
 
-; BEGIN GCC-XML MODIFICATIONS (2007/10/08 15:34:27)
+; BEGIN GCC-XML MODIFICATIONS (2007/10/08 17:36:42)
 fxml=
 C++ Joined
 -fxml=<file>    Enable XML output to a file (use with -fsyntax-only)
@@ -752,7 +752,7 @@ C++ Joined
 fxml-start=
 C++ Joined
 -fxml-start=<string>    Specify start locations for XML dump (use with -fxml)
-; END GCC-XML MODIFICATIONS (2007/10/08 15:34:27)
+; END GCC-XML MODIFICATIONS (2007/10/08 17:36:42)
 
 fxref
 C++ ObjC++
@@ -768,11 +768,11 @@ Dump declarations to a .decl file
 
 idirafter
 C ObjC C++ ObjC++ Joined Separate
--idirafter <dir>        Add <dir> to the end of the system include path
+-idirafter <dir>	Add <dir> to the end of the system include path
 
 imacros
 C ObjC C++ ObjC++ Joined Separate
--imacros <file>        Accept definition of macros in <file>
+-imacros <file>	Accept definition of macros in <file>
 
 imultilib
 C ObjC C++ ObjC++ Joined Separate
@@ -780,35 +780,35 @@ C ObjC C++ ObjC++ Joined Separate
 
 include
 C ObjC C++ ObjC++ Joined Separate
--include <file>        Include the contents of <file> before other files
+-include <file>	Include the contents of <file> before other files
 
 iprefix
 C ObjC C++ ObjC++ Joined Separate
--iprefix <path>        Specify <path> as a prefix for next two options
+-iprefix <path>	Specify <path> as a prefix for next two options
 
 isysroot
 C ObjC C++ ObjC++ Joined Separate
--isysroot <dir>        Set <dir> to be the system root directory
+-isysroot <dir>	Set <dir> to be the system root directory
 
 isystem
 C ObjC C++ ObjC++ Joined Separate
--isystem <dir>        Add <dir> to the start of the system include path
+-isystem <dir>	Add <dir> to the start of the system include path
 
 iquote
 C ObjC C++ ObjC++ Joined Separate
--iquote <dir>        Add <dir> to the end of the quote include path
+-iquote <dir>	Add <dir> to the end of the quote include path
 
 iwithprefix
 C ObjC C++ ObjC++ Joined Separate
--iwithprefix <dir>        Add <dir> to the end of the system include path
+-iwithprefix <dir>	Add <dir> to the end of the system include path
 
 iwithprefixbefore
 C ObjC C++ ObjC++ Joined Separate
--iwithprefixbefore <dir>        Add <dir> to the end of the main include path
+-iwithprefixbefore <dir>	Add <dir> to the end of the main include path
 
 iwrapper
 C ObjC C++ ObjC++ Joined Separate
--iwrapper <dir>        Add <dir> to the end of the wrapper include path
+-iwrapper <dir>	Add <dir> to the end of the wrapper include path
 
 lang-asm
 C Undocumented
@@ -905,7 +905,7 @@ Enable traditional preprocessing
 
 trigraphs
 C ObjC C++ ObjC++
--trigraphs        Support ISO C trigraphs
+-trigraphs	Support ISO C trigraphs
 
 undef
 C ObjC C++ ObjC++
