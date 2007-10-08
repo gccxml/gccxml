@@ -9,13 +9,19 @@ Returns a pointer to a copy of @var{s} in memory obtained from
 
 */
 
+#include <ansidecl.h>
+#include <stddef.h>
+
+extern size_t        strlen (const char*);
+extern PTR        malloc (size_t);
+extern PTR        memcpy (PTR, const PTR, size_t);
+
 char *
-strdup(s)
-     char *s;
+strdup(const char *s)
 {
-    char *result = (char*)malloc(strlen(s) + 1);
-    if (result == (char*)0)
-	return (char*)0;
-    strcpy(result, s);
-    return result;
+  size_t len = strlen (s) + 1;
+  char *result = (char*) malloc (len);
+  if (result == (char*) 0)
+    return (char*) 0;
+  return (char*) memcpy (result, s, len);
 }

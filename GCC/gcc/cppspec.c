@@ -15,11 +15,13 @@ for more details.
 
 You should have received a copy of the GNU General Public License
 along with GCC; see the file COPYING.  If not, write to the Free
-Software Foundation, 59 Temple Place - Suite 330, Boston, MA
-02111-1307, USA.  */
+Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
+02110-1301, USA.  */
 
 #include "config.h"
 #include "system.h"
+#include "coretypes.h"
+#include "tm.h"
 #include "gcc.h"
 
 /* The `cpp' executable installed in $(bindir) and $(cpp_install_dir)
@@ -49,10 +51,8 @@ static const char *const known_suffixes[] =
 
 /* Filter argc and argv before processing by the gcc driver proper.  */
 void
-lang_specific_driver (in_argc, in_argv, in_added_libraries)
-     int *in_argc;
-     const char *const **in_argv;
-     int *in_added_libraries ATTRIBUTE_UNUSED;
+lang_specific_driver (int *in_argc, const char *const **in_argv,
+                      int *in_added_libraries ATTRIBUTE_UNUSED)
 {
   int argc = *in_argc;
   const char *const *argv = *in_argv;
@@ -62,9 +62,6 @@ lang_specific_driver (in_argc, in_argv, in_added_libraries)
 
   /* Do we need to insert -E? */
   int need_E = 1;
-
-  /* Do we need to insert -no-gcc? */
-  int need_no_gcc = 1;
 
   /* Have we seen an input file? */
   int seen_input = 0;
@@ -91,93 +88,91 @@ lang_specific_driver (in_argc, in_argv, in_added_libraries)
   for (i = 1; i < argc; i++)
     {
       if (quote == 1)
-	{
-	  quote = 0;
-	  continue;
-	}
+        {
+          quote = 0;
+          continue;
+        }
 
       if (argv[i][0] == '-')
-	{
-	  if (argv[i][1] == '\0')
-	    read_stdin = 0;
-	  else if (argv[i][2] == '\0')
-	    {
-	      if (argv[i][1] == 'E')
-		need_E = 0;
-	      else if (argv[i][1] == 'S' || argv[i][1] == 'c')
-		{
-		  fatal ("\"%s\" is not a valid option to the preprocessor",
-			 argv[i]);
-		  return;
-		}
-	      else if (argv[i][1] == 'x')
-		{
-		  need_fixups = 0;
-		  quote = 1;
-		}
-	      else if (SWITCH_TAKES_ARG (argv[i][1]))
-		quote = 1;
-	    }
-	  else if (argv[i][1] == 'x')
-	    need_fixups = 0;
-	  else if (argv[i][1] == 'g' && !strcmp(&argv[i][2], "cc"))
-	    need_no_gcc = 0;
-	  else if (WORD_SWITCH_TAKES_ARG (&argv[i][1]))
-	    quote = 1;
-	}
+        {
+          if (argv[i][1] == '\0')
+            read_stdin = 0;
+          else if (argv[i][2] == '\0')
+            {
+              if (argv[i][1] == 'E')
+                need_E = 0;
+              else if (argv[i][1] == 'S' || argv[i][1] == 'c')
+                {
+                  fatal ("\"%s\" is not a valid option to the preprocessor",
+                         argv[i]);
+                  return;
+                }
+              else if (argv[i][1] == 'x')
+                {
+                  need_fixups = 0;
+                  quote = 1;
+                }
+              else if (SWITCH_TAKES_ARG (argv[i][1]))
+                quote = 1;
+            }
+          else if (argv[i][1] == 'x')
+            need_fixups = 0;
+          else if (WORD_SWITCH_TAKES_ARG (&argv[i][1]))
+            quote = 1;
+        }
       else /* not an option */
-	{
-	  seen_input++;
-	  if (seen_input == 3)
-	    {
-	      fatal ("too many input files");
-	      return;
-	    }
-	  else if (seen_input == 2)
-	    {
-	      o_here = i;
-	    }
-	  else
-	    {
-	      read_stdin = 0;
-	      if (need_fixups)
-		{
-		  int l = strlen (argv[i]);
-		  int known = 0;
-		  const char *const *suff;
+        {
+          seen_input++;
+          if (seen_input == 3)
+            {
+              fatal ("too many input files");
+              return;
+            }
+          else if (seen_input == 2)
+            {
+              o_here = i;
+            }
+          else
+            {
+              read_stdin = 0;
+              if (need_fixups)
+                {
+                  int l = strlen (argv[i]);
+                  int known = 0;
+                  const char *const *suff;
 
-		  for (suff = known_suffixes; *suff; suff++)
-		    if (!strcmp (*suff, &argv[i][l - strlen(*suff)]))
-		      {
-			known = 1;
-			break;
-		      }
+                  for (suff = known_suffixes; *suff; suff++)
+                    if (!strcmp (*suff, &argv[i][l - strlen(*suff)]))
+                      {
+                        known = 1;
+                        break;
+                      }
 
-		  if (! known)
-		    {
-		      /* .s files are a special case; we have to treat
-			 them like .S files so -D__ASSEMBLER__ will be
-			 in effect.  */
-		      if (!strcmp (".s", &argv[i][l - 2]))
-			lang_S_here = i;
-		      else
-			lang_c_here = i;
-		    }
-		}
-	    }
-	}
+                  if (! known)
+                    {
+                      /* .s files are a special case; we have to treat
+                         them like .S files so -D__ASSEMBLER__ will be
+                         in effect.  */
+                      if (!strcmp (".s", &argv[i][l - 2]))
+                        lang_S_here = i;
+                      else
+                        lang_c_here = i;
+                    }
+                }
+            }
+        }
     }
 
   /* If we don't need to edit the command line, we can bail early.  */
 
-  new_argc = argc + need_E + need_no_gcc + read_stdin
+  new_argc = argc + need_E + read_stdin
     + !!o_here + !!lang_c_here + !!lang_S_here;
 
   if (new_argc == argc)
     return;
 
   /* One more slot for a terminating null.  */
-  new_argv = (const char **) xmalloc ((new_argc + 1) * sizeof(char *));
+  new_argv = XNEWVEC (const char *, new_argc + 1);
 
   new_argv[0] = argv[0];
   j = 1;
@@ -185,17 +180,14 @@ lang_specific_driver (in_argc, in_argv, in_added_libraries)
   if (need_E)
     new_argv[j++] = "-E";
 
-  if (need_no_gcc)
-    new_argv[j++] = "-no-gcc";
-
   for (i = 1; i < argc; i++, j++)
     {
       if (i == lang_c_here)
-	new_argv[j++] = "-xc";
+        new_argv[j++] = "-xc";
       else if (i == lang_S_here)
-	new_argv[j++] = "-xassembler-with-cpp";
+        new_argv[j++] = "-xassembler-with-cpp";
       else if (i == o_here)
-	new_argv[j++] = "-o";
+        new_argv[j++] = "-o";
 
       new_argv[j] = argv[i];
     }
@@ -209,16 +201,10 @@ lang_specific_driver (in_argc, in_argv, in_added_libraries)
 }
 
 /* Called before linking.  Returns 0 on success and -1 on failure.  */
-int lang_specific_pre_link ()
+int lang_specific_pre_link (void)
 {
   return 0;  /* Not used for cpp.  */
 }
 
 /* Number of extra output files that lang_specific_pre_link may generate.  */
 int lang_specific_extra_outfiles = 0;  /* Not used for cpp.  */
-
-/* Table of language-specific spec functions.  */
-const struct spec_function lang_specific_spec_functions[] =
-{
-  { 0, 0 }
-};

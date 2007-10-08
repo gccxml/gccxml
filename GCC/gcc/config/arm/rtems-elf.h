@@ -1,22 +1,22 @@
 /* Definitions for RTEMS based ARM systems using ELF
-   Copyright (C) 2000, 2002 Free Software Foundation, Inc.
+   Copyright (C) 2000, 2002, 2005 Free Software Foundation, Inc.
  
-This file is part of GNU CC.
+   This file is part of GCC.
  
-GNU CC is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2, or (at your option)
-any later version.
+   GCC is free software; you can redistribute it and/or modify it
+   under the terms of the GNU General Public License as published
+   by the Free Software Foundation; either version 2, or (at your
+   option) any later version.
  
-GNU CC is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+   GCC is distributed in the hope that it will be useful, but WITHOUT
+   ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+   or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public
+   License for more details.
  
-You should have received a copy of the GNU General Public License
-along with this program; see the file COPYING.  If not, write to
-the Free Software Foundation, 59 Temple Place - Suite 330,
-Boston, MA 02111-1307, USA.  */
+   You should have received a copy of the GNU General Public License
+   along with this program; see the file COPYING.  If not, write to
+   the Free Software Foundation, 51 Franklin Street, Fifth Floor,
+   Boston, MA 02110-1301, USA.  */
 
 /* Run-time Target Specification.  */
 #undef TARGET_VERSION
@@ -24,9 +24,23 @@ Boston, MA 02111-1307, USA.  */
 
 #define HAS_INIT_SECTION
 
-#define TARGET_OS_CPP_BUILTINS()		\
-    do {					\
-	builtin_define ("__rtems__");		\
-	builtin_define ("__ELF__");		\
-	builtin_assert ("system=rtems");	\
+#define TARGET_OS_CPP_BUILTINS()                \
+    do {                                        \
+        builtin_define ("__rtems__");                \
+        builtin_assert ("system=rtems");        \
     } while (0)
+
+/*
+ * The default in gcc now is soft-float, but gcc misses it to 
+ * pass it to the assembler.
+ */
+#undef SUBTARGET_EXTRA_ASM_SPEC
+#define SUBTARGET_EXTRA_ASM_SPEC "\
+  %{!mhard-float: %{!msoft-float:-mfpu=softfpa}}"
+
+/*
+ *  The default includes --start-group and --end-group which conflicts
+ *  with how this used to be defined.
+ */
+#undef LINK_GCC_C_SEQUENCE_SPEC
+#define LINK_GCC_C_SEQUENCE_SPEC "%G %L"

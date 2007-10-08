@@ -16,8 +16,8 @@
 
    You should have received a copy of the GNU General Public License
    along with GNU CC; see the file COPYING.  If not, write to
-   the Free Software Foundation, 59 Temple Place - Suite 330,
-   Boston, MA 02111-1307, USA.  */
+   the Free Software Foundation, 51 Franklin Street - Fifth Floor,
+   Boston, MA 02110-1301, USA.  */
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -34,20 +34,19 @@
 #include "libiberty.h"
 #include "partition.h"
 
-static int elem_compare PARAMS ((const void *, const void *));
+static int elem_compare (const void *, const void *);
 
 /* Creates a partition of NUM_ELEMENTS elements.  Initially each
    element is in a class by itself.  */
 
 partition
-partition_new (num_elements)
-     int num_elements;
+partition_new (int num_elements)
 {
   int e;
   
   partition part = (partition) 
     xmalloc (sizeof (struct partition_def) + 
-	     (num_elements - 1) * sizeof (struct partition_elem));
+             (num_elements - 1) * sizeof (struct partition_elem));
   part->num_elements = num_elements;
   for (e = 0; e < num_elements; ++e) 
     {
@@ -62,8 +61,7 @@ partition_new (num_elements)
 /* Freeds a partition.  */
 
 void
-partition_delete (part)
-      partition part;
+partition_delete (partition part)
 {
   free (part);
 }
@@ -74,10 +72,7 @@ partition_delete (part)
    resulting union class.  */
 
 int
-partition_union (part, elem1, elem2)
-     partition part;
-     int elem1;
-     int elem2;
+partition_union (partition part, int elem1, int elem2)
 {
   struct partition_elem *elements = part->elements;
   struct partition_elem *e1;
@@ -126,9 +121,7 @@ partition_union (part, elem1, elem2)
    pointer to each.  Used to qsort such an array.  */
 
 static int 
-elem_compare (elem1, elem2)
-     const void *elem1;
-     const void *elem2;
+elem_compare (const void *elem1, const void *elem2)
 {
   int e1 = * (const int *) elem1;
   int e2 = * (const int *) elem2;
@@ -144,9 +137,7 @@ elem_compare (elem1, elem2)
    class are sorted.  */
 
 void
-partition_print (part, fp)
-     partition part;
-     FILE *fp;
+partition_print (partition part, FILE *fp)
 {
   char *done;
   int num_elements = part->num_elements;
@@ -166,26 +157,27 @@ partition_print (part, fp)
     /* If we haven't printed this element, print its entire class.  */
     if (! done[e]) 
       {
-	int c = e;
-	int count = elements[elements[e].class_element].class_count;
-	int i;
+        int c = e;
+        int count = elements[elements[e].class_element].class_count;
+        int i;
 
       /* Collect the elements in this class.  */
-	for (i = 0; i < count; ++i) {
-	  class_elements[i] = c;
-	  done[c] = 1;
-	  c = elements[c].next - elements;
-	}
-	/* Sort them.  */
-	qsort ((void *) class_elements, count, sizeof (int), elem_compare);
-	/* Print them.  */
-	fputc ('(', fp);
-	for (i = 0; i < count; ++i) 
-	  fprintf (fp, i == 0 ? "%d" : " %d", class_elements[i]);
-	fputc (')', fp);
+        for (i = 0; i < count; ++i) {
+          class_elements[i] = c;
+          done[c] = 1;
+          c = elements[c].next - elements;
+        }
+        /* Sort them.  */
+        qsort ((void *) class_elements, count, sizeof (int), elem_compare);
+        /* Print them.  */
+        fputc ('(', fp);
+        for (i = 0; i < count; ++i) 
+          fprintf (fp, i == 0 ? "%d" : " %d", class_elements[i]);
+        fputc (')', fp);
       }
   fputc (']', fp);
 
+  free (class_elements);
   free (done);
 }
 

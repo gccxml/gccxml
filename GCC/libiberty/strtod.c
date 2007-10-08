@@ -14,7 +14,7 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with GNU CC; see the file COPYING.  If not, write to
-the Free Software Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+the Free Software Foundation, 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.
 
 As a special exception, if you link this library with files
 compiled with a GNU compiler to produce an executable, this does not cause
@@ -40,16 +40,14 @@ the location referenced by @var{endptr}.
 #include "ansidecl.h"
 #include "safe-ctype.h"
 
-extern double atof ();
+extern double atof (const char *);
 
 /* Disclaimer: this is currently just used by CHILL in GDB and therefore
    has not been tested well.  It may have been tested for nothing except
    that it compiles.  */
 
 double
-strtod (str, ptr)
-     char *str;
-     char **ptr;
+strtod (char *str, char **ptr)
 {
   char *p;
 
@@ -70,19 +68,19 @@ strtod (str, ptr)
       && (p[2] == 'f' || p[2] == 'F'))
     {
       if ((p[3] == 'i' || p[3] == 'I')
-	  && (p[4] == 'n' || p[4] == 'N')
-	  && (p[5] == 'i' || p[5] == 'I')
-	  && (p[6] == 't' || p[6] == 'T')
-	  && (p[7] == 'y' || p[7] == 'Y'))
-	{
-	  *ptr = p + 8;
-	  return atof (str);
-	}
+          && (p[4] == 'n' || p[4] == 'N')
+          && (p[5] == 'i' || p[5] == 'I')
+          && (p[6] == 't' || p[6] == 'T')
+          && (p[7] == 'y' || p[7] == 'Y'))
+        {
+          *ptr = p + 8;
+          return atof (str);
+        }
       else
-	{
-	  *ptr = p + 3;
-	  return atof (str);
-	}
+        {
+          *ptr = p + 3;
+          return atof (str);
+        }
     }
 
   /* NAN or NAN(foo).  */
@@ -92,13 +90,13 @@ strtod (str, ptr)
     {
       p += 3;
       if (*p == '(')
-	{
-	  ++p;
-	  while (*p != '\0' && *p != ')')
-	    ++p;
-	  if (*p == ')')
-	    ++p;
-	}
+        {
+          ++p;
+          while (*p != '\0' && *p != ')')
+            ++p;
+          if (*p == ')')
+            ++p;
+        }
       *ptr = p;
       return atof (str);
     }
@@ -108,27 +106,27 @@ strtod (str, ptr)
     {
       int got_dot = 0;
       while (ISDIGIT (*p) || (!got_dot && *p == '.'))
-	{
-	  if (*p == '.')
-	    got_dot = 1;
-	  ++p;
-	}
+        {
+          if (*p == '.')
+            got_dot = 1;
+          ++p;
+        }
 
       /* Exponent.  */
       if (*p == 'e' || *p == 'E')
-	{
-	  int i;
-	  i = 1;
-	  if (p[i] == '+' || p[i] == '-')
-	    ++i;
-	  if (ISDIGIT (p[i]))
-	    {
-	      while (ISDIGIT (p[i]))
-		++i;
-	      *ptr = p + i;
-	      return atof (str);
-	    }
-	}
+        {
+          int i;
+          i = 1;
+          if (p[i] == '+' || p[i] == '-')
+            ++i;
+          if (ISDIGIT (p[i]))
+            {
+              while (ISDIGIT (p[i]))
+                ++i;
+              *ptr = p + i;
+              return atof (str);
+            }
+        }
       *ptr = p;
       return atof (str);
     }

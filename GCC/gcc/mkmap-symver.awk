@@ -1,5 +1,5 @@
 # Generate an ELF symbol version map a-la Solaris and GNU ld.
-#	Contributed by Richard Henderson <rth@cygnus.com>
+#        Contributed by Richard Henderson <rth@cygnus.com>
 #
 # This file is part of GCC.
 #
@@ -15,12 +15,16 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with GCC; see the file COPYING.  If not, write to the Free
-# Software Foundation, 59 Temple Place - Suite 330, Boston MA
-# 02111-1307, USA.
+# Software Foundation, 51 Franklin Street, Fifth Floor, Boston MA
+# 02110-1301, USA.
 
 BEGIN {
   state = "nm";
   sawsymbol = 0;
+  if (leading_underscore)
+    prefix = "_";
+  else
+    prefix = "";
 }
 
 # Remove comment and blank lines.
@@ -56,6 +60,8 @@ state == "nm" {
 # for beginning and ending each section, and %inherit markers for
 # describing version inheritence.  A symbol may appear in more than
 # one symbol version, and the last seen takes effect.
+# The magic version name '%exclude' causes all the symbols given that
+# version to be dropped from the output (unless a later version overrides).
 
 NF == 3 && $1 == "%inherit" {
   inherit[$2] = $3;
@@ -63,7 +69,8 @@ NF == 3 && $1 == "%inherit" {
 }
 
 NF == 2 && $2 == "{" {
-  libs[$1] = 1;
+  if ($1 != "%exclude")
+    libs[$1] = 1;
   thislib = $1;
   next;
 }
@@ -74,7 +81,11 @@ $1 == "}" {
 }
 
 {
-  ver[$1] = thislib;
+  sym = prefix $1;
+  if (thislib != "%exclude")
+    ver[sym] = thislib;
+  else
+    delete ver[sym];
   next;
 }
 
@@ -99,22 +110,20 @@ function output(lib) {
   for (sym in ver)
     if ((ver[sym] == lib) && (sym in def))
       {
-	if (empty)
-	  {
-	    printf("%s {\n", lib);
-	    printf("  global:\n");
-	    empty = 0;
-	  }
-	printf("\t%s;\n", sym);
-	if (dotsyms)
-	  printf("\t.%s;\n", sym);
+        if (empty)
+          {
+            printf("%s {\n", lib);
+            printf("  global:\n");
+            empty = 0;
+          }
+        printf("\t%s;\n", sym);
       }
 
   if (empty)
     {
       for (l in libs)
-	if (inherit[l] == lib)
-	  inherit[l] = inherit[lib];
+        if (inherit[l] == lib)
+          inherit[l] = inherit[lib];
     }
   else if (inherit[lib])
     printf("} %s;\n", inherit[lib]);

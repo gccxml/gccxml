@@ -22,8 +22,8 @@
  * 
  * You should have received a copy of the GNU General Public License
  * along with this program; see the file COPYING.  If not, write to
- * the Free Software Foundation, 59 Temple Place - Suite 330,
- * Boston, MA 02111-1307, USA.
+ * the Free Software Foundation, 51 Franklin Street, Fifth Floor,
+ * Boston, MA 02110-1301, USA.
  * 
  *    As a special exception, if you link this library with files
  *    compiled with GCC to produce an executable, this does not cause
@@ -32,7 +32,7 @@
  *    the executable file might be covered by the GNU General Public License.
  */
 
-#define FPRS_NS		(1 << 22)	/* Non-Standard fpu results */
+#define FPRS_NS                (1 << 22)        /* Non-Standard fpu results */
 
 static void __attribute__((constructor))
 set_fast_math (void)
@@ -45,10 +45,10 @@ set_fast_math (void)
      that this runs.  */
 
   __asm__("st %%fsr, %0"
-	  : "=m" (fsr));
+          : "=m" (fsr));
 
   fsr |= FPRS_NS;
 
   __asm__("ld %0, %%fsr"
-	  : : "m" (fsr));
+          : : "m" (fsr));
 }

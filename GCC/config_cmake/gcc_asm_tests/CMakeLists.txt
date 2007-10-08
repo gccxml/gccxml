@@ -2,7 +2,7 @@ PROJECT(GAT C)
 
 SET(GAT_AS as)
 
-FOREACH(test weak)
+FOREACH(test weak weakref)
   ADD_CUSTOM_TARGET(test_${test} echo DEPENDS ${GAT_BINARY_DIR}/${test}.o)
   ADD_CUSTOM_COMMAND(OUTPUT ${GAT_BINARY_DIR}/${test}.o
     COMMAND ${GAT_AS}

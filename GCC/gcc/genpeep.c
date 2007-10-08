@@ -1,6 +1,6 @@
 /* Generate code from machine description to perform peephole optimizations.
    Copyright (C) 1987, 1989, 1992, 1997, 1998,
-   1999, 2000 Free Software Foundation, Inc.
+   1999, 2000, 2003, 2004 Free Software Foundation, Inc.
 
 This file is part of GCC.
 
@@ -16,12 +16,14 @@ for more details.
 
 You should have received a copy of the GNU General Public License
 along with GCC; see the file COPYING.  If not, write to the Free
-Software Foundation, 59 Temple Place - Suite 330, Boston, MA
-02111-1307, USA.  */
+Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
+02110-1301, USA.  */
 
 
-#include "hconfig.h"
+#include "bconfig.h"
 #include "system.h"
+#include "coretypes.h"
+#include "tm.h"
 #include "rtl.h"
 #include "errors.h"
 #include "gensupport.h"
@@ -51,14 +53,13 @@ static int n_operands;
 
 static int insn_code_number = 0;
 
-static void gen_peephole PARAMS ((rtx));
-static void match_rtx PARAMS ((rtx, struct link *, int));
-static void print_path PARAMS ((struct link *));
-static void print_code PARAMS ((RTX_CODE));
+static void gen_peephole (rtx);
+static void match_rtx (rtx, struct link *, int);
+static void print_path (struct link *);
+static void print_code (RTX_CODE);
 
 static void
-gen_peephole (peep)
-     rtx peep;
+gen_peephole (rtx peep)
 {
   int ninsns = XVECLEN (peep, 0);
   int i;
@@ -66,36 +67,28 @@ gen_peephole (peep)
   n_operands = 0;
 
   printf ("  insn = ins1;\n");
-#if 0
-  printf ("  want_jump = 0;\n");
-#endif
 
   for (i = 0; i < ninsns; i++)
     {
       if (i > 0)
-	{
-	  printf ("  do { insn = NEXT_INSN (insn);\n");
-	  printf ("       if (insn == 0) goto L%d; }\n",
-		  insn_code_number);
-	  printf ("  while (GET_CODE (insn) == NOTE\n");
-	  printf ("\t || (GET_CODE (insn) == INSN\n");
-	  printf ("\t     && (GET_CODE (PATTERN (insn)) == USE\n");
-	  printf ("\t\t || GET_CODE (PATTERN (insn)) == CLOBBER)));\n");
+        {
+          printf ("  do { insn = NEXT_INSN (insn);\n");
+          printf ("       if (insn == 0) goto L%d; }\n",
+                  insn_code_number);
+          printf ("  while (NOTE_P (insn)\n");
+          printf ("\t || (NONJUMP_INSN_P (insn)\n");
+          printf ("\t     && (GET_CODE (PATTERN (insn)) == USE\n");
+          printf ("\t\t || GET_CODE (PATTERN (insn)) == CLOBBER)));\n");
 
-	  printf ("  if (GET_CODE (insn) == CODE_LABEL\n\
-      || GET_CODE (insn) == BARRIER)\n    goto L%d;\n",
-  		  insn_code_number);
-	}
-
-#if 0
-      printf ("  if (GET_CODE (insn) == JUMP_INSN)\n");
-      printf ("    want_jump = JUMP_LABEL (insn);\n");
-#endif
+          printf ("  if (LABEL_P (insn)\n\
+      || BARRIER_P (insn))\n    goto L%d;\n",
+                  insn_code_number);
+        }
 
       printf ("  pat = PATTERN (insn);\n");
 
       /* Walk the insn's pattern, remembering at all times the path
-	 down to the walking point.  */
+         down to the walking point.  */
 
       match_rtx (XVECEXP (peep, 0, i), NULL, insn_code_number);
     }
@@ -105,7 +98,7 @@ gen_peephole (peep)
 
   if (XSTR (peep, 1) && XSTR (peep, 1)[0])
     printf ("  if (! (%s)) goto L%d;\n",
-	    XSTR (peep, 1), insn_code_number);
+            XSTR (peep, 1), insn_code_number);
 
   /* If that matches, construct new pattern and put it in the first insn.
      This new pattern will never be matched.
@@ -115,19 +108,10 @@ gen_peephole (peep)
 
   printf ("  PATTERN (ins1) = gen_rtx_PARALLEL (VOIDmode, gen_rtvec_v (%d, operands));\n", n_operands);
 
-#if 0
-  printf ("  if (want_jump && GET_CODE (ins1) != JUMP_INSN)\n");
-  printf ("    {\n");
-  printf ("      rtx insn2 = emit_jump_insn_before (PATTERN (ins1), ins1);\n");
-  printf ("      delete_related_insns (ins1);\n");
-  printf ("      ins1 = ins2;\n");
-  printf ("    }\n");
-#endif
-
   /* Record this define_peephole's insn code in the insn,
      as if it had been recognized to match this.  */
   printf ("  INSN_CODE (ins1) = %d;\n",
-	  insn_code_number);
+          insn_code_number);
 
   /* Delete the remaining insns.  */
   if (ninsns > 1)
@@ -141,10 +125,7 @@ gen_peephole (peep)
 }
 
 static void
-match_rtx (x, path, fail_label)
-     rtx x;
-     struct link *path;
-     int fail_label;
+match_rtx (rtx x, struct link *path, int fail_label)
 {
   RTX_CODE code;
   int i;
@@ -162,9 +143,9 @@ match_rtx (x, path, fail_label)
     {
     case MATCH_OPERAND:
       if (XINT (x, 0) > max_opno)
-	max_opno = XINT (x, 0);
+        max_opno = XINT (x, 0);
       if (XINT (x, 0) >= n_operands)
-	n_operands = 1 + XINT (x, 0);
+        n_operands = 1 + XINT (x, 0);
 
       printf ("  x = ");
       print_path (path);
@@ -172,8 +153,8 @@ match_rtx (x, path, fail_label)
 
       printf ("  operands[%d] = x;\n", XINT (x, 0));
       if (XSTR (x, 1) && XSTR (x, 1)[0])
-	printf ("  if (! %s (x, %smode)) goto L%d;\n",
-		XSTR (x, 1), GET_MODE_NAME (GET_MODE (x)), fail_label);
+        printf ("  if (! %s (x, %smode)) goto L%d;\n",
+                XSTR (x, 1), GET_MODE_NAME (GET_MODE (x)), fail_label);
       return;
 
     case MATCH_DUP:
@@ -183,7 +164,7 @@ match_rtx (x, path, fail_label)
       printf (";\n");
 
       printf ("  if (!rtx_equal_p (operands[%d], x)) goto L%d;\n",
-	      XINT (x, 0), fail_label);
+              XINT (x, 0), fail_label);
       return;
 
     case MATCH_OP_DUP:
@@ -193,22 +174,22 @@ match_rtx (x, path, fail_label)
 
       printf ("  if (GET_CODE (operands[%d]) != GET_CODE (x)\n", XINT (x, 0));
       printf ("      || GET_MODE (operands[%d]) != GET_MODE (x)) goto L%d;\n",
-	      XINT (x, 0), fail_label);
+              XINT (x, 0), fail_label);
       printf ("  operands[%d] = x;\n", XINT (x, 0));
       link.next = path;
       link.vecelt = -1;
       for (i = 0; i < XVECLEN (x, 1); i++)
-	{
-	  link.pos = i;
-	  match_rtx (XVECEXP (x, 1, i), &link, fail_label);
-	}
+        {
+          link.pos = i;
+          match_rtx (XVECEXP (x, 1, i), &link, fail_label);
+        }
       return;
 
     case MATCH_OPERATOR:
       if (XINT (x, 0) > max_opno)
-	max_opno = XINT (x, 0);
+        max_opno = XINT (x, 0);
       if (XINT (x, 0) >= n_operands)
-	n_operands = 1 + XINT (x, 0);
+        n_operands = 1 + XINT (x, 0);
 
       printf ("  x = ");
       print_path (path);
@@ -216,22 +197,22 @@ match_rtx (x, path, fail_label)
 
       printf ("  operands[%d] = x;\n", XINT (x, 0));
       if (XSTR (x, 1) && XSTR (x, 1)[0])
-	printf ("  if (! %s (x, %smode)) goto L%d;\n",
-		XSTR (x, 1), GET_MODE_NAME (GET_MODE (x)), fail_label);
+        printf ("  if (! %s (x, %smode)) goto L%d;\n",
+                XSTR (x, 1), GET_MODE_NAME (GET_MODE (x)), fail_label);
       link.next = path;
       link.vecelt = -1;
       for (i = 0; i < XVECLEN (x, 2); i++)
-	{
-	  link.pos = i;
-	  match_rtx (XVECEXP (x, 2, i), &link, fail_label);
-	}
+        {
+          link.pos = i;
+          match_rtx (XVECEXP (x, 2, i), &link, fail_label);
+        }
       return;
 
     case MATCH_PARALLEL:
       if (XINT (x, 0) > max_opno)
-	max_opno = XINT (x, 0);
+        max_opno = XINT (x, 0);
       if (XINT (x, 0) >= n_operands)
-	n_operands = 1 + XINT (x, 0);
+        n_operands = 1 + XINT (x, 0);
 
       printf ("  x = ");
       print_path (path);
@@ -240,21 +221,21 @@ match_rtx (x, path, fail_label)
       printf ("  if (GET_CODE (x) != PARALLEL) goto L%d;\n", fail_label);
       printf ("  operands[%d] = x;\n", XINT (x, 0));
       if (XSTR (x, 1) && XSTR (x, 1)[0])
-	printf ("  if (! %s (x, %smode)) goto L%d;\n",
-		XSTR (x, 1), GET_MODE_NAME (GET_MODE (x)), fail_label);
+        printf ("  if (! %s (x, %smode)) goto L%d;\n",
+                XSTR (x, 1), GET_MODE_NAME (GET_MODE (x)), fail_label);
       link.next = path;
       link.pos = 0;
       for (i = 0; i < XVECLEN (x, 2); i++)
-	{
-	  link.vecelt = i;
-	  match_rtx (XVECEXP (x, 2, i), &link, fail_label);
-	}
+        {
+          link.vecelt = i;
+          match_rtx (XVECEXP (x, 2, i), &link, fail_label);
+        }
       return;
 
     case ADDRESS:
       match_rtx (XEXP (x, 0), path, fail_label);
       return;
-      
+
     default:
       break;
     }
@@ -270,7 +251,7 @@ match_rtx (x, path, fail_label)
   if (GET_MODE (x) != VOIDmode)
     {
       printf ("  if (GET_MODE (x) != %smode) goto L%d;\n",
-	      GET_MODE_NAME (GET_MODE (x)), fail_label);
+              GET_MODE_NAME (GET_MODE (x)), fail_label);
     }
 
   link.next = path;
@@ -281,58 +262,58 @@ match_rtx (x, path, fail_label)
     {
       link.pos = i;
       if (fmt[i] == 'e' || fmt[i] == 'u')
-	match_rtx (XEXP (x, i), &link, fail_label);
+        match_rtx (XEXP (x, i), &link, fail_label);
       else if (fmt[i] == 'E')
-	{
-	  int j;
-	  printf ("  if (XVECLEN (x, %d) != %d) goto L%d;\n",
-		  i, XVECLEN (x, i), fail_label);
-	  for (j = 0; j < XVECLEN (x, i); j++)
-	    {
-	      link.vecelt = j;
-	      match_rtx (XVECEXP (x, i, j), &link, fail_label);
-	    }
-	}
+        {
+          int j;
+          printf ("  if (XVECLEN (x, %d) != %d) goto L%d;\n",
+                  i, XVECLEN (x, i), fail_label);
+          for (j = 0; j < XVECLEN (x, i); j++)
+            {
+              link.vecelt = j;
+              match_rtx (XVECEXP (x, i, j), &link, fail_label);
+            }
+        }
       else if (fmt[i] == 'i')
-	{
-	  /* Make sure that at run time `x' is the RTX we want to test.  */
-	  if (i != 0)
-	    {
-	      printf ("  x = ");
-	      print_path (path);
-	      printf (";\n");
-	    }
+        {
+          /* Make sure that at run time `x' is the RTX we want to test.  */
+          if (i != 0)
+            {
+              printf ("  x = ");
+              print_path (path);
+              printf (";\n");
+            }
 
-	  printf ("  if (XINT (x, %d) != %d) goto L%d;\n",
-		  i, XINT (x, i), fail_label);
-	}
+          printf ("  if (XINT (x, %d) != %d) goto L%d;\n",
+                  i, XINT (x, i), fail_label);
+        }
       else if (fmt[i] == 'w')
-	{
-	  /* Make sure that at run time `x' is the RTX we want to test.  */
-	  if (i != 0)
-	    {
-	      printf ("  x = ");
-	      print_path (path);
-	      printf (";\n");
-	    }
+        {
+          /* Make sure that at run time `x' is the RTX we want to test.  */
+          if (i != 0)
+            {
+              printf ("  x = ");
+              print_path (path);
+              printf (";\n");
+            }
 
-	  printf ("  if (XWINT (x, %d) != ", i);
-	  printf (HOST_WIDE_INT_PRINT_DEC, XWINT (x, i));
-	  printf (") goto L%d;\n", fail_label);
-	}
+          printf ("  if (XWINT (x, %d) != ", i);
+          printf (HOST_WIDE_INT_PRINT_DEC, XWINT (x, i));
+          printf (") goto L%d;\n", fail_label);
+        }
       else if (fmt[i] == 's')
-	{
-	  /* Make sure that at run time `x' is the RTX we want to test.  */
-	  if (i != 0)
-	    {
-	      printf ("  x = ");
-	      print_path (path);
-	      printf (";\n");
-	    }
+        {
+          /* Make sure that at run time `x' is the RTX we want to test.  */
+          if (i != 0)
+            {
+              printf ("  x = ");
+              print_path (path);
+              printf (";\n");
+            }
 
-	  printf ("  if (strcmp (XSTR (x, %d), \"%s\")) goto L%d;\n",
-		  i, XSTR (x, i), fail_label);
-	}
+          printf ("  if (strcmp (XSTR (x, %d), \"%s\")) goto L%d;\n",
+                  i, XSTR (x, i), fail_label);
+        }
     }
 }
 
@@ -341,8 +322,7 @@ match_rtx (x, path, fail_label)
    evaluate to the rtx at that point.  */
 
 static void
-print_path (path)
-     struct link *path;
+print_path (struct link *path)
 {
   if (path == 0)
     printf ("pat");
@@ -361,29 +341,27 @@ print_path (path)
 }
 
 static void
-print_code (code)
-     RTX_CODE code;
+print_code (RTX_CODE code)
 {
   const char *p1;
   for (p1 = GET_RTX_NAME (code); *p1; p1++)
     putchar (TOUPPER(*p1));
 }
 
-extern int main PARAMS ((int, char **));
+extern int main (int, char **);
 
 int
-main (argc, argv)
-     int argc;
-     char **argv;
+main (int argc, char **argv)
 {
   rtx desc;
+
+/* BEGIN GCC-XML MODIFICATIONS (2007/10/08 15:34:29) */
+  gccxml_fix_printf();
+/* END GCC-XML MODIFICATIONS (2007/10/08 15:34:29) */
 
   max_opno = -1;
 
   progname = "genpeep";
-
-  if (argc <= 1)
-    fatal ("no input file name");
 
   if (init_md_reader_args (argc, argv) != SUCCESS_EXIT_CODE)
     return (FATAL_EXIT_CODE);
@@ -393,6 +371,8 @@ from the machine description file `md'.  */\n\n");
 
   printf ("#include \"config.h\"\n");
   printf ("#include \"system.h\"\n");
+  printf ("#include \"coretypes.h\"\n");
+  printf ("#include \"tm.h\"\n");
   printf ("#include \"insn-config.h\"\n");
   printf ("#include \"rtl.h\"\n");
   printf ("#include \"tm_p.h\"\n");
@@ -400,19 +380,22 @@ from the machine description file `md'.  */\n\n");
   printf ("#include \"output.h\"\n");
   printf ("#include \"real.h\"\n");
   printf ("#include \"recog.h\"\n");
-  printf ("#include \"except.h\"\n\n");
-  printf ("#include \"function.h\"\n\n");
+  printf ("#include \"except.h\"\n");
+  printf ("#include \"function.h\"\n");
+  printf ("#include \"toplev.h\"\n");
+  printf ("#include \"flags.h\"\n");
+  printf ("#include \"tm-constrs.h\"\n\n");
 
   printf ("#ifdef HAVE_peephole\n");
   printf ("extern rtx peep_operand[];\n\n");
   printf ("#define operands peep_operand\n\n");
 
-  printf ("rtx\npeephole (ins1)\n     rtx ins1;\n{\n");
+  printf ("rtx\npeephole (rtx ins1)\n{\n");
   printf ("  rtx insn ATTRIBUTE_UNUSED, x ATTRIBUTE_UNUSED, pat ATTRIBUTE_UNUSED;\n\n");
 
   /* Early out: no peepholes for insns followed by barriers.  */
   printf ("  if (NEXT_INSN (ins1)\n");
-  printf ("      && GET_CODE (NEXT_INSN (ins1)) == BARRIER)\n");
+  printf ("      && BARRIER_P (NEXT_INSN (ins1)))\n");
   printf ("    return 0;\n\n");
 
   /* Read the machine description.  */
@@ -423,20 +406,20 @@ from the machine description file `md'.  */\n\n");
 
       desc = read_md_rtx (&line_no, &rtx_number);
       if (desc == NULL)
-	break;
+        break;
 
        if (GET_CODE (desc) == DEFINE_PEEPHOLE)
-	{
-	  gen_peephole (desc);
-	  insn_code_number++;
-	}
+        {
+          gen_peephole (desc);
+          insn_code_number++;
+        }
       if (GET_CODE (desc) == DEFINE_INSN
-	  || GET_CODE (desc) == DEFINE_EXPAND
-	  || GET_CODE (desc) == DEFINE_SPLIT
-	  || GET_CODE (desc) == DEFINE_PEEPHOLE2)
-	{
-	  insn_code_number++;
-	}
+          || GET_CODE (desc) == DEFINE_EXPAND
+          || GET_CODE (desc) == DEFINE_SPLIT
+          || GET_CODE (desc) == DEFINE_PEEPHOLE2)
+        {
+          insn_code_number++;
+        }
     }
 
   printf ("  return 0;\n}\n\n");
@@ -449,12 +432,4 @@ from the machine description file `md'.  */\n\n");
 
   fflush (stdout);
   return (ferror (stdout) != 0 ? FATAL_EXIT_CODE : SUCCESS_EXIT_CODE);
-}
-
-/* Define this so we can link with print-rtl.o to get debug_rtx function.  */
-const char *
-get_insn_name (code)
-     int code ATTRIBUTE_UNUSED;
-{
-  return NULL;
 }

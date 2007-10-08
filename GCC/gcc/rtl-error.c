@@ -1,5 +1,5 @@
-/* RTL specific diagnostic subroutines for the GNU C compiler
-   Copyright (C) 2001, 2002 Free Software Foundation, Inc.
+/* RTL specific diagnostic subroutines for GCC
+   Copyright (C) 2001, 2002, 2003, 2004 Free Software Foundation, Inc.
    Contributed by Gabriel Dos Reis <gdr@codesourcery.com>
 
 This file is part of GCC.
@@ -16,13 +16,15 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with GCC; see the file COPYING.  If not, write to
-the Free Software Foundation, 59 Temple Place - Suite 330,
-Boston, MA 02111-1307, USA.  */
+the Free Software Foundation, 51 Franklin Street, Fifth Floor,
+Boston, MA 02110-1301, USA.  */
 
 #include "config.h"
 #undef FLOAT /* This is for hpux. They should change hpux.  */
 #undef FFS  /* Some systems define this in param.h.  */
 #include "system.h"
+#include "coretypes.h"
+#include "tm.h"
 #include "rtl.h"
 #include "insn-attr.h"
 #include "insn-config.h"
@@ -31,19 +33,16 @@ Boston, MA 02111-1307, USA.  */
 #include "intl.h"
 #include "diagnostic.h"
 
-static void file_and_line_for_asm PARAMS ((rtx, const char **, int *));
-static void diagnostic_for_asm PARAMS ((rtx, const char *, va_list *,
-                                        diagnostic_t));
+static location_t location_for_asm (rtx);
+static void diagnostic_for_asm (rtx, const char *, va_list *, diagnostic_t) ATTRIBUTE_GCC_DIAG(2,0);
 
-/* Figure file and line of the given INSN.  */
-static void
-file_and_line_for_asm (insn, pfile, pline)
-     rtx insn;
-     const char **pfile;
-     int *pline;
+/* Figure the location of the given INSN.  */
+static location_t
+location_for_asm (rtx insn)
 {
   rtx body = PATTERN (insn);
   rtx asmop;
+  location_t loc;
 
   /* Find the (or one of the) ASM_OPERANDS in the insn.  */
   if (GET_CODE (body) == SET && GET_CODE (SET_SRC (body)) == ASM_OPERANDS)
@@ -51,73 +50,65 @@ file_and_line_for_asm (insn, pfile, pline)
   else if (GET_CODE (body) == ASM_OPERANDS)
     asmop = body;
   else if (GET_CODE (body) == PARALLEL
-	   && GET_CODE (XVECEXP (body, 0, 0)) == SET)
+           && GET_CODE (XVECEXP (body, 0, 0)) == SET)
     asmop = SET_SRC (XVECEXP (body, 0, 0));
   else if (GET_CODE (body) == PARALLEL
-	   && GET_CODE (XVECEXP (body, 0, 0)) == ASM_OPERANDS)
+           && GET_CODE (XVECEXP (body, 0, 0)) == ASM_OPERANDS)
     asmop = XVECEXP (body, 0, 0);
   else
     asmop = NULL;
 
   if (asmop)
+#ifdef USE_MAPPED_LOCATION
+    loc = ASM_OPERANDS_SOURCE_LOCATION (asmop);
+#else
     {
-      *pfile = ASM_OPERANDS_SOURCE_FILE (asmop);
-      *pline = ASM_OPERANDS_SOURCE_LINE (asmop);
+      loc.file = ASM_OPERANDS_SOURCE_FILE (asmop);
+      loc.line = ASM_OPERANDS_SOURCE_LINE (asmop);
     }
+#endif
   else
-    {
-      *pfile = input_filename;
-      *pline = lineno;
-    }
+    loc = input_location;
+  return loc;
 }
 
 /* Report a diagnostic MESSAGE (an errror or a WARNING) at the line number
    of the insn INSN.  This is used only when INSN is an `asm' with operands,
    and each ASM_OPERANDS records its own source file and line.  */
 static void
-diagnostic_for_asm (insn, msg, args_ptr, kind)
-     rtx insn;
-     const char *msg;
-     va_list *args_ptr;
-     diagnostic_t kind;
+diagnostic_for_asm (rtx insn, const char *msg, va_list *args_ptr,
+                    diagnostic_t kind)
 {
   diagnostic_info diagnostic;
 
-  diagnostic_set_info (&diagnostic, msg, args_ptr, NULL, 0, kind);
-  file_and_line_for_asm (insn, &diagnostic.location.file,
-                         &diagnostic.location.line);
+  diagnostic_set_info (&diagnostic, msg, args_ptr,
+                       location_for_asm (insn), kind);
   report_diagnostic (&diagnostic);
 }
 
 void
-error_for_asm VPARAMS ((rtx insn, const char *msgid, ...))
+error_for_asm (rtx insn, const char *gmsgid, ...)
 {
-  VA_OPEN (ap, msgid);
-  VA_FIXEDARG (ap, rtx, insn);
-  VA_FIXEDARG (ap, const char *, msgid);
+  va_list ap;
 
-  diagnostic_for_asm (insn, msgid, &ap, DK_ERROR);
-  VA_CLOSE (ap);
+  va_start (ap, gmsgid);
+  diagnostic_for_asm (insn, gmsgid, &ap, DK_ERROR);
+  va_end (ap);
 }
 
 void
-warning_for_asm VPARAMS ((rtx insn, const char *msgid, ...))
+warning_for_asm (rtx insn, const char *gmsgid, ...)
 {
-  VA_OPEN (ap, msgid);
-  VA_FIXEDARG (ap, rtx, insn);
-  VA_FIXEDARG (ap, const char *, msgid);
+  va_list ap;
 
-  diagnostic_for_asm (insn, msgid, &ap, DK_WARNING);
-  VA_CLOSE (ap);
+  va_start (ap, gmsgid);
+  diagnostic_for_asm (insn, gmsgid, &ap, DK_WARNING);
+  va_end (ap);
 }
 
 void
-_fatal_insn (msgid, insn, file, line, function)
-     const char *msgid;
-     rtx insn;
-     const char *file;
-     int line;
-     const char *function;
+_fatal_insn (const char *msgid, rtx insn, const char *file, int line,
+             const char *function)
 {
   error ("%s", _(msgid));
 
@@ -130,16 +121,12 @@ _fatal_insn (msgid, insn, file, line, function)
 }
 
 void
-_fatal_insn_not_found (insn, file, line, function)
-     rtx insn;
-     const char *file;
-     int line;
-     const char *function;
+_fatal_insn_not_found (rtx insn, const char *file, int line,
+                       const char *function)
 {
   if (INSN_CODE (insn) < 0)
     _fatal_insn ("unrecognizable insn:", insn, file, line, function);
   else
     _fatal_insn ("insn does not satisfy its constraints:",
-		insn, file, line, function);
+                insn, file, line, function);
 }
-

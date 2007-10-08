@@ -1,543 +1,1408 @@
-/* config.in.  Generated automatically from configure.in by autoheader.  */
+/* config.in.  Generated from configure.ac by autoheader.  */
 
-/* Define to the type of elements in the array set by `getgroups'.
-   Usually this is either `int' or `gid_t'.  */
-#cmakedefine GETGROUPS_T @GETGROUPS_T@
+/* Define as the number of bits in a byte, if \`limits.h' doesn't. */
+#ifndef USED_FOR_TARGET
+#cmakedefine CHAR_BIT
+#endif
 
-/* Define to `int' if <sys/types.h> doesn't define.  */
-#cmakedefine gid_t @gid_t@
-
-/* Define if you have <sys/wait.h> that is POSIX.1 compatible.  */
-#cmakedefine HAVE_SYS_WAIT_H @HAVE_SYS_WAIT_H@
-
-/* Define if you have <vfork.h>.  */
-#cmakedefine HAVE_VFORK_H @HAVE_VFORK_H@
-
-/* Define as __inline if that's what the C compiler calls it.  */
-#cmakedefine inline @inline@
-
-/* Define if your C compiler doesn't accept -c and -o together.  */
-#cmakedefine NO_MINUS_C_MINUS_O @NO_MINUS_C_MINUS_O@
-
-/* Define to `int' if <sys/types.h> doesn't define.  */
-#cmakedefine pid_t @pid_t@
-
-/* Define if you have the ANSI C header files.  */
-#cmakedefine STDC_HEADERS @STDC_HEADERS@
-
-/* Define if you can safely include both <sys/time.h> and <time.h>.  */
-#cmakedefine TIME_WITH_SYS_TIME @TIME_WITH_SYS_TIME@
-
-/* Define to `int' if <sys/types.h> doesn't define.  */
-#cmakedefine uid_t @uid_t@
-
-/* Define vfork as fork if vfork does not work.  */
-#cmakedefine vfork @vfork@
-
-/* Define if you have the alphasort function.  */
-#cmakedefine HAVE_ALPHASORT @HAVE_ALPHASORT@
-
-/* Define if you have the atoll function.  */
-#cmakedefine HAVE_ATOLL @HAVE_ATOLL@
-
-/* Define if you have the atoq function.  */
-#cmakedefine HAVE_ATOQ @HAVE_ATOQ@
-
-/* Define if you have the clock function.  */
-#cmakedefine HAVE_CLOCK @HAVE_CLOCK@
-
-/* Define if you have the dup2 function.  */
-#cmakedefine HAVE_DUP2 @HAVE_DUP2@
-
-/* Define if you have the fprintf_unlocked function.  */
-#cmakedefine HAVE_FPRINTF_UNLOCKED @HAVE_FPRINTF_UNLOCKED@
-
-/* Define if you have the fputc_unlocked function.  */
-#cmakedefine HAVE_FPUTC_UNLOCKED @HAVE_FPUTC_UNLOCKED@
-
-/* Define if you have the fputs_unlocked function.  */
-#cmakedefine HAVE_FPUTS_UNLOCKED @HAVE_FPUTS_UNLOCKED@
-
-/* Define if you have the fwrite_unlocked function.  */
-#cmakedefine HAVE_FWRITE_UNLOCKED @HAVE_FWRITE_UNLOCKED@
-
-/* Define if you have the getrlimit function.  */
-#cmakedefine HAVE_GETRLIMIT @HAVE_GETRLIMIT@
-
-/* Define if you have the getrusage function.  */
-#cmakedefine HAVE_GETRUSAGE @HAVE_GETRUSAGE@
-
-/* Define if you have the gettimeofday function.  */
-#cmakedefine HAVE_GETTIMEOFDAY @HAVE_GETTIMEOFDAY@
-
-/* Define if you have the kill function.  */
-#cmakedefine HAVE_KILL @HAVE_KILL@
-
-/* Define if you have the mbstowcs function.  */
-#cmakedefine HAVE_MBSTOWCS @HAVE_MBSTOWCS@
-
-/* Define if you have the mincore function.  */
-#cmakedefine HAVE_MINCORE @HAVE_MINCORE@
-
-/* Define if you have the mmap function.  */
-#cmakedefine HAVE_MMAP @HAVE_MMAP@
-
-/* Define if you have the nl_langinfo function.  */
-#cmakedefine HAVE_NL_LANGINFO @HAVE_NL_LANGINFO@
-
-/* Define if you have the putc_unlocked function.  */
-#cmakedefine HAVE_PUTC_UNLOCKED @HAVE_PUTC_UNLOCKED@
-
-/* Define if you have the scandir function.  */
-#cmakedefine HAVE_SCANDIR @HAVE_SCANDIR@
-
-/* Define if you have the setlocale function.  */
-#cmakedefine HAVE_SETLOCALE @HAVE_SETLOCALE@
-
-/* Define if you have the setrlimit function.  */
-#cmakedefine HAVE_SETRLIMIT @HAVE_SETRLIMIT@
-
-/* Define if you have the strsignal function.  */
-#cmakedefine HAVE_STRSIGNAL @HAVE_STRSIGNAL@
-
-/* Define if you have the sysconf function.  */
-#cmakedefine HAVE_SYSCONF @HAVE_SYSCONF@
-
-/* Define if you have the times function.  */
-#cmakedefine HAVE_TIMES @HAVE_TIMES@
-
-/* Define if you have the wcswidth function.  */
-#cmakedefine HAVE_WCSWIDTH @HAVE_WCSWIDTH@
-
-/* Define if you have the <direct.h> header file.  */
-#cmakedefine HAVE_DIRECT_H @HAVE_DIRECT_H@
-
-/* Define if you have the <fcntl.h> header file.  */
-#cmakedefine HAVE_FCNTL_H @HAVE_FCNTL_H@
-
-/* Define if you have the <langinfo.h> header file.  */
-#cmakedefine HAVE_LANGINFO_H @HAVE_LANGINFO_H@
-
-/* Define if you have the <ldfcn.h> header file.  */
-#cmakedefine HAVE_LDFCN_H @HAVE_LDFCN_H@
-
-/* Define if you have the <limits.h> header file.  */
-#cmakedefine HAVE_LIMITS_H @HAVE_LIMITS_H@
-
-/* Define if you have the <locale.h> header file.  */
-#cmakedefine HAVE_LOCALE_H @HAVE_LOCALE_H@
-
-/* Define if you have the <malloc.h> header file.  */
-#cmakedefine HAVE_MALLOC_H @HAVE_MALLOC_H@
-
-/* Define if you have the <stddef.h> header file.  */
-#cmakedefine HAVE_STDDEF_H @HAVE_STDDEF_H@
-
-/* Define if you have the <stdlib.h> header file.  */
-#cmakedefine HAVE_STDLIB_H @HAVE_STDLIB_H@
-
-/* Define if you have the <string.h> header file.  */
-#cmakedefine HAVE_STRING_H @HAVE_STRING_H@
-
-/* Define if you have the <strings.h> header file.  */
-#cmakedefine HAVE_STRINGS_H @HAVE_STRINGS_H@
-
-/* Define if you have the <sys/file.h> header file.  */
-#cmakedefine HAVE_SYS_FILE_H @HAVE_SYS_FILE_H@
-
-/* Define if you have the <sys/mman.h> header file.  */
-#cmakedefine HAVE_SYS_MMAN_H @HAVE_SYS_MMAN_H@
-
-/* Define if you have the <sys/param.h> header file.  */
-#cmakedefine HAVE_SYS_PARAM_H @HAVE_SYS_PARAM_H@
-
-/* Define if you have the <sys/resource.h> header file.  */
-#cmakedefine HAVE_SYS_RESOURCE_H @HAVE_SYS_RESOURCE_H@
-
-/* Define if you have the <sys/stat.h> header file.  */
-#cmakedefine HAVE_SYS_STAT_H @HAVE_SYS_STAT_H@
-
-/* Define if you have the <sys/time.h> header file.  */
-#cmakedefine HAVE_SYS_TIME_H @HAVE_SYS_TIME_H@
-
-/* Define if you have the <sys/times.h> header file.  */
-#cmakedefine HAVE_SYS_TIMES_H @HAVE_SYS_TIMES_H@
-
-/* Define if you have the <time.h> header file.  */
-#cmakedefine HAVE_TIME_H @HAVE_TIME_H@
-
-/* Define if you have the <unistd.h> header file.  */
-#cmakedefine HAVE_UNISTD_H @HAVE_UNISTD_H@
-
-/* Define if you have the <wchar.h> header file.  */
-#cmakedefine HAVE_WCHAR_H @HAVE_WCHAR_H@
-
-/* Define to enable the use of a default linker. */
-#cmakedefine DEFAULT_LINKER @DEFAULT_LINKER@
-
-/* Define to enable the use of a default assembler. */
-#cmakedefine DEFAULT_ASSEMBLER @DEFAULT_ASSEMBLER@
-
-/* Define if your compiler supports the `long long' type. */
-#cmakedefine HAVE_LONG_LONG @HAVE_LONG_LONG@
-
-/* Define if your compiler supports the `__int64' type. */
-#cmakedefine HAVE___INT64 @HAVE___INT64@
-
-/* Define if the `_Bool' type is built-in. */
-#cmakedefine HAVE__BOOL @HAVE__BOOL@
-
-/* The number of bytes in type void * */
-#cmakedefine SIZEOF_VOID_P @SIZEOF_VOID_P@
-
-/* The number of bytes in type short */
-#cmakedefine SIZEOF_SHORT @SIZEOF_SHORT@
-
-/* The number of bytes in type int */
-#cmakedefine SIZEOF_INT @SIZEOF_INT@
-
-/* The number of bytes in type long */
-#cmakedefine SIZEOF_LONG @SIZEOF_LONG@
-
-/* The number of bytes in type long long */
-#cmakedefine SIZEOF_LONG_LONG @SIZEOF_LONG_LONG@
-
-/* The number of bytes in type __int64 */
-#cmakedefine SIZEOF___INT64 @SIZEOF___INT64@
-
-/* Define if you want more run-time sanity checks.  This one gets a grab
-   bag of miscellaneous but relatively cheap checks. */
-#cmakedefine ENABLE_CHECKING @ENABLE_CHECKING@
-
-/* Define if you want all operations on trees (the basic data
-   structure of the front ends) to be checked for dynamic type safety
-   at runtime.  This is moderately expensive. */
-#cmakedefine ENABLE_TREE_CHECKING @ENABLE_TREE_CHECKING@
-
-/* Define if you want all operations on RTL (the basic data structure
-   of the optimizer and back end) to be checked for dynamic type safety
-   at runtime.  This is quite expensive. */
-#cmakedefine ENABLE_RTL_CHECKING @ENABLE_RTL_CHECKING@
-
-/* Define if you want RTL flag accesses to be checked against the RTL
-   codes that are supported for each access macro.  This is relatively
-   cheap. */
-#cmakedefine ENABLE_RTL_FLAG_CHECKING @ENABLE_RTL_FLAG_CHECKING@
-
-/* Define if you want the garbage collector to do object poisoning and
-   other memory allocation checks.  This is quite expensive. */
-#cmakedefine ENABLE_GC_CHECKING @ENABLE_GC_CHECKING@
-
-/* Define if you want the garbage collector to operate in maximally
-   paranoid mode, validating the entire heap and collecting garbage at
-   every opportunity.  This is extremely expensive. */
-#cmakedefine ENABLE_GC_ALWAYS_COLLECT @ENABLE_GC_ALWAYS_COLLECT@
-
-/* Define if you want fold checked that it never destructs its argument.
-   This is quite expensive. */
-#cmakedefine ENABLE_FOLD_CHECKING @ENABLE_FOLD_CHECKING@
-
-/* Define if you want to run subprograms and generated programs
-   through valgrind (a memory checker).  This is extremely expensive. */
-#cmakedefine ENABLE_VALGRIND_CHECKING @ENABLE_VALGRIND_CHECKING@
-
-/* Define if valgrind's memcheck.h header is installed. */
-#cmakedefine HAVE_MEMCHECK_H @HAVE_MEMCHECK_H@
-
-/* Always define this when using the GNU C Library */
-#cmakedefine _GNU_SOURCE @_GNU_SOURCE@
-
-/* Define if you have a working <stdbool.h> header file. */
-#cmakedefine HAVE_STDBOOL_H @HAVE_STDBOOL_H@
-
-/* Define if you can safely include both <string.h> and <strings.h>. */
-#cmakedefine STRING_WITH_STRINGS @STRING_WITH_STRINGS@
-
-/* Define as the number of bits in a byte, if `limits.h' doesn't. */
-#cmakedefine CHAR_BIT @CHAR_BIT@
-
-/* whether byteorder is bigendian */
-#cmakedefine WORDS_BIGENDIAN @WORDS_BIGENDIAN@
-
-/* Define if the host machine stores words of multi-word integers in
-   big-endian order. */
-#cmakedefine HOST_WORDS_BIG_ENDIAN @HOST_WORDS_BIG_ENDIAN@
-
-/* 1234 = LIL_ENDIAN, 4321 = BIGENDIAN */
-#cmakedefine BYTEORDER @BYTEORDER@
-
-/* Define if you have a working <inttypes.h> header file. */
-#cmakedefine HAVE_INTTYPES_H @HAVE_INTTYPES_H@
-
-/* Define this macro if mbstowcs does not crash when its
-   first argument is NULL. */
-#cmakedefine HAVE_WORKING_MBSTOWCS @HAVE_WORKING_MBSTOWCS@
-
-/* Define as `int' if <sys/types.h> doesn't define. */
-#cmakedefine ssize_t @ssize_t@
-
-/* Define if printf supports %p. */
-#cmakedefine HAVE_PRINTF_PTR @HAVE_PRINTF_PTR@
-
-/* Define if read-only mmap of a plain file works. */
-#cmakedefine HAVE_MMAP_FILE @HAVE_MMAP_FILE@
-
-/* Define if mmap of /dev/zero works. */
-#cmakedefine HAVE_MMAP_DEV_ZERO @HAVE_MMAP_DEV_ZERO@
-
-/* Define if mmap with MAP_ANON(YMOUS) works. */
-#cmakedefine HAVE_MMAP_ANON @HAVE_MMAP_ANON@
-
-/* Define if you have the iconv() function. */
-#cmakedefine HAVE_ICONV @HAVE_ICONV@
-
-/* Define as const if the declaration of iconv() needs const. */
-#cmakedefine ICONV_CONST
-
-/* Define if your <locale.h> file defines LC_MESSAGES. */
-#cmakedefine HAVE_LC_MESSAGES @HAVE_LC_MESSAGES@
-
-/* Define to 1 if we found this declaration otherwise define to 0. */
-#cmakedefine HAVE_DECL_GETENV @HAVE_DECL_GETENV@
-
-/* Define to 1 if we found this declaration otherwise define to 0. */
-#cmakedefine HAVE_DECL_ATOL @HAVE_DECL_ATOL@
-
-/* Define to 1 if we found this declaration otherwise define to 0. */
-#cmakedefine HAVE_DECL_SBRK @HAVE_DECL_SBRK@
-
-/* Define to 1 if we found this declaration otherwise define to 0. */
-#cmakedefine HAVE_DECL_ABORT @HAVE_DECL_ABORT@
-
-/* Define to 1 if we found this declaration otherwise define to 0. */
-#cmakedefine HAVE_DECL_ATOF @HAVE_DECL_ATOF@
-
-/* Define to 1 if we found this declaration otherwise define to 0. */
-#cmakedefine HAVE_DECL_GETCWD @HAVE_DECL_GETCWD@
-
-/* Define to 1 if we found this declaration otherwise define to 0. */
-#cmakedefine HAVE_DECL_GETWD @HAVE_DECL_GETWD@
-
-/* Define to 1 if we found this declaration otherwise define to 0. */
-#cmakedefine HAVE_DECL_STRSIGNAL @HAVE_DECL_STRSIGNAL@
-
-/* Define to 1 if we found this declaration otherwise define to 0. */
-#cmakedefine HAVE_DECL_PUTC_UNLOCKED @HAVE_DECL_PUTC_UNLOCKED@
-
-/* Define to 1 if we found this declaration otherwise define to 0. */
-#cmakedefine HAVE_DECL_FPUTS_UNLOCKED @HAVE_DECL_FPUTS_UNLOCKED@
-
-/* Define to 1 if we found this declaration otherwise define to 0. */
-#cmakedefine HAVE_DECL_FWRITE_UNLOCKED @HAVE_DECL_FWRITE_UNLOCKED@
-
-/* Define to 1 if we found this declaration otherwise define to 0. */
-#cmakedefine HAVE_DECL_FPRINTF_UNLOCKED @HAVE_DECL_FPRINTF_UNLOCKED@
-
-/* Define to 1 if we found this declaration otherwise define to 0. */
-#cmakedefine HAVE_DECL_STRSTR @HAVE_DECL_STRSTR@
-
-/* Define to 1 if we found this declaration otherwise define to 0. */
-#cmakedefine HAVE_DECL_ERRNO @HAVE_DECL_ERRNO@
-
-/* Define to 1 if we found this declaration otherwise define to 0. */
-#cmakedefine HAVE_DECL_VASPRINTF @HAVE_DECL_VASPRINTF@
-
-/* Define to 1 if we found this declaration otherwise define to 0. */
-#cmakedefine HAVE_DECL_MALLOC @HAVE_DECL_MALLOC@
-
-/* Define to 1 if we found this declaration otherwise define to 0. */
-#cmakedefine HAVE_DECL_REALLOC @HAVE_DECL_REALLOC@
-
-/* Define to 1 if we found this declaration otherwise define to 0. */
-#cmakedefine HAVE_DECL_CALLOC @HAVE_DECL_CALLOC@
-
-/* Define to 1 if we found this declaration otherwise define to 0. */
-#cmakedefine HAVE_DECL_FREE @HAVE_DECL_FREE@
-
-/* Define to 1 if we found this declaration otherwise define to 0. */
-#cmakedefine HAVE_DECL_BASENAME @HAVE_DECL_BASENAME@
-
-/* Define to 1 if we found this declaration otherwise define to 0. */
-#cmakedefine HAVE_DECL_GETOPT @HAVE_DECL_GETOPT@
-
-/* Define to 1 if we found this declaration otherwise define to 0. */
-#cmakedefine HAVE_DECL_CLOCK @HAVE_DECL_CLOCK@
-
-/* Define to 1 if we found this declaration otherwise define to 0. */
-#cmakedefine HAVE_DECL_GETRLIMIT @HAVE_DECL_GETRLIMIT@
-
-/* Define to 1 if we found this declaration otherwise define to 0. */
-#cmakedefine HAVE_DECL_SETRLIMIT @HAVE_DECL_SETRLIMIT@
-
-/* Define to 1 if we found this declaration otherwise define to 0. */
-#cmakedefine HAVE_DECL_GETRUSAGE @HAVE_DECL_GETRUSAGE@
-
-/* Define to `long' if <sys/resource.h> doesn't define. */
-#cmakedefine rlim_t @rlim_t@
-
-/* Define to 1 if we found this declaration otherwise define to 0. */
-#cmakedefine HAVE_DECL_LDGETNAME @HAVE_DECL_LDGETNAME@
-
-/* Define to 1 if we found this declaration otherwise define to 0. */
-#cmakedefine HAVE_DECL_TIMES @HAVE_DECL_TIMES@
-
-/* Define if <sys/times.h> defines struct tms. */
-#cmakedefine HAVE_STRUCT_TMS @HAVE_STRUCT_TMS@
-
-/* Define if <time.h> defines clock_t. */
-#cmakedefine HAVE_CLOCK_T @HAVE_CLOCK_T@
-
-/* Define if <sys/types.h> defines `uchar'. */
-#cmakedefine HAVE_UCHAR @HAVE_UCHAR@
-
-/* Define .init_array/.fini_array sections are available and working. */
-#cmakedefine HAVE_INITFINI_ARRAY @HAVE_INITFINI_ARRAY@
-
-/* Define if host mkdir takes a single argument. */
-#cmakedefine MKDIR_TAKES_ONE_ARG @MKDIR_TAKES_ONE_ARG@
 
 /* Define 0/1 to force the choice for exception handling model. */
-#cmakedefine CONFIG_SJLJ_EXCEPTIONS @CONFIG_SJLJ_EXCEPTIONS@
+#ifndef USED_FOR_TARGET
+#cmakedefine CONFIG_SJLJ_EXCEPTIONS
+#endif
 
-/* Define if gcc should use -lunwind. */
-#cmakedefine USE_LIBUNWIND_EXCEPTIONS @USE_LIBUNWIND_EXCEPTIONS@
 
-/* Define to 1 if HOST_WIDE_INT must be 64 bits wide (see hwint.h). */
-#cmakedefine NEED_64BIT_HOST_WIDE_INT @NEED_64BIT_HOST_WIDE_INT@
+/* Define to enable the use of a default assembler. */
+#ifndef USED_FOR_TARGET
+#cmakedefine DEFAULT_ASSEMBLER
+#endif
 
-/* Define if you want to use __cxa_atexit, rather than atexit, to
-   register C++ destructors for local statics and global objects.
-   This is essential for fully standards-compliant handling of
-   destructors, but requires __cxa_atexit in libc. */
-#cmakedefine DEFAULT_USE_CXA_ATEXIT @DEFAULT_USE_CXA_ATEXIT@
 
-/* Define to the name of a file containing a list of extra machine modes
-   for this architecture. */
+/* Define to enable the use of a default linker. */
+#ifndef USED_FOR_TARGET
+#cmakedefine DEFAULT_LINKER
+#endif
+
+
+/* Define if you want to use __cxa_atexit, rather than atexit, to register C++
+   destructors for local statics and global objects. This is essential for
+   fully standards-compliant handling of destructors, but requires
+   __cxa_atexit in libc. */
+#ifndef USED_FOR_TARGET
+#cmakedefine DEFAULT_USE_CXA_ATEXIT
+#endif
+
+
+/* Define if you want assertions enabled. This is a cheap check. */
+#ifndef USED_FOR_TARGET
+#cmakedefine ENABLE_ASSERT_CHECKING 1
+#endif
+
+
+/* Define if you want more run-time sanity checks. This one gets a grab bag of
+   miscellaneous but relatively cheap checks. */
+#ifndef USED_FOR_TARGET
+#define ENABLE_CHECKING @ENABLE_CHECKING@
+#endif
+
+
+/* Define to 1 to enable decimal float extension to C. */
+#ifndef USED_FOR_TARGET
+#define ENABLE_DECIMAL_FLOAT @ENABLE_DECIMAL_FLOAT@
+#endif
+
+
+/* Define if you want fold checked that it never destructs its argument. This
+   is quite expensive. */
+#ifndef USED_FOR_TARGET
+#cmakedefine ENABLE_FOLD_CHECKING
+#endif
+
+
+/* Define if you want the garbage collector to operate in maximally paranoid
+   mode, validating the entire heap and collecting garbage at every
+   opportunity. This is extremely expensive. */
+#ifndef USED_FOR_TARGET
+#cmakedefine ENABLE_GC_ALWAYS_COLLECT
+#endif
+
+
+/* Define if you want the garbage collector to do object poisoning and other
+   memory allocation checks. This is quite expensive. */
+#ifndef USED_FOR_TARGET
+#cmakedefine ENABLE_GC_CHECKING
+#endif
+
+
+/* Define to 1 if translation of program messages to the user's native
+   language is requested. */
+#ifndef USED_FOR_TARGET
+#cmakedefine ENABLE_NLS 1
+#endif
+
+
+/* Define if you want all operations on RTL (the basic data structure of the
+   optimizer and back end) to be checked for dynamic type safety at runtime.
+   This is quite expensive. */
+#ifndef USED_FOR_TARGET
+#cmakedefine ENABLE_RTL_CHECKING
+#endif
+
+
+/* Define if you want RTL flag accesses to be checked against the RTL codes
+   that are supported for each access macro. This is relatively cheap. */
+#ifndef USED_FOR_TARGET
+#cmakedefine ENABLE_RTL_FLAG_CHECKING
+#endif
+
+
+/* Define if you want runtime assertions enabled. This is a cheap check. */
+#cmakedefine ENABLE_RUNTIME_CHECKING 1
+
+/* Define if you want all operations on trees (the basic data structure of the
+   front ends) to be checked for dynamic type safety at runtime. This is
+   moderately expensive. The tree browser debugging routines will also be
+   enabled by this option. */
+#ifndef USED_FOR_TARGET
+#cmakedefine ENABLE_TREE_CHECKING 1
+#endif
+
+
+/* Define if you want to run subprograms and generated programs through
+   valgrind (a memory checker). This is extremely expensive. */
+#ifndef USED_FOR_TARGET
+#cmakedefine ENABLE_VALGRIND_CHECKING
+#endif
+
+
+/* Define to 1 if installation paths should be looked up in the Windows
+   Registry. Ignored on non-Windows hosts. */
+#ifndef USED_FOR_TARGET
+#cmakedefine ENABLE_WIN32_REGISTRY 1
+#endif
+
+
+/* Define to the name of a file containing a list of extra machine modes for
+   this architecture. */
+#ifndef USED_FOR_TARGET
 #cmakedefine EXTRA_MODES_FILE "@EXTRA_MODES_FILE@"
+#endif
 
-/* Define if the target architecture needs extra machine modes to represent
-   the results of comparisons. */
-#cmakedefine EXTRA_CC_MODES @EXTRA_CC_MODES@
 
-/* Define to 1 if translation of program messages to the
-  user's native language is requested. */
-#cmakedefine ENABLE_NLS @ENABLE_NLS@
+/* Define to enable detailed memory allocation stats gathering. */
+#ifndef USED_FOR_TARGET
+#cmakedefine GATHER_STATISTICS
+#endif
 
-/* Define to 1 if installation paths should be looked up in Windows32
-   Registry. Ignored on non windows32 hosts. */
-#cmakedefine ENABLE_WIN32_REGISTRY @ENABLE_WIN32_REGISTRY@
 
-/* Define to be the last portion of registry key on windows hosts. */
-#cmakedefine WIN32_REGISTRY_KEY @WIN32_REGISTRY_KEY@
+/* Define to the type of elements in the array set by `getgroups'. Usually
+   this is either `int' or `gid_t'. */
+#ifndef USED_FOR_TARGET
+#cmakedefine GETGROUPS_T @GETGROUPS_T@
+#endif
+
+
+/* Define if the zone collector is in use */
+#ifndef USED_FOR_TARGET
+#cmakedefine GGC_ZONE
+#endif
+
+
+/* mcontext_t fields start with __ */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAS_MCONTEXT_T_UNDERSCORES
+#endif
+
+
+/* Define to 1 if you have the `alphasort' function. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_ALPHASORT 1
+#endif
+
+
+/* Define if your assembler supports dwarf2 .file/.loc directives, and
+   preserves file table indices exactly as given. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_AS_DWARF2_DEBUG_LINE 1
+#endif
+
+
+/* Define if your assembler supports explicit relocations. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_AS_EXPLICIT_RELOCS 1
+#endif
+
+
+/* Define if your assembler supports fprnd. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_AS_FPRND 1
+#endif
+
+
+/* Define if your assembler supports the --gdwarf2 option. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_AS_GDWARF2_DEBUG_FLAG 1
+#endif
+
+
+/* Define true if the assembler supports '.long foo@GOTOFF'. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_AS_GOTOFF_IN_DATA 1
+#endif
+
+
+/* Define if your assembler supports the --gstabs option. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_AS_GSTABS_DEBUG_FLAG 1
+#endif
+
+
+/* Define if your assembler supports the Sun syntax for cmov. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_AS_IX86_CMOV_SUN_SYNTAX 1
+#endif
+
+
+/* Define if your assembler supports the ffreep mnemonic. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_AS_IX86_FFREEP 1
+#endif
+
+
+/* Define if your assembler supports the lituse_jsrdirect relocation. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_AS_JSRDIRECT_RELOCS 1
+#endif
+
+
+/* Define if your assembler supports .sleb128 and .uleb128. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_AS_LEB128 1
+#endif
+
+
+/* Define if your assembler supports ltoffx and ldxmov relocations. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_AS_LTOFFX_LDXMOV_RELOCS 1
+#endif
+
+
+/* Define if your assembler supports mfcr field. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_AS_MFCRF 1
+#endif
+
+
+/* Define if your assembler supports the -no-mul-bug-abort option. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_AS_NO_MUL_BUG_ABORT_OPTION 1
+#endif
+
+
+/* Define if your assembler supports offsetable %lo(). */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_AS_OFFSETABLE_LO10 1
+#endif
+
+
+/* Define if your assembler supports popcntb field. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_AS_POPCNTB 1
+#endif
+
+
+/* Define if your assembler supports .register. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_AS_REGISTER_PSEUDO_OP 1
+#endif
+
+
+/* Define if your assembler supports R_PPC_REL16 relocs. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_AS_REL16 1
+#endif
+
+
+/* Define if your assembler supports -relax option. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_AS_RELAX_OPTION 1
+#endif
+
+
+/* Define if your assembler and linker support unaligned PC relative relocs.
+   */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_AS_SPARC_UA_PCREL 1
+#endif
+
+
+/* Define if your assembler and linker support unaligned PC relative relocs
+   against hidden symbols. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_AS_SPARC_UA_PCREL_HIDDEN 1
+#endif
+
+
+/* Define if your assembler supports thread-local storage. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_AS_TLS 1
+#endif
+
+
+/* Define to 1 if you have the `atoll' function. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_ATOLL 1
+#endif
+
+
+/* Define to 1 if you have the `atoq' function. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_ATOQ 1
+#endif
+
+
+/* Define to 1 if you have the `clearerr_unlocked' function. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_CLEARERR_UNLOCKED 1
+#endif
+
+
+/* Define to 1 if you have the `clock' function. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_CLOCK 1
+#endif
+
+
+/* Define if <time.h> defines clock_t. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_CLOCK_T 1
+#endif
+
+
+/* Define 0/1 if your assembler and linker support COMDAT groups. */
+#ifndef USED_FOR_TARGET
+#define HAVE_COMDAT_GROUP @HAVE_COMDAT_GROUP@
+#endif
+
+
+/* Define to 1 if we found a declaration for 'abort', otherwise define to 0.
+   */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_DECL_ABORT 1
+#endif
+
+
+/* Define to 1 if we found a declaration for 'asprintf', otherwise define to
+   0. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_DECL_ASPRINTF 1
+#endif
+
+
+/* Define to 1 if we found a declaration for 'atof', otherwise define to 0. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_DECL_ATOF 1
+#endif
+
+
+/* Define to 1 if we found a declaration for 'atol', otherwise define to 0. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_DECL_ATOL 1
+#endif
+
+
+/* Define to 1 if we found a declaration for 'basename', otherwise define to
+   0. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_DECL_BASENAME 1
+#endif
+
+
+/* Define to 1 if we found a declaration for 'calloc', otherwise define to 0.
+   */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_DECL_CALLOC 1
+#endif
+
+
+/* Define to 1 if we found a declaration for 'clearerr_unlocked', otherwise
+   define to 0. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_DECL_CLEARERR_UNLOCKED 1
+#endif
+
+
+/* Define to 1 if we found a declaration for 'clock', otherwise define to 0.
+   */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_DECL_CLOCK 1
+#endif
+
+
+/* Define to 1 if we found a declaration for 'errno', otherwise define to 0.
+   */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_DECL_ERRNO 1
+#endif
+
+
+/* Define to 1 if we found a declaration for 'feof_unlocked', otherwise define
+   to 0. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_DECL_FEOF_UNLOCKED 1
+#endif
+
+
+/* Define to 1 if we found a declaration for 'ferror_unlocked', otherwise
+   define to 0. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_DECL_FERROR_UNLOCKED 1
+#endif
+
+
+/* Define to 1 if we found a declaration for 'fflush_unlocked', otherwise
+   define to 0. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_DECL_FFLUSH_UNLOCKED 1
+#endif
+
+
+/* Define to 1 if we found a declaration for 'fgetc_unlocked', otherwise
+   define to 0. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_DECL_FGETC_UNLOCKED 1
+#endif
+
+
+/* Define to 1 if we found a declaration for 'fgets_unlocked', otherwise
+   define to 0. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_DECL_FGETS_UNLOCKED 1
+#endif
+
+
+/* Define to 1 if we found a declaration for 'fileno_unlocked', otherwise
+   define to 0. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_DECL_FILENO_UNLOCKED 1
+#endif
+
+
+/* Define to 1 if we found a declaration for 'fprintf_unlocked', otherwise
+   define to 0. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_DECL_FPRINTF_UNLOCKED 1
+#endif
+
+
+/* Define to 1 if we found a declaration for 'fputc_unlocked', otherwise
+   define to 0. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_DECL_FPUTC_UNLOCKED 1
+#endif
+
+
+/* Define to 1 if we found a declaration for 'fputs_unlocked', otherwise
+   define to 0. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_DECL_FPUTS_UNLOCKED 1
+#endif
+
+
+/* Define to 1 if we found a declaration for 'fread_unlocked', otherwise
+   define to 0. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_DECL_FREAD_UNLOCKED 1
+#endif
+
+
+/* Define to 1 if we found a declaration for 'free', otherwise define to 0. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_DECL_FREE 1
+#endif
+
+
+/* Define to 1 if we found a declaration for 'fwrite_unlocked', otherwise
+   define to 0. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_DECL_FWRITE_UNLOCKED 1
+#endif
+
+
+/* Define to 1 if we found a declaration for 'getchar_unlocked', otherwise
+   define to 0. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_DECL_GETCHAR_UNLOCKED 1
+#endif
+
+
+/* Define to 1 if we found a declaration for 'getcwd', otherwise define to 0.
+   */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_DECL_GETCWD 1
+#endif
+
+
+/* Define to 1 if we found a declaration for 'getc_unlocked', otherwise define
+   to 0. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_DECL_GETC_UNLOCKED 1
+#endif
+
+
+/* Define to 1 if we found a declaration for 'getenv', otherwise define to 0.
+   */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_DECL_GETENV 1
+#endif
+
+
+/* Define to 1 if we found a declaration for 'getopt', otherwise define to 0.
+   */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_DECL_GETOPT 1
+#endif
+
+
+/* Define to 1 if we found a declaration for 'getpagesize', otherwise define
+   to 0. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_DECL_GETPAGESIZE 1
+#endif
+
+
+/* Define to 1 if we found a declaration for 'getrlimit', otherwise define to
+   0. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_DECL_GETRLIMIT 1
+#endif
+
+
+/* Define to 1 if we found a declaration for 'getrusage', otherwise define to
+   0. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_DECL_GETRUSAGE 1
+#endif
+
+
+/* Define to 1 if we found a declaration for 'getwd', otherwise define to 0.
+   */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_DECL_GETWD 1
+#endif
+
+
+/* Define to 1 if we found a declaration for 'ldgetname', otherwise define to
+   0. */
+#ifndef USED_FOR_TARGET
+#define HAVE_DECL_LDGETNAME @HAVE_DECL_LDGETNAME@
+#endif
+
+
+/* Define to 1 if we found a declaration for 'malloc', otherwise define to 0.
+   */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_DECL_MALLOC 1
+#endif
+
+
+/* Define to 1 if we found a declaration for 'putchar_unlocked', otherwise
+   define to 0. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_DECL_PUTCHAR_UNLOCKED 1
+#endif
+
+
+/* Define to 1 if we found a declaration for 'putc_unlocked', otherwise define
+   to 0. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_DECL_PUTC_UNLOCKED 1
+#endif
+
+
+/* Define to 1 if we found a declaration for 'realloc', otherwise define to 0.
+   */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_DECL_REALLOC 1
+#endif
+
+
+/* Define to 1 if we found a declaration for 'sbrk', otherwise define to 0. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_DECL_SBRK 1
+#endif
+
+
+/* Define to 1 if we found a declaration for 'setrlimit', otherwise define to
+   0. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_DECL_SETRLIMIT 1
+#endif
+
+
+/* Define to 1 if we found a declaration for 'sigaltstack', otherwise define
+   to 0. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_DECL_SIGALTSTACK 1
+#endif
+
+
+/* Define to 1 if we found a declaration for 'snprintf', otherwise define to
+   0. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_DECL_SNPRINTF 1
+#endif
+
+
+/* Define to 1 if we found a declaration for 'strsignal', otherwise define to
+   0. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_DECL_STRSIGNAL 1
+#endif
+
+
+/* Define to 1 if we found a declaration for 'strstr', otherwise define to 0.
+   */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_DECL_STRSTR 1
+#endif
+
+
+/* Define to 1 if we found a declaration for 'strverscmp', otherwise define to
+   0. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_DECL_STRVERSCMP 1
+#endif
+
+
+/* Define to 1 if we found a declaration for 'times', otherwise define to 0.
+   */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_DECL_TIMES 1
+#endif
+
+
+/* Define to 1 if we found a declaration for 'vasprintf', otherwise define to
+   0. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_DECL_VASPRINTF 1
+#endif
+
+
+/* Define to 1 if we found a declaration for 'vsnprintf', otherwise define to
+   0. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_DECL_VSNPRINTF 1
+#endif
+
+
+/* Define to 1 if you have the <direct.h> header file. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_DIRECT_H 1
+#endif
+
+
+/* Define to 1 if you have the <fcntl.h> header file. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_FCNTL_H 1
+#endif
+
+
+/* Define to 1 if you have the `feof_unlocked' function. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_FEOF_UNLOCKED 1
+#endif
+
+
+/* Define to 1 if you have the `ferror_unlocked' function. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_FERROR_UNLOCKED 1
+#endif
+
+
+/* Define to 1 if you have the `fflush_unlocked' function. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_FFLUSH_UNLOCKED 1
+#endif
+
+
+/* Define to 1 if you have the `fgetc_unlocked' function. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_FGETC_UNLOCKED 1
+#endif
+
+
+/* Define to 1 if you have the `fgets_unlocked' function. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_FGETS_UNLOCKED 1
+#endif
+
+
+/* Define to 1 if you have the `fileno_unlocked' function. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_FILENO_UNLOCKED 1
+#endif
+
+
+/* Define to 1 if you have the `fork' function. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_FORK 1
+#endif
+
+
+/* Define to 1 if you have the `fprintf_unlocked' function. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_FPRINTF_UNLOCKED 1
+#endif
+
+
+/* Define to 1 if you have the `fputc_unlocked' function. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_FPUTC_UNLOCKED 1
+#endif
+
+
+/* Define to 1 if you have the `fputs_unlocked' function. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_FPUTS_UNLOCKED 1
+#endif
+
+
+/* Define to 1 if you have the `fread_unlocked' function. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_FREAD_UNLOCKED 1
+#endif
+
+
+/* Define to 1 if you have the `fwrite_unlocked' function. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_FWRITE_UNLOCKED 1
+#endif
+
 
 /* Define if your assembler supports .balign and .p2align. */
-#cmakedefine HAVE_GAS_BALIGN_AND_P2ALIGN @HAVE_GAS_BALIGN_AND_P2ALIGN@
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_GAS_BALIGN_AND_P2ALIGN 1
+#endif
 
-/* Define if your assembler supports specifying the maximum number
-   of bytes to skip when using the GAS .p2align command. */
-#cmakedefine HAVE_GAS_MAX_SKIP_P2ALIGN @HAVE_GAS_MAX_SKIP_P2ALIGN@
+
+/* Define if your assembler uses the new HImode fild and fist notation. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_GAS_FILDS_FISTS 1
+#endif
+
+
+/* Define if your assembler and linker support .hidden. */
+#cmakedefine HAVE_GAS_HIDDEN 1
+
+/* Define if your assembler supports specifying the maximum number of bytes to
+   skip when using the GAS .p2align command. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_GAS_MAX_SKIP_P2ALIGN 1
+#endif
+
+
+/* Define if your assembler supports .nsubspa comdat option. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_GAS_NSUBSPA_COMDAT 1
+#endif
+
+
+/* Define if your assembler and linker support 32-bit section relative relocs
+   via '.secrel32 label'. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_GAS_PE_SECREL32_RELOC 1
+#endif
+
+
+/* Define 0/1 if your assembler supports marking sections with SHF_MERGE flag.
+   */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_GAS_SHF_MERGE 1
+#endif
+
 
 /* Define if your assembler supports .subsection and .subsection -1 starts
    emitting at the beginning of your section. */
-#cmakedefine HAVE_GAS_SUBSECTION_ORDERING @HAVE_GAS_SUBSECTION_ORDERING@
-
-/* Define if your assembler supports .weak. */
-#cmakedefine HAVE_GAS_WEAK @HAVE_GAS_WEAK@
-
-/* Define if your assembler and linker support .hidden. */
-#cmakedefine HAVE_GAS_HIDDEN @HAVE_GAS_HIDDEN@
-
-/* Define if your assembler supports .sleb128 and .uleb128. */
-#cmakedefine HAVE_AS_LEB128 @HAVE_AS_LEB128@
-
-/* Define if your assembler mis-optimizes .eh_frame data. */
-#cmakedefine USE_AS_TRADITIONAL_FORMAT @USE_AS_TRADITIONAL_FORMAT@
-
-/* Define 0/1 if your assembler supports marking sections with SHF_MERGE flag. */
-#cmakedefine HAVE_GAS_SHF_MERGE @HAVE_GAS_SHF_MERGE@
-
-/* Define if your assembler supports thread-local storage. */
-#cmakedefine HAVE_AS_TLS @HAVE_AS_TLS@
-
-/* Define if your assembler supports explicit relocations. */
-#cmakedefine HAVE_AS_EXPLICIT_RELOCS @HAVE_AS_EXPLICIT_RELOCS@
-
-/* Define if your assembler supports .register. */
-#cmakedefine HAVE_AS_REGISTER_PSEUDO_OP @HAVE_AS_REGISTER_PSEUDO_OP@
-
-/* Define if your assembler supports -relax option. */
-#cmakedefine HAVE_AS_RELAX_OPTION @HAVE_AS_RELAX_OPTION@
-
-/* Define if your assembler and linker support unaligned PC relative relocs. */
-#cmakedefine HAVE_AS_SPARC_UA_PCREL @HAVE_AS_SPARC_UA_PCREL@
-
-/* Define if your assembler and linker support unaligned PC relative relocs against hidden symbols. */
-#cmakedefine HAVE_AS_SPARC_UA_PCREL_HIDDEN @HAVE_AS_SPARC_UA_PCREL_HIDDEN@
-
-/* Define if your assembler supports offsetable %lo(). */
-#cmakedefine HAVE_AS_OFFSETABLE_LO10 @HAVE_AS_OFFSETABLE_LO10@
-
-/* Define if your assembler uses the new HImode fild and fist notation. */
-#cmakedefine HAVE_GAS_FILDS_FISTS @HAVE_GAS_FILDS_FISTS@
-
-/* Define if your assembler supports the Sun syntax for cmov. */
-#cmakedefine HAVE_AS_IX86_CMOV_SUN_SYNTAX @HAVE_AS_IX86_CMOV_SUN_SYNTAX@
-
-/* Define true if the assembler supports '.long foo@GOTOFF'. */
-#cmakedefine HAVE_AS_GOTOFF_IN_DATA @HAVE_AS_GOTOFF_IN_DATA@
-
-/* Define if your assembler supports ltoffx and ldxmov relocations. */
-#cmakedefine HAVE_AS_LTOFFX_LDXMOV_RELOCS @HAVE_AS_LTOFFX_LDXMOV_RELOCS@
-
-/* Define if your assembler supports mfcr field. */
-#cmakedefine HAVE_AS_MFCRF @HAVE_AS_MFCRF@
-
-/* Define if your assembler supports dwarf2 .file/.loc directives,
-   and preserves file table indices exactly as given. */
-#cmakedefine HAVE_AS_DWARF2_DEBUG_LINE @HAVE_AS_DWARF2_DEBUG_LINE@
-
-/* Define if your assembler supports the --gdwarf2 option. */
-#cmakedefine HAVE_AS_GDWARF2_DEBUG_FLAG @HAVE_AS_GDWARF2_DEBUG_FLAG@
-
-/* Define if your assembler supports the --gstabs option. */
-#cmakedefine HAVE_AS_GSTABS_DEBUG_FLAG @HAVE_AS_GSTABS_DEBUG_FLAG@
-
-/* Define if your linker links a mix of read-only
-   and read-write sections into a read-write section. */
-#cmakedefine HAVE_LD_RO_RW_SECTION_MIXING @HAVE_LD_RO_RW_SECTION_MIXING@
-
-/* Define if your linker supports --eh-frame-hdr option. */
-#cmakedefine HAVE_LD_EH_FRAME_HDR @HAVE_LD_EH_FRAME_HDR@
-
-/* Define if your linker supports -pie option. */
-#cmakedefine HAVE_LD_PIE @HAVE_LD_PIE@
-
-/* Define if your MIPS libgloss linker scripts consistently include STARTUP directives. */
-#cmakedefine HAVE_MIPS_LIBGLOSS_STARTUP_DIRECTIVES @HAVE_MIPS_LIBGLOSS_STARTUP_DIRECTIVES@
-
-/* Define to PREFIX/include if cpp should also search that directory. */
-#cmakedefine PREFIX_INCLUDE_DIR "@PREFIX_INCLUDE_DIR@"
-
-/* Define if sys/types.h defines ssize_t.  */
-#cmakedefine SYS_TYPES_HAS_SSIZE_T @SYS_TYPES_HAS_SSIZE_T@
-
-/* Define if ino_t is available.  */
-#cmakedefine HAVE_INO_T @HAVE_INO_T@
-
-/* Define if dev_t is available.  */
-#cmakedefine HAVE_DEV_T @HAVE_DEV_T@
-
-#if !defined(SYS_TYPES_HAS_SSIZE_T) && !defined(ssize_t)
-# define ssize_t int
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_GAS_SUBSECTION_ORDERING 1
 #endif
 
-#if defined(_WIN32) && !defined(__CYGWIN__) && !defined(__MINGW32__)
-# define S_IFBLK 0
-# if defined(_MSC_VER)
-#  define open _open
-#  define close _close
-#  define read _read
-# endif
+
+/* Define if your assembler supports .weak. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_GAS_WEAK 1
+#endif
+
+
+/* Define if your assembler supports .weakref. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_GAS_WEAKREF 1
+#endif
+
+
+/* Define to 1 if you have the `getchar_unlocked' function. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_GETCHAR_UNLOCKED 1
+#endif
+
+
+/* Define to 1 if you have the `getc_unlocked' function. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_GETC_UNLOCKED 1
+#endif
+
+
+/* Define to 1 if system unwind library has _Unwind_GetIPInfo. */
+#cmakedefine HAVE_GETIPINFO 1
+
+/* Define to 1 if you have the `getrlimit' function. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_GETRLIMIT 1
+#endif
+
+
+/* Define to 1 if you have the `getrusage' function. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_GETRUSAGE 1
+#endif
+
+
+/* Define to 1 if you have the `gettimeofday' function. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_GETTIMEOFDAY 1
+#endif
+
+
+/* Define if you have the iconv() function. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_ICONV 1
+#endif
+
+
+/* Define to 1 if you have the <iconv.h> header file. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_ICONV_H 1
+#endif
+
+
+/* Define .init_array/.fini_array sections are available and working. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_INITFINI_ARRAY 1
+#endif
+
+
+/* Define if you have a working <inttypes.h> header file. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_INTTYPES_H 1
+#endif
+
+
+/* Define to 1 if you have the `kill' function. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_KILL 1
+#endif
+
+
+/* Define if you have <langinfo.h> and nl_langinfo(CODESET). */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_LANGINFO_CODESET 1
+#endif
+
+
+/* Define to 1 if you have the <langinfo.h> header file. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_LANGINFO_H 1
+#endif
+
+
+/* Define if your <locale.h> file defines LC_MESSAGES. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_LC_MESSAGES 1
+#endif
+
+
+/* Define to 1 if you have the <ldfcn.h> header file. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_LDFCN_H 1
+#endif
+
+
+/* Define if your linker supports --as-needed and --no-as-needed options. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_LD_AS_NEEDED
+#endif
+
+
+/* Define if your linker supports --demangle option. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_LD_DEMANGLE
+#endif
+
+
+/* Define if your linker supports --eh-frame-hdr option. */
+#cmakedefine HAVE_LD_EH_FRAME_HDR
+
+/* Define if your PowerPC64 linker only needs function descriptor syms. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_LD_NO_DOT_SYMS
+#endif
+
+
+/* Define if your linker supports -pie option. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_LD_PIE
+#endif
+
+
+/* Define if your linker links a mix of read-only and read-write sections into
+   a read-write section. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_LD_RO_RW_SECTION_MIXING
+#endif
+
+
+/* Define if your linker supports -Bstatic/-Bdynamic option. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_LD_STATIC_DYNAMIC
+#endif
+
+
+/* Define if your linker supports --sysroot. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_LD_SYSROOT
+#endif
+
+
+/* Define to 1 if you have the <limits.h> header file. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_LIMITS_H 1
+#endif
+
+
+/* Define to 1 if you have the <locale.h> header file. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_LOCALE_H 1
+#endif
+
+
+/* Define to 1 if the system has the type `long long'. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_LONG_LONG 1
+#endif
+
+
+/* Define to 1 if you have the <malloc.h> header file. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_MALLOC_H 1
+#endif
+
+
+/* Define to 1 if you have the `mbstowcs' function. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_MBSTOWCS 1
+#endif
+
+
+/* Define if valgrind's memcheck.h header is installed. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_MEMCHECK_H
+#endif
+
+
+/* Define to 1 if you have the <memory.h> header file. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_MEMORY_H 1
+#endif
+
+
+/* Define to 1 if you have the `mincore' function. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_MINCORE 1
+#endif
+
+
+/* Define to 1 if you have the `mmap' function. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_MMAP 1
+#endif
+
+
+/* Define if mmap with MAP_ANON(YMOUS) works. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_MMAP_ANON
+#endif
+
+
+/* Define if mmap of /dev/zero works. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_MMAP_DEV_ZERO
+#endif
+
+
+/* Define if read-only mmap of a plain file works. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_MMAP_FILE
+#endif
+
+
+/* Define to 1 if you have the `nl_langinfo' function. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_NL_LANGINFO 1
+#endif
+
+
+/* Define to 1 if you have the `putchar_unlocked' function. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_PUTCHAR_UNLOCKED 1
+#endif
+
+
+/* Define to 1 if you have the `putc_unlocked' function. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_PUTC_UNLOCKED 1
+#endif
+
+
+/* Define to 1 if you have the `scandir' function. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_SCANDIR 1
+#endif
+
+
+/* Define to 1 if you have the `setlocale' function. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_SETLOCALE 1
+#endif
+
+
+/* Define to 1 if you have the `setrlimit' function. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_SETRLIMIT 1
+#endif
+
+
+/* Define to 1 if you have the <stddef.h> header file. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_STDDEF_H 1
+#endif
+
+
+/* Define to 1 if you have the <stdint.h> header file. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_STDINT_H 1
+#endif
+
+
+/* Define to 1 if you have the <stdlib.h> header file. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_STDLIB_H 1
+#endif
+
+
+/* Define to 1 if you have the <strings.h> header file. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_STRINGS_H 1
+#endif
+
+
+/* Define to 1 if you have the <string.h> header file. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_STRING_H 1
+#endif
+
+
+/* Define to 1 if you have the `strsignal' function. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_STRSIGNAL 1
+#endif
+
+
+/* Define if <sys/times.h> defines struct tms. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_STRUCT_TMS 1
+#endif
+
+
+/* Define to 1 if you have the `sysconf' function. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_SYSCONF 1
+#endif
+
+
+/* Define to 1 if you have the <sys/file.h> header file. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_SYS_FILE_H 1
+#endif
+
+
+/* Define to 1 if you have the <sys/mman.h> header file. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_SYS_MMAN_H 1
+#endif
+
+
+/* Define to 1 if you have the <sys/param.h> header file. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_SYS_PARAM_H 1
+#endif
+
+
+/* Define to 1 if you have the <sys/resource.h> header file. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_SYS_RESOURCE_H 1
+#endif
+
+
+/* Define to 1 if you have the <sys/stat.h> header file. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_SYS_STAT_H 1
+#endif
+
+
+/* Define to 1 if you have the <sys/times.h> header file. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_SYS_TIMES_H 1
+#endif
+
+
+/* Define to 1 if you have the <sys/time.h> header file. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_SYS_TIME_H 1
+#endif
+
+
+/* Define to 1 if you have the <sys/types.h> header file. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_SYS_TYPES_H 1
+#endif
+
+
+/* Define to 1 if you have <sys/wait.h> that is POSIX.1 compatible. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_SYS_WAIT_H 1
+#endif
+
+
+/* Define to 1 if you have the `times' function. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_TIMES 1
+#endif
+
+
+/* Define to 1 if you have the <time.h> header file. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_TIME_H 1
+#endif
+
+
+/* Define to 1 if you have the <unistd.h> header file. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_UNISTD_H 1
+#endif
+
+
+/* Define if valgrind's valgrind/memcheck.h header is installed. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_VALGRIND_MEMCHECK_H 1
+#endif
+
+
+/* Define to 1 if you have the `vfork' function. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_VFORK 1
+#endif
+
+
+/* Define to 1 if you have the <vfork.h> header file. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_VFORK_H 1
+#endif
+
+
+/* Define to 1 if you have the <wchar.h> header file. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_WCHAR_H 1
+#endif
+
+
+/* Define to 1 if you have the `wcswidth' function. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_WCSWIDTH 1
+#endif
+
+
+/* Define to 1 if `fork' works. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_WORKING_FORK 1
+#endif
+
+
+/* Define this macro if mbstowcs does not crash when its first argument is
+   NULL. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_WORKING_MBSTOWCS 1
+#endif
+
+
+/* Define to 1 if `vfork' works. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE_WORKING_VFORK 1
+#endif
+
+
+/* Define to 1 if the system has the type `__int64'. */
+#ifndef USED_FOR_TARGET
+#cmakedefine HAVE___INT64 1
+#endif
+
+
+/* Define as const if the declaration of iconv() needs const. */
+#ifndef USED_FOR_TARGET
+#cmakedefine ICONV_CONST
+#endif
+
+
+/* Define if host mkdir takes a single argument. */
+#ifndef USED_FOR_TARGET
+#cmakedefine MKDIR_TAKES_ONE_ARG 1
+#endif
+
+
+/* Define to 1 if HOST_WIDE_INT must be 64 bits wide (see hwint.h). */
+#ifndef USED_FOR_TARGET
+#cmakedefine NEED_64BIT_HOST_WIDE_INT 1
+#endif
+
+
+/* Define to 1 if your C compiler doesn't accept -c and -o together. */
+#ifndef USED_FOR_TARGET
+#cmakedefine NO_MINUS_C_MINUS_O 1
+#endif
+
+
+/* Define to the address where bug reports for this package should be sent. */
+#ifndef USED_FOR_TARGET
+#define PACKAGE_BUGREPORT ""
+#endif
+
+
+/* Define to the full name of this package. */
+#ifndef USED_FOR_TARGET
+#define PACKAGE_NAME ""
+#endif
+
+
+/* Define to the full name and version of this package. */
+#ifndef USED_FOR_TARGET
+#define PACKAGE_STRING ""
+#endif
+
+
+/* Define to the one symbol short name of this package. */
+#ifndef USED_FOR_TARGET
+#define PACKAGE_TARNAME ""
+#endif
+
+
+/* Define to the version of this package. */
+#ifndef USED_FOR_TARGET
+#define PACKAGE_VERSION ""
+#endif
+
+
+/* Define to PREFIX/include if cpp should also search that directory. */
+#ifndef USED_FOR_TARGET
+#cmakedefine PREFIX_INCLUDE_DIR "@PREFIX_INCLUDE_DIR@"
+#endif
+
+
+/* The size of a `int', as computed by sizeof. */
+#ifndef USED_FOR_TARGET
+#cmakedefine SIZEOF_INT @SIZEOF_INT@
+#endif
+
+
+/* The size of a `long', as computed by sizeof. */
+#ifndef USED_FOR_TARGET
+#cmakedefine SIZEOF_LONG @SIZEOF_LONG@
+#endif
+
+
+/* The size of a `long long', as computed by sizeof. */
+#ifndef USED_FOR_TARGET
+#cmakedefine SIZEOF_LONG_LONG @SIZEOF_LONG_LONG@
+#endif
+
+
+/* The size of a `short', as computed by sizeof. */
+#ifndef USED_FOR_TARGET
+#cmakedefine SIZEOF_SHORT @SIZEOF_SHORT@
+#endif
+
+
+/* The size of a `void *', as computed by sizeof. */
+#ifndef USED_FOR_TARGET
+#cmakedefine SIZEOF_VOID_P @SIZEOF_VOID_P@
+#endif
+
+
+/* The size of a `__int64', as computed by sizeof. */
+#ifndef USED_FOR_TARGET
+#cmakedefine SIZEOF___INT64 @SIZEOF___INT64@
+#endif
+
+
+/* Define to 1 if you have the ANSI C header files. */
+#ifndef USED_FOR_TARGET
+#cmakedefine STDC_HEADERS 1
+#endif
+
+
+/* Define if you can safely include both <string.h> and <strings.h>. */
+#ifndef USED_FOR_TARGET
+#cmakedefine STRING_WITH_STRINGS 1
+#endif
+
+
+/* Define if TFmode long double should be the default */
+#ifndef USED_FOR_TARGET
+#cmakedefine TARGET_DEFAULT_LONG_DOUBLE_128
+#endif
+
+
+/* Define if your target C library provides stack protector support */
+#ifndef USED_FOR_TARGET
+#cmakedefine TARGET_LIBC_PROVIDES_SSP
+#endif
+
+
+/* Define to 1 if you can safely include both <sys/time.h> and <time.h>. */
+#ifndef USED_FOR_TARGET
+#cmakedefine TIME_WITH_SYS_TIME 1
+#endif
+
+
+/* Define if your assembler mis-optimizes .eh_frame data. */
+#ifndef USED_FOR_TARGET
+#cmakedefine USE_AS_TRADITIONAL_FORMAT 1
+#endif
+
+
+/* Define to 1 if the 'long long' (or '__int64') is wider than 'long' but
+   still efficiently supported by the host hardware. */
+#ifndef USED_FOR_TARGET
+#cmakedefine USE_LONG_LONG_FOR_WIDEST_FAST_INT 1
+#endif
+
+
+/* Define if location_t is fileline integer cookie. */
+#ifndef USED_FOR_TARGET
+#cmakedefine USE_MAPPED_LOCATION
+#endif
+
+
+/* Define to be the last component of the Windows registry key under which to
+   look for installation paths. The full key used will be
+   HKEY_LOCAL_MACHINE/SOFTWARE/Free Software Foundation/{WIN32_REGISTRY_KEY}.
+   The default is the GCC version number. */
+#ifndef USED_FOR_TARGET
+#cmakedefine WIN32_REGISTRY_KEY
+#endif
+
+
+/* Define to 1 if your processor stores words with the most significant byte
+   first (like Motorola and SPARC, unlike Intel and VAX). */
+#ifndef USED_FOR_TARGET
+#cmakedefine WORDS_BIGENDIAN 1
+#endif
+
+
+/* Always define this when using the GNU C Library */
+#ifndef USED_FOR_TARGET
+#cmakedefine _GNU_SOURCE @_GNU_SOURCE@
+#endif
+
+
+/* Define to `int' if <sys/types.h> doesn't define. */
+#ifndef USED_FOR_TARGET
+#cmakedefine gid_t
+#endif
+
+
+/* Define to `__inline__' or `__inline' if that's what the C compiler
+   calls it, or to nothing if 'inline' is not supported under any name.  */
+#ifndef __cplusplus
+#cmakedefine inline
+#endif
+
+/* Define to `int' if <sys/types.h> does not define. */
+#ifndef USED_FOR_TARGET
+#cmakedefine pid_t
+#endif
+
+
+/* Define to \`long' if <sys/resource.h> doesn't define. */
+#ifndef USED_FOR_TARGET
+#cmakedefine rlim_t
+#endif
+
+
+/* Define to `int' if <sys/types.h> does not define. */
+#ifndef USED_FOR_TARGET
+#cmakedefine ssize_t @ssize_t@
+#endif
+
+
+/* Define to `int' if <sys/types.h> doesn't define. */
+#ifndef USED_FOR_TARGET
+#cmakedefine uid_t
+#endif
+
+
+/* Define as `fork' if `vfork' does not work. */
+#ifndef USED_FOR_TARGET
+#cmakedefine vfork
 #endif
 
 /* Disable optimizations for MSVC.  They cause bugs.  */
@@ -547,3 +1412,6 @@
 
 #define GCC_TO_STRING(x) GCC_TO_STRING0(x)
 #define GCC_TO_STRING0(x) #x
+
+#define GCC_INCLUDE_DIR "bogus-include-dir"
+

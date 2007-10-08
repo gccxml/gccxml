@@ -2,7 +2,7 @@
    - some macros CODE_FOR_... giving the insn_code_number value
    for each of the defined standard insn names.
    Copyright (C) 1987, 1991, 1995, 1998,
-   1999, 2000, 2001 Free Software Foundation, Inc.
+   1999, 2000, 2001, 2003, 2004 Free Software Foundation, Inc.
 
 This file is part of GCC.
 
@@ -18,22 +18,20 @@ for more details.
 
 You should have received a copy of the GNU General Public License
 along with GCC; see the file COPYING.  If not, write to the Free
-Software Foundation, 59 Temple Place - Suite 330, Boston, MA
-02111-1307, USA.  */
+Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
+02110-1301, USA.  */
 
 
-#include "hconfig.h"
+#include "bconfig.h"
 #include "system.h"
+#include "coretypes.h"
+#include "tm.h"
 #include "rtl.h"
 #include "errors.h"
 #include "gensupport.h"
 
-static void gen_insn PARAMS ((rtx, int));
-
 static void
-gen_insn (insn, code)
-     rtx insn;
-     int code;
+gen_insn (rtx insn, int code)
 {
   const char *name = XSTR (insn, 0);
   int truth = maybe_eval_c_test (XSTR (insn, 2));
@@ -44,29 +42,26 @@ gen_insn (insn, code)
   if (name[0] != 0 && name[0] != '*')
     {
       if (truth == 0)
-	printf ("#define CODE_FOR_%s CODE_FOR_nothing\n", name);
+        printf ("#define CODE_FOR_%s CODE_FOR_nothing\n", name);
       else
-	printf ("  CODE_FOR_%s = %d,\n", name, code);
+        printf ("  CODE_FOR_%s = %d,\n", name, code);
     }
 }
 
-extern int main PARAMS ((int, char **));
-
 int
-main (argc, argv)
-     int argc;
-     char **argv;
+main (int argc, char **argv)
 {
   rtx desc;
+
+/* BEGIN GCC-XML MODIFICATIONS (2007/10/08 15:34:29) */
+  gccxml_fix_printf();
+/* END GCC-XML MODIFICATIONS (2007/10/08 15:34:29) */
 
   progname = "gencodes";
 
   /* We need to see all the possibilities.  Elided insns may have
      direct references to CODE_FOR_xxx in C code.  */
   insn_elision = 0;
-
-  if (argc <= 1)
-    fatal ("no input file name");
 
   if (init_md_reader_args (argc, argv) != SUCCESS_EXIT_CODE)
     return (FATAL_EXIT_CODE);
@@ -89,10 +84,10 @@ enum insn_code {");
 
       desc = read_md_rtx (&line_no, &insn_code_number);
       if (desc == NULL)
-	break;
+        break;
 
       if (GET_CODE (desc) == DEFINE_INSN || GET_CODE (desc) == DEFINE_EXPAND)
-	gen_insn (desc, insn_code_number);
+        gen_insn (desc, insn_code_number);
     }
 
   puts ("  CODE_FOR_nothing\n\
@@ -104,13 +99,4 @@ enum insn_code {");
     return FATAL_EXIT_CODE;
 
   return SUCCESS_EXIT_CODE;
-}
-
-/* Define this so we can link with print-rtl.o to get debug_rtx function.  */
-
-const char *
-get_insn_name (code)
-     int code ATTRIBUTE_UNUSED;
-{
-  return NULL;
 }

@@ -12,6 +12,9 @@ Behavior is undefined if the pathname ends in a directory separator.
 
 */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 #include "ansidecl.h"
 #include "libiberty.h"
 #include "safe-ctype.h"
@@ -33,12 +36,11 @@ Behavior is undefined if the pathname ends in a directory separator.
 # define IS_DIR_SEPARATOR(ch) ((ch) == DIR_SEPARATOR)
 #else /* DIR_SEPARATOR_2 */
 # define IS_DIR_SEPARATOR(ch) \
-	(((ch) == DIR_SEPARATOR) || ((ch) == DIR_SEPARATOR_2))
+        (((ch) == DIR_SEPARATOR) || ((ch) == DIR_SEPARATOR_2))
 #endif /* DIR_SEPARATOR_2 */
 
 char *
-basename (name)
-     const char *name;
+basename (const char *name)
 {
   const char *base;
 
@@ -51,9 +53,9 @@ basename (name)
   for (base = name; *name; name++)
     {
       if (IS_DIR_SEPARATOR (*name))
-	{
-	  base = name + 1;
-	}
+        {
+          base = name + 1;
+        }
     }
   return (char *) base;
 }

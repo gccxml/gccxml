@@ -2,25 +2,25 @@
    hosting on U/WIN (Windows32), using GNU tools and the Windows32 API 
    Library, as distinct from winnt.h, which is used to build GCC for use 
    with a windows style library and tool set and uses the Microsoft tools.
-   Copyright (C) 1999, 2002 Free Software Foundation, Inc.
+   Copyright (C) 1999, 2002, 2003, 2004 Free Software Foundation, Inc.
    Contributed by Mumit Khan  <khan@xraylith.wisc.edu>.
 
-This file is part of GNU CC.
+This file is part of GCC.
 
-GNU CC is free software; you can redistribute it and/or modify
+GCC is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation; either version 2, or (at your option)
 any later version.
 
-GNU CC is distributed in the hope that it will be useful,
+GCC is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with GNU CC; see the file COPYING.  If not, write to
-the Free Software Foundation, 59 Temple Place - Suite 330,
-Boston, MA 02111-1307, USA.  */
+along with GCC; see the file COPYING.  If not, write to
+the Free Software Foundation, 51 Franklin Street, Fifth Floor,
+Boston, MA 02110-1301, USA.  */
 
 /* Most of this is the same as for Cygwin32, except for changing some
    specs.  */
@@ -31,17 +31,17 @@ Boston, MA 02111-1307, USA.  */
 #define MD_STARTFILE_PREFIX "/usr/gnu/lib/"
 
 #undef MAYBE_UWIN_CPP_BUILTINS
-#define MAYBE_UWIN_CPP_BUILTINS()			\
-  do							\
-    {							\
-	builtin_define_std ("WINNT");			\
-	builtin_define ("_WIN32");			\
-	builtin_define ("__WIN32__");			\
-	builtin_define ("_UWIN");			\
-	builtin_define ("__UWIN__");			\
-	builtin_define ("__MSVCRT__");			\
-	builtin_define ("_STD_INCLUDE_DIR=mingw32");	\
-    }							\
+#define MAYBE_UWIN_CPP_BUILTINS()                        \
+  do                                                        \
+    {                                                        \
+        builtin_define_std ("WINNT");                        \
+        builtin_define ("_WIN32");                        \
+        builtin_define ("__WIN32__");                        \
+        builtin_define ("_UWIN");                        \
+        builtin_define ("__UWIN__");                        \
+        builtin_define ("__MSVCRT__");                        \
+        builtin_define ("_STD_INCLUDE_DIR=mingw32");        \
+    }                                                        \
   while (0)
 
 #undef CPP_SPEC
@@ -54,9 +54,6 @@ Boston, MA 02111-1307, USA.  */
 #undef LIB_SPEC
 #define LIB_SPEC \
   "%{pg:-lgmon} %{mwindows:-luser32 -lgdi32 -lcomdlg32} -lkernel32 -ladvapi32"
-
-/* This is needed in g77spec.c for now. Will be removed in the future.  */
-#define WIN32_UWIN_TARGET 1
 
 /* Include in the mingw32 libraries with libgcc */
 #undef LIBGCC_SPEC
@@ -77,22 +74,18 @@ Boston, MA 02111-1307, USA.  */
    properly.  If we are generating SDB debugging information, this
    will happen automatically, so we only need to handle other cases.  */
 #undef ASM_DECLARE_FUNCTION_NAME
-#define ASM_DECLARE_FUNCTION_NAME(FILE, NAME, DECL)			\
-  do									\
-    {									\
-      if (i386_pe_dllexport_name_p (NAME))				\
-	i386_pe_record_exported_symbol (NAME, 0);			\
-      /* UWIN binutils bug workaround.  */				\
-      if (0 && write_symbols != SDB_DEBUG)				\
-	i386_pe_declare_function_type (FILE, NAME, TREE_PUBLIC (DECL));	\
-      ASM_OUTPUT_LABEL (FILE, NAME);					\
-    }									\
+#define ASM_DECLARE_FUNCTION_NAME(FILE, NAME, DECL)                        \
+  do                                                                        \
+    {                                                                        \
+      if (i386_pe_dllexport_name_p (NAME))                                \
+        i386_pe_record_exported_symbol (NAME, 0);                        \
+      /* UWIN binutils bug workaround.  */                                \
+      if (0 && write_symbols != SDB_DEBUG)                                \
+        i386_pe_declare_function_type (FILE, NAME, TREE_PUBLIC (DECL));        \
+      ASM_OUTPUT_LABEL (FILE, NAME);                                        \
+    }                                                                        \
   while (0)
 
 #undef ASM_OUTPUT_EXTERNAL
 #undef ASM_OUTPUT_EXTERNAL_LIBCALL
-
-/* Override Cygwin's definition. This is necessary now due to the way
-   Cygwin profiling code is written. Once "fixed", we can remove this.  */
-#undef SUBTARGET_PROLOGUE
 

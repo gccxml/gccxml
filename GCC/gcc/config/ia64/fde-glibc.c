@@ -1,22 +1,22 @@
-/* Copyright (C) 2000, 2001 Free Software Foundation, Inc.
+/* Copyright (C) 2000, 2001, 2003 Free Software Foundation, Inc.
    Contributed by Richard Henderson <rth@cygnus.com>.
 
-   This file is part of GNU CC.
+   This file is part of GCC.
 
-   GNU CC is free software; you can redistribute it and/or modify
+   GCC is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
    the Free Software Foundation; either version 2, or (at your option)
    any later version.
 
-   GNU CC is distributed in the hope that it will be useful,
+   GCC is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
    GNU General Public License for more details.
 
    You should have received a copy of the GNU General Public License
-   along with GNU CC; see the file COPYING.  If not, write to
-   the Free Software Foundation, 59 Temple Place - Suite 330,
-   Boston, MA 02111-1307, USA.  */
+   along with GCC; see the file COPYING.  If not, write to
+   the Free Software Foundation, 51 Franklin Street, Fifth Floor,
+   Boston, MA 02110-1301, USA.  */
 
 /* As a special exception, if you link this library with other files,
    some of which are compiled with GCC, to produce an executable,
@@ -29,7 +29,7 @@
    to avoid register/deregister calls at DSO load/unload.  */
 
 #ifndef _GNU_SOURCE
-#define _GNU_SOURCE
+#define _GNU_SOURCE 1
 #endif
 #include "config.h"
 #include <stddef.h>
@@ -62,7 +62,7 @@ _Unwind_IteratePhdrCallback (struct dl_phdr_info *info, size_t size, void *ptr)
 
   /* Make sure struct dl_phdr_info is at least as big as we need.  */
   if (size < offsetof (struct dl_phdr_info, dlpi_phnum)
-	     + sizeof (info->dlpi_phnum))
+             + sizeof (info->dlpi_phnum))
     return -1;
 
   match = 0;
@@ -77,17 +77,17 @@ _Unwind_IteratePhdrCallback (struct dl_phdr_info *info, size_t size, void *ptr)
   for (n = info->dlpi_phnum; --n >= 0; phdr++)
     {
       if (phdr->p_type == PT_LOAD)
-	{
-	  Elf64_Addr vaddr = phdr->p_vaddr + load_base;
-	  if (data->pc >= vaddr && data->pc < vaddr + phdr->p_memsz)
-	    match = 1;
-	  if (vaddr < seg_base)
-	    seg_base = vaddr;
-	}
+        {
+          Elf64_Addr vaddr = phdr->p_vaddr + load_base;
+          if (data->pc >= vaddr && data->pc < vaddr + phdr->p_memsz)
+            match = 1;
+          if (vaddr < seg_base)
+            seg_base = vaddr;
+        }
       else if (phdr->p_type == PT_IA_64_UNWIND)
-	p_unwind = phdr;
+        p_unwind = phdr;
       else if (phdr->p_type == PT_DYNAMIC)
-	p_dynamic = phdr;
+        p_dynamic = phdr;
     }
   if (!match || !p_unwind)
     return 0;
@@ -104,9 +104,9 @@ _Unwind_IteratePhdrCallback (struct dl_phdr_info *info, size_t size, void *ptr)
 
       f = f_base + mid;
       if (data->pc < f->start_offset + seg_base)
-	hi = mid;
+        hi = mid;
       else if (data->pc >= f->end_offset + seg_base)
-	lo = mid + 1;
+        lo = mid + 1;
       else
         goto found;
     }
@@ -121,21 +121,21 @@ _Unwind_IteratePhdrCallback (struct dl_phdr_info *info, size_t size, void *ptr)
 
   if (p_dynamic)
     {
-      /* For dynamicly linked executables and shared libraries,
-	 DT_PLTGOT is the gp value for that object.  */
+      /* For dynamically linked executables and shared libraries,
+         DT_PLTGOT is the gp value for that object.  */
       Elf64_Dyn *dyn = (Elf64_Dyn *)(p_dynamic->p_vaddr + load_base);
       for (; dyn->d_tag != DT_NULL ; dyn++)
-	if (dyn->d_tag == DT_PLTGOT)
-	  {
-	    /* On IA-64, _DYNAMIC is writable and GLIBC has relocated it.  */
-	    *data->gp = dyn->d_un.d_ptr;
-	    break;
-	  }
+        if (dyn->d_tag == DT_PLTGOT)
+          {
+            /* On IA-64, _DYNAMIC is writable and GLIBC has relocated it.  */
+            *data->gp = dyn->d_un.d_ptr;
+            break;
+          }
     }
   else
     {
       /* Otherwise this is a static executable with no _DYNAMIC.
-	 The gp is constant program-wide.  */
+         The gp is constant program-wide.  */
       register unsigned long gp __asm__("gp");
       *data->gp = gp;
     }

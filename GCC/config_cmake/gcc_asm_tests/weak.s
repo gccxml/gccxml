@@ -1,1 +1,1 @@
-	.weak foobar
+        .weak foobar

@@ -5,9 +5,9 @@
 
 #define TARGET_VERSION fprintf (stderr, " (IA-64) ELF");
 
-/* A C string constant that tells the GNU CC driver program options to pass to
+/* A C string constant that tells the GCC driver program options to pass to
    the assembler.  It can also specify how to translate options you give to GNU
-   CC into options for GNU CC to pass to the assembler.  */
+   CC into options for GCC to pass to the assembler.  */
 
 #if ((TARGET_CPU_DEFAULT | TARGET_DEFAULT) & MASK_GNU_AS) != 0
 /* GNU AS.  */
@@ -22,9 +22,9 @@
    %{mauto-pic:-M no_plabel}"
 #endif
 
-/* A C string constant that tells the GNU CC driver program options to pass to
-   the linker.  It can also specify how to translate options you give to GNU CC
-   into options for GNU CC to pass to the linker.  */
+/* A C string constant that tells the GCC driver program options to pass to
+   the linker.  It can also specify how to translate options you give to GCC
+   into options for GCC to pass to the linker.  */
 
 /* The Intel linker does not support dynamic linking, so we need -dn.
    The Intel linker gives annoying messages unless -N so is used.  */
@@ -41,10 +41,10 @@
 #undef  ENDFILE_SPEC
 #define ENDFILE_SPEC "crtend.o%s crtn.o%s"
 
-#undef	STARTFILE_SPEC
+#undef        STARTFILE_SPEC
 #define STARTFILE_SPEC "%{!shared: \
-			 %{!symbolic: \
-			  %{pg:gcrt0.o%s}%{!pg:%{p:mcrt0.o%s}%{!p:crt0.o%s}}}}\
-			crti.o%s crtbegin.o%s"
+                         %{!symbolic: \
+                          %{pg:gcrt0.o%s}%{!pg:%{p:mcrt0.o%s}%{!p:crt0.o%s}}}}\
+                        crti.o%s crtbegin.o%s"
 
 /* End of elf.h */

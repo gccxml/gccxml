@@ -1,39 +1,51 @@
-/* Copyright (C) 2000, 2001, 2003 Free Software Foundation, Inc.
+/* Copyright (C) 2000, 2001, 2003, 2005 Free Software Foundation, Inc.
    Contributed by Jes Sorensen, <Jes.Sorensen@cern.ch>
 
-   The GNU C Library is free software; you can redistribute it and/or
-   modify it under the terms of the GNU Library General Public License as
-   published by the Free Software Foundation; either version 2 of the
-   License, or (at your option) any later version.
+   This file is part of GCC.
 
-   The GNU C Library is distributed in the hope that it will be useful,
+   GCC is free software; you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation; either version 2, or (at your option)
+   any later version.
+
+   GCC is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   Library General Public License for more details.
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
 
-   You should have received a copy of the GNU Library General Public
-   License along with the GNU C Library; see the file COPYING.LIB.  If not,
-   write to the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
-   Boston, MA 02111-1307, USA.  */
+   You should have received a copy of the GNU General Public License
+   along with GCC; see the file COPYING.  If not, write to
+   the Free Software Foundation, 51 Franklin Street, Fifth Floor,
+   Boston, MA 02110-1301, USA.  */
+
+/* As a special exception, if you link this library with other files,
+   some of which are compiled with GCC, to produce an executable,
+   this library does not by itself cause the resulting executable
+   to be covered by the GNU General Public License.
+   This exception does not however invalidate any other reasons why
+   the executable file might be covered by the GNU General Public License.  */
 
 #include "auto-host.h"
 
 .section .ctors,"aw","progbits"
-	.align	8
+        .align        8
 __CTOR_END__:
-	data8	0
+        data8        0
 
 .section .dtors,"aw","progbits"
-	.align 8
+        .align 8
 __DTOR_END__:
-	data8	0
+        data8        0
 
 .section .jcr,"aw","progbits"
-	.align 8
+        .align 8
 __JCR_END__:
-	data8	0
+        data8        0
 
-#ifndef HAVE_INITFINI_ARRAY
+#ifdef HAVE_INITFINI_ARRAY
+        .global __do_global_ctors_aux
+        .hidden        __do_global_ctors_aux
+#else /* !HAVE_INITFINI_ARRAY */
 /*
  * Fragment of the ELF _init routine that invokes our dtor cleanup.
  *
@@ -48,80 +60,65 @@ __JCR_END__:
  * so that the next fragment in .fini gets the right value.
  */
 .section .init,"ax","progbits"
-	{ .mlx
-	  movl r2 = @pcrel(__do_global_ctors_aux# - 16)
-	}
-	{ .mii
-	  mov r3 = ip
-	  ;;
-	  add r2 = r2, r3
-	  ;;
-	}
-	{ .mib
-	  mov b6 = r2
-	  br.call.sptk.many b0 = b6
-	  ;;
-	}
+        { .mlx
+          movl r2 = @pcrel(__do_global_ctors_aux - 16)
+        }
+        { .mii
+          mov r3 = ip
+          ;;
+          add r2 = r2, r3
+          ;;
+        }
+        { .mib
+          mov b6 = r2
+          br.call.sptk.many b0 = b6
+          ;;
+        }
 #endif /* !HAVE_INITFINI_ARRAY */
 
 .text
-	.align 16
-#ifdef HAVE_INITFINI_ARRAY
-	/* This is referenced from crtbegin.o.  */
-	.globl __do_global_ctors_aux#
-	.type __do_global_ctors_aux#,@function
-	.hidden __do_global_ctors_aux#
-#endif
-	.proc __do_global_ctors_aux#
+        .align 32
+        .proc __do_global_ctors_aux
 __do_global_ctors_aux:
-	/*
-		for (loc0 = __CTOR_END__-1; *p != -1; --p)
-		  (*p) ();
-	*/
-	{ .mlx
-	  alloc loc4 = ar.pfs, 0, 5, 0, 0
-	  movl loc0 = @gprel(__CTOR_END__# - 8)
-	  ;;
-	}
-	{ .mmi
-	  add loc0 = loc0, gp
-	  mov loc1 = b0
-	  ;;
-	}
-	{
-	  .mmi
-	  ld8 loc3 = [loc0], -8
-	  mov loc2 = gp
-	  ;;
-	}
-	{ .mfb
-	  cmp.eq p6, p0 = -1, loc3
-(p6)	  br.cond.spnt.few 2f
-	}
-0:
-	{ .mmi
-	  ld8 r15 = [loc3], 8
-	  ;;
-	  ld8 gp = [loc3]
-	  mov b6 = r15
-	}
-	{ .mfb
-	  ld8 loc3 = [loc0], -8
-	  br.call.sptk.many b0 = b6
-	  ;;
-	}
-	{ .mfb
-	  cmp.ne p6, p0 = -1, loc3
-(p6)	  br.cond.sptk.few 0b
-	}
-2:
-	{ .mii
-	  mov gp = loc2
-	  mov b0 = loc1
-	  mov ar.pfs = loc4
-	}
-	{ .bbb
-	  br.ret.sptk.many b0
-	  ;;
-	}
-	.endp __do_global_ctors_aux#
+        .prologue
+        /*
+                for (loc0 = __CTOR_END__-1; *p != -1; --p)
+                  (*p) ();
+        */
+        .save ar.pfs, r34
+        alloc loc2 = ar.pfs, 0, 5, 0, 0
+        movl loc0 = @gprel(__CTOR_END__ - 8)
+        ;;
+
+        add loc0 = loc0, gp
+        ;;
+        ld8 loc3 = [loc0], -8
+        .save rp, loc1
+        mov loc1 = rp
+        .body
+        ;;
+
+        cmp.eq p6, p0 = -1, loc3
+        mov loc4 = gp
+(p6)        br.cond.spnt.few .exit
+
+.loop:        ld8 r15 = [loc3], 8
+        ;;
+        ld8 gp = [loc3]
+        mov b6 = r15
+
+        ld8 loc3 = [loc0], -8
+        nop 0
+        br.call.sptk.many rp = b6
+        ;;
+
+        cmp.ne p6, p0 = -1, loc3
+        nop 0
+(p6)        br.cond.sptk.few .loop
+
+.exit:        mov gp = loc3
+        mov rp = loc1
+        mov ar.pfs = loc2
+
+        br.ret.sptk.many rp
+        .endp __do_global_ctors_aux

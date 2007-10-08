@@ -1,5 +1,5 @@
 /* Header file for libgcc2.c.  */
-/* Copyright (C) 2000, 2001
+/* Copyright (C) 2000, 2001, 2004, 2005
    Free Software Foundation, Inc.
 
 This file is part of GCC.
@@ -16,8 +16,8 @@ for more details.
 
 You should have received a copy of the GNU General Public License
 along with GCC; see the file COPYING.  If not, write to the Free
-Software Foundation, 59 Temple Place - Suite 330, Boston, MA
-02111-1307, USA.  */
+Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
+02110-1301, USA.  */
 
 /* As a special exception, if you link this library with other files,
    some of which are compiled with GCC, to produce an executable,
@@ -30,23 +30,14 @@ Software Foundation, 59 Temple Place - Suite 330, Boston, MA
 #ifndef GCC_LIBGCC2_H
 #define GCC_LIBGCC2_H
 
+#ifndef HIDE_EXPORTS
+#pragma GCC visibility push(default)
+#endif
+
 extern int __gcc_bcmp (const unsigned char *, const unsigned char *, size_t);
 extern void __clear_cache (char *, char *);
 extern void __eprintf (const char *, const char *, unsigned int, const char *)
   __attribute__ ((__noreturn__));
-
-struct bb;
-extern void __bb_exit_func (void);
-extern void __bb_init_func (struct bb *);
-extern void __bb_fork_func (void);
-
-#if LONG_TYPE_SIZE == GCOV_TYPE_SIZE
-typedef long gcov_type;
-#else
-typedef long long gcov_type;
-#endif
-
-extern gcov_type *__bb_find_arc_counters (void);
 
 struct exception_descriptor;
 extern short int __get_eh_table_language (struct exception_descriptor *);
@@ -60,12 +51,78 @@ extern short int __get_eh_table_version (struct exception_descriptor *);
 #define LIBGCC2_WORDS_BIG_ENDIAN WORDS_BIG_ENDIAN
 #endif
 
+#ifndef LIBGCC2_DOUBLE_TYPE_SIZE
+#define LIBGCC2_DOUBLE_TYPE_SIZE DOUBLE_TYPE_SIZE
+#endif
 #ifndef LIBGCC2_LONG_DOUBLE_TYPE_SIZE
 #define LIBGCC2_LONG_DOUBLE_TYPE_SIZE LONG_DOUBLE_TYPE_SIZE
 #endif
 
-#ifndef MIN_UNITS_PER_WORD
-#define MIN_UNITS_PER_WORD UNITS_PER_WORD
+#ifndef LIBGCC2_HAS_SF_MODE
+#define LIBGCC2_HAS_SF_MODE (BITS_PER_UNIT == 8)
+#endif
+
+#ifndef LIBGCC2_HAS_DF_MODE
+#define LIBGCC2_HAS_DF_MODE \
+  (BITS_PER_UNIT == 8 \
+   && (LIBGCC2_DOUBLE_TYPE_SIZE == 64 \
+       || LIBGCC2_LONG_DOUBLE_TYPE_SIZE == 64))
+#endif
+
+#ifndef LIBGCC2_HAS_XF_MODE
+#define LIBGCC2_HAS_XF_MODE \
+  (BITS_PER_UNIT == 8 && LIBGCC2_LONG_DOUBLE_TYPE_SIZE == 80)
+#endif
+
+#ifndef LIBGCC2_HAS_TF_MODE
+#define LIBGCC2_HAS_TF_MODE \
+  (BITS_PER_UNIT == 8 && LIBGCC2_LONG_DOUBLE_TYPE_SIZE == 128)
+#endif
+
+#ifndef SF_SIZE
+#if LIBGCC2_HAS_SF_MODE
+#define SF_SIZE FLT_MANT_DIG
+#else
+#define SF_SIZE 0
+#endif
+#endif
+
+#ifndef DF_SIZE
+#if LIBGCC2_HAS_DF_MODE
+#if LIBGCC2_DOUBLE_TYPE_SIZE == 64
+#define DF_SIZE DBL_MANT_DIG
+#elif LIBGCC2_LONG_DOUBLE_TYPE_SIZE == 64
+#define DF_SIZE LDBL_MANT_DIG
+#else
+#define DF_SIZE 0
+#endif
+#else
+#define DF_SIZE 0
+#endif
+#endif
+
+#ifndef XF_SIZE
+#if LIBGCC2_HAS_XF_MODE
+#define XF_SIZE LDBL_MANT_DIG
+#else
+#define XF_SIZE 0
+#endif
+#endif
+
+#ifndef TF_SIZE
+#if LIBGCC2_HAS_TF_MODE
+#define TF_SIZE LDBL_MANT_DIG
+#else
+#define TF_SIZE 0
+#endif
+#endif
+
+/* FIXME: This #ifdef probably should be removed, ie. enable the test
+   for mips too.  */
+#ifdef __powerpc__
+#define IS_IBM_EXTENDED(SIZE) (SIZE == 106)
+#else
+#define IS_IBM_EXTENDED(SIZE) 0
 #endif
 
 /* In the first part of this file, we are interfacing to calls generated
@@ -77,60 +134,42 @@ extern short int __get_eh_table_version (struct exception_descriptor *);
    because the sizes for those types can be configured to be anything.
    Instead we use the following special type names.  */
 
-typedef		 int QItype	__attribute__ ((mode (QI)));
-typedef unsigned int UQItype	__attribute__ ((mode (QI)));
-typedef		 int HItype	__attribute__ ((mode (HI)));
-typedef unsigned int UHItype	__attribute__ ((mode (HI)));
+typedef                 int QItype        __attribute__ ((mode (QI)));
+typedef unsigned int UQItype        __attribute__ ((mode (QI)));
+typedef                 int HItype        __attribute__ ((mode (HI)));
+typedef unsigned int UHItype        __attribute__ ((mode (HI)));
 #if MIN_UNITS_PER_WORD > 1
-/* These typedefs are usually forbidden on dsp's with UNITS_PER_WORD 1 */
-typedef 	 int SItype	__attribute__ ((mode (SI)));
-typedef unsigned int USItype	__attribute__ ((mode (SI)));
+/* These typedefs are usually forbidden on dsp's with UNITS_PER_WORD 1.  */
+typedef          int SItype        __attribute__ ((mode (SI)));
+typedef unsigned int USItype        __attribute__ ((mode (SI)));
 #if LONG_LONG_TYPE_SIZE > 32
-/* These typedefs are usually forbidden on archs with UNITS_PER_WORD 2 */
-typedef		 int DItype	__attribute__ ((mode (DI)));
-typedef unsigned int UDItype	__attribute__ ((mode (DI)));
+/* These typedefs are usually forbidden on archs with UNITS_PER_WORD 2.  */
+typedef                 int DItype        __attribute__ ((mode (DI)));
+typedef unsigned int UDItype        __attribute__ ((mode (DI)));
 #if MIN_UNITS_PER_WORD > 4
-/* These typedefs are usually forbidden on archs with UNITS_PER_WORD 4 */
-typedef		 int TItype	__attribute__ ((mode (TI)));
-typedef unsigned int UTItype	__attribute__ ((mode (TI)));
+/* These typedefs are usually forbidden on archs with UNITS_PER_WORD 4.  */
+typedef                 int TItype        __attribute__ ((mode (TI)));
+typedef unsigned int UTItype        __attribute__ ((mode (TI)));
 #endif
 #endif
 #endif
 
-#if BITS_PER_UNIT == 8
-
-typedef 	float SFtype	__attribute__ ((mode (SF)));
-typedef		float DFtype	__attribute__ ((mode (DF)));
-
-#if LIBGCC2_LONG_DOUBLE_TYPE_SIZE == 96
-typedef		float XFtype	__attribute__ ((mode (XF)));
+#if LIBGCC2_HAS_SF_MODE
+typedef         float SFtype        __attribute__ ((mode (SF)));
+typedef _Complex float SCtype        __attribute__ ((mode (SC)));
 #endif
-#if LIBGCC2_LONG_DOUBLE_TYPE_SIZE == 128
-typedef		float TFtype	__attribute__ ((mode (TF)));
+#if LIBGCC2_HAS_DF_MODE
+typedef                float DFtype        __attribute__ ((mode (DF)));
+typedef _Complex float DCtype        __attribute__ ((mode (DC)));
 #endif
-
-#else /* BITS_PER_UNIT != 8 */
-
-/* On dsp's there are usually qf/hf/tqf modes used instead of the above.
-   For now we don't support them in libgcc2.c.  */
-
-#undef L_fixdfdi
-#undef L_fixsfdi
-#undef L_fixtfdi
-#undef L_fixunsdfdi
-#undef L_fixunsdfsi
-#undef L_fixunssfdi
-#undef L_fixunssfsi
-#undef L_fixunstfdi
-#undef L_fixunsxfdi
-#undef L_fixunsxfsi
-#undef L_fixxfdi
-#undef L_floatdidf
-#undef L_floatdisf
-#undef L_floatditf
-#undef L_floatdixf
-
-#endif /* BITS_PER_UNIT != 8 */
+#if LIBGCC2_HAS_XF_MODE
+typedef                float XFtype        __attribute__ ((mode (XF)));
+typedef _Complex float XCtype        __attribute__ ((mode (XC)));
+#endif
+#if LIBGCC2_HAS_TF_MODE
+typedef                float TFtype        __attribute__ ((mode (TF)));
+typedef _Complex float TCtype        __attribute__ ((mode (TC)));
+#endif
 
 typedef int word_type __attribute__ ((mode (__word__)));
 
@@ -148,81 +187,128 @@ typedef int word_type __attribute__ ((mode (__word__)));
 #define float bogus_type
 #define double bogus_type
 
-#if MIN_UNITS_PER_WORD > 4
+/* Versions prior to 3.4.4 were not taking into account the word size for
+   the 5 trapping arithmetic functions absv, addv, subv, mulv and negv.  As
+   a consequence, the si and di variants were always and the only ones emitted.
+   To maintain backward compatibility, COMPAT_SIMODE_TRAPPING_ARITHMETIC is
+   defined on platforms where it makes sense to still have the si variants
+   emitted.  As a bonus, their implementation is now correct.  Note that the
+   same mechanism should have been implemented for the di variants, but it
+   turns out that no platform would define COMPAT_DIMODE_TRAPPING_ARITHMETIC
+   if it existed.  */
+
+#if LIBGCC2_UNITS_PER_WORD == 8
 #define W_TYPE_SIZE (8 * BITS_PER_UNIT)
-#define Wtype	DItype
-#define UWtype	UDItype
-#define HWtype	DItype
-#define UHWtype	UDItype
-#define DWtype	TItype
-#define UDWtype	UTItype
-#define __NW(a,b)	__ ## a ## di ## b
-#define __NDW(a,b)	__ ## a ## ti ## b
-#elif MIN_UNITS_PER_WORD > 2 \
-      || (MIN_UNITS_PER_WORD > 1 && LONG_LONG_TYPE_SIZE > 32)
+#define Wtype        DItype
+#define UWtype        UDItype
+#define HWtype        DItype
+#define UHWtype        UDItype
+#define DWtype        TItype
+#define UDWtype        UTItype
+#define __NW(a,b)        __ ## a ## di ## b
+#define __NDW(a,b)        __ ## a ## ti ## b
+#define COMPAT_SIMODE_TRAPPING_ARITHMETIC
+#elif LIBGCC2_UNITS_PER_WORD == 4
 #define W_TYPE_SIZE (4 * BITS_PER_UNIT)
-#define Wtype	SItype
-#define UWtype	USItype
-#define HWtype	SItype
-#define UHWtype	USItype
-#define DWtype	DItype
-#define UDWtype	UDItype
-#define __NW(a,b)	__ ## a ## si ## b
-#define __NDW(a,b)	__ ## a ## di ## b
-#elif MIN_UNITS_PER_WORD > 1
+#define Wtype        SItype
+#define UWtype        USItype
+#define HWtype        SItype
+#define UHWtype        USItype
+#define DWtype        DItype
+#define UDWtype        UDItype
+#define __NW(a,b)        __ ## a ## si ## b
+#define __NDW(a,b)        __ ## a ## di ## b
+#elif LIBGCC2_UNITS_PER_WORD == 2
 #define W_TYPE_SIZE (2 * BITS_PER_UNIT)
-#define Wtype	HItype
-#define UWtype	UHItype
-#define HWtype	HItype
-#define UHWtype	UHItype
-#define DWtype	SItype
-#define UDWtype	USItype
-#define __NW(a,b)	__ ## a ## hi ## b
-#define __NDW(a,b)	__ ## a ## si ## b
+#define Wtype        HItype
+#define UWtype        UHItype
+#define HWtype        HItype
+#define UHWtype        UHItype
+#define DWtype        SItype
+#define UDWtype        USItype
+#define __NW(a,b)        __ ## a ## hi ## b
+#define __NDW(a,b)        __ ## a ## si ## b
 #else
 #define W_TYPE_SIZE BITS_PER_UNIT
-#define Wtype	QItype
+#define Wtype        QItype
 #define UWtype  UQItype
-#define HWtype	QItype
-#define UHWtype	UQItype
-#define DWtype	HItype
-#define UDWtype	UHItype
-#define __NW(a,b)	__ ## a ## qi ## b
-#define __NDW(a,b)	__ ## a ## hi ## b
+#define HWtype        QItype
+#define UHWtype        UQItype
+#define DWtype        HItype
+#define UDWtype        UHItype
+#define __NW(a,b)        __ ## a ## qi ## b
+#define __NDW(a,b)        __ ## a ## hi ## b
 #endif
 
 #define Wtype_MAX ((Wtype)(((UWtype)1 << (W_TYPE_SIZE - 1)) - 1))
 #define Wtype_MIN (- Wtype_MAX - 1)
 
-#define __muldi3	__NDW(mul,3)
-#define __divdi3	__NDW(div,3)
-#define __udivdi3	__NDW(udiv,3)
-#define __moddi3	__NDW(mod,3)
-#define __umoddi3	__NDW(umod,3)
-#define __negdi2	__NDW(neg,2)
-#define __lshrdi3	__NDW(lshr,3)
-#define __ashldi3	__NDW(ashl,3)
-#define __ashrdi3	__NDW(ashr,3)
-#define __ffsdi2	__NDW(ffs,2)
-#define __cmpdi2	__NDW(cmp,2)
-#define __ucmpdi2	__NDW(ucmp,2)
-#define __udivmoddi4	__NDW(udivmod,4)
-#define __fixunstfDI	__NDW(fixunstf,)
-#define __fixtfdi	__NDW(fixtf,)
-#define __fixunsxfDI	__NDW(fixunsxf,)
-#define __fixxfdi	__NDW(fixxf,)
-#define __fixunsdfDI	__NDW(fixunsdf,)
-#define __fixdfdi	__NDW(fixdf,)
-#define __fixunssfDI	__NDW(fixunssf,)
-#define __fixsfdi	__NDW(fixsf,)
-#define __floatdixf	__NDW(float,xf)
-#define __floatditf	__NDW(float,tf)
-#define __floatdidf	__NDW(float,df)
-#define __floatdisf	__NDW(float,sf)
-#define __fixunsxfSI	__NW(fixunsxf,)
-#define __fixunstfSI	__NW(fixunstf,)
-#define __fixunsdfSI	__NW(fixunsdf,)
-#define __fixunssfSI	__NW(fixunssf,)
+#if W_TYPE_SIZE == 8
+# define Wtype_MAXp1_F        0x1p8f
+#elif W_TYPE_SIZE == 16
+# define Wtype_MAXp1_F        0x1p16f
+#elif W_TYPE_SIZE == 32
+# define Wtype_MAXp1_F        0x1p32f
+#elif W_TYPE_SIZE == 64
+# define Wtype_MAXp1_F        0x1p64f
+#else
+# error "expand the table"
+#endif
+
+#define __muldi3        __NDW(mul,3)
+#define __divdi3        __NDW(div,3)
+#define __udivdi3        __NDW(udiv,3)
+#define __moddi3        __NDW(mod,3)
+#define __umoddi3        __NDW(umod,3)
+#define __negdi2        __NDW(neg,2)
+#define __lshrdi3        __NDW(lshr,3)
+#define __ashldi3        __NDW(ashl,3)
+#define __ashrdi3        __NDW(ashr,3)
+#define __cmpdi2        __NDW(cmp,2)
+#define __ucmpdi2        __NDW(ucmp,2)
+#define __udivmoddi4        __NDW(udivmod,4)
+#define __fixunstfDI        __NDW(fixunstf,)
+#define __fixtfdi        __NDW(fixtf,)
+#define __fixunsxfDI        __NDW(fixunsxf,)
+#define __fixxfdi        __NDW(fixxf,)
+#define __fixunsdfDI        __NDW(fixunsdf,)
+#define __fixdfdi        __NDW(fixdf,)
+#define __fixunssfDI        __NDW(fixunssf,)
+#define __fixsfdi        __NDW(fixsf,)
+#define __floatdixf        __NDW(float,xf)
+#define __floatditf        __NDW(float,tf)
+#define __floatdidf        __NDW(float,df)
+#define __floatdisf        __NDW(float,sf)
+#define __floatundixf        __NDW(floatun,xf)
+#define __floatunditf        __NDW(floatun,tf)
+#define __floatundidf        __NDW(floatun,df)
+#define __floatundisf        __NDW(floatun,sf)
+#define __fixunsxfSI        __NW(fixunsxf,)
+#define __fixunstfSI        __NW(fixunstf,)
+#define __fixunsdfSI        __NW(fixunsdf,)
+#define __fixunssfSI        __NW(fixunssf,)
+
+#define __absvSI2        __NW(absv,2)
+#define __addvSI3        __NW(addv,3)
+#define __subvSI3        __NW(subv,3)
+#define __mulvSI3        __NW(mulv,3)
+#define __negvSI2        __NW(negv,2)
+#define __absvDI2        __NDW(absv,2)
+#define __addvDI3        __NDW(addv,3)
+#define __subvDI3        __NDW(subv,3)
+#define __mulvDI3        __NDW(mulv,3)
+#define __negvDI2        __NDW(negv,2)
+
+#define __ffsSI2        __NW(ffs,2)
+#define __clzSI2        __NW(clz,2)
+#define __ctzSI2        __NW(ctz,2)
+#define __popcountSI2        __NW(popcount,2)
+#define __paritySI2        __NW(parity,2)
+#define __ffsDI2        __NDW(ffs,2)
+#define __clzDI2        __NDW(clz,2)
+#define __ctzDI2        __NDW(ctz,2)
+#define __popcountDI2        __NDW(popcount,2)
+#define __parityDI2        __NDW(parity,2)
 
 extern DWtype __muldi3 (DWtype, DWtype);
 extern DWtype __divdi3 (DWtype, DWtype);
@@ -244,7 +330,6 @@ extern DWtype __negdi2 (DWtype);
 extern DWtype __lshrdi3 (DWtype, word_type);
 extern DWtype __ashldi3 (DWtype, word_type);
 extern DWtype __ashrdi3 (DWtype, word_type);
-extern DWtype __ffsdi2 (DWtype);
 
 /* __udiv_w_sdiv is static inline when building other libgcc2 portions.  */
 #if (!defined(L_udivdi3) && !defined(L_divdi3) && \
@@ -255,40 +340,68 @@ extern UWtype __udiv_w_sdiv (UWtype *, UWtype, UWtype, UWtype);
 extern word_type __cmpdi2 (DWtype, DWtype);
 extern word_type __ucmpdi2 (DWtype, DWtype);
 
-extern Wtype __absvsi2 (Wtype);
-extern DWtype __absvdi2 (DWtype);
-extern Wtype __addvsi3 (Wtype, Wtype);
-extern DWtype __addvdi3 (DWtype, DWtype);
-extern Wtype __subvsi3 (Wtype, Wtype);
-extern DWtype __subvdi3 (DWtype, DWtype);
-extern Wtype __mulvsi3 (Wtype, Wtype);
-extern DWtype __mulvdi3 (DWtype, DWtype);
-extern Wtype __negvsi2 (Wtype);
-extern DWtype __negvdi2 (DWtype);
+extern Wtype __absvSI2 (Wtype);
+extern Wtype __addvSI3 (Wtype, Wtype);
+extern Wtype __subvSI3 (Wtype, Wtype);
+extern Wtype __mulvSI3 (Wtype, Wtype);
+extern Wtype __negvSI2 (Wtype);
+extern DWtype __absvDI2 (DWtype);
+extern DWtype __addvDI3 (DWtype, DWtype);
+extern DWtype __subvDI3 (DWtype, DWtype);
+extern DWtype __mulvDI3 (DWtype, DWtype);
+extern DWtype __negvDI2 (DWtype);
 
-#if BITS_PER_UNIT == 8
-extern DWtype __fixdfdi (DFtype);
+#ifdef COMPAT_SIMODE_TRAPPING_ARITHMETIC
+extern SItype __absvsi2 (SItype);
+extern SItype __addvsi3 (SItype, SItype);
+extern SItype __subvsi3 (SItype, SItype);
+extern SItype __mulvsi3 (SItype, SItype);
+extern SItype __negvsi2 (SItype);
+#endif /* COMPAT_SIMODE_TRAPPING_ARITHMETIC */
+
+#undef int
+#if LIBGCC2_HAS_SF_MODE
 extern DWtype __fixsfdi (SFtype);
-extern DFtype __floatdidf (DWtype);
 extern SFtype __floatdisf (DWtype);
-extern UWtype __fixunsdfSI (DFtype);
+extern SFtype __floatundisf (UDWtype);
 extern UWtype __fixunssfSI (SFtype);
-extern DWtype __fixunsdfDI (DFtype);
 extern DWtype __fixunssfDI (SFtype);
+extern SFtype __powisf2 (SFtype, int);
+extern SCtype __divsc3 (SFtype, SFtype, SFtype, SFtype);
+extern SCtype __mulsc3 (SFtype, SFtype, SFtype, SFtype);
+#endif
+#if LIBGCC2_HAS_DF_MODE
+extern DWtype __fixdfdi (DFtype);
+extern DFtype __floatdidf (DWtype);
+extern DFtype __floatundidf (UDWtype);
+extern UWtype __fixunsdfSI (DFtype);
+extern DWtype __fixunsdfDI (DFtype);
+extern DFtype __powidf2 (DFtype, int);
+extern DCtype __divdc3 (DFtype, DFtype, DFtype, DFtype);
+extern DCtype __muldc3 (DFtype, DFtype, DFtype, DFtype);
+#endif
 
-#if LIBGCC2_LONG_DOUBLE_TYPE_SIZE == 96
+#if LIBGCC2_HAS_XF_MODE
 extern DWtype __fixxfdi (XFtype);
 extern DWtype __fixunsxfDI (XFtype);
 extern XFtype __floatdixf (DWtype);
+extern XFtype __floatundixf (UDWtype);
 extern UWtype __fixunsxfSI (XFtype);
+extern XFtype __powixf2 (XFtype, int);
+extern XCtype __divxc3 (XFtype, XFtype, XFtype, XFtype);
+extern XCtype __mulxc3 (XFtype, XFtype, XFtype, XFtype);
 #endif
 
-#if LIBGCC2_LONG_DOUBLE_TYPE_SIZE == 128
+#if LIBGCC2_HAS_TF_MODE
 extern DWtype __fixunstfDI (TFtype);
 extern DWtype __fixtfdi (TFtype);
 extern TFtype __floatditf (DWtype);
+extern TFtype __floatunditf (UDWtype);
+extern TFtype __powitf2 (TFtype, int);
+extern TCtype __divtc3 (TFtype, TFtype, TFtype, TFtype);
+extern TCtype __multc3 (TFtype, TFtype, TFtype, TFtype);
 #endif
-#endif /* BITS_PER_UNIT == 8 */
+#define int bogus_type
 
 /* DWstructs are pairs of Wtype values in the order determined by
    LIBGCC2_WORDS_BIG_ENDIAN.  */
@@ -309,6 +422,35 @@ typedef union
   DWtype ll;
 } DWunion;
 
+/* Defined for L_popcount_tab.  Exported here because some targets may
+   want to use it for their own versions of the __popcount builtins.  */
+extern const UQItype __popcount_tab[256];
+
+/* Defined for L_clz.  Exported here because some targets may want to use
+   it for their own versions of the __clz builtins.  It contains the bit
+   position of the first set bit for the numbers 0 - 255.  This avoids the
+   need for a separate table for the __ctz builtins.  */
+extern const UQItype __clz_tab[256];
+
 #include "longlong.h"
+
+#undef int
+extern int __clzDI2 (UDWtype);
+extern int __clzSI2 (UWtype);
+extern int __ctzSI2 (UWtype);
+extern int __ffsSI2 (UWtype);
+extern int __ffsDI2 (DWtype);
+extern int __ctzDI2 (UDWtype);
+extern int __popcountSI2 (UWtype);
+extern int __popcountDI2 (UDWtype);
+extern int __paritySI2 (UWtype);
+extern int __parityDI2 (UDWtype);
+#define int bogus_type
+
+extern void __enable_execute_stack (void *);
+
+#ifndef HIDE_EXPORTS
+#pragma GCC visibility pop
+#endif
 
 #endif /* ! GCC_LIBGCC2_H */

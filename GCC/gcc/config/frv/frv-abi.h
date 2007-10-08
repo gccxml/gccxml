@@ -1,23 +1,23 @@
 /* Frv map GCC names to FR-V ABI.
-   Copyright (C) 2000 Free Software Foundation, Inc.
+   Copyright (C) 2000, 2003, 2004 Free Software Foundation, Inc.
    Contributed by Red Hat, Inc.
 
-This file is part of GNU CC.
+This file is part of GCC.
 
-GNU CC is free software; you can redistribute it and/or modify
+GCC is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation; either version 2, or (at your option)
 any later version.
 
-GNU CC is distributed in the hope that it will be useful,
+GCC is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with GNU CC; see the file COPYING.  If not, write to
-the Free Software Foundation, 59 Temple Place - Suite 330,
-Boston, MA 02111-1307, USA.  */
+along with GCC; see the file COPYING.  If not, write to
+the Free Software Foundation, 51 Franklin Street, Fifth Floor,
+Boston, MA 02110-1301, USA.  */
 
 /* For each of the functions in the library that has a corresponding name in
    the ABI, add an equivalence between the GCC name and the ABI name.  This is
@@ -25,25 +25,26 @@ Boston, MA 02111-1307, USA.  */
 
 #ifdef __GNUC__
 #ifdef __FRV_UNDERSCORE__
-#define RENAME_LIBRARY(OLD,NEW)						\
-__asm__ (".globl\t_" #NEW "\n"						\
-	 "_" #NEW "=_" #OLD "\n"					\
-	 "\t.type\t_" #NEW ",@function\n");
+#define RENAME_LIBRARY(OLD,NEW)                                                \
+__asm__ (".globl\t_" #NEW "\n"                                                \
+         "_" #NEW "=_" #OLD "\n"                                        \
+         "\t.type\t_" #NEW ",@function\n");
 
 #else
-#define RENAME_LIBRARY(OLD,NEW)						\
-__asm__ (".globl\t" #NEW "\n"						\
-	 #NEW "=" #OLD "\n"						\
-	 "\t.type\t" #NEW ",@function\n");
+#define RENAME_LIBRARY(OLD,NEW)                                                \
+__asm__ (".globl\t" #NEW "\n"                                                \
+         #NEW "=" #OLD "\n"                                                \
+         "\t.type\t" #NEW ",@function\n");
 #endif
 
-#define CREATE_DOUBLE_SHIFT(OLD,NEW)					\
-__asm__ (".text\n"							\
-	 "\t.globl\t" #NEW "\n"						\
-	 "\t.type\t" #NEW ",@function\n"				\
-	 #NEW ":\n"							\
-	 "\tor\tgr11, gr0, gr10\n"					\
-	 "\tbra\t" #OLD "\n");
+#define CREATE_DOUBLE_SHIFT(OLD,NEW)                                        \
+__asm__ (".text\n"                                                        \
+         "\t.globl\t" #NEW "\n"                                                \
+         "\t.type\t" #NEW ",@function\n"                                \
+         #NEW ":\n"                                                        \
+         "\tor\tgr11, gr0, gr10\n"                                        \
+         ".L" #OLD " = " #OLD "\n"                                        \
+         "\tbra\t.L" #OLD "\n");
 
 #ifdef L_sf_to_df
 #define DECLARE_LIBRARY_RENAMES RENAME_LIBRARY(__extendsfdf2,__ftod)
@@ -111,8 +112,8 @@ __asm__ (".text\n"							\
 
 #ifdef L_addsub_df
 #define DECLARE_LIBRARY_RENAMES \
-	RENAME_LIBRARY(__adddf3,__addd)
-	RENAME_LIBRARY(__subdf3,__subd)
+        RENAME_LIBRARY(__adddf3,__addd)
+        RENAME_LIBRARY(__subdf3,__subd)
 #endif
 
 #ifdef L_mul_df
@@ -125,8 +126,8 @@ __asm__ (".text\n"							\
 
 #ifdef L_addsub_sf
 #define DECLARE_LIBRARY_RENAMES \
-	RENAME_LIBRARY(__addsf3,__addf) \
-	RENAME_LIBRARY(__subsf3,__subf)
+        RENAME_LIBRARY(__addsf3,__addf) \
+        RENAME_LIBRARY(__subsf3,__subf)
 #endif
 
 #ifdef L_mul_sf
@@ -159,8 +160,8 @@ __asm__ (".text\n"							\
 
 #ifdef L_muldi3
 #define DECLARE_LIBRARY_RENAMES \
-	RENAME_LIBRARY(__muldi3,__mulll)
-	RENAME_LIBRARY(__muldi3,__umulll)
+        RENAME_LIBRARY(__muldi3,__mulll)
+        RENAME_LIBRARY(__muldi3,__umulll)
 #endif
 
 #ifdef L_divdi3

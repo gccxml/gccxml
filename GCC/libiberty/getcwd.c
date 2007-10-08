@@ -38,9 +38,7 @@ extern int errno;
 #endif
 
 char *
-getcwd (buf, len)
-  char *buf;
-  int len;
+getcwd (char *buf, size_t len)
 {
   char ourbuf[MAXPATHLEN];
   char *result;
@@ -55,7 +53,7 @@ getcwd (buf, len)
        buf = (char*)malloc(len);
        if (!buf) {
            errno = ENOMEM;
-	   return 0;
+           return 0;
        }
     }
     strcpy (buf, ourbuf);

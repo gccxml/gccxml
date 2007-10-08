@@ -2,7 +2,7 @@
    - some flags HAVE_... saying which simple standard instructions are
    available for this machine.
    Copyright (C) 1987, 1991, 1995, 1998,
-   1999, 2000 Free Software Foundation, Inc.
+   1999, 2000, 2003, 2004 Free Software Foundation, Inc.
 
 This file is part of GCC.
 
@@ -18,12 +18,14 @@ for more details.
 
 You should have received a copy of the GNU General Public License
 along with GCC; see the file COPYING.  If not, write to the Free
-Software Foundation, 59 Temple Place - Suite 330, Boston, MA
-02111-1307, USA.  */
+Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
+02110-1301, USA.  */
 
 
-#include "hconfig.h"
+#include "bconfig.h"
 #include "system.h"
+#include "coretypes.h"
+#include "tm.h"
 #include "rtl.h"
 #include "obstack.h"
 #include "errors.h"
@@ -38,17 +40,16 @@ static int max_id_len;
 /* Max operand encountered in a scan over some insn.  */
 static int max_opno;
 
-static void max_operand_1	PARAMS ((rtx));
-static int num_operands		PARAMS ((rtx));
-static void gen_proto		PARAMS ((rtx));
-static void gen_macro		PARAMS ((const char *, int, int));
-static void gen_insn		PARAMS ((rtx));
+static void max_operand_1 (rtx);
+static int num_operands (rtx);
+static void gen_proto (rtx);
+static void gen_macro (const char *, int, int);
+static void gen_insn (rtx);
 
 /* Count the number of match_operand's found.  */
 
 static void
-max_operand_1 (x)
-     rtx x;
+max_operand_1 (rtx x)
 {
   RTX_CODE code;
   int i;
@@ -69,19 +70,18 @@ max_operand_1 (x)
   for (i = 0; i < len; i++)
     {
       if (fmt[i] == 'e' || fmt[i] == 'u')
-	max_operand_1 (XEXP (x, i));
+        max_operand_1 (XEXP (x, i));
       else if (fmt[i] == 'E')
-	{
-	  int j;
-	  for (j = 0; j < XVECLEN (x, i); j++)
-	    max_operand_1 (XVECEXP (x, i, j));
-	}
+        {
+          int j;
+          for (j = 0; j < XVECLEN (x, i); j++)
+            max_operand_1 (XVECEXP (x, i, j));
+        }
     }
 }
 
 static int
-num_operands (insn)
-     rtx insn;
+num_operands (rtx insn)
 {
   int len = XVECLEN (insn, 1);
   int i;
@@ -98,16 +98,12 @@ num_operands (insn)
    of arguments it takes.  Any missing arguments are assumed to be at
    the end.  */
 static void
-gen_macro (name, real, expect)
-     const char *name;
-     int real, expect;
+gen_macro (const char *name, int real, int expect)
 {
   int i;
 
-  if (real > expect)
-    abort ();
-  if (real == 0)
-    abort ();
+  gcc_assert (real <= expect);
+  gcc_assert (real);
 
   /* #define GEN_CALL(A, B, C, D) gen_call((A), (B)) */
   fputs ("#define GEN_", stdout);
@@ -129,8 +125,7 @@ gen_macro (name, real, expect)
    does nothing.  */
 
 static void
-gen_proto (insn)
-     rtx insn;
+gen_proto (rtx insn)
 {
   int num = num_operands (insn);
   int i;
@@ -145,33 +140,33 @@ gen_proto (insn)
   if (name[0] == 'c' || name[0] == 's')
     {
       if (!strcmp (name, "call")
-	  || !strcmp (name, "call_pop")
-	  || !strcmp (name, "sibcall")
-	  || !strcmp (name, "sibcall_pop"))
-	gen_macro (name, num, 4);
+          || !strcmp (name, "call_pop")
+          || !strcmp (name, "sibcall")
+          || !strcmp (name, "sibcall_pop"))
+        gen_macro (name, num, 4);
       else if (!strcmp (name, "call_value")
-	       || !strcmp (name, "call_value_pop")
-	       || !strcmp (name, "sibcall_value")
-	       || !strcmp (name, "sibcall_value_pop"))
-	gen_macro (name, num, 5);
+               || !strcmp (name, "call_value_pop")
+               || !strcmp (name, "sibcall_value")
+               || !strcmp (name, "sibcall_value_pop"))
+        gen_macro (name, num, 5);
     }
 
   if (truth != 0)
-    printf ("extern rtx        gen_%-*s PARAMS ((", max_id_len, name);
+    printf ("extern rtx        gen_%-*s (", max_id_len, name);
   else
-    printf ("static inline rtx gen_%-*s PARAMS ((", max_id_len, name);
+    printf ("static inline rtx gen_%-*s (", max_id_len, name);
 
   if (num == 0)
     fputs ("void", stdout);
   else
     {
       for (i = 1; i < num; i++)
-	fputs ("rtx, ", stdout);
-      
+        fputs ("rtx, ", stdout);
+
       fputs ("rtx", stdout);
     }
 
-  puts ("));");
+  puts (");");
 
   /* Some back ends want to take the address of generator functions,
      so we cannot simply use #define for these dummy definitions.  */
@@ -179,24 +174,21 @@ gen_proto (insn)
     {
       printf ("static inline rtx\ngen_%s", name);
       if (num > 0)
-	{
-	  putchar ('(');
-	  for (i = 0; i < num-1; i++)
-	    printf ("%c, ", 'a' + i);
-	  printf ("%c)\n", 'a' + i);
-	  for (i = 0; i < num; i++)
-	    printf ("     rtx %c ATTRIBUTE_UNUSED;\n", 'a' + i);
-	}
+        {
+          putchar ('(');
+          for (i = 0; i < num-1; i++)
+            printf ("rtx ARG_UNUSED (%c), ", 'a' + i);
+          printf ("rtx ARG_UNUSED (%c))\n", 'a' + i);
+        }
       else
-	puts ("()");
+        puts ("(void)");
       puts ("{\n  return 0;\n}");
     }
 
 }
 
 static void
-gen_insn (insn)
-     rtx insn;
+gen_insn (rtx insn)
 {
   const char *name = XSTR (insn, 0);
   const char *p;
@@ -215,38 +207,38 @@ gen_insn (insn)
     max_id_len = len;
 
   if (truth == 0)
-    /* emit nothing */;
+    /* Emit nothing.  */;
   else if (truth == 1)
     printf ("#define HAVE_%s 1\n", name);
   else
     {
       /* Write the macro definition, putting \'s at the end of each line,
-	 if more than one.  */
+         if more than one.  */
       printf ("#define HAVE_%s (", name);
       for (p = XSTR (insn, 2); *p; p++)
-	{
-	  if (IS_VSPACE (*p))
-	    fputs (" \\\n", stdout);
-	  else
-	    putchar (*p);
-	}
+        {
+          if (IS_VSPACE (*p))
+            fputs (" \\\n", stdout);
+          else
+            putchar (*p);
+        }
       fputs (")\n", stdout);
     }
 
   obstack_grow (&obstack, &insn, sizeof (rtx));
 }
 
-extern int main PARAMS ((int, char **));
-
 int
-main (argc, argv)
-     int argc;
-     char **argv;
+main (int argc, char **argv)
 {
   rtx desc;
   rtx dummy;
   rtx *insns;
   rtx *insn_ptr;
+
+/* BEGIN GCC-XML MODIFICATIONS (2007/10/08 15:34:29) */
+  gccxml_fix_printf();
+/* END GCC-XML MODIFICATIONS (2007/10/08 15:34:29) */
 
   progname = "genflags";
   obstack_init (&obstack);
@@ -255,12 +247,9 @@ main (argc, argv)
      direct calls to their generators in C code.  */
   insn_elision = 0;
 
-  if (argc <= 1)
-    fatal ("no input file name");
-
   if (init_md_reader_args (argc, argv) != SUCCESS_EXIT_CODE)
     return (FATAL_EXIT_CODE);
-  
+
   puts ("/* Generated automatically by the program `genflags'");
   puts ("   from the machine description file `md'.  */\n");
   puts ("#ifndef GCC_INSN_FLAGS_H");
@@ -274,15 +263,15 @@ main (argc, argv)
 
       desc = read_md_rtx (&line_no, &insn_code_number);
       if (desc == NULL)
-	break;
+        break;
       if (GET_CODE (desc) == DEFINE_INSN || GET_CODE (desc) == DEFINE_EXPAND)
-	gen_insn (desc);
+        gen_insn (desc);
     }
 
   /* Print out the prototypes now.  */
   dummy = (rtx) 0;
   obstack_grow (&obstack, &dummy, sizeof (rtx));
-  insns = (rtx *) obstack_finish (&obstack);
+  insns = XOBFINISH (&obstack, rtx *);
 
   for (insn_ptr = insns; *insn_ptr; insn_ptr++)
     gen_proto (*insn_ptr);
@@ -293,12 +282,4 @@ main (argc, argv)
     return FATAL_EXIT_CODE;
 
   return SUCCESS_EXIT_CODE;
-}
-
-/* Define this so we can link with print-rtl.o to get debug_rtx function.  */
-const char *
-get_insn_name (code)
-     int code ATTRIBUTE_UNUSED;
-{
-  return NULL;
 }

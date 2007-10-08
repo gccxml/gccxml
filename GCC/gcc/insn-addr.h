@@ -15,8 +15,8 @@ for more details.
 
 You should have received a copy of the GNU General Public License
 along with GCC; see the file COPYING.  If not, write to the Free
-Software Foundation, 59 Temple Place - Suite 330, Boston, MA
-02111-1307, USA.  */
+Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
+02110-1301, USA.  */
 
 #ifndef GCC_INSN_ADDR_H
 #define GCC_INSN_ADDR_H 
@@ -34,17 +34,17 @@ extern int insn_current_address;
 #define INSN_ADDRESSES_SET_P() (insn_addresses_ != 0)
 #define INSN_ADDRESSES_SIZE() VARRAY_SIZE (insn_addresses_)
 #define INSN_ADDRESSES_NEW(insn, addr) do \
-  {									\
-    unsigned insn_uid__ = INSN_UID ((insn));				\
-    int insn_addr__ = (addr);						\
-									\
-    if (INSN_ADDRESSES_SET_P ())					\
-      {									\
-	if (INSN_ADDRESSES_SIZE () <= insn_uid__)			\
-	  VARRAY_GROW (insn_addresses_, insn_uid__ + 1);		\
-	INSN_ADDRESSES (insn_uid__) = insn_addr__;			\
-      }									\
-  }									\
+  {                                                                        \
+    unsigned insn_uid__ = INSN_UID ((insn));                                \
+    int insn_addr__ = (addr);                                                \
+                                                                        \
+    if (INSN_ADDRESSES_SET_P ())                                        \
+      {                                                                        \
+        if (INSN_ADDRESSES_SIZE () <= insn_uid__)                        \
+          VARRAY_GROW (insn_addresses_, insn_uid__ + 1);                \
+        INSN_ADDRESSES (insn_uid__) = insn_addr__;                        \
+      }                                                                        \
+  }                                                                        \
 while (0)
 
 #endif /* ! GCC_INSN_ADDR_H */

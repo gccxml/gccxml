@@ -57,9 +57,15 @@ the possibility of a GCC built-in function.
 
 /* These variables are used by the ASTRDUP implementation that relies
    on C_alloca.  */
+#ifdef __cplusplus
+extern "C" {
+#endif /* __cplusplus */
 const char *libiberty_optr;
 char *libiberty_nptr;
 unsigned long libiberty_len;
+#ifdef __cplusplus
+}
+#endif /* __cplusplus */
 
 /* If your stack is a linked list of frames, you have to
    provide an "address metric" ADDRESS_FUNCTION macro.  */
@@ -72,7 +78,7 @@ static long i00afunc ();
 #endif
 
 #ifndef NULL
-#define	NULL	0
+#define        NULL        0
 #endif
 
 /* Define STACK_DIRECTION if you know the direction of stack
@@ -84,37 +90,37 @@ static long i00afunc ();
    STACK_DIRECTION = 0 => direction of growth unknown  */
 
 #ifndef STACK_DIRECTION
-#define	STACK_DIRECTION	0	/* Direction unknown.  */
+#define        STACK_DIRECTION        0        /* Direction unknown.  */
 #endif
 
 #if STACK_DIRECTION != 0
 
-#define	STACK_DIR	STACK_DIRECTION	/* Known at compile-time.  */
+#define        STACK_DIR        STACK_DIRECTION        /* Known at compile-time.  */
 
 #else /* STACK_DIRECTION == 0; need run-time code.  */
 
-static int stack_dir;		/* 1 or -1 once known.  */
-#define	STACK_DIR	stack_dir
+static int stack_dir;                /* 1 or -1 once known.  */
+#define        STACK_DIR        stack_dir
 
 static void
-find_stack_direction ()
+find_stack_direction (void)
 {
-  static char *addr = NULL;	/* Address of first `dummy', once known.  */
-  auto char dummy;		/* To get stack address.  */
+  static char *addr = NULL;        /* Address of first `dummy', once known.  */
+  auto char dummy;                /* To get stack address.  */
 
   if (addr == NULL)
-    {				/* Initial entry.  */
+    {                                /* Initial entry.  */
       addr = ADDRESS_FUNCTION (dummy);
 
-      find_stack_direction ();	/* Recurse once.  */
+      find_stack_direction ();        /* Recurse once.  */
     }
   else
     {
       /* Second entry.  */
       if (ADDRESS_FUNCTION (dummy) > addr)
-	stack_dir = 1;		/* Stack grew upward.  */
+        stack_dir = 1;                /* Stack grew upward.  */
       else
-	stack_dir = -1;		/* Stack grew downward.  */
+        stack_dir = -1;                /* Stack grew downward.  */
     }
 }
 
@@ -127,21 +133,21 @@ find_stack_direction ()
    It is very important that sizeof(header) agree with malloc
    alignment chunk size.  The following default should work okay.  */
 
-#ifndef	ALIGN_SIZE
-#define	ALIGN_SIZE	sizeof(double)
+#ifndef        ALIGN_SIZE
+#define        ALIGN_SIZE        sizeof(double)
 #endif
 
 typedef union hdr
 {
-  char align[ALIGN_SIZE];	/* To force sizeof(header).  */
+  char align[ALIGN_SIZE];        /* To force sizeof(header).  */
   struct
     {
-      union hdr *next;		/* For chaining headers.  */
-      char *deep;		/* For stack depth measure.  */
+      union hdr *next;                /* For chaining headers.  */
+      char *deep;                /* For stack depth measure.  */
     } h;
 } header;
 
-static header *last_alloca_header = NULL;	/* -> last alloca header.  */
+static header *last_alloca_header = NULL;        /* -> last alloca header.  */
 
 /* Return a pointer to at least SIZE bytes of storage,
    which will be automatically reclaimed upon exit from
@@ -153,14 +159,13 @@ static header *last_alloca_header = NULL;	/* -> last alloca header.  */
 /* @undocumented C_alloca */
 
 PTR
-C_alloca (size)
-     size_t size;
+C_alloca (size_t size)
 {
-  auto char probe;		/* Probes stack depth: */
+  auto char probe;                /* Probes stack depth: */
   register char *depth = ADDRESS_FUNCTION (probe);
 
 #if STACK_DIRECTION == 0
-  if (STACK_DIR == 0)		/* Unknown growth direction.  */
+  if (STACK_DIR == 0)                /* Unknown growth direction.  */
     find_stack_direction ();
 #endif
 
@@ -168,44 +173,44 @@ C_alloca (size)
      was allocated from deeper in the stack than currently.  */
 
   {
-    register header *hp;	/* Traverses linked list.  */
+    register header *hp;        /* Traverses linked list.  */
 
     for (hp = last_alloca_header; hp != NULL;)
       if ((STACK_DIR > 0 && hp->h.deep > depth)
-	  || (STACK_DIR < 0 && hp->h.deep < depth))
-	{
-	  register header *np = hp->h.next;
+          || (STACK_DIR < 0 && hp->h.deep < depth))
+        {
+          register header *np = hp->h.next;
 
-	  free ((PTR) hp);	/* Collect garbage.  */
+          free ((PTR) hp);        /* Collect garbage.  */
 
-	  hp = np;		/* -> next header.  */
-	}
+          hp = np;                /* -> next header.  */
+        }
       else
-	break;			/* Rest are not deeper.  */
+        break;                        /* Rest are not deeper.  */
 
-    last_alloca_header = hp;	/* -> last valid storage.  */
+    last_alloca_header = hp;        /* -> last valid storage.  */
   }
 
   if (size == 0)
-    return NULL;		/* No allocation required.  */
+    return NULL;                /* No allocation required.  */
 
   /* Allocate combined header + user data storage.  */
 
   {
-    register PTR new = xmalloc (sizeof (header) + size);
+    register void *new_storage = XNEWVEC (char, sizeof (header) + size);
     /* Address of header.  */
 
-    if (new == 0)
+    if (new_storage == 0)
       abort();
 
-    ((header *) new)->h.next = last_alloca_header;
-    ((header *) new)->h.deep = depth;
+    ((header *) new_storage)->h.next = last_alloca_header;
+    ((header *) new_storage)->h.deep = depth;
 
-    last_alloca_header = (header *) new;
+    last_alloca_header = (header *) new_storage;
 
     /* User storage begins just after header.  */
 
-    return (PTR) ((char *) new + sizeof (header));
+    return (PTR) ((char *) new_storage + sizeof (header));
   }
 }
 
@@ -221,10 +226,10 @@ C_alloca (size)
 /* Stack structures for CRAY-1, CRAY X-MP, and CRAY Y-MP */
 struct stack_control_header
   {
-    long shgrow:32;		/* Number of times stack has grown.  */
-    long shaseg:32;		/* Size of increments to stack.  */
-    long shhwm:32;		/* High water mark of stack.  */
-    long shsize:32;		/* Current size of stack (all segments).  */
+    long shgrow:32;                /* Number of times stack has grown.  */
+    long shaseg:32;                /* Size of increments to stack.  */
+    long shhwm:32;                /* High water mark of stack.  */
+    long shsize:32;                /* Current size of stack (all segments).  */
   };
 
 /* The stack segment linkage control information occurs at
@@ -236,21 +241,21 @@ struct stack_control_header
 
 struct stack_segment_linkage
   {
-    long ss[0200];		/* 0200 overflow words.  */
-    long sssize:32;		/* Number of words in this segment.  */
-    long ssbase:32;		/* Offset to stack base.  */
+    long ss[0200];                /* 0200 overflow words.  */
+    long sssize:32;                /* Number of words in this segment.  */
+    long ssbase:32;                /* Offset to stack base.  */
     long:32;
-    long sspseg:32;		/* Offset to linkage control of previous
-				   segment of stack.  */
+    long sspseg:32;                /* Offset to linkage control of previous
+                                   segment of stack.  */
     long:32;
-    long sstcpt:32;		/* Pointer to task common address block.  */
-    long sscsnm;		/* Private control structure number for
-				   microtasking.  */
-    long ssusr1;		/* Reserved for user.  */
-    long ssusr2;		/* Reserved for user.  */
-    long sstpid;		/* Process ID for pid based multi-tasking.  */
-    long ssgvup;		/* Pointer to multitasking thread giveup.  */
-    long sscray[7];		/* Reserved for Cray Research.  */
+    long sstcpt:32;                /* Pointer to task common address block.  */
+    long sscsnm;                /* Private control structure number for
+                                   microtasking.  */
+    long ssusr1;                /* Reserved for user.  */
+    long ssusr2;                /* Reserved for user.  */
+    long sstpid;                /* Process ID for pid based multi-tasking.  */
+    long ssgvup;                /* Pointer to multitasking thread giveup.  */
+    long sscray[7];                /* Reserved for Cray Research.  */
     long ssa0;
     long ssa1;
     long ssa2;
@@ -274,27 +279,27 @@ struct stack_segment_linkage
    returned by the STKSTAT library routine.  */
 struct stk_stat
   {
-    long now;			/* Current total stack size.  */
-    long maxc;			/* Amount of contiguous space which would
-				   be required to satisfy the maximum
-				   stack demand to date.  */
-    long high_water;		/* Stack high-water mark.  */
-    long overflows;		/* Number of stack overflow ($STKOFEN) calls.  */
-    long hits;			/* Number of internal buffer hits.  */
-    long extends;		/* Number of block extensions.  */
-    long stko_mallocs;		/* Block allocations by $STKOFEN.  */
-    long underflows;		/* Number of stack underflow calls ($STKRETN).  */
-    long stko_free;		/* Number of deallocations by $STKRETN.  */
-    long stkm_free;		/* Number of deallocations by $STKMRET.  */
-    long segments;		/* Current number of stack segments.  */
-    long maxs;			/* Maximum number of stack segments so far.  */
-    long pad_size;		/* Stack pad size.  */
-    long current_address;	/* Current stack segment address.  */
-    long current_size;		/* Current stack segment size.  This
-				   number is actually corrupted by STKSTAT to
-				   include the fifteen word trailer area.  */
-    long initial_address;	/* Address of initial segment.  */
-    long initial_size;		/* Size of initial segment.  */
+    long now;                        /* Current total stack size.  */
+    long maxc;                        /* Amount of contiguous space which would
+                                   be required to satisfy the maximum
+                                   stack demand to date.  */
+    long high_water;                /* Stack high-water mark.  */
+    long overflows;                /* Number of stack overflow ($STKOFEN) calls.  */
+    long hits;                        /* Number of internal buffer hits.  */
+    long extends;                /* Number of block extensions.  */
+    long stko_mallocs;                /* Block allocations by $STKOFEN.  */
+    long underflows;                /* Number of stack underflow calls ($STKRETN).  */
+    long stko_free;                /* Number of deallocations by $STKRETN.  */
+    long stkm_free;                /* Number of deallocations by $STKMRET.  */
+    long segments;                /* Current number of stack segments.  */
+    long maxs;                        /* Maximum number of stack segments so far.  */
+    long pad_size;                /* Stack pad size.  */
+    long current_address;        /* Current stack segment address.  */
+    long current_size;                /* Current stack segment size.  This
+                                   number is actually corrupted by STKSTAT to
+                                   include the fifteen word trailer area.  */
+    long initial_address;        /* Address of initial segment.  */
+    long initial_size;                /* Size of initial segment.  */
   };
 
 /* The following structure describes the data structure which trails
@@ -303,13 +308,13 @@ struct stk_stat
 
 struct stk_trailer
   {
-    long this_address;		/* Address of this block.  */
-    long this_size;		/* Size of this block (does not include
-				   this trailer).  */
+    long this_address;                /* Address of this block.  */
+    long this_size;                /* Size of this block (does not include
+                                   this trailer).  */
     long unknown2;
     long unknown3;
-    long link;			/* Address of trailer block of previous
-				   segment.  */
+    long link;                        /* Address of trailer block of previous
+                                   segment.  */
     long unknown5;
     long unknown6;
     long unknown7;
@@ -347,8 +352,8 @@ i00afunc (long *address)
   /* Set up the iteration.  */
 
   trailer = (struct stk_trailer *) (status.current_address
-				    + status.current_size
-				    - 15);
+                                    + status.current_size
+                                    - 15);
 
   /* There must be at least one stack segment.  Therefore it is
      a fatal error if "trailer" is null.  */
@@ -363,10 +368,10 @@ i00afunc (long *address)
       block = (long *) trailer->this_address;
       size = trailer->this_size;
       if (block == 0 || size == 0)
-	abort ();
+        abort ();
       trailer = (struct stk_trailer *) trailer->link;
       if ((block <= address) && (address < (block + size)))
-	break;
+        break;
     }
 
   /* Set the result to the offset in this segment and add the sizes
@@ -382,7 +387,7 @@ i00afunc (long *address)
   do
     {
       if (trailer->this_size <= 0)
-	abort ();
+        abort ();
       result += trailer->this_size;
       trailer = (struct stk_trailer *) trailer->link;
     }
@@ -445,7 +450,7 @@ i00afunc (long address)
       fprintf (stderr, "%011o %011o %011o\n", this_segment, address, stkl);
 #endif
       if (pseg == 0)
-	break;
+        break;
       stkl = stkl - pseg;
       ssptr = (struct stack_segment_linkage *) stkl;
       size = ssptr->sssize;

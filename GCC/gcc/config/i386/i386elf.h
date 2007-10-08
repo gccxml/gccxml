@@ -1,25 +1,25 @@
-/* Target definitions for GNU compiler for Intel 80386 using ELF
+/* Target definitions for GCC for Intel 80386 using ELF
    Copyright (C) 1988, 1991, 1995, 2000, 2001, 2002
    Free Software Foundation, Inc.
 
    Derived from sysv4.h written by Ron Guilmette (rfg@netcom.com).
 
-This file is part of GNU CC.
+This file is part of GCC.
 
-GNU CC is free software; you can redistribute it and/or modify
+GCC is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation; either version 2, or (at your option)
 any later version.
 
-GNU CC is distributed in the hope that it will be useful,
+GCC is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with GNU CC; see the file COPYING.  If not, write to
-the Free Software Foundation, 59 Temple Place - Suite 330,
-Boston, MA 02111-1307, USA.  */
+along with GCC; see the file COPYING.  If not, write to
+the Free Software Foundation, 51 Franklin Street, Fifth Floor,
+Boston, MA 02110-1301, USA.  */
 
 /* Use stabs instead of DWARF debug format.  */
 #undef  PREFERRED_DEBUGGING_TYPE
@@ -46,9 +46,9 @@ Boston, MA 02111-1307, USA.  */
 #define ENDFILE_SPEC "crtend.o%s"
 
 #define STARTFILE_SPEC "%{!shared: \
-			 %{!symbolic: \
-			  %{pg:gcrt0.o%s}%{!pg:%{p:mcrt0.o%s}%{!p:crt0.o%s}}}}\
-			crtbegin.o%s"
+                         %{!symbolic: \
+                          %{pg:gcrt0.o%s}%{!pg:%{p:mcrt0.o%s}%{!p:crt0.o%s}}}}\
+                        crtbegin.o%s"
 
 #undef DBX_REGISTER_NUMBER
 #define DBX_REGISTER_NUMBER(n) \
@@ -62,49 +62,49 @@ Boston, MA 02111-1307, USA.  */
    STRING_LIMIT) we output those using ASM_OUTPUT_LIMITED_STRING.  */
 
 #undef ASM_OUTPUT_ASCII
-#define ASM_OUTPUT_ASCII(FILE, STR, LENGTH)				\
-  do									\
-    {									\
-      register const unsigned char *_ascii_bytes =			\
-        (const unsigned char *) (STR);					\
-      register const unsigned char *limit = _ascii_bytes + (LENGTH);	\
-      register unsigned bytes_in_chunk = 0;				\
-      for (; _ascii_bytes < limit; _ascii_bytes++)			\
-        {								\
-	  register const unsigned char *p;				\
-	  if (bytes_in_chunk >= 64)					\
-	    {								\
-	      fputc ('\n', (FILE));					\
-	      bytes_in_chunk = 0;					\
-	    }								\
-	  for (p = _ascii_bytes; p < limit && *p != '\0'; p++)		\
-	    continue;							\
-	  if (p < limit && (p - _ascii_bytes) <= (long) STRING_LIMIT)	\
-	    {								\
-	      if (bytes_in_chunk > 0)					\
-		{							\
-		  fputc ('\n', (FILE));					\
-		  bytes_in_chunk = 0;					\
-		}							\
-	      ASM_OUTPUT_LIMITED_STRING ((FILE), _ascii_bytes);		\
-	      _ascii_bytes = p;						\
-	    }								\
-	  else								\
-	    {								\
-	      if (bytes_in_chunk == 0)					\
-		fprintf ((FILE), "\t.byte\t");				\
-	      else							\
-		fputc (',', (FILE));					\
-	      fprintf ((FILE), "0x%02x", *_ascii_bytes);		\
-	      bytes_in_chunk += 5;					\
-	    }								\
-	}								\
-      if (bytes_in_chunk > 0)						\
-        fprintf ((FILE), "\n");						\
-    }									\
+#define ASM_OUTPUT_ASCII(FILE, STR, LENGTH)                                \
+  do                                                                        \
+    {                                                                        \
+      const unsigned char *_ascii_bytes =                                \
+        (const unsigned char *) (STR);                                        \
+      const unsigned char *limit = _ascii_bytes + (LENGTH);                \
+      unsigned bytes_in_chunk = 0;                                        \
+      for (; _ascii_bytes < limit; _ascii_bytes++)                        \
+        {                                                                \
+          const unsigned char *p;                                        \
+          if (bytes_in_chunk >= 64)                                        \
+            {                                                                \
+              fputc ('\n', (FILE));                                        \
+              bytes_in_chunk = 0;                                        \
+            }                                                                \
+          for (p = _ascii_bytes; p < limit && *p != '\0'; p++)                \
+            continue;                                                        \
+          if (p < limit && (p - _ascii_bytes) <= (long) STRING_LIMIT)        \
+            {                                                                \
+              if (bytes_in_chunk > 0)                                        \
+                {                                                        \
+                  fputc ('\n', (FILE));                                        \
+                  bytes_in_chunk = 0;                                        \
+                }                                                        \
+              ASM_OUTPUT_LIMITED_STRING ((FILE), _ascii_bytes);                \
+              _ascii_bytes = p;                                                \
+            }                                                                \
+          else                                                                \
+            {                                                                \
+              if (bytes_in_chunk == 0)                                        \
+                fprintf ((FILE), "\t.byte\t");                                \
+              else                                                        \
+                fputc (',', (FILE));                                        \
+              fprintf ((FILE), "0x%02x", *_ascii_bytes);                \
+              bytes_in_chunk += 5;                                        \
+            }                                                                \
+        }                                                                \
+      if (bytes_in_chunk > 0)                                                \
+        fprintf ((FILE), "\n");                                                \
+    }                                                                        \
   while (0)
 
-#define LOCAL_LABEL_PREFIX	"."
+#define LOCAL_LABEL_PREFIX        "."
 
 /* Switch into a generic section.  */
 #define TARGET_ASM_NAMED_SECTION  default_elf_asm_named_section

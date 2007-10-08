@@ -1,6 +1,6 @@
 /* gen-protos.c - massages a list of prototypes, for use by fixproto.
    Copyright (C) 1993, 1994, 1995, 1996, 1998,
-   1999 Free Software Foundation, Inc.
+   1999, 2003, 2004, 2005 Free Software Foundation, Inc.
 
 This program is free software; you can redistribute it and/or modify it
 under the terms of the GNU General Public License as published by the
@@ -14,18 +14,19 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
-Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
+Foundation, 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.  */
 
-#include "hconfig.h"
+#include "bconfig.h"
 #include "system.h"
+#include "coretypes.h"
+#include "tm.h"
 #include "scan.h"
-#undef abort
+#include "errors.h"
 
 int verbose = 0;
-const char *progname;
 
-static void add_hash		PARAMS ((const char *));
-static int parse_fn_proto	PARAMS ((char *, char *, struct fn_decl *));
+static void add_hash (const char *);
+static int parse_fn_proto (char *, char *, struct fn_decl *);
 
 #define HASH_SIZE 2503 /* a prime */
 int hash_tab[HASH_SIZE];
@@ -33,8 +34,7 @@ int next_index;
 int collisions;
 
 static void
-add_hash (fname)
-     const char *fname;
+add_hash (const char *fname)
 {
   int i, i0;
 
@@ -45,13 +45,12 @@ add_hash (fname)
     {
       collisions++;
       for (;;)
-	{
-	  i = (i+1) % HASH_SIZE;
-	  if (i == i0)
-	    abort ();
-	  if (hash_tab[i] == 0)
-	    break;
-	}
+        {
+          i = (i+1) % HASH_SIZE;
+          gcc_assert (i != i0);
+          if (hash_tab[i] == 0)
+            break;
+        }
     }
   hash_tab[i] = next_index;
 
@@ -65,9 +64,7 @@ add_hash (fname)
    The fields of FN point to the input string.  */
 
 static int
-parse_fn_proto (start, end, fn)
-     char *start, *end;
-     struct fn_decl *fn;
+parse_fn_proto (char *start, char *end, struct fn_decl *fn)
 {
   char *ptr;
   int param_nesting = 1;
@@ -91,9 +88,9 @@ parse_fn_proto (start, end, fn)
     {
       int c = *--ptr;
       if (c == '(' && --param_nesting == 0)
-	break;
+        break;
       else if (c == ')')
-	param_nesting++;
+        param_nesting++;
     }
   param_start = ptr+1;
 
@@ -103,8 +100,8 @@ parse_fn_proto (start, end, fn)
   if (!ISALNUM ((unsigned char)*ptr))
     {
       if (verbose)
-	fprintf (stderr, "%s: Can't handle this complex prototype: %s\n",
-		 progname, start);
+        fprintf (stderr, "%s: Can't handle this complex prototype: %s\n",
+                 progname, start);
       return 0;
     }
   name_end = ptr+1;
@@ -129,12 +126,8 @@ parse_fn_proto (start, end, fn)
   return 1;
 }
 
-extern int main PARAMS ((int, char **));
-
 int
-main (argc, argv)
-     int argc ATTRIBUTE_UNUSED;
-     char **argv;
+main (int argc ATTRIBUTE_UNUSED, char **argv)
 {
   FILE *inf = stdin;
   FILE *outf = stdout;
@@ -142,9 +135,16 @@ main (argc, argv)
   sstring linebuf;
   struct fn_decl fn_decl;
 
+/* BEGIN GCC-XML MODIFICATIONS (2007/10/08 15:34:28) */
+  gccxml_fix_printf();
+/* END GCC-XML MODIFICATIONS (2007/10/08 15:34:28) */
+
   i = strlen (argv[0]);
   while (i > 0 && argv[0][i-1] != '/') --i;
   progname = &argv[0][i];
+
+  /* Unlock the stdio streams.  */
+  unlock_std_streams ();
 
   INIT_SSTRING (&linebuf);
 
@@ -153,31 +153,31 @@ main (argc, argv)
   /* A hash table entry of 0 means "unused" so reserve it.  */
   fprintf (outf, "  {\"\", \"\", \"\", 0},\n");
   next_index = 1;
-  
+
   for (;;)
     {
       int c = skip_spaces (inf, ' ');
 
       if (c == EOF)
-	break;
+        break;
       linebuf.ptr = linebuf.base;
       ungetc (c, inf);
       c = read_upto (inf, &linebuf, '\n');
       if (linebuf.base[0] == '#') /* skip cpp command */
-	continue;
+        continue;
       if (linebuf.base[0] == '\0') /* skip empty line */
-	continue;
+        continue;
 
       if (! parse_fn_proto (linebuf.base, linebuf.ptr, &fn_decl))
-	continue;
+        continue;
 
       add_hash (fn_decl.fname);
 
       fprintf (outf, "  {\"%s\", \"%s\", \"%s\", 0},\n",
-	       fn_decl.fname, fn_decl.rtype, fn_decl.params);
+               fn_decl.fname, fn_decl.rtype, fn_decl.params);
 
       if (c == EOF)
-	break;
+        break;
     }
   fprintf (outf, "  {0, 0, 0, 0}\n};\n");
 
@@ -189,7 +189,7 @@ main (argc, argv)
   fprintf (outf, "};\n");
 
   fprintf (stderr, "gen-protos: %d entries %d collisions\n",
-	   next_index, collisions);
-  
+           next_index, collisions);
+
   return 0;
 }

@@ -1,24 +1,24 @@
 /* Definitions of target machine for GNU compiler, for DEC Alpha w/ELF.
-   Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002
+   Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003
    Free Software Foundation, Inc.
    Contributed by Richard Henderson (rth@tamu.edu).
 
-This file is part of GNU CC.
+This file is part of GCC.
 
-GNU CC is free software; you can redistribute it and/or modify
+GCC is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation; either version 2, or (at your option)
 any later version.
 
-GNU CC is distributed in the hope that it will be useful,
+GCC is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with GNU CC; see the file COPYING.  If not, write to
-the Free Software Foundation, 59 Temple Place - Suite 330,
-Boston, MA 02111-1307, USA.    */
+along with GCC; see the file COPYING.  If not, write to
+the Free Software Foundation, 51 Franklin Street, Fifth Floor,
+Boston, MA 02110-1301, USA.  */
 
 #undef OBJECT_FORMAT_COFF
 #undef EXTENDED_COFF
@@ -35,35 +35,19 @@ Boston, MA 02111-1307, USA.    */
 
 #undef ASM_FINAL_SPEC
 
-#undef  CPP_SUBTARGET_SPEC
-#define CPP_SUBTARGET_SPEC "-D__ELF__"
+/* alpha/ doesn't use elfos.h for some reason.  */
+#define TARGET_OBJFMT_CPP_BUILTINS()                \
+  do                                                \
+    {                                                \
+        builtin_define ("__ELF__");                \
+    }                                                \
+  while (0)
 
 #undef  CC1_SPEC
 #define CC1_SPEC  "%{G*}"
 
 #undef  ASM_SPEC
 #define ASM_SPEC  "%{G*} %{relax:-relax} %{!gstabs*:-no-mdebug}%{gstabs*:-mdebug}"
-
-/* Output at beginning of assembler file.  */
-#undef  ASM_FILE_START
-#define ASM_FILE_START(FILE)					\
-do {								\
-  if (write_symbols == DBX_DEBUG)				\
-    {								\
-      alpha_write_verstamp (FILE);				\
-      output_file_directive (FILE, main_input_filename);	\
-    }								\
-  fprintf (FILE, "\t.set noat\n");				\
-  fprintf (FILE, "\t.set noreorder\n");				\
-  if (TARGET_EXPLICIT_RELOCS)					\
-    fprintf (FILE, "\t.set nomacro\n");				\
-  if (TARGET_BWX | TARGET_MAX | TARGET_FIX | TARGET_CIX)	\
-    {								\
-      fprintf (FILE, "\t.arch %s\n",				\
-               (TARGET_CPU_EV6 ? "ev6"				\
-                : TARGET_MAX ? "pca56" : "ev56"));		\
-    }								\
-} while (0)
 
 #undef  IDENT_ASM_OP
 #define IDENT_ASM_OP "\t.ident\t"
@@ -77,11 +61,11 @@ do {								\
    pseudo-op is used for this on most svr4 assemblers.  */
 
 #undef  SKIP_ASM_OP
-#define SKIP_ASM_OP	"\t.zero\t"
+#define SKIP_ASM_OP        "\t.zero\t"
 
 #undef  ASM_OUTPUT_SKIP
 #define ASM_OUTPUT_SKIP(FILE, SIZE) \
-  fprintf (FILE, "%s%u\n", SKIP_ASM_OP, (SIZE))
+  fprintf (FILE, "%s"HOST_WIDE_INT_PRINT_UNSIGNED"\n", SKIP_ASM_OP, (SIZE))
 
 /* Output the label which precedes a jumptable.  Note that for all svr4
    systems where we actually generate jumptables (which is to say every
@@ -100,10 +84,10 @@ do {								\
 #endif
 
 #undef  ASM_OUTPUT_CASE_LABEL
-#define ASM_OUTPUT_CASE_LABEL(FILE, PREFIX, NUM, JUMPTABLE)		\
-  do {									\
-    ASM_OUTPUT_BEFORE_CASE_LABEL (FILE, PREFIX, NUM, JUMPTABLE)		\
-    ASM_OUTPUT_INTERNAL_LABEL (FILE, PREFIX, NUM);			\
+#define ASM_OUTPUT_CASE_LABEL(FILE, PREFIX, NUM, JUMPTABLE)                \
+  do {                                                                        \
+    ASM_OUTPUT_BEFORE_CASE_LABEL (FILE, PREFIX, NUM, JUMPTABLE)                \
+    (*targetm.asm_out.internal_label) (FILE, PREFIX, NUM);                        \
   } while (0)
 
 /* The standard SVR4 assembler seems to require that certain builtin
@@ -111,7 +95,7 @@ do {								\
    in each assembly file where they are referenced.  */
 
 #undef  ASM_OUTPUT_EXTERNAL_LIBCALL
-#define ASM_OUTPUT_EXTERNAL_LIBCALL(FILE, FUN)				\
+#define ASM_OUTPUT_EXTERNAL_LIBCALL(FILE, FUN)                                \
   (*targetm.asm_out.globalize_label) (FILE, XSTR (FUN, 0))
 
 /* This says how to output assembler code to declare an
@@ -120,14 +104,14 @@ do {								\
    to depend on their types.  We do exactly that here.  */
 
 #undef  COMMON_ASM_OP
-#define COMMON_ASM_OP	"\t.comm\t"
+#define COMMON_ASM_OP        "\t.comm\t"
 
 #undef  ASM_OUTPUT_ALIGNED_COMMON
-#define ASM_OUTPUT_ALIGNED_COMMON(FILE, NAME, SIZE, ALIGN)		\
-do {									\
-  fprintf ((FILE), "%s", COMMON_ASM_OP);				\
-  assemble_name ((FILE), (NAME));					\
-  fprintf ((FILE), ",%u,%u\n", (SIZE), (ALIGN) / BITS_PER_UNIT);	\
+#define ASM_OUTPUT_ALIGNED_COMMON(FILE, NAME, SIZE, ALIGN)                \
+do {                                                                        \
+  fprintf ((FILE), "%s", COMMON_ASM_OP);                                \
+  assemble_name ((FILE), (NAME));                                        \
+  fprintf ((FILE), "," HOST_WIDE_INT_PRINT_UNSIGNED ",%u\n", (SIZE), (ALIGN) / BITS_PER_UNIT);        \
 } while (0)
 
 /* This says how to output assembler code to declare an
@@ -136,28 +120,27 @@ do {									\
    to depend on their types.  We do exactly that here.  */
 
 #undef  ASM_OUTPUT_ALIGNED_LOCAL
-#define ASM_OUTPUT_ALIGNED_LOCAL(FILE, NAME, SIZE, ALIGN)		\
-do {									\
-  if ((SIZE) <= g_switch_value)						\
-    sbss_section();							\
-  else									\
-    bss_section();							\
-  ASM_OUTPUT_TYPE_DIRECTIVE (FILE, NAME, "object");			\
-  if (!flag_inhibit_size_directive)					\
-    ASM_OUTPUT_SIZE_DIRECTIVE (FILE, NAME, SIZE);			\
-  ASM_OUTPUT_ALIGN ((FILE), exact_log2((ALIGN) / BITS_PER_UNIT));	\
-  ASM_OUTPUT_LABEL(FILE, NAME);						\
-  ASM_OUTPUT_SKIP((FILE), (SIZE) ? (SIZE) : 1);				\
+#define ASM_OUTPUT_ALIGNED_LOCAL(FILE, NAME, SIZE, ALIGN)                \
+do {                                                                        \
+  if ((SIZE) <= g_switch_value)                                                \
+    switch_to_section (sbss_section);                                        \
+  else                                                                        \
+    switch_to_section (bss_section);                                        \
+  ASM_OUTPUT_TYPE_DIRECTIVE (FILE, NAME, "object");                        \
+  if (!flag_inhibit_size_directive)                                        \
+    ASM_OUTPUT_SIZE_DIRECTIVE (FILE, NAME, SIZE);                        \
+  ASM_OUTPUT_ALIGN ((FILE), exact_log2((ALIGN) / BITS_PER_UNIT));        \
+  ASM_OUTPUT_LABEL(FILE, NAME);                                                \
+  ASM_OUTPUT_SKIP((FILE), (SIZE) ? (SIZE) : 1);                                \
 } while (0)
 
 /* This says how to output assembler code to declare an
    uninitialized external linkage data object.  */
 
 #undef  ASM_OUTPUT_ALIGNED_BSS
-#define ASM_OUTPUT_ALIGNED_BSS(FILE, DECL, NAME, SIZE, ALIGN)		\
-do {									\
-  (*targetm.asm_out.globalize_label) (FILE, NAME);	       		\
-  ASM_OUTPUT_ALIGNED_LOCAL (FILE, NAME, SIZE, ALIGN);			\
+#define ASM_OUTPUT_ALIGNED_BSS(FILE, DECL, NAME, SIZE, ALIGN)                \
+do {                                                                        \
+  ASM_OUTPUT_ALIGNED_LOCAL (FILE, NAME, SIZE, ALIGN);                        \
 } while (0)
 
 /* Biggest alignment supported by the object file format of this
@@ -166,7 +149,7 @@ do {									\
    not defined, the default value is `BIGGEST_ALIGNMENT'. 
 
    This value is really 2^63.  Since gcc figures the alignment in bits,
-   we could only potentially get to 2^60 on suitible hosts.  Due to other
+   we could only potentially get to 2^60 on suitable hosts.  Due to other
    considerations in varasm, we must restrict this to what fits in an int.  */
 
 #undef  MAX_OFILE_ALIGNMENT
@@ -178,16 +161,16 @@ do {									\
    AUTOMATICALLY APPENDED.  This is the same for most svr4 assemblers.  */
 
 #undef  ASCII_DATA_ASM_OP
-#define ASCII_DATA_ASM_OP	"\t.ascii\t"
+#define ASCII_DATA_ASM_OP        "\t.ascii\t"
 
 #undef  READONLY_DATA_SECTION_ASM_OP
-#define READONLY_DATA_SECTION_ASM_OP	"\t.section\t.rodata"
+#define READONLY_DATA_SECTION_ASM_OP        "\t.section\t.rodata"
 #undef  BSS_SECTION_ASM_OP
-#define BSS_SECTION_ASM_OP	"\t.section\t.bss"
+#define BSS_SECTION_ASM_OP        "\t.section\t.bss"
 #undef  SBSS_SECTION_ASM_OP
-#define SBSS_SECTION_ASM_OP	"\t.section\t.sbss,\"aw\""
+#define SBSS_SECTION_ASM_OP        "\t.section\t.sbss,\"aw\""
 #undef  SDATA_SECTION_ASM_OP
-#define SDATA_SECTION_ASM_OP	"\t.section\t.sdata,\"aw\""
+#define SDATA_SECTION_ASM_OP        "\t.section\t.sdata,\"aw\""
 
 /* On svr4, we *do* have support for the .init and .fini sections, and we
    can put stuff in there to be executed before and after `main'.  We let
@@ -196,50 +179,19 @@ do {									\
    sections.  This is the same for all known svr4 assemblers.  */
 
 #undef  INIT_SECTION_ASM_OP
-#define INIT_SECTION_ASM_OP	"\t.section\t.init"
+#define INIT_SECTION_ASM_OP        "\t.section\t.init"
 #undef  FINI_SECTION_ASM_OP
-#define FINI_SECTION_ASM_OP	"\t.section\t.fini"
+#define FINI_SECTION_ASM_OP        "\t.section\t.fini"
 
 #ifdef HAVE_GAS_SUBSECTION_ORDERING
 
-#define ASM_SECTION_START_OP	"\t.subsection\t-1"
+#define ASM_SECTION_START_OP        "\t.subsection\t-1"
 
 /* Output assembly directive to move to the beginning of current section.  */
-#define ASM_OUTPUT_SECTION_START(FILE)	\
+#define ASM_OUTPUT_SECTION_START(FILE)        \
   fprintf ((FILE), "%s\n", ASM_SECTION_START_OP)
 
 #endif
-
-/* A default list of other sections which we might be "in" at any given
-   time.  For targets that use additional sections (e.g. .tdesc) you
-   should override this definition in the target-specific file which
-   includes this file.  */
-
-#undef  EXTRA_SECTIONS
-#define EXTRA_SECTIONS in_sbss, in_sdata
-
-/* A default list of extra section function definitions.  For targets
-   that use additional sections (e.g. .tdesc) you should override this
-   definition in the target-specific file which includes this file.  */
-
-#undef  EXTRA_SECTION_FUNCTIONS
-#define EXTRA_SECTION_FUNCTIONS						\
-  SECTION_FUNCTION_TEMPLATE(sbss_section, in_sbss, SBSS_SECTION_ASM_OP)	\
-  SECTION_FUNCTION_TEMPLATE(sdata_section, in_sdata, SDATA_SECTION_ASM_OP)
-
-extern void sbss_section		PARAMS ((void));
-extern void sdata_section		PARAMS ((void));
-
-#undef  SECTION_FUNCTION_TEMPLATE
-#define SECTION_FUNCTION_TEMPLATE(FN, ENUM, OP)	\
-void FN ()					\
-{						\
-  if (in_section != ENUM)			\
-    {						\
-      fprintf (asm_out_file, "%s\n", OP);	\
-      in_section = ENUM;			\
-    }						\
-}
 
 /* Switch into a generic section.  */
 #define TARGET_ASM_NAMED_SECTION  default_elf_asm_named_section
@@ -254,9 +206,9 @@ void FN ()					\
    file which includes this one.  */
 
 #undef  TYPE_ASM_OP
-#define TYPE_ASM_OP	"\t.type\t"
+#define TYPE_ASM_OP        "\t.type\t"
 #undef  SIZE_ASM_OP
-#define SIZE_ASM_OP	"\t.size\t"
+#define SIZE_ASM_OP        "\t.size\t"
 
 /* This is how we tell the assembler that a symbol is weak.  */
 
@@ -268,31 +220,31 @@ void FN ()					\
 /* This is how we tell the assembler that two symbols have the same value.  */
 
 #undef  ASM_OUTPUT_DEF
-#define ASM_OUTPUT_DEF(FILE, ALIAS, NAME)			\
-  do {								\
-    assemble_name(FILE, ALIAS);					\
-    fputs(" = ", FILE);						\
-    assemble_name(FILE, NAME);					\
-    fputc('\n', FILE);						\
+#define ASM_OUTPUT_DEF(FILE, ALIAS, NAME)                        \
+  do {                                                                \
+    assemble_name(FILE, ALIAS);                                        \
+    fputs(" = ", FILE);                                                \
+    assemble_name(FILE, NAME);                                        \
+    fputc('\n', FILE);                                                \
   } while (0)
 
 #undef  ASM_OUTPUT_DEF_FROM_DECLS
-#define ASM_OUTPUT_DEF_FROM_DECLS(FILE, DECL, TARGET)		\
-  do {								\
-    const char *alias = XSTR (XEXP (DECL_RTL (DECL), 0), 0);	\
-    const char *name = IDENTIFIER_POINTER (TARGET);		\
-    if (TREE_CODE (DECL) == FUNCTION_DECL)			\
-      {								\
-	fputc ('$', FILE);					\
-	assemble_name (FILE, alias);				\
-	fputs ("..ng = $", FILE);				\
-	assemble_name (FILE, name);				\
-	fputs ("..ng\n", FILE);					\
-      }								\
-    assemble_name(FILE, alias);					\
-    fputs(" = ", FILE);						\
-    assemble_name(FILE, name);					\
-    fputc('\n', FILE);						\
+#define ASM_OUTPUT_DEF_FROM_DECLS(FILE, DECL, TARGET)                \
+  do {                                                                \
+    const char *alias = XSTR (XEXP (DECL_RTL (DECL), 0), 0);        \
+    const char *name = IDENTIFIER_POINTER (TARGET);                \
+    if (TREE_CODE (DECL) == FUNCTION_DECL)                        \
+      {                                                                \
+        fputc ('$', FILE);                                        \
+        assemble_name (FILE, alias);                                \
+        fputs ("..ng = $", FILE);                                \
+        assemble_name (FILE, name);                                \
+        fputs ("..ng\n", FILE);                                        \
+      }                                                                \
+    assemble_name(FILE, alias);                                        \
+    fputs(" = ", FILE);                                                \
+    assemble_name(FILE, name);                                        \
+    fputc('\n', FILE);                                                \
   } while (0)
 
 /* The following macro defines the format used to output the second
@@ -302,7 +254,7 @@ void FN ()					\
    specific tm.h file (depending upon the particulars of your assembler).  */
 
 #undef  TYPE_OPERAND_FMT
-#define TYPE_OPERAND_FMT	"@%s"
+#define TYPE_OPERAND_FMT        "@%s"
 
 /* Write the extra assembler code needed to declare a function's result.
    Most svr4 assemblers don't require any special declaration of the
@@ -320,19 +272,19 @@ void FN ()					\
 /* Write the extra assembler code needed to declare an object properly.  */
 
 #undef  ASM_DECLARE_OBJECT_NAME
-#define ASM_DECLARE_OBJECT_NAME(FILE, NAME, DECL)		\
-  do {								\
-    HOST_WIDE_INT size;						\
-    ASM_OUTPUT_TYPE_DIRECTIVE (FILE, NAME, "object");		\
-    size_directive_output = 0;					\
-    if (!flag_inhibit_size_directive				\
-	&& DECL_SIZE (DECL)					\
-	&& (size = int_size_in_bytes (TREE_TYPE (DECL))) > 0)	\
-      {								\
-	size_directive_output = 1;				\
-        ASM_OUTPUT_SIZE_DIRECTIVE (FILE, NAME, size);		\
-      }								\
-    ASM_OUTPUT_LABEL(FILE, NAME);				\
+#define ASM_DECLARE_OBJECT_NAME(FILE, NAME, DECL)                \
+  do {                                                                \
+    HOST_WIDE_INT size;                                                \
+    ASM_OUTPUT_TYPE_DIRECTIVE (FILE, NAME, "object");                \
+    size_directive_output = 0;                                        \
+    if (!flag_inhibit_size_directive                                \
+        && DECL_SIZE (DECL)                                        \
+        && (size = int_size_in_bytes (TREE_TYPE (DECL))) > 0)        \
+      {                                                                \
+        size_directive_output = 1;                                \
+        ASM_OUTPUT_SIZE_DIRECTIVE (FILE, NAME, size);                \
+      }                                                                \
+    ASM_OUTPUT_LABEL(FILE, NAME);                                \
   } while (0)
 
 /* Output the size directive for a decl in rest_of_decl_compilation
@@ -342,20 +294,20 @@ void FN ()					\
    by ASM_DECLARE_OBJECT_NAME when it was run for the same decl.  */
 
 #undef  ASM_FINISH_DECLARE_OBJECT
-#define ASM_FINISH_DECLARE_OBJECT(FILE, DECL, TOP_LEVEL, AT_END)	\
-  do {									\
-    const char *name = XSTR (XEXP (DECL_RTL (DECL), 0), 0);		\
-    HOST_WIDE_INT size;							\
-    if (!flag_inhibit_size_directive					\
-	&& DECL_SIZE (DECL)						\
-	&& ! AT_END && TOP_LEVEL					\
-	&& DECL_INITIAL (DECL) == error_mark_node			\
-	&& !size_directive_output					\
-	&& (size = int_size_in_bytes (TREE_TYPE (DECL))) > 0)		\
-      {									\
-	size_directive_output = 1;					\
-	ASM_OUTPUT_SIZE_DIRECTIVE (FILE, name, size);			\
-      }									\
+#define ASM_FINISH_DECLARE_OBJECT(FILE, DECL, TOP_LEVEL, AT_END)        \
+  do {                                                                        \
+    const char *name = XSTR (XEXP (DECL_RTL (DECL), 0), 0);                \
+    HOST_WIDE_INT size;                                                        \
+    if (!flag_inhibit_size_directive                                        \
+        && DECL_SIZE (DECL)                                                \
+        && ! AT_END && TOP_LEVEL                                        \
+        && DECL_INITIAL (DECL) == error_mark_node                        \
+        && !size_directive_output                                        \
+        && (size = int_size_in_bytes (TREE_TYPE (DECL))) > 0)                \
+      {                                                                        \
+        size_directive_output = 1;                                        \
+        ASM_OUTPUT_SIZE_DIRECTIVE (FILE, name, size);                        \
+      }                                                                        \
   } while (0)
 
 /* A table of bytes codes used by the ASM_OUTPUT_ASCII and
@@ -395,35 +347,39 @@ void FN ()					\
    should define this to zero.  */
 
 #undef  STRING_LIMIT
-#define STRING_LIMIT	((unsigned) 256)
+#define STRING_LIMIT        ((unsigned) 256)
 #undef  STRING_ASM_OP
-#define STRING_ASM_OP	"\t.string\t"
+#define STRING_ASM_OP        "\t.string\t"
 
 /* GAS is the only Alpha/ELF assembler.  */
 #undef  TARGET_GAS
-#define TARGET_GAS	(1)
+#define TARGET_GAS        (1)
 
 /* Provide a STARTFILE_SPEC appropriate for ELF.  Here we add the
    (even more) magical crtbegin.o file which provides part of the
    support for getting C++ file-scope static object constructed
-   before entering `main'.   */
+   before entering `main'.  */
 
-#undef	STARTFILE_SPEC
+#undef        STARTFILE_SPEC
+#ifdef HAVE_LD_PIE
 #define STARTFILE_SPEC \
-  "%{!shared: \
-     %{pg:gcrt1.o%s} %{!pg:%{p:gcrt1.o%s} %{!p:crt1.o%s}}}\
-   crti.o%s %{static:crtbeginT.o%s}\
-   %{!static:%{shared:crtbeginS.o%s}%{!shared:crtbegin.o%s}}"
+  "%{!shared: %{pg|p:gcrt1.o%s;pie:Scrt1.o%s;:crt1.o%s}}\
+   crti.o%s %{static:crtbeginT.o%s;shared|pie:crtbeginS.o%s;:crtbegin.o%s}"
+#else
+#define STARTFILE_SPEC \
+  "%{!shared: %{pg|p:gcrt1.o%s;:crt1.o%s}}\
+   crti.o%s %{static:crtbeginT.o%s;shared|pie:crtbeginS.o%s;:crtbegin.o%s}"
+#endif
 
 /* Provide a ENDFILE_SPEC appropriate for ELF.  Here we tack on the
    magical crtend.o file which provides part of the support for
    getting C++ file-scope static object constructed before entering
    `main', followed by a normal ELF "finalizer" file, `crtn.o'.  */
 
-#undef	ENDFILE_SPEC
+#undef        ENDFILE_SPEC
 #define ENDFILE_SPEC \
   "%{ffast-math|funsafe-math-optimizations:crtfastmath.o%s} \
-   %{shared:crtendS.o%s}%{!shared:crtend.o%s} crtn.o%s"
+   %{shared|pie:crtendS.o%s;:crtend.o%s} crtn.o%s"
 
 /* We support #pragma.  */
 #define HANDLE_SYSV_PRAGMA 1
@@ -441,8 +397,8 @@ void FN ()					\
 
 /* If defined, a C statement to be executed just prior to the output of
    assembler code for INSN.  */
-#define FINAL_PRESCAN_INSN(INSN, OPVEC, NOPERANDS)	\
- (alpha_this_literal_sequence_number = 0,		\
+#define FINAL_PRESCAN_INSN(INSN, OPVEC, NOPERANDS)        \
+ (alpha_this_literal_sequence_number = 0,                \
   alpha_this_gpdisp_sequence_number = 0)
 extern int alpha_this_literal_sequence_number;
 extern int alpha_this_gpdisp_sequence_number;
@@ -452,14 +408,14 @@ extern int alpha_this_gpdisp_sequence_number;
    we need to load our GP.  Further, the .init/.fini section can
    easily be more than 4MB away from the function to call so we can't
    use bsr.  */
-#define CRT_CALL_STATIC_FUNCTION(SECTION_OP, FUNC)	\
-   asm (SECTION_OP "\n"					\
-"	br $29,1f\n"					\
-"1:	ldgp $29,0($29)\n"				\
-"	unop\n"						\
-"	jsr $26," USER_LABEL_PREFIX #FUNC "\n"		\
-"	.align 3\n"					\
-"	.previous");
+#define CRT_CALL_STATIC_FUNCTION(SECTION_OP, FUNC)        \
+   asm (SECTION_OP "\n"                                        \
+"        br $29,1f\n"                                        \
+"1:        ldgp $29,0($29)\n"                                \
+"        unop\n"                                                \
+"        jsr $26," USER_LABEL_PREFIX #FUNC "\n"                \
+"        .align 3\n"                                        \
+"        .previous");
 
 /* If we have the capability create headers for efficient EH lookup.
    As of Jan 2002, only glibc 2.2.4 can actually make use of this, but

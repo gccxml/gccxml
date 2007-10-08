@@ -1,5 +1,6 @@
 /* Target macros for the FRV port of GCC.
-   Copyright (C) 1999, 2000, 2001, 2002 Free Software Foundation, Inc.
+   Copyright (C) 1999, 2000, 2001, 2002, 2003, 2004, 2005
+   Free Software Foundation, Inc.
    Contributed by Red Hat Inc.
 
    This file is part of GCC.
@@ -16,23 +17,19 @@
 
    You should have received a copy of the GNU General Public License
    along with GCC; see the file COPYING.  If not, write to the Free
-   Software Foundation, 59 Temple Place - Suite 330, Boston, MA
-   02111-1307, USA.  */
+   Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
+   02110-1301, USA.  */
 
 #ifndef __FRV_H__
 #define __FRV_H__
 
-/* Set up System V.4 (aka ELF) defaults.  */
-#include "svr4.h"
-
-
 /* Frv general purpose macros.  */
 /* Align an address.  */
 #define ADDR_ALIGN(addr,align) (((addr) + (align) - 1) & ~((align) - 1))
 
 /* Return true if a value is inside a range.  */
-#define IN_RANGE_P(VALUE, LOW, HIGH)				\
-  (   (((HOST_WIDE_INT)(VALUE)) >= (HOST_WIDE_INT)(LOW))	\
+#define IN_RANGE_P(VALUE, LOW, HIGH)                                \
+  (   (((HOST_WIDE_INT)(VALUE)) >= (HOST_WIDE_INT)(LOW))        \
    && (((HOST_WIDE_INT)(VALUE)) <= ((HOST_WIDE_INT)(HIGH))))
 
 
@@ -65,9 +62,35 @@
    Defined in svr4.h.  */
 #undef WORD_SWITCH_TAKES_ARG
 
-/* A C string constant that tells the GNU CC driver program options to pass to
+/* -fpic and -fPIC used to imply the -mlibrary-pic multilib, but with
+    FDPIC which multilib to use depends on whether FDPIC is in use or
+    not.  The trick we use is to introduce -multilib-library-pic as a
+    pseudo-flag that selects the library-pic multilib, and map fpic
+    and fPIC to it only if fdpic is not selected.  Also, if fdpic is
+    selected and no PIC/PIE options are present, we imply -fPIE.
+    Otherwise, if -fpic or -fPIC are enabled and we're optimizing for
+    speed, or if we have -On with n>=3, enable inlining of PLTs.  As
+    for -mgprel-ro, we want to enable it by default, but not for -fpic or
+    -fpie.  */
+
+#define DRIVER_SELF_SPECS SUBTARGET_DRIVER_SELF_SPECS \
+"%{mno-pack:\
+   %{!mhard-float:-msoft-float}\
+   %{!mmedia:-mno-media}}\
+ %{!mfdpic:%{fpic|fPIC: -multilib-library-pic}}\
+ %{mfdpic:%{!fpic:%{!fpie:%{!fPIC:%{!fPIE:\
+               %{!fno-pic:%{!fno-pie:%{!fno-PIC:%{!fno-PIE:-fPIE}}}}}}}} \
+          %{!mno-inline-plt:%{O*:%{!O0:%{!Os:%{fpic|fPIC:-minline-plt} \
+                    %{!fpic:%{!fPIC:%{!O:%{!O1:%{!O2:-minline-plt}}}}}}}}} \
+          %{!mno-gprel-ro:%{!fpic:%{!fpie:-mgprel-ro}}}} \
+"
+#ifndef SUBTARGET_DRIVER_SELF_SPECS
+# define SUBTARGET_DRIVER_SELF_SPECS
+#endif
+
+/* A C string constant that tells the GCC driver program options to pass to
    the assembler.  It can also specify how to translate options you give to GNU
-   CC into options for GNU CC to pass to the assembler.  See the file `sun3.h'
+   CC into options for GCC to pass to the assembler.  See the file `sun3.h'
    for an example of this.
 
    Do not define this macro if it does not need to do anything.
@@ -86,7 +109,8 @@
     %{mmedia} %{mno-media} \
     %{mmuladd} %{mno-muladd} \
     %{mpack} %{mno-pack} \
-    %{fpic: -mpic} %{fPIC: -mPIC} %{mlibrary-pic}}"
+    %{mno-fdpic:-mnopic} %{mfdpic} \
+    %{fpic|fpie: -mpic} %{fPIC|fPIE: -mPIC} %{mlibrary-pic}}"
 
 /* Another C string constant used much like `LINK_SPEC'.  The difference
    between the two is that `STARTFILE_SPEC' is used at the very beginning of
@@ -109,122 +133,62 @@
 #undef  ENDFILE_SPEC
 #define ENDFILE_SPEC "frvend%O%s"
 
-/* A C string constant that tells the GNU CC driver program options to pass to
-   CPP.  It can also specify how to translate options you give to GNU CC into
-   options for GNU CC to pass to the CPP.
 
-   Do not define this macro if it does not need to do anything.  */
-
-/* The idea here is to use the -mcpu option to define macros based on the
-   processor's features, using the features of the default processor if
-   no -mcpu option is given.  These macros can then be overridden by
-   other -m options.  */
-#define CPP_SPEC "\
-%{mcpu=frv: %(cpp_frv)} \
-%{mcpu=fr500: %(cpp_fr500)} \
-%{mcpu=fr400: %(cpp_fr400)} \
-%{mcpu=fr300: %(cpp_simple)} \
-%{mcpu=tomcat: %(cpp_fr500)} \
-%{mcpu=simple: %(cpp_simple)} \
-%{!mcpu*: %(cpp_cpu_default)} \
-%{mno-media: -D__FRV_ACC__=0 %{msoft-float: -D__FRV_FPR__=0}} \
-%{mhard-float: -D__FRV_HARD_FLOAT__} \
-%{msoft-float: -U__FRV_HARD_FLOAT__} \
-%{mgpr-32: -U__FRV_GPR__ -D__FRV_GPR__=32} \
-%{mgpr-64: -U__FRV_GPR__ -D__FRV_GPR__=64} \
-%{mfpr-32: -U__FRV_FPR__ -D__FRV_FPR__=32} \
-%{mfpr-64: -U__FRV_FPR__ -D__FRV_FPR__=64} \
-%{macc-4: -U__FRV_ACC__ -D__FRV_ACC__=4} \
-%{macc-8: -U__FRV_ACC__ -D__FRV_ACC__=8} \
-%{mdword: -D__FRV_DWORD__} \
-%{mno-dword: -U__FRV_DWORD__} \
-%{mno-pack: -U__FRV_VLIW__} \
-%{fleading-underscore: -D__FRV_UNDERSCORE__}"
-
-/* CPU defaults.  Each CPU has its own CPP spec that defines the default
-   macros for that CPU.  Each CPU also has its own default target mask.
-
-   CPU		GPRs	FPRs	ACCs	FPU	MulAdd  ldd/std  Issue rate
-   ---		----    ----    ----    ---	------  -------  ----------
-   FRV		64	64	8	double	yes	yes      4
-   FR500	64	64	8	single	no	yes      4
-   FR400	32	32	4	none	no	yes      2
-   Simple	32	0	0	none	no	no       1 */
-
-
-#define CPP_FRV_SPEC "\
--D__FRV_GPR__=64 \
--D__FRV_FPR__=64 \
--D__FRV_ACC__=8 \
--D__FRV_HARD_FLOAT__ \
--D__FRV_DWORD__ \
--D__FRV_VLIW__=4"
-
-#define CPP_FR500_SPEC "\
--D__FRV_GPR__=64 \
--D__FRV_FPR__=64 \
--D__FRV_ACC__=8 \
--D__FRV_HARD_FLOAT__ \
--D__FRV_DWORD__ \
--D__FRV_VLIW__=4"
-
-#define CPP_FR400_SPEC "\
--D__FRV_GPR__=32 \
--D__FRV_FPR__=32 \
--D__FRV_ACC__=4 \
--D__FRV_DWORD__ \
--D__FRV_VLIW__=2"
-
-#define CPP_SIMPLE_SPEC "\
--D__FRV_GPR__=32 \
--D__FRV_FPR__=0 \
--D__FRV_ACC__=0 \
-%{mmedia: -D__FRV_ACC__=8} \
-%{mhard-float|mmedia: -D__FRV_FPR__=64}"
-
-#define MASK_DEFAULT_FRV	\
-  (MASK_MEDIA			\
-   | MASK_DOUBLE		\
-   | MASK_MULADD		\
-   | MASK_DWORD			\
+#define MASK_DEFAULT_FRV        \
+  (MASK_MEDIA                        \
+   | MASK_DOUBLE                \
+   | MASK_MULADD                \
+   | MASK_DWORD                        \
    | MASK_PACK)
 
 #define MASK_DEFAULT_FR500 \
   (MASK_MEDIA | MASK_DWORD | MASK_PACK)
 
-#define MASK_DEFAULT_FR400	\
-  (MASK_GPR_32			\
-   | MASK_FPR_32		\
-   | MASK_MEDIA			\
-   | MASK_ACC_4			\
-   | MASK_SOFT_FLOAT		\
-   | MASK_DWORD			\
+#define MASK_DEFAULT_FR550 \
+  (MASK_MEDIA | MASK_DWORD | MASK_PACK)
+
+#define MASK_DEFAULT_FR450        \
+  (MASK_GPR_32                        \
+   | MASK_FPR_32                \
+   | MASK_MEDIA                        \
+   | MASK_SOFT_FLOAT                \
+   | MASK_DWORD                        \
+   | MASK_PACK)
+
+#define MASK_DEFAULT_FR400        \
+  (MASK_GPR_32                        \
+   | MASK_FPR_32                \
+   | MASK_MEDIA                        \
+   | MASK_ACC_4                        \
+   | MASK_SOFT_FLOAT                \
+   | MASK_DWORD                        \
    | MASK_PACK)
 
 #define MASK_DEFAULT_SIMPLE \
   (MASK_GPR_32 | MASK_SOFT_FLOAT)
 
-/* A C string constant that tells the GNU CC driver program options to pass to
-   `cc1'.  It can also specify how to translate options you give to GNU CC into
-   options for GNU CC to pass to the `cc1'.
+/* A C string constant that tells the GCC driver program options to pass to
+   `cc1'.  It can also specify how to translate options you give to GCC into
+   options for GCC to pass to the `cc1'.
 
    Do not define this macro if it does not need to do anything.  */
 /* For ABI compliance, we need to put bss data into the normal data section.  */
 #define CC1_SPEC "%{G*}"
 
-/* A C string constant that tells the GNU CC driver program options to pass to
-   the linker.  It can also specify how to translate options you give to GNU CC
-   into options for GNU CC to pass to the linker.
+/* A C string constant that tells the GCC driver program options to pass to
+   the linker.  It can also specify how to translate options you give to GCC
+   into options for GCC to pass to the linker.
 
    Do not define this macro if it does not need to do anything.
 
    Defined in svr4.h.  */
 /* Override the svr4.h version with one that dispenses without the svr4
    shared library options, notably -G.  */
-#undef	LINK_SPEC
+#undef        LINK_SPEC
 #define LINK_SPEC "\
 %{h*} %{v:-V} \
-%{b} %{Wl,*:%*} \
+%{b} \
+%{mfdpic:-melf32frvfd -z text} \
 %{static:-dn -Bstatic} \
 %{shared:-Bdynamic} \
 %{symbolic:-Bsymbolic} \
@@ -244,143 +208,78 @@
 #undef  LIB_SPEC
 #define LIB_SPEC "--start-group -lc -lsim --end-group"
 
-/* This macro defines names of additional specifications to put in the specs
-   that can be used in various specifications like CC1_SPEC.  Its definition
-   is an initializer with a subgrouping for each command option.
-
-   Each subgrouping contains a string constant, that defines the
-   specification name, and a string constant that used by the GNU CC driver
-   program.
-
-   Do not define this macro if it does not need to do anything.  */
-
-#ifndef SUBTARGET_EXTRA_SPECS
-#define SUBTARGET_EXTRA_SPECS
-#endif
-
-#define EXTRA_SPECS							\
-  { "cpp_frv",		CPP_FRV_SPEC },					\
-  { "cpp_fr500",	CPP_FR500_SPEC },				\
-  { "cpp_fr400",	CPP_FR400_SPEC },				\
-  { "cpp_simple",	CPP_SIMPLE_SPEC },				\
-  { "cpp_cpu_default",	CPP_CPU_DEFAULT_SPEC },				\
-  SUBTARGET_EXTRA_SPECS
-
-#ifndef CPP_CPU_DEFAULT_SPEC
-#define CPP_CPU_DEFAULT_SPEC	CPP_FR500_SPEC
-#define CPU_TYPE		FRV_CPU_FR500
-#endif
-
-/* Allow us to easily change the default for -malloc-cc.  */
-#ifndef	DEFAULT_NO_ALLOC_CC
-#define MASK_DEFAULT_ALLOC_CC	MASK_ALLOC_CC
-#else
-#define MASK_DEFAULT_ALLOC_CC	0
+#ifndef CPU_TYPE
+#define CPU_TYPE                FRV_CPU_FR500
 #endif
 
 /* Run-time target specifications */
 
-/* Define this to be a string constant containing `-D' options to define the
-   predefined macros that identify this machine and system.  These macros will
-   be predefined unless the `-ansi' option is specified.
-
-   In addition, a parallel set of macros are predefined, whose names are made
-   by appending `__' at the beginning and at the end.  These `__' macros are
-   permitted by the ANSI standard, so they are predefined regardless of whether
-   `-ansi' is specified.  */
-
-#define CPP_PREDEFINES "-D__frv__ -Amachine(frv)"
+#define TARGET_CPU_CPP_BUILTINS()                                        \
+  do                                                                        \
+    {                                                                        \
+      int issue_rate;                                                        \
+                                                                        \
+      builtin_define ("__frv__");                                        \
+      builtin_assert ("machine=frv");                                        \
+                                                                        \
+      issue_rate = frv_issue_rate ();                                        \
+      if (issue_rate > 1)                                                \
+        builtin_define_with_int_value ("__FRV_VLIW__", issue_rate);        \
+      builtin_define_with_int_value ("__FRV_GPR__", NUM_GPRS);                \
+      builtin_define_with_int_value ("__FRV_FPR__", NUM_FPRS);                \
+      builtin_define_with_int_value ("__FRV_ACC__", NUM_ACCS);                \
+                                                                        \
+      switch (frv_cpu_type)                                                \
+        {                                                                \
+        case FRV_CPU_GENERIC:                                                \
+          builtin_define ("__CPU_GENERIC__");                                \
+          break;                                                        \
+        case FRV_CPU_FR550:                                                \
+          builtin_define ("__CPU_FR550__");                                \
+          break;                                                        \
+        case FRV_CPU_FR500:                                                \
+        case FRV_CPU_TOMCAT:                                                \
+          builtin_define ("__CPU_FR500__");                                \
+          break;                                                        \
+        case FRV_CPU_FR450:                                                \
+          builtin_define ("__CPU_FR450__");                                \
+          break;                                                        \
+        case FRV_CPU_FR405:                                                \
+          builtin_define ("__CPU_FR405__");                                \
+          break;                                                        \
+        case FRV_CPU_FR400:                                                \
+          builtin_define ("__CPU_FR400__");                                \
+          break;                                                        \
+        case FRV_CPU_FR300:                                                \
+        case FRV_CPU_SIMPLE:                                                \
+          builtin_define ("__CPU_FR300__");                                \
+          break;                                                        \
+        }                                                                \
+                                                                        \
+      if (TARGET_HARD_FLOAT)                                                \
+        builtin_define ("__FRV_HARD_FLOAT__");                                \
+      if (TARGET_DWORD)                                                        \
+        builtin_define ("__FRV_DWORD__");                                \
+      if (TARGET_FDPIC)                                                        \
+        builtin_define ("__FRV_FDPIC__");                                \
+      if (flag_leading_underscore > 0)                                        \
+        builtin_define ("__FRV_UNDERSCORE__");                                \
+    }                                                                        \
+  while (0)
 
 
-/* This declaration should be present.  */
-extern int target_flags;
+#define TARGET_HAS_FPRS                (TARGET_HARD_FLOAT || TARGET_MEDIA)
 
-/* This series of macros is to allow compiler command arguments to enable or
-   disable the use of optional features of the target machine.  For example,
-   one machine description serves both the 68000 and the 68020; a command
-   argument tells the compiler whether it should use 68020-only instructions or
-   not.  This command argument works by means of a macro `TARGET_68020' that
-   tests a bit in `target_flags'.
+#define NUM_GPRS                (TARGET_GPR_32? 32 : 64)
+#define NUM_FPRS                (!TARGET_HAS_FPRS? 0 : TARGET_FPR_32? 32 : 64)
+#define NUM_ACCS                (!TARGET_MEDIA? 0 : TARGET_ACC_4? 4 : 8)
 
-   Define a macro `TARGET_FEATURENAME' for each such option.  Its definition
-   should test a bit in `target_flags'; for example:
-
-        #define TARGET_68020 (target_flags & 1)
-
-   One place where these macros are used is in the condition-expressions of
-   instruction patterns.  Note how `TARGET_68020' appears frequently in the
-   68000 machine description file, `m68k.md'.  Another place they are used is
-   in the definitions of the other macros in the `MACHINE.h' file.  */
-
-#define MASK_GPR_32	     0x00000001	/* Limit gprs to 32 registers */
-#define MASK_FPR_32	     0x00000002	/* Limit fprs to 32 registers */
-#define MASK_SOFT_FLOAT	     0x00000004	/* Use software floating point */
-#define MASK_ALLOC_CC	     0x00000008	/* Dynamically allocate icc/fcc's */
-#define MASK_DWORD	     0x00000010	/* Change ABi to allow dbl word insns*/
-#define MASK_DOUBLE	     0x00000020	/* Use double precision instructions */
-#define MASK_MEDIA	     0x00000040	/* Use media instructions */
-#define MASK_MULADD	     0x00000080	/* Use multiply add/subtract insns */
-#define MASK_LIBPIC	     0x00000100	/* -fpic that can be linked w/o pic */
-#define MASK_ACC_4	     0x00000200	/* Only use four media accumulators */
-#define MASK_PACK	     0x00000400 /* Set to enable packed output */
-
-			 		/* put debug masks up high */
-#define MASK_DEBUG_ARG	     0x40000000	/* debug argument handling */
-#define MASK_DEBUG_ADDR	     0x20000000	/* debug go_if_legitimate_address */
-#define MASK_DEBUG_STACK     0x10000000	/* debug stack frame */
-#define MASK_DEBUG	     0x08000000	/* general debugging switch */
-#define MASK_DEBUG_LOC	     0x04000000	/* optimize line # table */
-#define MASK_DEBUG_COND_EXEC 0x02000000	/* debug cond exec code */
-#define MASK_NO_COND_MOVE    0x01000000	/* disable conditional moves */
-#define MASK_NO_SCC	     0x00800000	/* disable set conditional codes */
-#define MASK_NO_COND_EXEC    0x00400000	/* disable conditional execution */
-#define MASK_NO_VLIW_BRANCH  0x00200000	/* disable repacking branches */
-#define MASK_NO_MULTI_CE     0x00100000	/* disable multi-level cond exec */
-#define MASK_NO_NESTED_CE    0x00080000	/* disable nested cond exec */
-
-#define MASK_DEFAULT		MASK_DEFAULT_ALLOC_CC
-
-#define TARGET_GPR_32		((target_flags & MASK_GPR_32) != 0)
-#define TARGET_FPR_32		((target_flags & MASK_FPR_32) != 0)
-#define TARGET_SOFT_FLOAT	((target_flags & MASK_SOFT_FLOAT) != 0)
-#define TARGET_ALLOC_CC		((target_flags & MASK_ALLOC_CC) != 0)
-#define TARGET_DWORD		((target_flags & MASK_DWORD) != 0)
-#define TARGET_DOUBLE		((target_flags & MASK_DOUBLE) != 0)
-#define TARGET_MEDIA		((target_flags & MASK_MEDIA) != 0)
-#define TARGET_MULADD		((target_flags & MASK_MULADD) != 0)
-#define TARGET_LIBPIC		((target_flags & MASK_LIBPIC) != 0)
-#define TARGET_ACC_4		((target_flags & MASK_ACC_4) != 0)
-#define TARGET_DEBUG_ARG	((target_flags & MASK_DEBUG_ARG) != 0)
-#define TARGET_DEBUG_ADDR	((target_flags & MASK_DEBUG_ADDR) != 0)
-#define TARGET_DEBUG_STACK	((target_flags & MASK_DEBUG_STACK) != 0)
-#define TARGET_DEBUG		((target_flags & MASK_DEBUG) != 0)
-#define TARGET_DEBUG_LOC	((target_flags & MASK_DEBUG_LOC) != 0)
-#define TARGET_DEBUG_COND_EXEC	((target_flags & MASK_DEBUG_COND_EXEC) != 0)
-#define TARGET_NO_COND_MOVE	((target_flags & MASK_NO_COND_MOVE) != 0)
-#define TARGET_NO_SCC		((target_flags & MASK_NO_SCC) != 0)
-#define TARGET_NO_COND_EXEC	((target_flags & MASK_NO_COND_EXEC) != 0)
-#define TARGET_NO_VLIW_BRANCH	((target_flags & MASK_NO_VLIW_BRANCH) != 0)
-#define TARGET_NO_MULTI_CE	((target_flags & MASK_NO_MULTI_CE) != 0)
-#define TARGET_NO_NESTED_CE	((target_flags & MASK_NO_NESTED_CE) != 0)
-#define TARGET_PACK		((target_flags & MASK_PACK) != 0)
-
-#define TARGET_GPR_64		(! TARGET_GPR_32)
-#define TARGET_FPR_64		(! TARGET_FPR_32)
-#define TARGET_HARD_FLOAT	(! TARGET_SOFT_FLOAT)
-#define TARGET_FIXED_CC		(! TARGET_ALLOC_CC)
-#define TARGET_COND_MOVE	(! TARGET_NO_COND_MOVE)
-#define TARGET_SCC		(! TARGET_NO_SCC)
-#define TARGET_COND_EXEC	(! TARGET_NO_COND_EXEC)
-#define TARGET_VLIW_BRANCH	(! TARGET_NO_VLIW_BRANCH)
-#define TARGET_MULTI_CE		(! TARGET_NO_MULTI_CE)
-#define TARGET_NESTED_CE	(! TARGET_NO_NESTED_CE)
-#define TARGET_ACC_8		(! TARGET_ACC_4)
-
-#define TARGET_HAS_FPRS		(TARGET_HARD_FLOAT || TARGET_MEDIA)
-
-#define NUM_GPRS		(TARGET_GPR_32? 32 : 64)
-#define NUM_FPRS		(!TARGET_HAS_FPRS? 0 : TARGET_FPR_32? 32 : 64)
-#define NUM_ACCS		(!TARGET_MEDIA? 0 : TARGET_ACC_4? 4 : 8)
+/* X is a valid accumulator number if (X & ACC_MASK) == X.  */
+#define ACC_MASK                                                \
+  (!TARGET_MEDIA ? 0                                                \
+   : TARGET_ACC_4 ? 3                                                \
+   : frv_cpu_type == FRV_CPU_FR450 ? 11                                \
+   : 7)
 
 /* Macros to identify the blend of media instructions available.  Revision 1
    is the one found on the FR500.  Revision 2 includes the changes made for
@@ -389,114 +288,32 @@ extern int target_flags;
    Treat the generic processor as a revision 1 machine for now, for
    compatibility with earlier releases.  */
 
-#define TARGET_MEDIA_REV1					\
-  (TARGET_MEDIA							\
-   && (frv_cpu_type == FRV_CPU_GENERIC				\
+#define TARGET_MEDIA_REV1                                        \
+  (TARGET_MEDIA                                                        \
+   && (frv_cpu_type == FRV_CPU_GENERIC                                \
        || frv_cpu_type == FRV_CPU_FR500))
 
-#define TARGET_MEDIA_REV2					\
-  (TARGET_MEDIA && frv_cpu_type == FRV_CPU_FR400)
+#define TARGET_MEDIA_REV2                                        \
+  (TARGET_MEDIA                                                        \
+   && (frv_cpu_type == FRV_CPU_FR400                                \
+       || frv_cpu_type == FRV_CPU_FR405                                \
+       || frv_cpu_type == FRV_CPU_FR450                                \
+       || frv_cpu_type == FRV_CPU_FR550))
 
-/* This macro defines names of command options to set and clear bits in
-   `target_flags'.  Its definition is an initializer with a subgrouping for
-   each command option.
+#define TARGET_MEDIA_FR450                                        \
+  (frv_cpu_type == FRV_CPU_FR450)
 
-   Each subgrouping contains a string constant, that defines the option name,
-   a number, which contains the bits to set in `target_flags', and an optional
-   second string which is the textual description that will be displayed when
-   the user passes --help on the command line.  If the number entry is negative
-   then the specified bits will be cleared instead of being set.  If the second
-   string entry is present but empty, then no help information will be displayed
-   for that option, but it will not count as an undocumented option.  The actual
-   option name, asseen on the command line is made by appending `-m' to the
-   specified name.
+#define TARGET_FR500_FR550_BUILTINS                                \
+   (frv_cpu_type == FRV_CPU_FR500                                \
+    || frv_cpu_type == FRV_CPU_FR550)
 
-   One of the subgroupings should have a null string.  The number in this
-   grouping is the default value for `target_flags'.  Any target options act
-   starting with that value.
+#define TARGET_FR405_BUILTINS                                        \
+  (frv_cpu_type == FRV_CPU_FR405                                \
+   || frv_cpu_type == FRV_CPU_FR450)
 
-   Here is an example which defines `-m68000' and `-m68020' with opposite
-   meanings, and picks the latter as the default:
-
-        #define TARGET_SWITCHES \
-          { { "68020",  1, ""},      \
-            { "68000", -1, "Compile for the m68000"},     \
-            { "",       1, }}
-
-   This declaration must be present.  */
-
-#define TARGET_SWITCHES							    \
-{{ "gpr-32",		  MASK_GPR_32,		"Only use 32 gprs"},	    \
- { "gpr-64",		 -MASK_GPR_32,		"Use 64 gprs"},		    \
- { "fpr-32",		  MASK_FPR_32,		"Only use 32 fprs"},	    \
- { "fpr-64",		 -MASK_FPR_32,		"Use 64 fprs"},		    \
- { "hard-float",	 -MASK_SOFT_FLOAT,	"Use hardware floating point" },\
- { "soft-float",	  MASK_SOFT_FLOAT,	"Use software floating point" },\
- { "alloc-cc",		  MASK_ALLOC_CC,	"Dynamically allocate cc's" }, \
- { "fixed-cc",		 -MASK_ALLOC_CC,	"Just use icc0/fcc0" },	    \
- { "dword",		  MASK_DWORD,		"Change ABI to allow double word insns" }, \
- { "no-dword",		 -MASK_DWORD,		"Do not use double word insns" }, \
- { "double",		  MASK_DOUBLE,		"Use fp double instructions" }, \
- { "no-double",		 -MASK_DOUBLE,		"Do not use fp double insns" }, \
- { "media",		  MASK_MEDIA,		"Use media instructions" }, \
- { "no-media",		 -MASK_MEDIA,		"Do not use media insns" }, \
- { "muladd",		  MASK_MULADD,		"Use multiply add/subtract instructions" }, \
- { "no-muladd",		 -MASK_MULADD,		"Do not use multiply add/subtract insns" }, \
- { "library-pic",	  MASK_LIBPIC,		"PIC support for building libraries" }, \
- { "acc-4",		  MASK_ACC_4,		"Use 4 media accumulators" }, \
- { "acc-8",		 -MASK_ACC_4,		"Use 8 media accumulators" }, \
- { "pack",		  MASK_PACK,		"Pack VLIW instructions" }, \
- { "no-pack",		 -MASK_PACK,		"Do not pack VLIW instructions" }, \
- { "no-eflags",		  0,			"Do not mark ABI switches in e_flags" }, \
- { "debug-arg",		  MASK_DEBUG_ARG,	"Internal debug switch" },  \
- { "debug-addr",	  MASK_DEBUG_ADDR,	"Internal debug switch" },  \
- { "debug-stack",	  MASK_DEBUG_STACK,	"Internal debug switch" },  \
- { "debug",		  MASK_DEBUG,		"Internal debug switch" },  \
- { "debug-cond-exec",	  MASK_DEBUG_COND_EXEC,	"Internal debug switch" },  \
- { "debug-loc",		  MASK_DEBUG_LOC,	"Internal debug switch" },  \
- { "cond-move",		 -MASK_NO_COND_MOVE,	"Enable conditional moves" },  \
- { "no-cond-move",	  MASK_NO_COND_MOVE,	"Disable conditional moves" },  \
- { "scc",		 -MASK_NO_SCC,		"Enable setting gprs to the result of comparisons" },  \
- { "no-scc",		  MASK_NO_SCC,		"Disable setting gprs to the result of comparisons" },  \
- { "cond-exec",		 -MASK_NO_COND_EXEC,	"Enable conditional execution other than moves/scc" }, \
- { "no-cond-exec",	  MASK_NO_COND_EXEC,	"Disable conditional execution other than moves/scc" }, \
- { "vliw-branch",	 -MASK_NO_VLIW_BRANCH,	"Run pass to pack branches into VLIW insns" }, \
- { "no-vliw-branch",	  MASK_NO_VLIW_BRANCH,	"Do not run pass to pack branches into VLIW insns" }, \
- { "multi-cond-exec",	 -MASK_NO_MULTI_CE,	"Disable optimizing &&/|| in conditional execution" }, \
- { "no-multi-cond-exec",  MASK_NO_MULTI_CE,	"Enable optimizing &&/|| in conditional execution" }, \
- { "nested-cond-exec",	 -MASK_NO_NESTED_CE,	"Enable nested conditional execution optimizations" }, \
- { "no-nested-cond-exec" ,MASK_NO_NESTED_CE,	"Disable nested conditional execution optimizations" }, \
- { "tomcat-stats",	  0, 			"Cause gas to print tomcat statistics" }, \
- { "",			  MASK_DEFAULT,		"" }}			    \
-
-/* This macro is similar to `TARGET_SWITCHES' but defines names of command
-   options that have values.  Its definition is an initializer with a
-   subgrouping for each command option.
-
-   Each subgrouping contains a string constant, that defines the fixed part of
-   the option name, the address of a variable, and an optional description string.
-   The variable, of type `char *', is set to the text following the fixed part of
-   the option as it is specified on the command line.  The actual option name is
-   made by appending `-m' to the specified name.
-
-   Here is an example which defines `-mshort-data-NUMBER'.  If the given option
-   is `-mshort-data-512', the variable `m88k_short_data' will be set to the
-   string `"512"'.
-
-        extern char *m88k_short_data;
-        #define TARGET_OPTIONS \
-         { { "short-data-", & m88k_short_data, \
-	 "Specify the size of the short data section"  } }
-
-   This declaration is optional.  */
-#define TARGET_OPTIONS							    \
-{									    \
-  { "cpu=",		&frv_cpu_string,	 "Set cpu type" },	    \
-  { "branch-cost=",	&frv_branch_cost_string, "Internal debug switch" }, \
-  { "cond-exec-insns=", &frv_condexec_insns_str, "Internal debug switch" }, \
-  { "cond-exec-temps=", &frv_condexec_temps_str, "Internal debug switch" }, \
-  { "sched-lookahead=", &frv_sched_lookahead_str,"Internal debug switch" }, \
-}
+#ifndef HAVE_AS_TLS
+#define HAVE_AS_TLS 0
+#endif
 
 /* This macro is a C statement to print on `stderr' a string describing the
    particular machine description choice.  Every machine description should
@@ -534,7 +351,7 @@ extern int target_flags;
 
    You should not use this macro to change options that are not
    machine-specific.  These should uniformly selected by the same optimization
-   level on all supported machines.  Use this macro to enable machbine-specific
+   level on all supported machines.  Use this macro to enable machine-specific
    optimizations.
 
    *Do not examine `write_symbols' in this macro!* The debugging options are
@@ -543,12 +360,13 @@ extern int target_flags;
 
 
 /* Define this macro if debugging can be performed even without a frame
-   pointer.  If this macro is defined, GNU CC will turn on the
+   pointer.  If this macro is defined, GCC will turn on the
    `-fomit-frame-pointer' option whenever `-O' is specified.  */
-/* Frv needs a specific frame layout that includes the frame pointer */
+/* Frv needs a specific frame layout that includes the frame pointer.  */
 
 #define CAN_DEBUG_WITHOUT_FP
 
+#define LABEL_ALIGN_AFTER_BARRIER(LABEL) (TARGET_ALIGN_LABELS ? 3 : 0)
 
 /* Small Data Area Support.  */
 /* Maximum size of variables that go in .sdata/.sbss.
@@ -556,9 +374,6 @@ extern int target_flags;
 #ifndef SDATA_DEFAULT_SIZE
 #define SDATA_DEFAULT_SIZE 8
 #endif
-
-extern int g_switch_value;        /* value of the -G xx switch */
-extern int g_switch_set;          /* whether -G xx was passed.  */
 
 
 /* Storage Layout */
@@ -580,7 +395,7 @@ extern int g_switch_set;          /* whether -G xx was passed.  */
 
 /* Define this macro to have the value 1 if, in a multiword object, the most
    significant word has the lowest number.  This applies to both memory
-   locations and registers; GNU CC fundamentally assumes that the order of
+   locations and registers; GCC fundamentally assumes that the order of
    words in memory is the same as the order in registers.  This macro need not
    be a constant.  */
 #define WORDS_BIG_ENDIAN 1
@@ -606,13 +421,13 @@ extern int g_switch_set;          /* whether -G xx was passed.  */
    is more efficient.
 
    Do not define this macro if it would never modify MODE.  */
-#define PROMOTE_MODE(MODE, UNSIGNEDP, TYPE)	\
-  do						\
-    {						\
-      if (GET_MODE_CLASS (MODE) == MODE_INT	\
-	  && GET_MODE_SIZE (MODE) < 4)		\
-	(MODE) = SImode;			\
-    }						\
+#define PROMOTE_MODE(MODE, UNSIGNEDP, TYPE)        \
+  do                                                \
+    {                                                \
+      if (GET_MODE_CLASS (MODE) == MODE_INT        \
+          && GET_MODE_SIZE (MODE) < 4)                \
+        (MODE) = SImode;                        \
+    }                                                \
   while (0)
 
 /* Normal alignment required for function parameters on the stack, in bits.
@@ -643,10 +458,10 @@ extern int g_switch_set;          /* whether -G xx was passed.  */
 #define BIGGEST_FIELD_ALIGNMENT 64
 #else
 /* An expression for the alignment of a structure field FIELD if the
-   alignment computed in the usual way is COMPUTED.  GNU CC uses this
+   alignment computed in the usual way is COMPUTED.  GCC uses this
    value instead of the value in `BIGGEST_ALIGNMENT' or
    `BIGGEST_FIELD_ALIGNMENT', if defined, for structure fields only.  */
-#define ADJUST_FIELD_ALIGN(FIELD, COMPUTED) 				\
+#define ADJUST_FIELD_ALIGN(FIELD, COMPUTED)                                 \
   frv_adjust_field_align (FIELD, COMPUTED)
 #endif
 
@@ -661,9 +476,9 @@ extern int g_switch_set;          /* whether -G xx was passed.  */
    it all fit in fewer cache lines.  Another is to cause character arrays to be
    word-aligned so that `strcpy' calls that copy constants to character arrays
    can be done inline.  */
-#define DATA_ALIGNMENT(TYPE, ALIGN)		\
-  (TREE_CODE (TYPE) == ARRAY_TYPE		\
-   && TYPE_MODE (TREE_TYPE (TYPE)) == QImode	\
+#define DATA_ALIGNMENT(TYPE, ALIGN)                \
+  (TREE_CODE (TYPE) == ARRAY_TYPE                \
+   && TYPE_MODE (TREE_TYPE (TYPE)) == QImode        \
    && (ALIGN) < BITS_PER_WORD ? BITS_PER_WORD : (ALIGN))
 
 /* If defined, a C expression to compute the alignment given to a constant that
@@ -677,7 +492,7 @@ extern int g_switch_set;          /* whether -G xx was passed.  */
    to be word aligned so that `strcpy' calls that copy constants can be done
    inline.  */
 #define CONSTANT_ALIGNMENT(EXP, ALIGN)  \
-  (TREE_CODE (EXP) == STRING_CST	\
+  (TREE_CODE (EXP) == STRING_CST        \
    && (ALIGN) < BITS_PER_WORD ? BITS_PER_WORD : (ALIGN))
 
 /* Define this macro to be the value 1 if instructions will fail to work if
@@ -715,7 +530,7 @@ extern int g_switch_set;          /* whether -G xx was passed.  */
    `STRUCTURE_SIZE_BOUNDARY' that way, you must define
    `PCC_BITFIELD_TYPE_MATTERS' to have a nonzero value.
 
-   If your aim is to make GNU CC use the same conventions for laying out
+   If your aim is to make GCC use the same conventions for laying out
    bitfields as are used by another compiler, here is how to investigate what
    the other compiler does.  Compile and run this program:
 
@@ -772,38 +587,41 @@ extern int g_switch_set;          /* whether -G xx was passed.  */
 #define GPR_R0          GPR_FIRST               /* R0, constant 0 */
 #define GPR_FP          (GPR_FIRST + 2)         /* Frame pointer */
 #define GPR_SP          (GPR_FIRST + 1)         /* Stack pointer */
-						/* small data register */
-#define SDA_BASE_REG    ((unsigned)(flag_pic ? PIC_REGNO : (GPR_FIRST+16)))
-#define PIC_REGNO       (GPR_FIRST + 17)        /* PIC register */
+                                                /* small data register */
+#define SDA_BASE_REG    ((unsigned)(TARGET_FDPIC ? -1 : flag_pic ? PIC_REGNO : (GPR_FIRST + 16)))
+#define PIC_REGNO       (GPR_FIRST + (TARGET_FDPIC?15:17))        /* PIC register.  */
+#define FDPIC_FPTR_REGNO  (GPR_FIRST + 14)        /* uClinux PIC function pointer register.  */
+#define FDPIC_REGNO   (GPR_FIRST + 15)        /* uClinux PIC register.  */
 
-#define FPR_FIRST       64			/* First FP reg */
-#define FPR_LAST        127			/* Last  FP reg */
+#define OUR_FDPIC_REG        get_hard_reg_initial_val (SImode, FDPIC_REGNO)
 
-#define DEFAULT_CONDEXEC_TEMPS 4		/* reserve 4 regs by default */
-#define GPR_TEMP_NUM	frv_condexec_temps	/* # gprs to reserve for temps */
+#define FPR_FIRST       64                        /* First FP reg */
+#define FPR_LAST        127                        /* Last  FP reg */
+
+#define GPR_TEMP_NUM        frv_condexec_temps        /* # gprs to reserve for temps */
 
 /* We reserve the last CR and CCR in each category to be used as a reload
    register to reload the CR/CCR registers.  This is a kludge.  */
-#define CC_FIRST	128			/* First ICC/FCC reg */
-#define CC_LAST		135			/* Last  ICC/FCC reg */
-#define ICC_FIRST	(CC_FIRST + 4)		/* First ICC reg */
-#define ICC_LAST	(CC_FIRST + 7)		/* Last  ICC reg */
-#define ICC_TEMP	(CC_FIRST + 7)		/* Temporary ICC reg */
-#define FCC_FIRST	(CC_FIRST)		/* First FCC reg */
-#define FCC_LAST	(CC_FIRST + 3)		/* Last  FCC reg */
+#define CC_FIRST        128                        /* First ICC/FCC reg */
+#define CC_LAST                135                        /* Last  ICC/FCC reg */
+#define ICC_FIRST        (CC_FIRST + 4)                /* First ICC reg */
+#define ICC_LAST        (CC_FIRST + 7)                /* Last  ICC reg */
+#define ICC_TEMP        (CC_FIRST + 7)                /* Temporary ICC reg */
+#define FCC_FIRST        (CC_FIRST)                /* First FCC reg */
+#define FCC_LAST        (CC_FIRST + 3)                /* Last  FCC reg */
 
 /* Amount to shift a value to locate a ICC or FCC register in the CCR
    register and shift it to the bottom 4 bits.  */
 #define CC_SHIFT_RIGHT(REGNO) (((REGNO) - CC_FIRST) << 2)
 
 /* Mask to isolate a single ICC/FCC value.  */
-#define CC_MASK		0xf
+#define CC_MASK                0xf
 
 /* Masks to isolate the various bits in an ICC field.  */
-#define ICC_MASK_N	0x8	/* negative */
-#define ICC_MASK_Z	0x4	/* zero */
-#define ICC_MASK_V	0x2	/* overflow */
-#define ICC_MASK_C	0x1	/* carry */
+#define ICC_MASK_N        0x8        /* negative */
+#define ICC_MASK_Z        0x4        /* zero */
+#define ICC_MASK_V        0x2        /* overflow */
+#define ICC_MASK_C        0x1        /* carry */
 
 /* Mask to isolate the N/Z flags in an ICC.  */
 #define ICC_MASK_NZ (ICC_MASK_N | ICC_MASK_Z)
@@ -812,66 +630,68 @@ extern int g_switch_set;          /* whether -G xx was passed.  */
 #define ICC_MASK_ZC (ICC_MASK_Z | ICC_MASK_C)
 
 /* Masks to isolate the various bits in a FCC field.  */
-#define FCC_MASK_E	0x8	/* equal */
-#define FCC_MASK_L	0x4	/* less than */
-#define FCC_MASK_G	0x2	/* greater than */
-#define FCC_MASK_U	0x1	/* unordered */
+#define FCC_MASK_E        0x8        /* equal */
+#define FCC_MASK_L        0x4        /* less than */
+#define FCC_MASK_G        0x2        /* greater than */
+#define FCC_MASK_U        0x1        /* unordered */
 
 /* For CCR registers, the machine wants CR4..CR7 to be used for integer
    code and CR0..CR3 to be used for floating point.  */
-#define CR_FIRST	136			/* First CCR */
-#define CR_LAST		143			/* Last  CCR */
-#define CR_NUM		(CR_LAST-CR_FIRST+1)	/* # of CCRs (8) */
-#define ICR_FIRST	(CR_FIRST + 4)		/* First integer CCR */
-#define ICR_LAST	(CR_FIRST + 7)		/* Last  integer CCR */
-#define ICR_TEMP	ICR_LAST		/* Temp  integer CCR */
-#define FCR_FIRST	(CR_FIRST + 0)		/* First float CCR */
-#define FCR_LAST	(CR_FIRST + 3)		/* Last  float CCR */
+#define CR_FIRST        136                        /* First CCR */
+#define CR_LAST                143                        /* Last  CCR */
+#define CR_NUM                (CR_LAST-CR_FIRST+1)        /* # of CCRs (8) */
+#define ICR_FIRST        (CR_FIRST + 4)                /* First integer CCR */
+#define ICR_LAST        (CR_FIRST + 7)                /* Last  integer CCR */
+#define ICR_TEMP        ICR_LAST                /* Temp  integer CCR */
+#define FCR_FIRST        (CR_FIRST + 0)                /* First float CCR */
+#define FCR_LAST        (CR_FIRST + 3)                /* Last  float CCR */
 
 /* Amount to shift a value to locate a CR register in the CCCR special purpose
    register and shift it to the bottom 2 bits.  */
 #define CR_SHIFT_RIGHT(REGNO) (((REGNO) - CR_FIRST) << 1)
 
 /* Mask to isolate a single CR value.  */
-#define CR_MASK		0x3
+#define CR_MASK                0x3
 
-#define ACC_FIRST	144			/* First acc register */
-#define ACC_LAST	151			/* Last  acc register */
+#define ACC_FIRST        144                        /* First acc register */
+#define ACC_LAST        155                        /* Last  acc register */
 
-#define ACCG_FIRST	152			/* First accg register */
-#define ACCG_LAST	159			/* Last  accg register */
+#define ACCG_FIRST        156                        /* First accg register */
+#define ACCG_LAST        167                        /* Last  accg register */
 
-#define AP_FIRST	160			/* fake argument pointer */
+#define AP_FIRST        168                        /* fake argument pointer */
 
-#define SPR_FIRST	161
-#define SPR_LAST	162
-#define LR_REGNO	(SPR_FIRST)
-#define LCR_REGNO	(SPR_FIRST + 1)
+#define SPR_FIRST        169
+#define SPR_LAST        172
+#define LR_REGNO        (SPR_FIRST)
+#define LCR_REGNO        (SPR_FIRST + 1)
+#define IACC_FIRST        (SPR_FIRST + 2)
+#define IACC_LAST        (SPR_FIRST + 3)
 
-#define GPR_P(R)	IN_RANGE_P (R, GPR_FIRST, GPR_LAST)
-#define GPR_OR_AP_P(R)	(GPR_P (R) || (R) == ARG_POINTER_REGNUM)
-#define FPR_P(R)	IN_RANGE_P (R, FPR_FIRST, FPR_LAST)
-#define CC_P(R)		IN_RANGE_P (R, CC_FIRST, CC_LAST)
-#define ICC_P(R)	IN_RANGE_P (R, ICC_FIRST, ICC_LAST)
-#define FCC_P(R)	IN_RANGE_P (R, FCC_FIRST, FCC_LAST)
-#define CR_P(R)		IN_RANGE_P (R, CR_FIRST, CR_LAST)
-#define ICR_P(R)	IN_RANGE_P (R, ICR_FIRST, ICR_LAST)
-#define FCR_P(R)	IN_RANGE_P (R, FCR_FIRST, FCR_LAST)
-#define ACC_P(R)	IN_RANGE_P (R, ACC_FIRST, ACC_LAST)
-#define ACCG_P(R)	IN_RANGE_P (R, ACCG_FIRST, ACCG_LAST)
-#define SPR_P(R)	IN_RANGE_P (R, SPR_FIRST, SPR_LAST)
+#define GPR_P(R)        IN_RANGE_P (R, GPR_FIRST, GPR_LAST)
+#define GPR_OR_AP_P(R)        (GPR_P (R) || (R) == ARG_POINTER_REGNUM)
+#define FPR_P(R)        IN_RANGE_P (R, FPR_FIRST, FPR_LAST)
+#define CC_P(R)                IN_RANGE_P (R, CC_FIRST, CC_LAST)
+#define ICC_P(R)        IN_RANGE_P (R, ICC_FIRST, ICC_LAST)
+#define FCC_P(R)        IN_RANGE_P (R, FCC_FIRST, FCC_LAST)
+#define CR_P(R)                IN_RANGE_P (R, CR_FIRST, CR_LAST)
+#define ICR_P(R)        IN_RANGE_P (R, ICR_FIRST, ICR_LAST)
+#define FCR_P(R)        IN_RANGE_P (R, FCR_FIRST, FCR_LAST)
+#define ACC_P(R)        IN_RANGE_P (R, ACC_FIRST, ACC_LAST)
+#define ACCG_P(R)        IN_RANGE_P (R, ACCG_FIRST, ACCG_LAST)
+#define SPR_P(R)        IN_RANGE_P (R, SPR_FIRST, SPR_LAST)
 
-#define GPR_OR_PSEUDO_P(R)	(GPR_P (R) || (R) >= FIRST_PSEUDO_REGISTER)
-#define FPR_OR_PSEUDO_P(R)	(FPR_P (R) || (R) >= FIRST_PSEUDO_REGISTER)
-#define GPR_AP_OR_PSEUDO_P(R)	(GPR_OR_AP_P (R) || (R) >= FIRST_PSEUDO_REGISTER)
-#define CC_OR_PSEUDO_P(R)	(CC_P (R) || (R) >= FIRST_PSEUDO_REGISTER)
-#define ICC_OR_PSEUDO_P(R)	(ICC_P (R) || (R) >= FIRST_PSEUDO_REGISTER)
-#define FCC_OR_PSEUDO_P(R)	(FCC_P (R) || (R) >= FIRST_PSEUDO_REGISTER)
-#define CR_OR_PSEUDO_P(R)	(CR_P (R) || (R) >= FIRST_PSEUDO_REGISTER)
-#define ICR_OR_PSEUDO_P(R)	(ICR_P (R) || (R) >= FIRST_PSEUDO_REGISTER)
-#define FCR_OR_PSEUDO_P(R)	(FCR_P (R) || (R) >= FIRST_PSEUDO_REGISTER)
-#define ACC_OR_PSEUDO_P(R)	(ACC_P (R) || (R) >= FIRST_PSEUDO_REGISTER)
-#define ACCG_OR_PSEUDO_P(R)	(ACCG_P (R) || (R) >= FIRST_PSEUDO_REGISTER)
+#define GPR_OR_PSEUDO_P(R)        (GPR_P (R) || (R) >= FIRST_PSEUDO_REGISTER)
+#define FPR_OR_PSEUDO_P(R)        (FPR_P (R) || (R) >= FIRST_PSEUDO_REGISTER)
+#define GPR_AP_OR_PSEUDO_P(R)        (GPR_OR_AP_P (R) || (R) >= FIRST_PSEUDO_REGISTER)
+#define CC_OR_PSEUDO_P(R)        (CC_P (R) || (R) >= FIRST_PSEUDO_REGISTER)
+#define ICC_OR_PSEUDO_P(R)        (ICC_P (R) || (R) >= FIRST_PSEUDO_REGISTER)
+#define FCC_OR_PSEUDO_P(R)        (FCC_P (R) || (R) >= FIRST_PSEUDO_REGISTER)
+#define CR_OR_PSEUDO_P(R)        (CR_P (R) || (R) >= FIRST_PSEUDO_REGISTER)
+#define ICR_OR_PSEUDO_P(R)        (ICR_P (R) || (R) >= FIRST_PSEUDO_REGISTER)
+#define FCR_OR_PSEUDO_P(R)        (FCR_P (R) || (R) >= FIRST_PSEUDO_REGISTER)
+#define ACC_OR_PSEUDO_P(R)        (ACC_P (R) || (R) >= FIRST_PSEUDO_REGISTER)
+#define ACCG_OR_PSEUDO_P(R)        (ACCG_P (R) || (R) >= FIRST_PSEUDO_REGISTER)
 
 #define MAX_STACK_IMMEDIATE_OFFSET 2047
 
@@ -884,37 +704,39 @@ extern int g_switch_set;          /* whether -G xx was passed.  */
 #define FIRST_PSEUDO_REGISTER (SPR_LAST + 1)
 
 /* The first/last register that can contain the arguments to a function.  */
-#define FIRST_ARG_REGNUM	(GPR_FIRST + 8)
-#define LAST_ARG_REGNUM		(FIRST_ARG_REGNUM + FRV_NUM_ARG_REGS - 1)
+#define FIRST_ARG_REGNUM        (GPR_FIRST + 8)
+#define LAST_ARG_REGNUM                (FIRST_ARG_REGNUM + FRV_NUM_ARG_REGS - 1)
 
 /* Registers used by the exception handling functions.  These should be
-   registers that are not otherwised used by the calling sequence.  */
-#define FIRST_EH_REGNUM		14
-#define LAST_EH_REGNUM		15
+   registers that are not otherwise used by the calling sequence.  */
+#define FIRST_EH_REGNUM                14
+#define LAST_EH_REGNUM                15
 
 /* Scratch registers used in the prologue, epilogue and thunks.
    OFFSET_REGNO is for loading constant addends that are too big for a
    single instruction.  TEMP_REGNO is used for transferring SPRs to and from
    the stack, and various other activities.  */
-#define OFFSET_REGNO		4
-#define TEMP_REGNO		5
+#define OFFSET_REGNO                4
+#define TEMP_REGNO                5
 
 /* Registers used in the prologue.  OLD_SP_REGNO is the old stack pointer,
    which is sometimes used to set up the frame pointer.  */
-#define OLD_SP_REGNO		6
+#define OLD_SP_REGNO                6
 
 /* Registers used in the epilogue.  STACKADJ_REGNO stores the exception
    handler's stack adjustment.  */
-#define STACKADJ_REGNO		6
+#define STACKADJ_REGNO                6
 
 /* Registers used in thunks.  JMP_REGNO is used for loading the target
    address.  */
-#define JUMP_REGNO		6
+#define JUMP_REGNO                6
 
-#define EH_RETURN_DATA_REGNO(N)	((N) <= (LAST_EH_REGNUM - FIRST_EH_REGNUM)? \
-				 (N) + FIRST_EH_REGNUM : INVALID_REGNUM)
-#define EH_RETURN_STACKADJ_RTX	gen_rtx_REG (SImode, STACKADJ_REGNO)
+#define EH_RETURN_DATA_REGNO(N)        ((N) <= (LAST_EH_REGNUM - FIRST_EH_REGNUM)? \
+                                 (N) + FIRST_EH_REGNUM : INVALID_REGNUM)
+#define EH_RETURN_STACKADJ_RTX        gen_rtx_REG (SImode, STACKADJ_REGNO)
 #define EH_RETURN_HANDLER_RTX   RETURN_ADDR_RTX (0, frame_pointer_rtx)
+
+#define EPILOGUE_USES(REGNO) ((REGNO) == LR_REGNO)
 
 /* An initializer that says which registers are used for fixed purposes all
    throughout the compiled code and are therefore not available for general
@@ -945,37 +767,40 @@ extern int g_switch_set;          /* whether -G xx was passed.  */
    gr31 -- OS reserved
    cr3  -- reserved to reload FCC registers.
    cr7  -- reserved to reload ICC registers.  */
-#define FIXED_REGISTERS							\
-{	/* Integer Registers */						\
-	1, 1, 1, 1, 0, 0, 0, 0,		/* 000-007, gr0  - gr7  */	\
-	0, 0, 0, 0, 0, 0, 0, 0,		/* 008-015, gr8  - gr15 */	\
-	1, 1, 0, 0, 0, 0, 0, 0,		/* 016-023, gr16 - gr23 */	\
-	0, 0, 0, 0, 1, 1, 1, 1,		/* 024-031, gr24 - gr31 */	\
-	0, 0, 0, 0, 0, 0, 0, 0,		/* 032-039, gr32 - gr39 */	\
-	0, 0, 0, 0, 0, 0, 0, 0,		/* 040-040, gr48 - gr47 */	\
-	0, 0, 0, 0, 0, 0, 0, 0,		/* 048-055, gr48 - gr55 */	\
-	0, 0, 0, 0, 0, 0, 0, 0,		/* 056-063, gr56 - gr63 */	\
-	/* Float Registers */						\
-	0, 0, 0, 0, 0, 0, 0, 0,		/* 064-071, fr0  - fr7  */	\
-	0, 0, 0, 0, 0, 0, 0, 0,		/* 072-079, fr8  - fr15 */	\
-	0, 0, 0, 0, 0, 0, 0, 0,		/* 080-087, fr16 - fr23 */	\
-	0, 0, 0, 0, 0, 0, 0, 0,		/* 088-095, fr24 - fr31 */	\
-	0, 0, 0, 0, 0, 0, 0, 0,		/* 096-103, fr32 - fr39 */	\
-	0, 0, 0, 0, 0, 0, 0, 0,		/* 104-111, fr48 - fr47 */	\
-	0, 0, 0, 0, 0, 0, 0, 0,		/* 112-119, fr48 - fr55 */	\
-	0, 0, 0, 0, 0, 0, 0, 0,		/* 120-127, fr56 - fr63 */	\
-	/* Condition Code Registers */					\
-	0, 0, 0, 0,			/* 128-131, fcc0 - fcc3  */	\
-	0, 0, 0, 1,			/* 132-135, icc0 - icc3 */	\
-	/* Conditional execution Registers (CCR) */			\
-	0, 0, 0, 0, 0, 0, 0, 1,		/* 136-143, cr0 - cr7 */	\
-	/* Accumulators */						\
-	1, 1, 1, 1, 1, 1, 1, 1,		/* 144-151, acc0  - acc7 */	\
-	1, 1, 1, 1, 1, 1, 1, 1,		/* 152-159, accg0 - accg7 */	\
-	/* Other registers */						\
-	1,				/* 160, AP   - fake arg ptr */	\
-	0,				/* 161, LR   - Link register*/	\
-	0,				/* 162, LCR  - Loop count reg*/	\
+#define FIXED_REGISTERS                                                        \
+{        /* Integer Registers */                                                \
+        1, 1, 1, 1, 0, 0, 0, 0,                /* 000-007, gr0  - gr7  */        \
+        0, 0, 0, 0, 0, 0, 0, 0,                /* 008-015, gr8  - gr15 */        \
+        1, 1, 0, 0, 0, 0, 0, 0,                /* 016-023, gr16 - gr23 */        \
+        0, 0, 0, 0, 1, 1, 1, 1,                /* 024-031, gr24 - gr31 */        \
+        0, 0, 0, 0, 0, 0, 0, 0,                /* 032-039, gr32 - gr39 */        \
+        0, 0, 0, 0, 0, 0, 0, 0,                /* 040-040, gr48 - gr47 */        \
+        0, 0, 0, 0, 0, 0, 0, 0,                /* 048-055, gr48 - gr55 */        \
+        0, 0, 0, 0, 0, 0, 0, 0,                /* 056-063, gr56 - gr63 */        \
+        /* Float Registers */                                                \
+        0, 0, 0, 0, 0, 0, 0, 0,                /* 064-071, fr0  - fr7  */        \
+        0, 0, 0, 0, 0, 0, 0, 0,                /* 072-079, fr8  - fr15 */        \
+        0, 0, 0, 0, 0, 0, 0, 0,                /* 080-087, fr16 - fr23 */        \
+        0, 0, 0, 0, 0, 0, 0, 0,                /* 088-095, fr24 - fr31 */        \
+        0, 0, 0, 0, 0, 0, 0, 0,                /* 096-103, fr32 - fr39 */        \
+        0, 0, 0, 0, 0, 0, 0, 0,                /* 104-111, fr48 - fr47 */        \
+        0, 0, 0, 0, 0, 0, 0, 0,                /* 112-119, fr48 - fr55 */        \
+        0, 0, 0, 0, 0, 0, 0, 0,                /* 120-127, fr56 - fr63 */        \
+        /* Condition Code Registers */                                        \
+        0, 0, 0, 0,                        /* 128-131, fcc0 - fcc3  */        \
+        0, 0, 0, 1,                        /* 132-135, icc0 - icc3 */        \
+        /* Conditional execution Registers (CCR) */                        \
+        0, 0, 0, 0, 0, 0, 0, 1,                /* 136-143, cr0 - cr7 */        \
+        /* Accumulators */                                                \
+        1, 1, 1, 1, 1, 1, 1, 1,                /* 144-151, acc0  - acc7 */        \
+        1, 1, 1, 1,                        /* 152-155, acc8  - acc11 */        \
+        1, 1, 1, 1, 1, 1, 1, 1,                /* 156-163, accg0 - accg7 */        \
+        1, 1, 1, 1,                        /* 164-167, accg8 - accg11 */        \
+        /* Other registers */                                                \
+        1,                                /* 168, AP   - fake arg ptr */        \
+        0,                                /* 169, LR   - Link register*/        \
+        0,                                /* 170, LCR  - Loop count reg*/        \
+        1, 1                                /* 171-172, iacc0 */                \
 }
 
 /* Like `FIXED_REGISTERS' but has 1 for each register that is clobbered (in
@@ -986,37 +811,40 @@ extern int g_switch_set;          /* whether -G xx was passed.  */
    If a register has 0 in `CALL_USED_REGISTERS', the compiler automatically
    saves it on function entry and restores it on function exit, if the register
    is used within the function.  */
-#define CALL_USED_REGISTERS						\
-{	/* Integer Registers */						\
-	1, 1, 1, 1, 1, 1, 1, 1,		/* 000-007, gr0  - gr7  */	\
-	1, 1, 1, 1, 1, 1, 1, 1,		/* 008-015, gr8  - gr15 */	\
-	1, 1, 0, 0, 0, 0, 0, 0,		/* 016-023, gr16 - gr23 */	\
-	0, 0, 0, 0, 1, 1, 1, 1,		/* 024-031, gr24 - gr31 */	\
-	1, 1, 1, 1, 1, 1, 1, 1,		/* 032-039, gr32 - gr39 */	\
-	1, 1, 1, 1, 1, 1, 1, 1,		/* 040-040, gr48 - gr47 */	\
-	0, 0, 0, 0, 0, 0, 0, 0,		/* 048-055, gr48 - gr55 */	\
-	0, 0, 0, 0, 0, 0, 0, 0,		/* 056-063, gr56 - gr63 */	\
-	/* Float Registers */						\
-	1, 1, 1, 1, 1, 1, 1, 1,		/* 064-071, fr0  - fr7  */	\
-	1, 1, 1, 1, 1, 1, 1, 1,		/* 072-079, fr8  - fr15 */	\
-	0, 0, 0, 0, 0, 0, 0, 0,		/* 080-087, fr16 - fr23 */	\
-	0, 0, 0, 0, 0, 0, 0, 0,		/* 088-095, fr24 - fr31 */	\
-	1, 1, 1, 1, 1, 1, 1, 1,		/* 096-103, fr32 - fr39 */	\
-	1, 1, 1, 1, 1, 1, 1, 1,		/* 104-111, fr48 - fr47 */	\
-	0, 0, 0, 0, 0, 0, 0, 0,		/* 112-119, fr48 - fr55 */	\
-	0, 0, 0, 0, 0, 0, 0, 0,		/* 120-127, fr56 - fr63 */	\
-	/* Condition Code Registers */					\
-	1, 1, 1, 1,			/* 128-131, fcc0 - fcc3 */	\
-	1, 1, 1, 1,			/* 132-135, icc0 - icc3  */	\
-	/* Conditional execution Registers (CCR) */			\
-	1, 1, 1, 1, 1, 1, 1, 1,		/* 136-143, cr0 - cr7 */	\
-	/* Accumulators */						\
-	1, 1, 1, 1, 1, 1, 1, 1,		/* 144-151, acc0 - acc7 */	\
-	1, 1, 1, 1, 1, 1, 1, 1,		/* 152-159, accg0 - accg7 */	\
-	/* Other registers */						\
-	1,				/* 160, AP  - fake arg ptr */	\
-	1,				/* 161, LR  - Link register*/	\
-	1,				/* 162, LCR - Loop count reg */	\
+#define CALL_USED_REGISTERS                                                \
+{        /* Integer Registers */                                                \
+        1, 1, 1, 1, 1, 1, 1, 1,                /* 000-007, gr0  - gr7  */        \
+        1, 1, 1, 1, 1, 1, 1, 1,                /* 008-015, gr8  - gr15 */        \
+        1, 1, 0, 0, 0, 0, 0, 0,                /* 016-023, gr16 - gr23 */        \
+        0, 0, 0, 0, 1, 1, 1, 1,                /* 024-031, gr24 - gr31 */        \
+        1, 1, 1, 1, 1, 1, 1, 1,                /* 032-039, gr32 - gr39 */        \
+        1, 1, 1, 1, 1, 1, 1, 1,                /* 040-040, gr48 - gr47 */        \
+        0, 0, 0, 0, 0, 0, 0, 0,                /* 048-055, gr48 - gr55 */        \
+        0, 0, 0, 0, 0, 0, 0, 0,                /* 056-063, gr56 - gr63 */        \
+        /* Float Registers */                                                \
+        1, 1, 1, 1, 1, 1, 1, 1,                /* 064-071, fr0  - fr7  */        \
+        1, 1, 1, 1, 1, 1, 1, 1,                /* 072-079, fr8  - fr15 */        \
+        0, 0, 0, 0, 0, 0, 0, 0,                /* 080-087, fr16 - fr23 */        \
+        0, 0, 0, 0, 0, 0, 0, 0,                /* 088-095, fr24 - fr31 */        \
+        1, 1, 1, 1, 1, 1, 1, 1,                /* 096-103, fr32 - fr39 */        \
+        1, 1, 1, 1, 1, 1, 1, 1,                /* 104-111, fr48 - fr47 */        \
+        0, 0, 0, 0, 0, 0, 0, 0,                /* 112-119, fr48 - fr55 */        \
+        0, 0, 0, 0, 0, 0, 0, 0,                /* 120-127, fr56 - fr63 */        \
+        /* Condition Code Registers */                                        \
+        1, 1, 1, 1,                        /* 128-131, fcc0 - fcc3 */        \
+        1, 1, 1, 1,                        /* 132-135, icc0 - icc3  */        \
+        /* Conditional execution Registers (CCR) */                        \
+        1, 1, 1, 1, 1, 1, 1, 1,                /* 136-143, cr0 - cr7 */        \
+        /* Accumulators */                                                \
+        1, 1, 1, 1, 1, 1, 1, 1,                /* 144-151, acc0 - acc7 */        \
+        1, 1, 1, 1,                        /* 152-155, acc8 - acc11 */        \
+        1, 1, 1, 1, 1, 1, 1, 1,                /* 156-163, accg0 - accg7 */        \
+        1, 1, 1, 1,                        /* 164-167, accg8 - accg11 */        \
+        /* Other registers */                                                \
+        1,                                /* 168, AP  - fake arg ptr */        \
+        1,                                /* 169, LR  - Link register*/        \
+        1,                                /* 170, LCR - Loop count reg */        \
+        1, 1                                /* 171-172, iacc0 */                \
 }
 
 /* Zero or more C statements that may conditionally modify two variables
@@ -1045,7 +873,7 @@ extern int g_switch_set;          /* whether -G xx was passed.  */
 /* Order of allocation of registers.  */
 
 /* If defined, an initializer for a vector of integers, containing the numbers
-   of hard registers in the order in which GNU CC should prefer to use them
+   of hard registers in the order in which GCC should prefer to use them
    (from most preferred to least).
 
    If this macro is not defined, registers are used lowest numbered first (all
@@ -1060,58 +888,61 @@ extern int g_switch_set;          /* whether -G xx was passed.  */
 /* On the FRV, allocate GR16 and GR17 after other saved registers so that we
    have a better chance of allocating 2 registers at a time and can use the
    double word load/store instructions in the prologue.  */
-#define REG_ALLOC_ORDER							\
-{									\
-  /* volatile registers */						\
-  GPR_FIRST  +  4, GPR_FIRST  +  5, GPR_FIRST  +  6, GPR_FIRST 	+  7,	\
-  GPR_FIRST  +  8, GPR_FIRST  +  9, GPR_FIRST  + 10, GPR_FIRST 	+ 11,	\
-  GPR_FIRST  + 12, GPR_FIRST  + 13, GPR_FIRST  + 14, GPR_FIRST 	+ 15,	\
-  GPR_FIRST  + 32, GPR_FIRST  + 33, GPR_FIRST  + 34, GPR_FIRST 	+ 35,	\
-  GPR_FIRST  + 36, GPR_FIRST  + 37, GPR_FIRST  + 38, GPR_FIRST 	+ 39,	\
-  GPR_FIRST  + 40, GPR_FIRST  + 41, GPR_FIRST  + 42, GPR_FIRST 	+ 43,	\
-  GPR_FIRST  + 44, GPR_FIRST  + 45, GPR_FIRST  + 46, GPR_FIRST 	+ 47,	\
-									\
-  FPR_FIRST  +  0, FPR_FIRST  +  1, FPR_FIRST  +  2, FPR_FIRST 	+  3,	\
-  FPR_FIRST  +  4, FPR_FIRST  +  5, FPR_FIRST  +  6, FPR_FIRST 	+  7,	\
-  FPR_FIRST  +  8, FPR_FIRST  +  9, FPR_FIRST  + 10, FPR_FIRST 	+ 11,	\
-  FPR_FIRST  + 12, FPR_FIRST  + 13, FPR_FIRST  + 14, FPR_FIRST 	+ 15,	\
-  FPR_FIRST  + 32, FPR_FIRST  + 33, FPR_FIRST  + 34, FPR_FIRST 	+ 35,	\
-  FPR_FIRST  + 36, FPR_FIRST  + 37, FPR_FIRST  + 38, FPR_FIRST 	+ 39,	\
-  FPR_FIRST  + 40, FPR_FIRST  + 41, FPR_FIRST  + 42, FPR_FIRST 	+ 43,	\
-  FPR_FIRST  + 44, FPR_FIRST  + 45, FPR_FIRST  + 46, FPR_FIRST 	+ 47,	\
-									\
-  ICC_FIRST  +  0, ICC_FIRST  +  1, ICC_FIRST  +  2, ICC_FIRST 	+  3,	\
-  FCC_FIRST  +  0, FCC_FIRST  +  1, FCC_FIRST  +  2, FCC_FIRST 	+  3,	\
-  CR_FIRST   +  0, CR_FIRST   +  1, CR_FIRST   +  2, CR_FIRST  	+  3,	\
-  CR_FIRST   +  4, CR_FIRST   +  5, CR_FIRST   +  6, CR_FIRST  	+  7,	\
-									\
-  /* saved registers */							\
-  GPR_FIRST  + 18, GPR_FIRST  + 19,					\
-  GPR_FIRST  + 20, GPR_FIRST  + 21, GPR_FIRST  + 22, GPR_FIRST 	+ 23,	\
-  GPR_FIRST  + 24, GPR_FIRST  + 25, GPR_FIRST  + 26, GPR_FIRST 	+ 27,	\
-  GPR_FIRST  + 48, GPR_FIRST  + 49, GPR_FIRST  + 50, GPR_FIRST 	+ 51,	\
-  GPR_FIRST  + 52, GPR_FIRST  + 53, GPR_FIRST  + 54, GPR_FIRST 	+ 55,	\
-  GPR_FIRST  + 56, GPR_FIRST  + 57, GPR_FIRST  + 58, GPR_FIRST 	+ 59,	\
-  GPR_FIRST  + 60, GPR_FIRST  + 61, GPR_FIRST  + 62, GPR_FIRST 	+ 63,	\
-  GPR_FIRST  + 16, GPR_FIRST  + 17,					\
-									\
-  FPR_FIRST  + 16, FPR_FIRST  + 17, FPR_FIRST  + 18, FPR_FIRST 	+ 19,	\
-  FPR_FIRST  + 20, FPR_FIRST  + 21, FPR_FIRST  + 22, FPR_FIRST 	+ 23,	\
-  FPR_FIRST  + 24, FPR_FIRST  + 25, FPR_FIRST  + 26, FPR_FIRST 	+ 27,	\
-  FPR_FIRST  + 28, FPR_FIRST  + 29, FPR_FIRST  + 30, FPR_FIRST 	+ 31,	\
-  FPR_FIRST  + 48, FPR_FIRST  + 49, FPR_FIRST  + 50, FPR_FIRST 	+ 51,	\
-  FPR_FIRST  + 52, FPR_FIRST  + 53, FPR_FIRST  + 54, FPR_FIRST 	+ 55,	\
-  FPR_FIRST  + 56, FPR_FIRST  + 57, FPR_FIRST  + 58, FPR_FIRST 	+ 59,	\
-  FPR_FIRST  + 60, FPR_FIRST  + 61, FPR_FIRST  + 62, FPR_FIRST 	+ 63,	\
-									\
-  /* special or fixed registers */					\
-  GPR_FIRST  +  0, GPR_FIRST  +  1, GPR_FIRST  +  2, GPR_FIRST 	+  3,	\
-  GPR_FIRST  + 28, GPR_FIRST  + 29, GPR_FIRST  + 30, GPR_FIRST 	+ 31,	\
-  ACC_FIRST  +  0, ACC_FIRST  +  1, ACC_FIRST  +  2, ACC_FIRST 	+  3,	\
-  ACC_FIRST  +  4, ACC_FIRST  +  5, ACC_FIRST  +  6, ACC_FIRST 	+  7,	\
-  ACCG_FIRST +  0, ACCG_FIRST +  1, ACCG_FIRST +  2, ACCG_FIRST	+  3,	\
-  ACCG_FIRST +  4, ACCG_FIRST +  5, ACCG_FIRST +  6, ACCG_FIRST	+  7,	\
-  AP_FIRST, 	   LR_REGNO,       LCR_REGNO				\
+#define REG_ALLOC_ORDER                                                        \
+{                                                                        \
+  /* volatile registers */                                                \
+  GPR_FIRST  +  4, GPR_FIRST  +  5, GPR_FIRST  +  6, GPR_FIRST         +  7,        \
+  GPR_FIRST  +  8, GPR_FIRST  +  9, GPR_FIRST  + 10, GPR_FIRST         + 11,        \
+  GPR_FIRST  + 12, GPR_FIRST  + 13, GPR_FIRST  + 14, GPR_FIRST         + 15,        \
+  GPR_FIRST  + 32, GPR_FIRST  + 33, GPR_FIRST  + 34, GPR_FIRST         + 35,        \
+  GPR_FIRST  + 36, GPR_FIRST  + 37, GPR_FIRST  + 38, GPR_FIRST         + 39,        \
+  GPR_FIRST  + 40, GPR_FIRST  + 41, GPR_FIRST  + 42, GPR_FIRST         + 43,        \
+  GPR_FIRST  + 44, GPR_FIRST  + 45, GPR_FIRST  + 46, GPR_FIRST         + 47,        \
+                                                                        \
+  FPR_FIRST  +  0, FPR_FIRST  +  1, FPR_FIRST  +  2, FPR_FIRST         +  3,        \
+  FPR_FIRST  +  4, FPR_FIRST  +  5, FPR_FIRST  +  6, FPR_FIRST         +  7,        \
+  FPR_FIRST  +  8, FPR_FIRST  +  9, FPR_FIRST  + 10, FPR_FIRST         + 11,        \
+  FPR_FIRST  + 12, FPR_FIRST  + 13, FPR_FIRST  + 14, FPR_FIRST         + 15,        \
+  FPR_FIRST  + 32, FPR_FIRST  + 33, FPR_FIRST  + 34, FPR_FIRST         + 35,        \
+  FPR_FIRST  + 36, FPR_FIRST  + 37, FPR_FIRST  + 38, FPR_FIRST         + 39,        \
+  FPR_FIRST  + 40, FPR_FIRST  + 41, FPR_FIRST  + 42, FPR_FIRST         + 43,        \
+  FPR_FIRST  + 44, FPR_FIRST  + 45, FPR_FIRST  + 46, FPR_FIRST         + 47,        \
+                                                                        \
+  ICC_FIRST  +  0, ICC_FIRST  +  1, ICC_FIRST  +  2, ICC_FIRST         +  3,        \
+  FCC_FIRST  +  0, FCC_FIRST  +  1, FCC_FIRST  +  2, FCC_FIRST         +  3,        \
+  CR_FIRST   +  0, CR_FIRST   +  1, CR_FIRST   +  2, CR_FIRST          +  3,        \
+  CR_FIRST   +  4, CR_FIRST   +  5, CR_FIRST   +  6, CR_FIRST          +  7,        \
+                                                                        \
+  /* saved registers */                                                        \
+  GPR_FIRST  + 18, GPR_FIRST  + 19,                                        \
+  GPR_FIRST  + 20, GPR_FIRST  + 21, GPR_FIRST  + 22, GPR_FIRST         + 23,        \
+  GPR_FIRST  + 24, GPR_FIRST  + 25, GPR_FIRST  + 26, GPR_FIRST         + 27,        \
+  GPR_FIRST  + 48, GPR_FIRST  + 49, GPR_FIRST  + 50, GPR_FIRST         + 51,        \
+  GPR_FIRST  + 52, GPR_FIRST  + 53, GPR_FIRST  + 54, GPR_FIRST         + 55,        \
+  GPR_FIRST  + 56, GPR_FIRST  + 57, GPR_FIRST  + 58, GPR_FIRST         + 59,        \
+  GPR_FIRST  + 60, GPR_FIRST  + 61, GPR_FIRST  + 62, GPR_FIRST         + 63,        \
+  GPR_FIRST  + 16, GPR_FIRST  + 17,                                        \
+                                                                        \
+  FPR_FIRST  + 16, FPR_FIRST  + 17, FPR_FIRST  + 18, FPR_FIRST         + 19,        \
+  FPR_FIRST  + 20, FPR_FIRST  + 21, FPR_FIRST  + 22, FPR_FIRST         + 23,        \
+  FPR_FIRST  + 24, FPR_FIRST  + 25, FPR_FIRST  + 26, FPR_FIRST         + 27,        \
+  FPR_FIRST  + 28, FPR_FIRST  + 29, FPR_FIRST  + 30, FPR_FIRST         + 31,        \
+  FPR_FIRST  + 48, FPR_FIRST  + 49, FPR_FIRST  + 50, FPR_FIRST         + 51,        \
+  FPR_FIRST  + 52, FPR_FIRST  + 53, FPR_FIRST  + 54, FPR_FIRST         + 55,        \
+  FPR_FIRST  + 56, FPR_FIRST  + 57, FPR_FIRST  + 58, FPR_FIRST         + 59,        \
+  FPR_FIRST  + 60, FPR_FIRST  + 61, FPR_FIRST  + 62, FPR_FIRST         + 63,        \
+                                                                        \
+  /* special or fixed registers */                                        \
+  GPR_FIRST  +  0, GPR_FIRST  +  1, GPR_FIRST  +  2, GPR_FIRST         +  3,        \
+  GPR_FIRST  + 28, GPR_FIRST  + 29, GPR_FIRST  + 30, GPR_FIRST         + 31,        \
+  ACC_FIRST  +  0, ACC_FIRST  +  1, ACC_FIRST  +  2, ACC_FIRST         +  3,        \
+  ACC_FIRST  +  4, ACC_FIRST  +  5, ACC_FIRST  +  6, ACC_FIRST         +  7,        \
+  ACC_FIRST  +  8, ACC_FIRST  +  9, ACC_FIRST  + 10, ACC_FIRST         + 11,        \
+  ACCG_FIRST +  0, ACCG_FIRST +  1, ACCG_FIRST +  2, ACCG_FIRST        +  3,        \
+  ACCG_FIRST +  4, ACCG_FIRST +  5, ACCG_FIRST +  6, ACCG_FIRST        +  7,        \
+  ACCG_FIRST +  8, ACCG_FIRST +  9, ACCG_FIRST + 10, ACCG_FIRST        + 11,        \
+  AP_FIRST,            LR_REGNO,       LCR_REGNO,                                \
+  IACC_FIRST +  0, IACC_FIRST +  1                                        \
 }
 
 
@@ -1222,6 +1053,12 @@ enum reg_class
   CR_REGS,
   LCR_REG,
   LR_REG,
+  GR8_REGS,
+  GR9_REGS,
+  GR89_REGS,
+  FDPIC_REGS,
+  FDPIC_FPTR_REGS,
+  FDPIC_CALL_REGS,
   SPR_REGS,
   QUAD_ACC_REGS,
   EVEN_ACC_REGS,
@@ -1246,28 +1083,34 @@ enum reg_class
 
 /* An initializer containing the names of the register classes as C string
    constants.  These names are used in writing some of the debugging dumps.  */
-#define REG_CLASS_NAMES {						\
-   "NO_REGS",								\
-   "ICC_REGS",								\
-   "FCC_REGS",								\
-   "CC_REGS",								\
-   "ICR_REGS",								\
-   "FCR_REGS",								\
-   "CR_REGS",								\
-   "LCR_REG",								\
-   "LR_REG",								\
-   "SPR_REGS",								\
-   "QUAD_ACC_REGS",							\
-   "EVEN_ACC_REGS",							\
-   "ACC_REGS",								\
-   "ACCG_REGS",								\
-   "QUAD_FPR_REGS",							\
-   "FEVEN_REGS",							\
-   "FPR_REGS",								\
-   "QUAD_REGS",								\
-   "EVEN_REGS",								\
-   "GPR_REGS",								\
-   "ALL_REGS"								\
+#define REG_CLASS_NAMES {                                                \
+   "NO_REGS",                                                                \
+   "ICC_REGS",                                                                \
+   "FCC_REGS",                                                                \
+   "CC_REGS",                                                                \
+   "ICR_REGS",                                                                \
+   "FCR_REGS",                                                                \
+   "CR_REGS",                                                                \
+   "LCR_REG",                                                                \
+   "LR_REG",                                                                \
+   "GR8_REGS",                                                          \
+   "GR9_REGS",                                                          \
+   "GR89_REGS",                                                         \
+   "FDPIC_REGS",                                                        \
+   "FDPIC_FPTR_REGS",                                                        \
+   "FDPIC_CALL_REGS",                                                        \
+   "SPR_REGS",                                                                \
+   "QUAD_ACC_REGS",                                                        \
+   "EVEN_ACC_REGS",                                                        \
+   "ACC_REGS",                                                                \
+   "ACCG_REGS",                                                                \
+   "QUAD_FPR_REGS",                                                        \
+   "FEVEN_REGS",                                                        \
+   "FPR_REGS",                                                                \
+   "QUAD_REGS",                                                                \
+   "EVEN_REGS",                                                                \
+   "GPR_REGS",                                                                \
+   "ALL_REGS"                                                                \
 }
 
 /* An initializer containing the contents of the register classes, as integers
@@ -1280,8 +1123,8 @@ enum reg_class
    containing several integers.  Each sub-initializer must be suitable as an
    initializer for the type `HARD_REG_SET' which is defined in
    `hard-reg-set.h'.  */
-#define REG_CLASS_CONTENTS						       \
-{  /* gr0-gr31 gr32-gr63  fr0-fr31   fr32-fr-63 cc/ccr/acc ap/spr */	       \
+#define REG_CLASS_CONTENTS                                                       \
+{  /* gr0-gr31 gr32-gr63  fr0-fr31   fr32-fr-63 cc/ccr/acc ap/spr */               \
   { 0x00000000,0x00000000,0x00000000,0x00000000,0x00000000,0x0}, /* NO_REGS  */\
   { 0x00000000,0x00000000,0x00000000,0x00000000,0x000000f0,0x0}, /* ICC_REGS */\
   { 0x00000000,0x00000000,0x00000000,0x00000000,0x0000000f,0x0}, /* FCC_REGS */\
@@ -1289,20 +1132,26 @@ enum reg_class
   { 0x00000000,0x00000000,0x00000000,0x00000000,0x0000f000,0x0}, /* ICR_REGS */\
   { 0x00000000,0x00000000,0x00000000,0x00000000,0x00000f00,0x0}, /* FCR_REGS */\
   { 0x00000000,0x00000000,0x00000000,0x00000000,0x0000ff00,0x0}, /* CR_REGS  */\
-  { 0x00000000,0x00000000,0x00000000,0x00000000,0x00000000,0x4}, /* LCR_REGS */\
-  { 0x00000000,0x00000000,0x00000000,0x00000000,0x00000000,0x2}, /* LR_REGS  */\
-  { 0x00000000,0x00000000,0x00000000,0x00000000,0x00000000,0x6}, /* SPR_REGS */\
-  { 0x00000000,0x00000000,0x00000000,0x00000000,0x00ff0000,0x0}, /* QUAD_ACC */\
-  { 0x00000000,0x00000000,0x00000000,0x00000000,0x00ff0000,0x0}, /* EVEN_ACC */\
-  { 0x00000000,0x00000000,0x00000000,0x00000000,0x00ff0000,0x0}, /* ACC_REGS */\
-  { 0x00000000,0x00000000,0x00000000,0x00000000,0xff000000,0x0}, /* ACCG_REGS*/\
+  { 0x00000000,0x00000000,0x00000000,0x00000000,0x00000000,0x400}, /* LCR_REGS */\
+  { 0x00000000,0x00000000,0x00000000,0x00000000,0x00000000,0x200}, /* LR_REGS  */\
+  { 0x00000100,0x00000000,0x00000000,0x00000000,0x00000000,0x0}, /* GR8_REGS */\
+  { 0x00000200,0x00000000,0x00000000,0x00000000,0x00000000,0x0}, /* GR9_REGS */\
+  { 0x00000300,0x00000000,0x00000000,0x00000000,0x00000000,0x0}, /* GR89_REGS */\
+  { 0x00008000,0x00000000,0x00000000,0x00000000,0x00000000,0x0}, /* FDPIC_REGS */\
+  { 0x00004000,0x00000000,0x00000000,0x00000000,0x00000000,0x0}, /* FDPIC_FPTR_REGS */\
+  { 0x0000c000,0x00000000,0x00000000,0x00000000,0x00000000,0x0}, /* FDPIC_CALL_REGS */\
+  { 0x00000000,0x00000000,0x00000000,0x00000000,0x00000000,0x1e00}, /* SPR_REGS */\
+  { 0x00000000,0x00000000,0x00000000,0x00000000,0x0fff0000,0x0}, /* QUAD_ACC */\
+  { 0x00000000,0x00000000,0x00000000,0x00000000,0x0fff0000,0x0}, /* EVEN_ACC */\
+  { 0x00000000,0x00000000,0x00000000,0x00000000,0x0fff0000,0x0}, /* ACC_REGS */\
+  { 0x00000000,0x00000000,0x00000000,0x00000000,0xf0000000,0xff}, /* ACCG_REGS*/\
   { 0x00000000,0x00000000,0xffffffff,0xffffffff,0x00000000,0x0}, /* QUAD_FPR */\
   { 0x00000000,0x00000000,0xffffffff,0xffffffff,0x00000000,0x0}, /* FEVEN_REG*/\
   { 0x00000000,0x00000000,0xffffffff,0xffffffff,0x00000000,0x0}, /* FPR_REGS */\
   { 0x0ffffffc,0xffffffff,0x00000000,0x00000000,0x00000000,0x0}, /* QUAD_REGS*/\
   { 0xfffffffc,0xffffffff,0x00000000,0x00000000,0x00000000,0x0}, /* EVEN_REGS*/\
-  { 0xffffffff,0xffffffff,0x00000000,0x00000000,0x00000000,0x1}, /* GPR_REGS */\
-  { 0xffffffff,0xffffffff,0xffffffff,0xffffffff,0xffffffff,0x7}, /* ALL_REGS */\
+  { 0xffffffff,0xffffffff,0x00000000,0x00000000,0x00000000,0x100}, /* GPR_REGS */\
+  { 0xffffffff,0xffffffff,0xffffffff,0xffffffff,0xffffffff,0x1fff}, /* ALL_REGS */\
 }
 
 /* A C expression whose value is a register class containing hard register
@@ -1331,13 +1180,13 @@ extern enum reg_class regno_reg_class[];
 
    The following letters are unavailable, due to being used as
    constraints:
-	'0'..'9'
-	'<', '>'
-	'E', 'F', 'G', 'H'
-	'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P'
-	'Q', 'R', 'S', 'T', 'U'
-	'V', 'X'
-	'g', 'i', 'm', 'n', 'o', 'p', 'r', 's' */
+        '0'..'9'
+        '<', '>'
+        'E', 'F', 'G', 'H'
+        'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P'
+        'Q', 'R', 'S', 'T', 'U'
+        'V', 'X'
+        'g', 'i', 'm', 'n', 'o', 'p', 'r', 's' */
 
 extern enum reg_class reg_class_from_letter[];
 #define REG_CLASS_FROM_LETTER(CHAR) reg_class_from_letter [(unsigned char)(CHAR)]
@@ -1445,7 +1294,7 @@ extern enum reg_class reg_class_from_letter[];
    If C is one of those letters, the expression should check that VALUE, an
    integer, is in the appropriate range and return 1 if so, 0 otherwise.  If C
    is not one of those letters, the value should be 0 regardless of VALUE.  */
-#define CONST_OK_FOR_LETTER_P(VALUE, C)		\
+#define CONST_OK_FOR_LETTER_P(VALUE, C)                \
   (  (C) == 'I' ? CONST_OK_FOR_I (VALUE)        \
    : (C) == 'J' ? CONST_OK_FOR_J (VALUE)        \
    : (C) == 'K' ? CONST_OK_FOR_K (VALUE)        \
@@ -1469,19 +1318,19 @@ extern enum reg_class reg_class_from_letter[];
    fixed-point constants.  A given letter can accept either or both kinds of
    values.  It can use `GET_MODE' to distinguish between these kinds.  */
 
-#define CONST_DOUBLE_OK_FOR_G(VALUE)					\
-  ((GET_MODE (VALUE) == VOIDmode 					\
-    && CONST_DOUBLE_LOW (VALUE) == 0					\
-    && CONST_DOUBLE_HIGH (VALUE) == 0)					\
-   || ((GET_MODE (VALUE) == SFmode					\
-        || GET_MODE (VALUE) == DFmode)					\
+#define CONST_DOUBLE_OK_FOR_G(VALUE)                                        \
+  ((GET_MODE (VALUE) == VOIDmode                                         \
+    && CONST_DOUBLE_LOW (VALUE) == 0                                        \
+    && CONST_DOUBLE_HIGH (VALUE) == 0)                                        \
+   || ((GET_MODE (VALUE) == SFmode                                        \
+        || GET_MODE (VALUE) == DFmode)                                        \
        && (VALUE) == CONST0_RTX (GET_MODE (VALUE))))
 
 #define CONST_DOUBLE_OK_FOR_H(VALUE) 0
 
-#define CONST_DOUBLE_OK_FOR_LETTER_P(VALUE, C)				\
-  (  (C) == 'G' ? CONST_DOUBLE_OK_FOR_G (VALUE)				\
-   : (C) == 'H' ? CONST_DOUBLE_OK_FOR_H (VALUE)				\
+#define CONST_DOUBLE_OK_FOR_LETTER_P(VALUE, C)                                \
+  (  (C) == 'G' ? CONST_DOUBLE_OK_FOR_G (VALUE)                                \
+   : (C) == 'H' ? CONST_DOUBLE_OK_FOR_H (VALUE)                                \
    : 0)
 
 /* A C expression that defines the optional machine-dependent constraint
@@ -1499,32 +1348,47 @@ extern enum reg_class reg_class_from_letter[];
    input and `r' on the output.  The next alternative specifies `m' on the
    input and a register class that does not include r0 on the output.  */
 
-/* Small data references */
-#define EXTRA_CONSTRAINT_FOR_Q(VALUE)					\
-  (small_data_symbolic_operand (VALUE, GET_MODE (VALUE)))
+/* 12-bit relocations.  */
+#define EXTRA_CONSTRAINT_FOR_Q(VALUE)                                        \
+  (got12_operand (VALUE, GET_MODE (VALUE)))
 
 /* Double word memory ops that take one instruction.  */
-#define EXTRA_CONSTRAINT_FOR_R(VALUE)					\
+#define EXTRA_CONSTRAINT_FOR_R(VALUE)                                        \
   (dbl_memory_one_insn_operand (VALUE, GET_MODE (VALUE)))
 
 /* SYMBOL_REF */
-#define EXTRA_CONSTRAINT_FOR_S(VALUE) (GET_CODE (VALUE) == SYMBOL_REF)
+#define EXTRA_CONSTRAINT_FOR_S(VALUE) \
+  (CONSTANT_P (VALUE) && call_operand (VALUE, VOIDmode))
 
 /* Double word memory ops that take two instructions.  */
-#define EXTRA_CONSTRAINT_FOR_T(VALUE)					\
+#define EXTRA_CONSTRAINT_FOR_T(VALUE)                                        \
   (dbl_memory_two_insn_operand (VALUE, GET_MODE (VALUE)))
 
 /* Memory operand for conditional execution.  */
-#define EXTRA_CONSTRAINT_FOR_U(VALUE)					\
+#define EXTRA_CONSTRAINT_FOR_U(VALUE)                                        \
   (condexec_memory_operand (VALUE, GET_MODE (VALUE)))
 
-#define EXTRA_CONSTRAINT(VALUE, C)					\
-  (  (C) == 'Q'   ? EXTRA_CONSTRAINT_FOR_Q (VALUE)			\
-   : (C) == 'R' ? EXTRA_CONSTRAINT_FOR_R (VALUE)			\
-   : (C) == 'S' ? EXTRA_CONSTRAINT_FOR_S (VALUE)			\
-   : (C) == 'T' ? EXTRA_CONSTRAINT_FOR_T (VALUE)			\
-   : (C) == 'U' ? EXTRA_CONSTRAINT_FOR_U (VALUE)			\
+#define EXTRA_CONSTRAINT(VALUE, C)                                        \
+  (  (C) == 'Q'   ? EXTRA_CONSTRAINT_FOR_Q (VALUE)                        \
+   : (C) == 'R' ? EXTRA_CONSTRAINT_FOR_R (VALUE)                        \
+   : (C) == 'S' ? EXTRA_CONSTRAINT_FOR_S (VALUE)                        \
+   : (C) == 'T' ? EXTRA_CONSTRAINT_FOR_T (VALUE)                        \
+   : (C) == 'U' ? EXTRA_CONSTRAINT_FOR_U (VALUE)                        \
    : 0)
+
+#define EXTRA_MEMORY_CONSTRAINT(C,STR) \
+  ((C) == 'U' || (C) == 'R' || (C) == 'T')
+
+#define CONSTRAINT_LEN(C, STR) \
+  ((C) == 'D' ? 3 : DEFAULT_CONSTRAINT_LEN ((C), (STR)))
+
+#define REG_CLASS_FROM_CONSTRAINT(C, STR) \
+  (((C) == 'D' && (STR)[1] == '8' && (STR)[2] == '9') ? GR89_REGS : \
+   ((C) == 'D' && (STR)[1] == '0' && (STR)[2] == '9') ? GR9_REGS : \
+   ((C) == 'D' && (STR)[1] == '0' && (STR)[2] == '8') ? GR8_REGS : \
+   ((C) == 'D' && (STR)[1] == '1' && (STR)[2] == '4') ? FDPIC_FPTR_REGS : \
+   ((C) == 'D' && (STR)[1] == '1' && (STR)[2] == '5') ? FDPIC_REGS : \
+   REG_CLASS_FROM_LETTER ((C)))
 
 
 /* Basic Stack Layout.  */
@@ -1532,51 +1396,51 @@ extern enum reg_class reg_class_from_letter[];
 /* Structure to describe information about a saved range of registers */
 
 typedef struct frv_stack_regs {
-  const char * name;		/* name of the register ranges */
-  int first;			/* first register in the range */
-  int last;			/* last register in the range */
-  int size_1word;		/* # of bytes to be stored via 1 word stores */
-  int size_2words;		/* # of bytes to be stored via 2 word stores */
-  unsigned char field_p;	/* true if the registers are a single SPR */
-  unsigned char dword_p;	/* true if we can do dword stores */
-  unsigned char special_p;	/* true if the regs have a fixed save loc.  */
+  const char * name;                /* name of the register ranges */
+  int first;                        /* first register in the range */
+  int last;                        /* last register in the range */
+  int size_1word;                /* # of bytes to be stored via 1 word stores */
+  int size_2words;                /* # of bytes to be stored via 2 word stores */
+  unsigned char field_p;        /* true if the registers are a single SPR */
+  unsigned char dword_p;        /* true if we can do dword stores */
+  unsigned char special_p;        /* true if the regs have a fixed save loc.  */
 } frv_stack_regs_t;
 
 /* Register ranges to look into saving.  */
-#define STACK_REGS_GPR		0	/* Gprs (normally gr16..gr31, gr48..gr63) */
-#define STACK_REGS_FPR		1	/* Fprs (normally fr16..fr31, fr48..fr63) */
-#define STACK_REGS_LR		2	/* LR register */
-#define STACK_REGS_CC		3	/* CCrs (normally not saved) */
-#define STACK_REGS_LCR		5	/* lcr register */
-#define STACK_REGS_STDARG	6	/* stdarg registers */
-#define STACK_REGS_STRUCT	7	/* structure return (gr3) */
-#define STACK_REGS_FP		8	/* FP register */
-#define STACK_REGS_MAX		9	/* # of register ranges */
+#define STACK_REGS_GPR                0        /* Gprs (normally gr16..gr31, gr48..gr63) */
+#define STACK_REGS_FPR                1        /* Fprs (normally fr16..fr31, fr48..fr63) */
+#define STACK_REGS_LR                2        /* LR register */
+#define STACK_REGS_CC                3        /* CCrs (normally not saved) */
+#define STACK_REGS_LCR                5        /* lcr register */
+#define STACK_REGS_STDARG        6        /* stdarg registers */
+#define STACK_REGS_STRUCT        7        /* structure return (gr3) */
+#define STACK_REGS_FP                8        /* FP register */
+#define STACK_REGS_MAX                9        /* # of register ranges */
 
 /* Values for save_p field.  */
-#define REG_SAVE_NO_SAVE	0	/* register not saved */
-#define REG_SAVE_1WORD		1	/* save the register */
-#define REG_SAVE_2WORDS		2	/* save register and register+1 */
+#define REG_SAVE_NO_SAVE        0        /* register not saved */
+#define REG_SAVE_1WORD                1        /* save the register */
+#define REG_SAVE_2WORDS                2        /* save register and register+1 */
 
 /* Structure used to define the frv stack.  */
 
 typedef struct frv_stack {
-  int total_size;		/* total bytes allocated for stack */
-  int vars_size;		/* variable save area size */
-  int parameter_size;		/* outgoing parameter size */
-  int stdarg_size;		/* size of regs needed to be saved for stdarg */
-  int regs_size;		/* size of the saved registers */
-  int regs_size_1word;		/* # of bytes to be stored via 1 word stores */
-  int regs_size_2words;		/* # of bytes to be stored via 2 word stores */
-  int header_size;		/* size of the old FP, struct ret., LR save */
-  int pretend_size;		/* size of pretend args */
-  int vars_offset;		/* offset to save local variables from new SP*/
-  int regs_offset;		/* offset to save registers from new SP */
-				/* register range information */
+  int total_size;                /* total bytes allocated for stack */
+  int vars_size;                /* variable save area size */
+  int parameter_size;                /* outgoing parameter size */
+  int stdarg_size;                /* size of regs needed to be saved for stdarg */
+  int regs_size;                /* size of the saved registers */
+  int regs_size_1word;                /* # of bytes to be stored via 1 word stores */
+  int regs_size_2words;                /* # of bytes to be stored via 2 word stores */
+  int header_size;                /* size of the old FP, struct ret., LR save */
+  int pretend_size;                /* size of pretend args */
+  int vars_offset;                /* offset to save local variables from new SP*/
+  int regs_offset;                /* offset to save registers from new SP */
+                                /* register range information */
   frv_stack_regs_t regs[STACK_REGS_MAX];
-				/* offset to store each register */
+                                /* offset to store each register */
   int reg_offset[FIRST_PSEUDO_REGISTER];
-				/* whether to save register (& reg+1) */
+                                /* whether to save register (& reg+1) */
   unsigned char save_p[FIRST_PSEUDO_REGISTER];
 } frv_stack_t;
 
@@ -1584,9 +1448,9 @@ typedef struct frv_stack {
    to a smaller address.  */
 #define STACK_GROWS_DOWNWARD 1
 
-/* Define this macro if the addresses of local variable slots are at negative
-   offsets from the frame pointer.  */
-#define FRAME_GROWS_DOWNWARD
+/* Define this macro to nonzero if the addresses of local variable slots
+   are at negative offsets from the frame pointer.  */
+#define FRAME_GROWS_DOWNWARD 1
 
 /* Offset from the frame pointer to the first local variable slot to be
    allocated.
@@ -1630,13 +1494,6 @@ typedef struct frv_stack {
    zero, but may be `NULL_RTX' if there is not way to determine the return
    address of other frames.  */
 #define RETURN_ADDR_RTX(COUNT, FRAMEADDR) frv_return_addr_rtx (COUNT, FRAMEADDR)
-
-/* This function contains machine specific function data.  */
-struct machine_function GTY(())
-{
-  /* True if we have created an rtx that relies on the stack frame.  */
-  int frame_needed;
-};
 
 #define RETURN_POINTER_REGNUM LR_REGNO
 
@@ -1734,11 +1591,11 @@ struct machine_function GTY(())
    Note that the elimination of the argument pointer with the stack pointer is
    specified first since that is the preferred elimination.  */
 
-#define ELIMINABLE_REGS							\
-{									\
-  {ARG_POINTER_REGNUM,	 STACK_POINTER_REGNUM},				\
-  {ARG_POINTER_REGNUM,	 FRAME_POINTER_REGNUM},				\
-  {FRAME_POINTER_REGNUM, STACK_POINTER_REGNUM}				\
+#define ELIMINABLE_REGS                                                        \
+{                                                                        \
+  {ARG_POINTER_REGNUM,         STACK_POINTER_REGNUM},                                \
+  {ARG_POINTER_REGNUM,         FRAME_POINTER_REGNUM},                                \
+  {FRAME_POINTER_REGNUM, STACK_POINTER_REGNUM}                                \
 }
 
 /* A C expression that returns nonzero if the compiler is allowed to try to
@@ -1747,16 +1604,16 @@ struct machine_function GTY(())
    1, since most of the cases preventing register elimination are things that
    the compiler already knows about.  */
 
-#define CAN_ELIMINATE(FROM, TO)						\
-  ((FROM) == ARG_POINTER_REGNUM && (TO) == STACK_POINTER_REGNUM		\
-   ? ! frame_pointer_needed						\
+#define CAN_ELIMINATE(FROM, TO)                                                \
+  ((FROM) == ARG_POINTER_REGNUM && (TO) == STACK_POINTER_REGNUM                \
+   ? ! frame_pointer_needed                                                \
    : 1)
 
 /* This macro is similar to `INITIAL_FRAME_POINTER_OFFSET'.  It specifies the
    initial difference between the specified pair of registers.  This macro must
    be defined if `ELIMINABLE_REGS' is defined.  */
 
-#define INITIAL_ELIMINATION_OFFSET(FROM, TO, OFFSET)			\
+#define INITIAL_ELIMINATION_OFFSET(FROM, TO, OFFSET)                        \
   (OFFSET) = frv_initial_elimination_offset (FROM, TO)
 
 
@@ -1808,58 +1665,10 @@ struct machine_function GTY(())
 #define RETURN_POPS_ARGS(FUNDECL, FUNTYPE, STACK_SIZE) 0
 
 
-/* Function Arguments in Registers.  */
-
-/* Nonzero if we do not know how to pass TYPE solely in registers.
-   We cannot do so in the following cases:
-
-   - if the type has variable size
-   - if the type is marked as addressable (it is required to be constructed
-     into the stack)
-   - if the type is a structure or union.  */
-
-#define MUST_PASS_IN_STACK(MODE,TYPE)                           \
-   (((MODE) == BLKmode)                                         \
-    || ((TYPE) != 0                                             \
-         && (TREE_CODE (TYPE_SIZE (TYPE)) != INTEGER_CST        \
-             || TREE_CODE (TYPE) == RECORD_TYPE                 \
-             || TREE_CODE (TYPE) == UNION_TYPE                  \
-             || TREE_CODE (TYPE) == QUAL_UNION_TYPE             \
-             || TREE_ADDRESSABLE (TYPE))))
-
 /* The number of register assigned to holding function arguments.  */
 
 #define FRV_NUM_ARG_REGS        6
 
-/* A C expression that controls whether a function argument is passed in a
-   register, and which register.
-
-   The arguments are CUM, of type CUMULATIVE_ARGS, which summarizes (in a way
-   defined by INIT_CUMULATIVE_ARGS and FUNCTION_ARG_ADVANCE) all of the previous
-   arguments so far passed in registers; MODE, the machine mode of the argument;
-   TYPE, the data type of the argument as a tree node or 0 if that is not known
-   (which happens for C support library functions); and NAMED, which is 1 for an
-   ordinary argument and 0 for nameless arguments that correspond to `...' in the
-   called function's prototype.
-
-   The value of the expression should either be a `reg' RTX for the hard
-   register in which to pass the argument, or zero to pass the argument on the
-   stack.
-
-   For machines like the VAX and 68000, where normally all arguments are
-   pushed, zero suffices as a definition.
-
-   The usual way to make the ANSI library `stdarg.h' work on a machine where
-   some arguments are usually passed in registers, is to cause nameless
-   arguments to be passed on the stack instead.  This is done by making
-   `FUNCTION_ARG' return 0 whenever NAMED is 0.
-
-   You may use the macro `MUST_PASS_IN_STACK (MODE, TYPE)' in the definition of
-   this macro to determine if this argument is of a type that must be passed in
-   the stack.  If `REG_PARM_STACK_SPACE' is not defined and `FUNCTION_ARG'
-   returns nonzero for such an argument, the compiler will abort.  If
-   `REG_PARM_STACK_SPACE' is defined, the argument will be computed in the
-   stack and then loaded into a register.  */
 #define FUNCTION_ARG(CUM, MODE, TYPE, NAMED)                    \
   frv_function_arg (&CUM, MODE, TYPE, NAMED, FALSE)
 
@@ -1874,58 +1683,8 @@ struct machine_function GTY(())
    If `FUNCTION_INCOMING_ARG' is not defined, `FUNCTION_ARG' serves both
    purposes.  */
 
-#define FUNCTION_INCOMING_ARG(CUM, MODE, TYPE, NAMED)			\
+#define FUNCTION_INCOMING_ARG(CUM, MODE, TYPE, NAMED)                        \
   frv_function_arg (&CUM, MODE, TYPE, NAMED, TRUE)
-
-/* A C expression for the number of words, at the beginning of an argument,
-   must be put in registers.  The value must be zero for arguments that are
-   passed entirely in registers or that are entirely pushed on the stack.
-
-   On some machines, certain arguments must be passed partially in registers
-   and partially in memory.  On these machines, typically the first N words of
-   arguments are passed in registers, and the rest on the stack.  If a
-   multi-word argument (a `double' or a structure) crosses that boundary, its
-   first few words must be passed in registers and the rest must be pushed.
-   This macro tells the compiler when this occurs, and how many of the words
-   should go in registers.
-
-   `FUNCTION_ARG' for these arguments should return the first register to be
-   used by the caller for this argument; likewise `FUNCTION_INCOMING_ARG', for
-   the called function.  */
-#define FUNCTION_ARG_PARTIAL_NREGS(CUM, MODE, TYPE, NAMED)		\
-  frv_function_arg_partial_nregs (&CUM, MODE, TYPE, NAMED)
-
-/* extern int frv_function_arg_partial_nregs PARAMS ((CUMULATIVE_ARGS, int, Tree, int));  */
-
-/* A C expression that indicates when an argument must be passed by reference.
-   If nonzero for an argument, a copy of that argument is made in memory and a
-   pointer to the argument is passed instead of the argument itself.  The
-   pointer is passed in whatever way is appropriate for passing a pointer to
-   that type.
-
-   On machines where `REG_PARM_STACK_SPACE' is not defined, a suitable
-   definition of this macro might be
-        #define FUNCTION_ARG_PASS_BY_REFERENCE(CUM, MODE, TYPE, NAMED)  \
-          MUST_PASS_IN_STACK (MODE, TYPE)  */
-#define FUNCTION_ARG_PASS_BY_REFERENCE(CUM, MODE, TYPE, NAMED)		\
-  frv_function_arg_pass_by_reference (&CUM, MODE, TYPE, NAMED)
-
-/* If defined, a C expression that indicates when it is the called function's
-   responsibility to make a copy of arguments passed by invisible reference.
-   Normally, the caller makes a copy and passes the address of the copy to the
-   routine being called.  When FUNCTION_ARG_CALLEE_COPIES is defined and is
-   nonzero, the caller does not make a copy.  Instead, it passes a pointer to
-   the "live" value.  The called function must not modify this value.  If it
-   can be determined that the value won't be modified, it need not make a copy;
-   otherwise a copy must be made.  */
-#define FUNCTION_ARG_CALLEE_COPIES(CUM, MODE, TYPE, NAMED)		\
-  frv_function_arg_callee_copies (&CUM, MODE, TYPE, NAMED)
-
-/* If defined, a C expression that indicates when it is more desirable to keep
-   an argument passed by invisible reference as a reference, rather than
-   copying it to a pseudo register.  */
-#define FUNCTION_ARG_KEEP_AS_REFERENCE(CUM, MODE, TYPE, NAMED)		\
-  frv_function_arg_keep_as_reference (&CUM, MODE, TYPE, NAMED)
 
 /* A C type for declaring a variable that is used as the first argument of
    `FUNCTION_ARG' and other related values.  For some target machines, the type
@@ -1955,19 +1714,19 @@ struct machine_function GTY(())
    being processed.  Thus, each time this macro is called, either LIBNAME or
    FNTYPE is nonzero, but never both of them at once.  */
 
-#define INIT_CUMULATIVE_ARGS(CUM, FNTYPE, LIBNAME, INDIRECT) \
-  frv_init_cumulative_args (&CUM, FNTYPE, LIBNAME, INDIRECT, FALSE)
+#define INIT_CUMULATIVE_ARGS(CUM, FNTYPE, LIBNAME, FNDECL, N_NAMED_ARGS) \
+  frv_init_cumulative_args (&CUM, FNTYPE, LIBNAME, FNDECL, FALSE)
 
 /* Like `INIT_CUMULATIVE_ARGS' but overrides it for the purposes of finding the
    arguments for the function being compiled.  If this macro is undefined,
    `INIT_CUMULATIVE_ARGS' is used instead.
 
    The value passed for LIBNAME is always 0, since library routines with
-   special calling conventions are never compiled with GNU CC.  The argument
+   special calling conventions are never compiled with GCC.  The argument
    LIBNAME exists for symmetry with `INIT_CUMULATIVE_ARGS'.  */
 
 #define INIT_CUMULATIVE_INCOMING_ARGS(CUM, FNTYPE, LIBNAME) \
-  frv_init_cumulative_args (&CUM, FNTYPE, LIBNAME, FALSE, TRUE)
+  frv_init_cumulative_args (&CUM, FNTYPE, LIBNAME, NULL, TRUE)
 
 /* A C statement (sans semicolon) to update the summarizer variable CUM to
    advance past an argument in the argument list.  The values MODE, TYPE and
@@ -1977,7 +1736,7 @@ struct machine_function GTY(())
    This macro need not do anything if the argument in question was passed on
    the stack.  The compiler knows how to track the amount of stack space used
    for arguments without any special help.  */
-#define FUNCTION_ARG_ADVANCE(CUM, MODE, TYPE, NAMED)			\
+#define FUNCTION_ARG_ADVANCE(CUM, MODE, TYPE, NAMED)                        \
   frv_function_arg_advance (&CUM, MODE, TYPE, NAMED)
 
 /* If defined, a C expression that gives the alignment boundary, in bits, of an
@@ -2000,7 +1759,7 @@ struct machine_function GTY(())
 
 /* The number of the hard register that is used to return a scalar value from a
    function call.  */
-#define RETURN_VALUE_REGNUM	(GPR_FIRST + 8)
+#define RETURN_VALUE_REGNUM        (GPR_FIRST + 8)
 
 /* A C expression to create an RTX representing the place where a function
    returns a value of data type VALTYPE.  VALTYPE is a tree node representing a
@@ -2009,8 +1768,9 @@ struct machine_function GTY(())
    (Actually, on most machines, scalar values are returned in the same place
    regardless of mode).
 
-   If `PROMOTE_FUNCTION_RETURN' is defined, you must apply the same promotion
-   rules specified in `PROMOTE_MODE' if VALTYPE is a scalar type.
+   If `TARGET_PROMOTE_FUNCTION_RETURN' is defined to return true, you
+   must apply the same promotion rules specified in `PROMOTE_MODE' if
+   VALTYPE is a scalar type.
 
    If the precise function being called is known, FUNC is a tree node
    (`FUNCTION_DECL') for it; otherwise, FUNC is a null pointer.  This makes it
@@ -2018,10 +1778,10 @@ struct machine_function GTY(())
    functions when all their calls are known.
 
    `FUNCTION_VALUE' is not used for return vales with aggregate data types,
-   because these are returned in another way.  See `STRUCT_VALUE_REGNUM' and
-   related macros, below.  */
+   because these are returned in another way.  See
+   `TARGET_STRUCT_VALUE_RTX' and related macros, below.  */
 #define FUNCTION_VALUE(VALTYPE, FUNC) \
-  gen_rtx (REG, TYPE_MODE (VALTYPE), RETURN_VALUE_REGNUM)
+  gen_rtx_REG (TYPE_MODE (VALTYPE), RETURN_VALUE_REGNUM)
 
 /* A C expression to create an RTX representing the place where a library
    function returns a value of mode MODE.
@@ -2032,7 +1792,7 @@ struct machine_function GTY(())
 
    The definition of `LIBRARY_VALUE' need not be concerned aggregate data
    types, because none of the library functions returns such types.  */
-#define LIBCALL_VALUE(MODE) gen_rtx (REG, MODE, RETURN_VALUE_REGNUM)
+#define LIBCALL_VALUE(MODE) gen_rtx_REG (MODE, RETURN_VALUE_REGNUM)
 
 /* A C expression that is nonzero if REGNO is the number of a hard register in
    which the values of called function may come back.
@@ -2051,9 +1811,9 @@ struct machine_function GTY(())
 
 /* How Large Values are Returned.  */
 
-/* If the structure value address is passed in a register, then
-   `STRUCT_VALUE_REGNUM' should be the number of that register.  */
-#define STRUCT_VALUE_REGNUM (GPR_FIRST + 3)
+/* The number of the register that is used to pass the structure
+   value address.  */
+#define FRV_STRUCT_VALUE_REGNUM (GPR_FIRST + 3)
 
 
 /* Function Entry and Exit.  */
@@ -2079,60 +1839,17 @@ struct machine_function GTY(())
    `fprintf'.
 
    The details of how the address should be passed to `mcount' are determined
-   by your operating system environment, not by GNU CC.  To figure them out,
+   by your operating system environment, not by GCC.  To figure them out,
    compile a small program for profiling using the system's installed C
    compiler and look at the assembler code that results.
 
    This declaration must be present, but it can be an abort if profiling is
    not implemented.  */
 
-#define FUNCTION_PROFILER(FILE, LABELNO) abort ()
+#define FUNCTION_PROFILER(FILE, LABELNO)
 
 
 /* Implementing the Varargs Macros.  */
-
-/* If defined, is a C expression that produces the machine-specific code for a
-   call to `__builtin_saveregs'.  This code will be moved to the very beginning
-   of the function, before any parameter access are made.  The return value of
-   this function should be an RTX that contains the value to use as the return
-   of `__builtin_saveregs'.
-
-   If this macro is not defined, the compiler will output an ordinary call to
-   the library function `__builtin_saveregs'.  */
-
-#define EXPAND_BUILTIN_SAVEREGS() frv_expand_builtin_saveregs ()
-
-/* This macro offers an alternative to using `__builtin_saveregs' and defining
-   the macro `EXPAND_BUILTIN_SAVEREGS'.  Use it to store the anonymous register
-   arguments into the stack so that all the arguments appear to have been
-   passed consecutively on the stack.  Once this is done, you can use the
-   standard implementation of varargs that works for machines that pass all
-   their arguments on the stack.
-
-   The argument ARGS_SO_FAR is the `CUMULATIVE_ARGS' data structure, containing
-   the values that obtain after processing of the named arguments.  The
-   arguments MODE and TYPE describe the last named argument--its machine mode
-   and its data type as a tree node.
-
-   The macro implementation should do two things: first, push onto the stack
-   all the argument registers *not* used for the named arguments, and second,
-   store the size of the data thus pushed into the `int'-valued variable whose
-   name is supplied as the argument PRETEND_ARGS_SIZE.  The value that you
-   store here will serve as additional offset for setting up the stack frame.
-
-   Because you must generate code to push the anonymous arguments at compile
-   time without knowing their data types, `SETUP_INCOMING_VARARGS' is only
-   useful on machines that have just a single category of argument register and
-   use it uniformly for all data types.
-
-   If the argument SECOND_TIME is nonzero, it means that the arguments of the
-   function are being analyzed for the second time.  This happens for an inline
-   function, which is not actually compiled until the end of the source file.
-   The macro `SETUP_INCOMING_VARARGS' should not generate any instructions in
-   this case.  */
-#define SETUP_INCOMING_VARARGS(ARGS_SO_FAR, MODE, TYPE, PRETEND_ARGS_SIZE, SECOND_TIME) \
-  frv_setup_incoming_varargs (& ARGS_SO_FAR, (int) MODE, TYPE, 	\
-			      & PRETEND_ARGS_SIZE, SECOND_TIME)
 
 /* Implement the stdarg/varargs va_start macro.  STDARG_P is nonzero if this
    is stdarg.h instead of varargs.h.  VALIST is the tree of the va_list
@@ -2140,14 +1857,8 @@ struct machine_function GTY(())
    'next' argument after the variable arguments.  If not defined, a standard
    implementation will be defined that works for arguments passed on the stack.  */
 
-#define EXPAND_BUILTIN_VA_START(VALIST, NEXTARG)		\
+#define EXPAND_BUILTIN_VA_START(VALIST, NEXTARG)                \
   (frv_expand_builtin_va_start(VALIST, NEXTARG))
-
-/* Implement the stdarg/varargs va_arg macro.  VALIST is the variable of type
-   va_list as a tree, TYPE is the type passed to va_arg.  */
-
-#define EXPAND_BUILTIN_VA_ARG(VALIST, TYPE)				\
-  (frv_expand_builtin_va_arg (VALIST, TYPE))
 
 
 /* Trampolines for Nested Functions.  */
@@ -2159,7 +1870,7 @@ struct machine_function GTY(())
 
    If you don't define this macro, the value of `BIGGEST_ALIGNMENT' is used for
    aligning trampolines.  */
-#define TRAMPOLINE_ALIGNMENT 32
+#define TRAMPOLINE_ALIGNMENT (TARGET_FDPIC ? 64 : 32)
 
 /* A C statement to initialize the variable parts of a trampoline.  ADDR is an
    RTX for the address of the trampoline; FNADDR is an RTX for the address of
@@ -2170,7 +1881,7 @@ struct machine_function GTY(())
 
 /* Define this macro if trampolines need a special subroutine to do their work.
    The macro should expand to a series of `asm' statements which will be
-   compiled with GNU CC.  They go in a library function named
+   compiled with GCC.  They go in a library function named
    `__transfer_from_trampoline'.
 
    If you need to avoid executing the ordinary prologue code of a compiled C
@@ -2186,147 +1897,112 @@ struct machine_function GTY(())
 #define TRAMPOLINE_TEMPLATE_NAME "__trampoline_template"
 #endif
 
-#define TRANSFER_FROM_TRAMPOLINE					\
-extern int _write (int, const void *, unsigned);			\
-									\
-void									\
-__trampoline_setup (addr, size, fnaddr, sc)				\
-     short * addr;							\
-     int size;								\
-     int fnaddr;							\
-     int sc;								\
-{									\
-  extern short __trampoline_template[];					\
-  short * to = addr;							\
-  short * from = &__trampoline_template[0];				\
-  int i;								\
-									\
-  if (size < 20)							\
-    {									\
-      _write (2, "__trampoline_setup bad size\n",			\
-	      sizeof ("__trampoline_setup bad size\n") - 1);		\
-      exit (-1);							\
-    }									\
-									\
-  to[0] = from[0];							\
-  to[1] = (short)(fnaddr);						\
-  to[2] = from[2];							\
-  to[3] = (short)(sc);							\
-  to[4] = from[4];							\
-  to[5] = (short)(fnaddr >> 16);					\
-  to[6] = from[6];							\
-  to[7] = (short)(sc >> 16);						\
-  to[8] = from[8];							\
-  to[9] = from[9];							\
-									\
-  for (i = 0; i < 20; i++)						\
+#define Twrite _write
+
+#if ! __FRV_FDPIC__
+#define TRANSFER_FROM_TRAMPOLINE                                        \
+extern int Twrite (int, const void *, unsigned);                        \
+                                                                        \
+void                                                                        \
+__trampoline_setup (short * addr, int size, int fnaddr, int sc)                \
+{                                                                        \
+  extern short __trampoline_template[];                                        \
+  short * to = addr;                                                        \
+  short * from = &__trampoline_template[0];                                \
+  int i;                                                                \
+                                                                        \
+  if (size < 20)                                                        \
+    {                                                                        \
+      Twrite (2, "__trampoline_setup bad size\n",                        \
+              sizeof ("__trampoline_setup bad size\n") - 1);                \
+      exit (-1);                                                        \
+    }                                                                        \
+                                                                        \
+  to[0] = from[0];                                                        \
+  to[1] = (short)(fnaddr);                                                \
+  to[2] = from[2];                                                        \
+  to[3] = (short)(sc);                                                        \
+  to[4] = from[4];                                                        \
+  to[5] = (short)(fnaddr >> 16);                                        \
+  to[6] = from[6];                                                        \
+  to[7] = (short)(sc >> 16);                                                \
+  to[8] = from[8];                                                        \
+  to[9] = from[9];                                                        \
+                                                                        \
+  for (i = 0; i < 20; i++)                                                \
     __asm__ volatile ("dcf @(%0,%1)\n\tici @(%0,%1)" :: "r" (to), "r" (i)); \
-}									\
-									\
-__asm__("\n"								\
-	"\t.globl " TRAMPOLINE_TEMPLATE_NAME "\n"			\
-	"\t.text\n"							\
-	TRAMPOLINE_TEMPLATE_NAME ":\n"					\
-	"\tsetlos #0, gr6\n"	/* jump register */			\
-	"\tsetlos #0, gr7\n"	/* static chain */			\
-	"\tsethi #0, gr6\n"						\
-	"\tsethi #0, gr7\n"						\
-	"\tjmpl @(gr0,gr6)\n");
-
-
-/* Implicit Calls to Library Routines.  */
-
-/* A C string constant giving the name of the function to call for the
-   remainder in division of one signed full-word by another.  If you do not
-   define this macro, the default name is used, which is `__modsi3', a function
-   defined in `libgcc.a'.  */
-#define MODSI3_LIBCALL "__modi"
-
-/* A C string constant giving the name of the function to call for the
-   remainder in division of one unsigned full-word by another.  If you do not
-   define this macro, the default name is used, which is `__umodsi3', a
-   function defined in `libgcc.a'.  */
-#define UMODSI3_LIBCALL "__umodi"
-
-/* A C string constant giving the name of the function to call for
-   multiplication of one signed double-word by another.  If you do not define
-   this macro, the default name is used, which is `__muldi3', a function
-   defined in `libgcc.a'.  */
-#define MULDI3_LIBCALL "__mulll"
-
-/* A C string constant giving the name of the function to call for division of
-   one signed double-word by another.  If you do not define this macro, the
-   default name is used, which is `__divdi3', a function defined in `libgcc.a'.  */
-#define DIVDI3_LIBCALL "__divll"
-
-/* A C string constant giving the name of the function to call for division of
-   one unsigned full-word by another.  If you do not define this macro, the
-   default name is used, which is `__udivdi3', a function defined in
-   `libgcc.a'.  */
-#define UDIVDI3_LIBCALL "__udivll"
-
-/* A C string constant giving the name of the function to call for the
-   remainder in division of one signed double-word by another.  If you do not
-   define this macro, the default name is used, which is `__moddi3', a function
-   defined in `libgcc.a'.  */
-#define MODDI3_LIBCALL "__modll"
-
-/* A C string constant giving the name of the function to call for the
-   remainder in division of one unsigned full-word by another.  If you do not
-   define this macro, the default name is used, which is `__umoddi3', a
-   function defined in `libgcc.a'.  */
-#define UMODDI3_LIBCALL "__umodll"
-
-/* Define this macro as a C statement that declares additional library routines
-   renames existing ones. `init_optabs' calls this macro after initializing all
-   the normal library routines.  */
-#define INIT_TARGET_OPTABS 					\
-  do								\
-    {								\
-      add_optab->handlers [(int) DImode].libfunc		\
-	= init_one_libfunc ("__addll");				\
-      sub_optab->handlers [(int) DImode].libfunc		\
-	= init_one_libfunc ("__subll");				\
-      and_optab->handlers [(int) DImode].libfunc		\
-	= init_one_libfunc ("__andll");				\
-      ior_optab->handlers [(int) DImode].libfunc		\
-	= init_one_libfunc ("__orll");				\
-      xor_optab->handlers [(int) DImode].libfunc		\
-	= init_one_libfunc ("__xorll");				\
-      one_cmpl_optab->handlers [(int) DImode].libfunc		\
-	= init_one_libfunc ("__notll");				\
-      add_optab->handlers [(int) SFmode].libfunc		\
-	= init_one_libfunc ("__addf");				\
-      sub_optab->handlers [(int) SFmode].libfunc		\
-	= init_one_libfunc ("__subf");				\
-      smul_optab->handlers [(int) SFmode].libfunc		\
-	= init_one_libfunc ("__mulf");				\
-      sdiv_optab->handlers [(int) SFmode].libfunc		\
-	= init_one_libfunc ("__divf");				\
-      add_optab->handlers [(int) DFmode].libfunc		\
-	= init_one_libfunc ("__addd");				\
-      sub_optab->handlers [(int) DFmode].libfunc		\
-	= init_one_libfunc ("__subd");				\
-      smul_optab->handlers [(int) DFmode].libfunc		\
-	= init_one_libfunc ("__muld");				\
-      sdiv_optab->handlers [(int) DFmode].libfunc		\
-	= init_one_libfunc ("__divd");				\
-      fixsfsi_libfunc = init_one_libfunc ("__ftoi");		\
-      fixunssfsi_libfunc = init_one_libfunc ("__ftoui");	\
-      fixsfdi_libfunc = init_one_libfunc ("__ftoll");		\
-      fixunssfdi_libfunc = init_one_libfunc ("__ftoull");	\
-      fixdfsi_libfunc = init_one_libfunc ("__dtoi");		\
-      fixunsdfsi_libfunc = init_one_libfunc ("__dtoui");	\
-      fixdfdi_libfunc = init_one_libfunc ("__dtoll");		\
-      fixunsdfdi_libfunc = init_one_libfunc ("__dtoull");	\
-      floatsisf_libfunc = init_one_libfunc ("__itof");		\
-      floatdisf_libfunc = init_one_libfunc ("__lltof");		\
-      floatsidf_libfunc = init_one_libfunc ("__itod");		\
-      floatdidf_libfunc = init_one_libfunc ("__lltod");		\
-      extendsfdf2_libfunc = init_one_libfunc ("__ftod");	\
-      truncdfsf2_libfunc = init_one_libfunc ("__dtof");		\
-    }								\
-  while (0)
+}                                                                        \
+                                                                        \
+__asm__("\n"                                                                \
+        "\t.globl " TRAMPOLINE_TEMPLATE_NAME "\n"                        \
+        "\t.text\n"                                                        \
+        TRAMPOLINE_TEMPLATE_NAME ":\n"                                        \
+        "\tsetlos #0, gr6\n"        /* jump register */                        \
+        "\tsetlos #0, gr7\n"        /* static chain */                        \
+        "\tsethi #0, gr6\n"                                                \
+        "\tsethi #0, gr7\n"                                                \
+        "\tjmpl @(gr0,gr6)\n");
+#else
+#define TRANSFER_FROM_TRAMPOLINE                                        \
+extern int Twrite (int, const void *, unsigned);                        \
+                                                                        \
+void                                                                        \
+__trampoline_setup (addr, size, fnaddr, sc)                                \
+     short * addr;                                                        \
+     int size;                                                                \
+     int fnaddr;                                                        \
+     int sc;                                                                \
+{                                                                        \
+  extern short __trampoline_template[];                                        \
+  short * from = &__trampoline_template[0];                                \
+  int i;                                                                \
+  short **desc = (short **)addr;                                        \
+  short * to = addr + 4;                                                \
+                                                                        \
+  if (size != 32)                                                        \
+    {                                                                        \
+      Twrite (2, "__trampoline_setup bad size\n",                        \
+              sizeof ("__trampoline_setup bad size\n") - 1);                \
+      exit (-1);                                                        \
+    }                                                                        \
+                                                                        \
+  /* Create a function descriptor with the address of the code below
+     and NULL as the FDPIC value.  We don't need the real GOT value
+     here, since we don't use it, so we use NULL, that is just as
+     good.  */                                                                \
+  desc[0] = to;                                                                \
+  desc[1] = NULL;                                                        \
+  size -= 8;                                                                \
+                                                                        \
+  to[0] = from[0];                                                        \
+  to[1] = (short)(fnaddr);                                                \
+  to[2] = from[2];                                                        \
+  to[3] = (short)(sc);                                                        \
+  to[4] = from[4];                                                        \
+  to[5] = (short)(fnaddr >> 16);                                        \
+  to[6] = from[6];                                                        \
+  to[7] = (short)(sc >> 16);                                                \
+  to[8] = from[8];                                                        \
+  to[9] = from[9];                                                        \
+  to[10] = from[10];                                                        \
+  to[11] = from[11];                                                        \
+                                                                        \
+  for (i = 0; i < size; i++)                                                \
+    __asm__ volatile ("dcf @(%0,%1)\n\tici @(%0,%1)" :: "r" (to), "r" (i)); \
+}                                                                        \
+                                                                        \
+__asm__("\n"                                                                \
+        "\t.globl " TRAMPOLINE_TEMPLATE_NAME "\n"                        \
+        "\t.text\n"                                                        \
+        TRAMPOLINE_TEMPLATE_NAME ":\n"                                        \
+        "\tsetlos #0, gr6\n"        /* Jump register.  */                        \
+        "\tsetlos #0, gr7\n"        /* Static chain.  */                        \
+        "\tsethi #0, gr6\n"                                                \
+        "\tsethi #0, gr7\n"                                                \
+        "\tldd @(gr6,gr0),gr14\n"                                        \
+        "\tjmpl @(gr14,gr0)\n"                                                \
+        );
+#endif
 
 
 /* Addressing Modes.  */
@@ -2408,12 +2084,13 @@ __asm__("\n"								\
 #define REG_OK_STRICT_P 0
 #endif
 
-#define GO_IF_LEGITIMATE_ADDRESS(MODE, X, LABEL)			\
-  do									\
-    {									\
-      if (frv_legitimate_address_p (MODE, X, REG_OK_STRICT_P, FALSE))	\
-	goto LABEL;							\
-    }									\
+#define GO_IF_LEGITIMATE_ADDRESS(MODE, X, LABEL)                        \
+  do                                                                        \
+    {                                                                        \
+      if (frv_legitimate_address_p (MODE, X, REG_OK_STRICT_P,                \
+                                     FALSE, FALSE))                        \
+        goto LABEL;                                                        \
+    }                                                                        \
   while (0)
 
 /* A C expression that is nonzero if X (assumed to be a `reg' RTX) is valid for
@@ -2440,40 +2117,17 @@ __asm__("\n"								\
    will reload one or both registers only if neither labeling works.  */
 #define REG_OK_FOR_INDEX_P(X) REG_OK_FOR_BASE_P (X)
 
-/* A C compound statement that attempts to replace X with a valid memory
-   address for an operand of mode MODE.  WIN will be a C statement label
-   elsewhere in the code; the macro definition may use
+#define LEGITIMIZE_ADDRESS(X, OLDX, MODE, WIN)                \
+do {                                                        \
+  rtx new_x = frv_legitimize_address (X, OLDX, MODE);        \
+  if (new_x)                                                \
+    {                                                         \
+      (X) = new_x;                                         \
+      goto WIN;                                         \
+    }                                                         \
+} while (0)
 
-        GO_IF_LEGITIMATE_ADDRESS (MODE, X, WIN);
-
-   to avoid further processing if the address has become legitimate.
-
-   X will always be the result of a call to `break_out_memory_refs', and OLDX
-   will be the operand that was given to that function to produce X.
-
-   The code generated by this macro should not alter the substructure of X.  If
-   it transforms X into a more legitimate form, it should assign X (which will
-   always be a C variable) a new value.
-
-   It is not necessary for this macro to come up with a legitimate address.
-   The compiler has standard ways of doing so in all cases.  In fact, it is
-   safe for this macro to do nothing.  But often a machine-dependent strategy
-   can generate better code.  */
-
-/* On the FRV, we use it to convert small data and pic references into using
-   the appropriate pointer in the address.  */
-#define LEGITIMIZE_ADDRESS(X, OLDX, MODE, WIN)			\
-  do								\
-    {								\
-      rtx newx = frv_legitimize_address (X, OLDX, MODE);	\
-								\
-      if (newx)							\
-	{							\
-	  (X) = newx;						\
-	  goto WIN;						\
-	}							\
-    }								\
-  while (0)
+#define FIND_BASE_TERM frv_find_base_term
 
 /* A C statement or compound statement with a conditional `goto LABEL;'
    executed if memory address X (an RTX) can have different meanings depending
@@ -2499,25 +2153,9 @@ __asm__("\n"								\
 #define HAVE_PRE_MODIFY_REG 1
 
 
-/* Returns a mode from class `MODE_CC' to be used when comparison operation
-   code OP is applied to rtx X and Y.  For example, on the SPARC,
-   `SELECT_CC_MODE' is defined as (see *note Jump Patterns::.  for a
-   description of the reason for this definition)
+/* We define extra CC modes in frv-modes.def so we need a selector.  */
 
-        #define SELECT_CC_MODE(OP,X,Y) \
-          (GET_MODE_CLASS (GET_MODE (X)) == MODE_FLOAT          \
-           ? ((OP == EQ || OP == NE) ? CCFPmode : CCFPEmode)    \
-           : ((GET_CODE (X) == PLUS || GET_CODE (X) == MINUS    \
-               || GET_CODE (X) == NEG) \
-              ? CC_NOOVmode : CCmode))
-
-   You need not define this macro if `EXTRA_CC_MODES' is not defined.  */
-#define SELECT_CC_MODE(OP, X, Y)					\
-  (GET_MODE_CLASS (GET_MODE (X)) == MODE_FLOAT				\
-   ? CC_FPmode								\
-   : (((OP) == LEU || (OP) == GTU || (OP) == LTU || (OP) == GEU)	\
-      ? CC_UNSmode							\
-      : CCmode))
+#define SELECT_CC_MODE frv_select_cc_mode
 
 /* A C expression whose value is one if it is always safe to reverse a
    comparison whose mode is MODE.  If `SELECT_CC_MODE' can ever return MODE for
@@ -2532,73 +2170,15 @@ __asm__("\n"								\
         #define REVERSIBLE_CC_MODE(MODE)  ((MODE) != CCFPEmode)  */
 
 /* On frv, don't consider floating point comparisons to be reversible.  In
-   theory, fp equality comparisons can be reversible */
-#define REVERSIBLE_CC_MODE(MODE) ((MODE) == CCmode || (MODE) == CC_UNSmode)
+   theory, fp equality comparisons can be reversible.  */
+#define REVERSIBLE_CC_MODE(MODE) \
+  ((MODE) == CCmode || (MODE) == CC_UNSmode || (MODE) == CC_NZmode)
 
 /* Frv CCR_MODE's are not reversible.  */
 #define REVERSE_CONDEXEC_PREDICATES_P(x,y)      0
 
 
 /* Describing Relative Costs of Operations.  */
-
-/* A part of a C `switch' statement that describes the relative costs of
-   constant RTL expressions.  It must contain `case' labels for expression
-   codes `const_int', `const', `symbol_ref', `label_ref' and `const_double'.
-   Each case must ultimately reach a `return' statement to return the relative
-   cost of the use of that kind of constant value in an expression.  The cost
-   may depend on the precise value of the constant, which is available for
-   examination in X, and the rtx code of the expression in which it is
-   contained, found in OUTER_CODE.
-
-   CODE is the expression code--redundant, since it can be obtained with
-   `GET_CODE (X)'.  */
-#define CONST_COSTS(X, CODE, OUTER_CODE)				\
-  case CONST:								\
-  case LABEL_REF:							\
-  case SYMBOL_REF:							\
-  case CONST_DOUBLE:							\
-    return COSTS_N_INSNS (2);						\
-									\
-  case CONST_INT:							\
-    /* Make 12 bit integers really cheap */				\
-    return IN_RANGE_P (INTVAL (X), -2048, 2047) ? 0 : COSTS_N_INSNS (2); \
-
-/* Like `CONST_COSTS' but applies to nonconstant RTL expressions.  This can be
-   used, for example, to indicate how costly a multiply instruction is.  In
-   writing this macro, you can use the construct `COSTS_N_INSNS (N)' to specify
-   a cost equal to N fast instructions.  OUTER_CODE is the code of the
-   expression in which X is contained.
-
-   This macro is optional; do not define it if the default cost assumptions are
-   adequate for the target machine.  */
-#define RTX_COSTS(X, CODE, OUTER_CODE)					\
-  case PLUS:								\
-  case MINUS:								\
-  case AND:								\
-  case IOR:								\
-  case XOR:								\
-  case ASHIFT:								\
-  case ASHIFTRT:							\
-  case LSHIFTRT:							\
-  case NOT:								\
-  case NEG:								\
-  case COMPARE:								\
-    if (GET_MODE (X) == SImode)						\
-      return COSTS_N_INSNS (1);						\
-    else if (GET_MODE (X) == DImode)					\
-      return COSTS_N_INSNS (2);						\
-    else								\
-      return COSTS_N_INSNS (3);	/* guess */				\
-									\
-  case MULT:								\
-    if (GET_MODE (X) == SImode)						\
-      return COSTS_N_INSNS (2);						\
-    else								\
-      return COSTS_N_INSNS (6);	/* guess */				\
-									\
-  case DIV:								\
-  case UDIV:								\
-    return COSTS_N_INSNS (18);
 
 /* A C expression for the cost of moving data from a register in class FROM to
    one in class TO.  The classes are expressed using the enumeration values
@@ -2627,18 +2207,6 @@ __asm__("\n"								\
 
 /* A C expression for the cost of a branch instruction.  A value of 1 is the
    default; other values are interpreted relative to that.  */
-
-/* Here are additional macros which do not specify precise relative costs, but
-   only that certain actions are more expensive than GNU CC would ordinarily
-   expect.  */
-
-/* We used to default the branch cost to 2, but I changed it to 1, to avoid
-   generating SCC instructions and or/and-ing them together, and then doing the
-   branch on the result, which collectively generate much worse code.  */
-#ifndef DEFAULT_BRANCH_COST
-#define DEFAULT_BRANCH_COST 1
-#endif
-
 #define BRANCH_COST frv_branch_cost_int
 
 /* Define this macro as a C expression which is nonzero if accessing less than
@@ -2657,10 +2225,6 @@ __asm__("\n"								\
 /* Define this macro if it is as good or better to call a constant function
    address than to call an address kept in a register.  */
 #define NO_FUNCTION_CSE
-
-/* Define this macro if it is as good or better for a function to call itself
-   with an explicit address than to call an address kept in a register.  */
-#define NO_RECURSIVE_FUNCTION_CSE
 
 
 /* Dividing the output into sections.  */
@@ -2685,8 +2249,7 @@ __asm__("\n"								\
 #define BSS_SECTION_ASM_OP "\t.section .bss,\"aw\""
 
 /* Short Data Support */
-#define SDATA_SECTION_ASM_OP	"\t.section .sdata,\"aw\""
-#define SBSS_SECTION_ASM_OP	"\t.section .sbss,\"aw\""
+#define SDATA_SECTION_ASM_OP        "\t.section .sdata,\"aw\""
 
 /* On svr4, we *do* have support for the .init and .fini sections, and we
    can put stuff in there to be executed before and after `main'.  We let
@@ -2697,70 +2260,21 @@ __asm__("\n"								\
    The standard System V.4 macros will work, but they look ugly in the
    assembly output, so redefine them.  */
 
-#undef	INIT_SECTION_ASM_OP
-#undef	FINI_SECTION_ASM_OP
-#define INIT_SECTION_ASM_OP	"\t.section .init,\"ax\""
-#define FINI_SECTION_ASM_OP	"\t.section .fini,\"ax\""
+#undef        INIT_SECTION_ASM_OP
+#undef        FINI_SECTION_ASM_OP
+#define INIT_SECTION_ASM_OP        "\t.section .init,\"ax\""
+#define FINI_SECTION_ASM_OP        "\t.section .fini,\"ax\""
+
+#undef CTORS_SECTION_ASM_OP
+#undef DTORS_SECTION_ASM_OP
+#define CTORS_SECTION_ASM_OP        "\t.section\t.ctors,\"a\""
+#define DTORS_SECTION_ASM_OP        "\t.section\t.dtors,\"a\""
 
 /* A C expression whose value is a string containing the assembler operation to
    switch to the fixup section that records all initialized pointers in a -fpic
    program so they can be changed program startup time if the program is loaded
    at a different address than linked for.  */
-#define FIXUP_SECTION_ASM_OP	"\t.section .rofixup,\"a\""
-
-/* A list of names for sections other than the standard two, which are
-   `in_text' and `in_data'.  You need not define this macro
-   on a system with no other sections (that GCC needs to use).  */
-#undef  EXTRA_SECTIONS
-#define EXTRA_SECTIONS in_sdata, in_sbss, in_const, in_fixup
-
-/* One or more functions to be defined in "varasm.c".  These
-   functions should do jobs analogous to those of `text_section' and
-   `data_section', for your additional sections.  Do not define this
-   macro if you do not define `EXTRA_SECTIONS'.  */
-#undef  EXTRA_SECTION_FUNCTIONS
-#define EXTRA_SECTION_FUNCTIONS                                         \
-SDATA_SECTION_FUNCTION                                                  \
-SBSS_SECTION_FUNCTION							\
-FIXUP_SECTION_FUNCTION
-
-
-#define SDATA_SECTION_FUNCTION						\
-void									\
-sdata_section ()							\
-{									\
-  if (in_section != in_sdata)						\
-    {									\
-      fprintf (asm_out_file, "%s\n", SDATA_SECTION_ASM_OP);		\
-      in_section = in_sdata;						\
-    }									\
-}									\
-
-#define SBSS_SECTION_FUNCTION						\
-void									\
-sbss_section ()								\
-{									\
-  if (in_section != in_sbss)						\
-    {									\
-      fprintf (asm_out_file, "%s\n", SBSS_SECTION_ASM_OP);		\
-      in_section = in_sbss;						\
-    }									\
-}									\
-
-#define FIXUP_SECTION_FUNCTION						\
-void									\
-fixup_section ()							\
-{									\
-  if (in_section != in_fixup)						\
-    {									\
-      fprintf (asm_out_file, "%s\n", FIXUP_SECTION_ASM_OP);		\
-      in_section = in_fixup;						\
-    }									\
-}									\
-
-#define SDATA_FLAG_CHAR '@'
-
-#define SDATA_NAME_P(NAME) (*(NAME) == SDATA_FLAG_CHAR)
+#define FIXUP_SECTION_ASM_OP        "\t.section .rofixup,\"a\""
 
 /* Position Independent Code.  */
 
@@ -2770,11 +2284,11 @@ fixup_section ()							\
    assume FLAG_PIC is true, so you need not check it either.  You need not
    define this macro if all constants (including `SYMBOL_REF') can be immediate
    operands when generating position independent code.  */
-#define LEGITIMATE_PIC_OPERAND_P(X)					\
-  (   GET_CODE (X) == CONST_INT						\
-   || GET_CODE (X) == CONST_DOUBLE					\
-   || (GET_CODE (X) == HIGH && GET_CODE (XEXP (X, 0)) == CONST_INT)	\
-   || GET_CODE (X) == CONSTANT_P_RTX)
+#define LEGITIMATE_PIC_OPERAND_P(X)                                        \
+  (   GET_CODE (X) == CONST_INT                                                \
+   || GET_CODE (X) == CONST_DOUBLE                                        \
+   || (GET_CODE (X) == HIGH && GET_CODE (XEXP (X, 0)) == CONST_INT)        \
+   || got12_operand (X, VOIDmode))                                        \
 
 
 /* The Overall Framework of an Assembler File.  */
@@ -2800,10 +2314,10 @@ fixup_section ()							\
 /* Output of Data.  */
 
 /* This is how to output a label to dwarf/dwarf2.  */
-#define ASM_OUTPUT_DWARF_ADDR(STREAM, LABEL)				\
-do {									\
-  fprintf (STREAM, "\t.picptr\t");					\
-  assemble_name (STREAM, LABEL);					\
+#define ASM_OUTPUT_DWARF_ADDR(STREAM, LABEL)                                \
+do {                                                                        \
+  fprintf (STREAM, "\t.picptr\t");                                        \
+  assemble_name (STREAM, LABEL);                                        \
 } while (0)
 
 /* Whether to emit the gas specific dwarf2 line number support.  */
@@ -2843,15 +2357,15 @@ extern int size_directive_output;
    `ASM_OUTPUT_ALIGNED_LOCAL', and gives you more flexibility in
    handling the destination of the variable.  */
 #undef ASM_OUTPUT_ALIGNED_DECL_LOCAL
-#define ASM_OUTPUT_ALIGNED_DECL_LOCAL(STREAM, DECL, NAME, SIZE, ALIGN)	\
-do {                                                                   	\
-  if (SDATA_NAME_P (NAME))                                             	\
-    sbss_section ();                                                 	\
-  else                                                                 	\
-     bss_section ();                                                  	\
-  ASM_OUTPUT_ALIGN (STREAM, floor_log2 ((ALIGN) / BITS_PER_UNIT));     	\
-  ASM_DECLARE_OBJECT_NAME (STREAM, NAME, DECL);                        	\
-  ASM_OUTPUT_SKIP (STREAM, (SIZE) ? (SIZE) : 1);                       	\
+#define ASM_OUTPUT_ALIGNED_DECL_LOCAL(STREAM, DECL, NAME, SIZE, ALIGN)        \
+do {                                                                           \
+  if ((SIZE) > 0 && (SIZE) <= g_switch_value)                                \
+    switch_to_section (get_named_section (NULL, ".sbss", 0));           \
+  else                                                                         \
+    switch_to_section (bss_section);                                          \
+  ASM_OUTPUT_ALIGN (STREAM, floor_log2 ((ALIGN) / BITS_PER_UNIT));             \
+  ASM_DECLARE_OBJECT_NAME (STREAM, NAME, DECL);                                \
+  ASM_OUTPUT_SKIP (STREAM, (SIZE) ? (SIZE) : 1);                               \
 } while (0)
 
 
@@ -2862,33 +2376,20 @@ do {                                                                   	\
    `assemble_name (STREAM, NAME)' to output the name itself; before and after
    that, output the additional assembler syntax for defining the name, and a
    newline.  */
-#define ASM_OUTPUT_LABEL(STREAM, NAME)					\
-do {									\
-  assemble_name (STREAM, NAME);						\
-  fputs (":\n", STREAM);						\
+#define ASM_OUTPUT_LABEL(STREAM, NAME)                                        \
+do {                                                                        \
+  assemble_name (STREAM, NAME);                                                \
+  fputs (":\n", STREAM);                                                \
 } while (0)
 
 /* Globalizing directive for a label.  */
 #define GLOBAL_ASM_OP "\t.globl "
 
-/* A C statement (sans semicolon) to output to the stdio stream STREAM a
-   reference in assembler syntax to a label named NAME.  This should add `_' to
-   the front of the name, if that is customary on your operating system, as it
-   is in most Berkeley Unix systems.  This macro is used in `assemble_name'.  */
-#undef ASM_OUTPUT_LABELREF
-#define ASM_OUTPUT_LABELREF(STREAM, NAME)				\
-do {									\
-  const char *_name = (NAME);						\
-  while (*_name == '*' || *_name == SDATA_FLAG_CHAR)			\
-    _name++;								\
-  asm_fprintf (STREAM, "%U%s", _name);					\
-} while (0)
-
 /* A C statement to store into the string STRING a label whose name is made
    from the string PREFIX and the number NUM.
 
    This string, when output subsequently by `assemble_name', should produce the
-   output that `ASM_OUTPUT_INTERNAL_LABEL' would produce with the same PREFIX
+   output that `(*targetm.asm_out.internal_label)' would produce with the same PREFIX
    and NUM.
 
    If the string begins with `*', then `assemble_name' will output the rest of
@@ -2900,37 +2401,16 @@ do {									\
 
    Defined in svr4.h.  */
 #undef ASM_GENERATE_INTERNAL_LABEL
-#define ASM_GENERATE_INTERNAL_LABEL(LABEL, PREFIX, NUM)			\
-do {									\
-  sprintf (LABEL, "*.%s%ld", PREFIX, (long)NUM);			\
-} while (0)
-
-/* A C expression to assign to OUTVAR (which is a variable of type `char *') a
-   newly allocated string made from the string NAME and the number NUMBER, with
-   some suitable punctuation added.  Use `alloca' to get space for the string.
-
-   The string will be used as an argument to `ASM_OUTPUT_LABELREF' to produce
-   an assembler label for an internal static variable whose name is NAME.
-   Therefore, the string must be such as to result in valid assembler code.
-   The argument NUMBER is different each time this macro is executed; it
-   prevents conflicts between similarly-named internal static variables in
-   different scopes.
-
-   Ideally this string should not be a valid C identifier, to prevent any
-   conflict with the user's own symbols.  Most assemblers allow periods or
-   percent signs in assembler symbols; putting at least one of these between
-   the name and the number will suffice.  */
-#define ASM_FORMAT_PRIVATE_NAME(OUTVAR, NAME, NUMBER)			\
-do {									\
-  (OUTVAR) = (char *) alloca (strlen ((NAME)) + 12);			\
-  sprintf ((OUTVAR), "%s.%ld", (NAME), (long)(NUMBER));			\
+#define ASM_GENERATE_INTERNAL_LABEL(LABEL, PREFIX, NUM)                        \
+do {                                                                        \
+  sprintf (LABEL, "*.%s%ld", PREFIX, (long)NUM);                        \
 } while (0)
 
 
 /* Macros Controlling Initialization Routines.  */
 
 /* If defined, a C string constant for the assembler operation to identify the
-   following data as initialization code.  If not defined, GNU CC will assume
+   following data as initialization code.  If not defined, GCC will assume
    such a section does not exist.  When you are using special sections for
    initialization and termination functions, this macro also controls how
    `crtstuff.c' and `libgcc2.c' arrange to run the initialization functions.
@@ -2943,58 +2423,39 @@ do {									\
    init section is not actually run automatically, but is still useful for
    collecting the lists of constructors and destructors.  */
 #define INVOKE__main
-
-/* Output appropriate code tp call a static constructor.  */
-#undef  ASM_OUTPUT_CONSTRUCTOR
-#define ASM_OUTPUT_CONSTRUCTOR(STREAM,NAME)				\
-do {									\
-  ctors_section ();							\
-  fprintf (STREAM, "\t.picptr\t");					\
-  assemble_name (STREAM, NAME);						\
-  fprintf (STREAM, "\n");							\
-} while (0)
-
-/* Output appropriate code tp call a static destructor.  */
-#undef  ASM_OUTPUT_DESTRUCTOR
-#define ASM_OUTPUT_DESTRUCTOR(STREAM,NAME)				\
-do {									\
-  dtors_section ();							\
-  fprintf (STREAM, "\t.picptr\t");					\
-  assemble_name (STREAM, NAME);						\
-  fprintf (STREAM, "\n");							\
-} while (0)
-
 
 /* Output of Assembler Instructions.  */
 
 /* A C initializer containing the assembler's names for the machine registers,
    each one as a C string constant.  This is what translates register numbers
    in the compiler into assembler language.  */
-#define REGISTER_NAMES							\
-{									\
- "gr0",  "sp",   "fp",   "gr3",  "gr4",  "gr5",  "gr6",  "gr7",		\
-  "gr8",  "gr9",  "gr10", "gr11", "gr12", "gr13", "gr14", "gr15",	\
-  "gr16", "gr17", "gr18", "gr19", "gr20", "gr21", "gr22", "gr23",	\
-  "gr24", "gr25", "gr26", "gr27", "gr28", "gr29", "gr30", "gr31",	\
-  "gr32", "gr33", "gr34", "gr35", "gr36", "gr37", "gr38", "gr39",	\
-  "gr40", "gr41", "gr42", "gr43", "gr44", "gr45", "gr46", "gr47",	\
-  "gr48", "gr49", "gr50", "gr51", "gr52", "gr53", "gr54", "gr55",	\
-  "gr56", "gr57", "gr58", "gr59", "gr60", "gr61", "gr62", "gr63",	\
-									\
-  "fr0",  "fr1",  "fr2",  "fr3",  "fr4",  "fr5",  "fr6",  "fr7",	\
-  "fr8",  "fr9",  "fr10", "fr11", "fr12", "fr13", "fr14", "fr15",	\
-  "fr16", "fr17", "fr18", "fr19", "fr20", "fr21", "fr22", "fr23",	\
-  "fr24", "fr25", "fr26", "fr27", "fr28", "fr29", "fr30", "fr31",	\
-  "fr32", "fr33", "fr34", "fr35", "fr36", "fr37", "fr38", "fr39",	\
-  "fr40", "fr41", "fr42", "fr43", "fr44", "fr45", "fr46", "fr47",	\
-  "fr48", "fr49", "fr50", "fr51", "fr52", "fr53", "fr54", "fr55",	\
-  "fr56", "fr57", "fr58", "fr59", "fr60", "fr61", "fr62", "fr63",	\
-									\
-  "fcc0", "fcc1", "fcc2", "fcc3", "icc0", "icc1", "icc2", "icc3",	\
-  "cc0",  "cc1",  "cc2",  "cc3",  "cc4",  "cc5",  "cc6",  "cc7",	\
-  "acc0", "acc1", "acc2", "acc3", "acc4", "acc5", "acc6", "acc7",	\
-  "accg0","accg1","accg2","accg3","accg4","accg5","accg6","accg7",	\
-  "ap",   "lr",   "lcr"							\
+#define REGISTER_NAMES                                                        \
+{                                                                        \
+ "gr0",  "sp",   "fp",   "gr3",  "gr4",  "gr5",  "gr6",  "gr7",                \
+  "gr8",  "gr9",  "gr10", "gr11", "gr12", "gr13", "gr14", "gr15",        \
+  "gr16", "gr17", "gr18", "gr19", "gr20", "gr21", "gr22", "gr23",        \
+  "gr24", "gr25", "gr26", "gr27", "gr28", "gr29", "gr30", "gr31",        \
+  "gr32", "gr33", "gr34", "gr35", "gr36", "gr37", "gr38", "gr39",        \
+  "gr40", "gr41", "gr42", "gr43", "gr44", "gr45", "gr46", "gr47",        \
+  "gr48", "gr49", "gr50", "gr51", "gr52", "gr53", "gr54", "gr55",        \
+  "gr56", "gr57", "gr58", "gr59", "gr60", "gr61", "gr62", "gr63",        \
+                                                                        \
+  "fr0",  "fr1",  "fr2",  "fr3",  "fr4",  "fr5",  "fr6",  "fr7",        \
+  "fr8",  "fr9",  "fr10", "fr11", "fr12", "fr13", "fr14", "fr15",        \
+  "fr16", "fr17", "fr18", "fr19", "fr20", "fr21", "fr22", "fr23",        \
+  "fr24", "fr25", "fr26", "fr27", "fr28", "fr29", "fr30", "fr31",        \
+  "fr32", "fr33", "fr34", "fr35", "fr36", "fr37", "fr38", "fr39",        \
+  "fr40", "fr41", "fr42", "fr43", "fr44", "fr45", "fr46", "fr47",        \
+  "fr48", "fr49", "fr50", "fr51", "fr52", "fr53", "fr54", "fr55",        \
+  "fr56", "fr57", "fr58", "fr59", "fr60", "fr61", "fr62", "fr63",        \
+                                                                        \
+  "fcc0", "fcc1", "fcc2", "fcc3", "icc0", "icc1", "icc2", "icc3",        \
+  "cc0",  "cc1",  "cc2",  "cc3",  "cc4",  "cc5",  "cc6",  "cc7",        \
+  "acc0", "acc1", "acc2", "acc3", "acc4", "acc5", "acc6", "acc7",        \
+  "acc8", "acc9", "acc10", "acc11",                                        \
+  "accg0","accg1","accg2","accg3","accg4","accg5","accg6","accg7",        \
+  "accg8", "accg9", "accg10", "accg11",                                        \
+  "ap",   "lr",   "lcr",  "iacc0h", "iacc0l"                                \
 }
 
 /* Define this macro if you are using an unusual assembler that
@@ -3078,8 +2539,8 @@ do {									\
    ~ == pic register (gr17)
    * == temporary integer CCR register (cr3)
    & == temporary integer ICC register (icc3)  */
-#define PRINT_OPERAND_PUNCT_VALID_P(CODE)				\
-((CODE) == '.' || (CODE) == '#' || (CODE) == SDATA_FLAG_CHAR || (CODE) == '~'	\
+#define PRINT_OPERAND_PUNCT_VALID_P(CODE)                                \
+((CODE) == '.' || (CODE) == '#' || (CODE) == '@' || (CODE) == '~'        \
  || (CODE) == '*' || (CODE) == '&')
 
 /* A C compound statement to output to stdio stream STREAM the assembler syntax
@@ -3115,7 +2576,7 @@ do {									\
    The definition should be a C statement to output to the stdio stream STREAM
    an assembler pseudo-instruction to generate a difference between two labels.
    VALUE and REL are the numbers of two internal labels.  The definitions of
-   these labels are output using `ASM_OUTPUT_INTERNAL_LABEL', and they must be
+   these labels are output using `(*targetm.asm_out.internal_label)', and they must be
    printed in the same way here.  For example,
 
         fprintf (STREAM, "\t.word L%d-L%d\n", VALUE, REL)  */
@@ -3128,14 +2589,14 @@ fprintf (STREAM, "\t.word .L%d-.L%d\n", VALUE, REL)
    The definition should be a C statement to output to the stdio stream STREAM
    an assembler pseudo-instruction to generate a reference to a label.  VALUE
    is the number of an internal label whose definition is output using
-   `ASM_OUTPUT_INTERNAL_LABEL'.  For example,
+   `(*targetm.asm_out.internal_label)'.  For example,
 
         fprintf (STREAM, "\t.word L%d\n", VALUE)  */
 #define ASM_OUTPUT_ADDR_VEC_ELT(STREAM, VALUE) \
 fprintf (STREAM, "\t.word .L%d\n", VALUE)
 
 /* Define this if the label before a jump-table needs to be output specially.
-   The first three arguments are the same as for `ASM_OUTPUT_INTERNAL_LABEL';
+   The first three arguments are the same as for `(*targetm.asm_out.internal_label)';
    the fourth argument is the jump-table which follows (a `jump_insn'
    containing an `addr_vec' or `addr_diff_vec').
 
@@ -3143,7 +2604,7 @@ fprintf (STREAM, "\t.word .L%d\n", VALUE)
    table.
 
    If this macro is not defined, these labels are output with
-   `ASM_OUTPUT_INTERNAL_LABEL'.
+   `(*targetm.asm_out.internal_label)'.
 
    Defined in svr4.h.  */
 /* When generating embedded PIC or mips16 code we want to put the jump
@@ -3157,14 +2618,9 @@ fprintf (STREAM, "\t.word .L%d\n", VALUE)
 #define ASM_OUTPUT_CASE_LABEL(STREAM, PREFIX, NUM, TABLE)               \
 do {                                                                    \
   if (flag_pic)                                                         \
-    function_section (current_function_decl);                           \
-  ASM_OUTPUT_INTERNAL_LABEL (STREAM, PREFIX, NUM);                      \
+    switch_to_section (function_section (current_function_decl));       \
+  (*targetm.asm_out.internal_label) (STREAM, PREFIX, NUM);              \
 } while (0)
-
-/* Define this to determine whether case statement labels are relative to
-   the start of the case statement or not.  */
-
-#define CASE_VECTOR_PC_RELATIVE (flag_pic)
 
 
 /* Assembler Commands for Exception Regions.  */
@@ -3194,7 +2650,7 @@ do {                                                                    \
    Defined in svr4.h.  */
 #undef  ASM_OUTPUT_SKIP
 #define ASM_OUTPUT_SKIP(STREAM, NBYTES) \
-  fprintf (STREAM, "\t.zero\t%u\n", (NBYTES))
+  fprintf (STREAM, "\t.zero\t%u\n", (int)(NBYTES))
 
 /* A C statement to output to the stdio stream STREAM an assembler command to
    advance the location counter to a multiple of 2 to the POWER bytes.  POWER
@@ -3202,6 +2658,9 @@ do {                                                                    \
 #define ASM_OUTPUT_ALIGN(STREAM, POWER) \
   fprintf ((STREAM), "\t.p2align %d\n", (POWER))
 
+/* Inside the text section, align with unpacked nops rather than zeros.  */
+#define ASM_OUTPUT_ALIGN_WITH_NOP(STREAM, POWER) \
+  fprintf ((STREAM), "\t.p2alignl %d,0x80880000\n", (POWER))
 
 /* Macros Affecting all Debug Formats.  */
 
@@ -3211,7 +2670,7 @@ do {                                                                    \
    knows about and DBX does not, or vice versa.  In such cases, some register
    may need to have one number in the compiler and another for DBX.
 
-   If two registers have consecutive numbers inside GNU CC, and they can be
+   If two registers have consecutive numbers inside GCC, and they can be
    used as a pair to hold a multiword value, then they *must* have consecutive
    numbers after renumbering with `DBX_REGISTER_NUMBER'.  Otherwise, debuggers
    will be unable to access such a pair, because they expect register pairs to
@@ -3224,9 +2683,9 @@ do {                                                                    \
    This declaration is required.  */
 #define DBX_REGISTER_NUMBER(REGNO) (REGNO)
 
-/* A C expression that returns the type of debugging output GNU CC produces
+/* A C expression that returns the type of debugging output GCC produces
    when the user specifies `-g' or `-ggdb'.  Define this if you have arranged
-   for GNU CC to support more than one format of debugging output.  Currently,
+   for GCC to support more than one format of debugging output.  Currently,
    the allowable values are `DBX_DEBUG', `SDB_DEBUG', `DWARF_DEBUG',
    `DWARF2_DEBUG', and `XCOFF_DEBUG'.
 
@@ -3239,99 +2698,6 @@ do {                                                                    \
 #define PREFERRED_DEBUGGING_TYPE DWARF2_DEBUG
 
 /* Miscellaneous Parameters.  */
-
-/* Define this if you have defined special-purpose predicates in the file
-   `MACHINE.c'.  This macro is called within an initializer of an array of
-   structures.  The first field in the structure is the name of a predicate and
-   the second field is an array of rtl codes.  For each predicate, list all rtl
-   codes that can be in expressions matched by the predicate.  The list should
-   have a trailing comma.  Here is an example of two entries in the list for a
-   typical RISC machine:
-
-        #define PREDICATE_CODES \
-          {"gen_reg_rtx_operand", {SUBREG, REG}},  \
-          {"reg_or_short_cint_operand", {SUBREG, REG, CONST_INT}},
-
-   Defining this macro does not affect the generated code (however, incorrect
-   definitions that omit an rtl code that may be matched by the predicate can
-   cause the compiler to malfunction).  Instead, it allows the table built by
-   `genrecog' to be more compact and efficient, thus speeding up the compiler.
-   The most important predicates to include in the list specified by this macro
-   are thoses used in the most insn patterns.  */
-#define PREDICATE_CODES							\
-  { "integer_register_operand",		{ REG, SUBREG }},		\
-  { "frv_load_operand",			{ REG, SUBREG, MEM }},		\
-  { "gpr_no_subreg_operand",		{ REG }},			\
-  { "gpr_or_fpr_operand",		{ REG, SUBREG }},		\
-  { "gpr_or_int12_operand",		{ REG, SUBREG, CONST_INT }},	\
-  { "gpr_fpr_or_int12_operand",		{ REG, SUBREG, CONST_INT }},	\
-  { "gpr_or_int10_operand",		{ REG, SUBREG, CONST_INT }},	\
-  { "gpr_or_int_operand",		{ REG, SUBREG, CONST_INT }},	\
-  { "move_source_operand",		{ REG, SUBREG, CONST_INT, MEM,	\
-					  CONST_DOUBLE, CONST,		\
-					  SYMBOL_REF, LABEL_REF }},	\
-  { "move_destination_operand",		{ REG, SUBREG, MEM }},		\
-  { "condexec_source_operand",		{ REG, SUBREG, CONST_INT, MEM,	\
-					  CONST_DOUBLE }},		\
-  { "condexec_dest_operand",		{ REG, SUBREG, MEM }},		\
-  { "reg_or_0_operand",			{ REG, SUBREG, CONST_INT }},	\
-  { "lr_operand",			{ REG }},			\
-  { "gpr_or_memory_operand",		{ REG, SUBREG, MEM }},		\
-  { "fpr_or_memory_operand",		{ REG, SUBREG, MEM }},		\
-  { "int12_operand",			{ CONST_INT }},			\
-  { "int_2word_operand",		{ CONST_INT, CONST_DOUBLE,	\
-					  SYMBOL_REF, LABEL_REF, CONST }}, \
-  { "pic_register_operand",		{ REG }},			\
-  { "pic_symbolic_operand",		{ SYMBOL_REF, LABEL_REF, CONST }}, \
-  { "small_data_register_operand",	{ REG }},			\
-  { "small_data_symbolic_operand",	{ SYMBOL_REF, CONST }},		\
-  { "icc_operand",			{ REG }},			\
-  { "fcc_operand",			{ REG }},			\
-  { "cc_operand",			{ REG }},			\
-  { "icr_operand",			{ REG }},			\
-  { "fcr_operand",			{ REG }},			\
-  { "cr_operand",			{ REG }},			\
-  { "fpr_operand",			{ REG, SUBREG }},		\
-  { "even_reg_operand",			{ REG, SUBREG }},		\
-  { "odd_reg_operand",			{ REG, SUBREG }},		\
-  { "even_gpr_operand",			{ REG, SUBREG }},		\
-  { "odd_gpr_operand",			{ REG, SUBREG }},		\
-  { "quad_fpr_operand",			{ REG, SUBREG }},		\
-  { "even_fpr_operand",			{ REG, SUBREG }},		\
-  { "odd_fpr_operand",			{ REG, SUBREG }},		\
-  { "dbl_memory_one_insn_operand",	{ MEM }},			\
-  { "dbl_memory_two_insn_operand",	{ MEM }},			\
-  { "call_operand",			{ REG, SUBREG, PLUS, CONST_INT,	\
-					  SYMBOL_REF, LABEL_REF, CONST }}, \
-  { "upper_int16_operand",		{ CONST_INT }},			\
-  { "uint16_operand",			{ CONST_INT }},			\
-  { "relational_operator",		{ EQ, NE, LE, LT, GE, GT,	\
-					  LEU, LTU, GEU, GTU }},	\
-  { "signed_relational_operator",	{ EQ, NE, LE, LT, GE, GT }},	\
-  { "unsigned_relational_operator",	{ LEU, LTU, GEU, GTU }},	\
-  { "float_relational_operator",	{ EQ, NE, LE, LT, GE, GT }},	\
-  { "ccr_eqne_operator",		{ EQ, NE }},			\
-  { "minmax_operator",			{ SMIN, SMAX, UMIN, UMAX }},	\
-  { "condexec_si_binary_operator",	{ PLUS, MINUS, AND, IOR, XOR,	\
-					  ASHIFT, ASHIFTRT, LSHIFTRT }}, \
-  { "condexec_si_divide_operator",	{ DIV, UDIV }},			\
-  { "condexec_si_unary_operator",	{ NOT, NEG }},			\
-  { "condexec_sf_binary_operator",	{ PLUS, MINUS, MULT, DIV }},	\
-  { "condexec_sf_unary_operator",	{ ABS, NEG, SQRT }},		\
-  { "intop_compare_operator",		{ PLUS, MINUS, AND, IOR, XOR,	\
-					  ASHIFT, ASHIFTRT, LSHIFTRT }}, \
-  { "condexec_intop_cmp_operator",	{ PLUS, MINUS, AND, IOR, XOR,	\
-					  ASHIFT, ASHIFTRT, LSHIFTRT }}, \
-  { "fpr_or_int6_operand",		{ REG, SUBREG, CONST_INT }},	\
-  { "int6_operand",			{ CONST_INT }},			\
-  { "int5_operand",			{ CONST_INT }},			\
-  { "uint5_operand",			{ CONST_INT }},			\
-  { "uint4_operand",			{ CONST_INT }},			\
-  { "uint1_operand",			{ CONST_INT }},			\
-  { "acc_operand",			{ REG, SUBREG }},		\
-  { "even_acc_operand",			{ REG, SUBREG }},		\
-  { "quad_acc_operand",			{ REG, SUBREG }},		\
-  { "accg_operand",			{ REG, SUBREG }},
 
 /* An alias for a machine mode name.  This is the machine mode that elements of
    a jump-table should have.  */
@@ -3346,12 +2712,12 @@ do {                                                                    \
    memory in MODE, an integral mode narrower than a word, set the bits outside
    of MODE to be either the sign-extension or the zero-extension of the data
    read.  Return `SIGN_EXTEND' for values of MODE for which the insn
-   sign-extends, `ZERO_EXTEND' for which it zero-extends, and `NIL' for other
+   sign-extends, `ZERO_EXTEND' for which it zero-extends, and `UNKNOWN' for other
    modes.
 
    This macro is not called with MODE non-integral or with a width greater than
    or equal to `BITS_PER_WORD', so you may return any value in this case.  Do
-   not define this macro if it would always return `NIL'.  On machines where
+   not define this macro if it would always return `UNKNOWN'.  On machines where
    this macro is defined, you will normally define it as the constant
    `SIGN_EXTEND' or `ZERO_EXTEND'.  */
 #define LOAD_EXTEND_OP(MODE) SIGN_EXTEND
@@ -3404,15 +2770,12 @@ do {                                                                    \
    cc0, and 1 if it does use cc0.  */
 #define MAX_CONDITIONAL_EXECUTE frv_condexec_insns
 
-/* Default value of MAX_CONDITIONAL_EXECUTE if no -mcond-exec-insns= */
-#define DEFAULT_CONDEXEC_INSNS 8
-
 /* A C expression to modify the code described by the conditional if
    information CE_INFO, possibly updating the tests in TRUE_EXPR, and
    FALSE_EXPR for converting if-then and if-then-else code to conditional
    instructions.  Set either TRUE_EXPR or FALSE_EXPR to a null pointer if the
    tests cannot be converted.  */
-#define IFCVT_MODIFY_TESTS(CE_INFO, TRUE_EXPR, FALSE_EXPR)		\
+#define IFCVT_MODIFY_TESTS(CE_INFO, TRUE_EXPR, FALSE_EXPR)                \
 frv_ifcvt_modify_tests (CE_INFO, &TRUE_EXPR, &FALSE_EXPR)
 
 /* A C expression to modify the code described by the conditional if
@@ -3444,18 +2807,6 @@ frv_ifcvt_modify_multiple_tests (CE_INFO, BB, &TRUE_EXPR, &FALSE_EXPR)
 /* Initialize the extra fields provided by IFCVT_EXTRA_FIELDS.  */
 #define IFCVT_INIT_EXTRA_FIELDS(CE_INFO) frv_ifcvt_init_extra_fields (CE_INFO)
 
-/* Indicate how many instructions can be issued at the same time.  */
-#define ISSUE_RATE							\
-(! TARGET_PACK ? 1							\
- : (frv_cpu_type == FRV_CPU_GENERIC					\
-    || frv_cpu_type == FRV_CPU_FR500					\
-    || frv_cpu_type == FRV_CPU_TOMCAT) ? 4				\
- : frv_cpu_type == FRV_CPU_FR400 ? 2 : 1)
-
-/* Set and clear whether this insn begins a VLIW insn.  */
-#define CLEAR_VLIW_START(INSN) PUT_MODE (INSN, VOIDmode)
-#define SET_VLIW_START(INSN) PUT_MODE (INSN, TImode)
-
 /* The definition of the following macro results in that the 2nd jump
    optimization (after the 2nd insn scheduling) is minimal.  It is
    necessary to define when start cycle marks of insns (TImode is used
@@ -3469,10 +2820,6 @@ frv_ifcvt_modify_multiple_tests (CE_INFO, BB, &TRUE_EXPR, &FALSE_EXPR)
 
 #define MINIMAL_SECOND_JUMP_OPTIMIZATION
 
-/* Return true if parallel operations are expected to be emitted via the
-   packing flag.  */
-#define PACKING_FLAG_USED_P() \
-(optimize && flag_schedule_insns_after_reload && ISSUE_RATE > 1)
 
 /* If the following macro is defined and nonzero and deterministic
    finite state automata are used for pipeline hazard recognition, the
@@ -3491,9 +2838,6 @@ frv_ifcvt_modify_multiple_tests (CE_INFO, BB, &TRUE_EXPR, &FALSE_EXPR)
    macro value is zero or negative there will be no multi-pass
    scheduling.  */
 #define FIRST_CYCLE_MULTIPASS_SCHEDULING_LOOKAHEAD frv_sched_lookahead
-
-/* Return true if a function is ok to be called as a sibcall.  */
-#define FUNCTION_OK_FOR_SIBCALL(DECL) 0
 
 enum frv_builtins
 {
@@ -3575,18 +2919,54 @@ enum frv_builtins
   FRV_BUILTIN_MCPLI,
   FRV_BUILTIN_MDCUTSSI,
   FRV_BUILTIN_MQSATHS,
+  FRV_BUILTIN_MQLCLRHS,
+  FRV_BUILTIN_MQLMTHS,
+  FRV_BUILTIN_MQSLLHI,
+  FRV_BUILTIN_MQSRAHI,
   FRV_BUILTIN_MHSETLOS,
   FRV_BUILTIN_MHSETLOH,
   FRV_BUILTIN_MHSETHIS,
   FRV_BUILTIN_MHSETHIH,
   FRV_BUILTIN_MHDSETS,
-  FRV_BUILTIN_MHDSETH
+  FRV_BUILTIN_MHDSETH,
+  FRV_BUILTIN_SMUL,
+  FRV_BUILTIN_UMUL,
+  FRV_BUILTIN_PREFETCH0,
+  FRV_BUILTIN_PREFETCH,
+  FRV_BUILTIN_SMASS,
+  FRV_BUILTIN_SMSSS,
+  FRV_BUILTIN_SMU,
+  FRV_BUILTIN_SCUTSS,
+  FRV_BUILTIN_ADDSS,
+  FRV_BUILTIN_SUBSS,
+  FRV_BUILTIN_SLASS,
+  FRV_BUILTIN_IACCreadll,
+  FRV_BUILTIN_IACCreadl,
+  FRV_BUILTIN_IACCsetll,
+  FRV_BUILTIN_IACCsetl,
+  FRV_BUILTIN_SCAN,
+  FRV_BUILTIN_READ8,
+  FRV_BUILTIN_READ16,
+  FRV_BUILTIN_READ32,
+  FRV_BUILTIN_READ64,
+  FRV_BUILTIN_WRITE8,
+  FRV_BUILTIN_WRITE16,
+  FRV_BUILTIN_WRITE32,
+  FRV_BUILTIN_WRITE64
 };
+#define FRV_BUILTIN_FIRST_NONMEDIA FRV_BUILTIN_SMUL
 
 /* Enable prototypes on the call rtl functions.  */
 #define MD_CALL_PROTOTYPES 1
 
-extern GTY(()) rtx frv_compare_op0;			/* operand save for */
-extern GTY(()) rtx frv_compare_op1;			/* comparison generation */
+extern GTY(()) rtx frv_compare_op0;                        /* operand save for */
+extern GTY(()) rtx frv_compare_op1;                        /* comparison generation */
+
+#define CPU_UNITS_QUERY 1
+
+#ifdef __FRV_FDPIC__
+#define CRT_GET_RFIB_DATA(dbase) \
+  ({ extern void *_GLOBAL_OFFSET_TABLE_; (dbase) = &_GLOBAL_OFFSET_TABLE_; })
+#endif
 
 #endif /* __FRV_H__ */

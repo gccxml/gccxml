@@ -1,8 +1,0 @@
-Portions of this source tree have been modified for GCC-XML.  Source
-files contain notices in the form of comments marking the sections of
-code that have been modified from their original versions.
-
-These notices take the form
-/* BEGIN GCC-XML MODIFICATIONS (date of change) */
-... modified code ...
-/* END GCC-XML MODIFICATIONS (date of change) */

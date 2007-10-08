@@ -1,23 +1,23 @@
 /* VMS DEC C wrapper.
-   Copyright (C) 2001 Free Software Foundation, Inc.
+   Copyright (C) 2001, 2003 Free Software Foundation, Inc.
    Contributed by Douglas B. Rupp (rupp@gnat.com).
 
-This file is part of GNU CC.
+This file is part of GCC.
 
-GNU CC is free software; you can redistribute it and/or modify
+GCC is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation; either version 2, or (at your option)
 any later version.
 
-GNU CC is distributed in the hope that it will be useful,
+GCC is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with GNU CC; see the file COPYING.  If not, write to
-the Free Software Foundation, 59 Temple Place - Suite 330,
-Boston, MA 02111-1307, USA.  */
+along with GCC; see the file COPYING.  If not, write to
+the Free Software Foundation, 51 Franklin Street, Fifth Floor,
+Boston, MA 02110-1301, USA.  */
 
 /* This program is a wrapper around the VMS DEC C compiler.
    It translates Unix style command line options into corresponding
@@ -25,6 +25,8 @@ Boston, MA 02111-1307, USA.  */
 
 #include "config.h"
 #include "system.h"
+#include "coretypes.h"
+#include "tm.h"
 
 #undef PATH_SEPARATOR
 #undef PATH_SEPARATOR_STR
@@ -32,63 +34,60 @@ Boston, MA 02111-1307, USA.  */
 #define PATH_SEPARATOR_STR ","
 
 /* These can be set by command line arguments */
-int verbose = 0;
-int save_temps = 0;
+static int verbose = 0;
+static int save_temps = 0;
 
-int comp_arg_max = -1;
-const char **comp_args = 0;
-int comp_arg_index = -1;
-char *objfilename = 0;
+static int comp_arg_max = -1;
+static const char **comp_args = 0;
+static int comp_arg_index = -1;
+static char *objfilename = 0;
 
-char *system_search_dirs = (char *) "";
-char *search_dirs;
+static char *system_search_dirs = (char *) "";
+static char *search_dirs;
 
-char *default_defines = (char *) "";
-char *defines;
+static char *default_defines = (char *) "";
+static char *defines;
 
 /* Translate a Unix syntax directory specification into VMS syntax.
-   If indicators of VMS syntax found, return input string. */
-static char *to_host_dir_spec PARAMS ((char *));
+   If indicators of VMS syntax found, return input string.  */
+static char *to_host_dir_spec (char *);
 
 /* Translate a Unix syntax file specification into VMS syntax.
-   If indicators of VMS syntax found, return input string. */
-static char *to_host_file_spec PARAMS ((char *));
+   If indicators of VMS syntax found, return input string.  */
+static char *to_host_file_spec (char *);
 
-/* Add a translated arg to the list to be passed to DEC CC */
-static void addarg PARAMS ((const char *));
+/* Add a translated arg to the list to be passed to DEC CC.  */
+static void addarg (const char *);
 
 /* Preprocess the number of args in P_ARGC and contained in ARGV.
-   Look for special flags, etc. that must be handled first. */
-static void preprocess_args PARAMS ((int *, char **));
+   Look for special flags, etc. that must be handled first.  */
+static void preprocess_args (int *, char **);
 
 /* Process the number of args in P_ARGC and contained in ARGV. Look
-   for special flags, etc. that must be handled for the VMS compiler. */
-static void process_args PARAMS ((int *, char **));
+   for special flags, etc. that must be handled for the VMS compiler.  */
+static void process_args (int *, char **);
 
 /* Action routine called by decc$to_vms */
-static int translate_unix PARAMS ((char *, int));
-
-int main PARAMS ((int, char **));
+static int translate_unix (char *, int);
 
 /* Add the argument contained in STR to the list of arguments to pass to the
    compiler.  */
 
 static void
-addarg (str)
-     const char *str;
+addarg (const char *str)
 {
   int i;
 
   if (++comp_arg_index >= comp_arg_max)
     {
       const char **new_comp_args
-	= (const char **) xcalloc (comp_arg_max + 1000, sizeof (char *));
+        = (const char **) xcalloc (comp_arg_max + 1000, sizeof (char *));
 
       for (i = 0; i <= comp_arg_max; i++)
-	new_comp_args [i] = comp_args [i];
+        new_comp_args [i] = comp_args [i];
 
       if (comp_args)
-	free (comp_args);
+        free (comp_args);
 
       comp_arg_max += 1000;
       comp_args = new_comp_args;
@@ -98,82 +97,78 @@ addarg (str)
 }
 
 static void
-preprocess_args (p_argc, argv)
-     int *p_argc;
-     char *argv[];
+preprocess_args (int *p_argc, char *argv[])
 {
   int i;
 
   for (i = 1; i < *p_argc; i++)
     {
       if (strcmp (argv[i], "-o") == 0)
-	{
-	  char *buff, *ptr;
+        {
+          char *buff, *ptr;
 
-	  i++;
-	  ptr = to_host_file_spec (argv[i]);
-	  objfilename = xstrdup (ptr);
-	  buff = concat ("/obj=", ptr, NULL);
-	  addarg (buff);
-	}
+          i++;
+          ptr = to_host_file_spec (argv[i]);
+          objfilename = xstrdup (ptr);
+          buff = concat ("/obj=", ptr, NULL);
+          addarg (buff);
+        }
     }
 }
 
 static void
-process_args (p_argc, argv)
-     int *p_argc;
-     char *argv[];
+process_args (int *p_argc, char *argv[])
 {
   int i;
 
   for (i = 1; i < *p_argc; i++)
     {
       if (strlen (argv[i]) < 2)
-	continue;
+        continue;
 
       if (strncmp (argv[i], "-I", 2) == 0)
-	{
-	  char *ptr;
-	  int new_len, search_dirs_len;
+        {
+          char *ptr;
+          int new_len, search_dirs_len;
 
-	  ptr = to_host_dir_spec (&argv[i][2]);
-	  new_len = strlen (ptr);
-	  search_dirs_len = strlen (search_dirs);
+          ptr = to_host_dir_spec (&argv[i][2]);
+          new_len = strlen (ptr);
+          search_dirs_len = strlen (search_dirs);
 
-	  search_dirs = xrealloc (search_dirs, search_dirs_len + new_len + 2);
-	  if (search_dirs_len > 0)
-	    strcat (search_dirs, PATH_SEPARATOR_STR);
-	  strcat (search_dirs, ptr);
-	}
+          search_dirs = xrealloc (search_dirs, search_dirs_len + new_len + 2);
+          if (search_dirs_len > 0)
+            strcat (search_dirs, PATH_SEPARATOR_STR);
+          strcat (search_dirs, ptr);
+        }
       else if (strncmp (argv[i], "-D", 2) == 0)
-	{
-	  char *ptr;
-	  int new_len, defines_len;
+        {
+          char *ptr;
+          int new_len, defines_len;
 
-	  ptr = &argv[i][2];
-	  new_len = strlen (ptr);
-	  defines_len = strlen (defines);
+          ptr = &argv[i][2];
+          new_len = strlen (ptr);
+          defines_len = strlen (defines);
 
-	  defines = xrealloc (defines, defines_len + new_len + 4);
-	  if (defines_len > 0)
-	    strcat (defines, ",");
+          defines = xrealloc (defines, defines_len + new_len + 4);
+          if (defines_len > 0)
+            strcat (defines, ",");
 
-	  strcat (defines, "\"");
-	  strcat (defines, ptr);
-	  strcat (defines, "\"");
-	}
+          strcat (defines, "\"");
+          strcat (defines, ptr);
+          strcat (defines, "\"");
+        }
       else if (strcmp (argv[i], "-v") == 0)
-	verbose = 1;
+        verbose = 1;
       else if (strcmp (argv[i], "-g0") == 0)
-	addarg ("/nodebug");
+        addarg ("/nodebug");
       else if (strcmp (argv[i], "-O0") == 0)
-	addarg ("/noopt");
+        addarg ("/noopt");
       else if (strncmp (argv[i], "-g", 2) == 0)
-	addarg ("/debug");
+        addarg ("/debug");
       else if (strcmp (argv[i], "-E") == 0)
-	addarg ("/preprocess");
+        addarg ("/preprocess");
       else if (strcmp (argv[i], "-save-temps") == 0)
-	save_temps = 1;
+        save_temps = 1;
     }
 }
 
@@ -183,9 +178,7 @@ process_args (p_argc, argv)
 typedef struct dsc {unsigned short len, mbz; char *adr; } Descr;
 
 int
-main (argc, argv)
-     int argc;
-     char **argv;
+main (int argc, char **argv)
 {
   int i;
   char cwdev [128], *devptr;
@@ -223,40 +216,40 @@ main (argc, argv)
       int arg_len = strlen (argv[i]);
 
       if (strcmp (argv[i], "-o") == 0)
-	i++;
+        i++;
       else if (strcmp (argv[i], "-v" ) == 0
-	       || strcmp (argv[i], "-E") == 0
-	       || strcmp (argv[i], "-c") == 0
-	       || strncmp (argv[i], "-g", 2 ) == 0
-	       || strncmp (argv[i], "-O", 2 ) == 0
-	       || strcmp (argv[i], "-save-temps") == 0
-	       || (arg_len > 2 && strncmp (argv[i], "-I", 2) == 0)
-	       || (arg_len > 2 && strncmp (argv[i], "-D", 2) == 0))
-	;
+               || strcmp (argv[i], "-E") == 0
+               || strcmp (argv[i], "-c") == 0
+               || strncmp (argv[i], "-g", 2 ) == 0
+               || strncmp (argv[i], "-O", 2 ) == 0
+               || strcmp (argv[i], "-save-temps") == 0
+               || (arg_len > 2 && strncmp (argv[i], "-I", 2) == 0)
+               || (arg_len > 2 && strncmp (argv[i], "-D", 2) == 0))
+        ;
 
       /* Unix style file specs and VMS style switches look alike, so assume
-	 an arg consisting of one and only one slash, and that being first, is
-	 really a switch.  */
+         an arg consisting of one and only one slash, and that being first, is
+         really a switch.  */
       else if ((argv[i][0] == '/') && (strchr (&argv[i][1], '/') == 0))
-	addarg (argv[i]);
+        addarg (argv[i]);
       else
-	{
-	  /* Assume filename arg */
-	  char buff [256], *ptr;
+        {
+          /* Assume filename arg */
+          char buff [256], *ptr;
 
-	  ptr = to_host_file_spec (argv[i]);
-	  arg_len = strlen (ptr);
+          ptr = to_host_file_spec (argv[i]);
+          arg_len = strlen (ptr);
 
-	  if (ptr[0] == '[')
-	    sprintf (buff, "%s%s", cwdev, ptr);
-	  else if (strchr (ptr, ':'))
-	    sprintf (buff, "%s", ptr);
-	  else
-	    sprintf (buff, "%s%s", cwd, ptr);
+          if (ptr[0] == '[')
+            sprintf (buff, "%s%s", cwdev, ptr);
+          else if (strchr (ptr, ':'))
+            sprintf (buff, "%s", ptr);
+          else
+            sprintf (buff, "%s%s", cwd, ptr);
 
-	  ptr = xstrdup (buff);
-	  addarg (ptr);
-	}
+          ptr = xstrdup (buff);
+          addarg (ptr);
+        }
     }
 
   addarg (NULL);
@@ -266,7 +259,7 @@ main (argc, argv)
       int i;
 
       for (i = 0; i < comp_arg_index; i++)
-	printf ("%s ", comp_args [i]);
+        printf ("%s ", comp_args [i]);
 
       putchar ('\n');
     }
@@ -285,13 +278,13 @@ main (argc, argv)
       int status1 = 1;
 
       for (i = 0; i < len + 1; i++)
-	allargs [i] = 0;
+        allargs [i] = 0;
 
       for (i = 0; comp_args [i]; i++)
-	{
-	  strcat (allargs, comp_args [i]);
-	  strcat (allargs, " ");
-	}
+        {
+          strcat (allargs, comp_args [i]);
+          strcat (allargs, " ");
+        }
 
       cmd.adr = allargs;
       cmd.len = len;
@@ -300,13 +293,13 @@ main (argc, argv)
       i = LIB$SPAWN (&cmd, 0, 0, 0, 0, 0, &status);
 
       if ((i & 1) != 1)
-	{
-	  LIB$SIGNAL (i);
-	  exit (1);
-	}
+        {
+          LIB$SIGNAL (i);
+          exit (1);
+        }
 
       if ((status & 1) == 1 && (status1 & 1) == 1)
-	exit (0);
+        exit (0);
 
       exit (1);
     }
@@ -318,17 +311,14 @@ static char new_host_dirspec [255];
 static char filename_buff [256];
 
 static int
-translate_unix (name, type)
-     char *name;
-     int type ATTRIBUTE_UNUSED;
+translate_unix (char *name, int type ATTRIBUTE_UNUSED)
 {
   strcpy (filename_buff, name);
   return 0;
 }
 
 static char *
-to_host_dir_spec (dirspec)
-     char *dirspec;
+to_host_dir_spec (char *dirspec)
 {
   int len = strlen (dirspec);
 
@@ -351,8 +341,7 @@ to_host_dir_spec (dirspec)
 }
 
 static char *
-to_host_file_spec (filespec)
-     char *filespec;
+to_host_file_spec (char *filespec)
 {
   strcpy (new_host_filespec, "");
   if (strchr (filespec, ']') || strchr (filespec, ':'))

@@ -1,5 +1,5 @@
 /* Exception handling and frame unwind runtime interface routines.
-   Copyright (C) 2001, 2002 Free Software Foundation, Inc.
+   Copyright (C) 2001, 2002, 2003, 2004 Free Software Foundation, Inc.
 
    This file is part of GCC.
 
@@ -8,6 +8,15 @@
    the Free Software Foundation; either version 2, or (at your option)
    any later version.
 
+   In addition to the permissions in the GNU General Public License, the
+   Free Software Foundation gives you unlimited permission to link the
+   compiled version of this file into combinations with other programs,
+   and to distribute those combinations without any restriction coming
+   from the use of this file.  (The General Public License restrictions
+   do apply in other respects; for example, they cover modification of
+   the file, and distribution when not linked into a combined
+   executable.)
+
    GCC is distributed in the hope that it will be useful, but WITHOUT
    ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
    or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public
@@ -15,12 +24,15 @@
 
    You should have received a copy of the GNU General Public License
    along with GCC; see the file COPYING.  If not, write to the Free
-   Software Foundation, 59 Temple Place - Suite 330, Boston, MA
-   02111-1307, USA.  */
+   Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
+   02110-1301, USA.  */
 
 /* @@@ Really this should be out of line, but this also causes link
    compatibility problems with the base ABI.  This is slightly better
    than duplicating code, however.  */
+
+#ifndef GCC_UNWIND_PE_H
+#define GCC_UNWIND_PE_H
 
 /* If using C++, references to abort have to be qualified with std::.  */
 #if __cplusplus
@@ -49,8 +61,10 @@
 #define DW_EH_PE_funcrel        0x40
 #define DW_EH_PE_aligned        0x50
 
-#define DW_EH_PE_indirect	0x80
+#define DW_EH_PE_indirect        0x80
 
+
+#ifndef NO_SIZE_OF_ENCODED_VALUE
 
 /* Given an encoding, return the number of bytes the format occupies.
    This is only defined for fixed-size encodings, and so does not
@@ -75,6 +89,8 @@ size_of_encoded_value (unsigned char encoding)
     }
   __gxx_abort ();
 }
+
+#endif
 
 #ifndef NO_BASE_OF_ENCODED_VALUE
 
@@ -124,7 +140,7 @@ read_uleb128 (const unsigned char *p, _Unwind_Word *val)
   do
     {
       byte = *p++;
-      result |= (byte & 0x7f) << shift;
+      result |= ((_Unwind_Word)byte & 0x7f) << shift;
       shift += 7;
     }
   while (byte & 0x80);
@@ -146,14 +162,14 @@ read_sleb128 (const unsigned char *p, _Unwind_Sword *val)
   do
     {
       byte = *p++;
-      result |= (byte & 0x7f) << shift;
+      result |= ((_Unwind_Word)byte & 0x7f) << shift;
       shift += 7;
     }
   while (byte & 0x80);
 
   /* Sign-extend a negative value.  */
   if (shift < 8 * sizeof(result) && (byte & 0x40) != 0)
-    result |= -(1L << shift);
+    result |= -(((_Unwind_Word)1L) << shift);
 
   *val = (_Unwind_Sword) result;
   return p;
@@ -165,7 +181,7 @@ read_sleb128 (const unsigned char *p, _Unwind_Sword *val)
 
 static const unsigned char *
 read_encoded_value_with_base (unsigned char encoding, _Unwind_Ptr base,
-			      const unsigned char *p, _Unwind_Ptr *val)
+                              const unsigned char *p, _Unwind_Ptr *val)
 {
   union unaligned
     {
@@ -178,7 +194,7 @@ read_encoded_value_with_base (unsigned char encoding, _Unwind_Ptr base,
       signed s8 __attribute__ ((mode (DI)));
     } __attribute__((__packed__));
 
-  union unaligned *u = (union unaligned *) p;
+  const union unaligned *u = (const union unaligned *) p;
   _Unwind_Internal_Ptr result;
 
   if (encoding == DW_EH_PE_aligned)
@@ -186,70 +202,70 @@ read_encoded_value_with_base (unsigned char encoding, _Unwind_Ptr base,
       _Unwind_Internal_Ptr a = (_Unwind_Internal_Ptr) p;
       a = (a + sizeof (void *) - 1) & - sizeof(void *);
       result = *(_Unwind_Internal_Ptr *) a;
-      p = (const unsigned char *) (a + sizeof (void *));
+      p = (const unsigned char *) (_Unwind_Internal_Ptr) (a + sizeof (void *));
     }
   else
     {
       switch (encoding & 0x0f)
-	{
-	case DW_EH_PE_absptr:
-	  result = (_Unwind_Internal_Ptr) u->ptr;
-	  p += sizeof (void *);
-	  break;
+        {
+        case DW_EH_PE_absptr:
+          result = (_Unwind_Internal_Ptr) u->ptr;
+          p += sizeof (void *);
+          break;
 
-	case DW_EH_PE_uleb128:
-	  {
-	    _Unwind_Word tmp;
-	    p = read_uleb128 (p, &tmp);
-	    result = (_Unwind_Internal_Ptr) tmp;
-	  }
-	  break;
+        case DW_EH_PE_uleb128:
+          {
+            _Unwind_Word tmp;
+            p = read_uleb128 (p, &tmp);
+            result = (_Unwind_Internal_Ptr) tmp;
+          }
+          break;
 
-	case DW_EH_PE_sleb128:
-	  {
-	    _Unwind_Sword tmp;
-	    p = read_sleb128 (p, &tmp);
-	    result = (_Unwind_Internal_Ptr) tmp;
-	  }
-	  break;
+        case DW_EH_PE_sleb128:
+          {
+            _Unwind_Sword tmp;
+            p = read_sleb128 (p, &tmp);
+            result = (_Unwind_Internal_Ptr) tmp;
+          }
+          break;
 
-	case DW_EH_PE_udata2:
-	  result = u->u2;
-	  p += 2;
-	  break;
-	case DW_EH_PE_udata4:
-	  result = u->u4;
-	  p += 4;
-	  break;
-	case DW_EH_PE_udata8:
-	  result = u->u8;
-	  p += 8;
-	  break;
+        case DW_EH_PE_udata2:
+          result = u->u2;
+          p += 2;
+          break;
+        case DW_EH_PE_udata4:
+          result = u->u4;
+          p += 4;
+          break;
+        case DW_EH_PE_udata8:
+          result = u->u8;
+          p += 8;
+          break;
 
-	case DW_EH_PE_sdata2:
-	  result = u->s2;
-	  p += 2;
-	  break;
-	case DW_EH_PE_sdata4:
-	  result = u->s4;
-	  p += 4;
-	  break;
-	case DW_EH_PE_sdata8:
-	  result = u->s8;
-	  p += 8;
-	  break;
+        case DW_EH_PE_sdata2:
+          result = u->s2;
+          p += 2;
+          break;
+        case DW_EH_PE_sdata4:
+          result = u->s4;
+          p += 4;
+          break;
+        case DW_EH_PE_sdata8:
+          result = u->s8;
+          p += 8;
+          break;
 
-	default:
-	  __gxx_abort ();
-	}
+        default:
+          __gxx_abort ();
+        }
 
       if (result != 0)
-	{
-	  result += ((encoding & 0x70) == DW_EH_PE_pcrel
-		     ? (_Unwind_Internal_Ptr) u : base);
-	  if (encoding & DW_EH_PE_indirect)
-	    result = *(_Unwind_Internal_Ptr *) result;
-	}
+        {
+          result += ((encoding & 0x70) == DW_EH_PE_pcrel
+                     ? (_Unwind_Internal_Ptr) u : base);
+          if (encoding & DW_EH_PE_indirect)
+            result = *(_Unwind_Internal_Ptr *) result;
+        }
     }
 
   *val = result;
@@ -263,11 +279,13 @@ read_encoded_value_with_base (unsigned char encoding, _Unwind_Ptr base,
 
 static inline const unsigned char *
 read_encoded_value (struct _Unwind_Context *context, unsigned char encoding,
-		    const unsigned char *p, _Unwind_Ptr *val)
+                    const unsigned char *p, _Unwind_Ptr *val)
 {
   return read_encoded_value_with_base (encoding,
-		base_of_encoded_value (encoding, context),
-		p, val);
+                base_of_encoded_value (encoding, context),
+                p, val);
 }
 
 #endif
+
+#endif /* unwind-pe.h */

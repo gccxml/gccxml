@@ -1,5 +1,5 @@
 /* fp-test.c - Check that all floating-point operations are available.
-   Copyright (C) 1995, 2000 Free Software Foundation, Inc.
+   Copyright (C) 1995, 2000, 2003 Free Software Foundation, Inc.
    Contributed by Ronald F. Guilmette <rfg@monkeys.com>.
 
    This file is part of GCC.
@@ -16,8 +16,8 @@
 
    You should have received a copy of the GNU General Public License
    along with GCC; see the file COPYING.  If not, write to the Free
-   Software Foundation, 59 Temple Place - Suite 330, Boston, MA
-   02111-1307, USA.  */
+   Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
+   02110-1301, USA.  */
 
 /* This is a trivial test program which may be useful to people who are
    porting the GCC or G++ compilers to a new system.  The intent here is
@@ -83,7 +83,7 @@ volatile double d1 = 1.0, d2 = 1.0, d3 = 1.0;
 volatile long double D1 = 1.0, D2 = 1.0, D3 = 1.0;
 
 int
-main ()
+main (void)
 {
   /* TYPE: float */
 

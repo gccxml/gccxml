@@ -13,15 +13,10 @@ Sets the first @var{count} bytes of @var{s} to the constant byte
 */
 
 #include <ansidecl.h>
-#ifdef __STDC__
 #include <stddef.h>
-#else
-#define size_t unsigned long
-#endif
 
 PTR
-DEFUN(memset, (dest, val, len),
-      PTR dest AND register int val AND register size_t len)
+memset (PTR dest, register int val, register size_t len)
 {
   register unsigned char *ptr = (unsigned char*)dest;
   while (len-- > 0)

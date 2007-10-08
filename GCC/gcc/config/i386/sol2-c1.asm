@@ -23,8 +23,8 @@
 ! 
 ! You should have received a copy of the GNU General Public License
 ! along with this program; see the file COPYING.  If not, write to
-! the Free Software Foundation, 59 Temple Place - Suite 330,
-! Boston, MA 02111-1307, USA.
+! the Free Software Foundation, 51 Franklin Street, Fifth Floor,
+! Boston, MA 02110-1301, USA.
 ! 
 !    As a special exception, if you link this library with files
 !    compiled with GCC to produce an executable, this does not cause
@@ -41,11 +41,11 @@
 ! information obtained by single stepping executables on other i386 SVR4
 ! implementations.  This file is the first thing linked into any executable.
 
-	.file	"crt1.s"
-	.ident	"GNU C crt1.s"
-	.weak	_cleanup
-	.weak	_DYNAMIC
-	.text
+        .file        "crt1.s"
+        .ident        "GNU C crt1.s"
+        .weak        _cleanup
+        .weak        _DYNAMIC
+        .text
 
 ! Start creating the initial frame by pushing a NULL value for the return
 ! address of the initial frame, and mark the end of the stack frame chain
@@ -53,29 +53,29 @@
 ! Initialize the first stack frame pointer in %ebp (the contents of which
 ! are unspecified at process initialization).
 
-	.globl	_start
+        .globl        _start
 _start:
-	pushl	$0x0
-	pushl	$0x0
-	movl	%esp,%ebp
+        pushl        $0x0
+        pushl        $0x0
+        movl        %esp,%ebp
 
 ! As specified per page 3-32 of the ABI, %edx contains a function 
 ! pointer that should be registered with atexit(), for proper
 ! shared object termination.  Just push it onto the stack for now
 ! to preserve it.  We want to register _cleanup() first.
 
-	pushl	%edx
+        pushl        %edx
 
 ! Check to see if there is an _cleanup() function linked in, and if
 ! so, register it with atexit() as the last thing to be run by
 ! atexit().
 
-	movl	$_cleanup,%eax
-	testl	%eax,%eax
-	je	.L1
-	pushl	$_cleanup
-	call	atexit
-	addl	$0x4,%esp
+        movl        $_cleanup,%eax
+        testl        %eax,%eax
+        je        .L1
+        pushl        $_cleanup
+        call        atexit
+        addl        $0x4,%esp
 .L1:
 
 ! Now check to see if we have an _DYNAMIC table, and if so then
@@ -83,17 +83,17 @@ _start:
 ! now conveniently saved on the stack as the argument to pass to
 ! atexit().
 
-	movl	$_DYNAMIC,%eax
-	testl	%eax,%eax
-	je	.L2
-	call	atexit
+        movl        $_DYNAMIC,%eax
+        testl        %eax,%eax
+        je        .L2
+        call        atexit
 .L2:
 
 ! Register _fini() with atexit().  We will take care of calling _init()
 ! directly.
 
-	pushl	$_fini
-	call	atexit
+        pushl        $_fini
+        call        atexit
 
 ! Compute the address of the environment vector on the stack and load
 ! it into the global variable _environ.  Currently argc is at 8 off
@@ -103,9 +103,9 @@ _start:
 ! plus the null word terminating the arg vector) further up the stack,
 ! off the frame pointer (whew!).
 
-	movl	8(%ebp),%eax
-	leal	16(%ebp,%eax,4),%edx
-	movl	%edx,_environ
+        movl        8(%ebp),%eax
+        leal        16(%ebp,%eax,4),%edx
+        movl        %edx,_environ
 
 ! Push the environment vector pointer, the argument vector pointer,
 ! and the argument count on to the stack to set up the arguments
@@ -118,45 +118,45 @@ _start:
 !
 ! Make sure the stack is properly aligned.
 !
-	andl $0xfffffff0,%esp
-	subl $4,%esp
-	
-	pushl	%edx
-	leal	12(%ebp),%edx
-	pushl	%edx
-	pushl	%eax
+        andl $0xfffffff0,%esp
+        subl $4,%esp
+        
+        pushl        %edx
+        leal        12(%ebp),%edx
+        pushl        %edx
+        pushl        %eax
 
 ! Call _init(argc, argv, environ), _fpstart(argc, argv, environ), and
 ! main(argc, argv, environ).
 
-	call	_init
-	call	__fpstart
-	call	main
+        call        _init
+        call        __fpstart
+        call        main
 
 ! Pop the argc, argv, and environ arguments off the stack, push the
 ! value returned from main(), and call exit().
 
-	addl	$12,%esp
-	pushl	%eax
-	call	exit
+        addl        $12,%esp
+        pushl        %eax
+        call        exit
 
 ! An inline equivalent of _exit, as specified in Figure 3-26 of the ABI.
 
-	pushl	$0x0
-	movl	$0x1,%eax
-	lcall	$7,$0
+        pushl        $0x0
+        movl        $0x1,%eax
+        lcall        $7,$0
 
 ! If all else fails, just try a halt!
 
-	hlt
-	.type	_start,@function
-	.size	_start,.-_start
+        hlt
+        .type        _start,@function
+        .size        _start,.-_start
 
 ! A dummy profiling support routine for non-profiling executables,
 ! in case we link in some objects that have been compiled for profiling.
 
-	.weak	_mcount
+        .weak        _mcount
 _mcount:
-	ret
-	.type	_mcount,@function
-	.size	_mcount,.-_mcount
+        ret
+        .type        _mcount,@function
+        .size        _mcount,.-_mcount

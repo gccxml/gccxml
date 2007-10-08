@@ -7,6 +7,9 @@
 #ifdef TEST_HAVE_PID_T
 # define gcc_default_includes
 #endif
+#ifdef TEST_HAVE_UINT64_T
+# define gcc_default_includes
+#endif
 
 #ifdef gcc_default_includes
 #include <stdio.h>
@@ -130,7 +133,9 @@ main ()
 
 /*--------------------------------------------------------------------------*/
 #ifdef TEST_TIME_WITH_SYS_TIME
-#include <sys/types.h>
+#if HAVE_SYS_TYPES_H
+# include <sys/types.h>
+#endif
 #include <sys/time.h>
 #include <time.h>
 
@@ -632,6 +637,18 @@ int main()
 #endif
 
 /*--------------------------------------------------------------------------*/
+#ifdef TEST_SYS_TYPES_HAS_OFF_T
+#include <sys/types.h>
+
+off_t f(off_t x) { return x; }
+
+int main()
+{
+  return 0;
+}
+#endif
+
+/*--------------------------------------------------------------------------*/
 #ifdef TEST_HAVE_DIRENT_H
 #include <sys/types.h>
 #include <dirent.h>
@@ -699,5 +716,39 @@ extern int _doprnt;
 int main()
 {
   return _doprnt;
+}
+#endif
+
+/*--------------------------------------------------------------------------*/
+#ifdef TEST_HAVE_UINT64_T
+int main()
+{
+  extern uint64_t foo;
+  return 0;
+}
+#endif
+
+/*--------------------------------------------------------------------------*/
+#ifdef TEST_HAVE_LANGINFO_CODESET
+#include <langinfo.h>
+int main()
+{
+  char* cs = nl_langinfo(CODESET);
+  (void)cs;
+  return 0;
+}
+#endif
+
+/*--------------------------------------------------------------------------*/
+#ifdef TEST_TM_IN_TIME_H
+#if HAVE_SYS_TYPES_H
+# include <sys/types.h>
+#endif
+#include <time.h>
+int main()
+{
+  struct tm *tp;
+  (void)tp->tm_sec;
+  return 0;
 }
 #endif

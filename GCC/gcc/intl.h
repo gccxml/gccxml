@@ -1,5 +1,5 @@
 /* intl.h - internationalization
-   Copyright 1998, 2001 Free Software Foundation, Inc.
+   Copyright 1998, 2001, 2003, 2004 Free Software Foundation, Inc.
 
    GCC is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -13,8 +13,8 @@
 
    You should have received a copy of the GNU General Public License
    along with GCC; see the file COPYING.  If not, write to the Free
-   Software Foundation, 59 Temple Place - Suite 330, Boston, MA
-   02111-1307, USA.  */
+   Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
+   02110-1301, USA.  */
 
 #ifndef GCC_INTL_H
 #define GCC_INTL_H
@@ -27,18 +27,10 @@
 # define setlocale(category, locale) (locale)
 #endif
 
-#ifdef USE_INCLUDED_LIBINTL
-# include <intl/libgnuintl.h>
-#else
-# ifdef HAVE_LIBINTL_H
-#  include <libintl.h>
-# else
-#  undef ENABLE_NLS
-# endif
-#endif
-
 #ifdef ENABLE_NLS
-extern void gcc_init_libintl PARAMS ((void));
+#include <libintl.h>
+extern void gcc_init_libintl (void);
+extern size_t gcc_gettext_width (const char *);
 #else
 /* Stubs.  */
 # undef textdomain
@@ -47,7 +39,8 @@ extern void gcc_init_libintl PARAMS ((void));
 # define bindtextdomain(domain, directory) (domain)
 # undef gettext
 # define gettext(msgid) (msgid)
-# define gcc_init_libintl()	/* nothing */
+# define gcc_init_libintl()        /* nothing */
+# define gcc_gettext_width(s) strlen(s)
 #endif
 
 #ifndef _
@@ -55,7 +48,14 @@ extern void gcc_init_libintl PARAMS ((void));
 #endif
 
 #ifndef N_
-# define N_(msgid) (msgid)
+# define N_(msgid) msgid
 #endif
+
+#ifndef G_
+# define G_(gmsgid) gmsgid
+#endif
+
+extern const char *open_quote;
+extern const char *close_quote;
 
 #endif /* intl.h */

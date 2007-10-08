@@ -34,36 +34,36 @@ if ${CPP} st-dummy.c >TMP ; then true
 else
   echo "scan-types: could not invoke ${CPP} on st-dummy.c" 1>&2 ; exit 1
 fi
-tr '	' ' ' <TMP >st-dummy.out
+tr '        ' ' ' <TMP >st-dummy.out
 
 for TYPE in dev_t clock_t fpos_t gid_t ino_t mode_t nlink_t off_t pid_t size_t ssize_t time_t uid_t va_list int32_t uint_32_t ; do
     IMPORTED=`eval 'echo $'"$TYPE"`
     if [ -n "${IMPORTED}" ] ; then
-	eval "$TYPE='$IMPORTED"
+        eval "$TYPE='$IMPORTED"
     else
-	# Search st-dummy.out for a typedef for $TYPE, and write it out
-	# to TMP in #define syntax.
-	rm -f TMP
-	${SED} -n -e "s|.*typedef  *\(.*\) X*$TYPE *;.*|\1|w TMP" <st-dummy.out>/dev/null
-	# Now select the first definition.
+        # Search st-dummy.out for a typedef for $TYPE, and write it out
+        # to TMP in #define syntax.
+        rm -f TMP
+        ${SED} -n -e "s|.*typedef  *\(.*\) X*$TYPE *;.*|\1|w TMP" <st-dummy.out>/dev/null
+        # Now select the first definition.
         if [ -s TMP ]; then
-	    # VALUE is now the typedef'd definition of $TYPE.
+            # VALUE is now the typedef'd definition of $TYPE.
             eval "VALUE='`${SED} -e 's| *$||' -e '2,$d' <TMP`'"
-	    # Unless VALUE contains a blank, look for a typedef for it
-	    # in turn (this could be a loop, but that would be over-kill).
-	    # Ensure $VALUE is double quoted to protect cases where it
-	    # contains an asterisk and would cause filename expansion.
-	    # E.g. when va_list is "char *".
-	    if echo "$VALUE" | grep " " >/dev/null ; then true
-	    else
-		rm -f TMP
-		${SED} -n -e "s|.*typedef[ 	][ 	]*\(.*[^a-zA-Z0-9_]\)${VALUE}[ 	]*;.*|\1|w TMP" <st-dummy.out>/dev/null
-		if [ -s TMP ]; then
-		    eval "VALUE='`${SED} -e '2,$d' -e 's|[ 	]*$||' <TMP`'"
-		fi
-	    fi
-	    eval "$TYPE='$VALUE'"
-	fi
+            # Unless VALUE contains a blank, look for a typedef for it
+            # in turn (this could be a loop, but that would be over-kill).
+            # Ensure $VALUE is double quoted to protect cases where it
+            # contains an asterisk and would cause filename expansion.
+            # E.g. when va_list is "char *".
+            if echo "$VALUE" | grep " " >/dev/null ; then true
+            else
+                rm -f TMP
+                ${SED} -n -e "s|.*typedef[         ][         ]*\(.*[^a-zA-Z0-9_]\)${VALUE}[         ]*;.*|\1|w TMP" <st-dummy.out>/dev/null
+                if [ -s TMP ]; then
+                    eval "VALUE='`${SED} -e '2,$d' -e 's|[         ]*$||' <TMP`'"
+                fi
+            fi
+            eval "$TYPE='$VALUE'"
+        fi
     fi
 done
 
@@ -99,12 +99,12 @@ else
     # Remove "unsigned" from ${size_t} to get ${ssize_t}.
     tmp="`echo ${size_t} | ${SED} -e 's|unsigned||g' -e 's|  | |g'`"
     if [ -z "$tmp" ] ; then
-	tmp=int
+        tmp=int
     else
-	# check $tmp doesn't conflict with <unistd.h>
-	echo "#include <unistd.h>
-	extern $tmp read();" >st-dummy.c
-	${CC} -c st-dummy.c >/dev/null 2>&1 || tmp=int
+        # check $tmp doesn't conflict with <unistd.h>
+        echo "#include <unistd.h>
+        extern $tmp read();" >st-dummy.c
+        ${CC} -c st-dummy.c >/dev/null 2>&1 || tmp=int
     fi
     echo "#define ${macro_prefix}ssize_t $tmp /* default */"
 fi

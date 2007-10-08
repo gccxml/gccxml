@@ -23,8 +23,8 @@
 ! 
 ! You should have received a copy of the GNU General Public License
 ! along with this program; see the file COPYING.  If not, write to
-! the Free Software Foundation, 59 Temple Place - Suite 330,
-! Boston, MA 02111-1307, USA.
+! the Free Software Foundation, 51 Franklin Street, Fifth Floor,
+! Boston, MA 02110-1301, USA.
 ! 
 !    As a special exception, if you link this library with files
 !    compiled with GCC to produce an executable, this does not cause
@@ -37,15 +37,15 @@
 ! sections.  It is linked in before the values-Xx.o files and also before
 ! crtbegin.o.
  
-	.file	"crti.s"
-	.ident	"GNU C crti.s"
+        .file        "crti.s"
+        .ident        "GNU C crti.s"
 
-	.section .init
-	.globl	_init
-	.type	_init,@function
+        .section .init
+        .globl        _init
+        .type        _init,@function
 _init:
 
-	.section .fini
-	.globl	_fini
-	.type	_fini,@function
+        .section .fini
+        .globl        _fini
+        .type        _fini,@function
 _fini:

@@ -1,5 +1,5 @@
 /* Definitions of target machine for GNU compiler, for MMIX.
-   Copyright (C) 2000, 2001, 2002 Free Software Foundation, Inc.
+   Copyright (C) 2000, 2001, 2002, 2004, 2005 Free Software Foundation, Inc.
    Contributed by Hans-Peter Nilsson (hp@bitrange.com)
 
 This file is part of GCC.
@@ -16,8 +16,8 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with GCC; see the file COPYING.  If not, write to
-the Free Software Foundation, 59 Temple Place - Suite 330,
-Boston, MA 02111-1307, USA.  */
+the Free Software Foundation, 51 Franklin Street, Fifth Floor,
+Boston, MA 02110-1301, USA.  */
 
 #ifndef GCC_MMIX_H
 #define GCC_MMIX_H
@@ -124,15 +124,6 @@ struct machine_function GTY(())
      %{!r:--defsym __.MMIX.start..text=0x100}}}\
   %{!melf:%{!r:-m mmo}}%{melf|r:-m elf64mmix}"
 
-/* Put unused option values here.  */
-extern const char *mmix_cc1_ignored_option;
-
-#define TARGET_OPTIONS					\
-   {{"set-program-start=", &mmix_cc1_ignored_option,	\
-  N_("Set start-address of the program") },		\
-    {"set-data-start=", &mmix_cc1_ignored_option,	\
-  N_("Set start-address of data")}}
-
 /* FIXME: There's no provision for profiling here.  */
 #define STARTFILE_SPEC  \
   "crti%O%s crtbegin%O%s"
@@ -142,94 +133,22 @@ extern const char *mmix_cc1_ignored_option;
 /* Node: Run-time Target */
 
 /* Define __LONG_MAX__, since we're advised not to change glimits.h.  */
-#define TARGET_CPU_CPP_BUILTINS()				\
-  do								\
-    {								\
-      builtin_define ("__mmix__");				\
-      builtin_define ("__MMIX__");				\
-      if (TARGET_ABI_GNU)					\
-	builtin_define ("__MMIX_ABI_GNU__");			\
-      else							\
-	builtin_define ("__MMIX_ABI_MMIXWARE__");		\
-    }								\
+#define TARGET_CPU_CPP_BUILTINS()                                \
+  do                                                                \
+    {                                                                \
+      builtin_define ("__mmix__");                                \
+      builtin_define ("__MMIX__");                                \
+      if (TARGET_ABI_GNU)                                        \
+        builtin_define ("__MMIX_ABI_GNU__");                        \
+      else                                                        \
+        builtin_define ("__MMIX_ABI_MMIXWARE__");                \
+    }                                                                \
   while (0)
 
 extern int target_flags;
 
-#define TARGET_MASK_LIBFUNCS 1
-#define TARGET_MASK_ABI_GNU 2
-#define TARGET_MASK_FCMP_EPSILON 4
-#define TARGET_MASK_ZERO_EXTEND 8
-#define TARGET_MASK_KNUTH_DIVISION 16
-#define TARGET_MASK_TOPLEVEL_SYMBOLS 32
-#define TARGET_MASK_BRANCH_PREDICT 64
-#define TARGET_MASK_USE_RETURN_INSN 128
-
-/* We use the term "base address" since that's what Knuth uses.  The base
-   address goes in a global register.  When addressing, it's more like
-   "base address plus offset", with the offset being 0..255 from the base,
-   which itself can be a symbol plus an offset.  The effect is like having
-   a constant pool in global registers, code offseting from those
-   registers (automatically causing a request for a suitable constant base
-   address register) without having to know the specific register or the
-   specific offset.  The setback is that there's a limited number of
-   registers, and you'll not find out until link time whether you
-   should've compiled with -mno-base-addresses.  */
-#define TARGET_MASK_BASE_ADDRESSES 128
-
-/* FIXME: Get rid of this one.  */
-#define TARGET_LIBFUNC (target_flags & TARGET_MASK_LIBFUNCS)
-#define TARGET_ABI_GNU (target_flags & TARGET_MASK_ABI_GNU)
-#define TARGET_FCMP_EPSILON (target_flags & TARGET_MASK_FCMP_EPSILON)
-#define TARGET_ZERO_EXTEND (target_flags & TARGET_MASK_ZERO_EXTEND)
-#define TARGET_KNUTH_DIVISION (target_flags & TARGET_MASK_KNUTH_DIVISION)
-#define TARGET_TOPLEVEL_SYMBOLS (target_flags & TARGET_MASK_TOPLEVEL_SYMBOLS)
-#define TARGET_BRANCH_PREDICT (target_flags & TARGET_MASK_BRANCH_PREDICT)
-#define TARGET_BASE_ADDRESSES (target_flags & TARGET_MASK_BASE_ADDRESSES)
-#define TARGET_USE_RETURN_INSN (target_flags & TARGET_MASK_USE_RETURN_INSN)
-
 #define TARGET_DEFAULT \
- (TARGET_MASK_BRANCH_PREDICT | TARGET_MASK_BASE_ADDRESSES \
-  | TARGET_MASK_USE_RETURN_INSN)
-
-/* FIXME: Provide a way to *load* the epsilon register.  */
-#define TARGET_SWITCHES							\
- {{"libfuncs",		TARGET_MASK_LIBFUNCS,				\
-   N_("For intrinsics library: pass all parameters in registers")},	\
-  {"no-libfuncs",	-TARGET_MASK_LIBFUNCS, ""},			\
-  {"abi=mmixware",	-TARGET_MASK_ABI_GNU,				\
-   N_("Use register stack for parameters and return value")},		\
-  {"abi=gnu",		TARGET_MASK_ABI_GNU,				\
-   N_("Use call-clobbered registers for parameters and return value")},	\
-  {"epsilon",		TARGET_MASK_FCMP_EPSILON,			\
-   N_("Use epsilon-respecting floating point compare instructions")},	\
-  {"no-epsilon",	-TARGET_MASK_FCMP_EPSILON, ""},			\
-  {"zero-extend",	TARGET_MASK_ZERO_EXTEND,			\
-   N_("Use zero-extending memory loads, not sign-extending ones")},	\
-  {"no-zero-extend",	-TARGET_MASK_ZERO_EXTEND,  ""},			\
-  {"knuthdiv",		TARGET_MASK_KNUTH_DIVISION,			\
-   N_("Generate divide results with reminder having the same sign as the\
- divisor (not the dividend)")},						\
-  {"no-knuthdiv",	-TARGET_MASK_KNUTH_DIVISION, ""},		\
-  {"toplevel-symbols",	TARGET_MASK_TOPLEVEL_SYMBOLS,			\
-   N_("Prepend global symbols with \":\" (for use with PREFIX)")},	\
-  {"no-toplevel-symbols", -TARGET_MASK_TOPLEVEL_SYMBOLS,		\
-   N_("Do not provide a default start-address 0x100 of the program")},	\
-  {"elf", 0,								\
-   N_("Link to emit program in ELF format (rather than mmo)")},		\
-  {"branch-predict",	TARGET_MASK_BRANCH_PREDICT,			\
-   N_("Use P-mnemonics for branches statically predicted as taken")},	\
-  {"no-branch-predict",	-TARGET_MASK_BRANCH_PREDICT,			\
-   N_("Don't use P-mnemonics for branches")},				\
-  {"base-addresses",	TARGET_MASK_BASE_ADDRESSES,			\
-   N_("Use addresses that allocate global registers")},			\
-  {"no-base-addresses",	-TARGET_MASK_BASE_ADDRESSES,			\
-   N_("Do not use addresses that allocate global registers")},		\
-  {"single-exit",	-TARGET_MASK_USE_RETURN_INSN,			\
-   N_("Generate a single exit point for each function")},		\
-  {"no-single-exit",	TARGET_MASK_USE_RETURN_INSN,			\
-   N_("Do not generate a single exit point for each function")},	\
-  {"",			TARGET_DEFAULT, ""}}
+ (MASK_BRANCH_PREDICT | MASK_BASE_ADDRESSES | MASK_USE_RETURN_INSN)
 
 /* Unfortunately, this must not reference anything in "mmix.c".  */
 #define TARGET_VERSION \
@@ -237,18 +156,17 @@ extern int target_flags;
 
 #define OVERRIDE_OPTIONS mmix_override_options ()
 
-#define OPTIMIZATION_OPTIONS(LEVEL, SIZE)	\
-  do						\
-    {						\
-      if (LEVEL >= 1)				\
-	flag_regmove = TRUE;			\
-      						\
-      if (SIZE || LEVEL > 1)			\
-	{					\
-	  flag_omit_frame_pointer = TRUE;	\
-	  flag_strength_reduce = FALSE;		\
-	}					\
-    }						\
+#define OPTIMIZATION_OPTIONS(LEVEL, SIZE)        \
+  do                                                \
+    {                                                \
+      if (LEVEL >= 1)                                \
+        flag_regmove = TRUE;                        \
+                                                      \
+      if (SIZE || LEVEL > 1)                        \
+        {                                        \
+          flag_omit_frame_pointer = TRUE;        \
+        }                                        \
+    }                                                \
   while (0)
 
 /* This one will have to wait a little bit; right now we can't debug
@@ -269,41 +187,22 @@ extern int target_flags;
 #define FLOAT_WORDS_BIG_ENDIAN 1
 #define UNITS_PER_WORD 8
 
-/* FIXME: This macro is correlated to MAX_FIXED_MODE_SIZE in that
-   e.g. this macro must not be 8 (default, UNITS_PER_WORD) when
-   MAX_FIXED_MODE_SIZE is 64 (default, DImode), or really: this must be
-   set manually if MAX_FIXED_MODE_SIZE is not at least twice the register
-   size.  By setting it to 4, we don't have to worry about TImode things
-   yet.  Revisit, perhaps get TImode going or get some solution that does
-   not mandate TImode or lie in other ways.  */
-#define MIN_UNITS_PER_WORD 4
-
 /* FIXME: Promotion of modes currently generates slow code, extending
    before every operation.  */
-
-#define PROMOTE_MODE(MODE, UNSIGNEDP, TYPE)	\
- do {						\
-  if (GET_MODE_CLASS (MODE) == MODE_INT		\
-      && GET_MODE_SIZE (MODE) < 8)		\
-   {						\
-     (MODE) = DImode;				\
-     /* Do the following some time later,	\
-	scrutinizing differences.  */		\
-     if (0) (UNSIGNEDP) = 0;			\
-   }						\
- } while (0)
-
-#define PROMOTE_FUNCTION_ARGS
-
-#if 0
-/* Apparently not doing TRT if int < register-size.  FIXME: Perhaps
-   FUNCTION_VALUE and LIBCALL_VALUE needs tweaking as some ports say.  */
-#define PROMOTE_FUNCTION_RETURN
-#endif
-
 /* I'm a little bit undecided about this one.  It might be beneficial to
    promote all operations.  */
-#define PROMOTE_FOR_CALL_ONLY
+
+#define PROMOTE_FUNCTION_MODE(MODE, UNSIGNEDP, TYPE)        \
+ do {                                                \
+  if (GET_MODE_CLASS (MODE) == MODE_INT                \
+      && GET_MODE_SIZE (MODE) < 8)                \
+   {                                                \
+     (MODE) = DImode;                                \
+     /* Do the following some time later,        \
+        scrutinizing differences.  */                \
+     if (0) (UNSIGNEDP) = 0;                        \
+   }                                                \
+ } while (0)
 
 /* We need to align everything to 64 bits that can affect the alignment
    of other types.  Since address N is interpreted in MMIX as (N modulo
@@ -440,47 +339,47 @@ extern int target_flags;
    I think that's what people expect.  Beyond that, just use
    call-clobbered global registers first, then call-clobbered special
    registers.  Last, the fixed registers.  */
-#define MMIX_MMIXWARE_ABI_REG_ALLOC_ORDER	\
- { 0, 1, 2, 3, 4, 5, 6, 7,			\
-   8, 9, 10, 11, 12, 13, 14, 15,		\
-   16, 17, 18, 19, 20, 21, 22, 23,		\
-   24, 25, 26, 27, 28, 29, 30, 31,    		\
-						\
-   252, 251, 250, 249, 248, 247, 		\
-						\
-   253,						\
-						\
-   258, 260, 259,				\
-						\
-   32, 33, 34, 35, 36, 37, 38, 39,		\
-   40, 41, 42, 43, 44, 45, 46, 47,		\
-   48, 49, 50, 51, 52, 53, 54, 55,		\
-   56, 57, 58, 59, 60, 61, 62, 63,		\
-   64, 65, 66, 67, 68, 69, 70, 71,		\
-   72, 73, 74, 75, 76, 77, 78, 79,		\
-   80, 81, 82, 83, 84, 85, 86, 87,		\
-   88, 89, 90, 91, 92, 93, 94, 95,		\
-   96, 97, 98, 99, 100, 101, 102, 103,		\
-   104, 105, 106, 107, 108, 109, 110, 111,	\
-   112, 113, 114, 115, 116, 117, 118, 119,	\
-   120, 121, 122, 123, 124, 125, 126, 127,	\
-   128, 129, 130, 131, 132, 133, 134, 135,	\
-   136, 137, 138, 139, 140, 141, 142, 143,	\
-   144, 145, 146, 147, 148, 149, 150, 151,	\
-   152, 153, 154, 155, 156, 157, 158, 159,	\
-   160, 161, 162, 163, 164, 165, 166, 167,	\
-   168, 169, 170, 171, 172, 173, 174, 175,	\
-   176, 177, 178, 179, 180, 181, 182, 183,	\
-   184, 185, 186, 187, 188, 189, 190, 191,	\
-   192, 193, 194, 195, 196, 197, 198, 199,	\
-   200, 201, 202, 203, 204, 205, 206, 207,	\
-   208, 209, 210, 211, 212, 213, 214, 215,	\
-   216, 217, 218, 219, 220, 221, 222, 223,	\
-   224, 225, 226, 227, 228, 229, 230, 231,	\
-   232, 233, 234, 235, 236, 237, 238, 239,	\
-   240, 241, 242, 243, 244, 245, 246,		\
-						\
-   254, 255, 256, 257, 261, 262			\
+#define MMIX_MMIXWARE_ABI_REG_ALLOC_ORDER        \
+ { 0, 1, 2, 3, 4, 5, 6, 7,                        \
+   8, 9, 10, 11, 12, 13, 14, 15,                \
+   16, 17, 18, 19, 20, 21, 22, 23,                \
+   24, 25, 26, 27, 28, 29, 30, 31,                    \
+                                                \
+   252, 251, 250, 249, 248, 247,                 \
+                                                \
+   253,                                                \
+                                                \
+   258, 260, 259,                                \
+                                                \
+   32, 33, 34, 35, 36, 37, 38, 39,                \
+   40, 41, 42, 43, 44, 45, 46, 47,                \
+   48, 49, 50, 51, 52, 53, 54, 55,                \
+   56, 57, 58, 59, 60, 61, 62, 63,                \
+   64, 65, 66, 67, 68, 69, 70, 71,                \
+   72, 73, 74, 75, 76, 77, 78, 79,                \
+   80, 81, 82, 83, 84, 85, 86, 87,                \
+   88, 89, 90, 91, 92, 93, 94, 95,                \
+   96, 97, 98, 99, 100, 101, 102, 103,                \
+   104, 105, 106, 107, 108, 109, 110, 111,        \
+   112, 113, 114, 115, 116, 117, 118, 119,        \
+   120, 121, 122, 123, 124, 125, 126, 127,        \
+   128, 129, 130, 131, 132, 133, 134, 135,        \
+   136, 137, 138, 139, 140, 141, 142, 143,        \
+   144, 145, 146, 147, 148, 149, 150, 151,        \
+   152, 153, 154, 155, 156, 157, 158, 159,        \
+   160, 161, 162, 163, 164, 165, 166, 167,        \
+   168, 169, 170, 171, 172, 173, 174, 175,        \
+   176, 177, 178, 179, 180, 181, 182, 183,        \
+   184, 185, 186, 187, 188, 189, 190, 191,        \
+   192, 193, 194, 195, 196, 197, 198, 199,        \
+   200, 201, 202, 203, 204, 205, 206, 207,        \
+   208, 209, 210, 211, 212, 213, 214, 215,        \
+   216, 217, 218, 219, 220, 221, 222, 223,        \
+   224, 225, 226, 227, 228, 229, 230, 231,        \
+   232, 233, 234, 235, 236, 237, 238, 239,        \
+   240, 241, 242, 243, 244, 245, 246,                \
+                                                \
+   254, 255, 256, 257, 261, 262                        \
  }
 
 /* As a convenience, we put this nearby, for ease of comparison.
@@ -495,47 +394,47 @@ extern int target_flags;
    of them than using a call-saved register for a call-clobbered use,
    assuming it is referenced a very limited number of times.  Other global
    and fixed registers come next; they are never allocated.  */
-#define MMIX_GNU_ABI_REG_ALLOC_ORDER		\
- { 252, 251, 250, 249, 248, 247, 246,		\
-   245, 244, 243, 242, 241, 240, 239, 238,	\
-   237, 236, 235, 234, 233, 232, 231,		\
-						\
-   0, 1, 2, 3, 4, 5, 6, 7,			\
-   8, 9, 10, 11, 12, 13, 14, 15,		\
-   16, 17, 18, 19, 20, 21, 22, 23,		\
-   24, 25, 26, 27, 28, 29, 30, 31,		\
-						\
-   253,						\
-						\
-   258, 260, 259,				\
-						\
-   32, 33, 34, 35, 36, 37, 38, 39,		\
-   40, 41, 42, 43, 44, 45, 46, 47,		\
-   48, 49, 50, 51, 52, 53, 54, 55,		\
-   56, 57, 58, 59, 60, 61, 62, 63,		\
-   64, 65, 66, 67, 68, 69, 70, 71,		\
-   72, 73, 74, 75, 76, 77, 78, 79,		\
-   80, 81, 82, 83, 84, 85, 86, 87,		\
-   88, 89, 90, 91, 92, 93, 94, 95,		\
-   96, 97, 98, 99, 100, 101, 102, 103,		\
-   104, 105, 106, 107, 108, 109, 110, 111,	\
-   112, 113, 114, 115, 116, 117, 118, 119,	\
-   120, 121, 122, 123, 124, 125, 126, 127,	\
-   128, 129, 130, 131, 132, 133, 134, 135,	\
-   136, 137, 138, 139, 140, 141, 142, 143,	\
-   144, 145, 146, 147, 148, 149, 150, 151,	\
-   152, 153, 154, 155, 156, 157, 158, 159,	\
-   160, 161, 162, 163, 164, 165, 166, 167,	\
-   168, 169, 170, 171, 172, 173, 174, 175,	\
-   176, 177, 178, 179, 180, 181, 182, 183,	\
-   184, 185, 186, 187, 188, 189, 190, 191,	\
-   192, 193, 194, 195, 196, 197, 198, 199,	\
-   200, 201, 202, 203, 204, 205, 206, 207,	\
-   208, 209, 210, 211, 212, 213, 214, 215,	\
-   216, 217, 218, 219, 220, 221, 222, 223,	\
-   224, 225, 226, 227, 228, 229, 230,		\
-						\
-   254, 255, 256, 257, 261, 262			\
+#define MMIX_GNU_ABI_REG_ALLOC_ORDER                \
+ { 252, 251, 250, 249, 248, 247, 246,                \
+   245, 244, 243, 242, 241, 240, 239, 238,        \
+   237, 236, 235, 234, 233, 232, 231,                \
+                                                \
+   0, 1, 2, 3, 4, 5, 6, 7,                        \
+   8, 9, 10, 11, 12, 13, 14, 15,                \
+   16, 17, 18, 19, 20, 21, 22, 23,                \
+   24, 25, 26, 27, 28, 29, 30, 31,                \
+                                                \
+   253,                                                \
+                                                \
+   258, 260, 259,                                \
+                                                \
+   32, 33, 34, 35, 36, 37, 38, 39,                \
+   40, 41, 42, 43, 44, 45, 46, 47,                \
+   48, 49, 50, 51, 52, 53, 54, 55,                \
+   56, 57, 58, 59, 60, 61, 62, 63,                \
+   64, 65, 66, 67, 68, 69, 70, 71,                \
+   72, 73, 74, 75, 76, 77, 78, 79,                \
+   80, 81, 82, 83, 84, 85, 86, 87,                \
+   88, 89, 90, 91, 92, 93, 94, 95,                \
+   96, 97, 98, 99, 100, 101, 102, 103,                \
+   104, 105, 106, 107, 108, 109, 110, 111,        \
+   112, 113, 114, 115, 116, 117, 118, 119,        \
+   120, 121, 122, 123, 124, 125, 126, 127,        \
+   128, 129, 130, 131, 132, 133, 134, 135,        \
+   136, 137, 138, 139, 140, 141, 142, 143,        \
+   144, 145, 146, 147, 148, 149, 150, 151,        \
+   152, 153, 154, 155, 156, 157, 158, 159,        \
+   160, 161, 162, 163, 164, 165, 166, 167,        \
+   168, 169, 170, 171, 172, 173, 174, 175,        \
+   176, 177, 178, 179, 180, 181, 182, 183,        \
+   184, 185, 186, 187, 188, 189, 190, 191,        \
+   192, 193, 194, 195, 196, 197, 198, 199,        \
+   200, 201, 202, 203, 204, 205, 206, 207,        \
+   208, 209, 210, 211, 212, 213, 214, 215,        \
+   216, 217, 218, 219, 220, 221, 222, 223,        \
+   224, 225, 226, 227, 228, 229, 230,                \
+                                                \
+   254, 255, 256, 257, 261, 262                        \
  }
 
 /* The default one.  */
@@ -543,8 +442,8 @@ extern int target_flags;
 
 /* Node: Values in Registers */
 
-#define HARD_REGNO_NREGS(REGNO, MODE)            	\
-   ((GET_MODE_SIZE (MODE) + UNITS_PER_WORD - 1)  	\
+#define HARD_REGNO_NREGS(REGNO, MODE)                    \
+   ((GET_MODE_SIZE (MODE) + UNITS_PER_WORD - 1)          \
     / UNITS_PER_WORD)
 
 #define HARD_REGNO_MODE_OK(REGNO, MODE) 1
@@ -569,39 +468,39 @@ enum reg_class
 
 #define N_REG_CLASSES (int) LIM_REG_CLASSES
 
-#define REG_CLASS_NAMES						\
- {"NO_REGS", "GENERAL_REGS", "REMAINDER_REG", "HIMULT_REG",	\
+#define REG_CLASS_NAMES                                                \
+ {"NO_REGS", "GENERAL_REGS", "REMAINDER_REG", "HIMULT_REG",        \
   "SYSTEM_REGS", "ALL_REGS"}
 
 /* Note that the contents of each item is always 32 bits.  */
-#define REG_CLASS_CONTENTS			\
- {{0, 0, 0, 0, 0, 0, 0, 0, 0},			\
-  {~0, ~0, ~0, ~0, ~0, ~0, ~0, ~0, 0x20},	\
-  {0, 0, 0, 0, 0, 0, 0, 0, 0x10},		\
-  {0, 0, 0, 0, 0, 0, 0, 0, 4},			\
-  {0, 0, 0, 0, 0, 0, 0, 0, 0x7f},		\
+#define REG_CLASS_CONTENTS                        \
+ {{0, 0, 0, 0, 0, 0, 0, 0, 0},                        \
+  {~0, ~0, ~0, ~0, ~0, ~0, ~0, ~0, 0x20},        \
+  {0, 0, 0, 0, 0, 0, 0, 0, 0x10},                \
+  {0, 0, 0, 0, 0, 0, 0, 0, 4},                        \
+  {0, 0, 0, 0, 0, 0, 0, 0, 0x7f},                \
   {~0, ~0, ~0, ~0, ~0, ~0, ~0, ~0, 0x7f}}
 
-#define REGNO_REG_CLASS(REGNO)					\
- ((REGNO) <= MMIX_LAST_GENERAL_REGISTER				\
-  || (REGNO) == MMIX_ARG_POINTER_REGNUM				\
-  ? GENERAL_REGS						\
-  : (REGNO) == MMIX_REMAINDER_REGNUM ? REMAINDER_REG		\
+#define REGNO_REG_CLASS(REGNO)                                        \
+ ((REGNO) <= MMIX_LAST_GENERAL_REGISTER                                \
+  || (REGNO) == MMIX_ARG_POINTER_REGNUM                                \
+  ? GENERAL_REGS                                                \
+  : (REGNO) == MMIX_REMAINDER_REGNUM ? REMAINDER_REG                \
   : (REGNO) == MMIX_HIMULT_REGNUM ? HIMULT_REG : SYSTEM_REGS)
 
 #define BASE_REG_CLASS GENERAL_REGS
 
 #define INDEX_REG_CLASS GENERAL_REGS
 
-#define REG_CLASS_FROM_LETTER(CHAR)		\
- ((CHAR) == 'x' ? SYSTEM_REGS			\
-  : (CHAR) == 'y' ? REMAINDER_REG		\
+#define REG_CLASS_FROM_LETTER(CHAR)                \
+ ((CHAR) == 'x' ? SYSTEM_REGS                        \
+  : (CHAR) == 'y' ? REMAINDER_REG                \
   : (CHAR) == 'z' ? HIMULT_REG : NO_REGS)
 
-#define REGNO_OK_FOR_BASE_P(REGNO)				\
- ((REGNO) <= MMIX_LAST_GENERAL_REGISTER				\
-  || (REGNO) == MMIX_ARG_POINTER_REGNUM				\
-  || (reg_renumber[REGNO] > 0					\
+#define REGNO_OK_FOR_BASE_P(REGNO)                                \
+ ((REGNO) <= MMIX_LAST_GENERAL_REGISTER                                \
+  || (REGNO) == MMIX_ARG_POINTER_REGNUM                                \
+  || (reg_renumber[REGNO] > 0                                        \
       && reg_renumber[REGNO] <= MMIX_LAST_GENERAL_REGISTER))
 
 #define REGNO_OK_FOR_INDEX_P(REGNO) REGNO_OK_FOR_BASE_P (REGNO)
@@ -620,21 +519,21 @@ enum reg_class
 
 #define CLASS_MAX_NREGS(CLASS, MODE) HARD_REGNO_NREGS (CLASS, MODE)
 
-#define CONST_OK_FOR_LETTER_P(VALUE, C)	\
+#define CONST_OK_FOR_LETTER_P(VALUE, C)        \
  mmix_const_ok_for_letter_p (VALUE, C)
 
-#define EXTRA_CONSTRAINT(VALUE, C)	\
+#define EXTRA_CONSTRAINT(VALUE, C)        \
  mmix_extra_constraint (VALUE, C, MMIX_REG_OK_STRICT)
 
 /* Do we need anything serious here?  Yes, any FLOT constant.  */
-#define CONST_DOUBLE_OK_FOR_LETTER_P(VALUE, C)			\
+#define CONST_DOUBLE_OK_FOR_LETTER_P(VALUE, C)                        \
  mmix_const_double_ok_for_letter_p (VALUE, C)
 
 
 /* Node: Frame Layout */
 
 #define STACK_GROWS_DOWNWARD
-#define FRAME_GROWS_DOWNWARD
+#define FRAME_GROWS_DOWNWARD 1
 
 #define STARTING_FRAME_OFFSET \
   mmix_starting_frame_offset ()
@@ -649,7 +548,7 @@ enum reg_class
 #define SETUP_FRAME_ADDRESSES() \
  mmix_setup_frame_addresses ()
 
-#define RETURN_ADDR_RTX(COUNT, FRAME)		\
+#define RETURN_ADDR_RTX(COUNT, FRAME)                \
  mmix_return_addr_rtx (COUNT, FRAME)
 
 /* It's in rJ before we store it somewhere.  */
@@ -697,15 +596,15 @@ enum reg_class
 /* Node: Elimination */
 /* FIXME: Is this requirement built-in?  Anyway, we should try to get rid
    of it; we can deduce the value.  */
-#define FRAME_POINTER_REQUIRED (nonlocal_goto_stack_level != NULL_RTX)
+#define FRAME_POINTER_REQUIRED  current_function_has_nonlocal_label
 
 /* The frame-pointer is stored in a location that either counts to the
    offset of incoming parameters, or that counts to the offset of the
    frame, so we can't use a single offset.  We therefore eliminate those
    two separately.  */
-#define ELIMINABLE_REGS				\
- {{ARG_POINTER_REGNUM, STACK_POINTER_REGNUM},	\
-  {ARG_POINTER_REGNUM, FRAME_POINTER_REGNUM},	\
+#define ELIMINABLE_REGS                                \
+ {{ARG_POINTER_REGNUM, STACK_POINTER_REGNUM},        \
+  {ARG_POINTER_REGNUM, FRAME_POINTER_REGNUM},        \
   {FRAME_POINTER_REGNUM, STACK_POINTER_REGNUM}}
 
 /* We need not worry about when the frame-pointer is required for other
@@ -724,42 +623,29 @@ enum reg_class
 
 
 /* Node: Register Arguments */
-#define FUNCTION_ARG(CUM, MODE, TYPE, NAMED)	\
+#define FUNCTION_ARG(CUM, MODE, TYPE, NAMED)        \
  mmix_function_arg (&(CUM), MODE, TYPE, NAMED, 0)
 
-#define FUNCTION_INCOMING_ARG(CUM, MODE, TYPE, NAMED)	\
+#define FUNCTION_INCOMING_ARG(CUM, MODE, TYPE, NAMED)        \
  mmix_function_arg (&(CUM), MODE, TYPE, NAMED, 1)
-
-#define FUNCTION_ARG_PASS_BY_REFERENCE(CUM, MODE, TYPE, NAMED)	\
- mmix_function_arg_pass_by_reference (&(CUM), MODE, TYPE, NAMED)
-
-/* This *sounds* good, but does not seem to be implemented correctly to
-   be a win; at least it wasn't in 2.7.2.  FIXME: Check and perhaps
-   replace with a big comment.
-   The definition needs to match or be a subset of
-   FUNCTION_ARG_PASS_BY_REFERENCE, since not all callers check that before
-   usage.  Watch lots of C++ test-cases fail if set to 1, for example
-   g++.dg/init/byval1.C.  */
-#define FUNCTION_ARG_CALLEE_COPIES(CUM, MODE, TYPE, NAMED) \
- mmix_function_arg_pass_by_reference (&(CUM), MODE, TYPE, NAMED)
 
 typedef struct { int regs; int lib; } CUMULATIVE_ARGS;
 
-#define INIT_CUMULATIVE_ARGS(CUM, FNTYPE, LIBNAME, INDIRECT)	\
+#define INIT_CUMULATIVE_ARGS(CUM, FNTYPE, LIBNAME, INDIRECT, N_NAMED_ARGS) \
  ((CUM).regs = 0, (CUM).lib = ((LIBNAME) != 0))
 
-#define FUNCTION_ARG_ADVANCE(CUM, MODE, TYPE, NAMED)		\
- ((CUM).regs							\
-  = ((MUST_PASS_IN_STACK (MODE, TYPE))				\
-     || (MMIX_FUNCTION_ARG_SIZE (MODE, TYPE) > 8		\
-	 && !TARGET_LIBFUNC && !(CUM).lib))			\
-  ? (MMIX_MAX_ARGS_IN_REGS) + 1					\
+#define FUNCTION_ARG_ADVANCE(CUM, MODE, TYPE, NAMED)                \
+ ((CUM).regs                                                        \
+  = ((targetm.calls.must_pass_in_stack (MODE, TYPE))                \
+     || (MMIX_FUNCTION_ARG_SIZE (MODE, TYPE) > 8                \
+         && !TARGET_LIBFUNC && !(CUM).lib))                        \
+  ? (MMIX_MAX_ARGS_IN_REGS) + 1                                        \
   : (CUM).regs + (7 + (MMIX_FUNCTION_ARG_SIZE (MODE, TYPE))) / 8)
 
-#define FUNCTION_ARG_REGNO_P(REGNO)		\
+#define FUNCTION_ARG_REGNO_P(REGNO)                \
  mmix_function_arg_regno_p (REGNO, 0)
 
-#define FUNCTION_INCOMING_ARG_REGNO_P(REGNO)		\
+#define FUNCTION_INCOMING_ARG_REGNO_P(REGNO)                \
  mmix_function_arg_regno_p (REGNO, 1)
 
 
@@ -779,11 +665,6 @@ typedef struct { int regs; int lib; } CUMULATIVE_ARGS;
  mmix_function_value_regno_p (REGNO)
 
 
-/* Node: Aggregate Return */
-
-#define STRUCT_VALUE_REGNUM MMIX_STRUCT_VALUE_REGNUM
-
-
 /* Node: Caller Saves */
 /* (empty) */
 
@@ -801,21 +682,8 @@ typedef struct { int regs; int lib; } CUMULATIVE_ARGS;
  ((REGNO) == MMIX_INCOMING_RETURN_ADDRESS_REGNUM)
 
 /* Node: Profiling */
-#define FUNCTION_PROFILER(FILE, LABELNO)	\
+#define FUNCTION_PROFILER(FILE, LABELNO)        \
  mmix_function_profiler (FILE, LABELNO)
-
-/* Node: Varargs */
-
-/* For the moment, let's stick to pushing argument registers on the stack.
-   Later, we can parse all arguments in registers, to improve
-   performance.  */
-#define SETUP_INCOMING_VARARGS(A, M, T, P, S)	\
- mmix_setup_incoming_varargs(&(A), M, T, &(P), S)
-
-/* FIXME: This and other EXPAND_BUILTIN_VA_... target macros are not
-   documented, although used by several targets.  */
-#define EXPAND_BUILTIN_VA_ARG(VALIST, TYPE) \
- mmix_expand_builtin_va_arg (VALIST, TYPE)
 
 /* Node: Trampolines */
 
@@ -827,11 +695,6 @@ typedef struct { int regs; int lib; } CUMULATIVE_ARGS;
  mmix_initialize_trampoline (ADDR, FNADDR, STATIC_CHAIN)
 
 
-/* Node: Library Calls */
-
-#define TARGET_MEM_FUNCTIONS
-
-
 /* Node: Addressing Modes */
 
 #define CONSTANT_ADDRESS_P(X) \
@@ -839,22 +702,20 @@ typedef struct { int regs; int lib; } CUMULATIVE_ARGS;
 
 #define MAX_REGS_PER_ADDRESS 2
 
-#define GO_IF_LEGITIMATE_ADDRESS(MODE, X, LABEL)		\
- if (mmix_legitimate_address (MODE, X, MMIX_REG_OK_STRICT))	\
+#define GO_IF_LEGITIMATE_ADDRESS(MODE, X, LABEL)                \
+ if (mmix_legitimate_address (MODE, X, MMIX_REG_OK_STRICT))        \
    goto LABEL
 
 #ifndef REG_OK_STRICT
-# define REG_OK_FOR_BASE_P(X)			\
-  (REGNO (X) <= MMIX_LAST_GENERAL_REGISTER	\
-   || REGNO (X) == MMIX_ARG_POINTER_REGNUM	\
+# define REG_OK_FOR_BASE_P(X)                        \
+  (REGNO (X) <= MMIX_LAST_GENERAL_REGISTER        \
+   || REGNO (X) == MMIX_ARG_POINTER_REGNUM        \
    || REGNO (X) >= FIRST_PSEUDO_REGISTER)
 #else
 # define REG_OK_FOR_BASE_P(X) REGNO_OK_FOR_BASE_P (REGNO (X))
 #endif /* REG_OK_STRICT */
 
 #define REG_OK_FOR_INDEX_P(X) REG_OK_FOR_BASE_P (X)
-
-#define LEGITIMIZE_ADDRESS(X, OLDX, MODE, WIN)
 
 #define GO_IF_MODE_DEPENDENT_ADDRESS(ADDR, LABEL)
 
@@ -864,33 +725,22 @@ typedef struct { int regs; int lib; } CUMULATIVE_ARGS;
 
 /* Node: Condition Code */
 
-#define SELECT_CC_MODE(OP, X, Y)		\
+#define SELECT_CC_MODE(OP, X, Y)                \
  mmix_select_cc_mode (OP, X, Y)
 
 /* A definition of CANONICALIZE_COMPARISON that changed LE and GT
    comparisons with -1 to LT and GE respectively, and LT, LTU, GE or GEU
    comparisons with 256 to 255 and LE, LEU, GT and GTU has been
    ineffective; the code path for performing the changes did not trig for
-   neither the GCC test-suite nor ghostscript-6.52 nor Knuth's mmix.tar.gz
+   neither the GCC testsuite nor ghostscript-6.52 nor Knuth's mmix.tar.gz
    itself (core GCC functionality supposedly handling it) with sources
    from 2002-06-06.  */
 
-#define REVERSIBLE_CC_MODE(MODE)		\
+#define REVERSIBLE_CC_MODE(MODE)                \
  mmix_reversible_cc_mode (MODE)
 
 
 /* Node: Costs */
-
-/* This one takes on both the RTX_COSTS and CONST_COSTS tasks.  */
-#define DEFAULT_RTX_COSTS(X, CODE, OUTER_CODE)			\
- {								\
-   int mmix_rtx_cost;						\
-   if (mmix_rtx_cost_recalculated (X, CODE, OUTER_CODE, 	\
-				   &mmix_rtx_cost))		\
-     return mmix_rtx_cost;					\
- }
-
-#define ADDRESS_COST(ADDRESS) mmix_address_cost (ADDRESS)
 
 /* The special registers can only move to and from general regs, and we
    need to check that their constraints match, so say 3 for them.  */
@@ -922,19 +772,13 @@ typedef struct { int regs; int lib; } CUMULATIVE_ARGS;
 #define DATA_SECTION_ASM_OP \
  mmix_data_section_asm_op ()
 
-#define READONLY_DATA_SECTION_ASM_OP	"\t.section\t.rodata"
+#define READONLY_DATA_SECTION_ASM_OP        "\t.section\t.rodata"
 
 /* Node: PIC */
 /* (empty) */
 
 
 /* Node: File Framework */
-
-#define ASM_FILE_START(STREAM) \
- mmix_asm_file_start (STREAM)
-
-#define ASM_FILE_END(STREAM) \
- mmix_asm_file_end (STREAM)
 
 /* While any other punctuation character but ";" would do, we prefer "%"
    or "!"; "!" is an unary operator and so will not be mistakenly included
@@ -953,11 +797,7 @@ typedef struct { int regs; int lib; } CUMULATIVE_ARGS;
 #define OUTPUT_QUOTED_STRING(STREAM, STRING) \
  mmix_output_quoted_string (STREAM, STRING, strlen (STRING))
 
-#define ASM_OUTPUT_SOURCE_LINE(STREAM, LINE) \
- mmix_asm_output_source_line  (STREAM, LINE)
-
 #define TARGET_ASM_NAMED_SECTION default_elf_asm_named_section
-
 
 /* Node: Data Output */
 
@@ -978,6 +818,9 @@ typedef struct { int regs; int lib; } CUMULATIVE_ARGS;
 #define ASM_OUTPUT_LABEL(STREAM, NAME) \
  mmix_asm_output_label (STREAM, NAME)
 
+#define ASM_OUTPUT_INTERNAL_LABEL(STREAM, NAME) \
+ mmix_asm_output_internal_label (STREAM, NAME)
+
 #define ASM_DECLARE_REGISTER_GLOBAL(STREAM, DECL, REGNO, NAME) \
  mmix_asm_declare_register_global (STREAM, DECL, REGNO, NAME)
 
@@ -992,9 +835,6 @@ typedef struct { int regs; int lib; } CUMULATIVE_ARGS;
 #define ASM_OUTPUT_LABELREF(STREAM, NAME) \
  mmix_asm_output_labelref (STREAM, NAME)
 
-#define ASM_OUTPUT_INTERNAL_LABEL(STREAM, PREFIX, NUM) \
- mmix_asm_output_internal_label (STREAM, PREFIX, NUM)
-
 /* We insert a ":" to disambiguate against user symbols like L5.  */
 #define ASM_GENERATE_INTERNAL_LABEL(LABEL, PREFIX, NUM) \
  sprintf (LABEL, "*%s:%ld", PREFIX, (long)(NUM))
@@ -1003,9 +843,7 @@ typedef struct { int regs; int lib; } CUMULATIVE_ARGS;
    ":" is seen in the object file; we don't really want that mmixal
    feature visible there.  We don't want the default, which uses a dot;
    that'd be incompatible with mmixal.  */
-#define ASM_FORMAT_PRIVATE_NAME(OUTPUT, NAME, LABELNO)		\
- ((OUTPUT) = (char *) alloca (strlen ((NAME)) + 2 + 10),	\
-  sprintf ((OUTPUT), "%s::%d", (NAME), (LABELNO)))
+#define ASM_PN_FORMAT "%s::%lu"
 
 #define ASM_OUTPUT_DEF(STREAM, NAME, VALUE) \
  mmix_asm_output_def (STREAM, NAME, VALUE)
@@ -1027,43 +865,43 @@ typedef struct { int regs; int lib; } CUMULATIVE_ARGS;
 /* The non-$ register names must be prefixed with ":", since they're
    affected by PREFIX.  We provide the non-colon names as additional
    names.  */
-#define REGISTER_NAMES							\
- {"$0", "$1", "$2", "$3", "$4", "$5", "$6", "$7",			\
-  "$8", "$9", "$10", "$11", "$12", "$13", "$14", "$15",			\
-  "$16", "$17", "$18", "$19", "$20", "$21", "$22", "$23",		\
-  "$24", "$25", "$26", "$27", "$28", "$29", "$30", "$31",		\
-  "$32", "$33", "$34", "$35", "$36", "$37", "$38", "$39",		\
-  "$40", "$41", "$42", "$43", "$44", "$45", "$46", "$47",		\
-  "$48", "$49", "$50", "$51", "$52", "$53", "$54", "$55",		\
-  "$56", "$57", "$58", "$59", "$60", "$61", "$62", "$63",		\
-  "$64", "$65", "$66", "$67", "$68", "$69", "$70", "$71",		\
-  "$72", "$73", "$74", "$75", "$76", "$77", "$78", "$79",		\
-  "$80", "$81", "$82", "$83", "$84", "$85", "$86", "$87",		\
-  "$88", "$89", "$90", "$91", "$92", "$93", "$94", "$95",		\
-  "$96", "$97", "$98", "$99", "$100", "$101", "$102", "$103",		\
-  "$104", "$105", "$106", "$107", "$108", "$109", "$110", "$111",	\
-  "$112", "$113", "$114", "$115", "$116", "$117", "$118", "$119",	\
-  "$120", "$121", "$122", "$123", "$124", "$125", "$126", "$127",	\
-  "$128", "$129", "$130", "$131", "$132", "$133", "$134", "$135",	\
-  "$136", "$137", "$138", "$139", "$140", "$141", "$142", "$143",	\
-  "$144", "$145", "$146", "$147", "$148", "$149", "$150", "$151",	\
-  "$152", "$153", "$154", "$155", "$156", "$157", "$158", "$159",	\
-  "$160", "$161", "$162", "$163", "$164", "$165", "$166", "$167",	\
-  "$168", "$169", "$170", "$171", "$172", "$173", "$174", "$175",	\
-  "$176", "$177", "$178", "$179", "$180", "$181", "$182", "$183",	\
-  "$184", "$185", "$186", "$187", "$188", "$189", "$190", "$191",	\
-  "$192", "$193", "$194", "$195", "$196", "$197", "$198", "$199",	\
-  "$200", "$201", "$202", "$203", "$204", "$205", "$206", "$207",	\
-  "$208", "$209", "$210", "$211", "$212", "$213", "$214", "$215",	\
-  "$216", "$217", "$218", "$219", "$220", "$221", "$222", "$223",	\
-  "$224", "$225", "$226", "$227", "$228", "$229", "$230", "$231",	\
-  "$232", "$233", "$234", "$235", "$236", "$237", "$238", "$239",	\
-  "$240", "$241", "$242", "$243", "$244", "$245", "$246", "$247",	\
-  "$248", "$249", "$250", "$251", "$252", "$253", "$254", "$255",	\
+#define REGISTER_NAMES                                                        \
+ {"$0", "$1", "$2", "$3", "$4", "$5", "$6", "$7",                        \
+  "$8", "$9", "$10", "$11", "$12", "$13", "$14", "$15",                        \
+  "$16", "$17", "$18", "$19", "$20", "$21", "$22", "$23",                \
+  "$24", "$25", "$26", "$27", "$28", "$29", "$30", "$31",                \
+  "$32", "$33", "$34", "$35", "$36", "$37", "$38", "$39",                \
+  "$40", "$41", "$42", "$43", "$44", "$45", "$46", "$47",                \
+  "$48", "$49", "$50", "$51", "$52", "$53", "$54", "$55",                \
+  "$56", "$57", "$58", "$59", "$60", "$61", "$62", "$63",                \
+  "$64", "$65", "$66", "$67", "$68", "$69", "$70", "$71",                \
+  "$72", "$73", "$74", "$75", "$76", "$77", "$78", "$79",                \
+  "$80", "$81", "$82", "$83", "$84", "$85", "$86", "$87",                \
+  "$88", "$89", "$90", "$91", "$92", "$93", "$94", "$95",                \
+  "$96", "$97", "$98", "$99", "$100", "$101", "$102", "$103",                \
+  "$104", "$105", "$106", "$107", "$108", "$109", "$110", "$111",        \
+  "$112", "$113", "$114", "$115", "$116", "$117", "$118", "$119",        \
+  "$120", "$121", "$122", "$123", "$124", "$125", "$126", "$127",        \
+  "$128", "$129", "$130", "$131", "$132", "$133", "$134", "$135",        \
+  "$136", "$137", "$138", "$139", "$140", "$141", "$142", "$143",        \
+  "$144", "$145", "$146", "$147", "$148", "$149", "$150", "$151",        \
+  "$152", "$153", "$154", "$155", "$156", "$157", "$158", "$159",        \
+  "$160", "$161", "$162", "$163", "$164", "$165", "$166", "$167",        \
+  "$168", "$169", "$170", "$171", "$172", "$173", "$174", "$175",        \
+  "$176", "$177", "$178", "$179", "$180", "$181", "$182", "$183",        \
+  "$184", "$185", "$186", "$187", "$188", "$189", "$190", "$191",        \
+  "$192", "$193", "$194", "$195", "$196", "$197", "$198", "$199",        \
+  "$200", "$201", "$202", "$203", "$204", "$205", "$206", "$207",        \
+  "$208", "$209", "$210", "$211", "$212", "$213", "$214", "$215",        \
+  "$216", "$217", "$218", "$219", "$220", "$221", "$222", "$223",        \
+  "$224", "$225", "$226", "$227", "$228", "$229", "$230", "$231",        \
+  "$232", "$233", "$234", "$235", "$236", "$237", "$238", "$239",        \
+  "$240", "$241", "$242", "$243", "$244", "$245", "$246", "$247",        \
+  "$248", "$249", "$250", "$251", "$252", "$253", "$254", "$255",        \
   ":rD",  ":rE",  ":rH",  ":rJ",  ":rR",  "ap_!BAD!", ":rO"}
 
-#define ADDITIONAL_REGISTER_NAMES			\
- {{"sp", 254}, {":sp", 254}, {"rD", 256}, {"rE", 257},	\
+#define ADDITIONAL_REGISTER_NAMES                        \
+ {{"sp", 254}, {":sp", 254}, {"rD", 256}, {"rE", 257},        \
   {"rH", 258}, {"rJ", MMIX_rJ_REGNUM}, {"rO", MMIX_rO_REGNUM}}
 
 #define PRINT_OPERAND(STREAM, X, CODE) \
@@ -1125,27 +963,6 @@ typedef struct { int regs; int lib; } CUMULATIVE_ARGS;
 
 /* Node: Misc */
 
-#define PREDICATE_CODES				\
- {"mmix_reg_cc_operand", {SUBREG, REG}},	\
- {"mmix_foldable_comparison_operator",		\
-  {NE, EQ, GE, GT, LE, LT}},			\
- /* All '<', actually.  */			\
- {"mmix_comparison_operator",			\
-  {NE, EQ, GE, GT, LE, LT, GEU, GTU, LEU,	\
-   LTU, UNORDERED, ORDERED, UNEQ, UNGE, UNLE,	\
-   UNLT, LTGT}},				\
- {"mmix_symbolic_or_address_operand",		\
-  {SYMBOL_REF, LABEL_REF, CONST,		\
-   SUBREG, REG, PLUS}},				\
- {"mmix_reg_or_constant_operand",		\
-  {CONST_INT, CONST_DOUBLE, SUBREG, REG}},	\
- {"mmix_reg_or_8bit_operand",			\
-  {CONST_INT, CONST_DOUBLE, SUBREG, REG}},	\
- {"mmix_reg_or_0_operand",			\
-  {CONST_INT, CONST_DOUBLE, SUBREG, REG}},
-
-#define SPECIAL_MODE_PREDICATES "mmix_symbolic_or_address_operand",
-
 /* There's no way to get a PC-relative offset into tables for SImode, so
    for the moment we have absolute entries in DImode.
    When we're going ELF, these should be SImode and 1.  */
@@ -1163,11 +980,8 @@ typedef struct { int regs; int lib; } CUMULATIVE_ARGS;
 
 #define TRULY_NOOP_TRUNCATION(OUTPREC, INPREC) 1
 
-/* We have a choice here too.  */
-#if 0
-/* FIXME:  Revisit, we don't have scc expanders yet.  */
-#define STORE_FLAG_VALUE 1
-#endif
+/* ??? MMIX allows a choice of STORE_FLAG_VALUE.  Revisit later,
+   we don't have scc expanders yet.  */
 
 #define Pmode DImode
 
@@ -1181,10 +995,6 @@ typedef struct { int regs; int lib; } CUMULATIVE_ARGS;
 #define DOLLARS_IN_IDENTIFIERS 0
 #define NO_DOLLAR_IN_LABEL
 #define NO_DOT_IN_LABEL
-
-/* Calculate the highest used supposed saved stack register.  */
-#define MACHINE_DEPENDENT_REORG(INSN) \
- mmix_machine_dependent_reorg (INSN)
 
 #endif /* GCC_MMIX_H */
 /*

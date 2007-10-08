@@ -36,4 +36,4 @@ ENDIF(CMAKE_C_COMPILER MATCHES "cl")
 
 ADD_DEFINITIONS(-DALMOST_STDC)
 
-SUBDIRS(config_cmake libiberty gcc)
+SUBDIRS(config_cmake libiberty libdecnumber libcpp gcc)

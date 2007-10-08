@@ -16,12 +16,12 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; see the file COPYING.  If not, write to
-   the Free Software Foundation, 59 Temple Place - Suite 330, Boston,
-   MA 02111-1307, USA.  */
+   the Free Software Foundation, 51 Franklin Street, Fifth Floor, Boston,
+   MA 02110-1301, USA.  */
 
 /* Run-time Target Specification.  */
 #undef  SUBTARGET_CPU_DEFAULT
-#define SUBTARGET_CPU_DEFAULT 		TARGET_CPU_xscale
+#define SUBTARGET_CPU_DEFAULT                 TARGET_CPU_xscale
 
 #undef  SUBTARGET_EXTRA_ASM_SPEC
 #define SUBTARGET_EXTRA_ASM_SPEC "%{!mcpu=*:-mcpu=xscale}"
@@ -31,4 +31,4 @@
   { "mlittle-endian", "mno-thumb-interwork", "marm" }
 
 #undef  TARGET_VERSION
-#define TARGET_VERSION	fputs (" (XScale/COFF)", stderr);
+#define TARGET_VERSION        fputs (" (XScale/COFF)", stderr);

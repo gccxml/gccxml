@@ -56,27 +56,9 @@
 
 #include "demangle.h"
 
-/* Decide how to call cp_error.  */
-#if defined(GCC_XML_GCC_VERSION) && (GCC_XML_GCC_VERSION >= 0x030100)
-# define XML_CP_ERROR cp_error_at
-#else
-# define XML_CP_ERROR cp_error
-# define XML_HAVE_FAKE_STD_NODE
-#endif
+#include "tree-iterator.h"
 
-/* Decide how to get the attributes node from a declaration.  */
-#if defined(GCC_XML_GCC_VERSION) && (GCC_XML_GCC_VERSION >= 0x030100)
-# define GCC_XML_DECL_ATTRIBUTES(n) DECL_ATTRIBUTES(n)
-#else
-# define GCC_XML_DECL_ATTRIBUTES(n) DECL_MACHINE_ATTRIBUTES(n)
-#endif
-
-/* Decide how to access base classes.  */
-#if !defined(GCC_XML_GCC_VERSION) || (GCC_XML_GCC_VERSION < 0x030400)
-# define XML_PRE_3_4_TREE_VIA_PUBLIC
-#endif
-
-#define GCC_XML_C_VERSION "$Revision: 1.115 $"
+#define GCC_XML_C_VERSION "$Revision: 1.115.4.1 $"
 
 /*--------------------------------------------------------------------------*/
 /* Data structures for the actual XML dump.  */
@@ -364,7 +346,7 @@ do_xml_output (const char* filename)
   file = fopen (filename, "w");
   if (!file)
     {
-    XML_CP_ERROR ("could not open xml-dump file `%s'", filename);
+    error ("could not open xml-dump file `%s'", filename);
     return;
     }
 
@@ -531,7 +513,7 @@ xml_add_node_real (xml_dump_info_p xdi, tree n, int complete)
 
   if(!xdi->require_complete && complete)
     {
-    XML_CP_ERROR ("XML dump bug: complete node added during incomplete phase.\n");
+    error ("XML dump bug: complete node added during incomplete phase.\n");
     }
 
   /* Return node's index.  */
@@ -654,11 +636,21 @@ xml_document_add_attribute_location(xml_document_element_p element,
 }
 
 /*--------------------------------------------------------------------------*/
-/* Print the XML attribute endline="line" for the given COMPOUND_STMT.  */
+/* Print the XML attribute endline="line" for the given STATEMENT_LIST.  */
 static void
-xml_print_endline_attribute (xml_dump_info_p xdi, tree stmt)
+xml_print_endline_attribute (xml_dump_info_p xdi, tree body)
 {
-  fprintf (xdi->file, " endline=\"%d\"", STMT_LINENO(stmt));
+  /* Get the last statement in the list.  The list may be empty if the
+     body is for an empty implicitly-generated copy-constructor.  */
+  tree_stmt_iterator t = tsi_last(body);
+  if(!tsi_end_p(t))
+    {
+    tree stmt = tsi_stmt(t);
+    if(EXPR_HAS_LOCATION(stmt))
+      {
+      fprintf (xdi->file, " endline=\"%d\"", EXPR_LINENO(stmt));
+      }
+    }
 }
 
 static void
@@ -707,7 +699,8 @@ xml_document_add_attribute_name(xml_document_element_p element,
 static void
 xml_print_mangled_attribute (xml_dump_info_p xdi, tree n)
 {
-  if (DECL_NAME (n) &&
+  if (HAS_DECL_ASSEMBLER_NAME_P(n) &&
+      DECL_NAME (n) &&
       DECL_ASSEMBLER_NAME (n) &&
       DECL_ASSEMBLER_NAME (n) != DECL_NAME (n))
     {
@@ -729,12 +722,14 @@ xml_document_add_attribute_mangled(xml_document_element_p element)
 static void
 xml_print_demangled_attribute (xml_dump_info_p xdi, tree n)
 {
-  if (DECL_NAME (n) &&
+  if (HAS_DECL_ASSEMBLER_NAME_P(n) &&
+      DECL_NAME (n) &&
       DECL_ASSEMBLER_NAME (n) &&
       DECL_ASSEMBLER_NAME (n) != DECL_NAME (n))
     {
     const char* INTERNAL = " *INTERNAL* ";
-    const int demangle_opt = DMGL_STYLE_MASK | DMGL_PARAMS | DMGL_TYPES;
+    const int demangle_opt =
+      (DMGL_STYLE_MASK | DMGL_PARAMS | DMGL_TYPES | DMGL_ANSI) & ~DMGL_JAVA;
 
     const char* name = xml_get_encoded_string (DECL_ASSEMBLER_NAME (n));
     /*demangled name*/
@@ -1598,12 +1593,12 @@ xml_output_namespace_decl (xml_dump_info_p xdi, tree ns, xml_dump_node_p dn)
     {
     fprintf (xdi->file, "  <Namespace");
     xml_print_id_attribute (xdi, dn);
-    if(DECL_NAME (ns) != anonymous_namespace_name)
+    if(DECL_NAME (ns) != NULL_TREE) /* anonymous_namespace_name */
       {
       xml_print_name_attribute (xdi, DECL_NAME (ns));
       }
     xml_print_context_attribute (xdi, ns);
-    xml_print_attributes_attribute (xdi, GCC_XML_DECL_ATTRIBUTES(ns), 0);
+    xml_print_attributes_attribute (xdi, DECL_ATTRIBUTES(ns), 0);
 
     /* If complete dump, walk the namespace.  */
     if(dn->complete)
@@ -1622,7 +1617,7 @@ xml_output_namespace_decl (xml_dump_info_p xdi, tree ns, xml_dump_node_p dn)
             }
           }
         }
-#if defined(GCC_XML_GCC_VERSION) && (GCC_XML_GCC_VERSION >= 0x030300)
+#if defined(GCC_XML_GCC_VERSION) && (GCC_XML_GCC_VERSION >= 0x030300) && 0
       /* Add child namespaces.  */
       for (cur_decl = cp_namespace_namespaces(ns); cur_decl;
            cur_decl = TREE_CHAIN (cur_decl))
@@ -1725,7 +1720,7 @@ xml_output_typedef (xml_dump_info_p xdi, tree td, xml_dump_node_p dn)
   /* Output typedef attributes (contributed by Steven Kilthau - May 2004).  */
   if (td)
     {
-    xml_print_attributes_attribute (xdi, GCC_XML_DECL_ATTRIBUTES(td), 0);
+    xml_print_attributes_attribute (xdi, DECL_ATTRIBUTES(td), 0);
     }
 
   fprintf (xdi->file, "/>\n");
@@ -1779,7 +1774,7 @@ xml_output_argument (xml_dump_info_p xdi, tree pd, tree tl, int complete)
   /* Output argument attributes (contributed by Steven Kilthau - May 2004).  */
   if (pd)
     {
-    xml_print_attributes_attribute (xdi, GCC_XML_DECL_ATTRIBUTES(pd), 0);
+    xml_print_attributes_attribute (xdi, DECL_ATTRIBUTES(pd), 0);
     }
 
   fprintf (xdi->file, "/>\n");
@@ -1832,7 +1827,8 @@ xml_output_function_decl (xml_dump_info_p xdi, tree fd, xml_dump_node_p dn)
   tree arg_type;
   const char* tag;
   tree name = DECL_NAME (fd);
-  tree body = DECL_SAVED_TREE(fd);
+  tree saved_tree = DECL_SAVED_TREE (fd);
+  tree body = saved_tree? BIND_EXPR_BODY (saved_tree) : 0;
   int do_name = 1;
   int do_returns = 0;
   int do_const = 0;
@@ -1926,7 +1922,7 @@ xml_output_function_decl (xml_dump_info_p xdi, tree fd, xml_dump_node_p dn)
     }
   xml_print_function_extern_attribute (xdi, fd);
   xml_print_inline_attribute (xdi, fd);
-  xml_print_attributes_attribute (xdi, GCC_XML_DECL_ATTRIBUTES(fd),
+  xml_print_attributes_attribute (xdi, DECL_ATTRIBUTES(fd),
                                   TYPE_ATTRIBUTES(TREE_TYPE(fd)));
   xml_print_befriending_attribute (xdi, DECL_BEFRIENDING_CLASSES (fd));
 
@@ -2083,7 +2079,7 @@ xml_output_var_decl (xml_dump_info_p xdi, tree vd, xml_dump_node_p dn)
   xml_print_location_attribute (xdi, vd);
   xml_print_extern_attribute (xdi, vd);
   xml_print_artificial_attribute (xdi, vd);
-  xml_print_attributes_attribute (xdi, GCC_XML_DECL_ATTRIBUTES(vd), 0);
+  xml_print_attributes_attribute (xdi, DECL_ATTRIBUTES(vd), 0);
   fprintf (xdi->file, "/>\n");
 }
 
@@ -2131,7 +2127,7 @@ xml_output_field_decl (xml_dump_info_p xdi, tree fd, xml_dump_node_p dn)
   xml_print_demangled_attribute (xdi, fd);
   xml_print_mutable_attribute(xdi, fd);
   xml_print_location_attribute (xdi, fd);
-  xml_print_attributes_attribute (xdi, GCC_XML_DECL_ATTRIBUTES(fd), 0);
+  xml_print_attributes_attribute (xdi, DECL_ATTRIBUTES(fd), 0);
   fprintf (xdi->file, "/>\n");
 }
 
@@ -2247,36 +2243,26 @@ xml_output_record_type (xml_dump_info_p xdi, tree rt, xml_dump_node_p dn)
     }
 
   /* Output all the base classes (compatibility with gccxml 0.6).  */
-  if (dn->complete && COMPLETE_TYPE_P (rt))
+  if (dn->complete && COMPLETE_TYPE_P (rt) && TYPE_BINFO (rt))
     {
     tree binfo = TYPE_BINFO (rt);
-    tree binfos = BINFO_BASETYPES (binfo);
-    int n_baselinks = binfos? TREE_VEC_LENGTH (binfos) : 0;
-#if !defined (XML_PRE_3_4_TREE_VIA_PUBLIC)
-    tree accesses = BINFO_BASEACCESSES (binfo);
-#endif
+    int n_baselinks = BINFO_N_BASE_BINFOS (binfo);
+    tree accesses = BINFO_BASE_ACCESSES (binfo);
     int i;
 
     has_bases = (n_baselinks > 0)? 1:0;
     fprintf (xdi->file, " bases=\"");
     for (i = 0; i < n_baselinks; i++)
       {
-      tree base_binfo = TREE_VEC_ELT (binfos, i);
+      tree base_binfo = BINFO_BASE_BINFO(binfo, i);
       if (base_binfo)
         {
         /* Output this base class.  Default is public access.  */
-#if defined (XML_PRE_3_4_TREE_VIA_PUBLIC)
-        const char* access = 0;
-        if (TREE_VIA_PUBLIC (base_binfo)) { access = ""; }
-        else if (TREE_VIA_PROTECTED (base_binfo)) { access = "protected:"; }
-        else { access="private:"; }
-#else
-        tree n_access = (accesses ? TREE_VEC_ELT (accesses, i)
+        tree n_access = (accesses ? BINFO_BASE_ACCESS(binfo, i)
                                   : access_public_node);
         const char* access = "";
         if (n_access == access_protected_node) { access = "protected:"; }
         else if (n_access == access_private_node) { access = "private:"; }
-#endif
 
         fprintf (xdi->file, "%s_%d ", access,
                  xml_add_node (xdi, BINFO_TYPE (base_binfo), 1));
@@ -2296,40 +2282,25 @@ xml_output_record_type (xml_dump_info_p xdi, tree rt, xml_dump_node_p dn)
   fprintf (xdi->file, ">\n");
 
   /* Output all the base classes.  */
-  if (dn->complete && COMPLETE_TYPE_P (rt))
+  if (dn->complete && COMPLETE_TYPE_P (rt) && TYPE_BINFO (rt))
     {
     tree binfo = TYPE_BINFO (rt);
-    tree binfos = BINFO_BASETYPES (binfo);
-    int n_baselinks = binfos? TREE_VEC_LENGTH (binfos) : 0;
-#if !defined (XML_PRE_3_4_TREE_VIA_PUBLIC)
-    tree accesses = BINFO_BASEACCESSES (binfo);
-#endif
+    int n_baselinks = BINFO_N_BASE_BINFOS (binfo);
+    tree accesses = BINFO_BASE_ACCESSES (binfo);
     int i;
 
     for (i = 0; i < n_baselinks; i++)
       {
-      tree base_binfo = TREE_VEC_ELT (binfos, i);
+      tree base_binfo = BINFO_BASE_BINFO(binfo, i);
       if (base_binfo)
         {
         /* Output this base class.  Default is public access.  */
-#if defined (XML_PRE_3_4_TREE_VIA_PUBLIC)
-        int is_virtual = TREE_VIA_VIRTUAL (base_binfo)? 1:0;
-        const char* access = "private";
-        if (TREE_VIA_PUBLIC (base_binfo)) { access = "public"; }
-        else if (TREE_VIA_PROTECTED (base_binfo)) { access = "protected"; }
-#else
-        tree n_access = (accesses ? TREE_VEC_ELT (accesses, i)
+        tree n_access = (accesses ? BINFO_BASE_ACCESS(binfo, i)
                                   : access_public_node);
-        int is_virtual = 0;
+        int is_virtual = BINFO_VIRTUAL_P (base_binfo);
         const char* access = "public";
         if (n_access == access_protected_node) { access = "protected"; }
         else if (n_access == access_private_node) { access = "private"; }
-        else if (n_access == access_public_virtual_node) { is_virtual = 1; }
-        else if (n_access == access_protected_virtual_node)
-          { access = "protected"; is_virtual = 1; }
-        else if (n_access == access_private_virtual_node)
-          { access = "private"; is_virtual = 1; }
-#endif
 
         fprintf (xdi->file,
                  "    <Base type=\"_%d\" access=\"%s\" virtual=\"%d\""
@@ -3048,9 +3019,6 @@ xml_find_template_parm (tree t)
     case VAR_DECL: return 1;
     case FUNCTION_DECL: return 1;
 
-    /* A template deferred lookup expression.  */
-    case LOOKUP_EXPR: return 1;
-
     /* A template deferred scoped lookup.  */
     case SCOPE_REF: return 1;
 
@@ -3208,11 +3176,16 @@ xml_add_template_decl (xml_dump_info_p xdi, tree td, int complete)
   /* Dump any member template instantiations.  */
   if (complete)
     {
-    for (tl = TYPE_FIELDS (TREE_TYPE (td)); tl; tl = TREE_CHAIN (tl))
+    if(TREE_CODE (TREE_TYPE (td)) == RECORD_TYPE ||
+       TREE_CODE (TREE_TYPE (td)) == UNION_TYPE ||
+       TREE_CODE (TREE_TYPE (td)) == QUAL_UNION_TYPE)
       {
-      if (TREE_CODE (tl) == TEMPLATE_DECL)
+      for (tl = TYPE_FIELDS (TREE_TYPE (td)); tl; tl = TREE_CHAIN (tl))
         {
-        xml_add_template_decl (xdi, tl, 1);
+        if (TREE_CODE (tl) == TEMPLATE_DECL)
+          {
+          xml_add_template_decl (xdi, tl, 1);
+          }
         }
       }
     }
@@ -3290,12 +3263,7 @@ xml_add_node (xml_dump_info_p xdi, tree n, int complete)
   switch (TREE_CODE (n))
     {
     case NAMESPACE_DECL:
-#if defined(XML_HAVE_FAKE_STD_NODE)
-      if(n != fake_std_node)
-#endif
-        {
-        return xml_add_node_real (xdi, n, complete);
-        }
+      return xml_add_node_real (xdi, n, complete);
       break;
     case TYPE_DECL:
       return xml_add_type_decl(xdi, n, complete);
@@ -3374,15 +3342,7 @@ xml_lookup_start_node (tree scope, const char* qualified_name)
   free (name);
 
   /* Lookup the first qualifier.  */
-  if (TREE_CODE (scope) == NAMESPACE_DECL)
-    {
-    node = lookup_namespace_name (scope, id);
-    }
-  else if ((TREE_CODE (scope) == TYPE_DECL)
-           && (TREE_CODE (TREE_TYPE (scope)) == RECORD_TYPE))
-    {
-    node = lookup_member (TREE_TYPE (scope), id, 2, 0);
-    }
+  node = lookup_qualified_name (scope, id, 0, 1);
 
   if (!node) { return 0; }
 
@@ -3732,7 +3692,7 @@ do_xml_document (const char* dtd_name, const char* schema_name)
       }
     else
       {
-      XML_CP_ERROR ("could not open xml-dtd file `%s'", dtd_name);
+      error ("could not open xml-dtd file `%s'", dtd_name);
       }
     }
 }

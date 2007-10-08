@@ -14,7 +14,7 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with GNU CC; see the file COPYING.  If not, write to
-the Free Software Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+the Free Software Foundation, 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.
 
 As a special exception, if you link this library with files
 compiled with a GNU compiler to produce an executable, this does not cause
@@ -67,14 +67,14 @@ number of seconds used.
 /* FIXME: should be able to declare as clock_t. */
 
 long
-clock ()
+clock (void)
 {
 #ifdef HAVE_GETRUSAGE
   struct rusage rusage;
 
   getrusage (0, &rusage);
   return (rusage.ru_utime.tv_sec * 1000000 + rusage.ru_utime.tv_usec
-	  + rusage.ru_stime.tv_sec * 1000000 + rusage.ru_stime.tv_usec);
+          + rusage.ru_stime.tv_sec * 1000000 + rusage.ru_stime.tv_usec);
 #else
 #ifdef HAVE_TIMES
   struct tms tms;

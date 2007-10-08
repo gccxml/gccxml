@@ -1,7 +1,7 @@
 /* Implementation of W32-specific threads compatibility routines for
-   libgcc2.   */ 
+   libgcc2.  */
 
-/* Copyright (C) 1999, 2000, 2002 Free Software Foundation, Inc.
+/* Copyright (C) 1999, 2000, 2002, 2004 Free Software Foundation, Inc.
    Contributed by Mumit Khan <khan@xraylith.wisc.edu>.
    Modified and moved to separate file by Danny Smith
    <dannysmith@users.sourceforge.net>.
@@ -20,8 +20,8 @@ for more details.
 
 You should have received a copy of the GNU General Public License
 along with GCC; see the file COPYING.  If not, write to the Free
-Software Foundation, 59 Temple Place - Suite 330, Boston, MA
-02111-1307, USA.  */
+Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
+02110-1301, USA.  */
 
 /* As a special exception, if you link this library with other files,
    some of which are compiled with GCC, to produce an executable,
@@ -31,11 +31,13 @@ Software Foundation, 59 Temple Place - Suite 330, Boston, MA
    the executable file might be covered by the GNU General Public License.  */
 
 
+#include <windows.h>
 #ifndef __GTHREAD_HIDE_WIN32API
 # define __GTHREAD_HIDE_WIN32API 1
 #endif
+#undef  __GTHREAD_I486_INLINE_LOCK_PRIMITIVES
+#define __GTHREAD_I486_INLINE_LOCK_PRIMITIVES
 #include <gthr-win32.h>
-#include <windows.h>
 
 /* Windows32 threads specific definitions. The windows32 threading model
    does not map well into pthread-inspired gcc's threading model, and so 
@@ -61,10 +63,9 @@ Software Foundation, 59 Temple Place - Suite 330, Boston, MA
       This may cause incorrect error return due to truncation values on 
       hw where sizeof (DWORD) > sizeof (int).
    
-   3. We might consider using Critical Sections instead of Windows32 
-      mutexes for better performance, but emulating __gthread_mutex_trylock 
-      interface becomes more complicated (Win9x does not support
-      TryEnterCriticalSectioni, while NT does).
+   3. We are currently using a special mutex instead of the Critical
+      Sections, since Win9x does not support TryEnterCriticalSection
+      (while NT does).
   
    The basic framework should work well enough. In the long term, GCC
    needs to use Structured Exception Handling on Windows32.  */
@@ -79,19 +80,19 @@ __gthr_win32_once (__gthread_once_t *once, void (*func) (void))
     {
       if (InterlockedIncrement (&(once->started)) == 0)
         {
-	  (*func) ();
-	  once->done = TRUE;
-	}
+          (*func) ();
+          once->done = TRUE;
+        }
       else
-	{
-	  /* Another thread is currently executing the code, so wait for it 
-	     to finish; yield the CPU in the meantime.  If performance 
-	     does become an issue, the solution is to use an Event that 
-	     we wait on here (and set above), but that implies a place to 
-	     create the event before this routine is called.  */ 
-	  while (! once->done)
-	    Sleep (0);
-	}
+        {
+          /* Another thread is currently executing the code, so wait for it 
+             to finish; yield the CPU in the meantime.  If performance 
+             does become an issue, the solution is to use an Event that 
+             we wait on here (and set above), but that implies a place to 
+             create the event before this routine is called.  */ 
+          while (! once->done)
+            Sleep (0);
+        }
     }
   return 0;
 }
@@ -145,23 +146,29 @@ __gthr_win32_setspecific (__gthread_key_t key, const void *ptr)
 void
 __gthr_win32_mutex_init_function (__gthread_mutex_t *mutex)
 {
-  /* Create unnamed mutex with default security attr and no initial owner.  */ 
-  *mutex = CreateMutex (NULL, 0, NULL);
+  mutex->counter = -1;
+  mutex->sema = CreateSemaphore (NULL, 0, 65535, NULL);
 }
 
 int
 __gthr_win32_mutex_lock (__gthread_mutex_t *mutex)
 {
-  if (WaitForSingleObject (*mutex, INFINITE) == WAIT_OBJECT_0)
+  if (InterlockedIncrement (&mutex->counter) == 0 ||
+      WaitForSingleObject (mutex->sema, INFINITE) == WAIT_OBJECT_0)
     return 0;
   else
-    return 1;
+    {
+      /* WaitForSingleObject returns WAIT_FAILED, and we can only do
+         some best-effort cleanup here.  */
+      InterlockedDecrement (&mutex->counter);
+      return 1;
+    }
 }
 
 int
 __gthr_win32_mutex_trylock (__gthread_mutex_t *mutex)
 {
-  if (WaitForSingleObject (*mutex, 0) == WAIT_OBJECT_0)
+  if (__GTHR_W32_InterlockedCompareExchange (&mutex->counter, 0, -1) < 0)
     return 0;
   else
     return 1;
@@ -170,5 +177,78 @@ __gthr_win32_mutex_trylock (__gthread_mutex_t *mutex)
 int
 __gthr_win32_mutex_unlock (__gthread_mutex_t *mutex)
 {
-    return (ReleaseMutex (*mutex) != 0) ? 0 : 1;
+  if (InterlockedDecrement (&mutex->counter) >= 0)
+    return ReleaseSemaphore (mutex->sema, 1, NULL) ? 0 : 1;
+  else
+    return 0;
+}
+
+void
+__gthr_win32_recursive_mutex_init_function (__gthread_recursive_mutex_t *mutex)
+{
+  mutex->counter = -1;
+  mutex->depth = 0;
+  mutex->owner = 0;
+  mutex->sema = CreateSemaphore (NULL, 0, 65535, NULL);
+}
+
+int
+__gthr_win32_recursive_mutex_lock (__gthread_recursive_mutex_t *mutex)
+{
+  DWORD me = GetCurrentThreadId();
+  if (InterlockedIncrement (&mutex->counter) == 0)
+    {
+      mutex->depth = 1;
+      mutex->owner = me;
+    }
+  else if (mutex->owner == me)
+    {
+      InterlockedDecrement (&mutex->counter);
+      ++(mutex->depth);
+    }
+  else if (WaitForSingleObject (mutex->sema, INFINITE) == WAIT_OBJECT_0)
+    {
+      mutex->depth = 1;
+      mutex->owner = me;
+    }
+  else
+    {
+      /* WaitForSingleObject returns WAIT_FAILED, and we can only do
+         some best-effort cleanup here.  */
+      InterlockedDecrement (&mutex->counter);
+      return 1;
+    }
+  return 0;
+}
+
+int
+__gthr_win32_recursive_mutex_trylock (__gthread_recursive_mutex_t *mutex)
+{
+  DWORD me = GetCurrentThreadId();
+  if (__GTHR_W32_InterlockedCompareExchange (&mutex->counter, 0, -1) < 0)
+    {
+      mutex->depth = 1;
+      mutex->owner = me;
+    }
+  else if (mutex->owner == me)
+    ++(mutex->depth);
+  else
+    return 1;
+
+  return 0;
+}
+
+int
+__gthr_win32_recursive_mutex_unlock (__gthread_recursive_mutex_t *mutex)
+{
+  --(mutex->depth);
+  if (mutex->depth == 0)
+    {
+      mutex->owner = 0;
+
+      if (InterlockedDecrement (&mutex->counter) >= 0)
+        return ReleaseSemaphore (mutex->sema, 1, NULL) ? 0 : 1;
+    }
+
+  return 0;
 }
