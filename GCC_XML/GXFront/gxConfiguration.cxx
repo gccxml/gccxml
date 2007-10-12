@@ -876,6 +876,85 @@ bool gxConfiguration::CheckFlags()
 }
 
 //----------------------------------------------------------------------------
+// Implemented below (at the bottom of the cxx file) to avoid windows.h
+// mangling of #define symbols...
+int GetPID();
+
+//----------------------------------------------------------------------------
+std::string AttemptTempFileName(const char* prefix, const char* ext)
+{
+  std::string dir;
+  std::string file;
+
+  // Get TMP, TEMP or "/tmp" dir if one exists,
+  // or if not, use "." (current dir)
+  //
+  gxSystemTools::GetEnv("TMP", dir);
+  if(dir.empty() || !gxSystemTools::FileExists(dir.c_str()))
+    {
+    gxSystemTools::GetEnv("TEMP", dir);
+    }
+  if(dir.empty() || !gxSystemTools::FileExists(dir.c_str()))
+    {
+    dir = "/tmp";
+    }
+  if(dir.empty() || !gxSystemTools::FileExists(dir.c_str()))
+    {
+    dir = ".";
+    }
+  gxSystemTools::ConvertToUnixSlashes(dir);
+
+  file = dir;
+
+  if(!gxSystemTools::StringEndsWith(file.c_str(), "/"))
+    {
+    file += "/";
+    }
+  if(prefix)
+    {
+    file += prefix;
+    }
+
+  gxsys_ios::ostringstream oss;
+  oss << GetPID();
+
+  file += oss.str();
+
+  if(ext)
+    {
+    file += ext;
+    }
+
+  return file;
+}
+
+//----------------------------------------------------------------------------
+std::string GetTempFileName(const char* prefix, const char* ext)
+{
+  std::string name(AttemptTempFileName(prefix, ext));
+  int counter = 1;
+
+  // Use counter to unique-ify and return a name that does not
+  // currently exist:
+  //
+  while (gxSystemTools::FileExists(name.c_str()))
+    {
+    gxsys_ios::ostringstream oss;
+    oss << "x";
+    oss << counter;
+    if (ext)
+      {
+      oss << ext;
+      }
+
+    name = AttemptTempFileName(prefix, oss.str().c_str());
+    counter++;
+    }
+
+  return name;
+}
+
+//----------------------------------------------------------------------------
 std::string gxConfiguration::GetCompilerId()
 {
   // This method uses the technique formerly found in the shell script
@@ -893,19 +972,7 @@ std::string gxConfiguration::GetCompilerId()
   // Write a temp file such that after preprocessing there should only be
   // one "<Id>(.*)</Id>" chunk in the output.
   //
-  std::string cppFile;
-  const char* cppFileBase = tempnam(0, "gx");
-  if(cppFileBase)
-    {
-    cppFile = cppFileBase;
-    free((void*) cppFileBase);
-    }
-  else
-    {
-    cppFile = "gx1";
-    }
-  cppFile += ".cpp";
-
+  std::string cppFile(GetTempFileName("gx", ".cpp"));
   std::ofstream ofs(cppFile.c_str());
 
   ofs << "#if defined(__GNUC__)" << std::endl;
@@ -2289,4 +2356,21 @@ bool gxConfiguration::FindFlagsBCC55(const char* inBcc32)
     "-iwrapper\""+include2+"\" "
     "-I\""+include3+"\" ";
   return true;
+}
+
+//----------------------------------------------------------------------------
+// Keep this section here (at the bottom of the cxx file) to avoid windows.h
+// mangling of #define symbols...
+#ifdef _WIN32
+#include <windows.h>
+#endif
+
+//----------------------------------------------------------------------------
+int GetPID()
+{
+#ifdef _WIN32
+  return (int) GetCurrentProcessId();
+#else
+  return (int) getpid();
+#endif
 }
