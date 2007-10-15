@@ -58,7 +58,9 @@
 
 #include "tree-iterator.h"
 
-#define GCC_XML_C_VERSION "$Revision: 1.115.4.1 $"
+#include "toplev.h" /* ident_hash */
+
+#define GCC_XML_C_VERSION "$Revision: 1.115.4.2 $"
 
 /*--------------------------------------------------------------------------*/
 /* Data structures for the actual XML dump.  */
@@ -275,9 +277,6 @@ xml_document_add_subelement(xml_document_info_p xdi,
 /*--------------------------------------------------------------------------*/
 /* Dump utility declarations.  */
 
-/* Return non-zero if the given _DECL is an internally generated decl.  */
-#define DECL_INTERNAL_P(d) (DECL_SOURCE_LINE(d) == 0)
-
 void do_xml_output PARAMS ((const char*));
 void do_xml_document PARAMS ((const char*, const char*));
 
@@ -293,6 +292,7 @@ static const char* xml_get_encoded_string PARAMS ((tree));
 static const char* xml_get_encoded_string_from_string PARAMS ((const char*));
 static tree xml_get_encoded_identifier_from_string PARAMS ((const char*));
 static const char* xml_escape_string PARAMS ((const char* in_str));
+static int xml_fill_all_decls(struct cpp_reader*, hashnode, const void*);
 
 #if defined(GCC_XML_GCC_VERSION) && (GCC_XML_GCC_VERSION >= 0x030100)
 # include "diagnostic.h"
@@ -341,6 +341,9 @@ do_xml_output (const char* filename)
     unlink(filename);
     return;
     }
+
+  /* Fill in the all_decls member we added to each scope.  */
+  ht_forall(ident_hash, xml_fill_all_decls, 0);
 
   /* Open the XML output file.  */
   file = fopen (filename, "w");
@@ -1211,25 +1214,6 @@ xml_print_init_attribute (xml_dump_info_p xdi, tree t)
 
   if (!t || (t == error_mark_node)) return;
 
-#if defined(GCC_XML_GCC_VERSION) && (GCC_XML_GCC_VERSION >= 0x030300)
-  /* GCC 3.3 uses a constructor to initialize a list of elements.  */
-  if (TREE_CODE (t) == CONSTRUCTOR)
-    {
-    tree elt;
-    const char* comma = "";
-    fprintf (xdi->file, " init=\"{");
-    for(elt = CONSTRUCTOR_ELTS (t); elt; elt = TREE_CHAIN (elt))
-      {
-      value = xml_get_encoded_string_from_string (
-        expr_as_string (TREE_VALUE(elt), 0));
-      fprintf (xdi->file, "%s%s", comma, value);
-      comma = ", ";
-      }
-    fprintf (xdi->file, "}\"");
-    return;
-    }
-#endif
-
   value = xml_get_encoded_string_from_string (expr_as_string (t, 0));
   fprintf (xdi->file, " init=\"%s\"", value);
 }
@@ -1603,36 +1587,22 @@ xml_output_namespace_decl (xml_dump_info_p xdi, tree ns, xml_dump_node_p dn)
     /* If complete dump, walk the namespace.  */
     if(dn->complete)
       {
-      tree cur_decl;
-      fprintf (xdi->file, " members=\"");
-      for (cur_decl = cp_namespace_decls(ns); cur_decl;
-           cur_decl = TREE_CHAIN (cur_decl))
-        {
-        if (!DECL_INTERNAL_P (cur_decl))
-          {
-          int id = xml_add_node (xdi, cur_decl, 1);
-          if (id)
-            {
-            fprintf (xdi->file, "_%d ", id);
-            }
-          }
-        }
-#if defined(GCC_XML_GCC_VERSION) && (GCC_XML_GCC_VERSION >= 0x030300) && 0
-      /* Add child namespaces.  */
-      for (cur_decl = cp_namespace_namespaces(ns); cur_decl;
-           cur_decl = TREE_CHAIN (cur_decl))
-        {
-        if (!DECL_INTERNAL_P (cur_decl))
-          {
-          int id = xml_add_node (xdi, cur_decl, 1);
-          if (id)
-            {
-            fprintf (xdi->file, "_%d ", id);
-            }
-          }
-        }
-#endif
+      /* Get the vector of all declarations in the namespace.  */
+      int i;
+      VEC(tree,gc) *decls = NAMESPACE_LEVEL (ns)->all_decls;
+      tree *vec = VEC_address (tree, decls);
+      int len = VEC_length (tree, decls);
 
+      /* Output all the declarations.  */
+      fprintf (xdi->file, " members=\"");
+      for (i=0; i < len; ++i)
+        {
+        int id = xml_add_node (xdi, vec[i], 1);
+        if (id)
+          {
+          fprintf (xdi->file, "_%d ", id);
+          }
+        }
       fprintf (xdi->file, "\"");
       }
 
@@ -2194,9 +2164,6 @@ xml_output_record_type (xml_dump_info_p xdi, tree rt, xml_dump_node_p dn)
     /* Output all the non-method declarations in the class.  */
     for (field = TYPE_FIELDS (rt) ; field ; field = TREE_CHAIN (field))
       {
-      /* Don't process any internally generated declarations.  */
-      if (DECL_INTERNAL_P (field)) continue;
-
       /* Don't process any compiler-generated fields.  */
       if (DECL_ARTIFICIAL(field) && !DECL_IMPLICIT_TYPEDEF_P(field)) continue;
 
@@ -2217,9 +2184,6 @@ xml_output_record_type (xml_dump_info_p xdi, tree rt, xml_dump_node_p dn)
     for (func = TYPE_METHODS (rt) ; func ; func = TREE_CHAIN (func))
       {
       int id;
-
-      /* Don't process any internally generated declarations.  */
-      if (DECL_INTERNAL_P (func)) continue;
 
       /* Don't process any compiler-generated functions except constructors
          and destructors.  */
@@ -2705,6 +2669,7 @@ xml_output_cv_qualified_type (xml_dump_info_p xdi, tree t, xml_dump_node_p dn)
     switch (TREE_CODE(t))
       {
       case UNION_TYPE:
+      case QUAL_UNION_TYPE:
       case RECORD_TYPE:
         xml_output_record_type (xdi, t, dn);
         break;
@@ -2810,21 +2775,26 @@ xml_document_add_element_cv_qualified_type (xml_document_info_p xdi,
 
 /* When a class, struct, or union type is defined, it is automatically
    given a member typedef to itself.  Given a RECORD_TYPE or
-   UNION_TYPE, this returns that field's name.  Although this should
-   never happen, 0 is returned when the field cannot be found.  */
+   UNION_TYPE, this returns that field's name.  The return value is
+   0 when the field cannot be found (such as for ENUMERAL_TYPE).  */
 static tree
 xml_find_self_typedef_name (tree rt)
 {
   tree field;
-  for (field = TYPE_FIELDS (rt) ; field ; field = TREE_CHAIN (field))
+  if(TREE_CODE (rt) == RECORD_TYPE ||
+     TREE_CODE (rt) == UNION_TYPE ||
+     TREE_CODE (rt) == QUAL_UNION_TYPE)
     {
-    /* The field must be artificial because someone could have written
-       their own typedef of the class's name.  */
-    if ((TREE_CODE (field) == TYPE_DECL)
-        && (TREE_TYPE (field) == rt)
-        && DECL_ARTIFICIAL (field))
+    for (field = TYPE_FIELDS (rt) ; field ; field = TREE_CHAIN (field))
       {
-      return DECL_NAME (field);
+      /* The field must be artificial because someone could have written
+         their own typedef of the class's name.  */
+      if ((TREE_CODE (field) == TYPE_DECL)
+          && (TREE_TYPE (field) == rt)
+          && DECL_ARTIFICIAL (field))
+        {
+        return DECL_NAME (field);
+        }
       }
     }
 
@@ -2903,6 +2873,7 @@ xml_add_type_decl (xml_dump_info_p xdi, tree td, int complete)
       break;
     case ENUMERAL_TYPE:
     case UNION_TYPE:
+    case QUAL_UNION_TYPE:
     case RECORD_TYPE:
       if ((TREE_CODE (t) == RECORD_TYPE) && TYPE_PTRMEMFUNC_P (t))
         {
@@ -3044,6 +3015,7 @@ xml_find_template_parm (tree t)
         }
       } break;
     case UNION_TYPE:
+    case QUAL_UNION_TYPE:
     case RECORD_TYPE:
       {
       if ((TREE_CODE (t) == RECORD_TYPE) && TYPE_PTRMEMFUNC_P (t))
@@ -3215,6 +3187,7 @@ xml_dump_tree_node (xml_dump_info_p xdi, tree n, xml_dump_node_p dn)
       xml_output_field_decl (xdi, n, dn);
       break;
     case UNION_TYPE:
+    case QUAL_UNION_TYPE:
     case RECORD_TYPE:
     case ARRAY_TYPE:
     case POINTER_TYPE:
@@ -3257,6 +3230,12 @@ xml_dump_tree_node (xml_dump_info_p xdi, tree n, xml_dump_node_p dn)
 int
 xml_add_node (xml_dump_info_p xdi, tree n, int complete)
 {
+  /* Skip internally generated declarations.  */
+  if(n != global_namespace && DECL_P (n) && DECL_SOURCE_LINE(n) == 0)
+    {
+    return 0;
+    }
+
   /* Some nodes don't need to be dumped and just refer to other nodes.
      These nodes should can have index zero because they should never
      be referenced.  */
@@ -3278,6 +3257,7 @@ xml_add_node (xml_dump_info_p xdi, tree n, int complete)
       return xml_add_template_decl (xdi, n, complete);
       break;
     case UNION_TYPE:
+    case QUAL_UNION_TYPE:
     case RECORD_TYPE:
       if ((TREE_CODE (n) == RECORD_TYPE) && TYPE_PTRMEMFUNC_P (n))
         {
@@ -3518,6 +3498,35 @@ xml_get_encoded_identifier_from_string (const char* in_str)
 #undef XML_GREATER_THAN
 #undef XML_SINGLE_QUOTE
 #undef XML_DOUBLE_QUOTE
+
+/*--------------------------------------------------------------------------*/
+/* Called for all identifiers in the symbol table.  */
+static int xml_fill_all_decls(struct cpp_reader* reader, hashnode node,
+                              const void* user_data)
+{
+  /* Get the bindings for the current identifier.  */
+  tree id = HT_IDENT_TO_GCC_IDENT(node);
+  cxx_binding* binding = IDENTIFIER_NAMESPACE_BINDINGS(id);
+
+  /* Avoid unused parameter warnings.  */
+  (void)reader;
+  (void)user_data;
+
+  /* For each binding of this symbol add the declaration to the vector
+     of all declarations in the corresponding scope.  */
+  for(;binding; binding = binding->previous)
+    {
+    if(binding->value)
+      {
+      VEC_safe_push (tree, gc, binding->scope->all_decls, binding->value);
+      }
+    if(binding->type)
+      {
+      VEC_safe_push (tree, gc, binding->scope->all_decls, binding->type);
+      }
+    }
+  return 1;
+}
 
 /*--------------------------------------------------------------------------*/
 /* Check at
