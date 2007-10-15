@@ -143,25 +143,25 @@ ENDFOREACH(f)
 
 # Find an awk tool.
 IF(WIN32 AND NOT CYGWIN)
-  SET(AWK_EXECUTABLE "${GCC_SOURCE_DIR}/config_cmake/gawk.exe")
+  SET(AWK_EXECUTABLE "${GCC_SOURCE_DIR}/config_cmake/nawk.exe")
 ELSE(WIN32 AND NOT CYGWIN)
   FIND_PROGRAM(AWK_EXECUTABLE NAMES gawk awk)
   MARK_AS_ADVANCED(AWK_EXECUTABLE)
 ENDIF(WIN32 AND NOT CYGWIN)
 
 ADD_CUSTOM_COMMAND(OUTPUT ${GCC_BINARY_DIR}/gcc/optionlist
-  COMMAND ${AWK_EXECUTABLE} -f ${GCC_SOURCE_DIR}/gcc/opt-gather.awk ${ALL_OPT_FILES} > ${GCC_BINARY_DIR}/gcc/optionlist
-  DEPENDS ${GCC_SOURCE_DIR}/gcc/opt-gather.awk ${ALL_OPT_FILES})
+  COMMAND ${AWK_EXECUTABLE} -f ${GCC_SOURCE_DIR}/gcc/opt-gather.awk ${ALL_OPT_FILES} > optionlist
+  DEPENDS ${GCC_SOURCE_DIR}/gcc/opt-gather.awk ${ALL_OPT_FILES}
+  )
 
 ADD_CUSTOM_COMMAND(OUTPUT ${GCC_BINARY_DIR}/gcc/options.h
-  COMMAND ${AWK_EXECUTABLE} -f ${GCC_SOURCE_DIR}/gcc/opt-functions.awk -f ${GCC_SOURCE_DIR}/gcc/opth-gen.awk < ${GCC_BINARY_DIR}/gcc/optionlist > ${GCC_BINARY_DIR}/gcc/options.h
+  COMMAND ${AWK_EXECUTABLE} -f ${GCC_SOURCE_DIR}/gcc/opt-functions.awk -f ${GCC_SOURCE_DIR}/gcc/opth-gen.awk < optionlist > options.h
   DEPENDS ${GCC_SOURCE_DIR}/gcc/opt-functions.awk ${GCC_SOURCE_DIR}/gcc/opth-gen.awk ${GCC_BINARY_DIR}/gcc/optionlist
   )
 
 ADD_CUSTOM_COMMAND(OUTPUT ${GCC_BINARY_DIR}/gcc/options.c
   COMMAND ${AWK_EXECUTABLE} -f ${GCC_SOURCE_DIR}/gcc/opt-functions.awk -f ${GCC_SOURCE_DIR}/gcc/optc-gen.awk
-               -v header_name="config.h system.h coretypes.h tm.h"
-               < ${GCC_BINARY_DIR}/gcc/optionlist > ${GCC_BINARY_DIR}/gcc/options.c
+                            -v header_name="config.h system.h coretypes.h tm.h" < optionlist > options.c
   DEPENDS ${GCC_SOURCE_DIR}/gcc/opt-functions.awk ${GCC_SOURCE_DIR}/gcc/optc-gen.awk ${GCC_BINARY_DIR}/gcc/optionlist
   )
 
@@ -181,17 +181,17 @@ SET_TARGET_PROPERTIES(genmodes PROPERTIES COMPILE_FLAGS -DGENERATOR_FILE)
 SET(GCC_genmodes_EXE "${GCC_GEN_DIR}/genmodes${GCC_EXE_EXT}")
 
 ADD_CUSTOM_COMMAND(OUTPUT ${GCC_BINARY_DIR}/gcc/insn-modes.h
-  COMMAND ${GCC_genmodes_EXE} -h > "${GCC_BINARY_DIR}/gcc/insn-modes.h"
+  COMMAND ${GCC_genmodes_EXE} -h > insn-modes.h
   DEPENDS genmodes
   )
 
 ADD_CUSTOM_COMMAND(OUTPUT ${GCC_BINARY_DIR}/gcc/insn-modes.c
-  COMMAND ${GCC_genmodes_EXE} > "${GCC_BINARY_DIR}/gcc/insn-modes.c"
+  COMMAND ${GCC_genmodes_EXE} > insn-modes.c
   DEPENDS genmodes
   )
 
 ADD_CUSTOM_COMMAND(OUTPUT ${GCC_BINARY_DIR}/gcc/min-insn-modes.c
-  COMMAND ${GCC_genmodes_EXE} -m > "${GCC_BINARY_DIR}/gcc/min-insn-modes.c"
+  COMMAND ${GCC_genmodes_EXE} -m > min-insn-modes.c
   DEPENDS genmodes
   )
 
@@ -207,13 +207,13 @@ SET(GCC_gengenrtl_EXE "${GCC_GEN_DIR}/gengenrtl${GCC_EXE_EXT}")
 
 ADD_CUSTOM_COMMAND(
   OUTPUT ${GCC_BINARY_DIR}/gcc/genrtl.c
-  COMMAND ${GCC_gengenrtl_EXE} > ${GCC_BINARY_DIR}/gcc/genrtl.c
+  COMMAND ${GCC_gengenrtl_EXE} > genrtl.c
   DEPENDS gengenrtl
   )
 
 ADD_CUSTOM_COMMAND(
   OUTPUT ${GCC_BINARY_DIR}/gcc/genrtl.h
-  COMMAND ${GCC_gengenrtl_EXE} -h > ${GCC_BINARY_DIR}/gcc/genrtl.h
+  COMMAND ${GCC_gengenrtl_EXE} -h > genrtl.h
   DEPENDS gengenrtl
   )
 
@@ -335,7 +335,7 @@ SET(GCC_gencheck_EXE "${GCC_GEN_DIR}/gencheck${GCC_EXE_EXT}")
 
 ADD_CUSTOM_COMMAND(
   OUTPUT ${GCC_BINARY_DIR}/gcc/tree-check.h
-  COMMAND ${GCC_gencheck_EXE} > "${GCC_BINARY_DIR}/gcc/tree-check.h"
+  COMMAND ${GCC_gencheck_EXE} > tree-check.h
   DEPENDS gencheck
   )
 
@@ -366,7 +366,7 @@ SET(GCC_genconstants_EXE "${GCC_GEN_DIR}/genconstants${GCC_EXE_EXT}")
 
 ADD_CUSTOM_COMMAND(
   OUTPUT ${GCC_BINARY_DIR}/gcc/insn-constants.h
-  COMMAND ${GCC_genconstants_EXE} ${MD_FILE} > ${GCC_BINARY_DIR}/gcc/insn-constants.h
+  COMMAND ${GCC_genconstants_EXE} ${MD_FILE} > insn-constants.h
   DEPENDS genconstants ${MD_FILE}
   )
 
@@ -381,19 +381,19 @@ SET(GCC_genpreds_EXE "${GCC_GEN_DIR}/genpreds${GCC_EXE_EXT}")
 
 ADD_CUSTOM_COMMAND(
   OUTPUT ${GCC_BINARY_DIR}/gcc/tm-preds.h
-  COMMAND ${GCC_genpreds_EXE} -h ${MD_FILE} > ${GCC_BINARY_DIR}/gcc/tm-preds.h
+  COMMAND ${GCC_genpreds_EXE} -h ${MD_FILE} > tm-preds.h
   DEPENDS genpreds ${MD_FILE}
   )
 
 ADD_CUSTOM_COMMAND(
   OUTPUT ${GCC_BINARY_DIR}/gcc/tm-constrs.h
-  COMMAND ${GCC_genpreds_EXE} -c ${MD_FILE} > ${GCC_BINARY_DIR}/gcc/tm-constrs.h
+  COMMAND ${GCC_genpreds_EXE} -c ${MD_FILE} > tm-constrs.h
   DEPENDS genpreds ${MD_FILE}
   )
 
 ADD_CUSTOM_COMMAND(
   OUTPUT ${GCC_BINARY_DIR}/gcc/insn-preds.c
-  COMMAND ${GCC_genpreds_EXE} ${MD_FILE} > ${GCC_BINARY_DIR}/gcc/insn-preds.c
+  COMMAND ${GCC_genpreds_EXE} ${MD_FILE} > insn-preds.c
   DEPENDS genpreds ${MD_FILE}
   )
 
@@ -408,7 +408,7 @@ SET(GCC_genconditions_EXE "${GCC_GEN_DIR}/genconditions${GCC_EXE_EXT}")
 
 ADD_CUSTOM_COMMAND(
   OUTPUT ${GCC_BINARY_DIR}/gcc/gencondmd.c
-  COMMAND ${GCC_genconditions_EXE} ${MD_FILE} > ${GCC_BINARY_DIR}/gcc/gencondmd.c
+  COMMAND ${GCC_genconditions_EXE} ${MD_FILE} > gencondmd.c
   DEPENDS genconditions ${MD_FILE}
   )
 
@@ -446,7 +446,7 @@ FOREACH(tgt config codes attr flags)
 
   ADD_CUSTOM_COMMAND(
     OUTPUT ${GCC_BINARY_DIR}/gcc/insn-${tgt}.h
-    COMMAND ${GCC_gen${tgt}_EXE} ${MD_FILE} ${MD_COND} > ${GCC_BINARY_DIR}/gcc/insn-${tgt}.h
+    COMMAND ${GCC_gen${tgt}_EXE} ${MD_FILE} ${MD_COND} > insn-${tgt}.h
     DEPENDS gen${tgt} ${MD_FILE} ${MD_COND}
     )
 ENDFOREACH(tgt)
@@ -471,7 +471,7 @@ FOREACH(tgt emit extract opinit peep output recog attrtab automata)
 
   ADD_CUSTOM_COMMAND(
     OUTPUT ${GCC_BINARY_DIR}/gcc/insn-${tgt}.c
-    COMMAND ${GCC_gen${tgt}_EXE} ${MD_FILE} ${MD_COND} > ${GCC_BINARY_DIR}/gcc/insn-${tgt}.c
+    COMMAND ${GCC_gen${tgt}_EXE} ${MD_FILE} ${MD_COND} > insn-${tgt}.c
     DEPENDS gen${tgt} ${MD_FILE} ${MD_COND}
     )
 ENDFOREACH(tgt)
@@ -486,7 +486,7 @@ SET(GCC_gcov-iov_EXE "${GCC_GEN_DIR}/gcov-iov${GCC_EXE_EXT}")
 
 ADD_CUSTOM_COMMAND(
   OUTPUT ${GCC_BINARY_DIR}/gcc/gcov-iov.h
-  COMMAND ${GCC_gcov-iov_EXE} '4.2.1' '' > ${GCC_BINARY_DIR}/gcc/gcov-iov.h
+  COMMAND ${GCC_gcov-iov_EXE} '4.2.1' '' > gcov-iov.h
   DEPENDS gcov-iov
   )
 

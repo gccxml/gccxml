@@ -462,6 +462,12 @@ announce_function (tree decl)
     }
 }
 
+/* BEGIN GCC-XML MODIFICATIONS (2007/10/15 20:23:18) */
+#if defined(__BORLANDC__)
+# undef randomize
+#endif
+/* END GCC-XML MODIFICATIONS (2007/10/15 20:23:18) */
+
 /* Set up a default flag_random_seed and local_tick, unless the user
    already specified one.  */
 
@@ -1170,9 +1176,9 @@ print_version (FILE *file, const char *indent)
   fprintf (file,
            file == stderr ? _(fmt1) : fmt1,
            indent, *indent != 0 ? " " : "",
-/* BEGIN GCC-XML MODIFICATIONS (2007/10/08 15:34:31) */
+/* BEGIN GCC-XML MODIFICATIONS (2007/10/15 20:23:18) */
            lang_hooks.name, version_string, GCC_TO_STRING(TARGET_NAME),
-/* END GCC-XML MODIFICATIONS (2007/10/08 15:34:31) */
+/* END GCC-XML MODIFICATIONS (2007/10/15 20:23:18) */
            indent, __VERSION__);
   fprintf (file,
            file == stderr ? _(fmt2) : fmt2,

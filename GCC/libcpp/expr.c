@@ -124,6 +124,44 @@ interpret_int_suffix (const uchar *s, size_t len)
 
   u = l = i = 0;
 
+/* BEGIN GCC-XML MODIFICATIONS (2007/10/15 20:23:19) */
+  /* Special support for MSVC integer suffixes.  */
+  if(len >= 2 && len < 10)
+    {
+    /* Duplicate input to avoid corrupting it.  */
+    const uchar* p = s;
+    size_t plen = len;
+    int pu = 0;
+
+    /* Check for unsigned part.  */
+    if(p[0] == 'u' || p[0] == 'U')
+      {
+      pu = 1;
+      ++p;
+      --plen;
+      }
+
+    /* Check for integer part.  */
+    if(p[0] == 'i' || p[0] == 'I')
+      {
+      /* Copy the rest of the buffer and null-terminate it.  */
+      int bits;
+      char buf[10];
+      memcpy(buf, p+1, plen-1);
+      buf[plen] = 0;
+
+      /* Try to parse the integer bit count.  */
+      if(sscanf(buf, "%d", &bits) == 1)
+        {
+        /* Encode the integer type and return it.  */
+        return ((pu ? CPP_N_UNSIGNED : 0)
+                | ((bits < 32) ? CPP_N_SMALL
+                   : (bits < 64) ? CPP_N_MEDIUM : CPP_N_LARGE));
+        }
+      }
+    }
+/* END GCC-XML MODIFICATIONS (2007/10/15 20:23:19) */
+
   while (len--)
     switch (s[len])
       {

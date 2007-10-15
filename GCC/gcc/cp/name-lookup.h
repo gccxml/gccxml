@@ -242,6 +242,11 @@ struct cp_binding_level GTY(())
     /* Binding depth at which this level began.  */
     int binding_depth;
 
+/* BEGIN GCC-XML MODIFICATIONS (2007/10/15 20:23:19) */
+    /* All declarations bound to this scope.  */
+    VEC(tree,gc) *all_decls;
+/* END GCC-XML MODIFICATIONS (2007/10/15 20:23:19) */
+
     /* The kind of scope that this object represents.  However, a
        SK_TEMPLATE_SPEC scope is represented with KIND set to
        SK_TEMPLATE_PARMS and EXPLICIT_SPEC_P set to true.  */

@@ -1757,7 +1757,7 @@ update_lineno (const char *l, size_t len)
 #define in_comment 3
 #define in_yacc_escape 4
 
-/* BEGIN GCC-XML MODIFICATIONS (2007/10/08 15:34:29) */
+/* BEGIN GCC-XML MODIFICATIONS (2007/10/15 20:23:18) */
 #ifndef YY_NO_UNISTD_H
 /* Special case for "unistd.h", since it is non-ANSI. We include it way
  * down here because we want the user's section 1 to have been scanned first.
@@ -1765,7 +1765,7 @@ update_lineno (const char *l, size_t len)
  */
 #include <unistd.h>
 #endif
-/* END GCC-XML MODIFICATIONS (2007/10/08 15:34:29) */
+/* END GCC-XML MODIFICATIONS (2007/10/15 20:23:18) */
 
 #ifndef YY_EXTRA_TYPE
 #define YY_EXTRA_TYPE void *
@@ -1775,6 +1775,9 @@ update_lineno (const char *l, size_t len)
  * section 1.
  */
 
+/* BEGIN GCC-XML MODIFICATIONS (2007/10/15 20:23:18) */
+#define yywrap() 1
+/* END GCC-XML MODIFICATIONS (2007/10/15 20:23:18) */
 #ifndef YY_SKIP_YYWRAP
 #ifdef __cplusplus
 extern "C" int yywrap (void );

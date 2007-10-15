@@ -435,8 +435,5 @@
 /* Define to `int' if <sys/types.h> does not define. */
 #cmakedefine pid_t @pid_t@
 
-/* Define to `unsigned long' if <sys/types.h> does not define. */
-#cmakedefine uintptr_t @uintptr_t@
-
 /* Define as `fork' if `vfork' does not work. */
 #cmakedefine vfork @vfork@

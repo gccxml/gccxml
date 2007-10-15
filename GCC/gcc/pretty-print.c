@@ -35,29 +35,39 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
 #define pp_formatted_text_data(PP) \
    ((const char *) obstack_base (pp_base (PP)->buffer->obstack))
 
+/* BEGIN GCC-XML MODIFICATIONS (2007/10/15 20:23:18) */
+#if defined(_MSC_VER) && _MSC_VER < 1400 || defined(__BORLANDC__)
+# define PP_LL_FORMAT "%I64"
+# define PP_LL_TYPE __int64
+#else
+# define PP_LL_FORMAT "%ll"
+# define PP_LL_TYPE long long
+#endif
+
 /* Format an integer given by va_arg (ARG, type-specifier T) where
    type-specifier is a precision modifier as indicated by PREC.  F is
    a string used to construct the appropriate format-specifier.  */
-#define pp_integer_with_precision(PP, ARG, PREC, T, F)       \
+#define pp_integer_with_precision(PP, ARG, PREC, sign, F)       \
   do                                                         \
     switch (PREC)                                            \
       {                                                      \
       case 0:                                                \
-        pp_scalar (PP, "%" F, va_arg (ARG, T));              \
+        pp_scalar (PP, "%" F, va_arg (ARG, sign int));              \
         break;                                               \
                                                              \
       case 1:                                                \
-        pp_scalar (PP, "%l" F, va_arg (ARG, long T));        \
+        pp_scalar (PP, "%l" F, va_arg (ARG, sign long));        \
         break;                                               \
                                                              \
       case 2:                                                \
-        pp_scalar (PP, "%ll" F, va_arg (ARG, long long T));  \
+        pp_scalar (PP, PP_LL_FORMAT F, va_arg (ARG, sign PP_LL_TYPE));  \
         break;                                               \
                                                              \
       default:                                               \
         break;                                               \
       }                                                      \
   while (0)
+/* END GCC-XML MODIFICATIONS (2007/10/15 20:23:18) */
 
 
 /* Subroutine of pp_set_maximum_length.  Set up PRETTY-PRINTER's
@@ -432,8 +442,10 @@ pp_base_format (pretty_printer *pp, text_info *text)
           if (wide)
             pp_wide_integer (pp, va_arg (*text->args_ptr, HOST_WIDE_INT));
           else
+/* BEGIN GCC-XML MODIFICATIONS (2007/10/15 20:23:18) */
             pp_integer_with_precision
-              (pp, *text->args_ptr, precision, int, "d");
+              (pp, *text->args_ptr, precision, signed, "d");
+/* BEGIN GCC-XML MODIFICATIONS (2007/10/15 20:23:18) */
           break;
 
         case 'o':

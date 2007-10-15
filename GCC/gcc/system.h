@@ -769,8 +769,8 @@ extern void fancy_abort (const char *, int, const char *) ATTRIBUTE_NORETURN;
 
 #endif /* GCC >= 3.0 */
 
-/* BEGIN GCC-XML MODIFICATIONS (2007/10/08 15:34:31) */
-#if defined(_MSC_VER)
+/* BEGIN GCC-XML MODIFICATIONS (2007/10/15 20:23:18) */
+#if defined(_MSC_VER) && _MSC_VER >= 1400
 static inline void gccxml_fix_printf(void)
 {
   _set_printf_count_output(1);
@@ -785,6 +785,6 @@ static inline void gccxml_fix_printf(void) {}
    Examples:  gcc 3.0.4 = 0x030004
               gcc 3.2.0 = 0x030200 */
 #define GCC_XML_GCC_VERSION 0x040201
-/* END GCC-XML MODIFICATIONS (2007/10/08 15:34:31) */
+/* END GCC-XML MODIFICATIONS (2007/10/15 20:23:18) */
 
 #endif /* ! GCC_SYSTEM_H */

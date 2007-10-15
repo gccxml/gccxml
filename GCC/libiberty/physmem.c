@@ -73,13 +73,13 @@ typedef struct
   DWORDLONG ullAvailVirtual;
   DWORDLONG ullAvailExtendedVirtual;
 } lMEMORYSTATUSEX;
-/* BEGIN GCC-XML MODIFICATIONS (2007/10/08 15:35:22) */
+/* BEGIN GCC-XML MODIFICATIONS (2007/10/15 20:23:19) */
 # if !defined(_MSC_VER) && !defined(__BORLANDC__)
 typedef WINBOOL (WINAPI *PFN_MS_EX) (lMEMORYSTATUSEX*);
 # else
 typedef BOOL (WINAPI *PFN_MS_EX) (lMEMORYSTATUSEX*);
 # endif
-/* END GCC-XML MODIFICATIONS (2007/10/08 15:35:22) */
+/* END GCC-XML MODIFICATIONS (2007/10/15 20:23:19) */
 #endif
 
 #include "libiberty.h"
@@ -170,7 +170,13 @@ physmem_total (void)
         lms_ex.dwLength = sizeof lms_ex;
         if (!pfnex (&lms_ex))
           return 0.0;
+/* BEGIN GCC-XML MODIFICATIONS (2007/10/15 20:23:19) */
+#if !defined(_MSC_VER) || _MSC_VER >= 1300
         return (double) lms_ex.ullTotalPhys;
+#else
+        return (double)(signed __int64) lms_ex.ullTotalPhys;
+#endif
+/* END GCC-XML MODIFICATIONS (2007/10/15 20:23:19) */
       }
 
     /*  Fall back to GlobalMemoryStatus which is always available.
@@ -271,7 +277,13 @@ physmem_available (void)
         lms_ex.dwLength = sizeof lms_ex;
         if (!pfnex (&lms_ex))
           return 0.0;
+/* BEGIN GCC-XML MODIFICATIONS (2007/10/15 20:23:19) */
+#if !defined(_MSC_VER) || _MSC_VER >= 1300
         return (double) lms_ex.ullAvailPhys;
+#else
+        return (double)(signed __int64) lms_ex.ullAvailPhys;
+#endif
+/* END GCC-XML MODIFICATIONS (2007/10/15 20:23:19) */
       }
 
     /*  Fall back to GlobalMemoryStatus which is always available.
