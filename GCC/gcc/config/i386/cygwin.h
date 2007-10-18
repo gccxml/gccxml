@@ -140,9 +140,9 @@ char cygwin_cross_include_dir[sizeof (CROSS_INCLUDE_DIR) + 1
 #endif
 
 #ifdef TOOL_INCLUDE_DIR
-char cygwin_tool_include_dir[sizeof (TOOL_INCLUDE_DIR) + 1
+char cygwin_tool_include_dir[sizeof (GCC_TO_STRING(TOOL_INCLUDE_DIR)) + 1
                              + CYGWIN_MINGW_SUBDIR_LEN]
-  = TOOL_INCLUDE_DIR;
+  = GCC_TO_STRING(TOOL_INCLUDE_DIR);
 #undef TOOL_INCLUDE_DIR
 #define TOOL_INCLUDE_DIR ((const char *) cygwin_tool_include_dir)
 
