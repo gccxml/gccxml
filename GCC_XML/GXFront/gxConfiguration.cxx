@@ -253,9 +253,9 @@ void gxConfiguration::AddArguments(std::vector<std::string>& arguments) const
                                     GCCXML_VERSION_MINOR*100 +
                                     GCCXML_VERSION_PATCH);
   arguments.push_back(version.str().c_str());
-  arguments.push_back("-D__GCCXML_GNUC__=3");
-  arguments.push_back("-D__GCCXML_GNUC_MINOR__=3");
-  arguments.push_back("-D__GCCXML_GNUC_PATCHLEVEL__=2");
+  arguments.push_back("-D__GCCXML_GNUC__=4");
+  arguments.push_back("-D__GCCXML_GNUC_MINOR__=2");
+  arguments.push_back("-D__GCCXML_GNUC_PATCHLEVEL__=1");
 
   // Add user arguments.
   for(std::vector<std::string>::const_iterator i=m_Arguments.begin();
@@ -876,6 +876,85 @@ bool gxConfiguration::CheckFlags()
 }
 
 //----------------------------------------------------------------------------
+// Implemented below (at the bottom of the cxx file) to avoid windows.h
+// mangling of #define symbols...
+int GetPID();
+
+//----------------------------------------------------------------------------
+std::string AttemptTempFileName(const char* prefix, const char* ext)
+{
+  std::string dir;
+  std::string file;
+
+  // Get TMP, TEMP or "/tmp" dir if one exists,
+  // or if not, use "." (current dir)
+  //
+  gxSystemTools::GetEnv("TMP", dir);
+  if(dir.empty() || !gxSystemTools::FileExists(dir.c_str()))
+    {
+    gxSystemTools::GetEnv("TEMP", dir);
+    }
+  if(dir.empty() || !gxSystemTools::FileExists(dir.c_str()))
+    {
+    dir = "/tmp";
+    }
+  if(dir.empty() || !gxSystemTools::FileExists(dir.c_str()))
+    {
+    dir = ".";
+    }
+  gxSystemTools::ConvertToUnixSlashes(dir);
+
+  file = dir;
+
+  if(!gxSystemTools::StringEndsWith(file.c_str(), "/"))
+    {
+    file += "/";
+    }
+  if(prefix)
+    {
+    file += prefix;
+    }
+
+  gxsys_ios::ostringstream oss;
+  oss << GetPID();
+
+  file += oss.str();
+
+  if(ext)
+    {
+    file += ext;
+    }
+
+  return file;
+}
+
+//----------------------------------------------------------------------------
+std::string GetTempFileName(const char* prefix, const char* ext)
+{
+  std::string name(AttemptTempFileName(prefix, ext));
+  int counter = 1;
+
+  // Use counter to unique-ify and return a name that does not
+  // currently exist:
+  //
+  while (gxSystemTools::FileExists(name.c_str()))
+    {
+    gxsys_ios::ostringstream oss;
+    oss << "x";
+    oss << counter;
+    if (ext)
+      {
+      oss << ext;
+      }
+
+    name = AttemptTempFileName(prefix, oss.str().c_str());
+    counter++;
+    }
+
+  return name;
+}
+
+//----------------------------------------------------------------------------
 std::string gxConfiguration::GetCompilerId()
 {
   // This method uses the technique formerly found in the shell script
@@ -893,19 +972,7 @@ std::string gxConfiguration::GetCompilerId()
   // Write a temp file such that after preprocessing there should only be
   // one "<Id>(.*)</Id>" chunk in the output.
   //
-  std::string cppFile;
-  const char* cppFileBase = tempnam(0, "gx");
-  if(cppFileBase)
-    {
-    cppFile = cppFileBase;
-    free((void*) cppFileBase);
-    }
-  else
-    {
-    cppFile = "gx1";
-    }
-  cppFile += ".cpp";
-
+  std::string cppFile(GetTempFileName("gx", ".cpp"));
   std::ofstream ofs(cppFile.c_str());
 
   ofs << "#if defined(__GNUC__)" << std::endl;
@@ -1468,10 +1535,15 @@ bool gxConfiguration::FindFlagsGCC()
     INCLUDES = "-iwrapper\"" + supportPath + "/4.0\" " + INCLUDES;
     SPECIAL = "-include \"" + supportPath + "/4.0/gccxml_builtins.h\"";
     }
+  else if(MAJOR_VERSION == 4 && MINOR_VERSION >= 2)
+    {
+    INCLUDES = "-iwrapper\"" + supportPath + "/4.2\" " + INCLUDES;
+    SPECIAL = "-include \"" + supportPath + "/4.2/gccxml_builtins.h\"";
+    }
   else if(MAJOR_VERSION == 3 && MINOR_VERSION >= 4)
     {
     INCLUDES = "-iwrapper\"" + supportPath + "/3.4\" " + INCLUDES;
-    SPECIAL = "-include \"" + supportPath + "/3.4/gccxml_builtins.h\"";
+    SPECIAL = "-include \"gccxml_builtins.h\"";
     }
   else if(MAJOR_VERSION == 3 && MINOR_VERSION == 3)
     {
@@ -2289,4 +2361,24 @@ bool gxConfiguration::FindFlagsBCC55(const char* inBcc32)
     "-iwrapper\""+include2+"\" "
     "-I\""+include3+"\" ";
   return true;
+}
+
+//----------------------------------------------------------------------------
+// Keep this section here (at the bottom of the cxx file) to avoid windows.h
+// mangling of #define symbols...
+#ifdef _WIN32
+#include <windows.h>
+#else
+#include <sys/types.h>
+#include <unistd.h>
+#endif
+
+//----------------------------------------------------------------------------
+int GetPID()
+{
+#ifdef _WIN32
+  return (int) GetCurrentProcessId();
+#else
+  return (int) getpid();
+#endif
 }
