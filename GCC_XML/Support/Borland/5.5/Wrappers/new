@@ -1,7 +1,7 @@
 #if defined(__USING_STD_NAMES__)
-# include_next <new.h>
+# include <gccxml_new.h>
 #else
 # define __USING_STD_NAMES__
-# include_next <new.h>
+# include <gccxml_new.h>
 # undef __USING_STD_NAMES__
 #endif
