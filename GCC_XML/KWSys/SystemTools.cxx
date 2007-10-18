@@ -455,6 +455,11 @@ void SystemTools::ReplaceString(kwsys_stl::string& source,
 
   // perform replacements until done
   size_t replaceSize = strlen(replace);
+  // do while hangs if replaceSize is 0
+  if(replaceSize == 0)
+    {
+    return;
+    }
   char *orig = strdup(src);
   char *currentPos = orig;
   searchPos = searchPos - src + orig;
@@ -3379,7 +3384,7 @@ bool SystemTools::LocateFileInDir(const char *filename,
       }
     temp += filename_base;
 
-    if (SystemTools::FileExists(filename_found.c_str()))
+    if (SystemTools::FileExists(temp.c_str()))
       {
       res = true;
       filename_found = temp;
