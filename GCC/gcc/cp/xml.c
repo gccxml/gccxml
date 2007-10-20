@@ -60,7 +60,7 @@
 
 #include "toplev.h" /* ident_hash */
 
-#define GCC_XML_C_VERSION "$Revision: 1.115.4.2 $"
+#define GCC_XML_C_VERSION "$Revision: 1.115.4.3 $"
 
 /*--------------------------------------------------------------------------*/
 /* Data structures for the actual XML dump.  */
@@ -3230,9 +3230,17 @@ xml_dump_tree_node (xml_dump_info_p xdi, tree n, xml_dump_node_p dn)
 int
 xml_add_node (xml_dump_info_p xdi, tree n, int complete)
 {
-  /* Skip internally generated declarations.  */
-  if(n != global_namespace && DECL_P (n) && DECL_SOURCE_LINE(n) == 0)
+  /* Skip internally generated declarations other than namespaces.  */
+  if(TREE_CODE (n) != NAMESPACE_DECL &&
+     DECL_P (n) && DECL_SOURCE_LINE(n) == 0)
     {
+    /* If it turns out that internally generated namespaces other than the
+       global namespace and std namespace should be disabled then change the namespace
+       test above to
+
+         n != global_namespace && !DECL_NAMESPACE_STD_P(n)
+
+       which will enable just those internal declarations.  */
     return 0;
     }
 
