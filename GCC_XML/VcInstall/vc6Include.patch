@@ -21,14 +21,101 @@ diff -c -3 -p -r1.1.1.1 -r1.3
 ! #define assert(exp)     ((void)0)
   
   #endif  /* NDEBUG */
+Index: complex
+===================================================================
+RCS file: /cvsroot/GxInclude/VcInclude/complex,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1.1.1 -r1.2
+*** complex	13 Jun 2001 19:30:43 -0000	1.1.1.1
+--- complex	21 Oct 2007 19:06:49 -0000	1.2
+*************** public:
+*** 56,61 ****
+--- 56,62 ----
+  		{return (::sqrt((double)_X)); }
+  	};
+  		// CLASS _Ctr<long double>
++ template<>
+  class _CRTIMP _Ctr<long double> {
+  public:
+  	typedef long double _Ty;
+*************** public:
+*** 91,96 ****
+--- 92,98 ----
+  		{return (sqrtl(_X)); }
+  	};
+  		// CLASS _Ctr<double>
++ template<>
+  class _CRTIMP _Ctr<double> {
+  public:
+  	typedef double _Ty;
+*************** public:
+*** 125,130 ****
+--- 127,133 ----
+  	static _Ty sqrt(_Ty _X)
+  		{return (::sqrt(_X)); }
+  	};
++ template<>
+  class _CRTIMP _Ctr<float> {
+  public:
+  	typedef float _Ty;
+*************** protected:
+*** 200,205 ****
+--- 203,209 ----
+  
+  
+  		// CLASS complex<float>
++ template<>
+  class _CRTIMP complex<float> : public _Complex_base<float> {
+  public:
+  	typedef float _Ty;
+*************** public:
+*** 213,218 ****
+--- 217,223 ----
+  		return (*this); }
+  	};
+  		// CLASS complex<double>
++ template<>
+  class _CRTIMP complex<double> : public _Complex_base<double> {
+  public:
+  	typedef double _Ty;
+*************** public:
+*** 226,231 ****
+--- 231,237 ----
+  		return (*this); }
+  	};
+  		// CLASS complex<long double>
++ template<>
+  class _CRTIMP complex<long double> : public _Complex_base<long double> {
+  public:
+  	typedef long double _Ty;
+*************** public:
+*** 261,268 ****
+  	complex(const complex<_U>& _X)
+  		: _Complex_base<_Ty>((_Ty)_X.real(), (_Ty)_X.imag()) {}
+  	complex<_Ty>& operator=(const complex<_U>& _X)
+! 		{_Re = (_Ty)_X.real();
+! 		_Im = (_Ty)_X.imag();
+  		return (*this); }
+  	};
+  		// TEMPLATE complex OPERATORS
+--- 267,274 ----
+  	complex(const complex<_U>& _X)
+  		: _Complex_base<_Ty>((_Ty)_X.real(), (_Ty)_X.imag()) {}
+  	complex<_Ty>& operator=(const complex<_U>& _X)
+! 		{this->_Re = (_Ty)_X.real();
+! 		this->_Im = (_Ty)_X.imag();
+  		return (*this); }
+  	};
+  		// TEMPLATE complex OPERATORS
 Index: deque
 ===================================================================
 RCS file: /cvsroot/GxInclude/VcInclude/deque,v
 retrieving revision 1.1.1.1
-retrieving revision 1.2
-diff -c -3 -p -r1.1.1.1 -r1.2
+retrieving revision 1.3
+diff -c -3 -p -r1.1.1.1 -r1.3
 *** deque	13 Jun 2001 19:30:51 -0000	1.1.1.1
---- deque	13 Jun 2001 21:16:23 -0000	1.2
+--- deque	21 Oct 2007 19:06:49 -0000	1.3
 *************** template<class _Ty, class _A = allocator
 *** 23,36 ****
   public:
@@ -60,14 +147,106 @@ diff -c -3 -p -r1.1.1.1 -r1.2
   		// CLASS const_iterator
   	class iterator;
   	class const_iterator : public _Ranit<_Ty, difference_type> {
+*************** public:
+*** 124,148 ****
+  		iterator(_Tptr _P, _Mapptr _M)
+  			: const_iterator(_P, _M) {}
+  		reference operator*() const
+! 			{return (*_Next); }
+  		_Tptr operator->() const
+  			{return (&**this); }
+  		iterator& operator++()
+! 			{if (++_Next == _Last)
+  				{_First = *++_Map;
+  				_Last = _First + _DEQUESIZ;
+! 				_Next = _First; }
+  			return (*this); }
+  		iterator operator++(int)
+  			{iterator _Tmp = *this;
+  			++*this;
+  			return (_Tmp); }
+  		iterator& operator--()
+! 			{if (_Next == _First)
+  				{_First = *--_Map;
+  				_Last = _First + _DEQUESIZ;
+! 				_Next = _Last; }
+! 			--_Next;
+  			return (*this); }
+  		iterator operator--(int)
+  			{iterator _Tmp = *this;
+--- 124,148 ----
+  		iterator(_Tptr _P, _Mapptr _M)
+  			: const_iterator(_P, _M) {}
+  		reference operator*() const
+! 			{return (*this->_Next); }
+  		_Tptr operator->() const
+  			{return (&**this); }
+  		iterator& operator++()
+! 			{if (++this->_Next == _Last)
+  				{_First = *++_Map;
+  				_Last = _First + _DEQUESIZ;
+! 				this->_Next = _First; }
+  			return (*this); }
+  		iterator operator++(int)
+  			{iterator _Tmp = *this;
+  			++*this;
+  			return (_Tmp); }
+  		iterator& operator--()
+! 			{if (this->_Next == _First)
+  				{_First = *--_Map;
+  				_Last = _First + _DEQUESIZ;
+! 				this->_Next = _Last; }
+! 			--this->_Next;
+  			return (*this); }
+  		iterator operator--(int)
+  			{iterator _Tmp = *this;
+*************** public:
+*** 160,177 ****
+  			{iterator _Tmp = *this;
+  			return (_Tmp -= _N); }
+  		difference_type operator-(const iterator& _X) const
+! 			{return (_Map == _X._Map ? _Next - _X._Next
+  				: _DEQUESIZ * (_Map - _X._Map - 1)
+! 				+ (_Next - _First) + (_X._Last - _X._Next)); }
+  		reference operator[](difference_type _N) const
+  			{return (*(*this + _N)); }
+  		bool operator==(const iterator& _X) const
+! 			{return (_Next == _X._Next); }
+  		bool operator!=(const iterator& _X) const
+  			{return (!(*this == _X)); }
+  		bool operator<(const iterator& _X) const
+  			{return (_Map < _X._Map
+! 				|| _Map == _X._Map && _Next < _X._Next); }
+  		bool operator<=(const iterator& _X) const
+  			{return (!(_X < *this)); }
+  		bool operator>(const iterator& _X) const
+--- 160,177 ----
+  			{iterator _Tmp = *this;
+  			return (_Tmp -= _N); }
+  		difference_type operator-(const iterator& _X) const
+! 			{return (_Map == _X._Map ? this->_Next - _X._Next
+  				: _DEQUESIZ * (_Map - _X._Map - 1)
+! 				+ (this->_Next - _First) + (_X._Last - _X._Next)); }
+  		reference operator[](difference_type _N) const
+  			{return (*(*this + _N)); }
+  		bool operator==(const iterator& _X) const
+! 			{return (this->_Next == _X._Next); }
+  		bool operator!=(const iterator& _X) const
+  			{return (!(*this == _X)); }
+  		bool operator<(const iterator& _X) const
+  			{return (_Map < _X._Map
+! 				|| _Map == _X._Map && this->_Next < _X._Next); }
+  		bool operator<=(const iterator& _X) const
+  			{return (!(_X < *this)); }
+  		bool operator>(const iterator& _X) const
 Index: fstream
 ===================================================================
 RCS file: /cvsroot/GxInclude/VcInclude/fstream,v
 retrieving revision 1.1.1.1
-retrieving revision 1.3
-diff -c -3 -p -r1.1.1.1 -r1.3
+retrieving revision 1.4
+diff -c -3 -p -r1.1.1.1 -r1.4
 *** fstream	13 Jun 2001 19:30:57 -0000	1.1.1.1
---- fstream	14 Jun 2001 18:20:43 -0000	1.3
+--- fstream	21 Oct 2007 19:06:49 -0000	1.4
 *************** inline bool _Ungetc(char _C, _Filet *_Fi
 *** 62,73 ****
   inline bool _Ungetc(wchar_t _C, _Filet *_Fi)
@@ -82,7 +261,7 @@ diff -c -3 -p -r1.1.1.1 -r1.3
   	basic_filebuf(_Filet *_F = 0)
   		: _Loc(), _Mysb() {_Init(_F, _Newfl); }
   	basic_filebuf(_Uninitialized)
---- 62,73 ----
+--- 62,76 ----
   inline bool _Ungetc(wchar_t _C, _Filet *_Fi)
   	{return (ungetwc(_C, _Fi) != WEOF); }
   		// TEMPLATE CLASS basic_filebuf
@@ -91,10 +270,86 @@ diff -c -3 -p -r1.1.1.1 -r1.3
   public:
   	typedef basic_filebuf<_E, _Tr> _Myt;
   	typedef basic_streambuf<_E, _Tr> _Mysb;
+!         typedef typename _Mysb::int_type int_type;
+!         typedef typename _Mysb::pos_type pos_type;
+!         typedef typename _Mysb::off_type off_type;
 ! 	typedef codecvt<_E, char, typename _Tr::state_type> _Cvt;
   	basic_filebuf(_Filet *_F = 0)
   		: _Loc(), _Mysb() {_Init(_F, _Newfl); }
   	basic_filebuf(_Uninitialized)
+*************** protected:
+*** 98,105 ****
+  	virtual int_type overflow(int_type _C = _Tr::eof())
+  		{if (_Tr::eq_int_type(_Tr::eof(), _C))
+  			return (_Tr::not_eof(_C));
+! 		else if (pptr() != 0 && pptr() < epptr())
+! 			{*_Pninc() = _Tr::to_char_type(_C);
+  			return (_C); }
+  		else if (_File == 0)
+  			return (_Tr::eof());
+--- 101,108 ----
+  	virtual int_type overflow(int_type _C = _Tr::eof())
+  		{if (_Tr::eq_int_type(_Tr::eof(), _C))
+  			return (_Tr::not_eof(_C));
+! 		else if (this->pptr() != 0 && this->pptr() < this->epptr())
+! 			{*this->_Pninc() = _Tr::to_char_type(_C);
+  			return (_C); }
+  		else if (_File == 0)
+  			return (_Tr::eof());
+*************** protected:
+*** 129,139 ****
+  				default:
+  					return (_Tr::eof()); }}}}
+  	virtual int_type pbackfail(int_type _C = _Tr::eof())
+! 		{if (gptr() != 0 && eback() < gptr()
+  			&& (_Tr::eq_int_type(_Tr::eof(), _C)
+! 			 || _Tr::eq_int_type(_Tr::to_int_type(gptr()[-1]),
+  				_C)))
+! 			{_Gndec();
+  			return (_Tr::not_eof(_C)); }
+  		else if (_File == 0 || _Tr::eq_int_type(_Tr::eof(), _C))
+  			return (_Tr::eof());
+--- 132,142 ----
+  				default:
+  					return (_Tr::eof()); }}}}
+  	virtual int_type pbackfail(int_type _C = _Tr::eof())
+! 		{if (this->gptr() != 0 && this->eback() < this->gptr()
+  			&& (_Tr::eq_int_type(_Tr::eof(), _C)
+! 			 || _Tr::eq_int_type(_Tr::to_int_type(this->gptr()[-1]),
+  				_C)))
+! 			{this->_Gndec();
+  			return (_Tr::not_eof(_C)); }
+  		else if (_File == 0 || _Tr::eq_int_type(_Tr::eof(), _C))
+  			return (_Tr::eof());
+*************** protected:
+*** 148,160 ****
+  		else
+  			return (_Tr::eof()); }
+  	virtual int_type underflow()
+! 		{if (gptr() != 0 && gptr() < egptr())
+! 			return (_Tr::to_int_type(*gptr()));
+  		else
+  			return (pbackfail(uflow())); }
+  	virtual int_type uflow()
+! 		{if (gptr() != 0 && gptr() < egptr())
+! 			return (_Tr::to_int_type(*_Gninc()));
+  		else if (_File == 0)
+  			return (_Tr::eof());
+  		else if (_Pcvt == 0)
+--- 151,163 ----
+  		else
+  			return (_Tr::eof()); }
+  	virtual int_type underflow()
+! 		{if (this->gptr() != 0 && this->gptr() < this->egptr())
+! 			return (_Tr::to_int_type(*this->gptr()));
+  		else
+  			return (pbackfail(uflow())); }
+  	virtual int_type uflow()
+! 		{if (this->gptr() != 0 && this->gptr() < this->egptr())
+! 			return (_Tr::to_int_type(*this->_Gninc()));
+  		else if (_File == 0)
+  			return (_Tr::eof());
+  		else if (_Pcvt == 0)
 *************** protected:
 *** 210,216 ****
   	virtual int sync()
@@ -104,7 +359,7 @@ diff -c -3 -p -r1.1.1.1 -r1.3
   		_Closef = _Which == _Openfl;
   		if (_Which == _Newfl)
   			{_Loc.locale::~locale();
---- 210,216 ----
+--- 213,219 ----
   	virtual int sync()
   		{return (_File == 0 || 0 <= fflush(_File) ? 0 : -1); }
   	void _Init(_Filet *_Fp, _Initfl _Which)
@@ -112,6 +367,23 @@ diff -c -3 -p -r1.1.1.1 -r1.3
   		_Closef = _Which == _Openfl;
   		if (_Which == _Newfl)
   			{_Loc.locale::~locale();
+*************** protected:
+*** 227,233 ****
+  		_State0 = _Stinit;
+  		_Pcvt = 0; }
+  	void _Initcvt()
+! 		{_Pcvt = (_Cvt *)&_USE(getloc(), _Cvt);
+  		_Loc = _ADDFAC(_Loc, _Pcvt);
+  		if (_Pcvt->always_noconv())
+  			_Pcvt = 0;
+--- 230,236 ----
+  		_State0 = _Stinit;
+  		_Pcvt = 0; }
+  	void _Initcvt()
+! 		{_Pcvt = (_Cvt *)&_USE(this->getloc(), _Cvt);
+  		_Loc = _ADDFAC(_Loc, _Pcvt);
+  		if (_Pcvt->always_noconv())
+  			_Pcvt = 0;
 *************** protected:
 *** 235,242 ****
   			_Str = new string; }
@@ -122,7 +394,7 @@ diff -c -3 -p -r1.1.1.1 -r1.3
   	string *_Str;
   	bool _Closef;
   	locale _Loc;
---- 235,242 ----
+--- 238,245 ----
   			_Str = new string; }
   private:
   	_Cvt *_Pcvt;
@@ -140,7 +412,7 @@ diff -c -3 -p -r1.1.1.1 -r1.3
   	class basic_ifstream : public basic_istream<_E, _Tr> {
   public:
   	typedef basic_ifstream<_E, _Tr> _Myt;
---- 251,257 ----
+--- 254,260 ----
   #endif		// _DLL
   
   		// TEMPLATE CLASS basic_ifstream
@@ -148,6 +420,57 @@ diff -c -3 -p -r1.1.1.1 -r1.3
   	class basic_ifstream : public basic_istream<_E, _Tr> {
   public:
   	typedef basic_ifstream<_E, _Tr> _Myt;
+*************** public:
+*** 259,282 ****
+  	basic_ifstream()
+  		: basic_istream<_E, _Tr>(&_Fb) {}
+  	explicit basic_ifstream(const char *_S,
+! 		ios_base::openmode _M = in)
+  		: basic_istream<_E, _Tr>(&_Fb)
+! 		{if (_Fb.open(_S, _M | in) == 0)
+! 			setstate(failbit); }
+  	virtual ~basic_ifstream()
+  		{}
+  	_Myfb *rdbuf() const
+  		{return ((_Myfb *)&_Fb); }
+  	bool is_open() const
+  		{return (_Fb.is_open()); }
+! 	void open(const char *_S, ios_base::openmode _M = in)
+! 		{if (_Fb.open(_S, _M | in) == 0)
+! 		 	setstate(failbit); }
+  	void open(const char *_S, ios_base::open_mode _M)
+! 		{open(_S, (openmode)_M); }
+  	void close()
+  		{if (_Fb.close() == 0)
+! 		 	setstate(failbit); }
+  private:
+  	_Myfb _Fb;
+  	};
+--- 262,285 ----
+  	basic_ifstream()
+  		: basic_istream<_E, _Tr>(&_Fb) {}
+  	explicit basic_ifstream(const char *_S,
+! 		ios_base::openmode _M = ios_base::in)
+  		: basic_istream<_E, _Tr>(&_Fb)
+! 		{if (_Fb.open(_S, _M | ios_base::in) == 0)
+! 			this->setstate(ios::failbit); }
+  	virtual ~basic_ifstream()
+  		{}
+  	_Myfb *rdbuf() const
+  		{return ((_Myfb *)&_Fb); }
+  	bool is_open() const
+  		{return (_Fb.is_open()); }
+! 	void open(const char *_S, ios_base::openmode _M = ios_base::in)
+! 		{if (_Fb.open(_S, _M | ios_base::in) == 0)
+! 		 	this->setstate(ios::failbit); }
+  	void open(const char *_S, ios_base::open_mode _M)
+! 		{open(_S, (ios_base::openmode)_M); }
+  	void close()
+  		{if (_Fb.close() == 0)
+! 		 	this->setstate(ios::failbit); }
+  private:
+  	_Myfb _Fb;
+  	};
 *************** extern template class _CRTIMP basic_ifst
 *** 289,295 ****
   #endif		// _DLL
@@ -157,7 +480,7 @@ diff -c -3 -p -r1.1.1.1 -r1.3
   	class basic_ofstream : public basic_ostream<_E, _Tr> {
   public:
   	typedef basic_ofstream<_E, _Tr> _Myt;
---- 289,295 ----
+--- 292,298 ----
   #endif		// _DLL
   
   		// TEMPLATE CLASS basic_ofstream
@@ -165,8 +488,59 @@ diff -c -3 -p -r1.1.1.1 -r1.3
   	class basic_ofstream : public basic_ostream<_E, _Tr> {
   public:
   	typedef basic_ofstream<_E, _Tr> _Myt;
+*************** public:
+*** 297,320 ****
+  	basic_ofstream()
+  		: basic_ostream<_E, _Tr>(&_Fb) {}
+  	explicit basic_ofstream(const char *_S,
+! 		ios_base::openmode _M = out | trunc)
+  		: basic_ostream<_E, _Tr>(&_Fb)
+! 		{if (_Fb.open(_S, _M | out) == 0)
+! 			setstate(failbit); }
+  	virtual ~basic_ofstream()
+  		{}
+  	_Myfb *rdbuf() const
+  		{return ((_Myfb *)&_Fb); }
+  	bool is_open() const
+  		{return (_Fb.is_open()); }
+! 	void open(const char *_S, ios_base::openmode _M = out | trunc)
+! 		{if (_Fb.open(_S, _M | out) == 0)
+! 		 	setstate(failbit); }
+  	void open(const char *_S, ios_base::open_mode _M)
+! 		{open(_S, (openmode)_M); }
+  	void close()
+  		{if (_Fb.close() == 0)
+! 		 	setstate(failbit); }
+  private:
+  	_Myfb _Fb;
+  	};
+--- 300,323 ----
+  	basic_ofstream()
+  		: basic_ostream<_E, _Tr>(&_Fb) {}
+  	explicit basic_ofstream(const char *_S,
+! 		ios_base::openmode _M = ios_base::out | ios_base::trunc)
+  		: basic_ostream<_E, _Tr>(&_Fb)
+! 		{if (_Fb.open(_S, _M | ios_base::out) == 0)
+! 			this->setstate(ios_base::failbit); }
+  	virtual ~basic_ofstream()
+  		{}
+  	_Myfb *rdbuf() const
+  		{return ((_Myfb *)&_Fb); }
+  	bool is_open() const
+  		{return (_Fb.is_open()); }
+! 	void open(const char *_S, ios_base::openmode _M = ios_base::out | ios_base::trunc)
+! 		{if (_Fb.open(_S, _M | ios_base::out) == 0)
+! 		 	this->setstate(ios_base::failbit); }
+  	void open(const char *_S, ios_base::open_mode _M)
+! 		{open(_S, (ios_base::openmode)_M); }
+  	void close()
+  		{if (_Fb.close() == 0)
+! 		 	this->setstate(ios_base::failbit); }
+  private:
+  	_Myfb _Fb;
+  	};
 *************** extern template class _CRTIMP basic_ofst
-*** 328,334 ****
+*** 328,357 ****
   
   
   		// TEMPLATE CLASS basic_fstream
@@ -174,7 +548,30 @@ diff -c -3 -p -r1.1.1.1 -r1.3
   	class basic_fstream : public basic_iostream<_E, _Tr> {
   public:
   	basic_fstream()
---- 328,334 ----
+  		: basic_iostream<_E, _Tr>(&_Fb) {}
+  	explicit basic_fstream(const char *_S,
+! 		ios_base::openmode _M = in | out)
+  		: basic_iostream<_E, _Tr>(&_Fb)
+  		{if (_Fb.open(_S, _M) == 0)
+! 			setstate(failbit); }
+  	virtual ~basic_fstream()
+  		{}
+  	basic_filebuf<_E, _Tr> *rdbuf() const
+  		{return ((basic_filebuf<_E, _Tr> *)&_Fb); }
+  	bool is_open() const
+  		{return (_Fb.is_open()); }
+! 	void open(const char *_S, ios_base::openmode _M = in | out)
+  		{if (_Fb.open(_S, _M) == 0)
+! 		 	setstate(failbit); }
+  	void open(const char *_S, ios_base::open_mode _M)
+! 		{open(_S, (openmode)_M); }
+  	void close()
+  		{if (_Fb.close() == 0)
+! 		 	setstate(failbit); }
+  private:
+  	basic_filebuf<_E, _Tr> _Fb;
+  	};
+--- 331,360 ----
   
   
   		// TEMPLATE CLASS basic_fstream
@@ -182,14 +579,37 @@ diff -c -3 -p -r1.1.1.1 -r1.3
   	class basic_fstream : public basic_iostream<_E, _Tr> {
   public:
   	basic_fstream()
+  		: basic_iostream<_E, _Tr>(&_Fb) {}
+  	explicit basic_fstream(const char *_S,
+! 		ios_base::openmode _M = ios_base::in | ios_base::out)
+  		: basic_iostream<_E, _Tr>(&_Fb)
+  		{if (_Fb.open(_S, _M) == 0)
+! 			this->setstate(ios::failbit); }
+  	virtual ~basic_fstream()
+  		{}
+  	basic_filebuf<_E, _Tr> *rdbuf() const
+  		{return ((basic_filebuf<_E, _Tr> *)&_Fb); }
+  	bool is_open() const
+  		{return (_Fb.is_open()); }
+! 	void open(const char *_S, ios_base::openmode _M = ios_base::in | ios_base::out)
+  		{if (_Fb.open(_S, _M) == 0)
+! 		 	this->setstate(ios::failbit); }
+  	void open(const char *_S, ios_base::open_mode _M)
+! 		{open(_S, (ios_base::openmode)_M); }
+  	void close()
+  		{if (_Fb.close() == 0)
+! 		 	this->setstate(ios::failbit); }
+  private:
+  	basic_filebuf<_E, _Tr> _Fb;
+  	};
 Index: functional
 ===================================================================
 RCS file: /cvsroot/GxInclude/VcInclude/functional,v
 retrieving revision 1.1.1.1
-retrieving revision 1.3
-diff -c -3 -p -r1.1.1.1 -r1.3
+retrieving revision 1.4
+diff -c -3 -p -r1.1.1.1 -r1.4
 *** functional	13 Jun 2001 19:30:57 -0000	1.1.1.1
---- functional	14 Jun 2001 18:20:43 -0000	1.3
+--- functional	21 Oct 2007 19:06:49 -0000	1.4
 *************** template<class _Ty>
 *** 118,128 ****
   		// TEMPLATE CLASS unary_negate
@@ -263,13 +683,17 @@ diff -c -3 -p -r1.1.1.1 -r1.3
   	};
   		// TEMPLATE FUNCTION bind1st
   template<class _Bfn, class _Ty> inline
---- 152,168 ----
+--- 152,172 ----
   		// TEMPLATE CLASS binder1st
   template<class _Bfn>
   	class binder1st
 ! 	: public unary_function<typename _Bfn::second_argument_type,
 ! 		typename _Bfn::result_type> {
   public:
++         typedef typename unary_function<typename _Bfn::second_argument_type,
++                                         typename _Bfn::result_type>::argument_type argument_type;
++         typedef typename unary_function<typename _Bfn::second_argument_type,
++                                         typename _Bfn::result_type>::result_type result_type;
   	binder1st(const _Bfn& _X,
 ! 		const typename _Bfn::first_argument_type& _Y)
   		: op(_X), value(_Y) {}
@@ -300,13 +724,17 @@ diff -c -3 -p -r1.1.1.1 -r1.3
   	};
   		// TEMPLATE FUNCTION bind2nd
   template<class _Bfn, class _Ty> inline
---- 172,188 ----
+--- 176,196 ----
   		// TEMPLATE CLASS binder2nd
   template<class _Bfn>
   	class binder2nd
 ! 	: public unary_function<typename _Bfn::first_argument_type,
 ! 		typename _Bfn::result_type> {
   public:
++         typedef typename unary_function<typename _Bfn::first_argument_type,
++                                         typename _Bfn::result_type>::argument_type argument_type;
++         typedef typename unary_function<typename _Bfn::first_argument_type,
++                                         typename _Bfn::result_type>::result_type result_type;
   	binder2nd(const _Bfn& _X,
 ! 		const typename _Bfn::second_argument_type& _Y)
   		: op(_X), value(_Y) {}
@@ -318,6 +746,42 @@ diff -c -3 -p -r1.1.1.1 -r1.3
   	};
   		// TEMPLATE FUNCTION bind2nd
   template<class _Bfn, class _Ty> inline
+*************** public:
+*** 199,205 ****
+  	_R operator()(_A _X) const
+  		{return (_Fn(_X)); }
+  protected:
+! 	_R (__cdecl *_Fn)(_A);
+  	};
+  		// TEMPLATE CLASS pointer_to_binary_function
+  template<class _A1, class _A2, class _R>
+--- 207,214 ----
+  	_R operator()(_A _X) const
+  		{return (_Fn(_X)); }
+  protected:
+! 	typedef _R (__cdecl *_FnType)(_A);
+!         _FnType _Fn;
+  	};
+  		// TEMPLATE CLASS pointer_to_binary_function
+  template<class _A1, class _A2, class _R>
+*************** public:
+*** 212,218 ****
+  	_R operator()(_A1 _X, _A2 _Y) const
+  		{return (_Fn(_X, _Y)); }
+  protected:
+! 	_R (__cdecl *_Fn)(_A1, _A2);
+  	};
+  		// TEMPLATE FUNCTION ptr_fun
+  template<class _A, class _R> inline
+--- 221,228 ----
+  	_R operator()(_A1 _X, _A2 _Y) const
+  		{return (_Fn(_X, _Y)); }
+  protected:
+! 	typedef _R (__cdecl *_FnType)(_A1, _A2);
+!         _FnType _Fn;
+  	};
+  		// TEMPLATE FUNCTION ptr_fun
+  template<class _A, class _R> inline
 Index: ios
 ===================================================================
 RCS file: /cvsroot/GxInclude/VcInclude/ios,v
@@ -368,10 +832,10 @@ Index: istream
 ===================================================================
 RCS file: /cvsroot/GxInclude/VcInclude/istream,v
 retrieving revision 1.1.1.1
-retrieving revision 1.2
-diff -c -3 -p -r1.1.1.1 -r1.2
+retrieving revision 1.3
+diff -c -3 -p -r1.1.1.1 -r1.3
 *** istream	13 Jun 2001 19:31:05 -0000	1.1.1.1
---- istream	13 Jun 2001 21:16:23 -0000	1.2
+--- istream	21 Oct 2007 19:06:49 -0000	1.3
 ***************
 *** 13,19 ****
   #endif  /* _MSC_VER */
@@ -389,6 +853,767 @@ diff -c -3 -p -r1.1.1.1 -r1.2
   	class basic_istream : virtual public basic_ios<_E, _Tr> {
   public:
   	typedef basic_istream<_E, _Tr> _Myt;
+*************** public:
+*** 22,31 ****
+  	typedef istreambuf_iterator<_E, _Tr> _Iter;
+  	typedef ctype<_E> _Ctype;
+  	typedef num_get<_E, _Iter> _Nget;
+  	explicit basic_istream(_Mysb *_S, bool _Isstd = false)
+  		: _Chcount(0) {init(_S, _Isstd); }
+  	basic_istream(_Uninitialized)
+! 		{_Addstd(); }
+  	virtual ~basic_istream()
+  		{}
+  	class sentry {
+--- 22,35 ----
+  	typedef istreambuf_iterator<_E, _Tr> _Iter;
+  	typedef ctype<_E> _Ctype;
+  	typedef num_get<_E, _Iter> _Nget;
++         typedef typename _Myios::pos_type pos_type;
++         typedef typename _Myios::off_type off_type;
++         typedef typename _Myios::iostate iostate;
++         typedef typename _Myios::int_type int_type;
+  	explicit basic_istream(_Mysb *_S, bool _Isstd = false)
+  		: _Chcount(0) {init(_S, _Isstd); }
+  	basic_istream(_Uninitialized)
+! 		{this->_Addstd(); }
+  	virtual ~basic_istream()
+  		{}
+  	class sentry {
+*************** public:
+*** 38,58 ****
+  		bool _Ok;
+  		};
+  	bool ipfx(bool _Noskip = false)
+! 		{if (good())
+! 			{if (tie() != 0)
+! 				tie()->flush();
+! 			if (!_Noskip && flags() & skipws)
+! 				{const _Ctype& _Fac = _USE(getloc(), _Ctype);
+  				_TRY_IO_BEGIN
+! 				int_type _C = rdbuf()->sgetc();
+  				while (!_Tr::eq_int_type(_Tr::eof(), _C)
+  					&& _Fac.is(_Ctype::space,
+  						_Tr::to_char_type(_C)))
+! 					_C = rdbuf()->snextc();
+  				_CATCH_IO_END }
+! 			if (good())
+  				return (true); }
+! 		setstate(failbit);
+  		return (false); }
+  	void isfx()
+  		{}
+--- 42,62 ----
+  		bool _Ok;
+  		};
+  	bool ipfx(bool _Noskip = false)
+! 		{if (this->good())
+! 			{if (this->tie() != 0)
+! 				this->tie()->flush();
+! 			if (!_Noskip && this->flags() & ios_base::skipws)
+! 				{const _Ctype& _Fac = _USE(this->getloc(), _Ctype);
+  				_TRY_IO_BEGIN
+! 				int_type _C = this->rdbuf()->sgetc();
+  				while (!_Tr::eq_int_type(_Tr::eof(), _C)
+  					&& _Fac.is(_Ctype::space,
+  						_Tr::to_char_type(_C)))
+! 					_C = this->rdbuf()->snextc();
+  				_CATCH_IO_END }
+! 			if (this->good())
+  				return (true); }
+! 		this->setstate(ios_base::failbit);
+  		return (false); }
+  	void isfx()
+  		{}
+*************** public:
+*** 65,199 ****
+  		{(*_F)(*(ios_base *)this);
+  		return (*this); }
+  	_Myt& operator>>(_Bool& _X)
+! 		{iostate _St = goodbit;
+  		const sentry _Ok(*this);
+  		if (_Ok)
+! 			{const _Nget& _Fac = _USE(getloc(), _Nget);
+  			_TRY_IO_BEGIN
+! 			_Fac.get(_Iter(rdbuf()), _Iter(0), *this, _St, _X);
+  			_CATCH_IO_END }
+  		setstate(_St);
+  		return (*this); }
+  	_Myt& operator>>(short& _X)
+! 		{iostate _St = goodbit;
+  		const sentry _Ok(*this);
+  		if (_Ok)
+  			{long _Y;
+! 			const _Nget& _Fac = _USE(getloc(), _Nget);
+  			_TRY_IO_BEGIN
+! 			_Fac.get(_Iter(rdbuf()), _Iter(0), *this, _St, _Y);
+  			_CATCH_IO_END
+! 			if (_St & failbit || _Y < SHRT_MIN || SHRT_MAX < _Y)
+! 				_St |= failbit;
+  			else
+  				_X = (short)_Y; }
+  		setstate(_St);
+  		return (*this); }
+  	_Myt& operator>>(unsigned short& _X)
+! 		{iostate _St = goodbit;
+  		const sentry _Ok(*this);
+  		if (_Ok)
+! 			{const _Nget& _Fac = _USE(getloc(), _Nget);
+  			_TRY_IO_BEGIN
+! 			_Fac.get(_Iter(rdbuf()), _Iter(0), *this, _St, _X);
+  			_CATCH_IO_END }
+  		setstate(_St);
+  		return (*this); }
+  	_Myt& operator>>(int& _X)
+! 		{iostate _St = goodbit;
+  		const sentry _Ok(*this);
+  		if (_Ok)
+  			{long _Y;
+! 			const _Nget& _Fac = _USE(getloc(), _Nget);
+  			_TRY_IO_BEGIN
+! 			_Fac.get(_Iter(rdbuf()), _Iter(0), *this, _St, _Y);
+  			_CATCH_IO_END
+! 			if (_St & failbit || _Y < INT_MIN || INT_MAX < _Y)
+! 				_St |= failbit;
+  			else
+  				_X = _Y; }
+  		setstate(_St);
+  		return (*this); }
+  	_Myt& operator>>(unsigned int& _X)
+! 		{iostate _St = goodbit;
+  		const sentry _Ok(*this);
+  		if (_Ok)
+! 			{const _Nget& _Fac = _USE(getloc(), _Nget);
+  			_TRY_IO_BEGIN
+! 			_Fac.get(_Iter(rdbuf()), _Iter(0), *this, _St, _X);
+  			_CATCH_IO_END }
+  		setstate(_St);
+  		return (*this); }
+  	_Myt& operator>>(long& _X)
+! 		{iostate _St = goodbit;
+  		const sentry _Ok(*this);
+  		if (_Ok)
+! 			{const _Nget& _Fac = _USE(getloc(), _Nget);
+  			_TRY_IO_BEGIN
+! 			_Fac.get(_Iter(rdbuf()), _Iter(0), *this, _St, _X);
+  			_CATCH_IO_END }
+  		setstate(_St);
+  		return (*this); }
+  	_Myt& operator>>(unsigned long& _X)
+! 		{iostate _St = goodbit;
+  		const sentry _Ok(*this);
+  		if (_Ok)
+! 			{const _Nget& _Fac = _USE(getloc(), _Nget);
+  			_TRY_IO_BEGIN
+! 			_Fac.get(_Iter(rdbuf()), _Iter(0), *this, _St, _X);
+  			_CATCH_IO_END }
+  		setstate(_St);
+  		return (*this); }
+  	_Myt& operator>>(float& _X)
+! 		{iostate _St = goodbit;
+  		const sentry _Ok(*this);
+  		if (_Ok)
+! 			{const _Nget& _Fac = _USE(getloc(), _Nget);
+  			_TRY_IO_BEGIN
+! 			_Fac.get(_Iter(rdbuf()), _Iter(0), *this, _St, _X);
+  			_CATCH_IO_END }
+  		setstate(_St);
+  		return (*this); }
+  	_Myt& operator>>(double& _X)
+! 		{iostate _St = goodbit;
+  		const sentry _Ok(*this);
+  		if (_Ok)
+! 			{const _Nget& _Fac = _USE(getloc(), _Nget);
+  			_TRY_IO_BEGIN
+! 			_Fac.get(_Iter(rdbuf()), _Iter(0), *this, _St, _X);
+  			_CATCH_IO_END }
+  		setstate(_St);
+  		return (*this); }
+  	_Myt& operator>>(long double& _X)
+! 		{iostate _St = goodbit;
+  		const sentry _Ok(*this);
+  		if (_Ok)
+! 			{const _Nget& _Fac = _USE(getloc(), _Nget);
+  			_TRY_IO_BEGIN
+! 			_Fac.get(_Iter(rdbuf()), _Iter(0), *this, _St, _X);
+  			_CATCH_IO_END }
+  		setstate(_St);
+  		return (*this); }
+  	_Myt& operator>>(void *& _X)
+! 		{iostate _St = goodbit;
+  		const sentry _Ok(*this);
+  		if (_Ok)
+! 			{const _Nget& _Fac = _USE(getloc(), _Nget);
+  			_TRY_IO_BEGIN
+! 			_Fac.get(_Iter(rdbuf()), _Iter(0), *this, _St, _X);
+  			_CATCH_IO_END }
+  		setstate(_St);
+  		return (*this); }
+  	_Myt& operator>>(_Mysb *_Pb)
+! 		{iostate _St = goodbit;
+  		bool _Copied = false;
+  		const sentry _Ok(*this);
+  		if (_Ok && _Pb != 0)
+  			{_TRY_IO_BEGIN
+! 			int_type _C = rdbuf()->sgetc();
+! 			for (; ; _C = rdbuf()->snextc())
+  				if (_Tr::eq_int_type(_Tr::eof(), _C))
+! 					{_St |= eofbit;
+  					break; }
+  				else
+  					{_TRY_BEGIN
+--- 69,203 ----
+  		{(*_F)(*(ios_base *)this);
+  		return (*this); }
+  	_Myt& operator>>(_Bool& _X)
+! 		{iostate _St = ios_base::goodbit;
+  		const sentry _Ok(*this);
+  		if (_Ok)
+! 			{const _Nget& _Fac = _USE(this->getloc(), _Nget);
+  			_TRY_IO_BEGIN
+! 			_Fac.get(_Iter(this->rdbuf()), _Iter(0), *this, _St, _X);
+  			_CATCH_IO_END }
+  		setstate(_St);
+  		return (*this); }
+  	_Myt& operator>>(short& _X)
+! 		{iostate _St = ios_base::goodbit;
+  		const sentry _Ok(*this);
+  		if (_Ok)
+  			{long _Y;
+! 			const _Nget& _Fac = _USE(this->getloc(), _Nget);
+  			_TRY_IO_BEGIN
+! 			_Fac.get(_Iter(this->rdbuf()), _Iter(0), *this, _St, _Y);
+  			_CATCH_IO_END
+! 			if (_St & ios_base::failbit || _Y < SHRT_MIN || SHRT_MAX < _Y)
+! 				_St |= ios_base::failbit;
+  			else
+  				_X = (short)_Y; }
+  		setstate(_St);
+  		return (*this); }
+  	_Myt& operator>>(unsigned short& _X)
+! 		{iostate _St = ios_base::goodbit;
+  		const sentry _Ok(*this);
+  		if (_Ok)
+! 			{const _Nget& _Fac = _USE(this->getloc(), _Nget);
+  			_TRY_IO_BEGIN
+! 			_Fac.get(_Iter(this->rdbuf()), _Iter(0), *this, _St, _X);
+  			_CATCH_IO_END }
+  		setstate(_St);
+  		return (*this); }
+  	_Myt& operator>>(int& _X)
+! 		{iostate _St = ios_base::goodbit;
+  		const sentry _Ok(*this);
+  		if (_Ok)
+  			{long _Y;
+! 			const _Nget& _Fac = _USE(this->getloc(), _Nget);
+  			_TRY_IO_BEGIN
+! 			_Fac.get(_Iter(this->rdbuf()), _Iter(0), *this, _St, _Y);
+  			_CATCH_IO_END
+! 			if (_St & ios_base::failbit || _Y < INT_MIN || INT_MAX < _Y)
+! 				_St |= ios_base::failbit;
+  			else
+  				_X = _Y; }
+  		setstate(_St);
+  		return (*this); }
+  	_Myt& operator>>(unsigned int& _X)
+! 		{iostate _St = ios_base::goodbit;
+  		const sentry _Ok(*this);
+  		if (_Ok)
+! 			{const _Nget& _Fac = _USE(this->getloc(), _Nget);
+  			_TRY_IO_BEGIN
+! 			_Fac.get(_Iter(this->rdbuf()), _Iter(0), *this, _St, _X);
+  			_CATCH_IO_END }
+  		setstate(_St);
+  		return (*this); }
+  	_Myt& operator>>(long& _X)
+! 		{iostate _St = ios_base::goodbit;
+  		const sentry _Ok(*this);
+  		if (_Ok)
+! 			{const _Nget& _Fac = _USE(this->getloc(), _Nget);
+  			_TRY_IO_BEGIN
+! 			_Fac.get(_Iter(this->rdbuf()), _Iter(0), *this, _St, _X);
+  			_CATCH_IO_END }
+  		setstate(_St);
+  		return (*this); }
+  	_Myt& operator>>(unsigned long& _X)
+! 		{iostate _St = ios_base::goodbit;
+  		const sentry _Ok(*this);
+  		if (_Ok)
+! 			{const _Nget& _Fac = _USE(this->getloc(), _Nget);
+  			_TRY_IO_BEGIN
+! 			_Fac.get(_Iter(this->rdbuf()), _Iter(0), *this, _St, _X);
+  			_CATCH_IO_END }
+  		setstate(_St);
+  		return (*this); }
+  	_Myt& operator>>(float& _X)
+! 		{iostate _St = ios_base::goodbit;
+  		const sentry _Ok(*this);
+  		if (_Ok)
+! 			{const _Nget& _Fac = _USE(this->getloc(), _Nget);
+  			_TRY_IO_BEGIN
+! 			_Fac.get(_Iter(this->rdbuf()), _Iter(0), *this, _St, _X);
+  			_CATCH_IO_END }
+  		setstate(_St);
+  		return (*this); }
+  	_Myt& operator>>(double& _X)
+! 		{iostate _St = ios_base::goodbit;
+  		const sentry _Ok(*this);
+  		if (_Ok)
+! 			{const _Nget& _Fac = _USE(this->getloc(), _Nget);
+  			_TRY_IO_BEGIN
+! 			_Fac.get(_Iter(this->rdbuf()), _Iter(0), *this, _St, _X);
+  			_CATCH_IO_END }
+  		setstate(_St);
+  		return (*this); }
+  	_Myt& operator>>(long double& _X)
+! 		{iostate _St = ios_base::goodbit;
+  		const sentry _Ok(*this);
+  		if (_Ok)
+! 			{const _Nget& _Fac = _USE(this->getloc(), _Nget);
+  			_TRY_IO_BEGIN
+! 			_Fac.get(_Iter(this->rdbuf()), _Iter(0), *this, _St, _X);
+  			_CATCH_IO_END }
+  		setstate(_St);
+  		return (*this); }
+  	_Myt& operator>>(void *& _X)
+! 		{iostate _St = ios_base::goodbit;
+  		const sentry _Ok(*this);
+  		if (_Ok)
+! 			{const _Nget& _Fac = _USE(this->getloc(), _Nget);
+  			_TRY_IO_BEGIN
+! 			_Fac.get(_Iter(this->rdbuf()), _Iter(0), *this, _St, _X);
+  			_CATCH_IO_END }
+  		setstate(_St);
+  		return (*this); }
+  	_Myt& operator>>(_Mysb *_Pb)
+! 		{iostate _St = ios_base::goodbit;
+  		bool _Copied = false;
+  		const sentry _Ok(*this);
+  		if (_Ok && _Pb != 0)
+  			{_TRY_IO_BEGIN
+! 			int_type _C = this->rdbuf()->sgetc();
+! 			for (; ; _C = this->rdbuf()->snextc())
+  				if (_Tr::eq_int_type(_Tr::eof(), _C))
+! 					{_St |= ios_base::eofbit;
+  					break; }
+  				else
+  					{_TRY_BEGIN
+*************** public:
+*** 205,248 ****
+  					_CATCH_END
+  					_Copied = true; }
+  			_CATCH_IO_END }
+! 		setstate(!_Copied ? _St | failbit : _St);
+  		return (*this); }
+  	int_type get()
+  		{int_type _C;
+! 		iostate _St = goodbit;
+  		_Chcount = 0;
+  		const sentry _Ok(*this, true);
+  		if (!_Ok)
+  			_C = _Tr::eof();
+  		else
+  			{_TRY_IO_BEGIN
+! 			_C = rdbuf()->sbumpc();
+  			if (_Tr::eq_int_type(_Tr::eof(), _C))
+! 				_St |= eofbit | failbit;
+  			else
+  				++_Chcount;
+  			_CATCH_IO_END }
+  		setstate(_St);
+  		return (_C); }
+  	_Myt& get(_E *_S, streamsize _N)
+! 		{return (get(_S, _N, widen('\n'))); }
+  	_Myt& get(_E *_S, streamsize _N, _E _D)
+! 		{iostate _St = goodbit;
+  		_Chcount = 0;
+  		const sentry _Ok(*this, true);
+  		if (_Ok && 0 < _N)
+  			{_TRY_IO_BEGIN
+! 			int_type _C = rdbuf()->sgetc();
+! 			for (; 0 < --_N; _C = rdbuf()->snextc())
+  				if (_Tr::eq_int_type(_Tr::eof(), _C))
+! 					{_St |= eofbit;
+  					break; }
+  				else if (_Tr::to_char_type(_C) == _D)
+  					break;
+  				else
+  					*_S++ = _Tr::to_char_type(_C), ++_Chcount;
+  			_CATCH_IO_END }
+! 		setstate(_Chcount == 0 ? _St | failbit : _St);
+  		*_S = _E(0);
+  		return (*this); }
+  	_Myt& get(_E& _X)
+--- 209,252 ----
+  					_CATCH_END
+  					_Copied = true; }
+  			_CATCH_IO_END }
+! 		setstate(!_Copied ? _St | ios_base::failbit : _St);
+  		return (*this); }
+  	int_type get()
+  		{int_type _C;
+! 		iostate _St = ios_base::goodbit;
+  		_Chcount = 0;
+  		const sentry _Ok(*this, true);
+  		if (!_Ok)
+  			_C = _Tr::eof();
+  		else
+  			{_TRY_IO_BEGIN
+! 			_C = this->rdbuf()->sbumpc();
+  			if (_Tr::eq_int_type(_Tr::eof(), _C))
+! 				_St |= ios_base::eofbit | ios_base::failbit;
+  			else
+  				++_Chcount;
+  			_CATCH_IO_END }
+  		setstate(_St);
+  		return (_C); }
+  	_Myt& get(_E *_S, streamsize _N)
+! 		{return (get(_S, _N, this->widen('\n'))); }
+  	_Myt& get(_E *_S, streamsize _N, _E _D)
+! 		{iostate _St = ios_base::goodbit;
+  		_Chcount = 0;
+  		const sentry _Ok(*this, true);
+  		if (_Ok && 0 < _N)
+  			{_TRY_IO_BEGIN
+! 			int_type _C = this->rdbuf()->sgetc();
+! 			for (; 0 < --_N; _C = this->rdbuf()->snextc())
+  				if (_Tr::eq_int_type(_Tr::eof(), _C))
+! 					{_St |= ios_base::eofbit;
+  					break; }
+  				else if (_Tr::to_char_type(_C) == _D)
+  					break;
+  				else
+  					*_S++ = _Tr::to_char_type(_C), ++_Chcount;
+  			_CATCH_IO_END }
+! 		setstate(_Chcount == 0 ? _St | ios_base::failbit : _St);
+  		*_S = _E(0);
+  		return (*this); }
+  	_Myt& get(_E& _X)
+*************** public:
+*** 251,267 ****
+  			_X = _Tr::to_char_type(_C);
+  		return (*this); }
+  	_Myt& get(_Mysb& _Sb)
+! 		{return (get(_Sb, widen('\n'))); }
+  	_Myt& get(_Mysb& _Sb, _E _D)
+! 		{iostate _St = goodbit;
+  		_Chcount = 0;
+  		const sentry _Ok(*this, true);
+  		if (_Ok)
+  			{_TRY_IO_BEGIN
+! 			int_type _C = rdbuf()->sgetc();
+! 			for (; ; _C = rdbuf()->snextc())
+  				if (_Tr::eq_int_type(_Tr::eof(), _C))
+! 					{_St |= eofbit;
+  					break; }
+  				else
+  					{_TRY_BEGIN
+--- 255,271 ----
+  			_X = _Tr::to_char_type(_C);
+  		return (*this); }
+  	_Myt& get(_Mysb& _Sb)
+! 		{return (get(_Sb, this->widen('\n'))); }
+  	_Myt& get(_Mysb& _Sb, _E _D)
+! 		{iostate _St = ios_base::goodbit;
+  		_Chcount = 0;
+  		const sentry _Ok(*this, true);
+  		if (_Ok)
+  			{_TRY_IO_BEGIN
+! 			int_type _C = this->rdbuf()->sgetc();
+! 			for (; ; _C = this->rdbuf()->snextc())
+  				if (_Tr::eq_int_type(_Tr::eof(), _C))
+! 					{_St |= ios_base::eofbit;
+  					break; }
+  				else
+  					{_TRY_BEGIN
+*************** public:
+*** 276,314 ****
+  					++_Chcount; }
+  			_CATCH_IO_END }
+  		if (_Chcount == 0)
+! 			_St |= failbit;
+  		setstate(_St);
+  		return (*this); }
+  	_Myt& getline(_E *_S, streamsize _N)
+! 		{return (getline(_S, _N, widen('\n'))); }
+  	_Myt& getline(_E *_S, streamsize _N, _E _D)
+! 		{iostate _St = goodbit;
+  		_Chcount = 0;
+  		const sentry _Ok(*this, true);
+  		if (_Ok && 0 < _N)
+  			{int_type _Di = _Tr::to_int_type(_D);
+  			_TRY_IO_BEGIN
+! 			int_type _C = rdbuf()->sgetc();
+! 			for (; ; _C = rdbuf()->snextc())
+  				if (_Tr::eq_int_type(_Tr::eof(), _C))
+! 					{_St |= eofbit;
+  					break; }
+  				else if (_C == _Di)
+  					{++_Chcount;
+! 					rdbuf()->stossc();
+  					break; }
+  				else if (--_N <= 0)
+! 					{_St |= failbit;
+  					break; }
+  				else
+  					{++_Chcount;
+  					*_S++ = _Tr::to_char_type(_C); }
+  			_CATCH_IO_END }
+  		*_S = _E(0);
+! 		setstate(_Chcount == 0 ? _St | failbit : _St);
+  		return (*this); }
+  	_Myt& ignore(streamsize _N = 1, int_type _Di = _Tr::eof())
+! 		{iostate _St = goodbit;
+  		_Chcount = 0;
+  		const sentry _Ok(*this, true);
+  		if (_Ok && 0 < _N)
+--- 280,318 ----
+  					++_Chcount; }
+  			_CATCH_IO_END }
+  		if (_Chcount == 0)
+! 			_St |= ios_base::failbit;
+  		setstate(_St);
+  		return (*this); }
+  	_Myt& getline(_E *_S, streamsize _N)
+! 		{return (getline(_S, _N, this->widen('\n'))); }
+  	_Myt& getline(_E *_S, streamsize _N, _E _D)
+! 		{iostate _St = ios_base::goodbit;
+  		_Chcount = 0;
+  		const sentry _Ok(*this, true);
+  		if (_Ok && 0 < _N)
+  			{int_type _Di = _Tr::to_int_type(_D);
+  			_TRY_IO_BEGIN
+! 			int_type _C = this->rdbuf()->sgetc();
+! 			for (; ; _C = this->rdbuf()->snextc())
+  				if (_Tr::eq_int_type(_Tr::eof(), _C))
+! 					{_St |= ios_base::eofbit;
+  					break; }
+  				else if (_C == _Di)
+  					{++_Chcount;
+! 					this->rdbuf()->stossc();
+  					break; }
+  				else if (--_N <= 0)
+! 					{_St |= ios_base::failbit;
+  					break; }
+  				else
+  					{++_Chcount;
+  					*_S++ = _Tr::to_char_type(_C); }
+  			_CATCH_IO_END }
+  		*_S = _E(0);
+! 		setstate(_Chcount == 0 ? _St | ios_base::failbit : _St);
+  		return (*this); }
+  	_Myt& ignore(streamsize _N = 1, int_type _Di = _Tr::eof())
+! 		{iostate _St = ios_base::goodbit;
+  		_Chcount = 0;
+  		const sentry _Ok(*this, true);
+  		if (_Ok && 0 < _N)
+*************** public:
+*** 318,325 ****
+  				if (_N != INT_MAX && --_N < 0)
+  					break;
+  				else if (_Tr::eq_int_type(_Tr::eof(),
+! 					_C = rdbuf()->sbumpc()))
+! 					{_St |= eofbit;
+  					break; }
+  				else
+  					{++_Chcount;
+--- 322,329 ----
+  				if (_N != INT_MAX && --_N < 0)
+  					break;
+  				else if (_Tr::eq_int_type(_Tr::eof(),
+! 					_C = this->rdbuf()->sbumpc()))
+! 					{_St |= ios_base::eofbit;
+  					break; }
+  				else
+  					{++_Chcount;
+*************** public:
+*** 329,360 ****
+  		setstate(_St);
+  		return (*this); }
+  	_Myt& read(_E *_S, streamsize _N)
+! 		{iostate _St = goodbit;
+  		_Chcount = 0;
+  		const sentry _Ok(*this, true);
+  		if (_Ok)
+  			{_TRY_IO_BEGIN
+! 			const streamsize _M = rdbuf()->sgetn(_S, _N);
+  			_Chcount += _M;
+  			if (_M != _N)
+! 				_St |= eofbit | failbit;
+  			_CATCH_IO_END }
+  		setstate(_St);
+  		return (*this); }
+  	streamsize readsome(_E *_S, streamsize _N)
+! 		{iostate _St = goodbit;
+  		_Chcount = 0;
+  		int _M;
+! 		if (rdbuf() == 0)
+! 			_St |= failbit;
+! 		else if ((_M = rdbuf()->in_avail()) < 0)
+! 			_St |= eofbit;
+  		else if (0 < _M)
+  			read(_S, _M < _N ? _M : _N);
+  		setstate(_St);
+  		return (gcount()); }
+  	int_type peek()
+! 		{iostate _St = goodbit;
+  		_Chcount = 0;
+  		int_type _C;
+  		const sentry _Ok(*this, true);
+--- 333,364 ----
+  		setstate(_St);
+  		return (*this); }
+  	_Myt& read(_E *_S, streamsize _N)
+! 		{iostate _St = ios_base::goodbit;
+  		_Chcount = 0;
+  		const sentry _Ok(*this, true);
+  		if (_Ok)
+  			{_TRY_IO_BEGIN
+! 			const streamsize _M = this->rdbuf()->sgetn(_S, _N);
+  			_Chcount += _M;
+  			if (_M != _N)
+! 				_St |= ios_base::eofbit | ios_base::failbit;
+  			_CATCH_IO_END }
+  		setstate(_St);
+  		return (*this); }
+  	streamsize readsome(_E *_S, streamsize _N)
+! 		{iostate _St = ios_base::goodbit;
+  		_Chcount = 0;
+  		int _M;
+! 		if (this->rdbuf() == 0)
+! 			_St |= this->ios_base::failbit;
+! 		else if ((_M = this->rdbuf()->in_avail()) < 0)
+! 			_St |= ios_base::eofbit;
+  		else if (0 < _M)
+  			read(_S, _M < _N ? _M : _N);
+  		setstate(_St);
+  		return (gcount()); }
+  	int_type peek()
+! 		{iostate _St = ios_base::goodbit;
+  		_Chcount = 0;
+  		int_type _C;
+  		const sentry _Ok(*this, true);
+*************** public:
+*** 363,421 ****
+  		else
+  			{_TRY_IO_BEGIN
+  			if (_Tr::eq_int_type(_Tr::eof(),
+! 				_C = rdbuf()->sgetc()))
+! 				_St |= eofbit;
+  			_CATCH_IO_END }
+  		setstate(_St);
+  		return (_C); }
+  	_Myt& putback(_E _X)
+! 		{iostate _St = goodbit;
+  		_Chcount = 0;
+  		const sentry _Ok(*this, true);
+  		if (_Ok)
+  			{_TRY_IO_BEGIN
+  			if (_Tr::eq_int_type(_Tr::eof(),
+! 				rdbuf()->sputbackc(_X)))
+! 				_St |= badbit;
+  			_CATCH_IO_END }
+  		setstate(_St);
+  		return (*this); }
+  	_Myt& unget()
+! 		{iostate _St = goodbit;
+  		_Chcount = 0;
+  		const sentry _Ok(*this, true);
+  		if (_Ok)
+  			{_TRY_IO_BEGIN
+  			if (_Tr::eq_int_type(_Tr::eof(),
+! 				rdbuf()->sungetc()))
+! 				_St |= badbit;
+  			_CATCH_IO_END }
+  		setstate(_St);
+  		return (*this); }
+  	streamsize gcount() const
+  		{return (_Chcount); }
+  	int sync()
+! 		{iostate _St = goodbit;
+  		int _Ans;
+! 		if (rdbuf() == 0)
+  			_Ans = -1;
+! 		else if (rdbuf()->pubsync() == -1)
+! 			_St |= badbit, _Ans = -1;
+  		else
+  			_Ans = 0;
+  		setstate(_St);
+  		return (_Ans); }
+  	_Myt& seekg(pos_type _P)
+! 		{if (!fail())
+! 			rdbuf()->pubseekpos(_P, in);
+  		return (*this); }
+  	_Myt& seekg(off_type _O, ios_base::seekdir _W)
+! 		{if (!fail())
+! 			rdbuf()->pubseekoff(_O, _W, in);
+  		return (*this); }
+  	pos_type tellg()
+! 		{if (!fail())
+! 			return (rdbuf()->pubseekoff(0, cur, in));
+  		else
+  			return (streampos(_BADOFF)); }
+  private:
+--- 367,425 ----
+  		else
+  			{_TRY_IO_BEGIN
+  			if (_Tr::eq_int_type(_Tr::eof(),
+! 				_C = this->rdbuf()->sgetc()))
+! 				_St |= ios_base::eofbit;
+  			_CATCH_IO_END }
+  		setstate(_St);
+  		return (_C); }
+  	_Myt& putback(_E _X)
+! 		{iostate _St = ios_base::goodbit;
+  		_Chcount = 0;
+  		const sentry _Ok(*this, true);
+  		if (_Ok)
+  			{_TRY_IO_BEGIN
+  			if (_Tr::eq_int_type(_Tr::eof(),
+! 				this->rdbuf()->sputbackc(_X)))
+! 				_St |= ios_base::badbit;
+  			_CATCH_IO_END }
+  		setstate(_St);
+  		return (*this); }
+  	_Myt& unget()
+! 		{iostate _St = ios_base::goodbit;
+  		_Chcount = 0;
+  		const sentry _Ok(*this, true);
+  		if (_Ok)
+  			{_TRY_IO_BEGIN
+  			if (_Tr::eq_int_type(_Tr::eof(),
+! 				this->rdbuf()->sungetc()))
+! 				_St |= ios_base::badbit;
+  			_CATCH_IO_END }
+  		setstate(_St);
+  		return (*this); }
+  	streamsize gcount() const
+  		{return (_Chcount); }
+  	int sync()
+! 		{iostate _St = ios_base::goodbit;
+  		int _Ans;
+! 		if (this->rdbuf() == 0)
+  			_Ans = -1;
+! 		else if (this->rdbuf()->pubsync() == -1)
+! 			_St |= ios_base::badbit, _Ans = -1;
+  		else
+  			_Ans = 0;
+  		setstate(_St);
+  		return (_Ans); }
+  	_Myt& seekg(pos_type _P)
+! 		{if (!this->fail())
+! 			this->rdbuf()->pubseekpos(_P, ios_base::in);
+  		return (*this); }
+  	_Myt& seekg(off_type _O, ios_base::seekdir _W)
+! 		{if (!this->fail())
+! 			this->rdbuf()->pubseekoff(_O, _W, ios_base::in);
+  		return (*this); }
+  	pos_type tellg()
+! 		{if (!this->fail())
+! 			return (this->rdbuf()->pubseekoff(0, ios_base::cur, ios_base::in));
+  		else
+  			return (streampos(_BADOFF)); }
+  private:
 *************** extern template class _CRTIMP basic_istr
 *** 430,436 ****
   #endif		// _DLL
@@ -398,7 +1623,7 @@ diff -c -3 -p -r1.1.1.1 -r1.2
   	class basic_iostream : public basic_istream<_E, _Tr>,
   		public basic_ostream<_E, _Tr> {
   public:
---- 430,436 ----
+--- 434,440 ----
   #endif		// _DLL
   
   		// TEMPLATE CLASS basic_iostream
@@ -407,7 +1632,59 @@ diff -c -3 -p -r1.1.1.1 -r1.2
   		public basic_ostream<_E, _Tr> {
   public:
 *************** template<class _E, class _Tr> inline
-*** 525,531 ****
+*** 458,469 ****
+  	typedef ctype<_E> _Ctype;
+  	ios_base::iostate _St = ios_base::goodbit;
+  	_E *_S = _X;
+! 	const _Myis::sentry _Ok(_I);
+  	if (_Ok)
+  		{const _Ctype& _Fac = _USE(_I.getloc(), _Ctype);
+  		_TRY_IO_BEGIN
+  		int _N = 0 < _I.width() ? _I.width() : INT_MAX;
+! 		_Myis::int_type _C = _I.rdbuf()->sgetc();
+  		for (; 0 < --_N; _C = _I.rdbuf()->snextc())
+  			if (_Tr::eq_int_type(_Tr::eof(), _C))
+  				{_St |= ios_base::eofbit;
+--- 462,473 ----
+  	typedef ctype<_E> _Ctype;
+  	ios_base::iostate _St = ios_base::goodbit;
+  	_E *_S = _X;
+! 	const typename _Myis::sentry _Ok(_I);
+  	if (_Ok)
+  		{const _Ctype& _Fac = _USE(_I.getloc(), _Ctype);
+  		_TRY_IO_BEGIN
+  		int _N = 0 < _I.width() ? _I.width() : INT_MAX;
+! 		typename _Myis::int_type _C = _I.rdbuf()->sgetc();
+  		for (; 0 < --_N; _C = _I.rdbuf()->snextc())
+  			if (_Tr::eq_int_type(_Tr::eof(), _C))
+  				{_St |= ios_base::eofbit;
+*************** template<class _E, class _Tr> inline
+*** 482,490 ****
+  	basic_istream<_E, _Tr>& __cdecl operator>>(
+  		basic_istream<_E, _Tr>& _I, _E& _X)
+  	{typedef basic_istream<_E, _Tr> _Myis;
+! 	_Myis::int_type _C;
+! 	ios_base::iostate _St = ios_base::goodbit;
+! 	const _Myis::sentry _Ok(_I);
+  	if (_Ok)
+  		{_TRY_IO_BEGIN
+  		_C = _I.rdbuf()->sbumpc();
+--- 486,494 ----
+  	basic_istream<_E, _Tr>& __cdecl operator>>(
+  		basic_istream<_E, _Tr>& _I, _E& _X)
+  	{typedef basic_istream<_E, _Tr> _Myis;
+! 	typename _Myis::int_type _C;
+! 	typename ios_base::iostate _St = ios_base::goodbit;
+! 	const typename _Myis::sentry _Ok(_I);
+  	if (_Ok)
+  		{_TRY_IO_BEGIN
+  		_C = _I.rdbuf()->sbumpc();
+*************** template<class _E, class _Tr> inline
+*** 521,531 ****
+  	{typedef basic_istream<_E, _Tr> _Myis;
+  	typedef ctype<_E> _Ctype;
+  	ios_base::iostate _St = ios_base::goodbit;
+! 	const _Myis::sentry _Ok(_I, true);
   	if (_Ok)
   		{const _Ctype& _Fac = _USE(_I.getloc(), _Ctype);
   		_TRY_IO_BEGIN
@@ -415,7 +1692,11 @@ diff -c -3 -p -r1.1.1.1 -r1.2
   			_C = _I.rdbuf()->snextc())
   			if (_Tr::eq_int_type(_Tr::eof(), _C))
   				{_St |= ios_base::eofbit;
---- 525,531 ----
+--- 525,535 ----
+  	{typedef basic_istream<_E, _Tr> _Myis;
+  	typedef ctype<_E> _Ctype;
+  	ios_base::iostate _St = ios_base::goodbit;
+! 	const typename _Myis::sentry _Ok(_I, true);
   	if (_Ok)
   		{const _Ctype& _Fac = _USE(_I.getloc(), _Ctype);
   		_TRY_IO_BEGIN
@@ -501,14 +1782,414 @@ diff -c -3 -p -r1.1.1.1 -r1.2
   	};
   template<class _C, class _XI> inline
   	insert_iterator<_C> inserter(_C& _X, _XI _I)
+Index: limits
+===================================================================
+RCS file: /cvsroot/GxInclude/VcInclude/limits,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1.1.1 -r1.2
+*** limits	13 Jun 2001 19:31:07 -0000	1.1.1.1
+--- limits	21 Oct 2007 19:06:49 -0000	1.2
+*************** struct _CRTIMP _Num_base {
+*** 53,64 ****
+  	_STCONS(int, min_exponent10, 0);
+  	_STCONS(int, radix, 0);
+  	};
+  		// TEMPLATE CLASS numeric_limits
+  template<class _Ty> class numeric_limits : public _Num_base {
+  public:
+! 	static _Ty (__cdecl min)() _THROW0()
+  		{return (_Ty(0)); }
+! 	static _Ty (__cdecl max)() _THROW0()
+  		{return (_Ty(0)); }
+  	static _Ty __cdecl epsilon() _THROW0()
+  		{return (_Ty(0)); }
+--- 53,65 ----
+  	_STCONS(int, min_exponent10, 0);
+  	_STCONS(int, radix, 0);
+  	};
++ #define __GCCXML_AVOID_MACRO_EXPANSION
+  		// TEMPLATE CLASS numeric_limits
+  template<class _Ty> class numeric_limits : public _Num_base {
+  public:
+! 	static _Ty __cdecl min __GCCXML_AVOID_MACRO_EXPANSION() _THROW0()
+  		{return (_Ty(0)); }
+! 	static _Ty __cdecl max __GCCXML_AVOID_MACRO_EXPANSION() _THROW0()
+  		{return (_Ty(0)); }
+  	static _Ty __cdecl epsilon() _THROW0()
+  		{return (_Ty(0)); }
+*************** struct _CRTIMP _Num_float_base : public 
+*** 102,113 ****
+  	_STCONS(int, radix, FLT_RADIX);
+  	};
+  		// CLASS numeric_limits<char>
+  class _CRTIMP numeric_limits<char> : public _Num_int_base {
+  public:
+  	typedef char _Ty;
+! 	static _Ty (__cdecl min)() _THROW0()
+  		{return (CHAR_MIN); }
+! 	static _Ty (__cdecl max)() _THROW0()
+  		{return (CHAR_MAX); }
+  	static _Ty __cdecl epsilon() _THROW0()
+  		{return (0); }
+--- 103,115 ----
+  	_STCONS(int, radix, FLT_RADIX);
+  	};
+  		// CLASS numeric_limits<char>
++ template <>
+  class _CRTIMP numeric_limits<char> : public _Num_int_base {
+  public:
+  	typedef char _Ty;
+! 	static _Ty __cdecl min __GCCXML_AVOID_MACRO_EXPANSION() _THROW0()
+  		{return (CHAR_MIN); }
+! 	static _Ty __cdecl max __GCCXML_AVOID_MACRO_EXPANSION() _THROW0()
+  		{return (CHAR_MAX); }
+  	static _Ty __cdecl epsilon() _THROW0()
+  		{return (0); }
+*************** public:
+*** 127,138 ****
+  		* 301L / 1000);
+  	};
+  		// CLASS numeric_limits<_Bool>
+  class _CRTIMP numeric_limits<_Bool> : public _Num_int_base {
+  public:
+  	typedef bool _Ty;
+! 	static _Ty (__cdecl min)() _THROW0()
+  		{return (false); }
+! 	static _Ty (__cdecl max)() _THROW0()
+  		{return (true); }
+  	static _Ty __cdecl epsilon() _THROW0()
+  		{return (0); }
+--- 129,141 ----
+  		* 301L / 1000);
+  	};
+  		// CLASS numeric_limits<_Bool>
++ template<>
+  class _CRTIMP numeric_limits<_Bool> : public _Num_int_base {
+  public:
+  	typedef bool _Ty;
+! 	static _Ty __cdecl min __GCCXML_AVOID_MACRO_EXPANSION() _THROW0()
+  		{return (false); }
+! 	static _Ty __cdecl max __GCCXML_AVOID_MACRO_EXPANSION() _THROW0()
+  		{return (true); }
+  	static _Ty __cdecl epsilon() _THROW0()
+  		{return (0); }
+*************** public:
+*** 151,162 ****
+  	_STCONS(int, digits10, 0);
+  	};
+  		// CLASS numeric_limits<signed char>
+  class _CRTIMP numeric_limits<signed char> : public _Num_int_base {
+  public:
+  	typedef signed char _Ty;
+! 	static _Ty (__cdecl min)() _THROW0()
+  		{return (SCHAR_MIN); }
+! 	static _Ty (__cdecl max)() _THROW0()
+  		{return (SCHAR_MAX); }
+  	static _Ty __cdecl epsilon() _THROW0()
+  		{return (0); }
+--- 154,166 ----
+  	_STCONS(int, digits10, 0);
+  	};
+  		// CLASS numeric_limits<signed char>
++ template<>
+  class _CRTIMP numeric_limits<signed char> : public _Num_int_base {
+  public:
+  	typedef signed char _Ty;
+! 	static _Ty __cdecl min __GCCXML_AVOID_MACRO_EXPANSION() _THROW0()
+  		{return (SCHAR_MIN); }
+! 	static _Ty __cdecl max __GCCXML_AVOID_MACRO_EXPANSION() _THROW0()
+  		{return (SCHAR_MAX); }
+  	static _Ty __cdecl epsilon() _THROW0()
+  		{return (0); }
+*************** public:
+*** 175,186 ****
+  	_STCONS(int, digits10, (CHAR_BIT - 1) * 301L / 1000);
+  	};
+  		// CLASS numeric_limits<unsigned char>
+  class _CRTIMP numeric_limits<unsigned char> : public _Num_int_base {
+  public:
+  	typedef unsigned char _Ty;
+! 	static _Ty (__cdecl min)() _THROW0()
+  		{return (0); }
+! 	static _Ty (__cdecl max)() _THROW0()
+  		{return (UCHAR_MAX); }
+  	static _Ty __cdecl epsilon() _THROW0()
+  		{return (0); }
+--- 179,191 ----
+  	_STCONS(int, digits10, (CHAR_BIT - 1) * 301L / 1000);
+  	};
+  		// CLASS numeric_limits<unsigned char>
++ template<>
+  class _CRTIMP numeric_limits<unsigned char> : public _Num_int_base {
+  public:
+  	typedef unsigned char _Ty;
+! 	static _Ty __cdecl min __GCCXML_AVOID_MACRO_EXPANSION() _THROW0()
+  		{return (0); }
+! 	static _Ty __cdecl max __GCCXML_AVOID_MACRO_EXPANSION() _THROW0()
+  		{return (UCHAR_MAX); }
+  	static _Ty __cdecl epsilon() _THROW0()
+  		{return (0); }
+*************** public:
+*** 199,210 ****
+  	_STCONS(int, digits10, (CHAR_BIT) * 301L / 1000);
+  	};
+  		// CLASS numeric_limits<short>
+  class _CRTIMP numeric_limits<short> : public _Num_int_base {
+  public:
+  	typedef short _Ty;
+! 	static _Ty (__cdecl min)() _THROW0()
+  		{return (SHRT_MIN); }
+! 	static _Ty (__cdecl max)() _THROW0()
+  		{return (SHRT_MAX); }
+  	static _Ty __cdecl epsilon() _THROW0()
+  		{return (0); }
+--- 204,216 ----
+  	_STCONS(int, digits10, (CHAR_BIT) * 301L / 1000);
+  	};
+  		// CLASS numeric_limits<short>
++ template<>
+  class _CRTIMP numeric_limits<short> : public _Num_int_base {
+  public:
+  	typedef short _Ty;
+! 	static _Ty __cdecl min __GCCXML_AVOID_MACRO_EXPANSION() _THROW0()
+  		{return (SHRT_MIN); }
+! 	static _Ty __cdecl max __GCCXML_AVOID_MACRO_EXPANSION() _THROW0()
+  		{return (SHRT_MAX); }
+  	static _Ty __cdecl epsilon() _THROW0()
+  		{return (0); }
+*************** public:
+*** 224,235 ****
+  		* 301L / 1000);
+  	};
+  		// CLASS numeric_limits<unsigned short>
+  class _CRTIMP numeric_limits<unsigned short> : public _Num_int_base {
+  public:
+  	typedef unsigned short _Ty;
+! 	static _Ty (__cdecl min)() _THROW0()
+  		{return (0); }
+! 	static _Ty (__cdecl max)() _THROW0()
+  		{return (USHRT_MAX); }
+  	static _Ty __cdecl epsilon() _THROW0()
+  		{return (0); }
+--- 230,242 ----
+  		* 301L / 1000);
+  	};
+  		// CLASS numeric_limits<unsigned short>
++ template<>
+  class _CRTIMP numeric_limits<unsigned short> : public _Num_int_base {
+  public:
+  	typedef unsigned short _Ty;
+! 	static _Ty __cdecl min __GCCXML_AVOID_MACRO_EXPANSION() _THROW0()
+  		{return (0); }
+! 	static _Ty __cdecl max __GCCXML_AVOID_MACRO_EXPANSION() _THROW0()
+  		{return (USHRT_MAX); }
+  	static _Ty __cdecl epsilon() _THROW0()
+  		{return (0); }
+*************** public:
+*** 249,260 ****
+  		* 301L / 1000);
+  	};
+  		// CLASS numeric_limits<int>
+  class _CRTIMP numeric_limits<int> : public _Num_int_base {
+  public:
+  	typedef int _Ty;
+! 	static _Ty (__cdecl min)() _THROW0()
+  		{return (INT_MIN); }
+! 	static _Ty (__cdecl max)() _THROW0()
+  		{return (INT_MAX); }
+  	static _Ty __cdecl epsilon() _THROW0()
+  		{return (0); }
+--- 256,268 ----
+  		* 301L / 1000);
+  	};
+  		// CLASS numeric_limits<int>
++ template<>
+  class _CRTIMP numeric_limits<int> : public _Num_int_base {
+  public:
+  	typedef int _Ty;
+! 	static _Ty __cdecl min __GCCXML_AVOID_MACRO_EXPANSION() _THROW0()
+  		{return (INT_MIN); }
+! 	static _Ty __cdecl max __GCCXML_AVOID_MACRO_EXPANSION() _THROW0()
+  		{return (INT_MAX); }
+  	static _Ty __cdecl epsilon() _THROW0()
+  		{return (0); }
+*************** public:
+*** 274,285 ****
+  		* 301L / 1000);
+  	};
+  		// CLASS numeric_limits<unsigned int>
+  class _CRTIMP numeric_limits<unsigned int> : public _Num_int_base {
+  public:
+  	typedef unsigned int _Ty;
+! 	static _Ty (__cdecl min)() _THROW0()
+  		{return (0); }
+! 	static _Ty (__cdecl max)() _THROW0()
+  		{return (UINT_MAX); }
+  	static _Ty __cdecl epsilon() _THROW0()
+  		{return (0); }
+--- 282,294 ----
+  		* 301L / 1000);
+  	};
+  		// CLASS numeric_limits<unsigned int>
++ template<>
+  class _CRTIMP numeric_limits<unsigned int> : public _Num_int_base {
+  public:
+  	typedef unsigned int _Ty;
+! 	static _Ty __cdecl min __GCCXML_AVOID_MACRO_EXPANSION() _THROW0()
+  		{return (0); }
+! 	static _Ty __cdecl max __GCCXML_AVOID_MACRO_EXPANSION() _THROW0()
+  		{return (UINT_MAX); }
+  	static _Ty __cdecl epsilon() _THROW0()
+  		{return (0); }
+*************** public:
+*** 299,310 ****
+  		* 301L / 1000);
+  	};
+  		// CLASS numeric_limits<long>
+  class _CRTIMP numeric_limits<long> : public _Num_int_base {
+  public:
+  	typedef long _Ty;
+! 	static _Ty (__cdecl min)() _THROW0()
+  		{return (LONG_MIN); }
+! 	static _Ty (__cdecl max)() _THROW0()
+  		{return (LONG_MAX); }
+  	static _Ty __cdecl epsilon() _THROW0()
+  		{return (0); }
+--- 308,320 ----
+  		* 301L / 1000);
+  	};
+  		// CLASS numeric_limits<long>
++ template<>
+  class _CRTIMP numeric_limits<long> : public _Num_int_base {
+  public:
+  	typedef long _Ty;
+! 	static _Ty __cdecl min __GCCXML_AVOID_MACRO_EXPANSION() _THROW0()
+  		{return (LONG_MIN); }
+! 	static _Ty __cdecl max __GCCXML_AVOID_MACRO_EXPANSION() _THROW0()
+  		{return (LONG_MAX); }
+  	static _Ty __cdecl epsilon() _THROW0()
+  		{return (0); }
+*************** public:
+*** 324,335 ****
+  		* 301L / 1000);
+  	};
+  		// CLASS numeric_limits<unsigned long>
+  class _CRTIMP numeric_limits<unsigned long> : public _Num_int_base {
+  public:
+  	typedef unsigned long _Ty;
+! 	static _Ty (__cdecl min)() _THROW0()
+  		{return (0); }
+! 	static _Ty (__cdecl max)() _THROW0()
+  		{return (ULONG_MAX); }
+  	static _Ty __cdecl epsilon() _THROW0()
+  		{return (0); }
+--- 334,346 ----
+  		* 301L / 1000);
+  	};
+  		// CLASS numeric_limits<unsigned long>
++ template<>
+  class _CRTIMP numeric_limits<unsigned long> : public _Num_int_base {
+  public:
+  	typedef unsigned long _Ty;
+! 	static _Ty __cdecl min __GCCXML_AVOID_MACRO_EXPANSION() _THROW0()
+  		{return (0); }
+! 	static _Ty __cdecl max __GCCXML_AVOID_MACRO_EXPANSION() _THROW0()
+  		{return (ULONG_MAX); }
+  	static _Ty __cdecl epsilon() _THROW0()
+  		{return (0); }
+*************** public:
+*** 349,360 ****
+  		* 301L / 1000);
+  	};
+  		// CLASS numeric_limits<float>
+  class _CRTIMP numeric_limits<float> : public _Num_float_base {
+  public:
+  	typedef float _Ty;
+! 	static _Ty (__cdecl min)() _THROW0()
+  		{return (FLT_MIN); }
+! 	static _Ty (__cdecl max)() _THROW0()
+  		{return (FLT_MAX); }
+  	static _Ty __cdecl epsilon() _THROW0()
+  		{return (FLT_EPSILON); }
+--- 360,372 ----
+  		* 301L / 1000);
+  	};
+  		// CLASS numeric_limits<float>
++ template<>
+  class _CRTIMP numeric_limits<float> : public _Num_float_base {
+  public:
+  	typedef float _Ty;
+! 	static _Ty __cdecl min __GCCXML_AVOID_MACRO_EXPANSION() _THROW0()
+  		{return (FLT_MIN); }
+! 	static _Ty __cdecl max __GCCXML_AVOID_MACRO_EXPANSION() _THROW0()
+  		{return (FLT_MAX); }
+  	static _Ty __cdecl epsilon() _THROW0()
+  		{return (FLT_EPSILON); }
+*************** public:
+*** 376,387 ****
+  	_STCONS(int, min_exponent10, FLT_MIN_10_EXP);
+  	};
+  		// CLASS numeric_limits<double>
+  class _CRTIMP numeric_limits<double> : public _Num_float_base {
+  public:
+  	typedef double _Ty;
+! 	static _Ty (__cdecl min)() _THROW0()
+  		{return (DBL_MIN); }
+! 	static _Ty (__cdecl max)() _THROW0()
+  		{return (DBL_MAX); }
+  	static _Ty __cdecl epsilon() _THROW0()
+  		{return (DBL_EPSILON); }
+--- 388,400 ----
+  	_STCONS(int, min_exponent10, FLT_MIN_10_EXP);
+  	};
+  		// CLASS numeric_limits<double>
++ template<>
+  class _CRTIMP numeric_limits<double> : public _Num_float_base {
+  public:
+  	typedef double _Ty;
+! 	static _Ty __cdecl min __GCCXML_AVOID_MACRO_EXPANSION() _THROW0()
+  		{return (DBL_MIN); }
+! 	static _Ty __cdecl max __GCCXML_AVOID_MACRO_EXPANSION() _THROW0()
+  		{return (DBL_MAX); }
+  	static _Ty __cdecl epsilon() _THROW0()
+  		{return (DBL_EPSILON); }
+*************** public:
+*** 403,414 ****
+  	_STCONS(int, min_exponent10, DBL_MIN_10_EXP);
+  	};
+  		// CLASS numeric_limits<long double>
+  class _CRTIMP numeric_limits<long double> : public _Num_float_base {
+  public:
+  	typedef long double _Ty;
+! 	static _Ty (__cdecl min)() _THROW0()
+  		{return (LDBL_MIN); }
+! 	static _Ty (__cdecl max)() _THROW0()
+  		{return (LDBL_MAX); }
+  	static _Ty __cdecl epsilon() _THROW0()
+  		{return (LDBL_EPSILON); }
+--- 416,428 ----
+  	_STCONS(int, min_exponent10, DBL_MIN_10_EXP);
+  	};
+  		// CLASS numeric_limits<long double>
++ template<>
+  class _CRTIMP numeric_limits<long double> : public _Num_float_base {
+  public:
+  	typedef long double _Ty;
+! 	static _Ty __cdecl min __GCCXML_AVOID_MACRO_EXPANSION() _THROW0()
+  		{return (LDBL_MIN); }
+! 	static _Ty __cdecl max __GCCXML_AVOID_MACRO_EXPANSION() _THROW0()
+  		{return (LDBL_MAX); }
+  	static _Ty __cdecl epsilon() _THROW0()
+  		{return (LDBL_EPSILON); }
 Index: list
 ===================================================================
 RCS file: /cvsroot/GxInclude/VcInclude/list,v
 retrieving revision 1.1.1.1
-retrieving revision 1.2
-diff -c -3 -p -r1.1.1.1 -r1.2
+retrieving revision 1.3
+diff -c -3 -p -r1.1.1.1 -r1.3
 *** list	13 Jun 2001 19:31:07 -0000	1.1.1.1
---- list	13 Jun 2001 21:16:23 -0000	1.2
+--- list	21 Oct 2007 19:06:49 -0000	1.3
 ***************
 *** 18,29 ****
   #endif  /* _MSC_VER */
@@ -588,6 +2269,59 @@ diff -c -3 -p -r1.1.1.1 -r1.2
   		// CLASS const_iterator
   	class iterator;
   	class const_iterator;
+*************** public:
+*** 98,122 ****
+  		iterator(_Nodeptr _P)
+  			: const_iterator(_P) {}
+  		reference operator*() const
+! 			{return (_Acc::_Value(_Ptr)); }
+  		_Tptr operator->() const
+  			{return (&**this); }
+  		iterator& operator++()
+! 			{_Ptr = _Acc::_Next(_Ptr);
+  			return (*this); }
+  		iterator operator++(int)
+  			{iterator _Tmp = *this;
+  			++*this;
+  			return (_Tmp); }
+  		iterator& operator--()
+! 			{_Ptr = _Acc::_Prev(_Ptr);
+  			return (*this); }
+  		iterator operator--(int)
+  			{iterator _Tmp = *this;
+  			--*this;
+  			return (_Tmp); }
+  		bool operator==(const iterator& _X) const
+! 			{return (_Ptr == _X._Ptr); }
+  		bool operator!=(const iterator& _X) const
+  			{return (!(*this == _X)); }
+  		};
+--- 98,122 ----
+  		iterator(_Nodeptr _P)
+  			: const_iterator(_P) {}
+  		reference operator*() const
+! 			{return (_Acc::_Value(this->_Ptr)); }
+  		_Tptr operator->() const
+  			{return (&**this); }
+  		iterator& operator++()
+! 			{this->_Ptr = _Acc::_Next(this->_Ptr);
+  			return (*this); }
+  		iterator operator++(int)
+  			{iterator _Tmp = *this;
+  			++*this;
+  			return (_Tmp); }
+  		iterator& operator--()
+! 			{this->_Ptr = _Acc::_Prev(this->_Ptr);
+  			return (*this); }
+  		iterator operator--(int)
+  			{iterator _Tmp = *this;
+  			--*this;
+  			return (_Tmp); }
+  		bool operator==(const iterator& _X) const
+! 			{return (this->_Ptr == _X._Ptr); }
+  		bool operator!=(const iterator& _X) const
+  			{return (!(*this == _X)); }
+  		};
 *************** public:
 *** 126,136 ****
   	typedef reverse_bidirectional_iterator<const_iterator,
@@ -678,27 +2412,148 @@ Index: map
 ===================================================================
 RCS file: /cvsroot/GxInclude/VcInclude/map,v
 retrieving revision 1.1.1.1
-retrieving revision 1.2
-diff -c -3 -p -r1.1.1.1 -r1.2
+retrieving revision 1.3
+diff -c -3 -p -r1.1.1.1 -r1.3
 *** map	13 Jun 2001 19:31:08 -0000	1.1.1.1
---- map	13 Jun 2001 21:16:23 -0000	1.2
+--- map	21 Oct 2007 19:06:49 -0000	1.3
 *************** public:
-*** 41,47 ****
+*** 41,56 ****
   	typedef _Ty referent_type;
   	typedef _Pr key_compare;
   	typedef _A allocator_type;
 ! 	typedef _A::reference _Tref;
   	typedef _Tree<_K, value_type, _Kfn, _Pr, _A> _Imp;
-  	typedef _Imp::size_type size_type;
-  	typedef _Imp::difference_type difference_type;
---- 41,47 ----
+! 	typedef _Imp::size_type size_type;
+! 	typedef _Imp::difference_type difference_type;
+! 	typedef _Imp::reference reference;
+! 	typedef _Imp::const_reference const_reference;
+! 	typedef _Imp::iterator iterator;
+! 	typedef _Imp::const_iterator const_iterator;
+! 	typedef _Imp::reverse_iterator reverse_iterator;
+! 	typedef _Imp::const_reverse_iterator const_reverse_iterator;
+  	typedef pair<iterator, bool> _Pairib;
+  	typedef pair<iterator, iterator> _Pairii;
+  	typedef pair<const_iterator, const_iterator> _Paircc;
+--- 41,56 ----
   	typedef _Ty referent_type;
   	typedef _Pr key_compare;
   	typedef _A allocator_type;
 ! 	typedef typename _A::reference _Tref;
   	typedef _Tree<_K, value_type, _Kfn, _Pr, _A> _Imp;
-  	typedef _Imp::size_type size_type;
-  	typedef _Imp::difference_type difference_type;
+! 	typedef typename _Imp::size_type size_type;
+! 	typedef typename _Imp::difference_type difference_type;
+! 	typedef typename _Imp::reference reference;
+! 	typedef typename _Imp::const_reference const_reference;
+! 	typedef typename _Imp::iterator iterator;
+! 	typedef typename _Imp::const_iterator const_iterator;
+! 	typedef typename _Imp::reverse_iterator reverse_iterator;
+! 	typedef typename _Imp::const_reverse_iterator const_reverse_iterator;
+  	typedef pair<iterator, bool> _Pairib;
+  	typedef pair<iterator, iterator> _Pairii;
+  	typedef pair<const_iterator, const_iterator> _Paircc;
+*************** public:
+*** 93,110 ****
+  		{iterator _P = insert(value_type(_Kv, _Ty())).first;
+  		return ((*_P).second); }
+  	_Pairib insert(const value_type& _X)
+! 		{_Imp::_Pairib _Ans = _Tr.insert(_X);
+  		return (_Pairib(_Ans.first, _Ans.second)); }
+  	iterator insert(iterator _P, const value_type& _X)
+! 		{return (_Tr.insert((_Imp::iterator&)_P, _X)); }
+  	void insert(_It _F, _It _L)
+  		{for (; _F != _L; ++_F)
+  			_Tr.insert(*_F); }
+  	iterator erase(iterator _P)
+! 		{return (_Tr.erase((_Imp::iterator&)_P)); }
+  	iterator erase(iterator _F, iterator _L)
+! 		{return (_Tr.erase((_Imp::iterator&)_F,
+! 			(_Imp::iterator&)_L)); }
+  	size_type erase(const _K& _Kv)
+  		{return (_Tr.erase(_Kv)); }
+  	void clear()
+--- 93,110 ----
+  		{iterator _P = insert(value_type(_Kv, _Ty())).first;
+  		return ((*_P).second); }
+  	_Pairib insert(const value_type& _X)
+! 		{typename _Imp::_Pairib _Ans = _Tr.insert(_X);
+  		return (_Pairib(_Ans.first, _Ans.second)); }
+  	iterator insert(iterator _P, const value_type& _X)
+! 		{return (_Tr.insert((typename _Imp::iterator&)_P, _X)); }
+  	void insert(_It _F, _It _L)
+  		{for (; _F != _L; ++_F)
+  			_Tr.insert(*_F); }
+  	iterator erase(iterator _P)
+! 		{return (_Tr.erase((typename _Imp::iterator&)_P)); }
+  	iterator erase(iterator _F, iterator _L)
+! 		{return (_Tr.erase((typename _Imp::iterator&)_F,
+! 			(typename _Imp::iterator&)_L)); }
+  	size_type erase(const _K& _Kv)
+  		{return (_Tr.erase(_Kv)); }
+  	void clear()
+*************** public:
+*** 193,206 ****
+  	typedef _Pr key_compare;
+  	typedef _A allocator_type;
+  	typedef _Tree<_K, value_type, _Kfn, _Pr, _A> _Imp;
+! 	typedef _Imp::size_type size_type;
+! 	typedef _Imp::difference_type difference_type;
+! 	typedef _Imp::reference reference;
+! 	typedef _Imp::const_reference const_reference;
+! 	typedef _Imp::iterator iterator;
+! 	typedef _Imp::const_iterator const_iterator;
+! 	typedef _Imp::reverse_iterator reverse_iterator;
+! 	typedef _Imp::const_reverse_iterator const_reverse_iterator;
+  	typedef pair<iterator, iterator> _Pairii;
+  	typedef pair<const_iterator, const_iterator> _Paircc;
+  	explicit multimap(const _Pr& _Pred = _Pr(),
+--- 193,206 ----
+  	typedef _Pr key_compare;
+  	typedef _A allocator_type;
+  	typedef _Tree<_K, value_type, _Kfn, _Pr, _A> _Imp;
+! 	typedef typename _Imp::size_type size_type;
+! 	typedef typename _Imp::difference_type difference_type;
+! 	typedef typename _Imp::reference reference;
+! 	typedef typename _Imp::const_reference const_reference;
+! 	typedef typename _Imp::iterator iterator;
+! 	typedef typename _Imp::const_iterator const_iterator;
+! 	typedef typename _Imp::reverse_iterator reverse_iterator;
+! 	typedef typename _Imp::const_reverse_iterator const_reverse_iterator;
+  	typedef pair<iterator, iterator> _Pairii;
+  	typedef pair<const_iterator, const_iterator> _Paircc;
+  	explicit multimap(const _Pr& _Pred = _Pr(),
+*************** public:
+*** 242,256 ****
+  	iterator insert(const value_type& _X)
+  		{return (_Tr.insert(_X).first); }
+  	iterator insert(iterator _P, const value_type& _X)
+! 		{return (_Tr.insert((_Imp::iterator&)_P, _X)); }
+  	void insert(_It _F, _It _L)
+  		{for (; _F != _L; ++_F)
+  			_Tr.insert(*_F); }
+  	iterator erase(iterator _P)
+! 		{return (_Tr.erase((_Imp::iterator&)_P)); }
+  	iterator erase(iterator _F, iterator _L)
+! 		{return (_Tr.erase((_Imp::iterator&)_F,
+! 			(_Imp::iterator&)_L)); }
+  	size_type erase(const _K& _Kv = _K())
+  		{return (_Tr.erase(_Kv)); }
+  	void clear()
+--- 242,256 ----
+  	iterator insert(const value_type& _X)
+  		{return (_Tr.insert(_X).first); }
+  	iterator insert(iterator _P, const value_type& _X)
+! 		{return (_Tr.insert((typename _Imp::iterator&)_P, _X)); }
+  	void insert(_It _F, _It _L)
+  		{for (; _F != _L; ++_F)
+  			_Tr.insert(*_F); }
+  	iterator erase(iterator _P)
+! 		{return (_Tr.erase((typename _Imp::iterator&)_P)); }
+  	iterator erase(iterator _F, iterator _L)
+! 		{return (_Tr.erase((typename _Imp::iterator&)_F,
+! 			(typename _Imp::iterator&)_L)); }
+  	size_type erase(const _K& _Kv = _K())
+  		{return (_Tr.erase(_Kv)); }
+  	void clear()
 Index: oaidl.h
 ===================================================================
 RCS file: /cvsroot/GxInclude/VcInclude/oaidl.h,v
@@ -770,12 +2625,17 @@ Index: ostream
 ===================================================================
 RCS file: /cvsroot/GxInclude/VcInclude/ostream,v
 retrieving revision 1.1.1.1
-retrieving revision 1.2
-diff -c -3 -p -r1.1.1.1 -r1.2
+retrieving revision 1.3
+diff -c -3 -p -r1.1.1.1 -r1.3
 *** ostream	13 Jun 2001 19:31:44 -0000	1.1.1.1
---- ostream	13 Jun 2001 21:16:23 -0000	1.2
+--- ostream	21 Oct 2007 19:06:49 -0000	1.3
 ***************
-*** 19,25 ****
+*** 14,25 ****
+  		// I/O exception macros
+   #define _TRY_IO_BEGIN	_TRY_BEGIN
+   #define _CATCH_IO_END	_CATCH_ALL \
+! 	setstate(ios_base::badbit, true); _CATCH_END
+   #define _CATCH_IO_(x)	_CATCH_ALL \
   	(x).setstate(ios_base::badbit, true); _CATCH_END
   _STD_BEGIN
   		// TEMPLATE CLASS basic_ostream
@@ -783,7 +2643,12 @@ diff -c -3 -p -r1.1.1.1 -r1.2
   	class basic_ostream : virtual public basic_ios<_E, _Tr> {
   public:
   	typedef basic_ostream<_E, _Tr> _Myt;
---- 19,25 ----
+--- 14,25 ----
+  		// I/O exception macros
+   #define _TRY_IO_BEGIN	_TRY_BEGIN
+   #define _CATCH_IO_END	_CATCH_ALL \
+! 	this->setstate(ios_base::badbit, true); _CATCH_END
+   #define _CATCH_IO_(x)	_CATCH_ALL \
   	(x).setstate(ios_base::badbit, true); _CATCH_END
   _STD_BEGIN
   		// TEMPLATE CLASS basic_ostream
@@ -791,6 +2656,517 @@ diff -c -3 -p -r1.1.1.1 -r1.2
   	class basic_ostream : virtual public basic_ios<_E, _Tr> {
   public:
   	typedef basic_ostream<_E, _Tr> _Myt;
+*************** public:
+*** 27,38 ****
+  	typedef basic_streambuf<_E, _Tr> _Mysb;
+  	typedef ostreambuf_iterator<_E, _Tr> _Iter;
+  	typedef num_put<_E, _Iter> _Nput;
+  	explicit basic_ostream(basic_streambuf<_E, _Tr> *_S,
+  		bool _Isstd = false, bool _Doinit = true)
+  		{if (_Doinit)
+  		    init(_S, _Isstd); }
+  	basic_ostream(_Uninitialized)
+! 		{_Addstd(); }
+  	virtual ~basic_ostream()
+  		{}
+  	class sentry {
+--- 27,43 ----
+  	typedef basic_streambuf<_E, _Tr> _Mysb;
+  	typedef ostreambuf_iterator<_E, _Tr> _Iter;
+  	typedef num_put<_E, _Iter> _Nput;
++         typedef typename _Myios::pos_type pos_type;
++         typedef typename _Myios::off_type off_type;
++         typedef typename _Myios::iostate iostate;
++         typedef typename _Myios::fmtflags fmtflags;
++         typedef typename _Myios::int_type int_type;
+  	explicit basic_ostream(basic_streambuf<_E, _Tr> *_S,
+  		bool _Isstd = false, bool _Doinit = true)
+  		{if (_Doinit)
+  		    init(_S, _Isstd); }
+  	basic_ostream(_Uninitialized)
+! 		{this->_Addstd(); }
+  	virtual ~basic_ostream()
+  		{}
+  	class sentry {
+*************** public:
+*** 49,59 ****
+  		_Myt& _Ostr;
+  		};
+  	bool opfx()
+! 		{if (good() && tie() != 0)
+! 			tie()->flush();
+! 		return (good()); }
+  	void osfx()
+! 		{if (flags() & unitbuf)
+  			flush(); }
+  	_Myt& operator<<(_Myt& (__cdecl *_F)(_Myt&))
+  		{return ((*_F)(*this)); }
+--- 54,64 ----
+  		_Myt& _Ostr;
+  		};
+  	bool opfx()
+! 		{if (this->good() && this->tie() != 0)
+! 			this->tie()->flush();
+! 		return (this->good()); }
+  	void osfx()
+! 		{if (this->flags() & ios_base::unitbuf)
+  			flush(); }
+  	_Myt& operator<<(_Myt& (__cdecl *_F)(_Myt&))
+  		{return ((*_F)(*this)); }
+*************** public:
+*** 64,208 ****
+  		{(*_F)(*(ios_base *)this);
+  		return (*this); }
+  	_Myt& operator<<(_Bool _X)
+! 		{iostate _St = goodbit;
+  		const sentry _Ok(*this);
+  		if (_Ok)
+! 			{const _Nput& _Fac = _USE(getloc(), _Nput);
+  			_TRY_IO_BEGIN
+! 			if (_Fac.put(_Iter(rdbuf()), *this,
+! 				fill(), _X).failed())
+! 				_St |= badbit;
+  			_CATCH_IO_END }
+! 		setstate(_St);
+  		return (*this); }
+  	_Myt& operator<<(short _X)
+! 		{iostate _St = goodbit;
+  		const sentry _Ok(*this);
+  		if (_Ok)
+! 			{const _Nput& _Fac = _USE(getloc(), _Nput);
+! 			fmtflags _Bfl = flags() & basefield;
+  			long _Y = (_Bfl == oct || _Bfl == hex)
+  				? (long)(unsigned short)_X : (long)_X;
+  			_TRY_IO_BEGIN
+! 			if (_Fac.put(_Iter(rdbuf()), *this,
+! 				fill(), _Y).failed())
+! 				_St |= badbit;
+  			_CATCH_IO_END }
+! 		setstate(_St);
+  		return (*this); }
+  	_Myt& operator<<(unsigned short _X)
+! 		{iostate _St = goodbit;
+  		const sentry _Ok(*this);
+  		if (_Ok)
+! 			{const _Nput& _Fac = _USE(getloc(), _Nput);
+  			_TRY_IO_BEGIN
+! 			if (_Fac.put(_Iter(rdbuf()), *this,
+! 				fill(), (unsigned long)_X).failed())
+! 				_St |= badbit;
+  			_CATCH_IO_END }
+! 		setstate(_St);
+  		return (*this); }
+  	_Myt& operator<<(int _X)
+! 		{iostate _St = goodbit;
+  		const sentry _Ok(*this);
+  		if (_Ok)
+! 			{const _Nput& _Fac = _USE(getloc(), _Nput);
+! 			fmtflags _Bfl = flags() & basefield;
+  			long _Y = (_Bfl == oct || _Bfl == hex)
+  				? (long)(unsigned int)_X : (long)_X;
+  			_TRY_IO_BEGIN
+! 			if (_Fac.put(_Iter(rdbuf()), *this,
+! 				fill(), _Y).failed())
+! 				_St |= badbit;
+  			_CATCH_IO_END }
+! 		setstate(_St);
+  		return (*this); }
+  	_Myt& operator<<(unsigned int _X)
+! 		{iostate _St = goodbit;
+  		const sentry _Ok(*this);
+  		if (_Ok)
+! 			{const _Nput& _Fac = _USE(getloc(), _Nput);
+  			_TRY_IO_BEGIN
+! 			if (_Fac.put(_Iter(rdbuf()), *this,
+! 				fill(), (unsigned long)_X).failed())
+! 				_St |= badbit;
+  			_CATCH_IO_END }
+! 		setstate(_St);
+  		return (*this); }
+  	_Myt& operator<<(long _X)
+! 		{iostate _St = goodbit;
+  		const sentry _Ok(*this);
+  		if (_Ok)
+! 			{const _Nput& _Fac = _USE(getloc(), _Nput);
+  			_TRY_IO_BEGIN
+! 			if (_Fac.put(_Iter(rdbuf()), *this,
+! 				fill(), _X).failed())
+! 				_St |= badbit;
+  			_CATCH_IO_END }
+! 		setstate(_St);
+  		return (*this); }
+  	_Myt& operator<<(unsigned long _X)
+! 		{iostate _St = goodbit;
+  		const sentry _Ok(*this);
+  		if (_Ok)
+! 			{const _Nput& _Fac = _USE(getloc(), _Nput);
+  			_TRY_IO_BEGIN
+! 			if (_Fac.put(_Iter(rdbuf()), *this,
+! 				fill(), _X).failed())
+! 				_St |= badbit;
+  			_CATCH_IO_END }
+! 		setstate(_St);
+  		return (*this); }
+  	_Myt& operator<<(float _X)
+! 		{iostate _St = goodbit;
+  		const sentry _Ok(*this);
+  		if (_Ok)
+! 			{const _Nput& _Fac = _USE(getloc(), _Nput);
+  			_TRY_IO_BEGIN
+! 			if (_Fac.put(_Iter(rdbuf()), *this,
+! 				fill(), (double)_X).failed())
+! 				_St |= badbit;
+  			_CATCH_IO_END }
+! 		setstate(_St);
+  		return (*this); }
+  	_Myt& operator<<(double _X)
+! 		{iostate _St = goodbit;
+  		const sentry _Ok(*this);
+  		if (_Ok)
+! 			{const _Nput& _Fac = _USE(getloc(), _Nput);
+  			_TRY_IO_BEGIN
+! 			if (_Fac.put(_Iter(rdbuf()), *this,
+! 				fill(), _X).failed())
+! 				_St |= badbit;
+  			_CATCH_IO_END }
+! 		setstate(_St);
+  		return (*this); }
+  	_Myt& operator<<(long double _X)
+! 		{iostate _St = goodbit;
+  		const sentry _Ok(*this);
+  		if (_Ok)
+! 			{const _Nput& _Fac = _USE(getloc(), _Nput);
+  			_TRY_IO_BEGIN
+! 			if (_Fac.put(_Iter(rdbuf()), *this,
+! 				fill(), _X).failed())
+! 				_St |= badbit;
+  			_CATCH_IO_END }
+! 		setstate(_St);
+  		return (*this); }
+  	_Myt& operator<<(const void *_X)
+! 		{iostate _St = goodbit;
+  		const sentry _Ok(*this);
+  		if (_Ok)
+! 			{const _Nput& _Fac = _USE(getloc(), _Nput);
+  			_TRY_IO_BEGIN
+! 			if (_Fac.put(_Iter(rdbuf()), *this,
+! 				fill(), _X).failed())
+! 				_St |= badbit;
+  			_CATCH_IO_END }
+! 		setstate(_St);
+  		return (*this); }
+  	_Myt& operator<<(_Mysb *_Pb)
+! 		{iostate _St = goodbit;
+  		bool _Copied = false;
+  		const sentry _Ok(*this);
+  		if (_Ok && _Pb != 0)
+--- 69,213 ----
+  		{(*_F)(*(ios_base *)this);
+  		return (*this); }
+  	_Myt& operator<<(_Bool _X)
+! 		{iostate _St = ios_base::goodbit;
+  		const sentry _Ok(*this);
+  		if (_Ok)
+! 			{const _Nput& _Fac = _USE(this->getloc(), _Nput);
+  			_TRY_IO_BEGIN
+! 			if (_Fac.put(_Iter(this->rdbuf()), *this,
+! 				this->fill(), _X).failed())
+! 				_St |= ios_base::badbit;
+  			_CATCH_IO_END }
+! 		this->setstate(_St);
+  		return (*this); }
+  	_Myt& operator<<(short _X)
+! 		{iostate _St = ios_base::goodbit;
+  		const sentry _Ok(*this);
+  		if (_Ok)
+! 			{const _Nput& _Fac = _USE(this->getloc(), _Nput);
+! 			fmtflags _Bfl = this->flags() & ios_base::basefield;
+  			long _Y = (_Bfl == oct || _Bfl == hex)
+  				? (long)(unsigned short)_X : (long)_X;
+  			_TRY_IO_BEGIN
+! 			if (_Fac.put(_Iter(this->rdbuf()), *this,
+! 				this->fill(), _Y).failed())
+! 				_St |= ios_base::badbit;
+  			_CATCH_IO_END }
+! 		this->setstate(_St);
+  		return (*this); }
+  	_Myt& operator<<(unsigned short _X)
+! 		{iostate _St = ios_base::goodbit;
+  		const sentry _Ok(*this);
+  		if (_Ok)
+! 			{const _Nput& _Fac = _USE(this->getloc(), _Nput);
+  			_TRY_IO_BEGIN
+! 			if (_Fac.put(_Iter(this->rdbuf()), *this,
+! 				this->fill(), (unsigned long)_X).failed())
+! 				_St |= ios_base::badbit;
+  			_CATCH_IO_END }
+! 		this->setstate(_St);
+  		return (*this); }
+  	_Myt& operator<<(int _X)
+! 		{iostate _St = ios_base::goodbit;
+  		const sentry _Ok(*this);
+  		if (_Ok)
+! 			{const _Nput& _Fac = _USE(this->getloc(), _Nput);
+! 			fmtflags _Bfl = this->flags() & this->basefield;
+  			long _Y = (_Bfl == oct || _Bfl == hex)
+  				? (long)(unsigned int)_X : (long)_X;
+  			_TRY_IO_BEGIN
+! 			if (_Fac.put(_Iter(this->rdbuf()), *this,
+! 				this->fill(), _Y).failed())
+! 				_St |= ios_base::badbit;
+  			_CATCH_IO_END }
+! 		this->setstate(_St);
+  		return (*this); }
+  	_Myt& operator<<(unsigned int _X)
+! 		{iostate _St = ios_base::goodbit;
+  		const sentry _Ok(*this);
+  		if (_Ok)
+! 			{const _Nput& _Fac = _USE(this->getloc(), _Nput);
+  			_TRY_IO_BEGIN
+! 			if (_Fac.put(_Iter(this->rdbuf()), *this,
+! 				this->fill(), (unsigned long)_X).failed())
+! 				_St |= ios_base::badbit;
+  			_CATCH_IO_END }
+! 		this->setstate(_St);
+  		return (*this); }
+  	_Myt& operator<<(long _X)
+! 		{iostate _St = ios_base::goodbit;
+  		const sentry _Ok(*this);
+  		if (_Ok)
+! 			{const _Nput& _Fac = _USE(this->getloc(), _Nput);
+  			_TRY_IO_BEGIN
+! 			if (_Fac.put(_Iter(this->rdbuf()), *this,
+! 				this->fill(), _X).failed())
+! 				_St |= ios_base::badbit;
+  			_CATCH_IO_END }
+! 		this->setstate(_St);
+  		return (*this); }
+  	_Myt& operator<<(unsigned long _X)
+! 		{iostate _St = ios_base::goodbit;
+  		const sentry _Ok(*this);
+  		if (_Ok)
+! 			{const _Nput& _Fac = _USE(this->getloc(), _Nput);
+  			_TRY_IO_BEGIN
+! 			if (_Fac.put(_Iter(this->rdbuf()), *this,
+! 				this->fill(), _X).failed())
+! 				_St |= ios_base::badbit;
+  			_CATCH_IO_END }
+! 		this->setstate(_St);
+  		return (*this); }
+  	_Myt& operator<<(float _X)
+! 		{iostate _St = ios_base::goodbit;
+  		const sentry _Ok(*this);
+  		if (_Ok)
+! 			{const _Nput& _Fac = _USE(this->getloc(), _Nput);
+  			_TRY_IO_BEGIN
+! 			if (_Fac.put(_Iter(this->rdbuf()), *this,
+! 				this->fill(), (double)_X).failed())
+! 				_St |= ios_base::badbit;
+  			_CATCH_IO_END }
+! 		this->setstate(_St);
+  		return (*this); }
+  	_Myt& operator<<(double _X)
+! 		{iostate _St = ios_base::goodbit;
+  		const sentry _Ok(*this);
+  		if (_Ok)
+! 			{const _Nput& _Fac = _USE(this->getloc(), _Nput);
+  			_TRY_IO_BEGIN
+! 			if (_Fac.put(_Iter(this->rdbuf()), *this,
+! 				this->fill(), _X).failed())
+! 				_St |= ios_base::badbit;
+  			_CATCH_IO_END }
+! 		this->setstate(_St);
+  		return (*this); }
+  	_Myt& operator<<(long double _X)
+! 		{iostate _St = ios_base::goodbit;
+  		const sentry _Ok(*this);
+  		if (_Ok)
+! 			{const _Nput& _Fac = _USE(this->getloc(), _Nput);
+  			_TRY_IO_BEGIN
+! 			if (_Fac.put(_Iter(this->rdbuf()), *this,
+! 				this->fill(), _X).failed())
+! 				_St |= ios_base::badbit;
+  			_CATCH_IO_END }
+! 		this->setstate(_St);
+  		return (*this); }
+  	_Myt& operator<<(const void *_X)
+! 		{iostate _St = ios_base::goodbit;
+  		const sentry _Ok(*this);
+  		if (_Ok)
+! 			{const _Nput& _Fac = _USE(this->getloc(), _Nput);
+  			_TRY_IO_BEGIN
+! 			if (_Fac.put(_Iter(this->rdbuf()), *this,
+! 				this->fill(), _X).failed())
+! 				_St |= ios_base::badbit;
+  			_CATCH_IO_END }
+! 		this->setstate(_St);
+  		return (*this); }
+  	_Myt& operator<<(_Mysb *_Pb)
+! 		{iostate _St = ios_base::goodbit;
+  		bool _Copied = false;
+  		const sentry _Ok(*this);
+  		if (_Ok && _Pb != 0)
+*************** public:
+*** 211,272 ****
+  				_C = _Tr::eq_int_type(_Tr::eof(), _C)
+  					? _Pb->sgetc() : _Pb->snextc();
+  				_CATCH_ALL
+! 					setstate(failbit);
+  					_RERAISE;
+  				_CATCH_END
+  				if (_Tr::eq_int_type(_Tr::eof(),_C))
+  					break;
+  				_TRY_IO_BEGIN
+  					if (_Tr::eq_int_type(_Tr::eof(),
+! 						rdbuf()->sputc(_Tr::to_char_type(_C))))
+! 						{_St |= badbit;
+  						break; }
+  				_CATCH_IO_END }
+! 		width(0);
+! 		setstate(!_Copied ? _St | failbit : _St);
+  		return (*this); }
+  	_Myt& put(_E _X)
+! 		{iostate _St = goodbit;
+  		const sentry _Ok(*this);
+  		if (!_Ok)
+! 			_St |= badbit;
+  		else
+  			{_TRY_IO_BEGIN
+  			 if (_Tr::eq_int_type(_Tr::eof(),
+! 				rdbuf()->sputc(_X)))
+! 				_St |= badbit;
+  			_CATCH_IO_END }
+! 		setstate(_St);
+  		return (*this); }
+  	_Myt& write(const _E *_S, streamsize _N)
+! 		{iostate _St = goodbit;
+  		const sentry _Ok(*this);
+  		if (!_Ok)
+! 			_St |= badbit;
+  		else
+  			{_TRY_IO_BEGIN
+! 			if (rdbuf()->sputn(_S, _N) != _N)
+! 				_St |= badbit;
+  			_CATCH_IO_END }
+! 		setstate(_St);
+  		return (*this); }
+  	_Myt& flush()
+! 		{iostate _St = goodbit;
+! 		if (!fail() && rdbuf()->pubsync() == -1)
+! 			_St |= badbit;
+! 		setstate(_St);
+  		return (*this); }
+  	_Myt& seekp(pos_type _P)
+! 		{if (!fail())
+! 			rdbuf()->pubseekpos(_P, out);
+  		return (*this); }
+  	_Myt& seekp(off_type _O, ios_base::seekdir _W)
+! 		{if (!fail())
+! 			rdbuf()->pubseekoff(_O, _W, out);
+  		return (*this); }
+  	pos_type tellp()
+! 		{if (!fail())
+! 			return (rdbuf()->pubseekoff(0, cur, out));
+  		else
+  			return (streampos(_BADOFF)); }
+  	};
+--- 216,277 ----
+  				_C = _Tr::eq_int_type(_Tr::eof(), _C)
+  					? _Pb->sgetc() : _Pb->snextc();
+  				_CATCH_ALL
+! 					this->setstate(ios_base::failbit);
+  					_RERAISE;
+  				_CATCH_END
+  				if (_Tr::eq_int_type(_Tr::eof(),_C))
+  					break;
+  				_TRY_IO_BEGIN
+  					if (_Tr::eq_int_type(_Tr::eof(),
+! 						this->rdbuf()->sputc(_Tr::to_char_type(_C))))
+! 						{_St |= ios_base::badbit;
+  						break; }
+  				_CATCH_IO_END }
+! 		this->width(0);
+! 		this->setstate(!_Copied ? _St | ios_base::failbit : _St);
+  		return (*this); }
+  	_Myt& put(_E _X)
+! 		{iostate _St = ios_base::goodbit;
+  		const sentry _Ok(*this);
+  		if (!_Ok)
+! 			_St |= ios_base::badbit;
+  		else
+  			{_TRY_IO_BEGIN
+  			 if (_Tr::eq_int_type(_Tr::eof(),
+! 				this->rdbuf()->sputc(_X)))
+! 				_St |= ios_base::badbit;
+  			_CATCH_IO_END }
+! 		this->setstate(_St);
+  		return (*this); }
+  	_Myt& write(const _E *_S, streamsize _N)
+! 		{iostate _St = ios_base::goodbit;
+  		const sentry _Ok(*this);
+  		if (!_Ok)
+! 			_St |= ios_base::badbit;
+  		else
+  			{_TRY_IO_BEGIN
+! 			if (this->rdbuf()->sputn(_S, _N) != _N)
+! 				_St |= ios_base::badbit;
+  			_CATCH_IO_END }
+! 		this->setstate(_St);
+  		return (*this); }
+  	_Myt& flush()
+! 		{iostate _St = ios_base::goodbit;
+! 		if (!this->fail() && this->rdbuf()->pubsync() == -1)
+! 			_St |= ios_base::badbit;
+! 		this->setstate(_St);
+  		return (*this); }
+  	_Myt& seekp(pos_type _P)
+! 		{if (!this->fail())
+! 			this->rdbuf()->pubseekpos(_P, ios_base::out);
+  		return (*this); }
+  	_Myt& seekp(off_type _O, ios_base::seekdir _W)
+! 		{if (!this->fail())
+! 			this->rdbuf()->pubseekoff(_O, _W, ios_base::out);
+  		return (*this); }
+  	pos_type tellp()
+! 		{if (!this->fail())
+! 			return (this->rdbuf()->pubseekoff(0, ios_base::cur, ios_base::out));
+  		else
+  			return (streampos(_BADOFF)); }
+  	};
+*************** template<class _E, class _Tr> inline
+*** 289,295 ****
+  	size_t _N = _Tr::length(_X);
+  	size_t _M = _O.width() <= 0 || _O.width() <= _N
+  		? 0 : _O.width() - _N;
+! 	const _Myos::sentry _Ok(_O);
+  	if (!_Ok)
+  		_St |= ios_base::badbit;
+  	else
+--- 294,300 ----
+  	size_t _N = _Tr::length(_X);
+  	size_t _M = _O.width() <= 0 || _O.width() <= _N
+  		? 0 : _O.width() - _N;
+! 	const typename _Myos::sentry _Ok(_O);
+  	if (!_Ok)
+  		_St |= ios_base::badbit;
+  	else
+*************** template<class _E, class _Tr> inline
+*** 319,325 ****
+  		basic_ostream<_E, _Tr>& _O, _E _C)
+  	{typedef basic_ostream<_E, _Tr> _Myos;
+  	ios_base::iostate _St = ios_base::goodbit;
+! 	const _Myos::sentry _Ok(_O);
+  	if (_Ok)
+  		{size_t _M = _O.width() <= 1 ? 0 : _O.width() - 1;
+  		_TRY_IO_BEGIN
+--- 324,330 ----
+  		basic_ostream<_E, _Tr>& _O, _E _C)
+  	{typedef basic_ostream<_E, _Tr> _Myos;
+  	ios_base::iostate _St = ios_base::goodbit;
+! 	const typename _Myos::sentry _Ok(_O);
+  	if (_Ok)
+  		{size_t _M = _O.width() <= 1 ? 0 : _O.width() - 1;
+  		_TRY_IO_BEGIN
 Index: process.h
 ===================================================================
 RCS file: /cvsroot/GxInclude/VcInclude/process.h,v
@@ -873,6 +3249,148 @@ diff -c -3 -p -r1.1.1.1 -r1.3
   	explicit priority_queue(const _Pr& _X = _Pr(),
   		const allocator_type& _Al = allocator_type())
   		: c(_Al), comp(_X) {}
+Index: set
+===================================================================
+RCS file: /cvsroot/GxInclude/VcInclude/set,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1.1.1 -r1.2
+*** set	13 Jun 2001 19:31:50 -0000	1.1.1.1
+--- set	21 Oct 2007 19:06:49 -0000	1.2
+*************** public:
+*** 30,43 ****
+  	typedef _Pr key_compare;
+  	typedef _A allocator_type;
+  	typedef _Tree<_K, value_type, _Kfn, _Pr, _A> _Imp;
+! 	typedef _Imp::size_type size_type;
+! 	typedef _Imp::difference_type difference_type;
+! 	typedef _Imp::reference reference;
+! 	typedef _Imp::const_reference const_reference;
+! 	typedef _Imp::iterator iterator;
+! 	typedef _Imp::const_iterator const_iterator;
+! 	typedef _Imp::reverse_iterator reverse_iterator;
+! 	typedef _Imp::const_reverse_iterator const_reverse_iterator;
+  	typedef pair<iterator, bool> _Pairib;
+  	typedef pair<iterator, iterator> _Pairii;
+  	typedef pair<const_iterator, const_iterator> _Paircc;
+--- 30,43 ----
+  	typedef _Pr key_compare;
+  	typedef _A allocator_type;
+  	typedef _Tree<_K, value_type, _Kfn, _Pr, _A> _Imp;
+! 	typedef typename _Imp::size_type size_type;
+! 	typedef typename _Imp::difference_type difference_type;
+! 	typedef typename _Imp::reference reference;
+! 	typedef typename _Imp::const_reference const_reference;
+! 	typedef typename _Imp::iterator iterator;
+! 	typedef typename _Imp::const_iterator const_iterator;
+! 	typedef typename _Imp::reverse_iterator reverse_iterator;
+! 	typedef typename _Imp::const_reverse_iterator const_reverse_iterator;
+  	typedef pair<iterator, bool> _Pairib;
+  	typedef pair<iterator, iterator> _Pairii;
+  	typedef pair<const_iterator, const_iterator> _Paircc;
+*************** public:
+*** 77,94 ****
+  	_A get_allocator() const
+  		{return (_Tr.get_allocator()); }
+  	_Pairib insert(const value_type& _X)
+! 		{_Imp::_Pairib _Ans = _Tr.insert(_X);
+  		return (_Pairib(_Ans.first, _Ans.second)); }
+  	iterator insert(iterator _P, const value_type& _X)
+! 		{return (_Tr.insert((_Imp::iterator&)_P, _X)); }
+  	void insert(_It _F, _It _L)
+  		{for (; _F != _L; ++_F)
+  			_Tr.insert(*_F); }
+  	iterator erase(iterator _P)
+! 		{return (_Tr.erase((_Imp::iterator&)_P)); }
+  	iterator erase(iterator _F, iterator _L)
+! 		{return (_Tr.erase((_Imp::iterator&)_F,
+! 			(_Imp::iterator&)_L)); }
+  	size_type erase(const _K& _Kv)
+  		{return (_Tr.erase(_Kv)); }
+  	void clear()
+--- 77,94 ----
+  	_A get_allocator() const
+  		{return (_Tr.get_allocator()); }
+  	_Pairib insert(const value_type& _X)
+! 		{typename _Imp::_Pairib _Ans = _Tr.insert(_X);
+  		return (_Pairib(_Ans.first, _Ans.second)); }
+  	iterator insert(iterator _P, const value_type& _X)
+! 		{return (_Tr.insert((typename _Imp::iterator&)_P, _X)); }
+  	void insert(_It _F, _It _L)
+  		{for (; _F != _L; ++_F)
+  			_Tr.insert(*_F); }
+  	iterator erase(iterator _P)
+! 		{return (_Tr.erase((typename _Imp::iterator&)_P)); }
+  	iterator erase(iterator _F, iterator _L)
+! 		{return (_Tr.erase((typename _Imp::iterator&)_F,
+! 			(typename _Imp::iterator&)_L)); }
+  	size_type erase(const _K& _Kv)
+  		{return (_Tr.erase(_Kv)); }
+  	void clear()
+*************** public:
+*** 165,178 ****
+  	typedef _Pr key_compare;
+  	typedef _A allocator_type;
+  	typedef _Tree<_K, value_type, _Kfn, _Pr, _A> _Imp;
+! 	typedef _Imp::size_type size_type;
+! 	typedef _Imp::difference_type difference_type;
+! 	typedef _Imp::reference reference;
+! 	typedef _Imp::const_reference const_reference;
+! 	typedef _Imp::iterator iterator;
+! 	typedef _Imp::const_iterator const_iterator;
+! 	typedef _Imp::reverse_iterator reverse_iterator;
+! 	typedef _Imp::const_reverse_iterator const_reverse_iterator;
+  	typedef pair<iterator, iterator> _Pairii;
+  	typedef pair<const_iterator, const_iterator> _Paircc;
+  	explicit multiset(const _Pr& _Pred = _Pr(),
+--- 165,178 ----
+  	typedef _Pr key_compare;
+  	typedef _A allocator_type;
+  	typedef _Tree<_K, value_type, _Kfn, _Pr, _A> _Imp;
+! 	typedef typename _Imp::size_type size_type;
+! 	typedef typename _Imp::difference_type difference_type;
+! 	typedef typename _Imp::reference reference;
+! 	typedef typename _Imp::const_reference const_reference;
+! 	typedef typename _Imp::iterator iterator;
+! 	typedef typename _Imp::const_iterator const_iterator;
+! 	typedef typename _Imp::reverse_iterator reverse_iterator;
+! 	typedef typename _Imp::const_reverse_iterator const_reverse_iterator;
+  	typedef pair<iterator, iterator> _Pairii;
+  	typedef pair<const_iterator, const_iterator> _Paircc;
+  	explicit multiset(const _Pr& _Pred = _Pr(),
+*************** public:
+*** 214,228 ****
+  	iterator insert(const value_type& _X)
+  		{return (_Tr.insert(_X).first); }
+  	iterator insert(iterator _P, const value_type& _X)
+! 		{return (_Tr.insert((_Imp::iterator&)_P, _X)); }
+  	void insert(_It _F, _It _L)
+  		{for (; _F != _L; ++_F)
+  			_Tr.insert(*_F); }
+  	iterator erase(iterator _P)
+! 		{return (_Tr.erase((_Imp::iterator&)_P)); }
+  	iterator erase(iterator _F, iterator _L)
+! 		{return (_Tr.erase((_Imp::iterator&)_F,
+! 			(_Imp::iterator&)_L)); }
+  	size_type erase(const _K& _Kv)
+  		{return (_Tr.erase(_Kv)); }
+  	void clear()
+--- 214,228 ----
+  	iterator insert(const value_type& _X)
+  		{return (_Tr.insert(_X).first); }
+  	iterator insert(iterator _P, const value_type& _X)
+! 		{return (_Tr.insert((typename _Imp::iterator&)_P, _X)); }
+  	void insert(_It _F, _It _L)
+  		{for (; _F != _L; ++_F)
+  			_Tr.insert(*_F); }
+  	iterator erase(iterator _P)
+! 		{return (_Tr.erase((typename _Imp::iterator&)_P)); }
+  	iterator erase(iterator _F, iterator _L)
+! 		{return (_Tr.erase((typename _Imp::iterator&)_F,
+! 			(typename _Imp::iterator&)_L)); }
+  	size_type erase(const _K& _Kv)
+  		{return (_Tr.erase(_Kv)); }
+  	void clear()
 Index: signal.h
 ===================================================================
 RCS file: /cvsroot/GxInclude/VcInclude/signal.h,v
@@ -903,12 +3421,12 @@ Index: sstream
 ===================================================================
 RCS file: /cvsroot/GxInclude/VcInclude/sstream,v
 retrieving revision 1.1.1.1
-retrieving revision 1.2
-diff -c -3 -p -r1.1.1.1 -r1.2
+retrieving revision 1.3
+diff -c -3 -p -r1.1.1.1 -r1.3
 *** sstream	13 Jun 2001 19:31:56 -0000	1.1.1.1
---- sstream	13 Jun 2001 21:16:23 -0000	1.2
+--- sstream	21 Oct 2007 19:06:49 -0000	1.3
 *************** _BITMASK(__Strstate, _Strstate);
-*** 17,24 ****
+*** 17,26 ****
   _BITMASK_OPS(__Strstate)
   		// TEMPLATE CLASS basic_stringbuf
   template<class _E,
@@ -917,7 +3435,9 @@ diff -c -3 -p -r1.1.1.1 -r1.2
   	class basic_stringbuf : public basic_streambuf<_E, _Tr> {
   public:
   	typedef basic_string<_E, _Tr, _A> _Mystr;
---- 17,24 ----
+  	explicit basic_stringbuf(
+  		ios_base::openmode _W = ios_base::in | ios_base::out)
+--- 17,29 ----
   _BITMASK_OPS(__Strstate)
   		// TEMPLATE CLASS basic_stringbuf
   template<class _E,
@@ -925,9 +3445,310 @@ diff -c -3 -p -r1.1.1.1 -r1.2
 ! 	class _A >
   	class basic_stringbuf : public basic_streambuf<_E, _Tr> {
   public:
++         typedef typename basic_streambuf<_E, _Tr>::int_type int_type;
++         typedef typename basic_streambuf<_E, _Tr>::pos_type pos_type;
++         typedef typename basic_streambuf<_E, _Tr>::off_type off_type;
   	typedef basic_string<_E, _Tr, _A> _Mystr;
+  	explicit basic_stringbuf(
+  		ios_base::openmode _W = ios_base::in | ios_base::out)
+*************** public:
+*** 31,42 ****
+  	virtual ~basic_stringbuf()
+  		{_Tidy(); }
+  	_Mystr str() const
+! 		{if (!(_Strmode & _Constant) && pptr() != 0)
+! 			{_Mystr _Str(pbase(), (_Seekhigh < pptr()
+! 				? pptr() : _Seekhigh) - pbase());
+  			return (_Str); }
+! 		else if (!(_Strmode & _Noread) && gptr() != 0)
+! 			{_Mystr _Str(eback(), egptr() - eback());
+  			return (_Str); }
+  		else
+  			{_Mystr _Nul;
+--- 34,45 ----
+  	virtual ~basic_stringbuf()
+  		{_Tidy(); }
+  	_Mystr str() const
+! 		{if (!(_Strmode & _Constant) && this->pptr() != 0)
+! 			{_Mystr _Str(this->pbase(), (_Seekhigh < this->pptr()
+! 				? this->pptr() : _Seekhigh) - this->pbase());
+  			return (_Str); }
+! 		else if (!(_Strmode & _Noread) && this->gptr() != 0)
+! 			{_Mystr _Str(this->eback(), this->ethis->gptr() - this->eback());
+  			return (_Str); }
+  		else
+  			{_Mystr _Nul;
+*************** protected:
+*** 48,134 ****
+  	virtual int_type overflow(int_type _C = _Tr::eof())
+  		{if (_Tr::eq_int_type(_Tr::eof(), _C))
+  			return (_Tr::not_eof(_C));
+! 		else if (pptr() != 0 && pptr() < epptr())
+! 			{*_Pninc() = _Tr::to_char_type(_C);
+  			return (_C); }
+  		else if (_Strmode & _Constant)
+  			return (_Tr::eof());
+  		else
+! 			{size_t _Os = gptr() == 0 ? 0 : epptr() - eback();
+  			size_t _Ns = _Os + _Alsize;
+  			_E *_P = _Al.allocate(_Ns, (void *)0);
+  			if (0 < _Os)
+! 				_Tr::copy(_P, eback(), _Os);
+  			else if (_ALSIZE < _Alsize)
+  				_Alsize = _ALSIZE;
+  			if (_Strmode & _Allocated)
+! 				_Al.deallocate(eback(), _Os);
+  			_Strmode |= _Allocated;
+  			if (_Os == 0)
+  				{_Seekhigh = _P;
+! 				setp(_P, _P + _Ns);
+! 				setg(_P, _P, _P); }
+  			else
+! 				{_Seekhigh = _Seekhigh - eback() + _P;
+! 				setp(pbase() - eback() + _P,
+! 					pptr() - eback() + _P, _P + _Ns);
+  				if (_Strmode & _Noread)
+! 					setg(_P, _P, _P);
+  				else
+! 					setg(_P, gptr() - eback() + _P, pptr() + 1); }
+! 			*_Pninc() = _Tr::to_char_type(_C);
+  			return (_C); }}
+  	virtual int_type pbackfail(int_type _C = _Tr::eof())
+! 		{if (gptr() == 0 || gptr() <= eback()
+  			|| !_Tr::eq_int_type(_Tr::eof(), _C)
+! 				&& !_Tr::eq(_Tr::to_char_type(_C), gptr()[-1])
+  				&& _Strmode & _Constant)
+  			return (_Tr::eof());
+  		else
+! 			{gbump(-1);
+  			if (!_Tr::eq_int_type(_Tr::eof(), _C))
+! 				*gptr() = _Tr::to_char_type(_C);
+  			return (_Tr::not_eof(_C)); }}
+  	virtual int_type underflow()
+! 		{if (gptr() == 0)
+  			return (_Tr::eof());
+! 		else if (gptr() < egptr())
+! 			return (_Tr::to_int_type(*gptr()));
+! 		else if (_Strmode & _Noread || pptr() == 0
+! 			|| pptr() <= gptr() && _Seekhigh <= gptr())
+  			return (_Tr::eof());
+  		else
+! 			{if (_Seekhigh < pptr())
+! 				_Seekhigh = pptr();
+! 			setg(eback(), gptr(), _Seekhigh);
+! 			return (_Tr::to_int_type(*gptr())); }}
+  	virtual pos_type seekoff(off_type _O, ios_base::seekdir _Way,
+  		ios_base::openmode _Which = ios_base::in | ios_base::out)
+! 		{if (pptr() != 0 && _Seekhigh < pptr())
+! 			_Seekhigh = pptr();
+! 		if (_Which & ios_base::in && gptr() != 0)
+  			{if (_Way == ios_base::end)
+! 				_O += _Seekhigh - eback();
+  			else if (_Way == ios_base::cur
+  				&& !(_Which & ios_base::out))
+! 				_O += gptr() - eback();
+  			else if (_Way != ios_base::beg)
+  				_O = _BADOFF;
+! 			if (0 <= _O && _O <= _Seekhigh - eback())
+! 				{gbump(eback() - gptr() + _O);
+! 				if (_Which & ios_base::out && pptr() != 0)
+! 					setp(pbase(), gptr(), epptr()); }
+  			else
+  				_O = _BADOFF; }
+! 		else if (_Which & ios_base::out && pptr() != 0)
+  			{if (_Way == ios_base::end)
+! 				_O += _Seekhigh - eback();
+  			else if (_Way == ios_base::cur)
+! 				_O += pptr() - eback();
+  			else if (_Way != ios_base::beg)
+  				_O = _BADOFF;
+! 			if (0 <= _O && _O <= _Seekhigh - eback())
+! 				pbump(eback() - pptr() + _O);
+  			else
+  				_O = _BADOFF; }
+  		else
+--- 51,137 ----
+  	virtual int_type overflow(int_type _C = _Tr::eof())
+  		{if (_Tr::eq_int_type(_Tr::eof(), _C))
+  			return (_Tr::not_eof(_C));
+! 		else if (this->pptr() != 0 && this->pptr() < this->epptr())
+! 			{*this->_Pninc() = _Tr::to_char_type(_C);
+  			return (_C); }
+  		else if (_Strmode & _Constant)
+  			return (_Tr::eof());
+  		else
+! 			{size_t _Os = this->gptr() == 0 ? 0 : this->epptr() - this->eback();
+  			size_t _Ns = _Os + _Alsize;
+  			_E *_P = _Al.allocate(_Ns, (void *)0);
+  			if (0 < _Os)
+! 				_Tr::copy(_P, this->eback(), _Os);
+  			else if (_ALSIZE < _Alsize)
+  				_Alsize = _ALSIZE;
+  			if (_Strmode & _Allocated)
+! 				_Al.deallocate(this->eback(), _Os);
+  			_Strmode |= _Allocated;
+  			if (_Os == 0)
+  				{_Seekhigh = _P;
+! 				this->setp(_P, _P + _Ns);
+! 				this->setg(_P, _P, _P); }
+  			else
+! 				{_Seekhigh = _Seekhigh - this->eback() + _P;
+! 				this->setp(this->pbase() - this->eback() + _P,
+! 					this->pptr() - this->eback() + _P, _P + _Ns);
+  				if (_Strmode & _Noread)
+! 					this->setg(_P, _P, _P);
+  				else
+! 					this->setg(_P, this->gptr() - this->eback() + _P, this->pptr() + 1); }
+! 			*this->_Pninc() = _Tr::to_char_type(_C);
+  			return (_C); }}
+  	virtual int_type pbackfail(int_type _C = _Tr::eof())
+! 		{if (this->gptr() == 0 || this->gptr() <= this->eback()
+  			|| !_Tr::eq_int_type(_Tr::eof(), _C)
+! 				&& !_Tr::eq(_Tr::to_char_type(_C), this->gptr()[-1])
+  				&& _Strmode & _Constant)
+  			return (_Tr::eof());
+  		else
+! 			{this->gbump(-1);
+  			if (!_Tr::eq_int_type(_Tr::eof(), _C))
+! 				*this->gptr() = _Tr::to_char_type(_C);
+  			return (_Tr::not_eof(_C)); }}
+  	virtual int_type underflow()
+! 		{if (this->gptr() == 0)
+  			return (_Tr::eof());
+! 		else if (this->gptr() < this->egptr())
+! 			return (_Tr::to_int_type(*this->gptr()));
+! 		else if (_Strmode & _Noread || this->pptr() == 0
+! 			|| this->pptr() <= this->gptr() && _Seekhigh <= this->gptr())
+  			return (_Tr::eof());
+  		else
+! 			{if (_Seekhigh < this->pptr())
+! 				_Seekhigh = this->pptr();
+! 			this->setg(this->eback(), this->gptr(), _Seekhigh);
+! 			return (_Tr::to_int_type(*this->gptr())); }}
+  	virtual pos_type seekoff(off_type _O, ios_base::seekdir _Way,
+  		ios_base::openmode _Which = ios_base::in | ios_base::out)
+! 		{if (this->pptr() != 0 && _Seekhigh < this->pptr())
+! 			_Seekhigh = this->pptr();
+! 		if (_Which & ios_base::in && this->gptr() != 0)
+  			{if (_Way == ios_base::end)
+! 				_O += _Seekhigh - this->eback();
+  			else if (_Way == ios_base::cur
+  				&& !(_Which & ios_base::out))
+! 				_O += this->gptr() - this->eback();
+  			else if (_Way != ios_base::beg)
+  				_O = _BADOFF;
+! 			if (0 <= _O && _O <= _Seekhigh - this->eback())
+! 				{this->gbump(this->eback() - this->gptr() + _O);
+! 				if (_Which & ios_base::out && this->pptr() != 0)
+! 					this->setp(this->pbase(), this->gptr(), this->epptr()); }
+  			else
+  				_O = _BADOFF; }
+! 		else if (_Which & ios_base::out && this->pptr() != 0)
+  			{if (_Way == ios_base::end)
+! 				_O += _Seekhigh - this->eback();
+  			else if (_Way == ios_base::cur)
+! 				_O += this->pptr() - this->eback();
+  			else if (_Way != ios_base::beg)
+  				_O = _BADOFF;
+! 			if (0 <= _O && _O <= _Seekhigh - this->eback())
+! 				this->pbump(this->eback() - this->pptr() + _O);
+  			else
+  				_O = _BADOFF; }
+  		else
+*************** protected:
+*** 137,156 ****
+  	virtual pos_type seekpos(pos_type _P,
+  		ios_base::openmode _Which = ios_base::in | ios_base::out)
+  		{streamoff _O = (streamoff)_P;
+! 		if (pptr() != 0 && _Seekhigh < pptr())
+! 			_Seekhigh = pptr();
+  		if (_O == _BADOFF)
+  			;
+! 		else if (_Which & ios_base::in && gptr() != 0)
+! 			{if (0 <= _O && _O <= _Seekhigh - eback())
+! 				{gbump(eback() - gptr() + _O);
+! 				if (_Which & ios_base::out && pptr() != 0)
+! 					setp(pbase(), gptr(), epptr()); }
+  			else
+  				_O = _BADOFF; }
+! 		else if (_Which & ios_base::out && pptr() != 0)
+! 			{if (0 <= _O && _O <= _Seekhigh - eback())
+! 				pbump(eback() - pptr() + _O);
+  			else
+  				_O = _BADOFF; }
+  		else
+--- 140,159 ----
+  	virtual pos_type seekpos(pos_type _P,
+  		ios_base::openmode _Which = ios_base::in | ios_base::out)
+  		{streamoff _O = (streamoff)_P;
+! 		if (this->pptr() != 0 && _Seekhigh < this->pptr())
+! 			_Seekhigh = this->pptr();
+  		if (_O == _BADOFF)
+  			;
+! 		else if (_Which & ios_base::in && this->gptr() != 0)
+! 			{if (0 <= _O && _O <= _Seekhigh - this->eback())
+! 				{this->gbump(this->eback() - this->gptr() + _O);
+! 				if (_Which & ios_base::out && this->pptr() != 0)
+! 					this->setp(this->pbase(), this->gptr(), this->epptr()); }
+  			else
+  				_O = _BADOFF; }
+! 		else if (_Which & ios_base::out && this->pptr() != 0)
+! 			{if (0 <= _O && _O <= _Seekhigh - this->eback())
+! 				this->pbump(this->eback() - this->pptr() + _O);
+  			else
+  				_O = _BADOFF; }
+  		else
+*************** protected:
+*** 161,183 ****
+  		_Alsize = _MINSIZE, _Strmode = _M;
+  		if (_N == 0 || (_Strmode & (_Noread | _Constant))
+  			== (_Noread | _Constant))
+! 			{setg(0, 0, 0);
+! 			setp(0, 0); }
+  		else
+  			{_E *_P = _Al.allocate(_N, (void *)0);
+  			_Tr::copy(_P, _S, _N);
+  			_Seekhigh = _P + _N;
+  			if (!(_Strmode & _Noread))
+! 				setg(_P, _P, _P + _N);
+  			if (!(_Strmode & _Constant))
+! 				{setp(_P, _P + _N);
+! 				if (gptr() == 0)
+! 					setg(_P, _P, _P); }
+  			_Strmode |= _Allocated; }}
+  	void _Tidy()
+  		{if (_Strmode & _Allocated)
+! 			_Al.deallocate(eback(),
+! 				(pptr() != 0 ? epptr() : egptr()) - eback());
+  		_Seekhigh = 0;
+  		_Strmode &= ~_Allocated; }
+  private:
+--- 164,186 ----
+  		_Alsize = _MINSIZE, _Strmode = _M;
+  		if (_N == 0 || (_Strmode & (_Noread | _Constant))
+  			== (_Noread | _Constant))
+! 			{this->setg(0, 0, 0);
+! 			this->setp(0, 0); }
+  		else
+  			{_E *_P = _Al.allocate(_N, (void *)0);
+  			_Tr::copy(_P, _S, _N);
+  			_Seekhigh = _P + _N;
+  			if (!(_Strmode & _Noread))
+! 				this->setg(_P, _P, _P + _N);
+  			if (!(_Strmode & _Constant))
+! 				{this->setp(_P, _P + _N);
+! 				if (this->gptr() == 0)
+! 					this->setg(_P, _P, _P); }
+  			_Strmode |= _Allocated; }}
+  	void _Tidy()
+  		{if (_Strmode & _Allocated)
+! 			_Al.deallocate(this->eback(),
+! 				(this->pptr() != 0 ? this->epptr() : this->egptr()) - this->eback());
+  		_Seekhigh = 0;
+  		_Strmode &= ~_Allocated; }
+  private:
 *************** private:
-*** 196,203 ****
+*** 196,212 ****
   	};
   		// TEMPLATE CLASS basic_istringstream
   template<class _E,
@@ -936,7 +3757,16 @@ diff -c -3 -p -r1.1.1.1 -r1.2
   	class basic_istringstream : public basic_istream<_E, _Tr> {
   public:
   	typedef basic_stringbuf<_E, _Tr, _A> _Mysb;
---- 196,203 ----
+  	typedef basic_string<_E, _Tr, _A> _Mystr;
+! 	explicit basic_istringstream(openmode _M = in)
+! 		: basic_istream<_E, _Tr>(&_Sb), _Sb(_M | in) {}
+  	explicit basic_istringstream(const _Mystr& _S,
+! 		openmode _M = in)
+! 		: basic_istream<_E, _Tr>(&_Sb), _Sb(_S, _M | in) {}
+  	virtual ~basic_istringstream()
+  		{}
+  	_Mysb *rdbuf() const
+--- 199,215 ----
   	};
   		// TEMPLATE CLASS basic_istringstream
   template<class _E,
@@ -945,8 +3775,17 @@ diff -c -3 -p -r1.1.1.1 -r1.2
   	class basic_istringstream : public basic_istream<_E, _Tr> {
   public:
   	typedef basic_stringbuf<_E, _Tr, _A> _Mysb;
+  	typedef basic_string<_E, _Tr, _A> _Mystr;
+! 	explicit basic_istringstream(ios_base::openmode _M = ios_base::in)
+! 		: basic_istream<_E, _Tr>(&_Sb), _Sb(_M | ios_base::in) {}
+  	explicit basic_istringstream(const _Mystr& _S,
+! 		ios_base::openmode _M = ios_base::in)
+! 		: basic_istream<_E, _Tr>(&_Sb), _Sb(_S, _M | ios_base::in) {}
+  	virtual ~basic_istringstream()
+  		{}
+  	_Mysb *rdbuf() const
 *************** private:
-*** 220,227 ****
+*** 220,236 ****
   	};
   		// TEMPLATE CLASS basic_ostringstream
   template<class _E,
@@ -955,7 +3794,16 @@ diff -c -3 -p -r1.1.1.1 -r1.2
   	class basic_ostringstream : public basic_ostream<_E, _Tr> {
   public:
   	typedef basic_stringbuf<_E, _Tr, _A> _Mysb;
---- 220,227 ----
+  	typedef basic_string<_E, _Tr, _A> _Mystr;
+! 	explicit basic_ostringstream(openmode _M = out)
+! 		: basic_ostream<_E, _Tr>(&_Sb), _Sb(_M | out) {}
+  	explicit basic_ostringstream(const _Mystr& _S,
+! 		openmode _M = out)
+! 		: basic_ostream<_E, _Tr>(&_Sb), _Sb(_S, _M | out) {}
+  	virtual ~basic_ostringstream()
+  		{}
+  	_Mysb *rdbuf() const
+--- 223,239 ----
   	};
   		// TEMPLATE CLASS basic_ostringstream
   template<class _E,
@@ -964,8 +3812,17 @@ diff -c -3 -p -r1.1.1.1 -r1.2
   	class basic_ostringstream : public basic_ostream<_E, _Tr> {
   public:
   	typedef basic_stringbuf<_E, _Tr, _A> _Mysb;
+  	typedef basic_string<_E, _Tr, _A> _Mystr;
+! 	explicit basic_ostringstream(ios_base::openmode _M = ios_base::out)
+! 		: basic_ostream<_E, _Tr>(&_Sb), _Sb(_M | ios_base::out) {}
+  	explicit basic_ostringstream(const _Mystr& _S,
+! 		ios_base::openmode _M = ios_base::out)
+! 		: basic_ostream<_E, _Tr>(&_Sb), _Sb(_S, _M | ios_base::out) {}
+  	virtual ~basic_ostringstream()
+  		{}
+  	_Mysb *rdbuf() const
 *************** private:
-*** 244,251 ****
+*** 244,258 ****
   	};
   		// TEMPLATE CLASS basic_stringstream
   template<class _E,
@@ -974,7 +3831,14 @@ diff -c -3 -p -r1.1.1.1 -r1.2
   	class basic_stringstream : public basic_iostream<_E, _Tr> {
   public:
   	typedef basic_string<_E, _Tr, _A> _Mystr;
---- 244,251 ----
+! 	explicit basic_stringstream(openmode _W = in | out)
+  		: basic_iostream<_E, _Tr>(&_Sb), _Sb(_W) {}
+  	explicit basic_stringstream(const _Mystr& _S,
+! 		openmode _W = in | out)
+  		: basic_iostream<_E, _Tr>(&_Sb), _Sb(_S, _W) {}
+  	virtual ~basic_stringstream()
+  		{}
+--- 247,261 ----
   	};
   		// TEMPLATE CLASS basic_stringstream
   template<class _E,
@@ -983,6 +3847,13 @@ diff -c -3 -p -r1.1.1.1 -r1.2
   	class basic_stringstream : public basic_iostream<_E, _Tr> {
   public:
   	typedef basic_string<_E, _Tr, _A> _Mystr;
+! 	explicit basic_stringstream(ios_base::openmode _W = ios_base::in | ios_base::out)
+  		: basic_iostream<_E, _Tr>(&_Sb), _Sb(_W) {}
+  	explicit basic_stringstream(const _Mystr& _S,
+! 		ios_base::openmode _W = ios_base::in | ios_base::out)
+  		: basic_iostream<_E, _Tr>(&_Sb), _Sb(_S, _W) {}
+  	virtual ~basic_stringstream()
+  		{}
 Index: stack
 ===================================================================
 RCS file: /cvsroot/GxInclude/VcInclude/stack,v
@@ -1062,12 +3933,16 @@ Index: string
 ===================================================================
 RCS file: /cvsroot/GxInclude/VcInclude/string,v
 retrieving revision 1.1.1.1
-retrieving revision 1.2
-diff -c -3 -p -r1.1.1.1 -r1.2
+retrieving revision 1.3
+diff -c -3 -p -r1.1.1.1 -r1.3
 *** string	13 Jun 2001 19:31:57 -0000	1.1.1.1
---- string	13 Jun 2001 21:16:23 -0000	1.2
+--- string	21 Oct 2007 19:06:49 -0000	1.3
 *************** template<class _E, class _Tr, class _A> 
-*** 121,130 ****
+*** 117,130 ****
+      ios_base::iostate _St = ios_base::goodbit;
+      bool _Chg = false;
+      _X.erase();
+!     const _Myis::sentry _Ok(_I);
       if (_Ok)
           {const _Ctype& _Fac = _USE(_I.getloc(), _Ctype);
           _TRY_IO_BEGIN
@@ -1078,7 +3953,11 @@ diff -c -3 -p -r1.1.1.1 -r1.2
           for (; 0 < --_N; _C = _I.rdbuf()->snextc())
               if(_Tr::eq_int_type(_Tr::eof(), _C))
                   {_St |= ios_base::eofbit;
---- 121,130 ----
+--- 117,130 ----
+      ios_base::iostate _St = ios_base::goodbit;
+      bool _Chg = false;
+      _X.erase();
+!     const typename _Myis::sentry _Ok(_I);
       if (_Ok)
           {const _Ctype& _Fac = _USE(_I.getloc(), _Ctype);
           _TRY_IO_BEGIN
@@ -1090,16 +3969,22 @@ diff -c -3 -p -r1.1.1.1 -r1.2
               if(_Tr::eq_int_type(_Tr::eof(), _C))
                   {_St |= ios_base::eofbit;
 *************** template<class _E, class _Tr, class _A> 
-*** 155,161 ****
-      const _Myis::sentry _Ok(_I, true);
+*** 152,161 ****
+      ios_base::iostate _St = ios_base::goodbit;
+      bool _Chg = false;
+      _X.erase();
+!     const _Myis::sentry _Ok(_I, true);
       if (_Ok)
           {_TRY_IO_BEGIN
 !         _Tr::int_type _C = _I.rdbuf()->sgetc();
           for (; ; _C = _I.rdbuf()->snextc())
               if (_Tr::eq_int_type(_Tr::eof(), _C))
                   {_St |= ios_base::eofbit;
---- 155,161 ----
-      const _Myis::sentry _Ok(_I, true);
+--- 152,161 ----
+      ios_base::iostate _St = ios_base::goodbit;
+      bool _Chg = false;
+      _X.erase();
+!     const typename _Myis::sentry _Ok(_I, true);
       if (_Ok)
           {_TRY_IO_BEGIN
 !         typename _Tr::int_type _C = _I.rdbuf()->sgetc();
@@ -1248,14 +4133,62 @@ diff -c -3 -p -r1.1.1.1 -r1.2
   	class ostreambuf_iterator
   		: public iterator<output_iterator_tag, void, void> {
   	typedef ostreambuf_iterator<_E, _Tr> _Myt;
+Index: valarray
+===================================================================
+RCS file: /cvsroot/GxInclude/VcInclude/valarray,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1.1.1 -r1.2
+*** valarray	13 Jun 2001 19:32:06 -0000	1.1.1.1
+--- valarray	21 Oct 2007 19:06:49 -0000	1.2
+***************
+*** 9,14 ****
+--- 9,16 ----
+  #include <cstring>
+  #include <xstddef>
+  
++ #define __GCCXML_AVOID_MACRO_EXPANSION
++ 
+  #ifdef  _MSC_VER
+  #pragma pack(push,8)
+  #endif  /* _MSC_VER */
+*************** public:
+*** 101,113 ****
+  		for (size_t _I = 0; ++_I < size(); )
+  			_Sum += _Ptr[_I];
+  		return (_Sum); }
+! 	_Ty min() const
+  		{_Ty _Min = _Ptr[0];
+  		for (size_t _I = 0; ++_I < size(); )
+  			if (_Ptr[_I] < _Min)
+  				_Min = _Ptr[_I];
+  		return (_Min); }
+! 	_Ty max() const
+  		{_Ty _Max = _Ptr[0];
+  		for (size_t _I = 0; ++_I < size(); )
+  			if (_Max < _Ptr[_I])
+--- 103,115 ----
+  		for (size_t _I = 0; ++_I < size(); )
+  			_Sum += _Ptr[_I];
+  		return (_Sum); }
+! 	_Ty min __GCCXML_AVOID_MACRO_EXPANSION() const
+  		{_Ty _Min = _Ptr[0];
+  		for (size_t _I = 0; ++_I < size(); )
+  			if (_Ptr[_I] < _Min)
+  				_Min = _Ptr[_I];
+  		return (_Min); }
+! 	_Ty max __GCCXML_AVOID_MACRO_EXPANSION() const
+  		{_Ty _Max = _Ptr[0];
+  		for (size_t _I = 0; ++_I < size(); )
+  			if (_Max < _Ptr[_I])
 Index: vector
 ===================================================================
 RCS file: /cvsroot/GxInclude/VcInclude/vector,v
 retrieving revision 1.1.1.1
-retrieving revision 1.2
-diff -c -3 -p -r1.1.1.1 -r1.2
+retrieving revision 1.3
+diff -c -3 -p -r1.1.1.1 -r1.3
 *** vector	13 Jun 2001 19:32:07 -0000	1.1.1.1
---- vector	13 Jun 2001 21:16:23 -0000	1.2
+--- vector	21 Oct 2007 19:06:49 -0000	1.3
 *************** template<class _Ty, class _A = allocator
 *** 21,33 ****
   public:
@@ -1285,6 +4218,16 @@ diff -c -3 -p -r1.1.1.1 -r1.2
   	typedef _Tptr iterator;
   	typedef _Ctptr const_iterator;
   	typedef reverse_iterator<const_iterator, value_type,
+*************** protected:
+*** 246,251 ****
+--- 246,252 ----
+  typedef unsigned int _Vbase;
+  const int _VBITS = CHAR_BIT * sizeof (_Vbase);
+  typedef allocator<_Vbase> _Bool_allocator;
++ template <>
+  class vector<_Bool, _Bool_allocator> {
+  public:
+  	typedef _Bool_allocator _A;
 Index: winnt.h
 ===================================================================
 RCS file: /cvsroot/GxInclude/VcInclude/winnt.h,v
@@ -1393,14 +4336,42 @@ diff -c -3 -p -r1.1.1.1 -r1.2
   
   #pragma warning (default:4035)        // Reenable it
   #endif
+Index: xlocale
+===================================================================
+RCS file: /cvsroot/GxInclude/VcInclude/xlocale,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1.1.1 -r1.2
+*** xlocale	13 Jun 2001 19:32:20 -0000	1.1.1.1
+--- xlocale	21 Oct 2007 19:06:49 -0000	1.2
+*************** private:
+*** 293,298 ****
+--- 293,299 ----
+  template<class _E, class _To, class _St>
+          locale::id codecvt<_E, _To, _St>::id;
+                  // CLASS codecvt<wchar_t, char, mbstate_t>
++ template<>
+  class _CRTIMP codecvt<wchar_t, char, mbstate_t> : public codecvt_base {
+  public:
+          typedef wchar_t _E;
+*************** template<class _E>
+*** 516,521 ****
+--- 517,523 ----
+          locale::id ctype<_E>::id;
+  
+                  // CLASS ctype<char>
++ template <>
+  class _CRTIMP ctype<char> : public ctype_base {
+  public:
+          typedef char _E;
 Index: xstring
 ===================================================================
 RCS file: /cvsroot/GxInclude/VcInclude/xstring,v
 retrieving revision 1.1.1.1
-retrieving revision 1.2
-diff -c -3 -p -r1.1.1.1 -r1.2
+retrieving revision 1.3
+diff -c -3 -p -r1.1.1.1 -r1.3
 *** xstring	13 Jun 2001 19:32:20 -0000	1.1.1.1
---- xstring	13 Jun 2001 21:16:23 -0000	1.2
+--- xstring	21 Oct 2007 19:06:49 -0000	1.3
 *************** template<class _E,
 *** 22,36 ****
   	class basic_string {
@@ -1434,14 +4405,31 @@ diff -c -3 -p -r1.1.1.1 -r1.2
   	typedef reverse_iterator<const_iterator, value_type,
   		const_reference, const_pointer, difference_type>
   			const_reverse_iterator;
+*************** private:
+*** 596,602 ****
+  	size_type _Len, _Res;
+  	};
+  template<class _E, class _Tr, class _A>
+! 	const basic_string<_E, _Tr, _A>::size_type
+  		basic_string<_E, _Tr, _A>::npos = -1;
+  
+  #ifdef	_DLL
+--- 596,602 ----
+  	size_type _Len, _Res;
+  	};
+  template<class _E, class _Tr, class _A>
+! 	const typename basic_string<_E, _Tr, _A>::size_type
+  		basic_string<_E, _Tr, _A>::npos = -1;
+  
+  #ifdef	_DLL
 Index: xtree
 ===================================================================
 RCS file: /cvsroot/GxInclude/VcInclude/xtree,v
 retrieving revision 1.1.1.1
-retrieving revision 1.2
-diff -c -3 -p -r1.1.1.1 -r1.2
+retrieving revision 1.3
+diff -c -3 -p -r1.1.1.1 -r1.3
 *** xtree	13 Jun 2001 19:32:20 -0000	1.1.1.1
---- xtree	13 Jun 2001 21:16:23 -0000	1.2
+--- xtree	21 Oct 2007 19:06:49 -0000	1.3
 *************** protected:
 *** 35,41 ****
           static _Rbref _Color(_Nodeptr _P)
@@ -1478,3 +4466,73 @@ diff -c -3 -p -r1.1.1.1 -r1.2
           typedef _POINTER_X(_Ty, _A) _Tptr;
           typedef _POINTER_X(const _Ty, _A) _Ctptr;
           typedef _REFERENCE_X(_Ty, _A) reference;
+*************** public:
+*** 122,146 ****
+                  iterator(_Nodeptr _P)
+                          : const_iterator(_P) {}
+                  reference operator*() const
+!                         {return (_Value(_Ptr)); }
+                  _Tptr operator->() const
+                          {return (&**this); }
+                  iterator& operator++()
+!                         {_Inc();
+                          return (*this); }
+                  iterator operator++(int)
+                          {iterator _Tmp = *this;
+                          ++*this;
+                          return (_Tmp); }
+                  iterator& operator--()
+!                         {_Dec();
+                          return (*this); }
+                  iterator operator--(int)
+                          {iterator _Tmp = *this;
+                          --*this;
+                          return (_Tmp); }
+                  bool operator==(const iterator& _X) const
+!                         {return (_Ptr == _X._Ptr); }
+                  bool operator!=(const iterator& _X) const
+                          {return (!(*this == _X)); }
+                  };
+--- 122,146 ----
+                  iterator(_Nodeptr _P)
+                          : const_iterator(_P) {}
+                  reference operator*() const
+!                         {return (_Value(this->_Ptr)); }
+                  _Tptr operator->() const
+                          {return (&**this); }
+                  iterator& operator++()
+!                         {this->_Inc();
+                          return (*this); }
+                  iterator operator++(int)
+                          {iterator _Tmp = *this;
+                          ++*this;
+                          return (_Tmp); }
+                  iterator& operator--()
+!                         {this->_Dec();
+                          return (*this); }
+                  iterator operator--(int)
+                          {iterator _Tmp = *this;
+                          --*this;
+                          return (_Tmp); }
+                  bool operator==(const iterator& _X) const
+!                         {return (this->_Ptr == _X._Ptr); }
+                  bool operator!=(const iterator& _X) const
+                          {return (!(*this == _X)); }
+                  };
+*************** protected:
+*** 592,598 ****
+          size_type _Size;
+          };
+  template<class _K, class _Ty, class _Kfn, class _Pr, class _A>
+!         _Tree<_K, _Ty, _Kfn, _Pr, _A>::_Nodeptr
+                  _Tree<_K, _Ty, _Kfn, _Pr, _A>::_Nil = 0;
+  template<class _K, class _Ty, class _Kfn, class _Pr, class _A>
+          size_t _Tree<_K, _Ty, _Kfn, _Pr, _A>::_Nilrefs = 0;
+--- 592,598 ----
+          size_type _Size;
+          };
+  template<class _K, class _Ty, class _Kfn, class _Pr, class _A>
+!         typename _Tree<_K, _Ty, _Kfn, _Pr, _A>::_Nodeptr
+                  _Tree<_K, _Ty, _Kfn, _Pr, _A>::_Nil = 0;
+  template<class _K, class _Ty, class _Kfn, class _Pr, class _A>
+          size_t _Tree<_K, _Ty, _Kfn, _Pr, _A>::_Nilrefs = 0;
