@@ -6,7 +6,7 @@ SET(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/GCC_XML/Copyright.t
 # Same as values down in GCC_XML/CMakeLists.txt and GCC_XML/Copyright.txt:
 # (extract/share these in a better way, so we do not have to duplicate the information...)
 SET(GCCXML_VERSION_MAJOR 0)
-SET(GCCXML_VERSION_MINOR 7)
+SET(GCCXML_VERSION_MINOR 9)
 SET(GCCXML_VERSION_PATCH 0)
 
 SET(CPACK_PACKAGE_VERSION_MAJOR "${GCCXML_VERSION_MAJOR}")
