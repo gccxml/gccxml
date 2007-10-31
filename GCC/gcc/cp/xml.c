@@ -1,19 +1,24 @@
-/*=========================================================================
+/* gccxml_cc1plus - A GCC parser patched for XML dumps of translation units
+   Copyright (C) 2002-2007 Kitware, Inc., Insight Consortium
 
-  Program:   GCC-XML
-  Module:    xml.c
-  Language:  C++
-  Date:      $Date$
-  Version:   $Revision$
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
 
-  Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
-  See Copyright.txt for details.
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-     This software is distributed WITHOUT ANY WARRANTY; without even
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-     PURPOSE.  See the above copyright notices for more information.
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the
 
-=========================================================================*/
+  Free Software Foundation, Inc.
+  51 Franklin Street, Fifth Floor
+  Boston, MA  02110-1301  USA
+
+*/
 
 /* Organization of this source:
    The entry point is do_xml_output(), which is called from the end of
@@ -60,7 +65,7 @@
 
 #include "toplev.h" /* ident_hash */
 
-#define GCC_XML_C_VERSION "$Revision: 1.116 $"
+#define GCC_XML_C_VERSION "$Revision: 1.117 $"
 
 /*--------------------------------------------------------------------------*/
 /* Data structures for the actual XML dump.  */
