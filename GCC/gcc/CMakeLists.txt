@@ -479,15 +479,15 @@ ENDFOREACH(tgt)
 #-----------------------------------------------------------------------------
 # Rules to generate gcov-iov.h.
 
-ADD_EXECUTABLE(gcov-iov gcov-iov.c)
-SET_TARGET_PROPERTIES(gcov-iov PROPERTIES COMPILE_FLAGS -DGENERATOR_FILE)
+ADD_EXECUTABLE(gcov_iov gcov-iov.c)
+SET_TARGET_PROPERTIES(gcov_iov PROPERTIES COMPILE_FLAGS -DGENERATOR_FILE)
 
-SET(GCC_gcov-iov_EXE "${GCC_GEN_DIR}/gcov-iov${GCC_EXE_EXT}")
+SET(GCC_gcov_iov_EXE "${GCC_GEN_DIR}/gcov_iov${GCC_EXE_EXT}")
 
 ADD_CUSTOM_COMMAND(
   OUTPUT ${GCC_BINARY_DIR}/gcc/gcov-iov.h
-  COMMAND ${GCC_gcov-iov_EXE} '4.2.1' '' > gcov-iov.h
-  DEPENDS gcov-iov
+  COMMAND ${GCC_gcov_iov_EXE} '4.2.1' '' > gcov-iov.h
+  DEPENDS gcov_iov
   )
 
 #-----------------------------------------------------------------------------
