@@ -3,19 +3,13 @@
    Copyright (C) 1998 Free Software Foundation, Inc.
  */
 
-#ifdef __STDC__
+#include "ansidecl.h"
 #include <stdarg.h>
-#else
-#include <varargs.h>
-#endif
 #include <stdio.h>
 #undef vfprintf
 
 int
-vfprintf (stream, format, ap)
-  FILE * stream;
-  const char * format;
-  va_list ap;
+vfprintf (FILE *stream, const char *format, va_list ap)
 {
   return _doprnt (format, ap, stream);
 }

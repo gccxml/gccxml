@@ -15,8 +15,8 @@ for more details.
 
 You should have received a copy of the GNU General Public License
 along with GCC; see the file COPYING.  If not, write to the Free
-Software Foundation, 59 Temple Place - Suite 330, Boston, MA
-02111-1307, USA.  */
+Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
+02110-1301, USA.  */
 
 #ifndef GCC_VMSDBG_H
 #define GCC_VMSDBG_H 1
@@ -30,10 +30,10 @@ Software Foundation, 59 Temple Place - Suite 330, Boston, MA
 
 /* Header type codes.  */
 typedef enum _DST_TYPE {DST_K_SOURCE = 155, DST_K_PROLOG = 162,
-			DST_K_BLKBEG = 176, DST_K_BLKEND = 177,
-			DST_K_LINE_NUM = 185, DST_K_MODBEG = 188,
-			DST_K_MODEND = 189, DST_K_RTNBEG = 190,
-			DST_K_RTNEND = 191} DST_DTYPE;
+                        DST_K_BLKBEG = 176, DST_K_BLKEND = 177,
+                        DST_K_LINE_NUM = 185, DST_K_MODBEG = 188,
+                        DST_K_MODEND = 189, DST_K_RTNBEG = 190,
+                        DST_K_RTNEND = 191} DST_DTYPE;
 
 /* Header.  */
 
@@ -54,7 +54,7 @@ typedef struct _DST_HEADER
 
 /* Language type codes.  */
 typedef enum _DST_LANGUAGE {DST_K_FORTRAN = 1, DST_K_C = 7, DST_K_ADA = 9,
-			    DST_K_UNKNOWN = 10, DST_K_CXX = 15} DST_LANGUAGE;
+                            DST_K_UNKNOWN = 10, DST_K_CXX = 15} DST_LANGUAGE;
 
 /* Module header (a module is the result of a single compilation).  */
 
@@ -212,22 +212,22 @@ typedef struct _DST_SRC_COMMAND
   union
     {
       struct
-	{
-	  unsigned char dst_b_src_df_length;
-	  unsigned char dst_b_src_df_flags;
-	  unsigned short int dst_w_src_df_fileid;
+        {
+          unsigned char dst_b_src_df_length;
+          unsigned char dst_b_src_df_flags;
+          unsigned short int dst_w_src_df_fileid;
 #ifdef HAVE_LONG_LONG
-	  long long dst_q_src_df_rms_cdt;
+          long long dst_q_src_df_rms_cdt;
 #else
 #ifdef HAVE___INT64
-	  __int64 dst_q_src_df_rms_cdt;
+          __int64 dst_q_src_df_rms_cdt;
 #endif
 #endif
-	  unsigned int dst_l_src_df_rms_ebk;
-	  unsigned short int dst_w_src_df_rms_ffb;
-	  unsigned char dst_b_src_df_rms_rfo;
-	  unsigned char dst_b_src_df_filename;
-	} dst_a_src_decl_src;
+          unsigned int dst_l_src_df_rms_ebk;
+          unsigned short int dst_w_src_df_rms_ffb;
+          unsigned char dst_b_src_df_rms_rfo;
+          unsigned char dst_b_src_df_filename;
+        } dst_a_src_decl_src;
       unsigned int dst_l_src_unslong;
       unsigned short int dst_w_src_unsword;
       unsigned char dst_b_src_unsbyte;

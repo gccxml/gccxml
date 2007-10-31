@@ -1,10 +1,10 @@
 #define __builtin_apply(x,y,z) ((void*)0)
-#define __builtin_nan(x) ((double)0.0)
-#define __builtin_nanf(x) ((float)0.0)
-#define __builtin_nanl(x) ((long double)0.0)
-#define __builtin_huge_val(x) ((double)0.0)
-#define __builtin_huge_valf(x) ((float)0.0)
-#define __builtin_huge_vall(x) ((long double)0.0)
+#define __builtin_nan(x) (0.0)
+#define __builtin_nanf(x) (0.0f)
+#define __builtin_nanl(x) (0.0l)
+#define __builtin_huge_val(x) (0.0)
+#define __builtin_huge_valf(x) (0.0f)
+#define __builtin_huge_vall(x) (0.0l)
 #define __builtin_apply_args(x) ((void*)0)
 #define __builtin_types_compatible_p(x,y) 0
 #define __builtin_choose_expr(x,y,z) int

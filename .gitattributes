@@ -2,13 +2,12 @@
 
 *.bat.in        -crlf
 *.bin           -crlf
+*.gmo           -crlf
 *.sh             crlf=input
 config.*         crlf=input
 configure        crlf=input
 fixproto         crlf=input
 gccbug.in        crlf=input
 genmultilib      crlf=input
-mkheaders.in     crlf=input
 mklibgcc.in      crlf=input
-move-if-change   crlf=input
 sort-protos      crlf=input

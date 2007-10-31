@@ -14,14 +14,14 @@
  
    You should have received a copy of the GNU General Public License along
    with this program; if not, write to the Free Software Foundation, Inc.,
-   59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
+   51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
 
 #ifndef SYM_CAT_H
 #define SYM_CAT_H
 
 #if defined (__STDC__) || defined (ALMOST_STDC) || defined (HAVE_STRINGIZE)
-#define CONCAT2(a,b)	 a##b
-#define CONCAT3(a,b,c)	 a##b##c
+#define CONCAT2(a,b)         a##b
+#define CONCAT3(a,b,c)         a##b##c
 #define CONCAT4(a,b,c,d) a##b##c##d
 #define STRINGX(s) #s
 #else
@@ -29,8 +29,8 @@
    e.g. CONCAT2(foo, bar) because traditonal C will keep the space between
    the two labels instead of concatenating them.  Instead, make sure to
    write CONCAT2(foo,bar).  */
-#define CONCAT2(a,b)	 a/**/b
-#define CONCAT3(a,b,c)	 a/**/b/**/c
+#define CONCAT2(a,b)         a/**/b
+#define CONCAT3(a,b,c)         a/**/b/**/c
 #define CONCAT4(a,b,c,d) a/**/b/**/c/**/d
 #define STRINGX(s) "s"
 #endif

@@ -16,15 +16,10 @@ as if comparing unsigned char arrays.
 */
 
 #include <ansidecl.h>
-#ifdef __STDC__
 #include <stddef.h>
-#else
-#define size_t unsigned long
-#endif
 
 int
-DEFUN(memcmp, (str1, str2, count),
-      const PTR str1 AND const PTR str2 AND size_t count)
+memcmp (const PTR str1, const PTR str2, size_t count)
 {
   register const unsigned char *s1 = (const unsigned char*)str1;
   register const unsigned char *s2 = (const unsigned char*)str2;
@@ -32,7 +27,7 @@ DEFUN(memcmp, (str1, str2, count),
   while (count-- > 0)
     {
       if (*s1++ != *s2++)
-	  return s1[-1] < s2[-1] ? -1 : 1;
+          return s1[-1] < s2[-1] ? -1 : 1;
     }
   return 0;
 }

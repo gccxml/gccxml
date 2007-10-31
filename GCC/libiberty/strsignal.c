@@ -2,10 +2,9 @@
    Written by Fred Fish.  fnf@cygnus.com
    This file is in the public domain.  */
 
+#include "config.h"
 #include "ansidecl.h"
 #include "libiberty.h"
-
-#include "config.h"
 
 /* We need to declare sys_siglist, because even if the system provides
    it we can't assume that it is declared in <signal.h> (for example,
@@ -42,18 +41,14 @@ extern PTR memset ();
 #undef sys_nsig
 
 #ifndef NULL
-#  ifdef __STDC__
-#    define NULL (void *) 0
-#  else
-#    define NULL 0
-#  endif
+#  define NULL (void *) 0
 #endif
 
 #ifndef MAX
 #  define MAX(a,b) ((a) > (b) ? (a) : (b))
 #endif
 
-static void init_signal_tables PARAMS ((void));
+static void init_signal_tables (void);
 
 /* Translation table for signal values.
 
@@ -67,17 +62,17 @@ static void init_signal_tables PARAMS ((void));
 
 struct signal_info
 {
-  const int value;		/* The numeric value from <signal.h> */
-  const char *const name;	/* The equivalent symbolic value */
+  const int value;                /* The numeric value from <signal.h> */
+  const char *const name;        /* The equivalent symbolic value */
 #ifndef HAVE_SYS_SIGLIST
-  const char *const msg;	/* Short message about this value */
+  const char *const msg;        /* Short message about this value */
 #endif
 };
 
 #ifndef HAVE_SYS_SIGLIST
-#   define ENTRY(value, name, msg)	{value, name, msg}
+#   define ENTRY(value, name, msg)        {value, name, msg}
 #else
-#   define ENTRY(value, name, msg)	{value, name}
+#   define ENTRY(value, name, msg)        {value, name}
 #endif
 
 static const struct signal_info signal_table[] =
@@ -264,32 +259,32 @@ extern const char * const sys_siglist[];
 
 NAME
 
-	init_signal_tables -- initialize the name and message tables
+        init_signal_tables -- initialize the name and message tables
 
 SYNOPSIS
 
-	static void init_signal_tables ();
+        static void init_signal_tables ();
 
 DESCRIPTION
 
-	Using the signal_table, which is initialized at compile time, generate
-	the signal_names and the sys_siglist (if needed) tables, which are
-	indexed at runtime by a specific signal value.
+        Using the signal_table, which is initialized at compile time, generate
+        the signal_names and the sys_siglist (if needed) tables, which are
+        indexed at runtime by a specific signal value.
 
 BUGS
 
-	The initialization of the tables may fail under low memory conditions,
-	in which case we don't do anything particularly useful, but we don't
-	bomb either.  Who knows, it might succeed at a later point if we free
-	some memory in the meantime.  In any case, the other routines know
-	how to deal with lack of a table after trying to initialize it.  This
-	may or may not be considered to be a bug, that we don't specifically
-	warn about this particular failure mode.
+        The initialization of the tables may fail under low memory conditions,
+        in which case we don't do anything particularly useful, but we don't
+        bomb either.  Who knows, it might succeed at a later point if we free
+        some memory in the meantime.  In any case, the other routines know
+        how to deal with lack of a table after trying to initialize it.  This
+        may or may not be considered to be a bug, that we don't specifically
+        warn about this particular failure mode.
 
 */
 
 static void
-init_signal_tables ()
+init_signal_tables (void)
 {
   const struct signal_info *eip;
   int nbytes;
@@ -300,12 +295,12 @@ init_signal_tables ()
   if (num_signal_names == 0)
     {
       for (eip = signal_table; eip -> name != NULL; eip++)
-	{
-	  if (eip -> value >= num_signal_names)
-	    {
-	      num_signal_names = eip -> value + 1;
-	    }
-	}
+        {
+          if (eip -> value >= num_signal_names)
+            {
+              num_signal_names = eip -> value + 1;
+            }
+        }
     }
 
   /* Now attempt to allocate the signal_names table, zero it out, and then
@@ -315,13 +310,13 @@ init_signal_tables ()
     {
       nbytes = num_signal_names * sizeof (char *);
       if ((signal_names = (const char **) malloc (nbytes)) != NULL)
-	{
-	  memset (signal_names, 0, nbytes);
-	  for (eip = signal_table; eip -> name != NULL; eip++)
-	    {
-	      signal_names[eip -> value] = eip -> name;
-	    }
-	}
+        {
+          memset (signal_names, 0, nbytes);
+          for (eip = signal_table; eip -> name != NULL; eip++)
+            {
+              signal_names[eip -> value] = eip -> name;
+            }
+        }
     }
 
 #ifndef HAVE_SYS_SIGLIST
@@ -333,14 +328,14 @@ init_signal_tables ()
     {
       nbytes = num_signal_names * sizeof (char *);
       if ((sys_siglist = (const char **) malloc (nbytes)) != NULL)
-	{
-	  memset (sys_siglist, 0, nbytes);
-	  sys_nsig = num_signal_names;
-	  for (eip = signal_table; eip -> name != NULL; eip++)
-	    {
-	      sys_siglist[eip -> value] = eip -> msg;
-	    }
-	}
+        {
+          memset (sys_siglist, 0, nbytes);
+          sys_nsig = num_signal_names;
+          for (eip = signal_table; eip -> name != NULL; eip++)
+            {
+              sys_siglist[eip -> value] = eip -> msg;
+            }
+        }
     }
 
 #endif
@@ -370,7 +365,7 @@ symbolic name or message.
 */
 
 int
-signo_max ()
+signo_max (void)
 {
   int maxsize;
 
@@ -410,8 +405,7 @@ call to @code{strsignal}.
 #ifndef HAVE_STRSIGNAL
 
 const char *
-strsignal (signo)
-  int signo;
+strsignal (int signo)
 {
   const char *msg;
   static char buf[32];
@@ -470,8 +464,7 @@ valid until the next call to @code{strsigno}.
 */
 
 const char *
-strsigno (signo)
-  int signo;
+strsigno (int signo)
 {
   const char *name;
   static char buf[32];
@@ -514,29 +507,28 @@ translation is found, returns 0.
 */
 
 int
-strtosigno (name)
-     const char *name;
+strtosigno (const char *name)
 {
   int signo = 0;
 
   if (name != NULL)
     {
       if (signal_names == NULL)
-	{
-	  init_signal_tables ();
-	}
+        {
+          init_signal_tables ();
+        }
       for (signo = 0; signo < num_signal_names; signo++)
-	{
-	  if ((signal_names[signo] != NULL) &&
-	      (strcmp (name, signal_names[signo]) == 0))
-	    {
-	      break;
-	    }
-	}
+        {
+          if ((signal_names[signo] != NULL) &&
+              (strcmp (name, signal_names[signo]) == 0))
+            {
+              break;
+            }
+        }
       if (signo == num_signal_names)
-	{
-	  signo = 0;
-	}
+        {
+          signo = 0;
+        }
     }
   return (signo);
 }
@@ -557,9 +549,7 @@ followed by a newline.
 #ifndef HAVE_PSIGNAL
 
 void
-psignal (signo, message)
-  unsigned signo;
-  char *message;
+psignal (unsigned signo, char *message)
 {
   if (signal_names == NULL)
     {
@@ -575,7 +565,7 @@ psignal (signo, message)
     }
 }
 
-#endif	/* ! HAVE_PSIGNAL */
+#endif        /* ! HAVE_PSIGNAL */
 
 
 /* A simple little main that does nothing but print all the signal translations
@@ -586,7 +576,7 @@ psignal (signo, message)
 #include <stdio.h>
 
 int
-main ()
+main (void)
 {
   int signo;
   int maxsigno;

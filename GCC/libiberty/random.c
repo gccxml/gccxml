@@ -30,7 +30,7 @@
 
 /*
  * This is derived from the Berkeley source:
- *	@(#)random.c	5.5 (Berkeley) 7/6/88
+ *        @(#)random.c        5.5 (Berkeley) 7/6/88
  * It was reworked for the GNU C Library by Roland McGrath.
  */
 
@@ -63,8 +63,8 @@ control over the state of the random number generator.
 
 #else
 
-#define	ULONG_MAX  ((unsigned long)(~0L))     /* 0xFFFFFFFF for 32-bits */
-#define	LONG_MAX   ((long)(ULONG_MAX >> 1))   /* 0x7FFFFFFF for 32-bits*/
+#define        ULONG_MAX  ((unsigned long)(~0L))     /* 0xFFFFFFFF for 32-bits */
+#define        LONG_MAX   ((long)(ULONG_MAX >> 1))   /* 0x7FFFFFFF for 32-bits*/
 
 #ifdef __STDC__
 #  define PTR void *
@@ -80,7 +80,7 @@ control over the state of the random number generator.
 
 #endif
 
-long int random ();
+long int random (void);
 
 /* An improved random number generation package.  In addition to the standard
    rand()/srand() like interface, this package also has a special state info
@@ -124,40 +124,40 @@ long int random ();
    separation between the two lower order coefficients of the trinomial.  */
 
 /* Linear congruential.  */
-#define	TYPE_0		0
-#define	BREAK_0		8
-#define	DEG_0		0
-#define	SEP_0		0
+#define        TYPE_0                0
+#define        BREAK_0                8
+#define        DEG_0                0
+#define        SEP_0                0
 
 /* x**7 + x**3 + 1.  */
-#define	TYPE_1		1
-#define	BREAK_1		32
-#define	DEG_1		7
-#define	SEP_1		3
+#define        TYPE_1                1
+#define        BREAK_1                32
+#define        DEG_1                7
+#define        SEP_1                3
 
 /* x**15 + x + 1.  */
-#define	TYPE_2		2
-#define	BREAK_2		64
-#define	DEG_2		15
-#define	SEP_2		1
+#define        TYPE_2                2
+#define        BREAK_2                64
+#define        DEG_2                15
+#define        SEP_2                1
 
 /* x**31 + x**3 + 1.  */
-#define	TYPE_3		3
-#define	BREAK_3		128
-#define	DEG_3		31
-#define	SEP_3		3
+#define        TYPE_3                3
+#define        BREAK_3                128
+#define        DEG_3                31
+#define        SEP_3                3
 
 /* x**63 + x + 1.  */
-#define	TYPE_4		4
-#define	BREAK_4		256
-#define	DEG_4		63
-#define	SEP_4		1
+#define        TYPE_4                4
+#define        BREAK_4                256
+#define        DEG_4                63
+#define        SEP_4                1
 
 
 /* Array versions of the above information to make code run faster.
    Relies on fact that TYPE_i == i.  */
 
-#define	MAX_TYPES	5	/* Max number of types above.  */
+#define        MAX_TYPES        5        /* Max number of types above.  */
 
 static int degrees[MAX_TYPES] = { DEG_0, DEG_1, DEG_2, DEG_3, DEG_4 };
 static int seps[MAX_TYPES] = { SEP_0, SEP_1, SEP_2, SEP_3, SEP_4 };
@@ -165,13 +165,13 @@ static int seps[MAX_TYPES] = { SEP_0, SEP_1, SEP_2, SEP_3, SEP_4 };
 
 
 /* Initially, everything is set up as if from:
-	initstate(1, randtbl, 128);
+        initstate(1, randtbl, 128);
    Note that this initialization takes advantage of the fact that srandom
    advances the front and rear pointers 10*rand_deg times, and hence the
    rear pointer which starts at 0 will also end up at zero; thus the zeroeth
    element of the state information, which contains info about the current
    position of the rear pointer is just
-	(MAX_TYPES * (rptr - state)) + TYPE_3 == TYPE_3.  */
+        (MAX_TYPES * (rptr - state)) + TYPE_3 == TYPE_3.  */
 
 static long int randtbl[DEG_3 + 1] =
   { TYPE_3,
@@ -190,7 +190,7 @@ static long int randtbl[DEG_3 + 1] =
    cycle through the state information.  (Yes, this does mean we could get
    away with just one pointer, but the code for random is more efficient
    this way).  The pointers are left positioned as they would be from the call:
-	initstate(1, randtbl, 128);
+        initstate(1, randtbl, 128);
    (The position of the rear pointer, rptr, is really 0 (as explained above
    in the initialization of randtbl) because the state table pointer is set
    to point to randtbl[1] (as explained below).)  */
@@ -227,19 +227,18 @@ static long int *end_ptr = &randtbl[sizeof(randtbl) / sizeof(randtbl[0])];
    introduced by the L.C.R.N.G.  Note that the initialization of randtbl[]
    for default usage relies on values produced by this routine.  */
 void
-srandom (x)
-  unsigned int x;
+srandom (unsigned int x)
 {
   state[0] = x;
   if (rand_type != TYPE_0)
     {
       register long int i;
       for (i = 1; i < rand_deg; ++i)
-	state[i] = (1103515145 * state[i - 1]) + 12345;
+        state[i] = (1103515145 * state[i - 1]) + 12345;
       fptr = &state[rand_sep];
       rptr = &state[0];
       for (i = 0; i < 10 * rand_deg; ++i)
-	random();
+        random();
     }
 }
 
@@ -255,10 +254,7 @@ srandom (x)
    setstate so that it doesn't matter when initstate is called.
    Returns a pointer to the old state.  */
 PTR
-initstate (seed, arg_state, n)
-  unsigned int seed;
-  PTR arg_state;
-  unsigned long n;
+initstate (unsigned int seed, PTR arg_state, unsigned long n)
 {
   PTR ostate = (PTR) &state[-1];
 
@@ -269,10 +265,10 @@ initstate (seed, arg_state, n)
   if (n < BREAK_1)
     {
       if (n < BREAK_0)
-	{
-	  errno = EINVAL;
-	  return NULL;
-	}
+        {
+          errno = EINVAL;
+          return NULL;
+        }
       rand_type = TYPE_0;
       rand_deg = DEG_0;
       rand_sep = SEP_0;
@@ -302,7 +298,7 @@ initstate (seed, arg_state, n)
       rand_sep = SEP_4;
     }
 
-  state = &((long int *) arg_state)[1];	/* First location.  */
+  state = &((long int *) arg_state)[1];        /* First location.  */
   /* Must set END_PTR before srandom.  */
   end_ptr = &state[rand_deg];
   srandom(seed);
@@ -324,8 +320,7 @@ initstate (seed, arg_state, n)
    Returns a pointer to the old state information.  */
 
 PTR
-setstate (arg_state)
-  PTR arg_state;
+setstate (PTR arg_state)
 {
   register long int *new_state = (long int *) arg_state;
   register int type = new_state[0] % MAX_TYPES;
@@ -378,7 +373,7 @@ setstate (arg_state)
    pointer if the front one has wrapped.  Returns a 31-bit random number.  */
 
 long int
-random ()
+random (void)
 {
   if (rand_type == TYPE_0)
     {
@@ -393,16 +388,16 @@ random ()
       i = (*fptr >> 1) & LONG_MAX;
       ++fptr;
       if (fptr >= end_ptr)
-	{
-	  fptr = state;
-	  ++rptr;
-	}
+        {
+          fptr = state;
+          ++rptr;
+        }
       else
-	{
-	  ++rptr;
-	  if (rptr >= end_ptr)
-	    rptr = state;
-	}
+        {
+          ++rptr;
+          if (rptr >= end_ptr)
+            rptr = state;
+        }
       return i;
     }
 }

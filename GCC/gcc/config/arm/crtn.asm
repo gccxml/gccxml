@@ -1,4 +1,4 @@
-#   Copyright (C) 2001 Free Software Foundation, Inc.
+#   Copyright (C) 2001, 2004 Free Software Foundation, Inc.
 #   Written By Nick Clifton
 # 
 # This file is free software; you can redistribute it and/or modify it
@@ -21,8 +21,8 @@
 # 
 # You should have received a copy of the GNU General Public License
 # along with this program; see the file COPYING.  If not, write to
-# the Free Software Foundation, 59 Temple Place - Suite 330,
-# Boston, MA 02111-1307, USA.
+# the Free Software Foundation, 51 Franklin Street, Fifth Floor,
+# Boston, MA 02110-1301, USA.
 # 
 #    As a special exception, if you link this library with files
 #    compiled with GCC to produce an executable, this does not cause
@@ -35,47 +35,45 @@
 # fact return.  Users may put any desired instructions in those sections.
 # This file is the last thing linked into any executable.
 
-	# Note - this macro is complemented by the FUNC_START macro
-	# in crti.asm.  If you change this macro you must also change
-	# that macro match.
-	#
-	# Note - we do not try any fancy optimisations of the return
-	# sequences here, it is just not worth it.  Instead keep things
-	# simple.  Restore all the save resgisters, including the link
-	# register and then perform the correct function return instruction.
+        # Note - this macro is complemented by the FUNC_START macro
+        # in crti.asm.  If you change this macro you must also change
+        # that macro match.
+        #
+        # Note - we do not try any fancy optimizations of the return
+        # sequences here, it is just not worth it.  Instead keep things
+        # simple.  Restore all the save resgisters, including the link
+        # register and then perform the correct function return instruction.
+        # We also save/restore r3 to ensure stack alignment.
 .macro FUNC_END
 #ifdef __thumb__
-	.thumb
-	
-	pop	{r4, r5, r6, r7}
-	pop	{r3}
-	mov	lr, r3
+        .thumb
+        
+        pop        {r3, r4, r5, r6, r7}
+        pop        {r3}
+        mov        lr, r3
 #else
-	.arm
-	
-	ldmdb	fp, {r4, r5, r6, r7, r8, r9, sl, fp, sp, lr}
+        .arm
+        
+        sub        sp, fp, #40
+        ldmfd        sp, {r4, r5, r6, r7, r8, r9, sl, fp, sp, lr}
 #endif
-	
+        
 #if defined __THUMB_INTERWORK__ || defined __thumb__
-	bx	lr
+        bx        lr
 #else
-#ifdef __APCS_26__
-	movs	pc, lr
-#else
-	mov	pc, lr
-#endif
+        mov        pc, lr
 #endif
 .endm
-		
-	
-	.file		"crtn.asm"
+                
+        
+        .file                "crtn.asm"
 
-	.section	".init"
-	;;
-	FUNC_END
-	
-	.section	".fini"
-	;;
-	FUNC_END
-	
+        .section        ".init"
+        ;;
+        FUNC_END
+        
+        .section        ".fini"
+        ;;
+        FUNC_END
+        
 # end of crtn.asm

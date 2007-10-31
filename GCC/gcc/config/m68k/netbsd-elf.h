@@ -1,39 +1,37 @@
 /* Definitions of target machine for GNU compiler,
    for m68k (including m68010) NetBSD platforms using the
    ELF object format.
-   Copyright (C) 2002 Free Software Foundation, Inc.
+   Copyright (C) 2002, 2003, 2004, 2006 Free Software Foundation, Inc.
    Contributed by Wasabi Systems. Inc.
 
    This file is derived from <m68k/m68kv4.h>, <m68k/m68kelf.h>,
    and <m68k/linux.h>.
 
-This file is part of GNU CC.
+This file is part of GCC.
 
-GNU CC is free software; you can redistribute it and/or modify
+GCC is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation; either version 2, or (at your option)
 any later version.
 
-GNU CC is distributed in the hope that it will be useful,
+GCC is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with GNU CC; see the file COPYING.  If not, write to
-the Free Software Foundation, 59 Temple Place - Suite 330,
-Boston, MA 02111-1307, USA.  */
+along with GCC; see the file COPYING.  If not, write to
+the Free Software Foundation, 51 Franklin Street, Fifth Floor,
+Boston, MA 02110-1301, USA.  */
 
-#define TARGET_OS_CPP_BUILTINS()		\
-  do						\
-    {						\
-      NETBSD_OS_CPP_BUILTINS_ELF();		\
-      builtin_define ("__m68k__");		\
-      builtin_define ("__SVR4_ABI__");		\
-      builtin_define ("__motorola__");		\
-      builtin_assert ("cpu=m68k");		\
-      builtin_assert ("machine=m68k");		\
-    }						\
+#define TARGET_OS_CPP_BUILTINS()                \
+  do                                                \
+    {                                                \
+      NETBSD_OS_CPP_BUILTINS_ELF();                \
+      builtin_define ("__m68k__");                \
+      builtin_define ("__SVR4_ABI__");                \
+      builtin_define ("__motorola__");                \
+    }                                                \
   while (0)
 
 /* Default target comes from config.gcc */
@@ -43,14 +41,14 @@ Boston, MA 02111-1307, USA.  */
 
 /* Don't try using XFmode on the 68010.  */ 
 #undef LONG_DOUBLE_TYPE_SIZE
-#define LONG_DOUBLE_TYPE_SIZE			\
+#define LONG_DOUBLE_TYPE_SIZE                        \
   ((TARGET_68020 || TARGET_68040 || TARGET_68040_ONLY || \
-    TARGET_68060) ? 96 : 64)
+    TARGET_68060) ? 80 : 64)
 
 #ifdef __mc68010__
 #define LIBGCC2_LONG_DOUBLE_TYPE_SIZE 64
 #else
-#define LIBGCC2_LONG_DOUBLE_TYPE_SIZE 96
+#define LIBGCC2_LONG_DOUBLE_TYPE_SIZE 80
 #endif
 
 #define EXTRA_SPECS \
@@ -103,9 +101,11 @@ Boston, MA 02111-1307, USA.  */
 
 #undef ASM_SPEC
 #define ASM_SPEC \
-  " %| %(asm_default_spec) \
+  "%(asm_default_spec) \
     %{m68010} %{m68020} %{m68030} %{m68040} %{m68060} \
-    %{fpic:-k} %{fPIC:-k -K}"
+    %{fpic|fpie:-k} %{fPIC|fPIE:-k -K}"
+
+#define AS_NEEDS_DASH_FOR_PIPED_INPUT
 
 /* Provide a LINK_SPEC appropriate for a NetBSD/m68k ELF target.  */
 
@@ -118,15 +118,15 @@ Boston, MA 02111-1307, USA.  */
    for profiling a function only.  */
 
 #undef FUNCTION_PROFILER
-#define FUNCTION_PROFILER(FILE, LABELNO)				\
-do									\
-  {									\
-    asm_fprintf (FILE, "\tlea (%LLP%d,%Rpc),%Ra1\n", (LABELNO));	\
-    if (flag_pic)							\
-      fprintf (FILE, "\tbsr.l __mcount@PLTPC\n");			\
-    else								\
-      fprintf (FILE, "\tjbsr __mcount\n");				\
-  }									\
+#define FUNCTION_PROFILER(FILE, LABELNO)                                \
+do                                                                        \
+  {                                                                        \
+    asm_fprintf (FILE, "\tlea (%LLP%d,%Rpc),%Ra1\n", (LABELNO));        \
+    if (flag_pic)                                                        \
+      fprintf (FILE, "\tbsr.l __mcount@PLTPC\n");                        \
+    else                                                                \
+      fprintf (FILE, "\tjbsr __mcount\n");                                \
+  }                                                                        \
 while (0)
 
 
@@ -142,9 +142,6 @@ while (0)
 /* XXX
    Here is a bunch of stuff lifted from m68kelf.h.  We don't use that
    file directly, because it has a lot of baggage we don't want.  */
-
-#define MOTOROLA	/* Use Motorola syntax */
-#define USE_GAS		/* But GAS wants jbsr instead of jsr */
 
 
 /* The prefix for register names.  Note that REGISTER_NAMES
@@ -178,34 +175,6 @@ while (0)
 #define ASM_COMMENT_START "|"
 
 
-/* How to refer to registers in assembler output.
-   This sequence is indexed by compiler's hard-register-number.
-   Motorola format uses different register names than defined in m68k.h.
-   We also take this chance to convert 'a6' to 'fp' */
-
-#undef REGISTER_NAMES
-
-#ifndef SUPPORT_SUN_FPA
-
-#define REGISTER_NAMES							\
-{"%d0",   "%d1",   "%d2",   "%d3",   "%d4",   "%d5",   "%d6",   "%d7",	\
- "%a0",   "%a1",   "%a2",   "%a3",   "%a4",   "%a5",   "%fp",   "%sp",	\
- "%fp0",  "%fp1",  "%fp2",  "%fp3",  "%fp4",  "%fp5",  "%fp6",  "%fp7" }
-
-#else /* SUPPORT_SUN_FPA */
-
-#define REGISTER_NAMES							\
-{"%d0",   "%d1",   "%d2",   "%d3",   "%d4",   "%d5",   "%d6",   "%d7",	\
- "%a0",   "%a1",   "%a2",   "%a3",   "%a4",   "%a5",   "%fp",   "%sp",	\
- "%fp0",  "%fp1",  "%fp2",  "%fp3",  "%fp4",  "%fp5",  "%fp6",  "%fp7",	\
- "%fpa0", "%fpa1", "%fpa2", "%fpa3", "%fpa4", "%fpa5", "%fpa6","%fpa7",	\
- "%fpa8", "%fpa9", "%fpa10","%fpa11","%fpa12","%fpa13","%fpa14","%fpa15", \
- "%fpa16","%fpa17","%fpa18","%fpa19","%fpa20","%fpa21","%fpa22","%fpa23", \
- "%fpa24","%fpa25","%fpa26","%fpa27","%fpa28","%fpa29","%fpa30","%fpa31" }
-
-#endif /* ! SUPPORT_SUN_FPA */
-
-
 /* Currently, JUMP_TABLES_IN_TEXT_SECTION must be defined in order to
    keep switch tables in the text section.  */
 
@@ -215,17 +184,17 @@ while (0)
 
 /* Use the default action for outputting the case label.  */
 #undef ASM_OUTPUT_CASE_LABEL
-#define ASM_RETURN_CASE_JUMP				\
-  do {							\
-    if (TARGET_5200)					\
-      {							\
-	if (ADDRESS_REG_P (operands[0]))		\
-	  return "jmp %%pc@(2,%0:l)";			\
-	else						\
-	  return "ext%.l %0\n\tjmp %%pc@(2,%0:l)";	\
-      }							\
-    else						\
-      return "jmp %%pc@(2,%0:w)";			\
+#define ASM_RETURN_CASE_JUMP                                \
+  do {                                                        \
+    if (TARGET_COLDFIRE)                                \
+      {                                                        \
+        if (ADDRESS_REG_P (operands[0]))                \
+          return "jmp %%pc@(2,%0:l)";                        \
+        else                                                \
+          return "ext%.l %0\n\tjmp %%pc@(2,%0:l)";        \
+      }                                                        \
+    else                                                \
+      return "jmp %%pc@(2,%0:w)";                        \
   } while (0)
 
 
@@ -233,12 +202,12 @@ while (0)
    location counter to a multiple of 2**LOG bytes.  */
 
 #undef ASM_OUTPUT_ALIGN
-#define ASM_OUTPUT_ALIGN(FILE,LOG)					\
-do									\
-  {									\
-    if ((LOG) > 0)							\
-      fprintf ((FILE), "%s%u\n", ALIGN_ASM_OP, 1 << (LOG));		\
-  }									\
+#define ASM_OUTPUT_ALIGN(FILE,LOG)                                        \
+do                                                                        \
+  {                                                                        \
+    if ((LOG) > 0)                                                        \
+      fprintf ((FILE), "%s%u\n", ALIGN_ASM_OP, 1 << (LOG));                \
+  }                                                                        \
 while (0)
 
 
@@ -246,7 +215,7 @@ while (0)
    assembler operation to identify the following data as uninitialized global
    data.  */
 
-#define BSS_SECTION_ASM_OP	".section\t.bss"
+#define BSS_SECTION_ASM_OP        ".section\t.bss"
 
 
 /* Like `ASM_OUTPUT_BSS' except takes the required alignment as a
@@ -259,21 +228,21 @@ while (0)
    `varasm.c' when defining this macro.  */
 
 #undef ASM_OUTPUT_ALIGNED_BSS
-#define ASM_OUTPUT_ALIGNED_BSS(FILE, DECL, NAME, SIZE, ALIGN)		\
+#define ASM_OUTPUT_ALIGNED_BSS(FILE, DECL, NAME, SIZE, ALIGN)                \
   asm_output_aligned_bss (FILE, DECL, NAME, SIZE, ALIGN)
 
 
 #undef ASM_OUTPUT_COMMON
-#define ASM_OUTPUT_COMMON(FILE, NAME, SIZE, ROUNDED)			\
-( fputs (".comm ", (FILE)),						\
-  assemble_name ((FILE), (NAME)),					\
-  fprintf ((FILE), ",%u\n", (SIZE)))
+#define ASM_OUTPUT_COMMON(FILE, NAME, SIZE, ROUNDED)                        \
+( fputs (".comm ", (FILE)),                                                \
+  assemble_name ((FILE), (NAME)),                                        \
+  fprintf ((FILE), ",%u\n", (int)(SIZE)))
 
 #undef ASM_OUTPUT_LOCAL
-#define ASM_OUTPUT_LOCAL(FILE, NAME, SIZE, ROUNDED)			\
-( fputs (".lcomm ", (FILE)),						\
-  assemble_name ((FILE), (NAME)),					\
-  fprintf ((FILE), ",%u\n", (SIZE)))
+#define ASM_OUTPUT_LOCAL(FILE, NAME, SIZE, ROUNDED)                        \
+( fputs (".lcomm ", (FILE)),                                                \
+  assemble_name ((FILE), (NAME)),                                        \
+  fprintf ((FILE), ",%u\n", (int)(SIZE)))
 
 
 /* XXX
@@ -291,8 +260,8 @@ while (0)
 /* Register in which address to store a structure value is passed to a
    function.  The default in m68k.h is a1.  For m68k/SVR4 it is a0. */
 
-#undef STRUCT_VALUE_REGNUM
-#define STRUCT_VALUE_REGNUM 8
+#undef M68K_STRUCT_VALUE_REGNUM
+#define M68K_STRUCT_VALUE_REGNUM 8
 
 
 /* Register in which static-chain is passed to a function.  The
@@ -318,7 +287,7 @@ while (0)
    a 68881 coprocessor.  */
 
 #undef FUNCTION_VALUE_REGNO_P
-#define FUNCTION_VALUE_REGNO_P(N)					\
+#define FUNCTION_VALUE_REGNO_P(N)                                        \
   ((N) == 0 || (N) == 8 || (TARGET_68881 && (N) == 16))
 
 
@@ -334,15 +303,11 @@ while (0)
    function.  VALTYPE is the data type of the value (as a tree).  If
    the precise function being called is known, FUNC is its
    FUNCTION_DECL; otherwise, FUNC is 0.  For m68k/SVR4 generate the
-   result in d0, a0, or fp0 as appropriate. */
+   result in d0, a0, or fp0 as appropriate.  */
 
 #undef FUNCTION_VALUE
-#define FUNCTION_VALUE(VALTYPE, FUNC)					\
-  (TREE_CODE (VALTYPE) == REAL_TYPE && TARGET_68881			\
-   ? gen_rtx_REG (TYPE_MODE (VALTYPE), 16)				\
-   : (POINTER_TYPE_P (VALTYPE)						\
-      ? gen_rtx_REG (TYPE_MODE (VALTYPE), 8)				\
-      : gen_rtx_REG (TYPE_MODE (VALTYPE), 0)))
+#define FUNCTION_VALUE(VALTYPE, FUNC)                                        \
+  m68k_function_value (VALTYPE, FUNC)
 
 
 /* For compatibility with the large body of existing code which does
@@ -353,13 +318,13 @@ while (0)
    still find the correct return value.  */
 
 extern int current_function_returns_pointer;
-#define FUNCTION_EXTRA_EPILOGUE(FILE, SIZE) 				\
-do									\
-  {									\
-    if (current_function_returns_pointer				\
-	&& ! find_equiv_reg (0, get_last_insn (), 0, 0, 0, 8, Pmode))	\
-      asm_fprintf (FILE, "\tmove.l %Ra0,%Rd0\n");			\
-  }									\
+#define FUNCTION_EXTRA_EPILOGUE(FILE, SIZE)                                 \
+do                                                                        \
+  {                                                                        \
+    if (current_function_returns_pointer                                \
+        && ! find_equiv_reg (0, get_last_insn (), 0, 0, 0, 8, Pmode))        \
+      asm_fprintf (FILE, "\tmove.l %Ra0,%Rd0\n");                        \
+  }                                                                        \
 while (0)
 
 
@@ -369,22 +334,19 @@ while (0)
    (returned in both d0 and a0), and floating values in fp0.  */
 
 #undef LIBCALL_VALUE
-#define LIBCALL_VALUE(MODE)						\
-  ((((MODE) == SFmode || (MODE) == DFmode || (MODE) == XFmode)		\
-    && TARGET_68881)							\
-   ? gen_rtx_REG (MODE, 16)						\
-   : gen_rtx_REG (MODE, 0))
+#define LIBCALL_VALUE(MODE)                                                \
+  m68k_libcall_value (MODE)
 
 
 /* Boundary (in *bits*) on which stack pointer should be aligned.
-   The m68k/SVR4 convention is to keep the stack pointer longword aligned. */
+   The m68k/SVR4 convention is to keep the stack pointer longword aligned.  */
 
 #undef STACK_BOUNDARY
 #define STACK_BOUNDARY 32
 
 
 /* Alignment of field after `int : 0' in a structure.
-   For m68k/SVR4, this is the next longword boundary. */
+   For m68k/SVR4, this is the next longword boundary.  */
 
 #undef EMPTY_FIELD_BOUNDARY
 #define EMPTY_FIELD_BOUNDARY 32
@@ -398,22 +360,8 @@ while (0)
 #define BIGGEST_ALIGNMENT 64
 
 
-/* In m68k svr4, a symbol_ref rtx can be a valid PIC operand if it is
-   an operand of a function call. */
-
-#undef LEGITIMATE_PIC_OPERAND_P
-#define LEGITIMATE_PIC_OPERAND_P(X)					\
-  ((! symbolic_operand (X, VOIDmode)					\
-    && ! (GET_CODE (X) == CONST_DOUBLE && mem_for_const_double (X)	\
-	  && GET_CODE (mem_for_const_double (X)) == MEM			\
-	  && symbolic_operand (XEXP (mem_for_const_double (X), 0),	\
-			       VOIDmode)))				\
-   || (GET_CODE (X) == SYMBOL_REF && SYMBOL_REF_FLAG (X))		\
-   || PCREL_GENERAL_OPERAND_OK)
-
-
 /* For m68k SVR4, structures are returned using the reentrant
-   technique. */
+   technique.  */
 
 #undef PCC_STATIC_STRUCT_RETURN
 
@@ -431,15 +379,15 @@ while (0)
    in that we use a1 as the static call chain.  */
 
 #undef TRAMPOLINE_TEMPLATE
-#define TRAMPOLINE_TEMPLATE(FILE)					\
-{									\
-  assemble_aligned_integer (2, GEN_INT (0x227a));			\
-  assemble_aligned_integer (2, GEN_INT (8));				\
-  assemble_aligned_integer (2, GEN_INT (0x2f3a));			\
-  assemble_aligned_integer (2, GEN_INT (8));				\
-  assemble_aligned_integer (2, GEN_INT (0x4e75));			\
-  assemble_aligned_integer (4, const0_rtx);				\
-  assemble_aligned_integer (4, const0_rtx);				\
+#define TRAMPOLINE_TEMPLATE(FILE)                                        \
+{                                                                        \
+  assemble_aligned_integer (2, GEN_INT (0x227a));                        \
+  assemble_aligned_integer (2, GEN_INT (8));                                \
+  assemble_aligned_integer (2, GEN_INT (0x2f3a));                        \
+  assemble_aligned_integer (2, GEN_INT (8));                                \
+  assemble_aligned_integer (2, GEN_INT (0x4e75));                        \
+  assemble_aligned_integer (4, const0_rtx);                                \
+  assemble_aligned_integer (4, const0_rtx);                                \
 }
 
 /* Redefine since we are using a different trampoline */
@@ -451,8 +399,8 @@ while (0)
    CXT is an RTX for the static chain value for the function.  */
 
 #undef INITIALIZE_TRAMPOLINE
-#define INITIALIZE_TRAMPOLINE(TRAMP, FNADDR, CXT)			\
-{									\
+#define INITIALIZE_TRAMPOLINE(TRAMP, FNADDR, CXT)                        \
+{                                                                        \
   emit_move_insn (gen_rtx_MEM (SImode, plus_constant (TRAMP, 10)), CXT); \
   emit_move_insn (gen_rtx_MEM (SImode, plus_constant (TRAMP, 14)), FNADDR); \
 }

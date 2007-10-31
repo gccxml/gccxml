@@ -1,7 +1,7 @@
 #if defined(__USING_STD_NAMES__)
-# include_next <valarray.h>
+# include <gccxml_valarray.h>
 #else
 # define __USING_STD_NAMES__
-# include_next <valarray.h>
+# include <gccxml_valarray.h>
 # undef __USING_STD_NAMES__
 #endif

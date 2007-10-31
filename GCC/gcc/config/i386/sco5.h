@@ -1,38 +1,35 @@
 /* Definitions for Intel 386 running SCO Unix System V 3.2 Version 5.
-   Copyright (C) 1992, 1995, 1996, 1997, 1998, 1999, 2000, 2002, 2003
+   Copyright (C) 1992, 1995, 1996, 1997, 1998, 1999, 2000, 2002, 2003, 2004
    Free Software Foundation, Inc.
    Contributed by Kean Johnston (jkj@sco.com)
 
-This file is part of GNU CC.
+This file is part of GCC.
 
-GNU CC is free software; you can redistribute it and/or modify
+GCC is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation; either version 2, or (at your option)
 any later version.
 
-GNU CC is distributed in the hope that it will be useful,
+GCC is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with GNU CC; see the file COPYING.  If not, write to
-the Free Software Foundation, 59 Temple Place - Suite 330,
-Boston, MA 02111-1307, USA.  */
+along with GCC; see the file COPYING.  If not, write to
+the Free Software Foundation, 51 Franklin Street, Fifth Floor,
+Boston, MA 02110-1301, USA.  */
 
 #undef TARGET_VERSION
 #define TARGET_VERSION fprintf (stderr, " (i386, SCO OpenServer 5 Syntax)");
 
-/* The native link editor does not support linkonce stuff */
-#define SUPPORTS_ONE_ONLY		0
-
 #undef ASM_QUAD
 
 #undef GLOBAL_ASM_OP
-#define GLOBAL_ASM_OP			"\t.globl\t"
+#define GLOBAL_ASM_OP                        "\t.globl\t"
 
 #undef BSS_SECTION_ASM_OP
-#define BSS_SECTION_ASM_OP		"\t.section\t.bss, \"aw\", @nobits"
+#define BSS_SECTION_ASM_OP                "\t.section\t.bss, \"aw\", @nobits"
   
 /*
  * NOTE: We really do want CTORS_SECTION_ASM_OP and DTORS_SECTION_ASM_OP.
@@ -44,8 +41,8 @@ Boston, MA 02111-1307, USA.  */
  * define these, many C++ ctors and dtors dont get run, because they never
  * wind up in the ctors/dtors arrays.
  */
-#define CTORS_SECTION_ASM_OP		"\t.section\t.ctors, \"aw\""
-#define DTORS_SECTION_ASM_OP		"\t.section\t.dtors, \"aw\""
+#define CTORS_SECTION_ASM_OP                "\t.section\t.ctors, \"aw\""
+#define DTORS_SECTION_ASM_OP                "\t.section\t.dtors, \"aw\""
 
 #define TARGET_ASM_FILE_START_FILE_DIRECTIVE true
 #undef X86_FILE_START_VERSION_DIRECTIVE
@@ -60,33 +57,32 @@ Boston, MA 02111-1307, USA.  */
   asm_output_aligned_bss (FILE, DECL, NAME, SIZE, ALIGN)
 
 #undef DBX_REGISTER_NUMBER
-#define DBX_REGISTER_NUMBER(n)	svr4_dbx_register_map[n]
+#define DBX_REGISTER_NUMBER(n)        svr4_dbx_register_map[n]
 
-#define DWARF2_DEBUGGING_INFO		1
-#define DWARF_DEBUGGING_INFO		1
-#define DBX_DEBUGGING_INFO		1
+#define DWARF2_DEBUGGING_INFO                1
+#define DBX_DEBUGGING_INFO                1
 
 #undef PREFERRED_DEBUGGING_TYPE
-#define PREFERRED_DEBUGGING_TYPE	DWARF2_DEBUG
+#define PREFERRED_DEBUGGING_TYPE        DWARF2_DEBUG
 
 #undef DWARF2_UNWIND_INFO
-#define DWARF2_UNWIND_INFO		1
+#define DWARF2_UNWIND_INFO                1
 
 #undef NO_IMPLICIT_EXTERN_C
-#define NO_IMPLICIT_EXTERN_C		1
+#define NO_IMPLICIT_EXTERN_C                1
 
 #undef SWITCH_TAKES_ARG
-#define SWITCH_TAKES_ARG(CHAR) 						\
-  (DEFAULT_SWITCH_TAKES_ARG(CHAR)					\
-   || (CHAR) == 'h' 							\
-   || (CHAR) == 'R' 							\
-   || (CHAR) == 'Y' 							\
+#define SWITCH_TAKES_ARG(CHAR)                                                 \
+  (DEFAULT_SWITCH_TAKES_ARG(CHAR)                                        \
+   || (CHAR) == 'h'                                                         \
+   || (CHAR) == 'R'                                                         \
+   || (CHAR) == 'Y'                                                         \
    || (CHAR) == 'z')
 
 #undef WORD_SWITCH_TAKES_ARG
-#define WORD_SWITCH_TAKES_ARG(STR)					\
- (DEFAULT_WORD_SWITCH_TAKES_ARG (STR)					\
-  && strcmp (STR, "Tdata") && strcmp (STR, "Ttext")			\
+#define WORD_SWITCH_TAKES_ARG(STR)                                        \
+ (DEFAULT_WORD_SWITCH_TAKES_ARG (STR)                                        \
+  && strcmp (STR, "Tdata") && strcmp (STR, "Ttext")                        \
   && strcmp (STR, "Tbss"))
 
 #undef TARGET_SUBTARGET_DEFAULT
@@ -100,13 +96,11 @@ Boston, MA 02111-1307, USA.  */
 #undef WCHAR_TYPE
 #undef WCHAR_TYPE_SIZE
 #undef WINT_TYPE
-#undef LONG_DOUBLE_TYPE_SIZE
-#define SIZE_TYPE		"unsigned int"
-#define PTRDIFF_TYPE		"int"
-#define WCHAR_TYPE		"long int"
-#define WCHAR_TYPE_SIZE		BITS_PER_WORD
-#define WINT_TYPE		"long int"
-#define LONG_DOUBLE_TYPE_SIZE 	96
+#define SIZE_TYPE                "unsigned int"
+#define PTRDIFF_TYPE                "int"
+#define WCHAR_TYPE                "long int"
+#define WCHAR_TYPE_SIZE                BITS_PER_WORD
+#define WINT_TYPE                "long int"
 
 /*
  * New for multilib support. Set the default switches for multilib,
@@ -149,7 +143,7 @@ Boston, MA 02111-1307, USA.  */
    assume that /usr/gnu is the prefix for the GNU tools, because thats
    where the SCO provided ones go. This is especially important for
    include and library search path ordering. We want to look in /usr/gnu
-   first, becuase frequently people are linking against -lintl, and they
+   first because frequently people are linking against -lintl, and they
    MEAN to link with gettext. What they get is the SCO intl library. Its
    a REAL pity that GNU gettext chose that name; perhaps in a future
    version they can be persuaded to change it to -lgnuintl and have a
@@ -159,18 +153,18 @@ Boston, MA 02111-1307, USA.  */
    We get /usr/gnu/lib first by virtue of the MD_STARTFILE_PREFIX below.
 */
 
-#define MD_STARTFILE_PREFIX	"/usr/gnu/lib/"
-#define MD_STARTFILE_PREFIX_1	"/usr/ccs/lib/"
+#define MD_STARTFILE_PREFIX        "/usr/gnu/lib/"
+#define MD_STARTFILE_PREFIX_1        "/usr/ccs/lib/"
 
 #if USE_GAS
-# define MD_EXEC_PREFIX		"/usr/gnu/bin/"
+# define MD_EXEC_PREFIX                "/usr/gnu/bin/"
 #else
-# define MD_EXEC_PREFIX		"/usr/ccs/bin/elf/"
+# define MD_EXEC_PREFIX                "/usr/ccs/bin/elf/"
 #endif
 
 /* Always use the system linker, please.  */
 #ifndef DEFAULT_LINKER
-# define DEFAULT_LINKER		"/usr/ccs/bin/elf/ld"
+# define DEFAULT_LINKER                "/usr/ccs/bin/elf/ld"
 #endif
 
 /* Set up assembler flags for PIC and ELF compilations */
@@ -214,31 +208,25 @@ Boston, MA 02111-1307, USA.  */
 #define ENDFILE_SPEC \
  "crtend.o%s crtn.o%s"
 
-#define TARGET_OS_CPP_BUILTINS()				\
-  do								\
-    {								\
-	builtin_define ("__unix");				\
-	builtin_define ("_SCO_DS");				\
-	builtin_define ("_SCO_DS_LL");				\
-	builtin_define ("_SCO_ELF");				\
-	builtin_define ("_M_I386");				\
-	builtin_define ("_M_XENIX");				\
-	builtin_define ("_M_UNIX");				\
-	builtin_assert ("system=svr3");				\
-	if (flag_iso)						\
-	  cpp_define (pfile, "_STRICT_ANSI");			\
-	if (flag_pic)						\
-	  {							\
-	    builtin_define ("__PIC__");				\
-	    builtin_define ("__pic__");				\
-	  }							\
-    }								\
+#define TARGET_OS_CPP_BUILTINS()                                \
+  do                                                                \
+    {                                                                \
+        builtin_define ("__unix");                                \
+        builtin_define ("_SCO_DS");                                \
+        builtin_define ("_SCO_DS_LL");                                \
+        builtin_define ("_SCO_ELF");                                \
+        builtin_define ("_M_I386");                                \
+        builtin_define ("_M_XENIX");                                \
+        builtin_define ("_M_UNIX");                                \
+        builtin_assert ("system=svr3");                                \
+        if (flag_iso)                                                \
+          cpp_define (pfile, "_STRICT_ANSI");                        \
+    }                                                                \
   while (0)
 
 #undef CPP_SPEC
 #define CPP_SPEC "\
   -isystem /usr/gnu/include \
-  %{pthread:-D_REENTRANT} \
   %{!Xods30:-D_STRICT_NAMES} \
   %{!ansi:%{!posix:%{!Xods30:-D_SCO_XPG_VERS=4}}} \
   %{ansi:-isystem include/ansi%s -isystem /usr/include/ansi} \
@@ -265,7 +253,7 @@ Boston, MA 02111-1307, USA.  */
 #undef LINK_SPEC
 #define LINK_SPEC \
  "%{!shared:%{!symbolic:%{!G:-E%{Xa:a}%{!Xa:%{Xc:c}%{!Xc:%{Xk:k}%{!Xk:%{Xt:t}%{!Xt:a}}}},%{ansi:ansi}%{!ansi:%{posix:posix}%{!posix:%{Xpg4:xpg4}%{!Xpg4:%{Xpg4plus:XPG4PLUS}%{!Xpg4plus:%{Xods30:ods30}%{!Xods30:XPG4PLUS}}}}},ELF}}} \
-  %{Wl,*:%*} %{YP,*} %{YL,*} %{YU,*} \
+  %{YP,*} %{YL,*} %{YU,*} \
   %{!YP,*:%{p:-YP,/usr/ccs/libp:/lib/libp:/usr/lib/libp:/usr/ccs/lib:/lib:/usr/lib} \
    %{!p:-YP,/usr/ccs/lib:/lib:/usr/lib}} \
   %{h*} %{static:-dn -Bstatic %{G:%e-G and -static are mutually exclusive}} \
@@ -282,50 +270,42 @@ Boston, MA 02111-1307, USA.  */
   %{G:%{!shared:pic/libgcc.a%s}} \
   %{shared:%{G:pic/libgcc.a%s}} \
   %{p:%{!pp:-lelfprof -lelf}} %{pp:%{!p:-lelfprof -lelf}} \
-  %{!shared:%{!symbolic:%{!G:-lcrypt -lgen -lc %{pthread:-lpthread}}}}"
+  %{!shared:%{!symbolic:%{!G:-lcrypt -lgen -lc}}}"
 
 #undef LIBGCC_SPEC
 #define LIBGCC_SPEC \
  "%{!shared:%{!G:-lgcc}}"
 
-/* Here for legacy support only so we still accept -melf flag */
-#define MASK_COFF     		010000000000	/* Mask for COFF generation */
-#define TARGET_ELF              (1)
-
-#undef SUBTARGET_SWITCHES
-#define SUBTARGET_SWITCHES 					\
-	{ "elf", -MASK_COFF, N_("Generate ELF output")  },
-
 /* Handle special EH pointer encodings.  Absolute, pc-relative, and
    indirect are handled automatically.  */
 #define ASM_MAYBE_OUTPUT_ENCODED_ADDR_RTX(FILE, ENCODING, SIZE, ADDR, DONE) \
-  do {									\
-    if ((SIZE) == 4 && ((ENCODING) & 0x70) == DW_EH_PE_datarel)		\
-      {									\
-        fputs (ASM_LONG, FILE);						\
-        assemble_name (FILE, XSTR (ADDR, 0));				\
-	fputs (((ENCODING) & DW_EH_PE_indirect ? "@GOT" : "@GOTOFF"), FILE); \
-        goto DONE;							\
-      }									\
+  do {                                                                        \
+    if ((SIZE) == 4 && ((ENCODING) & 0x70) == DW_EH_PE_datarel)                \
+      {                                                                        \
+        fputs (ASM_LONG, FILE);                                                \
+        assemble_name (FILE, XSTR (ADDR, 0));                                \
+        fputs (((ENCODING) & DW_EH_PE_indirect ? "@GOT" : "@GOTOFF"), FILE); \
+        goto DONE;                                                        \
+      }                                                                        \
   } while (0)
 
 /* Used by crtstuff.c to initialize the base of data-relative relocations.
    These are GOT relative on x86, so return the pic register.  */
 #ifdef __PIC__
-#define CRT_GET_RFIB_DATA(BASE)			\
-  {						\
-    register void *ebx_ __asm__("ebx");		\
-    BASE = ebx_;				\
+#define CRT_GET_RFIB_DATA(BASE)                        \
+  {                                                \
+    register void *ebx_ __asm__("ebx");                \
+    BASE = ebx_;                                \
   }
 #else
-#define CRT_GET_RFIB_DATA(BASE)						\
-  __asm__ ("call\t.LPR%=\n"						\
-	   ".LPR%=:\n\t"						\
-	   "popl\t%0\n\t"						\
-	   /* Due to a GAS bug, this cannot use EAX.  That encodes	\
-	      smaller than the traditional EBX, which results in the	\
-	      offset being off by one.  */				\
-	   "addl\t$_GLOBAL_OFFSET_TABLE_+[.-.LPR%=],%0"			\
-	   : "=d"(BASE))
+#define CRT_GET_RFIB_DATA(BASE)                                                \
+  __asm__ ("call\t.LPR%=\n"                                                \
+           ".LPR%=:\n\t"                                                \
+           "popl\t%0\n\t"                                                \
+           /* Due to a GAS bug, this cannot use EAX.  That encodes        \
+              smaller than the traditional EBX, which results in the        \
+              offset being off by one.  */                                \
+           "addl\t$_GLOBAL_OFFSET_TABLE_+[.-.LPR%=],%0"                        \
+           : "=d"(BASE))
 #endif
 

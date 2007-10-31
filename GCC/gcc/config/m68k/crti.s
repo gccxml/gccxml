@@ -3,22 +3,22 @@
    Copyright (C) 1999 Free Software Foundation, Inc.
    Contributed by Charles-Antoine Gauthier (charles.gauthier@iit.nrc.ca).
 
-This file is part of GNU CC.
+This file is part of GCC.
 
-GNU CC is free software; you can redistribute it and/or modify
+GCC is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation; either version 2, or (at your option)
 any later version.
 
-GNU CC is distributed in the hope that it will be useful,
+GCC is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with GNU CC; see the file COPYING.  If not, write to
-the Free Software Foundation, 59 Temple Place - Suite 330,
-Boston, MA 02111-1307, USA.  */
+along with GCC; see the file COPYING.  If not, write to
+the Free Software Foundation, 51 Franklin Street, Fifth Floor,
+Boston, MA 02110-1301, USA.  */
 
 /* As a special exception, if you link this library with files
    compiled with GCC to produce an executable, this does not cause
@@ -31,17 +31,17 @@ Boston, MA 02111-1307, USA.  */
  * sections.  It is linked in before crtbegin.o.
  */
 
-	.file   "crti.o"
-	.ident  "GNU C crti.o"
+        .file   "crti.o"
+        .ident  "GNU C crti.o"
 
-	.section .init
-	.globl  _init
-	.type   _init,@function
+        .section .init
+        .globl  _init
+        .type   _init,@function
 _init:
-	linkw %fp,#0
+        linkw %fp,#0
 
-	.section .fini
-	.globl  _fini
-	.type   _fini,@function
+        .section .fini
+        .globl  _fini
+        .type   _fini,@function
 _fini:
-	linkw %fp,#0
+        linkw %fp,#0

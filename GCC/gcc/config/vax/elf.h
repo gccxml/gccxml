@@ -1,31 +1,34 @@
 /* Target definitions for GNU compiler for VAX using ELF
-   Copyright (C) 2002 Free Software Foundation, Inc.
-   Contributed by Matt Thomas (matt@3am-software.com)
+   Copyright (C) 2002, 2004, 2005 Free Software Foundation, Inc.
+   Contributed by Matt Thomas <matt@3am-software.com>
 
-This file is part of GNU CC.
+This file is part of GCC.
 
-GNU CC is free software; you can redistribute it and/or modify
+GCC is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation; either version 2, or (at your option)
 any later version.
 
-GNU CC is distributed in the hope that it will be useful,
+GCC is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with GNU CC; see the file COPYING.  If not, write to
-the Free Software Foundation, 59 Temple Place - Suite 330,
-Boston, MA 02111-1307, USA.  */
+along with GCC; see the file COPYING.  If not, write to
+the Free Software Foundation, 51 Franklin Street, Fifth Floor,
+Boston, MA 02110-1301, USA.  */
+
+#undef TARGET_ELF
+#define TARGET_ELF 1
 
 #undef REGISTER_PREFIX
 #undef REGISTER_NAMES
 #define REGISTER_PREFIX "%"
 #define REGISTER_NAMES \
-{"%r0", "%r1",  "%r2",  "%r3", "%r4", "%r5", "%r6", "%r7", \
- "%r8", "%r9", "%r10", "%r11", "%ap", "%fp", "%sp", "%pc"}
-  
+  { "%r0", "%r1",  "%r2",  "%r3", "%r4", "%r5", "%r6", "%r7", \
+    "%r8", "%r9", "%r10", "%r11", "%ap", "%fp", "%sp", "%pc", }
+
 #undef SIZE_TYPE
 #define SIZE_TYPE "long unsigned int"
 
@@ -39,9 +42,6 @@ Boston, MA 02111-1307, USA.  */
 /*  Let's be re-entrant.  */
 #undef PCC_STATIC_STRUCT_RETURN
 
-/* Make sure .stabs for a function are always the same section.  */
-#define	DBX_OUTPUT_FUNCTION_END(file,decl) function_section(decl)
-
 /* Before the prologue, the top of the frame is below the argument
    count pushed by the CALLS and before the start of the saved registers.  */
 #define INCOMING_FRAME_SP_OFFSET 0
@@ -50,16 +50,16 @@ Boston, MA 02111-1307, USA.  */
 #define EH_RETURN_DATA_REGNO(N) ((N) < 4 ? (N) + 2 : INVALID_REGNUM)
 
 /* Place the top of the stack for the DWARF2 EH stackadj value.  */
-#define EH_RETURN_STACKADJ_RTX						\
-  gen_rtx_MEM (SImode,							\
-	       plus_constant (gen_rtx_REG (Pmode, FRAME_POINTER_REGNUM), \
-			      -4))
+#define EH_RETURN_STACKADJ_RTX                                                \
+  gen_rtx_MEM (SImode,                                                        \
+               plus_constant (gen_rtx_REG (Pmode, FRAME_POINTER_REGNUM),\
+                              -4))
 
 /* Simple store the return handler into the call frame.  */
-#define EH_RETURN_HANDLER_RTX						\
-  gen_rtx_MEM (Pmode,							\
-	       plus_constant (gen_rtx_REG (Pmode, FRAME_POINTER_REGNUM), \
-			      16))
+#define EH_RETURN_HANDLER_RTX                                                \
+  gen_rtx_MEM (Pmode,                                                        \
+               plus_constant (gen_rtx_REG (Pmode, FRAME_POINTER_REGNUM),\
+                              16))
 
 
 /* Reserve the top of the stack for exception handler stackadj value.  */
@@ -70,26 +70,21 @@ Boston, MA 02111-1307, USA.  */
 #undef  ASM_OUTPUT_BEFORE_CASE_LABEL
 #define ASM_OUTPUT_BEFORE_CASE_LABEL(FILE, PREFIX, NUM, TABLE)
 
-/* Get the udiv/urem calls out of the user's namespace.  */
-#undef  UDIVSI3_LIBCALL
-#define UDIVSI3_LIBCALL "*__udiv"
-#undef  UMODSI3_LIBCALL
-#define UMODSI3_LIBCALL "*__urem"
-
 #undef OVERRIDE_OPTIONS
-#define OVERRIDE_OPTIONS			\
-  do						\
-    {						\
-      /* Do generic VAX overrides.  */		\
-      override_options ();			\
-						\
-      /* Turn off function CSE if we're 	\
-	 doing PIC.  */				\
-      if (flag_pic) flag_no_function_cse = 1;	\
-    }						\
+#define OVERRIDE_OPTIONS                                \
+  do                                                        \
+    {                                                        \
+      /* Do generic VAX overrides.  */                        \
+      override_options ();                                \
+                                                        \
+      /* Turn off function CSE if we're doing PIC.  */        \
+      if (flag_pic)                                        \
+        flag_no_function_cse = 1;                        \
+    }                                                        \
   while (0)
 
 /* VAX ELF is always gas; override the generic VAX ASM_SPEC.  */
 
 #undef ASM_SPEC
 #define ASM_SPEC ""
+

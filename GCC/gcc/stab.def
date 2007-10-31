@@ -1,5 +1,5 @@
 /* Table of DBX symbol codes for the GNU system.
-   Copyright (C) 1988, 1997, 1998 Free Software Foundation, Inc.
+   Copyright (C) 1988, 1997, 1998, 2004 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -14,8 +14,8 @@
 
    You should have received a copy of the GNU Library General Public
    License along with the GNU C Library; see the file COPYING.LIB.  If not,
-   write to the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
-   Boston, MA 02111-1307, USA.  */
+   write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+   Boston, MA 02110-1301, USA.  */
 
 /* This contains contribution from Cygnus Support.  */
 
@@ -38,6 +38,12 @@ __define_stab (N_STSYM, 0x26, "STSYM")
 
 /* BSS-segment variable with internal linkage.  Value is its address.  */
 __define_stab (N_LCSYM, 0x28, "LCSYM")
+
+/* Begin function marker.  */
+__define_stab (N_BNSYM, 0x2e, "BNSYM")
+
+/* End function marker.  */
+__define_stab (N_ENSYM, 0x4e, "ENSYM")
 
 /* Name of main routine.  Only the name is significant.
    This is not used in C.  */
@@ -181,54 +187,54 @@ __define_stab (N_LENG, 0xfe, "LENG")
 
 /* The above information, in matrix format.
 
-			STAB MATRIX
-	_________________________________________________
-	| 00 - 1F are not dbx stab symbols		|
-	| In most cases, the low bit is the EXTernal bit|
+                        STAB MATRIX
+        _________________________________________________
+        | 00 - 1F are not dbx stab symbols                |
+        | In most cases, the low bit is the EXTernal bit|
 
-	| 00 UNDEF  | 02 ABS	| 04 TEXT   | 06 DATA	|
-	| 01  |EXT  | 03  |EXT	| 05  |EXT  | 07  |EXT	|
+        | 00 UNDEF  | 02 ABS        | 04 TEXT   | 06 DATA        |
+        | 01  |EXT  | 03  |EXT        | 05  |EXT  | 07  |EXT        |
 
-	| 08 BSS    | 0A INDR	| 0C FN_SEQ | 0E   	|
-	| 09  |EXT  | 0B 	| 0D	    | 0F	|
+        | 08 BSS    | 0A INDR        | 0C FN_SEQ | 0E           |
+        | 09  |EXT  | 0B         | 0D            | 0F        |
 
-	| 10 	    | 12 COMM	| 14 SETA   | 16 SETT	|
-	| 11	    | 13	| 15 	    | 17	|
+        | 10             | 12 COMM        | 14 SETA   | 16 SETT        |
+        | 11            | 13        | 15             | 17        |
 
-	| 18 SETD   | 1A SETB	| 1C SETV   | 1E WARNING|
-	| 19	    | 1B	| 1D 	    | 1F FN	|
+        | 18 SETD   | 1A SETB        | 1C SETV   | 1E WARNING|
+        | 19            | 1B        | 1D             | 1F FN        |
 
-	|_______________________________________________|
-	| Debug entries with bit 01 set are unused.	|
-	| 20 GSYM   | 22 FNAME	| 24 FUN    | 26 STSYM	|
-	| 28 LCSYM  | 2A MAIN	| 2C	    | 2E	|
-	| 30 PC	    | 32 NSYMS	| 34 NOMAP  | 36	|
-	| 38 OBJ    | 3A	| 3C OPT    | 3E	|
-	| 40 RSYM   | 42 M2C	| 44 SLINE  | 46 DSLINE |
-	| 48 BSLINE*| 4A DEFD	| 4C        | 4E	|
-	| 50 EHDECL*| 52	| 54 CATCH  | 56        |
-	| 58        | 5A        | 5C        | 5E	|
-	| 60 SSYM   | 62	| 64 SO	    | 66 	|
-	| 68 	    | 6A	| 6C	    | 6E	|
-	| 70	    | 72	| 74	    | 76	|
-	| 78	    | 7A	| 7C	    | 7E	|
-	| 80 LSYM   | 82 BINCL	| 84 SOL    | 86	|
-	| 88	    | 8A	| 8C	    | 8E	|
-	| 90	    | 92	| 94	    | 96	|
-	| 98	    | 9A	| 9C	    | 9E	|
-	| A0 PSYM   | A2 EINCL	| A4 ENTRY  | A6	|
-	| A8	    | AA	| AC	    | AE	|
-	| B0	    | B2	| B4	    | B6	|
-	| B8	    | BA	| BC	    | BE	|
-	| C0 LBRAC  | C2 EXCL	| C4 SCOPE  | C6	|
-	| C8	    | CA	| CC	    | CE	|
-	| D0	    | D2	| D4	    | D6	|
-	| D8	    | DA	| DC	    | DE	|
-	| E0 RBRAC  | E2 BCOMM	| E4 ECOMM  | E6	|
-	| E8 ECOML  | EA	| EC	    | EE	|
-	| F0	    | F2	| F4	    | F6	|
-	| F8	    | FA	| FC	    | FE LENG	|
-	+-----------------------------------------------+
+        |_______________________________________________|
+        | Debug entries with bit 01 set are unused.        |
+        | 20 GSYM   | 22 FNAME        | 24 FUN    | 26 STSYM        |
+        | 28 LCSYM  | 2A MAIN        | 2C            | 2E BNSYM        |
+        | 30 PC            | 32 NSYMS        | 34 NOMAP  | 36        |
+        | 38 OBJ    | 3A        | 3C OPT    | 3E        |
+        | 40 RSYM   | 42 M2C        | 44 SLINE  | 46 DSLINE |
+        | 48 BSLINE*| 4A DEFD        | 4C        | 4E ENSYM        |
+        | 50 EHDECL*| 52        | 54 CATCH  | 56        |
+        | 58        | 5A        | 5C        | 5E        |
+        | 60 SSYM   | 62        | 64 SO            | 66         |
+        | 68             | 6A        | 6C            | 6E        |
+        | 70            | 72        | 74            | 76        |
+        | 78            | 7A        | 7C            | 7E        |
+        | 80 LSYM   | 82 BINCL        | 84 SOL    | 86        |
+        | 88            | 8A        | 8C            | 8E        |
+        | 90            | 92        | 94            | 96        |
+        | 98            | 9A        | 9C            | 9E        |
+        | A0 PSYM   | A2 EINCL        | A4 ENTRY  | A6        |
+        | A8            | AA        | AC            | AE        |
+        | B0            | B2        | B4            | B6        |
+        | B8            | BA        | BC            | BE        |
+        | C0 LBRAC  | C2 EXCL        | C4 SCOPE  | C6        |
+        | C8            | CA        | CC            | CE        |
+        | D0            | D2        | D4            | D6        |
+        | D8            | DA        | DC            | DE        |
+        | E0 RBRAC  | E2 BCOMM        | E4 ECOMM  | E6        |
+        | E8 ECOML  | EA        | EC            | EE        |
+        | F0            | F2        | F4            | F6        |
+        | F8            | FA        | FC            | FE LENG        |
+        +-----------------------------------------------+
  * 50 EHDECL is also MOD2.
  * 48 BSLINE is also BROWS.
  */

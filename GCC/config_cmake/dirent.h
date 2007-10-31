@@ -12,7 +12,7 @@ DIR* opendir(const char*);
 struct dirent* readdir(DIR*);
 int closedir(DIR*);
 
-/* Hack for cppfiles.c.  */
+/* Hack for libcpp/files.c.  */
 #if defined(_MSC_VER)
 # include <io.h>
 # undef S_ISBLK

@@ -4,24 +4,11 @@
 #define TARGET_VERSION fprintf (stderr, " (i386 GNU)");
 
 #undef TARGET_OS_CPP_BUILTINS /* config.gcc includes i386/linux.h.  */
-#define TARGET_OS_CPP_BUILTINS()		\
-  do						\
-    {						\
-	builtin_define_std ("MACH");		\
-	builtin_define_std ("unix");		\
-	builtin_define ("__ELF__");		\
-	builtin_define ("__GNU__");		\
-	builtin_define ("__gnu_hurd__");	\
-	builtin_assert ("system=gnu");		\
-	builtin_assert ("system=mach");		\
-	builtin_assert ("system=posix");	\
-	builtin_assert ("system=unix");		\
-	if (flag_pic)				\
-	  {					\
-	    builtin_define ("__PIC__");		\
-	    builtin_define ("__pic__");		\
-	  }					\
-    }						\
+#define TARGET_OS_CPP_BUILTINS()                \
+  do                                                \
+    {                                                \
+        HURD_TARGET_OS_CPP_BUILTINS();                \
+    }                                                \
   while (0)
 
 #undef CPP_SPEC
@@ -30,7 +17,7 @@
 #undef CC1_SPEC
 #define CC1_SPEC "%(cc1_cpu)"
 
-#undef	LINK_SPEC
+#undef        LINK_SPEC
 #define LINK_SPEC "-m elf_i386 %{shared:-shared} \
   %{!shared: \
     %{!static: \
@@ -38,7 +25,7 @@
       %{!dynamic-linker:-dynamic-linker /lib/ld.so}} \
     %{static:-static}}"
 
-#undef	STARTFILE_SPEC
+#undef        STARTFILE_SPEC
 #define STARTFILE_SPEC \
   "%{!shared: \
      %{!static: \
@@ -48,4 +35,4 @@
    %{!static:%{!shared:crtbegin.o%s} %{shared:crtbeginS.o%s}}"
 
 /* FIXME: Is a Hurd-specific fallback mechanism necessary?  */
-#undef MD_FALLBACK_FRAME_STATE_FOR
+#undef MD_UNWIND_SUPPORT

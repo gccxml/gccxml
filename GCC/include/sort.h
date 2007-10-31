@@ -16,8 +16,8 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with GCC; see the file COPYING.  If not, write to
-the Free Software Foundation, 59 Temple Place - Suite 330,
-Boston, MA 02111-1307, USA.  */
+the Free Software Foundation, 51 Franklin Street - Fifth Floor,
+Boston, MA 02110-1301, USA.  */
 
 #ifndef SORT_H
 #define SORT_H
@@ -25,7 +25,7 @@ Boston, MA 02111-1307, USA.  */
 #include <sys/types.h> /* For size_t */
 #ifdef __STDC__
 #include <stddef.h>
-#endif	/* __STDC__ */
+#endif        /* __STDC__ */
 
 #ifdef __cplusplus
 extern "C" {
@@ -35,7 +35,7 @@ extern "C" {
 
 /* Sort an array of pointers.  */
 
-extern void sort_pointers PARAMS ((size_t, void **, void **));
+extern void sort_pointers (size_t, void **, void **);
 
 #ifdef __cplusplus
 }

@@ -1,34 +1,24 @@
 /* Definitions of target machine for GNU compiler, for HPs running
    HPUX using the 64bit runtime model.
-   Copyright (C) 1999, 2000, 2001, 2002 Free Software Foundation, Inc.
+   Copyright (C) 1999, 2000, 2001, 2002, 2004, 2005 Free Software Foundation,
+   Inc.
 
-This file is part of GNU CC.
+This file is part of GCC.
 
-GNU CC is free software; you can redistribute it and/or modify
+GCC is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation; either version 2, or (at your option)
 any later version.
 
-GNU CC is distributed in the hope that it will be useful,
+GCC is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with GNU CC; see the file COPYING.  If not, write to
-the Free Software Foundation, 59 Temple Place - Suite 330,
-Boston, MA 02111-1307, USA.  */
-
-#undef SUBTARGET_SWITCHES
-#define SUBTARGET_SWITCHES				\
-  { "sio",	 MASK_SIO,				\
-     N_("Generate cpp defines for server IO") },	\
-  { "wsio",	-MASK_SIO,				\
-     N_("Generate cpp defines for workstation IO") },	\
-  {"gnu-ld",	 MASK_GNU_LD,				\
-     N_("Assume code will be linked by GNU ld") },	\
-  {"hp-ld",	-MASK_GNU_LD,				\
-     N_("Assume code will be linked by HP ld") },
+along with GCC; see the file COPYING.  If not, write to
+the Free Software Foundation, 51 Franklin Street, Fifth Floor,
+Boston, MA 02110-1301, USA.  */
 
 /* We can debug dynamically linked executables on hpux11; we also
    want dereferencing of a NULL pointer to cause a SEGV.  Do not move
@@ -37,22 +27,63 @@ Boston, MA 02111-1307, USA.  */
 #undef LINK_SPEC
 #if ((TARGET_DEFAULT | TARGET_CPU_DEFAULT) & MASK_GNU_LD)
 #define LINK_SPEC \
-  "%{mhp-ld:+Accept TypeMismatch} -E %{mlinker-opt:-O} %{!shared:-u main} %{static:-a archive} %{shared:%{mhp-ld:-b}%{!mhp-ld:-shared}}"
+  "%{!shared:%{p:-L/lib/pa20_64/libp -L/usr/lib/pa20_64/libp %{!static:\
+     %nWarning: consider linking with `-static' as system libraries with\n\
+     %n  profiling support are only provided in archive format}}}\
+   %{!shared:%{pg:-L/lib/pa20_64/libp -L/usr/lib/pa20_64/libp %{!static:\
+     %nWarning: consider linking with `-static' as system libraries with\n\
+     %n  profiling support are only provided in archive format}}}\
+   %{mhp-ld:+Accept TypeMismatch -z} -E %{mlinker-opt:-O}\
+   %{!shared:-u main %{!nostdlib:%{!nodefaultlibs:-u __cxa_finalize}}}\
+   %{static:-a archive} %{shared:%{mhp-ld:-b}%{!mhp-ld:-shared}}"
 #else
 #define LINK_SPEC \
-  "%{!mgnu-ld:+Accept TypeMismatch} -E %{mlinker-opt:-O} %{!shared:-u main} %{static:-a archive} %{shared:%{mgnu-ld:-shared}%{!mgnu-ld:-b}}"
+  "%{!shared:%{p:-L/lib/pa20_64/libp -L/usr/lib/pa20_64/libp %{!static:\
+     %nWarning: consider linking with `-static' as system libraries with\n\
+     %n  profiling support are only provided in archive format}}}\
+   %{!shared:%{pg:-L/lib/pa20_64/libp -L/usr/lib/pa20_64/libp %{!static:\
+     %nWarning: consider linking with `-static' as system libraries with\n\
+     %n  profiling support are only provided in archive format}}}\
+   %{!mgnu-ld:+Accept TypeMismatch -z} -E %{mlinker-opt:-O}\
+   %{!shared:-u main %{!nostdlib:%{!nodefaultlibs:-u __cxa_finalize}}}\
+   %{static:-a archive} %{shared:%{mgnu-ld:-shared}%{!mgnu-ld:-b}}"
 #endif
 
-/* Like the default, except no -lg.  */
+/* Profiling support is only provided in libc.a.  However, libprof and
+   libgprof are only available in shared form on HP-UX 11.00.  We use
+   the shared form if we are using the GNU linker or an archive form
+   isn't available.  We also usually need to link with libdld and it's
+   only available in shared form.  */
 #undef LIB_SPEC
+#if ((TARGET_DEFAULT | TARGET_CPU_DEFAULT) & MASK_GNU_LD)
 #define LIB_SPEC \
   "%{!shared:\
-     %{!p:%{!pg: -lc %{static:%{!nolibdld:-a shared -ldld -a archive -lc}}}}\
-     %{pg: -L/usr/lib/pa20_64/libp/ -lgprof -lc\
-       %{static:%{!nolibdld:-a shared -ldld -a archive -lc}}}\
-     %{p: -L/usr/lib/pa20_64/libp/ -lprof -lc\
-       %{static:%{!nolibdld:-a shared -ldld -a archive -lc}}}}\
-   /usr/lib/pa20_64/milli.a"
+     %{!p:%{!pg: %{static|mt|pthread:-lpthread} -lc\
+            %{static:%{!nolibdld:-a shared -ldld -a archive -lc}}}}\
+     %{p:%{!pg:%{static:%{!mhp-ld:-a shared}%{mhp-ld:-a archive_shared}}\
+           -lprof %{static:-a archive} %{static|mt|pthread:-lpthread} -lc\
+           %{static:%{!nolibdld:-a shared -ldld -a archive -lc}}}}\
+     %{pg:%{static:%{!mhp-ld:-a shared}%{mhp-ld:-a archive_shared}}\
+       -lgprof %{static:-a archive} %{static|mt|pthread:-lpthread} -lc\
+       %{static:%{!nolibdld:-a shared -ldld -a archive -lc}}}}"
+#else
+#define LIB_SPEC \
+  "%{!shared:\
+     %{!p:%{!pg: %{static|mt|pthread:-lpthread} -lc\
+            %{static:%{!nolibdld:-a shared -ldld -a archive -lc}}}}\
+     %{p:%{!pg:%{static:%{mgnu-ld:-a shared}%{!mgnu-ld:-a archive_shared}}\
+           -lprof %{static:-a archive} %{static|mt|pthread:-lpthread} -lc\
+           %{static:%{!nolibdld:-a shared -ldld -a archive -lc}}}}\
+     %{pg:%{static:%{mgnu-ld:-a shared}%{!mgnu-ld:-a archive_shared}}\
+       -lgprof %{static:-a archive} %{static|mt|pthread:-lpthread} -lc\
+       %{static:%{!nolibdld:-a shared -ldld -a archive -lc}}}}"
+#endif
+
+/* The libgcc_stub.a and milli.a libraries need to come last.  */
+#undef LINK_GCC_C_SEQUENCE_SPEC
+#define LINK_GCC_C_SEQUENCE_SPEC "\
+  %G %L %G %{!nostdlib:%{!nodefaultlibs:%{!shared:-lgcc_stub}\
+  /usr/lib/pa20_64/milli.a}}"
 
 /* Under hpux11, the normal location of the `ld' and `as' programs is the
    /usr/ccs/bin directory.  */
@@ -61,6 +92,14 @@ Boston, MA 02111-1307, USA.  */
 #undef MD_EXEC_PREFIX
 #define MD_EXEC_PREFIX "/usr/ccs/bin"
 #endif
+
+/* Default prefixes.  */
+
+#undef STANDARD_STARTFILE_PREFIX_1
+#define STANDARD_STARTFILE_PREFIX_1 "/lib/pa20_64/"
+
+#undef STANDARD_STARTFILE_PREFIX_2
+#define STANDARD_STARTFILE_PREFIX_2 "/usr/lib/pa20_64/"
 
 /* Under hpux11 the normal location of the various pa20_64 *crt*.o files
    is the /usr/ccs/lib/pa20_64 directory.  Some files may also be in the
@@ -76,6 +115,16 @@ Boston, MA 02111-1307, USA.  */
 #define MD_STARTFILE_PREFIX_1 "/opt/langtools/lib/pa20_64/"
 #endif
 
+/* This macro specifies the biggest alignment supported by the object
+   file format of this machine.
+
+   The .align directive in the HP assembler allows alignments up to
+   4096 bytes.  However, the maximum alignment of a global common symbol
+   is 16 bytes using HP ld.  Unfortunately, this macro doesn't provide
+   a method to check for common symbols.  */
+#undef MAX_OFILE_ALIGNMENT
+#define MAX_OFILE_ALIGNMENT 32768
+
 /* Due to limitations in the target structure, it isn't currently possible
    to dynamically switch between the GNU and HP assemblers.  */
 #undef TARGET_GAS
@@ -86,87 +135,76 @@ Boston, MA 02111-1307, USA.  */
 /* We are using GAS.  */
 #define TARGET_GAS 1
 
-#undef ASM_FILE_START
-#define ASM_FILE_START(FILE) \
-do {								\
-  if (TARGET_64BIT)						\
-    fputs("\t.LEVEL 2.0w\n", FILE);				\
-  else if (TARGET_PA_20)					\
-    fputs("\t.LEVEL 2.0\n", FILE);				\
-  else if (TARGET_PA_11)					\
-    fputs("\t.LEVEL 1.1\n", FILE);				\
-  else								\
-    fputs("\t.LEVEL 1.0\n", FILE);				\
-  if (profile_flag)						\
-    ASM_OUTPUT_TYPE_DIRECTIVE (FILE, "_mcount", "function");	\
-  if (write_symbols != NO_DEBUG)				\
-    {								\
-      output_file_directive ((FILE), main_input_filename);	\
-      fputs ("\t.version\t\"01.01\"\n", FILE);			\
-    }								\
-} while (0)
+#undef TARGET_ASM_FILE_START
+#define TARGET_ASM_FILE_START pa_hpux64_gas_file_start
 
 /* This is how we output a null terminated string.  */
 #undef STRING_ASM_OP
-#define STRING_ASM_OP	"\t.stringz\t"
+#define STRING_ASM_OP        "\t.stringz\t"
 
-#define TEXT_SECTION_ASM_OP	"\t.text"
-#define DATA_SECTION_ASM_OP	"\t.data"
-#define BSS_SECTION_ASM_OP	"\t.section\t.bss"
+#define TEXT_SECTION_ASM_OP        "\t.text"
+#define DATA_SECTION_ASM_OP        "\t.data"
+#define BSS_SECTION_ASM_OP        "\t.section\t.bss"
 
-#define JCR_SECTION_NAME	".jcr"
+#define JCR_SECTION_NAME        ".jcr"
 
-#define HP_INIT_ARRAY_SECTION_ASM_OP	"\t.section\t.init"
-#define GNU_INIT_ARRAY_SECTION_ASM_OP	"\t.section\t.init_array"
-#define HP_FINI_ARRAY_SECTION_ASM_OP	"\t.section\t.fini"
-#define GNU_FINI_ARRAY_SECTION_ASM_OP	"\t.section\t.fini_array"
+#define HP_INIT_ARRAY_SECTION_ASM_OP        "\t.section\t.init"
+#define GNU_INIT_ARRAY_SECTION_ASM_OP        "\t.section\t.init_array"
+#define HP_FINI_ARRAY_SECTION_ASM_OP        "\t.section\t.fini"
+#define GNU_FINI_ARRAY_SECTION_ASM_OP        "\t.section\t.fini_array"
 
+/* We need to override the following two macros defined in elfos.h since
+   the .comm directive has a different syntax and it can't be used for
+   local common symbols.  */
 #undef ASM_OUTPUT_ALIGNED_COMMON
-#define ASM_OUTPUT_ALIGNED_COMMON(FILE, NAME, SIZE, ALIGN)		\
-do {									\
-  bss_section ();							\
-  assemble_name ((FILE), (NAME));					\
-  fputs ("\t.comm ", (FILE));						\
-  fprintf ((FILE), "%d\n", MAX ((SIZE), ((ALIGN) / BITS_PER_UNIT)));	\
-} while (0)
+#define ASM_OUTPUT_ALIGNED_COMMON(FILE, NAME, SIZE, ALIGN)                \
+  pa_asm_output_aligned_common (FILE, NAME, SIZE, ALIGN)
 
 #undef ASM_OUTPUT_ALIGNED_LOCAL
-#define ASM_OUTPUT_ALIGNED_LOCAL(FILE, NAME, SIZE, ALIGN)		\
-do {									\
-  bss_section ();							\
-  fprintf ((FILE), "\t.align %d\n", ((ALIGN) / BITS_PER_UNIT));		\
-  assemble_name ((FILE), (NAME));					\
-  fprintf ((FILE), "\n\t.block %d\n", (SIZE));				\
-} while (0)
+#define ASM_OUTPUT_ALIGNED_LOCAL(FILE, NAME, SIZE, ALIGN)                \
+  pa_asm_output_aligned_local (FILE, NAME, SIZE, ALIGN)
 
 /* The define in pa.h doesn't work with the alias attribute.  The
    default is ok with the following define for GLOBAL_ASM_OP.  */
 #undef TARGET_ASM_GLOBALIZE_LABEL
 
 /* This is how we globalize a label.  */
-#define GLOBAL_ASM_OP	"\t.globl\t"
+#define GLOBAL_ASM_OP        "\t.globl\t"
+
+/* Hacked version from defaults.h that uses assemble_name_raw
+   instead of assemble_name.  A symbol in a type directive that
+   isn't otherwise referenced doesn't cause the symbol to be
+   placed in the symbol table of the assembled object.  */
+#undef ASM_OUTPUT_TYPE_DIRECTIVE
+#define ASM_OUTPUT_TYPE_DIRECTIVE(STREAM, NAME, TYPE)                \
+do {                                                                \
+  fputs (TYPE_ASM_OP, STREAM);                                        \
+  assemble_name_raw (STREAM, NAME);                                \
+  fputs (", ", STREAM);                                                \
+  fprintf (STREAM, TYPE_OPERAND_FMT, TYPE);                        \
+  putc ('\n', STREAM);                                                \
+} while (0)
 
 /* Hacked version from elfos.h that doesn't output a label.  */
 #undef ASM_DECLARE_FUNCTION_NAME
-#define ASM_DECLARE_FUNCTION_NAME(FILE, NAME, DECL)		\
-do {								\
-  ASM_OUTPUT_TYPE_DIRECTIVE (FILE, NAME, "function");		\
-  ASM_DECLARE_RESULT (FILE, DECL_RESULT (DECL));		\
+#define ASM_DECLARE_FUNCTION_NAME(FILE, NAME, DECL)                \
+do {                                                                \
+  ASM_OUTPUT_TYPE_DIRECTIVE (FILE, NAME, "function");                \
+  ASM_DECLARE_RESULT (FILE, DECL_RESULT (DECL));                \
 } while (0)
 
 /* The type of external references must be set correctly for the
    dynamic loader to work correctly.  This is equivalent to the
    HP assembler's .IMPORT directive but relates more directly to
    ELF object file types.  */
-#define ASM_OUTPUT_EXTERNAL(FILE, DECL, NAME)				\
-do {									\
-  int save_referenced;							\
-  save_referenced = TREE_SYMBOL_REFERENCED (DECL_ASSEMBLER_NAME (DECL));\
-  if (FUNCTION_NAME_P (NAME))						\
-    ASM_OUTPUT_TYPE_DIRECTIVE (FILE, NAME, "function");			\
-  else									\
-    ASM_OUTPUT_TYPE_DIRECTIVE (FILE, NAME, "object");			\
-  TREE_SYMBOL_REFERENCED (DECL_ASSEMBLER_NAME (DECL)) = save_referenced;\
+#define ASM_OUTPUT_EXTERNAL(FILE, DECL, NAME)                        \
+  pa_hpux_asm_output_external ((FILE), (DECL), (NAME))
+#define ASM_OUTPUT_EXTERNAL_REAL(FILE, DECL, NAME)                \
+do {                                                                \
+  if (FUNCTION_NAME_P (NAME))                                        \
+    ASM_OUTPUT_TYPE_DIRECTIVE (FILE, NAME, "function");                \
+  else                                                                \
+    ASM_OUTPUT_TYPE_DIRECTIVE (FILE, NAME, "object");                \
 } while (0)
 
 /* We need set the type for external libcalls.  Also note that not all
@@ -174,20 +212,16 @@ do {									\
    Thus, we also have to do the section encoding if it hasn't been done
    already.  */
 #undef ASM_OUTPUT_EXTERNAL_LIBCALL
-#define ASM_OUTPUT_EXTERNAL_LIBCALL(FILE, FUN)			\
-do {								\
-  if (!FUNCTION_NAME_P (XSTR (FUN, 0)))				\
-    hppa_encode_label (FUN);					\
-  ASM_OUTPUT_TYPE_DIRECTIVE (FILE, XSTR (FUN, 0), "function");	\
+#define ASM_OUTPUT_EXTERNAL_LIBCALL(FILE, FUN)                        \
+do {                                                                \
+  if (!FUNCTION_NAME_P (XSTR (FUN, 0)))                                \
+    hppa_encode_label (FUN);                                        \
+  ASM_OUTPUT_TYPE_DIRECTIVE (FILE, XSTR (FUN, 0), "function");        \
 } while (0)
 
 /* We need to use the HP style for internal labels.  */
-#undef  ASM_OUTPUT_INTERNAL_LABEL
-#define ASM_OUTPUT_INTERNAL_LABEL(FILE, PREFIX, NUM)	\
-  fprintf (FILE, "%c$%s%04d\n", (PREFIX)[0], (PREFIX) + 1, NUM)
-
 #undef ASM_GENERATE_INTERNAL_LABEL
-#define ASM_GENERATE_INTERNAL_LABEL(LABEL, PREFIX, NUM)	\
+#define ASM_GENERATE_INTERNAL_LABEL(LABEL, PREFIX, NUM)        \
   sprintf (LABEL, "*%c$%s%04ld", (PREFIX)[0], (PREFIX) + 1, (long)(NUM))
 
 #else /* USING_ELFOS_H */
@@ -209,37 +243,17 @@ do {								\
 /* This target uses the ELF object file format.  */
 #define OBJECT_FORMAT_ELF
 
-#undef ASM_FILE_START
-#define ASM_FILE_START(FILE)					\
-do {								\
-  if (TARGET_64BIT)						\
-    fputs("\t.LEVEL 2.0w\n", FILE);				\
-  else if (TARGET_PA_20)					\
-    fputs("\t.LEVEL 2.0\n", FILE);				\
-  else if (TARGET_PA_11)					\
-    fputs("\t.LEVEL 1.1\n", FILE);				\
-  else								\
-    fputs("\t.LEVEL 1.0\n", FILE);				\
-  fputs("\t.SPACE $PRIVATE$,SORT=16\n\
-\t.SUBSPA $DATA$,QUAD=1,ALIGN=8,ACCESS=31\n\
-\t.SUBSPA $BSS$,QUAD=1,ALIGN=8,ACCESS=31,ZERO,SORT=82\n\
-\t.SPACE $TEXT$,SORT=8\n\
-\t.SUBSPA $LIT$,QUAD=0,ALIGN=8,ACCESS=44\n\
-\t.SUBSPA $CODE$,QUAD=0,ALIGN=8,ACCESS=44,CODE_ONLY\n", FILE);	\
-  if (profile_flag)						\
-    fprintf (FILE, "\t.IMPORT _mcount, CODE\n");		\
-  if (write_symbols != NO_DEBUG)				\
-    output_file_directive ((FILE), main_input_filename);	\
-} while (0)
+#undef TARGET_ASM_FILE_START
+#define TARGET_ASM_FILE_START pa_hpux64_hpas_file_start
 
 #undef TEXT_SECTION_ASM_OP
-#define TEXT_SECTION_ASM_OP		"\t.SUBSPA $CODE$\n"
+#define TEXT_SECTION_ASM_OP                "\t.SUBSPA $CODE$\n"
 #undef READONLY_DATA_SECTION_ASM_OP
-#define READONLY_DATA_SECTION_ASM_OP	"\t.SUBSPA $LIT$\n"
+#define READONLY_DATA_SECTION_ASM_OP        "\t.SUBSPA $LIT$\n"
 #undef DATA_SECTION_ASM_OP
-#define DATA_SECTION_ASM_OP		"\t.SUBSPA $DATA$\n"
+#define DATA_SECTION_ASM_OP                "\t.SUBSPA $DATA$\n"
 #undef BSS_SECTION_ASM_OP
-#define BSS_SECTION_ASM_OP		"\t.SUBSPA $BSS$\n"
+#define BSS_SECTION_ASM_OP                "\t.SUBSPA $BSS$\n"
 
 /* We provide explicit defines for CTORS_SECTION_ASM_OP and
    DTORS_SECTION_ASM_OP since we don't yet have support for
@@ -269,11 +283,19 @@ do {								\
 /* The following STARTFILE_SPEC and ENDFILE_SPEC defines provide the
    magic needed to run initializers and finalizers.  */
 #undef STARTFILE_SPEC
+#if TARGET_HPUX_11_11
 #define STARTFILE_SPEC \
-  "%{!shared: %{!symbolic: crt0.o%s}} %{static:crtbeginT.o%s} \
-   %{!static:%{!shared:crtbegin.o%s} %{shared:crtbeginS.o%s}}"
+  "%{!shared: %{!symbolic: crt0%O%s} %{munix=95:unix95.o%s} \
+     %{!munix=93:%{!munix=95:unix98%O%s}}} %{static:crtbeginT%O%s} \
+   %{!static:%{!shared:crtbegin%O%s} %{shared:crtbeginS%O%s}}"
+#else
+#define STARTFILE_SPEC \
+  "%{!shared: %{!symbolic: crt0%O%s} %{munix=95:unix95%O%s}} \
+   %{static:crtbeginT%O%s} %{!static:%{!shared:crtbegin%O%s} \
+   %{shared:crtbeginS%O%s}}"
+#endif
 #undef ENDFILE_SPEC
-#define ENDFILE_SPEC "%{!shared:crtend.o%s} %{shared:crtendS.o%s}"
+#define ENDFILE_SPEC "%{!shared:crtend%O%s} %{shared:crtendS%O%s}"
 
 /* Since HP uses the .init and .fini sections for array initializers
    and finalizers, we need different defines for INIT_SECTION_ASM_OP
@@ -310,16 +332,7 @@ do {								\
    the array.  DT_FINI_ARRAY is supposed to be executed in the opposite
    order.
 
-   The second hack is stubs for __cxa_finalize and _Jv_RegisterClasses.
-   The HP implementation of undefined weak symbols is broken.  The linker
-   and dynamic loader both search for undefined weak symbols contrary the
-   generic System V ABI.  An undefined weak symbol should resolve to a
-   value of 0 rather than causing an error.  The prototypes for
-   __cxa_finalize and _Jv_RegisterClasses in crtstuff.c are weak when
-   weak is supported (GNU as), so in theory a strong define should override
-   the stub functions provided here.
-
-   The final hack is a set of plabels to implement the effect of
+   The second hack is a set of plabels to implement the effect of
    CRT_CALL_STATIC_FUNCTION.  HP-UX 11 only supports DI_INIT_ARRAY and
    DT_FINI_ARRAY and they put the arrays in .init and .fini, rather than
    in .init_array and .fini_array.  The standard defines for .init and
@@ -335,25 +348,6 @@ do {								\
    either using the linker +init command or a plabel, run before the
    initializers specified here.  */
 
-/* We need a __cxa_finalize stub if CRTSTUFFS_O is defined.  */
-#ifdef CRTSTUFFS_O
-#define PA_CXA_FINALIZE_STUB \
-extern void __cxa_finalize (void *) TARGET_ATTRIBUTE_WEAK;		\
-void									\
-__cxa_finalize (void *p __attribute__((unused))) {}
-#else
-#define PA_CXA_FINALIZE_STUB
-#endif
-
-/* We need a _Jv_RegisterClasses stub if JCR_SECTION_NAME is defined.  */
-#ifdef JCR_SECTION_NAME
-#define PA_JV_REGISTERCLASSES_STUB \
-void									\
-_Jv_RegisterClasses (void *p __attribute__((unused))) {}
-#else
-#define PA_JV_REGISTERCLASSES_STUB
-#endif
-
 /* We need to add frame_dummy to the initializer list if EH_FRAME_SECTION_NAME
    or JCR_SECTION_NAME is defined.  */
 #if defined(EH_FRAME_SECTION_NAME) || defined(JCR_SECTION_NAME)
@@ -362,46 +356,50 @@ _Jv_RegisterClasses (void *p __attribute__((unused))) {}
 #define PA_INIT_FRAME_DUMMY_ASM_OP ""
 #endif
 
-#define PA_INIT_FINI_HACK \
-static void __attribute__((used))					\
-__do_global_ctors_aux (void)						\
-{									\
-  func_ptr *p = __CTOR_LIST__;						\
-  while (*(p + 1))							\
-    p++;								\
-  for (; *p != (func_ptr) -1; p--)					\
-    (*p) ();								\
-}									\
-									\
-PA_CXA_FINALIZE_STUB							\
-PA_JV_REGISTERCLASSES_STUB						\
-									\
-asm (HP_INIT_ARRAY_SECTION_ASM_OP);					\
-asm (".dword P%__do_global_ctors_aux");					\
-asm (PA_INIT_FRAME_DUMMY_ASM_OP);					\
-asm (GNU_INIT_ARRAY_SECTION_ASM_OP);					\
-asm (".dword P%__do_global_ctors_aux");					\
-asm (PA_INIT_FRAME_DUMMY_ASM_OP);					\
-asm (HP_FINI_ARRAY_SECTION_ASM_OP);					\
-asm (".dword P%__do_global_dtors_aux");					\
-asm (GNU_FINI_ARRAY_SECTION_ASM_OP);					\
+/* The following hack sets up the .init, .init_array, .fini and
+   .fini_array sections.  */
+#define PA_CRTBEGIN_HACK \
+asm (TEXT_SECTION_ASM_OP);                                                \
+static void __attribute__((used))                                        \
+__do_global_ctors_aux (void)                                                \
+{                                                                        \
+  func_ptr *p = __CTOR_LIST__;                                                \
+  while (*(p + 1))                                                        \
+    p++;                                                                \
+  for (; *p != (func_ptr) -1; p--)                                        \
+    (*p) ();                                                                \
+}                                                                        \
+                                                                        \
+asm (HP_INIT_ARRAY_SECTION_ASM_OP);                                        \
+asm (".align 8");                                                        \
+asm (".dword P%__do_global_ctors_aux");                                        \
+asm (PA_INIT_FRAME_DUMMY_ASM_OP);                                        \
+asm (GNU_INIT_ARRAY_SECTION_ASM_OP);                                        \
+asm (".align 8");                                                        \
+asm (".dword P%__do_global_ctors_aux");                                        \
+asm (PA_INIT_FRAME_DUMMY_ASM_OP);                                        \
+asm (HP_FINI_ARRAY_SECTION_ASM_OP);                                        \
+asm (".align 8");                                                        \
+asm (".dword P%__do_global_dtors_aux");                                        \
+asm (GNU_FINI_ARRAY_SECTION_ASM_OP);                                        \
+asm (".align 8");                                                        \
 asm (".dword P%__do_global_dtors_aux")
 
 /* The following two variants of DTOR_LIST_BEGIN are identical to those
-   in crtstuff.c except for the addition of the above init-fini hack.  */
+   in crtstuff.c except for the addition of the above crtbegin hack.  */
 #ifdef DTORS_SECTION_ASM_OP
 #define DTOR_LIST_BEGIN \
-asm (DTORS_SECTION_ASM_OP);						\
-STATIC func_ptr __DTOR_LIST__[1]					\
-  __attribute__ ((aligned(sizeof(func_ptr))))				\
-  = { (func_ptr) (-1) };						\
-PA_INIT_FINI_HACK
+asm (DTORS_SECTION_ASM_OP);                                                \
+STATIC func_ptr __DTOR_LIST__[1]                                        \
+  __attribute__ ((aligned(sizeof(func_ptr))))                                \
+  = { (func_ptr) (-1) };                                                \
+PA_CRTBEGIN_HACK
 #else
 #define DTOR_LIST_BEGIN \
-STATIC func_ptr __DTOR_LIST__[1]					\
-  __attribute__ ((section(".dtors"), aligned(sizeof(func_ptr))))	\
-  = { (func_ptr) (-1) };						\
-PA_INIT_FINI_HACK
+STATIC func_ptr __DTOR_LIST__[1]                                        \
+  __attribute__ ((section(".dtors"), aligned(sizeof(func_ptr))))        \
+  = { (func_ptr) (-1) };                                                \
+PA_CRTBEGIN_HACK
 #endif
 
 /* If using HP ld do not call pxdb.  Use size as a program that does nothing
@@ -409,6 +407,15 @@ PA_INIT_FINI_HACK
    an interpreter.  */
 #define INIT_ENVIRONMENT "LD_PXDB=/usr/ccs/bin/size"
 
-/* The HPUX dynamic linker objects to weak symbols with no
-   definitions, so do not use them in gthr-posix.h.  */
+/* The HPUX dynamic linker objects to undefined weak symbols, so do
+   not use them in gthr-posix.h.  */
 #define GTHREAD_USE_WEAK 0
+
+/* We don't want undefined weak references to __register_frame_info,
+   __deregister_frame_info, _Jv_RegisterClasses and __cxa_finalize
+   introduced by crtbegin.o.  The GNU linker only resolves weak
+   references if they appear in a shared library.  Thus, it would be
+   impossible to create a static executable if the symbols were weak.
+   So, the best solution seems to be to make the symbols strong and
+   provide an archive library of empty stub functions.  */
+#define TARGET_ATTRIBUTE_WEAK

@@ -21,6 +21,530 @@ diff -c -3 -p -r1.1 -r1.3
 ! #define assert(exp)     ((void)0)
   
   #endif  /* NDEBUG */
+Index: functional
+===================================================================
+RCS file: /cvsroot/GxInclude/Vc71/Include/functional,v
+retrieving revision 1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
+*** functional	10 Jun 2003 16:12:29 -0000	1.1
+--- functional	21 Oct 2007 19:58:10 -0000	1.2
+*************** public:
+*** 353,359 ****
+  		}
+  
+  protected:
+! 	_Result (__cdecl *_Pfun)(_Arg);	// the function pointer
+  	};
+  
+  		// TEMPLATE CLASS pointer_to_binary_function
+--- 353,360 ----
+  		}
+  
+  protected:
+! 	typedef _Result (__cdecl *_PfunType)(_Arg);
+!         _PfunType _Pfun;  // the function pointer
+  	};
+  
+  		// TEMPLATE CLASS pointer_to_binary_function
+*************** public:
+*** 376,382 ****
+  		}
+  
+  protected:
+! 	_Result (__cdecl *_Pfun)(_Arg1, _Arg2);	// the function pointer
+  	};
+  
+  		// TEMPLATE FUNCTION ptr_fun
+--- 377,384 ----
+  		}
+  
+  protected:
+! 	typedef _Result (__cdecl *_PfunType)(_Arg1, _Arg2);
+!         _PfunType _Pfun;  // the function pointer
+  	};
+  
+  		// TEMPLATE FUNCTION ptr_fun
+Index: limits
+===================================================================
+RCS file: /cvsroot/GxInclude/Vc71/Include/limits,v
+retrieving revision 1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
+*** limits	10 Jun 2003 16:12:29 -0000	1.1
+--- limits	21 Oct 2007 19:58:10 -0000	1.2
+*************** struct _CRTIMP2 _Num_base
+*** 66,83 ****
+  	_STCONS(int, radix, 0);
+  	};
+  
+  		// TEMPLATE CLASS numeric_limits
+  template<class _Ty>
+  	class numeric_limits
+  		: public _Num_base
+  	{	// numeric limits for arbitrary type _Ty (say little or nothing)
+  public:
+! 	static _Ty (__cdecl min)() _THROW0()
+  		{	// return minimum value
+  		return (_Ty(0));
+  		}
+  
+! 	static _Ty (__cdecl max)() _THROW0()
+  		{	// return maximum value
+  		return (_Ty(0));
+  		}
+--- 66,84 ----
+  	_STCONS(int, radix, 0);
+  	};
+  
++ #define __GCCXML_AVOID_MACRO_EXPANSION
+  		// TEMPLATE CLASS numeric_limits
+  template<class _Ty>
+  	class numeric_limits
+  		: public _Num_base
+  	{	// numeric limits for arbitrary type _Ty (say little or nothing)
+  public:
+! 	static _Ty __cdecl min __GCCXML_AVOID_MACRO_EXPANSION() _THROW0()
+  		{	// return minimum value
+  		return (_Ty(0));
+  		}
+  
+! 	static _Ty __cdecl max __GCCXML_AVOID_MACRO_EXPANSION() _THROW0()
+  		{	// return maximum value
+  		return (_Ty(0));
+  		}
+*************** template<> class _CRTIMP2 numeric_limits
+*** 154,165 ****
+  public:
+  	typedef char _Ty;
+  
+! 	static _Ty (__cdecl min)() _THROW0()
+  		{	// return minimum value
+  		return (CHAR_MIN);
+  		}
+  
+! 	static _Ty (__cdecl max)() _THROW0()
+  		{	// return maximum value
+  		return (CHAR_MAX);
+  		}
+--- 155,166 ----
+  public:
+  	typedef char _Ty;
+  
+! 	static _Ty __cdecl min __GCCXML_AVOID_MACRO_EXPANSION() _THROW0()
+  		{	// return minimum value
+  		return (CHAR_MIN);
+  		}
+  
+! 	static _Ty __cdecl max __GCCXML_AVOID_MACRO_EXPANSION() _THROW0()
+  		{	// return maximum value
+  		return (CHAR_MAX);
+  		}
+*************** template<> class _CRTIMP2 numeric_limits
+*** 208,219 ****
+  public:
+  	typedef wchar_t _Ty;
+  
+! 	static _Ty (__cdecl min)() _THROW0()
+  		{	// return minimum value
+  		return ((_Ty)WCHAR_MIN);
+  		}
+  
+! 	static _Ty (__cdecl max)() _THROW0()
+  		{	// return maximum value
+  		return ((_Ty)WCHAR_MAX);
+  		}
+--- 209,220 ----
+  public:
+  	typedef wchar_t _Ty;
+  
+! 	static _Ty __cdecl min __GCCXML_AVOID_MACRO_EXPANSION() _THROW0()
+  		{	// return minimum value
+  		return ((_Ty)WCHAR_MIN);
+  		}
+  
+! 	static _Ty __cdecl max __GCCXML_AVOID_MACRO_EXPANSION() _THROW0()
+  		{	// return maximum value
+  		return ((_Ty)WCHAR_MAX);
+  		}
+*************** template<> class _CRTIMP2 numeric_limits
+*** 263,274 ****
+  public:
+  	typedef bool _Ty;
+  
+! 	static _Ty (__cdecl min)() _THROW0()
+  		{	// return minimum value
+  		return (false);
+  		}
+  
+! 	static _Ty (__cdecl max)() _THROW0()
+  		{	// return maximum value
+  		return (true);
+  		}
+--- 264,275 ----
+  public:
+  	typedef bool _Ty;
+  
+! 	static _Ty __cdecl min __GCCXML_AVOID_MACRO_EXPANSION() _THROW0()
+  		{	// return minimum value
+  		return (false);
+  		}
+  
+! 	static _Ty __cdecl max __GCCXML_AVOID_MACRO_EXPANSION() _THROW0()
+  		{	// return maximum value
+  		return (true);
+  		}
+*************** template<> class _CRTIMP2 numeric_limits
+*** 316,327 ****
+  public:
+  	typedef signed char _Ty;
+  
+! 	static _Ty (__cdecl min)() _THROW0()
+  		{	// return minimum value
+  		return (SCHAR_MIN);
+  		}
+  
+! 	static _Ty (__cdecl max)() _THROW0()
+  		{	// return maximum value
+  		return (SCHAR_MAX);
+  		}
+--- 317,328 ----
+  public:
+  	typedef signed char _Ty;
+  
+! 	static _Ty __cdecl min __GCCXML_AVOID_MACRO_EXPANSION() _THROW0()
+  		{	// return minimum value
+  		return (SCHAR_MIN);
+  		}
+  
+! 	static _Ty __cdecl max __GCCXML_AVOID_MACRO_EXPANSION() _THROW0()
+  		{	// return maximum value
+  		return (SCHAR_MAX);
+  		}
+*************** template<> class _CRTIMP2 numeric_limits
+*** 368,379 ****
+  public:
+  	typedef unsigned char _Ty;
+  
+! 	static _Ty (__cdecl min)() _THROW0()
+  		{	// return minimum value
+  		return (0);
+  		}
+  
+! 	static _Ty (__cdecl max)() _THROW0()
+  		{	// return maximum value
+  		return (UCHAR_MAX);
+  		}
+--- 369,380 ----
+  public:
+  	typedef unsigned char _Ty;
+  
+! 	static _Ty __cdecl min __GCCXML_AVOID_MACRO_EXPANSION() _THROW0()
+  		{	// return minimum value
+  		return (0);
+  		}
+  
+! 	static _Ty __cdecl max __GCCXML_AVOID_MACRO_EXPANSION() _THROW0()
+  		{	// return maximum value
+  		return (UCHAR_MAX);
+  		}
+*************** template<> class _CRTIMP2 numeric_limits
+*** 420,431 ****
+  public:
+  	typedef short _Ty;
+  
+! 	static _Ty (__cdecl min)() _THROW0()
+  		{	// return minimum value
+  		return (SHRT_MIN);
+  		}
+  
+! 	static _Ty (__cdecl max)() _THROW0()
+  		{	// return maximum value
+  		return (SHRT_MAX);
+  		}
+--- 421,432 ----
+  public:
+  	typedef short _Ty;
+  
+! 	static _Ty __cdecl min __GCCXML_AVOID_MACRO_EXPANSION() _THROW0()
+  		{	// return minimum value
+  		return (SHRT_MIN);
+  		}
+  
+! 	static _Ty __cdecl max __GCCXML_AVOID_MACRO_EXPANSION() _THROW0()
+  		{	// return maximum value
+  		return (SHRT_MAX);
+  		}
+*************** template<> class _CRTIMP2 numeric_limits
+*** 473,484 ****
+  public:
+  	typedef unsigned short _Ty;
+  
+! 	static _Ty (__cdecl min)() _THROW0()
+  		{	// return minimum value
+  		return (0);
+  		}
+  
+! 	static _Ty (__cdecl max)() _THROW0()
+  		{	// return maximum value
+  		return (USHRT_MAX);
+  		}
+--- 474,485 ----
+  public:
+  	typedef unsigned short _Ty;
+  
+! 	static _Ty __cdecl min __GCCXML_AVOID_MACRO_EXPANSION() _THROW0()
+  		{	// return minimum value
+  		return (0);
+  		}
+  
+! 	static _Ty __cdecl max __GCCXML_AVOID_MACRO_EXPANSION() _THROW0()
+  		{	// return maximum value
+  		return (USHRT_MAX);
+  		}
+*************** template<> class _CRTIMP2 numeric_limits
+*** 526,537 ****
+  public:
+  	typedef int _Ty;
+  
+! 	static _Ty (__cdecl min)() _THROW0()
+  		{	// return minimum value
+  		return (INT_MIN);
+  		}
+  
+! 	static _Ty (__cdecl max)() _THROW0()
+  		{	// return maximum value
+  		return (INT_MAX);
+  		}
+--- 527,538 ----
+  public:
+  	typedef int _Ty;
+  
+! 	static _Ty __cdecl min __GCCXML_AVOID_MACRO_EXPANSION() _THROW0()
+  		{	// return minimum value
+  		return (INT_MIN);
+  		}
+  
+! 	static _Ty __cdecl max __GCCXML_AVOID_MACRO_EXPANSION() _THROW0()
+  		{	// return maximum value
+  		return (INT_MAX);
+  		}
+*************** template<> class _CRTIMP2 numeric_limits
+*** 579,590 ****
+  public:
+  	typedef unsigned int _Ty;
+  
+! 	static _Ty (__cdecl min)() _THROW0()
+  		{	// return minimum value
+  		return (0);
+  		}
+  
+! 	static _Ty (__cdecl max)() _THROW0()
+  		{	// return maximum value
+  		return (UINT_MAX);
+  		}
+--- 580,591 ----
+  public:
+  	typedef unsigned int _Ty;
+  
+! 	static _Ty __cdecl min __GCCXML_AVOID_MACRO_EXPANSION() _THROW0()
+  		{	// return minimum value
+  		return (0);
+  		}
+  
+! 	static _Ty __cdecl max __GCCXML_AVOID_MACRO_EXPANSION() _THROW0()
+  		{	// return maximum value
+  		return (UINT_MAX);
+  		}
+*************** template<> class _CRTIMP2 numeric_limits
+*** 632,643 ****
+  public:
+  	typedef long _Ty;
+  
+! 	static _Ty (__cdecl min)() _THROW0()
+  		{	// return minimum value
+  		return (LONG_MIN);
+  		}
+  
+! 	static _Ty (__cdecl max)() _THROW0()
+  		{	// return maximum value
+  		return (LONG_MAX);
+  		}
+--- 633,644 ----
+  public:
+  	typedef long _Ty;
+  
+! 	static _Ty __cdecl min __GCCXML_AVOID_MACRO_EXPANSION() _THROW0()
+  		{	// return minimum value
+  		return (LONG_MIN);
+  		}
+  
+! 	static _Ty __cdecl max __GCCXML_AVOID_MACRO_EXPANSION() _THROW0()
+  		{	// return maximum value
+  		return (LONG_MAX);
+  		}
+*************** template<> class _CRTIMP2 numeric_limits
+*** 685,696 ****
+  public:
+  	typedef unsigned long _Ty;
+  
+! 	static _Ty (__cdecl min)() _THROW0()
+  		{	// return minimum value
+  		return (0);
+  		}
+  
+! 	static _Ty (__cdecl max)() _THROW0()
+  		{	// return maximum value
+  		return (ULONG_MAX);
+  		}
+--- 686,697 ----
+  public:
+  	typedef unsigned long _Ty;
+  
+! 	static _Ty __cdecl min __GCCXML_AVOID_MACRO_EXPANSION() _THROW0()
+  		{	// return minimum value
+  		return (0);
+  		}
+  
+! 	static _Ty __cdecl max __GCCXML_AVOID_MACRO_EXPANSION() _THROW0()
+  		{	// return maximum value
+  		return (ULONG_MAX);
+  		}
+*************** template<> class _CRTIMP2 numeric_limits
+*** 739,750 ****
+  public:
+  	typedef _LONGLONG _Ty;
+  
+! 	static _Ty (__cdecl min)() _THROW0()
+  		{	// return minimum value
+  		return (-_LLONG_MAX - _C2);
+  		}
+  
+! 	static _Ty (__cdecl max)() _THROW0()
+  		{	// return maximum value
+  		return (_LLONG_MAX);
+  		}
+--- 740,751 ----
+  public:
+  	typedef _LONGLONG _Ty;
+  
+! 	static _Ty __cdecl min __GCCXML_AVOID_MACRO_EXPANSION() _THROW0()
+  		{	// return minimum value
+  		return (-_LLONG_MAX - _C2);
+  		}
+  
+! 	static _Ty __cdecl max __GCCXML_AVOID_MACRO_EXPANSION() _THROW0()
+  		{	// return maximum value
+  		return (_LLONG_MAX);
+  		}
+*************** template<> class _CRTIMP2 numeric_limits
+*** 792,803 ****
+  public:
+  	typedef _ULONGLONG _Ty;
+  
+! 	static _Ty (__cdecl min)() _THROW0()
+  		{	// return minimum value
+  		return (0);
+  		}
+  
+! 	static _Ty (__cdecl max)() _THROW0()
+  		{	// return maximum value
+  		return (_ULLONG_MAX);
+  		}
+--- 793,804 ----
+  public:
+  	typedef _ULONGLONG _Ty;
+  
+! 	static _Ty __cdecl min __GCCXML_AVOID_MACRO_EXPANSION() _THROW0()
+  		{	// return minimum value
+  		return (0);
+  		}
+  
+! 	static _Ty __cdecl max __GCCXML_AVOID_MACRO_EXPANSION() _THROW0()
+  		{	// return maximum value
+  		return (_ULLONG_MAX);
+  		}
+*************** template<> class _CRTIMP2 numeric_limits
+*** 846,857 ****
+  public:
+  	typedef float _Ty;
+  
+! 	static _Ty (__cdecl min)() _THROW0()
+  		{	// return minimum value
+  		return (FLT_MIN);
+  		}
+  
+! 	static _Ty (__cdecl max)() _THROW0()
+  		{	// return maximum value
+  		return (FLT_MAX);
+  		}
+--- 847,858 ----
+  public:
+  	typedef float _Ty;
+  
+! 	static _Ty __cdecl min __GCCXML_AVOID_MACRO_EXPANSION() _THROW0()
+  		{	// return minimum value
+  		return (FLT_MIN);
+  		}
+  
+! 	static _Ty __cdecl max __GCCXML_AVOID_MACRO_EXPANSION() _THROW0()
+  		{	// return maximum value
+  		return (FLT_MAX);
+  		}
+*************** template<> class _CRTIMP2 numeric_limits
+*** 901,912 ****
+  public:
+  	typedef double _Ty;
+  
+! 	static _Ty (__cdecl min)() _THROW0()
+  		{	// return minimum value
+  		return (DBL_MIN);
+  		}
+  
+! 	static _Ty (__cdecl max)() _THROW0()
+  		{	// return maximum value
+  		return (DBL_MAX);
+  		}
+--- 902,913 ----
+  public:
+  	typedef double _Ty;
+  
+! 	static _Ty __cdecl min __GCCXML_AVOID_MACRO_EXPANSION() _THROW0()
+  		{	// return minimum value
+  		return (DBL_MIN);
+  		}
+  
+! 	static _Ty __cdecl max __GCCXML_AVOID_MACRO_EXPANSION() _THROW0()
+  		{	// return maximum value
+  		return (DBL_MAX);
+  		}
+*************** template<> class _CRTIMP2 numeric_limits
+*** 956,967 ****
+  public:
+  	typedef long double _Ty;
+  
+! 	static _Ty (__cdecl min)() _THROW0()
+  		{	// return minimum value
+  		return (LDBL_MIN);
+  		}
+  
+! 	static _Ty (__cdecl max)() _THROW0()
+  		{	// return maximum value
+  		return (LDBL_MAX);
+  		}
+--- 957,968 ----
+  public:
+  	typedef long double _Ty;
+  
+! 	static _Ty __cdecl min __GCCXML_AVOID_MACRO_EXPANSION() _THROW0()
+  		{	// return minimum value
+  		return (LDBL_MIN);
+  		}
+  
+! 	static _Ty __cdecl max __GCCXML_AVOID_MACRO_EXPANSION() _THROW0()
+  		{	// return maximum value
+  		return (LDBL_MAX);
+  		}
 Index: limits.h
 ===================================================================
 RCS file: /cvsroot/GxInclude/Vc71/Include/limits.h,v
@@ -138,6 +662,141 @@ diff -c -3 -p -r1.1 -r1.2
   
   // This include must occur below the definition of class type_info
   #include <stdexcpt.h>
+Index: valarray
+===================================================================
+RCS file: /cvsroot/GxInclude/Vc71/Include/valarray,v
+retrieving revision 1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
+*** valarray	10 Jun 2003 16:12:29 -0000	1.1
+--- valarray	21 Oct 2007 19:58:10 -0000	1.2
+***************
+*** 5,10 ****
+--- 5,12 ----
+  #include <cmath>
+  #include <xstddef>
+  
++ #define __GCCXML_AVOID_MACRO_EXPANSION
++ 
+  #pragma pack(push,8)
+  #pragma warning(push,3)
+  
+*************** public:
+*** 311,317 ****
+  		return (_Sum);
+  		}
+  
+! 	_Ty min() const
+  		{	// return smallest of all elements
+  		_Ty _Min = _Myptr[0];
+  		for (size_t _Idx = 0; ++_Idx < size(); )
+--- 313,319 ----
+  		return (_Sum);
+  		}
+  
+! 	_Ty min __GCCXML_AVOID_MACRO_EXPANSION() const
+  		{	// return smallest of all elements
+  		_Ty _Min = _Myptr[0];
+  		for (size_t _Idx = 0; ++_Idx < size(); )
+*************** public:
+*** 320,326 ****
+  		return (_Min);
+  		}
+  
+! 	_Ty max() const
+  		{	// return largest of all elements
+  		_Ty _Max = _Myptr[0];
+  		for (size_t _Idx = 0; ++_Idx < size(); )
+--- 322,328 ----
+  		return (_Min);
+  		}
+  
+! 	_Ty max __GCCXML_AVOID_MACRO_EXPANSION() const
+  		{	// return largest of all elements
+  		_Ty _Max = _Myptr[0];
+  		for (size_t _Idx = 0; ++_Idx < size(); )
+Index: vector
+===================================================================
+RCS file: /cvsroot/GxInclude/Vc71/Include/vector,v
+retrieving revision 1.2
+retrieving revision 1.3
+diff -c -3 -p -r1.2 -r1.3
+*** vector	22 Oct 2007 20:15:48 -0000	1.2
+--- vector	22 Oct 2007 20:17:45 -0000	1.3
+*************** public:
+*** 1051,1056 ****
+--- 1051,1058 ----
+  		: public _Vb_iter_base
+  		{	// iterator for nonmutable vector<bool>
+  	public:
++                 using _Vb_iter_base::_Myoff;
++                 using _Vb_iter_base::_Myptr;
+  		typedef random_access_iterator_tag iterator_category;
+  		typedef _Bool value_type;
+  		typedef _Dift difference_type;
+Index: xdebug
+===================================================================
+RCS file: /cvsroot/GxInclude/Vc71/Include/xdebug,v
+retrieving revision 1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
+*** xdebug	10 Jun 2003 16:12:29 -0000	1.1
+--- xdebug	21 Oct 2007 19:58:10 -0000	1.2
+*************** template<class _Ty>
+*** 57,63 ****
+--- 57,65 ----
+  	{	// delete from the debug CRT heap even if operator delete exists
+  	if (_Ptr != 0)
+  		{	// worth deleting
++ #if 0
+  		_Ptr->~_Ty();
++ #endif
+  		// delete as _NORMAL_BLOCK, not _CRT_BLOCK, since we might have
+  		// facets allocated by normal new.
+  		free(_Ptr);
+*************** public:
+*** 74,93 ****
+  	template<class _Other>
+  		struct rebind
+  		{	// convert _DebugHeapAllocator<_Ty> to _DebugHeapAllocator<_Other>
+! 		typedef typename _DebugHeapAllocator<_Other> other;
+  		};
+  
+! 	allocator<_Ty>::pointer allocate(allocator<_Ty>::size_type _Count, const void *)
+  		{	// allocate array of _Count elements, ignore hint
+  		return ((_Ty *)_NEW_CRT char[_Count * sizeof(_Ty)]);
+  		}
+  
+! 	allocator<_Ty>::pointer allocate(allocator<_Ty>::size_type _Count)
+  		{	// allocate array of _Count elements
+  		return ((_Ty *)_NEW_CRT char[_Count * sizeof(_Ty)]);
+  		}
+  
+! 	void deallocate(allocator<_Ty>::pointer _Ptr, allocator<_Ty>::size_type)
+  		{	// deallocate object at _Ptr, ignore size
+  		_DELETE_CRT_VEC(_Ptr);
+  		}
+--- 76,95 ----
+  	template<class _Other>
+  		struct rebind
+  		{	// convert _DebugHeapAllocator<_Ty> to _DebugHeapAllocator<_Other>
+! 		typedef _DebugHeapAllocator<_Other> other;
+  		};
+  
+! 	typename allocator<_Ty>::pointer allocate(typename allocator<_Ty>::size_type _Count, const void *)
+  		{	// allocate array of _Count elements, ignore hint
+  		return ((_Ty *)_NEW_CRT char[_Count * sizeof(_Ty)]);
+  		}
+  
+! 	typename allocator<_Ty>::pointer allocate(typename allocator<_Ty>::size_type _Count)
+  		{	// allocate array of _Count elements
+  		return ((_Ty *)_NEW_CRT char[_Count * sizeof(_Ty)]);
+  		}
+  
+! 	void deallocate(typename allocator<_Ty>::pointer _Ptr, typename allocator<_Ty>::size_type)
+  		{	// deallocate object at _Ptr, ignore size
+  		_DELETE_CRT_VEC(_Ptr);
+  		}
 Index: xlocale
 ===================================================================
 RCS file: /cvsroot/GxInclude/Vc71/Include/xlocale,v
@@ -183,6 +842,31 @@ diff -c -3 -p -r1.1 -r1.2
    #define _THROW(x, y)	throw x(y)
   
    #else /* _HAS_EXCEPTIONS */
+Index: xstring
+===================================================================
+RCS file: /cvsroot/GxInclude/Vc71/Include/xstring,v
+retrieving revision 1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
+*** xstring	10 Jun 2003 16:12:29 -0000	1.1
+--- xstring	21 Oct 2007 19:58:10 -0000	1.2
+*************** template<class _Elem,
+*** 1547,1553 ****
+  	class _Alloc>
+  	const typename basic_string<_Elem, _Traits, _Alloc>::size_type
+  		basic_string<_Elem, _Traits, _Alloc>::npos =
+! 			(basic_string<_Elem, _Traits, _Alloc>::size_type)(-1);
+  
+  template<class _Elem,
+  	class _Traits,
+--- 1547,1553 ----
+  	class _Alloc>
+  	const typename basic_string<_Elem, _Traits, _Alloc>::size_type
+  		basic_string<_Elem, _Traits, _Alloc>::npos =
+! 			(typename basic_string<_Elem, _Traits, _Alloc>::size_type)(-1);
+  
+  template<class _Elem,
+  	class _Traits,
 Index: yvals.h
 ===================================================================
 RCS file: /cvsroot/GxInclude/Vc71/Include/yvals.h,v

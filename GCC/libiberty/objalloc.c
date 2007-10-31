@@ -14,11 +14,11 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
-Foundation, 59 Temple Place - Suite 330,
-Boston, MA 02111-1307, USA.  */
+Foundation, 51 Franklin Street - Fifth Floor,
+Boston, MA 02110-1301, USA.  */
 
-#include "ansidecl.h"
 #include "config.h"
+#include "ansidecl.h"
 
 #include "objalloc.h"
 
@@ -30,17 +30,15 @@ Boston, MA 02111-1307, USA.  */
 #include <unixlib.h>
 #else
 
-#ifdef ANSI_PROTOTYPES
 /* Get a definition for size_t.  */
 #include <stddef.h>
-#endif
 
 #ifdef HAVE_STDLIB_H
 #include <stdlib.h>
 #else
 /* For systems with larger pointers than ints, this must be declared.  */
-extern PTR malloc PARAMS ((size_t));
-extern void free PARAMS ((PTR));
+extern PTR malloc (size_t);
+extern void free (PTR);
 #endif
 
 #endif
@@ -69,8 +67,8 @@ struct objalloc_chunk
 
 /* The aligned size of objalloc_chunk.  */
 
-#define CHUNK_HEADER_SIZE					\
-  ((sizeof (struct objalloc_chunk) + OBJALLOC_ALIGN - 1)	\
+#define CHUNK_HEADER_SIZE                                        \
+  ((sizeof (struct objalloc_chunk) + OBJALLOC_ALIGN - 1)        \
    &~ (OBJALLOC_ALIGN - 1))
 
 /* We ask for this much memory each time we create a chunk which is to
@@ -85,7 +83,7 @@ struct objalloc_chunk
 /* Create an objalloc structure.  */
 
 struct objalloc *
-objalloc_create ()
+objalloc_create (void)
 {
   struct objalloc *ret;
   struct objalloc_chunk *chunk;
@@ -114,9 +112,7 @@ objalloc_create ()
 /* Allocate space from an objalloc structure.  */
 
 PTR
-_objalloc_alloc (o, len)
-     struct objalloc *o;
-     unsigned long len;
+_objalloc_alloc (struct objalloc *o, unsigned long len)
 {
   /* We avoid confusion from zero sized objects by always allocating
      at least 1 byte.  */
@@ -139,7 +135,7 @@ _objalloc_alloc (o, len)
 
       ret = (char *) malloc (CHUNK_HEADER_SIZE + len);
       if (ret == NULL)
-	return NULL;
+        return NULL;
 
       chunk = (struct objalloc_chunk *) ret;
       chunk->next = (struct objalloc_chunk *) o->chunks;
@@ -155,7 +151,7 @@ _objalloc_alloc (o, len)
 
       chunk = (struct objalloc_chunk *) malloc (CHUNK_SIZE);
       if (chunk == NULL)
-	return NULL;
+        return NULL;
       chunk->next = (struct objalloc_chunk *) o->chunks;
       chunk->current_ptr = NULL;
 
@@ -171,8 +167,7 @@ _objalloc_alloc (o, len)
 /* Free an entire objalloc structure.  */
 
 void
-objalloc_free (o)
-     struct objalloc *o;
+objalloc_free (struct objalloc *o)
 {
   struct objalloc_chunk *l;
 
@@ -193,9 +188,7 @@ objalloc_free (o)
    recently allocated blocks.  */
 
 void
-objalloc_free_block (o, block)
-     struct objalloc *o;
-     PTR block;
+objalloc_free_block (struct objalloc *o, PTR block)
 {
   struct objalloc_chunk *p, *small;
   char *b = (char *) block;
@@ -206,16 +199,16 @@ objalloc_free_block (o, block)
   for (p = (struct objalloc_chunk *) o->chunks; p != NULL; p = p->next)
     {
       if (p->current_ptr == NULL)
-	{
-	  if (b > (char *) p && b < (char *) p + CHUNK_SIZE)
-	    break;
-	  small = p;
-	}
+        {
+          if (b > (char *) p && b < (char *) p + CHUNK_SIZE)
+            break;
+          small = p;
+        }
       else
-	{
-	  if (b == (char *) p + CHUNK_HEADER_SIZE)
-	    break;
-	}
+        {
+          if (b == (char *) p + CHUNK_HEADER_SIZE)
+            break;
+        }
     }
 
   /* If we can't find the chunk, the caller has made a mistake.  */
@@ -228,35 +221,35 @@ objalloc_free_block (o, block)
       struct objalloc_chunk *first;
 
       /* The block is in a chunk containing small objects.  We can
-	 free every chunk through SMALL, because they have certainly
-	 been allocated more recently.  After SMALL, we will not see
-	 any chunks containing small objects; we can free any big
-	 chunk if the current_ptr is greater than or equal to B.  We
-	 can then reset the new current_ptr to B.  */
+         free every chunk through SMALL, because they have certainly
+         been allocated more recently.  After SMALL, we will not see
+         any chunks containing small objects; we can free any big
+         chunk if the current_ptr is greater than or equal to B.  We
+         can then reset the new current_ptr to B.  */
 
       first = NULL;
       q = (struct objalloc_chunk *) o->chunks;
       while (q != p)
-	{
-	  struct objalloc_chunk *next;
+        {
+          struct objalloc_chunk *next;
 
-	  next = q->next;
-	  if (small != NULL)
-	    {
-	      if (small == q)
-		small = NULL;
-	      free (q);
-	    }
-	  else if (q->current_ptr > b)
-	    free (q);
-	  else if (first == NULL)
-	    first = q;
+          next = q->next;
+          if (small != NULL)
+            {
+              if (small == q)
+                small = NULL;
+              free (q);
+            }
+          else if (q->current_ptr > b)
+            free (q);
+          else if (first == NULL)
+            first = q;
 
-	  q = next;
-	}
+          q = next;
+        }
 
       if (first == NULL)
-	first = p;
+        first = p;
       o->chunks = (PTR) first;
 
       /* Now start allocating from this small block again.  */
@@ -279,18 +272,18 @@ objalloc_free_block (o, block)
 
       q = (struct objalloc_chunk *) o->chunks;
       while (q != p)
-	{
-	  struct objalloc_chunk *next;
+        {
+          struct objalloc_chunk *next;
 
-	  next = q->next;
-	  free (q);
-	  q = next;
-	}
+          next = q->next;
+          free (q);
+          q = next;
+        }
 
       o->chunks = (PTR) p;
 
       while (p->current_ptr != NULL)
-	p = p->next;
+        p = p->next;
 
       o->current_ptr = current_ptr;
       o->current_space = ((char *) p + CHUNK_SIZE) - current_ptr;

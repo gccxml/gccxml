@@ -1,6 +1,6 @@
 #!/bin/sh
 # Submit a problem report to a GNATS site.
-# Copyright (C) 1993, 2000, 2001, 2002 Free Software Foundation, Inc.
+# Copyright (C) 1993, 2000, 2001, 2002, 2003 Free Software Foundation, Inc.
 # Contributed by Brendan Kehoe (brendan@cygnus.com), based on a
 # version written by Heinz G. Seidl (hgs@cygnus.com).
 #
@@ -18,8 +18,8 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with GNU GNATS; see the file COPYING.  If not, write to
-# the Free Software Foundation, 59 Temple Place - Suite 330,
-# Boston, MA 02111-1307, USA.
+# the Free Software Foundation, 51 Franklin Street, Fifth Floor,
+# Boston, MA 02110-1301, USA.
 
 # The version of this send-pr.
 VERSION=3.113
@@ -31,7 +31,11 @@ SUBMITTER=net
 GNATS_ADDR=gcc-gnats@gcc.gnu.org
 
 # The default release for this host.
-DEFAULT_RELEASE="@gcc_version_full@"
+# We have to guess at what program_transform_name might have done.
+# "sed 1q" because neither "head -1" nor "head -n 1" is universal, argh.
+
+DEFAULT_GCC="`echo $0 | sed -e 's/bug//'`"
+DEFAULT_RELEASE="`$DEFAULT_GCC --version | sed 1q`"
 
 # The default organization.
 DEFAULT_ORGANIZATION=
@@ -79,28 +83,28 @@ else
 fi
 
 if [ @have_mktemp_command@ = yes ]; then
-	TEMP0=`mktemp $TMPDIR/poXXXXXX` || exit 1
-	TEMP=`mktemp $TMPDIR/pXXXXXX` || exit 1
-	BAD=`mktemp $TMPDIR/pbadXXXXXX` || exit 1
-	REF=`mktemp $TMPDIR/pfXXXXXX` || exit 1
-	REMOVE_TEMP="rm -f $TEMP0 $TEMP $BAD $REF"
+        TEMP0=`mktemp $TMPDIR/poXXXXXX` || exit 1
+        TEMP=`mktemp $TMPDIR/pXXXXXX` || exit 1
+        BAD=`mktemp $TMPDIR/pbadXXXXXX` || exit 1
+        REF=`mktemp $TMPDIR/pfXXXXXX` || exit 1
+        REMOVE_TEMP="rm -f $TEMP0 $TEMP $BAD $REF"
 else
-	TEMPD=$TMPDIR/pd$$
-	TEMP0=$TEMPD/po$$
-	TEMP=$TEMPD/p$$
-	BAD=$TEMPD/pbad$$
-	REF=$TEMPD/pf$$
-	mkdir $TEMPD || exit 1
-	REMOVE_TEMP="rm -rf $TEMPD"
+        TEMPD=$TMPDIR/pd$$
+        TEMP0=$TEMPD/po$$
+        TEMP=$TEMPD/p$$
+        BAD=$TEMPD/pbad$$
+        REF=$TEMPD/pf$$
+        mkdir $TEMPD || exit 1
+        REMOVE_TEMP="rm -rf $TEMPD"
 fi
 
 # find a user name
 if [ "$LOGNAME" = "" ]; then
-	if [ "$USER" != "" ]; then
-		LOGNAME="$USER"
-	else
-		LOGNAME="UNKNOWN"
-	fi
+        if [ "$USER" != "" ]; then
+                LOGNAME="$USER"
+        else
+                LOGNAME="UNKNOWN"
+        fi
 fi
 
 FROM="$LOGNAME"
@@ -158,26 +162,26 @@ SEVERITY_C=
 
 while [ $# -gt 0 ]; do
   case "$1" in
-    -r) ;; 		# Ignore for backward compat.
+    -r) ;;                 # Ignore for backward compat.
     -t | --to) if [ $# -eq 1 ]; then echo "$USAGE"; $REMOVE_TEMP; exit 1; fi
-	shift ; GNATS_ADDR="$1"
-	EXPLICIT_GNATS_ADDR=true
+        shift ; GNATS_ADDR="$1"
+        EXPLICIT_GNATS_ADDR=true
         ;;
     -f | --file) if [ $# -eq 1 ]; then echo "$USAGE"; $REMOVE_TEMP; exit 1; fi
-	shift ; IN_FILE="$1"
-	if [ "$IN_FILE" != "-" -a ! -r "$IN_FILE" ]; then
-	  echo "$COMMAND: cannot read $IN_FILE"
-	  $REMOVE_TEMP
-	  exit 1
-	fi
-	;;
+        shift ; IN_FILE="$1"
+        if [ "$IN_FILE" != "-" -a ! -r "$IN_FILE" ]; then
+          echo "$COMMAND: cannot read $IN_FILE"
+          $REMOVE_TEMP
+          exit 1
+        fi
+        ;;
     -b | --batch) BATCH=true ;;
     -c | --cc) if [ $# -eq 1 ]; then echo "$USAGE"; $REMOVE_TEMP; exit 1; fi
-	shift ; CC="$1"
-	;;
+        shift ; CC="$1"
+        ;;
     -s | --severity) if [ $# -eq 1 ]; then echo "$USAGE"; $REMOVE_TEMP; exit 1; fi
-	shift ; SEVERITY_C="$1"
-	;;
+        shift ; SEVERITY_C="$1"
+        ;;
     -p | -P | --print) PRINT=true ;;
     -L | --list) FORMAT=norm ;;
     -l | -CL | --lisp) FORMAT=lisp ;;
@@ -190,7 +194,7 @@ This is free software; see the source for copying conditions.  There is NO
 warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 EOF
-	$REMOVE_TEMP; exit 0 ;;
+        $REMOVE_TEMP; exit 0 ;;
     -*) echo "$USAGE" ; $REMOVE_TEMP; exit 1 ;;
     *) echo "$USAGE" ; $REMOVE_TEMP; exit 1
  esac
@@ -198,24 +202,24 @@ EOF
 done
 
 # spam does not need to be listed here
-CATEGORIES="ada bootstrap c++ c debug driver fortran inline-asm java libf2c libgcj libobjc libstdc++ middle-end objc optimization other preprocessor target web"
+CATEGORIES="ada bootstrap c++ c debug driver fortran inline-asm java libgcj libobjc libstdc++ middle-end objc other pch preprocessor rtl-optimization target tree-optimization web"
 
 case "$FORMAT" in
   lisp) echo "$CATEGORIES" | \
         awk 'BEGIN {printf "( "} {printf "(\"%s\") ",$0} END {printf ")\n"}'
-	$REMOVE_TEMP
+        $REMOVE_TEMP
         exit 0
         ;;
   norm) l=`echo "$CATEGORIES" | \
-	awk 'BEGIN {max = 0; } { if (length($0) > max) { max = length($0); } }
-	     END {print max + 1;}'`
-	c=`expr 70 / $l`
-	if [ $c -eq 0 ]; then c=1; fi
-	echo "$CATEGORIES" | \
+        awk 'BEGIN {max = 0; } { if (length($0) > max) { max = length($0); } }
+             END {print max + 1;}'`
+        c=`expr 70 / $l`
+        if [ $c -eq 0 ]; then c=1; fi
+        echo "$CATEGORIES" | \
         awk 'BEGIN {print "Known categories:"; i = 0 }
           { printf ("%-'$l'.'$l's", $0); if ((++i % '$c') == 0) { print "" } }
             END { print ""; }'
-	$REMOVE_TEMP
+        $REMOVE_TEMP
         exit 0
         ;;
 esac
@@ -288,15 +292,15 @@ SEND-PR:
 __EOF__
 
       # Format the categories so they fit onto lines.
-	l=`echo "$CATEGORIES" | \
-	awk 'BEGIN {max = 0; } { if (length($0) > max) { max = length($0); } }
-	     END {print max + 1;}'`
-	c=`expr 61 / $l`
-	if [ $c -eq 0 ]; then c=1; fi
-	echo "$CATEGORIES" | \
+        l=`echo "$CATEGORIES" | \
+        awk 'BEGIN {max = 0; } { if (length($0) > max) { max = length($0); } }
+             END {print max + 1;}'`
+        c=`expr 61 / $l`
+        if [ $c -eq 0 ]; then c=1; fi
+        echo "$CATEGORIES" | \
         awk 'BEGIN {printf "SEND-PR: "; i = 0 }
           { printf ("%-'$l'.'$l's", $0);
-	    if ((++i % '$c') == 0) { printf "\nSEND-PR: " } }
+            if ((++i % '$c') == 0) { printf "\nSEND-PR: " } }
             END { printf "\nSEND-PR:\n"; }' >> $file
 
       cat >> $file << __EOF__
@@ -309,21 +313,21 @@ X-send-pr-version: $VERSION
 X-GNATS-Notify: 
 
 
->Submitter-Id:	$SUBMITTER
->Originator:	$ORIGINATOR
->Organization:	${ORGANIZATION-$ORGANIZATION_C}
->Confidential:	no
+>Submitter-Id:        $SUBMITTER
+>Originator:        $ORIGINATOR
+>Organization:        ${ORGANIZATION-$ORGANIZATION_C}
+>Confidential:        no
 SEND-PR: Leave "Confidential" as "no"; all GCC PRs are public.
->Synopsis:	$SYNOPSIS_C
->Severity:	$SEVERITY_C
+>Synopsis:        $SYNOPSIS_C
+>Severity:        $SEVERITY_C
 SEND-PR: critical     GCC is completely not operational; no work-around known.
 SEND-PR: serious      GCC is not working properly; a work-around is possible.
 SEND-PR: non-critical Report indicates minor problem.
->Priority:	$PRIORITY_C
+>Priority:        $PRIORITY_C
 SEND-PR: medium       The problem should be solved in the next release.
 SEND-PR: low          The problem should be solve in a future release.
->Category:	$CATEGORY_C
->Class:		<[ doc-bug | accepts-illegal | rejects-legal | wrong-code | ice-on-legal-code| ice-on-illegal-code | pessimizes-code | sw-bug | change-request | support ] (one line)>
+>Category:        $CATEGORY_C
+>Class:                <[ doc-bug | accepts-illegal | rejects-legal | wrong-code | ice-on-legal-code| ice-on-illegal-code | pessimizes-code | sw-bug | change-request | support ] (one line)>
 SEND-PR: doc-bug          The documentation is incorrect.
 SEND-PR: accepts-illegal  GCC fails to reject erroneous code.
 SEND-PR: rejects-legal    GCC gives an error message for correct code.
@@ -335,22 +339,26 @@ SEND-PR: pessimizes-code     GCC misses an important optimization opportunity
 SEND-PR: sw-bug              Software bug of some other class than above
 SEND-PR: change-request      A feature in GCC is missing.
 SEND-PR: support             I need help with gcc.
->Release:	${DEFAULT_RELEASE-$RELEASE_C}
+>Release:        ${DEFAULT_RELEASE-$RELEASE_C}
 >Environment:
 `[ -n "$SYSTEM" ] && echo System: $SYSTEM`
 `[ -n "$ARCH" ] && echo Architecture: $ARCH`
 `[ -n "$MACHINE" ] && echo Machine: $MACHINE`
-	$ENVIRONMENT_C
+        $ENVIRONMENT_C
 host: @host@
 build: @build@
 target: @target@
+__EOF__
+      cat >> $file << \__EOF__
 configured with: @gcc_config_arguments@
+__EOF__
+      cat >> $file << __EOF__
 >Description:
-	$DESCRIPTION_C
+        $DESCRIPTION_C
 >How-To-Repeat:
-	$HOW_TO_REPEAT_C
+        $HOW_TO_REPEAT_C
 >Fix:
-	$FIX_C
+        $FIX_C
 __EOF__
     done
   fi
@@ -379,7 +387,7 @@ __EOF__
 fi
 
 #
-#	Check the enumeration fields
+#        Check the enumeration fields
 
 # This is a "sed-subroutine" with one keyword parameter 
 # (with workaround for Sun sed bug)
@@ -388,8 +396,8 @@ SED_CMD='
 /$PATTERN/{
 s|||
 s|<.*>||
-s|^[ 	]*||
-s|[ 	]*$||
+s|^[         ]*||
+s|[         ]*$||
 p
 q
 }'
@@ -436,7 +444,7 @@ while [ -z "$REQUEST_ID" ]; do
     if [ "$C" = "$CATEGORY" ]; then FOUND=true ; break ; fi
   done
   if [ -n "$FOUND" ]; then
-    CNT=`expr $CNT + 1`	
+    CNT=`expr $CNT + 1`        
   else
     if [ -z "$CATEGORY" ]; then
       echo "$COMMAND: you must include a Category: field in your report."
@@ -456,7 +464,7 @@ while [ -z "$REQUEST_ID" ]; do
   #
   # 6) Check that synopsis is not empty
   #
-  if grep "^>Synopsis:[ 	]*${SYNOPSIS_C}\$" $TEMP > /dev/null
+  if grep "^>Synopsis:[         ]*${SYNOPSIS_C}\$" $TEMP > /dev/null
   then
     echo "$COMMAND: Synopsis must not be empty."
   else
@@ -479,22 +487,22 @@ while [ -z "$REQUEST_ID" ]; do
     fi
     case "$input" in
       a*)
-	if [ -z "$BATCH" ]; then
-	  echo "$COMMAND: the problem report remains in $BAD and is not sent."
-	  REMOVE_TEMP="rm -f $TEMP0 $TEMP $REF"
-	  mv $TEMP $BAD
+        if [ -z "$BATCH" ]; then
+          echo "$COMMAND: the problem report remains in $BAD and is not sent."
+          REMOVE_TEMP="rm -f $TEMP0 $TEMP $REF"
+          mv $TEMP $BAD
         else
-	  echo "$COMMAND: the problem report is not sent."
-	fi
-	xs=1; exit
-	;;
+          echo "$COMMAND: the problem report is not sent."
+        fi
+        xs=1; exit
+        ;;
       e*)
         eval $EDIT $TEMP
-	continue 2
-	;;
+        continue 2
+        ;;
       s*)
-	break 2
-	;;
+        break 2
+        ;;
     esac
   done
 done
@@ -504,9 +512,9 @@ done
 # in Synopsis.
 #
 
-if grep '^Subject:[ 	]*$' $TEMP > /dev/null
+if grep '^Subject:[         ]*$' $TEMP > /dev/null
 then
-  SYNOPSIS=`grep '^>Synopsis:' $TEMP | sed -e 's/^>Synopsis:[ 	]*//'`
+  SYNOPSIS=`grep '^>Synopsis:' $TEMP | sed -e 's/^>Synopsis:[         ]*//'`
   ed -s $TEMP << __EOF__
 /^Subject:/s/:.*\$/: $SYNOPSIS/
 w
@@ -515,8 +523,8 @@ __EOF__
 fi
 
 #
-#	Remove comments and send the problem report
-#	(we have to use patterns, where the comment contains regex chars)
+#        Remove comments and send the problem report
+#        (we have to use patterns, where the comment contains regex chars)
 #
 # /^>Originator:/s;$ORIGINATOR;;
 sed  -e "

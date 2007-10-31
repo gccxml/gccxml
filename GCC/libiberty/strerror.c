@@ -2,9 +2,6 @@
    Written by Fred Fish.  fnf@cygnus.com
    This file is in the public domain.  --Per Bothner.  */
 
-#include "ansidecl.h"
-#include "libiberty.h"
-
 #include "config.h"
 
 #ifdef HAVE_SYS_ERRLIST
@@ -17,16 +14,19 @@
 #define sys_errlist sys_errlist__
 #endif
 
+#include "ansidecl.h"
+#include "libiberty.h"
+
 #include <stdio.h>
 #include <errno.h>
 
-/* BEGIN GCC-XML MODIFICATIONS (2005/12/13 15:35:04) */
+/* BEGIN GCC-XML MODIFICATIONS (2007/10/31 15:08:51) */
 /* VS8 defines sys_errlist inside stdlib.h so we need to include it
    inside this sys_errlist macro hack region.  */
 #if defined(_MSC_VER) && _MSC_VER >= 1400
 # include <stdlib.h>
 #endif
-/* END GCC-XML MODIFICATIONS (2005/12/13 15:35:04) */
+/* END GCC-XML MODIFICATIONS (2007/10/31 15:08:51) */
 
 #ifdef HAVE_SYS_ERRLIST
 #undef sys_nerr
@@ -51,7 +51,7 @@ extern PTR memset ();
 #  define MAX(a,b) ((a) > (b) ? (a) : (b))
 #endif
 
-static void init_error_tables PARAMS ((void));
+static void init_error_tables (void);
 
 /* Translation table for errno values.  See intro(2) in most UNIX systems
    Programmers Reference Manuals.
@@ -66,17 +66,17 @@ static void init_error_tables PARAMS ((void));
 
 struct error_info
 {
-  const int value;              /* The numeric value from <errno.h> */
-  const char *const name;       /* The equivalent symbolic value */
+  const int value;                /* The numeric value from <errno.h> */
+  const char *const name;        /* The equivalent symbolic value */
 #ifndef HAVE_SYS_ERRLIST
   const char *const msg;        /* Short message about this value */
 #endif
 };
 
 #ifndef HAVE_SYS_ERRLIST
-#   define ENTRY(value, name, msg)      {value, name, msg}
+#   define ENTRY(value, name, msg)        {value, name, msg}
 #else
-#   define ENTRY(value, name, msg)      {value, name}
+#   define ENTRY(value, name, msg)        {value, name}
 #endif
 
 static const struct error_info error_table[] =
@@ -111,7 +111,7 @@ static const struct error_info error_table[] =
 #if defined (ECHILD)
   ENTRY(ECHILD, "ECHILD", "No child processes"),
 #endif
-#if defined (EWOULDBLOCK)       /* Put before EAGAIN, sometimes aliased */
+#if defined (EWOULDBLOCK)        /* Put before EAGAIN, sometimes aliased */
   ENTRY(EWOULDBLOCK, "EWOULDBLOCK", "Operation would block"),
 #endif
 #if defined (EAGAIN)
@@ -470,6 +470,8 @@ static int num_error_names = 0;
 
 #ifndef HAVE_SYS_ERRLIST
 
+#define sys_nerr sys_nerr__
+#define sys_errlist sys_errlist__
 static int sys_nerr;
 static const char **sys_errlist;
 
@@ -479,7 +481,6 @@ extern int sys_nerr;
 extern char *sys_errlist[];
 
 #endif
-
 
 /*
 
@@ -510,7 +511,7 @@ BUGS
 */
 
 static void
-init_error_tables ()
+init_error_tables (void)
 {
   const struct error_info *eip;
   int nbytes;
@@ -591,7 +592,7 @@ symbolic name or message.
 */
 
 int
-errno_max ()
+errno_max (void)
 {
   int maxsize;
 
@@ -630,8 +631,7 @@ next call to @code{strerror}.
 */
 
 char *
-strerror (errnoval)
-  int errnoval;
+strerror (int errnoval)
 {
   const char *msg;
   static char buf[32];
@@ -670,7 +670,7 @@ strerror (errnoval)
   return (msg);
 }
 
-#endif  /* ! HAVE_STRERROR */
+#endif        /* ! HAVE_STRERROR */
 
 
 /*
@@ -697,8 +697,7 @@ valid until the next call to @code{strerrno}.
 */
 
 const char *
-strerrno (errnoval)
-  int errnoval;
+strerrno (int errnoval)
 {
   const char *name;
   static char buf[32];
@@ -745,8 +744,7 @@ to an errno value.  If no translation is found, returns 0.
 */
 
 int
-strtoerrno (name)
-     const char *name;
+strtoerrno (const char *name)
 {
   int errnoval = 0;
 
@@ -786,7 +784,7 @@ strtoerrno (name)
 #include <stdio.h>
 
 int
-main ()
+main (void)
 {
   int errn;
   int errnmax;

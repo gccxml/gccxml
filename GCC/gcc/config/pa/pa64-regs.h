@@ -1,22 +1,22 @@
-/* Configuration for GNU C-compiler for PA-RISC.
-   Copyright (C) 1999, 2000 Free Software Foundation, Inc.
+/* Configuration for GCC-compiler for PA-RISC.
+   Copyright (C) 1999, 2000, 2003, 2004 Free Software Foundation, Inc.
 
-This file is part of GNU CC.
+This file is part of GCC.
 
-GNU CC is free software; you can redistribute it and/or modify
+GCC is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation; either version 2, or (at your option)
 any later version.
 
-GNU CC is distributed in the hope that it will be useful,
+GCC is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with GNU CC; see the file COPYING.  If not, write to
-the Free Software Foundation, 59 Temple Place - Suite 330,
-Boston, MA 02111-1307, USA.  */
+along with GCC; see the file COPYING.  If not, write to
+the Free Software Foundation, 51 Franklin Street, Fifth Floor,
+Boston, MA 02110-1301, USA.  */
 
 /* Standard register usage.
 
@@ -39,32 +39,32 @@ Boston, MA 02111-1307, USA.  */
    anyway.  */
 
 #define FIRST_PSEUDO_REGISTER 61  /* 32 general regs + 28 fp regs +
-				     + 1 shift reg */
+                                     + 1 shift reg */
 
 /* 1 for registers that have pervasive standard uses
    and are not available for the register allocator.
 
    On the HP-PA, these are:
-   Reg 0	= 0 (hardware). However, 0 is used for condition code,
+   Reg 0        = 0 (hardware). However, 0 is used for condition code,
                   so is not fixed.
-   Reg 1	= ADDIL target/Temporary (hardware).
-   Reg 2	= Return Pointer
-   Reg 3	= Frame Pointer
-   Reg 4	= Frame Pointer (>8k varying frame with HP compilers only)
-   Reg 4-18	= Preserved Registers
-   Reg 19	= Linkage Table Register in HPUX 8.0 shared library scheme.
-   Reg 20-22	= Temporary Registers
-   Reg 23-26	= Temporary/Parameter Registers
-   Reg 27	= Global Data Pointer (hp)
-   Reg 28	= Temporary/Return Value register
-   Reg 29	= Temporary/Static Chain/Return Value register #2
-   Reg 30	= stack pointer
-   Reg 31	= Temporary/Millicode Return Pointer (hp)
+   Reg 1        = ADDIL target/Temporary (hardware).
+   Reg 2        = Return Pointer
+   Reg 3        = Frame Pointer
+   Reg 4        = Frame Pointer (>8k varying frame with HP compilers only)
+   Reg 4-18        = Preserved Registers
+   Reg 19        = Linkage Table Register in HPUX 8.0 shared library scheme.
+   Reg 20-22        = Temporary Registers
+   Reg 23-26        = Temporary/Parameter Registers
+   Reg 27        = Global Data Pointer (hp)
+   Reg 28        = Temporary/Return Value register
+   Reg 29        = Temporary/Static Chain/Return Value register #2
+   Reg 30        = stack pointer
+   Reg 31        = Temporary/Millicode Return Pointer (hp)
 
-   Freg 0-3	= Status Registers	-- Not known to the compiler.
-   Freg 4-7	= Arguments/Return Value
-   Freg 8-11	= Temporary Registers
-   Freg 12-21	= Preserved Registers
+   Freg 0-3        = Status Registers        -- Not known to the compiler.
+   Freg 4-7        = Arguments/Return Value
+   Freg 8-11        = Temporary Registers
+   Freg 12-21        = Preserved Registers
    Freg 22-31 = Temporary Registers
 
 */
@@ -74,12 +74,12 @@ Boston, MA 02111-1307, USA.  */
   0, 0, 0, 0, 0, 0, 0, 0, \
   0, 0, 0, 0, 0, 0, 0, 0, \
   0, 0, 0, 1, 0, 0, 1, 0, \
-  /* fp registers */	  \
+  /* fp registers */          \
   0, 0, 0, 0, 0, 0, 0, 0, \
   0, 0, 0, 0, 0, 0, 0, 0, \
   0, 0, 0, 0, 0, 0, 0, 0, \
-  0, 0, 0, 0,		  \
-  /* shift register */	  \
+  0, 0, 0, 0,                  \
+  /* shift register */          \
   0}
 
 /* 1 for registers not available across function calls.
@@ -93,24 +93,24 @@ Boston, MA 02111-1307, USA.  */
   0, 0, 0, 0, 0, 0, 0, 0, \
   0, 0, 0, 1, 1, 1, 1, 1, \
   1, 1, 1, 1, 1, 1, 1, 1, \
-  /* fp registers */	  \
+  /* fp registers */          \
   1, 1, 1, 1, 1, 1, 1, 1, \
   0, 0, 0, 0, 0, 0, 0, 0, \
   0, 0, 1, 1, 1, 1, 1, 1, \
-  1, 1, 1, 1, 		  \
+  1, 1, 1, 1,                   \
   /* shift register */    \
   1}
 
 #define CONDITIONAL_REGISTER_USAGE \
-{						\
-  int i;					\
+{                                                \
+  int i;                                        \
   if (TARGET_DISABLE_FPREGS || TARGET_SOFT_FLOAT)\
-    {						\
-      for (i = FP_REG_FIRST; i < FP_REG_LAST; i++)\
-	fixed_regs[i] = call_used_regs[i] = 1; 	\
-    }						\
-  if (flag_pic)					\
-    fixed_regs[PIC_OFFSET_TABLE_REGNUM] = 1;	\
+    {                                                \
+      for (i = FP_REG_FIRST; i <= FP_REG_LAST; i++)\
+        fixed_regs[i] = call_used_regs[i] = 1;         \
+    }                                                \
+  if (flag_pic)                                        \
+    fixed_regs[PIC_OFFSET_TABLE_REGNUM] = 1;        \
 }
 
 /* Allocate the call used registers first.  This should minimize
@@ -118,30 +118,26 @@ Boston, MA 02111-1307, USA.  */
    registers will generally not be allocated across a call).
 
    Experimentation has shown slightly better results by allocating
-   FP registers first.  
-
-   FP registers are ordered so that all L registers are selected before
-   R registers.  This works around a false dependency interlock on the
-   PA8000 when accessing the high and low parts of an FP register
-   independently.  */
+   FP registers first.  We allocate the caller-saved registers more
+   or less in reverse order to their allocation as arguments.  */
 
 #define REG_ALLOC_ORDER \
- {					\
-  /* caller-saved fp regs.  */		\
-  50, 51, 52, 53, 54, 55, 56, 57,	\
-  58, 59, 36, 37, 38, 39, 32, 33,	\
-  34, 35,				\
-  /* caller-saved general regs.  */	\
-  19, 20, 21, 22, 23, 24, 25, 26,	\
-  27, 28, 29, 31,  2,			\
-  /* callee-saved fp regs.  */		\
-  40, 41, 42, 43, 44, 45, 46, 47,	\
-  48, 49,				\
-  /* callee-saved general regs.  */	\
-   3,  4,  5,  6,  7,  8,  9, 10, 	\
-  11, 12, 13, 14, 15, 16, 17, 18,	\
-  /* special registers.  */		\
-   1, 30,  0, 60}
+ {                                        \
+  /* caller-saved fp regs.  */                \
+  50, 51, 52, 53, 54, 55, 56, 57,        \
+  58, 59, 39, 38, 37, 36, 35, 34,        \
+  33, 32,                                \
+  /* caller-saved general regs.  */        \
+  28, 31, 19, 20, 21, 22, 23, 24,        \
+  25, 26, 29,  2,                        \
+  /* callee-saved fp regs.  */                \
+  40, 41, 42, 43, 44, 45, 46, 47,        \
+  48, 49,                                \
+  /* callee-saved general regs.  */        \
+   3,  4,  5,  6,  7,  8,  9, 10,         \
+  11, 12, 13, 14, 15, 16, 17, 18,        \
+  /* special registers.  */                \
+   1, 27, 30,  0, 60}
 
 
 /* Return number of consecutive hard regs needed starting at reg REGNO
@@ -149,33 +145,48 @@ Boston, MA 02111-1307, USA.  */
    This is ordinarily the length in words of a value of mode MODE
    but can be less for certain modes in special long registers.
 
-   For PA64, GPRs and FPRs hold 64 bits worth (we ignore the 32bit
-   addressability of the FPRs).  ie, we pretend each register holds
-   precisely WORD_SIZE bits.  */
-#define HARD_REGNO_NREGS(REGNO, MODE)					\
-   ((GET_MODE_SIZE (MODE) + UNITS_PER_WORD - 1) / UNITS_PER_WORD)
+   For PA64, GPRs and FPRs hold 64 bits worth.  We ignore the 32-bit
+   addressability of the FPRs and pretend each register holds precisely
+   WORD_SIZE bits.  Note that SCmode values are placed in a single FPR.
+   Thus, any patterns defined to operate on these values would have to
+   use the 32-bit addressability of the FPR registers.  */
+#define HARD_REGNO_NREGS(REGNO, MODE)                                        \
+  ((GET_MODE_SIZE (MODE) + UNITS_PER_WORD - 1) / UNITS_PER_WORD)
+
+/* These are the valid FP modes.  */
+#define VALID_FP_MODE_P(MODE)                                                \
+  ((MODE) == SFmode || (MODE) == DFmode                                        \
+   || (MODE) == SCmode || (MODE) == DCmode                                \
+   || (MODE) == QImode || (MODE) == HImode || (MODE) == SImode                \
+   || (MODE) == DImode)
 
 /* Value is 1 if hard register REGNO can hold a value of machine-mode MODE.
    On the HP-PA, the cpu registers can hold any mode.  We
    force this to be an even register is it cannot hold the full mode.  */
 #define HARD_REGNO_MODE_OK(REGNO, MODE) \
-  ((REGNO) == 0								\
-   ? (MODE) == CCmode || (MODE) == CCFPmode				\
-   /* Make wide modes be in aligned registers.  */			\
-   : (GET_MODE_SIZE (MODE) <= UNITS_PER_WORD				\
-      || (GET_MODE_SIZE (MODE) <= 2 * UNITS_PER_WORD && ((REGNO) & 1) == 0)))
+  ((REGNO) == 0                                                                \
+   ? (MODE) == CCmode || (MODE) == CCFPmode                                \
+   /* Make wide modes be in aligned registers.  */                        \
+   : FP_REGNO_P (REGNO)                                                        \
+     ? (VALID_FP_MODE_P (MODE)                                                \
+        && (GET_MODE_SIZE (MODE) <= 8                                        \
+            || (GET_MODE_SIZE (MODE) == 16 && ((REGNO) & 1) == 0)        \
+            || (GET_MODE_SIZE (MODE) == 32 && ((REGNO) & 3) == 0)))        \
+   : (GET_MODE_SIZE (MODE) <= UNITS_PER_WORD                                \
+      || (GET_MODE_SIZE (MODE) == 2 * UNITS_PER_WORD                        \
+          && ((((REGNO) & 1) == 1 && (REGNO) <= 25) || (REGNO) == 28))        \
+      || (GET_MODE_SIZE (MODE) == 4 * UNITS_PER_WORD                        \
+          && ((REGNO) & 3) == 3 && (REGNO) <= 23)))
 
 /* How to renumber registers for dbx and gdb.
 
    Registers 0  - 31 remain unchanged.
 
-   Registers 32 - 60 are mapped to 72, 74, 76 ...
+   Registers 32 - 59 are mapped to 72, 74, 76 ...
 
-   Register 88 is mapped to 32.  */
-
+   Register 60 is mapped to 32.  */
 #define DBX_REGISTER_NUMBER(REGNO) \
-  ((REGNO) <= 31 ? (REGNO) :						\
-   ((REGNO) > 31 && (REGNO) <= 60 ? (REGNO - 32) * 2 + 72 : 32))
+  ((REGNO) <= 31 ? (REGNO) : ((REGNO) < 60 ? (REGNO - 32) * 2 + 72 : 32))
 
 /* We must not use the DBX register numbers for the DWARF 2 CFA column
    numbers because that maps to numbers beyond FIRST_PSEUDO_REGISTER.
@@ -207,11 +218,11 @@ Boston, MA 02111-1307, USA.  */
      fmpyadd and fmpysub are restricted.  */
 
 enum reg_class { NO_REGS, R1_REGS, GENERAL_REGS, FPUPPER_REGS, FP_REGS,
-		 GENERAL_OR_FP_REGS, SHIFT_REGS, ALL_REGS, LIM_REG_CLASSES};
+                 GENERAL_OR_FP_REGS, SHIFT_REGS, ALL_REGS, LIM_REG_CLASSES};
 
 #define N_REG_CLASSES (int) LIM_REG_CLASSES
 
-/* Give names of register classes as strings for dump file.   */
+/* Give names of register classes as strings for dump file.  */
 
 #define REG_CLASS_NAMES \
   {"NO_REGS", "R1_REGS", "GENERAL_REGS", "FPUPPER_REGS", "FP_REGS", \
@@ -222,15 +233,15 @@ enum reg_class { NO_REGS, R1_REGS, GENERAL_REGS, FPUPPER_REGS, FP_REGS,
    of length N_REG_CLASSES. Register 0, the "condition code" register,
    is in no class.  */
 
-#define REG_CLASS_CONTENTS	\
- {{0x00000000, 0x00000000},	/* NO_REGS */			\
-  {0x00000002, 0x00000000},	/* R1_REGS */			\
-  {0xfffffffe, 0x00000000},	/* GENERAL_REGS */		\
-  {0x00000000, 0x00000000},	/* FPUPPER_REGS */			\
-  {0x00000000, 0x0fffffff},	/* FP_REGS */			\
-  {0xfffffffe, 0x0fffffff},	/* GENERAL_OR_FP_REGS */	\
-  {0x00000000, 0x10000000},	/* SHIFT_REGS */		\
-  {0xfffffffe, 0x1fffffff}}	/* ALL_REGS */
+#define REG_CLASS_CONTENTS        \
+ {{0x00000000, 0x00000000},        /* NO_REGS */                        \
+  {0x00000002, 0x00000000},        /* R1_REGS */                        \
+  {0xfffffffe, 0x00000000},        /* GENERAL_REGS */                \
+  {0x00000000, 0x00000000},        /* FPUPPER_REGS */                        \
+  {0x00000000, 0x0fffffff},        /* FP_REGS */                        \
+  {0xfffffffe, 0x0fffffff},        /* GENERAL_OR_FP_REGS */        \
+  {0x00000000, 0x10000000},        /* SHIFT_REGS */                \
+  {0xfffffffe, 0x1fffffff}}        /* ALL_REGS */
 
 /* Defines invalid mode changes.
 
@@ -240,7 +251,7 @@ enum reg_class { NO_REGS, R1_REGS, GENERAL_REGS, FPUPPER_REGS, FP_REGS,
    we inhibit changes from SImode unless they are to a mode that is
    identical in size.  */
 
-#define CANNOT_CHANGE_MODE_CLASS(FROM, TO, CLASS)		\
+#define CANNOT_CHANGE_MODE_CLASS(FROM, TO, CLASS)                \
   ((FROM) == SImode && GET_MODE_SIZE (FROM) != GET_MODE_SIZE (TO)       \
    ? reg_classes_intersect_p (CLASS, FP_REGS) : 0)
 
@@ -248,28 +259,28 @@ enum reg_class { NO_REGS, R1_REGS, GENERAL_REGS, FPUPPER_REGS, FP_REGS,
    reg number REGNO.  This could be a conditional expression
    or could index an array.  */
 
-#define REGNO_REG_CLASS(REGNO)						\
-  ((REGNO) == 0 ? NO_REGS 						\
-   : (REGNO) == 1 ? R1_REGS						\
-   : (REGNO) < 32 ? GENERAL_REGS					\
-   : (REGNO) < 60 ? FP_REGS						\
+#define REGNO_REG_CLASS(REGNO)                                                \
+  ((REGNO) == 0 ? NO_REGS                                                 \
+   : (REGNO) == 1 ? R1_REGS                                                \
+   : (REGNO) < 32 ? GENERAL_REGS                                        \
+   : (REGNO) < 60 ? FP_REGS                                                \
    : SHIFT_REGS)
 
 
 /* Get reg_class from a letter such as appears in the machine description.  */
-/* Keep 'x' for backward compatibility with user asm.   */
+/* Keep 'x' for backward compatibility with user asm.  */
 #define REG_CLASS_FROM_LETTER(C) \
-  ((C) == 'f' ? FP_REGS :					\
-   (C) == 'y' ? FP_REGS :					\
-   (C) == 'x' ? FP_REGS :					\
-   (C) == 'q' ? SHIFT_REGS :					\
-   (C) == 'a' ? R1_REGS :					\
+  ((C) == 'f' ? FP_REGS :                                        \
+   (C) == 'y' ? FP_REGS :                                        \
+   (C) == 'x' ? FP_REGS :                                        \
+   (C) == 'q' ? SHIFT_REGS :                                        \
+   (C) == 'a' ? R1_REGS :                                        \
    (C) == 'Z' ? ALL_REGS : NO_REGS)
 
 
 /* Return the maximum number of consecutive registers
    needed to represent mode MODE in a register of class CLASS.  */
-#define CLASS_MAX_NREGS(CLASS, MODE)					\
+#define CLASS_MAX_NREGS(CLASS, MODE)                                        \
   ((GET_MODE_SIZE (MODE) + UNITS_PER_WORD - 1) / UNITS_PER_WORD)
 
 /* 1 if N is a possible register number for function argument passing.  */
@@ -292,7 +303,7 @@ enum reg_class { NO_REGS, R1_REGS, GENERAL_REGS, FPUPPER_REGS, FP_REGS,
  "%fr28", "%fr29",  "%fr30", "%fr31", "SAR"}
 
 #define ADDITIONAL_REGISTER_NAMES \
- {{"%cr11",88}}
+ {{"%cr11",60}}
 
 #define FP_SAVED_REG_LAST 49
 #define FP_SAVED_REG_FIRST 40

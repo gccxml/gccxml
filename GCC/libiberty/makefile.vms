@@ -20,14 +20,14 @@ CFLAGS=/noopt/debug/include=([],[-.include])/define=("const=")/warnings=disable=
 endif
 
 libiberty.olb: config.h alloca-conf.h $(OBJS)
-	purge
-	lib/create libiberty *.obj
+        purge
+        lib/create libiberty *.obj
 
 config.h: config.h-vms
-	$(CP) $< $@
+        $(CP) $< $@
 
 clean:
-	$$ purge
-	$(RM) config.h;
-	$(RM) *.obj;
-	$(RM) libiberty.olb;
+        $$ purge
+        $(RM) config.h;
+        $(RM) *.obj;
+        $(RM) libiberty.olb;

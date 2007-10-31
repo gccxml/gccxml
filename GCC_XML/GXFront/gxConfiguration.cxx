@@ -253,9 +253,9 @@ void gxConfiguration::AddArguments(std::vector<std::string>& arguments) const
                                     GCCXML_VERSION_MINOR*100 +
                                     GCCXML_VERSION_PATCH);
   arguments.push_back(version.str().c_str());
-  arguments.push_back("-D__GCCXML_GNUC__=3");
-  arguments.push_back("-D__GCCXML_GNUC_MINOR__=3");
-  arguments.push_back("-D__GCCXML_GNUC_PATCHLEVEL__=2");
+  arguments.push_back("-D__GCCXML_GNUC__=4");
+  arguments.push_back("-D__GCCXML_GNUC_MINOR__=2");
+  arguments.push_back("-D__GCCXML_GNUC_PATCHLEVEL__=1");
 
   // Add user arguments.
   for(std::vector<std::string>::const_iterator i=m_Arguments.begin();
@@ -1535,10 +1535,15 @@ bool gxConfiguration::FindFlagsGCC()
     INCLUDES = "-iwrapper\"" + supportPath + "/4.0\" " + INCLUDES;
     SPECIAL = "-include \"" + supportPath + "/4.0/gccxml_builtins.h\"";
     }
+  else if(MAJOR_VERSION == 4 && MINOR_VERSION >= 2)
+    {
+    INCLUDES = "-iwrapper\"" + supportPath + "/4.2\" " + INCLUDES;
+    SPECIAL = "-include \"" + supportPath + "/4.2/gccxml_builtins.h\"";
+    }
   else if(MAJOR_VERSION == 3 && MINOR_VERSION >= 4)
     {
     INCLUDES = "-iwrapper\"" + supportPath + "/3.4\" " + INCLUDES;
-    SPECIAL = "-include \"" + supportPath + "/3.4/gccxml_builtins.h\"";
+    SPECIAL = "-include \"gccxml_builtins.h\"";
     }
   else if(MAJOR_VERSION == 3 && MINOR_VERSION == 3)
     {
@@ -2363,6 +2368,9 @@ bool gxConfiguration::FindFlagsBCC55(const char* inBcc32)
 // mangling of #define symbols...
 #ifdef _WIN32
 #include <windows.h>
+#else
+#include <sys/types.h>
+#include <unistd.h>
 #endif
 
 //----------------------------------------------------------------------------

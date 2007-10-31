@@ -12,10 +12,10 @@ udivmodsi4(unsigned long num, unsigned long den, int modwanted)
   while (bit)
     {
       if (num >= den)
-	{
-	  num -= den;
-	  res |= bit;
-	}
+        {
+          num -= den;
+          res |= bit;
+        }
       bit >>=1;
       den >>=1;
     }

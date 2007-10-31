@@ -11,8 +11,7 @@ value 1).  If @var{valu} is zero, zero is returned.
 */
 
 int
-ffs (valu)
-  register int valu;
+ffs (register int valu)
 {
   register int bit;
 
@@ -20,7 +19,7 @@ ffs (valu)
     return 0;
 
   for (bit = 1; !(valu & 1); bit++)
-  	valu >>= 1;
+          valu >>= 1;
 
   return bit;
 }

@@ -21,8 +21,8 @@
 # 
 # You should have received a copy of the GNU General Public License
 # along with this program; see the file COPYING.  If not, write to
-# the Free Software Foundation, 59 Temple Place - Suite 330,
-# Boston, MA 02111-1307, USA.
+# the Free Software Foundation, 51 Franklin Street, Fifth Floor,
+# Boston, MA 02110-1301, USA.
 # 
 #    As a special exception, if you link this library with files
 #    compiled with GCC to produce an executable, this does not cause
@@ -35,42 +35,50 @@
 # .init sections.  Users may put any desired instructions in those
 # sections.
 
-	# Note - this macro is complemented by the FUNC_END macro
-	# in crtn.asm.  If you change this macro you must also change
-	# that macro match.
+#ifdef __ELF__
+#define TYPE(x) .type x,function
+#else
+#define TYPE(x)
+#endif
+
+        # Note - this macro is complemented by the FUNC_END macro
+        # in crtn.asm.  If you change this macro you must also change
+        # that macro match.
 .macro FUNC_START
 #ifdef __thumb__
-	.thumb
-	
-	push	{r4, r5, r6, r7, lr}
+        .thumb
+        
+        push        {r3, r4, r5, r6, r7, lr}
 #else
-	.arm
-	#  Create a stack frame and save any call-preserved registers
-	mov	ip, sp
-	stmdb	sp!, {r4, r5, r6, r7, r8, r9, sl, fp, ip, lr, pc}
-	sub	fp, ip, #4
+        .arm
+        #  Create a stack frame and save any call-preserved registers
+        mov        ip, sp
+        stmdb        sp!, {r3, r4, r5, r6, r7, r8, r9, sl, fp, ip, lr, pc}
+        sub        fp, ip, #4
 #endif
 .endm
-		
-	.file		"crti.asm"
+                
+        .file                "crti.asm"
 
-	.section	".init"
-	.align 2
-	.global	_init
+        .section        ".init"
+        .align 2
+        .global        _init
 #ifdef __thumb__
-	.thumb_func
+        .thumb_func
 #endif
+        TYPE(_init)
 _init:
-	FUNC_START
-	
-		
-	.section	".fini"
-	.align	2
-	.global	_fini
+        FUNC_START
+        
+                
+        .section        ".fini"
+        .align        2
+        .global        _fini
 #ifdef __thumb__
-	.thumb_func
+        .thumb_func
 #endif
+        TYPE(_fini)
 _fini:
-	FUNC_START
-	
+        FUNC_START
+        
 # end of crti.asm

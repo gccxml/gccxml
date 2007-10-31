@@ -9,4 +9,4 @@ INSTALL_LIBGCC = install-multilib
 LIBGCC = stmp-multilib
 
 tmpabi_symbol.c: $(srcdir)/config/cris/cris_abi_symbol.c
-	cp $(srcdir)/config/cris/cris_abi_symbol.c $@
+        cp $(srcdir)/config/cris/cris_abi_symbol.c $@

@@ -23,8 +23,8 @@
 ! 
 ! You should have received a copy of the GNU General Public License
 ! along with this program; see the file COPYING.  If not, write to
-! the Free Software Foundation, 59 Temple Place - Suite 330,
-! Boston, MA 02111-1307, USA.
+! the Free Software Foundation, 51 Franklin Street, Fifth Floor,
+! Boston, MA 02110-1301, USA.
 ! 
 !    As a special exception, if you link this library with files
 !    compiled with GCC to produce an executable, this does not cause
@@ -40,29 +40,29 @@
 ! This file is linked in before the Values-Xx.o files and also before
 ! crtbegin, with which perhaps it should be merged.
  
-	.file		"crti.s"
+        .file                "crti.s"
 
-	.section	".init"
-	.proc	022
-	.global	_init
-	.type	_init,#function
-	.align	4
+        .section        ".init"
+        .proc        022
+        .global        _init
+        .type        _init,#function
+        .align        4
 _init:
 #ifdef __sparcv9
-	save	%sp, -176, %sp
+        save        %sp, -176, %sp
 #else
-	save	%sp, -96, %sp
+        save        %sp, -96, %sp
 #endif
 
 
-	.section	".fini"
-	.proc	022
-	.global	_fini
-	.type	_fini,#function
-	.align	4
+        .section        ".fini"
+        .proc        022
+        .global        _fini
+        .type        _fini,#function
+        .align        4
 _fini:
 #ifdef __sparcv9
-	save	%sp, -176, %sp
+        save        %sp, -176, %sp
 #else
-	save	%sp, -96, %sp
+        save        %sp, -96, %sp
 #endif

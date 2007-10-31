@@ -16,23 +16,32 @@ for more details.
 
 You should have received a copy of the GNU General Public License
 along with GCC; see the file COPYING.  If not, write to the Free
-Software Foundation, 59 Temple Place - Suite 330, Boston, MA
-02111-1307, USA.  */
+Software Foundation, 51 Franklin Street - Fifth Floor, Boston, MA
+02110-1301, USA.  */
 
 /*
 
 @deftypefn Extension {const char*} make_relative_prefix (const char *@var{progname}, const char *@var{bin_prefix}, const char *@var{prefix})
 
-Given three strings @var{progname}, @var{bin_prefix}, @var{prefix}, return a string
-that gets to @var{prefix} starting with the directory portion of @var{progname} and
-a relative pathname of the difference between @var{bin_prefix} and @var{prefix}.
+Given three paths @var{progname}, @var{bin_prefix}, @var{prefix},
+return the path that is in the same position relative to
+@var{progname}'s directory as @var{prefix} is relative to
+@var{bin_prefix}.  That is, a string starting with the directory
+portion of @var{progname}, followed by a relative pathname of the
+difference between @var{bin_prefix} and @var{prefix}.
 
-For example, if @var{bin_prefix} is @code{/alpha/beta/gamma/gcc/delta}, @var{prefix}
-is @code{/alpha/beta/gamma/omega/}, and @var{progname} is @code{/red/green/blue/gcc},
-then this function will return @code{/red/green/blue/../../omega/}.
+If @var{progname} does not contain any directory separators,
+@code{make_relative_prefix} will search @env{PATH} to find a program
+named @var{progname}.  Also, if @var{progname} is a symbolic link,
+the symbolic link will be resolved.
 
-The return value is normally allocated via @code{malloc}.  If no relative prefix
-can be found, return @code{NULL}.
+For example, if @var{bin_prefix} is @code{/alpha/beta/gamma/gcc/delta},
+@var{prefix} is @code{/alpha/beta/gamma/omega/}, and @var{progname} is
+@code{/red/green/blue/gcc}, then this function will return
+@code{/red/green/blue/../../omega/}.
+
+The return value is normally allocated via @code{malloc}.  If no
+relative prefix can be found, return @code{NULL}.
 
 @end deftypefn
 
@@ -81,21 +90,19 @@ can be found, return @code{NULL}.
 #  define IS_DIR_SEPARATOR(ch) ((ch) == DIR_SEPARATOR)
 #else
 #  define IS_DIR_SEPARATOR(ch) \
-	(((ch) == DIR_SEPARATOR) || ((ch) == DIR_SEPARATOR_2))
+        (((ch) == DIR_SEPARATOR) || ((ch) == DIR_SEPARATOR_2))
 #endif
 
 #define DIR_UP ".."
 
-static char *save_string PARAMS ((const char *, int));
-static char **split_directories	PARAMS ((const char *, int *));
-static void free_split_directories PARAMS ((char **));
+static char *save_string (const char *, int);
+static char **split_directories        (const char *, int *);
+static void free_split_directories (char **);
 
 static char *
-save_string (s, len)
-     const char *s;
-     int len;
+save_string (const char *s, int len)
 {
-  char *result = malloc (len + 1);
+  char *result = (char *) malloc (len + 1);
 
   memcpy (result, s, len);
   result[len] = 0;
@@ -105,9 +112,7 @@ save_string (s, len)
 /* Split a filename into component directories.  */
 
 static char **
-split_directories (name, ptr_num_dirs)
-     const char *name;
-     int *ptr_num_dirs;
+split_directories (const char *name, int *ptr_num_dirs)
 {
   int num_dirs = 0;
   char **dirs;
@@ -128,11 +133,11 @@ split_directories (name, ptr_num_dirs)
   while ((ch = *p++) != '\0')
     {
       if (IS_DIR_SEPARATOR (ch))
-	{
-	  num_dirs++;
-	  while (IS_DIR_SEPARATOR (*p))
-	    p++;
-	}
+        {
+          num_dirs++;
+          while (IS_DIR_SEPARATOR (*p))
+            p++;
+        }
     }
 
   dirs = (char **) malloc (sizeof (char *) * (num_dirs + 2));
@@ -147,10 +152,10 @@ split_directories (name, ptr_num_dirs)
     {
       dirs[num_dirs++] = save_string (p, 3);
       if (dirs[num_dirs - 1] == NULL)
-	{
-	  free (dirs);
-	  return NULL;
-	}
+        {
+          free (dirs);
+          return NULL;
+        }
       p += 3;
     }
 #endif /* HAVE_DOS_BASED_FILE_SYSTEM */
@@ -159,19 +164,19 @@ split_directories (name, ptr_num_dirs)
   while ((ch = *p++) != '\0')
     {
       if (IS_DIR_SEPARATOR (ch))
-	{
-	  while (IS_DIR_SEPARATOR (*p))
-	    p++;
+        {
+          while (IS_DIR_SEPARATOR (*p))
+            p++;
 
-	  dirs[num_dirs++] = save_string (q, p - q);
-	  if (dirs[num_dirs - 1] == NULL)
-	    {
-	      dirs[num_dirs] = NULL;
-	      free_split_directories (dirs);
-	      return NULL;
-	    }
-	  q = p;
-	}
+          dirs[num_dirs++] = save_string (q, p - q);
+          if (dirs[num_dirs - 1] == NULL)
+            {
+              dirs[num_dirs] = NULL;
+              free_split_directories (dirs);
+              return NULL;
+            }
+          q = p;
+        }
     }
 
   if (p - 1 - q > 0)
@@ -192,8 +197,7 @@ split_directories (name, ptr_num_dirs)
 /* Release storage held by split directories.  */
 
 static void
-free_split_directories (dirs)
-     char **dirs;
+free_split_directories (char **dirs)
 {
   int i = 0;
 
@@ -214,90 +218,86 @@ free_split_directories (dirs)
    If no relative prefix can be found, return NULL.  */
 
 char *
-make_relative_prefix (progname, bin_prefix, prefix)
-     const char *progname;
-     const char *bin_prefix;
-     const char *prefix;
+make_relative_prefix (const char *progname,
+                      const char *bin_prefix, const char *prefix)
 {
   char **prog_dirs, **bin_dirs, **prefix_dirs;
   int prog_num, bin_num, prefix_num;
   int i, n, common;
   int needed_len;
-  char *ret, *ptr;
+  char *ret, *ptr, *full_progname = NULL;
 
   if (progname == NULL || bin_prefix == NULL || prefix == NULL)
     return NULL;
 
-  prog_dirs = split_directories (progname, &prog_num);
-  bin_dirs = split_directories (bin_prefix, &bin_num);
-  if (bin_dirs == NULL || prog_dirs == NULL)
-    return NULL;
-
   /* If there is no full pathname, try to find the program by checking in each
      of the directories specified in the PATH environment variable.  */
-  if (prog_num == 1)
+  if (lbasename (progname) == progname)
     {
       char *temp;
 
       temp = getenv ("PATH");
       if (temp)
-	{
-	  char *startp, *endp, *nstore;
-	  size_t prefixlen = strlen (temp) + 1;
-	  if (prefixlen < 2)
-	    prefixlen = 2;
+        {
+          char *startp, *endp, *nstore;
+          size_t prefixlen = strlen (temp) + 1;
+          if (prefixlen < 2)
+            prefixlen = 2;
 
-	  nstore = (char *) alloca (prefixlen + strlen (progname) + 1);
+          nstore = (char *) alloca (prefixlen + strlen (progname) + 1);
 
-	  startp = endp = temp;
-	  while (1)
-	    {
-	      if (*endp == PATH_SEPARATOR || *endp == 0)
-		{
-		  if (endp == startp)
-		    {
-		      nstore[0] = '.';
-		      nstore[1] = DIR_SEPARATOR;
-		      nstore[2] = '\0';
-		    }
-		  else
-		    {
-		      strncpy (nstore, startp, endp - startp);
-		      if (! IS_DIR_SEPARATOR (endp[-1]))
-			{
-			  nstore[endp - startp] = DIR_SEPARATOR;
-			  nstore[endp - startp + 1] = 0;
-			}
-		      else
-			nstore[endp - startp] = 0;
-		    }
-		  strcat (nstore, progname);
-		  if (! access (nstore, X_OK)
+          startp = endp = temp;
+          while (1)
+            {
+              if (*endp == PATH_SEPARATOR || *endp == 0)
+                {
+                  if (endp == startp)
+                    {
+                      nstore[0] = '.';
+                      nstore[1] = DIR_SEPARATOR;
+                      nstore[2] = '\0';
+                    }
+                  else
+                    {
+                      strncpy (nstore, startp, endp - startp);
+                      if (! IS_DIR_SEPARATOR (endp[-1]))
+                        {
+                          nstore[endp - startp] = DIR_SEPARATOR;
+                          nstore[endp - startp + 1] = 0;
+                        }
+                      else
+                        nstore[endp - startp] = 0;
+                    }
+                  strcat (nstore, progname);
+                  if (! access (nstore, X_OK)
 #ifdef HAVE_HOST_EXECUTABLE_SUFFIX
                       || ! access (strcat (nstore, HOST_EXECUTABLE_SUFFIX), X_OK)
 #endif
-		      )
-		    {
-		      free_split_directories (prog_dirs);
-		      progname = nstore;
-		      prog_dirs = split_directories (progname, &prog_num);
-		      if (prog_dirs == NULL)
-			{
-			  free_split_directories (bin_dirs);
-			  return NULL;
-			}
-		      break;
-		    }
+                      )
+                    {
+                      progname = nstore;
+                      break;
+                    }
 
-		  if (*endp == 0)
-		    break;
-		  endp = startp = endp + 1;
-		}
-	      else
-		endp++;
-	    }
-	}
+                  if (*endp == 0)
+                    break;
+                  endp = startp = endp + 1;
+                }
+              else
+                endp++;
+            }
+        }
     }
+
+  full_progname = lrealpath (progname);
+  if (full_progname == NULL)
+    return NULL;
+
+  prog_dirs = split_directories (full_progname, &prog_num);
+  bin_dirs = split_directories (bin_prefix, &bin_num);
+  free (full_progname);
+  if (bin_dirs == NULL || prog_dirs == NULL)
+    return NULL;
 
   /* Remove the program name from comparison of directory names.  */
   prog_num--;
@@ -309,18 +309,18 @@ make_relative_prefix (progname, bin_prefix, prefix)
   if (prog_num == bin_num)
     {
       for (i = 0; i < bin_num; i++)
-	{
-	  if (strcmp (prog_dirs[i], bin_dirs[i]) != 0)
-	    break;
-	}
+        {
+          if (strcmp (prog_dirs[i], bin_dirs[i]) != 0)
+            break;
+        }
 
       if (prog_num <= 0 || i == bin_num)
-	{
-	  free_split_directories (prog_dirs);
-	  free_split_directories (bin_dirs);
-	  prog_dirs = bin_dirs = (char **) 0;
-	  return NULL;
-	}
+        {
+          free_split_directories (prog_dirs);
+          free_split_directories (bin_dirs);
+          prog_dirs = bin_dirs = (char **) 0;
+          return NULL;
+        }
     }
 
   prefix_dirs = split_directories (prefix, &prefix_num);
@@ -336,7 +336,7 @@ make_relative_prefix (progname, bin_prefix, prefix)
   for (common = 0; common < n; common++)
     {
       if (strcmp (bin_dirs[common], prefix_dirs[common]) != 0)
-	break;
+        break;
     }
 
   /* If there are no common directories, there can be no relative prefix.  */

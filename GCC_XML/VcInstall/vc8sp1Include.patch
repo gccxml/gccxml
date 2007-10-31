@@ -1,3 +1,55 @@
+Index: algorithm
+===================================================================
+RCS file: /cvsroot/GxInclude/Vc8sp1/Include/algorithm,v
+retrieving revision 1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
+*** algorithm	13 Feb 2007 15:03:08 -0000	1.1
+--- algorithm	10 Oct 2007 14:52:29 -0000	1.2
+***************
+*** 11,16 ****
+--- 11,51 ----
+   #pragma warning(disable: 4244)
+  #endif  /* _MSC_VER */
+  
++ /* ------------------------------------------------------------------------ */
++ /* Forward declare these now because they are used as non-dependent names.  */
++ _STDEXT_BEGIN
++ template<class _InIt, class _OutIt, class _Ty>
++ inline _OutIt unchecked_remove_copy(_InIt _First, _InIt _Last,
++                                     _OutIt _Dest, const _Ty& _Val);
++ template<class _InIt, class _OutIt, class _Pr>
++ inline _OutIt unchecked_remove_copy_if(_InIt _First, _InIt _Last,
++                                        _OutIt _Dest, _Pr _Pred);
++ template<class _InIt1, class _InIt2, class _OutIt>
++ inline _OutIt unchecked_merge(_InIt1 _First1, _InIt1 _Last1,
++                               _InIt2 _First2, _InIt2 _Last2, _OutIt _Dest);
++ template<class _InIt1, class _InIt2, class _OutIt, class _Pr>
++ inline _OutIt unchecked_merge(_InIt1 _First1, _InIt1 _Last1,
++                               _InIt2 _First2, _InIt2 _Last2, _OutIt _Dest,
++                               _Pr _Pred);
++ template<class _BidIt1, class _BidIt2, class _BidIt3>
++ inline _BidIt3 _Unchecked_merge_backward(_BidIt1 _First1, _BidIt1 _Last1,
++                                          _BidIt2 _First2, _BidIt2 _Last2,
++                                          _BidIt3 _Dest);
++ template<class _BidIt1, class _BidIt2, class _BidIt3, class _Pr>
++ inline _BidIt3 _Unchecked_merge_backward(_BidIt1 _First1, _BidIt1 _Last1,
++                                          _BidIt2 _First2, _BidIt2 _Last2,
++                                          _BidIt3 _Dest, _Pr _Pred);
++ template<class _BidIt, class _OutIt, class _Diff>
++ inline void _Unchecked_chunked_merge(_BidIt _First, _BidIt _Last,
++                                      _OutIt _Dest, _Diff _Chunk,
++                                      _Diff _Count);
++ template<class _BidIt, class _OutIt, class _Diff, class _Pr>
++ inline void _Unchecked_chunked_merge(_BidIt _First, _BidIt _Last,
++                                      _OutIt _Dest, _Diff _Chunk,
++                                      _Diff _Count, _Pr _Pred);
++ _STDEXT_END
++ /* ------------------------------------------------------------------------ */
++ 
+  _STD_BEGIN
+  
+  		// COMMON SORT PARAMETERS
 Index: comdef.h
 ===================================================================
 RCS file: /cvsroot/GxInclude/Vc8sp1/Include/comdef.h,v
@@ -220,6 +272,24 @@ diff -c -3 -p -r1.1 -r1.2
   {
       _COM_ASSERT(m_Data != NULL && m_Data->RefCount() == 1);
   
+Index: crtdbg.h
+===================================================================
+RCS file: /cvsroot/GxInclude/Vc8sp1/Include/crtdbg.h,v
+retrieving revision 1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
+*** crtdbg.h	13 Feb 2007 15:03:08 -0000	1.1
+--- crtdbg.h	10 Oct 2007 14:52:53 -0000	1.2
+*************** should not have done so since it was not
+*** 589,594 ****
+--- 589,595 ----
+  
+  #if     _MSC_VER >= 1300 && !defined(_CRT_PORTABLE)
+  #define _CrtDbgBreak() __debugbreak()
++ extern void __cdecl __debugbreak(void);
+  #elif   defined(_M_IX86) && !defined(_CRT_PORTABLE)
+  #define _CrtDbgBreak() __asm { int 3 }
+  #elif   defined(_M_IA64) && !defined(_CRT_PORTABLE)
 Index: crtdefs.h
 ===================================================================
 RCS file: /cvsroot/GxInclude/Vc8sp1/Include/crtdefs.h,v
@@ -1065,6 +1135,65 @@ diff -c -3 -p -r1.1 -r1.2
   
   #ifdef _M_CEE
 --- 437,442 ----
+Index: iosfwd
+===================================================================
+RCS file: /cvsroot/GxInclude/Vc8sp1/Include/iosfwd,v
+retrieving revision 1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
+*** iosfwd	13 Feb 2007 15:03:08 -0000	1.1
+--- iosfwd	8 Oct 2007 21:29:22 -0000	1.2
+*************** struct _Secure_char_traits_tag
+*** 138,143 ****
+--- 138,185 ----
+  	{
+  	};
+  
++ /* ------------------------------------------------------------------------ */
++ /* Forward declare these now because they are used as non-dependent names.  */
++ 	namespace _Traits_helper
++ 	{
++ 		// TEMPLATE FUNCTION _Traits_helper::copy_s
++ 	template<class _Traits>
++ 	inline
++ 	typename _Traits::char_type *copy_s(typename _Traits::char_type *_First1, size_t _Size,
++ 		const typename _Traits::char_type *_First2, size_t _Count);
++ 
++ 	template<class _Traits>
++ 	inline
++ 	typename _Traits::char_type *copy_s(typename _Traits::char_type *_First1, size_t _Size,
++ 		const typename _Traits::char_type *_First2, size_t _Count, _Secure_char_traits_tag);
++ 
++ 	// If _SECURE_SCL is turned on, the user will get a deprecation warning when calling an unsecure _Traits::copy
++ 	template<class _Traits>
++ 	inline
++ 	_SCL_INSECURE_DEPRECATE
++ 	typename _Traits::char_type *copy_s(typename _Traits::char_type *_First1, size_t _Size,
++ 		const typename _Traits::char_type *_First2, size_t _Count, _Unsecure_char_traits_tag);
++ 
++ 		// TEMPLATE FUNCTION _Traits_helper::move_s
++ 	template<class _Traits>
++ 	inline
++ 	typename _Traits::char_type *move_s(typename _Traits::char_type *_First1, size_t _Size,
++ 		const typename _Traits::char_type *_First2, size_t _Count);
++ 
++ 	template<class _Traits>
++ 	inline
++ 	typename _Traits::char_type *move_s(typename _Traits::char_type *_First1, size_t _Size,
++ 		const typename _Traits::char_type *_First2, size_t _Count, _Secure_char_traits_tag);
++ 
++ 	// If _SECURE_SCL is turned on, the user will get a deprecation warning when calling an unsecure _Traits::copy
++ 	template<class _Traits>
++ 	inline
++ 	_SCL_INSECURE_DEPRECATE
++ 	typename _Traits::char_type *move_s(typename _Traits::char_type *_First1, size_t _Size,
++ 		const typename _Traits::char_type *_First2, size_t _Count, _Unsecure_char_traits_tag);
++ 	} // namespace _Traits_helper
++ /* ------------------------------------------------------------------------ */
++ 
+  		// TEMPLATE STRUCT _Char_traits_base
+  		// Used to define the Secure_char_traits tag. This typedef is used
+  		// only for user defined char_traits. A user defined char_traits should 
 Index: iostream
 ===================================================================
 RCS file: /cvsroot/GxInclude/Vc8sp1/Include/iostream,v
@@ -1142,6 +1271,54 @@ diff -c -3 -p -r1.1 -r1.2
   public:
   	typedef checked_iterator<_Cont, _Iter> _Myt;
   	typedef typename _STD iterator_traits<_Iter>::difference_type difference_type;
+Index: limits
+===================================================================
+RCS file: /cvsroot/GxInclude/Vc8sp1/Include/limits,v
+retrieving revision 1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
+*** limits	13 Feb 2007 15:03:08 -0000	1.1
+--- limits	10 Oct 2007 14:53:14 -0000	1.2
+*************** _STCONSDEF(_Num_base, int, min_exponent)
+*** 93,110 ****
+  _STCONSDEF(_Num_base, int, min_exponent10)
+  _STCONSDEF(_Num_base, int, radix)
+  
+  		// TEMPLATE CLASS numeric_limits
+  template<class _Ty>
+  	class numeric_limits
+  		: public _Num_base
+  	{	// numeric limits for arbitrary type _Ty (say little or nothing)
+  public:
+! 	static _Ty (__CRTDECL min)() _THROW0()
+  		{	// return minimum value
+  		return (_Ty(0));
+  		}
+  
+! 	static _Ty (__CRTDECL max)() _THROW0()
+  		{	// return maximum value
+  		return (_Ty(0));
+  		}
+--- 93,111 ----
+  _STCONSDEF(_Num_base, int, min_exponent10)
+  _STCONSDEF(_Num_base, int, radix)
+  
++ #define __GCCXML_AVOID_MACRO_EXPANSION
+  		// TEMPLATE CLASS numeric_limits
+  template<class _Ty>
+  	class numeric_limits
+  		: public _Num_base
+  	{	// numeric limits for arbitrary type _Ty (say little or nothing)
+  public:
+! 	static _Ty __CRTDECL min __GCCXML_AVOID_MACRO_EXPANSION() _THROW0()
+  		{	// return minimum value
+  		return (_Ty(0));
+  		}
+  
+! 	static _Ty __CRTDECL max __GCCXML_AVOID_MACRO_EXPANSION() _THROW0()
+  		{	// return maximum value
+  		return (_Ty(0));
+  		}
 Index: list
 ===================================================================
 RCS file: /cvsroot/GxInclude/Vc8sp1/Include/list,v
@@ -1211,6 +1388,33 @@ diff -c -3 -p -r1.1 -r1.2
   _CRTIMP double  __cdecl ceil(__in double _X);
   _CRTIMP double  __cdecl floor(__in double _X);
   _CRTIMP double  __cdecl frexp(__in double _X, __out int * _Y);
+Index: memory
+===================================================================
+RCS file: /cvsroot/GxInclude/Vc8sp1/Include/memory,v
+retrieving revision 1.1
+retrieving revision 1.3
+diff -c -3 -p -r1.1 -r1.3
+*** memory	13 Feb 2007 15:03:08 -0000	1.1
+--- memory	8 Oct 2007 21:40:49 -0000	1.3
+***************
+*** 11,16 ****
+--- 11,26 ----
+  #pragma warning(push,3)
+  #endif  /* _MSC_VER */
+  
++ /* ------------------------------------------------------------------------ */
++ /* Forward declare these now because they are used as non-dependent names.  */
++ _STDEXT_BEGIN
++ template<class _InIt, class _FwdIt>
++ inline _FwdIt unchecked_uninitialized_copy(_InIt _First, _InIt _Last, _FwdIt _Dest);
++ template<class _InIt, class _FwdIt, class _Alloc>
++ inline _FwdIt unchecked_uninitialized_copy(_InIt _First, _InIt _Last, _FwdIt _Dest, _Alloc& _Al);
++ _STDEXT_END
++ /* ------------------------------------------------------------------------ */
++ 
+  _STD_BEGIN
+  
+  		// TEMPLATE FUNCTION get_temporary_buffer
 Index: process.h
 ===================================================================
 RCS file: /cvsroot/GxInclude/Vc8sp1/Include/process.h,v
@@ -1321,10 +1525,10 @@ Index: vector
 ===================================================================
 RCS file: /cvsroot/GxInclude/Vc8sp1/Include/vector,v
 retrieving revision 1.1
-retrieving revision 1.2
-diff -c -3 -p -r1.1 -r1.2
+retrieving revision 1.3
+diff -c -3 -p -r1.1 -r1.3
 *** vector	13 Feb 2007 15:03:08 -0000	1.1
---- vector	13 Feb 2007 16:09:18 -0000	1.2
+--- vector	10 Oct 2007 14:53:35 -0000	1.3
 *************** public:
 *** 1402,1408 ****
   
@@ -1342,6 +1546,85 @@ diff -c -3 -p -r1.1 -r1.2
   		_Off += _VBITS * (this->_Myptr - _My_cont_begin());
   		return _Off;
   		}
+*************** public:
+*** 2169,2175 ****
+  
+  	void flip()
+  		{	// toggle all elements
+! 		for (_Vbtype::iterator _Next = _Myvec.begin();
+  			_Next != _Myvec.end(); ++_Next)
+  			*_Next = (_Vbase)~*_Next;
+  		_Trim(_Mysize);
+--- 2169,2175 ----
+  
+  	void flip()
+  		{	// toggle all elements
+! 		for (typename _Vbtype::iterator _Next = _Myvec.begin();
+  			_Next != _Myvec.end(); ++_Next)
+  			*_Next = (_Vbase)~*_Next;
+  		_Trim(_Mysize);
+Index: xdebug
+===================================================================
+RCS file: /cvsroot/GxInclude/Vc8sp1/Include/xdebug,v
+retrieving revision 1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
+*** xdebug	13 Feb 2007 15:03:08 -0000	1.1
+--- xdebug	10 Oct 2007 14:54:01 -0000	1.2
+*************** template<class _Ty>
+*** 55,61 ****
+--- 55,63 ----
+  	{	// delete from the debug CRT heap even if operator delete exists
+  	if (_Ptr != 0)
+  		{	// worth deleting
++ #if 0
+  		_Ptr->~_Ty();
++ #endif
+  		// delete as _NORMAL_BLOCK, not _CRT_BLOCK, since we might have
+  		// facets allocated by normal new.
+  		free(_Ptr);
+*************** public:
+*** 72,78 ****
+  	template<class _Other>
+  		struct rebind
+  		{	// convert _DebugHeapAllocator<_Ty> to _DebugHeapAllocator<_Other>
+! 		typedef typename _DebugHeapAllocator<_Other> other;
+  		};
+  
+  	typename allocator<_Ty>::pointer __CLRCALL_OR_CDECL allocate(typename allocator<_Ty>::size_type _Count, const void *)
+--- 74,80 ----
+  	template<class _Other>
+  		struct rebind
+  		{	// convert _DebugHeapAllocator<_Ty> to _DebugHeapAllocator<_Other>
+! 		typedef _DebugHeapAllocator<_Other> other;
+  		};
+  
+  	typename allocator<_Ty>::pointer __CLRCALL_OR_CDECL allocate(typename allocator<_Ty>::size_type _Count, const void *)
+Index: xhash
+===================================================================
+RCS file: /cvsroot/GxInclude/Vc8sp1/Include/xhash,v
+retrieving revision 1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
+*** xhash	13 Feb 2007 15:03:08 -0000	1.1
+--- xhash	10 Oct 2007 14:54:24 -0000	1.2
+*************** public:
+*** 231,237 ****
+  			}
+  
+  	protected:
+! 		typename _Mylist::_Iterator<0> _Mypos;
+  	};
+  
+  	typedef _List_position _Myvec_value_type;
+--- 231,237 ----
+  			}
+  
+  	protected:
+! 		typename _Mylist::template _Iterator<0>::_Iterator _Mypos;
+  	};
+  
+  	typedef _List_position _Myvec_value_type;
 Index: xlocale
 ===================================================================
 RCS file: /cvsroot/GxInclude/Vc8sp1/Include/xlocale,v
@@ -1390,13 +1673,13 @@ Index: xutility
 ===================================================================
 RCS file: /cvsroot/GxInclude/Vc8sp1/Include/xutility,v
 retrieving revision 1.1
-retrieving revision 1.3
-diff -c -3 -p -r1.1 -r1.3
+retrieving revision 1.5
+diff -c -3 -p -r1.1 -r1.5
 *** xutility	13 Feb 2007 15:03:08 -0000	1.1
---- xutility	13 Feb 2007 16:25:11 -0000	1.3
+--- xutility	10 Oct 2007 14:54:53 -0000	1.5
 ***************
-*** 12,17 ****
---- 12,35 ----
+*** 12,19 ****
+--- 12,48 ----
   #pragma warning(push,3)
   #endif  /* _MSC_VER */
   
@@ -1414,13 +1697,66 @@ diff -c -3 -p -r1.1 -r1.3
 +   static const bool value = sizeof(check(derived())) == sizeof(yes_type);
 + };
 + 
++ /* ------------------------------------------------------------------------ */
++ /* Forward declare these now because they are used as non-dependent names.  */
 + _STDEXT_BEGIN
 + template <class _Iterator> class checked_array_iterator;
++ template <class _Iter>
++ checked_array_iterator<_Iter> make_checked_array_iterator(_Iter _Ptr, size_t _Size);
 + _STDEXT_END
++ /* ------------------------------------------------------------------------ */
 + 
   _STD_BEGIN
   
++ /* ------------------------------------------------------------------------ */
++ /* Forward declare these now because they are used as non-dependent names.  */
++ class out_of_range;
++ class invalid_argument;
++ /* ------------------------------------------------------------------------ */
++ 
   		// RANGE CHECKED ITERATOR TAGS
+  struct _Unchecked_iterator_tag
+  	{
+*************** template<class _Iter1, class _Iter2> inl
+*** 838,845 ****
+  		__CLRCALL_OR_CDECL _Iter_random(const _Iter1&, const _Iter2&)
+  	{	// return category from iterator argument
+  	typename _Iter_random_helper<
+! 		iterator_traits<_Iter1>::iterator_category, 
+! 		iterator_traits<_Iter2>::iterator_category>::_Iter_random_cat _Cat;
+  	return (_Cat);
+  	}
+  
+--- 867,874 ----
+  		__CLRCALL_OR_CDECL _Iter_random(const _Iter1&, const _Iter2&)
+  	{	// return category from iterator argument
+  	typename _Iter_random_helper<
+! 		typename iterator_traits<_Iter1>::iterator_category, 
+! 		typename iterator_traits<_Iter2>::iterator_category>::_Iter_random_cat _Cat;
+  	return (_Cat);
+  	}
+  
+*************** template<class _Iter1, class _Iter2, cla
+*** 851,859 ****
+  		__CLRCALL_OR_CDECL _Iter_random(const _Iter1&, const _Iter2&, const _Iter3&)
+  	{	// return category from iterator argument
+  	typename _Iter_random_helper3<
+! 		iterator_traits<_Iter1>::iterator_category, 
+! 		iterator_traits<_Iter2>::iterator_category,
+! 		iterator_traits<_Iter3>::iterator_category>::_Iter_random_cat _Cat;
+  	return (_Cat);
+  	}
+  
+--- 880,888 ----
+  		__CLRCALL_OR_CDECL _Iter_random(const _Iter1&, const _Iter2&, const _Iter3&)
+  	{	// return category from iterator argument
+  	typename _Iter_random_helper3<
+! 		typename iterator_traits<_Iter1>::iterator_category, 
+! 		typename iterator_traits<_Iter2>::iterator_category,
+! 		typename iterator_traits<_Iter3>::iterator_category>::_Iter_random_cat _Cat;
+  	return (_Cat);
+  	}
+  
 *************** public:
 *** 1743,1749 ****
    
@@ -1430,7 +1766,7 @@ diff -c -3 -p -r1.1 -r1.3
   		return _Base;
   	}
   
---- 1761,1767 ----
+--- 1772,1778 ----
    
   	_Checked_iterator_base_type _Checked_iterator_base() const
   	{
@@ -1438,14 +1774,76 @@ diff -c -3 -p -r1.1 -r1.3
   		return _Base;
   	}
   
+*************** _STDEXT_END
+*** 3730,3736 ****
+   #define _STR2WSTR(str)     __STR2WSTR(str)
+  
+   #define __FILEW__          _STR2WSTR(__FILE__)
+!  #define __FUNCTIONW__      _STR2WSTR(__FUNCTION__)
+  
+   #if !defined(_W64)
+   #if !defined(__midl) && (defined(_X86_) || defined(_M_IX86)) && _MSC_VER >= 1300
+--- 3759,3765 ----
+   #define _STR2WSTR(str)     __STR2WSTR(str)
+  
+   #define __FILEW__          _STR2WSTR(__FILE__)
+!  #define __FUNCTIONW__      L"<GCCXML-DISABLED>"
+  
+   #if !defined(_W64)
+   #if !defined(__midl) && (defined(_X86_) || defined(_M_IX86)) && _MSC_VER >= 1300
 Index: yvals.h
 ===================================================================
 RCS file: /cvsroot/GxInclude/Vc8sp1/Include/yvals.h,v
 retrieving revision 1.1
-retrieving revision 1.2
-diff -c -3 -p -r1.1 -r1.2
+retrieving revision 1.4
+diff -c -3 -p -r1.1 -r1.4
 *** yvals.h	13 Feb 2007 15:03:08 -0000	1.1
---- yvals.h	13 Feb 2007 16:09:18 -0000	1.2
+--- yvals.h	10 Oct 2007 14:55:16 -0000	1.4
+***************
+*** 110,116 ****
+  #define _STR2WSTR(str)     __STR2WSTR(str)
+  
+  #define __FILEW__          _STR2WSTR(__FILE__)
+! #define __FUNCTIONW__      _STR2WSTR(__FUNCTION__)
+  
+  /* _SECURE_SCL switches: default values */
+  
+--- 110,116 ----
+  #define _STR2WSTR(str)     __STR2WSTR(str)
+  
+  #define __FILEW__          _STR2WSTR(__FILE__)
+! #define __FUNCTIONW__      L"<GCCXML-DISABLED>"
+  
+  /* _SECURE_SCL switches: default values */
+  
+***************
+*** 175,180 ****
+--- 175,199 ----
+  
+   #endif
+  
++ /* ------------------------------------------------------------------------ */
++ /* Forward declare these now because they are used as non-dependent names.  */
++ #ifdef _DEBUG 
++ 
++ #if !defined(_NATIVE_WCHAR_T_DEFINED) && defined(_M_CEE_PURE)
++ extern "C++"
++ #else
++ extern "C"
++ #endif
++ _CRTIMP void __cdecl _invalid_parameter(const wchar_t *, const wchar_t *, const wchar_t *, unsigned int, uintptr_t);
++ 
++ #else /* _DEBUG */
++ 
++ extern "C"
++ _CRTIMP void __cdecl _invalid_parameter_noinfo(void);
++ 
++ #endif /* def _DEBUG */
++ /* ------------------------------------------------------------------------ */
++ 
+   #if _SECURE_SCL_THROWS
+  
+   #define _SCL_SECURE_INVALID_ARGUMENT_NO_ASSERT		_Xinvarg()
 *************** _STD_END
 *** 518,525 ****
   		/* VC++ COMPILER PARAMETERS */
@@ -1456,7 +1854,7 @@ diff -c -3 -p -r1.1 -r1.2
   
   		/* INTEGER PROPERTIES */
   #define _C2			1	/* 0 if not 2's complement */
---- 518,525 ----
+--- 537,544 ----
   		/* VC++ COMPILER PARAMETERS */
   #define _LONGLONG	__int64
   #define _ULONGLONG	unsigned __int64
@@ -1476,7 +1874,7 @@ diff -c -3 -p -r1.1 -r1.2
       #endif
   
       static _MRTIMP2_NPURE void __cdecl _Lockit_ctor(int);
---- 577,585 ----
+--- 596,604 ----
           _Lockit_dtor(this);
       }
       #else
@@ -1496,7 +1894,7 @@ diff -c -3 -p -r1.1 -r1.2
   	void __thiscall _Lock();
   	void __thiscall _Unlock();
       #endif
---- 728,735 ----
+--- 747,754 ----
           _Mutex_Unlock(this);
       }
       #else
@@ -1515,7 +1913,7 @@ diff -c -3 -p -r1.1 -r1.2
       #endif
   
   private:
---- 772,779 ----
+--- 791,798 ----
           _Init_locks_dtor(this);
       }
       #else
@@ -1524,3 +1922,20 @@ diff -c -3 -p -r1.1 -r1.2
       #endif
   
   private:
+*************** typedef int _Mbstatet;
+*** 810,816 ****
+  _C_STD_END
+  
+    #define _EXTERN_TEMPLATE	template
+!   #define _THROW_BAD_ALLOC	_THROW1(...)
+  
+  #ifdef  _MSC_VER
+  #pragma pack(pop)
+--- 829,835 ----
+  _C_STD_END
+  
+    #define _EXTERN_TEMPLATE	template
+!   #define _THROW_BAD_ALLOC
+  
+  #ifdef  _MSC_VER
+  #pragma pack(pop)

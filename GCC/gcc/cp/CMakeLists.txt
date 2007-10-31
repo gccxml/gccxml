@@ -13,19 +13,37 @@ IF(CMAKE_SYSTEM MATCHES "HP-UX")
   ENDIF(CMAKE_C_COMPILER MATCHES "(^cc$|/cc$)")
 ENDIF(CMAKE_SYSTEM MATCHES "HP-UX")
 
+#-----------------------------------------------------------------------------
+# Special flags for some source files.
+
+IF(XCODE)
+  SET_SOURCE_FILES_PROPERTIES(../prefix.c
+    PROPERTIES COMPILE_FLAGS "-DPREFIX=\\\"${CMAKE_INSTALL_PREFIX}\\\"")
+ELSE(XCODE)
+  SET_SOURCE_FILES_PROPERTIES(../prefix.c
+    PROPERTIES COMPILE_FLAGS "-DPREFIX=\"${CMAKE_INSTALL_PREFIX}\"")
+ENDIF(XCODE)
+IF(CYGWIN)
+  SET_SOURCE_FILES_PROPERTIES(../cppdefault.c PROPERTIES
+    COMPILE_FLAGS "-DTOOL_INCLUDE_DIR=/usr/include")
+ENDIF(CYGWIN)
+
 ADD_EXECUTABLE(gccxml_cc1plus
-  call.c decl.c expr.c pt.c typeck2.c class.c decl2.c error.c lex.c
-  parse.c ptree.c rtti.c spew.c typeck.c cvt.c except.c friend.c init.c
-  method.c search.c semantics.c tree.c repo.c dump.c optimize.c mangle.c
-  cp-lang.c
-  ../attribs.c ../c-common.c ../c-format.c ../c-pragma.c
-  ../c-semantics.c ../c-lex.c ../c-dump.c ../c-pretty-print.c
-  ../c-opts.c
-  ${cxx_target_srcs}
+  cp-lang.c ../stub-objc.c call.c decl.c expr.c pt.c typeck2.c class.c
+  decl2.c error.c lex.c parser.c ptree.c rtti.c typeck.c cvt.c except.c
+  friend.c init.c method.c search.c semantics.c tree.c repo.c dump.c
+  optimize.c mangle.c cp-objcp-common.c name-lookup.c cxx-pretty-print.c
+  cp-gimplify.c ../tree-mudflap.c ../attribs.c ../c-common.c
+  ../c-format.c ../c-pragma.c ../c-semantics.c ../c-lex.c ../c-dump.c
+  ${cxx_target_srcs} ../c-pretty-print.c ../c-opts.c ../c-pch.c
+  ../c-incpath.c ../cppdefault.c ../c-ppoutput.c ../c-cppbuiltin.c
+  ../prefix.c ../c-gimplify.c ../c-omp.c ../tree-inline.c
+  ../dummy-checksum.c ../main.c
+
   xml.c
   )
 
-TARGET_LINK_LIBRARIES(gccxml_cc1plus backend cpp iberty)
+TARGET_LINK_LIBRARIES(gccxml_cc1plus backend cpp decnumber iberty)
 
 # Use the "-lx" option to disable map file generation on Borland.
 # This avoids the "Fatal: Access violation.  Link terminated." error.

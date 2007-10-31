@@ -1,6 +1,7 @@
 /* Definitions of target machine for GNU compiler.  "embedded" 68XXX.
    This is meant to be included after m68k.h.
-   Copyright (C) 1994, 1995, 1998, 1999 Free Software Foundation, Inc.  */
+   Copyright (C) 1994, 1995, 1998, 1999, 2004, 2006
+   Free Software Foundation, Inc.  */
 
 /* Override the SVR4 ABI for this target.  */
 
@@ -21,19 +22,12 @@
    and unions in registers, which is slightly more efficient.  */
 #define DEFAULT_PCC_STRUCT_RETURN 0
 
-/* Return floating point values in a fp register.  This make fp code a
-   little bit faster.  It also makes -msoft-float code incompatible with
-   -m68881 code, so people have to be careful not to mix the two.  */
 #undef FUNCTION_VALUE
 #define FUNCTION_VALUE(VALTYPE,FUNC) LIBCALL_VALUE (TYPE_MODE (VALTYPE))
 
 #undef LIBCALL_VALUE
-#define LIBCALL_VALUE(MODE)					\
- gen_rtx_REG ((MODE),						\
-	      ((TARGET_68881					\
-		&& ((MODE) == SFmode || (MODE) == DFmode	\
-		    || (MODE) == XFmode))			\
-           ? 16 : 0))
+#define LIBCALL_VALUE(MODE)                                        \
+  m68k_libcall_value (MODE)
 
 #undef FUNCTION_VALUE_REGNO_P
 #define FUNCTION_VALUE_REGNO_P(N) ((N) == 0 || (TARGET_68881 && (N) == 16))
@@ -41,9 +35,13 @@
 #undef NEEDS_UNTYPED_CALL
 #define NEEDS_UNTYPED_CALL 1
 
-#undef CPP_PREDEFINES
-#define CPP_PREDEFINES "-Dmc68000 -D__embedded__ -Asystem=embedded \
-  -Amachine=mc68000"
+/* Target OS builtins.  */
+#define TARGET_OS_CPP_BUILTINS()                \
+  do                                                \
+    {                                                \
+      builtin_define ("__embedded__");                \
+    }                                                \
+  while (0)
 
 /* Override the default LIB_SPEC from gcc.c.  We don't currently support
    profiling, or libg.a.  */

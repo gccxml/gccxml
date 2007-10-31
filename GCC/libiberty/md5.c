@@ -17,7 +17,7 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software Foundation,
-   Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
+   Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
 
 /* Written by Ulrich Drepper <drepper@gnu.ai.mit.edu>, 1995.  */
 
@@ -47,7 +47,7 @@
 #endif
 
 #ifdef WORDS_BIGENDIAN
-# define SWAP(n)							\
+# define SWAP(n)                                                        \
     (((n) << 24) | (((n) & 0xff00) << 8) | (((n) >> 8) & 0xff00) | ((n) >> 24))
 #else
 # define SWAP(n) (n)
@@ -62,8 +62,7 @@ static const unsigned char fillbuf[64] = { 0x80, 0 /* , 0, 0, ...  */ };
 /* Initialize structure containing state of computation.
    (RFC 1321, 3.3: Step 3)  */
 void
-md5_init_ctx (ctx)
-     struct md5_ctx *ctx;
+md5_init_ctx (struct md5_ctx *ctx)
 {
   ctx->A = (md5_uint32) 0x67452301;
   ctx->B = (md5_uint32) 0xefcdab89;
@@ -80,9 +79,7 @@ md5_init_ctx (ctx)
    IMPORTANT: On some systems it is required that RESBUF is correctly
    aligned for a 32 bits value.  */
 void *
-md5_read_ctx (ctx, resbuf)
-     const struct md5_ctx *ctx;
-     void *resbuf;
+md5_read_ctx (const struct md5_ctx *ctx, void *resbuf)
 {
   ((md5_uint32 *) resbuf)[0] = SWAP (ctx->A);
   ((md5_uint32 *) resbuf)[1] = SWAP (ctx->B);
@@ -98,9 +95,7 @@ md5_read_ctx (ctx, resbuf)
    IMPORTANT: On some systems it is required that RESBUF is correctly
    aligned for a 32 bits value.  */
 void *
-md5_finish_ctx (ctx, resbuf)
-     struct md5_ctx *ctx;
-     void *resbuf;
+md5_finish_ctx (struct md5_ctx *ctx, void *resbuf)
 {
   /* Take yet unprocessed bytes into account.  */
   md5_uint32 bytes = ctx->buflen;
@@ -117,7 +112,7 @@ md5_finish_ctx (ctx, resbuf)
   /* Put the 64-bit file length in *bits* at the end of the buffer.  */
   *(md5_uint32 *) &ctx->buffer[bytes + pad] = SWAP (ctx->total[0] << 3);
   *(md5_uint32 *) &ctx->buffer[bytes + pad + 4] = SWAP ((ctx->total[1] << 3) |
-							(ctx->total[0] >> 29));
+                                                        (ctx->total[0] >> 29));
 
   /* Process last bytes.  */
   md5_process_block (ctx->buffer, bytes + pad + 8, ctx);
@@ -129,9 +124,7 @@ md5_finish_ctx (ctx, resbuf)
    resulting message digest number will be written into the 16 bytes
    beginning at RESBLOCK.  */
 int
-md5_stream (stream, resblock)
-     FILE *stream;
-     void *resblock;
+md5_stream (FILE *stream, void *resblock)
 {
   /* Important: BLOCKSIZE must be a multiple of 64.  */
 #define BLOCKSIZE 4096
@@ -146,28 +139,28 @@ md5_stream (stream, resblock)
   while (1)
     {
       /* We read the file in blocks of BLOCKSIZE bytes.  One call of the
-	 computation function processes the whole buffer so that with the
-	 next round of the loop another block can be read.  */
+         computation function processes the whole buffer so that with the
+         next round of the loop another block can be read.  */
       size_t n;
       sum = 0;
 
       /* Read block.  Take care for partial reads.  */
       do
-	{
-	  n = fread (buffer + sum, 1, BLOCKSIZE - sum, stream);
+        {
+          n = fread (buffer + sum, 1, BLOCKSIZE - sum, stream);
 
-	  sum += n;
-	}
+          sum += n;
+        }
       while (sum < BLOCKSIZE && n != 0);
       if (n == 0 && ferror (stream))
         return 1;
 
       /* If end of file is reached, end the loop.  */
       if (n == 0)
-	break;
+        break;
 
       /* Process buffer with BLOCKSIZE bytes.  Note that
-			BLOCKSIZE % 64 == 0
+                        BLOCKSIZE % 64 == 0
        */
       md5_process_block (buffer, BLOCKSIZE, &ctx);
     }
@@ -186,10 +179,7 @@ md5_stream (stream, resblock)
    output yields to the wanted ASCII representation of the message
    digest.  */
 void *
-md5_buffer (buffer, len, resblock)
-     const char *buffer;
-     size_t len;
-     void *resblock;
+md5_buffer (const char *buffer, size_t len, void *resblock)
 {
   struct md5_ctx ctx;
 
@@ -205,10 +195,7 @@ md5_buffer (buffer, len, resblock)
 
 
 void
-md5_process_bytes (buffer, len, ctx)
-     const void *buffer;
-     size_t len;
-     struct md5_ctx *ctx;
+md5_process_bytes (const void *buffer, size_t len, struct md5_ctx *ctx)
 {
   /* When we already have some bits in our internal buffer concatenate
      both inputs first.  */
@@ -221,13 +208,13 @@ md5_process_bytes (buffer, len, ctx)
       ctx->buflen += add;
 
       if (left_over + add > 64)
-	{
-	  md5_process_block (ctx->buffer, (left_over + add) & ~63, ctx);
-	  /* The regions in the following copy operation cannot overlap.  */
-	  memcpy (ctx->buffer, &ctx->buffer[(left_over + add) & ~63],
-		  (left_over + add) & 63);
-	  ctx->buflen = (left_over + add) & 63;
-	}
+        {
+          md5_process_block (ctx->buffer, (left_over + add) & ~63, ctx);
+          /* The regions in the following copy operation cannot overlap.  */
+          memcpy (ctx->buffer, &ctx->buffer[(left_over + add) & ~63],
+                  (left_over + add) & 63);
+          ctx->buflen = (left_over + add) & 63;
+        }
 
       buffer = (const void *) ((const char *) buffer + add);
       len -= add;
@@ -236,6 +223,23 @@ md5_process_bytes (buffer, len, ctx)
   /* Process available complete blocks.  */
   if (len > 64)
     {
+#if !_STRING_ARCH_unaligned
+/* To check alignment gcc has an appropriate operator.  Other
+   compilers don't.  */
+# if __GNUC__ >= 2
+#  define UNALIGNED_P(p) (((md5_uintptr) p) % __alignof__ (md5_uint32) != 0)
+# else
+#  define UNALIGNED_P(p) (((md5_uintptr) p) % sizeof (md5_uint32) != 0)
+# endif
+      if (UNALIGNED_P (buffer))
+        while (len > 64)
+          {
+            md5_process_block (memcpy (ctx->buffer, buffer, 64), 64, ctx);
+            buffer = (const char *) buffer + 64;
+            len -= 64;
+          }
+      else
+#endif
       md5_process_block (buffer, len & ~63, ctx);
       buffer = (const void *) ((const char *) buffer + (len & ~63));
       len &= 63;
@@ -263,10 +267,7 @@ md5_process_bytes (buffer, len, ctx)
    It is assumed that LEN % 64 == 0.  */
 
 void
-md5_process_block (buffer, len, ctx)
-     const void *buffer;
-     size_t len;
-     struct md5_ctx *ctx;
+md5_process_block (const void *buffer, size_t len, struct md5_ctx *ctx)
 {
   md5_uint32 correct_words[16];
   const md5_uint32 *words = (const md5_uint32 *) buffer;
@@ -295,30 +296,30 @@ md5_process_block (buffer, len, ctx)
       md5_uint32 D_save = D;
 
       /* First round: using the given function, the context and a constant
-	 the next context is computed.  Because the algorithms processing
-	 unit is a 32-bit word and it is determined to work on words in
-	 little endian byte order we perhaps have to change the byte order
-	 before the computation.  To reduce the work for the next steps
-	 we store the swapped words in the array CORRECT_WORDS.  */
+         the next context is computed.  Because the algorithms processing
+         unit is a 32-bit word and it is determined to work on words in
+         little endian byte order we perhaps have to change the byte order
+         before the computation.  To reduce the work for the next steps
+         we store the swapped words in the array CORRECT_WORDS.  */
 
-#define OP(a, b, c, d, s, T)						\
-      do								\
-        {								\
-	  a += FF (b, c, d) + (*cwp++ = SWAP (*words)) + T;		\
-	  ++words;							\
-	  CYCLIC (a, s);						\
-	  a += b;							\
-        }								\
+#define OP(a, b, c, d, s, T)                                                \
+      do                                                                \
+        {                                                                \
+          a += FF (b, c, d) + (*cwp++ = SWAP (*words)) + T;                \
+          ++words;                                                        \
+          CYCLIC (a, s);                                                \
+          a += b;                                                        \
+        }                                                                \
       while (0)
 
       /* It is unfortunate that C does not provide an operator for
-	 cyclic rotation.  Hope the C compiler is smart enough.  */
+         cyclic rotation.  Hope the C compiler is smart enough.  */
 #define CYCLIC(w, s) (w = (w << s) | (w >> (32 - s)))
 
       /* Before we start, one word to the strange constants.
-	 They are defined in RFC 1321 as
+         They are defined in RFC 1321 as
 
-	 T[i] = (int) (4294967296.0 * fabs (sin (i))), i=1..64
+         T[i] = (int) (4294967296.0 * fabs (sin (i))), i=1..64
        */
 
       /* Round 1.  */
@@ -340,16 +341,16 @@ md5_process_block (buffer, len, ctx)
       OP (B, C, D, A, 22, (md5_uint32) 0x49b40821);
 
       /* For the second to fourth round we have the possibly swapped words
-	 in CORRECT_WORDS.  Redefine the macro to take an additional first
-	 argument specifying the function to use.  */
+         in CORRECT_WORDS.  Redefine the macro to take an additional first
+         argument specifying the function to use.  */
 #undef OP
-#define OP(a, b, c, d, k, s, T)						\
-      do 								\
-	{								\
-	  a += FX (b, c, d) + correct_words[k] + T;			\
-	  CYCLIC (a, s);						\
-	  a += b;							\
-	}								\
+#define OP(a, b, c, d, k, s, T)                                                \
+      do                                                                 \
+        {                                                                \
+          a += FX (b, c, d) + correct_words[k] + T;                        \
+          CYCLIC (a, s);                                                \
+          a += b;                                                        \
+        }                                                                \
       while (0)
 
 #define FX(b, c, d) FG (b, c, d)

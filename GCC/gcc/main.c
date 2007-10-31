@@ -14,23 +14,23 @@ for more details.
 
 You should have received a copy of the GNU General Public License
 along with GCC; see the file COPYING.  If not, write to the Free
-Software Foundation, 59 Temple Place - Suite 330, Boston, MA
-02111-1307, USA.  */
+Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
+02110-1301, USA.  */
 
 #include "config.h"
 #include "system.h"
+#include "coretypes.h"
+#include "tm.h"
 #include "toplev.h"
 
-int main PARAMS ((int argc, char **argv));
+int main (int argc, char **argv);
 
 /* We define main() to call toplev_main(), which is defined in toplev.c.
    We do this in a separate file in order to allow the language front-end
    to define a different main(), if it so desires.  */
 
 int
-main (argc, argv)
-  int argc;
-  char **argv;
+main (int argc, char **argv)
 {
-  return toplev_main (argc, argv);
+  return toplev_main (argc, (const char **) argv);
 }

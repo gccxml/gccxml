@@ -1,0 +1,13 @@
+#include "gcc_check_decl.h"
+#undef @CHECK_DECL_EXISTS_VAR@
+#define @CHECK_DECL_EXISTS_VAR@ 1
+#include "ansidecl.h"
+#include "system.h"
+void cmakeRequireSymbol(int dummy,...){(void)dummy;}
+int main()
+{
+#ifndef @CHECK_DECL_EXISTS_SYM@
+  cmakeRequireSymbol(0,&@CHECK_DECL_EXISTS_SYM@);
+#endif
+  return 0;
+}

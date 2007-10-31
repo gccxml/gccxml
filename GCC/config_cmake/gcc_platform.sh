@@ -8,14 +8,21 @@ cmake_command="$2"
 config_sub="${GCC_SOURCE_DIR}/config.sub"
 host_alias=`"${GCC_SOURCE_DIR}/config.guess"`
 host=`"${GCC_SOURCE_DIR}/config.sub" $host_alias`
-machine="${host}"
+target="${host}"
+
+# Collect build-machine-specific information.
+. "${GCC_SOURCE_DIR}/gcc/config.build"
+
+# Collect host-machine-specific information.
+. "${GCC_SOURCE_DIR}/gcc/config.host"
+
+target_gtfiles=
 
 # Collect target-machine-specific information.
-# This script needs to be included twice!
-. "${GCC_SOURCE_DIR}/gcc/config.gcc"
 . "${GCC_SOURCE_DIR}/gcc/config.gcc"
 
 extra_objs="${host_extra_objs} ${extra_objs}"
+extra_gcc_objs="${host_extra_gcc_objs} ${extra_gcc_objs}"
 
 # Report the information back to the CMake process.
 cat > "${outfile}.in" <<EOF
@@ -32,9 +39,11 @@ SET(build_xm_file ${build_xm_file})
 SET(tm_p_file ${tm_p_file})
 SET(extra_modes ${extra_modes})
 SET(extra_objs ${extra_objs})
+SET(extra_options ${extra_options})
 SET(c_target_objs ${c_target_objs})
 SET(cxx_target_objs ${cxx_target_objs})
 SET(target_cpu_default ${target_cpu_default})
+SET(out_host_hook_obj ${out_host_hook_obj})
 EOF
 
 "${cmake_command}" -E copy_if_different "${outfile}.in" "${outfile}"

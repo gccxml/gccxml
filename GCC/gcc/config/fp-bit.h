@@ -1,30 +1,31 @@
 /* Header file for fp-bit.c.  */
-/* Copyright (C) 2000, 2002, 2003
-   Free Software Foundation, Inc.
+/* Copyright (C) 2000, 2002, 2003, 2006 Free Software Foundation, Inc.
 
-This file is part of GNU CC.
+This file is part of GCC.
 
-GNU CC is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2, or (at your option)
-any later version.
+GCC is free software; you can redistribute it and/or modify it under
+the terms of the GNU General Public License as published by the Free
+Software Foundation; either version 2, or (at your option) any later
+version.
 
-GNU CC is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+In addition to the permissions in the GNU General Public License, the
+Free Software Foundation gives you unlimited permission to link the
+compiled version of this file into combinations with other programs,
+and to distribute those combinations without any restriction coming
+from the use of this file.  (The General Public License restrictions
+do apply in other respects; for example, they cover modification of
+the file, and distribution when not linked into a combine
+executable.)
+
+GCC is distributed in the hope that it will be useful, but WITHOUT ANY
+WARRANTY; without even the implied warranty of MERCHANTABILITY or
+FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+for more details.
 
 You should have received a copy of the GNU General Public License
-along with GNU CC; see the file COPYING.  If not, write to
-the Free Software Foundation, 59 Temple Place - Suite 330,
-Boston, MA 02111-1307, USA.  */
-
-/* As a special exception, if you link this library with other files,
-   some of which are compiled with GCC, to produce an executable,
-   this library does not by itself cause the resulting executable
-   to be covered by the GNU General Public License.
-   This exception does not however invalidate any other reasons why
-   the executable file might be covered by the GNU General Public License.  */
+along with GCC; see the file COPYING.  If not, write to the Free
+Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
+02110-1301, USA.  */
 
 #ifndef GCC_FP_BIT_H
 #define GCC_FP_BIT_H
@@ -88,7 +89,9 @@ Boston, MA 02111-1307, USA.  */
 #endif /* ! FINE_GRAINED_LIBRARIES */
 
 #if __LDBL_MANT_DIG__ == 113 || __LDBL_MANT_DIG__ == 106
-# define TMODES
+# if defined(TFLOAT) || defined(L_sf_to_tf) || defined(L_df_to_tf)
+#  define TMODES
+# endif
 #endif
 
 typedef float SFtype __attribute__ ((mode (SF)));
@@ -104,9 +107,10 @@ typedef int DItype __attribute__ ((mode (DI)));
 typedef int TItype __attribute__ ((mode (TI)));
 #endif
 
-/* The type of the result of a fp compare */
+/* The type of the result of a floating point comparison.  This must
+   match `word_mode' in GCC for the target.  */
 #ifndef CMPtype
-#define CMPtype SItype
+typedef int CMPtype __attribute__ ((mode (word)));
 #endif
 
 typedef unsigned int UHItype __attribute__ ((mode (HI)));
@@ -134,184 +138,184 @@ typedef unsigned int UTItype __attribute__ ((mode (TI)));
 #  error "TFLOAT requires long double to have 113 bits of mantissa"
 # endif
 
-#	define PREFIXFPDP tp
-#	define PREFIXSFDF tf
-#	define NGARDS 10L /* Is this right? */
-#	define GARDROUND 0x1ff
-#	define GARDMASK  0x3ff
-#	define GARDMSB   0x200
-#	define FRAC_NBITS 128
+#        define PREFIXFPDP tp
+#        define PREFIXSFDF tf
+#        define NGARDS 10L /* Is this right? */
+#        define GARDROUND 0x1ff
+#        define GARDMASK  0x3ff
+#        define GARDMSB   0x200
+#        define FRAC_NBITS 128
 
 # if __LDBL_MANT_DIG__ == 113 /* IEEE quad */
-#	define EXPBITS 15
-#	define EXPBIAS 16383
-#	define EXPMAX (0x7fff)
-#	define QUIET_NAN ((TItype)0x8 << 108)
-#	define FRACHIGH  ((TItype)0x8 << 124)
-#	define FRACHIGH2 ((TItype)0xc << 124)
-#	define FRACBITS 112
+#        define EXPBITS 15
+#        define EXPBIAS 16383
+#        define EXPMAX (0x7fff)
+#        define QUIET_NAN ((TItype)0x8 << 108)
+#        define FRACHIGH  ((TItype)0x8 << 124)
+#        define FRACHIGH2 ((TItype)0xc << 124)
+#        define FRACBITS 112
 # endif
 
 # if __LDBL_MANT_DIG__ == 106 /* IBM extended (double+double) */
-#	define EXPBITS 11
-#	define EXPBIAS 1023
-#	define EXPMAX (0x7ff)
-#	define QUIET_NAN ((TItype)0x8 << (48 + 64))
-#	define FRACHIGH  ((TItype)0x8 << 124)
-#	define FRACHIGH2 ((TItype)0xc << 124)
-#	define FRACBITS 105
-#	define HALFFRACBITS 52
-#	define HALFSHIFT 64
+#        define EXPBITS 11
+#        define EXPBIAS 1023
+#        define EXPMAX (0x7ff)
+#        define QUIET_NAN ((TItype)0x8 << (48 + 64))
+#        define FRACHIGH  ((TItype)0x8 << 124)
+#        define FRACHIGH2 ((TItype)0xc << 124)
+#        define FRACBITS 105
+#        define HALFFRACBITS 52
+#        define HALFSHIFT 64
 # endif
 
-#	define pack_d __pack_t
-#	define unpack_d __unpack_t
-#	define __fpcmp_parts __fpcmp_parts_t
-	typedef UTItype fractype;
-	typedef UDItype halffractype;
-	typedef USItype qrtrfractype;
+#        define pack_d __pack_t
+#        define unpack_d __unpack_t
+#        define __fpcmp_parts __fpcmp_parts_t
+        typedef UTItype fractype;
+        typedef UDItype halffractype;
+        typedef USItype qrtrfractype;
 #define qrtrfractype qrtrfractype
-	typedef TFtype FLO_type;
-	typedef TItype intfrac;
+        typedef TFtype FLO_type;
+        typedef TItype intfrac;
 #elif defined FLOAT
-#	define NGARDS    7L
-#	define GARDROUND 0x3f
-#	define GARDMASK  0x7f
-#	define GARDMSB   0x40
-#	define EXPBITS 8
-#	define EXPBIAS 127
-#	define FRACBITS 23
-#	define EXPMAX (0xff)
-#	define QUIET_NAN 0x100000L
-#	define FRAC_NBITS 32
-#	define FRACHIGH  0x80000000L
-#	define FRACHIGH2 0xc0000000L
-#	define pack_d __pack_f
-#	define unpack_d __unpack_f
-#	define __fpcmp_parts __fpcmp_parts_f
-	typedef USItype fractype;
-	typedef UHItype halffractype;
-	typedef SFtype FLO_type;
-	typedef SItype intfrac;
+#        define NGARDS    7L
+#        define GARDROUND 0x3f
+#        define GARDMASK  0x7f
+#        define GARDMSB   0x40
+#        define EXPBITS 8
+#        define EXPBIAS 127
+#        define FRACBITS 23
+#        define EXPMAX (0xff)
+#        define QUIET_NAN 0x100000L
+#        define FRAC_NBITS 32
+#        define FRACHIGH  0x80000000L
+#        define FRACHIGH2 0xc0000000L
+#        define pack_d __pack_f
+#        define unpack_d __unpack_f
+#        define __fpcmp_parts __fpcmp_parts_f
+        typedef USItype fractype;
+        typedef UHItype halffractype;
+        typedef SFtype FLO_type;
+        typedef SItype intfrac;
 
 #else
-#	define PREFIXFPDP dp
-#	define PREFIXSFDF df
-#	define NGARDS 8L
-#	define GARDROUND 0x7f
-#	define GARDMASK  0xff
-#	define GARDMSB   0x80
-#	define EXPBITS 11
-#	define EXPBIAS 1023
-#	define FRACBITS 52
-#	define EXPMAX (0x7ff)
-#	define QUIET_NAN 0x8000000000000LL
-#	define FRAC_NBITS 64
-#	define FRACHIGH  0x8000000000000000LL
-#	define FRACHIGH2 0xc000000000000000LL
-#	define pack_d __pack_d
-#	define unpack_d __unpack_d
-#	define __fpcmp_parts __fpcmp_parts_d
-	typedef UDItype fractype;
-	typedef USItype halffractype;
-	typedef DFtype FLO_type;
-	typedef DItype intfrac;
+#        define PREFIXFPDP dp
+#        define PREFIXSFDF df
+#        define NGARDS 8L
+#        define GARDROUND 0x7f
+#        define GARDMASK  0xff
+#        define GARDMSB   0x80
+#        define EXPBITS 11
+#        define EXPBIAS 1023
+#        define FRACBITS 52
+#        define EXPMAX (0x7ff)
+#        define QUIET_NAN 0x8000000000000LL
+#        define FRAC_NBITS 64
+#        define FRACHIGH  0x8000000000000000LL
+#        define FRACHIGH2 0xc000000000000000LL
+#        define pack_d __pack_d
+#        define unpack_d __unpack_d
+#        define __fpcmp_parts __fpcmp_parts_d
+        typedef UDItype fractype;
+        typedef USItype halffractype;
+        typedef DFtype FLO_type;
+        typedef DItype intfrac;
 #endif /* FLOAT */
 
 #ifdef US_SOFTWARE_GOFAST
-#	ifdef TFLOAT
-#		error "GOFAST TFmode not supported"
-#	elif defined FLOAT
-#		define add 		fpadd
-#		define sub 		fpsub
-#		define multiply 	fpmul
-#		define divide 		fpdiv
-#		define compare 		fpcmp
-#		define _unord_f2	__unordsf2
-#		define usi_to_float 	__floatunsisf
-#		define si_to_float 	sitofp
-#		define float_to_si 	fptosi
-#		define float_to_usi 	fptoui
-#		define negate 		__negsf2
-#		define sf_to_df		fptodp
-#		define sf_to_tf		__extendsftf2
-#	else
-#		define add 		dpadd
-#		define sub 		dpsub
-#		define multiply 	dpmul
-#		define divide 		dpdiv
-#		define compare 		dpcmp
-#		define _unord_f2	__unorddf2
-#		define usi_to_float 	__floatunsidf
-#		define si_to_float 	litodp
-#		define float_to_si 	dptoli
-#		define float_to_usi 	dptoul
-#		define negate 		__negdf2
-#		define df_to_sf 	dptofp
-#		define df_to_tf 	__extenddftf2
-#	endif /* FLOAT */
+#        ifdef TFLOAT
+#                error "GOFAST TFmode not supported"
+#        elif defined FLOAT
+#                define add                 fpadd
+#                define sub                 fpsub
+#                define multiply         fpmul
+#                define divide                 fpdiv
+#                define compare                 fpcmp
+#                define _unord_f2        __unordsf2
+#                define usi_to_float         __floatunsisf
+#                define si_to_float         sitofp
+#                define float_to_si         fptosi
+#                define float_to_usi         fptoui
+#                define negate                 __negsf2
+#                define sf_to_df                fptodp
+#                define sf_to_tf                __extendsftf2
+#        else
+#                define add                 dpadd
+#                define sub                 dpsub
+#                define multiply         dpmul
+#                define divide                 dpdiv
+#                define compare                 dpcmp
+#                define _unord_f2        __unorddf2
+#                define usi_to_float         __floatunsidf
+#                define si_to_float         litodp
+#                define float_to_si         dptoli
+#                define float_to_usi         dptoul
+#                define negate                 __negdf2
+#                define df_to_sf         dptofp
+#                define df_to_tf         __extenddftf2
+#        endif /* FLOAT */
 #else
-#	ifdef TFLOAT
-#		define add 		__addtf3
-#		define sub 		__subtf3
-#		define multiply 	__multf3
-#		define divide 		__divtf3
-#		define compare 		__cmptf2
-#		define _eq_f2 		__eqtf2
-#		define _ne_f2 		__netf2
-#		define _gt_f2 		__gttf2
-#		define _ge_f2 		__getf2
-#		define _lt_f2 		__lttf2
-#		define _le_f2 		__letf2
-#		define _unord_f2	__unordtf2
-#		define usi_to_float 	__floatunsitf
-#		define si_to_float 	__floatsitf
-#		define float_to_si 	__fixtfsi
-#		define float_to_usi 	__fixunstfsi
-#		define negate 		__negtf2
-#		define tf_to_sf		__trunctfsf2
-#		define tf_to_df		__trunctfdf2
-#	elif defined FLOAT
-#		define add 		__addsf3
-#		define sub 		__subsf3
-#		define multiply 	__mulsf3
-#		define divide 		__divsf3
-#		define compare 		__cmpsf2
-#		define _eq_f2 		__eqsf2
-#		define _ne_f2 		__nesf2
-#		define _gt_f2 		__gtsf2
-#		define _ge_f2 		__gesf2
-#		define _lt_f2 		__ltsf2
-#		define _le_f2 		__lesf2
-#		define _unord_f2	__unordsf2
-#		define usi_to_float 	__floatunsisf
-#		define si_to_float 	__floatsisf
-#		define float_to_si 	__fixsfsi
-#		define float_to_usi 	__fixunssfsi
-#		define negate 		__negsf2
-#		define sf_to_df		__extendsfdf2
-#		define sf_to_tf		__extendsftf2
-#	else
-#		define add 		__adddf3
-#		define sub 		__subdf3
-#		define multiply 	__muldf3
-#		define divide 		__divdf3
-#		define compare 		__cmpdf2
-#		define _eq_f2 		__eqdf2
-#		define _ne_f2 		__nedf2
-#		define _gt_f2 		__gtdf2
-#		define _ge_f2 		__gedf2
-#		define _lt_f2 		__ltdf2
-#		define _le_f2 		__ledf2
-#		define _unord_f2	__unorddf2
-#		define usi_to_float 	__floatunsidf
-#		define si_to_float 	__floatsidf
-#		define float_to_si 	__fixdfsi
-#		define float_to_usi 	__fixunsdfsi
-#		define negate 		__negdf2
-#		define df_to_sf		__truncdfsf2
-#		define df_to_tf		__extenddftf2
-#	endif /* FLOAT */
+#        ifdef TFLOAT
+#                define add                 __addtf3
+#                define sub                 __subtf3
+#                define multiply         __multf3
+#                define divide                 __divtf3
+#                define compare                 __cmptf2
+#                define _eq_f2                 __eqtf2
+#                define _ne_f2                 __netf2
+#                define _gt_f2                 __gttf2
+#                define _ge_f2                 __getf2
+#                define _lt_f2                 __lttf2
+#                define _le_f2                 __letf2
+#                define _unord_f2        __unordtf2
+#                define usi_to_float         __floatunsitf
+#                define si_to_float         __floatsitf
+#                define float_to_si         __fixtfsi
+#                define float_to_usi         __fixunstfsi
+#                define negate                 __negtf2
+#                define tf_to_sf                __trunctfsf2
+#                define tf_to_df                __trunctfdf2
+#        elif defined FLOAT
+#                define add                 __addsf3
+#                define sub                 __subsf3
+#                define multiply         __mulsf3
+#                define divide                 __divsf3
+#                define compare                 __cmpsf2
+#                define _eq_f2                 __eqsf2
+#                define _ne_f2                 __nesf2
+#                define _gt_f2                 __gtsf2
+#                define _ge_f2                 __gesf2
+#                define _lt_f2                 __ltsf2
+#                define _le_f2                 __lesf2
+#                define _unord_f2        __unordsf2
+#                define usi_to_float         __floatunsisf
+#                define si_to_float         __floatsisf
+#                define float_to_si         __fixsfsi
+#                define float_to_usi         __fixunssfsi
+#                define negate                 __negsf2
+#                define sf_to_df                __extendsfdf2
+#                define sf_to_tf                __extendsftf2
+#        else
+#                define add                 __adddf3
+#                define sub                 __subdf3
+#                define multiply         __muldf3
+#                define divide                 __divdf3
+#                define compare                 __cmpdf2
+#                define _eq_f2                 __eqdf2
+#                define _ne_f2                 __nedf2
+#                define _gt_f2                 __gtdf2
+#                define _ge_f2                 __gedf2
+#                define _lt_f2                 __ltdf2
+#                define _le_f2                 __ledf2
+#                define _unord_f2        __unorddf2
+#                define usi_to_float         __floatunsidf
+#                define si_to_float         __floatsidf
+#                define float_to_si         __fixdfsi
+#                define float_to_usi         __fixunsdfsi
+#                define negate                 __negdf2
+#                define df_to_sf                __truncdfsf2
+#                define df_to_tf                __extenddftf2
+#        endif /* FLOAT */
 #endif /* US_SOFTWARE_GOFAST */
 
 #ifndef INLINE
@@ -319,7 +323,7 @@ typedef unsigned int UTItype __attribute__ ((mode (TI)));
 #endif
 
 /* Preserve the sticky-bit when shifting fractions to the right.  */
-#define LSHIFT(a) { a = (a & 1) | (a >> 1); }
+#define LSHIFT(a, s) { a = (a >> s) | !!(a & (((fractype) 1 << s) - 1)); }
 
 /* numeric parameters */
 /* F_D_BITOFF is the number of bits offset between the MSB of the mantissa
