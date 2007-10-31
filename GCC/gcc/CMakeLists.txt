@@ -161,7 +161,7 @@ ADD_CUSTOM_COMMAND(OUTPUT ${GCC_BINARY_DIR}/gcc/options.h
 
 ADD_CUSTOM_COMMAND(OUTPUT ${GCC_BINARY_DIR}/gcc/options.c
   COMMAND ${AWK_EXECUTABLE} -f ${GCC_SOURCE_DIR}/gcc/opt-functions.awk -f ${GCC_SOURCE_DIR}/gcc/optc-gen.awk
-                            -v header_name="config.h system.h coretypes.h tm.h" < optionlist > options.c
+                            -v "header_name=config.h system.h coretypes.h tm.h" < optionlist > options.c
   DEPENDS ${GCC_SOURCE_DIR}/gcc/opt-functions.awk ${GCC_SOURCE_DIR}/gcc/optc-gen.awk ${GCC_BINARY_DIR}/gcc/optionlist
   )
 
