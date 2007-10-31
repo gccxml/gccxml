@@ -529,13 +529,14 @@ ADD_LIBRARY(backend
   mode-switching.c modulo-sched.c optabs.c
   ${GCC_BINARY_DIR}/gcc/options.c
   opts.c opts-common.c params.c postreload.c postreload-gcse.c predict.c
-  pointer-set.c print-rtl.c print-tree.c
+  pointer-set.c backend-print-rtl.c print-tree.c
   profile.c value-prof.c var-tracking.c real.c recog.c reg-stack.c
   regclass.c regmove.c regrename.c reload.c reload1.c reorg.c resource.c
-  rtl.c rtlanal.c rtl-error.c sbitmap.c sched-deps.c sched-ebb.c
+  backend-rtl.c rtlanal.c rtl-error.c sbitmap.c sched-deps.c sched-ebb.c
   sched-rgn.c sched-vis.c sdbout.c see.c simplify-rtx.c sreal.c stmt.c
   stor-layout.c stringpool.c struct-equiv.c targhooks.c timevar.c
-  toplev.c tracer.c tree.c tree-dump.c varasm.c varray.c vec.c version.c
+  toplev.c tracer.c tree.c tree-dump.c varasm.c varray.c
+  backend-vec.c version.c
   vmsdbgout.c xcoffout.c alloc-pool.c et-forest.c cfghooks.c bt-load.c
   pretty-print.c ggc-page.c web.c passes.c tree-profile.c rtlhooks.c
   cfgexpand.c lambda-mat.c lambda-trans.c lambda-code.c
