@@ -245,7 +245,12 @@ void gxConfiguration::AddArguments(std::vector<std::string>& arguments) const
     arguments.push_back("/dev/null");
 #endif
     }
+
+  // Remove preprocessor include paths built into the GCC parser.
   arguments.push_back("-nostdinc");
+
+  // Remove preprocessor definitions built into the GCC parser.
+  arguments.push_back("-undef");
 
   // Allow source code to be aware of GCC-XML.
   gxsys_ios::ostringstream version;
