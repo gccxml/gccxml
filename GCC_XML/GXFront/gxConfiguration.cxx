@@ -2068,7 +2068,7 @@ bool gxConfiguration::FindFlagsMSVC6()
     }
 
   m_GCCXML_FLAGS =
-    "-U__STDC__ -U__MINGW32__"
+    "-U__STDC__ -U__STDC_HOSTED__ "
     "-D__stdcall=__attribute__((__stdcall__)) "
     "-D__cdecl=__attribute__((__cdecl__)) "
     "-D__fastcall=__attribute__((__fastcall__)) "
@@ -2108,7 +2108,7 @@ bool gxConfiguration::FindFlagsMSVC7()
     }
 
   m_GCCXML_FLAGS =
-    "-U__STDC__ -U__MINGW32__"
+    "-U__STDC__ -U__STDC_HOSTED__ "
     "-D__stdcall=__attribute__((__stdcall__)) "
     "-D__cdecl=__attribute__((__cdecl__)) "
     "-D__fastcall=__attribute__((__fastcall__)) "
@@ -2152,7 +2152,7 @@ bool gxConfiguration::FindFlagsMSVC71()
     }
 
   m_GCCXML_FLAGS =
-    "-U__STDC__ -U__MINGW32__"
+    "-U__STDC__ -U__STDC_HOSTED__ "
     "-D__stdcall=__attribute__((__stdcall__)) "
     "-D__cdecl=__attribute__((__cdecl__)) "
     "-D__fastcall=__attribute__((__fastcall__)) "
@@ -2196,7 +2196,7 @@ bool gxConfiguration::FindFlagsMSVC8()
     }
 
   m_GCCXML_FLAGS =
-    "-U__STDC__ -U__MINGW32__"
+    "-U__STDC__ -U__STDC_HOSTED__ "
     "-D__stdcall=__attribute__((__stdcall__)) "
     "-D__cdecl=__attribute__((__cdecl__)) "
     "-D__fastcall=__attribute__((__fastcall__)) "
@@ -2274,7 +2274,7 @@ bool gxConfiguration::FindFlagsMSVC8ex()
     }
 
   m_GCCXML_FLAGS =
-    "-U__STDC__ -U__MINGW32__"
+    "-U__STDC__ -U__STDC_HOSTED__ "
     "-D__stdcall=__attribute__((__stdcall__)) "
     "-D__cdecl=__attribute__((__cdecl__)) "
     "-D__fastcall=__attribute__((__fastcall__)) "
@@ -2361,7 +2361,7 @@ bool gxConfiguration::FindFlagsBCC55(const char* inBcc32)
     "-D_WCHAR_T_DEFINED -DPASCAL= -DRPC_ENTRY= -DSHSTDAPI=HRESULT "
     "-D__uuidof(x)=IID() -DSHSTDAPI_(x)=x -D__w64= -D__int64=\"long long\" "
     "-D__TURBOC__=0x0551 -D__BORLANDC__=0x0551 "
-    "-U__STDC__ -U__PTRDIFF_TYPE__ -U__SIZE_TYPE__ "
+    "-U__STDC__ -U__STDC_HOSTED__ -U__PTRDIFF_TYPE__ -U__SIZE_TYPE__ "
     "-iwrapper\""+include1+"\" "
     "-iwrapper\""+include2+"\" "
     "-I\""+include3+"\" ";
