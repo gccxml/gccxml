@@ -74,18 +74,21 @@ if [ "$MAJOR_VERSION" -lt 3 ]; then
   if [ "$MINOR_VERSION" = 96 ]; then
     INCLUDES="-iwrapper\"$SELFPATH/2.96\" $INCLUDES"
   fi
+elif [ "$MAJOR_VERSION" = 4 -a "$MINOR_VERSION" -ge 2 ]; then
+  INCLUDES="-iwrapper\"$SELFPATH/4.2\" $INCLUDES"
+  SPECIAL="-include \"gccxml_builtins.h\""
 elif [ "$MAJOR_VERSION" = 4 -a "$MINOR_VERSION" -ge 1 ]; then
   INCLUDES="-iwrapper\"$SELFPATH/4.1\" $INCLUDES"
-  SPECIAL="-include \"$SELFPATH/4.1/gccxml_builtins.h\""
+  SPECIAL="-include \"gccxml_builtins.h\""
 elif [ "$MAJOR_VERSION" = 4 -a "$MINOR_VERSION" -ge 0 ]; then
   INCLUDES="-iwrapper\"$SELFPATH/4.0\" $INCLUDES"
-  SPECIAL="-include \"$SELFPATH/4.0/gccxml_builtins.h\""
+  SPECIAL="-include \"gccxml_builtins.h\""
 elif [ "$MAJOR_VERSION" = 3 -a "$MINOR_VERSION" -ge 4 ]; then
   INCLUDES="-iwrapper\"$SELFPATH/3.4\" $INCLUDES"
-  SPECIAL="-include \"$SELFPATH/3.4/gccxml_builtins.h\""
+  SPECIAL="-include \"gccxml_builtins.h\""
 elif [ "$MAJOR_VERSION" = 3 -a "$MINOR_VERSION" = 3 ]; then
   INCLUDES="-iwrapper\"$SELFPATH/3.3\" $INCLUDES"
-  SPECIAL="-include \"$SELFPATH/3.3/gccxml_builtins.h\""
+  SPECIAL="-include \"gccxml_builtins.h\""
 elif [ "$MAJOR_VERSION" = 3 -a "$MINOR_VERSION" = 2 ]; then
   INCLUDES="-iwrapper\"$SELFPATH/3.2\" $INCLUDES"
 elif [ "$MAJOR_VERSION" = 3 -a "$MINOR_VERSION" = 1 ]; then

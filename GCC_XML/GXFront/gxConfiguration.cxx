@@ -1530,20 +1530,20 @@ bool gxConfiguration::FindFlagsGCC()
       INCLUDES = "-iwrapper\"" + supportPath + "/2.96\" " + INCLUDES;
       }
     }
+  else if(MAJOR_VERSION == 4 && MINOR_VERSION >= 2)
+    {
+    INCLUDES = "-iwrapper\"" + supportPath + "/4.2\" " + INCLUDES;
+    SPECIAL = "-include \"gccxml_builtins.h\"";
+    }
   else if(MAJOR_VERSION == 4 && MINOR_VERSION >= 1)
     {
     INCLUDES = "-iwrapper\"" + supportPath + "/4.1\" " + INCLUDES;
-    SPECIAL = "-include \"" + supportPath + "/4.1/gccxml_builtins.h\"";
+    SPECIAL = "-include \"gccxml_builtins.h\"";
     }
   else if(MAJOR_VERSION == 4 && MINOR_VERSION == 0)
     {
     INCLUDES = "-iwrapper\"" + supportPath + "/4.0\" " + INCLUDES;
-    SPECIAL = "-include \"" + supportPath + "/4.0/gccxml_builtins.h\"";
-    }
-  else if(MAJOR_VERSION == 4 && MINOR_VERSION >= 2)
-    {
-    INCLUDES = "-iwrapper\"" + supportPath + "/4.2\" " + INCLUDES;
-    SPECIAL = "-include \"" + supportPath + "/4.2/gccxml_builtins.h\"";
+    SPECIAL = "-include \"gccxml_builtins.h\"";
     }
   else if(MAJOR_VERSION == 3 && MINOR_VERSION >= 4)
     {
@@ -1553,7 +1553,7 @@ bool gxConfiguration::FindFlagsGCC()
   else if(MAJOR_VERSION == 3 && MINOR_VERSION == 3)
     {
     INCLUDES = "-iwrapper\"" + supportPath + "/3.3\" " + INCLUDES;
-    SPECIAL = "-include \"" + supportPath + "/3.3/gccxml_builtins.h\"";
+    SPECIAL = "-include \"gccxml_builtins.h\"";
     }
   else if(MAJOR_VERSION == 3 && MINOR_VERSION == 2)
     {
