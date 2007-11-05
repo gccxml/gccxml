@@ -285,8 +285,9 @@ const gxDocumentationEntry gxDocumentationMetaInfo[] =
 const gxDocumentationEntry gxDocumentationCopyright[] =
 {
   {0,
-   "Copyright (c) 2002-2004 Kitware, Inc., Insight Consortium.\n"
-   "All rights reserved.\n", 0},
+   "GCC-XML - XML output for GCC\n", 0},
+  {0,
+   "Copyright (c) 2002-2007 Kitware, Inc., Insight Consortium\n", 0},
   {0,
    "Redistribution and use in source and binary forms, with or without "
    "modification, are permitted provided that the following conditions are "
@@ -319,6 +320,29 @@ const gxDocumentationEntry gxDocumentationCopyright[] =
    "LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING "
    "NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS "
    "SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n", 0},
+  {0,
+   "------------------------------------------------------------\n", 0},
+  {0,
+   "gccxml_cc1plus - "
+   "A GCC parser patched for XML dumps of translation units\n", 0},
+  {0,
+   "Copyright (c) 2002-2007 Kitware, Inc., Insight Consortium\n", 0},
+  {0,
+   "This program is free software; you can redistribute it and/or modify "
+   "it under the terms of the GNU General Public License as published by "
+   "the Free Software Foundation; either version 2 of the License, or "
+   "(at your option) any later version.\n", 0},
+  {0,
+   "This program is distributed in the hope that it will be useful, "
+   "but WITHOUT ANY WARRANTY; without even the implied warranty of "
+   "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the "
+   "GNU General Public License for more details.\n", 0},
+  {0,
+   "You should have received a copy of the GNU General Public License "
+   "along with this program; if not, write to the\n"
+   "  Free Software Foundation, Inc.\n"
+   "  51 Franklin Street, Fifth Floor\n"
+   "  Boston, MA  02110-1301  USA\n", 0},
   {0, 0, 0}
 };
 
@@ -541,7 +565,6 @@ void gxDocumentation::PrintManPage(std::ostream& os)
 //----------------------------------------------------------------------------
 void gxDocumentation::PrintCopyright(std::ostream& os)
 {
-  os << "GCC-XML version " GCCXML_VERSION_FULL "\n";
   for(const gxDocumentationEntry* op = gxDocumentationCopyright;
       op->brief; ++op)
     {
