@@ -641,16 +641,16 @@ public:
     valarray<value_type> operator[] (const valarray<bool>&) const;
     valarray<value_type> operator[] (const valarray<size_t>&) const;
     
-    _Expr<_UnClos<_Unary_plus,_Expr,_Clos>, value_type>
+    _Expr<_UnClos<_Unary_plus,::_Expr,_Clos>, value_type>
     operator+ () const;
     
-    _Expr<_UnClos<negate,_Expr,_Clos>, value_type>
+    _Expr<_UnClos<negate,::_Expr,_Clos>, value_type>
     operator- () const;
     
-    _Expr<_UnClos<_Bitwise_not,_Expr,_Clos>, value_type>
+    _Expr<_UnClos<_Bitwise_not,::_Expr,_Clos>, value_type>
     operator~ () const;
     
-    _Expr<_UnClos<logical_not,_Expr,_Clos>, bool>
+    _Expr<_UnClos<logical_not,::_Expr,_Clos>, bool>
     operator! () const;
     
     size_t size () const;
@@ -680,11 +680,6 @@ template<class _Clos, typename _Tp>
 inline _Tp
 _Expr<_Clos,_Tp>::operator[] (size_t __i) const
 { return _M_closure[__i]; }
-
-template<class _Clos, typename _Tp>
-inline valarray<_Tp>
-_Expr<_Clos,_Tp>::operator[] (slice __s) const
-{ return _M_closure[__s]; }
 
 template<class _Clos, typename _Tp>
 inline valarray<_Tp>
@@ -742,7 +737,7 @@ template<class _Dom, typename _Tp>
 inline _Expr<_UnClos<logical_not,_Expr,_Dom>, bool>
 _Expr<_Dom,_Tp>::operator! () const
 {
-    typedef _UnClos<logical_not,_Expr,_Dom> _Closure;
+    typedef _UnClos<logical_not,::_Expr,_Dom> _Closure;
     return _Expr<_Closure,_Tp> (_Closure(this->_M_closure));
 }
 
@@ -751,7 +746,7 @@ template<class _Dom, typename _Tp>                                      \
 inline _Expr<_UnClos<_Name,_Expr,_Dom>,_Tp>                             \
 _Expr<_Dom,_Tp>::operator  _Op () const                                 \
 {                                                                       \
-    typedef _UnClos<_Name,_Expr,_Dom> _Closure;                         \
+    typedef _UnClos<_Name,::_Expr,_Dom> _Closure;                       \
     return _Expr<_Closure,_Tp> (_Closure (this->_M_closure));           \
 }
 
