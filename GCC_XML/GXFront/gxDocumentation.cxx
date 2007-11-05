@@ -59,7 +59,7 @@ const gxDocumentationEntry gxDocumentationDescription[] =
 const gxDocumentationEntry gxDocumentationCompilers[] =
 {
   {0, "GCC-XML can simulate any of the following compilers:", 0},
-  {"GCC", "Versions 4.2, 4.1, 4.0, 3.4, 3.3", 0},
+  {"GCC", "Versions 4.2, 4.1, 4.0, 3.4, 3.3, 3.2, 2.95.x", 0},
   //{"GCC", "Versions 4.2, 4.1, 4.0, 3.x, 2.95.x", 0},
   //{"SGI MIPSpro", "Version 7.3x", 0},
   {"Visual C++", "Versions 8, 7.1, 7.0, and 6 (sp5)", 0},
