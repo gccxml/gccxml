@@ -1159,8 +1159,13 @@ coerce_new_type (tree type)
       e = 2;
       if (args && args != void_list_node)
         args = TREE_CHAIN (args);
+/* BEGIN GCC-XML MODIFICATIONS (2007/11/05 20:04:58) */
+/* Ignore whether the native compiler breaks the operator new signature.  */
+#if 0
       pedwarn ("%<operator new%> takes type %<size_t%> (%qT) "
                "as first parameter", size_type_node);
+#endif
+/* END GCC-XML MODIFICATIONS (2007/11/05 20:04:58) */
     }
   switch (e)
   {
