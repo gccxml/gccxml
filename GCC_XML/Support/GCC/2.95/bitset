@@ -1,7 +1,7 @@
 #ifndef GCCXML_BITSET
 #define GCCXML_BITSET
 
-#include_next <bitset>
+#include "gccxml_bitset"
 
 // 23.3.5
 namespace std

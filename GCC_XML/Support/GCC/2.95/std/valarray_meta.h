@@ -503,9 +503,8 @@ public:
     
     _SBase (const _Dom& __e, const slice& __s)
             : _M_expr (__e), _M_slice (__s) {}
-    value_type operator[] (size_t __i) const
-    { return _M_expr[_M_slice.start () + __i * _M_slice.stride ()]; }
-    size_t size() const { return _M_slice.size (); }
+    value_type operator[] (size_t __i) const;
+    size_t size() const;
     
 private:
     const _Dom& _M_expr;
@@ -516,9 +515,7 @@ template<typename _Tp> class _SBase<_Array<_Tp> > {
 public:
     typedef _Tp value_type;
     
-    _SBase (_Array<_Tp> __a, const slice& __s)
-            : _M_array (__a._M_data+__s.start()), _M_size (__s.size()),
-              _M_stride (__s.stride()) {}
+    _SBase (_Array<_Tp> __a, const slice& __s);
     value_type operator[] (size_t __i) const
     { return _M_array._M_data[__i * _M_stride]; }
     size_t size() const { return _M_size; }
@@ -553,9 +550,8 @@ public:
     
     _GBase (const _Dom& __e, const valarray<size_t>& __i)
             : _M_expr (__e), _M_index(__i) {}
-    value_type operator[] (size_t __i) const
-    { return _M_expr[_M_index[__i]]; }
-    size_t size () const { return _M_index.size(); }
+    value_type operator[] (size_t __i) const;
+    size_t size () const;
     
 private:
     const _Dom&  _M_expr;
@@ -568,9 +564,8 @@ public:
     
     _GBase (_Array<_Tp> __a, const valarray<size_t>& __i)
             : _M_array (__a), _M_index(__i) {}
-    value_type operator[] (size_t __i) const
-    { return _M_array._M_data[_M_index[__i]]; }
-    size_t size () const { return _M_index.size(); }
+    value_type operator[] (size_t __i) const;
+    size_t size () const;
     
 private:
     const _Array<_Tp>     _M_array;
@@ -604,9 +599,8 @@ public:
 
     _IBase (const _Dom& __e, const valarray<size_t>& __i)
             : _M_expr (__e), _M_index (__i) {}
-    value_type operator[] (size_t __i) const
-    { return _M_expr[_M_index[__i]]; }
-    size_t size() const { return _M_index.size(); }
+    value_type operator[] (size_t __i) const;
+    size_t size() const;
     
 private:
     const _Dom&             _M_expr;
