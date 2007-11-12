@@ -65,7 +65,7 @@ along with this program; if not, write to the
 
 #include "toplev.h" /* ident_hash */
 
-#define GCC_XML_C_VERSION "$Revision: 1.117 $"
+#define GCC_XML_C_VERSION "$Revision: 1.118 $"
 
 /*--------------------------------------------------------------------------*/
 /* Data structures for the actual XML dump.  */
@@ -1733,7 +1733,14 @@ xml_output_argument (xml_dump_info_p xdi, tree pd, tree tl, int complete)
     }
   if (pd && TREE_TYPE (pd))
     {
-    xml_print_type_attribute (xdi, TREE_TYPE (pd), complete);
+    tree t = TREE_TYPE(pd);
+    if (DECL_BY_REFERENCE (pd))
+      {
+      /* This is an "invisible reference" added by GCC.  Replace it
+         with the real type.  */
+      t = TREE_TYPE (t);
+      }
+    xml_print_type_attribute (xdi, t, complete);
     xml_print_location_attribute (xdi, pd);
     }
   else
