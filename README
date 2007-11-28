@@ -37,6 +37,10 @@ run the executable directly from the build directory.  It will be
 located in gccxml-build/bin, gccxml-build/bin/Debug, or
 gccxml-build/bin/Release depending on the build system chosen.
 
+Solaris:
+Sun's CC 5.8 is supported. You need modified headers to use gccxml with CC 5.8.
+You need to follow the instructions in GCC_XML/Support/Sun/README.
+
 ------------------------------------------------------------------------------
 Running:
 

@@ -1,0 +1,69 @@
+#!/bin/sh
+#=============================================================================
+#
+#  Program:   GCC-XML
+#  Module:    find_flags
+#  Language:  C++
+#  Date:      $Date$
+#  Version:   $Revision$
+#
+#  Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
+#  See Copyright.txt for details.
+#
+#     This software is distributed WITHOUT ANY WARRANTY; without even 
+#     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+#     PURPOSE.  See the above copyright notices for more information.
+#
+#=============================================================================
+# Find the CC executable name.
+if test "x$1" = "x" ; then
+  if test "x${CXX}" = "x" ; then
+    CXX=CC
+  fi
+else 
+  CXX="$1"
+  shift
+  CXXFLAGS="$@"
+fi
+
+GCCXML_PID="$$"
+cat > "/tmp/gccxml_identify_compiler_args$GCCXML_PID.cc" <<!
+#include <>
+!
+
+# Find the macro definition options.
+MACROS=`${CXX} /tmp/gccxml_identify_compiler_args$GCCXML_PID.cc -E -xdumpmacros=defs 2>&1 |
+       awk '{ if ($1 ~ /#define/) printf("-D%s=%s %s %s ",$2,$3,$4,$5) }'
+       ` 
+MACROS="-D__cplusplus=199711L -D__STDC__ -D_REENTRANT $MACROS"
+
+# Find the include path options.
+#todo test for truss
+INCLUDES=`truss -f -t openat ${CXX} -E /tmp/gccxml_identify_compiler_args$GCCXML_PID.cc 2>&1 |
+         awk '{if ($3 ~ /\"[A-Za-z0-9_\/.-]+\",/ && $3 !~ /tmp/)
+                 if (tempString!=substr($3,2,length($3)-3))
+                 {
+                    tempString=substr($3,2,length($3)-3);
+                    printf("-I%s ",tempString)
+                 }
+               }'`
+
+#cleanup
+rm -rf "/tmp/gccxml_identify_compiler_args$GCCXML_PID.cc"
+
+# The support headers are located where this script is.
+SELFPATH=`echo $0 | sed -n '/\//{s/\/find_flags//;p;}'`
+if test "x$SELFPATH" = "x" ; then SELFPATH="." ; fi
+SELFPATH=`cd "$SELFPATH" ; pwd`
+
+# Find CC version
+CC_VERSION=`${CXX} -V 2>&1 | awk '{print $4}'`
+
+# Use hacked headers for CC 5.8
+if [ $CC_VERSION = 5.8 ]; then
+  INCLUDES="-iwrapper\"$SELFPATH/5.8\" $INCLUDES"
+fi
+ 
+# Format and print out the options.
+OPTIONS="$MACROS $INCLUDES $SPECIAL"
+echo $OPTIONS

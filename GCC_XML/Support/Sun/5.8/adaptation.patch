@@ -1,0 +1,168 @@
+Common subdirectories: ./iso and ../result/iso
+diff -r -u ./istream ../result/istream
+--- ./istream	Fri Nov 16 16:40:47 2007
++++ ../result/istream	Fri Nov 16 15:22:16 2007
+@@ -419,9 +419,11 @@
+         const istream_iterator<T,charT,traits,Distance>& x,
+         const istream_iterator<T,charT,traits,Distance>& y);
+ #else
+-    friend inline bool operator== <> (
++/* SMOSS 29/08/07 inline not allowed in friend declaration */
++    friend /*inline*/ bool operator== <> (
+         const istream_iterator<T,charT,traits,Distance>& x,
+         const istream_iterator<T,charT,traits,Distance>& y);
++/* END SMOSS 29/08/07 inline not allowed in friend declaration */
+ #endif
+   public: 
+     typedef charT char_type;
+diff -r -u ./math.h ../result/math.h
+--- ./math.h	Fri Nov 16 17:25:29 2007
++++ ../result/math.h	Fri Nov 16 15:22:16 2007
+@@ -313,6 +313,11 @@
+ #endif
+ /* END adopted by C99 */
+ 
++/* SMOSS 29/08/07 <floatingpoint.h> conflicts with stdlib_iso.h */
++#ifdef __EXTENSIONS__
++# undef __EXTENSIONS__
++#endif //__EXTENSIONS__
++/* END SMOSS 29/08/07 <floatingpoint.h> conflicts with stdlib_iso.h */
+ #if defined(__EXTENSIONS__) || !defined(__cplusplus)
+ #include <floatingpoint.h>
+ #endif
+@@ -319,6 +324,11 @@
+ #endif	/* defined(__EXTENSIONS__) || !defined(_XOPEN_SOURCE) */
+ #endif	/* defined(__EXTENSIONS__) || defined(_XOPEN_SOURCE) || ... */
+ 
++/* SMOSS 29/08/07 <floatingpoint.h> conflicts with stdlib_iso.h */
++#ifdef __EXTENSIONS__
++# define __EXTENSIONS__
++#endif //__EXTENSIONS__
++/* END SMOSS 29/08/07 <floatingpoint.h> conflicts with stdlib_iso.h */
+ #if defined(__cplusplus) && defined(__GNUC__)
+ #undef	exception
+ #endif
+Common subdirectories: ./rw and ../result/rw
+diff -r -u ./streambuf ../result/streambuf
+--- ./streambuf	Fri Nov 16 16:40:47 2007
++++ ../result/streambuf	Fri Nov 16 15:22:16 2007
+@@ -927,7 +927,10 @@
+    * int_type snextc()
+    * returns the next character
+    */
+-
++/* SMOSS 29/08/07 Can't use typename in template specializations */
++#ifdef _TYPENAME
++# define _TYPENAME
++#endif
+   inline _TYPENAME basic_streambuf<char, char_traits<char> >::int_type
+   basic_streambuf<char, char_traits<char> >::snextc()
+   {
+@@ -1208,6 +1211,11 @@
+   {
+     return seekpos(sp, which);
+   }
++#ifdef _TYPENAME
++# define _TYPENAME typename
++# undef _OLD_TYPENAME
++#endif
++/* END SMOSS 29/08/07 Can't use typename in template specializations */
+ 
+   /*
+    * basic_streambuf *pubsetbuf(char_type *, streamsize)
+diff -r -u ./string ../result/string
+--- ./string	Fri Nov 16 16:40:47 2007
++++ ../result/string	Fri Nov 16 15:22:16 2007
+@@ -797,7 +797,9 @@
+     // Null string ref
+     //
+ #ifndef _RWSTD_NO_STATIC_DEF3
+-    static __SUNW_GLOBAL const __null_ref_type __nullref;
++/* SMOSS 29/08/07 Can't resolve #define __SUNW_GLOBAL __global */
++    static /* __SUNW_GLOBAL */ const __null_ref_type __nullref;
++/* SMOSS 29/08/07 Can't resolve #define __SUNW_GLOBAL __global */
+ #endif
+ 
+     static __string_ref_type * __getNullRep ()
+Common subdirectories: ./sys and ../result/sys
+diff -r -u ./typeinfo ../result/typeinfo
+--- ./typeinfo	Fri Nov 16 16:40:47 2007
++++ ../result/typeinfo	Fri Nov 16 15:22:16 2007
+@@ -34,7 +34,8 @@
+ 	// Implementation
+ 	const void* __data;
+ 	type_info(const void*) throw();
+-	friend __Cimpl::__type_info_friend;
++	/* SMOSS 29/08/07 Can't resolve */
++	//friend __Cimpl::__type_info_friend;
+     };
+ 
+     class bad_typeid: public exception {
+diff -r -u ./iso/stdlib_iso.h ../result/iso/stdlib_iso.h
+--- ./iso/stdlib_iso.h	Fri Nov 16 16:40:47 2007
++++ ../result/iso/stdlib_iso.h	Fri Nov 16 15:22:16 2007
+@@ -110,8 +110,10 @@
+ extern double atof(const char *);
+ extern int atoi(const char *);
+ extern long int atol(const char *);
++/* SMOSS 29/08/07
+ extern void *bsearch(const void *, const void *, size_t, size_t,
+ 	int (*)(const void *, const void *));
++*/
+ #if __cplusplus >= 199711L
+ extern "C++" {
+ 	void *bsearch(const void *, const void *, size_t, size_t,
+@@ -131,7 +133,6 @@
+ extern size_t mbstowcs(wchar_t *_RESTRICT_KYWD, const char *_RESTRICT_KYWD,
+ 	size_t);
+ extern int mbtowc(wchar_t *_RESTRICT_KYWD, const char *_RESTRICT_KYWD, size_t);
+-extern void qsort(void *, size_t, size_t, int (*)(const void *, const void *));
+ #if __cplusplus >= 199711L
+ extern "C++" {
+ 	void qsort(void *, size_t, size_t, int (*)(const void *, const void *));
+diff -r -u ./rw/iterator ../result/rw/iterator
+--- ./rw/iterator	Fri Nov 16 17:03:59 2007
++++ ../result/rw/iterator	Fri Nov 16 15:22:16 2007
+@@ -426,10 +426,12 @@
+     friend inline difference_type (std::operator-) (const self& x, const self& y);
+     friend inline self (std::operator+)     (difference_type n, const self& x);
+ #else
+-    friend inline bool operator== <>   (const self& x, const self& y);
+-    friend inline bool operator<  <>   (const self& x, const self& y);
+-    friend inline difference_type operator- <> (const self& x, const self& y);
+-    friend inline self operator+  <>   (difference_type n, const self& x);
++/* SMOSS 29/08/07 removing 'inline' from friend declarations */
++    friend /*inline*/ bool operator== <>   (const self& x, const self& y);
++    friend /*inline*/ bool operator<  <>   (const self& x, const self& y);
++    friend /*inline*/ difference_type operator- <> (const self& x, const self& y);
++    friend /*inline*/ self operator+  <>   (difference_type n, const self& x);
++/* END SMOSS 29/08/07 removing 'inline' from friend declarations */
+ #endif        
+   protected:
+ 
+@@ -581,7 +583,9 @@
+     typedef Reference reference;
+     typedef Pointer pointer;
+ 
+-    friend inline bool operator== <>   (const self& x, const self& y);
++/* SMOSS 29/08/07 removing 'inline' from friend declarations */
++    friend /*inline*/ bool operator== <>   (const self& x, const self& y);
++/* END SMOSS 29/08/07 removing 'inline' from friend declarations */
+         
+   protected:
+ 
+diff -r -u ./sys/regset.h ../result/sys/regset.h
+--- ./sys/regset.h	Fri Nov 16 16:40:47 2007
++++ ../result/sys/regset.h	Fri Nov 16 15:22:16 2007
+@@ -16,7 +16,10 @@
+ #pragma ident	"@(#)regset.h	1.28	04/09/28 SMI"	/* SVr4.0 1.1	*/
+ 
+ #include <sys/feature_tests.h>
+-
++/* SMOSS 29/08/07     */
++//#include <inttypes.h>
++typedef long long unsigned int uint64_t;
++/* end SMOSS 29/08/08 */
+ #if !defined(_ASM)
+ #include <sys/int_types.h>
+ #endif

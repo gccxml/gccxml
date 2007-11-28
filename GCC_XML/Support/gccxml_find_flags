@@ -46,16 +46,21 @@ GCCXML_SUPPORT="GCC"
 GCCXML_SUPPORT="MIPSpro"
 #elif defined(__INTEL_COMPILER) && (__INTEL_COMPILER >= 700)
 GCCXML_SUPPORT="Intel"
+#elif defined(__SUNPRO_CC)
+GCCXML_SUPPORT="Sun"
 #else
 GCCXML_SUPPORT=""
 #endif
 !
 
 # Run the compiler's preprocessor on the above code to identify it.
+# (workaround for CC whitespace:)
 if (${GCCXML_COMPILER} ${GCCXML_CXXFLAGS} \
                          -E "/tmp/gccxml_identify_compiler$GCCXML_PID.cc" \
+			 | sed -e 's/[ ^]//g' \
                           > "/tmp/gccxml_identify_compiler$GCCXML_PID.pp";
-      rm -f "/tmp/gccxml_identify_compiler$GCCXML_PID.cc") ; then : ; else
+      rm -f "/tmp/gccxml_identify_compiler$GCCXML_PID.cc"
+) ; then : ; else
   echo "Error running \"${GCCXML_COMPILER} -E\""
   exit 1
 fi
