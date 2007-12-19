@@ -65,7 +65,7 @@ along with this program; if not, write to the
 
 #include "toplev.h" /* ident_hash */
 
-#define GCC_XML_C_VERSION "$Revision: 1.118 $"
+#define GCC_XML_C_VERSION "$Revision: 1.119 $"
 
 /*--------------------------------------------------------------------------*/
 /* Data structures for the actual XML dump.  */
@@ -3068,6 +3068,7 @@ xml_find_template_parm (tree t)
 
     /* Other types that have no nested types.  */
     case INTEGER_CST: return 0;
+    case ALIGNOF_EXPR: return 0;
     case SIZEOF_EXPR: return 0;
     case ADDR_EXPR: return 0;
     case BIT_AND_EXPR: return 0;
