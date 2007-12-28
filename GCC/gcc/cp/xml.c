@@ -65,7 +65,7 @@ along with this program; if not, write to the
 
 #include "toplev.h" /* ident_hash */
 
-#define GCC_XML_C_VERSION "$Revision: 1.119 $"
+#define GCC_XML_C_VERSION "$Revision: 1.120 $"
 
 /*--------------------------------------------------------------------------*/
 /* Data structures for the actual XML dump.  */
@@ -1189,16 +1189,7 @@ static void
 xml_print_default_argument_attribute (xml_dump_info_p xdi, tree t)
 {
   const char* value;
-
-  switch (TREE_CODE(t))
-    {
-    case CAST_EXPR:
-      value = xml_get_encoded_string_from_string ("<gccxml-cast-expr>");
-      break;
-    default:
-      value = xml_get_encoded_string_from_string (expr_as_string (t, 0));
-      break;
-    };
+  value = xml_get_encoded_string_from_string (expr_as_string (t, 0));
   fprintf (xdi->file, " default=\"%s\"", value);
 }
 
