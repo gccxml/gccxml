@@ -6,7 +6,7 @@
   Date:      $Date$
   Version:   $Revision$
 
-  Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
+  Copyright (c) 2002-2007 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt for details.
 
      This software is distributed WITHOUT ANY WARRANTY; without even
