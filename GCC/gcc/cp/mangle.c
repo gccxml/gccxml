@@ -2246,6 +2246,25 @@ write_template_arg_literal (const tree value)
   switch (TREE_CODE (value))
     {
     case CONST_DECL:
+/* BEGIN GCC-XML MODIFICATIONS (2008/02/14 15:26:25) */
+      /*
+      The mangling code chokes on this code:
+
+        template <int p, int n>
+        struct max_pow2_less {
+          enum { c = 2*n < p };
+          static const int value = c? (max_pow2_less< c*p, 2*c*n>::value) : n;
+        };
+
+      Here we check for the case that causes the error and hack around it.
+      */
+      if (TREE_CODE (DECL_INITIAL (value)) != INTEGER_CST)
+        {
+        char hack[] = "_gccxml_bug_in_gcc_";
+        write_chars (hack, sizeof(hack)-1);
+        break;
+        }
+/* END GCC-XML MODIFICATIONS (2008/02/14 15:26:25) */
       write_integer_cst (DECL_INITIAL (value));
       break;
 
