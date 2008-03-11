@@ -24,6 +24,14 @@ target_gtfiles=
 extra_objs="${host_extra_objs} ${extra_objs}"
 extra_gcc_objs="${host_extra_gcc_objs} ${extra_gcc_objs}"
 
+# The file host-ppc-darwin.o is built from rs6000/host-darwin.c in the
+# gcc makefile system
+fix_out_host_hook_obj()
+{
+  echo "$1" | sed 's/host-ppc-darwin/rs6000\/host-darwin/'
+}
+out_host_hook_obj=`fix_out_host_hook_obj "${out_host_hook_obj}"`
+
 # Report the information back to the CMake process.
 cat > "${outfile}.in" <<EOF
 SET(target ${host})
