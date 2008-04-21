@@ -1104,6 +1104,8 @@ bool gxConfiguration::FindFlags()
                                                    loc);
     bool have8ex =
       gxSystemTools::ReadRegistryValue(gxConfigurationVc8exRegistry, loc);
+    bool have9 =
+      gxSystemTools::ReadRegistryValue(gxConfigurationVc9Registry, loc);
 
     // Look for a VS8 that is not the beta release.
     bool have8 = false;
@@ -1125,27 +1127,31 @@ bool gxConfiguration::FindFlags()
       }
 
     // See if only one is installed.
-    if(have6 && !have7 && !have71 && !have8 && !have8ex)
+    if(have6 && !have7 && !have71 && !have8 && !have8ex && !have9)
       {
       return this->FindFlagsMSVC6();
       }
-    else if(!have6 && have7 && !have71 && !have8 && !have8ex)
+    else if(!have6 && have7 && !have71 && !have8 && !have8ex && !have9)
       {
       return this->FindFlagsMSVC7();
       }
-    else if(!have6 && !have7 && have71 && !have8 && !have8ex)
+    else if(!have6 && !have7 && have71 && !have8 && !have8ex && !have9)
       {
       return this->FindFlagsMSVC71();
       }
-    else if(!have6 && !have7 && !have71 && have8 && !have8ex)
+    else if(!have6 && !have7 && !have71 && have8 && !have8ex && !have9)
       {
       return this->FindFlagsMSVC8();
       }
-    else if(!have6 && !have7 && !have71 && !have8 && have8ex)
+    else if(!have6 && !have7 && !have71 && !have8 && have8ex && !have9)
       {
       return this->FindFlagsMSVC8ex();
       }
-    else if(have6 || have7 || have71 || have8 || have8ex)
+    else if(!have6 && !have7 && !have71 && !have8 && !have8ex && have9)
+      {
+      return this->FindFlagsMSVC9();
+      }
+    else if(have6 || have7 || have71 || have8 || have8ex || have9)
       {
       // Find available support directories.
       bool support6 = have6 && this->FindData("Vc6");
@@ -1153,30 +1159,42 @@ bool gxConfiguration::FindFlags()
       bool support71 = have71 && this->FindData("Vc71");
       bool support8 = have8 && this->FindData("Vc8");
       bool support8ex = have8ex && this->FindData("Vc8ex");
+      bool support9 = have9 && this->FindData("Vc9");
 
       // Have more than one.  See if only one has the support
       // directory available.
-      if(support6 && !support7 && !support71 && !support8 && !support8ex)
+      if(support6 && !support7 && !support71 && !support8 &&
+         !support8ex && !support9)
         {
         return this->FindFlagsMSVC6();
         }
-      else if(!support6 && support7 && !support71 && !support8 && !support8ex)
+      else if(!support6 && support7 && !support71 && !support8 &&
+              !support8ex && !support9)
         {
         return this->FindFlagsMSVC7();
         }
-      else if(!support6 && !support7 && support71 && !support8 && !support8ex)
+      else if(!support6 && !support7 && support71 && !support8 &&
+              !support8ex && !support9)
         {
         return this->FindFlagsMSVC71();
         }
-      else if(!support6 && !support7 && !support71 && support8 && !support8ex)
+      else if(!support6 && !support7 && !support71 && support8 &&
+              !support8ex && !support9)
         {
         return this->FindFlagsMSVC8();
         }
-      else if(!support6 && !support7 && !support71 && !support8 && support8ex)
+      else if(!support6 && !support7 && !support71 && !support8 &&
+              support8ex && !support9)
         {
         return this->FindFlagsMSVC8ex();
         }
-      else if(!support6 && !support7 && !support71 && !support8 && !support8ex)
+      else if(!support6 && !support7 && !support71 && !support8 &&
+              !support8ex && support9)
+        {
+        return this->FindFlagsMSVC9();
+        }
+      else if(!support6 && !support7 && !support71 && !support8 &&
+              !support8ex && !support9)
         {
         std::cerr << "Compiler \"" << m_GCCXML_COMPILER
                   << "\" is not supported by GCC_XML because none of \n"
@@ -1241,6 +1259,10 @@ bool gxConfiguration::FindFlags()
               return this->FindFlagsMSVC8ex();
               }
             }
+          else if(output.find("Compiler Version 15.") != std::string::npos)
+            {
+            return this->FindFlagsMSVC9();
+            }
           }
         // Couldn't tell by running the compiler.
         }
@@ -1248,8 +1270,9 @@ bool gxConfiguration::FindFlags()
       // was used to build this executable.
       const char* const clText =
         "Compiler \"cl\" specified, but more than one of "
-        "MSVC 6, 7, 7.1, and 8 are installed.\n"
-        "Please specify \"msvc6\", \"msvc7\", \"msvc71\", or \"msvc8\" for "
+        "MSVC 6, 7, 7.1, 8, and 9 are installed.\n"
+        "Please specify \"msvc6\", \"msvc7\", \"msvc71\", \"msvc8\", "
+        "\"msvc8ex\", or \"msvc9\" for "
         "the GCCXML_COMPILER setting.\n";
 #if defined(_MSC_VER) && ((_MSC_VER >= 1200) && (_MSC_VER < 1300))
       std::cerr << "Warning:\n" << clText
@@ -1282,6 +1305,11 @@ bool gxConfiguration::FindFlags()
         {
         std::cerr << "No installed version of MSVC 8 was found!\n";
         }
+#elif defined(_MSC_VER) && ((_MSC_VER >= 1500) && (_MSC_VER < 1600))
+      std::cerr << "Warning:\n" << clText
+                << "Using MSVC 9 because it was used to build GCC-XML.\n"
+                << "\n";
+      return this->FindFlagsMSVC9();
 #else
       // Give up.  The user must specify one.
       std::cerr << clText;
