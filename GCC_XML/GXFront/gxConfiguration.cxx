@@ -46,6 +46,12 @@ const char* gxConfigurationVc8sdkRegistry =
 const char* gxConfigurationVc8sdk2Registry =
 "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\MicrosoftSDK\\InstalledSDKs\\D2FF9F89-8AA2-4373-8A31-C838BF4DBBE1;Install Dir";
 
+const char* gxConfigurationVc9Registry =
+"HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\VisualStudio\\9.0;InstallDir";
+//"HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\Microsoft\\VisualStudio\\9.0;InstallDir"; // _WIN64 ?
+const char* gxConfigurationVc9sdkRegistry =
+"HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Microsoft SDKs\\Windows\\v6.0A;InstallationFolder";
+
 //----------------------------------------------------------------------------
 gxConfiguration::gxConfiguration()
 {
@@ -1070,6 +1076,20 @@ bool gxConfiguration::FindFlags()
     else
       {
       return this->FindFlagsMSVC8();
+      }
+    }
+  else if(compilerName == "msvc9")
+    {
+    std::string loc;
+    bool have9ex = false;
+    // gxSystemTools::ReadRegistryValue(gxConfigurationVc9exRegistry, loc);
+    if(have9ex)
+      {
+      return false; // this->FindFlagsMSVC8ex();
+      }
+    else
+      {
+      return this->FindFlagsMSVC9();
       }
     }
   else if(compilerName == "cl")
@@ -2317,6 +2337,76 @@ bool gxConfiguration::FindFlagsMSVC8ex()
     {
     m_GCCXML_FLAGS += "-I\""+msvcPath2+"\" ";
     }
+  return true;
+}
+
+//----------------------------------------------------------------------------
+bool gxConfiguration::FindFlagsMSVC9()
+{
+  // The registry key to use when attempting to automatically find the
+  // MSVC include files.
+  std::string msvcPath;
+  if(!gxSystemTools::ReadRegistryValue(gxConfigurationVc9Registry, msvcPath))
+    {
+    std::cerr << "Error finding MSVC 9 from registry.\n";
+    return false;
+    }
+  std::string psdkPath;
+  if(!gxSystemTools::ReadRegistryValue(gxConfigurationVc9sdkRegistry, psdkPath))
+    {
+    std::cerr << "Error finding MSVC 9 Platform SDK from registry.\n";
+    return false;
+    }
+  std::string msvcPath1 = msvcPath+"/../../Vc/Include";
+  std::string msvcPath2 = psdkPath+"/Include";
+  msvcPath1 = gxSystemTools::CollapseDirectory(msvcPath1.c_str());
+  msvcPath2 = gxSystemTools::CollapseDirectory(msvcPath2.c_str());
+  std::string vcIncludePath1;
+  std::string vcIncludePath2;
+  if(!this->FindData("Vc9/Include", vcIncludePath1) ||
+     !this->FindData("Vc9/PlatformSDK", vcIncludePath2))
+    {
+    return false;
+    }
+
+  m_GCCXML_FLAGS =
+    "-U__STDC__ -U__STDC_HOSTED__ "
+    "-D__stdcall=__attribute__((__stdcall__)) "
+    "-D__cdecl=__attribute__((__cdecl__)) "
+    "-D__fastcall=__attribute__((__fastcall__)) "
+    "-D__thiscall=__attribute__((__thiscall__)) "
+    "-D_stdcall=__attribute__((__stdcall__)) "
+    "-D_cdecl=__attribute__((__cdecl__)) "
+    "-D_fastcall=__attribute__((__fastcall__)) "
+    "-D_thiscall=__attribute__((__thiscall__)) "
+    "-D__declspec(x)=__attribute__((x)) -D__pragma(x)= "
+    "-D__cplusplus -D_inline=inline -D__forceinline=__inline "
+    "-D_MSC_VER=1500 -D_MSC_EXTENSIONS -D_WIN32 "
+    "-D_M_IX86 "
+    "-D_WCHAR_T_DEFINED -DPASCAL= -DRPC_ENTRY= -DSHSTDAPI=HRESULT "
+    "-D_INTEGRAL_MAX_BITS=64 "
+    "-D__uuidof(x)=IID() -DSHSTDAPI_(x)=x "
+    "-D__w64= "
+    "-D__int8=char "
+    "-D__int16=short "
+    "-D__int32=int "
+    "-D__int64=\"long long\" "
+    "-D__ptr64= "
+    "-DSTRSAFE_NO_DEPRECATE "
+    "-D_CRT_FAR_MAPPINGS_NO_DEPRECATE "
+    "-D_CRT_MANAGED_FP_NO_DEPRECATE "
+    "-D_CRT_MANAGED_HEAP_NO_DEPRECATE "
+    "-D_CRT_NONSTDC_NO_DEPRECATE "
+    "-D_CRT_OBSOLETE_NO_DEPRECATE "
+    "-D_CRT_SECURE_NO_DEPRECATE "
+    "-D_CRT_SECURE_NO_DEPRECATE_GLOBALS "
+    "-D_CRT_VCCLRIT_NO_DEPRECATE "
+    "-D_SCL_SECURE_NO_DEPRECATE "
+    "-D_WINDOWS_SECURE_NO_DEPRECATE "
+    "-iwrapper\""+vcIncludePath1+"\" "
+    "-iwrapper\""+vcIncludePath2+"\" "
+    "-I\""+msvcPath1+"\" "
+    "-I\""+msvcPath2+"\" ";
   return true;
 }
 

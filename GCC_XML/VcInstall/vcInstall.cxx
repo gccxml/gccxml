@@ -79,6 +79,11 @@ int main(int argc, char* argv[])
     "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\MicrosoftSDK\\InstalledSDKs\\8F9E5EF3-A9A5-491B-A889-C58EFFECE8B3;Install Dir";
   const char* vc8sdk2Registry =
     "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\MicrosoftSDK\\InstalledSDKs\\D2FF9F89-8AA2-4373-8A31-C838BF4DBBE1;Install Dir";
+  const char* vc9Registry =
+    "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\VisualStudio\\9.0;InstallDir";
+  //"HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\Microsoft\\VisualStudio\\9.0;InstallDir"; // _WIN64 ?
+  const char* vc9sdkRegistry =
+    "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Microsoft SDKs\\Windows\\v6.0A;InstallationFolder";
 
   // Check which versions of MSVC are installed.
   std::string msvc6;
@@ -87,11 +92,16 @@ int main(int argc, char* argv[])
   std::string msvc8;
   std::string msvc8ex;
   std::string msvc8sdk;
+  std::string msvc9;
+  std::string msvc9sdk;
   bool have6 = gxSystemTools::ReadRegistryValue(vc6Registry, msvc6);
   bool have7 = gxSystemTools::ReadRegistryValue(vc7Registry, msvc7);
   bool have71 = gxSystemTools::ReadRegistryValue(vc71Registry, msvc71);
   bool have8 = false;
   bool have8ex = false;
+  bool have9 = gxSystemTools::ReadRegistryValue(vc9Registry, msvc9);
+  bool have9sdk =
+    have9 && gxSystemTools::ReadRegistryValue(vc9sdkRegistry, msvc9sdk);
   // Look for a VS8 express that is not the beta release.
   if(gxSystemTools::ReadRegistryValue(vc8exRegistry, msvc8ex))
     {
@@ -135,23 +145,23 @@ int main(int argc, char* argv[])
     }
 
   // See if there is anything to do.
-  if(!have6 && !have7 && !have71 && !have8 && !have8ex)
+  if(!have6 && !have7 && !have71 && !have8 && !have8ex && !have9)
     {
-    std::cout << "None of MSVC 6, 7, 7.1, or 8 is installed.\n";
+    std::cout << "None of MSVC 6, 7, 7.1, 8, or 9 is installed.\n";
     }
 
   // Need to install at least one of the support directories.  We need
   // to find the cat and patch executables.
   std::string patchCommand;
   if(!FindTool(patchDir.c_str(), "patch", patchCommand) &&
-     (have6||have7||have71||have8||have8ex))
+     (have6||have7||have71||have8||have8ex||have9))
     {
     std::cerr << "Cannot find patch executable.\n";
     return 1;
     }
   std::string catCommand;
   if(!FindTool(patchDir.c_str(), "cat", catCommand) &&
-     (have6||have7||have71||have8||have8ex))
+     (have6||have7||have71||have8||have8ex||have9))
     {
     std::cerr << "Cannot find cat executable.\n";
     return 1;
@@ -348,6 +358,52 @@ int main(int argc, char* argv[])
     else
       {
       std::cerr << "Have MSVC 8 Express Platform SDK, but "
+                << "cannot find " << patchPname << ".\n";
+      result = 1;
+      }
+    }
+
+  if(have9)
+    {
+    std::string msvc9i = msvc9 + "/../../Vc/Include";
+    msvc9i = gxSystemTools::CollapseDirectory(msvc9i.c_str());
+    std::string patchIname = "vc9Include.patch";
+    std::string destPathI = gccxmlRoot+"/Vc9/Include";
+    std::string patchI = patchDir + "/" + patchIname;
+    if(gxSystemTools::FileExists(patchI.c_str()))
+      {
+      if(!InstallSupport(patchCommand.c_str(), catCommand.c_str(),
+                         patchI.c_str(), msvc9i.c_str(), destPathI.c_str()))
+        {
+        result = 1;
+        }
+      }
+    else
+      {
+      std::cerr << "Have MSVC 9, but cannot find "
+                << patchIname << ".\n";
+      result = 1;
+      }
+    }
+  if(have9sdk)
+    {
+    std::string msvc9p = msvc9sdk + "/Include";
+    msvc9p = gxSystemTools::CollapseDirectory(msvc9p.c_str());
+    std::string patchPname = "vc9PlatformSDK.patch";
+    std::string destPathP = gccxmlRoot+"/Vc9/PlatformSDK";
+
+    std::string patchP = patchDir + "/" + patchPname;
+    if(gxSystemTools::FileExists(patchP.c_str()))
+      {
+      if(!InstallSupport(patchCommand.c_str(), catCommand.c_str(),
+                         patchP.c_str(), msvc9p.c_str(), destPathP.c_str()))
+        {
+        result = 1;
+        }
+      }
+    else
+      {
+      std::cerr << "Have MSVC 9 Platform SDK, but "
                 << "cannot find " << patchPname << ".\n";
       result = 1;
       }

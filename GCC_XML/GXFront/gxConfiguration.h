@@ -162,6 +162,7 @@ protected:
   bool FindFlagsMSVC71();
   bool FindFlagsMSVC8();
   bool FindFlagsMSVC8ex();
+  bool FindFlagsMSVC9();
   bool FindFlagsBCC55(const char* inBcc32);
 };
 

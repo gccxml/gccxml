@@ -1,0 +1,383 @@
+Index: OAIdl.h
+===================================================================
+RCS file: /cvsroot/GxInclude/Vc9/PlatformSDK/OAIdl.h,v
+retrieving revision 1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
+*** OAIdl.h	29 Jan 2008 21:05:24 -0000	1.1
+--- OAIdl.h	21 Apr 2008 14:20:46 -0000	1.2
+*************** struct tagVARIANT
+*** 442,448 ****
+                  FLOAT fltVal;
+                  DOUBLE dblVal;
+                  VARIANT_BOOL boolVal;
+!                 _VARIANT_BOOL bool;
+                  SCODE scode;
+                  CY cyVal;
+                  DATE date;
+--- 442,448 ----
+                  FLOAT fltVal;
+                  DOUBLE dblVal;
+                  VARIANT_BOOL boolVal;
+! //                _VARIANT_BOOL bool;
+                  SCODE scode;
+                  CY cyVal;
+                  DATE date;
+*************** struct tagVARIANT
+*** 457,463 ****
+                  FLOAT *pfltVal;
+                  DOUBLE *pdblVal;
+                  VARIANT_BOOL *pboolVal;
+!                 _VARIANT_BOOL *pbool;
+                  SCODE *pscode;
+                  CY *pcyVal;
+                  DATE *pdate;
+--- 457,463 ----
+                  FLOAT *pfltVal;
+                  DOUBLE *pdblVal;
+                  VARIANT_BOOL *pboolVal;
+! //                _VARIANT_BOOL *pbool;
+                  SCODE *pscode;
+                  CY *pcyVal;
+                  DATE *pdate;
+Index: ObjBase.h
+===================================================================
+RCS file: /cvsroot/GxInclude/Vc9/PlatformSDK/ObjBase.h,v
+retrieving revision 1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
+*** ObjBase.h	29 Jan 2008 21:05:24 -0000	1.1
+--- ObjBase.h	21 Apr 2008 15:30:52 -0000	1.2
+*************** extern "C++"
+*** 237,243 ****
+      template<typename T> void** IID_PPV_ARGS_Helper(T** pp) 
+      {
+          // make sure everyone derives from IUnknown
+!         static_cast<IUnknown*>(*pp);
+          
+          return reinterpret_cast<void**>(pp);
+      }
+--- 237,243 ----
+      template<typename T> void** IID_PPV_ARGS_Helper(T** pp) 
+      {
+          // make sure everyone derives from IUnknown
+!         //static_cast<IUnknown*>(*pp);
+          
+          return reinterpret_cast<void**>(pp);
+      }
+Index: PropIdl.h
+===================================================================
+RCS file: /cvsroot/GxInclude/Vc9/PlatformSDK/PropIdl.h,v
+retrieving revision 1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
+*** PropIdl.h	29 Jan 2008 21:05:24 -0000	1.1
+--- PropIdl.h	21 Apr 2008 14:20:46 -0000	1.2
+*************** struct tag_inner_PROPVARIANT
+*** 310,316 ****
+          FLOAT fltVal;
+          DOUBLE dblVal;
+          VARIANT_BOOL boolVal;
+!         _VARIANT_BOOL bool;
+          SCODE scode;
+          CY cyVal;
+          DATE date;
+--- 310,316 ----
+          FLOAT fltVal;
+          DOUBLE dblVal;
+          VARIANT_BOOL boolVal;
+! //        _VARIANT_BOOL bool;
+          SCODE scode;
+          CY cyVal;
+          DATE date;
+Index: WinNT.h
+===================================================================
+RCS file: /cvsroot/GxInclude/Vc9/PlatformSDK/WinNT.h,v
+retrieving revision 1.1
+retrieving revision 1.3
+diff -c -3 -p -r1.1 -r1.3
+*** WinNT.h	29 Jan 2008 21:05:25 -0000	1.1
+--- WinNT.h	21 Apr 2008 14:22:57 -0000	1.3
+*************** Int64ShllMod32 (
+*** 682,694 ****
+      DWORD ShiftCount
+      )
+  {
+-     __asm    {
+-         mov     ecx, ShiftCount
+-         mov     eax, dword ptr [Value]
+-         mov     edx, dword ptr [Value+4]
+-         shld    edx, eax, cl
+-         shl     eax, cl
+-     }
+  }
+  
+  __inline LONGLONG
+--- 682,687 ----
+*************** Int64ShraMod32 (
+*** 698,710 ****
+      DWORD ShiftCount
+      )
+  {
+-     __asm {
+-         mov     ecx, ShiftCount
+-         mov     eax, dword ptr [Value]
+-         mov     edx, dword ptr [Value+4]
+-         shrd    eax, edx, cl
+-         sar     edx, cl
+-     }
+  }
+  
+  __inline ULONGLONG
+--- 691,696 ----
+*************** Int64ShrlMod32 (
+*** 714,726 ****
+      DWORD ShiftCount
+      )
+  {
+-     __asm    {
+-         mov     ecx, ShiftCount
+-         mov     eax, dword ptr [Value]
+-         mov     edx, dword ptr [Value+4]
+-         shrd    eax, edx, cl
+-         shr     edx, cl
+-     }
+  }
+  
+  #if _MSC_VER >= 1200
+--- 700,705 ----
+*************** InterlockedBitTestAndSet (
+*** 3158,3169 ****
+      IN LONG Bit
+      )
+  {
+-     __asm {
+-            mov eax, Bit
+-            mov ecx, Base
+-            lock bts [ecx], eax
+-            setc al
+-     };
+  }
+  
+  FORCEINLINE
+--- 3137,3142 ----
+*************** InterlockedBitTestAndReset (
+*** 3173,3184 ****
+      IN LONG Bit
+      )
+  {
+-     __asm {
+-            mov eax, Bit
+-            mov ecx, Base
+-            lock btr [ecx], eax
+-            setc al
+-     };
+  }
+  #pragma warning(pop)
+  
+--- 3146,3151 ----
+*************** InterlockedBitTestAndComplement (
+*** 3214,3225 ****
+      IN LONG Bit
+      )
+  {
+-     __asm {
+-            mov eax, Bit
+-            mov ecx, Base
+-            lock btc [ecx], eax
+-            setc al
+-     };
+  }
+  #pragma warning(pop)
+  #endif	/* _M_CEE_PURE */
+--- 3181,3186 ----
+*************** _mm_pause (
+*** 3340,3346 ****
+  #else
+  
+  #if !defined(_M_CEE_PURE)
+! #define YieldProcessor() __asm { rep nop }
+  #endif  // !defined(_M_CEE_PURE)
+  
+  #endif  // (_MSC_FULL_VER >= 140041204)
+--- 3301,3307 ----
+  #else
+  
+  #if !defined(_M_CEE_PURE)
+! #define YieldProcessor()
+  #endif  // !defined(_M_CEE_PURE)
+  
+  #endif  // (_MSC_FULL_VER >= 140041204)
+*************** MemoryBarrier (
+*** 3364,3372 ****
+      )
+  {
+      LONG Barrier;
+-     __asm {
+-         xchg Barrier, eax
+-     }
+  }
+  #pragma warning( pop )
+  
+--- 3325,3330 ----
+*************** ReadPMC (
+*** 3409,3419 ****
+      )
+  
+  {
+- 
+-     __asm {
+-         mov ecx, Counter
+-         rdpmc
+-     };
+  }
+  
+  #endif
+--- 3367,3372 ----
+*************** ReadTimeStampCounter (
+*** 3442,3449 ****
+      )
+  
+  {
+- 
+-     __asm rdtsc
+  }
+  
+  #endif
+--- 3395,3400 ----
+*************** DbgRaiseAssertionFailure (
+*** 3474,3480 ****
+      )
+  
+  {
+-     __asm int 0x2c
+  }
+  
+  #pragma warning( pop )
+--- 3425,3430 ----
+*************** __inline PVOID GetCurrentFiber( void ) {
+*** 3495,3506 ****
+  #pragma warning(push)
+  #endif
+  #pragma warning (disable:4035 4793)        // disable 4035 (function must return something)
+! __inline PVOID GetFiberData( void ) { __asm {
+!                                         mov eax, fs:[0x10]
+!                                         mov eax,[eax]
+!                                         }
+!                                      }
+! __inline PVOID GetCurrentFiber( void ) { __asm mov eax, fs:[0x10] }
+  
+  #if _MSC_VER >= 1200
+  #pragma warning(pop)
+--- 3445,3452 ----
+  #pragma warning(push)
+  #endif
+  #pragma warning (disable:4035 4793)        // disable 4035 (function must return something)
+! __inline PVOID GetFiberData( void ) {}
+! __inline PVOID GetCurrentFiber( void ) {}
+  
+  #if _MSC_VER >= 1200
+  #pragma warning(pop)
+*************** typedef enum _ENLISTMENT_INFORMATION_CLA
+*** 12655,12661 ****
+  } ENLISTMENT_INFORMATION_CLASS;
+  
+  typedef struct _TRANSACTION_LIST_ENTRY {
+!     UOW    UOW;
+  } TRANSACTION_LIST_ENTRY, *PTRANSACTION_LIST_ENTRY;
+  
+  typedef struct _TRANSACTION_LIST_INFORMATION {
+--- 12601,12607 ----
+  } ENLISTMENT_INFORMATION_CLASS;
+  
+  typedef struct _TRANSACTION_LIST_ENTRY {
+!   ::UOW    UOW;
+  } TRANSACTION_LIST_ENTRY, *PTRANSACTION_LIST_ENTRY;
+  
+  typedef struct _TRANSACTION_LIST_INFORMATION {
+*************** __inline struct _TEB * NtCurrentTeb( voi
+*** 12942,12948 ****
+  
+  #pragma warning (disable:4035)        // disable 4035 (function must return something)
+  
+! __inline struct _TEB * NtCurrentTeb( void ) { __asm mov eax, fs:[PcTeb] }
+  
+  #if _MSC_VER >= 1200
+  #pragma warning(pop)
+--- 12888,12894 ----
+  
+  #pragma warning (disable:4035)        // disable 4035 (function must return something)
+  
+! __inline struct _TEB * NtCurrentTeb( void ) {}
+  
+  #if _MSC_VER >= 1200
+  #pragma warning(pop)
+Index: ktmtypes.h
+===================================================================
+RCS file: /cvsroot/GxInclude/Vc9/PlatformSDK/ktmtypes.h,v
+retrieving revision 1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
+*** ktmtypes.h	29 Jan 2008 21:05:27 -0000	1.1
+--- ktmtypes.h	21 Apr 2008 14:22:57 -0000	1.2
+*************** typedef struct _TRANSACTION_NOTIFICATION
+*** 138,144 ****
+  
+  typedef struct _TRANSACTION_NOTIFICATION_RECOVERY_ARGUMENT {
+      GUID   EnlistmentId;
+!     UOW    UOW;
+  } TRANSACTION_NOTIFICATION_RECOVERY_ARGUMENT, *PTRANSACTION_NOTIFICATION_RECOVERY_ARGUMENT;
+  
+  typedef ULONG SAVEPOINT_ID, *PSAVEPOINT_ID;
+--- 138,144 ----
+  
+  typedef struct _TRANSACTION_NOTIFICATION_RECOVERY_ARGUMENT {
+      GUID   EnlistmentId;
+!   ::UOW    UOW;
+  } TRANSACTION_NOTIFICATION_RECOVERY_ARGUMENT, *PTRANSACTION_NOTIFICATION_RECOVERY_ARGUMENT;
+  
+  typedef ULONG SAVEPOINT_ID, *PSAVEPOINT_ID;
+*************** typedef struct _KCRM_MARSHAL_HEADER {
+*** 176,182 ****
+  } KCRM_MARSHAL_HEADER, *PKCRM_MARSHAL_HEADER, *RESTRICTED_POINTER PRKCRM_MARSHAL_HEADER;
+  
+  typedef struct _KCRM_TRANSACTION_BLOB {
+!     UOW                UOW;
+      GUID               TmIdentity;
+      ULONG              IsolationLevel;
+      ULONG              IsolationFlags;
+--- 176,182 ----
+  } KCRM_MARSHAL_HEADER, *PKCRM_MARSHAL_HEADER, *RESTRICTED_POINTER PRKCRM_MARSHAL_HEADER;
+  
+  typedef struct _KCRM_TRANSACTION_BLOB {
+!   ::UOW                UOW;
+      GUID               TmIdentity;
+      ULONG              IsolationLevel;
+      ULONG              IsolationFlags;
+Index: specstrings_strict.h
+===================================================================
+RCS file: /cvsroot/GxInclude/Vc9/PlatformSDK/specstrings_strict.h,v
+retrieving revision 1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
+*** specstrings_strict.h	29 Jan 2008 21:05:29 -0000	1.1
+--- specstrings_strict.h	21 Apr 2008 14:20:25 -0000	1.2
+***************
+*** 1009,1017 ****
+  *************************************************************************/
+  #define __allowed(p) __$allowed_##p
+  #define __$allowed_as_global_decl /* empty */
+! #define __$allowed_as_statement_with_arg(x) \
+!     __pragma(warning(push)) __pragma(warning(disable : 4548)) \
+!         do {__noop(x);} while((0,0) __pragma(warning(pop)) )
+  #define __$allowed_as_statement __$allowed_as_statement_with_arg(1)
+  
+  /**************************************************************************
+--- 1009,1015 ----
+  *************************************************************************/
+  #define __allowed(p) __$allowed_##p
+  #define __$allowed_as_global_decl /* empty */
+! #define __$allowed_as_statement_with_arg(x)
+  #define __$allowed_as_statement __$allowed_as_statement_with_arg(1)
+  
+  /**************************************************************************
