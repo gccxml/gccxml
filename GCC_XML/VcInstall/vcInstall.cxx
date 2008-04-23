@@ -82,9 +82,11 @@ int main(int argc, char* argv[])
   const char* vc9Registry =
     "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\VisualStudio\\9.0;InstallDir";
   //"HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\Microsoft\\VisualStudio\\9.0;InstallDir"; // _WIN64 ?
+  const char* vc9exRegistry =
+    "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\VCExpress\\9.0;InstallDir";
+  //"HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\Microsoft\\VCExpress\\9.0;InstallDir"; // _WIN64 ?
   const char* vc9sdkRegistry =
     "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Microsoft SDKs\\Windows\\v6.0A;InstallationFolder";
-
   // Check which versions of MSVC are installed.
   std::string msvc6;
   std::string msvc7;
@@ -99,7 +101,8 @@ int main(int argc, char* argv[])
   bool have71 = gxSystemTools::ReadRegistryValue(vc71Registry, msvc71);
   bool have8 = false;
   bool have8ex = false;
-  bool have9 = gxSystemTools::ReadRegistryValue(vc9Registry, msvc9);
+  bool have9 = (gxSystemTools::ReadRegistryValue(vc9Registry, msvc9) ||
+                gxSystemTools::ReadRegistryValue(vc9exRegistry, msvc9));
   bool have9sdk =
     have9 && gxSystemTools::ReadRegistryValue(vc9sdkRegistry, msvc9sdk);
   // Look for a VS8 express that is not the beta release.

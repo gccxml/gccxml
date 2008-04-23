@@ -49,6 +49,9 @@ const char* gxConfigurationVc8sdk2Registry =
 const char* gxConfigurationVc9Registry =
 "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\VisualStudio\\9.0;InstallDir";
 //"HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\Microsoft\\VisualStudio\\9.0;InstallDir"; // _WIN64 ?
+const char* gxConfigurationVc9exRegistry =
+"HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\VCExpress\\9.0;InstallDir";
+//"HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\Microsoft\\VCExpress\\9.0;InstallDir"; // _WIN64 ?
 const char* gxConfigurationVc9sdkRegistry =
 "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Microsoft SDKs\\Windows\\v6.0A;InstallationFolder";
 
@@ -1105,7 +1108,8 @@ bool gxConfiguration::FindFlags()
     bool have8ex =
       gxSystemTools::ReadRegistryValue(gxConfigurationVc8exRegistry, loc);
     bool have9 =
-      gxSystemTools::ReadRegistryValue(gxConfigurationVc9Registry, loc);
+      (gxSystemTools::ReadRegistryValue(gxConfigurationVc9Registry, loc) ||
+       gxSystemTools::ReadRegistryValue(gxConfigurationVc9exRegistry, loc));
 
     // Look for a VS8 that is not the beta release.
     bool have8 = false;
@@ -2374,7 +2378,8 @@ bool gxConfiguration::FindFlagsMSVC9()
   // The registry key to use when attempting to automatically find the
   // MSVC include files.
   std::string msvcPath;
-  if(!gxSystemTools::ReadRegistryValue(gxConfigurationVc9Registry, msvcPath))
+  if(!gxSystemTools::ReadRegistryValue(gxConfigurationVc9Registry, msvcPath) &&
+     !gxSystemTools::ReadRegistryValue(gxConfigurationVc9exRegistry, msvcPath))
     {
     std::cerr << "Error finding MSVC 9 from registry.\n";
     return false;
