@@ -1031,6 +1031,35 @@ diff -c -3 -p -r1.1 -r1.2
   
   	_Iterator<false> _Checked_iterator_base() const
   	{
+Index: locale
+===================================================================
+RCS file: /cvsroot/GxInclude/Vc9/Include/locale,v
+retrieving revision 1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
+*** locale	29 Jan 2008 21:05:21 -0000	1.1
+--- locale	24 Apr 2008 03:14:54 -0000	1.2
+*************** public:
+*** 64,71 ****
+  		const locale *_Ploc = 0)
+  		{	// return locale category mask and construct standard facet
+  		if (_Ppf != 0 && *_Ppf == 0)
+! 			*_Ppf = _NEW_CRT collate<_Elem>(
+! 				_Locinfo(_Ploc->name()));
+  		return (_X_COLLATE);
+  		}
+  
+--- 64,73 ----
+  		const locale *_Ploc = 0)
+  		{	// return locale category mask and construct standard facet
+  		if (_Ppf != 0 && *_Ppf == 0)
+!                   {
+!                   _Locinfo _Loc(_Ploc->name());
+!                   *_Ppf = _NEW_CRT collate<_Elem>(_Loc);
+!                   }
+  		return (_X_COLLATE);
+  		}
+  
 Index: memory
 ===================================================================
 RCS file: /cvsroot/GxInclude/Vc9/Include/memory,v
@@ -1352,6 +1381,248 @@ diff -c -3 -p -r1.1 -r1.3
 !                     *_Ppf = _NEW_CRT ctype<_Elem>(_Loc);
 !                   }
   		return (_X_CTYPE);
+  		}
+  
+Index: xlocmes
+===================================================================
+RCS file: /cvsroot/GxInclude/Vc9/Include/xlocmes,v
+retrieving revision 1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
+*** xlocmes	29 Jan 2008 21:05:21 -0000	1.1
+--- xlocmes	24 Apr 2008 03:14:54 -0000	1.2
+*************** public:
+*** 76,83 ****
+  		const locale *_Ploc = 0)
+  		{	// return locale category mask and construct standard facet
+  		if (_Ppf != 0 && *_Ppf == 0)
+! 			*_Ppf = _NEW_CRT messages<_Elem>(
+! 				_Locinfo(_Ploc->name()));
+  		return (_X_MESSAGES);
+  		}
+  
+--- 76,85 ----
+  		const locale *_Ploc = 0)
+  		{	// return locale category mask and construct standard facet
+  		if (_Ppf != 0 && *_Ppf == 0)
+!                   {
+!                   _Locinfo _Loc(_Ploc->name());
+!                   *_Ppf = _NEW_CRT messages<_Elem>(_Loc);
+!                   }
+  		return (_X_MESSAGES);
+  		}
+  
+Index: xlocmon
+===================================================================
+RCS file: /cvsroot/GxInclude/Vc9/Include/xlocmon,v
+retrieving revision 1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
+*** xlocmon	29 Jan 2008 21:05:21 -0000	1.1
+--- xlocmon	24 Apr 2008 03:14:54 -0000	1.2
+*************** public:
+*** 280,287 ****
+  		const locale *_Ploc = 0)
+  		{	// return locale category mask and construct standard facet
+  		if (_Ppf != 0 && *_Ppf == 0)
+! 			*_Ppf = _NEW_CRT moneypunct<_Elem, _Intl>(
+! 				_Locinfo(_Ploc->name()), 0, true);
+  		return (_X_MONETARY);
+  		}
+  
+--- 280,289 ----
+  		const locale *_Ploc = 0)
+  		{	// return locale category mask and construct standard facet
+  		if (_Ppf != 0 && *_Ppf == 0)
+!                   {
+!                   _Locinfo _Loc(_Ploc->name());
+!                   *_Ppf = _NEW_CRT moneypunct<_Elem, _Intl>(_Loc, 0, true);
+!                   }
+  		return (_X_MONETARY);
+  		}
+  
+*************** public:
+*** 373,380 ****
+  		const locale *_Ploc = 0)
+  		{	// return locale category mask and construct standard facet
+  		if (_Ppf != 0 && *_Ppf == 0)
+! 			*_Ppf = _NEW_CRT money_get<_Elem, _InIt>(
+! 				_Locinfo(_Ploc->name()));
+  		return (_X_MONETARY);
+  		}
+  
+--- 375,384 ----
+  		const locale *_Ploc = 0)
+  		{	// return locale category mask and construct standard facet
+  		if (_Ppf != 0 && *_Ppf == 0)
+!                   {
+!                   _Locinfo _Loc(_Ploc->name());
+!                   *_Ppf = _NEW_CRT money_get<_Elem, _InIt>(_Loc);
+!                   }
+  		return (_X_MONETARY);
+  		}
+  
+*************** public:
+*** 666,673 ****
+  		const locale *_Ploc = 0)
+  		{	// return locale category mask and construct standard facet
+  		if (_Ppf != 0 && *_Ppf == 0)
+! 			*_Ppf = _NEW_CRT money_put<_Elem, _OutIt>(
+! 				_Locinfo(_Ploc->name()));
+  		return (_X_MONETARY);
+  		}
+  
+--- 670,679 ----
+  		const locale *_Ploc = 0)
+  		{	// return locale category mask and construct standard facet
+  		if (_Ppf != 0 && *_Ppf == 0)
+!                   {
+!                   _Locinfo _Loc(_Ploc->name());
+!                   *_Ppf = _NEW_CRT money_put<_Elem, _OutIt>(_Loc);
+!                   }
+  		return (_X_MONETARY);
+  		}
+  
+Index: xlocnum
+===================================================================
+RCS file: /cvsroot/GxInclude/Vc9/Include/xlocnum,v
+retrieving revision 1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
+*** xlocnum	29 Jan 2008 21:05:21 -0000	1.1
+--- xlocnum	24 Apr 2008 03:14:54 -0000	1.2
+*************** public:
+*** 111,118 ****
+  		const locale *_Ploc = 0)
+  		{	// return locale category mask and construct standard facet
+  		if (_Ppf != 0 && *_Ppf == 0)
+! 			*_Ppf = _NEW_CRT numpunct<_Elem>(
+! 				_Locinfo(_Ploc->name()), 0, true);
+  		return (_X_NUMERIC);
+  		}
+  
+--- 111,120 ----
+  		const locale *_Ploc = 0)
+  		{	// return locale category mask and construct standard facet
+  		if (_Ppf != 0 && *_Ppf == 0)
+!                   {
+!                   _Locinfo _Loc(_Ploc->name());
+!                   *_Ppf = _NEW_CRT numpunct<_Elem>(_Loc, 0, true);
+!                   }
+  		return (_X_NUMERIC);
+  		}
+  
+*************** public:
+*** 239,246 ****
+  		const locale *_Ploc = 0)
+  		{	// return locale category mask and construct standard facet
+  		if (_Ppf != 0 && *_Ppf == 0)
+! 			*_Ppf = _NEW_CRT num_get<_Elem, _InIt>(
+! 				_Locinfo(_Ploc->name()));
+  		return (_X_NUMERIC);
+  		}
+  
+--- 241,250 ----
+  		const locale *_Ploc = 0)
+  		{	// return locale category mask and construct standard facet
+  		if (_Ppf != 0 && *_Ppf == 0)
+!                   {
+!                   _Locinfo _Loc(_Ploc->name());
+!                   *_Ppf = _NEW_CRT num_get<_Elem, _InIt>(_Loc);
+!                   }
+  		return (_X_NUMERIC);
+  		}
+  
+*************** public:
+*** 1032,1039 ****
+  		const locale *_Ploc = 0)
+  		{	// return locale category mask and construct standard facet
+  		if (_Ppf != 0 && *_Ppf == 0)
+! 			*_Ppf = _NEW_CRT num_put<_Elem, _OutIt>(
+! 				_Locinfo(_Ploc->name()));
+  		return (_X_NUMERIC);
+  		}
+  
+--- 1036,1045 ----
+  		const locale *_Ploc = 0)
+  		{	// return locale category mask and construct standard facet
+  		if (_Ppf != 0 && *_Ppf == 0)
+!                   {
+!                   _Locinfo _Loc(_Ploc->name());
+!                   *_Ppf = _NEW_CRT num_put<_Elem, _OutIt>(_Loc);
+!                   }
+  		return (_X_NUMERIC);
+  		}
+  
+Index: xloctime
+===================================================================
+RCS file: /cvsroot/GxInclude/Vc9/Include/xloctime,v
+retrieving revision 1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
+*** xloctime	29 Jan 2008 21:05:21 -0000	1.1
+--- xloctime	24 Apr 2008 03:14:54 -0000	1.2
+*************** public:
+*** 97,104 ****
+  		const locale *_Ploc = 0)
+  		{	// return locale category mask and construct standard facet
+  		if (_Ppf != 0 && *_Ppf == 0)
+! 			*_Ppf = _NEW_CRT time_get<_Elem, _InIt>(
+! 				_Locinfo(_Ploc->name()));
+  		return (_X_TIME);
+  		}
+  
+--- 97,106 ----
+  		const locale *_Ploc = 0)
+  		{	// return locale category mask and construct standard facet
+  		if (_Ppf != 0 && *_Ppf == 0)
+!                   {
+!                   _Locinfo _Loc(_Ploc->name());
+!                   *_Ppf = _NEW_CRT time_get<_Elem, _InIt>(_Loc);
+!                   }
+  		return (_X_TIME);
+  		}
+  
+*************** public:
+*** 458,465 ****
+  		const locale *_Ploc = 0)
+  		{	// return locale category mask and construct standard facet
+  		if (_Ppf != 0 && *_Ppf == 0)
+! 			*_Ppf = _NEW_CRT time_put<_Elem, _OutIt>(
+! 				_Locinfo(_Ploc->name()));
+  		return (_X_TIME);
+  		}
+  
+--- 460,469 ----
+  		const locale *_Ploc = 0)
+  		{	// return locale category mask and construct standard facet
+  		if (_Ppf != 0 && *_Ppf == 0)
+!                   {
+!                   _Locinfo _Loc(_Ploc->name());
+!                   *_Ppf = _NEW_CRT time_put<_Elem, _OutIt>(_Loc);
+!                   }
+  		return (_X_TIME);
+  		}
+  
+*************** public:
+*** 591,598 ****
+  		const locale *_Ploc = 0)
+  		{	// return locale category mask and construct standard facet
+  		if (_Ppf != 0 && *_Ppf == 0)
+! 			*_Ppf = _NEW_CRT time_put<_Elem, _OutIt>(
+! 				_Locinfo(_Ploc->name()));
+  		return (_X_TIME);
+  		}
+  
+--- 595,604 ----
+  		const locale *_Ploc = 0)
+  		{	// return locale category mask and construct standard facet
+  		if (_Ppf != 0 && *_Ppf == 0)
+!                   {
+!                   _Locinfo _Loc(_Ploc->name());
+!                   *_Ppf = _NEW_CRT time_put<_Elem, _OutIt>(_Loc);
+!                   }
+  		return (_X_TIME);
   		}
   
 Index: xstddef
