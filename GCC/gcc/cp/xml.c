@@ -65,7 +65,7 @@ along with this program; if not, write to the
 
 #include "toplev.h" /* ident_hash */
 
-#define GCC_XML_C_VERSION "$Revision: 1.120 $"
+#define GCC_XML_C_VERSION "$Revision: 1.121 $"
 
 /*--------------------------------------------------------------------------*/
 /* Data structures for the actual XML dump.  */
@@ -2992,6 +2992,7 @@ xml_find_template_parm (tree t)
     case CONST_DECL: return 1;
     case VAR_DECL: return 1;
     case FUNCTION_DECL: return 1;
+    case FIELD_DECL: return 1;
 
     /* A template deferred scoped lookup.  */
     case SCOPE_REF: return 1;
