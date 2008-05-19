@@ -45,7 +45,7 @@ IF(WIN32)
 
   SET(CPACK_NSIS_EXTRA_INSTALL_COMMANDS "
   CreateShortCut \\\"$SMPROGRAMS\\\\$STARTMENU_FOLDER\\\\How to Run GCC-XML.lnk\\\" \\\"$INSTDIR\\\\share\\\\doc\\\\gccxml-${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}\\\\gccxml.html\\\"
-  ExecWait '\\\"$INSTDIR\\\\bin\\\\gccxml_vcupdate.bat\\\"'
+  ExecWait '\\\"$INSTDIR\\\\bin\\\\gccxml_vcconfig.bat\\\"'
 ")
 
   SET(CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS "
