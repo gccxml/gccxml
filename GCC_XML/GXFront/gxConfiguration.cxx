@@ -2002,12 +2002,12 @@ bool gxConfiguration::FindFlagsMIPSpro()
 
             if (s.find(' ') == s.npos)
               {
-              INCLUDES += "-I";
+              INCLUDES += "-isystem";
               INCLUDES += s;
               }
             else
               {
-              INCLUDES += "-I\"";
+              INCLUDES += "-isystem\"";
               INCLUDES += s;
               INCLUDES += "\"";
               }

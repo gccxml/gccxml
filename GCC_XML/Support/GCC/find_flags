@@ -43,7 +43,7 @@ INCLUDES=`
   awk '/^[^ \/].*$/ { if (f) { printf("\n"); exit } }
        /^[ ]*\/[^ ]*$/ { if (f) { printf("-I%s ",$0) } }
        /\#include <\.\.\..*$/   {f=1} ' - |
-  sed 's/^-I /-I/;s/ -I / -I/g'
+  sed 's/^-I /-isystem/;s/ -I / -isystem/g'
 `
 
 # The support headers are located where this script is.
