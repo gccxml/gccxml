@@ -65,7 +65,7 @@ along with this program; if not, write to the
 
 #include "toplev.h" /* ident_hash */
 
-#define GCC_XML_C_VERSION "$Revision: 1.122 $"
+#define GCC_XML_C_VERSION "$Revision: 1.123 $"
 
 /*--------------------------------------------------------------------------*/
 /* Data structures for the actual XML dump.  */
@@ -2163,24 +2163,6 @@ xml_output_record_type (xml_dump_info_p xdi, tree rt, xml_dump_node_p dn)
 
   if (dn->complete && COMPLETE_TYPE_P (rt))
     {
-    /* Create implicitly declared methods if necessary.  */
-    if (CLASSTYPE_LAZY_DEFAULT_CTOR (rt))
-      {
-      lazily_declare_fn (sfk_constructor, rt);
-      }
-    if (CLASSTYPE_LAZY_COPY_CTOR (rt))
-      {
-      lazily_declare_fn (sfk_copy_constructor, rt);
-      }
-    if (CLASSTYPE_LAZY_ASSIGNMENT_OP (rt))
-      {
-      lazily_declare_fn (sfk_assignment_operator, rt);
-      }
-    if (CLASSTYPE_LAZY_DESTRUCTOR (rt))
-      {
-      lazily_declare_fn (sfk_destructor, rt);
-      }
-
     fprintf (xdi->file, " members=\"");
     /* Output all the non-method declarations in the class.  */
     for (field = TYPE_FIELDS (rt) ; field ; field = TREE_CHAIN (field))
