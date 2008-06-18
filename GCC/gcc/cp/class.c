@@ -2603,6 +2603,27 @@ add_implicitly_declared_members (tree t,
       TYPE_HAS_CONST_ASSIGN_REF (t) = !cant_have_const_assignment;
       CLASSTYPE_LAZY_ASSIGNMENT_OP (t) = 1;
     }
+
+/* BEGIN GCC-XML MODIFICATIONS 2008-06-18 */
+  /* We want all these declarations to be included in the dump so we
+     do them always.  */
+  if (CLASSTYPE_LAZY_DEFAULT_CTOR (t))
+    {
+    lazily_declare_fn (sfk_constructor, t);
+    }
+  if (CLASSTYPE_LAZY_COPY_CTOR (t))
+    {
+    lazily_declare_fn (sfk_copy_constructor, t);
+    }
+  if (CLASSTYPE_LAZY_ASSIGNMENT_OP (t))
+    {
+    lazily_declare_fn (sfk_assignment_operator, t);
+    }
+  if (CLASSTYPE_LAZY_DESTRUCTOR (t))
+    {
+    lazily_declare_fn (sfk_destructor, t);
+    }
+/* END GCC-XML MODIFICATIONS 2008-06-18 */
 }
 
 /* Subroutine of finish_struct_1.  Recursively count the number of fields
