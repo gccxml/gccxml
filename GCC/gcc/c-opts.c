@@ -854,7 +854,12 @@ c_common_handle_option (size_t scode, const char *arg, int value)
       break;
 
     case OPT_isystem:
-      add_path (xstrdup (arg), SYSTEM, 0, true);
+/* BEGIN GCC-XML MODIFICATIONS 2008-06-30 */
+      /* The third argument is a boolean indicating whether the files
+         in the directory specified are C++-aware.  GCC by default
+         hard-codes false, but for GCC-XML we use true.  */
+      add_path (xstrdup (arg), SYSTEM, 1, true);
+/* END GCC-XML MODIFICATIONS 2008-06-30 */
       break;
 
     case OPT_iwithprefix:
