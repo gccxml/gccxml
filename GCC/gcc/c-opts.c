@@ -166,9 +166,9 @@ c_common_missing_argument (const char *opt, size_t code)
     case OPT_isysroot:
     case OPT_isystem:
     case OPT_iquote:
-/* BEGIN GCC-XML MODIFICATIONS (2007/10/31 15:07:01) */
+/* BEGIN GCC-XML MODIFICATIONS 2007-10-31 */
     case OPT_iwrapper:
-/* END GCC-XML MODIFICATIONS (2007/10/31 15:07:01) */
+/* END GCC-XML MODIFICATIONS 2007-10-31 */
       error ("missing path after %qs", opt);
       break;
 
