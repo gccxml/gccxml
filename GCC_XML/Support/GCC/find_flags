@@ -41,9 +41,16 @@ BEGIN { first=1 }
 INCLUDES=`
   echo "" | ${CXX} -v -x c++ -E ${CXXFLAGS} - 2>&1 |
   awk '/^[^ \/].*$/ { if (f) { printf("\n"); exit } }
-       /^[ ]*\/[^ ]*$/ { if (f) { printf("-I%s ",$0) } }
-       /\#include <\.\.\..*$/   {f=1} ' - |
-  sed 's/^-I /-isystem/;s/ -I / -isystem/g'
+       /^[ ]*(\/[^ ]*)( \(.*\))?$/ {
+         if (f) {
+           if (match($1,"/Frameworks")) {
+             printf("-F%s ",$1)
+           } else {
+             printf("-isystem%s ",$1)
+           }
+         }
+       }
+       /\#include <\.\.\..*$/   {f=1} ' -
 `
 
 # The support headers are located where this script is.
