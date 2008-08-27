@@ -16,6 +16,8 @@ instructions for UNIX and Windows users.
 UNIX & Cygwin:
 These instructions assume that the front-end will be built
 out-of-source (recommended), but an in-source build should also work.
+The example command lines assume the current working directory is just
+above the top-level source directory (called "gccxml").
 
 $ mkdir gccxml-build
 $ cd gccxml-build
