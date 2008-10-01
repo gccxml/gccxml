@@ -65,7 +65,7 @@ along with this program; if not, write to the
 
 #include "toplev.h" /* ident_hash */
 
-#define GCC_XML_C_VERSION "$Revision: 1.123 $"
+#define GCC_XML_C_VERSION "$Revision: 1.124 $"
 
 /*--------------------------------------------------------------------------*/
 /* Data structures for the actual XML dump.  */
@@ -3232,6 +3232,9 @@ xml_dump_tree_node (xml_dump_info_p xdi, tree n, xml_dump_node_p dn)
 # undef xml_add_node
 #endif
 
+/* Hook to suppress diagnostic messages during synthesize test.  */
+extern int diagnostic_xml_synthesize_test;
+
 /* Add tree node N to those encountered.  Return its index.  */
 int
 xml_add_node (xml_dump_info_p xdi, tree n, int complete)
@@ -3248,6 +3251,36 @@ xml_add_node (xml_dump_info_p xdi, tree n, int complete)
 
        which will enable just those internal declarations.  */
     return 0;
+    }
+
+  /* Skip invalid compiler-generated functions.  These can occur for
+     code such as
+
+       struct A { A(); const int a; };
+
+     when the GCC parser produces the declaration but reports an error
+     if the definition is actually needed.  */
+  if (TREE_CODE (n) == FUNCTION_DECL &&
+      DECL_ARTIFICIAL (n) && !DECL_INITIAL (n) &&
+      (!DECL_REALLY_EXTERN (n) || DECL_INLINE (n)))
+    {
+    /* We try to synthesize this function but suppress error messages.  */
+    diagnostic_xml_synthesize_test = 1;
+
+    /* Taken from cp_finish_file.  */
+    push_to_top_level ();
+    input_location = DECL_SOURCE_LOCATION (n);
+    synthesize_method (n);
+    pop_from_top_level ();
+
+    /* If an error occurred (and was suppressed) then this function is
+       invalid and should not be included.  */
+    if(diagnostic_xml_synthesize_test > 1)
+      {
+      diagnostic_xml_synthesize_test = 0;
+      return 0;
+      }
+    diagnostic_xml_synthesize_test = 0;
     }
 
   /* Some nodes don't need to be dumped and just refer to other nodes.

@@ -165,6 +165,21 @@ diagnostic_build_prefix (diagnostic_info *diagnostic)
      : build_message_string ("%s:%d: %s", s.file, s.line, text));
 }
 
+/* BEGIN GCC-XML MODIFICATIONS 2008-10-01 */
+/* xml.c uses this to suppress error messages when testing whether
+   synthesizing an artificially-generated function succeeds.  */
+int diagnostic_xml_synthesize_test = 0;
+static bool diagnostic_in_xml_synthesize_test()
+{
+  if(diagnostic_xml_synthesize_test)
+    {
+    ++diagnostic_xml_synthesize_test;
+    return true;
+    }
+  return false;
+}
+/* END GCC-XML MODIFICATIONS 2008-10-01 */
+
 /* Count a diagnostic.  Return true if the message should be printed.  */
 static bool
 diagnostic_count_diagnostic (diagnostic_context *context,
@@ -224,6 +239,9 @@ diagnostic_count_diagnostic (diagnostic_context *context,
 
       /* And fall through.  */
     case DK_ERROR:
+/* BEGIN GCC-XML MODIFICATIONS 2008-10-01 */
+      if(diagnostic_in_xml_synthesize_test()) { return false; }
+/* END GCC-XML MODIFICATIONS 2008-10-01 */
       ++diagnostic_kind_count (context, DK_ERROR);
       break;
     }
