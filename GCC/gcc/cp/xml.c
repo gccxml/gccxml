@@ -65,7 +65,7 @@ along with this program; if not, write to the
 
 #include "toplev.h" /* ident_hash */
 
-#define GCC_XML_C_VERSION "$Revision: 1.124 $"
+#define GCC_XML_C_VERSION "$Revision: 1.125 $"
 
 /*--------------------------------------------------------------------------*/
 /* Data structures for the actual XML dump.  */
@@ -1100,7 +1100,74 @@ xml_document_add_attribute_static_method(xml_document_element_p element)
 }
 
 /*--------------------------------------------------------------------------*/
-/* Print XML attributes virtual="" and pure_virtual="" for a decl.  */
+static int
+xml_print_overrides_r (xml_dump_info_p xdi, tree type, tree fndecl);
+
+static int
+xml_print_overrides (xml_dump_info_p xdi, tree type, tree fndecl)
+{
+  tree binfo = TYPE_BINFO (type);
+  tree base_binfo;
+  int ix;
+  int found = 0;
+
+  for (ix = 0; BINFO_BASE_ITERATE (binfo, ix, base_binfo); ix++)
+    {
+    tree basetype = BINFO_TYPE (base_binfo);
+
+    if (TYPE_POLYMORPHIC_P (basetype))
+      {
+      found += xml_print_overrides_r (xdi, basetype, fndecl);
+      }
+    }
+  return found;
+}
+
+/* Look in TYPE for virtual functions overrides by FNDECL.  Check both
+   TYPE itself and its bases.  */
+static int
+xml_print_overrides_r (xml_dump_info_p xdi, tree type, tree fndecl)
+{
+  tree fn = look_for_overrides_here (type, fndecl);
+
+  if (fn)
+    {
+    int id = xml_add_node (xdi, fn, 1);
+
+    if(id)
+      {
+      fprintf (xdi->file, "_%d ", id);
+      }
+
+    return 1;
+    }
+
+  /* We failed to find one declared in this class. Look in its bases.  */
+  return xml_print_overrides (xdi, type, fndecl);
+}
+
+static void
+xml_print_overrides_method_attribute (xml_dump_info_p xdi, tree d)
+{
+  if (DECL_VIRTUAL_P (d))
+    {
+    fprintf (xdi->file, " overrides=\"");
+    xml_print_overrides(xdi, CP_DECL_CONTEXT(d), d);
+    fprintf (xdi->file, "\"");
+    }
+}
+
+static void
+xml_document_add_attribute_overrides_method(xml_document_element_p element)
+{
+  xml_document_add_attribute(element, "overrides",
+                             xml_document_attribute_type_idrefs,
+                             xml_document_attribute_use_optional, 0);
+}
+
+/*--------------------------------------------------------------------------*/
+/* Print XML attributes virtual="", overrides="", and pure_virtual=""
+   for a decl.  */
 static void
 xml_print_virtual_method_attributes (xml_dump_info_p xdi, tree d)
 {
@@ -1113,6 +1180,8 @@ xml_print_virtual_method_attributes (xml_dump_info_p xdi, tree d)
     {
     fprintf (xdi->file, " pure_virtual=\"1\"");
     }
+
+  xml_print_overrides_method_attribute(xdi, d);
 }
 
 static void
@@ -1124,6 +1193,7 @@ xml_document_add_attribute_virtual_method(xml_document_element_p element)
   xml_document_add_attribute(element, "pure_virtual",
                              xml_document_attribute_type_boolean,
                              xml_document_attribute_use_optional, "0");
+  xml_document_add_attribute_overrides_method(element);
 }
 
 /*--------------------------------------------------------------------------*/
