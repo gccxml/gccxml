@@ -130,6 +130,19 @@ float       __complex__ __builtin_cpowf(float __complex__, float __complex__);
 double      __complex__ __builtin_cpow(double __complex__, double __complex__);
 long double __complex__ __builtin_cpowl(long double __complex__, long double __complex__);
 
+/* The GCC 4.3 parser hard-codes handling of these, so they do not
+   have real signatures.  */
+bool __builtin_isfinite(...);
+bool __builtin_isinf(...);
+bool __builtin_isnan(...);
+bool __builtin_isnormal(...);
+bool __builtin_isgreater(...);
+bool __builtin_isgreaterequal(...);
+bool __builtin_isless(...);
+bool __builtin_islessequal(...);
+bool __builtin_islessgreater(...);
+bool __builtin_isunordered(...);
+
 /*
 
 GCC 4.3 has the following additional builtin compile-time constant
