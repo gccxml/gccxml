@@ -50,6 +50,23 @@ diff -c -3 -p -r1.1 -r1.2
   _STD_BEGIN
   
   		// COMMON SORT PARAMETERS
+Index: crtdbg.h
+===================================================================
+RCS file: /cvsroot/GxInclude/Vc9/Include/crtdbg.h,v
+retrieving revision 1.1
+diff -c -3 -p -r1.1 crtdbg.h
+*** crtdbg.h	29 Jan 2008 21:05:21 -0000	1.1
+--- crtdbg.h	15 Dec 2008 20:35:51 -0000
+*************** should not have done so since it was not
+*** 588,593 ****
+--- 588,594 ----
+          _RPT_BASE_W((rptno, _CRT_WIDE(__FILE__), __LINE__, NULL, msg, arg1, arg2, arg3, arg4, arg5))
+  
+  #if     _MSC_VER >= 1300 && !defined(_CRT_PORTABLE)
++ void __debugbreak();
+  #define _CrtDbgBreak() __debugbreak()
+  #elif   defined(_M_IX86) && !defined(_CRT_PORTABLE)
+  #define _CrtDbgBreak() __asm { int 3 }
 Index: crtdefs.h
 ===================================================================
 RCS file: /cvsroot/GxInclude/Vc9/Include/crtdefs.h,v
@@ -1759,10 +1776,9 @@ Index: yvals.h
 ===================================================================
 RCS file: /cvsroot/GxInclude/Vc9/Include/yvals.h,v
 retrieving revision 1.1
-retrieving revision 1.4
-diff -c -3 -p -r1.1 -r1.4
+diff -c -3 -p -r1.1 yvals.h
 *** yvals.h	29 Jan 2008 21:05:21 -0000	1.1
---- yvals.h	21 Apr 2008 15:38:15 -0000	1.4
+--- yvals.h	15 Dec 2008 20:35:51 -0000
 ***************
 *** 116,122 ****
   #define _STR2WSTR(str)     __STR2WSTR(str)
@@ -1772,17 +1788,18 @@ diff -c -3 -p -r1.1 -r1.4
   
   /* _SECURE_SCL switches: default values */
   
---- 116,122 ----
+--- 116,123 ----
   #define _STR2WSTR(str)     __STR2WSTR(str)
   
   #define __FILEW__          _STR2WSTR(__FILE__)
 ! #define __FUNCTIONW__      L"<GCCXML-DISABLED>"
+! #define L__FUNCTION__      L"<GCCXML-DISABLED>"
   
   /* _SECURE_SCL switches: default values */
   
 ***************
 *** 181,186 ****
---- 181,206 ----
+--- 182,207 ----
   
    #endif
   
@@ -1819,7 +1836,7 @@ diff -c -3 -p -r1.1 -r1.4
   
   		/* INTEGER PROPERTIES */
   #define _C2			1	/* 0 if not 2's complement */
---- 549,556 ----
+--- 550,557 ----
   		/* VC++ COMPILER PARAMETERS */
   #define _LONGLONG	__int64
   #define _ULONGLONG	unsigned __int64
