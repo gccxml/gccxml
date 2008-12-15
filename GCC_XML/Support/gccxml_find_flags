@@ -37,46 +37,31 @@ else
   GCCXML_CXXFLAGS="$@"
 fi
 
-# Use the compiler's preprocessor to identify the compiler.
-GCCXML_PID="$$"
-cat > "/tmp/gccxml_identify_compiler$GCCXML_PID.cc" <<!
-#if defined(__GNUC__)
-GCCXML_SUPPORT="GCC"
-#elif defined(__sgi) && defined(_COMPILER_VERSION)
-GCCXML_SUPPORT="MIPSpro"
-#elif defined(__INTEL_COMPILER) && (__INTEL_COMPILER >= 700)
-GCCXML_SUPPORT="Intel"
-#elif defined(__SUNPRO_CC)
-GCCXML_SUPPORT="Sun"
-#else
-GCCXML_SUPPORT=""
-#endif
-!
-
-# Run the compiler's preprocessor on the above code to identify it.
-# (workaround for CC whitespace:)
-if (${GCCXML_COMPILER} ${GCCXML_CXXFLAGS} \
-                         -E "/tmp/gccxml_identify_compiler$GCCXML_PID.cc" \
-			 | sed -e 's/[ ^]//g' \
-                          > "/tmp/gccxml_identify_compiler$GCCXML_PID.pp";
-      rm -f "/tmp/gccxml_identify_compiler$GCCXML_PID.cc"
-) ; then : ; else
-  echo "Error running \"${GCCXML_COMPILER} -E\""
+die()
+{
+  echo $1
   exit 1
-fi
+}
 
-# Source the result to get the settings found.
-. "/tmp/gccxml_identify_compiler$GCCXML_PID.pp"
-rm -f "/tmp/gccxml_identify_compiler$GCCXML_PID.pp"
+# The support directories are located near this script.
+SELFPATH=`cd "\`echo $0 | sed -n '/\//{s/\/[^\/]*$//;p;}'\`";pwd`
+
+# Run the compiler's preprocessor to identify it.
+# (workaround for CC whitespace:)
+PPOUT=`(${GCCXML_COMPILER} ${GCCXML_CXXFLAGS} \
+         -E "${SELFPATH}/gccxml_identify_compiler.cc" \
+         | sed -e 's/[ ^]//g'
+)` || die "Error running \"${GCCXML_COMPILER} -E\""
+
+# Parse the result to get the settings found.
+GCCXML_SUPPORT=`echo "${PPOUT}" |
+  sed -n '/GCCXML_SUPPORT/ {s/GCCXML_SUPPORT="\(.*\)"/\1/;p;}'`
 
 # Check if a supported compiler was identified.
 if test "x$GCCXML_SUPPORT" = "x" ; then
   echo "Compiler \"${GCCXML_COMPILER}\" is not supported by GCC-XML."
   exit 1
 fi
-
-# The support directories are located near this script.
-SELFPATH=`cd "\`echo $0 | sed -n '/\//{s/\/[^\/]*$//;p;}'\`";pwd`
 
 # Find the compiler-specific support directory.
 if test -d "${SELFPATH}/${GCCXML_SUPPORT}" ; then
