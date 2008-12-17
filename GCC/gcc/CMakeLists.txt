@@ -145,7 +145,10 @@ ENDFOREACH(f)
 IF(WIN32 AND NOT CYGWIN)
   SET(AWK_EXECUTABLE "${GCC_SOURCE_DIR}/config_cmake/nawk.exe")
 ELSE(WIN32 AND NOT CYGWIN)
-  FIND_PROGRAM(AWK_EXECUTABLE NAMES gawk awk)
+  # Prefer GNU awk at any location over the native awk if possible.
+  # The native awk on opensolaris causes opt-gather.awk to sort incorrectly.
+  FIND_PROGRAM(AWK_EXECUTABLE NAMES gawk)
+  FIND_PROGRAM(AWK_EXECUTABLE NAMES awk)
   MARK_AS_ADVANCED(AWK_EXECUTABLE)
 ENDIF(WIN32 AND NOT CYGWIN)
 

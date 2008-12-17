@@ -88,20 +88,6 @@ for (i = 0; i < n_opts; i++) {
 		gcc_driver = 0
 	}
 
-# BEGIN GCC-XML MODIFICATIONS 2008-12-16
-        # On opensolaris the opt-gather.awk script puts options
-        # into the 'optionlist' file in a different order than
-        # on linux.  The flag_pic option gets listed twice in
-        # the file, once with VarExists and once without.
-        # If the one without appears first, then gcc_driver
-        # is set to 1 and the symbol is preprocessed out.
-        # This work-around ensures that the definition of the
-        # symbol for the flag always appears.
-        #
-        # I would like to know the real problem but this is
-        # good enough for now.
-        gcc_driver = 0
-# END GCC-XML MODIFICATIONS 2008-12-16
 	if (gcc_driver == 1)
 		print "#ifdef GCC_DRIVER"
 	print "/* Set by -" opts[i] "."
