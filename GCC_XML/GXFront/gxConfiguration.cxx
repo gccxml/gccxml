@@ -985,35 +985,27 @@ std::string gxConfiguration::GetCompilerId()
   //
   std::string compilerID("ERROR_unsupported_compiler_in_gxConfiguration_GetCompilerId");
 
-  // Write a temp file such that after preprocessing there should only be
-  // one "<Id>(.*)</Id>" chunk in the output.
-  //
-  std::string cppFile(GetTempFileName("gx", ".cpp"));
-  std::ofstream ofs(cppFile.c_str());
-
-  ofs << "#if defined(__GNUC__)" << std::endl;
-  ofs << "<Id>GCC</Id>" << std::endl;
-  ofs << "#elif defined(__sgi) && defined(_COMPILER_VERSION)" << std::endl;
-  ofs << "<Id>MIPSpro</Id>" << std::endl;
-  ofs << "#elif defined(__INTEL_COMPILER) && (__INTEL_COMPILER >= 700)" << std::endl;
-  ofs << "<Id>Intel</Id>" << std::endl;
-  ofs << "#else" << std::endl;
-  ofs << "<Id>ERROR_unsupported_compiler_in_gxConfiguration_GetCompilerId</Id>" << std::endl;
-  ofs << "#endif" << std::endl;
-
-  ofs.flush();
-  ofs.close();
+  std::string cppFile;
+  if(!this->FindData("gccxml_identify_compiler.cc", cppFile))
+    {
+    return "ERROR_cannot_find_compiler_id_source";
+    }
 
   // Try running the compiler against the temp file with -E to preprocess
-  // the input. Then analyze the output looking for the "<Id>(.*)</Id>" chunk.
+  // the input. Then analyze the output looking for the id chunk.
   //
   std::string output;
   int retVal=0;
-  if(gxSystemTools::RunCommand((m_GCCXML_COMPILER + " -E \"" + cppFile +
-    "\"").c_str(), output, retVal) && (0 == retVal))
+  std::string cmd = m_GCCXML_COMPILER;
+  cmd += " ";
+  cmd += m_GCCXML_CXXFLAGS;
+  cmd += " -E \"";
+  cmd += cppFile;
+  cmd += "\"";
+  if(gxSystemTools::RunCommand(cmd.c_str(), output, retVal) && (0 == retVal))
     {
     gxsys::RegularExpression reId;
-    reId.compile("<Id>(.*)</Id>");
+    reId.compile("GCCXML_SUPPORT=\"(.*)\"");
 
     std::vector<gxsys::String> lines = gxSystemTools::SplitString(output.c_str(), '\n');
     std::vector<gxsys::String>::iterator it;
@@ -1030,10 +1022,6 @@ std::string gxConfiguration::GetCompilerId()
     {
     std::cerr << "error: could not identify compiler via -E preprocessing" << std::endl;
     }
-
-  // Clean up:
-  //
-  gxsys::SystemTools::RemoveFile(cppFile.c_str());
 
   return compilerID;
 }
@@ -1384,24 +1372,24 @@ bool gxConfiguration::FindFlags()
             << "(gxConfiguration::FindFlags)\n";
   return false;
 #else
-  // This is a UNIX environment.  Use the gccxml_find_flags script.
-  std::string gccxmlFindFlags;
-  std::string gccxmlFindFlagsScript;
-  if(!this->FindData("gccxml_find_flags", gccxmlFindFlagsScript))
+  // Determine the compiler.
+  std::string compilerID = this->GetCompilerId();
+
+  // For GCC use our C++ implementation to find flags.
+  if(compilerID == "GCC")
+    {
+    return this->FindFlagsGCC();
+    }
+
+  // For other compilers fall back to the old shell scripts.
+  std::string findFlags;
+  if(!this->FindData((compilerID+"/find_flags").c_str(), findFlags, true))
     {
     return false;
     }
-  if(gccxmlFindFlagsScript.find(" ") != std::string::npos)
-    {
-    gccxmlFindFlags = "\"";
-    gccxmlFindFlags += gccxmlFindFlagsScript;
-    gccxmlFindFlags += "\"";
-    }
-  else
-    {
-    gccxmlFindFlags = gccxmlFindFlagsScript;
-    }
-  gccxmlFindFlags += " ";
+  std::string gccxmlFindFlags = "\"";
+  gccxmlFindFlags += findFlags;
+  gccxmlFindFlags += "\" ";
   gccxmlFindFlags += m_GCCXML_COMPILER;
   gccxmlFindFlags += " ";
   gccxmlFindFlags += m_GCCXML_CXXFLAGS;
@@ -1512,7 +1500,7 @@ bool gxConfiguration::FindFlagsGCC()
   output = "";
   retVal = 0;
   if(gxSystemTools::RunCommand((std::string("echo \"\" | \"") + m_GCCXML_COMPILER + "\" -v -x c++ -E " +
-    m_GCCXML_CXXFLAGS + " -").c_str(), output, retVal) && (retVal == 0))
+    m_GCCXML_CXXFLAGS + " 2>&1 -").c_str(), output, retVal) && (retVal == 0))
     {
     std::vector<gxsys::String> lines = gxSystemTools::SplitString(output.c_str(), '\n');
 
@@ -1543,17 +1531,17 @@ bool gxConfiguration::FindFlagsGCC()
               INCLUDES += " ";
               }
 
-            if (s.find(' ') == s.npos)
+            if(s.find("/Frameworks") != s.npos)
               {
-              INCLUDES += "-I";
-              INCLUDES += s;
+              INCLUDES += "-F";
               }
             else
               {
-              INCLUDES += "-I\"";
-              INCLUDES += s;
-              INCLUDES += "\"";
+              INCLUDES += "-isystem";
               }
+            INCLUDES += "\"";
+            INCLUDES += s;
+            INCLUDES += "\"";
             }
           else
             {
@@ -1583,6 +1571,11 @@ bool gxConfiguration::FindFlagsGCC()
       {
       INCLUDES = "-iwrapper\"" + supportPath + "/2.96\" " + INCLUDES;
       }
+    }
+  else if(MAJOR_VERSION == 4 && MINOR_VERSION >= 3)
+    {
+    INCLUDES = "-iwrapper\"" + supportPath + "/4.3\" " + INCLUDES;
+    SPECIAL = "-include \"gccxml_builtins.h\"";
     }
   else if(MAJOR_VERSION == 4 && MINOR_VERSION >= 2)
     {
