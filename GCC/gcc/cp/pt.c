@@ -4382,6 +4382,12 @@ classtype_mangled_name (tree t)
   return TYPE_IDENTIFIER (t);
 }
 
+/* BEGIN GCC-XML MODIFICATIONS 2008-01-05 */
+/* xml.c uses this to suppress pending templates when testing whether
+   synthesizing an artificially-generated function succeeds.  */
+extern bool diagnostic_in_xml_synthesize_test();
+/* END GCC-XML MODIFICATIONS 2008-01-05 */
+
 static void
 add_pending_template (tree d)
 {
@@ -4390,6 +4396,13 @@ add_pending_template (tree d)
              : DECL_TEMPLATE_INFO (d));
   tree pt;
   int level;
+
+/* BEGIN GCC-XML MODIFICATIONS 2008-01-05 */
+  if(diagnostic_in_xml_synthesize_test())
+    {
+    return;
+    }
+/* END GCC-XML MODIFICATIONS 2008-01-05 */
 
   if (TI_PENDING_TEMPLATE_FLAG (ti))
     return;
