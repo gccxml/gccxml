@@ -65,7 +65,7 @@ along with this program; if not, write to the
 
 #include "toplev.h" /* ident_hash */
 
-#define GCC_XML_C_VERSION "$Revision: 1.125 $"
+#define GCC_XML_C_VERSION "$Revision: 1.126 $"
 
 /*--------------------------------------------------------------------------*/
 /* Data structures for the actual XML dump.  */
