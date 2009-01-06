@@ -1,0 +1,2481 @@
+Index: algorithm
+===================================================================
+RCS file: /cvsroot/GxInclude/Vc9sp1/Include/algorithm,v
+retrieving revision 1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
+*** algorithm	6 Jan 2009 21:18:02 -0000	1.1
+--- algorithm	6 Jan 2009 21:21:23 -0000	1.2
+***************
+*** 11,16 ****
+--- 11,51 ----
+   #pragma warning(disable: 4244)
+  #endif  /* _MSC_VER */
+  
++ /* ------------------------------------------------------------------------ */
++ /* Forward declare these now because they are used as non-dependent names.  */
++ _STDEXT_BEGIN
++ template<class _InIt, class _OutIt, class _Ty>
++ inline _OutIt unchecked_remove_copy(_InIt _First, _InIt _Last,
++                                     _OutIt _Dest, const _Ty& _Val);
++ template<class _InIt, class _OutIt, class _Pr>
++ inline _OutIt unchecked_remove_copy_if(_InIt _First, _InIt _Last,
++                                        _OutIt _Dest, _Pr _Pred);
++ template<class _InIt1, class _InIt2, class _OutIt>
++ inline _OutIt unchecked_merge(_InIt1 _First1, _InIt1 _Last1,
++                               _InIt2 _First2, _InIt2 _Last2, _OutIt _Dest);
++ template<class _InIt1, class _InIt2, class _OutIt, class _Pr>
++ inline _OutIt unchecked_merge(_InIt1 _First1, _InIt1 _Last1,
++                               _InIt2 _First2, _InIt2 _Last2, _OutIt _Dest,
++                               _Pr _Pred);
++ template<class _BidIt1, class _BidIt2, class _BidIt3>
++ inline _BidIt3 _Unchecked_merge_backward(_BidIt1 _First1, _BidIt1 _Last1,
++                                          _BidIt2 _First2, _BidIt2 _Last2,
++                                          _BidIt3 _Dest);
++ template<class _BidIt1, class _BidIt2, class _BidIt3, class _Pr>
++ inline _BidIt3 _Unchecked_merge_backward(_BidIt1 _First1, _BidIt1 _Last1,
++                                          _BidIt2 _First2, _BidIt2 _Last2,
++                                          _BidIt3 _Dest, _Pr _Pred);
++ template<class _BidIt, class _OutIt, class _Diff>
++ inline void _Unchecked_chunked_merge(_BidIt _First, _BidIt _Last,
++                                      _OutIt _Dest, _Diff _Chunk,
++                                      _Diff _Count);
++ template<class _BidIt, class _OutIt, class _Diff, class _Pr>
++ inline void _Unchecked_chunked_merge(_BidIt _First, _BidIt _Last,
++                                      _OutIt _Dest, _Diff _Chunk,
++                                      _Diff _Count, _Pr _Pred);
++ _STDEXT_END
++ /* ------------------------------------------------------------------------ */
++ 
+  _STD_BEGIN
+  
+  		// COMMON SORT PARAMETERS
+Index: crtdbg.h
+===================================================================
+RCS file: /cvsroot/GxInclude/Vc9sp1/Include/crtdbg.h,v
+retrieving revision 1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
+*** crtdbg.h	6 Jan 2009 21:18:02 -0000	1.1
+--- crtdbg.h	6 Jan 2009 21:21:23 -0000	1.2
+*************** should not have done so since it was not
+*** 588,593 ****
+--- 588,594 ----
+          _RPT_BASE_W((rptno, _CRT_WIDE(__FILE__), __LINE__, NULL, msg, arg1, arg2, arg3, arg4, arg5))
+  
+  #if     _MSC_VER >= 1300 && !defined(_CRT_PORTABLE)
++ void __debugbreak();
+  #define _CrtDbgBreak() __debugbreak()
+  #elif   defined(_M_IX86) && !defined(_CRT_PORTABLE)
+  #define _CrtDbgBreak() __asm { int 3 }
+Index: crtdefs.h
+===================================================================
+RCS file: /cvsroot/GxInclude/Vc9sp1/Include/crtdefs.h,v
+retrieving revision 1.1
+diff -c -3 -p -r1.1 crtdefs.h
+*** crtdefs.h	6 Jan 2009 21:18:02 -0000	1.1
+--- crtdefs.h	6 Jan 2009 21:48:30 -0000
+*************** typedef __time64_t time_t;      /* time 
+*** 666,764 ****
+  #define __DEFINE_CPP_OVERLOAD_SECURE_FUNC_0_0(_ReturnType, _FuncName, _DstType, _Dst) \
+      extern "C++" \
+      { \
+!     template <size_t _Size> \
+      inline \
+!     _ReturnType __CRTDECL _FuncName(_DstType (&_Dst)[_Size]) \
+      { \
+!         return _FuncName(_Dst, _Size); \
+      } \
+      }
+  
+  #define __DEFINE_CPP_OVERLOAD_SECURE_FUNC_0_1(_ReturnType, _FuncName, _DstType, _Dst, _TType1, _TArg1) \
+      extern "C++" \
+      { \
+!     template <size_t _Size> \
+      inline \
+!     _ReturnType __CRTDECL _FuncName(_DstType (&_Dst)[_Size], _TType1 _TArg1) \
+      { \
+!         return _FuncName(_Dst, _Size, _TArg1); \
+      } \
+      }
+  
+  #define __DEFINE_CPP_OVERLOAD_SECURE_FUNC_0_2(_ReturnType, _FuncName, _DstType, _Dst, _TType1, _TArg1, _TType2, _TArg2) \
+      extern "C++" \
+      { \
+!     template <size_t _Size> \
+      inline \
+!     _ReturnType __CRTDECL _FuncName(_DstType (&_Dst)[_Size], _TType1 _TArg1, _TType2 _TArg2) \
+      { \
+!         return _FuncName(_Dst, _Size, _TArg1, _TArg2); \
+      } \
+      }
+  
+  #define __DEFINE_CPP_OVERLOAD_SECURE_FUNC_0_3(_ReturnType, _FuncName, _DstType, _Dst, _TType1, _TArg1, _TType2, _TArg2, _TType3, _TArg3) \
+      extern "C++" \
+      { \
+!     template <size_t _Size> \
+      inline \
+!     _ReturnType __CRTDECL _FuncName(_DstType (&_Dst)[_Size], _TType1 _TArg1, _TType2 _TArg2, _TType3 _TArg3) \
+      { \
+!         return _FuncName(_Dst, _Size, _TArg1, _TArg2, _TArg3); \
+      } \
+      }
+  
+  #define __DEFINE_CPP_OVERLOAD_SECURE_FUNC_0_4(_ReturnType, _FuncName, _DstType, _Dst, _TType1, _TArg1, _TType2, _TArg2, _TType3, _TArg3, _TType4, _TArg4) \
+      extern "C++" \
+      { \
+!     template <size_t _Size> \
+      inline \
+!     _ReturnType __CRTDECL _FuncName(_DstType (&_Dst)[_Size], _TType1 _TArg1, _TType2 _TArg2, _TType3 _TArg3, _TType4 _TArg4) \
+      { \
+!         return _FuncName(_Dst, _Size, _TArg1, _TArg2, _TArg3, _TArg4); \
+      } \
+      }
+  
+  #define __DEFINE_CPP_OVERLOAD_SECURE_FUNC_1_1(_ReturnType, _FuncName, _HType1, _HArg1, _DstType, _Dst, _TType1, _TArg1) \
+      extern "C++" \
+      { \
+!     template <size_t _Size> \
+      inline \
+!     _ReturnType __CRTDECL _FuncName(_HType1 _HArg1, _DstType (&_Dst)[_Size], _TType1 _TArg1) \
+      { \
+!         return _FuncName(_HArg1, _Dst, _Size, _TArg1); \
+      } \
+      }
+  
+  #define __DEFINE_CPP_OVERLOAD_SECURE_FUNC_1_2(_ReturnType, _FuncName, _HType1, _HArg1, _DstType, _Dst, _TType1, _TArg1, _TType2, _TArg2) \
+      extern "C++" \
+      { \
+!     template <size_t _Size> \
+      inline \
+!     _ReturnType __CRTDECL _FuncName(_HType1 _HArg1, _DstType (&_Dst)[_Size], _TType1 _TArg1, _TType2 _TArg2) \
+      { \
+!         return _FuncName(_HArg1, _Dst, _Size, _TArg1, _TArg2); \
+      } \
+      }
+  
+  #define __DEFINE_CPP_OVERLOAD_SECURE_FUNC_1_3(_ReturnType, _FuncName, _HType1, _HArg1, _DstType, _Dst, _TType1, _TArg1, _TType2, _TArg2, _TType3, _TArg3) \
+      extern "C++" \
+      { \
+!     template <size_t _Size> \
+      inline \
+!     _ReturnType __CRTDECL _FuncName(_HType1 _HArg1, _DstType (&_Dst)[_Size], _TType1 _TArg1, _TType2 _TArg2, _TType3 _TArg3) \
+      { \
+!         return _FuncName(_HArg1, _Dst, _Size, _TArg1, _TArg2, _TArg3); \
+      } \
+      }
+  
+  #define __DEFINE_CPP_OVERLOAD_SECURE_FUNC_2_0(_ReturnType, _FuncName, _HType1, _HArg1, _HType2, _HArg2, _DstType, _Dst) \
+      extern "C++" \
+      { \
+!     template <size_t _Size> \
+      inline \
+!     _ReturnType __CRTDECL _FuncName(_HType1 _HArg1, _HType2 _HArg2, _DstType (&_Dst)[_Size]) \
+      { \
+!         return _FuncName(_HArg1, _HArg2, _Dst, _Size); \
+      } \
+      }
+  
+--- 666,764 ----
+  #define __DEFINE_CPP_OVERLOAD_SECURE_FUNC_0_0(_ReturnType, _FuncName, _DstType, _Dst) \
+      extern "C++" \
+      { \
+!     template <size_t _Sz> \
+      inline \
+!     _ReturnType __CRTDECL _FuncName(_DstType (&_Dst)[_Sz]) \
+      { \
+!         return _FuncName(_Dst, _Sz); \
+      } \
+      }
+  
+  #define __DEFINE_CPP_OVERLOAD_SECURE_FUNC_0_1(_ReturnType, _FuncName, _DstType, _Dst, _TType1, _TArg1) \
+      extern "C++" \
+      { \
+!     template <size_t _Sz> \
+      inline \
+!     _ReturnType __CRTDECL _FuncName(_DstType (&_Dst)[_Sz], _TType1 _TArg1) \
+      { \
+!         return _FuncName(_Dst, _Sz, _TArg1); \
+      } \
+      }
+  
+  #define __DEFINE_CPP_OVERLOAD_SECURE_FUNC_0_2(_ReturnType, _FuncName, _DstType, _Dst, _TType1, _TArg1, _TType2, _TArg2) \
+      extern "C++" \
+      { \
+!     template <size_t _Sz> \
+      inline \
+!     _ReturnType __CRTDECL _FuncName(_DstType (&_Dst)[_Sz], _TType1 _TArg1, _TType2 _TArg2) \
+      { \
+!         return _FuncName(_Dst, _Sz, _TArg1, _TArg2); \
+      } \
+      }
+  
+  #define __DEFINE_CPP_OVERLOAD_SECURE_FUNC_0_3(_ReturnType, _FuncName, _DstType, _Dst, _TType1, _TArg1, _TType2, _TArg2, _TType3, _TArg3) \
+      extern "C++" \
+      { \
+!     template <size_t _Sz> \
+      inline \
+!     _ReturnType __CRTDECL _FuncName(_DstType (&_Dst)[_Sz], _TType1 _TArg1, _TType2 _TArg2, _TType3 _TArg3) \
+      { \
+!         return _FuncName(_Dst, _Sz, _TArg1, _TArg2, _TArg3); \
+      } \
+      }
+  
+  #define __DEFINE_CPP_OVERLOAD_SECURE_FUNC_0_4(_ReturnType, _FuncName, _DstType, _Dst, _TType1, _TArg1, _TType2, _TArg2, _TType3, _TArg3, _TType4, _TArg4) \
+      extern "C++" \
+      { \
+!     template <size_t _Sz> \
+      inline \
+!     _ReturnType __CRTDECL _FuncName(_DstType (&_Dst)[_Sz], _TType1 _TArg1, _TType2 _TArg2, _TType3 _TArg3, _TType4 _TArg4) \
+      { \
+!         return _FuncName(_Dst, _Sz, _TArg1, _TArg2, _TArg3, _TArg4); \
+      } \
+      }
+  
+  #define __DEFINE_CPP_OVERLOAD_SECURE_FUNC_1_1(_ReturnType, _FuncName, _HType1, _HArg1, _DstType, _Dst, _TType1, _TArg1) \
+      extern "C++" \
+      { \
+!     template <size_t _Sz> \
+      inline \
+!     _ReturnType __CRTDECL _FuncName(_HType1 _HArg1, _DstType (&_Dst)[_Sz], _TType1 _TArg1) \
+      { \
+!         return _FuncName(_HArg1, _Dst, _Sz, _TArg1); \
+      } \
+      }
+  
+  #define __DEFINE_CPP_OVERLOAD_SECURE_FUNC_1_2(_ReturnType, _FuncName, _HType1, _HArg1, _DstType, _Dst, _TType1, _TArg1, _TType2, _TArg2) \
+      extern "C++" \
+      { \
+!     template <size_t _Sz> \
+      inline \
+!     _ReturnType __CRTDECL _FuncName(_HType1 _HArg1, _DstType (&_Dst)[_Sz], _TType1 _TArg1, _TType2 _TArg2) \
+      { \
+!         return _FuncName(_HArg1, _Dst, _Sz, _TArg1, _TArg2); \
+      } \
+      }
+  
+  #define __DEFINE_CPP_OVERLOAD_SECURE_FUNC_1_3(_ReturnType, _FuncName, _HType1, _HArg1, _DstType, _Dst, _TType1, _TArg1, _TType2, _TArg2, _TType3, _TArg3) \
+      extern "C++" \
+      { \
+!     template <size_t _Sz> \
+      inline \
+!     _ReturnType __CRTDECL _FuncName(_HType1 _HArg1, _DstType (&_Dst)[_Sz], _TType1 _TArg1, _TType2 _TArg2, _TType3 _TArg3) \
+      { \
+!         return _FuncName(_HArg1, _Dst, _Sz, _TArg1, _TArg2, _TArg3); \
+      } \
+      }
+  
+  #define __DEFINE_CPP_OVERLOAD_SECURE_FUNC_2_0(_ReturnType, _FuncName, _HType1, _HArg1, _HType2, _HArg2, _DstType, _Dst) \
+      extern "C++" \
+      { \
+!     template <size_t _Sz> \
+      inline \
+!     _ReturnType __CRTDECL _FuncName(_HType1 _HArg1, _HType2 _HArg2, _DstType (&_Dst)[_Sz]) \
+      { \
+!         return _FuncName(_HArg1, _HArg2, _Dst, _Sz); \
+      } \
+      }
+  
+*************** typedef __time64_t time_t;      /* time 
+*** 767,779 ****
+      { \
+  	__pragma(warning(push)); \
+  	__pragma(warning(disable: 4793)); \
+!     template <size_t _Size> \
+      inline \
+!     _ReturnType __CRTDECL _FuncName(_DstType (&_Dst)[_Size], _TType1 _TArg1, ...) \
+      { \
+          va_list _ArgList; \
+          _crt_va_start(_ArgList, _TArg1); \
+!         return _VFuncName(_Dst, _Size, _TArg1, _ArgList); \
+      } \
+  	__pragma(warning(pop)); \
+      }
+--- 767,779 ----
+      { \
+  	__pragma(warning(push)); \
+  	__pragma(warning(disable: 4793)); \
+!     template <size_t _Sz> \
+      inline \
+!     _ReturnType __CRTDECL _FuncName(_DstType (&_Dst)[_Sz], _TType1 _TArg1, ...) \
+      { \
+          va_list _ArgList; \
+          _crt_va_start(_ArgList, _TArg1); \
+!         return _VFuncName(_Dst, _Sz, _TArg1, _ArgList); \
+      } \
+  	__pragma(warning(pop)); \
+      }
+*************** typedef __time64_t time_t;      /* time 
+*** 783,795 ****
+      { \
+  	__pragma(warning(push)); \
+  	__pragma(warning(disable: 4793)); \
+!     template <size_t _Size> \
+      inline \
+!     _ReturnType __CRTDECL _FuncName(_DstType (&_Dst)[_Size], _TType1 _TArg1, _TType2 _TArg2, ...) \
+      { \
+          va_list _ArgList; \
+          _crt_va_start(_ArgList, _TArg2); \
+!         return _VFuncName(_Dst, _Size, _TArg1, _TArg2, _ArgList); \
+      } \
+  	__pragma(warning(pop)); \
+      }
+--- 783,795 ----
+      { \
+  	__pragma(warning(push)); \
+  	__pragma(warning(disable: 4793)); \
+!     template <size_t _Sz> \
+      inline \
+!     _ReturnType __CRTDECL _FuncName(_DstType (&_Dst)[_Sz], _TType1 _TArg1, _TType2 _TArg2, ...) \
+      { \
+          va_list _ArgList; \
+          _crt_va_start(_ArgList, _TArg2); \
+!         return _VFuncName(_Dst, _Sz, _TArg1, _TArg2, _ArgList); \
+      } \
+  	__pragma(warning(pop)); \
+      }
+*************** typedef __time64_t time_t;      /* time 
+*** 926,936 ****
+      { \
+          return __insecure_##_FuncName(_Dst); \
+      } \
+!     template <size_t _Size> \
+      inline \
+!     _ReturnType __CRTDECL _FuncName(_DstType (&_Dst)[_Size]) \
+      { \
+!         _ReturnPolicy(_SecureFuncName(_Dst, _Size), _Dst); \
+      } \
+      template <> \
+      inline \
+--- 926,936 ----
+      { \
+          return __insecure_##_FuncName(_Dst); \
+      } \
+!     template <size_t _Sz> \
+      inline \
+!     _ReturnType __CRTDECL _FuncName(_DstType (&_Dst)[_Sz]) \
+      { \
+!         _ReturnPolicy(_SecureFuncName(_Dst, _Sz), _Dst); \
+      } \
+      template <> \
+      inline \
+*************** typedef __time64_t time_t;      /* time 
+*** 971,982 ****
+      { \
+          return __insecure_##_FuncName(_Dst); \
+      } \
+!     template <size_t _Size> \
+      inline \
+!     _ReturnType __CRTDECL _FuncName(_DstType (&_Dst)[_Size]) \
+      { \
+          size_t _SizeRead = 0; \
+!         errno_t _Err = _FuncName##_s(_Dst + 2, (_Size - 2) < ((size_t)_Dst[0]) ? (_Size - 2) : ((size_t)_Dst[0]), &_SizeRead); \
+          _Dst[1] = (_DstType)(_SizeRead); \
+          return (_Err == 0 ? _Dst + 2 : 0); \
+      } \
+--- 971,982 ----
+      { \
+          return __insecure_##_FuncName(_Dst); \
+      } \
+!     template <size_t _Sz> \
+      inline \
+!     _ReturnType __CRTDECL _FuncName(_DstType (&_Dst)[_Sz]) \
+      { \
+          size_t _SizeRead = 0; \
+!         errno_t _Err = _FuncName##_s(_Dst + 2, (_Sz - 2) < ((size_t)_Dst[0]) ? (_Sz - 2) : ((size_t)_Dst[0]), &_SizeRead); \
+          _Dst[1] = (_DstType)(_SizeRead); \
+          return (_Err == 0 ? _Dst + 2 : 0); \
+      } \
+*************** typedef __time64_t time_t;      /* time 
+*** 1026,1036 ****
+      { \
+          return __insecure_##_FuncName(_Dst, _TArg1); \
+      } \
+!     template <size_t _Size> \
+      inline \
+!     _ReturnType __CRTDECL _FuncName(_SecureDstType (&_Dst)[_Size], _TType1 _TArg1) \
+      { \
+!         _ReturnPolicy(_SecureFuncName(_Dst, _Size, _TArg1), _Dst); \
+      } \
+      template <> \
+      inline \
+--- 1026,1036 ----
+      { \
+          return __insecure_##_FuncName(_Dst, _TArg1); \
+      } \
+!     template <size_t _Sz> \
+      inline \
+!     _ReturnType __CRTDECL _FuncName(_SecureDstType (&_Dst)[_Sz], _TType1 _TArg1) \
+      { \
+!         _ReturnPolicy(_SecureFuncName(_Dst, _Sz, _TArg1), _Dst); \
+      } \
+      template <> \
+      inline \
+*************** typedef __time64_t time_t;      /* time 
+*** 1071,1081 ****
+      { \
+          return __insecure_##_FuncName(_Dst, _TArg1, _TArg2); \
+      } \
+!     template <size_t _Size> \
+      inline \
+!     _ReturnType __CRTDECL _FuncName(_SecureDstType (&_Dst)[_Size], _TType1 _TArg1, _TType2 _TArg2) \
+      { \
+!         _ReturnPolicy(_SecureFuncName(_Dst, _Size, _TArg1, _TArg2), _Dst); \
+      } \
+      template <> \
+      inline \
+--- 1071,1081 ----
+      { \
+          return __insecure_##_FuncName(_Dst, _TArg1, _TArg2); \
+      } \
+!     template <size_t _Sz> \
+      inline \
+!     _ReturnType __CRTDECL _FuncName(_SecureDstType (&_Dst)[_Sz], _TType1 _TArg1, _TType2 _TArg2) \
+      { \
+!         _ReturnPolicy(_SecureFuncName(_Dst, _Sz, _TArg1, _TArg2), _Dst); \
+      } \
+      template <> \
+      inline \
+*************** typedef __time64_t time_t;      /* time 
+*** 1116,1126 ****
+      { \
+          return __insecure_##_FuncName(_Dst, _TArg1, _TArg2, _TArg3); \
+      } \
+!     template <size_t _Size> \
+      inline \
+!     _ReturnType __CRTDECL _FuncName(_SecureDstType (&_Dst)[_Size], _TType1 _TArg1, _TType2 _TArg2, _TType3 _TArg3) \
+      { \
+!         _ReturnPolicy(_SecureFuncName(_Dst, _Size, _TArg1, _TArg2, _TArg3), _Dst); \
+      } \
+      template <> \
+      inline \
+--- 1116,1126 ----
+      { \
+          return __insecure_##_FuncName(_Dst, _TArg1, _TArg2, _TArg3); \
+      } \
+!     template <size_t _Sz> \
+      inline \
+!     _ReturnType __CRTDECL _FuncName(_SecureDstType (&_Dst)[_Sz], _TType1 _TArg1, _TType2 _TArg2, _TType3 _TArg3) \
+      { \
+!         _ReturnPolicy(_SecureFuncName(_Dst, _Sz, _TArg1, _TArg2, _TArg3), _Dst); \
+      } \
+      template <> \
+      inline \
+*************** typedef __time64_t time_t;      /* time 
+*** 1161,1171 ****
+      { \
+          return __insecure_##_FuncName(_Dst, _TArg1, _TArg2, _TArg3, _TArg4); \
+      } \
+!     template <size_t _Size> \
+      inline \
+!     _ReturnType __CRTDECL _FuncName(_DstType (&_Dst)[_Size], _TType1 _TArg1, _TType2 _TArg2, _TType3 _TArg3, _TType4 _TArg4) \
+      { \
+!         _ReturnPolicy(_SecureFuncName(_Dst, _Size, _TArg1, _TArg2, _TArg3, _TArg4), _Dst); \
+      } \
+      template <> \
+      inline \
+--- 1161,1171 ----
+      { \
+          return __insecure_##_FuncName(_Dst, _TArg1, _TArg2, _TArg3, _TArg4); \
+      } \
+!     template <size_t _Sz> \
+      inline \
+!     _ReturnType __CRTDECL _FuncName(_DstType (&_Dst)[_Sz], _TType1 _TArg1, _TType2 _TArg2, _TType3 _TArg3, _TType4 _TArg4) \
+      { \
+!         _ReturnPolicy(_SecureFuncName(_Dst, _Sz, _TArg1, _TArg2, _TArg3, _TArg4), _Dst); \
+      } \
+      template <> \
+      inline \
+*************** typedef __time64_t time_t;      /* time 
+*** 1206,1216 ****
+      { \
+          return __insecure_##_FuncName(_HArg1, _Dst, _TArg1); \
+      } \
+!     template <size_t _Size> \
+      inline \
+!     _ReturnType __CRTDECL _FuncName(_HType1 _HArg1, _DstType (&_Dst)[_Size], _TType1 _TArg1) \
+      { \
+!         _ReturnPolicy(_SecureFuncName(_HArg1, _Dst, _Size, _TArg1), _Dst); \
+      } \
+      template <> \
+      inline \
+--- 1206,1216 ----
+      { \
+          return __insecure_##_FuncName(_HArg1, _Dst, _TArg1); \
+      } \
+!     template <size_t _Sz> \
+      inline \
+!     _ReturnType __CRTDECL _FuncName(_HType1 _HArg1, _DstType (&_Dst)[_Sz], _TType1 _TArg1) \
+      { \
+!         _ReturnPolicy(_SecureFuncName(_HArg1, _Dst, _Sz, _TArg1), _Dst); \
+      } \
+      template <> \
+      inline \
+*************** typedef __time64_t time_t;      /* time 
+*** 1251,1261 ****
+      { \
+          return __insecure_##_FuncName(_HArg1, _HArg2, _Dst); \
+      } \
+!     template <size_t _Size> \
+      inline \
+!     _ReturnType __CRTDECL _FuncName(_HType1 _HArg1, _HType2 _HArg2, _DstType (&_Dst)[_Size]) \
+      { \
+!         _ReturnPolicy(_SecureFuncName(_HArg1, _HArg2, _Dst, _Size), _Dst); \
+      } \
+      template <> \
+      inline \
+--- 1251,1261 ----
+      { \
+          return __insecure_##_FuncName(_HArg1, _HArg2, _Dst); \
+      } \
+!     template <size_t _Sz> \
+      inline \
+!     _ReturnType __CRTDECL _FuncName(_HType1 _HArg1, _HType2 _HArg2, _DstType (&_Dst)[_Sz]) \
+      { \
+!         _ReturnPolicy(_SecureFuncName(_HArg1, _HArg2, _Dst, _Sz), _Dst); \
+      } \
+      template <> \
+      inline \
+*************** typedef __time64_t time_t;      /* time 
+*** 1312,1324 ****
+  	\
+  	__pragma(warning(push)); \
+  	__pragma(warning(disable: 4793)); \
+! 	template <size_t _Size> \
+      inline \
+!     _ReturnType __CRTDECL _FuncName(_DstType (&_Dst)[_Size], _TType1 _TArg1, ...) \
+      { \
+          va_list _ArgList; \
+          _crt_va_start(_ArgList, _TArg1); \
+!         _ReturnPolicy(_SecureVFuncName(_Dst, _Size, _TArg1, _ArgList), _Dst); \
+      } \
+  	__pragma(warning(pop)); \
+  	\
+--- 1312,1324 ----
+  	\
+  	__pragma(warning(push)); \
+  	__pragma(warning(disable: 4793)); \
+! 	template <size_t _Sz> \
+      inline \
+!     _ReturnType __CRTDECL _FuncName(_DstType (&_Dst)[_Sz], _TType1 _TArg1, ...) \
+      { \
+          va_list _ArgList; \
+          _crt_va_start(_ArgList, _TArg1); \
+!         _ReturnPolicy(_SecureVFuncName(_Dst, _Sz, _TArg1, _ArgList), _Dst); \
+      } \
+  	__pragma(warning(pop)); \
+  	\
+*************** typedef __time64_t time_t;      /* time 
+*** 1356,1366 ****
+      { \
+          return __insecure_##_VFuncName(_Dst, _TArg1, _ArgList); \
+      } \
+!     template <size_t _Size> \
+      inline \
+!     _ReturnType __CRTDECL _VFuncName(_DstType (&_Dst)[_Size], _TType1 _TArg1, va_list _ArgList) \
+      { \
+!         _ReturnPolicy(_SecureVFuncName(_Dst, _Size, _TArg1, _ArgList), _Dst); \
+      } \
+      template <> \
+      inline \
+--- 1356,1366 ----
+      { \
+          return __insecure_##_VFuncName(_Dst, _TArg1, _ArgList); \
+      } \
+!     template <size_t _Sz> \
+      inline \
+!     _ReturnType __CRTDECL _VFuncName(_DstType (&_Dst)[_Sz], _TType1 _TArg1, va_list _ArgList) \
+      { \
+!         _ReturnPolicy(_SecureVFuncName(_Dst, _Sz, _TArg1, _ArgList), _Dst); \
+      } \
+      template <> \
+      inline \
+*************** typedef __time64_t time_t;      /* time 
+*** 1417,1429 ****
+  	\
+  	__pragma(warning(push)); \
+  	__pragma(warning(disable: 4793)); \
+!     template <size_t _Size> \
+      inline \
+!     _ReturnType __CRTDECL _FuncName(_SecureDstType (&_Dst)[_Size], _TType1 _TArg1, _TType2 _TArg2, ...) \
+      { \
+          va_list _ArgList; \
+          _crt_va_start(_ArgList, _TArg2); \
+!         _ReturnPolicy(_SecureVFuncName(_Dst, _Size, _TArg1, _TArg2, _ArgList), _Dst); \
+      } \
+  	__pragma(warning(pop)); \
+  	\
+--- 1417,1429 ----
+  	\
+  	__pragma(warning(push)); \
+  	__pragma(warning(disable: 4793)); \
+!     template <size_t _Sz> \
+      inline \
+!     _ReturnType __CRTDECL _FuncName(_SecureDstType (&_Dst)[_Sz], _TType1 _TArg1, _TType2 _TArg2, ...) \
+      { \
+          va_list _ArgList; \
+          _crt_va_start(_ArgList, _TArg2); \
+!         _ReturnPolicy(_SecureVFuncName(_Dst, _Sz, _TArg1, _TArg2, _ArgList), _Dst); \
+      } \
+  	__pragma(warning(pop)); \
+  	\
+*************** typedef __time64_t time_t;      /* time 
+*** 1461,1471 ****
+      { \
+          return __insecure_##_VFuncName(_Dst, _TArg1, _TArg2, _ArgList); \
+      } \
+!     template <size_t _Size> \
+      inline \
+!     _ReturnType __CRTDECL _VFuncName(_SecureDstType (&_Dst)[_Size], _TType1 _TArg1, _TType2 _TArg2, va_list _ArgList) \
+      { \
+!         _ReturnPolicy(_SecureVFuncName(_Dst, _Size, _TArg1, _TArg2, _ArgList), _Dst); \
+      } \
+      template <> \
+      inline \
+--- 1461,1471 ----
+      { \
+          return __insecure_##_VFuncName(_Dst, _TArg1, _TArg2, _ArgList); \
+      } \
+!     template <size_t _Sz> \
+      inline \
+!     _ReturnType __CRTDECL _VFuncName(_SecureDstType (&_Dst)[_Sz], _TType1 _TArg1, _TType2 _TArg2, va_list _ArgList) \
+      { \
+!         _ReturnPolicy(_SecureVFuncName(_Dst, _Sz, _TArg1, _TArg2, _ArgList), _Dst); \
+      } \
+      template <> \
+      inline \
+*************** typedef __time64_t time_t;      /* time 
+*** 1506,1517 ****
+      { \
+          return __insecure_##_FuncName(_Dst, _TArg1, _TArg2); \
+      } \
+!     template <size_t _Size> \
+      inline \
+!     size_t __CRTDECL _FuncName(_SecureDstType (&_Dst)[_Size], _TType1 _TArg1, _TType2 _TArg2) \
+      { \
+          size_t _Ret = 0; \
+!         _SecureFuncName(&_Ret, _Dst, _Size, _TArg1, _TArg2); \
+          return (_Ret > 0 ? (_Ret - 1) : _Ret); \
+      } \
+      template <> \
+--- 1506,1517 ----
+      { \
+          return __insecure_##_FuncName(_Dst, _TArg1, _TArg2); \
+      } \
+!     template <size_t _Sz> \
+      inline \
+!     size_t __CRTDECL _FuncName(_SecureDstType (&_Dst)[_Sz], _TType1 _TArg1, _TType2 _TArg2) \
+      { \
+          size_t _Ret = 0; \
+!         _SecureFuncName(&_Ret, _Dst, _Sz, _TArg1, _TArg2); \
+          return (_Ret > 0 ? (_Ret - 1) : _Ret); \
+      } \
+      template <> \
+*************** typedef __time64_t time_t;      /* time 
+*** 1555,1566 ****
+      { \
+          return __insecure_##_FuncName(_Dst, _TArg1, _TArg2, _TArg3); \
+      } \
+!     template <size_t _Size> \
+      inline \
+!     size_t __CRTDECL _FuncName(_SecureDstType (&_Dst)[_Size], _TType1 _TArg1, _TType2 _TArg2, _TType3 _TArg3) \
+      { \
+          size_t _Ret = 0; \
+!         _SecureFuncName(&_Ret, _Dst, _Size, _TArg1, _TArg2, _TArg3); \
+          return (_Ret > 0 ? (_Ret - 1) : _Ret); \
+      } \
+      template <> \
+--- 1555,1566 ----
+      { \
+          return __insecure_##_FuncName(_Dst, _TArg1, _TArg2, _TArg3); \
+      } \
+!     template <size_t _Sz> \
+      inline \
+!     size_t __CRTDECL _FuncName(_SecureDstType (&_Dst)[_Sz], _TType1 _TArg1, _TType2 _TArg2, _TType3 _TArg3) \
+      { \
+          size_t _Ret = 0; \
+!         _SecureFuncName(&_Ret, _Dst, _Sz, _TArg1, _TArg2, _TArg3); \
+          return (_Ret > 0 ? (_Ret - 1) : _Ret); \
+      } \
+      template <> \
+*************** typedef __time64_t time_t;      /* time 
+*** 1602,1612 ****
+      { \
+          return __insecure_##_FuncName(_Dst); \
+      } \
+!     template <size_t _Size> \
+      inline \
+!     _ReturnType __CRTDECL _FuncName(_SecureDstType (&_Dst)[_Size]) \
+      { \
+!         _ReturnPolicy(_SecureFuncName(_Dst, _Size), _Dst); \
+      } \
+      template <> \
+      inline \
+--- 1602,1612 ----
+      { \
+          return __insecure_##_FuncName(_Dst); \
+      } \
+!     template <size_t _Sz> \
+      inline \
+!     _ReturnType __CRTDECL _FuncName(_SecureDstType (&_Dst)[_Sz]) \
+      { \
+!         _ReturnPolicy(_SecureFuncName(_Dst, _Sz), _Dst); \
+      } \
+      template <> \
+      inline \
+*************** typedef __time64_t time_t;      /* time 
+*** 1645,1655 ****
+      { \
+          return __insecure_##_FuncName(_Dst, _TArg1); \
+      } \
+!     template <size_t _Size> \
+      inline \
+!     _ReturnType __CRTDECL _FuncName(_SecureDstType (&_Dst)[_Size], _TType1 _TArg1) \
+      { \
+!         _ReturnPolicy(_SecureFuncName(_Dst, _Size, _TArg1), _Dst); \
+      } \
+      template <> \
+      inline \
+--- 1645,1655 ----
+      { \
+          return __insecure_##_FuncName(_Dst, _TArg1); \
+      } \
+!     template <size_t _Sz> \
+      inline \
+!     _ReturnType __CRTDECL _FuncName(_SecureDstType (&_Dst)[_Sz], _TType1 _TArg1) \
+      { \
+!         _ReturnPolicy(_SecureFuncName(_Dst, _Sz, _TArg1), _Dst); \
+      } \
+      template <> \
+      inline \
+*************** typedef __time64_t time_t;      /* time 
+*** 1688,1698 ****
+      { \
+          return __insecure_##_FuncName(_Dst, _TArg1, _TArg2); \
+      } \
+!     template <size_t _Size> \
+      inline \
+!     _ReturnType __CRTDECL _FuncName(_SecureDstType (&_Dst)[_Size], _TType1 _TArg1, _TType2 _TArg2) \
+      { \
+!         _ReturnPolicy(_SecureFuncName(_Dst, _Size, _TArg1, _TArg2), _Dst); \
+      } \
+      template <> \
+      inline \
+--- 1688,1698 ----
+      { \
+          return __insecure_##_FuncName(_Dst, _TArg1, _TArg2); \
+      } \
+!     template <size_t _Sz> \
+      inline \
+!     _ReturnType __CRTDECL _FuncName(_SecureDstType (&_Dst)[_Sz], _TType1 _TArg1, _TType2 _TArg2) \
+      { \
+!         _ReturnPolicy(_SecureFuncName(_Dst, _Sz, _TArg1, _TArg2), _Dst); \
+      } \
+      template <> \
+      inline \
+*************** typedef __time64_t time_t;      /* time 
+*** 1731,1741 ****
+      { \
+          return __insecure_##_FuncName(_Dst, _TArg1, _TArg2, _TArg3); \
+      } \
+!     template <size_t _Size> \
+      inline \
+!     _ReturnType __CRTDECL _FuncName(_SecureDstType (&_Dst)[_Size], _TType1 _TArg1, _TType2 _TArg2, _TType3 _TArg3) \
+      { \
+!         _ReturnPolicy(_SecureFuncName(_Dst, _Size, _TArg1, _TArg2, _TArg3), _Dst); \
+      } \
+      template <> \
+      inline \
+--- 1731,1741 ----
+      { \
+          return __insecure_##_FuncName(_Dst, _TArg1, _TArg2, _TArg3); \
+      } \
+!     template <size_t _Sz> \
+      inline \
+!     _ReturnType __CRTDECL _FuncName(_SecureDstType (&_Dst)[_Sz], _TType1 _TArg1, _TType2 _TArg2, _TType3 _TArg3) \
+      { \
+!         _ReturnPolicy(_SecureFuncName(_Dst, _Sz, _TArg1, _TArg2, _TArg3), _Dst); \
+      } \
+      template <> \
+      inline \
+Index: deque
+===================================================================
+RCS file: /cvsroot/GxInclude/Vc9sp1/Include/deque,v
+retrieving revision 1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
+*** deque	6 Jan 2009 21:18:02 -0000	1.1
+--- deque	6 Jan 2009 21:21:23 -0000	1.2
+*************** public:
+*** 61,68 ****
+  		_Deque_const_iterator<_Ty, _Alloc, false>,
+  		_Unchanged_checked_iterator_base_type_tag>::_Result _Checked_iterator_base_type;
+  
+! 	friend _Deque_const_iterator<_Ty, _Alloc, false>;
+! 	friend _Deque_const_iterator<_Ty, _Alloc, true>;
+  
+  	_Deque_const_iterator<_Ty, _Alloc, false> _Checked_iterator_base() const
+  	{
+--- 61,67 ----
+  		_Deque_const_iterator<_Ty, _Alloc, false>,
+  		_Unchanged_checked_iterator_base_type_tag>::_Result _Checked_iterator_base_type;
+  
+! 	friend class _Deque_const_iterator<_Ty, _Alloc, !_SECURE_VALIDATION>;
+  
+  	_Deque_const_iterator<_Ty, _Alloc, false> _Checked_iterator_base() const
+  	{
+*************** public:
+*** 356,363 ****
+  		_Deque_iterator<_Ty, _Alloc, false>,
+  		_Unchanged_checked_iterator_base_type_tag>::_Result _Checked_iterator_base_type;
+  
+! 	friend _Deque_iterator<_Ty, _Alloc, false>;
+! 	friend _Deque_iterator<_Ty, _Alloc, true>;
+  
+  	_Deque_iterator<_Ty, _Alloc, false> _Checked_iterator_base() const
+  	{
+--- 355,361 ----
+  		_Deque_iterator<_Ty, _Alloc, false>,
+  		_Unchanged_checked_iterator_base_type_tag>::_Result _Checked_iterator_base_type;
+  
+! 	friend class _Deque_iterator<_Ty, _Alloc, !_SECURE_VALIDATION>;
+  
+  	_Deque_iterator<_Ty, _Alloc, false> _Checked_iterator_base() const
+  	{
+*************** public:
+*** 376,382 ****
+  		{	// construct with null vector pointer
+  		}
+  
+! 	_Deque_iterator(size_type _Off, const _Mybase::_Mydequebase *_Pdeque)
+  		: _Mybase(_Off, _Pdeque)
+  		{	// construct with offset _Off in *_Pdeque
+  		}
+--- 374,380 ----
+  		{	// construct with null vector pointer
+  		}
+  
+! 	_Deque_iterator(size_type _Off, const typename _Mybase::_Mydequebase *_Pdeque)
+  		: _Mybase(_Off, _Pdeque)
+  		{	// construct with offset _Off in *_Pdeque
+  		}
+Index: eh.h
+===================================================================
+RCS file: /cvsroot/GxInclude/Vc9sp1/Include/eh.h,v
+retrieving revision 1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
+*** eh.h	6 Jan 2009 21:18:02 -0000	1.1
+--- eh.h	6 Jan 2009 21:21:23 -0000	1.2
+***************
+*** 30,35 ****
+--- 30,38 ----
+  #error "eh.h is only for C++!"
+  #endif
+  
++ namespace std { class type_info; }
++ using std::type_info;
++ 
+  /* terminate_handler is the standard name; terminate_function is supported for historical reasons */
+  #ifndef _M_CEE_PURE
+  typedef void (__cdecl *terminate_function)();
+Index: iosfwd
+===================================================================
+RCS file: /cvsroot/GxInclude/Vc9sp1/Include/iosfwd,v
+retrieving revision 1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
+*** iosfwd	6 Jan 2009 21:18:02 -0000	1.1
+--- iosfwd	6 Jan 2009 21:21:23 -0000	1.2
+*************** struct _Secure_char_traits_tag
+*** 145,150 ****
+--- 145,184 ----
+  	{
+  	};
+  
++ /* ------------------------------------------------------------------------ */
++ /* Forward declare these now because they are used as non-dependent names.  */
++ 	namespace _Traits_helper
++ 	{
++ 	template<class _Traits>
++ 	inline
++ 	typename _Traits::char_type *copy_s(typename _Traits::char_type *_First1, size_t _Size,
++                                             const typename _Traits::char_type *_First2, size_t _Count);
++ 	template<class _Traits>
++ 	inline
++ 	typename _Traits::char_type *copy_s(typename _Traits::char_type *_First1, size_t _Size,
++                                             const typename _Traits::char_type *_First2, size_t _Count, _Secure_char_traits_tag);
++ 	template<class _Traits>
++ 	inline
++ 	_SCL_INSECURE_DEPRECATE
++ 	typename _Traits::char_type *copy_s(typename _Traits::char_type *_First1, size_t _Size,
++                                             const typename _Traits::char_type *_First2, size_t _Count, _Unsecure_char_traits_tag);
++ 	template<class _Traits>
++ 	inline
++ 	typename _Traits::char_type *move_s(typename _Traits::char_type *_First1, size_t _Size,
++                                             const typename _Traits::char_type *_First2, size_t _Count);
++ 	template<class _Traits>
++ 	inline
++ 	typename _Traits::char_type *move_s(typename _Traits::char_type *_First1, size_t _Size,
++                                             const typename _Traits::char_type *_First2, size_t _Count, _Secure_char_traits_tag);
++ 	template<class _Traits>
++ 	inline
++ 	_SCL_INSECURE_DEPRECATE
++ 	typename _Traits::char_type *move_s(typename _Traits::char_type *_First1, size_t _Size,
++                                             const typename _Traits::char_type *_First2, size_t _Count, _Unsecure_char_traits_tag);
++ 
++ 	} // namespace _Traits_helper
++ /* ------------------------------------------------------------------------ */
++ 
+  		// TEMPLATE STRUCT _Char_traits_base
+  		// Used to define the Secure_char_traits tag. This typedef is used
+  		// only for user defined char_traits. A user defined char_traits should 
+Index: iterator
+===================================================================
+RCS file: /cvsroot/GxInclude/Vc9sp1/Include/iterator,v
+retrieving revision 1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
+*** iterator	6 Jan 2009 21:18:02 -0000	1.1
+--- iterator	6 Jan 2009 21:21:23 -0000	1.2
+*************** template <class _Cont, class _Iter = typ
+*** 361,367 ****
+  			typename _STD iterator_traits<_Iter>::pointer, 
+  			typename _STD iterator_traits<_Iter>::reference>
+  	{
+! 	friend class checked_iterator;
+  public:
+  	typedef checked_iterator<_Cont, _Iter> _Myt;
+  	typedef typename _STD iterator_traits<_Iter>::difference_type difference_type;
+--- 361,367 ----
+  			typename _STD iterator_traits<_Iter>::pointer, 
+  			typename _STD iterator_traits<_Iter>::reference>
+  	{
+!         //friend class checked_iterator;
+  public:
+  	typedef checked_iterator<_Cont, _Iter> _Myt;
+  	typedef typename _STD iterator_traits<_Iter>::difference_type difference_type;
+Index: limits
+===================================================================
+RCS file: /cvsroot/GxInclude/Vc9sp1/Include/limits,v
+retrieving revision 1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
+*** limits	6 Jan 2009 21:18:02 -0000	1.1
+--- limits	6 Jan 2009 21:21:23 -0000	1.2
+*************** _STCONSDEF(_Num_base, int, min_exponent)
+*** 93,110 ****
+  _STCONSDEF(_Num_base, int, min_exponent10)
+  _STCONSDEF(_Num_base, int, radix)
+  
+  		// TEMPLATE CLASS numeric_limits
+  template<class _Ty>
+  	class numeric_limits
+  		: public _Num_base
+  	{	// numeric limits for arbitrary type _Ty (say little or nothing)
+  public:
+! 	static _Ty (__CRTDECL min)() _THROW0()
+  		{	// return minimum value
+  		return (_Ty(0));
+  		}
+  
+! 	static _Ty (__CRTDECL max)() _THROW0()
+  		{	// return maximum value
+  		return (_Ty(0));
+  		}
+--- 93,112 ----
+  _STCONSDEF(_Num_base, int, min_exponent10)
+  _STCONSDEF(_Num_base, int, radix)
+  
++ #define __GCCXML_AVOID_MACRO_EXPANSION
++ 
+  		// TEMPLATE CLASS numeric_limits
+  template<class _Ty>
+  	class numeric_limits
+  		: public _Num_base
+  	{	// numeric limits for arbitrary type _Ty (say little or nothing)
+  public:
+!  	static _Ty __CRTDECL min __GCCXML_AVOID_MACRO_EXPANSION() _THROW0()
+  		{	// return minimum value
+  		return (_Ty(0));
+  		}
+  
+!  	static _Ty __CRTDECL max __GCCXML_AVOID_MACRO_EXPANSION() _THROW0()
+  		{	// return maximum value
+  		return (_Ty(0));
+  		}
+Index: list
+===================================================================
+RCS file: /cvsroot/GxInclude/Vc9sp1/Include/list,v
+retrieving revision 1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
+*** list	6 Jan 2009 21:18:02 -0000	1.1
+--- list	6 Jan 2009 21:21:23 -0000	1.2
+*************** public:
+*** 191,198 ****
+  		_Const_iterator<false>,
+  		_Unchanged_checked_iterator_base_type_tag>::_Result _Checked_iterator_base_type;
+  
+! 	friend _Const_iterator<false>;
+! 	friend _Const_iterator<true>;
+  
+  	_Const_iterator<false> _Checked_iterator_base() const
+  	{
+--- 191,197 ----
+  		_Const_iterator<false>,
+  		_Unchanged_checked_iterator_base_type_tag>::_Result _Checked_iterator_base_type;
+  
+!  	friend class _Const_iterator<!_SECURE_VALIDATION>;
+  
+  	_Const_iterator<false> _Checked_iterator_base() const
+  	{
+*************** public:
+*** 373,380 ****
+  		_Iterator<false>,
+  		_Unchanged_checked_iterator_base_type_tag>::_Result _Checked_iterator_base_type;
+  
+! 	friend _Iterator<false>;
+! 	friend _Iterator<true>;
+  
+  	_Iterator<false> _Checked_iterator_base() const
+  	{
+--- 372,378 ----
+  		_Iterator<false>,
+  		_Unchanged_checked_iterator_base_type_tag>::_Result _Checked_iterator_base_type;
+  
+!  	friend class _Iterator<!_SECURE_VALIDATION>;
+  
+  	_Iterator<false> _Checked_iterator_base() const
+  	{
+Index: locale
+===================================================================
+RCS file: /cvsroot/GxInclude/Vc9sp1/Include/locale,v
+retrieving revision 1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
+*** locale	6 Jan 2009 21:18:02 -0000	1.1
+--- locale	6 Jan 2009 21:21:23 -0000	1.2
+*************** public:
+*** 64,71 ****
+  		const locale *_Ploc = 0)
+  		{	// return locale category mask and construct standard facet
+  		if (_Ppf != 0 && *_Ppf == 0)
+! 			*_Ppf = _NEW_CRT collate<_Elem>(
+! 				_Locinfo(_Ploc->name()));
+  		return (_X_COLLATE);
+  		}
+  
+--- 64,73 ----
+  		const locale *_Ploc = 0)
+  		{	// return locale category mask and construct standard facet
+  		if (_Ppf != 0 && *_Ppf == 0)
+!                   {
+!                   _Locinfo _Loc(_Ploc->name());
+!                   *_Ppf = _NEW_CRT collate<_Elem>(_Loc);
+!                   }
+  		return (_X_COLLATE);
+  		}
+  
+Index: memory
+===================================================================
+RCS file: /cvsroot/GxInclude/Vc9sp1/Include/memory,v
+retrieving revision 1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
+*** memory	6 Jan 2009 21:18:02 -0000	1.1
+--- memory	6 Jan 2009 21:21:23 -0000	1.2
+***************
+*** 10,15 ****
+--- 10,26 ----
+   #pragma pack(push,_CRT_PACKING)
+   #pragma warning(push,3)
+  #endif  /* _MSC_VER */
++ 
++ /* ------------------------------------------------------------------------ */
++ /* Forward declare these now because they are used as non-dependent names.  */
++ _STDEXT_BEGIN
++ template<class _InIt, class _FwdIt>
++ inline _FwdIt unchecked_uninitialized_copy(_InIt _First, _InIt _Last, _FwdIt _Dest);
++ template<class _InIt, class _FwdIt, class _Alloc>
++ inline _FwdIt unchecked_uninitialized_copy(_InIt _First, _InIt _Last, _FwdIt _Dest, _Alloc& _Al);
++ _STDEXT_END
++ /* ------------------------------------------------------------------------ */
++ 
+  _STD_BEGIN
+  
+  		// TEMPLATE FUNCTION get_temporary_buffer
+Index: sal.h
+===================================================================
+RCS file: /cvsroot/GxInclude/Vc9sp1/Include/sal.h,v
+retrieving revision 1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
+*** sal.h	6 Jan 2009 21:18:02 -0000	1.1
+--- sal.h	6 Jan 2009 21:21:23 -0000	1.2
+***************
+*** 107,113 ****
+  
+  // choose attribute or __declspec implementation
+  #ifndef _USE_DECLSPECS_FOR_SAL
+! #define _USE_DECLSPECS_FOR_SAL 0
+  #endif
+  
+  #if _USE_DECLSPECS_FOR_SAL
+--- 107,113 ----
+  
+  // choose attribute or __declspec implementation
+  #ifndef _USE_DECLSPECS_FOR_SAL
+! #define _USE_DECLSPECS_FOR_SAL 1
+  #endif
+  
+  #if _USE_DECLSPECS_FOR_SAL
+Index: setjmp.h
+===================================================================
+RCS file: /cvsroot/GxInclude/Vc9sp1/Include/setjmp.h,v
+retrieving revision 1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
+*** setjmp.h	6 Jan 2009 21:18:02 -0000	1.1
+--- setjmp.h	6 Jan 2009 21:21:23 -0000	1.2
+*************** int __cdecl setjmp(_Out_ jmp_buf _Buf);
+*** 253,259 ****
+  #ifdef  __cplusplus
+  extern "C"
+  {
+! _CRTIMP __declspec(noreturn) void __cdecl longjmp(_In_ jmp_buf _Buf, _In_ int _Value) throw(...);
+  }
+  #else
+  _CRTIMP __declspec(noreturn) void __cdecl longjmp(_In_ jmp_buf _Buf, _In_ int _Value);
+--- 253,259 ----
+  #ifdef  __cplusplus
+  extern "C"
+  {
+! _CRTIMP __declspec(noreturn) void __cdecl longjmp(_In_ jmp_buf _Buf, _In_ int _Value);
+  }
+  #else
+  _CRTIMP __declspec(noreturn) void __cdecl longjmp(_In_ jmp_buf _Buf, _In_ int _Value);
+Index: typeinfo
+===================================================================
+RCS file: /cvsroot/GxInclude/Vc9sp1/Include/typeinfo,v
+retrieving revision 1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
+*** typeinfo	6 Jan 2009 21:19:55 -0000	1.1
+--- typeinfo	6 Jan 2009 21:21:23 -0000	1.2
+*************** struct __type_info_node {
+*** 40,45 ****
+--- 40,46 ----
+  
+  extern __type_info_node __type_info_root_node;
+  
++ namespace std {
+  class type_info {
+  public:
+      virtual ~type_info();
+*************** private:
+*** 56,61 ****
+--- 57,64 ----
+      _CRTIMP_PURE static const char *__CLRCALL_OR_CDECL _Name_base(const type_info *,__type_info_node* __ptype_info_node);
+      _CRTIMP_PURE static void __CLRCALL_OR_CDECL _Type_info_dtor(type_info *);
+  };
++ }
++ using std::type_info;
+  
+   #if _HAS_EXCEPTIONS
+  
+Index: vector
+===================================================================
+RCS file: /cvsroot/GxInclude/Vc9sp1/Include/vector,v
+retrieving revision 1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
+*** vector	6 Jan 2009 21:19:55 -0000	1.1
+--- vector	6 Jan 2009 21:21:23 -0000	1.2
+*************** public:
+*** 2246,2252 ****
+  
+  	void flip()
+  		{	// toggle all elements
+! 		for (_Vbtype::iterator _Next = _Myvec.begin();
+  			_Next != _Myvec.end(); ++_Next)
+  			*_Next = (_Vbase)~*_Next;
+  		_Trim(_Mysize);
+--- 2246,2252 ----
+  
+  	void flip()
+  		{	// toggle all elements
+! 		for (typename _Vbtype::iterator _Next = _Myvec.begin();
+  			_Next != _Myvec.end(); ++_Next)
+  			*_Next = (_Vbase)~*_Next;
+  		_Trim(_Mysize);
+Index: xhash
+===================================================================
+RCS file: /cvsroot/GxInclude/Vc9sp1/Include/xhash,v
+retrieving revision 1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
+*** xhash	6 Jan 2009 21:19:25 -0000	1.1
+--- xhash	6 Jan 2009 21:21:23 -0000	1.2
+*************** public:
+*** 303,309 ****
+  			}
+  
+  	protected:
+! 		typename _Mylist::_Iterator<0> _Mypos;
+  	};
+  
+  typedef _List_position _Myvec_value_type;
+--- 303,309 ----
+  			}
+  
+  	protected:
+! 		typename _Mylist::template _Iterator<0> _Mypos;
+  	};
+  
+  typedef _List_position _Myvec_value_type;
+Index: xlocale
+===================================================================
+RCS file: /cvsroot/GxInclude/Vc9sp1/Include/xlocale,v
+retrieving revision 1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
+*** xlocale	6 Jan 2009 21:19:25 -0000	1.1
+--- xlocale	6 Jan 2009 21:21:23 -0000	1.2
+*************** template<class _Dummy>
+*** 54,59 ****
+--- 54,61 ----
+  class locale;
+  template<class _Facet>
+  	const _Facet& __CRTDECL use_facet(const locale&);
++ template<class _Elem>
++      class collate;
+  
+  // warning 4412 is benign here
+  #pragma warning(push)
+*************** public:
+*** 782,789 ****
+  		const locale *_Ploc = 0)
+  		{	// return locale category mask and construct standard facet
+  		if (_Ppf != 0 && *_Ppf == 0)
+! 			*_Ppf = _NEW_CRT codecvt<_Elem, _Byte, _Statype>(
+! 				_Locinfo(_Ploc->name()));
+  		return (_X_CTYPE);
+  		}
+  
+--- 784,793 ----
+  		const locale *_Ploc = 0)
+  		{	// return locale category mask and construct standard facet
+  		if (_Ppf != 0 && *_Ppf == 0)
+!                   {
+!                     _Locinfo _Loc(_Ploc->name());
+!                     *_Ppf = _NEW_CRT codecvt<_Elem, _Byte, _Statype>(_Loc);
+!                   }
+  		return (_X_CTYPE);
+  		}
+  
+*************** public:
+*** 900,907 ****
+  		const locale *_Ploc = 0)
+  		{	// return locale category mask and construct standard facet
+  		if (_Ppf != 0 && *_Ppf == 0)
+! 			*_Ppf = _NEW_CRT codecvt<_Elem, _Byte, _Statype>(
+! 				_Locinfo(_Ploc->name()));
+  		return (_X_CTYPE);
+  		}
+  
+--- 904,913 ----
+  		const locale *_Ploc = 0)
+  		{	// return locale category mask and construct standard facet
+  		if (_Ppf != 0 && *_Ppf == 0)
+!                   {
+!                     _Locinfo _Loc(_Ploc->name());
+!                     *_Ppf = _NEW_CRT codecvt<_Elem, _Byte, _Statype>(_Loc);
+!                   }
+  		return (_X_CTYPE);
+  		}
+  
+*************** public:
+*** 1142,1149 ****
+  		const locale *_Ploc = 0)
+  		{	// return locale category mask and construct standard facet
+  		if (_Ppf != 0 && *_Ppf == 0)
+! 			*_Ppf = _NEW_CRT codecvt<_Elem, _Byte, _Statype>(
+! 				_Locinfo(_Ploc->name()));
+  		return (_X_CTYPE);
+  		}
+  
+--- 1148,1157 ----
+  		const locale *_Ploc = 0)
+  		{	// return locale category mask and construct standard facet
+  		if (_Ppf != 0 && *_Ppf == 0)
+!                   {
+!                     _Locinfo _Loc(_Ploc->name());
+!                     *_Ppf = _NEW_CRT codecvt<_Elem, _Byte, _Statype>(_Loc);
+!                   }
+  		return (_X_CTYPE);
+  		}
+  
+*************** public:
+*** 1484,1491 ****
+  		const locale *_Ploc = 0)
+  		{	// return locale category mask and construct standard facet
+  		if (_Ppf != 0 && *_Ppf == 0)
+! 			*_Ppf = _NEW_CRT ctype<_Elem>(
+! 				_Locinfo(_Ploc->name()));
+  		return (_X_CTYPE);
+  		}
+  
+--- 1492,1501 ----
+  		const locale *_Ploc = 0)
+  		{	// return locale category mask and construct standard facet
+  		if (_Ppf != 0 && *_Ppf == 0)
+!                   {
+!                     _Locinfo _Loc(_Ploc->name());
+!                     *_Ppf = _NEW_CRT ctype<_Elem>(_Loc);
+!                   }
+  		return (_X_CTYPE);
+  		}
+  
+*************** public:
+*** 1789,1796 ****
+  		const locale *_Ploc = 0)
+  		{	// return locale category mask and construct standard facet
+  		if (_Ppf != 0 && *_Ppf == 0)
+! 			*_Ppf = _NEW_CRT ctype<_Elem>(
+! 				_Locinfo(_Ploc->name()));
+  		return (_X_CTYPE);
+  		}
+  
+--- 1799,1808 ----
+  		const locale *_Ploc = 0)
+  		{	// return locale category mask and construct standard facet
+  		if (_Ppf != 0 && *_Ppf == 0)
+!                   {
+!                     _Locinfo _Loc(_Ploc->name());
+!                     *_Ppf = _NEW_CRT ctype<_Elem>(_Loc);
+!                   }
+  		return (_X_CTYPE);
+  		}
+  
+*************** public:
+*** 2030,2037 ****
+  		const locale *_Ploc = 0)
+  		{	// return locale category mask and construct standard facet
+  		if (_Ppf != 0 && *_Ppf == 0)
+! 			*_Ppf = _NEW_CRT ctype<_Elem>(
+! 				_Locinfo(_Ploc->name()));
+  		return (_X_CTYPE);
+  		}
+  
+--- 2042,2051 ----
+  		const locale *_Ploc = 0)
+  		{	// return locale category mask and construct standard facet
+  		if (_Ppf != 0 && *_Ppf == 0)
+!                   {
+!                     _Locinfo _Loc(_Ploc->name());
+!                     *_Ppf = _NEW_CRT ctype<_Elem>(_Loc);
+!                   }
+  		return (_X_CTYPE);
+  		}
+  
+*************** public:
+*** 2304,2311 ****
+  		const locale *_Ploc = 0)
+  		{	// return locale category mask and construct standard facet
+  		if (_Ppf != 0 && *_Ppf == 0)
+! 			*_Ppf = _NEW_CRT ctype<_Elem>(
+! 				_Locinfo(_Ploc->name()));
+  		return (_X_CTYPE);
+  		}
+  
+--- 2318,2327 ----
+  		const locale *_Ploc = 0)
+  		{	// return locale category mask and construct standard facet
+  		if (_Ppf != 0 && *_Ppf == 0)
+!                   {
+!                     _Locinfo _Loc(_Ploc->name());
+!                     *_Ppf = _NEW_CRT ctype<_Elem>(_Loc);
+!                   }
+  		return (_X_CTYPE);
+  		}
+  
+Index: xlocmes
+===================================================================
+RCS file: /cvsroot/GxInclude/Vc9sp1/Include/xlocmes,v
+retrieving revision 1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
+*** xlocmes	6 Jan 2009 21:19:25 -0000	1.1
+--- xlocmes	6 Jan 2009 21:21:23 -0000	1.2
+*************** public:
+*** 76,83 ****
+  		const locale *_Ploc = 0)
+  		{	// return locale category mask and construct standard facet
+  		if (_Ppf != 0 && *_Ppf == 0)
+! 			*_Ppf = _NEW_CRT messages<_Elem>(
+! 				_Locinfo(_Ploc->name()));
+  		return (_X_MESSAGES);
+  		}
+  
+--- 76,85 ----
+  		const locale *_Ploc = 0)
+  		{	// return locale category mask and construct standard facet
+  		if (_Ppf != 0 && *_Ppf == 0)
+!                   {
+!                   _Locinfo _Loc(_Ploc->name());
+!                   *_Ppf = _NEW_CRT messages<_Elem>(_Loc);
+!                   }
+  		return (_X_MESSAGES);
+  		}
+  
+Index: xlocmon
+===================================================================
+RCS file: /cvsroot/GxInclude/Vc9sp1/Include/xlocmon,v
+retrieving revision 1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
+*** xlocmon	6 Jan 2009 21:19:25 -0000	1.1
+--- xlocmon	6 Jan 2009 21:21:23 -0000	1.2
+*************** public:
+*** 280,287 ****
+  		const locale *_Ploc = 0)
+  		{	// return locale category mask and construct standard facet
+  		if (_Ppf != 0 && *_Ppf == 0)
+! 			*_Ppf = _NEW_CRT moneypunct<_Elem, _Intl>(
+! 				_Locinfo(_Ploc->name()), 0, true);
+  		return (_X_MONETARY);
+  		}
+  
+--- 280,289 ----
+  		const locale *_Ploc = 0)
+  		{	// return locale category mask and construct standard facet
+  		if (_Ppf != 0 && *_Ppf == 0)
+!                   {
+!                   _Locinfo _Loc(_Ploc->name());
+!                   *_Ppf = _NEW_CRT moneypunct<_Elem, _Intl>(_Loc, 0, true);
+!                   }
+  		return (_X_MONETARY);
+  		}
+  
+*************** public:
+*** 373,380 ****
+  		const locale *_Ploc = 0)
+  		{	// return locale category mask and construct standard facet
+  		if (_Ppf != 0 && *_Ppf == 0)
+! 			*_Ppf = _NEW_CRT money_get<_Elem, _InIt>(
+! 				_Locinfo(_Ploc->name()));
+  		return (_X_MONETARY);
+  		}
+  
+--- 375,384 ----
+  		const locale *_Ploc = 0)
+  		{	// return locale category mask and construct standard facet
+  		if (_Ppf != 0 && *_Ppf == 0)
+!                   {
+!                   _Locinfo _Loc(_Ploc->name());
+!                   *_Ppf = _NEW_CRT money_get<_Elem, _InIt>(_Loc);
+!                   }
+  		return (_X_MONETARY);
+  		}
+  
+*************** public:
+*** 666,673 ****
+  		const locale *_Ploc = 0)
+  		{	// return locale category mask and construct standard facet
+  		if (_Ppf != 0 && *_Ppf == 0)
+! 			*_Ppf = _NEW_CRT money_put<_Elem, _OutIt>(
+! 				_Locinfo(_Ploc->name()));
+  		return (_X_MONETARY);
+  		}
+  
+--- 670,679 ----
+  		const locale *_Ploc = 0)
+  		{	// return locale category mask and construct standard facet
+  		if (_Ppf != 0 && *_Ppf == 0)
+!                   {
+!                   _Locinfo _Loc(_Ploc->name());
+!                   *_Ppf = _NEW_CRT money_put<_Elem, _OutIt>(_Loc);
+!                   }
+  		return (_X_MONETARY);
+  		}
+  
+Index: xlocnum
+===================================================================
+RCS file: /cvsroot/GxInclude/Vc9sp1/Include/xlocnum,v
+retrieving revision 1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
+*** xlocnum	6 Jan 2009 21:19:25 -0000	1.1
+--- xlocnum	6 Jan 2009 21:21:23 -0000	1.2
+*************** public:
+*** 111,118 ****
+  		const locale *_Ploc = 0)
+  		{	// return locale category mask and construct standard facet
+  		if (_Ppf != 0 && *_Ppf == 0)
+! 			*_Ppf = _NEW_CRT numpunct<_Elem>(
+! 				_Locinfo(_Ploc->name()), 0, true);
+  		return (_X_NUMERIC);
+  		}
+  
+--- 111,120 ----
+  		const locale *_Ploc = 0)
+  		{	// return locale category mask and construct standard facet
+  		if (_Ppf != 0 && *_Ppf == 0)
+!                   {
+!                   _Locinfo _Loc(_Ploc->name());
+!                   *_Ppf = _NEW_CRT numpunct<_Elem>(_Loc, 0, true);
+!                   }
+  		return (_X_NUMERIC);
+  		}
+  
+*************** public:
+*** 236,243 ****
+  		const locale *_Ploc = 0)
+  		{	// return locale category mask and construct standard facet
+  		if (_Ppf != 0 && *_Ppf == 0)
+! 			*_Ppf = _NEW_CRT num_get<_Elem, _InIt>(
+! 				_Locinfo(_Ploc->name()));
+  		return (_X_NUMERIC);
+  		}
+  
+--- 238,247 ----
+  		const locale *_Ploc = 0)
+  		{	// return locale category mask and construct standard facet
+  		if (_Ppf != 0 && *_Ppf == 0)
+!                   {
+!                   _Locinfo _Loc(_Ploc->name());
+!                   *_Ppf = _NEW_CRT num_get<_Elem, _InIt>(_Loc);
+!                   }
+  		return (_X_NUMERIC);
+  		}
+  
+*************** public:
+*** 1029,1036 ****
+  		const locale *_Ploc = 0)
+  		{	// return locale category mask and construct standard facet
+  		if (_Ppf != 0 && *_Ppf == 0)
+! 			*_Ppf = _NEW_CRT num_put<_Elem, _OutIt>(
+! 				_Locinfo(_Ploc->name()));
+  		return (_X_NUMERIC);
+  		}
+  
+--- 1033,1042 ----
+  		const locale *_Ploc = 0)
+  		{	// return locale category mask and construct standard facet
+  		if (_Ppf != 0 && *_Ppf == 0)
+!                   {
+!                   _Locinfo _Loc(_Ploc->name());
+!                   *_Ppf = _NEW_CRT num_put<_Elem, _OutIt>(_Loc);
+!                   }
+  		return (_X_NUMERIC);
+  		}
+  
+Index: xloctime
+===================================================================
+RCS file: /cvsroot/GxInclude/Vc9sp1/Include/xloctime,v
+retrieving revision 1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
+*** xloctime	6 Jan 2009 21:19:25 -0000	1.1
+--- xloctime	6 Jan 2009 21:21:23 -0000	1.2
+*************** public:
+*** 97,104 ****
+  		const locale *_Ploc = 0)
+  		{	// return locale category mask and construct standard facet
+  		if (_Ppf != 0 && *_Ppf == 0)
+! 			*_Ppf = _NEW_CRT time_get<_Elem, _InIt>(
+! 				_Locinfo(_Ploc->name()));
+  		return (_X_TIME);
+  		}
+  
+--- 97,106 ----
+  		const locale *_Ploc = 0)
+  		{	// return locale category mask and construct standard facet
+  		if (_Ppf != 0 && *_Ppf == 0)
+!                   {
+!                   _Locinfo _Loc(_Ploc->name());
+!                   *_Ppf = _NEW_CRT time_get<_Elem, _InIt>(_Loc);
+!                   }
+  		return (_X_TIME);
+  		}
+  
+*************** public:
+*** 458,465 ****
+  		const locale *_Ploc = 0)
+  		{	// return locale category mask and construct standard facet
+  		if (_Ppf != 0 && *_Ppf == 0)
+! 			*_Ppf = _NEW_CRT time_put<_Elem, _OutIt>(
+! 				_Locinfo(_Ploc->name()));
+  		return (_X_TIME);
+  		}
+  
+--- 460,469 ----
+  		const locale *_Ploc = 0)
+  		{	// return locale category mask and construct standard facet
+  		if (_Ppf != 0 && *_Ppf == 0)
+!                   {
+!                   _Locinfo _Loc(_Ploc->name());
+!                   *_Ppf = _NEW_CRT time_put<_Elem, _OutIt>(_Loc);
+!                   }
+  		return (_X_TIME);
+  		}
+  
+*************** public:
+*** 591,598 ****
+  		const locale *_Ploc = 0)
+  		{	// return locale category mask and construct standard facet
+  		if (_Ppf != 0 && *_Ppf == 0)
+! 			*_Ppf = _NEW_CRT time_put<_Elem, _OutIt>(
+! 				_Locinfo(_Ploc->name()));
+  		return (_X_TIME);
+  		}
+  
+--- 595,604 ----
+  		const locale *_Ploc = 0)
+  		{	// return locale category mask and construct standard facet
+  		if (_Ppf != 0 && *_Ppf == 0)
+!                   {
+!                   _Locinfo _Loc(_Ploc->name());
+!                   *_Ppf = _NEW_CRT time_put<_Elem, _OutIt>(_Loc);
+!                   }
+  		return (_X_TIME);
+  		}
+  
+Index: xstddef
+===================================================================
+RCS file: /cvsroot/GxInclude/Vc9sp1/Include/xstddef,v
+retrieving revision 1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
+*** xstddef	6 Jan 2009 21:19:25 -0000	1.1
+--- xstddef	6 Jan 2009 21:21:23 -0000	1.2
+*************** _STD_BEGIN
+*** 33,39 ****
+   #endif /* _THROWS */
+  
+   #define _THROW0()	throw ()
+!  #define _THROW1(x)	throw (...)
+  
+   #define _THROW(x, y)	throw x(y)
+   #define _THROW_NCEE(x, y)	_THROW(x, y)
+--- 33,39 ----
+   #endif /* _THROWS */
+  
+   #define _THROW0()	throw ()
+!  #define _THROW1(x)	throw (x)
+  
+   #define _THROW(x, y)	throw x(y)
+   #define _THROW_NCEE(x, y)	_THROW(x, y)
+Index: xutility
+===================================================================
+RCS file: /cvsroot/GxInclude/Vc9sp1/Include/xutility,v
+retrieving revision 1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
+*** xutility	6 Jan 2009 21:19:25 -0000	1.1
+--- xutility	6 Jan 2009 21:21:23 -0000	1.2
+***************
+*** 12,19 ****
+--- 12,48 ----
+   #pragma warning(push,3)
+  #endif  /* _MSC_VER */
+  
++ /* GCC-XML simulation of MSVC builtin __is_base_of. */
++ #define __is_base_of(base, derived) \
++   __gccxml_is_base_of< base , derived >::value
++ template <class _Base, class _Derived>
++ struct __gccxml_is_base_of
++ {
++   typedef char(&yes_type)[1];
++   typedef char(&no_type)[2];
++   static yes_type check(_Base*);
++   static no_type check(const volatile void*);
++   static _Derived* derived();
++   static const bool value = sizeof(check(derived())) == sizeof(yes_type);
++ };
++ 
++ /* ------------------------------------------------------------------------ */
++ /* Forward declare these now because they are used as non-dependent names.  */
++ _STDEXT_BEGIN
++ template <class _Iterator> class checked_array_iterator;
++ template <class _Iter>
++ checked_array_iterator<_Iter> make_checked_array_iterator(_Iter _Ptr, size_t _Size);
++ _STDEXT_END
++ /* ------------------------------------------------------------------------ */
++ 
+  _STD_BEGIN
+  
++ /* ------------------------------------------------------------------------ */
++ /* Forward declare these now because they are used as non-dependent names.  */
++ class out_of_range;
++ class invalid_argument;
++ /* ------------------------------------------------------------------------ */
++ 
+  		// RANGE CHECKED ITERATOR TAGS
+  struct _Unchecked_iterator_tag
+  	{
+*************** template<class _Iter1, class _Iter2> inl
+*** 992,999 ****
+  		__CLRCALL_OR_CDECL _Iter_random(const _Iter1&, const _Iter2&)
+  	{	// return category from iterator argument
+  	typename _Iter_random_helper<
+! 		iterator_traits<_Iter1>::iterator_category, 
+! 		iterator_traits<_Iter2>::iterator_category>::_Iter_random_cat _Cat;
+  	return (_Cat);
+  	}
+  
+--- 1021,1028 ----
+  		__CLRCALL_OR_CDECL _Iter_random(const _Iter1&, const _Iter2&)
+  	{	// return category from iterator argument
+  	typename _Iter_random_helper<
+! 		typename iterator_traits<_Iter1>::iterator_category, 
+! 		typename iterator_traits<_Iter2>::iterator_category>::_Iter_random_cat _Cat;
+  	return (_Cat);
+  	}
+  
+*************** template<class _Iter1, class _Iter2, cla
+*** 1005,1013 ****
+  		__CLRCALL_OR_CDECL _Iter_random(const _Iter1&, const _Iter2&, const _Iter3&)
+  	{	// return category from iterator argument
+  	typename _Iter_random_helper3<
+! 		iterator_traits<_Iter1>::iterator_category, 
+! 		iterator_traits<_Iter2>::iterator_category,
+! 		iterator_traits<_Iter3>::iterator_category>::_Iter_random_cat _Cat;
+  	return (_Cat);
+  	}
+  
+--- 1034,1042 ----
+  		__CLRCALL_OR_CDECL _Iter_random(const _Iter1&, const _Iter2&, const _Iter3&)
+  	{	// return category from iterator argument
+  	typename _Iter_random_helper3<
+! 		typename iterator_traits<_Iter1>::iterator_category, 
+! 		typename iterator_traits<_Iter2>::iterator_category,
+! 		typename iterator_traits<_Iter3>::iterator_category>::_Iter_random_cat _Cat;
+  	return (_Cat);
+  	}
+  
+*************** public:
+*** 2162,2168 ****
+   
+  	_Checked_iterator_base_type _Checked_iterator_base() const
+  	{
+! 		typename _Checked_iterator_base_type _Base(_CHECKED_BASE(this->current));
+  		return _Base;
+  	}
+  
+--- 2191,2197 ----
+   
+  	_Checked_iterator_base_type _Checked_iterator_base() const
+  	{
+! 		_Checked_iterator_base_type _Base(_CHECKED_BASE(this->current));
+  		return _Base;
+  	}
+  
+Index: xxmem_fn
+===================================================================
+RCS file: /cvsroot/GxInclude/Vc9sp1/Include/xxmem_fn,v
+retrieving revision 1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
+*** xxmem_fn	6 Jan 2009 21:19:25 -0000	1.1
+--- xxmem_fn	6 Jan 2009 21:37:23 -0000	1.2
+*************** public:
+*** 29,41 ****
+  	// TEMPLATE FUNCTION mem_fn, pointer to member function
+  template<class _Rx,
+  	_CLASS_ARG0>
+! 	_NAME<_Rx, _Rx(__thiscall _Arg0::*)(_ARG1_ARG2), _ARG0_ARG1>
+! 		mem_fn(_Rx(__thiscall _Arg0::*_Pm)(_ARG1_ARG2))
+  	{	// bind to pointer to member function
+! 	return (_NAME<_Rx, _Rx(__thiscall _Arg0::*)(_ARG1_ARG2),
+  		_ARG0_ARG1>(_Pm));
+  	}
+  
+   #ifdef _M_IX86
+  template<class _Rx,
+  	_CLASS_ARG0>
+--- 29,42 ----
+  	// TEMPLATE FUNCTION mem_fn, pointer to member function
+  template<class _Rx,
+  	_CLASS_ARG0>
+! 	_NAME<_Rx, _Rx(_Arg0::*)(_ARG1_ARG2), _ARG0_ARG1>
+! 		mem_fn(_Rx(_Arg0::*_Pm)(_ARG1_ARG2))
+  	{	// bind to pointer to member function
+! 	return (_NAME<_Rx, _Rx(_Arg0::*)(_ARG1_ARG2),
+  		_ARG0_ARG1>(_Pm));
+  	}
+  
++ #if 0 // Disabled for gccxml
+   #ifdef _M_IX86
+  template<class _Rx,
+  	_CLASS_ARG0>
+*************** template<class _Rx,
+*** 78,95 ****
+  		_ARG0_ARG1>(_Pm));
+  	}
+   #endif /* _M_CEE */
+  
+  	// TEMPLATE FUNCTION mem_fn, pointer to const member function
+  template<class _Rx,
+  	_CLASS_ARG0>
+! 	_NAME<_Rx, _Rx(__thiscall _Arg0::*)(_ARG1_ARG2) const,
+  		const _ARG0_ARG1>
+! 		mem_fn(_Rx(__thiscall _Arg0::*_Pm)(_ARG1_ARG2) const)
+  	{	// bind to pointer to const member function
+! 	return (_NAME<_Rx, _Rx(__thiscall _Arg0::*)(_ARG1_ARG2) const,
+  		const _ARG0_ARG1>(_Pm));
+  	}
+  
+   #ifdef _M_IX86
+  template<class _Rx,
+  	_CLASS_ARG0>
+--- 79,98 ----
+  		_ARG0_ARG1>(_Pm));
+  	}
+   #endif /* _M_CEE */
++ #endif // Disabled for gccxml
+  
+  	// TEMPLATE FUNCTION mem_fn, pointer to const member function
+  template<class _Rx,
+  	_CLASS_ARG0>
+! 	_NAME<_Rx, _Rx(_Arg0::*)(_ARG1_ARG2) const,
+  		const _ARG0_ARG1>
+! 		mem_fn(_Rx(_Arg0::*_Pm)(_ARG1_ARG2) const)
+  	{	// bind to pointer to const member function
+! 	return (_NAME<_Rx, _Rx(_Arg0::*)(_ARG1_ARG2) const,
+  		const _ARG0_ARG1>(_Pm));
+  	}
+  
++ #if 0 // Disabled for gccxml
+   #ifdef _M_IX86
+  template<class _Rx,
+  	_CLASS_ARG0>
+*************** template<class _Rx,
+*** 136,153 ****
+  		const _ARG0_ARG1>(_Pm));
+  	}
+   #endif /* _M_CEE */
+  
+  	// TEMPLATE FUNCTION mem_fn, pointer to volatile member function
+  template<class _Rx,
+  	_CLASS_ARG0>
+! 	_NAME<_Rx, _Rx(__thiscall _Arg0::*)(_ARG1_ARG2) volatile,
+  		volatile _ARG0_ARG1>
+! 		mem_fn(_Rx(__thiscall _Arg0::*_Pm)(_ARG1_ARG2) volatile)
+  	{	// bind to pointer to volatile member function
+! 	return (_NAME<_Rx, _Rx(__thiscall _Arg0::*)(_ARG1_ARG2) volatile,
+  		volatile _ARG0_ARG1>(_Pm));
+  	}
+  
+   #ifdef _M_IX86
+  template<class _Rx,
+  	_CLASS_ARG0>
+--- 139,158 ----
+  		const _ARG0_ARG1>(_Pm));
+  	}
+   #endif /* _M_CEE */
++ #endif // Disabled for gccxml
+  
+  	// TEMPLATE FUNCTION mem_fn, pointer to volatile member function
+  template<class _Rx,
+  	_CLASS_ARG0>
+! 	_NAME<_Rx, _Rx(_Arg0::*)(_ARG1_ARG2) volatile,
+  		volatile _ARG0_ARG1>
+! 		mem_fn(_Rx(_Arg0::*_Pm)(_ARG1_ARG2) volatile)
+  	{	// bind to pointer to volatile member function
+! 	return (_NAME<_Rx, _Rx(_Arg0::*)(_ARG1_ARG2) volatile,
+  		volatile _ARG0_ARG1>(_Pm));
+  	}
+  
++ #if 0 // Disabled for gccxml
+   #ifdef _M_IX86
+  template<class _Rx,
+  	_CLASS_ARG0>
+*************** template<class _Rx,
+*** 194,211 ****
+  		volatile _ARG0_ARG1>(_Pm));
+  	}
+   #endif /* _M_CEE */
+  
+  	// TEMPLATE FUNCTION mem_fn, pointer to const volatile member function
+  template<class _Rx,
+  	_CLASS_ARG0>
+! 	_NAME<_Rx, _Rx(__thiscall _Arg0::*)(_ARG1_ARG2) const volatile,
+  		const volatile _ARG0_ARG1>
+! 		mem_fn(_Rx(__thiscall _Arg0::*_Pm)(_ARG1_ARG2) const volatile)
+  	{	// bind to pointer to const volatile member function
+! 	return (_NAME<_Rx, _Rx(__thiscall _Arg0::*)(_ARG1_ARG2) const volatile,
+  		const volatile _ARG0_ARG1>(_Pm));
+  	}
+  
+   #ifdef _M_IX86
+  template<class _Rx,
+  	_CLASS_ARG0>
+--- 199,218 ----
+  		volatile _ARG0_ARG1>(_Pm));
+  	}
+   #endif /* _M_CEE */
++ #endif // Disabled for gccxml
+  
+  	// TEMPLATE FUNCTION mem_fn, pointer to const volatile member function
+  template<class _Rx,
+  	_CLASS_ARG0>
+! 	_NAME<_Rx, _Rx(_Arg0::*)(_ARG1_ARG2) const volatile,
+  		const volatile _ARG0_ARG1>
+! 		mem_fn(_Rx(_Arg0::*_Pm)(_ARG1_ARG2) const volatile)
+  	{	// bind to pointer to const volatile member function
+! 	return (_NAME<_Rx, _Rx(_Arg0::*)(_ARG1_ARG2) const volatile,
+  		const volatile _ARG0_ARG1>(_Pm));
+  	}
+  
++ #if 0 // Disabled for gccxml
+   #ifdef _M_IX86
+  template<class _Rx,
+  	_CLASS_ARG0>
+*************** template<class _Rx,
+*** 252,257 ****
+--- 259,265 ----
+  		const volatile _ARG0_ARG1>(_Pm));
+  	}
+   #endif /* _M_CEE */
++ #endif // Disabled for gccxml
+  
+  #undef _NAME
+  
+Index: xxresult
+===================================================================
+RCS file: /cvsroot/GxInclude/Vc9sp1/Include/xxresult,v
+retrieving revision 1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
+*** xxresult	6 Jan 2009 21:19:25 -0000	1.1
+--- xxresult	6 Jan 2009 21:37:23 -0000	1.2
+*************** template<class _Rx,
+*** 89,100 ****
+  template<class _Rx,
+  	_CLASS_ARG0
+  	_C_CLASS_FARG0>
+! 	struct _RESULT_OF<_Rx (__thiscall _Arg0::*)(_ARG1_ARG2),
+  		_Farg0& _C_FARG1_FARG2>
+  	{	// pointer to member fn
+  	typedef _Rx _Type;
+  	};
+  
+   #ifdef _M_IX86
+  template<class _Rx,
+  	_CLASS_ARG0
+--- 89,101 ----
+  template<class _Rx,
+  	_CLASS_ARG0
+  	_C_CLASS_FARG0>
+! 	struct _RESULT_OF<_Rx (_Arg0::*)(_ARG1_ARG2),
+  		_Farg0& _C_FARG1_FARG2>
+  	{	// pointer to member fn
+  	typedef _Rx _Type;
+  	};
+  
++ #if 0 // Disabled for gccxml
+   #ifdef _M_IX86
+  template<class _Rx,
+  	_CLASS_ARG0
+*************** template<class _Rx,
+*** 136,152 ****
+  	typedef _Rx _Type;
+  	};
+   #endif /* _M_CEE */
+  
+  	// TEMPLATE FUNCTION _RESULT_OF, pointer to const member fn
+  template<class _Rx,
+  	_CLASS_ARG0
+  	_C_CLASS_FARG0>
+! 	struct _RESULT_OF<_Rx (__thiscall _Arg0::*)(_ARG1_ARG2) const,
+  		_Farg0& _C_FARG1_FARG2>
+  	{	// pointer to const member fn
+  	typedef _Rx _Type;
+  	};
+  
+   #ifdef _M_IX86
+  template<class _Rx,
+  	_CLASS_ARG0
+--- 137,155 ----
+  	typedef _Rx _Type;
+  	};
+   #endif /* _M_CEE */
++ #endif // Disabled for gccxml
+  
+  	// TEMPLATE FUNCTION _RESULT_OF, pointer to const member fn
+  template<class _Rx,
+  	_CLASS_ARG0
+  	_C_CLASS_FARG0>
+! 	struct _RESULT_OF<_Rx (_Arg0::*)(_ARG1_ARG2) const,
+  		_Farg0& _C_FARG1_FARG2>
+  	{	// pointer to const member fn
+  	typedef _Rx _Type;
+  	};
+  
++ #if 0 // Disabled for gccxml
+   #ifdef _M_IX86
+  template<class _Rx,
+  	_CLASS_ARG0
+*************** template<class _Rx,
+*** 188,204 ****
+  	typedef _Rx _Type;
+  	};
+   #endif /* _M_CEE */
+  
+  	// TEMPLATE FUNCTION _RESULT_OF, pointer to volatile member fn
+  template<class _Rx,
+  	_CLASS_ARG0
+  	_C_CLASS_FARG0>
+! 	struct _RESULT_OF<_Rx (__thiscall _Arg0::*)(_ARG1_ARG2) volatile,
+  		_Farg0& _C_FARG1_FARG2>
+  	{	// pointer to volatile member fn
+  	typedef _Rx _Type;
+  	};
+  
+   #ifdef _M_IX86
+  template<class _Rx,
+  	_CLASS_ARG0
+--- 191,209 ----
+  	typedef _Rx _Type;
+  	};
+   #endif /* _M_CEE */
++ #endif // Disabled for gccxml
+  
+  	// TEMPLATE FUNCTION _RESULT_OF, pointer to volatile member fn
+  template<class _Rx,
+  	_CLASS_ARG0
+  	_C_CLASS_FARG0>
+! 	struct _RESULT_OF<_Rx (_Arg0::*)(_ARG1_ARG2) volatile,
+  		_Farg0& _C_FARG1_FARG2>
+  	{	// pointer to volatile member fn
+  	typedef _Rx _Type;
+  	};
+  
++ #if 0 // Disabled for gccxml
+   #ifdef _M_IX86
+  template<class _Rx,
+  	_CLASS_ARG0
+*************** template<class _Rx,
+*** 240,256 ****
+  	typedef _Rx _Type;
+  	};
+   #endif /* _M_CEE */
+  
+  	// TEMPLATE FUNCTION _RESULT_OF, pointer to const volatile member fn
+  template<class _Rx,
+  	_CLASS_ARG0
+  	_C_CLASS_FARG0>
+! 	struct _RESULT_OF<_Rx (__thiscall _Arg0::*)(_ARG1_ARG2) const volatile,
+  		_Farg0& _C_FARG1_FARG2>
+  	{	// pointer to const volatile member fn
+  	typedef _Rx _Type;
+  	};
+  
+   #ifdef _M_IX86
+  template<class _Rx,
+  	_CLASS_ARG0
+--- 245,263 ----
+  	typedef _Rx _Type;
+  	};
+   #endif /* _M_CEE */
++ #endif // Disabled for gccxml
+  
+  	// TEMPLATE FUNCTION _RESULT_OF, pointer to const volatile member fn
+  template<class _Rx,
+  	_CLASS_ARG0
+  	_C_CLASS_FARG0>
+! 	struct _RESULT_OF<_Rx (_Arg0::*)(_ARG1_ARG2) const volatile,
+  		_Farg0& _C_FARG1_FARG2>
+  	{	// pointer to const volatile member fn
+  	typedef _Rx _Type;
+  	};
+  
++ #if 0 // Disabled for gccxml
+   #ifdef _M_IX86
+  template<class _Rx,
+  	_CLASS_ARG0
+*************** template<class _Rx,
+*** 292,308 ****
+  	typedef _Rx _Type;
+  	};
+   #endif /* _M_CEE */
+  
+  	// TEMPLATE FUNCTION _RESULT_OF, const pointer to member fn
+  template<class _Rx,
+  	_CLASS_ARG0
+  	_C_CLASS_FARG0>
+! 	struct _RESULT_OF<_Rx (__thiscall _Arg0::*const)(_ARG1_ARG2),
+  		_Farg0& _C_FARG1_FARG2>
+  	{	// const pointer to member fn
+  	typedef _Rx _Type;
+  	};
+  
+   #ifdef _M_IX86
+  template<class _Rx,
+  	_CLASS_ARG0
+--- 299,317 ----
+  	typedef _Rx _Type;
+  	};
+   #endif /* _M_CEE */
++ #endif // Disabled for gccxml
+  
+  	// TEMPLATE FUNCTION _RESULT_OF, const pointer to member fn
+  template<class _Rx,
+  	_CLASS_ARG0
+  	_C_CLASS_FARG0>
+! 	struct _RESULT_OF<_Rx (_Arg0::*const)(_ARG1_ARG2),
+  		_Farg0& _C_FARG1_FARG2>
+  	{	// const pointer to member fn
+  	typedef _Rx _Type;
+  	};
+  
++ #if 0 // Disabled for gccxml
+   #ifdef _M_IX86
+  template<class _Rx,
+  	_CLASS_ARG0
+*************** template<class _Rx,
+*** 344,360 ****
+  	typedef _Rx _Type;
+  	};
+   #endif /* _M_CEE */
+  
+  	// TEMPLATE FUNCTION _RESULT_OF, const pointer to const member fn
+  template<class _Rx,
+  	_CLASS_ARG0
+  	_C_CLASS_FARG0>
+! 	struct _RESULT_OF<_Rx (__thiscall _Arg0::*const)(_ARG1_ARG2) const,
+  		_Farg0& _C_FARG1_FARG2>
+  	{	// const pointer to const member fn
+  	typedef _Rx _Type;
+  	};
+  
+   #ifdef _M_IX86
+  template<class _Rx,
+  	_CLASS_ARG0
+--- 353,371 ----
+  	typedef _Rx _Type;
+  	};
+   #endif /* _M_CEE */
++ #endif // Disabled for gccxml
+  
+  	// TEMPLATE FUNCTION _RESULT_OF, const pointer to const member fn
+  template<class _Rx,
+  	_CLASS_ARG0
+  	_C_CLASS_FARG0>
+! 	struct _RESULT_OF<_Rx (_Arg0::*const)(_ARG1_ARG2) const,
+  		_Farg0& _C_FARG1_FARG2>
+  	{	// const pointer to const member fn
+  	typedef _Rx _Type;
+  	};
+  
++ #if 0 // Disabled for gccxml
+   #ifdef _M_IX86
+  template<class _Rx,
+  	_CLASS_ARG0
+*************** template<class _Rx,
+*** 396,412 ****
+  	typedef _Rx _Type;
+  	};
+   #endif /* _M_CEE */
+  
+  	// TEMPLATE FUNCTION _RESULT_OF, const pointer to volatile member fn
+  template<class _Rx,
+  	_CLASS_ARG0
+  	_C_CLASS_FARG0>
+! 	struct _RESULT_OF<_Rx (__thiscall _Arg0::*const)(_ARG1_ARG2) volatile,
+  		_Farg0& _C_FARG1_FARG2>
+  	{	// const pointer to volatile member fn
+  	typedef _Rx _Type;
+  	};
+  
+   #ifdef _M_IX86
+  template<class _Rx,
+  	_CLASS_ARG0
+--- 407,425 ----
+  	typedef _Rx _Type;
+  	};
+   #endif /* _M_CEE */
++ #endif // Disabled for gccxml
+  
+  	// TEMPLATE FUNCTION _RESULT_OF, const pointer to volatile member fn
+  template<class _Rx,
+  	_CLASS_ARG0
+  	_C_CLASS_FARG0>
+! 	struct _RESULT_OF<_Rx (_Arg0::*const)(_ARG1_ARG2) volatile,
+  		_Farg0& _C_FARG1_FARG2>
+  	{	// const pointer to volatile member fn
+  	typedef _Rx _Type;
+  	};
+  
++ #if 0 // Disabled for gccxml
+   #ifdef _M_IX86
+  template<class _Rx,
+  	_CLASS_ARG0
+*************** template<class _Rx,
+*** 448,464 ****
+  	typedef _Rx _Type;
+  	};
+   #endif /* _M_CEE */
+  
+  	// TEMPLATE FUNCTION _RESULT_OF, const pointer to const volatile member fn
+  template<class _Rx,
+  	_CLASS_ARG0
+  	_C_CLASS_FARG0>
+! 	struct _RESULT_OF<_Rx (__thiscall _Arg0::*const)(_ARG1_ARG2) const volatile,
+  		_Farg0& _C_FARG1_FARG2>
+  	{	// const pointer to const volatile member fn
+  	typedef _Rx _Type;
+  	};
+  
+   #ifdef _M_IX86
+  template<class _Rx,
+  	_CLASS_ARG0
+--- 461,479 ----
+  	typedef _Rx _Type;
+  	};
+   #endif /* _M_CEE */
++ #endif // Disabled for gccxml
+  
+  	// TEMPLATE FUNCTION _RESULT_OF, const pointer to const volatile member fn
+  template<class _Rx,
+  	_CLASS_ARG0
+  	_C_CLASS_FARG0>
+! 	struct _RESULT_OF<_Rx (_Arg0::*const)(_ARG1_ARG2) const volatile,
+  		_Farg0& _C_FARG1_FARG2>
+  	{	// const pointer to const volatile member fn
+  	typedef _Rx _Type;
+  	};
+  
++ #if 0 // Disabled for gccxml
+   #ifdef _M_IX86
+  template<class _Rx,
+  	_CLASS_ARG0
+*************** template<class _Rx,
+*** 500,505 ****
+--- 515,521 ----
+  	typedef _Rx _Type;
+  	};
+   #endif /* _M_CEE */
++ #endif // Disabled for gccxml
+   #endif /* _NARGS != 0 */
+  
+  	// TEMPLATE CLASS _Result_of
+Index: yvals.h
+===================================================================
+RCS file: /cvsroot/GxInclude/Vc9sp1/Include/yvals.h,v
+retrieving revision 1.1
+retrieving revision 1.3
+diff -c -3 -p -r1.1 -r1.3
+*** yvals.h	6 Jan 2009 21:18:02 -0000	1.1
+--- yvals.h	6 Jan 2009 21:48:10 -0000	1.3
+***************
+*** 11,16 ****
+--- 11,35 ----
+  
+  #define _CPPLIB_VER	505
+  
++ #if 1 // gccxml cannot provide these builtins until we use the 4.3 parser
++ #define __is_union(X) gccxml_does_not_yet_support_tr1_type_traits
++ #define __is_class(X) gccxml_does_not_yet_support_tr1_type_traits
++ #define __is_enum(X) gccxml_does_not_yet_support_tr1_type_traits
++ #define __is_pod(X) gccxml_does_not_yet_support_tr1_type_traits
++ #define __is_empty(X) gccxml_does_not_yet_support_tr1_type_traits
++ #define __is_polymorphic(X) gccxml_does_not_yet_support_tr1_type_traits
++ #define __is_abstract(X) gccxml_does_not_yet_support_tr1_type_traits
++ #define __is_convertible_to(X,Y) gccxml_does_not_yet_support_tr1_type_traits
++ #define __has_trivial_constructor(X) gccxml_does_not_yet_support_tr1_type_traits
++ #define __has_trivial_copy(X) gccxml_does_not_yet_support_tr1_type_traits
++ #define __has_trivial_assign(X) gccxml_does_not_yet_support_tr1_type_traits
++ #define __has_trivial_destructor(X) gccxml_does_not_yet_support_tr1_type_traits
++ #define __has_nothrow_constructor(X) gccxml_does_not_yet_support_tr1_type_traits
++ #define __has_nothrow_copy(X) gccxml_does_not_yet_support_tr1_type_traits
++ #define __has_nothrow_assign(X) gccxml_does_not_yet_support_tr1_type_traits
++ #define __has_virtual_destructor(X) gccxml_does_not_yet_support_tr1_type_traits
++ #endif
++ 
+   #if !defined(_HAS_TR1)
+    #define _HAS_TR1	1	/* enable TR1 extensions */
+   #endif /* !defined(_HAS_TR1) */
+***************
+*** 120,126 ****
+  #define _STR2WSTR(str)     __STR2WSTR(str)
+  
+  #define __FILEW__          _STR2WSTR(__FILE__)
+! #define __FUNCTIONW__      _STR2WSTR(__FUNCTION__)
+  
+  /* _SECURE_SCL switches: default values */
+  
+--- 139,146 ----
+  #define _STR2WSTR(str)     __STR2WSTR(str)
+  
+  #define __FILEW__          _STR2WSTR(__FILE__)
+! #define __FUNCTIONW__      L"<GCCXML-DISABLED>"
+! #define L__FUNCTION__      L"<GCCXML-DISABLED>"
+  
+  /* _SECURE_SCL switches: default values */
+  
+***************
+*** 185,190 ****
+--- 205,230 ----
+  
+   #endif
+  
++ /* ------------------------------------------------------------------------ */
++ /* Forward declare these now because they are used as non-dependent names.  */
++ #ifdef _DEBUG
++ 
++ #if !defined(_NATIVE_WCHAR_T_DEFINED) && defined(_M_CEE_PURE)
++ extern "C++"
++ #else
++ extern "C"
++ #endif
++ _CRTIMP void __cdecl _invalid_parameter(_In_opt_z_ const wchar_t *, _In_opt_z_ const wchar_t *, _In_opt_z_ const wchar_t *, unsigned int, uintptr_t);
++ 
++ #else /* _DEBUG */
++ 
++ extern "C"
++ _CRTIMP void __cdecl _invalid_parameter_noinfo(void);
++ 
++ #endif /* def _DEBUG */
++ /* ------------------------------------------------------------------------ */
++ 
++ 
+   #if _SECURE_SCL_THROWS
+  
+   #define _SCL_SECURE_INVALID_ARGUMENT_NO_ASSERT		_Xinvarg()
+*************** _STD_END
+*** 533,540 ****
+  		/* VC++ COMPILER PARAMETERS */
+  #define _LONGLONG	__int64
+  #define _ULONGLONG	unsigned __int64
+! #define _LLONG_MAX	0x7fffffffffffffff
+! #define _ULLONG_MAX	0xffffffffffffffff
+  
+  		/* INTEGER PROPERTIES */
+  #define _C2			1	/* 0 if not 2's complement */
+--- 573,580 ----
+  		/* VC++ COMPILER PARAMETERS */
+  #define _LONGLONG	__int64
+  #define _ULONGLONG	unsigned __int64
+! #define _LLONG_MAX	0x7fffffffffffffffi64
+! #define _ULLONG_MAX	0xffffffffffffffffui64
+  
+  		/* INTEGER PROPERTIES */
+  #define _C2			1	/* 0 if not 2's complement */
+Index: CodeAnalysis/sourceannotations.h
+===================================================================
+RCS file: /cvsroot/GxInclude/Vc9sp1/Include/CodeAnalysis/sourceannotations.h,v
+retrieving revision 1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
+*** CodeAnalysis/sourceannotations.h	6 Jan 2009 21:19:11 -0000	1.1
+--- CodeAnalysis/sourceannotations.h	6 Jan 2009 21:21:23 -0000	1.2
+*************** typedef unsigned short wchar_t;
+*** 32,38 ****
+  
+  #ifdef __cplusplus
+  #define SA( id ) id
+! #define REPEATABLE [repeatable]
+  #else  // !__cplusplus
+  #define SA( id ) SA_##id
+  #define REPEATABLE
+--- 32,38 ----
+  
+  #ifdef __cplusplus
+  #define SA( id ) id
+! #define REPEATABLE
+  #else  // !__cplusplus
+  #define SA( id ) SA_##id
+  #define REPEATABLE
+*************** typedef enum SA( AccessType ) SA( Access
+*** 66,72 ****
+  #ifndef SAL_NO_ATTRIBUTE_DECLARATIONS
+  
+  REPEATABLE
+- [source_annotation_attribute( SA( Parameter ) )]
+  struct PreAttribute
+  {
+  #ifdef __cplusplus
+--- 66,71 ----
+*************** struct PreAttribute
+*** 97,103 ****
+  };
+  
+  REPEATABLE
+- [source_annotation_attribute( SA( Parameter )|SA( ReturnValue ) )]
+  struct PostAttribute
+  {
+  #ifdef __cplusplus
+--- 96,101 ----
+*************** struct PostAttribute
+*** 128,134 ****
+  	const wchar_t* Condition;
+  };
+  
+- [source_annotation_attribute( SA( Parameter ) )]
+  struct FormatStringAttribute
+  {
+  #ifdef __cplusplus
+--- 126,131 ----
+*************** struct FormatStringAttribute
+*** 140,146 ****
+  };
+  
+  REPEATABLE
+- [source_annotation_attribute( SA( ReturnValue ) )]
+  struct InvalidCheckAttribute
+  {
+  #ifdef __cplusplus
+--- 137,142 ----
+*************** struct InvalidCheckAttribute
+*** 150,156 ****
+  	long Value;
+  };
+  
+- [source_annotation_attribute( SA( Method ) )]
+  struct SuccessAttribute
+  {
+  #ifdef __cplusplus
+--- 146,151 ----
+*************** struct SuccessAttribute
+*** 161,167 ****
+  };
+  
+  REPEATABLE
+- [source_annotation_attribute( SA( Parameter ) )]
+  struct PreBoundAttribute
+  {
+  #ifdef __cplusplus
+--- 156,161 ----
+*************** struct PreBoundAttribute
+*** 171,177 ****
+  };
+  
+  REPEATABLE
+- [source_annotation_attribute( SA( Parameter )|SA( ReturnValue ) )]
+  struct PostBoundAttribute
+  {
+  #ifdef __cplusplus
+--- 165,170 ----
+*************** struct PostBoundAttribute
+*** 181,187 ****
+  };
+  
+  REPEATABLE
+- [source_annotation_attribute( SA( Parameter ) )]
+  struct PreRangeAttribute
+  {
+  #ifdef __cplusplus
+--- 174,179 ----
+*************** struct PreRangeAttribute
+*** 193,199 ****
+  };
+  
+  REPEATABLE
+- [source_annotation_attribute( SA( Parameter )|SA( ReturnValue ) )]
+  struct PostRangeAttribute
+  {
+  #ifdef __cplusplus
+--- 185,190 ----

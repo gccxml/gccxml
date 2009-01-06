@@ -88,6 +88,12 @@ int main(int argc, char* argv[])
   const char* vc9Registry =
     "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\VisualStudio\\9.0;InstallDir";
   //"HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\Microsoft\\VisualStudio\\9.0;InstallDir"; // _WIN64 ?
+  const char* vc9sp1Registry[] =
+  {
+    // English SP1
+    "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\VisualStudio\\9.0\\InstalledProducts\\KB948484;",
+    0
+  };
   const char* vc9exRegistry =
     "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\VCExpress\\9.0;InstallDir";
   //"HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\Microsoft\\VCExpress\\9.0;InstallDir"; // _WIN64 ?
@@ -383,6 +389,16 @@ int main(int argc, char* argv[])
     msvc9i = gxSystemTools::CollapseDirectory(msvc9i.c_str());
     std::string patchIname = "vc9Include.patch";
     std::string destPathI = gccxmlRoot+"/Vc9/Include";
+    std::string msvc9sp1;
+    bool vc9sp1 = false;
+    for(const char** reg = vc9sp1Registry; !vc9sp1 && *reg; ++reg)
+      {
+      vc9sp1 = vc9sp1 || gxSystemTools::ReadRegistryValue(*reg, msvc9sp1);
+      }
+    if(vc9sp1)
+      {
+      patchIname = "vc9sp1Include.patch";
+      }
     std::string patchI = patchDir + "/" + patchIname;
     if(gxSystemTools::FileExists(patchI.c_str()))
       {
