@@ -169,7 +169,7 @@ diagnostic_build_prefix (diagnostic_info *diagnostic)
 /* xml.c uses this to suppress error messages when testing whether
    synthesizing an artificially-generated function succeeds.  */
 int diagnostic_xml_synthesize_test = 0;
-bool diagnostic_in_xml_synthesize_test()
+static bool diagnostic_in_xml_synthesize_test()
 {
   if(diagnostic_xml_synthesize_test)
     {
@@ -177,6 +177,10 @@ bool diagnostic_in_xml_synthesize_test()
     return true;
     }
   return false;
+}
+bool diagnostic_get_xml_synthesize_test()
+{
+  return diagnostic_xml_synthesize_test > 0;
 }
 /* END GCC-XML MODIFICATIONS 2008-10-01 */
 
