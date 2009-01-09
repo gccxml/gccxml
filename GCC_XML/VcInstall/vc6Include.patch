@@ -3883,6 +3883,27 @@ diff -c -3 -p -r1.1.1.1 -r1.2
   	explicit stack(const allocator_type& _Al = allocator_type())
   		: c(_Al) {}
   	allocator_type get_allocator() const
+Index: stddef.h
+===================================================================
+RCS file: /cvsroot/GxInclude/VcInclude/stddef.h,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1.1.1 -r1.2
+*** stddef.h	13 Jun 2001 19:31:56 -0000	1.1.1.1
+--- stddef.h	9 Jan 2009 13:47:14 -0000	1.2
+*************** extern "C" {
+*** 68,74 ****
+--- 68,77 ----
+  #endif
+  
+  
++ #define offsetof(s,m) ((size_t)__builtin_offsetof(s,m))
++ #if 0 /* replaced for gccxml */
+  #define offsetof(s,m)   (size_t)&(((s *)0)->m)
++ #endif  /* 0 */
+  
+  
+  /* Declare reference to errno */
 Index: streambuf
 ===================================================================
 RCS file: /cvsroot/GxInclude/VcInclude/streambuf,v

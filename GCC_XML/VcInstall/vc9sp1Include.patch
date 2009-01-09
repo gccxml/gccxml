@@ -74,7 +74,7 @@ RCS file: /cvsroot/GxInclude/Vc9sp1/Include/crtdefs.h,v
 retrieving revision 1.1
 diff -c -3 -p -r1.1 crtdefs.h
 *** crtdefs.h	6 Jan 2009 21:18:02 -0000	1.1
---- crtdefs.h	6 Jan 2009 21:48:30 -0000
+--- crtdefs.h	9 Jan 2009 13:53:55 -0000
 *************** typedef __time64_t time_t;      /* time 
 *** 666,764 ****
   #define __DEFINE_CPP_OVERLOAD_SECURE_FUNC_0_0(_ReturnType, _FuncName, _DstType, _Dst) \
@@ -1155,6 +1155,35 @@ diff -c -3 -p -r1.1 -r1.2
   }
   #else
   _CRTIMP __declspec(noreturn) void __cdecl longjmp(_In_ jmp_buf _Buf, _In_ int _Value);
+Index: stddef.h
+===================================================================
+RCS file: /cvsroot/GxInclude/Vc9sp1/Include/stddef.h,v
+retrieving revision 1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
+*** stddef.h	6 Jan 2009 21:18:02 -0000	1.1
+--- stddef.h	9 Jan 2009 13:47:14 -0000	1.2
+*************** errno_t __cdecl _get_errno(_Out_ int * _
+*** 46,51 ****
+--- 46,53 ----
+  #endif
+  
+  /* Define offsetof macro */
++ #define offsetof(s,m) ((size_t)__builtin_offsetof(s,m))
++ #if 0 /* replaced for gccxml */
+  #ifdef __cplusplus
+  
+  #ifdef  _WIN64
+*************** errno_t __cdecl _get_errno(_Out_ int * _
+*** 63,68 ****
+--- 65,71 ----
+  #endif
+  
+  #endif	/* __cplusplus */
++ #endif  /* 0 */
+  
+  #ifdef  _MT
+  _CRTIMP extern unsigned long  __cdecl __threadid(void);
 Index: typeinfo
 ===================================================================
 RCS file: /cvsroot/GxInclude/Vc9sp1/Include/typeinfo,v

@@ -54,9 +54,10 @@ Index: crtdbg.h
 ===================================================================
 RCS file: /cvsroot/GxInclude/Vc9/Include/crtdbg.h,v
 retrieving revision 1.1
-diff -c -3 -p -r1.1 crtdbg.h
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
 *** crtdbg.h	29 Jan 2008 21:05:21 -0000	1.1
---- crtdbg.h	15 Dec 2008 20:35:51 -0000
+--- crtdbg.h	15 Dec 2008 20:37:10 -0000	1.2
 *************** should not have done so since it was not
 *** 588,593 ****
 --- 588,594 ----
@@ -1155,6 +1156,35 @@ diff -c -3 -p -r1.1 -r1.2
   }
   #else
   _CRTIMP __declspec(noreturn) void __cdecl longjmp(_In_ jmp_buf _Buf, _In_ int _Value);
+Index: stddef.h
+===================================================================
+RCS file: /cvsroot/GxInclude/Vc9/Include/stddef.h,v
+retrieving revision 1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
+*** stddef.h	29 Jan 2008 21:05:21 -0000	1.1
+--- stddef.h	9 Jan 2009 13:47:14 -0000	1.2
+*************** errno_t __cdecl _get_errno(_Out_ int * _
+*** 46,51 ****
+--- 46,53 ----
+  #endif
+  
+  /* Define offsetof macro */
++ #define offsetof(s,m) ((size_t)__builtin_offsetof(s,m))
++ #if 0 /* replaced for gccxml */
+  #ifdef __cplusplus
+  
+  #ifdef  _WIN64
+*************** errno_t __cdecl _get_errno(_Out_ int * _
+*** 63,68 ****
+--- 65,71 ----
+  #endif
+  
+  #endif	/* __cplusplus */
++ #endif  /* 0 */
+  
+  #ifdef  _MT
+  _CRTIMP extern unsigned long  __cdecl __threadid(void);
 Index: typeinfo
 ===================================================================
 RCS file: /cvsroot/GxInclude/Vc9/Include/typeinfo,v
@@ -1776,9 +1806,10 @@ Index: yvals.h
 ===================================================================
 RCS file: /cvsroot/GxInclude/Vc9/Include/yvals.h,v
 retrieving revision 1.1
-diff -c -3 -p -r1.1 yvals.h
+retrieving revision 1.5
+diff -c -3 -p -r1.1 -r1.5
 *** yvals.h	29 Jan 2008 21:05:21 -0000	1.1
---- yvals.h	15 Dec 2008 20:35:51 -0000
+--- yvals.h	15 Dec 2008 20:36:52 -0000	1.5
 ***************
 *** 116,122 ****
   #define _STR2WSTR(str)     __STR2WSTR(str)

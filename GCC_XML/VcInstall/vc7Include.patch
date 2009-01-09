@@ -25,9 +25,10 @@ Index: deque
 ===================================================================
 RCS file: /cvsroot/GxInclude/Vc7/Include/deque,v
 retrieving revision 1.1
-diff -c -3 -p -r1.1 deque
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
 *** deque	1 Nov 2002 14:00:28 -0000	1.1
---- deque	21 Oct 2007 19:25:26 -0000
+--- deque	21 Oct 2007 19:58:47 -0000	1.2
 *************** public:
 *** 245,253 ****
   			size_type _Block = _Myoff / _DEQUESIZ;
@@ -127,9 +128,10 @@ Index: functional
 ===================================================================
 RCS file: /cvsroot/GxInclude/Vc7/Include/functional,v
 retrieving revision 1.1
-diff -c -3 -p -r1.1 functional
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
 *** functional	1 Nov 2002 14:00:28 -0000	1.1
---- functional	21 Oct 2007 19:25:26 -0000
+--- functional	21 Oct 2007 19:58:47 -0000	1.2
 *************** public:
 *** 343,349 ****
   		}
@@ -170,9 +172,10 @@ Index: istream
 ===================================================================
 RCS file: /cvsroot/GxInclude/Vc7/Include/istream,v
 retrieving revision 1.1
-diff -c -3 -p -r1.1 istream
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
 *** istream	1 Nov 2002 14:00:28 -0000	1.1
---- istream	21 Oct 2007 19:25:26 -0000
+--- istream	21 Oct 2007 19:58:47 -0000	1.2
 *************** public:
 *** 70,76 ****
   		explicit sentry(_Myt& _Istr, bool _Noskip = false)
@@ -194,9 +197,10 @@ Index: limits
 ===================================================================
 RCS file: /cvsroot/GxInclude/Vc7/Include/limits,v
 retrieving revision 1.1
-diff -c -3 -p -r1.1 limits
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
 *** limits	1 Nov 2002 14:00:28 -0000	1.1
---- limits	21 Oct 2007 19:25:26 -0000
+--- limits	21 Oct 2007 19:58:47 -0000	1.2
 *************** struct _CRTIMP2 _Num_base
 *** 66,83 ****
   	_STCONS(int, radix, 0);
@@ -673,9 +677,10 @@ Index: list
 ===================================================================
 RCS file: /cvsroot/GxInclude/Vc7/Include/list,v
 retrieving revision 1.1
-diff -c -3 -p -r1.1 list
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
 *** list	1 Nov 2002 14:00:28 -0000	1.1
---- list	21 Oct 2007 19:25:26 -0000
+--- list	21 Oct 2007 19:58:47 -0000	1.2
 *************** public:
 *** 233,239 ****
   
@@ -731,9 +736,10 @@ Index: ostream
 ===================================================================
 RCS file: /cvsroot/GxInclude/Vc7/Include/ostream,v
 retrieving revision 1.1
-diff -c -3 -p -r1.1 ostream
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
 *** ostream	1 Nov 2002 14:00:28 -0000	1.1
---- ostream	21 Oct 2007 19:25:26 -0000
+--- ostream	21 Oct 2007 19:58:47 -0000	1.2
 *************** public:
 *** 93,102 ****
   			{	// destroy the object
@@ -809,6 +815,31 @@ diff -c -3 -p -r1.1 -r1.2
   _CRTIMP int __cdecl raise(int);
   
   
+Index: stddef.h
+===================================================================
+RCS file: /cvsroot/GxInclude/Vc7/Include/stddef.h,v
+retrieving revision 1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
+*** stddef.h	1 Nov 2002 14:00:28 -0000	1.1
+--- stddef.h	9 Jan 2009 13:47:14 -0000	1.2
+*************** typedef unsigned short wchar_t;
+*** 122,132 ****
+--- 122,135 ----
+  
+  /* Define offsetof macro */
+  
++ #define offsetof(s,m) ((size_t)__builtin_offsetof(s,m))
++ #if 0 /* replaced for gccxml */
+  #ifdef  _WIN64
+  #define offsetof(s,m)   (size_t)( (ptrdiff_t)&(((s *)0)->m) )
+  #else
+  #define offsetof(s,m)   (size_t)&(((s *)0)->m)
+  #endif
++ #endif  /* 0 */
+  
+  
+  #ifdef  _MT
 Index: typeinfo.h
 ===================================================================
 RCS file: /cvsroot/GxInclude/Vc7/Include/typeinfo.h,v
@@ -849,9 +880,10 @@ Index: valarray
 ===================================================================
 RCS file: /cvsroot/GxInclude/Vc7/Include/valarray,v
 retrieving revision 1.1
-diff -c -3 -p -r1.1 valarray
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
 *** valarray	1 Nov 2002 14:00:28 -0000	1.1
---- valarray	21 Oct 2007 19:25:26 -0000
+--- valarray	21 Oct 2007 19:58:47 -0000	1.2
 ***************
 *** 5,10 ****
 --- 5,12 ----
@@ -901,9 +933,10 @@ Index: xdebug
 ===================================================================
 RCS file: /cvsroot/GxInclude/Vc7/Include/xdebug,v
 retrieving revision 1.1
-diff -c -3 -p -r1.1 xdebug
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
 *** xdebug	1 Nov 2002 14:00:28 -0000	1.1
---- xdebug	21 Oct 2007 19:25:26 -0000
+--- xdebug	21 Oct 2007 19:58:47 -0000	1.2
 *************** template<class _Ty>
 *** 53,59 ****
 --- 53,61 ----
@@ -993,9 +1026,10 @@ Index: xstring
 ===================================================================
 RCS file: /cvsroot/GxInclude/Vc7/Include/xstring,v
 retrieving revision 1.1
-diff -c -3 -p -r1.1 xstring
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
 *** xstring	1 Nov 2002 14:00:28 -0000	1.1
---- xstring	21 Oct 2007 19:25:26 -0000
+--- xstring	21 Oct 2007 19:58:47 -0000	1.2
 *************** private:
 *** 1281,1289 ****
   template<class _Elem,
@@ -1021,9 +1055,10 @@ Index: xtree
 ===================================================================
 RCS file: /cvsroot/GxInclude/Vc7/Include/xtree,v
 retrieving revision 1.1
-diff -c -3 -p -r1.1 xtree
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
 *** xtree	1 Nov 2002 14:00:28 -0000	1.1
---- xtree	21 Oct 2007 19:25:26 -0000
+--- xtree	21 Oct 2007 19:58:47 -0000	1.2
 *************** public:
 *** 307,313 ****
   
