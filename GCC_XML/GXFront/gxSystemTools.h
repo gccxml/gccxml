@@ -44,6 +44,11 @@ public:
   /** Given a path to a directory, convert it to a full path.  This
    * collapses away relative paths.  The full path is returned.  */
   static std::string CollapseDirectory(const char* in_dir);
+
+  /**
+   * Read a registry value from the 32-bit registry view.
+   */
+  static bool ReadRegistryValue(const char *key, std::string &value);
 };
 
 #endif

@@ -107,3 +107,10 @@ std::string gxSystemTools::CollapseDirectory(const char* in_dir)
 {
   return gxsys::SystemTools::CollapseFullPath(in_dir);
 }
+
+//----------------------------------------------------------------------------
+bool gxSystemTools::ReadRegistryValue(const char *key, std::string &value)
+{
+  return SystemTools::ReadRegistryValue(key, value,
+                                        SystemTools::KeyWOW64_32);
+}
