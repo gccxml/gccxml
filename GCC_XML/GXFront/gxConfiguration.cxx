@@ -1314,7 +1314,7 @@ bool gxConfiguration::FindFlags()
       {
       std::cerr << "Compiler \"" << m_GCCXML_COMPILER
                 << "\" is not supported by GCC_XML because "
-                << "none of MSVC 6, 7, 7.1, 8 is installed.\n";
+                << "none of MSVC 6, 7, 7.1, 8, or 9 is installed.\n";
       return false;
       }
     }
