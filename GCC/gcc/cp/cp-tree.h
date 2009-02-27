@@ -4564,6 +4564,11 @@ extern void cp_genericize                        (tree);
 extern void do_xml_output                       PARAMS ((const char *));
 /* END GCC-XML MODIFICATIONS 2003-11-21 */
 
+/* BEGIN GCC-XML MODIFICATIONS 2008-02-27 */
+/* In FUNCTION_DECL, true for artifical methods that should not exist.  */
+#define GCCXML_DECL_ERROR(NODE) DECL_COMMON_CHECK (NODE)->decl_common.gccxml_decl_error
+/* END GCC-XML MODIFICATIONS 2008-02-27 */
+
 /* -- end of C++ */
 
 /* In order for the format checking to accept the C++ frontend

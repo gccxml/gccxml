@@ -2570,6 +2570,10 @@ struct tree_decl_common GTY(())
      parm decl. */
   unsigned gimple_reg_flag : 1;
   unsigned call_clobbered_flag : 1;
+/* BEGIN GCC-XML MODIFICATIONS 2008-02-27 */
+  /* In FUNCTION_DECL, true for artifical methods that should not exist.  */
+  unsigned gccxml_decl_error : 1;
+/* END GCC-XML MODIFICATIONS 2008-02-27 */
 
   union tree_decl_u1 {
     /* In a FUNCTION_DECL for which DECL_BUILT_IN holds, this is

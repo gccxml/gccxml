@@ -65,7 +65,7 @@ along with this program; if not, write to the
 
 #include "toplev.h" /* ident_hash */
 
-#define GCC_XML_C_VERSION "$Revision: 1.127 $"
+#define GCC_XML_C_VERSION "$Revision: 1.128 $"
 
 /*--------------------------------------------------------------------------*/
 /* Data structures for the actual XML dump.  */
@@ -3343,14 +3343,14 @@ xml_add_node (xml_dump_info_p xdi, tree n, int complete)
     synthesize_method (n);
     pop_from_top_level ();
 
-    /* If an error occurred (and was suppressed) then this function is
-       invalid and should not be included.  */
-    if(diagnostic_xml_synthesize_test > 1)
-      {
-      diagnostic_xml_synthesize_test = 0;
-      return 0;
-      }
+    /* Error messages have been converted to GCCXML_DECL_ERROR marks.  */
     diagnostic_xml_synthesize_test = 0;
+    }
+
+  /* Skip synthesized invalid compiler-generated functions.  */
+  if (TREE_CODE (n) == FUNCTION_DECL && GCCXML_DECL_ERROR (n))
+    {
+    return 0;
     }
 
   /* Some nodes don't need to be dumped and just refer to other nodes.
