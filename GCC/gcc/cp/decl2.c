@@ -1159,13 +1159,13 @@ coerce_new_type (tree type)
       e = 2;
       if (args && args != void_list_node)
         args = TREE_CHAIN (args);
-/* BEGIN GCC-XML MODIFICATIONS (2007/11/05 20:04:58) */
+/* BEGIN GCC-XML MODIFICATIONS (2009/03/02 14:29:19) */
 /* Ignore whether the native compiler breaks the operator new signature.  */
 #if 0
       pedwarn ("%<operator new%> takes type %<size_t%> (%qT) "
                "as first parameter", size_type_node);
 #endif
-/* END GCC-XML MODIFICATIONS (2007/11/05 20:04:58) */
+/* END GCC-XML MODIFICATIONS (2009/03/02 14:29:19) */
     }
   switch (e)
   {
@@ -3471,6 +3471,10 @@ check_default_args (tree x)
     }
 }
 
+/* BEGIN GCC-XML MODIFICATIONS 2008-03-02 */
+extern int diagnostic_xml_synthesize_test;
+/* END GCC-XML MODIFICATIONS 2008-03-02 */
+
 /* Mark DECL (either a _DECL or a BASELINK) as "used" in the program.
    If DECL is a specialization or implicitly declared class member,
    generate the actual definition.  */
@@ -3491,6 +3495,16 @@ mark_used (tree decl)
         return;
       decl = OVL_CURRENT (decl);
     }
+
+/* BEGIN GCC-XML MODIFICATIONS 2008-03-02 */
+  if(diagnostic_xml_synthesize_test &&
+     TREE_CODE (decl) == FUNCTION_DECL && GCCXML_DECL_ERROR (decl))
+    {
+    /* This is a method synth test and we recursively encountered a
+       previously synthesized invalid method.  */
+    ++diagnostic_xml_synthesize_test;
+    }
+/* END GCC-XML MODIFICATIONS 2008-03-02 */
 
   TREE_USED (decl) = 1;
   if (DECL_CLONED_FUNCTION_P (decl))
