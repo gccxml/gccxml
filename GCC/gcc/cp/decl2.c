@@ -1159,13 +1159,13 @@ coerce_new_type (tree type)
       e = 2;
       if (args && args != void_list_node)
         args = TREE_CHAIN (args);
-/* BEGIN GCC-XML MODIFICATIONS (2009/03/02 14:29:19) */
+/* BEGIN GCC-XML MODIFICATIONS (2009/03/03 16:31:15) */
 /* Ignore whether the native compiler breaks the operator new signature.  */
 #if 0
       pedwarn ("%<operator new%> takes type %<size_t%> (%qT) "
                "as first parameter", size_type_node);
 #endif
-/* END GCC-XML MODIFICATIONS (2009/03/02 14:29:19) */
+/* END GCC-XML MODIFICATIONS (2009/03/03 16:31:15) */
     }
   switch (e)
   {
@@ -3498,7 +3498,9 @@ mark_used (tree decl)
 
 /* BEGIN GCC-XML MODIFICATIONS 2008-03-02 */
   if(diagnostic_xml_synthesize_test &&
-     TREE_CODE (decl) == FUNCTION_DECL && GCCXML_DECL_ERROR (decl))
+     ((TREE_CODE (decl) == FUNCTION_DECL && GCCXML_DECL_ERROR (decl)) ||
+      (DECL_CLONED_FUNCTION_P (decl) &&
+       GCCXML_DECL_ERROR (DECL_CLONED_FUNCTION (decl)))))
     {
     /* This is a method synth test and we recursively encountered a
        previously synthesized invalid method.  */
