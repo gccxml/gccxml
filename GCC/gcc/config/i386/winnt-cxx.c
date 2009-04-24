@@ -117,8 +117,28 @@ i386_pe_type_dllexport_p (tree decl)
 
 static inline void maybe_add_dllimport (tree decl) 
 {
+/* BEGIN GCC-XML MODIFICATIONS 2009-04-24 */
+/* Somehow dllimport ends up on the VAR_DECL for the 'B' vtable:
+
+     class A {};
+     struct __attribute__((dllimport)) B: virtual public A { ~B() {} };
+
+   Then 'maybe_emit_vtables' calls 'store_init_value' which eventually
+   calls 'initializer_constant_valid_p' and 'staticp'.  The
+   DECL_DLLIMPORT_P mark requires runtime initialization of the
+   vtable, which is not allowed, and results in an ICE.
+
+   There is code in "class.c" which removes the dllimport attribute
+   but it never seems to be called for the vtable VAR_DECL.  We
+   workaround the problem for gccxml by disabling the mark altogether,
+   as it seems to be used only for code generation.  */
+#if 0
   if (i386_pe_type_dllimport_p (decl))
     DECL_DLLIMPORT_P (decl) = 1;   
+#else
+  (void)decl;
+#endif
+/* END GCC-XML MODIFICATIONS 2009-04-24 */
 }
 
 void
