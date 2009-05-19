@@ -1239,6 +1239,43 @@ diff -c -3 -p -r1.1 -r1.2
   			_Next != _Myvec.end(); ++_Next)
   			*_Next = (_Vbase)~*_Next;
   		_Trim(_Mysize);
+Index: xdebug
+===================================================================
+RCS file: /cvsroot/GxInclude/Vc9/Include/xdebug,v
+retrieving revision 1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
+*** xdebug	29 Jan 2008 21:05:21 -0000	1.1
+--- xdebug	19 May 2009 12:59:33 -0000	1.2
+*************** template<class _Ty>
+*** 55,61 ****
+--- 55,63 ----
+  	{	// delete from the debug CRT heap even if operator delete exists
+  	if (_Ptr != 0)
+  		{	// worth deleting
++ #if 0
+  		_Ptr->~_Ty();
++ #endif
+  		// delete as _NORMAL_BLOCK, not _CRT_BLOCK, since we might have
+  		// facets allocated by normal new.
+  		free(_Ptr);
+*************** public:
+*** 72,78 ****
+  	template<class _Other>
+  		struct rebind
+  		{	// convert _DebugHeapAllocator<_Ty> to _DebugHeapAllocator<_Other>
+! 		typedef typename _DebugHeapAllocator<_Other> other;
+  		};
+  
+  	typename allocator<_Ty>::pointer __CLRCALL_OR_CDECL allocate(typename allocator<_Ty>::size_type _Count, const void *)
+--- 74,80 ----
+  	template<class _Other>
+  		struct rebind
+  		{	// convert _DebugHeapAllocator<_Ty> to _DebugHeapAllocator<_Other>
+! 		typedef _DebugHeapAllocator<_Other> other;
+  		};
+  
+  	typename allocator<_Ty>::pointer __CLRCALL_OR_CDECL allocate(typename allocator<_Ty>::size_type _Count, const void *)
 Index: xhash
 ===================================================================
 RCS file: /cvsroot/GxInclude/Vc9/Include/xhash,v
@@ -1806,10 +1843,10 @@ Index: yvals.h
 ===================================================================
 RCS file: /cvsroot/GxInclude/Vc9/Include/yvals.h,v
 retrieving revision 1.1
-retrieving revision 1.5
-diff -c -3 -p -r1.1 -r1.5
+retrieving revision 1.6
+diff -c -3 -p -r1.1 -r1.6
 *** yvals.h	29 Jan 2008 21:05:21 -0000	1.1
---- yvals.h	15 Dec 2008 20:36:52 -0000	1.5
+--- yvals.h	19 May 2009 13:00:05 -0000	1.6
 ***************
 *** 116,122 ****
   #define _STR2WSTR(str)     __STR2WSTR(str)
@@ -1876,6 +1913,23 @@ diff -c -3 -p -r1.1 -r1.5
   
   		/* INTEGER PROPERTIES */
   #define _C2			1	/* 0 if not 2's complement */
+*************** _C_STD_END
+*** 822,828 ****
+  
+  #ifdef _MSC_VER
+    #define _EXTERN_TEMPLATE	template
+!   #define _THROW_BAD_ALLOC	_THROW1(...)
+   #pragma pack(pop)
+  #endif  /* _MSC_VER */
+  
+--- 843,849 ----
+  
+  #ifdef _MSC_VER
+    #define _EXTERN_TEMPLATE	template
+!   #define _THROW_BAD_ALLOC
+   #pragma pack(pop)
+  #endif  /* _MSC_VER */
+  
 Index: CodeAnalysis/sourceannotations.h
 ===================================================================
 RCS file: /cvsroot/GxInclude/Vc9/Include/CodeAnalysis/sourceannotations.h,v
