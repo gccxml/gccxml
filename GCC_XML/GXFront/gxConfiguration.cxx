@@ -614,6 +614,23 @@ bool gxConfiguration::ProcessCommandLine(int argc, const char*const* argv)
       {
       m_HelpHTMLFlag = true;
       }
+    else if(strcmp(argv[i], "-c") == 0)
+      {
+      // Accept and ignore "-c" for ccache.
+      }
+    else if(strcmp(argv[i], "-o") == 0)
+      {
+      // Convert "-o" to "-fxml=" for ccache.
+      if(++i < argc)
+        {
+        m_Arguments.push_back(std::string("-fxml=") + argv[i]);
+        }
+      else
+        {
+        std::cerr << "Option -o requires an argument.\n";
+        return false;
+        }
+      }
     else
       {
       m_Arguments.push_back(argv[i]);
