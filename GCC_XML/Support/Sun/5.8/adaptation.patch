@@ -1,7 +1,40 @@
+diff -r -u ./algorithm ../result/algorithm
+--- ./algorithm	Wed May 20 12:02:31 2009
++++ ../result/algorithm	Wed May 20 12:01:23 2009
+@@ -880,6 +880,11 @@
+                                RandomAccessIterator last, Pointer buffer,
+                                Distance buffer_size, T*, Compare comp);
+ 
++#if !defined(__MINMAX_DEFINED) 
++  template <class T>
++  inline const T& (min)(const T& a, const T& b);
++#endif
++
+   template <class RandomAccessIterator, class Pointer, class Distance, class T>
+   inline void __stable_sort (RandomAccessIterator first,
+                              RandomAccessIterator last,
 Common subdirectories: ./iso and ../result/iso
 diff -r -u ./istream ../result/istream
---- ./istream	Fri Nov 16 16:40:47 2007
-+++ ../result/istream	Fri Nov 16 15:22:16 2007
+--- ./istream	Wed May 20 12:02:31 2009
++++ ../result/istream	Wed May 20 12:01:23 2009
+@@ -67,7 +67,7 @@
+ 
+     _EXPLICIT basic_istream(basic_streambuf<charT, traits> *sb);
+ 
+-    _EXPLICIT basic_istream(EmptyCtor) : basic_ios<charT, traits>(1) {}
++    _EXPLICIT basic_istream(ios_base::EmptyCtor) : basic_ios<charT, traits>(1) {}
+     virtual ~basic_istream();
+ 
+     class sentry 
+@@ -307,7 +307,7 @@
+           }
+           else
+           {
+-            ostream_type* ost = stream.tie();
++            basic_ostream<charT, traits>* ost = stream.tie();
+             if (ost && ost->rdbuf() != sb) 
+               ost->flush();
+ 
 @@ -419,9 +419,11 @@
          const istream_iterator<T,charT,traits,Distance>& x,
          const istream_iterator<T,charT,traits,Distance>& y);
@@ -16,8 +49,8 @@ diff -r -u ./istream ../result/istream
    public: 
      typedef charT char_type;
 diff -r -u ./math.h ../result/math.h
---- ./math.h	Fri Nov 16 17:25:29 2007
-+++ ../result/math.h	Fri Nov 16 15:22:16 2007
+--- ./math.h	Wed May 20 12:02:31 2009
++++ ../result/math.h	Wed May 20 12:01:23 2009
 @@ -313,6 +313,11 @@
  #endif
  /* END adopted by C99 */
@@ -42,10 +75,32 @@ diff -r -u ./math.h ../result/math.h
  #if defined(__cplusplus) && defined(__GNUC__)
  #undef	exception
  #endif
+diff -r -u ./ostream ../result/ostream
+--- ./ostream	Wed May 20 12:02:31 2009
++++ ../result/ostream	Wed May 20 12:01:23 2009
+@@ -88,7 +88,7 @@
+     typedef basic_ios<charT, traits>               ios_type;
+ 
+     _EXPLICIT basic_ostream(basic_streambuf<charT, traits> *sb);
+-    _EXPLICIT basic_ostream(EmptyCtor) : basic_ios<charT, traits>(1) {}
++    _EXPLICIT basic_ostream(ios_base::EmptyCtor) : basic_ios<charT, traits>(1) {}
+     virtual ~basic_ostream();
+ 
+     class sentry {
+@@ -97,8 +97,7 @@
+       sentry(basic_ostream<charT,traits>& stream)
+         : __stream(stream)                  
+       {  
+-                      
+-        streambuf_type* sb = stream.rdbuf();
++        basic_streambuf<charT, traits>* sb = stream.rdbuf();
+         if ( sb ) {
+           stream.rdbuf()->buffer_mutex_.acquire();
+         }
 Common subdirectories: ./rw and ../result/rw
 diff -r -u ./streambuf ../result/streambuf
---- ./streambuf	Fri Nov 16 16:40:47 2007
-+++ ../result/streambuf	Fri Nov 16 15:22:16 2007
+--- ./streambuf	Wed May 20 12:02:31 2009
++++ ../result/streambuf	Wed May 20 12:01:23 2009
 @@ -927,7 +927,10 @@
     * int_type snextc()
     * returns the next character
@@ -71,8 +126,8 @@ diff -r -u ./streambuf ../result/streambuf
    /*
     * basic_streambuf *pubsetbuf(char_type *, streamsize)
 diff -r -u ./string ../result/string
---- ./string	Fri Nov 16 16:40:47 2007
-+++ ../result/string	Fri Nov 16 15:22:16 2007
+--- ./string	Wed May 20 12:02:31 2009
++++ ../result/string	Wed May 20 12:01:23 2009
 @@ -797,7 +797,9 @@
      // Null string ref
      //
@@ -86,8 +141,8 @@ diff -r -u ./string ../result/string
      static __string_ref_type * __getNullRep ()
 Common subdirectories: ./sys and ../result/sys
 diff -r -u ./typeinfo ../result/typeinfo
---- ./typeinfo	Fri Nov 16 16:40:47 2007
-+++ ../result/typeinfo	Fri Nov 16 15:22:16 2007
+--- ./typeinfo	Wed May 20 12:02:31 2009
++++ ../result/typeinfo	Wed May 20 12:01:23 2009
 @@ -34,7 +34,8 @@
  	// Implementation
  	const void* __data;
@@ -99,8 +154,8 @@ diff -r -u ./typeinfo ../result/typeinfo
  
      class bad_typeid: public exception {
 diff -r -u ./iso/stdlib_iso.h ../result/iso/stdlib_iso.h
---- ./iso/stdlib_iso.h	Fri Nov 16 16:40:47 2007
-+++ ../result/iso/stdlib_iso.h	Fri Nov 16 15:22:16 2007
+--- ./iso/stdlib_iso.h	Wed May 20 12:02:31 2009
++++ ../result/iso/stdlib_iso.h	Wed May 20 12:01:23 2009
 @@ -110,8 +110,10 @@
  extern double atof(const char *);
  extern int atoi(const char *);
@@ -121,8 +176,8 @@ diff -r -u ./iso/stdlib_iso.h ../result/iso/stdlib_iso.h
  extern "C++" {
  	void qsort(void *, size_t, size_t, int (*)(const void *, const void *));
 diff -r -u ./rw/iterator ../result/rw/iterator
---- ./rw/iterator	Fri Nov 16 17:03:59 2007
-+++ ../result/rw/iterator	Fri Nov 16 15:22:16 2007
+--- ./rw/iterator	Wed May 20 12:02:31 2009
++++ ../result/rw/iterator	Wed May 20 12:01:23 2009
 @@ -426,10 +426,12 @@
      friend inline difference_type (std::operator-) (const self& x, const self& y);
      friend inline self (std::operator+)     (difference_type n, const self& x);
@@ -152,10 +207,10 @@ diff -r -u ./rw/iterator ../result/rw/iterator
    protected:
  
 diff -r -u ./sys/regset.h ../result/sys/regset.h
---- ./sys/regset.h	Fri Nov 16 16:40:47 2007
-+++ ../result/sys/regset.h	Fri Nov 16 15:22:16 2007
+--- ./sys/regset.h	Wed May 20 12:02:31 2009
++++ ../result/sys/regset.h	Wed May 20 12:13:34 2009
 @@ -16,7 +16,10 @@
- #pragma ident	"@(#)regset.h	1.28	04/09/28 SMI"	/* SVr4.0 1.1	*/
+ #pragma ident	"@(#)regset.h	1.9	06/05/12 SMI"
  
  #include <sys/feature_tests.h>
 -
@@ -164,5 +219,5 @@ diff -r -u ./sys/regset.h ../result/sys/regset.h
 +typedef long long unsigned int uint64_t;
 +/* end SMOSS 29/08/08 */
  #if !defined(_ASM)
- #include <sys/int_types.h>
+ #include <sys/types.h>
  #endif

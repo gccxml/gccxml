@@ -1022,7 +1022,7 @@ std::string gxConfiguration::GetCompilerId()
   if(gxSystemTools::RunCommand(cmd.c_str(), output, retVal) && (0 == retVal))
     {
     gxsys::RegularExpression reId;
-    reId.compile("GCCXML_SUPPORT=\"(.*)\"");
+    reId.compile("GCCXML_SUPPORT[ ]*=[ ]*\"(.*)\"");
 
     std::vector<gxsys::String> lines = gxSystemTools::SplitString(output.c_str(), '\n');
     std::vector<gxsys::String>::iterator it;
