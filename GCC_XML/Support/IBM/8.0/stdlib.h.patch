@@ -1,0 +1,27 @@
+*** stdlib.h.orig	Mon Jun  8 17:46:16 2009
+--- stdlib.h	Mon Jun  8 17:46:32 2009
+***************
+*** 33,43 ****
+  #     endif
+  
+  #   if defined (__MATH__) && defined (_ANSI_C_SOURCE)
+!       inline int abs (int );
+  #    if defined (__ABS_LONG__)
+        extern "C++" inline long abs (long );
+  #    endif
+!       inline long labs (long );
+  #   endif
+  #   if defined (__MATH__) && defined(__XLC13__) && defined(_LONG_LONG) && defined(_ALL_SOURCE)
+        inline long long llabs(long long);
+--- 33,43 ----
+  #     endif
+  
+  #   if defined (__MATH__) && defined (_ANSI_C_SOURCE)
+!       extern "C" inline int abs (int );
+  #    if defined (__ABS_LONG__)
+        extern "C++" inline long abs (long );
+  #    endif
+!       extern "C" inline long labs (long );
+  #   endif
+  #   if defined (__MATH__) && defined(__XLC13__) && defined(_LONG_LONG) && defined(_ALL_SOURCE)
+        inline long long llabs(long long);

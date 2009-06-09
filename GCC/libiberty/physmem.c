@@ -73,13 +73,13 @@ typedef struct
   DWORDLONG ullAvailVirtual;
   DWORDLONG ullAvailExtendedVirtual;
 } lMEMORYSTATUSEX;
-/* BEGIN GCC-XML MODIFICATIONS (2007/10/31 15:08:51) */
+/* BEGIN GCC-XML MODIFICATIONS (2009/06/09 18:18:45) */
 # if !defined(_MSC_VER) && !defined(__BORLANDC__)
 typedef WINBOOL (WINAPI *PFN_MS_EX) (lMEMORYSTATUSEX*);
 # else
 typedef BOOL (WINAPI *PFN_MS_EX) (lMEMORYSTATUSEX*);
 # endif
-/* END GCC-XML MODIFICATIONS (2007/10/31 15:08:51) */
+/* END GCC-XML MODIFICATIONS (2009/06/09 18:18:45) */
 #endif
 
 #include "libiberty.h"
@@ -150,7 +150,7 @@ physmem_total (void)
   }
 #endif
 
-#if HAVE__SYSTEM_CONFIGURATION
+#ifdef HAVE__SYSTEM_CONFIGURATION
   /* This works on AIX 4.3.3+.  */
   return _system_configuration.physmem;
 #endif
@@ -170,13 +170,13 @@ physmem_total (void)
         lms_ex.dwLength = sizeof lms_ex;
         if (!pfnex (&lms_ex))
           return 0.0;
-/* BEGIN GCC-XML MODIFICATIONS (2007/10/31 15:08:51) */
+/* BEGIN GCC-XML MODIFICATIONS (2009/06/09 18:18:45) */
 #if !defined(_MSC_VER) || _MSC_VER >= 1300
         return (double) lms_ex.ullTotalPhys;
 #else
         return (double)(signed __int64) lms_ex.ullTotalPhys;
 #endif
-/* END GCC-XML MODIFICATIONS (2007/10/31 15:08:51) */
+/* END GCC-XML MODIFICATIONS (2009/06/09 18:18:45) */
       }
 
     /*  Fall back to GlobalMemoryStatus which is always available.
@@ -277,13 +277,13 @@ physmem_available (void)
         lms_ex.dwLength = sizeof lms_ex;
         if (!pfnex (&lms_ex))
           return 0.0;
-/* BEGIN GCC-XML MODIFICATIONS (2007/10/31 15:08:51) */
+/* BEGIN GCC-XML MODIFICATIONS (2009/06/09 18:18:45) */
 #if !defined(_MSC_VER) || _MSC_VER >= 1300
         return (double) lms_ex.ullAvailPhys;
 #else
         return (double)(signed __int64) lms_ex.ullAvailPhys;
 #endif
-/* END GCC-XML MODIFICATIONS (2007/10/31 15:08:51) */
+/* END GCC-XML MODIFICATIONS (2009/06/09 18:18:45) */
       }
 
     /*  Fall back to GlobalMemoryStatus which is always available.

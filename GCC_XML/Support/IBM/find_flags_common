@@ -1,0 +1,48 @@
+#!/bin/sh
+#=============================================================================
+#
+#  Program:   GCC-XML
+#  Module:    find_flags_common
+#  Language:  C++
+#  Date:      $Date$
+#  Version:   $Revision$
+#
+#  Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
+#  See Copyright.txt for details.
+#
+#     This software is distributed WITHOUT ANY WARRANTY; without even
+#     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+#     PURPOSE.  See the above copyright notices for more information.
+#
+#=============================================================================
+
+# Find the include path directory.
+CXX_BIN_DIR=$(dirname $(which "${CXX}"))
+CXX_INC_DIR=$(dirname $CXX_BIN_DIR)/include
+
+if [ ! -d "$CXX_INC_DIR" ]
+then
+  echo "Could not find the xlC include directory in $CXX_INC_DIR"
+  exit 1
+fi
+
+GCCXML_PID="$$"
+cat > "/tmp/gccxml_identify_compiler_args$GCCXML_PID.cc" <<!
+#include <>
+!
+
+# Find the macro definition options.
+MACROS=`${CXX} ${CXXFLAGS} /tmp/gccxml_identify_compiler_args$GCCXML_PID.cc -E -V 2>&1 | perl -ne 'print m|(\W-D[^\s]+\s+)|og'`
+MACROS="${MACROS} -D_WCHAR_T -D__MATH__ -D__TOS_AIX__ -D__BUILD_RT__"
+
+# Find the include path options.
+INCLUDES="-I${CXX_INC_DIR} -I/usr/include"
+
+# Use hacked headers
+INCLUDES="-iwrapper\"$CXX_SUPPORT_DIR\" $INCLUDES"
+
+# Cleanup
+rm -rf "/tmp/gccxml_identify_compiler_args$GCCXML_PID.cc"
+
+# Format the options.
+OPTIONS="$MACROS $INCLUDES $SPECIAL"

@@ -1,0 +1,51 @@
+#!/bin/sh
+#=============================================================================
+#
+#  Program:   GCC-XML
+#  Module:    find_flags
+#  Language:  C++
+#  Date:      $Date$
+#  Version:   $Revision$
+#
+#  Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
+#  See Copyright.txt for details.
+#
+#     This software is distributed WITHOUT ANY WARRANTY; without even
+#     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+#     PURPOSE.  See the above copyright notices for more information.
+#
+#=============================================================================
+
+# Find the compiler executable name.
+if test "x$1" = "x" ; then
+  if test "x${CXX}" = "x" ; then
+    CXX=xlC
+  fi
+else
+  CXX="$1"
+  shift
+  CXXFLAGS="$@"
+fi
+
+# Find the compiler version
+CXX_VERSION=`${CXX} -qversion 2>&1 | perl -ne 'print m|\WV(\d+\.\d+)|o'`
+[ -z "${CXX_VERSION}" ] && echo "Could not find compiler version" && exit 1
+
+# Compute the script dir
+SCRIPT_DIR=`dirname $0`
+if test "x$SCRIPT_DIR" = "x" ; then SCRIPT_DIR="." ; fi
+SCRIPT_DIR=`cd "$SCRIPT_DIR" ; pwd`
+
+# Compute the version-specific support dir
+CXX_SUPPORT_DIR="$SCRIPT_DIR/$CXX_VERSION"
+
+# Use the version-specific find_flags if available
+if [ -f "$CXX_SUPPORT_DIR/find_flags" ]
+then
+  . "$CXX_SUPPORT_DIR/find_flags"
+else
+  . "$SCRIPT_DIR/find_flags_common"
+fi
+
+# Print out the options
+echo $OPTIONS

@@ -1,0 +1,8 @@
+IBM xlC support contributed by Hady Zalek
+
+This is a small README file regarding gccxml support for AIX and IBM xlC.
+
+The IBM xlC headers are not suitable for GCC and need to be adapted. The modified files may not be redistributed freely. This forces you to perform the following operations:
+ ./<xlC-version>/adapt_headers.sh
+
+This will produce corrected header files in the corresponding directory.

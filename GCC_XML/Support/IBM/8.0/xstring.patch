@@ -1,0 +1,19 @@
+*** xstring.orig	Mon Jun  8 17:48:44 2009
+--- xstring	Mon Jun  8 17:48:56 2009
+***************
+*** 571,577 ****
+  template<class _E, class _Tr, class _A>
+          const typename basic_string<_E, _Tr, _A>::size_type
+                  basic_string<_E, _Tr, _A>::npos =
+!                         (basic_string<_E, _Tr, _A>::size_type)(-1);
+  
+  template<class _E, class _Tr, class _A> inline
+          void swap(basic_string<_E, _Tr, _A>& _X,
+--- 571,577 ----
+  template<class _E, class _Tr, class _A>
+          const typename basic_string<_E, _Tr, _A>::size_type
+                  basic_string<_E, _Tr, _A>::npos =
+!                         (typename basic_string<_E, _Tr, _A>::size_type)(-1);
+  
+  template<class _E, class _Tr, class _A> inline
+          void swap(basic_string<_E, _Tr, _A>& _X,
