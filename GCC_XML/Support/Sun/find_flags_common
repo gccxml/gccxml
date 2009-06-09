@@ -1,0 +1,42 @@
+#!/bin/sh
+#=============================================================================
+#
+#  Program:   GCC-XML
+#  Module:    find_flags_common
+#  Language:  C++
+#  Date:      $Date$
+#  Version:   $Revision$
+#
+#  Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
+#  See Copyright.txt for details.
+#
+#     This software is distributed WITHOUT ANY WARRANTY; without even 
+#     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+#     PURPOSE.  See the above copyright notices for more information.
+#
+#=============================================================================
+
+GCCXML_PID="$$"
+cat > "/tmp/gccxml_identify_compiler_args$GCCXML_PID.cc" <<!
+#include <>
+!
+
+# Find the macro definition options.
+MACROS=`${CXX} ${CXXFLAGS} /tmp/gccxml_identify_compiler_args$GCCXML_PID.cc -E -xdumpmacros=defs 2>&1 |
+       awk '{ if ($1 ~ /#define/) printf("-D%s=%s %s %s ",$2,$3,$4,$5) }'` 
+MACROS="-D__cplusplus=199711L -D__STDC__ -D_REENTRANT $MACROS"
+
+# Find the include path options.
+INCLUDES="`echo '' | ${CXX} -v -E ${CXXFLAGS} ~ 2>&1 | perl -ne 'print m|(-I/[/a-zA-Z0-9\._-]+\s*)|og'`"
+INCLUDES="$INCLUDES -I/usr/include"
+
+# Use hacked headers
+if [ -d "$CXX_SUPPORT_DIR" ]; then
+  INCLUDES="-iwrapper\"$CXX_SUPPORT_DIR\" $INCLUDES"
+fi
+
+# Cleanup
+rm -rf "/tmp/gccxml_identify_compiler_args$GCCXML_PID.cc"
+ 
+# Format the options.
+OPTIONS="$MACROS $INCLUDES $SPECIAL"

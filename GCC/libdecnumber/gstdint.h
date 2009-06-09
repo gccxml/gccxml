@@ -1,4 +1,4 @@
-/* BEGIN GCC-XML MODIFICATIONS (2007/10/31 15:08:49) */
+/* BEGIN GCC-XML MODIFICATIONS (2009/06/09 18:18:01) */
 /* This file was manually written for gccxml's GCC. */
 #ifndef GCC_GSTDINT_H
 #define GCC_GSTDINT_H 1
@@ -14,9 +14,11 @@ typedef unsigned __int8  uint8_t;
 typedef unsigned __int16 uint16_t;
 typedef unsigned __int32 uint32_t;
 typedef unsigned __int64 uint64_t;
-#else
+#elif defined(HAVE_STDINT_H)
 # include <stdint.h>
+#elif defined(HAVE_INTTYPES_H)
+# include <inttypes.h>
 #endif
 
 #endif /* GCC_GSTDINT_H */
-/* END GCC-XML MODIFICATIONS (2007/10/31 15:08:49) */
+/* END GCC-XML MODIFICATIONS (2009/06/09 18:18:01) */

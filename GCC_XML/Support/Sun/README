@@ -1,8 +1,8 @@
 Sun CC support contributed by Pierre-Olivier Gaillard
 
-This is a small README file regarding gccxml support for Solaris and Sun CC 5.8.
+This is a small README file regarding gccxml support for Solaris and Sun CC.
 
-The Sun CC headers are not suitable for GCC and need to be adapted. The adapted files may not be redistributed freely. This forces you to perform the following operations:
- ./adapt_headers.sh
+The Sun CC headers are not suitable for GCC and need to be adapted. The modified files may not be redistributed freely. This forces you to perform the following operations:
+ ./<CC-version>/adapt_headers.sh
 
-This will produce corrected header files in the 5.8 directory.
+This will produce corrected header files in the corresponding directory.

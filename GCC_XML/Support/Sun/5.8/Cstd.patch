@@ -1,0 +1,156 @@
+diff -r -u old/algorithm new/algorithm
+--- old/algorithm	2009-06-05 10:01:07.000000000 +0200
++++ new/algorithm	2009-06-05 10:01:43.000000000 +0200
+@@ -880,6 +880,11 @@
+                                RandomAccessIterator last, Pointer buffer,
+                                Distance buffer_size, T*, Compare comp);
+ 
++#if !defined(__MINMAX_DEFINED) 
++  template <class T>
++  inline const T& (min)(const T& a, const T& b);
++#endif
++
+   template <class RandomAccessIterator, class Pointer, class Distance, class T>
+   inline void __stable_sort (RandomAccessIterator first,
+                              RandomAccessIterator last,
+diff -r -u old/istream new/istream
+--- old/istream	2009-06-05 10:01:07.000000000 +0200
++++ new/istream	2009-06-05 10:01:43.000000000 +0200
+@@ -67,7 +67,7 @@
+ 
+     _EXPLICIT basic_istream(basic_streambuf<charT, traits> *sb);
+ 
+-    _EXPLICIT basic_istream(EmptyCtor) : basic_ios<charT, traits>(1) {}
++    _EXPLICIT basic_istream(ios_base::EmptyCtor) : basic_ios<charT, traits>(1) {}
+     virtual ~basic_istream();
+ 
+     class sentry 
+@@ -307,7 +307,7 @@
+           }
+           else
+           {
+-            ostream_type* ost = stream.tie();
++            basic_ostream<charT, traits>* ost = stream.tie();
+             if (ost && ost->rdbuf() != sb) 
+               ost->flush();
+ 
+@@ -419,9 +419,11 @@
+         const istream_iterator<T,charT,traits,Distance>& x,
+         const istream_iterator<T,charT,traits,Distance>& y);
+ #else
+-    friend inline bool operator== <> (
++/* SMOSS 29/08/07 inline not allowed in friend declaration */
++    friend /*inline*/ bool operator== <> (
+         const istream_iterator<T,charT,traits,Distance>& x,
+         const istream_iterator<T,charT,traits,Distance>& y);
++/* END SMOSS 29/08/07 inline not allowed in friend declaration */
+ #endif
+   public: 
+     typedef charT char_type;
+diff -r -u old/ostream new/ostream
+--- old/ostream	2009-06-05 10:01:07.000000000 +0200
++++ new/ostream	2009-06-05 10:01:43.000000000 +0200
+@@ -88,7 +88,7 @@
+     typedef basic_ios<charT, traits>               ios_type;
+ 
+     _EXPLICIT basic_ostream(basic_streambuf<charT, traits> *sb);
+-    _EXPLICIT basic_ostream(EmptyCtor) : basic_ios<charT, traits>(1) {}
++    _EXPLICIT basic_ostream(ios_base::EmptyCtor) : basic_ios<charT, traits>(1) {}
+     virtual ~basic_ostream();
+ 
+     class sentry {
+@@ -97,8 +97,7 @@
+       sentry(basic_ostream<charT,traits>& stream)
+         : __stream(stream)                  
+       {  
+-                      
+-        streambuf_type* sb = stream.rdbuf();
++        basic_streambuf<charT, traits>* sb = stream.rdbuf();
+         if ( sb ) {
+           stream.rdbuf()->buffer_mutex_.acquire();
+         }
+diff -r -u old/rw/iterator new/rw/iterator
+--- old/rw/iterator	2009-06-05 10:01:07.000000000 +0200
++++ new/rw/iterator	2009-06-05 10:01:43.000000000 +0200
+@@ -426,10 +426,12 @@
+     friend inline difference_type (std::operator-) (const self& x, const self& y);
+     friend inline self (std::operator+)     (difference_type n, const self& x);
+ #else
+-    friend inline bool operator== <>   (const self& x, const self& y);
+-    friend inline bool operator<  <>   (const self& x, const self& y);
+-    friend inline difference_type operator- <> (const self& x, const self& y);
+-    friend inline self operator+  <>   (difference_type n, const self& x);
++/* SMOSS 29/08/07 removing 'inline' from friend declarations */
++    friend /*inline*/ bool operator== <>   (const self& x, const self& y);
++    friend /*inline*/ bool operator<  <>   (const self& x, const self& y);
++    friend /*inline*/ difference_type operator- <> (const self& x, const self& y);
++    friend /*inline*/ self operator+  <>   (difference_type n, const self& x);
++/* END SMOSS 29/08/07 removing 'inline' from friend declarations */
+ #endif        
+   protected:
+ 
+@@ -581,7 +583,9 @@
+     typedef Reference reference;
+     typedef Pointer pointer;
+ 
+-    friend inline bool operator== <>   (const self& x, const self& y);
++/* SMOSS 29/08/07 removing 'inline' from friend declarations */
++    friend /*inline*/ bool operator== <>   (const self& x, const self& y);
++/* END SMOSS 29/08/07 removing 'inline' from friend declarations */
+         
+   protected:
+ 
+diff -r -u old/streambuf new/streambuf
+--- old/streambuf	2009-06-05 10:01:07.000000000 +0200
++++ new/streambuf	2009-06-05 10:01:43.000000000 +0200
+@@ -927,7 +927,10 @@
+    * int_type snextc()
+    * returns the next character
+    */
+-
++/* SMOSS 29/08/07 Can't use typename in template specializations */
++#ifdef _TYPENAME
++# define _TYPENAME
++#endif
+   inline _TYPENAME basic_streambuf<char, char_traits<char> >::int_type
+   basic_streambuf<char, char_traits<char> >::snextc()
+   {
+@@ -1208,6 +1211,11 @@
+   {
+     return seekpos(sp, which);
+   }
++#ifdef _TYPENAME
++# define _TYPENAME typename
++# undef _OLD_TYPENAME
++#endif
++/* END SMOSS 29/08/07 Can't use typename in template specializations */
+ 
+   /*
+    * basic_streambuf *pubsetbuf(char_type *, streamsize)
+diff -r -u old/string new/string
+--- old/string	2009-06-05 10:01:07.000000000 +0200
++++ new/string	2009-06-05 10:01:43.000000000 +0200
+@@ -797,7 +797,9 @@
+     // Null string ref
+     //
+ #ifndef _RWSTD_NO_STATIC_DEF3
+-    static __SUNW_GLOBAL const __null_ref_type __nullref;
++/* SMOSS 29/08/07 Can't resolve #define __SUNW_GLOBAL __global */
++    static /* __SUNW_GLOBAL */ const __null_ref_type __nullref;
++/* SMOSS 29/08/07 Can't resolve #define __SUNW_GLOBAL __global */
+ #endif
+ 
+     static __string_ref_type * __getNullRep ()
+diff -r -u old/typeinfo new/typeinfo
+--- old/typeinfo	2009-06-05 10:01:07.000000000 +0200
++++ new/typeinfo	2009-06-05 10:01:43.000000000 +0200
+@@ -34,7 +34,8 @@
+ 	// Implementation
+ 	const void* __data;
+ 	type_info(const void*) throw();
+-	friend __Cimpl::__type_info_friend;
++	/* SMOSS 29/08/07 Can't resolve */
++	//friend __Cimpl::__type_info_friend;
+     };
+ 
+     class bad_typeid: public exception {
