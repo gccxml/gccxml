@@ -4,10 +4,21 @@ rem This is a driver script to update GCC-XML's support of new Visual Studio
 rem installations.
 rem --------------------------------------------------------------------------
 
-rem Reference this script - strip double quotes if Windows_NT
 set vcupdate=%0
-if "%OS%" equ "Windows_NT" set vcupdate=%~0
+if "%OS%" equ "Windows_NT" (goto winnt) else (goto non_winnt)
 
+:winnt
+rem Get absolute name of directory where this batch is
+rem and strip double quotes
+set vcupdate=%~dp0
+
+rem Get the absolute name of the VC data directory
+set directory="%vcupdate%\..\@VC_DATA_DIR@"
+for %%T in (%directory%) do set vc_dir=%%~dfT
+
+goto start
+
+:non_winnt
 rem Reference the TEMP directory in a safe way.
 set vc_temp=%TEMP%.
 
@@ -26,10 +37,16 @@ call "%vc_temp%\vc_env_temp.bat"
 del "%vc_temp%\vc_env_temp.bat"
 set vc_dir=%vc_result%
 
+set vcupdate=%vcupdate%\..
+
 rem Change back to the original working directory.
 cd /D "%cwd%"
 
+goto start
+
+:start
+
 rem Run the installer executable to do the rest of the work.
-"%vcupdate%\..\gccxml_vcconfig" "%vc_dir%\VcInstall" "%vc_dir%"
+"%vcupdate%\gccxml_vcconfig.exe" "%vc_dir%\VcInstall" "%vc_dir%"
 
 if errorlevel 1 pause
