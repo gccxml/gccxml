@@ -142,6 +142,7 @@ bool __builtin_isless(...);
 bool __builtin_islessequal(...);
 bool __builtin_islessgreater(...);
 bool __builtin_isunordered(...);
+bool __builtin_va_arg_pack(...);
 
 /*
 
