@@ -16,17 +16,14 @@ ENDIF(CMAKE_SYSTEM MATCHES "HP-UX")
 #-----------------------------------------------------------------------------
 # Special flags for some source files.
 
-IF(XCODE)
-  SET_SOURCE_FILES_PROPERTIES(../prefix.c
-    PROPERTIES COMPILE_FLAGS "-DPREFIX=\\\"${CMAKE_INSTALL_PREFIX}\\\"")
-ELSE(XCODE)
-  SET_SOURCE_FILES_PROPERTIES(../prefix.c
-    PROPERTIES COMPILE_FLAGS "-DPREFIX=\"${CMAKE_INSTALL_PREFIX}\"")
-ENDIF(XCODE)
 IF(CYGWIN)
   SET_SOURCE_FILES_PROPERTIES(../cppdefault.c PROPERTIES
     COMPILE_FLAGS "-DTOOL_INCLUDE_DIR=/usr/include")
 ENDIF(CYGWIN)
+
+INCLUDE_DIRECTORIES(BEFORE ${CMAKE_CURRENT_BINARY_DIR})
+CONFIGURE_FILE(${GCC_SOURCE_DIR}/gcc/cp/gccxml_prefix.h.in
+               ${GCC_BINARY_DIR}/gcc/cp/gccxml_prefix.h @ONLY IMMEDIATE)
 
 ADD_EXECUTABLE(gccxml_cc1plus
   cp-lang.c ../stub-objc.c call.c decl.c expr.c pt.c typeck2.c class.c

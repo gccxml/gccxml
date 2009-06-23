@@ -74,9 +74,10 @@ Boston, MA 02110-1301, USA.  */
 #endif
 #include "prefix.h"
 
-/* BEGIN GCC-XML MODIFICATIONS (2007/10/31 15:07:10) */
+/* BEGIN GCC-XML MODIFICATIONS 2009-06-22 */
+#include <gccxml_prefix.h>
 static const char *std_prefix = GCC_TO_STRING(PREFIX);
-/* END GCC-XML MODIFICATIONS (2007/10/31 15:07:10) */
+/* END GCC-XML MODIFICATIONS 2009-06-22 */
 
 static const char *get_key_value (char *);
 static char *translate_name (char *);
@@ -217,9 +218,9 @@ translate_name (char *name)
         prefix = getenv (key);
 
       if (prefix == 0)
-/* BEGIN GCC-XML MODIFICATIONS (2007/10/31 15:07:10) */
+/* BEGIN GCC-XML MODIFICATIONS (2009/06/23 11:57:24) */
         prefix = GCC_TO_STRING(PREFIX);
-/* END GCC-XML MODIFICATIONS (2007/10/31 15:07:10) */
+/* END GCC-XML MODIFICATIONS (2009/06/23 11:57:24) */
 
       /* We used to strip trailing DIR_SEPARATORs here, but that can
          sometimes yield a result with no separator when one was coded
