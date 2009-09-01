@@ -1466,6 +1466,12 @@ bool gxConfiguration::FindFlagsGCC()
       {
       if(reDefine.find(it->c_str()))
         {
+        // __BLOCKS__ is an Apple extension to gcc unknown to gccxml.
+        if(reDefine.match(1) == "__BLOCKS__")
+          {
+          continue;
+          }
+
         if (MACROS == "")
           {
           MACROS = "-D";
