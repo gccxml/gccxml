@@ -80,9 +80,9 @@ struct _cpp_file
      header.  */
   cpp_dir *dir;
 
-/* BEGIN GCC-XML MODIFICATIONS (2008/02/07 15:15:10) */
+/* BEGIN GCC-XML MODIFICATIONS (2009/09/01 13:48:58) */
   struct cpp_dir wrapper_dir; /* hack for supporting -iwrapper */
-/* END GCC-XML MODIFICATIONS (2008/02/07 15:15:10) */
+/* END GCC-XML MODIFICATIONS (2009/09/01 13:48:58) */
 
   /* As filled in by stat(2) for the file.  */
   struct stat st;
@@ -380,6 +380,12 @@ _cpp_find_failed (_cpp_file *file)
   return file->err_no != 0;
 }
 
+/* The gccxml include wrapper path changes with each input file
+   because it wraps around double-quote locations too (so that system
+   headers including each other by double-quotes can be wrapped).
+   This does not interact well with search result caching.  */
+#define GCCXML_DISABLE_INCLUDE_CACHE
+
 /* Given a filename FNAME search for such a file in the include path
    starting from START_DIR.  If FNAME is the empty string it is
    interpreted as STDIN if START_DIR is PFILE->no_search_path.
@@ -397,7 +403,9 @@ _cpp_find_failed (_cpp_file *file)
 _cpp_file *
 _cpp_find_file (cpp_reader *pfile, const char *fname, cpp_dir *start_dir, bool fake, int angle_brackets)
 {
+#ifndef GCCXML_DISABLE_INCLUDE_CACHE
   struct file_hash_entry *entry, **hash_slot;
+#endif
   _cpp_file *file;
   bool invalid_pch = false;
 
@@ -405,6 +413,7 @@ _cpp_find_file (cpp_reader *pfile, const char *fname, cpp_dir *start_dir, bool f
   if (start_dir == NULL)
     cpp_error (pfile, CPP_DL_ICE, "NULL directory in find_file");
 
+#ifndef GCCXML_DISABLE_INCLUDE_CACHE
   hash_slot = (struct file_hash_entry **)
     htab_find_slot_with_hash (pfile->file_hash, fname,
                               htab_hash_string (fname),
@@ -414,6 +423,7 @@ _cpp_find_file (cpp_reader *pfile, const char *fname, cpp_dir *start_dir, bool f
   entry = search_cache (*hash_slot, start_dir);
   if (entry)
     return entry->u.file;
+#endif
 
   file = make_cpp_file (pfile, start_dir, fname);
 
@@ -449,6 +459,7 @@ _cpp_find_file (cpp_reader *pfile, const char *fname, cpp_dir *start_dir, bool f
           break;
         }
 
+#ifndef GCCXML_DISABLE_INCLUDE_CACHE
       /* Only check the cache for the starting location (done above)
          and the quote and bracket chain heads because there are no
          other possible starting points for searches.  */
@@ -459,8 +470,10 @@ _cpp_find_file (cpp_reader *pfile, const char *fname, cpp_dir *start_dir, bool f
       entry = search_cache (*hash_slot, file->dir);
       if (entry)
         break;
+#endif
     }
 
+#ifndef GCCXML_DISABLE_INCLUDE_CACHE
   if (entry)
     {
       /* Cache for START_DIR too, sharing the _cpp_file structure.  */
@@ -469,18 +482,21 @@ _cpp_find_file (cpp_reader *pfile, const char *fname, cpp_dir *start_dir, bool f
       file = entry->u.file;
     }
   else
+#endif
     {
       /* This is a new file; put it in the list.  */
       file->next_file = pfile->all_files;
       pfile->all_files = file;
     }
 
+#ifndef GCCXML_DISABLE_INCLUDE_CACHE
   /* Store this new result in the hash table.  */
   entry = new_file_hash_entry (pfile);
   entry->next = *hash_slot;
   entry->start_dir = start_dir;
   entry->u.file = file;
   *hash_slot = entry;
+#endif
 
   return file;
 }
@@ -821,7 +837,7 @@ _cpp_stack_include (cpp_reader *pfile, const char *fname, int angle_brackets,
   if (!dir)
     return false;
 
-/* BEGIN GCC-XML MODIFICATIONS (2008/02/07 15:15:10) */
+/* BEGIN GCC-XML MODIFICATIONS (2009/09/01 13:48:58) */
   /* pfile->buffer is NULL when processing an -include command-line flag.  */
   file = pfile->buffer == NULL ? pfile->main_file : pfile->buffer->file;
 
@@ -854,7 +870,7 @@ _cpp_stack_include (cpp_reader *pfile, const char *fname, int angle_brackets,
     {
     file = _cpp_find_file (pfile, fname, dir, false, angle_brackets);
     }
-/* END GCC-XML MODIFICATIONS (2008/02/07 15:15:10) */
+/* END GCC-XML MODIFICATIONS (2009/09/01 13:48:58) */
 
   /* Compensate for the increment in linemap_add.  In the case of a
      normal #include, we're currently at the start of the line
@@ -1198,14 +1214,14 @@ _cpp_get_file_stat (_cpp_file *file)
    If BRACKET does not lie in the QUOTE chain, it is set to QUOTE.  */
 void
 cpp_set_include_chains (cpp_reader *pfile, cpp_dir *quote, cpp_dir *bracket,
-/* BEGIN GCC-XML MODIFICATIONS (2008/02/07 15:15:10) */
+/* BEGIN GCC-XML MODIFICATIONS (2009/09/01 13:48:58) */
                         cpp_dir *wrapper,
-/* END GCC-XML MODIFICATIONS (2008/02/07 15:15:10) */
+/* END GCC-XML MODIFICATIONS (2009/09/01 13:48:58) */
                         int quote_ignores_source_dir)
 {
   pfile->quote_include = quote;
   pfile->bracket_include = quote;
-/* BEGIN GCC-XML MODIFICATIONS (2008/02/07 15:15:10) */
+/* BEGIN GCC-XML MODIFICATIONS (2009/09/01 13:48:58) */
   pfile->wrapper_include = wrapper;
   pfile->wrapper_include_last = 0;
   for (; wrapper; wrapper = wrapper->next)
@@ -1214,7 +1230,7 @@ cpp_set_include_chains (cpp_reader *pfile, cpp_dir *quote, cpp_dir *bracket,
     wrapper->len = strlen (wrapper->name);
     pfile->wrapper_include_last = wrapper;
     }
-/* END GCC-XML MODIFICATIONS (2008/02/07 15:15:10) */
+/* END GCC-XML MODIFICATIONS (2009/09/01 13:48:58) */
   pfile->quote_ignores_source_dir = quote_ignores_source_dir;
 
   for (; quote; quote = quote->next)
