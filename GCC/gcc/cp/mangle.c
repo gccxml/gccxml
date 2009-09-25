@@ -2157,7 +2157,12 @@ write_expression (tree expr)
         }
 
       /* If it wasn't any of those, recursively expand the expression.  */
-      write_string (operator_name_info[(int) code].mangled_name);
+/* BEGIN GCC-XML MODIFICATIONS 2009-09-25 */
+      {
+      const char *mangled_name = operator_name_info[(int) code].mangled_name;
+      write_string (mangled_name? mangled_name : "(unmangled-operator)");
+      }
+/* END GCC-XML MODIFICATIONS 2009-09-25 */
 
       switch (code)
         {
@@ -2224,7 +2229,10 @@ write_expression (tree expr)
                          "cannot be mangled");
                   continue;
                 }
-              write_expression (operand);
+/* BEGIN GCC-XML MODIFICATIONS 2009-09-25 */
+              if(operand)
+                write_expression (operand);
+/* END GCC-XML MODIFICATIONS 2009-09-25 */
             }
         }
     }
@@ -2246,7 +2254,7 @@ write_template_arg_literal (const tree value)
   switch (TREE_CODE (value))
     {
     case CONST_DECL:
-/* BEGIN GCC-XML MODIFICATIONS (2008/02/14 15:26:25) */
+/* BEGIN GCC-XML MODIFICATIONS (2009/09/25 17:34:43) */
       /*
       The mangling code chokes on this code:
 
@@ -2264,7 +2272,7 @@ write_template_arg_literal (const tree value)
         write_chars (hack, sizeof(hack)-1);
         break;
         }
-/* END GCC-XML MODIFICATIONS (2008/02/14 15:26:25) */
+/* END GCC-XML MODIFICATIONS (2009/09/25 17:34:43) */
       write_integer_cst (DECL_INITIAL (value));
       break;
 
