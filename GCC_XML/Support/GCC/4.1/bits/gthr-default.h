@@ -1,3 +1,6 @@
+#if defined(__MINGW32__)
+# include_next <bits/gthr-default.h>
+#else
 /* Threads compatibility routines for libgcc2 and libobjc.  */
 /* Compile this one with gcc.  */
 /* Copyright (C) 1997, 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007
@@ -616,3 +619,4 @@ __gthread_recursive_mutex_unlock (__gthread_recursive_mutex_t *mutex)
 #endif /* _LIBOBJC */
 
 #endif /* ! _GLIBCXX_GCC_GTHR_POSIX_H */
+#endif
