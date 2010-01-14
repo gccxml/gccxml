@@ -1595,6 +1595,11 @@ bool gxConfiguration::FindFlagsGCC()
       INCLUDES = "-iwrapper\"" + supportPath + "/2.96\" " + INCLUDES;
       }
     }
+  else if(MAJOR_VERSION == 4 && MINOR_VERSION >= 4)
+    {
+    INCLUDES = "-iwrapper\"" + supportPath + "/4.4\" " + INCLUDES;
+    SPECIAL = "-include \"gccxml_builtins.h\"";
+    }
   else if(MAJOR_VERSION == 4 && MINOR_VERSION >= 3)
     {
     INCLUDES = "-iwrapper\"" + supportPath + "/4.3\" " + INCLUDES;
