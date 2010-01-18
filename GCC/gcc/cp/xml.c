@@ -65,7 +65,7 @@ along with this program; if not, write to the
 
 #include "toplev.h" /* ident_hash */
 
-#define GCC_XML_C_VERSION "$Revision: 1.128 $"
+#define GCC_XML_C_VERSION "$Revision: 1.129 $"
 
 /*--------------------------------------------------------------------------*/
 /* Data structures for the actual XML dump.  */
@@ -3129,43 +3129,57 @@ xml_find_template_parm (tree t)
        template parameters.  */
     case TEMPLATE_DECL: return 0;
 
+    /* Unary expressions.  */
+    case ALIGNOF_EXPR:
+    case SIZEOF_EXPR:
+    case ADDR_EXPR:
+    case CONVERT_EXPR:
+    case NOP_EXPR:
+    case NEGATE_EXPR:
+    case BIT_NOT_EXPR:
+    case TRUTH_NOT_EXPR:
+    case PREDECREMENT_EXPR:
+    case PREINCREMENT_EXPR:
+    case POSTDECREMENT_EXPR:
+    case POSTINCREMENT_EXPR:
+      return xml_find_template_parm (TREE_OPERAND (t, 0));
+
+    /* Binary expressions.  */
+    case COMPOUND_EXPR:
+    case INIT_EXPR:
+    case MODIFY_EXPR:
+    case PLUS_EXPR:
+    case MINUS_EXPR:
+    case MULT_EXPR:
+    case TRUNC_DIV_EXPR:
+    case TRUNC_MOD_EXPR:
+    case MIN_EXPR:
+    case MAX_EXPR:
+    case LSHIFT_EXPR:
+    case RSHIFT_EXPR:
+    case BIT_IOR_EXPR:
+    case BIT_XOR_EXPR:
+    case BIT_AND_EXPR:
+    case TRUTH_ANDIF_EXPR:
+    case TRUTH_ORIF_EXPR:
+    case LT_EXPR:
+    case LE_EXPR:
+    case GT_EXPR:
+    case GE_EXPR:
+    case EQ_EXPR:
+    case NE_EXPR:
+    case EXACT_DIV_EXPR:
+      return (xml_find_template_parm (TREE_OPERAND (t, 0))
+              || xml_find_template_parm (TREE_OPERAND (t, 1)));
+
+    /* Ternary expressions.  */
+    case COND_EXPR:
+      return (xml_find_template_parm (TREE_OPERAND (t, 0))
+              || xml_find_template_parm (TREE_OPERAND (t, 1))
+              || xml_find_template_parm (TREE_OPERAND (t, 2)));
+
     /* Other types that have no nested types.  */
     case INTEGER_CST: return 0;
-    case ALIGNOF_EXPR: return 0;
-    case SIZEOF_EXPR: return 0;
-    case ADDR_EXPR: return 0;
-    case BIT_AND_EXPR: return 0;
-    case BIT_IOR_EXPR: return 0;
-    case BIT_NOT_EXPR: return 0;
-    case BIT_XOR_EXPR: return 0;
-    case COMPOUND_EXPR: return 0;
-    case COND_EXPR: return 0;
-    case CONVERT_EXPR: return 0;
-    case EQ_EXPR: return 0;
-    case GE_EXPR: return 0;
-    case GT_EXPR: return 0;
-    case LE_EXPR: return 0;
-    case LSHIFT_EXPR: return 0;
-    case LT_EXPR: return 0;
-    case MAX_EXPR: return 0;
-    case MINUS_EXPR: return 0;
-    case MIN_EXPR: return 0;
-    case MODIFY_EXPR: return 0;
-    case MULT_EXPR: return 0;
-    case NEGATE_EXPR: return 0;
-    case NE_EXPR: return 0;
-    case NOP_EXPR: return 0;
-    case PLUS_EXPR: return 0;
-    case POSTDECREMENT_EXPR: return 0;
-    case POSTINCREMENT_EXPR: return 0;
-    case PREDECREMENT_EXPR: return 0;
-    case PREINCREMENT_EXPR: return 0;
-    case RSHIFT_EXPR: return 0;
-    case TRUNC_DIV_EXPR: return 0;
-    case TRUNC_MOD_EXPR: return 0;
-    case TRUTH_ANDIF_EXPR: return 0;
-    case TRUTH_NOT_EXPR: return 0;
-    case TRUTH_ORIF_EXPR: return 0;
     case STATIC_CAST_EXPR: return 0;
     default:
       fprintf(stderr, "xml_find_template_parm encountered unsupported type %s\n",
