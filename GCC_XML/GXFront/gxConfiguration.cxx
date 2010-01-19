@@ -34,26 +34,24 @@ const char* gxConfigurationVc6Registry =
 "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\"
 "DevStudio\\6.0\\Products\\Microsoft Visual C++;ProductDir";
 const char* gxConfigurationVc7Registry =
-"HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\VisualStudio\\7.0;InstallDir";
+"HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\VisualStudio\\7.0\\Setup\\VC;ProductDir";
 const char* gxConfigurationVc71Registry =
-"HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\VisualStudio\\7.1;InstallDir";
+"HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\VisualStudio\\7.1\\Setup\\VC;ProductDir";
 const char* gxConfigurationVc8Registry =
-"HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\VisualStudio\\8.0;InstallDir";
+"HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\VisualStudio\\8.0\\Setup\\VC;ProductDir";
 const char* gxConfigurationVc8RegistryVersion =
 "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\VisualStudio\\8.0;CLR Version";
 const char* gxConfigurationVc8exRegistry =
-"HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\VCExpress\\8.0;InstallDir";
+"HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\VCExpress\\8.0\\Setup\\VC;ProductDir";
 const char* gxConfigurationVc8sdkRegistry =
 "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\MicrosoftSDK\\InstalledSDKs\\8F9E5EF3-A9A5-491B-A889-C58EFFECE8B3;Install Dir";
 const char* gxConfigurationVc8sdk2Registry =
 "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\MicrosoftSDK\\InstalledSDKs\\D2FF9F89-8AA2-4373-8A31-C838BF4DBBE1;Install Dir";
 
 const char* gxConfigurationVc9Registry =
-"HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\VisualStudio\\9.0;InstallDir";
-//"HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\Microsoft\\VisualStudio\\9.0;InstallDir"; // _WIN64 ?
+"HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\VisualStudio\\9.0\\Setup\\VC;ProductDir";
 const char* gxConfigurationVc9exRegistry =
-"HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\VCExpress\\9.0;InstallDir";
-//"HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\Microsoft\\VCExpress\\9.0;InstallDir"; // _WIN64 ?
+"HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\VCExpress\\9.0\\Setup\\VC;ProductDir";
 const char* gxConfigurationVc9sdkRegistry =
 "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Microsoft SDKs\\Windows\\v6.0A;InstallationFolder";
 
@@ -2170,8 +2168,8 @@ bool gxConfiguration::FindFlagsMSVC7()
     std::cerr << "Error finding MSVC 7.0 from registry.\n";
     return false;
     }
-  std::string msvcPath1 = msvcPath+"/../../Vc7/Include";
-  std::string msvcPath2 = msvcPath+"/../../Vc7/PlatformSDK/Include";
+  std::string msvcPath1 = msvcPath+"/Include";
+  std::string msvcPath2 = msvcPath+"/PlatformSDK/Include";
   msvcPath1 = gxSystemTools::CollapseDirectory(msvcPath1.c_str());
   msvcPath2 = gxSystemTools::CollapseDirectory(msvcPath2.c_str());
   std::string vcIncludePath1;
@@ -2214,8 +2212,8 @@ bool gxConfiguration::FindFlagsMSVC71()
     std::cerr << "Error finding MSVC 7.1 from registry.\n";
     return false;
     }
-  std::string msvcPath1 = msvcPath+"/../../Vc7/Include";
-  std::string msvcPath2 = msvcPath+"/../../Vc7/PlatformSDK/Include";
+  std::string msvcPath1 = msvcPath+"/Include";
+  std::string msvcPath2 = msvcPath+"/PlatformSDK/Include";
   msvcPath1 = gxSystemTools::CollapseDirectory(msvcPath1.c_str());
   msvcPath2 = gxSystemTools::CollapseDirectory(msvcPath2.c_str());
   std::string vcIncludePath1;
@@ -2258,8 +2256,8 @@ bool gxConfiguration::FindFlagsMSVC8()
     std::cerr << "Error finding MSVC 8 from registry.\n";
     return false;
     }
-  std::string msvcPath1 = msvcPath+"/../../Vc/Include";
-  std::string msvcPath2 = msvcPath+"/../../Vc/PlatformSDK/Include";
+  std::string msvcPath1 = msvcPath+"/Include";
+  std::string msvcPath2 = msvcPath+"/PlatformSDK/Include";
   msvcPath1 = gxSystemTools::CollapseDirectory(msvcPath1.c_str());
   msvcPath2 = gxSystemTools::CollapseDirectory(msvcPath2.c_str());
   std::string vcIncludePath1;
@@ -2322,7 +2320,7 @@ bool gxConfiguration::FindFlagsMSVC8ex()
     std::cerr << "Error finding MSVC 8 Express from registry.\n";
     return false;
     }
-  std::string msvcPath1 = msvcPath+"/../../Vc/Include";
+  std::string msvcPath1 = msvcPath+"/Include";
   msvcPath1 = gxSystemTools::CollapseDirectory(msvcPath1.c_str());
   std::string vcIncludePath1;
   if(!this->FindData("Vc8ex/Include", vcIncludePath1))
@@ -2413,7 +2411,7 @@ bool gxConfiguration::FindFlagsMSVC9()
     std::cerr << "Error finding MSVC 9 Platform SDK from registry.\n";
     return false;
     }
-  std::string msvcPath1 = msvcPath+"/../../Vc/Include";
+  std::string msvcPath1 = msvcPath+"/Include";
   std::string msvcPath2 = psdkPath+"/Include";
   msvcPath1 = gxSystemTools::CollapseDirectory(msvcPath1.c_str());
   msvcPath2 = gxSystemTools::CollapseDirectory(msvcPath2.c_str());

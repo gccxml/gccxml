@@ -64,11 +64,11 @@ int main(int argc, char* argv[])
     "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\"
     "DevStudio\\6.0\\Products\\Microsoft Visual C++;ProductDir";
   const char* vc7Registry =
-    "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\VisualStudio\\7.0;InstallDir";
+    "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\VisualStudio\\7.0\\Setup\\VC;ProductDir";
   const char* vc71Registry =
-    "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\VisualStudio\\7.1;InstallDir";
+    "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\VisualStudio\\7.1\\Setup\\VC;ProductDir";
   const char* vc8Registry =
-    "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\VisualStudio\\8.0;InstallDir";
+    "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\VisualStudio\\8.0\\Setup\\VC;ProductDir";
   const char* vc8sp1Registry[] =
   {
     // English SP1
@@ -78,7 +78,7 @@ int main(int argc, char* argv[])
     0
   };
   const char* vc8exRegistry =
-    "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\VCExpress\\8.0;InstallDir";
+    "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\VCExpress\\8.0\\Setup\\VC;ProductDir";
   const char* vc8exSP1Registry =
     "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\VisualStudio\\8.0\\InstalledProducts\\KB926748;";
   const char* vc8sdkRegistry =
@@ -86,8 +86,7 @@ int main(int argc, char* argv[])
   const char* vc8sdk2Registry =
     "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\MicrosoftSDK\\InstalledSDKs\\D2FF9F89-8AA2-4373-8A31-C838BF4DBBE1;Install Dir";
   const char* vc9Registry =
-    "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\VisualStudio\\9.0;InstallDir";
-  //"HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\Microsoft\\VisualStudio\\9.0;InstallDir"; // _WIN64 ?
+    "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\VisualStudio\\9.0\\Setup\\VC;ProductDir";
   const char* vc9sp1Registry[] =
   {
     // English SP1
@@ -95,8 +94,7 @@ int main(int argc, char* argv[])
     0
   };
   const char* vc9exRegistry =
-    "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\VCExpress\\9.0;InstallDir";
-  //"HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\Microsoft\\VCExpress\\9.0;InstallDir"; // _WIN64 ?
+    "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\VCExpress\\9.0\\Setup\\VC;ProductDir";
   const char* vc9sdkRegistry =
     "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Microsoft SDKs\\Windows\\v6.0A;InstallationFolder";
   // Check which versions of MSVC are installed.
@@ -205,8 +203,8 @@ int main(int argc, char* argv[])
 
   if(have7)
     {
-    std::string msvc7i = msvc7 + "/../../Vc7/Include";
-    std::string msvc7p = msvc7 + "/../../Vc7/PlatformSDK/Include";
+    std::string msvc7i = msvc7 + "/Include";
+    std::string msvc7p = msvc7 + "/PlatformSDK/Include";
     msvc7i = gxSystemTools::CollapseDirectory(msvc7i.c_str());
     msvc7p = gxSystemTools::CollapseDirectory(msvc7p.c_str());
     std::string patchI = patchDir + "/vc7Include.patch";
@@ -242,8 +240,8 @@ int main(int argc, char* argv[])
     }
   if(have71)
     {
-    std::string msvc71i = msvc71 + "/../../Vc7/Include";
-    std::string msvc71p = msvc71 + "/../../Vc7/PlatformSDK/Include";
+    std::string msvc71i = msvc71 + "/Include";
+    std::string msvc71p = msvc71 + "/PlatformSDK/Include";
     msvc71i = gxSystemTools::CollapseDirectory(msvc71i.c_str());
     msvc71p = gxSystemTools::CollapseDirectory(msvc71p.c_str());
     std::string patchI = patchDir + "/vc71Include.patch";
@@ -279,8 +277,8 @@ int main(int argc, char* argv[])
     }
   if(have8)
     {
-    std::string msvc8i = msvc8 + "/../../Vc/Include";
-    std::string msvc8p = msvc8 + "/../../Vc/PlatformSDK/Include";
+    std::string msvc8i = msvc8 + "/Include";
+    std::string msvc8p = msvc8 + "/PlatformSDK/Include";
     msvc8i = gxSystemTools::CollapseDirectory(msvc8i.c_str());
     msvc8p = gxSystemTools::CollapseDirectory(msvc8p.c_str());
     std::string patchIname = "vc8Include.patch";
@@ -332,7 +330,7 @@ int main(int argc, char* argv[])
 
   if(have8ex)
     {
-    std::string msvc8i = msvc8ex + "/../../Vc/Include";
+    std::string msvc8i = msvc8ex + "/Include";
     msvc8i = gxSystemTools::CollapseDirectory(msvc8i.c_str());
     std::string patchIname = "vc8ExpressInclude.patch";
     std::string destPathI = gccxmlRoot+"/Vc8ex/Include";
@@ -385,7 +383,7 @@ int main(int argc, char* argv[])
 
   if(have9)
     {
-    std::string msvc9i = msvc9 + "/../../Vc/Include";
+    std::string msvc9i = msvc9 + "/Include";
     msvc9i = gxSystemTools::CollapseDirectory(msvc9i.c_str());
     std::string patchIname = "vc9Include.patch";
     std::string destPathI = gccxmlRoot+"/Vc9/Include";
