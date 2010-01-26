@@ -65,7 +65,7 @@ along with this program; if not, write to the
 
 #include "toplev.h" /* ident_hash */
 
-#define GCC_XML_C_VERSION "$Revision: 1.131 $"
+#define GCC_XML_C_VERSION "$Revision: 1.132 $"
 
 /*--------------------------------------------------------------------------*/
 /* Data structures for the actual XML dump.  */
@@ -2419,7 +2419,11 @@ xml_output_fundamental_type (xml_dump_info_p xdi, tree t, xml_dump_node_p dn)
 {
   fprintf (xdi->file, "  <FundamentalType");
   xml_print_id_attribute (xdi, dn);
-  xml_print_name_attribute (xdi, DECL_NAME (TYPE_NAME (t)));
+  /* Some fundamental types do not have names!  */
+  if (TYPE_NAME (t))
+    {
+    xml_print_name_attribute (xdi, DECL_NAME (TYPE_NAME (t)));
+    }
   xml_print_attributes_attribute (xdi, TYPE_ATTRIBUTES(t), 0);
   xml_print_size_attribute (xdi, t);
   xml_print_align_attribute (xdi, t);
