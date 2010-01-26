@@ -65,7 +65,7 @@ along with this program; if not, write to the
 
 #include "toplev.h" /* ident_hash */
 
-#define GCC_XML_C_VERSION "$Revision: 1.129 $"
+#define GCC_XML_C_VERSION "$Revision: 1.130 $"
 
 /*--------------------------------------------------------------------------*/
 /* Data structures for the actual XML dump.  */
@@ -648,16 +648,20 @@ xml_document_add_attribute_location(xml_document_element_p element,
 static void
 xml_print_endline_attribute (xml_dump_info_p xdi, tree body)
 {
-  /* Get the last statement in the list.  The list may be empty if the
-     body is for an empty implicitly-generated copy-constructor.  */
-  tree_stmt_iterator t = tsi_last(body);
-  if(!tsi_end_p(t))
+  tree last = EXPR_P (body)? body : 0;
+  if (TREE_CODE (body) == STATEMENT_LIST)
     {
-    tree stmt = tsi_stmt(t);
-    if(EXPR_HAS_LOCATION(stmt))
+    /* Get the last statement in the list.  The list may be empty if the
+       body is for an empty implicitly-generated copy-constructor.  */
+    tree_stmt_iterator t = tsi_last (body);
+    if (!tsi_end_p (t))
       {
-      fprintf (xdi->file, " endline=\"%d\"", EXPR_LINENO(stmt));
+      last = tsi_stmt (t);
       }
+    }
+  if (last && EXPR_HAS_LOCATION (last))
+    {
+    fprintf (xdi->file, " endline=\"%d\"", EXPR_LINENO (last));
     }
 }
 
