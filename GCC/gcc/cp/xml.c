@@ -65,7 +65,7 @@ along with this program; if not, write to the
 
 #include "toplev.h" /* ident_hash */
 
-#define GCC_XML_C_VERSION "$Revision: 1.130 $"
+#define GCC_XML_C_VERSION "$Revision: 1.131 $"
 
 /*--------------------------------------------------------------------------*/
 /* Data structures for the actual XML dump.  */
@@ -3107,6 +3107,7 @@ xml_find_template_parm (tree t)
         }
       }
     case REFERENCE_TYPE: return xml_find_template_parm (TREE_TYPE (t));
+    case INDIRECT_REF: return xml_find_template_parm (TREE_TYPE (t));
     case POINTER_TYPE: return xml_find_template_parm (TREE_TYPE (t));
     case ARRAY_TYPE: return xml_find_template_parm (TREE_TYPE (t));
     case OFFSET_TYPE:
@@ -3181,6 +3182,10 @@ xml_find_template_parm (tree t)
       return (xml_find_template_parm (TREE_OPERAND (t, 0))
               || xml_find_template_parm (TREE_OPERAND (t, 1))
               || xml_find_template_parm (TREE_OPERAND (t, 2)));
+
+    /* Other expressions.  */
+    case TYPEOF_TYPE:
+      return xml_find_template_parm (TYPEOF_TYPE_EXPR (t));
 
     /* Other types that have no nested types.  */
     case INTEGER_CST: return 0;
