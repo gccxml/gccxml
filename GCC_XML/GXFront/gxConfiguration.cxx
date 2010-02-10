@@ -1593,29 +1593,13 @@ bool gxConfiguration::FindFlagsGCC()
       INCLUDES = "-iwrapper\"" + supportPath + "/2.96\" " + INCLUDES;
       }
     }
-  else if(MAJOR_VERSION == 4 && MINOR_VERSION >= 4)
+  else if(MAJOR_VERSION >= 4)
     {
-    INCLUDES = "-iwrapper\"" + supportPath + "/4.4\" " + INCLUDES;
-    SPECIAL = "-include \"gccxml_builtins.h\"";
-    }
-  else if(MAJOR_VERSION == 4 && MINOR_VERSION >= 3)
-    {
-    INCLUDES = "-iwrapper\"" + supportPath + "/4.3\" " + INCLUDES;
-    SPECIAL = "-include \"gccxml_builtins.h\"";
-    }
-  else if(MAJOR_VERSION == 4 && MINOR_VERSION >= 2)
-    {
-    INCLUDES = "-iwrapper\"" + supportPath + "/4.2\" " + INCLUDES;
-    SPECIAL = "-include \"gccxml_builtins.h\"";
-    }
-  else if(MAJOR_VERSION == 4 && MINOR_VERSION >= 1)
-    {
-    INCLUDES = "-iwrapper\"" + supportPath + "/4.1\" " + INCLUDES;
-    SPECIAL = "-include \"gccxml_builtins.h\"";
-    }
-  else if(MAJOR_VERSION == 4 && MINOR_VERSION == 0)
-    {
-    INCLUDES = "-iwrapper\"" + supportPath + "/4.0\" " + INCLUDES;
+    gxsys_ios::ostringstream includes;
+    includes << "-iwrapper\"" << supportPath << "/"
+             << MAJOR_VERSION << "." << MINOR_VERSION << "\" "
+             << INCLUDES;
+    INCLUDES = includes.str();
     SPECIAL = "-include \"gccxml_builtins.h\"";
     }
   else if(MAJOR_VERSION == 3 && MINOR_VERSION >= 4)
