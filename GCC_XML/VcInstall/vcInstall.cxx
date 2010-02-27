@@ -91,6 +91,8 @@ int main(int argc, char* argv[])
   {
     // English SP1
     "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\VisualStudio\\9.0\\InstalledProducts\\KB948484;",
+    // Team System English SP1
+    "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\VisualStudio\\9.0\\InstalledProducts\\KB947888;",
     0
   };
   const char* vc9exRegistry =
