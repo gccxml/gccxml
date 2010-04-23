@@ -65,7 +65,7 @@ along with this program; if not, write to the
 
 #include "toplev.h" /* ident_hash */
 
-#define GCC_XML_C_VERSION "$Revision: 1.132 $"
+#define GCC_XML_C_VERSION "$Revision: 1.133 $"
 
 /*--------------------------------------------------------------------------*/
 /* Data structures for the actual XML dump.  */
@@ -3071,6 +3071,7 @@ xml_find_template_parm (tree t)
     case CONST_DECL: return 1;
     case VAR_DECL: return 1;
     case FUNCTION_DECL: return 1;
+    case OVERLOAD: return 1;
     case FIELD_DECL: return 1;
 
     /* A template deferred scoped lookup.  */
@@ -3112,6 +3113,7 @@ xml_find_template_parm (tree t)
       }
     case REFERENCE_TYPE: return xml_find_template_parm (TREE_TYPE (t));
     case INDIRECT_REF: return xml_find_template_parm (TREE_TYPE (t));
+    case COMPONENT_REF: return xml_find_template_parm (TREE_TYPE (t));
     case POINTER_TYPE: return xml_find_template_parm (TREE_TYPE (t));
     case ARRAY_TYPE: return xml_find_template_parm (TREE_TYPE (t));
     case OFFSET_TYPE:
@@ -3190,6 +3192,48 @@ xml_find_template_parm (tree t)
     /* Other expressions.  */
     case TYPEOF_TYPE:
       return xml_find_template_parm (TYPEOF_TYPE_EXPR (t));
+    case CALL_EXPR:
+      {
+      tree func_expr = TREE_OPERAND (t, 0);
+      gcc_assert(func_expr);
+      if (xml_find_template_parm(func_expr))
+        {
+        return 1;
+        }
+      tree arg_expr = TREE_OPERAND (t, 1);
+      while (arg_expr)
+        {
+        if (xml_find_template_parm(arg_expr))
+          {
+          return 1;
+          }
+        arg_expr = TREE_CHAIN (arg_expr);
+        }
+      return 0;
+      }
+    case TEMPLATE_ID_EXPR:
+      {
+      tree template_expr = TREE_OPERAND (t, 0);
+      gcc_assert(template_expr);
+      if (xml_find_template_parm(template_expr))
+        {
+        return 1;
+        }
+      tree argument_vec = TREE_OPERAND (t, 1);
+      if (argument_vec)
+        {
+        int i;
+        for (i = 0; i < TREE_VEC_LENGTH(argument_vec); ++i)
+          {
+          tree argument_expr = TREE_VEC_ELT(argument_vec, i);
+          if (xml_find_template_parm(argument_expr))
+            {
+            return 1;
+            }
+          }
+        }
+      return 0;
+      }
 
     /* Other types that have no nested types.  */
     case INTEGER_CST: return 0;
