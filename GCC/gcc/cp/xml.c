@@ -65,7 +65,7 @@ along with this program; if not, write to the
 
 #include "toplev.h" /* ident_hash */
 
-#define GCC_XML_C_VERSION "$Revision: 1.133 $"
+#define GCC_XML_C_VERSION "$Revision: 1.134 $"
 
 /*--------------------------------------------------------------------------*/
 /* Data structures for the actual XML dump.  */
@@ -3194,13 +3194,14 @@ xml_find_template_parm (tree t)
       return xml_find_template_parm (TYPEOF_TYPE_EXPR (t));
     case CALL_EXPR:
       {
+      tree arg_expr;
       tree func_expr = TREE_OPERAND (t, 0);
       gcc_assert(func_expr);
       if (xml_find_template_parm(func_expr))
         {
         return 1;
         }
-      tree arg_expr = TREE_OPERAND (t, 1);
+      arg_expr = TREE_OPERAND (t, 1);
       while (arg_expr)
         {
         if (xml_find_template_parm(arg_expr))
@@ -3213,13 +3214,14 @@ xml_find_template_parm (tree t)
       }
     case TEMPLATE_ID_EXPR:
       {
+      tree argument_vec;
       tree template_expr = TREE_OPERAND (t, 0);
       gcc_assert(template_expr);
       if (xml_find_template_parm(template_expr))
         {
         return 1;
         }
-      tree argument_vec = TREE_OPERAND (t, 1);
+      argument_vec = TREE_OPERAND (t, 1);
       if (argument_vec)
         {
         int i;
