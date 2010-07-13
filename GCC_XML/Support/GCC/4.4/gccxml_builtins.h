@@ -145,6 +145,7 @@ bool __builtin_isnan(...);
 bool __builtin_isnormal(...);
 bool __builtin_isunordered(...);
 bool __builtin_va_arg_pack(...);
+int  __builtin_va_arg_pack_len(...);
 
 /* We fake some constant expressions from GCC 4.4 parser.  */
 #define __is_pod(x) false
