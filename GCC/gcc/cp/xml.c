@@ -65,7 +65,7 @@ along with this program; if not, write to the
 
 #include "toplev.h" /* ident_hash */
 
-#define GCC_XML_C_VERSION "$Revision: 1.134 $"
+#define GCC_XML_C_VERSION "$Revision: 1.135 $"
 
 /*--------------------------------------------------------------------------*/
 /* Data structures for the actual XML dump.  */
@@ -1096,11 +1096,22 @@ xml_print_static_method_attribute (xml_dump_info_p xdi, tree fd)
 }
 
 static void
-xml_document_add_attribute_static_method(xml_document_element_p element)
+xml_document_add_attribute_static(xml_document_element_p element)
 {
   xml_document_add_attribute(element, "static",
                              xml_document_attribute_type_boolean,
                              xml_document_attribute_use_optional, "0");
+}
+
+/*--------------------------------------------------------------------------*/
+/* Print XML attribute static="1" for static functions and variables.  */
+static void
+xml_print_static_attribute (xml_dump_info_p xdi, tree fd)
+{
+  if (DECL_THIS_STATIC (fd))
+    {
+    fprintf (xdi->file, " static=\"1\"");
+    }
 }
 
 /*--------------------------------------------------------------------------*/
@@ -1880,7 +1891,8 @@ xml_output_function_decl (xml_dump_info_p xdi, tree fd, xml_dump_node_p dn)
   int do_returns = 0;
   int do_const = 0;
   int do_virtual = 0;
-  int do_static = 0;
+  int do_static_method = 0;
+  int do_static_function = 0;
   int do_artificial = 0;
   int do_explicit = 0;
 
@@ -1916,14 +1928,14 @@ xml_output_function_decl (xml_dump_info_p xdi, tree fd, xml_dump_node_p dn)
         tag = "OperatorMethod";
         name = xml_reverse_opname_lookup (DECL_NAME (fd));
         do_returns = 1; do_const = 1; do_virtual = 1;
-        do_static = 1; do_artificial = 1;
+        do_static_method = 1; do_artificial = 1;
         }
       else
         {
         /* An operator in a namespace.  */
         tag = "OperatorFunction";
         name = xml_reverse_opname_lookup (DECL_NAME (fd));
-        do_returns = 1;
+        do_static_function= 1; do_returns = 1;
         }
       }
     }
@@ -1933,12 +1945,12 @@ xml_output_function_decl (xml_dump_info_p xdi, tree fd, xml_dump_node_p dn)
       {
       /* A member of a class.  */
       tag = "Method"; do_returns = 1; do_const = 1;
-      do_virtual = 1; do_static = 1;
+      do_virtual = 1; do_static_method = 1;
       }
     else
       {
       /* A member of a namespace.  */
-      tag = "Function"; do_returns = 1;
+      tag = "Function"; do_returns = 1; do_static_function = 1;
       }
     }
 
@@ -1956,7 +1968,8 @@ xml_output_function_decl (xml_dump_info_p xdi, tree fd, xml_dump_node_p dn)
   if(do_explicit) xml_print_explicit_attribute (xdi, fd);
   if(do_const)   xml_print_const_method_attribute (xdi, fd);
   if(do_virtual) xml_print_virtual_method_attributes (xdi, fd);
-  if(do_static)  xml_print_static_method_attribute (xdi, fd);
+  if(do_static_method)  xml_print_static_method_attribute (xdi, fd);
+  if(do_static_function)  xml_print_static_attribute (xdi, fd);
   if(do_artificial)  xml_print_artificial_attribute (xdi, fd);
   xml_print_throw_attribute (xdi, TREE_TYPE (fd), dn->complete);
   xml_print_context_attribute (xdi, fd);
@@ -2043,7 +2056,7 @@ xml_document_add_element_function_helper (xml_document_info_p xdi,
     }
   if(do_static)
     {
-    xml_document_add_attribute_static_method(e);
+    xml_document_add_attribute_static(e);
     }
   if(do_artificial)
     {
@@ -2096,7 +2109,7 @@ xml_document_add_element_function (xml_document_info_p xdi,
     /*do_explicit*/ 0, /*allow_arguments*/ 1, /*allow_ellipsis*/ 0);
   xml_document_add_element_function_helper(
     xdi, parent, "OperatorFunction", /*do_returns*/ 1, /*do_access*/ 0,
-    /*do_const*/ 0, /*do_virtual*/ 0, /*do_static*/ 0, /*do_artificial*/ 0,
+    /*do_const*/ 0, /*do_virtual*/ 0, /*do_static*/ 1, /*do_artificial*/ 0,
     /*do_explicit*/ 0, /*allow_arguments*/ 1, /*allow_ellipsis*/ 0);
   xml_document_add_element_function_helper(
     xdi, parent, "Method", /*do_returns*/ 1, /*do_access*/ 1,
@@ -2104,7 +2117,7 @@ xml_document_add_element_function (xml_document_info_p xdi,
     /*do_explicit*/ 0, /*allow_arguments*/ 1, /*allow_ellipsis*/ 1);
   xml_document_add_element_function_helper(
     xdi, parent, "Function", /*do_returns*/ 1, /*do_access*/ 0,
-    /*do_const*/ 0, /*do_virtual*/ 0, /*do_static*/ 0, /*do_artificial*/ 0,
+    /*do_const*/ 0, /*do_virtual*/ 0, /*do_static*/ 1, /*do_artificial*/ 0,
     /*do_explicit*/ 0, /*allow_arguments*/ 1, /*allow_ellipsis*/ 1);
 }
 
@@ -2124,6 +2137,7 @@ xml_output_var_decl (xml_dump_info_p xdi, tree vd, xml_dump_node_p dn)
   xml_print_mangled_attribute (xdi, vd);
   xml_print_demangled_attribute (xdi, vd );
   xml_print_location_attribute (xdi, vd);
+  xml_print_static_attribute(xdi, vd);
   xml_print_extern_attribute (xdi, vd);
   xml_print_artificial_attribute (xdi, vd);
   xml_print_attributes_attribute (xdi, DECL_ATTRIBUTES(vd), 0);
@@ -2145,6 +2159,7 @@ xml_document_add_element_var_decl (xml_document_info_p xdi,
   xml_document_add_attribute_mangled(e);
   xml_document_add_attribute_demangled(e);
   xml_document_add_attribute_location(e, xml_document_attribute_use_required);
+  xml_document_add_attribute_static(e);
   xml_document_add_attribute_extern(e);
   xml_document_add_attribute_artificial(e);
   xml_document_add_attribute_attributes(e);
