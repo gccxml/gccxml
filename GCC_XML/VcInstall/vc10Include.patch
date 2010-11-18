@@ -1,0 +1,5032 @@
+Index: algorithm
+===================================================================
+RCS file: /cvsroot/GxInclude/Vc10/Include/algorithm,v
+retrieving revision 1.1
+retrieving revision 1.3
+diff -c -3 -p -r1.1 -r1.3
+*** algorithm	18 Nov 2010 15:58:43 -0000	1.1
+--- algorithm	18 Nov 2010 18:36:00 -0000	1.3
+***************
+*** 9,14 ****
+--- 9,49 ----
+   #pragma warning(push,3)
+   #pragma warning(disable: 4244)
+  
++ /* ------------------------------------------------------------------------ */
++ /* Forward declare these now because they are used as non-dependent names.  */
++ _STDEXT_BEGIN
++ template<class _InIt, class _OutIt, class _Ty>
++ inline _OutIt unchecked_remove_copy(_InIt _First, _InIt _Last,
++                                     _OutIt _Dest, const _Ty& _Val);
++ template<class _InIt, class _OutIt, class _Pr>
++ inline _OutIt unchecked_remove_copy_if(_InIt _First, _InIt _Last,
++                                        _OutIt _Dest, _Pr _Pred);
++ template<class _InIt1, class _InIt2, class _OutIt>
++ inline _OutIt unchecked_merge(_InIt1 _First1, _InIt1 _Last1,
++                               _InIt2 _First2, _InIt2 _Last2, _OutIt _Dest);
++ template<class _InIt1, class _InIt2, class _OutIt, class _Pr>
++ inline _OutIt unchecked_merge(_InIt1 _First1, _InIt1 _Last1,
++                               _InIt2 _First2, _InIt2 _Last2, _OutIt _Dest,
++                               _Pr _Pred);
++ template<class _BidIt1, class _BidIt2, class _BidIt3>
++ inline _BidIt3 _Unchecked_merge_backward(_BidIt1 _First1, _BidIt1 _Last1,
++                                          _BidIt2 _First2, _BidIt2 _Last2,
++                                          _BidIt3 _Dest);
++ template<class _BidIt1, class _BidIt2, class _BidIt3, class _Pr>
++ inline _BidIt3 _Unchecked_merge_backward(_BidIt1 _First1, _BidIt1 _Last1,
++                                          _BidIt2 _First2, _BidIt2 _Last2,
++                                          _BidIt3 _Dest, _Pr _Pred);
++ template<class _BidIt, class _OutIt, class _Diff>
++ inline void _Unchecked_chunked_merge(_BidIt _First, _BidIt _Last,
++                                      _OutIt _Dest, _Diff _Chunk,
++                                      _Diff _Count);
++ template<class _BidIt, class _OutIt, class _Diff, class _Pr>
++ inline void _Unchecked_chunked_merge(_BidIt _First, _BidIt _Last,
++                                      _OutIt _Dest, _Diff _Chunk,
++                                      _Diff _Count, _Pr _Pred);
++ _STDEXT_END
++ /* ------------------------------------------------------------------------ */
++ 
+  _STD_BEGIN
+  		// COMMON SORT PARAMETERS
+  const int _ISORT_MAX = 32;	// maximum size for insertion sort
+*************** template<class _RanIt,
+*** 2400,2406 ****
+    #define _DEBUG_HEAP(first, last)
+    #define _DEBUG_HEAP_PRED(first, last, pred)
+   #endif /* _ITERATOR_DEBUG_LEVEL == 2 */
+! 
+  		// TEMPLATE FUNCTION push_heap
+  template<class _RanIt,
+  	class _Diff,
+--- 2435,2441 ----
+    #define _DEBUG_HEAP(first, last)
+    #define _DEBUG_HEAP_PRED(first, last, pred)
+   #endif /* _ITERATOR_DEBUG_LEVEL == 2 */
+! #if 0 /* Disabled for gccxml */
+  		// TEMPLATE FUNCTION push_heap
+  template<class _RanIt,
+  	class _Diff,
+*************** template<class _RanIt,
+*** 2418,2424 ****
+  
+  	*(_First + _Hole) = _Move(_Val);	// drop _Val into final hole
+  	}
+! 
+  template<class _RanIt,
+  	class _Diff,
+  	class _Ty> inline
+--- 2453,2459 ----
+  
+  	*(_First + _Hole) = _Move(_Val);	// drop _Val into final hole
+  	}
+! #endif /* Disabled for gccxml */
+  template<class _RanIt,
+  	class _Diff,
+  	class _Ty> inline
+*************** template<class _RanIt> inline
+*** 2444,2450 ****
+  			_Dist_type(_First), _Val_type(_First));
+  		}
+  	}
+! 
+  		// TEMPLATE FUNCTION push_heap WITH PRED
+  template<class _RanIt,
+  	class _Diff,
+--- 2479,2485 ----
+  			_Dist_type(_First), _Val_type(_First));
+  		}
+  	}
+! #if 0 /* Disabled for gccxml */
+  		// TEMPLATE FUNCTION push_heap WITH PRED
+  template<class _RanIt,
+  	class _Diff,
+*************** template<class _RanIt,
+*** 2463,2469 ****
+  
+  	*(_First + _Hole) = _Move(_Val);	// drop _Val into final hole
+  	}
+! 
+  template<class _RanIt,
+  	class _Diff,
+  	class _Ty,
+--- 2498,2504 ----
+  
+  	*(_First + _Hole) = _Move(_Val);	// drop _Val into final hole
+  	}
+! #endif /* Disabled for gccxml */
+  template<class _RanIt,
+  	class _Diff,
+  	class _Ty,
+*************** template<class _RanIt,
+*** 2492,2498 ****
+  			_Dist_type(_First), _Val_type(_First));
+  		}
+  	}
+! 
+  		// TEMPLATE FUNCTION pop_heap
+  template<class _RanIt,
+  	class _Diff,
+--- 2527,2533 ----
+  			_Dist_type(_First), _Val_type(_First));
+  		}
+  	}
+! #if 0 /* Disabled for gccxml */
+  		// TEMPLATE FUNCTION pop_heap
+  template<class _RanIt,
+  	class _Diff,
+*************** template<class _RanIt,
+*** 2529,2535 ****
+  	_Adjust_heap(_First, _Diff(0), _Diff(_Last - _First),
+  		_Move(_Val));
+  	}
+! 
+  template<class _RanIt,
+  	class _Ty> inline
+  	void _Pop_heap_0(_RanIt _First, _RanIt _Last, _Ty *)
+--- 2564,2570 ----
+  	_Adjust_heap(_First, _Diff(0), _Diff(_Last - _First),
+  		_Move(_Val));
+  	}
+! #endif /* Disabled for gccxml */
+  template<class _RanIt,
+  	class _Ty> inline
+  	void _Pop_heap_0(_RanIt _First, _RanIt _Last, _Ty *)
+*************** template<class _RanIt> inline
+*** 2554,2560 ****
+  	if (1 < _Last - _First)
+  		_Pop_heap(_Unchecked(_First), _Unchecked(_Last));
+  	}
+! 
+  		// TEMPLATE FUNCTION pop_heap WITH PRED
+  template<class _RanIt,
+  	class _Diff,
+--- 2589,2595 ----
+  	if (1 < _Last - _First)
+  		_Pop_heap(_Unchecked(_First), _Unchecked(_Last));
+  	}
+! #if 0 /* Disabled for gccxml */
+  		// TEMPLATE FUNCTION pop_heap WITH PRED
+  template<class _RanIt,
+  	class _Diff,
+*************** template<class _RanIt,
+*** 2593,2599 ****
+  	_Adjust_heap(_First, _Diff(0), _Diff(_Last - _First),
+  		_Move(_Val), _Pred);
+  	}
+! 
+  template<class _RanIt,
+  	class _Ty,
+  	class _Pr> inline
+--- 2628,2634 ----
+  	_Adjust_heap(_First, _Diff(0), _Diff(_Last - _First),
+  		_Move(_Val), _Pred);
+  	}
+! #endif /* Disabled for gccxml */
+  template<class _RanIt,
+  	class _Ty,
+  	class _Pr> inline
+Index: bitset
+===================================================================
+RCS file: /cvsroot/GxInclude/Vc10/Include/bitset,v
+retrieving revision 1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
+*** bitset	18 Nov 2010 15:58:43 -0000	1.1
+--- bitset	18 Nov 2010 18:35:33 -0000	1.2
+*************** private:
+*** 478,483 ****
+--- 478,484 ----
+  
+  	void _Trim()
+  		{	// clear any trailing bits in last word
++ #if 0 /* Disabled for gccxml */
+  		_Trim_if<_Bits % _Bitsperword != 0>();
+  		}
+  
+*************** private:
+*** 490,495 ****
+--- 491,497 ----
+  	template<>
+  		void _Trim_if<false>()
+  		{	// no bits to trim, do nothing
++ #endif /* Disabled for gccxml */
+  		}
+  
+  	__declspec(noreturn) void _Xinv() const
+Index: crtdefs.h
+===================================================================
+RCS file: /cvsroot/GxInclude/Vc10/Include/crtdefs.h,v
+retrieving revision 1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
+*** crtdefs.h	18 Nov 2010 15:58:43 -0000	1.1
+--- crtdefs.h	18 Nov 2010 18:36:30 -0000	1.2
+*************** extern "C" {
+*** 220,226 ****
+  #endif
+  
+  /* See note on use of deprecate at the top of this file */
+! #define _CRT_DEPRECATE_TEXT(_Text) __declspec(deprecated(_Text))
+  
+  /* Define _CRT_INSECURE_DEPRECATE */
+  /* See note on use of deprecate at the top of this file */
+--- 220,226 ----
+  #endif
+  
+  /* See note on use of deprecate at the top of this file */
+! #define _CRT_DEPRECATE_TEXT(_Text)
+  
+  /* Define _CRT_INSECURE_DEPRECATE */
+  /* See note on use of deprecate at the top of this file */
+Index: deque
+===================================================================
+RCS file: /cvsroot/GxInclude/Vc10/Include/deque,v
+retrieving revision 1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
+*** deque	18 Nov 2010 15:58:44 -0000	1.1
+--- deque	18 Nov 2010 18:35:33 -0000	1.2
+*************** public:
+*** 901,907 ****
+  
+  #define _PUSH_BACK_END \
+  	++this->_Mysize
+! 
+  	deque(_Myt&& _Right)
+  		: _Mybase(_Right._Alval)
+  		{	// construct by moving _Right
+--- 901,907 ----
+  
+  #define _PUSH_BACK_END \
+  	++this->_Mysize
+! #if 0 /* Disabled for gccxml */
+  	deque(_Myt&& _Right)
+  		: _Mybase(_Right._Alval)
+  		{	// construct by moving _Right
+*************** public:
+*** 1016,1022 ****
+  		{	// exchange contents with movable _Right
+  		_Assign_rv(_STD forward<_Myt>(_Right));
+  		}
+! 
+  	~deque()
+  		{	// destroy the deque
+  		_Tidy();
+--- 1016,1022 ----
+  		{	// exchange contents with movable _Right
+  		_Assign_rv(_STD forward<_Myt>(_Right));
+  		}
+! #endif /* Disabled for gccxml */
+  	~deque()
+  		{	// destroy the deque
+  		_Tidy();
+*************** template<class _Ty,
+*** 1686,1692 ****
+  	{	// swap _Left and _Right deques
+  	_Left.swap(_Right);
+  	}
+! 
+  template<class _Ty,
+  	class _Alloc> inline
+  	void swap(deque<_Ty, _Alloc>& _Left, deque<_Ty, _Alloc>&& _Right)
+--- 1686,1692 ----
+  	{	// swap _Left and _Right deques
+  	_Left.swap(_Right);
+  	}
+! #if 0 /* Disabled for gccxml */
+  template<class _Ty,
+  	class _Alloc> inline
+  	void swap(deque<_Ty, _Alloc>& _Left, deque<_Ty, _Alloc>&& _Right)
+*************** template<class _Ty,
+*** 1702,1708 ****
+  	typedef deque<_Ty, _Alloc> _Myt;
+  	_Right.swap(_STD forward<_Myt>(_Left));
+  	}
+! 
+  template<class _Ty,
+  	class _Alloc> inline
+  	bool operator==(const deque<_Ty, _Alloc>& _Left,
+--- 1702,1708 ----
+  	typedef deque<_Ty, _Alloc> _Myt;
+  	_Right.swap(_STD forward<_Myt>(_Left));
+  	}
+! #endif /* Disabled for gccxml */
+  template<class _Ty,
+  	class _Alloc> inline
+  	bool operator==(const deque<_Ty, _Alloc>& _Left,
+Index: eh.h
+===================================================================
+RCS file: /cvsroot/GxInclude/Vc10/Include/eh.h,v
+retrieving revision 1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
+*** eh.h	18 Nov 2010 15:58:44 -0000	1.1
+--- eh.h	18 Nov 2010 18:37:20 -0000	1.2
+***************
+*** 27,32 ****
+--- 27,35 ----
+  #error "eh.h is only for C++!"
+  #endif
+  
++ namespace std { class type_info; }
++ using std::type_info;
++ 
+  /* terminate_handler is the standard name; terminate_function is supported for historical reasons */
+  #ifndef _M_CEE_PURE
+  typedef void (__cdecl *terminate_function)();
+Index: fstream
+===================================================================
+RCS file: /cvsroot/GxInclude/Vc10/Include/fstream,v
+retrieving revision 1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
+*** fstream	18 Nov 2010 15:58:44 -0000	1.1
+--- fstream	18 Nov 2010 18:35:33 -0000	1.2
+*************** public:
+*** 161,167 ****
+  		: _Mysb(_Noinit)
+  		{	// construct uninitialized
+  		}
+! 
+  	basic_filebuf(_Myt&& _Right)
+  		{	// construct by copying _Right
+  		_Init(_Right._Myfile, _Newfl);	// match buffering styles
+--- 161,167 ----
+  		: _Mysb(_Noinit)
+  		{	// construct uninitialized
+  		}
+! #if 0 /* Disabled for gccxml */
+  	basic_filebuf(_Myt&& _Right)
+  		{	// construct by copying _Right
+  		_Init(_Right._Myfile, _Newfl);	// match buffering styles
+*************** public:
+*** 183,189 ****
+  			this->swap(_Right);
+  			}
+  		}
+! 
+  	void swap(_Myt& _Right)
+  		{	// swap with _Right
+  		if (this != &_Right)
+--- 183,189 ----
+  			this->swap(_Right);
+  			}
+  		}
+! #endif /* Disabled for gccxml */
+  	void swap(_Myt& _Right)
+  		{	// swap with _Right
+  		if (this != &_Right)
+*************** public:
+*** 197,208 ****
+  			_STD swap(_Myfile, _Right._Myfile);
+  			}
+  		}
+! 
+  	void swap(_Myt&& _Right)
+  		{	// swap with _Right
+  		_Assign_rv(_STD forward<_Myt>(_Right));
+  		}
+! 
+  	enum _Initfl
+  		{	// reasons for a call to _Init
+  		_Newfl, _Openfl, _Closefl};
+--- 197,208 ----
+  			_STD swap(_Myfile, _Right._Myfile);
+  			}
+  		}
+! #if 0 /* Disabled for gccxml */
+  	void swap(_Myt&& _Right)
+  		{	// swap with _Right
+  		_Assign_rv(_STD forward<_Myt>(_Right));
+  		}
+! #endif /* Disabled for gccxml */
+  	enum _Initfl
+  		{	// reasons for a call to _Init
+  		_Newfl, _Openfl, _Closefl};
+*************** template<class _Elem,
+*** 671,677 ****
+  	{	// swap _Left and _Right basic_filebufs
+  	_Left.swap(_Right);
+  	}
+! 
+  template<class _Elem,
+  	class _Traits> inline
+  	void swap(basic_filebuf<_Elem, _Traits>& _Left,
+--- 671,677 ----
+  	{	// swap _Left and _Right basic_filebufs
+  	_Left.swap(_Right);
+  	}
+! #if 0 /* Disabled for gccxml */
+  template<class _Elem,
+  	class _Traits> inline
+  	void swap(basic_filebuf<_Elem, _Traits>& _Left,
+*************** template<class _Elem,
+*** 689,695 ****
+  	typedef basic_filebuf<_Elem, _Traits> _Myt;
+  	_Right.swap(_STD forward<_Myt>(_Left));
+  	}
+! 
+  		// TEMPLATE CLASS basic_ifstream
+  template<class _Elem,
+  	class _Traits>
+--- 689,695 ----
+  	typedef basic_filebuf<_Elem, _Traits> _Myt;
+  	_Right.swap(_STD forward<_Myt>(_Left));
+  	}
+! #endif /* Disabled for gccxml */
+  		// TEMPLATE CLASS basic_ifstream
+  template<class _Elem,
+  	class _Traits>
+*************** public:
+*** 763,769 ****
+  			_Filebuffer(_File)
+  		{	// construct with specified C stream
+  		}
+! 
+  	basic_ifstream(_Myt&& _Right)
+  		: _Mybase(&_Filebuffer)
+  		{	// construct by moving _Right
+--- 763,769 ----
+  			_Filebuffer(_File)
+  		{	// construct with specified C stream
+  		}
+! #if 0 /* Disabled for gccxml */
+  	basic_ifstream(_Myt&& _Right)
+  		: _Mybase(&_Filebuffer)
+  		{	// construct by moving _Right
+*************** public:
+*** 784,790 ****
+  			this->swap(_Right);
+  			}
+  		}
+! 
+  	void swap(_Myt& _Right)
+  		{	// swap with _Right
+  		if (this != &_Right)
+--- 784,790 ----
+  			this->swap(_Right);
+  			}
+  		}
+! #endif /* Disabled for gccxml */
+  	void swap(_Myt& _Right)
+  		{	// swap with _Right
+  		if (this != &_Right)
+*************** public:
+*** 793,799 ****
+  			_Filebuffer.swap(_Right._Filebuffer);
+  			}
+  		}
+! 
+  	void swap(_Myt&& _Right)
+  		{	// swap with _Right
+  		_Assign_rv(_STD forward<_Myt>(_Right));
+--- 793,799 ----
+  			_Filebuffer.swap(_Right._Filebuffer);
+  			}
+  		}
+! #if 0 /* Disabled for gccxml */
+  	void swap(_Myt&& _Right)
+  		{	// swap with _Right
+  		_Assign_rv(_STD forward<_Myt>(_Right));
+*************** public:
+*** 808,814 ****
+  		else
+  			_Myios::clear();	// added with C++0X
+  		}
+! 
+   #if _HAS_CPP0X
+  	void open(const wstring& _Str,
+  		ios_base::openmode _Mode = ios_base::in,
+--- 808,814 ----
+  		else
+  			_Myios::clear();	// added with C++0X
+  		}
+! #endif /* Disabled for gccxml */
+   #if _HAS_CPP0X
+  	void open(const wstring& _Str,
+  		ios_base::openmode _Mode = ios_base::in,
+*************** template<class _Elem,
+*** 897,903 ****
+  	{	// swap _Left and _Right basic_ifstreams
+  	_Left.swap(_Right);
+  	}
+! 
+  template<class _Elem,
+  	class _Traits> inline
+  	void swap(basic_ifstream<_Elem, _Traits>& _Left,
+--- 897,903 ----
+  	{	// swap _Left and _Right basic_ifstreams
+  	_Left.swap(_Right);
+  	}
+! #if 0 /* Disabled for gccxml */
+  template<class _Elem,
+  	class _Traits> inline
+  	void swap(basic_ifstream<_Elem, _Traits>& _Left,
+*************** template<class _Elem,
+*** 915,921 ****
+  	typedef basic_ifstream<_Elem, _Traits> _Myt;
+  	_Right.swap(_STD forward<_Myt>(_Left));
+  	}
+! 
+  		// TEMPLATE CLASS basic_ofstream
+  template<class _Elem,
+  	class _Traits>
+--- 915,921 ----
+  	typedef basic_ifstream<_Elem, _Traits> _Myt;
+  	_Right.swap(_STD forward<_Myt>(_Left));
+  	}
+! #endif /* Disabled for gccxml */
+  		// TEMPLATE CLASS basic_ofstream
+  template<class _Elem,
+  	class _Traits>
+*************** public:
+*** 989,995 ****
+  			_Filebuffer(_File)
+  		{	// construct with specified C stream
+  		}
+! 
+  	basic_ofstream(_Myt&& _Right)
+  		: _Mybase(&_Filebuffer)
+  		{	// construct by moving _Right
+--- 989,995 ----
+  			_Filebuffer(_File)
+  		{	// construct with specified C stream
+  		}
+! #if 0 /* Disabled for gccxml */
+  	basic_ofstream(_Myt&& _Right)
+  		: _Mybase(&_Filebuffer)
+  		{	// construct by moving _Right
+*************** public:
+*** 1010,1016 ****
+  			this->swap(_Right);
+  			}
+  		}
+! 
+  	void swap(_Myt& _Right)
+  		{	// swap with _Right
+  		if (this != &_Right)
+--- 1010,1016 ----
+  			this->swap(_Right);
+  			}
+  		}
+! #endif /* Disabled for gccxml */
+  	void swap(_Myt& _Right)
+  		{	// swap with _Right
+  		if (this != &_Right)
+*************** public:
+*** 1019,1030 ****
+  			_Filebuffer.swap(_Right._Filebuffer);
+  			}
+  		}
+! 
+  	void swap(_Myt&& _Right)
+  		{	// swap with _Right
+  		_Assign_rv(_STD forward<_Myt>(_Right));
+  		}
+! 
+  	void open(const wchar_t *_Filename,
+  		ios_base::openmode _Mode = ios_base::out,
+  		int _Prot = (int)ios_base::_Openprot)
+--- 1019,1030 ----
+  			_Filebuffer.swap(_Right._Filebuffer);
+  			}
+  		}
+! #if 0 /* Disabled for gccxml */
+  	void swap(_Myt&& _Right)
+  		{	// swap with _Right
+  		_Assign_rv(_STD forward<_Myt>(_Right));
+  		}
+! #endif /* Disabled for gccxml */
+  	void open(const wchar_t *_Filename,
+  		ios_base::openmode _Mode = ios_base::out,
+  		int _Prot = (int)ios_base::_Openprot)
+*************** template<class _Elem,
+*** 1123,1129 ****
+  	{	// swap _Left and _Right basic_ofstreams
+  	_Left.swap(_Right);
+  	}
+! 
+  template<class _Elem,
+  	class _Traits> inline
+  	void swap(basic_ofstream<_Elem, _Traits>& _Left,
+--- 1123,1129 ----
+  	{	// swap _Left and _Right basic_ofstreams
+  	_Left.swap(_Right);
+  	}
+! #if 0 /* Disabled for gccxml */
+  template<class _Elem,
+  	class _Traits> inline
+  	void swap(basic_ofstream<_Elem, _Traits>& _Left,
+*************** template<class _Elem,
+*** 1141,1147 ****
+  	typedef basic_ofstream<_Elem, _Traits> _Myt;
+  	_Right.swap(_STD forward<_Myt>(_Left));
+  	}
+! 
+  		// TEMPLATE CLASS basic_fstream
+  template<class _Elem,
+  	class _Traits>
+--- 1141,1147 ----
+  	typedef basic_ofstream<_Elem, _Traits> _Myt;
+  	_Right.swap(_STD forward<_Myt>(_Left));
+  	}
+! #endif /* Disabled for gccxml */
+  		// TEMPLATE CLASS basic_fstream
+  template<class _Elem,
+  	class _Traits>
+*************** public:
+*** 1220,1226 ****
+  			_Filebuffer(_File)
+  		{	// construct with specified C stream
+  		}
+! 
+  	basic_fstream(_Myt&& _Right)
+  		: _Mybase(&_Filebuffer)
+  		{	// construct by moving _Right
+--- 1220,1226 ----
+  			_Filebuffer(_File)
+  		{	// construct with specified C stream
+  		}
+! #if 0 /* Disabled for gccxml */
+  	basic_fstream(_Myt&& _Right)
+  		: _Mybase(&_Filebuffer)
+  		{	// construct by moving _Right
+*************** public:
+*** 1241,1247 ****
+  			this->swap(_Right);
+  			}
+  		}
+! 
+  	void swap(_Myt& _Right)
+  		{	// swap with _Right
+  		if (this != &_Right)
+--- 1241,1247 ----
+  			this->swap(_Right);
+  			}
+  		}
+! #endif /* Disabled for gccxml */
+  	void swap(_Myt& _Right)
+  		{	// swap with _Right
+  		if (this != &_Right)
+*************** public:
+*** 1250,1261 ****
+  			_Filebuffer.swap(_Right._Filebuffer);
+  			}
+  		}
+! 
+  	void swap(_Myt&& _Right)
+  		{	// swap with _Right
+  		_Assign_rv(_STD forward<_Myt>(_Right));
+  		}
+! 
+  	void open(const wchar_t *_Filename,
+  		ios_base::openmode _Mode = ios_base::in | ios_base::out,
+  		int _Prot = (int)ios_base::_Openprot)
+--- 1250,1261 ----
+  			_Filebuffer.swap(_Right._Filebuffer);
+  			}
+  		}
+! #if 0 /* Disabled for gccxml */
+  	void swap(_Myt&& _Right)
+  		{	// swap with _Right
+  		_Assign_rv(_STD forward<_Myt>(_Right));
+  		}
+! #endif /* Disabled for gccxml */
+  	void open(const wchar_t *_Filename,
+  		ios_base::openmode _Mode = ios_base::in | ios_base::out,
+  		int _Prot = (int)ios_base::_Openprot)
+*************** template<class _Elem,
+*** 1354,1360 ****
+  	{	// swap _Left and _Right basic_fstreams
+  	_Left.swap(_Right);
+  	}
+! 
+  template<class _Elem,
+  	class _Traits> inline
+  	void swap(basic_fstream<_Elem, _Traits>& _Left,
+--- 1354,1360 ----
+  	{	// swap _Left and _Right basic_fstreams
+  	_Left.swap(_Right);
+  	}
+! #if 0 /* Disabled for gccxml */
+  template<class _Elem,
+  	class _Traits> inline
+  	void swap(basic_fstream<_Elem, _Traits>& _Left,
+*************** template<class _Elem,
+*** 1372,1377 ****
+--- 1372,1378 ----
+  	typedef basic_fstream<_Elem, _Traits> _Myt;
+  	_Right.swap(_STD forward<_Myt>(_Left));
+  	}
++ #endif /* Disabled for gccxml */
+  _STD_END
+  
+   #pragma warning(pop)
+Index: functional
+===================================================================
+RCS file: /cvsroot/GxInclude/Vc10/Include/functional,v
+retrieving revision 1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
+*** functional	18 Nov 2010 15:58:44 -0000	1.1
+--- functional	18 Nov 2010 19:18:59 -0000	1.2
+***************
+*** 11,17 ****
+   #pragma push_macro("new")
+   #undef new
+  
+!  #if _HAS_TR1
+  #include <exception>
+  #include <typeinfo>
+  #include <xrefwrap>
+--- 11,17 ----
+   #pragma push_macro("new")
+   #undef new
+  
+!  #if _HAS_TR1 && 0 /* Disabled for gccxml */
+  #include <exception>
+  #include <typeinfo>
+  #include <xrefwrap>
+Index: hash_map
+===================================================================
+RCS file: /cvsroot/GxInclude/Vc10/Include/hash_map,v
+retrieving revision 1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
+*** hash_map	18 Nov 2010 15:58:44 -0000	1.1
+--- hash_map	18 Nov 2010 18:35:33 -0000	1.2
+*************** public:
+*** 166,172 ****
+  		_Mybase::operator=(_Right);
+  		return (*this);
+  		}
+! 
+  	hash_map(_Myt&& _Right)
+  		: _Mybase(_STD move(_Right))
+  		{	// construct map by moving _Right
+--- 166,172 ----
+  		_Mybase::operator=(_Right);
+  		return (*this);
+  		}
+! #if 0 /* Disabled for gccxml */
+  	hash_map(_Myt&& _Right)
+  		: _Mybase(_STD move(_Right))
+  		{	// construct map by moving _Right
+*************** public:
+*** 188,204 ****
+  					mapped_type())).first;
+  		return ((*_Where).second);
+  		}
+! 
+  	void swap(_Myt& _Right)
+  		{	// exchange contents with non-movable _Right
+  		_Mybase::swap(_Right);
+  		}
+! 
+  	void swap(_Myt&& _Right)
+  		{	// exchange contents with movable _Right
+  		_Mybase::swap(_STD move(_Right));
+  		}
+! 
+  	mapped_type& operator[](const key_type& _Keyval)
+  		{	// find element matching _Keyval or insert with default mapped
+  		iterator _Where = this->lower_bound(_Keyval);
+--- 188,204 ----
+  					mapped_type())).first;
+  		return ((*_Where).second);
+  		}
+! #endif /* Disabled for gccxml */
+  	void swap(_Myt& _Right)
+  		{	// exchange contents with non-movable _Right
+  		_Mybase::swap(_Right);
+  		}
+! #if 0 /* Disabled for gccxml */
+  	void swap(_Myt&& _Right)
+  		{	// exchange contents with movable _Right
+  		_Mybase::swap(_STD move(_Right));
+  		}
+! #endif /* Disabled for gccxml */
+  	mapped_type& operator[](const key_type& _Keyval)
+  		{	// find element matching _Keyval or insert with default mapped
+  		iterator _Where = this->lower_bound(_Keyval);
+*************** template<class _Kty,
+*** 235,241 ****
+  	{	// swap _Left and _Right hash_maps
+  	_Left.swap(_Right);
+  	}
+! 
+  template<class _Kty,
+  	class _Ty,
+  	class _Tr,
+--- 235,241 ----
+  	{	// swap _Left and _Right hash_maps
+  	_Left.swap(_Right);
+  	}
+! #if 0 /* Disabled for gccxml */
+  template<class _Kty,
+  	class _Ty,
+  	class _Tr,
+*************** template<class _Kty,
+*** 257,262 ****
+--- 257,263 ----
+  	typedef hash_map<_Kty, _Ty, _Tr, _Alloc> _Myt;
+  	_Right.swap(_STD forward<_Myt>(_Left));
+  	}
++ #endif /* Disabled for gccxml */
+  }	// namespace stdext
+  _STD_BEGIN
+  using stdext::hash_map;
+*************** public:
+*** 349,355 ****
+  		_Mybase::operator=(_Right);
+  		return (*this);
+  		}
+! 
+  	hash_multimap(_Myt&& _Right)
+  		: _Mybase(_STD move(_Right))
+  		{	// construct map by moving _Right
+--- 350,356 ----
+  		_Mybase::operator=(_Right);
+  		return (*this);
+  		}
+! #if 0 /* Disabled for gccxml */
+  	hash_multimap(_Myt&& _Right)
+  		: _Mybase(_STD move(_Right))
+  		{	// construct map by moving _Right
+*************** public:
+*** 375,391 ****
+  		{	// insert a {key, mapped} value, with hint
+  		return (_Mybase::insert(_Where, _STD forward<_Valty>(_Val)));
+  		}
+! 
+  	void swap(_Myt& _Right)
+  		{	// exchange contents with non-movable _Right
+  		_Mybase::swap(_Right);
+  		}
+! 
+  	void swap(_Myt&& _Right)
+  		{	// exchange contents with movable _Right
+  		_Mybase::swap(_STD move(_Right));
+  		}
+! 
+  	iterator insert(const value_type& _Val)
+  		{	// insert a {key, mapped} value
+  		return (_Mybase::insert(_Val).first);
+--- 376,392 ----
+  		{	// insert a {key, mapped} value, with hint
+  		return (_Mybase::insert(_Where, _STD forward<_Valty>(_Val)));
+  		}
+! #endif /* Disabled for gccxml */
+  	void swap(_Myt& _Right)
+  		{	// exchange contents with non-movable _Right
+  		_Mybase::swap(_Right);
+  		}
+! #if 0 /* Disabled for gccxml */
+  	void swap(_Myt&& _Right)
+  		{	// exchange contents with movable _Right
+  		_Mybase::swap(_STD move(_Right));
+  		}
+! #endif /* Disabled for gccxml */
+  	iterator insert(const value_type& _Val)
+  		{	// insert a {key, mapped} value
+  		return (_Mybase::insert(_Val).first);
+*************** template<class _Kty,
+*** 413,419 ****
+  	{	// swap _Left and _Right hash_multimaps
+  	_Left.swap(_Right);
+  	}
+! 
+  template<class _Kty,
+  	class _Ty,
+  	class _Tr,
+--- 414,420 ----
+  	{	// swap _Left and _Right hash_multimaps
+  	_Left.swap(_Right);
+  	}
+! #if 0 /* Disabled for gccxml */
+  template<class _Kty,
+  	class _Ty,
+  	class _Tr,
+*************** template<class _Kty,
+*** 435,440 ****
+--- 436,442 ----
+  	typedef hash_multimap<_Kty, _Ty, _Tr, _Alloc> _Myt;
+  	_Right.swap(_STD forward<_Myt>(_Left));
+  	}
++ #endif /* Disabled for gccxml */
+  }	// namespace stdext
+  _STD_BEGIN
+  using stdext::hash_multimap;
+Index: hash_set
+===================================================================
+RCS file: /cvsroot/GxInclude/Vc10/Include/hash_set,v
+retrieving revision 1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
+*** hash_set	18 Nov 2010 15:58:44 -0000	1.1
+--- hash_set	18 Nov 2010 18:35:33 -0000	1.2
+*************** public:
+*** 138,144 ****
+  		_Mybase::operator=(_Right);
+  		return (*this);
+  		}
+! 
+  	hash_set(_Myt&& _Right)
+  		: _Mybase(_STD move(_Right))
+  		{	// construct set by moving _Right
+--- 138,144 ----
+  		_Mybase::operator=(_Right);
+  		return (*this);
+  		}
+! #if 0 /* Disabled for gccxml */
+  	hash_set(_Myt&& _Right)
+  		: _Mybase(_STD move(_Right))
+  		{	// construct set by moving _Right
+*************** public:
+*** 149,164 ****
+  		_Mybase::operator=(_STD move(_Right));
+  		return (*this);
+  		}
+! 
+  	void swap(_Myt& _Right)
+  		{	// exchange contents with non-movable _Right
+  		_Mybase::swap(_Right);
+  		}
+! 
+  	void swap(_Myt&& _Right)
+  		{	// exchange contents with movable _Right
+  		_Mybase::swap(_STD move(_Right));
+  		}
+  	};
+  
+  template<class _Kty,
+--- 149,165 ----
+  		_Mybase::operator=(_STD move(_Right));
+  		return (*this);
+  		}
+! #endif /* Disabled for gccxml */
+  	void swap(_Myt& _Right)
+  		{	// exchange contents with non-movable _Right
+  		_Mybase::swap(_Right);
+  		}
+! #if 0 /* Disabled for gccxml */
+  	void swap(_Myt&& _Right)
+  		{	// exchange contents with movable _Right
+  		_Mybase::swap(_STD move(_Right));
+  		}
++ #endif /* Disabled for gccxml */
+  	};
+  
+  template<class _Kty,
+*************** template<class _Kty,
+*** 169,175 ****
+  	{	// swap _Left and _Right hash_sets
+  	_Left.swap(_Right);
+  	}
+! 
+  template<class _Kty,
+  	class _Tr,
+  	class _Alloc> inline
+--- 170,176 ----
+  	{	// swap _Left and _Right hash_sets
+  	_Left.swap(_Right);
+  	}
+! #if 0 /* Disabled for gccxml */
+  template<class _Kty,
+  	class _Tr,
+  	class _Alloc> inline
+*************** template<class _Kty,
+*** 189,194 ****
+--- 190,196 ----
+  	typedef hash_set<_Kty, _Tr, _Alloc> _Myt;
+  	_Right.swap(_STD forward<_Myt>(_Left));
+  	}
++ #endif /* Disabled for gccxml */
+  }	// namespace stdext
+  _STD_BEGIN
+  using stdext::hash_set;
+*************** public:
+*** 277,283 ****
+  		_Mybase::operator=(_Right);
+  		return (*this);
+  		}
+! 
+  	hash_multiset(_Myt&& _Right)
+  		: _Mybase(_STD move(_Right))
+  		{	// construct set by moving _Right
+--- 279,285 ----
+  		_Mybase::operator=(_Right);
+  		return (*this);
+  		}
+! #if 0 /* Disabled for gccxml */
+  	hash_multiset(_Myt&& _Right)
+  		: _Mybase(_STD move(_Right))
+  		{	// construct set by moving _Right
+*************** public:
+*** 303,319 ****
+  		{	// insert a {key, mapped} value, with hint
+  		return (_Mybase::insert(_Where, _STD forward<_Valty>(_Val)));
+  		}
+! 
+  	void swap(_Myt& _Right)
+  		{	// exchange contents with non-movable _Right
+  		_Mybase::swap(_Right);
+  		}
+! 
+  	void swap(_Myt&& _Right)
+  		{	// exchange contents with movable _Right
+  		_Mybase::swap(_STD move(_Right));
+  		}
+! 
+  	iterator insert(const value_type& _Val)
+  		{	// insert a key value
+  		return (_Mybase::insert(_Val).first);
+--- 305,321 ----
+  		{	// insert a {key, mapped} value, with hint
+  		return (_Mybase::insert(_Where, _STD forward<_Valty>(_Val)));
+  		}
+! #endif /* Disabled for gccxml */
+  	void swap(_Myt& _Right)
+  		{	// exchange contents with non-movable _Right
+  		_Mybase::swap(_Right);
+  		}
+! #if 0 /* Disabled for gccxml */
+  	void swap(_Myt&& _Right)
+  		{	// exchange contents with movable _Right
+  		_Mybase::swap(_STD move(_Right));
+  		}
+! #endif /* Disabled for gccxml */
+  	iterator insert(const value_type& _Val)
+  		{	// insert a key value
+  		return (_Mybase::insert(_Val).first);
+*************** template<class _Kty,
+*** 340,346 ****
+  	{	// swap _Left and _Right hash_multisets
+  	_Left.swap(_Right);
+  	}
+! 
+  template<class _Kty,
+  	class _Tr,
+  	class _Alloc> inline
+--- 342,348 ----
+  	{	// swap _Left and _Right hash_multisets
+  	_Left.swap(_Right);
+  	}
+! #if 0 /* Disabled for gccxml */
+  template<class _Kty,
+  	class _Tr,
+  	class _Alloc> inline
+*************** template<class _Kty,
+*** 360,365 ****
+--- 362,368 ----
+  	typedef hash_multiset<_Kty, _Tr, _Alloc> _Myt;
+  	_Right.swap(_STD forward<_Myt>(_Left));
+  	}
++ #endif /* Disabled for gccxml */
+  }	// namespace stdext
+  _STD_BEGIN
+  using stdext::hash_multiset;
+Index: ios
+===================================================================
+RCS file: /cvsroot/GxInclude/Vc10/Include/ios,v
+retrieving revision 1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
+*** ios	18 Nov 2010 15:58:44 -0000	1.1
+--- ios	18 Nov 2010 18:35:33 -0000	1.2
+*************** public:
+*** 125,131 ****
+  		const _Ctype& _Ctype_fac = _USE(getloc(), _Ctype);
+  		return (_Ctype_fac.widen(_Byte));
+  		}
+! 
+  	void __CLR_OR_THIS_CALL move(_Myt&& _Right)
+  		{	// assign by moving _Right
+  		if (this != &_Right)
+--- 125,131 ----
+  		const _Ctype& _Ctype_fac = _USE(getloc(), _Ctype);
+  		return (_Ctype_fac.widen(_Byte));
+  		}
+! #if 0 /* Disabled for gccxml */
+  	void __CLR_OR_THIS_CALL move(_Myt&& _Right)
+  		{	// assign by moving _Right
+  		if (this != &_Right)
+*************** public:
+*** 135,141 ****
+  			this->swap(_Right);
+  			}
+  		}
+! 
+  	void __CLR_OR_THIS_CALL swap(_Myt& _Right)
+  		{	// swap all but rdbuf() with right
+  		ios_base::swap(_Right);
+--- 135,141 ----
+  			this->swap(_Right);
+  			}
+  		}
+! #endif /* Disabled for gccxml */
+  	void __CLR_OR_THIS_CALL swap(_Myt& _Right)
+  		{	// swap all but rdbuf() with right
+  		ios_base::swap(_Right);
+Index: istream
+===================================================================
+RCS file: /cvsroot/GxInclude/Vc10/Include/istream,v
+retrieving revision 1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
+*** istream	18 Nov 2010 15:58:44 -0000	1.1
+--- istream	18 Nov 2010 18:35:33 -0000	1.2
+*************** public:
+*** 38,44 ****
+  		{	// construct uninitialized
+  		ios_base::_Addstd(this);
+  		}
+! 
+  	__CLR_OR_THIS_CALL basic_istream(_Myt&& _Right)
+  		: _Chcount(_Right._Chcount)
+  		{	// construct by moving _Right
+--- 38,44 ----
+  		{	// construct uninitialized
+  		ios_base::_Addstd(this);
+  		}
+! #if 0 /* Disabled for gccxml */
+  	__CLR_OR_THIS_CALL basic_istream(_Myt&& _Right)
+  		: _Chcount(_Right._Chcount)
+  		{	// construct by moving _Right
+*************** public:
+*** 52,58 ****
+  		this->swap(_Right);
+  		return (*this);
+  		}
+! 
+  	void __CLR_OR_THIS_CALL swap(_Myt& _Right)
+  		{	// swap with _Right
+  		_Myios::swap(_Right);
+--- 52,58 ----
+  		this->swap(_Right);
+  		return (*this);
+  		}
+! #endif /* Disabled for gccxml */
+  	void __CLR_OR_THIS_CALL swap(_Myt& _Right)
+  		{	// swap with _Right
+  		_Myios::swap(_Right);
+*************** public:
+*** 938,944 ****
+  			_Myos(_Noinit, false)
+  		{	// construct from stream buffer pointer
+  		}
+! 
+  	__CLR_OR_THIS_CALL basic_iostream(_Myt&& _Right)
+  		: _Myis(_Right.rdbuf(), false),
+  			_Myos(_Noinit, false)
+--- 938,944 ----
+  			_Myos(_Noinit, false)
+  		{	// construct from stream buffer pointer
+  		}
+! #if 0 /* Disabled for gccxml */
+  	__CLR_OR_THIS_CALL basic_iostream(_Myt&& _Right)
+  		: _Myis(_Right.rdbuf(), false),
+  			_Myos(_Noinit, false)
+*************** public:
+*** 952,958 ****
+  		this->swap(_Right);
+  		return (*this);
+  		}
+! 
+  	void __CLR_OR_THIS_CALL swap(_Myt& _Right)
+  		{	// swap with _Right
+  		if (this != &_Right)
+--- 952,958 ----
+  		this->swap(_Right);
+  		return (*this);
+  		}
+! #endif /* Disabled for gccxml */
+  	void __CLR_OR_THIS_CALL swap(_Myt& _Right)
+  		{	// swap with _Right
+  		if (this != &_Right)
+*************** template class _CRTIMP2_PURE basic_iostr
+*** 980,986 ****
+  
+  
+   #endif /* defined(_DLL_CPPLIB) etc. */
+! 
+  		// EXTRACTORS
+  template<class _Elem,
+  	class _Traits> inline
+--- 980,986 ----
+  
+  
+   #endif /* defined(_DLL_CPPLIB) etc. */
+! #if 0 /* Disabled for gccxml */
+  		// EXTRACTORS
+  template<class _Elem,
+  	class _Traits> inline
+*************** template<class _Traits> inline
+*** 1076,1082 ****
+  	{	// extract an unsigned char
+  	return (_Istr >> (char&)_Ch);
+  	}
+! 
+  template<class _Elem,
+  	class _Traits> inline
+  	basic_istream<_Elem, _Traits>& operator>>(
+--- 1076,1082 ----
+  	{	// extract an unsigned char
+  	return (_Istr >> (char&)_Ch);
+  	}
+! #endif /* Disabled for gccxml */
+  template<class _Elem,
+  	class _Traits> inline
+  	basic_istream<_Elem, _Traits>& operator>>(
+*************** template<class _Traits> inline
+*** 1120,1126 ****
+  	{	// extract an unsigned char
+  	return (_STD move(_Istr) >> (char&)_Ch);
+  	}
+! 
+  template<class _Elem,
+  	class _Traits,
+  	class _Ty> inline
+--- 1120,1126 ----
+  	{	// extract an unsigned char
+  	return (_STD move(_Istr) >> (char&)_Ch);
+  	}
+! #if 0 /* Disabled for gccxml */
+  template<class _Elem,
+  	class _Traits,
+  	class _Ty> inline
+*************** template<class _Elem,
+*** 1129,1135 ****
+  	{	// extract from rvalue stream
+  	return (_Istr >> _Val);
+  	}
+! 
+  		// MANIPULATORS
+  template<class _Elem,
+  	class _Traits> inline
+--- 1129,1135 ----
+  	{	// extract from rvalue stream
+  	return (_Istr >> _Val);
+  	}
+! #endif /* Disabled for gccxml */
+  		// MANIPULATORS
+  template<class _Elem,
+  	class _Traits> inline
+Index: iterator
+===================================================================
+RCS file: /cvsroot/GxInclude/Vc10/Include/iterator,v
+retrieving revision 1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
+*** iterator	18 Nov 2010 15:58:44 -0000	1.1
+--- iterator	18 Nov 2010 18:35:33 -0000	1.2
+*************** public:
+*** 31,43 ****
+  		container->push_back(_Val);
+  		return (*this);
+  		}
+! 
+  	_Myt& operator=(_Valty&& _Val)
+  		{	// push value into container
+  		container->push_back(_STD forward<_Valty>(_Val));
+  		return (*this);
+  		}
+! 
+  	_Myt& operator*()
+  		{	// pretend to return designated value
+  		return (*this);
+--- 31,43 ----
+  		container->push_back(_Val);
+  		return (*this);
+  		}
+! #if 0 /* Disabled for gccxml */
+  	_Myt& operator=(_Valty&& _Val)
+  		{	// push value into container
+  		container->push_back(_STD forward<_Valty>(_Val));
+  		return (*this);
+  		}
+! #endif /* Disabled for gccxml */
+  	_Myt& operator*()
+  		{	// pretend to return designated value
+  		return (*this);
+*************** public:
+*** 91,103 ****
+  		container->push_front(_Val);
+  		return (*this);
+  		}
+! 
+  	_Myt& operator=(_Valty&& _Val)
+  		{	// push value into container
+  		container->push_front(_STD forward<_Valty>(_Val));
+  		return (*this);
+  		}
+! 
+  	_Myt& operator*()
+  		{	// pretend to return designated value
+  		return (*this);
+--- 91,103 ----
+  		container->push_front(_Val);
+  		return (*this);
+  		}
+! #if 0 /* Disabled for gccxml */
+  	_Myt& operator=(_Valty&& _Val)
+  		{	// push value into container
+  		container->push_front(_STD forward<_Valty>(_Val));
+  		return (*this);
+  		}
+! #endif /* Disabled for gccxml */
+  	_Myt& operator*()
+  		{	// pretend to return designated value
+  		return (*this);
+*************** public:
+*** 152,165 ****
+  		++iter;
+  		return (*this);
+  		}
+! 
+  	_Myt& operator=(_Valty&& _Val)
+  		{	// push value into container
+  		iter = container->insert(iter, _STD forward<_Valty>(_Val));
+  		++iter;
+  		return (*this);
+  		}
+! 
+  	_Myt& operator*()
+  		{	// pretend to return designated value
+  		return (*this);
+--- 152,165 ----
+  		++iter;
+  		return (*this);
+  		}
+! #if 0 /* Disabled for gccxml */
+  	_Myt& operator=(_Valty&& _Val)
+  		{	// push value into container
+  		iter = container->insert(iter, _STD forward<_Valty>(_Val));
+  		++iter;
+  		return (*this);
+  		}
+! #endif /* Disabled for gccxml */
+  	_Myt& operator*()
+  		{	// pretend to return designated value
+  		return (*this);
+*************** public:
+*** 207,213 ****
+   	typedef typename iterator_traits<_RanIt>::difference_type
+  		difference_type;
+  	typedef _RanIt pointer;
+! 	typedef value_type&& reference;
+  	typedef _RanIt iterator_type;
+  
+  	move_iterator()
+--- 207,213 ----
+   	typedef typename iterator_traits<_RanIt>::difference_type
+  		difference_type;
+  	typedef _RanIt pointer;
+! 	typedef value_type& reference;
+  	typedef _RanIt iterator_type;
+  
+  	move_iterator()
+*************** public:
+*** 586,592 ****
+  	checked_array_iterator(_Iterator _Array, _STD size_t _Size, _STD size_t _Index = 0)
+  		: _Myarray(_Array), _Mysize(_Size), _Myindex(_Index)
+  		{	// construct with array, size, and optional index
+! 		_SCL_SECURE_ALWAYS_VALIDATE(_Index <= _Size);
+  		}
+  
+  	_Iterator base() const
+--- 586,592 ----
+  	checked_array_iterator(_Iterator _Array, _STD size_t _Size, _STD size_t _Index = 0)
+  		: _Myarray(_Array), _Mysize(_Size), _Myindex(_Index)
+  		{	// construct with array, size, and optional index
+! 		//_SCL_SECURE_ALWAYS_VALIDATE(_Index <= _Size);
+  		}
+  
+  	_Iterator base() const
+Index: limits
+===================================================================
+RCS file: /cvsroot/GxInclude/Vc10/Include/limits,v
+retrieving revision 1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
+*** limits	18 Nov 2010 15:58:45 -0000	1.1
+--- limits	18 Nov 2010 18:40:56 -0000	1.2
+*************** struct _CRTIMP2_PURE _Num_base
+*** 76,93 ****
+  	_STCONS(int, radix, 0);
+  	};
+  
+  		// TEMPLATE CLASS numeric_limits
+  template<class _Ty>
+  	class numeric_limits
+  		: public _Num_base
+  	{	// numeric limits for arbitrary type _Ty (say little or nothing)
+  public:
+! 	static _Ty (__CRTDECL min)() _THROW0()
+  		{	// return minimum value
+  		return (_Ty(0));
+  		}
+  
+! 	static _Ty (__CRTDECL max)() _THROW0()
+  		{	// return maximum value
+  		return (_Ty(0));
+  		}
+--- 76,95 ----
+  	_STCONS(int, radix, 0);
+  	};
+  
++ #define __GCCXML_AVOID_MACRO_EXPANSION
++ 
+  		// TEMPLATE CLASS numeric_limits
+  template<class _Ty>
+  	class numeric_limits
+  		: public _Num_base
+  	{	// numeric limits for arbitrary type _Ty (say little or nothing)
+  public:
+!  	static _Ty __CRTDECL min __GCCXML_AVOID_MACRO_EXPANSION() _THROW0()
+  		{	// return minimum value
+  		return (_Ty(0));
+  		}
+  
+!  	static _Ty __CRTDECL max __GCCXML_AVOID_MACRO_EXPANSION() _THROW0()
+  		{	// return maximum value
+  		return (_Ty(0));
+  		}
+Index: list
+===================================================================
+RCS file: /cvsroot/GxInclude/Vc10/Include/list,v
+retrieving revision 1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
+*** list	18 Nov 2010 15:58:45 -0000	1.1
+--- list	18 Nov 2010 18:35:33 -0000	1.2
+*************** public:
+*** 536,542 ****
+  
+  		return (_Pnode);
+  		}
+! 
+  	template<class _Valty>
+  		_Nodeptr _Buynode(_Nodeptr _Next,
+  		_Nodeptr _Prev, _Valty&& _Val)
+--- 536,542 ----
+  
+  		return (_Pnode);
+  		}
+! #if 0 /* Disabled for gccxml */
+  	template<class _Valty>
+  		_Nodeptr _Buynode(_Nodeptr _Next,
+  		_Nodeptr _Prev, _Valty&& _Val)
+*************** public:
+*** 555,561 ****
+  
+  		return (_Pnode);
+  		}
+! 
+  	static _Nodepref _Nextnode(_Nodeptr _Pnode)
+  		{	// return reference to successor pointer in node
+  		return ((_Nodepref)(*_Pnode)._Next);
+--- 555,561 ----
+  
+  		return (_Pnode);
+  		}
+! #endif /* Disabled for gccxml */
+  	static _Nodepref _Nextnode(_Nodeptr _Pnode)
+  		{	// return reference to successor pointer in node
+  		return ((_Nodepref)(*_Pnode)._Next);
+*************** public:
+*** 683,689 ****
+  		_RERAISE;
+  		_CATCH_END
+  		}
+! 
+  	list(_Myt&& _Right)
+  		: _Mybase(_Right._Alval)
+  		{	// construct list by copying _Right
+--- 683,689 ----
+  		_RERAISE;
+  		_CATCH_END
+  		}
+! #if 0 /* Disabled for gccxml */
+  	list(_Myt&& _Right)
+  		: _Mybase(_Right._Alval)
+  		{	// construct list by copying _Right
+*************** public:
+*** 764,770 ****
+  		{	// exchange contents with movable _Right
+  		_Assign_rv(_STD forward<_Myt>(_Right));
+  		}
+! 
+  	~list()
+  		{	// destroy the object
+  		_Tidy();
+--- 764,770 ----
+  		{	// exchange contents with movable _Right
+  		_Assign_rv(_STD forward<_Myt>(_Right));
+  		}
+! #endif /* Disabled for gccxml */
+  	~list()
+  		{	// destroy the object
+  		_Tidy();
+*************** public:
+*** 1455,1463 ****
+--- 1455,1465 ----
+  
+  		else
+  			{	// different allocator, copy nodes then erase source
++ #if 0 /* Disabled for gccxml */
+  			for (const_iterator _Next = _First; _Next != _Last; ++_Next)
+  				insert(_Where, (_Ty &&)*_Next);
+  			_Right.erase(_First, _Last);
++ #endif /* Disabled for gccxml */
+  			}
+  		}
+  
+*************** template<class _Ty,
+*** 1549,1555 ****
+  	{	// swap _Left and _Right lists
+  	_Left.swap(_Right);
+  	}
+! 
+  template<class _Ty,
+  	class _Alloc> inline
+  	void swap(list<_Ty, _Alloc>& _Left, list<_Ty, _Alloc>&& _Right)
+--- 1551,1557 ----
+  	{	// swap _Left and _Right lists
+  	_Left.swap(_Right);
+  	}
+! #if 0 /* Disabled for gccxml */
+  template<class _Ty,
+  	class _Alloc> inline
+  	void swap(list<_Ty, _Alloc>& _Left, list<_Ty, _Alloc>&& _Right)
+*************** template<class _Ty,
+*** 1565,1571 ****
+  	typedef list<_Ty, _Alloc> _Myt;
+  	_Right.swap(_STD forward<_Myt>(_Left));
+  	}
+! 
+  template<class _Ty,
+  	class _Alloc> inline
+  	bool operator==(const list<_Ty, _Alloc>& _Left,
+--- 1567,1573 ----
+  	typedef list<_Ty, _Alloc> _Myt;
+  	_Right.swap(_STD forward<_Myt>(_Left));
+  	}
+! #endif /* Disabled for gccxml */
+  template<class _Ty,
+  	class _Alloc> inline
+  	bool operator==(const list<_Ty, _Alloc>& _Left,
+Index: map
+===================================================================
+RCS file: /cvsroot/GxInclude/Vc10/Include/map,v
+retrieving revision 1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
+*** map	18 Nov 2010 15:58:45 -0000	1.1
+--- map	18 Nov 2010 18:35:33 -0000	1.2
+*************** public:
+*** 149,155 ****
+  		_Mybase::operator=(_Right);
+  		return (*this);
+  		}
+! 
+  	map(_Myt&& _Right)
+  		: _Mybase(_STD move(_Right))
+  		{	// construct map by moving _Right
+--- 149,155 ----
+  		_Mybase::operator=(_Right);
+  		return (*this);
+  		}
+! #if 0 /* Disabled for gccxml */
+  	map(_Myt&& _Right)
+  		: _Mybase(_STD move(_Right))
+  		{	// construct map by moving _Right
+*************** public:
+*** 172,188 ****
+  					mapped_type()));
+  		return ((*_Where).second);
+  		}
+! 
+  	void swap(_Myt& _Right)
+  		{	// exchange contents with non-movable _Right
+  		_Mybase::swap(_Right);
+  		}
+! 
+  	void swap(_Myt&& _Right)
+  		{	// exchange contents with movable _Right
+  		_Mybase::swap(_STD move(_Right));
+  		}
+! 
+   #if _HAS_CPP0X
+  
+   #else /* _HAS_CPP0X */
+--- 172,188 ----
+  					mapped_type()));
+  		return ((*_Where).second);
+  		}
+! #endif /* Disabled for gccxml */
+  	void swap(_Myt& _Right)
+  		{	// exchange contents with non-movable _Right
+  		_Mybase::swap(_Right);
+  		}
+! #if 0 /* Disabled for gccxml */
+  	void swap(_Myt&& _Right)
+  		{	// exchange contents with movable _Right
+  		_Mybase::swap(_STD move(_Right));
+  		}
+! #endif /* Disabled for gccxml */
+   #if _HAS_CPP0X
+  
+   #else /* _HAS_CPP0X */
+*************** template<class _Kty,
+*** 246,252 ****
+  	{	// swap _Left and _Right maps
+  	_Left.swap(_Right);
+  	}
+! 
+  template<class _Kty,
+  	class _Ty,
+  	class _Pr,
+--- 246,252 ----
+  	{	// swap _Left and _Right maps
+  	_Left.swap(_Right);
+  	}
+! #if 0 /* Disabled for gccxml */
+  template<class _Kty,
+  	class _Ty,
+  	class _Pr,
+*************** template<class _Kty,
+*** 268,274 ****
+  	typedef map<_Kty, _Ty, _Pr, _Alloc> _Myt;
+  	_Right.swap(_STD forward<_Myt>(_Left));
+  	}
+! 
+  		// TEMPLATE CLASS multimap
+  template<class _Kty,
+  	class _Ty,
+--- 268,274 ----
+  	typedef map<_Kty, _Ty, _Pr, _Alloc> _Myt;
+  	_Right.swap(_STD forward<_Myt>(_Left));
+  	}
+! #endif /* Disabled for gccxml */
+  		// TEMPLATE CLASS multimap
+  template<class _Kty,
+  	class _Ty,
+*************** public:
+*** 346,352 ****
+  		_Mybase::operator=(_Right);
+  		return (*this);
+  		}
+! 
+  	multimap(_Myt&& _Right)
+  		: _Mybase(_STD move(_Right))
+  		{	// construct map by moving _Right
+--- 346,352 ----
+  		_Mybase::operator=(_Right);
+  		return (*this);
+  		}
+! #if 0 /* Disabled for gccxml */
+  	multimap(_Myt&& _Right)
+  		: _Mybase(_STD move(_Right))
+  		{	// construct map by moving _Right
+*************** public:
+*** 372,388 ****
+  		{	// insert a {key, mapped} value, with hint
+  		return (_Mybase::insert(_Where, _STD forward<_Valty>(_Val)));
+  		}
+! 
+  	void swap(_Myt& _Right)
+  		{	// exchange contents with non-movable _Right
+  		_Mybase::swap(_Right);
+  		}
+! 
+  	void swap(_Myt&& _Right)
+  		{	// exchange contents with movable _Right
+  		_Mybase::swap(_STD move(_Right));
+  		}
+! 
+   #if _HAS_CPP0X
+  
+   #else /* _HAS_CPP0X */
+--- 372,388 ----
+  		{	// insert a {key, mapped} value, with hint
+  		return (_Mybase::insert(_Where, _STD forward<_Valty>(_Val)));
+  		}
+! #endif /* Disabled for gccxml */
+  	void swap(_Myt& _Right)
+  		{	// exchange contents with non-movable _Right
+  		_Mybase::swap(_Right);
+  		}
+! #if 0 /* Disabled for gccxml */
+  	void swap(_Myt&& _Right)
+  		{	// exchange contents with movable _Right
+  		_Mybase::swap(_STD move(_Right));
+  		}
+! #endif /* Disabled for gccxml */
+   #if _HAS_CPP0X
+  
+   #else /* _HAS_CPP0X */
+*************** template<class _Kty,
+*** 434,440 ****
+  	{	// swap _Left and _Right multimaps
+  	_Left.swap(_Right);
+  	}
+! 
+  template<class _Kty,
+  	class _Ty,
+  	class _Pr,
+--- 434,440 ----
+  	{	// swap _Left and _Right multimaps
+  	_Left.swap(_Right);
+  	}
+! #if 0 /* Disabled for gccxml */
+  template<class _Kty,
+  	class _Ty,
+  	class _Pr,
+*************** template<class _Kty,
+*** 456,461 ****
+--- 456,462 ----
+  	typedef multimap<_Kty, _Ty, _Pr, _Alloc> _Myt;
+  	_Right.swap(_STD forward<_Myt>(_Left));
+  	}
++ #endif /* Disabled for gccxml */
+  _STD_END
+   #pragma warning(pop)
+   #pragma pack(pop)
+Index: memory
+===================================================================
+RCS file: /cvsroot/GxInclude/Vc10/Include/memory,v
+retrieving revision 1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
+*** memory	18 Nov 2010 15:58:45 -0000	1.1
+--- memory	18 Nov 2010 18:35:33 -0000	1.2
+*************** template<class _InIt,
+*** 413,419 ****
+  	return (_Uninit_copy(_First, _Last, _Dest, _Al,
+  		_Ptr_cat(_First, _Dest)));
+  	}
+! 
+  		// TEMPLATE FUNCTION _Uninitialized_move WITH ALLOCATOR
+  template<class _InIt,
+  	class _FwdIt,
+--- 413,419 ----
+  	return (_Uninit_copy(_First, _Last, _Dest, _Al,
+  		_Ptr_cat(_First, _Dest)));
+  	}
+! #if 0 /* Disabled for gccxml */
+  		// TEMPLATE FUNCTION _Uninitialized_move WITH ALLOCATOR
+  template<class _InIt,
+  	class _FwdIt,
+*************** template<class _InIt,
+*** 436,442 ****
+  	_CATCH_END
+  	return (_Dest);
+  	}
+! 
+  template<class _InIt,
+  	class _FwdIt,
+  	class _Alloc,
+--- 436,442 ----
+  	_CATCH_END
+  	return (_Dest);
+  	}
+! #endif /* Disabled for gccxml */
+  template<class _InIt,
+  	class _FwdIt,
+  	class _Alloc,
+*************** public:
+*** 771,777 ****
+  			}
+  		return (*this);
+  		}
+! 
+  	_Temp_iterator<_Ty>& operator=(_Ty&& _Val)
+  		{	// move or construct value into active buffer, and increment
+  		if (_Pbuf->_Current < _Pbuf->_Hiwater)
+--- 771,777 ----
+  			}
+  		return (*this);
+  		}
+! #if 0 /* Disabled for gccxml */
+  	_Temp_iterator<_Ty>& operator=(_Ty&& _Val)
+  		{	// move or construct value into active buffer, and increment
+  		if (_Pbuf->_Current < _Pbuf->_Hiwater)
+*************** public:
+*** 785,791 ****
+  			}
+  		return (*this);
+  		}
+! 
+  	_Temp_iterator<_Ty>& operator*()
+  		{	// pretend to return designated value
+  		return (*this);
+--- 785,791 ----
+  			}
+  		return (*this);
+  		}
+! #endif /* Disabled for gccxml */
+  	_Temp_iterator<_Ty>& operator*()
+  		{	// pretend to return designated value
+  		return (*this);
+*************** public:
+*** 1225,1231 ****
+  		: _Ptr(0), _Rep(0)
+  		{	// construct
+  		}
+! 
+  	_Ptr_base(_Myt&& _Right)
+  		: _Ptr(0), _Rep(0)
+  		{	// construct _Ptr_base object that takes resource from _Right
+--- 1225,1231 ----
+  		: _Ptr(0), _Rep(0)
+  		{	// construct
+  		}
+! #if 0 /* Disabled for gccxml */
+  	_Ptr_base(_Myt&& _Right)
+  		: _Ptr(0), _Rep(0)
+  		{	// construct _Ptr_base object that takes resource from _Right
+*************** public:
+*** 1251,1257 ****
+  		if (this != &_Right)
+  			_Swap(_Right);
+  		}
+! 
+  	long use_count() const
+  		{	// return use count
+  		return (_Rep ? _Rep->_Use_count() : 0);
+--- 1251,1257 ----
+  		if (this != &_Right)
+  			_Swap(_Right);
+  		}
+! #endif /* Disabled for gccxml */
+  	long use_count() const
+  		{	// return use count
+  		return (_Rep ? _Rep->_Use_count() : 0);
+*************** public:
+*** 1522,1528 ****
+  		{	// construct shared_ptr object for dynamic_pointer_cast
+  		this->_Reset(_Other, _Tag);
+  		}
+! 
+  	shared_ptr(_Myt&& _Right)
+  		: _Mybase(_STD forward<_Myt>(_Right))
+  		{	// construct shared_ptr object that takes resource from _Right
+--- 1522,1528 ----
+  		{	// construct shared_ptr object for dynamic_pointer_cast
+  		this->_Reset(_Other, _Tag);
+  		}
+! #if 0 /* Disabled for gccxml */
+  	shared_ptr(_Myt&& _Right)
+  		: _Mybase(_STD forward<_Myt>(_Right))
+  		{	// construct shared_ptr object that takes resource from _Right
+*************** public:
+*** 1535,1541 ****
+  		: _Mybase(_STD forward<shared_ptr<_Ty2> >(_Right))
+  		{	// construct shared_ptr object that takes resource from _Right
+  		}
+! 
+   #if _HAS_CPP0X
+  	template<class _Ux,
+  		class _Dx>
+--- 1535,1541 ----
+  		: _Mybase(_STD forward<shared_ptr<_Ty2> >(_Right))
+  		{	// construct shared_ptr object that takes resource from _Right
+  		}
+! #endif /* Disabled for gccxml */
+   #if _HAS_CPP0X
+  	template<class _Ux,
+  		class _Dx>
+*************** public:
+*** 1552,1558 ****
+  		return (*this);
+  		}
+   #endif /* _HAS_CPP0X */
+! 
+  	_Myt& operator=(_Myt&& _Right)
+  		{	// construct shared_ptr object that takes resource from _Right
+  		shared_ptr(_STD move(_Right)).swap(*this);
+--- 1552,1558 ----
+  		return (*this);
+  		}
+   #endif /* _HAS_CPP0X */
+! #if 0 /* Disabled for gccxml */
+  	_Myt& operator=(_Myt&& _Right)
+  		{	// construct shared_ptr object that takes resource from _Right
+  		shared_ptr(_STD move(_Right)).swap(*this);
+*************** public:
+*** 1570,1576 ****
+  		{	// exchange contents with movable _Right
+  		_Mybase::swap(_STD move(_Right));
+  		}
+! 
+  	~shared_ptr()
+  		{	// release resource
+  		this->_Decref();
+--- 1570,1576 ----
+  		{	// exchange contents with movable _Right
+  		_Mybase::swap(_STD move(_Right));
+  		}
+! #endif /* Disabled for gccxml */
+  	~shared_ptr()
+  		{	// release resource
+  		this->_Decref();
+*************** template<class _Ty>
+*** 1771,1777 ****
+  	{	// swap _Left and _Right shared_ptrs
+  	_Left.swap(_Right);
+  	}
+! 
+  template<class _Ty>
+  	void swap(shared_ptr<_Ty>& _Left,
+  		shared_ptr<_Ty>&& _Right)
+--- 1771,1777 ----
+  	{	// swap _Left and _Right shared_ptrs
+  	_Left.swap(_Right);
+  	}
+! #if 0 /* Disabled for gccxml */
+  template<class _Ty>
+  	void swap(shared_ptr<_Ty>& _Left,
+  		shared_ptr<_Ty>&& _Right)
+*************** template<class _Ty>
+*** 1785,1791 ****
+  	{	// swap _Left and _Right shared_ptrs
+  	_Right.swap(_Left);
+  	}
+! 
+  template<class _Ty1,
+  	class _Ty2>
+  	shared_ptr<_Ty1> static_pointer_cast(const shared_ptr<_Ty2>& _Other)
+--- 1785,1791 ----
+  	{	// swap _Left and _Right shared_ptrs
+  	_Right.swap(_Left);
+  	}
+! #endif /* Disabled for gccxml */
+  template<class _Ty1,
+  	class _Ty2>
+  	shared_ptr<_Ty1> static_pointer_cast(const shared_ptr<_Ty2>& _Other)
+*************** public:
+*** 2238,2244 ****
+  		: _Mybase(_Ptr, _Dt)
+  		{	// construct with pointer and (maybe const) deleter&
+  		}
+! 
+  	unique_ptr(pointer _Ptr, typename tr1::remove_reference<_Dx>::type&& _Dt)
+  		: _Mybase(_Ptr, _STD move(_Dt))
+  		{	// construct by moving deleter
+--- 2238,2244 ----
+  		: _Mybase(_Ptr, _Dt)
+  		{	// construct with pointer and (maybe const) deleter&
+  		}
+! #if 0 /* Disabled for gccxml */
+  	unique_ptr(pointer _Ptr, typename tr1::remove_reference<_Dx>::type&& _Dt)
+  		: _Mybase(_Ptr, _STD move(_Dt))
+  		{	// construct by moving deleter
+*************** public:
+*** 2288,2294 ****
+  				_Right.get_deleter());
+  			}
+  		}
+! 
+  	void swap(_Myt& _Right)
+  		{	// swap elements
+  		_Swap_adl(this->_Myptr, _Right._Myptr);
+--- 2288,2294 ----
+  				_Right.get_deleter());
+  			}
+  		}
+! #endif /* Disabled for gccxml */
+  	void swap(_Myt& _Right)
+  		{	// swap elements
+  		_Swap_adl(this->_Myptr, _Right._Myptr);
+*************** public:
+*** 2394,2399 ****
+--- 2394,2400 ----
+  		}
+  
+  public:
++ #if 0 /* Disabled for gccxml */
+  	unique_ptr(pointer _Ptr, typename tr1::remove_reference<_Dx>::type&& _Dt)
+  		: _Mybase(_Ptr, _STD move(_Dt))
+  		{	// construct by moving deleter
+*************** public:
+*** 2436,2442 ****
+  				_Right.get_deleter());
+  			}
+  		}
+! 
+   #if defined(_NATIVE_NULLPTR_SUPPORTED) \
+  	&& !defined(_DO_NOT_USE_NULLPTR_IN_STL)
+  	unique_ptr(_STD nullptr_t)
+--- 2437,2443 ----
+  				_Right.get_deleter());
+  			}
+  		}
+! #endif /* Disabled for gccxml */
+   #if defined(_NATIVE_NULLPTR_SUPPORTED) \
+  	&& !defined(_DO_NOT_USE_NULLPTR_IN_STL)
+  	unique_ptr(_STD nullptr_t)
+*************** template<class _Ty,
+*** 2538,2544 ****
+  	{	// swap _Left with _Right
+  	_Left.swap(_Right);
+  	}
+! 
+  template<class _Ty,
+  	class _Dx>
+  	void swap(unique_ptr<_Ty, _Dx>& _Left,
+--- 2539,2545 ----
+  	{	// swap _Left with _Right
+  	_Left.swap(_Right);
+  	}
+! #if 0 /* Disabled for gccxml */
+  template<class _Ty,
+  	class _Dx>
+  	void swap(unique_ptr<_Ty, _Dx>& _Left,
+*************** template<class _Ty,
+*** 2554,2560 ****
+  	{	// swap _Right with rvalue _Left
+  	_Right.swap(_Left);
+  	}
+! 
+  template<class _Ty1,
+  	class _Dx1,
+  	class _Ty2,
+--- 2555,2561 ----
+  	{	// swap _Right with rvalue _Left
+  	_Right.swap(_Left);
+  	}
+! #endif /* Disabled for gccxml */
+  template<class _Ty1,
+  	class _Dx1,
+  	class _Ty2,
+Index: ostream
+===================================================================
+RCS file: /cvsroot/GxInclude/Vc10/Include/ostream,v
+retrieving revision 1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
+*** ostream	18 Nov 2010 15:58:45 -0000	1.1
+--- ostream	18 Nov 2010 18:35:33 -0000	1.2
+*************** public:
+*** 56,62 ****
+  		if (_Addit)
+  			ios_base::_Addstd(this);	// suppress for basic_iostream
+  		}
+! 
+  	__CLR_OR_THIS_CALL basic_ostream(_Myt&& _Right)
+  		{	// construct by moving _Right
+  		_Myios::init();
+--- 56,62 ----
+  		if (_Addit)
+  			ios_base::_Addstd(this);	// suppress for basic_iostream
+  		}
+! #if 0 /* Disabled for gccxml */
+  	__CLR_OR_THIS_CALL basic_ostream(_Myt&& _Right)
+  		{	// construct by moving _Right
+  		_Myios::init();
+*************** public:
+*** 68,74 ****
+  		this->swap(_Right);
+  		return (*this);
+  		}
+! 
+  	void __CLR_OR_THIS_CALL swap(_Myt& _Right)
+  		{	// swap with _Right
+  		if (this != &_Right)
+--- 68,74 ----
+  		this->swap(_Right);
+  		return (*this);
+  		}
+! #endif /* Disabled for gccxml */
+  	void __CLR_OR_THIS_CALL swap(_Myt& _Right)
+  		{	// swap with _Right
+  		if (this != &_Right)
+*************** template<class _Traits> inline
+*** 960,966 ****
+  	{	// insert an unsigned char
+  	return (_Ostr << (char)_Ch);
+  	}
+! 
+  template<class _Elem,
+  	class _Traits,
+  	class _Ty> inline
+--- 960,966 ----
+  	{	// insert an unsigned char
+  	return (_Ostr << (char)_Ch);
+  	}
+! #if 0 /* Disabled for gccxml */
+  template<class _Elem,
+  	class _Traits,
+  	class _Ty> inline
+*************** template<class _Elem,
+*** 969,975 ****
+  	{	// insert to rvalue stream
+  	return (_Ostr << _Val);
+  	}
+! 
+  		// MANIPULATORS
+  template<class _Elem,
+  	class _Traits> inline
+--- 969,975 ----
+  	{	// insert to rvalue stream
+  	return (_Ostr << _Val);
+  	}
+! #endif /* Disabled for gccxml */
+  		// MANIPULATORS
+  template<class _Elem,
+  	class _Traits> inline
+Index: queue
+===================================================================
+RCS file: /cvsroot/GxInclude/Vc10/Include/queue,v
+retrieving revision 1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
+*** queue	18 Nov 2010 15:58:45 -0000	1.1
+--- queue	18 Nov 2010 18:35:33 -0000	1.2
+*************** public:
+*** 44,50 ****
+  		c = _Right.c;
+  		return (*this);
+  		}
+! 
+  	queue(_Myt&& _Right)
+  		: c(_STD move(_Right.c))
+  		{	// construct by moving _Right
+--- 44,50 ----
+  		c = _Right.c;
+  		return (*this);
+  		}
+! #if 0 /* Disabled for gccxml */
+  	queue(_Myt&& _Right)
+  		: c(_STD move(_Right.c))
+  		{	// construct by moving _Right
+*************** public:
+*** 76,82 ****
+  		{	// exchange contents with movable _Right
+  		c.swap(_STD move(_Right.c));
+  		}
+! 
+  	bool empty() const
+  		{	// test if queue is empty
+  		return (c.empty());
+--- 76,82 ----
+  		{	// exchange contents with movable _Right
+  		c.swap(_STD move(_Right.c));
+  		}
+! #endif /* Disabled for gccxml */
+  	bool empty() const
+  		{	// test if queue is empty
+  		return (c.empty());
+*************** template<class _Ty,
+*** 139,145 ****
+  	{	// swap _Left and _Right queues
+  	_Left.swap(_Right);
+  	}
+! 
+  template<class _Ty,
+  	class _Container> inline
+  	void swap(queue<_Ty, _Container>& _Left,
+--- 139,145 ----
+  	{	// swap _Left and _Right queues
+  	_Left.swap(_Right);
+  	}
+! #if 0 /* Disabled for gccxml */
+  template<class _Ty,
+  	class _Container> inline
+  	void swap(queue<_Ty, _Container>& _Left,
+*************** template<class _Ty,
+*** 157,163 ****
+  	typedef queue<_Ty, _Container> _Myt;
+  	_Right.swap(_STD forward<_Myt>(_Left));
+  	}
+! 
+  template<class _Ty,
+  	class _Container> inline
+  	bool operator==(const queue<_Ty, _Container>& _Left,
+--- 157,163 ----
+  	typedef queue<_Ty, _Container> _Myt;
+  	_Right.swap(_STD forward<_Myt>(_Left));
+  	}
+! #endif /* Disabled for gccxml */
+  template<class _Ty,
+  	class _Container> inline
+  	bool operator==(const queue<_Ty, _Container>& _Left,
+*************** public:
+*** 270,276 ****
+  		comp = _Right.comp;
+  		return (*this);
+  		}
+! 
+  	priority_queue(_Myt&& _Right)
+  		: c(_STD move(_Right.c)), comp(_STD move(_Right.comp))
+  		{	// construct by moving _Right
+--- 270,276 ----
+  		comp = _Right.comp;
+  		return (*this);
+  		}
+! #if 0 /* Disabled for gccxml */
+  	priority_queue(_Myt&& _Right)
+  		: c(_STD move(_Right.c)), comp(_STD move(_Right.comp))
+  		{	// construct by moving _Right
+*************** public:
+*** 316,322 ****
+  		c.swap(_STD move(_Right.c));
+  		_Swap_adl(comp, _Right.comp);
+  		}
+! 
+  	bool empty() const
+  		{	// test if queue is empty
+  		return (c.empty());
+--- 316,322 ----
+  		c.swap(_STD move(_Right.c));
+  		_Swap_adl(comp, _Right.comp);
+  		}
+! #endif /* Disabled for gccxml */
+  	bool empty() const
+  		{	// test if queue is empty
+  		return (c.empty());
+*************** template<class _Ty,
+*** 369,375 ****
+  	{	// swap _Left and _Right queues
+  	_Left.swap(_Right);
+  	}
+! 
+  template<class _Ty,
+  	class _Container,
+  	class _Pr> inline
+--- 369,375 ----
+  	{	// swap _Left and _Right queues
+  	_Left.swap(_Right);
+  	}
+! #if 0 /* Disabled for gccxml */
+  template<class _Ty,
+  	class _Container,
+  	class _Pr> inline
+*************** template<class _Ty,
+*** 387,392 ****
+--- 387,393 ----
+  	{	// swap _Left and _Right queues
+  	_Right.swap(_Left);
+  	}
++ #endif /* Disabled for gccxml */
+  _STD_END
+   #pragma warning(pop)
+   #pragma pack(pop)
+Index: sal.h
+===================================================================
+RCS file: /cvsroot/GxInclude/Vc10/Include/sal.h,v
+retrieving revision 1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
+*** sal.h	18 Nov 2010 15:58:45 -0000	1.1
+--- sal.h	18 Nov 2010 18:40:02 -0000	1.2
+***************
+*** 108,114 ****
+  #ifdef _PREFAST_
+  // choose attribute or __declspec implementation
+  #ifndef _USE_DECLSPECS_FOR_SAL
+! #define _USE_DECLSPECS_FOR_SAL 0
+  #endif
+  
+  #if _USE_DECLSPECS_FOR_SAL
+--- 108,114 ----
+  #ifdef _PREFAST_
+  // choose attribute or __declspec implementation
+  #ifndef _USE_DECLSPECS_FOR_SAL
+! #define _USE_DECLSPECS_FOR_SAL 1
+  #endif
+  
+  #if _USE_DECLSPECS_FOR_SAL
+Index: set
+===================================================================
+RCS file: /cvsroot/GxInclude/Vc10/Include/set,v
+retrieving revision 1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
+*** set	18 Nov 2010 15:58:45 -0000	1.1
+--- set	18 Nov 2010 18:35:33 -0000	1.2
+*************** public:
+*** 124,130 ****
+  		_Mybase::operator=(_Right);
+  		return (*this);
+  		}
+! 
+  	set(_Myt&& _Right)
+  		: _Mybase(_STD move(_Right))
+  		{	// construct set by moving _Right
+--- 124,130 ----
+  		_Mybase::operator=(_Right);
+  		return (*this);
+  		}
+! #if 0 /* Disabled for gccxml */
+  	set(_Myt&& _Right)
+  		: _Mybase(_STD move(_Right))
+  		{	// construct set by moving _Right
+*************** public:
+*** 135,151 ****
+  		_Mybase::operator=(_STD move(_Right));
+  		return (*this);
+  		}
+! 
+  	void swap(_Myt& _Right)
+  		{	// exchange contents with non-movable _Right
+  		_Mybase::swap(_Right);
+  		}
+! 
+  	void swap(_Myt&& _Right)
+  		{	// exchange contents with movable _Right
+  		_Mybase::swap(_STD move(_Right));
+  		}
+! 
+   #if _HAS_CPP0X
+  
+   #else /* _HAS_CPP0X */
+--- 135,151 ----
+  		_Mybase::operator=(_STD move(_Right));
+  		return (*this);
+  		}
+! #endif /* Disabled for gccxml */
+  	void swap(_Myt& _Right)
+  		{	// exchange contents with non-movable _Right
+  		_Mybase::swap(_Right);
+  		}
+! #if 0 /* Disabled for gccxml */
+  	void swap(_Myt&& _Right)
+  		{	// exchange contents with movable _Right
+  		_Mybase::swap(_STD move(_Right));
+  		}
+! #endif /* Disabled for gccxml */
+   #if _HAS_CPP0X
+  
+   #else /* _HAS_CPP0X */
+*************** template<class _Kty,
+*** 178,184 ****
+  	{	// swap _Left and _Right sets
+  	_Left.swap(_Right);
+  	}
+! 
+  template<class _Kty,
+  	class _Pr,
+  	class _Alloc> inline
+--- 178,184 ----
+  	{	// swap _Left and _Right sets
+  	_Left.swap(_Right);
+  	}
+! #if 0 /* Disabled for gccxml */
+  template<class _Kty,
+  	class _Pr,
+  	class _Alloc> inline
+*************** template<class _Kty,
+*** 198,204 ****
+  	typedef set<_Kty, _Pr, _Alloc> _Myt;
+  	_Right.swap(_STD forward<_Myt>(_Left));
+  	}
+! 
+  		// TEMPLATE CLASS multiset
+  template<class _Kty,
+  	class _Pr = less<_Kty>,
+--- 198,204 ----
+  	typedef set<_Kty, _Pr, _Alloc> _Myt;
+  	_Right.swap(_STD forward<_Myt>(_Left));
+  	}
+! #endif /* Disabled for gccxml */
+  		// TEMPLATE CLASS multiset
+  template<class _Kty,
+  	class _Pr = less<_Kty>,
+*************** public:
+*** 274,280 ****
+  		_Mybase::operator=(_Right);
+  		return (*this);
+  		}
+! 
+  	multiset(_Myt&& _Right)
+  		: _Mybase(_STD move(_Right))
+  		{	// construct set by moving _Right
+--- 274,280 ----
+  		_Mybase::operator=(_Right);
+  		return (*this);
+  		}
+! #if 0 /* Disabled for gccxml */
+  	multiset(_Myt&& _Right)
+  		: _Mybase(_STD move(_Right))
+  		{	// construct set by moving _Right
+*************** public:
+*** 300,316 ****
+  		{	// insert a key value, with hint
+  		return (_Mybase::insert(_Where, _STD forward<_Valty>(_Val)));
+  		}
+! 
+  	void swap(_Myt& _Right)
+  		{	// exchange contents with non-movable _Right
+  		_Mybase::swap(_Right);
+  		}
+! 
+  	void swap(_Myt&& _Right)
+  		{	// exchange contents with movable _Right
+  		_Mybase::swap(_STD move(_Right));
+  		}
+! 
+   #if _HAS_CPP0X
+  
+   #else /* _HAS_CPP0X */
+--- 300,316 ----
+  		{	// insert a key value, with hint
+  		return (_Mybase::insert(_Where, _STD forward<_Valty>(_Val)));
+  		}
+! #endif /* Disabled for gccxml */
+  	void swap(_Myt& _Right)
+  		{	// exchange contents with non-movable _Right
+  		_Mybase::swap(_Right);
+  		}
+! #if 0 /* Disabled for gccxml */
+  	void swap(_Myt&& _Right)
+  		{	// exchange contents with movable _Right
+  		_Mybase::swap(_STD move(_Right));
+  		}
+! #endif /* Disabled for gccxml */
+   #if _HAS_CPP0X
+  
+   #else /* _HAS_CPP0X */
+*************** template<class _Kty,
+*** 361,367 ****
+  	{	// swap _Left and _Right multisets
+  	_Left.swap(_Right);
+  	}
+! 
+  template<class _Kty,
+  	class _Pr,
+  	class _Alloc> inline
+--- 361,367 ----
+  	{	// swap _Left and _Right multisets
+  	_Left.swap(_Right);
+  	}
+! #if 0 /* Disabled for gccxml */
+  template<class _Kty,
+  	class _Pr,
+  	class _Alloc> inline
+*************** template<class _Kty,
+*** 381,386 ****
+--- 381,387 ----
+  	typedef multiset<_Kty, _Pr, _Alloc> _Myt;
+  	_Right.swap(_STD forward<_Myt>(_Left));
+  	}
++ #endif /* Disabled for gccxml */
+  _STD_END
+   #pragma warning(pop)
+   #pragma pack(pop)
+Index: setjmp.h
+===================================================================
+RCS file: /cvsroot/GxInclude/Vc10/Include/setjmp.h,v
+retrieving revision 1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
+*** setjmp.h	18 Nov 2010 15:58:45 -0000	1.1
+--- setjmp.h	18 Nov 2010 18:43:33 -0000	1.2
+*************** int __cdecl setjmp(_Out_ jmp_buf _Buf);
+*** 249,255 ****
+  #ifdef  __cplusplus
+  extern "C"
+  {
+! _CRTIMP __declspec(noreturn) void __cdecl longjmp(_In_ jmp_buf _Buf, _In_ int _Value) throw(...);
+  }
+  #else
+  _CRTIMP __declspec(noreturn) void __cdecl longjmp(_In_ jmp_buf _Buf, _In_ int _Value);
+--- 249,255 ----
+  #ifdef  __cplusplus
+  extern "C"
+  {
+! _CRTIMP __declspec(noreturn) void __cdecl longjmp(_In_ jmp_buf _Buf, _In_ int _Value);
+  }
+  #else
+  _CRTIMP __declspec(noreturn) void __cdecl longjmp(_In_ jmp_buf _Buf, _In_ int _Value);
+Index: sstream
+===================================================================
+RCS file: /cvsroot/GxInclude/Vc10/Include/sstream,v
+retrieving revision 1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
+*** sstream	18 Nov 2010 15:58:45 -0000	1.1
+--- sstream	18 Nov 2010 18:35:33 -0000	1.2
+*************** public:
+*** 34,40 ****
+  		{	// construct character buffer from string, mode
+  		_Init(_Str.c_str(), _Str.size(), _Getstate(_Mode));
+  		}
+! 
+  	basic_stringbuf(_Myt&& _Right)
+  		{	// construct by moving _Right
+  		_Assign_rv(_STD forward<_Myt>(_Right));
+--- 34,40 ----
+  		{	// construct character buffer from string, mode
+  		_Init(_Str.c_str(), _Str.size(), _Getstate(_Mode));
+  		}
+! #if 0 /* Disabled for gccxml */
+  	basic_stringbuf(_Myt&& _Right)
+  		{	// construct by moving _Right
+  		_Assign_rv(_STD forward<_Myt>(_Right));
+*************** public:
+*** 54,60 ****
+  			this->swap(_Right);
+  			}
+  		}
+! 
+  	void swap(_Myt& _Right)
+  		{	// swap with _Right
+  		if (this != &_Right)
+--- 54,60 ----
+  			this->swap(_Right);
+  			}
+  		}
+! #endif /* Disabled for gccxml */
+  	void swap(_Myt& _Right)
+  		{	// swap with _Right
+  		if (this != &_Right)
+*************** public:
+*** 65,76 ****
+  			_Swap_adl(_Al, _Right._Al);
+  			}
+  		}
+! 
+  	void swap(_Myt&& _Right)
+  		{	// swap with _Right
+  		_Assign_rv(_STD forward<_Myt>(_Right));
+  		}
+! 
+  	virtual ~basic_stringbuf()
+  		{	// destroy the object
+  		_Tidy();
+--- 65,76 ----
+  			_Swap_adl(_Al, _Right._Al);
+  			}
+  		}
+! #if 0 /* Disabled for gccxml */
+  	void swap(_Myt&& _Right)
+  		{	// swap with _Right
+  		_Assign_rv(_STD forward<_Myt>(_Right));
+  		}
+! #endif /* Disabled for gccxml */
+  	virtual ~basic_stringbuf()
+  		{	// destroy the object
+  		_Tidy();
+*************** template<class _Elem,
+*** 381,387 ****
+  	{	// swap _Left and _Right basic_stringbufs
+  	_Left.swap(_Right);
+  	}
+! 
+  template<class _Elem,
+  	class _Traits,
+  	class _Alloc> inline
+--- 381,387 ----
+  	{	// swap _Left and _Right basic_stringbufs
+  	_Left.swap(_Right);
+  	}
+! #if 0 /* Disabled for gccxml */
+  template<class _Elem,
+  	class _Traits,
+  	class _Alloc> inline
+*************** template<class _Elem,
+*** 401,407 ****
+  	typedef basic_stringbuf<_Elem, _Traits, _Alloc> _Myt;
+  	_Right.swap(_STD forward<_Myt>(_Left));
+  	}
+! 
+  		// TEMPLATE CLASS basic_istringstream
+  template<class _Elem,
+  	class _Traits,
+--- 401,407 ----
+  	typedef basic_stringbuf<_Elem, _Traits, _Alloc> _Myt;
+  	_Right.swap(_STD forward<_Myt>(_Left));
+  	}
+! #endif /* Disabled for gccxml */
+  		// TEMPLATE CLASS basic_istringstream
+  template<class _Elem,
+  	class _Traits,
+*************** public:
+*** 428,434 ****
+  			_Stringbuffer(_Str, _Mode | ios_base::in)
+  		{	// construct readable character buffer from NTCS
+  		}
+! 
+  	basic_istringstream(_Myt&& _Right)
+  		: _Mybase(&_Stringbuffer)
+  		{	// construct by moving _Right
+--- 428,434 ----
+  			_Stringbuffer(_Str, _Mode | ios_base::in)
+  		{	// construct readable character buffer from NTCS
+  		}
+! #if 0 /* Disabled for gccxml */
+  	basic_istringstream(_Myt&& _Right)
+  		: _Mybase(&_Stringbuffer)
+  		{	// construct by moving _Right
+*************** public:
+*** 449,455 ****
+  			this->swap(_Right);
+  			}
+  		}
+! 
+  	void swap(_Myt& _Right)
+  		{	// swap with _Right
+  		if (this != &_Right)
+--- 449,455 ----
+  			this->swap(_Right);
+  			}
+  		}
+! #endif /* Disabled for gccxml */
+  	void swap(_Myt& _Right)
+  		{	// swap with _Right
+  		if (this != &_Right)
+*************** public:
+*** 458,469 ****
+  			_Stringbuffer.swap(_Right._Stringbuffer);
+  			}
+  		}
+! 
+  	void swap(_Myt&& _Right)
+  		{	// swap with _Right
+  		_Assign_rv(_STD forward<_Myt>(_Right));
+  		}
+! 
+  	virtual ~basic_istringstream()
+  		{	// destroy the object
+  		}
+--- 458,469 ----
+  			_Stringbuffer.swap(_Right._Stringbuffer);
+  			}
+  		}
+! #if 0 /* Disabled for gccxml */
+  	void swap(_Myt&& _Right)
+  		{	// swap with _Right
+  		_Assign_rv(_STD forward<_Myt>(_Right));
+  		}
+! #endif /* Disabled for gccxml */
+  	virtual ~basic_istringstream()
+  		{	// destroy the object
+  		}
+*************** template<class _Elem,
+*** 496,502 ****
+  	{	// swap _Left and _Right basic_istringstreams
+  	_Left.swap(_Right);
+  	}
+! 
+  template<class _Elem,
+  	class _Traits,
+  	class _Alloc> inline
+--- 496,502 ----
+  	{	// swap _Left and _Right basic_istringstreams
+  	_Left.swap(_Right);
+  	}
+! #if 0 /* Disabled for gccxml */
+  template<class _Elem,
+  	class _Traits,
+  	class _Alloc> inline
+*************** template<class _Elem,
+*** 516,522 ****
+  	typedef basic_istringstream<_Elem, _Traits> _Myt;
+  	_Right.swap(_STD forward<_Myt>(_Left));
+  	}
+! 
+  		// TEMPLATE CLASS basic_ostringstream
+  template<class _Elem,
+  	class _Traits,
+--- 516,522 ----
+  	typedef basic_istringstream<_Elem, _Traits> _Myt;
+  	_Right.swap(_STD forward<_Myt>(_Left));
+  	}
+! #endif /* Disabled for gccxml */
+  		// TEMPLATE CLASS basic_ostringstream
+  template<class _Elem,
+  	class _Traits,
+*************** public:
+*** 543,549 ****
+  			_Stringbuffer(_Str, _Mode | ios_base::out)
+  		{	// construct writable character buffer from NTCS
+  		}
+! 
+  	basic_ostringstream(_Myt&& _Right)
+  		: _Mybase(&_Stringbuffer)
+  		{	// construct by moving _Right
+--- 543,549 ----
+  			_Stringbuffer(_Str, _Mode | ios_base::out)
+  		{	// construct writable character buffer from NTCS
+  		}
+! #if 0 /* Disabled for gccxml */
+  	basic_ostringstream(_Myt&& _Right)
+  		: _Mybase(&_Stringbuffer)
+  		{	// construct by moving _Right
+*************** public:
+*** 564,570 ****
+  			this->swap(_Right);
+  			}
+  		}
+! 
+  	void swap(_Myt& _Right)
+  		{	// swap with _Right
+  		if (this != &_Right)
+--- 564,570 ----
+  			this->swap(_Right);
+  			}
+  		}
+! #endif /* Disabled for gccxml */
+  	void swap(_Myt& _Right)
+  		{	// swap with _Right
+  		if (this != &_Right)
+*************** public:
+*** 573,584 ****
+  			_Stringbuffer.swap(_Right._Stringbuffer);
+  			}
+  		}
+! 
+  	void swap(_Myt&& _Right)
+  		{	// swap with _Right
+  		_Assign_rv(_STD forward<_Myt>(_Right));
+  		}
+! 
+  	virtual ~basic_ostringstream()
+  		{	// destroy the object
+  		}
+--- 573,584 ----
+  			_Stringbuffer.swap(_Right._Stringbuffer);
+  			}
+  		}
+! #if 0 /* Disabled for gccxml */
+  	void swap(_Myt&& _Right)
+  		{	// swap with _Right
+  		_Assign_rv(_STD forward<_Myt>(_Right));
+  		}
+! #endif /* Disabled for gccxml */
+  	virtual ~basic_ostringstream()
+  		{	// destroy the object
+  		}
+*************** template<class _Elem,
+*** 611,617 ****
+  	{	// swap _Left and _Right basic_ostringstreams
+  	_Left.swap(_Right);
+  	}
+! 
+  template<class _Elem,
+  	class _Traits,
+  	class _Alloc> inline
+--- 611,617 ----
+  	{	// swap _Left and _Right basic_ostringstreams
+  	_Left.swap(_Right);
+  	}
+! #if 0 /* Disabled for gccxml */
+  template<class _Elem,
+  	class _Traits,
+  	class _Alloc> inline
+*************** template<class _Elem,
+*** 631,637 ****
+  	typedef basic_ostringstream<_Elem, _Traits> _Myt;
+  	_Right.swap(_STD forward<_Myt>(_Left));
+  	}
+! 
+  		// TEMPLATE CLASS basic_stringstream
+  template<class _Elem,
+  	class _Traits,
+--- 631,637 ----
+  	typedef basic_ostringstream<_Elem, _Traits> _Myt;
+  	_Right.swap(_STD forward<_Myt>(_Left));
+  	}
+! #endif /* Disabled for gccxml */
+  		// TEMPLATE CLASS basic_stringstream
+  template<class _Elem,
+  	class _Traits,
+*************** public:
+*** 664,670 ****
+  			_Stringbuffer(_Str, _Mode)
+  		{	// construct character buffer from NTCS
+  		}
+! 
+  	basic_stringstream(_Myt&& _Right)
+  		: _Mybase(&_Stringbuffer)
+  		{	// construct by moving _Right
+--- 664,670 ----
+  			_Stringbuffer(_Str, _Mode)
+  		{	// construct character buffer from NTCS
+  		}
+! #if 0 /* Disabled for gccxml */
+  	basic_stringstream(_Myt&& _Right)
+  		: _Mybase(&_Stringbuffer)
+  		{	// construct by moving _Right
+*************** public:
+*** 685,691 ****
+  			this->swap(_Right);
+  			}
+  		}
+! 
+  	void swap(_Myt& _Right)
+  		{	// swap with _Right
+  		if (this != &_Right)
+--- 685,691 ----
+  			this->swap(_Right);
+  			}
+  		}
+! #endif /* Disabled for gccxml */
+  	void swap(_Myt& _Right)
+  		{	// swap with _Right
+  		if (this != &_Right)
+*************** public:
+*** 694,705 ****
+  			_Stringbuffer.swap(_Right._Stringbuffer);
+  			}
+  		}
+! 
+  	void swap(_Myt&& _Right)
+  		{	// swap with _Right
+  		_Assign_rv(_STD forward<_Myt>(_Right));
+  		}
+! 
+  	virtual ~basic_stringstream()
+  		{	// destroy the object
+  		}
+--- 694,705 ----
+  			_Stringbuffer.swap(_Right._Stringbuffer);
+  			}
+  		}
+! #if 0 /* Disabled for gccxml */
+  	void swap(_Myt&& _Right)
+  		{	// swap with _Right
+  		_Assign_rv(_STD forward<_Myt>(_Right));
+  		}
+! #endif /* Disabled for gccxml */
+  	virtual ~basic_stringstream()
+  		{	// destroy the object
+  		}
+*************** template<class _Elem,
+*** 732,738 ****
+  	{	// swap _Left and _Right basic_stringstreams
+  	_Left.swap(_Right);
+  	}
+! 
+  template<class _Elem,
+  	class _Traits,
+  	class _Alloc> inline
+--- 732,738 ----
+  	{	// swap _Left and _Right basic_stringstreams
+  	_Left.swap(_Right);
+  	}
+! #if 0 /* Disabled for gccxml */
+  template<class _Elem,
+  	class _Traits,
+  	class _Alloc> inline
+*************** template<class _Elem,
+*** 752,757 ****
+--- 752,758 ----
+  	typedef basic_ostringstream<_Elem, _Traits> _Myt;
+  	_Right.swap(_STD forward<_Myt>(_Left));
+  	}
++ #endif /* Disabled for gccxml */
+  _STD_END
+   #pragma warning(pop)
+   #pragma pack(pop)
+Index: stack
+===================================================================
+RCS file: /cvsroot/GxInclude/Vc10/Include/stack,v
+retrieving revision 1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
+*** stack	18 Nov 2010 15:58:45 -0000	1.1
+--- stack	18 Nov 2010 18:35:33 -0000	1.2
+*************** public:
+*** 41,47 ****
+  		c = _Right.c;
+  		return (*this);
+  		}
+! 
+  	stack(_Myt&& _Right)
+  		: c(_STD move(_Right.c))
+  		{	// construct by moving _Right
+--- 41,47 ----
+  		c = _Right.c;
+  		return (*this);
+  		}
+! #if 0 /* Disabled for gccxml */
+  	stack(_Myt&& _Right)
+  		: c(_STD move(_Right.c))
+  		{	// construct by moving _Right
+*************** public:
+*** 73,79 ****
+  		{	// exchange contents with movable _Right
+  		c.swap(_STD move(_Right.c));
+  		}
+! 
+  	bool empty() const
+  		{	// test if stack is empty
+  		return (c.empty());
+--- 73,79 ----
+  		{	// exchange contents with movable _Right
+  		c.swap(_STD move(_Right.c));
+  		}
+! #endif /* Disabled for gccxml */
+  	bool empty() const
+  		{	// test if stack is empty
+  		return (c.empty());
+*************** template<class _Ty,
+*** 126,132 ****
+  	{	// swap _Left and _Right stacks
+  	_Left.swap(_Right);
+  	}
+! 
+  template<class _Ty,
+  	class _Container> inline
+  	void swap(stack<_Ty, _Container>& _Left,
+--- 126,132 ----
+  	{	// swap _Left and _Right stacks
+  	_Left.swap(_Right);
+  	}
+! #if 0 /* Disabled for gccxml */
+  template<class _Ty,
+  	class _Container> inline
+  	void swap(stack<_Ty, _Container>& _Left,
+*************** template<class _Ty,
+*** 144,150 ****
+  	typedef stack<_Ty, _Container> _Myt;
+  	_Right.swap(_STD forward<_Myt>(_Left));
+  	}
+! 
+  template<class _Ty,
+  	class _Container> inline
+  	bool operator==(const stack<_Ty, _Container>& _Left,
+--- 144,150 ----
+  	typedef stack<_Ty, _Container> _Myt;
+  	_Right.swap(_STD forward<_Myt>(_Left));
+  	}
+! #endif /* Disabled for gccxml */
+  template<class _Ty,
+  	class _Container> inline
+  	bool operator==(const stack<_Ty, _Container>& _Left,
+Index: stddef.h
+===================================================================
+RCS file: /cvsroot/GxInclude/Vc10/Include/stddef.h,v
+retrieving revision 1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
+*** stddef.h	18 Nov 2010 15:58:45 -0000	1.1
+--- stddef.h	18 Nov 2010 18:39:02 -0000	1.2
+*************** errno_t __cdecl _get_errno(_Out_ int * _
+*** 52,57 ****
+--- 52,59 ----
+  #endif
+  
+  /* Define offsetof macro */
++ #define offsetof(s,m) ((size_t)__builtin_offsetof(s,m))
++ #if 0 /* replaced for gccxml */
+  #ifdef __cplusplus
+  
+  #ifdef  _WIN64
+*************** errno_t __cdecl _get_errno(_Out_ int * _
+*** 69,74 ****
+--- 71,77 ----
+  #endif
+  
+  #endif	/* __cplusplus */
++ #endif  /* 0 */
+  
+  _CRTIMP extern unsigned long  __cdecl __threadid(void);
+  #define _threadid       (__threadid())
+Index: string
+===================================================================
+RCS file: /cvsroot/GxInclude/Vc10/Include/string,v
+retrieving revision 1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
+*** string	18 Nov 2010 15:58:45 -0000	1.1
+--- string	18 Nov 2010 18:35:33 -0000	1.2
+*************** template<class _Elem,
+*** 82,88 ****
+  	_Ans += _Right;
+  	return (_Ans);
+  	}
+! 
+  template<class _Elem,
+  	class _Traits,
+  	class _Alloc> inline
+--- 82,88 ----
+  	_Ans += _Right;
+  	return (_Ans);
+  	}
+! #if 0 /* Disabled for gccxml */
+  template<class _Elem,
+  	class _Traits,
+  	class _Alloc> inline
+*************** template<class _Elem,
+*** 156,162 ****
+  	{	// return string + character
+  	return (_STD move(_Left.append(1, _Right)));
+  	}
+! 
+  template<class _Elem,
+  	class _Traits,
+  	class _Alloc> inline
+--- 156,162 ----
+  	{	// return string + character
+  	return (_STD move(_Left.append(1, _Right)));
+  	}
+! #endif /* Disabled for gccxml */
+  template<class _Elem,
+  	class _Traits,
+  	class _Alloc> inline
+*************** template<class _Elem,
+*** 336,342 ****
+  	{	// test if string >= NTCS
+  	return (!(_Left < _Right));
+  	}
+! 
+  		// basic_string INSERTERS AND EXTRACTORS
+  template<class _Elem,
+  	class _Traits,
+--- 336,342 ----
+  	{	// test if string >= NTCS
+  	return (!(_Left < _Right));
+  	}
+! #if 0 /* Disabled for gccxml */
+  		// basic_string INSERTERS AND EXTRACTORS
+  template<class _Elem,
+  	class _Traits,
+*************** template<class _Elem,
+*** 451,457 ****
+  	{	// get characters into string, discard newline
+  	return (getline(_Istr, _Str, _Istr.widen('\n')));
+  	}
+! 
+  template<class _Elem,
+  	class _Traits,
+  	class _Alloc> inline
+--- 451,457 ----
+  	{	// get characters into string, discard newline
+  	return (getline(_Istr, _Str, _Istr.widen('\n')));
+  	}
+! #endif /* Disabled for gccxml */
+  template<class _Elem,
+  	class _Traits,
+  	class _Alloc> inline
+Index: strstream
+===================================================================
+RCS file: /cvsroot/GxInclude/Vc10/Include/strstream,v
+retrieving revision 1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
+*** strstream	18 Nov 2010 15:58:45 -0000	1.1
+--- strstream	18 Nov 2010 18:35:33 -0000	1.2
+*************** public:
+*** 70,76 ****
+  		}
+  
+    #pragma warning(pop)
+! 
+  	__CLR_OR_THIS_CALL strstreambuf(_Myt&& _Right)
+  		{	// construct by moving _Right
+  		_Init();
+--- 70,76 ----
+  		}
+  
+    #pragma warning(pop)
+! #if 0 /* Disabled for gccxml */
+  	__CLR_OR_THIS_CALL strstreambuf(_Myt&& _Right)
+  		{	// construct by moving _Right
+  		_Init();
+*************** public:
+*** 91,97 ****
+  			this->swap(_Right);
+  			}
+  		}
+! 
+  	void __CLR_OR_THIS_CALL swap(_Myt& _Right)
+  		{	// swap with _Right
+  		if (this != &_Right)
+--- 91,97 ----
+  			this->swap(_Right);
+  			}
+  		}
+! #endif /* Disabled for gccxml */
+  	void __CLR_OR_THIS_CALL swap(_Myt& _Right)
+  		{	// swap with _Right
+  		if (this != &_Right)
+*************** public:
+*** 105,116 ****
+  			_STD swap(_Pfree, _Right._Pfree);
+  			}
+  		}
+! 
+  	void __CLR_OR_THIS_CALL swap(_Myt&& _Right)
+  		{	// swap with _Right
+  		_Assign_rv(_STD forward<_Myt>(_Right));
+  		}
+! 
+  	virtual __CLR_OR_THIS_CALL ~strstreambuf()
+  		{	// destroy a strstreambuf
+  		_Tidy();
+--- 105,116 ----
+  			_STD swap(_Pfree, _Right._Pfree);
+  			}
+  		}
+! #if 0 /* Disabled for gccxml */
+  	void __CLR_OR_THIS_CALL swap(_Myt&& _Right)
+  		{	// swap with _Right
+  		_Assign_rv(_STD forward<_Myt>(_Right));
+  		}
+! #endif /* Disabled for gccxml */
+  	virtual __CLR_OR_THIS_CALL ~strstreambuf()
+  		{	// destroy a strstreambuf
+  		_Tidy();
+*************** inline void swap(strstreambuf& _Left, st
+*** 401,407 ****
+  	{	// swap _Left and _Right strstreambufs
+  	_Left.swap(_Right);
+  	}
+! 
+  inline void swap(strstreambuf& _Left, strstreambuf&& _Right)
+  	{	// swap _Left and _Right strstreambufs
+  	typedef strstreambuf _Myt;
+--- 401,407 ----
+  	{	// swap _Left and _Right strstreambufs
+  	_Left.swap(_Right);
+  	}
+! #if 0 /* Disabled for gccxml */
+  inline void swap(strstreambuf& _Left, strstreambuf&& _Right)
+  	{	// swap _Left and _Right strstreambufs
+  	typedef strstreambuf _Myt;
+*************** inline void swap(strstreambuf&& _Left, s
+*** 413,419 ****
+  	typedef strstreambuf _Myt;
+  	_Right.swap(_STD forward<_Myt>(_Left));
+  	}
+! 
+  		// CLASS istrstream
+  class istrstream
+  	: public istream
+--- 413,419 ----
+  	typedef strstreambuf _Myt;
+  	_Right.swap(_STD forward<_Myt>(_Left));
+  	}
+! #endif /* Disabled for gccxml */
+  		// CLASS istrstream
+  class istrstream
+  	: public istream
+*************** public:
+*** 444,450 ****
+  		: _Mybase(&_Strbuffer), _Strbuffer((const char *)_Ptr, _Count)
+  		{	// construct with [_Ptr, _Ptr + _Count)
+  		}
+! 
+  	__CLR_OR_THIS_CALL istrstream(_Myt&& _Right)
+  		: _Mybase(&_Strbuffer)
+  		{	// construct by moving _Right
+--- 444,450 ----
+  		: _Mybase(&_Strbuffer), _Strbuffer((const char *)_Ptr, _Count)
+  		{	// construct with [_Ptr, _Ptr + _Count)
+  		}
+! #if 0 /* Disabled for gccxml */
+  	__CLR_OR_THIS_CALL istrstream(_Myt&& _Right)
+  		: _Mybase(&_Strbuffer)
+  		{	// construct by moving _Right
+*************** public:
+*** 465,471 ****
+  			this->swap(_Right);
+  			}
+  		}
+! 
+  	void __CLR_OR_THIS_CALL swap(_Myt& _Right)
+  		{	// swap with _Right
+  		if (this != &_Right)
+--- 465,471 ----
+  			this->swap(_Right);
+  			}
+  		}
+! #endif /* Disabled for gccxml */
+  	void __CLR_OR_THIS_CALL swap(_Myt& _Right)
+  		{	// swap with _Right
+  		if (this != &_Right)
+*************** public:
+*** 474,485 ****
+  			_Strbuffer.swap(_Right._Strbuffer);
+  			}
+  		}
+! 
+  	void __CLR_OR_THIS_CALL swap(_Myt&& _Right)
+  		{	// swap with _Right
+  		_Assign_rv(_STD forward<_Myt>(_Right));
+  		}
+! 
+  	virtual __CLR_OR_THIS_CALL ~istrstream()
+  		{	// destroy an istrstream
+  		}
+--- 474,485 ----
+  			_Strbuffer.swap(_Right._Strbuffer);
+  			}
+  		}
+! #if 0 /* Disabled for gccxml */
+  	void __CLR_OR_THIS_CALL swap(_Myt&& _Right)
+  		{	// swap with _Right
+  		_Assign_rv(_STD forward<_Myt>(_Right));
+  		}
+! #endif /* Disabled for gccxml */
+  	virtual __CLR_OR_THIS_CALL ~istrstream()
+  		{	// destroy an istrstream
+  		}
+*************** inline void swap(istrstream& _Left, istr
+*** 503,509 ****
+  	{	// swap _Left and _Right istrstreams
+  	_Left.swap(_Right);
+  	}
+! 
+  inline void swap(istrstream& _Left, istrstream&& _Right)
+  	{	// swap _Left and _Right istrstreams
+  	typedef istrstream _Myt;
+--- 503,509 ----
+  	{	// swap _Left and _Right istrstreams
+  	_Left.swap(_Right);
+  	}
+! #if 0 /* Disabled for gccxml */
+  inline void swap(istrstream& _Left, istrstream&& _Right)
+  	{	// swap _Left and _Right istrstreams
+  	typedef istrstream _Myt;
+*************** inline void swap(istrstream&& _Left, ist
+*** 515,521 ****
+  	typedef istrstream _Myt;
+  	_Right.swap(_STD forward<_Myt>(_Left));
+  	}
+! 
+  		// CLASS ostrstream
+  class ostrstream
+  	: public ostream
+--- 515,521 ----
+  	typedef istrstream _Myt;
+  	_Right.swap(_STD forward<_Myt>(_Left));
+  	}
+! #endif /* Disabled for gccxml */
+  		// CLASS ostrstream
+  class ostrstream
+  	: public ostream
+*************** public:
+*** 540,546 ****
+  					? _Ptr : _Ptr + _CSTD strlen(_Ptr))
+  		{	// construct with [_Ptr, _Ptr + _Count)
+  		}
+! 
+  	__CLR_OR_THIS_CALL ostrstream(_Myt&& _Right)
+  		: _Mybase(&_Strbuffer)
+  		{	// construct by moving _Right
+--- 540,546 ----
+  					? _Ptr : _Ptr + _CSTD strlen(_Ptr))
+  		{	// construct with [_Ptr, _Ptr + _Count)
+  		}
+! #if 0 /* Disabled for gccxml */
+  	__CLR_OR_THIS_CALL ostrstream(_Myt&& _Right)
+  		: _Mybase(&_Strbuffer)
+  		{	// construct by moving _Right
+*************** public:
+*** 561,567 ****
+  			this->swap(_Right);
+  			}
+  		}
+! 
+  	void __CLR_OR_THIS_CALL swap(_Myt& _Right)
+  		{	// swap with _Right
+  		if (this != &_Right)
+--- 561,567 ----
+  			this->swap(_Right);
+  			}
+  		}
+! #endif /* Disabled for gccxml */
+  	void __CLR_OR_THIS_CALL swap(_Myt& _Right)
+  		{	// swap with _Right
+  		if (this != &_Right)
+*************** public:
+*** 570,581 ****
+  			_Strbuffer.swap(_Right._Strbuffer);
+  			}
+  		}
+! 
+  	void __CLR_OR_THIS_CALL swap(_Myt&& _Right)
+  		{	// swap with _Right
+  		_Assign_rv(_STD forward<_Myt>(_Right));
+  		}
+! 
+  	virtual __CLR_OR_THIS_CALL ~ostrstream()
+  		{	// destroy an ostrstream
+  		}
+--- 570,581 ----
+  			_Strbuffer.swap(_Right._Strbuffer);
+  			}
+  		}
+! #if 0 /* Disabled for gccxml */
+  	void __CLR_OR_THIS_CALL swap(_Myt&& _Right)
+  		{	// swap with _Right
+  		_Assign_rv(_STD forward<_Myt>(_Right));
+  		}
+! #endif /* Disabled for gccxml */
+  	virtual __CLR_OR_THIS_CALL ~ostrstream()
+  		{	// destroy an ostrstream
+  		}
+*************** inline void swap(ostrstream& _Left, ostr
+*** 609,615 ****
+  	{	// swap _Left and _Right ostrstreams
+  	_Left.swap(_Right);
+  	}
+! 
+  inline void swap(ostrstream& _Left, ostrstream&& _Right)
+  	{	// swap _Left and _Right ostrstreams
+  	typedef ostrstream _Myt;
+--- 609,615 ----
+  	{	// swap _Left and _Right ostrstreams
+  	_Left.swap(_Right);
+  	}
+! #if 0 /* Disabled for gccxml */
+  inline void swap(ostrstream& _Left, ostrstream&& _Right)
+  	{	// swap _Left and _Right ostrstreams
+  	typedef ostrstream _Myt;
+*************** inline void swap(ostrstream&& _Left, ost
+*** 621,627 ****
+  	typedef ostrstream _Myt;
+  	_Right.swap(_STD forward<_Myt>(_Left));
+  	}
+! 
+  		// CLASS strstream
+  class strstream
+  	: public iostream
+--- 621,627 ----
+  	typedef ostrstream _Myt;
+  	_Right.swap(_STD forward<_Myt>(_Left));
+  	}
+! #endif /* Disabled for gccxml */
+  		// CLASS strstream
+  class strstream
+  	: public iostream
+*************** public:
+*** 651,657 ****
+  					? _Ptr : _Ptr + _CSTD strlen(_Ptr))
+  		{	// construct with [_Ptr, _Ptr + _Count)
+  		}
+! 
+  	__CLR_OR_THIS_CALL strstream(_Myt&& _Right)
+  		: _Mybase(&_Strbuffer)
+  		{	// construct by moving _Right
+--- 651,657 ----
+  					? _Ptr : _Ptr + _CSTD strlen(_Ptr))
+  		{	// construct with [_Ptr, _Ptr + _Count)
+  		}
+! #if 0 /* Disabled for gccxml */
+  	__CLR_OR_THIS_CALL strstream(_Myt&& _Right)
+  		: _Mybase(&_Strbuffer)
+  		{	// construct by moving _Right
+*************** public:
+*** 672,678 ****
+  			this->swap(_Right);
+  			}
+  		}
+! 
+  	void __CLR_OR_THIS_CALL swap(_Myt& _Right)
+  		{	// swap with _Right
+  		if (this != &_Right)
+--- 672,678 ----
+  			this->swap(_Right);
+  			}
+  		}
+! #endif /* Disabled for gccxml */
+  	void __CLR_OR_THIS_CALL swap(_Myt& _Right)
+  		{	// swap with _Right
+  		if (this != &_Right)
+*************** public:
+*** 681,692 ****
+  			_Strbuffer.swap(_Right._Strbuffer);
+  			}
+  		}
+! 
+  	void __CLR_OR_THIS_CALL swap(_Myt&& _Right)
+  		{	// swap with _Right
+  		_Assign_rv(_STD forward<_Myt>(_Right));
+  		}
+! 
+  	virtual __CLR_OR_THIS_CALL ~strstream()
+  		{	// destroy a strstream
+  		}
+--- 681,692 ----
+  			_Strbuffer.swap(_Right._Strbuffer);
+  			}
+  		}
+! #if 0 /* Disabled for gccxml */
+  	void __CLR_OR_THIS_CALL swap(_Myt&& _Right)
+  		{	// swap with _Right
+  		_Assign_rv(_STD forward<_Myt>(_Right));
+  		}
+! #endif /* Disabled for gccxml */
+  	virtual __CLR_OR_THIS_CALL ~strstream()
+  		{	// destroy a strstream
+  		}
+*************** inline void swap(strstream& _Left, strst
+*** 720,726 ****
+  	{	// swap _Left and _Right strstreams
+  	_Left.swap(_Right);
+  	}
+! 
+  inline void swap(strstream& _Left, strstream&& _Right)
+  	{	// swap _Left and _Right strstreams
+  	typedef strstream _Myt;
+--- 720,726 ----
+  	{	// swap _Left and _Right strstreams
+  	_Left.swap(_Right);
+  	}
+! #if 0 /* Disabled for gccxml */
+  inline void swap(strstream& _Left, strstream&& _Right)
+  	{	// swap _Left and _Right strstreams
+  	typedef strstream _Myt;
+*************** inline void swap(strstream&& _Left, strs
+*** 732,737 ****
+--- 732,738 ----
+  	typedef strstream _Myt;
+  	_Right.swap(_STD forward<_Myt>(_Left));
+  	}
++ #endif /* Disabled for gccxml */
+  _STD_END
+  
+   #pragma pop_macro("new")
+Index: type_traits
+===================================================================
+RCS file: /cvsroot/GxInclude/Vc10/Include/type_traits,v
+retrieving revision 1.1
+diff -c -3 -p -r1.1 type_traits
+*** type_traits	18 Nov 2010 15:58:45 -0000	1.1
+--- type_traits	18 Nov 2010 19:38:34 -0000
+***************
+*** 12,17 ****
+--- 12,18 ----
+  	// COMPILER SUPPORT MACROS
+  
+  // VC++ V8 support
++ #if 0 /* Replaced for gccxml */
+    #define _IS_BASE_OF(_Base, _Der)	\
+  	: _Cat_base<__is_base_of(_Base, _Der)>
+    #define _IS_CONVERTIBLE(_From, _To)	\
+***************
+*** 46,51 ****
+--- 47,74 ----
+  	: _Cat_base<is_pod<_Ty>::value || __has_nothrow_assign(_Ty)>
+    #define _HAS_VIRTUAL_DESTRUCTOR(_Ty)	\
+  	: _Cat_base<__has_virtual_destructor(_Ty)>
++ #else /* Replaced for gccxml */
++   #define _IS_BASE_OF(_Base, _Der)
++   #define _IS_CONVERTIBLE(_From, _To)
++   #define _IS_UNION(_Ty)
++   #define _IS_CLASS(_Ty)
++   #define _IS_ENUM(_Ty)
++   #define _IS_POD(_Ty)
++   #define _IS_EMPTY(_Ty)
++   #define _IS_POLYMORPHIC(_Ty)
++   #define _IS_ABSTRACT(_Ty)
++   #define _IS_STANDARD_LAYOUT(_Ty)
++   #define _IS_TRIVIAL(_Ty)
++ 
++   #define _HAS_TRIVIAL_CONSTRUCTOR(_Ty)
++   #define _HAS_TRIVIAL_COPY(_Ty)
++   #define _HAS_TRIVIAL_ASSIGN(_Ty)
++   #define _HAS_TRIVIAL_DESTRUCTOR(_Ty)
++   #define _HAS_NOTHROW_CONSTRUCTOR(_Ty)
++   #define _HAS_NOTHROW_COPY(_Ty)
++   #define _HAS_NOTHROW_ASSIGN(_Ty)
++   #define _HAS_VIRTUAL_DESTRUCTOR(_Ty)
++ #endif /* Replaced for gccxml */
+  
+  _STD_BEGIN
+  	namespace tr1 {	// TR1 additions
+*************** template<class _Ty>
+*** 240,246 ****
+  template<class _Ty>
+  	struct add_rvalue_reference
+  	{	// add rvalue reference
+! 	typedef _Ty && type;
+  	};
+  
+  template<class _Ty>
+--- 263,270 ----
+  template<class _Ty>
+  	struct add_rvalue_reference
+  	{	// add rvalue reference
+! //	typedef _Ty && type;
+! 	typedef _Ty & type;
+  	};
+  
+  template<class _Ty>
+*************** template<class _Ty>
+*** 422,434 ****
+  	: false_type
+  	{	// determine whether _Ty is an rvalue reference
+  	};
+! 
+  template<class _Ty>
+  	struct is_rvalue_reference<_Ty&&>
+  	: true_type
+  	{	// determine whether _Ty is an rvalue reference
+  	};
+! 
+  	// TEMPLATE CLASS is_reference
+  template<class _Ty>
+  	struct is_reference
+--- 446,458 ----
+  	: false_type
+  	{	// determine whether _Ty is an rvalue reference
+  	};
+! #if 0 /* Disabled for gccxml */
+  template<class _Ty>
+  	struct is_rvalue_reference<_Ty&&>
+  	: true_type
+  	{	// determine whether _Ty is an rvalue reference
+  	};
+! #endif /* Disabled for gccxml */
+  	// TEMPLATE CLASS is_reference
+  template<class _Ty>
+  	struct is_reference
+Index: typeinfo
+===================================================================
+RCS file: /cvsroot/GxInclude/Vc10/Include/typeinfo,v
+retrieving revision 1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
+*** typeinfo	18 Nov 2010 15:58:45 -0000	1.1
+--- typeinfo	18 Nov 2010 18:37:20 -0000	1.2
+*************** struct __type_info_node {
+*** 40,45 ****
+--- 40,46 ----
+  
+  extern __type_info_node __type_info_root_node;
+  
++ namespace std {
+  class type_info {
+  public:
+   #if _HAS_CPP0X
+*************** private:
+*** 74,79 ****
+--- 75,82 ----
+      _CRTIMP_PURE static const char *__CLRCALL_OR_CDECL _Name_base(const type_info *,__type_info_node* __ptype_info_node);
+      _CRTIMP_PURE static void __CLRCALL_OR_CDECL _Type_info_dtor(type_info *);
+  };
++ }
++ using std::type_info;
+  
+   #if _HAS_EXCEPTIONS
+  
+Index: utility
+===================================================================
+RCS file: /cvsroot/GxInclude/Vc10/Include/utility,v
+retrieving revision 1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
+*** utility	18 Nov 2010 15:58:45 -0000	1.1
+--- utility	18 Nov 2010 18:35:33 -0000	1.2
+*************** template<class _Ty>
+*** 71,77 ****
+  		return (_Left);
+  		}
+  	};
+! 
+  	// TEMPLATE FUNCTION forward
+  template<class _Ty> inline
+  	_Ty&& forward(typename identity<_Ty>::type& _Arg)
+--- 71,77 ----
+  		return (_Left);
+  		}
+  	};
+! #if 0 /* Disabled for gccxml */
+  	// TEMPLATE FUNCTION forward
+  template<class _Ty> inline
+  	_Ty&& forward(typename identity<_Ty>::type& _Arg)
+*************** template<class _Ty> inline
+*** 94,107 ****
+  	{	// forward _Arg as movable
+  	return ((typename tr1::_Remove_reference<_Ty>::_Type&&)_Arg);
+  	}
+! 
+  		// TEMPLATE FUNCTION swap (from <algorithm>)
+  template<class _Ty> inline
+  	void swap(_Ty& _Left, _Ty& _Right)
+  	{	// exchange values stored at _Left and _Right
+  	_Ty _Tmp = _Move(_Left);
+  	_Left = _Move(_Right);
+  	_Right = _Move(_Tmp);
+  	}
+  
+  		// TEMPLATE FUNCTION _Swap_adl
+--- 94,109 ----
+  	{	// forward _Arg as movable
+  	return ((typename tr1::_Remove_reference<_Ty>::_Type&&)_Arg);
+  	}
+! #endif /* Disabled for gccxml */
+  		// TEMPLATE FUNCTION swap (from <algorithm>)
+  template<class _Ty> inline
+  	void swap(_Ty& _Left, _Ty& _Right)
+  	{	// exchange values stored at _Left and _Right
++ #if 0 /* Disabled for gccxml */
+  	_Ty _Tmp = _Move(_Left);
+  	_Left = _Move(_Right);
+  	_Right = _Move(_Tmp);
++ #endif /* Disabled for gccxml */
+  	}
+  
+  		// TEMPLATE FUNCTION _Swap_adl
+*************** template<class _Ty1,
+*** 138,144 ****
+  
+  	typedef typename tr1::remove_reference<_Ty1>::type _Ty1x;
+  	typedef typename tr1::remove_reference<_Ty2>::type _Ty2x;
+! 
+  	_Pair_base(_Ty1x&& _Val1, _Ty2x&& _Val2)
+  		: first(_STD move(_Val1)),
+  			second(_STD move(_Val2))
+--- 140,146 ----
+  
+  	typedef typename tr1::remove_reference<_Ty1>::type _Ty1x;
+  	typedef typename tr1::remove_reference<_Ty2>::type _Ty2x;
+! #if 0 /* Disabled for gccxml */
+  	_Pair_base(_Ty1x&& _Val1, _Ty2x&& _Val2)
+  		: first(_STD move(_Val1)),
+  			second(_STD move(_Val2))
+*************** template<class _Ty1,
+*** 162,168 ****
+  			second(_STD forward<_Other2>(_Val2))
+  		{	// construct from moved values
+  		}
+! 
+  	_Ty1 first;	// the first stored value
+  	_Ty2 second;	// the second stored value
+  	};
+--- 164,170 ----
+  			second(_STD forward<_Other2>(_Val2))
+  		{	// construct from moved values
+  		}
+! #endif /* Disabled for gccxml */
+  	_Ty1 first;	// the first stored value
+  	_Ty2 second;	// the second stored value
+  	};
+*************** template<class _Ty1,
+*** 220,226 ****
+  
+  	typedef typename tr1::remove_reference<_Ty1>::type _Ty1x;
+  	typedef typename tr1::remove_reference<_Ty2>::type _Ty2x;
+! 
+  	pair(_Ty1x&& _Val1, _Ty2x&& _Val2)
+  		: _Mybase(_STD move(_Val1),
+  			_STD move(_Val2))
+--- 222,228 ----
+  
+  	typedef typename tr1::remove_reference<_Ty1>::type _Ty1x;
+  	typedef typename tr1::remove_reference<_Ty2>::type _Ty2x;
+! #if 0 /* Disabled for gccxml */
+  	pair(_Ty1x&& _Val1, _Ty2x&& _Val2)
+  		: _Mybase(_STD move(_Val1),
+  			_STD move(_Val2))
+*************** template<class _Ty1,
+*** 270,275 ****
+--- 272,278 ----
+  			this->second = _STD move(_Right.second);
+  			}
+  		}
++ #endif /* Disabled for gccxml */
+  	};
+  
+  		// pair TEMPLATE FUNCTIONS
+*************** template<class _Ty1,
+*** 280,286 ****
+  	{	// swap _Left and _Right pairs
+  	_Left.swap(_Right);
+  	}
+! 
+  template<class _Ty1,
+  	class _Ty2> inline
+  	void swap(pair<_Ty1, _Ty2>& _Left, pair<_Ty1, _Ty2>&& _Right)
+--- 283,289 ----
+  	{	// swap _Left and _Right pairs
+  	_Left.swap(_Right);
+  	}
+! #if 0 /* Disabled for gccxml */
+  template<class _Ty1,
+  	class _Ty2> inline
+  	void swap(pair<_Ty1, _Ty2>& _Left, pair<_Ty1, _Ty2>&& _Right)
+*************** template<class _Ty1,
+*** 296,302 ****
+  	typedef pair<_Ty1, _Ty2> _Myt;
+  	_Right.swap(_STD forward<_Myt>(_Left));
+  	}
+! 
+  template<class _Ty1,
+  	class _Ty2> inline
+  	bool operator==(const pair<_Ty1, _Ty2>& _Left,
+--- 299,305 ----
+  	typedef pair<_Ty1, _Ty2> _Myt;
+  	_Right.swap(_STD forward<_Myt>(_Left));
+  	}
+! #endif /* Disabled for gccxml */
+  template<class _Ty1,
+  	class _Ty2> inline
+  	bool operator==(const pair<_Ty1, _Ty2>& _Left,
+*************** template<class _Ty1,
+*** 347,353 ****
+  	}
+  
+  	// TEMPLATE FUNCTION make_pair
+! 
+  template<class _Ty1,
+  	class _Ty2> inline
+  	pair<typename _Unrefwrap<_Ty1>::type,
+--- 350,356 ----
+  	}
+  
+  	// TEMPLATE FUNCTION make_pair
+! #if 0 /* Disabled for gccxml */
+  template<class _Ty1,
+  	class _Ty2> inline
+  	pair<typename _Unrefwrap<_Ty1>::type,
+*************** template<class _Ty1,
+*** 383,389 ****
+  	return (_Mypair(_STD forward<_Ty1>(_Val1),
+  		(typename _Unrefwrap<_Ty2>::type)_Val2));
+  	}
+! 
+  template<class _Ty1,
+  	class _Ty2> inline
+  	pair<typename _Unrefwrap<_Ty1>::type,
+--- 386,392 ----
+  	return (_Mypair(_STD forward<_Ty1>(_Val1),
+  		(typename _Unrefwrap<_Ty2>::type)_Val2));
+  	}
+! #endif /* Disabled for gccxml */
+  template<class _Ty1,
+  	class _Ty2> inline
+  	pair<typename _Unrefwrap<_Ty1>::type,
+Index: valarray
+===================================================================
+RCS file: /cvsroot/GxInclude/Vc10/Include/valarray,v
+retrieving revision 1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
+*** valarray	18 Nov 2010 15:58:45 -0000	1.1
+--- valarray	18 Nov 2010 18:35:33 -0000	1.2
+*************** public:
+*** 101,107 ****
+  		_Tidy();
+  		*this = _Indarr;
+  		}
+! 
+  	valarray(_Myt&& _Right)
+  		{	// construct by moving _Right
+  		_Tidy();
+--- 101,107 ----
+  		_Tidy();
+  		*this = _Indarr;
+  		}
+! #if 0 /* Disabled for gccxml */
+  	valarray(_Myt&& _Right)
+  		{	// construct by moving _Right
+  		_Tidy();
+*************** public:
+*** 129,135 ****
+  		{	// exchange contents with movable _Right
+  		_Assign_rv(_STD forward<_Myt>(_Right));
+  		}
+! 
+  	void swap(_Myt& _Right)
+  		{	// exchange contents with _Right
+  		if (this != &_Right)
+--- 129,135 ----
+  		{	// exchange contents with movable _Right
+  		_Assign_rv(_STD forward<_Myt>(_Right));
+  		}
+! #endif /* Disabled for gccxml */
+  	void swap(_Myt& _Right)
+  		{	// exchange contents with _Right
+  		if (this != &_Right)
+*************** private:
+*** 444,451 ****
+--- 444,453 ----
+  			_Myptr = _Allocate(_Newsize, (_Ty *)0);
+  
+  			_TRY_BEGIN
++ #if 0 /* Disabled for gccxml */
+  			for (size_t _Idx = 0; _Idx < _Newsize; ++_Idx, _Ptr += _Inc)
+  				_Construct(&_Myptr[_Idx], *_Ptr);
++ #endif /* Disabled for gccxml */
+  			_CATCH_ALL
+  			_Tidy(true);	// construction failed, clean up and reraise
+  			_RERAISE;
+*************** template<class _Ty> inline
+*** 479,485 ****
+  	{	// swap _Left and _Right valarrays
+  	_Left.swap(_Right);
+  	}
+! 
+  template<class _Ty> inline
+  	void swap(valarray<_Ty>& _Left,
+  		valarray<_Ty>&& _Right)
+--- 481,487 ----
+  	{	// swap _Left and _Right valarrays
+  	_Left.swap(_Right);
+  	}
+! #if 0 /* Disabled for gccxml */
+  template<class _Ty> inline
+  	void swap(valarray<_Ty>& _Left,
+  		valarray<_Ty>&& _Right)
+*************** template<class _Ty> inline
+*** 495,501 ****
+  	typedef valarray<_Ty> _Myt;
+  	_Right.swap(_STD forward<_Myt>(_Left));
+  	}
+! 
+   #if _HAS_CPP0X
+  template<class _Ty> inline
+  	_Ty *begin(valarray<_Ty>& _Array)
+--- 497,503 ----
+  	typedef valarray<_Ty> _Myt;
+  	_Right.swap(_STD forward<_Myt>(_Left));
+  	}
+! #endif /* Disabled for gccxml */
+   #if _HAS_CPP0X
+  template<class _Ty> inline
+  	_Ty *begin(valarray<_Ty>& _Array)
+Index: vector
+===================================================================
+RCS file: /cvsroot/GxInclude/Vc10/Include/vector,v
+retrieving revision 1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
+*** vector	18 Nov 2010 15:58:45 -0000	1.1
+--- vector	18 Nov 2010 18:35:33 -0000	1.2
+*************** public:
+*** 589,595 ****
+  			_CATCH_END
+  			}
+  		}
+! 
+  	vector(_Myt&& _Right)
+  		: _Mybase(_Right._Alval)
+  		{	// construct by moving _Right
+--- 589,595 ----
+  			_CATCH_END
+  			}
+  		}
+! #if 0 /* Disabled for gccxml */
+  	vector(_Myt&& _Right)
+  		: _Mybase(_Right._Alval)
+  		{	// construct by moving _Right
+*************** public:
+*** 699,705 ****
+  			_Assign_rv(_STD forward<_Myt>(_Right));
+  			}
+  		}
+! 
+  	~vector()
+  		{	// destroy the object
+  		_Tidy();
+--- 699,705 ----
+  			_Assign_rv(_STD forward<_Myt>(_Right));
+  			}
+  		}
+! #endif /* Disabled for gccxml */
+  	~vector()
+  		{	// destroy the object
+  		_Tidy();
+*************** template<class _Ty,
+*** 1463,1469 ****
+  	{	// swap _Left and _Right vectors
+  	_Left.swap(_Right);
+  	}
+! 
+  template<class _Ty,
+  	class _Alloc> inline
+  	void swap(vector<_Ty, _Alloc>& _Left, vector<_Ty, _Alloc>&& _Right)
+--- 1463,1469 ----
+  	{	// swap _Left and _Right vectors
+  	_Left.swap(_Right);
+  	}
+! #if 0 /* Disabled for gccxml */
+  template<class _Ty,
+  	class _Alloc> inline
+  	void swap(vector<_Ty, _Alloc>& _Left, vector<_Ty, _Alloc>&& _Right)
+*************** template<class _Ty,
+*** 1479,1485 ****
+  	typedef vector<_Ty, _Alloc> _Myt;
+  	_Right.swap(_STD forward<_Myt>(_Left));
+  	}
+! 
+  template<class _Ty,
+  	class _Alloc> inline
+  	bool operator==(const vector<_Ty, _Alloc>& _Left,
+--- 1479,1485 ----
+  	typedef vector<_Ty, _Alloc> _Myt;
+  	_Right.swap(_STD forward<_Myt>(_Left));
+  	}
+! #endif /* Disabled for gccxml */
+  template<class _Ty,
+  	class _Alloc> inline
+  	bool operator==(const vector<_Ty, _Alloc>& _Left,
+*************** public:
+*** 2146,2152 ****
+  		{	// initialize from [_First, _Last), input iterators
+  		insert(begin(), _First, _Last);
+  		}
+! 
+  	vector(_Myt&& _Right)
+  		: _Mybase(0, false, _Right.get_allocator())
+  		{	// construct by moving _Right
+--- 2146,2152 ----
+  		{	// initialize from [_First, _Last), input iterators
+  		insert(begin(), _First, _Last);
+  		}
+! #if 0 /* Disabled for gccxml */
+  	vector(_Myt&& _Right)
+  		: _Mybase(0, false, _Right.get_allocator())
+  		{	// construct by moving _Right
+*************** public:
+*** 2179,2185 ****
+  		{	// exchange contents with movable _Right
+  		_Assign_rv(_STD move(_Right));
+  		}
+! 
+  	~vector()
+  		{	// destroy the object
+  		this->_Mysize = 0;
+--- 2179,2185 ----
+  		{	// exchange contents with movable _Right
+  		_Assign_rv(_STD move(_Right));
+  		}
+! #endif /* Disabled for gccxml */
+  	~vector()
+  		{	// destroy the object
+  		this->_Mysize = 0;
+Index: xdebug
+===================================================================
+RCS file: /cvsroot/GxInclude/Vc10/Include/xdebug,v
+retrieving revision 1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
+*** xdebug	18 Nov 2010 15:58:45 -0000	1.1
+--- xdebug	18 Nov 2010 18:39:36 -0000	1.2
+*************** template<class _Ty>
+*** 56,62 ****
+--- 56,64 ----
+  	{	// delete from the debug CRT heap even if operator delete exists
+  	if (_Ptr != 0)
+  		{	// worth deleting
++ #if 0
+  		_Ptr->~_Ty();
++ #endif
+  		// delete as _NORMAL_BLOCK, not _CRT_BLOCK, since we might have
+  		// facets allocated by normal new.
+  		free(_Ptr);
+Index: xhash
+===================================================================
+RCS file: /cvsroot/GxInclude/Vc10/Include/xhash,v
+retrieving revision 1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
+*** xhash	18 Nov 2010 15:58:45 -0000	1.1
+--- xhash	18 Nov 2010 18:35:33 -0000	1.2
+*************** public:
+*** 241,247 ****
+  		{	// construct hash table by copying right
+  		_Copy(_Right);
+  		}
+! 
+  	_Hash(_Myt&& _Right)
+  		: _Traits(_Right.comp),
+  			_List(_Right.get_allocator()),
+--- 241,247 ----
+  		{	// construct hash table by copying right
+  		_Copy(_Right);
+  		}
+! #if 0 /* Disabled for gccxml */
+  	_Hash(_Myt&& _Right)
+  		: _Traits(_Right.comp),
+  			_List(_Right.get_allocator()),
+*************** public:
+*** 310,316 ****
+  		{	// exchange contents with movable _Right
+  		_Assign_rv(_STD forward<_Myt>(_Right));
+  		}
+! 
+  	~_Hash()
+  		{	// destroy hash table
+  		}
+--- 310,316 ----
+  		{	// exchange contents with movable _Right
+  		_Assign_rv(_STD forward<_Myt>(_Right));
+  		}
+! #endif /* Disabled for gccxml */
+  	~_Hash()
+  		{	// destroy hash table
+  		}
+Index: xlocale
+===================================================================
+RCS file: /cvsroot/GxInclude/Vc10/Include/xlocale,v
+retrieving revision 1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
+*** xlocale	18 Nov 2010 15:58:45 -0000	1.1
+--- xlocale	18 Nov 2010 18:40:34 -0000	1.2
+*************** template<class _Dummy>
+*** 55,60 ****
+--- 55,62 ----
+  class locale;
+  template<class _Facet>
+  	const _Facet& __CRTDECL use_facet(const locale&);
++ template<class _Elem>
++      class collate;
+  
+  class  locale
+  	: public _Locbase<int>
+Index: xlocnum
+===================================================================
+RCS file: /cvsroot/GxInclude/Vc10/Include/xlocnum,v
+retrieving revision 1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
+*** xlocnum	18 Nov 2010 15:58:45 -0000	1.1
+--- xlocnum	18 Nov 2010 18:42:27 -0000	1.2
+*************** private:
+*** 1493,1499 ****
+--- 1493,1501 ----
+  				{	// add a NUL to mark thousands separator
+  				_Off -= *_Pg;
+  
++ #if 0 /* Disabled for gccxml */
+  				__analysis_assume(_Count + 1 > _Off);
++ #endif /* Disabled for gccxml */
+  				_CRT_SECURE_MEMMOVE(&_Buf[_Off + 1], _Count + 1 - _Off,
+  					&_Buf[_Off], _Count + 1 - _Off);
+  
+Index: xmemory
+===================================================================
+RCS file: /cvsroot/GxInclude/Vc10/Include/xmemory,v
+retrieving revision 1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
+*** xmemory	18 Nov 2010 15:58:45 -0000	1.1
+--- xmemory	18 Nov 2010 18:35:33 -0000	1.2
+*************** template<class _Ty> inline
+*** 38,44 ****
+  
+  	return ((_Ty _FARQ *)_Ptr);
+  	}
+! 
+  		// TEMPLATE FUNCTION _Construct
+  template<class _Ty1,
+  	class _Ty2> inline
+--- 38,44 ----
+  
+  	return ((_Ty _FARQ *)_Ptr);
+  	}
+! #if 0 /* Disabled for gccxml */
+  		// TEMPLATE FUNCTION _Construct
+  template<class _Ty1,
+  	class _Ty2> inline
+*************** template<class _Ty1,
+*** 47,53 ****
+  	void _FARQ *_Vptr = _Ptr;
+  	::new (_Vptr) _Ty1(_STD forward<_Ty2>(_Val));
+  	}
+! 
+  template<class _Ty1> inline
+  	void _Construct(_Ty1 _FARQ *_Ptr)
+  	{	// construct object at _Ptr with default value
+--- 47,53 ----
+  	void _FARQ *_Vptr = _Ptr;
+  	::new (_Vptr) _Ty1(_STD forward<_Ty2>(_Val));
+  	}
+! #endif /* Disabled for gccxml */
+  template<class _Ty1> inline
+  	void _Construct(_Ty1 _FARQ *_Ptr)
+  	{	// construct object at _Ptr with default value
+*************** public:
+*** 196,202 ****
+  		{	// construct object at _Ptr with value _Val
+  		_Construct(_Ptr, _Val);
+  		}
+! 
+  	void construct(pointer _Ptr, _Ty&& _Val)
+  		{	// construct object at _Ptr with value _Val
+  		::new ((void _FARQ *)_Ptr) _Ty(_STD forward<_Ty>(_Val));
+--- 196,202 ----
+  		{	// construct object at _Ptr with value _Val
+  		_Construct(_Ptr, _Val);
+  		}
+! #if 0 /* Disabled for gccxml */
+  	void construct(pointer _Ptr, _Ty&& _Val)
+  		{	// construct object at _Ptr with value _Val
+  		::new ((void _FARQ *)_Ptr) _Ty(_STD forward<_Ty>(_Val));
+*************** public:
+*** 207,213 ****
+  		{	// construct object at _Ptr with value _Val
+  		::new ((void _FARQ *)_Ptr) _Ty(_STD forward<_Other>(_Val));
+  		}
+! 
+  	void destroy(pointer _Ptr)
+  		{	// destroy object at _Ptr
+  		_Destroy(_Ptr);
+--- 207,213 ----
+  		{	// construct object at _Ptr with value _Val
+  		::new ((void _FARQ *)_Ptr) _Ty(_STD forward<_Other>(_Val));
+  		}
+! #endif /* Disabled for gccxml */
+  	void destroy(pointer _Ptr)
+  		{	// destroy object at _Ptr
+  		_Destroy(_Ptr);
+*************** template<class _Ty,
+*** 270,276 ****
+  	{	// test for allocator inequality
+  	return (!(_Left == _Right));
+  	}
+! 
+  		// TEMPLATE FUNCTIONS _Cons_val AND _Dest_val
+  template<class _Alloc,
+  	class _Ty1,
+--- 270,276 ----
+  	{	// test for allocator inequality
+  	return (!(_Left == _Right));
+  	}
+! #if 0 /* Disabled for gccxml */
+  		// TEMPLATE FUNCTIONS _Cons_val AND _Dest_val
+  template<class _Alloc,
+  	class _Ty1,
+*************** template<class _Alloc,
+*** 279,285 ****
+  	{	// construct using allocator
+  	_Alval.construct(_Pdest, _STD forward<_Ty2>(_Src));
+  	}
+! 
+  template<class _Alloc,
+  	class _Ty1>
+  	void _Dest_val(_Alloc& _Alval, _Ty1 *_Pdest)
+--- 279,285 ----
+  	{	// construct using allocator
+  	_Alval.construct(_Pdest, _STD forward<_Ty2>(_Src));
+  	}
+! #endif /* Disabled for gccxml */
+  template<class _Alloc,
+  	class _Ty1>
+  	void _Dest_val(_Alloc& _Alval, _Ty1 *_Pdest)
+Index: xstddef
+===================================================================
+RCS file: /cvsroot/GxInclude/Vc10/Include/xstddef,v
+retrieving revision 1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
+*** xstddef	18 Nov 2010 15:58:45 -0000	1.1
+--- xstddef	18 Nov 2010 18:43:04 -0000	1.2
+*************** _STD_BEGIN
+*** 34,40 ****
+   #endif /* _THROWS */
+  
+    #define _THROW0()		throw ()
+!   #define _THROW1(x)	throw (...)
+  
+     #define _THROW(x, y)			throw x(y)
+     #define _THROW_NCEE(x, y)	throw x(y)
+--- 34,40 ----
+   #endif /* _THROWS */
+  
+    #define _THROW0()		throw ()
+!   #define _THROW1(x)	throw (x)
+  
+     #define _THROW(x, y)			throw x(y)
+     #define _THROW_NCEE(x, y)	throw x(y)
+Index: xstring
+===================================================================
+RCS file: /cvsroot/GxInclude/Vc10/Include/xstring,v
+retrieving revision 1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
+*** xstring	18 Nov 2010 15:58:45 -0000	1.1
+--- xstring	18 Nov 2010 18:35:33 -0000	1.2
+*************** public:
+*** 696,702 ****
+  		if (_First != _Last)
+  			assign(&*_First, _Last - _First);
+  		}
+! 
+  	basic_string(_Myt&& _Right)
+  		: _Mybase(_STD forward<_Alloc>(_Right._Alval))
+  		{	// construct by moving _Right
+--- 696,702 ----
+  		if (_First != _Last)
+  			assign(&*_First, _Last - _First);
+  		}
+! #if 0 /* Disabled for gccxml */
+  	basic_string(_Myt&& _Right)
+  		: _Mybase(_STD forward<_Alloc>(_Right._Alval))
+  		{	// construct by moving _Right
+*************** public:
+*** 748,754 ****
+  			assign(_STD forward<_Myt>(_Right));
+  			}
+  		}
+! 
+  	~basic_string()
+  		{	// destroy the string
+  		_Tidy(true);
+--- 748,754 ----
+  			assign(_STD forward<_Myt>(_Right));
+  			}
+  		}
+! #endif /* Disabled for gccxml */
+  	~basic_string()
+  		{	// destroy the string
+  		_Tidy(true);
+*************** template<class _Elem,
+*** 2040,2046 ****
+  	{	// swap _Left and _Right strings
+  	_Left.swap(_Right);
+  	}
+! 
+  template<class _Elem,
+  	class _Traits,
+  	class _Alloc> inline
+--- 2040,2046 ----
+  	{	// swap _Left and _Right strings
+  	_Left.swap(_Right);
+  	}
+! #if 0 /* Disabled for gccxml */
+  template<class _Elem,
+  	class _Traits,
+  	class _Alloc> inline
+*************** template<class _Elem,
+*** 2058,2064 ****
+  	{	// swap _Left and _Right strings
+  	_Right.swap(_Left);
+  	}
+! 
+  typedef basic_string<char, char_traits<char>, allocator<char> >
+  	string;
+  typedef basic_string<wchar_t, char_traits<wchar_t>, allocator<wchar_t> >
+--- 2058,2064 ----
+  	{	// swap _Left and _Right strings
+  	_Right.swap(_Left);
+  	}
+! #endif /* Disabled for gccxml */
+  typedef basic_string<char, char_traits<char>, allocator<char> >
+  	string;
+  typedef basic_string<wchar_t, char_traits<wchar_t>, allocator<wchar_t> >
+Index: xtr1common
+===================================================================
+RCS file: /cvsroot/GxInclude/Vc10/Include/xtr1common,v
+retrieving revision 1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
+*** xtr1common	18 Nov 2010 15:58:45 -0000	1.1
+--- xtr1common	18 Nov 2010 18:35:33 -0000	1.2
+*************** template<class _Ty>
+*** 350,375 ****
+  	{	// remove reference
+  	typedef _Ty _Type;
+  	};
+! 
+  template<class _Ty>
+  	struct _Remove_reference<_Ty&&>
+  	{	// remove rvalue reference
+  	typedef _Ty _Type;
+  	};
+! 
+  	// TEMPLATE _Remove_rvalue_reference
+  template<class _Ty>
+  	struct _Remove_rvalue_reference
+  	{	// remove rvalue reference
+  	typedef _Ty _Type;
+  	};
+! 
+  template<class _Ty>
+  	struct _Remove_rvalue_reference<_Ty&&>
+  	{	// remove rvalue reference
+  	typedef _Ty _Type;
+  	};
+! 
+  	// TEMPLATE STRUCT _Copy_cv
+  template<class _Tgt,
+  	class _Src>
+--- 350,375 ----
+  	{	// remove reference
+  	typedef _Ty _Type;
+  	};
+! #if 0 /* Disabled for gccxml */
+  template<class _Ty>
+  	struct _Remove_reference<_Ty&&>
+  	{	// remove rvalue reference
+  	typedef _Ty _Type;
+  	};
+! #endif /* Disabled for gccxml */
+  	// TEMPLATE _Remove_rvalue_reference
+  template<class _Ty>
+  	struct _Remove_rvalue_reference
+  	{	// remove rvalue reference
+  	typedef _Ty _Type;
+  	};
+! #if 0 /* Disabled for gccxml */
+  template<class _Ty>
+  	struct _Remove_rvalue_reference<_Ty&&>
+  	{	// remove rvalue reference
+  	typedef _Ty _Type;
+  	};
+! #endif /* Disabled for gccxml */
+  	// TEMPLATE STRUCT _Copy_cv
+  template<class _Tgt,
+  	class _Src>
+Index: xtree
+===================================================================
+RCS file: /cvsroot/GxInclude/Vc10/Include/xtree,v
+retrieving revision 1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
+*** xtree	18 Nov 2010 15:58:45 -0000	1.1
+--- xtree	18 Nov 2010 18:35:33 -0000	1.2
+*************** public:
+*** 581,587 ****
+  
+  		return (_Wherenode);
+  		}
+! 
+  	template<class _Valty>
+  		_Nodeptr _Buynode(_Valty&& _Val)
+  		{	// allocate a node with defaults
+--- 581,587 ----
+  
+  		return (_Wherenode);
+  		}
+! #if 0 /* Disabled for gccxml */
+  	template<class _Valty>
+  		_Nodeptr _Buynode(_Valty&& _Val)
+  		{	// allocate a node with defaults
+*************** public:
+*** 597,603 ****
+  
+  		return (_Wherenode);
+  		}
+! 
+  	enum _Redbl
+  		{	// colors for link to parent
+  		_Red, _Black};
+--- 597,603 ----
+  
+  		return (_Wherenode);
+  		}
+! #endif /* Disabled for gccxml */
+  	enum _Redbl
+  		{	// colors for link to parent
+  		_Red, _Black};
+*************** public:
+*** 720,726 ****
+  		_RERAISE;
+  		_CATCH_END
+  		}
+! 
+  	_Tree(_Myt&& _Right)
+  		: _Mybase(_Right.key_comp(), _Right._Alval)
+  		{	// construct tree by copying _Right
+--- 720,726 ----
+  		_RERAISE;
+  		_CATCH_END
+  		}
+! #if 0 /* Disabled for gccxml */
+  	_Tree(_Myt&& _Right)
+  		: _Mybase(_Right.key_comp(), _Right._Alval)
+  		{	// construct tree by copying _Right
+*************** public:
+*** 785,791 ****
+  		{	// exchange contents with movable _Right
+  		_Assign_rv(_STD forward<_Myt>(_Right));
+  		}
+! 
+  	~_Tree()
+  		{	// destroy tree
+  		_Tidy();
+--- 785,791 ----
+  		{	// exchange contents with movable _Right
+  		_Assign_rv(_STD forward<_Myt>(_Right));
+  		}
+! #endif /* Disabled for gccxml */
+  	~_Tree()
+  		{	// destroy tree
+  		_Tidy();
+Index: xutility
+===================================================================
+RCS file: /cvsroot/GxInclude/Vc10/Include/xutility,v
+retrieving revision 1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
+*** xutility	18 Nov 2010 15:58:45 -0000	1.1
+--- xutility	18 Nov 2010 18:35:33 -0000	1.2
+*************** template<class _BidIt1,
+*** 2503,2509 ****
+  		_Dest, _Is_checked(_Dest)));
+  	}
+   #endif /* _ITERATOR_DEBUG_LEVEL == 0 */
+! 
+  		// TEMPLATE FUNCTION move
+  template<class _InIt,
+  	class _OutIt> inline
+--- 2503,2509 ----
+  		_Dest, _Is_checked(_Dest)));
+  	}
+   #endif /* _ITERATOR_DEBUG_LEVEL == 0 */
+! #if 0 /* Disabled for gccxml */
+  		// TEMPLATE FUNCTION move
+  template<class _InIt,
+  	class _OutIt> inline
+*************** template<class _InIt,
+*** 2514,2520 ****
+  		*_Dest = _STD move(*_First);
+  	return (_Dest);
+  	}
+! 
+  template<class _InIt,
+  	class _OutIt> inline
+  	_OutIt _Move(_InIt _First, _InIt _Last,
+--- 2514,2520 ----
+  		*_Dest = _STD move(*_First);
+  	return (_Dest);
+  	}
+! #endif /* Disabled for gccxml */
+  template<class _InIt,
+  	class _OutIt> inline
+  	_OutIt _Move(_InIt _First, _InIt _Last,
+Index: xxresult
+===================================================================
+RCS file: /cvsroot/GxInclude/Vc10/Include/xxresult,v
+retrieving revision 1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
+*** xxresult	18 Nov 2010 15:58:45 -0000	1.1
+--- xxresult	18 Nov 2010 19:06:39 -0000	1.2
+*************** template<class _Rx,
+*** 164,169 ****
+--- 164,170 ----
+  
+   #if _NARGS != 0
+  	// TEMPLATE FUNCTION _RESULT_OF, pointer to member fn
++ #if 0 /* Disabled for gccxml */
+  template<class _Rx,
+  	_CLASS_ARG0
+  	_C_CLASS_FARG0>
+*************** template<class _Rx,
+*** 172,177 ****
+--- 173,179 ----
+  	{	// pointer to member fn
+  	typedef _Rx _Type;
+  	};
++ #endif /* Disabled for gccxml */
+  
+   #ifdef _M_IX86
+  template<class _Rx,
+*************** template<class _Rx,
+*** 183,188 ****
+--- 185,191 ----
+  	typedef _Rx _Type;
+  	};
+  
++ #if 0 /* Disabled for gccxml */
+  template<class _Rx,
+  	_CLASS_ARG0
+  	_C_CLASS_FARG0>
+*************** template<class _Rx,
+*** 202,207 ****
+--- 205,211 ----
+  	typedef _Rx _Type;
+  	};
+    #endif /* _M_CEE */
++ #endif /* Disabled for gccxml */
+  
+   #endif /* _M_IX86 */
+  
+*************** template<class _Rx,
+*** 217,222 ****
+--- 221,227 ----
+   #endif /* _M_CEE */
+  
+  	// TEMPLATE FUNCTION _RESULT_OF, pointer to const member fn
++ #if 0 /* Disabled for gccxml */
+  template<class _Rx,
+  	_CLASS_ARG0
+  	_C_CLASS_FARG0>
+*************** template<class _Rx,
+*** 225,230 ****
+--- 230,236 ----
+  	{	// pointer to const member fn
+  	typedef _Rx _Type;
+  	};
++ #endif /* Disabled for gccxml */
+  
+   #ifdef _M_IX86
+  template<class _Rx,
+*************** template<class _Rx,
+*** 236,241 ****
+--- 242,248 ----
+  	typedef _Rx _Type;
+  	};
+  
++ #if 0 /* Disabled for gccxml */
+  template<class _Rx,
+  	_CLASS_ARG0
+  	_C_CLASS_FARG0>
+*************** template<class _Rx,
+*** 255,261 ****
+  	typedef _Rx _Type;
+  	};
+    #endif /* _M_CEE */
+! 
+   #endif /* _M_IX86 */
+  
+   #ifdef _M_CEE
+--- 262,268 ----
+  	typedef _Rx _Type;
+  	};
+    #endif /* _M_CEE */
+! #endif
+   #endif /* _M_IX86 */
+  
+   #ifdef _M_CEE
+*************** template<class _Rx,
+*** 270,275 ****
+--- 277,283 ----
+   #endif /* _M_CEE */
+  
+  	// TEMPLATE FUNCTION _RESULT_OF, pointer to volatile member fn
++ #if 0 /* Disabled for gccxml */
+  template<class _Rx,
+  	_CLASS_ARG0
+  	_C_CLASS_FARG0>
+*************** template<class _Rx,
+*** 278,283 ****
+--- 286,292 ----
+  	{	// pointer to volatile member fn
+  	typedef _Rx _Type;
+  	};
++ #endif /* Disabled for gccxml */
+  
+   #ifdef _M_IX86
+  template<class _Rx,
+*************** template<class _Rx,
+*** 289,294 ****
+--- 298,304 ----
+  	typedef _Rx _Type;
+  	};
+  
++ #if 0 /* Disabled for gccxml */
+  template<class _Rx,
+  	_CLASS_ARG0
+  	_C_CLASS_FARG0>
+*************** template<class _Rx,
+*** 308,314 ****
+  	typedef _Rx _Type;
+  	};
+    #endif /* _M_CEE */
+! 
+   #endif /* _M_IX86 */
+  
+   #ifdef _M_CEE
+--- 318,324 ----
+  	typedef _Rx _Type;
+  	};
+    #endif /* _M_CEE */
+! #endif /* Disabled for gccxml */
+   #endif /* _M_IX86 */
+  
+   #ifdef _M_CEE
+*************** template<class _Rx,
+*** 323,328 ****
+--- 333,339 ----
+   #endif /* _M_CEE */
+  
+  	// TEMPLATE FUNCTION _RESULT_OF, pointer to const volatile member fn
++ #if 0 /* Disabled for gccxml */
+  template<class _Rx,
+  	_CLASS_ARG0
+  	_C_CLASS_FARG0>
+*************** template<class _Rx,
+*** 331,336 ****
+--- 342,348 ----
+  	{	// pointer to const volatile member fn
+  	typedef _Rx _Type;
+  	};
++ #endif /* Disabled for gccxml */
+  
+   #ifdef _M_IX86
+  template<class _Rx,
+*************** template<class _Rx,
+*** 342,347 ****
+--- 354,360 ----
+  	typedef _Rx _Type;
+  	};
+  
++ #if 0 /* Disabled for gccxml */
+  template<class _Rx,
+  	_CLASS_ARG0
+  	_C_CLASS_FARG0>
+*************** template<class _Rx,
+*** 361,366 ****
+--- 374,380 ----
+  	typedef _Rx _Type;
+  	};
+    #endif /* _M_CEE */
++ #endif /* Disabled for gccxml */
+  
+   #endif /* _M_IX86 */
+  
+*************** template<class _Rx,
+*** 376,381 ****
+--- 390,396 ----
+   #endif /* _M_CEE */
+  
+  	// TEMPLATE FUNCTION _RESULT_OF, const pointer to member fn
++ #if 0 /* Disabled for gccxml */
+  template<class _Rx,
+  	_CLASS_ARG0
+  	_C_CLASS_FARG0>
+*************** template<class _Rx,
+*** 384,389 ****
+--- 399,405 ----
+  	{	// const pointer to member fn
+  	typedef _Rx _Type;
+  	};
++ #endif /* Disabled for gccxml */
+  
+   #ifdef _M_IX86
+  template<class _Rx,
+*************** template<class _Rx,
+*** 395,400 ****
+--- 411,417 ----
+  	typedef _Rx _Type;
+  	};
+  
++ #if 0 /* Disabled for gccxml */
+  template<class _Rx,
+  	_CLASS_ARG0
+  	_C_CLASS_FARG0>
+*************** template<class _Rx,
+*** 414,419 ****
+--- 431,437 ----
+  	typedef _Rx _Type;
+  	};
+    #endif /* _M_CEE */
++ #endif /* Disabled for gccxml */
+  
+   #endif /* _M_IX86 */
+  
+*************** template<class _Rx,
+*** 429,434 ****
+--- 447,453 ----
+   #endif /* _M_CEE */
+  
+  	// TEMPLATE FUNCTION _RESULT_OF, const pointer to const member fn
++ #if 0 /* Disabled for gccxml */
+  template<class _Rx,
+  	_CLASS_ARG0
+  	_C_CLASS_FARG0>
+*************** template<class _Rx,
+*** 437,442 ****
+--- 456,462 ----
+  	{	// const pointer to const member fn
+  	typedef _Rx _Type;
+  	};
++ #endif /* Disabled for gccxml */
+  
+   #ifdef _M_IX86
+  template<class _Rx,
+*************** template<class _Rx,
+*** 448,453 ****
+--- 468,474 ----
+  	typedef _Rx _Type;
+  	};
+  
++ #if 0 /* Disabled for gccxml */
+  template<class _Rx,
+  	_CLASS_ARG0
+  	_C_CLASS_FARG0>
+*************** template<class _Rx,
+*** 467,472 ****
+--- 488,494 ----
+  	typedef _Rx _Type;
+  	};
+    #endif /* _M_CEE */
++ #endif /* Disabled for gccxml */
+  
+   #endif /* _M_IX86 */
+  
+*************** template<class _Rx,
+*** 482,487 ****
+--- 504,510 ----
+   #endif /* _M_CEE */
+  
+  	// TEMPLATE FUNCTION _RESULT_OF, const pointer to volatile member fn
++ #if 0 /* Disabled for gccxml */
+  template<class _Rx,
+  	_CLASS_ARG0
+  	_C_CLASS_FARG0>
+*************** template<class _Rx,
+*** 490,495 ****
+--- 513,519 ----
+  	{	// const pointer to volatile member fn
+  	typedef _Rx _Type;
+  	};
++ #endif /* Disabled for gccxml */
+  
+   #ifdef _M_IX86
+  template<class _Rx,
+*************** template<class _Rx,
+*** 501,506 ****
+--- 525,531 ----
+  	typedef _Rx _Type;
+  	};
+  
++ #if 0 /* Disabled for gccxml */
+  template<class _Rx,
+  	_CLASS_ARG0
+  	_C_CLASS_FARG0>
+*************** template<class _Rx,
+*** 520,525 ****
+--- 545,551 ----
+  	typedef _Rx _Type;
+  	};
+    #endif /* _M_CEE */
++ #endif /* Disabled for gccxml */
+  
+   #endif /* _M_IX86 */
+  
+*************** template<class _Rx,
+*** 535,540 ****
+--- 561,567 ----
+   #endif /* _M_CEE */
+  
+  	// TEMPLATE FUNCTION _RESULT_OF, const pointer to const volatile member fn
++ #if 0 /* Disabled for gccxml */
+  template<class _Rx,
+  	_CLASS_ARG0
+  	_C_CLASS_FARG0>
+*************** template<class _Rx,
+*** 543,548 ****
+--- 570,576 ----
+  	{	// const pointer to const volatile member fn
+  	typedef _Rx _Type;
+  	};
++ #endif /* Disabled for gccxml */
+  
+   #ifdef _M_IX86
+  template<class _Rx,
+*************** template<class _Rx,
+*** 554,559 ****
+--- 582,588 ----
+  	typedef _Rx _Type;
+  	};
+  
++ #if 0 /* Disabled for gccxml */
+  template<class _Rx,
+  	_CLASS_ARG0
+  	_C_CLASS_FARG0>
+*************** template<class _Rx,
+*** 573,578 ****
+--- 602,608 ----
+  	typedef _Rx _Type;
+  	};
+    #endif /* _M_CEE */
++ #endif /* Disabled for gccxml */
+  
+   #endif /* _M_IX86 */
+  
+*************** template<class _Fty
+*** 597,602 ****
+--- 627,633 ----
+  	typedef typename _RESULT_OF<_Fty _C_ARG0_ARG1_TO_REF>::_Type _Type;
+  	};
+  
++ #if 0 /* Disabled for gccxml */
+   #ifdef _M_IX86
+  template<class _Fty
+  	_C_CLASS_ARG0>
+*************** template<class _Fty
+*** 614,619 ****
+--- 645,651 ----
+  	};
+    #endif /* _M_CEE */
+   #endif /* _M_IX86 */
++ #endif /* Disabled for gccxml */
+  
+   #ifdef _M_CEE
+  template<class _Fty
+Index: yvals.h
+===================================================================
+RCS file: /cvsroot/GxInclude/Vc10/Include/yvals.h,v
+retrieving revision 1.1
+diff -c -3 -p -r1.1 yvals.h
+*** yvals.h	18 Nov 2010 15:58:45 -0000	1.1
+--- yvals.h	18 Nov 2010 19:38:34 -0000
+***************
+*** 9,14 ****
+--- 9,33 ----
+  
+  #define _CPPLIB_VER	520
+  
++ #if 1 // gccxml cannot provide these builtins until we use the 4.3 parser
++ #define __is_union(X) gccxml_does_not_yet_support_tr1_type_traits
++ #define __is_class(X) gccxml_does_not_yet_support_tr1_type_traits
++ #define __is_enum(X) gccxml_does_not_yet_support_tr1_type_traits
++ #define __is_pod(X) gccxml_does_not_yet_support_tr1_type_traits
++ #define __is_empty(X) gccxml_does_not_yet_support_tr1_type_traits
++ #define __is_polymorphic(X) gccxml_does_not_yet_support_tr1_type_traits
++ #define __is_abstract(X) gccxml_does_not_yet_support_tr1_type_traits
++ #define __is_convertible_to(X,Y) gccxml_does_not_yet_support_tr1_type_traits
++ #define __has_trivial_constructor(X) gccxml_does_not_yet_support_tr1_type_traits
++ #define __has_trivial_copy(X) gccxml_does_not_yet_support_tr1_type_traits
++ #define __has_trivial_assign(X) gccxml_does_not_yet_support_tr1_type_traits
++ #define __has_trivial_destructor(X) gccxml_does_not_yet_support_tr1_type_traits
++ #define __has_nothrow_constructor(X) gccxml_does_not_yet_support_tr1_type_traits
++ #define __has_nothrow_copy(X) gccxml_does_not_yet_support_tr1_type_traits
++ #define __has_nothrow_assign(X) gccxml_does_not_yet_support_tr1_type_traits
++ #define __has_virtual_destructor(X) gccxml_does_not_yet_support_tr1_type_traits
++ #endif
++ 
+  #define _ALLOW_KEYWORD_MACROS	// TRANSITION
+  #ifndef _ALLOW_KEYWORD_MACROS
+   #include <xkeycheck.h>
+***************
+*** 243,248 ****
+--- 262,287 ----
+  #endif
+  
+  
++ /* ------------------------------------------------------------------------ */
++ /* Forward declare these now because they are used as non-dependent names.  */
++ #ifdef _DEBUG
++ 
++ #if !defined(_NATIVE_WCHAR_T_DEFINED) && defined(_M_CEE_PURE)
++ extern "C++"
++ #else
++ extern "C"
++ #endif
++ _CRTIMP void __cdecl _invalid_parameter(_In_opt_z_ const wchar_t *, _In_opt_z_ const wchar_t *, _In_opt_z_ const wchar_t *, unsigned int, uintptr_t);
++ 
++ #else /* _DEBUG */
++ 
++ extern "C"
++ _CRTIMP void __cdecl _invalid_parameter_noinfo(void);
++ 
++ #endif /* def _DEBUG */
++ /* ------------------------------------------------------------------------ */
++ 
++ 
+   #if _SECURE_SCL_THROWS
+  
+   #ifndef _SILENCE_DEPRECATION_OF_SECURE_SCL_THROWS
+*************** _STD_END
+*** 540,547 ****
+  		/* VC++ COMPILER PARAMETERS */
+  #define _LONGLONG	__int64
+  #define _ULONGLONG	unsigned __int64
+! #define _LLONG_MAX	0x7fffffffffffffff
+! #define _ULLONG_MAX	0xffffffffffffffff
+  
+  		/* INTEGER PROPERTIES */
+  #define _C2			1	/* 0 if not 2's complement */
+--- 579,586 ----
+  		/* VC++ COMPILER PARAMETERS */
+  #define _LONGLONG	__int64
+  #define _ULONGLONG	unsigned __int64
+! #define _LLONG_MAX	0x7fffffffffffffffi64
+! #define _ULLONG_MAX	0xffffffffffffffffui64
+  
+  		/* INTEGER PROPERTIES */
+  #define _C2			1	/* 0 if not 2's complement */
+*************** private:
+*** 633,642 ****
+      static _MRTIMP2_NPURE void __cdecl _Lockit_ctor(_Lockit *);
+      static _MRTIMP2_NPURE void __cdecl _Lockit_ctor(_Lockit *, int);
+      static _MRTIMP2_NPURE void __cdecl _Lockit_dtor(_Lockit *);
+! 
+  	__CLR_OR_THIS_CALL _Lockit(const _Lockit&);				// not defined
+  	_Lockit& __CLR_OR_THIS_CALL operator=(const _Lockit&);	// not defined
+! 
+  	int _Locktype;
+  
+    #else /* _MULTI_THREAD */
+--- 672,681 ----
+      static _MRTIMP2_NPURE void __cdecl _Lockit_ctor(_Lockit *);
+      static _MRTIMP2_NPURE void __cdecl _Lockit_ctor(_Lockit *, int);
+      static _MRTIMP2_NPURE void __cdecl _Lockit_dtor(_Lockit *);
+! #if 0 /* Disabled for gccxml */
+  	__CLR_OR_THIS_CALL _Lockit(const _Lockit&);				// not defined
+  	_Lockit& __CLR_OR_THIS_CALL operator=(const _Lockit&);	// not defined
+! #endif /* Disabled for gccxml */
+  	int _Locktype;
+  
+    #else /* _MULTI_THREAD */
+Index: CodeAnalysis/sourceannotations.h
+===================================================================
+RCS file: /cvsroot/GxInclude/Vc10/Include/CodeAnalysis/sourceannotations.h,v
+retrieving revision 1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
+*** CodeAnalysis/sourceannotations.h	18 Nov 2010 15:58:45 -0000	1.1
+--- CodeAnalysis/sourceannotations.h	18 Nov 2010 18:38:36 -0000	1.2
+*************** typedef unsigned short wchar_t;
+*** 42,48 ****
+  
+  #ifdef __cplusplus
+  #define SA( id ) id
+! #define REPEATABLE [repeatable]
+  #else  // !__cplusplus
+  #define SA( id ) SA_##id
+  #define REPEATABLE
+--- 42,48 ----
+  
+  #ifdef __cplusplus
+  #define SA( id ) id
+! #define REPEATABLE
+  #else  // !__cplusplus
+  #define SA( id ) SA_##id
+  #define REPEATABLE
+*************** typedef enum SA( AccessType ) SA( Access
+*** 76,82 ****
+  #ifndef SAL_NO_ATTRIBUTE_DECLARATIONS
+  
+  REPEATABLE
+- [source_annotation_attribute( SA( Parameter ) )]
+  struct PreAttribute
+  {
+  #ifdef __cplusplus
+--- 76,81 ----
+*************** struct PreAttribute
+*** 107,113 ****
+  };
+  
+  REPEATABLE
+- [source_annotation_attribute( SA( Parameter )|SA( ReturnValue ) )]
+  struct PostAttribute
+  {
+  #ifdef __cplusplus
+--- 106,111 ----
+*************** struct PostAttribute
+*** 138,144 ****
+  	const wchar_t* Condition;
+  };
+  
+- [source_annotation_attribute( SA( Parameter ) )]
+  struct FormatStringAttribute
+  {
+  #ifdef __cplusplus
+--- 136,141 ----
+*************** struct FormatStringAttribute
+*** 150,156 ****
+  };
+  
+  REPEATABLE
+- [source_annotation_attribute( SA( ReturnValue ) )]
+  struct InvalidCheckAttribute
+  {
+  #ifdef __cplusplus
+--- 147,152 ----
+*************** struct InvalidCheckAttribute
+*** 160,166 ****
+  	long Value;
+  };
+  
+- [source_annotation_attribute( SA( Method ) )]
+  struct SuccessAttribute
+  {
+  #ifdef __cplusplus
+--- 156,161 ----
+*************** struct SuccessAttribute
+*** 171,177 ****
+  };
+  
+  REPEATABLE
+- [source_annotation_attribute( SA( Parameter ) )]
+  struct PreBoundAttribute
+  {
+  #ifdef __cplusplus
+--- 166,171 ----
+*************** struct PreBoundAttribute
+*** 181,187 ****
+  };
+  
+  REPEATABLE
+- [source_annotation_attribute( SA( Parameter )|SA( ReturnValue ) )]
+  struct PostBoundAttribute
+  {
+  #ifdef __cplusplus
+--- 175,180 ----
+*************** struct PostBoundAttribute
+*** 191,197 ****
+  };
+  
+  REPEATABLE
+- [source_annotation_attribute( SA( Parameter ) )]
+  struct PreRangeAttribute
+  {
+  #ifdef __cplusplus
+--- 184,189 ----
+*************** struct PreRangeAttribute
+*** 203,209 ****
+  };
+  
+  REPEATABLE
+- [source_annotation_attribute( SA( Parameter )|SA( ReturnValue ) )]
+  struct PostRangeAttribute
+  {
+  #ifdef __cplusplus
+--- 195,200 ----

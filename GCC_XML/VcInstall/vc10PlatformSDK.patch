@@ -1,0 +1,465 @@
+Index: OAIdl.h
+===================================================================
+RCS file: /cvsroot/GxInclude/Vc10/PlatformSDK/OAIdl.h,v
+retrieving revision 1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
+*** OAIdl.h	18 Nov 2010 15:58:49 -0000	1.1
+--- OAIdl.h	18 Nov 2010 18:51:09 -0000	1.2
+*************** struct tagVARIANT
+*** 442,448 ****
+                  FLOAT fltVal;
+                  DOUBLE dblVal;
+                  VARIANT_BOOL boolVal;
+!                 _VARIANT_BOOL bool;
+                  SCODE scode;
+                  CY cyVal;
+                  DATE date;
+--- 442,448 ----
+                  FLOAT fltVal;
+                  DOUBLE dblVal;
+                  VARIANT_BOOL boolVal;
+! //                _VARIANT_BOOL bool;
+                  SCODE scode;
+                  CY cyVal;
+                  DATE date;
+*************** struct tagVARIANT
+*** 457,463 ****
+                  FLOAT *pfltVal;
+                  DOUBLE *pdblVal;
+                  VARIANT_BOOL *pboolVal;
+!                 _VARIANT_BOOL *pbool;
+                  SCODE *pscode;
+                  CY *pcyVal;
+                  DATE *pdate;
+--- 457,463 ----
+                  FLOAT *pfltVal;
+                  DOUBLE *pdblVal;
+                  VARIANT_BOOL *pboolVal;
+! //                _VARIANT_BOOL *pbool;
+                  SCODE *pscode;
+                  CY *pcyVal;
+                  DATE *pdate;
+Index: ObjBase.h
+===================================================================
+RCS file: /cvsroot/GxInclude/Vc10/PlatformSDK/ObjBase.h,v
+retrieving revision 1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
+*** ObjBase.h	18 Nov 2010 15:58:49 -0000	1.1
+--- ObjBase.h	18 Nov 2010 18:52:02 -0000	1.2
+*************** extern "C++"
+*** 236,242 ****
+  {
+      template<typename T> void** IID_PPV_ARGS_Helper(T** pp) 
+      {
+!         static_cast<IUnknown*>(*pp);    // make sure everyone derives from IUnknown
+          return reinterpret_cast<void**>(pp);
+      }
+  }
+--- 236,242 ----
+  {
+      template<typename T> void** IID_PPV_ARGS_Helper(T** pp) 
+      {
+!         //static_cast<IUnknown*>(*pp);    // make sure everyone derives from IUnknown
+          return reinterpret_cast<void**>(pp);
+      }
+  }
+Index: PropIdl.h
+===================================================================
+RCS file: /cvsroot/GxInclude/Vc10/PlatformSDK/PropIdl.h,v
+retrieving revision 1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
+*** PropIdl.h	18 Nov 2010 15:58:50 -0000	1.1
+--- PropIdl.h	18 Nov 2010 18:52:32 -0000	1.2
+*************** struct tag_inner_PROPVARIANT
+*** 316,322 ****
+          FLOAT fltVal;
+          DOUBLE dblVal;
+          VARIANT_BOOL boolVal;
+!         _VARIANT_BOOL bool;
+          SCODE scode;
+          CY cyVal;
+          DATE date;
+--- 316,322 ----
+          FLOAT fltVal;
+          DOUBLE dblVal;
+          VARIANT_BOOL boolVal;
+! //        _VARIANT_BOOL bool;
+          SCODE scode;
+          CY cyVal;
+          DATE date;
+Index: WinNT.h
+===================================================================
+RCS file: /cvsroot/GxInclude/Vc10/PlatformSDK/WinNT.h,v
+retrieving revision 1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
+*** WinNT.h	18 Nov 2010 15:58:52 -0000	1.1
+--- WinNT.h	18 Nov 2010 18:53:29 -0000	1.2
+*************** Int64ShllMod32 (
+*** 799,811 ****
+      __in DWORD ShiftCount
+      )
+  {
+-     __asm    {
+-         mov     ecx, ShiftCount
+-         mov     eax, dword ptr [Value]
+-         mov     edx, dword ptr [Value+4]
+-         shld    edx, eax, cl
+-         shl     eax, cl
+-     }
+  }
+  
+  __inline LONGLONG
+--- 799,804 ----
+*************** Int64ShraMod32 (
+*** 815,827 ****
+      __in DWORD ShiftCount
+      )
+  {
+-     __asm {
+-         mov     ecx, ShiftCount
+-         mov     eax, dword ptr [Value]
+-         mov     edx, dword ptr [Value+4]
+-         shrd    eax, edx, cl
+-         sar     edx, cl
+-     }
+  }
+  
+  __inline ULONGLONG
+--- 808,813 ----
+*************** Int64ShrlMod32 (
+*** 831,843 ****
+      __in DWORD ShiftCount
+      )
+  {
+-     __asm    {
+-         mov     ecx, ShiftCount
+-         mov     eax, dword ptr [Value]
+-         mov     edx, dword ptr [Value+4]
+-         shrd    eax, edx, cl
+-         shr     edx, cl
+-     }
+  }
+  
+  #if _MSC_VER >= 1200
+--- 817,822 ----
+*************** typedef struct _CONTEXT_EX {
+*** 2232,2238 ****
+  //
+  
+  C_ASSERT((sizeof(XSAVE_FORMAT) & (XSAVE_ALIGN - 1)) == 0);
+! C_ASSERT((FIELD_OFFSET(XSAVE_AREA, Header) & (XSAVE_ALIGN - 1)) == 0);
+  
+  // XSAVE_AREA structure must be sized uniformly on all architectures
+  C_ASSERT(MINIMAL_XSTATE_AREA_LENGTH == 512 + 64);
+--- 2211,2217 ----
+  //
+  
+  C_ASSERT((sizeof(XSAVE_FORMAT) & (XSAVE_ALIGN - 1)) == 0);
+! //C_ASSERT((FIELD_OFFSET(XSAVE_AREA, Header) & (XSAVE_ALIGN - 1)) == 0);
+  
+  // XSAVE_AREA structure must be sized uniformly on all architectures
+  C_ASSERT(MINIMAL_XSTATE_AREA_LENGTH == 512 + 64);
+*************** InterlockedBitTestAndSet (
+*** 3722,3733 ****
+      __in LONG Bit
+      )
+  {
+-     __asm {
+-            mov eax, Bit
+-            mov ecx, Base
+-            lock bts [ecx], eax
+-            setc al
+-     };
+  }
+  
+  FORCEINLINE
+--- 3701,3706 ----
+*************** InterlockedBitTestAndReset (
+*** 3737,3748 ****
+      __in LONG Bit
+      )
+  {
+-     __asm {
+-            mov eax, Bit
+-            mov ecx, Base
+-            lock btr [ecx], eax
+-            setc al
+-     };
+  }
+  #pragma warning(pop)
+  
+--- 3710,3715 ----
+*************** InterlockedBitTestAndComplement (
+*** 3793,3804 ****
+      __in LONG Bit
+      )
+  {
+-     __asm {
+-            mov eax, Bit
+-            mov ecx, Base
+-            lock btc [ecx], eax
+-            setc al
+-     };
+  }
+  #pragma warning(pop)
+  #endif	/* _M_CEE_PURE */
+--- 3760,3765 ----
+*************** _mm_pause (
+*** 3917,3923 ****
+  #else
+  
+  #if !defined(_M_CEE_PURE)
+! #define YieldProcessor() __asm { rep nop }
+  #endif  // !defined(_M_CEE_PURE)
+  
+  #endif  // (_MSC_FULL_VER >= 140041204)
+--- 3878,3884 ----
+  #else
+  
+  #if !defined(_M_CEE_PURE)
+! #define YieldProcessor()
+  #endif  // !defined(_M_CEE_PURE)
+  
+  #endif  // (_MSC_FULL_VER >= 140041204)
+*************** MemoryBarrier (
+*** 3940,3949 ****
+      VOID
+      )
+  {
+-     LONG Barrier;
+-     __asm {
+-         xchg Barrier, eax
+-     }
+  }
+  #pragma warning( pop )
+  
+--- 3901,3906 ----
+*************** ReadPMC (
+*** 3987,3996 ****
+      )
+  
+  {
+-     __asm {
+-         mov ecx, Counter
+-         rdpmc
+-     };
+  }
+  
+  #endif
+--- 3944,3949 ----
+*************** ReadTimeStampCounter (
+*** 4019,4025 ****
+      )
+  
+  {
+-     __asm rdtsc
+  }
+  
+  #endif
+--- 3972,3977 ----
+*************** DbgRaiseAssertionFailure (
+*** 4061,4067 ****
+      )
+  
+  {
+-     __asm int 0x2c
+  }
+  
+  #pragma warning( pop )
+--- 4013,4018 ----
+*************** __inline PVOID GetCurrentFiber( void ) {
+*** 4082,4093 ****
+  #pragma warning(push)
+  #endif
+  #pragma warning (disable:4035 4793)        // disable 4035 (function must return something)
+! __inline PVOID GetFiberData( void ) { __asm {
+!                                         mov eax, fs:[0x10]
+!                                         mov eax,[eax]
+!                                         }
+                                       }
+! __inline PVOID GetCurrentFiber( void ) { __asm mov eax, fs:[0x10] }
+  
+  #if _MSC_VER >= 1200
+  #pragma warning(pop)
+--- 4033,4041 ----
+  #pragma warning(push)
+  #endif
+  #pragma warning (disable:4035 4793)        // disable 4035 (function must return something)
+! __inline PVOID GetFiberData( void ) {
+                                       }
+! __inline PVOID GetCurrentFiber( void ) {  }
+  
+  #if _MSC_VER >= 1200
+  #pragma warning(pop)
+*************** HEAP_MAKE_TAG_FLAGS (
+*** 12958,12964 ****
+      )
+  
+  {
+-     __assume_bound(TagBase);
+      return ((DWORD)((TagBase) + ((Tag) << HEAP_TAG_SHIFT)));
+  }
+  #endif
+--- 12906,12911 ----
+*************** typedef enum _ENLISTMENT_INFORMATION_CLA
+*** 14616,14622 ****
+  } ENLISTMENT_INFORMATION_CLASS;
+  
+  typedef struct _TRANSACTION_LIST_ENTRY {
+!     UOW    UOW;
+  } TRANSACTION_LIST_ENTRY, *PTRANSACTION_LIST_ENTRY;
+  
+  typedef struct _TRANSACTION_LIST_INFORMATION {
+--- 14563,14569 ----
+  } ENLISTMENT_INFORMATION_CLASS;
+  
+  typedef struct _TRANSACTION_LIST_ENTRY {
+!     ::UOW    UOW;
+  } TRANSACTION_LIST_ENTRY, *PTRANSACTION_LIST_ENTRY;
+  
+  typedef struct _TRANSACTION_LIST_INFORMATION {
+*************** __inline struct _TEB * NtCurrentTeb( voi
+*** 14989,14995 ****
+  
+  #pragma warning (disable:4035)        // disable 4035 (function must return something)
+  
+! __inline struct _TEB * NtCurrentTeb( void ) { __asm mov eax, fs:[PcTeb] }
+  
+  #if _MSC_VER >= 1200
+  #pragma warning(pop)
+--- 14936,14942 ----
+  
+  #pragma warning (disable:4035)        // disable 4035 (function must return something)
+  
+! __inline struct _TEB * NtCurrentTeb( void ) { }
+  
+  #if _MSC_VER >= 1200
+  #pragma warning(pop)
+Index: driverspecs.h
+===================================================================
+RCS file: /cvsroot/GxInclude/Vc10/PlatformSDK/driverspecs.h,v
+retrieving revision 1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
+*** driverspecs.h	18 Nov 2010 15:58:53 -0000	1.1
+--- driverspecs.h	18 Nov 2010 18:57:48 -0000	1.2
+*************** extern "C" {
+*** 278,285 ****
+  	#define __drv_in_deref(annotes) __pre __deref __$drv_group(##__drv_nop(annotes))
+  	#define __drv_out(annotes) __post __$drv_group(##__drv_nop(annotes))
+  	#define __drv_out_deref(annotes) __post __deref __$drv_group(##__drv_nop(annotes))
+! 	#define __drv_when(cond, annotes)										\
+! 	  __drv_declspec("SAL_when(" SPECSTRINGIZE(cond) ")") __$drv_group(##__drv_nop(annotes))
+  	#define __drv_at(expr,annotes)\
+  	  __drv_declspec("SAL_at(" SPECSTRINGIZE(expr) ")") __$drv_group(##__drv_nop(annotes))
+  
+--- 278,285 ----
+  	#define __drv_in_deref(annotes) __pre __deref __$drv_group(##__drv_nop(annotes))
+  	#define __drv_out(annotes) __post __$drv_group(##__drv_nop(annotes))
+  	#define __drv_out_deref(annotes) __post __deref __$drv_group(##__drv_nop(annotes))
+! 	#define __drv_when(cond, annotes)
+! 	  //__drv_declspec("SAL_when(" SPECSTRINGIZE(cond) ")") __$drv_group(##__drv_nop(annotes))
+  	#define __drv_at(expr,annotes)\
+  	  __drv_declspec("SAL_at(" SPECSTRINGIZE(expr) ")") __$drv_group(##__drv_nop(annotes))
+  
+*************** extern "C" {
+*** 354,361 ****
+  	// This can be tested by the condition function inFunctionClass$()
+  	//
+  	__ANNOTATION(SAL_functionClass(__in char *);)
+! 	#define __drv_functionClass(x)									     	\
+! 		__drv_out(__drv_declspec("SAL_functionClass(\""#x"\")"))
+  
+  	// ---------------------------------------------------------------------
+  	// Resources:
+--- 354,361 ----
+  	// This can be tested by the condition function inFunctionClass$()
+  	//
+  	__ANNOTATION(SAL_functionClass(__in char *);)
+! 	#define __drv_functionClass(x)
+! 		//__drv_out(__drv_declspec("SAL_functionClass(\""#x"\")"))
+  
+  	// ---------------------------------------------------------------------
+  	// Resources:
+*************** extern "C" {
+*** 650,656 ****
+  	//
+  	__ANNOTATION(SAL_error(__in __AuToQuOtE char *);)
+  	#define __drv_reportError(why)											\
+! 		__pre __drv_declspec("SAL_error(" SPECSTRINGIZE(why) ")")
+  
+  	// ---------------------------------------------------------------------
+  	// Floating point save/restore:
+--- 650,656 ----
+  	//
+  	__ANNOTATION(SAL_error(__in __AuToQuOtE char *);)
+  	#define __drv_reportError(why)											\
+! 		//__pre __drv_declspec("SAL_error(" SPECSTRINGIZE(why) ")")
+  
+  	// ---------------------------------------------------------------------
+  	// Floating point save/restore:
+Index: ktmtypes.h
+===================================================================
+RCS file: /cvsroot/GxInclude/Vc10/PlatformSDK/ktmtypes.h,v
+retrieving revision 1.1
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
+*** ktmtypes.h	18 Nov 2010 15:58:55 -0000	1.1
+--- ktmtypes.h	18 Nov 2010 18:51:27 -0000	1.2
+*************** extern "C" {
+*** 24,30 ****
+  #endif
+  
+  
+! typedef GUID UOW, *PUOW;
+  typedef GUID CRM_PROTOCOL_ID, *PCRM_PROTOCOL_ID;
+  
+  //
+--- 24,32 ----
+  #endif
+  
+  
+! typedef GUID UOW;
+! typedef UOW* PUOW;
+! 
+  typedef GUID CRM_PROTOCOL_ID, *PCRM_PROTOCOL_ID;
+  
+  //
+*************** typedef struct _TRANSACTION_NOTIFICATION
+*** 139,145 ****
+  
+  typedef struct _TRANSACTION_NOTIFICATION_RECOVERY_ARGUMENT {
+      GUID   EnlistmentId;
+!     UOW    UOW;
+  } TRANSACTION_NOTIFICATION_RECOVERY_ARGUMENT, *PTRANSACTION_NOTIFICATION_RECOVERY_ARGUMENT;
+  
+  #define TRANSACTION_NOTIFICATION_TM_ONLINE_FLAG_IS_CLUSTERED 0x1
+--- 141,147 ----
+  
+  typedef struct _TRANSACTION_NOTIFICATION_RECOVERY_ARGUMENT {
+      GUID   EnlistmentId;
+!     ::UOW    UOW;
+  } TRANSACTION_NOTIFICATION_RECOVERY_ARGUMENT, *PTRANSACTION_NOTIFICATION_RECOVERY_ARGUMENT;
+  
+  #define TRANSACTION_NOTIFICATION_TM_ONLINE_FLAG_IS_CLUSTERED 0x1
+*************** typedef struct _KCRM_MARSHAL_HEADER {
+*** 184,190 ****
+  } KCRM_MARSHAL_HEADER, *PKCRM_MARSHAL_HEADER, *RESTRICTED_POINTER PRKCRM_MARSHAL_HEADER;
+  
+  typedef struct _KCRM_TRANSACTION_BLOB {
+!     UOW                UOW;
+      GUID               TmIdentity;
+      ULONG              IsolationLevel;
+      ULONG              IsolationFlags;
+--- 186,192 ----
+  } KCRM_MARSHAL_HEADER, *PKCRM_MARSHAL_HEADER, *RESTRICTED_POINTER PRKCRM_MARSHAL_HEADER;
+  
+  typedef struct _KCRM_TRANSACTION_BLOB {
+!     ::UOW                UOW;
+      GUID               TmIdentity;
+      ULONG              IsolationLevel;
+      ULONG              IsolationFlags;

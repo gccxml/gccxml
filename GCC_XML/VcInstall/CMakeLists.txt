@@ -39,6 +39,8 @@ ADD_CUSTOM_COMMAND(
   ${GCCXML_SOURCE_DIR}/VcInstall/vc9Include.patch
   ${GCCXML_SOURCE_DIR}/VcInstall/vc9PlatformSDK.patch
   ${GCCXML_SOURCE_DIR}/VcInstall/vc9sp1Include.patch
+  ${GCCXML_SOURCE_DIR}/VcInstall/vc10Include.patch
+  ${GCCXML_SOURCE_DIR}/VcInstall/vc10PlatformSDK.patch
   )
 ADD_CUSTOM_TARGET(vcInstallPatch DEPENDS
   ${GCCXML_BINARY_DIR}/vcInstall_stamp.c)

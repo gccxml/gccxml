@@ -58,6 +58,8 @@ int main(int argc, char* argv[])
   gxSystemTools::RemoveADirectory((gccxmlRoot+"/Vc71").c_str());
   gxSystemTools::RemoveADirectory((gccxmlRoot+"/Vc8").c_str());
   gxSystemTools::RemoveADirectory((gccxmlRoot+"/Vc8ex").c_str());
+  gxSystemTools::RemoveADirectory((gccxmlRoot+"/Vc9").c_str());
+  gxSystemTools::RemoveADirectory((gccxmlRoot+"/Vc10").c_str());
 
   // The registry keys for MSVC install detection.
   const char* vc6Registry =
@@ -99,6 +101,12 @@ int main(int argc, char* argv[])
     "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\VCExpress\\9.0\\Setup\\VC;ProductDir";
   const char* vc9sdkRegistry =
     "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Microsoft SDKs\\Windows\\v6.0A;InstallationFolder";
+
+  const char* vc10Registry =
+    "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\VisualStudio\\10.0\\Setup\\VC;ProductDir";
+  const char* vc10sdkRegistry =
+    "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Microsoft SDKs\\Windows\\v7.0A;InstallationFolder";
+
   // Check which versions of MSVC are installed.
   std::string msvc6;
   std::string msvc7;
@@ -108,6 +116,10 @@ int main(int argc, char* argv[])
   std::string msvc8sdk;
   std::string msvc9;
   std::string msvc9sdk;
+
+  std::string msvc10;
+  std::string msvc10sdk;
+
   bool have6 = gxSystemTools::ReadRegistryValue(vc6Registry, msvc6);
   bool have7 = gxSystemTools::ReadRegistryValue(vc7Registry, msvc7);
   bool have71 = gxSystemTools::ReadRegistryValue(vc71Registry, msvc71);
@@ -117,6 +129,10 @@ int main(int argc, char* argv[])
                 gxSystemTools::ReadRegistryValue(vc9exRegistry, msvc9));
   bool have9sdk =
     have9 && gxSystemTools::ReadRegistryValue(vc9sdkRegistry, msvc9sdk);
+
+  bool have10 = gxSystemTools::ReadRegistryValue(vc10Registry, msvc10);
+  bool have10sdk = have10 && gxSystemTools::ReadRegistryValue(vc10sdkRegistry, msvc10sdk);
+
   // Look for a VS8 express that is not the beta release.
   if(gxSystemTools::ReadRegistryValue(vc8exRegistry, msvc8ex))
     {
@@ -160,23 +176,23 @@ int main(int argc, char* argv[])
     }
 
   // See if there is anything to do.
-  if(!have6 && !have7 && !have71 && !have8 && !have8ex && !have9)
+  if(!have6 && !have7 && !have71 && !have8 && !have8ex && !have9 && !have10)
     {
-    std::cout << "None of MSVC 6, 7, 7.1, 8, or 9 is installed.\n";
+    std::cout << "None of MSVC 6, 7, 7.1, 8, 9 or 10 is installed.\n";
     }
 
   // Need to install at least one of the support directories.  We need
   // to find the cat and patch executables.
   std::string patchCommand;
   if(!FindTool(patchDir.c_str(), "patch", patchCommand) &&
-     (have6||have7||have71||have8||have8ex||have9))
+     (have6||have7||have71||have8||have8ex||have9||have10))
     {
     std::cerr << "Cannot find patch executable.\n";
     return 1;
     }
   std::string catCommand;
   if(!FindTool(patchDir.c_str(), "cat", catCommand) &&
-     (have6||have7||have71||have8||have8ex||have9))
+     (have6||have7||have71||have8||have8ex||have9||have10))
     {
     std::cerr << "Cannot find cat executable.\n";
     return 1;
@@ -439,6 +455,54 @@ int main(int argc, char* argv[])
       }
     }
 
+
+  if(have10)
+    {
+    std::string msvc10i = msvc10 + "/Include";
+    msvc10i = gxSystemTools::CollapseDirectory(msvc10i.c_str());
+    std::string patchIname = "vc10Include.patch";
+    std::string destPathI = gccxmlRoot+"/Vc10/Include";
+    std::string msvc10sp1;
+    std::string patchI = patchDir + "/" + patchIname;
+    if(gxSystemTools::FileExists(patchI.c_str()))
+      {
+      if(!InstallSupport(patchCommand.c_str(), catCommand.c_str(),
+                         patchI.c_str(), msvc10i.c_str(), destPathI.c_str()))
+        {
+        result = 1;
+        }
+      }
+    else
+      {
+      std::cerr << "Have MSVC 10, but cannot find "
+                << patchIname << ".\n";
+      result = 1;
+      }
+    }
+  if(have10sdk)
+    {
+    std::string msvc10p = msvc10sdk + "/Include";
+    msvc10p = gxSystemTools::CollapseDirectory(msvc10p.c_str());
+    std::string patchPname = "vc10PlatformSDK.patch";
+    std::string destPathP = gccxmlRoot+"/Vc10/PlatformSDK";
+
+    std::string patchP = patchDir + "/" + patchPname;
+    if(gxSystemTools::FileExists(patchP.c_str()))
+      {
+      if(!InstallSupport(patchCommand.c_str(), catCommand.c_str(),
+                         patchP.c_str(), msvc10p.c_str(), destPathP.c_str()))
+        {
+        result = 1;
+        }
+      }
+    else
+      {
+      std::cerr << "Have MSVC 10 Platform SDK, but "
+                << "cannot find " << patchPname << ".\n";
+      result = 1;
+      }
+    }
+
   // If we succeeded, write the timestamp file.
   if(result == 0 && (timestamp.length() > 0))
     {
@@ -483,6 +547,12 @@ bool InstallSupport(const char* patchCommand, const char* catCommand,
       std::string dest = destPath;
       dest += "/"+line.substr(7);
       gxSystemTools::FileCopy(source.c_str(), dest.c_str());
+      mode_t mode;
+      if(gxSystemTools::GetPermissions(dest.c_str(), mode))
+        {
+        mode = mode | 0200;
+        gxSystemTools::SetPermissions(dest.c_str(), mode);
+        }
       }
     }
   std::string cmd = catCommand;
