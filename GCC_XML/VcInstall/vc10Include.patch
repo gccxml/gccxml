@@ -1758,10 +1758,10 @@ Index: memory
 ===================================================================
 RCS file: /cvsroot/GxInclude/Vc10/Include/memory,v
 retrieving revision 1.1
-retrieving revision 1.2
-diff -c -3 -p -r1.1 -r1.2
+retrieving revision 1.3
+diff -c -3 -p -r1.1 -r1.3
 *** memory	18 Nov 2010 15:58:45 -0000	1.1
---- memory	18 Nov 2010 18:35:33 -0000	1.2
+--- memory	3 Feb 2011 14:54:35 -0000	1.3
 *************** template<class _InIt,
 *** 413,419 ****
   	return (_Uninit_copy(_First, _Last, _Dest, _Al,
@@ -1796,6 +1796,23 @@ diff -c -3 -p -r1.1 -r1.2
   template<class _InIt,
   	class _FwdIt,
   	class _Alloc,
+*************** template<class _InIt,
+*** 466,475 ****
+--- 466,479 ----
+  	class _Alloc> inline
+  	_FwdIt _Uninitialized_move(_InIt _First, _InIt _Last, _FwdIt _Dest,
+  		_Alloc& _Al)
++ #if 0 /* Disabled for gccxml */
+  	{	// move [_First, _Last) to raw _Dest, using _Al
+  	return (_Uninit_move(_First, _Last, _Dest, _Al,
+  		_Val_type(_First), _Ptr_cat(_First, _Dest)));
+  	}
++ #else
++ 	;
++ #endif
+  
+  		// TEMPLATE FUNCTION uninitialized_fill
+  template<class _FwdIt,
 *************** public:
 *** 771,777 ****
   			}
@@ -1805,7 +1822,7 @@ diff -c -3 -p -r1.1 -r1.2
   	_Temp_iterator<_Ty>& operator=(_Ty&& _Val)
   		{	// move or construct value into active buffer, and increment
   		if (_Pbuf->_Current < _Pbuf->_Hiwater)
---- 771,777 ----
+--- 775,781 ----
   			}
   		return (*this);
   		}
@@ -1822,7 +1839,7 @@ diff -c -3 -p -r1.1 -r1.2
   	_Temp_iterator<_Ty>& operator*()
   		{	// pretend to return designated value
   		return (*this);
---- 785,791 ----
+--- 789,795 ----
   			}
   		return (*this);
   		}
@@ -1839,7 +1856,7 @@ diff -c -3 -p -r1.1 -r1.2
   	_Ptr_base(_Myt&& _Right)
   		: _Ptr(0), _Rep(0)
   		{	// construct _Ptr_base object that takes resource from _Right
---- 1225,1231 ----
+--- 1229,1235 ----
   		: _Ptr(0), _Rep(0)
   		{	// construct
   		}
@@ -1856,7 +1873,7 @@ diff -c -3 -p -r1.1 -r1.2
   	long use_count() const
   		{	// return use count
   		return (_Rep ? _Rep->_Use_count() : 0);
---- 1251,1257 ----
+--- 1255,1261 ----
   		if (this != &_Right)
   			_Swap(_Right);
   		}
@@ -1873,7 +1890,7 @@ diff -c -3 -p -r1.1 -r1.2
   	shared_ptr(_Myt&& _Right)
   		: _Mybase(_STD forward<_Myt>(_Right))
   		{	// construct shared_ptr object that takes resource from _Right
---- 1522,1528 ----
+--- 1526,1532 ----
   		{	// construct shared_ptr object for dynamic_pointer_cast
   		this->_Reset(_Other, _Tag);
   		}
@@ -1890,7 +1907,7 @@ diff -c -3 -p -r1.1 -r1.2
    #if _HAS_CPP0X
   	template<class _Ux,
   		class _Dx>
---- 1535,1541 ----
+--- 1539,1545 ----
   		: _Mybase(_STD forward<shared_ptr<_Ty2> >(_Right))
   		{	// construct shared_ptr object that takes resource from _Right
   		}
@@ -1907,7 +1924,7 @@ diff -c -3 -p -r1.1 -r1.2
   	_Myt& operator=(_Myt&& _Right)
   		{	// construct shared_ptr object that takes resource from _Right
   		shared_ptr(_STD move(_Right)).swap(*this);
---- 1552,1558 ----
+--- 1556,1562 ----
   		return (*this);
   		}
    #endif /* _HAS_CPP0X */
@@ -1924,7 +1941,7 @@ diff -c -3 -p -r1.1 -r1.2
   	~shared_ptr()
   		{	// release resource
   		this->_Decref();
---- 1570,1576 ----
+--- 1574,1580 ----
   		{	// exchange contents with movable _Right
   		_Mybase::swap(_STD move(_Right));
   		}
@@ -1941,7 +1958,7 @@ diff -c -3 -p -r1.1 -r1.2
   template<class _Ty>
   	void swap(shared_ptr<_Ty>& _Left,
   		shared_ptr<_Ty>&& _Right)
---- 1771,1777 ----
+--- 1775,1781 ----
   	{	// swap _Left and _Right shared_ptrs
   	_Left.swap(_Right);
   	}
@@ -1958,7 +1975,7 @@ diff -c -3 -p -r1.1 -r1.2
   template<class _Ty1,
   	class _Ty2>
   	shared_ptr<_Ty1> static_pointer_cast(const shared_ptr<_Ty2>& _Other)
---- 1785,1791 ----
+--- 1789,1795 ----
   	{	// swap _Left and _Right shared_ptrs
   	_Right.swap(_Left);
   	}
@@ -1975,7 +1992,7 @@ diff -c -3 -p -r1.1 -r1.2
   	unique_ptr(pointer _Ptr, typename tr1::remove_reference<_Dx>::type&& _Dt)
   		: _Mybase(_Ptr, _STD move(_Dt))
   		{	// construct by moving deleter
---- 2238,2244 ----
+--- 2242,2248 ----
   		: _Mybase(_Ptr, _Dt)
   		{	// construct with pointer and (maybe const) deleter&
   		}
@@ -1992,7 +2009,7 @@ diff -c -3 -p -r1.1 -r1.2
   	void swap(_Myt& _Right)
   		{	// swap elements
   		_Swap_adl(this->_Myptr, _Right._Myptr);
---- 2288,2294 ----
+--- 2292,2298 ----
   				_Right.get_deleter());
   			}
   		}
@@ -2002,7 +2019,7 @@ diff -c -3 -p -r1.1 -r1.2
   		_Swap_adl(this->_Myptr, _Right._Myptr);
 *************** public:
 *** 2394,2399 ****
---- 2394,2400 ----
+--- 2398,2404 ----
   		}
   
   public:
@@ -2019,7 +2036,7 @@ diff -c -3 -p -r1.1 -r1.2
    #if defined(_NATIVE_NULLPTR_SUPPORTED) \
   	&& !defined(_DO_NOT_USE_NULLPTR_IN_STL)
   	unique_ptr(_STD nullptr_t)
---- 2437,2443 ----
+--- 2441,2447 ----
   				_Right.get_deleter());
   			}
   		}
@@ -2036,7 +2053,7 @@ diff -c -3 -p -r1.1 -r1.2
   template<class _Ty,
   	class _Dx>
   	void swap(unique_ptr<_Ty, _Dx>& _Left,
---- 2539,2545 ----
+--- 2543,2549 ----
   	{	// swap _Left with _Right
   	_Left.swap(_Right);
   	}
@@ -2053,7 +2070,7 @@ diff -c -3 -p -r1.1 -r1.2
   template<class _Ty1,
   	class _Dx1,
   	class _Ty2,
---- 2555,2561 ----
+--- 2559,2565 ----
   	{	// swap _Right with rvalue _Left
   	_Right.swap(_Left);
   	}
@@ -3448,9 +3465,10 @@ Index: type_traits
 ===================================================================
 RCS file: /cvsroot/GxInclude/Vc10/Include/type_traits,v
 retrieving revision 1.1
-diff -c -3 -p -r1.1 type_traits
+retrieving revision 1.2
+diff -c -3 -p -r1.1 -r1.2
 *** type_traits	18 Nov 2010 15:58:45 -0000	1.1
---- type_traits	18 Nov 2010 19:38:34 -0000
+--- type_traits	18 Nov 2010 18:49:59 -0000	1.2
 ***************
 *** 12,17 ****
 --- 12,18 ----
@@ -4059,10 +4077,10 @@ Index: xmemory
 ===================================================================
 RCS file: /cvsroot/GxInclude/Vc10/Include/xmemory,v
 retrieving revision 1.1
-retrieving revision 1.2
-diff -c -3 -p -r1.1 -r1.2
+retrieving revision 1.3
+diff -c -3 -p -r1.1 -r1.3
 *** xmemory	18 Nov 2010 15:58:45 -0000	1.1
---- xmemory	18 Nov 2010 18:35:33 -0000	1.2
+--- xmemory	3 Feb 2011 14:54:34 -0000	1.3
 *************** template<class _Ty> inline
 *** 38,44 ****
   
@@ -4097,6 +4115,22 @@ diff -c -3 -p -r1.1 -r1.2
   template<class _Ty1> inline
   	void _Construct(_Ty1 _FARQ *_Ptr)
   	{	// construct object at _Ptr with default value
+*************** template<> inline
+*** 84,92 ****
+--- 84,96 ----
+  template<class _Alloc> inline
+  	void _Destroy_range(typename _Alloc::pointer _First,
+  		typename _Alloc::pointer _Last, _Alloc& _Al)
++ #if 0 /* Disabled for gccxml */
+  	{	// destroy [_First, _Last)
+  	_Destroy_range(_First, _Last, _Al, _Ptr_cat(_First, _Last));
+  	}
++ #else
++ 	;
++ #endif
+  
+  template<class _Alloc> inline
+  	void _Destroy_range(typename _Alloc::pointer _First,
 *************** public:
 *** 196,202 ****
   		{	// construct object at _Ptr with value _Val
@@ -4106,7 +4140,7 @@ diff -c -3 -p -r1.1 -r1.2
   	void construct(pointer _Ptr, _Ty&& _Val)
   		{	// construct object at _Ptr with value _Val
   		::new ((void _FARQ *)_Ptr) _Ty(_STD forward<_Ty>(_Val));
---- 196,202 ----
+--- 200,206 ----
   		{	// construct object at _Ptr with value _Val
   		_Construct(_Ptr, _Val);
   		}
@@ -4123,7 +4157,7 @@ diff -c -3 -p -r1.1 -r1.2
   	void destroy(pointer _Ptr)
   		{	// destroy object at _Ptr
   		_Destroy(_Ptr);
---- 207,213 ----
+--- 211,217 ----
   		{	// construct object at _Ptr with value _Val
   		::new ((void _FARQ *)_Ptr) _Ty(_STD forward<_Other>(_Val));
   		}
@@ -4140,7 +4174,7 @@ diff -c -3 -p -r1.1 -r1.2
   		// TEMPLATE FUNCTIONS _Cons_val AND _Dest_val
   template<class _Alloc,
   	class _Ty1,
---- 270,276 ----
+--- 274,280 ----
   	{	// test for allocator inequality
   	return (!(_Left == _Right));
   	}
@@ -4157,10 +4191,13 @@ diff -c -3 -p -r1.1 -r1.2
   template<class _Alloc,
   	class _Ty1>
   	void _Dest_val(_Alloc& _Alval, _Ty1 *_Pdest)
---- 279,285 ----
+--- 283,292 ----
   	{	// construct using allocator
   	_Alval.construct(_Pdest, _STD forward<_Ty2>(_Src));
   	}
+! #else
+! template<class _Alloc, class _Ty1, class _Ty2>
+! 	void _Cons_val(_Alloc&, _Ty1 *, _Ty2 const&);
 ! #endif /* Disabled for gccxml */
   template<class _Alloc,
   	class _Ty1>
@@ -4813,9 +4850,10 @@ Index: yvals.h
 ===================================================================
 RCS file: /cvsroot/GxInclude/Vc10/Include/yvals.h,v
 retrieving revision 1.1
-diff -c -3 -p -r1.1 yvals.h
+retrieving revision 1.3
+diff -c -3 -p -r1.1 -r1.3
 *** yvals.h	18 Nov 2010 15:58:45 -0000	1.1
---- yvals.h	18 Nov 2010 19:38:34 -0000
+--- yvals.h	18 Nov 2010 19:39:22 -0000	1.3
 ***************
 *** 9,14 ****
 --- 9,33 ----
