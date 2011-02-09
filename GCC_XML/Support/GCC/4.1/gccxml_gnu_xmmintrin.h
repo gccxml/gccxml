@@ -356,6 +356,13 @@ _mm_cvt_ss2si (__m128 __A)
 #ifdef __x86_64__
 /* Convert the lower SPFP value to a 32-bit integer according to the current
    rounding mode.  */
+
+/* Intel intrinsic.  */
+static __inline long long __attribute__((__always_inline__,__artificial__))
+_mm_cvtss_si64 (__m128 __A)
+;
+
+/* Microsoft intrinsic.  */
 static __inline long long __attribute__((__always_inline__))
 _mm_cvtss_si64x (__m128 __A)
 ;

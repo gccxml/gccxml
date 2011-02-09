@@ -541,6 +541,12 @@ _mm_cvtsd_si32 (__m128d __A)
 ;
 
 #ifdef __x86_64__
+/* Intel intrinsic.  */
+static __inline long long __attribute__((__always_inline__,__artificial__))
+_mm_cvtsd_si64 (__m128d __A)
+;
+
+/* Microsoft intrinsic.  */
 static __inline long long __attribute__((__always_inline__))
 _mm_cvtsd_si64x (__m128d __A)
 ;
