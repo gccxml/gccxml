@@ -148,8 +148,9 @@ bool __builtin_va_arg_pack(...);
 int  __builtin_va_arg_pack_len(...);
 
 /* We fake some constant expressions from GCC 4.5 parser.  */
-#define __is_pod(x) false
 #define __is_empty(x) false
+#define __is_pod(x) false
+#define __is_trivial(x) false
 #define __has_trivial_destructor(x) false
 #define __has_trivial_constructor(x) false
 

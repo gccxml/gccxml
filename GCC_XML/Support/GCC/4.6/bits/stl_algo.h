@@ -4934,8 +4934,7 @@ _GLIBCXX_BEGIN_NAMESPACE_ALGO
             // "the type returned by a _Generator"
             __typeof__(__gen())>)
 
-      for (__decltype(__n + 0) __niter = __n;
-           __niter > 0; --__niter, ++__first)
+      for (; __n > 0; --__n, ++__first)
         *__first = __gen();
       return __first;
     }
