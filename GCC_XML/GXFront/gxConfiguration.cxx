@@ -132,7 +132,7 @@ bool gxConfiguration::Configure(int argc, const char*const * argv)
       }
 #endif
     loc += "/gccxml_cc1plus";
-#ifdef _WIN32
+#if defined(_WIN32) || defined(__CYGWIN__)
     loc += ".exe";
 #endif
     if(gxSystemTools::FileExists(loc.c_str()) &&
@@ -160,7 +160,7 @@ bool gxConfiguration::Configure(int argc, const char*const * argv)
     std::string loc =
       gxSystemTools::GetFilenamePath(m_GCCXML_EXECUTABLE.c_str());
     loc += "/gccxml_cpp0";
-#ifdef _WIN32
+#if defined(_WIN32) || defined(__CYGWIN__)
     loc += ".exe";
 #endif
     if(gxSystemTools::FileExists(loc.c_str()) &&
@@ -384,7 +384,7 @@ void gxConfiguration::FindRoots(const char* argv0)
     {
     exeName = av0.substr(pos+1).c_str();
     }
-#ifdef _WIN32
+#if defined(_WIN32) || defined(__CYGWIN__)
   exeName = gxSystemTools::LowerCase(exeName.c_str());
   if(exeName.length() < 4 || exeName.substr(exeName.length()-4) != ".exe")
     {
