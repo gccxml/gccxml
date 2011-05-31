@@ -722,10 +722,7 @@ _mm_movpi64_epi64 (__m64 __A)
 }
 
 extern __inline __m128i __attribute__((__gnu_inline__, __always_inline__, __artificial__))
-_mm_move_epi64 (__m128i __A)
-{
-  return (__m128i)__builtin_ia32_movq128 ((__v2di) __A);
-}
+_mm_move_epi64 (__m128i __A);
 
 /* Create a vector of zeros.  */
 extern __inline __m128i __attribute__((__gnu_inline__, __always_inline__, __artificial__))
