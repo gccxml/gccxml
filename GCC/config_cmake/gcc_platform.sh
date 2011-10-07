@@ -50,7 +50,7 @@ SET(extra_objs ${extra_objs})
 SET(extra_options ${extra_options})
 SET(c_target_objs ${c_target_objs})
 SET(cxx_target_objs ${cxx_target_objs})
-SET(target_cpu_default ${target_cpu_default})
+SET(target_cpu_default "${target_cpu_default}")
 SET(out_host_hook_obj ${out_host_hook_obj})
 EOF
 
