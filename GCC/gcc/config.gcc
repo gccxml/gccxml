@@ -484,12 +484,17 @@ case ${target} in
   # support are matched above and just set $cpu_type.
   tm_file="${cpu_type}/gnu.h"
   extra_parts="crtbegin.o crtend.o crtbeginS.o crtendS.o crtbeginT.o"
+  extra_options="${extra_options} linux.opt"
   # GNU tools are the only tools.
   gas=yes
   gnu_ld=yes
+  case ${enable_threads} in
+    "" | yes | posix) thread_file='posix' ;;
+  esac
   # These details are the same as for Linux.
   # But here we need a little extra magic.
   tmake_file="t-slibgcc-elf-ver t-linux t-gnu"
+  tm_defines="${tm_defines} UCLIBC_DEFAULT=0"
   case ${target} in
     alpha*)
       tm_file="${cpu_type}/${cpu_type}.h alpha/elf.h alpha/linux.h alpha/linux-elf.h gnu.h ${tm_file}"
