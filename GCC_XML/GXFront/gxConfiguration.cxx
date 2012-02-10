@@ -1576,6 +1576,7 @@ bool gxConfiguration::FindFlagsGCC()
               {
               s = *it;
               }
+            gxSystemTools::ConvertToUnixSlashes(s);
 
             if (INCLUDES != "")
               {
@@ -1801,6 +1802,7 @@ bool gxConfiguration::FindFlagsIntel()
               {
               s = *it;
               }
+            gxSystemTools::ConvertToUnixSlashes(s);
 
             if (INCLUDES != "")
               {
@@ -2027,6 +2029,7 @@ bool gxConfiguration::FindFlagsMIPSpro()
               {
               s = *it;
               }
+            gxSystemTools::ConvertToUnixSlashes(s);
 
             if (INCLUDES != "")
               {
