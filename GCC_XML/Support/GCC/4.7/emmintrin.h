@@ -722,10 +722,7 @@ _mm_movpi64_epi64 (__m64 __A)
 }
 
 extern __inline __m128i __attribute__((__gnu_inline__, __always_inline__, __artificial__))
-_mm_move_epi64 (__m128i __A)
-{
-  return (__m128i)__builtin_ia32_movq128 ((__v2di) __A);
-}
+_mm_move_epi64 (__m128i __A);
 
 /* Create a vector of zeros.  */
 extern __inline __m128i __attribute__((__gnu_inline__, __always_inline__, __artificial__))
@@ -1420,10 +1417,7 @@ _mm_stream_si32 (int *__A, int __B)
 
 #ifdef __x86_64__
 extern __inline void __attribute__((__gnu_inline__, __always_inline__, __artificial__))
-_mm_stream_si64 (long long int *__A, long long int __B)
-{
-  __builtin_ia32_movnti64 (__A, __B);
-}
+_mm_stream_si64 (long long int *__A, long long int __B);
 #endif
 
 extern __inline void __attribute__((__gnu_inline__, __always_inline__, __artificial__))
