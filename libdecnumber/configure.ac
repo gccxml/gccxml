@@ -1,13 +1,13 @@
 # configure.ac for libdecnumber			-*- Autoconf -*-
 # Process this file with autoconf to generate a configuration script.
 
-# Copyright 2005, 2006 Free Software Foundation, Inc.
+# Copyright 2005, 2006, 2009 Free Software Foundation, Inc.
 
 # This file is part of GCC.
 
 # GCC is free software; you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free
-# Software Foundation; either version 2, or (at your option) any
+# Software Foundation; either version 3, or (at your option) any
 # later #version.
 
 # GCC is distributed in the hope that it will be useful, but WITHOUT
@@ -16,11 +16,10 @@
 # License #for more details.
 
 # You should have received a copy of the GNU General Public License
-# along with GCC; see the file COPYING.  If not, write to the Free
-# Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
-# 02110-1301, USA.
+# along with GCC; see the file COPYING3.  If not see
+# <http://www.gnu.org/licenses/>.
 
-AC_PREREQ(2.59)
+AC_PREREQ(2.64)
 AC_INIT(libdecnumber, [ ], gcc-bugs@gcc.gnu.org, libdecnumber)
 AC_CONFIG_SRCDIR(decNumber.h)
 AC_CONFIG_MACRO_DIR(../config)
@@ -70,6 +69,30 @@ else
   MAINT=
 fi
 AC_SUBST(MAINT)
+
+AC_CANONICAL_TARGET
+
+# Default decimal format
+# If you change the defaults here, be sure to change them in the GCC directory also
+AC_MSG_CHECKING([for decimal floating point])
+
+GCC_AC_ENABLE_DECIMAL_FLOAT([$target])
+
+# Use default_decimal_float for dependency.
+enable_decimal_float=$default_decimal_float
+
+# If BID is being used, additional objects should be linked in.
+if test x$enable_decimal_float = xbid; then
+  ADDITIONAL_OBJS="$ADDITIONAL_OBJS \$(bid_OBJS)"
+else
+  ADDITIONAL_OBJS=
+fi
+
+AC_MSG_RESULT($enable_decimal_float)
+AC_SUBST(enable_decimal_float)
+AC_SUBST(ADDITIONAL_OBJS)
+
+AC_C_BIGENDIAN
 
 # Output.
 

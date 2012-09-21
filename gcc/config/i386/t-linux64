@@ -1,21 +1,39 @@
-# On x86-64 we do not need any exports for glibc for 64-bit libgcc_s,
-# override the settings
-# from t-slibgcc-elf-ver and t-linux
-SHLIB_MAPFILES = $(srcdir)/libgcc-std.ver \
-		 $(srcdir)/config/i386/libgcc-x86_64-glibc.ver
+# Copyright (C) 2002, 2005, 2007, 2008, 2011
+# Free Software Foundation, Inc.
+#
+# This file is part of GCC.
+#
+# GCC is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3, or (at your option)
+# any later version.
+#
+# GCC is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with GCC; see the file COPYING3.  If not see
+# <http://www.gnu.org/licenses/>.
 
-MULTILIB_OPTIONS = m64/m32
-MULTILIB_DIRNAMES = 64 32 
-MULTILIB_OSDIRNAMES = ../lib64 ../lib
+# On Debian, Ubuntu and other derivative distributions, the 32bit libraries
+# are found in /lib32 and /usr/lib32, /lib64 and /usr/lib64 are symlinks to
+# /lib and /usr/lib, while other distributions install libraries into /lib64
+# and /usr/lib64.  The LSB does not enforce the use of /lib64 and /usr/lib64,
+# it doesn't tell anything about the 32bit libraries on those systems.  Set
+# MULTILIB_OSDIRNAMES according to what is found on the target.
 
-LIBGCC = stmp-multilib
-INSTALL_LIBGCC = install-multilib
-
-EXTRA_MULTILIB_PARTS=crtbegin.o crtend.o crtbeginS.o crtendS.o \
-		     crtbeginT.o crtfastmath.o
-
-# The pushl in CTOR initialization interferes with frame pointer elimination.
-# crtend*.o cannot be compiled without -fno-asynchronous-unwind-tables,
-# because then __FRAME_END__ might not be the last thing in .eh_frame
-# section.
-CRTSTUFF_T_CFLAGS = -fno-omit-frame-pointer -fno-asynchronous-unwind-tables
+# To support i386, x86-64 and x32 libraries, the directory structrue
+# should be:
+#
+# 	/lib has i386 libraries.
+# 	/lib64 has x86-64 libraries.
+# 	/libx32 has x32 libraries.
+#
+comma=,
+MULTILIB_OPTIONS    = $(subst $(comma),/,$(TM_MULTILIB_CONFIG))
+MULTILIB_DIRNAMES   = $(patsubst m%, %, $(subst /, ,$(MULTILIB_OPTIONS)))
+MULTILIB_OSDIRNAMES = m64=../lib64
+MULTILIB_OSDIRNAMES+= m32=$(if $(wildcard $(shell echo $(SYSTEM_HEADER_DIR))/../../usr/lib32),../lib32,../lib)
+MULTILIB_OSDIRNAMES+= mx32=../libx32

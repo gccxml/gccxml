@@ -1,3 +1,27 @@
+/* Copyright (C) 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007,
+   2008, 2010 Free Software Foundation, Inc.
+
+This file is part of GCC.
+
+GCC is free software; you can redistribute it and/or modify it under
+the terms of the GNU General Public License as published by the Free
+Software Foundation; either version 3, or (at your option) any later
+version.
+
+GCC is distributed in the hope that it will be useful, but WITHOUT ANY
+WARRANTY; without even the implied warranty of MERCHANTABILITY or
+FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+for more details.
+
+Under Section 7 of GPL version 3, you are granted additional
+permissions described in the GCC Runtime Library Exception, version
+3.1, as published by the Free Software Foundation.
+
+You should have received a copy of the GNU General Public License and
+a copy of the GCC Runtime Library Exception along with this program;
+see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
+<http://www.gnu.org/licenses/>.  */
+
 /* Standard register usage.  */
 
 /* Number of actual hardware registers.
@@ -15,12 +39,12 @@
    HP-PA 1.1 has 32 fullword registers and 32 floating point
    registers. However, the floating point registers behave
    differently: the left and right halves of registers are addressable
-   as 32 bit registers. So, we will set things up like the 68k which
+   as 32-bit registers. So, we will set things up like the 68k which
    has different fp units: define separate register sets for the 1.0
    and 1.1 fp units.  */
 
-#define FIRST_PSEUDO_REGISTER 89  /* 32 general regs + 56 fp regs +
-				     + 1 shift reg */
+#define FIRST_PSEUDO_REGISTER 90  /* 32 general regs + 56 fp regs +
+				     + 1 shift reg + frame pointer */
 
 /* 1 for registers that have pervasive standard uses
    and are not available for the register allocator.
@@ -72,7 +96,8 @@
   0, 0, 0, 0, 0, 0, 0, 0, \
   0, 0, 0, 0, 0, 0, 0, 0, \
   0, 0, 0, 0, 0, 0, 0, 0, \
-  0}
+  /* shift register and soft frame pointer */ \
+  0, 1}
 
 /* 1 for registers not available across function calls.
    These must include the FIXED_REGISTERS and also any
@@ -93,26 +118,8 @@
   0, 0, 0, 0, 1, 1, 1, 1, \
   1, 1, 1, 1, 1, 1, 1, 1, \
   1, 1, 1, 1, 1, 1, 1, 1, \
-  1}
-
-#define CONDITIONAL_REGISTER_USAGE \
-{						\
-  int i;					\
-  if (!TARGET_PA_11)				\
-    {						\
-      for (i = 56; i < 88; i++) 		\
-	fixed_regs[i] = call_used_regs[i] = 1; 	\
-      for (i = 33; i < 88; i += 2) 		\
-	fixed_regs[i] = call_used_regs[i] = 1; 	\
-    }						\
-  if (TARGET_DISABLE_FPREGS || TARGET_SOFT_FLOAT)\
-    {						\
-      for (i = 32; i < 88; i++) 		\
-	fixed_regs[i] = call_used_regs[i] = 1; 	\
-    }						\
-  if (flag_pic)					\
-    fixed_regs[PIC_OFFSET_TABLE_REGNUM] = 1;	\
-}
+  /* shift register and soft frame pointer */ \
+  1, 1}
 
 /* Allocate the call used registers first.  This should minimize
    the number of registers that need to be saved (as call used
@@ -148,7 +155,7 @@
    3,  4,  5,  6,  7,  8,  9, 10, 	\
   11, 12, 13, 14, 15, 16, 17, 18,	\
   /* special registers.  */		\
-   1, 30,  0, 88}
+   1, 30,  0, 88, 89}
 
 
 /* Return number of consecutive hard regs needed starting at reg REGNO
@@ -172,8 +179,7 @@
 #define VALID_FP_MODE_P(MODE)						\
   ((MODE) == SFmode || (MODE) == DFmode					\
    || (MODE) == SCmode || (MODE) == DCmode				\
-   || (MODE) == QImode || (MODE) == HImode || (MODE) == SImode		\
-   || (TARGET_PA_11 && (MODE) == DImode))
+   || (MODE) == SImode || (TARGET_PA_11 && (MODE) == DImode))
 
 /* Value is 1 if hard register REGNO can hold a value of machine-mode MODE.
 
@@ -203,6 +209,7 @@
    registers.  */
 #define HARD_REGNO_MODE_OK(REGNO, MODE) \
   ((REGNO) == 0 ? (MODE) == CCmode || (MODE) == CCFPmode		\
+   : (REGNO) == 88 ? SCALAR_INT_MODE_P (MODE)				\
    : !TARGET_PA_11 && FP_REGNO_P (REGNO)				\
      ? (VALID_FP_MODE_P (MODE)						\
 	&& (GET_MODE_SIZE (MODE) <= 8					\
@@ -281,12 +288,17 @@ enum reg_class { NO_REGS, R1_REGS, GENERAL_REGS, FPUPPER_REGS, FP_REGS,
 #define REG_CLASS_CONTENTS	\
  {{0x00000000, 0x00000000, 0x00000000},	/* NO_REGS */			\
   {0x00000002, 0x00000000, 0x00000000},	/* R1_REGS */			\
-  {0xfffffffe, 0x00000000, 0x00000000},	/* GENERAL_REGS */		\
+  {0xfffffffe, 0x00000000, 0x02000000},	/* GENERAL_REGS */		\
   {0x00000000, 0xff000000, 0x00ffffff},	/* FPUPPER_REGS */		\
   {0x00000000, 0xffffffff, 0x00ffffff},	/* FP_REGS */			\
-  {0xfffffffe, 0xffffffff, 0x00ffffff},	/* GENERAL_OR_FP_REGS */	\
+  {0xfffffffe, 0xffffffff, 0x02ffffff},	/* GENERAL_OR_FP_REGS */	\
   {0x00000000, 0x00000000, 0x01000000},	/* SHIFT_REGS */		\
-  {0xfffffffe, 0xffffffff, 0x01ffffff}}	/* ALL_REGS */
+  {0xfffffffe, 0xffffffff, 0x03ffffff}}	/* ALL_REGS */
+
+/* Defines invalid mode changes.  */
+
+#define CANNOT_CHANGE_MODE_CLASS(FROM, TO, CLASS) \
+  pa_cannot_change_mode_class (FROM, TO, CLASS)
 
 /* Return the class number of the smallest class containing
    reg number REGNO.  This could be a conditional expression
@@ -295,20 +307,10 @@ enum reg_class { NO_REGS, R1_REGS, GENERAL_REGS, FPUPPER_REGS, FP_REGS,
 #define REGNO_REG_CLASS(REGNO)						\
   ((REGNO) == 0 ? NO_REGS 						\
    : (REGNO) == 1 ? R1_REGS						\
-   : (REGNO) < 32 ? GENERAL_REGS					\
+   : (REGNO) < 32 || (REGNO) == 89 ? GENERAL_REGS			\
    : (REGNO) < 56 ? FP_REGS						\
    : (REGNO) < 88 ? FPUPPER_REGS					\
    : SHIFT_REGS)
-
-/* Get reg_class from a letter such as appears in the machine description.  */
-/* Keep 'x' for backward compatibility with user asm.  */
-#define REG_CLASS_FROM_LETTER(C) \
-  ((C) == 'f' ? FP_REGS :					\
-   (C) == 'y' ? FPUPPER_REGS :					\
-   (C) == 'x' ? FP_REGS :					\
-   (C) == 'q' ? SHIFT_REGS :					\
-   (C) == 'a' ? R1_REGS :					\
-   (C) == 'Z' ? ALL_REGS : NO_REGS)
 
 /* Return the maximum number of consecutive registers
    needed to represent mode MODE in a register of class CLASS.  */
@@ -339,7 +341,7 @@ enum reg_class { NO_REGS, R1_REGS, GENERAL_REGS, FPUPPER_REGS, FP_REGS,
  "%fr20", "%fr20R", "%fr21", "%fr21R", "%fr22", "%fr22R", "%fr23", "%fr23R", \
  "%fr24", "%fr24R", "%fr25", "%fr25R", "%fr26", "%fr26R", "%fr27", "%fr27R", \
  "%fr28", "%fr28R", "%fr29", "%fr29R", "%fr30", "%fr30R", "%fr31", "%fr31R", \
- "SAR"}
+ "SAR",   "sfp"}
 
 #define ADDITIONAL_REGISTER_NAMES \
 {{"%fr4L",32}, {"%fr5L",34}, {"%fr6L",36}, {"%fr7L",38},		\

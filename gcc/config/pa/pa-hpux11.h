@@ -1,12 +1,12 @@
 /* Definitions of target machine for GNU compiler, for HP PA-RISC
-   Copyright (C) 1998, 1999, 2000, 2002, 2003, 2004, 2005
+   Copyright (C) 1998, 1999, 2000, 2002, 2003, 2004, 2005, 2007, 2008, 2010
    Free Software Foundation, Inc.
 
 This file is part of GCC.
 
 GCC is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2, or (at your option)
+the Free Software Foundation; either version 3, or (at your option)
 any later version.
 
 GCC is distributed in the hope that it will be useful,
@@ -15,9 +15,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with GCC; see the file COPYING.  If not, write to
-the Free Software Foundation, 51 Franklin Street, Fifth Floor,
-Boston, MA 02110-1301, USA.  */
+along with GCC; see the file COPYING3.  If not see
+<http://www.gnu.org/licenses/>.  */
 
 /* GCC always defines __STDC__.  HP C++ compilers don't define it.  This
    causes trouble when sys/stdsyms.h is included.  As a work around,
@@ -38,11 +37,11 @@ Boston, MA 02110-1301, USA.  */
 	builtin_define ("__hpux__");					\
 	builtin_define ("__unix");					\
 	builtin_define ("__unix__");					\
+	builtin_define ("__STDC_EXT__");				\
 	if (c_dialect_cxx ())						\
 	  {								\
 	    builtin_define ("_HPUX_SOURCE");				\
 	    builtin_define ("_INCLUDE_LONGLONG");			\
-	    builtin_define ("__STDC_EXT__");				\
 	    builtin_define ("__STDCPP__");				\
 	  }								\
 	else								\
@@ -60,8 +59,6 @@ Boston, MA 02110-1301, USA.  */
 		    builtin_define ("_PWB");				\
 		    builtin_define ("PWB");				\
 		  }							\
-		else							\
-		  builtin_define ("__STDC_EXT__");			\
 	      }								\
 	  }								\
 	if (!TARGET_64BIT)						\
@@ -106,38 +103,34 @@ Boston, MA 02110-1301, USA.  */
 /* We can debug dynamically linked executables on hpux11; we also
    want dereferencing of a NULL pointer to cause a SEGV.  */
 #undef LINK_SPEC
-#if ((TARGET_DEFAULT | TARGET_CPU_DEFAULT) & MASK_PA_11)
-#define LINK_SPEC \
-  "%{!mpa-risc-1-0:%{!march=1.0:%{!shared:-L/lib/pa1.1 -L/usr/lib/pa1.1 }}}\
-   %{!shared:%{p:-L/lib/libp -L/usr/lib/libp %{!static:\
-     %nWarning: consider linking with `-static' as system libraries with\n\
-     %n  profiling support are only provided in archive format}}}\
-   %{!shared:%{pg:-L/lib/libp -L/usr/lib/libp %{!static:\
-     %nWarning: consider linking with `-static' as system libraries with\n\
-     %n  profiling support are only provided in archive format}}}\
-   -z %{mlinker-opt:-O} %{!shared:-u main -u __gcc_plt_call}\
-   %{static:-a archive} %{shared:-b}"
-#else
 #define LINK_SPEC \
   "%{!shared:%{p:-L/lib/libp -L/usr/lib/libp %{!static:\
-     %nWarning: consider linking with `-static' as system libraries with\n\
+     %nwarning: consider linking with '-static' as system libraries with\n\
      %n  profiling support are only provided in archive format}}}\
    %{!shared:%{pg:-L/lib/libp -L/usr/lib/libp %{!static:\
-     %nWarning: consider linking with `-static' as system libraries with\n\
+     %nwarning: consider linking with '-static' as system libraries with\n\
      %n  profiling support are only provided in archive format}}}\
+   %{!shared:%{!static:%{rdynamic:-E}}}\
    -z %{mlinker-opt:-O} %{!shared:-u main -u __gcc_plt_call}\
    %{static:-a archive} %{shared:-b}"
-#endif
 
-/* HP-UX 11 has posix threads.  HP libc contains pthread stubs so that
-   non-threaded applications can be linked with a thread-safe libc
-   without a subsequent loss of performance.  For more details, see
-   <http://docs.hp.com/en/1896/pthreads.html>.  */
+/* HP-UX 11 has posix threads.  HP's shared libc contains pthread stubs
+   so that non-threaded applications can be linked with a thread-safe
+   libc without a subsequent loss of performance.  For more details,
+   see <http://docs.hp.com/en/1896/pthreads.html>.  */
 #undef LIB_SPEC
 #define LIB_SPEC \
   "%{!shared:\
-     %{mt|pthread:-lpthread} -lc \
-     %{static:%{!nolibdld:-a shared -ldld -a archive -lpthread -lc}}}"
+     %{fopenmp:%{static:-a archive_shared} -lrt %{static:-a archive}}\
+     %{mt|pthread:-lpthread} -lc\
+     %{static:%{!nolibdld:-a archive_shared -ldld -a archive -lc}\
+       %{!mt:%{!pthread:-a shared -lc -a archive}}}}\
+   %{shared:%{mt|pthread:-lpthread}}"
+
+/* The libgcc_stub.a library needs to come last.  */
+#undef LINK_GCC_C_SEQUENCE_SPEC
+#define LINK_GCC_C_SEQUENCE_SPEC \
+  "%G %L %G %{!nostdlib:%{!nodefaultlibs:%{!shared:-lgcc_stub}}}"
 
 #undef STARTFILE_SPEC
 #define STARTFILE_SPEC \
@@ -147,7 +140,7 @@ Boston, MA 02110-1301, USA.  */
 /* Under hpux11, the normal location of the `ld' and `as' programs is the
    /usr/ccs/bin directory.  */
 
-#ifndef CROSS_COMPILE
+#ifndef CROSS_DIRECTORY_STRUCTURE
 #undef MD_EXEC_PREFIX
 #define MD_EXEC_PREFIX "/usr/ccs/bin/"
 #endif
@@ -156,7 +149,7 @@ Boston, MA 02110-1301, USA.  */
    the /usr/ccs/lib directory.  However, the profiling files are in
    /opt/langtools/lib.  */
 
-#ifndef CROSS_COMPILE
+#ifndef CROSS_DIRECTORY_STRUCTURE
 #undef MD_STARTFILE_PREFIX
 #define MD_STARTFILE_PREFIX "/usr/ccs/lib/"
 #define MD_STARTFILE_PREFIX_1 "/opt/langtools/lib/"
@@ -191,3 +184,6 @@ Boston, MA 02110-1301, USA.  */
    with secondary definition (weak) symbols.  */
 #undef TARGET_SOM_SDEF
 #define TARGET_SOM_SDEF 1
+
+#undef TARGET_HPUX_11
+#define TARGET_HPUX_11 1

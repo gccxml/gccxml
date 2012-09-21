@@ -1,11 +1,12 @@
 /* Base configuration file for all OpenBSD targets.
-   Copyright (C) 1999, 2000, 2004, 2005 Free Software Foundation, Inc.
+   Copyright (C) 1999, 2000, 2004, 2005, 2007, 2009, 2010, 2011
+   Free Software Foundation, Inc.
 
 This file is part of GCC.
 
 GCC is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2, or (at your option)
+the Free Software Foundation; either version 3, or (at your option)
 any later version.
 
 GCC is distributed in the hope that it will be useful,
@@ -14,9 +15,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with GCC; see the file COPYING.  If not, write to
-the Free Software Foundation, 51 Franklin Street, Fifth Floor,
-Boston, MA 02110-1301, USA.  */
+along with GCC; see the file COPYING3.  If not see
+<http://www.gnu.org/licenses/>.  */
 
 /* Common OpenBSD configuration. 
    All OpenBSD architectures include this file, which is intended as
@@ -59,7 +59,7 @@ Boston, MA 02110-1301, USA.  */
     { GPLUSPLUS_INCLUDE_DIR, "G++", 1, 1 },	\
     { GPLUSPLUS_TOOL_INCLUDE_DIR, "G++", 1, 1 }, \
     { GPLUSPLUS_BACKWARD_INCLUDE_DIR, "G++", 1, 1 }, \
-    { STANDARD_INCLUDE_DIR, STANDARD_INCLUDE_COMPONENT, 0, 0 }, \
+    { NATIVE_SYSTEM_HEADER_DIR, NATIVE_SYSTEM_HEADER_COMPONENT, 0, 0 }, \
     { 0, 0, 0, 0 }				\
   }
 
@@ -85,6 +85,24 @@ Boston, MA 02110-1301, USA.  */
     }						\
   while (0)
 
+/* TARGET_OS_CPP_BUILTINS() common to all OpenBSD ELF targets.  */
+#define OPENBSD_OS_CPP_BUILTINS_ELF()		\
+  do						\
+    {						\
+      OPENBSD_OS_CPP_BUILTINS();		\
+      builtin_define ("__ELF__");		\
+    }						\
+while (0)
+
+/* TARGET_OS_CPP_BUILTINS() common to all LP64 OpenBSD targets.  */
+#define OPENBSD_OS_CPP_BUILTINS_LP64()		\
+  do						\
+    {						\
+      builtin_define ("_LP64");			\
+      builtin_define ("__LP64__");		\
+    }						\
+  while (0)
+
 /* CPP_SPEC appropriate for OpenBSD. We deal with -posix and -pthread.
    XXX the way threads are handled currently is not very satisfying,
    since all code must be compiled with -pthread to work. 
@@ -96,24 +114,10 @@ Boston, MA 02110-1301, USA.  */
 #define OBSD_CPP_SPEC "%{posix:-D_POSIX_SOURCE} %{pthread:-D_POSIX_THREADS}"
 #endif
 
-/* LIB_SPEC appropriate for OpenBSD.  */
-#ifdef HAS_LIBC_R
-/*   -lc(_r)?(_p)?, select _r for threads, and _p for p or pg.  */
-# define OBSD_LIB_SPEC "%{!shared:-lc%{pthread:_r}%{p:_p}%{!p:%{pg:_p}}}"
-#else
-/* Include -lpthread if -pthread is specified on the command line. */
-# define OBSD_LIB_SPEC "%{!shared:%{pthread:-lpthread%{p:_p}%{!p:%{pg:_p}}}} %{!shared:-lc%{p:_p}%{!p:%{pg:_p}}}"
-#endif
-
+#undef LIB_SPEC
+#define LIB_SPEC OBSD_LIB_SPEC
 
 #ifndef OBSD_HAS_CORRECT_SPECS
-
-#ifndef OBSD_NO_DYNAMIC_LIBRARIES
-#undef SWITCH_TAKES_ARG
-#define SWITCH_TAKES_ARG(CHAR) \
-  (DEFAULT_SWITCH_TAKES_ARG (CHAR) \
-   || (CHAR) == 'R')
-#endif
 
 #undef CPP_SPEC
 #define CPP_SPEC OBSD_CPP_SPEC
@@ -129,21 +133,18 @@ Boston, MA 02110-1301, USA.  */
 /* Since we use gas, stdin -> - is a good idea.  */
 #define AS_NEEDS_DASH_FOR_PIPED_INPUT
 
-/* LINK_SPEC appropriate for OpenBSD.  Support for GCC options 
-   -static, -assert, and -nostdlib.  */
-#undef LINK_SPEC
-#ifdef OBSD_NO_DYNAMIC_LIBRARIES
-#define LINK_SPEC \
-  "%{g:%{!nostdlib:-L/usr/lib/debug}} %{!nostdlib:%{!r*:%{!e*:-e start}}} -dc -dp %{assert*}"
-#else
-#define LINK_SPEC \
-  "%{g:%{!nostdlib:-L/usr/lib/debug}} %{!shared:%{!nostdlib:%{!r*:%{!e*:-e start}}}} %{shared:-Bshareable -x} -dc -dp %{R*} %{static:-Bstatic} %{assert*}"
+#undef LIB_SPEC
+#define LIB_SPEC OBSD_LIB_SPEC
+
+#if defined(HAVE_LD_EH_FRAME_HDR)
+#define LINK_EH_SPEC "%{!static:--eh-frame-hdr} "
 #endif
 
 #undef LIB_SPEC
 #define LIB_SPEC OBSD_LIB_SPEC
 #endif
 
+#define TARGET_POSIX_IO
 
 /* Runtime target specification.  */
 
@@ -156,9 +157,7 @@ Boston, MA 02110-1301, USA.  */
 #define DBX_NO_XREFS
 
 
-/* Support of shared libraries, mostly imported from svr4.h through netbsd.  */
-/* Two differences from svr4.h:
-   - we use . - _func instead of a local label,
+/* - we use . - _func instead of a local label,
    - we put extra spaces in expressions such as 
      .type _func , @function
      This is more readable for a human being and confuses c++filt less.  */
@@ -210,7 +209,7 @@ Boston, MA 02110-1301, USA.  */
   do {									\
     ASM_OUTPUT_TYPE_DIRECTIVE (FILE, NAME, "function");			\
     ASM_DECLARE_RESULT (FILE, DECL_RESULT (DECL));			\
-    ASM_OUTPUT_LABEL(FILE, NAME);					\
+    ASM_OUTPUT_FUNCTION_LABEL (FILE, NAME, DECL);			\
   } while (0)
 #endif
 
@@ -282,30 +281,4 @@ do {									 \
 /* Storage layout.  */
 
 
-/* Otherwise, since we support weak, gthr.h erroneously tries to use
-   #pragma weak.  */
-#define GTHREAD_USE_WEAK 0
-
-/* bug work around: we don't want to support #pragma weak, but the current
-   code layout needs HANDLE_PRAGMA_WEAK asserted for __attribute((weak)) to
-   work.  On the other hand, we don't define HANDLE_PRAGMA_WEAK directly,
-   as this depends on a few other details as well...  */
-#define HANDLE_SYSV_PRAGMA 1
-
-/* Stack is explicitly denied execution rights on OpenBSD platforms.  */
-#define ENABLE_EXECUTE_STACK						\
-extern void __enable_execute_stack (void *);				\
-void									\
-__enable_execute_stack (void *addr)					\
-{									\
-  long size = getpagesize ();						\
-  long mask = ~(size-1);						\
-  char *page = (char *) (((long) addr) & mask); 			\
-  char *end  = (char *) ((((long) (addr + TRAMPOLINE_SIZE)) & mask) + size); \
-								      \
-  if (mprotect (page, end - page, PROT_READ | PROT_WRITE | PROT_EXEC) < 0) \
-    perror ("mprotect of trampoline code");				\
-}
-
-#include <sys/types.h>
-#include <sys/mman.h>
+#define HAVE_ENABLE_EXECUTE_STACK

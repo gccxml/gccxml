@@ -1,5 +1,5 @@
 /* Definitions of target machine for GNU compiler, for ARM.
-   Copyright (C) 2002, 2004 Free Software Foundation, Inc.
+   Copyright (C) 2002, 2004, 2007, 2010 Free Software Foundation, Inc.
    Contributed by Pieter `Tiggr' Schoenmakers (rcpieter@win.tue.nl)
    and Martin Simmons (@harleqn.co.uk).
    More major hacks by Richard Earnshaw (rearnsha@arm.com)
@@ -9,7 +9,7 @@
 
    GCC is free software; you can redistribute it and/or modify it
    under the terms of the GNU General Public License as published
-   by the Free Software Foundation; either version 2, or (at your
+   by the Free Software Foundation; either version 3, or (at your
    option) any later version.
 
    GCC is distributed in the hope that it will be useful, but WITHOUT
@@ -18,23 +18,35 @@
    License for more details.
 
    You should have received a copy of the GNU General Public License
-   along with GCC; see the file COPYING.  If not, write to
-   the Free Software Foundation, 51 Franklin Street, Fifth Floor,
-   Boston, MA 02110-1301, USA.  */
+   along with GCC; see the file COPYING3.  If not see
+   <http://www.gnu.org/licenses/>.  */
 
 /* Extended precision floating point.
    FIXME What format is this?  */
 FLOAT_MODE (XF, 12, 0);
 
+/* Half-precision floating point */
+FLOAT_MODE (HF, 2, 0);
+ADJUST_FLOAT_FORMAT (HF, ((arm_fp16_format == ARM_FP16_FORMAT_ALTERNATIVE)
+			  ? &arm_half_format : &ieee_half_format));
+
 /* CCFPEmode should be used with floating inequalities,
    CCFPmode should be used with floating equalities.
    CC_NOOVmode should be used with SImode integer equalities.
    CC_Zmode should be used if only the Z flag is set correctly
+   CC_Cmode should be used if only the C flag is set correctly, after an
+     addition.
    CC_Nmode should be used if only the N (sign) flag is set correctly
+   CC_CZmode should be used if only the C and Z flags are correct
+   (used for DImode unsigned comparisons).
+   CC_NCVmode should be used if only the N, C, and V flags are correct
+   (used for DImode signed comparisons).
    CCmode should be used otherwise.  */
 
 CC_MODE (CC_NOOV);
 CC_MODE (CC_Z);
+CC_MODE (CC_CZ);
+CC_MODE (CC_NCV);
 CC_MODE (CC_SWP);
 CC_MODE (CCFP);
 CC_MODE (CCFPE);
@@ -58,3 +70,15 @@ VECTOR_MODES (INT, 16);       /* V16QI V8HI V4SI V2DI */
 VECTOR_MODES (FLOAT, 8);      /*            V4HF V2SF */
 VECTOR_MODES (FLOAT, 16);     /*       V8HF V4SF V2DF */
 
+/* Fraction and accumulator vector modes.  */
+VECTOR_MODES (FRACT, 4);      /* V4QQ  V2HQ */
+VECTOR_MODES (UFRACT, 4);     /* V4UQQ V2UHQ */
+VECTOR_MODES (ACCUM, 4);      /*       V2HA */
+VECTOR_MODES (UACCUM, 4);     /*       V2UHA */
+
+/* Opaque integer modes for 3, 4, 6 or 8 Neon double registers (2 is
+   TImode).  */
+INT_MODE (EI, 24);
+INT_MODE (OI, 32);
+INT_MODE (CI, 48);
+INT_MODE (XI, 64);

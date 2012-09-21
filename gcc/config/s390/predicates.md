@@ -1,5 +1,5 @@
 ;; Predicate definitions for S/390 and zSeries.
-;; Copyright (C) 2005 Free Software Foundation, Inc.
+;; Copyright (C) 2005, 2007, 2008 Free Software Foundation, Inc.
 ;; Contributed by Hartmut Penner (hpenner@de.ibm.com) and
 ;;                Ulrich Weigand (uweigand@de.ibm.com).
 ;;
@@ -7,7 +7,7 @@
 ;;
 ;; GCC is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
-;; the Free Software Foundation; either version 2, or (at your option)
+;; the Free Software Foundation; either version 3, or (at your option)
 ;; any later version.
 ;;
 ;; GCC is distributed in the hope that it will be useful,
@@ -16,9 +16,8 @@
 ;; GNU General Public License for more details.
 ;;
 ;; You should have received a copy of the GNU General Public License
-;; along with GCC; see the file COPYING.  If not, write to
-;; the Free Software Foundation, 51 Franklin Street, Fifth Floor,
-;; Boston, MA 02110-1301, USA.
+;; along with GCC; see the file COPYING3.  If not see
+;; <http://www.gnu.org/licenses/>.
 
 ;; OP is the current operation.
 ;; MODE is the current operation mode.
@@ -111,7 +110,7 @@
   if (GET_CODE (op) == LABEL_REF)
     return true;
   if (GET_CODE (op) == SYMBOL_REF)
-    return ((SYMBOL_REF_FLAGS (op) & SYMBOL_FLAG_ALIGN1) == 0
+    return (!SYMBOL_REF_ALIGN1_P (op)
 	    && SYMBOL_REF_TLS_MODEL (op) == 0
 	    && (!flag_pic || SYMBOL_REF_LOCAL_P (op)));
 
@@ -172,6 +171,34 @@
 
   return (s390_branch_condition_mask (op) >= 0);
 })
+
+;; Return true if op is the cc register.
+(define_predicate "cc_reg_operand"
+  (and (match_code "reg")
+       (match_test "REGNO (op) == CC_REGNUM")))
+
+(define_predicate "s390_signed_integer_comparison"
+  (match_code "eq, ne, lt, gt, le, ge")
+{
+  return (s390_compare_and_branch_condition_mask (op) >= 0);
+})
+
+(define_predicate "s390_unsigned_integer_comparison"
+  (match_code "eq, ne, ltu, gtu, leu, geu")
+{
+  return (s390_compare_and_branch_condition_mask (op) >= 0);
+})
+
+;; Return nonzero if OP is a valid comparison operator for the
+;; cstore expanders -- respectively cstorecc4 and integer cstore.
+(define_predicate "s390_eqne_operator"
+  (match_code "eq, ne"))
+
+(define_predicate "s390_scond_operator"
+  (match_code "ltu, gtu, leu, geu"))
+
+(define_predicate "s390_brx_operator"
+  (match_code "le, gt"))
 
 ;; Return nonzero if OP is a valid comparison operator
 ;; for an ALC condition.

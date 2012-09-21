@@ -1,13 +1,13 @@
 /* Definitions of target machine for GNU compiler,
    for IBM RS/6000 POWER running AIX.
-   Copyright (C) 2000, 2001, 2002, 2003, 2004, 2005, 2006
-   Free Software Foundation, Inc.
+   Copyright (C) 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2010,
+   2011 Free Software Foundation, Inc.
 
    This file is part of GCC.
 
    GCC is free software; you can redistribute it and/or modify it
    under the terms of the GNU General Public License as published
-   by the Free Software Foundation; either version 2, or (at your
+   by the Free Software Foundation; either version 3, or (at your
    option) any later version.
 
    GCC is distributed in the hope that it will be useful, but WITHOUT
@@ -16,14 +16,18 @@
    License for more details.
 
    You should have received a copy of the GNU General Public License
-   along with GCC; see the file COPYING.  If not, write to the
-   Free Software Foundation, 51 Franklin Street, Fifth Floor, Boston,
-   MA 02110-1301, USA.  */
+   along with GCC; see the file COPYING3.  If not see
+   <http://www.gnu.org/licenses/>.  */
 
 /* Yes!  We are AIX!  */
 #define DEFAULT_ABI ABI_AIX
 #undef  TARGET_AIX
 #define TARGET_AIX 1
+
+/* Linux64.h wants to redefine TARGET_AIX based on -m64, but it can't be used
+   in the #if conditional in options-default.h, so provide another macro.  */
+#undef  TARGET_AIX_OS
+#define TARGET_AIX_OS 1
 
 /* AIX always has a TOC.  */
 #define TARGET_NO_TOC 0
@@ -37,11 +41,6 @@
 #undef  STACK_BOUNDARY
 #define STACK_BOUNDARY 128
 
-/* AIX does not support Altivec.  */
-#undef  TARGET_ALTIVEC
-#define TARGET_ALTIVEC 0
-#undef  TARGET_ALTIVEC_ABI
-#define TARGET_ALTIVEC_ABI 0
 #undef  TARGET_IEEEQUAD
 #define TARGET_IEEEQUAD 0
 
@@ -49,8 +48,13 @@
    collect has a chance to see them, so scan the object files directly.  */
 #define COLLECT_EXPORT_LIST
 
-/* Handle #pragma weak and #pragma pack.  */
-#define HANDLE_SYSV_PRAGMA 1
+#if HAVE_AS_REF
+/* Issue assembly directives that create a reference to the given DWARF table
+   identifier label from the current function section.  This is defined to
+   ensure we drag frame frame tables associated with needed function bodies in
+   a link with garbage collection activated.  */
+#define ASM_OUTPUT_DWARF_TABLE_REF rs6000_aix_asm_output_dwarf_table_ref
+#endif
 
 /* This is the only version of nm that collect2 can work with.  */
 #define REAL_NM_FILE_NAME "/usr/ucb/nm"
@@ -93,6 +97,9 @@
     {						\
       builtin_define ("_IBMR2");		\
       builtin_define ("_POWER");		\
+      builtin_define ("__powerpc__");           \
+      builtin_define ("__PPC__");               \
+      builtin_define ("__unix__");              \
       builtin_define ("_AIX");			\
       builtin_define ("_AIX32");		\
       builtin_define ("_AIX41");		\
@@ -110,6 +117,8 @@
 #define CPP_SPEC "%{posix: -D_POSIX_SOURCE}\
    %{ansi: -D_ANSI_C_SOURCE}"
 
+#define CC1_SPEC "%(cc1_cpu)"
+
 #undef ASM_DEFAULT_SPEC
 #define ASM_DEFAULT_SPEC ""
 
@@ -124,18 +133,10 @@
 /* #define ASM_SPEC "-u %(asm_cpu)" */
 
 /* Default location of syscalls.exp under AIX */
-#ifndef CROSS_COMPILE
-#define LINK_SYSCALLS_SPEC "-bI:/lib/syscalls.exp"
-#else
-#define LINK_SYSCALLS_SPEC ""
-#endif
+#define LINK_SYSCALLS_SPEC "-bI:%R/lib/syscalls.exp"
 
 /* Default location of libg.exp under AIX */
-#ifndef CROSS_COMPILE
-#define LINK_LIBG_SPEC "-bexport:/usr/lib/libg.exp"
-#else
-#define LINK_LIBG_SPEC ""
-#endif
+#define LINK_LIBG_SPEC "-bexport:%R/usr/lib/libg.exp"
 
 /* Define the options for the binder: Start text at 512, align all segments
    to 512 bytes, and warn if there is text relocation.
@@ -156,17 +157,19 @@
 %{!shared:%{g*: %(link_libg) }} %{shared:-bM:SRE}"
 
 /* Profiled library versions are used by linking with special directories.  */
-#define LIB_SPEC "%{pg:-L/lib/profiled -L/usr/lib/profiled}\
-%{p:-L/lib/profiled -L/usr/lib/profiled} %{!shared:%{g*:-lg}} -lc"
+#define LIB_SPEC "%{pg:-L%R/lib/profiled -L%R/usr/lib/profiled}\
+%{p:-L%R/lib/profiled -L%R/usr/lib/profiled} %{!shared:%{g*:-lg}} -lc"
+
+/* Static linking with shared libstdc++ requires libsupc++ as well.  */
+#define LIBSTDCXX_STATIC "supc++"
 
 /* This now supports a natural alignment mode.  */
 /* AIX word-aligns FP doubles but doubleword-aligns 64-bit ints.  */
 #define ADJUST_FIELD_ALIGN(FIELD, COMPUTED) \
-  (TARGET_ALIGN_NATURAL ? (COMPUTED) : \
-  (TYPE_MODE (TREE_CODE (TREE_TYPE (FIELD)) == ARRAY_TYPE \
-	      ? get_inner_array_type (FIELD) \
-	      : TREE_TYPE (FIELD)) == DFmode \
-   ? MIN ((COMPUTED), 32) : (COMPUTED)))
+  ((TARGET_ALIGN_NATURAL == 0						\
+    && TYPE_MODE (strip_array_types (TREE_TYPE (FIELD))) == DFmode)	\
+   ? MIN ((COMPUTED), 32)						\
+   : (COMPUTED))
 
 /* AIX increases natural record alignment to doubleword if the first
    field is an FP double while the FP fields remain word aligned.  */
@@ -206,50 +209,10 @@
 
 /* Define cutoff for using external functions to save floating point.  */
 #define FP_SAVE_INLINE(FIRST_REG) ((FIRST_REG) == 62 || (FIRST_REG) == 63)
-
-/* __throw will restore its own return address to be the same as the
-   return address of the function that the throw is being made to.
-   This is unfortunate, because we want to check the original
-   return address to see if we need to restore the TOC.
-   So we have to squirrel it away with this.  */
-#define SETUP_FRAME_ADDRESSES() rs6000_aix_emit_builtin_unwind_init ()
-
-/* If the current unwind info (FS) does not contain explicit info
-   saving R2, then we have to do a minor amount of code reading to
-   figure out if it was saved.  The big problem here is that the
-   code that does the save/restore is generated by the linker, so
-   we have no good way to determine at compile time what to do.  */
-
-#ifdef __64BIT__
-#define MD_FROB_UPDATE_CONTEXT(CTX, FS)					\
-  do {									\
-    if ((FS)->regs.reg[2].how == REG_UNSAVED)				\
-      {									\
-	unsigned int *insn						\
-	  = (unsigned int *)						\
-	    _Unwind_GetGR ((CTX), LINK_REGISTER_REGNUM);		\
-	if (*insn == 0xE8410028)					\
-	  _Unwind_SetGRPtr ((CTX), 2, (CTX)->cfa + 40);			\
-      }									\
-  } while (0)
-#else
-#define MD_FROB_UPDATE_CONTEXT(CTX, FS)					\
-  do {									\
-    if ((FS)->regs.reg[2].how == REG_UNSAVED)				\
-      {									\
-	unsigned int *insn						\
-	  = (unsigned int *)						\
-	    _Unwind_GetGR ((CTX), LINK_REGISTER_REGNUM);		\
-	if (*insn == 0x80410014)					\
-	  _Unwind_SetGRPtr ((CTX), 2, (CTX)->cfa + 20);			\
-      }									\
-  } while (0)
-#endif
+/* And similarly for general purpose registers.  */
+#define GP_SAVE_INLINE(FIRST_REG) ((FIRST_REG) < 32)
 
 #define PROFILE_HOOK(LABEL)   output_profile_hook (LABEL)
-
-/* Print subsidiary information on the compiler version in use.  */
-#define TARGET_VERSION ;
 
 /* No version of AIX fully supports AltiVec or 64-bit instructions in
    32-bit mode.  */
@@ -258,3 +221,6 @@
 
 /* WINT_TYPE */
 #define WINT_TYPE "int"
+
+/* Static stack checking is supported by means of probes.  */
+#define STACK_CHECK_STATIC_BUILTIN 1

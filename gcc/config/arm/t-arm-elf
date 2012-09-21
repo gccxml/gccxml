@@ -1,15 +1,49 @@
-LIB1ASMSRC = arm/lib1funcs.asm
-LIB1ASMFUNCS = _udivsi3 _divsi3 _umodsi3 _modsi3 _dvmd_tls _bb_init_func \
-	_call_via_rX _interwork_call_via_rX \
-	_lshrdi3 _ashrdi3 _ashldi3 \
-	_negdf2 _addsubdf3 _muldivdf3 _cmpdf2 _unorddf2 _fixdfsi _fixunsdfsi \
-	_truncdfsf2 _negsf2 _addsubsf3 _muldivsf3 _cmpsf2 _unordsf2 \
-	_fixsfsi _fixunssfsi _floatdidf _floatdisf _floatundidf _floatundisf
+# Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007,
+# 2008, 2010, 2011 Free Software Foundation, Inc.
+#
+# This file is part of GCC.
+#
+# GCC is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3, or (at your option)
+# any later version.
+#
+# GCC is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with GCC; see the file COPYING3.  If not see
+# <http://www.gnu.org/licenses/>.
 
 MULTILIB_OPTIONS     = marm/mthumb
 MULTILIB_DIRNAMES    = arm thumb
 MULTILIB_EXCEPTIONS  = 
 MULTILIB_MATCHES     =
+
+#MULTILIB_OPTIONS     += mcpu=fa526/mcpu=fa626/mcpu=fa606te/mcpu=fa626te/mcpu=fmp626/mcpu=fa726te
+#MULTILIB_DIRNAMES    += fa526 fa626 fa606te fa626te fmp626 fa726te
+#MULTILIB_EXCEPTIONS  += *mthumb*/*mcpu=fa526 *mthumb*/*mcpu=fa626
+
+#MULTILIB_OPTIONS      += march=armv7
+#MULTILIB_DIRNAMES     += thumb2
+#MULTILIB_EXCEPTIONS   += march=armv7* marm/*march=armv7*
+#MULTILIB_MATCHES      += march?armv7=march?armv7-a
+#MULTILIB_MATCHES      += march?armv7=march?armv7-r
+#MULTILIB_MATCHES      += march?armv7=march?armv7-m
+#MULTILIB_MATCHES      += march?armv7=mcpu?cortex-a8
+#MULTILIB_MATCHES      += march?armv7=mcpu?cortex-r4
+#MULTILIB_MATCHES      += march?armv7=mcpu?cortex-m3
+
+# Not quite true.  We can support hard-vfp calling in Thumb2, but how do we
+# express that here?  Also, we really need architecture v5e or later
+# (mcrr etc).
+MULTILIB_OPTIONS       += mfloat-abi=hard
+MULTILIB_DIRNAMES      += fpu
+MULTILIB_EXCEPTIONS    += *mthumb/*mfloat-abi=hard*
+#MULTILIB_EXCEPTIONS    += *mcpu=fa526/*mfloat-abi=hard*
+#MULTILIB_EXCEPTIONS    += *mcpu=fa626/*mfloat-abi=hard*
 
 # MULTILIB_OPTIONS    += mcpu=ep9312
 # MULTILIB_DIRNAMES   += ep9312
@@ -19,9 +53,9 @@ MULTILIB_MATCHES     =
 # MULTILIB_DIRNAMES    += le be
 # MULTILIB_MATCHES     += mbig-endian=mbe mlittle-endian=mle
 # 
-# MULTILIB_OPTIONS    += mhard-float/msoft-float
+# MULTILIB_OPTIONS    += mfloat-abi=hard/mfloat-abi=soft
 # MULTILIB_DIRNAMES   += fpu soft
-# MULTILIB_EXCEPTIONS += *mthumb/*mhard-float*
+# MULTILIB_EXCEPTIONS += *mthumb/*mfloat-abi=hard*
 # 
 # MULTILIB_OPTIONS    += mno-thumb-interwork/mthumb-interwork
 # MULTILIB_DIRNAMES   += normal interwork
@@ -55,26 +89,3 @@ MULTILIB_MATCHES     =
 # MULTILIB_MATCHES    += mcpu?arm7=mcpu?arm600
 # MULTILIB_MATCHES    += mcpu?arm7=mcpu?arm610
 # MULTILIB_MATCHES    += mcpu?arm7=mcpu?arm620
-
-EXTRA_MULTILIB_PARTS = crtbegin.o crtend.o crti.o crtn.o
-
-# If EXTRA_MULTILIB_PARTS is not defined above then define EXTRA_PARTS here
-# EXTRA_PARTS = crtbegin.o crtend.o crti.o crtn.o
-
-LIBGCC = stmp-multilib
-INSTALL_LIBGCC = install-multilib
-
-# Currently there is a bug somewhere in GCC's alias analysis
-# or scheduling code that is breaking _fpmul_parts in fp-bit.c.
-# Disabling function inlining is a workaround for this problem.
-TARGET_LIBGCC2_CFLAGS = -fno-inline
-
-# Assemble startup files.
-$(T)crti.o: $(srcdir)/config/arm/crti.asm $(GCC_PASSES)
-	$(GCC_FOR_TARGET) $(GCC_CFLAGS) $(MULTILIB_CFLAGS) $(INCLUDES) \
-	-c -o $(T)crti.o -x assembler-with-cpp $(srcdir)/config/arm/crti.asm
-
-$(T)crtn.o: $(srcdir)/config/arm/crtn.asm $(GCC_PASSES)
-	$(GCC_FOR_TARGET) $(GCC_CFLAGS) $(MULTILIB_CFLAGS) $(INCLUDES) \
-	-c -o $(T)crtn.o -x assembler-with-cpp $(srcdir)/config/arm/crtn.asm
-

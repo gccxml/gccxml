@@ -1,12 +1,14 @@
+;; ??? This file needs auditing for thumb2
 ;; Patterns for the Intel Wireless MMX technology architecture.
-;; Copyright (C) 2003, 2004, 2005 Free Software Foundation, Inc.
+;; Copyright (C) 2003, 2004, 2005, 2007, 2008, 2010
+;; Free Software Foundation, Inc.
 ;; Contributed by Red Hat.
 
 ;; This file is part of GCC.
 
 ;; GCC is free software; you can redistribute it and/or modify it under
 ;; the terms of the GNU General Public License as published by the Free
-;; Software Foundation; either version 2, or (at your option) any later
+;; Software Foundation; either version 3, or (at your option) any later
 ;; version.
 
 ;; GCC is distributed in the hope that it will be useful, but WITHOUT
@@ -15,9 +17,9 @@
 ;; License for more details.
 
 ;; You should have received a copy of the GNU General Public License
-;; along with GCC; see the file COPYING.  If not, write to
-;; the Free Software Foundation, 51 Franklin Street, Fifth Floor,
-;; Boston, MA 02110-1301, USA.
+;; along with GCC; see the file COPYING3.  If not see
+;; <http://www.gnu.org/licenses/>.
+
 
 (define_insn "iwmmxt_iordi3"
   [(set (match_operand:DI         0 "register_operand" "=y,?&r,?&r")
@@ -74,7 +76,7 @@
   switch (which_alternative)
     {
     default:
-      return output_move_double (operands);
+      return output_move_double (operands, true, NULL);
     case 0:
       return \"#\";
     case 3:
@@ -96,8 +98,8 @@
 )
 
 (define_insn "*iwmmxt_movsi_insn"
-  [(set (match_operand:SI 0 "nonimmediate_operand" "=r,r,r, m,z,r,?z,Uy,z")
-	(match_operand:SI 1 "general_operand"      "rI,K,mi,r,r,z,Uy,z,z"))]
+  [(set (match_operand:SI 0 "nonimmediate_operand" "=rk,r,r,rk, m,z,r,?z,Uy,z")
+	(match_operand:SI 1 "general_operand"      "rk, I,K,mi,rk,r,z,Uy,z, z"))]
   "TARGET_REALLY_IWMMXT
    && (   register_operand (operands[0], SImode)
        || register_operand (operands[1], SImode))"
@@ -105,19 +107,20 @@
    switch (which_alternative)
    {
    case 0: return \"mov\\t%0, %1\";
-   case 1: return \"mvn\\t%0, #%B1\";
-   case 2: return \"ldr\\t%0, %1\";
-   case 3: return \"str\\t%1, %0\";
-   case 4: return \"tmcr\\t%0, %1\";
-   case 5: return \"tmrc\\t%0, %1\";
-   case 6: return arm_output_load_gr (operands);
-   case 7: return \"wstrw\\t%1, %0\";
+   case 1: return \"mov\\t%0, %1\";
+   case 2: return \"mvn\\t%0, #%B1\";
+   case 3: return \"ldr\\t%0, %1\";
+   case 4: return \"str\\t%1, %0\";
+   case 5: return \"tmcr\\t%0, %1\";
+   case 6: return \"tmrc\\t%0, %1\";
+   case 7: return arm_output_load_gr (operands);
+   case 8: return \"wstrw\\t%1, %0\";
    default:return \"wstrw\\t%1, [sp, #-4]!\;wldrw\\t%0, [sp], #4\\t@move CG reg\";
   }"
-  [(set_attr "type"           "*,*,load1,store1,*,*,load1,store1,*")
-   (set_attr "length"         "*,*,*,        *,*,*,  16,     *,8")
-   (set_attr "pool_range"     "*,*,4096,     *,*,*,1024,     *,*")
-   (set_attr "neg_pool_range" "*,*,4084,     *,*,*,   *,  1012,*")
+  [(set_attr "type"           "*,*,*,load1,store1,*,*,load1,store1,*")
+   (set_attr "length"         "*,*,*,*,        *,*,*,  16,     *,8")
+   (set_attr "pool_range"     "*,*,*,4096,     *,*,*,1024,     *,*")
+   (set_attr "neg_pool_range" "*,*,*,4084,     *,*,*,   *,  1012,*")
    ;; Note - the "predicable" attribute is not allowed to have alternatives.
    ;; Since the wSTRw wCx instruction is not predicable, we cannot support
    ;; predicating any of the alternatives in this template.  Instead,
@@ -157,9 +160,9 @@
    (set_attr "neg_pool_range" "*,*,4084,     *,*,*")]
 )
 
-(define_insn "movv8qi_internal"
-  [(set (match_operand:V8QI 0 "nonimmediate_operand" "=y,m,y,?r,?y,?r")
-	(match_operand:V8QI 1 "general_operand"       "y,y,mi,y,r,mi"))]
+(define_insn "mov<mode>_internal"
+  [(set (match_operand:VMMX 0 "nonimmediate_operand" "=y,m,y,?r,?y,?r,?r,?m")
+	(match_operand:VMMX 1 "general_operand"       "y,y,mi,y,r,r,mi,r"))]
   "TARGET_REALLY_IWMMXT"
   "*
    switch (which_alternative)
@@ -169,94 +172,23 @@
    case 2: return \"wldrd%?\\t%0, %1\";
    case 3: return \"tmrrc%?\\t%Q0, %R0, %1\";
    case 4: return \"tmcrr%?\\t%0, %Q1, %R1\";
-   default: return output_move_double (operands);
+   case 5: return \"#\";
+   default: return output_move_double (operands, true, NULL);
    }"
   [(set_attr "predicable" "yes")
-   (set_attr "length"         "4,     4,   4,4,4,   8")
-   (set_attr "type"           "*,store1,load1,*,*,load1")
-   (set_attr "pool_range"     "*,     *, 256,*,*, 256")
-   (set_attr "neg_pool_range" "*,     *, 244,*,*, 244")])
-
-(define_insn "movv4hi_internal"
-  [(set (match_operand:V4HI 0 "nonimmediate_operand" "=y,m,y,?r,?y,?r")
-	(match_operand:V4HI 1 "general_operand"       "y,y,mi,y,r,mi"))]
-  "TARGET_REALLY_IWMMXT"
-  "*
-   switch (which_alternative)
-   {
-   case 0: return \"wmov%?\\t%0, %1\";
-   case 1: return \"wstrd%?\\t%1, %0\";
-   case 2: return \"wldrd%?\\t%0, %1\";
-   case 3: return \"tmrrc%?\\t%Q0, %R0, %1\";
-   case 4: return \"tmcrr%?\\t%0, %Q1, %R1\";
-   default: return output_move_double (operands);
-   }"
-  [(set_attr "predicable" "yes")
-   (set_attr "length"         "4,     4,   4,4,4,   8")
-   (set_attr "type"           "*,store1,load1,*,*,load1")
-   (set_attr "pool_range"     "*,     *, 256,*,*, 256")
-   (set_attr "neg_pool_range" "*,     *, 244,*,*, 244")])
-
-(define_insn "movv2si_internal"
-  [(set (match_operand:V2SI 0 "nonimmediate_operand" "=y,m,y,?r,?y,?r")
-	(match_operand:V2SI 1 "general_operand"       "y,y,mi,y,r,mi"))]
-  "TARGET_REALLY_IWMMXT"
-  "*
-   switch (which_alternative)
-   {
-   case 0: return \"wmov%?\\t%0, %1\";
-   case 1: return \"wstrd%?\\t%1, %0\";
-   case 2: return \"wldrd%?\\t%0, %1\";
-   case 3: return \"tmrrc%?\\t%Q0, %R0, %1\";
-   case 4: return \"tmcrr%?\\t%0, %Q1, %R1\";
-   default: return output_move_double (operands);
-   }"
-  [(set_attr "predicable" "yes")
-   (set_attr "length"         "4,     4,   4,4,4,  24")
-   (set_attr "type"           "*,store1,load1,*,*,load1")
-   (set_attr "pool_range"     "*,     *, 256,*,*, 256")
-   (set_attr "neg_pool_range" "*,     *, 244,*,*, 244")])
-
-;; This pattern should not be needed.  It is to match a
-;; wierd case generated by GCC when no optimizations are
-;; enabled.  (Try compiling gcc/testsuite/gcc.c-torture/
-;; compile/simd-5.c at -O0).  The mode for operands[1] is
-;; deliberately omitted.
-(define_insn "movv2si_internal_2"
-  [(set (match_operand:V2SI 0 "nonimmediate_operand" "=?r")
-	(match_operand      1 "immediate_operand"      "mi"))]
-  "TARGET_REALLY_IWMMXT"
-  "* return output_move_double (operands);"
-  [(set_attr "predicable"     "yes")
-   (set_attr "length"         "8")
-   (set_attr "type"           "load1")
-   (set_attr "pool_range"     "256")
-   (set_attr "neg_pool_range" "244")])
+   (set_attr "length"         "4,     4,   4,4,4,8,   8,8")
+   (set_attr "type"           "*,store1,load1,*,*,*,load1,store1")
+   (set_attr "pool_range"     "*,     *, 256,*,*,*, 256,*")
+   (set_attr "neg_pool_range" "*,     *, 244,*,*,*, 244,*")])
 
 ;; Vector add/subtract
 
-(define_insn "addv8qi3"
-  [(set (match_operand:V8QI            0 "register_operand" "=y")
-        (plus:V8QI (match_operand:V8QI 1 "register_operand"  "y")
-	           (match_operand:V8QI 2 "register_operand"  "y")))]
+(define_insn "*add<mode>3_iwmmxt"
+  [(set (match_operand:VMMX            0 "register_operand" "=y")
+        (plus:VMMX (match_operand:VMMX 1 "register_operand"  "y")
+	           (match_operand:VMMX 2 "register_operand"  "y")))]
   "TARGET_REALLY_IWMMXT"
-  "waddb%?\\t%0, %1, %2"
-  [(set_attr "predicable" "yes")])
-
-(define_insn "addv4hi3"
-  [(set (match_operand:V4HI            0 "register_operand" "=y")
-        (plus:V4HI (match_operand:V4HI 1 "register_operand"  "y")
-	           (match_operand:V4HI 2 "register_operand"  "y")))]
-  "TARGET_REALLY_IWMMXT"
-  "waddh%?\\t%0, %1, %2"
-  [(set_attr "predicable" "yes")])
-
-(define_insn "addv2si3"
-  [(set (match_operand:V2SI            0 "register_operand" "=y")
-        (plus:V2SI (match_operand:V2SI 1 "register_operand"  "y")
-	           (match_operand:V2SI 2 "register_operand"  "y")))]
-  "TARGET_REALLY_IWMMXT"
-  "waddw%?\\t%0, %1, %2"
+  "wadd<MMX_char>%?\\t%0, %1, %2"
   [(set_attr "predicable" "yes")])
 
 (define_insn "ssaddv8qi3"
@@ -307,28 +239,12 @@
   "waddwus%?\\t%0, %1, %2"
   [(set_attr "predicable" "yes")])
 
-(define_insn "subv8qi3"
-  [(set (match_operand:V8QI             0 "register_operand" "=y")
-        (minus:V8QI (match_operand:V8QI 1 "register_operand"  "y")
-		    (match_operand:V8QI 2 "register_operand"  "y")))]
+(define_insn "*sub<mode>3_iwmmxt"
+  [(set (match_operand:VMMX             0 "register_operand" "=y")
+        (minus:VMMX (match_operand:VMMX 1 "register_operand"  "y")
+		    (match_operand:VMMX 2 "register_operand"  "y")))]
   "TARGET_REALLY_IWMMXT"
-  "wsubb%?\\t%0, %1, %2"
-  [(set_attr "predicable" "yes")])
-
-(define_insn "subv4hi3"
-  [(set (match_operand:V4HI             0 "register_operand" "=y")
-        (minus:V4HI (match_operand:V4HI 1 "register_operand"  "y")
-		    (match_operand:V4HI 2 "register_operand"  "y")))]
-  "TARGET_REALLY_IWMMXT"
-  "wsubh%?\\t%0, %1, %2"
-  [(set_attr "predicable" "yes")])
-
-(define_insn "subv2si3"
-  [(set (match_operand:V2SI             0 "register_operand" "=y")
-        (minus:V2SI (match_operand:V2SI 1 "register_operand"  "y")
-		    (match_operand:V2SI 2 "register_operand"  "y")))]
-  "TARGET_REALLY_IWMMXT"
-  "wsubw%?\\t%0, %1, %2"
+  "wsub<MMX_char>%?\\t%0, %1, %2"
   [(set_attr "predicable" "yes")])
 
 (define_insn "sssubv8qi3"
@@ -379,7 +295,7 @@
   "wsubwus%?\\t%0, %1, %2"
   [(set_attr "predicable" "yes")])
 
-(define_insn "mulv4hi3"
+(define_insn "*mulv4hi3_iwmmxt"
   [(set (match_operand:V4HI            0 "register_operand" "=y")
         (mult:V4HI (match_operand:V4HI 1 "register_operand" "y")
 		   (match_operand:V4HI 2 "register_operand" "y")))]
@@ -635,7 +551,7 @@
 ;;
 ;; Note - you cannot use patterns like these here:
 ;;
-;;   (set:<vector> (match:<vector>) (<comparator>:<vector> (match:<vector>) (match:<vector>)))
+;;   (set (match:<vector>) (<comparator>:<vector> (match:<vector>) (match:<vector>)))
 ;;
 ;; Because GCC will assume that the truth value (1 or 0) is installed
 ;; into the entire destination vector, (with the '1' going into the least
@@ -730,100 +646,36 @@
 
 ;; Max/min insns
 
-(define_insn "smaxv8qi3"
-  [(set (match_operand:V8QI            0 "register_operand" "=y")
-        (smax:V8QI (match_operand:V8QI 1 "register_operand" "y")
-		   (match_operand:V8QI 2 "register_operand" "y")))]
+(define_insn "*smax<mode>3_iwmmxt"
+  [(set (match_operand:VMMX            0 "register_operand" "=y")
+        (smax:VMMX (match_operand:VMMX 1 "register_operand" "y")
+		   (match_operand:VMMX 2 "register_operand" "y")))]
   "TARGET_REALLY_IWMMXT"
-  "wmaxsb%?\\t%0, %1, %2"
+  "wmaxs<MMX_char>%?\\t%0, %1, %2"
   [(set_attr "predicable" "yes")])
 
-(define_insn "umaxv8qi3"
-  [(set (match_operand:V8QI            0 "register_operand" "=y")
-        (umax:V8QI (match_operand:V8QI 1 "register_operand" "y")
-		   (match_operand:V8QI 2 "register_operand" "y")))]
+(define_insn "*umax<mode>3_iwmmxt"
+  [(set (match_operand:VMMX            0 "register_operand" "=y")
+        (umax:VMMX (match_operand:VMMX 1 "register_operand" "y")
+		   (match_operand:VMMX 2 "register_operand" "y")))]
   "TARGET_REALLY_IWMMXT"
-  "wmaxub%?\\t%0, %1, %2"
+  "wmaxu<MMX_char>%?\\t%0, %1, %2"
   [(set_attr "predicable" "yes")])
 
-(define_insn "smaxv4hi3"
-  [(set (match_operand:V4HI            0 "register_operand" "=y")
-        (smax:V4HI (match_operand:V4HI 1 "register_operand" "y")
-		   (match_operand:V4HI 2 "register_operand" "y")))]
+(define_insn "*smin<mode>3_iwmmxt"
+  [(set (match_operand:VMMX            0 "register_operand" "=y")
+        (smin:VMMX (match_operand:VMMX 1 "register_operand" "y")
+		   (match_operand:VMMX 2 "register_operand" "y")))]
   "TARGET_REALLY_IWMMXT"
-  "wmaxsh%?\\t%0, %1, %2"
+  "wmins<MMX_char>%?\\t%0, %1, %2"
   [(set_attr "predicable" "yes")])
 
-(define_insn "umaxv4hi3"
-  [(set (match_operand:V4HI            0 "register_operand" "=y")
-        (umax:V4HI (match_operand:V4HI 1 "register_operand" "y")
-		   (match_operand:V4HI 2 "register_operand" "y")))]
+(define_insn "*umin<mode>3_iwmmxt"
+  [(set (match_operand:VMMX            0 "register_operand" "=y")
+        (umin:VMMX (match_operand:VMMX 1 "register_operand" "y")
+		   (match_operand:VMMX 2 "register_operand" "y")))]
   "TARGET_REALLY_IWMMXT"
-  "wmaxuh%?\\t%0, %1, %2"
-  [(set_attr "predicable" "yes")])
-
-(define_insn "smaxv2si3"
-  [(set (match_operand:V2SI            0 "register_operand" "=y")
-        (smax:V2SI (match_operand:V2SI 1 "register_operand" "y")
-		   (match_operand:V2SI 2 "register_operand" "y")))]
-  "TARGET_REALLY_IWMMXT"
-  "wmaxsw%?\\t%0, %1, %2"
-  [(set_attr "predicable" "yes")])
-
-(define_insn "umaxv2si3"
-  [(set (match_operand:V2SI            0 "register_operand" "=y")
-        (umax:V2SI (match_operand:V2SI 1 "register_operand" "y")
-		   (match_operand:V2SI 2 "register_operand" "y")))]
-  "TARGET_REALLY_IWMMXT"
-  "wmaxuw%?\\t%0, %1, %2"
-  [(set_attr "predicable" "yes")])
-
-(define_insn "sminv8qi3"
-  [(set (match_operand:V8QI            0 "register_operand" "=y")
-        (smin:V8QI (match_operand:V8QI 1 "register_operand" "y")
-		   (match_operand:V8QI 2 "register_operand" "y")))]
-  "TARGET_REALLY_IWMMXT"
-  "wminsb%?\\t%0, %1, %2"
-  [(set_attr "predicable" "yes")])
-
-(define_insn "uminv8qi3"
-  [(set (match_operand:V8QI            0 "register_operand" "=y")
-        (umin:V8QI (match_operand:V8QI 1 "register_operand" "y")
-		   (match_operand:V8QI 2 "register_operand" "y")))]
-  "TARGET_REALLY_IWMMXT"
-  "wminub%?\\t%0, %1, %2"
-  [(set_attr "predicable" "yes")])
-
-(define_insn "sminv4hi3"
-  [(set (match_operand:V4HI            0 "register_operand" "=y")
-        (smin:V4HI (match_operand:V4HI 1 "register_operand" "y")
-		   (match_operand:V4HI 2 "register_operand" "y")))]
-  "TARGET_REALLY_IWMMXT"
-  "wminsh%?\\t%0, %1, %2"
-  [(set_attr "predicable" "yes")])
-
-(define_insn "uminv4hi3"
-  [(set (match_operand:V4HI            0 "register_operand" "=y")
-        (umin:V4HI (match_operand:V4HI 1 "register_operand" "y")
-		   (match_operand:V4HI 2 "register_operand" "y")))]
-  "TARGET_REALLY_IWMMXT"
-  "wminuh%?\\t%0, %1, %2"
-  [(set_attr "predicable" "yes")])
-
-(define_insn "sminv2si3"
-  [(set (match_operand:V2SI            0 "register_operand" "=y")
-        (smin:V2SI (match_operand:V2SI 1 "register_operand" "y")
-		   (match_operand:V2SI 2 "register_operand" "y")))]
-  "TARGET_REALLY_IWMMXT"
-  "wminsw%?\\t%0, %1, %2"
-  [(set_attr "predicable" "yes")])
-
-(define_insn "uminv2si3"
-  [(set (match_operand:V2SI            0 "register_operand" "=y")
-        (umin:V2SI (match_operand:V2SI 1 "register_operand" "y")
-		   (match_operand:V2SI 2 "register_operand" "y")))]
-  "TARGET_REALLY_IWMMXT"
-  "wminuw%?\\t%0, %1, %2"
+  "wminu<MMX_char>%?\\t%0, %1, %2"
   [(set_attr "predicable" "yes")])
 
 ;; Pack/unpack insns.
@@ -1137,76 +989,28 @@
   "wrordg%?\\t%0, %1, %2"
   [(set_attr "predicable" "yes")])
 
-(define_insn "ashrv4hi3"
-  [(set (match_operand:V4HI                0 "register_operand" "=y")
-        (ashiftrt:V4HI (match_operand:V4HI 1 "register_operand" "y")
-		       (match_operand:SI   2 "register_operand" "z")))]
+(define_insn "ashr<mode>3_iwmmxt"
+  [(set (match_operand:VSHFT                 0 "register_operand" "=y")
+        (ashiftrt:VSHFT (match_operand:VSHFT 1 "register_operand" "y")
+			(match_operand:SI    2 "register_operand" "z")))]
   "TARGET_REALLY_IWMMXT"
-  "wsrahg%?\\t%0, %1, %2"
+  "wsra<MMX_char>g%?\\t%0, %1, %2"
   [(set_attr "predicable" "yes")])
 
-(define_insn "ashrv2si3"
-  [(set (match_operand:V2SI                0 "register_operand" "=y")
-        (ashiftrt:V2SI (match_operand:V2SI 1 "register_operand" "y")
-		       (match_operand:SI   2 "register_operand" "z")))]
+(define_insn "lshr<mode>3_iwmmxt"
+  [(set (match_operand:VSHFT                 0 "register_operand" "=y")
+        (lshiftrt:VSHFT (match_operand:VSHFT 1 "register_operand" "y")
+			(match_operand:SI    2 "register_operand" "z")))]
   "TARGET_REALLY_IWMMXT"
-  "wsrawg%?\\t%0, %1, %2"
+  "wsrl<MMX_char>g%?\\t%0, %1, %2"
   [(set_attr "predicable" "yes")])
 
-(define_insn "ashrdi3_iwmmxt"
-  [(set (match_operand:DI              0 "register_operand" "=y")
-	(ashiftrt:DI (match_operand:DI 1 "register_operand" "y")
-		   (match_operand:SI   2 "register_operand" "z")))]
+(define_insn "ashl<mode>3_iwmmxt"
+  [(set (match_operand:VSHFT               0 "register_operand" "=y")
+        (ashift:VSHFT (match_operand:VSHFT 1 "register_operand" "y")
+		      (match_operand:SI    2 "register_operand" "z")))]
   "TARGET_REALLY_IWMMXT"
-  "wsradg%?\\t%0, %1, %2"
-  [(set_attr "predicable" "yes")])
-
-(define_insn "lshrv4hi3"
-  [(set (match_operand:V4HI                0 "register_operand" "=y")
-        (lshiftrt:V4HI (match_operand:V4HI 1 "register_operand" "y")
-		       (match_operand:SI   2 "register_operand" "z")))]
-  "TARGET_REALLY_IWMMXT"
-  "wsrlhg%?\\t%0, %1, %2"
-  [(set_attr "predicable" "yes")])
-
-(define_insn "lshrv2si3"
-  [(set (match_operand:V2SI                0 "register_operand" "=y")
-        (lshiftrt:V2SI (match_operand:V2SI 1 "register_operand" "y")
-		       (match_operand:SI   2 "register_operand" "z")))]
-  "TARGET_REALLY_IWMMXT"
-  "wsrlwg%?\\t%0, %1, %2"
-  [(set_attr "predicable" "yes")])
-
-(define_insn "lshrdi3_iwmmxt"
-  [(set (match_operand:DI              0 "register_operand" "=y")
-	(lshiftrt:DI (match_operand:DI 1 "register_operand" "y")
-		     (match_operand:SI 2 "register_operand" "z")))]
-  "TARGET_REALLY_IWMMXT"
-  "wsrldg%?\\t%0, %1, %2"
-  [(set_attr "predicable" "yes")])
-
-(define_insn "ashlv4hi3"
-  [(set (match_operand:V4HI              0 "register_operand" "=y")
-        (ashift:V4HI (match_operand:V4HI 1 "register_operand" "y")
-		     (match_operand:SI   2 "register_operand" "z")))]
-  "TARGET_REALLY_IWMMXT"
-  "wsllhg%?\\t%0, %1, %2"
-  [(set_attr "predicable" "yes")])
-
-(define_insn "ashlv2si3"
-  [(set (match_operand:V2SI              0 "register_operand" "=y")
-        (ashift:V2SI (match_operand:V2SI 1 "register_operand" "y")
-		       (match_operand:SI 2 "register_operand" "z")))]
-  "TARGET_REALLY_IWMMXT"
-  "wsllwg%?\\t%0, %1, %2"
-  [(set_attr "predicable" "yes")])
-
-(define_insn "ashldi3_iwmmxt"
-  [(set (match_operand:DI            0 "register_operand" "=y")
-	(ashift:DI (match_operand:DI 1 "register_operand" "y")
-		   (match_operand:SI 2 "register_operand" "z")))]
-  "TARGET_REALLY_IWMMXT"
-  "wslldg%?\\t%0, %1, %2"
+  "wsll<MMX_char>g%?\\t%0, %1, %2"
   [(set_attr "predicable" "yes")])
 
 (define_insn "rorv4hi3_di"

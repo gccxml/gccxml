@@ -1,12 +1,13 @@
 /* ARM CPU Cores
-   Copyright (C) 2003, 2005 Free Software Foundation, Inc.
+   Copyright (C) 2003, 2005, 2006, 2007, 2008, 2009, 2010
+   Free Software Foundation, Inc.
    Written by CodeSourcery, LLC
 
    This file is part of GCC.
 
    GCC is free software; you can redistribute it and/or modify it
    under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 2, or (at your option)
+   the Free Software Foundation; either version 3, or (at your option)
    any later version.
 
    GCC is distributed in the hope that it will be useful, but
@@ -15,9 +16,8 @@
    General Public License for more details.
 
    You should have received a copy of the GNU General Public License
-   along with GCC; see the file COPYING.  If not, write to the Free
-   Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
-   02110-1301, USA.  */
+   along with GCC; see the file COPYING3.  If not see
+   <http://www.gnu.org/licenses/>.  */
 
 /* Before using #include to read this file, define a macro:
 
@@ -70,10 +70,12 @@ ARM_CORE("arm7dmi",       arm7dmi,	3M,	FL_CO_PROC | FL_MODE26, fastmul)
 /* V4 Architecture Processors */
 ARM_CORE("arm8",          arm8,		4,	             FL_MODE26 | FL_LDSCHED, fastmul)
 ARM_CORE("arm810",        arm810,	4,	             FL_MODE26 | FL_LDSCHED, fastmul)
-ARM_CORE("strongarm",     strongarm,	4,	             FL_MODE26 | FL_LDSCHED | FL_STRONG, fastmul)
-ARM_CORE("strongarm110",  strongarm110,	4,	             FL_MODE26 | FL_LDSCHED | FL_STRONG, fastmul)
-ARM_CORE("strongarm1100", strongarm1100, 4,	             FL_MODE26 | FL_LDSCHED | FL_STRONG, fastmul)
-ARM_CORE("strongarm1110", strongarm1110, 4,	             FL_MODE26 | FL_LDSCHED | FL_STRONG, fastmul)
+ARM_CORE("strongarm",     strongarm,	4,	             FL_MODE26 | FL_LDSCHED | FL_STRONG, strongarm)
+ARM_CORE("strongarm110",  strongarm110,	4,	             FL_MODE26 | FL_LDSCHED | FL_STRONG, strongarm)
+ARM_CORE("strongarm1100", strongarm1100, 4,	             FL_MODE26 | FL_LDSCHED | FL_STRONG, strongarm)
+ARM_CORE("strongarm1110", strongarm1110, 4,	             FL_MODE26 | FL_LDSCHED | FL_STRONG, strongarm)
+ARM_CORE("fa526",         fa526,        4,                               FL_LDSCHED, fastmul)
+ARM_CORE("fa626",         fa626,        4,                               FL_LDSCHED, fastmul)
 
 /* V4T Architecture Processors */
 ARM_CORE("arm7tdmi",      arm7tdmi,	4T,	FL_CO_PROC          , fastmul)
@@ -103,6 +105,11 @@ ARM_CORE("arm1020e",      arm1020e,	5TE,				 FL_LDSCHED, fastmul)
 ARM_CORE("arm1022e",      arm1022e,	5TE,				 FL_LDSCHED, fastmul)
 ARM_CORE("xscale",        xscale,	5TE,	                         FL_LDSCHED | FL_STRONG | FL_XSCALE, xscale)
 ARM_CORE("iwmmxt",        iwmmxt,	5TE,	                         FL_LDSCHED | FL_STRONG | FL_XSCALE | FL_IWMMXT, xscale)
+ARM_CORE("iwmmxt2",       iwmmxt2,	5TE,	                         FL_LDSCHED | FL_STRONG | FL_XSCALE | FL_IWMMXT, xscale)
+ARM_CORE("fa606te",       fa606te,      5TE,                             FL_LDSCHED, 9e)
+ARM_CORE("fa626te",       fa626te,      5TE,                             FL_LDSCHED, 9e)
+ARM_CORE("fmp626",        fmp626,       5TE,                             FL_LDSCHED, 9e)
+ARM_CORE("fa726te",       fa726te,      5TE,                             FL_LDSCHED, fa726te)
 
 /* V5TEJ Architecture Processors */
 ARM_CORE("arm926ej-s",    arm926ejs,	5TEJ,	                         FL_LDSCHED, 9e)
@@ -115,3 +122,19 @@ ARM_CORE("arm1176jz-s",	  arm1176jzs,	6ZK,				 FL_LDSCHED, 9e)
 ARM_CORE("arm1176jzf-s",  arm1176jzfs,	6ZK,				 FL_LDSCHED | FL_VFPV2, 9e)
 ARM_CORE("mpcorenovfp",	  mpcorenovfp,	6K,				 FL_LDSCHED, 9e)
 ARM_CORE("mpcore",	  mpcore,	6K,				 FL_LDSCHED | FL_VFPV2, 9e)
+ARM_CORE("arm1156t2-s",	  arm1156t2s,	6T2,				 FL_LDSCHED, v6t2)
+ARM_CORE("arm1156t2f-s",  arm1156t2fs,  6T2,				 FL_LDSCHED | FL_VFPV2, v6t2)
+ARM_CORE("generic-armv7-a", genericv7a,	7A,				 FL_LDSCHED, cortex)
+ARM_CORE("cortex-a5",	  cortexa5,	7A,				 FL_LDSCHED, cortex_a5)
+ARM_CORE("cortex-a7",	  cortexa7,	7A,				 FL_LDSCHED | FL_THUMB_DIV | FL_ARM_DIV, cortex)
+ARM_CORE("cortex-a8",	  cortexa8,	7A,				 FL_LDSCHED, cortex)
+ARM_CORE("cortex-a9",	  cortexa9,	7A,				 FL_LDSCHED, cortex_a9)
+ARM_CORE("cortex-a15",	  cortexa15,	7A,				 FL_LDSCHED | FL_THUMB_DIV | FL_ARM_DIV, cortex)
+ARM_CORE("cortex-r4",	  cortexr4,	7R,				 FL_LDSCHED, cortex)
+ARM_CORE("cortex-r4f",	  cortexr4f,	7R,				 FL_LDSCHED, cortex)
+ARM_CORE("cortex-r5",	  cortexr5,	7R,				 FL_LDSCHED | FL_ARM_DIV, cortex)
+ARM_CORE("cortex-m4",	  cortexm4,	7EM,				 FL_LDSCHED, cortex)
+ARM_CORE("cortex-m3",	  cortexm3,	7M,				 FL_LDSCHED, cortex)
+ARM_CORE("cortex-m1",	  cortexm1,	6M,				 FL_LDSCHED, cortex)
+ARM_CORE("cortex-m0",	  cortexm0,	6M,				 FL_LDSCHED, cortex)
+

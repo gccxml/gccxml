@@ -1,10 +1,11 @@
 /* Dependency generator for Makefile fragments.
-   Copyright (C) 2000, 2001, 2003, 2007 Free Software Foundation, Inc.
+   Copyright (C) 2000, 2001, 2003, 2007, 2008, 2009
+   Free Software Foundation, Inc.
    Contributed by Zack Weinberg, Mar 2000
 
 This program is free software; you can redistribute it and/or modify it
 under the terms of the GNU General Public License as published by the
-Free Software Foundation; either version 2, or (at your option) any
+Free Software Foundation; either version 3, or (at your option) any
 later version.
 
 This program is distributed in the hope that it will be useful,
@@ -13,8 +14,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+along with this program; see the file COPYING3.  If not see
+<http://www.gnu.org/licenses/>.
 
  In other words, you are welcome to use, share and improve this program.
  You are forbidden to forbid anyone else to use, share and improve
@@ -79,6 +80,11 @@ munge (const char *filename)
 	  /* '$' is quoted by doubling it.  */
 	  len++;
 	  break;
+
+	case '#':
+	  /* '#' is quoted with a backslash.  */
+	  len++;
+	  break;
 	}
     }
 
@@ -98,6 +104,10 @@ munge (const char *filename)
 
 	case '$':
 	  *dst++ = '$';
+	  break;
+
+	case '#':
+	  *dst++ = '\\';
 	  break;
 
 	default:
@@ -120,7 +130,7 @@ apply_vpath (struct deps *d, const char *t)
       unsigned int i;
       for (i = 0; i < d->nvpaths; i++)
 	{
-	  if (!strncmp (d->vpathv[i], t, d->vpathlv[i]))
+	  if (!filename_ncmp (d->vpathv[i], t, d->vpathlv[i]))
 	    {
 	      const char *p = t + d->vpathlv[i];
 	      if (!IS_DIR_SEPARATOR (*p))
@@ -298,22 +308,24 @@ deps_write (const struct deps *d, FILE *fp, unsigned int colmax)
     {
       size = strlen (d->targetv[i]);
       column += size;
-      if (colmax && column > colmax)
-	{
-	  fputs (" \\\n ", fp);
-	  column = 1 + size;
-	}
       if (i)
 	{
-	  putc (' ', fp);
-	  column++;
+	  if (colmax && column > colmax)
+	    {
+	      fputs (" \\\n ", fp);
+	      column = 1 + size;
+	    }
+	  else
+	    {
+	      putc (' ', fp);
+	      column++;
+	    }
 	}
       fputs (d->targetv[i], fp);
     }
 
   putc (':', fp);
-  putc (' ', fp);
-  column += 2;
+  column++;
 
   for (i = 0; i < d->ndeps; i++)
     {
@@ -324,7 +336,7 @@ deps_write (const struct deps *d, FILE *fp, unsigned int colmax)
 	  fputs (" \\\n ", fp);
 	  column = 1 + size;
 	}
-      if (i)
+      else
 	{
 	  putc (' ', fp);
 	  column++;
@@ -409,7 +421,7 @@ deps_restore (struct deps *deps, FILE *fd, const char *self)
       buf[num_to_read] = '\0';
 
       /* Generate makefile dependencies from .pch if -nopch-deps.  */
-      if (self != NULL && strcmp (buf, self) != 0)
+      if (self != NULL && filename_cmp (buf, self) != 0)
         deps_add_dep (deps, buf);
     }
 

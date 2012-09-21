@@ -1,3 +1,22 @@
+dnl Copyright (C) 2005, 2006, 2007, 2008, 2011, 2012
+dnl Free Software Foundation, Inc.
+dnl
+dnl This file is part of GCC.
+dnl
+dnl GCC is free software; you can redistribute it and/or modify
+dnl it under the terms of the GNU General Public License as published by
+dnl the Free Software Foundation; either version 3, or (at your option)
+dnl any later version.
+dnl
+dnl GCC is distributed in the hope that it will be useful,
+dnl but WITHOUT ANY WARRANTY; without even the implied warranty of
+dnl MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+dnl GNU General Public License for more details.
+dnl
+dnl You should have received a copy of the GNU General Public License
+dnl along with GCC; see the file COPYING3.  If not see
+dnl <http://www.gnu.org/licenses/>.
+
 dnl See whether we need a declaration for a function.
 dnl The result is highly dependent on the INCLUDES passed in, so make sure
 dnl to use a different cache variable name in this macro if it is invoked
@@ -295,34 +314,6 @@ if test $gcc_cv_func_mmap_anon = yes; then
 fi
 ])
 
-dnl Locate a program and check that its version is acceptable.
-dnl AC_PROG_CHECK_VER(var, name, version-switch,
-dnl                  version-extract-regexp, version-glob)
-AC_DEFUN([gcc_AC_CHECK_PROG_VER],
-[AC_REQUIRE([gcc_AC_BUILD_EXEEXT])
-AC_CHECK_PROG([$1], [$2], [$2])
-if test -n "[$]$1"; then
-  # Found it, now check the version.
-  AC_CACHE_CHECK(for modern $2, gcc_cv_prog_$2_modern,
-[changequote(<<,>>)dnl
-  ac_prog_version=`<<$>>$1 $3 2>&1 |
-                   sed -n 's/^.*patsubst(<<$4>>,/,\/).*$/\1/p'`
-changequote([,])dnl
-  echo "configure:__oline__: version of $2 is $ac_prog_version" >&AS_MESSAGE_LOG_FD
-changequote(<<,>>)dnl
-  case $ac_prog_version in
-    '')     gcc_cv_prog_$2_modern=no;;
-    <<$5>>)
-            gcc_cv_prog_$2_modern=yes;;
-    *)      gcc_cv_prog_$2_modern=no;;
-  esac
-changequote([,])dnl
-])
-else
-  gcc_cv_prog_$2_modern=no
-fi
-])
-
 dnl Determine if enumerated bitfields are unsigned.   ISO C says they can 
 dnl be either signed or unsigned.
 dnl
@@ -375,27 +366,127 @@ if test $gcc_cv_c_nbby = failed; then
   AC_MSG_ERROR(cannot determine number of bits in a byte)
 else
   AC_DEFINE_UNQUOTED(CHAR_BIT, $gcc_cv_c_nbby,
-  [Define as the number of bits in a byte, if \`limits.h' doesn't.])
+  [Define as the number of bits in a byte, if `limits.h' doesn't.])
 fi
 fi])
 
 AC_DEFUN([gcc_AC_INITFINI_ARRAY],
-[AC_ARG_ENABLE(initfini-array,
+[AC_REQUIRE([gcc_SUN_LD_VERSION])dnl
+AC_ARG_ENABLE(initfini-array,
 	[  --enable-initfini-array	use .init_array/.fini_array sections],
 	[], [
 AC_CACHE_CHECK(for .preinit_array/.init_array/.fini_array support,
 		 gcc_cv_initfini_array, [dnl
-  AC_RUN_IFELSE([AC_LANG_SOURCE([
+  if test "x${build}" = "x${target}" && test "x${build}" = "x${host}"; then
+    case "${target}" in
+      ia64-*)
+	AC_RUN_IFELSE([AC_LANG_SOURCE([
+#ifndef __ELF__
+#error Not an ELF OS
+#endif
+/* We turn on .preinit_array/.init_array/.fini_array support for ia64
+   if it can be used.  */
 static int x = -1;
 int main (void) { return x; }
 int foo (void) { x = 0; }
-int (*fp) (void) __attribute__ ((section (".init_array"))) = foo;])],
+int (*fp) (void) __attribute__ ((section (".init_array"))) = foo;
+])],
 	     [gcc_cv_initfini_array=yes], [gcc_cv_initfini_array=no],
-	     [gcc_cv_initfini_array=no])])
+	     [gcc_cv_initfini_array=no]);;
+      *)
+	gcc_cv_initfini_array=no
+	if test $in_tree_ld = yes ; then
+	  if test "$gcc_cv_gld_major_version" -eq 2 \
+	     -a "$gcc_cv_gld_minor_version" -ge 22 \
+	     -o "$gcc_cv_gld_major_version" -gt 2 \
+	     && test $in_tree_ld_is_elf = yes; then
+	    gcc_cv_initfini_array=yes
+	  fi
+	elif test x$gcc_cv_as != x -a x$gcc_cv_ld != x -a x$gcc_cv_objdump != x ; then
+	  cat > conftest.s <<\EOF
+.section .dtors,"a",%progbits
+.balign 4
+.byte 'A', 'A', 'A', 'A'
+.section .ctors,"a",%progbits
+.balign 4
+.byte 'B', 'B', 'B', 'B'
+.section .fini_array.65530,"a",%progbits
+.balign 4
+.byte 'C', 'C', 'C', 'C'
+.section .init_array.65530,"a",%progbits
+.balign 4
+.byte 'D', 'D', 'D', 'D'
+.section .dtors.64528,"a",%progbits
+.balign 4
+.byte 'E', 'E', 'E', 'E'
+.section .ctors.64528,"a",%progbits
+.balign 4
+.byte 'F', 'F', 'F', 'F'
+.section .fini_array.01005,"a",%progbits
+.balign 4
+.byte 'G', 'G', 'G', 'G'
+.section .init_array.01005,"a",%progbits
+.balign 4
+.byte 'H', 'H', 'H', 'H'
+.text
+.globl _start
+_start:
+EOF
+	  if $gcc_cv_as -o conftest.o conftest.s > /dev/null 2>&1 \
+	     && $gcc_cv_ld -o conftest conftest.o > /dev/null 2>&1 \
+	     && $gcc_cv_objdump -s -j .init_array conftest \
+		| grep HHHHFFFFDDDDBBBB > /dev/null 2>&1 \
+	     && $gcc_cv_objdump -s -j .fini_array conftest \
+		| grep GGGGEEEECCCCAAAA > /dev/null 2>&1; then
+	    gcc_cv_initfini_array=yes
+	  fi
+changequote(,)dnl
+	  rm -f conftest conftest.*
+changequote([,])dnl
+	fi
+	AC_PREPROC_IFELSE([AC_LANG_SOURCE([
+#ifndef __ELF__
+# error Not an ELF OS
+#endif
+#include <stdlib.h>
+#if defined __GLIBC_PREREQ
+# if __GLIBC_PREREQ (2, 4)
+# else
+#  error GLIBC 2.4 required
+# endif
+#else
+# if defined __sun__ && defined __svr4__
+   /* Solaris ld.so.1 supports .init_array/.fini_array since Solaris 8.  */
+# else
+#  error The C library not known to support .init_array/.fini_array
+# endif
+#endif
+])],[
+    case "${target}" in
+      *-*-solaris2.8*)
+	# .init_array/.fini_array support was introduced in Solaris 8
+	# patches 109147-08 (sparc) and 109148-08 (x86).  Since ld.so.1 and
+	# ld are guaranteed to be updated in lockstep, we can check ld -V
+	# instead.  Unfortunately, proper ld version numbers were only
+	# introduced in rev. -14, so we check for that.
+  	if test "$gcc_cv_sun_ld_vers_minor" -lt 272; then
+	  gcc_cv_initfini_array=no
+	fi
+      ;;
+      *-*-solaris2.9* | *-*-solaris2.1[[0-9]]*)
+        # .init_array/.fini_array support is present since Solaris 9 FCS.
+        ;;
+    esac
+], [gcc_cv_initfini_array=no]);;
+    esac
+  else
+    AC_MSG_CHECKING(cross compile... guessing)
+    gcc_cv_initfini_array=no
+  fi])
   enable_initfini_array=$gcc_cv_initfini_array
 ])
 if test $enable_initfini_array = yes; then
-  AC_DEFINE(HAVE_INITFINI_ARRAY, 1,
+  AC_DEFINE(HAVE_INITFINI_ARRAY_SUPPORT, 1,
     [Define .init_array/.fini_array sections are available and working.])
 fi])
 
@@ -452,6 +543,26 @@ AC_DEFUN([gcc_GAS_VERSION_GTE_IFELSE],
 ifelse([$1], elf, [_gcc_GAS_VERSION_GTE_IFELSE($@)],
                   [_gcc_GAS_VERSION_GTE_IFELSE(,$@)])])
 
+dnl # gcc_GAS_FLAGS
+dnl # Used by gcc_GAS_CHECK_FEATURE 
+dnl #
+AC_DEFUN([gcc_GAS_FLAGS],
+[AC_CACHE_CHECK([assembler flags], gcc_cv_as_flags,
+[ case "$target" in
+  i[[34567]]86-*-linux*)
+    dnl Always pass --32 to ia32 Linux assembler.
+    gcc_cv_as_flags="--32"
+    ;;
+  powerpc*-*-darwin*)
+    dnl Always pass -arch ppc to assembler.
+    gcc_cv_as_flags="-arch ppc"
+    ;;
+  *)
+    gcc_cv_as_flags=" "
+    ;;
+  esac])
+])
+
 dnl gcc_GAS_CHECK_FEATURE(description, cv, [[elf,]major,minor,patchlevel],
 dnl [extra switches to as], [assembler input],
 dnl [extra testing logic], [command if feature available])
@@ -464,14 +575,15 @@ dnl if assembly succeeds.  If EXTRA TESTING LOGIC is not the empty string,
 dnl then it is run instead of simply setting CV to "yes" - it is responsible
 dnl for doing so, if appropriate.
 AC_DEFUN([gcc_GAS_CHECK_FEATURE],
-[AC_CACHE_CHECK([assembler for $1], [$2],
+[AC_REQUIRE([gcc_GAS_FLAGS])dnl
+AC_CACHE_CHECK([assembler for $1], [$2],
  [[$2]=no
   ifelse([$3],,,[dnl
   if test $in_tree_gas = yes; then
     gcc_GAS_VERSION_GTE_IFELSE($3, [[$2]=yes])
   el])if test x$gcc_cv_as != x; then
-    echo ifelse(m4_substr([$5],0,1),[$], "[$5]", '[$5]') > conftest.s
-    if AC_TRY_COMMAND([$gcc_cv_as $4 -o conftest.o conftest.s >&AS_MESSAGE_LOG_FD])
+    AS_ECHO([ifelse(m4_substr([$5],0,1),[$], "[$5]", '[$5]')]) > conftest.s
+    if AC_TRY_COMMAND([$gcc_cv_as $gcc_cv_as_flags $4 -o conftest.o conftest.s >&AS_MESSAGE_LOG_FD])
     then
 	ifelse([$6],, [$2]=yes, [$6])
     else
@@ -484,6 +596,43 @@ ifelse([$7],,,[dnl
 if test $[$2] = yes; then
   $7
 fi])])
+
+dnl gcc_SUN_LD_VERSION
+dnl
+dnl Determines Sun linker version numbers, setting gcc_cv_sun_ld_vers to
+dnl the complete version number and gcc_cv_sun_ld_vers_{major, minor} to
+dnl the corresponding fields.
+dnl
+dnl ld and ld.so.1 are guaranteed to be updated in lockstep, so ld version
+dnl numbers can be used in ld.so.1 feature checks even if a different
+dnl linker is configured.
+dnl
+AC_DEFUN([gcc_SUN_LD_VERSION],
+[changequote(,)dnl
+if test "x${build}" = "x${target}" && test "x${build}" = "x${host}"; then
+  case "${target}" in
+    *-*-solaris2*)
+      #
+      # Solaris 2 ld -V output looks like this for a regular version:
+      #
+      # ld: Software Generation Utilities - Solaris Link Editors: 5.11-1.1699
+      #
+      # but test versions add stuff at the end:
+      #
+      # ld: Software Generation Utilities - Solaris Link Editors: 5.11-1.1701:onnv-ab196087-6931056-03/25/10
+      #
+      gcc_cv_sun_ld_ver=`/usr/ccs/bin/ld -V 2>&1`
+      if echo "$gcc_cv_sun_ld_ver" | grep 'Solaris Link Editors' > /dev/null; then
+	gcc_cv_sun_ld_vers=`echo $gcc_cv_sun_ld_ver | sed -n \
+	  -e 's,^.*: 5\.[0-9][0-9]*-\([0-9]\.[0-9][0-9]*\).*$,\1,p'`
+	gcc_cv_sun_ld_vers_major=`expr "$gcc_cv_sun_ld_vers" : '\([0-9]*\)'`
+	gcc_cv_sun_ld_vers_minor=`expr "$gcc_cv_sun_ld_vers" : '[0-9]*\.\([0-9]*\)'`
+      fi
+      ;;
+  esac
+fi
+changequote([,])dnl
+])
 
 dnl GCC_TARGET_TEMPLATE(KEY)
 dnl ------------------------

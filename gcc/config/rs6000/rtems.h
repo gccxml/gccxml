@@ -1,5 +1,5 @@
 /* Definitions for rtems targeting a PowerPC using elf.
-   Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005
+   Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2007
    Free Software Foundation, Inc.
    Contributed by Joel Sherrill (joel@OARcorp.com).
 
@@ -7,7 +7,7 @@
 
    GCC is free software; you can redistribute it and/or modify it
    under the terms of the GNU General Public License as published
-   by the Free Software Foundation; either version 2, or (at your
+   by the Free Software Foundation; either version 3, or (at your
    option) any later version.
 
    GCC is distributed in the hope that it will be useful, but WITHOUT
@@ -16,9 +16,8 @@
    License for more details.
 
    You should have received a copy of the GNU General Public License
-   along with GCC; see the file COPYING.  If not, write to the
-   Free Software Foundation, 51 Franklin Street, Fifth Floor, Boston,
-   MA 02110-1301, USA.  */
+   along with GCC; see the file COPYING3.  If not see
+   <http://www.gnu.org/licenses/>.  */
 
 /* Specify predefined symbols in preprocessor.  */
 
@@ -50,8 +49,23 @@
 %{mcpu=604:  %{!Dppc*: %{!Dmpc*: -Dmpc604}  } } \
 %{mcpu=750:  %{!Dppc*: %{!Dmpc*: -Dmpc750}  } } \
 %{mcpu=821:  %{!Dppc*: %{!Dmpc*: -Dmpc821}  } } \
-%{mcpu=860:  %{!Dppc*: %{!Dmpc*: -Dmpc860}  } }" 
+%{mcpu=860:  %{!Dppc*: %{!Dmpc*: -Dmpc860}  } } \
+%{mcpu=8540: %{!Dppc*: %{!Dmpc*: -Dppc8540}  } }" 
 
 #undef  SUBSUBTARGET_EXTRA_SPECS
 #define SUBSUBTARGET_EXTRA_SPECS \
   { "cpp_os_rtems",		CPP_OS_RTEMS_SPEC }
+
+#undef SUBSUBTARGET_OVERRIDE_OPTIONS
+#define SUBSUBTARGET_OVERRIDE_OPTIONS                                     \
+  do {                                                                    \
+   if (TARGET_E500)                                                       \
+      {                                                                   \
+        if (TARGET_HARD_FLOAT && !global_options_set.x_rs6000_float_gprs) \
+          rs6000_float_gprs = 1;                                          \
+        if (rs6000_float_gprs != 0 && !global_options_set.x_rs6000_spe)   \
+          rs6000_spe = 1;                                                 \
+        if (rs6000_spe && !global_options_set.x_rs6000_spe_abi)           \
+          rs6000_spe_abi = 1;                                             \
+      }                                                                   \
+  } while(0)

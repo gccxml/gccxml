@@ -1,11 +1,12 @@
 /* Base configuration file for all FreeBSD targets.
-   Copyright (C) 1999, 2000, 2001 Free Software Foundation, Inc.
+   Copyright (C) 1999, 2000, 2001, 2007, 2008, 2009,
+   2010, 2011, 2012 Free Software Foundation, Inc.
 
 This file is part of GCC.
 
 GCC is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2, or (at your option)
+the Free Software Foundation; either version 3, or (at your option)
 any later version.
 
 GCC is distributed in the hope that it will be useful,
@@ -14,9 +15,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with GCC; see the file COPYING.  If not, write to
-the Free Software Foundation, 51 Franklin Street, Fifth Floor,
-Boston, MA 02110-1301, USA.  */
+along with GCC; see the file COPYING3.  If not see
+<http://www.gnu.org/licenses/>.  */
 
 /* Common FreeBSD configuration. 
    All FreeBSD architectures should include this file, which will specify
@@ -29,17 +29,6 @@ Boston, MA 02110-1301, USA.  */
 
 /* In case we need to know.  */
 #define USING_CONFIG_FREEBSD 1
-
-/* This defines which switch letters take arguments.  On FreeBSD, most of
-   the normal cases (defined in gcc.c) apply, and we also have -h* and
-   -z* options (for the linker) (coming from SVR4).
-   We also have -R (alias --rpath), no -z, --soname (-h), --assert etc.  */
-
-#undef  SWITCH_TAKES_ARG
-#define SWITCH_TAKES_ARG(CHAR) (FBSD_SWITCH_TAKES_ARG(CHAR))
-
-#undef  WORD_SWITCH_TAKES_ARG
-#define WORD_SWITCH_TAKES_ARG(STR) (FBSD_WORD_SWITCH_TAKES_ARG(STR))
 
 #undef  TARGET_OS_CPP_BUILTINS
 #define TARGET_OS_CPP_BUILTINS() FBSD_TARGET_OS_CPP_BUILTINS()
@@ -56,6 +45,18 @@ Boston, MA 02110-1301, USA.  */
 #undef  LIB_SPEC
 #define LIB_SPEC FBSD_LIB_SPEC
 
+#if defined(HAVE_LD_EH_FRAME_HDR)
+#define LINK_EH_SPEC "%{!static:--eh-frame-hdr} "
+#endif
+
+#ifdef TARGET_LIBC_PROVIDES_SSP
+#define LINK_SSP_SPEC "%{fstack-protector|fstack-protector-all:-lssp_nonshared}"
+#endif
+
+/* Use --as-needed -lgcc_s for eh support.  */
+#ifdef HAVE_LD_AS_NEEDED
+#define USE_LD_AS_NEEDED 1
+#endif
 
 /************************[  Target stuff  ]***********************************/
 
@@ -67,12 +68,15 @@ Boston, MA 02110-1301, USA.  */
 #undef  NO_IMPLICIT_EXTERN_C
 #define NO_IMPLICIT_EXTERN_C	1
 
-/* Make gcc agree with FreeBSD's standard headers (<machine/ansi.h>, etc...)  */
+/* Follow FreeBSD's standard headers (<sys/_types.h> etc...).  */
 
 #undef  WCHAR_TYPE
 #define WCHAR_TYPE "int"
 
-#define MATH_LIBRARY_PROFILE    "-lm_p"
+#undef  WINT_TYPE
+#define WINT_TYPE "int"
+
+#define MATH_LIBRARY_PROFILE    "m_p"
 
 /* Code generation parameters.  */
 

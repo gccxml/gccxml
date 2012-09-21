@@ -1,5 +1,5 @@
 ;; Machine Descriptions for R8C/M16C/M32C
-;; Copyright (C) 2005
+;; Copyright (C) 2005, 2007
 ;; Free Software Foundation, Inc.
 ;; Contributed by Red Hat.
 ;;
@@ -7,7 +7,7 @@
 ;;
 ;; GCC is free software; you can redistribute it and/or modify it
 ;; under the terms of the GNU General Public License as published
-;; by the Free Software Foundation; either version 2, or (at your
+;; by the Free Software Foundation; either version 3, or (at your
 ;; option) any later version.
 ;;
 ;; GCC is distributed in the hope that it will be useful, but WITHOUT
@@ -16,9 +16,8 @@
 ;; License for more details.
 ;;
 ;; You should have received a copy of the GNU General Public License
-;; along with GCC; see the file COPYING.  If not, write to the Free
-;; Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
-;; 02110-1301, USA.
+;; along with GCC; see the file COPYING3.  If not see
+;; <http://www.gnu.org/licenses/>.
 
 ;; bit shifting
 
@@ -175,7 +174,7 @@
 (define_insn "ashlpsi3_i"
   [(set (match_operand:PSI 0 "mra_operand" "=R02RaaSd*Rmm,R02RaaSd*Rmm")
 	(ashift:PSI (match_operand:PSI 1 "mra_operand" "0,0")
-		    (match_operand:QI 2 "mrai_operand" "In4,RqiSd")))
+		    (match_operand:QI 2 "shiftcount_operand" "In4,RqiSd")))
    (clobber (match_scratch:HI 3 "=X,R1w"))]
   "TARGET_A24"
   "@
@@ -187,7 +186,7 @@
 (define_insn "ashrpsi3_i"
   [(set (match_operand:PSI 0 "mra_operand" "=R02RaaSd*Rmm,R02RaaSd*Rmm")
 	(ashiftrt:PSI (match_operand:PSI 1 "mra_operand" "0,0")
-		      (neg:QI (match_operand:QI 2 "mrai_operand" "In4,RqiSd"))))
+		      (neg:QI (match_operand:QI 2 "shiftcount_operand" "In4,RqiSd"))))
    (clobber (match_scratch:HI 3 "=X,R1w"))]
   "TARGET_A24"
   "@
@@ -212,7 +211,7 @@
 (define_expand "ashlpsi3"
   [(parallel [(set (match_operand:PSI 0 "mra_operand" "")
 		   (ashift:PSI (match_operand:PSI 1 "mra_operand" "")
-			       (match_operand:QI 2 "mrai_operand" "")))
+			       (match_operand:QI 2 "shiftcount_operand" "")))
 	      (clobber (match_scratch:HI 3 ""))])]
   "TARGET_A24"
   "if (m32c_prepare_shift (operands, 1, ASHIFT))
@@ -222,7 +221,7 @@
 (define_expand "ashrpsi3"
   [(parallel [(set (match_operand:PSI 0 "mra_operand" "")
 		   (ashiftrt:PSI (match_operand:PSI 1 "mra_operand" "")
-				 (neg:QI (match_operand:QI 2 "mrai_operand" ""))))
+				 (neg:QI (match_operand:QI 2 "shiftcount_operand" ""))))
 	      (clobber (match_scratch:HI 3 ""))])]
   "TARGET_A24"
   "if (m32c_prepare_shift (operands, -1, ASHIFTRT))
@@ -232,7 +231,7 @@
 (define_expand "lshrpsi3"
   [(parallel [(set (match_operand:PSI 0 "mra_operand" "")
 		   (lshiftrt:PSI (match_operand:PSI 1 "mra_operand" "")
-				 (neg:QI (match_operand:QI 2 "mrai_operand" ""))))
+				 (neg:QI (match_operand:QI 2 "shiftcount_operand" ""))))
 	      (clobber (match_scratch:HI 3 ""))])]
   "TARGET_A24"
   "if (m32c_prepare_shift (operands, -1, LSHIFTRT))

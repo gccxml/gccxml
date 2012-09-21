@@ -14,10 +14,6 @@
    so we define PCC_BITFIELD_TYPE_MATTERS.  */
 #define PCC_BITFIELD_TYPE_MATTERS 1
 
-/* Undef PCC_STATIC_STRUCT_RETURN so that we get a re-entrant calling
-   convention.  */
-#undef PCC_STATIC_STRUCT_RETURN
-
 /* Don't default to pcc-struct-return, so that we can return small structures
    and unions in registers, which is slightly more efficient.  */
 #define DEFAULT_PCC_STRUCT_RETURN 0
@@ -30,7 +26,8 @@
   m68k_libcall_value (MODE)
 
 #undef FUNCTION_VALUE_REGNO_P
-#define FUNCTION_VALUE_REGNO_P(N) ((N) == 0 || (TARGET_68881 && (N) == 16))
+#define FUNCTION_VALUE_REGNO_P(N)			\
+  ((N) == D0_REG || (TARGET_68881 && (N) == FP0_REG))
 
 #undef NEEDS_UNTYPED_CALL
 #define NEEDS_UNTYPED_CALL 1

@@ -1,11 +1,11 @@
 /* Definitions for code generation pass of GNU compiler.
-   Copyright (C) 2001, 2004 Free Software Foundation, Inc.
+   Copyright (C) 2001, 2004, 2007, 2008, 2010 Free Software Foundation, Inc.
 
 This file is part of GCC.
 
 GCC is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2, or (at your option)
+the Free Software Foundation; either version 3, or (at your option)
 any later version.
 
 GCC is distributed in the hope that it will be useful,
@@ -14,12 +14,13 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with GCC; see the file COPYING.  If not, write to
-the Free Software Foundation, 51 Franklin Street, Fifth Floor,
-Boston, MA 02110-1301, USA.  */
+along with GCC; see the file COPYING3.  If not see
+<http://www.gnu.org/licenses/>.  */
 
 #ifndef GCC_LIBFUNCS_H
 #define GCC_LIBFUNCS_H
+
+#include "hashtab.h"
 
 /* Enumeration of indexes into libfunc_table.  */
 enum libfunc_index
@@ -31,8 +32,6 @@ enum libfunc_index
   LTI_memset,
   LTI_setbits,
 
-  LTI_unwind_resume,
-  LTI_eh_personality,
   LTI_setjmp,
   LTI_longjmp,
   LTI_unwind_sjlj_register,
@@ -41,14 +40,41 @@ enum libfunc_index
   LTI_profile_function_entry,
   LTI_profile_function_exit,
 
+  LTI_synchronize,
+
   LTI_gcov_flush,
 
   LTI_MAX
 };
 
-/* SYMBOL_REF rtx's for the library functions that are called
-   implicitly and not via optabs.  */
-extern GTY(()) rtx libfunc_table[LTI_MAX];
+/* Information about an optab-related libfunc.  We use the same hashtable
+   for normal optabs and conversion optabs.  In the first case mode2
+   is unused.  */
+struct GTY(()) libfunc_entry {
+  size_t optab;
+  enum machine_mode mode1, mode2;
+  rtx libfunc;
+};
+
+/* Target-dependent globals.  */
+struct GTY(()) target_libfuncs {
+  /* SYMBOL_REF rtx's for the library functions that are called
+     implicitly and not via optabs.  */
+  rtx x_libfunc_table[LTI_MAX];
+
+  /* Hash table used to convert declarations into nodes.  */
+  htab_t GTY((param_is (struct libfunc_entry))) x_libfunc_hash;
+};
+
+extern GTY(()) struct target_libfuncs default_target_libfuncs;
+#if SWITCHABLE_TARGET
+extern struct target_libfuncs *this_target_libfuncs;
+#else
+#define this_target_libfuncs (&default_target_libfuncs)
+#endif
+
+#define libfunc_table \
+  (this_target_libfuncs->x_libfunc_table)
 
 /* Accessor macros for libfunc_table.  */
 
@@ -59,8 +85,6 @@ extern GTY(()) rtx libfunc_table[LTI_MAX];
 #define memset_libfunc	(libfunc_table[LTI_memset])
 #define setbits_libfunc	(libfunc_table[LTI_setbits])
 
-#define unwind_resume_libfunc	(libfunc_table[LTI_unwind_resume])
-#define eh_personality_libfunc	(libfunc_table[LTI_eh_personality])
 #define setjmp_libfunc	(libfunc_table[LTI_setjmp])
 #define longjmp_libfunc	(libfunc_table[LTI_longjmp])
 #define unwind_sjlj_register_libfunc (libfunc_table[LTI_unwind_sjlj_register])
@@ -70,6 +94,11 @@ extern GTY(()) rtx libfunc_table[LTI_MAX];
 #define profile_function_entry_libfunc	(libfunc_table[LTI_profile_function_entry])
 #define profile_function_exit_libfunc	(libfunc_table[LTI_profile_function_exit])
 
+#define synchronize_libfunc	(libfunc_table[LTI_synchronize])
+
 #define gcov_flush_libfunc	(libfunc_table[LTI_gcov_flush])
+
+/* In explow.c */
+extern void set_stack_check_libfunc (const char *);
 
 #endif /* GCC_LIBFUNCS_H */

@@ -1,13 +1,14 @@
 /* Definitions of target machine for GNU compiler, for DEC Alpha.
    Copyright (C) 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999,
-   2000, 2001, 2002, 2004, 2005 Free Software Foundation, Inc.
+   2000, 2001, 2002, 2004, 2005, 2007, 2008, 2009, 2010, 2011
+   Free Software Foundation, Inc.
    Contributed by Richard Kenner (kenner@vlsi1.ultra.nyu.edu)
 
 This file is part of GCC.
 
 GCC is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2, or (at your option)
+the Free Software Foundation; either version 3, or (at your option)
 any later version.
 
 GCC is distributed in the hope that it will be useful,
@@ -16,9 +17,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with GCC; see the file COPYING.  If not, write to
-the Free Software Foundation, 51 Franklin Street, Fifth Floor,
-Boston, MA 02110-1301, USA.  */
+along with GCC; see the file COPYING3.  If not see
+<http://www.gnu.org/licenses/>.  */
 
 /* Target CPU builtins.  */
 #define TARGET_CPU_CPP_BUILTINS()			\
@@ -96,18 +96,6 @@ Boston, MA 02110-1301, USA.  */
   while (0)
 #endif
 
-#define CPP_SPEC "%(cpp_subtarget)"
-
-#ifndef CPP_SUBTARGET_SPEC
-#define CPP_SUBTARGET_SPEC ""
-#endif
-
-#define WORD_SWITCH_TAKES_ARG(STR)		\
- (!strcmp (STR, "rpath") || DEFAULT_WORD_SWITCH_TAKES_ARG(STR))
-
-/* Print subsidiary information on the compiler version in use.  */
-#define TARGET_VERSION
-
 /* Run-time compilation parameters selecting different hardware subsets.  */
 
 /* Which processor to schedule for. The cpu attribute defines a list that
@@ -147,8 +135,6 @@ enum alpha_fp_trap_mode
   ALPHA_FPTM_SUI	/* Software completion, w/underflow & inexact traps */
 };
 
-extern int target_flags;
-
 extern enum alpha_trap_precision alpha_tp;
 extern enum alpha_fp_rounding_mode alpha_fprm;
 extern enum alpha_fp_trap_mode alpha_fptm;
@@ -157,12 +143,8 @@ extern enum alpha_fp_trap_mode alpha_fptm;
 #define TARGET_FP	(!TARGET_SOFT_FP)
 
 /* These are for target os support and cannot be changed at runtime.  */
-#define TARGET_ABI_WINDOWS_NT 0
-#define TARGET_ABI_OPEN_VMS 0
-#define TARGET_ABI_UNICOSMK 0
-#define TARGET_ABI_OSF (!TARGET_ABI_WINDOWS_NT	\
-			&& !TARGET_ABI_OPEN_VMS	\
-			&& !TARGET_ABI_UNICOSMK)
+#define TARGET_ABI_OPEN_VMS	0
+#define TARGET_ABI_OSF		(!TARGET_ABI_OPEN_VMS)
 
 #ifndef TARGET_AS_CAN_SUBTRACT_LABELS
 #define TARGET_AS_CAN_SUBTRACT_LABELS TARGET_GAS
@@ -215,53 +197,6 @@ extern enum alpha_fp_trap_mode alpha_fptm;
   {"cpu", "%{!mcpu=*:-mcpu=%(VALUE)}" }, \
   {"tune", "%{!mtune=*:-mtune=%(VALUE)}" }
 
-/* This macro defines names of additional specifications to put in the
-   specs that can be used in various specifications like CC1_SPEC.  Its
-   definition is an initializer with a subgrouping for each command option.
-
-   Each subgrouping contains a string constant, that defines the
-   specification name, and a string constant that used by the GCC driver
-   program.
-
-   Do not define this macro if it does not need to do anything.  */
-
-#ifndef SUBTARGET_EXTRA_SPECS
-#define SUBTARGET_EXTRA_SPECS
-#endif
-
-#define EXTRA_SPECS				\
-  { "cpp_subtarget", CPP_SUBTARGET_SPEC },	\
-  SUBTARGET_EXTRA_SPECS
-
-
-/* Sometimes certain combinations of command options do not make sense
-   on a particular target machine.  You can define a macro
-   `OVERRIDE_OPTIONS' to take account of this.  This macro, if
-   defined, is executed once just after all the command options have
-   been parsed.
-
-   On the Alpha, it is used to translate target-option strings into
-   numeric values.  */
-
-#define OVERRIDE_OPTIONS override_options ()
-
-
-/* Define this macro to change register usage conditional on target flags.
-
-   On the Alpha, we use this to disable the floating-point registers when
-   they don't exist.  */
-
-#define CONDITIONAL_REGISTER_USAGE		\
-{						\
-  int i;					\
-  if (! TARGET_FPREGS)				\
-    for (i = 32; i < 63; i++)			\
-      fixed_regs[i] = call_used_regs[i] = 1;	\
-}
-
-
-/* Show we can debug even without a frame pointer.  */
-#define CAN_DEBUG_WITHOUT_FP
 
 /* target machine storage layout */
 
@@ -270,10 +205,6 @@ extern enum alpha_fp_trap_mode alpha_fptm;
 
 /* Define the size of `long long'.  The default is the twice the word size.  */
 #define LONG_LONG_TYPE_SIZE 64
-
-/* We're IEEE unless someone says to use VAX.  */
-#define TARGET_FLOAT_FORMAT \
-  (TARGET_FLOAT_VAX ? VAX_FLOAT_FORMAT : IEEE_FLOAT_FORMAT)
 
 /* The two floating-point formats we support are S-floating, which is
    4 bytes, and T-floating, which is 8 bytes.  `float' is S and `double'
@@ -477,7 +408,7 @@ extern enum alpha_fp_trap_mode alpha_fptm;
    registers can hold 64-bit integers as well, but not smaller values.  */
 
 #define HARD_REGNO_MODE_OK(REGNO, MODE) 				\
-  ((REGNO) >= 32 && (REGNO) <= 62 					\
+  (IN_RANGE ((REGNO), 32, 62)						\
    ? (MODE) == SFmode || (MODE) == DFmode || (MODE) == DImode		\
      || (MODE) == SCmode || (MODE) == DCmode				\
    : 1)
@@ -504,12 +435,6 @@ extern enum alpha_fp_trap_mode alpha_fptm;
 
 /* Base register for access to local variables of the function.  */
 #define HARD_FRAME_POINTER_REGNUM 15
-
-/* Value should be nonzero if functions must have frame pointers.
-   Zero means the frame pointer need not be set up (and parms
-   may be accessed via the stack pointer) in functions that seem suitable.
-   This is computed in `reload', in reload1.c.  */
-#define FRAME_POINTER_REQUIRED 0
 
 /* Base register for access to arguments of the function.  */
 #define ARG_POINTER_REGNUM 31
@@ -593,69 +518,12 @@ enum reg_class {
   : (REGNO) == 24 ? R24_REG			\
   : (REGNO) == 25 ? R25_REG			\
   : (REGNO) == 27 ? R27_REG			\
-  : (REGNO) >= 32 && (REGNO) <= 62 ? FLOAT_REGS	\
+  : IN_RANGE ((REGNO), 32, 62) ? FLOAT_REGS	\
   : GENERAL_REGS)
 
 /* The class value for index registers, and the one for base regs.  */
 #define INDEX_REG_CLASS NO_REGS
 #define BASE_REG_CLASS GENERAL_REGS
-
-/* Get reg_class from a letter such as appears in the machine description.  */
-
-#define REG_CLASS_FROM_LETTER(C)	\
- ((C) == 'a' ? R24_REG			\
-  : (C) == 'b' ? R25_REG		\
-  : (C) == 'c' ? R27_REG		\
-  : (C) == 'f' ? FLOAT_REGS		\
-  : (C) == 'v' ? R0_REG			\
-  : NO_REGS)
-
-/* Define this macro to change register usage conditional on target flags.  */
-/* #define CONDITIONAL_REGISTER_USAGE  */
-
-/* The letters I, J, K, L, M, N, O, and P in a register constraint string
-   can be used to stand for particular ranges of immediate operands.
-   This macro defines what the ranges are.
-   C is the letter, and VALUE is a constant value.
-   Return 1 if VALUE is in the range specified by C.
-
-   For Alpha:
-   `I' is used for the range of constants most insns can contain.
-   `J' is the constant zero.
-   `K' is used for the constant in an LDA insn.
-   `L' is used for the constant in a LDAH insn.
-   `M' is used for the constants that can be AND'ed with using a ZAP insn.
-   `N' is used for complemented 8-bit constants.
-   `O' is used for negated 8-bit constants.
-   `P' is used for the constants 1, 2 and 3.  */
-
-#define CONST_OK_FOR_LETTER_P   alpha_const_ok_for_letter_p
-
-/* Similar, but for floating or large integer constants, and defining letters
-   G and H.   Here VALUE is the CONST_DOUBLE rtx itself.
-
-   For Alpha, `G' is the floating-point constant zero.  `H' is a CONST_DOUBLE
-   that is the operand of a ZAP insn.  */
-
-#define CONST_DOUBLE_OK_FOR_LETTER_P  alpha_const_double_ok_for_letter_p
-
-/* Optional extra constraints for this machine.
-
-   For the Alpha, `Q' means that this is a memory operand but not a
-   reference to an unaligned location.
-
-   `R' is a SYMBOL_REF that has SYMBOL_REF_FLAG set or is the current
-   function.
-
-   'S' is a 6-bit constant (valid for a shift insn).
-
-   'T' is a HIGH.
-
-   'U' is a symbolic operand.
-
-   'W' is a vector zero.  */
-
-#define EXTRA_CONSTRAINT  alpha_extra_constraint
 
 /* Given an rtx X being reloaded into a reg required to be
    in class CLASS, return the class of reg to actually use.
@@ -663,19 +531,6 @@ enum reg_class {
    in some cases it is preferable to use a more restrictive class.  */
 
 #define PREFERRED_RELOAD_CLASS  alpha_preferred_reload_class
-
-/* Loading and storing HImode or QImode values to and from memory
-   usually requires a scratch register.  The exceptions are loading
-   QImode and HImode from an aligned address to a general register
-   unless byte instructions are permitted.
-   We also cannot load an unaligned address or a paradoxical SUBREG into an
-   FP register.  */
-
-#define SECONDARY_INPUT_RELOAD_CLASS(CLASS,MODE,IN) \
-  alpha_secondary_reload_class((CLASS), (MODE), (IN), 1)
-
-#define SECONDARY_OUTPUT_RELOAD_CLASS(CLASS,MODE,OUT) \
-  alpha_secondary_reload_class((CLASS), (MODE), (OUT), 0)
 
 /* If we are copying between general and FP registers, we need a memory
    location unless the FIX extension is available.  */
@@ -693,12 +548,6 @@ enum reg_class {
   (GET_MODE_CLASS (MODE) == MODE_FLOAT ? (MODE)		\
    : GET_MODE_SIZE (MODE) >= 4 ? (MODE)			\
    : mode_for_size (BITS_PER_WORD, GET_MODE_CLASS (MODE), 0))
-
-/* Return the maximum number of consecutive registers
-   needed to represent mode MODE in a register of class CLASS.  */
-
-#define CLASS_MAX_NREGS(CLASS, MODE)				\
- ((GET_MODE_SIZE (MODE) + UNITS_PER_WORD - 1) / UNITS_PER_WORD)
 
 /* Return the class of registers that cannot change mode from FROM to TO.  */
 
@@ -727,7 +576,7 @@ extern int alpha_memory_latency;
 #define MEMORY_MOVE_COST(MODE,CLASS,IN)  (2*alpha_memory_latency)
 
 /* Provide the cost of a branch.  Exact meaning under development.  */
-#define BRANCH_COST 5
+#define BRANCH_COST(speed_p, predictable_p) 5
 
 /* Stack layout; function entry, exit and calling.  */
 
@@ -758,7 +607,7 @@ extern int alpha_memory_latency;
 
 /* Define this if the maximum size of all the outgoing args is to be
    accumulated and pushed during the prologue.  The amount can be
-   found in the variable current_function_outgoing_args_size.  */
+   found in the variable crtl->outgoing_args_size.  */
 #define ACCUMULATE_OUTGOING_ARGS 1
 
 /* Offset of first parameter from the argument pointer register value.  */
@@ -783,14 +632,6 @@ extern int alpha_memory_latency;
  { FRAME_POINTER_REGNUM, STACK_POINTER_REGNUM},	     \
  { FRAME_POINTER_REGNUM, HARD_FRAME_POINTER_REGNUM}}
 
-/* Given FROM and TO register numbers, say whether this elimination is allowed.
-   Frame pointer elimination is automatically handled.
-
-   All eliminations are valid since the cases where FP can't be
-   eliminated are already handled.  */
-
-#define CAN_ELIMINATE(FROM, TO) 1
-
 /* Round up to a multiple of 16 bytes.  */
 #define ALPHA_ROUND(X) (((X) + 15) & ~ 15)
 
@@ -802,15 +643,6 @@ extern int alpha_memory_latency;
 /* Define this if stack space is still allocated for a parameter passed
    in a register.  */
 /* #define REG_PARM_STACK_SPACE */
-
-/* Value is the number of bytes of arguments automatically
-   popped when returning from a subroutine call.
-   FUNDECL is the declaration node of the function (as a tree),
-   FUNTYPE is the data type of the function (as a tree),
-   or for a library call it is an identifier node for the subroutine name.
-   SIZE is the number of bytes of arguments passed on the stack.  */
-
-#define RETURN_POPS_ARGS(FUNDECL,FUNTYPE,SIZE) 0
 
 /* Define how to find the value returned by a function.
    VALTYPE is the data type of the value (as a tree).
@@ -839,7 +671,7 @@ extern int alpha_memory_latency;
    On Alpha, these are $16-$21 and $f16-$f21.  */
 
 #define FUNCTION_ARG_REGNO_P(N) \
-  (((N) >= 16 && (N) <= 21) || ((N) >= 16 + 32 && (N) <= 21 + 32))
+  (IN_RANGE ((N), 16, 21) || ((N) >= 16 + 32 && (N) <= 21 + 32))
 
 /* Define a data type for recording info about an argument list
    during the scan of that argument list.  This data type should
@@ -867,52 +699,6 @@ extern int alpha_memory_latency;
   ((MODE) == TFmode || (MODE) == TCmode ? 1				\
    : (((MODE) == BLKmode ? int_size_in_bytes (TYPE) : GET_MODE_SIZE (MODE)) \
       + (UNITS_PER_WORD - 1)) / UNITS_PER_WORD)
-
-/* Update the data in CUM to advance over an argument
-   of mode MODE and data type TYPE.
-   (TYPE is null for libcalls where that information may not be available.)  */
-
-#define FUNCTION_ARG_ADVANCE(CUM, MODE, TYPE, NAMED)			\
-  ((CUM) += 								\
-   (targetm.calls.must_pass_in_stack (MODE, TYPE))			\
-    ? 6 : ALPHA_ARG_SIZE (MODE, TYPE, NAMED))
-
-/* Determine where to put an argument to a function.
-   Value is zero to push the argument on the stack,
-   or a hard register in which to store the argument.
-
-   MODE is the argument's machine mode.
-   TYPE is the data type of the argument (as a tree).
-    This is null for libcalls where that information may
-    not be available.
-   CUM is a variable of type CUMULATIVE_ARGS which gives info about
-    the preceding args and about the function being called.
-   NAMED is nonzero if this argument is a named parameter
-    (otherwise it is an extra parameter matching an ellipsis).
-
-   On Alpha the first 6 words of args are normally in registers
-   and the rest are pushed.  */
-
-#define FUNCTION_ARG(CUM, MODE, TYPE, NAMED)	\
-  function_arg((CUM), (MODE), (TYPE), (NAMED))
-
-/* Try to output insns to set TARGET equal to the constant C if it can be
-   done in less than N insns.  Do all computations in MODE.  Returns the place
-   where the output has been placed if it can be done and the insns have been
-   emitted.  If it would take more than N insns, zero is returned and no
-   insns and emitted.  */
-
-/* Define the information needed to generate branch and scc insns.  This is
-   stored from the compare operation.  Note that we can't use "rtx" here
-   since it hasn't been defined!  */
-
-struct alpha_compare
-{
-  struct rtx_def *op0, *op1;
-  int fp_p;
-};
-
-extern struct alpha_compare alpha_compare;
 
 /* Make (or fake) .linkage entry for function call.
    IS_LOCAL is 0 if name is used in call, 1 if name is used in definition.  */
@@ -956,28 +742,6 @@ extern struct alpha_compare alpha_compare;
 
 #define EPILOGUE_USES(REGNO)	((REGNO) == 26)
 
-/* Output assembler code for a block containing the constant parts
-   of a trampoline, leaving space for the variable parts.
-
-   The trampoline should set the static chain pointer to value placed
-   into the trampoline and should branch to the specified routine.
-   Note that $27 has been set to the address of the trampoline, so we can
-   use it for addressability of the two data items.  */
-
-#define TRAMPOLINE_TEMPLATE(FILE)		\
-do {						\
-  fprintf (FILE, "\tldq $1,24($27)\n");		\
-  fprintf (FILE, "\tldq $27,16($27)\n");	\
-  fprintf (FILE, "\tjmp $31,($27),0\n");	\
-  fprintf (FILE, "\tnop\n");			\
-  fprintf (FILE, "\t.quad 0,0\n");		\
-} while (0)
-
-/* Section in which to place the trampoline.  On Alpha, instructions
-   may only be placed in a text segment.  */
-
-#define TRAMPOLINE_SECTION text_section
-
 /* Length in units of the trampoline for entering a nested function.  */
 
 #define TRAMPOLINE_SIZE    32
@@ -986,19 +750,18 @@ do {						\
 
 #define TRAMPOLINE_ALIGNMENT  64
 
-/* Emit RTL insns to initialize the variable parts of a trampoline.
-   FNADDR is an RTX for the address of the function's pure code.
-   CXT is an RTX for the static chain value for the function.  */
-
-#define INITIALIZE_TRAMPOLINE(TRAMP, FNADDR, CXT) \
-  alpha_initialize_trampoline (TRAMP, FNADDR, CXT, 16, 24, 8)
-
 /* A C expression whose value is RTL representing the value of the return
    address for the frame COUNT steps up from the current frame.
    FRAMEADDR is the frame pointer of the COUNT frame, or the frame pointer of
    the COUNT-1 frame if RETURN_ADDR_IN_PREVIOUS_FRAME is defined.  */
 
 #define RETURN_ADDR_RTX  alpha_return_addr
+
+/* Provide a definition of DWARF_FRAME_REGNUM here so that fallback unwinders
+   can use DWARF_ALT_FRAME_RETURN_COLUMN defined below.  This is just the same
+   as the default definition in dwarf2out.c.  */
+#undef DWARF_FRAME_REGNUM
+#define DWARF_FRAME_REGNUM(REG) DBX_REGISTER_NUMBER (REG)
 
 /* Before the prologue, RA lives in $26.  */
 #define INCOMING_RETURN_ADDR_RTX  gen_rtx_REG (Pmode, 26)
@@ -1011,7 +774,7 @@ do {						\
 #define EH_RETURN_STACKADJ_RTX	gen_rtx_REG (Pmode, 28)
 #define EH_RETURN_HANDLER_RTX \
   gen_rtx_MEM (Pmode, plus_constant (stack_pointer_rtx, \
-				     current_function_outgoing_args_size))
+				     crtl->outgoing_args_size))
 
 /* Addressing modes, and classification of registers for them.  */
 
@@ -1036,13 +799,8 @@ do {						\
    symbolic addresses into registers.  */
 
 #define CONSTANT_ADDRESS_P(X)   \
-  (GET_CODE (X) == CONST_INT	\
+  (CONST_INT_P (X)		\
    && (unsigned HOST_WIDE_INT) (INTVAL (X) + 0x8000) < 0x10000)
-
-/* Include all constant integers and constant doubles, but not
-   floating-point, except for floating-point zero.  */
-
-#define LEGITIMATE_CONSTANT_P  alpha_legitimate_constant_p
 
 /* The macros REG_OK_FOR..._P assume that the arg is a REG rtx
    and check its validity for a certain class.
@@ -1074,7 +832,7 @@ do {						\
 #define NONSTRICT_REG_OK_FP_BASE_P(X)		\
   (REGNO (X) == 31 || REGNO (X) == 63		\
    || (REGNO (X) >= FIRST_PSEUDO_REGISTER	\
-       && REGNO (X) < LAST_VIRTUAL_REGISTER))
+       && REGNO (X) < LAST_VIRTUAL_POINTER_REGISTER))
 
 /* Nonzero if X is a hard reg that can be used as a base reg.  */
 #define STRICT_REG_OK_FOR_BASE_P(X) REGNO_OK_FOR_BASE_P (REGNO (X))
@@ -1085,37 +843,6 @@ do {						\
 #define REG_OK_FOR_BASE_P(X)	NONSTRICT_REG_OK_FOR_BASE_P (X)
 #endif
 
-/* GO_IF_LEGITIMATE_ADDRESS recognizes an RTL expression that is a
-   valid memory address for an instruction.  */
-
-#ifdef REG_OK_STRICT
-#define GO_IF_LEGITIMATE_ADDRESS(MODE, X, WIN)	\
-do {						\
-  if (alpha_legitimate_address_p (MODE, X, 1))	\
-    goto WIN;					\
-} while (0)
-#else
-#define GO_IF_LEGITIMATE_ADDRESS(MODE, X, WIN)	\
-do {						\
-  if (alpha_legitimate_address_p (MODE, X, 0))	\
-    goto WIN;					\
-} while (0)
-#endif
-
-/* Try machine-dependent ways of modifying an illegitimate address
-   to be legitimate.  If we find one, return the new, valid address.
-   This macro is used in only one place: `memory_address' in explow.c.  */
-
-#define LEGITIMIZE_ADDRESS(X,OLDX,MODE,WIN)			\
-do {								\
-  rtx new_x = alpha_legitimize_address (X, NULL_RTX, MODE);	\
-  if (new_x)							\
-    {								\
-      X = new_x;						\
-      goto WIN;							\
-    }								\
-} while (0)
-
 /* Try a machine-dependent way of reloading an illegitimate address
    operand.  If we find one, push the reload and jump to WIN.  This
    macro is used in only one place: `find_reloads_address' in reload.c.  */
@@ -1166,7 +893,7 @@ do {									     \
    Without byte/word accesses, we want no more than four instructions;
    with, several single byte accesses are better.  */
 
-#define MOVE_RATIO  (TARGET_BWX ? 7 : 2)
+#define MOVE_RATIO(speed)  (TARGET_BWX ? 7 : 2)
 
 /* Largest number of bytes of an object that can be placed in a register.
    On the Alpha we have plenty of registers, so use TImode.  */
@@ -1212,7 +939,7 @@ do {									     \
 #define CANONICALIZE_COMPARISON(CODE,OP0,OP1) \
   do {									\
     if (((CODE) == GE || (CODE) == GT || (CODE) == GEU || (CODE) == GTU) \
-	&& (GET_CODE (OP1) == REG || (OP1) == const0_rtx))		\
+	&& (REG_P (OP1) || (OP1) == const0_rtx))		\
       {									\
 	rtx tem = (OP0);						\
 	(OP0) = (OP1);							\
@@ -1220,7 +947,7 @@ do {									     \
 	(CODE) = swap_condition (CODE);					\
       }									\
     if (((CODE) == LT || (CODE) == LTU)					\
-	&& GET_CODE (OP1) == CONST_INT && INTVAL (OP1) == 256)		\
+	&& CONST_INT_P (OP1) && INTVAL (OP1) == 256)			\
       {									\
 	(CODE) = (CODE) == LT ? LE : LEU;				\
 	(OP1) = GEN_INT (255);						\
@@ -1368,8 +1095,7 @@ do {						\
 /* This is how to output an element of a case-vector that is relative.  */
 
 #define ASM_OUTPUT_ADDR_DIFF_ELT(FILE, BODY, VALUE, REL) \
-  fprintf (FILE, "\t.%s $L%d\n", TARGET_ABI_WINDOWS_NT ? "long" : "gprel32", \
-	   (VALUE))
+  fprintf (FILE, "\t.gprel32 $L%d\n", (VALUE))
 
 /* This is how to output an assembler line
    that says to advance the location counter
@@ -1420,23 +1146,16 @@ do {						\
 
    -	Generates double precision suffix for floating point
 	instructions (t for IEEE, g for VAX)
-
-   +	Generates a nop instruction after a noreturn call at the very end
-	of the function
    */
 
 #define PRINT_OPERAND_PUNCT_VALID_P(CODE) \
   ((CODE) == '/' || (CODE) == ',' || (CODE) == '-' || (CODE) == '~' \
-   || (CODE) == '#' || (CODE) == '*' || (CODE) == '&' || (CODE) == '+')
+   || (CODE) == '#' || (CODE) == '*' || (CODE) == '&')
 
 /* Print a memory address as an operand to reference that memory location.  */
 
 #define PRINT_OPERAND_ADDRESS(FILE, ADDR) \
   print_operand_address((FILE), (ADDR))
-
-/* Implement `va_start' for varargs and stdarg.  */
-#define EXPAND_BUILTIN_VA_START(valist, nextarg) \
-  alpha_va_start (valist, nextarg)
 
 /* Tell collect that the object format is ECOFF.  */
 #define OBJECT_FORMAT_COFF
@@ -1568,26 +1287,6 @@ do {							\
 #define PUT_SDB_FUNCTION_END(LINE)
 
 #define PUT_SDB_EPILOGUE_END(NAME) ((void)(NAME))
-
-/* Macros for mips-tfile.c to encapsulate stabs in ECOFF, and for
-   mips-tdump.c to print them out.
-
-   These must match the corresponding definitions in gdb/mipsread.c.
-   Unfortunately, gcc and gdb do not currently share any directories.  */
-
-#define CODE_MASK 0x8F300
-#define MIPS_IS_STAB(sym) (((sym)->index & 0xFFF00) == CODE_MASK)
-#define MIPS_MARK_STAB(code) ((code)+CODE_MASK)
-#define MIPS_UNMARK_STAB(code) ((code)-CODE_MASK)
-
-/* Override some mips-tfile definitions.  */
-
-#define SHASH_SIZE 511
-#define THASH_SIZE 55
-
-/* Align ecoff symbol tables to avoid OSF1/1.3 nm complaints.  */
-
-#define ALIGN_SYMTABLE_OFFSET(OFFSET) (((OFFSET) + 7) & ~7)
 
 /* The system headers under Alpha systems are generally C++-aware.  */
 #define NO_IMPLICIT_EXTERN_C

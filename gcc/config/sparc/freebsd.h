@@ -1,12 +1,13 @@
 /* Definitions for Sun SPARC64 running FreeBSD using the ELF format
-   Copyright (C) 2001, 2002, 2004, 2005, 2006 Free Software Foundation, Inc.
+   Copyright (C) 2001, 2002, 2004, 2005, 2006, 2007, 2010, 2011
+   Free Software Foundation, Inc.
    Contributed by David E. O'Brien <obrien@FreeBSD.org> and BSDi.
 
 This file is part of GCC.
 
 GCC is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2, or (at your option)
+the Free Software Foundation; either version 3, or (at your option)
 any later version.
 
 GCC is distributed in the hope that it will be useful,
@@ -15,31 +16,41 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with GCC; see the file COPYING.  If not, write to
-the Free Software Foundation, 51 Franklin Street, Fifth Floor,
-Boston, MA 02110-1301, USA.  */
+along with GCC; see the file COPYING3.  If not see
+<http://www.gnu.org/licenses/>.  */
 
 #undef  SUBTARGET_EXTRA_SPECS
 #define SUBTARGET_EXTRA_SPECS \
   { "fbsd_dynamic_linker", FBSD_DYNAMIC_LINKER }
 
 /* FreeBSD needs the platform name (sparc64) defined.
-   Emacs needs to know if the arch is 64 or 32-bits.  */
+   Emacs etc needs to know if the arch is 64 or 32-bits.
+   This also selects which targets are available via -mcpu.  */
 
-#undef  CPP_CPU64_DEFAULT_SPEC
-#define CPP_CPU64_DEFAULT_SPEC \
-  "-D__sparc64__ -D__sparc_v9__ -D__sparcv9 -D__arch64__"
+#undef  FBSD_TARGET_CPU_CPP_BUILTINS
+#define FBSD_TARGET_CPU_CPP_BUILTINS()		\
+  do						\
+    {						\
+      builtin_define ("__sparc64__");		\
+      builtin_define ("__sparc__");		\
+      builtin_define ("__sparc_v9__");		\
+      builtin_define ("__sparcv9");		\
+    }						\
+  while (0)
+
+#undef ASM_SPEC
+#define ASM_SPEC "%{fpic|fPIC|fpie|fPIE:-K PIC} %(asm_cpu)"
 
 #define LINK_SPEC "%(link_arch)						\
   %{!mno-relax:%{!r:-relax}}						\
-  %{p:%nconsider using `-pg' instead of `-p' with gprof(1)}		\
+  %{p:%nconsider using '-pg' instead of '-p' with gprof(1)}		\
   %{assert*} %{R*} %{rpath*} %{defsym*}					\
   %{shared:-Bshareable %{h*} %{soname*}}				\
   %{symbolic:-Bsymbolic}						\
   %{!shared:								\
     %{!static:								\
       %{rdynamic:-export-dynamic}					\
-      %{!dynamic-linker:-dynamic-linker %(fbsd_dynamic_linker) }}	\
+      -dynamic-linker %(fbsd_dynamic_linker) }	\
     %{static:-Bstatic}}"
 
 
@@ -71,9 +82,6 @@ Boston, MA 02110-1301, USA.  */
 
 /* Definitions for 64-bit SPARC running systems with ELF. */
 
-#undef  TARGET_VERSION
-#define TARGET_VERSION fprintf (stderr, " (FreeBSD/sparc64 ELF)");
-
 #define TARGET_ELF		1
 
 /* XXX */
@@ -90,31 +98,7 @@ Boston, MA 02110-1301, USA.  */
 #undef  SPARC_DEFAULT_CMODEL
 #define SPARC_DEFAULT_CMODEL	CM_MEDLOW
 
-#define ENABLE_EXECUTE_STACK						\
-  static int need_enable_exec_stack;					\
-  static void check_enabling(void) __attribute__ ((constructor));	\
-  static void check_enabling(void)					\
-  {									\
-    extern int sysctlbyname(const char *, void *, size_t *, void *, size_t);\
-    int prot = 0;							\
-    size_t len = sizeof(prot);						\
-									\
-    sysctlbyname ("kern.stackprot", &prot, &len, NULL, 0);		\
-    if (prot != 7)							\
-      need_enable_exec_stack = 1;					\
-  }									\
-  extern void __enable_execute_stack (void *);				\
-  void __enable_execute_stack (void *addr)				\
-  {									\
-    if (!need_enable_exec_stack)					\
-      return;								\
-    else {								\
-      /* 7 is PROT_READ | PROT_WRITE | PROT_EXEC */ 			\
-      if (mprotect (addr, TRAMPOLINE_SIZE, 7) < 0)			\
-        perror ("mprotect of trampoline code");				\
-    }									\
-  }
-
+#define HAVE_ENABLE_EXECUTE_STACK
 
 /************************[  Assembler stuff  ]********************************/
 
@@ -149,9 +133,16 @@ Boston, MA 02110-1301, USA.  */
 
 /* #define DWARF_OFFSET_SIZE PTR_SIZE */
 
+#ifdef HAVE_AS_TLS
+#undef TARGET_SUN_TLS
+#undef TARGET_GNU_TLS
+#define TARGET_SUN_TLS 0
+#define TARGET_GNU_TLS 1
+#endif
+
 #undef ENDFILE_SPEC
 #define ENDFILE_SPEC						\
-  "%{ffast-math|funsafe-math-optimizations:crtfastmath.o%s} "	\
+  "%{Ofast|ffast-math|funsafe-math-optimizations:crtfastmath.o%s} "	\
   FBSD_ENDFILE_SPEC
 
 /* We use GNU ld so undefine this so that attribute((init_priority)) works.  */

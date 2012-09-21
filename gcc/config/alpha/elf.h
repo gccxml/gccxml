@@ -1,13 +1,13 @@
 /* Definitions of target machine for GNU compiler, for DEC Alpha w/ELF.
-   Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003
-   Free Software Foundation, Inc.
+   Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2007, 2008,
+   2009, 2010 Free Software Foundation, Inc.
    Contributed by Richard Henderson (rth@tamu.edu).
 
 This file is part of GCC.
 
 GCC is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2, or (at your option)
+the Free Software Foundation; either version 3, or (at your option)
 any later version.
 
 GCC is distributed in the hope that it will be useful,
@@ -16,9 +16,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with GCC; see the file COPYING.  If not, write to
-the Free Software Foundation, 51 Franklin Street, Fifth Floor,
-Boston, MA 02110-1301, USA.  */
+along with GCC; see the file COPYING3.  If not see
+<http://www.gnu.org/licenses/>.  */
 
 #undef OBJECT_FORMAT_COFF
 #undef EXTENDED_COFF
@@ -26,8 +25,9 @@ Boston, MA 02110-1301, USA.  */
 
 /* ??? Move all SDB stuff from alpha.h to osf.h.  */
 #undef SDB_DEBUGGING_INFO
+#undef MIPS_DEBUGGING_INFO
+#undef DBX_DEBUGGING_INFO
 
-#define DBX_DEBUGGING_INFO 1
 #define DWARF2_DEBUGGING_INFO 1
 
 #undef  PREFERRED_DEBUGGING_TYPE
@@ -122,7 +122,7 @@ do {									\
 #undef  ASM_OUTPUT_ALIGNED_LOCAL
 #define ASM_OUTPUT_ALIGNED_LOCAL(FILE, NAME, SIZE, ALIGN)		\
 do {									\
-  if ((SIZE) <= g_switch_value)						\
+  if ((SIZE) <= (unsigned HOST_WIDE_INT) g_switch_value)		\
     switch_to_section (sbss_section);					\
   else									\
     switch_to_section (bss_section);					\
@@ -143,18 +143,20 @@ do {									\
   ASM_OUTPUT_ALIGNED_LOCAL (FILE, NAME, SIZE, ALIGN);			\
 } while (0)
 
-/* Biggest alignment supported by the object file format of this
-   machine.  Use this macro to limit the alignment which can be
-   specified using the `__attribute__ ((aligned (N)))' construct.  If
-   not defined, the default value is `BIGGEST_ALIGNMENT'. 
+/* The biggest alignment supported by ELF in bits. 32-bit ELF 
+   supports section alignment up to (0x80000000 * 8), while 
+   64-bit ELF supports (0x8000000000000000 * 8). If this macro 
+   is not defined, the default is the largest alignment supported 
+   by 32-bit ELF and representable on a 32-bit host. Use this
+   macro to limit the alignment which can be specified using
+   the `__attribute__ ((aligned (N)))' construct.
 
    This value is really 2^63.  Since gcc figures the alignment in bits,
    we could only potentially get to 2^60 on suitable hosts.  Due to other
    considerations in varasm, we must restrict this to what fits in an int.  */
 
 #undef  MAX_OFILE_ALIGNMENT
-#define MAX_OFILE_ALIGNMENT \
-  (1 << (HOST_BITS_PER_INT < 64 ? HOST_BITS_PER_INT - 2 : 62))
+#define MAX_OFILE_ALIGNMENT (((unsigned int) 1 << 28) * 8)
 
 /* This is the pseudo-op used to generate a contiguous sequence of byte
    values from a double-quoted string WITHOUT HAVING A TERMINATING NUL
@@ -271,20 +273,38 @@ do {									\
 
 /* Write the extra assembler code needed to declare an object properly.  */
 
+#ifdef HAVE_GAS_GNU_UNIQUE_OBJECT
+#define USE_GNU_UNIQUE_OBJECT 1
+#else
+#define USE_GNU_UNIQUE_OBJECT 0
+#endif
+
 #undef  ASM_DECLARE_OBJECT_NAME
-#define ASM_DECLARE_OBJECT_NAME(FILE, NAME, DECL)		\
-  do {								\
-    HOST_WIDE_INT size;						\
-    ASM_OUTPUT_TYPE_DIRECTIVE (FILE, NAME, "object");		\
-    size_directive_output = 0;					\
-    if (!flag_inhibit_size_directive				\
-	&& DECL_SIZE (DECL)					\
-	&& (size = int_size_in_bytes (TREE_TYPE (DECL))) > 0)	\
-      {								\
-	size_directive_output = 1;				\
-        ASM_OUTPUT_SIZE_DIRECTIVE (FILE, NAME, size);		\
-      }								\
-    ASM_OUTPUT_LABEL(FILE, NAME);				\
+#define ASM_DECLARE_OBJECT_NAME(FILE, NAME, DECL)			\
+  do {									\
+    HOST_WIDE_INT size;							\
+    									\
+    /* For template static data member instantiations or		\
+       inline fn local statics and their guard variables, use		\
+       gnu_unique_object so that they will be combined even under	\
+       RTLD_LOCAL.  Don't use gnu_unique_object for typeinfo,		\
+       vtables and other read-only artificial decls.  */		\
+    if (USE_GNU_UNIQUE_OBJECT	&& DECL_ONE_ONLY (DECL)			\
+	&& (!DECL_ARTIFICIAL (DECL) || !TREE_READONLY (DECL)))		\
+      ASM_OUTPUT_TYPE_DIRECTIVE (FILE, NAME, "gnu_unique_object");	\
+    else								\
+      ASM_OUTPUT_TYPE_DIRECTIVE (FILE, NAME, "object");			\
+    									\
+    size_directive_output = 0;						\
+    if (!flag_inhibit_size_directive					\
+	&& (DECL) && DECL_SIZE (DECL))					\
+      {									\
+	size_directive_output = 1;					\
+	size = int_size_in_bytes (TREE_TYPE (DECL));			\
+	ASM_OUTPUT_SIZE_DIRECTIVE (FILE, NAME, size);			\
+      }									\
+    									\
+    ASM_OUTPUT_LABEL (FILE, NAME);					\
   } while (0)
 
 /* Output the size directive for a decl in rest_of_decl_compilation
@@ -324,8 +344,8 @@ do {									\
    the i386) don't know about that.  Also, we don't use \v
    since some versions of gas, such as 2.2 did not accept it.  */
 
-#undef  ESCAPES
-#define ESCAPES \
+#undef  ELF_ASCII_ESCAPES
+#define ELF_ASCII_ESCAPES \
 "\1\1\1\1\1\1\1\1btn\1fr\1\1\1\1\1\1\1\1\1\1\1\1\1\1\1\1\1\1\
 \0\0\"\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\
 \0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\\\0\0\0\
@@ -346,8 +366,9 @@ do {									\
    If your target assembler doesn't support the .string directive, you
    should define this to zero.  */
 
-#undef  STRING_LIMIT
-#define STRING_LIMIT	((unsigned) 256)
+#undef  ELF_STRING_LIMIT
+#define ELF_STRING_LIMIT	((unsigned) 256)
+
 #undef  STRING_ASM_OP
 #define STRING_ASM_OP	"\t.string\t"
 
@@ -378,11 +399,8 @@ do {									\
 
 #undef	ENDFILE_SPEC
 #define ENDFILE_SPEC \
-  "%{ffast-math|funsafe-math-optimizations:crtfastmath.o%s} \
+  "%{Ofast|ffast-math|funsafe-math-optimizations:crtfastmath.o%s} \
    %{shared|pie:crtendS.o%s;:crtend.o%s} crtn.o%s"
-
-/* We support #pragma.  */
-#define HANDLE_SYSV_PRAGMA 1
 
 /* Select a format to encode pointers in exception handling data.  CODE
    is 0 for data, 1 for code labels, 2 for function pointers.  GLOBAL is
@@ -423,4 +441,14 @@ extern int alpha_this_gpdisp_sequence_number;
    doesn't harm to make sure that the data exists to be used later.  */
 #if defined(HAVE_LD_EH_FRAME_HDR)
 #define LINK_EH_SPEC "%{!static:--eh-frame-hdr} "
+#endif
+
+/* A C statement (sans semicolon) to output to the stdio stream STREAM
+   any text necessary for declaring the name of an external symbol
+   named NAME which is referenced in this compilation but not defined.
+   It is needed to properly support non-default visibility.  */
+
+#ifndef ASM_OUTPUT_EXTERNAL
+#define ASM_OUTPUT_EXTERNAL(FILE, DECL, NAME) \
+  default_elf_asm_output_external (FILE, DECL, NAME)
 #endif

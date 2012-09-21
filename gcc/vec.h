@@ -1,12 +1,13 @@
 /* Vector API for GNU compiler.
-   Copyright (C) 2004, 2005 Free Software Foundation, Inc.
+   Copyright (C) 2004, 2005, 2007, 2008, 2009, 2010
+   Free Software Foundation, Inc.
    Contributed by Nathan Sidwell <nathan@codesourcery.com>
 
 This file is part of GCC.
 
 GCC is free software; you can redistribute it and/or modify it under
 the terms of the GNU General Public License as published by the Free
-Software Foundation; either version 2, or (at your option) any later
+Software Foundation; either version 3, or (at your option) any later
 version.
 
 GCC is distributed in the hope that it will be useful, but WITHOUT ANY
@@ -15,12 +16,13 @@ FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 for more details.
 
 You should have received a copy of the GNU General Public License
-along with GCC; see the file COPYING.  If not, write to the Free
-Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
-02110-1301, USA.  */
+along with GCC; see the file COPYING3.  If not see
+<http://www.gnu.org/licenses/>.  */
 
 #ifndef GCC_VEC_H
 #define GCC_VEC_H
+
+#include "statistics.h"		/* For MEM_STAT_DECL.  */
 
 /* The macros here implement a set of templated vector types and
    associated interfaces.  These templates are implemented with
@@ -87,12 +89,12 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
    when the type is defined, and is therefore part of the type.  If
    you need both gc'd and heap allocated versions, you still must have
    *exactly* one definition of the common non-memory managed base vector.
-   
+
    If you need to directly manipulate a vector, then the 'address'
    accessor will return the address of the start of the vector.  Also
    the 'space' predicate will tell you whether there is spare capacity
    in the vector.  You will not normally need to use these two functions.
-   
+
    Vector types are defined using a DEF_VEC_{O,P,I}(TYPEDEF) macro, to
    get the non-memory allocation version, and then a
    DEF_VEC_ALLOC_{O,P,I}(TYPEDEF,ALLOC) macro to get memory managed
@@ -188,6 +190,23 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
 
 #define VEC_iterate(T,V,I,P)	(VEC_OP(T,base,iterate)(VEC_BASE(V),I,&(P)))
 
+/* Convenience macro for forward iteration.  */
+
+#define FOR_EACH_VEC_ELT(T, V, I, P)		\
+  for (I = 0; VEC_iterate (T, (V), (I), (P)); ++(I))
+
+/* Likewise, but start from FROM rather than 0.  */
+
+#define FOR_EACH_VEC_ELT_FROM(T, V, I, P, FROM)		\
+  for (I = (FROM); VEC_iterate (T, (V), (I), (P)); ++(I))
+
+/* Convenience macro for reverse iteration.  */
+
+#define FOR_EACH_VEC_ELT_REVERSE(T,V,I,P) \
+  for (I = VEC_length (T, (V)) - 1;           \
+       VEC_iterate (T, (V), (I), (P));	  \
+       (I)--)
+
 /* Allocate new vector.
    VEC(T,A) *VEC_T_A_alloc(int reserve);
 
@@ -205,10 +224,10 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
 
 /* Use these to determine the required size and initialization of a
    vector embedded within another structure (as the final member).
-   
+
    size_t VEC_T_embedded_size(int reserve);
    void VEC_T_embedded_init(VEC(T) *v, int reserve);
-   
+
    These allow the caller to perform the memory allocation.  */
 
 #define VEC_embedded_size(T,N)	 (VEC_OP(T,base,embedded_size)(N))
@@ -223,7 +242,7 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
 #define VEC_copy(T,A,V) (VEC_OP(T,A,copy)(VEC_BASE(V) MEM_STAT_INFO))
 
 /* Determine if a vector has additional capacity.
-   
+
    int VEC_T_space (VEC(T) *v,int reserve)
 
    If V has space for RESERVE additional entries, return nonzero.  You
@@ -257,11 +276,37 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
 #define VEC_reserve_exact(T,A,V,R)	\
 	(VEC_OP(T,A,reserve_exact)(&(V),R VEC_CHECK_INFO MEM_STAT_INFO))
 
+/* Copy elements with no reallocation
+   void VEC_T_splice (VEC(T) *dst, VEC(T) *src); // Integer
+   void VEC_T_splice (VEC(T) *dst, VEC(T) *src); // Pointer
+   void VEC_T_splice (VEC(T) *dst, VEC(T) *src); // Object
+
+   Copy the elements in SRC to the end of DST as if by memcpy.  DST and
+   SRC need not be allocated with the same mechanism, although they most
+   often will be.  DST is assumed to have sufficient headroom
+   available.  */
+
+#define VEC_splice(T,DST,SRC)			\
+  (VEC_OP(T,base,splice)(VEC_BASE(DST), VEC_BASE(SRC) VEC_CHECK_INFO))
+
+/* Copy elements with reallocation
+   void VEC_T_safe_splice (VEC(T,A) *&dst, VEC(T) *src); // Integer
+   void VEC_T_safe_splice (VEC(T,A) *&dst, VEC(T) *src); // Pointer
+   void VEC_T_safe_splice (VEC(T,A) *&dst, VEC(T) *src); // Object
+
+   Copy the elements in SRC to the end of DST as if by memcpy.  DST and
+   SRC need not be allocated with the same mechanism, although they most
+   often will be.  DST need not have sufficient headroom and will be
+   reallocated if needed.  */
+
+#define VEC_safe_splice(T,A,DST,SRC)					\
+  (VEC_OP(T,A,safe_splice)(&(DST), VEC_BASE(SRC) VEC_CHECK_INFO MEM_STAT_INFO))
+  
 /* Push object with no reallocation
    T *VEC_T_quick_push (VEC(T) *v, T obj); // Integer
    T *VEC_T_quick_push (VEC(T) *v, T obj); // Pointer
    T *VEC_T_quick_push (VEC(T) *v, T *obj); // Object
-   
+
    Push a new element onto the end, returns a pointer to the slot
    filled in. For object vectors, the new value can be NULL, in which
    case NO initialization is performed.  There must
@@ -274,7 +319,7 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
    T *VEC_T_A_safe_push (VEC(T,A) *&v, T obj); // Integer
    T *VEC_T_A_safe_push (VEC(T,A) *&v, T obj); // Pointer
    T *VEC_T_A_safe_push (VEC(T,A) *&v, T *obj); // Object
-   
+
    Push a new element onto the end, returns a pointer to the slot
    filled in. For object vectors, the new value can be NULL, in which
    case NO initialization is performed.  Reallocates V, if needed.  */
@@ -294,7 +339,7 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
 
 /* Truncate to specific length
    void VEC_T_truncate (VEC(T) *v, unsigned len);
-   
+
    Set the length as specified.  The new length must be less than or
    equal to the current length.  This is an O(1) operation.  */
 
@@ -311,11 +356,21 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
 #define VEC_safe_grow(T,A,V,I)		\
 	(VEC_OP(T,A,safe_grow)(&(V),I VEC_CHECK_INFO MEM_STAT_INFO))
 
+/* Grow to a specific length.
+   void VEC_T_A_safe_grow_cleared (VEC(T,A) *&v, int len);
+
+   Grow the vector to a specific length.  The LEN must be as
+   long or longer than the current length.  The new elements are
+   initialized to zero.  */
+
+#define VEC_safe_grow_cleared(T,A,V,I)		\
+	(VEC_OP(T,A,safe_grow_cleared)(&(V),I VEC_CHECK_INFO MEM_STAT_INFO))
+
 /* Replace element
    T VEC_T_replace (VEC(T) *v, unsigned ix, T val); // Integer
    T VEC_T_replace (VEC(T) *v, unsigned ix, T val); // Pointer
    T *VEC_T_replace (VEC(T) *v, unsigned ix, T *val);  // Object
-   
+
    Replace the IXth element of V with a new value, VAL.  For pointer
    vectors returns the original value. For object vectors returns a
    pointer to the new value.  For object vectors the new value can be
@@ -329,7 +384,7 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
    T *VEC_T_quick_insert (VEC(T) *v, unsigned ix, T val); // Integer
    T *VEC_T_quick_insert (VEC(T) *v, unsigned ix, T val); // Pointer
    T *VEC_T_quick_insert (VEC(T) *v, unsigned ix, T *val); // Object
-   
+
    Insert an element, VAL, at the IXth position of V. Return a pointer
    to the slot created.  For vectors of object, the new value can be
    NULL, in which case no initialization of the inserted slot takes
@@ -342,7 +397,7 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
    T *VEC_T_A_safe_insert (VEC(T,A) *&v, unsigned ix, T val); // Integer
    T *VEC_T_A_safe_insert (VEC(T,A) *&v, unsigned ix, T val); // Pointer
    T *VEC_T_A_safe_insert (VEC(T,A) *&v, unsigned ix, T *val); // Object
-   
+
    Insert an element, VAL, at the IXth position of V. Return a pointer
    to the slot created.  For vectors of object, the new value can be
    NULL, in which case no initialization of the inserted slot takes
@@ -350,12 +405,12 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
 
 #define VEC_safe_insert(T,A,V,I,O)	\
 	(VEC_OP(T,A,safe_insert)(&(V),I,O VEC_CHECK_INFO MEM_STAT_INFO))
-     
+
 /* Remove element retaining order
    T VEC_T_ordered_remove (VEC(T) *v, unsigned ix); // Integer
    T VEC_T_ordered_remove (VEC(T) *v, unsigned ix); // Pointer
    void VEC_T_ordered_remove (VEC(T) *v, unsigned ix); // Object
-   
+
    Remove an element from the IXth position of V. Ordering of
    remaining elements is preserved.  For pointer vectors returns the
    removed object.  This is an O(N) operation due to a memmove.  */
@@ -367,7 +422,7 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
    T VEC_T_unordered_remove (VEC(T) *v, unsigned ix); // Integer
    T VEC_T_unordered_remove (VEC(T) *v, unsigned ix); // Pointer
    void VEC_T_unordered_remove (VEC(T) *v, unsigned ix); // Object
-   
+
    Remove an element from the IXth position of V. Ordering of
    remaining elements is destroyed.  For pointer vectors returns the
    removed object.  This is an O(1) operation.  */
@@ -377,9 +432,9 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
 
 /* Remove a block of elements
    void VEC_T_block_remove (VEC(T) *v, unsigned ix, unsigned len);
-   
+
    Remove LEN elements starting at the IXth.  Ordering is retained.
-   This is an O(1) operation.  */
+   This is an O(N) operation due to memmove.  */
 
 #define VEC_block_remove(T,V,I,L)	\
 	(VEC_OP(T,base,block_remove)(VEC_BASE(V),I,L VEC_CHECK_INFO))
@@ -392,22 +447,27 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
 
 #define VEC_address(T,V)		(VEC_OP(T,base,address)(VEC_BASE(V)))
 
+/* Conveniently sort the contents of the vector with qsort.
+   void VEC_qsort (VEC(T) *v, int (*cmp_func)(const void *, const void *))  */
+
+#define VEC_qsort(T,V,CMP) qsort(VEC_address (T,V), VEC_length(T,V),	\
+				 sizeof (T), CMP)
+
 /* Find the first index in the vector not less than the object.
-   unsigned VEC_T_lower_bound (VEC(T) *v, const T val, 
+   unsigned VEC_T_lower_bound (VEC(T) *v, const T val,
                                bool (*lessthan) (const T, const T)); // Integer
-   unsigned VEC_T_lower_bound (VEC(T) *v, const T val, 
+   unsigned VEC_T_lower_bound (VEC(T) *v, const T val,
                                bool (*lessthan) (const T, const T)); // Pointer
    unsigned VEC_T_lower_bound (VEC(T) *v, const T *val,
                                bool (*lessthan) (const T*, const T*)); // Object
-   
+
    Find the first position in which VAL could be inserted without
    changing the ordering of V.  LESSTHAN is a function that returns
    true if the first argument is strictly less than the second.  */
-   
+
 #define VEC_lower_bound(T,V,O,LT)    \
        (VEC_OP(T,base,lower_bound)(VEC_BASE(V),O,LT VEC_CHECK_INFO))
 
-#if !IN_GENGTYPE
 /* Reallocate an array of elements with prefix.  */
 extern void *vec_gc_p_reserve (void *, int MEM_STAT_DECL);
 extern void *vec_gc_p_reserve_exact (void *, int MEM_STAT_DECL);
@@ -421,13 +481,19 @@ extern void *vec_heap_p_reserve_exact (void *, int MEM_STAT_DECL);
 extern void *vec_heap_o_reserve (void *, int, size_t, size_t MEM_STAT_DECL);
 extern void *vec_heap_o_reserve_exact (void *, int, size_t, size_t
 				       MEM_STAT_DECL);
-#define vec_heap_free(V) free (V)
+extern void dump_vec_loc_statistics (void);
+#ifdef GATHER_STATISTICS
+void vec_heap_free (void *);
+#else
+/* Avoid problems with frontends that #define free(x).  */
+#define vec_heap_free(V) (free) (V)
+#endif
 
 #if ENABLE_CHECKING
 #define VEC_CHECK_INFO ,__FILE__,__LINE__,__FUNCTION__
 #define VEC_CHECK_DECL ,const char *file_,unsigned line_,const char *function_
 #define VEC_CHECK_PASS ,file_,line_,function_
-     
+
 #define VEC_ASSERT(EXPR,OP,T,A) \
   (void)((EXPR) ? 0 : (VEC_ASSERT_FAIL(OP,VEC(T,A)), 0))
 
@@ -441,47 +507,56 @@ extern void vec_assert_fail (const char *, const char * VEC_CHECK_DECL)
 #define VEC_ASSERT(EXPR,OP,T,A) (void)(EXPR)
 #endif
 
+/* Note: gengtype has hardwired knowledge of the expansions of the
+   VEC, DEF_VEC_*, and DEF_VEC_ALLOC_* macros.  If you change the
+   expansions of these macros you may need to change gengtype too.  */
+
+typedef struct GTY(()) vec_prefix
+{
+  unsigned num;
+  unsigned alloc;
+} vec_prefix;
+
 #define VEC(T,A) VEC_##T##_##A
 #define VEC_OP(T,A,OP) VEC_##T##_##A##_##OP
-#else  /* IN_GENGTYPE */
-#define VEC(T,A) VEC_ T _ A
-#define VEC_STRINGIFY(X) VEC_STRINGIFY_(X)
-#define VEC_STRINGIFY_(X) #X
-#undef GTY
-#endif /* IN_GENGTYPE */
 
-/* Base of vector type, not user visible.  */     
+/* Base of vector type, not user visible.  */
 #define VEC_T(T,B)							  \
 typedef struct VEC(T,B) 				 		  \
 {									  \
-  unsigned num;								  \
-  unsigned alloc;							  \
+  struct vec_prefix prefix;						  \
   T vec[1];								  \
 } VEC(T,B)
 
 #define VEC_T_GTY(T,B)							  \
-typedef struct VEC(T,B) GTY(())				 		  \
+typedef struct GTY(()) VEC(T,B)				 		  \
 {									  \
-  unsigned num;								  \
-  unsigned alloc;							  \
-  T GTY ((length ("%h.num"))) vec[1];					  \
+  struct vec_prefix prefix;						  \
+  T GTY ((length ("%h.prefix.num"))) vec[1];				  \
 } VEC(T,B)
 
 /* Derived vector type, user visible.  */
 #define VEC_TA_GTY(T,B,A,GTY)						  \
-typedef struct VEC(T,A) GTY						  \
+typedef struct GTY VEC(T,A)						  \
+{									  \
+  VEC(T,B) base;							  \
+} VEC(T,A)
+
+#define VEC_TA(T,B,A)							  \
+typedef struct VEC(T,A)							  \
 {									  \
   VEC(T,B) base;							  \
 } VEC(T,A)
 
 /* Convert to base type.  */
+#if GCC_VERSION >= 4000
+#define VEC_BASE(P) \
+  ((offsetof (__typeof (*P), base) == 0 || (P)) ? &(P)->base : 0)
+#else
 #define VEC_BASE(P)  ((P) ? &(P)->base : 0)
+#endif
 
 /* Vector of integer-like object.  */
-#if IN_GENGTYPE
-{"DEF_VEC_I", VEC_STRINGIFY (VEC_T(#0,#1)) ";", "none"},
-{"DEF_VEC_ALLOC_I", VEC_STRINGIFY (VEC_TA (#0,#1,#2,#3)) ";", NULL},
-#else
 #define DEF_VEC_I(T)							  \
 static inline void VEC_OP (T,must_be,integral_type) (void) 		  \
 {									  \
@@ -489,20 +564,16 @@ static inline void VEC_OP (T,must_be,integral_type) (void) 		  \
 }									  \
 									  \
 VEC_T(T,base);								  \
-VEC_TA_GTY(T,base,none,);						  \
+VEC_TA(T,base,none);							  \
 DEF_VEC_FUNC_P(T)							  \
 struct vec_swallow_trailing_semi
 #define DEF_VEC_ALLOC_I(T,A)						  \
-VEC_TA_GTY(T,base,A,);							  \
+VEC_TA(T,base,A);							  \
 DEF_VEC_ALLOC_FUNC_I(T,A)						  \
+DEF_VEC_NONALLOC_FUNCS_I(T,A)						  \
 struct vec_swallow_trailing_semi
-#endif
 
 /* Vector of pointer to object.  */
-#if IN_GENGTYPE
-{"DEF_VEC_P", VEC_STRINGIFY (VEC_T_GTY(#0,#1)) ";", "none"},
-{"DEF_VEC_ALLOC_P", VEC_STRINGIFY (VEC_TA_GTY (#0,#1,#2,#3)) ";", NULL},
-#else
 #define DEF_VEC_P(T) 							  \
 static inline void VEC_OP (T,must_be,pointer_type) (void) 		  \
 {									  \
@@ -510,33 +581,33 @@ static inline void VEC_OP (T,must_be,pointer_type) (void) 		  \
 }									  \
 									  \
 VEC_T_GTY(T,base);							  \
-VEC_TA_GTY(T,base,none,);						  \
+VEC_TA(T,base,none);							  \
 DEF_VEC_FUNC_P(T)							  \
 struct vec_swallow_trailing_semi
 #define DEF_VEC_ALLOC_P(T,A)						  \
-VEC_TA_GTY(T,base,A,);							  \
+VEC_TA(T,base,A);							  \
 DEF_VEC_ALLOC_FUNC_P(T,A)						  \
+DEF_VEC_NONALLOC_FUNCS_P(T,A)						  \
 struct vec_swallow_trailing_semi
-#endif
 
 #define DEF_VEC_FUNC_P(T)						  \
 static inline unsigned VEC_OP (T,base,length) (const VEC(T,base) *vec_)   \
 {									  \
-  return vec_ ? vec_->num : 0;						  \
+  return vec_ ? vec_->prefix.num : 0;						  \
 }									  \
 									  \
 static inline T VEC_OP (T,base,last)					  \
      (const VEC(T,base) *vec_ VEC_CHECK_DECL)				  \
 {									  \
-  VEC_ASSERT (vec_ && vec_->num, "last", T, base);			  \
+  VEC_ASSERT (vec_ && vec_->prefix.num, "last", T, base);			  \
   									  \
-  return vec_->vec[vec_->num - 1];					  \
+  return vec_->vec[vec_->prefix.num - 1];					  \
 }									  \
 									  \
 static inline T VEC_OP (T,base,index)					  \
      (const VEC(T,base) *vec_, unsigned ix_ VEC_CHECK_DECL)		  \
 {									  \
-  VEC_ASSERT (vec_ && ix_ < vec_->num, "index", T, base);		  \
+  VEC_ASSERT (vec_ && ix_ < vec_->prefix.num, "index", T, base);		  \
   									  \
   return vec_->vec[ix_];						  \
 }									  \
@@ -544,14 +615,14 @@ static inline T VEC_OP (T,base,index)					  \
 static inline int VEC_OP (T,base,iterate)			  	  \
      (const VEC(T,base) *vec_, unsigned ix_, T *ptr)			  \
 {									  \
-  if (vec_ && ix_ < vec_->num)						  \
+  if (vec_ && ix_ < vec_->prefix.num)						  \
     {									  \
       *ptr = vec_->vec[ix_];						  \
       return 1;								  \
     }									  \
   else									  \
     {									  \
-      *ptr = 0;								  \
+      *ptr = (T) 0;							  \
       return 0;								  \
     }									  \
 }									  \
@@ -565,15 +636,28 @@ static inline size_t VEC_OP (T,base,embedded_size)			  \
 static inline void VEC_OP (T,base,embedded_init)			  \
      (VEC(T,base) *vec_, int alloc_)					  \
 {									  \
-  vec_->num = 0;							  \
-  vec_->alloc = alloc_;							  \
+  vec_->prefix.num = 0;							  \
+  vec_->prefix.alloc = alloc_;							  \
 }									  \
 									  \
 static inline int VEC_OP (T,base,space)	       				  \
      (VEC(T,base) *vec_, int alloc_ VEC_CHECK_DECL)			  \
 {									  \
   VEC_ASSERT (alloc_ >= 0, "space", T, base);				  \
-  return vec_ ? vec_->alloc - vec_->num >= (unsigned)alloc_ : !alloc_;	  \
+  return vec_ ? vec_->prefix.alloc - vec_->prefix.num >= (unsigned)alloc_ : !alloc_;	  \
+}									  \
+									  \
+static inline void VEC_OP(T,base,splice)				  \
+     (VEC(T,base) *dst_, VEC(T,base) *src_ VEC_CHECK_DECL)		  \
+{									  \
+  if (src_)								  \
+    {									  \
+      unsigned len_ = src_->prefix.num;					  \
+      VEC_ASSERT (dst_->prefix.num + len_ <= dst_->prefix.alloc, "splice", T, base);	  \
+									  \
+      memcpy (&dst_->vec[dst_->prefix.num], &src_->vec[0], len_ * sizeof (T));	  \
+      dst_->prefix.num += len_;						  \
+    }									  \
 }									  \
 									  \
 static inline T *VEC_OP (T,base,quick_push)				  \
@@ -581,8 +665,8 @@ static inline T *VEC_OP (T,base,quick_push)				  \
 {									  \
   T *slot_;								  \
   									  \
-  VEC_ASSERT (vec_->num < vec_->alloc, "push", T, base);		  \
-  slot_ = &vec_->vec[vec_->num++];					  \
+  VEC_ASSERT (vec_->prefix.num < vec_->prefix.alloc, "push", T, base);		  \
+  slot_ = &vec_->vec[vec_->prefix.num++];					  \
   *slot_ = obj_;							  \
   									  \
   return slot_;								  \
@@ -592,8 +676,8 @@ static inline T VEC_OP (T,base,pop) (VEC(T,base) *vec_ VEC_CHECK_DECL)	  \
 {									  \
   T obj_;								  \
 									  \
-  VEC_ASSERT (vec_->num, "pop", T, base);				  \
-  obj_ = vec_->vec[--vec_->num];					  \
+  VEC_ASSERT (vec_->prefix.num, "pop", T, base);				  \
+  obj_ = vec_->vec[--vec_->prefix.num];					  \
 									  \
   return obj_;								  \
 }									  \
@@ -601,9 +685,9 @@ static inline T VEC_OP (T,base,pop) (VEC(T,base) *vec_ VEC_CHECK_DECL)	  \
 static inline void VEC_OP (T,base,truncate)				  \
      (VEC(T,base) *vec_, unsigned size_ VEC_CHECK_DECL)			  \
 {									  \
-  VEC_ASSERT (vec_ ? vec_->num >= size_ : !size_, "truncate", T, base);	  \
+  VEC_ASSERT (vec_ ? vec_->prefix.num >= size_ : !size_, "truncate", T, base);	  \
   if (vec_)								  \
-    vec_->num = size_;							  \
+    vec_->prefix.num = size_;							  \
 }									  \
 									  \
 static inline T VEC_OP (T,base,replace)		  	     		  \
@@ -611,7 +695,7 @@ static inline T VEC_OP (T,base,replace)		  	     		  \
 {									  \
   T old_obj_;								  \
 									  \
-  VEC_ASSERT (ix_ < vec_->num, "replace", T, base);			  \
+  VEC_ASSERT (ix_ < vec_->prefix.num, "replace", T, base);			  \
   old_obj_ = vec_->vec[ix_];						  \
   vec_->vec[ix_] = obj_;						  \
 									  \
@@ -623,10 +707,10 @@ static inline T *VEC_OP (T,base,quick_insert)				  \
 {									  \
   T *slot_;								  \
 									  \
-  VEC_ASSERT (vec_->num < vec_->alloc, "insert", T, base);		  \
-  VEC_ASSERT (ix_ <= vec_->num, "insert", T, base);			  \
+  VEC_ASSERT (vec_->prefix.num < vec_->prefix.alloc, "insert", T, base);		  \
+  VEC_ASSERT (ix_ <= vec_->prefix.num, "insert", T, base);			  \
   slot_ = &vec_->vec[ix_];						  \
-  memmove (slot_ + 1, slot_, (vec_->num++ - ix_) * sizeof (T));		  \
+  memmove (slot_ + 1, slot_, (vec_->prefix.num++ - ix_) * sizeof (T));		  \
   *slot_ = obj_;							  \
   									  \
   return slot_;								  \
@@ -638,10 +722,10 @@ static inline T VEC_OP (T,base,ordered_remove)				  \
   T *slot_;								  \
   T obj_;								  \
 									  \
-  VEC_ASSERT (ix_ < vec_->num, "remove", T, base);			  \
+  VEC_ASSERT (ix_ < vec_->prefix.num, "remove", T, base);			  \
   slot_ = &vec_->vec[ix_];						  \
   obj_ = *slot_;							  \
-  memmove (slot_, slot_ + 1, (--vec_->num - ix_) * sizeof (T));     	  \
+  memmove (slot_, slot_ + 1, (--vec_->prefix.num - ix_) * sizeof (T));     	  \
 									  \
   return obj_;								  \
 }									  \
@@ -652,10 +736,10 @@ static inline T VEC_OP (T,base,unordered_remove)			  \
   T *slot_;								  \
   T obj_;								  \
 									  \
-  VEC_ASSERT (ix_ < vec_->num, "remove", T, base);			  \
+  VEC_ASSERT (ix_ < vec_->prefix.num, "remove", T, base);			  \
   slot_ = &vec_->vec[ix_];						  \
   obj_ = *slot_;							  \
-  *slot_ = vec_->vec[--vec_->num];					  \
+  *slot_ = vec_->vec[--vec_->prefix.num];					  \
 									  \
   return obj_;								  \
 }									  \
@@ -665,10 +749,10 @@ static inline void VEC_OP (T,base,block_remove)				  \
 {									  \
   T *slot_;								  \
 									  \
-  VEC_ASSERT (ix_ + len_ <= vec_->num, "block_remove", T, base);	  \
+  VEC_ASSERT (ix_ + len_ <= vec_->prefix.num, "block_remove", T, base);	  \
   slot_ = &vec_->vec[ix_];						  \
-  vec_->num -= len_;							  \
-  memmove (slot_, slot_ + len_, (vec_->num - ix_) * sizeof (T));	  \
+  vec_->prefix.num -= len_;							  \
+  memmove (slot_, slot_ + len_, (vec_->prefix.num - ix_) * sizeof (T));	  \
 }									  \
 									  \
 static inline T *VEC_OP (T,base,address)				  \
@@ -709,8 +793,10 @@ static inline VEC(T,A) *VEC_OP (T,A,alloc)				  \
 {									  \
   return (VEC(T,A) *) vec_##A##_p_reserve_exact (NULL, alloc_		  \
 						 PASS_MEM_STAT);	  \
-}									  \
-									  \
+}
+
+
+#define DEF_VEC_NONALLOC_FUNCS_P(T,A)					  \
 static inline void VEC_OP (T,A,free)					  \
      (VEC(T,A) **vec_)							  \
 {									  \
@@ -721,7 +807,7 @@ static inline void VEC_OP (T,A,free)					  \
 									  \
 static inline VEC(T,A) *VEC_OP (T,A,copy) (VEC(T,base) *vec_ MEM_STAT_DECL) \
 {									  \
-  size_t len_ = vec_ ? vec_->num : 0;					  \
+  size_t len_ = vec_ ? vec_->prefix.num : 0;					  \
   VEC (T,A) *new_vec_ = NULL;						  \
 									  \
   if (len_)								  \
@@ -729,7 +815,7 @@ static inline VEC(T,A) *VEC_OP (T,A,copy) (VEC(T,base) *vec_ MEM_STAT_DECL) \
       new_vec_ = (VEC (T,A) *)(vec_##A##_p_reserve_exact		  \
 			       (NULL, len_ PASS_MEM_STAT));		  \
 									  \
-      new_vec_->base.num = len_;					  \
+      new_vec_->base.prefix.num = len_;					  \
       memcpy (new_vec_->base.vec, vec_->vec, sizeof (T) * len_);	  \
     }									  \
   return new_vec_;							  \
@@ -767,9 +853,31 @@ static inline void VEC_OP (T,A,safe_grow)				  \
 	      && VEC_OP(T,base,length) VEC_BASE(*vec_) <= (unsigned)size_, \
 						 "grow", T, A);		  \
   VEC_OP (T,A,reserve_exact) (vec_,					  \
-			      size_ - (int)(*vec_ ? VEC_BASE(*vec_)->num : 0) \
+			      size_ - (int)(*vec_ ? VEC_BASE(*vec_)->prefix.num : 0) \
 			      VEC_CHECK_PASS PASS_MEM_STAT);		  \
-  VEC_BASE (*vec_)->num = size_;					  \
+  VEC_BASE (*vec_)->prefix.num = size_;					  \
+}									  \
+									  \
+static inline void VEC_OP (T,A,safe_grow_cleared)			  \
+     (VEC(T,A) **vec_, int size_ VEC_CHECK_DECL MEM_STAT_DECL)		  \
+{									  \
+  int oldsize = VEC_OP(T,base,length) VEC_BASE(*vec_);			  \
+  VEC_OP (T,A,safe_grow) (vec_, size_ VEC_CHECK_PASS PASS_MEM_STAT);	  \
+  memset (&(VEC_OP (T,base,address) VEC_BASE(*vec_))[oldsize], 0,	  \
+	  sizeof (T) * (size_ - oldsize));				  \
+}									  \
+									  \
+static inline void VEC_OP(T,A,safe_splice)				  \
+     (VEC(T,A) **dst_, VEC(T,base) *src_ VEC_CHECK_DECL MEM_STAT_DECL)	  \
+{									  \
+  if (src_)								  \
+    {									  \
+      VEC_OP (T,A,reserve_exact) (dst_, src_->prefix.num			  \
+				  VEC_CHECK_PASS MEM_STAT_INFO);	  \
+									  \
+      VEC_OP (T,base,splice) (VEC_BASE (*dst_), src_			  \
+			      VEC_CHECK_PASS);				  \
+    }									  \
 }									  \
 									  \
 static inline T *VEC_OP (T,A,safe_push)					  \
@@ -790,38 +898,34 @@ static inline T *VEC_OP (T,A,safe_insert)		     	  	  \
 }
 
 /* Vector of object.  */
-#if IN_GENGTYPE
-{"DEF_VEC_O", VEC_STRINGIFY (VEC_T_GTY(#0,#1)) ";", "none"},
-{"DEF_VEC_ALLOC_O", VEC_STRINGIFY (VEC_TA_GTY(#0,#1,#2,#3)) ";", NULL},
-#else
 #define DEF_VEC_O(T)							  \
 VEC_T_GTY(T,base);							  \
-VEC_TA_GTY(T,base,none,);						  \
+VEC_TA(T,base,none);						  \
 DEF_VEC_FUNC_O(T)							  \
 struct vec_swallow_trailing_semi
 #define DEF_VEC_ALLOC_O(T,A)						  \
-VEC_TA_GTY(T,base,A,);							  \
+VEC_TA(T,base,A);							  \
 DEF_VEC_ALLOC_FUNC_O(T,A)						  \
+DEF_VEC_NONALLOC_FUNCS_O(T,A)						  \
 struct vec_swallow_trailing_semi
-#endif
 
 #define DEF_VEC_FUNC_O(T)						  \
 static inline unsigned VEC_OP (T,base,length) (const VEC(T,base) *vec_)	  \
 {									  \
-  return vec_ ? vec_->num : 0;						  \
+  return vec_ ? vec_->prefix.num : 0;						  \
 }									  \
 									  \
 static inline T *VEC_OP (T,base,last) (VEC(T,base) *vec_ VEC_CHECK_DECL)  \
 {									  \
-  VEC_ASSERT (vec_ && vec_->num, "last", T, base);			  \
+  VEC_ASSERT (vec_ && vec_->prefix.num, "last", T, base);			  \
   									  \
-  return &vec_->vec[vec_->num - 1];					  \
+  return &vec_->vec[vec_->prefix.num - 1];					  \
 }									  \
 									  \
 static inline T *VEC_OP (T,base,index)					  \
      (VEC(T,base) *vec_, unsigned ix_ VEC_CHECK_DECL)			  \
 {									  \
-  VEC_ASSERT (vec_ && ix_ < vec_->num, "index", T, base);		  \
+  VEC_ASSERT (vec_ && ix_ < vec_->prefix.num, "index", T, base);		  \
   									  \
   return &vec_->vec[ix_];						  \
 }									  \
@@ -829,7 +933,7 @@ static inline T *VEC_OP (T,base,index)					  \
 static inline int VEC_OP (T,base,iterate)			     	  \
      (VEC(T,base) *vec_, unsigned ix_, T **ptr)				  \
 {									  \
-  if (vec_ && ix_ < vec_->num)						  \
+  if (vec_ && ix_ < vec_->prefix.num)						  \
     {									  \
       *ptr = &vec_->vec[ix_];						  \
       return 1;								  \
@@ -850,15 +954,28 @@ static inline size_t VEC_OP (T,base,embedded_size)			  \
 static inline void VEC_OP (T,base,embedded_init)			  \
      (VEC(T,base) *vec_, int alloc_)					  \
 {									  \
-  vec_->num = 0;							  \
-  vec_->alloc = alloc_;							  \
+  vec_->prefix.num = 0;							  \
+  vec_->prefix.alloc = alloc_;							  \
 }									  \
 									  \
 static inline int VEC_OP (T,base,space)	       				  \
      (VEC(T,base) *vec_, int alloc_ VEC_CHECK_DECL)			  \
 {									  \
   VEC_ASSERT (alloc_ >= 0, "space", T, base);				  \
-  return vec_ ? vec_->alloc - vec_->num >= (unsigned)alloc_ : !alloc_;	  \
+  return vec_ ? vec_->prefix.alloc - vec_->prefix.num >= (unsigned)alloc_ : !alloc_;	  \
+}									  \
+									  \
+static inline void VEC_OP(T,base,splice)				  \
+     (VEC(T,base) *dst_, VEC(T,base) *src_ VEC_CHECK_DECL)		  \
+{									  \
+  if (src_)								  \
+    {									  \
+      unsigned len_ = src_->prefix.num;					  \
+      VEC_ASSERT (dst_->prefix.num + len_ <= dst_->prefix.alloc, "splice", T, base);	  \
+									  \
+      memcpy (&dst_->vec[dst_->prefix.num], &src_->vec[0], len_ * sizeof (T));	  \
+      dst_->prefix.num += len_;						  \
+    }									  \
 }									  \
 									  \
 static inline T *VEC_OP (T,base,quick_push)				  \
@@ -866,8 +983,8 @@ static inline T *VEC_OP (T,base,quick_push)				  \
 {									  \
   T *slot_;								  \
   									  \
-  VEC_ASSERT (vec_->num < vec_->alloc, "push", T, base);		  \
-  slot_ = &vec_->vec[vec_->num++];					  \
+  VEC_ASSERT (vec_->prefix.num < vec_->prefix.alloc, "push", T, base);		  \
+  slot_ = &vec_->vec[vec_->prefix.num++];					  \
   if (obj_)								  \
     *slot_ = *obj_;							  \
   									  \
@@ -876,16 +993,16 @@ static inline T *VEC_OP (T,base,quick_push)				  \
 									  \
 static inline void VEC_OP (T,base,pop) (VEC(T,base) *vec_ VEC_CHECK_DECL) \
 {									  \
-  VEC_ASSERT (vec_->num, "pop", T, base);				  \
-  --vec_->num;								  \
+  VEC_ASSERT (vec_->prefix.num, "pop", T, base);				  \
+  --vec_->prefix.num;								  \
 }									  \
 									  \
 static inline void VEC_OP (T,base,truncate)				  \
      (VEC(T,base) *vec_, unsigned size_ VEC_CHECK_DECL)			  \
 {									  \
-  VEC_ASSERT (vec_ ? vec_->num >= size_ : !size_, "truncate", T, base);	  \
+  VEC_ASSERT (vec_ ? vec_->prefix.num >= size_ : !size_, "truncate", T, base);	  \
   if (vec_)								  \
-    vec_->num = size_;							  \
+    vec_->prefix.num = size_;							  \
 }									  \
 									  \
 static inline T *VEC_OP (T,base,replace)				  \
@@ -893,7 +1010,7 @@ static inline T *VEC_OP (T,base,replace)				  \
 {									  \
   T *slot_;								  \
 									  \
-  VEC_ASSERT (ix_ < vec_->num, "replace", T, base);			  \
+  VEC_ASSERT (ix_ < vec_->prefix.num, "replace", T, base);			  \
   slot_ = &vec_->vec[ix_];						  \
   if (obj_)								  \
     *slot_ = *obj_;							  \
@@ -906,10 +1023,10 @@ static inline T *VEC_OP (T,base,quick_insert)				  \
 {									  \
   T *slot_;								  \
 									  \
-  VEC_ASSERT (vec_->num < vec_->alloc, "insert", T, base);		  \
-  VEC_ASSERT (ix_ <= vec_->num, "insert", T, base);			  \
+  VEC_ASSERT (vec_->prefix.num < vec_->prefix.alloc, "insert", T, base);		  \
+  VEC_ASSERT (ix_ <= vec_->prefix.num, "insert", T, base);			  \
   slot_ = &vec_->vec[ix_];						  \
-  memmove (slot_ + 1, slot_, (vec_->num++ - ix_) * sizeof (T));		  \
+  memmove (slot_ + 1, slot_, (vec_->prefix.num++ - ix_) * sizeof (T));		  \
   if (obj_)								  \
     *slot_ = *obj_;							  \
   									  \
@@ -921,16 +1038,16 @@ static inline void VEC_OP (T,base,ordered_remove)			  \
 {									  \
   T *slot_;								  \
 									  \
-  VEC_ASSERT (ix_ < vec_->num, "remove", T, base);			  \
+  VEC_ASSERT (ix_ < vec_->prefix.num, "remove", T, base);			  \
   slot_ = &vec_->vec[ix_];						  \
-  memmove (slot_, slot_ + 1, (--vec_->num - ix_) * sizeof (T));		  \
+  memmove (slot_, slot_ + 1, (--vec_->prefix.num - ix_) * sizeof (T));		  \
 }									  \
 									  \
 static inline void VEC_OP (T,base,unordered_remove)			  \
      (VEC(T,base) *vec_, unsigned ix_ VEC_CHECK_DECL)			  \
 {									  \
-  VEC_ASSERT (ix_ < vec_->num, "remove", T, base);			  \
-  vec_->vec[ix_] = vec_->vec[--vec_->num];				  \
+  VEC_ASSERT (ix_ < vec_->prefix.num, "remove", T, base);			  \
+  vec_->vec[ix_] = vec_->vec[--vec_->prefix.num];				  \
 }									  \
 									  \
 static inline void VEC_OP (T,base,block_remove)				  \
@@ -938,10 +1055,10 @@ static inline void VEC_OP (T,base,block_remove)				  \
 {									  \
   T *slot_;								  \
 									  \
-  VEC_ASSERT (ix_ + len_ <= vec_->num, "block_remove", T, base);	  \
+  VEC_ASSERT (ix_ + len_ <= vec_->prefix.num, "block_remove", T, base);	  \
   slot_ = &vec_->vec[ix_];						  \
-  vec_->num -= len_;							  \
-  memmove (slot_, slot_ + len_, (vec_->num - ix_) * sizeof (T));	  \
+  vec_->prefix.num -= len_;							  \
+  memmove (slot_, slot_ + len_, (vec_->prefix.num - ix_) * sizeof (T));	  \
 }									  \
 									  \
 static inline T *VEC_OP (T,base,address)				  \
@@ -984,11 +1101,12 @@ static inline VEC(T,A) *VEC_OP (T,A,alloc)      			  \
 						 offsetof (VEC(T,A),base.vec), \
 						 sizeof (T)		  \
 						 PASS_MEM_STAT);	  \
-}									  \
-									  \
+}
+
+#define DEF_VEC_NONALLOC_FUNCS_O(T,A)					  \
 static inline VEC(T,A) *VEC_OP (T,A,copy) (VEC(T,base) *vec_ MEM_STAT_DECL) \
 {									  \
-  size_t len_ = vec_ ? vec_->num : 0;					  \
+  size_t len_ = vec_ ? vec_->prefix.num : 0;					  \
   VEC (T,A) *new_vec_ = NULL;						  \
 									  \
   if (len_)								  \
@@ -998,7 +1116,7 @@ static inline VEC(T,A) *VEC_OP (T,A,copy) (VEC(T,base) *vec_ MEM_STAT_DECL) \
 				offsetof (VEC(T,A),base.vec), sizeof (T)  \
 				PASS_MEM_STAT));			  \
 									  \
-      new_vec_->base.num = len_;					  \
+      new_vec_->base.prefix.num = len_;					  \
       memcpy (new_vec_->base.vec, vec_->vec, sizeof (T) * len_);	  \
     }									  \
   return new_vec_;							  \
@@ -1049,9 +1167,31 @@ static inline void VEC_OP (T,A,safe_grow)				  \
 	      && VEC_OP(T,base,length) VEC_BASE(*vec_) <= (unsigned)size_, \
 						 "grow", T, A);		  \
   VEC_OP (T,A,reserve_exact) (vec_,					  \
-			      size_ - (int)(*vec_ ? VEC_BASE(*vec_)->num : 0) \
+			      size_ - (int)(*vec_ ? VEC_BASE(*vec_)->prefix.num : 0) \
 			      VEC_CHECK_PASS PASS_MEM_STAT);		  \
-  VEC_BASE (*vec_)->num = size_;					  \
+  VEC_BASE (*vec_)->prefix.num = size_;					  \
+}									  \
+									  \
+static inline void VEC_OP (T,A,safe_grow_cleared)			  \
+     (VEC(T,A) **vec_, int size_ VEC_CHECK_DECL MEM_STAT_DECL)		  \
+{									  \
+  int oldsize = VEC_OP(T,base,length) VEC_BASE(*vec_);			  \
+  VEC_OP (T,A,safe_grow) (vec_, size_ VEC_CHECK_PASS PASS_MEM_STAT);	  \
+  memset (&(VEC_OP (T,base,address) VEC_BASE(*vec_))[oldsize], 0,	  \
+	  sizeof (T) * (size_ - oldsize));				  \
+}									  \
+									  \
+static inline void VEC_OP(T,A,safe_splice)				  \
+     (VEC(T,A) **dst_, VEC(T,base) *src_ VEC_CHECK_DECL MEM_STAT_DECL)	  \
+{									  \
+  if (src_)								  \
+    {									  \
+      VEC_OP (T,A,reserve_exact) (dst_, src_->prefix.num			  \
+				  VEC_CHECK_PASS MEM_STAT_INFO);	  \
+									  \
+      VEC_OP (T,base,splice) (VEC_BASE (*dst_), src_			  \
+			      VEC_CHECK_PASS);				  \
+    }									  \
 }									  \
 									  \
 static inline T *VEC_OP (T,A,safe_push)					  \
@@ -1079,11 +1219,12 @@ static inline VEC(T,A) *VEC_OP (T,A,alloc)      			  \
   return (VEC(T,A) *) vec_##A##_o_reserve_exact				  \
 		      (NULL, alloc_, offsetof (VEC(T,A),base.vec),	  \
 		       sizeof (T) PASS_MEM_STAT);			  \
-}									  \
-									  \
+}
+
+#define DEF_VEC_NONALLOC_FUNCS_I(T,A)					  \
 static inline VEC(T,A) *VEC_OP (T,A,copy) (VEC(T,base) *vec_ MEM_STAT_DECL) \
 {									  \
-  size_t len_ = vec_ ? vec_->num : 0;					  \
+  size_t len_ = vec_ ? vec_->prefix.num : 0;					  \
   VEC (T,A) *new_vec_ = NULL;						  \
 									  \
   if (len_)								  \
@@ -1093,7 +1234,7 @@ static inline VEC(T,A) *VEC_OP (T,A,copy) (VEC(T,base) *vec_ MEM_STAT_DECL) \
 				offsetof (VEC(T,A),base.vec), sizeof (T)  \
 				PASS_MEM_STAT));			  \
 									  \
-      new_vec_->base.num = len_;					  \
+      new_vec_->base.prefix.num = len_;					  \
       memcpy (new_vec_->base.vec, vec_->vec, sizeof (T) * len_);	  \
     }									  \
   return new_vec_;							  \
@@ -1143,9 +1284,31 @@ static inline void VEC_OP (T,A,safe_grow)				  \
 	      && VEC_OP(T,base,length) VEC_BASE(*vec_) <= (unsigned)size_, \
 						 "grow", T, A);		  \
   VEC_OP (T,A,reserve_exact) (vec_,					  \
-			      size_ - (int)(*vec_ ? VEC_BASE(*vec_)->num : 0) \
+			      size_ - (int)(*vec_ ? VEC_BASE(*vec_)->prefix.num : 0) \
 			      VEC_CHECK_PASS PASS_MEM_STAT);		  \
-  VEC_BASE (*vec_)->num = size_;					  \
+  VEC_BASE (*vec_)->prefix.num = size_;					  \
+}									  \
+									  \
+static inline void VEC_OP (T,A,safe_grow_cleared)			  \
+     (VEC(T,A) **vec_, int size_ VEC_CHECK_DECL MEM_STAT_DECL)		  \
+{									  \
+  int oldsize = VEC_OP(T,base,length) VEC_BASE(*vec_);			  \
+  VEC_OP (T,A,safe_grow) (vec_, size_ VEC_CHECK_PASS PASS_MEM_STAT);	  \
+  memset (&(VEC_OP (T,base,address) VEC_BASE(*vec_))[oldsize], 0,	  \
+	  sizeof (T) * (size_ - oldsize));				  \
+}									  \
+									  \
+static inline void VEC_OP(T,A,safe_splice)				  \
+     (VEC(T,A) **dst_, VEC(T,base) *src_ VEC_CHECK_DECL MEM_STAT_DECL)	  \
+{									  \
+  if (src_)								  \
+    {									  \
+      VEC_OP (T,A,reserve_exact) (dst_, src_->prefix.num			  \
+				  VEC_CHECK_PASS MEM_STAT_INFO);	  \
+									  \
+      VEC_OP (T,base,splice) (VEC_BASE (*dst_), src_			  \
+			      VEC_CHECK_PASS);				  \
+    }									  \
 }									  \
 									  \
 static inline T *VEC_OP (T,A,safe_push)					  \
@@ -1164,6 +1327,82 @@ static inline T *VEC_OP (T,A,safe_insert)		     	  	  \
 									  \
   return VEC_OP (T,base,quick_insert) (VEC_BASE(*vec_), ix_, obj_	  \
 				       VEC_CHECK_PASS);			  \
+}
+
+/* We support a vector which starts out with space on the stack and
+   switches to heap space when forced to reallocate.  This works a
+   little differently.  Instead of DEF_VEC_ALLOC_P(TYPE, heap|gc), use
+   DEF_VEC_ALLOC_P_STACK(TYPE).  This uses alloca to get the initial
+   space; because alloca can not be usefully called in an inline
+   function, and because a macro can not define a macro, you must then
+   write a #define for each type:
+
+   #define VEC_{TYPE}_stack_alloc(alloc)                          \
+     VEC_stack_alloc({TYPE}, alloc)
+
+   This is really a hack and perhaps can be made better.  Note that
+   this macro will wind up evaluating the ALLOC parameter twice.
+
+   Only the initial allocation will be made using alloca, so pass a
+   reasonable estimate that doesn't use too much stack space; don't
+   pass zero.  Don't return a VEC(TYPE,stack) vector from the function
+   which allocated it.  */
+
+extern void *vec_stack_p_reserve (void *, int MEM_STAT_DECL);
+extern void *vec_stack_p_reserve_exact (void *, int MEM_STAT_DECL);
+extern void *vec_stack_p_reserve_exact_1 (int, void *);
+extern void *vec_stack_o_reserve (void *, int, size_t, size_t MEM_STAT_DECL);
+extern void *vec_stack_o_reserve_exact (void *, int, size_t, size_t
+					 MEM_STAT_DECL);
+extern void vec_stack_free (void *);
+
+#ifdef GATHER_STATISTICS
+#define VEC_stack_alloc(T,alloc,name,line,function)			  \
+  (VEC_OP (T,stack,alloc1)						  \
+   (alloc, XALLOCAVAR (VEC(T,stack), VEC_embedded_size (T, alloc))))
+#else
+#define VEC_stack_alloc(T,alloc)					  \
+  (VEC_OP (T,stack,alloc1)						  \
+   (alloc, XALLOCAVAR (VEC(T,stack), VEC_embedded_size (T, alloc))))
+#endif
+
+#define DEF_VEC_ALLOC_P_STACK(T)					  \
+VEC_TA(T,base,stack);							  \
+DEF_VEC_ALLOC_FUNC_P_STACK(T)						  \
+DEF_VEC_NONALLOC_FUNCS_P(T,stack)					  \
+struct vec_swallow_trailing_semi
+
+#define DEF_VEC_ALLOC_FUNC_P_STACK(T)					  \
+static inline VEC(T,stack) *VEC_OP (T,stack,alloc1)			  \
+     (int alloc_, VEC(T,stack)* space)					  \
+{									  \
+  return (VEC(T,stack) *) vec_stack_p_reserve_exact_1 (alloc_, space);	  \
+}
+
+#define DEF_VEC_ALLOC_O_STACK(T)					  \
+VEC_TA(T,base,stack);							  \
+DEF_VEC_ALLOC_FUNC_O_STACK(T)						  \
+DEF_VEC_NONALLOC_FUNCS_O(T,stack)					  \
+struct vec_swallow_trailing_semi
+
+#define DEF_VEC_ALLOC_FUNC_O_STACK(T)					  \
+static inline VEC(T,stack) *VEC_OP (T,stack,alloc1)			  \
+     (int alloc_, VEC(T,stack)* space)					  \
+{									  \
+  return (VEC(T,stack) *) vec_stack_p_reserve_exact_1 (alloc_, space);	  \
+}
+
+#define DEF_VEC_ALLOC_I_STACK(T)					  \
+VEC_TA(T,base,stack);							  \
+DEF_VEC_ALLOC_FUNC_I_STACK(T)						  \
+DEF_VEC_NONALLOC_FUNCS_I(T,stack)					  \
+struct vec_swallow_trailing_semi
+
+#define DEF_VEC_ALLOC_FUNC_I_STACK(T)					  \
+static inline VEC(T,stack) *VEC_OP (T,stack,alloc1)			  \
+     (int alloc_, VEC(T,stack)* space)					  \
+{									  \
+  return (VEC(T,stack) *) vec_stack_p_reserve_exact_1 (alloc_, space);   \
 }
 
 #endif /* GCC_VEC_H */

@@ -1,12 +1,12 @@
 /* Definitions of target machine for GNU compiler,
    for NetBSD/vax ELF systems.
-   Copyright (C) 2002 Free Software Foundation, Inc.
+   Copyright (C) 2002, 2007, 2009, 2010 Free Software Foundation, Inc.
 
 This file is part of GCC.
 
 GCC is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2, or (at your option)
+the Free Software Foundation; either version 3, or (at your option)
 any later version.
 
 GCC is distributed in the hope that it will be useful,
@@ -15,9 +15,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with GCC; see the file COPYING.  If not, write to
-the Free Software Foundation, 51 Franklin Street, Fifth Floor,
-Boston, MA 02110-1301, USA.  */
+along with GCC; see the file COPYING3.  If not see
+<http://www.gnu.org/licenses/>.  */
 
 /* Names to predefine in the preprocessor for this target OS.  */
 #undef TARGET_OS_CPP_BUILTINS
@@ -31,10 +30,20 @@ Boston, MA 02110-1301, USA.  */
 #undef CPP_SPEC
 #define CPP_SPEC NETBSD_CPP_SPEC
 
+#ifndef NETBSD_CC1_AND_CC1PLUS_SPEC
+#define NETBSD_CC1_AND_CC1PLUS_SPEC ""
+#endif
+
+#undef CC1_SPEC
+#define CC1_SPEC NETBSD_CC1_AND_CC1PLUS_SPEC VAX_CC1_AND_CC1PLUS_SPEC
+
+#undef CC1PLUS_SPEC
+#define CC1PLUS_SPEC NETBSD_CC1_AND_CC1PLUS_SPEC VAX_CC1_AND_CC1PLUS_SPEC
+
 #define NETBSD_ENTRY_POINT "__start"
 
 #undef LINK_SPEC
-#if 1
+#if 0
 /* FIXME: We must link all executables statically until PIC support
    is added to the compiler.  */
 #define LINK_SPEC \
@@ -43,7 +52,7 @@ Boston, MA 02110-1301, USA.  */
    %{!shared: \
      -dc -dp \
      %{!nostdlib: \
-       %{!r*: \
+       %{!r: \
 	 %{!e*:-e %(netbsd_entry_point)}}} \
      %{!static:-static} \
      %{static:-static}}"
@@ -56,5 +65,4 @@ Boston, MA 02110-1301, USA.  */
 
 /* We use gas, not the UNIX assembler.  */
 #undef TARGET_DEFAULT
-#define TARGET_DEFAULT 0
-
+#define TARGET_DEFAULT MASK_QMATH

@@ -1,13 +1,14 @@
 /* Definitions of target machine for GCC, for ELF on NetBSD/sparc
    and NetBSD/sparc64.
-   Copyright (C) 2002, 2003, 2004, 2005 Free Software Foundation, Inc.
+   Copyright (C) 2002, 2003, 2004, 2005, 2007, 2010, 2011
+   Free Software Foundation, Inc.
    Contributed by Matthew Green (mrg@eterna.com.au).
 
 This file is part of GCC.
 
 GCC is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2, or (at your option)
+the Free Software Foundation; either version 3, or (at your option)
 any later version.
 
 GCC is distributed in the hope that it will be useful,
@@ -16,9 +17,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with GCC; see the file COPYING.  If not, write to
-the Free Software Foundation, 51 Franklin Street, Fifth Floor,
-Boston, MA 02110-1301, USA.  */
+along with GCC; see the file COPYING3.  If not see
+<http://www.gnu.org/licenses/>.  */
 
 #define TARGET_OS_CPP_BUILTINS()			\
   do							\
@@ -35,10 +35,6 @@ Boston, MA 02110-1301, USA.  */
       builtin_define ("__sparc__");			\
     }							\
   while (0)
-
-/* Make sure these are undefined.  */
-#undef MD_EXEC_PREFIX
-#undef MD_STARTFILE_PREFIX
 
 /* CPP defines used by all NetBSD targets.  */
 #undef CPP_SUBTARGET_SPEC
@@ -72,20 +68,15 @@ Boston, MA 02110-1301, USA.  */
 #define USER_LABEL_PREFIX ""
 
 #undef ASM_SPEC
-#define ASM_SPEC "%{fpic|fPIC|fpie|fPIE:-K PIC} %{V} %{v:%{!V:-V}} \
-%{mlittle-endian:-EL} \
+#define ASM_SPEC "%{fpic|fPIC|fpie|fPIE:-K PIC} \
 %(asm_cpu) %(asm_arch) %(asm_relax)"
 
 #undef STDC_0_IN_SYSTEM_HEADERS
 
-/* Attempt to enable execute permissions on the stack.  */
-#define ENABLE_EXECUTE_STACK NETBSD_ENABLE_EXECUTE_STACK
-
-#undef TARGET_VERSION
-#define TARGET_VERSION fprintf (stderr, " (%s)", TARGET_NAME);
+#define HAVE_ENABLE_EXECUTE_STACK
 
 /* Below here exists the merged NetBSD/sparc & NetBSD/sparc64 compiler
-   description, allowing one to build 32 bit or 64 bit applications
+   description, allowing one to build 32-bit or 64-bit applications
    on either.  We define the sparc & sparc64 versions of things,
    occasionally a neutral version (should be the same as "netbsd-elf.h")
    and then based on SPARC_BI_ARCH, DEFAULT_ARCH32_P, and TARGET_CPU_DEFAULT,
@@ -94,10 +85,6 @@ Boston, MA 02110-1301, USA.  */
 /* We use the default NetBSD ELF STARTFILE_SPEC and ENDFILE_SPEC
    definitions, even for the SPARC_BI_ARCH compiler, because NetBSD does
    not have a default place to find these libraries..  */
-
-/* Name the port(s).  */
-#define TARGET_NAME64     "NetBSD/sparc64 ELF"
-#define TARGET_NAME32     "NetBSD/sparc ELF"
 
 /* TARGET_CPU_DEFAULT is set in Makefile.in.  We test for 64-bit default
    platform here.  */
@@ -119,40 +106,20 @@ Boston, MA 02110-1301, USA.  */
 
 /* CC1_SPEC for NetBSD/sparc.  */
 #define CC1_SPEC32 \
- "%{sun4:} %{target:} \
-  %{mcypress:-mcpu=cypress} \
-  %{msparclite:-mcpu=sparclite} %{mf930:-mcpu=f930} %{mf934:-mcpu=f934} \
-  %{mv8:-mcpu=v8} %{msupersparc:-mcpu=supersparc} \
-  %{m32:%{m64:%emay not use both -m32 and -m64}} \
+ "%{m32:%{m64:%emay not use both -m32 and -m64}} \
   %{m64: \
     -mptr64 -mstack-bias -mno-v8plus -mlong-double-128 \
-    %{!mcpu*: \
-      %{!mcypress: \
-        %{!msparclite: \
-	  %{!mf930: \
-	    %{!mf934: \
-	      %{!mv8*: \
-	        %{!msupersparc:-mcpu=ultrasparc}}}}}}} \
+    %{!mcpu*:%{!mv8plus:-mcpu=ultrasparc}} \
     %{!mno-vis:%{!mcpu=v9:-mvis}} \
     %{p:-mcmodel=medlow} \
     %{pg:-mcmodel=medlow}}"
 
 #define CC1_SPEC64 \
- "%{sun4:} %{target:} \
-  %{mcypress:-mcpu=cypress} \
-  %{msparclite:-mcpu=sparclite} %{mf930:-mcpu=f930} %{mf934:-mcpu=f934} \
-  %{mv8:-mcpu=v8} %{msupersparc:-mcpu=supersparc} \
-  %{m32:%{m64:%emay not use both -m32 and -m64}} \
+ "%{m32:%{m64:%emay not use both -m32 and -m64}} \
   %{m32: \
     -mptr32 -mno-stack-bias \
     %{!mlong-double-128:-mlong-double-64} \
-    %{!mcpu*: \
-      %{!mcypress: \
-	%{!msparclite: \
-	  %{!mf930: \
-	    %{!mf934: \
-	      %{!mv8*: \
-		%{!msupersparc:-mcpu=cypress}}}}}}}} \
+    %{!mcpu*:%{!mv8plus:-mcpu=cypress}}} \
   %{!m32: \
     %{p:-mcmodel=medlow} \
     %{pg:-mcmodel=medlow}}"
@@ -221,10 +188,6 @@ Boston, MA 02110-1301, USA.  */
 #define MULTILIB_DEFAULTS { "m64" }
 #endif
 
-/* Name the port.  */
-#undef TARGET_NAME
-#define TARGET_NAME     (DEFAULT_ARCH32_P ? TARGET_NAME32 : TARGET_NAME64)
-
 #else	/* SPARC_BI_ARCH */
 
 #if TARGET_CPU_DEFAULT == TARGET_CPU_v9 \
@@ -238,9 +201,6 @@ Boston, MA 02110-1301, USA.  */
 
 #undef  CC1_SPEC
 #define CC1_SPEC CC1_SPEC64
-
-#undef TARGET_NAME
-#define TARGET_NAME     TARGET_NAME64
 
 #else	/* TARGET_CPU_DEFAULT == TARGET_CPU_v9 \
 	|| TARGET_CPU_DEFAULT == TARGET_CPU_ultrasparc */
@@ -256,9 +216,6 @@ Boston, MA 02110-1301, USA.  */
 
 #undef  CC1_SPEC
 #define CC1_SPEC CC1_SPEC32
-
-#undef TARGET_NAME
-#define TARGET_NAME     TARGET_NAME32
 
 #endif	/* TARGET_CPU_DEFAULT == TARGET_CPU_v9 \
 	|| TARGET_CPU_DEFAULT == TARGET_CPU_ultrasparc */

@@ -1,12 +1,12 @@
 /* Configuration for an OpenBSD i386 target.
    
-   Copyright (C) 2005 Free Software Foundation, Inc.
+   Copyright (C) 2005, 2007, 2009, 2010 Free Software Foundation, Inc.
 
 This file is part of GCC.
 
 GCC is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2, or (at your option)
+the Free Software Foundation; either version 3, or (at your option)
 any later version.
 
 GCC is distributed in the hope that it will be useful,
@@ -15,12 +15,11 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with GCC; see the file COPYING.  If not, write to
-the Free Software Foundation, 51 Franklin Street, Fifth Floor,
-Boston, MA 02110-1301, USA.  */
+along with GCC; see the file COPYING3.  If not see
+<http://www.gnu.org/licenses/>.  */
 
-/* This gets defined in tm.h->linux.h->svr4.h, and keeps us from using
-   libraries compiled with the native cc, so undef it. */
+/* This keeps us from using libraries compiled with the native cc, so
+   undef it. */
 #undef NO_DOLLAR_IN_LABEL
 
 /* Override the default comment-starter of "/".  */
@@ -56,16 +55,19 @@ Boston, MA 02110-1301, USA.  */
 
 /* This must agree with <machine/ansi.h> */
 #undef SIZE_TYPE
-#define SIZE_TYPE "unsigned int"
+#define SIZE_TYPE "long unsigned int"
 
 #undef PTRDIFF_TYPE
-#define PTRDIFF_TYPE "int"
+#define PTRDIFF_TYPE "long int"
 
 #undef WCHAR_TYPE
 #define WCHAR_TYPE "int"
 
 #undef WCHAR_TYPE_SIZE
 #define WCHAR_TYPE_SIZE BITS_PER_WORD
+
+#undef WINT_TYPE
+#define WINT_TYPE "int"
 
 /* Assembler format: overall framework.  */
 
@@ -122,11 +124,11 @@ Boston, MA 02110-1301, USA.  */
 
 #undef LINK_SPEC
 #define LINK_SPEC \
-  "%{!shared:%{!nostdlib:%{!r*:%{!e*:-e __start}}}} \
+  "%{!shared:%{!nostdlib:%{!r:%{!e*:-e __start}}}} \
    %{shared:-shared} %{R*} \
    %{static:-Bstatic} \
    %{!static:-Bdynamic} \
    %{assert*} \
-   %{!dynamic-linker:-dynamic-linker /usr/libexec/ld.so}"
+   -dynamic-linker /usr/libexec/ld.so"
 
 #define OBSD_HAS_CORRECT_SPECS

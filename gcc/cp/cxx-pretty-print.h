@@ -1,12 +1,13 @@
 /* Interface for the GNU C++ pretty-printer.
-   Copyright (C) 2003, 2004, 2005 Free Software Foundation, Inc.
+   Copyright (C) 2003, 2004, 2005, 2007, 2009, 2010
+   Free Software Foundation, Inc.
    Contributed by Gabriel Dos Reis <gdr@integrable-solutions.net>
 
 This file is part of GCC.
 
 GCC is free software; you can redistribute it and/or modify it under
 the terms of the GNU General Public License as published by the Free
-Software Foundation; either version 2, or (at your option) any later
+Software Foundation; either version 3, or (at your option) any later
 version.
 
 GCC is distributed in the hope that it will be useful, but WITHOUT ANY
@@ -15,14 +16,13 @@ FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 for more details.
 
 You should have received a copy of the GNU General Public License
-along with GCC; see the file COPYING.  If not, write to the Free
-Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
-02110-1301, USA.  */
+along with GCC; see the file COPYING3.  If not see
+<http://www.gnu.org/licenses/>.  */
 
 #ifndef GCC_CXX_PRETTY_PRINT_H
 #define GCC_CXX_PRETTY_PRINT_H
 
-#include "c-pretty-print.h"
+#include "c-family/c-pretty-print.h"
 
 #undef pp_c_base
 #define pp_c_base(PP) (&(PP)->c_base)
@@ -58,6 +58,7 @@ typedef struct
 #define pp_cxx_semicolon(PP)		pp_c_semicolon (pp_c_base (PP))
 #define pp_cxx_complement(PP)		pp_c_complement (pp_c_base (PP))
 
+#define pp_cxx_ws_string(PP, I)		pp_c_ws_string (pp_c_base (PP), I)
 #define pp_cxx_identifier(PP, I)	pp_c_identifier (pp_c_base (PP), I)
 #define pp_cxx_tree_identifier(PP, T) \
   pp_c_tree_identifier (pp_c_base (PP), T)
@@ -70,6 +71,10 @@ void pp_cxx_separate_with (cxx_pretty_printer *, int);
 
 void pp_cxx_declaration (cxx_pretty_printer *, tree);
 void pp_cxx_canonical_template_parameter (cxx_pretty_printer *, tree);
+void pp_cxx_trait_expression (cxx_pretty_printer *, tree);
+void pp_cxx_va_arg_expression (cxx_pretty_printer *, tree);
+void pp_cxx_offsetof_expression (cxx_pretty_printer *, tree);
+void pp_cxx_userdef_literal (cxx_pretty_printer *, tree);
 
 
 #endif /* GCC_CXX_PRETTY_PRINT_H */

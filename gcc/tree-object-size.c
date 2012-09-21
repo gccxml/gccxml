@@ -1,12 +1,13 @@
 /* __builtin_object_size (ptr, object_size_type) computation
-   Copyright (C) 2004, 2005, 2006 Free Software Foundation, Inc.
+   Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011
+   Free Software Foundation, Inc.
    Contributed by Jakub Jelinek <jakub@redhat.com>
 
 This file is part of GCC.
 
 GCC is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2, or (at your option)
+the Free Software Foundation; either version 3, or (at your option)
 any later version.
 
 GCC is distributed in the hope that it will be useful,
@@ -15,16 +16,17 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with GCC; see the file COPYING.  If not, write to
-the Free Software Foundation, 51 Franklin Street, Fifth Floor,
-Boston, MA 02110-1301, USA.  */
+along with GCC; see the file COPYING3.  If not see
+<http://www.gnu.org/licenses/>.  */
 
 #include "config.h"
 #include "system.h"
 #include "coretypes.h"
 #include "tm.h"
 #include "tree.h"
-#include "diagnostic.h"
+#include "diagnostic-core.h"
+#include "tree-pretty-print.h"
+#include "gimple-pretty-print.h"
 #include "tree-flow.h"
 #include "tree-pass.h"
 #include "tree-ssa-propagate.h"
@@ -41,15 +43,17 @@ struct object_size_info
 
 static unsigned HOST_WIDE_INT unknown[4] = { -1, -1, 0, 0 };
 
-static tree compute_object_offset (tree, tree);
-static unsigned HOST_WIDE_INT addr_object_size (tree, int);
-static unsigned HOST_WIDE_INT alloc_object_size (tree, int);
-static tree pass_through_call (tree);
+static tree compute_object_offset (const_tree, const_tree);
+static unsigned HOST_WIDE_INT addr_object_size (struct object_size_info *,
+						const_tree, int);
+static unsigned HOST_WIDE_INT alloc_object_size (const_gimple, int);
+static tree pass_through_call (const_gimple);
 static void collect_object_sizes_for (struct object_size_info *, tree);
 static void expr_object_size (struct object_size_info *, tree, tree);
 static bool merge_object_sizes (struct object_size_info *, tree, tree,
 				unsigned HOST_WIDE_INT);
-static bool plus_expr_object_size (struct object_size_info *, tree, tree);
+static bool plus_stmt_object_size (struct object_size_info *, tree, gimple);
+static bool cond_expr_object_size (struct object_size_info *, tree, gimple);
 static unsigned int compute_object_sizes (void);
 static void init_offset_limit (void);
 static void check_for_plus_in_loops (struct object_size_info *, tree);
@@ -87,7 +91,7 @@ init_offset_limit (void)
    if unknown.  */
 
 static tree
-compute_object_offset (tree expr, tree var)
+compute_object_offset (const_tree expr, const_tree var)
 {
   enum tree_code code = PLUS_EXPR;
   tree base, off, t;
@@ -109,8 +113,7 @@ compute_object_offset (tree expr, tree var)
       break;
 
     case REALPART_EXPR:
-    case NOP_EXPR:
-    case CONVERT_EXPR:
+    CASE_CONVERT:
     case VIEW_CONVERT_EXPR:
     case NON_LVALUE_EXPR:
       return compute_object_offset (TREE_OPERAND (expr, 0), var);
@@ -138,6 +141,10 @@ compute_object_offset (tree expr, tree var)
       off = size_binop (MULT_EXPR, TYPE_SIZE_UNIT (TREE_TYPE (expr)), t);
       break;
 
+    case MEM_REF:
+      gcc_assert (TREE_CODE (TREE_OPERAND (expr, 0)) == ADDR_EXPR);
+      return double_int_to_tree (sizetype, mem_ref_offset (expr));
+
     default:
       return error_mark_node;
     }
@@ -151,125 +158,282 @@ compute_object_offset (tree expr, tree var)
    If unknown, return unknown[object_size_type].  */
 
 static unsigned HOST_WIDE_INT
-addr_object_size (tree ptr, int object_size_type)
+addr_object_size (struct object_size_info *osi, const_tree ptr,
+		  int object_size_type)
 {
-  tree pt_var;
+  tree pt_var, pt_var_size = NULL_TREE, var_size, bytes;
 
   gcc_assert (TREE_CODE (ptr) == ADDR_EXPR);
 
   pt_var = TREE_OPERAND (ptr, 0);
-  if (REFERENCE_CLASS_P (pt_var))
-    pt_var = get_base_address (pt_var);
+  while (handled_component_p (pt_var))
+    pt_var = TREE_OPERAND (pt_var, 0);
 
   if (pt_var
-      && (SSA_VAR_P (pt_var) || TREE_CODE (pt_var) == STRING_CST)
-      && TYPE_SIZE_UNIT (TREE_TYPE (pt_var))
-      && host_integerp (TYPE_SIZE_UNIT (TREE_TYPE (pt_var)), 1)
-      && (unsigned HOST_WIDE_INT)
-	 tree_low_cst (TYPE_SIZE_UNIT (TREE_TYPE (pt_var)), 1) < offset_limit)
+      && TREE_CODE (pt_var) == MEM_REF)
     {
-      tree bytes;
+      unsigned HOST_WIDE_INT sz;
 
-      if (pt_var != TREE_OPERAND (ptr, 0))
+      if (!osi || (object_size_type & 1) != 0
+	  || TREE_CODE (TREE_OPERAND (pt_var, 0)) != SSA_NAME)
 	{
-	  tree var;
-
-	  if (object_size_type & 1)
-	    {
-	      var = TREE_OPERAND (ptr, 0);
-
-	      while (var != pt_var
-		      && TREE_CODE (var) != BIT_FIELD_REF
-		      && TREE_CODE (var) != COMPONENT_REF
-		      && TREE_CODE (var) != ARRAY_REF
-		      && TREE_CODE (var) != ARRAY_RANGE_REF
-		      && TREE_CODE (var) != REALPART_EXPR
-		      && TREE_CODE (var) != IMAGPART_EXPR)
-		var = TREE_OPERAND (var, 0);
-	      if (var != pt_var && TREE_CODE (var) == ARRAY_REF)
-		var = TREE_OPERAND (var, 0);
-	      if (! TYPE_SIZE_UNIT (TREE_TYPE (var))
-		  || ! host_integerp (TYPE_SIZE_UNIT (TREE_TYPE (var)), 1)
-		  || tree_int_cst_lt (TYPE_SIZE_UNIT (TREE_TYPE (pt_var)),
-				      TYPE_SIZE_UNIT (TREE_TYPE (var))))
-		var = pt_var;
-	    }
+	  sz = compute_builtin_object_size (TREE_OPERAND (pt_var, 0),
+					    object_size_type & ~1);
+	}
+      else
+	{
+	  tree var = TREE_OPERAND (pt_var, 0);
+	  if (osi->pass == 0)
+	    collect_object_sizes_for (osi, var);
+	  if (bitmap_bit_p (computed[object_size_type],
+			    SSA_NAME_VERSION (var)))
+	    sz = object_sizes[object_size_type][SSA_NAME_VERSION (var)];
 	  else
-	    var = pt_var;
+	    sz = unknown[object_size_type];
+	}
+      if (sz != unknown[object_size_type])
+	{
+	  double_int dsz = double_int_sub (uhwi_to_double_int (sz),
+					   mem_ref_offset (pt_var));
+	  if (double_int_negative_p (dsz))
+	    sz = 0;
+	  else if (double_int_fits_in_uhwi_p (dsz))
+	    sz = double_int_to_uhwi (dsz);
+	  else
+	    sz = unknown[object_size_type];
+	}
 
-	  bytes = compute_object_offset (TREE_OPERAND (ptr, 0), var);
-	  if (bytes != error_mark_node)
+      if (sz != unknown[object_size_type] && sz < offset_limit)
+	pt_var_size = size_int (sz);
+    }
+  else if (pt_var
+	   && DECL_P (pt_var)
+	   && host_integerp (DECL_SIZE_UNIT (pt_var), 1)
+	   && (unsigned HOST_WIDE_INT)
+	        tree_low_cst (DECL_SIZE_UNIT (pt_var), 1) < offset_limit)
+    pt_var_size = DECL_SIZE_UNIT (pt_var);
+  else if (pt_var
+	   && TREE_CODE (pt_var) == STRING_CST
+	   && TYPE_SIZE_UNIT (TREE_TYPE (pt_var))
+	   && host_integerp (TYPE_SIZE_UNIT (TREE_TYPE (pt_var)), 1)
+	   && (unsigned HOST_WIDE_INT)
+	      tree_low_cst (TYPE_SIZE_UNIT (TREE_TYPE (pt_var)), 1)
+	      < offset_limit)
+    pt_var_size = TYPE_SIZE_UNIT (TREE_TYPE (pt_var));
+  else
+    return unknown[object_size_type];
+
+  if (pt_var != TREE_OPERAND (ptr, 0))
+    {
+      tree var;
+
+      if (object_size_type & 1)
+	{
+	  var = TREE_OPERAND (ptr, 0);
+
+	  while (var != pt_var
+		 && TREE_CODE (var) != BIT_FIELD_REF
+		 && TREE_CODE (var) != COMPONENT_REF
+		 && TREE_CODE (var) != ARRAY_REF
+		 && TREE_CODE (var) != ARRAY_RANGE_REF
+		 && TREE_CODE (var) != REALPART_EXPR
+		 && TREE_CODE (var) != IMAGPART_EXPR)
+	    var = TREE_OPERAND (var, 0);
+	  if (var != pt_var && TREE_CODE (var) == ARRAY_REF)
+	    var = TREE_OPERAND (var, 0);
+	  if (! TYPE_SIZE_UNIT (TREE_TYPE (var))
+	      || ! host_integerp (TYPE_SIZE_UNIT (TREE_TYPE (var)), 1)
+	      || (pt_var_size
+		  && tree_int_cst_lt (pt_var_size,
+				      TYPE_SIZE_UNIT (TREE_TYPE (var)))))
+	    var = pt_var;
+	  else if (var != pt_var && TREE_CODE (pt_var) == MEM_REF)
 	    {
-	      if (TREE_CODE (bytes) == INTEGER_CST
-		  && tree_int_cst_lt (TYPE_SIZE_UNIT (TREE_TYPE (var)), bytes))
-		bytes = size_zero_node;
-	      else
-		bytes = size_binop (MINUS_EXPR,
-				    TYPE_SIZE_UNIT (TREE_TYPE (var)), bytes);
+	      tree v = var;
+	      /* For &X->fld, compute object size only if fld isn't the last
+		 field, as struct { int i; char c[1]; } is often used instead
+		 of flexible array member.  */
+	      while (v && v != pt_var)
+		switch (TREE_CODE (v))
+		  {
+		  case ARRAY_REF:
+		    if (TYPE_SIZE_UNIT (TREE_TYPE (TREE_OPERAND (v, 0)))
+			&& TREE_CODE (TREE_OPERAND (v, 1)) == INTEGER_CST)
+		      {
+			tree domain
+			  = TYPE_DOMAIN (TREE_TYPE (TREE_OPERAND (v, 0)));
+			if (domain
+			    && TYPE_MAX_VALUE (domain)
+			    && TREE_CODE (TYPE_MAX_VALUE (domain))
+			       == INTEGER_CST
+			    && tree_int_cst_lt (TREE_OPERAND (v, 1),
+						TYPE_MAX_VALUE (domain)))
+			  {
+			    v = NULL_TREE;
+			    break;
+			  }
+		      }
+		    v = TREE_OPERAND (v, 0);
+		    break;
+		  case REALPART_EXPR:
+		  case IMAGPART_EXPR:
+		    v = NULL_TREE;
+		    break;
+		  case COMPONENT_REF:
+		    if (TREE_CODE (TREE_TYPE (v)) != ARRAY_TYPE)
+		      {
+			v = NULL_TREE;
+			break;
+		      }
+		    while (v != pt_var && TREE_CODE (v) == COMPONENT_REF)
+		      if (TREE_CODE (TREE_TYPE (TREE_OPERAND (v, 0)))
+			  != UNION_TYPE
+			  && TREE_CODE (TREE_TYPE (TREE_OPERAND (v, 0)))
+			  != QUAL_UNION_TYPE)
+			break;
+		      else
+			v = TREE_OPERAND (v, 0);
+		    if (TREE_CODE (v) == COMPONENT_REF
+			&& TREE_CODE (TREE_TYPE (TREE_OPERAND (v, 0)))
+			   == RECORD_TYPE)
+		      {
+			tree fld_chain = DECL_CHAIN (TREE_OPERAND (v, 1));
+			for (; fld_chain; fld_chain = DECL_CHAIN (fld_chain))
+			  if (TREE_CODE (fld_chain) == FIELD_DECL)
+			    break;
+
+			if (fld_chain)
+			  {
+			    v = NULL_TREE;
+			    break;
+			  }
+			v = TREE_OPERAND (v, 0);
+		      }
+		    while (v != pt_var && TREE_CODE (v) == COMPONENT_REF)
+		      if (TREE_CODE (TREE_TYPE (TREE_OPERAND (v, 0)))
+			  != UNION_TYPE
+			  && TREE_CODE (TREE_TYPE (TREE_OPERAND (v, 0)))
+			  != QUAL_UNION_TYPE)
+			break;
+		      else
+			v = TREE_OPERAND (v, 0);
+		    if (v != pt_var)
+		      v = NULL_TREE;
+		    else
+		      v = pt_var;
+		    break;
+		  default:
+		    v = pt_var;
+		    break;
+		  }
+	      if (v == pt_var)
+		var = pt_var;
 	    }
 	}
       else
-	bytes = TYPE_SIZE_UNIT (TREE_TYPE (pt_var));
+	var = pt_var;
 
-      if (host_integerp (bytes, 1))
-	return tree_low_cst (bytes, 1);
+      if (var != pt_var)
+	var_size = TYPE_SIZE_UNIT (TREE_TYPE (var));
+      else if (!pt_var_size)
+	return unknown[object_size_type];
+      else
+	var_size = pt_var_size;
+      bytes = compute_object_offset (TREE_OPERAND (ptr, 0), var);
+      if (bytes != error_mark_node)
+	{
+	  if (TREE_CODE (bytes) == INTEGER_CST
+	      && tree_int_cst_lt (var_size, bytes))
+	    bytes = size_zero_node;
+	  else
+	    bytes = size_binop (MINUS_EXPR, var_size, bytes);
+	}
+      if (var != pt_var
+	  && pt_var_size
+	  && TREE_CODE (pt_var) == MEM_REF
+	  && bytes != error_mark_node)
+	{
+	  tree bytes2 = compute_object_offset (TREE_OPERAND (ptr, 0), pt_var);
+	  if (bytes2 != error_mark_node)
+	    {
+	      if (TREE_CODE (bytes2) == INTEGER_CST
+		  && tree_int_cst_lt (pt_var_size, bytes2))
+		bytes2 = size_zero_node;
+	      else
+		bytes2 = size_binop (MINUS_EXPR, pt_var_size, bytes2);
+	      bytes = size_binop (MIN_EXPR, bytes, bytes2);
+	    }
+	}
     }
+  else if (!pt_var_size)
+    return unknown[object_size_type];
+  else
+    bytes = pt_var_size;
+
+  if (host_integerp (bytes, 1))
+    return tree_low_cst (bytes, 1);
 
   return unknown[object_size_type];
 }
 
 
-/* Compute __builtin_object_size for CALL, which is a CALL_EXPR.
+/* Compute __builtin_object_size for CALL, which is a GIMPLE_CALL.
    Handles various allocation calls.  OBJECT_SIZE_TYPE is the second
    argument from __builtin_object_size.  If unknown, return
    unknown[object_size_type].  */
 
 static unsigned HOST_WIDE_INT
-alloc_object_size (tree call, int object_size_type)
+alloc_object_size (const_gimple call, int object_size_type)
 {
-  tree callee, arglist, a, bytes = NULL_TREE;
-  unsigned int arg_mask = 0;
+  tree callee, bytes = NULL_TREE;
+  tree alloc_size;
+  int arg1 = -1, arg2 = -1;
 
-  gcc_assert (TREE_CODE (call) == CALL_EXPR);
+  gcc_assert (is_gimple_call (call));
 
-  callee = get_callee_fndecl (call);
-  arglist = TREE_OPERAND (call, 1);
-  if (callee
-      && DECL_BUILT_IN_CLASS (callee) == BUILT_IN_NORMAL)
+  callee = gimple_call_fndecl (call);
+  if (!callee)
+    return unknown[object_size_type];
+
+  alloc_size = lookup_attribute ("alloc_size", TYPE_ATTRIBUTES (TREE_TYPE(callee)));
+  if (alloc_size && TREE_VALUE (alloc_size))
+    {
+      tree p = TREE_VALUE (alloc_size);
+
+      arg1 = TREE_INT_CST_LOW (TREE_VALUE (p))-1;
+      if (TREE_CHAIN (p))
+        arg2 = TREE_INT_CST_LOW (TREE_VALUE (TREE_CHAIN (p)))-1;
+    }
+
+  if (DECL_BUILT_IN_CLASS (callee) == BUILT_IN_NORMAL)
     switch (DECL_FUNCTION_CODE (callee))
       {
+      case BUILT_IN_CALLOC:
+	arg2 = 1;
+	/* fall through */
       case BUILT_IN_MALLOC:
       case BUILT_IN_ALLOCA:
-	arg_mask = 1;
-	break;
-      /*
-      case BUILT_IN_REALLOC:
-	arg_mask = 2;
-	break;
-	*/
-      case BUILT_IN_CALLOC:
-	arg_mask = 3;
-	break;
+      case BUILT_IN_ALLOCA_WITH_ALIGN:
+	arg1 = 0;
       default:
 	break;
       }
 
-  for (a = arglist; arg_mask && a; arg_mask >>= 1, a = TREE_CHAIN (a))
-    if (arg_mask & 1)
-      {
-	tree arg = TREE_VALUE (a);
+  if (arg1 < 0 || arg1 >= (int)gimple_call_num_args (call)
+      || TREE_CODE (gimple_call_arg (call, arg1)) != INTEGER_CST
+      || (arg2 >= 0
+	  && (arg2 >= (int)gimple_call_num_args (call)
+	      || TREE_CODE (gimple_call_arg (call, arg2)) != INTEGER_CST)))
+    return unknown[object_size_type];
 
-	if (TREE_CODE (arg) != INTEGER_CST)
-	  break;
+  if (arg2 >= 0)
+    bytes = size_binop (MULT_EXPR,
+	fold_convert (sizetype, gimple_call_arg (call, arg1)),
+	fold_convert (sizetype, gimple_call_arg (call, arg2)));
+  else if (arg1 >= 0)
+    bytes = fold_convert (sizetype, gimple_call_arg (call, arg1));
 
-	if (! bytes)
-	  bytes = fold_convert (sizetype, arg);
-	else
-	  bytes = size_binop (MULT_EXPR, bytes,
-			      fold_convert (sizetype, arg));
-      }
-
-  if (! arg_mask && bytes && host_integerp (bytes, 1))
+  if (bytes && host_integerp (bytes, 1))
     return tree_low_cst (bytes, 1);
 
   return unknown[object_size_type];
@@ -277,14 +441,13 @@ alloc_object_size (tree call, int object_size_type)
 
 
 /* If object size is propagated from one of function's arguments directly
-   to its return value, return that argument for CALL_EXPR CALL.
+   to its return value, return that argument for GIMPLE_CALL statement CALL.
    Otherwise return NULL.  */
 
 static tree
-pass_through_call (tree call)
+pass_through_call (const_gimple call)
 {
-  tree callee = get_callee_fndecl (call);
-  tree arglist = TREE_OPERAND (call, 1);
+  tree callee = gimple_call_fndecl (call);
 
   if (callee
       && DECL_BUILT_IN_CLASS (callee) == BUILT_IN_NORMAL)
@@ -302,10 +465,12 @@ pass_through_call (tree call)
       case BUILT_IN_MEMSET_CHK:
       case BUILT_IN_STRCPY_CHK:
       case BUILT_IN_STRNCPY_CHK:
+      case BUILT_IN_STPNCPY_CHK:
       case BUILT_IN_STRCAT_CHK:
       case BUILT_IN_STRNCAT_CHK:
-	if (arglist)
-	  return TREE_VALUE (arglist);
+      case BUILT_IN_ASSUME_ALIGNED:
+	if (gimple_call_num_args (call) >= 1)
+	  return gimple_call_arg (call, 0);
 	break;
       default:
 	break;
@@ -327,19 +492,11 @@ compute_builtin_object_size (tree ptr, int object_size_type)
     init_offset_limit ();
 
   if (TREE_CODE (ptr) == ADDR_EXPR)
-    return addr_object_size (ptr, object_size_type);
-  else if (TREE_CODE (ptr) == CALL_EXPR)
-    {
-      tree arg = pass_through_call (ptr);
+    return addr_object_size (NULL, ptr, object_size_type);
 
-      if (arg)
-	return compute_builtin_object_size (arg, object_size_type);
-      else
-	return alloc_object_size (ptr, object_size_type);
-    }
-  else if (TREE_CODE (ptr) == SSA_NAME
-	   && POINTER_TYPE_P (TREE_TYPE (ptr))
-	   && object_sizes[object_size_type] != NULL)
+  if (TREE_CODE (ptr) == SSA_NAME
+      && POINTER_TYPE_P (TREE_TYPE (ptr))
+      && object_sizes[object_size_type] != NULL)
     {
       if (!bitmap_bit_p (computed[object_size_type], SSA_NAME_VERSION (ptr)))
 	{
@@ -459,9 +616,7 @@ compute_builtin_object_size (tree ptr, int object_size_type)
   return unknown[object_size_type];
 }
 
-
-/* Compute object_sizes for PTR, defined to VALUE, which is not
-   a SSA_NAME.  */
+/* Compute object_sizes for PTR, defined to VALUE, which is not an SSA_NAME.  */
 
 static void
 expr_object_size (struct object_size_info *osi, tree ptr, tree value)
@@ -482,11 +637,67 @@ expr_object_size (struct object_size_info *osi, tree ptr, tree value)
 	      || !POINTER_TYPE_P (TREE_TYPE (value)));
 
   if (TREE_CODE (value) == ADDR_EXPR)
-    bytes = addr_object_size (value, object_size_type);
-  else if (TREE_CODE (value) == CALL_EXPR)
-    bytes = alloc_object_size (value, object_size_type);
+    bytes = addr_object_size (osi, value, object_size_type);
   else
     bytes = unknown[object_size_type];
+
+  if ((object_size_type & 2) == 0)
+    {
+      if (object_sizes[object_size_type][varno] < bytes)
+	object_sizes[object_size_type][varno] = bytes;
+    }
+  else
+    {
+      if (object_sizes[object_size_type][varno] > bytes)
+	object_sizes[object_size_type][varno] = bytes;
+    }
+}
+
+
+/* Compute object_sizes for PTR, defined to the result of a call.  */
+
+static void
+call_object_size (struct object_size_info *osi, tree ptr, gimple call)
+{
+  int object_size_type = osi->object_size_type;
+  unsigned int varno = SSA_NAME_VERSION (ptr);
+  unsigned HOST_WIDE_INT bytes;
+
+  gcc_assert (is_gimple_call (call));
+
+  gcc_assert (object_sizes[object_size_type][varno]
+	      != unknown[object_size_type]);
+  gcc_assert (osi->pass == 0);
+
+  bytes = alloc_object_size (call, object_size_type);
+
+  if ((object_size_type & 2) == 0)
+    {
+      if (object_sizes[object_size_type][varno] < bytes)
+	object_sizes[object_size_type][varno] = bytes;
+    }
+  else
+    {
+      if (object_sizes[object_size_type][varno] > bytes)
+	object_sizes[object_size_type][varno] = bytes;
+    }
+}
+
+
+/* Compute object_sizes for PTR, defined to an unknown value.  */
+
+static void
+unknown_object_size (struct object_size_info *osi, tree ptr)
+{
+  int object_size_type = osi->object_size_type;
+  unsigned int varno = SSA_NAME_VERSION (ptr);
+  unsigned HOST_WIDE_INT bytes;
+
+  gcc_assert (object_sizes[object_size_type][varno]
+	      != unknown[object_size_type]);
+  gcc_assert (osi->pass == 0);
+
+  bytes = unknown[object_size_type];
 
   if ((object_size_type & 2) == 0)
     {
@@ -548,42 +759,38 @@ merge_object_sizes (struct object_size_info *osi, tree dest, tree orig,
 }
 
 
-/* Compute object_sizes for PTR, defined to VALUE, which is
-   a PLUS_EXPR.  Return true if the object size might need reexamination
-   later.  */
+/* Compute object_sizes for VAR, defined to the result of an assignment
+   with operator POINTER_PLUS_EXPR.  Return true if the object size might
+   need reexamination  later.  */
 
 static bool
-plus_expr_object_size (struct object_size_info *osi, tree var, tree value)
+plus_stmt_object_size (struct object_size_info *osi, tree var, gimple stmt)
 {
-  tree op0 = TREE_OPERAND (value, 0);
-  tree op1 = TREE_OPERAND (value, 1);
-  bool ptr1_p = POINTER_TYPE_P (TREE_TYPE (op0))
-		&& TREE_CODE (op0) != INTEGER_CST;
-  bool ptr2_p = POINTER_TYPE_P (TREE_TYPE (op1))
-		&& TREE_CODE (op1) != INTEGER_CST;
   int object_size_type = osi->object_size_type;
   unsigned int varno = SSA_NAME_VERSION (var);
   unsigned HOST_WIDE_INT bytes;
+  tree op0, op1;
 
-  gcc_assert (TREE_CODE (value) == PLUS_EXPR);
+  if (gimple_assign_rhs_code (stmt) == POINTER_PLUS_EXPR)
+    {
+      op0 = gimple_assign_rhs1 (stmt);
+      op1 = gimple_assign_rhs2 (stmt);
+    }
+  else if (gimple_assign_rhs_code (stmt) == ADDR_EXPR)
+    {
+      tree rhs = TREE_OPERAND (gimple_assign_rhs1 (stmt), 0);
+      gcc_assert (TREE_CODE (rhs) == MEM_REF);
+      op0 = TREE_OPERAND (rhs, 0);
+      op1 = TREE_OPERAND (rhs, 1);
+    }
+  else
+    gcc_unreachable ();
 
   if (object_sizes[object_size_type][varno] == unknown[object_size_type])
     return false;
 
-  /* Swap operands if needed.  */
-  if (ptr2_p && !ptr1_p)
-    {
-      tree tem = op0;
-      op0 = op1;
-      op1 = tem;
-      ptr1_p = true;
-      ptr2_p = false;
-    }
-
   /* Handle PTR + OFFSET here.  */
-  if (ptr1_p
-      && !ptr2_p
-      && TREE_CODE (op1) == INTEGER_CST
+  if (TREE_CODE (op1) == INTEGER_CST
       && (TREE_CODE (op0) == SSA_NAME
 	  || TREE_CODE (op0) == ADDR_EXPR))
     {
@@ -595,8 +802,11 @@ plus_expr_object_size (struct object_size_info *osi, tree var, tree value)
 	{
 	  unsigned HOST_WIDE_INT off = tree_low_cst (op1, 1);
 
-	  bytes = compute_builtin_object_size (op0, object_size_type);
-	  if (off > offset_limit)
+          /* op0 will be ADDR_EXPR here.  */
+	  bytes = addr_object_size (osi, op0, object_size_type);
+	  if (bytes == unknown[object_size_type])
+	    ;
+	  else if (off > offset_limit)
 	    bytes = unknown[object_size_type];
 	  else if (off > bytes)
 	    bytes = 0;
@@ -621,13 +831,46 @@ plus_expr_object_size (struct object_size_info *osi, tree var, tree value)
 }
 
 
+/* Compute object_sizes for VAR, defined at STMT, which is
+   a COND_EXPR.  Return true if the object size might need reexamination
+   later.  */
+
+static bool
+cond_expr_object_size (struct object_size_info *osi, tree var, gimple stmt)
+{
+  tree then_, else_;
+  int object_size_type = osi->object_size_type;
+  unsigned int varno = SSA_NAME_VERSION (var);
+  bool reexamine = false;
+
+  gcc_assert (gimple_assign_rhs_code (stmt) == COND_EXPR);
+
+  if (object_sizes[object_size_type][varno] == unknown[object_size_type])
+    return false;
+
+  then_ = gimple_assign_rhs2 (stmt);
+  else_ = gimple_assign_rhs3 (stmt);
+
+  if (TREE_CODE (then_) == SSA_NAME)
+    reexamine |= merge_object_sizes (osi, var, then_, 0);
+  else
+    expr_object_size (osi, var, then_);
+
+  if (TREE_CODE (else_) == SSA_NAME)
+    reexamine |= merge_object_sizes (osi, var, else_, 0);
+  else
+    expr_object_size (osi, var, else_);
+
+  return reexamine;
+}
+
 /* Compute object sizes for VAR.
    For ADDR_EXPR an object size is the number of remaining bytes
    to the end of the object (where what is considered an object depends on
    OSI->object_size_type).
-   For allocation CALL_EXPR like malloc or calloc object size is the size
+   For allocation GIMPLE_CALL like malloc or calloc object size is the size
    of the allocation.
-   For pointer PLUS_EXPR where second operand is a constant integer,
+   For POINTER_PLUS_EXPR where second operand is a constant integer,
    object size is object size of the first operand minus the constant.
    If the constant is bigger than the number of remaining bytes until the
    end of the object, object size is 0, but if it is instead a pointer
@@ -636,7 +879,7 @@ plus_expr_object_size (struct object_size_info *osi, tree var, tree value)
    unknown[object_size_type] for all objects bigger than half of the address
    space, and constants less than half of the address space are considered
    addition, while bigger constants subtraction.
-   For a memcpy like CALL_EXPR that always returns one of its arguments, the
+   For a memcpy like GIMPLE_CALL that always returns one of its arguments, the
    object size is object size of that argument.
    Otherwise, object size is the maximum of object sizes of variables
    that it might be set to.  */
@@ -646,7 +889,7 @@ collect_object_sizes_for (struct object_size_info *osi, tree var)
 {
   int object_size_type = osi->object_size_type;
   unsigned int varno = SSA_NAME_VERSION (var);
-  tree stmt;
+  gimple stmt;
   bool reexamine;
 
   if (bitmap_bit_p (computed[object_size_type], varno))
@@ -654,9 +897,8 @@ collect_object_sizes_for (struct object_size_info *osi, tree var)
 
   if (osi->pass == 0)
     {
-      if (! bitmap_bit_p (osi->visited, varno))
+      if (bitmap_set_bit (osi->visited, varno))
 	{
-	  bitmap_set_bit (osi->visited, varno);
 	  object_sizes[object_size_type][varno]
 	    = (object_size_type & 2) ? -1 : 0;
 	}
@@ -685,47 +927,55 @@ collect_object_sizes_for (struct object_size_info *osi, tree var)
   stmt = SSA_NAME_DEF_STMT (var);
   reexamine = false;
 
-  switch (TREE_CODE (stmt))
+  switch (gimple_code (stmt))
     {
-    case RETURN_EXPR:
-      gcc_assert (TREE_CODE (TREE_OPERAND (stmt, 0)) == MODIFY_EXPR);
-      stmt = TREE_OPERAND (stmt, 0);
-      /* FALLTHRU  */
-
-    case MODIFY_EXPR:
+    case GIMPLE_ASSIGN:
       {
-	tree rhs = TREE_OPERAND (stmt, 1), arg;
-	STRIP_NOPS (rhs);
+	tree rhs = gimple_assign_rhs1 (stmt);
+        if (gimple_assign_rhs_code (stmt) == POINTER_PLUS_EXPR
+	    || (gimple_assign_rhs_code (stmt) == ADDR_EXPR
+		&& TREE_CODE (TREE_OPERAND (rhs, 0)) == MEM_REF))
+          reexamine = plus_stmt_object_size (osi, var, stmt);
+	else if (gimple_assign_rhs_code (stmt) == COND_EXPR)
+	  reexamine = cond_expr_object_size (osi, var, stmt);
+        else if (gimple_assign_single_p (stmt)
+                 || gimple_assign_unary_nop_p (stmt))
+          {
+            if (TREE_CODE (rhs) == SSA_NAME
+                && POINTER_TYPE_P (TREE_TYPE (rhs)))
+              reexamine = merge_object_sizes (osi, var, rhs, 0);
+            else
+              expr_object_size (osi, var, rhs);
+          }
+        else
+          unknown_object_size (osi, var);
+        break;
+      }
 
-	if (TREE_CODE (rhs) == CALL_EXPR)
-	  {
-	    arg = pass_through_call (rhs);
-	    if (arg)
-	      rhs = arg;
-	  }
-
-	if (TREE_CODE (rhs) == SSA_NAME
-	    && POINTER_TYPE_P (TREE_TYPE (rhs)))
-	  reexamine = merge_object_sizes (osi, var, rhs, 0);
-
-	else if (TREE_CODE (rhs) == PLUS_EXPR)
-	  reexamine = plus_expr_object_size (osi, var, rhs);
-
-	else
-	  expr_object_size (osi, var, rhs);
+    case GIMPLE_CALL:
+      {
+        tree arg = pass_through_call (stmt);
+        if (arg)
+          {
+            if (TREE_CODE (arg) == SSA_NAME
+                && POINTER_TYPE_P (TREE_TYPE (arg)))
+              reexamine = merge_object_sizes (osi, var, arg, 0);
+            else
+              expr_object_size (osi, var, arg);
+          }
+        else
+          call_object_size (osi, var, stmt);
 	break;
       }
 
-    case ASM_EXPR:
+    case GIMPLE_ASM:
       /* Pointers defined by __asm__ statements can point anywhere.  */
       object_sizes[object_size_type][varno] = unknown[object_size_type];
       break;
 
-    case NOP_EXPR:
+    case GIMPLE_NOP:
       {
 	tree decl = SSA_NAME_VAR (var);
-
-	gcc_assert (IS_EMPTY_STMT (stmt));
 
 	if (TREE_CODE (decl) != PARM_DECL && DECL_INITIAL (decl))
 	  expr_object_size (osi, var, DECL_INITIAL (decl));
@@ -734,13 +984,13 @@ collect_object_sizes_for (struct object_size_info *osi, tree var)
       }
       break;
 
-    case PHI_NODE:
+    case GIMPLE_PHI:
       {
-	int i;
+	unsigned i;
 
-	for (i = 0; i < PHI_NUM_ARGS (stmt); i++)
+	for (i = 0; i < gimple_phi_num_args (stmt); i++)
 	  {
-	    tree rhs = PHI_ARG_DEF (stmt, i);
+	    tree rhs = gimple_phi_arg (stmt, i)->def;
 
 	    if (object_sizes[object_size_type][varno]
 		== unknown[object_size_type])
@@ -753,6 +1003,7 @@ collect_object_sizes_for (struct object_size_info *osi, tree var)
 	  }
 	break;
       }
+
     default:
       gcc_unreachable ();
     }
@@ -783,7 +1034,7 @@ static void
 check_for_plus_in_loops_1 (struct object_size_info *osi, tree var,
 			   unsigned int depth)
 {
-  tree stmt = SSA_NAME_DEF_STMT (var);
+  gimple stmt = SSA_NAME_DEF_STMT (var);
   unsigned int varno = SSA_NAME_VERSION (var);
 
   if (osi->depths[varno])
@@ -811,66 +1062,61 @@ check_for_plus_in_loops_1 (struct object_size_info *osi, tree var,
   osi->depths[varno] = depth;
   *osi->tos++ = varno;
 
-  switch (TREE_CODE (stmt))
+  switch (gimple_code (stmt))
     {
-    case RETURN_EXPR:
-      gcc_assert (TREE_CODE (TREE_OPERAND (stmt, 0)) == MODIFY_EXPR);
-      stmt = TREE_OPERAND (stmt, 0);
-      /* FALLTHRU  */
 
-    case MODIFY_EXPR:
+    case GIMPLE_ASSIGN:
       {
-	tree rhs = TREE_OPERAND (stmt, 1), arg;
-	STRIP_NOPS (rhs);
+        if ((gimple_assign_single_p (stmt)
+             || gimple_assign_unary_nop_p (stmt))
+            && TREE_CODE (gimple_assign_rhs1 (stmt)) == SSA_NAME)
+          {
+            tree rhs = gimple_assign_rhs1 (stmt);
 
-	if (TREE_CODE (rhs) == CALL_EXPR)
-	  {
-	    arg = pass_through_call (rhs);
-	    if (arg)
-	      rhs = arg;
-	  }
+            check_for_plus_in_loops_1 (osi, rhs, depth);
+          }
+        else if (gimple_assign_rhs_code (stmt) == POINTER_PLUS_EXPR)
+          {
+            tree basevar = gimple_assign_rhs1 (stmt);
+            tree cst = gimple_assign_rhs2 (stmt);
 
-	if (TREE_CODE (rhs) == SSA_NAME)
-	  check_for_plus_in_loops_1 (osi, rhs, depth);
-	else if (TREE_CODE (rhs) == PLUS_EXPR)
-	  {
-	    tree op0 = TREE_OPERAND (rhs, 0);
-	    tree op1 = TREE_OPERAND (rhs, 1);
-	    tree cst, basevar;
+            gcc_assert (TREE_CODE (cst) == INTEGER_CST);
 
-	    if (TREE_CODE (op0) == SSA_NAME)
-	      {
-		basevar = op0;
-		cst = op1;
-	      }
-	    else
-	      {
-		basevar = op1;
-		cst = op0;
-		gcc_assert (TREE_CODE (basevar) == SSA_NAME);
-	      }
-	    gcc_assert (TREE_CODE (cst) == INTEGER_CST);
-
-	    check_for_plus_in_loops_1 (osi, basevar,
-				       depth + !integer_zerop (cst));
-	  }
-	else
-	  gcc_unreachable ();
-	break;
+            check_for_plus_in_loops_1 (osi, basevar,
+                                       depth + !integer_zerop (cst));
+          }
+        else
+          gcc_unreachable ();
+        break;
       }
-    case PHI_NODE:
-      {
-	int i;
 
-	for (i = 0; i < PHI_NUM_ARGS (stmt); i++)
+    case GIMPLE_CALL:
+      {
+        tree arg = pass_through_call (stmt);
+        if (arg)
+          {
+            if (TREE_CODE (arg) == SSA_NAME)
+              check_for_plus_in_loops_1 (osi, arg, depth);
+            else
+              gcc_unreachable ();
+          }
+        break;
+      }
+
+    case GIMPLE_PHI:
+      {
+	unsigned i;
+
+	for (i = 0; i < gimple_phi_num_args (stmt); i++)
 	  {
-	    tree rhs = PHI_ARG_DEF (stmt, i);
+	    tree rhs = gimple_phi_arg (stmt, i)->def;
 
 	    if (TREE_CODE (rhs) == SSA_NAME)
 	      check_for_plus_in_loops_1 (osi, rhs, depth);
 	  }
 	break;
       }
+
     default:
       gcc_unreachable ();
     }
@@ -887,59 +1133,29 @@ check_for_plus_in_loops_1 (struct object_size_info *osi, tree var,
 static void
 check_for_plus_in_loops (struct object_size_info *osi, tree var)
 {
-  tree stmt = SSA_NAME_DEF_STMT (var);
+  gimple stmt = SSA_NAME_DEF_STMT (var);
 
-  switch (TREE_CODE (stmt))
+  /* NOTE: In the pre-tuples code, we handled a CALL_EXPR here,
+     and looked for a POINTER_PLUS_EXPR in the pass-through
+     argument, if any.  In GIMPLE, however, such an expression
+     is not a valid call operand.  */
+
+  if (is_gimple_assign (stmt)
+      && gimple_assign_rhs_code (stmt) == POINTER_PLUS_EXPR)
     {
-    case RETURN_EXPR:
-      gcc_assert (TREE_CODE (TREE_OPERAND (stmt, 0)) == MODIFY_EXPR);
-      stmt = TREE_OPERAND (stmt, 0);
-      /* FALLTHRU  */
+      tree basevar = gimple_assign_rhs1 (stmt);
+      tree cst = gimple_assign_rhs2 (stmt);
 
-    case MODIFY_EXPR:
-      {
-	tree rhs = TREE_OPERAND (stmt, 1), arg;
-	STRIP_NOPS (rhs);
+      gcc_assert (TREE_CODE (cst) == INTEGER_CST);
 
-	if (TREE_CODE (rhs) == CALL_EXPR)
-	  {
-	    arg = pass_through_call (rhs);
-	    if (arg)
-	      rhs = arg;
-	  }
+      if (integer_zerop (cst))
+        return;
 
-	if (TREE_CODE (rhs) == PLUS_EXPR)
-	  {
-	    tree op0 = TREE_OPERAND (rhs, 0);
-	    tree op1 = TREE_OPERAND (rhs, 1);
-	    tree cst, basevar;
-
-	    if (TREE_CODE (op0) == SSA_NAME)
-	      {
-		basevar = op0;
-		cst = op1;
-	      }
-	    else
-	      {
-		basevar = op1;
-		cst = op0;
-		gcc_assert (TREE_CODE (basevar) == SSA_NAME);
-	      }
-	    gcc_assert (TREE_CODE (cst) == INTEGER_CST);
-
-	    if (integer_zerop (cst))
-	      break;
-
-	    osi->depths[SSA_NAME_VERSION (basevar)] = 1;
-	    *osi->tos++ = SSA_NAME_VERSION (basevar);
-	    check_for_plus_in_loops_1 (osi, var, 2);
-	    osi->depths[SSA_NAME_VERSION (basevar)] = 0;
-	    osi->tos--;
-	  }
-	break;
-      }
-    default:
-      break;
+      osi->depths[SSA_NAME_VERSION (basevar)] = 1;
+      *osi->tos++ = SSA_NAME_VERSION (basevar);
+      check_for_plus_in_loops_1 (osi, var, 2);
+      osi->depths[SSA_NAME_VERSION (basevar)] = 0;
+      osi->tos--;
     }
 }
 
@@ -988,34 +1204,29 @@ compute_object_sizes (void)
   basic_block bb;
   FOR_EACH_BB (bb)
     {
-      block_stmt_iterator i;
-      for (i = bsi_start (bb); !bsi_end_p (i); bsi_next (&i))
+      gimple_stmt_iterator i;
+      for (i = gsi_start_bb (bb); !gsi_end_p (i); gsi_next (&i))
 	{
-	  tree *stmtp = bsi_stmt_ptr (i);
-	  tree call = get_rhs (*stmtp);
 	  tree callee, result;
+	  gimple call = gsi_stmt (i);
 
-	  if (!call || TREE_CODE (call) != CALL_EXPR)
+          if (gimple_code (call) != GIMPLE_CALL)
 	    continue;
 
-	  callee = get_callee_fndecl (call);
+	  callee = gimple_call_fndecl (call);
 	  if (!callee
 	      || DECL_BUILT_IN_CLASS (callee) != BUILT_IN_NORMAL
 	      || DECL_FUNCTION_CODE (callee) != BUILT_IN_OBJECT_SIZE)
 	    continue;
 
 	  init_object_sizes ();
-	  result = fold_builtin (callee, TREE_OPERAND (call, 1), false);
+	  result = fold_call_stmt (call, false);
 	  if (!result)
 	    {
-	      tree arglist = TREE_OPERAND (call, 1);
-
-	      if (arglist != NULL
-		  && POINTER_TYPE_P (TREE_TYPE (TREE_VALUE (arglist)))
-		  && TREE_CHAIN (arglist) != NULL
-		  && TREE_CHAIN (TREE_CHAIN (arglist)) == NULL)
+	      if (gimple_call_num_args (call) == 2
+		  && POINTER_TYPE_P (TREE_TYPE (gimple_call_arg (call, 0))))
 		{
-		  tree ost = TREE_VALUE (TREE_CHAIN (arglist));
+		  tree ost = gimple_call_arg (call, 1);
 
 		  if (host_integerp (ost, 1))
 		    {
@@ -1026,7 +1237,7 @@ compute_object_sizes (void)
 			result = fold_convert (size_type_node,
 					       integer_minus_one_node);
 		      else if (object_size_type < 4)
-			result = size_zero_node;
+			result = build_zero_cst (size_type_node);
 		    }
 		}
 
@@ -1037,17 +1248,16 @@ compute_object_sizes (void)
 	  if (dump_file && (dump_flags & TDF_DETAILS))
 	    {
 	      fprintf (dump_file, "Simplified\n  ");
-	      print_generic_stmt (dump_file, *stmtp, dump_flags);
+	      print_gimple_stmt (dump_file, call, 0, dump_flags);
 	    }
 
-	  if (!set_rhs (stmtp, result))
+	  if (!update_call_from_tree (&i, result))
 	    gcc_unreachable ();
-	  update_stmt (*stmtp);
 
 	  if (dump_file && (dump_flags & TDF_DETAILS))
 	    {
 	      fprintf (dump_file, "to\n  ");
-	      print_generic_stmt (dump_file, *stmtp, dump_flags);
+	      print_gimple_stmt (dump_file, gsi_stmt (i), 0, dump_flags);
 	      fprintf (dump_file, "\n");
 	    }
 	}
@@ -1057,19 +1267,21 @@ compute_object_sizes (void)
   return 0;
 }
 
-struct tree_opt_pass pass_object_sizes =
+struct gimple_opt_pass pass_object_sizes =
 {
+ {
+  GIMPLE_PASS,
   "objsz",				/* name */
   NULL,					/* gate */
   compute_object_sizes,			/* execute */
   NULL,					/* sub */
   NULL,					/* next */
   0,					/* static_pass_number */
-  0,					/* tv_id */
-  PROP_cfg | PROP_ssa | PROP_alias,	/* properties_required */
+  TV_NONE,				/* tv_id */
+  PROP_cfg | PROP_ssa,			/* properties_required */
   0,					/* properties_provided */
   0,					/* properties_destroyed */
   0,					/* todo_flags_start */
-  TODO_dump_func | TODO_verify_ssa,	/* todo_flags_finish */
-  0					/* letter */
+  TODO_verify_ssa	                /* todo_flags_finish */
+ }
 };

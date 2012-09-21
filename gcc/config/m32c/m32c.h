@@ -1,5 +1,5 @@
 /* Target Definitions for R8C/M16C/M32C
-   Copyright (C) 2005
+   Copyright (C) 2005, 2007, 2008, 2009, 2010, 2011
    Free Software Foundation, Inc.
    Contributed by Red Hat.
 
@@ -7,7 +7,7 @@
 
    GCC is free software; you can redistribute it and/or modify it
    under the terms of the GNU General Public License as published
-   by the Free Software Foundation; either version 2, or (at your
+   by the Free Software Foundation; either version 3, or (at your
    option) any later version.
 
    GCC is distributed in the hope that it will be useful, but WITHOUT
@@ -16,9 +16,8 @@
    License for more details.
 
    You should have received a copy of the GNU General Public License
-   along with GCC; see the file COPYING.  If not, write to the Free
-   Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
-   02110-1301, USA.  */
+   along with GCC; see the file COPYING3.  If not see
+   <http://www.gnu.org/licenses/>.  */
 
 #ifndef GCC_M32C_H
 #define GCC_M32C_H
@@ -28,10 +27,17 @@
 #undef  STARTFILE_SPEC
 #define STARTFILE_SPEC "crt0.o%s crtbegin.o%s"
 
+#undef  ENDFILE_SPEC
+#define ENDFILE_SPEC "crtend.o%s crtn.o%s"
+
+#undef  LINK_SPEC
+#define LINK_SPEC "%{h*} %{v:-V} \
+		   %{static:-Bstatic} %{shared:-shared} %{symbolic:-Bsymbolic}"
+
 /* There are four CPU series we support, but they basically break down
-   into two families - the R8C/M16C families, with 16 bit address
-   registers and one set of opcodes, and the M32CM/M32C group, with 24
-   bit address registers and a different set of opcodes.  The
+   into two families - the R8C/M16C families, with 16-bit address
+   registers and one set of opcodes, and the M32CM/M32C group, with
+   24-bit address registers and a different set of opcodes.  The
    assembler doesn't care except for which opcode set is needed; the
    big difference is in the memory maps, which we cover in
    LIB_SPEC.  */
@@ -48,13 +54,13 @@
    family.  Most of the logic here is making sure we do the right
    thing when no CPU is specified, which defaults to R8C.  */
 #undef  LIB_SPEC
-#define LIB_SPEC "-( -lc %{msim*:-lsim}%{!msim*:-lnosys} -) \
-%{msim*:%{!T*: %{mcpu=m32cm:-Tsim24.ld}%{mcpu=m32c:-Tsim24.ld} \
-	%{!mcpu=m32cm:%{!mcpu=m32c:-Tsim16.ld}}}} \
-%{!T*:%{!msim*: %{mcpu=m16c:-Tm16c.ld} \
-		%{mcpu=m32cm:-Tm32cm.ld} \
-		%{mcpu=m32c:-Tm32c.ld} \
-		%{!mcpu=m16c:%{!mcpu=m32cm:%{!mcpu=m32c:-Tr8c.ld}}}}} \
+#define LIB_SPEC "-( -lc %{msim:-lsim}%{!msim:-lnosys} -) \
+%{msim:%{!T*: %{mcpu=m32cm:%Tsim24.ld}%{mcpu=m32c:%Tsim24.ld} \
+       %{!mcpu=m32cm:%{!mcpu=m32c:%Tsim16.ld}}}} \
+%{!T*:%{!msim: %{mcpu=m16c:%Tm16c.ld} \
+	       %{mcpu=m32cm:%Tm32cm.ld} \
+	       %{mcpu=m32c:%Tm32c.ld} \
+	       %{!mcpu=m16c:%{!mcpu=m32cm:%{!mcpu=m32c:%Tr8c.ld}}}}} \
 "
 
 /* Run-time Target Specification */
@@ -80,7 +86,6 @@
    beginning of the file.  This variable starts off TRUE and later
    becomes FALSE.  */
 extern int ok_to_change_target_memregs;
-extern int target_memregs;
 
 /* TARGET_CPU is a multi-way option set in m32c.opt.  While we could
    use enums or defines for this, this and m32c.opt are the only
@@ -95,13 +100,9 @@ extern int target_memregs;
 #define TARGET_A16	(TARGET_R8C || TARGET_M16C)
 #define TARGET_A24	(TARGET_M32CM || TARGET_M32C)
 
-#define TARGET_VERSION fprintf (stderr, " (m32c)");
-
-#define OVERRIDE_OPTIONS m32c_override_options ();
-
 /* Defining data structures for per-function information */
 
-typedef struct machine_function GTY (())
+typedef struct GTY (()) machine_function
 {
   /* How much we adjust the stack when returning from an exception
      handler.  */
@@ -139,21 +140,37 @@ machine_function;
    GCC expects us to have a "native" format, so we pick the one that
    matches "int".  Pointers are 16 bits for R8C/M16C (when TARGET_A16
    is true) and 24 bits for M32CM/M32C (when TARGET_A24 is true), but
-   24 bit pointers are stored in 32 bit words.  */
+   24-bit pointers are stored in 32-bit words.  */
 #define BITS_PER_UNIT 8
 #define UNITS_PER_WORD 2
 #define POINTER_SIZE (TARGET_A16 ? 16 : 32)
 #define POINTERS_EXTEND_UNSIGNED 1
+/* We have a problem with libgcc2.  It only defines two versions of
+   each function, one for "int" and one for "long long".  Ie it assumes
+   that "sizeof (int) == sizeof (long)".  For the M32C this is not true
+   and we need a third set of functions.  We explicitly define
+   LIBGCC2_UNITS_PER_WORD here so that it is clear that we are expecting
+   to get the SI and DI versions from the libgcc2.c sources, and we
+   provide our own set of HI functions in m32c-lib2.c, which is why this
+   definition is surrounded by #ifndef..#endif.  */
+#ifndef LIBGCC2_UNITS_PER_WORD
+#define LIBGCC2_UNITS_PER_WORD 4
+#endif
 
 /* These match the alignment enforced by the two types of stack operations.  */
 #define PARM_BOUNDARY (TARGET_A16 ? 8 : 16)
 #define STACK_BOUNDARY (TARGET_A16 ? 8 : 16)
 
 /* We do this because we care more about space than about speed.  For
-   the chips with 16 bit busses, we could set these to 16 if
+   the chips with 16-bit busses, we could set these to 16 if
    desired.  */
 #define FUNCTION_BOUNDARY 8
 #define BIGGEST_ALIGNMENT 8
+
+/* Since we have a maximum structure alignment of 8 there
+   is no need to enforce any alignment of bitfield types.  */
+#undef  PCC_BITFIELD_TYPE_MATTERS
+#define PCC_BITFIELD_TYPE_MATTERS 0
 
 #define STRICT_ALIGNMENT 0
 #define SLOW_BYTE_ACCESS 1
@@ -174,15 +191,27 @@ machine_function;
 #undef PTRDIFF_TYPE
 #define PTRDIFF_TYPE (TARGET_A16 ? "int" : "long int")
 
+#undef UINTPTR_TYPE
+#define UINTPTR_TYPE (TARGET_A16 ? "unsigned int" : "long unsigned int")
+
+#undef  SIZE_TYPE
+#define SIZE_TYPE "unsigned int"
+
+#undef  WCHAR_TYPE
+#define WCHAR_TYPE "long int"
+
+#undef  WCHAR_TYPE_SIZE
+#define WCHAR_TYPE_SIZE 32
+
 /* REGISTER USAGE */
 
 /* Register Basics */
 
 /* Register layout:
 
-        [r0h][r0l]  $r0  (16 bits, or two 8 bit halves)
+        [r0h][r0l]  $r0  (16 bits, or two 8-bit halves)
         [--------]  $r2  (16 bits)
-        [r1h][r1l]  $r1  (16 bits, or two 8 bit halves)
+        [r1h][r1l]  $r1  (16 bits, or two 8-bit halves)
         [--------]  $r3  (16 bits)
    [---][--------]  $a0  (might be 24 bits)
    [---][--------]  $a1  (might be 24 bits)
@@ -212,8 +241,6 @@ machine_function;
 			      1, 1, 1, 1, \
 			      1, 1, 1, 1, 1, 1, 1, 1 }
 
-#define CONDITIONAL_REGISTER_USAGE m32c_conditional_register_usage ();
-
 /* The *_REGNO theme matches m32c.md and most register number
    arguments; the PC_REGNUM is the odd one out.  */
 #ifndef PC_REGNO
@@ -225,7 +252,7 @@ machine_function;
 
 #define REG_ALLOC_ORDER { \
 	0, 1, 2, 3, 4, 5, /* r0..r3, a0, a1 */ \
-	12, 13, 14, 15, 16, 17, 18, /* mem0..mem7 */  \
+        12, 13, 14, 15, 16, 17, 18, 19, /* mem0..mem7 */	\
 	6, 7, 8, 9, 10, 11 /* sb, fb, sp, pc, flg, ap */ }
 
 /* How Values Fit in Registers */
@@ -259,19 +286,17 @@ machine_function;
   { 0x00000002 }, /* R2  - r2 */\
   { 0x00000008 }, /* R3  - r3 */\
   { 0x00000003 }, /* R02 - r0r2 */\
+  { 0x0000000c }, /* R13 - r1r3 */\
   { 0x00000005 }, /* HL  - r0 r1 */\
-  { 0x00000005 }, /* QI  - r0 r1 */\
   { 0x0000000a }, /* R23 - r2 r3 */\
   { 0x0000000f }, /* R03 - r0r2 r1r3 */\
-  { 0x0000000f }, /* DI  - r0r2r1r3 + mems */\
   { 0x00000010 }, /* A0  - a0 */\
   { 0x00000020 }, /* A1  - a1 */\
   { 0x00000030 }, /* A   - a0 a1 */\
   { 0x000000f0 }, /* AD  - a0 a1 sb fp */\
   { 0x000001f0 }, /* PS  - a0 a1 sb fp sp */\
-  { 0x0000000f }, /* SI  - r0r2 r1r3 a0a1 */\
-  { 0x0000003f }, /* HI  - r0 r1 r2 r3 a0 a1 */\
-  { 0x0000003f }, /* RA  - r0..r3 a0 a1 */\
+  { 0x00000033 }, /* R02A  - r0r2 a0 a1 */ \
+  { 0x0000003f }, /* RA  - r0 r1 r2 r3 a0 a1 */\
   { 0x0000007f }, /* GENERAL */\
   { 0x00000400 }, /* FLG */\
   { 0x000001ff }, /* HC  - r0l r1 r2 r3 a0 a1 sb fb sp */\
@@ -282,8 +307,13 @@ machine_function;
   { 0x000ff00f }, /* R03_MEM */\
   { 0x000ff03f }, /* A_HI_MEM */\
   { 0x000ff0ff }, /* A_AD_CR_MEM_SI */\
-  { 0x000ff1ff }, /* ALL */\
+  { 0x000ff5ff }, /* ALL */\
 }
+
+#define QI_REGS HL_REGS
+#define HI_REGS RA_REGS
+#define SI_REGS R03_REGS
+#define DI_REGS R03_REGS
 
 enum reg_class
 {
@@ -297,18 +327,16 @@ enum reg_class
   R2_REGS,
   R3_REGS,
   R02_REGS,
+  R13_REGS,
   HL_REGS,
-  QI_REGS,
   R23_REGS,
   R03_REGS,
-  DI_REGS,
   A0_REGS,
   A1_REGS,
   A_REGS,
   AD_REGS,
   PS_REGS,
-  SI_REGS,
-  HI_REGS,
+  R02A_REGS,
   RA_REGS,
   GENERAL_REGS,
   FLG_REGS,
@@ -337,18 +365,16 @@ enum reg_class
 "R2_REGS", \
 "R3_REGS", \
 "R02_REGS", \
+"R13_REGS", \
 "HL_REGS", \
-"QI_REGS", \
 "R23_REGS", \
 "R03_REGS", \
-"DI_REGS", \
 "A0_REGS", \
 "A1_REGS", \
 "A_REGS", \
 "AD_REGS", \
 "PS_REGS", \
-"SI_REGS", \
-"HI_REGS", \
+"R02A_REGS", \
 "RA_REGS", \
 "GENERAL_REGS", \
 "FLG_REGS", \
@@ -386,22 +412,18 @@ enum reg_class
 	 : (CHAR) == 'A' ? 2 \
 	 : DEFAULT_CONSTRAINT_LEN(CHAR,STR))
 #define REG_CLASS_FROM_CONSTRAINT(CHAR,STR) \
-	m32c_reg_class_from_constraint (CHAR, STR)
+	(enum reg_class) m32c_reg_class_from_constraint (CHAR, STR)
 
 #define REGNO_OK_FOR_BASE_P(NUM) m32c_regno_ok_for_base_p (NUM)
 #define REGNO_OK_FOR_INDEX_P(NUM) 0
 
-#define PREFERRED_RELOAD_CLASS(X,CLASS) m32c_preferred_reload_class (X, CLASS)
-#define PREFERRED_OUTPUT_RELOAD_CLASS(X,CLASS) m32c_preferred_output_reload_class (X, CLASS)
-#define LIMIT_RELOAD_CLASS(MODE,CLASS) m32c_limit_reload_class (MODE, CLASS)
+#define LIMIT_RELOAD_CLASS(MODE,CLASS) \
+  (enum reg_class) m32c_limit_reload_class (MODE, CLASS)
 
-#define SECONDARY_RELOAD_CLASS(CLASS,MODE,X) m32c_secondary_reload_class (CLASS, MODE, X)
+#define SECONDARY_RELOAD_CLASS(CLASS,MODE,X) \
+  (enum reg_class) m32c_secondary_reload_class (CLASS, MODE, X)
 
-#define SMALL_REGISTER_CLASSES 1
-
-#define CLASS_LIKELY_SPILLED_P(C) m32c_class_likely_spilled_p (C)
-
-#define CLASS_MAX_NREGS(C,M) m32c_class_max_nregs (C, M)
+#define TARGET_SMALL_REGISTER_CLASSES_FOR_MODE_P hook_bool_mode_true
 
 #define CANNOT_CHANGE_MODE_CLASS(F,T,C) m32c_cannot_change_mode_class(F,T,C)
 
@@ -459,19 +481,19 @@ enum reg_class
 #define DWARF_FRAME_REGNUM(N) m32c_dwarf_frame_regnum (N)
 #define DBX_REGISTER_NUMBER(N) m32c_dwarf_frame_regnum (N)
 
-/* Eliminating Frame Pointer and Arg Pointer */
+#undef ASM_PREFERRED_EH_DATA_FORMAT
+/* This is the same as the default in practice, except that by making
+   it explicit we tell binutils what size pointers to use.  */
+#define ASM_PREFERRED_EH_DATA_FORMAT(CODE,GLOBAL) \
+  (TARGET_A16 ? DW_EH_PE_udata2 : DW_EH_PE_udata4)
 
-/* If the frame pointer isn't used, we detect it manually.  But the
-   stack pointer doesn't have as flexible addressing as the frame
-   pointer, so we always assume we have it.  */
-#define FRAME_POINTER_REQUIRED 1
+/* Eliminating Frame Pointer and Arg Pointer */
 
 #define ELIMINABLE_REGS \
   {{AP_REGNO, SP_REGNO}, \
    {AP_REGNO, FB_REGNO}, \
    {FB_REGNO, SP_REGNO}}
 
-#define CAN_ELIMINATE(FROM,TO) 1
 #define INITIAL_ELIMINATION_OFFSET(FROM,TO,VAR) \
 	(VAR) = m32c_initial_elimination_offset(FROM,TO)
 
@@ -479,13 +501,9 @@ enum reg_class
 
 #define PUSH_ARGS 1
 #define PUSH_ROUNDING(N) m32c_push_rounding (N)
-#define RETURN_POPS_ARGS(D,T,S) 0
 #define CALL_POPS_ARGS(C) 0
 
 /* Passing Arguments in Registers */
-
-#define FUNCTION_ARG(CA,MODE,TYPE,NAMED) \
-	m32c_function_arg (&(CA),MODE,TYPE,NAMED)
 
 typedef struct m32c_cumulative_args
 {
@@ -502,17 +520,7 @@ typedef struct m32c_cumulative_args
 #define CUMULATIVE_ARGS m32c_cumulative_args
 #define INIT_CUMULATIVE_ARGS(CA,FNTYPE,LIBNAME,FNDECL,N_NAMED_ARGS) \
 	m32c_init_cumulative_args (&(CA),FNTYPE,LIBNAME,FNDECL,N_NAMED_ARGS)
-#define FUNCTION_ARG_ADVANCE(CA,MODE,TYPE,NAMED) \
-	m32c_function_arg_advance (&(CA),MODE,TYPE,NAMED)
-#define FUNCTION_ARG_BOUNDARY(MODE,TYPE) (TARGET_A16 ? 8 : 16)
 #define FUNCTION_ARG_REGNO_P(r) m32c_function_arg_regno_p (r)
-
-/* How Scalar Function Values Are Returned */
-
-#define FUNCTION_VALUE(VT,F) m32c_function_value (VT, F)
-#define LIBCALL_VALUE(MODE) m32c_libcall_value (MODE)
-
-#define FUNCTION_VALUE_REGNO_P(r) ((r) == R0_REGNO || (r) == MEM0_REGNO)
 
 /* How Large Values Are Returned */
 
@@ -534,13 +542,11 @@ typedef struct m32c_cumulative_args
 
 #define TRAMPOLINE_SIZE m32c_trampoline_size ()
 #define TRAMPOLINE_ALIGNMENT m32c_trampoline_alignment ()
-#define INITIALIZE_TRAMPOLINE(a,fn,sc) m32c_initialize_trampoline (a, fn, sc)
 
 /* Addressing Modes */
 
 #define HAVE_PRE_DECREMENT 1
 #define HAVE_POST_INCREMENT 1
-#define CONSTANT_ADDRESS_P(X) CONSTANT_P(X)
 #define MAX_REGS_PER_ADDRESS 1
 
 /* This is passed to the macros below, so that they can be implemented
@@ -551,39 +557,22 @@ typedef struct m32c_cumulative_args
 #define REG_OK_STRICT_V 0
 #endif
 
-#define GO_IF_LEGITIMATE_ADDRESS(MODE,X,LABEL) \
-	if (m32c_legitimate_address_p (MODE, X, REG_OK_STRICT_V)) \
-	  goto LABEL;
-
 #define REG_OK_FOR_BASE_P(X) m32c_reg_ok_for_base_p (X, REG_OK_STRICT_V)
 #define REG_OK_FOR_INDEX_P(X) 0
 
 /* #define FIND_BASE_TERM(X) when we do unspecs for symrefs */
 
-#define LEGITIMIZE_ADDRESS(X,OLDX,MODE,WIN) \
-	if (m32c_legitimize_address(&(X),OLDX,MODE)) \
-	  goto win;
-
 #define LEGITIMIZE_RELOAD_ADDRESS(X,MODE,OPNUM,TYPE,IND_LEVELS,WIN) \
 	if (m32c_legitimize_reload_address(&(X),MODE,OPNUM,TYPE,IND_LEVELS)) \
-	  goto win;
+	  goto WIN;
 
-#define GO_IF_MODE_DEPENDENT_ADDRESS(ADDR,LABEL) \
-	if (m32c_mode_dependent_address (ADDR)) \
-	  goto LABEL;
+/* Address spaces.  */
+#define ADDR_SPACE_FAR	1
 
-#define LEGITIMATE_CONSTANT_P(X) m32c_legitimate_constant_p (X)
 
 /* Condition Code Status */
 
 #define REVERSIBLE_CC_MODE(MODE) 1
-
-/* Describing Relative Costs of Operations */
-
-#define REGISTER_MOVE_COST(MODE,FROM,TO) \
-	m32c_register_move_cost (MODE, FROM, TO)
-#define MEMORY_MOVE_COST(MODE,CLASS,IN) \
-	m32c_memory_move_cost (MODE, CLASS, IN)
 
 /* Dividing the Output into Sections (Texts, Data, ...) */
 
@@ -627,15 +616,18 @@ typedef struct m32c_cumulative_args
   {"a0a1", 4}, \
   {"r0r2r1r3", 0} }
 
-#define PRINT_OPERAND(S,X,C) m32c_print_operand (S, X, C)
-#define PRINT_OPERAND_PUNCT_VALID_P(C) m32c_print_operand_punct_valid_p (C)
-#define PRINT_OPERAND_ADDRESS(S,X) m32c_print_operand_address (S, X)
-
 #undef USER_LABEL_PREFIX
 #define USER_LABEL_PREFIX "_"
 
 #define ASM_OUTPUT_REG_PUSH(S,R) m32c_output_reg_push (S, R)
 #define ASM_OUTPUT_REG_POP(S,R) m32c_output_reg_pop (S, R)
+
+#define ASM_OUTPUT_ALIGNED_DECL_COMMON(STREAM, DECL, NAME, SIZE, ALIGNMENT) \
+	m32c_output_aligned_common (STREAM, DECL, NAME, SIZE, ALIGNMENT, 1)
+
+#define ASM_OUTPUT_ALIGNED_DECL_LOCAL(STREAM, DECL, NAME, SIZE, ALIGNMENT) \
+	m32c_output_aligned_common (STREAM, DECL, NAME, SIZE, ALIGNMENT, 0)
+
 
 /* Output of Dispatch Tables */
 
@@ -667,7 +659,7 @@ typedef struct m32c_cumulative_args
 
 #define STORE_FLAG_VALUE 1
 
-/* 16 or 24 bit pointers */
+/* 16- or 24-bit pointers */
 #define Pmode (TARGET_A16 ? HImode : PSImode)
 #define FUNCTION_MODE QImode
 

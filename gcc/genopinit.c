@@ -1,12 +1,13 @@
 /* Generate code to initialize optabs from machine description.
    Copyright (C) 1993, 1994, 1995, 1996, 1997, 1998, 1999, 2000,
-   2001, 2002, 2003, 2004, 2005, 2006 Free Software Foundation, Inc.
+   2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2010, 2011
+   Free Software Foundation, Inc.
 
 This file is part of GCC.
 
 GCC is free software; you can redistribute it and/or modify it under
 the terms of the GNU General Public License as published by the Free
-Software Foundation; either version 2, or (at your option) any later
+Software Foundation; either version 3, or (at your option) any later
 version.
 
 GCC is distributed in the hope that it will be useful, but WITHOUT ANY
@@ -15,9 +16,8 @@ FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 for more details.
 
 You should have received a copy of the GNU General Public License
-along with GCC; see the file COPYING.  If not, write to the Free
-Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
-02110-1301, USA.  */
+along with GCC; see the file COPYING3.  If not see
+<http://www.gnu.org/licenses/>.  */
 
 
 #include "bconfig.h"
@@ -46,11 +46,14 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
    used.  $A and $B are replaced with the full name of the mode; $a and $b
    are replaced with the short form of the name, as above.
 
-   If $N is present in the pattern, it means the two modes must be consecutive
-   widths in the same mode class (e.g, QImode and HImode).  $I means that
-   only full integer modes should be considered for the next mode, and $F
-   means that only float modes should be considered.
+   If $N is present in the pattern, it means the two modes must be in
+   the same mode class, and $b must be greater than $a (e.g, QImode
+   and HImode).
+
+   $I means that only full integer modes should be considered for the
+   next mode, and $F means that only float modes should be considered.
    $P means that both full and partial integer modes should be considered.
+   $Q means that only fixed-point modes should be considered.
 
    $V means to emit 'v' if the first mode is a MODE_FLOAT mode.
 
@@ -59,160 +62,250 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
    upper-case forms of the comparison, respectively.  */
 
 static const char * const optabs[] =
-{ "sext_optab->handlers[$B][$A].insn_code = CODE_FOR_$(extend$a$b2$)",
-  "zext_optab->handlers[$B][$A].insn_code = CODE_FOR_$(zero_extend$a$b2$)",
-  "sfix_optab->handlers[$B][$A].insn_code = CODE_FOR_$(fix$F$a$I$b2$)",
-  "ufix_optab->handlers[$B][$A].insn_code = CODE_FOR_$(fixuns$F$a$b2$)",
-  "sfixtrunc_optab->handlers[$B][$A].insn_code = CODE_FOR_$(fix_trunc$F$a$I$b2$)",
-  "ufixtrunc_optab->handlers[$B][$A].insn_code = CODE_FOR_$(fixuns_trunc$F$a$I$b2$)",
-  "sfloat_optab->handlers[$B][$A].insn_code = CODE_FOR_$(float$I$a$F$b2$)",
-  "ufloat_optab->handlers[$B][$A].insn_code = CODE_FOR_$(floatuns$I$a$F$b2$)",
-  "trunc_optab->handlers[$B][$A].insn_code = CODE_FOR_$(trunc$a$b2$)",
-  "add_optab->handlers[$A].insn_code = CODE_FOR_$(add$P$a3$)",
-  "addv_optab->handlers[$A].insn_code =\n\
-    add_optab->handlers[$A].insn_code = CODE_FOR_$(add$F$a3$)",
-  "addv_optab->handlers[$A].insn_code = CODE_FOR_$(addv$I$a3$)",
-  "sub_optab->handlers[$A].insn_code = CODE_FOR_$(sub$P$a3$)",
-  "subv_optab->handlers[$A].insn_code =\n\
-    sub_optab->handlers[$A].insn_code = CODE_FOR_$(sub$F$a3$)",
-  "subv_optab->handlers[$A].insn_code = CODE_FOR_$(subv$I$a3$)",
-  "smul_optab->handlers[$A].insn_code = CODE_FOR_$(mul$P$a3$)",
-  "smulv_optab->handlers[$A].insn_code =\n\
-    smul_optab->handlers[$A].insn_code = CODE_FOR_$(mul$F$a3$)",
-  "smulv_optab->handlers[$A].insn_code = CODE_FOR_$(mulv$I$a3$)",
-  "umul_highpart_optab->handlers[$A].insn_code = CODE_FOR_$(umul$a3_highpart$)",
-  "smul_highpart_optab->handlers[$A].insn_code = CODE_FOR_$(smul$a3_highpart$)",
-  "smul_widen_optab->handlers[$B].insn_code = CODE_FOR_$(mul$a$b3$)$N",
-  "umul_widen_optab->handlers[$B].insn_code = CODE_FOR_$(umul$a$b3$)$N",
-  "usmul_widen_optab->handlers[$B].insn_code = CODE_FOR_$(usmul$a$b3$)$N",
-  "sdiv_optab->handlers[$A].insn_code = CODE_FOR_$(div$a3$)",
-  "sdivv_optab->handlers[$A].insn_code = CODE_FOR_$(div$V$I$a3$)",
-  "udiv_optab->handlers[$A].insn_code = CODE_FOR_$(udiv$I$a3$)",
-  "sdivmod_optab->handlers[$A].insn_code = CODE_FOR_$(divmod$a4$)",
-  "udivmod_optab->handlers[$A].insn_code = CODE_FOR_$(udivmod$a4$)",
-  "smod_optab->handlers[$A].insn_code = CODE_FOR_$(mod$a3$)",
-  "umod_optab->handlers[$A].insn_code = CODE_FOR_$(umod$a3$)",
-  "fmod_optab->handlers[$A].insn_code = CODE_FOR_$(fmod$a3$)",
-  "drem_optab->handlers[$A].insn_code = CODE_FOR_$(drem$a3$)",
-  "ftrunc_optab->handlers[$A].insn_code = CODE_FOR_$(ftrunc$F$a2$)",
-  "and_optab->handlers[$A].insn_code = CODE_FOR_$(and$a3$)",
-  "ior_optab->handlers[$A].insn_code = CODE_FOR_$(ior$a3$)",
-  "xor_optab->handlers[$A].insn_code = CODE_FOR_$(xor$a3$)",
-  "ashl_optab->handlers[$A].insn_code = CODE_FOR_$(ashl$a3$)",
-  "ashr_optab->handlers[$A].insn_code = CODE_FOR_$(ashr$a3$)",
-  "lshr_optab->handlers[$A].insn_code = CODE_FOR_$(lshr$a3$)",
-  "rotl_optab->handlers[$A].insn_code = CODE_FOR_$(rotl$a3$)",
-  "rotr_optab->handlers[$A].insn_code = CODE_FOR_$(rotr$a3$)",
-  "smin_optab->handlers[$A].insn_code = CODE_FOR_$(smin$a3$)",
-  "smax_optab->handlers[$A].insn_code = CODE_FOR_$(smax$a3$)",
-  "umin_optab->handlers[$A].insn_code = CODE_FOR_$(umin$I$a3$)",
-  "umax_optab->handlers[$A].insn_code = CODE_FOR_$(umax$I$a3$)",
-  "pow_optab->handlers[$A].insn_code = CODE_FOR_$(pow$a3$)",
-  "atan2_optab->handlers[$A].insn_code = CODE_FOR_$(atan2$a3$)",
-  "neg_optab->handlers[$A].insn_code = CODE_FOR_$(neg$P$a2$)",
-  "negv_optab->handlers[$A].insn_code =\n\
-    neg_optab->handlers[$A].insn_code = CODE_FOR_$(neg$F$a2$)",
-  "negv_optab->handlers[$A].insn_code = CODE_FOR_$(negv$I$a2$)",
-  "abs_optab->handlers[$A].insn_code = CODE_FOR_$(abs$P$a2$)",
-  "absv_optab->handlers[$A].insn_code =\n\
-    abs_optab->handlers[$A].insn_code = CODE_FOR_$(abs$F$a2$)",
-  "absv_optab->handlers[$A].insn_code = CODE_FOR_$(absv$I$a2$)",
-  "copysign_optab->handlers[$A].insn_code = CODE_FOR_$(copysign$F$a3$)",
-  "sqrt_optab->handlers[$A].insn_code = CODE_FOR_$(sqrt$a2$)",
-  "floor_optab->handlers[$A].insn_code = CODE_FOR_$(floor$a2$)",
-  "lfloor_optab->handlers[$A].insn_code = CODE_FOR_$(lfloor$a2$)",
-  "ceil_optab->handlers[$A].insn_code = CODE_FOR_$(ceil$a2$)",
-  "lceil_optab->handlers[$A].insn_code = CODE_FOR_$(lceil$a2$)",
-  "round_optab->handlers[$A].insn_code = CODE_FOR_$(round$a2$)",
-  "btrunc_optab->handlers[$A].insn_code = CODE_FOR_$(btrunc$a2$)",
-  "nearbyint_optab->handlers[$A].insn_code = CODE_FOR_$(nearbyint$a2$)",
-  "rint_optab->handlers[$A].insn_code = CODE_FOR_$(rint$a2$)",
-  "lrint_optab->handlers[$A].insn_code = CODE_FOR_$(lrint$a2$)",
-  "sincos_optab->handlers[$A].insn_code = CODE_FOR_$(sincos$a3$)",
-  "sin_optab->handlers[$A].insn_code = CODE_FOR_$(sin$a2$)",
-  "asin_optab->handlers[$A].insn_code = CODE_FOR_$(asin$a2$)",
-  "cos_optab->handlers[$A].insn_code = CODE_FOR_$(cos$a2$)",
-  "acos_optab->handlers[$A].insn_code = CODE_FOR_$(acos$a2$)",
-  "exp_optab->handlers[$A].insn_code = CODE_FOR_$(exp$a2$)",
-  "exp10_optab->handlers[$A].insn_code = CODE_FOR_$(exp10$a2$)",
-  "exp2_optab->handlers[$A].insn_code = CODE_FOR_$(exp2$a2$)",
-  "expm1_optab->handlers[$A].insn_code = CODE_FOR_$(expm1$a2$)",
-  "ldexp_optab->handlers[$A].insn_code = CODE_FOR_$(ldexp$a3$)",
-  "logb_optab->handlers[$A].insn_code = CODE_FOR_$(logb$a2$)",
-  "ilogb_optab->handlers[$A].insn_code = CODE_FOR_$(ilogb$a2$)",
-  "log_optab->handlers[$A].insn_code = CODE_FOR_$(log$a2$)",
-  "log10_optab->handlers[$A].insn_code = CODE_FOR_$(log10$a2$)",  
-  "log2_optab->handlers[$A].insn_code = CODE_FOR_$(log2$a2$)",  
-  "log1p_optab->handlers[$A].insn_code = CODE_FOR_$(log1p$a2$)",  
-  "tan_optab->handlers[$A].insn_code = CODE_FOR_$(tan$a2$)",
-  "atan_optab->handlers[$A].insn_code = CODE_FOR_$(atan$a2$)",
-  "strlen_optab->handlers[$A].insn_code = CODE_FOR_$(strlen$a$)",
-  "one_cmpl_optab->handlers[$A].insn_code = CODE_FOR_$(one_cmpl$a2$)",
-  "ffs_optab->handlers[$A].insn_code = CODE_FOR_$(ffs$a2$)",
-  "clz_optab->handlers[$A].insn_code = CODE_FOR_$(clz$a2$)",
-  "ctz_optab->handlers[$A].insn_code = CODE_FOR_$(ctz$a2$)",
-  "popcount_optab->handlers[$A].insn_code = CODE_FOR_$(popcount$a2$)",
-  "parity_optab->handlers[$A].insn_code = CODE_FOR_$(parity$a2$)",
-  "mov_optab->handlers[$A].insn_code = CODE_FOR_$(mov$a$)",
-  "movstrict_optab->handlers[$A].insn_code = CODE_FOR_$(movstrict$a$)",
-  "movmisalign_optab->handlers[$A].insn_code = CODE_FOR_$(movmisalign$a$)",
-  "cmp_optab->handlers[$A].insn_code = CODE_FOR_$(cmp$a$)",
-  "tst_optab->handlers[$A].insn_code = CODE_FOR_$(tst$a$)",
-  "addcc_optab->handlers[$A].insn_code = CODE_FOR_$(add$acc$)",
-  "bcc_gen_fctn[$C] = gen_$(b$c$)",
-  "setcc_gen_code[$C] = CODE_FOR_$(s$c$)",
-  "movcc_gen_code[$A] = CODE_FOR_$(mov$acc$)",
-  "cbranch_optab->handlers[$A].insn_code = CODE_FOR_$(cbranch$a4$)",
-  "cmov_optab->handlers[$A].insn_code = CODE_FOR_$(cmov$a6$)",
-  "cstore_optab->handlers[$A].insn_code = CODE_FOR_$(cstore$a4$)",
-  "push_optab->handlers[$A].insn_code = CODE_FOR_$(push$a1$)",
-  "reload_in_optab[$A] = CODE_FOR_$(reload_in$a$)",
-  "reload_out_optab[$A] = CODE_FOR_$(reload_out$a$)",
-  "movmem_optab[$A] = CODE_FOR_$(movmem$a$)",
-  "cmpstr_optab[$A] = CODE_FOR_$(cmpstr$a$)",
-  "cmpstrn_optab[$A] = CODE_FOR_$(cmpstrn$a$)",
-  "cmpmem_optab[$A] = CODE_FOR_$(cmpmem$a$)",
-  "setmem_optab[$A] = CODE_FOR_$(setmem$a$)",
-  "sync_add_optab[$A] = CODE_FOR_$(sync_add$I$a$)",
-  "sync_sub_optab[$A] = CODE_FOR_$(sync_sub$I$a$)",
-  "sync_ior_optab[$A] = CODE_FOR_$(sync_ior$I$a$)",
-  "sync_and_optab[$A] = CODE_FOR_$(sync_and$I$a$)",
-  "sync_xor_optab[$A] = CODE_FOR_$(sync_xor$I$a$)",
-  "sync_nand_optab[$A] = CODE_FOR_$(sync_nand$I$a$)",
-  "sync_old_add_optab[$A] = CODE_FOR_$(sync_old_add$I$a$)",
-  "sync_old_sub_optab[$A] = CODE_FOR_$(sync_old_sub$I$a$)",
-  "sync_old_ior_optab[$A] = CODE_FOR_$(sync_old_ior$I$a$)",
-  "sync_old_and_optab[$A] = CODE_FOR_$(sync_old_and$I$a$)",
-  "sync_old_xor_optab[$A] = CODE_FOR_$(sync_old_xor$I$a$)",
-  "sync_old_nand_optab[$A] = CODE_FOR_$(sync_old_nand$I$a$)",
-  "sync_new_add_optab[$A] = CODE_FOR_$(sync_new_add$I$a$)",
-  "sync_new_sub_optab[$A] = CODE_FOR_$(sync_new_sub$I$a$)",
-  "sync_new_ior_optab[$A] = CODE_FOR_$(sync_new_ior$I$a$)",
-  "sync_new_and_optab[$A] = CODE_FOR_$(sync_new_and$I$a$)",
-  "sync_new_xor_optab[$A] = CODE_FOR_$(sync_new_xor$I$a$)",
-  "sync_new_nand_optab[$A] = CODE_FOR_$(sync_new_nand$I$a$)",
-  "sync_compare_and_swap[$A] = CODE_FOR_$(sync_compare_and_swap$I$a$)",
-  "sync_compare_and_swap_cc[$A] = CODE_FOR_$(sync_compare_and_swap_cc$I$a$)",
-  "sync_lock_test_and_set[$A] = CODE_FOR_$(sync_lock_test_and_set$I$a$)",
-  "sync_lock_release[$A] = CODE_FOR_$(sync_lock_release$I$a$)",
-  "vec_set_optab->handlers[$A].insn_code = CODE_FOR_$(vec_set$a$)",
-  "vec_extract_optab->handlers[$A].insn_code = CODE_FOR_$(vec_extract$a$)",
-  "vec_init_optab->handlers[$A].insn_code = CODE_FOR_$(vec_init$a$)",
-  "vec_shl_optab->handlers[$A].insn_code = CODE_FOR_$(vec_shl_$a$)",
-  "vec_shr_optab->handlers[$A].insn_code = CODE_FOR_$(vec_shr_$a$)",
-  "vec_realign_load_optab->handlers[$A].insn_code = CODE_FOR_$(vec_realign_load_$a$)",
-  "vcond_gen_code[$A] = CODE_FOR_$(vcond$a$)",
-  "vcondu_gen_code[$A] = CODE_FOR_$(vcondu$a$)",
-  "ssum_widen_optab->handlers[$A].insn_code = CODE_FOR_$(widen_ssum$I$a3$)",
-  "usum_widen_optab->handlers[$A].insn_code = CODE_FOR_$(widen_usum$I$a3$)",
-  "udot_prod_optab->handlers[$A].insn_code = CODE_FOR_$(udot_prod$I$a$)",
-  "sdot_prod_optab->handlers[$A].insn_code = CODE_FOR_$(sdot_prod$I$a$)",
-  "reduc_smax_optab->handlers[$A].insn_code = CODE_FOR_$(reduc_smax_$a$)",
-  "reduc_umax_optab->handlers[$A].insn_code = CODE_FOR_$(reduc_umax_$a$)",
-  "reduc_smin_optab->handlers[$A].insn_code = CODE_FOR_$(reduc_smin_$a$)",
-  "reduc_umin_optab->handlers[$A].insn_code = CODE_FOR_$(reduc_umin_$a$)",
-  "reduc_splus_optab->handlers[$A].insn_code = CODE_FOR_$(reduc_splus_$a$)" ,
-  "reduc_uplus_optab->handlers[$A].insn_code = CODE_FOR_$(reduc_uplus_$a$)" 
+{ "set_convert_optab_handler (sext_optab, $B, $A, CODE_FOR_$(extend$a$b2$))",
+  "set_convert_optab_handler (zext_optab, $B, $A, CODE_FOR_$(zero_extend$a$b2$))",
+  "set_convert_optab_handler (sfix_optab, $B, $A, CODE_FOR_$(fix$F$a$I$b2$))",
+  "set_convert_optab_handler (ufix_optab, $B, $A, CODE_FOR_$(fixuns$F$a$b2$))",
+  "set_convert_optab_handler (sfixtrunc_optab, $B, $A, CODE_FOR_$(fix_trunc$F$a$I$b2$))",
+  "set_convert_optab_handler (ufixtrunc_optab, $B, $A, CODE_FOR_$(fixuns_trunc$F$a$I$b2$))",
+  "set_convert_optab_handler (sfloat_optab, $B, $A, CODE_FOR_$(float$I$a$F$b2$))",
+  "set_convert_optab_handler (ufloat_optab, $B, $A, CODE_FOR_$(floatuns$I$a$F$b2$))",
+  "set_convert_optab_handler (trunc_optab, $B, $A, CODE_FOR_$(trunc$a$b2$))",
+  "set_convert_optab_handler (fract_optab, $B, $A, CODE_FOR_$(fract$a$b2$))",
+  "set_convert_optab_handler (fractuns_optab, $B, $A, CODE_FOR_$(fractuns$I$a$Q$b2$))",
+  "set_convert_optab_handler (fractuns_optab, $B, $A, CODE_FOR_$(fractuns$Q$a$I$b2$))",
+  "set_convert_optab_handler (satfract_optab, $B, $A, CODE_FOR_$(satfract$a$Q$b2$))",
+  "set_convert_optab_handler (satfractuns_optab, $B, $A, CODE_FOR_$(satfractuns$I$a$Q$b2$))",
+  "set_convert_optab_handler (vec_load_lanes_optab, $A, $B, CODE_FOR_$(vec_load_lanes$a$b$))",
+  "set_convert_optab_handler (vec_store_lanes_optab, $A, $B, CODE_FOR_$(vec_store_lanes$a$b$))",
+  "set_optab_handler (add_optab, $A, CODE_FOR_$(add$P$a3$))",
+  "set_optab_handler (addv_optab, $A, CODE_FOR_$(add$F$a3$)),\n\
+    set_optab_handler (add_optab, $A, CODE_FOR_$(add$F$a3$))",
+  "set_optab_handler (addv_optab, $A, CODE_FOR_$(addv$I$a3$))",
+  "set_optab_handler (add_optab, $A, CODE_FOR_$(add$Q$a3$))",
+  "set_optab_handler (ssadd_optab, $A, CODE_FOR_$(ssadd$Q$a3$))",
+  "set_optab_handler (usadd_optab, $A, CODE_FOR_$(usadd$Q$a3$))",
+  "set_optab_handler (sub_optab, $A, CODE_FOR_$(sub$P$a3$))",
+  "set_optab_handler (subv_optab, $A, CODE_FOR_$(sub$F$a3$)),\n\
+    set_optab_handler (sub_optab, $A, CODE_FOR_$(sub$F$a3$))",
+  "set_optab_handler (subv_optab, $A, CODE_FOR_$(subv$I$a3$))",
+  "set_optab_handler (sub_optab, $A, CODE_FOR_$(sub$Q$a3$))",
+  "set_optab_handler (sssub_optab, $A, CODE_FOR_$(sssub$Q$a3$))",
+  "set_optab_handler (ussub_optab, $A, CODE_FOR_$(ussub$Q$a3$))",
+  "set_optab_handler (smul_optab, $A, CODE_FOR_$(mul$Q$a3$))",
+  "set_optab_handler (ssmul_optab, $A, CODE_FOR_$(ssmul$Q$a3$))",
+  "set_optab_handler (usmul_optab, $A, CODE_FOR_$(usmul$Q$a3$))",
+  "set_optab_handler (smul_optab, $A, CODE_FOR_$(mul$P$a3$))",
+  "set_optab_handler (smulv_optab, $A, CODE_FOR_$(mul$F$a3$)),\n\
+    set_optab_handler (smul_optab, $A, CODE_FOR_$(mul$F$a3$))",
+  "set_optab_handler (smulv_optab, $A, CODE_FOR_$(mulv$I$a3$))",
+  "set_optab_handler (umul_highpart_optab, $A, CODE_FOR_$(umul$a3_highpart$))",
+  "set_optab_handler (smul_highpart_optab, $A, CODE_FOR_$(smul$a3_highpart$))",
+  "set_widening_optab_handler (smul_widen_optab, $B, $A, CODE_FOR_$(mul$a$b3$)$N)",
+  "set_widening_optab_handler (umul_widen_optab, $B, $A, CODE_FOR_$(umul$a$b3$)$N)",
+  "set_widening_optab_handler (usmul_widen_optab, $B, $A, CODE_FOR_$(usmul$a$b3$)$N)",
+  "set_widening_optab_handler (smadd_widen_optab, $B, $A, CODE_FOR_$(madd$a$b4$)$N)",
+  "set_widening_optab_handler (umadd_widen_optab, $B, $A, CODE_FOR_$(umadd$a$b4$)$N)",
+  "set_widening_optab_handler (ssmadd_widen_optab, $B, $A, CODE_FOR_$(ssmadd$a$b4$)$N)",
+  "set_widening_optab_handler (usmadd_widen_optab, $B, $A, CODE_FOR_$(usmadd$a$b4$)$N)",
+  "set_widening_optab_handler (smsub_widen_optab, $B, $A, CODE_FOR_$(msub$a$b4$)$N)",
+  "set_widening_optab_handler (umsub_widen_optab, $B, $A, CODE_FOR_$(umsub$a$b4$)$N)",
+  "set_widening_optab_handler (ssmsub_widen_optab, $B, $A, CODE_FOR_$(ssmsub$a$b4$)$N)",
+  "set_widening_optab_handler (usmsub_widen_optab, $B, $A, CODE_FOR_$(usmsub$a$b4$)$N)",
+  "set_optab_handler (sdiv_optab, $A, CODE_FOR_$(div$a3$))",
+  "set_optab_handler (ssdiv_optab, $A, CODE_FOR_$(ssdiv$Q$a3$))",
+  "set_optab_handler (sdivv_optab, $A, CODE_FOR_$(div$V$I$a3$))",
+  "set_optab_handler (udiv_optab, $A, CODE_FOR_$(udiv$I$a3$))",
+  "set_optab_handler (udiv_optab, $A, CODE_FOR_$(udiv$Q$a3$))",
+  "set_optab_handler (usdiv_optab, $A, CODE_FOR_$(usdiv$Q$a3$))",
+  "set_optab_handler (sdivmod_optab, $A, CODE_FOR_$(divmod$a4$))",
+  "set_optab_handler (udivmod_optab, $A, CODE_FOR_$(udivmod$a4$))",
+  "set_optab_handler (smod_optab, $A, CODE_FOR_$(mod$a3$))",
+  "set_optab_handler (umod_optab, $A, CODE_FOR_$(umod$a3$))",
+  "set_optab_handler (fmod_optab, $A, CODE_FOR_$(fmod$a3$))",
+  "set_optab_handler (remainder_optab, $A, CODE_FOR_$(remainder$a3$))",
+  "set_optab_handler (ftrunc_optab, $A, CODE_FOR_$(ftrunc$F$a2$))",
+  "set_optab_handler (and_optab, $A, CODE_FOR_$(and$a3$))",
+  "set_optab_handler (ior_optab, $A, CODE_FOR_$(ior$a3$))",
+  "set_optab_handler (xor_optab, $A, CODE_FOR_$(xor$a3$))",
+  "set_optab_handler (ashl_optab, $A, CODE_FOR_$(ashl$a3$))",
+  "set_optab_handler (ssashl_optab, $A, CODE_FOR_$(ssashl$Q$a3$))",
+  "set_optab_handler (usashl_optab, $A, CODE_FOR_$(usashl$Q$a3$))",
+  "set_optab_handler (ashr_optab, $A, CODE_FOR_$(ashr$a3$))",
+  "set_optab_handler (lshr_optab, $A, CODE_FOR_$(lshr$a3$))",
+  "set_optab_handler (rotl_optab, $A, CODE_FOR_$(rotl$a3$))",
+  "set_optab_handler (rotr_optab, $A, CODE_FOR_$(rotr$a3$))",
+  "set_optab_handler (vashr_optab, $A, CODE_FOR_$(vashr$a3$))",
+  "set_optab_handler (vlshr_optab, $A, CODE_FOR_$(vlshr$a3$))",
+  "set_optab_handler (vashl_optab, $A, CODE_FOR_$(vashl$a3$))",
+  "set_optab_handler (vrotl_optab, $A, CODE_FOR_$(vrotl$a3$))",
+  "set_optab_handler (vrotr_optab, $A, CODE_FOR_$(vrotr$a3$))",
+  "set_optab_handler (smin_optab, $A, CODE_FOR_$(smin$a3$))",
+  "set_optab_handler (smax_optab, $A, CODE_FOR_$(smax$a3$))",
+  "set_optab_handler (umin_optab, $A, CODE_FOR_$(umin$I$a3$))",
+  "set_optab_handler (umax_optab, $A, CODE_FOR_$(umax$I$a3$))",
+  "set_optab_handler (pow_optab, $A, CODE_FOR_$(pow$a3$))",
+  "set_optab_handler (atan2_optab, $A, CODE_FOR_$(atan2$a3$))",
+  "set_optab_handler (neg_optab, $A, CODE_FOR_$(neg$P$a2$))",
+  "set_optab_handler (negv_optab, $A, CODE_FOR_$(neg$F$a2$)),\n\
+    set_optab_handler (neg_optab, $A, CODE_FOR_$(neg$F$a2$))",
+  "set_optab_handler (negv_optab, $A, CODE_FOR_$(negv$I$a2$))",
+  "set_optab_handler (neg_optab, $A, CODE_FOR_$(neg$Q$a2$))",
+  "set_optab_handler (ssneg_optab, $A, CODE_FOR_$(ssneg$Q$a2$))",
+  "set_optab_handler (usneg_optab, $A, CODE_FOR_$(usneg$Q$a2$))",
+  "set_optab_handler (abs_optab, $A, CODE_FOR_$(abs$P$a2$))",
+  "set_optab_handler (absv_optab, $A, CODE_FOR_$(abs$F$a2$)),\n\
+    set_optab_handler (abs_optab, $A, CODE_FOR_$(abs$F$a2$))",
+  "set_optab_handler (absv_optab, $A, CODE_FOR_$(absv$I$a2$))",
+  "set_optab_handler (copysign_optab, $A, CODE_FOR_$(copysign$F$a3$))",
+  "set_optab_handler (signbit_optab, $A, CODE_FOR_$(signbit$F$a2$))",
+  "set_optab_handler (isinf_optab, $A, CODE_FOR_$(isinf$a2$))",
+  "set_optab_handler (sqrt_optab, $A, CODE_FOR_$(sqrt$a2$))",
+  "set_optab_handler (floor_optab, $A, CODE_FOR_$(floor$a2$))",
+  "set_convert_optab_handler (lfloor_optab, $B, $A, CODE_FOR_$(lfloor$F$a$I$b2$))",
+  "set_optab_handler (fma_optab, $A, CODE_FOR_$(fma$a4$))",
+  "set_optab_handler (fms_optab, $A, CODE_FOR_$(fms$a4$))",
+  "set_optab_handler (fnma_optab, $A, CODE_FOR_$(fnma$a4$))",
+  "set_optab_handler (fnms_optab, $A, CODE_FOR_$(fnms$a4$))",
+  "set_optab_handler (ceil_optab, $A, CODE_FOR_$(ceil$a2$))",
+  "set_convert_optab_handler (lceil_optab, $B, $A, CODE_FOR_$(lceil$F$a$I$b2$))",
+  "set_optab_handler (round_optab, $A, CODE_FOR_$(round$a2$))",
+  "set_optab_handler (btrunc_optab, $A, CODE_FOR_$(btrunc$a2$))",
+  "set_optab_handler (nearbyint_optab, $A, CODE_FOR_$(nearbyint$a2$))",
+  "set_optab_handler (rint_optab, $A, CODE_FOR_$(rint$a2$))",
+  "set_convert_optab_handler (lrint_optab, $B, $A, CODE_FOR_$(lrint$F$a$I$b2$))",
+  "set_convert_optab_handler (lround_optab, $B, $A, CODE_FOR_$(lround$F$a$I$b2$))",
+  "set_optab_handler (sincos_optab, $A, CODE_FOR_$(sincos$a3$))",
+  "set_optab_handler (sin_optab, $A, CODE_FOR_$(sin$a2$))",
+  "set_optab_handler (asin_optab, $A, CODE_FOR_$(asin$a2$))",
+  "set_optab_handler (cos_optab, $A, CODE_FOR_$(cos$a2$))",
+  "set_optab_handler (acos_optab, $A, CODE_FOR_$(acos$a2$))",
+  "set_optab_handler (exp_optab, $A, CODE_FOR_$(exp$a2$))",
+  "set_optab_handler (exp10_optab, $A, CODE_FOR_$(exp10$a2$))",
+  "set_optab_handler (exp2_optab, $A, CODE_FOR_$(exp2$a2$))",
+  "set_optab_handler (expm1_optab, $A, CODE_FOR_$(expm1$a2$))",
+  "set_optab_handler (ldexp_optab, $A, CODE_FOR_$(ldexp$a3$))",
+  "set_optab_handler (scalb_optab, $A, CODE_FOR_$(scalb$a3$))",
+  "set_optab_handler (significand_optab, $A, CODE_FOR_$(significand$a2$))",
+  "set_optab_handler (logb_optab, $A, CODE_FOR_$(logb$a2$))",
+  "set_optab_handler (ilogb_optab, $A, CODE_FOR_$(ilogb$a2$))",
+  "set_optab_handler (log_optab, $A, CODE_FOR_$(log$a2$))",
+  "set_optab_handler (log10_optab, $A, CODE_FOR_$(log10$a2$))",
+  "set_optab_handler (log2_optab, $A, CODE_FOR_$(log2$a2$))",
+  "set_optab_handler (log1p_optab, $A, CODE_FOR_$(log1p$a2$))",
+  "set_optab_handler (tan_optab, $A, CODE_FOR_$(tan$a2$))",
+  "set_optab_handler (atan_optab, $A, CODE_FOR_$(atan$a2$))",
+  "set_optab_handler (strlen_optab, $A, CODE_FOR_$(strlen$a$))",
+  "set_optab_handler (one_cmpl_optab, $A, CODE_FOR_$(one_cmpl$a2$))",
+  "set_optab_handler (bswap_optab, $A, CODE_FOR_$(bswap$a2$))",
+  "set_optab_handler (ffs_optab, $A, CODE_FOR_$(ffs$a2$))",
+  "set_optab_handler (clz_optab, $A, CODE_FOR_$(clz$a2$))",
+  "set_optab_handler (ctz_optab, $A, CODE_FOR_$(ctz$a2$))",
+  "set_optab_handler (clrsb_optab, $A, CODE_FOR_$(clrsb$a2$))",
+  "set_optab_handler (popcount_optab, $A, CODE_FOR_$(popcount$a2$))",
+  "set_optab_handler (parity_optab, $A, CODE_FOR_$(parity$a2$))",
+  "set_optab_handler (mov_optab, $A, CODE_FOR_$(mov$a$))",
+  "set_optab_handler (movstrict_optab, $A, CODE_FOR_$(movstrict$a$))",
+  "set_optab_handler (movmisalign_optab, $A, CODE_FOR_$(movmisalign$a$))",
+  "set_optab_handler (storent_optab, $A, CODE_FOR_$(storent$a$))",
+  "set_optab_handler (addcc_optab, $A, CODE_FOR_$(add$acc$))",
+  "set_direct_optab_handler (movcc_optab, $A, CODE_FOR_$(mov$acc$))",
+  "set_optab_handler (cbranch_optab, $A, CODE_FOR_$(cbranch$a4$))",
+  "set_optab_handler (cmov_optab, $A, CODE_FOR_$(cmov$a6$))",
+  "set_optab_handler (cstore_optab, $A, CODE_FOR_$(cstore$a4$))",
+  "set_optab_handler (ctrap_optab, $A, CODE_FOR_$(ctrap$a4$))",
+  "set_optab_handler (push_optab, $A, CODE_FOR_$(push$a1$))",
+  "set_direct_optab_handler (reload_in_optab, $A, CODE_FOR_$(reload_in$a$))",
+  "set_direct_optab_handler (reload_out_optab, $A, CODE_FOR_$(reload_out$a$))",
+  "set_direct_optab_handler (movmem_optab, $A, CODE_FOR_$(movmem$a$))",
+  "set_direct_optab_handler (cmpstr_optab, $A, CODE_FOR_$(cmpstr$a$))",
+  "set_direct_optab_handler (cmpstrn_optab, $A, CODE_FOR_$(cmpstrn$a$))",
+  "set_direct_optab_handler (cmpmem_optab, $A, CODE_FOR_$(cmpmem$a$))",
+  "set_direct_optab_handler (setmem_optab, $A, CODE_FOR_$(setmem$a$))",
+  "set_direct_optab_handler (sync_add_optab, $A, CODE_FOR_$(sync_add$I$a$))",
+  "set_direct_optab_handler (sync_sub_optab, $A, CODE_FOR_$(sync_sub$I$a$))",
+  "set_direct_optab_handler (sync_ior_optab, $A, CODE_FOR_$(sync_ior$I$a$))",
+  "set_direct_optab_handler (sync_and_optab, $A, CODE_FOR_$(sync_and$I$a$))",
+  "set_direct_optab_handler (sync_xor_optab, $A, CODE_FOR_$(sync_xor$I$a$))",
+  "set_direct_optab_handler (sync_nand_optab, $A, CODE_FOR_$(sync_nand$I$a$))",
+  "set_optab_handler (sync_old_add_optab, $A, CODE_FOR_$(sync_old_add$I$a$))",
+  "set_optab_handler (sync_old_sub_optab, $A, CODE_FOR_$(sync_old_sub$I$a$))",
+  "set_optab_handler (sync_old_ior_optab, $A, CODE_FOR_$(sync_old_ior$I$a$))",
+  "set_optab_handler (sync_old_and_optab, $A, CODE_FOR_$(sync_old_and$I$a$))",
+  "set_optab_handler (sync_old_xor_optab, $A, CODE_FOR_$(sync_old_xor$I$a$))",
+  "set_optab_handler (sync_old_nand_optab, $A, CODE_FOR_$(sync_old_nand$I$a$))",
+  "set_optab_handler (sync_new_add_optab, $A, CODE_FOR_$(sync_new_add$I$a$))",
+  "set_optab_handler (sync_new_sub_optab, $A, CODE_FOR_$(sync_new_sub$I$a$))",
+  "set_optab_handler (sync_new_ior_optab, $A, CODE_FOR_$(sync_new_ior$I$a$))",
+  "set_optab_handler (sync_new_and_optab, $A, CODE_FOR_$(sync_new_and$I$a$))",
+  "set_optab_handler (sync_new_xor_optab, $A, CODE_FOR_$(sync_new_xor$I$a$))",
+  "set_optab_handler (sync_new_nand_optab, $A, CODE_FOR_$(sync_new_nand$I$a$))",
+  "set_optab_handler (sync_compare_and_swap_optab, $A, CODE_FOR_$(sync_compare_and_swap$I$a$))",
+  "set_optab_handler (sync_lock_test_and_set_optab, $A, CODE_FOR_$(sync_lock_test_and_set$I$a$))",
+  "set_direct_optab_handler (sync_lock_release_optab, $A, CODE_FOR_$(sync_lock_release$I$a$))",
+  "set_direct_optab_handler (atomic_exchange_optab, $A, CODE_FOR_$(atomic_exchange$I$a$))",
+  "set_direct_optab_handler (atomic_compare_and_swap_optab, $A, CODE_FOR_$(atomic_compare_and_swap$I$a$))",
+  "set_direct_optab_handler (atomic_load_optab, $A, CODE_FOR_$(atomic_load$I$a$))",
+  "set_direct_optab_handler (atomic_store_optab, $A, CODE_FOR_$(atomic_store$I$a$))",
+  "set_direct_optab_handler (atomic_add_fetch_optab, $A, CODE_FOR_$(atomic_add_fetch$I$a$))",
+  "set_direct_optab_handler (atomic_sub_fetch_optab, $A, CODE_FOR_$(atomic_sub_fetch$I$a$))",
+  "set_direct_optab_handler (atomic_and_fetch_optab, $A, CODE_FOR_$(atomic_and_fetch$I$a$))",
+  "set_direct_optab_handler (atomic_nand_fetch_optab, $A, CODE_FOR_$(atomic_nand_fetch$I$a$))",
+  "set_direct_optab_handler (atomic_xor_fetch_optab, $A, CODE_FOR_$(atomic_xor_fetch$I$a$))",
+  "set_direct_optab_handler (atomic_or_fetch_optab, $A, CODE_FOR_$(atomic_or_fetch$I$a$))",
+  "set_direct_optab_handler (atomic_fetch_add_optab, $A, CODE_FOR_$(atomic_fetch_add$I$a$))",
+  "set_direct_optab_handler (atomic_fetch_sub_optab, $A, CODE_FOR_$(atomic_fetch_sub$I$a$))",
+  "set_direct_optab_handler (atomic_fetch_and_optab, $A, CODE_FOR_$(atomic_fetch_and$I$a$))",
+  "set_direct_optab_handler (atomic_fetch_nand_optab, $A, CODE_FOR_$(atomic_fetch_nand$I$a$))",
+  "set_direct_optab_handler (atomic_fetch_xor_optab, $A, CODE_FOR_$(atomic_fetch_xor$I$a$))",
+  "set_direct_optab_handler (atomic_fetch_or_optab, $A, CODE_FOR_$(atomic_fetch_or$I$a$))",
+  "set_direct_optab_handler (atomic_add_optab, $A, CODE_FOR_$(atomic_add$I$a$))",
+  "set_direct_optab_handler (atomic_sub_optab, $A, CODE_FOR_$(atomic_sub$I$a$))",
+  "set_direct_optab_handler (atomic_and_optab, $A, CODE_FOR_$(atomic_and$I$a$))",
+  "set_direct_optab_handler (atomic_nand_optab, $A, CODE_FOR_$(atomic_nand$I$a$))",
+  "set_direct_optab_handler (atomic_xor_optab, $A, CODE_FOR_$(atomic_xor$I$a$))",
+  "set_direct_optab_handler (atomic_or_optab, $A, CODE_FOR_$(atomic_or$I$a$))",
+  "set_optab_handler (vec_set_optab, $A, CODE_FOR_$(vec_set$a$))",
+  "set_optab_handler (vec_extract_optab, $A, CODE_FOR_$(vec_extract$a$))",
+  "set_optab_handler (vec_init_optab, $A, CODE_FOR_$(vec_init$a$))",
+  "set_optab_handler (vec_shl_optab, $A, CODE_FOR_$(vec_shl_$a$))",
+  "set_optab_handler (vec_shr_optab, $A, CODE_FOR_$(vec_shr_$a$))",
+  "set_optab_handler (vec_realign_load_optab, $A, CODE_FOR_$(vec_realign_load_$a$))",
+  "set_direct_optab_handler (vec_perm_optab, $A, CODE_FOR_$(vec_perm$a$))",
+  "set_direct_optab_handler (vec_perm_const_optab, $A, CODE_FOR_$(vec_perm_const$a$))",
+  "set_convert_optab_handler (vcond_optab, $A, $B, CODE_FOR_$(vcond$a$b$))",
+  "set_convert_optab_handler (vcondu_optab, $A, $B, CODE_FOR_$(vcondu$a$b$))",
+  "set_optab_handler (ssum_widen_optab, $A, CODE_FOR_$(widen_ssum$I$a3$))",
+  "set_optab_handler (usum_widen_optab, $A, CODE_FOR_$(widen_usum$I$a3$))",
+  "set_optab_handler (udot_prod_optab, $A, CODE_FOR_$(udot_prod$I$a$))",
+  "set_optab_handler (sdot_prod_optab, $A, CODE_FOR_$(sdot_prod$I$a$))",
+  "set_optab_handler (reduc_smax_optab, $A, CODE_FOR_$(reduc_smax_$a$))",
+  "set_optab_handler (reduc_umax_optab, $A, CODE_FOR_$(reduc_umax_$a$))",
+  "set_optab_handler (reduc_smin_optab, $A, CODE_FOR_$(reduc_smin_$a$))",
+  "set_optab_handler (reduc_umin_optab, $A, CODE_FOR_$(reduc_umin_$a$))",
+  "set_optab_handler (reduc_splus_optab, $A, CODE_FOR_$(reduc_splus_$a$))" ,
+  "set_optab_handler (reduc_uplus_optab, $A, CODE_FOR_$(reduc_uplus_$a$))",
+  "set_optab_handler (vec_widen_umult_hi_optab, $A, CODE_FOR_$(vec_widen_umult_hi_$a$))",
+  "set_optab_handler (vec_widen_umult_lo_optab, $A, CODE_FOR_$(vec_widen_umult_lo_$a$))",
+  "set_optab_handler (vec_widen_smult_hi_optab, $A, CODE_FOR_$(vec_widen_smult_hi_$a$))",
+  "set_optab_handler (vec_widen_smult_lo_optab, $A, CODE_FOR_$(vec_widen_smult_lo_$a$))",
+  "set_optab_handler (vec_widen_ushiftl_hi_optab, $A, CODE_FOR_$(vec_widen_ushiftl_hi_$a$))",
+  "set_optab_handler (vec_widen_ushiftl_lo_optab, $A, CODE_FOR_$(vec_widen_ushiftl_lo_$a$))",
+  "set_optab_handler (vec_widen_sshiftl_hi_optab, $A, CODE_FOR_$(vec_widen_sshiftl_hi_$a$))",
+  "set_optab_handler (vec_widen_sshiftl_lo_optab, $A, CODE_FOR_$(vec_widen_sshiftl_lo_$a$))",
+  "set_optab_handler (vec_unpacks_hi_optab, $A, CODE_FOR_$(vec_unpacks_hi_$a$))",
+  "set_optab_handler (vec_unpacks_lo_optab, $A, CODE_FOR_$(vec_unpacks_lo_$a$))",
+  "set_optab_handler (vec_unpacku_hi_optab, $A, CODE_FOR_$(vec_unpacku_hi_$a$))",
+  "set_optab_handler (vec_unpacku_lo_optab, $A, CODE_FOR_$(vec_unpacku_lo_$a$))",
+  "set_optab_handler (vec_unpacks_float_hi_optab, $A, CODE_FOR_$(vec_unpacks_float_hi_$a$))",
+  "set_optab_handler (vec_unpacks_float_lo_optab, $A, CODE_FOR_$(vec_unpacks_float_lo_$a$))",
+  "set_optab_handler (vec_unpacku_float_hi_optab, $A, CODE_FOR_$(vec_unpacku_float_hi_$a$))",
+  "set_optab_handler (vec_unpacku_float_lo_optab, $A, CODE_FOR_$(vec_unpacku_float_lo_$a$))",
+  "set_optab_handler (vec_pack_trunc_optab, $A, CODE_FOR_$(vec_pack_trunc_$a$))",
+  "set_optab_handler (vec_pack_ssat_optab, $A, CODE_FOR_$(vec_pack_ssat_$a$))",
+  "set_optab_handler (vec_pack_usat_optab, $A, CODE_FOR_$(vec_pack_usat_$a$))",
+  "set_optab_handler (vec_pack_sfix_trunc_optab, $A, CODE_FOR_$(vec_pack_sfix_trunc_$a$))",
+  "set_optab_handler (vec_pack_ufix_trunc_optab, $A, CODE_FOR_$(vec_pack_ufix_trunc_$a$))"
 };
 
 static void gen_insn (rtx);
@@ -237,7 +330,8 @@ gen_insn (rtx insn)
   for (pindex = 0; pindex < ARRAY_SIZE (optabs); pindex++)
     {
       int force_float = 0, force_int = 0, force_partial_int = 0;
-      int force_consec = 0;
+      int force_fixed = 0;
+      int force_wider = 0;
       int matches = 1;
 
       for (pp = optabs[pindex]; pp[0] != '$' || pp[1] != '('; pp++)
@@ -255,7 +349,7 @@ gen_insn (rtx insn)
 	    switch (*++pp)
 	      {
 	      case 'N':
-		force_consec = 1;
+		force_wider = 1;
 		break;
 	      case 'I':
 		force_int = 1;
@@ -265,6 +359,9 @@ gen_insn (rtx insn)
                 break;
 	      case 'F':
 		force_float = 1;
+		break;
+	      case 'Q':
+		force_fixed = 1;
 		break;
 	      case 'V':
                 break;
@@ -302,17 +399,29 @@ gen_insn (rtx insn)
 			break;
 
 		    if (*p == 0
-			&& (! force_int || mode_class[i] == MODE_INT 
+			&& (! force_int || mode_class[i] == MODE_INT
 			    || mode_class[i] == MODE_VECTOR_INT)
 		        && (! force_partial_int
                             || mode_class[i] == MODE_INT
                             || mode_class[i] == MODE_PARTIAL_INT
 			    || mode_class[i] == MODE_VECTOR_INT)
 			&& (! force_float
-			    || mode_class[i] == MODE_FLOAT 
+			    || mode_class[i] == MODE_FLOAT
 			    || mode_class[i] == MODE_DECIMAL_FLOAT
 			    || mode_class[i] == MODE_COMPLEX_FLOAT
-			    || mode_class[i] == MODE_VECTOR_FLOAT))
+			    || mode_class[i] == MODE_VECTOR_FLOAT)
+			&& (! force_fixed
+			    || mode_class[i] == MODE_FRACT
+			    || mode_class[i] == MODE_UFRACT
+			    || mode_class[i] == MODE_ACCUM
+			    || mode_class[i] == MODE_UACCUM
+			    || mode_class[i] == MODE_VECTOR_FRACT
+			    || mode_class[i] == MODE_VECTOR_UFRACT
+			    || mode_class[i] == MODE_VECTOR_ACCUM
+			    || mode_class[i] == MODE_VECTOR_UACCUM)
+			&& (! force_wider
+			    || *pp == 'a'
+			    || m1 < i))
 		      break;
 		  }
 
@@ -323,7 +432,7 @@ gen_insn (rtx insn)
 		else
 		  m2 = i, np += strlen (GET_MODE_NAME(i));
 
-		force_int = force_partial_int = force_float = 0;
+		force_int = force_partial_int = force_float = force_fixed = 0;
 		break;
 
 	      default:
@@ -332,8 +441,7 @@ gen_insn (rtx insn)
 	}
 
       if (matches && pp[0] == '$' && pp[1] == ')'
-	  && *np == 0
-	  && (! force_consec || (int) GET_MODE_WIDER_MODE(m1) == m2))
+	  && *np == 0)
 	break;
     }
 
@@ -399,7 +507,7 @@ main (int argc, char **argv)
 
   progname = "genopinit";
 
-  if (init_md_reader_args (argc, argv) != SUCCESS_EXIT_CODE)
+  if (!init_rtx_reader_args (argc, argv))
     return (FATAL_EXIT_CODE);
 
   printf ("/* Generated automatically by the program `genopinit'\n\
@@ -410,6 +518,7 @@ from the machine description file `md'.  */\n\n");
   printf ("#include \"coretypes.h\"\n");
   printf ("#include \"tm.h\"\n");
   printf ("#include \"rtl.h\"\n");
+  printf ("#include \"tm_p.h\"\n");
   printf ("#include \"flags.h\"\n");
   printf ("#include \"insn-config.h\"\n");
   printf ("#include \"recog.h\"\n");
@@ -445,8 +554,10 @@ from the machine description file `md'.  */\n\n");
      also convert validly to an unsigned one.  */\n\
   for (i = 0; i < NUM_MACHINE_MODES; i++)\n\
     for (j = 0; j < NUM_MACHINE_MODES; j++)\n\
-      ufixtrunc_optab->handlers[i][j].insn_code\n\
-      = sfixtrunc_optab->handlers[i][j].insn_code;\n\
+      set_convert_optab_handler\n\
+ 	(ufixtrunc_optab, (enum machine_mode) i, (enum machine_mode) j,\n\
+	 convert_optab_handler (sfixtrunc_optab, (enum machine_mode) i,\n\
+						 (enum machine_mode) j));\n\
 #endif\n\
 }");
 

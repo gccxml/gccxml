@@ -1,4 +1,28 @@
-/* Override definitions in elfos.h/svr4.h to be correct for IA64.  */
+/* Override definitions in elfos.h to be correct for IA64.
+
+Copyright (C) 2000, 2001, 2002, 2003, 2004, 2005,
+2007, 2010 Free Software Foundation, Inc.
+
+This file is part of GCC.
+
+GCC is free software; you can redistribute it and/or modify it under
+the terms of the GNU General Public License as published by the Free
+Software Foundation; either version 3, or (at your option) any later
+version.
+
+GCC is distributed in the hope that it will be useful, but WITHOUT ANY
+WARRANTY; without even the implied warranty of MERCHANTABILITY or
+FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+for more details.
+
+Under Section 7 of GPL version 3, you are granted additional
+permissions described in the GCC Runtime Library Exception, version
+3.1, as published by the Free Software Foundation.
+
+You should have received a copy of the GNU General Public License and
+a copy of the GCC Runtime Library Exception along with this program;
+see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
+<http://www.gnu.org/licenses/>.  */
 
 #undef TARGET_INIT_LIBFUNCS
 #define TARGET_INIT_LIBFUNCS ia64_sysv4_init_libfuncs
@@ -80,12 +104,8 @@ do {						\
 #undef FINI_SECTION_ASM_OP
 #define FINI_SECTION_ASM_OP	"\t.section\t.fini,\"ax\",\"progbits\""
 
-/* svr4.h undefines this, so we need to define it here.  */
 #define DBX_REGISTER_NUMBER(REGNO) \
   ia64_dbx_register_number(REGNO)
-
-/* Things that svr4.h defines to the wrong type, because it assumes 32 bit
-   ints and 32 bit longs.  */
 
 #undef SIZE_TYPE
 #define SIZE_TYPE "long unsigned int"
@@ -103,12 +123,7 @@ do {						\
 
 #undef ASM_DECLARE_FUNCTION_NAME
 #define ASM_DECLARE_FUNCTION_NAME(FILE, NAME, DECL) \
-do {									\
-  fputs ("\t.proc ", FILE);						\
-  assemble_name (FILE, NAME);						\
-  fputc ('\n', FILE);							\
-  ASM_OUTPUT_LABEL (FILE, NAME);					\
-} while (0)
+  ia64_start_function(FILE,NAME,DECL)
 
 /* We redefine this to use the ia64 .endp pseudo-op.  */
 

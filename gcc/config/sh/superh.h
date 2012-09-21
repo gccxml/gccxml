@@ -1,11 +1,11 @@
 /* Definitions of target machine for gcc for Super-H using sh-superh-elf.
-   Copyright (C) 2001, 2006 Free Software Foundation, Inc.
+   Copyright (C) 2001, 2006, 2007, 2011 Free Software Foundation, Inc.
 
 This file is part of GNU CC.
 
 GNU CC is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2, or (at your option)
+the Free Software Foundation; either version 3, or (at your option)
 any later version.
 
 GNU CC is distributed in the hope that it will be useful,
@@ -14,9 +14,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with GNU CC; see the file COPYING.  If not, write to
-the Free Software Foundation, 51 Franklin Street, Fifth Floor,
-Boston, MA 02110-1301, USA.  */
+along with GCC; see the file COPYING3.  If not see
+<http://www.gnu.org/licenses/>.  */
 
 
 /* This header file is used when the vendor name is set to 'superh'.
@@ -35,9 +34,6 @@ Boston, MA 02110-1301, USA.  */
 #define _SUPERH_H
 #endif
 
-
-#undef TARGET_VERSION
-#define TARGET_VERSION fprintf (stderr, " (SuperH SH special %s)", __DATE__);
 
 /* Override the linker spec strings to use the new emulation
    The specstrings are concatenated as follows
@@ -75,17 +71,17 @@ Boston, MA 02110-1301, USA.  */
    on newlib and provide the runtime support */
 #undef SUBTARGET_CPP_SPEC
 #define SUBTARGET_CPP_SPEC \
-"-D__EMBEDDED_CROSS__ %{m4-100*:-D__SH4_100__} %{m4-200*:-D__SH4_200__} %{m4-400:-D__SH4_400__} %{m4-500:-D__SH4_500__} \
+"-D__EMBEDDED_CROSS__ %{m4-100*:-D__SH4_100__} %{m4-200*:-D__SH4_200__} %{m4-300*:-D__SH4_300__} %{m4-340:-D__SH4_340__} %{m4-400:-D__SH4_400__} %{m4-500:-D__SH4_500__} \
 %(cppruntime)"
 
 /* Override the SUBTARGET_ASM_SPEC to add the runtime support */
 #undef SUBTARGET_ASM_SPEC
-#define SUBTARGET_ASM_SPEC "%{m4-100*|m4-200*:-isa=sh4} %{m4-400:-isa=sh4-nommu-nofpu} %{m4-500:-isa=sh4-nofpu} %(asruntime)"
+#define SUBTARGET_ASM_SPEC "%{m4-100*|m4-200*:-isa=sh4} %{m4-400|m4-340:-isa=sh4-nommu-nofpu} %{m4-500:-isa=sh4-nofpu} %(asruntime)"
 
 /* Override the SUBTARGET_ASM_RELAX_SPEC so it doesn't interfere with the
    runtime support by adding -isa=sh4 in the wrong place.  */
 #undef SUBTARGET_ASM_RELAX_SPEC
-#define SUBTARGET_ASM_RELAX_SPEC "%{!m4-100*:%{!m4-200*:%{!m4-400:%{!m4-500:-isa=sh4}}}}"
+#define SUBTARGET_ASM_RELAX_SPEC "%{!m4-100*:%{!m4-200*:%{!m4-300*:%{!m4-340:%{!m4-400:%{!m4-500:-isa=sh4}}}}}}"
 
 /* Create the CC1_SPEC to add the runtime support */
 #undef CC1_SPEC
@@ -102,7 +98,7 @@ Boston, MA 02110-1301, USA.  */
 /* Override STARTFILE_SPEC to add profiling and MMU support.  */
 #undef STARTFILE_SPEC
 #define STARTFILE_SPEC \
-  "%{!shared: %{!m4-400*: %{pg:gcrt1-mmu.o%s}%{!pg:crt1-mmu.o%s}}} \
-   %{!shared: %{m4-400*: %{pg:gcrt1.o%s}%{!pg:crt1.o%s}}} \
+  "%{!shared: %{!m4-400*:%{!m4-340*: %{pg:gcrt1-mmu.o%s}%{!pg:crt1-mmu.o%s}}}} \
+   %{!shared: %{m4-340*|m4-400*: %{pg:gcrt1.o%s}%{!pg:crt1.o%s}}} \
    crti.o%s \
    %{!shared:crtbegin.o%s} %{shared:crtbeginS.o%s}"

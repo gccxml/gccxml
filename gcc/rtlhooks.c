@@ -1,11 +1,11 @@
 /* Generic hooks for the RTL middle-end.
-   Copyright (C) 2004, 2005 Free Software Foundation, Inc.
+   Copyright (C) 2004, 2005, 2007, 2008 Free Software Foundation, Inc.
 
 This file is part of GCC.
 
 GCC is free software; you can redistribute it and/or modify it under
 the terms of the GNU General Public License as published by the Free
-Software Foundation; either version 2, or (at your option) any later
+Software Foundation; either version 3, or (at your option) any later
 version.
 
 GCC is distributed in the hope that it will be useful, but WITHOUT ANY
@@ -14,9 +14,8 @@ FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 for more details.
 
 You should have received a copy of the GNU General Public License
-along with GCC; see the file COPYING.  If not, write to the Free
-Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
-02110-1301, USA.  */
+along with GCC; see the file COPYING3.  If not see
+<http://www.gnu.org/licenses/>.  */
 
 #include "config.h"
 #include "system.h"
@@ -44,11 +43,9 @@ gen_lowpart_general (enum machine_mode mode, rtx x)
 
   if (result)
     return result;
-  /* If it's a REG, it must be a hard reg that's not valid in MODE.  */
-  else if (REG_P (x)
-	   /* Or we could have a subreg of a floating point value.  */
-	   || (GET_CODE (x) == SUBREG
-	       && FLOAT_MODE_P (GET_MODE (SUBREG_REG (x)))))
+  /* Handle SUBREGs and hard REGs that were rejected by
+     simplify_gen_subreg.  */
+  else if (REG_P (x) || GET_CODE (x) == SUBREG)
     {
       result = gen_lowpart_common (mode, copy_to_reg (x));
       gcc_assert (result != 0);
@@ -64,9 +61,8 @@ gen_lowpart_general (enum machine_mode mode, rtx x)
       /* The following exposes the use of "x" to CSE.  */
       if (GET_MODE_SIZE (GET_MODE (x)) <= UNITS_PER_WORD
 	  && SCALAR_INT_MODE_P (GET_MODE (x))
-	  && TRULY_NOOP_TRUNCATION (GET_MODE_BITSIZE (mode),
-				    GET_MODE_BITSIZE (GET_MODE (x)))
-	  && ! no_new_pseudos)
+	  && TRULY_NOOP_TRUNCATION_MODES_P (mode, GET_MODE (x))
+	  && !reload_completed)
 	return gen_lowpart_general (mode, force_reg (GET_MODE (x), x));
 
       if (WORDS_BIG_ENDIAN)
@@ -96,9 +92,9 @@ gen_lowpart_no_emit_general (enum machine_mode mode, rtx x)
 }
 
 rtx
-reg_num_sign_bit_copies_general (rtx x ATTRIBUTE_UNUSED,
+reg_num_sign_bit_copies_general (const_rtx x ATTRIBUTE_UNUSED,
 				 enum machine_mode mode ATTRIBUTE_UNUSED,
-                                 rtx known_x ATTRIBUTE_UNUSED,
+                                 const_rtx known_x ATTRIBUTE_UNUSED,
 				 enum machine_mode known_mode ATTRIBUTE_UNUSED,
                                  unsigned int known_ret ATTRIBUTE_UNUSED,
                                  unsigned int *result ATTRIBUTE_UNUSED)
@@ -107,9 +103,9 @@ reg_num_sign_bit_copies_general (rtx x ATTRIBUTE_UNUSED,
 }
 
 rtx
-reg_nonzero_bits_general (rtx x ATTRIBUTE_UNUSED,
+reg_nonzero_bits_general (const_rtx x ATTRIBUTE_UNUSED,
 			  enum machine_mode mode ATTRIBUTE_UNUSED,
-			  rtx known_x ATTRIBUTE_UNUSED,
+			  const_rtx known_x ATTRIBUTE_UNUSED,
                           enum machine_mode known_mode ATTRIBUTE_UNUSED,
                           unsigned HOST_WIDE_INT known_ret ATTRIBUTE_UNUSED,
                           unsigned HOST_WIDE_INT *nonzero ATTRIBUTE_UNUSED)
@@ -119,7 +115,7 @@ reg_nonzero_bits_general (rtx x ATTRIBUTE_UNUSED,
 
 bool
 reg_truncated_to_mode_general (enum machine_mode mode ATTRIBUTE_UNUSED,
-			       rtx x ATTRIBUTE_UNUSED)
+			       const_rtx x ATTRIBUTE_UNUSED)
 {
   return false;
 }
@@ -144,7 +140,7 @@ gen_lowpart_if_possible (enum machine_mode mode, rtx x)
     {
       /* This is the only other case we handle.  */
       int offset = 0;
-      rtx new;
+      rtx new_rtx;
 
       if (WORDS_BIG_ENDIAN)
 	offset = (MAX (GET_MODE_SIZE (GET_MODE (x)), UNITS_PER_WORD)
@@ -155,13 +151,16 @@ gen_lowpart_if_possible (enum machine_mode mode, rtx x)
 	offset -= (MIN (UNITS_PER_WORD, GET_MODE_SIZE (mode))
 		   - MIN (UNITS_PER_WORD, GET_MODE_SIZE (GET_MODE (x))));
 
-      new = adjust_address_nv (x, mode, offset);
-      if (! memory_address_p (mode, XEXP (new, 0)))
+      new_rtx = adjust_address_nv (x, mode, offset);
+      if (! memory_address_addr_space_p (mode, XEXP (new_rtx, 0),
+					 MEM_ADDR_SPACE (x)))
 	return 0;
 
-      return new;
+      return new_rtx;
     }
-  else if (mode != GET_MODE (x) && GET_MODE (x) != VOIDmode)
+  else if (mode != GET_MODE (x) && GET_MODE (x) != VOIDmode
+	   && validate_subreg (mode, GET_MODE (x), x,
+			        subreg_lowpart_offset (mode, GET_MODE (x))))
     return gen_lowpart_SUBREG (mode, x);
   else
     return 0;

@@ -1,13 +1,14 @@
 /* Procedure integration for GCC.
    Copyright (C) 1988, 1991, 1993, 1994, 1995, 1996, 1997, 1998, 1999,
-   2000, 2001, 2002, 2003, 2004, 2005 Free Software Foundation, Inc.
+   2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011
+   Free Software Foundation, Inc.
    Contributed by Michael Tiemann (tiemann@cygnus.com)
 
 This file is part of GCC.
 
 GCC is free software; you can redistribute it and/or modify it under
 the terms of the GNU General Public License as published by the Free
-Software Foundation; either version 2, or (at your option) any later
+Software Foundation; either version 3, or (at your option) any later
 version.
 
 GCC is distributed in the hope that it will be useful, but WITHOUT ANY
@@ -16,9 +17,8 @@ FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 for more details.
 
 You should have received a copy of the GNU General Public License
-along with GCC; see the file COPYING.  If not, write to the Free
-Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
-02110-1301, USA.  */
+along with GCC; see the file COPYING3.  If not see
+<http://www.gnu.org/licenses/>.  */
 
 #include "config.h"
 #include "system.h"
@@ -35,28 +35,30 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
 #include "expr.h"
 #include "output.h"
 #include "recog.h"
+/* For reg_equivs.  */
+#include "reload.h"
 #include "integrate.h"
-#include "real.h"
 #include "except.h"
 #include "function.h"
-#include "toplev.h"
+#include "diagnostic-core.h"
 #include "intl.h"
 #include "params.h"
 #include "ggc.h"
 #include "target.h"
 #include "langhooks.h"
 #include "tree-pass.h"
+#include "df.h"
 
 /* Round to the next highest integer that meets the alignment.  */
 #define CEIL_ROUND(VALUE,ALIGN)	(((VALUE) + (ALIGN) - 1) & ~((ALIGN)- 1))
 
 
 /* Private type used by {get/has}_hard_reg_initial_val.  */
-typedef struct initial_value_pair GTY(()) {
+typedef struct GTY(()) initial_value_pair {
   rtx hard_reg;
   rtx pseudo;
 } initial_value_pair;
-typedef struct initial_value_struct GTY(()) {
+typedef struct GTY(()) initial_value_struct {
   int num_entries;
   int max_entries;
   initial_value_pair * GTY ((length ("%h.num_entries"))) entries;
@@ -69,15 +71,15 @@ static void set_block_abstract_flags (tree, int);
 /* Return false if the function FNDECL cannot be inlined on account of its
    attributes, true otherwise.  */
 bool
-function_attribute_inlinable_p (tree fndecl)
+function_attribute_inlinable_p (const_tree fndecl)
 {
   if (targetm.attribute_table)
     {
-      tree a;
+      const_tree a;
 
       for (a = DECL_ATTRIBUTES (fndecl); a; a = TREE_CHAIN (a))
 	{
-	  tree name = TREE_PURPOSE (a);
+	  const_tree name = TREE_PURPOSE (a);
 	  int i;
 
 	  for (i = 0; targetm.attribute_table[i].name != NULL; i++)
@@ -111,8 +113,9 @@ set_block_origin_self (tree stmt)
 
 	for (local_decl = BLOCK_VARS (stmt);
 	     local_decl != NULL_TREE;
-	     local_decl = TREE_CHAIN (local_decl))
-	  set_decl_origin_self (local_decl);	/* Potential recursion.  */
+	     local_decl = DECL_CHAIN (local_decl))
+	  if (! DECL_EXTERNAL (local_decl))
+	    set_decl_origin_self (local_decl);	/* Potential recursion.  */
       }
 
       {
@@ -147,7 +150,7 @@ set_decl_origin_self (tree decl)
 	{
 	  tree arg;
 
-	  for (arg = DECL_ARGUMENTS (decl); arg; arg = TREE_CHAIN (arg))
+	  for (arg = DECL_ARGUMENTS (decl); arg; arg = DECL_CHAIN (arg))
 	    DECL_ABSTRACT_ORIGIN (arg) = arg;
 	  if (DECL_INITIAL (decl) != NULL_TREE
 	      && DECL_INITIAL (decl) != error_mark_node)
@@ -166,13 +169,23 @@ set_block_abstract_flags (tree stmt, int setting)
 {
   tree local_decl;
   tree subblock;
+  unsigned int i;
 
   BLOCK_ABSTRACT (stmt) = setting;
 
   for (local_decl = BLOCK_VARS (stmt);
        local_decl != NULL_TREE;
-       local_decl = TREE_CHAIN (local_decl))
-    set_decl_abstract_flags (local_decl, setting);
+       local_decl = DECL_CHAIN (local_decl))
+    if (! DECL_EXTERNAL (local_decl))
+      set_decl_abstract_flags (local_decl, setting);
+
+  for (i = 0; i < BLOCK_NUM_NONLOCALIZED_VARS (stmt); i++)
+    {
+      local_decl = BLOCK_NONLOCALIZED_VAR (stmt, i);
+      if ((TREE_CODE (local_decl) == VAR_DECL && !TREE_STATIC (local_decl))
+	  || TREE_CODE (local_decl) == PARM_DECL)
+	set_decl_abstract_flags (local_decl, setting);
+    }
 
   for (subblock = BLOCK_SUBBLOCKS (stmt);
        subblock != NULL_TREE;
@@ -194,7 +207,7 @@ set_decl_abstract_flags (tree decl, int setting)
     {
       tree arg;
 
-      for (arg = DECL_ARGUMENTS (decl); arg; arg = TREE_CHAIN (arg))
+      for (arg = DECL_ARGUMENTS (decl); arg; arg = DECL_CHAIN (arg))
 	DECL_ABSTRACT (arg) = setting;
       if (DECL_INITIAL (decl) != NULL_TREE
 	  && DECL_INITIAL (decl) != error_mark_node)
@@ -206,9 +219,9 @@ set_decl_abstract_flags (tree decl, int setting)
    the function.  */
 
 rtx
-get_hard_reg_initial_reg (struct function *fun, rtx reg)
+get_hard_reg_initial_reg (rtx reg)
 {
-  struct initial_value_struct *ivs = fun->hard_reg_initial_vals;
+  struct initial_value_struct *ivs = crtl->hard_reg_initial_vals;
   int i;
 
   if (ivs == 0)
@@ -234,22 +247,21 @@ get_hard_reg_initial_val (enum machine_mode mode, unsigned int regno)
   if (rv)
     return rv;
 
-  ivs = cfun->hard_reg_initial_vals;
+  ivs = crtl->hard_reg_initial_vals;
   if (ivs == 0)
     {
-      ivs = ggc_alloc (sizeof (initial_value_struct));
+      ivs = ggc_alloc_initial_value_struct ();
       ivs->num_entries = 0;
       ivs->max_entries = 5;
-      ivs->entries = ggc_alloc (5 * sizeof (initial_value_pair));
-      cfun->hard_reg_initial_vals = ivs;
+      ivs->entries = ggc_alloc_vec_initial_value_pair (5);
+      crtl->hard_reg_initial_vals = ivs;
     }
 
   if (ivs->num_entries >= ivs->max_entries)
     {
       ivs->max_entries += 5;
-      ivs->entries = ggc_realloc (ivs->entries,
-				  ivs->max_entries
-				  * sizeof (initial_value_pair));
+      ivs->entries = GGC_RESIZEVEC (initial_value_pair, ivs->entries,
+				    ivs->max_entries);
     }
 
   ivs->entries[ivs->num_entries].hard_reg = gen_rtx_REG (mode, regno);
@@ -268,7 +280,7 @@ has_hard_reg_initial_val (enum machine_mode mode, unsigned int regno)
   struct initial_value_struct *ivs;
   int i;
 
-  ivs = cfun->hard_reg_initial_vals;
+  ivs = crtl->hard_reg_initial_vals;
   if (ivs != 0)
     for (i = 0; i < ivs->num_entries; i++)
       if (GET_MODE (ivs->entries[i].hard_reg) == mode
@@ -281,7 +293,7 @@ has_hard_reg_initial_val (enum machine_mode mode, unsigned int regno)
 unsigned int
 emit_initial_value_sets (void)
 {
-  struct initial_value_struct *ivs = cfun->hard_reg_initial_vals;
+  struct initial_value_struct *ivs = crtl->hard_reg_initial_vals;
   int i;
   rtx seq;
 
@@ -298,31 +310,33 @@ emit_initial_value_sets (void)
   return 0;
 }
 
-struct tree_opt_pass pass_initial_value_sets =
+struct rtl_opt_pass pass_initial_value_sets =
 {
+ {
+  RTL_PASS,
   "initvals",                           /* name */
   NULL,                                 /* gate */
   emit_initial_value_sets,              /* execute */
   NULL,                                 /* sub */
   NULL,                                 /* next */
   0,                                    /* static_pass_number */
-  0,                                    /* tv_id */
+  TV_NONE,                              /* tv_id */
   0,                                    /* properties_required */
   0,                                    /* properties_provided */
   0,                                    /* properties_destroyed */
   0,                                    /* todo_flags_start */
-  TODO_dump_func,                       /* todo_flags_finish */
-  0                                     /* letter */
+  0                                     /* todo_flags_finish */
+ }
 };
 
 /* If the backend knows where to allocate pseudos for hard
    register initial values, register these allocations now.  */
 void
-allocate_initial_values (rtx *reg_equiv_memory_loc ATTRIBUTE_UNUSED)
+allocate_initial_values (VEC (reg_equivs_t, gc) *reg_equivs)
 {
   if (targetm.allocate_initial_value)
     {
-      struct initial_value_struct *ivs = cfun->hard_reg_initial_vals;
+      struct initial_value_struct *ivs = crtl->hard_reg_initial_vals;
       int i;
 
       if (ivs == 0)
@@ -332,11 +346,11 @@ allocate_initial_values (rtx *reg_equiv_memory_loc ATTRIBUTE_UNUSED)
 	{
 	  int regno = REGNO (ivs->entries[i].pseudo);
 	  rtx x = targetm.allocate_initial_value (ivs->entries[i].hard_reg);
-  
+
 	  if (x && REG_N_SETS (REGNO (ivs->entries[i].pseudo)) <= 1)
 	    {
 	      if (MEM_P (x))
-		reg_equiv_memory_loc[regno] = x;
+		reg_equiv_memory_loc (regno) = x;
 	      else
 		{
 		  basic_block bb;
@@ -347,18 +361,14 @@ allocate_initial_values (rtx *reg_equiv_memory_loc ATTRIBUTE_UNUSED)
 		  reg_renumber[regno] = new_regno;
 		  /* Poke the regno right into regno_reg_rtx so that even
 		     fixed regs are accepted.  */
-		  REGNO (ivs->entries[i].pseudo) = new_regno;
+		  SET_REGNO (ivs->entries[i].pseudo, new_regno);
 		  /* Update global register liveness information.  */
 		  FOR_EACH_BB (bb)
 		    {
-		      struct rtl_bb_info *info = bb->il.rtl;
-
-		      if (REGNO_REG_SET_P(info->global_live_at_start, regno))
-			SET_REGNO_REG_SET (info->global_live_at_start,
-					   new_regno);
-		      if (REGNO_REG_SET_P(info->global_live_at_end, regno))
-			SET_REGNO_REG_SET (info->global_live_at_end,
-					   new_regno);
+		      if (REGNO_REG_SET_P(df_get_live_in (bb), regno))
+			SET_REGNO_REG_SET (df_get_live_in (bb), new_regno);
+		      if (REGNO_REG_SET_P(df_get_live_out (bb), regno))
+			SET_REGNO_REG_SET (df_get_live_out (bb), new_regno);
 		    }
 		}
 	    }

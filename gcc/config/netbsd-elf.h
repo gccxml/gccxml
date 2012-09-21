@@ -1,12 +1,12 @@
 /* Common configuration file for NetBSD ELF targets.
-   Copyright (C) 2002 Free Software Foundation, Inc.
+   Copyright (C) 2002, 2007, 2010 Free Software Foundation, Inc.
    Contributed by Wasabi Systems, Inc.
 
 This file is part of GCC.
 
 GCC is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2, or (at your option)
+the Free Software Foundation; either version 3, or (at your option)
 any later version.
 
 GCC is distributed in the hope that it will be useful,
@@ -15,9 +15,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with GCC; see the file COPYING.  If not, write to
-the Free Software Foundation, 51 Franklin Street, Fifth Floor,
-Boston, MA 02110-1301, USA.  */
+along with GCC; see the file COPYING3.  If not see
+<http://www.gnu.org/licenses/>.  */
 
 /* TARGET_OS_CPP_BUILTINS() common to all NetBSD ELF targets.  */
 #define NETBSD_OS_CPP_BUILTINS_ELF()		\
@@ -26,18 +25,6 @@ Boston, MA 02110-1301, USA.  */
       NETBSD_OS_CPP_BUILTINS_COMMON();		\
     }						\
   while (0)
-
-/* This defines which switch letters take arguments.  On NetBSD, most
-   of the normal cases (defined by gcc.c) apply, and we also have -h*
-   and -z* options (for the linker) (coming from SVR4).  */
-
-#undef SWITCH_TAKES_ARG
-#define SWITCH_TAKES_ARG(CHAR)			\
-  (DEFAULT_SWITCH_TAKES_ARG (CHAR)		\
-   || (CHAR) == 'h'				\
-   || (CHAR) == 'z'				\
-   || (CHAR) == 'R')
-
 
 /* Provide a STARTFILE_SPEC appropriate for NetBSD ELF.  Here we
    provide support for the special GCC option -static.  On ELF
@@ -86,9 +73,14 @@ Boston, MA 02110-1301, USA.  */
    %{!shared: \
      -dc -dp \
      %{!nostdlib: \
-       %{!r*: \
+       %{!r: \
 	 %{!e*:-e %(netbsd_entry_point)}}} \
      %{!static: \
        %{rdynamic:-export-dynamic} \
-       %{!dynamic-linker:-dynamic-linker /usr/libexec/ld.elf_so}} \
+       -dynamic-linker /usr/libexec/ld.elf_so} \
      %{static:-static}}"
+
+/* Use --as-needed -lgcc_s for eh support.  */
+#ifdef HAVE_LD_AS_NEEDED
+#define USE_LD_AS_NEEDED 1
+#endif

@@ -1,5 +1,5 @@
 ;; Machine Descriptions for R8C/M16C/M32C
-;; Copyright (C) 2005
+;; Copyright (C) 2005, 2007, 2008, 2010
 ;; Free Software Foundation, Inc.
 ;; Contributed by Red Hat.
 ;;
@@ -7,7 +7,7 @@
 ;;
 ;; GCC is free software; you can redistribute it and/or modify it
 ;; under the terms of the GNU General Public License as published
-;; by the Free Software Foundation; either version 2, or (at your
+;; by the Free Software Foundation; either version 3, or (at your
 ;; option) any later version.
 ;;
 ;; GCC is distributed in the hope that it will be useful, but WITHOUT
@@ -16,9 +16,8 @@
 ;; License for more details.
 ;;
 ;; You should have received a copy of the GNU General Public License
-;; along with GCC; see the file COPYING.  If not, write to the Free
-;; Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
-;; 02110-1301, USA.
+;; along with GCC; see the file COPYING3.  If not see
+;; <http://www.gnu.org/licenses/>.
 
 ;; move, push, extend, etc.
 
@@ -29,22 +28,45 @@
 ;; example is code like this: a = *b where both a and b are spilled to
 ;; the stack.
 
+(define_insn "mov<mode>_far_op1"
+  [(set (match_operand:QHI 0 "register_operand" "=Rhi")
+	(mem:QHI (plus:SI (sign_extend:SI (match_operand:HI 1 "register_operand" "Ra0"))
+			 (match_operand 2 "immediate_operand" "si"))))
+   ]
+  ""
+  "lde.<bwl>\t%D2[%1],%0"
+  [(set_attr "flags" "sz")]
+  )
+
+(define_insn "mov<mode>_far_op2"
+  [(set (mem:QHI (plus:SI (sign_extend:SI (match_operand:HI 0 "register_operand" "Ra0"))
+			 (match_operand 1 "immediate_operand" "si")))
+	(match_operand:QHI 2 "register_operand"
+			  "=Rhi"))
+   ]
+  ""
+  "ste.<bwl>\t%2,%D1[%0]"
+  [(set_attr "flags" "sz")]
+  )
+
 ;; Match push/pop before mov.b for passing char as arg,
 ;; e.g. stdlib/efgcvt.c.
 (define_insn "movqi_op"
   [(set (match_operand:QI 0 "m32c_nonimmediate_operand"
-			  "=Rqi*Rmm, <,          RqiSd*Rmm, SdSs,    Rqi*Rmm, Sd")
+			  "=SF,Rhi*Rmm, Rqi*Rmm, <,          RqiSd*Rmm, SdSs,    Rqi*Rmm, Sd")
 	(match_operand:QI 1 "m32c_any_operand"
-			  "iRqi*Rmm, iRqiSd*Rmm, >,         Rqi*Rmm, SdSs,    i"))]
+			  "Rhi*Rmm,SF, iRqi*Rmm, iRqiSd*Rmm, >,         Rqi*Rmm, SdSs,    i"))]
   "m32c_mov_ok (operands, QImode)"
   "@
+    lde.b\t%1,%0
+    ste.b\t%1,%0
     mov.b\t%1,%0
     push.b\t%1
     pop.b\t%0
     mov.b\t%1,%0
     mov.b\t%1,%0
     mov.b\t%1,%0"
-  [(set_attr "flags" "sz,*,*,sz,sz,sz")]
+  [(set_attr "flags" "sz,sz,sz,*,*,sz,sz,sz")]
   )
 
 (define_expand "movqi"
@@ -57,11 +79,13 @@
 
 (define_insn "movhi_op"
   [(set (match_operand:HI 0 "m32c_nonimmediate_operand"
-			  "=Rhi*Rmm,     Sd, SdSs,   *Rcr, RhiSd*Rmm, <, RhiSd*Rmm, <, *Rcr")
+			  "=SF,Rhi*Rmm, Rhi*Rmm,     Sd, SdSs,   *Rcr, RhiSd*Rmm, <, RhiSd*Rmm, <, *Rcr")
 	(match_operand:HI 1 "m32c_any_operand"
-			  "iRhi*RmmSdSs, i, Rhi*Rmm, RhiSd*Rmm, *Rcr, iRhiSd*Rmm, >, *Rcr, >"))]
+			  " Rhi*Rmm,SF, iRhi*RmmSdSs, i, Rhi*Rmm, RhiSd*Rmm, *Rcr, iRhiSd*Rmm, >, *Rcr, >"))]
   "m32c_mov_ok (operands, HImode)"
   "@
+   ste.w\t%1,%0
+   lde.w\t%1,%0
    mov.w\t%1,%0
    mov.w\t%1,%0
    mov.w\t%1,%0
@@ -71,7 +95,7 @@
    pop.w\t%0
    pushc\t%1
    popc\t%0"
-  [(set_attr "flags" "sz,sz,sz,n,n,n,n,n,n")]
+  [(set_attr "flags" "sz,sz,sz,sz,sz,n,n,n,n,n,n")]
   )
 
 (define_expand "movhi"
@@ -177,11 +201,11 @@
 
 ; All SI moves are split if TARGET_A16
 (define_insn_and_split "movsi_splittable"
-  [(set (match_operand:SI 0 "m32c_nonimmediate_operand" "=Rsi<*Rmm,RsiSd*Rmm,Ss")
-	(match_operand:SI 1 "m32c_any_operand" "iRsiSd*Rmm,iRsi>*Rmm,Rsi*Rmm"))]
+  [(set (match_operand:SI 0 "m32c_nonimmediate_operand" "=RsiRaa<*Rmm,  RsiRaaSd*Rmm,  Ss")
+	(match_operand:SI 1 "m32c_any_operand" "iRsiRaaSd*Rmm,  iRsiRaa>*Rmm,  RsiRaa*Rmm"))]
   "TARGET_A16"
   "#"
-  "TARGET_A16 && reload_completed"
+  "TARGET_A16"
   [(pc)]
   "m32c_split_move (operands, SImode, 1); DONE;"
   )
@@ -339,6 +363,16 @@
   [(set_attr "flags" "x")]
   )
 
+(define_insn "extendhipsi2"
+  [(set (match_operand:PSI 0 "register_operand" "=R03")
+	(sign_extend:PSI (match_operand:HI 1 "register_operand" "0")))]
+  ""
+  "*
+   if (REGNO(operands[0]) == 0) return \"exts.w\t%1\";
+   else return \"mov.w r1,r3 | sha.w #-8,r3 | sha.w #-7,r3\";"
+  [(set_attr "flags" "x")]
+  )
+
 (define_insn "extendpsisi2"
   [(set (match_operand:SI 0 "mr_operand" "=R03Sd*Rmm")
 	(sign_extend:SI (match_operand:PSI 1 "mr_operand" "0")))]
@@ -372,7 +406,7 @@
   )
 
 (define_insn "zero_extendqihi2"
-  [(set (match_operand:HI 0 "m32c_nonimmediate_operand" "=Rhl,RhiSd*Rmm")
+  [(set (match_operand:HI 0 "m32c_nonimmediate_operand" "=?Rhl,RhiSd*Rmm")
 	(zero_extend:HI (match_operand:QI 1 "nonimmediate_operand" "0,0")))]
   ""
   "@

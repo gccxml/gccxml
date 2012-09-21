@@ -1,10 +1,10 @@
 /* Structures that hang off cpp_identifier, for PCH.
    Copyright (C) 1986, 1987, 1989, 1992, 1993, 1994, 1995, 1996, 1997, 1998,
-   1999, 2000, 2001, 2002, 2003, 2004 Free Software Foundation, Inc.
+   1999, 2000, 2001, 2002, 2003, 2004, 2009 Free Software Foundation, Inc.
 
 This program is free software; you can redistribute it and/or modify it
 under the terms of the GNU General Public License as published by the
-Free Software Foundation; either version 2, or (at your option) any
+Free Software Foundation; either version 3, or (at your option) any
 later version.
 
 This program is distributed in the hope that it will be useful,
@@ -13,8 +13,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.  */
+along with this program; see the file COPYING3.  If not see
+<http://www.gnu.org/licenses/>.  */
 
 #include "cpplib.h"
 
@@ -22,11 +22,10 @@ Foundation, 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.  */
 typedef unsigned char uchar;
 #endif
 
-#define U (const unsigned char *)  /* Intended use: U"string" */
+#define UC (const unsigned char *)  /* Intended use: UC"string" */
 
 /* Chained list of answers to an assertion.  */
-struct answer GTY(())
-{
+struct GTY(()) answer {
   struct answer *next;
   unsigned int count;
   cpp_token GTY ((length ("%h.count"))) first[1];
@@ -34,8 +33,7 @@ struct answer GTY(())
 
 /* Each macro definition is recorded in a cpp_macro structure.
    Variadic macros cannot occur with traditional cpp.  */
-struct cpp_macro GTY(())
-{
+struct GTY(()) cpp_macro {
   /* Parameters, if any.  */
   cpp_hashnode ** GTY ((nested_ptr (union tree_node,
 		"%h ? CPP_HASHNODE (GCC_IDENT_TO_HT_IDENT (%h)) : NULL",
@@ -75,4 +73,9 @@ struct cpp_macro GTY(())
 
   /* Indicate which field of 'exp' is in use.  */
   unsigned int traditional : 1;
+
+  /* Indicate whether the tokens include extra CPP_PASTE tokens at the
+     end to track invalid redefinitions with consecutive CPP_PASTE
+     tokens.  */
+  unsigned int extra_tokens : 1;
 };

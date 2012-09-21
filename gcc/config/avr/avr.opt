@@ -1,12 +1,12 @@
 ; Options for the ATMEL AVR port of the compiler.
 
-; Copyright (C) 2005 Free Software Foundation, Inc.
+; Copyright (C) 2005, 2007, 2008, 2010, 2011 Free Software Foundation, Inc.
 ;
 ; This file is part of GCC.
 ;
 ; GCC is free software; you can redistribute it and/or modify it under
 ; the terms of the GNU General Public License as published by the Free
-; Software Foundation; either version 2, or (at your option) any later
+; Software Foundation; either version 3, or (at your option) any later
 ; version.
 ;
 ; GCC is distributed in the hope that it will be useful, but WITHOUT ANY
@@ -15,24 +15,22 @@
 ; for more details.
 ;
 ; You should have received a copy of the GNU General Public License
-; along with GCC; see the file COPYING.  If not, write to the Free
-; Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
-; 02110-1301, USA.
+; along with GCC; see the file COPYING3.  If not see
+; <http://www.gnu.org/licenses/>.
 
 mcall-prologues
 Target Report Mask(CALL_PROLOGUES)
 Use subroutines for function prologues and epilogues
 
 mmcu=
-Target RejectNegative Joined Var(avr_mcu_name) Init("avr2")
+Target RejectNegative Joined Var(avr_mcu_index) Init(0) Enum(avr_mcu)
 -mmcu=MCU	Select the target MCU
 
 mdeb
 Target Report Undocumented Mask(ALL_DEBUG)
 
-minit-stack=
-Target RejectNegative Joined Var(avr_init_stack) Init("__stack")
--minit-stack=STACK	Use STACK as the initial value of the stack pointer
+mlog=
+Target RejectNegative Joined Undocumented Var(avr_log_details)
 
 mint8
 Target Report Mask(INT8)
@@ -42,9 +40,9 @@ mno-interrupts
 Target Report RejectNegative Mask(NO_INTERRUPTS)
 Change the stack pointer without disabling interrupts
 
-mno-tablejump
-Target Report RejectNegative Mask(NO_TABLEJUMP)
-Do not generate tablejump insns
+mbranch-cost=
+Target Report Joined RejectNegative UInteger Var(avr_branch_cost) Init(0)
+Set the branch costs for conditional branch instructions.  Reasonable values are small, non-negative integers.  The default branch cost is 0.
 
 morder1
 Target Report Undocumented Mask(ORDER_1)
@@ -56,10 +54,28 @@ mshort-calls
 Target Report Mask(SHORT_CALLS)
 Use rjmp/rcall (limited range) on >8K devices
 
-msize
-Target Report Mask(INSN_SIZE_DUMP)
-Output instruction sizes to the asm file
-
 mtiny-stack
 Target Report Mask(TINY_STACK)
 Change only the low 8 bits of the stack pointer
+
+mrelax
+Target Report
+Relax branches
+
+mpmem-wrap-around
+Target Report
+Make the linker relaxation machine assume that a program counter wrap-around occurs.
+
+maccumulate-args
+Target Report Mask(ACCUMULATE_OUTGOING_ARGS)
+Accumulate outgoing function arguments and acquire/release the needed stack space for outpoing function arguments in function prologue/epilogue.  Without this option, outgoing arguments are pushed before calling a function and popped afterwards.  This option can lead to reduced code size for functions that call many functions that get their arguments on the stack like, for example printf.
+
+mstrict-X
+Target Report Var(avr_strict_X) Init(0)
+When accessing RAM, use X as imposed by the hardware, i.e. just use pre-decrement, post-increment and indirect addressing with the X register.  Without this option, the compiler may assume that there is an addressing mode X+const similar to Y+const and Z+const and emit instructions to emulate such an addressing mode for X.
+
+;; For rationale behind -msp8 see explanation in avr.h.
+msp8
+Target Report RejectNegative Var(avr_sp8) Init(0)
+The device has no SPH special function register. This option will be overridden by the compiler driver with the correct setting if presence/absence of SPH can be deduced from -mmcu=MCU.
+

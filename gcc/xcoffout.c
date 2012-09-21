@@ -1,12 +1,12 @@
 /* Output xcoff-format symbol table information from GNU compiler.
-   Copyright (C) 1992, 1994, 1995, 1997, 1998, 1999, 2000, 2002, 2003, 2004
-   Free Software Foundation, Inc.
+   Copyright (C) 1992, 1994, 1995, 1997, 1998, 1999, 2000, 2002, 2003, 2004,
+   2007, 2008, 2010  Free Software Foundation, Inc.
 
 This file is part of GCC.
 
 GCC is free software; you can redistribute it and/or modify it under
 the terms of the GNU General Public License as published by the Free
-Software Foundation; either version 2, or (at your option) any later
+Software Foundation; either version 3, or (at your option) any later
 version.
 
 GCC is distributed in the hope that it will be useful, but WITHOUT ANY
@@ -15,9 +15,8 @@ FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 for more details.
 
 You should have received a copy of the GNU General Public License
-along with GCC; see the file COPYING.  If not, write to the Free
-Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
-02110-1301, USA.  */
+along with GCC; see the file COPYING3.  If not see
+<http://www.gnu.org/licenses/>.  */
 
 /* Output xcoff-format symbol table data.  The main functionality is contained
    in dbxout.c.  This file implements the sdbout-like parts of the xcoff
@@ -31,10 +30,11 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
 #include "tree.h"
 #include "rtl.h"
 #include "flags.h"
-#include "toplev.h"
+#include "diagnostic-core.h"
 #include "output.h"
 #include "ggc.h"
 #include "target.h"
+#include "debug.h"
 
 #ifdef XCOFF_DEBUGGING_INFO
 
@@ -81,8 +81,15 @@ const char *xcoff_lastfile;
 #define ASM_OUTPUT_LINE(FILE,LINENUM)					   \
   do									   \
     {									   \
+      /* Make sure we're in a function and prevent output of .line 0, as   \
+	 line # 0 is meant for symbol addresses in xcoff.  Additionally,   \
+	 line numbers are 'unsigned short' in 32-bit mode.  */		   \
       if (xcoff_begin_function_line >= 0)				   \
-	fprintf (FILE, "\t.line\t%d\n", ABS_OR_RELATIVE_LINENO (LINENUM)); \
+	{								   \
+	  int lno = ABS_OR_RELATIVE_LINENO (LINENUM);			   \
+	  if (lno > 0 && (TARGET_64BIT || lno <= (int)USHRT_MAX))	   \
+	    fprintf (FILE, "\t.line\t%d\n", lno);			   \
+	}								   \
     }									   \
   while (0)
 
@@ -145,7 +152,7 @@ static const struct xcoff_type_number xcoff_type_numbers[] = {
 
   /* ??? Should also handle built-in C++ and Obj-C types.  There perhaps
      aren't any that C doesn't already have.  */
-};    
+};
 
 /* Returns an XCOFF fundamental type number for DECL (assumed to be a
    TYPE_DECL), or 0 if dbxout.c should assign a type number normally.  */
@@ -301,7 +308,8 @@ xcoffout_source_file (FILE *file, const char *filename, int inline_p)
       if (xcoff_current_include_file)
 	{
 	  fprintf (file, "\t.ei\t");
-	  output_quoted_string (file, xcoff_current_include_file);
+	  output_quoted_string (file,
+	      remap_debug_filename (xcoff_current_include_file));
 	  fprintf (file, "\n");
 	  xcoff_current_include_file = NULL;
 	}
@@ -309,7 +317,7 @@ xcoffout_source_file (FILE *file, const char *filename, int inline_p)
       if (strcmp (main_input_filename, filename) || inline_p)
 	{
 	  fprintf (file, "\t.bi\t");
-	  output_quoted_string (file, filename);
+	  output_quoted_string (file, remap_debug_filename (filename));
 	  fprintf (file, "\n");
 	  xcoff_current_include_file = filename;
 	}
@@ -320,7 +328,9 @@ xcoffout_source_file (FILE *file, const char *filename, int inline_p)
 /* Output a line number symbol entry for location (FILENAME, LINE).  */
 
 void
-xcoffout_source_line (unsigned int line, const char *filename)
+xcoffout_source_line (unsigned int line, const char *filename,
+                      int discriminator ATTRIBUTE_UNUSED,
+                      bool is_stmt ATTRIBUTE_UNUSED)
 {
   bool inline_p = (strcmp (xcoff_current_function_file, filename) != 0
 		   || (int) line < xcoff_begin_function_line);
@@ -412,7 +422,7 @@ xcoffout_declare_function (FILE *file, tree decl, const char *name)
   len = strlen (name);
   if (name[len - 1] == ']')
     {
-      char *n = alloca (len - 3);
+      char *n = XALLOCAVEC (char, len - 3);
       memcpy (n, name, len - 4);
       n[len - 4] = '\0';
       name = n;

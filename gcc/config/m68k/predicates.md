@@ -1,11 +1,11 @@
 ;; Predicate definitions for Motorola 68000.
-;; Copyright (C) 2005 Free Software Foundation, Inc.
+;; Copyright (C) 2005, 2007 Free Software Foundation, Inc.
 ;;
 ;; This file is part of GCC.
 ;;
 ;; GCC is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
-;; the Free Software Foundation; either version 2, or (at your option)
+;; the Free Software Foundation; either version 3, or (at your option)
 ;; any later version.
 ;;
 ;; GCC is distributed in the hope that it will be useful,
@@ -14,9 +14,8 @@
 ;; GNU General Public License for more details.
 ;;
 ;; You should have received a copy of the GNU General Public License
-;; along with GCC; see the file COPYING.  If not, write to
-;; the Free Software Foundation, 51 Franklin Street, Fifth Floor,
-;; Boston, MA 02110-1301, USA.
+;; along with GCC; see the file COPYING3.  If not see
+;; <http://www.gnu.org/licenses/>.
 
 ;; Special case of a general operand that's used as a source
 ;; operand. Use this to permit reads from PC-relative memory when
@@ -125,13 +124,20 @@
   (and (match_code "eq,ne,gtu,ltu,geu,leu,gt,lt,ge,le")
        (match_test "valid_dbcc_comparison_p_2 (op, mode)")))
 
+(define_predicate "m68k_cstore_comparison_operator"
+  (if_then_else (match_test "TARGET_68881")
+	        (match_operand 0 "comparison_operator")
+		(match_operand 0 "ordered_comparison_operator")))
+
 ;; Check for sign_extend or zero_extend.  Used for bit-count operands.
 
 (define_predicate "extend_operator"
   (match_code "sign_extend,zero_extend"))
 
 ;; Returns true if OP is either a symbol reference or a sum of a
-;; symbol reference and a constant.
+;; symbol reference and a constant.  This predicate is for "raw"
+;; symbol references not yet processed by legitimize*_address,
+;; hence we do not handle UNSPEC_{XGOT, TLS, XTLS} here.
 
 (define_predicate "symbolic_operand"
   (match_code "symbol_ref,label_ref,const")
@@ -159,6 +165,29 @@
     }
 })
 
+;; A constant that can be used the address in a call insn
+(define_predicate "const_call_operand"
+  (ior (match_operand 0 "const_int_operand")
+       (and (match_test "m68k_symbolic_call != NULL")
+	    (match_operand 0 "symbolic_operand"))))
+
+;; An operand that can be used as the address in a call insn.
+(define_predicate "call_operand"
+  (ior (match_operand 0 "const_call_operand")
+       (match_operand 0 "register_operand")))
+
+;; A constant that can be used the address in a sibcall insn
+(define_predicate "const_sibcall_operand"
+  (ior (match_operand 0 "const_int_operand")
+       (and (match_test "m68k_symbolic_jump != NULL")
+	    (match_operand 0 "symbolic_operand"))))
+
+;; An operand that can be used as the address in a sibcall insn.
+(define_predicate "sibcall_operand"
+  (ior (match_operand 0 "const_sibcall_operand")
+       (and (match_code "reg")
+	    (match_test "REGNO (op) == STATIC_CHAIN_REGNUM"))))
+
 ;; TODO: Add a comment here.
 
 (define_predicate "post_inc_operand"
@@ -170,3 +199,48 @@
 (define_predicate "pre_dec_operand"
   (and (match_code "mem")
        (match_test "GET_CODE (XEXP (op, 0)) == PRE_DEC")))
+
+;; A zero constant.
+(define_predicate "const0_operand"
+  (and (match_code "const_int,const_double,const_vector")
+       (match_test "op == CONST0_RTX (mode)")))
+
+;; A one constant (operand for conditional_trap).
+(define_predicate "const1_operand"
+  (and (match_code "const_int")
+       (match_test "op == const1_rtx")))
+
+;; A valid operand for a HImode or QImode conditional operation.
+;; ColdFire has tst patterns, but not cmp patterns.
+(define_predicate "m68k_subword_comparison_operand"
+  (if_then_else (match_test "TARGET_COLDFIRE")
+                (and (match_code "const_int")
+		     (match_test "op == const0_rtx"))
+		(match_operand 0 "general_src_operand")))
+
+;; An operand for movsi_const0 pattern.
+(define_predicate "movsi_const0_operand"
+  (and (match_operand 0 "nonimmediate_operand")
+       (match_test "(TARGET_68010 || TARGET_COLDFIRE)
+                    || !(MEM_P (op) && MEM_VOLATILE_P (op))")))
+ 
+;; A non-symbolic call operand.
+;; We need to special case 'const_int' to ignore its mode while matching.
+(define_predicate "non_symbolic_call_operand"
+  (and (match_operand 0 "call_operand")
+       (ior (and (match_code "const_int")
+ 		 (match_test "!symbolic_operand (op, mode)"))
+ 	    (match_test "!symbolic_operand (op,mode)"))))
+
+;; Special case of general_src_operand, which rejects a few fp
+;; constants (which we prefer in registers) before reload.
+
+(define_predicate "fp_src_operand"
+  (match_operand 0 "general_src_operand")
+{
+  return !CONSTANT_P (op)
+	 || (TARGET_68881
+	     && (!standard_68881_constant_p (op)
+		 || reload_in_progress
+		 || reload_completed));
+})

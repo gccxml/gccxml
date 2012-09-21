@@ -1,5 +1,5 @@
 /* Definitions for SH running Linux-based GNU systems using ELF
-   Copyright (C) 1999, 2000, 2002, 2003, 2004, 2005, 2006
+   Copyright (C) 1999, 2000, 2002, 2003, 2004, 2005, 2006, 2007, 2010, 2011
    Free Software Foundation, Inc.
    Contributed by Kazumoto Kojima <kkojima@rr.iij4u.or.jp>
 
@@ -7,7 +7,7 @@ This file is part of GCC.
 
 GCC is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2, or (at your option)
+the Free Software Foundation; either version 3, or (at your option)
 any later version.
 
 GCC is distributed in the hope that it will be useful,
@@ -16,13 +16,10 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; see the file COPYING.  If not, write to
-the Free Software Foundation, 51 Franklin Street, Fifth Floor,
-Boston, MA 02110-1301, USA.  */
+along with GCC; see the file COPYING3.  If not see
+<http://www.gnu.org/licenses/>.  */
 
 /* Run-time Target Specification.  */
-#undef TARGET_VERSION
-#define TARGET_VERSION  fputs (" (SH GNU/Linux with ELF)", stderr);
 
 /* Enable DWARF 2 exceptions.  */
 #undef DWARF2_UNWIND_INFO
@@ -37,14 +34,14 @@ Boston, MA 02110-1301, USA.  */
 #define TARGET_OS_CPP_BUILTINS() \
   do						\
     {						\
-      LINUX_TARGET_OS_CPP_BUILTINS();		\
+      GNU_USER_TARGET_OS_CPP_BUILTINS();	\
     }						\
   while (0)
 
 #undef TARGET_DEFAULT
 #define TARGET_DEFAULT \
   (TARGET_CPU_DEFAULT | MASK_USERMODE | TARGET_ENDIAN_DEFAULT \
-   | TARGET_OPT_DEFAULT)
+   | TARGET_OPT_DEFAULT | MASK_SOFT_ATOMIC)
 
 #define TARGET_ASM_FILE_END file_end_indicate_exec_stack
 
@@ -57,7 +54,7 @@ Boston, MA 02110-1301, USA.  */
   "%{shared:-shared} \
    %{!static: \
      %{rdynamic:-export-dynamic} \
-     %{!dynamic-linker:-dynamic-linker " LINUX_DYNAMIC_LINKER "}} \
+     -dynamic-linker " GNU_USER_DYNAMIC_LINKER "} \
    %{static:-static}"
 
 /* Output assembler code to STREAM to call the profiler.  */
@@ -117,8 +114,6 @@ Boston, MA 02110-1301, USA.  */
       }									\
   } while (0)
 
-#define MD_UNWIND_SUPPORT "config/sh/linux-unwind.h"
-
 /* For SH3 and SH4, we use a slot of the unwind frame which correspond
    to a fake register number 16 as a placeholder for the return address
    in MD_FALLBACK_FRAME_STATE_FOR and its content will be read with
@@ -136,3 +131,7 @@ Boston, MA 02110-1301, USA.  */
 #define SH_DIV_STRATEGY_DEFAULT SH_DIV_CALL2
 #undef SH_DIV_STR_FOR_SIZE
 #define SH_DIV_STR_FOR_SIZE "call2"
+
+/* Install the __sync libcalls.  */
+#undef TARGET_INIT_LIBFUNCS
+#define TARGET_INIT_LIBFUNCS  sh_init_sync_libfuncs

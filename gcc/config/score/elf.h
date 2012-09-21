@@ -1,11 +1,11 @@
 /* elf.h for Sunplus S+CORE processor
-   Copyright (C) 2005 Free Software Foundation, Inc.
+   Copyright (C) 2005, 2007, 2010 Free Software Foundation, Inc.
 
    This file is part of GCC.
 
    GCC is free software; you can redistribute it and/or modify it
    under the terms of the GNU General Public License as published
-   by the Free Software Foundation; either version 2, or (at your
+   by the Free Software Foundation; either version 3, or (at your
    option) any later version.
 
    GCC is distributed in the hope that it will be useful, but WITHOUT
@@ -14,9 +14,8 @@
    License for more details.
 
    You should have received a copy of the GNU General Public License
-   along with GCC; see the file COPYING.  If not, write to
-   the Free Software Foundation, 51 Franklin Street, Fifth Floor,
-   Boston, MA 02110-1301, USA.  */
+   along with GCC; see the file COPYING3.  If not see
+   <http://www.gnu.org/licenses/>.  */
 
 #define OBJECT_FORMAT_ELF
 
@@ -33,16 +32,16 @@
 #define TYPE_OPERAND_FMT        "@%s"
 
 #undef TYPE_ASM_OP
-#define TYPE_ASM_OP        "\t.type\t"
+#define TYPE_ASM_OP             "\t.type\t"
 
 #undef SIZE_ASM_OP
-#define SIZE_ASM_OP        "\t.size\t"
+#define SIZE_ASM_OP             "\t.size\t"
 
 /* A c expression whose value is a string containing the
    assembler operation to identify the following data as
    uninitialized global data.  */
 #ifndef BSS_SECTION_ASM_OP
-#define BSS_SECTION_ASM_OP        "\t.section\t.bss"
+#define BSS_SECTION_ASM_OP      "\t.section\t.bss"
 #endif
 
 #ifndef ASM_OUTPUT_ALIGNED_BSS
@@ -96,6 +95,3 @@
 
 #undef  ENDFILE_SPEC
 #define ENDFILE_SPEC            "crtend%O%s crtn%O%s"
-
-/* We support #pragma.  */
-#define HANDLE_SYSV_PRAGMA      1

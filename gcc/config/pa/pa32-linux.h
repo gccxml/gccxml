@@ -1,11 +1,12 @@
 /* Definitions for PA_RISC with ELF-32 format
-   Copyright (C) 2000, 2002, 2004, 2006 Free Software Foundation, Inc.
+   Copyright (C) 2000, 2002, 2004, 2006, 2007, 2010, 2011
+   Free Software Foundation, Inc.
 
 This file is part of GCC.
 
 GCC is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2, or (at your option)
+the Free Software Foundation; either version 3, or (at your option)
 any later version.
 
 GCC is distributed in the hope that it will be useful,
@@ -14,9 +15,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with GCC; see the file COPYING.  If not, write to
-the Free Software Foundation, 51 Franklin Street, Fifth Floor,
-Boston, MA 02110-1301, USA.  */
+along with GCC; see the file COPYING3.  If not see
+<http://www.gnu.org/licenses/>.  */
 
 /* Turn off various SOM crap we don't want.  */
 #undef TARGET_ELF32
@@ -32,7 +32,7 @@ Boston, MA 02110-1301, USA.  */
 "	.text\n"							\
 "	.word __canonicalize_funcptr_for_compare-$PIC_pcrel$0");	\
   STATIC func_ptr __CTOR_LIST__[1]					\
-    __attribute__ ((__unused__, section(".ctors"),			\
+    __attribute__ ((__used__, section(".ctors"),			\
 		    aligned(sizeof(func_ptr))))				\
     = { (func_ptr) (-1) }
 
@@ -58,4 +58,8 @@ call_ ## FUNC (void)					\
 }
 #endif
 
-#define MD_UNWIND_SUPPORT "config/pa/linux-unwind.h"
+#undef  WCHAR_TYPE
+#define WCHAR_TYPE "long int"
+
+#undef  WCHAR_TYPE_SIZE
+#define WCHAR_TYPE_SIZE BITS_PER_WORD

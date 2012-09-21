@@ -1,3 +1,94 @@
+;; Copyright (C) 2005, 2006, 2007, 2008, 2010, 2011, 2012
+;; Free Software Foundation, Inc.
+;;
+;; This file is part of GCC.
+;;
+;; GCC is free software; you can redistribute it and/or modify
+;; it under the terms of the GNU General Public License as published by
+;; the Free Software Foundation; either version 3, or (at your option)
+;; any later version.
+;;
+;; GCC is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;; GNU General Public License for more details.
+;;
+;; You should have received a copy of the GNU General Public License
+;; along with GCC; see the file COPYING3.  If not see
+;; <http://www.gnu.org/licenses/>.
+
+;; MIPS DSP ASE Revision 0.98 3/24/2005
+(define_c_enum "unspec" [
+  UNSPEC_ADDQ
+  UNSPEC_ADDQ_S
+  UNSPEC_SUBQ
+  UNSPEC_SUBQ_S
+  UNSPEC_ADDSC
+  UNSPEC_ADDWC
+  UNSPEC_MODSUB
+  UNSPEC_RADDU_W_QB
+  UNSPEC_ABSQ_S
+  UNSPEC_PRECRQ_QB_PH
+  UNSPEC_PRECRQ_PH_W
+  UNSPEC_PRECRQ_RS_PH_W
+  UNSPEC_PRECRQU_S_QB_PH
+  UNSPEC_PRECEQ_W_PHL
+  UNSPEC_PRECEQ_W_PHR
+  UNSPEC_PRECEQU_PH_QBL
+  UNSPEC_PRECEQU_PH_QBR
+  UNSPEC_PRECEQU_PH_QBLA
+  UNSPEC_PRECEQU_PH_QBRA
+  UNSPEC_PRECEU_PH_QBL
+  UNSPEC_PRECEU_PH_QBR
+  UNSPEC_PRECEU_PH_QBLA
+  UNSPEC_PRECEU_PH_QBRA
+  UNSPEC_SHLL
+  UNSPEC_SHLL_S
+  UNSPEC_SHRL_QB
+  UNSPEC_SHRA_PH
+  UNSPEC_SHRA_R
+  UNSPEC_MULEU_S_PH_QBL
+  UNSPEC_MULEU_S_PH_QBR
+  UNSPEC_MULQ_RS_PH
+  UNSPEC_MULEQ_S_W_PHL
+  UNSPEC_MULEQ_S_W_PHR
+  UNSPEC_DPAU_H_QBL
+  UNSPEC_DPAU_H_QBR
+  UNSPEC_DPSU_H_QBL
+  UNSPEC_DPSU_H_QBR
+  UNSPEC_DPAQ_S_W_PH
+  UNSPEC_DPSQ_S_W_PH
+  UNSPEC_MULSAQ_S_W_PH
+  UNSPEC_DPAQ_SA_L_W
+  UNSPEC_DPSQ_SA_L_W
+  UNSPEC_MAQ_S_W_PHL
+  UNSPEC_MAQ_S_W_PHR
+  UNSPEC_MAQ_SA_W_PHL
+  UNSPEC_MAQ_SA_W_PHR
+  UNSPEC_BITREV
+  UNSPEC_INSV
+  UNSPEC_REPL_QB
+  UNSPEC_REPL_PH
+  UNSPEC_CMP_EQ
+  UNSPEC_CMP_LT
+  UNSPEC_CMP_LE
+  UNSPEC_CMPGU_EQ_QB
+  UNSPEC_CMPGU_LT_QB
+  UNSPEC_CMPGU_LE_QB
+  UNSPEC_PICK
+  UNSPEC_PACKRL_PH
+  UNSPEC_EXTR_W
+  UNSPEC_EXTR_R_W
+  UNSPEC_EXTR_RS_W
+  UNSPEC_EXTR_S_H
+  UNSPEC_EXTP
+  UNSPEC_EXTPDP
+  UNSPEC_SHILO
+  UNSPEC_MTHLIP
+  UNSPEC_WRDSP
+  UNSPEC_RDDSP
+])
+
 (define_constants
   [(CCDSP_PO_REGNUM	182)
    (CCDSP_SC_REGNUM	183)
@@ -6,18 +97,18 @@
    (CCDSP_CC_REGNUM	186)
    (CCDSP_EF_REGNUM	187)])
 
-;; This mode macro allows si, v2hi, v4qi for all possible modes in DSP ASE.
-(define_mode_macro DSP [(SI "TARGET_DSP")
-			(V2HI "TARGET_DSP")
-		 	(V4QI "TARGET_DSP")])
+;; This mode iterator allows si, v2hi, v4qi for all possible modes in DSP ASE.
+(define_mode_iterator DSP [(SI "ISA_HAS_DSP")
+			   (V2HI "ISA_HAS_DSP")
+		 	   (V4QI "ISA_HAS_DSP")])
 
-;; This mode macro allows v2hi, v4qi for vector/SIMD data.
-(define_mode_macro DSPV [(V2HI "TARGET_DSP")
-			 (V4QI "TARGET_DSP")])
+;; This mode iterator allows v2hi, v4qi for vector/SIMD data.
+(define_mode_iterator DSPV [(V2HI "ISA_HAS_DSP")
+			    (V4QI "ISA_HAS_DSP")])
 
-;; This mode macro allows si, v2hi for Q31 and V2Q15 fixed-point data.
-(define_mode_macro DSPQ [(SI "TARGET_DSP")
-		         (V2HI "TARGET_DSP")])
+;; This mode iterator allows si, v2hi for Q31 and V2Q15 fixed-point data.
+(define_mode_iterator DSPQ [(SI "ISA_HAS_DSP")
+			    (V2HI "ISA_HAS_DSP")])
 
 ;; DSP instructions use q for fixed-point data, and u for integer in the infix.
 (define_mode_attr dspfmt1 [(SI "q") (V2HI "q") (V4QI "u")])
@@ -42,7 +133,7 @@
 		     (match_operand:DSPV 2 "register_operand" "d")))
      (set (reg:CCDSP CCDSP_OU_REGNUM)
 	  (unspec:CCDSP [(match_dup 1) (match_dup 2)] UNSPEC_ADDQ))])]
-  ""
+  "ISA_HAS_DSP"
   "add<DSPV:dspfmt1>.<DSPV:dspfmt2>\t%0,%1,%2"
   [(set_attr "type"	"arith")
    (set_attr "mode"	"SI")])
@@ -55,7 +146,7 @@
 		      UNSPEC_ADDQ_S))
      (set (reg:CCDSP CCDSP_OU_REGNUM)
 	  (unspec:CCDSP [(match_dup 1) (match_dup 2)] UNSPEC_ADDQ_S))])]
-  ""
+  "ISA_HAS_DSP"
   "add<DSP:dspfmt1>_s.<DSP:dspfmt2>\t%0,%1,%2"
   [(set_attr "type"	"arith")
    (set_attr "mode"	"SI")])
@@ -68,7 +159,7 @@
 		      (match_operand:DSPV 2 "register_operand" "d")))
      (set (reg:CCDSP CCDSP_OU_REGNUM)
 	  (unspec:CCDSP [(match_dup 1) (match_dup 2)] UNSPEC_SUBQ))])]
-  "TARGET_DSP"
+  "ISA_HAS_DSP"
   "sub<DSPV:dspfmt1>.<DSPV:dspfmt2>\t%0,%1,%2"
   [(set_attr "type"	"arith")
    (set_attr "mode"	"SI")])
@@ -81,7 +172,7 @@
 		      UNSPEC_SUBQ_S))
      (set (reg:CCDSP CCDSP_OU_REGNUM)
 	  (unspec:CCDSP [(match_dup 1) (match_dup 2)] UNSPEC_SUBQ_S))])]
-  "TARGET_DSP"
+  "ISA_HAS_DSP"
   "sub<DSP:dspfmt1>_s.<DSP:dspfmt2>\t%0,%1,%2"
   [(set_attr "type"	"arith")
    (set_attr "mode"	"SI")])
@@ -95,7 +186,7 @@
 		     UNSPEC_ADDSC))
      (set (reg:CCDSP CCDSP_CA_REGNUM)
 	  (unspec:CCDSP [(match_dup 1) (match_dup 2)] UNSPEC_ADDSC))])]
-  "TARGET_DSP"
+  "ISA_HAS_DSP"
   "addsc\t%0,%1,%2"
   [(set_attr "type"	"arith")
    (set_attr "mode"	"SI")])
@@ -110,7 +201,7 @@
 		     UNSPEC_ADDWC))
      (set (reg:CCDSP CCDSP_OU_REGNUM)
 	  (unspec:CCDSP [(match_dup 1) (match_dup 2)] UNSPEC_ADDWC))])]
-  "TARGET_DSP"
+  "ISA_HAS_DSP"
   "addwc\t%0,%1,%2"
   [(set_attr "type"	"arith")
    (set_attr "mode"	"SI")])
@@ -121,7 +212,7 @@
 	(unspec:SI [(match_operand:SI 1 "register_operand" "d")
 		    (match_operand:SI 2 "register_operand" "d")]
 		   UNSPEC_MODSUB))]
-  "TARGET_DSP"
+  "ISA_HAS_DSP"
   "modsub\t%0,%1,%2"
   [(set_attr "type"	"arith")
    (set_attr "mode"	"SI")])
@@ -131,7 +222,7 @@
   [(set (match_operand:SI 0 "register_operand" "=d")
 	(unspec:SI [(match_operand:V4QI 1 "register_operand" "d")]
 		   UNSPEC_RADDU_W_QB))]
-  "TARGET_DSP"
+  "ISA_HAS_DSP"
   "raddu.w.qb\t%0,%1"
   [(set_attr "type"	"arith")
    (set_attr "mode"	"SI")])
@@ -144,7 +235,7 @@
 		       UNSPEC_ABSQ_S))
      (set (reg:CCDSP CCDSP_OU_REGNUM)
 	  (unspec:CCDSP [(match_dup 1)] UNSPEC_ABSQ_S))])]
-  "TARGET_DSP"
+  "ISA_HAS_DSP"
   "absq_s.<DSPQ:dspfmt2>\t%0,%1"
   [(set_attr "type"	"arith")
    (set_attr "mode"	"SI")])
@@ -155,7 +246,7 @@
 	(unspec:V4QI [(match_operand:V2HI 1 "register_operand" "d")
 		      (match_operand:V2HI 2 "register_operand" "d")]
 		     UNSPEC_PRECRQ_QB_PH))]
-  "TARGET_DSP"
+  "ISA_HAS_DSP"
   "precrq.qb.ph\t%0,%1,%2"
   [(set_attr "type"	"arith")
    (set_attr "mode"	"SI")])
@@ -165,7 +256,7 @@
 	(unspec:V2HI [(match_operand:SI 1 "register_operand" "d")
 		      (match_operand:SI 2 "register_operand" "d")]
 		     UNSPEC_PRECRQ_PH_W))]
-  "TARGET_DSP"
+  "ISA_HAS_DSP"
   "precrq.ph.w\t%0,%1,%2"
   [(set_attr "type"	"arith")
    (set_attr "mode"	"SI")])
@@ -179,7 +270,7 @@
      (set (reg:CCDSP CCDSP_OU_REGNUM)
 	  (unspec:CCDSP [(match_dup 1) (match_dup 2)]
 			UNSPEC_PRECRQ_RS_PH_W))])]
-  "TARGET_DSP"
+  "ISA_HAS_DSP"
   "precrq_rs.ph.w\t%0,%1,%2"
   [(set_attr "type"	"arith")
    (set_attr "mode"	"SI")])
@@ -194,7 +285,7 @@
      (set (reg:CCDSP CCDSP_OU_REGNUM)
 	  (unspec:CCDSP [(match_dup 1) (match_dup 2)]
 			UNSPEC_PRECRQU_S_QB_PH))])]
-  "TARGET_DSP"
+  "ISA_HAS_DSP"
   "precrqu_s.qb.ph\t%0,%1,%2"
   [(set_attr "type"	"arith")
    (set_attr "mode"	"SI")])
@@ -204,7 +295,7 @@
   [(set (match_operand:SI 0 "register_operand" "=d")
 	(unspec:SI [(match_operand:V2HI 1 "register_operand" "d")]
 		   UNSPEC_PRECEQ_W_PHL))]
-  "TARGET_DSP"
+  "ISA_HAS_DSP"
   "preceq.w.phl\t%0,%1"
   [(set_attr "type"	"arith")
    (set_attr "mode"	"SI")])
@@ -213,7 +304,7 @@
   [(set (match_operand:SI 0 "register_operand" "=d")
 	(unspec:SI [(match_operand:V2HI 1 "register_operand" "d")]
 		   UNSPEC_PRECEQ_W_PHR))]
-  "TARGET_DSP"
+  "ISA_HAS_DSP"
   "preceq.w.phr\t%0,%1"
   [(set_attr "type"	"arith")
    (set_attr "mode"	"SI")])
@@ -223,7 +314,7 @@
   [(set (match_operand:V2HI 0 "register_operand" "=d")
 	(unspec:V2HI [(match_operand:V4QI 1 "register_operand" "d")]
 		     UNSPEC_PRECEQU_PH_QBL))]
-  "TARGET_DSP"
+  "ISA_HAS_DSP"
   "precequ.ph.qbl\t%0,%1"
   [(set_attr "type"	"arith")
    (set_attr "mode"	"SI")])
@@ -232,7 +323,7 @@
   [(set (match_operand:V2HI 0 "register_operand" "=d")
 	(unspec:V2HI [(match_operand:V4QI 1 "register_operand" "d")]
 		     UNSPEC_PRECEQU_PH_QBR))]
-  "TARGET_DSP"
+  "ISA_HAS_DSP"
   "precequ.ph.qbr\t%0,%1"
   [(set_attr "type"	"arith")
    (set_attr "mode"	"SI")])
@@ -241,7 +332,7 @@
   [(set (match_operand:V2HI 0 "register_operand" "=d")
 	(unspec:V2HI [(match_operand:V4QI 1 "register_operand" "d")]
 		     UNSPEC_PRECEQU_PH_QBLA))]
-  "TARGET_DSP"
+  "ISA_HAS_DSP"
   "precequ.ph.qbla\t%0,%1"
   [(set_attr "type"	"arith")
    (set_attr "mode"	"SI")])
@@ -250,7 +341,7 @@
   [(set (match_operand:V2HI 0 "register_operand" "=d")
 	(unspec:V2HI [(match_operand:V4QI 1 "register_operand" "d")]
 		     UNSPEC_PRECEQU_PH_QBRA))]
-  "TARGET_DSP"
+  "ISA_HAS_DSP"
   "precequ.ph.qbra\t%0,%1"
   [(set_attr "type"	"arith")
    (set_attr "mode"	"SI")])
@@ -260,7 +351,7 @@
   [(set (match_operand:V2HI 0 "register_operand" "=d")
 	(unspec:V2HI [(match_operand:V4QI 1 "register_operand" "d")]
 		     UNSPEC_PRECEU_PH_QBL))]
-  "TARGET_DSP"
+  "ISA_HAS_DSP"
   "preceu.ph.qbl\t%0,%1"
   [(set_attr "type"	"arith")
    (set_attr "mode"	"SI")])
@@ -269,7 +360,7 @@
   [(set (match_operand:V2HI 0 "register_operand" "=d")
 	(unspec:V2HI [(match_operand:V4QI 1 "register_operand" "d")]
 		     UNSPEC_PRECEU_PH_QBR))]
-  "TARGET_DSP"
+  "ISA_HAS_DSP"
   "preceu.ph.qbr\t%0,%1"
   [(set_attr "type"	"arith")
    (set_attr "mode"	"SI")])
@@ -278,7 +369,7 @@
   [(set (match_operand:V2HI 0 "register_operand" "=d")
 	(unspec:V2HI [(match_operand:V4QI 1 "register_operand" "d")]
 		     UNSPEC_PRECEU_PH_QBLA))]
-  "TARGET_DSP"
+  "ISA_HAS_DSP"
   "preceu.ph.qbla\t%0,%1"
   [(set_attr "type"	"arith")
    (set_attr "mode"	"SI")])
@@ -287,7 +378,7 @@
   [(set (match_operand:V2HI 0 "register_operand" "=d")
 	(unspec:V2HI [(match_operand:V4QI 1 "register_operand" "d")]
 		     UNSPEC_PRECEU_PH_QBRA))]
-  "TARGET_DSP"
+  "ISA_HAS_DSP"
   "preceu.ph.qbra\t%0,%1"
   [(set_attr "type"	"arith")
    (set_attr "mode"	"SI")])
@@ -302,7 +393,7 @@
 		       UNSPEC_SHLL))
      (set (reg:CCDSP CCDSP_OU_REGNUM)
 	  (unspec:CCDSP [(match_dup 1) (match_dup 2)] UNSPEC_SHLL))])]
-  "TARGET_DSP"
+  "ISA_HAS_DSP"
 {
   if (which_alternative == 0)
     {
@@ -324,7 +415,7 @@
 		       UNSPEC_SHLL_S))
      (set (reg:CCDSP CCDSP_OU_REGNUM)
 	  (unspec:CCDSP [(match_dup 1) (match_dup 2)] UNSPEC_SHLL_S))])]
-  "TARGET_DSP"
+  "ISA_HAS_DSP"
 {
   if (which_alternative == 0)
     {
@@ -344,7 +435,7 @@
 	(unspec:V4QI [(match_operand:V4QI 1 "register_operand" "d,d")
 		      (match_operand:SI 2 "arith_operand" "I,d")]
 		     UNSPEC_SHRL_QB))]
-  "TARGET_DSP"
+  "ISA_HAS_DSP"
 {
   if (which_alternative == 0)
     {
@@ -363,7 +454,7 @@
 	(unspec:V2HI [(match_operand:V2HI 1 "register_operand" "d,d")
 		      (match_operand:SI 2 "arith_operand" "I,d")]
 		     UNSPEC_SHRA_PH))]
-  "TARGET_DSP"
+  "ISA_HAS_DSP"
 {
   if (which_alternative == 0)
     {
@@ -381,7 +472,7 @@
 	(unspec:DSPQ [(match_operand:DSPQ 1 "register_operand" "d,d")
 		      (match_operand:SI 2 "arith_operand" "I,d")]
 		     UNSPEC_SHRA_R))]
-  "TARGET_DSP"
+  "ISA_HAS_DSP"
 {
   if (which_alternative == 0)
     {
@@ -406,7 +497,7 @@
      (set (reg:CCDSP CCDSP_OU_REGNUM)
 	  (unspec:CCDSP [(match_dup 1) (match_dup 2)] UNSPEC_MULEU_S_PH_QBL))
      (clobber (match_scratch:DI 3 "=x"))])]
-  "TARGET_DSP"
+  "ISA_HAS_DSP"
   "muleu_s.ph.qbl\t%0,%1,%2"
   [(set_attr "type"	"imul3")
    (set_attr "mode"	"SI")])
@@ -420,7 +511,7 @@
      (set (reg:CCDSP CCDSP_OU_REGNUM)
 	  (unspec:CCDSP [(match_dup 1) (match_dup 2)] UNSPEC_MULEU_S_PH_QBR))
      (clobber (match_scratch:DI 3 "=x"))])]
-  "TARGET_DSP"
+  "ISA_HAS_DSP"
   "muleu_s.ph.qbr\t%0,%1,%2"
   [(set_attr "type"	"imul3")
    (set_attr "mode"	"SI")])
@@ -435,7 +526,7 @@
      (set (reg:CCDSP CCDSP_OU_REGNUM)
 	  (unspec:CCDSP [(match_dup 1) (match_dup 2)] UNSPEC_MULQ_RS_PH))
      (clobber (match_scratch:DI 3 "=x"))])]
-  "TARGET_DSP"
+  "ISA_HAS_DSP"
   "mulq_rs.ph\t%0,%1,%2"
   [(set_attr "type"	"imul3")
    (set_attr "mode"	"SI")])
@@ -450,7 +541,7 @@
      (set (reg:CCDSP CCDSP_OU_REGNUM)
 	  (unspec:CCDSP [(match_dup 1) (match_dup 2)] UNSPEC_MULEQ_S_W_PHL))
      (clobber (match_scratch:DI 3 "=x"))])]
-  "TARGET_DSP"
+  "ISA_HAS_DSP"
   "muleq_s.w.phl\t%0,%1,%2"
   [(set_attr "type"	"imul3")
    (set_attr "mode"	"SI")])
@@ -464,7 +555,7 @@
      (set (reg:CCDSP CCDSP_OU_REGNUM)
 	  (unspec:CCDSP [(match_dup 1) (match_dup 2)] UNSPEC_MULEQ_S_W_PHR))
      (clobber (match_scratch:DI 3 "=x"))])]
-  "TARGET_DSP"
+  "ISA_HAS_DSP"
   "muleq_s.w.phr\t%0,%1,%2"
   [(set_attr "type"	"imul3")
    (set_attr "mode"	"SI")])
@@ -476,7 +567,7 @@
 		    (match_operand:V4QI 2 "register_operand" "d")
 		    (match_operand:V4QI 3 "register_operand" "d")]
 		   UNSPEC_DPAU_H_QBL))]
-  "TARGET_DSP && !TARGET_64BIT"
+  "ISA_HAS_DSP && !TARGET_64BIT"
   "dpau.h.qbl\t%q0,%2,%3"
   [(set_attr "type"	"imadd")
    (set_attr "mode"	"SI")])
@@ -487,7 +578,7 @@
 		    (match_operand:V4QI 2 "register_operand" "d")
 		    (match_operand:V4QI 3 "register_operand" "d")]
 		   UNSPEC_DPAU_H_QBR))]
-  "TARGET_DSP && !TARGET_64BIT"
+  "ISA_HAS_DSP && !TARGET_64BIT"
   "dpau.h.qbr\t%q0,%2,%3"
   [(set_attr "type"	"imadd")
    (set_attr "mode"	"SI")])
@@ -499,7 +590,7 @@
 		    (match_operand:V4QI 2 "register_operand" "d")
 		    (match_operand:V4QI 3 "register_operand" "d")]
 		   UNSPEC_DPSU_H_QBL))]
-  "TARGET_DSP && !TARGET_64BIT"
+  "ISA_HAS_DSP && !TARGET_64BIT"
   "dpsu.h.qbl\t%q0,%2,%3"
   [(set_attr "type"	"imadd")
    (set_attr "mode"	"SI")])
@@ -510,7 +601,7 @@
 		    (match_operand:V4QI 2 "register_operand" "d")
 		    (match_operand:V4QI 3 "register_operand" "d")]
 		   UNSPEC_DPSU_H_QBR))]
-  "TARGET_DSP && !TARGET_64BIT"
+  "ISA_HAS_DSP && !TARGET_64BIT"
   "dpsu.h.qbr\t%q0,%2,%3"
   [(set_attr "type"	"imadd")
    (set_attr "mode"	"SI")])
@@ -526,7 +617,7 @@
      (set (reg:CCDSP CCDSP_OU_REGNUM)
 	  (unspec:CCDSP [(match_dup 1) (match_dup 2) (match_dup 3)]
 			UNSPEC_DPAQ_S_W_PH))])]
-  "TARGET_DSP && !TARGET_64BIT"
+  "ISA_HAS_DSP && !TARGET_64BIT"
   "dpaq_s.w.ph\t%q0,%2,%3"
   [(set_attr "type"	"imadd")
    (set_attr "mode"	"SI")])
@@ -542,7 +633,7 @@
      (set (reg:CCDSP CCDSP_OU_REGNUM)
 	  (unspec:CCDSP [(match_dup 1) (match_dup 2) (match_dup 3)]
 			UNSPEC_DPSQ_S_W_PH))])]
-  "TARGET_DSP && !TARGET_64BIT"
+  "ISA_HAS_DSP && !TARGET_64BIT"
   "dpsq_s.w.ph\t%q0,%2,%3"
   [(set_attr "type"	"imadd")
    (set_attr "mode"	"SI")])
@@ -558,7 +649,7 @@
      (set (reg:CCDSP CCDSP_OU_REGNUM)
 	  (unspec:CCDSP [(match_dup 1) (match_dup 2) (match_dup 3)]
 			UNSPEC_MULSAQ_S_W_PH))])]
-  "TARGET_DSP && !TARGET_64BIT"
+  "ISA_HAS_DSP && !TARGET_64BIT"
   "mulsaq_s.w.ph\t%q0,%2,%3"
   [(set_attr "type"	"imadd")
    (set_attr "mode"	"SI")])
@@ -574,7 +665,7 @@
      (set (reg:CCDSP CCDSP_OU_REGNUM)
 	  (unspec:CCDSP [(match_dup 1) (match_dup 2) (match_dup 3)]
 			UNSPEC_DPAQ_SA_L_W))])]
-  "TARGET_DSP && !TARGET_64BIT"
+  "ISA_HAS_DSP && !TARGET_64BIT"
   "dpaq_sa.l.w\t%q0,%2,%3"
   [(set_attr "type"	"imadd")
    (set_attr "mode"	"SI")])
@@ -590,7 +681,7 @@
      (set (reg:CCDSP CCDSP_OU_REGNUM)
 	  (unspec:CCDSP [(match_dup 1) (match_dup 2) (match_dup 3)]
 			UNSPEC_DPSQ_SA_L_W))])]
-  "TARGET_DSP && !TARGET_64BIT"
+  "ISA_HAS_DSP && !TARGET_64BIT"
   "dpsq_sa.l.w\t%q0,%2,%3"
   [(set_attr "type"	"imadd")
    (set_attr "mode"	"SI")])
@@ -606,7 +697,7 @@
      (set (reg:CCDSP CCDSP_OU_REGNUM)
 	  (unspec:CCDSP [(match_dup 1) (match_dup 2) (match_dup 3)]
 			UNSPEC_MAQ_S_W_PHL))])]
-  "TARGET_DSP && !TARGET_64BIT"
+  "ISA_HAS_DSP && !TARGET_64BIT"
   "maq_s.w.phl\t%q0,%2,%3"
   [(set_attr "type"	"imadd")
    (set_attr "mode"	"SI")])
@@ -621,7 +712,7 @@
      (set (reg:CCDSP CCDSP_OU_REGNUM)
 	  (unspec:CCDSP [(match_dup 1) (match_dup 2) (match_dup 3)]
 			UNSPEC_MAQ_S_W_PHR))])]
-  "TARGET_DSP && !TARGET_64BIT"
+  "ISA_HAS_DSP && !TARGET_64BIT"
   "maq_s.w.phr\t%q0,%2,%3"
   [(set_attr "type"	"imadd")
    (set_attr "mode"	"SI")])
@@ -637,7 +728,7 @@
      (set (reg:CCDSP CCDSP_OU_REGNUM)
 	  (unspec:CCDSP [(match_dup 1) (match_dup 2) (match_dup 3)]
 			UNSPEC_MAQ_SA_W_PHL))])]
-  "TARGET_DSP && !TARGET_64BIT"
+  "ISA_HAS_DSP && !TARGET_64BIT"
   "maq_sa.w.phl\t%q0,%2,%3"
   [(set_attr "type"	"imadd")
    (set_attr "mode"	"SI")])
@@ -652,7 +743,7 @@
      (set (reg:CCDSP CCDSP_OU_REGNUM)
 	  (unspec:CCDSP [(match_dup 1) (match_dup 2) (match_dup 3)]
 			UNSPEC_MAQ_SA_W_PHR))])]
-  "TARGET_DSP && !TARGET_64BIT"
+  "ISA_HAS_DSP && !TARGET_64BIT"
   "maq_sa.w.phr\t%q0,%2,%3"
   [(set_attr "type"	"imadd")
    (set_attr "mode"	"SI")])
@@ -663,7 +754,7 @@
   [(set (match_operand:SI 0 "register_operand" "=d")
 	(unspec:SI [(match_operand:SI 1 "register_operand" "d")]
 		   UNSPEC_BITREV))]
-  "TARGET_DSP"
+  "ISA_HAS_DSP"
   "bitrev\t%0,%1"
   [(set_attr "type"	"arith")
    (set_attr "mode"	"SI")])
@@ -676,7 +767,7 @@
 		    (reg:CCDSP CCDSP_SC_REGNUM)
 		    (reg:CCDSP CCDSP_PO_REGNUM)]
 		   UNSPEC_INSV))]
-  "TARGET_DSP"
+  "ISA_HAS_DSP"
   "insv\t%0,%2"
   [(set_attr "type"	"arith")
    (set_attr "mode"	"SI")])
@@ -686,7 +777,7 @@
   [(set (match_operand:V4QI 0 "register_operand" "=d,d")
 	(unspec:V4QI [(match_operand:SI 1 "arith_operand" "I,d")]
 		     UNSPEC_REPL_QB))]
-  "TARGET_DSP"
+  "ISA_HAS_DSP"
 {
   if (which_alternative == 0)
     {
@@ -703,7 +794,7 @@
   [(set (match_operand:V2HI 0 "register_operand" "=d,d")
 	(unspec:V2HI [(match_operand:SI 1 "reg_imm10_operand" "YB,d")]
 		     UNSPEC_REPL_PH))]
-  "TARGET_DSP"
+  "ISA_HAS_DSP"
   "@
    repl.ph\t%0,%1
    replv.ph\t%0,%1"
@@ -718,7 +809,7 @@
 		       (match_operand:DSPV 1 "register_operand" "d")
 		       (reg:CCDSP CCDSP_CC_REGNUM)]
 		      UNSPEC_CMP_EQ))]
-  "TARGET_DSP"
+  "ISA_HAS_DSP"
   "cmp<DSPV:dspfmt1_1>.eq.<DSPV:dspfmt2>\t%0,%1"
   [(set_attr "type"	"arith")
    (set_attr "mode"	"SI")])
@@ -729,7 +820,7 @@
 		       (match_operand:DSPV 1 "register_operand" "d")
 		       (reg:CCDSP CCDSP_CC_REGNUM)]
 		      UNSPEC_CMP_LT))]
-  "TARGET_DSP"
+  "ISA_HAS_DSP"
   "cmp<DSPV:dspfmt1_1>.lt.<DSPV:dspfmt2>\t%0,%1"
   [(set_attr "type"	"arith")
    (set_attr "mode"	"SI")])
@@ -740,7 +831,7 @@
 		       (match_operand:DSPV 1 "register_operand" "d")
 		       (reg:CCDSP CCDSP_CC_REGNUM)]
 		      UNSPEC_CMP_LE))]
-  "TARGET_DSP"
+  "ISA_HAS_DSP"
   "cmp<DSPV:dspfmt1_1>.le.<DSPV:dspfmt2>\t%0,%1"
   [(set_attr "type"	"arith")
    (set_attr "mode"	"SI")])
@@ -750,7 +841,7 @@
 	(unspec:SI [(match_operand:V4QI 1 "register_operand" "d")
 		    (match_operand:V4QI 2 "register_operand" "d")]
 		   UNSPEC_CMPGU_EQ_QB))]
-  "TARGET_DSP"
+  "ISA_HAS_DSP"
   "cmpgu.eq.qb\t%0,%1,%2"
   [(set_attr "type"	"arith")
    (set_attr "mode"	"SI")])
@@ -760,7 +851,7 @@
 	(unspec:SI [(match_operand:V4QI 1 "register_operand" "d")
 		    (match_operand:V4QI 2 "register_operand" "d")]
 		   UNSPEC_CMPGU_LT_QB))]
-  "TARGET_DSP"
+  "ISA_HAS_DSP"
   "cmpgu.lt.qb\t%0,%1,%2"
   [(set_attr "type"	"arith")
    (set_attr "mode"	"SI")])
@@ -770,7 +861,7 @@
 	(unspec:SI [(match_operand:V4QI 1 "register_operand" "d")
 		    (match_operand:V4QI 2 "register_operand" "d")]
 		   UNSPEC_CMPGU_LE_QB))]
-  "TARGET_DSP"
+  "ISA_HAS_DSP"
   "cmpgu.le.qb\t%0,%1,%2"
   [(set_attr "type"	"arith")
    (set_attr "mode"	"SI")])
@@ -782,7 +873,7 @@
 		      (match_operand:DSPV 2 "register_operand" "d")
 		      (reg:CCDSP CCDSP_CC_REGNUM)]
 		     UNSPEC_PICK))]
-  "TARGET_DSP"
+  "ISA_HAS_DSP"
   "pick.<DSPV:dspfmt2>\t%0,%1,%2"
   [(set_attr "type"	"arith")
    (set_attr "mode"	"SI")])
@@ -793,7 +884,7 @@
 	(unspec:V2HI [(match_operand:V2HI 1 "register_operand" "d")
 		      (match_operand:V2HI 2 "register_operand" "d")]
 		     UNSPEC_PACKRL_PH))]
-  "TARGET_DSP"
+  "ISA_HAS_DSP"
   "packrl.ph\t%0,%1,%2"
   [(set_attr "type"	"arith")
    (set_attr "mode"	"SI")])
@@ -808,7 +899,7 @@
 		     UNSPEC_EXTR_W))
      (set (reg:CCDSP CCDSP_OU_REGNUM)
 	  (unspec:CCDSP [(match_dup 1) (match_dup 2)] UNSPEC_EXTR_W))])]
-  "TARGET_DSP && !TARGET_64BIT"
+  "ISA_HAS_DSP && !TARGET_64BIT"
 {
   if (which_alternative == 0)
     {
@@ -829,7 +920,7 @@
 		     UNSPEC_EXTR_R_W))
      (set (reg:CCDSP CCDSP_OU_REGNUM)
 	  (unspec:CCDSP [(match_dup 1) (match_dup 2)] UNSPEC_EXTR_R_W))])]
-  "TARGET_DSP && !TARGET_64BIT"
+  "ISA_HAS_DSP && !TARGET_64BIT"
 {
   if (which_alternative == 0)
     {
@@ -850,7 +941,7 @@
 		     UNSPEC_EXTR_RS_W))
      (set (reg:CCDSP CCDSP_OU_REGNUM)
 	  (unspec:CCDSP [(match_dup 1) (match_dup 2)] UNSPEC_EXTR_RS_W))])]
-  "TARGET_DSP && !TARGET_64BIT"
+  "ISA_HAS_DSP && !TARGET_64BIT"
 {
   if (which_alternative == 0)
     {
@@ -872,7 +963,7 @@
 		     UNSPEC_EXTR_S_H))
      (set (reg:CCDSP CCDSP_OU_REGNUM)
 	  (unspec:CCDSP [(match_dup 1) (match_dup 2)] UNSPEC_EXTR_S_H))])]
-  "TARGET_DSP && !TARGET_64BIT"
+  "ISA_HAS_DSP && !TARGET_64BIT"
 {
   if (which_alternative == 0)
     {
@@ -895,7 +986,7 @@
 		     UNSPEC_EXTP))
      (set (reg:CCDSP CCDSP_EF_REGNUM)
 	  (unspec:CCDSP [(match_dup 1) (match_dup 2)] UNSPEC_EXTP))])]
-  "TARGET_DSP && !TARGET_64BIT"
+  "ISA_HAS_DSP && !TARGET_64BIT"
 {
   if (which_alternative == 0)
     {
@@ -920,7 +1011,7 @@
 			 (reg:CCDSP CCDSP_PO_REGNUM)] UNSPEC_EXTPDP))
      (set (reg:CCDSP CCDSP_EF_REGNUM)
 	  (unspec:CCDSP [(match_dup 1) (match_dup 2)] UNSPEC_EXTPDP))])]
-  "TARGET_DSP && !TARGET_64BIT"
+  "ISA_HAS_DSP && !TARGET_64BIT"
 {
   if (which_alternative == 0)
     {
@@ -939,7 +1030,7 @@
 	(unspec:DI [(match_operand:DI 1 "register_operand" "0,0")
 		    (match_operand:SI 2 "arith_operand" "I,d")]
 		   UNSPEC_SHILO))]
-  "TARGET_DSP && !TARGET_64BIT"
+  "ISA_HAS_DSP && !TARGET_64BIT"
 {
   if (which_alternative == 0)
     {
@@ -963,7 +1054,7 @@
      (set (reg:CCDSP CCDSP_PO_REGNUM)
 	  (unspec:CCDSP [(match_dup 1) (match_dup 2)
 			 (reg:CCDSP CCDSP_PO_REGNUM)] UNSPEC_MTHLIP))])]
-  "TARGET_DSP && !TARGET_64BIT"
+  "ISA_HAS_DSP && !TARGET_64BIT"
   "mthlip\t%2,%q0"
   [(set_attr "type"	"mfhilo")
    (set_attr "mode"	"SI")])
@@ -985,7 +1076,7 @@
 	  (unspec:CCDSP [(match_dup 0) (match_dup 1)] UNSPEC_WRDSP))
      (set (reg:CCDSP CCDSP_EF_REGNUM)
 	  (unspec:CCDSP [(match_dup 0) (match_dup 1)] UNSPEC_WRDSP))])]
-  "TARGET_DSP"
+  "ISA_HAS_DSP"
   "wrdsp\t%0,%1"
   [(set_attr "type"	"arith")
    (set_attr "mode"	"SI")])
@@ -1001,45 +1092,79 @@
 		    (reg:CCDSP CCDSP_CC_REGNUM)
 		    (reg:CCDSP CCDSP_EF_REGNUM)]
 		   UNSPEC_RDDSP))]
-  "TARGET_DSP"
+  "ISA_HAS_DSP"
   "rddsp\t%0,%1"
   [(set_attr "type"	"arith")
    (set_attr "mode"	"SI")])
 
 ;; Table 2-7. MIPS DSP ASE Instructions: Indexed-Load
 ;; L*X
-(define_insn "mips_lbux"
-  [(set (match_operand:SI 0 "register_operand" "=d")
-	(zero_extend:SI (mem:QI (plus:SI (match_operand:SI 1
-					  "register_operand" "d")
-					 (match_operand:SI 2
-					  "register_operand" "d")))))]
-  "TARGET_DSP"
-  "lbux\t%0,%2(%1)"
+(define_expand "mips_lbux"
+  [(match_operand:SI 0 "register_operand")
+   (match_operand 1 "pmode_register_operand")
+   (match_operand:SI 2 "register_operand")]
+  "ISA_HAS_DSP"
+{
+  operands[2] = convert_to_mode (Pmode, operands[2], false);
+  emit_insn (PMODE_INSN (gen_mips_lbux_extsi,
+			 (operands[0], operands[1], operands[2])));
+  DONE;
+})
+
+(define_insn "mips_l<SHORT:size><u>x_ext<GPR:mode>_<P:mode>"
+  [(set (match_operand:GPR 0 "register_operand" "=d")
+   	(any_extend:GPR
+	  (mem:SHORT (plus:P (match_operand:P 1 "register_operand" "d")
+			     (match_operand:P 2 "register_operand" "d")))))]
+  "ISA_HAS_L<SHORT:SIZE><U>X"
+  "l<SHORT:size><u>x\t%0,%2(%1)"
   [(set_attr "type"	"load")
-   (set_attr "mode"	"SI")
+   (set_attr "mode"	"<GPR:MODE>")
    (set_attr "length"	"4")])
 
-(define_insn "mips_lhx"
-  [(set (match_operand:SI 0 "register_operand" "=d")
-	(sign_extend:SI (mem:HI (plus:SI (match_operand:SI 1
-					  "register_operand" "d")
-					 (match_operand:SI 2
-					  "register_operand" "d")))))]
-  "TARGET_DSP"
-  "lhx\t%0,%2(%1)"
+(define_expand "mips_lhx"
+  [(match_operand:SI 0 "register_operand")
+   (match_operand 1 "pmode_register_operand")
+   (match_operand:SI 2 "register_operand")]
+  "ISA_HAS_DSP"
+{
+  operands[2] = convert_to_mode (Pmode, operands[2], false);
+  emit_insn (PMODE_INSN (gen_mips_lhx_extsi,
+			 (operands[0], operands[1], operands[2])));
+  DONE;
+})
+
+(define_expand "mips_l<size>x"
+  [(match_operand:GPR 0 "register_operand")
+   (match_operand 1 "pmode_register_operand")
+   (match_operand:SI 2 "register_operand")]
+  "ISA_HAS_DSP"
+{
+  operands[2] = convert_to_mode (Pmode, operands[2], false);
+  emit_insn (PMODE_INSN (gen_mips_l<size>x,
+			 (operands[0], operands[1], operands[2])));
+  DONE;
+})
+
+(define_insn "mips_l<GPR:size>x_<P:mode>"
+  [(set (match_operand:GPR 0 "register_operand" "=d")
+	(mem:GPR (plus:P (match_operand:P 1 "register_operand" "d")
+			 (match_operand:P 2 "register_operand" "d"))))]
+  "ISA_HAS_L<GPR:SIZE>X"
+  "l<GPR:size>x\t%0,%2(%1)"
   [(set_attr "type"	"load")
-   (set_attr "mode"	"SI")
+   (set_attr "mode"	"<GPR:MODE>")
    (set_attr "length"	"4")])
 
-(define_insn "mips_lwx"
-  [(set (match_operand:SI 0 "register_operand" "=d")
-	(mem:SI (plus:SI (match_operand:SI 1 "register_operand" "d")
-			 (match_operand:SI 2 "register_operand" "d"))))]
-  "TARGET_DSP"
-  "lwx\t%0,%2(%1)"
+(define_insn "*mips_lw<u>x_<P:mode>_ext"
+  [(set (match_operand:DI 0 "register_operand" "=d")
+   	(any_extend:DI
+	  (mem:SI (plus:P (match_operand:P 1 "register_operand" "d")
+			     (match_operand:P 2 "register_operand" "d")))))]
+  "ISA_HAS_LW<U>X && TARGET_64BIT"
+  "lw<u>x\t%0,%2(%1)"
   [(set_attr "type"	"load")
-   (set_attr "mode"	"SI")
+   (set_attr "mode"	"DI")
    (set_attr "length"	"4")])
 
 ;; Table 2-8. MIPS DSP ASE Instructions: Branch
@@ -1047,11 +1172,25 @@
 (define_insn "mips_bposge"
   [(set (pc)
 	(if_then_else (ge (reg:CCDSP CCDSP_PO_REGNUM)
-			  (match_operand:SI 0 "immediate_operand" "I"))
-		      (label_ref (match_operand 1 "" ""))
+			  (match_operand:SI 1 "immediate_operand" "I"))
+		      (label_ref (match_operand 0 "" ""))
 		      (pc)))]
-  "TARGET_DSP"
-  "%*bposge%0\t%1%/"
-  [(set_attr "type"	"branch")
-   (set_attr "mode"	"none")])
+  "ISA_HAS_DSP"
+  "%*bposge%1\t%0%/"
+  [(set_attr "type"	"branch")])
 
+(define_expand "mips_madd<u>"
+  [(set (match_operand:DI 0 "register_operand")
+	(plus:DI
+	 (mult:DI (any_extend:DI (match_operand:SI 2 "register_operand"))
+		  (any_extend:DI (match_operand:SI 3 "register_operand")))
+	 (match_operand:DI 1 "register_operand")))]
+  "ISA_HAS_DSP && !TARGET_64BIT")
+
+(define_expand "mips_msub<u>"
+  [(set (match_operand:DI 0 "register_operand")
+	(minus:DI
+	 (match_operand:DI 1 "register_operand")
+	 (mult:DI (any_extend:DI (match_operand:SI 2 "register_operand"))
+		  (any_extend:DI (match_operand:SI 3 "register_operand")))))]
+  "ISA_HAS_DSP && !TARGET_64BIT")

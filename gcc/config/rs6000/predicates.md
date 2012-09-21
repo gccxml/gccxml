@@ -1,11 +1,12 @@
 ;; Predicate definitions for POWER and PowerPC.
-;; Copyright (C) 2005, 2006 Free Software Foundation, Inc.
+;; Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011
+;; Free Software Foundation, Inc.
 ;;
 ;; This file is part of GCC.
 ;;
 ;; GCC is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
-;; the Free Software Foundation; either version 2, or (at your option)
+;; the Free Software Foundation; either version 3, or (at your option)
 ;; any later version.
 ;;
 ;; GCC is distributed in the hope that it will be useful,
@@ -14,9 +15,8 @@
 ;; GNU General Public License for more details.
 ;;
 ;; You should have received a copy of the GNU General Public License
-;; along with GCC; see the file COPYING.  If not, write to
-;; the Free Software Foundation, 51 Franklin Street, Fifth Floor,
-;; Boston, MA 02110-1301, USA.
+;; along with GCC; see the file COPYING3.  If not see
+;; <http://www.gnu.org/licenses/>.
 
 ;; Return 1 for anything except PARALLEL.
 (define_predicate "any_operand"
@@ -29,7 +29,7 @@
 ;; Return 1 if op is COUNT register.
 (define_predicate "count_register_operand"
   (and (match_code "reg")
-       (match_test "REGNO (op) == COUNT_REGISTER_REGNUM
+       (match_test "REGNO (op) == CTR_REGNO
 		    || REGNO (op) > LAST_VIRTUAL_REGISTER")))
   
 ;; Return 1 if op is an Altivec register.
@@ -39,10 +39,41 @@
 		     || ALTIVEC_REGNO_P (REGNO (op))
 		     || REGNO (op) > LAST_VIRTUAL_REGISTER")))
 
-;; Return 1 if op is XER register.
-(define_predicate "xer_operand"
+;; Return 1 if op is a VSX register.
+(define_predicate "vsx_register_operand"
+   (and (match_operand 0 "register_operand")
+	(match_test "GET_CODE (op) != REG
+		     || VSX_REGNO_P (REGNO (op))
+		     || REGNO (op) > LAST_VIRTUAL_REGISTER")))
+
+;; Return 1 if op is a vector register that operates on floating point vectors
+;; (either altivec or VSX).
+(define_predicate "vfloat_operand"
+   (and (match_operand 0 "register_operand")
+	(match_test "GET_CODE (op) != REG
+		     || VFLOAT_REGNO_P (REGNO (op))
+		     || REGNO (op) > LAST_VIRTUAL_REGISTER")))
+
+;; Return 1 if op is a vector register that operates on integer vectors
+;; (only altivec, VSX doesn't support integer vectors)
+(define_predicate "vint_operand"
+   (and (match_operand 0 "register_operand")
+	(match_test "GET_CODE (op) != REG
+		     || VINT_REGNO_P (REGNO (op))
+		     || REGNO (op) > LAST_VIRTUAL_REGISTER")))
+
+;; Return 1 if op is a vector register to do logical operations on (and, or,
+;; xor, etc.)
+(define_predicate "vlogical_operand"
+   (and (match_operand 0 "register_operand")
+	(match_test "GET_CODE (op) != REG
+		     || VLOGICAL_REGNO_P (REGNO (op))
+		     || REGNO (op) > LAST_VIRTUAL_REGISTER")))
+
+;; Return 1 if op is the carry register.
+(define_predicate "ca_operand"
   (and (match_code "reg")
-       (match_test "XER_REGNO_P (REGNO (op))")))
+       (match_test "CA_REGNO_P (REGNO (op))")))
 
 ;; Return 1 if op is a signed 5-bit constant integer.
 (define_predicate "s5bit_cint_operand"
@@ -81,12 +112,22 @@
   (and (match_code "const_int")
        (match_test "INTVAL (op) > 0 && exact_log2 (INTVAL (op)) >= 0")))
 
+;; Match op = 0 or op = 1.
+(define_predicate "const_0_to_1_operand"
+  (and (match_code "const_int")
+       (match_test "IN_RANGE (INTVAL (op), 0, 1)")))
+
+;; Match op = 2 or op = 3.
+(define_predicate "const_2_to_3_operand"
+  (and (match_code "const_int")
+       (match_test "IN_RANGE (INTVAL (op), 2, 3)")))
+
 ;; Return 1 if op is a register that is not special.
 (define_predicate "gpc_reg_operand"
    (and (match_operand 0 "register_operand")
 	(match_test "(GET_CODE (op) != REG
 		      || (REGNO (op) >= ARG_POINTER_REGNUM
-			  && !XER_REGNO_P (REGNO (op)))
+			  && !CA_REGNO_P (REGNO (op)))
 		      || REGNO (op) < MQ_REGNO)
 		     && !((TARGET_E500_DOUBLE || TARGET_SPE)
 			  && invalid_e500_subreg (op, mode))")))
@@ -104,6 +145,14 @@
 	(match_test "GET_CODE (op) != REG
 		     || REGNO (op) > LAST_VIRTUAL_REGISTER
 		     || CR_REGNO_NOT_CR0_P (REGNO (op))")))
+
+;; Return 1 if op is a register that is a condition register field and if generating microcode, not cr0.
+(define_predicate "cc_reg_not_micro_cr0_operand"
+   (and (match_operand 0 "register_operand")
+	(match_test "GET_CODE (op) != REG
+		     || REGNO (op) > LAST_VIRTUAL_REGISTER
+		     || (rs6000_gen_cell_microcode && CR_REGNO_NOT_CR0_P (REGNO (op)))
+		     || (!rs6000_gen_cell_microcode && CR_REGNO_P (REGNO (op)))")))
 
 ;; Return 1 if op is a constant integer valid for D field
 ;; or non-special register register.
@@ -193,7 +242,8 @@
     return 0;
 
   /* Consider all constants with -msoft-float to be easy.  */
-  if ((TARGET_SOFT_FLOAT || TARGET_E500_SINGLE)
+  if ((TARGET_SOFT_FLOAT || TARGET_E500_SINGLE 
+      || (TARGET_HARD_FLOAT && (TARGET_SINGLE_FLOAT && ! TARGET_DOUBLE_FLOAT)))
       && mode != DImode)
     return 1;
 
@@ -214,6 +264,9 @@
   switch (mode)
     {
     case TFmode:
+      if (TARGET_E500_DOUBLE)
+	return 0;
+
       REAL_VALUE_FROM_CONST_DOUBLE (rv, op);
       REAL_VALUE_TO_TARGET_LONG_DOUBLE (rv, k);
 
@@ -223,6 +276,10 @@
 	      && num_insns_constant_wide ((HOST_WIDE_INT) k[3]) == 1);
 
     case DFmode:
+      /* The constant 0.f is easy under VSX.  */
+      if (op == CONST0_RTX (DFmode) && VECTOR_UNIT_VSX_P (DFmode))
+	return 1;
+
       /* Force constants to memory before reload to utilize
 	 compress_float_constant.
 	 Avoid this when flag_unsafe_math_optimizations is enabled
@@ -276,10 +333,16 @@
 (define_predicate "easy_vector_constant"
   (match_code "const_vector")
 {
-  if (ALTIVEC_VECTOR_MODE (mode))
+  /* As the paired vectors are actually FPRs it seems that there is
+     no easy way to load a CONST_VECTOR without using memory.  */
+  if (TARGET_PAIRED_FLOAT)
+    return false;
+
+  if (VECTOR_MEM_ALTIVEC_OR_VSX_P (mode))
     {
       if (zero_constant (op, mode))
-        return true;
+	return true;
+
       return easy_altivec_constant (op, mode);
     }
 
@@ -318,9 +381,25 @@
        (and (match_test "TARGET_ALTIVEC")
 	    (match_test "easy_altivec_constant (op, mode)")))
 {
-  rtx last = CONST_VECTOR_ELT (op, GET_MODE_NUNITS (mode) - 1);
-  HOST_WIDE_INT val = ((INTVAL (last) & 0xff) ^ 0x80) - 0x80;
+  HOST_WIDE_INT val;
+  if (mode == V2DImode || mode == V2DFmode)
+    return 0;
+  val = const_vector_elt_as_int (op, GET_MODE_NUNITS (mode) - 1);
+  val = ((val & 0xff) ^ 0x80) - 0x80;
   return EASY_VECTOR_15_ADD_SELF (val);
+})
+
+;; Same as easy_vector_constant but only for EASY_VECTOR_MSB.
+(define_predicate "easy_vector_constant_msb"
+  (and (match_code "const_vector")
+       (and (match_test "TARGET_ALTIVEC")
+	    (match_test "easy_altivec_constant (op, mode)")))
+{
+  HOST_WIDE_INT val;
+  if (mode == V2DImode || mode == V2DFmode)
+    return 0;
+  val = const_vector_elt_as_int (op, GET_MODE_NUNITS (mode) - 1);
+  return EASY_VECTOR_MSB (val, GET_MODE_INNER (mode));
 })
 
 ;; Return 1 if operand is constant zero (scalars and vectors).
@@ -350,32 +429,61 @@
 
 ;; Return 1 if the operand is an offsettable memory operand.
 (define_predicate "offsettable_mem_operand"
-  (and (match_code "mem")
-       (match_test "offsettable_address_p (reload_completed
-					   || reload_in_progress,
-					   mode, XEXP (op, 0))")))
+  (and (match_operand 0 "memory_operand")
+       (match_test "offsettable_nonstrict_memref_p (op)")))
 
 ;; Return 1 if the operand is a memory operand with an address divisible by 4
 (define_predicate "word_offset_memref_operand"
-  (and (match_operand 0 "memory_operand")
-       (match_test "GET_CODE (XEXP (op, 0)) != PLUS
-		    || ! REG_P (XEXP (XEXP (op, 0), 0)) 
-		    || GET_CODE (XEXP (XEXP (op, 0), 1)) != CONST_INT
-		    || INTVAL (XEXP (XEXP (op, 0), 1)) % 4 == 0")))
+  (match_operand 0 "memory_operand")
+{
+  /* Address inside MEM.  */
+  op = XEXP (op, 0);
+
+  /* Extract address from auto-inc/dec.  */
+  if (GET_CODE (op) == PRE_INC
+      || GET_CODE (op) == PRE_DEC)
+    op = XEXP (op, 0);
+  else if (GET_CODE (op) == PRE_MODIFY)
+    op = XEXP (op, 1);
+  else if (GET_CODE (op) == LO_SUM
+	   && GET_CODE (XEXP (op, 0)) == REG
+	   && GET_CODE (XEXP (op, 1)) == CONST)
+    op = XEXP (XEXP (op, 1), 0);
+
+  return (GET_CODE (op) != PLUS
+	  || GET_CODE (XEXP (op, 1)) != CONST_INT
+	  || INTVAL (XEXP (op, 1)) % 4 == 0);
+})
 
 ;; Return 1 if the operand is an indexed or indirect memory operand.
 (define_predicate "indexed_or_indirect_operand"
   (match_code "mem")
 {
   op = XEXP (op, 0);
-  if (TARGET_ALTIVEC
-      && ALTIVEC_VECTOR_MODE (mode)
+  if (VECTOR_MEM_ALTIVEC_P (mode)
       && GET_CODE (op) == AND
       && GET_CODE (XEXP (op, 1)) == CONST_INT
       && INTVAL (XEXP (op, 1)) == -16)
     op = XEXP (op, 0);
 
   return indexed_or_indirect_address (op, mode);
+})
+
+;; Return 1 if the operand is an indexed or indirect memory operand with an
+;; AND -16 in it, used to recognize when we need to switch to Altivec loads
+;; to realign loops instead of VSX (altivec silently ignores the bottom bits,
+;; while VSX uses the full address and traps)
+(define_predicate "altivec_indexed_or_indirect_operand"
+  (match_code "mem")
+{
+  op = XEXP (op, 0);
+  if (VECTOR_MEM_ALTIVEC_OR_VSX_P (mode)
+      && GET_CODE (op) == AND
+      && GET_CODE (XEXP (op, 1)) == CONST_INT
+      && INTVAL (XEXP (op, 1)) == -16)
+    return indexed_or_indirect_address (XEXP (op, 0), mode);
+
+  return 0;
 })
 
 ;; Return 1 if the operand is an indexed or indirect address.
@@ -640,23 +748,37 @@
        (match_operand 0 "reg_or_mem_operand")))
 
 ;; Return 1 if the operand is a general register or memory operand without
-;; pre_inc or pre_dec, which produces invalid form of PowerPC lwa
-;; instruction.
+;; pre_inc or pre_dec or pre_modify, which produces invalid form of PowerPC
+;; lwa instruction.
 (define_predicate "lwa_operand"
   (match_code "reg,subreg,mem")
 {
-  rtx inner = op;
+  rtx inner, addr, offset;
 
+  inner = op;
   if (reload_completed && GET_CODE (inner) == SUBREG)
     inner = SUBREG_REG (inner);
 
-  return gpc_reg_operand (inner, mode)
-    || (memory_operand (inner, mode)
-	&& GET_CODE (XEXP (inner, 0)) != PRE_INC
-	&& GET_CODE (XEXP (inner, 0)) != PRE_DEC
-	&& (GET_CODE (XEXP (inner, 0)) != PLUS
-	    || GET_CODE (XEXP (XEXP (inner, 0), 1)) != CONST_INT
-	    || INTVAL (XEXP (XEXP (inner, 0), 1)) % 4 == 0));
+  if (gpc_reg_operand (inner, mode))
+    return true;
+  if (!memory_operand (inner, mode))
+    return false;
+  addr = XEXP (inner, 0);
+  if (GET_CODE (addr) == PRE_INC
+      || GET_CODE (addr) == PRE_DEC
+      || (GET_CODE (addr) == PRE_MODIFY
+	  && !legitimate_indexed_address_p (XEXP (addr, 1), 0)))
+    return false;
+  if (GET_CODE (addr) == LO_SUM
+      && GET_CODE (XEXP (addr, 0)) == REG
+      && GET_CODE (XEXP (addr, 1)) == CONST)
+    addr = XEXP (XEXP (addr, 1), 0);
+  if (GET_CODE (addr) != PLUS)
+    return true;
+  offset = XEXP (addr, 1);
+  if (GET_CODE (offset) != CONST_INT)
+    return true;
+  return INTVAL (offset) % 4 == 0;
 })
 
 ;; Return 1 if the operand, used inside a MEM, is a SYMBOL_REF.
@@ -684,8 +806,8 @@
 ;; to CALL.  This is a SYMBOL_REF, a pseudo-register, LR or CTR.
 (define_predicate "call_operand"
   (if_then_else (match_code "reg")
-     (match_test "REGNO (op) == LINK_REGISTER_REGNUM
-		  || REGNO (op) == COUNT_REGISTER_REGNUM
+     (match_test "REGNO (op) == LR_REGNO
+		  || REGNO (op) == CTR_REGNO
 		  || REGNO (op) >= FIRST_PSEUDO_REGISTER")
      (match_code "symbol_ref")))
 
@@ -745,7 +867,7 @@
     return 1;
 
   /* A SYMBOL_REF referring to the TOC is valid.  */
-  if (legitimate_constant_pool_address_p (op))
+  if (legitimate_constant_pool_address_p (op, mode, false))
     return 1;
 
   /* A constant pool expression (relative to the TOC) is valid */
@@ -760,6 +882,23 @@
     return 1;
 
   return 0;
+})
+
+;; Return 1 if this operand is a valid input for a vsx_splat insn.
+(define_predicate "splat_input_operand"
+  (match_code "label_ref,symbol_ref,const,high,reg,subreg,mem,
+	       const_double,const_vector,const_int,plus")
+{
+  if (MEM_P (op))
+    {
+      if (mode == DFmode)
+	mode = V2DFmode;
+      else if (mode == DImode)
+	mode = V2DImode;
+      else
+	gcc_unreachable ();        
+    }
+  return input_operand (op, mode);
 })
 
 ;; Return true if OP is an invalid SUBREG operation on the e500.
@@ -800,22 +939,28 @@
 						   GET_MODE (XEXP (op, 0))),
 			  1"))))
 
+(define_predicate "rs6000_cbranch_operator"
+  (if_then_else (match_test "TARGET_HARD_FLOAT && !TARGET_FPRS")
+		(match_operand 0 "ordered_comparison_operator")
+		(match_operand 0 "comparison_operator")))
+
 ;; Return 1 if OP is a comparison operation that is valid for an SCC insn --
 ;; it must be a positive comparison.
 (define_predicate "scc_comparison_operator"
   (and (match_operand 0 "branch_comparison_operator")
        (match_code "eq,lt,gt,ltu,gtu,unordered")))
 
+;; Return 1 if OP is a comparison operation whose inverse would be valid for
+;; an SCC insn.
+(define_predicate "scc_rev_comparison_operator"
+  (and (match_operand 0 "branch_comparison_operator")
+       (match_code "ne,le,ge,leu,geu,ordered")))
+
 ;; Return 1 if OP is a comparison operation that is valid for a branch
 ;; insn, which is true if the corresponding bit in the CC register is set.
 (define_predicate "branch_positive_comparison_operator"
   (and (match_operand 0 "branch_comparison_operator")
        (match_code "eq,lt,gt,ltu,gtu,unordered")))
-
-;; Return 1 is OP is a comparison operation that is valid for a trap insn.
-(define_predicate "trap_comparison_operator"
-   (and (match_operand 0 "comparison_operator")
-	(match_code "eq,ne,le,lt,ge,gt,leu,ltu,geu,gtu")))
 
 ;; Return 1 if OP is a load multiple operation, known to be a PARALLEL.
 (define_predicate "load_multiple_operation"
@@ -906,7 +1051,7 @@
   rtx elt;
   int count = XVECLEN (op, 0);
 
-  if (count != 55)
+  if (count != 54)
     return 0;
 
   index = 0;
@@ -955,9 +1100,8 @@
       || GET_MODE (SET_SRC (elt)) != Pmode)
     return 0;
 
-  if (GET_CODE (XVECEXP (op, 0, index++)) != USE
-      || GET_CODE (XVECEXP (op, 0, index++)) != USE
-      || GET_CODE (XVECEXP (op, 0, index++)) != CLOBBER)
+  if (GET_CODE (XVECEXP (op, 0, index++)) != SET
+      || GET_CODE (XVECEXP (op, 0, index++)) != SET)
     return 0;
   return 1;
 })

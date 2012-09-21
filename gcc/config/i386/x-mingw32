@@ -1,3 +1,21 @@
+# Copyright (C) 2003, 2004, 2008, 2009 Free Software Foundation, Inc.
+#
+# This file is part of GCC.
+#
+# GCC is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3, or (at your option)
+# any later version.
+#
+# GCC is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with GCC; see the file COPYING3.  If not see
+# <http://www.gnu.org/licenses/>.
+#
 #
 # Make local_includedir relative to EXEC_PREFIX 
 #
@@ -8,6 +26,6 @@ local_includedir=$(libsubdir)/$(unlibsubdir)/..`echo $(exec_prefix) | sed -e 's|
 WERROR_FLAGS += -Wno-format
 
 host-mingw32.o : $(srcdir)/config/i386/host-mingw32.c $(CONFIG_H) $(SYSTEM_H) \
-  coretypes.h hosthooks.h hosthooks-def.h toplev.h diagnostic.h $(HOOKS_H)
-	$(CC) -c $(ALL_CFLAGS) $(ALL_CPPFLAGS) $(INCLUDES) \
+  coretypes.h hosthooks.h hosthooks-def.h toplev.h $(DIAGNOSTIC_H) $(HOOKS_H)
+	$(COMPILER) -c $(ALL_COMPILERFLAGS) $(ALL_CPPFLAGS) $(INCLUDES) \
 		$(srcdir)/config/i386/host-mingw32.c

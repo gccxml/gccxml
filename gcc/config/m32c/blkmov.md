@@ -1,5 +1,5 @@
 ;; Machine Descriptions for R8C/M16C/M32C
-;; Copyright (C) 2006
+;; Copyright (C) 2006, 2007, 2010
 ;; Free Software Foundation, Inc.
 ;; Contributed by Red Hat.
 ;;
@@ -7,7 +7,7 @@
 ;;
 ;; GCC is free software; you can redistribute it and/or modify it
 ;; under the terms of the GNU General Public License as published
-;; by the Free Software Foundation; either version 2, or (at your
+;; by the Free Software Foundation; either version 3, or (at your
 ;; option) any later version.
 ;;
 ;; GCC is distributed in the hope that it will be useful, but WITHOUT
@@ -16,9 +16,8 @@
 ;; License for more details.
 ;;
 ;; You should have received a copy of the GNU General Public License
-;; along with GCC; see the file COPYING.  If not, write to the Free
-;; Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
-;; 02110-1301, USA.
+;; along with GCC; see the file COPYING3.  If not see
+;; <http://www.gnu.org/licenses/>.
 
 ;; various block move instructions
 
@@ -52,7 +51,7 @@
   "if (m32c_expand_movmemhi(operands)) DONE; FAIL;"
   )
 
-;; We can't use mode macros for these because M16C uses r1h to extend
+;; We can't use mode iterators for these because M16C uses r1h to extend
 ;; the source address, for copying data from ROM to RAM.  We don't yet
 ;; support that, but we need to zero our r1h, so the patterns differ.
 
@@ -215,9 +214,9 @@
 ;; 2 = source (mem:BLK ...)
 
 (define_expand "movstr"
-  [(match_operand 0 "" "")
-   (match_operand 1 "ap_operand" "")
-   (match_operand 2 "ap_operand" "")
+  [(match_operand 0 "m32c_nonimmediate_operand" "")
+   (match_operand 1 "" "")
+   (match_operand 2 "" "")
    ]
   "TARGET_A24"
   "if (m32c_expand_movstr(operands)) DONE; FAIL;"

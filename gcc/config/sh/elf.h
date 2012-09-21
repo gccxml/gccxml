@@ -1,5 +1,5 @@
 /* Definitions of target machine for gcc for Renesas / SuperH SH using ELF.
-   Copyright (C) 1996, 1997, 2000, 2001, 2002, 2004, 2005
+   Copyright (C) 1996, 1997, 2000, 2001, 2002, 2004, 2005, 2007, 2010
    Free Software Foundation, Inc.
    Contributed by Ian Lance Taylor <ian@cygnus.com>.
 
@@ -7,7 +7,7 @@ This file is part of GCC.
 
 GCC is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2, or (at your option)
+the Free Software Foundation; either version 3, or (at your option)
 any later version.
 
 GCC is distributed in the hope that it will be useful,
@@ -16,9 +16,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with GCC; see the file COPYING.  If not, write to
-the Free Software Foundation, 51 Franklin Street, Fifth Floor,
-Boston, MA 02110-1301, USA.  */
+along with GCC; see the file COPYING3.  If not see
+<http://www.gnu.org/licenses/>.  */
 
 /* Let sh.c know this is ELF.  */
 #undef TARGET_ELF
@@ -33,8 +32,6 @@ Boston, MA 02110-1301, USA.  */
 /* use a more compact format for line information */
 #define DWARF2_ASM_LINE_DEBUG_INFO 1
 
-/* WCHAR_TYPE / WCHAR_TYPE_SIZE are defined to long int / BITS_PER_WORD in
-   svr4.h, but these work out as 64 bit for shmedia64.  */
 #undef WCHAR_TYPE
 /* #define WCHAR_TYPE (TARGET_SH5 ? "int" : "long int") */
 #define WCHAR_TYPE SH_ELF_WCHAR_TYPE
@@ -67,8 +64,6 @@ Boston, MA 02110-1301, USA.  */
 #define LINK_EMUL_PREFIX "sh%{ml:l}elf"
 #endif
 
-/* svr4.h undefined DBX_REGISTER_NUMBER, so we need to define it
-   again.  */
 #define DBX_REGISTER_NUMBER(REGNO) SH_DBX_REGISTER_NUMBER (REGNO)
 
 #undef ASM_GENERATE_INTERNAL_LABEL
@@ -86,6 +81,9 @@ Boston, MA 02110-1301, USA.  */
 #undef ENDFILE_SPEC
 #define ENDFILE_SPEC \
   "%{!shared:crtend.o%s} %{shared:crtendS.o%s} crtn.o%s"
+
+#undef LIB_SPEC
+#define LIB_SPEC "-lc"
 
 /* ASM_OUTPUT_CASE_LABEL is defined in elfos.h.  With it,
    a redundant .align was generated.  */

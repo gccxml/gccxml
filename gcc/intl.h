@@ -1,9 +1,10 @@
 /* intl.h - internationalization
-   Copyright 1998, 2001, 2003, 2004 Free Software Foundation, Inc.
+   Copyright 1998, 2001, 2003, 2004, 2007, 2009, 2010
+   Free Software Foundation, Inc.
 
    GCC is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 2, or (at your option)
+   the Free Software Foundation; either version 3, or (at your option)
    any later version.
 
    GCC is distributed in the hope that it will be useful,
@@ -12,9 +13,8 @@
    GNU General Public License for more details.
 
    You should have received a copy of the GNU General Public License
-   along with GCC; see the file COPYING.  If not, write to the Free
-   Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
-   02110-1301, USA.  */
+   along with GCC; see the file COPYING3.  If not see
+   <http://www.gnu.org/licenses/>.  */
 
 #ifndef GCC_INTL_H
 #define GCC_INTL_H
@@ -39,8 +39,13 @@ extern size_t gcc_gettext_width (const char *);
 # define bindtextdomain(domain, directory) (domain)
 # undef gettext
 # define gettext(msgid) (msgid)
+# define ngettext(singular,plural,n) fake_ngettext(singular,plural,n)
 # define gcc_init_libintl()	/* nothing */
 # define gcc_gettext_width(s) strlen(s)
+
+extern const char *fake_ngettext(const char *singular,const char *plural,
+                                 unsigned long int n);
+
 #endif
 
 #ifndef _
@@ -55,7 +60,11 @@ extern size_t gcc_gettext_width (const char *);
 # define G_(gmsgid) gmsgid
 #endif
 
+extern char *get_spaces (const char *);
+
 extern const char *open_quote;
 extern const char *close_quote;
+extern const char *locale_encoding;
+extern bool locale_utf8;
 
 #endif /* intl.h */

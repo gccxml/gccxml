@@ -1,13 +1,14 @@
 /* CPP Library.
    Copyright (C) 1986, 1987, 1989, 1992, 1993, 1994, 1995, 1996, 1997, 1998,
-   1999, 2000, 2001, 2002, 2003, 2004, 2005 Free Software Foundation, Inc.
+   1999, 2000, 2001, 2002, 2003, 2004, 2005, 2007, 2008,
+   2009, 2010, 2011 Free Software Foundation, Inc.
    Contributed by Per Bothner, 1994-95.
    Based on CCCP program by Paul Rubin, June 1986
    Adapted to ANSI C, Richard Stallman, Jan 1987
 
 This program is free software; you can redistribute it and/or modify it
 under the terms of the GNU General Public License as published by the
-Free Software Foundation; either version 2, or (at your option) any
+Free Software Foundation; either version 3, or (at your option) any
 later version.
 
 This program is distributed in the hope that it will be useful,
@@ -16,8 +17,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.  */
+along with this program; see the file COPYING3.  If not see
+<http://www.gnu.org/licenses/>.  */
 
 #include "config.h"
 #include "system.h"
@@ -25,9 +26,10 @@ Foundation, 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.  */
 #include "internal.h"
 #include "mkdeps.h"
 #include "localedir.h"
+#include "filenames.h"
 
 static void init_library (void);
-static void mark_named_operators (cpp_reader *);
+static void mark_named_operators (cpp_reader *, int);
 static void read_original_filename (cpp_reader *);
 static void read_original_directory (cpp_reader *);
 static void post_options (cpp_reader *);
@@ -76,22 +78,29 @@ struct lang_flags
   char std;
   char cplusplus_comments;
   char digraphs;
+  char uliterals;
+  char rliterals;
+  char user_literals;
 };
 
 static const struct lang_flags lang_defaults[] =
-{ /*              c99 c++ xnum xid std  //   digr  */
-  /* GNUC89 */  { 0,  0,  1,   0,  0,   1,   1     },
-  /* GNUC99 */  { 1,  0,  1,   0,  0,   1,   1     },
-  /* STDC89 */  { 0,  0,  0,   0,  1,   0,   0     },
-  /* STDC94 */  { 0,  0,  0,   0,  1,   0,   1     },
-  /* STDC99 */  { 1,  0,  1,   0,  1,   1,   1     },
-  /* GNUCXX */  { 0,  1,  1,   0,  0,   1,   1     },
-  /* CXX98  */  { 0,  1,  1,   0,  1,   1,   1     },
-  /* ASM    */  { 0,  0,  1,   0,  0,   1,   0     }
-  /* xid should be 1 for GNUC99, STDC99, GNUCXX and CXX98 when no
-     longer experimental (when all uses of identifiers in the compiler
-     have been audited for correct handling of extended
-     identifiers).  */
+{ /*              c99 c++ xnum xid std  //   digr ulit rlit user_literals */
+  /* GNUC89   */  { 0,  0,  1,   0,  0,   1,   1,   0,   0,    0 },
+  /* GNUC99   */  { 1,  0,  1,   0,  0,   1,   1,   1,   1,    0 },
+  /* GNUC11   */  { 1,  0,  1,   0,  0,   1,   1,   1,   1,    0 },
+  /* STDC89   */  { 0,  0,  0,   0,  1,   0,   0,   0,   0,    0 },
+  /* STDC94   */  { 0,  0,  0,   0,  1,   0,   1,   0,   0,    0 },
+  /* STDC99   */  { 1,  0,  1,   0,  1,   1,   1,   0,   0,    0 },
+  /* STDC11   */  { 1,  0,  1,   0,  1,   1,   1,   1,   0,    0 },
+  /* GNUCXX   */  { 0,  1,  1,   0,  0,   1,   1,   0,   0,    0 },
+  /* CXX98    */  { 0,  1,  1,   0,  1,   1,   1,   0,   0,    0 },
+  /* GNUCXX11 */  { 1,  1,  1,   0,  0,   1,   1,   1,   1,    1 },
+  /* CXX11    */  { 1,  1,  1,   0,  1,   1,   1,   1,   1,    1 },
+  /* ASM      */  { 0,  0,  1,   0,  0,   1,   0,   0,   0,    0 }
+  /* xid should be 1 for GNUC99, STDC99, GNUCXX, CXX98, GNUCXX11, and
+     CXX11 when no longer experimental (when all uses of identifiers
+     in the compiler have been audited for correct handling of
+     extended identifiers).  */
 };
 
 /* Sets internal flags correctly for a given language.  */
@@ -110,6 +119,9 @@ cpp_set_lang (cpp_reader *pfile, enum c_lang lang)
   CPP_OPTION (pfile, trigraphs)			 = l->std;
   CPP_OPTION (pfile, cplusplus_comments)	 = l->cplusplus_comments;
   CPP_OPTION (pfile, digraphs)			 = l->digraphs;
+  CPP_OPTION (pfile, uliterals)			 = l->uliterals;
+  CPP_OPTION (pfile, rliterals)			 = l->rliterals;
+  CPP_OPTION (pfile, user_literals)		 = l->user_literals;
 }
 
 /* Initialize library global state.  */
@@ -121,6 +133,8 @@ init_library (void)
   if (! initialized)
     {
       initialized = 1;
+
+      _cpp_init_lexer ();
 
       /* Set up the trigraph map.  This doesn't need to do anything if
 	 we were compiled with a compiler that supports C99 designated
@@ -144,21 +158,22 @@ cpp_create_reader (enum c_lang lang, hash_table *table,
   init_library ();
 
   pfile = XCNEW (cpp_reader);
+  memset (&pfile->base_context, 0, sizeof (pfile->base_context));
 
   cpp_set_lang (pfile, lang);
   CPP_OPTION (pfile, warn_multichar) = 1;
   CPP_OPTION (pfile, discard_comments) = 1;
   CPP_OPTION (pfile, discard_comments_in_macro_exp) = 1;
-  CPP_OPTION (pfile, show_column) = 1;
   CPP_OPTION (pfile, tabstop) = 8;
   CPP_OPTION (pfile, operator_names) = 1;
   CPP_OPTION (pfile, warn_trigraphs) = 2;
   CPP_OPTION (pfile, warn_endif_labels) = 1;
-  CPP_OPTION (pfile, warn_deprecated) = 1;
-  CPP_OPTION (pfile, warn_long_long) = !CPP_OPTION (pfile, c99);
+  CPP_OPTION (pfile, cpp_warn_deprecated) = 1;
+  CPP_OPTION (pfile, cpp_warn_long_long) = 0;
   CPP_OPTION (pfile, dollars_in_ident) = 1;
   CPP_OPTION (pfile, warn_dollars) = 1;
   CPP_OPTION (pfile, warn_variadic_macros) = 1;
+  CPP_OPTION (pfile, warn_builtin_macro_redefined) = 1;
   CPP_OPTION (pfile, warn_normalize) = normalized_C;
 
   /* Default CPP arithmetic to something sensible for the host for the
@@ -203,12 +218,18 @@ cpp_create_reader (enum c_lang lang, hash_table *table,
 
   /* Initialize the base context.  */
   pfile->context = &pfile->base_context;
-  pfile->base_context.macro = 0;
+  pfile->base_context.c.macro = 0;
   pfile->base_context.prev = pfile->base_context.next = 0;
 
   /* Aligned and unaligned storage.  */
   pfile->a_buff = _cpp_get_buff (pfile, 0);
   pfile->u_buff = _cpp_get_buff (pfile, 0);
+
+  /* Initialize table for push_macro/pop_macro.  */
+  pfile->pushed_macros = 0;
+
+  /* Do not force token locations by default.  */
+  pfile->forced_token_location_p = NULL;
 
   /* The expression parser stack.  */
   _cpp_expand_op_stack (pfile);
@@ -225,21 +246,30 @@ cpp_create_reader (enum c_lang lang, hash_table *table,
   return pfile;
 }
 
+/* Set the line_table entry in PFILE.  This is called after reading a
+   PCH file, as the old line_table will be incorrect.  */
+void
+cpp_set_line_map (cpp_reader *pfile, struct line_maps *line_table)
+{
+  pfile->line_table = line_table;
+}
+
 /* Free resources used by PFILE.  Accessing PFILE after this function
    returns leads to undefined behavior.  Returns the error count.  */
 void
 cpp_destroy (cpp_reader *pfile)
 {
   cpp_context *context, *contextn;
+  struct def_pragma_macro *pmacro;
   tokenrun *run, *runn;
+  int i;
 
   free (pfile->op_stack);
 
   while (CPP_BUFFER (pfile) != NULL)
     _cpp_pop_buffer (pfile);
 
-  if (pfile->out.base)
-    free (pfile->out.base);
+  free (pfile->out.base);
 
   if (pfile->macro_buffer)
     {
@@ -274,6 +304,25 @@ cpp_destroy (cpp_reader *pfile)
       free (context);
     }
 
+  if (pfile->comments.entries)
+    {
+      for (i = 0; i < pfile->comments.count; i++)
+	free (pfile->comments.entries[i].comment);
+
+      free (pfile->comments.entries);
+    }
+  if (pfile->pushed_macros)
+    {
+      do
+	{
+	  pmacro = pfile->pushed_macros;
+	  pfile->pushed_macros = pmacro->next;
+	  free (pmacro->name);
+	  free (pmacro);
+	}
+      while (pfile->pushed_macros);
+    }
+
   free (pfile);
 }
 
@@ -284,37 +333,48 @@ cpp_destroy (cpp_reader *pfile)
    "builtin" macros: these are handled by builtin_macro() in
    macro.c.  Builtin is somewhat of a misnomer -- the property of
    interest is that these macros require special code to compute their
-   expansions.  The value is a "builtin_type" enumerator.
+   expansions.  The value is a "cpp_builtin_type" enumerator.
 
    operator_array holds the C++ named operators.  These are keywords
    which act as aliases for punctuators.  In C++, they cannot be
    altered through #define, and #if recognizes them as operators.  In
    C, these are not entered into the hash table at all (but see
    <iso646.h>).  The value is a token-type enumerator.  */
-struct builtin
+struct builtin_macro
 {
-  const uchar *name;
-  unsigned short len;
-  unsigned short value;
+  const uchar *const name;
+  const unsigned short len;
+  const unsigned short value;
+  const bool always_warn_if_redefined;
+};
+
+#define B(n, t, f)    { DSC(n), t, f }
+static const struct builtin_macro builtin_array[] =
+{
+  B("__TIMESTAMP__",	 BT_TIMESTAMP,     false),
+  B("__TIME__",		 BT_TIME,          false),
+  B("__DATE__",		 BT_DATE,          false),
+  B("__FILE__",		 BT_FILE,          false),
+  B("__BASE_FILE__",	 BT_BASE_FILE,     false),
+  B("__LINE__",		 BT_SPECLINE,      true),
+  B("__INCLUDE_LEVEL__", BT_INCLUDE_LEVEL, true),
+  B("__COUNTER__",	 BT_COUNTER,       true),
+  /* Keep builtins not used for -traditional-cpp at the end, and
+     update init_builtins() if any more are added.  */
+  B("_Pragma",		 BT_PRAGMA,        true),
+  B("__STDC__",		 BT_STDC,          true),
+};
+#undef B
+
+struct builtin_operator
+{
+  const uchar *const name;
+  const unsigned short len;
+  const unsigned short value;
 };
 
 #define B(n, t)    { DSC(n), t }
-static const struct builtin builtin_array[] =
-{
-  B("__TIMESTAMP__",	 BT_TIMESTAMP),
-  B("__TIME__",		 BT_TIME),
-  B("__DATE__",		 BT_DATE),
-  B("__FILE__",		 BT_FILE),
-  B("__BASE_FILE__",	 BT_BASE_FILE),
-  B("__LINE__",		 BT_SPECLINE),
-  B("__INCLUDE_LEVEL__", BT_INCLUDE_LEVEL),
-  /* Keep builtins not used for -traditional-cpp at the end, and
-     update init_builtins() if any more are added.  */
-  B("_Pragma",		 BT_PRAGMA),
-  B("__STDC__",		 BT_STDC),
-};
-
-static const struct builtin operator_array[] =
+static const struct builtin_operator operator_array[] =
 {
   B("and",	CPP_AND_AND),
   B("and_eq",	CPP_AND_EQ),
@@ -332,18 +392,60 @@ static const struct builtin operator_array[] =
 
 /* Mark the C++ named operators in the hash table.  */
 static void
-mark_named_operators (cpp_reader *pfile)
+mark_named_operators (cpp_reader *pfile, int flags)
 {
-  const struct builtin *b;
+  const struct builtin_operator *b;
 
   for (b = operator_array;
        b < (operator_array + ARRAY_SIZE (operator_array));
        b++)
     {
       cpp_hashnode *hp = cpp_lookup (pfile, b->name, b->len);
-      hp->flags |= NODE_OPERATOR;
+      hp->flags |= flags;
       hp->is_directive = 0;
       hp->directive_index = b->value;
+    }
+}
+
+/* Helper function of cpp_type2name. Return the string associated with
+   named operator TYPE.  */
+const char *
+cpp_named_operator2name (enum cpp_ttype type)
+{
+  const struct builtin_operator *b;
+
+  for (b = operator_array;
+       b < (operator_array + ARRAY_SIZE (operator_array));
+       b++)
+    {
+      if (type == b->value)
+	return (const char *) b->name;
+    }
+
+  return NULL;
+}
+
+void
+cpp_init_special_builtins (cpp_reader *pfile)
+{
+  const struct builtin_macro *b;
+  size_t n = ARRAY_SIZE (builtin_array);
+
+  if (CPP_OPTION (pfile, traditional))
+    n -= 2;
+  else if (! CPP_OPTION (pfile, stdc_0_in_system_headers)
+	   || CPP_OPTION (pfile, std))
+    n--;
+
+  for (b = builtin_array; b < builtin_array + n; b++)
+    {
+      cpp_hashnode *hp = cpp_lookup (pfile, b->name, b->len);
+      hp->type = NT_MACRO;
+      hp->flags |= NODE_BUILTIN;
+      if (b->always_warn_if_redefined
+          || CPP_OPTION (pfile, warn_builtin_macro_redefined))
+	hp->flags |= NODE_WARN;
+      hp->value.builtin = (enum cpp_builtin_type) b->value;
     }
 }
 
@@ -353,34 +455,37 @@ mark_named_operators (cpp_reader *pfile)
 void
 cpp_init_builtins (cpp_reader *pfile, int hosted)
 {
-  const struct builtin *b;
-  size_t n = ARRAY_SIZE (builtin_array);
+  cpp_init_special_builtins (pfile);
 
-  if (CPP_OPTION (pfile, traditional))
-    n -= 2;
-  else if (! CPP_OPTION (pfile, stdc_0_in_system_headers)
-	   || CPP_OPTION (pfile, std))
-    {
-      n--;
-      _cpp_define_builtin (pfile, "__STDC__ 1");
-    }
-
-  for (b = builtin_array; b < builtin_array + n; b++)
-    {
-      cpp_hashnode *hp = cpp_lookup (pfile, b->name, b->len);
-      hp->type = NT_MACRO;
-      hp->flags |= NODE_BUILTIN | NODE_WARN;
-      hp->value.builtin = (enum builtin_type) b->value;
-    }
+  if (!CPP_OPTION (pfile, traditional)
+      && (! CPP_OPTION (pfile, stdc_0_in_system_headers)
+	  || CPP_OPTION (pfile, std)))
+    _cpp_define_builtin (pfile, "__STDC__ 1");
 
   if (CPP_OPTION (pfile, cplusplus))
-    _cpp_define_builtin (pfile, "__cplusplus 1");
+    {
+      if (CPP_OPTION (pfile, lang) == CLK_CXX11
+	   || CPP_OPTION (pfile, lang) == CLK_GNUCXX11)
+	_cpp_define_builtin (pfile, "__cplusplus 201103L");
+      else
+	_cpp_define_builtin (pfile, "__cplusplus 199711L");
+    }
   else if (CPP_OPTION (pfile, lang) == CLK_ASM)
     _cpp_define_builtin (pfile, "__ASSEMBLER__ 1");
   else if (CPP_OPTION (pfile, lang) == CLK_STDC94)
     _cpp_define_builtin (pfile, "__STDC_VERSION__ 199409L");
+  else if (CPP_OPTION (pfile, lang) == CLK_STDC11
+	   || CPP_OPTION (pfile, lang) == CLK_GNUC11)
+    _cpp_define_builtin (pfile, "__STDC_VERSION__ 201112L");
   else if (CPP_OPTION (pfile, c99))
     _cpp_define_builtin (pfile, "__STDC_VERSION__ 199901L");
+
+  if (CPP_OPTION (pfile, uliterals)
+      && !CPP_OPTION (pfile, cplusplus))
+    {
+      _cpp_define_builtin (pfile, "__STDC_UTF_16__ 1");
+      _cpp_define_builtin (pfile, "__STDC_UTF_32__ 1");
+    }
 
   if (hosted)
     _cpp_define_builtin (pfile, "__STDC_HOSTED__ 1");
@@ -449,13 +554,20 @@ static void sanity_checks (cpp_reader *pfile)
 void
 cpp_post_options (cpp_reader *pfile)
 {
+  int flags;
+
   sanity_checks (pfile);
 
   post_options (pfile);
 
   /* Mark named operators before handling command line macros.  */
+  flags = 0;
   if (CPP_OPTION (pfile, cplusplus) && CPP_OPTION (pfile, operator_names))
-    mark_named_operators (pfile);
+    flags |= NODE_OPERATOR;
+  if (CPP_OPTION (pfile, warn_cxx_operator_names))
+    flags |= NODE_DIAGNOSTIC | NODE_WARN_OPERATOR;
+  if (flags != 0)
+    mark_named_operators (pfile, flags);
 }
 
 /* Setup for processing input from the file named FNAME, or stdin if
@@ -485,7 +597,9 @@ cpp_read_main_file (cpp_reader *pfile, const char *fname)
   if (CPP_OPTION (pfile, preprocessed))
     {
       read_original_filename (pfile);
-      fname = pfile->line_table->maps[pfile->line_table->used-1].to_file;
+      fname =
+	ORDINARY_MAP_FILE_NAME
+	((LINEMAPS_LAST_ORDINARY_MAP (pfile->line_table)));
     }
   return fname;
 }
@@ -510,9 +624,9 @@ read_original_filename (cpp_reader *pfile)
       pfile->state.in_directive = 0;
 
       /* If it's a #line directive, handle it.  */
-      if (token1->type == CPP_NUMBER)
+      if (token1->type == CPP_NUMBER
+	  && _cpp_handle_directive (pfile, token->flags & PREV_WHITE))
 	{
-	  _cpp_handle_directive (pfile, token->flags & PREV_WHITE);
 	  read_original_directory (pfile);
 	  return;
 	}
@@ -551,8 +665,8 @@ read_original_directory (cpp_reader *pfile)
 
   if (token->type != CPP_STRING
       || ! (token->val.str.len >= 5
-	    && token->val.str.text[token->val.str.len-2] == '/'
-	    && token->val.str.text[token->val.str.len-3] == '/'))
+	    && IS_DIR_SEPARATOR (token->val.str.text[token->val.str.len-2])
+	    && IS_DIR_SEPARATOR (token->val.str.text[token->val.str.len-3])))
     {
       _cpp_backup_tokens (pfile, 3);
       return;
@@ -571,12 +685,11 @@ read_original_directory (cpp_reader *pfile)
 }
 
 /* This is called at the end of preprocessing.  It pops the last
-   buffer and writes dependency output, and returns the number of
-   errors.
+   buffer and writes dependency output.
 
    Maybe it should also reset state, such that you could call
    cpp_start_read with a new filename to restart processing.  */
-int
+void
 cpp_finish (cpp_reader *pfile, FILE *deps_stream)
 {
   /* Warn about unused macros before popping the final buffer.  */
@@ -591,9 +704,8 @@ cpp_finish (cpp_reader *pfile, FILE *deps_stream)
   while (pfile->buffer)
     _cpp_pop_buffer (pfile);
 
-  /* Don't write the deps file if there are errors.  */
   if (CPP_OPTION (pfile, deps.style) != DEPS_NONE
-      && deps_stream && pfile->errors == 0)
+      && deps_stream)
     {
       deps_write (pfile->deps, deps_stream, 72);
 
@@ -604,8 +716,6 @@ cpp_finish (cpp_reader *pfile, FILE *deps_stream)
   /* Report on headers that could use multiple include guards.  */
   if (CPP_OPTION (pfile, print_include_names))
     _cpp_report_missing_guards (pfile);
-
-  return pfile->errors;
 }
 
 static void
@@ -613,13 +723,14 @@ post_options (cpp_reader *pfile)
 {
   /* -Wtraditional is not useful in C++ mode.  */
   if (CPP_OPTION (pfile, cplusplus))
-    CPP_OPTION (pfile, warn_traditional) = 0;
+    CPP_OPTION (pfile, cpp_warn_traditional) = 0;
 
   /* Permanently disable macro expansion if we are rescanning
      preprocessed text.  Read preprocesed source in ISO mode.  */
   if (CPP_OPTION (pfile, preprocessed))
     {
-      pfile->state.prevent_expansion = 1;
+      if (!CPP_OPTION (pfile, directives_only))
+	pfile->state.prevent_expansion = 1;
       CPP_OPTION (pfile, traditional) = 0;
     }
 
@@ -630,8 +741,6 @@ post_options (cpp_reader *pfile)
     {
       CPP_OPTION (pfile, cplusplus_comments) = 0;
 
-      /* Traditional CPP does not accurately track column information.  */
-      CPP_OPTION (pfile, show_column) = 0;
       CPP_OPTION (pfile, trigraphs) = 0;
       CPP_OPTION (pfile, warn_trigraphs) = 0;
     }

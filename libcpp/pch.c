@@ -1,10 +1,10 @@
 /* Part of CPP library.  (Precompiled header reading/writing.)
-   Copyright (C) 2000, 2001, 2002, 2003, 2004, 2005
+   Copyright (C) 2000, 2001, 2002, 2003, 2004, 2005, 2008, 2009, 2010
    Free Software Foundation, Inc.
 
 This program is free software; you can redistribute it and/or modify it
 under the terms of the GNU General Public License as published by the
-Free Software Foundation; either version 2, or (at your option) any
+Free Software Foundation; either version 3, or (at your option) any
 later version.
 
 This program is distributed in the hope that it will be useful,
@@ -13,8 +13,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.  */
+along with this program; see the file COPYING3.  If not see
+<http://www.gnu.org/licenses/>.  */
 
 #include "config.h"
 #include "system.h"
@@ -33,16 +33,18 @@ static int comp_hashnodes (const void *, const void *);
 static int collect_ht_nodes (cpp_reader *, cpp_hashnode *, void *);
 static int write_defs (cpp_reader *, cpp_hashnode *, void *);
 static int save_macros (cpp_reader *, cpp_hashnode *, void *);
+static int _cpp_save_pushed_macros (cpp_reader *, FILE *);
+static int _cpp_restore_pushed_macros (cpp_reader *, FILE *);
 
 /* This structure represents a macro definition on disk.  */
-struct macrodef_struct 
+struct macrodef_struct
 {
   unsigned int definition_length;
   unsigned short name_length;
   unsigned short flags;
 };
 
-/* This is how we write out a macro definition.  
+/* This is how we write out a macro definition.
    Suitable for being called by cpp_forall_identifiers.  */
 
 static int
@@ -54,9 +56,11 @@ write_macdef (cpp_reader *pfile, cpp_hashnode *hn, void *file_p)
     case NT_VOID:
       if (! (hn->flags & NODE_POISONED))
 	return 1;
-      
+
     case NT_MACRO:
-      if ((hn->flags & NODE_BUILTIN))
+      if ((hn->flags & NODE_BUILTIN)
+	  && (!pfile->cb.user_builtin_macro
+	      || !pfile->cb.user_builtin_macro (pfile, hn)))
 	return 1;
 
       {
@@ -76,7 +80,7 @@ write_macdef (cpp_reader *pfile, cpp_hashnode *hn, void *file_p)
 	    defn = NODE_NAME (hn);
 	    s.definition_length = s.name_length;
 	  }
-	
+
 	if (fwrite (&s, sizeof (s), 1, f) != 1
 	    || fwrite (defn, 1, s.definition_length, f) != s.definition_length)
 	  {
@@ -86,7 +90,7 @@ write_macdef (cpp_reader *pfile, cpp_hashnode *hn, void *file_p)
 	  }
       }
       return 1;
-      
+
     case NT_ASSERTION:
       /* Not currently implemented.  */
       return 1;
@@ -123,7 +127,7 @@ static int
 save_idents (cpp_reader *pfile ATTRIBUTE_UNUSED, cpp_hashnode *hn, void *ss_p)
 {
   struct cpp_savedstate *const ss = (struct cpp_savedstate *)ss_p;
-  
+
   if (hn->type != NT_VOID)
     {
       struct cpp_string news;
@@ -136,7 +140,7 @@ save_idents (cpp_reader *pfile ATTRIBUTE_UNUSED, cpp_hashnode *hn, void *ss_p)
 	{
 	  struct cpp_string *sp;
 	  unsigned char *text;
-	  
+
 	  sp = XNEW (struct cpp_string);
 	  *slot = sp;
 
@@ -157,7 +161,7 @@ hashmem (const void *p_p, size_t sz)
   const unsigned char *p = (const unsigned char *)p_p;
   size_t i;
   hashval_t h;
-  
+
   h = 0;
   for (i = 0; i < sz; i++)
     h = h * 67 - (*p++ - 113);
@@ -194,10 +198,10 @@ cpp_save_state (cpp_reader *r, FILE *f)
 {
   /* Save the list of non-void identifiers for the dependency checking.  */
   r->savedstate = XNEW (struct cpp_savedstate);
-  r->savedstate->definedhash = htab_create (100, cpp_string_hash, 
+  r->savedstate->definedhash = htab_create (100, cpp_string_hash,
 					    cpp_string_eq, NULL);
   cpp_forall_identifiers (r, save_idents, r->savedstate);
-  
+
   /* Write out the list of defined identifiers.  */
   cpp_forall_identifiers (r, write_macdef, f);
 
@@ -210,20 +214,20 @@ static int
 count_defs (cpp_reader *pfile ATTRIBUTE_UNUSED, cpp_hashnode *hn, void *ss_p)
 {
   struct cpp_savedstate *const ss = (struct cpp_savedstate *)ss_p;
-  
+
   switch (hn->type)
     {
     case NT_MACRO:
       if (hn->flags & NODE_BUILTIN)
 	return 1;
-      
+
       /* else fall through.  */
 
     case NT_VOID:
       {
 	struct cpp_string news;
 	void **slot;
-	
+
 	news.len = NODE_LEN (hn);
 	news.text = NODE_NAME (hn);
 	slot = (void **) htab_find (ss->definedhash, &news);
@@ -249,20 +253,20 @@ static int
 write_defs (cpp_reader *pfile ATTRIBUTE_UNUSED, cpp_hashnode *hn, void *ss_p)
 {
   struct cpp_savedstate *const ss = (struct cpp_savedstate *)ss_p;
-  
+
   switch (hn->type)
     {
     case NT_MACRO:
       if (hn->flags & NODE_BUILTIN)
 	return 1;
-      
+
       /* else fall through.  */
 
     case NT_VOID:
       {
 	struct cpp_string news;
 	void **slot;
-	
+
 	news.len = NODE_LEN (hn);
 	news.text = NODE_NAME (hn);
 	slot = (void **) htab_find (ss->definedhash, &news);
@@ -303,7 +307,7 @@ cpp_write_pch_deps (cpp_reader *r, FILE *f)
   struct cpp_savedstate *const ss = r->savedstate;
   unsigned char *definedstrs;
   size_t i;
-  
+
   /* Collect the list of identifiers which have been seen and
      weren't defined to anything previously.  */
   ss->hashsize = 0;
@@ -337,6 +341,14 @@ cpp_write_pch_deps (cpp_reader *r, FILE *f)
   /* Free the saved state.  */
   free (ss);
   r->savedstate = NULL;
+
+  /* Save the next value of __COUNTER__. */
+  if (fwrite (&r->counter, sizeof (r->counter), 1, f) != 1)
+    {
+      cpp_errno (r, CPP_DL_ERROR, "while writing precompiled header");
+      return -1;
+    }
+
   return 0;
 }
 
@@ -361,7 +373,136 @@ cpp_write_pch_state (cpp_reader *r, FILE *f)
       return -1;
     }
 
+  /* Save the next __COUNTER__ value.  When we include a precompiled header,
+     we need to start at the offset we would have if the header had been
+     included normally. */
+  if (fwrite (&r->counter, sizeof (r->counter), 1, f) != 1)
+    {
+      cpp_errno (r, CPP_DL_ERROR, "while writing precompiled header");
+      return -1;
+    }
+
+  /* Write saved macros.  */
+  if (! _cpp_save_pushed_macros (r, f))
+    {
+      cpp_errno (r, CPP_DL_ERROR, "while writing precompiled header");
+      return -1;
+    }
+
   return 0;
+}
+
+static int
+_cpp_restore_pushed_macros (cpp_reader *r, FILE *f)
+{
+  size_t count_saved = 0;
+  size_t i;
+  struct def_pragma_macro *p;
+  size_t nlen;
+  uchar *defn;
+  size_t defnlen;
+
+  if (fread (&count_saved, sizeof (count_saved), 1, f) != 1)
+    return 0;
+  if (! count_saved)
+    return 1;
+  for (i = 0; i < count_saved; i++)
+    {
+      if (fread (&nlen, sizeof (nlen), 1, f) != 1)
+	return 0;
+      p = XNEW (struct def_pragma_macro);
+      memset (p, 0, sizeof (struct def_pragma_macro));
+      p->name = XNEWVAR (char, nlen + 1);
+      p->name[nlen] = 0;
+      if (fread (p->name, nlen, 1, f) != 1)
+	return 0;
+      if (fread (&defnlen, sizeof (defnlen), 1, f) != 1)
+	return 0;
+      if (defnlen == 0)
+        p->is_undef = 1;
+      else
+        {
+	  defn = XNEWVEC (uchar, defnlen + 1);
+	  defn[defnlen] = 0;
+
+	  if (fread (defn, defnlen, 1, f) != 1)
+	    return 0;
+
+	  p->definition = defn;
+	  if (fread (&(p->line), sizeof (source_location), 1, f) != 1)
+	    return 0;
+	  defnlen = 0;
+	  if (fread (&defnlen, sizeof (defnlen), 1, f) != 1)
+	    return 0;
+	  p->syshdr = ((defnlen & 1) != 0 ? 1 : 0);
+	  p->used =  ((defnlen & 2) != 0 ? 1 : 0);
+	}
+
+      p->next = r->pushed_macros;
+      r->pushed_macros = p;
+    }
+  return 1;
+}
+
+static int
+_cpp_save_pushed_macros (cpp_reader *r, FILE *f)
+{
+  size_t count_saved = 0;
+  size_t i;
+  struct def_pragma_macro *p,**pp;
+  size_t defnlen;
+
+  /* Get count. */
+  p = r->pushed_macros;
+  while (p != NULL)
+    {
+      count_saved++;
+      p = p->next;
+    }
+  if (fwrite (&count_saved, sizeof (count_saved), 1, f) != 1)
+    return 0;
+  if (!count_saved)
+    return 1;
+
+  pp = (struct def_pragma_macro **) alloca (sizeof (struct def_pragma_macro *)
+					    * count_saved);
+  /* Store them in reverse order.  */
+  p = r->pushed_macros;
+  i = count_saved;
+  while (p != NULL)
+    {
+      --i;
+      pp[i] = p;
+      p = p->next;
+    }
+  for (i = 0; i < count_saved; i++)
+    {
+      defnlen = strlen (pp[i]->name);
+      if (fwrite (&defnlen, sizeof (size_t), 1, f) != 1
+	  || fwrite (pp[i]->name, defnlen, 1, f) != 1)
+	return 0;
+      if (pp[i]->is_undef)
+	{
+	  defnlen = 0;
+	  if (fwrite (&defnlen, sizeof (size_t), 1, f) != 1)
+	    return 0;
+	}
+      else
+        {
+	  defnlen = ustrlen (pp[i]->definition);
+	  if (fwrite (&defnlen, sizeof (size_t), 1, f) != 1
+	      || fwrite (pp[i]->definition, defnlen, 1, f) != 1)
+	    return 0;
+	  if (fwrite (&(pp[i]->line), sizeof (source_location), 1, f) != 1)
+	    return 0;
+	  defnlen = 0;
+	  defnlen |= (pp[i]->syshdr != 0 ? 1 : 0);
+	  defnlen |= (pp[i]->used != 0 ? 2 : 0);
+	  if (fwrite (&defnlen, sizeof (defnlen), 1, f) != 1)
+	    return 0;
+	}
+    }
+  return 1;
 }
 
 
@@ -404,7 +545,7 @@ collect_ht_nodes (cpp_reader *pfile ATTRIBUTE_UNUSED, cpp_hashnode *hn,
    with the preprocessor's current definitions.  It will be consistent
    when:
 
-   - anything that was defined just before the PCH was generated 
+   - anything that was defined just before the PCH was generated
      is defined the same way now; and
    - anything that was not defined then, but is defined now, was not
      used by the PCH.
@@ -423,17 +564,18 @@ cpp_valid_state (cpp_reader *r, const char *name, int fd)
   struct ht_node_list nl = { 0, 0, 0 };
   unsigned char *first, *last;
   unsigned int i;
-  
+  unsigned int counter;
+
   /* Read in the list of identifiers that must be defined
      Check that they are defined in the same way.  */
   for (;;)
     {
       cpp_hashnode *h;
       const unsigned char *newdefn;
-      
+
       if (read (fd, &m, sizeof (m)) != sizeof (m))
 	goto error;
-      
+
       if (m.name_length == 0)
 	break;
 
@@ -453,29 +595,50 @@ cpp_valid_state (cpp_reader *r, const char *name, int fd)
 	  namebuf = XNEWVEC (unsigned char, namebufsz);
 	}
 
-      if ((size_t)read (fd, namebuf, m.definition_length) 
+      if ((size_t)read (fd, namebuf, m.definition_length)
 	  != m.definition_length)
 	goto error;
-      
+
       h = cpp_lookup (r, namebuf, m.name_length);
       if (m.flags & NODE_POISONED
-	  || h->type != NT_MACRO
 	  || h->flags & NODE_POISONED)
 	{
 	  if (CPP_OPTION (r, warn_invalid_pch))
-	    cpp_error (r, CPP_DL_WARNING_SYSHDR,
-		       "%s: not used because `%.*s' not defined",
-		       name, m.name_length, namebuf);
+	    cpp_warning_syshdr (r, CPP_W_INVALID_PCH,
+		                "%s: not used because `%.*s' is poisoned",
+		                name, m.name_length, namebuf);
+	  goto fail;
+	}
+
+      if (h->type != NT_MACRO)
+	{
+	  /* It's ok if __GCC_HAVE_DWARF2_CFI_ASM becomes undefined,
+	     as in, when the PCH file is created with -g and we're
+	     attempting to use it without -g.  Restoring the PCH file
+	     is supposed to bring in this definition *and* enable the
+	     generation of call frame information, so that precompiled
+	     definitions that take this macro into accout, to decide
+	     what asm to emit, won't issue .cfi directives when the
+	     compiler doesn't.  */
+	  if (!(h->flags & NODE_USED)
+	      && m.name_length == sizeof ("__GCC_HAVE_DWARF2_CFI_ASM") - 1
+	      && !memcmp (namebuf, "__GCC_HAVE_DWARF2_CFI_ASM", m.name_length))
+	    continue;
+
+	  if (CPP_OPTION (r, warn_invalid_pch))
+	    cpp_warning_syshdr (r, CPP_W_INVALID_PCH,
+		                "%s: not used because `%.*s' not defined",
+		                name, m.name_length, namebuf);
 	  goto fail;
 	}
 
       newdefn = cpp_macro_definition (r, h);
-      
+
       if (m.definition_length != ustrlen (newdefn)
 	  || memcmp (namebuf, newdefn, m.definition_length) != 0)
 	{
 	  if (CPP_OPTION (r, warn_invalid_pch))
-	    cpp_error (r, CPP_DL_WARNING_SYSHDR,
+	    cpp_warning_syshdr (r, CPP_W_INVALID_PCH,
 	       "%s: not used because `%.*s' defined as `%s' not `%.*s'",
 		       name, m.name_length, namebuf, newdefn + m.name_length,
 		       m.definition_length - m.name_length,
@@ -498,17 +661,17 @@ cpp_valid_state (cpp_reader *r, const char *name, int fd)
   nl.defs = XNEWVEC (cpp_hashnode *, nl.asize);
   cpp_forall_identifiers (r, &collect_ht_nodes, &nl);
   qsort (nl.defs, nl.n_defs, sizeof (cpp_hashnode *), &comp_hashnodes);
- 
+
   /* Loop through nl.defs and undeftab, both of which are sorted lists.
      There should be no matches.  */
   first = undeftab;
   last = undeftab + m.definition_length;
   i = 0;
- 
+
   while (first < last && i < nl.n_defs)
     {
       int cmp = ustrcmp (first, NODE_NAME (nl.defs[i]));
- 
+
       if (cmp < 0)
  	first += ustrlen (first) + 1;
       else if (cmp > 0)
@@ -516,15 +679,31 @@ cpp_valid_state (cpp_reader *r, const char *name, int fd)
       else
 	{
 	  if (CPP_OPTION (r, warn_invalid_pch))
-	    cpp_error (r, CPP_DL_WARNING_SYSHDR, 
-		       "%s: not used because `%s' is defined",
-		       name, first);
+	    cpp_warning_syshdr (r, CPP_W_INVALID_PCH,
+		                "%s: not used because `%s' is defined",
+		                name, first);
 	  goto fail;
 	}
     }
-   
+
   free(nl.defs);
+  nl.defs = NULL;
   free (undeftab);
+  undeftab = NULL;
+
+  /* Read in the next value of __COUNTER__.
+     Check that (a) __COUNTER__ was not used in the pch or (b) __COUNTER__
+     has not been used in this translation unit. */
+  if (read (fd, &counter, sizeof (counter)) != sizeof (counter))
+    goto error;
+  if (counter && r->counter)
+    {
+      if (CPP_OPTION (r, warn_invalid_pch))
+	cpp_warning_syshdr (r, CPP_W_INVALID_PCH,
+		            "%s: not used because `__COUNTER__' is invalid",
+		            name);
+	goto fail;
+    }
 
   /* We win!  */
   return 0;
@@ -534,18 +713,15 @@ cpp_valid_state (cpp_reader *r, const char *name, int fd)
   return -1;
 
  fail:
-  if (namebuf != NULL)
-    free (namebuf);
-  if (undeftab != NULL)
-    free (undeftab);
-  if (nl.defs != NULL)
-    free (nl.defs);
+  free (namebuf);
+  free (undeftab);
+  free (nl.defs);
   return 1;
 }
 
 /* Save all the existing macros.  */
 
-struct save_macro_data 
+struct save_macro_data
 {
   uchar **defns;
   size_t count;
@@ -567,19 +743,25 @@ struct save_macro_data
    file were not saved in this way, but this is not done (yet), except
    for builtins, and for #assert by default.  */
 
-static int 
+static int
 save_macros (cpp_reader *r, cpp_hashnode *h, void *data_p)
 {
   struct save_macro_data *data = (struct save_macro_data *)data_p;
+
+  if ((h->flags & NODE_BUILTIN)
+      && h->type == NT_MACRO
+      && r->cb.user_builtin_macro)
+    r->cb.user_builtin_macro (r, h);
+
   if (h->type != NT_VOID
       && (h->flags & NODE_BUILTIN) == 0)
     {
       if (data->count == data->array_size)
 	{
 	  data->array_size *= 2;
-	  data->defns = XRESIZEVEC (uchar *, data->defns, (data->array_size)); 
+	  data->defns = XRESIZEVEC (uchar *, data->defns, (data->array_size));
 	}
-      
+
       switch (h->type)
 	{
 	case NT_ASSERTION:
@@ -596,7 +778,7 @@ save_macros (cpp_reader *r, cpp_hashnode *h, void *data_p)
 	    data->defns[data->count][defnlen] = '\n';
 	  }
 	  break;
-	  
+
 	default:
 	  abort ();
 	}
@@ -612,7 +794,7 @@ void
 cpp_prepare_state (cpp_reader *r, struct save_macro_data **data)
 {
   struct save_macro_data *d = XNEW (struct save_macro_data);
-  
+
   d->array_size = 512;
   d->defns = XNEWVEC (uchar *, d->array_size);
   d->count = 0;
@@ -622,7 +804,7 @@ cpp_prepare_state (cpp_reader *r, struct save_macro_data **data)
 }
 
 /* Given a precompiled header that was previously determined to be valid,
-   apply all its definitions (and undefinitions) to the current state. 
+   apply all its definitions (and undefinitions) to the current state.
    DEPNAME is passed to deps_restore.  */
 
 int
@@ -631,8 +813,9 @@ cpp_read_state (cpp_reader *r, const char *name, FILE *f,
 {
   size_t i;
   struct lexer_state old_state;
+  unsigned int counter;
 
-  /* Restore spec_nodes, which will be full of references to the old 
+  /* Restore spec_nodes, which will be full of references to the old
      hashtable entries and so will now be invalid.  */
   {
     struct spec_nodes *s = &r->spec_nodes;
@@ -690,8 +873,17 @@ cpp_read_state (cpp_reader *r, const char *name, FILE *f,
   if (! _cpp_read_file_entries (r, f))
     goto error;
 
+  if (fread (&counter, sizeof (counter), 1, f) != 1)
+    goto error;
+
+  if (!r->counter)
+    r->counter = counter;
+
+  /* Read pushed macros. */
+  if (! _cpp_restore_pushed_macros (r, f))
+    goto error;
   return 0;
-  
+
  error:
   cpp_errno (r, CPP_DL_ERROR, "while reading precompiled header");
   return -1;

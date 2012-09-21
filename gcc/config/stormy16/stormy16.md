@@ -1,13 +1,13 @@
 ;; XSTORMY16 Machine description template
-;; Copyright (C) 1997, 1998, 1999, 2001, 2002, 2003, 2004, 2005
-;; Free Software Foundation, Inc.
+;; Copyright (C) 1997, 1998, 1999, 2001, 2002, 2003, 2004, 2005, 2007, 2008,
+;; 2010 Free Software Foundation, Inc.
 ;; Contributed by Red Hat, Inc.
 
 ;; This file is part of GCC.
 
 ;; GCC is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
-;; the Free Software Foundation; either version 2, or (at your option)
+;; the Free Software Foundation; either version 3, or (at your option)
 ;; any later version.
 
 ;; GCC is distributed in the hope that it will be useful,
@@ -16,9 +16,8 @@
 ;; GNU General Public License for more details.
 
 ;; You should have received a copy of the GNU General Public License
-;; along with GCC; see the file COPYING.  If not, write to
-;; the Free Software Foundation, 51 Franklin Street, Fifth Floor,
-;; Boston, MA 02110-1301, USA.
+;; along with GCC; see the file COPYING3.  If not see
+;; <http://www.gnu.org/licenses/>.
 
 ;;- See file "rtl.def" for documentation on define_insn, match_*, et. al.
 
@@ -29,7 +28,6 @@
 ;; d  $8
 ;; e  $0..$7
 ;; t  $0..$1
-;; y  Carry
 ;; z  $8..$9
 ;; I  0..3
 ;; J  2**N mask
@@ -46,6 +44,11 @@
 ;; U  -inf..1 or 16..inf
 ;; Z  0
 
+(define_constants
+  [
+    (CARRY_REG 16)
+  ]
+)
 
 ;; ::::::::::::::::::::
 ;; ::
@@ -54,11 +57,11 @@
 ;; ::::::::::::::::::::
 
 ; Categorize branches for the conditional in the length attribute.
-(define_attr "branch_class" "notdirectbranch,br12,bcc12,bcc8p2,bcc8p4" 
+(define_attr "branch_class" "notdirectbranch,br12,bcc12,bcc8p2,bcc8p4"
     (const_string "notdirectbranch"))
 
 ; The length of an instruction, used for branch shortening.
-(define_attr "length" "" 
+(define_attr "length" ""
   (cond
    [(eq_attr "branch_class" "br12")
      (if_then_else (and (ge (minus (match_dup 0) (pc)) (const_int -2046))
@@ -92,6 +95,7 @@
 			(set_attr "psw_operand" "clobber")])
 
 (include "predicates.md")
+(include "constraints.md")
 
 ;; ::::::::::::::::::::
 ;; ::
@@ -130,11 +134,13 @@
   [(set (match_operand:QI 0 "nonimmediate_nonstack_operand" "")
 	(match_operand:QI 1 "general_operand" ""))]
   ""
-  "{ xstormy16_expand_move (QImode, operands[0], operands[1]); DONE; }")
+  { xstormy16_expand_move (QImode, operands[0], operands[1]);
+    DONE;
+  })
 
 (define_insn "movqi_internal"
-  [(set (match_operand:QI 0 "nonimmediate_nonstack_operand" "=r,m,e,e,T,r,S,W,r")
-	(match_operand:QI 1 "general_operand"       "r,e,m,i,i,i,i,ir,W"))]
+  [(set (match_operand:QI 0 "nonimmediate_nonstack_operand" "=r,m,e,e,T,r,S,W,e")
+	(match_operand:QI 1 "general_operand"       "r,e,m,i,i,i,i,ie,W"))]
   ""
   "@
    mov %0,%1
@@ -146,7 +152,7 @@
    mov.b %0,%1
    mov.b %0,%1
    mov.b %0,%1"
-  [(set_attr_alternative "length" 
+  [(set_attr_alternative "length"
 	     [(const_int 2)
 	      (if_then_else (match_operand:QI 0 "short_memory_operand" "")
 			    (const_int 2)
@@ -182,11 +188,13 @@
   [(set (match_operand:HI 0 "nonimmediate_nonstack_operand" "")
 	(match_operand:HI 1 "xs_hi_general_operand" ""))]
   ""
-  "{ xstormy16_expand_move (HImode, operands[0], operands[1]); DONE; }")
+  { xstormy16_expand_move (HImode, operands[0], operands[1]);
+    DONE;
+  })
 
 (define_insn "movhi_internal"
-  [(set (match_operand:HI 0 "nonimmediate_nonstack_operand" "=r,m,e,e,T,r,S,W,r")
-	(match_operand:HI 1 "xs_hi_general_operand"       "r,e,m,L,L,i,i,ir,W"))]
+  [(set (match_operand:HI 0 "nonimmediate_nonstack_operand" "=r,m,e,e,T,r,S,W,e")
+	(match_operand:HI 1 "xs_hi_general_operand"          "r,e,m,L,L,i,i,ie,W"))]
   ""
   "@
    mov %0,%1
@@ -198,7 +206,7 @@
    mov.w %0,%1
    mov.w %0,%1
    mov.w %0,%1"
-  [(set_attr_alternative "length" 
+  [(set_attr_alternative "length"
 	     [(const_int 2)
 	      (if_then_else (match_operand:QI 0 "short_memory_operand" "")
 			    (const_int 2)
@@ -218,7 +226,9 @@
   [(set (match_operand:SI 0 "nonimmediate_operand" "")
 	(match_operand:SI 1 "general_operand" ""))]
   ""
-  "{ xstormy16_expand_move (SImode, operands[0], operands[1]); DONE; }")
+  { xstormy16_expand_move (SImode, operands[0], operands[1]);
+    DONE;
+  })
 
 (define_insn_and_split "*movsi_internal"
   [(set (match_operand:SI 0 "nonimmediate_operand" "=r,Q,r,m,e,&e,e,r,S")
@@ -227,8 +237,10 @@
   "#"
   "reload_completed"
   [(pc)]
-  "{ xstormy16_split_move (SImode, operands[0], operands[1]); DONE; }"
-  [(set_attr_alternative "length" 
+  { xstormy16_split_move (SImode, operands[0], operands[1]);
+    DONE;
+  }
+  [(set_attr_alternative "length"
 	     [(const_int 4)
 	      (const_int 4)
 	      (const_int 4)
@@ -244,7 +256,6 @@
 	      (const_int 4)
 	      (const_int 8)
 	      (const_int 8)])])
-
 
 ;; ::::::::::::::::::::
 ;; ::
@@ -266,10 +277,9 @@
    mov.b %0, %1
    shl %0,#8\n\tshr %0,#8"
   [(set_attr "psw_operand" "nop,0")
-   (set_attr_alternative "length" 
-	     [(const_int 2)
-	      (const_int 4)])])
-
+   (set_attr_alternative "length"
+	     [(const_int 4)
+	      (const_int 8)])])
 
 ;; ::::::::::::::::::::
 ;; ::
@@ -300,16 +310,13 @@
 
 ;; ::::::::::::::::::::
 ;; ::
-;; :: 16 bit Integer arithmetic
+;; :: 16-bit Integer arithmetic
 ;; ::
 ;; ::::::::::::::::::::
 
 ;; Addition
-; Operand 3 is marked earlyclobber because that helps reload
-; to generate better code---this pattern will never need the
-; carry register as an input, and some output reloads or input
-; reloads might need to use it.  In fact, without the '&' reload
-; will fail in some cases.
+; Note - the early clobber modifier is no longer needed on operand 3
+; and in fact can cause some reload spill failures if it is present.
 ; Note that the 'Z' constraint matches "add $reg,0", which reload
 ; will occasionally emit.  We avoid the "add $reg,imm" match because
 ; it clobbers the carry.
@@ -317,7 +324,7 @@
   [(set (match_operand:HI 0 "register_operand" "=r,r,r,T,T,r,r,r")
 	(plus:HI (match_operand:HI 1 "register_operand" "%0,0,0,0,0,0,0,0")
 		 (match_operand:HI 2 "xs_hi_nonmemory_operand" "O,P,Z,L,M,Ir,N,i")))
-   (clobber (match_scratch:BI 3 "=X,X,X,&y,&y,&y,&y,&y"))]
+   (clobber (reg:BI CARRY_REG))]
   ""
   "@
    inc %0,%o2
@@ -330,27 +337,11 @@
    add %0,%2"
   [(set_attr "length" "2,2,0,2,2,2,2,4")])
 
-; Reload can generate addition operations.  The SECONDARY_RELOAD_CLASS
-; macro causes it to allocate the carry register; this pattern
-; shows it how to place the register in RTL to make the addition work.
-(define_expand "reload_inhi"
-  [(parallel [(set (match_operand:HI 0 "register_operand" "=r")
-		   (match_operand:HI 1 "xstormy16_carry_plus_operand" ""))
-	      (clobber (match_operand:BI 2 "" "=&y"))])]
-  ""
-  "if (! rtx_equal_p (operands[0], XEXP (operands[1], 0)))
-    {
-      emit_insn (gen_rtx_SET (VOIDmode, operands[0], XEXP (operands[1], 0)));
-      operands[1] = gen_rtx_PLUS (GET_MODE (operands[1]), operands[0],
-				  XEXP (operands[1], 1));
-    }
- ")
-
 (define_insn "addchi4"
   [(set (match_operand:HI 0 "register_operand" "=T,r,r")
 	(plus:HI (match_operand:HI 1 "register_operand" "%0,0,0")
 		 (match_operand:HI 2 "xs_hi_nonmemory_operand" "L,Ir,i")))
-   (set (match_operand:BI 3 "register_operand" "=y,y,y")
+   (set (reg:BI CARRY_REG)
         (truncate:BI (lshiftrt:SI (plus:SI (zero_extend:SI (match_dup 1))
 					   (zero_extend:SI (match_dup 2)))
 				  (const_int 16))))]
@@ -364,14 +355,12 @@
 (define_insn "addchi5"
   [(set (match_operand:HI 0 "register_operand" "=T,r,r")
 	(plus:HI (plus:HI (match_operand:HI 1 "register_operand" "%0,0,0")
-			  (zero_extend:HI (match_operand:BI 3 
-							    "register_operand"
-							    "y,y,y")))
+			  (zero_extend:HI (reg:BI CARRY_REG)))
 		 (match_operand:HI 2 "xs_hi_nonmemory_operand" "L,Ir,i")))
-   (set (match_operand:BI 4 "register_operand" "=y,y,y") 
-        (truncate:BI (lshiftrt:SI (plus:SI (plus:SI 
+   (set (reg:BI CARRY_REG)
+        (truncate:BI (lshiftrt:SI (plus:SI (plus:SI
 					    (zero_extend:SI (match_dup 1))
-					    (zero_extend:SI (match_dup 3)))
+					    (zero_extend:SI (reg:BI CARRY_REG)))
 					   (zero_extend:SI (match_dup 2)))
 				  (const_int 16))))]
   ""
@@ -391,7 +380,7 @@
   [(set (match_operand:HI 0 "register_operand" "=r,r,T,T,r,r,r")
 	(minus:HI (match_operand:HI 1 "register_operand" "0,0,0,0,0,0,0")
 		  (match_operand:HI 2 "xs_hi_nonmemory_operand" "O,P,L,M,rI,M,i")))
-   (clobber (match_scratch:BI 3 "=X,X,&y,&y,&y,&y,&y"))]
+   (clobber (reg:BI CARRY_REG))]
   ""
   "@
    dec %0,%o2
@@ -407,7 +396,7 @@
   [(set (match_operand:HI 0 "register_operand" "=T,r,r")
 	(minus:HI (match_operand:HI 1 "register_operand" "0,0,0")
 		  (match_operand:HI 2 "xs_hi_nonmemory_operand" "L,Ir,i")))
-   (set (match_operand:BI 3 "register_operand" "=y,y,y") 
+   (set (reg:BI CARRY_REG)
         (truncate:BI (lshiftrt:SI (minus:SI (zero_extend:SI (match_dup 1))
 					    (zero_extend:SI (match_dup 2)))
 				  (const_int 16))))]
@@ -421,14 +410,12 @@
 (define_insn "subchi5"
   [(set (match_operand:HI 0 "register_operand" "=T,r,r")
 	(minus:HI (minus:HI (match_operand:HI 1 "register_operand" "0,0,0")
-			  (zero_extend:HI (match_operand:BI 3 
-							    "register_operand"
-							    "y,y,y")))
+			  (zero_extend:HI (reg:BI CARRY_REG)))
 		 (match_operand:HI 2 "xs_hi_nonmemory_operand" "L,Ir,i")))
-   (set (match_operand:BI 4 "register_operand" "=y,y,y") 
-        (truncate:BI (lshiftrt:SI (minus:SI (minus:SI 
+   (set (reg:BI CARRY_REG)
+        (truncate:BI (lshiftrt:SI (minus:SI (minus:SI
 					     (zero_extend:SI (match_dup 1))
-					     (zero_extend:SI (match_dup 3)))
+					     (zero_extend:SI (reg:BI CARRY_REG)))
 					    (zero_extend:SI (match_dup 2)))
 				  (const_int 16))))]
   ""
@@ -449,7 +436,7 @@
   "mul"
   [(set_attr "psw_operand" "nop")])
 
-;; Unsigned multiplication producing 64 bit results from 32 bit inputs
+;; Unsigned multiplication producing 64-bit results from 32-bit inputs
 ; The constraint on operand 0 is 't' because it is actually two regs
 ; long, and both regs must match the constraint.
 (define_insn "umulhisi3"
@@ -515,14 +502,13 @@
   [(set (match_operand:HI 0 "register_operand" "")
 	(not:HI (match_operand:HI 1 "register_operand" "")))
    (parallel [(set (match_dup 0) (plus:HI (match_dup 0) (const_int 1)))
-	      (clobber (match_scratch:BI 3 ""))])]
+	      (clobber (reg:BI CARRY_REG))])]
   ""
   "")
-
 
 ;; ::::::::::::::::::::
 ;; ::
-;; :: 16 bit Integer Shifts and Rotates
+;; :: 16-bit Integer Shifts and Rotates
 ;; ::
 ;; ::::::::::::::::::::
 
@@ -531,7 +517,7 @@
   [(set (match_operand:HI 0 "register_operand" "=r")
 	(ashift:HI (match_operand:HI 1 "register_operand" "0")
 		   (match_operand:HI 2 "nonmemory_operand" "ri")))
-   (clobber (match_scratch:BI 3 "=y"))]
+   (clobber (reg:BI CARRY_REG))]
   ""
   "shl %0,%2")
 
@@ -540,7 +526,7 @@
   [(set (match_operand:HI 0 "register_operand" "=r")
 	(ashiftrt:HI (match_operand:HI 1 "register_operand" "0")
 		     (match_operand:HI 2 "nonmemory_operand" "ri")))
-   (clobber (match_scratch:BI 3 "=y"))]
+   (clobber (reg:BI CARRY_REG))]
   ""
   "asr %0,%2")
 
@@ -549,18 +535,17 @@
   [(set (match_operand:HI 0 "register_operand" "=r")
 	(lshiftrt:HI (match_operand:HI 1 "register_operand" "0")
 		     (match_operand:HI 2 "nonmemory_operand" "ri")))
-   (clobber (match_scratch:BI 3 "=y"))]
+   (clobber (reg:BI CARRY_REG))]
   ""
   "shr %0,%2")
-
 
 ;; ::::::::::::::::::::
 ;; ::
-;; :: 16 Bit Integer Logical operations
+;; :: 16-Bit Integer Logical operations
 ;; ::
 ;; ::::::::::::::::::::
 
-;; Logical AND, 16 bit integers
+;; Logical AND, 16-bit integers
 (define_insn "andhi3"
   [(set (match_operand:HI 0 "xstormy16_splittable_below100_or_register" "=T,r,r,r,W")
 	(and:HI (match_operand:HI 1 "xstormy16_below100_or_register" "%0,0,0,0,0")
@@ -582,15 +567,14 @@
   [(set (match_dup 3)
 	(and:QI (match_dup 4)
 		(match_dup 5)))]
-  "{ int s = ((INTVAL (operands[2]) & 0xff) == 0xff) ? 1 : 0;
-     operands[3] = simplify_gen_subreg (QImode, operands[0], HImode, s);
-     operands[4] = simplify_gen_subreg (QImode, operands[1], HImode, s);
-     operands[5] = simplify_gen_subreg (QImode, operands[2], HImode, s);
-     operands[5] = GEN_INT (INTVAL (operands[5]) | ~(HOST_WIDE_INT)0xff);
-   }
-")
+  { int s = ((INTVAL (operands[2]) & 0xff) == 0xff) ? 1 : 0;
+    operands[3] = simplify_gen_subreg (QImode, operands[0], HImode, s);
+    operands[4] = simplify_gen_subreg (QImode, operands[1], HImode, s);
+    operands[5] = simplify_gen_subreg (QImode, operands[2], HImode, s);
+    operands[5] = GEN_INT (INTVAL (operands[5]) | ~ (HOST_WIDE_INT) 0xff);
+  })
 
-;; Inclusive OR, 16 bit integers
+;; Inclusive OR, 16-bit integers
 (define_insn "iorhi3"
   [(set (match_operand:HI 0 "xstormy16_splittable_below100_or_register" "=T,r,r,r,W")
 	(ior:HI (match_operand:HI 1 "xstormy16_below100_or_register" "%0,0,0,0,0")
@@ -612,15 +596,14 @@
   [(set (match_dup 3)
 	(ior:QI (match_dup 4)
 		(match_dup 5)))]
-  "{ int s = ((INTVAL (operands[2]) & 0xff) == 0x00) ? 1 : 0;
-     operands[3] = simplify_gen_subreg (QImode, operands[0], HImode, s);
-     operands[4] = simplify_gen_subreg (QImode, operands[1], HImode, s);
-     operands[5] = simplify_gen_subreg (QImode, operands[2], HImode, s);
-     operands[5] = GEN_INT (INTVAL (operands[5]) & 0xff);
-   }
-")
+  { int s = ((INTVAL (operands[2]) & 0xff) == 0x00) ? 1 : 0;
+    operands[3] = simplify_gen_subreg (QImode, operands[0], HImode, s);
+    operands[4] = simplify_gen_subreg (QImode, operands[1], HImode, s);
+    operands[5] = simplify_gen_subreg (QImode, operands[2], HImode, s);
+    operands[5] = GEN_INT (INTVAL (operands[5]) & 0xff);
+  })
 
-;; Exclusive OR, 16 bit integers
+;; Exclusive OR, 16-bit integers
 (define_insn "xorhi3"
   [(set (match_operand:HI 0 "register_operand" "=T,r,r")
 	(xor:HI (match_operand:HI 1 "register_operand" "%0,0,0")
@@ -632,17 +615,16 @@
    xor %0,%2"
   [(set_attr "length" "2,2,4")])
 
-;; One's complement, 16 bit integers
+;; One's complement, 16-bit integers
 (define_insn "one_cmplhi2"
   [(set (match_operand:HI 0 "register_operand" "=r")
 	(not:HI (match_operand:HI 1 "register_operand" "0")))]
   ""
   "not %0")
-
 
 ;; ::::::::::::::::::::
 ;; ::
-;; :: 32 bit Integer arithmetic
+;; :: 32-bit Integer arithmetic
 ;; ::
 ;; ::::::::::::::::::::
 
@@ -651,13 +633,15 @@
   [(set (match_operand:SI 0 "register_operand" "=r")
 	(plus:SI (match_operand:SI 1 "register_operand" "%0")
 		 (match_operand:SI 2 "nonmemory_operand" "ri")))
-   (clobber (match_scratch:BI 3 "=y"))]
+   (clobber (reg:BI CARRY_REG))]
   ""
   "#"
   "reload_completed"
   [(pc)]
-  "{ xstormy16_expand_arith (SImode, PLUS, operands[0], operands[1],
-			    operands[2], operands[3]); DONE; } "
+  { xstormy16_expand_arith (SImode, PLUS, operands[0], operands[1],
+			    operands[2]);
+    DONE;
+  }
   [(set_attr "length" "4")])
 
 ;; Subtraction
@@ -665,37 +649,40 @@
   [(set (match_operand:SI 0 "register_operand" "=r")
 	(minus:SI (match_operand:SI 1 "register_operand" "0")
 		 (match_operand:SI 2 "nonmemory_operand" "ri")))
-   (clobber (match_scratch:BI 3 "=y"))]
+   (clobber (reg:BI CARRY_REG))]
   ""
   "#"
   "reload_completed"
   [(pc)]
-  "{ xstormy16_expand_arith (SImode, MINUS, operands[0], operands[1],
-			    operands[2], operands[3]); DONE; } "
+  { xstormy16_expand_arith (SImode, MINUS, operands[0], operands[1],
+			    operands[2]);
+    DONE;
+  }
   [(set_attr "length" "4")])
 
 (define_expand "negsi2"
   [(parallel [(set (match_operand:SI 0 "register_operand" "")
 		   (neg:SI (match_operand:SI 1 "register_operand" "")))
-	      (clobber (match_scratch:BI 2 ""))])]
+	      (clobber (reg:BI CARRY_REG))])]
   ""
-  "{ operands[2] = gen_reg_rtx (HImode);
-     operands[3] = gen_reg_rtx (BImode); }")
+  { operands[2] = gen_reg_rtx (HImode); })
 
 (define_insn_and_split "*negsi2_internal"
   [(set (match_operand:SI 0 "register_operand" "=&r")
 	(neg:SI (match_operand:SI 1 "register_operand" "r")))
-   (clobber (match_scratch:BI 2 "=y"))]
+   (clobber (reg:BI CARRY_REG))]
   ""
   "#"
   "reload_completed"
   [(pc)]
-  "{ xstormy16_expand_arith (SImode, NEG, operands[0], operands[0],
-			    operands[1], operands[2]); DONE; }")
+  { xstormy16_expand_arith (SImode, NEG, operands[0], operands[0],
+			    operands[1]);
+    DONE;
+  })
 
 ;; ::::::::::::::::::::
 ;; ::
-;; :: 32 bit Integer Shifts and Rotates
+;; :: 32-bit Integer Shifts and Rotates
 ;; ::
 ;; ::::::::::::::::::::
 
@@ -704,83 +691,52 @@
   [(parallel [(set (match_operand:SI 0 "register_operand" "")
 		   (ashift:SI (match_operand:SI 1 "register_operand" "")
 			      (match_operand:SI 2 "const_int_operand" "")))
-	      (clobber (match_dup 3))
-	      (clobber (match_dup 4))])]
+	      (clobber (reg:BI CARRY_REG))
+	      (clobber (match_dup 3))])]
   ""
-  " if (! const_int_operand (operands[2], SImode)) FAIL;
-  operands[3] = gen_reg_rtx (BImode); operands[4] = gen_reg_rtx (HImode); ")
+  { if (! const_int_operand (operands[2], SImode))
+      FAIL;
+    operands[3] = gen_reg_rtx (HImode);
+  })
 
 ;; Arithmetic Shift Right
 (define_expand "ashrsi3"
   [(parallel [(set (match_operand:SI 0 "register_operand" "")
 		   (ashiftrt:SI (match_operand:SI 1 "register_operand" "")
 			        (match_operand:SI 2 "const_int_operand" "")))
-	      (clobber (match_dup 3))
-	      (clobber (match_dup 4))])]
+	      (clobber (reg:BI CARRY_REG))
+	      (clobber (match_dup 3))])]
   ""
-  " if (! const_int_operand (operands[2], SImode)) FAIL;
-  operands[3] = gen_reg_rtx (BImode); operands[4] = gen_reg_rtx (HImode); ")
+  { if (! const_int_operand (operands[2], SImode))
+      FAIL;
+    operands[3] = gen_reg_rtx (HImode);
+  })
 
 ;; Logical Shift Right
 (define_expand "lshrsi3"
   [(parallel [(set (match_operand:SI 0 "register_operand" "")
 		   (lshiftrt:SI (match_operand:SI 1 "register_operand" "")
 			        (match_operand:SI 2 "const_int_operand" "")))
-	      (clobber (match_dup 3))
-	      (clobber (match_dup 4))])]
+	      (clobber (reg:BI CARRY_REG))
+	      (clobber (match_dup 3))])]
   ""
-  " if (! const_int_operand (operands[2], SImode)) FAIL;
-  operands[3] = gen_reg_rtx (BImode); operands[4] = gen_reg_rtx (HImode); ")
+  { if (! const_int_operand (operands[2], SImode))
+      FAIL;
+    operands[3] = gen_reg_rtx (HImode);
+  })
 
 (define_insn "*shiftsi"
   [(set (match_operand:SI 0 "register_operand" "=r,r")
-	(match_operator:SI 5 "shift_operator"
+	(match_operator:SI 4 "shift_operator"
 	 [(match_operand:SI 1 "register_operand" "0,0")
 	  (match_operand:SI 2 "const_int_operand" "U,n")]))
-   (clobber (match_operand:BI 3 "register_operand" "=y,y"))
-   (clobber (match_operand:HI 4 "" "=X,r"))]
+   (clobber (reg:BI CARRY_REG))
+   (clobber (match_operand:HI 3 "" "=X,r"))]
   ""
-  "* return xstormy16_output_shift (SImode, GET_CODE (operands[5]), 
-				   operands[0], operands[2], operands[4]);"
+  "* return xstormy16_output_shift (SImode, GET_CODE (operands[4]),
+				    operands[0], operands[2], operands[3]);"
   [(set_attr "length" "6,10")
    (set_attr "psw_operand" "clobber,clobber")])
-
-
-;; ::::::::::::::::::::
-;; ::
-;; :: Comparisons
-;; ::
-;; ::::::::::::::::::::
-
-;; Note, we store the operands in the comparison insns, and use them later
-;; when generating the branch or scc operation.
-
-;; First the routines called by the machine independent part of the compiler
-(define_expand "cmphi"
-  [(set (cc0)
-        (compare (match_operand:HI 0 "register_operand" "")
-  		 (match_operand:HI 1 "nonmemory_operand" "")))]
-  ""
-  "
-{
-  xstormy16_compare_op0 = operands[0];
-  xstormy16_compare_op1 = operands[1];
-  DONE;
-}")
-
-; There are no real SImode comparisons, but some can be emulated
-; by performing a SImode subtract and looking at the condition flags.
-(define_expand "cmpsi"
-  [(set (cc0)
-        (compare (match_operand:SI 0 "register_operand" "")
-  		 (match_operand:SI 1 "nonmemory_operand" "")))]
-  ""
-  "
-{
-  xstormy16_compare_op0 = operands[0];
-  xstormy16_compare_op1 = operands[1];
-  DONE;
-}")
 
 
 ;; ::::::::::::::::::::
@@ -789,67 +745,31 @@
 ;; ::
 ;; ::::::::::::::::::::
 
-(define_expand "beq"
-  [(use (match_operand 0 "" ""))]
+(define_expand "cbranchhi4"
+  [(set (pc)
+	(if_then_else (match_operator 0 "comparison_operator"
+				      [(match_operand:HI 1 "register_operand" "")
+				       (match_operand:HI 2 "nonmemory_operand" "")])
+		      (label_ref (match_operand 3 "" ""))
+		      (pc)))
+   (clobber (reg:BI CARRY_REG))]
   ""
-  "{ xstormy16_emit_cbranch (EQ, operands[0]); DONE; }")
-
-(define_expand "bne"
-  [(use (match_operand 0 "" ""))]
-  ""
-  "{ xstormy16_emit_cbranch (NE, operands[0]); DONE; }")
-
-(define_expand "bge"
-  [(use (match_operand 0 "" ""))]
-  ""
-  "{ xstormy16_emit_cbranch (GE, operands[0]); DONE; }")
-
-(define_expand "bgt"
-  [(use (match_operand 0 "" ""))]
-  ""
-  "{ xstormy16_emit_cbranch (GT, operands[0]); DONE; }")
-
-(define_expand "ble"
-  [(use (match_operand 0 "" ""))]
-  ""
-  "{ xstormy16_emit_cbranch (LE, operands[0]); DONE; }")
-
-(define_expand "blt"
-  [(use (match_operand 0 "" ""))]
-  ""
-  "{ xstormy16_emit_cbranch (LT, operands[0]); DONE; }")
-
-(define_expand "bgeu"
-  [(use (match_operand 0 "" ""))]
-  ""
-  "{ xstormy16_emit_cbranch (GEU, operands[0]); DONE; }")
-
-(define_expand "bgtu"
-  [(use (match_operand 0 "" ""))]
-  ""
-  "{ xstormy16_emit_cbranch (GTU, operands[0]); DONE; }")
-
-(define_expand "bleu"
-  [(use (match_operand 0 "" ""))]
-  ""
-  "{ xstormy16_emit_cbranch (LEU, operands[0]); DONE; }")
-
-(define_expand "bltu"
-  [(use (match_operand 0 "" ""))]
-  ""
-  "{ xstormy16_emit_cbranch (LTU, operands[0]); DONE; }")
-
+  {
+  xstormy16_emit_cbranch (GET_CODE (operands[0]), operands[1], operands[2],
+			  operands[3]);
+  DONE;
+})
 
 (define_insn "cbranchhi"
-  [(set (pc) 
+  [(set (pc)
 	(if_then_else (match_operator:HI 1 "comparison_operator"
-				      [(match_operand:HI 2 "nonmemory_operand" 
+				      [(match_operand:HI 2 "nonmemory_operand"
 					"r,e,L")
 				       (match_operand:HI 3 "nonmemory_operand"
 						      "r,L,e")])
 		      (label_ref (match_operand 0 "" ""))
 		      (pc)))
-   (clobber (match_operand:BI 4 "" "=&y,&y,&y"))]
+   (clobber (reg:BI CARRY_REG))]
   ""
   "*
 {
@@ -859,15 +779,15 @@
    (set_attr "psw_operand" "0,0,1")])
 
 (define_insn "cbranchhi_neg"
-  [(set (pc) 
+  [(set (pc)
 	(if_then_else (match_operator:HI 1 "comparison_operator"
-				      [(match_operand:HI 2 "nonmemory_operand" 
+				      [(match_operand:HI 2 "nonmemory_operand"
 							 "r,e,L")
 				       (match_operand:HI 3 "nonmemory_operand"
 							 "r,L,e")])
 		      (pc)
 		      (label_ref (match_operand 0 "" ""))))
-   (clobber (match_operand:BI 4 "" "=&y,&y,&y"))]
+   (clobber (reg:BI CARRY_REG))]
   ""
   "*
 {
@@ -879,16 +799,12 @@
 (define_insn "*eqbranchsi"
   [(set (pc)
 	(if_then_else (match_operator:SI 1 "equality_operator"
-				      [(match_operand:SI 2 "register_operand" 
+				      [(match_operand:SI 2 "register_operand"
 							 "r")
 				       (const_int 0)])
 		      (label_ref (match_operand 0 "" ""))
 		      (pc)))
-;; Although I would greatly like the 'match_dup' in the following line
-;; to actually be a register constraint, there is (at the time of writing) no
-;; way for reload to insert an output reload on the edges out of a branch.
-;; If reload is fixed to use insert_insn_on_edge, this can be changed.
-   (clobber (match_dup 2))]
+   (clobber (match_operand:SI 3 "register_operand" "=2"))]
   ""
   "*
 {
@@ -897,56 +813,25 @@
   [(set_attr "branch_class" "bcc8p2")
    (set_attr "psw_operand" "clobber")])
 
-(define_insn_and_split "*ineqbranchsi"
-  [(set (pc)
-	(if_then_else (match_operator:SI 1 "xstormy16_ineqsi_operator"
-				      [(match_operand:SI 2 "register_operand" 
-							 "r")
-				       (match_operand:SI 3 "nonmemory_operand" 
-							 "ri")])
-		      (label_ref (match_operand 0 "" ""))
-		      (pc)))
-;; Although I would greatly like the 'match_dup' in the following line
-;; to actually be a register constraint, there is (at the time of writing) no
-;; way for reload to insert an output reload on the edges out of a branch.
-;; If reload is fixed to use insert_insn_on_edge, this can be changed,
-;; preferably to a 'minus' operand that explains the actual operation, like:
-; (set (match_operand 5 "register_operand" "=2")
-;      (minus:SI (match_operand 6 "register_operand" "2")
-;		 (match_operand 7 "register_operand" "3")))
-   (clobber (match_dup 2))
-   (clobber (match_operand:BI 4 "" "=&y"))]
-  ""
-  "#"
-  "reload_completed"
-  [(pc)]
-  "{ xstormy16_split_cbranch (SImode, operands[0], operands[1], operands[2],
-			     operands[4]); DONE; }"
-  [(set_attr "length" "8")])
-
 (define_insn "*ineqbranch_1"
   [(set (pc)
-	(if_then_else (match_operator:HI 5 "xstormy16_ineqsi_operator"
-		       [(minus:HI (match_operand:HI 1 "register_operand" 
-						    "T,r,r")
-			   (zero_extend:HI (match_operand:BI 4
-							     "register_operand"
-							     "y,y,y")))
-			(match_operand:HI 3 "nonmemory_operand" "L,Ir,i")])
+	(if_then_else (match_operator:HI 4 "xstormy16_ineqsi_operator"
+		       [(minus:HI (match_operand:HI 1 "register_operand" "T,r,r")
+			   (zero_extend:HI (reg:BI CARRY_REG)))
+			(match_operand:HI 3 "nonmemory_operand" "L,r,i")])
 		      (label_ref (match_operand 0 "" ""))
 		      (pc)))
    (set (match_operand:HI 2 "register_operand" "=1,1,1")
-	(minus:HI (minus:HI (match_dup 1) (zero_extend:HI (match_dup 4)))
+	(minus:HI (minus:HI (match_dup 1) (zero_extend:HI (reg:BI CARRY_REG)))
 		  (match_dup 3)))
-   (clobber (match_operand:BI 6 "" "=y,y,y"))]
+   (clobber (reg:BI CARRY_REG))]
   ""
   "*
 {
-  return xstormy16_output_cbranch_si (operands[5], \"%l0\", 0, insn);
+  return xstormy16_output_cbranch_si (operands[4], \"%l0\", 0, insn);
 }"
   [(set_attr "branch_class" "bcc8p2,bcc8p2,bcc8p4")
    (set_attr "psw_operand" "2,2,2")])
-
 
 ;; ::::::::::::::::::::
 ;; ::
@@ -1042,7 +927,7 @@
 ;; Indirect jump through a register
 (define_expand "indirect_jump"
   [(set (match_dup 1) (const_int 0))
-   (parallel [(set (pc) (match_operand:HI 0 "register_operand" "r"))
+   (parallel [(set (pc) (match_operand:HI 0 "register_operand" ""))
 	      (use (match_dup 1))])]
   ""
   "operands[1] = gen_reg_rtx (HImode);")
@@ -1071,13 +956,12 @@
 }")
 
 (define_insn "tablejump_pcrel"
-  [(set (pc) (mem:HI (plus:HI (pc) 
+  [(set (pc) (mem:HI (plus:HI (pc)
 			      (match_operand:HI 0 "register_operand" "r"))))
    (use (label_ref:SI (match_operand 1 "" "")))]
   ""
   "br %0"
   [(set_attr "psw_operand" "nop")])
-
 
 ;; ::::::::::::::::::::
 ;; ::
@@ -1095,11 +979,10 @@
 (define_expand "prologue"
   [(const_int 1)]
   ""
-  "
-{
-  xstormy16_expand_prologue ();
-  DONE;
-}")
+  {
+    xstormy16_expand_prologue ();
+    DONE;
+  })
 
 ;; Called after register allocation to add any instructions needed for
 ;; the epilogue.  Using an epilogue insn is favored compared to putting
@@ -1111,12 +994,10 @@
 (define_expand "epilogue"
   [(const_int 2)]
   ""
-  "
-{
-  xstormy16_expand_epilogue ();
-  DONE;
-}")
-
+  {
+    xstormy16_expand_epilogue ();
+    DONE;
+  })
 
 ;; ::::::::::::::::::::
 ;; ::
@@ -1147,11 +1028,10 @@
    (match_operand:QI 1 "xstormy16_below100_or_register" "")
    (match_operand:QI 2 "nonmemory_operand" "")]
   ""
-  "
-{
-  xstormy16_expand_iorqi3 (operands);
-  DONE;
-}")
+  {
+    xstormy16_expand_iorqi3 (operands);
+    DONE;
+  })
 
 (define_insn "iorqi3_internal"
   [(set (match_operand:QI 0 "xstormy16_below100_or_register" "=Wr")
@@ -1187,11 +1067,10 @@
    (match_operand:QI 1 "xstormy16_below100_or_register" "")
    (match_operand:QI 2 "nonmemory_operand" "")]
   ""
-  "
-{
-  xstormy16_expand_andqi3 (operands);
-  DONE;
-}")
+  {
+    xstormy16_expand_andqi3 (operands);
+    DONE;
+  })
 
 (define_insn "andqi3_internal"
   [(set (match_operand:QI 0 "xstormy16_below100_or_register" "=Wr")
@@ -1241,20 +1120,20 @@
 ;; we have to code those separately.
 
 (define_insn "*bclrx"
-  [(set (pc) 
+  [(set (pc)
 	(if_then_else (eq:HI (and:QI (match_operand:QI 1 "xstormy16_below100_operand" "W")
 				     (match_operand:HI 2 "immediate_operand" "i"))
 			     (const_int 0))
 		      (label_ref (match_operand 0 "" ""))
 		      (pc)))
-   (clobber (match_operand:BI 3 "" "=y"))]
+   (clobber (reg:BI CARRY_REG))]
   ""
   "bn %1,%B2,%l0"
   [(set_attr "length" "4")
    (set_attr "psw_operand" "nop")])
 
 (define_insn "*bclrx2"
-  [(set (pc) 
+  [(set (pc)
 	(if_then_else (zero_extract:HI
 		       (xor:HI (subreg:HI
 				(match_operand:QI 1 "xstormy16_below100_operand" "W") 0)
@@ -1263,109 +1142,109 @@
 		       (match_operand:HI 3 "immediate_operand" "i"))
 		      (label_ref (match_operand 0 "" ""))
 		      (pc)))
-   (clobber (match_operand:BI 4 "" "=y"))]
+   (clobber (reg:BI CARRY_REG))]
   ""
   "bn %1,%B2,%l0"
   [(set_attr "length" "4")
    (set_attr "psw_operand" "nop")])
 
 (define_insn "*bclrx3"
-  [(set (pc) 
+  [(set (pc)
 	(if_then_else (eq:HI (and:HI (zero_extend:HI (match_operand:QI 1 "xstormy16_below100_operand" "W"))
 				     (match_operand:HI 2 "immediate_operand" "i"))
 			     (const_int 0))
 		      (label_ref (match_operand 0 "" ""))
 		      (pc)))
-   (clobber (match_operand:BI 3 "" "=y"))]
+   (clobber (reg:BI CARRY_REG))]
   ""
   "bn %1,%B2,%l0"
   [(set_attr "length" "4")
    (set_attr "psw_operand" "nop")])
 
 (define_insn "*bclr7"
-  [(set (pc) 
+  [(set (pc)
 	(if_then_else (xor:HI (lshiftrt:HI (subreg:HI
 					    (match_operand:QI 1 "xstormy16_below100_operand" "W") 0)
 					   (const_int 7))
 			      (const_int 1))
 		      (label_ref (match_operand 0 "" ""))
 		      (pc)))
-   (clobber (match_operand:BI 2 "" "=y"))]
+   (clobber (reg:BI CARRY_REG))]
   ""
   "bn %1,#7,%l0"
   [(set_attr "length" "4")
    (set_attr "psw_operand" "nop")])
 
 (define_insn "*bclr15"
-  [(set (pc) 
+  [(set (pc)
 	(if_then_else (ge:HI (sign_extend:HI (match_operand:QI 1 "xstormy16_below100_operand" "W"))
 			     (const_int 0))
 		      (label_ref (match_operand 0 "" ""))
 		      (pc)))
-   (clobber (match_operand:BI 2 "" "=y"))]
+   (clobber (reg:BI CARRY_REG))]
   ""
   "bn %1,#7,%l0"
   [(set_attr "length" "4")
    (set_attr "psw_operand" "nop")])
 
 (define_insn "*bsetx"
-  [(set (pc) 
+  [(set (pc)
 	(if_then_else (ne:HI (and:QI (match_operand:QI 1 "xstormy16_below100_operand" "W")
 				     (match_operand:HI 2 "immediate_operand" "i"))
 			     (const_int 0))
 		      (label_ref (match_operand 0 "" ""))
 		      (pc)))
-   (clobber (match_operand:BI 3 "" "=y"))]
+   (clobber (reg:BI CARRY_REG))]
   ""
   "bp %1,%B2,%l0"
   [(set_attr "length" "4")
    (set_attr "psw_operand" "nop")])
 
 (define_insn "*bsetx2"
-  [(set (pc) 
+  [(set (pc)
 	(if_then_else (zero_extract:HI (match_operand:QI 1 "xstormy16_below100_operand" "W")
 				       (const_int 1)
 				       (match_operand:HI 2 "immediate_operand" "i"))
 		      (label_ref (match_operand 0 "" ""))
 		      (pc)))
-   (clobber (match_operand:BI 3 "" "=y"))]
+   (clobber (reg:BI CARRY_REG))]
   ""
   "bp %1,%b2,%l0"
   [(set_attr "length" "4")
    (set_attr "psw_operand" "nop")])
 
 (define_insn "*bsetx3"
-  [(set (pc) 
+  [(set (pc)
 	(if_then_else (ne:HI (and:HI (zero_extend:HI (match_operand:QI 1 "xstormy16_below100_operand" "W"))
 				     (match_operand:HI 2 "immediate_operand" "i"))
 			     (const_int 0))
 		      (label_ref (match_operand 0 "" ""))
 		      (pc)))
-   (clobber (match_operand:BI 3 "" "=y"))]
+   (clobber (reg:BI CARRY_REG))]
   ""
   "bp %1,%B2,%l0"
   [(set_attr "length" "4")
    (set_attr "psw_operand" "nop")])
 
 (define_insn "*bset7"
-  [(set (pc) 
+  [(set (pc)
 	(if_then_else (lshiftrt:HI (subreg:HI (match_operand:QI 1 "xstormy16_below100_operand" "W") 0)
 				   (const_int 7))
 		      (label_ref (match_operand 0 "" ""))
 		      (pc)))
-   (clobber (match_operand:BI 2 "" "=y"))]
+   (clobber (reg:BI CARRY_REG))]
   ""
   "bp %1,#7,%l0"
   [(set_attr "length" "4")
    (set_attr "psw_operand" "nop")])
 
 (define_insn "*bset15"
-  [(set (pc) 
+  [(set (pc)
 	(if_then_else (lt:HI (sign_extend:HI (match_operand:QI 1 "xstormy16_below100_operand" "W"))
 			     (const_int 0))
 		      (label_ref (match_operand 0 "" ""))
 		      (pc)))
-   (clobber (match_operand:BI 2 "" "=y"))]
+   (clobber (reg:BI CARRY_REG))]
   ""
   "bp %1,#7,%l0"
   [(set_attr "length" "4")

@@ -1,12 +1,12 @@
 /* CPP Library - charsets
-   Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003, 2004
-   Free Software Foundation, Inc.
+   Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2006, 2008, 2009,
+   2010 Free Software Foundation, Inc.
 
    Broken out of c-lex.c Apr 2003, adding valid C99 UCN ranges.
 
 This program is free software; you can redistribute it and/or modify it
 under the terms of the GNU General Public License as published by the
-Free Software Foundation; either version 2, or (at your option) any
+Free Software Foundation; either version 3, or (at your option) any
 later version.
 
 This program is distributed in the hope that it will be useful,
@@ -15,8 +15,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.  */
+along with this program; see the file COPYING3.  If not see
+<http://www.gnu.org/licenses/>.  */
 
 #include "config.h"
 #include "system.h"
@@ -169,7 +169,7 @@ static inline int
 one_utf8_to_cppchar (const uchar **inbufp, size_t *inbytesleftp,
 		     cppchar_t *cp)
 {
-  static const uchar masks[6] = { 0x7F, 0x1F, 0x0F, 0x07, 0x02, 0x01 };
+  static const uchar masks[6] = { 0x7F, 0x1F, 0x0F, 0x07, 0x03, 0x01 };
   static const uchar patns[6] = { 0x00, 0xC0, 0xE0, 0xF0, 0xF8, 0xFC };
 
   cppchar_t c;
@@ -548,6 +548,15 @@ convert_no_conversion (iconv_t cd ATTRIBUTE_UNUSED,
 /* And this one uses the system iconv primitive.  It's a little
    different, since iconv's interface is a little different.  */
 #if HAVE_ICONV
+
+#define CONVERT_ICONV_GROW_BUFFER \
+  do { \
+      outbytesleft += OUTBUF_BLOCK_SIZE; \
+      to->asize += OUTBUF_BLOCK_SIZE; \
+      to->text = XRESIZEVEC (uchar, to->text, to->asize); \
+      outbuf = (char *)to->text + to->asize - outbytesleft; \
+  } while (0)
+
 static bool
 convert_using_iconv (iconv_t cd, const uchar *from, size_t flen,
 		     struct _cpp_strbuf *to)
@@ -570,16 +579,24 @@ convert_using_iconv (iconv_t cd, const uchar *from, size_t flen,
       iconv (cd, &inbuf, &inbytesleft, &outbuf, &outbytesleft);
       if (__builtin_expect (inbytesleft == 0, 1))
 	{
+	  /* Close out any shift states, returning to the initial state.  */
+	  if (iconv (cd, 0, 0, &outbuf, &outbytesleft) == (size_t)-1)
+	    {
+	      if (errno != E2BIG)
+		return false;
+
+	      CONVERT_ICONV_GROW_BUFFER;
+	      if (iconv (cd, 0, 0, &outbuf, &outbytesleft) == (size_t)-1)
+		return false;
+	    }
+
 	  to->len = to->asize - outbytesleft;
 	  return true;
 	}
       if (errno != E2BIG)
 	return false;
 
-      outbytesleft += OUTBUF_BLOCK_SIZE;
-      to->asize += OUTBUF_BLOCK_SIZE;
-      to->text = XRESIZEVEC (uchar, to->text, to->asize);
-      outbuf = (char *)to->text + to->asize - outbytesleft;
+      CONVERT_ICONV_GROW_BUFFER;
     }
 }
 #else
@@ -625,6 +642,7 @@ init_iconv_desc (cpp_reader *pfile, const char *to, const char *from)
     {
       ret.func = convert_no_conversion;
       ret.cd = (iconv_t) -1;
+      ret.width = -1;
       return ret;
     }
 
@@ -638,6 +656,7 @@ init_iconv_desc (cpp_reader *pfile, const char *to, const char *from)
       {
 	ret.func = conversion_tab[i].func;
 	ret.cd = conversion_tab[i].fake_cd;
+	ret.width = -1;
 	return ret;
       }
 
@@ -646,6 +665,7 @@ init_iconv_desc (cpp_reader *pfile, const char *to, const char *from)
     {
       ret.func = convert_using_iconv;
       ret.cd = iconv_open (to, from);
+      ret.width = -1;
 
       if (ret.cd == (iconv_t) -1)
 	{
@@ -666,6 +686,7 @@ init_iconv_desc (cpp_reader *pfile, const char *to, const char *from)
 		 from, to);
       ret.func = convert_no_conversion;
       ret.cd = (iconv_t) -1;
+      ret.width = -1;
     }
   return ret;
 }
@@ -699,7 +720,19 @@ cpp_init_iconv (cpp_reader *pfile)
     wcset = default_wcset;
 
   pfile->narrow_cset_desc = init_iconv_desc (pfile, ncset, SOURCE_CHARSET);
+  pfile->narrow_cset_desc.width = CPP_OPTION (pfile, char_precision);
+  pfile->utf8_cset_desc = init_iconv_desc (pfile, "UTF-8", SOURCE_CHARSET);
+  pfile->utf8_cset_desc.width = CPP_OPTION (pfile, char_precision);
+  pfile->char16_cset_desc = init_iconv_desc (pfile,
+					     be ? "UTF-16BE" : "UTF-16LE",
+					     SOURCE_CHARSET);
+  pfile->char16_cset_desc.width = 16;
+  pfile->char32_cset_desc = init_iconv_desc (pfile,
+					     be ? "UTF-32BE" : "UTF-32LE",
+					     SOURCE_CHARSET);
+  pfile->char32_cset_desc.width = 32;
   pfile->wide_cset_desc = init_iconv_desc (pfile, wcset, SOURCE_CHARSET);
+  pfile->wide_cset_desc.width = CPP_OPTION (pfile, wchar_precision);
 }
 
 /* Destroy iconv(3) descriptors set up by cpp_init_iconv, if necessary.  */
@@ -710,6 +743,12 @@ _cpp_destroy_iconv (cpp_reader *pfile)
     {
       if (pfile->narrow_cset_desc.func == convert_using_iconv)
 	iconv_close (pfile->narrow_cset_desc.cd);
+      if (pfile->utf8_cset_desc.func == convert_using_iconv)
+	iconv_close (pfile->utf8_cset_desc.cd);
+      if (pfile->char16_cset_desc.func == convert_using_iconv)
+	iconv_close (pfile->char16_cset_desc.cd);
+      if (pfile->char32_cset_desc.func == convert_using_iconv)
+	iconv_close (pfile->char32_cset_desc.cd);
       if (pfile->wide_cset_desc.func == convert_using_iconv)
 	iconv_close (pfile->wide_cset_desc.cd);
     }
@@ -917,10 +956,16 @@ ucn_valid_in_identifier (cpp_reader *pfile, cppchar_t c,
    ISO/IEC 10646 is NNNNNNNN; the character designated by the
    universal character name \uNNNN is that character whose character
    short name in ISO/IEC 10646 is 0000NNNN.  If the hexadecimal value
-   for a universal character name is less than 0x20 or in the range
-   0x7F-0x9F (inclusive), or if the universal character name
-   designates a character in the basic source character set, then the
-   program is ill-formed.
+   for a universal character name corresponds to a surrogate code point
+   (in the range 0xD800-0xDFFF, inclusive), the program is ill-formed.
+   Additionally, if the hexadecimal value for a universal-character-name
+   outside a character or string literal corresponds to a control character
+   (in either of the ranges 0x00-0x1F or 0x7F-0x9F, both inclusive) or to a
+   character in the basic source character set, the program is ill-formed.
+
+   C99 6.4.3: A universal character name shall not specify a character
+   whose short identifier is less than 00A0 other than 0024 ($), 0040 (@),
+   or 0060 (`), nor one in the range D800 through DFFF inclusive.
 
    *PSTR must be preceded by "\u" or "\U"; it is assumed that the
    buffer end is delimited by a non-hex digit.  Returns zero if the
@@ -948,9 +993,9 @@ _cpp_valid_ucn (cpp_reader *pfile, const uchar **pstr,
     cpp_error (pfile, CPP_DL_WARNING,
 	       "universal character names are only valid in C++ and C99");
   else if (CPP_WTRADITIONAL (pfile) && identifier_pos == 0)
-    cpp_error (pfile, CPP_DL_WARNING,
-	       "the meaning of '\\%c' is different in traditional C",
-	       (int) str[-1]);
+    cpp_warning (pfile, CPP_W_TRADITIONAL,
+	         "the meaning of '\\%c' is different in traditional C",
+	         (int) str[-1]);
 
   if (str[-1] == 'u')
     length = 4;
@@ -987,9 +1032,12 @@ _cpp_valid_ucn (cpp_reader *pfile, const uchar **pstr,
 		 (int) (str - base), base);
       result = 1;
     }
-  /* The standard permits $, @ and ` to be specified as UCNs.  We use
-     hex escapes so that this also works with EBCDIC hosts.  */
+  /* The C99 standard permits $, @ and ` to be specified as UCNs.  We use
+     hex escapes so that this also works with EBCDIC hosts.
+     C++0x permits everything below 0xa0 within literals;
+     ucn_valid_in_identifier will complain about identifiers.  */
   else if ((result < 0xa0
+	    && !CPP_OPTION (pfile, cplusplus)
 	    && (result != 0x24 && result != 0x40 && result != 0x60))
 	   || (result & 0x80000000)
 	   || (result >= 0xD800 && result <= 0xDFFF))
@@ -1034,15 +1082,13 @@ _cpp_valid_ucn (cpp_reader *pfile, const uchar **pstr,
    An advanced pointer is returned.  Issues all relevant diagnostics.  */
 static const uchar *
 convert_ucn (cpp_reader *pfile, const uchar *from, const uchar *limit,
-	     struct _cpp_strbuf *tbuf, bool wide)
+	     struct _cpp_strbuf *tbuf, struct cset_converter cvt)
 {
   cppchar_t ucn;
   uchar buf[6];
   uchar *bufp = buf;
   size_t bytesleft = 6;
   int rval;
-  struct cset_converter cvt
-    = wide ? pfile->wide_cset_desc : pfile->narrow_cset_desc;
   struct normalize_state nst = INITIAL_NORMALIZE_STATE;
 
   from++;  /* Skip u/U.  */
@@ -1069,14 +1115,15 @@ convert_ucn (cpp_reader *pfile, const uchar *from, const uchar *limit,
    function issues no diagnostics and never fails.  */
 static void
 emit_numeric_escape (cpp_reader *pfile, cppchar_t n,
-		     struct _cpp_strbuf *tbuf, bool wide)
+		     struct _cpp_strbuf *tbuf, struct cset_converter cvt)
 {
-  if (wide)
+  size_t width = cvt.width;
+
+  if (width != CPP_OPTION (pfile, char_precision))
     {
       /* We have to render this into the target byte order, which may not
 	 be our byte order.  */
       bool bigend = CPP_OPTION (pfile, bytes_big_endian);
-      size_t width = CPP_OPTION (pfile, wchar_precision);
       size_t cwidth = CPP_OPTION (pfile, char_precision);
       size_t cmask = width_to_mask (cwidth);
       size_t nbwc = width / cwidth;
@@ -1119,17 +1166,16 @@ emit_numeric_escape (cpp_reader *pfile, cppchar_t n,
    number.  You can, e.g. generate surrogate pairs this way.  */
 static const uchar *
 convert_hex (cpp_reader *pfile, const uchar *from, const uchar *limit,
-	     struct _cpp_strbuf *tbuf, bool wide)
+	     struct _cpp_strbuf *tbuf, struct cset_converter cvt)
 {
   cppchar_t c, n = 0, overflow = 0;
   int digits_found = 0;
-  size_t width = (wide ? CPP_OPTION (pfile, wchar_precision)
-		  : CPP_OPTION (pfile, char_precision));
+  size_t width = cvt.width;
   size_t mask = width_to_mask (width);
 
   if (CPP_WTRADITIONAL (pfile))
-    cpp_error (pfile, CPP_DL_WARNING,
-	       "the meaning of '\\x' is different in traditional C");
+    cpp_warning (pfile, CPP_W_TRADITIONAL,
+	         "the meaning of '\\x' is different in traditional C");
 
   from++;  /* Skip 'x'.  */
   while (from < limit)
@@ -1157,7 +1203,7 @@ convert_hex (cpp_reader *pfile, const uchar *from, const uchar *limit,
       n &= mask;
     }
 
-  emit_numeric_escape (pfile, n, tbuf, wide);
+  emit_numeric_escape (pfile, n, tbuf, cvt);
 
   return from;
 }
@@ -1170,12 +1216,11 @@ convert_hex (cpp_reader *pfile, const uchar *from, const uchar *limit,
    number.  */
 static const uchar *
 convert_oct (cpp_reader *pfile, const uchar *from, const uchar *limit,
-	     struct _cpp_strbuf *tbuf, bool wide)
+	     struct _cpp_strbuf *tbuf, struct cset_converter cvt)
 {
   size_t count = 0;
   cppchar_t c, n = 0;
-  size_t width = (wide ? CPP_OPTION (pfile, wchar_precision)
-		  : CPP_OPTION (pfile, char_precision));
+  size_t width = cvt.width;
   size_t mask = width_to_mask (width);
   bool overflow = false;
 
@@ -1196,7 +1241,7 @@ convert_oct (cpp_reader *pfile, const uchar *from, const uchar *limit,
       n &= mask;
     }
 
-  emit_numeric_escape (pfile, n, tbuf, wide);
+  emit_numeric_escape (pfile, n, tbuf, cvt);
 
   return from;
 }
@@ -1207,7 +1252,7 @@ convert_oct (cpp_reader *pfile, const uchar *from, const uchar *limit,
    pointer.  Handles all relevant diagnostics.  */
 static const uchar *
 convert_escape (cpp_reader *pfile, const uchar *from, const uchar *limit,
-		struct _cpp_strbuf *tbuf, bool wide)
+		struct _cpp_strbuf *tbuf, struct cset_converter cvt)
 {
   /* Values of \a \b \e \f \n \r \t \v respectively.  */
 #if HOST_CHARSET == HOST_CHARSET_ASCII
@@ -1219,23 +1264,21 @@ convert_escape (cpp_reader *pfile, const uchar *from, const uchar *limit,
 #endif
 
   uchar c;
-  struct cset_converter cvt
-    = wide ? pfile->wide_cset_desc : pfile->narrow_cset_desc;
 
   c = *from;
   switch (c)
     {
       /* UCNs, hex escapes, and octal escapes are processed separately.  */
     case 'u': case 'U':
-      return convert_ucn (pfile, from, limit, tbuf, wide);
+      return convert_ucn (pfile, from, limit, tbuf, cvt);
 
     case 'x':
-      return convert_hex (pfile, from, limit, tbuf, wide);
+      return convert_hex (pfile, from, limit, tbuf, cvt);
       break;
 
     case '0':  case '1':  case '2':  case '3':
     case '4':  case '5':  case '6':  case '7':
-      return convert_oct (pfile, from, limit, tbuf, wide);
+      return convert_oct (pfile, from, limit, tbuf, cvt);
 
       /* Various letter escapes.  Get the appropriate host-charset
 	 value into C.  */
@@ -1259,8 +1302,8 @@ convert_escape (cpp_reader *pfile, const uchar *from, const uchar *limit,
 
     case 'a':
       if (CPP_WTRADITIONAL (pfile))
-	cpp_error (pfile, CPP_DL_WARNING,
-		   "the meaning of '\\a' is different in traditional C");
+	cpp_warning (pfile, CPP_W_TRADITIONAL,
+		     "the meaning of '\\a' is different in traditional C");
       c = charconsts[0];
       break;
 
@@ -1275,7 +1318,7 @@ convert_escape (cpp_reader *pfile, const uchar *from, const uchar *limit,
     unknown:
       if (ISGRAPH (c))
 	cpp_error (pfile, CPP_DL_PEDWARN,
-		   "unknown escape sequence '\\%c'", (int) c);
+		   "unknown escape sequence: '\\%c'", (int) c);
       else
 	{
 	  /* diagnostic.c does not support "%03o".  When it does, this
@@ -1295,6 +1338,29 @@ convert_escape (cpp_reader *pfile, const uchar *from, const uchar *limit,
   return from + 1;
 }
 
+/* TYPE is a token type.  The return value is the conversion needed to
+   convert from source to execution character set for the given type. */
+static struct cset_converter
+converter_for_type (cpp_reader *pfile, enum cpp_ttype type)
+{
+  switch (type)
+    {
+    default:
+	return pfile->narrow_cset_desc;
+    case CPP_UTF8STRING:
+	return pfile->utf8_cset_desc;
+    case CPP_CHAR16:
+    case CPP_STRING16:
+	return pfile->char16_cset_desc;
+    case CPP_CHAR32:
+    case CPP_STRING32:
+	return pfile->char32_cset_desc;
+    case CPP_WCHAR:
+    case CPP_WSTRING:
+	return pfile->wide_cset_desc;
+    }
+}
+
 /* FROM is an array of cpp_string structures of length COUNT.  These
    are to be converted from the source to the execution character set,
    escape sequences translated, and finally all are to be
@@ -1303,13 +1369,12 @@ convert_escape (cpp_reader *pfile, const uchar *from, const uchar *limit,
    false for failure.  */
 bool
 cpp_interpret_string (cpp_reader *pfile, const cpp_string *from, size_t count,
-		      cpp_string *to, bool wide)
+		      cpp_string *to,  enum cpp_ttype type)
 {
   struct _cpp_strbuf tbuf;
   const uchar *p, *base, *limit;
   size_t i;
-  struct cset_converter cvt
-    = wide ? pfile->wide_cset_desc : pfile->narrow_cset_desc;
+  struct cset_converter cvt = converter_for_type (pfile, type);
 
   tbuf.asize = MAX (OUTBUF_BLOCK_SIZE, from->len);
   tbuf.text = XNEWVEC (uchar, tbuf.asize);
@@ -1318,7 +1383,34 @@ cpp_interpret_string (cpp_reader *pfile, const cpp_string *from, size_t count,
   for (i = 0; i < count; i++)
     {
       p = from[i].text;
-      if (*p == 'L') p++;
+      if (*p == 'u')
+	{
+	  if (*++p == '8')
+	    p++;
+	}
+      else if (*p == 'L' || *p == 'U') p++;
+      if (*p == 'R')
+	{
+	  const uchar *prefix;
+
+	  /* Skip over 'R"'.  */
+	  p += 2;
+	  prefix = p;
+	  while (*p != '(')
+	    p++;
+	  p++;
+	  limit = from[i].text + from[i].len;
+	  if (limit >= p + (p - prefix) + 1)
+	    limit -= (p - prefix) + 1;
+
+	  /* Raw strings are all normal characters; these can be fed
+	     directly to convert_cset.  */
+	  if (!APPLY_CONVERSION (cvt, p, limit - p, &tbuf))
+	    goto fail;
+
+	  continue;
+	}
+
       p++; /* Skip leading quote.  */
       limit = from[i].text + from[i].len - 1; /* Skip trailing quote.  */
 
@@ -1337,12 +1429,12 @@ cpp_interpret_string (cpp_reader *pfile, const cpp_string *from, size_t count,
 	  if (p == limit)
 	    break;
 
-	  p = convert_escape (pfile, p + 1, limit, &tbuf, wide);
+	  p = convert_escape (pfile, p + 1, limit, &tbuf, cvt);
 	}
     }
   /* NUL-terminate the 'to' buffer and translate it to a cpp_string
      structure.  */
-  emit_numeric_escape (pfile, 0, &tbuf, wide);
+  emit_numeric_escape (pfile, 0, &tbuf, cvt);
   tbuf.text = XRESIZEVEC (uchar, tbuf.text, tbuf.len);
   to->text = tbuf.text;
   to->len = tbuf.len;
@@ -1358,15 +1450,17 @@ cpp_interpret_string (cpp_reader *pfile, const cpp_string *from, size_t count,
    in a string, but do not perform character set conversion.  */
 bool
 cpp_interpret_string_notranslate (cpp_reader *pfile, const cpp_string *from,
-				  size_t count,	cpp_string *to, bool wide)
+				  size_t count,	cpp_string *to,
+				  enum cpp_ttype type ATTRIBUTE_UNUSED)
 {
   struct cset_converter save_narrow_cset_desc = pfile->narrow_cset_desc;
   bool retval;
 
   pfile->narrow_cset_desc.func = convert_no_conversion;
   pfile->narrow_cset_desc.cd = (iconv_t) -1;
+  pfile->narrow_cset_desc.width = CPP_OPTION (pfile, char_precision);
 
-  retval = cpp_interpret_string (pfile, from, count, to, wide);
+  retval = cpp_interpret_string (pfile, from, count, to, CPP_STRING);
 
   pfile->narrow_cset_desc = save_narrow_cset_desc;
   return retval;
@@ -1415,7 +1509,7 @@ narrow_str_to_charconst (cpp_reader *pfile, cpp_string str,
 		 "character constant too long for its type");
     }
   else if (i > 1 && CPP_OPTION (pfile, warn_multichar))
-    cpp_error (pfile, CPP_DL_WARNING, "multi-character character constant");
+    cpp_warning (pfile, CPP_W_MULTICHAR, "multi-character character constant");
 
   /* Multichar constants are of type int and therefore signed.  */
   if (i > 1)
@@ -1445,13 +1539,14 @@ narrow_str_to_charconst (cpp_reader *pfile, cpp_string str,
 /* Subroutine of cpp_interpret_charconst which performs the conversion
    to a number, for wide strings.  STR is the string structure returned
    by cpp_interpret_string.  PCHARS_SEEN and UNSIGNEDP are as for
-   cpp_interpret_charconst.  */
+   cpp_interpret_charconst.  TYPE is the token type.  */
 static cppchar_t
 wide_str_to_charconst (cpp_reader *pfile, cpp_string str,
-		       unsigned int *pchars_seen, int *unsignedp)
+		       unsigned int *pchars_seen, int *unsignedp,
+		       enum cpp_ttype type)
 {
   bool bigend = CPP_OPTION (pfile, bytes_big_endian);
-  size_t width = CPP_OPTION (pfile, wchar_precision);
+  size_t width = converter_for_type (pfile, type).width;
   size_t cwidth = CPP_OPTION (pfile, char_precision);
   size_t mask = width_to_mask (width);
   size_t cmask = width_to_mask (cwidth);
@@ -1473,7 +1568,7 @@ wide_str_to_charconst (cpp_reader *pfile, cpp_string str,
   /* Wide character constants have type wchar_t, and a single
      character exactly fills a wchar_t, so a multi-character wide
      character constant is guaranteed to overflow.  */
-  if (off > 0)
+  if (str.len > nbwc * 2)
     cpp_error (pfile, CPP_DL_WARNING,
 	       "character constant too long for its type");
 
@@ -1481,13 +1576,20 @@ wide_str_to_charconst (cpp_reader *pfile, cpp_string str,
      sign- or zero-extend to the full width of cppchar_t.  */
   if (width < BITS_PER_CPPCHAR_T)
     {
-      if (CPP_OPTION (pfile, unsigned_wchar) || !(result & (1 << (width - 1))))
+      if (type == CPP_CHAR16 || type == CPP_CHAR32
+	  || CPP_OPTION (pfile, unsigned_wchar)
+	  || !(result & (1 << (width - 1))))
 	result &= mask;
       else
 	result |= ~mask;
     }
 
-  *unsignedp = CPP_OPTION (pfile, unsigned_wchar);
+  if (type == CPP_CHAR16 || type == CPP_CHAR32
+      || CPP_OPTION (pfile, unsigned_wchar))
+    *unsignedp = 1;
+  else
+    *unsignedp = 0;
+
   *pchars_seen = 1;
   return result;
 }
@@ -1501,20 +1603,21 @@ cpp_interpret_charconst (cpp_reader *pfile, const cpp_token *token,
 			 unsigned int *pchars_seen, int *unsignedp)
 {
   cpp_string str = { 0, 0 };
-  bool wide = (token->type == CPP_WCHAR);
+  bool wide = (token->type != CPP_CHAR);
   cppchar_t result;
 
-  /* an empty constant will appear as L'' or '' */
+  /* an empty constant will appear as L'', u'', U'' or '' */
   if (token->val.str.len == (size_t) (2 + wide))
     {
       cpp_error (pfile, CPP_DL_ERROR, "empty character constant");
       return 0;
     }
-  else if (!cpp_interpret_string (pfile, &token->val.str, 1, &str, wide))
+  else if (!cpp_interpret_string (pfile, &token->val.str, 1, &str, token->type))
     return 0;
 
   if (wide)
-    result = wide_str_to_charconst (pfile, str, pchars_seen, unsignedp);
+    result = wide_str_to_charconst (pfile, str, pchars_seen, unsignedp,
+				    token->type);
   else
     result = narrow_str_to_charconst (pfile, str, pchars_seen, unsignedp);
 
@@ -1581,18 +1684,24 @@ _cpp_interpret_identifier (cpp_reader *pfile, const uchar *id, size_t len)
    source file) from INPUT_CHARSET to the source character set.  INPUT
    points to the input buffer, SIZE is its allocated size, and LEN is
    the length of the meaningful data within the buffer.  The
-   translated buffer is returned, and *ST_SIZE is set to the length of
-   the meaningful data within the translated buffer.
+   translated buffer is returned, *ST_SIZE is set to the length of
+   the meaningful data within the translated buffer, and *BUFFER_START
+   is set to the start of the returned buffer.  *BUFFER_START may
+   differ from the return value in the case of a BOM or other ignored
+   marker information.
 
-   INPUT is expected to have been allocated with xmalloc.  This function
-   will either return INPUT, or free it and return a pointer to another
-   xmalloc-allocated block of memory.  */
+   INPUT is expected to have been allocated with xmalloc.  This
+   function will either set *BUFFER_START to INPUT, or free it and set
+   *BUFFER_START to a pointer to another xmalloc-allocated block of
+   memory.  */
 uchar * 
 _cpp_convert_input (cpp_reader *pfile, const char *input_charset,
-		    uchar *input, size_t size, size_t len, off_t *st_size)
+		    uchar *input, size_t size, size_t len,
+		    const unsigned char **buffer_start, off_t *st_size)
 {
   struct cset_converter input_cset;
   struct _cpp_strbuf to;
+  unsigned char *buffer;
 
   input_cset = init_iconv_desc (pfile, SOURCE_CHARSET, input_charset);
   if (input_cset.func == convert_no_conversion)
@@ -1628,13 +1737,29 @@ _cpp_convert_input (cpp_reader *pfile, const char *input_charset,
      terminate with another \r, not an \n, so that we do not mistake
      the \r\n sequence for a single DOS line ending and erroneously
      issue the "No newline at end of file" diagnostic.  */
-  if (to.text[to.len - 1] == '\r')
+  if (to.len && to.text[to.len - 1] == '\r')
     to.text[to.len] = '\r';
   else
     to.text[to.len] = '\n';
 
+  buffer = to.text;
   *st_size = to.len;
-  return to.text;
+#if HOST_CHARSET == HOST_CHARSET_ASCII
+  /* The HOST_CHARSET test just above ensures that the source charset
+     is UTF-8.  So, ignore a UTF-8 BOM if we see one.  Note that
+     glib'c UTF-8 iconv() provider (as of glibc 2.7) does not ignore a
+     BOM -- however, even if it did, we would still need this code due
+     to the 'convert_no_conversion' case.  */
+  if (to.len >= 3 && to.text[0] == 0xef && to.text[1] == 0xbb
+      && to.text[2] == 0xbf)
+    {
+      *st_size -= 3;
+      buffer += 3;
+    }
+#endif
+
+  *buffer_start = to.text;
+  return buffer;
 }
 
 /* Decide on the default encoding to assume for input files.  */

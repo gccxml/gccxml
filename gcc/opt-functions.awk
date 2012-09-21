@@ -1,10 +1,11 @@
-#  Copyright (C) 2003,2004 Free Software Foundation, Inc.
+#  Copyright (C) 2003, 2004, 2007, 2008, 2009, 2010, 2011
+#  Free Software Foundation, Inc.
 #  Contributed by Kelley Cook, June 2004.
 #  Original code from Neil Booth, May 2003.
 #
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by the
-# Free Software Foundation; either version 2, or (at your option) any
+# Free Software Foundation; either version 3, or (at your option) any
 # later version.
 # 
 # This program is distributed in the hope that it will be useful,
@@ -13,10 +14,18 @@
 # GNU General Public License for more details.
 # 
 # You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+# along with this program; see the file COPYING3.  If not see
+# <http://www.gnu.org/licenses/>.
 
 # Some common subroutines for use by opt[ch]-gen.awk.
+
+# Define some helpful character classes, for portability.
+BEGIN {
+	lower = "abcdefghijklmnopqrstuvwxyz"
+	upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+	digit = "0123456789"
+	alnum = lower "" upper "" digit
+}
 
 # Return nonzero if FLAGS contains a flag matching REGEX.
 function flag_set_p(regex, flags)
@@ -33,6 +42,16 @@ function test_flag(regex, flags, string)
 	return ""
 }
 
+# Return a field initializer, with trailing comma, for a field that is
+# 1 if FLAGS contains a flag matching REGEX and 0 otherwise.
+function flag_init(regex, flags)
+{
+	if (flag_set_p(regex, flags))
+		return "1 /* " regex " */, "
+	else
+		return "0, "
+}
+
 # If FLAGS contains a "NAME(...argument...)" flag, return the value
 # of the argument.  Return the empty string otherwise.
 function opt_args(name, flags)
@@ -41,7 +60,13 @@ function opt_args(name, flags)
 	if (flags !~ " " name "\\(")
 		return ""
 	sub(".* " name "\\(", "", flags)
-	sub("\\).*", "", flags)
+	if (flags ~ "^{")
+	{
+		sub ("^{", "", flags)
+		sub("}\\).*", "", flags)
+	}
+	else
+		sub("\\).*", "", flags)
 
 	return flags
 }
@@ -71,14 +96,46 @@ function switch_flags (flags)
 	result = result \
 	  test_flag("Common", flags, " | CL_COMMON") \
 	  test_flag("Target", flags, " | CL_TARGET") \
+	  test_flag("Driver", flags, " | CL_DRIVER") \
 	  test_flag("Joined", flags, " | CL_JOINED") \
-	  test_flag("JoinedOrMissing", flags, " | CL_JOINED | CL_MISSING_OK") \
+	  test_flag("JoinedOrMissing", flags, " | CL_JOINED") \
 	  test_flag("Separate", flags, " | CL_SEPARATE") \
-	  test_flag("RejectNegative", flags, " | CL_REJECT_NEGATIVE") \
-	  test_flag("UInteger", flags, " | CL_UINTEGER") \
 	  test_flag("Undocumented", flags,  " | CL_UNDOCUMENTED") \
-	  test_flag("Report", flags, " | CL_REPORT")
+	  test_flag("Warning", flags,  " | CL_WARNING") \
+	  test_flag("Optimization", flags,  " | CL_OPTIMIZATION")
 	sub( "^0 \\| ", "", result )
+	return result
+}
+
+# Return bit-field initializers for option flags FLAGS.
+function switch_bit_fields (flags)
+{
+	vn = var_name(flags);
+	if (host_wide_int[vn] == "yes")
+		hwi = "Host_Wide_Int"
+	else
+		hwi = ""
+	result = ""
+	sep_args = opt_args("Args", flags)
+	if (sep_args == "")
+		sep_args = 0
+	else
+		sep_args--
+	result = result sep_args ", "
+
+	result = result \
+	  flag_init("SeparateAlias", flags) \
+	  flag_init("NegativeAlias", flags) \
+	  flag_init("NoDriverArg", flags) \
+	  flag_init("RejectDriver", flags) \
+	  flag_init("RejectNegative", flags) \
+	  flag_init("JoinedOrMissing", flags) \
+	  flag_init("UInteger", flags) \
+	  flag_init("Host_Wide_Int", hwi) \
+	  flag_init("ToLower", flags) \
+	  flag_init("Report", flags)
+
+	sub(", $", "", result)
 	return result
 }
 
@@ -87,6 +144,17 @@ function switch_flags (flags)
 function var_name(flags)
 {
 	return nth_arg(0, opt_args("Var", flags))
+}
+
+# Return the name of the variable if FLAGS has a HOST_WIDE_INT variable. 
+# Return the empty string otherwise.
+function host_wide_int_var_name(flags)
+{
+	split (flags, array, "[ \t]+")
+	if (array[1] == "HOST_WIDE_INT")
+		return array[2]
+	else
+		return ""
 }
 
 # Return true if the option described by FLAGS has a globally-visible state.
@@ -101,24 +169,32 @@ function global_state_p(flags)
 # associated with it.
 function needs_state_p(flags)
 {
-	return flag_set_p("Target", flags)
+	return (flag_set_p("Target", flags) \
+		&& !flag_set_p("Alias.*", flags) \
+		&& !flag_set_p("Ignore", flags))
 }
 
-# If FLAGS describes an option that needs a static state variable,
-# return the name of that variable, otherwise return "".  NAME is
-# the name of the option.
+# If FLAGS describes an option that needs state without a public
+# variable name, return the name of that field, minus the initial
+# "x_", otherwise return "".  NAME is the name of the option.
 function static_var(name, flags)
 {
 	if (global_state_p(flags) || !needs_state_p(flags))
 		return ""
-	gsub ("[^A-Za-z0-9]", "_", name)
+	gsub ("[^" alnum "]", "_", name)
 	return "VAR_" name
 }
 
 # Return the type of variable that should be associated with the given flags.
 function var_type(flags)
 {
-	if (!flag_set_p("Joined.*", flags))
+	if (flag_set_p("Defer", flags))
+		return "void *"
+	else if (flag_set_p("Enum.*", flags)) {
+		en = opt_args("Enum", flags);
+		return enum_type[en] " "
+	}
+	else if (!flag_set_p("Joined.*", flags) && !flag_set_p("Separate", flags))
 		return "int "
 	else if (flag_set_p("UInteger", flags))
 		return "int "
@@ -126,32 +202,63 @@ function var_type(flags)
 		return "const char *"
 }
 
+# Return the type of variable that should be associated with the given flags
+# for use within a structure.  Simple variables are changed to signed char
+# type instead of int to save space.
+function var_type_struct(flags)
+{
+	if (flag_set_p("UInteger", flags))
+		return "int "
+	else if (flag_set_p("Enum.*", flags)) {
+		en = opt_args("Enum", flags);
+		return enum_type[en] " "
+	}
+	else if (!flag_set_p("Joined.*", flags) && !flag_set_p("Separate", flags)) {
+		if (flag_set_p(".*Mask.*", flags)) {
+			if (host_wide_int[var_name(flags)] == "yes")
+				return "HOST_WIDE_INT "
+			else
+				return "int "
+		}
+		else
+			return "signed char "
+	}
+	else
+		return "const char *"
+}
+
 # Given that an option has flags FLAGS, return an initializer for the
-# "var_cond" and "var_value" fields of its cl_options[] entry.
+# "var_enum", "var_type" and "var_value" fields of its cl_options[] entry.
 function var_set(flags)
 {
+	if (flag_set_p("Defer", flags))
+		return "0, CLVC_DEFER, 0"
 	s = nth_arg(1, opt_args("Var", flags))
 	if (s != "")
-		return "CLVC_EQUAL, " s
+		return "0, CLVC_EQUAL, " s
 	s = opt_args("Mask", flags);
 	if (s != "") {
 		vn = var_name(flags);
 		if (vn)
-			return "CLVC_BIT_SET, OPTION_MASK_" s
+			return "0, CLVC_BIT_SET, OPTION_MASK_" s
 		else
-			return "CLVC_BIT_SET, MASK_" s
+			return "0, CLVC_BIT_SET, MASK_" s
 	}
 	s = nth_arg(0, opt_args("InverseMask", flags));
 	if (s != "") {
 		vn = var_name(flags);
 		if (vn)
-			return "CLVC_BIT_CLEAR, OPTION_MASK_" s
+			return "0, CLVC_BIT_CLEAR, OPTION_MASK_" s
 		else
-			return "CLVC_BIT_CLEAR, MASK_" s
+			return "0, CLVC_BIT_CLEAR, MASK_" s
+	}
+	if (flag_set_p("Enum.*", flags)) {
+		en = opt_args("Enum", flags);
+		return enum_index[en] ", CLVC_ENUM, 0"
 	}
 	if (var_type(flags) == "const char *")
-		return "CLVC_STRING, 0"
-	return "CLVC_BOOLEAN, 0"
+		return "0, CLVC_STRING, 0"
+	return "0, CLVC_BOOLEAN, 0"
 }
 
 # Given that an option called NAME has flags FLAGS, return an initializer
@@ -160,10 +267,23 @@ function var_ref(name, flags)
 {
 	name = var_name(flags) static_var(name, flags)
 	if (name != "")
-		return "&" name
+		return "offsetof (struct gcc_options, x_" name ")"
 	if (opt_args("Mask", flags) != "")
-		return "&target_flags"
+		return "offsetof (struct gcc_options, x_target_flags)"
 	if (opt_args("InverseMask", flags) != "")
-		return "&target_flags"
-	return "0"
+		return "offsetof (struct gcc_options, x_target_flags)"
+	return "-1"
+}
+
+# Given the option called NAME return a sanitized version of its name.
+function opt_sanitized_name(name)
+{
+	gsub ("[^" alnum "]", "_", name)
+	return name
+}
+
+# Given the option called NAME return the appropriate enum for it.
+function opt_enum(name)
+{
+	return "OPT_" opt_sanitized_name(name)
 }

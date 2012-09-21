@@ -1,5 +1,5 @@
 /* Definitions of target machine for GNU compiler, for ARM with PE obj format.
-   Copyright (C) 1995, 1996, 1999, 2000, 2002, 2003, 2004, 2005
+   Copyright (C) 1995, 1996, 1999, 2000, 2002, 2003, 2004, 2005, 2007, 2011
    Free Software Foundation, Inc.
    Contributed by Doug Evans (dje@cygnus.com).
    
@@ -7,7 +7,7 @@
 
    GCC is free software; you can redistribute it and/or modify it
    under the terms of the GNU General Public License as published
-   by the Free Software Foundation; either version 2, or (at your
+   by the Free Software Foundation; either version 3, or (at your
    option) any later version.
 
    GCC is distributed in the hope that it will be useful, but WITHOUT
@@ -16,9 +16,8 @@
    License for more details.
 
    You should have received a copy of the GNU General Public License
-   along with GCC; see the file COPYING.  If not, write to
-   the Free Software Foundation, 51 Franklin Street, Fifth Floor,
-   Boston, MA 02110-1301, USA.  */
+   along with GCC; see the file COPYING3.  If not see
+   <http://www.gnu.org/licenses/>.  */
 
 /* Enable PE specific code.  */
 #define ARM_PE		1
@@ -35,8 +34,6 @@
 
 
 /* Run-time Target Specification.  */
-#undef  TARGET_VERSION
-#define TARGET_VERSION fputs (" (ARM/pe)", stderr)
 
 /* Get tree.c to declare a target-specific specialization of
    merge_decl_attributes.  */
@@ -50,7 +47,7 @@
 
 #undef  MULTILIB_DEFAULTS
 #define MULTILIB_DEFAULTS \
-  { "marm", "mlittle-endian", "msoft-float", "mno-thumb-interwork" }  
+  { "marm", "mlittle-endian", "mfloat-abi=soft", "mno-thumb-interwork" }  
 
 #undef  WCHAR_TYPE
 #define WCHAR_TYPE 	"short unsigned int"

@@ -72,6 +72,10 @@ typedef uintptr_t md5_uintptr;
 typedef unsigned long int md5_uintptr;
 #endif
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /* Structure to save state of computation between the single steps.  */
 struct md5_ctx
 {
@@ -137,5 +141,9 @@ extern int md5_stream (FILE *stream, void *resblock);
    output yields to the wanted ASCII representation of the message
    digest.  */
 extern void *md5_buffer (const char *buffer, size_t len, void *resblock);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
