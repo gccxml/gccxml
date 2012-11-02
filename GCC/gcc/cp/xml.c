@@ -1,5 +1,5 @@
 /* gccxml_cc1plus - A GCC parser patched for XML dumps of translation units
-   Copyright (C) 2002-2007 Kitware, Inc., Insight Consortium
+   Copyright 2002-2012 Kitware, Inc., Insight Consortium
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

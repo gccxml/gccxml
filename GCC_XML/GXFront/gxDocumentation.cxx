@@ -287,46 +287,42 @@ const gxDocumentationEntry gxDocumentationCopyright[] =
   {0,
    "GCC-XML - XML output for GCC\n", 0},
   {0,
-   "Copyright (c) 2002-2007 Kitware, Inc., Insight Consortium\n", 0},
+   "Copyright 2002-2012 Kitware, Inc., Insight Consortium\n", 0},
   {0,
    "Redistribution and use in source and binary forms, with or without "
-   "modification, are permitted provided that the following conditions are "
-   "met:\n", 0},
+   "modification, are permitted provided that the following conditions "
+   "are met:\n", 0},
   {" * ",
-   "Redistributions of source code must retain the above copyright notice, "
-   "this list of conditions and the following disclaimer.\n", 0},
+   "Redistributions of source code must retain the above copyright "
+   "notice, this list of conditions and the following disclaimer.\n", 0},
   {" * ",
    "Redistributions in binary form must reproduce the above copyright "
    "notice, this list of conditions and the following disclaimer in the "
-   "documentation and/or other materials provided with the distribution.\n",
-   0},
+   "documentation and/or other materials provided with the distribution.\n", 0},
   {" * ",
-   "The names of Kitware, Inc., the Insight Consortium, or the names of "
-   "any consortium members, or of any contributors, may not be used to "
-   "endorse or promote products derived from this software without "
-   "specific prior written permission.\n", 0},
-  {" * ",
-   "Modified source versions must be plainly marked as such, and must "
-   "not be misrepresented as being the original software.\n", 0},
+   "Neither the names of Kitware, Inc., the Insight Software Consortium, "
+   "nor the names of their contributors may be used to endorse or promote "
+   "products derived from this software without specific prior written "
+   "permission.\n", 0},
   {0,
-   "THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDER AND CONTRIBUTORS "
-   "``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT "
+   "THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "
+   "\"AS IS\" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT "
    "LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR "
-   "A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE AUTHORS OR "
-   "CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, "
-   "EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, "
-   "PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR "
-   "PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF "
-   "LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING "
-   "NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS "
-   "SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n", 0},
+   "A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT "
+   "HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, "
+   "SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT "
+   "LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, "
+   "DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY "
+   "THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT "
+   "(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE "
+   "OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n", 0},
   {0,
    "------------------------------------------------------------\n", 0},
   {0,
    "gccxml_cc1plus - "
    "A GCC parser patched for XML dumps of translation units\n", 0},
   {0,
-   "Copyright (c) 2002-2007 Kitware, Inc., Insight Consortium\n", 0},
+   "Copyright 2002-2012 Kitware, Inc., Insight Consortium\n", 0},
   {0,
    "This program is free software; you can redistribute it and/or modify "
    "it under the terms of the GNU General Public License as published by "
