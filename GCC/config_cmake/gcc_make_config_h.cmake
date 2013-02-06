@@ -39,9 +39,9 @@ MACRO(GCC_MAKE_CONFIG_H output blocker defines headers cpu)
 
   IF("${output}" MATCHES "^tm\\.h$")
     SET(GCC_CONFIG_TM_H "#if defined IN_GCC && !defined GENERATOR_FILE && !defined USED_FOR_TARGET
-# include \"insn-constants.h\"
 # include \"insn-flags.h\"
 #endif
+# include \"defaults.h\"
 ")
   ENDIF("${output}" MATCHES "^tm\\.h$")
 

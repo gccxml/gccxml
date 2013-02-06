@@ -21,6 +21,15 @@ target_gtfiles=
 # Collect target-machine-specific information.
 . "${GCC_SOURCE_DIR}/gcc/config.gcc"
 
+C_TARGET_SOURCES=
+for obj in ${c_target_objs} ; do
+    C_TARGET_SOURCES="$(echo ${obj} | sed 's/\.o$/\.c/') ${C_TARGET_SOURCES}"
+done
+CXX_TARGET_SOURCES=
+for obj in ${cxx_target_objs} ; do
+    CXX_TARGET_SOURCES="$(echo ${obj} | sed 's/\.o$/\.c/') ${CXX_TARGET_SOURCES}"
+done
+
 extra_objs="${host_extra_objs} ${extra_objs}"
 extra_gcc_objs="${host_extra_gcc_objs} ${extra_gcc_objs}"
 
@@ -50,6 +59,8 @@ SET(extra_objs ${extra_objs})
 SET(extra_options ${extra_options})
 SET(c_target_objs ${c_target_objs})
 SET(cxx_target_objs ${cxx_target_objs})
+SET(C_TARGET_SOURCES ${C_TARGET_SOURCES})
+SET(CXX_TARGET_SOURCES ${CXX_TARGET_SOURCES})
 SET(target_cpu_default "${target_cpu_default}")
 SET(out_host_hook_obj ${out_host_hook_obj})
 EOF

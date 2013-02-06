@@ -1,0 +1,8 @@
+/* Generated automatically. */
+static const char configuration_arguments[] = "@GCC_CONFIG_ARGUMENTS_STR@";
+static const char thread_model[] = "@THREAD_FILE@";
+
+static const struct {
+  const char *name, *value;
+} configure_default_options[] = @CONFIGURE_DEFAULT_OPTIONS@;
+
