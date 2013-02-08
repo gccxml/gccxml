@@ -18,10 +18,10 @@ INCLUDE_DIRECTORIES(BEFORE
 SET(BUILDING_GCC_MAJOR      4)
 SET(BUILDING_GCC_MINOR      7)
 SET(BUILDING_GCC_PATCHLEVEL 2)
-SET(GCC_BASEVER             "4.7.2")
-SET(GCC_VERSION "${BUILDING_GCC_MAJOR}${BUILDING_GCC_MINOR}${BUILDING_GCC_PATCHLEVEL}")
+
+SET(GCC_BASEVER "${BUILDING_GCC_MAJOR}.${BUILDING_GCC_MINOR}.${BUILDING_GCC_PATCHLEVEL}")
 MATH(EXPR BUILDING_GCC_VERSION "(${BUILDING_GCC_MAJOR} * 1000 + ${BUILDING_GCC_MINOR})")
-#SET(BUILDING_GCC_VERSION    "(BUILDING_GCC_MAJOR * 1000 + BUILDING_GCC_MINOR)")
+SET(GCC_VERSION ${BUILDING_GCC_VERSION})
 
 ADD_DEFINITIONS(-DIN_GCC -DHAVE_CONFIG_H)
 
@@ -63,17 +63,10 @@ ENDIF(NOT out_file)
 
 # Generate arch-dependent builtins header, e.g. i386-builtin-types.inc
 ADD_SUBDIRECTORY(config)
-# INCLUDE("${GCC_SOURCE_DIR}/config_cmake/archs/t-${cpu_type}.cmake")
 SET_SOURCE_FILES_PROPERTIES(
     ${CMAKE_CURRENT_BINARY_DIR}/config/${cpu_type}-builtin-types.inc 
     PROPERTIES GENERATED 1
     )
-
-#ADD_CUSTOM_COMMAND(
-#    OUTPUT ${cpu_type}
-#    COMMAND ${CMAKE_COMMAND}
-#    DEPENDS ${cpu_type}-builtin-types.inc
-#  )
 
 SET(build_auto auto-host.h) # or auto-build.h for cross compiling?
 
@@ -178,12 +171,12 @@ GCC_MAKE_CONFIG_H(tm.h GCC_TM_H "${tm_defines}" "${tm_include_list}" "${target_c
 
 SET(LANG_SPEC_FILES
     cp/lang-specs.h
-    go/lang-specs.h
+    #go/lang-specs.h
     lto/lang-specs.h
-    objcp/lang-specs.h
-    fortran/lang-specs.h
-    java/lang-specs.h
-    objc/lang-specs.h
+    #objcp/lang-specs.h
+    #fortran/lang-specs.h
+    #java/lang-specs.h
+    #    objc/lang-specs.h
     )
 FILE(WRITE specs.h )
 FOREACH(f ${LANG_SPEC_FILES})
@@ -201,34 +194,32 @@ ENDFOREACH()
 SET(ALL_OPT_FILES
   ${GCC_SOURCE_DIR}/gcc/c-family/c.opt
   ${GCC_SOURCE_DIR}/gcc/common.opt
-  ${GCC_SOURCE_DIR}/gcc/fortran/lang.opt
-  ${GCC_SOURCE_DIR}/gcc/go/lang.opt
-  ${GCC_SOURCE_DIR}/gcc/java/lang.opt
+  # ${GCC_SOURCE_DIR}/gcc/fortran/lang.opt
+  # ${GCC_SOURCE_DIR}/gcc/go/lang.opt
+  # ${GCC_SOURCE_DIR}/gcc/java/lang.opt
   ${GCC_SOURCE_DIR}/gcc/lto/lang.opt
   )
+
 FOREACH(f ${extra_options})
   LIST(APPEND ALL_OPT_FILES ${GCC_SOURCE_DIR}/gcc/config/${f})
 ENDFOREACH(f)
 
-# Find an awk tool.
-IF(WIN32 AND NOT CYGWIN)
-    SET(AWK_EXECUTABLE "${GCC_SOURCE_DIR}/config_cmake/nawk.exe" CACHE INTERNAL "Awk Executable")
-ELSE(WIN32 AND NOT CYGWIN)
-  # Prefer GNU awk at any location over the native awk if possible.
-  # The native awk on opensolaris causes opt-gather.awk to sort incorrectly.
-  FIND_PROGRAM(AWK_EXECUTABLE NAMES gawk)
-  FIND_PROGRAM(AWK_EXECUTABLE NAMES awk)
-  MARK_AS_ADVANCED(AWK_EXECUTABLE)
-ENDIF(WIN32 AND NOT CYGWIN)
-ADD_CUSTOM_COMMAND(OUTPUT ${GCC_BINARY_DIR}/gcc/optionlist
+MESSAGE("Have these options files:\n${ALL_OPT_FILES}")
+
+ADD_CUSTOM_COMMAND(OUTPUT option-includes.mk
+  COMMAND ${AWK_EXECUTABLE} -f ${GCC_SOURCE_DIR}/gcc/opt-include.awk ${ALL_OPT_FILES} > option-includes.mk
+  )
+
+ADD_CUSTOM_COMMAND(OUTPUT optionlist
   COMMAND ${AWK_EXECUTABLE} -f ${GCC_SOURCE_DIR}/gcc/opt-gather.awk ${ALL_OPT_FILES} > optionlist
-  DEPENDS ${GCC_SOURCE_DIR}/gcc/opt-gather.awk ${ALL_OPT_FILES}
+  DEPENDS ${GCC_SOURCE_DIR}/gcc/opt-gather.awk
   )
 
 ADD_CUSTOM_COMMAND(OUTPUT ${GCC_BINARY_DIR}/gcc/options.h
   COMMAND ${AWK_EXECUTABLE} -f ${GCC_SOURCE_DIR}/gcc/opt-functions.awk -f ${GCC_SOURCE_DIR}/gcc/opt-read.awk
                             -f ${GCC_SOURCE_DIR}/gcc/opth-gen.awk < optionlist > options.h
   DEPENDS ${GCC_SOURCE_DIR}/gcc/opt-functions.awk ${GCC_SOURCE_DIR}/gcc/opth-gen.awk ${GCC_BINARY_DIR}/gcc/optionlist
+  #          option-includes
   )
 
 ADD_CUSTOM_COMMAND(OUTPUT ${GCC_BINARY_DIR}/gcc/options.c
@@ -392,7 +383,7 @@ ENDFOREACH()
 ADD_EXECUTABLE(gengenrtl gengenrtl.c errors.c)
 ADD_DEPENDENCIES(gengenrtl genoptions ${GCC_BINARY_DIRECTORY}/gcc/insn-flags.h ${GCC_BINARY_DIRECTORY}/gcc/gtype-desc.h)
 TARGET_LINK_LIBRARIES(gengenrtl iberty)
-SET_TARGET_PROPERTIES(gengenrtl PROPERTIES COMPILE_FLAGS "-DGENERATOR_FILE -I${CMAKE_CURRENT_BINARY_DIR}")
+SET_TARGET_PROPERTIES(gengenrtl PROPERTIES COMPILE_FLAGS "-DGENERATOR_FILE")
 
 SET(GCC_gengenrtl_EXE "${GCC_GEN_DIR}/gengenrtl${GCC_EXE_EXT}")
 
@@ -601,12 +592,14 @@ ADD_EXECUTABLE(gengtype
   )
 
 SET_SOURCE_FILES_PROPERTIES(version.c
-  PROPERTIES COMPILE_DEFINITIONS "BASEVER=\"${GCC_BASEVER}\";BUGURL=\"${PACKAGE_BUGURL}\";DATESTAMP=\"${GCC_DATESTAMP}\";PKGVERSION=\"${GCC_BASEVER}\";DEVPHASE=\"\";REVISION=\"\"")
+  PROPERTIES COMPILE_DEFINITIONS
+    "BASEVER=\"${GCC_BASEVER}\";BUGURL=\"${PACKAGE_BUGURL}\";DATESTAMP=\"\";PKGVERSION=\"${GCC_BASEVER}\";DEVPHASE=\"\";REVISION=\"\"")
+  #"BASEVER=\"${GCC_BASEVER}\";BUGURL=\"${PACKAGE_BUGURL}\";DATESTAMP=\"-${GCC_DATESTAMP}\";PKGVERSION=\"${GCC_BASEVER}\";DEVPHASE=\"\";REVISION=\" (gccxml.org)\"")
 
 ADD_DEPENDENCIES(gengtype genoptions version.c)
-TARGET_LINK_LIBRARIES(gengtype iberty cpp intl decnumber)
+TARGET_LINK_LIBRARIES(gengtype iberty cpp decnumber)
 SET_TARGET_PROPERTIES(gengtype PROPERTIES
-    COMPILE_FLAGS "-DGENERATOR_FILE -DYY_NO_UNISTD_H ${LDFLAGS}")
+  COMPILE_FLAGS "-DGENERATOR_FILE -DYY_NO_UNISTD_H ${LDFLAGS}")
 
 SET(GCC_gengtype_EXE "${GCC_GEN_DIR}/gengtype${GCC_EXE_EXT}")
 
@@ -703,15 +696,12 @@ FILE(RELATIVE_PATH RELATIVE_SOURCE_PATH ${GCC_BINARY_DIR}/gcc ${GCC_SOURCE_DIR}/
 FILE(RELATIVE_PATH RELATIVE_BINARY_PATH ${GCC_BINARY_DIR}/gcc ${GCC_BINARY_DIR}/gcc)
 FILE(RELATIVE_PATH RELATIVE_LIBCPP_PATH ${GCC_BINARY_DIR}/gcc ${GCC_SOURCE_DIR}/libcpp)
 FILE(RELATIVE_PATH RELATIVE_INCLUDE_PATH ${GCC_BINARY_DIR}/gcc ${GCC_SOURCE_DIR}/include)
-#MESSAGE("RELATIVE_PATH ${RELATIVE_SOURCE_PATH}")
 FILE(WRITE ${GCC_BINARY_DIR}/gcc/gtyp-input.list)
 FOREACH(_header ${_GTFILES})
-#    MESSAGE("INPUT HEADER:  ${_header}")
     STRING(REGEX REPLACE "^${GCC_SOURCE_DIR}/gcc/(.*)$" "${RELATIVE_SOURCE_PATH}/\\1" _path "${_header}")
     STRING(REGEX REPLACE "^${GCC_SOURCE_DIR}/libcpp/(.*)$" "${RELATIVE_LIBCPP_PATH}/\\1" _path "${_header}")
     STRING(REGEX REPLACE "^${GCC_SOURCE_DIR}/include/(.*)$" "${RELATIVE_INCLUDE_PATH}/\\1" _path "${_header}")
     STRING(REGEX REPLACE "^${GCC_BINARY_DIR}/gcc/(.*)$" "\\1" _path "${_path}")
-#    MESSAGE("OUTPUT HEADER: ${_path}")
     FILE(APPEND ${GCC_BINARY_DIR}/gcc/gtyp-input.list "${_path}\n")
 ENDFOREACH()
 
@@ -733,13 +723,8 @@ ADD_CUSTOM_COMMAND(
 #-----------------------------------------------------------------------------
 # Rules to generate tree-check.h.
 
-ADD_EXECUTABLE(gencheck gencheck.c)
-ADD_DEPENDENCIES(gencheck genoptions
-                ${GCC_BINARY_DIR}/gcc/insn-modes.c
-                ${GCC_BINARY_DIR}/gcc/insn-modes.h 
-                ${GCC_BINARY_DIR}/gcc/gtype-desc.h
-                ${GCC_BINARY_DIR}/gcc/insn-flags.h
-                )
+ADD_EXECUTABLE(gencheck gencheck.c gtype-desc.h insn-constants.h)
+ADD_DEPENDENCIES(gencheck genoptions)
 TARGET_LINK_LIBRARIES(gencheck iberty)
 SET_TARGET_PROPERTIES(gencheck PROPERTIES COMPILE_FLAGS -DGENERATOR_FILE)
 
@@ -782,13 +767,12 @@ ADD_LIBRARY(gen
 
   ${GCC_BINARY_DIR}/gcc/min-insn-modes.c
   ${GCC_BINARY_DIR}/gcc/insn-modes.h
-  ${GCC_BINARY_DIR}/gcc/tree-check.h
+  #${GCC_BINARY_DIR}/gcc/tree-check.h
   ${GCC_BINARY_DIR}/gcc/gtype-desc.h
   ${GCC_BINARY_DIR}/gcc/gtyp-input.list
   )
-ADD_DEPENDENCIES(gen genoptions ${GCC_BINARY_DIR}/gcc/gtype-desc.h ${GCC_BINARY_DIR}/gcc/insn-flags.h)
 TARGET_LINK_LIBRARIES(gen iberty)
-SET_TARGET_PROPERTIES(gen PROPERTIES COMPILE_FLAGS "-DGENERATOR_FILE -I${CMAKE_CURRENT_BINARY_DIR}")
+SET_TARGET_PROPERTIES(gen PROPERTIES COMPILE_FLAGS "-DGENERATOR_FILE")
 
 #-----------------------------------------------------------------------------
 # Rules to generate insn-enums.c.
@@ -831,6 +815,10 @@ ADD_CUSTOM_COMMAND(
   COMMAND ${GCC_genpreds_EXE} ${MD_FILE} > insn-preds.c
   DEPENDS genpreds ${MD_FILE}
   )
+
+SET_SOURCE_FILES_PROPERTIES(tm-preds.h PROPERTIES GENERATED true)
+SET_SOURCE_FILES_PROPERTIES(tm-constrs.h PROPERTIES GENERATED true)
+SET_SOURCE_FILES_PROPERTIES(insn-preds.h PROPERTIES GENERATED true)
 
 #-----------------------------------------------------------------------------
 # Rules to generate target-hooks-def.h, c-family/c-target-hooks-def.h, and
@@ -950,9 +938,30 @@ ADD_CUSTOM_COMMAND(
 #-----------------------------------------------------------------------------
 # Special flags for some source files.
 
-SET(LIBSUBDIR  "${CMAKE_LIBRARY_PATH}/gcc/${target}/${GCC_VERSION}")
-
 INCLUDE(GNUInstallDirs)
+SET(GCC_LIBDIR "/usr/lib" CACHE INTERNAL "Installed GCC library directory")
+SET(LIBSUBDIR  "${GCC_LIBDIR}/gcc/${target}/${GCC_BASEVER}")
+SET(unlibsubdir ../../..)
+SET(GCC_PREFIX "/usr")
+
+# Get relative path from GCC_LIBDIR to GCC_PREFIX
+#----------------------------------------
+# 1. Strip prefix from libdir
+STRING(REGEX REPLACE "^${GCC_PREFIX}" "" LIBSUBDIR_TO_PREFIX "${LIBSUBDIR}" )
+# 2. Add leading slash
+STRING(REGEX REPLACE "^[^/]" "/" LIBSUBDIR_TO_PREFIX "${LIBSUBDIR_TO_PREFIX}" )
+# 3. Replace each directory in path with ../
+STRING(REGEX REPLACE "/[^/]*" "../" LIBSUBDIR_TO_PREFIX "${LIBSUBDIR_TO_PREFIX}" )
+# 4. Strip trailing slash
+STRING(REGEX REPLACE "/$" "" LIBSUBDIR_TO_PREFIX "${LIBSUBDIR_TO_PREFIX}" )
+
+#SET(GCC_GXX_INCLUDE_DIR "${LIBSUBDIR}/${unlibsubdir}/include/c++/${GCC_BASEVER}")
+#SET(GCC_TOOLDIR "${LIBSUBDIR}/${LIBSUBDIR_TO_PREFIX}/${target}")
+SET(GCC_TOOLDIR "${LIBSUBDIR}/${LIBSUBDIR_TO_PREFIX}")
+SET(GCC_GXX_INCLUDE_DIR "${LIBSUBDIR}/${LIBSUBDIR_TO_PREFIX}/include/c++/${GCC_BASEVER}")
+
+#gcc_gxx_include_dir = $(libsubdir)/$(libsubdir_to_prefix)include/c++/$(version)
+#gcc_tooldir='$(libsubdir)/$(libsubdir_to_prefix)$(target_noncanonical)'
 
 SET(PREPROCESSOR_DEFINES
   GCC_INCLUDE_DIR=\"${LIBSUBDIR}/include\"
@@ -961,14 +970,15 @@ SET(PREPROCESSOR_DEFINES
   GPLUSPLUS_INCLUDE_DIR_ADD_SYSROOT=0
   GPLUSPLUS_TOOL_INCLUDE_DIR=\"${GCC_GXX_INCLUDE_DIR}/${target}\"
   GPLUSPLUS_BACKWARD_INCLUDE_DIR=\"${GCC_GXX_INCLUDE_DIR}/backward\"
-  LOCAL_INCLUDE_DIR=\"$(local_includedir)\"
+  LOCAL_INCLUDE_DIR=\"/usr/local/include\"
   CROSS_INCLUDE_DIR=\"${CROSS_SYSTEM_HEADER_DIR}\"
   TOOL_INCLUDE_DIR=\"${GCC_TOOLDIR}/include\"
   NATIVE_SYSTEM_HEADER_DIR=\"${NATIVE_SYSTEM_HEADER_DIR}\"
-  PREFIX=\"$(prefix)/\"
-  STANDARD_EXEC_PREFIX=\"${CMAKE_INSTALL_LIBDIR}/gcc/\"
+  PREFIX=\"${GCC_PREFIX}/\"
   ${TARGET_SYSTEM_ROOT_DEFINE}
   )
+
+MESSAGE("Using these proprocessor definitions:\n ${PREPROCESSOR_DEFINES}")
 
 SET_SOURCE_FILES_PROPERTIES(toplev.c
   PROPERTIES COMPILE_DEFINITIONS "TARGET_NAME=\"${target}\"")
@@ -983,45 +993,16 @@ SET_SOURCE_FILES_PROPERTIES(cppdefault.c
 #-----------------------------------------------------------------------------
 # Compiler backend library.
 
-SET(unlibsubdir ../../..)
-
-# Get relative path from LIBDIR to PREFIX
-#----------------------------------------
-# 1. Strip prefix from libdir
-#STRING(REGEX REPLACE "^${CMAKE_INSTALL_PREFIX}" "" _relpath "${CMAKE_INSTALL_LIBDIR}" )
-# 2. Strip trailing slash
-#STRING(REGEX REPLACE "/$" "" _relpath "${_relpath}" )
-# 3. Add leading slash
-#STRING(REGEX REPLACE "^[^/]" "/" _relpath "${_relpath}" )
-# Replace each directory in path with ../
-#STRING(REGEX REPLACE "/[^/]*" "../" _relpath "${_relpath}" )
-
 ADD_DEFINITIONS(
   -DSTANDARD_STARTFILE_PREFIX="${unlibsubdir}"
-  -DSTANDARD_EXEC_PREFIX="${CMAKE_INSTALL_LIBDIR}/gcc/"
-  -DSTANDARD_LIBEXEC_PREFIX="${CMAKE_INSTALL_LIBEXECDIR}/gcc/"
-  -DDEFAULT_TARGET_VERSION="${GCC_VERSION}"
-  -DDEFAULT_TARGET_MACHINE="${TARGET}"
-  -DSTANDARD_BINDIR_PREFIX="${CMAKE_INSTALL_BINDIR}"
-  -DTOOLDIR_BASE_PREFIX="${unlibsubdir}${_relpath}"
-  -DPREFIX="${CMAKE_INSTALL_PREFIX}" 
+  -DSTANDARD_EXEC_PREFIX="${GCC_LIBDIR}/gcc/"
+  -DSTANDARD_LIBEXEC_PREFIX=\"${GCC_LIBDIR}/gcc/\"
+  -DDEFAULT_TARGET_VERSION=\"${GCC_VERSION}\"
+  -DDEFAULT_TARGET_MACHINE=\"${target}\"
+  -DSTANDARD_BINDIR_PREFIX=\"${GCC_PREFIX}/bin\"
+  -DTOOLDIR_BASE_PREFIX=\"${LIBSUBDIR_TO_PREFIX}\"
+  -DPREFIX=\"${GCC_PREFIX}\"
   )
-
-SET(GCC_GXX_INCLUDE_DIR "${LIBSUBDIR}/${unlibsubdir}/include/c++/${GCC_VERSION}")
-SET(GCC_TOOLDIR "${LIBSUBDIR}/${unlibsubdir}/${target}")
-
-#DRIVER_DEFINES = \
-#  -DSTANDARD_STARTFILE_PREFIX=\"$(unlibsubdir)/\" \
-#  -DSTANDARD_EXEC_PREFIX=\"$(libdir)/gcc/\" \
-#  -DSTANDARD_LIBEXEC_PREFIX=\"$(libexecdir)/gcc/\" \
-#  -DDEFAULT_TARGET_VERSION=\"$(version)\" \
-#  -DDEFAULT_TARGET_MACHINE=\"$(target_noncanonical)\" \
-#  -DSTANDARD_BINDIR_PREFIX=\"$(bindir)/\" \
-#  -DTOOLDIR_BASE_PREFIX=\"$(libsubdir_to_prefix)$(prefix_to_exec_prefix)\" \
-#  @TARGET_SYSTEM_ROOT_DEFINE@ \
-#  $(VALGRIND_DRIVER_DEFINES) \
-#  `test "X$${SHLIB}" = "X" || test "@enable_shared@" != "yes" || echo "-DENABLE_SHARED_LIBGCC"` \
-#  -DCONFIGURE_SPECS="\"@CONFIGURE_SPECS@\""
 
 #-----------------------------------------------------------------------------
 # Target Arch builtin type defs.
@@ -1029,15 +1010,11 @@ SET(GCC_TOOLDIR "${LIBSUBDIR}/${unlibsubdir}/${target}")
 
 ADD_LIBRARY(backend
 
-  # ${GCC_BINARY_DIR}/gcc/insn-attr.h
   ${GCC_BINARY_DIR}/gcc/insn-attrtab.c
   ${GCC_BINARY_DIR}/gcc/insn-automata.c
-  # ${GCC_BINARY_DIR}/gcc/insn-codes.h
-  # ${GCC_BINARY_DIR}/gcc/insn-config.h
   ${GCC_BINARY_DIR}/gcc/insn-emit.c
   ${GCC_BINARY_DIR}/gcc/insn-enums.c
   ${GCC_BINARY_DIR}/gcc/insn-extract.c
-  # ${GCC_BINARY_DIR}/gcc/insn-flags.h
   ${GCC_BINARY_DIR}/gcc/insn-modes.c
   ${GCC_BINARY_DIR}/gcc/insn-opinit.c
   ${GCC_BINARY_DIR}/gcc/insn-output.c
@@ -1052,9 +1029,6 @@ ADD_LIBRARY(backend
   alias.c
   alloc-pool.c
   auto-inc-dec.c
-  #backend-print-rtl.c
-  #backend-rtl.c
-  #backend-vec.c
   bb-reorder.c
   bitmap.c
   bt-load.c
@@ -1078,7 +1052,6 @@ ADD_LIBRARY(backend
   combine.c
   combine-stack-adj.c
   compare-elim.c
-  # conflict.c
   convert.c
   coverage.c
   cppbuiltin.c
@@ -1098,7 +1071,6 @@ ADD_LIBRARY(backend
   df-problems.c
   df-scan.c
   dfp.c
-  # diagnostic.c
   dojump.c
   dominance.c
   domwalk.c
@@ -1132,7 +1104,7 @@ ADD_LIBRARY(backend
   gimple-streamer-out.c
   gimplify.c
   godump.c
-  #global.c
+  # global.c
   graph.c
   graphds.c
   graphite.c
@@ -1148,19 +1120,17 @@ ADD_LIBRARY(backend
   graphite-sese-to-poly.c
   gtype-desc.c
 
-  #${GCC_BINARY_DIR}/gcc/genrtl.h
+  # ${GCC_BINARY_DIR}/gcc/genrtl.h
   ${GCC_BINARY_DIR}/gcc/gcov-iov.h
 
   haifa-sched.c
   hw-doloop.c
   hwint.c
-  #hooks.c
   ifcvt.c
   incpath.c
   init-regs.c
   integrate.c
   internal-fn.c
-  #intl.c
   ipa-cp.c
   ipa-split.c
   ipa-inline.c
@@ -1170,7 +1140,6 @@ ADD_LIBRARY(backend
   ipa-pure-const.c
   ipa-reference.c
   ipa-ref.c
-  #ipa-type-escape.c
   ipa-utils.c
   ipa.c
   ira.c
@@ -1181,13 +1150,9 @@ ADD_LIBRARY(backend
   ira-emit.c
   ira-lives.c
   jump.c
-  #lambda-code.c
-  #lambda-mat.c
-  #lambda-trans.c
   langhooks.c
   lcm.c
   lists.c
-  #local-alloc.c
   loop-doloop.c
   loop-init.c
   loop-invariant.c
@@ -1213,16 +1178,12 @@ ADD_LIBRARY(backend
   optabs.c
   options-save.c
   opts-global.c
-  #opts-common.c
-  #opts.c
-  #params.c
   passes.c
   plugin.c
   pointer-set.c
   postreload-gcse.c
   postreload.c
   predict.c
-  #pretty-print.c
   print-rtl.c
   print-tree.c
   profile.c
@@ -1233,7 +1194,6 @@ ADD_LIBRARY(backend
   reg-stack.c
   regcprop.c
   reginfo.c
-  #regclass.c
   regmove.c
   regrename.c
   regstat.c
@@ -1242,7 +1202,6 @@ ADD_LIBRARY(backend
   reorg.c
   resource.c
   rtl-error.c
-  #rtl-factoring.c
   rtl.c
   rtlanal.c
   rtlhooks.c
@@ -1256,7 +1215,6 @@ ADD_LIBRARY(backend
   sel-sched-dump.c
   sel-sched.c
   sese.c
-  #see.c
   simplify-rtx.c
   sparseset.c
   sreal.c
@@ -1267,7 +1225,6 @@ ADD_LIBRARY(backend
   store-motion.c
   streamer-hooks.c
   stringpool.c
-  #struct-equiv.c
   target-globals.c
   targhooks.c
   timevar.c
@@ -1290,7 +1247,6 @@ ADD_LIBRARY(backend
   tree-inline.c
   tree-into-ssa.c
   tree-iterator.c
-  #tree-loop-linear.c
   tree-loop-distribution.c
   tree-nested.c
   tree-nomudflap.c
@@ -1351,7 +1307,6 @@ ADD_LIBRARY(backend
   tree-streamer-in.c
   tree-streamer-out.c
   tree-tailcall.c
-  #tree-vect-analyze.c
   tree-vect-data-refs.c
   tree-vect-generic.c
   tree-vect-loop.c
@@ -1359,17 +1314,13 @@ ADD_LIBRARY(backend
   tree-vect-patterns.c
   tree-vect-slp.c
   tree-vect-stmts.c
-  #tree-vect-transform.c
   tree-vectorizer.c
-  #tree-vn.c
   tree-vrp.c
   tree.c
   value-prof.c
   var-tracking.c
   varasm.c
   varpool.c
-  #varray.c
-  #version.c
   vmsdbgout.c
   web.c
   xcoffout.c
@@ -1378,7 +1329,6 @@ ADD_LIBRARY(backend
   ${extra_srcs}
   ${host_hook_srcs}
 
-  #${GCC_BINARY_DIR}/gcc/options.c
   )
 
 ADD_DEPENDENCIES(backend
@@ -1392,18 +1342,18 @@ SET_SOURCE_FILES_PROPERTIES(intl.c
   COMPILE_FLAGS -DLOCALEDIR="\\\"${LOCALEDIR}\\\""
   )
 
-ADD_LIBRARY(common diagnostic.c pretty-print.c intl.c input.c version.c)
-ADD_DEPENDENCIES(common
-    genflags     ${GCC_BINARY_DIR}/gcc/insn-flags.h
-    genconstants ${GCC_BINARY_DIR}/gcc/insn-constants.h )
+ADD_LIBRARY(common 
+  diagnostic.c pretty-print.c intl.c input.c version.c
+  insn-flags.h insn-constants.h)
+ADD_DEPENDENCIES(common genflags genconstants)
 
 ADD_LIBRARY(common-target
   common/config/${cpu_type}/${cpu_type}-common.c prefix.c params.c opts.c
-  opts-common.c options.c vec.c hooks.c common/common-targhooks.c)
+  opts-common.c options.c vec.c hooks.c common/common-targhooks.c
+  insn-flags.h insn-constants.h insn-attr-common.h)
 
 ADD_DEPENDENCIES(common-target
     ${GCC_BINARY_DIR}/gcc/gtype-desc.h
-    ${GCC_BINARY_DIR}/gcc/insn-flags.h 
     ${GCC_BINARY_DIR}/gcc/insn-modes.h 
     ${GCC_BINARY_DIR}/gcc/insn-constants.h )
 

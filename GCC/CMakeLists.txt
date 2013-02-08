@@ -22,6 +22,7 @@ IF(APPLE)
   ENDIF(CMAKE_COMPILER_IS_GNUCC)
 ENDIF(APPLE)
 SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${CMAKE_ANSI_CFLAGS}")
+SET(LC_ALL "C")
 
 IF(CMAKE_C_COMPILER MATCHES "cl")
   STRING(REGEX REPLACE "/W([0-4])?" "" CMAKE_C_FLAGS "${CMAKE_C_FLAGS}")
@@ -37,4 +38,5 @@ ENDIF(CMAKE_C_COMPILER MATCHES "cl")
 
 ADD_DEFINITIONS(-DALMOST_STDC)
 
-SUBDIRS(config_cmake intl libiberty libdecnumber libcpp gcc)
+SUBDIRS(config_cmake libiberty libdecnumber libcpp gcc)
+#SUBDIRS(config_cmake intl libiberty libdecnumber libcpp gcc)
