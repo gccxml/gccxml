@@ -1,9 +1,10 @@
 INCLUDE_DIRECTORIES(BEFORE
   ${GCC_SOURCE_DIR}/include
-  ${GCC_SOURCE_DIR}/libgcc
+#  ${GCC_SOURCE_DIR}/libgcc
   ${GCC_SOURCE_DIR}/libdecnumber
   ${GCC_SOURCE_DIR}/libdecnumber/include
   ${GCC_BINARY_DIR}/libdecnumber
+  ${GCC_SOURCE_DIR}/gcc
   )
 
 SET(decnumber_SRCS

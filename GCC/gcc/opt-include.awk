@@ -24,7 +24,7 @@ BEGIN {
 	c_next = 0
 }
 
-(h_next != 0)	  { print "OPTIONS_H_EXTRA += $(srcdir)/" $1; h_next = 0 }
-(c_next != 0)	  { print "OPTIONS_C_EXTRA += $(srcdir)/" $1; c_next = 0 }
+(h_next != 0)	  { print "OPTIONS_H_EXTRA += ${GCC_SOURCE_DIR}/gcc/" $1; h_next = 0 }
+(c_next != 0)	  { print "OPTIONS_C_EXTRA += ${GCC_SOURCE_DIR}/gcc/" $1; c_next = 0 }
 /^HeaderInclude$/ { h_next = 1; c_next = 0 }
 /^SourceInclude$/ { h_next = 0; c_next = 1 }

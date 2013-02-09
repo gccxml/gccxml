@@ -323,6 +323,9 @@ merge_include_chains (const char *sysroot, cpp_reader *pfile, int verbose)
   /* Add the sysroot to user-supplied paths starting with "=".  */
   if (sysroot)
     {
+/* BEGIN GCC-XML MODIFICATIONS (2007/10/31 15:07:01) */
+      add_sysroot_to_chain (sysroot, WRAPPER);
+/* END GCC-XML MODIFICATIONS (2007/10/31 15:07:01) */
       add_sysroot_to_chain (sysroot, QUOTE);
       add_sysroot_to_chain (sysroot, BRACKET);
       add_sysroot_to_chain (sysroot, SYSTEM);

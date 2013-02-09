@@ -1,1 +1,1 @@
-#define LOCALEDIR "@CMAKE_INSTALL_PREFIX@/share/locale"
+#define LOCALEDIR "@LOCALEDIR@"

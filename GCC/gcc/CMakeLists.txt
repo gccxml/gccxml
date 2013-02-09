@@ -170,17 +170,18 @@ GCC_MAKE_CONFIG_H(tm.h GCC_TM_H "${tm_defines}" "${tm_include_list}" "${target_c
 # Rules to generate specs.h
 
 SET(LANG_SPEC_FILES
-    cp/lang-specs.h
-    #go/lang-specs.h
-    lto/lang-specs.h
-    #objcp/lang-specs.h
-    #fortran/lang-specs.h
-    #java/lang-specs.h
-    #    objc/lang-specs.h
-    )
-FILE(WRITE specs.h )
+  cp/lang-specs.h
+  lto/lang-specs.h
+  # go/lang-specs.h
+  # objcp/lang-specs.h
+  # fortran/lang-specs.h
+  # java/lang-specs.h
+  # objc/lang-specs.h
+  )
+
+FILE(WRITE ${GCC_BINARY_DIR}/gcc/specs.h )
 FOREACH(f ${LANG_SPEC_FILES})
-    FILE(APPEND specs.h "#include \"${f}\"\n")
+  FILE(APPEND ${GCC_BINARY_DIR}/gcc/specs.h "#include \"${f}\"\n")
 ENDFOREACH()
 
 #lsf="$(lang_specs_files)"; for f in $$lsf; do \
@@ -527,6 +528,10 @@ SET(C_LANG_FILES
   ${GCC_SUB_SOURCE_DIR}/c-parser.c        ${GCC_SUB_SOURCE_DIR}/c-lang.h
 )
 
+FOREACH(FRONTEND_FILE ${C_LANG_FILES} ${LTO_LANG_FILES} ${CP_LANG_FILES})
+  SET_SOURCE_FILES_PROPERTIES(${FRONTEND_FILE} PROPERTIES
+    COMPILE_FLAGS "-DIN_GCC_FRONTEND")
+ENDFOREACH(FRONTEND_FILE ${C_LANG_FILES} ${LTO_LANG_FILES} ${CP_LANG_FILES})
 
 #####################################
 
@@ -955,13 +960,8 @@ STRING(REGEX REPLACE "/[^/]*" "../" LIBSUBDIR_TO_PREFIX "${LIBSUBDIR_TO_PREFIX}"
 # 4. Strip trailing slash
 STRING(REGEX REPLACE "/$" "" LIBSUBDIR_TO_PREFIX "${LIBSUBDIR_TO_PREFIX}" )
 
-#SET(GCC_GXX_INCLUDE_DIR "${LIBSUBDIR}/${unlibsubdir}/include/c++/${GCC_BASEVER}")
-#SET(GCC_TOOLDIR "${LIBSUBDIR}/${LIBSUBDIR_TO_PREFIX}/${target}")
 SET(GCC_TOOLDIR "${LIBSUBDIR}/${LIBSUBDIR_TO_PREFIX}")
 SET(GCC_GXX_INCLUDE_DIR "${LIBSUBDIR}/${LIBSUBDIR_TO_PREFIX}/include/c++/${GCC_BASEVER}")
-
-#gcc_gxx_include_dir = $(libsubdir)/$(libsubdir_to_prefix)include/c++/$(version)
-#gcc_tooldir='$(libsubdir)/$(libsubdir_to_prefix)$(target_noncanonical)'
 
 SET(PREPROCESSOR_DEFINES
   GCC_INCLUDE_DIR=\"${LIBSUBDIR}/include\"
@@ -971,11 +971,24 @@ SET(PREPROCESSOR_DEFINES
   GPLUSPLUS_TOOL_INCLUDE_DIR=\"${GCC_GXX_INCLUDE_DIR}/${target}\"
   GPLUSPLUS_BACKWARD_INCLUDE_DIR=\"${GCC_GXX_INCLUDE_DIR}/backward\"
   LOCAL_INCLUDE_DIR=\"/usr/local/include\"
-  CROSS_INCLUDE_DIR=\"${CROSS_SYSTEM_HEADER_DIR}\"
+  # CROSS_INCLUDE_DIR=\"${CROSS_SYSTEM_HEADER_DIR}\"
   TOOL_INCLUDE_DIR=\"${GCC_TOOLDIR}/include\"
   NATIVE_SYSTEM_HEADER_DIR=\"${NATIVE_SYSTEM_HEADER_DIR}\"
   PREFIX=\"${GCC_PREFIX}/\"
   ${TARGET_SYSTEM_ROOT_DEFINE}
+  )
+
+SET(DRIVER_DEFINES
+  STANDARD_STARTFILE_PREFIX=\"$(unlibsubdir)/\"
+  STANDARD_EXEC_PREFIX=\"${GCC_LIBDIR}/gcc/\"
+  STANDARD_LIBEXEC_PREFIX=\"${GCC_LIBDIR}/gcc/\"
+  DEFAULT_TARGET_VERSION=\"${GCC_VERSION}\"
+  DEFAULT_TARGET_MACHINE=\"${target}\"
+  STANDARD_BINDIR_PREFIX=\"${GCC_BINDIR}/\"
+  TOOLDIR_BASE_PREFIX=\"${LIBSUBDIR_TO_PREFIX}\"
+  ${TARGET_SYSTEM_ROOT_DEFINE}
+  ${VALGRIND_DRIVER_DEFINES}
+  # -DCONFIGURE_SPECS="\"@CONFIGURE_SPECS@\""
   )
 
 MESSAGE("Using these proprocessor definitions:\n ${PREPROCESSOR_DEFINES}")
@@ -986,9 +999,8 @@ SET_SOURCE_FILES_PROPERTIES(cppbuiltin.c
   PROPERTIES COMPILE_DEFINITIONS "${PREPROCESSOR_DEFINES};BASEVER=\"${GCC_BASEVER}\"")
 SET_SOURCE_FILES_PROPERTIES(cppdefault.c
   PROPERTIES COMPILE_DEFINITIONS "${PREPROCESSOR_DEFINES}")
-
-#SET_SOURCE_FILES_PROPERTIES(collect2.c
-#  PROPERTIES COMPILE_FLAGS "-DTARGET_MACHINE=\"${TARGET}\"")
+SET_SOURCE_FILES_PROPERTIES(collect2.c
+  PROPERTIES COMPILE_DEFINITIONS "TARGET_MACHINE=\"${target}\"")
 
 #-----------------------------------------------------------------------------
 # Compiler backend library.
@@ -1180,6 +1192,11 @@ ADD_LIBRARY(backend
   opts-global.c
   passes.c
   plugin.c
+  # plugin shizzle
+  plugin.h
+  gcc-plugin.h
+  highlev-plugin-common.h
+
   pointer-set.c
   postreload-gcse.c
   postreload.c
@@ -1357,8 +1374,9 @@ ADD_DEPENDENCIES(common-target
     ${GCC_BINARY_DIR}/gcc/insn-modes.h 
     ${GCC_BINARY_DIR}/gcc/insn-constants.h )
 
-SET_SOURCE_FILES_PROPERTIES(prefix.c
+SET_SOURCE_FILES_PROPERTIES(prefix.c PROPERTIES
   COMPILE_FLAGS "-I${CMAKE_CURRENT_BINARY_DIR} -I${CMAKE_CURRENT_BINARY_DIR}/cp"
+  COMPILE_DEFINITIONS "PREFIX=\"${GCC_PREFIX}\";BASEVER=\"${GCC_BASEVER}\""
   )
 
 
