@@ -182,7 +182,5 @@ library.
 #define __is_empty(x) false
 #define __has_trivial_destructor(x) false
 
-#ifdef __llvm__
 extern unsigned int  __builtin_bswap32(unsigned int _data);
 extern unsigned long __builtin_bswap64(unsigned long _data);
-#endif
