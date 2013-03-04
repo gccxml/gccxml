@@ -113,7 +113,7 @@ void __gttf2 (void) { abort(); }
 void __getf2 (void) { abort(); }
 void __letf2 (void) { abort(); }
 void __lttf2 (void) { abort(); }
-#else        /* !EXTENDED_FLOAT_STUBS, rest of file */
+#else	/* !EXTENDED_FLOAT_STUBS, rest of file */
 
 /* IEEE "special" number predicates */
 
@@ -157,7 +157,7 @@ static int
 isnan ( fp_number_type *  x)
 {
   return __builtin_expect (x->class == CLASS_SNAN || x->class == CLASS_QNAN,
-                           0);
+			   0);
 }
 
 INLINE
@@ -206,15 +206,15 @@ FLO_type
 pack_d ( fp_number_type *  src)
 {
   FLO_union_type dst;
-  fractype fraction = src->fraction.ll;        /* wasn't unsigned before? */
+  fractype fraction = src->fraction.ll;	/* wasn't unsigned before? */
   int sign = src->sign;
   int exp = 0;
 
   if (LARGEST_EXPONENT_IS_NORMAL (FRAC_NBITS) && (isnan (src) || isinf (src)))
     {
       /* We can't represent these values accurately.  By using the
-         largest possible magnitude, we guarantee that the conversion
-         of infinity is at least as big as any finite number.  */
+	 largest possible magnitude, we guarantee that the conversion
+	 of infinity is at least as big as any finite number.  */
       exp = EXPMAX;
       fraction = ((fractype) 1 << FRACBITS) - 1;
     }
@@ -222,13 +222,13 @@ pack_d ( fp_number_type *  src)
     {
       exp = EXPMAX;
       if (src->class == CLASS_QNAN || 1)
-        {
+	{
 #ifdef QUIET_NAN_NEGATED
-          fraction |= QUIET_NAN - 1;
+	  fraction |= QUIET_NAN - 1;
 #else
-          fraction |= QUIET_NAN;
+	  fraction |= QUIET_NAN;
 #endif
-        }
+	}
     }
   else if (isinf (src))
     {
@@ -247,90 +247,90 @@ pack_d ( fp_number_type *  src)
   else
     {
       if (__builtin_expect (src->normal_exp < NORMAL_EXPMIN, 0))
-        {
+	{
 #ifdef NO_DENORMALS
-          /* Go straight to a zero representation if denormals are not
-              supported.  The denormal handling would be harmless but
-              isn't unnecessary.  */
-          exp = 0;
-          fraction = 0;
+	  /* Go straight to a zero representation if denormals are not
+ 	     supported.  The denormal handling would be harmless but
+ 	     isn't unnecessary.  */
+	  exp = 0;
+	  fraction = 0;
 #else /* NO_DENORMALS */
-          /* This number's exponent is too low to fit into the bits
-             available in the number, so we'll store 0 in the exponent and
-             shift the fraction to the right to make up for it.  */
+	  /* This number's exponent is too low to fit into the bits
+	     available in the number, so we'll store 0 in the exponent and
+	     shift the fraction to the right to make up for it.  */
 
-          int shift = NORMAL_EXPMIN - src->normal_exp;
+	  int shift = NORMAL_EXPMIN - src->normal_exp;
 
-          exp = 0;
+	  exp = 0;
 
-          if (shift > FRAC_NBITS - NGARDS)
-            {
-              /* No point shifting, since it's more that 64 out.  */
-              fraction = 0;
-            }
-          else
-            {
-              int lowbit = (fraction & (((fractype)1 << shift) - 1)) ? 1 : 0;
-              fraction = (fraction >> shift) | lowbit;
-            }
-          if ((fraction & GARDMASK) == GARDMSB)
-            {
-              if ((fraction & (1 << NGARDS)))
-                fraction += GARDROUND + 1;
-            }
-          else
-            {
-              /* Add to the guards to round up.  */
-              fraction += GARDROUND;
-            }
-          /* Perhaps the rounding means we now need to change the
+	  if (shift > FRAC_NBITS - NGARDS)
+	    {
+	      /* No point shifting, since it's more that 64 out.  */
+	      fraction = 0;
+	    }
+	  else
+	    {
+	      int lowbit = (fraction & (((fractype)1 << shift) - 1)) ? 1 : 0;
+	      fraction = (fraction >> shift) | lowbit;
+	    }
+	  if ((fraction & GARDMASK) == GARDMSB)
+	    {
+	      if ((fraction & (1 << NGARDS)))
+		fraction += GARDROUND + 1;
+	    }
+	  else
+	    {
+	      /* Add to the guards to round up.  */
+	      fraction += GARDROUND;
+	    }
+	  /* Perhaps the rounding means we now need to change the
              exponent, because the fraction is no longer denormal.  */
-          if (fraction >= IMPLICIT_1)
-            {
-              exp += 1;
-            }
-          fraction >>= NGARDS;
+	  if (fraction >= IMPLICIT_1)
+	    {
+	      exp += 1;
+	    }
+	  fraction >>= NGARDS;
 #endif /* NO_DENORMALS */
-        }
+	}
       else if (!LARGEST_EXPONENT_IS_NORMAL (FRAC_NBITS)
-               && __builtin_expect (src->normal_exp > EXPBIAS, 0))
-        {
-          exp = EXPMAX;
-          fraction = 0;
-        }
+	       && __builtin_expect (src->normal_exp > EXPBIAS, 0))
+	{
+	  exp = EXPMAX;
+	  fraction = 0;
+	}
       else
-        {
-          exp = src->normal_exp + EXPBIAS;
-          if (!ROUND_TOWARDS_ZERO)
-            {
-              /* IF the gard bits are the all zero, but the first, then we're
-                 half way between two numbers, choose the one which makes the
-                 lsb of the answer 0.  */
-              if ((fraction & GARDMASK) == GARDMSB)
-                {
-                  if (fraction & (1 << NGARDS))
-                    fraction += GARDROUND + 1;
-                }
-              else
-                {
-                  /* Add a one to the guards to round up */
-                  fraction += GARDROUND;
-                }
-              if (fraction >= IMPLICIT_2)
-                {
-                  fraction >>= 1;
-                  exp += 1;
-                }
-            }
-          fraction >>= NGARDS;
+	{
+	  exp = src->normal_exp + EXPBIAS;
+	  if (!ROUND_TOWARDS_ZERO)
+	    {
+	      /* IF the gard bits are the all zero, but the first, then we're
+		 half way between two numbers, choose the one which makes the
+		 lsb of the answer 0.  */
+	      if ((fraction & GARDMASK) == GARDMSB)
+		{
+		  if (fraction & (1 << NGARDS))
+		    fraction += GARDROUND + 1;
+		}
+	      else
+		{
+		  /* Add a one to the guards to round up */
+		  fraction += GARDROUND;
+		}
+	      if (fraction >= IMPLICIT_2)
+		{
+		  fraction >>= 1;
+		  exp += 1;
+		}
+	    }
+	  fraction >>= NGARDS;
 
-          if (LARGEST_EXPONENT_IS_NORMAL (FRAC_NBITS) && exp > EXPMAX)
-            {
-              /* Saturate on overflow.  */
-              exp = EXPMAX;
-              fraction = ((fractype) 1 << FRACBITS) - 1;
-            }
-        }
+	  if (LARGEST_EXPONENT_IS_NORMAL (FRAC_NBITS) && exp > EXPMAX)
+	    {
+	      /* Saturate on overflow.  */
+	      exp = EXPMAX;
+	      fraction = ((fractype) 1 << FRACBITS) - 1;
+	    }
+	}
     }
 
   /* We previously used bitfields to store the number, but this doesn't
@@ -362,16 +362,16 @@ pack_d ( fp_number_type *  src)
    if (exp < EXPMAX)
      if (low > unity || (low == unity && (high & 1) == 1))
        {
-         /* Round HIGH up and adjust LOW to match.  */
-         high++;
-         if (high == unity)
-           {
-             /* May make it infinite, but that's OK.  */
-             high = 0;
-             exp++;
-           }
-         low = unity * 2 - low;
-         lowsign ^= 1;
+	 /* Round HIGH up and adjust LOW to match.  */
+	 high++;
+	 if (high == unity)
+	   {
+	     /* May make it infinite, but that's OK.  */
+	     high = 0;
+	     exp++;
+	   }
+	 low = unity * 2 - low;
+	 lowsign ^= 1;
        }
 
    high |= (halffractype) exp << HALFFRACBITS;
@@ -382,31 +382,31 @@ pack_d ( fp_number_type *  src)
    else
      {
        while (lowexp > 0 && low < unity)
-         {
-           low <<= 1;
-           lowexp--;
-         }
+	 {
+	   low <<= 1;
+	   lowexp--;
+	 }
 
        if (lowexp <= 0)
-         {
-           halffractype roundmsb, round;
-           int shift;
+	 {
+	   halffractype roundmsb, round;
+	   int shift;
 
-           shift = 1 - lowexp;
-           roundmsb = (1 << (shift - 1));
-           round = low & ((roundmsb << 1) - 1);
+	   shift = 1 - lowexp;
+	   roundmsb = (1 << (shift - 1));
+	   round = low & ((roundmsb << 1) - 1);
 
-           low >>= shift;
-           lowexp = 0;
+	   low >>= shift;
+	   lowexp = 0;
 
-           if (round > roundmsb || (round == roundmsb && (low & 1) == 1))
-             {
-               low++;
-               if (low == unity)
-                 /* LOW rounds up to the smallest normal number.  */
-                 lowexp++;
-             }
-         }
+	   if (round > roundmsb || (round == roundmsb && (low & 1) == 1))
+	     {
+	       low++;
+	       if (low == unity)
+		 /* LOW rounds up to the smallest normal number.  */
+		 lowexp++;
+	     }
+	 }
 
        low &= unity - 1;
        low |= (halffractype) lowexp << HALFFRACBITS;
@@ -496,26 +496,26 @@ unpack_d (FLO_union_type * src, fp_number_type * dst)
 
        xlow = low & ((((fractype)1) << HALFFRACBITS) - 1);
        if (lowexp)
-         xlow |= (((halffractype)1) << HALFFRACBITS);
+	 xlow |= (((halffractype)1) << HALFFRACBITS);
        else
-         lowexp = 1;
+	 lowexp = 1;
        shift = (FRACBITS - HALFFRACBITS) - (exp - lowexp);
        if (shift > 0)
-         xlow <<= shift;
+	 xlow <<= shift;
        else if (shift < 0)
-         xlow >>= -shift;
+	 xlow >>= -shift;
        if (sign == lowsign)
-         fraction += xlow;
+	 fraction += xlow;
        else if (fraction >= xlow)
-         fraction -= xlow;
+	 fraction -= xlow;
        else
-         {
-           /* The high part is a power of two but the full number is lower.
-              This code will leave the implicit 1 in FRACTION, but we'd
-              have added that below anyway.  */
-           fraction = (((fractype) 1 << FRACBITS) - xlow) << 1;
-           exp--;
-         }
+	 {
+	   /* The high part is a power of two but the full number is lower.
+	      This code will leave the implicit 1 in FRACTION, but we'd
+	      have added that below anyway.  */
+	   fraction = (((fractype) 1 << FRACBITS) - xlow) << 1;
+	   exp--;
+	 }
      }
  }
 # else
@@ -531,59 +531,59 @@ unpack_d (FLO_union_type * src, fp_number_type * dst)
       /* Hmm.  Looks like 0 */
       if (fraction == 0
 #ifdef NO_DENORMALS
-          || 1
+	  || 1
 #endif
-          )
-        {
-          /* tastes like zero */
-          dst->class = CLASS_ZERO;
-        }
+	  )
+	{
+	  /* tastes like zero */
+	  dst->class = CLASS_ZERO;
+	}
       else
-        {
-          /* Zero exponent with nonzero fraction - it's denormalized,
-             so there isn't a leading implicit one - we'll shift it so
-             it gets one.  */
-          dst->normal_exp = exp - EXPBIAS + 1;
-          fraction <<= NGARDS;
+	{
+	  /* Zero exponent with nonzero fraction - it's denormalized,
+	     so there isn't a leading implicit one - we'll shift it so
+	     it gets one.  */
+	  dst->normal_exp = exp - EXPBIAS + 1;
+	  fraction <<= NGARDS;
 
-          dst->class = CLASS_NUMBER;
+	  dst->class = CLASS_NUMBER;
 #if 1
-          while (fraction < IMPLICIT_1)
-            {
-              fraction <<= 1;
-              dst->normal_exp--;
-            }
+	  while (fraction < IMPLICIT_1)
+	    {
+	      fraction <<= 1;
+	      dst->normal_exp--;
+	    }
 #endif
-          dst->fraction.ll = fraction;
-        }
+	  dst->fraction.ll = fraction;
+	}
     }
   else if (!LARGEST_EXPONENT_IS_NORMAL (FRAC_NBITS)
-           && __builtin_expect (exp == EXPMAX, 0))
+	   && __builtin_expect (exp == EXPMAX, 0))
     {
       /* Huge exponent*/
       if (fraction == 0)
-        {
-          /* Attached to a zero fraction - means infinity */
-          dst->class = CLASS_INFINITY;
-        }
+	{
+	  /* Attached to a zero fraction - means infinity */
+	  dst->class = CLASS_INFINITY;
+	}
       else
-        {
-          /* Nonzero fraction, means nan */
+	{
+	  /* Nonzero fraction, means nan */
 #ifdef QUIET_NAN_NEGATED
-          if ((fraction & QUIET_NAN) == 0)
+	  if ((fraction & QUIET_NAN) == 0)
 #else
-          if (fraction & QUIET_NAN)
+	  if (fraction & QUIET_NAN)
 #endif
-            {
-              dst->class = CLASS_QNAN;
-            }
-          else
-            {
-              dst->class = CLASS_SNAN;
-            }
-          /* Keep the fraction part as the nan number */
-          dst->fraction.ll = fraction;
-        }
+	    {
+	      dst->class = CLASS_QNAN;
+	    }
+	  else
+	    {
+	      dst->class = CLASS_SNAN;
+	    }
+	  /* Keep the fraction part as the nan number */
+	  dst->fraction.ll = fraction;
+	}
     }
   else
     {
@@ -598,8 +598,8 @@ unpack_d (FLO_union_type * src, fp_number_type * dst)
 #if defined(L_addsub_sf) || defined(L_addsub_df) || defined(L_addsub_tf)
 static fp_number_type *
 _fpadd_parts (fp_number_type * a,
-              fp_number_type * b,
-              fp_number_type * tmp)
+	      fp_number_type * b,
+	      fp_number_type * tmp)
 {
   intfrac tfraction;
 
@@ -621,7 +621,7 @@ _fpadd_parts (fp_number_type * a,
     {
       /* Adding infinities with opposite signs yields a NaN.  */
       if (isinf (b) && a->sign != b->sign)
-        return nan ();
+	return nan ();
       return a;
     }
   if (isinf (b))
@@ -631,11 +631,11 @@ _fpadd_parts (fp_number_type * a,
   if (iszero (b))
     {
       if (iszero (a))
-        {
-          *tmp = *a;
-          tmp->sign = a->sign & b->sign;
-          return tmp;
-        }
+	{
+	  *tmp = *a;
+	  tmp->sign = a->sign & b->sign;
+	  return tmp;
+	}
       return a;
     }
   if (iszero (a))
@@ -661,62 +661,62 @@ _fpadd_parts (fp_number_type * a,
       diff = -diff;
     if (diff < FRAC_NBITS)
       {
-        if (sdiff > 0)
-          {
-            b_normal_exp += diff;
-            LSHIFT (b_fraction, diff);
-          }
-        else if (sdiff < 0)
-          {
-            a_normal_exp += diff;
-            LSHIFT (a_fraction, diff);
-          }
+	if (sdiff > 0)
+	  {
+	    b_normal_exp += diff;
+	    LSHIFT (b_fraction, diff);
+	  }
+	else if (sdiff < 0)
+	  {
+	    a_normal_exp += diff;
+	    LSHIFT (a_fraction, diff);
+	  }
       }
     else
       {
-        /* Somethings's up.. choose the biggest */
-        if (a_normal_exp > b_normal_exp)
-          {
-            b_normal_exp = a_normal_exp;
-            b_fraction = 0;
-          }
-        else
-          {
-            a_normal_exp = b_normal_exp;
-            a_fraction = 0;
-          }
+	/* Somethings's up.. choose the biggest */
+	if (a_normal_exp > b_normal_exp)
+	  {
+	    b_normal_exp = a_normal_exp;
+	    b_fraction = 0;
+	  }
+	else
+	  {
+	    a_normal_exp = b_normal_exp;
+	    a_fraction = 0;
+	  }
       }
   }
 
   if (a->sign != b->sign)
     {
       if (a->sign)
-        {
-          tfraction = -a_fraction + b_fraction;
-        }
+	{
+	  tfraction = -a_fraction + b_fraction;
+	}
       else
-        {
-          tfraction = a_fraction - b_fraction;
-        }
+	{
+	  tfraction = a_fraction - b_fraction;
+	}
       if (tfraction >= 0)
-        {
-          tmp->sign = 0;
-          tmp->normal_exp = a_normal_exp;
-          tmp->fraction.ll = tfraction;
-        }
+	{
+	  tmp->sign = 0;
+	  tmp->normal_exp = a_normal_exp;
+	  tmp->fraction.ll = tfraction;
+	}
       else
-        {
-          tmp->sign = 1;
-          tmp->normal_exp = a_normal_exp;
-          tmp->fraction.ll = -tfraction;
-        }
+	{
+	  tmp->sign = 1;
+	  tmp->normal_exp = a_normal_exp;
+	  tmp->fraction.ll = -tfraction;
+	}
       /* and renormalize it */
 
       while (tmp->fraction.ll < IMPLICIT_1 && tmp->fraction.ll)
-        {
-          tmp->fraction.ll <<= 1;
-          tmp->normal_exp--;
-        }
+	{
+	  tmp->fraction.ll <<= 1;
+	  tmp->normal_exp--;
+	}
     }
   else
     {
@@ -783,8 +783,8 @@ sub (FLO_type arg_a, FLO_type arg_b)
 #if defined(L_mul_sf) || defined(L_mul_df) || defined(L_mul_tf)
 static inline __attribute__ ((__always_inline__)) fp_number_type *
 _fpmul_parts ( fp_number_type *  a,
-               fp_number_type *  b,
-               fp_number_type * tmp)
+	       fp_number_type *  b,
+	       fp_number_type * tmp)
 {
   fractype low = 0;
   fractype high = 0;
@@ -802,16 +802,16 @@ _fpmul_parts ( fp_number_type *  a,
   if (isinf (a))
     {
       if (iszero (b))
-        return nan ();
+	return nan ();
       a->sign = a->sign != b->sign;
       return a;
     }
   if (isinf (b))
     {
       if (iszero (a))
-        {
-          return nan ();
-        }
+	{
+	  return nan ();
+	}
       b->sign = a->sign != b->sign;
       return b;
     }
@@ -838,22 +838,22 @@ _fpmul_parts ( fp_number_type *  a,
 
       /* ??? This does multiplies one bit at a time.  Optimize.  */
       for (bit = 0; bit < FRAC_NBITS; bit++)
-        {
-          int carry;
+	{
+	  int carry;
 
-          if (x & 1)
-            {
-              carry = (low += ylow) < ylow;
-              high += yhigh + carry;
-            }
-          yhigh <<= 1;
-          if (ylow & FRACHIGH)
-            {
-              yhigh |= 1;
-            }
-          ylow <<= 1;
-          x >>= 1;
-        }
+	  if (x & 1)
+	    {
+	      carry = (low += ylow) < ylow;
+	      high += yhigh + carry;
+	    }
+	  yhigh <<= 1;
+	  if (ylow & FRACHIGH)
+	    {
+	      yhigh |= 1;
+	    }
+	  ylow <<= 1;
+	  x >>= 1;
+	}
     }
 #elif defined(FLOAT) 
     /* Multiplying two USIs to get a UDI, we're safe.  */
@@ -880,11 +880,11 @@ _fpmul_parts ( fp_number_type *  a,
       UDItype res0 = 0;
       UDItype ps_hh__ = pp_hl + pp_lh;
       if (ps_hh__ < pp_hl)
-        res2 += (UDItype)1 << BITS_PER_SI;
+	res2 += (UDItype)1 << BITS_PER_SI;
       pp_hl = (UDItype)(USItype)ps_hh__ << BITS_PER_SI;
       res0 = pp_ll + pp_hl;
       if (res0 < pp_ll)
-        res2++;
+	res2++;
       res2 += (ps_hh__ >> BITS_PER_SI) + pp_hh;
       high = res2;
       low = res0;
@@ -899,10 +899,10 @@ _fpmul_parts ( fp_number_type *  a,
     {
       tmp->normal_exp++;
       if (high & 1)
-        {
-          low >>= 1;
-          low |= FRACHIGH;
-        }
+	{
+	  low >>= 1;
+	  low |= FRACHIGH;
+	}
       high >>= 1;
     }
   while (high < IMPLICIT_1)
@@ -911,32 +911,32 @@ _fpmul_parts ( fp_number_type *  a,
 
       high <<= 1;
       if (low & FRACHIGH)
-        high |= 1;
+	high |= 1;
       low <<= 1;
     }
 
   if (!ROUND_TOWARDS_ZERO && (high & GARDMASK) == GARDMSB)
     {
       if (high & (1 << NGARDS))
-        {
-          /* Because we're half way, we would round to even by adding
-             GARDROUND + 1, except that's also done in the packing
-             function, and rounding twice will lose precision and cause
-             the result to be too far off.  Example: 32-bit floats with
-             bit patterns 0xfff * 0x3f800400 ~= 0xfff (less than 0.5ulp
-             off), not 0x1000 (more than 0.5ulp off).  */
-        }
+	{
+	  /* Because we're half way, we would round to even by adding
+	     GARDROUND + 1, except that's also done in the packing
+	     function, and rounding twice will lose precision and cause
+	     the result to be too far off.  Example: 32-bit floats with
+	     bit patterns 0xfff * 0x3f800400 ~= 0xfff (less than 0.5ulp
+	     off), not 0x1000 (more than 0.5ulp off).  */
+	}
       else if (low)
-        {
-          /* We're a further than half way by a small amount corresponding
-             to the bits set in "low".  Knowing that, we round here and
-             not in pack_d, because there we don't have "low" available
-             anymore.  */
-          high += GARDROUND + 1;
+	{
+	  /* We're a further than half way by a small amount corresponding
+	     to the bits set in "low".  Knowing that, we round here and
+	     not in pack_d, because there we don't have "low" available
+	     anymore.  */
+	  high += GARDROUND + 1;
 
-          /* Avoid further rounding in pack_d.  */
-          high &= ~(fractype) GARDMASK;
-        }
+	  /* Avoid further rounding in pack_d.  */
+	  high &= ~(fractype) GARDMASK;
+	}
     }
   tmp->fraction.ll = high;
   tmp->class = CLASS_NUMBER;
@@ -967,7 +967,7 @@ multiply (FLO_type arg_a, FLO_type arg_b)
 #if defined(L_div_sf) || defined(L_div_df) || defined(L_div_tf)
 static inline __attribute__ ((__always_inline__)) fp_number_type *
 _fpdiv_parts (fp_number_type * a,
-              fp_number_type * b)
+	      fp_number_type * b)
 {
   fractype bit;
   fractype numerator;
@@ -988,7 +988,7 @@ _fpdiv_parts (fp_number_type * a,
   if (isinf (a) || iszero (a))
     {
       if (a->class == b->class)
-        return nan ();
+	return nan ();
       return a;
     }
 
@@ -1017,44 +1017,44 @@ _fpdiv_parts (fp_number_type * a,
 
     if (numerator < denominator)
       {
-        /* Fraction will be less than 1.0 */
-        numerator *= 2;
-        a->normal_exp--;
+	/* Fraction will be less than 1.0 */
+	numerator *= 2;
+	a->normal_exp--;
       }
     bit = IMPLICIT_1;
     quotient = 0;
     /* ??? Does divide one bit at a time.  Optimize.  */
     while (bit)
       {
-        if (numerator >= denominator)
-          {
-            quotient |= bit;
-            numerator -= denominator;
-          }
-        bit >>= 1;
-        numerator *= 2;
+	if (numerator >= denominator)
+	  {
+	    quotient |= bit;
+	    numerator -= denominator;
+	  }
+	bit >>= 1;
+	numerator *= 2;
       }
 
     if (!ROUND_TOWARDS_ZERO && (quotient & GARDMASK) == GARDMSB)
       {
-        if (quotient & (1 << NGARDS))
-          {
-            /* Because we're half way, we would round to even by adding
-               GARDROUND + 1, except that's also done in the packing
-               function, and rounding twice will lose precision and cause
-               the result to be too far off.  */
-          }
-        else if (numerator)
-          {
-            /* We're a further than half way by the small amount
-               corresponding to the bits set in "numerator".  Knowing
-               that, we round here and not in pack_d, because there we
-               don't have "numerator" available anymore.  */
-            quotient += GARDROUND + 1;
+	if (quotient & (1 << NGARDS))
+	  {
+	    /* Because we're half way, we would round to even by adding
+	       GARDROUND + 1, except that's also done in the packing
+	       function, and rounding twice will lose precision and cause
+	       the result to be too far off.  */
+	  }
+	else if (numerator)
+	  {
+	    /* We're a further than half way by the small amount
+	       corresponding to the bits set in "numerator".  Knowing
+	       that, we round here and not in pack_d, because there we
+	       don't have "numerator" available anymore.  */
+	    quotient += GARDROUND + 1;
 
-            /* Avoid further rounding in pack_d.  */
-            quotient &= ~(fractype) GARDMASK;
-          }
+	    /* Avoid further rounding in pack_d.  */
+	    quotient &= ~(fractype) GARDMASK;
+	  }
       }
 
     a->fraction.ll = quotient;
@@ -1097,13 +1097,13 @@ __fpcmp_parts (fp_number_type * a, fp_number_type * b)
   /* either nan -> unordered. Must be checked outside of this routine.  */
   if (isnan (a) && isnan (b))
     {
-      return 1;                        /* still unordered! */
+      return 1;			/* still unordered! */
     }
 #endif
 
   if (isnan (a) || isnan (b))
     {
-      return 1;                        /* how to indicate unordered compare? */
+      return 1;			/* how to indicate unordered compare? */
     }
   if (isinf (a) && isinf (b))
     {
@@ -1205,7 +1205,7 @@ _eq_f2 (FLO_type arg_a, FLO_type arg_b)
   unpack_d (&bu, &b);
 
   if (isnan (&a) || isnan (&b))
-    return 1;                        /* false, truth == 0 */
+    return 1;			/* false, truth == 0 */
 
   return __fpcmp_parts (&a, &b) ;
 }
@@ -1226,7 +1226,7 @@ _ne_f2 (FLO_type arg_a, FLO_type arg_b)
   unpack_d (&bu, &b);
 
   if (isnan (&a) || isnan (&b))
-    return 1;                        /* true, truth != 0 */
+    return 1;			/* true, truth != 0 */
 
   return  __fpcmp_parts (&a, &b) ;
 }
@@ -1247,7 +1247,7 @@ _gt_f2 (FLO_type arg_a, FLO_type arg_b)
   unpack_d (&bu, &b);
 
   if (isnan (&a) || isnan (&b))
-    return -1;                        /* false, truth > 0 */
+    return -1;			/* false, truth > 0 */
 
   return __fpcmp_parts (&a, &b);
 }
@@ -1268,7 +1268,7 @@ _ge_f2 (FLO_type arg_a, FLO_type arg_b)
   unpack_d (&bu, &b);
 
   if (isnan (&a) || isnan (&b))
-    return -1;                        /* false, truth >= 0 */
+    return -1;			/* false, truth >= 0 */
   return __fpcmp_parts (&a, &b) ;
 }
 #endif /* L_ge_sf || L_ge_df */
@@ -1288,7 +1288,7 @@ _lt_f2 (FLO_type arg_a, FLO_type arg_b)
   unpack_d (&bu, &b);
 
   if (isnan (&a) || isnan (&b))
-    return 1;                        /* false, truth < 0 */
+    return 1;			/* false, truth < 0 */
 
   return __fpcmp_parts (&a, &b);
 }
@@ -1309,7 +1309,7 @@ _le_f2 (FLO_type arg_a, FLO_type arg_b)
   unpack_d (&bu, &b);
 
   if (isnan (&a) || isnan (&b))
-    return 1;                        /* false, truth <= 0 */
+    return 1;			/* false, truth <= 0 */
 
   return __fpcmp_parts (&a, &b) ;
 }
@@ -1353,25 +1353,25 @@ si_to_float (SItype arg_a)
       int shift;
       in.normal_exp = FRACBITS + NGARDS;
       if (in.sign) 
-        {
-          /* Special case for minint, since there is no +ve integer
-             representation for it */
-          if (arg_a == (- MAX_SI_INT - 1))
-            {
-              return (FLO_type)(- MAX_SI_INT - 1);
-            }
-          uarg = (-arg_a);
-        }
+	{
+	  /* Special case for minint, since there is no +ve integer
+	     representation for it */
+	  if (arg_a == (- MAX_SI_INT - 1))
+	    {
+	      return (FLO_type)(- MAX_SI_INT - 1);
+	    }
+	  uarg = (-arg_a);
+	}
       else
-        uarg = arg_a;
+	uarg = arg_a;
 
       in.fraction.ll = uarg;
       shift = clzusi (uarg) - (BITS_PER_SI - 1 - FRACBITS - NGARDS);
       if (shift > 0)
-        {
-          in.fraction.ll <<= shift;
-          in.normal_exp -= shift;
-        }
+	{
+	  in.fraction.ll <<= shift;
+	  in.normal_exp -= shift;
+	}
     }
   return pack_d (&in);
 }
@@ -1397,17 +1397,17 @@ usi_to_float (USItype arg_a)
 
       shift = clzusi (arg_a) - (BITS_PER_SI - 1 - FRACBITS - NGARDS);
       if (shift < 0)
-        {
-          fractype guard = in.fraction.ll & (((fractype)1 << -shift) - 1);
-          in.fraction.ll >>= -shift;
-          in.fraction.ll |= (guard != 0);
-          in.normal_exp -= shift;
-        }
+	{
+	  fractype guard = in.fraction.ll & (((fractype)1 << -shift) - 1);
+	  in.fraction.ll >>= -shift;
+	  in.fraction.ll |= (guard != 0);
+	  in.normal_exp -= shift;
+	}
       else if (shift > 0)
-        {
-          in.fraction.ll <<= shift;
-          in.normal_exp -= shift;
-        }
+	{
+	  in.fraction.ll <<= shift;
+	  in.normal_exp -= shift;
+	}
     }
   return pack_d (&in);
 }
@@ -1501,9 +1501,9 @@ negate (FLO_type arg_a)
 #if defined(L_make_sf)
 SFtype
 __make_fp(fp_class_type class,
-             unsigned int sign,
-             int exp, 
-             USItype frac)
+	     unsigned int sign,
+	     int exp, 
+	     USItype frac)
 {
   fp_number_type in;
 
@@ -1533,7 +1533,7 @@ sf_to_df (SFtype arg_a)
   unpack_d (&au, &in);
 
   return __make_dp (in.class, in.sign, in.normal_exp,
-                    ((UDItype) in.fraction.ll) << F_D_BITOFF);
+		    ((UDItype) in.fraction.ll) << F_D_BITOFF);
 }
 #endif /* L_sf_to_df */
 
@@ -1548,7 +1548,7 @@ sf_to_tf (SFtype arg_a)
   unpack_d (&au, &in);
 
   return __make_tp (in.class, in.sign, in.normal_exp,
-                    ((UTItype) in.fraction.ll) << F_T_BITOFF);
+		    ((UTItype) in.fraction.ll) << F_T_BITOFF);
 }
 #endif /* L_sf_to_df */
 
@@ -1607,7 +1607,7 @@ df_to_tf (DFtype arg_a)
   unpack_d (&au, &in);
 
   return __make_tp (in.class, in.sign, in.normal_exp,
-                    ((UTItype) in.fraction.ll) << D_T_BITOFF);
+		    ((UTItype) in.fraction.ll) << D_T_BITOFF);
 }
 #endif /* L_sf_to_df */
 
@@ -1615,9 +1615,9 @@ df_to_tf (DFtype arg_a)
 #if defined(L_make_tf)
 TFtype
 __make_tp(fp_class_type class,
-             unsigned int sign,
-             int exp, 
-             UTItype frac)
+	     unsigned int sign,
+	     int exp, 
+	     UTItype frac)
 {
   fp_number_type in;
 

@@ -31,52 +31,52 @@ Boston, MA 02110-1301, USA.  */
 /* Linking with this file forces Dwarf2 debug sections to be
    sequentially loaded by the VMS linker, enabling GDB to read them.  */
 
-.section        .debug_abbrev,NOWRT
-                .align 0
-                .globl        $dwarf2.debug_abbrev
+.section	.debug_abbrev,NOWRT
+		.align 0
+		.globl	$dwarf2.debug_abbrev
 $dwarf2.debug_abbrev:
-        
-.section        .debug_aranges,NOWRT
-                .align 0
-                .globl        $dwarf2.debug_aranges
+	
+.section	.debug_aranges,NOWRT
+		.align 0
+		.globl	$dwarf2.debug_aranges
 $dwarf2.debug_aranges:
-        
-.section        .debug_frame,NOWRT
-                .align 0
-                .globl        $dwarf2.debug_frame
-$dwarf2.debug_frame:                
-        
-.section        .debug_info,NOWRT
-                .align 0
-                .globl        $dwarf2.debug_info
-$dwarf2.debug_info:                
-        
-.section        .debug_line,NOWRT
-                .align 0
-                .globl        $dwarf2.debug_line
-$dwarf2.debug_line:                
-        
-.section        .debug_loc,NOWRT
-                .align 0
-                .globl        $dwarf2.debug_loc
-$dwarf2.debug_loc:                
-        
-.section        .debug_macinfo,NOWRT
-                .align 0
-                .globl        $dwarf2.debug_macinfo
-$dwarf2.debug_macinfo:                
-        
-.section        .debug_pubnames,NOWRT
-                .align 0
-                .globl        $dwarf2.debug_pubnames
-$dwarf2.debug_pubnames:                
-        
-.section        .debug_str,NOWRT
-                .align 0
-                .globl        $dwarf2.debug_str
-$dwarf2.debug_str:                
-        
-.section        .debug_zzzzzz,NOWRT
-                .align 0
-                .globl        $dwarf2.debug_zzzzzz
-$dwarf2.debug_zzzzzz:                
+	
+.section	.debug_frame,NOWRT
+		.align 0
+		.globl	$dwarf2.debug_frame
+$dwarf2.debug_frame:		
+	
+.section	.debug_info,NOWRT
+		.align 0
+		.globl	$dwarf2.debug_info
+$dwarf2.debug_info:		
+	
+.section	.debug_line,NOWRT
+		.align 0
+		.globl	$dwarf2.debug_line
+$dwarf2.debug_line:		
+	
+.section	.debug_loc,NOWRT
+		.align 0
+		.globl	$dwarf2.debug_loc
+$dwarf2.debug_loc:		
+	
+.section	.debug_macinfo,NOWRT
+		.align 0
+		.globl	$dwarf2.debug_macinfo
+$dwarf2.debug_macinfo:		
+	
+.section	.debug_pubnames,NOWRT
+		.align 0
+		.globl	$dwarf2.debug_pubnames
+$dwarf2.debug_pubnames:		
+	
+.section	.debug_str,NOWRT
+		.align 0
+		.globl	$dwarf2.debug_str
+$dwarf2.debug_str:		
+	
+.section	.debug_zzzzzz,NOWRT
+		.align 0
+		.globl	$dwarf2.debug_zzzzzz
+$dwarf2.debug_zzzzzz:		

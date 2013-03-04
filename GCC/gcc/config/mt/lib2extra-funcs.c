@@ -26,15 +26,15 @@ along with GCC; see the file COPYING.  If not, write to the Free
 Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
 02110-1301, USA.  */
 
-#define BITS_PER_UNIT        8
+#define BITS_PER_UNIT	8
 
-typedef          int HItype                __attribute__ ((mode (HI)));
-typedef unsigned int UHItype                __attribute__ ((mode (HI)));
+typedef 	 int HItype		__attribute__ ((mode (HI)));
+typedef unsigned int UHItype		__attribute__ ((mode (HI)));
 
-typedef                 int SItype                __attribute__ ((mode (SI)));
-typedef unsigned int USItype                __attribute__ ((mode (SI)));
+typedef		 int SItype		__attribute__ ((mode (SI)));
+typedef unsigned int USItype		__attribute__ ((mode (SI)));
 
-typedef int word_type                        __attribute__ ((mode (__word__)));
+typedef int word_type			__attribute__ ((mode (__word__)));
 
 struct SIstruct {HItype low, high;};
 
@@ -137,7 +137,7 @@ __mulsi3 (USItype a, USItype b)
   while (a != 0)
     {
       if (a & 1)
-        c += b;
+	c += b;
       a >>= 1;
       b <<= 1;
     }
@@ -159,10 +159,10 @@ udivmodsi4(USItype num, USItype den, word_type modwanted)
   while (bit)
     {
       if (num >= den)
-        {
-          num -= den;
-          res |= bit;
-        }
+	{
+	  num -= den;
+	  res |= bit;
+	}
       bit >>=1;
       den >>=1;
     }

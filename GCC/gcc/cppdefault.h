@@ -34,18 +34,18 @@ Foundation, 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.  */
 
 struct default_include
 {
-  const char *const fname;        /* The name of the directory.  */
-  const char *const component;        /* The component containing the directory
-                                   (see update_path in prefix.c) */
-  const char cplusplus;                /* Only look here if we're compiling C++.  */
-  const char cxx_aware;                /* Includes in this directory don't need to
-                                   be wrapped in extern "C" when compiling
-                                   C++.  */
-  const char add_sysroot;        /* FNAME should be prefixed by
-                                   cpp_SYSROOT.  */
-  const char multilib;                /* FNAME should have the multilib path
-                                   specified with -imultilib
-                                   appended.  */
+  const char *const fname;	/* The name of the directory.  */
+  const char *const component;	/* The component containing the directory
+				   (see update_path in prefix.c) */
+  const char cplusplus;		/* Only look here if we're compiling C++.  */
+  const char cxx_aware;		/* Includes in this directory don't need to
+				   be wrapped in extern "C" when compiling
+				   C++.  */
+  const char add_sysroot;	/* FNAME should be prefixed by
+				   cpp_SYSROOT.  */
+  const char multilib;		/* FNAME should have the multilib path
+				   specified with -imultilib
+				   appended.  */
 };
 
 extern const struct default_include cpp_include_defaults[];

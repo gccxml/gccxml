@@ -81,9 +81,9 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
 
 #ifdef INSN_SCHEDULING
 /* Some accessor macros for h_i_d members only used within this file.  */
-#define INSN_REF_COUNT(INSN)        (h_i_d[INSN_UID (INSN)].ref_count)
-#define FED_BY_SPEC_LOAD(insn)        (h_i_d[INSN_UID (insn)].fed_by_spec_load)
-#define IS_LOAD_INSN(insn)        (h_i_d[INSN_UID (insn)].is_load_insn)
+#define INSN_REF_COUNT(INSN)	(h_i_d[INSN_UID (INSN)].ref_count)
+#define FED_BY_SPEC_LOAD(insn)	(h_i_d[INSN_UID (insn)].fed_by_spec_load)
+#define IS_LOAD_INSN(insn)	(h_i_d[INSN_UID (insn)].is_load_insn)
 
 /* nr_inter/spec counts interblock/speculative motion for the function.  */
 static int nr_inter, nr_spec;
@@ -331,20 +331,20 @@ is_cfg_nonregular (void)
   FOR_EACH_BB (b)
     FOR_BB_INSNS (b, insn)
       {
-        /* Check for labels referred by non-jump insns.  */
-        if (NONJUMP_INSN_P (insn) || CALL_P (insn))
-          {
-            rtx note = find_reg_note (insn, REG_LABEL, NULL_RTX);
-            if (note
-                && ! (JUMP_P (NEXT_INSN (insn))
-                      && find_reg_note (NEXT_INSN (insn), REG_LABEL,
-                                        XEXP (note, 0))))
-              return 1;
-          }
-        /* If this function has a computed jump, then we consider the cfg
-           not well structured.  */
-        else if (JUMP_P (insn) && computed_jump_p (insn))
-          return 1;
+	/* Check for labels referred by non-jump insns.  */
+	if (NONJUMP_INSN_P (insn) || CALL_P (insn))
+	  {
+	    rtx note = find_reg_note (insn, REG_LABEL, NULL_RTX);
+	    if (note
+		&& ! (JUMP_P (NEXT_INSN (insn))
+		      && find_reg_note (NEXT_INSN (insn), REG_LABEL,
+					XEXP (note, 0))))
+	      return 1;
+	  }
+	/* If this function has a computed jump, then we consider the cfg
+	   not well structured.  */
+	else if (JUMP_P (insn) && computed_jump_p (insn))
+	  return 1;
       }
 
   /* Unreachable loops with more than one basic block are detected
@@ -356,9 +356,9 @@ is_cfg_nonregular (void)
   FOR_EACH_BB (b)
     {
       if (EDGE_COUNT (b->preds) == 0
-          || (single_pred_p (b)
-              && single_pred (b) == b))
-        return 1;
+	  || (single_pred_p (b)
+	      && single_pred (b) == b))
+	return 1;
     }
 
   /* All the tests passed.  Consider the cfg well structured.  */
@@ -400,15 +400,15 @@ debug_regions (void)
   for (rgn = 0; rgn < nr_regions; rgn++)
     {
       fprintf (sched_dump, ";;\trgn %d nr_blocks %d:\n", rgn,
-               rgn_table[rgn].rgn_nr_blocks);
+	       rgn_table[rgn].rgn_nr_blocks);
       fprintf (sched_dump, ";;\tbb/block: ");
 
       /* We don't have ebb_head initialized yet, so we can't use
-         BB_TO_BLOCK ().  */
+	 BB_TO_BLOCK ().  */
       current_blocks = RGN_BLOCKS (rgn);
 
       for (bb = 0; bb < rgn_table[rgn].rgn_nr_blocks; bb++)
-        fprintf (sched_dump, " %d/%d ", bb, rgn_bb_table[current_blocks + bb]);
+	fprintf (sched_dump, " %d/%d ", bb, rgn_bb_table[current_blocks + bb]);
 
       fprintf (sched_dump, "\n\n");
     }
@@ -447,26 +447,26 @@ too_large (int block, int *num_bbs, int *num_insns)
 {
   (*num_bbs)++;
   (*num_insns) += (INSN_LUID (BB_END (BASIC_BLOCK (block)))
-                   - INSN_LUID (BB_HEAD (BASIC_BLOCK (block))));
+		   - INSN_LUID (BB_HEAD (BASIC_BLOCK (block))));
 
   return ((*num_bbs > PARAM_VALUE (PARAM_MAX_SCHED_REGION_BLOCKS))
-          || (*num_insns > PARAM_VALUE (PARAM_MAX_SCHED_REGION_INSNS)));
+	  || (*num_insns > PARAM_VALUE (PARAM_MAX_SCHED_REGION_INSNS)));
 }
 
 /* Update_loop_relations(blk, hdr): Check if the loop headed by max_hdr[blk]
    is still an inner loop.  Put in max_hdr[blk] the header of the most inner
    loop containing blk.  */
-#define UPDATE_LOOP_RELATIONS(blk, hdr)                \
-{                                                \
-  if (max_hdr[blk] == -1)                        \
-    max_hdr[blk] = hdr;                                \
-  else if (dfs_nr[max_hdr[blk]] > dfs_nr[hdr])        \
-    RESET_BIT (inner, hdr);                        \
-  else if (dfs_nr[max_hdr[blk]] < dfs_nr[hdr])        \
-    {                                                \
-      RESET_BIT (inner,max_hdr[blk]);                \
-      max_hdr[blk] = hdr;                        \
-    }                                                \
+#define UPDATE_LOOP_RELATIONS(blk, hdr)		\
+{						\
+  if (max_hdr[blk] == -1)			\
+    max_hdr[blk] = hdr;				\
+  else if (dfs_nr[max_hdr[blk]] > dfs_nr[hdr])	\
+    RESET_BIT (inner, hdr);			\
+  else if (dfs_nr[max_hdr[blk]] < dfs_nr[hdr])	\
+    {						\
+      RESET_BIT (inner,max_hdr[blk]);		\
+      max_hdr[blk] = hdr;			\
+    }						\
 }
 
 /* Find regions for interblock scheduling.
@@ -564,31 +564,31 @@ find_rgns (void)
   while (1)
     {
       if (EDGE_PASSED (current_edge))
-        {
-          /* We have reached a leaf node or a node that was already
-             processed.  Pop edges off the stack until we find
-             an edge that has not yet been processed.  */
-          while (sp >= 0 && EDGE_PASSED (current_edge))
-            {
-              /* Pop entry off the stack.  */
-              current_edge = stack[sp--];
-              node = ei_edge (current_edge)->src->index;
-              gcc_assert (node != ENTRY_BLOCK);
-              child = ei_edge (current_edge)->dest->index;
-              gcc_assert (child != EXIT_BLOCK);
-              RESET_BIT (in_stack, child);
-              if (max_hdr[child] >= 0 && TEST_BIT (in_stack, max_hdr[child]))
-                UPDATE_LOOP_RELATIONS (node, max_hdr[child]);
-              ei_next (&current_edge);
-            }
+	{
+	  /* We have reached a leaf node or a node that was already
+	     processed.  Pop edges off the stack until we find
+	     an edge that has not yet been processed.  */
+	  while (sp >= 0 && EDGE_PASSED (current_edge))
+	    {
+	      /* Pop entry off the stack.  */
+	      current_edge = stack[sp--];
+	      node = ei_edge (current_edge)->src->index;
+	      gcc_assert (node != ENTRY_BLOCK);
+	      child = ei_edge (current_edge)->dest->index;
+	      gcc_assert (child != EXIT_BLOCK);
+	      RESET_BIT (in_stack, child);
+	      if (max_hdr[child] >= 0 && TEST_BIT (in_stack, max_hdr[child]))
+		UPDATE_LOOP_RELATIONS (node, max_hdr[child]);
+	      ei_next (&current_edge);
+	    }
 
-          /* See if have finished the DFS tree traversal.  */
-          if (sp < 0 && EDGE_PASSED (current_edge))
-            break;
+	  /* See if have finished the DFS tree traversal.  */
+	  if (sp < 0 && EDGE_PASSED (current_edge))
+	    break;
 
-          /* Nope, continue the traversal with the popped node.  */
-          continue;
-        }
+	  /* Nope, continue the traversal with the popped node.  */
+	  continue;
+	}
 
       /* Process a node.  */
       node = ei_edge (current_edge)->src->index;
@@ -599,36 +599,36 @@ find_rgns (void)
       /* We don't traverse to the exit block.  */
       child = ei_edge (current_edge)->dest->index;
       if (child == EXIT_BLOCK)
-        {
-          SET_EDGE_PASSED (current_edge);
-          ei_next (&current_edge);
-          continue;
-        }
+	{
+	  SET_EDGE_PASSED (current_edge);
+	  ei_next (&current_edge);
+	  continue;
+	}
 
       /* If the successor is in the stack, then we've found a loop.
-         Mark the loop, if it is not a natural loop, then it will
-         be rejected during the second traversal.  */
+	 Mark the loop, if it is not a natural loop, then it will
+	 be rejected during the second traversal.  */
       if (TEST_BIT (in_stack, child))
-        {
-          no_loops = 0;
-          SET_BIT (header, child);
-          UPDATE_LOOP_RELATIONS (node, child);
-          SET_EDGE_PASSED (current_edge);
-          ei_next (&current_edge);
-          continue;
-        }
+	{
+	  no_loops = 0;
+	  SET_BIT (header, child);
+	  UPDATE_LOOP_RELATIONS (node, child);
+	  SET_EDGE_PASSED (current_edge);
+	  ei_next (&current_edge);
+	  continue;
+	}
 
       /* If the child was already visited, then there is no need to visit
-         it again.  Just update the loop relationships and restart
-         with a new edge.  */
+	 it again.  Just update the loop relationships and restart
+	 with a new edge.  */
       if (dfs_nr[child])
-        {
-          if (max_hdr[child] >= 0 && TEST_BIT (in_stack, max_hdr[child]))
-            UPDATE_LOOP_RELATIONS (node, max_hdr[child]);
-          SET_EDGE_PASSED (current_edge);
-          ei_next (&current_edge);
-          continue;
-        }
+	{
+	  if (max_hdr[child] >= 0 && TEST_BIT (in_stack, max_hdr[child]))
+	    UPDATE_LOOP_RELATIONS (node, max_hdr[child]);
+	  SET_EDGE_PASSED (current_edge);
+	  ei_next (&current_edge);
+	  continue;
+	}
 
       /* Push an entry on the stack and continue DFS traversal.  */
       stack[++sp] = current_edge;
@@ -642,7 +642,7 @@ find_rgns (void)
       edge_iterator ei;
       edge e;
       FOR_EACH_EDGE (e, ei, bb->succs)
-        e->aux = NULL;
+	e->aux = NULL;
     }
 
 
@@ -657,8 +657,8 @@ find_rgns (void)
   FOR_EACH_BB (bb)
     if (dfs_nr[bb->index] == 0)
       {
-        unreachable = 1;
-        break;
+	unreachable = 1;
+	break;
       }
 
   /* Gross.  To avoid wasting memory, the second pass uses the dfs_nr array
@@ -674,17 +674,17 @@ find_rgns (void)
     {
       int *queue, *degree1 = NULL;
       /* We use EXTENDED_RGN_HEADER as an addition to HEADER and put
-         there basic blocks, which are forced to be region heads.
-         This is done to try to assemble few smaller regions 
-         from a too_large region.  */
+	 there basic blocks, which are forced to be region heads.
+	 This is done to try to assemble few smaller regions 
+	 from a too_large region.  */
       sbitmap extended_rgn_header = NULL;
       bool extend_regions_p;
 
       if (no_loops)
-        SET_BIT (header, 0);
+	SET_BIT (header, 0);
 
       /* Second traversal:find reducible inner loops and topologically sort
-         block of each region.  */
+	 block of each region.  */
 
       queue = XNEWVEC (int, n_basic_blocks);
       
@@ -694,220 +694,220 @@ find_rgns (void)
           degree1 = xmalloc (last_basic_block * sizeof (int));
           extended_rgn_header = sbitmap_alloc (last_basic_block);
           sbitmap_zero (extended_rgn_header);
-        }
+	}
 
       /* Find blocks which are inner loop headers.  We still have non-reducible
-         loops to consider at this point.  */
+	 loops to consider at this point.  */
       FOR_EACH_BB (bb)
-        {
-          if (TEST_BIT (header, bb->index) && TEST_BIT (inner, bb->index))
-            {
-              edge e;
-              edge_iterator ei;
-              basic_block jbb;
+	{
+	  if (TEST_BIT (header, bb->index) && TEST_BIT (inner, bb->index))
+	    {
+	      edge e;
+	      edge_iterator ei;
+	      basic_block jbb;
 
-              /* Now check that the loop is reducible.  We do this separate
-                 from finding inner loops so that we do not find a reducible
-                 loop which contains an inner non-reducible loop.
+	      /* Now check that the loop is reducible.  We do this separate
+		 from finding inner loops so that we do not find a reducible
+		 loop which contains an inner non-reducible loop.
 
-                 A simple way to find reducible/natural loops is to verify
-                 that each block in the loop is dominated by the loop
-                 header.
+		 A simple way to find reducible/natural loops is to verify
+		 that each block in the loop is dominated by the loop
+		 header.
 
-                 If there exists a block that is not dominated by the loop
-                 header, then the block is reachable from outside the loop
-                 and thus the loop is not a natural loop.  */
-              FOR_EACH_BB (jbb)
-                {
-                  /* First identify blocks in the loop, except for the loop
-                     entry block.  */
-                  if (bb->index == max_hdr[jbb->index] && bb != jbb)
-                    {
-                      /* Now verify that the block is dominated by the loop
-                         header.  */
-                      if (!dominated_by_p (CDI_DOMINATORS, jbb, bb))
-                        break;
-                    }
-                }
+		 If there exists a block that is not dominated by the loop
+		 header, then the block is reachable from outside the loop
+		 and thus the loop is not a natural loop.  */
+	      FOR_EACH_BB (jbb)
+		{
+		  /* First identify blocks in the loop, except for the loop
+		     entry block.  */
+		  if (bb->index == max_hdr[jbb->index] && bb != jbb)
+		    {
+		      /* Now verify that the block is dominated by the loop
+			 header.  */
+		      if (!dominated_by_p (CDI_DOMINATORS, jbb, bb))
+			break;
+		    }
+		}
 
-              /* If we exited the loop early, then I is the header of
-                 a non-reducible loop and we should quit processing it
-                 now.  */
-              if (jbb != EXIT_BLOCK_PTR)
-                continue;
+	      /* If we exited the loop early, then I is the header of
+		 a non-reducible loop and we should quit processing it
+		 now.  */
+	      if (jbb != EXIT_BLOCK_PTR)
+		continue;
 
-              /* I is a header of an inner loop, or block 0 in a subroutine
-                 with no loops at all.  */
-              head = tail = -1;
-              too_large_failure = 0;
-              loop_head = max_hdr[bb->index];
+	      /* I is a header of an inner loop, or block 0 in a subroutine
+		 with no loops at all.  */
+	      head = tail = -1;
+	      too_large_failure = 0;
+	      loop_head = max_hdr[bb->index];
 
               if (extend_regions_p)
                 /* We save degree in case when we meet a too_large region 
-                   and cancel it.  We need a correct degree later when 
+		   and cancel it.  We need a correct degree later when 
                    calling extend_rgns.  */
                 memcpy (degree1, degree, last_basic_block * sizeof (int));
-              
-              /* Decrease degree of all I's successors for topological
-                 ordering.  */
-              FOR_EACH_EDGE (e, ei, bb->succs)
-                if (e->dest != EXIT_BLOCK_PTR)
-                  --degree[e->dest->index];
+	      
+	      /* Decrease degree of all I's successors for topological
+		 ordering.  */
+	      FOR_EACH_EDGE (e, ei, bb->succs)
+		if (e->dest != EXIT_BLOCK_PTR)
+		  --degree[e->dest->index];
 
-              /* Estimate # insns, and count # blocks in the region.  */
-              num_bbs = 1;
-              num_insns = (INSN_LUID (BB_END (bb))
-                           - INSN_LUID (BB_HEAD (bb)));
+	      /* Estimate # insns, and count # blocks in the region.  */
+	      num_bbs = 1;
+	      num_insns = (INSN_LUID (BB_END (bb))
+			   - INSN_LUID (BB_HEAD (bb)));
 
-              /* Find all loop latches (blocks with back edges to the loop
-                 header) or all the leaf blocks in the cfg has no loops.
+	      /* Find all loop latches (blocks with back edges to the loop
+		 header) or all the leaf blocks in the cfg has no loops.
 
-                 Place those blocks into the queue.  */
-              if (no_loops)
-                {
-                  FOR_EACH_BB (jbb)
-                    /* Leaf nodes have only a single successor which must
-                       be EXIT_BLOCK.  */
-                    if (single_succ_p (jbb)
-                        && single_succ (jbb) == EXIT_BLOCK_PTR)
-                      {
-                        queue[++tail] = jbb->index;
-                        SET_BIT (in_queue, jbb->index);
+		 Place those blocks into the queue.  */
+	      if (no_loops)
+		{
+		  FOR_EACH_BB (jbb)
+		    /* Leaf nodes have only a single successor which must
+		       be EXIT_BLOCK.  */
+		    if (single_succ_p (jbb)
+			&& single_succ (jbb) == EXIT_BLOCK_PTR)
+		      {
+			queue[++tail] = jbb->index;
+			SET_BIT (in_queue, jbb->index);
 
-                        if (too_large (jbb->index, &num_bbs, &num_insns))
-                          {
-                            too_large_failure = 1;
-                            break;
-                          }
-                      }
-                }
-              else
-                {
-                  edge e;
+			if (too_large (jbb->index, &num_bbs, &num_insns))
+			  {
+			    too_large_failure = 1;
+			    break;
+			  }
+		      }
+		}
+	      else
+		{
+		  edge e;
 
-                  FOR_EACH_EDGE (e, ei, bb->preds)
-                    {
-                      if (e->src == ENTRY_BLOCK_PTR)
-                        continue;
+		  FOR_EACH_EDGE (e, ei, bb->preds)
+		    {
+		      if (e->src == ENTRY_BLOCK_PTR)
+			continue;
 
-                      node = e->src->index;
+		      node = e->src->index;
 
-                      if (max_hdr[node] == loop_head && node != bb->index)
-                        {
-                          /* This is a loop latch.  */
-                          queue[++tail] = node;
-                          SET_BIT (in_queue, node);
+		      if (max_hdr[node] == loop_head && node != bb->index)
+			{
+			  /* This is a loop latch.  */
+			  queue[++tail] = node;
+			  SET_BIT (in_queue, node);
 
-                          if (too_large (node, &num_bbs, &num_insns))
-                            {
-                              too_large_failure = 1;
-                              break;
-                            }
-                        }
-                    }
-                }
+			  if (too_large (node, &num_bbs, &num_insns))
+			    {
+			      too_large_failure = 1;
+			      break;
+			    }
+			}
+		    }
+		}
 
-              /* Now add all the blocks in the loop to the queue.
+	      /* Now add all the blocks in the loop to the queue.
 
-             We know the loop is a natural loop; however the algorithm
-             above will not always mark certain blocks as being in the
-             loop.  Consider:
-                node   children
-                 a          b,c
-                 b          c
-                 c          a,d
-                 d          b
+	     We know the loop is a natural loop; however the algorithm
+	     above will not always mark certain blocks as being in the
+	     loop.  Consider:
+		node   children
+		 a	  b,c
+		 b	  c
+		 c	  a,d
+		 d	  b
 
-             The algorithm in the DFS traversal may not mark B & D as part
-             of the loop (i.e. they will not have max_hdr set to A).
+	     The algorithm in the DFS traversal may not mark B & D as part
+	     of the loop (i.e. they will not have max_hdr set to A).
 
-             We know they can not be loop latches (else they would have
-             had max_hdr set since they'd have a backedge to a dominator
-             block).  So we don't need them on the initial queue.
+	     We know they can not be loop latches (else they would have
+	     had max_hdr set since they'd have a backedge to a dominator
+	     block).  So we don't need them on the initial queue.
 
-             We know they are part of the loop because they are dominated
-             by the loop header and can be reached by a backwards walk of
-             the edges starting with nodes on the initial queue.
+	     We know they are part of the loop because they are dominated
+	     by the loop header and can be reached by a backwards walk of
+	     the edges starting with nodes on the initial queue.
 
-             It is safe and desirable to include those nodes in the
-             loop/scheduling region.  To do so we would need to decrease
-             the degree of a node if it is the target of a backedge
-             within the loop itself as the node is placed in the queue.
+	     It is safe and desirable to include those nodes in the
+	     loop/scheduling region.  To do so we would need to decrease
+	     the degree of a node if it is the target of a backedge
+	     within the loop itself as the node is placed in the queue.
 
-             We do not do this because I'm not sure that the actual
-             scheduling code will properly handle this case. ?!? */
+	     We do not do this because I'm not sure that the actual
+	     scheduling code will properly handle this case. ?!? */
 
-              while (head < tail && !too_large_failure)
-                {
-                  edge e;
-                  child = queue[++head];
+	      while (head < tail && !too_large_failure)
+		{
+		  edge e;
+		  child = queue[++head];
 
-                  FOR_EACH_EDGE (e, ei, BASIC_BLOCK (child)->preds)
-                    {
-                      node = e->src->index;
+		  FOR_EACH_EDGE (e, ei, BASIC_BLOCK (child)->preds)
+		    {
+		      node = e->src->index;
 
-                      /* See discussion above about nodes not marked as in
-                         this loop during the initial DFS traversal.  */
-                      if (e->src == ENTRY_BLOCK_PTR
-                          || max_hdr[node] != loop_head)
-                        {
-                          tail = -1;
-                          break;
-                        }
-                      else if (!TEST_BIT (in_queue, node) && node != bb->index)
-                        {
-                          queue[++tail] = node;
-                          SET_BIT (in_queue, node);
+		      /* See discussion above about nodes not marked as in
+			 this loop during the initial DFS traversal.  */
+		      if (e->src == ENTRY_BLOCK_PTR
+			  || max_hdr[node] != loop_head)
+			{
+			  tail = -1;
+			  break;
+			}
+		      else if (!TEST_BIT (in_queue, node) && node != bb->index)
+			{
+			  queue[++tail] = node;
+			  SET_BIT (in_queue, node);
 
-                          if (too_large (node, &num_bbs, &num_insns))
-                            {
-                              too_large_failure = 1;
-                              break;
-                            }
-                        }
-                    }
-                }
+			  if (too_large (node, &num_bbs, &num_insns))
+			    {
+			      too_large_failure = 1;
+			      break;
+			    }
+			}
+		    }
+		}
 
-              if (tail >= 0 && !too_large_failure)
-                {
-                  /* Place the loop header into list of region blocks.  */
-                  degree[bb->index] = -1;
-                  rgn_bb_table[idx] = bb->index;
-                  RGN_NR_BLOCKS (nr_regions) = num_bbs;
-                  RGN_BLOCKS (nr_regions) = idx++;
+	      if (tail >= 0 && !too_large_failure)
+		{
+		  /* Place the loop header into list of region blocks.  */
+		  degree[bb->index] = -1;
+		  rgn_bb_table[idx] = bb->index;
+		  RGN_NR_BLOCKS (nr_regions) = num_bbs;
+		  RGN_BLOCKS (nr_regions) = idx++;
                   RGN_DONT_CALC_DEPS (nr_regions) = 0;
-                  RGN_HAS_REAL_EBB (nr_regions) = 0;
-                  CONTAINING_RGN (bb->index) = nr_regions;
-                  BLOCK_TO_BB (bb->index) = count = 0;
+		  RGN_HAS_REAL_EBB (nr_regions) = 0;
+		  CONTAINING_RGN (bb->index) = nr_regions;
+		  BLOCK_TO_BB (bb->index) = count = 0;
 
-                  /* Remove blocks from queue[] when their in degree
-                     becomes zero.  Repeat until no blocks are left on the
-                     list.  This produces a topological list of blocks in
-                     the region.  */
-                  while (tail >= 0)
-                    {
-                      if (head < 0)
-                        head = tail;
-                      child = queue[head];
-                      if (degree[child] == 0)
-                        {
-                          edge e;
+		  /* Remove blocks from queue[] when their in degree
+		     becomes zero.  Repeat until no blocks are left on the
+		     list.  This produces a topological list of blocks in
+		     the region.  */
+		  while (tail >= 0)
+		    {
+		      if (head < 0)
+			head = tail;
+		      child = queue[head];
+		      if (degree[child] == 0)
+			{
+			  edge e;
 
-                          degree[child] = -1;
-                          rgn_bb_table[idx++] = child;
-                          BLOCK_TO_BB (child) = ++count;
-                          CONTAINING_RGN (child) = nr_regions;
-                          queue[head] = queue[tail--];
+			  degree[child] = -1;
+			  rgn_bb_table[idx++] = child;
+			  BLOCK_TO_BB (child) = ++count;
+			  CONTAINING_RGN (child) = nr_regions;
+			  queue[head] = queue[tail--];
 
-                          FOR_EACH_EDGE (e, ei, BASIC_BLOCK (child)->succs)
-                            if (e->dest != EXIT_BLOCK_PTR)
-                              --degree[e->dest->index];
-                        }
-                      else
-                        --head;
-                    }
-                  ++nr_regions;
-                }
+			  FOR_EACH_EDGE (e, ei, BASIC_BLOCK (child)->succs)
+			    if (e->dest != EXIT_BLOCK_PTR)
+			      --degree[e->dest->index];
+			}
+		      else
+			--head;
+		    }
+		  ++nr_regions;
+		}
               else if (extend_regions_p)
                 {
                   /* Restore DEGREE.  */
@@ -917,14 +917,14 @@ find_rgns (void)
                   degree1 = t;
                   
                   /* And force successors of BB to be region heads.
-                     This may provide several smaller regions instead
-                     of one too_large region.  */
+		     This may provide several smaller regions instead
+		     of one too_large region.  */
                   FOR_EACH_EDGE (e, ei, bb->succs)
                     if (e->dest != EXIT_BLOCK_PTR)
                       SET_BIT (extended_rgn_header, e->dest->index);
                 }
-            }
-        }
+	    }
+	}
       free (queue);
 
       if (extend_regions_p)
@@ -943,13 +943,13 @@ find_rgns (void)
   FOR_EACH_BB (bb)
     if (degree[bb->index] >= 0)
       {
-        rgn_bb_table[idx] = bb->index;
-        RGN_NR_BLOCKS (nr_regions) = 1;
-        RGN_BLOCKS (nr_regions) = idx++;
+	rgn_bb_table[idx] = bb->index;
+	RGN_NR_BLOCKS (nr_regions) = 1;
+	RGN_BLOCKS (nr_regions) = idx++;
         RGN_DONT_CALC_DEPS (nr_regions) = 0;
-        RGN_HAS_REAL_EBB (nr_regions) = 0;
-        CONTAINING_RGN (bb->index) = nr_regions++;
-        BLOCK_TO_BB (bb->index) = 0;
+	RGN_HAS_REAL_EBB (nr_regions) = 0;
+	CONTAINING_RGN (bb->index) = nr_regions++;
+	BLOCK_TO_BB (bb->index) = 0;
       }
 
   free (max_hdr);
@@ -980,12 +980,12 @@ gather_region_statistics (int **rsp)
       gcc_assert (nr_blocks >= 1);
 
       if (nr_blocks > a_sz)
-        {         
-          a = xrealloc (a, nr_blocks * sizeof (*a));
-          do
-            a[a_sz++] = 0;
-          while (a_sz != nr_blocks);
-        }
+	{	 
+	  a = xrealloc (a, nr_blocks * sizeof (*a));
+	  do
+	    a[a_sz++] = 0;
+	  while (a_sz != nr_blocks);
+	}
 
       a[nr_blocks - 1]++;
     }
@@ -1010,15 +1010,15 @@ print_region_statistics (int *s1, int s1_sz, int *s2, int s2_sz)
       n2 = s2[i];
 
       if (n2 == 0)
-        continue;
+	continue;
 
       if (i >= s1_sz)
-        n1 = 0;
+	n1 = 0;
       else
-        n1 = s1[i];
+	n1 = s1[i];
 
       fprintf (sched_dump, ";; Region extension statistics: size %d: " \
-               "was %d + %d more\n", i + 1, n1, n2 - n1);
+	       "was %d + %d more\n", i + 1, n1, n2 - n1);
     }
 }
 
@@ -1047,10 +1047,10 @@ extend_rgns (int *degree, int *idxp, sbitmap header, int *loop_hdr)
     {
       int bbn = order[i];
       if (degree[bbn] >= 0)
-        {
-          max_hdr[bbn] = bbn;
-          rescan = 1;
-        }
+	{
+	  max_hdr[bbn] = bbn;
+	  rescan = 1;
+	}
       else
         /* This block already was processed in find_rgns.  */
         max_hdr[bbn] = -1;
@@ -1071,59 +1071,59 @@ extend_rgns (int *degree, int *idxp, sbitmap header, int *loop_hdr)
       rescan = 0;
       
       for (i = nblocks - 1; i >= 0; i--)
-        {
-          edge e;
-          edge_iterator ei;
-          int bbn = order[i];
-        
-          if (max_hdr[bbn] != -1 && !TEST_BIT (header, bbn))
-            {
-              int hdr = -1;
+	{
+	  edge e;
+	  edge_iterator ei;
+	  int bbn = order[i];
+	
+	  if (max_hdr[bbn] != -1 && !TEST_BIT (header, bbn))
+	    {
+	      int hdr = -1;
 
-              FOR_EACH_EDGE (e, ei, BASIC_BLOCK (bbn)->preds)
-                {
-                  int predn = e->src->index;
+	      FOR_EACH_EDGE (e, ei, BASIC_BLOCK (bbn)->preds)
+		{
+		  int predn = e->src->index;
 
-                  if (predn != ENTRY_BLOCK
-                      /* If pred wasn't processed in find_rgns.  */
-                      && max_hdr[predn] != -1
-                      /* And pred and bb reside in the same loop.
-                         (Or out of any loop).  */
-                      && loop_hdr[bbn] == loop_hdr[predn])
-                    {
-                      if (hdr == -1)
-                        /* Then bb extends the containing region of pred.  */
-                        hdr = max_hdr[predn];
-                      else if (hdr != max_hdr[predn])
-                        /* Too bad, there are at least two predecessors
-                           that reside in different regions.  Thus, BB should
-                           begin its own region.  */
-                        {
-                          hdr = bbn;
-                          break;
-                        }                    
-                    }
-                  else
-                    /* BB starts its own region.  */
-                    {
-                      hdr = bbn;
-                      break;
-                    }                
-                }
-            
-              if (hdr == bbn)
-                {
-                  /* If BB start its own region,
-                     update set of headers with BB.  */
-                  SET_BIT (header, bbn);
-                  rescan = 1;
-                }
-              else
-                gcc_assert (hdr != -1);            
+		  if (predn != ENTRY_BLOCK
+		      /* If pred wasn't processed in find_rgns.  */
+		      && max_hdr[predn] != -1
+		      /* And pred and bb reside in the same loop.
+			 (Or out of any loop).  */
+		      && loop_hdr[bbn] == loop_hdr[predn])
+		    {
+		      if (hdr == -1)
+			/* Then bb extends the containing region of pred.  */
+			hdr = max_hdr[predn];
+		      else if (hdr != max_hdr[predn])
+			/* Too bad, there are at least two predecessors
+			   that reside in different regions.  Thus, BB should
+			   begin its own region.  */
+			{
+			  hdr = bbn;
+			  break;
+			}		    
+		    }
+		  else
+		    /* BB starts its own region.  */
+		    {
+		      hdr = bbn;
+		      break;
+		    }		
+		}
+	    
+	      if (hdr == bbn)
+		{
+		  /* If BB start its own region,
+		     update set of headers with BB.  */
+		  SET_BIT (header, bbn);
+		  rescan = 1;
+		}
+	      else
+		gcc_assert (hdr != -1);	    
 
-              max_hdr[bbn] = hdr;
-            }
-        }
+	      max_hdr[bbn] = hdr;
+	    }
+	}
 
       iter++;
     }
@@ -1152,7 +1152,7 @@ extend_rgns (int *degree, int *idxp, sbitmap header, int *loop_hdr)
   
   if (sched_verbose && iter != 0)
     fprintf (sched_dump, ";; Region extension iterations: %d%s\n", iter,
-             rescan ? "... failed" : "");
+	     rescan ? "... failed" : "");
     
   if (!rescan && iter != 0)
     {
@@ -1160,112 +1160,112 @@ extend_rgns (int *degree, int *idxp, sbitmap header, int *loop_hdr)
 
       /* Save the old statistics for later printout.  */
       if (sched_verbose >= 6)
-        s1_sz = gather_region_statistics (&s1);
+	s1_sz = gather_region_statistics (&s1);
 
       /* We have succeeded.  Now assemble the regions.  */
       for (i = nblocks - 1; i >= 0; i--)
-        {
-          int bbn = order[i];
+	{
+	  int bbn = order[i];
 
-          if (max_hdr[bbn] == bbn)
-            /* BBN is a region head.  */
-            {
-              edge e;
-              edge_iterator ei;
-              int num_bbs = 0, j, num_insns = 0, large;
-        
-              large = too_large (bbn, &num_bbs, &num_insns);
+	  if (max_hdr[bbn] == bbn)
+	    /* BBN is a region head.  */
+	    {
+	      edge e;
+	      edge_iterator ei;
+	      int num_bbs = 0, j, num_insns = 0, large;
+	
+	      large = too_large (bbn, &num_bbs, &num_insns);
 
-              degree[bbn] = -1;
-              rgn_bb_table[idx] = bbn;
-              RGN_BLOCKS (nr_regions) = idx++;
-              RGN_DONT_CALC_DEPS (nr_regions) = 0;
-              RGN_HAS_REAL_EBB (nr_regions) = 0;
-              CONTAINING_RGN (bbn) = nr_regions;
-              BLOCK_TO_BB (bbn) = 0;
+	      degree[bbn] = -1;
+	      rgn_bb_table[idx] = bbn;
+	      RGN_BLOCKS (nr_regions) = idx++;
+	      RGN_DONT_CALC_DEPS (nr_regions) = 0;
+	      RGN_HAS_REAL_EBB (nr_regions) = 0;
+	      CONTAINING_RGN (bbn) = nr_regions;
+	      BLOCK_TO_BB (bbn) = 0;
 
-              FOR_EACH_EDGE (e, ei, BASIC_BLOCK (bbn)->succs)
-                if (e->dest != EXIT_BLOCK_PTR)
-                  degree[e->dest->index]--;
+	      FOR_EACH_EDGE (e, ei, BASIC_BLOCK (bbn)->succs)
+		if (e->dest != EXIT_BLOCK_PTR)
+		  degree[e->dest->index]--;
 
-              if (!large)
-                /* Here we check whether the region is too_large.  */
-                for (j = i - 1; j >= 0; j--)
-                  {
-                    int succn = order[j];
-                    if (max_hdr[succn] == bbn)
-                      {
-                        if ((large = too_large (succn, &num_bbs, &num_insns)))
-                          break;
-                      }
-                  }
+	      if (!large)
+		/* Here we check whether the region is too_large.  */
+		for (j = i - 1; j >= 0; j--)
+		  {
+		    int succn = order[j];
+		    if (max_hdr[succn] == bbn)
+		      {
+			if ((large = too_large (succn, &num_bbs, &num_insns)))
+			  break;
+		      }
+		  }
 
-              if (large)
-                /* If the region is too_large, then wrap every block of
-                   the region into single block region.
-                   Here we wrap region head only.  Other blocks are
-                   processed in the below cycle.  */
-                {
-                  RGN_NR_BLOCKS (nr_regions) = 1;
-                  nr_regions++;
-                }          
+	      if (large)
+		/* If the region is too_large, then wrap every block of
+		   the region into single block region.
+		   Here we wrap region head only.  Other blocks are
+		   processed in the below cycle.  */
+		{
+		  RGN_NR_BLOCKS (nr_regions) = 1;
+		  nr_regions++;
+		}          
 
-              num_bbs = 1;
+	      num_bbs = 1;
 
-              for (j = i - 1; j >= 0; j--)
-                {
-                  int succn = order[j];
+	      for (j = i - 1; j >= 0; j--)
+		{
+		  int succn = order[j];
 
-                  if (max_hdr[succn] == bbn)
-                    /* This cycle iterates over all basic blocks, that 
-                       are supposed to be in the region with head BBN,
-                       and wraps them into that region (or in single
-                       block region).  */
-                    {
-                      gcc_assert (degree[succn] == 0);
+		  if (max_hdr[succn] == bbn)
+		    /* This cycle iterates over all basic blocks, that 
+		       are supposed to be in the region with head BBN,
+		       and wraps them into that region (or in single
+		       block region).  */
+		    {
+		      gcc_assert (degree[succn] == 0);
 
-                      degree[succn] = -1;
-                      rgn_bb_table[idx] = succn;                 
-                      BLOCK_TO_BB (succn) = large ? 0 : num_bbs++;
-                      CONTAINING_RGN (succn) = nr_regions;
+		      degree[succn] = -1;
+		      rgn_bb_table[idx] = succn;		 
+		      BLOCK_TO_BB (succn) = large ? 0 : num_bbs++;
+		      CONTAINING_RGN (succn) = nr_regions;
 
-                      if (large)
-                        /* Wrap SUCCN into single block region.  */
-                        {
-                          RGN_BLOCKS (nr_regions) = idx;
-                          RGN_NR_BLOCKS (nr_regions) = 1;
-                          RGN_DONT_CALC_DEPS (nr_regions) = 0;
-                          RGN_HAS_REAL_EBB (nr_regions) = 0;
-                          nr_regions++;
-                        }
+		      if (large)
+			/* Wrap SUCCN into single block region.  */
+			{
+			  RGN_BLOCKS (nr_regions) = idx;
+			  RGN_NR_BLOCKS (nr_regions) = 1;
+			  RGN_DONT_CALC_DEPS (nr_regions) = 0;
+			  RGN_HAS_REAL_EBB (nr_regions) = 0;
+			  nr_regions++;
+			}
 
-                      idx++;
-                                
-                      FOR_EACH_EDGE (e, ei, BASIC_BLOCK (succn)->succs)
-                        if (e->dest != EXIT_BLOCK_PTR)
-                          degree[e->dest->index]--;
-                    }
-                }
+		      idx++;
+				
+		      FOR_EACH_EDGE (e, ei, BASIC_BLOCK (succn)->succs)
+			if (e->dest != EXIT_BLOCK_PTR)
+			  degree[e->dest->index]--;
+		    }
+		}
 
-              if (!large)
-                {
-                  RGN_NR_BLOCKS (nr_regions) = num_bbs;
-                  nr_regions++;
-                }
-            }
-        }
+	      if (!large)
+		{
+		  RGN_NR_BLOCKS (nr_regions) = num_bbs;
+		  nr_regions++;
+		}
+	    }
+	}
 
       if (sched_verbose >= 6)
-        {
-          int *s2, s2_sz;
+	{
+	  int *s2, s2_sz;
 
           /* Get the new statistics and print the comparison with the 
              one before calling this function.  */
-          s2_sz = gather_region_statistics (&s2);
-          print_region_statistics (s1, s1_sz, s2, s2_sz);
-          free (s1);
-          free (s2);
-        }
+	  s2_sz = gather_region_statistics (&s2);
+	  print_region_statistics (s1, s1_sz, s2, s2_sz);
+	  free (s1);
+	  free (s2);
+	}
     }
   
   free (order);
@@ -1307,19 +1307,19 @@ compute_dom_prob_ps (int bb)
       edge_iterator out_ei;
 
       if (in_edge->src == ENTRY_BLOCK_PTR)
-        continue;
+	continue;
 
       pred_bb = BLOCK_TO_BB (in_edge->src->index);
       sbitmap_a_and_b (dom[bb], dom[bb], dom[pred_bb]);
       sbitmap_a_or_b (ancestor_edges[bb],
-                      ancestor_edges[bb], ancestor_edges[pred_bb]);
+		      ancestor_edges[bb], ancestor_edges[pred_bb]);
 
       SET_BIT (ancestor_edges[bb], EDGE_TO_BIT (in_edge));
 
       sbitmap_a_or_b (pot_split[bb], pot_split[bb], pot_split[pred_bb]);
 
       FOR_EACH_EDGE (out_edge, out_ei, in_edge->src->succs)
-        SET_BIT (pot_split[bb], EDGE_TO_BIT (out_edge));
+	SET_BIT (pot_split[bb], EDGE_TO_BIT (out_edge));
 
       prob[bb] += ((prob[pred_bb] * in_edge->probability) / REG_BR_PROB_BASE);
     }
@@ -1329,7 +1329,7 @@ compute_dom_prob_ps (int bb)
 
   if (sched_verbose >= 2)
     fprintf (sched_dump, ";;  bb_prob(%d, %d) = %3d\n", bb, BB_TO_BLOCK (bb),
-             (100 * prob[bb]) / REG_BR_PROB_BASE);
+	     (100 * prob[bb]) / REG_BR_PROB_BASE);
 }
 
 /* Functions for target info.  */
@@ -1377,73 +1377,73 @@ compute_trg_info (int trg)
 
       sp->is_valid = IS_DOMINATED (i, trg);
       if (sp->is_valid)
-        {
-          int tf = prob[trg], cf = prob[i];
+	{
+	  int tf = prob[trg], cf = prob[i];
 
-          /* In CFGs with low probability edges TF can possibly be zero.  */
-          sp->src_prob = (tf ? ((cf * REG_BR_PROB_BASE) / tf) : 0);
-          sp->is_valid = (sp->src_prob >= min_spec_prob);
-        }
-
-      if (sp->is_valid)
-        {
-          split_edges (i, trg, &el);
-          sp->is_speculative = (el.nr_members) ? 1 : 0;
-          if (sp->is_speculative && !flag_schedule_speculative)
-            sp->is_valid = 0;
-        }
+	  /* In CFGs with low probability edges TF can possibly be zero.  */
+	  sp->src_prob = (tf ? ((cf * REG_BR_PROB_BASE) / tf) : 0);
+	  sp->is_valid = (sp->src_prob >= min_spec_prob);
+	}
 
       if (sp->is_valid)
-        {
-          /* Compute split blocks and store them in bblst_table.
-             The TO block of every split edge is a split block.  */
-          sp->split_bbs.first_member = &bblst_table[bblst_last];
-          sp->split_bbs.nr_members = el.nr_members;
-          for (j = 0; j < el.nr_members; bblst_last++, j++)
-            bblst_table[bblst_last] = el.first_member[j]->dest;
-          sp->update_bbs.first_member = &bblst_table[bblst_last];
+	{
+	  split_edges (i, trg, &el);
+	  sp->is_speculative = (el.nr_members) ? 1 : 0;
+	  if (sp->is_speculative && !flag_schedule_speculative)
+	    sp->is_valid = 0;
+	}
 
-          /* Compute update blocks and store them in bblst_table.
-             For every split edge, look at the FROM block, and check
-             all out edges.  For each out edge that is not a split edge,
-             add the TO block to the update block list.  This list can end
-             up with a lot of duplicates.  We need to weed them out to avoid
-             overrunning the end of the bblst_table.  */
+      if (sp->is_valid)
+	{
+	  /* Compute split blocks and store them in bblst_table.
+	     The TO block of every split edge is a split block.  */
+	  sp->split_bbs.first_member = &bblst_table[bblst_last];
+	  sp->split_bbs.nr_members = el.nr_members;
+	  for (j = 0; j < el.nr_members; bblst_last++, j++)
+	    bblst_table[bblst_last] = el.first_member[j]->dest;
+	  sp->update_bbs.first_member = &bblst_table[bblst_last];
 
-          update_idx = 0;
-          sbitmap_zero (visited);
-          for (j = 0; j < el.nr_members; j++)
-            {
-              block = el.first_member[j]->src;
-              FOR_EACH_EDGE (e, ei, block->succs)
-                {
-                  if (!TEST_BIT (visited, e->dest->index))
-                    {
-                      for (k = 0; k < el.nr_members; k++)
-                        if (e == el.first_member[k])
-                          break;
+	  /* Compute update blocks and store them in bblst_table.
+	     For every split edge, look at the FROM block, and check
+	     all out edges.  For each out edge that is not a split edge,
+	     add the TO block to the update block list.  This list can end
+	     up with a lot of duplicates.  We need to weed them out to avoid
+	     overrunning the end of the bblst_table.  */
 
-                      if (k >= el.nr_members)
-                        {
-                          bblst_table[bblst_last++] = e->dest;
-                          SET_BIT (visited, e->dest->index);
-                          update_idx++;
-                        }
-                    }
-                }
-            }
-          sp->update_bbs.nr_members = update_idx;
+	  update_idx = 0;
+	  sbitmap_zero (visited);
+	  for (j = 0; j < el.nr_members; j++)
+	    {
+	      block = el.first_member[j]->src;
+	      FOR_EACH_EDGE (e, ei, block->succs)
+		{
+		  if (!TEST_BIT (visited, e->dest->index))
+		    {
+		      for (k = 0; k < el.nr_members; k++)
+			if (e == el.first_member[k])
+			  break;
 
-          /* Make sure we didn't overrun the end of bblst_table.  */
-          gcc_assert (bblst_last <= bblst_size);
-        }
+		      if (k >= el.nr_members)
+			{
+			  bblst_table[bblst_last++] = e->dest;
+			  SET_BIT (visited, e->dest->index);
+			  update_idx++;
+			}
+		    }
+		}
+	    }
+	  sp->update_bbs.nr_members = update_idx;
+
+	  /* Make sure we didn't overrun the end of bblst_table.  */
+	  gcc_assert (bblst_last <= bblst_size);
+	}
       else
-        {
-          sp->split_bbs.nr_members = sp->update_bbs.nr_members = 0;
+	{
+	  sp->split_bbs.nr_members = sp->update_bbs.nr_members = 0;
 
-          sp->is_speculative = 0;
-          sp->src_prob = 0;
-        }
+	  sp->is_speculative = 0;
+	  sp->src_prob = 0;
+	}
     }
 
   sbitmap_free (visited);
@@ -1464,20 +1464,20 @@ debug_candidate (int i)
 
       fprintf (sched_dump, "split path: ");
       for (j = 0; j < candidate_table[i].split_bbs.nr_members; j++)
-        {
-          int b = candidate_table[i].split_bbs.first_member[j]->index;
+	{
+	  int b = candidate_table[i].split_bbs.first_member[j]->index;
 
-          fprintf (sched_dump, " %d ", b);
-        }
+	  fprintf (sched_dump, " %d ", b);
+	}
       fprintf (sched_dump, "\n");
 
       fprintf (sched_dump, "update path: ");
       for (j = 0; j < candidate_table[i].update_bbs.nr_members; j++)
-        {
-          int b = candidate_table[i].update_bbs.first_member[j]->index;
+	{
+	  int b = candidate_table[i].update_bbs.first_member[j]->index;
 
-          fprintf (sched_dump, " %d ", b);
-        }
+	  fprintf (sched_dump, " %d ", b);
+	}
       fprintf (sched_dump, "\n");
     }
   else
@@ -1494,7 +1494,7 @@ debug_candidates (int trg)
   int i;
 
   fprintf (sched_dump, "----------- candidate table: target: b=%d bb=%d ---\n",
-           BB_TO_BLOCK (trg), trg);
+	   BB_TO_BLOCK (trg), trg);
   for (i = trg + 1; i < current_nr_blocks; i++)
     debug_candidate (i);
 }
@@ -1515,8 +1515,8 @@ check_live_1 (int src, rtx x)
     return 1;
 
   while (GET_CODE (reg) == SUBREG
-         || GET_CODE (reg) == ZERO_EXTRACT
-         || GET_CODE (reg) == STRICT_LOW_PART)
+	 || GET_CODE (reg) == ZERO_EXTRACT
+	 || GET_CODE (reg) == STRICT_LOW_PART)
     reg = XEXP (reg, 0);
 
   if (GET_CODE (reg) == PARALLEL)
@@ -1524,9 +1524,9 @@ check_live_1 (int src, rtx x)
       int i;
 
       for (i = XVECLEN (reg, 0) - 1; i >= 0; i--)
-        if (XEXP (XVECEXP (reg, 0, i), 0) != 0)
-          if (check_live_1 (src, XEXP (XVECEXP (reg, 0, i), 0)))
-            return 1;
+	if (XEXP (XVECEXP (reg, 0, i), 0) != 0)
+	  if (check_live_1 (src, XEXP (XVECEXP (reg, 0, i), 0)))
+	    return 1;
 
       return 0;
     }
@@ -1544,46 +1544,46 @@ check_live_1 (int src, rtx x)
   else
     {
       if (regno < FIRST_PSEUDO_REGISTER)
-        {
-          /* Check for hard registers.  */
-          int j = hard_regno_nregs[regno][GET_MODE (reg)];
-          while (--j >= 0)
-            {
-              for (i = 0; i < candidate_table[src].split_bbs.nr_members; i++)
-                {
-                  basic_block b = candidate_table[src].split_bbs.first_member[i];
+	{
+	  /* Check for hard registers.  */
+	  int j = hard_regno_nregs[regno][GET_MODE (reg)];
+	  while (--j >= 0)
+	    {
+	      for (i = 0; i < candidate_table[src].split_bbs.nr_members; i++)
+		{
+		  basic_block b = candidate_table[src].split_bbs.first_member[i];
 
-                  /* We can have split blocks, that were recently generated.
-                     such blocks are always outside current region.  */
-                  gcc_assert (glat_start[b->index]
-                              || CONTAINING_RGN (b->index)
-                              != CONTAINING_RGN (BB_TO_BLOCK (src)));
-                  if (!glat_start[b->index]
-                      || REGNO_REG_SET_P (glat_start[b->index],
-                                          regno + j))
-                    {
-                      return 0;
-                    }
-                }
-            }
-        }
+		  /* We can have split blocks, that were recently generated.
+		     such blocks are always outside current region.  */
+		  gcc_assert (glat_start[b->index]
+			      || CONTAINING_RGN (b->index)
+			      != CONTAINING_RGN (BB_TO_BLOCK (src)));
+		  if (!glat_start[b->index]
+		      || REGNO_REG_SET_P (glat_start[b->index],
+					  regno + j))
+		    {
+		      return 0;
+		    }
+		}
+	    }
+	}
       else
-        {
-          /* Check for pseudo registers.  */
-          for (i = 0; i < candidate_table[src].split_bbs.nr_members; i++)
-            {
-              basic_block b = candidate_table[src].split_bbs.first_member[i];
+	{
+	  /* Check for pseudo registers.  */
+	  for (i = 0; i < candidate_table[src].split_bbs.nr_members; i++)
+	    {
+	      basic_block b = candidate_table[src].split_bbs.first_member[i];
 
-              gcc_assert (glat_start[b->index]
-                          || CONTAINING_RGN (b->index)
-                          != CONTAINING_RGN (BB_TO_BLOCK (src)));
-              if (!glat_start[b->index]
-                  || REGNO_REG_SET_P (glat_start[b->index], regno))
-                {
-                  return 0;
-                }
-            }
-        }
+	      gcc_assert (glat_start[b->index]
+			  || CONTAINING_RGN (b->index)
+			  != CONTAINING_RGN (BB_TO_BLOCK (src)));
+	      if (!glat_start[b->index]
+		  || REGNO_REG_SET_P (glat_start[b->index], regno))
+		{
+		  return 0;
+		}
+	    }
+	}
     }
 
   return 1;
@@ -1603,8 +1603,8 @@ update_live_1 (int src, rtx x)
     return;
 
   while (GET_CODE (reg) == SUBREG
-         || GET_CODE (reg) == ZERO_EXTRACT
-         || GET_CODE (reg) == STRICT_LOW_PART)
+	 || GET_CODE (reg) == ZERO_EXTRACT
+	 || GET_CODE (reg) == STRICT_LOW_PART)
     reg = XEXP (reg, 0);
 
   if (GET_CODE (reg) == PARALLEL)
@@ -1612,8 +1612,8 @@ update_live_1 (int src, rtx x)
       int i;
 
       for (i = XVECLEN (reg, 0) - 1; i >= 0; i--)
-        if (XEXP (XVECEXP (reg, 0, i), 0) != 0)
-          update_live_1 (src, XEXP (XVECEXP (reg, 0, i), 0));
+	if (XEXP (XVECEXP (reg, 0, i), 0) != 0)
+	  update_live_1 (src, XEXP (XVECEXP (reg, 0, i), 0));
 
       return;
     }
@@ -1629,27 +1629,27 @@ update_live_1 (int src, rtx x)
   if (regno >= FIRST_PSEUDO_REGISTER || !global_regs[regno])
     {
       if (regno < FIRST_PSEUDO_REGISTER)
-        {
-          int j = hard_regno_nregs[regno][GET_MODE (reg)];
-          while (--j >= 0)
-            {
-              for (i = 0; i < candidate_table[src].update_bbs.nr_members; i++)
-                {
-                  basic_block b = candidate_table[src].update_bbs.first_member[i];
+	{
+	  int j = hard_regno_nregs[regno][GET_MODE (reg)];
+	  while (--j >= 0)
+	    {
+	      for (i = 0; i < candidate_table[src].update_bbs.nr_members; i++)
+		{
+		  basic_block b = candidate_table[src].update_bbs.first_member[i];
 
-                  SET_REGNO_REG_SET (glat_start[b->index], regno + j);
-                }
-            }
-        }
+		  SET_REGNO_REG_SET (glat_start[b->index], regno + j);
+		}
+	    }
+	}
       else
-        {
-          for (i = 0; i < candidate_table[src].update_bbs.nr_members; i++)
-            {
-              basic_block b = candidate_table[src].update_bbs.first_member[i];
+	{
+	  for (i = 0; i < candidate_table[src].update_bbs.nr_members; i++)
+	    {
+	      basic_block b = candidate_table[src].update_bbs.first_member[i];
 
-              SET_REGNO_REG_SET (glat_start[b->index], regno);
-            }
-        }
+	      SET_REGNO_REG_SET (glat_start[b->index], regno);
+	    }
+	}
     }
 }
 
@@ -1668,10 +1668,10 @@ check_live (rtx insn, int src)
     {
       int j;
       for (j = XVECLEN (PATTERN (insn), 0) - 1; j >= 0; j--)
-        if ((GET_CODE (XVECEXP (PATTERN (insn), 0, j)) == SET
-             || GET_CODE (XVECEXP (PATTERN (insn), 0, j)) == CLOBBER)
-            && !check_live_1 (src, XVECEXP (PATTERN (insn), 0, j)))
-          return 0;
+	if ((GET_CODE (XVECEXP (PATTERN (insn), 0, j)) == SET
+	     || GET_CODE (XVECEXP (PATTERN (insn), 0, j)) == CLOBBER)
+	    && !check_live_1 (src, XVECEXP (PATTERN (insn), 0, j)))
+	  return 0;
 
       return 1;
     }
@@ -1693,18 +1693,18 @@ update_live (rtx insn, int src)
     {
       int j;
       for (j = XVECLEN (PATTERN (insn), 0) - 1; j >= 0; j--)
-        if (GET_CODE (XVECEXP (PATTERN (insn), 0, j)) == SET
-            || GET_CODE (XVECEXP (PATTERN (insn), 0, j)) == CLOBBER)
-          update_live_1 (src, XVECEXP (PATTERN (insn), 0, j));
+	if (GET_CODE (XVECEXP (PATTERN (insn), 0, j)) == SET
+	    || GET_CODE (XVECEXP (PATTERN (insn), 0, j)) == CLOBBER)
+	  update_live_1 (src, XVECEXP (PATTERN (insn), 0, j));
     }
 }
 
 /* Nonzero if block bb_to is equal to, or reachable from block bb_from.  */
-#define IS_REACHABLE(bb_from, bb_to)                                        \
-  (bb_from == bb_to                                                        \
-   || IS_RGN_ENTRY (bb_from)                                                \
-   || (TEST_BIT (ancestor_edges[bb_to],                                        \
-         EDGE_TO_BIT (single_pred_edge (BASIC_BLOCK (BB_TO_BLOCK (bb_from)))))))
+#define IS_REACHABLE(bb_from, bb_to)					\
+  (bb_from == bb_to							\
+   || IS_RGN_ENTRY (bb_from)						\
+   || (TEST_BIT (ancestor_edges[bb_to],					\
+	 EDGE_TO_BIT (single_pred_edge (BASIC_BLOCK (BB_TO_BLOCK (bb_from)))))))
 
 /* Turns on the fed_by_spec_load flag for insns fed by load_insn.  */
 
@@ -1716,7 +1716,7 @@ set_spec_fed (rtx load_insn)
   for (link = INSN_DEPEND (load_insn); link; link = XEXP (link, 1))
     if (GET_MODE (link) == VOIDmode)
       FED_BY_SPEC_LOAD (XEXP (link, 0)) = 1;
-}                                /* set_spec_fed */
+}				/* set_spec_fed */
 
 /* On the path from the insn to load_insn_bb, find a conditional
 branch depending on insn, that guards the speculative load.  */
@@ -1731,16 +1731,16 @@ find_conditional_protection (rtx insn, int load_insn_bb)
     {
       rtx next = XEXP (link, 0);
       if ((CONTAINING_RGN (BLOCK_NUM (next)) ==
-           CONTAINING_RGN (BB_TO_BLOCK (load_insn_bb)))
-          && IS_REACHABLE (INSN_BB (next), load_insn_bb)
-          && load_insn_bb != INSN_BB (next)
-          && GET_MODE (link) == VOIDmode
-          && (JUMP_P (next)
-              || find_conditional_protection (next, load_insn_bb)))
-        return 1;
+	   CONTAINING_RGN (BB_TO_BLOCK (load_insn_bb)))
+	  && IS_REACHABLE (INSN_BB (next), load_insn_bb)
+	  && load_insn_bb != INSN_BB (next)
+	  && GET_MODE (link) == VOIDmode
+	  && (JUMP_P (next)
+	      || find_conditional_protection (next, load_insn_bb)))
+	return 1;
     }
   return 0;
-}                                /* find_conditional_protection */
+}				/* find_conditional_protection */
 
 /* Returns 1 if the same insn1 that participates in the computation
    of load_insn's address is feeding a conditional branch that is
@@ -1767,20 +1767,20 @@ is_conditionally_protected (rtx load_insn, int bb_src, int bb_trg)
 
       /* Must be a DEF-USE dependence upon non-branch.  */
       if (GET_MODE (link) != VOIDmode
-          || JUMP_P (insn1))
-        continue;
+	  || JUMP_P (insn1))
+	continue;
 
       /* Must exist a path: region-entry -> ... -> bb_trg -> ... load_insn.  */
       if (INSN_BB (insn1) == bb_src
-          || (CONTAINING_RGN (BLOCK_NUM (insn1))
-              != CONTAINING_RGN (BB_TO_BLOCK (bb_src)))
-          || (!IS_REACHABLE (bb_trg, INSN_BB (insn1))
-              && !IS_REACHABLE (INSN_BB (insn1), bb_trg)))
-        continue;
+	  || (CONTAINING_RGN (BLOCK_NUM (insn1))
+	      != CONTAINING_RGN (BB_TO_BLOCK (bb_src)))
+	  || (!IS_REACHABLE (bb_trg, INSN_BB (insn1))
+	      && !IS_REACHABLE (INSN_BB (insn1), bb_trg)))
+	continue;
 
       /* Now search for the conditional-branch.  */
       if (find_conditional_protection (insn1, bb_src))
-        return 1;
+	return 1;
 
       /* Recursive step: search another insn1, "above" current insn1.  */
       return is_conditionally_protected (insn1, bb_src, bb_trg);
@@ -1788,7 +1788,7 @@ is_conditionally_protected (rtx load_insn, int bb_src, int bb_trg)
 
   /* The chain does not exist.  */
   return 0;
-}                                /* is_conditionally_protected */
+}				/* is_conditionally_protected */
 
 /* Returns 1 if a clue for "similar load" 'insn2' is found, and hence
    load_insn can move speculatively from bb_src to bb_trg.  All the
@@ -1822,36 +1822,36 @@ is_pfree (rtx load_insn, int bb_src, int bb_trg)
       rtx insn1 = XEXP (back_link, 0);
 
       if (GET_MODE (back_link) == VOIDmode)
-        {
-          /* Found a DEF-USE dependence (insn1, load_insn).  */
-          rtx fore_link;
+	{
+	  /* Found a DEF-USE dependence (insn1, load_insn).  */
+	  rtx fore_link;
 
-          for (fore_link = INSN_DEPEND (insn1);
-               fore_link; fore_link = XEXP (fore_link, 1))
-            {
-              rtx insn2 = XEXP (fore_link, 0);
-              if (GET_MODE (fore_link) == VOIDmode)
-                {
-                  /* Found a DEF-USE dependence (insn1, insn2).  */
-                  if (haifa_classify_insn (insn2) != PFREE_CANDIDATE)
-                    /* insn2 not guaranteed to be a 1 base reg load.  */
-                    continue;
+	  for (fore_link = INSN_DEPEND (insn1);
+	       fore_link; fore_link = XEXP (fore_link, 1))
+	    {
+	      rtx insn2 = XEXP (fore_link, 0);
+	      if (GET_MODE (fore_link) == VOIDmode)
+		{
+		  /* Found a DEF-USE dependence (insn1, insn2).  */
+		  if (haifa_classify_insn (insn2) != PFREE_CANDIDATE)
+		    /* insn2 not guaranteed to be a 1 base reg load.  */
+		    continue;
 
-                  if (INSN_BB (insn2) == bb_trg)
-                    /* insn2 is the similar load, in the target block.  */
-                    return 1;
+		  if (INSN_BB (insn2) == bb_trg)
+		    /* insn2 is the similar load, in the target block.  */
+		    return 1;
 
-                  if (*(candp->split_bbs.first_member) == BLOCK_FOR_INSN (insn2))
-                    /* insn2 is a similar load, in a split-block.  */
-                    return 1;
-                }
-            }
-        }
+		  if (*(candp->split_bbs.first_member) == BLOCK_FOR_INSN (insn2))
+		    /* insn2 is a similar load, in a split-block.  */
+		    return 1;
+		}
+	    }
+	}
     }
 
   /* Couldn't find a similar load.  */
   return 0;
-}                                /* is_pfree */
+}				/* is_pfree */
 
 /* Return 1 if load_insn is prisky (i.e. if load_insn is fed by
    a load moved speculatively, or if load_insn is protected by
@@ -1904,12 +1904,12 @@ is_exception_free (rtx insn, int bb_src, int bb_trg)
       return 0;
     case PFREE_CANDIDATE:
       if (is_pfree (insn, bb_src, bb_trg))
-        return 1;
+	return 1;
       /* Don't 'break' here: PFREE-candidate is also PRISKY-candidate.  */
     case PRISKY_CANDIDATE:
       if (!flag_schedule_speculative_load_dangerous
-          || is_prisky (insn, bb_src, bb_trg))
-        return 0;
+	  || is_prisky (insn, bb_src, bb_trg))
+	return 0;
       break;
     default:;
     }
@@ -1980,9 +1980,9 @@ init_ready_list (void)
 
       bblst_last = 0;
       /* bblst_table holds split blocks and update blocks for each block after
-         the current one in the region.  split blocks and update blocks are
-         the TO blocks of region edges, so there can be at most rgn_nr_edges
-         of them.  */
+	 the current one in the region.  split blocks and update blocks are
+	 the TO blocks of region edges, so there can be at most rgn_nr_edges
+	 of them.  */
       bblst_size = (current_nr_blocks - target_bb) * rgn_nr_edges;
       bblst_table = XNEWVEC (basic_block, bblst_size);
 
@@ -2008,18 +2008,18 @@ init_ready_list (void)
   for (bb_src = target_bb + 1; bb_src < current_nr_blocks; bb_src++)
     if (IS_VALID (bb_src))
       {
-        rtx src_head;
-        rtx src_next_tail;
-        rtx tail, head;
+	rtx src_head;
+	rtx src_next_tail;
+	rtx tail, head;
 
-        get_ebb_head_tail (EBB_FIRST_BB (bb_src), EBB_LAST_BB (bb_src),
-                           &head, &tail);
-        src_next_tail = NEXT_INSN (tail);
-        src_head = head;
+	get_ebb_head_tail (EBB_FIRST_BB (bb_src), EBB_LAST_BB (bb_src),
+			   &head, &tail);
+	src_next_tail = NEXT_INSN (tail);
+	src_head = head;
 
-        for (insn = src_head; insn != src_next_tail; insn = NEXT_INSN (insn))
-          if (INSN_P (insn))
-            try_ready (insn);
+	for (insn = src_head; insn != src_next_tail; insn = NEXT_INSN (insn))
+	  if (INSN_P (insn))
+	    try_ready (insn);
       }
 }
 
@@ -2049,17 +2049,17 @@ begin_schedule_ready (rtx insn, rtx last ATTRIBUTE_UNUSED)
   if (INSN_BB (insn) != target_bb)
     {
       if (IS_SPECULATIVE_INSN (insn))
-        {
-          gcc_assert (check_live (insn, INSN_BB (insn)));
+	{
+	  gcc_assert (check_live (insn, INSN_BB (insn)));
 
-          update_live (insn, INSN_BB (insn));
+	  update_live (insn, INSN_BB (insn));
 
-          /* For speculative load, mark insns fed by it.  */
-          if (IS_LOAD_INSN (insn) || FED_BY_SPEC_LOAD (insn))
-            set_spec_fed (insn);
+	  /* For speculative load, mark insns fed by it.  */
+	  if (IS_LOAD_INSN (insn) || FED_BY_SPEC_LOAD (insn))
+	    set_spec_fed (insn);
 
-          nr_spec++;
-        }
+	  nr_spec++;
+	}
       nr_inter++;
     }
   else
@@ -2082,27 +2082,27 @@ new_ready (rtx next, ds_t ts)
       int not_ex_free = 0;
 
       /* For speculative insns, before inserting to ready/queue,
-         check live, exception-free, and issue-delay.  */        
+	 check live, exception-free, and issue-delay.  */	
       if (!IS_VALID (INSN_BB (next))
-          || CANT_MOVE (next)
-          || (IS_SPECULATIVE_INSN (next)
-              && ((recog_memoized (next) >= 0
-                   && min_insn_conflict_delay (curr_state, next, next) 
+	  || CANT_MOVE (next)
+	  || (IS_SPECULATIVE_INSN (next)
+	      && ((recog_memoized (next) >= 0
+		   && min_insn_conflict_delay (curr_state, next, next) 
                    > PARAM_VALUE (PARAM_MAX_SCHED_INSN_CONFLICT_DELAY))
                   || IS_SPECULATION_CHECK_P (next)
-                  || !check_live (next, INSN_BB (next))
-                  || (not_ex_free = !is_exception_free (next, INSN_BB (next),
-                                                        target_bb)))))
-        {
-          if (not_ex_free
-              /* We are here because is_exception_free () == false.
-                 But we possibly can handle that with control speculation.  */
-              && current_sched_info->flags & DO_SPECULATION)
+		  || !check_live (next, INSN_BB (next))
+		  || (not_ex_free = !is_exception_free (next, INSN_BB (next),
+							target_bb)))))
+	{
+	  if (not_ex_free
+	      /* We are here because is_exception_free () == false.
+		 But we possibly can handle that with control speculation.  */
+	      && current_sched_info->flags & DO_SPECULATION)
             /* Here we got new control-speculative instruction.  */
             ts = set_dep_weak (ts, BEGIN_CONTROL, MAX_DEP_WEAK);
-          else
+	  else
             ts = (ts & ~SPECULATIVE) | HARD_DEP;
-        }
+	}
     }
   
   return ts;
@@ -2123,9 +2123,9 @@ rgn_print_insn (rtx insn, int aligned)
   else
     {
       if (current_nr_blocks > 1 && INSN_BB (insn) != target_bb)
-        sprintf (tmp, "%d/b%d", INSN_UID (insn), INSN_BB (insn));
+	sprintf (tmp, "%d/b%d", INSN_UID (insn), INSN_BB (insn));
       else
-        sprintf (tmp, "%d", INSN_UID (insn));
+	sprintf (tmp, "%d", INSN_UID (insn));
     }
   return tmp;
 }
@@ -2144,19 +2144,19 @@ rgn_rank (rtx insn1, rtx insn2)
 
       /* Prefer an inblock motion on an interblock motion.  */
       if ((INSN_BB (insn2) == target_bb) && (INSN_BB (insn1) != target_bb))
-        return 1;
+	return 1;
       if ((INSN_BB (insn1) == target_bb) && (INSN_BB (insn2) != target_bb))
-        return -1;
+	return -1;
 
       /* Prefer a useful motion on a speculative one.  */
       spec_val = IS_SPECULATIVE_INSN (insn1) - IS_SPECULATIVE_INSN (insn2);
       if (spec_val)
-        return spec_val;
+	return spec_val;
 
       /* Prefer a more probable (speculative) insn.  */
       prob_val = INSN_PROBABILITY (insn2) - INSN_PROBABILITY (insn1);
       if (prob_val)
-        return prob_val;
+	return prob_val;
     }
   return 0;
 }
@@ -2179,9 +2179,9 @@ contributes_to_priority (rtx next, rtx insn)
 
 static void
 compute_jump_reg_dependencies (rtx insn ATTRIBUTE_UNUSED,
-                               regset cond_exec ATTRIBUTE_UNUSED,
-                               regset used ATTRIBUTE_UNUSED,
-                               regset set ATTRIBUTE_UNUSED)
+			       regset cond_exec ATTRIBUTE_UNUSED,
+			       regset used ATTRIBUTE_UNUSED,
+			       regset set ATTRIBUTE_UNUSED)
 {
   /* Nothing to do here, since we postprocess jumps in
      add_branch_dependences.  */
@@ -2270,35 +2270,35 @@ add_branch_dependences (rtx head, rtx tail)
   insn = tail;
   last = 0;
   while (CALL_P (insn)
-         || JUMP_P (insn)
-         || (NONJUMP_INSN_P (insn)
-             && (GET_CODE (PATTERN (insn)) == USE
-                 || GET_CODE (PATTERN (insn)) == CLOBBER
-                 || can_throw_internal (insn)
+	 || JUMP_P (insn)
+	 || (NONJUMP_INSN_P (insn)
+	     && (GET_CODE (PATTERN (insn)) == USE
+		 || GET_CODE (PATTERN (insn)) == CLOBBER
+		 || can_throw_internal (insn)
 #ifdef HAVE_cc0
-                 || sets_cc0_p (PATTERN (insn))
+		 || sets_cc0_p (PATTERN (insn))
 #endif
-                 || (!reload_completed
-                     && sets_likely_spilled (PATTERN (insn)))))
-         || NOTE_P (insn))
+		 || (!reload_completed
+		     && sets_likely_spilled (PATTERN (insn)))))
+	 || NOTE_P (insn))
     {
       if (!NOTE_P (insn))
-        {
-          if (last != 0 && !find_insn_list (insn, LOG_LINKS (last)))
-            {
-              if (! sched_insns_conditions_mutex_p (last, insn))
-                add_dependence (last, insn, REG_DEP_ANTI);
-              INSN_REF_COUNT (insn)++;
-            }
+	{
+	  if (last != 0 && !find_insn_list (insn, LOG_LINKS (last)))
+	    {
+	      if (! sched_insns_conditions_mutex_p (last, insn))
+		add_dependence (last, insn, REG_DEP_ANTI);
+	      INSN_REF_COUNT (insn)++;
+	    }
 
-          CANT_MOVE (insn) = 1;
+	  CANT_MOVE (insn) = 1;
 
-          last = insn;
-        }
+	  last = insn;
+	}
 
       /* Don't overrun the bounds of the basic block.  */
       if (insn == head)
-        break;
+	break;
 
       insn = PREV_INSN (insn);
     }
@@ -2308,14 +2308,14 @@ add_branch_dependences (rtx head, rtx tail)
   if (insn != 0)
     while (insn != head)
       {
-        insn = prev_nonnote_insn (insn);
+	insn = prev_nonnote_insn (insn);
 
-        if (INSN_REF_COUNT (insn) != 0)
-          continue;
+	if (INSN_REF_COUNT (insn) != 0)
+	  continue;
 
-        if (! sched_insns_conditions_mutex_p (last, insn))
-          add_dependence (last, insn, REG_DEP_ANTI);
-        INSN_REF_COUNT (insn) = 1;
+	if (! sched_insns_conditions_mutex_p (last, insn))
+	  add_dependence (last, insn, REG_DEP_ANTI);
+	INSN_REF_COUNT (insn) = 1;
       }
 
 #ifdef HAVE_conditional_execution
@@ -2330,20 +2330,20 @@ add_branch_dependences (rtx head, rtx tail)
      FIXME: We could in some cases move COND_EXEC insns past the branch if
      this scheduler would be a little smarter.  Consider this code:
 
-                T = [addr]
-        C  ?        addr += 4
-        !C ?        X += 12
-        C  ?        T += 1
-        C  ?        jump foo
+		T = [addr]
+	C  ?	addr += 4
+	!C ?	X += 12
+	C  ?	T += 1
+	C  ?	jump foo
 
      On a target with a one cycle stall on a memory access the optimal
      sequence would be:
 
-                T = [addr]
-        C  ?        addr += 4
-        C  ?        T += 1
-        C  ?        jump foo
-        !C ?        X += 12
+		T = [addr]
+	C  ?	addr += 4
+	C  ?	T += 1
+	C  ?	jump foo
+	!C ?	X += 12
 
      We don't want to put the 'X += 12' before the branch because it just
      wastes a cycle of execution time when the branch is taken.
@@ -2361,11 +2361,11 @@ add_branch_dependences (rtx head, rtx tail)
       insn = PREV_INSN (insn);
 
       /* Note that we want to add this dependency even when
-         sched_insns_conditions_mutex_p returns true.  The whole point
-         is that we _want_ this dependency, even if these insns really
-         are independent.  */
+	 sched_insns_conditions_mutex_p returns true.  The whole point
+	 is that we _want_ this dependency, even if these insns really
+	 are independent.  */
       if (INSN_P (insn) && GET_CODE (PATTERN (insn)) == COND_EXEC)
-        add_dependence (tail, insn, REG_DEP_ANTI);
+	add_dependence (tail, insn, REG_DEP_ANTI);
     }
 #endif
 }
@@ -2391,7 +2391,7 @@ concat_INSN_LIST (rtx copy, rtx old)
 
 static void
 concat_insn_mem_list (rtx copy_insns, rtx copy_mems, rtx *old_insns_p,
-                      rtx *old_mems_p)
+		      rtx *old_mems_p)
 {
   rtx new_insns = *old_insns_p;
   rtx new_mems = *old_mems_p;
@@ -2426,53 +2426,53 @@ propagate_deps (int bb, struct deps *pred_deps)
 
       /* Only bbs "below" bb, in the same region, are interesting.  */
       if (e->dest == EXIT_BLOCK_PTR
-          || CONTAINING_RGN (block->index) != CONTAINING_RGN (e->dest->index)
-          || BLOCK_TO_BB (e->dest->index) <= bb)
-        continue;
+	  || CONTAINING_RGN (block->index) != CONTAINING_RGN (e->dest->index)
+	  || BLOCK_TO_BB (e->dest->index) <= bb)
+	continue;
 
       succ_deps = bb_deps + BLOCK_TO_BB (e->dest->index);
 
       /* The reg_last lists are inherited by successor.  */
       EXECUTE_IF_SET_IN_REG_SET (&pred_deps->reg_last_in_use, 0, reg, rsi)
-        {
-          struct deps_reg *pred_rl = &pred_deps->reg_last[reg];
-          struct deps_reg *succ_rl = &succ_deps->reg_last[reg];
+	{
+	  struct deps_reg *pred_rl = &pred_deps->reg_last[reg];
+	  struct deps_reg *succ_rl = &succ_deps->reg_last[reg];
 
-          succ_rl->uses = concat_INSN_LIST (pred_rl->uses, succ_rl->uses);
-          succ_rl->sets = concat_INSN_LIST (pred_rl->sets, succ_rl->sets);
-          succ_rl->clobbers = concat_INSN_LIST (pred_rl->clobbers,
-                                                succ_rl->clobbers);
-          succ_rl->uses_length += pred_rl->uses_length;
-          succ_rl->clobbers_length += pred_rl->clobbers_length;
-        }
+	  succ_rl->uses = concat_INSN_LIST (pred_rl->uses, succ_rl->uses);
+	  succ_rl->sets = concat_INSN_LIST (pred_rl->sets, succ_rl->sets);
+	  succ_rl->clobbers = concat_INSN_LIST (pred_rl->clobbers,
+						succ_rl->clobbers);
+	  succ_rl->uses_length += pred_rl->uses_length;
+	  succ_rl->clobbers_length += pred_rl->clobbers_length;
+	}
       IOR_REG_SET (&succ_deps->reg_last_in_use, &pred_deps->reg_last_in_use);
 
       /* Mem read/write lists are inherited by successor.  */
       concat_insn_mem_list (pred_deps->pending_read_insns,
-                            pred_deps->pending_read_mems,
-                            &succ_deps->pending_read_insns,
-                            &succ_deps->pending_read_mems);
+			    pred_deps->pending_read_mems,
+			    &succ_deps->pending_read_insns,
+			    &succ_deps->pending_read_mems);
       concat_insn_mem_list (pred_deps->pending_write_insns,
-                            pred_deps->pending_write_mems,
-                            &succ_deps->pending_write_insns,
-                            &succ_deps->pending_write_mems);
+			    pred_deps->pending_write_mems,
+			    &succ_deps->pending_write_insns,
+			    &succ_deps->pending_write_mems);
 
       succ_deps->last_pending_memory_flush
-        = concat_INSN_LIST (pred_deps->last_pending_memory_flush,
-                            succ_deps->last_pending_memory_flush);
+	= concat_INSN_LIST (pred_deps->last_pending_memory_flush,
+			    succ_deps->last_pending_memory_flush);
 
       succ_deps->pending_lists_length += pred_deps->pending_lists_length;
       succ_deps->pending_flush_length += pred_deps->pending_flush_length;
 
       /* last_function_call is inherited by successor.  */
       succ_deps->last_function_call
-        = concat_INSN_LIST (pred_deps->last_function_call,
-                              succ_deps->last_function_call);
+	= concat_INSN_LIST (pred_deps->last_function_call,
+			      succ_deps->last_function_call);
 
       /* sched_before_next_call is inherited by successor.  */
       succ_deps->sched_before_next_call
-        = concat_INSN_LIST (pred_deps->sched_before_next_call,
-                            succ_deps->sched_before_next_call);
+	= concat_INSN_LIST (pred_deps->sched_before_next_call,
+			    succ_deps->sched_before_next_call);
     }
 
   /* These lists should point to the right place, for correct
@@ -2562,61 +2562,61 @@ debug_dependencies (void)
       get_ebb_head_tail (EBB_FIRST_BB (bb), EBB_LAST_BB (bb), &head, &tail);
       next_tail = NEXT_INSN (tail);
       fprintf (sched_dump, "\n;;   --- Region Dependences --- b %d bb %d \n",
-               BB_TO_BLOCK (bb), bb);
+	       BB_TO_BLOCK (bb), bb);
 
       fprintf (sched_dump, ";;   %7s%6s%6s%6s%6s%6s%14s\n",
-               "insn", "code", "bb", "dep", "prio", "cost",
-               "reservation");
+	       "insn", "code", "bb", "dep", "prio", "cost",
+	       "reservation");
       fprintf (sched_dump, ";;   %7s%6s%6s%6s%6s%6s%14s\n",
-               "----", "----", "--", "---", "----", "----",
-               "-----------");
+	       "----", "----", "--", "---", "----", "----",
+	       "-----------");
 
       for (insn = head; insn != next_tail; insn = NEXT_INSN (insn))
-        {
-          rtx link;
+	{
+	  rtx link;
 
-          if (! INSN_P (insn))
-            {
-              int n;
-              fprintf (sched_dump, ";;   %6d ", INSN_UID (insn));
-              if (NOTE_P (insn))
-                {
-                  n = NOTE_LINE_NUMBER (insn);
-                  if (n < 0)
-                    fprintf (sched_dump, "%s\n", GET_NOTE_INSN_NAME (n));
-                  else
-                    {
-                      expanded_location xloc;
-                      NOTE_EXPANDED_LOCATION (xloc, insn);
-                      fprintf (sched_dump, "line %d, file %s\n",
-                               xloc.line, xloc.file);
-                    }
-                }
-              else
-                fprintf (sched_dump, " {%s}\n", GET_RTX_NAME (GET_CODE (insn)));
-              continue;
-            }
+	  if (! INSN_P (insn))
+	    {
+	      int n;
+	      fprintf (sched_dump, ";;   %6d ", INSN_UID (insn));
+	      if (NOTE_P (insn))
+		{
+		  n = NOTE_LINE_NUMBER (insn);
+		  if (n < 0)
+		    fprintf (sched_dump, "%s\n", GET_NOTE_INSN_NAME (n));
+		  else
+		    {
+		      expanded_location xloc;
+		      NOTE_EXPANDED_LOCATION (xloc, insn);
+		      fprintf (sched_dump, "line %d, file %s\n",
+			       xloc.line, xloc.file);
+		    }
+		}
+	      else
+		fprintf (sched_dump, " {%s}\n", GET_RTX_NAME (GET_CODE (insn)));
+	      continue;
+	    }
 
-          fprintf (sched_dump,
-                   ";;   %s%5d%6d%6d%6d%6d%6d   ",
-                   (SCHED_GROUP_P (insn) ? "+" : " "),
-                   INSN_UID (insn),
-                   INSN_CODE (insn),
-                   INSN_BB (insn),
-                   INSN_DEP_COUNT (insn),
-                   INSN_PRIORITY (insn),
-                   insn_cost (insn, 0, 0));
+	  fprintf (sched_dump,
+		   ";;   %s%5d%6d%6d%6d%6d%6d   ",
+		   (SCHED_GROUP_P (insn) ? "+" : " "),
+		   INSN_UID (insn),
+		   INSN_CODE (insn),
+		   INSN_BB (insn),
+		   INSN_DEP_COUNT (insn),
+		   INSN_PRIORITY (insn),
+		   insn_cost (insn, 0, 0));
 
-          if (recog_memoized (insn) < 0)
-            fprintf (sched_dump, "nothing");
-          else
-            print_reservation (sched_dump, insn);
+	  if (recog_memoized (insn) < 0)
+	    fprintf (sched_dump, "nothing");
+	  else
+	    print_reservation (sched_dump, insn);
 
-          fprintf (sched_dump, "\t: ");
-          for (link = INSN_DEPEND (insn); link; link = XEXP (link, 1))
-            fprintf (sched_dump, "%d ", INSN_UID (XEXP (link, 0)));
-          fprintf (sched_dump, "\n");
-        }
+	  fprintf (sched_dump, "\t: ");
+	  for (link = INSN_DEPEND (insn); link; link = XEXP (link, 1))
+	    fprintf (sched_dump, "%d ", INSN_UID (XEXP (link, 0)));
+	  fprintf (sched_dump, "\n");
+	}
     }
   fprintf (sched_dump, "\n");
 }
@@ -2670,7 +2670,7 @@ schedule_region (int rgn)
       /* Initializations for region data dependence analysis.  */
       bb_deps = XNEWVEC (struct deps, current_nr_blocks);
       for (bb = 0; bb < current_nr_blocks; bb++)
-        init_deps (bb_deps + bb);
+	init_deps (bb_deps + bb);
 
       /* Compute LOG_LINKS.  */
       for (bb = 0; bb < current_nr_blocks; bb++)
@@ -2681,7 +2681,7 @@ schedule_region (int rgn)
         {
           rtx head, tail;
 
-          gcc_assert (EBB_FIRST_BB (bb) == EBB_LAST_BB (bb));
+	  gcc_assert (EBB_FIRST_BB (bb) == EBB_LAST_BB (bb));
           get_ebb_head_tail (EBB_FIRST_BB (bb), EBB_LAST_BB (bb), &head, &tail);
 
           compute_forward_dependences (head, tail);
@@ -2724,22 +2724,22 @@ schedule_region (int rgn)
       /* Use ->aux to implement EDGE_TO_BIT mapping.  */
       rgn_nr_edges = 0;
       FOR_EACH_BB (block)
-        {
-          if (CONTAINING_RGN (block->index) != rgn)
-            continue;
-          FOR_EACH_EDGE (e, ei, block->succs)
-            SET_EDGE_TO_BIT (e, rgn_nr_edges++);
-        }
+	{
+	  if (CONTAINING_RGN (block->index) != rgn)
+	    continue;
+	  FOR_EACH_EDGE (e, ei, block->succs)
+	    SET_EDGE_TO_BIT (e, rgn_nr_edges++);
+	}
 
       rgn_edges = XNEWVEC (edge, rgn_nr_edges);
       rgn_nr_edges = 0;
       FOR_EACH_BB (block)
-        {
-          if (CONTAINING_RGN (block->index) != rgn)
-            continue;
-          FOR_EACH_EDGE (e, ei, block->succs)
-            rgn_edges[rgn_nr_edges++] = e;
-        }
+	{
+	  if (CONTAINING_RGN (block->index) != rgn)
+	    continue;
+	  FOR_EACH_EDGE (e, ei, block->succs)
+	    rgn_edges[rgn_nr_edges++] = e;
+	}
 
       /* Split edges.  */
       pot_split = sbitmap_vector_alloc (current_nr_blocks, rgn_nr_edges);
@@ -2749,17 +2749,17 @@ schedule_region (int rgn)
 
       /* Compute probabilities, dominators, split_edges.  */
       for (bb = 0; bb < current_nr_blocks; bb++)
-        compute_dom_prob_ps (bb);
+	compute_dom_prob_ps (bb);
 
       /* Cleanup ->aux used for EDGE_TO_BIT mapping.  */
       /* We don't need them anymore.  But we want to avoid duplication of
-         aux fields in the newly created edges.  */
+	 aux fields in the newly created edges.  */
       FOR_EACH_BB (block)
-        {
-          if (CONTAINING_RGN (block->index) != rgn)
-            continue;
-          FOR_EACH_EDGE (e, ei, block->succs)
-            e->aux = NULL;
+	{
+	  if (CONTAINING_RGN (block->index) != rgn)
+	    continue;
+	  FOR_EACH_EDGE (e, ei, block->succs)
+	    e->aux = NULL;
         }
     }
 
@@ -2776,43 +2776,43 @@ schedule_region (int rgn)
       get_ebb_head_tail (first_bb, last_bb, &head, &tail);
 
       if (no_real_insns_p (head, tail))
-        {
-          gcc_assert (first_bb == last_bb);
-          continue;
-        }
+	{
+	  gcc_assert (first_bb == last_bb);
+	  continue;
+	}
 
       current_sched_info->prev_head = PREV_INSN (head);
       current_sched_info->next_tail = NEXT_INSN (tail);
 
       if (write_symbols != NO_DEBUG)
-        {
-          save_line_notes (b, head, tail);
-          rm_line_notes (head, tail);
-        }
+	{
+	  save_line_notes (b, head, tail);
+	  rm_line_notes (head, tail);
+	}
 
       /* rm_other_notes only removes notes which are _inside_ the
-         block---that is, it won't remove notes before the first real insn
-         or after the last real insn of the block.  So if the first insn
-         has a REG_SAVE_NOTE which would otherwise be emitted before the
-         insn, it is redundant with the note before the start of the
-         block, and so we have to take it out.  */
+	 block---that is, it won't remove notes before the first real insn
+	 or after the last real insn of the block.  So if the first insn
+	 has a REG_SAVE_NOTE which would otherwise be emitted before the
+	 insn, it is redundant with the note before the start of the
+	 block, and so we have to take it out.  */
       if (INSN_P (head))
-        {
-          rtx note;
+	{
+	  rtx note;
 
-          for (note = REG_NOTES (head); note; note = XEXP (note, 1))
-            if (REG_NOTE_KIND (note) == REG_SAVE_NOTE)
-              remove_note (head, note);
-        }
+	  for (note = REG_NOTES (head); note; note = XEXP (note, 1))
+	    if (REG_NOTE_KIND (note) == REG_SAVE_NOTE)
+	      remove_note (head, note);
+	}
       else
-        /* This means that first block in ebb is empty.
-           It looks to me as an impossible thing.  There at least should be
-           a recovery check, that caused the splitting.  */
-        gcc_unreachable ();
+	/* This means that first block in ebb is empty.
+	   It looks to me as an impossible thing.  There at least should be
+	   a recovery check, that caused the splitting.  */
+	gcc_unreachable ();
 
       /* Remove remaining note insns from the block, save them in
-         note_list.  These notes are restored at the end of
-         schedule_block ().  */
+	 note_list.  These notes are restored at the end of
+	 schedule_block ().  */
       rm_other_notes (head, tail);
 
       unlink_bb_notes (first_bb, last_bb);
@@ -2829,11 +2829,11 @@ schedule_region (int rgn)
 
       /* Clean up.  */
       if (current_nr_blocks > 1)
-        {
-          free (candidate_table);
-          free (bblst_table);
-          free (edgelst_table);
-        }
+	{
+	  free (candidate_table);
+	  free (bblst_table);
+	  free (edgelst_table);
+	}
     }
 
   /* Sanity check: verify that all region insns were scheduled.  */
@@ -2843,12 +2843,12 @@ schedule_region (int rgn)
   if (write_symbols != NO_DEBUG)
     {
       for (bb = 0; bb < current_nr_blocks; bb++)
-        {
-          rtx head, tail;
+	{
+	  rtx head, tail;
 
-          get_ebb_head_tail (EBB_FIRST_BB (bb), EBB_LAST_BB (bb), &head, &tail);
-          restore_line_notes (head, tail);
-        }
+	  get_ebb_head_tail (EBB_FIRST_BB (bb), EBB_LAST_BB (bb), &head, &tail);
+	  restore_line_notes (head, tail);
+	}
     }
 
   /* Done with this region.  */
@@ -2899,10 +2899,10 @@ init_regions (void)
       find_rgns ();
 
       if (sched_verbose >= 3)
-        debug_regions ();
+	debug_regions ();
 
       /* For now.  This will move as more and more of haifa is converted
-         to using the cfg code in flow.c.  */
+	 to using the cfg code in flow.c.  */
       free_dominance_info (CDI_DOMINATORS);
     }
   RGN_BLOCKS (nr_regions) = RGN_BLOCKS (nr_regions - 1) +
@@ -2948,7 +2948,7 @@ schedule_insns (void)
   sched_init ();
 
   min_spec_prob = ((PARAM_VALUE (PARAM_MIN_SPEC_PROB) * REG_BR_PROB_BASE)
-                    / 100);
+		    / 100);
 
   init_regions ();
 
@@ -2996,28 +2996,28 @@ schedule_insns (void)
      liveness.  */
   for (rgn = 0; rgn < nr_regions; rgn++)    
     if (RGN_NR_BLOCKS (rgn) > 1
-        /* Or the only block of this region has been split.  */
-        || RGN_HAS_REAL_EBB (rgn)
-        /* New blocks (e.g. recovery blocks) should be processed
-           as parts of large regions.  */
-        || !glat_start[rgn_bb_table[RGN_BLOCKS (rgn)]])
+	/* Or the only block of this region has been split.  */
+	|| RGN_HAS_REAL_EBB (rgn)
+	/* New blocks (e.g. recovery blocks) should be processed
+	   as parts of large regions.  */
+	|| !glat_start[rgn_bb_table[RGN_BLOCKS (rgn)]])
       any_large_regions = 1;
     else
       {
-        SET_BIT (blocks, rgn_bb_table[RGN_BLOCKS (rgn)]);
-        RESET_BIT (large_region_blocks, rgn_bb_table[RGN_BLOCKS (rgn)]);
+	SET_BIT (blocks, rgn_bb_table[RGN_BLOCKS (rgn)]);
+	RESET_BIT (large_region_blocks, rgn_bb_table[RGN_BLOCKS (rgn)]);
       }
 
   /* Don't update reg info after reload, since that affects
      regs_ever_live, which should not change after reload.  */
   update_life_info (blocks, UPDATE_LIFE_LOCAL,
-                    (reload_completed ? PROP_DEATH_NOTES
-                     : (PROP_DEATH_NOTES | PROP_REG_INFO)));
+		    (reload_completed ? PROP_DEATH_NOTES
+		     : (PROP_DEATH_NOTES | PROP_REG_INFO)));
   if (any_large_regions)
     {
       update_life_info (large_region_blocks, UPDATE_LIFE_GLOBAL,
-                        (reload_completed ? PROP_DEATH_NOTES
-                         : (PROP_DEATH_NOTES | PROP_REG_INFO)));
+			(reload_completed ? PROP_DEATH_NOTES
+			 : (PROP_DEATH_NOTES | PROP_REG_INFO)));
 
 #ifdef ENABLE_CHECKING
       check_reg_live (true);
@@ -3029,14 +3029,14 @@ schedule_insns (void)
       /* Verify the counts of basic block notes in single basic block
          regions.  */
       for (rgn = 0; rgn < nr_regions; rgn++)
-        if (RGN_NR_BLOCKS (rgn) == 1)
-          {
-            sbitmap_zero (blocks);
-            SET_BIT (blocks, rgn_bb_table[RGN_BLOCKS (rgn)]);
+	if (RGN_NR_BLOCKS (rgn) == 1)
+	  {
+	    sbitmap_zero (blocks);
+	    SET_BIT (blocks, rgn_bb_table[RGN_BLOCKS (rgn)]);
 
-            gcc_assert (deaths_in_region[rgn]
-                        == count_or_remove_death_notes (blocks, 0));
-          }
+	    gcc_assert (deaths_in_region[rgn]
+			== count_or_remove_death_notes (blocks, 0));
+	  }
       free (deaths_in_region);
     }
 
@@ -3052,13 +3052,13 @@ schedule_insns (void)
   if (sched_verbose)
     {
       if (reload_completed == 0 && flag_schedule_interblock)
-        {
-          fprintf (sched_dump,
-                   "\n;; Procedure interblock/speculative motions == %d/%d \n",
-                   nr_inter, nr_spec);
-        }
+	{
+	  fprintf (sched_dump,
+		   "\n;; Procedure interblock/speculative motions == %d/%d \n",
+		   nr_inter, nr_spec);
+	}
       else
-        gcc_assert (nr_inter <= 0);
+	gcc_assert (nr_inter <= 0);
       fprintf (sched_dump, "\n\n");
     }
 
@@ -3086,9 +3086,9 @@ add_remove_insn (rtx insn, int remove_p)
   if (INSN_BB (insn) == target_bb)
     {
       if (!remove_p)
-        target_n_insns++;
+	target_n_insns++;
       else
-        target_n_insns--;
+	target_n_insns--;
     }
 }
 
@@ -3130,7 +3130,7 @@ add_block1 (basic_block bb, basic_block after)
         {
           sbitmap blocks = sbitmap_alloc (last_basic_block);
           deaths_in_region = xrealloc (deaths_in_region, nr_regions *
-                                       sizeof (*deaths_in_region));
+				       sizeof (*deaths_in_region));
 
           check_dead_notes1 (nr_regions - 1, blocks);
       
@@ -3142,14 +3142,14 @@ add_block1 (basic_block bb, basic_block after)
       int i, pos;
 
       /* We need to fix rgn_table, block_to_bb, containing_rgn
-         and ebb_head.  */
+	 and ebb_head.  */
 
       BLOCK_TO_BB (bb->index) = BLOCK_TO_BB (after->index);
 
       /* We extend ebb_head to one more position to
-         easily find the last position of the last ebb in 
-         the current region.  Thus, ebb_head[BLOCK_TO_BB (after) + 1]
-         is _always_ valid for access.  */
+	 easily find the last position of the last ebb in 
+	 the current region.  Thus, ebb_head[BLOCK_TO_BB (after) + 1]
+	 is _always_ valid for access.  */
 
       i = BLOCK_TO_BB (after->index) + 1;
       pos = ebb_head[i] - 1;
@@ -3165,21 +3165,21 @@ add_block1 (basic_block bb, basic_block after)
       /* ebb_head[i] - VALID.  */
 
       /* Source position: ebb_head[i]
-         Destination position: ebb_head[i] + 1
-         Last position: 
-           RGN_BLOCKS (nr_regions) - 1
-         Number of elements to copy: (last_position) - (source_position) + 1
+	 Destination position: ebb_head[i] + 1
+	 Last position: 
+	   RGN_BLOCKS (nr_regions) - 1
+	 Number of elements to copy: (last_position) - (source_position) + 1
        */
       
       memmove (rgn_bb_table + pos + 1,
-               rgn_bb_table + pos,
-               ((RGN_BLOCKS (nr_regions) - 1) - (pos) + 1)
-               * sizeof (*rgn_bb_table));
+	       rgn_bb_table + pos,
+	       ((RGN_BLOCKS (nr_regions) - 1) - (pos) + 1)
+	       * sizeof (*rgn_bb_table));
 
       rgn_bb_table[pos] = bb->index;
       
       for (; i <= current_nr_blocks; i++)
-        ebb_head [i]++;
+	ebb_head [i]++;
 
       i = CONTAINING_RGN (after->index);
       CONTAINING_RGN (bb->index) = i;
@@ -3187,10 +3187,10 @@ add_block1 (basic_block bb, basic_block after)
       RGN_HAS_REAL_EBB (i) = 1;
 
       for (++i; i <= nr_regions; i++)
-        RGN_BLOCKS (i)++;
+	RGN_BLOCKS (i)++;
 
       /* We don't need to call check_dead_notes1 () because this new block
-         is just a split of the old.  We don't want to count anything twice.  */
+	 is just a split of the old.  We don't want to count anything twice.  */
     }
 }
 
@@ -3218,8 +3218,8 @@ fix_recovery_cfg (int bbi, int check_bbi, int check_bb_nexti)
   gcc_assert (new_pos < old_pos);
 
   memmove (rgn_bb_table + new_pos + 1,
-           rgn_bb_table + new_pos,
-           (old_pos - new_pos) * sizeof (*rgn_bb_table));
+	   rgn_bb_table + new_pos,
+	   (old_pos - new_pos) * sizeof (*rgn_bb_table));
 
   rgn_bb_table[new_pos] = check_bb_nexti;
 
@@ -3236,7 +3236,7 @@ advance_target_bb (basic_block bb, rtx insn)
     return 0;
 
   gcc_assert (BLOCK_TO_BB (bb->index) == target_bb
-              && BLOCK_TO_BB (bb->next_bb->index) == target_bb);
+	      && BLOCK_TO_BB (bb->next_bb->index) == target_bb);
   return bb->next_bb;
 }
 
@@ -3272,11 +3272,11 @@ region_head_or_leaf_p (basic_block bb, int leaf_p)
       i = CONTAINING_RGN (bb->index);
 
       FOR_EACH_EDGE (e, ei, bb->succs)
-        if (e->dest != EXIT_BLOCK_PTR
+	if (e->dest != EXIT_BLOCK_PTR
             && CONTAINING_RGN (e->dest->index) == i
-            /* except self-loop.  */
-            && e->dest != bb)
-          return 0;
+	    /* except self-loop.  */
+	    && e->dest != bb)
+	  return 0;
       
       return 1;
     }

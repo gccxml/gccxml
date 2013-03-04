@@ -27,7 +27,7 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
    These enumerator values are used in order to distinguish members of union
    tree_node for garbage collection purposes, as well as specifying what structures
    contain what other structures in the tree_contains_struct array.  */
-        
+	
 DEFTREESTRUCT(TS_COMMON, "common")
 DEFTREESTRUCT(TS_INT_CST, "integer cst")
 DEFTREESTRUCT(TS_REAL_CST, "real cst")

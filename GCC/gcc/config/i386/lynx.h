@@ -21,12 +21,12 @@ Boston, MA 02110-1301, USA.  */
 
 #define TARGET_VERSION fputs (" (i386/LynxOS)", stderr);
 
-#define TARGET_OS_CPP_BUILTINS()                \
-  do                                                \
-    {                                                \
-      builtin_define ("__LITTLE_ENDIAN__");        \
-      builtin_define ("__x86__");                \
-    }                                                \
+#define TARGET_OS_CPP_BUILTINS()		\
+  do						\
+    {						\
+      builtin_define ("__LITTLE_ENDIAN__");	\
+      builtin_define ("__x86__");		\
+    }						\
   while (0)
 
 /* The svr4 ABI for the i386 says that records and unions are returned
@@ -42,17 +42,17 @@ Boston, MA 02110-1301, USA.  */
 /* LynxOS's GDB counts the floating point registers from 16.  */
 
 #undef DBX_REGISTER_NUMBER
-#define DBX_REGISTER_NUMBER(n)                                                \
-  (TARGET_64BIT ? dbx64_register_map[n]                                        \
-   : (n) == 0 ? 0                                                        \
-   : (n) == 1 ? 2                                                        \
-   : (n) == 2 ? 1                                                        \
-   : (n) == 3 ? 3                                                        \
-   : (n) == 4 ? 6                                                        \
-   : (n) == 5 ? 7                                                        \
-   : (n) == 6 ? 5                                                        \
-   : (n) == 7 ? 4                                                        \
-   : ((n) >= FIRST_STACK_REG && (n) <= LAST_STACK_REG) ? (n) + 8        \
+#define DBX_REGISTER_NUMBER(n)						\
+  (TARGET_64BIT ? dbx64_register_map[n]					\
+   : (n) == 0 ? 0							\
+   : (n) == 1 ? 2							\
+   : (n) == 2 ? 1							\
+   : (n) == 3 ? 3							\
+   : (n) == 4 ? 6							\
+   : (n) == 5 ? 7							\
+   : (n) == 6 ? 5							\
+   : (n) == 7 ? 4							\
+   : ((n) >= FIRST_STACK_REG && (n) <= LAST_STACK_REG) ? (n) + 8	\
    : (-1))
   
 /* A C statement to output to the stdio stream FILE an assembler
@@ -62,12 +62,12 @@ Boston, MA 02110-1301, USA.  */
    This is used to align code labels according to Intel recommendations.  */
 
 #ifdef HAVE_GAS_MAX_SKIP_P2ALIGN
-#define ASM_OUTPUT_MAX_SKIP_ALIGN(FILE,LOG,MAX_SKIP)                        \
-  do {                                                                        \
-    if ((LOG) != 0) {                                                        \
-      if ((MAX_SKIP) == 0) fprintf ((FILE), "\t.p2align %d\n", (LOG));        \
-      else fprintf ((FILE), "\t.p2align %d,,%d\n", (LOG), (MAX_SKIP));        \
-    }                                                                        \
+#define ASM_OUTPUT_MAX_SKIP_ALIGN(FILE,LOG,MAX_SKIP)			\
+  do {									\
+    if ((LOG) != 0) {							\
+      if ((MAX_SKIP) == 0) fprintf ((FILE), "\t.p2align %d\n", (LOG));	\
+      else fprintf ((FILE), "\t.p2align %d,,%d\n", (LOG), (MAX_SKIP));	\
+    }									\
   } while (0)
 #endif
 

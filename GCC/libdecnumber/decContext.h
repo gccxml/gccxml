@@ -45,41 +45,41 @@
 
 #if !defined(DECCONTEXT)
 #define DECCONTEXT
-#define DECCNAME     "decContext"        /* Short name */
-#define DECCFULLNAME "Decimal Context Descriptor"        /* Verbose name */
-#define DECCAUTHOR   "Mike Cowlishaw"        /* Who to blame */
+#define DECCNAME     "decContext"	/* Short name */
+#define DECCFULLNAME "Decimal Context Descriptor"	/* Verbose name */
+#define DECCAUTHOR   "Mike Cowlishaw"	/* Who to blame */
 
-#include "gstdint.h"                /* C99 standard integers */
-#include <signal.h>                /* for traps */
+#include "gstdint.h"		/* C99 standard integers */
+#include <signal.h>		/* for traps */
 
 
   /* Conditional code flag -- set this to 0 for best performance */
-#define DECSUBSET 0                /* 1 to enable subset arithmetic */
+#define DECSUBSET 0		/* 1 to enable subset arithmetic */
 
   /* Context for operations, with associated constants */
 enum rounding
 {
-  DEC_ROUND_CEILING,                /* round towards +infinity */
-  DEC_ROUND_UP,                        /* round away from 0 */
-  DEC_ROUND_HALF_UP,                /* 0.5 rounds up */
-  DEC_ROUND_HALF_EVEN,                /* 0.5 rounds to nearest even */
-  DEC_ROUND_HALF_DOWN,                /* 0.5 rounds down */
-  DEC_ROUND_DOWN,                /* round towards 0 (truncate) */
-  DEC_ROUND_FLOOR,                /* round towards -infinity */
-  DEC_ROUND_MAX                        /* enum must be less than this */
+  DEC_ROUND_CEILING,		/* round towards +infinity */
+  DEC_ROUND_UP,			/* round away from 0 */
+  DEC_ROUND_HALF_UP,		/* 0.5 rounds up */
+  DEC_ROUND_HALF_EVEN,		/* 0.5 rounds to nearest even */
+  DEC_ROUND_HALF_DOWN,		/* 0.5 rounds down */
+  DEC_ROUND_DOWN,		/* round towards 0 (truncate) */
+  DEC_ROUND_FLOOR,		/* round towards -infinity */
+  DEC_ROUND_MAX			/* enum must be less than this */
 };
 
 typedef struct
 {
-  int32_t digits;                /* working precision */
-  int32_t emax;                        /* maximum positive exponent */
-  int32_t emin;                        /* minimum negative exponent */
-  enum rounding round;                /* rounding mode */
-  uint32_t traps;                /* trap-enabler flags */
-  uint32_t status;                /* status flags */
-  uint8_t clamp;                /* flag: apply IEEE exponent clamp */
+  int32_t digits;		/* working precision */
+  int32_t emax;			/* maximum positive exponent */
+  int32_t emin;			/* minimum negative exponent */
+  enum rounding round;		/* rounding mode */
+  uint32_t traps;		/* trap-enabler flags */
+  uint32_t status;		/* status flags */
+  uint8_t clamp;		/* flag: apply IEEE exponent clamp */
 #if DECSUBSET
-  uint8_t extended;                /* flag: special-values allowed */
+  uint8_t extended;		/* flag: special-values allowed */
 #endif
 } decContext;
 
@@ -97,7 +97,7 @@ typedef struct
 #define DEC_Division_by_zero     0x00000002
 #define DEC_Division_impossible  0x00000004
 #define DEC_Division_undefined   0x00000008
-#define DEC_Insufficient_storage 0x00000010        /* [used if malloc fails] */
+#define DEC_Insufficient_storage 0x00000010	/* [used if malloc fails] */
 #define DEC_Inexact              0x00000020
 #define DEC_Invalid_context      0x00000040
 #define DEC_Invalid_operation    0x00000080
@@ -163,8 +163,8 @@ typedef struct
 #define DEC_Condition_UN "Underflow"
 #define DEC_Condition_ZE "No status"
 #define DEC_Condition_MU "Multiple status"
-#define DEC_Condition_Length 21        /* length of the longest string, */
-                                   /* including terminator */
+#define DEC_Condition_Length 21	/* length of the longest string, */
+				   /* including terminator */
 
   /* Initialization descriptors, used by decContextDefault */
 #define DEC_INIT_BASE         0

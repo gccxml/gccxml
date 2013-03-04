@@ -39,7 +39,7 @@ unsigned long long
 sh_media_GETCON (unsigned int k)
 {
   unsigned long long res;
-  __asm__ __volatile__ ("getcon        cr%1, %0" : "=r" (res) : "n" (k));
+  __asm__ __volatile__ ("getcon	cr%1, %0" : "=r" (res) : "n" (k));
   return res;
 }
 
@@ -50,7 +50,7 @@ __inline__ static
 void
 sh_media_PUTCON (unsigned long long mm, unsigned int k)
 {
-  __asm__ __volatile__ ("putcon        %0, cr%1" : : "r" (mm), "n" (k));
+  __asm__ __volatile__ ("putcon	%0, cr%1" : : "r" (mm), "n" (k));
 }
 
 __inline__ static
@@ -58,7 +58,7 @@ unsigned long long
 sh_media_GETCFG (unsigned long long mm, int s)
 {
   unsigned long long res;
-  __asm__ __volatile__ ("getcfg        %1, %2, %0" : "=r" (res) : "r" (mm), "n" (s));
+  __asm__ __volatile__ ("getcfg	%1, %2, %0" : "=r" (res) : "r" (mm), "n" (s));
   return res;
 }
 
@@ -66,7 +66,7 @@ __inline__ static
 void
 sh_media_PUTCFG (unsigned long long mm, int s, unsigned long long mw)
 {
-  __asm__ __volatile__ ("putcfg        %0, %1, %2" : : "r" (mm), "n" (s), "r" (mw));
+  __asm__ __volatile__ ("putcfg	%0, %1, %2" : : "r" (mm), "n" (s), "r" (mw));
 }
 
 __inline__ static

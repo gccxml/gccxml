@@ -45,41 +45,41 @@ extern const unsigned char mode_class[NUM_MACHINE_MODES];
 #define GET_MODE_CLASS(MODE)  mode_class[MODE]
 
 /* Nonzero if MODE is an integral mode.  */
-#define INTEGRAL_MODE_P(MODE)                        \
-  (GET_MODE_CLASS (MODE) == MODE_INT                \
+#define INTEGRAL_MODE_P(MODE)			\
+  (GET_MODE_CLASS (MODE) == MODE_INT		\
    || GET_MODE_CLASS (MODE) == MODE_PARTIAL_INT \
    || GET_MODE_CLASS (MODE) == MODE_COMPLEX_INT \
    || GET_MODE_CLASS (MODE) == MODE_VECTOR_INT)
 
 /* Nonzero if MODE is a floating-point mode.  */
-#define FLOAT_MODE_P(MODE)                \
-  (GET_MODE_CLASS (MODE) == MODE_FLOAT        \
+#define FLOAT_MODE_P(MODE)		\
+  (GET_MODE_CLASS (MODE) == MODE_FLOAT	\
    || GET_MODE_CLASS (MODE) == MODE_DECIMAL_FLOAT \
    || GET_MODE_CLASS (MODE) == MODE_COMPLEX_FLOAT \
    || GET_MODE_CLASS (MODE) == MODE_VECTOR_FLOAT)
 
 /* Nonzero if MODE is a complex mode.  */
-#define COMPLEX_MODE_P(MODE)                        \
-  (GET_MODE_CLASS (MODE) == MODE_COMPLEX_INT        \
+#define COMPLEX_MODE_P(MODE)			\
+  (GET_MODE_CLASS (MODE) == MODE_COMPLEX_INT	\
    || GET_MODE_CLASS (MODE) == MODE_COMPLEX_FLOAT)
 
 /* Nonzero if MODE is a vector mode.  */
-#define VECTOR_MODE_P(MODE)                        \
-  (GET_MODE_CLASS (MODE) == MODE_VECTOR_INT        \
+#define VECTOR_MODE_P(MODE)			\
+  (GET_MODE_CLASS (MODE) == MODE_VECTOR_INT	\
    || GET_MODE_CLASS (MODE) == MODE_VECTOR_FLOAT)
 
 /* Nonzero if MODE is a scalar integral mode.  */
-#define SCALAR_INT_MODE_P(MODE)                        \
-  (GET_MODE_CLASS (MODE) == MODE_INT                \
+#define SCALAR_INT_MODE_P(MODE)			\
+  (GET_MODE_CLASS (MODE) == MODE_INT		\
    || GET_MODE_CLASS (MODE) == MODE_PARTIAL_INT)
 
 /* Nonzero if MODE is a scalar floating point mode.  */
-#define SCALAR_FLOAT_MODE_P(MODE)                \
-  (GET_MODE_CLASS (MODE) == MODE_FLOAT                \
+#define SCALAR_FLOAT_MODE_P(MODE)		\
+  (GET_MODE_CLASS (MODE) == MODE_FLOAT		\
    || GET_MODE_CLASS (MODE) == MODE_DECIMAL_FLOAT)
 
 /* Nonzero if MODE is a decimal floating point mode.  */
-#define DECIMAL_FLOAT_MODE_P(MODE)                \
+#define DECIMAL_FLOAT_MODE_P(MODE)		\
   (GET_MODE_CLASS (MODE) == MODE_DECIMAL_FLOAT)
 
 /* Nonzero if CLASS modes can be widened.  */
@@ -113,9 +113,9 @@ extern const unsigned char mode_inner[NUM_MACHINE_MODES];
 
 /* Get the size in bytes of the basic parts of an object of mode MODE.  */
 
-#define GET_MODE_UNIT_SIZE(MODE)                \
-  (GET_MODE_INNER (MODE) == VOIDmode                \
-   ? GET_MODE_SIZE (MODE)                        \
+#define GET_MODE_UNIT_SIZE(MODE)		\
+  (GET_MODE_INNER (MODE) == VOIDmode		\
+   ? GET_MODE_SIZE (MODE)			\
    : GET_MODE_SIZE (GET_MODE_INNER (MODE)))
 
 /* Get the number of units in the object.  */
@@ -140,7 +140,7 @@ extern enum machine_mode mode_for_size (unsigned int, enum mode_class, int);
 /* Similar, but find the smallest mode for a given width.  */
 
 extern enum machine_mode smallest_mode_for_size (unsigned int,
-                                                 enum mode_class);
+						 enum mode_class);
 
 
 /* Return an integer mode of the exact same size as the input mode,
@@ -151,7 +151,7 @@ extern enum machine_mode int_mode_for_mode (enum machine_mode);
 /* Find the best mode to use to access a bit field.  */
 
 extern enum machine_mode get_best_mode (int, int, unsigned int,
-                                        enum machine_mode, int);
+					enum machine_mode, int);
 
 /* Determine alignment, 1<=result<=BIGGEST_ALIGNMENT.  */
 

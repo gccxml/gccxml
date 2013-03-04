@@ -77,9 +77,9 @@ struct rtx_def * fr30_compare_op1;
                                         |                       |  \  
                                         |  register save area   |   |
                                         |                       |   |
-                                        +-----------------------+   |  reg_size
+					+-----------------------+   |  reg_size
                                         |    return address     |   | 
-                                        +-----------------------+   |
+					+-----------------------+   |
                                    FP ->|   previous frame ptr  |  /
                                         +-----------------------+    
                                         |                       |  \   
@@ -103,33 +103,33 @@ struct rtx_def * fr30_compare_op1;
    save masks, and offsets for the current function.  */
 struct fr30_frame_info
 {
-  unsigned int total_size;        /* # Bytes that the entire frame takes up.  */
-  unsigned int pretend_size;        /* # Bytes we push and pretend caller did.  */
-  unsigned int args_size;        /* # Bytes that outgoing arguments take up.  */
-  unsigned int reg_size;        /* # Bytes needed to store regs.  */
-  unsigned int var_size;        /* # Bytes that variables take up.  */
+  unsigned int total_size;	/* # Bytes that the entire frame takes up.  */
+  unsigned int pretend_size;	/* # Bytes we push and pretend caller did.  */
+  unsigned int args_size;	/* # Bytes that outgoing arguments take up.  */
+  unsigned int reg_size;	/* # Bytes needed to store regs.  */
+  unsigned int var_size;	/* # Bytes that variables take up.  */
   unsigned int frame_size;      /* # Bytes in current frame.  */
-  unsigned int gmask;                /* Mask of saved registers.  */
-  unsigned int save_fp;                /* Nonzero if frame pointer must be saved.  */
-  unsigned int save_rp;                /* Nonzero if return pointer must be saved.  */
-  int          initialised;        /* Nonzero if frame size already calculated.  */
+  unsigned int gmask;		/* Mask of saved registers.  */
+  unsigned int save_fp;		/* Nonzero if frame pointer must be saved.  */
+  unsigned int save_rp;		/* Nonzero if return pointer must be saved.  */
+  int          initialised;	/* Nonzero if frame size already calculated.  */
 };
 
 /* Current frame information calculated by fr30_compute_frame_size().  */
-static struct fr30_frame_info         current_frame_info;
+static struct fr30_frame_info 	current_frame_info;
 
 /* Zero structure to initialize current_frame_info.  */
-static struct fr30_frame_info         zero_frame_info;
+static struct fr30_frame_info 	zero_frame_info;
 
 static void fr30_setup_incoming_varargs (CUMULATIVE_ARGS *, enum machine_mode,
-                                         tree, int *, int);
+					 tree, int *, int);
 static bool fr30_must_pass_in_stack (enum machine_mode, tree);
 static int fr30_arg_partial_bytes (CUMULATIVE_ARGS *, enum machine_mode,
-                                   tree, bool);
+				   tree, bool);
 
 
-#define FRAME_POINTER_MASK         (1 << (FRAME_POINTER_REGNUM))
-#define RETURN_POINTER_MASK         (1 << (RETURN_POINTER_REGNUM))
+#define FRAME_POINTER_MASK 	(1 << (FRAME_POINTER_REGNUM))
+#define RETURN_POINTER_MASK 	(1 << (RETURN_POINTER_REGNUM))
 
 /* Tell prologue and epilogue if register REGNO should be saved / restored.
    The return address and frame pointer are treated separately.
@@ -140,7 +140,7 @@ static int fr30_arg_partial_bytes (CUMULATIVE_ARGS *, enum machine_mode,
    &&   regs_ever_live [regno]         \
    && ! call_used_regs [regno]         )
 
-#define MUST_SAVE_FRAME_POINTER         (regs_ever_live [FRAME_POINTER_REGNUM]  || frame_pointer_needed)
+#define MUST_SAVE_FRAME_POINTER	 (regs_ever_live [FRAME_POINTER_REGNUM]  || frame_pointer_needed)
 #define MUST_SAVE_RETURN_POINTER (regs_ever_live [RETURN_POINTER_REGNUM] || current_function_profile)
 
 #if UNITS_PER_WORD == 4
@@ -173,45 +173,45 @@ struct gcc_target targetm = TARGET_INITIALIZER;
 unsigned int
 fr30_compute_frame_size (int from_reg, int to_reg)
 {
-  int                 regno;
-  unsigned int         return_value;
-  unsigned int        var_size;
-  unsigned int        args_size;
-  unsigned int        pretend_size;
-  unsigned int         reg_size;
-  unsigned int         gmask;
+  int 		regno;
+  unsigned int 	return_value;
+  unsigned int	var_size;
+  unsigned int	args_size;
+  unsigned int	pretend_size;
+  unsigned int 	reg_size;
+  unsigned int 	gmask;
 
-  var_size        = WORD_ALIGN (get_frame_size ());
-  args_size        = WORD_ALIGN (current_function_outgoing_args_size);
-  pretend_size        = current_function_pretend_args_size;
+  var_size	= WORD_ALIGN (get_frame_size ());
+  args_size	= WORD_ALIGN (current_function_outgoing_args_size);
+  pretend_size	= current_function_pretend_args_size;
 
-  reg_size        = 0;
-  gmask                = 0;
+  reg_size	= 0;
+  gmask		= 0;
 
   /* Calculate space needed for registers.  */
   for (regno = 0; regno < FIRST_PSEUDO_REGISTER; regno ++)
     {
       if (MUST_SAVE_REGISTER (regno))
-        {
-          reg_size += UNITS_PER_WORD;
-          gmask |= 1 << regno;
-        }
+	{
+	  reg_size += UNITS_PER_WORD;
+	  gmask |= 1 << regno;
+	}
     }
 
   current_frame_info.save_fp = MUST_SAVE_FRAME_POINTER;
   current_frame_info.save_rp = MUST_SAVE_RETURN_POINTER;
 
   reg_size += (current_frame_info.save_fp + current_frame_info.save_rp)
-               * UNITS_PER_WORD;
+	       * UNITS_PER_WORD;
 
   /* Save computed information.  */
   current_frame_info.pretend_size = pretend_size;
   current_frame_info.var_size     = var_size;
   current_frame_info.args_size    = args_size;
-  current_frame_info.reg_size          = reg_size;
+  current_frame_info.reg_size	  = reg_size;
   current_frame_info.frame_size   = args_size + var_size;
   current_frame_info.total_size   = args_size + var_size + reg_size + pretend_size;
-  current_frame_info.gmask          = gmask;
+  current_frame_info.gmask	  = gmask;
   current_frame_info.initialised  = reload_completed;
 
   /* Calculate the required distance.  */
@@ -253,29 +253,29 @@ fr30_expand_prologue (void)
       /* Push argument registers into the pretend arg area.  */
       for (regno = FIRST_ARG_REGNUM + FR30_NUM_ARG_REGS; regno --, regs_to_save --;)
         {
-          insn = emit_insn (gen_movsi_push (gen_rtx_REG (Pmode, regno)));
-          RTX_FRAME_RELATED_P (insn) = 1;
-        }
+	  insn = emit_insn (gen_movsi_push (gen_rtx_REG (Pmode, regno)));
+	  RTX_FRAME_RELATED_P (insn) = 1;
+	}
     }
 
   if (current_frame_info.gmask)
     {
       /* Save any needed call-saved regs.  */
       for (regno = STACK_POINTER_REGNUM; regno--;)
-        {
-          if ((current_frame_info.gmask & (1 << regno)) != 0)
-            {
-              insn = emit_insn (gen_movsi_push (gen_rtx_REG (Pmode, regno)));
-              RTX_FRAME_RELATED_P (insn) = 1;
-            }
-        }
+	{
+	  if ((current_frame_info.gmask & (1 << regno)) != 0)
+	    {
+	      insn = emit_insn (gen_movsi_push (gen_rtx_REG (Pmode, regno)));
+	      RTX_FRAME_RELATED_P (insn) = 1;
+	    }
+	}
     }
 
   /* Save return address if necessary.  */
   if (current_frame_info.save_rp)
     {
       insn = emit_insn (gen_movsi_push (gen_rtx_REG (Pmode, 
-                                                           RETURN_POINTER_REGNUM)));
+      						     RETURN_POINTER_REGNUM)));
       RTX_FRAME_RELATED_P (insn) = 1;
     }
 
@@ -284,56 +284,56 @@ fr30_expand_prologue (void)
     {
       if (current_frame_info.frame_size < ((1 << 10) - UNITS_PER_WORD))
         {
-          int enter_size = current_frame_info.frame_size + UNITS_PER_WORD;
-          rtx pattern;
-          
-          insn = emit_insn (gen_enter_func (GEN_INT (enter_size)));
+	  int enter_size = current_frame_info.frame_size + UNITS_PER_WORD;
+	  rtx pattern;
+	  
+	  insn = emit_insn (gen_enter_func (GEN_INT (enter_size)));
           RTX_FRAME_RELATED_P (insn) = 1;
-          
-          pattern = PATTERN (insn);
-          
-          /* Also mark all 3 subexpressions as RTX_FRAME_RELATED_P. */
+	  
+	  pattern = PATTERN (insn);
+	  
+	  /* Also mark all 3 subexpressions as RTX_FRAME_RELATED_P. */
           if (GET_CODE (pattern) == PARALLEL)
             {
               int x;
               for (x = XVECLEN (pattern, 0); x--;)
-                {
-                  rtx part = XVECEXP (pattern, 0, x);
-                  
-                  /* One of the insns in the ENTER pattern updates the
-                     frame pointer.  If we do not actually need the frame
-                     pointer in this function then this is a side effect
-                     rather than a desired effect, so we do not mark that
-                     insn as being related to the frame set up.  Doing this
-                     allows us to compile the crash66.C test file in the
-                     G++ testsuite.  */
-                  if (! frame_pointer_needed
-                      && GET_CODE (part) == SET
-                      && REGNO (SET_DEST (part)) == HARD_FRAME_POINTER_REGNUM)
-                    RTX_FRAME_RELATED_P (part) = 0;
-                  else
-                    RTX_FRAME_RELATED_P (part) = 1;
-                }
+		{
+		  rtx part = XVECEXP (pattern, 0, x);
+		  
+		  /* One of the insns in the ENTER pattern updates the
+		     frame pointer.  If we do not actually need the frame
+		     pointer in this function then this is a side effect
+		     rather than a desired effect, so we do not mark that
+		     insn as being related to the frame set up.  Doing this
+		     allows us to compile the crash66.C test file in the
+		     G++ testsuite.  */
+		  if (! frame_pointer_needed
+		      && GET_CODE (part) == SET
+		      && REGNO (SET_DEST (part)) == HARD_FRAME_POINTER_REGNUM)
+		    RTX_FRAME_RELATED_P (part) = 0;
+		  else
+		    RTX_FRAME_RELATED_P (part) = 1;
+		}
             }
-        }
+	}
       else
-        {
-          insn = emit_insn (gen_movsi_push (frame_pointer_rtx));
+	{
+	  insn = emit_insn (gen_movsi_push (frame_pointer_rtx));
           RTX_FRAME_RELATED_P (insn) = 1;
 
-          if (frame_pointer_needed)
-            {
-              insn = emit_insn (gen_movsi (frame_pointer_rtx, stack_pointer_rtx));
-              RTX_FRAME_RELATED_P (insn) = 1;
-            }
-        }
+	  if (frame_pointer_needed)
+	    {
+	      insn = emit_insn (gen_movsi (frame_pointer_rtx, stack_pointer_rtx));
+	      RTX_FRAME_RELATED_P (insn) = 1;
+	    }
+	}
     }
 
   /* Allocate the stack frame.  */
   if (current_frame_info.frame_size == 0)
     ; /* Nothing to do.  */
   else if (current_frame_info.save_fp
-           && current_frame_info.frame_size < ((1 << 10) - UNITS_PER_WORD))
+	   && current_frame_info.frame_size < ((1 << 10) - UNITS_PER_WORD))
     ; /* Nothing to do.  */
   else if (current_frame_info.frame_size <= 512)
     {
@@ -375,19 +375,19 @@ fr30_expand_epilogue (void)
   if (current_frame_info.frame_size > 0)
     {
       if (current_frame_info.save_fp && frame_pointer_needed)
-        {
-          emit_insn (gen_leave_func ());
-          current_frame_info.save_fp = 0;
-        }
+	{
+	  emit_insn (gen_leave_func ());
+	  current_frame_info.save_fp = 0;
+	}
       else if (current_frame_info.frame_size <= 508)
-        emit_insn (gen_add_to_stack
-                   (GEN_INT (current_frame_info.frame_size)));
+	emit_insn (gen_add_to_stack
+		   (GEN_INT (current_frame_info.frame_size)));
       else
-        {
-          rtx tmp = gen_rtx_REG (Pmode, PROLOGUE_TMP_REGNUM);
-          emit_insn (gen_movsi (tmp, GEN_INT (current_frame_info.frame_size)));
-          emit_insn (gen_addsi3 (stack_pointer_rtx, stack_pointer_rtx, tmp));
-        }
+	{
+	  rtx tmp = gen_rtx_REG (Pmode, PROLOGUE_TMP_REGNUM);
+	  emit_insn (gen_movsi (tmp, GEN_INT (current_frame_info.frame_size)));
+	  emit_insn (gen_addsi3 (stack_pointer_rtx, stack_pointer_rtx, tmp));
+	}
     }
   
   if (current_frame_info.save_fp)
@@ -419,10 +419,10 @@ fr30_expand_epilogue (void)
    which has type TYPE and mode MODE, and we rely on this fact.  */
 void
 fr30_setup_incoming_varargs (CUMULATIVE_ARGS *arg_regs_used_so_far,
-                             enum machine_mode mode,
-                             tree type ATTRIBUTE_UNUSED,
-                             int *pretend_size,
-                             int second_time ATTRIBUTE_UNUSED)
+			     enum machine_mode mode,
+			     tree type ATTRIBUTE_UNUSED,
+			     int *pretend_size,
+			     int second_time ATTRIBUTE_UNUSED)
 {
   int size;
 
@@ -478,95 +478,95 @@ fr30_print_operand (FILE *file, rtx x, int code)
     case '#':
       /* Output a :D if this instruction is delayed.  */
       if (dbr_sequence_length () != 0)
-        fputs (":D", file);
+	fputs (":D", file);
       return;
       
     case 'p':
       /* Compute the register name of the second register in a hi/lo
-         register pair.  */
+	 register pair.  */
       if (GET_CODE (x) != REG)
-        output_operand_lossage ("fr30_print_operand: unrecognized %%p code");
+	output_operand_lossage ("fr30_print_operand: unrecognized %%p code");
       else
-        fprintf (file, "r%d", REGNO (x) + 1);
+	fprintf (file, "r%d", REGNO (x) + 1);
       return;
       
     case 'b':
       /* Convert GCC's comparison operators into FR30 comparison codes.  */
       switch (GET_CODE (x))
-        {
-        case EQ:  fprintf (file, "eq"); break;
-        case NE:  fprintf (file, "ne"); break;
-        case LT:  fprintf (file, "lt"); break;
-        case LE:  fprintf (file, "le"); break;
-        case GT:  fprintf (file, "gt"); break;
-        case GE:  fprintf (file, "ge"); break;
-        case LTU: fprintf (file, "c"); break;
-        case LEU: fprintf (file, "ls"); break;
-        case GTU: fprintf (file, "hi"); break;
-        case GEU: fprintf (file, "nc");  break;
-        default:
-          output_operand_lossage ("fr30_print_operand: unrecognized %%b code");
-          break;
-        }
+	{
+	case EQ:  fprintf (file, "eq"); break;
+	case NE:  fprintf (file, "ne"); break;
+	case LT:  fprintf (file, "lt"); break;
+	case LE:  fprintf (file, "le"); break;
+	case GT:  fprintf (file, "gt"); break;
+	case GE:  fprintf (file, "ge"); break;
+	case LTU: fprintf (file, "c"); break;
+	case LEU: fprintf (file, "ls"); break;
+	case GTU: fprintf (file, "hi"); break;
+	case GEU: fprintf (file, "nc");  break;
+	default:
+	  output_operand_lossage ("fr30_print_operand: unrecognized %%b code");
+	  break;
+	}
       return;
       
     case 'B':
       /* Convert GCC's comparison operators into the complimentary FR30
-         comparison codes.  */
+	 comparison codes.  */
       switch (GET_CODE (x))
-        {
-        case EQ:  fprintf (file, "ne"); break;
-        case NE:  fprintf (file, "eq"); break;
-        case LT:  fprintf (file, "ge"); break;
-        case LE:  fprintf (file, "gt"); break;
-        case GT:  fprintf (file, "le"); break;
-        case GE:  fprintf (file, "lt"); break;
-        case LTU: fprintf (file, "nc"); break;
-        case LEU: fprintf (file, "hi"); break;
-        case GTU: fprintf (file, "ls"); break;
-        case GEU: fprintf (file, "c"); break;
-        default:
-          output_operand_lossage ("fr30_print_operand: unrecognized %%B code");
-          break;
-        }
+	{
+	case EQ:  fprintf (file, "ne"); break;
+	case NE:  fprintf (file, "eq"); break;
+	case LT:  fprintf (file, "ge"); break;
+	case LE:  fprintf (file, "gt"); break;
+	case GT:  fprintf (file, "le"); break;
+	case GE:  fprintf (file, "lt"); break;
+	case LTU: fprintf (file, "nc"); break;
+	case LEU: fprintf (file, "hi"); break;
+	case GTU: fprintf (file, "ls"); break;
+	case GEU: fprintf (file, "c"); break;
+	default:
+	  output_operand_lossage ("fr30_print_operand: unrecognized %%B code");
+	  break;
+	}
       return;
 
     case 'A':
       /* Print a signed byte value as an unsigned value.  */
       if (GET_CODE (x) != CONST_INT)
-        output_operand_lossage ("fr30_print_operand: invalid operand to %%A code");
+	output_operand_lossage ("fr30_print_operand: invalid operand to %%A code");
       else
-        {
-          HOST_WIDE_INT val;
-          
-          val = INTVAL (x);
+	{
+	  HOST_WIDE_INT val;
+	  
+	  val = INTVAL (x);
 
-          val &= 0xff;
+	  val &= 0xff;
 
-          fprintf (file, HOST_WIDE_INT_PRINT_DEC, val);
-        }
+	  fprintf (file, HOST_WIDE_INT_PRINT_DEC, val);
+	}
       return;
       
     case 'x':
       if (GET_CODE (x) != CONST_INT
-          || INTVAL (x) < 16
-          || INTVAL (x) > 32)
-        output_operand_lossage ("fr30_print_operand: invalid %%x code");
+	  || INTVAL (x) < 16
+	  || INTVAL (x) > 32)
+	output_operand_lossage ("fr30_print_operand: invalid %%x code");
       else
-        fprintf (file, HOST_WIDE_INT_PRINT_DEC, INTVAL (x) - 16);
+	fprintf (file, HOST_WIDE_INT_PRINT_DEC, INTVAL (x) - 16);
       return;
 
     case 'F':
       if (GET_CODE (x) != CONST_DOUBLE)
-        output_operand_lossage ("fr30_print_operand: invalid %%F code");
+	output_operand_lossage ("fr30_print_operand: invalid %%F code");
       else
-        {
-          char str[30];
+	{
+	  char str[30];
 
-          real_to_decimal (str, CONST_DOUBLE_REAL_VALUE (x),
-                           sizeof (str), 0, 1);
-          fputs (str, file);
-        }
+	  real_to_decimal (str, CONST_DOUBLE_REAL_VALUE (x),
+			   sizeof (str), 0, 1);
+	  fputs (str, file);
+	}
       return;
       
     case 0:
@@ -589,70 +589,70 @@ fr30_print_operand (FILE *file, rtx x, int code)
       x0 = XEXP (x,0);
       
       switch (GET_CODE (x0))
-        {
-        case REG:
-          gcc_assert ((unsigned) REGNO (x0) < ARRAY_SIZE (reg_names));
-          fprintf (file, "@%s", reg_names [REGNO (x0)]);
-          break;
+	{
+	case REG:
+	  gcc_assert ((unsigned) REGNO (x0) < ARRAY_SIZE (reg_names));
+	  fprintf (file, "@%s", reg_names [REGNO (x0)]);
+	  break;
 
-        case PLUS:
-          if (GET_CODE (XEXP (x0, 0)) != REG
-              || REGNO (XEXP (x0, 0)) < FRAME_POINTER_REGNUM
-              || REGNO (XEXP (x0, 0)) > STACK_POINTER_REGNUM
-              || GET_CODE (XEXP (x0, 1)) != CONST_INT)
-            {
-              fprintf (stderr, "bad INDEXed address:");
-              debug_rtx (x);
-              output_operand_lossage ("fr30_print_operand: unhandled MEM");
-            }
-          else if (REGNO (XEXP (x0, 0)) == FRAME_POINTER_REGNUM)
-            {
-              HOST_WIDE_INT val = INTVAL (XEXP (x0, 1));
-              if (val < -(1 << 9) || val > ((1 << 9) - 4))
-                {
-                  fprintf (stderr, "frame INDEX out of range:");
-                  debug_rtx (x);
-                  output_operand_lossage ("fr30_print_operand: unhandled MEM");
-                }
-              fprintf (file, "@(r14, #" HOST_WIDE_INT_PRINT_DEC ")", val);
-            }
-          else
-            {
-              HOST_WIDE_INT val = INTVAL (XEXP (x0, 1));
-              if (val < 0 || val > ((1 << 6) - 4))
-                {
-                  fprintf (stderr, "stack INDEX out of range:");
-                  debug_rtx (x);
-                  output_operand_lossage ("fr30_print_operand: unhandled MEM");
-                }
-              fprintf (file, "@(r15, #" HOST_WIDE_INT_PRINT_DEC ")", val);
-            }
-          break;
-          
-        case SYMBOL_REF:
-          output_address (x0);
-          break;
-          
-        default:
-          fprintf (stderr, "bad MEM code = %x\n", GET_CODE (x0));
-          debug_rtx (x);
-          output_operand_lossage ("fr30_print_operand: unhandled MEM");
-          break;
-        }
+	case PLUS:
+	  if (GET_CODE (XEXP (x0, 0)) != REG
+	      || REGNO (XEXP (x0, 0)) < FRAME_POINTER_REGNUM
+	      || REGNO (XEXP (x0, 0)) > STACK_POINTER_REGNUM
+	      || GET_CODE (XEXP (x0, 1)) != CONST_INT)
+	    {
+	      fprintf (stderr, "bad INDEXed address:");
+	      debug_rtx (x);
+	      output_operand_lossage ("fr30_print_operand: unhandled MEM");
+	    }
+	  else if (REGNO (XEXP (x0, 0)) == FRAME_POINTER_REGNUM)
+	    {
+	      HOST_WIDE_INT val = INTVAL (XEXP (x0, 1));
+	      if (val < -(1 << 9) || val > ((1 << 9) - 4))
+		{
+		  fprintf (stderr, "frame INDEX out of range:");
+		  debug_rtx (x);
+		  output_operand_lossage ("fr30_print_operand: unhandled MEM");
+		}
+	      fprintf (file, "@(r14, #" HOST_WIDE_INT_PRINT_DEC ")", val);
+	    }
+	  else
+	    {
+	      HOST_WIDE_INT val = INTVAL (XEXP (x0, 1));
+	      if (val < 0 || val > ((1 << 6) - 4))
+		{
+		  fprintf (stderr, "stack INDEX out of range:");
+		  debug_rtx (x);
+		  output_operand_lossage ("fr30_print_operand: unhandled MEM");
+		}
+	      fprintf (file, "@(r15, #" HOST_WIDE_INT_PRINT_DEC ")", val);
+	    }
+	  break;
+	  
+	case SYMBOL_REF:
+	  output_address (x0);
+	  break;
+	  
+	default:
+	  fprintf (stderr, "bad MEM code = %x\n", GET_CODE (x0));
+	  debug_rtx (x);
+	  output_operand_lossage ("fr30_print_operand: unhandled MEM");
+	  break;
+	}
       break;
       
     case CONST_DOUBLE :
       /* We handle SFmode constants here as output_addr_const doesn't.  */
       if (GET_MODE (x) == SFmode)
-        {
-          REAL_VALUE_TYPE d;
-          long l;
+	{
+	  REAL_VALUE_TYPE d;
+	  long l;
 
-          REAL_VALUE_FROM_CONST_DOUBLE (d, x);
-          REAL_VALUE_TO_TARGET_SINGLE (d, l);
-          fprintf (file, "0x%08lx", l);
-          break;
-        }
+	  REAL_VALUE_FROM_CONST_DOUBLE (d, x);
+	  REAL_VALUE_TO_TARGET_SINGLE (d, l);
+	  fprintf (file, "0x%08lx", l);
+	  break;
+	}
 
       /* Fall through.  Let output_addr_const deal with it.  */
     default:
@@ -706,7 +706,7 @@ fr30_num_arg_regs (enum machine_mode mode, tree type)
 
 static int
 fr30_arg_partial_bytes (CUMULATIVE_ARGS *cum, enum machine_mode mode,
-                        tree type, bool named)
+			tree type, bool named)
 {
   /* Unnamed arguments, i.e. those that are prototyped as ...
      are always passed on the stack.
@@ -743,30 +743,30 @@ fr30_check_multiple_regs (rtx *operands, int num_operands, int descending)
       unsigned int prev_regno = 0;
       
       while (num_operands --)
-        {
-          if (GET_CODE (operands [num_operands]) != REG)
-            return 0;
-          
-          if (REGNO (operands [num_operands]) < prev_regno)
-            return 0;
-          
-          prev_regno = REGNO (operands [num_operands]);
-        }
+	{
+	  if (GET_CODE (operands [num_operands]) != REG)
+	    return 0;
+	  
+	  if (REGNO (operands [num_operands]) < prev_regno)
+	    return 0;
+	  
+	  prev_regno = REGNO (operands [num_operands]);
+	}
     }
   else
     {
       unsigned int prev_regno = CONDITION_CODE_REGNUM;
       
       while (num_operands --)
-        {
-          if (GET_CODE (operands [num_operands]) != REG)
-            return 0;
-          
-          if (REGNO (operands [num_operands]) > prev_regno)
-            return 0;
-          
-          prev_regno = REGNO (operands [num_operands]);
-        }
+	{
+	  if (GET_CODE (operands [num_operands]) != REG)
+	    return 0;
+	  
+	  if (REGNO (operands [num_operands]) > prev_regno)
+	    return 0;
+	  
+	  prev_regno = REGNO (operands [num_operands]);
+	}
     }
 
   return 1;
@@ -810,78 +810,78 @@ fr30_move_double (rtx * operands)
   if (dest_code == REG)
     {
       if (src_code == REG)
-        {
-          int reverse = (REGNO (dest) == REGNO (src) + 1);
-          
-          /* We normally copy the low-numbered register first.  However, if
-             the first register of operand 0 is the same as the second register
-             of operand 1, we must copy in the opposite order.  */
-          emit_insn (gen_rtx_SET (VOIDmode,
-                                  operand_subword (dest, reverse, TRUE, mode),
-                                  operand_subword (src,  reverse, TRUE, mode)));
-          
-          emit_insn (gen_rtx_SET (VOIDmode,
-                              operand_subword (dest, !reverse, TRUE, mode),
-                              operand_subword (src,  !reverse, TRUE, mode)));
-        }
+	{
+	  int reverse = (REGNO (dest) == REGNO (src) + 1);
+	  
+	  /* We normally copy the low-numbered register first.  However, if
+	     the first register of operand 0 is the same as the second register
+	     of operand 1, we must copy in the opposite order.  */
+	  emit_insn (gen_rtx_SET (VOIDmode,
+				  operand_subword (dest, reverse, TRUE, mode),
+				  operand_subword (src,  reverse, TRUE, mode)));
+	  
+	  emit_insn (gen_rtx_SET (VOIDmode,
+			      operand_subword (dest, !reverse, TRUE, mode),
+			      operand_subword (src,  !reverse, TRUE, mode)));
+	}
       else if (src_code == MEM)
-        {
-          rtx addr = XEXP (src, 0);
-          int dregno = REGNO (dest);
-          rtx dest0;
-          rtx dest1;
-          rtx new_mem;
-          
-          /* If the high-address word is used in the address, we
-             must load it last.  Otherwise, load it first.  */
-          int reverse = (refers_to_regno_p (dregno, dregno + 1, addr, 0) != 0);
+	{
+	  rtx addr = XEXP (src, 0);
+	  int dregno = REGNO (dest);
+	  rtx dest0;
+	  rtx dest1;
+	  rtx new_mem;
+	  
+	  /* If the high-address word is used in the address, we
+	     must load it last.  Otherwise, load it first.  */
+	  int reverse = (refers_to_regno_p (dregno, dregno + 1, addr, 0) != 0);
 
-          gcc_assert (GET_CODE (addr) == REG);
-          
-          dest0 = operand_subword (dest, reverse, TRUE, mode);
-          dest1 = operand_subword (dest, !reverse, TRUE, mode);
+	  gcc_assert (GET_CODE (addr) == REG);
+	  
+	  dest0 = operand_subword (dest, reverse, TRUE, mode);
+	  dest1 = operand_subword (dest, !reverse, TRUE, mode);
 
-          if (reverse)
-            {
-              emit_insn (gen_rtx_SET (VOIDmode, dest1,
-                                      adjust_address (src, SImode, 0)));
-              emit_insn (gen_rtx_SET (SImode, dest0,
-                                      gen_rtx_REG (SImode, REGNO (addr))));
-              emit_insn (gen_rtx_SET (SImode, dest0,
-                                      plus_constant (dest0, UNITS_PER_WORD)));
+	  if (reverse)
+	    {
+	      emit_insn (gen_rtx_SET (VOIDmode, dest1,
+				      adjust_address (src, SImode, 0)));
+	      emit_insn (gen_rtx_SET (SImode, dest0,
+				      gen_rtx_REG (SImode, REGNO (addr))));
+	      emit_insn (gen_rtx_SET (SImode, dest0,
+				      plus_constant (dest0, UNITS_PER_WORD)));
 
-              new_mem = gen_rtx_MEM (SImode, dest0);
-              MEM_COPY_ATTRIBUTES (new_mem, src);
-              
-              emit_insn (gen_rtx_SET (VOIDmode, dest0, new_mem));
-            }
-          else
-            {
-              emit_insn (gen_rtx_SET (VOIDmode, dest0,
-                                      adjust_address (src, SImode, 0)));
-              emit_insn (gen_rtx_SET (SImode, dest1,
-                                      gen_rtx_REG (SImode, REGNO (addr))));
-              emit_insn (gen_rtx_SET (SImode, dest1,
-                                      plus_constant (dest1, UNITS_PER_WORD)));
+	      new_mem = gen_rtx_MEM (SImode, dest0);
+	      MEM_COPY_ATTRIBUTES (new_mem, src);
+	      
+	      emit_insn (gen_rtx_SET (VOIDmode, dest0, new_mem));
+	    }
+	  else
+	    {
+	      emit_insn (gen_rtx_SET (VOIDmode, dest0,
+				      adjust_address (src, SImode, 0)));
+	      emit_insn (gen_rtx_SET (SImode, dest1,
+				      gen_rtx_REG (SImode, REGNO (addr))));
+	      emit_insn (gen_rtx_SET (SImode, dest1,
+				      plus_constant (dest1, UNITS_PER_WORD)));
 
-              new_mem = gen_rtx_MEM (SImode, dest1);
-              MEM_COPY_ATTRIBUTES (new_mem, src);
-              
-              emit_insn (gen_rtx_SET (VOIDmode, dest1, new_mem));
-            }
-        }
+	      new_mem = gen_rtx_MEM (SImode, dest1);
+	      MEM_COPY_ATTRIBUTES (new_mem, src);
+	      
+	      emit_insn (gen_rtx_SET (VOIDmode, dest1, new_mem));
+	    }
+	}
       else if (src_code == CONST_INT || src_code == CONST_DOUBLE)
-        {
-          rtx words[2];
-          split_double (src, &words[0], &words[1]);
-          emit_insn (gen_rtx_SET (VOIDmode,
-                                  operand_subword (dest, 0, TRUE, mode),
-                                  words[0]));
+	{
+	  rtx words[2];
+	  split_double (src, &words[0], &words[1]);
+	  emit_insn (gen_rtx_SET (VOIDmode,
+				  operand_subword (dest, 0, TRUE, mode),
+				  words[0]));
       
-          emit_insn (gen_rtx_SET (VOIDmode,
-                                  operand_subword (dest, 1, TRUE, mode),
-                                  words[1]));
-        }
+	  emit_insn (gen_rtx_SET (VOIDmode,
+				  operand_subword (dest, 1, TRUE, mode),
+				  words[1]));
+	}
     }
   else if (src_code == REG && dest_code == MEM)
     {
@@ -895,30 +895,30 @@ fr30_move_double (rtx * operands)
       src1 = operand_subword (src, 1, TRUE, mode);
       
       emit_insn (gen_rtx_SET (VOIDmode, adjust_address (dest, SImode, 0),
-                              src0));
+			      src0));
 
       if (REGNO (addr) == STACK_POINTER_REGNUM
-          || REGNO (addr) == FRAME_POINTER_REGNUM)
-        emit_insn (gen_rtx_SET (VOIDmode,
-                                adjust_address (dest, SImode, UNITS_PER_WORD),
-                                src1));
+	  || REGNO (addr) == FRAME_POINTER_REGNUM)
+	emit_insn (gen_rtx_SET (VOIDmode,
+				adjust_address (dest, SImode, UNITS_PER_WORD),
+				src1));
       else
-        {
-          rtx new_mem;
-          
-          /* We need a scratch register to hold the value of 'address + 4'.
-             We ought to allow gcc to find one for us, but for now, just
-             push one of the source registers.  */
-          emit_insn (gen_movsi_push (src0));
-          emit_insn (gen_movsi_internal (src0, addr));
-          emit_insn (gen_addsi_small_int (src0, src0, GEN_INT (UNITS_PER_WORD)));
-          
-          new_mem = gen_rtx_MEM (SImode, src0);
-          MEM_COPY_ATTRIBUTES (new_mem, dest);
-          
-          emit_insn (gen_rtx_SET (VOIDmode, new_mem, src1));
-          emit_insn (gen_movsi_pop (src0));
-        }
+	{
+	  rtx new_mem;
+	  
+	  /* We need a scratch register to hold the value of 'address + 4'.
+	     We ought to allow gcc to find one for us, but for now, just
+	     push one of the source registers.  */
+	  emit_insn (gen_movsi_push (src0));
+	  emit_insn (gen_movsi_internal (src0, addr));
+	  emit_insn (gen_addsi_small_int (src0, src0, GEN_INT (UNITS_PER_WORD)));
+	  
+	  new_mem = gen_rtx_MEM (SImode, src0);
+	  MEM_COPY_ATTRIBUTES (new_mem, dest);
+	  
+	  emit_insn (gen_rtx_SET (VOIDmode, new_mem, src1));
+	  emit_insn (gen_movsi_pop (src0));
+	}
     }
   else
     /* This should have been prevented by the constraints on movdi_insn.  */
@@ -932,4 +932,4 @@ fr30_move_double (rtx * operands)
 /*}}}*/
 /* Local Variables: */
 /* folded-file: t   */
-/* End:                    */
+/* End:		    */

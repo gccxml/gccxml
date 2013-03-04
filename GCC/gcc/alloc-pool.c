@@ -41,8 +41,8 @@ typedef struct allocation_object_def
       char data[1];
 
       /* Because we want any type of data to be well aligned after the ID,
-         the following elements are here.  They are never accessed so
-         the allocated object may be even smaller than this structure.  */
+	 the following elements are here.  They are never accessed so
+	 the allocated object may be even smaller than this structure.  */
       char *align_p;
       HOST_WIDEST_INT align_i;
       long double align_ld;
@@ -50,12 +50,12 @@ typedef struct allocation_object_def
 } allocation_object;
 
 /* Convert a pointer to allocation_object from a pointer to user data.  */
-#define ALLOCATION_OBJECT_PTR_FROM_USER_PTR(X)                                \
-   ((allocation_object *) (((char *) (X))                                \
-                           - offsetof (allocation_object, u.data)))
+#define ALLOCATION_OBJECT_PTR_FROM_USER_PTR(X)				\
+   ((allocation_object *) (((char *) (X))				\
+			   - offsetof (allocation_object, u.data)))
 
 /* Convert a pointer to user data from a pointer to allocation_object.  */
-#define USER_PTR_FROM_ALLOCATION_OBJECT_PTR(X)                                \
+#define USER_PTR_FROM_ALLOCATION_OBJECT_PTR(X)				\
    ((void *) (((allocation_object *) (X))->u.data))
 
 #ifdef ENABLE_CHECKING
@@ -103,8 +103,8 @@ alloc_pool_descriptor (const char *name)
 
   slot = (struct alloc_pool_descriptor **)
     htab_find_slot_with_hash (alloc_pool_hash, name,
-                              htab_hash_pointer (name),
-                              1);
+			      htab_hash_pointer (name),
+			      1);
   if (*slot)
     return *slot;
   *slot = xcalloc (sizeof (**slot), 1);
@@ -245,7 +245,7 @@ pool_alloc (alloc_pool pool)
 #ifdef GATHER_STATISTICS
       desc->current += pool->block_size;
       if (desc->peak < desc->current)
-        desc->peak = desc->current;
+	desc->peak = desc->current;
 #endif
 
       /* Throw it on the block list.  */
@@ -256,15 +256,15 @@ pool_alloc (alloc_pool pool)
       for (i = 0; i < pool->elts_per_block; i++, block += pool->elt_size)
       {
 #ifdef ENABLE_CHECKING
-        /* Mark the element to be free.  */
-        ((allocation_object *) block)->id = 0;
+	/* Mark the element to be free.  */
+	((allocation_object *) block)->id = 0;
 #endif
-        header = (alloc_pool_list) USER_PTR_FROM_ALLOCATION_OBJECT_PTR (block);
-        header->next = pool->free_list;
-        pool->free_list = header;
+	header = (alloc_pool_list) USER_PTR_FROM_ALLOCATION_OBJECT_PTR (block);
+	header->next = pool->free_list;
+	pool->free_list = header;
       }
       /* Also update the number of elements we have free/allocated, and
-         increment the allocated block count.  */
+	 increment the allocated block count.  */
       pool->elts_allocated += pool->elts_per_block;
       pool->elts_free += pool->elts_per_block;
       pool->blocks_allocated += 1;
@@ -330,7 +330,7 @@ print_statistics (void **slot, void *b)
   if (d->allocated)
     {
       fprintf (stderr, "%-21s %6d %10d %10d %10d\n", d->name,
-               d->created, d->allocated, d->peak, d->current);
+	       d->created, d->allocated, d->peak, d->current);
       i->size += d->allocated;
       i->count += d->created;
     }
@@ -355,7 +355,7 @@ dump_alloc_pool_statistics (void)
   htab_traverse (alloc_pool_hash, print_statistics, &info);
   fprintf (stderr, "-------------------------------------------------------------\n");
   fprintf (stderr, "%-20s %7d %10d\n",
-           "Total", info.count, info.size);
+	   "Total", info.count, info.size);
   fprintf (stderr, "-------------------------------------------------------------\n");
 #endif
 }

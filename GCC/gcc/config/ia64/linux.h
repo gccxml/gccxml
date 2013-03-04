@@ -10,10 +10,10 @@
 #define CC1_SPEC "%{profile:-p} %{G*}"
 
 /* Target OS builtins.  */
-#define TARGET_OS_CPP_BUILTINS()                \
-do {                                                \
-        LINUX_TARGET_OS_CPP_BUILTINS();                \
-        builtin_define("_LONGLONG");                \
+#define TARGET_OS_CPP_BUILTINS()		\
+do {						\
+	LINUX_TARGET_OS_CPP_BUILTINS();		\
+	builtin_define("_LONGLONG");		\
 } while (0)
 
 /* Need to override linux.h STARTFILE_SPEC, since it has crtbeginT.o in.  */

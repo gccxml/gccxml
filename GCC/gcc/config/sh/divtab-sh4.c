@@ -46,44 +46,44 @@ main ()
     {
       int n = 0;
       if (i == 128)
-        puts ("\
+	puts ("\
 /* Lookup table translating positive divisor to index into table of\n\
    normalized inverse.  N.B. the '0' entry is also the last entry of the\n\
  previous table, and causes an unaligned access for division by zero.  */\n\
 LOCAL(div_table_ix):");
       for (j = i; j <= 128; j += j)
-        n++;
+	n++;
       printf ("\t.byte\t%d\n", n - 7);
     }
   for (i = 1; i <= 128; i++)
     {
       j = i < 0 ? -i : i;
       while (j < 128)
-        j += j;
+	j += j;
       printf ("\t.byte\t%d\n", j * 2 - 96*4);
     }
   puts("\
 /* 1/64 .. 1/127, normalized.  There is an implicit leading 1 in bit 32.  */\n\
-        .balign 4\n\
+	.balign 4\n\
 LOCAL(zero_l):");
   for (i = 64; i < 128; i++)
     {
       if (i == 96)
-        puts ("LOCAL(div_table):");
+	puts ("LOCAL(div_table):");
       q = 4.*(1<<30)*128/i;
       r = ceil (q);
       /* The value for 64 is actually differently scaled that it would
-         appear from this calculation.  The implicit part is %01, not 10.
-         Still, since the value in the table is 0 either way, this
-         doesn't matter here.  Still, the 1/64 entry is effectively a 1/128
-         entry.  */
+	 appear from this calculation.  The implicit part is %01, not 10.
+	 Still, since the value in the table is 0 either way, this
+	 doesn't matter here.  Still, the 1/64 entry is effectively a 1/128
+	 entry.  */
       printf ("\t.long\t0x%X\n", (unsigned) r);
       err = r - q;
       if (err > max_err)
-        max_err = err;
+	max_err = err;
       err = err * i / 128;
       if (err > max_s_err)
-        max_s_err = err;
+	max_s_err = err;
     }
   printf ("\t/* maximum error: %f scaled: %f*/\n", max_err, max_s_err);
   exit (0);

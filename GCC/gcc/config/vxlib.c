@@ -197,26 +197,26 @@ tls_delete_hook (void *tcb ATTRIBUTE_UNUSED)
     {
       __gthread_enter_tls_dtor_context ();
       for (key = 0; key < MAX_KEYS; key++)
-        {
-          if (data->generation[key] == tls_keys.generation[key])
-            {
-              tls_dtor dtor = tls_keys.dtor[key];
+	{
+	  if (data->generation[key] == tls_keys.generation[key])
+	    {
+	      tls_dtor dtor = tls_keys.dtor[key];
 
-              if (dtor)
-                dtor (data->values[key]);
-            }
-        }
+	      if (dtor)
+		dtor (data->values[key]);
+	    }
+	}
       free (data);
 
       /* We can't handle an error here, so just leave the thread
-         marked as loaded if one occurs.  */
+	 marked as loaded if one occurs.  */
       if (__gthread_mutex_lock (&tls_lock) != ERROR)
-        {
-          active_tls_threads--;
-          if (active_tls_threads == 0)
-            taskDeleteHookDelete ((FUNCPTR)tls_delete_hook);
-          __gthread_mutex_unlock (&tls_lock);
-        }
+	{
+	  active_tls_threads--;
+	  if (active_tls_threads == 0)
+	    taskDeleteHookDelete ((FUNCPTR)tls_delete_hook);
+	  __gthread_mutex_unlock (&tls_lock);
+	}
 
       __gthread_set_tls_data (0);
       __gthread_leave_tls_dtor_context ();
@@ -358,15 +358,15 @@ __gthread_setspecific (__gthread_key_t key, void *value)
   if (!data)
     {
       if (__gthread_mutex_lock (&tls_lock) == ERROR)
-        return ENOMEM;
+	return ENOMEM;
       if (active_tls_threads == 0)
-        taskDeleteHookAdd ((FUNCPTR)tls_delete_hook);
+	taskDeleteHookAdd ((FUNCPTR)tls_delete_hook);
       active_tls_threads++;
       __gthread_mutex_unlock (&tls_lock);
 
       data = malloc (sizeof (struct tls_data));
       if (!data)
-        return ENOMEM;
+	return ENOMEM;
 
       memset (data, 0, sizeof (struct tls_data));
       data->owner = &self_owner;

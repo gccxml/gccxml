@@ -62,8 +62,8 @@ lhd_do_nothing_i (int ARG_UNUSED (i))
 
 tree
 lhd_do_nothing_iii_return_null_tree (int ARG_UNUSED (i),
-                                     int ARG_UNUSED (j),
-                                     int ARG_UNUSED (k))
+				     int ARG_UNUSED (j),
+				     int ARG_UNUSED (k))
 {
   return NULL_TREE;
 }
@@ -111,8 +111,8 @@ lhd_post_options (const char ** ARG_UNUSED (pfilename))
 
 void
 lhd_print_tree_nothing (FILE * ARG_UNUSED (file),
-                        tree ARG_UNUSED (node),
-                        int ARG_UNUSED (indent))
+			tree ARG_UNUSED (node),
+			int ARG_UNUSED (indent))
 {
 }
 
@@ -159,10 +159,10 @@ lhd_set_decl_assembler_name (tree decl)
      VAR_DECLs for variables with static storage duration need a real
      DECL_ASSEMBLER_NAME.  */
   gcc_assert (TREE_CODE (decl) == FUNCTION_DECL
-              || (TREE_CODE (decl) == VAR_DECL
-                  && (TREE_STATIC (decl)
-                      || DECL_EXTERNAL (decl)
-                      || TREE_PUBLIC (decl))));
+	      || (TREE_CODE (decl) == VAR_DECL
+		  && (TREE_STATIC (decl)
+		      || DECL_EXTERNAL (decl)
+		      || TREE_PUBLIC (decl))));
   
   /* By default, assume the name to use in assembly code is the same
      as that used in the source language.  (That's correct for C, and
@@ -202,7 +202,7 @@ lhd_type_promotes_to (tree ARG_UNUSED (type))
 /* Registration of machine- or os-specific builtin types.  */
 void
 lhd_register_builtin_type (tree ARG_UNUSED (type),
-                           const char * ARG_UNUSED (name))
+			   const char * ARG_UNUSED (name))
 {
 }
 
@@ -236,9 +236,9 @@ hook_get_alias_set_0 (tree ARG_UNUSED (t))
 
 rtx
 lhd_expand_expr (tree ARG_UNUSED (t), rtx ARG_UNUSED (r),
-                 enum machine_mode ARG_UNUSED (mm),
-                 int ARG_UNUSED (em),
-                 rtx * ARG_UNUSED (a))
+		 enum machine_mode ARG_UNUSED (mm),
+		 int ARG_UNUSED (em),
+		 rtx * ARG_UNUSED (a))
 {
   gcc_unreachable ();
 }
@@ -297,10 +297,10 @@ lhd_types_compatible_p (tree x, tree y)
 
 tree
 lhd_tree_inlining_walk_subtrees (tree *tp ATTRIBUTE_UNUSED,
-                                 int *subtrees ATTRIBUTE_UNUSED,
-                                 walk_tree_fn func ATTRIBUTE_UNUSED,
-                                 void *data ATTRIBUTE_UNUSED,
-                                 struct pointer_set_t *pset ATTRIBUTE_UNUSED)
+				 int *subtrees ATTRIBUTE_UNUSED,
+				 walk_tree_fn func ATTRIBUTE_UNUSED,
+				 void *data ATTRIBUTE_UNUSED,
+				 struct pointer_set_t *pset ATTRIBUTE_UNUSED)
 {
   return NULL_TREE;
 }
@@ -352,10 +352,10 @@ int
 lhd_tree_inlining_auto_var_in_fn_p (tree var, tree fn)
 {
   return (DECL_P (var) && DECL_CONTEXT (var) == fn
-          && (((TREE_CODE (var) == VAR_DECL || TREE_CODE (var) == PARM_DECL)
-               && ! TREE_STATIC (var))
-              || TREE_CODE (var) == LABEL_DECL
-              || TREE_CODE (var) == RESULT_DECL));
+	  && (((TREE_CODE (var) == VAR_DECL || TREE_CODE (var) == PARM_DECL)
+	       && ! TREE_STATIC (var))
+	      || TREE_CODE (var) == LABEL_DECL
+	      || TREE_CODE (var) == RESULT_DECL));
 }
 
 /* lang_hooks.tree_inlining.anon_aggr_type_p determines whether T is a
@@ -392,9 +392,9 @@ lhd_tree_inlining_end_inlining (tree fn ATTRIBUTE_UNUSED)
 
 tree
 lhd_tree_inlining_convert_parm_for_inlining (tree parm ATTRIBUTE_UNUSED,
-                                             tree value,
-                                             tree fndecl ATTRIBUTE_UNUSED,
-                                             int argnum ATTRIBUTE_UNUSED)
+					     tree value,
+					     tree fndecl ATTRIBUTE_UNUSED,
+					     int argnum ATTRIBUTE_UNUSED)
 {
   return value;
 }
@@ -435,7 +435,7 @@ lhd_expr_size (tree exp)
 
 int
 lhd_gimplify_expr (tree *expr_p ATTRIBUTE_UNUSED, tree *pre_p ATTRIBUTE_UNUSED,
-                   tree *post_p ATTRIBUTE_UNUSED)
+		   tree *post_p ATTRIBUTE_UNUSED)
 {
   return GS_UNHANDLED;
 }
@@ -514,18 +514,18 @@ lhd_print_error_function (diagnostic_context *context, const char *file)
       pp_set_prefix (context->printer, new_prefix);
 
       if (current_function_decl == NULL)
-        pp_printf (context->printer, _("At top level:"));
+	pp_printf (context->printer, _("At top level:"));
       else
-        {
-          if (TREE_CODE (TREE_TYPE (current_function_decl)) == METHOD_TYPE)
-            pp_printf
-              (context->printer, _("In member function %qs:"),
-               lang_hooks.decl_printable_name (current_function_decl, 2));
-          else
-            pp_printf
-              (context->printer, _("In function %qs:"),
-               lang_hooks.decl_printable_name (current_function_decl, 2));
-        }
+	{
+	  if (TREE_CODE (TREE_TYPE (current_function_decl)) == METHOD_TYPE)
+	    pp_printf
+	      (context->printer, _("In member function %qs:"),
+	       lang_hooks.decl_printable_name (current_function_decl, 2));
+	  else
+	    pp_printf
+	      (context->printer, _("In function %qs:"),
+	       lang_hooks.decl_printable_name (current_function_decl, 2));
+	}
 
       diagnostic_set_last_function (context);
       pp_flush (context->printer);
@@ -536,8 +536,8 @@ lhd_print_error_function (diagnostic_context *context, const char *file)
 
 tree
 lhd_callgraph_analyze_expr (tree *tp ATTRIBUTE_UNUSED,
-                            int *walk_subtrees ATTRIBUTE_UNUSED,
-                            tree decl ATTRIBUTE_UNUSED)
+			    int *walk_subtrees ATTRIBUTE_UNUSED,
+			    tree decl ATTRIBUTE_UNUSED)
 {
   return NULL;
 }
@@ -556,7 +556,7 @@ lhd_to_target_charset (HOST_WIDE_INT c)
 
 tree
 lhd_expr_to_decl (tree expr, bool *tc ATTRIBUTE_UNUSED,
-                  bool *ti ATTRIBUTE_UNUSED, bool *se ATTRIBUTE_UNUSED)
+		  bool *ti ATTRIBUTE_UNUSED, bool *se ATTRIBUTE_UNUSED)
 {
   return expr;
 }
@@ -585,6 +585,6 @@ lhd_omp_assignment (tree clause ATTRIBUTE_UNUSED, tree dst, tree src)
 
 void
 lhd_omp_firstprivatize_type_sizes (struct gimplify_omp_ctx *c ATTRIBUTE_UNUSED,
-                                   tree t ATTRIBUTE_UNUSED)
+				   tree t ATTRIBUTE_UNUSED)
 {
 }

@@ -50,16 +50,16 @@ Boston, MA 02110-1301, USA.  */
 #define EH_RETURN_DATA_REGNO(N) ((N) < 4 ? (N) + 2 : INVALID_REGNUM)
 
 /* Place the top of the stack for the DWARF2 EH stackadj value.  */
-#define EH_RETURN_STACKADJ_RTX                                                \
-  gen_rtx_MEM (SImode,                                                        \
-               plus_constant (gen_rtx_REG (Pmode, FRAME_POINTER_REGNUM),\
-                              -4))
+#define EH_RETURN_STACKADJ_RTX						\
+  gen_rtx_MEM (SImode,							\
+	       plus_constant (gen_rtx_REG (Pmode, FRAME_POINTER_REGNUM),\
+			      -4))
 
 /* Simple store the return handler into the call frame.  */
-#define EH_RETURN_HANDLER_RTX                                                \
-  gen_rtx_MEM (Pmode,                                                        \
-               plus_constant (gen_rtx_REG (Pmode, FRAME_POINTER_REGNUM),\
-                              16))
+#define EH_RETURN_HANDLER_RTX						\
+  gen_rtx_MEM (Pmode,							\
+	       plus_constant (gen_rtx_REG (Pmode, FRAME_POINTER_REGNUM),\
+			      16))
 
 
 /* Reserve the top of the stack for exception handler stackadj value.  */
@@ -71,16 +71,16 @@ Boston, MA 02110-1301, USA.  */
 #define ASM_OUTPUT_BEFORE_CASE_LABEL(FILE, PREFIX, NUM, TABLE)
 
 #undef OVERRIDE_OPTIONS
-#define OVERRIDE_OPTIONS                                \
-  do                                                        \
-    {                                                        \
-      /* Do generic VAX overrides.  */                        \
-      override_options ();                                \
-                                                        \
-      /* Turn off function CSE if we're doing PIC.  */        \
-      if (flag_pic)                                        \
-        flag_no_function_cse = 1;                        \
-    }                                                        \
+#define OVERRIDE_OPTIONS				\
+  do							\
+    {							\
+      /* Do generic VAX overrides.  */			\
+      override_options ();				\
+							\
+      /* Turn off function CSE if we're doing PIC.  */	\
+      if (flag_pic)					\
+	flag_no_function_cse = 1;			\
+    }							\
   while (0)
 
 /* VAX ELF is always gas; override the generic VAX ASM_SPEC.  */

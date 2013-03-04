@@ -444,16 +444,16 @@ static int reg_set_table_size;
 
 struct ls_expr
 {
-  struct expr * expr;                /* Gcse expression reference for LM.  */
-  rtx pattern;                        /* Pattern of this mem.  */
-  rtx pattern_regs;                /* List of registers mentioned by the mem.  */
-  rtx loads;                        /* INSN list of loads seen.  */
-  rtx stores;                        /* INSN list of stores seen.  */
-  struct ls_expr * next;        /* Next in the list.  */
-  int invalid;                        /* Invalid for some reason.  */
-  int index;                        /* If it maps to a bitmap index.  */
-  unsigned int hash_index;        /* Index when in a hash table.  */
-  rtx reaching_reg;                /* Register to use when re-writing.  */
+  struct expr * expr;		/* Gcse expression reference for LM.  */
+  rtx pattern;			/* Pattern of this mem.  */
+  rtx pattern_regs;		/* List of registers mentioned by the mem.  */
+  rtx loads;			/* INSN list of loads seen.  */
+  rtx stores;			/* INSN list of stores seen.  */
+  struct ls_expr * next;	/* Next in the list.  */
+  int invalid;			/* Invalid for some reason.  */
+  int index;			/* If it maps to a bitmap index.  */
+  unsigned int hash_index;	/* Index when in a hash table.  */
+  rtx reaching_reg;		/* Register to use when re-writing.  */
 };
 
 /* Array of implicit set patterns indexed by basic block index.  */
@@ -535,7 +535,7 @@ static int oprs_unchanged_p (rtx, rtx, int);
 static int oprs_anticipatable_p (rtx, rtx);
 static int oprs_available_p (rtx, rtx);
 static void insert_expr_in_table (rtx, enum machine_mode, rtx, int, int,
-                                  struct hash_table *);
+				  struct hash_table *);
 static void insert_set_in_table (rtx, rtx, struct hash_table *);
 static unsigned int hash_expr (rtx, enum machine_mode, int *, int);
 static unsigned int hash_set (int, int);
@@ -561,7 +561,7 @@ static void free_cprop_mem (void);
 static void compute_transp (rtx, int, sbitmap *, int);
 static void compute_transpout (void);
 static void compute_local_properties (sbitmap *, sbitmap *, sbitmap *,
-                                      struct hash_table *);
+				      struct hash_table *);
 static void compute_cprop_data (void);
 static void find_used_regs (rtx *, void *);
 static int try_replace_reg (rtx, rtx, rtx);
@@ -583,7 +583,7 @@ static void alloc_pre_mem (int, int);
 static void free_pre_mem (void);
 static void compute_pre_data (void);
 static int pre_expr_reaches_here_p (basic_block, struct expr *,
-                                    basic_block);
+				    basic_block);
 static void insert_insn_end_bb (struct expr *, basic_block, int);
 static void pre_insert_copy_insn (struct expr *, rtx);
 static void pre_insert_copies (void);
@@ -601,7 +601,7 @@ static int one_code_hoisting_pass (void);
 static rtx process_insert_insn (struct expr *);
 static int pre_edge_insert (struct edge_list *, struct expr **);
 static int pre_expr_reaches_here_p_work (basic_block, struct expr *,
-                                         basic_block, char *);
+					 basic_block, char *);
 static struct ls_expr * ldst_entry (rtx);
 static void free_ldst_entry (struct ls_expr *);
 static void free_ldst_mems (void);
@@ -707,10 +707,10 @@ gcse_main (rtx f ATTRIBUTE_UNUSED)
     {
       changed = 0;
       if (dump_file)
-        fprintf (dump_file, "GCSE pass %d\n\n", pass + 1);
+	fprintf (dump_file, "GCSE pass %d\n\n", pass + 1);
 
       /* Initialize bytes_used to the space for the pred/succ lists,
-         and the reg_set_table data.  */
+	 and the reg_set_table data.  */
       bytes_used = initial_bytes_used;
 
       /* Each pass may create new registers, so recalculate each time.  */
@@ -719,64 +719,64 @@ gcse_main (rtx f ATTRIBUTE_UNUSED)
       alloc_gcse_mem ();
 
       /* Don't allow constant propagation to modify jumps
-         during this pass.  */
+	 during this pass.  */
       timevar_push (TV_CPROP1);
       changed = one_cprop_pass (pass + 1, false, false);
       timevar_pop (TV_CPROP1);
 
       if (optimize_size)
-        /* Do nothing.  */ ;
+	/* Do nothing.  */ ;
       else
-        {
-          timevar_push (TV_PRE);
-          changed |= one_pre_gcse_pass (pass + 1);
-          /* We may have just created new basic blocks.  Release and
-             recompute various things which are sized on the number of
-             basic blocks.  */
-          if (changed)
-            {
-              free_modify_mem_tables ();
-              modify_mem_list = gcalloc (last_basic_block, sizeof (rtx));
-              canon_modify_mem_list = gcalloc (last_basic_block, sizeof (rtx));
-            }
-          free_reg_set_mem ();
-          alloc_reg_set_mem (max_reg_num ());
-          compute_sets ();
-          run_jump_opt_after_gcse = 1;
-          timevar_pop (TV_PRE);
-        }
+	{
+	  timevar_push (TV_PRE);
+	  changed |= one_pre_gcse_pass (pass + 1);
+	  /* We may have just created new basic blocks.  Release and
+	     recompute various things which are sized on the number of
+	     basic blocks.  */
+	  if (changed)
+	    {
+	      free_modify_mem_tables ();
+	      modify_mem_list = gcalloc (last_basic_block, sizeof (rtx));
+	      canon_modify_mem_list = gcalloc (last_basic_block, sizeof (rtx));
+	    }
+	  free_reg_set_mem ();
+	  alloc_reg_set_mem (max_reg_num ());
+	  compute_sets ();
+	  run_jump_opt_after_gcse = 1;
+	  timevar_pop (TV_PRE);
+	}
 
       if (max_pass_bytes < bytes_used)
-        max_pass_bytes = bytes_used;
+	max_pass_bytes = bytes_used;
 
       /* Free up memory, then reallocate for code hoisting.  We can
-         not re-use the existing allocated memory because the tables
-         will not have info for the insns or registers created by
-         partial redundancy elimination.  */
+	 not re-use the existing allocated memory because the tables
+	 will not have info for the insns or registers created by
+	 partial redundancy elimination.  */
       free_gcse_mem ();
 
       /* It does not make sense to run code hoisting unless we are optimizing
-         for code size -- it rarely makes programs faster, and can make
-         them bigger if we did partial redundancy elimination (when optimizing
-         for space, we don't run the partial redundancy algorithms).  */
+	 for code size -- it rarely makes programs faster, and can make
+	 them bigger if we did partial redundancy elimination (when optimizing
+	 for space, we don't run the partial redundancy algorithms).  */
       if (optimize_size)
-        {
-          timevar_push (TV_HOIST);
-          max_gcse_regno = max_reg_num ();
-          alloc_gcse_mem ();
-          changed |= one_code_hoisting_pass ();
-          free_gcse_mem ();
+	{
+	  timevar_push (TV_HOIST);
+	  max_gcse_regno = max_reg_num ();
+	  alloc_gcse_mem ();
+	  changed |= one_code_hoisting_pass ();
+	  free_gcse_mem ();
 
-          if (max_pass_bytes < bytes_used)
-            max_pass_bytes = bytes_used;
-          timevar_pop (TV_HOIST);
-        }
+	  if (max_pass_bytes < bytes_used)
+	    max_pass_bytes = bytes_used;
+	  timevar_pop (TV_HOIST);
+	}
 
       if (dump_file)
-        {
-          fprintf (dump_file, "\n");
-          fflush (dump_file);
-        }
+	{
+	  fprintf (dump_file, "\n");
+	  fflush (dump_file);
+	}
 
       obstack_free (&gcse_obstack, gcse_obstack_bottom);
       pass++;
@@ -796,9 +796,9 @@ gcse_main (rtx f ATTRIBUTE_UNUSED)
   if (dump_file)
     {
       fprintf (dump_file, "GCSE of %s: %d basic blocks, ",
-               current_function_name (), n_basic_blocks);
+	       current_function_name (), n_basic_blocks);
       fprintf (dump_file, "%d pass%s, %d bytes\n\n",
-               pass, pass > 1 ? "es" : "", max_pass_bytes);
+	       pass, pass > 1 ? "es" : "", max_pass_bytes);
     }
 
   obstack_free (&gcse_obstack, NULL);
@@ -842,12 +842,12 @@ compute_can_copy (void)
     if (GET_MODE_CLASS (i) == MODE_CC)
       {
 #ifdef AVOID_CCMODE_COPIES
-        can_copy[i] = 0;
+	can_copy[i] = 0;
 #else
-        reg = gen_rtx_REG ((enum machine_mode) i, LAST_VIRTUAL_REGISTER + 1);
-        insn = emit_insn (gen_rtx_SET (VOIDmode, reg, reg));
-        if (recog (PATTERN (insn), insn, NULL) >= 0)
-          can_copy[i] = 1;
+	reg = gen_rtx_REG ((enum machine_mode) i, LAST_VIRTUAL_REGISTER + 1);
+	insn = emit_insn (gen_rtx_SET (VOIDmode, reg, reg));
+	if (recog (PATTERN (insn), insn, NULL) >= 0)
+	  can_copy[i] = 1;
 #endif
       }
     else
@@ -933,10 +933,10 @@ alloc_gcse_mem (void)
   FOR_EACH_BB (bb)
     FOR_BB_INSNS (bb, insn)
       {
-        if (INSN_P (insn))
-          uid_cuid[INSN_UID (insn)] = i++;
-        else
-          uid_cuid[INSN_UID (insn)] = i;
+	if (INSN_P (insn))
+	  uid_cuid[INSN_UID (insn)] = i++;
+	else
+	  uid_cuid[INSN_UID (insn)] = i;
       }
 
   /* Create a table mapping cuids to insns.  */
@@ -947,7 +947,7 @@ alloc_gcse_mem (void)
   FOR_EACH_BB (bb)
     FOR_BB_INSNS (bb, insn)
       if (INSN_P (insn))
-        CUID_INSN (i++) = insn;
+	CUID_INSN (i++) = insn;
 
   /* Allocate vars to track sets of regs.  */
   reg_set_bitmap = BITMAP_ALLOC (NULL);
@@ -1007,7 +1007,7 @@ free_gcse_mem (void)
 
 static void
 compute_local_properties (sbitmap *transp, sbitmap *comp, sbitmap *antloc,
-                          struct hash_table *table)
+			  struct hash_table *table)
 {
   unsigned int i;
 
@@ -1015,9 +1015,9 @@ compute_local_properties (sbitmap *transp, sbitmap *comp, sbitmap *antloc,
   if (transp)
     {
       if (table->set_p)
-        sbitmap_vector_zero (transp, last_basic_block);
+	sbitmap_vector_zero (transp, last_basic_block);
       else
-        sbitmap_vector_ones (transp, last_basic_block);
+	sbitmap_vector_ones (transp, last_basic_block);
     }
 
   if (comp)
@@ -1030,44 +1030,44 @@ compute_local_properties (sbitmap *transp, sbitmap *comp, sbitmap *antloc,
       struct expr *expr;
 
       for (expr = table->table[i]; expr != NULL; expr = expr->next_same_hash)
-        {
-          int indx = expr->bitmap_index;
-          struct occr *occr;
+	{
+	  int indx = expr->bitmap_index;
+	  struct occr *occr;
 
-          /* The expression is transparent in this block if it is not killed.
-             We start by assuming all are transparent [none are killed], and
-             then reset the bits for those that are.  */
-          if (transp)
-            compute_transp (expr->expr, indx, transp, table->set_p);
+	  /* The expression is transparent in this block if it is not killed.
+	     We start by assuming all are transparent [none are killed], and
+	     then reset the bits for those that are.  */
+	  if (transp)
+	    compute_transp (expr->expr, indx, transp, table->set_p);
 
-          /* The occurrences recorded in antic_occr are exactly those that
-             we want to set to nonzero in ANTLOC.  */
-          if (antloc)
-            for (occr = expr->antic_occr; occr != NULL; occr = occr->next)
-              {
-                SET_BIT (antloc[BLOCK_NUM (occr->insn)], indx);
+	  /* The occurrences recorded in antic_occr are exactly those that
+	     we want to set to nonzero in ANTLOC.  */
+	  if (antloc)
+	    for (occr = expr->antic_occr; occr != NULL; occr = occr->next)
+	      {
+		SET_BIT (antloc[BLOCK_NUM (occr->insn)], indx);
 
-                /* While we're scanning the table, this is a good place to
-                   initialize this.  */
-                occr->deleted_p = 0;
-              }
+		/* While we're scanning the table, this is a good place to
+		   initialize this.  */
+		occr->deleted_p = 0;
+	      }
 
-          /* The occurrences recorded in avail_occr are exactly those that
-             we want to set to nonzero in COMP.  */
-          if (comp)
-            for (occr = expr->avail_occr; occr != NULL; occr = occr->next)
-              {
-                SET_BIT (comp[BLOCK_NUM (occr->insn)], indx);
+	  /* The occurrences recorded in avail_occr are exactly those that
+	     we want to set to nonzero in COMP.  */
+	  if (comp)
+	    for (occr = expr->avail_occr; occr != NULL; occr = occr->next)
+	      {
+		SET_BIT (comp[BLOCK_NUM (occr->insn)], indx);
 
-                /* While we're scanning the table, this is a good place to
-                   initialize this.  */
-                occr->copied_p = 0;
-              }
+		/* While we're scanning the table, this is a good place to
+		   initialize this.  */
+		occr->copied_p = 0;
+	      }
 
-          /* While we're scanning the table, this is a good place to
-             initialize this.  */
-          expr->reaching_reg = 0;
-        }
+	  /* While we're scanning the table, this is a good place to
+	     initialize this.  */
+	  expr->reaching_reg = 0;
+	}
     }
 }
 
@@ -1108,9 +1108,9 @@ record_one_set (int regno, rtx insn)
       int new_size = regno + REG_SET_TABLE_SLOP;
 
       reg_set_table = grealloc (reg_set_table,
-                                new_size * sizeof (struct reg_set *));
+				new_size * sizeof (struct reg_set *));
       memset (reg_set_table + reg_set_table_size, 0,
-              (new_size - reg_set_table_size) * sizeof (struct reg_set *));
+	      (new_size - reg_set_table_size) * sizeof (struct reg_set *));
       reg_set_table_size = new_size;
     }
 
@@ -1148,7 +1148,7 @@ compute_sets (void)
   FOR_EACH_BB (bb)
     FOR_BB_INSNS (bb, insn)
       if (INSN_P (insn))
-        note_stores (PATTERN (insn), record_set_info, insn);
+	note_stores (PATTERN (insn), record_set_info, insn);
 }
 
 /* Hash table support.  */
@@ -1216,10 +1216,10 @@ can_assign_to_reg_p (rtx x)
   if (test_insn == 0)
     {
       test_insn
-        = make_insn_raw (gen_rtx_SET (VOIDmode,
-                                      gen_rtx_REG (word_mode,
-                                                   FIRST_PSEUDO_REGISTER * 2),
-                                      const0_rtx));
+	= make_insn_raw (gen_rtx_SET (VOIDmode,
+				      gen_rtx_REG (word_mode,
+						   FIRST_PSEUDO_REGISTER * 2),
+				      const0_rtx));
       NEXT_INSN (test_insn) = PREV_INSN (test_insn) = 0;
     }
 
@@ -1228,7 +1228,7 @@ can_assign_to_reg_p (rtx x)
   PUT_MODE (SET_DEST (PATTERN (test_insn)), GET_MODE (x));
   SET_SRC (PATTERN (test_insn)) = x;
   return ((icode = recog (PATTERN (test_insn), test_insn, &num_clobbers)) >= 0
-          && (num_clobbers == 0 || ! added_clobbers_hard_reg_p (icode)));
+	  && (num_clobbers == 0 || ! added_clobbers_hard_reg_p (icode)));
 }
 
 /* Return nonzero if the operands of expression X are unchanged from the
@@ -1250,22 +1250,22 @@ oprs_unchanged_p (rtx x, rtx insn, int avail_p)
     {
     case REG:
       {
-        struct reg_avail_info *info = &reg_avail_info[REGNO (x)];
+	struct reg_avail_info *info = &reg_avail_info[REGNO (x)];
 
-        if (info->last_bb != current_bb)
-          return 1;
-        if (avail_p)
-          return info->last_set < INSN_CUID (insn);
-        else
-          return info->first_set >= INSN_CUID (insn);
+	if (info->last_bb != current_bb)
+	  return 1;
+	if (avail_p)
+	  return info->last_set < INSN_CUID (insn);
+	else
+	  return info->first_set >= INSN_CUID (insn);
       }
 
     case MEM:
       if (load_killed_in_block_p (current_bb, INSN_CUID (insn),
-                                  x, avail_p))
-        return 0;
+				  x, avail_p))
+	return 0;
       else
-        return oprs_unchanged_p (XEXP (x, 0), insn, avail_p);
+	return oprs_unchanged_p (XEXP (x, 0), insn, avail_p);
 
     case PRE_DEC:
     case PRE_INC:
@@ -1294,20 +1294,20 @@ oprs_unchanged_p (rtx x, rtx insn, int avail_p)
   for (i = GET_RTX_LENGTH (code) - 1, fmt = GET_RTX_FORMAT (code); i >= 0; i--)
     {
       if (fmt[i] == 'e')
-        {
-          /* If we are about to do the last recursive call needed at this
-             level, change it into iteration.  This function is called enough
-             to be worth it.  */
-          if (i == 0)
-            return oprs_unchanged_p (XEXP (x, i), insn, avail_p);
+	{
+	  /* If we are about to do the last recursive call needed at this
+	     level, change it into iteration.  This function is called enough
+	     to be worth it.  */
+	  if (i == 0)
+	    return oprs_unchanged_p (XEXP (x, i), insn, avail_p);
 
-          else if (! oprs_unchanged_p (XEXP (x, i), insn, avail_p))
-            return 0;
-        }
+	  else if (! oprs_unchanged_p (XEXP (x, i), insn, avail_p))
+	    return 0;
+	}
       else if (fmt[i] == 'E')
-        for (j = 0; j < XVECLEN (x, i); j++)
-          if (! oprs_unchanged_p (XVECEXP (x, i, j), insn, avail_p))
-            return 0;
+	for (j = 0; j < XVECLEN (x, i); j++)
+	  if (! oprs_unchanged_p (XVECEXP (x, i, j), insn, avail_p))
+	    return 0;
     }
 
   return 1;
@@ -1330,11 +1330,11 @@ static rtx gcse_mem_operand;
 
 static void
 mems_conflict_for_gcse_p (rtx dest, rtx setter ATTRIBUTE_UNUSED,
-                          void *data ATTRIBUTE_UNUSED)
+			  void *data ATTRIBUTE_UNUSED)
 {
   while (GET_CODE (dest) == SUBREG
-         || GET_CODE (dest) == ZERO_EXTRACT
-         || GET_CODE (dest) == STRICT_LOW_PART)
+	 || GET_CODE (dest) == ZERO_EXTRACT
+	 || GET_CODE (dest) == STRICT_LOW_PART)
     dest = XEXP (dest, 0);
 
   /* If DEST is not a MEM, then it will not conflict with the load.  Note
@@ -1349,12 +1349,12 @@ mems_conflict_for_gcse_p (rtx dest, rtx setter ATTRIBUTE_UNUSED,
   if (expr_equiv_p (dest, gcse_mem_operand) && pre_ldst_mems != NULL)
     {
       if (!find_rtx_in_ldst (dest))
-        gcse_mems_conflict_p = 1;
+	gcse_mems_conflict_p = 1;
       return;
     }
 
   if (true_dependence (dest, GET_MODE (dest), gcse_mem_operand,
-                       rtx_addr_varies_p))
+		       rtx_addr_varies_p))
     gcse_mems_conflict_p = 1;
 }
 
@@ -1380,32 +1380,32 @@ load_killed_in_block_p (basic_block bb, int uid_limit, rtx x, int avail_p)
       rtx setter;
       /* Ignore entries in the list that do not apply.  */
       if ((avail_p
-           && INSN_CUID (XEXP (list_entry, 0)) < uid_limit)
-          || (! avail_p
-              && INSN_CUID (XEXP (list_entry, 0)) > uid_limit))
-        {
-          list_entry = XEXP (list_entry, 1);
-          continue;
-        }
+	   && INSN_CUID (XEXP (list_entry, 0)) < uid_limit)
+	  || (! avail_p
+	      && INSN_CUID (XEXP (list_entry, 0)) > uid_limit))
+	{
+	  list_entry = XEXP (list_entry, 1);
+	  continue;
+	}
 
       setter = XEXP (list_entry, 0);
 
       /* If SETTER is a call everything is clobbered.  Note that calls
-         to pure functions are never put on the list, so we need not
-         worry about them.  */
+	 to pure functions are never put on the list, so we need not
+	 worry about them.  */
       if (CALL_P (setter))
-        return 1;
+	return 1;
 
       /* SETTER must be an INSN of some kind that sets memory.  Call
-         note_stores to examine each hunk of memory that is modified.
+	 note_stores to examine each hunk of memory that is modified.
 
-         The note_stores interface is pretty limited, so we have to
-         communicate via global variables.  Yuk.  */
+	 The note_stores interface is pretty limited, so we have to
+	 communicate via global variables.  Yuk.  */
       gcse_mem_operand = x;
       gcse_mems_conflict_p = 0;
       note_stores (PATTERN (setter), mems_conflict_for_gcse_p, NULL);
       if (gcse_mems_conflict_p)
-        return 1;
+	return 1;
       list_entry = XEXP (list_entry, 1);
     }
   return 0;
@@ -1438,14 +1438,14 @@ oprs_available_p (rtx x, rtx insn)
 
 static unsigned int
 hash_expr (rtx x, enum machine_mode mode, int *do_not_record_p,
-           int hash_table_size)
+	   int hash_table_size)
 {
   unsigned int hash;
 
   *do_not_record_p = 0;
 
   hash = hash_rtx (x, mode, do_not_record_p,
-                   NULL,  /*have_reg_qty=*/false);
+		   NULL,  /*have_reg_qty=*/false);
   return hash % hash_table_size;
 }
 
@@ -1485,7 +1485,7 @@ expr_equiv_p (rtx x, rtx y)
 
 static void
 insert_expr_in_table (rtx x, enum machine_mode mode, rtx insn, int antic_p,
-                      int avail_p, struct hash_table *table)
+		      int avail_p, struct hash_table *table)
 {
   int found, do_not_record_p;
   unsigned int hash;
@@ -1506,7 +1506,7 @@ insert_expr_in_table (rtx x, enum machine_mode mode, rtx insn, int antic_p,
   while (cur_expr && 0 == (found = expr_equiv_p (cur_expr->expr, x)))
     {
       /* If the expression isn't found, save a pointer to the end of
-         the list.  */
+	 the list.  */
       last_expr = cur_expr;
       cur_expr = cur_expr->next_same_hash;
     }
@@ -1516,11 +1516,11 @@ insert_expr_in_table (rtx x, enum machine_mode mode, rtx insn, int antic_p,
       cur_expr = gcse_alloc (sizeof (struct expr));
       bytes_used += sizeof (struct expr);
       if (table->table[hash] == NULL)
-        /* This is the first pattern that hashed to this index.  */
-        table->table[hash] = cur_expr;
+	/* This is the first pattern that hashed to this index.  */
+	table->table[hash] = cur_expr;
       else
-        /* Add EXPR to end of this hash chain.  */
-        last_expr->next_same_hash = cur_expr;
+	/* Add EXPR to end of this hash chain.  */
+	last_expr->next_same_hash = cur_expr;
 
       /* Set the fields of the expr element.  */
       cur_expr->expr = x;
@@ -1536,23 +1536,23 @@ insert_expr_in_table (rtx x, enum machine_mode mode, rtx insn, int antic_p,
       antic_occr = cur_expr->antic_occr;
 
       if (antic_occr && BLOCK_NUM (antic_occr->insn) != BLOCK_NUM (insn))
-        antic_occr = NULL;
+	antic_occr = NULL;
 
       if (antic_occr)
-        /* Found another instance of the expression in the same basic block.
-           Prefer the currently recorded one.  We want the first one in the
-           block and the block is scanned from start to end.  */
-        ; /* nothing to do */
+	/* Found another instance of the expression in the same basic block.
+	   Prefer the currently recorded one.  We want the first one in the
+	   block and the block is scanned from start to end.  */
+	; /* nothing to do */
       else
-        {
-          /* First occurrence of this expression in this basic block.  */
-          antic_occr = gcse_alloc (sizeof (struct occr));
-          bytes_used += sizeof (struct occr);
-          antic_occr->insn = insn;
-          antic_occr->next = cur_expr->antic_occr;
-          antic_occr->deleted_p = 0;
-          cur_expr->antic_occr = antic_occr;
-        }
+	{
+	  /* First occurrence of this expression in this basic block.  */
+	  antic_occr = gcse_alloc (sizeof (struct occr));
+	  bytes_used += sizeof (struct occr);
+	  antic_occr->insn = insn;
+	  antic_occr->next = cur_expr->antic_occr;
+	  antic_occr->deleted_p = 0;
+	  cur_expr->antic_occr = antic_occr;
+	}
     }
 
   if (avail_p)
@@ -1560,23 +1560,23 @@ insert_expr_in_table (rtx x, enum machine_mode mode, rtx insn, int antic_p,
       avail_occr = cur_expr->avail_occr;
 
       if (avail_occr && BLOCK_NUM (avail_occr->insn) == BLOCK_NUM (insn))
-        {
-          /* Found another instance of the expression in the same basic block.
-             Prefer this occurrence to the currently recorded one.  We want
-             the last one in the block and the block is scanned from start
-             to end.  */
-          avail_occr->insn = insn;
-        }
+	{
+	  /* Found another instance of the expression in the same basic block.
+	     Prefer this occurrence to the currently recorded one.  We want
+	     the last one in the block and the block is scanned from start
+	     to end.  */
+	  avail_occr->insn = insn;
+	}
       else
-        {
-          /* First occurrence of this expression in this basic block.  */
-          avail_occr = gcse_alloc (sizeof (struct occr));
-          bytes_used += sizeof (struct occr);
-          avail_occr->insn = insn;
-          avail_occr->next = cur_expr->avail_occr;
-          avail_occr->deleted_p = 0;
-          cur_expr->avail_occr = avail_occr;
-        }
+	{
+	  /* First occurrence of this expression in this basic block.  */
+	  avail_occr = gcse_alloc (sizeof (struct occr));
+	  bytes_used += sizeof (struct occr);
+	  avail_occr->insn = insn;
+	  avail_occr->next = cur_expr->avail_occr;
+	  avail_occr->deleted_p = 0;
+	  cur_expr->avail_occr = avail_occr;
+	}
     }
 }
 
@@ -1603,7 +1603,7 @@ insert_set_in_table (rtx x, rtx insn, struct hash_table *table)
   while (cur_expr && 0 == (found = expr_equiv_p (cur_expr->expr, x)))
     {
       /* If the expression isn't found, save a pointer to the end of
-         the list.  */
+	 the list.  */
       last_expr = cur_expr;
       cur_expr = cur_expr->next_same_hash;
     }
@@ -1613,15 +1613,15 @@ insert_set_in_table (rtx x, rtx insn, struct hash_table *table)
       cur_expr = gcse_alloc (sizeof (struct expr));
       bytes_used += sizeof (struct expr);
       if (table->table[hash] == NULL)
-        /* This is the first pattern that hashed to this index.  */
-        table->table[hash] = cur_expr;
+	/* This is the first pattern that hashed to this index.  */
+	table->table[hash] = cur_expr;
       else
-        /* Add EXPR to end of this hash chain.  */
-        last_expr->next_same_hash = cur_expr;
+	/* Add EXPR to end of this hash chain.  */
+	last_expr->next_same_hash = cur_expr;
 
       /* Set the fields of the expr element.
-         We must copy X because it can be modified when copy propagation is
-         performed on its operands.  */
+	 We must copy X because it can be modified when copy propagation is
+	 performed on its operands.  */
       cur_expr->expr = copy_rtx (x);
       cur_expr->bitmap_index = table->n_elems++;
       cur_expr->next_same_hash = NULL;
@@ -1635,9 +1635,9 @@ insert_set_in_table (rtx x, rtx insn, struct hash_table *table)
   if (cur_occr && BLOCK_NUM (cur_occr->insn) == BLOCK_NUM (insn))
     {
       /* Found another instance of the expression in the same basic block.
-         Prefer this occurrence to the currently recorded one.  We want
-         the last one in the block and the block is scanned from start
-         to end.  */
+	 Prefer this occurrence to the currently recorded one.  We want
+	 the last one in the block and the block is scanned from start
+	 to end.  */
       cur_occr->insn = insn;
     }
   else
@@ -1646,10 +1646,10 @@ insert_set_in_table (rtx x, rtx insn, struct hash_table *table)
       cur_occr = gcse_alloc (sizeof (struct occr));
       bytes_used += sizeof (struct occr);
 
-          cur_occr->insn = insn;
-          cur_occr->next = cur_expr->avail_occr;
-          cur_occr->deleted_p = 0;
-          cur_expr->avail_occr = cur_occr;
+	  cur_occr->insn = insn;
+	  cur_occr->next = cur_expr->avail_occr;
+	  cur_occr->deleted_p = 0;
+	  cur_expr->avail_occr = cur_occr;
     }
 }
 
@@ -1696,65 +1696,65 @@ hash_scan_set (rtx pat, rtx insn, struct hash_table *table)
       rtx tmp;
 
       /* See if a REG_NOTE shows this equivalent to a simpler expression.
-         This allows us to do a single GCSE pass and still eliminate
-         redundant constants, addresses or other expressions that are
-         constructed with multiple instructions.  */
+	 This allows us to do a single GCSE pass and still eliminate
+	 redundant constants, addresses or other expressions that are
+	 constructed with multiple instructions.  */
       note = find_reg_equal_equiv_note (insn);
       if (note != 0
-          && (table->set_p
-              ? gcse_constant_p (XEXP (note, 0))
-              : want_to_gcse_p (XEXP (note, 0))))
-        src = XEXP (note, 0), pat = gen_rtx_SET (VOIDmode, dest, src);
+	  && (table->set_p
+	      ? gcse_constant_p (XEXP (note, 0))
+	      : want_to_gcse_p (XEXP (note, 0))))
+	src = XEXP (note, 0), pat = gen_rtx_SET (VOIDmode, dest, src);
 
       /* Only record sets of pseudo-regs in the hash table.  */
       if (! table->set_p
-          && regno >= FIRST_PSEUDO_REGISTER
-          /* Don't GCSE something if we can't do a reg/reg copy.  */
-          && can_copy_p (GET_MODE (dest))
-          /* GCSE commonly inserts instruction after the insn.  We can't
-             do that easily for EH_REGION notes so disable GCSE on these
-             for now.  */
-          && !find_reg_note (insn, REG_EH_REGION, NULL_RTX)
-          /* Is SET_SRC something we want to gcse?  */
-          && want_to_gcse_p (src)
-          /* Don't CSE a nop.  */
-          && ! set_noop_p (pat)
-          /* Don't GCSE if it has attached REG_EQUIV note.
-             At this point this only function parameters should have
-             REG_EQUIV notes and if the argument slot is used somewhere
-             explicitly, it means address of parameter has been taken,
-             so we should not extend the lifetime of the pseudo.  */
-          && (note == NULL_RTX || ! MEM_P (XEXP (note, 0))))
-        {
-          /* An expression is not anticipatable if its operands are
-             modified before this insn or if this is not the only SET in
-             this insn.  */
-          int antic_p = oprs_anticipatable_p (src, insn) && single_set (insn);
-          /* An expression is not available if its operands are
-             subsequently modified, including this insn.  It's also not
-             available if this is a branch, because we can't insert
-             a set after the branch.  */
-          int avail_p = (oprs_available_p (src, insn)
-                         && ! JUMP_P (insn));
+	  && regno >= FIRST_PSEUDO_REGISTER
+	  /* Don't GCSE something if we can't do a reg/reg copy.  */
+	  && can_copy_p (GET_MODE (dest))
+	  /* GCSE commonly inserts instruction after the insn.  We can't
+	     do that easily for EH_REGION notes so disable GCSE on these
+	     for now.  */
+	  && !find_reg_note (insn, REG_EH_REGION, NULL_RTX)
+	  /* Is SET_SRC something we want to gcse?  */
+	  && want_to_gcse_p (src)
+	  /* Don't CSE a nop.  */
+	  && ! set_noop_p (pat)
+	  /* Don't GCSE if it has attached REG_EQUIV note.
+	     At this point this only function parameters should have
+	     REG_EQUIV notes and if the argument slot is used somewhere
+	     explicitly, it means address of parameter has been taken,
+	     so we should not extend the lifetime of the pseudo.  */
+	  && (note == NULL_RTX || ! MEM_P (XEXP (note, 0))))
+	{
+	  /* An expression is not anticipatable if its operands are
+	     modified before this insn or if this is not the only SET in
+	     this insn.  */
+	  int antic_p = oprs_anticipatable_p (src, insn) && single_set (insn);
+	  /* An expression is not available if its operands are
+	     subsequently modified, including this insn.  It's also not
+	     available if this is a branch, because we can't insert
+	     a set after the branch.  */
+	  int avail_p = (oprs_available_p (src, insn)
+			 && ! JUMP_P (insn));
 
-          insert_expr_in_table (src, GET_MODE (dest), insn, antic_p, avail_p, table);
-        }
+	  insert_expr_in_table (src, GET_MODE (dest), insn, antic_p, avail_p, table);
+	}
 
       /* Record sets for constant/copy propagation.  */
       else if (table->set_p
-               && regno >= FIRST_PSEUDO_REGISTER
-               && ((REG_P (src)
-                    && REGNO (src) >= FIRST_PSEUDO_REGISTER
-                    && can_copy_p (GET_MODE (dest))
-                    && REGNO (src) != regno)
-                   || gcse_constant_p (src))
-               /* A copy is not available if its src or dest is subsequently
-                  modified.  Here we want to search from INSN+1 on, but
-                  oprs_available_p searches from INSN on.  */
-               && (insn == BB_END (BLOCK_FOR_INSN (insn))
-                   || ((tmp = next_nonnote_insn (insn)) != NULL_RTX
-                       && oprs_available_p (pat, tmp))))
-        insert_set_in_table (pat, insn, table);
+	       && regno >= FIRST_PSEUDO_REGISTER
+	       && ((REG_P (src)
+		    && REGNO (src) >= FIRST_PSEUDO_REGISTER
+		    && can_copy_p (GET_MODE (dest))
+		    && REGNO (src) != regno)
+		   || gcse_constant_p (src))
+	       /* A copy is not available if its src or dest is subsequently
+		  modified.  Here we want to search from INSN+1 on, but
+		  oprs_available_p searches from INSN on.  */
+	       && (insn == BB_END (BLOCK_FOR_INSN (insn))
+		   || ((tmp = next_nonnote_insn (insn)) != NULL_RTX
+		       && oprs_available_p (pat, tmp))))
+	insert_set_in_table (pat, insn, table);
     }
   /* In case of store we want to consider the memory value as available in
      the REG stored in that memory. This makes it possible to remove
@@ -1766,51 +1766,51 @@ hash_scan_set (rtx pat, rtx insn, struct hash_table *table)
         /* Do not do this for constant/copy propagation.  */
         if (! table->set_p
             /* Only record sets of pseudo-regs in the hash table.  */
-            && regno >= FIRST_PSEUDO_REGISTER
-           /* Don't GCSE something if we can't do a reg/reg copy.  */
-           && can_copy_p (GET_MODE (src))
-           /* GCSE commonly inserts instruction after the insn.  We can't
-              do that easily for EH_REGION notes so disable GCSE on these
-              for now.  */
-           && ! find_reg_note (insn, REG_EH_REGION, NULL_RTX)
-           /* Is SET_DEST something we want to gcse?  */
-           && want_to_gcse_p (dest)
-           /* Don't CSE a nop.  */
-           && ! set_noop_p (pat)
-           /* Don't GCSE if it has attached REG_EQUIV note.
-              At this point this only function parameters should have
-              REG_EQUIV notes and if the argument slot is used somewhere
-              explicitly, it means address of parameter has been taken,
-              so we should not extend the lifetime of the pseudo.  */
-           && ((note = find_reg_note (insn, REG_EQUIV, NULL_RTX)) == 0
-               || ! MEM_P (XEXP (note, 0))))
+	    && regno >= FIRST_PSEUDO_REGISTER
+	   /* Don't GCSE something if we can't do a reg/reg copy.  */
+	   && can_copy_p (GET_MODE (src))
+	   /* GCSE commonly inserts instruction after the insn.  We can't
+	      do that easily for EH_REGION notes so disable GCSE on these
+	      for now.  */
+	   && ! find_reg_note (insn, REG_EH_REGION, NULL_RTX)
+	   /* Is SET_DEST something we want to gcse?  */
+	   && want_to_gcse_p (dest)
+	   /* Don't CSE a nop.  */
+	   && ! set_noop_p (pat)
+	   /* Don't GCSE if it has attached REG_EQUIV note.
+	      At this point this only function parameters should have
+	      REG_EQUIV notes and if the argument slot is used somewhere
+	      explicitly, it means address of parameter has been taken,
+	      so we should not extend the lifetime of the pseudo.  */
+	   && ((note = find_reg_note (insn, REG_EQUIV, NULL_RTX)) == 0
+	       || ! MEM_P (XEXP (note, 0))))
              {
                /* Stores are never anticipatable.  */
                int antic_p = 0;
-               /* An expression is not available if its operands are
-                  subsequently modified, including this insn.  It's also not
-                  available if this is a branch, because we can't insert
-                  a set after the branch.  */
+	       /* An expression is not available if its operands are
+	          subsequently modified, including this insn.  It's also not
+	          available if this is a branch, because we can't insert
+	          a set after the branch.  */
                int avail_p = oprs_available_p (dest, insn)
-                             && ! JUMP_P (insn);
+			     && ! JUMP_P (insn);
 
-               /* Record the memory expression (DEST) in the hash table.  */
-               insert_expr_in_table (dest, GET_MODE (dest), insn,
-                                     antic_p, avail_p, table);
+	       /* Record the memory expression (DEST) in the hash table.  */
+	       insert_expr_in_table (dest, GET_MODE (dest), insn,
+				     antic_p, avail_p, table);
              }
       }
 }
 
 static void
 hash_scan_clobber (rtx x ATTRIBUTE_UNUSED, rtx insn ATTRIBUTE_UNUSED,
-                   struct hash_table *table ATTRIBUTE_UNUSED)
+		   struct hash_table *table ATTRIBUTE_UNUSED)
 {
   /* Currently nothing to do.  */
 }
 
 static void
 hash_scan_call (rtx x ATTRIBUTE_UNUSED, rtx insn ATTRIBUTE_UNUSED,
-                struct hash_table *table ATTRIBUTE_UNUSED)
+		struct hash_table *table ATTRIBUTE_UNUSED)
 {
   /* Currently nothing to do.  */
 }
@@ -1845,14 +1845,14 @@ hash_scan_insn (rtx insn, struct hash_table *table, int in_libcall_block)
   else if (GET_CODE (pat) == PARALLEL)
     for (i = 0; i < XVECLEN (pat, 0); i++)
       {
-        rtx x = XVECEXP (pat, 0, i);
+	rtx x = XVECEXP (pat, 0, i);
 
-        if (GET_CODE (x) == SET)
-          hash_scan_set (x, insn, table);
-        else if (GET_CODE (x) == CLOBBER)
-          hash_scan_clobber (x, insn, table);
-        else if (GET_CODE (x) == CALL)
-          hash_scan_call (x, insn, table);
+	if (GET_CODE (x) == SET)
+	  hash_scan_set (x, insn, table);
+	else if (GET_CODE (x) == CLOBBER)
+	  hash_scan_clobber (x, insn, table);
+	else if (GET_CODE (x) == CALL)
+	  hash_scan_call (x, insn, table);
       }
 
   else if (GET_CODE (pat) == CLOBBER)
@@ -1876,21 +1876,21 @@ dump_hash_table (FILE *file, const char *name, struct hash_table *table)
   for (i = 0; i < (int) table->size; i++)
     for (expr = table->table[i]; expr != NULL; expr = expr->next_same_hash)
       {
-        flat_table[expr->bitmap_index] = expr;
-        hash_val[expr->bitmap_index] = i;
+	flat_table[expr->bitmap_index] = expr;
+	hash_val[expr->bitmap_index] = i;
       }
 
   fprintf (file, "%s hash table (%d buckets, %d entries)\n",
-           name, table->size, table->n_elems);
+	   name, table->size, table->n_elems);
 
   for (i = 0; i < (int) table->n_elems; i++)
     if (flat_table[i] != 0)
       {
-        expr = flat_table[i];
-        fprintf (file, "Index %d (hash value %d)\n  ",
-                 expr->bitmap_index, hash_val[i]);
-        print_rtl (file, expr->expr);
-        fprintf (file, "\n");
+	expr = flat_table[i];
+	fprintf (file, "Index %d (hash value %d)\n  ",
+		 expr->bitmap_index, hash_val[i]);
+	print_rtl (file, expr->expr);
+	fprintf (file, "\n");
       }
 
   fprintf (file, "\n");
@@ -1935,7 +1935,7 @@ record_last_reg_set_info (rtx insn, int regno)
 
 static void
 canon_list_insert (rtx dest ATTRIBUTE_UNUSED, rtx unused1 ATTRIBUTE_UNUSED,
-                   void * v_insn)
+		   void * v_insn)
 {
   rtx dest_addr, insn;
   int bb;
@@ -1980,10 +1980,10 @@ record_last_mem_set_info (rtx insn)
   if (CALL_P (insn))
     {
       /* Note that traversals of this loop (other than for free-ing)
-         will break after encountering a CALL_INSN.  So, there's no
-         need to insert a pair of items, as canon_list_insert does.  */
+	 will break after encountering a CALL_INSN.  So, there's no
+	 need to insert a pair of items, as canon_list_insert does.  */
       canon_modify_mem_list[bb] =
-        alloc_INSN_LIST (insn, canon_modify_mem_list[bb]);
+	alloc_INSN_LIST (insn, canon_modify_mem_list[bb]);
       bitmap_set_bit (blocks_with_calls, bb);
     }
   else
@@ -2005,8 +2005,8 @@ record_last_set_info (rtx dest, rtx setter ATTRIBUTE_UNUSED, void *data)
   if (REG_P (dest))
     record_last_reg_set_info (last_set_insn, REGNO (dest));
   else if (MEM_P (dest)
-           /* Ignore pushes, they clobber nothing.  */
-           && ! push_operand (dest, GET_MODE (dest)))
+	   /* Ignore pushes, they clobber nothing.  */
+	   && ! push_operand (dest, GET_MODE (dest)))
     record_last_mem_set_info (last_set_insn);
 }
 
@@ -2052,46 +2052,46 @@ compute_hash_table_work (struct hash_table *table)
       int in_libcall_block;
 
       /* First pass over the instructions records information used to
-         determine when registers and memory are first and last set.
-         ??? hard-reg reg_set_in_block computation
-         could be moved to compute_sets since they currently don't change.  */
+	 determine when registers and memory are first and last set.
+	 ??? hard-reg reg_set_in_block computation
+	 could be moved to compute_sets since they currently don't change.  */
 
       FOR_BB_INSNS (current_bb, insn)
-        {
-          if (! INSN_P (insn))
-            continue;
+	{
+	  if (! INSN_P (insn))
+	    continue;
 
-          if (CALL_P (insn))
-            {
-              for (regno = 0; regno < FIRST_PSEUDO_REGISTER; regno++)
-                if (TEST_HARD_REG_BIT (regs_invalidated_by_call, regno))
-                  record_last_reg_set_info (insn, regno);
+	  if (CALL_P (insn))
+	    {
+	      for (regno = 0; regno < FIRST_PSEUDO_REGISTER; regno++)
+		if (TEST_HARD_REG_BIT (regs_invalidated_by_call, regno))
+		  record_last_reg_set_info (insn, regno);
 
-              mark_call (insn);
-            }
+	      mark_call (insn);
+	    }
 
-          note_stores (PATTERN (insn), record_last_set_info, insn);
-        }
+	  note_stores (PATTERN (insn), record_last_set_info, insn);
+	}
 
       /* Insert implicit sets in the hash table.  */
       if (table->set_p
-          && implicit_sets[current_bb->index] != NULL_RTX)
-        hash_scan_set (implicit_sets[current_bb->index],
-                       BB_HEAD (current_bb), table);
+	  && implicit_sets[current_bb->index] != NULL_RTX)
+	hash_scan_set (implicit_sets[current_bb->index],
+		       BB_HEAD (current_bb), table);
 
       /* The next pass builds the hash table.  */
       in_libcall_block = 0;
       FOR_BB_INSNS (current_bb, insn)
-        if (INSN_P (insn))
-          {
-            if (find_reg_note (insn, REG_LIBCALL, NULL_RTX))
-              in_libcall_block = 1;
-            else if (table->set_p && find_reg_note (insn, REG_RETVAL, NULL_RTX))
-              in_libcall_block = 0;
-            hash_scan_insn (insn, table, in_libcall_block);
-            if (!table->set_p && find_reg_note (insn, REG_RETVAL, NULL_RTX))
-              in_libcall_block = 0;
-          }
+	if (INSN_P (insn))
+	  {
+	    if (find_reg_note (insn, REG_LIBCALL, NULL_RTX))
+	      in_libcall_block = 1;
+	    else if (table->set_p && find_reg_note (insn, REG_RETVAL, NULL_RTX))
+	      in_libcall_block = 0;
+	    hash_scan_insn (insn, table, in_libcall_block);
+	    if (!table->set_p && find_reg_note (insn, REG_RETVAL, NULL_RTX))
+	      in_libcall_block = 0;
+	  }
     }
 
   free (reg_avail_info);
@@ -2186,9 +2186,9 @@ free_insn_expr_list_list (rtx *listp)
     {
       next = XEXP (list, 1);
       if (GET_CODE (list) == EXPR_LIST)
-        free_EXPR_LIST_node (list);
+	free_EXPR_LIST_node (list);
       else
-        free_INSN_LIST_node (list);
+	free_INSN_LIST_node (list);
     }
 
   *listp = NULL;
@@ -2268,10 +2268,10 @@ oprs_not_set_p (rtx x, rtx insn)
 
     case MEM:
       if (load_killed_in_block_p (BLOCK_FOR_INSN (insn),
-                                  INSN_CUID (insn), x, 0))
-        return 0;
+				  INSN_CUID (insn), x, 0))
+	return 0;
       else
-        return oprs_not_set_p (XEXP (x, 0), insn);
+	return oprs_not_set_p (XEXP (x, 0), insn);
 
     case REG:
       return ! REGNO_REG_SET_P (reg_set_bitmap, REGNO (x));
@@ -2283,20 +2283,20 @@ oprs_not_set_p (rtx x, rtx insn)
   for (i = GET_RTX_LENGTH (code) - 1, fmt = GET_RTX_FORMAT (code); i >= 0; i--)
     {
       if (fmt[i] == 'e')
-        {
-          /* If we are about to do the last recursive call
-             needed at this level, change it into iteration.
-             This function is called enough to be worth it.  */
-          if (i == 0)
-            return oprs_not_set_p (XEXP (x, i), insn);
+	{
+	  /* If we are about to do the last recursive call
+	     needed at this level, change it into iteration.
+	     This function is called enough to be worth it.  */
+	  if (i == 0)
+	    return oprs_not_set_p (XEXP (x, i), insn);
 
-          if (! oprs_not_set_p (XEXP (x, i), insn))
-            return 0;
-        }
+	  if (! oprs_not_set_p (XEXP (x, i), insn))
+	    return 0;
+	}
       else if (fmt[i] == 'E')
-        for (j = 0; j < XVECLEN (x, i); j++)
-          if (! oprs_not_set_p (XVECEXP (x, i, j), insn))
-            return 0;
+	for (j = 0; j < XVECLEN (x, i); j++)
+	  if (! oprs_not_set_p (XVECEXP (x, i, j), insn))
+	    return 0;
     }
 
   return 1;
@@ -2319,8 +2319,8 @@ mark_set (rtx pat, rtx insn)
   rtx dest = SET_DEST (pat);
 
   while (GET_CODE (dest) == SUBREG
-         || GET_CODE (dest) == ZERO_EXTRACT
-         || GET_CODE (dest) == STRICT_LOW_PART)
+	 || GET_CODE (dest) == ZERO_EXTRACT
+	 || GET_CODE (dest) == STRICT_LOW_PART)
     dest = XEXP (dest, 0);
 
   if (REG_P (dest))
@@ -2362,14 +2362,14 @@ mark_oprs_set (rtx insn)
   else if (GET_CODE (pat) == PARALLEL)
     for (i = 0; i < XVECLEN (pat, 0); i++)
       {
-        rtx x = XVECEXP (pat, 0, i);
+	rtx x = XVECEXP (pat, 0, i);
 
-        if (GET_CODE (x) == SET)
-          mark_set (x, insn);
-        else if (GET_CODE (x) == CLOBBER)
-          mark_clobber (x, insn);
-        else if (GET_CODE (x) == CALL)
-          mark_call (insn);
+	if (GET_CODE (x) == SET)
+	  mark_set (x, insn);
+	else if (GET_CODE (x) == CLOBBER)
+	  mark_clobber (x, insn);
+	else if (GET_CODE (x) == CALL)
+	  mark_call (insn);
       }
 
   else if (GET_CODE (pat) == CLOBBER)
@@ -2440,84 +2440,84 @@ compute_transp (rtx x, int indx, sbitmap *bmap, int set_p)
     {
     case REG:
       if (set_p)
-        {
-          if (REGNO (x) < FIRST_PSEUDO_REGISTER)
-            {
-              FOR_EACH_BB (bb)
-                if (TEST_BIT (reg_set_in_block[bb->index], REGNO (x)))
-                  SET_BIT (bmap[bb->index], indx);
-            }
-          else
-            {
-              for (r = reg_set_table[REGNO (x)]; r != NULL; r = r->next)
-                SET_BIT (bmap[r->bb_index], indx);
-            }
-        }
+	{
+	  if (REGNO (x) < FIRST_PSEUDO_REGISTER)
+	    {
+	      FOR_EACH_BB (bb)
+		if (TEST_BIT (reg_set_in_block[bb->index], REGNO (x)))
+		  SET_BIT (bmap[bb->index], indx);
+	    }
+	  else
+	    {
+	      for (r = reg_set_table[REGNO (x)]; r != NULL; r = r->next)
+		SET_BIT (bmap[r->bb_index], indx);
+	    }
+	}
       else
-        {
-          if (REGNO (x) < FIRST_PSEUDO_REGISTER)
-            {
-              FOR_EACH_BB (bb)
-                if (TEST_BIT (reg_set_in_block[bb->index], REGNO (x)))
-                  RESET_BIT (bmap[bb->index], indx);
-            }
-          else
-            {
-              for (r = reg_set_table[REGNO (x)]; r != NULL; r = r->next)
-                RESET_BIT (bmap[r->bb_index], indx);
-            }
-        }
+	{
+	  if (REGNO (x) < FIRST_PSEUDO_REGISTER)
+	    {
+	      FOR_EACH_BB (bb)
+		if (TEST_BIT (reg_set_in_block[bb->index], REGNO (x)))
+		  RESET_BIT (bmap[bb->index], indx);
+	    }
+	  else
+	    {
+	      for (r = reg_set_table[REGNO (x)]; r != NULL; r = r->next)
+		RESET_BIT (bmap[r->bb_index], indx);
+	    }
+	}
 
       return;
 
     case MEM:
       if (! MEM_READONLY_P (x))
-        {
-          bitmap_iterator bi;
-          unsigned bb_index;
+	{
+	  bitmap_iterator bi;
+	  unsigned bb_index;
 
-          /* First handle all the blocks with calls.  We don't need to
-             do any list walking for them.  */
-          EXECUTE_IF_SET_IN_BITMAP (blocks_with_calls, 0, bb_index, bi)
-            {
-              if (set_p)
-                SET_BIT (bmap[bb_index], indx);
-              else
-                RESET_BIT (bmap[bb_index], indx);
-            }
+	  /* First handle all the blocks with calls.  We don't need to
+	     do any list walking for them.  */
+	  EXECUTE_IF_SET_IN_BITMAP (blocks_with_calls, 0, bb_index, bi)
+	    {
+	      if (set_p)
+		SET_BIT (bmap[bb_index], indx);
+	      else
+		RESET_BIT (bmap[bb_index], indx);
+	    }
 
-            /* Now iterate over the blocks which have memory modifications
-               but which do not have any calls.  */
-            EXECUTE_IF_AND_COMPL_IN_BITMAP (modify_mem_list_set, 
-                                            blocks_with_calls,
-                                            0, bb_index, bi)
-              {
-                rtx list_entry = canon_modify_mem_list[bb_index];
+	    /* Now iterate over the blocks which have memory modifications
+	       but which do not have any calls.  */
+	    EXECUTE_IF_AND_COMPL_IN_BITMAP (modify_mem_list_set, 
+					    blocks_with_calls,
+					    0, bb_index, bi)
+	      {
+		rtx list_entry = canon_modify_mem_list[bb_index];
 
-                while (list_entry)
-                  {
-                    rtx dest, dest_addr;
+		while (list_entry)
+		  {
+		    rtx dest, dest_addr;
 
-                    /* LIST_ENTRY must be an INSN of some kind that sets memory.
-                       Examine each hunk of memory that is modified.  */
+		    /* LIST_ENTRY must be an INSN of some kind that sets memory.
+		       Examine each hunk of memory that is modified.  */
 
-                    dest = XEXP (list_entry, 0);
-                    list_entry = XEXP (list_entry, 1);
-                    dest_addr = XEXP (list_entry, 0);
+		    dest = XEXP (list_entry, 0);
+		    list_entry = XEXP (list_entry, 1);
+		    dest_addr = XEXP (list_entry, 0);
 
-                    if (canon_true_dependence (dest, GET_MODE (dest), dest_addr,
-                                               x, rtx_addr_varies_p))
-                      {
-                        if (set_p)
-                          SET_BIT (bmap[bb_index], indx);
-                        else
-                          RESET_BIT (bmap[bb_index], indx);
-                        break;
-                      }
-                    list_entry = XEXP (list_entry, 1);
-                  }
-              }
-        }
+		    if (canon_true_dependence (dest, GET_MODE (dest), dest_addr,
+					       x, rtx_addr_varies_p))
+		      {
+			if (set_p)
+			  SET_BIT (bmap[bb_index], indx);
+			else
+			  RESET_BIT (bmap[bb_index], indx);
+			break;
+		      }
+		    list_entry = XEXP (list_entry, 1);
+	          }
+	      }
+	}
 
       x = XEXP (x, 0);
       goto repeat;
@@ -2541,21 +2541,21 @@ compute_transp (rtx x, int indx, sbitmap *bmap, int set_p)
   for (i = GET_RTX_LENGTH (code) - 1, fmt = GET_RTX_FORMAT (code); i >= 0; i--)
     {
       if (fmt[i] == 'e')
-        {
-          /* If we are about to do the last recursive call
-             needed at this level, change it into iteration.
-             This function is called enough to be worth it.  */
-          if (i == 0)
-            {
-              x = XEXP (x, i);
-              goto repeat;
-            }
+	{
+	  /* If we are about to do the last recursive call
+	     needed at this level, change it into iteration.
+	     This function is called enough to be worth it.  */
+	  if (i == 0)
+	    {
+	      x = XEXP (x, i);
+	      goto repeat;
+	    }
 
-          compute_transp (XEXP (x, i), indx, bmap, set_p);
-        }
+	  compute_transp (XEXP (x, i), indx, bmap, set_p);
+	}
       else if (fmt[i] == 'E')
-        for (j = 0; j < XVECLEN (x, i); j++)
-          compute_transp (XVECEXP (x, i, j), indx, bmap, set_p);
+	for (j = 0; j < XVECLEN (x, i); j++)
+	  compute_transp (XVECEXP (x, i, j), indx, bmap, set_p);
     }
 }
 
@@ -2567,7 +2567,7 @@ compute_cprop_data (void)
 {
   compute_local_properties (cprop_absaltered, cprop_pavloc, NULL, &set_hash_table);
   compute_available (cprop_pavloc, cprop_absaltered,
-                     cprop_avout, cprop_avin);
+		     cprop_avout, cprop_avin);
 }
 
 /* Copy/constant propagation.  */
@@ -2607,7 +2607,7 @@ find_used_regs (rtx *xptr, void *data ATTRIBUTE_UNUSED)
   if (REG_P (x))
     {
       if (reg_use_count == MAX_USES)
-        return;
+	return;
 
       reg_use_table[reg_use_count].reg_rtx = x;
       reg_use_count++;
@@ -2618,21 +2618,21 @@ find_used_regs (rtx *xptr, void *data ATTRIBUTE_UNUSED)
   for (i = GET_RTX_LENGTH (code) - 1, fmt = GET_RTX_FORMAT (code); i >= 0; i--)
     {
       if (fmt[i] == 'e')
-        {
-          /* If we are about to do the last recursive call
-             needed at this level, change it into iteration.
-             This function is called enough to be worth it.  */
-          if (i == 0)
-            {
-              x = XEXP (x, 0);
-              goto repeat;
-            }
+	{
+	  /* If we are about to do the last recursive call
+	     needed at this level, change it into iteration.
+	     This function is called enough to be worth it.  */
+	  if (i == 0)
+	    {
+	      x = XEXP (x, 0);
+	      goto repeat;
+	    }
 
-          find_used_regs (&XEXP (x, i), data);
-        }
+	  find_used_regs (&XEXP (x, i), data);
+	}
       else if (fmt[i] == 'E')
-        for (j = 0; j < XVECLEN (x, i); j++)
-          find_used_regs (&XVECEXP (x, i, j), data);
+	for (j = 0; j < XVECLEN (x, i); j++)
+	  find_used_regs (&XVECEXP (x, i, j), data);
     }
 }
 
@@ -2657,7 +2657,7 @@ try_replace_reg (rtx from, rtx to, rtx insn)
       src = simplify_rtx (SET_SRC (set));
 
       if (src)
-        validate_change (insn, &SET_SRC (set), src, 0);
+	validate_change (insn, &SET_SRC (set), src, 0);
     }
 
   /* If there is already a REG_EQUAL note, update the expression in it
@@ -2668,21 +2668,21 @@ try_replace_reg (rtx from, rtx to, rtx insn)
   if (!success && set && reg_mentioned_p (from, SET_SRC (set)))
     {
       /* If above failed and this is a single set, try to simplify the source of
-         the set given our substitution.  We could perhaps try this for multiple
-         SETs, but it probably won't buy us anything.  */
+	 the set given our substitution.  We could perhaps try this for multiple
+	 SETs, but it probably won't buy us anything.  */
       src = simplify_replace_rtx (SET_SRC (set), from, to);
 
       if (!rtx_equal_p (src, SET_SRC (set))
-          && validate_change (insn, &SET_SRC (set), src, 0))
-        success = 1;
+	  && validate_change (insn, &SET_SRC (set), src, 0))
+	success = 1;
 
       /* If we've failed to do replacement, have a single SET, don't already
-         have a note, and have no special SET, add a REG_EQUAL note to not
-         lose information.  */
+	 have a note, and have no special SET, add a REG_EQUAL note to not
+	 lose information.  */
       if (!success && note == 0 && set != 0
-          && GET_CODE (SET_DEST (set)) != ZERO_EXTRACT
-          && GET_CODE (SET_DEST (set)) != STRICT_LOW_PART)
-        note = set_unique_reg_note (insn, REG_EQUAL, copy_rtx (src));
+	  && GET_CODE (SET_DEST (set)) != ZERO_EXTRACT
+	  && GET_CODE (SET_DEST (set)) != STRICT_LOW_PART)
+	note = set_unique_reg_note (insn, REG_EQUAL, copy_rtx (src));
     }
 
   /* REG_EQUAL may get simplified into register.
@@ -2720,40 +2720,40 @@ find_avail_set (int regno, rtx insn)
       struct expr *set = lookup_set (regno, &set_hash_table);
 
       /* Find a set that is available at the start of the block
-         which contains INSN.  */
+	 which contains INSN.  */
       while (set)
-        {
-          if (TEST_BIT (cprop_avin[BLOCK_NUM (insn)], set->bitmap_index))
-            break;
-          set = next_set (regno, set);
-        }
+	{
+	  if (TEST_BIT (cprop_avin[BLOCK_NUM (insn)], set->bitmap_index))
+	    break;
+	  set = next_set (regno, set);
+	}
 
       /* If no available set was found we've reached the end of the
-         (possibly empty) copy chain.  */
+	 (possibly empty) copy chain.  */
       if (set == 0)
-        break;
+	break;
 
       gcc_assert (GET_CODE (set->expr) == SET);
 
       src = SET_SRC (set->expr);
 
       /* We know the set is available.
-         Now check that SRC is ANTLOC (i.e. none of the source operands
-         have changed since the start of the block).
+	 Now check that SRC is ANTLOC (i.e. none of the source operands
+	 have changed since the start of the block).
 
          If the source operand changed, we may still use it for the next
          iteration of this loop, but we may not use it for substitutions.  */
 
       if (gcse_constant_p (src) || oprs_not_set_p (src, insn))
-        set1 = set;
+	set1 = set;
 
       /* If the source of the set is anything except a register, then
-         we have reached the end of the copy chain.  */
+	 we have reached the end of the copy chain.  */
       if (! REG_P (src))
-        break;
+	break;
 
       /* Follow the copy chain, i.e. start another iteration of the loop
-         and see if we have an available copy into SRC.  */
+	 and see if we have an available copy into SRC.  */
       regno = REGNO (src);
     }
 
@@ -2780,7 +2780,7 @@ cprop_jump (basic_block bb, rtx setcc, rtx jump, rtx from, rtx src)
     {
       note_src = XEXP (note, 0);
       if (GET_CODE (note_src) == EXPR_LIST)
-        note_src = NULL_RTX;
+	note_src = NULL_RTX;
     }
   else note_src = NULL_RTX;
 
@@ -2797,9 +2797,9 @@ cprop_jump (basic_block bb, rtx setcc, rtx jump, rtx from, rtx src)
       rtx setcc_set = single_set (setcc);
       rtx setcc_note = find_reg_equal_equiv_note (setcc);
       setcc_src = (setcc_note && GET_CODE (XEXP (setcc_note, 0)) != EXPR_LIST)
-                ? XEXP (setcc_note, 0) : SET_SRC (setcc_set);
+		? XEXP (setcc_note, 0) : SET_SRC (setcc_set);
       set_src = simplify_replace_rtx (set_src, SET_DEST (setcc_set),
-                                      setcc_src);
+				      setcc_src);
     }
   else
     setcc = NULL_RTX;
@@ -2818,32 +2818,32 @@ cprop_jump (basic_block bb, rtx setcc, rtx jump, rtx from, rtx src)
       /* Ensure the value computed inside the jump insn to be equivalent
          to one computed by setcc.  */
       if (setcc && modified_in_p (new, setcc))
-        return 0;
+	return 0;
       if (! validate_change (jump, &SET_SRC (set), new, 0))
-        {
-          /* When (some) constants are not valid in a comparison, and there
-             are two registers to be replaced by constants before the entire
-             comparison can be folded into a constant, we need to keep
-             intermediate information in REG_EQUAL notes.  For targets with
-             separate compare insns, such notes are added by try_replace_reg.
-             When we have a combined compare-and-branch instruction, however,
-             we need to attach a note to the branch itself to make this
-             optimization work.  */
+	{
+	  /* When (some) constants are not valid in a comparison, and there
+	     are two registers to be replaced by constants before the entire
+	     comparison can be folded into a constant, we need to keep
+	     intermediate information in REG_EQUAL notes.  For targets with
+	     separate compare insns, such notes are added by try_replace_reg.
+	     When we have a combined compare-and-branch instruction, however,
+	     we need to attach a note to the branch itself to make this
+	     optimization work.  */
 
-          if (!rtx_equal_p (new, note_src))
-            set_unique_reg_note (jump, REG_EQUAL, copy_rtx (new));
-          return 0;
-        }
+	  if (!rtx_equal_p (new, note_src))
+	    set_unique_reg_note (jump, REG_EQUAL, copy_rtx (new));
+	  return 0;
+	}
 
       /* Remove REG_EQUAL note after simplification.  */
       if (note_src)
-        remove_note (jump, note);
+	remove_note (jump, note);
 
       /* If this has turned into an unconditional jump,
-         then put a barrier after it so that the unreachable
-         code will be deleted.  */
+	 then put a barrier after it so that the unreachable
+	 code will be deleted.  */
       if (GET_CODE (SET_SRC (set)) == LABEL_REF)
-        emit_barrier_after (jump);
+	emit_barrier_after (jump);
      }
 
 #ifdef HAVE_cc0
@@ -2858,8 +2858,8 @@ cprop_jump (basic_block bb, rtx setcc, rtx jump, rtx from, rtx src)
   if (dump_file != NULL)
     {
       fprintf (dump_file,
-               "GLOBAL CONST-PROP: Replacing reg %d in jump_insn %d with constant ",
-               REGNO (from), INSN_UID (jump));
+	       "GLOBAL CONST-PROP: Replacing reg %d in jump_insn %d with constant ",
+	       REGNO (from), INSN_UID (jump));
       print_rtl (dump_file, src);
       fprintf (dump_file, "\n");
     }
@@ -2882,8 +2882,8 @@ constprop_register (rtx insn, rtx from, rtx to, bool alter_jumps)
     {
       rtx dest = SET_DEST (sset);
       if ((REG_P (dest) || CC0_P (dest))
-          && cprop_jump (BLOCK_FOR_INSN (insn), insn, NEXT_INSN (insn), from, to))
-        return 1;
+	  && cprop_jump (BLOCK_FOR_INSN (insn), insn, NEXT_INSN (insn), from, to))
+	return 1;
     }
 
   /* Handle normal insns next.  */
@@ -2932,20 +2932,20 @@ cprop_insn (rtx insn, int alter_jumps)
       struct expr *set;
 
       /* Ignore registers created by GCSE.
-         We do this because ...  */
+	 We do this because ...  */
       if (regno >= max_gcse_regno)
-        continue;
+	continue;
 
       /* If the register has already been set in this block, there's
-         nothing we can do.  */
+	 nothing we can do.  */
       if (! oprs_not_set_p (reg_used->reg_rtx, insn))
-        continue;
+	continue;
 
       /* Find an assignment that sets reg_used and is available
-         at the start of the block.  */
+	 at the start of the block.  */
       set = find_avail_set (regno, insn);
       if (! set)
-        continue;
+	continue;
 
       pat = set->expr;
       /* ??? We might be able to handle PARALLELs.  Later.  */
@@ -2955,44 +2955,44 @@ cprop_insn (rtx insn, int alter_jumps)
 
       /* Constant propagation.  */
       if (gcse_constant_p (src))
-        {
+	{
           if (constprop_register (insn, reg_used->reg_rtx, src, alter_jumps))
-            {
-              changed = 1;
-              global_const_prop_count++;
-              if (dump_file != NULL)
-                {
-                  fprintf (dump_file, "GLOBAL CONST-PROP: Replacing reg %d in ", regno);
-                  fprintf (dump_file, "insn %d with constant ", INSN_UID (insn));
-                  print_rtl (dump_file, src);
-                  fprintf (dump_file, "\n");
-                }
-              if (INSN_DELETED_P (insn))
-                return 1;
-            }
-        }
+	    {
+	      changed = 1;
+	      global_const_prop_count++;
+	      if (dump_file != NULL)
+		{
+		  fprintf (dump_file, "GLOBAL CONST-PROP: Replacing reg %d in ", regno);
+		  fprintf (dump_file, "insn %d with constant ", INSN_UID (insn));
+		  print_rtl (dump_file, src);
+		  fprintf (dump_file, "\n");
+		}
+	      if (INSN_DELETED_P (insn))
+		return 1;
+	    }
+	}
       else if (REG_P (src)
-               && REGNO (src) >= FIRST_PSEUDO_REGISTER
-               && REGNO (src) != regno)
-        {
-          if (try_replace_reg (reg_used->reg_rtx, src, insn))
-            {
-              changed = 1;
-              global_copy_prop_count++;
-              if (dump_file != NULL)
-                {
-                  fprintf (dump_file, "GLOBAL COPY-PROP: Replacing reg %d in insn %d",
-                           regno, INSN_UID (insn));
-                  fprintf (dump_file, " with reg %d\n", REGNO (src));
-                }
+	       && REGNO (src) >= FIRST_PSEUDO_REGISTER
+	       && REGNO (src) != regno)
+	{
+	  if (try_replace_reg (reg_used->reg_rtx, src, insn))
+	    {
+	      changed = 1;
+	      global_copy_prop_count++;
+	      if (dump_file != NULL)
+		{
+		  fprintf (dump_file, "GLOBAL COPY-PROP: Replacing reg %d in insn %d",
+			   regno, INSN_UID (insn));
+		  fprintf (dump_file, " with reg %d\n", REGNO (src));
+		}
 
-              /* The original insn setting reg_used may or may not now be
-                 deletable.  We leave the deletion to flow.  */
-              /* FIXME: If it turns out that the insn isn't deletable,
-                 then we may have unnecessarily extended register lifetimes
-                 and made things worse.  */
-            }
-        }
+	      /* The original insn setting reg_used may or may not now be
+		 deletable.  We leave the deletion to flow.  */
+	      /* FIXME: If it turns out that the insn isn't deletable,
+		 then we may have unnecessarily extended register lifetimes
+		 and made things worse.  */
+	    }
+	}
     }
 
   return changed;
@@ -3025,15 +3025,15 @@ local_cprop_find_used_regs (rtx *xptr, void *data)
     case PRE_MODIFY:
     case POST_MODIFY:
       /* Can only legitimately appear this early in the context of
-         stack pushes for function arguments, but handle all of the
-         codes nonetheless.  */
+	 stack pushes for function arguments, but handle all of the
+	 codes nonetheless.  */
       return;
 
     case SUBREG:
       /* Setting a subreg of a register larger than word_mode leaves
-         the non-written words unchanged.  */
+	 the non-written words unchanged.  */
       if (GET_MODE_BITSIZE (GET_MODE (SUBREG_REG (x))) > BITS_PER_WORD)
-        return;
+	return;
       break;
 
     default:
@@ -3056,71 +3056,71 @@ do_local_cprop (rtx x, rtx insn, bool alter_jumps, rtx *libcall_sp)
   if (REG_P (x)
       && (REGNO (x) >= FIRST_PSEUDO_REGISTER
           || (GET_CODE (PATTERN (insn)) != USE
-              && asm_noperands (PATTERN (insn)) < 0)))
+	      && asm_noperands (PATTERN (insn)) < 0)))
     {
       cselib_val *val = cselib_lookup (x, GET_MODE (x), 0);
       struct elt_loc_list *l;
 
       if (!val)
-        return false;
+	return false;
       for (l = val->locs; l; l = l->next)
-        {
-          rtx this_rtx = l->loc;
-          rtx note;
+	{
+	  rtx this_rtx = l->loc;
+	  rtx note;
 
-          /* Don't CSE non-constant values out of libcall blocks.  */
-          if (l->in_libcall && ! CONSTANT_P (this_rtx))
-            continue;
+	  /* Don't CSE non-constant values out of libcall blocks.  */
+	  if (l->in_libcall && ! CONSTANT_P (this_rtx))
+	    continue;
 
-          if (gcse_constant_p (this_rtx))
-            newcnst = this_rtx;
-          if (REG_P (this_rtx) && REGNO (this_rtx) >= FIRST_PSEUDO_REGISTER
-              /* Don't copy propagate if it has attached REG_EQUIV note.
-                 At this point this only function parameters should have
-                 REG_EQUIV notes and if the argument slot is used somewhere
-                 explicitly, it means address of parameter has been taken,
-                 so we should not extend the lifetime of the pseudo.  */
-              && (!(note = find_reg_note (l->setting_insn, REG_EQUIV, NULL_RTX))
-                  || ! MEM_P (XEXP (note, 0))))
-            newreg = this_rtx;
-        }
+	  if (gcse_constant_p (this_rtx))
+	    newcnst = this_rtx;
+	  if (REG_P (this_rtx) && REGNO (this_rtx) >= FIRST_PSEUDO_REGISTER
+	      /* Don't copy propagate if it has attached REG_EQUIV note.
+		 At this point this only function parameters should have
+		 REG_EQUIV notes and if the argument slot is used somewhere
+		 explicitly, it means address of parameter has been taken,
+		 so we should not extend the lifetime of the pseudo.  */
+	      && (!(note = find_reg_note (l->setting_insn, REG_EQUIV, NULL_RTX))
+		  || ! MEM_P (XEXP (note, 0))))
+	    newreg = this_rtx;
+	}
       if (newcnst && constprop_register (insn, x, newcnst, alter_jumps))
-        {
-          /* If we find a case where we can't fix the retval REG_EQUAL notes
-             match the new register, we either have to abandon this replacement
-             or fix delete_trivially_dead_insns to preserve the setting insn,
-             or make it delete the REG_EUAQL note, and fix up all passes that
-             require the REG_EQUAL note there.  */
-          bool adjusted;
+	{
+	  /* If we find a case where we can't fix the retval REG_EQUAL notes
+	     match the new register, we either have to abandon this replacement
+	     or fix delete_trivially_dead_insns to preserve the setting insn,
+	     or make it delete the REG_EUAQL note, and fix up all passes that
+	     require the REG_EQUAL note there.  */
+	  bool adjusted;
 
-          adjusted = adjust_libcall_notes (x, newcnst, insn, libcall_sp);
-          gcc_assert (adjusted);
-          
-          if (dump_file != NULL)
-            {
-              fprintf (dump_file, "LOCAL CONST-PROP: Replacing reg %d in ",
-                       REGNO (x));
-              fprintf (dump_file, "insn %d with constant ",
-                       INSN_UID (insn));
-              print_rtl (dump_file, newcnst);
-              fprintf (dump_file, "\n");
-            }
-          local_const_prop_count++;
-          return true;
-        }
+	  adjusted = adjust_libcall_notes (x, newcnst, insn, libcall_sp);
+	  gcc_assert (adjusted);
+	  
+	  if (dump_file != NULL)
+	    {
+	      fprintf (dump_file, "LOCAL CONST-PROP: Replacing reg %d in ",
+		       REGNO (x));
+	      fprintf (dump_file, "insn %d with constant ",
+		       INSN_UID (insn));
+	      print_rtl (dump_file, newcnst);
+	      fprintf (dump_file, "\n");
+	    }
+	  local_const_prop_count++;
+	  return true;
+	}
       else if (newreg && newreg != x && try_replace_reg (x, newreg, insn))
-        {
-          adjust_libcall_notes (x, newreg, insn, libcall_sp);
-          if (dump_file != NULL)
-            {
-              fprintf (dump_file,
-                       "LOCAL COPY-PROP: Replacing reg %d in insn %d",
-                       REGNO (x), INSN_UID (insn));
-              fprintf (dump_file, " with reg %d\n", REGNO (newreg));
-            }
-          local_copy_prop_count++;
-          return true;
-        }
+	{
+	  adjust_libcall_notes (x, newreg, insn, libcall_sp);
+	  if (dump_file != NULL)
+	    {
+	      fprintf (dump_file,
+		       "LOCAL COPY-PROP: Replacing reg %d in insn %d",
+		       REGNO (x), INSN_UID (insn));
+	      fprintf (dump_file, " with reg %d\n", REGNO (newreg));
+	    }
+	  local_copy_prop_count++;
+	  return true;
+	}
     }
   return false;
 }
@@ -3139,24 +3139,24 @@ adjust_libcall_notes (rtx oldreg, rtx newval, rtx insn, rtx *libcall_sp)
       rtx note = find_reg_equal_equiv_note (end);
 
       if (! note)
-        continue;
+	continue;
 
       if (REG_P (newval))
-        {
-          if (reg_set_between_p (newval, PREV_INSN (insn), end))
-            {
-              do
-                {
-                  note = find_reg_equal_equiv_note (end);
-                  if (! note)
-                    continue;
-                  if (reg_mentioned_p (newval, XEXP (note, 0)))
-                    return false;
-                }
-              while ((end = *libcall_sp++));
-              return true;
-            }
-        }
+	{
+	  if (reg_set_between_p (newval, PREV_INSN (insn), end))
+	    {
+	      do
+		{
+		  note = find_reg_equal_equiv_note (end);
+		  if (! note)
+		    continue;
+		  if (reg_mentioned_p (newval, XEXP (note, 0)))
+		    return false;
+		}
+	      while ((end = *libcall_sp++));
+	      return true;
+	    }
+	}
       XEXP (note, 0) = simplify_replace_rtx (XEXP (note, 0), oldreg, newval);
       insn = end;
     }
@@ -3184,46 +3184,46 @@ local_cprop_pass (bool alter_jumps)
   FOR_EACH_BB (bb)
     {
       FOR_BB_INSNS (bb, insn)
-        {
-          if (INSN_P (insn))
-            {
-              rtx note = find_reg_note (insn, REG_LIBCALL, NULL_RTX);
+	{
+	  if (INSN_P (insn))
+	    {
+	      rtx note = find_reg_note (insn, REG_LIBCALL, NULL_RTX);
 
-              if (note)
-                {
-                  gcc_assert (libcall_sp != libcall_stack);
-                  *--libcall_sp = XEXP (note, 0);
-                }
-              note = find_reg_note (insn, REG_RETVAL, NULL_RTX);
-              if (note)
-                libcall_sp++;
-              note = find_reg_equal_equiv_note (insn);
-              do
-                {
-                  reg_use_count = 0;
-                  note_uses (&PATTERN (insn), local_cprop_find_used_regs,
-                             NULL);
-                  if (note)
-                    local_cprop_find_used_regs (&XEXP (note, 0), NULL);
+	      if (note)
+		{
+		  gcc_assert (libcall_sp != libcall_stack);
+		  *--libcall_sp = XEXP (note, 0);
+		}
+	      note = find_reg_note (insn, REG_RETVAL, NULL_RTX);
+	      if (note)
+		libcall_sp++;
+	      note = find_reg_equal_equiv_note (insn);
+	      do
+		{
+		  reg_use_count = 0;
+		  note_uses (&PATTERN (insn), local_cprop_find_used_regs,
+			     NULL);
+		  if (note)
+		    local_cprop_find_used_regs (&XEXP (note, 0), NULL);
 
-                  for (reg_used = &reg_use_table[0]; reg_use_count > 0;
-                       reg_used++, reg_use_count--)
-                    if (do_local_cprop (reg_used->reg_rtx, insn, alter_jumps,
-                        libcall_sp))
-                      {
-                        changed = true;
-                        break;
-                      }
-                  if (INSN_DELETED_P (insn))
-                    break;
-                }
-              while (reg_use_count);
-            }
-          cselib_process_insn (insn);
-        }
+		  for (reg_used = &reg_use_table[0]; reg_use_count > 0;
+		       reg_used++, reg_use_count--)
+		    if (do_local_cprop (reg_used->reg_rtx, insn, alter_jumps,
+			libcall_sp))
+		      {
+			changed = true;
+			break;
+		      }
+		  if (INSN_DELETED_P (insn))
+		    break;
+		}
+	      while (reg_use_count);
+	    }
+	  cselib_process_insn (insn);
+	}
 
       /* Forget everything at the end of a basic block.  Make sure we are
-         not inside a libcall, they should never cross basic blocks.  */
+	 not inside a libcall, they should never cross basic blocks.  */
       cselib_clear_table ();
       gcc_assert (libcall_sp == &libcall_stack[MAX_NESTED_LIBCALLS]);
     }
@@ -3254,7 +3254,7 @@ cprop (int alter_jumps)
   if (ENTRY_BLOCK_PTR->next_bb == EXIT_BLOCK_PTR)
     {
       if (dump_file != NULL)
-        fprintf (dump_file, "\n");
+	fprintf (dump_file, "\n");
       return 0;
     }
 
@@ -3262,20 +3262,20 @@ cprop (int alter_jumps)
   FOR_BB_BETWEEN (bb, ENTRY_BLOCK_PTR->next_bb->next_bb, EXIT_BLOCK_PTR, next_bb)
     {
       /* Reset tables used to keep track of what's still valid [since the
-         start of the block].  */
+	 start of the block].  */
       reset_opr_set_tables ();
 
       FOR_BB_INSNS (bb, insn)
-        if (INSN_P (insn))
-          {
-            changed |= cprop_insn (insn, alter_jumps);
+	if (INSN_P (insn))
+	  {
+	    changed |= cprop_insn (insn, alter_jumps);
 
-            /* Keep track of everything modified by this insn.  */
-            /* ??? Need to be careful w.r.t. mods done to INSN.  Don't
-               call mark_oprs_set if we turned the insn into a NOTE.  */
-            if (! NOTE_P (insn))
-              mark_oprs_set (insn);
-          }
+	    /* Keep track of everything modified by this insn.  */
+	    /* ??? Need to be careful w.r.t. mods done to INSN.  Don't
+	       call mark_oprs_set if we turned the insn into a NOTE.  */
+	    if (! NOTE_P (insn))
+	      mark_oprs_set (insn);
+	  }
     }
 
   if (dump_file != NULL)
@@ -3314,19 +3314,19 @@ implicit_set_cond_p (rtx cond)
   if (HONOR_SIGNED_ZEROS (mode))
     {
       /* It is sufficient to check if CST is or contains a zero.  We must
-         handle float, complex, and vector.  If any subpart is a zero, then
-         the optimization can't be performed.  */
+	 handle float, complex, and vector.  If any subpart is a zero, then
+	 the optimization can't be performed.  */
       /* ??? The complex and vector checks are not implemented yet.  We just
-         always return zero for them.  */
+	 always return zero for them.  */
       if (GET_CODE (cst) == CONST_DOUBLE)
-        {
-          REAL_VALUE_TYPE d;
-          REAL_VALUE_FROM_CONST_DOUBLE (d, cst);
-          if (REAL_VALUES_EQUAL (d, dconst0))
-            return 0;
-        }
+	{
+	  REAL_VALUE_TYPE d;
+	  REAL_VALUE_FROM_CONST_DOUBLE (d, cst);
+	  if (REAL_VALUES_EQUAL (d, dconst0))
+	    return 0;
+	}
       else
-        return 0;
+	return 0;
     }
 
   return gcse_constant_p (cst);
@@ -3351,32 +3351,32 @@ find_implicit_sets (void)
     /* Check for more than one successor.  */
     if (EDGE_COUNT (bb->succs) > 1)
       {
-        cond = fis_get_condition (BB_END (bb));
+	cond = fis_get_condition (BB_END (bb));
 
-        if (cond
-            && (GET_CODE (cond) == EQ || GET_CODE (cond) == NE)
-            && REG_P (XEXP (cond, 0))
-            && REGNO (XEXP (cond, 0)) >= FIRST_PSEUDO_REGISTER
-            && implicit_set_cond_p (cond))
-          {
-            dest = GET_CODE (cond) == EQ ? BRANCH_EDGE (bb)->dest
-                                         : FALLTHRU_EDGE (bb)->dest;
+	if (cond
+	    && (GET_CODE (cond) == EQ || GET_CODE (cond) == NE)
+	    && REG_P (XEXP (cond, 0))
+	    && REGNO (XEXP (cond, 0)) >= FIRST_PSEUDO_REGISTER
+	    && implicit_set_cond_p (cond))
+	  {
+	    dest = GET_CODE (cond) == EQ ? BRANCH_EDGE (bb)->dest
+					 : FALLTHRU_EDGE (bb)->dest;
 
-            if (dest && single_pred_p (dest)
-                && dest != EXIT_BLOCK_PTR)
-              {
-                new = gen_rtx_SET (VOIDmode, XEXP (cond, 0),
-                                             XEXP (cond, 1));
-                implicit_sets[dest->index] = new;
-                if (dump_file)
-                  {
-                    fprintf(dump_file, "Implicit set of reg %d in ",
-                            REGNO (XEXP (cond, 0)));
-                    fprintf(dump_file, "basic block %d\n", dest->index);
-                  }
-                count++;
-              }
-          }
+	    if (dest && single_pred_p (dest)
+		&& dest != EXIT_BLOCK_PTR)
+	      {
+		new = gen_rtx_SET (VOIDmode, XEXP (cond, 0),
+					     XEXP (cond, 1));
+		implicit_sets[dest->index] = new;
+		if (dump_file)
+		  {
+		    fprintf(dump_file, "Implicit set of reg %d in ",
+			    REGNO (XEXP (cond, 0)));
+		    fprintf(dump_file, "basic block %d\n", dest->index);
+		  }
+		count++;
+	      }
+	  }
       }
 
   if (dump_file)
@@ -3417,7 +3417,7 @@ one_cprop_pass (int pass, bool cprop_jumps, bool bypass_jumps)
       compute_cprop_data ();
       changed = cprop (cprop_jumps);
       if (bypass_jumps)
-        changed |= bypass_conditional_jumps ();
+	changed |= bypass_conditional_jumps ();
       free_cprop_mem ();
     }
 
@@ -3426,11 +3426,11 @@ one_cprop_pass (int pass, bool cprop_jumps, bool bypass_jumps)
   if (dump_file)
     {
       fprintf (dump_file, "CPROP of %s, pass %d: %d bytes needed, ",
-               current_function_name (), pass, bytes_used);
+	       current_function_name (), pass, bytes_used);
       fprintf (dump_file, "%d local const props, %d local copy props, ",
-               local_const_prop_count, local_copy_prop_count);
+	       local_const_prop_count, local_copy_prop_count);
       fprintf (dump_file, "%d global const props, %d global copy props\n\n",
-               global_const_prop_count, global_copy_prop_count);
+	       global_const_prop_count, global_copy_prop_count);
     }
   /* Global analysis may get into infinite loops for unreachable blocks.  */
   if (changed && cprop_jumps)
@@ -3463,23 +3463,23 @@ find_bypass_set (int regno, int bb)
       struct expr *set = lookup_set (regno, &set_hash_table);
 
       while (set)
-        {
-          if (TEST_BIT (cprop_avout[bb], set->bitmap_index))
-            break;
-          set = next_set (regno, set);
-        }
+	{
+	  if (TEST_BIT (cprop_avout[bb], set->bitmap_index))
+	    break;
+	  set = next_set (regno, set);
+	}
 
       if (set == 0)
-        break;
+	break;
 
       gcc_assert (GET_CODE (set->expr) == SET);
 
       src = SET_SRC (set->expr);
       if (gcse_constant_p (src))
-        result = set;
+	result = set;
 
       if (! REG_P (src))
-        break;
+	break;
 
       regno = REGNO (src);
     }
@@ -3538,129 +3538,129 @@ bypass_block (basic_block bb, rtx setcc, rtx jump)
   FOR_EACH_EDGE (e, ei, bb->preds)
     if (e->flags & EDGE_DFS_BACK)
       {
-        may_be_loop_header = true;
-        break;
+	may_be_loop_header = true;
+	break;
       }
 
   change = 0;
   for (ei = ei_start (bb->preds); (e = ei_safe_edge (ei)); )
     {
       removed_p = 0;
-          
+	  
       if (e->flags & EDGE_COMPLEX)
-        {
-          ei_next (&ei);
-          continue;
-        }
+	{
+	  ei_next (&ei);
+	  continue;
+	}
 
       /* We can't redirect edges from new basic blocks.  */
       if (e->src->index >= bypass_last_basic_block)
-        {
-          ei_next (&ei);
-          continue;
-        }
+	{
+	  ei_next (&ei);
+	  continue;
+	}
 
       /* The irreducible loops created by redirecting of edges entering the
-         loop from outside would decrease effectiveness of some of the following
-         optimizations, so prevent this.  */
+	 loop from outside would decrease effectiveness of some of the following
+	 optimizations, so prevent this.  */
       if (may_be_loop_header
-          && !(e->flags & EDGE_DFS_BACK))
-        {
-          ei_next (&ei);
-          continue;
-        }
+	  && !(e->flags & EDGE_DFS_BACK))
+	{
+	  ei_next (&ei);
+	  continue;
+	}
 
       for (i = 0; i < reg_use_count; i++)
-        {
-          struct reg_use *reg_used = &reg_use_table[i];
-          unsigned int regno = REGNO (reg_used->reg_rtx);
-          basic_block dest, old_dest;
-          struct expr *set;
-          rtx src, new;
+	{
+	  struct reg_use *reg_used = &reg_use_table[i];
+	  unsigned int regno = REGNO (reg_used->reg_rtx);
+	  basic_block dest, old_dest;
+	  struct expr *set;
+	  rtx src, new;
 
-          if (regno >= max_gcse_regno)
-            continue;
+	  if (regno >= max_gcse_regno)
+	    continue;
 
-          set = find_bypass_set (regno, e->src->index);
+	  set = find_bypass_set (regno, e->src->index);
 
-          if (! set)
-            continue;
+	  if (! set)
+	    continue;
 
-          /* Check the data flow is valid after edge insertions.  */
-          if (e->insns.r && reg_killed_on_edge (reg_used->reg_rtx, e))
-            continue;
+	  /* Check the data flow is valid after edge insertions.  */
+	  if (e->insns.r && reg_killed_on_edge (reg_used->reg_rtx, e))
+	    continue;
 
-          src = SET_SRC (pc_set (jump));
+	  src = SET_SRC (pc_set (jump));
 
-          if (setcc != NULL)
-              src = simplify_replace_rtx (src,
-                                          SET_DEST (PATTERN (setcc)),
-                                          SET_SRC (PATTERN (setcc)));
+	  if (setcc != NULL)
+	      src = simplify_replace_rtx (src,
+					  SET_DEST (PATTERN (setcc)),
+					  SET_SRC (PATTERN (setcc)));
 
-          new = simplify_replace_rtx (src, reg_used->reg_rtx,
-                                      SET_SRC (set->expr));
+	  new = simplify_replace_rtx (src, reg_used->reg_rtx,
+				      SET_SRC (set->expr));
 
-          /* Jump bypassing may have already placed instructions on
-             edges of the CFG.  We can't bypass an outgoing edge that
-             has instructions associated with it, as these insns won't
-             get executed if the incoming edge is redirected.  */
+	  /* Jump bypassing may have already placed instructions on
+	     edges of the CFG.  We can't bypass an outgoing edge that
+	     has instructions associated with it, as these insns won't
+	     get executed if the incoming edge is redirected.  */
 
-          if (new == pc_rtx)
+	  if (new == pc_rtx)
+	    {
+	      edest = FALLTHRU_EDGE (bb);
+	      dest = edest->insns.r ? NULL : edest->dest;
+	    }
+	  else if (GET_CODE (new) == LABEL_REF)
+	    {
+	      dest = BLOCK_FOR_INSN (XEXP (new, 0));
+	      /* Don't bypass edges containing instructions.  */
+	      edest = find_edge (bb, dest);
+	      if (edest && edest->insns.r)
+		dest = NULL;
+	    }
+	  else
+	    dest = NULL;
+
+	  /* Avoid unification of the edge with other edges from original
+	     branch.  We would end up emitting the instruction on "both"
+	     edges.  */
+
+	  if (dest && setcc && !CC0_P (SET_DEST (PATTERN (setcc)))
+	      && find_edge (e->src, dest))
+	    dest = NULL;
+
+	  old_dest = e->dest;
+	  if (dest != NULL
+	      && dest != old_dest
+	      && dest != EXIT_BLOCK_PTR)
             {
-              edest = FALLTHRU_EDGE (bb);
-              dest = edest->insns.r ? NULL : edest->dest;
-            }
-          else if (GET_CODE (new) == LABEL_REF)
-            {
-              dest = BLOCK_FOR_INSN (XEXP (new, 0));
-              /* Don't bypass edges containing instructions.  */
-              edest = find_edge (bb, dest);
-              if (edest && edest->insns.r)
-                dest = NULL;
-            }
-          else
-            dest = NULL;
+	      redirect_edge_and_branch_force (e, dest);
 
-          /* Avoid unification of the edge with other edges from original
-             branch.  We would end up emitting the instruction on "both"
-             edges.  */
+	      /* Copy the register setter to the redirected edge.
+		 Don't copy CC0 setters, as CC0 is dead after jump.  */
+	      if (setcc)
+		{
+		  rtx pat = PATTERN (setcc);
+		  if (!CC0_P (SET_DEST (pat)))
+		    insert_insn_on_edge (copy_insn (pat), e);
+		}
 
-          if (dest && setcc && !CC0_P (SET_DEST (PATTERN (setcc)))
-              && find_edge (e->src, dest))
-            dest = NULL;
-
-          old_dest = e->dest;
-          if (dest != NULL
-              && dest != old_dest
-              && dest != EXIT_BLOCK_PTR)
-            {
-              redirect_edge_and_branch_force (e, dest);
-
-              /* Copy the register setter to the redirected edge.
-                 Don't copy CC0 setters, as CC0 is dead after jump.  */
-              if (setcc)
-                {
-                  rtx pat = PATTERN (setcc);
-                  if (!CC0_P (SET_DEST (pat)))
-                    insert_insn_on_edge (copy_insn (pat), e);
-                }
-
-              if (dump_file != NULL)
-                {
-                  fprintf (dump_file, "JUMP-BYPASS: Proved reg %d "
-                                      "in jump_insn %d equals constant ",
-                           regno, INSN_UID (jump));
-                  print_rtl (dump_file, SET_SRC (set->expr));
-                  fprintf (dump_file, "\nBypass edge from %d->%d to %d\n",
-                           e->src->index, old_dest->index, dest->index);
-                }
-              change = 1;
-              removed_p = 1;
-              break;
-            }
-        }
+	      if (dump_file != NULL)
+		{
+		  fprintf (dump_file, "JUMP-BYPASS: Proved reg %d "
+				      "in jump_insn %d equals constant ",
+			   regno, INSN_UID (jump));
+		  print_rtl (dump_file, SET_SRC (set->expr));
+		  fprintf (dump_file, "\nBypass edge from %d->%d to %d\n",
+			   e->src->index, old_dest->index, dest->index);
+		}
+	      change = 1;
+	      removed_p = 1;
+	      break;
+	    }
+	}
       if (!removed_p)
-        ei_next (&ei);
+	ei_next (&ei);
     }
   return change;
 }
@@ -3690,36 +3690,36 @@ bypass_conditional_jumps (void)
 
   changed = 0;
   FOR_BB_BETWEEN (bb, ENTRY_BLOCK_PTR->next_bb->next_bb,
-                  EXIT_BLOCK_PTR, next_bb)
+		  EXIT_BLOCK_PTR, next_bb)
     {
       /* Check for more than one predecessor.  */
       if (!single_pred_p (bb))
-        {
-          setcc = NULL_RTX;
-          FOR_BB_INSNS (bb, insn)
-            if (NONJUMP_INSN_P (insn))
-              {
-                if (setcc)
-                  break;
-                if (GET_CODE (PATTERN (insn)) != SET)
-                  break;
+	{
+	  setcc = NULL_RTX;
+	  FOR_BB_INSNS (bb, insn)
+	    if (NONJUMP_INSN_P (insn))
+	      {
+		if (setcc)
+		  break;
+		if (GET_CODE (PATTERN (insn)) != SET)
+		  break;
 
-                dest = SET_DEST (PATTERN (insn));
-                if (REG_P (dest) || CC0_P (dest))
-                  setcc = insn;
-                else
-                  break;
-              }
-            else if (JUMP_P (insn))
-              {
-                if ((any_condjump_p (insn) || computed_jump_p (insn))
-                    && onlyjump_p (insn))
-                  changed |= bypass_block (bb, setcc, insn);
-                break;
-              }
-            else if (INSN_P (insn))
-              break;
-        }
+		dest = SET_DEST (PATTERN (insn));
+		if (REG_P (dest) || CC0_P (dest))
+		  setcc = insn;
+		else
+		  break;
+	      }
+	    else if (JUMP_P (insn))
+	      {
+		if ((any_condjump_p (insn) || computed_jump_p (insn))
+		    && onlyjump_p (insn))
+		  changed |= bypass_block (bb, setcc, insn);
+		break;
+	      }
+	    else if (INSN_P (insn))
+	      break;
+	}
     }
 
   /* If we bypassed any register setting insns, we inserted a
@@ -3826,8 +3826,8 @@ compute_pre_data (void)
     {
       struct expr *e;
       for (e = expr_hash_table.table[ui]; e != NULL; e = e->next_same_hash)
-        if (may_trap_p (e->expr))
-          SET_BIT (trapping_expr, e->bitmap_index);
+	if (may_trap_p (e->expr))
+	  SET_BIT (trapping_expr, e->bitmap_index);
     }
 
   /* Compute ae_kill for each basic block using:
@@ -3841,23 +3841,23 @@ compute_pre_data (void)
       edge_iterator ei;
 
       /* If the current block is the destination of an abnormal edge, we
-         kill all trapping expressions because we won't be able to properly
-         place the instruction on the edge.  So make them neither
-         anticipatable nor transparent.  This is fairly conservative.  */
+	 kill all trapping expressions because we won't be able to properly
+	 place the instruction on the edge.  So make them neither
+	 anticipatable nor transparent.  This is fairly conservative.  */
       FOR_EACH_EDGE (e, ei, bb->preds)
-        if (e->flags & EDGE_ABNORMAL)
-          {
-            sbitmap_difference (antloc[bb->index], antloc[bb->index], trapping_expr);
-            sbitmap_difference (transp[bb->index], transp[bb->index], trapping_expr);
-            break;
-          }
+	if (e->flags & EDGE_ABNORMAL)
+	  {
+	    sbitmap_difference (antloc[bb->index], antloc[bb->index], trapping_expr);
+	    sbitmap_difference (transp[bb->index], transp[bb->index], trapping_expr);
+	    break;
+	  }
 
       sbitmap_a_or_b (ae_kill[bb->index], transp[bb->index], comp[bb->index]);
       sbitmap_not (ae_kill[bb->index], ae_kill[bb->index]);
     }
 
   edge_list = pre_edge_lcm (expr_hash_table.n_elems, transp, comp, antloc,
-                            ae_kill, &pre_insert_map, &pre_delete_map);
+			    ae_kill, &pre_insert_map, &pre_delete_map);
   sbitmap_vector_free (antloc);
   antloc = NULL;
   sbitmap_vector_free (ae_kill);
@@ -3891,32 +3891,32 @@ pre_expr_reaches_here_p_work (basic_block occr_bb, struct expr *expr, basic_bloc
       basic_block pred_bb = pred->src;
 
       if (pred->src == ENTRY_BLOCK_PTR
-          /* Has predecessor has already been visited?  */
-          || visited[pred_bb->index])
-        ;/* Nothing to do.  */
+	  /* Has predecessor has already been visited?  */
+	  || visited[pred_bb->index])
+	;/* Nothing to do.  */
 
       /* Does this predecessor generate this expression?  */
       else if (TEST_BIT (comp[pred_bb->index], expr->bitmap_index))
-        {
-          /* Is this the occurrence we're looking for?
-             Note that there's only one generating occurrence per block
-             so we just need to check the block number.  */
-          if (occr_bb == pred_bb)
-            return 1;
+	{
+	  /* Is this the occurrence we're looking for?
+	     Note that there's only one generating occurrence per block
+	     so we just need to check the block number.  */
+	  if (occr_bb == pred_bb)
+	    return 1;
 
-          visited[pred_bb->index] = 1;
-        }
+	  visited[pred_bb->index] = 1;
+	}
       /* Ignore this predecessor if it kills the expression.  */
       else if (! TEST_BIT (transp[pred_bb->index], expr->bitmap_index))
-        visited[pred_bb->index] = 1;
+	visited[pred_bb->index] = 1;
 
       /* Neither gen nor kill.  */
       else
-        {
-          visited[pred_bb->index] = 1;
-          if (pre_expr_reaches_here_p_work (occr_bb, expr, pred_bb, visited))
-            return 1;
-        }
+	{
+	  visited[pred_bb->index] = 1;
+	  if (pre_expr_reaches_here_p_work (occr_bb, expr, pred_bb, visited))
+	    return 1;
+	}
     }
 
   /* All paths have been checked.  */
@@ -3965,7 +3965,7 @@ process_insert_insn (struct expr *expr)
       rtx insn = emit_insn (gen_rtx_SET (VOIDmode, reg, exp));
 
       if (insn_invalid_p (insn))
-        gcc_unreachable ();
+	gcc_unreachable ();
     }
   
 
@@ -4005,40 +4005,40 @@ insert_insn_end_bb (struct expr *expr, basic_block bb, int pre)
 
   if (JUMP_P (insn)
       || (NONJUMP_INSN_P (insn)
-          && (!single_succ_p (bb)
-              || single_succ_edge (bb)->flags & EDGE_ABNORMAL)))
+	  && (!single_succ_p (bb)
+	      || single_succ_edge (bb)->flags & EDGE_ABNORMAL)))
     {
 #ifdef HAVE_cc0
       rtx note;
 #endif
       /* It should always be the case that we can put these instructions
-         anywhere in the basic block with performing PRE optimizations.
-         Check this.  */
+	 anywhere in the basic block with performing PRE optimizations.
+	 Check this.  */
       gcc_assert (!NONJUMP_INSN_P (insn) || !pre
-                  || TEST_BIT (antloc[bb->index], expr->bitmap_index)
-                  || TEST_BIT (transp[bb->index], expr->bitmap_index));
+		  || TEST_BIT (antloc[bb->index], expr->bitmap_index)
+		  || TEST_BIT (transp[bb->index], expr->bitmap_index));
 
       /* If this is a jump table, then we can't insert stuff here.  Since
-         we know the previous real insn must be the tablejump, we insert
-         the new instruction just before the tablejump.  */
+	 we know the previous real insn must be the tablejump, we insert
+	 the new instruction just before the tablejump.  */
       if (GET_CODE (PATTERN (insn)) == ADDR_VEC
-          || GET_CODE (PATTERN (insn)) == ADDR_DIFF_VEC)
-        insn = prev_real_insn (insn);
+	  || GET_CODE (PATTERN (insn)) == ADDR_DIFF_VEC)
+	insn = prev_real_insn (insn);
 
 #ifdef HAVE_cc0
       /* FIXME: 'twould be nice to call prev_cc0_setter here but it aborts
-         if cc0 isn't set.  */
+	 if cc0 isn't set.  */
       note = find_reg_note (insn, REG_CC_SETTER, NULL_RTX);
       if (note)
-        insn = XEXP (note, 0);
+	insn = XEXP (note, 0);
       else
-        {
-          rtx maybe_cc0_setter = prev_nonnote_insn (insn);
-          if (maybe_cc0_setter
-              && INSN_P (maybe_cc0_setter)
-              && sets_cc0_p (PATTERN (maybe_cc0_setter)))
-            insn = maybe_cc0_setter;
-        }
+	{
+	  rtx maybe_cc0_setter = prev_nonnote_insn (insn);
+	  if (maybe_cc0_setter
+	      && INSN_P (maybe_cc0_setter)
+	      && sets_cc0_p (PATTERN (maybe_cc0_setter)))
+	    insn = maybe_cc0_setter;
+	}
 #endif
       /* FIXME: What if something in cc0/jump uses value set in new insn?  */
       new_insn = emit_insn_before_noloc (pat, insn);
@@ -4047,38 +4047,38 @@ insert_insn_end_bb (struct expr *expr, basic_block bb, int pre)
   /* Likewise if the last insn is a call, as will happen in the presence
      of exception handling.  */
   else if (CALL_P (insn)
-           && (!single_succ_p (bb)
-               || single_succ_edge (bb)->flags & EDGE_ABNORMAL))
+	   && (!single_succ_p (bb)
+	       || single_succ_edge (bb)->flags & EDGE_ABNORMAL))
     {
       /* Keeping in mind SMALL_REGISTER_CLASSES and parameters in registers,
-         we search backward and place the instructions before the first
-         parameter is loaded.  Do this for everyone for consistency and a
-         presumption that we'll get better code elsewhere as well.
+	 we search backward and place the instructions before the first
+	 parameter is loaded.  Do this for everyone for consistency and a
+	 presumption that we'll get better code elsewhere as well.
 
-         It should always be the case that we can put these instructions
-         anywhere in the basic block with performing PRE optimizations.
-         Check this.  */
+	 It should always be the case that we can put these instructions
+	 anywhere in the basic block with performing PRE optimizations.
+	 Check this.  */
 
       gcc_assert (!pre
-                  || TEST_BIT (antloc[bb->index], expr->bitmap_index)
-                  || TEST_BIT (transp[bb->index], expr->bitmap_index));
+		  || TEST_BIT (antloc[bb->index], expr->bitmap_index)
+		  || TEST_BIT (transp[bb->index], expr->bitmap_index));
 
       /* Since different machines initialize their parameter registers
-         in different orders, assume nothing.  Collect the set of all
-         parameter registers.  */
+	 in different orders, assume nothing.  Collect the set of all
+	 parameter registers.  */
       insn = find_first_parameter_load (insn, BB_HEAD (bb));
 
       /* If we found all the parameter loads, then we want to insert
-         before the first parameter load.
+	 before the first parameter load.
 
-         If we did not find all the parameter loads, then we might have
-         stopped on the head of the block, which could be a CODE_LABEL.
-         If we inserted before the CODE_LABEL, then we would be putting
-         the insn in the wrong basic block.  In that case, put the insn
-         after the CODE_LABEL.  Also, respect NOTE_INSN_BASIC_BLOCK.  */
+	 If we did not find all the parameter loads, then we might have
+	 stopped on the head of the block, which could be a CODE_LABEL.
+	 If we inserted before the CODE_LABEL, then we would be putting
+	 the insn in the wrong basic block.  In that case, put the insn
+	 after the CODE_LABEL.  Also, respect NOTE_INSN_BASIC_BLOCK.  */
       while (LABEL_P (insn)
-             || NOTE_INSN_BASIC_BLOCK_P (insn))
-        insn = NEXT_INSN (insn);
+	     || NOTE_INSN_BASIC_BLOCK_P (insn))
+	insn = NEXT_INSN (insn);
 
       new_insn = emit_insn_before_noloc (pat, insn);
     }
@@ -4088,12 +4088,12 @@ insert_insn_end_bb (struct expr *expr, basic_block bb, int pre)
   while (1)
     {
       if (INSN_P (pat))
-        {
-          add_label_notes (PATTERN (pat), new_insn);
-          note_stores (PATTERN (pat), record_set_info, pat);
-        }
+	{
+	  add_label_notes (PATTERN (pat), new_insn);
+	  note_stores (PATTERN (pat), record_set_info, pat);
+	}
       if (pat == pat_end)
-        break;
+	break;
       pat = NEXT_INSN (pat);
     }
 
@@ -4102,9 +4102,9 @@ insert_insn_end_bb (struct expr *expr, basic_block bb, int pre)
   if (dump_file)
     {
       fprintf (dump_file, "PRE/HOIST: end of bb %d, insn %d, ",
-               bb->index, INSN_UID (new_insn));
+	       bb->index, INSN_UID (new_insn));
       fprintf (dump_file, "copying expression %d to reg %d\n",
-               expr->bitmap_index, regno);
+	       expr->bitmap_index, regno);
     }
 }
 
@@ -4131,60 +4131,60 @@ pre_edge_insert (struct edge_list *edge_list, struct expr **index_map)
       basic_block bb = INDEX_EDGE_PRED_BB (edge_list, e);
 
       for (i = indx = 0; i < set_size; i++, indx += SBITMAP_ELT_BITS)
-        {
-          SBITMAP_ELT_TYPE insert = pre_insert_map[e]->elms[i];
+	{
+	  SBITMAP_ELT_TYPE insert = pre_insert_map[e]->elms[i];
 
-          for (j = indx; insert && j < (int) expr_hash_table.n_elems; j++, insert >>= 1)
-            if ((insert & 1) != 0 && index_map[j]->reaching_reg != NULL_RTX)
-              {
-                struct expr *expr = index_map[j];
-                struct occr *occr;
+	  for (j = indx; insert && j < (int) expr_hash_table.n_elems; j++, insert >>= 1)
+	    if ((insert & 1) != 0 && index_map[j]->reaching_reg != NULL_RTX)
+	      {
+		struct expr *expr = index_map[j];
+		struct occr *occr;
 
-                /* Now look at each deleted occurrence of this expression.  */
-                for (occr = expr->antic_occr; occr != NULL; occr = occr->next)
-                  {
-                    if (! occr->deleted_p)
-                      continue;
+		/* Now look at each deleted occurrence of this expression.  */
+		for (occr = expr->antic_occr; occr != NULL; occr = occr->next)
+		  {
+		    if (! occr->deleted_p)
+		      continue;
 
-                    /* Insert this expression on this edge if it would
-                       reach the deleted occurrence in BB.  */
-                    if (!TEST_BIT (inserted[e], j))
-                      {
-                        rtx insn;
-                        edge eg = INDEX_EDGE (edge_list, e);
+		    /* Insert this expression on this edge if it would
+		       reach the deleted occurrence in BB.  */
+		    if (!TEST_BIT (inserted[e], j))
+		      {
+			rtx insn;
+			edge eg = INDEX_EDGE (edge_list, e);
 
-                        /* We can't insert anything on an abnormal and
-                           critical edge, so we insert the insn at the end of
-                           the previous block. There are several alternatives
-                           detailed in Morgans book P277 (sec 10.5) for
-                           handling this situation.  This one is easiest for
-                           now.  */
+			/* We can't insert anything on an abnormal and
+			   critical edge, so we insert the insn at the end of
+			   the previous block. There are several alternatives
+			   detailed in Morgans book P277 (sec 10.5) for
+			   handling this situation.  This one is easiest for
+			   now.  */
 
-                        if (eg->flags & EDGE_ABNORMAL)
-                          insert_insn_end_bb (index_map[j], bb, 0);
-                        else
-                          {
-                            insn = process_insert_insn (index_map[j]);
-                            insert_insn_on_edge (insn, eg);
-                          }
+			if (eg->flags & EDGE_ABNORMAL)
+			  insert_insn_end_bb (index_map[j], bb, 0);
+			else
+			  {
+			    insn = process_insert_insn (index_map[j]);
+			    insert_insn_on_edge (insn, eg);
+			  }
 
-                        if (dump_file)
-                          {
-                            fprintf (dump_file, "PRE/HOIST: edge (%d,%d), ",
-                                     bb->index,
-                                     INDEX_EDGE_SUCC_BB (edge_list, e)->index);
-                            fprintf (dump_file, "copy expression %d\n",
-                                     expr->bitmap_index);
-                          }
+			if (dump_file)
+			  {
+			    fprintf (dump_file, "PRE/HOIST: edge (%d,%d), ",
+				     bb->index,
+				     INDEX_EDGE_SUCC_BB (edge_list, e)->index);
+			    fprintf (dump_file, "copy expression %d\n",
+				     expr->bitmap_index);
+			  }
 
-                        update_ld_motion_stores (expr);
-                        SET_BIT (inserted[e], j);
-                        did_insert = 1;
-                        gcse_create_count++;
-                      }
-                  }
-              }
-        }
+			update_ld_motion_stores (expr);
+			SET_BIT (inserted[e], j);
+			did_insert = 1;
+			gcse_create_count++;
+		      }
+		  }
+	      }
+	}
     }
 
   sbitmap_vector_free (inserted);
@@ -4226,26 +4226,26 @@ pre_insert_copy_insn (struct expr *expr, rtx insn)
 
     case PARALLEL:
       /* Search through the parallel looking for the set whose
-         source was the expression that we're interested in.  */
+	 source was the expression that we're interested in.  */
       first_set = NULL_RTX;
       set = NULL_RTX;
       for (i = 0; i < XVECLEN (pat, 0); i++)
-        {
-          rtx x = XVECEXP (pat, 0, i);
-          if (GET_CODE (x) == SET)
-            {
-              /* If the source was a REG_EQUAL or REG_EQUIV note, we
-                 may not find an equivalent expression, but in this
-                 case the PARALLEL will have a single set.  */
-              if (first_set == NULL_RTX)
-                first_set = x;
-              if (expr_equiv_p (SET_SRC (x), expr->expr))
-                {
-                  set = x;
-                  break;
-                }
-            }
-        }
+	{
+	  rtx x = XVECEXP (pat, 0, i);
+	  if (GET_CODE (x) == SET)
+	    {
+	      /* If the source was a REG_EQUAL or REG_EQUIV note, we
+		 may not find an equivalent expression, but in this
+		 case the PARALLEL will have a single set.  */
+	      if (first_set == NULL_RTX)
+		first_set = x;
+	      if (expr_equiv_p (SET_SRC (x), expr->expr))
+	        {
+	          set = x;
+	          break;
+	        }
+	    }
+	}
 
       gcc_assert (first_set);
       if (set == NULL_RTX)
@@ -4296,9 +4296,9 @@ pre_insert_copy_insn (struct expr *expr, rtx insn)
 
   if (dump_file)
     fprintf (dump_file,
-             "PRE: bb %d, insn %d, copy expression %d in insn %d to reg %d\n",
-              BLOCK_NUM (insn), INSN_UID (new_insn), indx,
-              INSN_UID (insn), regno);
+	     "PRE: bb %d, insn %d, copy expression %d in insn %d to reg %d\n",
+	      BLOCK_NUM (insn), INSN_UID (new_insn), indx,
+	      INSN_UID (insn), regno);
 }
 
 /* Copy available expressions that reach the redundant expression
@@ -4321,49 +4321,49 @@ pre_insert_copies (void)
   for (i = 0; i < expr_hash_table.size; i++)
     for (expr = expr_hash_table.table[i]; expr != NULL; expr = expr->next_same_hash)
       {
-        /* If the basic block isn't reachable, PPOUT will be TRUE.  However,
-           we don't want to insert a copy here because the expression may not
-           really be redundant.  So only insert an insn if the expression was
-           deleted.  This test also avoids further processing if the
-           expression wasn't deleted anywhere.  */
-        if (expr->reaching_reg == NULL)
-          continue;
+	/* If the basic block isn't reachable, PPOUT will be TRUE.  However,
+	   we don't want to insert a copy here because the expression may not
+	   really be redundant.  So only insert an insn if the expression was
+	   deleted.  This test also avoids further processing if the
+	   expression wasn't deleted anywhere.  */
+	if (expr->reaching_reg == NULL)
+	  continue;
 
-        /* Set when we add a copy for that expression.  */
-        added_copy = 0;
+	/* Set when we add a copy for that expression.  */
+	added_copy = 0;
 
-        for (occr = expr->antic_occr; occr != NULL; occr = occr->next)
-          {
-            if (! occr->deleted_p)
-              continue;
+	for (occr = expr->antic_occr; occr != NULL; occr = occr->next)
+	  {
+	    if (! occr->deleted_p)
+	      continue;
 
-            for (avail = expr->avail_occr; avail != NULL; avail = avail->next)
-              {
-                rtx insn = avail->insn;
+	    for (avail = expr->avail_occr; avail != NULL; avail = avail->next)
+	      {
+		rtx insn = avail->insn;
 
-                /* No need to handle this one if handled already.  */
-                if (avail->copied_p)
-                  continue;
+		/* No need to handle this one if handled already.  */
+		if (avail->copied_p)
+		  continue;
 
-                /* Don't handle this one if it's a redundant one.  */
-                if (TEST_BIT (pre_redundant_insns, INSN_CUID (insn)))
-                  continue;
+		/* Don't handle this one if it's a redundant one.  */
+		if (TEST_BIT (pre_redundant_insns, INSN_CUID (insn)))
+		  continue;
 
-                /* Or if the expression doesn't reach the deleted one.  */
-                if (! pre_expr_reaches_here_p (BLOCK_FOR_INSN (avail->insn),
-                                               expr,
-                                               BLOCK_FOR_INSN (occr->insn)))
-                  continue;
+		/* Or if the expression doesn't reach the deleted one.  */
+		if (! pre_expr_reaches_here_p (BLOCK_FOR_INSN (avail->insn),
+					       expr,
+					       BLOCK_FOR_INSN (occr->insn)))
+		  continue;
 
                 added_copy = 1;
 
-                /* Copy the result of avail to reaching_reg.  */
-                pre_insert_copy_insn (expr, insn);
-                avail->copied_p = 1;
-              }
-          }
+		/* Copy the result of avail to reaching_reg.  */
+		pre_insert_copy_insn (expr, insn);
+		avail->copied_p = 1;
+	      }
+	  }
 
-          if (added_copy)
+	  if (added_copy)
             update_ld_motion_stores (expr);
       }
 }
@@ -4415,48 +4415,48 @@ pre_delete (void)
   changed = 0;
   for (i = 0; i < expr_hash_table.size; i++)
     for (expr = expr_hash_table.table[i];
-         expr != NULL;
-         expr = expr->next_same_hash)
+	 expr != NULL;
+	 expr = expr->next_same_hash)
       {
-        int indx = expr->bitmap_index;
+	int indx = expr->bitmap_index;
 
-        /* We only need to search antic_occr since we require
-           ANTLOC != 0.  */
+	/* We only need to search antic_occr since we require
+	   ANTLOC != 0.  */
 
-        for (occr = expr->antic_occr; occr != NULL; occr = occr->next)
-          {
-            rtx insn = occr->insn;
-            rtx set;
-            basic_block bb = BLOCK_FOR_INSN (insn);
+	for (occr = expr->antic_occr; occr != NULL; occr = occr->next)
+	  {
+	    rtx insn = occr->insn;
+	    rtx set;
+	    basic_block bb = BLOCK_FOR_INSN (insn);
 
-            /* We only delete insns that have a single_set.  */
-            if (TEST_BIT (pre_delete_map[bb->index], indx)
-                && (set = single_set (insn)) != 0)
-              {
-                /* Create a pseudo-reg to store the result of reaching
-                   expressions into.  Get the mode for the new pseudo from
-                   the mode of the original destination pseudo.  */
-                if (expr->reaching_reg == NULL)
-                  expr->reaching_reg
-                    = gen_reg_rtx (GET_MODE (SET_DEST (set)));
+	    /* We only delete insns that have a single_set.  */
+	    if (TEST_BIT (pre_delete_map[bb->index], indx)
+		&& (set = single_set (insn)) != 0)
+	      {
+		/* Create a pseudo-reg to store the result of reaching
+		   expressions into.  Get the mode for the new pseudo from
+		   the mode of the original destination pseudo.  */
+		if (expr->reaching_reg == NULL)
+		  expr->reaching_reg
+		    = gen_reg_rtx (GET_MODE (SET_DEST (set)));
 
-                gcse_emit_move_after (expr->reaching_reg, SET_DEST (set), insn);
-                delete_insn (insn);
-                occr->deleted_p = 1;
-                SET_BIT (pre_redundant_insns, INSN_CUID (insn));
-                changed = 1;
-                gcse_subst_count++;
+		gcse_emit_move_after (expr->reaching_reg, SET_DEST (set), insn);
+		delete_insn (insn);
+		occr->deleted_p = 1;
+		SET_BIT (pre_redundant_insns, INSN_CUID (insn));
+		changed = 1;
+		gcse_subst_count++;
 
-                if (dump_file)
-                  {
-                    fprintf (dump_file,
-                             "PRE: redundant insn %d (expression %d) in ",
-                               INSN_UID (insn), indx);
-                    fprintf (dump_file, "bb %d, reaching reg is %d\n",
-                             bb->index, REGNO (expr->reaching_reg));
-                  }
-              }
-          }
+		if (dump_file)
+		  {
+		    fprintf (dump_file,
+			     "PRE: redundant insn %d (expression %d) in ",
+			       INSN_UID (insn), indx);
+		    fprintf (dump_file, "bb %d, reaching reg is %d\n",
+			     bb->index, REGNO (expr->reaching_reg));
+		  }
+	      }
+	  }
       }
 
   return changed;
@@ -4563,9 +4563,9 @@ one_pre_gcse_pass (int pass)
   if (dump_file)
     {
       fprintf (dump_file, "\nPRE GCSE of %s, pass %d: %d bytes needed, ",
-               current_function_name (), pass, bytes_used);
+	       current_function_name (), pass, bytes_used);
       fprintf (dump_file, "%d substs, %d insns created\n",
-               gcse_subst_count, gcse_create_count);
+	       gcse_subst_count, gcse_create_count);
     }
 
   return changed;
@@ -4590,25 +4590,25 @@ add_label_notes (rtx x, rtx insn)
   if (code == LABEL_REF && !LABEL_REF_NONLOCAL_P (x))
     {
       /* This code used to ignore labels that referred to dispatch tables to
-         avoid flow generating (slightly) worse code.
+	 avoid flow generating (slightly) worse code.
 
-         We no longer ignore such label references (see LABEL_REF handling in
-         mark_jump_label for additional information).  */
+	 We no longer ignore such label references (see LABEL_REF handling in
+	 mark_jump_label for additional information).  */
 
       REG_NOTES (insn) = gen_rtx_INSN_LIST (REG_LABEL, XEXP (x, 0),
-                                            REG_NOTES (insn));
+					    REG_NOTES (insn));
       if (LABEL_P (XEXP (x, 0)))
-        LABEL_NUSES (XEXP (x, 0))++;
+	LABEL_NUSES (XEXP (x, 0))++;
       return;
     }
 
   for (i = GET_RTX_LENGTH (code) - 1, fmt = GET_RTX_FORMAT (code); i >= 0; i--)
     {
       if (fmt[i] == 'e')
-        add_label_notes (XEXP (x, i), insn);
+	add_label_notes (XEXP (x, i), insn);
       else if (fmt[i] == 'E')
-        for (j = XVECLEN (x, i) - 1; j >= 0; j--)
-          add_label_notes (XVECEXP (x, i, j), insn);
+	for (j = XVECLEN (x, i) - 1; j >= 0; j--)
+	  add_label_notes (XVECEXP (x, i, j), insn);
     }
 }
 
@@ -4637,24 +4637,24 @@ compute_transpout (void)
   FOR_EACH_BB (bb)
     {
       /* Note that flow inserted a nop a the end of basic blocks that
-         end in call instructions for reasons other than abnormal
-         control flow.  */
+	 end in call instructions for reasons other than abnormal
+	 control flow.  */
       if (! CALL_P (BB_END (bb)))
-        continue;
+	continue;
 
       for (i = 0; i < expr_hash_table.size; i++)
-        for (expr = expr_hash_table.table[i]; expr ; expr = expr->next_same_hash)
-          if (MEM_P (expr->expr))
-            {
-              if (GET_CODE (XEXP (expr->expr, 0)) == SYMBOL_REF
-                  && CONSTANT_POOL_ADDRESS_P (XEXP (expr->expr, 0)))
-                continue;
+	for (expr = expr_hash_table.table[i]; expr ; expr = expr->next_same_hash)
+	  if (MEM_P (expr->expr))
+	    {
+	      if (GET_CODE (XEXP (expr->expr, 0)) == SYMBOL_REF
+		  && CONSTANT_POOL_ADDRESS_P (XEXP (expr->expr, 0)))
+		continue;
 
-              /* ??? Optimally, we would use interprocedural alias
-                 analysis to determine if this mem is actually killed
-                 by this call.  */
-              RESET_BIT (transpout[bb->index], expr->bitmap_index);
-            }
+	      /* ??? Optimally, we would use interprocedural alias
+		 analysis to determine if this mem is actually killed
+		 by this call.  */
+	      RESET_BIT (transpout[bb->index], expr->bitmap_index);
+	    }
     }
 }
 
@@ -4728,14 +4728,14 @@ compute_code_hoist_vbeinout (void)
       changed = 0;
 
       /* We scan the blocks in the reverse order to speed up
-         the convergence.  */
+	 the convergence.  */
       FOR_EACH_BB_REVERSE (bb)
-        {
-          changed |= sbitmap_a_or_b_and_c_cg (hoist_vbein[bb->index], antloc[bb->index],
-                                              hoist_vbeout[bb->index], transp[bb->index]);
-          if (bb->next_bb != EXIT_BLOCK_PTR)
-            sbitmap_intersection_of_succs (hoist_vbeout[bb->index], hoist_vbein, bb->index);
-        }
+	{
+	  changed |= sbitmap_a_or_b_and_c_cg (hoist_vbein[bb->index], antloc[bb->index],
+					      hoist_vbeout[bb->index], transp[bb->index]);
+	  if (bb->next_bb != EXIT_BLOCK_PTR)
+	    sbitmap_intersection_of_succs (hoist_vbeout[bb->index], hoist_vbein, bb->index);
+	}
 
       passes++;
     }
@@ -4789,26 +4789,26 @@ hoist_expr_reaches_here_p (basic_block expr_bb, int expr_index, basic_block bb, 
       basic_block pred_bb = pred->src;
 
       if (pred->src == ENTRY_BLOCK_PTR)
-        break;
+	break;
       else if (pred_bb == expr_bb)
-        continue;
+	continue;
       else if (visited[pred_bb->index])
-        continue;
+	continue;
 
       /* Does this predecessor generate this expression?  */
       else if (TEST_BIT (comp[pred_bb->index], expr_index))
-        break;
+	break;
       else if (! TEST_BIT (transp[pred_bb->index], expr_index))
-        break;
+	break;
 
       /* Not killed.  */
       else
-        {
-          visited[pred_bb->index] = 1;
-          if (! hoist_expr_reaches_here_p (expr_bb, expr_index,
-                                           pred_bb, visited))
-            break;
-        }
+	{
+	  visited[pred_bb->index] = 1;
+	  if (! hoist_expr_reaches_here_p (expr_bb, expr_index,
+					   pred_bb, visited))
+	    break;
+	}
     }
   if (visited_allocated_locally)
     free (visited);
@@ -4847,128 +4847,128 @@ hoist_code (void)
 
       domby_len = get_dominated_by (CDI_DOMINATORS, bb, &domby);
       /* Examine each expression that is very busy at the exit of this
-         block.  These are the potentially hoistable expressions.  */
+	 block.  These are the potentially hoistable expressions.  */
       for (i = 0; i < hoist_vbeout[bb->index]->n_bits; i++)
-        {
-          int hoistable = 0;
+	{
+	  int hoistable = 0;
 
-          if (TEST_BIT (hoist_vbeout[bb->index], i)
-              && TEST_BIT (transpout[bb->index], i))
-            {
-              /* We've found a potentially hoistable expression, now
-                 we look at every block BB dominates to see if it
-                 computes the expression.  */
-              for (j = 0; j < domby_len; j++)
-                {
-                  dominated = domby[j];
-                  /* Ignore self dominance.  */
-                  if (bb == dominated)
-                    continue;
-                  /* We've found a dominated block, now see if it computes
-                     the busy expression and whether or not moving that
-                     expression to the "beginning" of that block is safe.  */
-                  if (!TEST_BIT (antloc[dominated->index], i))
-                    continue;
+	  if (TEST_BIT (hoist_vbeout[bb->index], i)
+	      && TEST_BIT (transpout[bb->index], i))
+	    {
+	      /* We've found a potentially hoistable expression, now
+		 we look at every block BB dominates to see if it
+		 computes the expression.  */
+	      for (j = 0; j < domby_len; j++)
+		{
+		  dominated = domby[j];
+		  /* Ignore self dominance.  */
+		  if (bb == dominated)
+		    continue;
+		  /* We've found a dominated block, now see if it computes
+		     the busy expression and whether or not moving that
+		     expression to the "beginning" of that block is safe.  */
+		  if (!TEST_BIT (antloc[dominated->index], i))
+		    continue;
 
-                  /* Note if the expression would reach the dominated block
-                     unimpared if it was placed at the end of BB.
+		  /* Note if the expression would reach the dominated block
+		     unimpared if it was placed at the end of BB.
 
-                     Keep track of how many times this expression is hoistable
-                     from a dominated block into BB.  */
-                  if (hoist_expr_reaches_here_p (bb, i, dominated, NULL))
-                    hoistable++;
-                }
+		     Keep track of how many times this expression is hoistable
+		     from a dominated block into BB.  */
+		  if (hoist_expr_reaches_here_p (bb, i, dominated, NULL))
+		    hoistable++;
+		}
 
-              /* If we found more than one hoistable occurrence of this
-                 expression, then note it in the bitmap of expressions to
-                 hoist.  It makes no sense to hoist things which are computed
-                 in only one BB, and doing so tends to pessimize register
-                 allocation.  One could increase this value to try harder
-                 to avoid any possible code expansion due to register
-                 allocation issues; however experiments have shown that
-                 the vast majority of hoistable expressions are only movable
-                 from two successors, so raising this threshold is likely
-                 to nullify any benefit we get from code hoisting.  */
-              if (hoistable > 1)
-                {
-                  SET_BIT (hoist_exprs[bb->index], i);
-                  found = 1;
-                }
-            }
-        }
+	      /* If we found more than one hoistable occurrence of this
+		 expression, then note it in the bitmap of expressions to
+		 hoist.  It makes no sense to hoist things which are computed
+		 in only one BB, and doing so tends to pessimize register
+		 allocation.  One could increase this value to try harder
+		 to avoid any possible code expansion due to register
+		 allocation issues; however experiments have shown that
+		 the vast majority of hoistable expressions are only movable
+		 from two successors, so raising this threshold is likely
+		 to nullify any benefit we get from code hoisting.  */
+	      if (hoistable > 1)
+		{
+		  SET_BIT (hoist_exprs[bb->index], i);
+		  found = 1;
+		}
+	    }
+	}
       /* If we found nothing to hoist, then quit now.  */
       if (! found)
         {
-          free (domby);
-        continue;
-        }
+	  free (domby);
+	continue;
+	}
 
       /* Loop over all the hoistable expressions.  */
       for (i = 0; i < hoist_exprs[bb->index]->n_bits; i++)
-        {
-          /* We want to insert the expression into BB only once, so
-             note when we've inserted it.  */
-          insn_inserted_p = 0;
+	{
+	  /* We want to insert the expression into BB only once, so
+	     note when we've inserted it.  */
+	  insn_inserted_p = 0;
 
-          /* These tests should be the same as the tests above.  */
-          if (TEST_BIT (hoist_exprs[bb->index], i))
-            {
-              /* We've found a potentially hoistable expression, now
-                 we look at every block BB dominates to see if it
-                 computes the expression.  */
-              for (j = 0; j < domby_len; j++)
-                {
-                  dominated = domby[j];
-                  /* Ignore self dominance.  */
-                  if (bb == dominated)
-                    continue;
+	  /* These tests should be the same as the tests above.  */
+	  if (TEST_BIT (hoist_exprs[bb->index], i))
+	    {
+	      /* We've found a potentially hoistable expression, now
+		 we look at every block BB dominates to see if it
+		 computes the expression.  */
+	      for (j = 0; j < domby_len; j++)
+		{
+		  dominated = domby[j];
+		  /* Ignore self dominance.  */
+		  if (bb == dominated)
+		    continue;
 
-                  /* We've found a dominated block, now see if it computes
-                     the busy expression and whether or not moving that
-                     expression to the "beginning" of that block is safe.  */
-                  if (!TEST_BIT (antloc[dominated->index], i))
-                    continue;
+		  /* We've found a dominated block, now see if it computes
+		     the busy expression and whether or not moving that
+		     expression to the "beginning" of that block is safe.  */
+		  if (!TEST_BIT (antloc[dominated->index], i))
+		    continue;
 
-                  /* The expression is computed in the dominated block and
-                     it would be safe to compute it at the start of the
-                     dominated block.  Now we have to determine if the
-                     expression would reach the dominated block if it was
-                     placed at the end of BB.  */
-                  if (hoist_expr_reaches_here_p (bb, i, dominated, NULL))
-                    {
-                      struct expr *expr = index_map[i];
-                      struct occr *occr = expr->antic_occr;
-                      rtx insn;
-                      rtx set;
+		  /* The expression is computed in the dominated block and
+		     it would be safe to compute it at the start of the
+		     dominated block.  Now we have to determine if the
+		     expression would reach the dominated block if it was
+		     placed at the end of BB.  */
+		  if (hoist_expr_reaches_here_p (bb, i, dominated, NULL))
+		    {
+		      struct expr *expr = index_map[i];
+		      struct occr *occr = expr->antic_occr;
+		      rtx insn;
+		      rtx set;
 
-                      /* Find the right occurrence of this expression.  */
-                      while (BLOCK_FOR_INSN (occr->insn) != dominated && occr)
-                        occr = occr->next;
+		      /* Find the right occurrence of this expression.  */
+		      while (BLOCK_FOR_INSN (occr->insn) != dominated && occr)
+			occr = occr->next;
 
-                      gcc_assert (occr);
-                      insn = occr->insn;
-                      set = single_set (insn);
-                      gcc_assert (set);
+		      gcc_assert (occr);
+		      insn = occr->insn;
+		      set = single_set (insn);
+		      gcc_assert (set);
 
-                      /* Create a pseudo-reg to store the result of reaching
-                         expressions into.  Get the mode for the new pseudo
-                         from the mode of the original destination pseudo.  */
-                      if (expr->reaching_reg == NULL)
-                        expr->reaching_reg
-                          = gen_reg_rtx (GET_MODE (SET_DEST (set)));
+		      /* Create a pseudo-reg to store the result of reaching
+			 expressions into.  Get the mode for the new pseudo
+			 from the mode of the original destination pseudo.  */
+		      if (expr->reaching_reg == NULL)
+			expr->reaching_reg
+			  = gen_reg_rtx (GET_MODE (SET_DEST (set)));
 
-                      gcse_emit_move_after (expr->reaching_reg, SET_DEST (set), insn);
-                      delete_insn (insn);
-                      occr->deleted_p = 1;
-                      if (!insn_inserted_p)
-                        {
-                          insert_insn_end_bb (index_map[i], bb, 0);
-                          insn_inserted_p = 1;
-                        }
-                    }
-                }
-            }
-        }
+		      gcse_emit_move_after (expr->reaching_reg, SET_DEST (set), insn);
+		      delete_insn (insn);
+		      occr->deleted_p = 1;
+		      if (!insn_inserted_p)
+			{
+			  insert_insn_end_bb (index_map[i], bb, 0);
+			  insn_inserted_p = 1;
+			}
+		    }
+		}
+	    }
+	}
       free (domby);
     }
 
@@ -5006,14 +5006,14 @@ one_code_hoisting_pass (void)
     the exit. In order for this to be effective, gcse also needed to
     be taught how to move a load when it is kill only by a store to itself.
 
-            int i;
-            float a[10];
+	    int i;
+	    float a[10];
 
-            void foo(float scale)
-            {
-              for (i=0; i<10; i++)
-                a[i] *= scale;
-            }
+	    void foo(float scale)
+	    {
+	      for (i=0; i<10; i++)
+		a[i] *= scale;
+	    }
 
     'i' is both loaded and stored to in the loop. Normally, gcse cannot move
     the load out since its live around the loop, and stored at the bottom
@@ -5055,7 +5055,7 @@ ldst_entry (rtx x)
   struct ls_expr e;
 
   hash = hash_rtx (x, GET_MODE (x), &do_not_record_p,
-                   NULL,  /*have_reg_qty=*/false);
+		   NULL,  /*have_reg_qty=*/false);
 
   e.pattern = x;
   slot = htab_find_slot_with_hash (pre_ldst_table, &e, hash, INSERT);
@@ -5127,19 +5127,19 @@ print_ldst_list (FILE * file)
 
       print_rtl (file, ptr->pattern);
 
-      fprintf (file, "\n         Loads : ");
+      fprintf (file, "\n	 Loads : ");
 
       if (ptr->loads)
-        print_rtl (file, ptr->loads);
+	print_rtl (file, ptr->loads);
       else
-        fprintf (file, "(nil)");
+	fprintf (file, "(nil)");
 
-      fprintf (file, "\n        Stores : ");
+      fprintf (file, "\n	Stores : ");
 
       if (ptr->stores)
-        print_rtl (file, ptr->stores);
+	print_rtl (file, ptr->stores);
       else
-        fprintf (file, "(nil)");
+	fprintf (file, "(nil)");
 
       fprintf (file, "\n\n");
     }
@@ -5258,10 +5258,10 @@ invalidate_any_buried_refs (rtx x)
   for (i = GET_RTX_LENGTH (GET_CODE (x)) - 1; i >= 0; i--)
     {
       if (fmt[i] == 'e')
-        invalidate_any_buried_refs (XEXP (x, i));
+	invalidate_any_buried_refs (XEXP (x, i));
       else if (fmt[i] == 'E')
-        for (j = XVECLEN (x, i) - 1; j >= 0; j--)
-          invalidate_any_buried_refs (XVECEXP (x, i, j));
+	for (j = XVECLEN (x, i) - 1; j >= 0; j--)
+	  invalidate_any_buried_refs (XVECEXP (x, i, j));
     }
 }
 
@@ -5282,56 +5282,56 @@ compute_ld_motion_mems (void)
 
   pre_ldst_mems = NULL;
   pre_ldst_table = htab_create (13, pre_ldst_expr_hash,
-                                pre_ldst_expr_eq, NULL);
+				pre_ldst_expr_eq, NULL);
 
   FOR_EACH_BB (bb)
     {
       FOR_BB_INSNS (bb, insn)
-        {
-          if (INSN_P (insn))
-            {
-              if (GET_CODE (PATTERN (insn)) == SET)
-                {
-                  rtx src = SET_SRC (PATTERN (insn));
-                  rtx dest = SET_DEST (PATTERN (insn));
+	{
+	  if (INSN_P (insn))
+	    {
+	      if (GET_CODE (PATTERN (insn)) == SET)
+		{
+		  rtx src = SET_SRC (PATTERN (insn));
+		  rtx dest = SET_DEST (PATTERN (insn));
 
-                  /* Check for a simple LOAD...  */
-                  if (MEM_P (src) && simple_mem (src))
-                    {
-                      ptr = ldst_entry (src);
-                      if (REG_P (dest))
-                        ptr->loads = alloc_INSN_LIST (insn, ptr->loads);
-                      else
-                        ptr->invalid = 1;
-                    }
-                  else
-                    {
-                      /* Make sure there isn't a buried load somewhere.  */
-                      invalidate_any_buried_refs (src);
-                    }
+		  /* Check for a simple LOAD...  */
+		  if (MEM_P (src) && simple_mem (src))
+		    {
+		      ptr = ldst_entry (src);
+		      if (REG_P (dest))
+			ptr->loads = alloc_INSN_LIST (insn, ptr->loads);
+		      else
+			ptr->invalid = 1;
+		    }
+		  else
+		    {
+		      /* Make sure there isn't a buried load somewhere.  */
+		      invalidate_any_buried_refs (src);
+		    }
 
-                  /* Check for stores. Don't worry about aliased ones, they
-                     will block any movement we might do later. We only care
-                     about this exact pattern since those are the only
-                     circumstance that we will ignore the aliasing info.  */
-                  if (MEM_P (dest) && simple_mem (dest))
-                    {
-                      ptr = ldst_entry (dest);
+		  /* Check for stores. Don't worry about aliased ones, they
+		     will block any movement we might do later. We only care
+		     about this exact pattern since those are the only
+		     circumstance that we will ignore the aliasing info.  */
+		  if (MEM_P (dest) && simple_mem (dest))
+		    {
+		      ptr = ldst_entry (dest);
 
-                      if (! MEM_P (src)
-                          && GET_CODE (src) != ASM_OPERANDS
-                          /* Check for REG manually since want_to_gcse_p
-                             returns 0 for all REGs.  */
-                          && can_assign_to_reg_p (src))
-                        ptr->stores = alloc_INSN_LIST (insn, ptr->stores);
-                      else
-                        ptr->invalid = 1;
-                    }
-                }
-              else
-                invalidate_any_buried_refs (PATTERN (insn));
-            }
-        }
+		      if (! MEM_P (src)
+			  && GET_CODE (src) != ASM_OPERANDS
+			  /* Check for REG manually since want_to_gcse_p
+			     returns 0 for all REGs.  */
+			  && can_assign_to_reg_p (src))
+			ptr->stores = alloc_INSN_LIST (insn, ptr->stores);
+		      else
+			ptr->invalid = 1;
+		    }
+		}
+	      else
+		invalidate_any_buried_refs (PATTERN (insn));
+	    }
+	}
     }
 }
 
@@ -5350,33 +5350,33 @@ trim_ld_motion_mems (void)
 
       /* Delete if entry has been made invalid.  */
       if (! ptr->invalid)
-        {
-          /* Delete if we cannot find this mem in the expression list.  */
-          unsigned int hash = ptr->hash_index % expr_hash_table.size;
+	{
+	  /* Delete if we cannot find this mem in the expression list.  */
+	  unsigned int hash = ptr->hash_index % expr_hash_table.size;
 
-          for (expr = expr_hash_table.table[hash];
-               expr != NULL;
-               expr = expr->next_same_hash)
-            if (expr_equiv_p (expr->expr, ptr->pattern))
-              break;
-        }
+	  for (expr = expr_hash_table.table[hash];
+	       expr != NULL;
+	       expr = expr->next_same_hash)
+	    if (expr_equiv_p (expr->expr, ptr->pattern))
+	      break;
+	}
       else
-        expr = (struct expr *) 0;
+	expr = (struct expr *) 0;
 
       if (expr)
-        {
-          /* Set the expression field if we are keeping it.  */
-          ptr->expr = expr;
-          last = & ptr->next;
-          ptr = ptr->next;
-        }
+	{
+	  /* Set the expression field if we are keeping it.  */
+	  ptr->expr = expr;
+	  last = & ptr->next;
+	  ptr = ptr->next;
+	}
       else
-        {
-          *last = ptr->next;
-          htab_remove_elt_with_hash (pre_ldst_table, ptr, ptr->hash_index);
-          free_ldst_entry (ptr);
-          ptr = * last;
-        }
+	{
+	  *last = ptr->next;
+	  htab_remove_elt_with_hash (pre_ldst_table, ptr, ptr->hash_index);
+	  free_ldst_entry (ptr);
+	  ptr = * last;
+	}
     }
 
   /* Show the world what we've found.  */
@@ -5399,53 +5399,53 @@ update_ld_motion_stores (struct expr * expr)
   if ((mem_ptr = find_rtx_in_ldst (expr->expr)))
     {
       /* We can try to find just the REACHED stores, but is shouldn't
-         matter to set the reaching reg everywhere...  some might be
-         dead and should be eliminated later.  */
+	 matter to set the reaching reg everywhere...  some might be
+	 dead and should be eliminated later.  */
 
       /* We replace (set mem expr) with (set reg expr) (set mem reg)
-         where reg is the reaching reg used in the load.  We checked in
-         compute_ld_motion_mems that we can replace (set mem expr) with
-         (set reg expr) in that insn.  */
+	 where reg is the reaching reg used in the load.  We checked in
+	 compute_ld_motion_mems that we can replace (set mem expr) with
+	 (set reg expr) in that insn.  */
       rtx list = mem_ptr->stores;
 
       for ( ; list != NULL_RTX; list = XEXP (list, 1))
-        {
-          rtx insn = XEXP (list, 0);
-          rtx pat = PATTERN (insn);
-          rtx src = SET_SRC (pat);
-          rtx reg = expr->reaching_reg;
-          rtx copy, new;
+	{
+	  rtx insn = XEXP (list, 0);
+	  rtx pat = PATTERN (insn);
+	  rtx src = SET_SRC (pat);
+	  rtx reg = expr->reaching_reg;
+	  rtx copy, new;
 
-          /* If we've already copied it, continue.  */
-          if (expr->reaching_reg == src)
-            continue;
+	  /* If we've already copied it, continue.  */
+	  if (expr->reaching_reg == src)
+	    continue;
 
-          if (dump_file)
-            {
-              fprintf (dump_file, "PRE:  store updated with reaching reg ");
-              print_rtl (dump_file, expr->reaching_reg);
-              fprintf (dump_file, ":\n        ");
-              print_inline_rtx (dump_file, insn, 8);
-              fprintf (dump_file, "\n");
-            }
+	  if (dump_file)
+	    {
+	      fprintf (dump_file, "PRE:  store updated with reaching reg ");
+	      print_rtl (dump_file, expr->reaching_reg);
+	      fprintf (dump_file, ":\n	");
+	      print_inline_rtx (dump_file, insn, 8);
+	      fprintf (dump_file, "\n");
+	    }
 
-          copy = gen_move_insn ( reg, copy_rtx (SET_SRC (pat)));
-          new = emit_insn_before (copy, insn);
-          record_one_set (REGNO (reg), new);
-          SET_SRC (pat) = reg;
+	  copy = gen_move_insn ( reg, copy_rtx (SET_SRC (pat)));
+	  new = emit_insn_before (copy, insn);
+	  record_one_set (REGNO (reg), new);
+	  SET_SRC (pat) = reg;
 
-          /* un-recognize this pattern since it's probably different now.  */
-          INSN_CODE (insn) = -1;
-          gcse_create_count++;
-        }
+	  /* un-recognize this pattern since it's probably different now.  */
+	  INSN_CODE (insn) = -1;
+	  gcse_create_count++;
+	}
     }
 }
 
 /* Store motion code.  */
 
-#define ANTIC_STORE_LIST(x)                ((x)->loads)
-#define AVAIL_STORE_LIST(x)                ((x)->stores)
-#define LAST_AVAIL_CHECK_FAILURE(x)        ((x)->reaching_reg)
+#define ANTIC_STORE_LIST(x)		((x)->loads)
+#define AVAIL_STORE_LIST(x)		((x)->stores)
+#define LAST_AVAIL_CHECK_FAILURE(x)	((x)->reaching_reg)
 
 /* This is used to communicate the target bitvector we want to use in the
    reg_set_info routine when called via the note_stores mechanism.  */
@@ -5465,7 +5465,7 @@ static int num_stores;
 
 static void
 reg_set_info (rtx dest, rtx setter ATTRIBUTE_UNUSED,
-              void *data)
+	      void *data)
 {
   sbitmap bb_reg = data;
 
@@ -5476,7 +5476,7 @@ reg_set_info (rtx dest, rtx setter ATTRIBUTE_UNUSED,
     {
       regvec[REGNO (dest)] = INSN_UID (compute_store_table_current_insn);
       if (bb_reg)
-        SET_BIT (bb_reg, REGNO (dest));
+	SET_BIT (bb_reg, REGNO (dest));
     }
 }
 
@@ -5485,7 +5485,7 @@ reg_set_info (rtx dest, rtx setter ATTRIBUTE_UNUSED,
 
 static void
 reg_clear_last_set (rtx dest, rtx setter ATTRIBUTE_UNUSED,
-              void *data)
+	      void *data)
 {
   int *dead_vec = data;
 
@@ -5509,7 +5509,7 @@ store_ops_ok (rtx x, int *regs_set)
     {
       reg = XEXP (x, 0);
       if (regs_set[REGNO(reg)])
-        return false;
+	return false;
     }
 
   return true;
@@ -5576,26 +5576,26 @@ extract_mentioned_regs_helper (rtx x, rtx accum)
   for (; i >= 0; i--)
     {
       if (fmt[i] == 'e')
-        {
-          rtx tem = XEXP (x, i);
+	{
+	  rtx tem = XEXP (x, i);
 
-          /* If we are about to do the last recursive call
-             needed at this level, change it into iteration.  */
-          if (i == 0)
-            {
-              x = tem;
-              goto repeat;
-            }
+	  /* If we are about to do the last recursive call
+	     needed at this level, change it into iteration.  */
+	  if (i == 0)
+	    {
+	      x = tem;
+	      goto repeat;
+	    }
 
-          accum = extract_mentioned_regs_helper (tem, accum);
-        }
+	  accum = extract_mentioned_regs_helper (tem, accum);
+	}
       else if (fmt[i] == 'E')
-        {
-          int j;
+	{
+	  int j;
 
-          for (j = 0; j < XVECLEN (x, i); j++)
-            accum = extract_mentioned_regs_helper (XVECEXP (x, i, j), accum);
-        }
+	  for (j = 0; j < XVECLEN (x, i); j++)
+	    accum = extract_mentioned_regs_helper (XVECEXP (x, i, j), accum);
+	}
     }
 
   return accum;
@@ -5676,17 +5676,17 @@ find_moveable_store (rtx insn, int *regs_set_before, int *regs_set_after)
     {
       tmp = XEXP (ANTIC_STORE_LIST (ptr), 0);
       if (tmp != NULL_RTX
-          && BLOCK_FOR_INSN (tmp) != bb)
-        check_anticipatable = 1;
+	  && BLOCK_FOR_INSN (tmp) != bb)
+	check_anticipatable = 1;
     }
   if (check_anticipatable)
     {
       if (store_killed_before (dest, ptr->pattern_regs, insn, bb, regs_set_before))
-        tmp = NULL_RTX;
+	tmp = NULL_RTX;
       else
-        tmp = insn;
+	tmp = insn;
       ANTIC_STORE_LIST (ptr) = alloc_INSN_LIST (tmp,
-                                                ANTIC_STORE_LIST (ptr));
+						ANTIC_STORE_LIST (ptr));
     }
 
   /* It is not necessary to check whether store is available if we did
@@ -5699,25 +5699,25 @@ find_moveable_store (rtx insn, int *regs_set_before, int *regs_set_after)
     {
       tmp = XEXP (AVAIL_STORE_LIST (ptr), 0);
       if (BLOCK_FOR_INSN (tmp) != bb)
-        check_available = 1;
+	check_available = 1;
     }
   if (check_available)
     {
       /* Check that we have already reached the insn at that the check
-         failed last time.  */
+	 failed last time.  */
       if (LAST_AVAIL_CHECK_FAILURE (ptr))
-        {
-          for (tmp = BB_END (bb);
-               tmp != insn && tmp != LAST_AVAIL_CHECK_FAILURE (ptr);
-               tmp = PREV_INSN (tmp))
-            continue;
-          if (tmp == insn)
-            check_available = 0;
-        }
+	{
+	  for (tmp = BB_END (bb);
+	       tmp != insn && tmp != LAST_AVAIL_CHECK_FAILURE (ptr);
+	       tmp = PREV_INSN (tmp))
+	    continue;
+	  if (tmp == insn)
+	    check_available = 0;
+	}
       else
-        check_available = store_killed_after (dest, ptr->pattern_regs, insn,
-                                              bb, regs_set_after,
-                                              &LAST_AVAIL_CHECK_FAILURE (ptr));
+	check_available = store_killed_after (dest, ptr->pattern_regs, insn,
+					      bb, regs_set_after,
+					      &LAST_AVAIL_CHECK_FAILURE (ptr));
     }
   if (!check_available)
     AVAIL_STORE_LIST (ptr) = alloc_INSN_LIST (insn, AVAIL_STORE_LIST (ptr));
@@ -5738,11 +5738,11 @@ compute_store_table (void)
   max_gcse_regno = max_reg_num ();
 
   reg_set_in_block = sbitmap_vector_alloc (last_basic_block,
-                                                       max_gcse_regno);
+						       max_gcse_regno);
   sbitmap_vector_zero (reg_set_in_block, last_basic_block);
   pre_ldst_mems = 0;
   pre_ldst_table = htab_create (13, pre_ldst_expr_hash,
-                                pre_ldst_expr_eq, NULL);
+				pre_ldst_expr_eq, NULL);
   last_set_in = XCNEWVEC (int, max_gcse_regno);
   already_set = XNEWVEC (int, max_gcse_regno);
 
@@ -5753,72 +5753,72 @@ compute_store_table (void)
       regvec = last_set_in;
 
       FOR_BB_INSNS (bb, insn)
-        {
-          if (! INSN_P (insn))
-            continue;
+	{
+	  if (! INSN_P (insn))
+	    continue;
 
-          if (CALL_P (insn))
-            {
-              for (regno = 0; regno < FIRST_PSEUDO_REGISTER; regno++)
-                if (TEST_HARD_REG_BIT (regs_invalidated_by_call, regno))
-                  {
-                    last_set_in[regno] = INSN_UID (insn);
-                    SET_BIT (reg_set_in_block[bb->index], regno);
-                  }
-            }
+	  if (CALL_P (insn))
+	    {
+	      for (regno = 0; regno < FIRST_PSEUDO_REGISTER; regno++)
+		if (TEST_HARD_REG_BIT (regs_invalidated_by_call, regno))
+		  {
+		    last_set_in[regno] = INSN_UID (insn);
+		    SET_BIT (reg_set_in_block[bb->index], regno);
+		  }
+	    }
 
-          pat = PATTERN (insn);
-          compute_store_table_current_insn = insn;
-          note_stores (pat, reg_set_info, reg_set_in_block[bb->index]);
-        }
+	  pat = PATTERN (insn);
+	  compute_store_table_current_insn = insn;
+	  note_stores (pat, reg_set_info, reg_set_in_block[bb->index]);
+	}
 
       /* Now find the stores.  */
       memset (already_set, 0, sizeof (int) * max_gcse_regno);
       regvec = already_set;
       FOR_BB_INSNS (bb, insn)
-        {
-          if (! INSN_P (insn))
-            continue;
+	{
+	  if (! INSN_P (insn))
+	    continue;
 
-          if (CALL_P (insn))
-            {
-              for (regno = 0; regno < FIRST_PSEUDO_REGISTER; regno++)
-                if (TEST_HARD_REG_BIT (regs_invalidated_by_call, regno))
-                  already_set[regno] = 1;
-            }
+	  if (CALL_P (insn))
+	    {
+	      for (regno = 0; regno < FIRST_PSEUDO_REGISTER; regno++)
+		if (TEST_HARD_REG_BIT (regs_invalidated_by_call, regno))
+		  already_set[regno] = 1;
+	    }
 
-          pat = PATTERN (insn);
-          note_stores (pat, reg_set_info, NULL);
+	  pat = PATTERN (insn);
+	  note_stores (pat, reg_set_info, NULL);
 
-          /* Now that we've marked regs, look for stores.  */
-          find_moveable_store (insn, already_set, last_set_in);
+	  /* Now that we've marked regs, look for stores.  */
+	  find_moveable_store (insn, already_set, last_set_in);
 
-          /* Unmark regs that are no longer set.  */
-          compute_store_table_current_insn = insn;
-          note_stores (pat, reg_clear_last_set, last_set_in);
-          if (CALL_P (insn))
-            {
-              for (regno = 0; regno < FIRST_PSEUDO_REGISTER; regno++)
-                if (TEST_HARD_REG_BIT (regs_invalidated_by_call, regno)
-                    && last_set_in[regno] == INSN_UID (insn))
-                  last_set_in[regno] = 0;
-            }
-        }
+	  /* Unmark regs that are no longer set.  */
+	  compute_store_table_current_insn = insn;
+	  note_stores (pat, reg_clear_last_set, last_set_in);
+	  if (CALL_P (insn))
+	    {
+	      for (regno = 0; regno < FIRST_PSEUDO_REGISTER; regno++)
+		if (TEST_HARD_REG_BIT (regs_invalidated_by_call, regno)
+		    && last_set_in[regno] == INSN_UID (insn))
+		  last_set_in[regno] = 0;
+	    }
+	}
 
 #ifdef ENABLE_CHECKING
       /* last_set_in should now be all-zero.  */
       for (regno = 0; regno < max_gcse_regno; regno++)
-        gcc_assert (!last_set_in[regno]);
+	gcc_assert (!last_set_in[regno]);
 #endif
 
       /* Clear temporary marks.  */
       for (ptr = first_ls_expr (); ptr != NULL; ptr = next_ls_expr (ptr))
-        {
-          LAST_AVAIL_CHECK_FAILURE(ptr) = NULL_RTX;
-          if (ANTIC_STORE_LIST (ptr)
-              && (tmp = XEXP (ANTIC_STORE_LIST (ptr), 0)) == NULL_RTX)
-            ANTIC_STORE_LIST (ptr) = XEXP (ANTIC_STORE_LIST (ptr), 1);
-        }
+	{
+	  LAST_AVAIL_CHECK_FAILURE(ptr) = NULL_RTX;
+	  if (ANTIC_STORE_LIST (ptr)
+	      && (tmp = XEXP (ANTIC_STORE_LIST (ptr), 0)) == NULL_RTX)
+	    ANTIC_STORE_LIST (ptr) = XEXP (ANTIC_STORE_LIST (ptr), 1);
+	}
     }
 
   /* Remove the stores that are not available anywhere, as there will
@@ -5828,13 +5828,13 @@ compute_store_table (void)
        ptr = *prev_next_ptr_ptr)
     {
       if (!AVAIL_STORE_LIST (ptr))
-        {
-          *prev_next_ptr_ptr = ptr->next;
-          htab_remove_elt_with_hash (pre_ldst_table, ptr, ptr->hash_index);
-          free_ldst_entry (ptr);
-        }
+	{
+	  *prev_next_ptr_ptr = ptr->next;
+	  htab_remove_elt_with_hash (pre_ldst_table, ptr, ptr->hash_index);
+	  free_ldst_entry (ptr);
+	}
       else
-        prev_next_ptr_ptr = &ptr->next;
+	prev_next_ptr_ptr = &ptr->next;
     }
 
   ret = enumerate_ldsts ();
@@ -5861,7 +5861,7 @@ load_kills_store (rtx x, rtx store_pattern, int after)
     return anti_dependence (x, store_pattern);
   else
     return true_dependence (store_pattern, GET_MODE (store_pattern), x,
-                            rtx_addr_varies_p);
+			    rtx_addr_varies_p);
 }
 
 /* Go through the entire insn X, looking for any loads which might alias
@@ -5885,7 +5885,7 @@ find_loads (rtx x, rtx store_pattern, int after)
   if (MEM_P (x))
     {
       if (load_kills_store (x, store_pattern, after))
-        return true;
+	return true;
     }
 
   /* Recursively process the insn.  */
@@ -5894,10 +5894,10 @@ find_loads (rtx x, rtx store_pattern, int after)
   for (i = GET_RTX_LENGTH (GET_CODE (x)) - 1; i >= 0 && !ret; i--)
     {
       if (fmt[i] == 'e')
-        ret |= find_loads (XEXP (x, i), store_pattern, after);
+	ret |= find_loads (XEXP (x, i), store_pattern, after);
       else if (fmt[i] == 'E')
-        for (j = XVECLEN (x, i) - 1; j >= 0; j--)
-          ret |= find_loads (XVECEXP (x, i, j), store_pattern, after);
+	for (j = XVECLEN (x, i) - 1; j >= 0; j--)
+	  ret |= find_loads (XVECEXP (x, i, j), store_pattern, after);
     }
   return ret;
 }
@@ -5917,21 +5917,21 @@ store_killed_in_insn (rtx x, rtx x_regs, rtx insn, int after)
   if (CALL_P (insn))
     {
       /* A normal or pure call might read from pattern,
-         but a const call will not.  */
+	 but a const call will not.  */
       if (! CONST_OR_PURE_CALL_P (insn) || pure_call_p (insn))
-        return true;
+	return true;
 
       /* But even a const call reads its parameters.  Check whether the
-         base of some of registers used in mem is stack pointer.  */
+	 base of some of registers used in mem is stack pointer.  */
       for (reg = x_regs; reg; reg = XEXP (reg, 1))
-        {
-          base = find_base_term (XEXP (reg, 0));
-          if (!base
-              || (GET_CODE (base) == ADDRESS
-                  && GET_MODE (base) == Pmode
-                  && XEXP (base, 0) == stack_pointer_rtx))
-            return true;
-        }
+	{
+	  base = find_base_term (XEXP (reg, 0));
+	  if (!base
+	      || (GET_CODE (base) == ADDRESS
+		  && GET_MODE (base) == Pmode
+		  && XEXP (base, 0) == stack_pointer_rtx))
+	    return true;
+	}
 
       return false;
     }
@@ -5942,25 +5942,25 @@ store_killed_in_insn (rtx x, rtx x_regs, rtx insn, int after)
       rtx dest = SET_DEST (pat);
 
       if (GET_CODE (dest) == ZERO_EXTRACT)
-        dest = XEXP (dest, 0);
+	dest = XEXP (dest, 0);
 
       /* Check for memory stores to aliased objects.  */
       if (MEM_P (dest)
-          && !expr_equiv_p (dest, x))
-        {
-          if (after)
-            {
-              if (output_dependence (dest, x))
-                return true;
-            }
-          else
-            {
-              if (output_dependence (x, dest))
-                return true;
-            }
-        }
+	  && !expr_equiv_p (dest, x))
+	{
+	  if (after)
+	    {
+	      if (output_dependence (dest, x))
+		return true;
+	    }
+	  else
+	    {
+	      if (output_dependence (x, dest))
+		return true;
+	    }
+	}
       if (find_loads (SET_SRC (pat), x, after))
-        return true;
+	return true;
     }
   else if (find_loads (PATTERN (insn), x, after))
     return true;
@@ -5988,7 +5988,7 @@ store_killed_in_insn (rtx x, rtx x_regs, rtx insn, int after)
 
 static bool
 store_killed_after (rtx x, rtx x_regs, rtx insn, basic_block bb,
-                    int *regs_set_after, rtx *fail_insn)
+		    int *regs_set_after, rtx *fail_insn)
 {
   rtx last = BB_END (bb), act;
 
@@ -5996,7 +5996,7 @@ store_killed_after (rtx x, rtx x_regs, rtx insn, basic_block bb,
     {
       /* We do not know where it will happen.  */
       if (fail_insn)
-        *fail_insn = NULL_RTX;
+	*fail_insn = NULL_RTX;
       return true;
     }
 
@@ -6004,9 +6004,9 @@ store_killed_after (rtx x, rtx x_regs, rtx insn, basic_block bb,
   for (act = last; act != PREV_INSN (insn); act = PREV_INSN (act))
     if (store_killed_in_insn (x, x_regs, act, false))
       {
-        if (fail_insn)
-          *fail_insn = act;
-        return true;
+	if (fail_insn)
+	  *fail_insn = act;
+	return true;
       }
 
   return false;
@@ -6017,7 +6017,7 @@ store_killed_after (rtx x, rtx x_regs, rtx insn, basic_block bb,
    REGS_SET_BEFORE is bitmap of registers set before or in this insn.  */
 static bool
 store_killed_before (rtx x, rtx x_regs, rtx insn, basic_block bb,
-                     int *regs_set_before)
+		     int *regs_set_before)
 {
   rtx first = BB_HEAD (bb);
 
@@ -6053,31 +6053,31 @@ build_store_vectors (void)
   for (ptr = first_ls_expr (); ptr != NULL; ptr = next_ls_expr (ptr))
     {
       for (st = AVAIL_STORE_LIST (ptr); st != NULL; st = XEXP (st, 1))
-        {
-          insn = XEXP (st, 0);
-          bb = BLOCK_FOR_INSN (insn);
+	{
+	  insn = XEXP (st, 0);
+	  bb = BLOCK_FOR_INSN (insn);
 
-          /* If we've already seen an available expression in this block,
-             we can delete this one (It occurs earlier in the block). We'll
-             copy the SRC expression to an unused register in case there
-             are any side effects.  */
-          if (TEST_BIT (ae_gen[bb->index], ptr->index))
-            {
-              rtx r = gen_reg_rtx (GET_MODE (ptr->pattern));
-              if (dump_file)
-                fprintf (dump_file, "Removing redundant store:\n");
-              replace_store_insn (r, XEXP (st, 0), bb, ptr);
-              continue;
-            }
-          SET_BIT (ae_gen[bb->index], ptr->index);
-        }
+	  /* If we've already seen an available expression in this block,
+	     we can delete this one (It occurs earlier in the block). We'll
+	     copy the SRC expression to an unused register in case there
+	     are any side effects.  */
+	  if (TEST_BIT (ae_gen[bb->index], ptr->index))
+	    {
+	      rtx r = gen_reg_rtx (GET_MODE (ptr->pattern));
+	      if (dump_file)
+		fprintf (dump_file, "Removing redundant store:\n");
+	      replace_store_insn (r, XEXP (st, 0), bb, ptr);
+	      continue;
+	    }
+	  SET_BIT (ae_gen[bb->index], ptr->index);
+	}
 
       for (st = ANTIC_STORE_LIST (ptr); st != NULL; st = XEXP (st, 1))
-        {
-          insn = XEXP (st, 0);
-          bb = BLOCK_FOR_INSN (insn);
-          SET_BIT (st_antloc[bb->index], ptr->index);
-        }
+	{
+	  insn = XEXP (st, 0);
+	  bb = BLOCK_FOR_INSN (insn);
+	  SET_BIT (st_antloc[bb->index], ptr->index);
+	}
     }
 
   ae_kill = sbitmap_vector_alloc (last_basic_block, num_stores);
@@ -6090,22 +6090,22 @@ build_store_vectors (void)
   FOR_EACH_BB (bb)
     {
       for (regno = 0; regno < max_gcse_regno; regno++)
-        regs_set_in_block[regno] = TEST_BIT (reg_set_in_block[bb->index], regno);
+	regs_set_in_block[regno] = TEST_BIT (reg_set_in_block[bb->index], regno);
 
       for (ptr = first_ls_expr (); ptr != NULL; ptr = next_ls_expr (ptr))
-        {
-          if (store_killed_after (ptr->pattern, ptr->pattern_regs, BB_HEAD (bb),
-                                  bb, regs_set_in_block, NULL))
-            {
-              /* It should not be necessary to consider the expression
-                 killed if it is both anticipatable and available.  */
-              if (!TEST_BIT (st_antloc[bb->index], ptr->index)
-                  || !TEST_BIT (ae_gen[bb->index], ptr->index))
-                SET_BIT (ae_kill[bb->index], ptr->index);
-            }
-          else
-            SET_BIT (transp[bb->index], ptr->index);
-        }
+	{
+	  if (store_killed_after (ptr->pattern, ptr->pattern_regs, BB_HEAD (bb),
+				  bb, regs_set_in_block, NULL))
+	    {
+	      /* It should not be necessary to consider the expression
+		 killed if it is both anticipatable and available.  */
+	      if (!TEST_BIT (st_antloc[bb->index], ptr->index)
+		  || !TEST_BIT (ae_gen[bb->index], ptr->index))
+		SET_BIT (ae_kill[bb->index], ptr->index);
+	    }
+	  else
+	    SET_BIT (transp[bb->index], ptr->index);
+	}
     }
 
   free (regs_set_in_block);
@@ -6131,12 +6131,12 @@ insert_insn_start_bb (rtx insn, basic_block bb)
   while (before != 0)
     {
       if (! LABEL_P (before)
-          && (! NOTE_P (before)
-              || NOTE_LINE_NUMBER (before) != NOTE_INSN_BASIC_BLOCK))
-        break;
+	  && (! NOTE_P (before)
+	      || NOTE_LINE_NUMBER (before) != NOTE_INSN_BASIC_BLOCK))
+	break;
       prev = before;
       if (prev == BB_END (bb))
-        break;
+	break;
       before = NEXT_INSN (before);
     }
 
@@ -6145,7 +6145,7 @@ insert_insn_start_bb (rtx insn, basic_block bb)
   if (dump_file)
     {
       fprintf (dump_file, "STORE_MOTION  insert store at start of BB %d:\n",
-               bb->index);
+	       bb->index);
       print_inline_rtx (dump_file, insn, 6);
       fprintf (dump_file, "\n");
     }
@@ -6181,11 +6181,11 @@ insert_store (struct ls_expr * expr, edge e)
   FOR_EACH_EDGE (tmp, ei, e->dest->preds)
     if (!(tmp->flags & EDGE_FAKE))
       {
-        int index = EDGE_INDEX (edge_list, tmp->src, tmp->dest);
-        
-        gcc_assert (index != EDGE_INDEX_NO_EDGE);
-        if (! TEST_BIT (pre_insert_map[index], expr->index))
-          break;
+	int index = EDGE_INDEX (edge_list, tmp->src, tmp->dest);
+	
+	gcc_assert (index != EDGE_INDEX_NO_EDGE);
+	if (! TEST_BIT (pre_insert_map[index], expr->index))
+	  break;
       }
 
   /* If tmp is NULL, we found an insertion on every edge, blank the
@@ -6193,10 +6193,10 @@ insert_store (struct ls_expr * expr, edge e)
   if (!tmp && bb != EXIT_BLOCK_PTR)
     {
       FOR_EACH_EDGE (tmp, ei, e->dest->preds)
-        {
-          int index = EDGE_INDEX (edge_list, tmp->src, tmp->dest);
-          RESET_BIT (pre_insert_map[index], expr->index);
-        }
+	{
+	  int index = EDGE_INDEX (edge_list, tmp->src, tmp->dest);
+	  RESET_BIT (pre_insert_map[index], expr->index);
+	}
       insert_insn_start_bb (insn, bb);
       return 0;
     }
@@ -6210,7 +6210,7 @@ insert_store (struct ls_expr * expr, edge e)
   if (dump_file)
     {
       fprintf (dump_file, "STORE_MOTION  insert insn on edge (%d, %d):\n",
-               e->src->index, e->dest->index);
+	       e->src->index, e->dest->index);
       print_inline_rtx (dump_file, insn, 6);
       fprintf (dump_file, "\n");
     }
@@ -6243,62 +6243,62 @@ remove_reachable_equiv_notes (basic_block bb, struct ls_expr *smexpr)
   while (1)
     {
       if (!act)
-        {
-          if (!sp)
-            {
-              free (stack);
-              sbitmap_free (visited);
-              return;
-            }
-          act = ei_edge (stack[--sp]);
-        }
+	{
+	  if (!sp)
+	    {
+	      free (stack);
+	      sbitmap_free (visited);
+	      return;
+	    }
+	  act = ei_edge (stack[--sp]);
+	}
       bb = act->dest;
 
       if (bb == EXIT_BLOCK_PTR
-          || TEST_BIT (visited, bb->index))
-        {
-          if (!ei_end_p (ei))
-              ei_next (&ei);
-          act = (! ei_end_p (ei)) ? ei_edge (ei) : NULL;
-          continue;
-        }
+	  || TEST_BIT (visited, bb->index))
+	{
+	  if (!ei_end_p (ei))
+	      ei_next (&ei);
+	  act = (! ei_end_p (ei)) ? ei_edge (ei) : NULL;
+	  continue;
+	}
       SET_BIT (visited, bb->index);
 
       if (TEST_BIT (st_antloc[bb->index], smexpr->index))
-        {
-          for (last = ANTIC_STORE_LIST (smexpr);
-               BLOCK_FOR_INSN (XEXP (last, 0)) != bb;
-               last = XEXP (last, 1))
-            continue;
-          last = XEXP (last, 0);
-        }
+	{
+	  for (last = ANTIC_STORE_LIST (smexpr);
+	       BLOCK_FOR_INSN (XEXP (last, 0)) != bb;
+	       last = XEXP (last, 1))
+	    continue;
+	  last = XEXP (last, 0);
+	}
       else
-        last = NEXT_INSN (BB_END (bb));
+	last = NEXT_INSN (BB_END (bb));
 
       for (insn = BB_HEAD (bb); insn != last; insn = NEXT_INSN (insn))
-        if (INSN_P (insn))
-          {
-            note = find_reg_equal_equiv_note (insn);
-            if (!note || !expr_equiv_p (XEXP (note, 0), mem))
-              continue;
+	if (INSN_P (insn))
+	  {
+	    note = find_reg_equal_equiv_note (insn);
+	    if (!note || !expr_equiv_p (XEXP (note, 0), mem))
+	      continue;
 
-            if (dump_file)
-              fprintf (dump_file, "STORE_MOTION  drop REG_EQUAL note at insn %d:\n",
-                       INSN_UID (insn));
-            remove_note (insn, note);
-          }
+	    if (dump_file)
+	      fprintf (dump_file, "STORE_MOTION  drop REG_EQUAL note at insn %d:\n",
+		       INSN_UID (insn));
+	    remove_note (insn, note);
+	  }
 
       if (!ei_end_p (ei))
-        ei_next (&ei);
+	ei_next (&ei);
       act = (! ei_end_p (ei)) ? ei_edge (ei) : NULL;
 
       if (EDGE_COUNT (bb->succs) > 0)
-        {
-          if (act)
-            stack[sp++] = ei;
-          ei = ei_start (bb->succs);
-          act = (EDGE_COUNT (ei_container (ei)) > 0 ? EDGE_I (ei_container (ei), 0) : NULL);
-        }
+	{
+	  if (act)
+	    stack[sp++] = ei;
+	  ei = ei_start (bb->succs);
+	  act = (EDGE_COUNT (ei_container (ei)) > 0 ? EDGE_I (ei_container (ei), 0) : NULL);
+	}
     }
 }
 
@@ -6316,7 +6316,7 @@ replace_store_insn (rtx reg, rtx del, basic_block bb, struct ls_expr *smexpr)
   if (dump_file)
     {
       fprintf (dump_file,
-               "STORE_MOTION  delete insn in BB %d:\n      ", bb->index);
+	       "STORE_MOTION  delete insn in BB %d:\n      ", bb->index);
       print_inline_rtx (dump_file, del, 6);
       fprintf (dump_file, "\nSTORE MOTION  replaced with insn:\n      ");
       print_inline_rtx (dump_file, insn, 6);
@@ -6326,8 +6326,8 @@ replace_store_insn (rtx reg, rtx del, basic_block bb, struct ls_expr *smexpr)
   for (ptr = ANTIC_STORE_LIST (smexpr); ptr; ptr = XEXP (ptr, 1))
     if (XEXP (ptr, 0) == del)
       {
-        XEXP (ptr, 0) = insn;
-        break;
+	XEXP (ptr, 0) = insn;
+	break;
       }
 
   /* Move the notes from the deleted insn to its replacement, and patch
@@ -6357,19 +6357,19 @@ replace_store_insn (rtx reg, rtx del, basic_block bb, struct ls_expr *smexpr)
   for (; insn != NEXT_INSN (BB_END (bb)); insn = NEXT_INSN (insn))
     if (INSN_P (insn))
       {
-        set = single_set (insn);
-        if (!set)
-          continue;
-        if (expr_equiv_p (SET_DEST (set), mem))
-          return;
-        note = find_reg_equal_equiv_note (insn);
-        if (!note || !expr_equiv_p (XEXP (note, 0), mem))
-          continue;
+	set = single_set (insn);
+	if (!set)
+	  continue;
+	if (expr_equiv_p (SET_DEST (set), mem))
+	  return;
+	note = find_reg_equal_equiv_note (insn);
+	if (!note || !expr_equiv_p (XEXP (note, 0), mem))
+	  continue;
 
-        if (dump_file)
-          fprintf (dump_file, "STORE_MOTION  drop REG_EQUAL note at insn %d:\n",
-                   INSN_UID (insn));
-        remove_note (insn, note);
+	if (dump_file)
+	  fprintf (dump_file, "STORE_MOTION  drop REG_EQUAL note at insn %d:\n",
+		   INSN_UID (insn));
+	remove_note (insn, note);
       }
   remove_reachable_equiv_notes (bb, smexpr);
 }
@@ -6392,12 +6392,12 @@ delete_store (struct ls_expr * expr, basic_block bb)
     {
       del = XEXP (i, 0);
       if (BLOCK_FOR_INSN (del) == bb)
-        {
-          /* We know there is only one since we deleted redundant
-             ones during the available computation.  */
-          replace_store_insn (reg, del, bb, expr);
-          break;
-        }
+	{
+	  /* We know there is only one since we deleted redundant
+	     ones during the available computation.  */
+	  replace_store_insn (reg, del, bb, expr);
+	  break;
+	}
     }
 }
 
@@ -6463,38 +6463,38 @@ store_motion (void)
   connect_infinite_loops_to_exit ();
 
   edge_list = pre_edge_rev_lcm (num_stores, transp, ae_gen,
-                                st_antloc, ae_kill, &pre_insert_map,
-                                &pre_delete_map);
+				st_antloc, ae_kill, &pre_insert_map,
+				&pre_delete_map);
 
   /* Now we want to insert the new stores which are going to be needed.  */
   for (ptr = first_ls_expr (); ptr != NULL; ptr = next_ls_expr (ptr))
     {
       /* If any of the edges we have above are abnormal, we can't move this
-         store.  */
+	 store.  */
       for (x = NUM_EDGES (edge_list) - 1; x >= 0; x--)
-        if (TEST_BIT (pre_insert_map[x], ptr->index)
-            && (INDEX_EDGE (edge_list, x)->flags & EDGE_ABNORMAL))
-          break;
+	if (TEST_BIT (pre_insert_map[x], ptr->index)
+	    && (INDEX_EDGE (edge_list, x)->flags & EDGE_ABNORMAL))
+	  break;
 
       if (x >= 0)
-        {
-          if (dump_file != NULL)
-            fprintf (dump_file,
-                     "Can't replace store %d: abnormal edge from %d to %d\n",
-                     ptr->index, INDEX_EDGE (edge_list, x)->src->index,
-                     INDEX_EDGE (edge_list, x)->dest->index);
-          continue;
-        }
-                      
+	{
+	  if (dump_file != NULL)
+	    fprintf (dump_file,
+		     "Can't replace store %d: abnormal edge from %d to %d\n",
+		     ptr->index, INDEX_EDGE (edge_list, x)->src->index,
+		     INDEX_EDGE (edge_list, x)->dest->index);
+	  continue;
+	}
+		      
       /* Now we want to insert the new stores which are going to be needed.  */
 
       FOR_EACH_BB (bb)
-        if (TEST_BIT (pre_delete_map[bb->index], ptr->index))
-          delete_store (ptr, bb);
+	if (TEST_BIT (pre_delete_map[bb->index], ptr->index))
+	  delete_store (ptr, bb);
 
       for (x = 0; x < NUM_EDGES (edge_list); x++)
-        if (TEST_BIT (pre_insert_map[x], ptr->index))
-          update_flow |= insert_store (ptr, INDEX_EDGE (edge_list, x));
+	if (TEST_BIT (pre_insert_map[x], ptr->index))
+	  update_flow |= insert_store (ptr, INDEX_EDGE (edge_list, x));
     }
 
   if (update_flow)
@@ -6557,7 +6557,7 @@ bypass_jumps (void)
   if (dump_file)
     {
       fprintf (dump_file, "BYPASS of %s: %d basic blocks, ",
-               current_function_name (), n_basic_blocks);
+	       current_function_name (), n_basic_blocks);
       fprintf (dump_file, "%d bytes\n\n", bytes_used);
     }
 
@@ -6589,8 +6589,8 @@ is_too_expensive (const char *pass)
   if (n_edges > 20000 + n_basic_blocks * 4)
     {
       warning (OPT_Wdisabled_optimization,
-               "%s: %d basic blocks and %d edges/basic block",
-               pass, n_basic_blocks, n_edges / n_basic_blocks);
+	       "%s: %d basic blocks and %d edges/basic block",
+	       pass, n_basic_blocks, n_edges / n_basic_blocks);
 
       return true;
     }
@@ -6602,8 +6602,8 @@ is_too_expensive (const char *pass)
        * sizeof (SBITMAP_ELT_TYPE)) > MAX_GCSE_MEMORY)
     {
       warning (OPT_Wdisabled_optimization,
-               "%s: %d basic blocks and %d registers",
-               pass, n_basic_blocks, max_reg_num ());
+	       "%s: %d basic blocks and %d registers",
+	       pass, n_basic_blocks, max_reg_num ());
 
       return true;
     }
@@ -6706,7 +6706,7 @@ struct tree_opt_pass pass_gcse =
 {
   "gcse1",                              /* name */
   gate_handle_gcse,                     /* gate */   
-  rest_of_handle_gcse,                        /* execute */       
+  rest_of_handle_gcse,			/* execute */       
   NULL,                                 /* sub */
   NULL,                                 /* next */
   0,                                    /* static_pass_number */

@@ -37,18 +37,18 @@
 ! fact return.  Users may put any desired instructions in those sections.
 ! This file is the last thing linked into any executable.
 
-        .file                "crtn.s"
+	.file		"crtn.s"
 
-        .section        ".init"
-        .align                4
+	.section	".init"
+	.align		4
 
-        ret
-        restore
+	ret
+	restore
 
-        .section        ".fini"
-        .align                4
+	.section	".fini"
+	.align		4
 
-        ret
-        restore
+	ret
+	restore
 
 ! Th-th-th-that is all folks!

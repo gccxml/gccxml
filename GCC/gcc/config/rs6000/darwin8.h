@@ -27,7 +27,7 @@ Boston, MA 02110-1301, USA.  */
    libSystemStubs when compiling on (not necessarily for) 8.0 and
    above and not 64-bit long double.  */
 
-#undef        LIB_SPEC
+#undef	LIB_SPEC
 #define LIB_SPEC "%{!static:\
   %{!mlong-double-64:%{pg:-lSystemStubs_profile;:-lSystemStubs}} \
   %{!m64:%:version-compare(>< 10.3 10.4 mmacosx-version-min= -lmx)} -lSystem}"

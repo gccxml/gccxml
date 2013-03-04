@@ -64,11 +64,11 @@
 #define JUMP_TABLES_IN_TEXT_SECTION (TARGET_ARM)
 
 #undef  READONLY_DATA_SECTION_ASM_OP
-#define READONLY_DATA_SECTION_ASM_OP        "\t.section .rdata"
+#define READONLY_DATA_SECTION_ASM_OP	"\t.section .rdata"
 #undef  CTORS_SECTION_ASM_OP
-#define CTORS_SECTION_ASM_OP        "\t.section .ctors,\"x\""
+#define CTORS_SECTION_ASM_OP	"\t.section .ctors,\"x\""
 #undef  DTORS_SECTION_ASM_OP
-#define DTORS_SECTION_ASM_OP        "\t.section .dtors,\"x\""
+#define DTORS_SECTION_ASM_OP	"\t.section .dtors,\"x\""
 
 /* Support the ctors/dtors sections for g++.  */
 

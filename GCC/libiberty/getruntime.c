@@ -97,7 +97,7 @@ get_run_time (void)
 
   getrusage (0, &rusage);
   return (rusage.ru_utime.tv_sec * 1000000 + rusage.ru_utime.tv_usec
-          + rusage.ru_stime.tv_sec * 1000000 + rusage.ru_stime.tv_usec);
+	  + rusage.ru_stime.tv_sec * 1000000 + rusage.ru_stime.tv_usec);
 #else /* ! HAVE_GETRUSAGE */
 #ifdef HAVE_TIMES
   struct tms tms;

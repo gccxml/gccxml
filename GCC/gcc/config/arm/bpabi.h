@@ -50,8 +50,8 @@
 
 /* The generic link spec in elf.h does not support shared libraries.  */
 #undef LINK_SPEC
-#define LINK_SPEC "%{mbig-endian:-EB} %{mlittle-endian:-EL} "                \
-  "%{static:-Bstatic} %{shared:-shared} %{symbolic:-Bsymbolic} "        \
+#define LINK_SPEC "%{mbig-endian:-EB} %{mlittle-endian:-EL} "		\
+  "%{static:-Bstatic} %{shared:-shared} %{symbolic:-Bsymbolic} "	\
   "-X"
 
 #if defined (__thumb__)
@@ -61,10 +61,10 @@
 #endif
 
 /* Make __aeabi_AEABI_NAME an alias for __GCC_NAME.  */
-#define RENAME_LIBRARY(GCC_NAME, AEABI_NAME)                \
-  __asm__ (".globl\t__aeabi_" #AEABI_NAME "\n"                \
-           RENAME_LIBRARY_SET "\t__aeabi_" #AEABI_NAME         \
-             ", __" #GCC_NAME "\n");
+#define RENAME_LIBRARY(GCC_NAME, AEABI_NAME)		\
+  __asm__ (".globl\t__aeabi_" #AEABI_NAME "\n"		\
+	   RENAME_LIBRARY_SET "\t__aeabi_" #AEABI_NAME 	\
+	     ", __" #GCC_NAME "\n");
 
 /* Give some libgcc functions an additional __aeabi name.  */
 #ifdef L_muldi3
@@ -99,11 +99,11 @@
    broken out separately so that it can be used within
    TARGET_OS_CPP_BUILTINS in configuration files for systems based on
    the BPABI.  */
-#define TARGET_BPABI_CPP_BUILTINS()                        \
-  do                                                        \
-    {                                                        \
-      builtin_define ("__GXX_MERGED_TYPEINFO_NAMES=0");        \
-    }                                                        \
+#define TARGET_BPABI_CPP_BUILTINS()			\
+  do							\
+    {							\
+      builtin_define ("__GXX_MERGED_TYPEINFO_NAMES=0");	\
+    }							\
   while (false)
 
 #undef TARGET_OS_CPP_BUILTINS

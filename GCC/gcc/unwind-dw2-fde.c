@@ -76,7 +76,7 @@ init_object_mutex_once (void)
 
 void
 __register_frame_info_bases (const void *begin, struct object *ob,
-                             void *tbase, void *dbase)
+			     void *tbase, void *dbase)
 {
   /* If .eh_frame is empty, don't register at all.  */
   if ((uword *) begin == 0 || *(uword *) begin == 0)
@@ -126,7 +126,7 @@ __register_frame (void *begin)
 
 void
 __register_frame_info_table_bases (void *begin, struct object *ob,
-                                   void *tbase, void *dbase)
+				   void *tbase, void *dbase)
 {
   ob->pc_begin = (void *)-1;
   ob->tbase = tbase;
@@ -186,30 +186,30 @@ __deregister_frame_info_bases (const void *begin)
   for (p = &unseen_objects; *p ; p = &(*p)->next)
     if ((*p)->u.single == begin)
       {
-        ob = *p;
-        *p = ob->next;
-        goto out;
+	ob = *p;
+	*p = ob->next;
+	goto out;
       }
 
   for (p = &seen_objects; *p ; p = &(*p)->next)
     if ((*p)->s.b.sorted)
       {
-        if ((*p)->u.sort->orig_data == begin)
-          {
-            ob = *p;
-            *p = ob->next;
-            free (ob->u.sort);
-            goto out;
-          }
+	if ((*p)->u.sort->orig_data == begin)
+	  {
+	    ob = *p;
+	    *p = ob->next;
+	    free (ob->u.sort);
+	    goto out;
+	  }
       }
     else
       {
-        if ((*p)->u.single == begin)
-          {
-            ob = *p;
-            *p = ob->next;
-            goto out;
-          }
+	if ((*p)->u.single == begin)
+	  {
+	    ob = *p;
+	    *p = ob->next;
+	    goto out;
+	  }
       }
 
  out:
@@ -274,34 +274,34 @@ get_cie_encoding (const struct dwarf_cie *cie)
     return DW_EH_PE_absptr;
 
   p = aug + strlen ((const char *)aug) + 1; /* Skip the augmentation string.  */
-  p = read_uleb128 (p, &utmp);                /* Skip code alignment.  */
-  p = read_sleb128 (p, &stmp);                /* Skip data alignment.  */
-  if (cie->version == 1)                /* Skip return address column.  */
+  p = read_uleb128 (p, &utmp);		/* Skip code alignment.  */
+  p = read_sleb128 (p, &stmp);		/* Skip data alignment.  */
+  if (cie->version == 1)		/* Skip return address column.  */
     p++;
   else
     p = read_uleb128 (p, &utmp);
 
-  aug++;                                /* Skip 'z' */
-  p = read_uleb128 (p, &utmp);                /* Skip augmentation length.  */
+  aug++;				/* Skip 'z' */
+  p = read_uleb128 (p, &utmp);		/* Skip augmentation length.  */
   while (1)
     {
       /* This is what we're looking for.  */
       if (*aug == 'R')
-        return *p;
+	return *p;
       /* Personality encoding and pointer.  */
       else if (*aug == 'P')
-        {
-          /* ??? Avoid dereferencing indirect pointers, since we're
-             faking the base address.  Gotta keep DW_EH_PE_aligned
-             intact, however.  */
-          p = read_encoded_value_with_base (*p & 0x7F, 0, p + 1, &dummy);
-        }
+	{
+	  /* ??? Avoid dereferencing indirect pointers, since we're
+	     faking the base address.  Gotta keep DW_EH_PE_aligned
+	     intact, however.  */
+	  p = read_encoded_value_with_base (*p & 0x7F, 0, p + 1, &dummy);
+	}
       /* LSDA encoding.  */
       else if (*aug == 'L')
-        p++;
+	p++;
       /* Otherwise end of string, or unknown augmentation.  */
       else
-        return DW_EH_PE_absptr;
+	return DW_EH_PE_absptr;
       aug++;
     }
 }
@@ -321,7 +321,7 @@ get_fde_encoding (const struct dwarf_fde *f)
 
 static int
 fde_unencoded_compare (struct object *ob __attribute__((unused)),
-                       const fde *x, const fde *y)
+		       const fde *x, const fde *y)
 {
   _Unwind_Ptr x_ptr = *(_Unwind_Ptr *) x->pc_begin;
   _Unwind_Ptr y_ptr = *(_Unwind_Ptr *) y->pc_begin;
@@ -357,11 +357,11 @@ fde_mixed_encoding_compare (struct object *ob, const fde *x, const fde *y)
 
   x_encoding = get_fde_encoding (x);
   read_encoded_value_with_base (x_encoding, base_from_object (x_encoding, ob),
-                                x->pc_begin, &x_ptr);
+				x->pc_begin, &x_ptr);
 
   y_encoding = get_fde_encoding (y);
   read_encoded_value_with_base (y_encoding, base_from_object (y_encoding, ob),
-                                y->pc_begin, &y_ptr);
+				y->pc_begin, &y_ptr);
 
   if (x_ptr > y_ptr)
     return 1;
@@ -402,7 +402,7 @@ start_fde_sort (struct fde_accumulator *accu, size_t count)
     {
       accu->linear->count = 0;
       if ((accu->erratic = malloc (size)))
-        accu->erratic->count = 0;
+	accu->erratic->count = 0;
       return 1;
     }
   else
@@ -430,7 +430,7 @@ fde_insert (struct fde_accumulator *accu, const fde *this_fde)
 
 static inline void
 fde_split (struct object *ob, fde_compare_t fde_compare,
-           struct fde_vector *linear, struct fde_vector *erratic)
+	   struct fde_vector *linear, struct fde_vector *erratic)
 {
   static const fde *marker;
   size_t count = linear->count;
@@ -447,12 +447,12 @@ fde_split (struct object *ob, fde_compare_t fde_compare,
       const fde **probe;
 
       for (probe = chain_end;
-           probe != &marker && fde_compare (ob, linear->array[i], *probe) < 0;
-           probe = chain_end)
-        {
-          chain_end = (const fde **) erratic->array[probe - linear->array];
-          erratic->array[probe - linear->array] = NULL;
-        }
+	   probe != &marker && fde_compare (ob, linear->array[i], *probe) < 0;
+	   probe = chain_end)
+	{
+	  chain_end = (const fde **) erratic->array[probe - linear->array];
+	  erratic->array[probe - linear->array] = NULL;
+	}
       erratic->array[i] = (const fde *) chain_end;
       chain_end = &linear->array[i];
     }
@@ -476,7 +476,7 @@ fde_split (struct object *ob, fde_compare_t fde_compare,
 
 static void
 frame_downheap (struct object *ob, fde_compare_t fde_compare, const fde **a,
-                int lo, int hi)
+		int lo, int hi)
 {
   int i, j;
 
@@ -485,15 +485,15 @@ frame_downheap (struct object *ob, fde_compare_t fde_compare, const fde **a,
        j = 2*i+1)
     {
       if (j+1 < hi && fde_compare (ob, a[j], a[j+1]) < 0)
-        ++j;
+	++j;
 
       if (fde_compare (ob, a[i], a[j]) < 0)
-        {
-          SWAP (a[i], a[j]);
-          i = j;
-        }
+	{
+	  SWAP (a[i], a[j]);
+	  i = j;
+	}
       else
-        break;
+	break;
     }
 }
 
@@ -502,7 +502,7 @@ frame_downheap (struct object *ob, fde_compare_t fde_compare, const fde **a,
 
 static void
 frame_heapsort (struct object *ob, fde_compare_t fde_compare,
-                struct fde_vector *erratic)
+		struct fde_vector *erratic)
 {
   /* For a description of this algorithm, see:
      Samuel P. Harbison, Guy L. Steele Jr.: C, a reference manual, 2nd ed.,
@@ -534,7 +534,7 @@ frame_heapsort (struct object *ob, fde_compare_t fde_compare,
 /* Merge V1 and V2, both sorted, and put the result into V1.  */
 static inline void
 fde_merge (struct object *ob, fde_compare_t fde_compare,
-           struct fde_vector *v1, struct fde_vector *v2)
+	   struct fde_vector *v1, struct fde_vector *v2)
 {
   size_t i1, i2;
   const fde * fde2;
@@ -544,16 +544,16 @@ fde_merge (struct object *ob, fde_compare_t fde_compare,
     {
       i1 = v1->count;
       do
-        {
-          i2--;
-          fde2 = v2->array[i2];
-          while (i1 > 0 && fde_compare (ob, v1->array[i1-1], fde2) > 0)
-            {
-              v1->array[i1+i2] = v1->array[i1-1];
-              i1--;
-            }
-          v1->array[i1+i2] = fde2;
-        }
+	{
+	  i2--;
+	  fde2 = v2->array[i2];
+	  while (i1 > 0 && fde_compare (ob, v1->array[i1-1], fde2) > 0)
+	    {
+	      v1->array[i1+i2] = v1->array[i1-1];
+	      i1--;
+	    }
+	  v1->array[i1+i2] = fde2;
+	}
       while (i2 > 0);
       v1->count += v2->count;
     }
@@ -584,7 +584,7 @@ end_fde_sort (struct object *ob, struct fde_accumulator *accu, size_t count)
   else
     {
       /* We've not managed to malloc an erratic array,
-         so heap sort in the linear one.  */
+	 so heap sort in the linear one.  */
       frame_heapsort (ob, fde_compare, accu->linear);
     }
 }
@@ -609,41 +609,41 @@ classify_object_over_fdes (struct object *ob, const fde *this_fde)
 
       /* Skip CIEs.  */
       if (this_fde->CIE_delta == 0)
-        continue;
+	continue;
 
       /* Determine the encoding for this FDE.  Note mixed encoded
-         objects for later.  */
+	 objects for later.  */
       this_cie = get_cie (this_fde);
       if (this_cie != last_cie)
-        {
-          last_cie = this_cie;
-          encoding = get_cie_encoding (this_cie);
-          base = base_from_object (encoding, ob);
-          if (ob->s.b.encoding == DW_EH_PE_omit)
-            ob->s.b.encoding = encoding;
-          else if (ob->s.b.encoding != encoding)
-            ob->s.b.mixed_encoding = 1;
-        }
+	{
+	  last_cie = this_cie;
+	  encoding = get_cie_encoding (this_cie);
+	  base = base_from_object (encoding, ob);
+	  if (ob->s.b.encoding == DW_EH_PE_omit)
+	    ob->s.b.encoding = encoding;
+	  else if (ob->s.b.encoding != encoding)
+	    ob->s.b.mixed_encoding = 1;
+	}
 
       read_encoded_value_with_base (encoding, base, this_fde->pc_begin,
-                                    &pc_begin);
+				    &pc_begin);
 
       /* Take care to ignore link-once functions that were removed.
-         In these cases, the function address will be NULL, but if
-         the encoding is smaller than a pointer a true NULL may not
-         be representable.  Assume 0 in the representable bits is NULL.  */
+	 In these cases, the function address will be NULL, but if
+	 the encoding is smaller than a pointer a true NULL may not
+	 be representable.  Assume 0 in the representable bits is NULL.  */
       mask = size_of_encoded_value (encoding);
       if (mask < sizeof (void *))
-        mask = (1L << (mask << 3)) - 1;
+	mask = (1L << (mask << 3)) - 1;
       else
-        mask = -1;
+	mask = -1;
 
       if ((pc_begin & mask) == 0)
-        continue;
+	continue;
 
       count += 1;
       if ((void *) pc_begin < ob->pc_begin)
-        ob->pc_begin = (void *) pc_begin;
+	ob->pc_begin = (void *) pc_begin;
     }
 
   return count;
@@ -662,46 +662,46 @@ add_fdes (struct object *ob, struct fde_accumulator *accu, const fde *this_fde)
 
       /* Skip CIEs.  */
       if (this_fde->CIE_delta == 0)
-        continue;
+	continue;
 
       if (ob->s.b.mixed_encoding)
-        {
-          /* Determine the encoding for this FDE.  Note mixed encoded
-             objects for later.  */
-          this_cie = get_cie (this_fde);
-          if (this_cie != last_cie)
-            {
-              last_cie = this_cie;
-              encoding = get_cie_encoding (this_cie);
-              base = base_from_object (encoding, ob);
-            }
-        }
+	{
+	  /* Determine the encoding for this FDE.  Note mixed encoded
+	     objects for later.  */
+	  this_cie = get_cie (this_fde);
+	  if (this_cie != last_cie)
+	    {
+	      last_cie = this_cie;
+	      encoding = get_cie_encoding (this_cie);
+	      base = base_from_object (encoding, ob);
+	    }
+	}
 
       if (encoding == DW_EH_PE_absptr)
-        {
-          if (*(_Unwind_Ptr *) this_fde->pc_begin == 0)
-            continue;
-        }
+	{
+	  if (*(_Unwind_Ptr *) this_fde->pc_begin == 0)
+	    continue;
+	}
       else
-        {
-          _Unwind_Ptr pc_begin, mask;
+	{
+	  _Unwind_Ptr pc_begin, mask;
 
-          read_encoded_value_with_base (encoding, base, this_fde->pc_begin,
-                                        &pc_begin);
+	  read_encoded_value_with_base (encoding, base, this_fde->pc_begin,
+					&pc_begin);
 
-          /* Take care to ignore link-once functions that were removed.
-             In these cases, the function address will be NULL, but if
-             the encoding is smaller than a pointer a true NULL may not
-             be representable.  Assume 0 in the representable bits is NULL.  */
-          mask = size_of_encoded_value (encoding);
-          if (mask < sizeof (void *))
-            mask = (1L << (mask << 3)) - 1;
-          else
-            mask = -1;
+	  /* Take care to ignore link-once functions that were removed.
+	     In these cases, the function address will be NULL, but if
+	     the encoding is smaller than a pointer a true NULL may not
+	     be representable.  Assume 0 in the representable bits is NULL.  */
+	  mask = size_of_encoded_value (encoding);
+	  if (mask < sizeof (void *))
+	    mask = (1L << (mask << 3)) - 1;
+	  else
+	    mask = -1;
 
-          if ((pc_begin & mask) == 0)
-            continue;
-        }
+	  if ((pc_begin & mask) == 0)
+	    continue;
+	}
 
       fde_insert (accu, this_fde);
     }
@@ -722,22 +722,22 @@ init_object (struct object* ob)
   if (count == 0)
     {
       if (ob->s.b.from_array)
-        {
-          fde **p = ob->u.array;
-          for (count = 0; *p; ++p)
-            count += classify_object_over_fdes (ob, *p);
-        }
+	{
+	  fde **p = ob->u.array;
+	  for (count = 0; *p; ++p)
+	    count += classify_object_over_fdes (ob, *p);
+	}
       else
-        count = classify_object_over_fdes (ob, ob->u.single);
+	count = classify_object_over_fdes (ob, ob->u.single);
 
       /* The count field we have in the main struct object is somewhat
-         limited, but should suffice for virtually all cases.  If the
-         counted value doesn't fit, re-write a zero.  The worst that
-         happens is that we re-count next time -- admittedly non-trivial
-         in that this implies some 2M fdes, but at least we function.  */
+	 limited, but should suffice for virtually all cases.  If the
+	 counted value doesn't fit, re-write a zero.  The worst that
+	 happens is that we re-count next time -- admittedly non-trivial
+	 in that this implies some 2M fdes, but at least we function.  */
       ob->s.b.count = count;
       if (ob->s.b.count != count)
-        ob->s.b.count = 0;
+	ob->s.b.count = 0;
     }
 
   if (!start_fde_sort (&accu, count))
@@ -747,7 +747,7 @@ init_object (struct object* ob)
     {
       fde **p;
       for (p = ob->u.array; *p; ++p)
-        add_fdes (ob, &accu, *p);
+	add_fdes (ob, &accu, *p);
     }
   else
     add_fdes (ob, &accu, ob->u.single);
@@ -780,53 +780,53 @@ linear_search_fdes (struct object *ob, const fde *this_fde, void *pc)
 
       /* Skip CIEs.  */
       if (this_fde->CIE_delta == 0)
-        continue;
+	continue;
 
       if (ob->s.b.mixed_encoding)
-        {
-          /* Determine the encoding for this FDE.  Note mixed encoded
-             objects for later.  */
-          this_cie = get_cie (this_fde);
-          if (this_cie != last_cie)
-            {
-              last_cie = this_cie;
-              encoding = get_cie_encoding (this_cie);
-              base = base_from_object (encoding, ob);
-            }
-        }
+	{
+	  /* Determine the encoding for this FDE.  Note mixed encoded
+	     objects for later.  */
+	  this_cie = get_cie (this_fde);
+	  if (this_cie != last_cie)
+	    {
+	      last_cie = this_cie;
+	      encoding = get_cie_encoding (this_cie);
+	      base = base_from_object (encoding, ob);
+	    }
+	}
 
       if (encoding == DW_EH_PE_absptr)
-        {
-          pc_begin = ((_Unwind_Ptr *) this_fde->pc_begin)[0];
-          pc_range = ((_Unwind_Ptr *) this_fde->pc_begin)[1];
-          if (pc_begin == 0)
-            continue;
-        }
+	{
+	  pc_begin = ((_Unwind_Ptr *) this_fde->pc_begin)[0];
+	  pc_range = ((_Unwind_Ptr *) this_fde->pc_begin)[1];
+	  if (pc_begin == 0)
+	    continue;
+	}
       else
-        {
-          _Unwind_Ptr mask;
-          const unsigned char *p;
+	{
+	  _Unwind_Ptr mask;
+	  const unsigned char *p;
 
-          p = read_encoded_value_with_base (encoding, base,
-                                            this_fde->pc_begin, &pc_begin);
-          read_encoded_value_with_base (encoding & 0x0F, 0, p, &pc_range);
+	  p = read_encoded_value_with_base (encoding, base,
+					    this_fde->pc_begin, &pc_begin);
+	  read_encoded_value_with_base (encoding & 0x0F, 0, p, &pc_range);
 
-          /* Take care to ignore link-once functions that were removed.
-             In these cases, the function address will be NULL, but if
-             the encoding is smaller than a pointer a true NULL may not
-             be representable.  Assume 0 in the representable bits is NULL.  */
-          mask = size_of_encoded_value (encoding);
-          if (mask < sizeof (void *))
-            mask = (1L << (mask << 3)) - 1;
-          else
-            mask = -1;
+	  /* Take care to ignore link-once functions that were removed.
+	     In these cases, the function address will be NULL, but if
+	     the encoding is smaller than a pointer a true NULL may not
+	     be representable.  Assume 0 in the representable bits is NULL.  */
+	  mask = size_of_encoded_value (encoding);
+	  if (mask < sizeof (void *))
+	    mask = (1L << (mask << 3)) - 1;
+	  else
+	    mask = -1;
 
-          if ((pc_begin & mask) == 0)
-            continue;
-        }
+	  if ((pc_begin & mask) == 0)
+	    continue;
+	}
 
       if ((_Unwind_Ptr) pc - pc_begin < pc_range)
-        return this_fde;
+	return this_fde;
     }
 
   return NULL;
@@ -852,11 +852,11 @@ binary_search_unencoded_fdes (struct object *ob, void *pc)
       pc_range = ((uaddr *) f->pc_begin)[1];
 
       if (pc < pc_begin)
-        hi = i;
+	hi = i;
       else if (pc >= pc_begin + pc_range)
-        lo = i + 1;
+	lo = i + 1;
       else
-        return f;
+	return f;
     }
 
   return NULL;
@@ -878,15 +878,15 @@ binary_search_single_encoding_fdes (struct object *ob, void *pc)
       const unsigned char *p;
 
       p = read_encoded_value_with_base (encoding, base, f->pc_begin,
-                                        &pc_begin);
+					&pc_begin);
       read_encoded_value_with_base (encoding & 0x0F, 0, p, &pc_range);
 
       if ((_Unwind_Ptr) pc < pc_begin)
-        hi = i;
+	hi = i;
       else if ((_Unwind_Ptr) pc >= pc_begin + pc_range)
-        lo = i + 1;
+	lo = i + 1;
       else
-        return f;
+	return f;
     }
 
   return NULL;
@@ -908,16 +908,16 @@ binary_search_mixed_encoding_fdes (struct object *ob, void *pc)
 
       encoding = get_fde_encoding (f);
       p = read_encoded_value_with_base (encoding,
-                                        base_from_object (encoding, ob),
-                                        f->pc_begin, &pc_begin);
+					base_from_object (encoding, ob),
+					f->pc_begin, &pc_begin);
       read_encoded_value_with_base (encoding & 0x0F, 0, p, &pc_range);
 
       if ((_Unwind_Ptr) pc < pc_begin)
-        hi = i;
+	hi = i;
       else if ((_Unwind_Ptr) pc >= pc_begin + pc_range)
-        lo = i + 1;
+	lo = i + 1;
       else
-        return f;
+	return f;
     }
 
   return NULL;
@@ -933,37 +933,37 @@ search_object (struct object* ob, void *pc)
       init_object (ob);
 
       /* Despite the above comment, the normal reason to get here is
-         that we've not processed this object before.  A quick range
-         check is in order.  */
+	 that we've not processed this object before.  A quick range
+	 check is in order.  */
       if (pc < ob->pc_begin)
-        return NULL;
+	return NULL;
     }
 
   if (ob->s.b.sorted)
     {
       if (ob->s.b.mixed_encoding)
-        return binary_search_mixed_encoding_fdes (ob, pc);
+	return binary_search_mixed_encoding_fdes (ob, pc);
       else if (ob->s.b.encoding == DW_EH_PE_absptr)
-        return binary_search_unencoded_fdes (ob, pc);
+	return binary_search_unencoded_fdes (ob, pc);
       else
-        return binary_search_single_encoding_fdes (ob, pc);
+	return binary_search_single_encoding_fdes (ob, pc);
     }
   else
     {
       /* Long slow labourious linear search, cos we've no memory.  */
       if (ob->s.b.from_array)
-        {
-          fde **p;
-          for (p = ob->u.array; *p ; p++)
-            {
-              const fde *f = linear_search_fdes (ob, *p, pc);
-              if (f)
-                return f;
-            }
-          return NULL;
-        }
+	{
+	  fde **p;
+	  for (p = ob->u.array; *p ; p++)
+	    {
+	      const fde *f = linear_search_fdes (ob, *p, pc);
+	      if (f)
+		return f;
+	    }
+	  return NULL;
+	}
       else
-        return linear_search_fdes (ob, ob->u.single, pc);
+	return linear_search_fdes (ob, ob->u.single, pc);
     }
 }
 
@@ -982,10 +982,10 @@ _Unwind_Find_FDE (void *pc, struct dwarf_eh_bases *bases)
   for (ob = seen_objects; ob; ob = ob->next)
     if (pc >= ob->pc_begin)
       {
-        f = search_object (ob, pc);
-        if (f)
-          goto fini;
-        break;
+	f = search_object (ob, pc);
+	if (f)
+	  goto fini;
+	break;
       }
 
   /* Classify and search the objects we've not yet processed.  */
@@ -998,13 +998,13 @@ _Unwind_Find_FDE (void *pc, struct dwarf_eh_bases *bases)
 
       /* Insert the object into the classified list.  */
       for (p = &seen_objects; *p ; p = &(*p)->next)
-        if ((*p)->pc_begin < ob->pc_begin)
-          break;
+	if ((*p)->pc_begin < ob->pc_begin)
+	  break;
       ob->next = *p;
       *p = ob;
 
       if (f)
-        goto fini;
+	goto fini;
     }
 
  fini:
@@ -1020,9 +1020,9 @@ _Unwind_Find_FDE (void *pc, struct dwarf_eh_bases *bases)
 
       encoding = ob->s.b.encoding;
       if (ob->s.b.mixed_encoding)
-        encoding = get_fde_encoding (f);
+	encoding = get_fde_encoding (f);
       read_encoded_value_with_base (encoding, base_from_object (encoding, ob),
-                                    f->pc_begin, &func);
+				    f->pc_begin, &func);
       bases->func = (void *) func;
     }
 

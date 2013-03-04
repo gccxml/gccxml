@@ -41,10 +41,10 @@
 #undef  ENDFILE_SPEC
 #define ENDFILE_SPEC "crtend.o%s crtn.o%s"
 
-#undef        STARTFILE_SPEC
+#undef	STARTFILE_SPEC
 #define STARTFILE_SPEC "%{!shared: \
-                         %{!symbolic: \
-                          %{pg:gcrt0.o%s}%{!pg:%{p:mcrt0.o%s}%{!p:crt0.o%s}}}}\
-                        crti.o%s crtbegin.o%s"
+			 %{!symbolic: \
+			  %{pg:gcrt0.o%s}%{!pg:%{p:mcrt0.o%s}%{!p:crt0.o%s}}}}\
+			crti.o%s crtbegin.o%s"
 
 /* End of elf.h */

@@ -6,10 +6,10 @@ LIB2FUNCS_EXTRA += tramp.S $(srcdir)/config/rs6000/darwin-ldouble.c
 LIB2FUNCS_STATIC_EXTRA = eabi.S
 
 eabi.S: $(srcdir)/config/rs6000/eabi.asm
-        cat $(srcdir)/config/rs6000/eabi.asm > eabi.S
+	cat $(srcdir)/config/rs6000/eabi.asm > eabi.S
 
 tramp.S: $(srcdir)/config/rs6000/tramp.asm
-        cat $(srcdir)/config/rs6000/tramp.asm > tramp.S
+	cat $(srcdir)/config/rs6000/tramp.asm > tramp.S
 
 ifneq (,$(findstring gnu,$(target)))
 ifeq (,$(findstring spe,$(target)))
@@ -20,8 +20,8 @@ endif
 endif
 
 # Switch synonyms
-MULTILIB_MATCHES_ENDIAN        = mlittle=mlittle-endian mbig=mbig-endian
-MULTILIB_MATCHES_SYSV        = mcall-sysv=mcall-sysv-eabi mcall-sysv=mcall-sysv-noeabi mcall-sysv=mcall-linux mcall-sysv=mcall-netbsd
+MULTILIB_MATCHES_ENDIAN	= mlittle=mlittle-endian mbig=mbig-endian
+MULTILIB_MATCHES_SYSV	= mcall-sysv=mcall-sysv-eabi mcall-sysv=mcall-sysv-noeabi mcall-sysv=mcall-linux mcall-sysv=mcall-netbsd
 
 EXTRA_MULTILIB_PARTS = crtbegin$(objext) crtend$(objext) \
   crtbeginS$(objext) crtendS$(objext) crtbeginT$(objext) \
@@ -34,35 +34,35 @@ EXTRA_MULTILIB_PARTS = crtbegin$(objext) crtend$(objext) \
 
 # Assemble startup files.
 ecrti.S: $(srcdir)/config/rs6000/eabi-ci.asm
-        cat $(srcdir)/config/rs6000/eabi-ci.asm >ecrti.S
+	cat $(srcdir)/config/rs6000/eabi-ci.asm >ecrti.S
 
 ecrtn.S: $(srcdir)/config/rs6000/eabi-cn.asm
-        cat $(srcdir)/config/rs6000/eabi-cn.asm >ecrtn.S
+	cat $(srcdir)/config/rs6000/eabi-cn.asm >ecrtn.S
 
 ncrti.S: $(srcdir)/config/rs6000/sol-ci.asm
-        cat $(srcdir)/config/rs6000/sol-ci.asm >ncrti.S
+	cat $(srcdir)/config/rs6000/sol-ci.asm >ncrti.S
 
 ncrtn.S: $(srcdir)/config/rs6000/sol-cn.asm
-        cat $(srcdir)/config/rs6000/sol-cn.asm >ncrtn.S
+	cat $(srcdir)/config/rs6000/sol-cn.asm >ncrtn.S
 
 crtsavres.S: $(srcdir)/config/rs6000/crtsavres.asm
-        cat $(srcdir)/config/rs6000/crtsavres.asm >crtsavres.S
+	cat $(srcdir)/config/rs6000/crtsavres.asm >crtsavres.S
 
 # Build multiple copies of ?crt{i,n}.o, one for each target switch.
 $(T)ecrti$(objext): ecrti.S
-        $(GCC_FOR_TARGET) $(GCC_CFLAGS) $(INCLUDES) $(MULTILIB_CFLAGS) -c ecrti.S -o $(T)ecrti$(objext)
+	$(GCC_FOR_TARGET) $(GCC_CFLAGS) $(INCLUDES) $(MULTILIB_CFLAGS) -c ecrti.S -o $(T)ecrti$(objext)
 
 $(T)ecrtn$(objext): ecrtn.S
-        $(GCC_FOR_TARGET) $(GCC_CFLAGS) $(INCLUDES) $(MULTILIB_CFLAGS) -c ecrtn.S -o $(T)ecrtn$(objext)
+	$(GCC_FOR_TARGET) $(GCC_CFLAGS) $(INCLUDES) $(MULTILIB_CFLAGS) -c ecrtn.S -o $(T)ecrtn$(objext)
 
 $(T)ncrti$(objext): ncrti.S
-        $(GCC_FOR_TARGET) $(GCC_CFLAGS) $(INCLUDES) $(MULTILIB_CFLAGS) -c ncrti.S -o $(T)ncrti$(objext)
+	$(GCC_FOR_TARGET) $(GCC_CFLAGS) $(INCLUDES) $(MULTILIB_CFLAGS) -c ncrti.S -o $(T)ncrti$(objext)
 
 $(T)ncrtn$(objext): ncrtn.S
-        $(GCC_FOR_TARGET) $(GCC_CFLAGS) $(INCLUDES) $(MULTILIB_CFLAGS) -c ncrtn.S -o $(T)ncrtn$(objext)
+	$(GCC_FOR_TARGET) $(GCC_CFLAGS) $(INCLUDES) $(MULTILIB_CFLAGS) -c ncrtn.S -o $(T)ncrtn$(objext)
 
 $(T)crtsavres$(objext): crtsavres.S
-        $(GCC_FOR_TARGET) $(GCC_CFLAGS) $(INCLUDES) $(MULTILIB_CFLAGS) -c crtsavres.S -o $(T)crtsavres$(objext)
+	$(GCC_FOR_TARGET) $(GCC_CFLAGS) $(INCLUDES) $(MULTILIB_CFLAGS) -c crtsavres.S -o $(T)crtsavres$(objext)
 
 # It is important that crtbegin.o, etc., aren't surprised by stuff in .sdata.
 CRTSTUFF_T_CFLAGS = -msdata=none

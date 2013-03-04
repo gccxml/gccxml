@@ -270,10 +270,10 @@ DEF_VEC_ALLOC_P(ddr_p,heap);
 
 
 extern tree find_data_references_in_loop (struct loop *,
-                                          VEC (data_reference_p, heap) **);
+					  VEC (data_reference_p, heap) **);
 extern void compute_data_dependences_for_loop (struct loop *, bool,
-                                               VEC (data_reference_p, heap) **,
-                                               VEC (ddr_p, heap) **);
+					       VEC (data_reference_p, heap) **,
+					       VEC (ddr_p, heap) **);
 extern void print_direction_vector (FILE *, lambda_vector, int);
 extern void print_dir_vectors (FILE *, VEC (lambda_vector, heap) *, int);
 extern void print_dist_vectors (FILE *, VEC (lambda_vector, heap) *, int);
@@ -284,10 +284,10 @@ extern void dump_data_reference (FILE *, struct data_reference *);
 extern void dump_data_references (FILE *, VEC (data_reference_p, heap) *);
 extern void debug_data_dependence_relation (struct data_dependence_relation *);
 extern void dump_data_dependence_relation (FILE *, 
-                                           struct data_dependence_relation *);
+					   struct data_dependence_relation *);
 extern void dump_data_dependence_relations (FILE *, VEC (ddr_p, heap) *);
 extern void dump_data_dependence_direction (FILE *, 
-                                            enum data_dependence_direction);
+					    enum data_dependence_direction);
 extern void free_dependence_relation (struct data_dependence_relation *);
 extern void free_dependence_relations (VEC (ddr_p, heap) *);
 extern void free_data_refs (VEC (data_reference_p, heap) *);

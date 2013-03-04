@@ -24,19 +24,19 @@ Foundation, 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.  */
 #include "cpplib.h"
 #include "../libcpp/internal.h"
 #include "tree.h"
-#include "c-common.h"                /* For flags.  */
-#include "c-pragma.h"                /* For parse_in.  */
+#include "c-common.h"		/* For flags.  */
+#include "c-pragma.h"		/* For parse_in.  */
 
 /* Encapsulates state used to convert a stream of tokens into a text
    file.  */
 static struct
 {
-  FILE *outf;                        /* Stream to write to.  */
-  const cpp_token *prev;        /* Previous token.  */
-  const cpp_token *source;        /* Source token for spacing.  */
-  int src_line;                        /* Line number currently being written.  */
-  unsigned char printed;        /* Nonzero if something output at line.  */
-  bool first_time;                /* pp_file_change hasn't been called yet.  */
+  FILE *outf;			/* Stream to write to.  */
+  const cpp_token *prev;	/* Previous token.  */
+  const cpp_token *source;	/* Source token for spacing.  */
+  int src_line;			/* Line number currently being written.  */
+  unsigned char printed;	/* Nonzero if something output at line.  */
+  bool first_time;		/* pp_file_change hasn't been called yet.  */
 } print;
 
 /* General output routines.  */
@@ -54,11 +54,11 @@ static void cb_line_change (cpp_reader *, const cpp_token *, int);
 static void cb_define (cpp_reader *, source_location, cpp_hashnode *);
 static void cb_undef (cpp_reader *, source_location, cpp_hashnode *);
 static void cb_include (cpp_reader *, source_location, const unsigned char *,
-                        const char *, int, const cpp_token **);
+			const char *, int, const cpp_token **);
 static void cb_ident (cpp_reader *, source_location, const cpp_string *);
 static void cb_def_pragma (cpp_reader *, source_location);
 static void cb_read_pch (cpp_reader *pfile, const char *name,
-                         int fd, const char *orig_name);
+			 int fd, const char *orig_name);
 
 /* Preprocess and output.  */
 void
@@ -70,7 +70,7 @@ preprocess_file (cpp_reader *pfile)
     {
       /* Scan -included buffers, then the main file.  */
       while (pfile->buffer->prev)
-        cpp_scan_nooutput (pfile);
+	cpp_scan_nooutput (pfile);
       cpp_scan_nooutput (pfile);
     }
   else if (cpp_get_options (pfile)->traditional)
@@ -97,12 +97,12 @@ init_pp_output (FILE *out_stream)
     {
       cb->line_change = cb_line_change;
       /* Don't emit #pragma or #ident directives if we are processing
-         assembly language; the assembler may choke on them.  */
+	 assembly language; the assembler may choke on them.  */
       if (cpp_get_options (parse_in)->lang != CLK_ASM)
-        {
-          cb->ident      = cb_ident;
-          cb->def_pragma = cb_def_pragma;
-        }
+	{
+	  cb->ident      = cb_ident;
+	  cb->def_pragma = cb_def_pragma;
+	}
     }
 
   if (flag_dump_includes)
@@ -143,31 +143,31 @@ scan_translation_unit (cpp_reader *pfile)
       const cpp_token *token = cpp_get_token (pfile);
 
       if (token->type == CPP_PADDING)
-        {
-          avoid_paste = true;
-          if (print.source == NULL
-              || (!(print.source->flags & PREV_WHITE)
-                  && token->val.source == NULL))
-            print.source = token->val.source;
-          continue;
-        }
+	{
+	  avoid_paste = true;
+	  if (print.source == NULL
+	      || (!(print.source->flags & PREV_WHITE)
+		  && token->val.source == NULL))
+	    print.source = token->val.source;
+	  continue;
+	}
 
       if (token->type == CPP_EOF)
-        break;
+	break;
 
       /* Subtle logic to output a space if and only if necessary.  */
       if (avoid_paste)
-        {
-          if (print.source == NULL)
-            print.source = token;
-          if (print.source->flags & PREV_WHITE
-              || (print.prev
-                  && cpp_avoid_paste (pfile, print.prev, token))
-              || (print.prev == NULL && token->type == CPP_HASH))
-            putc (' ', print.outf);
-        }
+	{
+	  if (print.source == NULL)
+	    print.source = token;
+	  if (print.source->flags & PREV_WHITE
+	      || (print.prev
+		  && cpp_avoid_paste (pfile, print.prev, token))
+	      || (print.prev == NULL && token->type == CPP_HASH))
+	    putc (' ', print.outf);
+	}
       else if (token->flags & PREV_WHITE)
-        putc (' ', print.outf);
+	putc (' ', print.outf);
 
       avoid_paste = false;
       print.source = NULL;
@@ -175,7 +175,7 @@ scan_translation_unit (cpp_reader *pfile)
       cpp_output_token (token, print.outf);
 
       if (token->type == CPP_COMMENT)
-        account_for_newlines (token->val.str.text, token->val.str.len);
+	account_for_newlines (token->val.str.text, token->val.str.len);
     }
 }
 
@@ -199,7 +199,7 @@ scan_translation_unit_trad (cpp_reader *pfile)
       fwrite (pfile->out.base, 1, len, print.outf);
       print.printed = 1;
       if (!CPP_OPTION (pfile, discard_comments))
-        account_for_newlines (pfile->out.base, len);
+	account_for_newlines (pfile->out.base, len);
     }
 }
 
@@ -222,10 +222,10 @@ maybe_print_line (source_location src_loc)
   if (src_line >= print.src_line && src_line < print.src_line + 8)
     {
       while (src_line > print.src_line)
-        {
-          putc ('\n', print.outf);
-          print.src_line++;
-        }
+	{
+	  putc ('\n', print.outf);
+	  print.src_line++;
+	}
     }
   else
     print_line (src_loc, "");
@@ -253,18 +253,18 @@ print_line (source_location src_loc, const char *special_flags)
       print.src_line = SOURCE_LINE (map, src_loc);
 
       /* cpp_quote_string does not nul-terminate, so we have to do it
-         ourselves.  */
+	 ourselves.  */
       p = cpp_quote_string (to_file_quoted,
-                            (unsigned char *) map->to_file, to_file_len);
+			    (unsigned char *) map->to_file, to_file_len);
       *p = '\0';
       fprintf (print.outf, "# %u \"%s\"%s",
-               print.src_line == 0 ? 1 : print.src_line,
-               to_file_quoted, special_flags);
+	       print.src_line == 0 ? 1 : print.src_line,
+	       to_file_quoted, special_flags);
 
       if (map->sysp == 2)
-        fputs (" 3 4", print.outf);
+	fputs (" 3 4", print.outf);
       else if (map->sysp == 1)
-        fputs (" 3", print.outf);
+	fputs (" 3", print.outf);
 
       putc ('\n', print.outf);
     }
@@ -274,7 +274,7 @@ print_line (source_location src_loc, const char *special_flags)
    of the line, and at end of file will be CPP_EOF.  */
 static void
 cb_line_change (cpp_reader *pfile, const cpp_token *token,
-                int parsing_args)
+		int parsing_args)
 {
   source_location src_loc = token->src_loc;
 
@@ -297,13 +297,13 @@ cb_line_change (cpp_reader *pfile, const cpp_token *token,
       print.printed = 1;
 
       while (-- spaces >= 0)
-        putc (' ', print.outf);
+	putc (' ', print.outf);
     }
 }
 
 static void
 cb_ident (cpp_reader *pfile ATTRIBUTE_UNUSED, source_location line,
-          const cpp_string *str)
+	  const cpp_string *str)
 {
   maybe_print_line (line);
   fprintf (print.outf, "#ident %s\n", str->text);
@@ -319,7 +319,7 @@ cb_define (cpp_reader *pfile, source_location line, cpp_hashnode *node)
   /* 'D' is whole definition; 'N' is name only.  */
   if (flag_dump_macros == 'D')
     fputs ((const char *) cpp_macro_definition (pfile, node),
-           print.outf);
+	   print.outf);
   else
     fputs ((const char *) NODE_NAME (node), print.outf);
 
@@ -330,7 +330,7 @@ cb_define (cpp_reader *pfile, source_location line, cpp_hashnode *node)
 
 static void
 cb_undef (cpp_reader *pfile ATTRIBUTE_UNUSED, source_location line,
-          cpp_hashnode *node)
+	  cpp_hashnode *node)
 {
   maybe_print_line (line);
   fprintf (print.outf, "#undef %s\n", NODE_NAME (node));
@@ -339,8 +339,8 @@ cb_undef (cpp_reader *pfile ATTRIBUTE_UNUSED, source_location line,
 
 static void
 cb_include (cpp_reader *pfile ATTRIBUTE_UNUSED, source_location line,
-            const unsigned char *dir, const char *header, int angle_brackets,
-            const cpp_token **comments)
+	    const unsigned char *dir, const char *header, int angle_brackets,
+	    const cpp_token **comments)
 {
   maybe_print_line (line);
   if (angle_brackets)
@@ -351,12 +351,12 @@ cb_include (cpp_reader *pfile ATTRIBUTE_UNUSED, source_location line,
   if (comments != NULL)
     {
       while (*comments != NULL)
-        {
-          if ((*comments)->flags & PREV_WHITE)
-            putc (' ', print.outf);
-          cpp_output_token (*comments, print.outf);
-          ++comments;
-        }
+	{
+	  if ((*comments)->flags & PREV_WHITE)
+	    putc (' ', print.outf);
+	  cpp_output_token (*comments, print.outf);
+	  ++comments;
+	}
     }
 
   putc ('\n', print.outf);
@@ -394,26 +394,26 @@ pp_file_change (const struct line_map *map)
   if (map != NULL)
     {
       if (print.first_time)
-        {
-          /* Avoid printing foo.i when the main file is foo.c.  */
-          if (!cpp_get_options (parse_in)->preprocessed)
-            print_line (map->start_location, flags);
-          print.first_time = 0;
-        }
+	{
+	  /* Avoid printing foo.i when the main file is foo.c.  */
+	  if (!cpp_get_options (parse_in)->preprocessed)
+	    print_line (map->start_location, flags);
+	  print.first_time = 0;
+	}
       else
-        {
-          /* Bring current file to correct line when entering a new file.  */
-          if (map->reason == LC_ENTER)
-            {
-              const struct line_map *from = INCLUDED_FROM (&line_table, map);
-              maybe_print_line (LAST_SOURCE_LINE_LOCATION (from));
-            }
-          if (map->reason == LC_ENTER)
-            flags = " 1";
-          else if (map->reason == LC_LEAVE)
-            flags = " 2";
-          print_line (map->start_location, flags);
-        }
+	{
+	  /* Bring current file to correct line when entering a new file.  */
+	  if (map->reason == LC_ENTER)
+	    {
+	      const struct line_map *from = INCLUDED_FROM (&line_table, map);
+	      maybe_print_line (LAST_SOURCE_LINE_LOCATION (from));
+	    }
+	  if (map->reason == LC_ENTER)
+	    flags = " 1";
+	  else if (map->reason == LC_LEAVE)
+	    flags = " 2";
+	  print_line (map->start_location, flags);
+	}
     }
 }
 
@@ -435,7 +435,7 @@ dump_macro (cpp_reader *pfile, cpp_hashnode *node, void *v ATTRIBUTE_UNUSED)
     {
       fputs ("#define ", print.outf);
       fputs ((const char *) cpp_macro_definition (pfile, node),
-             print.outf);
+	     print.outf);
       putc ('\n', print.outf);
       print.src_line++;
     }
@@ -449,7 +449,7 @@ dump_macro (cpp_reader *pfile, cpp_hashnode *node, void *v ATTRIBUTE_UNUSED)
 
 static void
 cb_read_pch (cpp_reader *pfile, const char *name,
-             int fd, const char *orig_name ATTRIBUTE_UNUSED)
+	     int fd, const char *orig_name ATTRIBUTE_UNUSED)
 {
   c_common_read_pch (pfile, name, fd, orig_name);
 

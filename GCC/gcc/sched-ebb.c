@@ -133,46 +133,46 @@ begin_schedule_ready (rtx insn, rtx last)
       basic_block bb;
 
       /* An obscure special case, where we do have partially dead
-         instruction scheduled after last control flow instruction.
-         In this case we can create new basic block.  It is
-         always exactly one basic block last in the sequence.  */
+	 instruction scheduled after last control flow instruction.
+	 In this case we can create new basic block.  It is
+	 always exactly one basic block last in the sequence.  */
       
       FOR_EACH_EDGE (e, ei, last_bb->succs)
-        if (e->flags & EDGE_FALLTHRU)
-          break;
+	if (e->flags & EDGE_FALLTHRU)
+	  break;
 
 #ifdef ENABLE_CHECKING
-      gcc_assert (!e || !(e->flags & EDGE_COMPLEX));            
+      gcc_assert (!e || !(e->flags & EDGE_COMPLEX));	    
 
       gcc_assert (BLOCK_FOR_INSN (insn) == last_bb
-                  && !IS_SPECULATION_CHECK_P (insn)
-                  && BB_HEAD (last_bb) != insn
-                  && BB_END (last_bb) == insn);
+		  && !IS_SPECULATION_CHECK_P (insn)
+		  && BB_HEAD (last_bb) != insn
+		  && BB_END (last_bb) == insn);
 
       {
-        rtx x;
+	rtx x;
 
-        x = NEXT_INSN (insn);
-        if (e)
-          gcc_assert (NOTE_P (x) || LABEL_P (x));
-        else
-          gcc_assert (BARRIER_P (x));
+	x = NEXT_INSN (insn);
+	if (e)
+	  gcc_assert (NOTE_P (x) || LABEL_P (x));
+	else
+	  gcc_assert (BARRIER_P (x));
       }
 #endif
 
       if (e)
-        {
-          bb = split_edge (e);
-          gcc_assert (NOTE_INSN_BASIC_BLOCK_P (BB_END (bb)));
-        }
+	{
+	  bb = split_edge (e);
+	  gcc_assert (NOTE_INSN_BASIC_BLOCK_P (BB_END (bb)));
+	}
       else
-        /* Create an empty unreachable block after the INSN.  */
-        bb = create_basic_block (NEXT_INSN (insn), NULL_RTX, last_bb);
+	/* Create an empty unreachable block after the INSN.  */
+	bb = create_basic_block (NEXT_INSN (insn), NULL_RTX, last_bb);
       
       /* split_edge () creates BB before E->DEST.  Keep in mind, that
-         this operation extends scheduling region till the end of BB.
-         Hence, we need to shift NEXT_TAIL, so haifa-sched.c won't go out
-         of the scheduling region.  */
+	 this operation extends scheduling region till the end of BB.
+	 Hence, we need to shift NEXT_TAIL, so haifa-sched.c won't go out
+	 of the scheduling region.  */
       current_sched_info->next_tail = NEXT_INSN (BB_END (bb));
       gcc_assert (current_sched_info->next_tail);
 
@@ -220,7 +220,7 @@ rank (rtx insn1, rtx insn2)
 
 static int
 contributes_to_priority (rtx next ATTRIBUTE_UNUSED,
-                         rtx insn ATTRIBUTE_UNUSED)
+			 rtx insn ATTRIBUTE_UNUSED)
 {
   return 1;
 }
@@ -232,7 +232,7 @@ contributes_to_priority (rtx next ATTRIBUTE_UNUSED,
 
 static void
 compute_jump_reg_dependencies (rtx insn, regset cond_set, regset used,
-                               regset set)
+			       regset set)
 {
   basic_block b = BLOCK_FOR_INSN (insn);
   edge e;
@@ -241,10 +241,10 @@ compute_jump_reg_dependencies (rtx insn, regset cond_set, regset used,
   FOR_EACH_EDGE (e, ei, b->succs)
     if (e->flags & EDGE_FALLTHRU)
       /* The jump may be a by-product of a branch that has been merged
-         in the main codepath after being conditionalized.  Therefore
-         it may guard the fallthrough block from using a value that has
-         conditionally overwritten that of the main codepath.  So we
-         consider that it restores the value of the main codepath.  */
+	 in the main codepath after being conditionalized.  Therefore
+	 it may guard the fallthrough block from using a value that has
+	 conditionally overwritten that of the main codepath.  So we
+	 consider that it restores the value of the main codepath.  */
       bitmap_and (set, glat_start [e->dest->index], cond_set);
     else
       bitmap_ior_into (used, glat_start [e->dest->index]);
@@ -310,38 +310,38 @@ earliest_block_with_similiar_load (basic_block last_block, rtx load_insn)
       rtx insn1 = XEXP (back_link, 0);
 
       if (GET_MODE (back_link) == VOIDmode)
-        {
-          /* Found a DEF-USE dependence (insn1, load_insn).  */
-          rtx fore_link;
+	{
+	  /* Found a DEF-USE dependence (insn1, load_insn).  */
+	  rtx fore_link;
 
-          for (fore_link = INSN_DEPEND (insn1);
-               fore_link;
-               fore_link = XEXP (fore_link, 1))
-            {
-              rtx insn2 = XEXP (fore_link, 0);
-              basic_block insn2_block = BLOCK_FOR_INSN (insn2);
+	  for (fore_link = INSN_DEPEND (insn1);
+	       fore_link;
+	       fore_link = XEXP (fore_link, 1))
+	    {
+	      rtx insn2 = XEXP (fore_link, 0);
+	      basic_block insn2_block = BLOCK_FOR_INSN (insn2);
 
-              if (GET_MODE (fore_link) == VOIDmode)
-                {
-                  if (earliest_block != NULL
-                      && earliest_block->index < insn2_block->index)
-                    continue;
+	      if (GET_MODE (fore_link) == VOIDmode)
+		{
+		  if (earliest_block != NULL
+		      && earliest_block->index < insn2_block->index)
+		    continue;
 
-                  /* Found a DEF-USE dependence (insn1, insn2).  */
-                  if (haifa_classify_insn (insn2) != PFREE_CANDIDATE)
-                    /* insn2 not guaranteed to be a 1 base reg load.  */
-                    continue;
+		  /* Found a DEF-USE dependence (insn1, insn2).  */
+		  if (haifa_classify_insn (insn2) != PFREE_CANDIDATE)
+		    /* insn2 not guaranteed to be a 1 base reg load.  */
+		    continue;
 
-                  for (bb = last_block; bb; bb = bb->aux)
-                    if (insn2_block == bb)
-                      break;
+		  for (bb = last_block; bb; bb = bb->aux)
+		    if (insn2_block == bb)
+		      break;
 
-                  if (!bb)
-                    /* insn2 is the similar load.  */
-                    earliest_block = insn2_block;
-                }
-            }
-        }
+		  if (!bb)
+		    /* insn2 is the similar load.  */
+		    earliest_block = insn2_block;
+		}
+	    }
+	}
     }
 
   return earliest_block;
@@ -362,64 +362,64 @@ add_deps_for_risky_insns (rtx head, rtx tail)
   for (insn = head; insn != next_tail; insn = NEXT_INSN (insn))
     if (control_flow_insn_p (insn))
       {
-        bb = BLOCK_FOR_INSN (insn);
-        bb->aux = last_block;
-        last_block = bb;
-        last_jump = insn;
+	bb = BLOCK_FOR_INSN (insn);
+	bb->aux = last_block;
+	last_block = bb;
+	last_jump = insn;
       }
     else if (INSN_P (insn) && last_jump != NULL_RTX)
       {
-        class = haifa_classify_insn (insn);
-        prev = last_jump;
-        switch (class)
-          {
-          case PFREE_CANDIDATE:
-            if (flag_schedule_speculative_load)
-              {
-                bb = earliest_block_with_similiar_load (last_block, insn);
-                if (bb)
-                  {
-                    bb = bb->aux;
-                    if (!bb)
-                      break;
-                    prev = BB_END (bb);
-                  }
-              }
-            /* Fall through.  */
-          case TRAP_RISKY:
-          case IRISKY:
-          case PRISKY_CANDIDATE:
-            /* ??? We could implement better checking PRISKY_CANDIDATEs
-               analogous to sched-rgn.c.  */
-            /* We can not change the mode of the backward
-               dependency because REG_DEP_ANTI has the lowest
-               rank.  */
-            if (! sched_insns_conditions_mutex_p (insn, prev))
-              {
-                if (!(current_sched_info->flags & DO_SPECULATION))
-                  {
-                    enum DEPS_ADJUST_RESULT res;
-                    
-                    res = add_or_update_back_dep (insn, prev,
-                                                  REG_DEP_ANTI, DEP_ANTI);
+	class = haifa_classify_insn (insn);
+	prev = last_jump;
+	switch (class)
+	  {
+	  case PFREE_CANDIDATE:
+	    if (flag_schedule_speculative_load)
+	      {
+		bb = earliest_block_with_similiar_load (last_block, insn);
+		if (bb)
+		  {
+		    bb = bb->aux;
+		    if (!bb)
+		      break;
+		    prev = BB_END (bb);
+		  }
+	      }
+	    /* Fall through.  */
+	  case TRAP_RISKY:
+	  case IRISKY:
+	  case PRISKY_CANDIDATE:
+	    /* ??? We could implement better checking PRISKY_CANDIDATEs
+	       analogous to sched-rgn.c.  */
+	    /* We can not change the mode of the backward
+	       dependency because REG_DEP_ANTI has the lowest
+	       rank.  */
+	    if (! sched_insns_conditions_mutex_p (insn, prev))
+	      {
+		if (!(current_sched_info->flags & DO_SPECULATION))
+		  {
+		    enum DEPS_ADJUST_RESULT res;
+		    
+		    res = add_or_update_back_dep (insn, prev,
+						  REG_DEP_ANTI, DEP_ANTI);
 
-                    if (res == DEP_CREATED)
-                      add_forw_dep (insn, LOG_LINKS (insn));
-                    else
-                      gcc_assert (res != DEP_CHANGED);
-                  }
-                else
-                  add_or_update_back_forw_dep (insn, prev, REG_DEP_ANTI,
-                                               set_dep_weak (DEP_ANTI,
-                                                             BEGIN_CONTROL,
-                                                             MAX_DEP_WEAK));
-              }
+		    if (res == DEP_CREATED)
+		      add_forw_dep (insn, LOG_LINKS (insn));
+		    else
+		      gcc_assert (res != DEP_CHANGED);
+		  }
+		else
+		  add_or_update_back_forw_dep (insn, prev, REG_DEP_ANTI,
+					       set_dep_weak (DEP_ANTI,
+							     BEGIN_CONTROL,
+							     MAX_DEP_WEAK));
+	      }
 
             break;
 
           default:
             break;
-          }
+	  }
       }
   /* Maintain the invariant that bb->aux is clear after use.  */
   while (last_block)
@@ -496,8 +496,8 @@ schedule_ebb (rtx head, rtx tail)
       rtx note;
 
       for (note = REG_NOTES (head); note; note = XEXP (note, 1))
-        if (REG_NOTE_KIND (note) == REG_SAVE_NOTE)
-          remove_note (head, note);
+	if (REG_NOTE_KIND (note) == REG_SAVE_NOTE)
+	  remove_note (head, note);
     }
 
   /* Remove remaining note insns from the block, save them in
@@ -527,7 +527,7 @@ schedule_ebb (rtx head, rtx tail)
     /* LAST_BB is unreachable.  */
     {
       gcc_assert (first_bb != last_bb
-                  && EDGE_COUNT (last_bb->succs) == 0);
+		  && EDGE_COUNT (last_bb->succs) == 0);
       last_bb = last_bb->prev_bb;
       delete_basic_block (last_bb->next_bb);
     }
@@ -579,36 +579,36 @@ schedule_ebbs (void)
       rtx head = BB_HEAD (bb);
 
       for (;;)
-        {
-          edge e;
-          edge_iterator ei;
-          tail = BB_END (bb);
-          if (bb->next_bb == EXIT_BLOCK_PTR
-              || LABEL_P (BB_HEAD (bb->next_bb)))
-            break;
-          FOR_EACH_EDGE (e, ei, bb->succs)
-            if ((e->flags & EDGE_FALLTHRU) != 0)
-              break;
-          if (! e)
-            break;
-          if (e->probability <= probability_cutoff)
-            break;
-          bb = bb->next_bb;
-        }
+	{
+	  edge e;
+	  edge_iterator ei;
+	  tail = BB_END (bb);
+	  if (bb->next_bb == EXIT_BLOCK_PTR
+	      || LABEL_P (BB_HEAD (bb->next_bb)))
+	    break;
+	  FOR_EACH_EDGE (e, ei, bb->succs)
+	    if ((e->flags & EDGE_FALLTHRU) != 0)
+	      break;
+	  if (! e)
+	    break;
+	  if (e->probability <= probability_cutoff)
+	    break;
+	  bb = bb->next_bb;
+	}
 
       /* Blah.  We should fix the rest of the code not to get confused by
-         a note or two.  */
+	 a note or two.  */
       while (head != tail)
-        {
-          if (NOTE_P (head))
-            head = NEXT_INSN (head);
-          else if (NOTE_P (tail))
-            tail = PREV_INSN (tail);
-          else if (LABEL_P (head))
-            head = NEXT_INSN (head);
-          else
-            break;
-        }
+	{
+	  if (NOTE_P (head))
+	    head = NEXT_INSN (head);
+	  else if (NOTE_P (tail))
+	    tail = PREV_INSN (tail);
+	  else if (LABEL_P (head))
+	    head = NEXT_INSN (head);
+	  else
+	    break;
+	}
 
       bitmap_set_bit (&ebb_head, BLOCK_NUM (head));
       bb = schedule_ebb (head, tail);
@@ -645,16 +645,16 @@ schedule_ebbs (void)
       bbi = bb->index;
 
       if (!bitmap_bit_p (&ebb_head, bbi)
-          || !bitmap_bit_p (&ebb_tail, bbi)
-          /* New blocks (e.g. recovery blocks) should be processed
-             as parts of large regions.  */
-          || !glat_start[bbi])
-        any_large_regions = 1;
+	  || !bitmap_bit_p (&ebb_tail, bbi)
+	  /* New blocks (e.g. recovery blocks) should be processed
+	     as parts of large regions.  */
+	  || !glat_start[bbi])
+	any_large_regions = 1;
       else
-        {
-          SET_BIT (blocks, bbi);
-          RESET_BIT (large_region_blocks, bbi);
-        }
+	{
+	  SET_BIT (blocks, bbi);
+	  RESET_BIT (large_region_blocks, bbi);
+	}
     }
 
   update_life_info (blocks, UPDATE_LIFE_LOCAL, 0);
@@ -666,8 +666,8 @@ schedule_ebbs (void)
 
 #ifdef ENABLE_CHECKING
       /* !!! We can't check reg_live_info here because of the fact,
-         that destination registers of COND_EXEC's may be dead
-         before scheduling (while they should be alive).  Don't know why.  */
+	 that destination registers of COND_EXEC's may be dead
+	 before scheduling (while they should be alive).  Don't know why.  */
       /*check_reg_live (true);*/
 #endif
     }
@@ -718,30 +718,30 @@ advance_target_bb (basic_block bb, rtx insn)
   if (insn)
     {
       if (BLOCK_FOR_INSN (insn) != bb
-          && control_flow_insn_p (insn)
-          /* We handle interblock movement of the speculation check
-             or over a speculation check in
-             haifa-sched.c: move_block_after_check ().  */
-          && !IS_SPECULATION_BRANCHY_CHECK_P (insn)
-          && !IS_SPECULATION_BRANCHY_CHECK_P (BB_END (bb)))
-        {
-          /* Assert that we don't move jumps across blocks.  */
-          gcc_assert (!control_flow_insn_p (BB_END (bb))
-                      && NOTE_INSN_BASIC_BLOCK_P (BB_HEAD (bb->next_bb)));
-          return bb;
-        }
+	  && control_flow_insn_p (insn)
+	  /* We handle interblock movement of the speculation check
+	     or over a speculation check in
+	     haifa-sched.c: move_block_after_check ().  */
+	  && !IS_SPECULATION_BRANCHY_CHECK_P (insn)
+	  && !IS_SPECULATION_BRANCHY_CHECK_P (BB_END (bb)))
+	{
+	  /* Assert that we don't move jumps across blocks.  */
+	  gcc_assert (!control_flow_insn_p (BB_END (bb))
+		      && NOTE_INSN_BASIC_BLOCK_P (BB_HEAD (bb->next_bb)));
+	  return bb;
+	}
       else
-        return 0;
+	return 0;
     }
   else
     /* Return next non empty block.  */
     {
       do
-        {
-          gcc_assert (bb != last_bb);
+	{
+	  gcc_assert (bb != last_bb);
 
-          bb = bb->next_bb;
-        }
+	  bb = bb->next_bb;
+	}
       while (bb_note (bb) == BB_END (bb));
 
       return bb;

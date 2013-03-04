@@ -51,9 +51,9 @@ static tree vect_recog_widen_sum_pattern (tree, tree *, tree *);
 static tree vect_recog_widen_mult_pattern (tree, tree *, tree *);
 static tree vect_recog_dot_prod_pattern (tree, tree *, tree *);
 static vect_recog_func_ptr vect_vect_recog_func_ptrs[NUM_PATTERNS] = {
-        vect_recog_widen_mult_pattern,
-        vect_recog_widen_sum_pattern,
-        vect_recog_dot_prod_pattern};
+	vect_recog_widen_mult_pattern,
+	vect_recog_widen_sum_pattern,
+	vect_recog_dot_prod_pattern};
 
 
 /* Function widened_name_p
@@ -271,9 +271,9 @@ vect_recog_dot_prod_pattern (tree last_stmt, tree *type_in, tree *type_out)
       oprnd0 = TREE_OPERAND (expr, 0);
       oprnd1 = TREE_OPERAND (expr, 1);
       if (TYPE_MAIN_VARIANT (TREE_TYPE (oprnd0)) 
-                                != TYPE_MAIN_VARIANT (prod_type)
+				!= TYPE_MAIN_VARIANT (prod_type)
           || TYPE_MAIN_VARIANT (TREE_TYPE (oprnd1)) 
-                                != TYPE_MAIN_VARIANT (prod_type))
+				!= TYPE_MAIN_VARIANT (prod_type))
         return NULL;
       if (!widened_name_p (oprnd0, stmt, &half_type0, &def_stmt))
         return NULL;
@@ -284,7 +284,7 @@ vect_recog_dot_prod_pattern (tree last_stmt, tree *type_in, tree *type_out)
       if (TYPE_MAIN_VARIANT (half_type0) != TYPE_MAIN_VARIANT (half_type1))
         return NULL;
       if (TYPE_PRECISION (prod_type) != TYPE_PRECISION (half_type0) * 2)
-        return NULL;
+	return NULL;
     }
 
   half_type = TREE_TYPE (oprnd00);
@@ -335,8 +335,8 @@ vect_recog_dot_prod_pattern (tree last_stmt, tree *type_in, tree *type_out)
 
 static tree
 vect_recog_widen_mult_pattern (tree last_stmt ATTRIBUTE_UNUSED, 
-                               tree *type_in ATTRIBUTE_UNUSED, 
-                               tree *type_out ATTRIBUTE_UNUSED)
+			       tree *type_in ATTRIBUTE_UNUSED, 
+			       tree *type_out ATTRIBUTE_UNUSED)
 {
   /* Yet to be implemented.   */
   return NULL;
@@ -460,8 +460,8 @@ vect_recog_widen_sum_pattern (tree last_stmt, tree *type_in, tree *type_out)
 
 static void
 vect_pattern_recog_1 (
-        tree (* vect_recog_func) (tree, tree *, tree *),
-        block_stmt_iterator si)
+	tree (* vect_recog_func) (tree, tree *, tree *),
+	block_stmt_iterator si)
 {
   tree stmt = bsi_stmt (si);
   stmt_vec_info stmt_info = vinfo_for_stmt (stmt);
@@ -501,7 +501,7 @@ vect_pattern_recog_1 (
           || (type_out
               && (insn_data[icode].operand[0].mode !=
                   TYPE_MODE (get_vectype_for_scalar_type (type_out)))))
-        return;
+	return;
     }
 
   /* Found a vectorizable pattern.  */

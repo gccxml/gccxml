@@ -48,14 +48,14 @@
 
 (define_insn_reservation "ppc750-load" 2
   (and (eq_attr "type" "load,load_ext,load_ext_u,load_ext_ux,\
-                        load_ux,load_u,fpload,fpload_ux,fpload_u,\
-                        vecload,load_l")
+		        load_ux,load_u,fpload,fpload_ux,fpload_u,\
+			vecload,load_l")
        (eq_attr "cpu" "ppc750,ppc7400"))
   "ppc750_du,lsu_7xx")
 
 (define_insn_reservation "ppc750-store" 2
   (and (eq_attr "type" "store,store_ux,store_u,\
-                        fpstore,fpstore_ux,fpstore_u,vecstore")
+		        fpstore,fpstore_ux,fpstore_u,vecstore")
        (eq_attr "cpu" "ppc750,ppc7400"))
   "ppc750_du,lsu_7xx")
 

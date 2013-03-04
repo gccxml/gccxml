@@ -22,15 +22,15 @@ Boston, MA 02110-1301, USA.  */
 #undef TARGET_DEFAULT
 #define TARGET_DEFAULT (MASK_FPREGS | MASK_GAS)
 
-#define TARGET_OS_CPP_BUILTINS()                \
-    do {                                        \
-        NETBSD_OS_CPP_BUILTINS_ELF();                \
+#define TARGET_OS_CPP_BUILTINS()		\
+    do {					\
+	NETBSD_OS_CPP_BUILTINS_ELF();		\
     } while (0)
 
 
 /* NetBSD doesn't use the LANGUAGE* built-ins.  */
 #undef SUBTARGET_LANGUAGE_CPP_BUILTINS
-#define SUBTARGET_LANGUAGE_CPP_BUILTINS()        /* nothing */
+#define SUBTARGET_LANGUAGE_CPP_BUILTINS()	/* nothing */
 
 
 /* Show that we need a GP when profiling.  */
@@ -45,9 +45,9 @@ Boston, MA 02110-1301, USA.  */
 #define CPP_SUBTARGET_SPEC NETBSD_CPP_SPEC
 
 #undef SUBTARGET_EXTRA_SPECS
-#define SUBTARGET_EXTRA_SPECS                        \
-  { "netbsd_link_spec", NETBSD_LINK_SPEC_ELF },        \
-  { "netbsd_entry_point", NETBSD_ENTRY_POINT },        \
+#define SUBTARGET_EXTRA_SPECS			\
+  { "netbsd_link_spec", NETBSD_LINK_SPEC_ELF },	\
+  { "netbsd_entry_point", NETBSD_ENTRY_POINT },	\
   { "netbsd_endfile_spec", NETBSD_ENDFILE_SPEC },
 
 
@@ -69,7 +69,7 @@ Boston, MA 02110-1301, USA.  */
    We also need to handle the GCC option `-ffast-math'.  */
 
 #undef ENDFILE_SPEC
-#define ENDFILE_SPEC                \
+#define ENDFILE_SPEC		\
   "%{ffast-math|funsafe-math-optimizations:crtfm%O%s} \
    %(netbsd_endfile_spec)"
 

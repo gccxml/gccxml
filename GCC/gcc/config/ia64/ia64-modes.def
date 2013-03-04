@@ -1,7 +1,7 @@
 /* Definitions of target machine GNU compiler.  IA-64 version.
    Copyright (C) 2002, 2003, 2004, 2005 Free Software Foundation, Inc.
    Contributed by James E. Wilson <wilson@cygnus.com> and
-                     David Mosberger <davidm@hpl.hp.com>.
+   		  David Mosberger <davidm@hpl.hp.com>.
 
 This file is part of GCC.
 
@@ -33,33 +33,33 @@ FLOAT_MODE (TF, 16, ieee_quad_format);
 
 /* The above produces:
 
-   mode          ILP32 size/align        LP64 size/align
-   XF          16/16                        16/16
-   TF          16/16                        16/16
+   mode	  ILP32 size/align	LP64 size/align
+   XF	  16/16			16/16
+   TF	  16/16			16/16
 
    psABI expectations:
 
-   mode   ILP32 size/align        LP64 size/align
-   XF          12/4                        -
-   TF          -                        -
+   mode   ILP32 size/align	LP64 size/align
+   XF	  12/4			-
+   TF	  -			-
 
    HPUX expectations:
 
-   mode          ILP32 size/align        LP64 size/align
-   XF          -                        -
-   TF          16/8                        -
+   mode	  ILP32 size/align	LP64 size/align
+   XF	  -			-
+   TF	  16/8			-
 
    We fix this up here.  */
 
 ADJUST_FLOAT_FORMAT (XF, (TARGET_ILP32 && !TARGET_HPUX)
-                         ? &ieee_extended_intel_96_format
-                         : &ieee_extended_intel_128_format);
+			 ? &ieee_extended_intel_96_format
+			 : &ieee_extended_intel_128_format);
 ADJUST_BYTESIZE  (XF, (TARGET_ILP32 && !TARGET_HPUX) ? 12 : 16);
 ADJUST_ALIGNMENT (XF, (TARGET_ILP32 && !TARGET_HPUX) ?  4 : 16);
 
 ADJUST_FLOAT_FORMAT (RF, (TARGET_ILP32 && !TARGET_HPUX)
-                         ? &ieee_extended_intel_96_format
-                         : &ieee_extended_intel_128_format);
+			 ? &ieee_extended_intel_96_format
+			 : &ieee_extended_intel_128_format);
 ADJUST_BYTESIZE  (RF, (TARGET_ILP32 && !TARGET_HPUX) ? 12 : 16);
 ADJUST_ALIGNMENT (RF, (TARGET_ILP32 && !TARGET_HPUX) ?  4 : 16);
 
@@ -77,8 +77,8 @@ INT_MODE (OI, 32);
 CC_MODE (CCI);
 
 /* Vector modes.  */
-VECTOR_MODES (INT, 4);                /* V4QI V2HI */
-VECTOR_MODES (INT, 8);                /* V8QI V4HI V2SI */
+VECTOR_MODES (INT, 4);		/* V4QI V2HI */
+VECTOR_MODES (INT, 8);		/* V8QI V4HI V2SI */
 VECTOR_MODE (INT, QI, 16);
 VECTOR_MODE (INT, HI, 8);
 VECTOR_MODE (INT, SI, 4);

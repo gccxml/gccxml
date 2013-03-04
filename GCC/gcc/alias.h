@@ -30,6 +30,6 @@ extern bool component_uses_parent_alias_set (tree);
    other memories, creating a barrier across which no memory reference
    can move.  Note that there are other legacy ways to create such
    memory barriers, including an address of SCRATCH.  */
-#define ALIAS_SET_MEMORY_BARRIER        ((HOST_WIDE_INT) -1)
+#define ALIAS_SET_MEMORY_BARRIER	((HOST_WIDE_INT) -1)
 
 #endif /* GCC_ALIAS_H */

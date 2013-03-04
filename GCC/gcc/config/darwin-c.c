@@ -50,7 +50,7 @@ static void pop_field_alignment (void);
 static const char *find_subframework_file (const char *, const char *);
 static void add_system_framework_path (char *);
 static const char *find_subframework_header (cpp_reader *pfile, const char *header,
-                                             cpp_dir **dirp);
+					     cpp_dir **dirp);
 
 typedef struct align_stack
 {
@@ -142,15 +142,15 @@ darwin_pragma_unused (cpp_reader *pfile ATTRIBUTE_UNUSED)
     {
       tok = pragma_lex (&decl);
       if (tok == CPP_NAME && decl)
-        {
-          tree local = lookup_name (decl);
-          if (local && (TREE_CODE (local) == PARM_DECL
-                        || TREE_CODE (local) == VAR_DECL))
-            TREE_USED (local) = 1;
-          tok = pragma_lex (&x);
-          if (tok != CPP_COMMA)
-            break;
-        }
+	{
+	  tree local = lookup_name (decl);
+	  if (local && (TREE_CODE (local) == PARM_DECL
+			|| TREE_CODE (local) == VAR_DECL))
+	    TREE_USED (local) = 1;
+	  tok = pragma_lex (&x);
+	  if (tok != CPP_COMMA)
+	    break;
+	}
     }
 
   if (tok != CPP_CLOSE_PAREN)
@@ -205,17 +205,17 @@ add_framework (const char *name, size_t len, cpp_dir *dir)
   for (i = 0; i < num_frameworks; ++i)
     {
       if (len == frameworks_in_use[i].len
-          && strncmp (name, frameworks_in_use[i].name, len) == 0)
-        {
-          return;
-        }
+	  && strncmp (name, frameworks_in_use[i].name, len) == 0)
+	{
+	  return;
+	}
     }
   if (i >= max_frameworks)
     {
       max_frameworks = i*2;
       max_frameworks += i == 0;
       frameworks_in_use = xrealloc (frameworks_in_use,
-                                    max_frameworks*sizeof(*frameworks_in_use));
+				    max_frameworks*sizeof(*frameworks_in_use));
     }
   dir_name = XNEWVEC (char, len + 1);
   memcpy (dir_name, name, len);
@@ -237,10 +237,10 @@ find_framework (const char *name, size_t len)
   for (i = 0; i < num_frameworks; ++i)
     {
       if (len == frameworks_in_use[i].len
-          && strncmp (name, frameworks_in_use[i].name, len) == 0)
-        {
-          return frameworks_in_use[i].dir;
-        }
+	  && strncmp (name, frameworks_in_use[i].name, len) == 0)
+	{
+	  return frameworks_in_use[i].dir;
+	}
     }
   return 0;
 }
@@ -285,7 +285,7 @@ framework_construct_pathname (const char *fname, cpp_dir *dir)
     return 0;
 
   frname = XNEWVEC (char, strlen (fname) + dir->len + 2
-                    + strlen(".framework/") + strlen("PrivateHeaders"));
+		    + strlen(".framework/") + strlen("PrivateHeaders"));
   strncpy (&frname[0], dir->name, dir->len);
   frname_len = dir->len;
   if (frname_len && frname[frname_len-1] != '/')
@@ -299,19 +299,19 @@ framework_construct_pathname (const char *fname, cpp_dir *dir)
     {
       frname[frname_len-1] = 0;
       if (stat (frname, &st) == 0)
-        {
-          /* As soon as we find the first instance of the framework,
-             we stop and never use any later instance of that
-             framework.  */
-          add_framework (fname, fname_len, dir);
-        }
+	{
+	  /* As soon as we find the first instance of the framework,
+	     we stop and never use any later instance of that
+	     framework.  */
+	  add_framework (fname, fname_len, dir);
+	}
       else
-        {
-          /* If we can't find the parent directory, no point looking
-             further.  */
-          free (frname);
-          return 0;
-        }
+	{
+	  /* If we can't find the parent directory, no point looking
+	     further.  */
+	  free (frname);
+	  return 0;
+	}
       frname[frname_len-1] = '/';
     }
 
@@ -319,13 +319,13 @@ framework_construct_pathname (const char *fname, cpp_dir *dir)
   for (i = 0; framework_header_dirs[i].dirName; i++)
     {
       strncpy (&frname[frname_len],
-               framework_header_dirs[i].dirName,
-               framework_header_dirs[i].dirNameLen);
+	       framework_header_dirs[i].dirName,
+	       framework_header_dirs[i].dirNameLen);
       strcpy (&frname[frname_len + framework_header_dirs[i].dirNameLen],
-              &fname[fname_len]);
+	      &fname[fname_len]);
 
       if (stat (frname, &st) == 0)
-        return frname;
+	return frname;
     }
 
   free (frname);
@@ -373,8 +373,8 @@ find_subframework_file (const char *fname, const char *pname)
      sfrname = /System/Library/Frameworks/Foundation.framework/Frameworks/CarbonCore.framework/Headers/OSUtils.h */
 
   sfrname = XNEWVEC (char, strlen (pname) + strlen (fname) + 2 +
-                              strlen ("Frameworks/") + strlen (".framework/")
-                              + strlen ("PrivateHeaders"));
+			      strlen ("Frameworks/") + strlen (".framework/")
+			      + strlen ("PrivateHeaders"));
 
   bufptr += strlen (dot_framework);
 
@@ -395,24 +395,24 @@ find_subframework_file (const char *fname, const char *pname)
   for (i = 0; framework_header_dirs[i].dirName; i++)
     {
       strncpy (&sfrname[sfrname_len],
-               framework_header_dirs[i].dirName,
-               framework_header_dirs[i].dirNameLen);
+	       framework_header_dirs[i].dirName,
+	       framework_header_dirs[i].dirNameLen);
       strcpy (&sfrname[sfrname_len + framework_header_dirs[i].dirNameLen],
-              &fname[fname_len]);
+	      &fname[fname_len]);
 
       if (stat (sfrname, &st) == 0)
-        {
-          if (fast_dir != &subframe_dir)
-            {
-              if (fast_dir)
-                warning (0, "subframework include %s conflicts with framework include",
-                         fname);
-              else
-                add_framework (fname, fname_len, &subframe_dir);
-            }
+	{
+	  if (fast_dir != &subframe_dir)
+	    {
+	      if (fast_dir)
+		warning (0, "subframework include %s conflicts with framework include",
+			 fname);
+	      else
+		add_framework (fname, fname_len, &subframe_dir);
+	    }
 
-          return sfrname;
-        }
+	  return sfrname;
+	}
     }
   free (sfrname);
 
@@ -466,7 +466,7 @@ static const char *framework_defaults [] =
 
 void
 darwin_register_objc_includes (const char *sysroot, const char *iprefix,
-                               int stdinc)
+			       int stdinc)
 {
   const char *fname;
   size_t len;
@@ -483,21 +483,21 @@ darwin_register_objc_includes (const char *sysroot, const char *iprefix,
     {
       char *str;
       /* See if our directory starts with the standard prefix.
-         "Translate" them, i.e. replace /usr/local/lib/gcc... with
-         IPREFIX and search them first.  */
+	 "Translate" them, i.e. replace /usr/local/lib/gcc... with
+	 IPREFIX and search them first.  */
       if (iprefix && (len = cpp_GCC_INCLUDE_DIR_len) != 0 && !sysroot
-          && !strncmp (fname, cpp_GCC_INCLUDE_DIR, len))
-        {
-          str = concat (iprefix, fname + len, NULL);
+	  && !strncmp (fname, cpp_GCC_INCLUDE_DIR, len))
+	{
+	  str = concat (iprefix, fname + len, NULL);
           /* FIXME: wrap the headers for C++awareness.  */
-          add_path (str, SYSTEM, /*c++aware=*/false, false);
-        }
+	  add_path (str, SYSTEM, /*c++aware=*/false, false);
+	}
 
       /* Should this directory start with the sysroot?  */
       if (sysroot)
-        str = concat (sysroot, fname, NULL);
+	str = concat (sysroot, fname, NULL);
       else
-        str = update_path (fname, "");
+	str = update_path (fname, "");
 
       add_path (str, SYSTEM, /*c++aware=*/false, false);
     }
@@ -510,7 +510,7 @@ darwin_register_objc_includes (const char *sysroot, const char *iprefix,
 
 void
 darwin_register_frameworks (const char *sysroot,
-                            const char *iprefix ATTRIBUTE_UNUSED, int stdinc)
+			    const char *iprefix ATTRIBUTE_UNUSED, int stdinc)
 {
   if (stdinc)
     {
@@ -518,15 +518,15 @@ darwin_register_frameworks (const char *sysroot,
 
       /* Setup default search path for frameworks.  */
       for (i=0; i<sizeof (framework_defaults)/sizeof(const char *); ++i)
-        {
-          char *str;
-          if (sysroot)
-            str = concat (sysroot, xstrdup (framework_defaults [i]), NULL);
-          else
-            str = xstrdup (framework_defaults[i]);
-          /* System Framework headers are cxx aware.  */
-          add_system_framework_path (str);
-        }
+	{
+	  char *str;
+	  if (sysroot)
+	    str = concat (sysroot, xstrdup (framework_defaults [i]), NULL);
+	  else
+	    str = xstrdup (framework_defaults[i]);
+	  /* System Framework headers are cxx aware.  */
+	  add_system_framework_path (str);
+	}
     }
 
   if (using_frameworks)
@@ -554,14 +554,14 @@ find_subframework_header (cpp_reader *pfile, const char *header, cpp_dir **dirp)
     {
       n = find_subframework_file (fname, cpp_get_path (cpp_get_file (b)));
       if (n)
-        {
-          /* Logically, the place where we found the subframework is
-             the place where we found the Framework that contains the
-             subframework.  This is useful for tracking wether or not
-             we are in a system header.  */
-          *dirp = cpp_get_dir (cpp_get_file (b));
-          return n;
-        }
+	{
+	  /* Logically, the place where we found the subframework is
+	     the place where we found the Framework that contains the
+	     subframework.  This is useful for tracking wether or not
+	     we are in a system header.  */
+	  *dirp = cpp_get_dir (cpp_get_file (b));
+	  return n;
+	}
     }
 
   return 0;
@@ -584,11 +584,11 @@ version_as_macro (void)
   if (darwin_macosx_version_min[4] != '\0')
     {
       if (darwin_macosx_version_min[4] != '.')
-        goto fail;
+	goto fail;
       if (! ISDIGIT (darwin_macosx_version_min[5]))
-        goto fail;
+	goto fail;
       if (darwin_macosx_version_min[6] != '\0')
-        goto fail;
+	goto fail;
       result[3] = darwin_macosx_version_min[5];
     }
   else
@@ -598,7 +598,7 @@ version_as_macro (void)
 
  fail:
   error ("Unknown value %qs of -mmacosx-version-min",
-         darwin_macosx_version_min);
+	 darwin_macosx_version_min);
   return "1000";
 }
 
@@ -618,5 +618,5 @@ darwin_cpp_builtins (cpp_reader *pfile)
 
   if (darwin_macosx_version_min)
     builtin_define_with_value ("__ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__",
-                               version_as_macro(), false);
+			       version_as_macro(), false);
 }

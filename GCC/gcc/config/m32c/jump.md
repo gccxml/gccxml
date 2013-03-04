@@ -55,7 +55,7 @@
 ; far easier (and more reliable) to let gas worry about it.
 (define_insn "jump"
   [(set (pc)
-        (label_ref (match_operand 0 "" "")))]
+	(label_ref (match_operand 0 "" "")))]
   ""
   "jmp.a\t%l0"
   [(set_attr "flags" "n")]
@@ -64,7 +64,7 @@
 ; No 16 bit indirect calls on r8c/m16c.  */
 (define_insn "call"
   [(call (match_operand:QI 0 "memory_operand" "Si,SaSb,?Rmm")
-         (match_operand 1 "" ""))
+	 (match_operand 1 "" ""))
    (use (match_operand 2 "immediate_operand" ""))]
   ""
   "*
@@ -78,8 +78,8 @@ switch (which_alternative) {
 
 (define_insn "call_value"
   [(set (match_operand 0 "m32c_return_operand" "=RdiRmmRpa,RdiRmmRpa,RdiRmmRpa")
-        (call (match_operand:QI 1 "memory_operand" "Si,SaSb,?Rmm")
-              (match_operand 2 "" "")))
+	(call (match_operand:QI 1 "memory_operand" "Si,SaSb,?Rmm")
+	      (match_operand 2 "" "")))
    (use (match_operand 3 "immediate_operand" ""))]
   ""
   "*

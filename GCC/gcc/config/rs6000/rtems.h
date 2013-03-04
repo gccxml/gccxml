@@ -54,4 +54,4 @@
 
 #undef  SUBSUBTARGET_EXTRA_SPECS
 #define SUBSUBTARGET_EXTRA_SPECS \
-  { "cpp_os_rtems",                CPP_OS_RTEMS_SPEC }
+  { "cpp_os_rtems",		CPP_OS_RTEMS_SPEC }

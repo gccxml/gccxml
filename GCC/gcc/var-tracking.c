@@ -110,15 +110,15 @@
 /* Type of micro operation.  */
 enum micro_operation_type
 {
-  MO_USE,        /* Use location (REG or MEM).  */
+  MO_USE,	/* Use location (REG or MEM).  */
   MO_USE_NO_VAR,/* Use location which is not associated with a variable
-                   or the variable is not trackable.  */
-  MO_SET,        /* Set location.  */
-  MO_COPY,        /* Copy the same portion of a variable from one
-                   location to another.  */
-  MO_CLOBBER,        /* Clobber location.  */
-  MO_CALL,        /* Call insn.  */
-  MO_ADJUST        /* Adjust stack pointer.  */
+		   or the variable is not trackable.  */
+  MO_SET,	/* Set location.  */
+  MO_COPY,	/* Copy the same portion of a variable from one
+		   location to another.  */
+  MO_CLOBBER,	/* Clobber location.  */
+  MO_CALL,	/* Call insn.  */
+  MO_ADJUST	/* Adjust stack pointer.  */
 };
 
 /* Where shall the note be emitted?  BEFORE or AFTER the instruction.  */
@@ -276,9 +276,9 @@ static bool emit_notes;
 
 /* Local function prototypes.  */
 static void stack_adjust_offset_pre_post (rtx, HOST_WIDE_INT *,
-                                          HOST_WIDE_INT *);
+					  HOST_WIDE_INT *);
 static void insn_stack_adjust_offset_pre_post (rtx, HOST_WIDE_INT *,
-                                               HOST_WIDE_INT *);
+					       HOST_WIDE_INT *);
 static void bb_stack_adjust_offset (basic_block);
 static bool vt_stack_adjustments (void);
 static rtx adjust_stack_reference (rtx, HOST_WIDE_INT);
@@ -360,7 +360,7 @@ static void vt_finalize (void);
 
 static void
 stack_adjust_offset_pre_post (rtx pattern, HOST_WIDE_INT *pre,
-                              HOST_WIDE_INT *post)
+			      HOST_WIDE_INT *post)
 {
   rtx src = SET_SRC (pattern);
   rtx dest = SET_DEST (pattern);
@@ -371,14 +371,14 @@ stack_adjust_offset_pre_post (rtx pattern, HOST_WIDE_INT *pre,
       /* (set (reg sp) (plus (reg sp) (const_int))) */
       code = GET_CODE (src);
       if (! (code == PLUS || code == MINUS)
-          || XEXP (src, 0) != stack_pointer_rtx
-          || GET_CODE (XEXP (src, 1)) != CONST_INT)
-        return;
+	  || XEXP (src, 0) != stack_pointer_rtx
+	  || GET_CODE (XEXP (src, 1)) != CONST_INT)
+	return;
 
       if (code == MINUS)
-        *post += INTVAL (XEXP (src, 1));
+	*post += INTVAL (XEXP (src, 1));
       else
-        *post -= INTVAL (XEXP (src, 1));
+	*post -= INTVAL (XEXP (src, 1));
     }
   else if (MEM_P (dest))
     {
@@ -387,59 +387,59 @@ stack_adjust_offset_pre_post (rtx pattern, HOST_WIDE_INT *pre,
       code = GET_CODE (src);
 
       switch (code)
-        {
-        case PRE_MODIFY:
-        case POST_MODIFY:
-          if (XEXP (src, 0) == stack_pointer_rtx)
-            {
-              rtx val = XEXP (XEXP (src, 1), 1);
-              /* We handle only adjustments by constant amount.  */
-              gcc_assert (GET_CODE (XEXP (src, 1)) == PLUS &&
-                          GET_CODE (val) == CONST_INT);
-              
-              if (code == PRE_MODIFY)
-                *pre -= INTVAL (val);
-              else
-                *post -= INTVAL (val);
-              break;
-            }
-          return;
+	{
+	case PRE_MODIFY:
+	case POST_MODIFY:
+	  if (XEXP (src, 0) == stack_pointer_rtx)
+	    {
+	      rtx val = XEXP (XEXP (src, 1), 1);
+	      /* We handle only adjustments by constant amount.  */
+	      gcc_assert (GET_CODE (XEXP (src, 1)) == PLUS &&
+			  GET_CODE (val) == CONST_INT);
+	      
+	      if (code == PRE_MODIFY)
+		*pre -= INTVAL (val);
+	      else
+		*post -= INTVAL (val);
+	      break;
+	    }
+	  return;
 
-        case PRE_DEC:
-          if (XEXP (src, 0) == stack_pointer_rtx)
-            {
-              *pre += GET_MODE_SIZE (GET_MODE (dest));
-              break;
-            }
-          return;
+	case PRE_DEC:
+	  if (XEXP (src, 0) == stack_pointer_rtx)
+	    {
+	      *pre += GET_MODE_SIZE (GET_MODE (dest));
+	      break;
+	    }
+	  return;
 
-        case POST_DEC:
-          if (XEXP (src, 0) == stack_pointer_rtx)
-            {
-              *post += GET_MODE_SIZE (GET_MODE (dest));
-              break;
-            }
-          return;
+	case POST_DEC:
+	  if (XEXP (src, 0) == stack_pointer_rtx)
+	    {
+	      *post += GET_MODE_SIZE (GET_MODE (dest));
+	      break;
+	    }
+	  return;
 
-        case PRE_INC:
-          if (XEXP (src, 0) == stack_pointer_rtx)
-            {
-              *pre -= GET_MODE_SIZE (GET_MODE (dest));
-              break;
-            }
-          return;
+	case PRE_INC:
+	  if (XEXP (src, 0) == stack_pointer_rtx)
+	    {
+	      *pre -= GET_MODE_SIZE (GET_MODE (dest));
+	      break;
+	    }
+	  return;
 
-        case POST_INC:
-          if (XEXP (src, 0) == stack_pointer_rtx)
-            {
-              *post -= GET_MODE_SIZE (GET_MODE (dest));
-              break;
-            }
-          return;
+	case POST_INC:
+	  if (XEXP (src, 0) == stack_pointer_rtx)
+	    {
+	      *post -= GET_MODE_SIZE (GET_MODE (dest));
+	      break;
+	    }
+	  return;
 
-        default:
-          return;
-        }
+	default:
+	  return;
+	}
     }
 }
 
@@ -448,7 +448,7 @@ stack_adjust_offset_pre_post (rtx pattern, HOST_WIDE_INT *pre,
 
 static void
 insn_stack_adjust_offset_pre_post (rtx insn, HOST_WIDE_INT *pre,
-                                   HOST_WIDE_INT *post)
+				   HOST_WIDE_INT *post)
 {
   *pre = 0;
   *post = 0;
@@ -456,16 +456,16 @@ insn_stack_adjust_offset_pre_post (rtx insn, HOST_WIDE_INT *pre,
   if (GET_CODE (PATTERN (insn)) == SET)
     stack_adjust_offset_pre_post (PATTERN (insn), pre, post);
   else if (GET_CODE (PATTERN (insn)) == PARALLEL
-           || GET_CODE (PATTERN (insn)) == SEQUENCE)
+	   || GET_CODE (PATTERN (insn)) == SEQUENCE)
     {
       int i;
 
       /* There may be stack adjustments inside compound insns.  Search
-         for them.  */
+	 for them.  */
       for ( i = XVECLEN (PATTERN (insn), 0) - 1; i >= 0; i--)
-        if (GET_CODE (XVECEXP (PATTERN (insn), 0, i)) == SET)
-          stack_adjust_offset_pre_post (XVECEXP (PATTERN (insn), 0, i),
-                                        pre, post);
+	if (GET_CODE (XVECEXP (PATTERN (insn), 0, i)) == SET)
+	  stack_adjust_offset_pre_post (XVECEXP (PATTERN (insn), 0, i),
+					pre, post);
     }
 }
 
@@ -481,15 +481,15 @@ bb_stack_adjust_offset (basic_block bb)
   for (i = 0; i < VTI (bb)->n_mos; i++)
     {
       if (VTI (bb)->mos[i].type == MO_ADJUST)
-        offset += VTI (bb)->mos[i].u.adjust;
+	offset += VTI (bb)->mos[i].u.adjust;
       else if (VTI (bb)->mos[i].type != MO_CALL)
-        {
-          if (MEM_P (VTI (bb)->mos[i].u.loc))
-            {
-              VTI (bb)->mos[i].u.loc
-                = adjust_stack_reference (VTI (bb)->mos[i].u.loc, -offset);
-            }
-        }
+	{
+	  if (MEM_P (VTI (bb)->mos[i].u.loc))
+	    {
+	      VTI (bb)->mos[i].u.loc
+		= adjust_stack_reference (VTI (bb)->mos[i].u.loc, -offset);
+	    }
+	}
     }
   VTI (bb)->out.stack_adjust = offset;
 }
@@ -528,32 +528,32 @@ vt_stack_adjustments (void)
 
       /* Check if the edge destination has been visited yet.  */
       if (!VTI (dest)->visited)
-        {
-          VTI (dest)->visited = true;
-          VTI (dest)->in.stack_adjust = VTI (src)->out.stack_adjust;
-          bb_stack_adjust_offset (dest);
+	{
+	  VTI (dest)->visited = true;
+	  VTI (dest)->in.stack_adjust = VTI (src)->out.stack_adjust;
+	  bb_stack_adjust_offset (dest);
 
-          if (EDGE_COUNT (dest->succs) > 0)
-            /* Since the DEST node has been visited for the first
-               time, check its successors.  */
-            stack[sp++] = ei_start (dest->succs);
-        }
+	  if (EDGE_COUNT (dest->succs) > 0)
+	    /* Since the DEST node has been visited for the first
+	       time, check its successors.  */
+	    stack[sp++] = ei_start (dest->succs);
+	}
       else
-        {
-          /* Check whether the adjustments on the edges are the same.  */
-          if (VTI (dest)->in.stack_adjust != VTI (src)->out.stack_adjust)
-            {
-              free (stack);
-              return false;
-            }
+	{
+	  /* Check whether the adjustments on the edges are the same.  */
+	  if (VTI (dest)->in.stack_adjust != VTI (src)->out.stack_adjust)
+	    {
+	      free (stack);
+	      return false;
+	    }
 
-          if (! ei_one_before_end_p (ei))
-            /* Go to the next edge.  */
-            ei_next (&stack[sp - 1]);
-          else
-            /* Return to previous level if there are no more edges.  */
-            sp--;
-        }
+	  if (! ei_one_before_end_p (ei))
+	    /* Go to the next edge.  */
+	    ei_next (&stack[sp - 1]);
+	  else
+	    /* Return to previous level if there are no more edges.  */
+	    sp--;
+	}
     }
 
   free (stack);
@@ -624,10 +624,10 @@ variable_htab_free (void *elem)
   for (i = 0; i < var->n_var_parts; i++)
     {
       for (node = var->var_part[i].loc_chain; node; node = next)
-        {
-          next = node->next;
-          pool_free (loc_chain_pool, node);
-        }
+	{
+	  next = node->next;
+	  pool_free (loc_chain_pool, node);
+	}
       var->var_part[i].loc_chain = NULL;
     }
   pool_free (var_pool, var);
@@ -712,7 +712,7 @@ attrs_list_union (attrs *dstp, attrs src)
   for (; src; src = src->next)
     {
       if (!attrs_list_member (*dstp, src->decl, src->offset))
-        attrs_list_insert (dstp, src->decl, src->offset, src->loc);
+	attrs_list_insert (dstp, src->decl, src->offset, src->loc);
     }
 }
 
@@ -747,28 +747,28 @@ unshare_variable (dataflow_set *set, variable var)
       new_var->var_part[i].offset = var->var_part[i].offset;
       nextp = &new_var->var_part[i].loc_chain;
       for (node = var->var_part[i].loc_chain; node; node = node->next)
-        {
-          location_chain new_lc;
+	{
+	  location_chain new_lc;
 
-          new_lc = pool_alloc (loc_chain_pool);
-          new_lc->next = NULL;
-          new_lc->loc = node->loc;
+	  new_lc = pool_alloc (loc_chain_pool);
+	  new_lc->next = NULL;
+	  new_lc->loc = node->loc;
 
-          *nextp = new_lc;
-          nextp = &new_lc->next;
-        }
+	  *nextp = new_lc;
+	  nextp = &new_lc->next;
+	}
 
       /* We are at the basic block boundary when copying variable description
-         so set the CUR_LOC to be the first element of the chain.  */
+	 so set the CUR_LOC to be the first element of the chain.  */
       if (new_var->var_part[i].loc_chain)
-        new_var->var_part[i].cur_loc = new_var->var_part[i].loc_chain->loc;
+	new_var->var_part[i].cur_loc = new_var->var_part[i].loc_chain->loc;
       else
-        new_var->var_part[i].cur_loc = NULL;
+	new_var->var_part[i].cur_loc = NULL;
     }
 
   slot = htab_find_slot_with_hash (set->vars, new_var->decl,
-                                   VARIABLE_HASH_VAL (new_var->decl),
-                                   INSERT);
+				   VARIABLE_HASH_VAL (new_var->decl),
+				   INSERT);
   *slot = new_var;
   return new_var;
 }
@@ -786,8 +786,8 @@ vars_copy_1 (void **slot, void *data)
   src->refcount++;
 
   dstp = (variable *) htab_find_slot_with_hash (dst, src->decl,
-                                                VARIABLE_HASH_VAL (src->decl),
-                                                INSERT);
+						VARIABLE_HASH_VAL (src->decl),
+						INSERT);
   *dstp = src;
 
   /* Continue traversing the hash table.  */
@@ -857,16 +857,16 @@ var_reg_delete_and_set (dataflow_set *set, rtx loc, bool modify)
     {
       next = node->next;
       if (node->decl != decl || node->offset != offset)
-        {
-          delete_variable_part (set, node->loc, node->decl, node->offset);
-          pool_free (attrs_pool, node);
-          *nextp = next;
-        }
+	{
+	  delete_variable_part (set, node->loc, node->decl, node->offset);
+	  pool_free (attrs_pool, node);
+	  *nextp = next;
+	}
       else
-        {
-          node->loc = loc;
-          nextp = &node->next;
-        }
+	{
+	  node->loc = loc;
+	  nextp = &node->next;
+	}
     }
   if (modify)
     clobber_variable_part (set, loc, decl, offset);
@@ -978,7 +978,7 @@ dataflow_set_init (dataflow_set *set, int vars_size)
 {
   init_attrs_list_set (set->regs);
   set->vars = htab_create (vars_size, variable_htab_hash, variable_htab_eq,
-                           variable_htab_free);
+			   variable_htab_free);
   set->stack_adjust = 0;
 }
 
@@ -1057,30 +1057,30 @@ variable_union (void **slot, void *data)
 
   src = *(variable *) slot;
   dstp = (variable *) htab_find_slot_with_hash (set->vars, src->decl,
-                                                VARIABLE_HASH_VAL (src->decl),
-                                                INSERT);
+						VARIABLE_HASH_VAL (src->decl),
+						INSERT);
   if (!*dstp)
     {
       src->refcount++;
 
       /* If CUR_LOC of some variable part is not the first element of
-         the location chain we are going to change it so we have to make
-         a copy of the variable.  */
+	 the location chain we are going to change it so we have to make
+	 a copy of the variable.  */
       for (k = 0; k < src->n_var_parts; k++)
-        {
-          gcc_assert (!src->var_part[k].loc_chain
-                      == !src->var_part[k].cur_loc);
-          if (src->var_part[k].loc_chain)
-            {
-              gcc_assert (src->var_part[k].cur_loc);
-              if (src->var_part[k].cur_loc != src->var_part[k].loc_chain->loc)
-                break;
-            }
-        }
+	{
+	  gcc_assert (!src->var_part[k].loc_chain
+		      == !src->var_part[k].cur_loc);
+	  if (src->var_part[k].loc_chain)
+	    {
+	      gcc_assert (src->var_part[k].cur_loc);
+	      if (src->var_part[k].cur_loc != src->var_part[k].loc_chain->loc)
+		break;
+	    }
+	}
       if (k < src->n_var_parts)
-        unshare_variable (set, src);
+	unshare_variable (set, src);
       else
-        *dstp = src;
+	*dstp = src;
 
       /* Continue traversing the hash table.  */
       return 1;
@@ -1095,14 +1095,14 @@ variable_union (void **slot, void *data)
        i < src->n_var_parts && j < dst->n_var_parts; k++)
     {
       if (src->var_part[i].offset == dst->var_part[j].offset)
-        {
-          i++;
-          j++;
-        }
+	{
+	  i++;
+	  j++;
+	}
       else if (src->var_part[i].offset < dst->var_part[j].offset)
-        i++;
+	i++;
       else
-        j++;
+	j++;
     }
   k += src->n_var_parts - i;
   k += dst->n_var_parts - j;
@@ -1123,139 +1123,139 @@ variable_union (void **slot, void *data)
       location_chain node, node2;
 
       if (i >= 0 && j >= 0
-          && src->var_part[i].offset == dst->var_part[j].offset)
-        {
-          /* Compute the "sorted" union of the chains, i.e. the locations which
-             are in both chains go first, they are sorted by the sum of
-             positions in the chains.  */
-          int dst_l, src_l;
-          int ii, jj, n;
-          struct variable_union_info *vui;
+	  && src->var_part[i].offset == dst->var_part[j].offset)
+	{
+	  /* Compute the "sorted" union of the chains, i.e. the locations which
+	     are in both chains go first, they are sorted by the sum of
+	     positions in the chains.  */
+	  int dst_l, src_l;
+	  int ii, jj, n;
+	  struct variable_union_info *vui;
 
-          /* If DST is shared compare the location chains.
-             If they are different we will modify the chain in DST with
-             high probability so make a copy of DST.  */
-          if (dst->refcount > 1)
-            {
-              for (node = src->var_part[i].loc_chain,
-                   node2 = dst->var_part[j].loc_chain; node && node2;
-                   node = node->next, node2 = node2->next)
-                {
-                  if (!((REG_P (node2->loc)
-                         && REG_P (node->loc)
-                         && REGNO (node2->loc) == REGNO (node->loc))
-                        || rtx_equal_p (node2->loc, node->loc)))
-                    break;
-                }
-              if (node || node2)
-                dst = unshare_variable (set, dst);
-            }
+	  /* If DST is shared compare the location chains.
+	     If they are different we will modify the chain in DST with
+	     high probability so make a copy of DST.  */
+	  if (dst->refcount > 1)
+	    {
+	      for (node = src->var_part[i].loc_chain,
+		   node2 = dst->var_part[j].loc_chain; node && node2;
+		   node = node->next, node2 = node2->next)
+		{
+		  if (!((REG_P (node2->loc)
+			 && REG_P (node->loc)
+			 && REGNO (node2->loc) == REGNO (node->loc))
+			|| rtx_equal_p (node2->loc, node->loc)))
+		    break;
+		}
+	      if (node || node2)
+		dst = unshare_variable (set, dst);
+	    }
 
-          src_l = 0;
-          for (node = src->var_part[i].loc_chain; node; node = node->next)
-            src_l++;
-          dst_l = 0;
-          for (node = dst->var_part[j].loc_chain; node; node = node->next)
-            dst_l++;
-          vui = XCNEWVEC (struct variable_union_info, src_l + dst_l);
+	  src_l = 0;
+	  for (node = src->var_part[i].loc_chain; node; node = node->next)
+	    src_l++;
+	  dst_l = 0;
+	  for (node = dst->var_part[j].loc_chain; node; node = node->next)
+	    dst_l++;
+	  vui = XCNEWVEC (struct variable_union_info, src_l + dst_l);
 
-          /* Fill in the locations from DST.  */
-          for (node = dst->var_part[j].loc_chain, jj = 0; node;
-               node = node->next, jj++)
-            {
-              vui[jj].lc = node;
-              vui[jj].pos_dst = jj;
+	  /* Fill in the locations from DST.  */
+	  for (node = dst->var_part[j].loc_chain, jj = 0; node;
+	       node = node->next, jj++)
+	    {
+	      vui[jj].lc = node;
+	      vui[jj].pos_dst = jj;
 
-              /* Value larger than a sum of 2 valid positions.  */
-              vui[jj].pos_src = src_l + dst_l;
-            }
+	      /* Value larger than a sum of 2 valid positions.  */
+	      vui[jj].pos_src = src_l + dst_l;
+	    }
 
-          /* Fill in the locations from SRC.  */
-          n = dst_l;
-          for (node = src->var_part[i].loc_chain, ii = 0; node;
-               node = node->next, ii++)
-            {
-              /* Find location from NODE.  */
-              for (jj = 0; jj < dst_l; jj++)
-                {
-                  if ((REG_P (vui[jj].lc->loc)
-                       && REG_P (node->loc)
-                       && REGNO (vui[jj].lc->loc) == REGNO (node->loc))
-                      || rtx_equal_p (vui[jj].lc->loc, node->loc))
-                    {
-                      vui[jj].pos_src = ii;
-                      break;
-                    }
-                }
-              if (jj >= dst_l)        /* The location has not been found.  */
-                {
-                  location_chain new_node;
+	  /* Fill in the locations from SRC.  */
+	  n = dst_l;
+	  for (node = src->var_part[i].loc_chain, ii = 0; node;
+	       node = node->next, ii++)
+	    {
+	      /* Find location from NODE.  */
+	      for (jj = 0; jj < dst_l; jj++)
+		{
+		  if ((REG_P (vui[jj].lc->loc)
+		       && REG_P (node->loc)
+		       && REGNO (vui[jj].lc->loc) == REGNO (node->loc))
+		      || rtx_equal_p (vui[jj].lc->loc, node->loc))
+		    {
+		      vui[jj].pos_src = ii;
+		      break;
+		    }
+		}
+	      if (jj >= dst_l)	/* The location has not been found.  */
+		{
+		  location_chain new_node;
 
-                  /* Copy the location from SRC.  */
-                  new_node = pool_alloc (loc_chain_pool);
-                  new_node->loc = node->loc;
-                  vui[n].lc = new_node;
-                  vui[n].pos_src = ii;
-                  vui[n].pos_dst = src_l + dst_l;
-                  n++;
-                }
-            }
+		  /* Copy the location from SRC.  */
+		  new_node = pool_alloc (loc_chain_pool);
+		  new_node->loc = node->loc;
+		  vui[n].lc = new_node;
+		  vui[n].pos_src = ii;
+		  vui[n].pos_dst = src_l + dst_l;
+		  n++;
+		}
+	    }
 
-          for (ii = 0; ii < src_l + dst_l; ii++)
-            vui[ii].pos = vui[ii].pos_src + vui[ii].pos_dst;
+	  for (ii = 0; ii < src_l + dst_l; ii++)
+	    vui[ii].pos = vui[ii].pos_src + vui[ii].pos_dst;
 
-          qsort (vui, n, sizeof (struct variable_union_info),
-                 variable_union_info_cmp_pos);
+	  qsort (vui, n, sizeof (struct variable_union_info),
+		 variable_union_info_cmp_pos);
 
-          /* Reconnect the nodes in sorted order.  */
-          for (ii = 1; ii < n; ii++)
-            vui[ii - 1].lc->next = vui[ii].lc;
-          vui[n - 1].lc->next = NULL;
+	  /* Reconnect the nodes in sorted order.  */
+	  for (ii = 1; ii < n; ii++)
+	    vui[ii - 1].lc->next = vui[ii].lc;
+	  vui[n - 1].lc->next = NULL;
 
-          dst->var_part[k].loc_chain = vui[0].lc;
-          dst->var_part[k].offset = dst->var_part[j].offset;
+	  dst->var_part[k].loc_chain = vui[0].lc;
+	  dst->var_part[k].offset = dst->var_part[j].offset;
 
-          free (vui);
-          i--;
-          j--;
-        }
+	  free (vui);
+	  i--;
+	  j--;
+	}
       else if ((i >= 0 && j >= 0
-                && src->var_part[i].offset < dst->var_part[j].offset)
-               || i < 0)
-        {
-          dst->var_part[k] = dst->var_part[j];
-          j--;
-        }
+		&& src->var_part[i].offset < dst->var_part[j].offset)
+	       || i < 0)
+	{
+	  dst->var_part[k] = dst->var_part[j];
+	  j--;
+	}
       else if ((i >= 0 && j >= 0
-                && src->var_part[i].offset > dst->var_part[j].offset)
-               || j < 0)
-        {
-          location_chain *nextp;
+		&& src->var_part[i].offset > dst->var_part[j].offset)
+	       || j < 0)
+	{
+	  location_chain *nextp;
 
-          /* Copy the chain from SRC.  */
-          nextp = &dst->var_part[k].loc_chain;
-          for (node = src->var_part[i].loc_chain; node; node = node->next)
-            {
-              location_chain new_lc;
+	  /* Copy the chain from SRC.  */
+	  nextp = &dst->var_part[k].loc_chain;
+	  for (node = src->var_part[i].loc_chain; node; node = node->next)
+	    {
+	      location_chain new_lc;
 
-              new_lc = pool_alloc (loc_chain_pool);
-              new_lc->next = NULL;
-              new_lc->loc = node->loc;
+	      new_lc = pool_alloc (loc_chain_pool);
+	      new_lc->next = NULL;
+	      new_lc->loc = node->loc;
 
-              *nextp = new_lc;
-              nextp = &new_lc->next;
-            }
+	      *nextp = new_lc;
+	      nextp = &new_lc->next;
+	    }
 
-          dst->var_part[k].offset = src->var_part[i].offset;
-          i--;
-        }
+	  dst->var_part[k].offset = src->var_part[i].offset;
+	  i--;
+	}
 
       /* We are at the basic block boundary when computing union
-         so set the CUR_LOC to be the first element of the chain.  */
+	 so set the CUR_LOC to be the first element of the chain.  */
       if (dst->var_part[k].loc_chain)
-        dst->var_part[k].cur_loc = dst->var_part[k].loc_chain->loc;
+	dst->var_part[k].cur_loc = dst->var_part[k].loc_chain->loc;
       else
-        dst->var_part[k].cur_loc = NULL;
+	dst->var_part[k].cur_loc = NULL;
     }
 
   /* Continue traversing the hash table.  */
@@ -1287,17 +1287,17 @@ variable_part_different_p (variable_part *vp1, variable_part *vp2)
   for (lc1 = vp1->loc_chain; lc1; lc1 = lc1->next)
     {
       for (lc2 = vp2->loc_chain; lc2; lc2 = lc2->next)
-        {
-          if (REG_P (lc1->loc) && REG_P (lc2->loc))
-            {
-              if (REGNO (lc1->loc) == REGNO (lc2->loc))
-                break;
-            }
-          if (rtx_equal_p (lc1->loc, lc2->loc))
-            break;
-        }
+	{
+	  if (REG_P (lc1->loc) && REG_P (lc2->loc))
+	    {
+	      if (REGNO (lc1->loc) == REGNO (lc2->loc))
+		break;
+	    }
+	  if (rtx_equal_p (lc1->loc, lc2->loc))
+	    break;
+	}
       if (!lc2)
-        return true;
+	return true;
     }
   return false;
 }
@@ -1308,7 +1308,7 @@ variable_part_different_p (variable_part *vp1, variable_part *vp2)
 
 static bool
 variable_different_p (variable var1, variable var2,
-                      bool compare_current_location)
+		      bool compare_current_location)
 {
   int i;
 
@@ -1321,21 +1321,21 @@ variable_different_p (variable var1, variable var2,
   for (i = 0; i < var1->n_var_parts; i++)
     {
       if (var1->var_part[i].offset != var2->var_part[i].offset)
-        return true;
+	return true;
       if (compare_current_location)
-        {
-          if (!((REG_P (var1->var_part[i].cur_loc)
-                 && REG_P (var2->var_part[i].cur_loc)
-                 && (REGNO (var1->var_part[i].cur_loc)
-                     == REGNO (var2->var_part[i].cur_loc)))
-                || rtx_equal_p (var1->var_part[i].cur_loc,
-                                var2->var_part[i].cur_loc)))
-            return true;
-        }
+	{
+	  if (!((REG_P (var1->var_part[i].cur_loc)
+		 && REG_P (var2->var_part[i].cur_loc)
+		 && (REGNO (var1->var_part[i].cur_loc)
+		     == REGNO (var2->var_part[i].cur_loc)))
+		|| rtx_equal_p (var1->var_part[i].cur_loc,
+				var2->var_part[i].cur_loc)))
+	    return true;
+	}
       if (variable_part_different_p (&var1->var_part[i], &var2->var_part[i]))
-        return true;
+	return true;
       if (variable_part_different_p (&var2->var_part[i], &var1->var_part[i]))
-        return true;
+	return true;
     }
   return false;
 }
@@ -1351,7 +1351,7 @@ dataflow_set_different_1 (void **slot, void *data)
 
   var1 = *(variable *) slot;
   var2 = htab_find_with_hash (htab, var1->decl,
-                              VARIABLE_HASH_VAL (var1->decl));
+			      VARIABLE_HASH_VAL (var1->decl));
   if (!var2)
     {
       dataflow_set_different_value = true;
@@ -1383,7 +1383,7 @@ dataflow_set_different_2 (void **slot, void *data)
 
   var1 = *(variable *) slot;
   var2 = htab_find_with_hash (htab, var1->decl,
-                              VARIABLE_HASH_VAL (var1->decl));
+			      VARIABLE_HASH_VAL (var1->decl));
   if (!var2)
     {
       dataflow_set_different_value = true;
@@ -1411,8 +1411,8 @@ dataflow_set_different (dataflow_set *old_set, dataflow_set *new_set)
   if (!dataflow_set_different_value)
     {
       /* We have compared the variables which are in both hash tables
-         so now only check whether there are some variables in NEW_SET->VARS
-         which are not in OLD_SET->VARS.  */
+	 so now only check whether there are some variables in NEW_SET->VARS
+	 which are not in OLD_SET->VARS.  */
       htab_traverse (new_set->vars, dataflow_set_different_2, old_set->vars);
     }
   return dataflow_set_different_value;
@@ -1452,17 +1452,17 @@ contains_symbol_ref (rtx x)
   for (i = GET_RTX_LENGTH (code) - 1; i >= 0; i--)
     {
       if (fmt[i] == 'e')
-        {
-          if (contains_symbol_ref (XEXP (x, i)))
-            return true;
-        }
+	{
+	  if (contains_symbol_ref (XEXP (x, i)))
+	    return true;
+	}
       else if (fmt[i] == 'E')
-        {
-          int j;
-          for (j = 0; j < XVECLEN (x, i); j++)
-            if (contains_symbol_ref (XVECEXP (x, i, j)))
-              return true;
-        }
+	{
+	  int j;
+	  for (j = 0; j < XVECLEN (x, i); j++)
+	    if (contains_symbol_ref (XVECEXP (x, i, j)))
+	      return true;
+	}
     }
 
   return false;
@@ -1497,9 +1497,9 @@ track_expr_p (tree expr)
     {
       realdecl = DECL_DEBUG_EXPR (realdecl);
       /* ??? We don't yet know how to emit DW_OP_piece for variable
-         that has been SRA'ed.  */
+	 that has been SRA'ed.  */
       if (!DECL_P (realdecl))
-        return 0;
+	return 0;
     }
 
   /* Do not track EXPR if REALDECL it should be ignored for debugging
@@ -1530,11 +1530,11 @@ track_expr_p (tree expr)
     {
       /* Do not track structures and arrays.  */
       if (GET_MODE (decl_rtl) == BLKmode
-          || AGGREGATE_TYPE_P (TREE_TYPE (realdecl)))
-        return 0;
+	  || AGGREGATE_TYPE_P (TREE_TYPE (realdecl)))
+	return 0;
       if (MEM_SIZE (decl_rtl)
-          && INTVAL (MEM_SIZE (decl_rtl)) > MAX_VAR_PARTS)
-        return 0;
+	  && INTVAL (MEM_SIZE (decl_rtl)) > MAX_VAR_PARTS)
+	return 0;
     }
 
   return 1;
@@ -1589,8 +1589,8 @@ count_uses (rtx *loc, void *insn)
       VTI (bb)->n_mos++;
     }
   else if (MEM_P (*loc)
-           && MEM_EXPR (*loc)
-           && track_expr_p (MEM_EXPR (*loc)))
+	   && MEM_EXPR (*loc)
+	   && track_expr_p (MEM_EXPR (*loc)))
     {
       VTI (bb)->n_mos++;
     }
@@ -1627,13 +1627,13 @@ add_uses (rtx *loc, void *insn)
       micro_operation *mo = VTI (bb)->mos + VTI (bb)->n_mos++;
 
       mo->type = ((REG_EXPR (*loc) && track_expr_p (REG_EXPR (*loc)))
-                  ? MO_USE : MO_USE_NO_VAR);
+		  ? MO_USE : MO_USE_NO_VAR);
       mo->u.loc = *loc;
       mo->insn = (rtx) insn;
     }
   else if (MEM_P (*loc)
-           && MEM_EXPR (*loc)
-           && track_expr_p (MEM_EXPR (*loc)))
+	   && MEM_EXPR (*loc)
+	   && track_expr_p (MEM_EXPR (*loc)))
     {
       basic_block bb = BLOCK_FOR_INSN ((rtx) insn);
       micro_operation *mo = VTI (bb)->mos + VTI (bb)->n_mos++;
@@ -1667,38 +1667,38 @@ add_stores (rtx loc, rtx expr, void *insn)
       micro_operation *mo = VTI (bb)->mos + VTI (bb)->n_mos++;
 
       if (GET_CODE (expr) == CLOBBER
-          || ! REG_EXPR (loc)
-          || ! track_expr_p (REG_EXPR (loc)))
-        mo->type = MO_CLOBBER;
+	  || ! REG_EXPR (loc)
+	  || ! track_expr_p (REG_EXPR (loc)))
+	mo->type = MO_CLOBBER;
       else if (GET_CODE (expr) == SET
-               && SET_DEST (expr) == loc
-               && same_variable_part_p (SET_SRC (expr),
-                                        REG_EXPR (loc),
-                                        REG_OFFSET (loc)))
-        mo->type = MO_COPY;
+	       && SET_DEST (expr) == loc
+	       && same_variable_part_p (SET_SRC (expr),
+					REG_EXPR (loc),
+					REG_OFFSET (loc)))
+	mo->type = MO_COPY;
       else
-        mo->type = MO_SET;
+	mo->type = MO_SET;
       mo->u.loc = loc;
       mo->insn = NEXT_INSN ((rtx) insn);
     }
   else if (MEM_P (loc)
-           && MEM_EXPR (loc)
-           && track_expr_p (MEM_EXPR (loc)))
+	   && MEM_EXPR (loc)
+	   && track_expr_p (MEM_EXPR (loc)))
     {
       basic_block bb = BLOCK_FOR_INSN ((rtx) insn);
       micro_operation *mo = VTI (bb)->mos + VTI (bb)->n_mos++;
 
       if (GET_CODE (expr) == CLOBBER)
-        mo->type = MO_CLOBBER;
+	mo->type = MO_CLOBBER;
       else if (GET_CODE (expr) == SET
-               && SET_DEST (expr) == loc
-               && same_variable_part_p (SET_SRC (expr),
-                                        MEM_EXPR (loc),
-                                        MEM_OFFSET (loc)
-                                        ? INTVAL (MEM_OFFSET (loc)) : 0))
-        mo->type = MO_COPY;
+	       && SET_DEST (expr) == loc
+	       && same_variable_part_p (SET_SRC (expr),
+					MEM_EXPR (loc),
+					MEM_OFFSET (loc)
+					? INTVAL (MEM_OFFSET (loc)) : 0))
+	mo->type = MO_COPY;
       else
-        mo->type = MO_SET;
+	mo->type = MO_SET;
       mo->u.loc = loc;
       mo->insn = NEXT_INSN ((rtx) insn);
     }
@@ -1723,72 +1723,72 @@ compute_bb_dataflow (basic_block bb)
   for (i = 0; i < n; i++)
     {
       switch (VTI (bb)->mos[i].type)
-        {
-          case MO_CALL:
-            for (r = 0; r < FIRST_PSEUDO_REGISTER; r++)
-              if (TEST_HARD_REG_BIT (call_used_reg_set, r))
-                var_regno_delete (out, r);
-            break;
+	{
+	  case MO_CALL:
+	    for (r = 0; r < FIRST_PSEUDO_REGISTER; r++)
+	      if (TEST_HARD_REG_BIT (call_used_reg_set, r))
+		var_regno_delete (out, r);
+	    break;
 
-          case MO_USE:
-            {
-              rtx loc = VTI (bb)->mos[i].u.loc;
+	  case MO_USE:
+	    {
+	      rtx loc = VTI (bb)->mos[i].u.loc;
 
-              if (GET_CODE (loc) == REG)
-                var_reg_set (out, loc);
-              else if (GET_CODE (loc) == MEM)
-                var_mem_set (out, loc);
-            }
-            break;
+	      if (GET_CODE (loc) == REG)
+		var_reg_set (out, loc);
+	      else if (GET_CODE (loc) == MEM)
+		var_mem_set (out, loc);
+	    }
+	    break;
 
-          case MO_SET:
-            {
-              rtx loc = VTI (bb)->mos[i].u.loc;
+	  case MO_SET:
+	    {
+	      rtx loc = VTI (bb)->mos[i].u.loc;
 
-              if (REG_P (loc))
-                var_reg_delete_and_set (out, loc, true);
-              else if (MEM_P (loc))
-                var_mem_delete_and_set (out, loc, true);
-            }
-            break;
+	      if (REG_P (loc))
+		var_reg_delete_and_set (out, loc, true);
+	      else if (MEM_P (loc))
+		var_mem_delete_and_set (out, loc, true);
+	    }
+	    break;
 
-          case MO_COPY:
-            {
-              rtx loc = VTI (bb)->mos[i].u.loc;
+	  case MO_COPY:
+	    {
+	      rtx loc = VTI (bb)->mos[i].u.loc;
 
-              if (REG_P (loc))
-                var_reg_delete_and_set (out, loc, false);
-              else if (MEM_P (loc))
-                var_mem_delete_and_set (out, loc, false);
-            }
-            break;
+	      if (REG_P (loc))
+		var_reg_delete_and_set (out, loc, false);
+	      else if (MEM_P (loc))
+		var_mem_delete_and_set (out, loc, false);
+	    }
+	    break;
 
-          case MO_USE_NO_VAR:
-            {
-              rtx loc = VTI (bb)->mos[i].u.loc;
+	  case MO_USE_NO_VAR:
+	    {
+	      rtx loc = VTI (bb)->mos[i].u.loc;
 
-              if (REG_P (loc))
-                var_reg_delete (out, loc, false);
-              else if (MEM_P (loc))
-                var_mem_delete (out, loc, false);
-            }
-            break;
+	      if (REG_P (loc))
+		var_reg_delete (out, loc, false);
+	      else if (MEM_P (loc))
+		var_mem_delete (out, loc, false);
+	    }
+	    break;
 
-          case MO_CLOBBER:
-            {
-              rtx loc = VTI (bb)->mos[i].u.loc;
+	  case MO_CLOBBER:
+	    {
+	      rtx loc = VTI (bb)->mos[i].u.loc;
 
-              if (REG_P (loc))
-                var_reg_delete (out, loc, true);
-              else if (MEM_P (loc))
-                var_mem_delete (out, loc, true);
-            }
-            break;
+	      if (REG_P (loc))
+		var_reg_delete (out, loc, true);
+	      else if (MEM_P (loc))
+		var_mem_delete (out, loc, true);
+	    }
+	    break;
 
-          case MO_ADJUST:
-            out->stack_adjust += VTI (bb)->mos[i].u.adjust;
-            break;
-        }
+	  case MO_ADJUST:
+	    out->stack_adjust += VTI (bb)->mos[i].u.adjust;
+	    break;
+	}
     }
 
   changed = dataflow_set_different (&old_out, out);
@@ -1841,56 +1841,56 @@ vt_find_locations (void)
       sbitmap_zero (visited);
 
       while (!fibheap_empty (worklist))
-        {
-          bb = fibheap_extract_min (worklist);
-          RESET_BIT (in_worklist, bb->index);
-          if (!TEST_BIT (visited, bb->index))
-            {
-              bool changed;
-              edge_iterator ei;
+	{
+	  bb = fibheap_extract_min (worklist);
+	  RESET_BIT (in_worklist, bb->index);
+	  if (!TEST_BIT (visited, bb->index))
+	    {
+	      bool changed;
+	      edge_iterator ei;
 
-              SET_BIT (visited, bb->index);
+	      SET_BIT (visited, bb->index);
 
-              /* Calculate the IN set as union of predecessor OUT sets.  */
-              dataflow_set_clear (&VTI (bb)->in);
-              FOR_EACH_EDGE (e, ei, bb->preds)
-                {
-                  dataflow_set_union (&VTI (bb)->in, &VTI (e->src)->out);
-                }
+	      /* Calculate the IN set as union of predecessor OUT sets.  */
+	      dataflow_set_clear (&VTI (bb)->in);
+	      FOR_EACH_EDGE (e, ei, bb->preds)
+		{
+		  dataflow_set_union (&VTI (bb)->in, &VTI (e->src)->out);
+		}
 
-              changed = compute_bb_dataflow (bb);
-              if (changed)
-                {
-                  FOR_EACH_EDGE (e, ei, bb->succs)
-                    {
-                      if (e->dest == EXIT_BLOCK_PTR)
-                        continue;
+	      changed = compute_bb_dataflow (bb);
+	      if (changed)
+		{
+		  FOR_EACH_EDGE (e, ei, bb->succs)
+		    {
+		      if (e->dest == EXIT_BLOCK_PTR)
+			continue;
 
-                      if (e->dest == bb)
-                        continue;
+		      if (e->dest == bb)
+			continue;
 
-                      if (TEST_BIT (visited, e->dest->index))
-                        {
-                          if (!TEST_BIT (in_pending, e->dest->index))
-                            {
-                              /* Send E->DEST to next round.  */
-                              SET_BIT (in_pending, e->dest->index);
-                              fibheap_insert (pending,
-                                              bb_order[e->dest->index],
-                                              e->dest);
-                            }
-                        }
-                      else if (!TEST_BIT (in_worklist, e->dest->index))
-                        {
-                          /* Add E->DEST to current round.  */
-                          SET_BIT (in_worklist, e->dest->index);
-                          fibheap_insert (worklist, bb_order[e->dest->index],
-                                          e->dest);
-                        }
-                    }
-                }
-            }
-        }
+		      if (TEST_BIT (visited, e->dest->index))
+			{
+			  if (!TEST_BIT (in_pending, e->dest->index))
+			    {
+			      /* Send E->DEST to next round.  */
+			      SET_BIT (in_pending, e->dest->index);
+			      fibheap_insert (pending,
+					      bb_order[e->dest->index],
+					      e->dest);
+			    }
+			}
+		      else if (!TEST_BIT (in_worklist, e->dest->index))
+			{
+			  /* Add E->DEST to current round.  */
+			  SET_BIT (in_worklist, e->dest->index);
+			  fibheap_insert (worklist, bb_order[e->dest->index],
+					  e->dest);
+			}
+		    }
+		}
+	    }
+	}
     }
 
   free (bb_order);
@@ -1924,16 +1924,16 @@ dump_variable (void **slot, void *data ATTRIBUTE_UNUSED)
   location_chain node;
 
   fprintf (dump_file, "  name: %s\n",
-           IDENTIFIER_POINTER (DECL_NAME (var->decl)));
+	   IDENTIFIER_POINTER (DECL_NAME (var->decl)));
   for (i = 0; i < var->n_var_parts; i++)
     {
       fprintf (dump_file, "    offset %ld\n",
-               (long) var->var_part[i].offset);
+	       (long) var->var_part[i].offset);
       for (node = var->var_part[i].loc_chain; node; node = node->next)
-        {
-          fprintf (dump_file, "      ");
-          print_rtl_single (dump_file, node->loc);
-        }
+	{
+	  fprintf (dump_file, "      ");
+	  print_rtl_single (dump_file, node->loc);
+	}
     }
 
   /* Continue traversing the hash table.  */
@@ -1960,14 +1960,14 @@ dump_dataflow_set (dataflow_set *set)
   int i;
 
   fprintf (dump_file, "Stack adjustment: " HOST_WIDE_INT_PRINT_DEC "\n",
-           set->stack_adjust);
+	   set->stack_adjust);
   for (i = 0; i < FIRST_PSEUDO_REGISTER; i++)
     {
       if (set->regs[i])
-        {
-          fprintf (dump_file, "Reg %d:", i);
-          dump_attrs_list (set->regs[i]);
-        }
+	{
+	  fprintf (dump_file, "Reg %d:", i);
+	  dump_attrs_list (set->regs[i]);
+	}
     }
   dump_vars (set->vars);
   fprintf (dump_file, "\n");
@@ -2003,39 +2003,39 @@ variable_was_changed (variable var, htab_t htab)
       variable *slot;
 
       slot = (variable *) htab_find_slot_with_hash (changed_variables,
-                                                    var->decl, hash, INSERT);
+						    var->decl, hash, INSERT);
 
       if (htab && var->n_var_parts == 0)
-        {
-          variable empty_var;
-          void **old;
+	{
+	  variable empty_var;
+	  void **old;
 
-          empty_var = pool_alloc (var_pool);
-          empty_var->decl = var->decl;
-          empty_var->refcount = 1;
-          empty_var->n_var_parts = 0;
-          *slot = empty_var;
+	  empty_var = pool_alloc (var_pool);
+	  empty_var->decl = var->decl;
+	  empty_var->refcount = 1;
+	  empty_var->n_var_parts = 0;
+	  *slot = empty_var;
 
-          old = htab_find_slot_with_hash (htab, var->decl, hash,
-                                          NO_INSERT);
-          if (old)
-            htab_clear_slot (htab, old);
-        }
+	  old = htab_find_slot_with_hash (htab, var->decl, hash,
+					  NO_INSERT);
+	  if (old)
+	    htab_clear_slot (htab, old);
+	}
       else
-        {
-          *slot = var;
-        }
+	{
+	  *slot = var;
+	}
     }
   else
     {
       gcc_assert (htab);
       if (var->n_var_parts == 0)
-        {
-          void **slot = htab_find_slot_with_hash (htab, var->decl, hash,
-                                                  NO_INSERT);
-          if (slot)
-            htab_clear_slot (htab, slot);
-        }
+	{
+	  void **slot = htab_find_slot_with_hash (htab, var->decl, hash,
+						  NO_INSERT);
+	  if (slot)
+	    htab_clear_slot (htab, slot);
+	}
     }
 }
 
@@ -2046,7 +2046,7 @@ variable_was_changed (variable var, htab_t htab)
 
 static inline int
 find_variable_location_part (variable var, HOST_WIDE_INT offset,
-                             int *insertion_point)
+			     int *insertion_point)
 {
   int pos, low, high;
 
@@ -2057,9 +2057,9 @@ find_variable_location_part (variable var, HOST_WIDE_INT offset,
     {
       pos = (low + high) / 2;
       if (var->var_part[pos].offset < offset)
-        low = pos + 1;
+	low = pos + 1;
       else
-        high = pos;
+	high = pos;
     }
   pos = low;
 
@@ -2086,7 +2086,7 @@ set_variable_part (dataflow_set *set, rtx loc, tree decl, HOST_WIDE_INT offset)
   void **slot;
   
   slot = htab_find_slot_with_hash (set->vars, decl,
-                                   VARIABLE_HASH_VAL (decl), INSERT);
+				   VARIABLE_HASH_VAL (decl), INSERT);
   if (!*slot)
     {
       /* Create new variable information.  */
@@ -2109,47 +2109,47 @@ set_variable_part (dataflow_set *set, rtx loc, tree decl, HOST_WIDE_INT offset)
       pos = find_variable_location_part (var, offset, &inspos);
 
       if (pos >= 0)
-        {
-          node = var->var_part[pos].loc_chain;
+	{
+	  node = var->var_part[pos].loc_chain;
 
-          if (node
-              && ((REG_P (node->loc) && REG_P (loc)
-                   && REGNO (node->loc) == REGNO (loc))
-                  || rtx_equal_p (node->loc, loc)))
-            {
-              /* LOC is in the beginning of the chain so we have nothing
-                 to do.  */
-              return;
-            }
-          else
-            {
-              /* We have to make a copy of a shared variable.  */
-              if (var->refcount > 1)
-                var = unshare_variable (set, var);
-            }
-        }
+	  if (node
+	      && ((REG_P (node->loc) && REG_P (loc)
+		   && REGNO (node->loc) == REGNO (loc))
+		  || rtx_equal_p (node->loc, loc)))
+	    {
+	      /* LOC is in the beginning of the chain so we have nothing
+		 to do.  */
+	      return;
+	    }
+	  else
+	    {
+	      /* We have to make a copy of a shared variable.  */
+	      if (var->refcount > 1)
+		var = unshare_variable (set, var);
+	    }
+	}
       else
-        {
-          /* We have not found the location part, new one will be created.  */
+	{
+	  /* We have not found the location part, new one will be created.  */
 
-          /* We have to make a copy of the shared variable.  */
-          if (var->refcount > 1)
-            var = unshare_variable (set, var);
+	  /* We have to make a copy of the shared variable.  */
+	  if (var->refcount > 1)
+	    var = unshare_variable (set, var);
 
-          /* We track only variables whose size is <= MAX_VAR_PARTS bytes
-             thus there are at most MAX_VAR_PARTS different offsets.  */
-          gcc_assert (var->n_var_parts < MAX_VAR_PARTS);
+	  /* We track only variables whose size is <= MAX_VAR_PARTS bytes
+	     thus there are at most MAX_VAR_PARTS different offsets.  */
+	  gcc_assert (var->n_var_parts < MAX_VAR_PARTS);
 
-          /* We have to move the elements of array starting at index
-             inspos to the next position.  */
-          for (pos = var->n_var_parts; pos > inspos; pos--)
-            var->var_part[pos] = var->var_part[pos - 1];
+	  /* We have to move the elements of array starting at index
+	     inspos to the next position.  */
+	  for (pos = var->n_var_parts; pos > inspos; pos--)
+	    var->var_part[pos] = var->var_part[pos - 1];
 
-          var->n_var_parts++;
-          var->var_part[pos].offset = offset;
-          var->var_part[pos].loc_chain = NULL;
-          var->var_part[pos].cur_loc = NULL;
-        }
+	  var->n_var_parts++;
+	  var->var_part[pos].offset = offset;
+	  var->var_part[pos].loc_chain = NULL;
+	  var->var_part[pos].cur_loc = NULL;
+	}
     }
 
   /* Delete the location from the list.  */
@@ -2158,15 +2158,15 @@ set_variable_part (dataflow_set *set, rtx loc, tree decl, HOST_WIDE_INT offset)
     {
       next = node->next;
       if ((REG_P (node->loc) && REG_P (loc)
-           && REGNO (node->loc) == REGNO (loc))
-          || rtx_equal_p (node->loc, loc))
-        {
-          pool_free (loc_chain_pool, node);
-          *nextp = next;
-          break;
-        }
+	   && REGNO (node->loc) == REGNO (loc))
+	  || rtx_equal_p (node->loc, loc))
+	{
+	  pool_free (loc_chain_pool, node);
+	  *nextp = next;
+	  break;
+	}
       else
-        nextp = &node->next;
+	nextp = &node->next;
     }
 
   /* Add the location to the beginning.  */
@@ -2190,7 +2190,7 @@ set_variable_part (dataflow_set *set, rtx loc, tree decl, HOST_WIDE_INT offset)
 
 static void
 clobber_variable_part (dataflow_set *set, rtx loc, tree decl,
-                      HOST_WIDE_INT offset)
+		      HOST_WIDE_INT offset)
 {
   void **slot;
 
@@ -2198,49 +2198,49 @@ clobber_variable_part (dataflow_set *set, rtx loc, tree decl,
     return;
 
   slot = htab_find_slot_with_hash (set->vars, decl, VARIABLE_HASH_VAL (decl),
-                                   NO_INSERT);
+				   NO_INSERT);
   if (slot)
     {
       variable var = (variable) *slot;
       int pos = find_variable_location_part (var, offset, NULL);
 
       if (pos >= 0)
-        {
-          location_chain node, next;
+	{
+	  location_chain node, next;
 
-          /* Remove the register locations from the dataflow set.  */
-          next = var->var_part[pos].loc_chain;
-          for (node = next; node; node = next)
-            {
-              next = node->next;
-              if (node->loc != loc)
-                {
-                  if (REG_P (node->loc))
-                    {
-                      attrs anode, anext;
-                      attrs *anextp;
+	  /* Remove the register locations from the dataflow set.  */
+	  next = var->var_part[pos].loc_chain;
+	  for (node = next; node; node = next)
+	    {
+	      next = node->next;
+	      if (node->loc != loc)
+		{
+		  if (REG_P (node->loc))
+		    {
+		      attrs anode, anext;
+		      attrs *anextp;
 
-                      /* Remove the variable part from the register's
-                         list, but preserve any other variable parts
-                         that might be regarded as live in that same
-                         register.  */
-                      anextp = &set->regs[REGNO (node->loc)];
-                      for (anode = *anextp; anode; anode = anext)
-                        {
-                          anext = anode->next;
-                          if (anode->decl == decl
-                              && anode->offset == offset)
-                            {
-                              pool_free (attrs_pool, anode);
-                              *anextp = anext;
-                            }
-                        }
-                    }
+		      /* Remove the variable part from the register's
+			 list, but preserve any other variable parts
+			 that might be regarded as live in that same
+			 register.  */
+		      anextp = &set->regs[REGNO (node->loc)];
+		      for (anode = *anextp; anode; anode = anext)
+			{
+			  anext = anode->next;
+			  if (anode->decl == decl
+			      && anode->offset == offset)
+			    {
+			      pool_free (attrs_pool, anode);
+			      *anextp = anext;
+			    }
+			}
+		    }
 
-                  delete_variable_part (set, node->loc, decl, offset);
-                }
-            }
-        }
+		  delete_variable_part (set, node->loc, decl, offset);
+		}
+	    }
+	}
     }
 }
 
@@ -2250,85 +2250,85 @@ clobber_variable_part (dataflow_set *set, rtx loc, tree decl,
 
 static void
 delete_variable_part (dataflow_set *set, rtx loc, tree decl,
-                      HOST_WIDE_INT offset)
+		      HOST_WIDE_INT offset)
 {
   void **slot;
     
   slot = htab_find_slot_with_hash (set->vars, decl, VARIABLE_HASH_VAL (decl),
-                                   NO_INSERT);
+				   NO_INSERT);
   if (slot)
     {
       variable var = (variable) *slot;
       int pos = find_variable_location_part (var, offset, NULL);
 
       if (pos >= 0)
-        {
-          location_chain node, next;
-          location_chain *nextp;
-          bool changed;
+	{
+	  location_chain node, next;
+	  location_chain *nextp;
+	  bool changed;
 
-          if (var->refcount > 1)
-            {
-              /* If the variable contains the location part we have to
-                 make a copy of the variable.  */
-              for (node = var->var_part[pos].loc_chain; node;
-                   node = node->next)
-                {
-                  if ((REG_P (node->loc) && REG_P (loc)
-                       && REGNO (node->loc) == REGNO (loc))
-                      || rtx_equal_p (node->loc, loc))
-                    {
-                      var = unshare_variable (set, var);
-                      break;
-                    }
-                }
-            }
+	  if (var->refcount > 1)
+	    {
+	      /* If the variable contains the location part we have to
+		 make a copy of the variable.  */
+	      for (node = var->var_part[pos].loc_chain; node;
+		   node = node->next)
+		{
+		  if ((REG_P (node->loc) && REG_P (loc)
+		       && REGNO (node->loc) == REGNO (loc))
+		      || rtx_equal_p (node->loc, loc))
+		    {
+		      var = unshare_variable (set, var);
+		      break;
+		    }
+		}
+	    }
 
-          /* Delete the location part.  */
-          nextp = &var->var_part[pos].loc_chain;
-          for (node = *nextp; node; node = next)
-            {
-              next = node->next;
-              if ((REG_P (node->loc) && REG_P (loc)
-                   && REGNO (node->loc) == REGNO (loc))
-                  || rtx_equal_p (node->loc, loc))
-                {
-                  pool_free (loc_chain_pool, node);
-                  *nextp = next;
-                  break;
-                }
-              else
-                nextp = &node->next;
-            }
+	  /* Delete the location part.  */
+	  nextp = &var->var_part[pos].loc_chain;
+	  for (node = *nextp; node; node = next)
+	    {
+	      next = node->next;
+	      if ((REG_P (node->loc) && REG_P (loc)
+		   && REGNO (node->loc) == REGNO (loc))
+		  || rtx_equal_p (node->loc, loc))
+		{
+		  pool_free (loc_chain_pool, node);
+		  *nextp = next;
+		  break;
+		}
+	      else
+		nextp = &node->next;
+	    }
 
-          /* If we have deleted the location which was last emitted
-             we have to emit new location so add the variable to set
-             of changed variables.  */
-          if (var->var_part[pos].cur_loc
-              && ((REG_P (loc)
-                   && REG_P (var->var_part[pos].cur_loc)
-                   && REGNO (loc) == REGNO (var->var_part[pos].cur_loc))
-                  || rtx_equal_p (loc, var->var_part[pos].cur_loc)))
-            {
-              changed = true;
-              if (var->var_part[pos].loc_chain)
-                var->var_part[pos].cur_loc = var->var_part[pos].loc_chain->loc;
-            }
-          else
-            changed = false;
+	  /* If we have deleted the location which was last emitted
+	     we have to emit new location so add the variable to set
+	     of changed variables.  */
+	  if (var->var_part[pos].cur_loc
+	      && ((REG_P (loc)
+		   && REG_P (var->var_part[pos].cur_loc)
+		   && REGNO (loc) == REGNO (var->var_part[pos].cur_loc))
+		  || rtx_equal_p (loc, var->var_part[pos].cur_loc)))
+	    {
+	      changed = true;
+	      if (var->var_part[pos].loc_chain)
+		var->var_part[pos].cur_loc = var->var_part[pos].loc_chain->loc;
+	    }
+	  else
+	    changed = false;
 
-          if (var->var_part[pos].loc_chain == NULL)
-            {
-              var->n_var_parts--;
-              while (pos < var->n_var_parts)
-                {
-                  var->var_part[pos] = var->var_part[pos + 1];
-                  pos++;
-                }
-            }
-          if (changed)
-            variable_was_changed (var, set->vars);
-        }
+	  if (var->var_part[pos].loc_chain == NULL)
+	    {
+	      var->n_var_parts--;
+	      while (pos < var->n_var_parts)
+		{
+		  var->var_part[pos] = var->var_part[pos + 1];
+		  pos++;
+		}
+	    }
+	  if (changed)
+	    variable_was_changed (var, set->vars);
+	}
     }
 }
 
@@ -2360,12 +2360,12 @@ emit_note_insn_var_location (void **varp, void *data)
       enum machine_mode mode, wider_mode;
 
       if (last_limit < var->var_part[i].offset)
-        {
-          complete = false;
-          break;
-        }
+	{
+	  complete = false;
+	  break;
+	}
       else if (last_limit > var->var_part[i].offset)
-        continue;
+	continue;
       offsets[n_var_parts] = var->var_part[i].offset;
       loc[n_var_parts] = var->var_part[i].loc_chain->loc;
       mode = GET_MODE (loc[n_var_parts]);
@@ -2374,69 +2374,69 @@ emit_note_insn_var_location (void **varp, void *data)
       /* Attempt to merge adjacent registers or memory.  */
       wider_mode = GET_MODE_WIDER_MODE (mode);
       for (j = i + 1; j < var->n_var_parts; j++)
-        if (last_limit <= var->var_part[j].offset)
-          break;
+	if (last_limit <= var->var_part[j].offset)
+	  break;
       if (j < var->n_var_parts
-          && wider_mode != VOIDmode
-          && GET_CODE (loc[n_var_parts])
-             == GET_CODE (var->var_part[j].loc_chain->loc)
-          && mode == GET_MODE (var->var_part[j].loc_chain->loc)
-          && last_limit == var->var_part[j].offset)
-        {
-          rtx new_loc = NULL;
-          rtx loc2 = var->var_part[j].loc_chain->loc;
+	  && wider_mode != VOIDmode
+	  && GET_CODE (loc[n_var_parts])
+	     == GET_CODE (var->var_part[j].loc_chain->loc)
+	  && mode == GET_MODE (var->var_part[j].loc_chain->loc)
+	  && last_limit == var->var_part[j].offset)
+	{
+	  rtx new_loc = NULL;
+	  rtx loc2 = var->var_part[j].loc_chain->loc;
 
-          if (REG_P (loc[n_var_parts])
-              && hard_regno_nregs[REGNO (loc[n_var_parts])][mode] * 2
-                 == hard_regno_nregs[REGNO (loc[n_var_parts])][wider_mode]
-              && REGNO (loc[n_var_parts])
-                 + hard_regno_nregs[REGNO (loc[n_var_parts])][mode]
-                 == REGNO (loc2))
-            {
-              if (! WORDS_BIG_ENDIAN && ! BYTES_BIG_ENDIAN)
-                new_loc = simplify_subreg (wider_mode, loc[n_var_parts],
-                                           mode, 0);
-              else if (WORDS_BIG_ENDIAN && BYTES_BIG_ENDIAN)
-                new_loc = simplify_subreg (wider_mode, loc2, mode, 0);
-              if (new_loc)
-                {
-                  if (!REG_P (new_loc)
-                      || REGNO (new_loc) != REGNO (loc[n_var_parts]))
-                    new_loc = NULL;
-                  else
-                    REG_ATTRS (new_loc) = REG_ATTRS (loc[n_var_parts]);
-                }
-            }
-          else if (MEM_P (loc[n_var_parts])
-                   && GET_CODE (XEXP (loc2, 0)) == PLUS
-                   && GET_CODE (XEXP (XEXP (loc2, 0), 0)) == REG
-                   && GET_CODE (XEXP (XEXP (loc2, 0), 1)) == CONST_INT)
-            {
-              if ((GET_CODE (XEXP (loc[n_var_parts], 0)) == REG
-                   && rtx_equal_p (XEXP (loc[n_var_parts], 0),
-                                   XEXP (XEXP (loc2, 0), 0))
-                   && INTVAL (XEXP (XEXP (loc2, 0), 1))
-                      == GET_MODE_SIZE (mode))
-                  || (GET_CODE (XEXP (loc[n_var_parts], 0)) == PLUS
-                      && GET_CODE (XEXP (XEXP (loc[n_var_parts], 0), 1))
-                         == CONST_INT
-                      && rtx_equal_p (XEXP (XEXP (loc[n_var_parts], 0), 0),
-                                      XEXP (XEXP (loc2, 0), 0))
-                      && INTVAL (XEXP (XEXP (loc[n_var_parts], 0), 1))
-                         + GET_MODE_SIZE (mode)
-                         == INTVAL (XEXP (XEXP (loc2, 0), 1))))
-                new_loc = adjust_address_nv (loc[n_var_parts],
-                                             wider_mode, 0);
-            }
+	  if (REG_P (loc[n_var_parts])
+	      && hard_regno_nregs[REGNO (loc[n_var_parts])][mode] * 2
+		 == hard_regno_nregs[REGNO (loc[n_var_parts])][wider_mode]
+	      && REGNO (loc[n_var_parts])
+		 + hard_regno_nregs[REGNO (loc[n_var_parts])][mode]
+		 == REGNO (loc2))
+	    {
+	      if (! WORDS_BIG_ENDIAN && ! BYTES_BIG_ENDIAN)
+		new_loc = simplify_subreg (wider_mode, loc[n_var_parts],
+					   mode, 0);
+	      else if (WORDS_BIG_ENDIAN && BYTES_BIG_ENDIAN)
+		new_loc = simplify_subreg (wider_mode, loc2, mode, 0);
+	      if (new_loc)
+		{
+		  if (!REG_P (new_loc)
+		      || REGNO (new_loc) != REGNO (loc[n_var_parts]))
+		    new_loc = NULL;
+		  else
+		    REG_ATTRS (new_loc) = REG_ATTRS (loc[n_var_parts]);
+		}
+	    }
+	  else if (MEM_P (loc[n_var_parts])
+		   && GET_CODE (XEXP (loc2, 0)) == PLUS
+		   && GET_CODE (XEXP (XEXP (loc2, 0), 0)) == REG
+		   && GET_CODE (XEXP (XEXP (loc2, 0), 1)) == CONST_INT)
+	    {
+	      if ((GET_CODE (XEXP (loc[n_var_parts], 0)) == REG
+		   && rtx_equal_p (XEXP (loc[n_var_parts], 0),
+				   XEXP (XEXP (loc2, 0), 0))
+		   && INTVAL (XEXP (XEXP (loc2, 0), 1))
+		      == GET_MODE_SIZE (mode))
+		  || (GET_CODE (XEXP (loc[n_var_parts], 0)) == PLUS
+		      && GET_CODE (XEXP (XEXP (loc[n_var_parts], 0), 1))
+			 == CONST_INT
+		      && rtx_equal_p (XEXP (XEXP (loc[n_var_parts], 0), 0),
+				      XEXP (XEXP (loc2, 0), 0))
+		      && INTVAL (XEXP (XEXP (loc[n_var_parts], 0), 1))
+			 + GET_MODE_SIZE (mode)
+			 == INTVAL (XEXP (XEXP (loc2, 0), 1))))
+		new_loc = adjust_address_nv (loc[n_var_parts],
+					     wider_mode, 0);
+	    }
 
-          if (new_loc)
-            {
-              loc[n_var_parts] = new_loc;
-              mode = wider_mode;
-              last_limit = offsets[n_var_parts] + GET_MODE_SIZE (mode);
-              i = j;
-            }
-        }
+	  if (new_loc)
+	    {
+	      loc[n_var_parts] = new_loc;
+	      mode = wider_mode;
+	      last_limit = offsets[n_var_parts] + GET_MODE_SIZE (mode);
+	      i = j;
+	    }
+	}
       ++n_var_parts;
     }
   type_size_unit = TYPE_SIZE_UNIT (TREE_TYPE (var->decl));
@@ -2451,28 +2451,28 @@ emit_note_insn_var_location (void **varp, void *data)
   if (!complete)
     {
       NOTE_VAR_LOCATION (note) = gen_rtx_VAR_LOCATION (VOIDmode, var->decl,
-                                                       NULL_RTX);
+						       NULL_RTX);
     }
   else if (n_var_parts == 1)
     {
       rtx expr_list
-        = gen_rtx_EXPR_LIST (VOIDmode, loc[0], GEN_INT (offsets[0]));
+	= gen_rtx_EXPR_LIST (VOIDmode, loc[0], GEN_INT (offsets[0]));
 
       NOTE_VAR_LOCATION (note) = gen_rtx_VAR_LOCATION (VOIDmode, var->decl,
-                                                       expr_list);
+						       expr_list);
     }
   else if (n_var_parts)
     {
       rtx parallel;
 
       for (i = 0; i < n_var_parts; i++)
-        loc[i]
-          = gen_rtx_EXPR_LIST (VOIDmode, loc[i], GEN_INT (offsets[i]));
+	loc[i]
+	  = gen_rtx_EXPR_LIST (VOIDmode, loc[i], GEN_INT (offsets[i]));
 
       parallel = gen_rtx_PARALLEL (VOIDmode,
-                                   gen_rtvec_v (n_var_parts, loc));
+				   gen_rtvec_v (n_var_parts, loc));
       NOTE_VAR_LOCATION (note) = gen_rtx_VAR_LOCATION (VOIDmode, var->decl,
-                                                       parallel);
+						       parallel);
     }
 
   htab_clear_slot (changed_variables, varp);
@@ -2514,7 +2514,7 @@ emit_notes_for_differences_1 (void **slot, void *data)
 
   old_var = *(variable *) slot;
   new_var = htab_find_with_hash (new_vars, old_var->decl,
-                                 VARIABLE_HASH_VAL (old_var->decl));
+				 VARIABLE_HASH_VAL (old_var->decl));
 
   if (!new_var)
     {
@@ -2547,7 +2547,7 @@ emit_notes_for_differences_2 (void **slot, void *data)
 
   new_var = *(variable *) slot;
   old_var = htab_find_with_hash (old_vars, new_var->decl,
-                                 VARIABLE_HASH_VAL (new_var->decl));
+				 VARIABLE_HASH_VAL (new_var->decl));
   if (!old_var)
     {
       /* Variable has appeared.  */
@@ -2563,7 +2563,7 @@ emit_notes_for_differences_2 (void **slot, void *data)
 
 static void
 emit_notes_for_differences (rtx insn, dataflow_set *old_set,
-                            dataflow_set *new_set)
+			    dataflow_set *new_set)
 {
   htab_traverse (old_set->vars, emit_notes_for_differences_1, new_set->vars);
   htab_traverse (new_set->vars, emit_notes_for_differences_2, old_set->vars);
@@ -2586,89 +2586,89 @@ emit_notes_in_bb (basic_block bb)
       rtx insn = VTI (bb)->mos[i].insn;
 
       switch (VTI (bb)->mos[i].type)
-        {
-          case MO_CALL:
-            {
-              int r;
+	{
+	  case MO_CALL:
+	    {
+	      int r;
 
-              for (r = 0; r < FIRST_PSEUDO_REGISTER; r++)
-                if (TEST_HARD_REG_BIT (call_used_reg_set, r))
-                  {
-                    var_regno_delete (&set, r);
-                  }
-              emit_notes_for_changes (insn, EMIT_NOTE_AFTER_INSN);
-            }
-            break;
+	      for (r = 0; r < FIRST_PSEUDO_REGISTER; r++)
+		if (TEST_HARD_REG_BIT (call_used_reg_set, r))
+		  {
+		    var_regno_delete (&set, r);
+		  }
+	      emit_notes_for_changes (insn, EMIT_NOTE_AFTER_INSN);
+	    }
+	    break;
 
-          case MO_USE:
-            {
-              rtx loc = VTI (bb)->mos[i].u.loc;
+	  case MO_USE:
+	    {
+	      rtx loc = VTI (bb)->mos[i].u.loc;
 
-              if (GET_CODE (loc) == REG)
-                var_reg_set (&set, loc);
-              else
-                var_mem_set (&set, loc);
+	      if (GET_CODE (loc) == REG)
+		var_reg_set (&set, loc);
+	      else
+		var_mem_set (&set, loc);
 
-              emit_notes_for_changes (insn, EMIT_NOTE_AFTER_INSN);
-            }
-            break;
+	      emit_notes_for_changes (insn, EMIT_NOTE_AFTER_INSN);
+	    }
+	    break;
 
-          case MO_SET:
-            {
-              rtx loc = VTI (bb)->mos[i].u.loc;
+	  case MO_SET:
+	    {
+	      rtx loc = VTI (bb)->mos[i].u.loc;
 
-              if (REG_P (loc))
-                var_reg_delete_and_set (&set, loc, true);
-              else
-                var_mem_delete_and_set (&set, loc, true);
+	      if (REG_P (loc))
+		var_reg_delete_and_set (&set, loc, true);
+	      else
+		var_mem_delete_and_set (&set, loc, true);
 
-              emit_notes_for_changes (insn, EMIT_NOTE_BEFORE_INSN);
-            }
-            break;
+	      emit_notes_for_changes (insn, EMIT_NOTE_BEFORE_INSN);
+	    }
+	    break;
 
-          case MO_COPY:
-            {
-              rtx loc = VTI (bb)->mos[i].u.loc;
+	  case MO_COPY:
+	    {
+	      rtx loc = VTI (bb)->mos[i].u.loc;
 
-              if (REG_P (loc))
-                var_reg_delete_and_set (&set, loc, false);
-              else
-                var_mem_delete_and_set (&set, loc, false);
+	      if (REG_P (loc))
+		var_reg_delete_and_set (&set, loc, false);
+	      else
+		var_mem_delete_and_set (&set, loc, false);
 
-              emit_notes_for_changes (insn, EMIT_NOTE_BEFORE_INSN);
-            }
-            break;
+	      emit_notes_for_changes (insn, EMIT_NOTE_BEFORE_INSN);
+	    }
+	    break;
 
-          case MO_USE_NO_VAR:
-            {
-              rtx loc = VTI (bb)->mos[i].u.loc;
+	  case MO_USE_NO_VAR:
+	    {
+	      rtx loc = VTI (bb)->mos[i].u.loc;
 
-              if (REG_P (loc))
-                var_reg_delete (&set, loc, false);
-              else
-                var_mem_delete (&set, loc, false);
+	      if (REG_P (loc))
+		var_reg_delete (&set, loc, false);
+	      else
+		var_mem_delete (&set, loc, false);
 
-              emit_notes_for_changes (insn, EMIT_NOTE_AFTER_INSN);
-            }
-            break;
+	      emit_notes_for_changes (insn, EMIT_NOTE_AFTER_INSN);
+	    }
+	    break;
 
-          case MO_CLOBBER:
-            {
-              rtx loc = VTI (bb)->mos[i].u.loc;
+	  case MO_CLOBBER:
+	    {
+	      rtx loc = VTI (bb)->mos[i].u.loc;
 
-              if (REG_P (loc))
-                var_reg_delete (&set, loc, true);
-              else
-                var_mem_delete (&set, loc, true);
+	      if (REG_P (loc))
+		var_reg_delete (&set, loc, true);
+	      else
+		var_mem_delete (&set, loc, true);
 
-              emit_notes_for_changes (insn, EMIT_NOTE_BEFORE_INSN);
-            }
-            break;
+	      emit_notes_for_changes (insn, EMIT_NOTE_BEFORE_INSN);
+	    }
+	    break;
 
-          case MO_ADJUST:
-            set.stack_adjust += VTI (bb)->mos[i].u.adjust;
-            break;
-        }
+	  case MO_ADJUST:
+	    set.stack_adjust += VTI (bb)->mos[i].u.adjust;
+	    break;
+	}
     }
   dataflow_set_destroy (&set);
 }
@@ -2694,7 +2694,7 @@ vt_emit_notes (void)
   FOR_EACH_BB (bb)
     {
       /* Emit the notes for changes of variable locations between two
-         subsequent basic blocks.  */
+	 subsequent basic blocks.  */
       emit_notes_for_differences (BB_HEAD (bb), last_out, &VTI (bb)->in);
 
       /* Emit the notes for the changes in the basic block itself.  */
@@ -2715,20 +2715,20 @@ vt_get_decl_and_offset (rtx rtl, tree *declp, HOST_WIDE_INT *offsetp)
   if (REG_P (rtl))
     {
       if (REG_ATTRS (rtl))
-        {
-          *declp = REG_EXPR (rtl);
-          *offsetp = REG_OFFSET (rtl);
-          return true;
-        }
+	{
+	  *declp = REG_EXPR (rtl);
+	  *offsetp = REG_OFFSET (rtl);
+	  return true;
+	}
     }
   else if (MEM_P (rtl))
     {
       if (MEM_ATTRS (rtl))
-        {
-          *declp = MEM_EXPR (rtl);
-          *offsetp = MEM_OFFSET (rtl) ? INTVAL (MEM_OFFSET (rtl)) : 0;
-          return true;
-        }
+	{
+	  *declp = MEM_EXPR (rtl);
+	  *offsetp = MEM_OFFSET (rtl) ? INTVAL (MEM_OFFSET (rtl)) : 0;
+	  return true;
+	}
     }
   return false;
 }
@@ -2750,37 +2750,37 @@ vt_add_function_parameters (void)
       dataflow_set *out;
 
       if (TREE_CODE (parm) != PARM_DECL)
-        continue;
+	continue;
 
       if (!DECL_NAME (parm))
-        continue;
+	continue;
 
       if (!decl_rtl || !incoming)
-        continue;
+	continue;
 
       if (GET_MODE (decl_rtl) == BLKmode || GET_MODE (incoming) == BLKmode)
-        continue;
+	continue;
 
       if (!vt_get_decl_and_offset (incoming, &decl, &offset))
-        if (!vt_get_decl_and_offset (decl_rtl, &decl, &offset))
-          continue;
+	if (!vt_get_decl_and_offset (decl_rtl, &decl, &offset))
+	  continue;
 
       if (!decl)
-        continue;
+	continue;
 
       gcc_assert (parm == decl);
 
       out = &VTI (ENTRY_BLOCK_PTR)->out;
 
       if (REG_P (incoming))
-        {
-          gcc_assert (REGNO (incoming) < FIRST_PSEUDO_REGISTER);
-          attrs_list_insert (&out->regs[REGNO (incoming)],
-                             parm, offset, incoming);
-          set_variable_part (out, incoming, parm, offset);
-        }
+	{
+	  gcc_assert (REGNO (incoming) < FIRST_PSEUDO_REGISTER);
+	  attrs_list_insert (&out->regs[REGNO (incoming)],
+			     parm, offset, incoming);
+	  set_variable_part (out, incoming, parm, offset);
+	}
       else if (MEM_P (incoming))
-        set_variable_part (out, incoming, parm, offset);
+	set_variable_part (out, incoming, parm, offset);
     }
 }
 
@@ -2802,112 +2802,112 @@ vt_initialize (void)
       /* Count the number of micro operations.  */
       VTI (bb)->n_mos = 0;
       for (insn = BB_HEAD (bb); insn != NEXT_INSN (BB_END (bb));
-           insn = NEXT_INSN (insn))
-        {
-          if (INSN_P (insn))
-            {
-              if (!frame_pointer_needed)
-                {
-                  insn_stack_adjust_offset_pre_post (insn, &pre, &post);
-                  if (pre)
-                    VTI (bb)->n_mos++;
-                  if (post)
-                    VTI (bb)->n_mos++;
-                }
-              note_uses (&PATTERN (insn), count_uses_1, insn);
-              note_stores (PATTERN (insn), count_stores, insn);
-              if (CALL_P (insn))
-                VTI (bb)->n_mos++;
-            }
-        }
+	   insn = NEXT_INSN (insn))
+	{
+	  if (INSN_P (insn))
+	    {
+	      if (!frame_pointer_needed)
+		{
+		  insn_stack_adjust_offset_pre_post (insn, &pre, &post);
+		  if (pre)
+		    VTI (bb)->n_mos++;
+		  if (post)
+		    VTI (bb)->n_mos++;
+		}
+	      note_uses (&PATTERN (insn), count_uses_1, insn);
+	      note_stores (PATTERN (insn), count_stores, insn);
+	      if (CALL_P (insn))
+		VTI (bb)->n_mos++;
+	    }
+	}
 
       /* Add the micro-operations to the array.  */
       VTI (bb)->mos = XNEWVEC (micro_operation, VTI (bb)->n_mos);
       VTI (bb)->n_mos = 0;
       for (insn = BB_HEAD (bb); insn != NEXT_INSN (BB_END (bb));
-           insn = NEXT_INSN (insn))
-        {
-          if (INSN_P (insn))
-            {
-              int n1, n2;
+	   insn = NEXT_INSN (insn))
+	{
+	  if (INSN_P (insn))
+	    {
+	      int n1, n2;
 
-              if (!frame_pointer_needed)
-                {
-                  insn_stack_adjust_offset_pre_post (insn, &pre, &post);
-                  if (pre)
-                    {
-                      micro_operation *mo = VTI (bb)->mos + VTI (bb)->n_mos++;
+	      if (!frame_pointer_needed)
+		{
+		  insn_stack_adjust_offset_pre_post (insn, &pre, &post);
+		  if (pre)
+		    {
+		      micro_operation *mo = VTI (bb)->mos + VTI (bb)->n_mos++;
 
-                      mo->type = MO_ADJUST;
-                      mo->u.adjust = pre;
-                      mo->insn = insn;
-                    }
-                }
+		      mo->type = MO_ADJUST;
+		      mo->u.adjust = pre;
+		      mo->insn = insn;
+		    }
+		}
 
-              n1 = VTI (bb)->n_mos;
-              note_uses (&PATTERN (insn), add_uses_1, insn);
-              n2 = VTI (bb)->n_mos - 1;
+	      n1 = VTI (bb)->n_mos;
+	      note_uses (&PATTERN (insn), add_uses_1, insn);
+	      n2 = VTI (bb)->n_mos - 1;
 
-              /* Order the MO_USEs to be before MO_USE_NO_VARs.  */
-              while (n1 < n2)
-                {
-                  while (n1 < n2 && VTI (bb)->mos[n1].type == MO_USE)
-                    n1++;
-                  while (n1 < n2 && VTI (bb)->mos[n2].type == MO_USE_NO_VAR)
-                    n2--;
-                  if (n1 < n2)
-                    {
-                      micro_operation sw;
+	      /* Order the MO_USEs to be before MO_USE_NO_VARs.  */
+	      while (n1 < n2)
+		{
+		  while (n1 < n2 && VTI (bb)->mos[n1].type == MO_USE)
+		    n1++;
+		  while (n1 < n2 && VTI (bb)->mos[n2].type == MO_USE_NO_VAR)
+		    n2--;
+		  if (n1 < n2)
+		    {
+		      micro_operation sw;
 
-                      sw = VTI (bb)->mos[n1];
-                      VTI (bb)->mos[n1] = VTI (bb)->mos[n2];
-                      VTI (bb)->mos[n2] = sw;
-                    }
-                }
+		      sw = VTI (bb)->mos[n1];
+		      VTI (bb)->mos[n1] = VTI (bb)->mos[n2];
+		      VTI (bb)->mos[n2] = sw;
+		    }
+		}
 
-              if (CALL_P (insn))
-                {
-                  micro_operation *mo = VTI (bb)->mos + VTI (bb)->n_mos++;
+	      if (CALL_P (insn))
+		{
+		  micro_operation *mo = VTI (bb)->mos + VTI (bb)->n_mos++;
 
-                  mo->type = MO_CALL;
-                  mo->insn = insn;
-                }
+		  mo->type = MO_CALL;
+		  mo->insn = insn;
+		}
 
-              n1 = VTI (bb)->n_mos;
-              /* This will record NEXT_INSN (insn), such that we can
-                 insert notes before it without worrying about any
-                 notes that MO_USEs might emit after the insn.  */
-              note_stores (PATTERN (insn), add_stores, insn);
-              n2 = VTI (bb)->n_mos - 1;
+	      n1 = VTI (bb)->n_mos;
+	      /* This will record NEXT_INSN (insn), such that we can
+		 insert notes before it without worrying about any
+		 notes that MO_USEs might emit after the insn.  */
+	      note_stores (PATTERN (insn), add_stores, insn);
+	      n2 = VTI (bb)->n_mos - 1;
 
-              /* Order the MO_CLOBBERs to be before MO_SETs.  */
-              while (n1 < n2)
-                {
-                  while (n1 < n2 && VTI (bb)->mos[n1].type == MO_CLOBBER)
-                    n1++;
-                  while (n1 < n2 && (VTI (bb)->mos[n2].type == MO_SET
-                                     || VTI (bb)->mos[n2].type == MO_COPY))
-                    n2--;
-                  if (n1 < n2)
-                    {
-                      micro_operation sw;
+	      /* Order the MO_CLOBBERs to be before MO_SETs.  */
+	      while (n1 < n2)
+		{
+		  while (n1 < n2 && VTI (bb)->mos[n1].type == MO_CLOBBER)
+		    n1++;
+		  while (n1 < n2 && (VTI (bb)->mos[n2].type == MO_SET
+				     || VTI (bb)->mos[n2].type == MO_COPY))
+		    n2--;
+		  if (n1 < n2)
+		    {
+		      micro_operation sw;
 
-                      sw = VTI (bb)->mos[n1];
-                      VTI (bb)->mos[n1] = VTI (bb)->mos[n2];
-                      VTI (bb)->mos[n2] = sw;
-                    }
-                }
+		      sw = VTI (bb)->mos[n1];
+		      VTI (bb)->mos[n1] = VTI (bb)->mos[n2];
+		      VTI (bb)->mos[n2] = sw;
+		    }
+		}
 
-              if (!frame_pointer_needed && post)
-                {
-                  micro_operation *mo = VTI (bb)->mos + VTI (bb)->n_mos++;
+	      if (!frame_pointer_needed && post)
+		{
+		  micro_operation *mo = VTI (bb)->mos + VTI (bb)->n_mos++;
 
-                  mo->type = MO_ADJUST;
-                  mo->u.adjust = post;
-                  mo->insn = insn;
-                }
-            }
-        }
+		  mo->type = MO_ADJUST;
+		  mo->u.adjust = post;
+		  mo->insn = insn;
+		}
+	    }
+	}
     }
 
   /* Init the IN and OUT sets.  */
@@ -2919,14 +2919,14 @@ vt_initialize (void)
     }
 
   attrs_pool = create_alloc_pool ("attrs_def pool",
-                                  sizeof (struct attrs_def), 1024);
+				  sizeof (struct attrs_def), 1024);
   var_pool = create_alloc_pool ("variable_def pool",
-                                sizeof (struct variable_def), 64);
+				sizeof (struct variable_def), 64);
   loc_chain_pool = create_alloc_pool ("location_chain_def pool",
-                                      sizeof (struct location_chain_def),
-                                      1024);
+				      sizeof (struct location_chain_def),
+				      1024);
   changed_variables = htab_create (10, variable_htab_hash, variable_htab_eq,
-                                   NULL);
+				   NULL);
   vt_add_function_parameters ();
 }
 
@@ -2967,10 +2967,10 @@ variable_tracking_main (void)
   if (!frame_pointer_needed)
     {
       if (!vt_stack_adjustments ())
-        {
-          vt_finalize ();
-          return 0;
-        }
+	{
+	  vt_finalize ();
+	  return 0;
+	}
     }
 
   vt_find_locations ();

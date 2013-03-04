@@ -59,9 +59,9 @@ _mm_malloc (size_t size, size_t align)
 
   /* Align  We have at least sizeof (void *) space below malloc'd ptr. */
   aligned_ptr = (void *) (((size_t) malloc_ptr + align)
-                          & ~((size_t) (align) - 1));
+			  & ~((size_t) (align) - 1));
 
-  /* Store the original pointer just before p.  */        
+  /* Store the original pointer just before p.  */	
   ((void **) aligned_ptr) [-1] = malloc_ptr;
 
   return aligned_ptr;

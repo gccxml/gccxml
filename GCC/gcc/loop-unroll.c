@@ -73,22 +73,22 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
 
 struct iv_to_split
 {
-  rtx insn;                /* The insn in that the induction variable occurs.  */
-  rtx base_var;                /* The variable on that the values in the further
-                           iterations are based.  */
-  rtx step;                /* Step of the induction variable.  */
+  rtx insn;		/* The insn in that the induction variable occurs.  */
+  rtx base_var;		/* The variable on that the values in the further
+			   iterations are based.  */
+  rtx step;		/* Step of the induction variable.  */
   unsigned n_loc;
-  unsigned loc[3];        /* Location where the definition of the induction
-                           variable occurs in the insn.  For example if
-                           N_LOC is 2, the expression is located at
-                           XEXP (XEXP (single_set, loc[0]), loc[1]).  */ 
+  unsigned loc[3];	/* Location where the definition of the induction
+			   variable occurs in the insn.  For example if
+			   N_LOC is 2, the expression is located at
+			   XEXP (XEXP (single_set, loc[0]), loc[1]).  */ 
 };
 
 /* Information about accumulators to expand.  */
 
 struct var_to_expand
 {
-  rtx insn;                           /* The insn in that the variable expansion occurs.  */
+  rtx insn;		           /* The insn in that the variable expansion occurs.  */
   rtx reg;                         /* The accumulator which is expanded.  */
   VEC(rtx,heap) *var_expansions;   /* The copies of the accumulator which is expanded.  */ 
   enum rtx_code op;                /* The type of the accumulation - addition, subtraction 
@@ -162,46 +162,46 @@ unroll_and_peel_loops (struct loops *loops, int flags)
   while (loop != loops->tree_root)
     {
       if (loop->next)
-        {
-          next = loop->next;
-          while (next->inner)
-            next = next->inner;
-        }
+	{
+	  next = loop->next;
+	  while (next->inner)
+	    next = next->inner;
+	}
       else
-        next = loop->outer;
+	next = loop->outer;
 
       check = true;
       /* And perform the appropriate transformations.  */
       switch (loop->lpt_decision.decision)
-        {
-        case LPT_PEEL_COMPLETELY:
-          /* Already done.  */
-          gcc_unreachable ();
-        case LPT_PEEL_SIMPLE:
-          peel_loop_simple (loops, loop);
-          break;
-        case LPT_UNROLL_CONSTANT:
-          unroll_loop_constant_iterations (loops, loop);
-          break;
-        case LPT_UNROLL_RUNTIME:
-          unroll_loop_runtime_iterations (loops, loop);
-          break;
-        case LPT_UNROLL_STUPID:
-          unroll_loop_stupid (loops, loop);
-          break;
-        case LPT_NONE:
-          check = false;
-          break;
-        default:
-          gcc_unreachable ();
-        }
+	{
+	case LPT_PEEL_COMPLETELY:
+	  /* Already done.  */
+	  gcc_unreachable ();
+	case LPT_PEEL_SIMPLE:
+	  peel_loop_simple (loops, loop);
+	  break;
+	case LPT_UNROLL_CONSTANT:
+	  unroll_loop_constant_iterations (loops, loop);
+	  break;
+	case LPT_UNROLL_RUNTIME:
+	  unroll_loop_runtime_iterations (loops, loop);
+	  break;
+	case LPT_UNROLL_STUPID:
+	  unroll_loop_stupid (loops, loop);
+	  break;
+	case LPT_NONE:
+	  check = false;
+	  break;
+	default:
+	  gcc_unreachable ();
+	}
       if (check)
-        {
+	{
 #ifdef ENABLE_CHECKING
-          verify_dominators (CDI_DOMINATORS);
-          verify_loop_structure (loops);
+	  verify_dominators (CDI_DOMINATORS);
+	  verify_loop_structure (loops);
 #endif
-        }
+	}
       loop = next;
     }
 
@@ -223,7 +223,7 @@ loop_exit_at_end_p (struct loop *loop)
   FOR_BB_INSNS (loop->latch, insn)
     {
       if (INSN_P (insn))
-        return false;
+	return false;
     }
 
   return true;
@@ -241,29 +241,29 @@ peel_loops_completely (struct loops *loops, int flags)
     {
       loop = loops->parray[i];
       if (!loop)
-        continue;
+	continue;
 
       loop->lpt_decision.decision = LPT_NONE;
 
       if (dump_file)
-        fprintf (dump_file,
-                 "\n;; *** Considering loop %d for complete peeling ***\n",
-                 loop->num);
+	fprintf (dump_file,
+		 "\n;; *** Considering loop %d for complete peeling ***\n",
+		 loop->num);
 
       loop->ninsns = num_loop_insns (loop);
 
       decide_peel_once_rolling (loop, flags);
       if (loop->lpt_decision.decision == LPT_NONE)
-        decide_peel_completely (loop, flags);
+	decide_peel_completely (loop, flags);
 
       if (loop->lpt_decision.decision == LPT_PEEL_COMPLETELY)
-        {
-          peel_loop_completely (loops, loop);
+	{
+	  peel_loop_completely (loops, loop);
 #ifdef ENABLE_CHECKING
-          verify_dominators (CDI_DOMINATORS);
-          verify_loop_structure (loops);
+	  verify_dominators (CDI_DOMINATORS);
+	  verify_loop_structure (loops);
 #endif
-        }
+	}
     }
 }
 
@@ -280,60 +280,60 @@ decide_unrolling_and_peeling (struct loops *loops, int flags)
   while (loop != loops->tree_root)
     {
       if (loop->next)
-        {
-          next = loop->next;
-          while (next->inner)
-            next = next->inner;
-        }
+	{
+	  next = loop->next;
+	  while (next->inner)
+	    next = next->inner;
+	}
       else
-        next = loop->outer;
+	next = loop->outer;
 
       loop->lpt_decision.decision = LPT_NONE;
 
       if (dump_file)
-        fprintf (dump_file, "\n;; *** Considering loop %d ***\n", loop->num);
+	fprintf (dump_file, "\n;; *** Considering loop %d ***\n", loop->num);
 
       /* Do not peel cold areas.  */
       if (!maybe_hot_bb_p (loop->header))
-        {
-          if (dump_file)
-            fprintf (dump_file, ";; Not considering loop, cold area\n");
-          loop = next;
-          continue;
-        }
+	{
+	  if (dump_file)
+	    fprintf (dump_file, ";; Not considering loop, cold area\n");
+	  loop = next;
+	  continue;
+	}
 
       /* Can the loop be manipulated?  */
       if (!can_duplicate_loop_p (loop))
-        {
-          if (dump_file)
-            fprintf (dump_file,
-                     ";; Not considering loop, cannot duplicate\n");
-          loop = next;
-          continue;
-        }
+	{
+	  if (dump_file)
+	    fprintf (dump_file,
+		     ";; Not considering loop, cannot duplicate\n");
+	  loop = next;
+	  continue;
+	}
 
       /* Skip non-innermost loops.  */
       if (loop->inner)
-        {
-          if (dump_file)
-            fprintf (dump_file, ";; Not considering loop, is not innermost\n");
-          loop = next;
-          continue;
-        }
+	{
+	  if (dump_file)
+	    fprintf (dump_file, ";; Not considering loop, is not innermost\n");
+	  loop = next;
+	  continue;
+	}
 
       loop->ninsns = num_loop_insns (loop);
       loop->av_ninsns = average_num_loop_insns (loop);
 
       /* Try transformations one by one in decreasing order of
-         priority.  */
+	 priority.  */
 
       decide_unroll_constant_iterations (loop, flags);
       if (loop->lpt_decision.decision == LPT_NONE)
-        decide_unroll_runtime_iterations (loop, flags);
+	decide_unroll_runtime_iterations (loop, flags);
       if (loop->lpt_decision.decision == LPT_NONE)
-        decide_unroll_stupid (loop, flags);
+	decide_unroll_stupid (loop, flags);
       if (loop->lpt_decision.decision == LPT_NONE)
-        decide_peel_simple (loop, flags);
+	decide_peel_simple (loop, flags);
 
       loop = next;
     }
@@ -353,7 +353,7 @@ decide_peel_once_rolling (struct loop *loop, int flags ATTRIBUTE_UNUSED)
   if ((unsigned) PARAM_VALUE (PARAM_MAX_ONCE_PEELED_INSNS) < loop->ninsns)
     {
       if (dump_file)
-        fprintf (dump_file, ";; Not considering loop, is too big\n");
+	fprintf (dump_file, ";; Not considering loop, is too big\n");
       return;
     }
 
@@ -368,8 +368,8 @@ decide_peel_once_rolling (struct loop *loop, int flags ATTRIBUTE_UNUSED)
       || desc->niter != 0)
     {
       if (dump_file)
-        fprintf (dump_file,
-                 ";; Unable to prove that the loop rolls exactly once\n");
+	fprintf (dump_file,
+		 ";; Unable to prove that the loop rolls exactly once\n");
       return;
     }
 
@@ -393,7 +393,7 @@ decide_peel_completely (struct loop *loop, int flags ATTRIBUTE_UNUSED)
   if (loop->inner)
     {
       if (dump_file)
-        fprintf (dump_file, ";; Not considering loop, is not innermost\n");
+	fprintf (dump_file, ";; Not considering loop, is not innermost\n");
       return;
     }
 
@@ -401,7 +401,7 @@ decide_peel_completely (struct loop *loop, int flags ATTRIBUTE_UNUSED)
   if (!maybe_hot_bb_p (loop->header))
     {
       if (dump_file)
-        fprintf (dump_file, ";; Not considering loop, cold area\n");
+	fprintf (dump_file, ";; Not considering loop, cold area\n");
       return;
     }
 
@@ -409,8 +409,8 @@ decide_peel_completely (struct loop *loop, int flags ATTRIBUTE_UNUSED)
   if (!can_duplicate_loop_p (loop))
     {
       if (dump_file)
-        fprintf (dump_file,
-                 ";; Not considering loop, cannot duplicate\n");
+	fprintf (dump_file,
+		 ";; Not considering loop, cannot duplicate\n");
       return;
     }
 
@@ -423,7 +423,7 @@ decide_peel_completely (struct loop *loop, int flags ATTRIBUTE_UNUSED)
   if (!npeel)
     {
       if (dump_file)
-        fprintf (dump_file, ";; Not considering loop, is too big\n");
+	fprintf (dump_file, ";; Not considering loop, is too big\n");
       return;
     }
 
@@ -437,20 +437,20 @@ decide_peel_completely (struct loop *loop, int flags ATTRIBUTE_UNUSED)
       || desc->infinite)
     {
       if (dump_file)
-        fprintf (dump_file,
-                 ";; Unable to prove that the loop iterates constant times\n");
+	fprintf (dump_file,
+		 ";; Unable to prove that the loop iterates constant times\n");
       return;
     }
 
   if (desc->niter > npeel - 1)
     {
       if (dump_file)
-        {
-          fprintf (dump_file,
-                   ";; Not peeling loop completely, rolls too much (");
-          fprintf (dump_file, HOST_WIDEST_INT_PRINT_DEC, desc->niter);
-          fprintf (dump_file, " iterations > %d [maximum peelings])\n", npeel);
-        }
+	{
+	  fprintf (dump_file,
+		   ";; Not peeling loop completely, rolls too much (");
+	  fprintf (dump_file, HOST_WIDEST_INT_PRINT_DEC, desc->niter);
+	  fprintf (dump_file, " iterations > %d [maximum peelings])\n", npeel);
+	}
       return;
     }
 
@@ -494,7 +494,7 @@ peel_loop_completely (struct loops *loops, struct loop *loop)
       sbitmap_ones (wont_exit);
       RESET_BIT (wont_exit, 0);
       if (desc->noloop_assumptions)
-        RESET_BIT (wont_exit, 1);
+	RESET_BIT (wont_exit, 1);
 
       remove_edges = XCNEWVEC (edge, npeel);
       n_remove_edges = 0;
@@ -504,26 +504,26 @@ peel_loop_completely (struct loops *loops, struct loop *loop)
       
       opt_info_start_duplication (opt_info);
       ok = duplicate_loop_to_header_edge (loop, loop_preheader_edge (loop),
-                                          loops, npeel,
-                                          wont_exit, desc->out_edge,
-                                          remove_edges, &n_remove_edges,
-                                          DLTHE_FLAG_UPDATE_FREQ
-                                          | DLTHE_FLAG_COMPLETTE_PEEL
-                                          | (opt_info
-                                             ? DLTHE_RECORD_COPY_NUMBER : 0));
+					  loops, npeel,
+					  wont_exit, desc->out_edge,
+					  remove_edges, &n_remove_edges,
+					  DLTHE_FLAG_UPDATE_FREQ
+					  | DLTHE_FLAG_COMPLETTE_PEEL
+					  | (opt_info
+					     ? DLTHE_RECORD_COPY_NUMBER : 0));
       gcc_assert (ok);
 
       free (wont_exit);
       
       if (opt_info)
-         {
-           apply_opt_in_copies (opt_info, npeel, false, true);
-           free_opt_info (opt_info);
-         }
+ 	{
+ 	  apply_opt_in_copies (opt_info, npeel, false, true);
+ 	  free_opt_info (opt_info);
+ 	}
 
       /* Remove the exit edges.  */
       for (i = 0; i < n_remove_edges; i++)
-        remove_path (loops, remove_edges[i]);
+	remove_path (loops, remove_edges[i]);
       free (remove_edges);
     }
 
@@ -555,8 +555,8 @@ decide_unroll_constant_iterations (struct loop *loop, int flags)
 
   if (dump_file)
     fprintf (dump_file,
-             "\n;; Considering unrolling loop with constant "
-             "number of iterations\n");
+	     "\n;; Considering unrolling loop with constant "
+	     "number of iterations\n");
 
   /* nunroll = total number of copies of the original loop body in
      unrolled loop (i.e. if it is 2, we have to duplicate loop body once.  */
@@ -572,7 +572,7 @@ decide_unroll_constant_iterations (struct loop *loop, int flags)
   if (nunroll <= 1)
     {
       if (dump_file)
-        fprintf (dump_file, ";; Not considering loop, is too big\n");
+	fprintf (dump_file, ";; Not considering loop, is too big\n");
       return;
     }
 
@@ -583,8 +583,8 @@ decide_unroll_constant_iterations (struct loop *loop, int flags)
   if (!desc->simple_p || !desc->const_iter || desc->assumptions)
     {
       if (dump_file)
-        fprintf (dump_file,
-                 ";; Unable to prove that the loop iterates constant times\n");
+	fprintf (dump_file,
+		 ";; Unable to prove that the loop iterates constant times\n");
       return;
     }
 
@@ -592,7 +592,7 @@ decide_unroll_constant_iterations (struct loop *loop, int flags)
   if (desc->niter < 2 * nunroll)
     {
       if (dump_file)
-        fprintf (dump_file, ";; Not unrolling loop, doesn't roll\n");
+	fprintf (dump_file, ";; Not unrolling loop, doesn't roll\n");
       return;
     }
 
@@ -611,31 +611,31 @@ decide_unroll_constant_iterations (struct loop *loop, int flags)
       unsigned exit_mod = desc->niter % (i + 1);
 
       if (!loop_exit_at_end_p (loop))
-        n_copies = exit_mod + i + 1;
+	n_copies = exit_mod + i + 1;
       else if (exit_mod != (unsigned) i
-               || desc->noloop_assumptions != NULL_RTX)
-        n_copies = exit_mod + i + 2;
+	       || desc->noloop_assumptions != NULL_RTX)
+	n_copies = exit_mod + i + 2;
       else
-        n_copies = i + 1;
+	n_copies = i + 1;
 
       if (n_copies < best_copies)
-        {
-          best_copies = n_copies;
-          best_unroll = i;
-        }
+	{
+	  best_copies = n_copies;
+	  best_unroll = i;
+	}
     }
 
   if (dump_file)
     fprintf (dump_file, ";; max_unroll %d (%d copies, initial %d).\n",
-             best_unroll + 1, best_copies, nunroll);
+	     best_unroll + 1, best_copies, nunroll);
 
   loop->lpt_decision.decision = LPT_UNROLL_CONSTANT;
   loop->lpt_decision.times = best_unroll;
   
   if (dump_file)
     fprintf (dump_file,
-             ";; Decided to unroll the constant times rolling loop, %d times.\n",
-             loop->lpt_decision.times);
+	     ";; Decided to unroll the constant times rolling loop, %d times.\n",
+	     loop->lpt_decision.times);
 }
 
 /* Unroll LOOP with constant number of iterations LOOP->LPT_DECISION.TIMES + 1
@@ -690,79 +690,79 @@ unroll_loop_constant_iterations (struct loops *loops, struct loop *loop)
   if (!exit_at_end)
     {
       /* The exit is not at the end of the loop; leave exit test
-         in the first copy, so that the loops that start with test
-         of exit condition have continuous body after unrolling.  */
+	 in the first copy, so that the loops that start with test
+	 of exit condition have continuous body after unrolling.  */
 
       if (dump_file)
-        fprintf (dump_file, ";; Condition on beginning of loop.\n");
+	fprintf (dump_file, ";; Condition on beginning of loop.\n");
 
       /* Peel exit_mod iterations.  */
       RESET_BIT (wont_exit, 0);
       if (desc->noloop_assumptions)
-        RESET_BIT (wont_exit, 1);
+	RESET_BIT (wont_exit, 1);
 
       if (exit_mod)
-        {
-          opt_info_start_duplication (opt_info);
+	{
+	  opt_info_start_duplication (opt_info);
           ok = duplicate_loop_to_header_edge (loop, loop_preheader_edge (loop),
-                                              loops, exit_mod,
-                                              wont_exit, desc->out_edge,
-                                              remove_edges, &n_remove_edges,
-                                              DLTHE_FLAG_UPDATE_FREQ
-                                              | (opt_info && exit_mod > 1
-                                                 ? DLTHE_RECORD_COPY_NUMBER
-                                                   : 0));
-          gcc_assert (ok);
+					      loops, exit_mod,
+					      wont_exit, desc->out_edge,
+					      remove_edges, &n_remove_edges,
+					      DLTHE_FLAG_UPDATE_FREQ
+					      | (opt_info && exit_mod > 1
+						 ? DLTHE_RECORD_COPY_NUMBER
+						   : 0));
+	  gcc_assert (ok);
 
           if (opt_info && exit_mod > 1)
-             apply_opt_in_copies (opt_info, exit_mod, false, false); 
+ 	    apply_opt_in_copies (opt_info, exit_mod, false, false); 
           
-          desc->noloop_assumptions = NULL_RTX;
-          desc->niter -= exit_mod;
-          desc->niter_max -= exit_mod;
-        }
+	  desc->noloop_assumptions = NULL_RTX;
+	  desc->niter -= exit_mod;
+	  desc->niter_max -= exit_mod;
+	}
 
       SET_BIT (wont_exit, 1);
     }
   else
     {
       /* Leave exit test in last copy, for the same reason as above if
-         the loop tests the condition at the end of loop body.  */
+	 the loop tests the condition at the end of loop body.  */
 
       if (dump_file)
-        fprintf (dump_file, ";; Condition on end of loop.\n");
+	fprintf (dump_file, ";; Condition on end of loop.\n");
 
       /* We know that niter >= max_unroll + 2; so we do not need to care of
-         case when we would exit before reaching the loop.  So just peel
-         exit_mod + 1 iterations.  */
+	 case when we would exit before reaching the loop.  So just peel
+	 exit_mod + 1 iterations.  */
       if (exit_mod != max_unroll
-          || desc->noloop_assumptions)
-        {
-          RESET_BIT (wont_exit, 0);
-          if (desc->noloop_assumptions)
-            RESET_BIT (wont_exit, 1);
+	  || desc->noloop_assumptions)
+	{
+	  RESET_BIT (wont_exit, 0);
+	  if (desc->noloop_assumptions)
+	    RESET_BIT (wont_exit, 1);
          
           opt_info_start_duplication (opt_info);
-          ok = duplicate_loop_to_header_edge (loop, loop_preheader_edge (loop),
-                                              loops, exit_mod + 1,
-                                              wont_exit, desc->out_edge,
-                                              remove_edges, &n_remove_edges,
-                                              DLTHE_FLAG_UPDATE_FREQ
-                                              | (opt_info && exit_mod > 0
-                                                 ? DLTHE_RECORD_COPY_NUMBER
-                                                   : 0));
-          gcc_assert (ok);
+	  ok = duplicate_loop_to_header_edge (loop, loop_preheader_edge (loop),
+					      loops, exit_mod + 1,
+					      wont_exit, desc->out_edge,
+					      remove_edges, &n_remove_edges,
+					      DLTHE_FLAG_UPDATE_FREQ
+					      | (opt_info && exit_mod > 0
+						 ? DLTHE_RECORD_COPY_NUMBER
+						   : 0));
+	  gcc_assert (ok);
  
           if (opt_info && exit_mod > 0)
-              apply_opt_in_copies (opt_info, exit_mod + 1, false, false);
+  	    apply_opt_in_copies (opt_info, exit_mod + 1, false, false);
 
-          desc->niter -= exit_mod + 1;
-          desc->niter_max -= exit_mod + 1;
-          desc->noloop_assumptions = NULL_RTX;
+	  desc->niter -= exit_mod + 1;
+	  desc->niter_max -= exit_mod + 1;
+	  desc->noloop_assumptions = NULL_RTX;
 
-          SET_BIT (wont_exit, 0);
-          SET_BIT (wont_exit, 1);
-        }
+	  SET_BIT (wont_exit, 0);
+	  SET_BIT (wont_exit, 1);
+	}
 
       RESET_BIT (wont_exit, max_unroll);
     }
@@ -771,13 +771,13 @@ unroll_loop_constant_iterations (struct loops *loops, struct loop *loop)
   
   opt_info_start_duplication (opt_info);
   ok = duplicate_loop_to_header_edge (loop, loop_latch_edge (loop),
-                                      loops, max_unroll,
-                                      wont_exit, desc->out_edge,
-                                      remove_edges, &n_remove_edges,
-                                      DLTHE_FLAG_UPDATE_FREQ
-                                      | (opt_info
-                                         ? DLTHE_RECORD_COPY_NUMBER
-                                           : 0));
+				      loops, max_unroll,
+				      wont_exit, desc->out_edge,
+				      remove_edges, &n_remove_edges,
+				      DLTHE_FLAG_UPDATE_FREQ
+				      | (opt_info
+					 ? DLTHE_RECORD_COPY_NUMBER
+					   : 0));
   gcc_assert (ok);
 
   if (opt_info)
@@ -794,15 +794,15 @@ unroll_loop_constant_iterations (struct loops *loops, struct loop *loop)
       /* Find a new in and out edge; they are in the last copy we have made.  */
       
       if (EDGE_SUCC (exit_block, 0)->dest == desc->out_edge->dest)
-        {
-          desc->out_edge = EDGE_SUCC (exit_block, 0);
-          desc->in_edge = EDGE_SUCC (exit_block, 1);
-        }
+	{
+	  desc->out_edge = EDGE_SUCC (exit_block, 0);
+	  desc->in_edge = EDGE_SUCC (exit_block, 1);
+	}
       else
-        {
-          desc->out_edge = EDGE_SUCC (exit_block, 1);
-          desc->in_edge = EDGE_SUCC (exit_block, 0);
-        }
+	{
+	  desc->out_edge = EDGE_SUCC (exit_block, 1);
+	  desc->in_edge = EDGE_SUCC (exit_block, 0);
+	}
     }
 
   desc->niter /= max_unroll + 1;
@@ -816,8 +816,8 @@ unroll_loop_constant_iterations (struct loops *loops, struct loop *loop)
 
   if (dump_file)
     fprintf (dump_file,
-             ";; Unrolled loop %d times, constant # of iterations %i insns\n",
-             max_unroll, num_loop_insns (loop));
+	     ";; Unrolled loop %d times, constant # of iterations %i insns\n",
+	     max_unroll, num_loop_insns (loop));
 }
 
 /* Decide whether to unroll LOOP iterating runtime computable number of times
@@ -836,8 +836,8 @@ decide_unroll_runtime_iterations (struct loop *loop, int flags)
 
   if (dump_file)
     fprintf (dump_file,
-             "\n;; Considering unrolling loop with runtime "
-             "computable number of iterations\n");
+	     "\n;; Considering unrolling loop with runtime "
+	     "computable number of iterations\n");
 
   /* nunroll = total number of copies of the original loop body in
      unrolled loop (i.e. if it is 2, we have to duplicate loop body once.  */
@@ -852,7 +852,7 @@ decide_unroll_runtime_iterations (struct loop *loop, int flags)
   if (nunroll <= 1)
     {
       if (dump_file)
-        fprintf (dump_file, ";; Not considering loop, is too big\n");
+	fprintf (dump_file, ";; Not considering loop, is too big\n");
       return;
     }
 
@@ -863,16 +863,16 @@ decide_unroll_runtime_iterations (struct loop *loop, int flags)
   if (!desc->simple_p || desc->assumptions)
     {
       if (dump_file)
-        fprintf (dump_file,
-                 ";; Unable to prove that the number of iterations "
-                 "can be counted in runtime\n");
+	fprintf (dump_file,
+		 ";; Unable to prove that the number of iterations "
+		 "can be counted in runtime\n");
       return;
     }
 
   if (desc->const_iter)
     {
       if (dump_file)
-        fprintf (dump_file, ";; Loop iterates constant times\n");
+	fprintf (dump_file, ";; Loop iterates constant times\n");
       return;
     }
 
@@ -880,7 +880,7 @@ decide_unroll_runtime_iterations (struct loop *loop, int flags)
   if (loop->header->count && expected_loop_iterations (loop) < 2 * nunroll)
     {
       if (dump_file)
-        fprintf (dump_file, ";; Not unrolling loop, doesn't roll\n");
+	fprintf (dump_file, ";; Not unrolling loop, doesn't roll\n");
       return;
     }
 
@@ -894,9 +894,9 @@ decide_unroll_runtime_iterations (struct loop *loop, int flags)
   
   if (dump_file)
     fprintf (dump_file,
-             ";; Decided to unroll the runtime computable "
-             "times rolling loop, %d times.\n",
-             loop->lpt_decision.times);
+	     ";; Decided to unroll the runtime computable "
+	     "times rolling loop, %d times.\n",
+	     loop->lpt_decision.times);
 }
 
 /* Unroll LOOP for that we are able to count number of iterations in runtime
@@ -964,8 +964,8 @@ unroll_loop_runtime_iterations (struct loops *loops, struct loop *loop)
 
       nldom = get_dominated_by (CDI_DOMINATORS, body[i], &ldom);
       for (j = 0; j < nldom; j++)
-        if (!flow_bb_inside_loop_p (loop, ldom[j]))
-          dom_bbs[n_dom_bbs++] = ldom[j];
+	if (!flow_bb_inside_loop_p (loop, ldom[j]))
+	  dom_bbs[n_dom_bbs++] = ldom[j];
 
       free (ldom);
     }
@@ -974,7 +974,7 @@ unroll_loop_runtime_iterations (struct loops *loops, struct loop *loop)
   if (!exit_at_end)
     {
       /* Leave exit in first copy (for explanation why see comment in
-         unroll_loop_constant_iterations).  */
+	 unroll_loop_constant_iterations).  */
       may_exit_copy = 0;
       n_peel = max_unroll - 1;
       extra_zero_check = true;
@@ -983,7 +983,7 @@ unroll_loop_runtime_iterations (struct loops *loops, struct loop *loop)
   else
     {
       /* Leave exit in last copy (for explanation why see comment in
-         unroll_loop_constant_iterations).  */
+	 unroll_loop_constant_iterations).  */
       may_exit_copy = max_unroll;
       n_peel = max_unroll;
       extra_zero_check = false;
@@ -1001,9 +1001,9 @@ unroll_loop_runtime_iterations (struct loops *loops, struct loop *loop)
      the number of unrollings is a power of two, and thus this is correct
      even if there is overflow in the computation.  */
   niter = expand_simple_binop (desc->mode, AND,
-                               niter,
-                               GEN_INT (max_unroll),
-                               NULL_RTX, 0, OPTAB_LIB_WIDEN);
+			       niter,
+			       GEN_INT (max_unroll),
+			       NULL_RTX, 0, OPTAB_LIB_WIDEN);
 
   init_code = get_insns ();
   end_sequence ();
@@ -1026,27 +1026,27 @@ unroll_loop_runtime_iterations (struct loops *loops, struct loop *loop)
     SET_BIT (wont_exit, 1);
   ezc_swtch = loop_preheader_edge (loop)->src;
   ok = duplicate_loop_to_header_edge (loop, loop_preheader_edge (loop),
-                                      loops, 1,
-                                      wont_exit, desc->out_edge,
-                                      remove_edges, &n_remove_edges,
-                                      DLTHE_FLAG_UPDATE_FREQ);
+				      loops, 1,
+				      wont_exit, desc->out_edge,
+				      remove_edges, &n_remove_edges,
+				      DLTHE_FLAG_UPDATE_FREQ);
   gcc_assert (ok);
 
   /* Record the place where switch will be built for preconditioning.  */
   swtch = loop_split_edge_with (loop_preheader_edge (loop),
-                                NULL_RTX);
+				NULL_RTX);
 
   for (i = 0; i < n_peel; i++)
     {
       /* Peel the copy.  */
       sbitmap_zero (wont_exit);
       if (i != n_peel - 1 || !last_may_exit)
-        SET_BIT (wont_exit, 1);
+	SET_BIT (wont_exit, 1);
       ok = duplicate_loop_to_header_edge (loop, loop_preheader_edge (loop),
-                                          loops, 1,
-                                          wont_exit, desc->out_edge,
-                                          remove_edges, &n_remove_edges,
-                                          DLTHE_FLAG_UPDATE_FREQ);
+					  loops, 1,
+					  wont_exit, desc->out_edge,
+					  remove_edges, &n_remove_edges,
+					  DLTHE_FLAG_UPDATE_FREQ);
       gcc_assert (ok);
 
       /* Create item for switch.  */
@@ -1055,14 +1055,14 @@ unroll_loop_runtime_iterations (struct loops *loops, struct loop *loop)
 
       preheader = loop_split_edge_with (loop_preheader_edge (loop), NULL_RTX);
       branch_code = compare_and_jump_seq (copy_rtx (niter), GEN_INT (j), EQ,
-                                          block_label (preheader), p,
-                                          NULL_RTX);
+					  block_label (preheader), p,
+					  NULL_RTX);
 
       swtch = loop_split_edge_with (single_pred_edge (swtch), branch_code);
       set_immediate_dominator (CDI_DOMINATORS, preheader, swtch);
       single_pred_edge (swtch)->probability = REG_BR_PROB_BASE - p;
       e = make_edge (swtch, preheader,
-                     single_succ_edge (swtch)->flags & EDGE_IRREDUCIBLE_LOOP);
+		     single_succ_edge (swtch)->flags & EDGE_IRREDUCIBLE_LOOP);
       e->probability = p;
     }
 
@@ -1073,14 +1073,14 @@ unroll_loop_runtime_iterations (struct loops *loops, struct loop *loop)
       swtch = ezc_swtch;
       preheader = loop_split_edge_with (loop_preheader_edge (loop), NULL_RTX);
       branch_code = compare_and_jump_seq (copy_rtx (niter), const0_rtx, EQ,
-                                          block_label (preheader), p,
-                                          NULL_RTX);
+					  block_label (preheader), p,
+					  NULL_RTX);
 
       swtch = loop_split_edge_with (single_succ_edge (swtch), branch_code);
       set_immediate_dominator (CDI_DOMINATORS, preheader, swtch);
       single_succ_edge (swtch)->probability = REG_BR_PROB_BASE - p;
       e = make_edge (swtch, preheader,
-                     single_succ_edge (swtch)->flags & EDGE_IRREDUCIBLE_LOOP);
+		     single_succ_edge (swtch)->flags & EDGE_IRREDUCIBLE_LOOP);
       e->probability = p;
     }
 
@@ -1094,13 +1094,13 @@ unroll_loop_runtime_iterations (struct loops *loops, struct loop *loop)
   opt_info_start_duplication (opt_info);
   
   ok = duplicate_loop_to_header_edge (loop, loop_latch_edge (loop),
-                                      loops, max_unroll,
-                                      wont_exit, desc->out_edge,
-                                      remove_edges, &n_remove_edges,
-                                      DLTHE_FLAG_UPDATE_FREQ
-                                      | (opt_info
-                                         ? DLTHE_RECORD_COPY_NUMBER
-                                           : 0));
+				      loops, max_unroll,
+				      wont_exit, desc->out_edge,
+				      remove_edges, &n_remove_edges,
+				      DLTHE_FLAG_UPDATE_FREQ
+				      | (opt_info
+					 ? DLTHE_RECORD_COPY_NUMBER
+					   : 0));
   gcc_assert (ok);
   
   if (opt_info)
@@ -1115,18 +1115,18 @@ unroll_loop_runtime_iterations (struct loops *loops, struct loop *loop)
     {
       basic_block exit_block = get_bb_copy (desc->in_edge->src);
       /* Find a new in and out edge; they are in the last copy we have
-         made.  */
+	 made.  */
       
       if (EDGE_SUCC (exit_block, 0)->dest == desc->out_edge->dest)
-        {
-          desc->out_edge = EDGE_SUCC (exit_block, 0);
-          desc->in_edge = EDGE_SUCC (exit_block, 1);
-        }
+	{
+	  desc->out_edge = EDGE_SUCC (exit_block, 0);
+	  desc->in_edge = EDGE_SUCC (exit_block, 1);
+	}
       else
-        {
-          desc->out_edge = EDGE_SUCC (exit_block, 1);
-          desc->in_edge = EDGE_SUCC (exit_block, 0);
-        }
+	{
+	  desc->out_edge = EDGE_SUCC (exit_block, 1);
+	  desc->in_edge = EDGE_SUCC (exit_block, 0);
+	}
     }
 
   /* Remove the edges.  */
@@ -1141,21 +1141,21 @@ unroll_loop_runtime_iterations (struct loops *loops, struct loop *loop)
   gcc_assert (!desc->const_iter);
   desc->niter_expr =
     simplify_gen_binary (UDIV, desc->mode, old_niter,
-                         GEN_INT (max_unroll + 1));
+			 GEN_INT (max_unroll + 1));
   desc->niter_max /= max_unroll + 1;
   if (exit_at_end)
     {
       desc->niter_expr =
-        simplify_gen_binary (MINUS, desc->mode, desc->niter_expr, const1_rtx);
+	simplify_gen_binary (MINUS, desc->mode, desc->niter_expr, const1_rtx);
       desc->noloop_assumptions = NULL_RTX;
       desc->niter_max--;
     }
 
   if (dump_file)
     fprintf (dump_file,
-             ";; Unrolled loop %d times, counting # of iterations "
-             "in runtime, %i insns\n",
-             max_unroll, num_loop_insns (loop));
+	     ";; Unrolled loop %d times, counting # of iterations "
+	     "in runtime, %i insns\n",
+	     max_unroll, num_loop_insns (loop));
 
   if (dom_bbs)
     free (dom_bbs);
@@ -1186,7 +1186,7 @@ decide_peel_simple (struct loop *loop, int flags)
   if (!npeel)
     {
       if (dump_file)
-        fprintf (dump_file, ";; Not considering loop, is too big\n");
+	fprintf (dump_file, ";; Not considering loop, is too big\n");
       return;
     }
 
@@ -1197,7 +1197,7 @@ decide_peel_simple (struct loop *loop, int flags)
   if (desc->simple_p && !desc->assumptions && desc->const_iter)
     {
       if (dump_file)
-        fprintf (dump_file, ";; Loop iterates constant times\n");
+	fprintf (dump_file, ";; Loop iterates constant times\n");
       return;
     }
 
@@ -1206,7 +1206,7 @@ decide_peel_simple (struct loop *loop, int flags)
   if (num_loop_branches (loop) > 1)
     {
       if (dump_file)
-        fprintf (dump_file, ";; Not peeling, contains branches\n");
+	fprintf (dump_file, ";; Not peeling, contains branches\n");
       return;
     }
 
@@ -1214,17 +1214,17 @@ decide_peel_simple (struct loop *loop, int flags)
     {
       unsigned niter = expected_loop_iterations (loop);
       if (niter + 1 > npeel)
-        {
-          if (dump_file)
-            {
-              fprintf (dump_file, ";; Not peeling loop, rolls too much (");
-              fprintf (dump_file, HOST_WIDEST_INT_PRINT_DEC,
-                       (HOST_WIDEST_INT) (niter + 1));
-              fprintf (dump_file, " iterations > %d [maximum peelings])\n",
-                       npeel);
-            }
-          return;
-        }
+	{
+	  if (dump_file)
+	    {
+	      fprintf (dump_file, ";; Not peeling loop, rolls too much (");
+	      fprintf (dump_file, HOST_WIDEST_INT_PRINT_DEC,
+		       (HOST_WIDEST_INT) (niter + 1));
+	      fprintf (dump_file, " iterations > %d [maximum peelings])\n",
+		       npeel);
+	    }
+	  return;
+	}
       npeel = niter + 1;
     }
   else
@@ -1232,8 +1232,8 @@ decide_peel_simple (struct loop *loop, int flags)
       /* For now we have no good heuristics to decide whether loop peeling
          will be effective, so disable it.  */
       if (dump_file)
-        fprintf (dump_file,
-                 ";; Not peeling loop, no evidence it will be profitable\n");
+	fprintf (dump_file,
+		 ";; Not peeling loop, no evidence it will be profitable\n");
       return;
     }
 
@@ -1243,7 +1243,7 @@ decide_peel_simple (struct loop *loop, int flags)
       
   if (dump_file)
     fprintf (dump_file, ";; Decided to simply peel the loop, %d times.\n",
-             loop->lpt_decision.times);
+	     loop->lpt_decision.times);
 }
 
 /* Peel a LOOP LOOP->LPT_DECISION.TIMES times.  The transformation:
@@ -1278,12 +1278,12 @@ peel_loop_simple (struct loops *loops, struct loop *loop)
   opt_info_start_duplication (opt_info);
   
   ok = duplicate_loop_to_header_edge (loop, loop_preheader_edge (loop),
-                                      loops, npeel, wont_exit,
-                                      NULL, NULL,
-                                      NULL, DLTHE_FLAG_UPDATE_FREQ
-                                      | (opt_info
-                                         ? DLTHE_RECORD_COPY_NUMBER
-                                           : 0));
+				      loops, npeel, wont_exit,
+				      NULL, NULL,
+				      NULL, DLTHE_FLAG_UPDATE_FREQ
+				      | (opt_info
+					 ? DLTHE_RECORD_COPY_NUMBER
+					   : 0));
   gcc_assert (ok);
 
   free (wont_exit);
@@ -1297,19 +1297,19 @@ peel_loop_simple (struct loops *loops, struct loop *loop)
   if (desc->simple_p)
     {
       if (desc->const_iter)
-        {
-          desc->niter -= npeel;
-          desc->niter_expr = GEN_INT (desc->niter);
-          desc->noloop_assumptions = NULL_RTX;
-        }
+	{
+	  desc->niter -= npeel;
+	  desc->niter_expr = GEN_INT (desc->niter);
+	  desc->noloop_assumptions = NULL_RTX;
+	}
       else
-        {
-          /* We cannot just update niter_expr, as its value might be clobbered
-             inside loop.  We could handle this by counting the number into
-             temporary just like we do in runtime unrolling, but it does not
-             seem worthwhile.  */
-          free_simple_loop_desc (loop);
-        }
+	{
+	  /* We cannot just update niter_expr, as its value might be clobbered
+	     inside loop.  We could handle this by counting the number into
+	     temporary just like we do in runtime unrolling, but it does not
+	     seem worthwhile.  */
+	  free_simple_loop_desc (loop);
+	}
     }
   if (dump_file)
     fprintf (dump_file, ";; Peeling loop %d times\n", npeel);
@@ -1345,7 +1345,7 @@ decide_unroll_stupid (struct loop *loop, int flags)
   if (nunroll <= 1)
     {
       if (dump_file)
-        fprintf (dump_file, ";; Not considering loop, is too big\n");
+	fprintf (dump_file, ";; Not considering loop, is too big\n");
       return;
     }
 
@@ -1356,7 +1356,7 @@ decide_unroll_stupid (struct loop *loop, int flags)
   if (desc->simple_p && !desc->assumptions)
     {
       if (dump_file)
-        fprintf (dump_file, ";; The loop is simple\n");
+	fprintf (dump_file, ";; The loop is simple\n");
       return;
     }
 
@@ -1365,7 +1365,7 @@ decide_unroll_stupid (struct loop *loop, int flags)
   if (num_loop_branches (loop) > 1)
     {
       if (dump_file)
-        fprintf (dump_file, ";; Not unrolling, contains branches\n");
+	fprintf (dump_file, ";; Not unrolling, contains branches\n");
       return;
     }
 
@@ -1374,7 +1374,7 @@ decide_unroll_stupid (struct loop *loop, int flags)
       && expected_loop_iterations (loop) < 2 * nunroll)
     {
       if (dump_file)
-        fprintf (dump_file, ";; Not unrolling loop, doesn't roll\n");
+	fprintf (dump_file, ";; Not unrolling loop, doesn't roll\n");
       return;
     }
 
@@ -1389,8 +1389,8 @@ decide_unroll_stupid (struct loop *loop, int flags)
       
   if (dump_file)
     fprintf (dump_file,
-             ";; Decided to unroll the loop stupidly, %d times.\n",
-             loop->lpt_decision.times);
+	     ";; Decided to unroll the loop stupidly, %d times.\n",
+	     loop->lpt_decision.times);
 }
 
 /* Unroll a LOOP LOOP->LPT_DECISION.TIMES times.  The transformation:
@@ -1429,12 +1429,12 @@ unroll_loop_stupid (struct loops *loops, struct loop *loop)
   opt_info_start_duplication (opt_info);
   
   ok = duplicate_loop_to_header_edge (loop, loop_latch_edge (loop),
-                                      loops, nunroll, wont_exit,
-                                      NULL, NULL, NULL,
-                                      DLTHE_FLAG_UPDATE_FREQ
-                                      | (opt_info
-                                         ? DLTHE_RECORD_COPY_NUMBER
-                                           : 0));
+				      loops, nunroll, wont_exit,
+				      NULL, NULL, NULL,
+				      DLTHE_FLAG_UPDATE_FREQ
+				      | (opt_info
+					 ? DLTHE_RECORD_COPY_NUMBER
+					   : 0));
   gcc_assert (ok);
   
   if (opt_info)
@@ -1448,17 +1448,17 @@ unroll_loop_stupid (struct loops *loops, struct loop *loop)
   if (desc->simple_p)
     {
       /* We indeed may get here provided that there are nontrivial assumptions
-         for a loop to be really simple.  We could update the counts, but the
-         problem is that we are unable to decide which exit will be taken
-         (not really true in case the number of iterations is constant,
-         but noone will do anything with this information, so we do not
-         worry about it).  */
+	 for a loop to be really simple.  We could update the counts, but the
+	 problem is that we are unable to decide which exit will be taken
+	 (not really true in case the number of iterations is constant,
+	 but noone will do anything with this information, so we do not
+	 worry about it).  */
       desc->simple_p = false;
     }
 
   if (dump_file)
     fprintf (dump_file, ";; Unrolled loop %d times, %i insns\n",
-             nunroll, num_loop_insns (loop));
+	     nunroll, num_loop_insns (loop));
 }
 
 /* A hash function for information about insns to split.  */
@@ -1735,13 +1735,13 @@ analyze_insns_in_loop (struct loop *loop)
   if (flag_variable_expansion_in_unroller
       && can_apply)
     opt_info->insns_with_var_to_expand = htab_create (5 * loop->num_nodes,
-                                                      ve_info_hash, ve_info_eq, free);
+						      ve_info_hash, ve_info_eq, free);
   
   for (i = 0; i < loop->num_nodes; i++)
     {
       bb = body[i];
       if (!dominated_by_p (CDI_DOMINATORS, loop->latch, bb))
-        continue;
+	continue;
 
       FOR_BB_INSNS (bb, insn)
       {
@@ -1795,17 +1795,17 @@ determine_split_iv_delta (unsigned n_copy, unsigned n_copies, bool unrolling)
   if (unrolling)
     {
       /* If we are unrolling, initialization is done in the original loop
-         body (number 0).  */
+	 body (number 0).  */
       return n_copy;
     }
   else
     {
       /* If we are peeling, the copy in that the initialization occurs has
-         number 1.  The original loop (number 0) is the last.  */
+	 number 1.  The original loop (number 0) is the last.  */
       if (n_copy)
-        return n_copy - 1;
+	return n_copy - 1;
       else
-        return n_copies;
+	return n_copies;
     }
 }
 
@@ -1873,9 +1873,9 @@ split_iv (struct iv_to_split *ivts, rtx insn, unsigned delta)
   else
     {
       incr = simplify_gen_binary (MULT, mode,
-                                  ivts->step, gen_int_mode (delta, mode));
+				  ivts->step, gen_int_mode (delta, mode));
       expr = simplify_gen_binary (PLUS, GET_MODE (ivts->base_var),
-                                  ivts->base_var, incr);
+				  ivts->base_var, incr);
     }
 
   /* Figure out where to do the replacement.  */
@@ -2095,9 +2095,9 @@ apply_opt_in_copies (struct opt_info *opt_info,
       orig_bb = get_bb_original (bb);
       
       /* bb->aux holds position in copy sequence initialized by
-         duplicate_loop_to_header_edge.  */
+	 duplicate_loop_to_header_edge.  */
       delta = determine_split_iv_delta ((size_t)bb->aux, n_copies,
-                                        unrolling);
+					unrolling);
       bb->aux = 0;
       orig_insn = BB_HEAD (orig_bb);
       for (insn = BB_HEAD (bb); insn != NEXT_INSN (BB_END (bb)); insn = next)
@@ -2119,8 +2119,8 @@ apply_opt_in_copies (struct opt_info *opt_info,
               
               if (ivts)
                 {
-                  gcc_assert (GET_CODE (PATTERN (insn))
-                              == GET_CODE (PATTERN (orig_insn)));
+		  gcc_assert (GET_CODE (PATTERN (insn))
+			      == GET_CODE (PATTERN (orig_insn)));
                   
                   if (!delta)
                     insert_base_initialization (ivts, insn);
@@ -2133,8 +2133,8 @@ apply_opt_in_copies (struct opt_info *opt_info,
               ves = htab_find (opt_info->insns_with_var_to_expand, &ve_templ);
               if (ves)
                 { 
-                  gcc_assert (GET_CODE (PATTERN (insn))
-                              == GET_CODE (PATTERN (orig_insn)));
+		  gcc_assert (GET_CODE (PATTERN (insn))
+			      == GET_CODE (PATTERN (orig_insn)));
                   expand_var_during_unrolling (ves, insn);
                 }
             }
@@ -2165,7 +2165,7 @@ apply_opt_in_copies (struct opt_info *opt_info,
       bb = BASIC_BLOCK (i);
       orig_bb = get_bb_original (bb);
       if (get_bb_copy (orig_bb) != bb)
-        continue;
+	continue;
       
       delta = determine_split_iv_delta (0, n_copies, unrolling);
       for (orig_insn = BB_HEAD (orig_bb);
@@ -2175,7 +2175,7 @@ apply_opt_in_copies (struct opt_info *opt_info,
           next = NEXT_INSN (orig_insn);
           
           if (!INSN_P (orig_insn))
-             continue;
+ 	    continue;
           
           ivts_templ.insn = orig_insn;
           if (opt_info->insns_to_split)

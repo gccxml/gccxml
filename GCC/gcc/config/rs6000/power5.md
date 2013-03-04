@@ -32,25 +32,25 @@
 (define_cpu_unit "fpu1_power5,fpu2_power5" "power5fpu")
 (define_cpu_unit "bpu_power5,cru_power5" "power5misc")
 (define_cpu_unit "du1_power5,du2_power5,du3_power5,du4_power5,du5_power5"
-                 "power5misc")
+		 "power5misc")
 
 (define_reservation "lsq_power5"
-                    "(du1_power5,lsu1_power5)\
-                    |(du2_power5,lsu2_power5)\
-                    |(du3_power5,lsu2_power5)\
-                    |(du4_power5,lsu1_power5)")
+		    "(du1_power5,lsu1_power5)\
+		    |(du2_power5,lsu2_power5)\
+		    |(du3_power5,lsu2_power5)\
+		    |(du4_power5,lsu1_power5)")
 
 (define_reservation "iq_power5"
-                    "(du1_power5,iu1_power5)\
-                    |(du2_power5,iu2_power5)\
-                    |(du3_power5,iu2_power5)\
-                    |(du4_power5,iu1_power5)")
+		    "(du1_power5,iu1_power5)\
+		    |(du2_power5,iu2_power5)\
+		    |(du3_power5,iu2_power5)\
+		    |(du4_power5,iu1_power5)")
 
 (define_reservation "fpq_power5"
-                    "(du1_power5,fpu1_power5)\
-                    |(du2_power5,fpu2_power5)\
-                    |(du3_power5,fpu2_power5)\
-                    |(du4_power5,fpu1_power5)")
+		    "(du1_power5,fpu1_power5)\
+		    |(du2_power5,fpu2_power5)\
+		    |(du3_power5,fpu2_power5)\
+		    |(du4_power5,fpu1_power5)")
 
 ; Dispatch slots are allocated in order conforming to program order.
 (absence_set "du1_power5" "du2_power5,du3_power5,du4_power5,du5_power5")

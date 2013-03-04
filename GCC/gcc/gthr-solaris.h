@@ -164,8 +164,8 @@ __gthread_objc_thread_detach (void (*func)(void *), void *arg)
     return NULL;
 
   if (__gthrw_(thr_create) (NULL, 0, (void *) func, arg,
-                  THR_DETACHED | THR_NEW_LWP,
-                  &new_thread_id) == 0)
+		  THR_DETACHED | THR_NEW_LWP,
+		  &new_thread_id) == 0)
     thread_id = *(objc_thread_t *) &new_thread_id;
   else
     thread_id = NULL;
@@ -215,9 +215,9 @@ __gthread_objc_thread_get_priority (void)
   if (__gthrw_(thr_getprio) (__gthrw_(thr_self) (), &sys_priority) == 0)
     {
       if (sys_priority >= 250)
-        return OBJC_THREAD_INTERACTIVE_PRIORITY;
+	return OBJC_THREAD_INTERACTIVE_PRIORITY;
       else if (sys_priority >= 150)
-        return OBJC_THREAD_BACKGROUND_PRIORITY;
+	return OBJC_THREAD_BACKGROUND_PRIORITY;
       return OBJC_THREAD_LOW_PRIORITY;
     }
 
@@ -262,9 +262,9 @@ __gthread_objc_thread_set_data (void *value)
   if (__gthread_active_p ())
     {
       if (__gthrw_(thr_setspecific) (_objc_thread_storage, value) == 0)
-        return 0;
+	return 0;
       else
-        return -1;
+	return -1;
     }
   else
     {
@@ -282,9 +282,9 @@ __gthread_objc_thread_get_data (void)
   if (__gthread_active_p ())
     {
       if (__gthrw_(thr_getspecific) (_objc_thread_storage, &value) == 0)
-        return value;
+	return value;
       else
-        return NULL;
+	return NULL;
     }
   else
     return thread_local_storage;
@@ -354,7 +354,7 @@ __gthread_objc_condition_allocate (objc_condition_t condition)
 {
   if (__gthread_active_p ())
     return __gthrw_(cond_init) ((cond_t *) (&(condition->backend)), USYNC_THREAD,
-                      NULL);
+		      NULL);
   else
     return 0;
 }
@@ -375,7 +375,7 @@ __gthread_objc_condition_wait (objc_condition_t condition, objc_mutex_t mutex)
 {
   if (__gthread_active_p ())
     return __gthrw_(cond_wait) ((cond_t *) (&(condition->backend)),
-                      (mutex_t *) (&(mutex->backend)));
+		      (mutex_t *) (&(mutex->backend)));
   else
     return 0;
 }
@@ -415,12 +415,12 @@ __gthread_once (__gthread_once_t *once, void (*func) (void))
     {
       int status = __gthrw_(mutex_lock) (&once->mutex);
       if (status != 0)
-        return status;
+	return status;
       if (once->once == 0)
-        {
-          (*func) ();
-          once->once++;
-        }
+	{
+	  (*func) ();
+	  once->once++;
+	}
       __gthrw_(mutex_unlock) (&once->mutex);
     }
   return 0;
@@ -504,10 +504,10 @@ __gthread_recursive_mutex_lock (__gthread_recursive_mutex_t *mutex)
       thread_t me = __gthrw_(thr_self) ();
 
       if (mutex->owner != me)
-        {
-          __gthrw_(mutex_lock) (&mutex->actual);
-          mutex->owner = me;
-        }
+	{
+	  __gthrw_(mutex_lock) (&mutex->actual);
+	  mutex->owner = me;
+	}
 
       mutex->depth++;
     }
@@ -522,11 +522,11 @@ __gthread_recursive_mutex_trylock (__gthread_recursive_mutex_t *mutex)
       thread_t me = __gthrw_(thr_self) ();
 
       if (mutex->owner != me)
-        {
-          if (__gthrw_(mutex_trylock) (&mutex->actual))
-            return 1;
-          mutex->owner = me;
-        }
+	{
+	  if (__gthrw_(mutex_trylock) (&mutex->actual))
+	    return 1;
+	  mutex->owner = me;
+	}
 
       mutex->depth++;
     }
@@ -539,10 +539,10 @@ __gthread_recursive_mutex_unlock (__gthread_recursive_mutex_t *mutex)
   if (__gthread_active_p ())
     {
       if (--mutex->depth == 0)
-        {
-           mutex->owner = (thread_t) 0;
-           __gthrw_(mutex_unlock) (&mutex->actual);
-        }
+	{
+	   mutex->owner = (thread_t) 0;
+	   __gthrw_(mutex_unlock) (&mutex->actual);
+	}
     }
   return 0;
 }

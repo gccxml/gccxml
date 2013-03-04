@@ -53,9 +53,9 @@ dw2_assemble_integer (int size, rtx x)
     {
       fputs (op, asm_out_file);
       if (GET_CODE (x) == CONST_INT)
-        fprintf (asm_out_file, HOST_WIDE_INT_PRINT_HEX, INTVAL (x));
+	fprintf (asm_out_file, HOST_WIDE_INT_PRINT_HEX, INTVAL (x));
       else
-        output_addr_const (asm_out_file, x);
+	output_addr_const (asm_out_file, x);
     }
   else
     assemble_integer (x, size, BITS_PER_UNIT, 1);
@@ -66,7 +66,7 @@ dw2_assemble_integer (int size, rtx x)
 
 void
 dw2_asm_output_data (int size, unsigned HOST_WIDE_INT value,
-                     const char *comment, ...)
+		     const char *comment, ...)
 {
   va_list ap;
   const char *op = integer_asm_op (size, FALSE);
@@ -99,7 +99,7 @@ dw2_asm_output_data (int size, unsigned HOST_WIDE_INT value,
 
 void
 dw2_asm_output_delta (int size, const char *lab1, const char *lab2,
-                      const char *comment, ...)
+		      const char *comment, ...)
 {
   va_list ap;
 
@@ -109,9 +109,9 @@ dw2_asm_output_delta (int size, const char *lab1, const char *lab2,
   ASM_OUTPUT_DWARF_DELTA (asm_out_file, size, lab1, lab2);
 #else
   dw2_assemble_integer (size,
-                        gen_rtx_MINUS (Pmode,
-                                       gen_rtx_SYMBOL_REF (Pmode, lab1),
-                                       gen_rtx_SYMBOL_REF (Pmode, lab2)));
+			gen_rtx_MINUS (Pmode,
+				       gen_rtx_SYMBOL_REF (Pmode, lab1),
+				       gen_rtx_SYMBOL_REF (Pmode, lab2)));
 #endif
   if (flag_debug_asm && comment)
     {
@@ -132,8 +132,8 @@ dw2_asm_output_delta (int size, const char *lab1, const char *lab2,
 
 void
 dw2_asm_output_offset (int size, const char *label,
-                       section *base ATTRIBUTE_UNUSED,
-                       const char *comment, ...)
+		       section *base ATTRIBUTE_UNUSED,
+		       const char *comment, ...)
 {
   va_list ap;
 
@@ -162,8 +162,8 @@ dw2_asm_output_offset (int size, const char *label,
 
 void
 dw2_asm_output_pcrel (int size ATTRIBUTE_UNUSED,
-                      const char *label ATTRIBUTE_UNUSED,
-                      const char *comment, ...)
+		      const char *label ATTRIBUTE_UNUSED,
+		      const char *comment, ...)
 {
   va_list ap;
 
@@ -173,9 +173,9 @@ dw2_asm_output_pcrel (int size ATTRIBUTE_UNUSED,
   ASM_OUTPUT_DWARF_PCREL (asm_out_file, size, label);
 #else
   dw2_assemble_integer (size,
-                        gen_rtx_MINUS (Pmode,
-                                       gen_rtx_SYMBOL_REF (Pmode, label),
-                                       pc_rtx));
+			gen_rtx_MINUS (Pmode,
+				       gen_rtx_SYMBOL_REF (Pmode, label),
+				       pc_rtx));
 #endif
 
   if (flag_debug_asm && comment)
@@ -193,7 +193,7 @@ dw2_asm_output_pcrel (int size ATTRIBUTE_UNUSED,
 
 void
 dw2_asm_output_addr (int size, const char *label,
-                     const char *comment, ...)
+		     const char *comment, ...)
 {
   va_list ap;
 
@@ -215,7 +215,7 @@ dw2_asm_output_addr (int size, const char *label,
 
 void
 dw2_asm_output_addr_rtx (int size, rtx addr,
-                         const char *comment, ...)
+			 const char *comment, ...)
 {
   va_list ap;
 
@@ -242,7 +242,7 @@ dw2_asm_output_addr_rtx (int size, rtx addr,
    
 void
 dw2_asm_output_nstring (const char *str, size_t orig_len,
-                        const char *comment, ...)
+			const char *comment, ...)
 {
   size_t i, len;
   va_list ap;
@@ -258,15 +258,15 @@ dw2_asm_output_nstring (const char *str, size_t orig_len,
     {
       fputs ("\t.ascii \"", asm_out_file);
       for (i = 0; i < len; i++)
-        {
-          int c = str[i];
-          if (c == '\"' || c == '\\')
-            fputc ('\\', asm_out_file);
-          if (ISPRINT(c))
-            fputc (c, asm_out_file);
-          else
-            fprintf (asm_out_file, "\\%o", c);
-        }
+	{
+	  int c = str[i];
+	  if (c == '\"' || c == '\\')
+	    fputc ('\\', asm_out_file);
+	  if (ISPRINT(c))
+	    fputc (c, asm_out_file);
+	  else
+	    fprintf (asm_out_file, "\\%o", c);
+	}
       fprintf (asm_out_file, "\\0\"\t%s ", ASM_COMMENT_START);
       vfprintf (asm_out_file, comment, ap);
       fputc ('\n', asm_out_file);
@@ -274,12 +274,12 @@ dw2_asm_output_nstring (const char *str, size_t orig_len,
   else
     {
       /* If an explicit length was given, we can't assume there
-         is a null termination in the string buffer.  */
+	 is a null termination in the string buffer.  */
       if (orig_len == (size_t) -1)
-        len += 1;
+	len += 1;
       ASM_OUTPUT_ASCII (asm_out_file, str, len);
       if (orig_len != (size_t) -1)
-        assemble_integer (const0_rtx, 1, BITS_PER_UNIT, 1);
+	assemble_integer (const0_rtx, 1, BITS_PER_UNIT, 1);
     }
 
   va_end (ap);
@@ -317,7 +317,7 @@ size_of_sleb128 (HOST_WIDE_INT value)
       size += 1;
     }
   while (!((value == 0 && (byte & 0x40) == 0)
-           || (value == -1 && (byte & 0x40) != 0)));
+	   || (value == -1 && (byte & 0x40) != 0)));
 
   return size;
 }
@@ -353,9 +353,9 @@ const char *
 eh_data_format_name (int format)
 {
 #if HAVE_DESIGNATED_INITIALIZERS
-#define S(p, v)                [p] = v,
+#define S(p, v)		[p] = v,
 #else
-#define S(p, v)                case p: return v;
+#define S(p, v)		case p: return v;
 #endif
 
 #if HAVE_DESIGNATED_INITIALIZERS
@@ -509,7 +509,7 @@ eh_data_format_name (int format)
 
 void
 dw2_asm_output_data_uleb128 (unsigned HOST_WIDE_INT value,
-                             const char *comment, ...)
+			     const char *comment, ...)
 {
   va_list ap;
 
@@ -532,32 +532,32 @@ dw2_asm_output_data_uleb128 (unsigned HOST_WIDE_INT value,
       fputs (byte_op, asm_out_file);
     do
       {
-        int byte = (work & 0x7f);
-        work >>= 7;
-        if (work != 0)
-          /* More bytes to follow.  */
-          byte |= 0x80;
+	int byte = (work & 0x7f);
+	work >>= 7;
+	if (work != 0)
+	  /* More bytes to follow.  */
+	  byte |= 0x80;
 
-        if (byte_op)
-          {
-            fprintf (asm_out_file, "0x%x", byte);
-            if (work != 0)
-              fputc (',', asm_out_file);
-          }
-        else
-          assemble_integer (GEN_INT (byte), 1, BITS_PER_UNIT, 1);
+	if (byte_op)
+	  {
+	    fprintf (asm_out_file, "0x%x", byte);
+	    if (work != 0)
+	      fputc (',', asm_out_file);
+	  }
+	else
+	  assemble_integer (GEN_INT (byte), 1, BITS_PER_UNIT, 1);
       }
     while (work != 0);
 
   if (flag_debug_asm)
     {
       fprintf (asm_out_file, "\t%s uleb128 " HOST_WIDE_INT_PRINT_HEX,
-               ASM_COMMENT_START, value);
+	       ASM_COMMENT_START, value);
       if (comment)
-        {
-          fputs ("; ", asm_out_file);
-          vfprintf (asm_out_file, comment, ap);
-        }
+	{
+	  fputs ("; ", asm_out_file);
+	  vfprintf (asm_out_file, comment, ap);
+	}
     }
   }
 #endif
@@ -570,7 +570,7 @@ dw2_asm_output_data_uleb128 (unsigned HOST_WIDE_INT value,
 
 void
 dw2_asm_output_data_sleb128 (HOST_WIDE_INT value,
-                             const char *comment, ...)
+			     const char *comment, ...)
 {
   va_list ap;
 
@@ -594,34 +594,34 @@ dw2_asm_output_data_sleb128 (HOST_WIDE_INT value,
       fputs (byte_op, asm_out_file);
     do
       {
-        byte = (work & 0x7f);
-        /* arithmetic shift */
-        work >>= 7;
-        more = !((work == 0 && (byte & 0x40) == 0)
-                 || (work == -1 && (byte & 0x40) != 0));
-        if (more)
-          byte |= 0x80;
+	byte = (work & 0x7f);
+	/* arithmetic shift */
+	work >>= 7;
+	more = !((work == 0 && (byte & 0x40) == 0)
+		 || (work == -1 && (byte & 0x40) != 0));
+	if (more)
+	  byte |= 0x80;
 
-        if (byte_op)
-          {
-            fprintf (asm_out_file, "0x%x", byte);
-            if (more)
-              fputc (',', asm_out_file);
-          }
-        else
-          assemble_integer (GEN_INT (byte), 1, BITS_PER_UNIT, 1);
+	if (byte_op)
+	  {
+	    fprintf (asm_out_file, "0x%x", byte);
+	    if (more)
+	      fputc (',', asm_out_file);
+	  }
+	else
+	  assemble_integer (GEN_INT (byte), 1, BITS_PER_UNIT, 1);
       }
     while (more);
 
   if (flag_debug_asm)
     {
       fprintf (asm_out_file, "\t%s sleb128 " HOST_WIDE_INT_PRINT_DEC,
-               ASM_COMMENT_START, value);
+	       ASM_COMMENT_START, value);
       if (comment)
-        {
-          fputs ("; ", asm_out_file);
-          vfprintf (asm_out_file, comment, ap);
-        }
+	{
+	  fputs ("; ", asm_out_file);
+	  vfprintf (asm_out_file, comment, ap);
+	}
     }
   }
 #endif
@@ -632,8 +632,8 @@ dw2_asm_output_data_sleb128 (HOST_WIDE_INT value,
 
 void
 dw2_asm_output_delta_uleb128 (const char *lab1 ATTRIBUTE_UNUSED,
-                              const char *lab2 ATTRIBUTE_UNUSED,
-                              const char *comment, ...)
+			      const char *lab2 ATTRIBUTE_UNUSED,
+			      const char *comment, ...)
 {
   va_list ap;
 
@@ -662,8 +662,8 @@ dw2_asm_output_delta_uleb128 (const char *lab1 ATTRIBUTE_UNUSED,
 
 void
 dw2_asm_output_delta_sleb128 (const char *lab1 ATTRIBUTE_UNUSED,
-                              const char *lab2 ATTRIBUTE_UNUSED,
-                              const char *comment, ...)
+			      const char *lab2 ATTRIBUTE_UNUSED,
+			      const char *comment, ...)
 {
   va_list ap;
 
@@ -729,38 +729,38 @@ dw2_force_const_mem (rtx x, bool public)
       tree id;
 
       if (public && USE_LINKONCE_INDIRECT)
-        {
-          char *ref_name = alloca (strlen (str) + sizeof "DW.ref.");
+	{
+	  char *ref_name = alloca (strlen (str) + sizeof "DW.ref.");
 
-          sprintf (ref_name, "DW.ref.%s", str);
-          id = get_identifier (ref_name);
-          decl = build_decl (VAR_DECL, id, ptr_type_node);
-          DECL_ARTIFICIAL (decl) = 1;
-          DECL_IGNORED_P (decl) = 1;
-          TREE_PUBLIC (decl) = 1;
-          DECL_INITIAL (decl) = decl;
-          make_decl_one_only (decl);
-        }
+	  sprintf (ref_name, "DW.ref.%s", str);
+	  id = get_identifier (ref_name);
+	  decl = build_decl (VAR_DECL, id, ptr_type_node);
+	  DECL_ARTIFICIAL (decl) = 1;
+	  DECL_IGNORED_P (decl) = 1;
+	  TREE_PUBLIC (decl) = 1;
+	  DECL_INITIAL (decl) = decl;
+	  make_decl_one_only (decl);
+	}
       else
-        {
-          char label[32];
+	{
+	  char label[32];
 
-          ASM_GENERATE_INTERNAL_LABEL (label, "LDFCM", dw2_const_labelno);
-          ++dw2_const_labelno;
-          id = get_identifier (label);
-          decl = build_decl (VAR_DECL, id, ptr_type_node);
-          DECL_ARTIFICIAL (decl) = 1;
-          DECL_IGNORED_P (decl) = 1;
-          TREE_STATIC (decl) = 1;
-          DECL_INITIAL (decl) = decl;
-        }
+	  ASM_GENERATE_INTERNAL_LABEL (label, "LDFCM", dw2_const_labelno);
+	  ++dw2_const_labelno;
+	  id = get_identifier (label);
+	  decl = build_decl (VAR_DECL, id, ptr_type_node);
+	  DECL_ARTIFICIAL (decl) = 1;
+	  DECL_IGNORED_P (decl) = 1;
+	  TREE_STATIC (decl) = 1;
+	  DECL_INITIAL (decl) = decl;
+	}
 
       id = maybe_get_identifier (str);
       if (id)
-        TREE_SYMBOL_REFERENCED (id) = 1;
+	TREE_SYMBOL_REFERENCED (id) = 1;
 
       splay_tree_insert (indirect_pool, (splay_tree_key) str,
-                         (splay_tree_value) decl);
+			 (splay_tree_value) decl);
     }
 
   return XEXP (DECL_RTL (decl), 0);
@@ -771,7 +771,7 @@ dw2_force_const_mem (rtx x, bool public)
 
 static int
 dw2_output_indirect_constant_1 (splay_tree_node node,
-                                void *data ATTRIBUTE_UNUSED)
+				void *data ATTRIBUTE_UNUSED)
 {
   const char *sym;
   rtx sym_ref;
@@ -803,7 +803,7 @@ dw2_output_indirect_constants (void)
 
 void
 dw2_asm_output_encoded_addr_rtx (int encoding, rtx addr, bool public,
-                                 const char *comment, ...)
+				 const char *comment, ...)
 {
   int size;
   va_list ap;
@@ -827,47 +827,47 @@ dw2_asm_output_encoded_addr_rtx (int encoding, rtx addr, bool public,
     {
     restart:
       /* Allow the target first crack at emitting this.  Some of the
-         special relocations require special directives instead of
-         just ".4byte" or whatever.  */
+	 special relocations require special directives instead of
+	 just ".4byte" or whatever.  */
 #ifdef ASM_MAYBE_OUTPUT_ENCODED_ADDR_RTX
       ASM_MAYBE_OUTPUT_ENCODED_ADDR_RTX (asm_out_file, encoding, size,
-                                         addr, done);
+					 addr, done);
 #endif
 
       /* Indirection is used to get dynamic relocations out of a
-         read-only section.  */
+	 read-only section.  */
       if (encoding & DW_EH_PE_indirect)
-        {
-          /* It is very tempting to use force_const_mem so that we share data
-             with the normal constant pool.  However, we've already emitted
-             the constant pool for this function.  Moreover, we'd like to
-             share these constants across the entire unit of translation and
-             even, if possible, across the entire application (or DSO).  */
-          addr = dw2_force_const_mem (addr, public);
-          encoding &= ~DW_EH_PE_indirect;
-          goto restart;
-        }
+	{
+	  /* It is very tempting to use force_const_mem so that we share data
+	     with the normal constant pool.  However, we've already emitted
+	     the constant pool for this function.  Moreover, we'd like to
+	     share these constants across the entire unit of translation and
+	     even, if possible, across the entire application (or DSO).  */
+	  addr = dw2_force_const_mem (addr, public);
+	  encoding &= ~DW_EH_PE_indirect;
+	  goto restart;
+	}
 
       switch (encoding & 0xF0)
-        {
-        case DW_EH_PE_absptr:
-          dw2_assemble_integer (size, addr);
-          break;
+	{
+	case DW_EH_PE_absptr:
+	  dw2_assemble_integer (size, addr);
+	  break;
 
-        case DW_EH_PE_pcrel:
-          gcc_assert (GET_CODE (addr) == SYMBOL_REF);
+	case DW_EH_PE_pcrel:
+	  gcc_assert (GET_CODE (addr) == SYMBOL_REF);
 #ifdef ASM_OUTPUT_DWARF_PCREL
-          ASM_OUTPUT_DWARF_PCREL (asm_out_file, size, XSTR (addr, 0));
+	  ASM_OUTPUT_DWARF_PCREL (asm_out_file, size, XSTR (addr, 0));
 #else
-          dw2_assemble_integer (size, gen_rtx_MINUS (Pmode, addr, pc_rtx));
+	  dw2_assemble_integer (size, gen_rtx_MINUS (Pmode, addr, pc_rtx));
 #endif
-          break;
+	  break;
 
-        default:
-          /* Other encodings should have been handled by
-             ASM_MAYBE_OUTPUT_ENCODED_ADDR_RTX.  */
-          gcc_unreachable ();
-        }
+	default:
+	  /* Other encodings should have been handled by
+	     ASM_MAYBE_OUTPUT_ENCODED_ADDR_RTX.  */
+	  gcc_unreachable ();
+	}
 
 #ifdef ASM_MAYBE_OUTPUT_ENCODED_ADDR_RTX
     done:;

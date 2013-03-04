@@ -48,13 +48,13 @@ static tree pass_through_call (tree);
 static void collect_object_sizes_for (struct object_size_info *, tree);
 static void expr_object_size (struct object_size_info *, tree, tree);
 static bool merge_object_sizes (struct object_size_info *, tree, tree,
-                                unsigned HOST_WIDE_INT);
+				unsigned HOST_WIDE_INT);
 static bool plus_expr_object_size (struct object_size_info *, tree, tree);
 static unsigned int compute_object_sizes (void);
 static void init_offset_limit (void);
 static void check_for_plus_in_loops (struct object_size_info *, tree);
 static void check_for_plus_in_loops_1 (struct object_size_info *, tree,
-                                       unsigned int);
+				       unsigned int);
 
 /* object_sizes[0] is upper bound for number of bytes till the end of
    the object.
@@ -100,12 +100,12 @@ compute_object_offset (tree expr, tree var)
     case COMPONENT_REF:
       base = compute_object_offset (TREE_OPERAND (expr, 0), var);
       if (base == error_mark_node)
-        return base;
+	return base;
 
       t = TREE_OPERAND (expr, 1);
       off = size_binop (PLUS_EXPR, DECL_FIELD_OFFSET (t),
-                        size_int (tree_low_cst (DECL_FIELD_BIT_OFFSET (t), 1)
-                                  / BITS_PER_UNIT));
+			size_int (tree_low_cst (DECL_FIELD_BIT_OFFSET (t), 1)
+				  / BITS_PER_UNIT));
       break;
 
     case REALPART_EXPR:
@@ -118,7 +118,7 @@ compute_object_offset (tree expr, tree var)
     case IMAGPART_EXPR:
       base = compute_object_offset (TREE_OPERAND (expr, 0), var);
       if (base == error_mark_node)
-        return base;
+	return base;
 
       off = TYPE_SIZE_UNIT (TREE_TYPE (expr));
       break;
@@ -126,14 +126,14 @@ compute_object_offset (tree expr, tree var)
     case ARRAY_REF:
       base = compute_object_offset (TREE_OPERAND (expr, 0), var);
       if (base == error_mark_node)
-        return base;
+	return base;
 
       t = TREE_OPERAND (expr, 1);
       if (TREE_CODE (t) == INTEGER_CST && tree_int_cst_sgn (t) < 0)
-        {
-          code = MINUS_EXPR;
-          t = fold_build1 (NEGATE_EXPR, TREE_TYPE (t), t);
-        }
+	{
+	  code = MINUS_EXPR;
+	  t = fold_build1 (NEGATE_EXPR, TREE_TYPE (t), t);
+	}
       t = fold_convert (sizetype, t);
       off = size_binop (MULT_EXPR, TYPE_SIZE_UNIT (TREE_TYPE (expr)), t);
       break;
@@ -166,53 +166,53 @@ addr_object_size (tree ptr, int object_size_type)
       && TYPE_SIZE_UNIT (TREE_TYPE (pt_var))
       && host_integerp (TYPE_SIZE_UNIT (TREE_TYPE (pt_var)), 1)
       && (unsigned HOST_WIDE_INT)
-         tree_low_cst (TYPE_SIZE_UNIT (TREE_TYPE (pt_var)), 1) < offset_limit)
+	 tree_low_cst (TYPE_SIZE_UNIT (TREE_TYPE (pt_var)), 1) < offset_limit)
     {
       tree bytes;
 
       if (pt_var != TREE_OPERAND (ptr, 0))
-        {
-          tree var;
+	{
+	  tree var;
 
-          if (object_size_type & 1)
-            {
-              var = TREE_OPERAND (ptr, 0);
+	  if (object_size_type & 1)
+	    {
+	      var = TREE_OPERAND (ptr, 0);
 
-              while (var != pt_var
-                      && TREE_CODE (var) != BIT_FIELD_REF
-                      && TREE_CODE (var) != COMPONENT_REF
-                      && TREE_CODE (var) != ARRAY_REF
-                      && TREE_CODE (var) != ARRAY_RANGE_REF
-                      && TREE_CODE (var) != REALPART_EXPR
-                      && TREE_CODE (var) != IMAGPART_EXPR)
-                var = TREE_OPERAND (var, 0);
-              if (var != pt_var && TREE_CODE (var) == ARRAY_REF)
-                var = TREE_OPERAND (var, 0);
-              if (! TYPE_SIZE_UNIT (TREE_TYPE (var))
-                  || ! host_integerp (TYPE_SIZE_UNIT (TREE_TYPE (var)), 1)
-                  || tree_int_cst_lt (TYPE_SIZE_UNIT (TREE_TYPE (pt_var)),
-                                      TYPE_SIZE_UNIT (TREE_TYPE (var))))
-                var = pt_var;
-            }
-          else
-            var = pt_var;
+	      while (var != pt_var
+		      && TREE_CODE (var) != BIT_FIELD_REF
+		      && TREE_CODE (var) != COMPONENT_REF
+		      && TREE_CODE (var) != ARRAY_REF
+		      && TREE_CODE (var) != ARRAY_RANGE_REF
+		      && TREE_CODE (var) != REALPART_EXPR
+		      && TREE_CODE (var) != IMAGPART_EXPR)
+		var = TREE_OPERAND (var, 0);
+	      if (var != pt_var && TREE_CODE (var) == ARRAY_REF)
+		var = TREE_OPERAND (var, 0);
+	      if (! TYPE_SIZE_UNIT (TREE_TYPE (var))
+		  || ! host_integerp (TYPE_SIZE_UNIT (TREE_TYPE (var)), 1)
+		  || tree_int_cst_lt (TYPE_SIZE_UNIT (TREE_TYPE (pt_var)),
+				      TYPE_SIZE_UNIT (TREE_TYPE (var))))
+		var = pt_var;
+	    }
+	  else
+	    var = pt_var;
 
-          bytes = compute_object_offset (TREE_OPERAND (ptr, 0), var);
-          if (bytes != error_mark_node)
-            {
-              if (TREE_CODE (bytes) == INTEGER_CST
-                  && tree_int_cst_lt (TYPE_SIZE_UNIT (TREE_TYPE (var)), bytes))
-                bytes = size_zero_node;
-              else
-                bytes = size_binop (MINUS_EXPR,
-                                    TYPE_SIZE_UNIT (TREE_TYPE (var)), bytes);
-            }
-        }
+	  bytes = compute_object_offset (TREE_OPERAND (ptr, 0), var);
+	  if (bytes != error_mark_node)
+	    {
+	      if (TREE_CODE (bytes) == INTEGER_CST
+		  && tree_int_cst_lt (TYPE_SIZE_UNIT (TREE_TYPE (var)), bytes))
+		bytes = size_zero_node;
+	      else
+		bytes = size_binop (MINUS_EXPR,
+				    TYPE_SIZE_UNIT (TREE_TYPE (var)), bytes);
+	    }
+	}
       else
-        bytes = TYPE_SIZE_UNIT (TREE_TYPE (pt_var));
+	bytes = TYPE_SIZE_UNIT (TREE_TYPE (pt_var));
 
       if (host_integerp (bytes, 1))
-        return tree_low_cst (bytes, 1);
+	return tree_low_cst (bytes, 1);
     }
 
   return unknown[object_size_type];
@@ -240,33 +240,33 @@ alloc_object_size (tree call, int object_size_type)
       {
       case BUILT_IN_MALLOC:
       case BUILT_IN_ALLOCA:
-        arg_mask = 1;
-        break;
+	arg_mask = 1;
+	break;
       /*
       case BUILT_IN_REALLOC:
-        arg_mask = 2;
-        break;
-        */
+	arg_mask = 2;
+	break;
+	*/
       case BUILT_IN_CALLOC:
-        arg_mask = 3;
-        break;
+	arg_mask = 3;
+	break;
       default:
-        break;
+	break;
       }
 
   for (a = arglist; arg_mask && a; arg_mask >>= 1, a = TREE_CHAIN (a))
     if (arg_mask & 1)
       {
-        tree arg = TREE_VALUE (a);
+	tree arg = TREE_VALUE (a);
 
-        if (TREE_CODE (arg) != INTEGER_CST)
-          break;
+	if (TREE_CODE (arg) != INTEGER_CST)
+	  break;
 
-        if (! bytes)
-          bytes = fold_convert (sizetype, arg);
-        else
-          bytes = size_binop (MULT_EXPR, bytes,
-                              fold_convert (sizetype, arg));
+	if (! bytes)
+	  bytes = fold_convert (sizetype, arg);
+	else
+	  bytes = size_binop (MULT_EXPR, bytes,
+			      fold_convert (sizetype, arg));
       }
 
   if (! arg_mask && bytes && host_integerp (bytes, 1))
@@ -304,11 +304,11 @@ pass_through_call (tree call)
       case BUILT_IN_STRNCPY_CHK:
       case BUILT_IN_STRCAT_CHK:
       case BUILT_IN_STRNCAT_CHK:
-        if (arglist)
-          return TREE_VALUE (arglist);
-        break;
+	if (arglist)
+	  return TREE_VALUE (arglist);
+	break;
       default:
-        break;
+	break;
       }
 
   return NULL_TREE;
@@ -333,125 +333,125 @@ compute_builtin_object_size (tree ptr, int object_size_type)
       tree arg = pass_through_call (ptr);
 
       if (arg)
-        return compute_builtin_object_size (arg, object_size_type);
+	return compute_builtin_object_size (arg, object_size_type);
       else
-        return alloc_object_size (ptr, object_size_type);
+	return alloc_object_size (ptr, object_size_type);
     }
   else if (TREE_CODE (ptr) == SSA_NAME
-           && POINTER_TYPE_P (TREE_TYPE (ptr))
-           && object_sizes[object_size_type] != NULL)
+	   && POINTER_TYPE_P (TREE_TYPE (ptr))
+	   && object_sizes[object_size_type] != NULL)
     {
       if (!bitmap_bit_p (computed[object_size_type], SSA_NAME_VERSION (ptr)))
-        {
-          struct object_size_info osi;
-          bitmap_iterator bi;
-          unsigned int i;
+	{
+	  struct object_size_info osi;
+	  bitmap_iterator bi;
+	  unsigned int i;
 
-          if (dump_file)
-            {
-              fprintf (dump_file, "Computing %s %sobject size for ",
-                       (object_size_type & 2) ? "minimum" : "maximum",
-                       (object_size_type & 1) ? "sub" : "");
-              print_generic_expr (dump_file, ptr, dump_flags);
-              fprintf (dump_file, ":\n");
-            }
+	  if (dump_file)
+	    {
+	      fprintf (dump_file, "Computing %s %sobject size for ",
+		       (object_size_type & 2) ? "minimum" : "maximum",
+		       (object_size_type & 1) ? "sub" : "");
+	      print_generic_expr (dump_file, ptr, dump_flags);
+	      fprintf (dump_file, ":\n");
+	    }
 
-          osi.visited = BITMAP_ALLOC (NULL);
-          osi.reexamine = BITMAP_ALLOC (NULL);
-          osi.object_size_type = object_size_type;
-          osi.depths = NULL;
-          osi.stack = NULL;
-          osi.tos = NULL;
+	  osi.visited = BITMAP_ALLOC (NULL);
+	  osi.reexamine = BITMAP_ALLOC (NULL);
+	  osi.object_size_type = object_size_type;
+	  osi.depths = NULL;
+	  osi.stack = NULL;
+	  osi.tos = NULL;
 
-          /* First pass: walk UD chains, compute object sizes that
-             can be computed.  osi.reexamine bitmap at the end will
-             contain what variables were found in dependency cycles
-             and therefore need to be reexamined.  */
-          osi.pass = 0;
-          osi.changed = false;
-          collect_object_sizes_for (&osi, ptr);
+	  /* First pass: walk UD chains, compute object sizes that
+	     can be computed.  osi.reexamine bitmap at the end will
+	     contain what variables were found in dependency cycles
+	     and therefore need to be reexamined.  */
+	  osi.pass = 0;
+	  osi.changed = false;
+	  collect_object_sizes_for (&osi, ptr);
 
-          /* Second pass: keep recomputing object sizes of variables
-             that need reexamination, until no object sizes are
-             increased or all object sizes are computed.  */
-          if (! bitmap_empty_p (osi.reexamine))
-            {
-              bitmap reexamine = BITMAP_ALLOC (NULL);
+	  /* Second pass: keep recomputing object sizes of variables
+	     that need reexamination, until no object sizes are
+	     increased or all object sizes are computed.  */
+	  if (! bitmap_empty_p (osi.reexamine))
+	    {
+	      bitmap reexamine = BITMAP_ALLOC (NULL);
 
-              /* If looking for minimum instead of maximum object size,
-                 detect cases where a pointer is increased in a loop.
-                 Although even without this detection pass 2 would eventually
-                 terminate, it could take a long time.  If a pointer is
-                 increasing this way, we need to assume 0 object size.
-                 E.g. p = &buf[0]; while (cond) p = p + 4;  */
-              if (object_size_type & 2)
-                {
-                  osi.depths = XCNEWVEC (unsigned int, num_ssa_names);
-                  osi.stack = XNEWVEC (unsigned int, num_ssa_names);
-                  osi.tos = osi.stack;
-                  osi.pass = 1;
-                  /* collect_object_sizes_for is changing
-                     osi.reexamine bitmap, so iterate over a copy.  */
-                  bitmap_copy (reexamine, osi.reexamine);
-                  EXECUTE_IF_SET_IN_BITMAP (reexamine, 0, i, bi)
-                    if (bitmap_bit_p (osi.reexamine, i))
-                      check_for_plus_in_loops (&osi, ssa_name (i));
+	      /* If looking for minimum instead of maximum object size,
+		 detect cases where a pointer is increased in a loop.
+		 Although even without this detection pass 2 would eventually
+		 terminate, it could take a long time.  If a pointer is
+		 increasing this way, we need to assume 0 object size.
+		 E.g. p = &buf[0]; while (cond) p = p + 4;  */
+	      if (object_size_type & 2)
+		{
+		  osi.depths = XCNEWVEC (unsigned int, num_ssa_names);
+		  osi.stack = XNEWVEC (unsigned int, num_ssa_names);
+		  osi.tos = osi.stack;
+		  osi.pass = 1;
+		  /* collect_object_sizes_for is changing
+		     osi.reexamine bitmap, so iterate over a copy.  */
+		  bitmap_copy (reexamine, osi.reexamine);
+		  EXECUTE_IF_SET_IN_BITMAP (reexamine, 0, i, bi)
+		    if (bitmap_bit_p (osi.reexamine, i))
+		      check_for_plus_in_loops (&osi, ssa_name (i));
 
-                  free (osi.depths);
-                  osi.depths = NULL;
-                  free (osi.stack);
-                  osi.stack = NULL;
-                  osi.tos = NULL;
-                }
+		  free (osi.depths);
+		  osi.depths = NULL;
+		  free (osi.stack);
+		  osi.stack = NULL;
+		  osi.tos = NULL;
+		}
 
-              do
-                {
-                  osi.pass = 2;
-                  osi.changed = false;
-                  /* collect_object_sizes_for is changing
-                     osi.reexamine bitmap, so iterate over a copy.  */
-                  bitmap_copy (reexamine, osi.reexamine);
-                  EXECUTE_IF_SET_IN_BITMAP (reexamine, 0, i, bi)
-                    if (bitmap_bit_p (osi.reexamine, i))
-                      {
-                        collect_object_sizes_for (&osi, ssa_name (i));
-                        if (dump_file && (dump_flags & TDF_DETAILS))
-                          {
-                            fprintf (dump_file, "Reexamining ");
-                            print_generic_expr (dump_file, ssa_name (i),
-                                                dump_flags);
-                            fprintf (dump_file, "\n");
-                          }
-                      }
-                }
-              while (osi.changed);
+	      do
+		{
+		  osi.pass = 2;
+		  osi.changed = false;
+		  /* collect_object_sizes_for is changing
+		     osi.reexamine bitmap, so iterate over a copy.  */
+		  bitmap_copy (reexamine, osi.reexamine);
+		  EXECUTE_IF_SET_IN_BITMAP (reexamine, 0, i, bi)
+		    if (bitmap_bit_p (osi.reexamine, i))
+		      {
+			collect_object_sizes_for (&osi, ssa_name (i));
+			if (dump_file && (dump_flags & TDF_DETAILS))
+			  {
+			    fprintf (dump_file, "Reexamining ");
+			    print_generic_expr (dump_file, ssa_name (i),
+						dump_flags);
+			    fprintf (dump_file, "\n");
+			  }
+		      }
+		}
+	      while (osi.changed);
 
-              BITMAP_FREE (reexamine);
-            }
-          EXECUTE_IF_SET_IN_BITMAP (osi.reexamine, 0, i, bi)
-            bitmap_set_bit (computed[object_size_type], i);
+	      BITMAP_FREE (reexamine);
+	    }
+	  EXECUTE_IF_SET_IN_BITMAP (osi.reexamine, 0, i, bi)
+	    bitmap_set_bit (computed[object_size_type], i);
 
-          /* Debugging dumps.  */
-          if (dump_file)
-            {
-              EXECUTE_IF_SET_IN_BITMAP (osi.visited, 0, i, bi)
-                if (object_sizes[object_size_type][i]
-                    != unknown[object_size_type])
-                  {
-                    print_generic_expr (dump_file, ssa_name (i),
-                                        dump_flags);
-                    fprintf (dump_file,
-                             ": %s %sobject size "
-                             HOST_WIDE_INT_PRINT_UNSIGNED "\n",
-                             (object_size_type & 2) ? "minimum" : "maximum",
-                             (object_size_type & 1) ? "sub" : "",
-                             object_sizes[object_size_type][i]);
-                  }
-            }
+	  /* Debugging dumps.  */
+	  if (dump_file)
+	    {
+	      EXECUTE_IF_SET_IN_BITMAP (osi.visited, 0, i, bi)
+		if (object_sizes[object_size_type][i]
+		    != unknown[object_size_type])
+		  {
+		    print_generic_expr (dump_file, ssa_name (i),
+					dump_flags);
+		    fprintf (dump_file,
+			     ": %s %sobject size "
+			     HOST_WIDE_INT_PRINT_UNSIGNED "\n",
+			     (object_size_type & 2) ? "minimum" : "maximum",
+			     (object_size_type & 1) ? "sub" : "",
+			     object_sizes[object_size_type][i]);
+		  }
+	    }
 
-          BITMAP_FREE (osi.reexamine);
-          BITMAP_FREE (osi.visited);
-        }
+	  BITMAP_FREE (osi.reexamine);
+	  BITMAP_FREE (osi.visited);
+	}
 
       return object_sizes[object_size_type][SSA_NAME_VERSION (ptr)];
     }
@@ -471,7 +471,7 @@ expr_object_size (struct object_size_info *osi, tree ptr, tree value)
   unsigned HOST_WIDE_INT bytes;
 
   gcc_assert (object_sizes[object_size_type][varno]
-              != unknown[object_size_type]);
+	      != unknown[object_size_type]);
   gcc_assert (osi->pass == 0);
 
   if (TREE_CODE (value) == WITH_SIZE_EXPR)
@@ -479,7 +479,7 @@ expr_object_size (struct object_size_info *osi, tree ptr, tree value)
 
   /* Pointer variables should have been handled by merge_object_sizes.  */
   gcc_assert (TREE_CODE (value) != SSA_NAME
-              || !POINTER_TYPE_P (TREE_TYPE (value)));
+	      || !POINTER_TYPE_P (TREE_TYPE (value)));
 
   if (TREE_CODE (value) == ADDR_EXPR)
     bytes = addr_object_size (value, object_size_type);
@@ -491,12 +491,12 @@ expr_object_size (struct object_size_info *osi, tree ptr, tree value)
   if ((object_size_type & 2) == 0)
     {
       if (object_sizes[object_size_type][varno] < bytes)
-        object_sizes[object_size_type][varno] = bytes;
+	object_sizes[object_size_type][varno] = bytes;
     }
   else
     {
       if (object_sizes[object_size_type][varno] > bytes)
-        object_sizes[object_size_type][varno] = bytes;
+	object_sizes[object_size_type][varno] = bytes;
     }
 }
 
@@ -506,7 +506,7 @@ expr_object_size (struct object_size_info *osi, tree ptr, tree value)
 
 static bool
 merge_object_sizes (struct object_size_info *osi, tree dest, tree orig,
-                    unsigned HOST_WIDE_INT offset)
+		    unsigned HOST_WIDE_INT offset)
 {
   int object_size_type = osi->object_size_type;
   unsigned int varno = SSA_NAME_VERSION (dest);
@@ -526,23 +526,23 @@ merge_object_sizes (struct object_size_info *osi, tree dest, tree orig,
   orig_bytes = object_sizes[object_size_type][SSA_NAME_VERSION (orig)];
   if (orig_bytes != unknown[object_size_type])
     orig_bytes = (offset > orig_bytes)
-                 ? (unsigned HOST_WIDE_INT) 0 : orig_bytes - offset;
+		 ? (unsigned HOST_WIDE_INT) 0 : orig_bytes - offset;
 
   if ((object_size_type & 2) == 0)
     {
       if (object_sizes[object_size_type][varno] < orig_bytes)
-        {
-          object_sizes[object_size_type][varno] = orig_bytes;
-          osi->changed = true;
-        }
+	{
+	  object_sizes[object_size_type][varno] = orig_bytes;
+	  osi->changed = true;
+	}
     }
   else
     {
       if (object_sizes[object_size_type][varno] > orig_bytes)
-        {
-          object_sizes[object_size_type][varno] = orig_bytes;
-          osi->changed = true;
-        }
+	{
+	  object_sizes[object_size_type][varno] = orig_bytes;
+	  osi->changed = true;
+	}
     }
   return bitmap_bit_p (osi->reexamine, SSA_NAME_VERSION (orig));
 }
@@ -558,9 +558,9 @@ plus_expr_object_size (struct object_size_info *osi, tree var, tree value)
   tree op0 = TREE_OPERAND (value, 0);
   tree op1 = TREE_OPERAND (value, 1);
   bool ptr1_p = POINTER_TYPE_P (TREE_TYPE (op0))
-                && TREE_CODE (op0) != INTEGER_CST;
+		&& TREE_CODE (op0) != INTEGER_CST;
   bool ptr2_p = POINTER_TYPE_P (TREE_TYPE (op1))
-                && TREE_CODE (op1) != INTEGER_CST;
+		&& TREE_CODE (op1) != INTEGER_CST;
   int object_size_type = osi->object_size_type;
   unsigned int varno = SSA_NAME_VERSION (var);
   unsigned HOST_WIDE_INT bytes;
@@ -585,24 +585,24 @@ plus_expr_object_size (struct object_size_info *osi, tree var, tree value)
       && !ptr2_p
       && TREE_CODE (op1) == INTEGER_CST
       && (TREE_CODE (op0) == SSA_NAME
-          || TREE_CODE (op0) == ADDR_EXPR))
+	  || TREE_CODE (op0) == ADDR_EXPR))
     {
       if (! host_integerp (op1, 1))
-        bytes = unknown[object_size_type];
+	bytes = unknown[object_size_type];
       else if (TREE_CODE (op0) == SSA_NAME)
-        return merge_object_sizes (osi, var, op0, tree_low_cst (op1, 1));
+	return merge_object_sizes (osi, var, op0, tree_low_cst (op1, 1));
       else
-        {
-          unsigned HOST_WIDE_INT off = tree_low_cst (op1, 1);
+	{
+	  unsigned HOST_WIDE_INT off = tree_low_cst (op1, 1);
 
-          bytes = compute_builtin_object_size (op0, object_size_type);
-          if (off > offset_limit)
-            bytes = unknown[object_size_type];
-          else if (off > bytes)
-            bytes = 0;
-          else
-            bytes -= off;
-        }
+	  bytes = compute_builtin_object_size (op0, object_size_type);
+	  if (off > offset_limit)
+	    bytes = unknown[object_size_type];
+	  else if (off > bytes)
+	    bytes = 0;
+	  else
+	    bytes -= off;
+	}
     }
   else
     bytes = unknown[object_size_type];
@@ -610,12 +610,12 @@ plus_expr_object_size (struct object_size_info *osi, tree var, tree value)
   if ((object_size_type & 2) == 0)
     {
       if (object_sizes[object_size_type][varno] < bytes)
-        object_sizes[object_size_type][varno] = bytes;
+	object_sizes[object_size_type][varno] = bytes;
     }
   else
     {
       if (object_sizes[object_size_type][varno] > bytes)
-        object_sizes[object_size_type][varno] = bytes;
+	object_sizes[object_size_type][varno] = bytes;
     }
   return false;
 }
@@ -655,24 +655,24 @@ collect_object_sizes_for (struct object_size_info *osi, tree var)
   if (osi->pass == 0)
     {
       if (! bitmap_bit_p (osi->visited, varno))
-        {
-          bitmap_set_bit (osi->visited, varno);
-          object_sizes[object_size_type][varno]
-            = (object_size_type & 2) ? -1 : 0;
-        }
+	{
+	  bitmap_set_bit (osi->visited, varno);
+	  object_sizes[object_size_type][varno]
+	    = (object_size_type & 2) ? -1 : 0;
+	}
       else
-        {
-          /* Found a dependency loop.  Mark the variable for later
-             re-examination.  */
-          bitmap_set_bit (osi->reexamine, varno);
-          if (dump_file && (dump_flags & TDF_DETAILS))
-            {
-              fprintf (dump_file, "Found a dependency loop at ");
-              print_generic_expr (dump_file, var, dump_flags);
-              fprintf (dump_file, "\n");
-            }
-          return;
-        }
+	{
+	  /* Found a dependency loop.  Mark the variable for later
+	     re-examination.  */
+	  bitmap_set_bit (osi->reexamine, varno);
+	  if (dump_file && (dump_flags & TDF_DETAILS))
+	    {
+	      fprintf (dump_file, "Found a dependency loop at ");
+	      print_generic_expr (dump_file, var, dump_flags);
+	      fprintf (dump_file, "\n");
+	    }
+	  return;
+	}
     }
 
   if (dump_file && (dump_flags & TDF_DETAILS))
@@ -694,26 +694,26 @@ collect_object_sizes_for (struct object_size_info *osi, tree var)
 
     case MODIFY_EXPR:
       {
-        tree rhs = TREE_OPERAND (stmt, 1), arg;
-        STRIP_NOPS (rhs);
+	tree rhs = TREE_OPERAND (stmt, 1), arg;
+	STRIP_NOPS (rhs);
 
-        if (TREE_CODE (rhs) == CALL_EXPR)
-          {
-            arg = pass_through_call (rhs);
-            if (arg)
-              rhs = arg;
-          }
+	if (TREE_CODE (rhs) == CALL_EXPR)
+	  {
+	    arg = pass_through_call (rhs);
+	    if (arg)
+	      rhs = arg;
+	  }
 
-        if (TREE_CODE (rhs) == SSA_NAME
-            && POINTER_TYPE_P (TREE_TYPE (rhs)))
-          reexamine = merge_object_sizes (osi, var, rhs, 0);
+	if (TREE_CODE (rhs) == SSA_NAME
+	    && POINTER_TYPE_P (TREE_TYPE (rhs)))
+	  reexamine = merge_object_sizes (osi, var, rhs, 0);
 
-        else if (TREE_CODE (rhs) == PLUS_EXPR)
-          reexamine = plus_expr_object_size (osi, var, rhs);
+	else if (TREE_CODE (rhs) == PLUS_EXPR)
+	  reexamine = plus_expr_object_size (osi, var, rhs);
 
-        else
-          expr_object_size (osi, var, rhs);
-        break;
+	else
+	  expr_object_size (osi, var, rhs);
+	break;
       }
 
     case ASM_EXPR:
@@ -723,35 +723,35 @@ collect_object_sizes_for (struct object_size_info *osi, tree var)
 
     case NOP_EXPR:
       {
-        tree decl = SSA_NAME_VAR (var);
+	tree decl = SSA_NAME_VAR (var);
 
-        gcc_assert (IS_EMPTY_STMT (stmt));
+	gcc_assert (IS_EMPTY_STMT (stmt));
 
-        if (TREE_CODE (decl) != PARM_DECL && DECL_INITIAL (decl))
-          expr_object_size (osi, var, DECL_INITIAL (decl));
-        else
-          expr_object_size (osi, var, decl);
+	if (TREE_CODE (decl) != PARM_DECL && DECL_INITIAL (decl))
+	  expr_object_size (osi, var, DECL_INITIAL (decl));
+	else
+	  expr_object_size (osi, var, decl);
       }
       break;
 
     case PHI_NODE:
       {
-        int i;
+	int i;
 
-        for (i = 0; i < PHI_NUM_ARGS (stmt); i++)
-          {
-            tree rhs = PHI_ARG_DEF (stmt, i);
+	for (i = 0; i < PHI_NUM_ARGS (stmt); i++)
+	  {
+	    tree rhs = PHI_ARG_DEF (stmt, i);
 
-            if (object_sizes[object_size_type][varno]
-                == unknown[object_size_type])
-              break;
+	    if (object_sizes[object_size_type][varno]
+		== unknown[object_size_type])
+	      break;
 
-            if (TREE_CODE (rhs) == SSA_NAME)
-              reexamine |= merge_object_sizes (osi, var, rhs, 0);
-            else if (osi->pass == 0)
-              expr_object_size (osi, var, rhs);
-          }
-        break;
+	    if (TREE_CODE (rhs) == SSA_NAME)
+	      reexamine |= merge_object_sizes (osi, var, rhs, 0);
+	    else if (osi->pass == 0)
+	      expr_object_size (osi, var, rhs);
+	  }
+	break;
       }
     default:
       gcc_unreachable ();
@@ -767,11 +767,11 @@ collect_object_sizes_for (struct object_size_info *osi, tree var)
     {
       bitmap_set_bit (osi->reexamine, varno);
       if (dump_file && (dump_flags & TDF_DETAILS))
-        {
-          fprintf (dump_file, "Need to reexamine ");
-          print_generic_expr (dump_file, var, dump_flags);
-          fprintf (dump_file, "\n");
-        }
+	{
+	  fprintf (dump_file, "Need to reexamine ");
+	  print_generic_expr (dump_file, var, dump_flags);
+	  fprintf (dump_file, "\n");
+	}
     }
 }
 
@@ -781,7 +781,7 @@ collect_object_sizes_for (struct object_size_info *osi, tree var)
 
 static void
 check_for_plus_in_loops_1 (struct object_size_info *osi, tree var,
-                           unsigned int depth)
+			   unsigned int depth)
 {
   tree stmt = SSA_NAME_DEF_STMT (var);
   unsigned int varno = SSA_NAME_VERSION (var);
@@ -789,20 +789,20 @@ check_for_plus_in_loops_1 (struct object_size_info *osi, tree var,
   if (osi->depths[varno])
     {
       if (osi->depths[varno] != depth)
-        {
-          unsigned int *sp;
+	{
+	  unsigned int *sp;
 
-          /* Found a loop involving pointer addition.  */
-          for (sp = osi->tos; sp > osi->stack; )
-            {
-              --sp;
-              bitmap_clear_bit (osi->reexamine, *sp);
-              bitmap_set_bit (computed[osi->object_size_type], *sp);
-              object_sizes[osi->object_size_type][*sp] = 0;
-              if (*sp == varno)
-                break;
-            }
-        }
+	  /* Found a loop involving pointer addition.  */
+	  for (sp = osi->tos; sp > osi->stack; )
+	    {
+	      --sp;
+	      bitmap_clear_bit (osi->reexamine, *sp);
+	      bitmap_set_bit (computed[osi->object_size_type], *sp);
+	      object_sizes[osi->object_size_type][*sp] = 0;
+	      if (*sp == varno)
+		break;
+	    }
+	}
       return;
     }
   else if (! bitmap_bit_p (osi->reexamine, varno))
@@ -820,56 +820,56 @@ check_for_plus_in_loops_1 (struct object_size_info *osi, tree var,
 
     case MODIFY_EXPR:
       {
-        tree rhs = TREE_OPERAND (stmt, 1), arg;
-        STRIP_NOPS (rhs);
+	tree rhs = TREE_OPERAND (stmt, 1), arg;
+	STRIP_NOPS (rhs);
 
-        if (TREE_CODE (rhs) == CALL_EXPR)
-          {
-            arg = pass_through_call (rhs);
-            if (arg)
-              rhs = arg;
-          }
+	if (TREE_CODE (rhs) == CALL_EXPR)
+	  {
+	    arg = pass_through_call (rhs);
+	    if (arg)
+	      rhs = arg;
+	  }
 
-        if (TREE_CODE (rhs) == SSA_NAME)
-          check_for_plus_in_loops_1 (osi, rhs, depth);
-        else if (TREE_CODE (rhs) == PLUS_EXPR)
-          {
-            tree op0 = TREE_OPERAND (rhs, 0);
-            tree op1 = TREE_OPERAND (rhs, 1);
-            tree cst, basevar;
+	if (TREE_CODE (rhs) == SSA_NAME)
+	  check_for_plus_in_loops_1 (osi, rhs, depth);
+	else if (TREE_CODE (rhs) == PLUS_EXPR)
+	  {
+	    tree op0 = TREE_OPERAND (rhs, 0);
+	    tree op1 = TREE_OPERAND (rhs, 1);
+	    tree cst, basevar;
 
-            if (TREE_CODE (op0) == SSA_NAME)
-              {
-                basevar = op0;
-                cst = op1;
-              }
-            else
-              {
-                basevar = op1;
-                cst = op0;
-                gcc_assert (TREE_CODE (basevar) == SSA_NAME);
-              }
-            gcc_assert (TREE_CODE (cst) == INTEGER_CST);
+	    if (TREE_CODE (op0) == SSA_NAME)
+	      {
+		basevar = op0;
+		cst = op1;
+	      }
+	    else
+	      {
+		basevar = op1;
+		cst = op0;
+		gcc_assert (TREE_CODE (basevar) == SSA_NAME);
+	      }
+	    gcc_assert (TREE_CODE (cst) == INTEGER_CST);
 
-            check_for_plus_in_loops_1 (osi, basevar,
-                                       depth + !integer_zerop (cst));
-          }
-        else
-          gcc_unreachable ();
-        break;
+	    check_for_plus_in_loops_1 (osi, basevar,
+				       depth + !integer_zerop (cst));
+	  }
+	else
+	  gcc_unreachable ();
+	break;
       }
     case PHI_NODE:
       {
-        int i;
+	int i;
 
-        for (i = 0; i < PHI_NUM_ARGS (stmt); i++)
-          {
-            tree rhs = PHI_ARG_DEF (stmt, i);
+	for (i = 0; i < PHI_NUM_ARGS (stmt); i++)
+	  {
+	    tree rhs = PHI_ARG_DEF (stmt, i);
 
-            if (TREE_CODE (rhs) == SSA_NAME)
-              check_for_plus_in_loops_1 (osi, rhs, depth);
-          }
-        break;
+	    if (TREE_CODE (rhs) == SSA_NAME)
+	      check_for_plus_in_loops_1 (osi, rhs, depth);
+	  }
+	break;
       }
     default:
       gcc_unreachable ();
@@ -898,45 +898,45 @@ check_for_plus_in_loops (struct object_size_info *osi, tree var)
 
     case MODIFY_EXPR:
       {
-        tree rhs = TREE_OPERAND (stmt, 1), arg;
-        STRIP_NOPS (rhs);
+	tree rhs = TREE_OPERAND (stmt, 1), arg;
+	STRIP_NOPS (rhs);
 
-        if (TREE_CODE (rhs) == CALL_EXPR)
-          {
-            arg = pass_through_call (rhs);
-            if (arg)
-              rhs = arg;
-          }
+	if (TREE_CODE (rhs) == CALL_EXPR)
+	  {
+	    arg = pass_through_call (rhs);
+	    if (arg)
+	      rhs = arg;
+	  }
 
-        if (TREE_CODE (rhs) == PLUS_EXPR)
-          {
-            tree op0 = TREE_OPERAND (rhs, 0);
-            tree op1 = TREE_OPERAND (rhs, 1);
-            tree cst, basevar;
+	if (TREE_CODE (rhs) == PLUS_EXPR)
+	  {
+	    tree op0 = TREE_OPERAND (rhs, 0);
+	    tree op1 = TREE_OPERAND (rhs, 1);
+	    tree cst, basevar;
 
-            if (TREE_CODE (op0) == SSA_NAME)
-              {
-                basevar = op0;
-                cst = op1;
-              }
-            else
-              {
-                basevar = op1;
-                cst = op0;
-                gcc_assert (TREE_CODE (basevar) == SSA_NAME);
-              }
-            gcc_assert (TREE_CODE (cst) == INTEGER_CST);
+	    if (TREE_CODE (op0) == SSA_NAME)
+	      {
+		basevar = op0;
+		cst = op1;
+	      }
+	    else
+	      {
+		basevar = op1;
+		cst = op0;
+		gcc_assert (TREE_CODE (basevar) == SSA_NAME);
+	      }
+	    gcc_assert (TREE_CODE (cst) == INTEGER_CST);
 
-            if (integer_zerop (cst))
-              break;
+	    if (integer_zerop (cst))
+	      break;
 
-            osi->depths[SSA_NAME_VERSION (basevar)] = 1;
-            *osi->tos++ = SSA_NAME_VERSION (basevar);
-            check_for_plus_in_loops_1 (osi, var, 2);
-            osi->depths[SSA_NAME_VERSION (basevar)] = 0;
-            osi->tos--;
-          }
-        break;
+	    osi->depths[SSA_NAME_VERSION (basevar)] = 1;
+	    *osi->tos++ = SSA_NAME_VERSION (basevar);
+	    check_for_plus_in_loops_1 (osi, var, 2);
+	    osi->depths[SSA_NAME_VERSION (basevar)] = 0;
+	    osi->tos--;
+	  }
+	break;
       }
     default:
       break;
@@ -990,67 +990,67 @@ compute_object_sizes (void)
     {
       block_stmt_iterator i;
       for (i = bsi_start (bb); !bsi_end_p (i); bsi_next (&i))
-        {
-          tree *stmtp = bsi_stmt_ptr (i);
-          tree call = get_rhs (*stmtp);
-          tree callee, result;
+	{
+	  tree *stmtp = bsi_stmt_ptr (i);
+	  tree call = get_rhs (*stmtp);
+	  tree callee, result;
 
-          if (!call || TREE_CODE (call) != CALL_EXPR)
-            continue;
+	  if (!call || TREE_CODE (call) != CALL_EXPR)
+	    continue;
 
-          callee = get_callee_fndecl (call);
-          if (!callee
-              || DECL_BUILT_IN_CLASS (callee) != BUILT_IN_NORMAL
-              || DECL_FUNCTION_CODE (callee) != BUILT_IN_OBJECT_SIZE)
-            continue;
+	  callee = get_callee_fndecl (call);
+	  if (!callee
+	      || DECL_BUILT_IN_CLASS (callee) != BUILT_IN_NORMAL
+	      || DECL_FUNCTION_CODE (callee) != BUILT_IN_OBJECT_SIZE)
+	    continue;
 
-          init_object_sizes ();
-          result = fold_builtin (callee, TREE_OPERAND (call, 1), false);
-          if (!result)
-            {
-              tree arglist = TREE_OPERAND (call, 1);
+	  init_object_sizes ();
+	  result = fold_builtin (callee, TREE_OPERAND (call, 1), false);
+	  if (!result)
+	    {
+	      tree arglist = TREE_OPERAND (call, 1);
 
-              if (arglist != NULL
-                  && POINTER_TYPE_P (TREE_TYPE (TREE_VALUE (arglist)))
-                  && TREE_CHAIN (arglist) != NULL
-                  && TREE_CHAIN (TREE_CHAIN (arglist)) == NULL)
-                {
-                  tree ost = TREE_VALUE (TREE_CHAIN (arglist));
+	      if (arglist != NULL
+		  && POINTER_TYPE_P (TREE_TYPE (TREE_VALUE (arglist)))
+		  && TREE_CHAIN (arglist) != NULL
+		  && TREE_CHAIN (TREE_CHAIN (arglist)) == NULL)
+		{
+		  tree ost = TREE_VALUE (TREE_CHAIN (arglist));
 
-                  if (host_integerp (ost, 1))
-                    {
-                      unsigned HOST_WIDE_INT object_size_type
-                        = tree_low_cst (ost, 1);
+		  if (host_integerp (ost, 1))
+		    {
+		      unsigned HOST_WIDE_INT object_size_type
+			= tree_low_cst (ost, 1);
 
-                      if (object_size_type < 2)
-                        result = fold_convert (size_type_node,
-                                               integer_minus_one_node);
-                      else if (object_size_type < 4)
-                        result = size_zero_node;
-                    }
-                }
+		      if (object_size_type < 2)
+			result = fold_convert (size_type_node,
+					       integer_minus_one_node);
+		      else if (object_size_type < 4)
+			result = size_zero_node;
+		    }
+		}
 
-              if (!result)
-                continue;
-            }
+	      if (!result)
+		continue;
+	    }
 
-          if (dump_file && (dump_flags & TDF_DETAILS))
-            {
-              fprintf (dump_file, "Simplified\n  ");
-              print_generic_stmt (dump_file, *stmtp, dump_flags);
-            }
+	  if (dump_file && (dump_flags & TDF_DETAILS))
+	    {
+	      fprintf (dump_file, "Simplified\n  ");
+	      print_generic_stmt (dump_file, *stmtp, dump_flags);
+	    }
 
-          if (!set_rhs (stmtp, result))
-            gcc_unreachable ();
-          update_stmt (*stmtp);
+	  if (!set_rhs (stmtp, result))
+	    gcc_unreachable ();
+	  update_stmt (*stmtp);
 
-          if (dump_file && (dump_flags & TDF_DETAILS))
-            {
-              fprintf (dump_file, "to\n  ");
-              print_generic_stmt (dump_file, *stmtp, dump_flags);
-              fprintf (dump_file, "\n");
-            }
-        }
+	  if (dump_file && (dump_flags & TDF_DETAILS))
+	    {
+	      fprintf (dump_file, "to\n  ");
+	      print_generic_stmt (dump_file, *stmtp, dump_flags);
+	      fprintf (dump_file, "\n");
+	    }
+	}
     }
 
   fini_object_sizes ();
@@ -1059,17 +1059,17 @@ compute_object_sizes (void)
 
 struct tree_opt_pass pass_object_sizes =
 {
-  "objsz",                                /* name */
-  NULL,                                        /* gate */
-  compute_object_sizes,                        /* execute */
-  NULL,                                        /* sub */
-  NULL,                                        /* next */
-  0,                                        /* static_pass_number */
-  0,                                        /* tv_id */
-  PROP_cfg | PROP_ssa | PROP_alias,        /* properties_required */
-  0,                                        /* properties_provided */
-  0,                                        /* properties_destroyed */
-  0,                                        /* todo_flags_start */
-  TODO_dump_func | TODO_verify_ssa,        /* todo_flags_finish */
-  0                                        /* letter */
+  "objsz",				/* name */
+  NULL,					/* gate */
+  compute_object_sizes,			/* execute */
+  NULL,					/* sub */
+  NULL,					/* next */
+  0,					/* static_pass_number */
+  0,					/* tv_id */
+  PROP_cfg | PROP_ssa | PROP_alias,	/* properties_required */
+  0,					/* properties_provided */
+  0,					/* properties_destroyed */
+  0,					/* todo_flags_start */
+  TODO_dump_func | TODO_verify_ssa,	/* todo_flags_finish */
+  0					/* letter */
 };

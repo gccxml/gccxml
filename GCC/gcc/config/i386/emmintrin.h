@@ -426,20 +426,20 @@ static __inline __m128d __attribute__((__always_inline__))
 _mm_cmpgt_sd (__m128d __A, __m128d __B)
 {
   return (__m128d) __builtin_ia32_movsd ((__v2df) __A,
-                                         (__v2df)
-                                         __builtin_ia32_cmpltsd ((__v2df) __B,
-                                                                 (__v2df)
-                                                                 __A));
+					 (__v2df)
+					 __builtin_ia32_cmpltsd ((__v2df) __B,
+								 (__v2df)
+								 __A));
 }
 
 static __inline __m128d __attribute__((__always_inline__))
 _mm_cmpge_sd (__m128d __A, __m128d __B)
 {
   return (__m128d) __builtin_ia32_movsd ((__v2df) __A,
-                                         (__v2df)
-                                         __builtin_ia32_cmplesd ((__v2df) __B,
-                                                                 (__v2df)
-                                                                 __A));
+					 (__v2df)
+					 __builtin_ia32_cmplesd ((__v2df) __B,
+								 (__v2df)
+								 __A));
 }
 
 static __inline __m128d __attribute__((__always_inline__))
@@ -464,20 +464,20 @@ static __inline __m128d __attribute__((__always_inline__))
 _mm_cmpngt_sd (__m128d __A, __m128d __B)
 {
   return (__m128d) __builtin_ia32_movsd ((__v2df) __A,
-                                         (__v2df)
-                                         __builtin_ia32_cmpnltsd ((__v2df) __B,
-                                                                  (__v2df)
-                                                                  __A));
+					 (__v2df)
+					 __builtin_ia32_cmpnltsd ((__v2df) __B,
+								  (__v2df)
+								  __A));
 }
 
 static __inline __m128d __attribute__((__always_inline__))
 _mm_cmpnge_sd (__m128d __A, __m128d __B)
 {
   return (__m128d) __builtin_ia32_movsd ((__v2df) __A,
-                                         (__v2df)
-                                         __builtin_ia32_cmpnlesd ((__v2df) __B,
-                                                                  (__v2df)
-                                                                  __A));
+					 (__v2df)
+					 __builtin_ia32_cmpnlesd ((__v2df) __B,
+								  (__v2df)
+								  __A));
 }
 
 static __inline __m128d __attribute__((__always_inline__))
@@ -586,7 +586,7 @@ _mm_set_epi32 (int __q3, int __q2, int __q1, int __q0)
 
 static __inline __m128i __attribute__((__always_inline__))
 _mm_set_epi16 (short __q7, short __q6, short __q5, short __q4,
-               short __q3, short __q2, short __q1, short __q0)
+	       short __q3, short __q2, short __q1, short __q0)
 {
   return __extension__ (__m128i)(__v8hi){
     __q0, __q1, __q2, __q3, __q4, __q5, __q6, __q7 };
@@ -594,9 +594,9 @@ _mm_set_epi16 (short __q7, short __q6, short __q5, short __q4,
 
 static __inline __m128i __attribute__((__always_inline__))
 _mm_set_epi8 (char __q15, char __q14, char __q13, char __q12,
-              char __q11, char __q10, char __q09, char __q08,
-              char __q07, char __q06, char __q05, char __q04,
-              char __q03, char __q02, char __q01, char __q00)
+	      char __q11, char __q10, char __q09, char __q08,
+	      char __q07, char __q06, char __q05, char __q04,
+	      char __q03, char __q02, char __q01, char __q00)
 {
   return __extension__ (__m128i)(__v16qi){
     __q00, __q01, __q02, __q03, __q04, __q05, __q06, __q07,
@@ -634,7 +634,7 @@ static __inline __m128i __attribute__((__always_inline__))
 _mm_set1_epi8 (char __A)
 {
   return _mm_set_epi8 (__A, __A, __A, __A, __A, __A, __A, __A,
-                       __A, __A, __A, __A, __A, __A, __A, __A);
+		       __A, __A, __A, __A, __A, __A, __A, __A);
 }
 
 /* Create a vector of Qi, where i is the element number.
@@ -654,19 +654,19 @@ _mm_setr_epi32 (int __q0, int __q1, int __q2, int __q3)
 
 static __inline __m128i __attribute__((__always_inline__))
 _mm_setr_epi16 (short __q0, short __q1, short __q2, short __q3,
-                short __q4, short __q5, short __q6, short __q7)
+	        short __q4, short __q5, short __q6, short __q7)
 {
   return _mm_set_epi16 (__q7, __q6, __q5, __q4, __q3, __q2, __q1, __q0);
 }
 
 static __inline __m128i __attribute__((__always_inline__))
 _mm_setr_epi8 (char __q00, char __q01, char __q02, char __q03,
-               char __q04, char __q05, char __q06, char __q07,
-               char __q08, char __q09, char __q10, char __q11,
-               char __q12, char __q13, char __q14, char __q15)
+	       char __q04, char __q05, char __q06, char __q07,
+	       char __q08, char __q09, char __q10, char __q11,
+	       char __q12, char __q13, char __q14, char __q15)
 {
   return _mm_set_epi8 (__q15, __q14, __q13, __q12, __q11, __q10, __q09, __q08,
-                       __q07, __q06, __q05, __q04, __q03, __q02, __q01, __q00);
+		       __q07, __q06, __q05, __q04, __q03, __q02, __q01, __q00);
 }
 
 /* Create a vector with element 0 as *P and the rest zero.  */

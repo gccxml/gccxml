@@ -72,10 +72,10 @@ static struct value_prof_hooks *value_prof_hooks;
 
 
 static tree tree_divmod_fixed_value (tree, tree, tree, tree, 
-                                    tree, int, gcov_type, gcov_type);
+				    tree, int, gcov_type, gcov_type);
 static tree tree_mod_pow2 (tree, tree, tree, tree, int, gcov_type, gcov_type);
 static tree tree_mod_subtract (tree, tree, tree, tree, int, int, int,
-                                gcov_type, gcov_type, gcov_type);
+				gcov_type, gcov_type, gcov_type);
 static bool tree_divmod_fixed_value_transform (tree);
 static bool tree_mod_pow2_value_transform (tree);
 static bool tree_mod_subtract_transform (tree);
@@ -90,10 +90,10 @@ check_counter (tree stmt, const char * name, gcov_type all, gcov_type bb_count)
     {
       location_t * locus;
       locus = (stmt != NULL && EXPR_HAS_LOCATION (stmt)
-               ? EXPR_LOCUS (stmt)
-               : &DECL_SOURCE_LOCATION (current_function_decl));
+	       ? EXPR_LOCUS (stmt)
+	       : &DECL_SOURCE_LOCATION (current_function_decl));
       error ("%HCorrupted value profile: %s profiler overall count (%d) does not match BB count (%d)",
-             locus, name, (int)all, (int)bb_count);
+	     locus, name, (int)all, (int)bb_count);
       return true;
     }
   return false;
@@ -111,50 +111,50 @@ tree_value_profile_transformations (void)
     {
       /* Ignore cold areas -- we are enlarging the code.  */
       if (!maybe_hot_bb_p (bb))
-        continue;
+	continue;
 
       for (bsi = bsi_start (bb); !bsi_end_p (bsi); bsi_next (&bsi))
-        {
-          tree stmt = bsi_stmt (bsi);
-          stmt_ann_t ann = get_stmt_ann (stmt);
-          histogram_value th = ann->histograms;
-          if (!th)
-            continue;
+	{
+	  tree stmt = bsi_stmt (bsi);
+	  stmt_ann_t ann = get_stmt_ann (stmt);
+	  histogram_value th = ann->histograms;
+	  if (!th)
+	    continue;
 
-          if (dump_file)
-            {
-              fprintf (dump_file, "Trying transformations on insn ");
-              print_generic_stmt (dump_file, stmt, TDF_SLIM);
-            }
+	  if (dump_file)
+	    {
+	      fprintf (dump_file, "Trying transformations on insn ");
+	      print_generic_stmt (dump_file, stmt, TDF_SLIM);
+	    }
 
-          /* Transformations:  */
-          /* The order of things in this conditional controls which
-             transformation is used when more than one is applicable.  */
-          /* It is expected that any code added by the transformations
-             will be added before the current statement, and that the
-             current statement remain valid (although possibly
-             modified) upon return.  */
-          if (flag_value_profile_transformations
-              && (tree_mod_subtract_transform (stmt)
-                  || tree_divmod_fixed_value_transform (stmt)
-                  || tree_mod_pow2_value_transform (stmt)))
-            {
-              changed = true;
-              /* Original statement may no longer be in the same block. */
-              if (bb != bb_for_stmt (stmt))
-                {
-                  bb = bb_for_stmt (stmt);
-                  bsi = bsi_for_stmt (stmt);
-                }
-            }
+	  /* Transformations:  */
+	  /* The order of things in this conditional controls which
+	     transformation is used when more than one is applicable.  */
+	  /* It is expected that any code added by the transformations
+	     will be added before the current statement, and that the
+	     current statement remain valid (although possibly
+	     modified) upon return.  */
+	  if (flag_value_profile_transformations
+	      && (tree_mod_subtract_transform (stmt)
+		  || tree_divmod_fixed_value_transform (stmt)
+		  || tree_mod_pow2_value_transform (stmt)))
+	    {
+	      changed = true;
+	      /* Original statement may no longer be in the same block. */
+	      if (bb != bb_for_stmt (stmt))
+		{
+	          bb = bb_for_stmt (stmt);
+		  bsi = bsi_for_stmt (stmt);
+		}
+	    }
 
-          /* Free extra storage from compute_value_histograms.  */
-          while (th)
-            {
-              free (th->hvalue.counters);
-              th = th->hvalue.next;
-            }
-          ann->histograms = 0;
+	  /* Free extra storage from compute_value_histograms.  */
+	  while (th)
+	    {
+	      free (th->hvalue.counters);
+	      th = th->hvalue.next;
+	    }
+	  ann->histograms = 0;
         }
     }
 
@@ -173,8 +173,8 @@ tree_value_profile_transformations (void)
    the temp; it does not replace or alter the original STMT.  */
 static tree
 tree_divmod_fixed_value (tree stmt, tree operation, 
-                         tree op1, tree op2, tree value, int prob, gcov_type count,
-                         gcov_type all)
+			 tree op1, tree op2, tree value, int prob, gcov_type count,
+			 gcov_type all)
 {
   tree stmt1, stmt2, stmt3;
   tree tmp1, tmp2, tmpv;
@@ -196,9 +196,9 @@ tree_divmod_fixed_value (tree stmt, tree operation,
   stmt1 = build2 (MODIFY_EXPR, optype, tmpv, fold_convert (optype, value));
   stmt2 = build2 (MODIFY_EXPR, optype, tmp1, op2);
   stmt3 = build3 (COND_EXPR, void_type_node,
-            build2 (NE_EXPR, boolean_type_node, tmp1, tmpv),
-            build1 (GOTO_EXPR, void_type_node, label_decl2),
-            build1 (GOTO_EXPR, void_type_node, label_decl1));
+	    build2 (NE_EXPR, boolean_type_node, tmp1, tmpv),
+	    build1 (GOTO_EXPR, void_type_node, label_decl2),
+	    build1 (GOTO_EXPR, void_type_node, label_decl1));
   bsi_insert_before (&bsi, stmt1, BSI_SAME_STMT);
   bsi_insert_before (&bsi, stmt2, BSI_SAME_STMT);
   bsi_insert_before (&bsi, stmt3, BSI_SAME_STMT);
@@ -207,14 +207,14 @@ tree_divmod_fixed_value (tree stmt, tree operation,
   tmp2 = create_tmp_var (optype, "PROF");
   label1 = build1 (LABEL_EXPR, void_type_node, label_decl1);
   stmt1 = build2 (MODIFY_EXPR, optype, tmp2,
-                  build2 (TREE_CODE (operation), optype, op1, tmpv));
+		  build2 (TREE_CODE (operation), optype, op1, tmpv));
   bsi_insert_before (&bsi, label1, BSI_SAME_STMT);
   bsi_insert_before (&bsi, stmt1, BSI_SAME_STMT);
   bb2end = stmt1;
 
   label2 = build1 (LABEL_EXPR, void_type_node, label_decl2);
   stmt1 = build2 (MODIFY_EXPR, optype, tmp2,
-                  build2 (TREE_CODE (operation), optype, op1, op2));
+		  build2 (TREE_CODE (operation), optype, op1, op2));
   bsi_insert_before (&bsi, label2, BSI_SAME_STMT);
   bsi_insert_before (&bsi, stmt1, BSI_SAME_STMT);
   bb3end = stmt1;
@@ -311,8 +311,8 @@ tree_divmod_fixed_value_transform (tree stmt)
   prob = (count * REG_BR_PROB_BASE + all / 2) / all;
 
   tree_val = build_int_cst_wide (get_gcov_type (),
-                                 (unsigned HOST_WIDE_INT) val,
-                                 val >> (HOST_BITS_PER_WIDE_INT - 1) >> 1);
+				 (unsigned HOST_WIDE_INT) val,
+				 val >> (HOST_BITS_PER_WIDE_INT - 1) >> 1);
   result = tree_divmod_fixed_value (stmt, op, op1, op2, tree_val, prob, count, all);
 
   if (dump_file)
@@ -337,7 +337,7 @@ tree_divmod_fixed_value_transform (tree stmt)
    the temp; it does not replace or alter the original STMT.  */
 static tree
 tree_mod_pow2 (tree stmt, tree operation, tree op1, tree op2, int prob, 
-               gcov_type count, gcov_type all)
+	       gcov_type count, gcov_type all)
 {
   tree stmt1, stmt2, stmt3, stmt4;
   tree tmp2, tmp3;
@@ -358,14 +358,14 @@ tree_mod_pow2 (tree stmt, tree operation, tree op1, tree op2, int prob,
   tmp2 = create_tmp_var (optype, "PROF");
   tmp3 = create_tmp_var (optype, "PROF");
   stmt2 = build2 (MODIFY_EXPR, optype, tmp2, 
-                  build2 (PLUS_EXPR, optype, op2, build_int_cst (optype, -1)));
+		  build2 (PLUS_EXPR, optype, op2, build_int_cst (optype, -1)));
   stmt3 = build2 (MODIFY_EXPR, optype, tmp3,
-                  build2 (BIT_AND_EXPR, optype, tmp2, op2));
+		  build2 (BIT_AND_EXPR, optype, tmp2, op2));
   stmt4 = build3 (COND_EXPR, void_type_node,
-                  build2 (NE_EXPR, boolean_type_node,
-                          tmp3, build_int_cst (optype, 0)),
-                  build1 (GOTO_EXPR, void_type_node, label_decl2),
-                   build1 (GOTO_EXPR, void_type_node, label_decl1));
+		  build2 (NE_EXPR, boolean_type_node,
+			  tmp3, build_int_cst (optype, 0)),
+		  build1 (GOTO_EXPR, void_type_node, label_decl2),
+	 	  build1 (GOTO_EXPR, void_type_node, label_decl1));
   bsi_insert_before (&bsi, stmt2, BSI_SAME_STMT);
   bsi_insert_before (&bsi, stmt3, BSI_SAME_STMT);
   bsi_insert_before (&bsi, stmt4, BSI_SAME_STMT);
@@ -374,14 +374,14 @@ tree_mod_pow2 (tree stmt, tree operation, tree op1, tree op2, int prob,
   /* tmp2 == op2-1 inherited from previous block */
   label1 = build1 (LABEL_EXPR, void_type_node, label_decl1);
   stmt1 = build2 (MODIFY_EXPR, optype, result,
-                  build2 (BIT_AND_EXPR, optype, op1, tmp2));
+		  build2 (BIT_AND_EXPR, optype, op1, tmp2));
   bsi_insert_before (&bsi, label1, BSI_SAME_STMT);
   bsi_insert_before (&bsi, stmt1, BSI_SAME_STMT);
   bb2end = stmt1;
 
   label2 = build1 (LABEL_EXPR, void_type_node, label_decl2);
   stmt1 = build2 (MODIFY_EXPR, optype, result,
-                  build2 (TREE_CODE (operation), optype, op1, op2));
+		  build2 (TREE_CODE (operation), optype, op1, op2));
   bsi_insert_before (&bsi, label2, BSI_SAME_STMT);
   bsi_insert_before (&bsi, stmt1, BSI_SAME_STMT);
   bb3end = stmt1;
@@ -500,8 +500,8 @@ tree_mod_pow2_value_transform (tree stmt)
 
 static tree
 tree_mod_subtract (tree stmt, tree operation, tree op1, tree op2, 
-                    int prob1, int prob2, int ncounts,
-                    gcov_type count1, gcov_type count2, gcov_type all)
+		    int prob1, int prob2, int ncounts,
+		    gcov_type count1, gcov_type count2, gcov_type all)
 {
   tree stmt1, stmt2, stmt3;
   tree tmp1;
@@ -523,24 +523,24 @@ tree_mod_subtract (tree stmt, tree operation, tree op1, tree op2,
   stmt1 = build2 (MODIFY_EXPR, optype, result, op1);
   stmt2 = build2 (MODIFY_EXPR, optype, tmp1, op2);
   stmt3 = build3 (COND_EXPR, void_type_node,
-            build2 (LT_EXPR, boolean_type_node, result, tmp1),
-            build1 (GOTO_EXPR, void_type_node, label_decl3),
-            build1 (GOTO_EXPR, void_type_node, 
-                    ncounts ? label_decl1 : label_decl2));
+	    build2 (LT_EXPR, boolean_type_node, result, tmp1),
+	    build1 (GOTO_EXPR, void_type_node, label_decl3),
+	    build1 (GOTO_EXPR, void_type_node, 
+		    ncounts ? label_decl1 : label_decl2));
   bsi_insert_before (&bsi, stmt1, BSI_SAME_STMT);
   bsi_insert_before (&bsi, stmt2, BSI_SAME_STMT);
   bsi_insert_before (&bsi, stmt3, BSI_SAME_STMT);
   bb1end = stmt3;
 
-  if (ncounts)        /* Assumed to be 0 or 1 */
+  if (ncounts)	/* Assumed to be 0 or 1 */
     {
       label1 = build1 (LABEL_EXPR, void_type_node, label_decl1);
       stmt1 = build2 (MODIFY_EXPR, optype, result,
-                      build2 (MINUS_EXPR, optype, result, tmp1));
+		      build2 (MINUS_EXPR, optype, result, tmp1));
       stmt2 = build3 (COND_EXPR, void_type_node,
-                build2 (LT_EXPR, boolean_type_node, result, tmp1),
-                build1 (GOTO_EXPR, void_type_node, label_decl3),
-                build1 (GOTO_EXPR, void_type_node, label_decl2));
+		build2 (LT_EXPR, boolean_type_node, result, tmp1),
+		build1 (GOTO_EXPR, void_type_node, label_decl3),
+		build1 (GOTO_EXPR, void_type_node, label_decl2));
       bsi_insert_before (&bsi, label1, BSI_SAME_STMT);
       bsi_insert_before (&bsi, stmt1, BSI_SAME_STMT);
       bsi_insert_before (&bsi, stmt2, BSI_SAME_STMT);
@@ -550,7 +550,7 @@ tree_mod_subtract (tree stmt, tree operation, tree op1, tree op2,
   /* Fallback case. */
   label2 = build1 (LABEL_EXPR, void_type_node, label_decl2);
   stmt1 = build2 (MODIFY_EXPR, optype, result,
-                    build2 (TREE_CODE (operation), optype, result, tmp1));
+		    build2 (TREE_CODE (operation), optype, result, tmp1));
   bsi_insert_before (&bsi, label2, BSI_SAME_STMT);
   bsi_insert_before (&bsi, stmt1, BSI_SAME_STMT);
   bb3end = stmt1;
@@ -566,7 +566,7 @@ tree_mod_subtract (tree stmt, tree operation, tree op1, tree op2,
   bb2 = e12->dest;
   bb2->count = all - count1;
     
-  if (ncounts)        /* Assumed to be 0 or 1.  */
+  if (ncounts)	/* Assumed to be 0 or 1.  */
     {
       e23 = split_block (bb2, bb2end);
       bb3 = e23->dest;
@@ -664,7 +664,7 @@ tree_mod_subtract_transform (tree stmt)
     {
       count += histogram->hvalue.counters[i];
       if (count * 2 >= all)
-        break;
+	break;
     }
   if (i == histogram->hdata.intvl.steps)
     return false;
@@ -682,8 +682,8 @@ tree_mod_subtract_transform (tree stmt)
   /* In practice, "steps" is always 2.  This interface reflects this,
      and will need to be changed if "steps" can change.  */
   result = tree_mod_subtract (stmt, op, op1, op2, prob1, prob2, i,
-                            histogram->hvalue.counters[0], 
-                            histogram->hvalue.counters[1], all);
+			    histogram->hvalue.counters[0], 
+			    histogram->hvalue.counters[1], all);
 
   TREE_OPERAND (modify, 1) = result;
 
@@ -731,37 +731,37 @@ tree_divmod_values_to_profile (tree stmt, histogram_values *values)
       VEC_reserve (histogram_value, heap, *values, 3);
 
       if (is_gimple_reg (divisor))
-        {
-          /* Check for the case where the divisor is the same value most
-             of the time.  */
-          hist = ggc_alloc (sizeof (*hist));
-          hist->hvalue.value = divisor;
-          hist->hvalue.stmt = stmt;
-          hist->type = HIST_TYPE_SINGLE_VALUE;
-          VEC_quick_push (histogram_value, *values, hist);
-        }
+	{
+	  /* Check for the case where the divisor is the same value most
+	     of the time.  */
+	  hist = ggc_alloc (sizeof (*hist));
+	  hist->hvalue.value = divisor;
+	  hist->hvalue.stmt = stmt;
+	  hist->type = HIST_TYPE_SINGLE_VALUE;
+	  VEC_quick_push (histogram_value, *values, hist);
+	}
 
       /* For mod, check whether it is not often a noop (or replaceable by
-         a few subtractions).  */
+	 a few subtractions).  */
       if (TREE_CODE (rhs) == TRUNC_MOD_EXPR
-          && TYPE_UNSIGNED (type))
-        {
+	  && TYPE_UNSIGNED (type))
+	{
           /* Check for a special case where the divisor is power of 2.  */
-          hist = ggc_alloc (sizeof (*hist));
-          hist->hvalue.value = divisor;
-          hist->hvalue.stmt = stmt;
-          hist->type = HIST_TYPE_POW2;
-          VEC_quick_push (histogram_value, *values, hist);
+	  hist = ggc_alloc (sizeof (*hist));
+	  hist->hvalue.value = divisor;
+	  hist->hvalue.stmt = stmt;
+	  hist->type = HIST_TYPE_POW2;
+	  VEC_quick_push (histogram_value, *values, hist);
 
-          hist = ggc_alloc (sizeof (*hist));
-          hist->hvalue.stmt = stmt;
-          hist->hvalue.value
-                  = build2 (TRUNC_DIV_EXPR, type, op0, divisor);
-          hist->type = HIST_TYPE_INTERVAL;
-          hist->hdata.intvl.int_start = 0;
-          hist->hdata.intvl.steps = 2;
-          VEC_quick_push (histogram_value, *values, hist);
-        }
+	  hist = ggc_alloc (sizeof (*hist));
+	  hist->hvalue.stmt = stmt;
+	  hist->hvalue.value
+		  = build2 (TRUNC_DIV_EXPR, type, op0, divisor);
+	  hist->type = HIST_TYPE_INTERVAL;
+	  hist->hdata.intvl.int_start = 0;
+	  hist->hdata.intvl.steps = 2;
+	  VEC_quick_push (histogram_value, *values, hist);
+	}
       return;
 
     default:
@@ -796,53 +796,53 @@ tree_find_values_to_profile (histogram_values *values)
     {
       switch (hist->type)
         {
-        case HIST_TYPE_INTERVAL:
-          if (dump_file)
-            {
-              fprintf (dump_file, "Interval counter for tree ");
-              print_generic_expr (dump_file, hist->hvalue.stmt, 
-                                  TDF_SLIM);
-              fprintf (dump_file, ", range %d -- %d.\n",
-                     hist->hdata.intvl.int_start,
-                     (hist->hdata.intvl.int_start
-                      + hist->hdata.intvl.steps - 1));
-            }
-          hist->n_counters = hist->hdata.intvl.steps + 2;
-          break;
+	case HIST_TYPE_INTERVAL:
+	  if (dump_file)
+	    {
+	      fprintf (dump_file, "Interval counter for tree ");
+	      print_generic_expr (dump_file, hist->hvalue.stmt, 
+				  TDF_SLIM);
+	      fprintf (dump_file, ", range %d -- %d.\n",
+		     hist->hdata.intvl.int_start,
+		     (hist->hdata.intvl.int_start
+		      + hist->hdata.intvl.steps - 1));
+	    }
+	  hist->n_counters = hist->hdata.intvl.steps + 2;
+	  break;
 
-        case HIST_TYPE_POW2:
-          if (dump_file)
-            {
-              fprintf (dump_file, "Pow2 counter for tree ");
-              print_generic_expr (dump_file, hist->hvalue.stmt, TDF_SLIM);
-              fprintf (dump_file, ".\n");
-            }
-          hist->n_counters = 2;
-          break;
+	case HIST_TYPE_POW2:
+	  if (dump_file)
+	    {
+	      fprintf (dump_file, "Pow2 counter for tree ");
+	      print_generic_expr (dump_file, hist->hvalue.stmt, TDF_SLIM);
+	      fprintf (dump_file, ".\n");
+	    }
+	  hist->n_counters = 2;
+	  break;
 
-        case HIST_TYPE_SINGLE_VALUE:
-          if (dump_file)
-            {
-              fprintf (dump_file, "Single value counter for tree ");
-              print_generic_expr (dump_file, hist->hvalue.stmt, TDF_SLIM);
-              fprintf (dump_file, ".\n");
-            }
-          hist->n_counters = 3;
-          break;
+	case HIST_TYPE_SINGLE_VALUE:
+	  if (dump_file)
+	    {
+	      fprintf (dump_file, "Single value counter for tree ");
+	      print_generic_expr (dump_file, hist->hvalue.stmt, TDF_SLIM);
+	      fprintf (dump_file, ".\n");
+	    }
+	  hist->n_counters = 3;
+	  break;
 
-        case HIST_TYPE_CONST_DELTA:
-          if (dump_file)
-            {
-              fprintf (dump_file, "Constant delta counter for tree ");
-              print_generic_expr (dump_file, hist->hvalue.stmt, TDF_SLIM);
-              fprintf (dump_file, ".\n");
-            }
-          hist->n_counters = 4;
-          break;
+	case HIST_TYPE_CONST_DELTA:
+	  if (dump_file)
+	    {
+	      fprintf (dump_file, "Constant delta counter for tree ");
+	      print_generic_expr (dump_file, hist->hvalue.stmt, TDF_SLIM);
+	      fprintf (dump_file, ".\n");
+	    }
+	  hist->n_counters = 4;
+	  break;
 
-        default:
-          gcc_unreachable ();
-        }
+	default:
+	  gcc_unreachable ();
+	}
     }
 }
 

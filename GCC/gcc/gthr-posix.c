@@ -35,14 +35,14 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
 
 int
 pthread_once (pthread_once_t *once ATTRIBUTE_UNUSED,
-              void (*func) (void) ATTRIBUTE_UNUSED)
+	      void (*func) (void) ATTRIBUTE_UNUSED)
 {
   return -1;
 }
 
 int
 pthread_key_create (pthread_key_t *key ATTRIBUTE_UNUSED,
-                    void (*dtor) (void *) ATTRIBUTE_UNUSED)
+		    void (*dtor) (void *) ATTRIBUTE_UNUSED)
 {
   return -1;
 }
@@ -61,16 +61,16 @@ pthread_getspecific (pthread_key_t key ATTRIBUTE_UNUSED)
 
 int
 pthread_setspecific (pthread_key_t key ATTRIBUTE_UNUSED,
-                     const void *ptr ATTRIBUTE_UNUSED)
+		     const void *ptr ATTRIBUTE_UNUSED)
 {
   return 0;
 }
 
 int
 pthread_create (pthread_t *thread ATTRIBUTE_UNUSED,
-                const pthread_attr_t *attr ATTRIBUTE_UNUSED,
-                void *(*start_routine) (void *) ATTRIBUTE_UNUSED,
-                void *arg ATTRIBUTE_UNUSED)
+		const pthread_attr_t *attr ATTRIBUTE_UNUSED,
+		void *(*start_routine) (void *) ATTRIBUTE_UNUSED,
+		void *arg ATTRIBUTE_UNUSED)
 {
   return 0;
 }
@@ -107,7 +107,7 @@ pthread_mutexattr_init (pthread_mutexattr_t *attr ATTRIBUTE_UNUSED)
 
 int
 pthread_mutexattr_settype (pthread_mutexattr_t *attr ATTRIBUTE_UNUSED,
-                           int type ATTRIBUTE_UNUSED)
+			   int type ATTRIBUTE_UNUSED)
 {
   return 0;
 }
@@ -132,7 +132,7 @@ pthread_cond_destroy (pthread_cond_t *cond ATTRIBUTE_UNUSED)
 
 int
 pthread_cond_init (pthread_cond_t *cond ATTRIBUTE_UNUSED,
-                   const pthread_condattr_t *attr ATTRIBUTE_UNUSED)
+		   const pthread_condattr_t *attr ATTRIBUTE_UNUSED)
 {
   return 0;
 }
@@ -145,7 +145,7 @@ pthread_cond_signal (pthread_cond_t *cond ATTRIBUTE_UNUSED)
 
 int
 pthread_cond_wait (pthread_cond_t *cond ATTRIBUTE_UNUSED,
-                   pthread_mutex_t *mutex ATTRIBUTE_UNUSED)
+		   pthread_mutex_t *mutex ATTRIBUTE_UNUSED)
 {
   return 0;
 }
@@ -157,7 +157,7 @@ pthread_exit (void *value_ptr ATTRIBUTE_UNUSED)
 
 int
 pthread_mutex_init (pthread_mutex_t *mutex ATTRIBUTE_UNUSED,
-                    const pthread_mutexattr_t *attr ATTRIBUTE_UNUSED)
+		    const pthread_mutexattr_t *attr ATTRIBUTE_UNUSED)
 {
   return 0;
 }
@@ -209,7 +209,7 @@ pthread_attr_init (pthread_attr_t *attr ATTRIBUTE_UNUSED)
 
 int
 pthread_attr_setdetachstate (pthread_attr_t *attr ATTRIBUTE_UNUSED,
-                             int detachstate ATTRIBUTE_UNUSED)
+			     int detachstate ATTRIBUTE_UNUSED)
 {
   return 0;
 }
@@ -217,16 +217,16 @@ pthread_attr_setdetachstate (pthread_attr_t *attr ATTRIBUTE_UNUSED,
 #ifdef _POSIX_THREAD_PRIORITY_SCHEDULING
 int
 pthread_getschedparam (pthread_t thread ATTRIBUTE_UNUSED,
-                       int *policy ATTRIBUTE_UNUSED,
-                       struct sched_param *param ATTRIBUTE_UNUSED)
+		       int *policy ATTRIBUTE_UNUSED,
+		       struct sched_param *param ATTRIBUTE_UNUSED)
 {
   return 0;
 }
 
 int
 pthread_setschedparam (pthread_t thread ATTRIBUTE_UNUSED,
-                       int policy ATTRIBUTE_UNUSED,
-                       const struct sched_param *param ATTRIBUTE_UNUSED)
+		       int policy ATTRIBUTE_UNUSED,
+		       const struct sched_param *param ATTRIBUTE_UNUSED)
 {
   return 0;
 }

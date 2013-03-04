@@ -65,9 +65,9 @@ Boston, MA 02110-1301, USA.  */
 #define TARGET_LINUX 1
 
 #undef CRIS_SUBTARGET_DEFAULT
-#define CRIS_SUBTARGET_DEFAULT                        \
-  (MASK_SVINTO                                        \
-   + MASK_ETRAX4_ADD                                \
+#define CRIS_SUBTARGET_DEFAULT			\
+  (MASK_SVINTO					\
+   + MASK_ETRAX4_ADD				\
    + MASK_ALIGN_BY_32)
 
 #undef CRIS_DEFAULT_CPU_VERSION
@@ -96,13 +96,13 @@ Boston, MA 02110-1301, USA.  */
 
 /* For the cris-*-linux* subtarget.  */
 #undef TARGET_OS_CPP_BUILTINS
-#define TARGET_OS_CPP_BUILTINS()                \
-  do                                                \
-    {                                                \
-      LINUX_TARGET_OS_CPP_BUILTINS();                \
-      if (flag_leading_underscore <= 0)                \
-        builtin_define ("__NO_UNDERSCORES__");        \
-    }                                                \
+#define TARGET_OS_CPP_BUILTINS()		\
+  do						\
+    {						\
+      LINUX_TARGET_OS_CPP_BUILTINS();		\
+      if (flag_leading_underscore <= 0)		\
+	builtin_define ("__NO_UNDERSCORES__");	\
+    }						\
   while (0)
      
 

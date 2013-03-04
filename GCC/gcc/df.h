@@ -64,7 +64,7 @@ enum df_flow_dir
    all uses of a register (the mem_load and mem_store relate to how
    the register as an addressing operand).  */
 enum df_ref_type {DF_REF_REG_DEF, DF_REF_REG_USE, DF_REF_REG_MEM_LOAD,
-                  DF_REF_REG_MEM_STORE};
+		  DF_REF_REG_MEM_STORE};
 
 #define DF_REF_TYPE_NAMES {"def", "use", "mem load", "mem store"}
 
@@ -146,7 +146,7 @@ typedef void (*df_init_function) (struct dataflow *, bitmap);
 
 /* Iterative dataflow function.  */
 typedef void (*df_dataflow_function) (struct dataflow *, bitmap, bitmap, 
-                                   int *, int, bool);
+				   int *, int, bool);
 
 /* Confluence operator for blocks with 0 out (or in) edges.  */
 typedef void (*df_confluence_function_0) (struct dataflow *, basic_block);
@@ -177,7 +177,7 @@ struct df_problem {
   /* The unique id of the problem.  This is used it index into
      df->defined_problems to make accessing the problem data easy.  */
   unsigned int id;                        
-  enum df_flow_dir dir;                        /* Dataflow direction.  */
+  enum df_flow_dir dir;			/* Dataflow direction.  */
   df_alloc_function alloc_fun;
   df_reset_function reset_fun;
   df_free_bb_function free_bb_fun;
@@ -217,9 +217,9 @@ struct dataflow
   /* Problem specific control information.  */
 
   /* Scanning flags.  */
-#define DF_HARD_REGS             1        /* Mark hard registers.  */
-#define DF_EQUIV_NOTES             2        /* Mark uses present in EQUIV/EQUAL notes.  */
-#define DF_SUBREGS             4        /* Return subregs rather than the inner reg.  */
+#define DF_HARD_REGS	     1	/* Mark hard registers.  */
+#define DF_EQUIV_NOTES	     2	/* Mark uses present in EQUIV/EQUAL notes.  */
+#define DF_SUBREGS	     4	/* Return subregs rather than the inner reg.  */
   /* Flags that control the building of chains.  */
 #define DF_DU_CHAIN          1    /* Build DU chains.  */  
 #define DF_UD_CHAIN          2    /* Build UD chains.  */
@@ -244,9 +244,9 @@ struct df_mw_hardreg
 {
   rtx mw_reg;                   /* The multiword hardreg.  */ 
   enum df_ref_type type;        /* Used to see if the ref is read or write.  */
-  enum df_ref_flags flags;        /* Various flags.  */
+  enum df_ref_flags flags;	/* Various flags.  */
   struct df_link *regs;         /* The individual regs that make up
-                                   this hardreg.  */
+				   this hardreg.  */
   struct df_mw_hardreg *next;   /* The next mw_hardreg in this insn.  */
 };
  
@@ -254,12 +254,12 @@ struct df_mw_hardreg
 /* One of these structures is allocated for every insn.  */
 struct df_insn_info
 {
-  struct df_ref *defs;                /* Head of insn-def chain.  */
-  struct df_ref *uses;                /* Head of insn-use chain.  */
+  struct df_ref *defs;	        /* Head of insn-def chain.  */
+  struct df_ref *uses;	        /* Head of insn-use chain.  */
   struct df_mw_hardreg *mw_hardregs;   
   /* ???? The following luid field should be considered private so that
      we can change it on the fly to accommodate new insns?  */
-  int luid;                        /* Logical UID.  */
+  int luid;			/* Logical UID.  */
   bool contains_asm;            /* Contains an asm instruction.  */
 };
 
@@ -278,18 +278,18 @@ struct df_reg_info
    references (e.g., post_inc, subreg) generate both a def and a use.  */
 struct df_ref
 {
-  rtx reg;                        /* The register referenced.  */
+  rtx reg;			/* The register referenced.  */
   unsigned int regno;           /* The register number referenced.  */
   basic_block bb;               /* Basic block containing the instruction. */
 
   /* Insn containing ref. This will be null if this is an artificial
      reference.  */
   rtx insn;
-  rtx *loc;                        /* The location of the reg.  */
-  struct df_link *chain;        /* Head of def-use, use-def.  */
-  unsigned int id;                /* Location in table.  */
-  enum df_ref_type type;        /* Type of ref.  */
-  enum df_ref_flags flags;        /* Various flags.  */
+  rtx *loc;			/* The location of the reg.  */
+  struct df_link *chain;	/* Head of def-use, use-def.  */
+  unsigned int id;		/* Location in table.  */
+  enum df_ref_type type;	/* Type of ref.  */
+  enum df_ref_flags flags;	/* Various flags.  */
 
   /* For each regno, there are two chains of refs, one for the uses
      and one for the defs.  These chains go thru the refs themselves
@@ -300,7 +300,7 @@ struct df_ref
   /* Each insn has two lists, one for the uses and one for the
      defs. This is the next field in either of these chains. */
   struct df_ref *next_ref; 
-  void *data;                        /* The data assigned to it by user.  */
+  void *data;			/* The data assigned to it by user.  */
 };
 
 /* These links are used for two purposes:
@@ -321,7 +321,7 @@ struct df_ref_info
   unsigned int regs_inited;     /* Number of regs with reg_infos allocated.  */
   struct df_ref **refs;         /* Ref table, indexed by id.  */
   unsigned int refs_size;       /* Size of currently allocated refs table.  */
-  unsigned int bitmap_size;        /* Number of refs seen.  */
+  unsigned int bitmap_size;	/* Number of refs seen.  */
 
   /* True if refs table is organized so that every reference for a
      pseudo is contiguous.  */
@@ -404,10 +404,10 @@ struct df
 
 
 #define DF_REF_REAL_REG(REF) (GET_CODE ((REF)->reg) == SUBREG \
-                                ? SUBREG_REG ((REF)->reg) : ((REF)->reg))
+				? SUBREG_REG ((REF)->reg) : ((REF)->reg))
 #define DF_REF_REGNO(REF) ((REF)->regno)
 #define DF_REF_REAL_LOC(REF) (GET_CODE ((REF)->reg) == SUBREG \
-                                ? &SUBREG_REG ((REF)->reg) : ((REF)->loc))
+			        ? &SUBREG_REG ((REF)->reg) : ((REF)->loc))
 #define DF_REF_REG(REF) ((REF)->reg)
 #define DF_REF_LOC(REF) ((REF)->loc)
 #define DF_REF_BB(REF) ((REF)->bb)
@@ -549,7 +549,7 @@ struct df_ur_bb_info
 {
   /* Local sets to describe the basic blocks.  */
   bitmap kill;  /* The set of registers unset in this block.  Calls,
-                   for instance, unset registers.  */
+		   for instance, unset registers.  */
   bitmap gen;   /* The set of registers set in this block.  */
 
   /* The results of the dataflow problem.  */
@@ -562,7 +562,7 @@ struct df_urec_bb_info
 {
   /* Local sets to describe the basic blocks.  */
   bitmap earlyclobber;  /* The set of registers that are referenced
-                           with an an early clobber mode.  */
+			   with an an early clobber mode.  */
   /* Kill and gen are defined as in the UR problem.  */
   bitmap kill;
   bitmap gen;
@@ -674,7 +674,7 @@ extern struct web_entry *unionfind_root (struct web_entry *);
 extern bool unionfind_union (struct web_entry *, struct web_entry *);
 extern void union_defs (struct df *, struct df_ref *,
                         struct web_entry *, struct web_entry *,
-                        bool (*fun) (struct web_entry *, struct web_entry *));
+			bool (*fun) (struct web_entry *, struct web_entry *));
 
 
 #endif /* GCC_DF_H */

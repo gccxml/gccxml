@@ -104,7 +104,7 @@ better_p (edge e1, edge e2)
   if (e1->src->frequency * e1->probability !=
       e2->src->frequency * e2->probability)
     return (e1->src->frequency * e1->probability
-            > e2->src->frequency * e2->probability);
+	    > e2->src->frequency * e2->probability);
   /* This is needed to avoid changes in the decision after
      CFG is modified.  */
   if (e1->src != e2->src)
@@ -167,10 +167,10 @@ find_trace (basic_block bb, basic_block *trace)
     {
       basic_block bb2 = e->src;
       if (seen (bb2) || (e->flags & (EDGE_DFS_BACK | EDGE_COMPLEX))
-          || find_best_successor (bb2) != e)
-        break;
+	  || find_best_successor (bb2) != e)
+	break;
       if (dump_file)
-        fprintf (dump_file, ",%i [%i]", bb->index, bb->frequency);
+	fprintf (dump_file, ",%i [%i]", bb->index, bb->frequency);
       bb = bb2;
     }
   if (dump_file)
@@ -182,10 +182,10 @@ find_trace (basic_block bb, basic_block *trace)
     {
       bb = e->dest;
       if (seen (bb) || (e->flags & (EDGE_DFS_BACK | EDGE_COMPLEX))
-          || find_best_predecessor (bb) != e)
-        break;
+	  || find_best_predecessor (bb) != e)
+	break;
       if (dump_file)
-        fprintf (dump_file, ",%i [%i]", bb->index, bb->frequency);
+	fprintf (dump_file, ",%i [%i]", bb->index, bb->frequency);
       trace[i++] = bb;
     }
   if (dump_file)
@@ -222,8 +222,8 @@ tail_duplicate (void)
     {
       int n = count_insns (bb);
       if (!ignore_bb_p (bb))
-        blocks[bb->index] = fibheap_insert (heap, -bb->frequency,
-                                            bb);
+	blocks[bb->index] = fibheap_insert (heap, -bb->frequency,
+					    bb);
 
       counts [bb->index] = n;
       ninsns += n;
@@ -244,12 +244,12 @@ tail_duplicate (void)
       int n, pos;
 
       if (!bb)
-        break;
+	break;
 
       blocks[bb->index] = NULL;
 
       if (ignore_bb_p (bb))
-        continue;
+	continue;
       gcc_assert (!seen (bb));
 
       n = find_trace (bb, trace);
@@ -257,56 +257,56 @@ tail_duplicate (void)
       bb = trace[0];
       traced_insns += bb->frequency * counts [bb->index];
       if (blocks[bb->index])
-        {
-          fibheap_delete_node (heap, blocks[bb->index]);
-          blocks[bb->index] = NULL;
-        }
+	{
+	  fibheap_delete_node (heap, blocks[bb->index]);
+	  blocks[bb->index] = NULL;
+	}
 
       for (pos = 1; pos < n; pos++)
-        {
-          basic_block bb2 = trace[pos];
+	{
+	  basic_block bb2 = trace[pos];
 
-          if (blocks[bb2->index])
-            {
-              fibheap_delete_node (heap, blocks[bb2->index]);
-              blocks[bb2->index] = NULL;
-            }
-          traced_insns += bb2->frequency * counts [bb2->index];
-          if (EDGE_COUNT (bb2->preds) > 1
-              && can_duplicate_block_p (bb2))
-            {
-              edge e;
-              basic_block old = bb2;
+	  if (blocks[bb2->index])
+	    {
+	      fibheap_delete_node (heap, blocks[bb2->index]);
+	      blocks[bb2->index] = NULL;
+	    }
+	  traced_insns += bb2->frequency * counts [bb2->index];
+	  if (EDGE_COUNT (bb2->preds) > 1
+	      && can_duplicate_block_p (bb2))
+	    {
+	      edge e;
+	      basic_block old = bb2;
 
-              e = find_edge (bb, bb2);
+	      e = find_edge (bb, bb2);
 
-              nduplicated += counts [bb2->index];
-              bb2 = duplicate_block (bb2, e, bb);
+	      nduplicated += counts [bb2->index];
+	      bb2 = duplicate_block (bb2, e, bb);
 
-              /* Reconsider the original copy of block we've duplicated.
-                 Removing the most common predecessor may make it to be
-                 head.  */
-              blocks[old->index] =
-                fibheap_insert (heap, -old->frequency, old);
+	      /* Reconsider the original copy of block we've duplicated.
+	         Removing the most common predecessor may make it to be
+	         head.  */
+	      blocks[old->index] =
+		fibheap_insert (heap, -old->frequency, old);
 
-              if (dump_file)
-                fprintf (dump_file, "Duplicated %i as %i [%i]\n",
-                         old->index, bb2->index, bb2->frequency);
-            }
-          bb->aux = bb2;
-          bb2->il.rtl->visited = 1;
-          bb = bb2;
-          /* In case the trace became infrequent, stop duplicating.  */
-          if (ignore_bb_p (bb))
-            break;
-        }
+	      if (dump_file)
+		fprintf (dump_file, "Duplicated %i as %i [%i]\n",
+			 old->index, bb2->index, bb2->frequency);
+	    }
+	  bb->aux = bb2;
+	  bb2->il.rtl->visited = 1;
+	  bb = bb2;
+	  /* In case the trace became infrequent, stop duplicating.  */
+	  if (ignore_bb_p (bb))
+	    break;
+	}
       if (dump_file)
-        fprintf (dump_file, " covered now %.1f\n\n",
-                 traced_insns * 100.0 / weighted_insns);
+	fprintf (dump_file, " covered now %.1f\n\n",
+		 traced_insns * 100.0 / weighted_insns);
     }
   if (dump_file)
     fprintf (dump_file, "Duplicated %i insns (%i%%)\n", nduplicated,
-             nduplicated * 100 / ninsns);
+	     nduplicated * 100 / ninsns);
 
   free (blocks);
   free (trace);
@@ -330,30 +330,30 @@ layout_superblocks (void)
       edge_iterator ei;
       edge e, best = NULL;
       while (end->aux)
-        end = end->aux;
+	end = end->aux;
 
       FOR_EACH_EDGE (e, ei, end->succs)
-        if (e->dest != EXIT_BLOCK_PTR
-            && e->dest != single_succ (ENTRY_BLOCK_PTR)
-            && !e->dest->il.rtl->visited
-            && (!best || EDGE_FREQUENCY (e) > EDGE_FREQUENCY (best)))
-          best = e;
+	if (e->dest != EXIT_BLOCK_PTR
+	    && e->dest != single_succ (ENTRY_BLOCK_PTR)
+	    && !e->dest->il.rtl->visited
+	    && (!best || EDGE_FREQUENCY (e) > EDGE_FREQUENCY (best)))
+	  best = e;
 
       if (best)
-        {
-          end->aux = best->dest;
-          best->dest->il.rtl->visited = 1;
-        }
+	{
+	  end->aux = best->dest;
+	  best->dest->il.rtl->visited = 1;
+	}
       else
-        for (; bb != EXIT_BLOCK_PTR; bb = bb->next_bb)
-          {
-            if (!bb->il.rtl->visited)
-              {
-                end->aux = bb;
-                bb->il.rtl->visited = 1;
-                break;
-              }
-          }
+	for (; bb != EXIT_BLOCK_PTR; bb = bb->next_bb)
+	  {
+	    if (!bb->il.rtl->visited)
+	      {
+		end->aux = bb;
+		bb->il.rtl->visited = 1;
+		break;
+	      }
+	  }
     }
 }
 

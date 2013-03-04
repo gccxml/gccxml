@@ -62,24 +62,24 @@ typedef struct bitmap_obstack GTY (())
 
 typedef struct bitmap_element_def GTY(())
 {
-  struct bitmap_element_def *next;                /* Next element.  */
-  struct bitmap_element_def *prev;                /* Previous element.  */
-  unsigned int indx;                        /* regno/BITMAP_ELEMENT_ALL_BITS.  */
+  struct bitmap_element_def *next;		/* Next element.  */
+  struct bitmap_element_def *prev;		/* Previous element.  */
+  unsigned int indx;			/* regno/BITMAP_ELEMENT_ALL_BITS.  */
   BITMAP_WORD bits[BITMAP_ELEMENT_WORDS]; /* Bits that are set.  */
 } bitmap_element;
 
 /* Head of bitmap linked list.  */
 typedef struct bitmap_head_def GTY(()) {
-  bitmap_element *first;        /* First element in linked list.  */
-  bitmap_element *current;        /* Last element looked at.  */
-  unsigned int indx;                /* Index of last element looked at.  */
-  bitmap_obstack *obstack;        /* Obstack to allocate elements from.
-                                   If NULL, then use ggc_alloc.  */
+  bitmap_element *first;	/* First element in linked list.  */
+  bitmap_element *current;	/* Last element looked at.  */
+  unsigned int indx;		/* Index of last element looked at.  */
+  bitmap_obstack *obstack;	/* Obstack to allocate elements from.
+				   If NULL, then use ggc_alloc.  */
 } bitmap_head;
 
 
 /* Global data */
-extern bitmap_element bitmap_zero_bits;        /* Zero bitmap element */
+extern bitmap_element bitmap_zero_bits;	/* Zero bitmap element */
 extern bitmap_obstack bitmap_default_obstack;   /* Default bitmap obstack */
 
 /* Clear a bitmap by freeing up the linked list.  */
@@ -175,8 +175,8 @@ extern hashval_t bitmap_hash(bitmap);
 #define BITMAP_GGC_ALLOC() bitmap_gc_alloc ()
 
 /* Do any cleanup needed on a bitmap when it is no longer used.  */
-#define BITMAP_FREE(BITMAP)                        \
-        ((void)(bitmap_obstack_free (BITMAP), (BITMAP) = NULL))
+#define BITMAP_FREE(BITMAP)			\
+	((void)(bitmap_obstack_free (BITMAP), (BITMAP) = NULL))
 
 /* Iterator for bitmaps.  */
 
@@ -202,7 +202,7 @@ typedef struct
 
 static inline void
 bmp_iter_set_init (bitmap_iterator *bi, bitmap map,
-                   unsigned start_bit, unsigned *bit_no)
+		   unsigned start_bit, unsigned *bit_no)
 {
   bi->elt1 = map->first;
   bi->elt2 = NULL;
@@ -211,13 +211,13 @@ bmp_iter_set_init (bitmap_iterator *bi, bitmap map,
   while (1)
     {
       if (!bi->elt1)
-        {
-          bi->elt1 = &bitmap_zero_bits;
-          break;
-        }
+	{
+	  bi->elt1 = &bitmap_zero_bits;
+	  break;
+	}
 
       if (bi->elt1->indx >= start_bit / BITMAP_ELEMENT_ALL_BITS)
-        break;
+	break;
       bi->elt1 = bi->elt1->next;
     }
 
@@ -244,7 +244,7 @@ bmp_iter_set_init (bitmap_iterator *bi, bitmap map,
 
 static inline void
 bmp_iter_and_init (bitmap_iterator *bi, bitmap map1, bitmap map2,
-                   unsigned start_bit, unsigned *bit_no)
+		   unsigned start_bit, unsigned *bit_no)
 {
   bi->elt1 = map1->first;
   bi->elt2 = map2->first;
@@ -254,13 +254,13 @@ bmp_iter_and_init (bitmap_iterator *bi, bitmap map1, bitmap map2,
   while (1)
     {
       if (!bi->elt1)
-        {
-          bi->elt2 = NULL;
-          break;
-        }
+	{
+	  bi->elt2 = NULL;
+	  break;
+	}
 
       if (bi->elt1->indx >= start_bit / BITMAP_ELEMENT_ALL_BITS)
-        break;
+	break;
       bi->elt1 = bi->elt1->next;
     }
 
@@ -268,13 +268,13 @@ bmp_iter_and_init (bitmap_iterator *bi, bitmap map1, bitmap map2,
   while (1)
     {
       if (!bi->elt2)
-        {
-          bi->elt1 = bi->elt2 = &bitmap_zero_bits;
-          break;
-        }
+	{
+	  bi->elt1 = bi->elt2 = &bitmap_zero_bits;
+	  break;
+	}
 
       if (bi->elt2->indx >= bi->elt1->indx)
-        break;
+	break;
       bi->elt2 = bi->elt2->next;
     }
 
@@ -282,9 +282,9 @@ bmp_iter_and_init (bitmap_iterator *bi, bitmap map1, bitmap map2,
   if (bi->elt1->indx == bi->elt2->indx)
     {
       /* We might have advanced beyond the start_bit, so reinitialize
-         for that.  */
+	 for that.  */
       if (bi->elt1->indx != start_bit / BITMAP_ELEMENT_ALL_BITS)
-        start_bit = bi->elt1->indx * BITMAP_ELEMENT_ALL_BITS;
+	start_bit = bi->elt1->indx * BITMAP_ELEMENT_ALL_BITS;
 
       bi->word_no = start_bit / BITMAP_WORD_BITS % BITMAP_ELEMENT_WORDS;
       bi->bits = bi->elt1->bits[bi->word_no] & bi->elt2->bits[bi->word_no];
@@ -293,7 +293,7 @@ bmp_iter_and_init (bitmap_iterator *bi, bitmap map1, bitmap map2,
   else
     {
       /* Otherwise we must immediately advance elt1, so initialize for
-         that.  */
+	 that.  */
       bi->word_no = BITMAP_ELEMENT_WORDS - 1;
       bi->bits = 0;
     }
@@ -312,7 +312,7 @@ bmp_iter_and_init (bitmap_iterator *bi, bitmap map1, bitmap map2,
 
 static inline void
 bmp_iter_and_compl_init (bitmap_iterator *bi, bitmap map1, bitmap map2,
-                         unsigned start_bit, unsigned *bit_no)
+			 unsigned start_bit, unsigned *bit_no)
 {
   bi->elt1 = map1->first;
   bi->elt2 = map2->first;
@@ -321,13 +321,13 @@ bmp_iter_and_compl_init (bitmap_iterator *bi, bitmap map1, bitmap map2,
   while (1)
     {
       if (!bi->elt1)
-        {
-          bi->elt1 = &bitmap_zero_bits;
-          break;
-        }
+	{
+	  bi->elt1 = &bitmap_zero_bits;
+	  break;
+	}
 
       if (bi->elt1->indx >= start_bit / BITMAP_ELEMENT_ALL_BITS)
-        break;
+	break;
       bi->elt1 = bi->elt1->next;
     }
 
@@ -377,10 +377,10 @@ bmp_iter_set (bitmap_iterator *bi, unsigned *bit_no)
     {
     next_bit:
       while (!(bi->bits & 1))
-        {
-          bi->bits >>= 1;
-          *bit_no += 1;
-        }
+	{
+	  bi->bits >>= 1;
+	  *bit_no += 1;
+	}
       return true;
     }
 
@@ -388,25 +388,25 @@ bmp_iter_set (bitmap_iterator *bi, unsigned *bit_no)
      the end of the last word, hence the -1.  It is not possible for
      bit_no to point at the beginning of the now last word.  */
   *bit_no = ((*bit_no + BITMAP_WORD_BITS - 1)
-             / BITMAP_WORD_BITS * BITMAP_WORD_BITS);
+	     / BITMAP_WORD_BITS * BITMAP_WORD_BITS);
   bi->word_no++;
 
   while (1)
     {
       /* Find the next nonzero word in this elt.  */
       while (bi->word_no != BITMAP_ELEMENT_WORDS)
-        {
-          bi->bits = bi->elt1->bits[bi->word_no];
-          if (bi->bits)
-            goto next_bit;
-          *bit_no += BITMAP_WORD_BITS;
-          bi->word_no++;
-        }
+	{
+	  bi->bits = bi->elt1->bits[bi->word_no];
+	  if (bi->bits)
+	    goto next_bit;
+	  *bit_no += BITMAP_WORD_BITS;
+	  bi->word_no++;
+	}
 
       /* Advance to the next element.  */
       bi->elt1 = bi->elt1->next;
       if (!bi->elt1)
-        return false;
+	return false;
       *bit_no = bi->elt1->indx * BITMAP_ELEMENT_ALL_BITS;
       bi->word_no = 0;
     }
@@ -424,10 +424,10 @@ bmp_iter_and (bitmap_iterator *bi, unsigned *bit_no)
     {
     next_bit:
       while (!(bi->bits & 1))
-        {
-          bi->bits >>= 1;
-          *bit_no += 1;
-        }
+	{
+	  bi->bits >>= 1;
+	  *bit_no += 1;
+	}
       return true;
     }
 
@@ -435,43 +435,43 @@ bmp_iter_and (bitmap_iterator *bi, unsigned *bit_no)
      the end of the last word, hence the -1.  It is not possible for
      bit_no to point at the beginning of the now last word.  */
   *bit_no = ((*bit_no + BITMAP_WORD_BITS - 1)
-             / BITMAP_WORD_BITS * BITMAP_WORD_BITS);
+	     / BITMAP_WORD_BITS * BITMAP_WORD_BITS);
   bi->word_no++;
 
   while (1)
     {
       /* Find the next nonzero word in this elt.  */
       while (bi->word_no != BITMAP_ELEMENT_WORDS)
-        {
-          bi->bits = bi->elt1->bits[bi->word_no] & bi->elt2->bits[bi->word_no];
-          if (bi->bits)
-            goto next_bit;
-          *bit_no += BITMAP_WORD_BITS;
-          bi->word_no++;
-        }
+	{
+	  bi->bits = bi->elt1->bits[bi->word_no] & bi->elt2->bits[bi->word_no];
+	  if (bi->bits)
+	    goto next_bit;
+	  *bit_no += BITMAP_WORD_BITS;
+	  bi->word_no++;
+	}
 
       /* Advance to the next identical element.  */
       do
-        {
-          /* Advance elt1 while it is less than elt2.  We always want
-             to advance one elt.  */
-          do
-            {
-              bi->elt1 = bi->elt1->next;
-              if (!bi->elt1)
-                return false;
-            }
-          while (bi->elt1->indx < bi->elt2->indx);
+	{
+	  /* Advance elt1 while it is less than elt2.  We always want
+	     to advance one elt.  */
+	  do
+	    {
+	      bi->elt1 = bi->elt1->next;
+	      if (!bi->elt1)
+		return false;
+	    }
+	  while (bi->elt1->indx < bi->elt2->indx);
 
-          /* Advance elt2 to be no less than elt1.  This might not
-             advance.  */
-          while (bi->elt2->indx < bi->elt1->indx)
-            {
-              bi->elt2 = bi->elt2->next;
-              if (!bi->elt2)
-                return false;
-            }
-        }
+	  /* Advance elt2 to be no less than elt1.  This might not
+	     advance.  */
+	  while (bi->elt2->indx < bi->elt1->indx)
+	    {
+	      bi->elt2 = bi->elt2->next;
+	      if (!bi->elt2)
+		return false;
+	    }
+	}
       while (bi->elt1->indx != bi->elt2->indx);
 
       *bit_no = bi->elt1->indx * BITMAP_ELEMENT_ALL_BITS;
@@ -491,10 +491,10 @@ bmp_iter_and_compl (bitmap_iterator *bi, unsigned *bit_no)
     {
     next_bit:
       while (!(bi->bits & 1))
-        {
-          bi->bits >>= 1;
-          *bit_no += 1;
-        }
+	{
+	  bi->bits >>= 1;
+	  *bit_no += 1;
+	}
       return true;
     }
 
@@ -502,31 +502,31 @@ bmp_iter_and_compl (bitmap_iterator *bi, unsigned *bit_no)
      the end of the last word, hence the -1.  It is not possible for
      bit_no to point at the beginning of the now last word.  */
   *bit_no = ((*bit_no + BITMAP_WORD_BITS - 1)
-             / BITMAP_WORD_BITS * BITMAP_WORD_BITS);
+	     / BITMAP_WORD_BITS * BITMAP_WORD_BITS);
   bi->word_no++;
 
   while (1)
     {
       /* Find the next nonzero word in this elt.  */
       while (bi->word_no != BITMAP_ELEMENT_WORDS)
-        {
-          bi->bits = bi->elt1->bits[bi->word_no];
-          if (bi->elt2 && bi->elt2->indx == bi->elt1->indx)
-            bi->bits &= ~bi->elt2->bits[bi->word_no];
-          if (bi->bits)
-            goto next_bit;
-          *bit_no += BITMAP_WORD_BITS;
-          bi->word_no++;
-        }
+	{
+	  bi->bits = bi->elt1->bits[bi->word_no];
+	  if (bi->elt2 && bi->elt2->indx == bi->elt1->indx)
+	    bi->bits &= ~bi->elt2->bits[bi->word_no];
+	  if (bi->bits)
+	    goto next_bit;
+	  *bit_no += BITMAP_WORD_BITS;
+	  bi->word_no++;
+	}
 
       /* Advance to the next element of elt1.  */
       bi->elt1 = bi->elt1->next;
       if (!bi->elt1)
-        return false;
+	return false;
 
       /* Advance elt2 until it is no less than elt1.  */
       while (bi->elt2 && bi->elt2->indx < bi->elt1->indx)
-        bi->elt2 = bi->elt2->next;
+	bi->elt2 = bi->elt2->next;
 
       *bit_no = bi->elt1->indx * BITMAP_ELEMENT_ALL_BITS;
       bi->word_no = 0;
@@ -538,9 +538,9 @@ bmp_iter_and_compl (bitmap_iterator *bi, unsigned *bit_no)
    should be treated as a read-only variable as it contains loop
    state.  */
 
-#define EXECUTE_IF_SET_IN_BITMAP(BITMAP, MIN, BITNUM, ITER)                \
-  for (bmp_iter_set_init (&(ITER), (BITMAP), (MIN), &(BITNUM));                \
-       bmp_iter_set (&(ITER), &(BITNUM));                                \
+#define EXECUTE_IF_SET_IN_BITMAP(BITMAP, MIN, BITNUM, ITER)		\
+  for (bmp_iter_set_init (&(ITER), (BITMAP), (MIN), &(BITNUM));		\
+       bmp_iter_set (&(ITER), &(BITNUM));				\
        bmp_iter_next (&(ITER), &(BITNUM)))
 
 /* Loop over all the bits set in BITMAP1 & BITMAP2, starting with MIN
@@ -548,10 +548,10 @@ bmp_iter_and_compl (bitmap_iterator *bi, unsigned *bit_no)
    BITNUM should be treated as a read-only variable as it contains
    loop state.  */
 
-#define EXECUTE_IF_AND_IN_BITMAP(BITMAP1, BITMAP2, MIN, BITNUM, ITER)        \
-  for (bmp_iter_and_init (&(ITER), (BITMAP1), (BITMAP2), (MIN),                \
-                          &(BITNUM));                                        \
-       bmp_iter_and (&(ITER), &(BITNUM));                                \
+#define EXECUTE_IF_AND_IN_BITMAP(BITMAP1, BITMAP2, MIN, BITNUM, ITER)	\
+  for (bmp_iter_and_init (&(ITER), (BITMAP1), (BITMAP2), (MIN),		\
+			  &(BITNUM));					\
+       bmp_iter_and (&(ITER), &(BITNUM));				\
        bmp_iter_next (&(ITER), &(BITNUM)))
 
 /* Loop over all the bits set in BITMAP1 & ~BITMAP2, starting with MIN
@@ -560,9 +560,9 @@ bmp_iter_and_compl (bitmap_iterator *bi, unsigned *bit_no)
    loop state.  */
 
 #define EXECUTE_IF_AND_COMPL_IN_BITMAP(BITMAP1, BITMAP2, MIN, BITNUM, ITER) \
-  for (bmp_iter_and_compl_init (&(ITER), (BITMAP1), (BITMAP2), (MIN),        \
-                                &(BITNUM));                                \
-       bmp_iter_and_compl (&(ITER), &(BITNUM));                                \
+  for (bmp_iter_and_compl_init (&(ITER), (BITMAP1), (BITMAP2), (MIN),	\
+				&(BITNUM));				\
+       bmp_iter_and_compl (&(ITER), &(BITNUM));				\
        bmp_iter_next (&(ITER), &(BITNUM)))
 
 #endif /* GCC_BITMAP_H */

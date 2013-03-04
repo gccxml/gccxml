@@ -133,7 +133,7 @@ typedef struct
    otherwise it returns false.  */
 typedef struct pretty_print_info pretty_printer;
 typedef bool (*printer_fn) (pretty_printer *, text_info *, const char *,
-                            int, bool, bool, bool);
+			    int, bool, bool, bool);
 
 /* Client supplied function used to decode formats.  */
 #define pp_format_decoder(PP) pp_base (PP)->format_decoder
@@ -259,12 +259,12 @@ struct pretty_print_info
      pp_character (PP, C);          \
      pp_space (PP);                 \
    } while (0)
-#define pp_scalar(PP, FORMAT, SCALAR)                              \
-  do                                                              \
-    {                                                               \
+#define pp_scalar(PP, FORMAT, SCALAR)	                      \
+  do					        	      \
+    {			         			      \
       sprintf (pp_buffer (PP)->digit_buffer, FORMAT, SCALAR); \
       pp_string (PP, pp_buffer (PP)->digit_buffer);           \
-    }                                                              \
+    }						              \
   while (0)
 #define pp_decimal_int(PP, I)  pp_scalar (PP, "%d", I)
 #define pp_wide_integer(PP, I) \

@@ -46,9 +46,9 @@ gen_lowpart_general (enum machine_mode mode, rtx x)
     return result;
   /* If it's a REG, it must be a hard reg that's not valid in MODE.  */
   else if (REG_P (x)
-           /* Or we could have a subreg of a floating point value.  */
-           || (GET_CODE (x) == SUBREG
-               && FLOAT_MODE_P (GET_MODE (SUBREG_REG (x)))))
+	   /* Or we could have a subreg of a floating point value.  */
+	   || (GET_CODE (x) == SUBREG
+	       && FLOAT_MODE_P (GET_MODE (SUBREG_REG (x)))))
     {
       result = gen_lowpart_common (mode, copy_to_reg (x));
       gcc_assert (result != 0);
@@ -63,21 +63,21 @@ gen_lowpart_general (enum machine_mode mode, rtx x)
 
       /* The following exposes the use of "x" to CSE.  */
       if (GET_MODE_SIZE (GET_MODE (x)) <= UNITS_PER_WORD
-          && SCALAR_INT_MODE_P (GET_MODE (x))
-          && TRULY_NOOP_TRUNCATION (GET_MODE_BITSIZE (mode),
-                                    GET_MODE_BITSIZE (GET_MODE (x)))
-          && ! no_new_pseudos)
-        return gen_lowpart_general (mode, force_reg (GET_MODE (x), x));
+	  && SCALAR_INT_MODE_P (GET_MODE (x))
+	  && TRULY_NOOP_TRUNCATION (GET_MODE_BITSIZE (mode),
+				    GET_MODE_BITSIZE (GET_MODE (x)))
+	  && ! no_new_pseudos)
+	return gen_lowpart_general (mode, force_reg (GET_MODE (x), x));
 
       if (WORDS_BIG_ENDIAN)
-        offset = (MAX (GET_MODE_SIZE (GET_MODE (x)), UNITS_PER_WORD)
-                  - MAX (GET_MODE_SIZE (mode), UNITS_PER_WORD));
+	offset = (MAX (GET_MODE_SIZE (GET_MODE (x)), UNITS_PER_WORD)
+		  - MAX (GET_MODE_SIZE (mode), UNITS_PER_WORD));
 
       if (BYTES_BIG_ENDIAN)
-        /* Adjust the address so that the address-after-the-data
-           is unchanged.  */
-        offset -= (MIN (UNITS_PER_WORD, GET_MODE_SIZE (mode))
-                   - MIN (UNITS_PER_WORD, GET_MODE_SIZE (GET_MODE (x))));
+	/* Adjust the address so that the address-after-the-data
+	   is unchanged.  */
+	offset -= (MIN (UNITS_PER_WORD, GET_MODE_SIZE (mode))
+		   - MIN (UNITS_PER_WORD, GET_MODE_SIZE (GET_MODE (x))));
 
       return adjust_address (x, mode, offset);
     }
@@ -97,9 +97,9 @@ gen_lowpart_no_emit_general (enum machine_mode mode, rtx x)
 
 rtx
 reg_num_sign_bit_copies_general (rtx x ATTRIBUTE_UNUSED,
-                                 enum machine_mode mode ATTRIBUTE_UNUSED,
+				 enum machine_mode mode ATTRIBUTE_UNUSED,
                                  rtx known_x ATTRIBUTE_UNUSED,
-                                 enum machine_mode known_mode ATTRIBUTE_UNUSED,
+				 enum machine_mode known_mode ATTRIBUTE_UNUSED,
                                  unsigned int known_ret ATTRIBUTE_UNUSED,
                                  unsigned int *result ATTRIBUTE_UNUSED)
 {
@@ -108,8 +108,8 @@ reg_num_sign_bit_copies_general (rtx x ATTRIBUTE_UNUSED,
 
 rtx
 reg_nonzero_bits_general (rtx x ATTRIBUTE_UNUSED,
-                          enum machine_mode mode ATTRIBUTE_UNUSED,
-                          rtx known_x ATTRIBUTE_UNUSED,
+			  enum machine_mode mode ATTRIBUTE_UNUSED,
+			  rtx known_x ATTRIBUTE_UNUSED,
                           enum machine_mode known_mode ATTRIBUTE_UNUSED,
                           unsigned HOST_WIDE_INT known_ret ATTRIBUTE_UNUSED,
                           unsigned HOST_WIDE_INT *nonzero ATTRIBUTE_UNUSED)
@@ -119,7 +119,7 @@ reg_nonzero_bits_general (rtx x ATTRIBUTE_UNUSED,
 
 bool
 reg_truncated_to_mode_general (enum machine_mode mode ATTRIBUTE_UNUSED,
-                               rtx x ATTRIBUTE_UNUSED)
+			       rtx x ATTRIBUTE_UNUSED)
 {
   return false;
 }
@@ -147,17 +147,17 @@ gen_lowpart_if_possible (enum machine_mode mode, rtx x)
       rtx new;
 
       if (WORDS_BIG_ENDIAN)
-        offset = (MAX (GET_MODE_SIZE (GET_MODE (x)), UNITS_PER_WORD)
-                  - MAX (GET_MODE_SIZE (mode), UNITS_PER_WORD));
+	offset = (MAX (GET_MODE_SIZE (GET_MODE (x)), UNITS_PER_WORD)
+		  - MAX (GET_MODE_SIZE (mode), UNITS_PER_WORD));
       if (BYTES_BIG_ENDIAN)
-        /* Adjust the address so that the address-after-the-data is
-           unchanged.  */
-        offset -= (MIN (UNITS_PER_WORD, GET_MODE_SIZE (mode))
-                   - MIN (UNITS_PER_WORD, GET_MODE_SIZE (GET_MODE (x))));
+	/* Adjust the address so that the address-after-the-data is
+	   unchanged.  */
+	offset -= (MIN (UNITS_PER_WORD, GET_MODE_SIZE (mode))
+		   - MIN (UNITS_PER_WORD, GET_MODE_SIZE (GET_MODE (x))));
 
       new = adjust_address_nv (x, mode, offset);
       if (! memory_address_p (mode, XEXP (new, 0)))
-        return 0;
+	return 0;
 
       return new;
     }

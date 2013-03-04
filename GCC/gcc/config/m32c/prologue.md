@@ -34,12 +34,12 @@
 ; We assume dwarf2out will process each set in sequence.
 (define_insn "prologue_enter_16"
   [(set (mem:HI (pre_dec:HI (reg:HI SP_REGNO)))
-        (reg:HI FB_REGNO))
+	(reg:HI FB_REGNO))
    (set (reg:HI FB_REGNO)
-        (reg:HI SP_REGNO))
+	(reg:HI SP_REGNO))
    (set (reg:HI SP_REGNO)
-        (minus:HI (reg:HI SP_REGNO)
-                   (match_operand 0 "const_int_operand" "i")))
+	(minus:HI (reg:HI SP_REGNO)
+	           (match_operand 0 "const_int_operand" "i")))
    ]
   "TARGET_A16"
   "enter\t%0"
@@ -48,12 +48,12 @@
 
 (define_insn "prologue_enter_24"
   [(set (mem:SI (pre_dec:PSI (reg:PSI SP_REGNO)))
-        (reg:SI FB_REGNO))
+	(reg:SI FB_REGNO))
    (set (reg:PSI FB_REGNO)
-        (reg:PSI SP_REGNO))
+	(reg:PSI SP_REGNO))
    (set (reg:PSI SP_REGNO)
-        (minus:PSI (reg:PSI SP_REGNO)
-                   (match_operand 0 "const_int_operand" "i")))
+	(minus:PSI (reg:PSI SP_REGNO)
+	           (match_operand 0 "const_int_operand" "i")))
    ]
   "TARGET_A24"
   "enter\t%0"
@@ -84,9 +84,9 @@
 
 (define_insn "eh_epilogue"
   [(set (pc)
-        (unspec_volatile [(match_operand 0 "m32c_r1_operand" "")
-                          (match_operand 1 "m32c_r0_operand" "")
-                          ] UNS_EH_EPILOGUE))]
+	(unspec_volatile [(match_operand 0 "m32c_r1_operand" "")
+			  (match_operand 1 "m32c_r0_operand" "")
+			  ] UNS_EH_EPILOGUE))]
   ""
   "jmp.a\t__m32c_eh_return"
   [(set_attr "flags" "x")]
@@ -94,12 +94,12 @@
 
 (define_insn "epilogue_exitd"
   [(set (reg:PSI SP_REGNO)
-        (reg:PSI FB_REGNO))
+	(reg:PSI FB_REGNO))
    (set (reg:PSI FB_REGNO)
-        (mem:PSI (reg:PSI SP_REGNO)))
+	(mem:PSI (reg:PSI SP_REGNO)))
    (set (reg:PSI SP_REGNO)
-        (plus:PSI (reg:PSI SP_REGNO)
-              (match_operand 0 "const_int_operand" "i")))
+	(plus:PSI (reg:PSI SP_REGNO)
+	      (match_operand 0 "const_int_operand" "i")))
    (return)
    ]
   ""
@@ -109,8 +109,8 @@
 
 (define_insn "epilogue_reit"
   [(set (reg:PSI SP_REGNO)
-        (plus:PSI (reg:PSI SP_REGNO)
-              (match_operand 0 "const_int_operand" "i")))
+	(plus:PSI (reg:PSI SP_REGNO)
+	      (match_operand 0 "const_int_operand" "i")))
    (return)
    ]
   ""

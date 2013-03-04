@@ -25,7 +25,7 @@ Boston, MA 02110-1301, USA.  */
 
 /* These are values set by the configure script in TARGET_CPU_DEFAULT.
    They are (sequential integer + (desired value for TARGET_DEFAULT) << 4).  */
-#define M68K_CPU_m68k        (0 + ((MASK_68020|MASK_68881|MASK_BITFIELD)<<4))
+#define M68K_CPU_m68k	(0 + ((MASK_68020|MASK_68881|MASK_BITFIELD)<<4))
 #define M68K_CPU_m68000 (1 + (0 << 4))
 #define M68K_CPU_m68010 (1 + (0 << 4)) /* make same as m68000 */
 #define M68K_CPU_m68020 (2 + ((MASK_68020|MASK_68881|MASK_BITFIELD) << 4))
@@ -102,9 +102,9 @@ Unrecognized value in TARGET_CPU_DEFAULT.
 
    Do not define this macro if it does not need to do anything.  */
 
-#define EXTRA_SPECS                                        \
-  { "asm_cpu_default",        ASM_CPU_DEFAULT_SPEC },                \
-  { "cc1_cpu_default",        CC1_CPU_DEFAULT_SPEC },                \
+#define EXTRA_SPECS					\
+  { "asm_cpu_default",	ASM_CPU_DEFAULT_SPEC },		\
+  { "cc1_cpu_default",	CC1_CPU_DEFAULT_SPEC },		\
   SUBTARGET_EXTRA_SPECS
 
 #define CPP_SUBTARGET_SPEC ""

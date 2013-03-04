@@ -37,15 +37,15 @@ Boston, MA 02110-1301, USA.  */
 
 static _Unwind_Reason_Code
 sparc64_fallback_frame_state (struct _Unwind_Context *context,
-                              _Unwind_FrameState *fs)
+			      _Unwind_FrameState *fs)
 {
   unsigned int *pc = context->ra;
   long new_cfa, i;
   long regs_off, fpu_save_off;
   long this_cfa, fpu_save;
 
-  if (pc[0] != 0x82102065                /* mov NR_rt_sigreturn, %g1 */
-      || pc[1] != 0x91d0206d)                /* ta 0x6d */
+  if (pc[0] != 0x82102065		/* mov NR_rt_sigreturn, %g1 */
+      || pc[1] != 0x91d0206d)		/* ta 0x6d */
     return _URC_END_OF_STACK;
   regs_off = 192 + 128;
   fpu_save_off = regs_off + (16 * 8) + (3 * 8) + (2 * 4);
@@ -60,24 +60,24 @@ sparc64_fallback_frame_state (struct _Unwind_Context *context,
     {
       fs->regs.reg[i].how = REG_SAVED_OFFSET;
       fs->regs.reg[i].loc.offset =
-        this_cfa + (regs_off + (i * 8)) - new_cfa;
+	this_cfa + (regs_off + (i * 8)) - new_cfa;
     }
   for (i = 0; i < 16; ++i)
     {
       fs->regs.reg[i + 16].how = REG_SAVED_OFFSET;
       fs->regs.reg[i + 16].loc.offset =
-        this_cfa + (i * 8) - new_cfa;
+	this_cfa + (i * 8) - new_cfa;
     }
   if (fpu_save)
     {
       for (i = 0; i < 64; ++i)
-        {
-          if (i > 32 && (i & 0x1))
-            continue;
-          fs->regs.reg[i + 32].how = REG_SAVED_OFFSET;
-          fs->regs.reg[i + 32].loc.offset =
-            (fpu_save + (i * 4)) - new_cfa;
-        }
+	{
+	  if (i > 32 && (i & 0x1))
+	    continue;
+	  fs->regs.reg[i + 32].how = REG_SAVED_OFFSET;
+	  fs->regs.reg[i + 32].loc.offset =
+	    (fpu_save + (i * 4)) - new_cfa;
+	}
     }
   /* Stick return address into %g0, same trick Alpha uses.  */
   fs->regs.reg[0].how = REG_SAVED_OFFSET;
@@ -94,18 +94,18 @@ sparc64_fallback_frame_state (struct _Unwind_Context *context,
 
 static _Unwind_Reason_Code
 sparc_fallback_frame_state (struct _Unwind_Context *context,
-                            _Unwind_FrameState *fs)
+			    _Unwind_FrameState *fs)
 {
   unsigned int *pc = context->ra;
   int new_cfa, i, oldstyle;
   int regs_off, fpu_save_off;
   int fpu_save, this_cfa;
 
-  if (pc[1] != 0x91d02010)                /* ta 0x10 */
+  if (pc[1] != 0x91d02010)		/* ta 0x10 */
     return _URC_END_OF_STACK;
-  if (pc[0] == 0x821020d8)                /* mov NR_sigreturn, %g1 */
+  if (pc[0] == 0x821020d8)		/* mov NR_sigreturn, %g1 */
     oldstyle = 1;
-  else if (pc[0] == 0x82102065)        /* mov NR_rt_sigreturn, %g1 */
+  else if (pc[0] == 0x82102065)	/* mov NR_rt_sigreturn, %g1 */
     oldstyle = 0;
   else
     return _URC_END_OF_STACK;
@@ -128,25 +128,25 @@ sparc_fallback_frame_state (struct _Unwind_Context *context,
   for (i = 1; i < 16; ++i)
     {
       if (i == 14)
-        continue;
+	continue;
       fs->regs.reg[i].how = REG_SAVED_OFFSET;
       fs->regs.reg[i].loc.offset =
-        this_cfa + (regs_off+(4 * 4)+(i * 4)) - new_cfa;
+	this_cfa + (regs_off+(4 * 4)+(i * 4)) - new_cfa;
     }
   for (i = 0; i < 16; ++i)
     {
       fs->regs.reg[i + 16].how = REG_SAVED_OFFSET;
       fs->regs.reg[i + 16].loc.offset =
-        this_cfa + (i * 4) - new_cfa;
+	this_cfa + (i * 4) - new_cfa;
     }
   if (fpu_save)
     {
       for (i = 0; i < 32; ++i)
-        {
-          fs->regs.reg[i + 32].how = REG_SAVED_OFFSET;
-          fs->regs.reg[i + 32].loc.offset =
-            (fpu_save + (i * 4)) - new_cfa;
-        }
+	{
+	  fs->regs.reg[i + 32].how = REG_SAVED_OFFSET;
+	  fs->regs.reg[i + 32].loc.offset =
+	    (fpu_save + (i * 4)) - new_cfa;
+	}
     }
   /* Stick return address into %g0, same trick Alpha uses.  */
   fs->regs.reg[0].how = REG_SAVED_OFFSET;

@@ -102,7 +102,7 @@ unlock_std_streams (void)
 }
 
 FILE *
-fopen_unlocked (const char *path, const char *mode)                
+fopen_unlocked (const char *path, const char *mode)		
 {
   FILE *const fp = fopen (path, mode);
   unlock_1 (fp);

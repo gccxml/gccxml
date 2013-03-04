@@ -22,15 +22,15 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
 extern void dw2_assemble_integer (int, rtx);
 
 extern void dw2_asm_output_data (int, unsigned HOST_WIDE_INT,
-                                 const char *, ...)
+				 const char *, ...)
      ATTRIBUTE_NULL_PRINTF_3;
 
 extern void dw2_asm_output_delta (int, const char *, const char *,
-                                  const char *, ...)
+				  const char *, ...)
      ATTRIBUTE_NULL_PRINTF_4;
 
 extern void dw2_asm_output_offset (int, const char *, section *, 
-                                   const char *, ...)
+				   const char *, ...)
      ATTRIBUTE_NULL_PRINTF_4;
 
 extern void dw2_asm_output_addr (int, const char *, const char *, ...)
@@ -40,23 +40,23 @@ extern void dw2_asm_output_addr_rtx (int, rtx, const char *, ...)
      ATTRIBUTE_NULL_PRINTF_3;
 
 extern void dw2_asm_output_encoded_addr_rtx (int, rtx, bool,
-                                             const char *, ...)
+					     const char *, ...)
      ATTRIBUTE_NULL_PRINTF_4;
 
 extern void dw2_asm_output_nstring (const char *, size_t,
-                                    const char *, ...)
+				    const char *, ...)
      ATTRIBUTE_NULL_PRINTF_3;
 
-extern void dw2_asm_output_data_uleb128        (unsigned HOST_WIDE_INT,
-                                         const char *, ...)
+extern void dw2_asm_output_data_uleb128	(unsigned HOST_WIDE_INT,
+					 const char *, ...)
      ATTRIBUTE_NULL_PRINTF_2;
 
-extern void dw2_asm_output_data_sleb128        (HOST_WIDE_INT,
-                                         const char *, ...)
+extern void dw2_asm_output_data_sleb128	(HOST_WIDE_INT,
+					 const char *, ...)
      ATTRIBUTE_NULL_PRINTF_2;
 
 extern void dw2_asm_output_delta_uleb128 (const char *, const char *,
-                                          const char *, ...)
+					  const char *, ...)
      ATTRIBUTE_NULL_PRINTF_3;
 
 extern int size_of_uleb128 (unsigned HOST_WIDE_INT);
@@ -73,6 +73,6 @@ extern void dw2_asm_output_pcrel (int, const char *, const char *, ...)
      ATTRIBUTE_NULL_PRINTF_3;
 
 extern void dw2_asm_output_delta_sleb128 (const char *, const char *,
-                                          const char *, ...)
+					  const char *, ...)
      ATTRIBUTE_NULL_PRINTF_3;
 #endif

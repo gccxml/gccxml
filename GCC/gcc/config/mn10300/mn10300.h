@@ -32,14 +32,14 @@ Boston, MA 02110-1301, USA.  */
 
 /* Names to predefine in the preprocessor for this target machine.  */
 
-#define TARGET_CPU_CPP_BUILTINS()                \
-  do                                                \
-    {                                                \
-      builtin_define ("__mn10300__");                \
-      builtin_define ("__MN10300__");                \
-      builtin_assert ("cpu=mn10300");                \
-      builtin_assert ("machine=mn10300");        \
-    }                                                \
+#define TARGET_CPU_CPP_BUILTINS()		\
+  do						\
+    {						\
+      builtin_define ("__mn10300__");		\
+      builtin_define ("__MN10300__");		\
+      builtin_assert ("cpu=mn10300");		\
+      builtin_assert ("machine=mn10300");	\
+    }						\
   while (0)
 
 #define CPP_SPEC "%{mam33:-D__AM33__} %{mam33-2:-D__AM33__=2 -D__AM33_2__}"
@@ -54,8 +54,8 @@ enum processor_type {
 
 extern enum processor_type mn10300_processor;
 
-#define TARGET_AM33        (mn10300_processor >= PROCESSOR_AM33)
-#define TARGET_AM33_2        (mn10300_processor == PROCESSOR_AM33_2)
+#define TARGET_AM33	(mn10300_processor >= PROCESSOR_AM33)
+#define TARGET_AM33_2	(mn10300_processor == PROCESSOR_AM33_2)
 
 #ifndef PROCESSOR_DEFAULT
 #define PROCESSOR_DEFAULT PROCESSOR_MN10300
@@ -85,13 +85,13 @@ extern enum processor_type mn10300_processor;
 #define WORDS_BIG_ENDIAN 0
 
 /* Width of a word, in units (bytes).  */
-#define UNITS_PER_WORD                4
+#define UNITS_PER_WORD		4
 
 /* Allocation boundary (in *bits*) for storing arguments in argument list.  */
-#define PARM_BOUNDARY                32
+#define PARM_BOUNDARY		32
 
 /* The stack goes in 32 bit lumps.  */
-#define STACK_BOUNDARY                 32
+#define STACK_BOUNDARY 		32
 
 /* Allocation boundary (in *bits*) for the code of a function.
    8 is the minimum boundary; it's unclear if bigger alignments
@@ -99,7 +99,7 @@ extern enum processor_type mn10300_processor;
 #define FUNCTION_BOUNDARY 8
 
 /* No data type wants to be aligned rounder than this.  */
-#define BIGGEST_ALIGNMENT        32
+#define BIGGEST_ALIGNMENT	32
 
 /* Alignment of field after `int : 0' in a structure.  */
 #define EMPTY_FIELD_BOUNDARY 32
@@ -179,23 +179,23 @@ extern enum processor_type mn10300_processor;
   }
 
 #define CONDITIONAL_REGISTER_USAGE \
-{                                                \
-  unsigned int i;                                \
-                                                \
-  if (!TARGET_AM33)                                \
-    {                                                \
-      for (i = FIRST_EXTENDED_REGNUM;                 \
-           i <= LAST_EXTENDED_REGNUM; i++)         \
-        fixed_regs[i] = call_used_regs[i] = 1;         \
-    }                                                \
-  if (!TARGET_AM33_2)                                \
-    {                                                \
-      for (i = FIRST_FP_REGNUM;                        \
-           i <= LAST_FP_REGNUM;                 \
-           i++)                                 \
-        fixed_regs[i] = call_used_regs[i] = 1;        \
-    }                                                \
-  if (flag_pic)                                        \
+{						\
+  unsigned int i;				\
+						\
+  if (!TARGET_AM33)				\
+    {						\
+      for (i = FIRST_EXTENDED_REGNUM; 		\
+	   i <= LAST_EXTENDED_REGNUM; i++) 	\
+	fixed_regs[i] = call_used_regs[i] = 1; 	\
+    }						\
+  if (!TARGET_AM33_2)				\
+    {						\
+      for (i = FIRST_FP_REGNUM;			\
+	   i <= LAST_FP_REGNUM; 		\
+           i++) 				\
+	fixed_regs[i] = call_used_regs[i] = 1;	\
+    }						\
+  if (flag_pic)					\
     fixed_regs[PIC_OFFSET_TABLE_REGNUM] =       \
     call_used_regs[PIC_OFFSET_TABLE_REGNUM] = 1;\
 }
@@ -216,7 +216,7 @@ extern enum processor_type mn10300_processor;
  ((REGNO_REG_CLASS (REGNO) == DATA_REGS \
    || (TARGET_AM33 && REGNO_REG_CLASS (REGNO) == ADDRESS_REGS) \
    || REGNO_REG_CLASS (REGNO) == EXTENDED_REGS) \
-  ? ((REGNO) & 1) == 0 || GET_MODE_SIZE (MODE) <= 4        \
+  ? ((REGNO) & 1) == 0 || GET_MODE_SIZE (MODE) <= 4	\
   : ((REGNO) & 1) == 0 || GET_MODE_SIZE (MODE) == 4)
 
 /* Value is 1 if it is a good idea to tie two pseudo registers
@@ -278,22 +278,22 @@ enum reg_class {
    This is an initializer for a vector of HARD_REG_SET
    of length N_REG_CLASSES.  */
 
-#define REG_CLASS_CONTENTS                          \
-{  { 0,        0 },                /* No regs      */        \
- { 0x0000f, 0 },        /* DATA_REGS */                \
- { 0x001f0, 0 },        /* ADDRESS_REGS */        \
- { 0x00200, 0 },        /* SP_REGS */                \
- { 0x001ff, 0 },        /* DATA_OR_ADDRESS_REGS */\
- { 0x003f0, 0 },        /* SP_OR_ADDRESS_REGS */\
- { 0x3fc00, 0 },        /* EXTENDED_REGS */        \
- { 0x3fc0f, 0 },        /* DATA_OR_EXTENDED_REGS */        \
- { 0x3fdf0, 0 },        /* ADDRESS_OR_EXTENDED_REGS */        \
- { 0x3fe00, 0 },        /* SP_OR_EXTENDED_REGS */        \
- { 0x3fff0, 0 },        /* SP_OR_ADDRESS_OR_EXTENDED_REGS */        \
- { 0xfffc0000, 0x3ffff }, /* FP_REGS */                \
- { 0x03fc0000, 0 },        /* FP_ACC_REGS */        \
- { 0x3fdff, 0 },         /* GENERAL_REGS */        \
- { 0xffffffff, 0x3ffff } /* ALL_REGS         */        \
+#define REG_CLASS_CONTENTS  			\
+{  { 0,	0 },		/* No regs      */	\
+ { 0x0000f, 0 },	/* DATA_REGS */		\
+ { 0x001f0, 0 },	/* ADDRESS_REGS */	\
+ { 0x00200, 0 },	/* SP_REGS */		\
+ { 0x001ff, 0 },	/* DATA_OR_ADDRESS_REGS */\
+ { 0x003f0, 0 },	/* SP_OR_ADDRESS_REGS */\
+ { 0x3fc00, 0 },	/* EXTENDED_REGS */	\
+ { 0x3fc0f, 0 },	/* DATA_OR_EXTENDED_REGS */	\
+ { 0x3fdf0, 0 },	/* ADDRESS_OR_EXTENDED_REGS */	\
+ { 0x3fe00, 0 },	/* SP_OR_EXTENDED_REGS */	\
+ { 0x3fff0, 0 },	/* SP_OR_ADDRESS_OR_EXTENDED_REGS */	\
+ { 0xfffc0000, 0x3ffff }, /* FP_REGS */		\
+ { 0x03fc0000, 0 },	/* FP_ACC_REGS */	\
+ { 0x3fdff, 0 }, 	/* GENERAL_REGS */	\
+ { 0xffffffff, 0x3ffff } /* ALL_REGS 	*/	\
 }
 
 /* The same information, inverted:
@@ -354,25 +354,25 @@ enum reg_class {
 #endif
 
 # define REGNO_IN_RANGE_P(regno,min,max,strict) \
-  (IN_RANGE ((regno), (min), (max))                 \
-   || ((strict)                                        \
-       ? (reg_renumber                                \
-          && reg_renumber[(regno)] >= (min)        \
-          && reg_renumber[(regno)] <= (max))        \
+  (IN_RANGE ((regno), (min), (max)) 		\
+   || ((strict)					\
+       ? (reg_renumber				\
+	  && reg_renumber[(regno)] >= (min)	\
+	  && reg_renumber[(regno)] <= (max))	\
        : (regno) >= FIRST_PSEUDO_REGISTER))
 
 #define REGNO_DATA_P(regno, strict) \
   (REGNO_IN_RANGE_P ((regno), FIRST_DATA_REGNUM, LAST_DATA_REGNUM, \
-                     (strict)))
+		     (strict)))
 #define REGNO_ADDRESS_P(regno, strict) \
   (REGNO_IN_RANGE_P ((regno), FIRST_ADDRESS_REGNUM, LAST_ADDRESS_REGNUM, \
-                     (strict)))
+		     (strict)))
 #define REGNO_SP_P(regno, strict) \
   (REGNO_IN_RANGE_P ((regno), STACK_POINTER_REGNUM, STACK_POINTER_REGNUM, \
-                     (strict)))
+		     (strict)))
 #define REGNO_EXTENDED_P(regno, strict) \
   (REGNO_IN_RANGE_P ((regno), FIRST_EXTENDED_REGNUM, LAST_EXTENDED_REGNUM, \
-                     (strict)))
+		     (strict)))
 #define REGNO_AM33_P(regno, strict) \
   (REGNO_DATA_P ((regno), (strict)) || REGNO_ADDRESS_P ((regno), (strict)) \
    || REGNO_EXTENDED_P ((regno), (strict)))
@@ -407,16 +407,16 @@ enum reg_class {
    In general this is just CLASS; but on some machines
    in some cases it is preferable to use a more restrictive class.  */
 
-#define PREFERRED_RELOAD_CLASS(X,CLASS)                                \
-  ((X) == stack_pointer_rtx && (CLASS) != SP_REGS                \
-   ? ADDRESS_OR_EXTENDED_REGS                                        \
-   : (GET_CODE (X) == MEM                                        \
-      || (GET_CODE (X) == REG                                        \
-          && REGNO (X) >= FIRST_PSEUDO_REGISTER)                \
-      || (GET_CODE (X) == SUBREG                                \
-          && GET_CODE (SUBREG_REG (X)) == REG                        \
-          && REGNO (SUBREG_REG (X)) >= FIRST_PSEUDO_REGISTER)        \
-      ? LIMIT_RELOAD_CLASS (GET_MODE (X), CLASS)                \
+#define PREFERRED_RELOAD_CLASS(X,CLASS)				\
+  ((X) == stack_pointer_rtx && (CLASS) != SP_REGS		\
+   ? ADDRESS_OR_EXTENDED_REGS					\
+   : (GET_CODE (X) == MEM					\
+      || (GET_CODE (X) == REG					\
+	  && REGNO (X) >= FIRST_PSEUDO_REGISTER)		\
+      || (GET_CODE (X) == SUBREG				\
+	  && GET_CODE (SUBREG_REG (X)) == REG			\
+	  && REGNO (SUBREG_REG (X)) >= FIRST_PSEUDO_REGISTER)	\
+      ? LIMIT_RELOAD_CLASS (GET_MODE (X), CLASS)		\
       : (CLASS)))
 
 #define PREFERRED_OUTPUT_RELOAD_CLASS(X,CLASS) \
@@ -432,7 +432,7 @@ enum reg_class {
 /* Return the maximum number of consecutive registers
    needed to represent mode MODE in a register of class CLASS.  */
 
-#define CLASS_MAX_NREGS(CLASS, MODE)        \
+#define CLASS_MAX_NREGS(CLASS, MODE)	\
   ((GET_MODE_SIZE (MODE) + UNITS_PER_WORD - 1) / UNITS_PER_WORD)
 
 /* A class that contains registers which the compiler must always
@@ -471,8 +471,8 @@ enum reg_class {
   `G' is a floating-point zero.  */
 
 #define CONST_DOUBLE_OK_FOR_LETTER_P(VALUE, C) \
-  ((C) == 'G' ? (GET_MODE_CLASS (GET_MODE (VALUE)) == MODE_FLOAT        \
-                 && (VALUE) == CONST0_RTX (GET_MODE (VALUE))) : 0)
+  ((C) == 'G' ? (GET_MODE_CLASS (GET_MODE (VALUE)) == MODE_FLOAT	\
+		 && (VALUE) == CONST0_RTX (GET_MODE (VALUE))) : 0)
 
 
 /* Stack layout; function entry, exit and calling.  */
@@ -502,9 +502,9 @@ enum reg_class {
 
 #define FIRST_PARM_OFFSET(FNDECL) 4
 
-#define ELIMINABLE_REGS                                \
-{{ ARG_POINTER_REGNUM, STACK_POINTER_REGNUM},        \
- { ARG_POINTER_REGNUM, FRAME_POINTER_REGNUM},        \
+#define ELIMINABLE_REGS				\
+{{ ARG_POINTER_REGNUM, STACK_POINTER_REGNUM},	\
+ { ARG_POINTER_REGNUM, FRAME_POINTER_REGNUM},	\
  { FRAME_POINTER_REGNUM, STACK_POINTER_REGNUM}}
 
 #define CAN_ELIMINATE(FROM, TO) 1
@@ -567,10 +567,10 @@ struct cum_arg {int nbytes; };
    of mode MODE and data type TYPE.
    (TYPE is null for libcalls where that information may not be available.)  */
 
-#define FUNCTION_ARG_ADVANCE(CUM, MODE, TYPE, NAMED)        \
- ((CUM).nbytes += ((MODE) != BLKmode                        \
-                   ? (GET_MODE_SIZE (MODE) + 3) & ~3        \
-                   : (int_size_in_bytes (TYPE) + 3) & ~3))
+#define FUNCTION_ARG_ADVANCE(CUM, MODE, TYPE, NAMED)	\
+ ((CUM).nbytes += ((MODE) != BLKmode			\
+	           ? (GET_MODE_SIZE (MODE) + 3) & ~3	\
+	           : (int_size_in_bytes (TYPE) + 3) & ~3))
 
 /* Define where to put the arguments to a function.
    Value is zero to push the argument on the stack,
@@ -624,17 +624,17 @@ struct cum_arg {int nbytes; };
 
 #define FUNCTION_PROFILER(FILE, LABELNO) ;
 
-#define TRAMPOLINE_TEMPLATE(FILE)                        \
-  do {                                                        \
-    fprintf (FILE, "\tadd -4,sp\n");                        \
-    fprintf (FILE, "\t.long 0x0004fffa\n");                \
-    fprintf (FILE, "\tmov (0,sp),a0\n");                \
-    fprintf (FILE, "\tadd 4,sp\n");                        \
-    fprintf (FILE, "\tmov (13,a0),a1\n");                \
-    fprintf (FILE, "\tmov (17,a0),a0\n");                \
-    fprintf (FILE, "\tjmp (a0)\n");                        \
-    fprintf (FILE, "\t.long 0\n");                        \
-    fprintf (FILE, "\t.long 0\n");                        \
+#define TRAMPOLINE_TEMPLATE(FILE)			\
+  do {							\
+    fprintf (FILE, "\tadd -4,sp\n");			\
+    fprintf (FILE, "\t.long 0x0004fffa\n");		\
+    fprintf (FILE, "\tmov (0,sp),a0\n");		\
+    fprintf (FILE, "\tadd 4,sp\n");			\
+    fprintf (FILE, "\tmov (13,a0),a1\n");		\
+    fprintf (FILE, "\tmov (17,a0),a0\n");		\
+    fprintf (FILE, "\tjmp (a0)\n");			\
+    fprintf (FILE, "\t.long 0\n");			\
+    fprintf (FILE, "\t.long 0\n");			\
   } while (0)
 
 /* Length in units of the trampoline for entering a nested function.  */
@@ -647,12 +647,12 @@ struct cum_arg {int nbytes; };
    FNADDR is an RTX for the address of the function's pure code.
    CXT is an RTX for the static chain value for the function.  */
 
-#define INITIALIZE_TRAMPOLINE(TRAMP, FNADDR, CXT)                        \
-{                                                                        \
-  emit_move_insn (gen_rtx_MEM (SImode, plus_constant ((TRAMP), 0x14)),        \
-                  (CXT));                                                \
-  emit_move_insn (gen_rtx_MEM (SImode, plus_constant ((TRAMP), 0x18)),        \
-                 (FNADDR));                                                \
+#define INITIALIZE_TRAMPOLINE(TRAMP, FNADDR, CXT)			\
+{									\
+  emit_move_insn (gen_rtx_MEM (SImode, plus_constant ((TRAMP), 0x14)),	\
+ 		 (CXT));						\
+  emit_move_insn (gen_rtx_MEM (SImode, plus_constant ((TRAMP), 0x18)),	\
+		 (FNADDR));						\
 }
 /* A C expression whose value is RTL representing the value of the return
    address for the frame COUNT steps up from the current frame.
@@ -682,32 +682,32 @@ struct cum_arg {int nbytes; };
    (GET_CODE (OP) == MEM && ! CONSTANT_ADDRESS_P (XEXP (OP, 0)))
 
 #define OK_FOR_R(OP) \
-   (GET_CODE (OP) == MEM                                        \
-    && GET_MODE (OP) == QImode                                        \
-    && (CONSTANT_ADDRESS_P (XEXP (OP, 0))                        \
-        || (GET_CODE (XEXP (OP, 0)) == REG                        \
-            && REG_OK_FOR_BIT_BASE_P (XEXP (OP, 0))                \
-            && XEXP (OP, 0) != stack_pointer_rtx)                \
-        || (GET_CODE (XEXP (OP, 0)) == PLUS                        \
-            && GET_CODE (XEXP (XEXP (OP, 0), 0)) == REG                \
-            && REG_OK_FOR_BIT_BASE_P (XEXP (XEXP (OP, 0), 0))        \
-            && XEXP (XEXP (OP, 0), 0) != stack_pointer_rtx        \
-            && GET_CODE (XEXP (XEXP (OP, 0), 1)) == CONST_INT        \
-            && INT_8_BITS (INTVAL (XEXP (XEXP (OP, 0), 1))))))
-         
+   (GET_CODE (OP) == MEM					\
+    && GET_MODE (OP) == QImode					\
+    && (CONSTANT_ADDRESS_P (XEXP (OP, 0))			\
+	|| (GET_CODE (XEXP (OP, 0)) == REG			\
+	    && REG_OK_FOR_BIT_BASE_P (XEXP (OP, 0))		\
+	    && XEXP (OP, 0) != stack_pointer_rtx)		\
+	|| (GET_CODE (XEXP (OP, 0)) == PLUS			\
+	    && GET_CODE (XEXP (XEXP (OP, 0), 0)) == REG		\
+	    && REG_OK_FOR_BIT_BASE_P (XEXP (XEXP (OP, 0), 0))	\
+	    && XEXP (XEXP (OP, 0), 0) != stack_pointer_rtx	\
+	    && GET_CODE (XEXP (XEXP (OP, 0), 1)) == CONST_INT	\
+	    && INT_8_BITS (INTVAL (XEXP (XEXP (OP, 0), 1))))))
+	 
 #define OK_FOR_T(OP) \
-   (GET_CODE (OP) == MEM                                        \
-    && GET_MODE (OP) == QImode                                        \
-    && (GET_CODE (XEXP (OP, 0)) == REG                                \
-        && REG_OK_FOR_BIT_BASE_P (XEXP (OP, 0))                        \
-        && XEXP (OP, 0) != stack_pointer_rtx))
+   (GET_CODE (OP) == MEM					\
+    && GET_MODE (OP) == QImode					\
+    && (GET_CODE (XEXP (OP, 0)) == REG				\
+	&& REG_OK_FOR_BIT_BASE_P (XEXP (OP, 0))			\
+	&& XEXP (OP, 0) != stack_pointer_rtx))
 
 #define EXTRA_CONSTRAINT(OP, C) \
  ((C) == 'R' ? OK_FOR_R (OP) \
   : (C) == 'Q' ? OK_FOR_Q (OP) \
   : (C) == 'S' && flag_pic \
   ? GET_CODE (OP) == UNSPEC && (XINT (OP, 1) == UNSPEC_PLT \
-                                || XINT (OP, 1) == UNSPEC_PIC) \
+				|| XINT (OP, 1) == UNSPEC_PIC) \
   : (C) == 'S' ? GET_CODE (OP) == SYMBOL_REF \
   : (C) == 'T' ? OK_FOR_T (OP) \
   : 0)
@@ -741,19 +741,19 @@ struct cum_arg {int nbytes; };
 
 /* Accept either REG or SUBREG where a register is valid.  */
   
-#define RTX_OK_FOR_BASE_P(X, strict)                                \
-  ((REG_P (X) && REGNO_STRICT_OK_FOR_BASE_P (REGNO (X),                \
-                                              (strict)))         \
-   || (GET_CODE (X) == SUBREG && REG_P (SUBREG_REG (X))                \
-       && REGNO_STRICT_OK_FOR_BASE_P (REGNO (SUBREG_REG (X)),        \
-                                       (strict))))
+#define RTX_OK_FOR_BASE_P(X, strict)				\
+  ((REG_P (X) && REGNO_STRICT_OK_FOR_BASE_P (REGNO (X),		\
+ 					     (strict))) 	\
+   || (GET_CODE (X) == SUBREG && REG_P (SUBREG_REG (X))		\
+       && REGNO_STRICT_OK_FOR_BASE_P (REGNO (SUBREG_REG (X)),	\
+ 				      (strict))))
 
-#define GO_IF_LEGITIMATE_ADDRESS(MODE, X, ADDR)            \
-do                                                        \
-  {                                                        \
-    if (legitimate_address_p ((MODE), (X), REG_STRICT))        \
-      goto ADDR;                                        \
-  }                                                        \
+#define GO_IF_LEGITIMATE_ADDRESS(MODE, X, ADDR)    	\
+do							\
+  {							\
+    if (legitimate_address_p ((MODE), (X), REG_STRICT))	\
+      goto ADDR;					\
+  }							\
 while (0) 
 
 
@@ -771,8 +771,8 @@ while (0)
    opportunities to optimize the output.  */
 
 #define LEGITIMIZE_ADDRESS(X, OLDX, MODE, WIN)  \
-{ rtx orig_x = (X);                                \
-  (X) = legitimize_address (X, OLDX, MODE);        \
+{ rtx orig_x = (X);				\
+  (X) = legitimize_address (X, OLDX, MODE);	\
   if ((X) != orig_x && memory_address_p (MODE, X)) \
     goto WIN; }
 
@@ -794,13 +794,13 @@ while (0)
 
 /* Register to hold the addressing base for
    position independent code access to data items.  */
-#define PIC_OFFSET_TABLE_REGNUM        PIC_REG
+#define PIC_OFFSET_TABLE_REGNUM	PIC_REG
 
 /* The name of the pseudo-symbol representing the Global Offset Table.  */
 #define GOT_SYMBOL_NAME "*_GLOBAL_OFFSET_TABLE_"
 
-#define SYMBOLIC_CONST_P(X)        \
-((GET_CODE (X) == SYMBOL_REF || GET_CODE (X) == LABEL_REF)        \
+#define SYMBOLIC_CONST_P(X)	\
+((GET_CODE (X) == SYMBOL_REF || GET_CODE (X) == LABEL_REF)	\
   && ! LEGITIMATE_PIC_OPERAND_P (X))
 
 /* Non-global SYMBOL_REFs have SYMBOL_REF_FLAG enabled.  */
@@ -809,38 +809,38 @@ while (0)
 /* Recognize machine-specific patterns that may appear within
    constants.  Used for PIC-specific UNSPECs.  */
 #define OUTPUT_ADDR_CONST_EXTRA(STREAM, X, FAIL) \
-  do                                                                        \
-    if (GET_CODE (X) == UNSPEC && XVECLEN ((X), 0) == 1)        \
-      {                                                                        \
-        switch (XINT ((X), 1))                                                \
-          {                                                                \
-          case UNSPEC_INT_LABEL:                                        \
-            asm_fprintf ((STREAM), ".%LLIL%d",                                \
-                          INTVAL (XVECEXP ((X), 0, 0)));                        \
-            break;                                                        \
-          case UNSPEC_PIC:                                                \
-            /* GLOBAL_OFFSET_TABLE or local symbols, no suffix.  */        \
-            output_addr_const ((STREAM), XVECEXP ((X), 0, 0));                \
-            break;                                                        \
-          case UNSPEC_GOT:                                                \
-            output_addr_const ((STREAM), XVECEXP ((X), 0, 0));                \
-            fputs ("@GOT", (STREAM));                                        \
-            break;                                                        \
-          case UNSPEC_GOTOFF:                                                \
-            output_addr_const ((STREAM), XVECEXP ((X), 0, 0));                \
-            fputs ("@GOTOFF", (STREAM));                                \
-            break;                                                        \
-          case UNSPEC_PLT:                                                \
-            output_addr_const ((STREAM), XVECEXP ((X), 0, 0));                \
-            fputs ("@PLT", (STREAM));                                        \
-            break;                                                        \
-          default:                                                        \
-            goto FAIL;                                                        \
-          }                                                                \
-        break;                                                                \
-      }                                                                        \
-    else                                                                \
-      goto FAIL;                                                        \
+  do									\
+    if (GET_CODE (X) == UNSPEC && XVECLEN ((X), 0) == 1)	\
+      {									\
+	switch (XINT ((X), 1))						\
+	  {								\
+	  case UNSPEC_INT_LABEL:					\
+	    asm_fprintf ((STREAM), ".%LLIL%d",				\
+ 			 INTVAL (XVECEXP ((X), 0, 0)));			\
+	    break;							\
+	  case UNSPEC_PIC:						\
+	    /* GLOBAL_OFFSET_TABLE or local symbols, no suffix.  */	\
+	    output_addr_const ((STREAM), XVECEXP ((X), 0, 0));		\
+	    break;							\
+	  case UNSPEC_GOT:						\
+	    output_addr_const ((STREAM), XVECEXP ((X), 0, 0));		\
+	    fputs ("@GOT", (STREAM));					\
+	    break;							\
+	  case UNSPEC_GOTOFF:						\
+	    output_addr_const ((STREAM), XVECEXP ((X), 0, 0));		\
+	    fputs ("@GOTOFF", (STREAM));				\
+	    break;							\
+	  case UNSPEC_PLT:						\
+	    output_addr_const ((STREAM), XVECEXP ((X), 0, 0));		\
+	    fputs ("@PLT", (STREAM));					\
+	    break;							\
+	  default:							\
+	    goto FAIL;							\
+	  }								\
+	break;								\
+      }									\
+    else								\
+      goto FAIL;							\
   while (0)
 
 /* Tell final.c how to eliminate redundant test instructions.  */
@@ -926,9 +926,9 @@ while (0)
 /* This is how we tell the assembler that two symbols have the same value.  */
 
 #define ASM_OUTPUT_DEF(FILE,NAME1,NAME2) \
-  do { assemble_name(FILE, NAME1);          \
-       fputs(" = ", FILE);                 \
-       assemble_name(FILE, NAME2);         \
+  do { assemble_name(FILE, NAME1); 	 \
+       fputs(" = ", FILE);		 \
+       assemble_name(FILE, NAME2);	 \
        fputc('\n', FILE); } while (0)
 
 
@@ -978,8 +978,8 @@ while (0)
 #define ASM_OUTPUT_ADDR_DIFF_ELT(FILE, BODY, VALUE, REL) \
   fprintf (FILE, "\t%s .L%d-.L%d\n", ".long", VALUE, REL)
 
-#define ASM_OUTPUT_ALIGN(FILE,LOG)        \
-  if ((LOG) != 0)                        \
+#define ASM_OUTPUT_ALIGN(FILE,LOG)	\
+  if ((LOG) != 0)			\
     fprintf (FILE, "\t.align %d\n", (LOG))
 
 /* We don't have to worry about dbx compatibility for the mn10300.  */
@@ -1030,7 +1030,7 @@ while (0)
 
 /* Max number of bytes we can move from memory to memory
    in one reasonably fast instruction.  */
-#define MOVE_MAX        4
+#define MOVE_MAX	4
 
 /* Define if shifts truncate the shift count
    which implies one can omit a sign-extension or zero-extension

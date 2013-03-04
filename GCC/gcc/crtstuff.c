@@ -75,14 +75,14 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
 #endif
 
 #ifndef CRT_CALL_STATIC_FUNCTION
-# define CRT_CALL_STATIC_FUNCTION(SECTION_OP, FUNC)        \
-static void __attribute__((__used__))                        \
-call_ ## FUNC (void)                                        \
-{                                                        \
-  asm (SECTION_OP);                                        \
-  FUNC ();                                                \
-  FORCE_CODE_SECTION_ALIGN                                \
-  asm (TEXT_SECTION_ASM_OP);                                \
+# define CRT_CALL_STATIC_FUNCTION(SECTION_OP, FUNC)	\
+static void __attribute__((__used__))			\
+call_ ## FUNC (void)					\
+{							\
+  asm (SECTION_OP);					\
+  FUNC ();						\
+  FORCE_CODE_SECTION_ALIGN				\
+  asm (TEXT_SECTION_ASM_OP);				\
 }
 #endif
 
@@ -127,14 +127,14 @@ call_ ## FUNC (void)                                        \
 /* References to __register_frame_info and __deregister_frame_info should
    be weak in this file if at all possible.  */
 extern void __register_frame_info (const void *, struct object *)
-                                  TARGET_ATTRIBUTE_WEAK;
+				  TARGET_ATTRIBUTE_WEAK;
 extern void __register_frame_info_bases (const void *, struct object *,
-                                         void *, void *)
-                                  TARGET_ATTRIBUTE_WEAK;
+					 void *, void *)
+				  TARGET_ATTRIBUTE_WEAK;
 extern void *__deregister_frame_info (const void *)
-                                     TARGET_ATTRIBUTE_WEAK;
+				     TARGET_ATTRIBUTE_WEAK;
 extern void *__deregister_frame_info_bases (const void *)
-                                     TARGET_ATTRIBUTE_WEAK;
+				     TARGET_ATTRIBUTE_WEAK;
 extern void __do_global_ctors_1 (void);
 
 /* Likewise for _Jv_RegisterClasses.  */
@@ -339,7 +339,7 @@ frame_dummy (void)
       void (*register_classes) (void *) = _Jv_RegisterClasses;
       __asm ("" : "+r" (register_classes));
       if (register_classes)
-        register_classes (__JCR_LIST__);
+	register_classes (__JCR_LIST__);
     }
 #endif /* JCR_SECTION_NAME */
 }
@@ -375,7 +375,7 @@ __do_global_ctors (void)
 #endif
 }
 
-asm (INIT_SECTION_ASM_OP);        /* cc1 doesn't know that we are switching! */
+asm (INIT_SECTION_ASM_OP);	/* cc1 doesn't know that we are switching! */
 
 /* A routine to invoke all of the global constructors upon entry to the
    program.  We put this into the .init section (for systems that have
@@ -383,10 +383,10 @@ asm (INIT_SECTION_ASM_OP);        /* cc1 doesn't know that we are switching! */
    file-scope static-storage C++ objects within shared libraries.  */
 
 static void __attribute__((used))
-__do_global_ctors_aux (void)        /* prologue goes in .init section */
+__do_global_ctors_aux (void)	/* prologue goes in .init section */
 {
-  FORCE_CODE_SECTION_ALIGN        /* explicit align before switch to .text */
-  asm (TEXT_SECTION_ASM_OP);        /* don't put epilogue and body in .init */
+  FORCE_CODE_SECTION_ALIGN	/* explicit align before switch to .text */
+  asm (TEXT_SECTION_ASM_OP);	/* don't put epilogue and body in .init */
   DO_GLOBAL_CTORS_BODY;
   atexit (__do_global_dtors);
 }
@@ -433,7 +433,7 @@ __do_global_ctors_1(void)
       void (*register_classes) (void *) = _Jv_RegisterClasses;
       __asm ("" : "+r" (register_classes));
       if (register_classes)
-        register_classes (__JCR_LIST__);
+	register_classes (__JCR_LIST__);
     }
 #endif
 }
@@ -494,7 +494,7 @@ typedef short int32;
 # endif
 STATIC EH_FRAME_SECTION_CONST int32 __FRAME_END__[]
      __attribute__ ((unused, section(EH_FRAME_SECTION_NAME),
-                     aligned(sizeof(int32))))
+		     aligned(sizeof(int32))))
      = { 0 };
 #endif /* EH_FRAME_SECTION_NAME */
 
@@ -502,7 +502,7 @@ STATIC EH_FRAME_SECTION_CONST int32 __FRAME_END__[]
 /* Null terminate the .jcr section array.  */
 STATIC void *__JCR_END__[1] 
    __attribute__ ((unused, section(JCR_SECTION_NAME),
-                   aligned(sizeof(void *))))
+		   aligned(sizeof(void *))))
    = { 0 };
 #endif /* JCR_SECTION_NAME */
 
@@ -547,12 +547,12 @@ CRT_CALL_STATIC_FUNCTION (INIT_SECTION_ASM_OP, __do_global_ctors_aux)
    before we start to execute any of the user's code.  */
 
 static void
-__do_global_ctors_aux (void)        /* prologue goes in .text section */
+__do_global_ctors_aux (void)	/* prologue goes in .text section */
 {
   asm (INIT_SECTION_ASM_OP);
   DO_GLOBAL_CTORS_BODY;
   atexit (__do_global_dtors);
-}                                /* epilogue and body go in .init section */
+}				/* epilogue and body go in .init section */
 
 FORCE_CODE_SECTION_ALIGN
 asm (TEXT_SECTION_ASM_OP);

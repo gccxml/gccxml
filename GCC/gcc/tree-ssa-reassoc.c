@@ -264,45 +264,45 @@ get_rank (tree e)
       int i;
 
       if (TREE_CODE (SSA_NAME_VAR (e)) == PARM_DECL
-          && e == default_def (SSA_NAME_VAR (e)))
-        return find_operand_rank (e)->rank;
+	  && e == default_def (SSA_NAME_VAR (e)))
+	return find_operand_rank (e)->rank;
 
       stmt = SSA_NAME_DEF_STMT (e);
       if (bb_for_stmt (stmt) == NULL)
-        return 0;
+	return 0;
 
       if (TREE_CODE (stmt) != MODIFY_EXPR
-          || !ZERO_SSA_OPERANDS (stmt, SSA_OP_VIRTUAL_DEFS))
-        return bb_rank[bb_for_stmt (stmt)->index];
+	  || !ZERO_SSA_OPERANDS (stmt, SSA_OP_VIRTUAL_DEFS))
+	return bb_rank[bb_for_stmt (stmt)->index];
 
       /* If we already have a rank for this expression, use that.  */
       vr = find_operand_rank (e);
       if (vr)
-        return vr->rank;
+	return vr->rank;
 
       /* Otherwise, find the maximum rank for the operands, or the bb
-         rank, whichever is less.   */
+	 rank, whichever is less.   */
       rank = 0;
       maxrank = bb_rank[bb_for_stmt(stmt)->index];
       rhs = TREE_OPERAND (stmt, 1);
       if (TREE_CODE_LENGTH (TREE_CODE (rhs)) == 0)
-        rank = MAX (rank, get_rank (rhs));
+	rank = MAX (rank, get_rank (rhs));
       else
-        {
-          for (i = 0;
-               i < TREE_CODE_LENGTH (TREE_CODE (rhs))
-                 && TREE_OPERAND (rhs, i)
-                 && rank != maxrank;
-               i++)
-            rank = MAX(rank, get_rank (TREE_OPERAND (rhs, i)));
-        }
+	{
+	  for (i = 0;
+	       i < TREE_CODE_LENGTH (TREE_CODE (rhs))
+		 && TREE_OPERAND (rhs, i)
+		 && rank != maxrank;
+	       i++)
+	    rank = MAX(rank, get_rank (TREE_OPERAND (rhs, i)));
+	}
 
       if (dump_file && (dump_flags & TDF_DETAILS))
-        {
-          fprintf (dump_file, "Rank for ");
-          print_generic_expr (dump_file, e, 0);
-          fprintf (dump_file, " is %d\n", (rank + 1));
-        }
+	{
+	  fprintf (dump_file, "Rank for ");
+	  print_generic_expr (dump_file, e, 0);
+	  fprintf (dump_file, " is %d\n", (rank + 1));
+	}
 
       /* Note the rank in the hashtable so we don't recompute it.  */
       insert_operand_rank (e, (rank + 1));
@@ -410,11 +410,11 @@ get_unary_op (tree name, enum tree_code opcode)
 
 static bool
 eliminate_duplicate_pair (enum tree_code opcode,
-                          VEC (operand_entry_t, heap) **ops,
-                          bool *all_done,
-                          unsigned int i,
-                          operand_entry_t curr,
-                          operand_entry_t last)
+			  VEC (operand_entry_t, heap) **ops,
+			  bool *all_done,
+			  unsigned int i,
+			  operand_entry_t curr,
+			  operand_entry_t last)
 {
 
   /* If we have two of the same op, and the opcode is & |, min, or max,
@@ -425,57 +425,57 @@ eliminate_duplicate_pair (enum tree_code opcode,
   if (last && last->op == curr->op)
     {
       switch (opcode)
-        {
-        case MAX_EXPR:
-        case MIN_EXPR:
-        case BIT_IOR_EXPR:
-        case BIT_AND_EXPR:
-          if (dump_file && (dump_flags & TDF_DETAILS))
-            {
-              fprintf (dump_file, "Equivalence: ");
-              print_generic_expr (dump_file, curr->op, 0);
-              fprintf (dump_file, " [&|minmax] ");
-              print_generic_expr (dump_file, last->op, 0);
-              fprintf (dump_file, " -> ");
-              print_generic_stmt (dump_file, last->op, 0);
-            }
+	{
+	case MAX_EXPR:
+	case MIN_EXPR:
+	case BIT_IOR_EXPR:
+	case BIT_AND_EXPR:
+	  if (dump_file && (dump_flags & TDF_DETAILS))
+	    {
+	      fprintf (dump_file, "Equivalence: ");
+	      print_generic_expr (dump_file, curr->op, 0);
+	      fprintf (dump_file, " [&|minmax] ");
+	      print_generic_expr (dump_file, last->op, 0);
+	      fprintf (dump_file, " -> ");
+	      print_generic_stmt (dump_file, last->op, 0);
+	    }
 
-          VEC_ordered_remove (operand_entry_t, *ops, i);
-          reassociate_stats.ops_eliminated ++;
+	  VEC_ordered_remove (operand_entry_t, *ops, i);
+	  reassociate_stats.ops_eliminated ++;
 
-          return true;
+	  return true;
 
-        case BIT_XOR_EXPR:
-          if (dump_file && (dump_flags & TDF_DETAILS))
-            {
-              fprintf (dump_file, "Equivalence: ");
-              print_generic_expr (dump_file, curr->op, 0);
-              fprintf (dump_file, " ^ ");
-              print_generic_expr (dump_file, last->op, 0);
-              fprintf (dump_file, " -> nothing\n");
-            }
+	case BIT_XOR_EXPR:
+	  if (dump_file && (dump_flags & TDF_DETAILS))
+	    {
+	      fprintf (dump_file, "Equivalence: ");
+	      print_generic_expr (dump_file, curr->op, 0);
+	      fprintf (dump_file, " ^ ");
+	      print_generic_expr (dump_file, last->op, 0);
+	      fprintf (dump_file, " -> nothing\n");
+	    }
 
-          reassociate_stats.ops_eliminated += 2;
+	  reassociate_stats.ops_eliminated += 2;
 
-          if (VEC_length (operand_entry_t, *ops) == 2)
-            {
-              VEC_free (operand_entry_t, heap, *ops);
-              *ops = NULL;
-              add_to_ops_vec (ops, fold_convert (TREE_TYPE (last->op), 
-                                                 integer_zero_node));
-              *all_done = true;
-            }
-          else
-            {
-              VEC_ordered_remove (operand_entry_t, *ops, i-1);
-              VEC_ordered_remove (operand_entry_t, *ops, i-1);
-            }
+	  if (VEC_length (operand_entry_t, *ops) == 2)
+	    {
+	      VEC_free (operand_entry_t, heap, *ops);
+	      *ops = NULL;
+	      add_to_ops_vec (ops, fold_convert (TREE_TYPE (last->op), 
+						 integer_zero_node));
+	      *all_done = true;
+	    }
+	  else
+	    {
+	      VEC_ordered_remove (operand_entry_t, *ops, i-1);
+	      VEC_ordered_remove (operand_entry_t, *ops, i-1);
+	    }
 
-          return true;
+	  return true;
 
-        default:
-          break;
-        }
+	default:
+	  break;
+	}
     }
   return false;
 }
@@ -488,9 +488,9 @@ eliminate_duplicate_pair (enum tree_code opcode,
 
 static bool
 eliminate_plus_minus_pair (enum tree_code opcode,
-                           VEC (operand_entry_t, heap) **ops,
-                           unsigned int currindex,
-                           operand_entry_t curr)
+			   VEC (operand_entry_t, heap) **ops,
+			   unsigned int currindex,
+			   operand_entry_t curr)
 {
   tree negateop;
   unsigned int i;
@@ -513,25 +513,25 @@ eliminate_plus_minus_pair (enum tree_code opcode,
        i++)
     {
       if (oe->op == negateop)
-        {
+	{
 
-          if (dump_file && (dump_flags & TDF_DETAILS))
-            {
-              fprintf (dump_file, "Equivalence: ");
-              print_generic_expr (dump_file, negateop, 0);
-              fprintf (dump_file, " + -");
-              print_generic_expr (dump_file, oe->op, 0);
-              fprintf (dump_file, " -> 0\n");
-            }
+	  if (dump_file && (dump_flags & TDF_DETAILS))
+	    {
+	      fprintf (dump_file, "Equivalence: ");
+	      print_generic_expr (dump_file, negateop, 0);
+	      fprintf (dump_file, " + -");
+	      print_generic_expr (dump_file, oe->op, 0);
+	      fprintf (dump_file, " -> 0\n");
+	    }
 
-          VEC_ordered_remove (operand_entry_t, *ops, i);
-          add_to_ops_vec (ops, fold_convert(TREE_TYPE (oe->op), 
-                                            integer_zero_node));
-          VEC_ordered_remove (operand_entry_t, *ops, currindex);
-          reassociate_stats.ops_eliminated ++;
+	  VEC_ordered_remove (operand_entry_t, *ops, i);
+	  add_to_ops_vec (ops, fold_convert(TREE_TYPE (oe->op), 
+					    integer_zero_node));
+	  VEC_ordered_remove (operand_entry_t, *ops, currindex);
+	  reassociate_stats.ops_eliminated ++;
 
-          return true;
-        }
+	  return true;
+	}
     }
 
   return false;
@@ -545,9 +545,9 @@ eliminate_plus_minus_pair (enum tree_code opcode,
 
 static bool
 eliminate_not_pairs (enum tree_code opcode,
-                     VEC (operand_entry_t, heap) **ops,
-                     unsigned int currindex,
-                     operand_entry_t curr)
+		     VEC (operand_entry_t, heap) **ops,
+		     unsigned int currindex,
+		     operand_entry_t curr)
 {
   tree notop;
   unsigned int i;
@@ -571,35 +571,35 @@ eliminate_not_pairs (enum tree_code opcode,
        i++)
     {
       if (oe->op == notop)
-        {
-          if (dump_file && (dump_flags & TDF_DETAILS))
-            {
-              fprintf (dump_file, "Equivalence: ");
-              print_generic_expr (dump_file, notop, 0);
-              if (opcode == BIT_AND_EXPR)
-                fprintf (dump_file, " & ~");
-              else if (opcode == BIT_IOR_EXPR)
-                fprintf (dump_file, " | ~");
-              print_generic_expr (dump_file, oe->op, 0);
-              if (opcode == BIT_AND_EXPR)
-                fprintf (dump_file, " -> 0\n");
-              else if (opcode == BIT_IOR_EXPR)
-                fprintf (dump_file, " -> -1\n");
-            }
+	{
+	  if (dump_file && (dump_flags & TDF_DETAILS))
+	    {
+	      fprintf (dump_file, "Equivalence: ");
+	      print_generic_expr (dump_file, notop, 0);
+	      if (opcode == BIT_AND_EXPR)
+		fprintf (dump_file, " & ~");
+	      else if (opcode == BIT_IOR_EXPR)
+		fprintf (dump_file, " | ~");
+	      print_generic_expr (dump_file, oe->op, 0);
+	      if (opcode == BIT_AND_EXPR)
+		fprintf (dump_file, " -> 0\n");
+	      else if (opcode == BIT_IOR_EXPR)
+		fprintf (dump_file, " -> -1\n");
+	    }
 
-          if (opcode == BIT_AND_EXPR)
-            oe->op = fold_convert (TREE_TYPE (oe->op), integer_zero_node);
-          else if (opcode == BIT_IOR_EXPR)
-            oe->op = build_low_bits_mask (TREE_TYPE (oe->op),
-                                          TYPE_PRECISION (TREE_TYPE (oe->op)));
+	  if (opcode == BIT_AND_EXPR)
+	    oe->op = fold_convert (TREE_TYPE (oe->op), integer_zero_node);
+	  else if (opcode == BIT_IOR_EXPR)
+	    oe->op = build_low_bits_mask (TREE_TYPE (oe->op),
+					  TYPE_PRECISION (TREE_TYPE (oe->op)));
 
-          reassociate_stats.ops_eliminated 
-            += VEC_length (operand_entry_t, *ops) - 1;
-          VEC_free (operand_entry_t, heap, *ops);
-          *ops = NULL;
-          VEC_safe_push (operand_entry_t, heap, *ops, oe);
-          return true;
-        }
+	  reassociate_stats.ops_eliminated 
+	    += VEC_length (operand_entry_t, *ops) - 1;
+	  VEC_free (operand_entry_t, heap, *ops);
+	  *ops = NULL;
+	  VEC_safe_push (operand_entry_t, heap, *ops, oe);
+	  return true;
+	}
     }
 
   return false;
@@ -614,116 +614,116 @@ eliminate_not_pairs (enum tree_code opcode,
 
 static void
 eliminate_using_constants (enum tree_code opcode,
-                           VEC(operand_entry_t, heap) **ops)
+			   VEC(operand_entry_t, heap) **ops)
 {
   operand_entry_t oelast = VEC_last (operand_entry_t, *ops);
 
   if (oelast->rank == 0 && INTEGRAL_TYPE_P (TREE_TYPE (oelast->op)))
     {
       switch (opcode)
-        {
-        case BIT_AND_EXPR:
-          if (integer_zerop (oelast->op))
-            {
-              if (VEC_length (operand_entry_t, *ops) != 1)
-                {
-                  if (dump_file && (dump_flags & TDF_DETAILS))
-                    fprintf (dump_file, "Found & 0, removing all other ops\n");
+	{
+	case BIT_AND_EXPR:
+	  if (integer_zerop (oelast->op))
+	    {
+	      if (VEC_length (operand_entry_t, *ops) != 1)
+		{
+		  if (dump_file && (dump_flags & TDF_DETAILS))
+		    fprintf (dump_file, "Found & 0, removing all other ops\n");
 
-                  reassociate_stats.ops_eliminated 
-                    += VEC_length (operand_entry_t, *ops) - 1;
-                  
-                  VEC_free (operand_entry_t, heap, *ops);
-                  *ops = NULL;
-                  VEC_safe_push (operand_entry_t, heap, *ops, oelast);
-                  return;
-                }
-            }
-          else if (integer_all_onesp (oelast->op))
-            {
-              if (VEC_length (operand_entry_t, *ops) != 1)
-                {
-                  if (dump_file && (dump_flags & TDF_DETAILS))
-                    fprintf (dump_file, "Found & -1, removing\n");
-                  VEC_pop (operand_entry_t, *ops);
-                  reassociate_stats.ops_eliminated++;
-                }
-            }
-          break;
-        case BIT_IOR_EXPR:
-          if (integer_all_onesp (oelast->op))
-            {
-              if (VEC_length (operand_entry_t, *ops) != 1)
-                {
-                  if (dump_file && (dump_flags & TDF_DETAILS))
-                    fprintf (dump_file, "Found | -1, removing all other ops\n");
+		  reassociate_stats.ops_eliminated 
+		    += VEC_length (operand_entry_t, *ops) - 1;
+		  
+		  VEC_free (operand_entry_t, heap, *ops);
+		  *ops = NULL;
+		  VEC_safe_push (operand_entry_t, heap, *ops, oelast);
+		  return;
+		}
+	    }
+	  else if (integer_all_onesp (oelast->op))
+	    {
+	      if (VEC_length (operand_entry_t, *ops) != 1)
+		{
+		  if (dump_file && (dump_flags & TDF_DETAILS))
+		    fprintf (dump_file, "Found & -1, removing\n");
+		  VEC_pop (operand_entry_t, *ops);
+		  reassociate_stats.ops_eliminated++;
+		}
+	    }
+	  break;
+	case BIT_IOR_EXPR:
+	  if (integer_all_onesp (oelast->op))
+	    {
+	      if (VEC_length (operand_entry_t, *ops) != 1)
+		{
+		  if (dump_file && (dump_flags & TDF_DETAILS))
+		    fprintf (dump_file, "Found | -1, removing all other ops\n");
 
-                  reassociate_stats.ops_eliminated 
-                    += VEC_length (operand_entry_t, *ops) - 1;
-                  
-                  VEC_free (operand_entry_t, heap, *ops);
-                  *ops = NULL;
-                  VEC_safe_push (operand_entry_t, heap, *ops, oelast);
-                  return;
-                }
-            }          
-          else if (integer_zerop (oelast->op))
-            {
-              if (VEC_length (operand_entry_t, *ops) != 1)
-                {
-                  if (dump_file && (dump_flags & TDF_DETAILS))
-                    fprintf (dump_file, "Found | 0, removing\n");
-                  VEC_pop (operand_entry_t, *ops);
-                  reassociate_stats.ops_eliminated++;
-                }
-            }
-          break;
-        case MULT_EXPR:
-          if (integer_zerop (oelast->op))
-            {
-              if (VEC_length (operand_entry_t, *ops) != 1)
-                {
-                  if (dump_file && (dump_flags & TDF_DETAILS))
-                    fprintf (dump_file, "Found * 0, removing all other ops\n");
-                  
-                  reassociate_stats.ops_eliminated 
-                    += VEC_length (operand_entry_t, *ops) - 1;
-                  VEC_free (operand_entry_t, heap, *ops);
-                  *ops = NULL;
-                  VEC_safe_push (operand_entry_t, heap, *ops, oelast);
-                  return;
-                }
-            }
-          else if (integer_onep (oelast->op))
-            {
-              if (VEC_length (operand_entry_t, *ops) != 1)
-                {
-                  if (dump_file && (dump_flags & TDF_DETAILS))
-                    fprintf (dump_file, "Found * 1, removing\n");
-                  VEC_pop (operand_entry_t, *ops);
-                  reassociate_stats.ops_eliminated++;
-                  return;
-                }
-            }
-          break;
-        case BIT_XOR_EXPR:
-        case PLUS_EXPR:
-        case MINUS_EXPR:
-          if (integer_zerop (oelast->op))
-            {
-              if (VEC_length (operand_entry_t, *ops) != 1)
-                {
-                  if (dump_file && (dump_flags & TDF_DETAILS))
-                    fprintf (dump_file, "Found [|^+] 0, removing\n");
-                  VEC_pop (operand_entry_t, *ops);
-                  reassociate_stats.ops_eliminated++;
-                  return;
-                }
-            }
-          break;
-        default:
-          break;
-        }
+		  reassociate_stats.ops_eliminated 
+		    += VEC_length (operand_entry_t, *ops) - 1;
+		  
+		  VEC_free (operand_entry_t, heap, *ops);
+		  *ops = NULL;
+		  VEC_safe_push (operand_entry_t, heap, *ops, oelast);
+		  return;
+		}
+	    }	  
+	  else if (integer_zerop (oelast->op))
+	    {
+	      if (VEC_length (operand_entry_t, *ops) != 1)
+		{
+		  if (dump_file && (dump_flags & TDF_DETAILS))
+		    fprintf (dump_file, "Found | 0, removing\n");
+		  VEC_pop (operand_entry_t, *ops);
+		  reassociate_stats.ops_eliminated++;
+		}
+	    }
+	  break;
+	case MULT_EXPR:
+	  if (integer_zerop (oelast->op))
+	    {
+	      if (VEC_length (operand_entry_t, *ops) != 1)
+		{
+		  if (dump_file && (dump_flags & TDF_DETAILS))
+		    fprintf (dump_file, "Found * 0, removing all other ops\n");
+		  
+		  reassociate_stats.ops_eliminated 
+		    += VEC_length (operand_entry_t, *ops) - 1;
+		  VEC_free (operand_entry_t, heap, *ops);
+		  *ops = NULL;
+		  VEC_safe_push (operand_entry_t, heap, *ops, oelast);
+		  return;
+		}
+	    }
+	  else if (integer_onep (oelast->op))
+	    {
+	      if (VEC_length (operand_entry_t, *ops) != 1)
+		{
+		  if (dump_file && (dump_flags & TDF_DETAILS))
+		    fprintf (dump_file, "Found * 1, removing\n");
+		  VEC_pop (operand_entry_t, *ops);
+		  reassociate_stats.ops_eliminated++;
+		  return;
+		}
+	    }
+	  break;
+	case BIT_XOR_EXPR:
+	case PLUS_EXPR:
+	case MINUS_EXPR:
+	  if (integer_zerop (oelast->op))
+	    {
+	      if (VEC_length (operand_entry_t, *ops) != 1)
+		{
+		  if (dump_file && (dump_flags & TDF_DETAILS))
+		    fprintf (dump_file, "Found [|^+] 0, removing\n");
+		  VEC_pop (operand_entry_t, *ops);
+		  reassociate_stats.ops_eliminated++;
+		  return;
+		}
+	    }
+	  break;
+	default:
+	  break;
+	}
     }
 }
 
@@ -733,7 +733,7 @@ eliminate_using_constants (enum tree_code opcode,
 
 static void
 optimize_ops_list (enum tree_code opcode,
-                   VEC (operand_entry_t, heap) **ops)
+		   VEC (operand_entry_t, heap) **ops)
 {
   unsigned int length = VEC_length (operand_entry_t, *ops);
   unsigned int i;
@@ -753,28 +753,28 @@ optimize_ops_list (enum tree_code opcode,
       operand_entry_t oelm1 = VEC_index (operand_entry_t, *ops, length - 2);
 
       if (oelm1->rank == 0
-          && is_gimple_min_invariant (oelm1->op)
-          && lang_hooks.types_compatible_p (TREE_TYPE (oelm1->op),
-                                            TREE_TYPE (oelast->op)))
-        {
-          tree folded = fold_binary (opcode, TREE_TYPE (oelm1->op),
-                                     oelm1->op, oelast->op);
+	  && is_gimple_min_invariant (oelm1->op)
+	  && lang_hooks.types_compatible_p (TREE_TYPE (oelm1->op),
+					    TREE_TYPE (oelast->op)))
+	{
+	  tree folded = fold_binary (opcode, TREE_TYPE (oelm1->op),
+				     oelm1->op, oelast->op);
 
-          if (folded && is_gimple_min_invariant (folded))
-            {
-              if (dump_file && (dump_flags & TDF_DETAILS))
-                fprintf (dump_file, "Merging constants\n");
+	  if (folded && is_gimple_min_invariant (folded))
+	    {
+	      if (dump_file && (dump_flags & TDF_DETAILS))
+		fprintf (dump_file, "Merging constants\n");
 
-              VEC_pop (operand_entry_t, *ops);
-              VEC_pop (operand_entry_t, *ops);
+	      VEC_pop (operand_entry_t, *ops);
+	      VEC_pop (operand_entry_t, *ops);
 
-              add_to_ops_vec (ops, folded);
-              reassociate_stats.constants_eliminated++;
+	      add_to_ops_vec (ops, folded);
+	      reassociate_stats.constants_eliminated++;
 
-              optimize_ops_list (opcode, ops);
-              return;
-            }
-        }
+	      optimize_ops_list (opcode, ops);
+	      return;
+	    }
+	}
     }
 
   eliminate_using_constants (opcode, ops);
@@ -785,16 +785,16 @@ optimize_ops_list (enum tree_code opcode,
       bool done = false;
 
       if (eliminate_not_pairs (opcode, ops, i, oe))
-        return;
+	return;
       if (eliminate_duplicate_pair (opcode, ops, &done, i, oe, oelast)
-          || (!done && eliminate_plus_minus_pair (opcode, ops, i, oe)))
-        {
-          if (done)
-            return;
-          iterate = true;
-          oelast = NULL;
-          continue;
-        }
+	  || (!done && eliminate_plus_minus_pair (opcode, ops, i, oe)))
+	{
+	  if (done)
+	    return;
+	  iterate = true;
+	  oelast = NULL;
+	  continue;
+	}
       oelast = oe;
       i++;
     }
@@ -837,7 +837,7 @@ is_phi_for_stmt (tree stmt, tree operand)
 
 static void
 rewrite_expr_tree (tree stmt, unsigned int opindex,
-                   VEC(operand_entry_t, heap) * ops)
+		   VEC(operand_entry_t, heap) * ops)
 {
   tree rhs = TREE_OPERAND (stmt, 1);
   operand_entry_t oe;
@@ -865,17 +865,17 @@ rewrite_expr_tree (tree stmt, unsigned int opindex,
       oe3 = VEC_index (operand_entry_t, ops, opindex + 2);
 
       if ((oe1->rank == oe2->rank
-           && oe2->rank != oe3->rank)
-          || (is_phi_for_stmt (stmt, oe3->op)
-              && !is_phi_for_stmt (stmt, oe1->op)
-              && !is_phi_for_stmt (stmt, oe2->op)))
-        {
-          struct operand_entry temp = *oe3;
-          oe3->op = oe1->op;
-          oe3->rank = oe1->rank;
-          oe1->op = temp.op;
-          oe1->rank= temp.rank;
-        }
+	   && oe2->rank != oe3->rank)
+	  || (is_phi_for_stmt (stmt, oe3->op)
+	      && !is_phi_for_stmt (stmt, oe1->op)
+	      && !is_phi_for_stmt (stmt, oe2->op)))
+	{
+	  struct operand_entry temp = *oe3;
+	  oe3->op = oe1->op;
+	  oe3->rank = oe1->rank;
+	  oe1->op = temp.op;
+	  oe1->rank= temp.rank;
+	}
     }
 
   /* The final recursion case for this function is that you have
@@ -891,26 +891,26 @@ rewrite_expr_tree (tree stmt, unsigned int opindex,
       oe2 = VEC_index (operand_entry_t, ops, opindex + 1);
 
       if (TREE_OPERAND (rhs, 0) != oe1->op
-          || TREE_OPERAND (rhs, 1) != oe2->op)
-        {
+	  || TREE_OPERAND (rhs, 1) != oe2->op)
+	{
 
-          if (dump_file && (dump_flags & TDF_DETAILS))
-            {
-              fprintf (dump_file, "Transforming ");
-              print_generic_expr (dump_file, rhs, 0);
-            }
+	  if (dump_file && (dump_flags & TDF_DETAILS))
+	    {
+	      fprintf (dump_file, "Transforming ");
+	      print_generic_expr (dump_file, rhs, 0);
+	    }
 
-          TREE_OPERAND (rhs, 0) = oe1->op;
-          TREE_OPERAND (rhs, 1) = oe2->op;
-          update_stmt (stmt);
+	  TREE_OPERAND (rhs, 0) = oe1->op;
+	  TREE_OPERAND (rhs, 1) = oe2->op;
+	  update_stmt (stmt);
 
-          if (dump_file && (dump_flags & TDF_DETAILS))
-            {
-              fprintf (dump_file, " into ");
-              print_generic_stmt (dump_file, rhs, 0);
-            }
+	  if (dump_file && (dump_flags & TDF_DETAILS))
+	    {
+	      fprintf (dump_file, " into ");
+	      print_generic_stmt (dump_file, rhs, 0);
+	    }
 
-        }
+	}
       return;
     }
 
@@ -924,24 +924,24 @@ rewrite_expr_tree (tree stmt, unsigned int opindex,
     {
 
       if (dump_file && (dump_flags & TDF_DETAILS))
-        {
-          fprintf (dump_file, "Transforming ");
-          print_generic_expr (dump_file, rhs, 0);
-        }
+	{
+	  fprintf (dump_file, "Transforming ");
+	  print_generic_expr (dump_file, rhs, 0);
+	}
 
       TREE_OPERAND (rhs, 1) = oe->op;
       update_stmt (stmt);
 
       if (dump_file && (dump_flags & TDF_DETAILS))
-        {
-          fprintf (dump_file, " into ");
-          print_generic_stmt (dump_file, rhs, 0);
-        }
+	{
+	  fprintf (dump_file, " into ");
+	  print_generic_stmt (dump_file, rhs, 0);
+	}
     }
   /* Recurse on the LHS of the binary operator, which is guaranteed to
      be the non-leaf side.  */
   rewrite_expr_tree (SSA_NAME_DEF_STMT (TREE_OPERAND (rhs, 0)),
-                     opindex + 1, ops);
+		     opindex + 1, ops);
 }
 
 /* Transform STMT, which is really (A +B) + (C + D) into the left
@@ -959,7 +959,7 @@ linearize_expr (tree stmt)
   tree newbinrhs = NULL_TREE;
 
   gcc_assert (is_reassociable_op (binlhs, TREE_CODE (rhs))
-              && is_reassociable_op (binrhs, TREE_CODE (rhs)));
+	      && is_reassociable_op (binrhs, TREE_CODE (rhs)));
 
   bsinow = bsi_for_stmt (stmt);
   bsirhs = bsi_for_stmt (binrhs);
@@ -1004,9 +1004,9 @@ get_single_immediate_use (tree lhs)
       && single_imm_use (lhs, &immuse, &immusestmt))
     {
       if (TREE_CODE (immusestmt) == RETURN_EXPR)
-        immusestmt = TREE_OPERAND (immusestmt, 0);
+	immusestmt = TREE_OPERAND (immusestmt, 0);
       if (TREE_CODE (immusestmt) == MODIFY_EXPR)
-        return immusestmt;
+	return immusestmt;
     }
   return NULL_TREE;
 }
@@ -1042,17 +1042,17 @@ negate_value (tree tonegate, block_stmt_iterator *bsi)
 
       bsi = bsi_for_stmt (negatedef);
       TREE_OPERAND (binop, 0) = negate_value (TREE_OPERAND (binop, 0),
-                                              &bsi);
+					      &bsi);
       bsi = bsi_for_stmt (negatedef);
       TREE_OPERAND (binop, 1) = negate_value (TREE_OPERAND (binop, 1),
-                                              &bsi);
+					      &bsi);
       update_stmt (negatedef);
       return TREE_OPERAND (negatedef, 0);
     }
 
   tonegate = fold_build1 (NEGATE_EXPR, TREE_TYPE (tonegate), tonegate);
   resultofnegate = force_gimple_operand_bsi (bsi, tonegate, true,
-                                             NULL_TREE);
+					     NULL_TREE);
   VEC_safe_push (tree, heap, broken_up_subtracts, resultofnegate);
   return resultofnegate;
 
@@ -1149,30 +1149,30 @@ linearize_expr_tree (VEC(operand_entry_t, heap) **ops, tree stmt)
       tree temp;
 
       if (!binrhsisreassoc)
-        {
-          add_to_ops_vec (ops, binrhs);
-          add_to_ops_vec (ops, binlhs);
-          return;
-        }
+	{
+	  add_to_ops_vec (ops, binrhs);
+	  add_to_ops_vec (ops, binlhs);
+	  return;
+	}
 
       if (dump_file && (dump_flags & TDF_DETAILS))
-        {
-          fprintf (dump_file, "swapping operands of ");
-          print_generic_expr (dump_file, stmt, 0);
-        }
+	{
+	  fprintf (dump_file, "swapping operands of ");
+	  print_generic_expr (dump_file, stmt, 0);
+	}
 
       swap_tree_operands (stmt, &TREE_OPERAND (rhs, 0),
-                          &TREE_OPERAND (rhs, 1));
+			  &TREE_OPERAND (rhs, 1));
       update_stmt (stmt);
 
       if (dump_file && (dump_flags & TDF_DETAILS))
-        {
-          fprintf (dump_file, " is now ");
-          print_generic_stmt (dump_file, stmt, 0);
-        }
+	{
+	  fprintf (dump_file, " is now ");
+	  print_generic_stmt (dump_file, stmt, 0);
+	}
 
       /* We want to make it so the lhs is always the reassociative op,
-         so swap.  */
+	 so swap.  */
       temp = binlhs;
       binlhs = binrhs;
       binrhs = temp;
@@ -1186,7 +1186,7 @@ linearize_expr_tree (VEC(operand_entry_t, heap) **ops, tree stmt)
     }
 
   gcc_assert (TREE_CODE (binrhs) != SSA_NAME
-              || !is_reassociable_op (SSA_NAME_DEF_STMT (binrhs), rhscode));
+	      || !is_reassociable_op (SSA_NAME_DEF_STMT (binrhs), rhscode));
   bsinow = bsi_for_stmt (stmt);
   bsilhs = bsi_for_stmt (SSA_NAME_DEF_STMT (binlhs));
   bsi_move_before (&bsilhs, &bsinow);
@@ -1208,35 +1208,35 @@ repropagate_negates (void)
       tree user = get_single_immediate_use (negate);
 
       /* The negate operand can be either operand of a PLUS_EXPR
-         (it can be the LHS if the RHS is a constant for example).
+	 (it can be the LHS if the RHS is a constant for example).
 
-         Force the negate operand to the RHS of the PLUS_EXPR, then
-         transform the PLUS_EXPR into a MINUS_EXPR.  */
+	 Force the negate operand to the RHS of the PLUS_EXPR, then
+	 transform the PLUS_EXPR into a MINUS_EXPR.  */
       if (user
-          && TREE_CODE (user) == MODIFY_EXPR
-          && TREE_CODE (TREE_OPERAND (user, 1)) == PLUS_EXPR)
-        {
-          tree rhs = TREE_OPERAND (user, 1);
+	  && TREE_CODE (user) == MODIFY_EXPR
+	  && TREE_CODE (TREE_OPERAND (user, 1)) == PLUS_EXPR)
+	{
+	  tree rhs = TREE_OPERAND (user, 1);
 
-          /* If the negated operand appears on the LHS of the
-             PLUS_EXPR, exchange the operands of the PLUS_EXPR
-             to force the negated operand to the RHS of the PLUS_EXPR.  */
-          if (TREE_OPERAND (TREE_OPERAND (user, 1), 0) == negate)
-            {
-              tree temp = TREE_OPERAND (rhs, 0);
-              TREE_OPERAND (rhs, 0) = TREE_OPERAND (rhs, 1);
-              TREE_OPERAND (rhs, 1) = temp;
-            }
+	  /* If the negated operand appears on the LHS of the
+	     PLUS_EXPR, exchange the operands of the PLUS_EXPR
+	     to force the negated operand to the RHS of the PLUS_EXPR.  */
+	  if (TREE_OPERAND (TREE_OPERAND (user, 1), 0) == negate)
+	    {
+	      tree temp = TREE_OPERAND (rhs, 0);
+	      TREE_OPERAND (rhs, 0) = TREE_OPERAND (rhs, 1);
+	      TREE_OPERAND (rhs, 1) = temp;
+	    }
 
-          /* Now transform the PLUS_EXPR into a MINUS_EXPR and replace
-             the RHS of the PLUS_EXPR with the operand of the NEGATE_EXPR.  */
-          if (TREE_OPERAND (TREE_OPERAND (user, 1), 1) == negate)
-            {
-              TREE_SET_CODE (rhs, MINUS_EXPR);
-              TREE_OPERAND (rhs, 1) = get_unary_op (negate, NEGATE_EXPR);
-              update_stmt (user);
-            }
-        }
+	  /* Now transform the PLUS_EXPR into a MINUS_EXPR and replace
+	     the RHS of the PLUS_EXPR with the operand of the NEGATE_EXPR.  */
+	  if (TREE_OPERAND (TREE_OPERAND (user, 1), 1) == negate)
+	    {
+	      TREE_SET_CODE (rhs, MINUS_EXPR);
+	      TREE_OPERAND (rhs, 1) = get_unary_op (negate, NEGATE_EXPR);
+	      update_stmt (user);
+	    }
+	}
     }
 }
 
@@ -1266,28 +1266,28 @@ break_up_subtract_bb (basic_block bb)
       tree stmt = bsi_stmt (bsi);
 
       if (TREE_CODE (stmt) == MODIFY_EXPR)
-        {
-          tree lhs = TREE_OPERAND (stmt, 0);
-          tree rhs = TREE_OPERAND (stmt, 1);
+	{
+	  tree lhs = TREE_OPERAND (stmt, 0);
+	  tree rhs = TREE_OPERAND (stmt, 1);
 
-          TREE_VISITED (stmt) = 0;
-          /* If unsafe math optimizations we can do reassociation for
-             non-integral types.  */
-          if ((!INTEGRAL_TYPE_P (TREE_TYPE (lhs))
-               || !INTEGRAL_TYPE_P (TREE_TYPE (rhs)))
-              && (!SCALAR_FLOAT_TYPE_P (TREE_TYPE (rhs))
-                  || !SCALAR_FLOAT_TYPE_P (TREE_TYPE(lhs))
-                  || !flag_unsafe_math_optimizations))
-            continue;
+	  TREE_VISITED (stmt) = 0;
+	  /* If unsafe math optimizations we can do reassociation for
+	     non-integral types.  */
+	  if ((!INTEGRAL_TYPE_P (TREE_TYPE (lhs))
+	       || !INTEGRAL_TYPE_P (TREE_TYPE (rhs)))
+	      && (!SCALAR_FLOAT_TYPE_P (TREE_TYPE (rhs))
+		  || !SCALAR_FLOAT_TYPE_P (TREE_TYPE(lhs))
+		  || !flag_unsafe_math_optimizations))
+	    continue;
 
-          /* Check for a subtract used only in an addition.  If this
-             is the case, transform it into add of a negate for better
-             reassociation.  IE transform C = A-B into C = A + -B if C
-             is only used in an addition.  */
-          if (TREE_CODE (rhs) == MINUS_EXPR)
-            if (should_break_up_subtract (stmt))
-              break_up_subtract (stmt, &bsi);
-        }
+	  /* Check for a subtract used only in an addition.  If this
+	     is the case, transform it into add of a negate for better
+	     reassociation.  IE transform C = A-B into C = A + -B if C
+	     is only used in an addition.  */
+	  if (TREE_CODE (rhs) == MINUS_EXPR)
+	    if (should_break_up_subtract (stmt))
+	      break_up_subtract (stmt, &bsi);
+	}
     }
   for (son = first_dom_son (CDI_DOMINATORS, bb);
        son;
@@ -1309,66 +1309,66 @@ reassociate_bb (basic_block bb)
       tree stmt = bsi_stmt (bsi);
 
       if (TREE_CODE (stmt) == MODIFY_EXPR)
-        {
-          tree lhs = TREE_OPERAND (stmt, 0);
-          tree rhs = TREE_OPERAND (stmt, 1);
+	{
+	  tree lhs = TREE_OPERAND (stmt, 0);
+	  tree rhs = TREE_OPERAND (stmt, 1);
 
-          /* If this was part of an already processed tree, we don't
-             need to touch it again. */
-          if (TREE_VISITED (stmt))
-            continue;
+	  /* If this was part of an already processed tree, we don't
+	     need to touch it again. */
+	  if (TREE_VISITED (stmt))
+	    continue;
 
-          /* If unsafe math optimizations we can do reassociation for
-             non-integral types.  */
-          if ((!INTEGRAL_TYPE_P (TREE_TYPE (lhs))
-               || !INTEGRAL_TYPE_P (TREE_TYPE (rhs)))
-              && (!SCALAR_FLOAT_TYPE_P (TREE_TYPE (rhs))
-                  || !SCALAR_FLOAT_TYPE_P (TREE_TYPE(lhs))
-                  || !flag_unsafe_math_optimizations))
-            continue;
+	  /* If unsafe math optimizations we can do reassociation for
+	     non-integral types.  */
+	  if ((!INTEGRAL_TYPE_P (TREE_TYPE (lhs))
+	       || !INTEGRAL_TYPE_P (TREE_TYPE (rhs)))
+	      && (!SCALAR_FLOAT_TYPE_P (TREE_TYPE (rhs))
+		  || !SCALAR_FLOAT_TYPE_P (TREE_TYPE(lhs))
+		  || !flag_unsafe_math_optimizations))
+	    continue;
 
-          if (associative_tree_code (TREE_CODE (rhs)))
-            {
-              VEC(operand_entry_t, heap) *ops = NULL;
+	  if (associative_tree_code (TREE_CODE (rhs)))
+	    {
+	      VEC(operand_entry_t, heap) *ops = NULL;
 
-              /* There may be no immediate uses left by the time we
-                 get here because we may have eliminated them all.  */
-              if (TREE_CODE (lhs) == SSA_NAME && has_zero_uses (lhs))
-                continue;
+	      /* There may be no immediate uses left by the time we
+		 get here because we may have eliminated them all.  */
+	      if (TREE_CODE (lhs) == SSA_NAME && has_zero_uses (lhs))
+		continue;
 
-              TREE_VISITED (stmt) = 1;
-              linearize_expr_tree (&ops, stmt);
-              qsort (VEC_address (operand_entry_t, ops),
-                     VEC_length (operand_entry_t, ops),
-                     sizeof (operand_entry_t),
-                     sort_by_operand_rank);
-              optimize_ops_list (TREE_CODE (rhs), &ops);
+	      TREE_VISITED (stmt) = 1;
+	      linearize_expr_tree (&ops, stmt);
+	      qsort (VEC_address (operand_entry_t, ops),
+		     VEC_length (operand_entry_t, ops),
+		     sizeof (operand_entry_t),
+		     sort_by_operand_rank);
+	      optimize_ops_list (TREE_CODE (rhs), &ops);
 
-              if (VEC_length (operand_entry_t, ops) == 1)
-                {
-                  if (dump_file && (dump_flags & TDF_DETAILS))
-                    {
-                      fprintf (dump_file, "Transforming ");
-                      print_generic_expr (dump_file, rhs, 0);
-                    }
-                  TREE_OPERAND (stmt, 1) = VEC_last (operand_entry_t, ops)->op;
-                  update_stmt (stmt);
+	      if (VEC_length (operand_entry_t, ops) == 1)
+		{
+		  if (dump_file && (dump_flags & TDF_DETAILS))
+		    {
+		      fprintf (dump_file, "Transforming ");
+		      print_generic_expr (dump_file, rhs, 0);
+		    }
+		  TREE_OPERAND (stmt, 1) = VEC_last (operand_entry_t, ops)->op;
+		  update_stmt (stmt);
 
-                  if (dump_file && (dump_flags & TDF_DETAILS))
-                    {
-                      fprintf (dump_file, " into ");
-                      print_generic_stmt (dump_file,
-                                          TREE_OPERAND (stmt, 1), 0);
-                    }
-                }
-              else
-                {
-                  rewrite_expr_tree (stmt, 0, ops);
-                }
+		  if (dump_file && (dump_flags & TDF_DETAILS))
+		    {
+		      fprintf (dump_file, " into ");
+		      print_generic_stmt (dump_file,
+					  TREE_OPERAND (stmt, 1), 0);
+		    }
+		}
+	      else
+		{
+		  rewrite_expr_tree (stmt, 0, ops);
+		}
 
-              VEC_free (operand_entry_t, heap, ops);
-            }
-        }
+	      VEC_free (operand_entry_t, heap, ops);
+	    }
+	}
     }
   for (son = first_dom_son (CDI_POST_DOMINATORS, bb);
        son;
@@ -1422,7 +1422,7 @@ init_reassoc (void)
   memset (&reassociate_stats, 0, sizeof (reassociate_stats));
 
   operand_entry_pool = create_alloc_pool ("operand entry pool",
-                                          sizeof (struct operand_entry), 30);
+					  sizeof (struct operand_entry), 30);
 
   /* Reverse RPO (Reverse Post Order) will give us something where
      deeper loops come later.  */
@@ -1430,7 +1430,7 @@ init_reassoc (void)
   bb_rank = XCNEWVEC (unsigned int, last_basic_block + 1);
   
   operand_rank = htab_create (511, operand_entry_hash,
-                              operand_entry_eq, 0);
+			      operand_entry_eq, 0);
 
   /* Give each argument a distinct rank.   */
   for (param = DECL_ARGUMENTS (current_function_decl);
@@ -1438,10 +1438,10 @@ init_reassoc (void)
        param = TREE_CHAIN (param))
     {
       if (default_def (param) != NULL)
-        {
-          tree def = default_def (param);
-          insert_operand_rank (def, ++rank);
-        }
+	{
+	  tree def = default_def (param);
+	  insert_operand_rank (def, ++rank);
+	}
     }
 
   /* Give the chain decl a distinct rank. */
@@ -1449,7 +1449,7 @@ init_reassoc (void)
     {
       tree def = default_def (cfun->static_chain_decl);
       if (def != NULL)
-        insert_operand_rank (def, ++rank);
+	insert_operand_rank (def, ++rank);
     }
 
   /* Set up rank for each BB  */
@@ -1473,13 +1473,13 @@ fini_reassoc (void)
     {
       fprintf (dump_file, "Reassociation stats:\n");
       fprintf (dump_file, "Linearized: %d\n", 
-               reassociate_stats.linearized);
+	       reassociate_stats.linearized);
       fprintf (dump_file, "Constants eliminated: %d\n",
-               reassociate_stats.constants_eliminated);
+	       reassociate_stats.constants_eliminated);
       fprintf (dump_file, "Ops eliminated: %d\n",
-               reassociate_stats.ops_eliminated);
+	       reassociate_stats.ops_eliminated);
       fprintf (dump_file, "Statements rewritten: %d\n",
-               reassociate_stats.rewritten);
+	       reassociate_stats.rewritten);
     }
   htab_delete (operand_rank);
 
@@ -1505,17 +1505,17 @@ execute_reassoc (void)
 
 struct tree_opt_pass pass_reassoc =
 {
-  "reassoc",                                /* name */
-  NULL,                                /* gate */
-  execute_reassoc,                                /* execute */
-  NULL,                                        /* sub */
-  NULL,                                        /* next */
-  0,                                        /* static_pass_number */
-  TV_TREE_REASSOC,                                /* tv_id */
-  PROP_cfg | PROP_ssa | PROP_alias,        /* properties_required */
-  0,                                        /* properties_provided */
-  0,                                        /* properties_destroyed */
-  0,                                        /* todo_flags_start */
+  "reassoc",				/* name */
+  NULL,				/* gate */
+  execute_reassoc,				/* execute */
+  NULL,					/* sub */
+  NULL,					/* next */
+  0,					/* static_pass_number */
+  TV_TREE_REASSOC,				/* tv_id */
+  PROP_cfg | PROP_ssa | PROP_alias,	/* properties_required */
+  0,					/* properties_provided */
+  0,					/* properties_destroyed */
+  0,					/* todo_flags_start */
   TODO_dump_func | TODO_ggc_collect | TODO_verify_ssa, /* todo_flags_finish */
-  0                                        /* letter */
+  0					/* letter */
 };

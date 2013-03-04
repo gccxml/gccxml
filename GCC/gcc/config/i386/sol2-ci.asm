@@ -37,15 +37,15 @@
 ! sections.  It is linked in before the values-Xx.o files and also before
 ! crtbegin.o.
  
-        .file        "crti.s"
-        .ident        "GNU C crti.s"
+	.file	"crti.s"
+	.ident	"GNU C crti.s"
 
-        .section .init
-        .globl        _init
-        .type        _init,@function
+	.section .init
+	.globl	_init
+	.type	_init,@function
 _init:
 
-        .section .fini
-        .globl        _fini
-        .type        _fini,@function
+	.section .fini
+	.globl	_fini
+	.type	_fini,@function
 _fini:

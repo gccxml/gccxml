@@ -54,7 +54,7 @@ typedef struct
 /*  Forward declarations.  */
 typedef struct diagnostic_context diagnostic_context;
 typedef void (*diagnostic_starter_fn) (diagnostic_context *,
-                                       diagnostic_info *);
+				       diagnostic_info *);
 typedef diagnostic_starter_fn diagnostic_finalizer_fn;
 
 /* This data structure bundles altogether any information relevant to
@@ -177,8 +177,8 @@ extern diagnostic_context *global_dc;
 #define sorrycount diagnostic_kind_count (global_dc, DK_SORRY)
 
 /* Returns nonzero if warnings should be emitted.  */
-#define diagnostic_report_warnings_p()                        \
-  (!inhibit_warnings                                        \
+#define diagnostic_report_warnings_p()			\
+  (!inhibit_warnings					\
    && !(in_system_header && !warn_system_headers))
 
 #define report_diagnostic(D) diagnostic_report_diagnostic (global_dc, D)
@@ -190,16 +190,16 @@ extern void diagnostic_report_current_function (diagnostic_context *);
 
 /* Force diagnostics controlled by OPTIDX to be kind KIND.  */
 extern diagnostic_t diagnostic_classify_diagnostic (diagnostic_context *,
-                                                    int /* optidx */,
-                                                    diagnostic_t /* kind */);
+						    int /* optidx */,
+						    diagnostic_t /* kind */);
 extern void diagnostic_report_diagnostic (diagnostic_context *,
-                                          diagnostic_info *);
+					  diagnostic_info *);
 #ifdef ATTRIBUTE_GCC_DIAG
 extern void diagnostic_set_info (diagnostic_info *, const char *, va_list *,
-                                 location_t, diagnostic_t) ATTRIBUTE_GCC_DIAG(2,0);
+				 location_t, diagnostic_t) ATTRIBUTE_GCC_DIAG(2,0);
 extern void diagnostic_set_info_translated (diagnostic_info *, const char *,
-                                            va_list *, location_t,
-                                            diagnostic_t)
+					    va_list *, location_t,
+					    diagnostic_t)
      ATTRIBUTE_GCC_DIAG(2,0);
 #endif
 extern char *diagnostic_build_prefix (diagnostic_info *);

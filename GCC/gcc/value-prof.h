@@ -24,13 +24,13 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
 /* Supported histogram types.  */
 enum hist_type
 {
-  HIST_TYPE_INTERVAL,        /* Measures histogram of values inside a specified
-                           interval.  */
-  HIST_TYPE_POW2,        /* Histogram of power of 2 values.  */
+  HIST_TYPE_INTERVAL,	/* Measures histogram of values inside a specified
+			   interval.  */
+  HIST_TYPE_POW2,	/* Histogram of power of 2 values.  */
   HIST_TYPE_SINGLE_VALUE, /* Tries to identify the value that is (almost)
-                           always constant.  */
-  HIST_TYPE_CONST_DELTA        /* Tries to identify the (almost) always constant
-                           difference between two evaluations of a value.  */
+			   always constant.  */
+  HIST_TYPE_CONST_DELTA	/* Tries to identify the (almost) always constant
+			   difference between two evaluations of a value.  */
 };
 
 #define COUNTER_FOR_HIST_TYPE(TYPE) ((int) (TYPE) + GCOV_FIRST_VALUE_COUNTER)
@@ -42,21 +42,21 @@ struct histogram_value_t
 {
   struct
     {
-      tree value;                /* The value to profile.  */
-      tree stmt;                /* Insn containing the value.  */
-      gcov_type *counters;                        /* Pointer to first counter.  */
-      struct histogram_value_t *next;                /* Linked list pointer.  */
+      tree value;		/* The value to profile.  */
+      tree stmt;		/* Insn containing the value.  */
+      gcov_type *counters;		        /* Pointer to first counter.  */
+      struct histogram_value_t *next;		/* Linked list pointer.  */
     } hvalue;
-  enum hist_type type;                        /* Type of information to measure.  */
-  unsigned n_counters;                        /* Number of required counters.  */
+  enum hist_type type;			/* Type of information to measure.  */
+  unsigned n_counters;			/* Number of required counters.  */
   union
     {
       struct
-        {
-          int int_start;        /* First value in interval.  */
-          unsigned int steps;        /* Number of values in it.  */
-        } intvl;        /* Interval histogram data.  */
-    } hdata;                /* Profiled information specific data.  */
+	{
+	  int int_start;	/* First value in interval.  */
+	  unsigned int steps;	/* Number of values in it.  */
+	} intvl;	/* Interval histogram data.  */
+    } hdata;		/* Profiled information specific data.  */
 };
 
 typedef struct histogram_value_t *histogram_value;
@@ -105,5 +105,5 @@ extern void tree_register_profile_hooks (void);
 /* In tree-profile.c.  */
 extern struct profile_hooks tree_profile_hooks;
 
-#endif        /* GCC_VALUE_PROF_H */
+#endif	/* GCC_VALUE_PROF_H */
 

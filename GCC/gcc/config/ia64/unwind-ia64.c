@@ -3,8 +3,8 @@
    Copyright (C) 1997, 1998, 1999, 2000, 2001, 2002, 2004, 2005, 2006
    Free Software Foundation, Inc.
    Contributed by Andrew MacLeod  <amacleod@cygnus.com>
-                  Andrew Haley  <aph@cygnus.com>
-                  David Mosberger-Tang <davidm@hpl.hp.com>
+	          Andrew Haley  <aph@cygnus.com>
+		  David Mosberger-Tang <davidm@hpl.hp.com>
 
    This file is part of GCC.
 
@@ -45,12 +45,12 @@
 
 #ifndef __USING_SJLJ_EXCEPTIONS__
 
-#define UNW_VER(x)                ((x) >> 48)
-#define UNW_FLAG_MASK                0x0000ffff00000000
-#define UNW_FLAG_OSMASK                0x0000f00000000000
-#define UNW_FLAG_EHANDLER(x)        ((x) & 0x0000000100000000L)
-#define UNW_FLAG_UHANDLER(x)        ((x) & 0x0000000200000000L)
-#define UNW_LENGTH(x)                ((x) & 0x00000000ffffffffL)
+#define UNW_VER(x)		((x) >> 48)
+#define UNW_FLAG_MASK		0x0000ffff00000000
+#define UNW_FLAG_OSMASK		0x0000f00000000000
+#define UNW_FLAG_EHANDLER(x)	((x) & 0x0000000100000000L)
+#define UNW_FLAG_UHANDLER(x)	((x) & 0x0000000200000000L)
+#define UNW_LENGTH(x)		((x) & 0x00000000ffffffffL)
 
 enum unw_application_register
 {
@@ -73,12 +73,12 @@ enum unw_register_index
   UNW_REG_PRI_UNAT_MEM,
 
   /* Memory Stack.  */
-  UNW_REG_PSP,                        /* previous memory stack pointer */
+  UNW_REG_PSP,			/* previous memory stack pointer */
 
   /* Register Stack.  */
-  UNW_REG_BSP,                        /* register stack pointer */
+  UNW_REG_BSP,			/* register stack pointer */
   UNW_REG_BSPSTORE,
-  UNW_REG_PFS,                        /* previous function state */
+  UNW_REG_PFS,			/* previous function state */
   UNW_REG_RNAT,
   /* Return Pointer.  */
   UNW_REG_RP,
@@ -107,62 +107,62 @@ enum unw_register_index
 
 enum unw_where
 {
-  UNW_WHERE_NONE,        /* register isn't saved at all */
-  UNW_WHERE_GR,                /* register is saved in a general register */
-  UNW_WHERE_FR,                /* register is saved in a floating-point register */
-  UNW_WHERE_BR,                /* register is saved in a branch register */
-  UNW_WHERE_SPREL,        /* register is saved on memstack (sp-relative) */
-  UNW_WHERE_PSPREL,        /* register is saved on memstack (psp-relative) */
+  UNW_WHERE_NONE,	/* register isn't saved at all */
+  UNW_WHERE_GR,		/* register is saved in a general register */
+  UNW_WHERE_FR,		/* register is saved in a floating-point register */
+  UNW_WHERE_BR,		/* register is saved in a branch register */
+  UNW_WHERE_SPREL,	/* register is saved on memstack (sp-relative) */
+  UNW_WHERE_PSPREL,	/* register is saved on memstack (psp-relative) */
  
  /* At the end of each prologue these locations get resolved to
      UNW_WHERE_PSPREL and UNW_WHERE_GR, respectively.  */
-  UNW_WHERE_SPILL_HOME,        /* register is saved in its spill home */
-  UNW_WHERE_GR_SAVE        /* register is saved in next general register */
+  UNW_WHERE_SPILL_HOME,	/* register is saved in its spill home */
+  UNW_WHERE_GR_SAVE	/* register is saved in next general register */
 };
 
 #define UNW_WHEN_NEVER  0x7fffffff
 
 struct unw_reg_info
 {
-  unsigned long val;                /* save location: register number or offset */
-  enum unw_where where;                /* where the register gets saved */
-  int when;                        /* when the register gets saved */
+  unsigned long val;		/* save location: register number or offset */
+  enum unw_where where;		/* where the register gets saved */
+  int when;			/* when the register gets saved */
 };
 
 struct unw_reg_state {
-        struct unw_reg_state *next;        /* next (outer) element on state stack */
-        struct unw_reg_info reg[UNW_NUM_REGS];        /* register save locations */
+	struct unw_reg_state *next;	/* next (outer) element on state stack */
+	struct unw_reg_info reg[UNW_NUM_REGS];	/* register save locations */
 };
 
 struct unw_labeled_state {
-        struct unw_labeled_state *next;                /* next labeled state (or NULL) */
-        unsigned long label;                        /* label for this state */
-        struct unw_reg_state saved_state;
+	struct unw_labeled_state *next;		/* next labeled state (or NULL) */
+	unsigned long label;			/* label for this state */
+	struct unw_reg_state saved_state;
 };
 
 typedef struct unw_state_record
 {
-  unsigned int first_region : 1;        /* is this the first region? */
-  unsigned int done : 1;                /* are we done scanning descriptors? */
-  unsigned int any_spills : 1;                /* got any register spills? */
-  unsigned int in_body : 1;        /* are we inside a body? */
-  unsigned int no_reg_stack_frame : 1;        /* Don't adjust bsp for i&l regs */
-  unsigned char *imask;                /* imask of spill_mask record or NULL */
-  unsigned long pr_val;                /* predicate values */
-  unsigned long pr_mask;        /* predicate mask */
-  long spill_offset;                /* psp-relative offset for spill base */
+  unsigned int first_region : 1;	/* is this the first region? */
+  unsigned int done : 1;		/* are we done scanning descriptors? */
+  unsigned int any_spills : 1;		/* got any register spills? */
+  unsigned int in_body : 1;	/* are we inside a body? */
+  unsigned int no_reg_stack_frame : 1;	/* Don't adjust bsp for i&l regs */
+  unsigned char *imask;		/* imask of spill_mask record or NULL */
+  unsigned long pr_val;		/* predicate values */
+  unsigned long pr_mask;	/* predicate mask */
+  long spill_offset;		/* psp-relative offset for spill base */
   int region_start;
   int region_len;
   int epilogue_start;
   int epilogue_count;
   int when_target;
 
-  unsigned char gr_save_loc;        /* next general register to use for saving */
+  unsigned char gr_save_loc;	/* next general register to use for saving */
   unsigned char return_link_reg; /* branch register for return link */
   unsigned short unwabi;
 
-  struct unw_labeled_state *labeled_states;        /* list of all labeled states */
-  struct unw_reg_state curr;        /* current state */
+  struct unw_labeled_state *labeled_states;	/* list of all labeled states */
+  struct unw_reg_state curr;	/* current state */
 
   _Unwind_Personality_Fn personality;
   
@@ -170,10 +170,10 @@ typedef struct unw_state_record
 
 enum unw_nat_type
 {
-  UNW_NAT_NONE,                        /* NaT not represented */
-  UNW_NAT_VAL,                        /* NaT represented by NaT value (fp reg) */
-  UNW_NAT_MEMSTK,                /* NaT value is in unat word at offset OFF  */
-  UNW_NAT_REGSTK                /* NaT is in rnat */
+  UNW_NAT_NONE,			/* NaT not represented */
+  UNW_NAT_VAL,			/* NaT represented by NaT value (fp reg) */
+  UNW_NAT_MEMSTK,		/* NaT value is in unat word at offset OFF  */
+  UNW_NAT_REGSTK		/* NaT is in rnat */
 };
 
 struct unw_stack
@@ -185,29 +185,29 @@ struct unw_stack
 struct _Unwind_Context
 {
   /* Initial frame info.  */
-  unsigned long rnat;                /* rse nat collection */
-  unsigned long regstk_top;        /* lowest address of rbs stored register
-                                   which uses context->rnat collection */
+  unsigned long rnat;		/* rse nat collection */
+  unsigned long regstk_top;	/* lowest address of rbs stored register
+				   which uses context->rnat collection */
 
   /* Current frame info.  */
-  unsigned long bsp;                /* backing store pointer value
-                                   corresponding to psp.  */
-  unsigned long sp;                /* stack pointer value */
-  unsigned long psp;                /* previous sp value */
-  unsigned long rp;                /* return pointer */
-  unsigned long pr;                /* predicate collection */
+  unsigned long bsp;		/* backing store pointer value
+				   corresponding to psp.  */
+  unsigned long sp;		/* stack pointer value */
+  unsigned long psp;		/* previous sp value */
+  unsigned long rp;		/* return pointer */
+  unsigned long pr;		/* predicate collection */
 
-  unsigned long region_start;        /* start of unwind region */
-  unsigned long gp;                /* global pointer value */
-  void *lsda;                        /* language specific data area */
+  unsigned long region_start;	/* start of unwind region */
+  unsigned long gp;		/* global pointer value */
+  void *lsda;			/* language specific data area */
 
   /* Preserved state.  */
-  unsigned long *bsp_loc;        /* previous bsp save location
-                                     Appears to be write-only?        */
+  unsigned long *bsp_loc;	/* previous bsp save location
+  				   Appears to be write-only?	*/
   unsigned long *bspstore_loc;
-  unsigned long *pfs_loc;        /* Save location for pfs in current
-                                     (corr. to sp) frame.  Target
-                                     contains cfm for caller.        */
+  unsigned long *pfs_loc;	/* Save location for pfs in current
+  				   (corr. to sp) frame.  Target
+  				   contains cfm for caller.	*/
   unsigned long *pri_unat_loc;
   unsigned long *unat_loc;
   unsigned long *lc_loc;
@@ -221,9 +221,9 @@ struct _Unwind_Context
     struct unw_ireg_nat
     {
       enum unw_nat_type type : 3;
-      signed long off : 61;                /* NaT word is at loc+nat.off */
+      signed long off : 61;		/* NaT word is at loc+nat.off */
     } nat;
-  } ireg[32 - 2];        /* Indexed by <register number> - 2 */
+  } ireg[32 - 2];	/* Indexed by <register number> - 2 */
 
   unsigned long *br_loc[8];
   void *fr_loc[32 - 2];
@@ -259,12 +259,12 @@ atomic_alloc (unsigned int *mask)
   while (1)
     {
       if (old == 0)
-        return -1;
+	return -1;
       ret = old & -old;
       new = old & ~ret;
       new = __sync_val_compare_and_swap (mask, old, new);
       if (old == new)
-        break;
+	break;
       old = new;
     }
 
@@ -280,9 +280,9 @@ atomic_free (unsigned int *mask, int bit)
 }
 
 
-#define SIZE(X)                (sizeof(X) / sizeof(*(X)))
-#define MASK_FOR(X)        ((2U << (SIZE (X) - 1)) - 1)
-#define PTR_IN(X, P)        ((P) >= (X) && (P) < (X) + SIZE (X))
+#define SIZE(X)		(sizeof(X) / sizeof(*(X)))
+#define MASK_FOR(X)	((2U << (SIZE (X) - 1)) - 1)
+#define PTR_IN(X, P)	((P) >= (X) && (P) < (X) + SIZE (X))
 
 static struct unw_reg_state emergency_reg_state[32];
 static unsigned int emergency_reg_state_free = MASK_FOR (emergency_reg_state);
@@ -311,7 +311,7 @@ alloc_reg_state (void)
     {
       int n = atomic_alloc (&emergency_reg_state_free);
       if (n >= 0)
-        rs = &emergency_reg_state[n];
+	rs = &emergency_reg_state[n];
     }
 
   return rs;
@@ -344,7 +344,7 @@ alloc_label_state (void)
     {
       int n = atomic_alloc (&emergency_labeled_state_free);
       if (n >= 0)
-        ls = &emergency_labeled_state[n];
+	ls = &emergency_labeled_state[n];
     }
 
   return ls;
@@ -396,9 +396,9 @@ dup_state_stack (struct unw_reg_state *rs)
       copy = alloc_reg_state ();
       memcpy (copy, rs, sizeof(*copy));
       if (first)
-        prev->next = copy;
+	prev->next = copy;
       else
-        first = copy;
+	first = copy;
       rs = rs->next;
       prev = copy;
     }
@@ -465,7 +465,7 @@ decode_abreg (unsigned char abreg, int memory)
 
 static void
 set_reg (struct unw_reg_info *reg, enum unw_where where,
-         int when, unsigned long val)
+	 int when, unsigned long val)
 {
   reg->val = val;
   reg->where = where;
@@ -475,35 +475,35 @@ set_reg (struct unw_reg_info *reg, enum unw_where where,
 
 static void
 alloc_spill_area (unsigned long *offp, unsigned long regsize,
-                  struct unw_reg_info *lo, struct unw_reg_info *hi)
+		  struct unw_reg_info *lo, struct unw_reg_info *hi)
 {
   struct unw_reg_info *reg;
 
   for (reg = hi; reg >= lo; --reg)
     {
       if (reg->where == UNW_WHERE_SPILL_HOME)
-        {
-          reg->where = UNW_WHERE_PSPREL;
-          *offp -= regsize;
-          reg->val = *offp;
-        }
+	{
+	  reg->where = UNW_WHERE_PSPREL;
+	  *offp -= regsize;
+	  reg->val = *offp;
+	}
     }
 }
 
 static inline void
 spill_next_when (struct unw_reg_info **regp, struct unw_reg_info *lim,
-                 unw_word t)
+		 unw_word t)
 {
   struct unw_reg_info *reg;
 
   for (reg = *regp; reg <= lim; ++reg)
     {
       if (reg->where == UNW_WHERE_SPILL_HOME)
-        {
-          reg->when = t;
-          *regp = reg + 1;
-          return;
-        }
+	{
+	  reg->when = t;
+	  *regp = reg + 1;
+	  return;
+	}
     }
   /* Excess spill.  */
   abort ();
@@ -523,10 +523,10 @@ finish_prologue (struct unw_state_record *sr)
     {
       reg = sr->curr.reg + save_order[i];
       if (reg->where == UNW_WHERE_GR_SAVE)
-        {
-          reg->where = UNW_WHERE_GR;
-          reg->val = sr->gr_save_loc++;
-        }
+	{
+	  reg->where = UNW_WHERE_GR;
+	  reg->val = sr->gr_save_loc++;
+	}
     }
 
   /* Next, compute when the fp, general, and branch registers get saved.
@@ -535,7 +535,7 @@ finish_prologue (struct unw_state_record *sr)
   if (sr->imask)
     {
       static unsigned char const limit[3] = {
-        UNW_REG_F31, UNW_REG_R7, UNW_REG_B5
+	UNW_REG_F31, UNW_REG_R7, UNW_REG_B5
       };
 
       unsigned char kind, mask = 0, *cp = sr->imask;
@@ -547,14 +547,14 @@ finish_prologue (struct unw_state_record *sr)
       regs[2] = sr->curr.reg + UNW_REG_B1;
 
       for (t = 0; t < sr->region_len; ++t)
-        {
-          if ((t & 3) == 0)
-            mask = *cp++;
-          kind = (mask >> 2*(3-(t & 3))) & 3;
-          if (kind > 0)
-            spill_next_when (&regs[kind - 1], sr->curr.reg + limit[kind - 1],
-                             sr->region_start + t);
-        }
+	{
+	  if ((t & 3) == 0)
+	    mask = *cp++;
+	  kind = (mask >> 2*(3-(t & 3))) & 3;
+	  if (kind > 0)
+	    spill_next_when (&regs[kind - 1], sr->curr.reg + limit[kind - 1],
+			     sr->region_start + t);
+	}
     }
 
   /* Next, lay out the memory stack spill area.  */
@@ -562,11 +562,11 @@ finish_prologue (struct unw_state_record *sr)
     {
       off = sr->spill_offset;
       alloc_spill_area (&off, 16, sr->curr.reg + UNW_REG_F2,
-                        sr->curr.reg + UNW_REG_F31); 
+		        sr->curr.reg + UNW_REG_F31); 
       alloc_spill_area (&off,  8, sr->curr.reg + UNW_REG_B1,
-                        sr->curr.reg + UNW_REG_B5);
+		        sr->curr.reg + UNW_REG_B5);
       alloc_spill_area (&off,  8, sr->curr.reg + UNW_REG_R4,
-                        sr->curr.reg + UNW_REG_R7);
+		        sr->curr.reg + UNW_REG_R7);
     }
 }
 
@@ -576,7 +576,7 @@ finish_prologue (struct unw_state_record *sr)
 
 static void
 desc_prologue (int body, unw_word rlen, unsigned char mask,
-               unsigned char grsave, struct unw_state_record *sr)
+	       unsigned char grsave, struct unw_state_record *sr)
 {
   int i;
 
@@ -607,16 +607,16 @@ desc_prologue (int body, unw_word rlen, unsigned char mask,
   if (!body)
     {
       for (i = 0; i < 4; ++i)
-        {
-          if (mask & 0x8)
-            set_reg (sr->curr.reg + save_order[i], UNW_WHERE_GR,
-                     sr->region_start + sr->region_len - 1, grsave++);
-          mask <<= 1;
-        }
+	{
+	  if (mask & 0x8)
+	    set_reg (sr->curr.reg + save_order[i], UNW_WHERE_GR,
+		     sr->region_start + sr->region_len - 1, grsave++);
+	  mask <<= 1;
+	}
       sr->gr_save_loc = grsave;
       sr->any_spills = 0;
       sr->imask = 0;
-      sr->spill_offset = 0x10;        /* default to psp+16 */
+      sr->spill_offset = 0x10;	/* default to psp+16 */
     }
 }
 
@@ -626,23 +626,23 @@ desc_prologue (int body, unw_word rlen, unsigned char mask,
 
 static inline void
 desc_abi (unsigned char abi,
-          unsigned char context,
-          struct unw_state_record *sr)
+	  unsigned char context,
+	  struct unw_state_record *sr)
 {
   sr->unwabi = (abi << 8) | context;
 }
 
 static inline void
 desc_br_gr (unsigned char brmask, unsigned char gr,
-            struct unw_state_record *sr)
+	    struct unw_state_record *sr)
 {
   int i;
 
   for (i = 0; i < 5; ++i)
     {
       if (brmask & 1)
-        set_reg (sr->curr.reg + UNW_REG_B1 + i, UNW_WHERE_GR,
-                 sr->region_start + sr->region_len - 1, gr++);
+	set_reg (sr->curr.reg + UNW_REG_B1 + i, UNW_WHERE_GR,
+		 sr->region_start + sr->region_len - 1, gr++);
       brmask >>= 1;
     }
 }
@@ -655,40 +655,40 @@ desc_br_mem (unsigned char brmask, struct unw_state_record *sr)
   for (i = 0; i < 5; ++i)
     {
       if (brmask & 1)
-        {
-          set_reg (sr->curr.reg + UNW_REG_B1 + i, UNW_WHERE_SPILL_HOME,
-                   sr->region_start + sr->region_len - 1, 0);
-          sr->any_spills = 1;
-        }
+	{
+	  set_reg (sr->curr.reg + UNW_REG_B1 + i, UNW_WHERE_SPILL_HOME,
+		   sr->region_start + sr->region_len - 1, 0);
+	  sr->any_spills = 1;
+	}
       brmask >>= 1;
     }
 }
 
 static inline void
 desc_frgr_mem (unsigned char grmask, unw_word frmask,
-               struct unw_state_record *sr)
+	       struct unw_state_record *sr)
 {
   int i;
 
   for (i = 0; i < 4; ++i)
     {
       if ((grmask & 1) != 0)
-        {
-          set_reg (sr->curr.reg + UNW_REG_R4 + i, UNW_WHERE_SPILL_HOME,
-                   sr->region_start + sr->region_len - 1, 0);
-          sr->any_spills = 1;
-        }
+	{
+	  set_reg (sr->curr.reg + UNW_REG_R4 + i, UNW_WHERE_SPILL_HOME,
+		   sr->region_start + sr->region_len - 1, 0);
+	  sr->any_spills = 1;
+	}
       grmask >>= 1;
     }
   for (i = 0; i < 20; ++i)
     {
       if ((frmask & 1) != 0)
-        {
-          enum unw_register_index base = i < 4 ? UNW_REG_F2 : UNW_REG_F16 - 4;
-          set_reg (sr->curr.reg + base + i, UNW_WHERE_SPILL_HOME,
-                   sr->region_start + sr->region_len - 1, 0);
-          sr->any_spills = 1;
-        }
+	{
+	  enum unw_register_index base = i < 4 ? UNW_REG_F2 : UNW_REG_F16 - 4;
+	  set_reg (sr->curr.reg + base + i, UNW_WHERE_SPILL_HOME,
+		   sr->region_start + sr->region_len - 1, 0);
+	  sr->any_spills = 1;
+	}
       frmask >>= 1;
     }
 }
@@ -701,26 +701,26 @@ desc_fr_mem (unsigned char frmask, struct unw_state_record *sr)
   for (i = 0; i < 4; ++i)
     {
       if ((frmask & 1) != 0)
-        {
-          set_reg (sr->curr.reg + UNW_REG_F2 + i, UNW_WHERE_SPILL_HOME,
-                   sr->region_start + sr->region_len - 1, 0);
-          sr->any_spills = 1;
-        }
+	{
+	  set_reg (sr->curr.reg + UNW_REG_F2 + i, UNW_WHERE_SPILL_HOME,
+		   sr->region_start + sr->region_len - 1, 0);
+	  sr->any_spills = 1;
+	}
       frmask >>= 1;
     }
 }
 
 static inline void
 desc_gr_gr (unsigned char grmask, unsigned char gr,
-            struct unw_state_record *sr)
+	    struct unw_state_record *sr)
 {
   int i;
 
   for (i = 0; i < 4; ++i)
     {
       if ((grmask & 1) != 0)
-        set_reg (sr->curr.reg + UNW_REG_R4 + i, UNW_WHERE_GR,
-                 sr->region_start + sr->region_len - 1, gr++);
+	set_reg (sr->curr.reg + UNW_REG_R4 + i, UNW_WHERE_GR,
+		 sr->region_start + sr->region_len - 1, gr++);
       grmask >>= 1;
     }
 }
@@ -733,11 +733,11 @@ desc_gr_mem (unsigned char grmask, struct unw_state_record *sr)
   for (i = 0; i < 4; ++i)
     {
       if ((grmask & 1) != 0)
-        {
-          set_reg (sr->curr.reg + UNW_REG_R4 + i, UNW_WHERE_SPILL_HOME,
-                   sr->region_start + sr->region_len - 1, 0);
-          sr->any_spills = 1;
-        }
+	{
+	  set_reg (sr->curr.reg + UNW_REG_R4 + i, UNW_WHERE_SPILL_HOME,
+		   sr->region_start + sr->region_len - 1, 0);
+	  sr->any_spills = 1;
+	}
       grmask >>= 1;
     }
 }
@@ -746,7 +746,7 @@ static inline void
 desc_mem_stack_f (unw_word t, unw_word size, struct unw_state_record *sr)
 {
   set_reg (sr->curr.reg + UNW_REG_PSP, UNW_WHERE_NONE,
-           sr->region_start + MIN ((int)t, sr->region_len - 1), 16*size);
+	   sr->region_start + MIN ((int)t, sr->region_len - 1), 16*size);
 }
 
 static inline void
@@ -760,24 +760,24 @@ static inline void
 desc_reg_gr (unsigned char reg, unsigned char dst, struct unw_state_record *sr)
 {
   set_reg (sr->curr.reg + reg, UNW_WHERE_GR,
-           sr->region_start + sr->region_len - 1, dst);
+	   sr->region_start + sr->region_len - 1, dst);
 }
 
 static inline void
 desc_reg_psprel (unsigned char reg, unw_word pspoff,
-                 struct unw_state_record *sr)
+		 struct unw_state_record *sr)
 {
   set_reg (sr->curr.reg + reg, UNW_WHERE_PSPREL,
-           sr->region_start + sr->region_len - 1,
-           0x10 - 4*pspoff);
+	   sr->region_start + sr->region_len - 1,
+	   0x10 - 4*pspoff);
 }
 
 static inline void
 desc_reg_sprel (unsigned char reg, unw_word spoff, struct unw_state_record *sr)
 {
   set_reg (sr->curr.reg + reg, UNW_WHERE_SPREL,
-           sr->region_start + sr->region_len - 1,
-           4*spoff);
+	   sr->region_start + sr->region_len - 1,
+	   4*spoff);
 }
 
 static inline void
@@ -828,11 +828,11 @@ desc_copy_state (unw_word label, struct unw_state_record *sr)
     {
       if (ls->label == label)
         {
-          free_state_stack (&sr->curr);
-             memcpy (&sr->curr, &ls->saved_state, sizeof (sr->curr));
-          sr->curr.next = dup_state_stack (ls->saved_state.next);
-          return;
-        }
+	  free_state_stack (&sr->curr);
+   	  memcpy (&sr->curr, &ls->saved_state, sizeof (sr->curr));
+	  sr->curr.next = dup_state_stack (ls->saved_state.next);
+	  return;
+	}
     }
   abort ();
 }
@@ -863,7 +863,7 @@ desc_is_active (unsigned char qp, unw_word t, struct unw_state_record *sr)
   if (qp > 0)
     {
       if ((sr->pr_val & (1UL << qp)) == 0) 
-        return 0;
+	return 0;
       sr->pr_mask |= (1UL << qp);
     }
   return 1;
@@ -871,7 +871,7 @@ desc_is_active (unsigned char qp, unw_word t, struct unw_state_record *sr)
 
 static inline void
 desc_restore_p (unsigned char qp, unw_word t, unsigned char abreg,
-                struct unw_state_record *sr)
+		struct unw_state_record *sr)
 {
   struct unw_reg_info *r;
 
@@ -886,8 +886,8 @@ desc_restore_p (unsigned char qp, unw_word t, unsigned char abreg,
 
 static inline void
 desc_spill_reg_p (unsigned char qp, unw_word t, unsigned char abreg,
-                  unsigned char x, unsigned char ytreg,
-                  struct unw_state_record *sr)
+		  unsigned char x, unsigned char ytreg,
+		  struct unw_state_record *sr)
 {
   enum unw_where where = UNW_WHERE_GR;
   struct unw_reg_info *r;
@@ -908,7 +908,7 @@ desc_spill_reg_p (unsigned char qp, unw_word t, unsigned char abreg,
 
 static inline void
 desc_spill_psprel_p (unsigned char qp, unw_word t, unsigned char abreg,
-                     unw_word pspoff, struct unw_state_record *sr)
+		     unw_word pspoff, struct unw_state_record *sr)
 {
   struct unw_reg_info *r;
 
@@ -923,7 +923,7 @@ desc_spill_psprel_p (unsigned char qp, unw_word t, unsigned char abreg,
 
 static inline void
 desc_spill_sprel_p (unsigned char qp, unw_word t, unsigned char abreg,
-                    unw_word spoff, struct unw_state_record *sr)
+		    unw_word spoff, struct unw_state_record *sr)
 {
   struct unw_reg_info *r;
 
@@ -937,49 +937,49 @@ desc_spill_sprel_p (unsigned char qp, unw_word t, unsigned char abreg,
 }
 
 
-#define UNW_DEC_BAD_CODE(code)                        abort ();
+#define UNW_DEC_BAD_CODE(code)			abort ();
 
 /* Region headers.  */
-#define UNW_DEC_PROLOGUE_GR(fmt,r,m,gr,arg)        desc_prologue(0,r,m,gr,arg)
-#define UNW_DEC_PROLOGUE(fmt,b,r,arg)                desc_prologue(b,r,0,32,arg)
+#define UNW_DEC_PROLOGUE_GR(fmt,r,m,gr,arg)	desc_prologue(0,r,m,gr,arg)
+#define UNW_DEC_PROLOGUE(fmt,b,r,arg)		desc_prologue(b,r,0,32,arg)
 
 /* Prologue descriptors.  */
-#define UNW_DEC_ABI(fmt,a,c,arg)                desc_abi(a,c,arg)
-#define UNW_DEC_BR_GR(fmt,b,g,arg)                desc_br_gr(b,g,arg)
-#define UNW_DEC_BR_MEM(fmt,b,arg)                desc_br_mem(b,arg)
-#define UNW_DEC_FRGR_MEM(fmt,g,f,arg)                desc_frgr_mem(g,f,arg)
-#define UNW_DEC_FR_MEM(fmt,f,arg)                desc_fr_mem(f,arg)
-#define UNW_DEC_GR_GR(fmt,m,g,arg)                desc_gr_gr(m,g,arg)
-#define UNW_DEC_GR_MEM(fmt,m,arg)                desc_gr_mem(m,arg)
-#define UNW_DEC_MEM_STACK_F(fmt,t,s,arg)        desc_mem_stack_f(t,s,arg)
-#define UNW_DEC_MEM_STACK_V(fmt,t,arg)                desc_mem_stack_v(t,arg)
-#define UNW_DEC_REG_GR(fmt,r,d,arg)                desc_reg_gr(r,d,arg)
-#define UNW_DEC_REG_PSPREL(fmt,r,o,arg)                desc_reg_psprel(r,o,arg)
-#define UNW_DEC_REG_SPREL(fmt,r,o,arg)                desc_reg_sprel(r,o,arg)
-#define UNW_DEC_REG_WHEN(fmt,r,t,arg)                desc_reg_when(r,t,arg)
-#define UNW_DEC_PRIUNAT_WHEN_GR(fmt,t,arg)        desc_reg_when(UNW_REG_PRI_UNAT_GR,t,arg)
-#define UNW_DEC_PRIUNAT_WHEN_MEM(fmt,t,arg)        desc_reg_when(UNW_REG_PRI_UNAT_MEM,t,arg)
-#define UNW_DEC_PRIUNAT_GR(fmt,r,arg)                desc_reg_gr(UNW_REG_PRI_UNAT_GR,r,arg)
-#define UNW_DEC_PRIUNAT_PSPREL(fmt,o,arg)        desc_reg_psprel(UNW_REG_PRI_UNAT_MEM,o,arg)
-#define UNW_DEC_PRIUNAT_SPREL(fmt,o,arg)        desc_reg_sprel(UNW_REG_PRI_UNAT_MEM,o,arg)
-#define UNW_DEC_RP_BR(fmt,d,arg)                desc_rp_br(d,arg)
-#define UNW_DEC_SPILL_BASE(fmt,o,arg)                desc_spill_base(o,arg)
-#define UNW_DEC_SPILL_MASK(fmt,m,arg)                (m = desc_spill_mask(m,arg))
+#define UNW_DEC_ABI(fmt,a,c,arg)		desc_abi(a,c,arg)
+#define UNW_DEC_BR_GR(fmt,b,g,arg)		desc_br_gr(b,g,arg)
+#define UNW_DEC_BR_MEM(fmt,b,arg)		desc_br_mem(b,arg)
+#define UNW_DEC_FRGR_MEM(fmt,g,f,arg)		desc_frgr_mem(g,f,arg)
+#define UNW_DEC_FR_MEM(fmt,f,arg)		desc_fr_mem(f,arg)
+#define UNW_DEC_GR_GR(fmt,m,g,arg)		desc_gr_gr(m,g,arg)
+#define UNW_DEC_GR_MEM(fmt,m,arg)		desc_gr_mem(m,arg)
+#define UNW_DEC_MEM_STACK_F(fmt,t,s,arg)	desc_mem_stack_f(t,s,arg)
+#define UNW_DEC_MEM_STACK_V(fmt,t,arg)		desc_mem_stack_v(t,arg)
+#define UNW_DEC_REG_GR(fmt,r,d,arg)		desc_reg_gr(r,d,arg)
+#define UNW_DEC_REG_PSPREL(fmt,r,o,arg)		desc_reg_psprel(r,o,arg)
+#define UNW_DEC_REG_SPREL(fmt,r,o,arg)		desc_reg_sprel(r,o,arg)
+#define UNW_DEC_REG_WHEN(fmt,r,t,arg)		desc_reg_when(r,t,arg)
+#define UNW_DEC_PRIUNAT_WHEN_GR(fmt,t,arg)	desc_reg_when(UNW_REG_PRI_UNAT_GR,t,arg)
+#define UNW_DEC_PRIUNAT_WHEN_MEM(fmt,t,arg)	desc_reg_when(UNW_REG_PRI_UNAT_MEM,t,arg)
+#define UNW_DEC_PRIUNAT_GR(fmt,r,arg)		desc_reg_gr(UNW_REG_PRI_UNAT_GR,r,arg)
+#define UNW_DEC_PRIUNAT_PSPREL(fmt,o,arg)	desc_reg_psprel(UNW_REG_PRI_UNAT_MEM,o,arg)
+#define UNW_DEC_PRIUNAT_SPREL(fmt,o,arg)	desc_reg_sprel(UNW_REG_PRI_UNAT_MEM,o,arg)
+#define UNW_DEC_RP_BR(fmt,d,arg)		desc_rp_br(d,arg)
+#define UNW_DEC_SPILL_BASE(fmt,o,arg)		desc_spill_base(o,arg)
+#define UNW_DEC_SPILL_MASK(fmt,m,arg)		(m = desc_spill_mask(m,arg))
 
 /* Body descriptors.  */
-#define UNW_DEC_EPILOGUE(fmt,t,c,arg)                desc_epilogue(t,c,arg)
-#define UNW_DEC_COPY_STATE(fmt,l,arg)                desc_copy_state(l,arg)
-#define UNW_DEC_LABEL_STATE(fmt,l,arg)                desc_label_state(l,arg)
+#define UNW_DEC_EPILOGUE(fmt,t,c,arg)		desc_epilogue(t,c,arg)
+#define UNW_DEC_COPY_STATE(fmt,l,arg)		desc_copy_state(l,arg)
+#define UNW_DEC_LABEL_STATE(fmt,l,arg)		desc_label_state(l,arg)
 
 /* General unwind descriptors.  */
-#define UNW_DEC_SPILL_REG_P(f,p,t,a,x,y,arg)        desc_spill_reg_p(p,t,a,x,y,arg)
-#define UNW_DEC_SPILL_REG(f,t,a,x,y,arg)        desc_spill_reg_p(0,t,a,x,y,arg)
-#define UNW_DEC_SPILL_PSPREL_P(f,p,t,a,o,arg)        desc_spill_psprel_p(p,t,a,o,arg)
-#define UNW_DEC_SPILL_PSPREL(f,t,a,o,arg)        desc_spill_psprel_p(0,t,a,o,arg)
-#define UNW_DEC_SPILL_SPREL_P(f,p,t,a,o,arg)        desc_spill_sprel_p(p,t,a,o,arg)
-#define UNW_DEC_SPILL_SPREL(f,t,a,o,arg)        desc_spill_sprel_p(0,t,a,o,arg)
-#define UNW_DEC_RESTORE_P(f,p,t,a,arg)                desc_restore_p(p,t,a,arg)
-#define UNW_DEC_RESTORE(f,t,a,arg)                desc_restore_p(0,t,a,arg)
+#define UNW_DEC_SPILL_REG_P(f,p,t,a,x,y,arg)	desc_spill_reg_p(p,t,a,x,y,arg)
+#define UNW_DEC_SPILL_REG(f,t,a,x,y,arg)	desc_spill_reg_p(0,t,a,x,y,arg)
+#define UNW_DEC_SPILL_PSPREL_P(f,p,t,a,o,arg)	desc_spill_psprel_p(p,t,a,o,arg)
+#define UNW_DEC_SPILL_PSPREL(f,t,a,o,arg)	desc_spill_psprel_p(0,t,a,o,arg)
+#define UNW_DEC_SPILL_SPREL_P(f,p,t,a,o,arg)	desc_spill_sprel_p(p,t,a,o,arg)
+#define UNW_DEC_SPILL_SPREL(f,t,a,o,arg)	desc_spill_sprel_p(0,t,a,o,arg)
+#define UNW_DEC_RESTORE_P(f,p,t,a,arg)		desc_restore_p(p,t,a,arg)
+#define UNW_DEC_RESTORE(f,t,a,arg)		desc_restore_p(0,t,a,arg)
 
 
 /*
@@ -992,55 +992,55 @@ desc_spill_sprel_p (unsigned char qp, unw_word t, unsigned char abreg,
  * macros/constants before including this file:
  *
  *  Types:
- *        unw_word        Unsigned integer type with at least 64 bits 
+ *	unw_word	Unsigned integer type with at least 64 bits 
  *
  *  Register names:
- *        UNW_REG_BSP
- *        UNW_REG_BSPSTORE
- *        UNW_REG_FPSR
- *        UNW_REG_LC
- *        UNW_REG_PFS
- *        UNW_REG_PR
- *        UNW_REG_RNAT
- *        UNW_REG_PSP
- *        UNW_REG_RP
- *        UNW_REG_UNAT
+ *	UNW_REG_BSP
+ *	UNW_REG_BSPSTORE
+ *	UNW_REG_FPSR
+ *	UNW_REG_LC
+ *	UNW_REG_PFS
+ *	UNW_REG_PR
+ *	UNW_REG_RNAT
+ *	UNW_REG_PSP
+ *	UNW_REG_RP
+ *	UNW_REG_UNAT
  *
  *  Decoder action macros:
- *        UNW_DEC_BAD_CODE(code)
- *        UNW_DEC_ABI(fmt,abi,context,arg)
- *        UNW_DEC_BR_GR(fmt,brmask,gr,arg)
- *        UNW_DEC_BR_MEM(fmt,brmask,arg)
- *        UNW_DEC_COPY_STATE(fmt,label,arg)
- *        UNW_DEC_EPILOGUE(fmt,t,ecount,arg)
- *        UNW_DEC_FRGR_MEM(fmt,grmask,frmask,arg)
- *        UNW_DEC_FR_MEM(fmt,frmask,arg)
- *        UNW_DEC_GR_GR(fmt,grmask,gr,arg)
- *        UNW_DEC_GR_MEM(fmt,grmask,arg)
- *        UNW_DEC_LABEL_STATE(fmt,label,arg)
- *        UNW_DEC_MEM_STACK_F(fmt,t,size,arg)
- *        UNW_DEC_MEM_STACK_V(fmt,t,arg)
- *        UNW_DEC_PRIUNAT_GR(fmt,r,arg)
- *        UNW_DEC_PRIUNAT_WHEN_GR(fmt,t,arg)
- *        UNW_DEC_PRIUNAT_WHEN_MEM(fmt,t,arg)
- *        UNW_DEC_PRIUNAT_WHEN_PSPREL(fmt,pspoff,arg)
- *        UNW_DEC_PRIUNAT_WHEN_SPREL(fmt,spoff,arg)
- *        UNW_DEC_PROLOGUE(fmt,body,rlen,arg)
- *        UNW_DEC_PROLOGUE_GR(fmt,rlen,mask,grsave,arg)
- *        UNW_DEC_REG_PSPREL(fmt,reg,pspoff,arg)
- *        UNW_DEC_REG_REG(fmt,src,dst,arg)
- *        UNW_DEC_REG_SPREL(fmt,reg,spoff,arg)
- *        UNW_DEC_REG_WHEN(fmt,reg,t,arg)
- *        UNW_DEC_RESTORE(fmt,t,abreg,arg)
- *        UNW_DEC_RESTORE_P(fmt,qp,t,abreg,arg)
- *        UNW_DEC_SPILL_BASE(fmt,pspoff,arg)
- *        UNW_DEC_SPILL_MASK(fmt,imaskp,arg)
- *        UNW_DEC_SPILL_PSPREL(fmt,t,abreg,pspoff,arg)
- *        UNW_DEC_SPILL_PSPREL_P(fmt,qp,t,abreg,pspoff,arg)
- *        UNW_DEC_SPILL_REG(fmt,t,abreg,x,ytreg,arg)
- *        UNW_DEC_SPILL_REG_P(fmt,qp,t,abreg,x,ytreg,arg)
- *        UNW_DEC_SPILL_SPREL(fmt,t,abreg,spoff,arg)
- *        UNW_DEC_SPILL_SPREL_P(fmt,qp,t,abreg,pspoff,arg)
+ *	UNW_DEC_BAD_CODE(code)
+ *	UNW_DEC_ABI(fmt,abi,context,arg)
+ *	UNW_DEC_BR_GR(fmt,brmask,gr,arg)
+ *	UNW_DEC_BR_MEM(fmt,brmask,arg)
+ *	UNW_DEC_COPY_STATE(fmt,label,arg)
+ *	UNW_DEC_EPILOGUE(fmt,t,ecount,arg)
+ *	UNW_DEC_FRGR_MEM(fmt,grmask,frmask,arg)
+ *	UNW_DEC_FR_MEM(fmt,frmask,arg)
+ *	UNW_DEC_GR_GR(fmt,grmask,gr,arg)
+ *	UNW_DEC_GR_MEM(fmt,grmask,arg)
+ *	UNW_DEC_LABEL_STATE(fmt,label,arg)
+ *	UNW_DEC_MEM_STACK_F(fmt,t,size,arg)
+ *	UNW_DEC_MEM_STACK_V(fmt,t,arg)
+ *	UNW_DEC_PRIUNAT_GR(fmt,r,arg)
+ *	UNW_DEC_PRIUNAT_WHEN_GR(fmt,t,arg)
+ *	UNW_DEC_PRIUNAT_WHEN_MEM(fmt,t,arg)
+ *	UNW_DEC_PRIUNAT_WHEN_PSPREL(fmt,pspoff,arg)
+ *	UNW_DEC_PRIUNAT_WHEN_SPREL(fmt,spoff,arg)
+ *	UNW_DEC_PROLOGUE(fmt,body,rlen,arg)
+ *	UNW_DEC_PROLOGUE_GR(fmt,rlen,mask,grsave,arg)
+ *	UNW_DEC_REG_PSPREL(fmt,reg,pspoff,arg)
+ *	UNW_DEC_REG_REG(fmt,src,dst,arg)
+ *	UNW_DEC_REG_SPREL(fmt,reg,spoff,arg)
+ *	UNW_DEC_REG_WHEN(fmt,reg,t,arg)
+ *	UNW_DEC_RESTORE(fmt,t,abreg,arg)
+ *	UNW_DEC_RESTORE_P(fmt,qp,t,abreg,arg)
+ *	UNW_DEC_SPILL_BASE(fmt,pspoff,arg)
+ *	UNW_DEC_SPILL_MASK(fmt,imaskp,arg)
+ *	UNW_DEC_SPILL_PSPREL(fmt,t,abreg,pspoff,arg)
+ *	UNW_DEC_SPILL_PSPREL_P(fmt,qp,t,abreg,pspoff,arg)
+ *	UNW_DEC_SPILL_REG(fmt,t,abreg,x,ytreg,arg)
+ *	UNW_DEC_SPILL_REG_P(fmt,qp,t,abreg,x,ytreg,arg)
+ *	UNW_DEC_SPILL_SPREL(fmt,t,abreg,spoff,arg)
+ *	UNW_DEC_SPILL_SPREL_P(fmt,qp,t,abreg,pspoff,arg)
  */
 
 static unw_word
@@ -1055,7 +1055,7 @@ unw_decode_uleb128 (unsigned char **dpp)
       byte = *bp++;
       result |= (byte & 0x7f) << shift;
       if ((byte & 0x80) == 0)
-        break;
+	break;
       shift += 7;
     }
   *dpp = bp;
@@ -1064,8 +1064,8 @@ unw_decode_uleb128 (unsigned char **dpp)
 
 static unsigned char *
 unw_decode_x1 (unsigned char *dp,
-               unsigned char code __attribute__((unused)),
-               void *arg)
+	       unsigned char code __attribute__((unused)),
+	       void *arg)
 {
   unsigned char byte1, abreg;
   unw_word t, off;
@@ -1075,16 +1075,16 @@ unw_decode_x1 (unsigned char *dp,
   off = unw_decode_uleb128 (&dp);
   abreg = (byte1 & 0x7f);
   if (byte1 & 0x80)
-          UNW_DEC_SPILL_SPREL(X1, t, abreg, off, arg);
+	  UNW_DEC_SPILL_SPREL(X1, t, abreg, off, arg);
   else
-          UNW_DEC_SPILL_PSPREL(X1, t, abreg, off, arg);
+	  UNW_DEC_SPILL_PSPREL(X1, t, abreg, off, arg);
   return dp;
 }
 
 static unsigned char *
 unw_decode_x2 (unsigned char *dp,
-               unsigned char code __attribute__((unused)),
-               void *arg)
+	       unsigned char code __attribute__((unused)),
+	       void *arg)
 {
   unsigned char byte1, byte2, abreg, x, ytreg;
   unw_word t;
@@ -1103,8 +1103,8 @@ unw_decode_x2 (unsigned char *dp,
 
 static unsigned char *
 unw_decode_x3 (unsigned char *dp,
-               unsigned char code __attribute__((unused)),
-               void *arg)
+	       unsigned char code __attribute__((unused)),
+	       void *arg)
 {
   unsigned char byte1, byte2, abreg, qp;
   unw_word t, off;
@@ -1125,8 +1125,8 @@ unw_decode_x3 (unsigned char *dp,
 
 static unsigned char *
 unw_decode_x4 (unsigned char *dp,
-               unsigned char code __attribute__((unused)),
-               void *arg)
+	       unsigned char code __attribute__((unused)),
+	       void *arg)
 {
   unsigned char byte1, byte2, byte3, qp, abreg, x, ytreg;
   unw_word t;
@@ -1199,7 +1199,7 @@ unw_decode_p2_p5 (unsigned char *dp, unsigned char code, void *arg)
       unsigned char byte1 = *dp++;
 
       UNW_DEC_BR_GR(P2, ((code & 0xf) << 1) | ((byte1 >> 7) & 1),
-                    (byte1 & 0x7f), arg);
+		    (byte1 & 0x7f), arg);
     }
   else if ((code & 0x08) == 0)
     {
@@ -1208,21 +1208,21 @@ unw_decode_p2_p5 (unsigned char *dp, unsigned char code, void *arg)
       r = ((code & 0x7) << 1) | ((byte1 >> 7) & 1);
       dst = (byte1 & 0x7f);
       switch (r)
-        {
-        case 0: UNW_DEC_REG_GR(P3, UNW_REG_PSP, dst, arg); break;
-        case 1: UNW_DEC_REG_GR(P3, UNW_REG_RP, dst, arg); break;
-        case 2: UNW_DEC_REG_GR(P3, UNW_REG_PFS, dst, arg); break;
-        case 3: UNW_DEC_REG_GR(P3, UNW_REG_PR, dst, arg); break;
-        case 4: UNW_DEC_REG_GR(P3, UNW_REG_UNAT, dst, arg); break;
-        case 5: UNW_DEC_REG_GR(P3, UNW_REG_LC, dst, arg); break;
-        case 6: UNW_DEC_RP_BR(P3, dst, arg); break;
-        case 7: UNW_DEC_REG_GR(P3, UNW_REG_RNAT, dst, arg); break;
-        case 8: UNW_DEC_REG_GR(P3, UNW_REG_BSP, dst, arg); break;
-        case 9: UNW_DEC_REG_GR(P3, UNW_REG_BSPSTORE, dst, arg); break;
-        case 10: UNW_DEC_REG_GR(P3, UNW_REG_FPSR, dst, arg); break;
-        case 11: UNW_DEC_PRIUNAT_GR(P3, dst, arg); break;
-        default: UNW_DEC_BAD_CODE(r); break;
-        }
+	{
+	case 0: UNW_DEC_REG_GR(P3, UNW_REG_PSP, dst, arg); break;
+	case 1: UNW_DEC_REG_GR(P3, UNW_REG_RP, dst, arg); break;
+	case 2: UNW_DEC_REG_GR(P3, UNW_REG_PFS, dst, arg); break;
+	case 3: UNW_DEC_REG_GR(P3, UNW_REG_PR, dst, arg); break;
+	case 4: UNW_DEC_REG_GR(P3, UNW_REG_UNAT, dst, arg); break;
+	case 5: UNW_DEC_REG_GR(P3, UNW_REG_LC, dst, arg); break;
+	case 6: UNW_DEC_RP_BR(P3, dst, arg); break;
+	case 7: UNW_DEC_REG_GR(P3, UNW_REG_RNAT, dst, arg); break;
+	case 8: UNW_DEC_REG_GR(P3, UNW_REG_BSP, dst, arg); break;
+	case 9: UNW_DEC_REG_GR(P3, UNW_REG_BSPSTORE, dst, arg); break;
+	case 10: UNW_DEC_REG_GR(P3, UNW_REG_FPSR, dst, arg); break;
+	case 11: UNW_DEC_PRIUNAT_GR(P3, dst, arg); break;
+	default: UNW_DEC_BAD_CODE(r); break;
+	}
     }
   else if ((code & 0x7) == 0)
     UNW_DEC_SPILL_MASK(P4, dp, arg);
@@ -1264,90 +1264,90 @@ unw_decode_p7_p10 (unsigned char *dp, unsigned char code, void *arg)
       r = (code & 0xf);
       t = unw_decode_uleb128 (&dp);
       switch (r)
-        {
-        case 0:
-          size = unw_decode_uleb128 (&dp);
-          UNW_DEC_MEM_STACK_F(P7, t, size, arg);
-          break;
+	{
+	case 0:
+	  size = unw_decode_uleb128 (&dp);
+	  UNW_DEC_MEM_STACK_F(P7, t, size, arg);
+	  break;
 
-        case 1: UNW_DEC_MEM_STACK_V(P7, t, arg); break;
-        case 2: UNW_DEC_SPILL_BASE(P7, t, arg); break;
-        case 3: UNW_DEC_REG_SPREL(P7, UNW_REG_PSP, t, arg); break;
-        case 4: UNW_DEC_REG_WHEN(P7, UNW_REG_RP, t, arg); break;
-        case 5: UNW_DEC_REG_PSPREL(P7, UNW_REG_RP, t, arg); break;
-        case 6: UNW_DEC_REG_WHEN(P7, UNW_REG_PFS, t, arg); break;
-        case 7: UNW_DEC_REG_PSPREL(P7, UNW_REG_PFS, t, arg); break;
-        case 8: UNW_DEC_REG_WHEN(P7, UNW_REG_PR, t, arg); break;
-        case 9: UNW_DEC_REG_PSPREL(P7, UNW_REG_PR, t, arg); break;
-        case 10: UNW_DEC_REG_WHEN(P7, UNW_REG_LC, t, arg); break;
-        case 11: UNW_DEC_REG_PSPREL(P7, UNW_REG_LC, t, arg); break;
-        case 12: UNW_DEC_REG_WHEN(P7, UNW_REG_UNAT, t, arg); break;
-        case 13: UNW_DEC_REG_PSPREL(P7, UNW_REG_UNAT, t, arg); break;
-        case 14: UNW_DEC_REG_WHEN(P7, UNW_REG_FPSR, t, arg); break;
-        case 15: UNW_DEC_REG_PSPREL(P7, UNW_REG_FPSR, t, arg); break;
-        default: UNW_DEC_BAD_CODE(r); break;
-        }
+	case 1: UNW_DEC_MEM_STACK_V(P7, t, arg); break;
+	case 2: UNW_DEC_SPILL_BASE(P7, t, arg); break;
+	case 3: UNW_DEC_REG_SPREL(P7, UNW_REG_PSP, t, arg); break;
+	case 4: UNW_DEC_REG_WHEN(P7, UNW_REG_RP, t, arg); break;
+	case 5: UNW_DEC_REG_PSPREL(P7, UNW_REG_RP, t, arg); break;
+	case 6: UNW_DEC_REG_WHEN(P7, UNW_REG_PFS, t, arg); break;
+	case 7: UNW_DEC_REG_PSPREL(P7, UNW_REG_PFS, t, arg); break;
+	case 8: UNW_DEC_REG_WHEN(P7, UNW_REG_PR, t, arg); break;
+	case 9: UNW_DEC_REG_PSPREL(P7, UNW_REG_PR, t, arg); break;
+	case 10: UNW_DEC_REG_WHEN(P7, UNW_REG_LC, t, arg); break;
+	case 11: UNW_DEC_REG_PSPREL(P7, UNW_REG_LC, t, arg); break;
+	case 12: UNW_DEC_REG_WHEN(P7, UNW_REG_UNAT, t, arg); break;
+	case 13: UNW_DEC_REG_PSPREL(P7, UNW_REG_UNAT, t, arg); break;
+	case 14: UNW_DEC_REG_WHEN(P7, UNW_REG_FPSR, t, arg); break;
+	case 15: UNW_DEC_REG_PSPREL(P7, UNW_REG_FPSR, t, arg); break;
+	default: UNW_DEC_BAD_CODE(r); break;
+	}
     }
   else
     {
       switch (code & 0xf)
-        {
-        case 0x0: /* p8 */
-          {
-            r = *dp++;
-            t = unw_decode_uleb128 (&dp);
-            switch (r)
-              {
-              case  1: UNW_DEC_REG_SPREL(P8, UNW_REG_RP, t, arg); break;
-              case  2: UNW_DEC_REG_SPREL(P8, UNW_REG_PFS, t, arg); break;
-              case  3: UNW_DEC_REG_SPREL(P8, UNW_REG_PR, t, arg); break;
-              case  4: UNW_DEC_REG_SPREL(P8, UNW_REG_LC, t, arg); break;
-              case  5: UNW_DEC_REG_SPREL(P8, UNW_REG_UNAT, t, arg); break;
-              case  6: UNW_DEC_REG_SPREL(P8, UNW_REG_FPSR, t, arg); break;
-              case  7: UNW_DEC_REG_WHEN(P8, UNW_REG_BSP, t, arg); break;
-              case  8: UNW_DEC_REG_PSPREL(P8, UNW_REG_BSP, t, arg); break;
-              case  9: UNW_DEC_REG_SPREL(P8, UNW_REG_BSP, t, arg); break;
-              case 10: UNW_DEC_REG_WHEN(P8, UNW_REG_BSPSTORE, t, arg); break;
-              case 11: UNW_DEC_REG_PSPREL(P8, UNW_REG_BSPSTORE, t, arg); break;
-              case 12: UNW_DEC_REG_SPREL(P8, UNW_REG_BSPSTORE, t, arg); break;
-              case 13: UNW_DEC_REG_WHEN(P8, UNW_REG_RNAT, t, arg); break;
-              case 14: UNW_DEC_REG_PSPREL(P8, UNW_REG_RNAT, t, arg); break;
-              case 15: UNW_DEC_REG_SPREL(P8, UNW_REG_RNAT, t, arg); break;
-              case 16: UNW_DEC_PRIUNAT_WHEN_GR(P8, t, arg); break;
-              case 17: UNW_DEC_PRIUNAT_PSPREL(P8, t, arg); break;
-              case 18: UNW_DEC_PRIUNAT_SPREL(P8, t, arg); break;
-              case 19: UNW_DEC_PRIUNAT_WHEN_MEM(P8, t, arg); break;
-              default: UNW_DEC_BAD_CODE(r); break;
-            }
-          }
-          break;
+	{
+	case 0x0: /* p8 */
+	  {
+	    r = *dp++;
+	    t = unw_decode_uleb128 (&dp);
+	    switch (r)
+	      {
+	      case  1: UNW_DEC_REG_SPREL(P8, UNW_REG_RP, t, arg); break;
+	      case  2: UNW_DEC_REG_SPREL(P8, UNW_REG_PFS, t, arg); break;
+	      case  3: UNW_DEC_REG_SPREL(P8, UNW_REG_PR, t, arg); break;
+	      case  4: UNW_DEC_REG_SPREL(P8, UNW_REG_LC, t, arg); break;
+	      case  5: UNW_DEC_REG_SPREL(P8, UNW_REG_UNAT, t, arg); break;
+	      case  6: UNW_DEC_REG_SPREL(P8, UNW_REG_FPSR, t, arg); break;
+	      case  7: UNW_DEC_REG_WHEN(P8, UNW_REG_BSP, t, arg); break;
+	      case  8: UNW_DEC_REG_PSPREL(P8, UNW_REG_BSP, t, arg); break;
+	      case  9: UNW_DEC_REG_SPREL(P8, UNW_REG_BSP, t, arg); break;
+	      case 10: UNW_DEC_REG_WHEN(P8, UNW_REG_BSPSTORE, t, arg); break;
+	      case 11: UNW_DEC_REG_PSPREL(P8, UNW_REG_BSPSTORE, t, arg); break;
+	      case 12: UNW_DEC_REG_SPREL(P8, UNW_REG_BSPSTORE, t, arg); break;
+	      case 13: UNW_DEC_REG_WHEN(P8, UNW_REG_RNAT, t, arg); break;
+	      case 14: UNW_DEC_REG_PSPREL(P8, UNW_REG_RNAT, t, arg); break;
+	      case 15: UNW_DEC_REG_SPREL(P8, UNW_REG_RNAT, t, arg); break;
+	      case 16: UNW_DEC_PRIUNAT_WHEN_GR(P8, t, arg); break;
+	      case 17: UNW_DEC_PRIUNAT_PSPREL(P8, t, arg); break;
+	      case 18: UNW_DEC_PRIUNAT_SPREL(P8, t, arg); break;
+	      case 19: UNW_DEC_PRIUNAT_WHEN_MEM(P8, t, arg); break;
+	      default: UNW_DEC_BAD_CODE(r); break;
+	    }
+	  }
+	  break;
 
-        case 0x1:
-          byte1 = *dp++; byte2 = *dp++;
-          UNW_DEC_GR_GR(P9, (byte1 & 0xf), (byte2 & 0x7f), arg);
-          break;
+	case 0x1:
+	  byte1 = *dp++; byte2 = *dp++;
+	  UNW_DEC_GR_GR(P9, (byte1 & 0xf), (byte2 & 0x7f), arg);
+	  break;
 
-        case 0xf: /* p10 */
-          byte1 = *dp++; byte2 = *dp++;
-          UNW_DEC_ABI(P10, byte1, byte2, arg);
-          break;
+	case 0xf: /* p10 */
+	  byte1 = *dp++; byte2 = *dp++;
+	  UNW_DEC_ABI(P10, byte1, byte2, arg);
+	  break;
 
-        case 0x9:
-          return unw_decode_x1 (dp, code, arg);
+	case 0x9:
+	  return unw_decode_x1 (dp, code, arg);
 
-        case 0xa:
-          return unw_decode_x2 (dp, code, arg);
+	case 0xa:
+	  return unw_decode_x2 (dp, code, arg);
 
-        case 0xb:
-          return unw_decode_x3 (dp, code, arg);
+	case 0xb:
+	  return unw_decode_x3 (dp, code, arg);
 
-        case 0xc:
-          return unw_decode_x4 (dp, code, arg);
+	case 0xc:
+	  return unw_decode_x4 (dp, code, arg);
 
-        default:
-          UNW_DEC_BAD_CODE(code);
-          break;
-        }
+	default:
+	  UNW_DEC_BAD_CODE(code);
+	  break;
+	}
     }
   return dp;
 }
@@ -1389,9 +1389,9 @@ unw_decode_b3_x4 (unsigned char *dp, unsigned char code, void *arg)
     {
       label = unw_decode_uleb128 (&dp);
       if ((code & 0x08) != 0)
-        UNW_DEC_COPY_STATE(B4, label, arg);
+	UNW_DEC_COPY_STATE(B4, label, arg);
       else
-        UNW_DEC_LABEL_STATE(B4, label, arg);
+	UNW_DEC_LABEL_STATE(B4, label, arg);
     }
   else
     switch (code & 0x7)
@@ -1411,21 +1411,21 @@ static const unw_decoder unw_decode_table[2][8] =
 {
   /* prologue table: */
   {
-    unw_decode_r1,        /* 0 */
+    unw_decode_r1,	/* 0 */
     unw_decode_r1,
     unw_decode_r2,
     unw_decode_r3,
-    unw_decode_p1,        /* 4 */
+    unw_decode_p1,	/* 4 */
     unw_decode_p2_p5,
     unw_decode_p6,
     unw_decode_p7_p10
   },
   {
-    unw_decode_r1,        /* 0 */
+    unw_decode_r1,	/* 0 */
     unw_decode_r1,
     unw_decode_r2,
     unw_decode_r3,
-    unw_decode_b1,        /* 4 */
+    unw_decode_b1,	/* 4 */
     unw_decode_b1,
     unw_decode_b2,
     unw_decode_b3_x4
@@ -1512,7 +1512,7 @@ ia64_copy_rbs (struct _Unwind_Context *info, unsigned long dst,
   len <<= 3;
   dst_rnat &= (1UL << ((dst >> 3) & 0x3f)) - 1;
   src_rnat = src >= info->regstk_top
-             ? info->rnat : *(unsigned long *) (src | 0x1f8);
+	     ? info->rnat : *(unsigned long *) (src | 0x1f8);
   src_rnat &= ~((1UL << ((src >> 3) & 0x3f)) - 1);
   /* Just to make sure.  */
   src_rnat &= ~(1UL << 63);
@@ -1530,7 +1530,7 @@ ia64_copy_rbs (struct _Unwind_Context *info, unsigned long dst,
   while (len > 0)
     {
       src_rnat = src >= info->regstk_top
-                 ? info->rnat : *(unsigned long *) (src | 0x1f8);
+		 ? info->rnat : *(unsigned long *) (src | 0x1f8);
       /* Just to make sure.  */
       src_rnat &= ~(1UL << 63);
       count = shift2 << 3;
@@ -1573,7 +1573,7 @@ second:
 
 static void
 unw_access_gr (struct _Unwind_Context *info, int regnum,
-               unsigned long *val, char *nat, int write)
+	       unsigned long *val, char *nat, int write)
 {
   unsigned long *addr, *nat_addr = 0, nat_mask = 0, dummy_nat;
   struct unw_ireg *ireg;
@@ -1592,59 +1592,59 @@ unw_access_gr (struct _Unwind_Context *info, int regnum,
       ireg = &info->ireg[regnum - 2];
       addr = ireg->loc;
       if (addr)
-        {
-          nat_addr = addr + ireg->nat.off;
-          switch (ireg->nat.type)
-            {
-            case UNW_NAT_VAL:
-              /* Simulate getf.sig/setf.sig.  */
-              if (write)
-                {
-                  if (*nat)
-                    {
-                      /* Write NaTVal and be done with it.  */
-                      addr[0] = 0;
-                      addr[1] = 0x1fffe;
-                      return;
-                    }
-                  addr[1] = 0x1003e;
-                }
-              else if (addr[0] == 0 && addr[1] == 0x1ffe)
-                {
-                  /* Return NaT and be done with it.  */
-                  *val = 0;
-                  *nat = 1;
-                  return;
-                }
-              /* FALLTHRU */
+	{
+	  nat_addr = addr + ireg->nat.off;
+	  switch (ireg->nat.type)
+	    {
+	    case UNW_NAT_VAL:
+	      /* Simulate getf.sig/setf.sig.  */
+	      if (write)
+		{
+		  if (*nat)
+		    {
+		      /* Write NaTVal and be done with it.  */
+		      addr[0] = 0;
+		      addr[1] = 0x1fffe;
+		      return;
+		    }
+		  addr[1] = 0x1003e;
+		}
+	      else if (addr[0] == 0 && addr[1] == 0x1ffe)
+		{
+		  /* Return NaT and be done with it.  */
+		  *val = 0;
+		  *nat = 1;
+		  return;
+		}
+	      /* FALLTHRU */
 
-            case UNW_NAT_NONE:
-              dummy_nat = 0;
-              nat_addr = &dummy_nat;
-              break;
+	    case UNW_NAT_NONE:
+	      dummy_nat = 0;
+	      nat_addr = &dummy_nat;
+	      break;
 
-            case UNW_NAT_MEMSTK:
-              nat_mask = 1UL << ((long) addr & 0x1f8)/8;
-              break;
+	    case UNW_NAT_MEMSTK:
+	      nat_mask = 1UL << ((long) addr & 0x1f8)/8;
+	      break;
 
-            case UNW_NAT_REGSTK:
-              if ((unsigned long) addr >= info->regstk_top)
-                nat_addr = &info->rnat;
-              else
-                nat_addr = ia64_rse_rnat_addr (addr);
-              nat_mask = 1UL << ia64_rse_slot_num (addr);
-              break;
-            }
-        }
+	    case UNW_NAT_REGSTK:
+	      if ((unsigned long) addr >= info->regstk_top)
+		nat_addr = &info->rnat;
+	      else
+		nat_addr = ia64_rse_rnat_addr (addr);
+	      nat_mask = 1UL << ia64_rse_slot_num (addr);
+	      break;
+	    }
+	}
     }
   else
     {
       /* Access a stacked register.  */
       addr = ia64_rse_skip_regs ((unsigned long *) info->bsp, regnum - 32);
       if ((unsigned long) addr >= info->regstk_top)
-        nat_addr = &info->rnat;
+	nat_addr = &info->rnat;
       else
-        nat_addr = ia64_rse_rnat_addr (addr);
+	nat_addr = ia64_rse_rnat_addr (addr);
       nat_mask = 1UL << ia64_rse_slot_num (addr);
     }
 
@@ -1652,9 +1652,9 @@ unw_access_gr (struct _Unwind_Context *info, int regnum,
     {
       *addr = *val;
       if (*nat)
-        *nat_addr |= nat_mask;
+	*nat_addr |= nat_mask;
       else
-        *nat_addr &= ~nat_mask;
+	*nat_addr &= ~nat_mask;
     }
   else
     {
@@ -1781,38 +1781,38 @@ uw_frame_state_for (struct _Unwind_Context *context, _Unwind_FrameState *fs)
   context->lsda = 0;
 
   ent = _Unwind_FindTableEntry ((void *) context->rp,
-                                &segment_base, &context->gp);
+				&segment_base, &context->gp);
   if (ent == NULL)
     {
       /* Couldn't find unwind info for this function.  Try an
-         os-specific fallback mechanism.  This will necessarily
-         not provide a personality routine or LSDA.  */
+	 os-specific fallback mechanism.  This will necessarily
+	 not provide a personality routine or LSDA.  */
 #ifdef MD_FALLBACK_FRAME_STATE_FOR
       if (MD_FALLBACK_FRAME_STATE_FOR (context, fs) == _URC_NO_REASON)
-        return _URC_NO_REASON;
+	return _URC_NO_REASON;
 
       /* [SCRA 11.4.1] A leaf function with no memory stack, no exception
-         handlers, and which keeps the return value in B0 does not need
-         an unwind table entry.
+	 handlers, and which keeps the return value in B0 does not need
+	 an unwind table entry.
 
-         This can only happen in the frame after unwinding through a signal
-         handler.  Avoid infinite looping by requiring that B0 != RP.
-         RP == 0 terminates the chain.  */
+	 This can only happen in the frame after unwinding through a signal
+	 handler.  Avoid infinite looping by requiring that B0 != RP.
+	 RP == 0 terminates the chain.  */
       if (context->br_loc[0] && *context->br_loc[0] != context->rp
-          && context->rp != 0)
-        {
-          fs->curr.reg[UNW_REG_RP].where = UNW_WHERE_BR;
-          fs->curr.reg[UNW_REG_RP].when = -1;
-          fs->curr.reg[UNW_REG_RP].val = 0;
-          return _URC_NO_REASON;
-        }
+	  && context->rp != 0)
+	{
+	  fs->curr.reg[UNW_REG_RP].where = UNW_WHERE_BR;
+	  fs->curr.reg[UNW_REG_RP].when = -1;
+	  fs->curr.reg[UNW_REG_RP].val = 0;
+	  return _URC_NO_REASON;
+	}
 #endif
       return _URC_END_OF_STACK;
     }
 
   context->region_start = ent->start_offset + segment_base;
   fs->when_target = ((context->rp & -16) - context->region_start) / 16 * 3
-                    + (context->rp & 15);
+		    + (context->rp & 15);
 
   unw = (unsigned long *) (ent->info_offset + segment_base);
   header = *unw;
@@ -1823,7 +1823,7 @@ uw_frame_state_for (struct _Unwind_Context *context, _Unwind_FrameState *fs)
   if (UNW_FLAG_EHANDLER (header) | UNW_FLAG_UHANDLER (header))
     {
       fs->personality =
-        *(_Unwind_Personality_Fn *) (unw[length + 1] + context->gp);
+	*(_Unwind_Personality_Fn *) (unw[length + 1] + context->gp);
       context->lsda = unw + length + 2;
     }
 
@@ -1849,9 +1849,9 @@ uw_frame_state_for (struct _Unwind_Context *context, _Unwind_FrameState *fs)
       fs->curr.reg[UNW_REG_PSP].where = UNW_WHERE_NONE;
       fs->curr.reg[UNW_REG_PSP].val = 0;
       for (r = fs->curr.reg; r < fs->curr.reg + UNW_NUM_REGS; ++r)
-        if ((r->where == UNW_WHERE_PSPREL && r->val <= 0x10)
-            || r->where == UNW_WHERE_SPREL)
-          r->where = UNW_WHERE_NONE;
+	if ((r->where == UNW_WHERE_PSPREL && r->val <= 0x10)
+	    || r->where == UNW_WHERE_SPREL)
+	  r->where = UNW_WHERE_NONE;
     }
 
   /* If RP did't get saved, generate entry for the return link register.  */
@@ -1867,8 +1867,8 @@ uw_frame_state_for (struct _Unwind_Context *context, _Unwind_FrameState *fs)
 
 static void
 uw_update_reg_address (struct _Unwind_Context *context,
-                       _Unwind_FrameState *fs,
-                       enum unw_register_index regno)
+		       _Unwind_FrameState *fs,
+		       enum unw_register_index regno)
 {
   struct unw_reg_info *r = fs->curr.reg + regno;
   void *addr;
@@ -1882,33 +1882,33 @@ uw_update_reg_address (struct _Unwind_Context *context,
     {
     case UNW_WHERE_GR:
       if (rval >= 32)
-        addr = ia64_rse_skip_regs ((unsigned long *) context->bsp, rval - 32);
+	addr = ia64_rse_skip_regs ((unsigned long *) context->bsp, rval - 32);
       else if (rval >= 2)
-        addr = context->ireg[rval - 2].loc;
+	addr = context->ireg[rval - 2].loc;
       else if (rval == 0)
-        {
-          static const unsigned long dummy;
-          addr = (void *) &dummy;
-        }
+	{
+	  static const unsigned long dummy;
+	  addr = (void *) &dummy;
+	}
       else
-        abort ();
+	abort ();
       break;
 
     case UNW_WHERE_FR:
       if (rval >= 2 && rval < 32)
-        addr = context->fr_loc[rval - 2];
+	addr = context->fr_loc[rval - 2];
       else
-        abort ();
+	abort ();
       break;
 
     case UNW_WHERE_BR:
       /* Note that while RVAL can only be 1-5 from normal descriptors,
-         we can want to look at B0, B6 and B7 due to having manually unwound a
-         signal frame.  */
+	 we can want to look at B0, B6 and B7 due to having manually unwound a
+	 signal frame.  */
       if (rval < 8)
-        addr = context->br_loc[rval];
+	addr = context->br_loc[rval];
       else
-        abort ();
+	abort ();
       break;
 
     case UNW_WHERE_SPREL:
@@ -1930,45 +1930,45 @@ uw_update_reg_address (struct _Unwind_Context *context,
       switch (r->where)
       {
       case UNW_WHERE_GR:
-        if (rval >= 32)
-          {
-            context->ireg[regno - UNW_REG_R2].nat.type = UNW_NAT_MEMSTK;
-            context->ireg[regno - UNW_REG_R2].nat.off
-              = context->pri_unat_loc - (unsigned long *) addr;
-          }
-        else if (rval >= 2)
-          {
-            context->ireg[regno - UNW_REG_R2].nat
-              = context->ireg[rval - 2].nat;
-          }
-        else if (rval == 0)
-          {
-            context->ireg[regno - UNW_REG_R2].nat.type = UNW_NAT_NONE;
-            context->ireg[regno - UNW_REG_R2].nat.off = 0;
-          }
-        else
-          abort ();
-        break;
+	if (rval >= 32)
+	  {
+	    context->ireg[regno - UNW_REG_R2].nat.type = UNW_NAT_MEMSTK;
+	    context->ireg[regno - UNW_REG_R2].nat.off
+	      = context->pri_unat_loc - (unsigned long *) addr;
+	  }
+	else if (rval >= 2)
+	  {
+	    context->ireg[regno - UNW_REG_R2].nat
+	      = context->ireg[rval - 2].nat;
+	  }
+	else if (rval == 0)
+	  {
+	    context->ireg[regno - UNW_REG_R2].nat.type = UNW_NAT_NONE;
+	    context->ireg[regno - UNW_REG_R2].nat.off = 0;
+	  }
+	else
+	  abort ();
+	break;
 
       case UNW_WHERE_FR:
-        context->ireg[regno - UNW_REG_R2].nat.type = UNW_NAT_VAL;
-        context->ireg[regno - UNW_REG_R2].nat.off = 0;
-        break;
+	context->ireg[regno - UNW_REG_R2].nat.type = UNW_NAT_VAL;
+	context->ireg[regno - UNW_REG_R2].nat.off = 0;
+	break;
 
       case UNW_WHERE_BR:
-        context->ireg[regno - UNW_REG_R2].nat.type = UNW_NAT_NONE;
-        context->ireg[regno - UNW_REG_R2].nat.off = 0;
-        break;
+	context->ireg[regno - UNW_REG_R2].nat.type = UNW_NAT_NONE;
+	context->ireg[regno - UNW_REG_R2].nat.off = 0;
+	break;
 
       case UNW_WHERE_PSPREL:
       case UNW_WHERE_SPREL:
-        context->ireg[regno - UNW_REG_R2].nat.type = UNW_NAT_MEMSTK;
-        context->ireg[regno - UNW_REG_R2].nat.off
-          = context->pri_unat_loc - (unsigned long *) addr;
-        break;
+	context->ireg[regno - UNW_REG_R2].nat.type = UNW_NAT_MEMSTK;
+	context->ireg[regno - UNW_REG_R2].nat.off
+	  = context->pri_unat_loc - (unsigned long *) addr;
+	break;
 
       default:
-        abort ();
+	abort ();
       }
       break;
 
@@ -2029,9 +2029,9 @@ uw_update_context (struct _Unwind_Context *context, _Unwind_FrameState *fs)
   if (fs->when_target > fs->curr.reg[UNW_REG_PSP].when)
     {
       if (fs->curr.reg[UNW_REG_PSP].where == UNW_WHERE_NONE)
-        context->psp = context->psp + fs->curr.reg[UNW_REG_PSP].val;
+	context->psp = context->psp + fs->curr.reg[UNW_REG_PSP].val;
       else
-        uw_update_reg_address (context, fs, UNW_REG_PSP);
+	uw_update_reg_address (context, fs, UNW_REG_PSP);
     }
 
   /* Determine the location of the primary UNaT.  */
@@ -2042,7 +2042,7 @@ uw_update_context (struct _Unwind_Context *context, _Unwind_FrameState *fs)
     else if (fs->when_target < fs->curr.reg[UNW_REG_PRI_UNAT_MEM].when)
       i = UNW_REG_PRI_UNAT_GR;
     else if (fs->curr.reg[UNW_REG_PRI_UNAT_MEM].when
-             > fs->curr.reg[UNW_REG_PRI_UNAT_GR].when)
+	     > fs->curr.reg[UNW_REG_PRI_UNAT_GR].when)
       i = UNW_REG_PRI_UNAT_MEM;
     else
       i = UNW_REG_PRI_UNAT_GR;
@@ -2057,13 +2057,13 @@ uw_update_context (struct _Unwind_Context *context, _Unwind_FrameState *fs)
   /* ??? What to do with stored BSP or BSPSTORE registers.  */
   /* We assert that we are either at a call site, or we have
      just unwound through a signal frame.  In either case
-     pfs_loc is valid.        */
+     pfs_loc is valid.	*/
   if (!(fs -> no_reg_stack_frame))
     {
       unsigned long pfs = *context->pfs_loc;
       unsigned long sol = (pfs >> 7) & 0x7f;
       context->bsp = (unsigned long)
-        ia64_rse_skip_regs ((unsigned long *) context->bsp, -sol);
+	ia64_rse_skip_regs ((unsigned long *) context->bsp, -sol);
     }
 }
 
@@ -2076,13 +2076,13 @@ uw_advance_context (struct _Unwind_Context *context, _Unwind_FrameState *fs)
 /* Fill in CONTEXT for top-of-stack.  The only valid registers at this
    level will be the return address and the CFA.  Note that CFA = SP+16.  */
    
-#define uw_init_context(CONTEXT)                                        \
-  do {                                                                        \
-    /* ??? There is a whole lot o code in uw_install_context that        \
-       tries to avoid spilling the entire machine state here.  We        \
-       should try to make that work again.  */                                \
-    __builtin_unwind_init();                                                \
-    uw_init_context_1 (CONTEXT, __builtin_ia64_bsp ());                        \
+#define uw_init_context(CONTEXT)					\
+  do {									\
+    /* ??? There is a whole lot o code in uw_install_context that	\
+       tries to avoid spilling the entire machine state here.  We	\
+       should try to make that work again.  */				\
+    __builtin_unwind_init();						\
+    uw_init_context_1 (CONTEXT, __builtin_ia64_bsp ());			\
   } while (0)
 
 static void
@@ -2116,7 +2116,7 @@ uw_init_context_1 (struct _Unwind_Context *context, void *bsp)
   context->rp = (unsigned long) rp;
   asm ("mov %0 = sp" : "=r" (context->sp));
   asm ("mov %0 = pr" : "=r" (context->pr));
-  context->pri_unat_loc = &context->initial_unat;        /* ??? */
+  context->pri_unat_loc = &context->initial_unat;	/* ??? */
 
   if (uw_frame_state_for (context, &fs) != _URC_NO_REASON)
     abort ();
@@ -2128,7 +2128,7 @@ uw_init_context_1 (struct _Unwind_Context *context, void *bsp)
 
 static void __attribute__((noreturn))
 uw_install_context (struct _Unwind_Context *current __attribute__((unused)),
-                    struct _Unwind_Context *target)
+		    struct _Unwind_Context *target)
 {
   unsigned long ireg_buf[4], ireg_nat = 0, ireg_pr = 0;
   long i;
@@ -2141,12 +2141,12 @@ uw_install_context (struct _Unwind_Context *current __attribute__((unused)),
       char nat;
       void *t = target->ireg[i - 2].loc;
       if (t)
-        {
-          unw_access_gr (target, i, &ireg_buf[i - 4], &nat, 0);
+	{
+	  unw_access_gr (target, i, &ireg_buf[i - 4], &nat, 0);
           ireg_nat |= (long)nat << (((size_t)&ireg_buf[i - 4] >> 3) & 0x3f);
-          /* Set p6 - p9.  */
-          ireg_pr |= 4L << i;
-        }
+	  /* Set p6 - p9.  */
+	  ireg_pr |= 4L << i;
+	}
     }
 
   /* The value in uc_bsp that we've computed is that for the 
@@ -2155,237 +2155,237 @@ uw_install_context (struct _Unwind_Context *current __attribute__((unused)),
      of AR.PFS.  So we must unadjust that here.  */
   target->bsp = (unsigned long)
     ia64_rse_skip_regs ((unsigned long *)target->bsp,
-                        (*target->pfs_loc >> 7) & 0x7f);
+			(*target->pfs_loc >> 7) & 0x7f);
 
   if (target->bsp < target->regstk_top)
     target->rnat = *ia64_rse_rnat_addr ((unsigned long *) target->bsp);
 
   /* Provide assembly with the offsets into the _Unwind_Context.  */
   asm volatile ("uc_rnat = %0"
-                : : "i"(offsetof (struct _Unwind_Context, rnat)));
+		: : "i"(offsetof (struct _Unwind_Context, rnat)));
   asm volatile ("uc_bsp = %0"
-                : : "i"(offsetof (struct _Unwind_Context, bsp)));
+		: : "i"(offsetof (struct _Unwind_Context, bsp)));
   asm volatile ("uc_psp = %0"
-                : : "i"(offsetof (struct _Unwind_Context, psp)));
+		: : "i"(offsetof (struct _Unwind_Context, psp)));
   asm volatile ("uc_rp = %0"
-                : : "i"(offsetof (struct _Unwind_Context, rp)));
+		: : "i"(offsetof (struct _Unwind_Context, rp)));
   asm volatile ("uc_pr = %0"
-                : : "i"(offsetof (struct _Unwind_Context, pr)));
+		: : "i"(offsetof (struct _Unwind_Context, pr)));
   asm volatile ("uc_gp = %0"
-                : : "i"(offsetof (struct _Unwind_Context, gp)));
+		: : "i"(offsetof (struct _Unwind_Context, gp)));
   asm volatile ("uc_pfs_loc = %0"
-                : : "i"(offsetof (struct _Unwind_Context, pfs_loc)));
+		: : "i"(offsetof (struct _Unwind_Context, pfs_loc)));
   asm volatile ("uc_unat_loc = %0"
-                : : "i"(offsetof (struct _Unwind_Context, unat_loc)));
+		: : "i"(offsetof (struct _Unwind_Context, unat_loc)));
   asm volatile ("uc_lc_loc = %0"
-                : : "i"(offsetof (struct _Unwind_Context, lc_loc)));
+		: : "i"(offsetof (struct _Unwind_Context, lc_loc)));
   asm volatile ("uc_fpsr_loc = %0"
-                : : "i"(offsetof (struct _Unwind_Context, fpsr_loc)));
+		: : "i"(offsetof (struct _Unwind_Context, fpsr_loc)));
   asm volatile ("uc_eh_data = %0"
-                : : "i"(offsetof (struct _Unwind_Context, eh_data)));
+		: : "i"(offsetof (struct _Unwind_Context, eh_data)));
   asm volatile ("uc_br_loc = %0"
-                : : "i"(offsetof (struct _Unwind_Context, br_loc)));
+		: : "i"(offsetof (struct _Unwind_Context, br_loc)));
   asm volatile ("uc_fr_loc = %0"
-                : : "i"(offsetof (struct _Unwind_Context, fr_loc)));
+		: : "i"(offsetof (struct _Unwind_Context, fr_loc)));
 
   asm volatile (
-        /* Load up call-saved non-window integer registers from ireg_buf.  */
-        "add r20 = 8, %1                        \n\t"
-        "mov ar.unat = %2                        \n\t"
-        "mov pr = %3, 0x3c0                        \n\t"
-        ";;                                        \n\t"
-        "(p6) ld8.fill r4 = [%1]                \n\t"
-        "(p7) ld8.fill r5 = [r20]                \n\t"
-        "add r21 = uc_br_loc + 16, %0                \n\t"
-        "adds %1 = 16, %1                        \n\t"
-        "adds r20 = 16, r20                        \n\t"
-        ";;                                        \n\t"
-        "(p8) ld8.fill r6 = [%1]                \n\t"
-        "(p9) ld8.fill r7 = [r20]                \n\t"
-        "add r20 = uc_br_loc + 8, %0                \n\t"
-        ";;                                        \n\t"
-        /* Load up call-saved branch registers.  */
-        "ld8 r22 = [r20], 16                        \n\t"
-        "ld8 r23 = [r21], 16                        \n\t"
-        ";;                                        \n\t"
-        "ld8 r24 = [r20], 16                        \n\t"
-        "ld8 r25 = [r21], uc_fr_loc - (uc_br_loc + 32)\n\t"
-        ";;                                        \n\t"
-        "ld8 r26 = [r20], uc_fr_loc + 8 - (uc_br_loc + 40)\n\t"
-        "ld8 r27 = [r21], 24                        \n\t"
-        "cmp.ne p6, p0 = r0, r22                \n\t"
-        ";;                                        \n\t"
-        "ld8 r28 = [r20], 8                        \n\t"
-        "(p6) ld8 r22 = [r22]                        \n\t"
-        "cmp.ne p7, p0 = r0, r23                \n\t"
-        ";;                                        \n\t"
-        "(p7) ld8 r23 = [r23]                        \n\t"
-        "cmp.ne p8, p0 = r0, r24                \n\t"
-        ";;                                        \n\t"
-        "(p8) ld8 r24 = [r24]                        \n\t"
-        "(p6) mov b1 = r22                        \n\t"
-        "cmp.ne p9, p0 = r0, r25                \n\t"
-        ";;                                        \n\t"
-        "(p9) ld8 r25 = [r25]                        \n\t"
-        "(p7) mov b2 = r23                        \n\t"
-        "cmp.ne p6, p0 = r0, r26                \n\t"
-        ";;                                        \n\t"
-        "(p6) ld8 r26 = [r26]                        \n\t"
-        "(p8) mov b3 = r24                        \n\t"
-        "cmp.ne p7, p0 = r0, r27                \n\t"
-        ";;                                        \n\t"
-        /* Load up call-saved fp registers.  */
-        "(p7) ldf.fill f2 = [r27]                \n\t"
-        "(p9) mov b4 = r25                        \n\t"
-        "cmp.ne p8, p0 = r0, r28                \n\t"
-        ";;                                        \n\t"
-        "(p8) ldf.fill f3 = [r28]                \n\t"
-        "(p6) mov b5 = r26                        \n\t"
-        ";;                                        \n\t"
-        "ld8 r29 = [r20], 16*8 - 4*8                \n\t"
-        "ld8 r30 = [r21], 17*8 - 5*8                \n\t"
-        ";;                                        \n\t"
-        "ld8 r22 = [r20], 16                        \n\t"
-        "ld8 r23 = [r21], 16                        \n\t"
-        ";;                                        \n\t"
-        "ld8 r24 = [r20], 16                        \n\t"
-        "ld8 r25 = [r21]                        \n\t"
-        "cmp.ne p6, p0 = r0, r29                \n\t"
-        ";;                                        \n\t"
-        "ld8 r26 = [r20], 8                        \n\t"
-        "(p6) ldf.fill f4 = [r29]                \n\t"
-        "cmp.ne p7, p0 = r0, r30                \n\t"
-        ";;                                        \n\t"
-        "ld8 r27 = [r20], 8                        \n\t"
-        "(p7) ldf.fill f5 = [r30]                \n\t"
-        "cmp.ne p6, p0 = r0, r22                \n\t"
-        ";;                                        \n\t"
-        "ld8 r28 = [r20], 8                        \n\t"
-        "(p6) ldf.fill f16 = [r22]                \n\t"
-        "cmp.ne p7, p0 = r0, r23                \n\t"
-        ";;                                        \n\t"
-        "ld8 r29 = [r20], 8                        \n\t"
-        "(p7) ldf.fill f17 = [r23]                \n\t"
-        "cmp.ne p6, p0 = r0, r24                \n\t"
-        ";;                                        \n\t"
-        "ld8 r22 = [r20], 8                        \n\t"
-        "(p6) ldf.fill f18 = [r24]                \n\t"
-        "cmp.ne p7, p0 = r0, r25                \n\t"
-        ";;                                        \n\t"
-        "ld8 r23 = [r20], 8                        \n\t"
-        "(p7) ldf.fill f19 = [r25]                \n\t"
-        "cmp.ne p6, p0 = r0, r26                \n\t"
-        ";;                                        \n\t"
-        "ld8 r24 = [r20], 8                        \n\t"
-        "(p6) ldf.fill f20 = [r26]                \n\t"
-        "cmp.ne p7, p0 = r0, r27                \n\t"
-        ";;                                        \n\t"
-        "ld8 r25 = [r20], 8                        \n\t"
-        "(p7) ldf.fill f21 = [r27]                \n\t"
-        "cmp.ne p6, p0 = r0, r28                \n\t"
-        ";;                                        \n\t"
-        "ld8 r26 = [r20], 8                        \n\t"
-        "(p6) ldf.fill f22 = [r28]                \n\t"
-        "cmp.ne p7, p0 = r0, r29                \n\t"
-        ";;                                        \n\t"
-        "ld8 r27 = [r20], 8                        \n\t"
-        ";;                                        \n\t"
-        "ld8 r28 = [r20], 8                        \n\t"
-        "(p7) ldf.fill f23 = [r29]                \n\t"
-        "cmp.ne p6, p0 = r0, r22                \n\t"
-        ";;                                        \n\t"
-        "ld8 r29 = [r20], 8                        \n\t"
-        "(p6) ldf.fill f24 = [r22]                \n\t"
-        "cmp.ne p7, p0 = r0, r23                \n\t"
-        ";;                                        \n\t"
-        "(p7) ldf.fill f25 = [r23]                \n\t"
-        "cmp.ne p6, p0 = r0, r24                \n\t"
-        "cmp.ne p7, p0 = r0, r25                \n\t"
-        ";;                                        \n\t"
-        "(p6) ldf.fill f26 = [r24]                \n\t"
-        "(p7) ldf.fill f27 = [r25]                \n\t"
-        "cmp.ne p6, p0 = r0, r26                \n\t"
-        ";;                                        \n\t"
-        "(p6) ldf.fill f28 = [r26]                \n\t"
-        "cmp.ne p7, p0 = r0, r27                \n\t"
-        "cmp.ne p6, p0 = r0, r28                \n\t"
-        ";;                                        \n\t"
-        "(p7) ldf.fill f29 = [r27]                \n\t"
-        "(p6) ldf.fill f30 = [r28]                \n\t"
-        "cmp.ne p7, p0 = r0, r29                \n\t"
-        ";;                                        \n\t"
-        "(p7) ldf.fill f31 = [r29]                \n\t"
-        "add r20 = uc_rnat, %0                        \n\t"
-        "add r21 = uc_bsp, %0                        \n\t"
-        ";;                                        \n\t"
-        /* Load the balance of the thread state from the context.  */
-        "ld8 r22 = [r20], uc_psp - uc_rnat        \n\t"
-        "ld8 r23 = [r21], uc_gp - uc_bsp        \n\t"
-        ";;                                        \n\t"
-        "ld8 r24 = [r20], uc_pfs_loc - uc_psp        \n\t"
-        "ld8 r1 = [r21], uc_rp - uc_gp                \n\t"
-        ";;                                        \n\t"
-        "ld8 r25 = [r20], uc_unat_loc - uc_pfs_loc\n\t"
-        "ld8 r26 = [r21], uc_pr - uc_rp                \n\t"
-        ";;                                        \n\t"
-        "ld8 r27 = [r20], uc_lc_loc - uc_unat_loc\n\t"
-        "ld8 r28 = [r21], uc_fpsr_loc - uc_pr        \n\t"
-        ";;                                        \n\t"
-        "ld8 r29 = [r20], uc_eh_data - uc_lc_loc\n\t"
-        "ld8 r30 = [r21], uc_eh_data + 8 - uc_fpsr_loc\n\t"
-        ";;                                        \n\t"
-        /* Load data for the exception handler.  */
-        "ld8 r15 = [r20], 16                        \n\t"
-        "ld8 r16 = [r21], 16                        \n\t"
-        ";;                                        \n\t"
-        "ld8 r17 = [r20]                        \n\t"
-        "ld8 r18 = [r21]                        \n\t"
-        ";;                                        \n\t"
-        /* Install the balance of the thread state loaded above.  */
-        "cmp.ne p6, p0 = r0, r25                \n\t"
-        "cmp.ne p7, p0 = r0, r27                \n\t"
-        ";;                                        \n\t"
-        "(p6) ld8 r25 = [r25]                        \n\t"
-        "(p7) ld8 r27 = [r27]                        \n\t"
-        ";;                                        \n\t"
-        "(p7) mov.m ar.unat = r27                \n\t"
-        "(p6) mov.i ar.pfs = r25                \n\t"
-        "cmp.ne p9, p0 = r0, r29                \n\t"
-        ";;                                        \n\t"
-        "(p9) ld8 r29 = [r29]                        \n\t"
-        "cmp.ne p6, p0 = r0, r30                \n\t"
-        ";;                                        \n\t"
-        "(p6) ld8 r30 = [r30]                        \n\t"
-        /* Don't clobber p6-p9, which are in use at present.  */
-        "mov pr = r28, ~0x3c0                        \n\t"
-        "(p9) mov.i ar.lc = r29                        \n\t"
-        ";;                                        \n\t"
-        "mov.m r25 = ar.rsc                        \n\t"
-        "(p6) mov.m ar.fpsr = r30                \n\t"
-        ";;                                        \n\t"
-        "and r29 = 0x1c, r25                        \n\t"
-        "mov b0 = r26                                \n\t"
-        ";;                                        \n\t"
-        "mov.m ar.rsc = r29                        \n\t"
-        ";;                                        \n\t"
-        /* This must be done before setting AR.BSPSTORE, otherwise 
-           AR.BSP will be initialized with a random displacement
-           below the value we want, based on the current number of
-           dirty stacked registers.  */
-        "loadrs                                        \n\t"
-        "invala                                        \n\t"
-        ";;                                        \n\t"
-        "mov.m ar.bspstore = r23                \n\t"
-        ";;                                        \n\t"
-        "mov.m ar.rnat = r22                        \n\t"
-        ";;                                        \n\t"
-        "mov.m ar.rsc = r25                        \n\t"
-        "mov sp = r24                                \n\t"
-        "br.ret.sptk.few b0"
-        : : "r"(target), "r"(ireg_buf), "r"(ireg_nat), "r"(ireg_pr)
-        : "r15", "r16", "r17", "r18", "r20", "r21", "r22",
-          "r23", "r24", "r25", "r26", "r27", "r28", "r29",
-          "r30", "r31");
+	/* Load up call-saved non-window integer registers from ireg_buf.  */
+	"add r20 = 8, %1			\n\t"
+	"mov ar.unat = %2			\n\t"
+	"mov pr = %3, 0x3c0			\n\t"
+	";;					\n\t"
+	"(p6) ld8.fill r4 = [%1]		\n\t"
+	"(p7) ld8.fill r5 = [r20]		\n\t"
+	"add r21 = uc_br_loc + 16, %0		\n\t"
+	"adds %1 = 16, %1			\n\t"
+	"adds r20 = 16, r20			\n\t"
+	";;					\n\t"
+	"(p8) ld8.fill r6 = [%1]		\n\t"
+	"(p9) ld8.fill r7 = [r20]		\n\t"
+	"add r20 = uc_br_loc + 8, %0		\n\t"
+	";;					\n\t"
+	/* Load up call-saved branch registers.  */
+	"ld8 r22 = [r20], 16			\n\t"
+	"ld8 r23 = [r21], 16			\n\t"
+	";;					\n\t"
+	"ld8 r24 = [r20], 16			\n\t"
+	"ld8 r25 = [r21], uc_fr_loc - (uc_br_loc + 32)\n\t"
+	";;					\n\t"
+	"ld8 r26 = [r20], uc_fr_loc + 8 - (uc_br_loc + 40)\n\t"
+	"ld8 r27 = [r21], 24			\n\t"
+	"cmp.ne p6, p0 = r0, r22		\n\t"
+	";;					\n\t"
+	"ld8 r28 = [r20], 8			\n\t"
+	"(p6) ld8 r22 = [r22]			\n\t"
+	"cmp.ne p7, p0 = r0, r23		\n\t"
+	";;					\n\t"
+	"(p7) ld8 r23 = [r23]			\n\t"
+	"cmp.ne p8, p0 = r0, r24		\n\t"
+	";;					\n\t"
+	"(p8) ld8 r24 = [r24]			\n\t"
+	"(p6) mov b1 = r22			\n\t"
+	"cmp.ne p9, p0 = r0, r25		\n\t"
+	";;					\n\t"
+	"(p9) ld8 r25 = [r25]			\n\t"
+	"(p7) mov b2 = r23			\n\t"
+	"cmp.ne p6, p0 = r0, r26		\n\t"
+	";;					\n\t"
+	"(p6) ld8 r26 = [r26]			\n\t"
+	"(p8) mov b3 = r24			\n\t"
+	"cmp.ne p7, p0 = r0, r27		\n\t"
+	";;					\n\t"
+	/* Load up call-saved fp registers.  */
+	"(p7) ldf.fill f2 = [r27]		\n\t"
+	"(p9) mov b4 = r25			\n\t"
+	"cmp.ne p8, p0 = r0, r28		\n\t"
+	";;					\n\t"
+	"(p8) ldf.fill f3 = [r28]		\n\t"
+	"(p6) mov b5 = r26			\n\t"
+	";;					\n\t"
+	"ld8 r29 = [r20], 16*8 - 4*8		\n\t"
+	"ld8 r30 = [r21], 17*8 - 5*8		\n\t"
+	";;					\n\t"
+	"ld8 r22 = [r20], 16			\n\t"
+	"ld8 r23 = [r21], 16			\n\t"
+	";;					\n\t"
+	"ld8 r24 = [r20], 16			\n\t"
+	"ld8 r25 = [r21]			\n\t"
+	"cmp.ne p6, p0 = r0, r29		\n\t"
+	";;					\n\t"
+	"ld8 r26 = [r20], 8			\n\t"
+	"(p6) ldf.fill f4 = [r29]		\n\t"
+	"cmp.ne p7, p0 = r0, r30		\n\t"
+	";;					\n\t"
+	"ld8 r27 = [r20], 8			\n\t"
+	"(p7) ldf.fill f5 = [r30]		\n\t"
+	"cmp.ne p6, p0 = r0, r22		\n\t"
+	";;					\n\t"
+	"ld8 r28 = [r20], 8			\n\t"
+	"(p6) ldf.fill f16 = [r22]		\n\t"
+	"cmp.ne p7, p0 = r0, r23		\n\t"
+	";;					\n\t"
+	"ld8 r29 = [r20], 8			\n\t"
+	"(p7) ldf.fill f17 = [r23]		\n\t"
+	"cmp.ne p6, p0 = r0, r24		\n\t"
+	";;					\n\t"
+	"ld8 r22 = [r20], 8			\n\t"
+	"(p6) ldf.fill f18 = [r24]		\n\t"
+	"cmp.ne p7, p0 = r0, r25		\n\t"
+	";;					\n\t"
+	"ld8 r23 = [r20], 8			\n\t"
+	"(p7) ldf.fill f19 = [r25]		\n\t"
+	"cmp.ne p6, p0 = r0, r26		\n\t"
+	";;					\n\t"
+	"ld8 r24 = [r20], 8			\n\t"
+	"(p6) ldf.fill f20 = [r26]		\n\t"
+	"cmp.ne p7, p0 = r0, r27		\n\t"
+	";;					\n\t"
+	"ld8 r25 = [r20], 8			\n\t"
+	"(p7) ldf.fill f21 = [r27]		\n\t"
+	"cmp.ne p6, p0 = r0, r28		\n\t"
+	";;					\n\t"
+	"ld8 r26 = [r20], 8			\n\t"
+	"(p6) ldf.fill f22 = [r28]		\n\t"
+	"cmp.ne p7, p0 = r0, r29		\n\t"
+	";;					\n\t"
+	"ld8 r27 = [r20], 8			\n\t"
+	";;					\n\t"
+	"ld8 r28 = [r20], 8			\n\t"
+	"(p7) ldf.fill f23 = [r29]		\n\t"
+	"cmp.ne p6, p0 = r0, r22		\n\t"
+	";;					\n\t"
+	"ld8 r29 = [r20], 8			\n\t"
+	"(p6) ldf.fill f24 = [r22]		\n\t"
+	"cmp.ne p7, p0 = r0, r23		\n\t"
+	";;					\n\t"
+	"(p7) ldf.fill f25 = [r23]		\n\t"
+	"cmp.ne p6, p0 = r0, r24		\n\t"
+	"cmp.ne p7, p0 = r0, r25		\n\t"
+	";;					\n\t"
+	"(p6) ldf.fill f26 = [r24]		\n\t"
+	"(p7) ldf.fill f27 = [r25]		\n\t"
+	"cmp.ne p6, p0 = r0, r26		\n\t"
+	";;					\n\t"
+	"(p6) ldf.fill f28 = [r26]		\n\t"
+	"cmp.ne p7, p0 = r0, r27		\n\t"
+	"cmp.ne p6, p0 = r0, r28		\n\t"
+	";;					\n\t"
+	"(p7) ldf.fill f29 = [r27]		\n\t"
+	"(p6) ldf.fill f30 = [r28]		\n\t"
+	"cmp.ne p7, p0 = r0, r29		\n\t"
+	";;					\n\t"
+	"(p7) ldf.fill f31 = [r29]		\n\t"
+	"add r20 = uc_rnat, %0			\n\t"
+	"add r21 = uc_bsp, %0			\n\t"
+	";;					\n\t"
+	/* Load the balance of the thread state from the context.  */
+	"ld8 r22 = [r20], uc_psp - uc_rnat	\n\t"
+	"ld8 r23 = [r21], uc_gp - uc_bsp	\n\t"
+	";;					\n\t"
+	"ld8 r24 = [r20], uc_pfs_loc - uc_psp	\n\t"
+	"ld8 r1 = [r21], uc_rp - uc_gp		\n\t"
+	";;					\n\t"
+	"ld8 r25 = [r20], uc_unat_loc - uc_pfs_loc\n\t"
+	"ld8 r26 = [r21], uc_pr - uc_rp		\n\t"
+	";;					\n\t"
+	"ld8 r27 = [r20], uc_lc_loc - uc_unat_loc\n\t"
+	"ld8 r28 = [r21], uc_fpsr_loc - uc_pr	\n\t"
+	";;					\n\t"
+	"ld8 r29 = [r20], uc_eh_data - uc_lc_loc\n\t"
+	"ld8 r30 = [r21], uc_eh_data + 8 - uc_fpsr_loc\n\t"
+	";;					\n\t"
+	/* Load data for the exception handler.  */
+	"ld8 r15 = [r20], 16			\n\t"
+	"ld8 r16 = [r21], 16			\n\t"
+	";;					\n\t"
+	"ld8 r17 = [r20]			\n\t"
+	"ld8 r18 = [r21]			\n\t"
+	";;					\n\t"
+	/* Install the balance of the thread state loaded above.  */
+	"cmp.ne p6, p0 = r0, r25		\n\t"
+	"cmp.ne p7, p0 = r0, r27		\n\t"
+	";;					\n\t"
+	"(p6) ld8 r25 = [r25]			\n\t"
+	"(p7) ld8 r27 = [r27]			\n\t"
+	";;					\n\t"
+	"(p7) mov.m ar.unat = r27		\n\t"
+	"(p6) mov.i ar.pfs = r25		\n\t"
+	"cmp.ne p9, p0 = r0, r29		\n\t"
+	";;					\n\t"
+	"(p9) ld8 r29 = [r29]			\n\t"
+	"cmp.ne p6, p0 = r0, r30		\n\t"
+	";;					\n\t"
+	"(p6) ld8 r30 = [r30]			\n\t"
+	/* Don't clobber p6-p9, which are in use at present.  */
+	"mov pr = r28, ~0x3c0			\n\t"
+	"(p9) mov.i ar.lc = r29			\n\t"
+	";;					\n\t"
+	"mov.m r25 = ar.rsc			\n\t"
+	"(p6) mov.m ar.fpsr = r30		\n\t"
+	";;					\n\t"
+	"and r29 = 0x1c, r25			\n\t"
+	"mov b0 = r26				\n\t"
+	";;					\n\t"
+	"mov.m ar.rsc = r29			\n\t"
+	";;					\n\t"
+	/* This must be done before setting AR.BSPSTORE, otherwise 
+	   AR.BSP will be initialized with a random displacement
+	   below the value we want, based on the current number of
+	   dirty stacked registers.  */
+	"loadrs					\n\t"
+	"invala					\n\t"
+	";;					\n\t"
+	"mov.m ar.bspstore = r23		\n\t"
+	";;					\n\t"
+	"mov.m ar.rnat = r22			\n\t"
+	";;					\n\t"
+	"mov.m ar.rsc = r25			\n\t"
+	"mov sp = r24				\n\t"
+	"br.ret.sptk.few b0"
+	: : "r"(target), "r"(ireg_buf), "r"(ireg_nat), "r"(ireg_pr)
+	: "r15", "r16", "r17", "r18", "r20", "r21", "r22",
+	  "r23", "r24", "r25", "r26", "r27", "r28", "r29",
+	  "r30", "r31");
   /* NOTREACHED */
   while (1);
 }

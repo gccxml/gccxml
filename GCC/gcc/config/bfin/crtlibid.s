@@ -1,5 +1,5 @@
 /* Provide a weak definition of the library ID, for the benefit of certain
-   configure scripts.         
+   configure scripts.	 
    Copyright (C) 2005 Free Software Foundation, Inc.
 
 This file is part of GCC.
@@ -25,8 +25,8 @@ Boston, MA 02110-1301, USA.  */
    This exception does not however invalidate any other reasons why
    the executable file might be covered by the GNU General Public License.  */
 
-        .file   "crtlibid.o"
-        .ident  "GNU C crtlibid.o"
+	.file   "crtlibid.o"
+	.ident  "GNU C crtlibid.o"
 
 .weak _current_shared_library_p5_offset_
 .set _current_shared_library_p5_offset_, 0

@@ -96,8 +96,8 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
 #endif
 
 #ifdef XCOFF_DEBUGGING_INFO
-#include "xcoffout.h"                /* Needed for external data
-                                   declarations for e.g. AIX 4.x.  */
+#include "xcoffout.h"		/* Needed for external data
+				   declarations for e.g. AIX 4.x.  */
 #endif
 
 /* Global variables used to communicate with passes.  */
@@ -119,8 +119,8 @@ bool in_gimple_form;
 
 void
 rest_of_decl_compilation (tree decl,
-                          int top_level,
-                          int at_end)
+			  int top_level,
+			  int at_end)
 {
   /* We deferred calling assemble_alias so that we could collect
      other attributes such as visibility.  Emit the alias now.  */
@@ -129,9 +129,9 @@ rest_of_decl_compilation (tree decl,
     alias = lookup_attribute ("alias", DECL_ATTRIBUTES (decl));
     if (alias)
       {
-        alias = TREE_VALUE (TREE_VALUE (alias));
-        alias = get_identifier (TREE_STRING_POINTER (alias));
-        assemble_alias (decl, alias);
+	alias = TREE_VALUE (TREE_VALUE (alias));
+	alias = get_identifier (TREE_STRING_POINTER (alias));
+	assemble_alias (decl, alias);
       }
   }
 
@@ -148,36 +148,36 @@ rest_of_decl_compilation (tree decl,
       timevar_push (TV_VARCONST);
 
       /* Don't output anything when a tentative file-scope definition
-         is seen.  But at end of compilation, do output code for them.
+	 is seen.  But at end of compilation, do output code for them.
 
-         We do output all variables when unit-at-a-time is active and rely on
-         callgraph code to defer them except for forward declarations
-         (see gcc.c-torture/compile/920624-1.c) */
+	 We do output all variables when unit-at-a-time is active and rely on
+	 callgraph code to defer them except for forward declarations
+	 (see gcc.c-torture/compile/920624-1.c) */
       if ((at_end
-           || !DECL_DEFER_OUTPUT (decl)
-           || DECL_INITIAL (decl))
-          && !DECL_EXTERNAL (decl))
-        {
-          if (TREE_CODE (decl) != FUNCTION_DECL)
-            cgraph_varpool_finalize_decl (decl);
-          else
-            assemble_variable (decl, top_level, at_end, 0);
-        }
+	   || !DECL_DEFER_OUTPUT (decl)
+	   || DECL_INITIAL (decl))
+	  && !DECL_EXTERNAL (decl))
+	{
+	  if (TREE_CODE (decl) != FUNCTION_DECL)
+	    cgraph_varpool_finalize_decl (decl);
+	  else
+	    assemble_variable (decl, top_level, at_end, 0);
+	}
 
 #ifdef ASM_FINISH_DECLARE_OBJECT
       if (decl == last_assemble_variable_decl)
-        {
-          ASM_FINISH_DECLARE_OBJECT (asm_out_file, decl,
-                                     top_level, at_end);
-        }
+	{
+	  ASM_FINISH_DECLARE_OBJECT (asm_out_file, decl,
+				     top_level, at_end);
+	}
 #endif
 
       timevar_pop (TV_VARCONST);
     }
   else if (TREE_CODE (decl) == TYPE_DECL
-           /* Like in rest_of_type_compilation, avoid confusing the debug
-              information machinery when there are errors.  */
-           && !(sorrycount || errorcount))
+	   /* Like in rest_of_type_compilation, avoid confusing the debug
+	      information machinery when there are errors.  */
+	   && !(sorrycount || errorcount))
     {
       timevar_push (TV_SYMOUT);
       debug_hooks->type_decl (decl, !top_level);
@@ -219,29 +219,29 @@ finish_optimization_passes (void)
       dump_file = dump_begin (pass_profile.static_pass_number, NULL);
       end_branch_prob ();
       if (dump_file)
-        dump_end (pass_profile.static_pass_number, dump_file);
+	dump_end (pass_profile.static_pass_number, dump_file);
     }
 
   if (optimize > 0)
     {
       dump_file = dump_begin (pass_combine.static_pass_number, NULL);
       if (dump_file)
-        {
-          dump_combine_total_stats (dump_file);
+	{
+	  dump_combine_total_stats (dump_file);
           dump_end (pass_combine.static_pass_number, dump_file);
-        }
+	}
     }
 
   /* Do whatever is necessary to finish printing the graphs.  */
   if (graph_dump_format != no_graph)
     for (i = TDI_end; (dfi = get_dump_file_info (i)) != NULL; ++i)
       if (dump_initialized_p (i)
-          && (dfi->flags & TDF_GRAPH) != 0
-          && (name = get_dump_file_name (i)) != NULL)
-        {
-          finish_graph_dump_file (name);
-          free (name);
-        }
+	  && (dfi->flags & TDF_GRAPH) != 0
+	  && (name = get_dump_file_name (i)) != NULL)
+	{
+	  finish_graph_dump_file (name);
+	  free (name);
+	}
 
   timevar_pop (TV_DUMP);
 }
@@ -291,7 +291,7 @@ struct tree_opt_pass pass_postreload =
   0,                                    /* properties_destroyed */
   0,                                    /* todo_flags_start */
   TODO_ggc_collect,                     /* todo_flags_finish */
-  0                                        /* letter */
+  0					/* letter */
 };
 
 
@@ -315,7 +315,7 @@ register_one_dump_file (struct tree_opt_pass *pass, bool ipa, int properties)
   num[0] = '\0';
   if (pass->static_pass_number != -1)
     sprintf (num, "%d", ((int) pass->static_pass_number < 0
-                         ? 1 : pass->static_pass_number));
+			 ? 1 : pass->static_pass_number));
 
   dot_name = concat (".", pass->name, num, NULL);
   if (ipa)
@@ -339,14 +339,14 @@ register_dump_files_1 (struct tree_opt_pass *pass, bool ipa, int properties)
   do
     {
       int new_properties = (properties | pass->properties_provided)
-                           & ~pass->properties_destroyed;
+			   & ~pass->properties_destroyed;
 
       if (pass->name)
         register_one_dump_file (pass, ipa, new_properties);
 
       if (pass->sub)
         new_properties = register_dump_files_1 (pass->sub, false,
-                                                new_properties);
+						new_properties);
 
       /* If we have a gate, combine the properties that we could have with
          and without the pass being examined.  */
@@ -398,7 +398,7 @@ next_pass_1 (struct tree_opt_pass **list, struct tree_opt_pass *pass)
         {
           pass->static_pass_number -= 1;
           new->static_pass_number = -pass->static_pass_number;
-        }
+	}
       
       *list = new;
     }
@@ -417,19 +417,19 @@ next_pass_1 (struct tree_opt_pass **list, struct tree_opt_pass *pass)
 
    cgraph_finalize_compilation_unit ()
        for each node N in the cgraph
-           cgraph_analyze_function (N)
-               cgraph_lower_function (N) -> all_lowering_passes
+	   cgraph_analyze_function (N)
+	       cgraph_lower_function (N) -> all_lowering_passes
 
    If we are optimizing, cgraph_optimize is then invoked:
 
    cgraph_optimize ()
-       ipa_passes ()                         -> all_ipa_passes
+       ipa_passes () 			-> all_ipa_passes
        cgraph_expand_all_functions ()
            for each node N in the cgraph
-               cgraph_expand_function (N)
-                   cgraph_lower_function (N)        -> Now a NOP.
-                   lang_hooks.callgraph.expand_function (DECL (N))
-                           tree_rest_of_compilation (DECL (N))  -> all_passes
+	       cgraph_expand_function (N)
+	           cgraph_lower_function (N)	-> Now a NOP.
+		   lang_hooks.callgraph.expand_function (DECL (N))
+		   	tree_rest_of_compilation (DECL (N))  -> all_passes
 */
 
 void
@@ -695,12 +695,12 @@ init_optimization_passes (void)
 
   /* Register the passes with the tree dump code.  */
   register_dump_files (all_ipa_passes, true,
-                       PROP_gimple_any | PROP_gimple_lcf | PROP_gimple_leh
-                       | PROP_cfg);
+		       PROP_gimple_any | PROP_gimple_lcf | PROP_gimple_leh
+		       | PROP_cfg);
   register_dump_files (all_lowering_passes, false, PROP_gimple_any);
   register_dump_files (all_passes, false,
-                       PROP_gimple_any | PROP_gimple_lcf | PROP_gimple_leh
-                       | PROP_cfg);
+		       PROP_gimple_any | PROP_gimple_lcf | PROP_gimple_leh
+		       | PROP_cfg);
 }
 
 static unsigned int last_verified;
@@ -731,21 +731,21 @@ execute_todo (unsigned int flags)
       updating_used_alone = true;
 
       if (current_loops)
-        cleanup_tree_cfg_loop ();
+	cleanup_tree_cfg_loop ();
       else
-        cleanup_tree_cfg ();
+	cleanup_tree_cfg ();
 
       /* Update the used alone after cleanup cfg.  */
       recalculate_used_alone ();
 
       /* When cleanup_tree_cfg merges consecutive blocks, it may
-         perform some simplistic propagation when removing single
-         valued PHI nodes.  This propagation may, in turn, cause the
-         SSA form to become out-of-date (see PR 22037).  So, even
-         if the parent pass had not scheduled an SSA update, we may
-         still need to do one.  */
+	 perform some simplistic propagation when removing single
+	 valued PHI nodes.  This propagation may, in turn, cause the
+	 SSA form to become out-of-date (see PR 22037).  So, even
+	 if the parent pass had not scheduled an SSA update, we may
+	 still need to do one.  */
       if (!(flags & TODO_update_ssa_any) && need_ssa_update_p ())
-        flags |= TODO_update_ssa;
+	flags |= TODO_update_ssa;
     }
 
   if (flags & TODO_update_ssa_any)
@@ -765,22 +765,22 @@ execute_todo (unsigned int flags)
         dump_function_to_file (current_function_decl,
                                dump_file, dump_flags);
       else
-        {
-          if (dump_flags & TDF_SLIM)
-            print_rtl_slim_with_bb (dump_file, get_insns (), dump_flags);
-          else if ((curr_properties & PROP_cfg) && (dump_flags & TDF_BLOCKS))
-            print_rtl_with_bb (dump_file, get_insns ());
+	{
+	  if (dump_flags & TDF_SLIM)
+	    print_rtl_slim_with_bb (dump_file, get_insns (), dump_flags);
+	  else if ((curr_properties & PROP_cfg) && (dump_flags & TDF_BLOCKS))
+	    print_rtl_with_bb (dump_file, get_insns ());
           else
-            print_rtl (dump_file, get_insns ());
+	    print_rtl (dump_file, get_insns ());
 
-          if (curr_properties & PROP_cfg
-              && graph_dump_format != no_graph
-              && (dump_flags & TDF_GRAPH))
-            print_rtl_graph_with_bb (dump_file_name, get_insns ());
-        }
+	  if (curr_properties & PROP_cfg
+	      && graph_dump_format != no_graph
+	      && (dump_flags & TDF_GRAPH))
+	    print_rtl_graph_with_bb (dump_file_name, get_insns ());
+	}
 
       /* Flush the file.  If verification fails, we won't be able to
-         close the file before aborting.  */
+	 close the file before aborting.  */
       fflush (dump_file);
     }
   if ((flags & TODO_dump_cgraph)
@@ -788,7 +788,7 @@ execute_todo (unsigned int flags)
     {
       dump_cgraph (dump_file);
       /* Flush the file.  If verification fails, we won't be able to
-         close the file before aborting.  */
+	 close the file before aborting.  */
       fflush (dump_file);
     }
 
@@ -843,7 +843,7 @@ execute_one_pass (struct tree_opt_pass *pass)
   execute_todo (pass->todo_flags_start);
 
   gcc_assert ((curr_properties & pass->properties_required)
-              == pass->properties_required);
+	      == pass->properties_required);
 
   if (pass->properties_destroyed & PROP_smt_usage)
     updating_used_alone = true;
@@ -855,18 +855,18 @@ execute_one_pass (struct tree_opt_pass *pass)
       dump_file_name = get_dump_file_name (pass->static_pass_number);
       dump_file = dump_begin (pass->static_pass_number, &dump_flags);
       if (dump_file && current_function_decl)
-        {
-          const char *dname, *aname;
-          dname = lang_hooks.decl_printable_name (current_function_decl, 2);
-          aname = (IDENTIFIER_POINTER
-                   (DECL_ASSEMBLER_NAME (current_function_decl)));
-          fprintf (dump_file, "\n;; Function %s (%s)%s\n\n", dname, aname,
-             cfun->function_frequency == FUNCTION_FREQUENCY_HOT
-             ? " (hot)"
-             : cfun->function_frequency == FUNCTION_FREQUENCY_UNLIKELY_EXECUTED
-             ? " (unlikely executed)"
-             : "");
-        }
+	{
+	  const char *dname, *aname;
+	  dname = lang_hooks.decl_printable_name (current_function_decl, 2);
+	  aname = (IDENTIFIER_POINTER
+		   (DECL_ASSEMBLER_NAME (current_function_decl)));
+	  fprintf (dump_file, "\n;; Function %s (%s)%s\n\n", dname, aname,
+	     cfun->function_frequency == FUNCTION_FREQUENCY_HOT
+	     ? " (hot)"
+	     : cfun->function_frequency == FUNCTION_FREQUENCY_UNLIKELY_EXECUTED
+	     ? " (unlikely executed)"
+	     : "");
+	}
     }
   else
     initializing_dump = false;
@@ -887,7 +887,7 @@ execute_one_pass (struct tree_opt_pass *pass)
     timevar_pop (pass->tv_id);
 
   curr_properties = (curr_properties | pass->properties_provided)
-                    & ~pass->properties_destroyed;
+		    & ~pass->properties_destroyed;
 
   if (initializing_dump
       && dump_file
@@ -944,21 +944,21 @@ execute_ipa_pass_list (struct tree_opt_pass *pass)
   do
     {
       if (execute_one_pass (pass) && pass->sub)
-        {
-          struct cgraph_node *node;
-          for (node = cgraph_nodes; node; node = node->next)
-            if (node->analyzed)
-              {
-                push_cfun (DECL_STRUCT_FUNCTION (node->decl));
-                current_function_decl = node->decl;
-                execute_pass_list (pass->sub);
-                free_dominance_info (CDI_DOMINATORS);
-                free_dominance_info (CDI_POST_DOMINATORS);
-                current_function_decl = NULL;
-                pop_cfun ();
-                ggc_collect ();
-              }
-        }
+	{
+	  struct cgraph_node *node;
+	  for (node = cgraph_nodes; node; node = node->next)
+	    if (node->analyzed)
+	      {
+		push_cfun (DECL_STRUCT_FUNCTION (node->decl));
+		current_function_decl = node->decl;
+		execute_pass_list (pass->sub);
+		free_dominance_info (CDI_DOMINATORS);
+		free_dominance_info (CDI_POST_DOMINATORS);
+		current_function_decl = NULL;
+		pop_cfun ();
+		ggc_collect ();
+	      }
+	}
       pass = pass->next;
     }
   while (pass);

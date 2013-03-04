@@ -21,7 +21,7 @@
    MA 02110-1301, USA.  */
 
 #undef  TARGET_DEFAULT
-#define TARGET_DEFAULT (MASK_POWERPC | MASK_NEW_MNEMONICS | MASK_EABI        \
+#define TARGET_DEFAULT (MASK_POWERPC | MASK_NEW_MNEMONICS | MASK_EABI	\
   | MASK_STRICT_ALIGN)
 
 #undef  TARGET_VERSION
@@ -57,4 +57,4 @@
 */
 
 #undef  ASM_DEFAULT_SPEC
-#define        ASM_DEFAULT_SPEC "-mppc -mspe -me500"
+#define	ASM_DEFAULT_SPEC "-mppc -mspe -me500"

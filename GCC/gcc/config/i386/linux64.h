@@ -21,11 +21,11 @@ Boston, MA 02110-1301, USA.  */
 
 #define TARGET_VERSION fprintf (stderr, " (x86-64 Linux/ELF)");
 
-#define TARGET_OS_CPP_BUILTINS()                                \
-  do                                                                \
-    {                                                                \
-        LINUX_TARGET_OS_CPP_BUILTINS();                                \
-    }                                                                \
+#define TARGET_OS_CPP_BUILTINS()				\
+  do								\
+    {								\
+	LINUX_TARGET_OS_CPP_BUILTINS();				\
+    }								\
   while (0)
 
 #undef CPP_SPEC
@@ -52,7 +52,7 @@ Boston, MA 02110-1301, USA.  */
 #define GLIBC_DYNAMIC_LINKER32 "/lib/ld-linux.so.2"
 #define GLIBC_DYNAMIC_LINKER64 "/lib64/ld-linux-x86-64.so.2"
 
-#undef        LINK_SPEC
+#undef	LINK_SPEC
 #define LINK_SPEC "%{!m32:-m elf_x86_64} %{m32:-m elf_i386} \
   %{shared:-shared} \
   %{!shared: \
@@ -81,5 +81,5 @@ Boston, MA 02110-1301, USA.  */
 #ifdef TARGET_LIBC_PROVIDES_SSP
 /* i386 glibc provides __stack_chk_guard in %gs:0x14,
    x86_64 glibc provides it in %fs:0x28.  */
-#define TARGET_THREAD_SSP_OFFSET        (TARGET_64BIT ? 0x28 : 0x14)
+#define TARGET_THREAD_SSP_OFFSET	(TARGET_64BIT ? 0x28 : 0x14)
 #endif

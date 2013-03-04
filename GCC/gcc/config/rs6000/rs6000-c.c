@@ -48,10 +48,10 @@
    whether or not new function declarations receive a longcall
    attribute by default.  */
 
-#define SYNTAX_ERROR(gmsgid) do {                                        \
-  warning (OPT_Wpragmas, gmsgid);                                        \
-  warning (OPT_Wpragmas, "ignoring malformed #pragma longcall");        \
-  return;                                                                \
+#define SYNTAX_ERROR(gmsgid) do {					\
+  warning (OPT_Wpragmas, gmsgid);					\
+  warning (OPT_Wpragmas, "ignoring malformed #pragma longcall");	\
+  return;								\
 } while (0)
 
 void
@@ -2435,7 +2435,7 @@ rs6000_builtin_type_compatible (tree t, int id)
 
 static tree
 altivec_build_resolved_builtin (tree *args, int n,
-                                const struct altivec_builtin_types *desc)
+				const struct altivec_builtin_types *desc)
 {
   tree impl_fndecl = rs6000_builtin_decls[desc->overloaded_code];
   tree ret_type = rs6000_builtin_type (desc->ret_type);
@@ -2464,16 +2464,16 @@ altivec_build_resolved_builtin (tree *args, int n,
       t = arg_type[2], arg_type[2] = arg_type[1], arg_type[1] = t;
       
       args[0] = fold_build2 (BIT_XOR_EXPR, TREE_TYPE (args[0]), args[0],
-                             build_int_cst (NULL_TREE, 2));
+			     build_int_cst (NULL_TREE, 2));
     }
 
   while (--n >= 0)
     arglist = tree_cons (NULL_TREE,
-                         fold_convert (arg_type[n], args[n]),
-                         arglist);
+			 fold_convert (arg_type[n], args[n]),
+			 arglist);
 
   return fold_convert (ret_type,
-                       build_function_call_expr (impl_fndecl, arglist));
+		       build_function_call_expr (impl_fndecl, arglist));
 }
 
 /* Implementation of the resolve_overloaded_builtin target hook, to
@@ -2501,7 +2501,7 @@ altivec_resolve_overloaded_builtin (tree fndecl, tree arglist)
       tree type;
 
       if (arg == error_mark_node)
-        return error_mark_node;
+	return error_mark_node;
 
       if (n >= 3)
         abort ();
@@ -2509,33 +2509,33 @@ altivec_resolve_overloaded_builtin (tree fndecl, tree arglist)
       arg = default_conversion (arg);
 
       /* The C++ front-end converts float * to const void * using
-         NOP_EXPR<const void *> (NOP_EXPR<void *> (x)).  */
+	 NOP_EXPR<const void *> (NOP_EXPR<void *> (x)).  */
       type = TREE_TYPE (arg);
       if (POINTER_TYPE_P (type)
-          && TREE_CODE (arg) == NOP_EXPR
-          && lang_hooks.types_compatible_p (TREE_TYPE (arg),
-                                            const_ptr_type_node)
-          && lang_hooks.types_compatible_p (TREE_TYPE (TREE_OPERAND (arg, 0)),
-                                            ptr_type_node))
-        {
-          arg = TREE_OPERAND (arg, 0);
+	  && TREE_CODE (arg) == NOP_EXPR
+	  && lang_hooks.types_compatible_p (TREE_TYPE (arg),
+					    const_ptr_type_node)
+	  && lang_hooks.types_compatible_p (TREE_TYPE (TREE_OPERAND (arg, 0)),
+					    ptr_type_node))
+	{
+	  arg = TREE_OPERAND (arg, 0);
           type = TREE_TYPE (arg);
-        }
+	}
 
       /* Remove the const from the pointers to simplify the overload
-         matching further down.  */
+	 matching further down.  */
       if (POINTER_TYPE_P (decl_type)
-          && POINTER_TYPE_P (type)
-          && TYPE_QUALS (TREE_TYPE (type)) != 0)
-        {
+	  && POINTER_TYPE_P (type)
+	  && TYPE_QUALS (TREE_TYPE (type)) != 0)
+	{
           if (TYPE_READONLY (TREE_TYPE (type))
-              && !TYPE_READONLY (TREE_TYPE (decl_type)))
-            warning (0, "passing arg %d of %qE discards qualifiers from"
-                        "pointer target type", n + 1, fndecl);
-          type = build_pointer_type (build_qualified_type (TREE_TYPE (type),
-                                                           0));
-          arg = fold_convert (type, arg);
-        }
+	      && !TYPE_READONLY (TREE_TYPE (decl_type)))
+	    warning (0, "passing arg %d of %qE discards qualifiers from"
+		        "pointer target type", n + 1, fndecl);
+	  type = build_pointer_type (build_qualified_type (TREE_TYPE (type),
+							   0));
+	  arg = fold_convert (type, arg);
+	}
 
       args[n] = arg;
       types[n] = type;
@@ -2552,7 +2552,7 @@ altivec_resolve_overloaded_builtin (tree fndecl, tree arglist)
   if (fcode == ALTIVEC_BUILTIN_VEC_STEP)
     {
       if (TREE_CODE (types[0]) != VECTOR_TYPE)
-        goto bad;
+	goto bad;
 
       return build_int_cst (NULL_TREE, TYPE_VECTOR_SUBPARTS (types[0]));
     }
@@ -2565,11 +2565,11 @@ altivec_resolve_overloaded_builtin (tree fndecl, tree arglist)
      the opX fields.  */
   for (; desc->code == fcode; desc++)
     if ((desc->op1 == RS6000_BTI_NOT_OPAQUE
-         || rs6000_builtin_type_compatible (types[0], desc->op1))
-        && (desc->op2 == RS6000_BTI_NOT_OPAQUE
-            || rs6000_builtin_type_compatible (types[1], desc->op2))
-        && (desc->op3 == RS6000_BTI_NOT_OPAQUE
-            || rs6000_builtin_type_compatible (types[2], desc->op3)))
+	 || rs6000_builtin_type_compatible (types[0], desc->op1))
+	&& (desc->op2 == RS6000_BTI_NOT_OPAQUE
+	    || rs6000_builtin_type_compatible (types[1], desc->op2))
+	&& (desc->op3 == RS6000_BTI_NOT_OPAQUE
+	    || rs6000_builtin_type_compatible (types[2], desc->op3)))
       return altivec_build_resolved_builtin (args, n, desc);
 
  bad:

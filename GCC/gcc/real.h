@@ -34,11 +34,11 @@ enum real_value_class {
   rvc_nan
 };
 
-#define SIGNIFICAND_BITS        (128 + HOST_BITS_PER_LONG)
-#define EXP_BITS                (32 - 6)
-#define MAX_EXP                        ((1 << (EXP_BITS - 1)) - 1)
-#define SIGSZ                        (SIGNIFICAND_BITS / HOST_BITS_PER_LONG)
-#define SIG_MSB                        ((unsigned long)1 << (HOST_BITS_PER_LONG - 1))
+#define SIGNIFICAND_BITS	(128 + HOST_BITS_PER_LONG)
+#define EXP_BITS		(32 - 6)
+#define MAX_EXP			((1 << (EXP_BITS - 1)) - 1)
+#define SIGSZ			(SIGNIFICAND_BITS / HOST_BITS_PER_LONG)
+#define SIG_MSB			((unsigned long)1 << (HOST_BITS_PER_LONG - 1))
 
 struct real_value GTY(())
 {
@@ -86,16 +86,16 @@ extern char test_real_width
    slots in a CONST_DOUBLE, so we provide them even if one would suffice.  */
 
 #if REAL_WIDTH == 1
-# define CONST_DOUBLE_FORMAT         "ww"
+# define CONST_DOUBLE_FORMAT	 "ww"
 #else
 # if REAL_WIDTH == 2
-#  define CONST_DOUBLE_FORMAT         "ww"
+#  define CONST_DOUBLE_FORMAT	 "ww"
 # else
 #  if REAL_WIDTH == 3
-#   define CONST_DOUBLE_FORMAT         "www"
+#   define CONST_DOUBLE_FORMAT	 "www"
 #  else
 #   if REAL_WIDTH == 4
-#    define CONST_DOUBLE_FORMAT         "wwww"
+#    define CONST_DOUBLE_FORMAT	 "wwww"
 #   else
 #    if REAL_WIDTH == 5
 #     define CONST_DOUBLE_FORMAT "wwwww"
@@ -117,9 +117,9 @@ struct real_format
 {
   /* Move to and from the target bytes.  */
   void (*encode) (const struct real_format *, long *,
-                  const REAL_VALUE_TYPE *);
+		  const REAL_VALUE_TYPE *);
   void (*decode) (const struct real_format *, REAL_VALUE_TYPE *,
-                  const long *);
+		  const long *);
 
   /* The radix of the exponent and digits of the significand.  */
   int b;
@@ -163,25 +163,25 @@ struct real_format
    the number of float modes.  */
 extern const struct real_format *
   real_format_for_mode[MAX_MODE_FLOAT - MIN_MODE_FLOAT + 1
-                       + MAX_MODE_DECIMAL_FLOAT - MIN_MODE_DECIMAL_FLOAT + 1];
+		       + MAX_MODE_DECIMAL_FLOAT - MIN_MODE_DECIMAL_FLOAT + 1];
 
-#define REAL_MODE_FORMAT(MODE)                                                \
-  (real_format_for_mode[DECIMAL_FLOAT_MODE_P (MODE)                        \
-                        ? ((MODE - MIN_MODE_DECIMAL_FLOAT)                \
-                           + (MAX_MODE_FLOAT - MIN_MODE_FLOAT + 1))        \
-                        : (MODE - MIN_MODE_FLOAT)])
+#define REAL_MODE_FORMAT(MODE)						\
+  (real_format_for_mode[DECIMAL_FLOAT_MODE_P (MODE)			\
+			? ((MODE - MIN_MODE_DECIMAL_FLOAT)		\
+			   + (MAX_MODE_FLOAT - MIN_MODE_FLOAT + 1))	\
+			: (MODE - MIN_MODE_FLOAT)])
 
 /* The following macro determines whether the floating point format is
    composite, i.e. may contain non-consecutive mantissa bits, in which
    case compile-time FP overflow may not model run-time overflow.  */
 #define REAL_MODE_FORMAT_COMPOSITE_P(MODE) \
-        ((REAL_MODE_FORMAT(MODE))->pnan < (REAL_MODE_FORMAT (MODE))->p)
+	((REAL_MODE_FORMAT(MODE))->pnan < (REAL_MODE_FORMAT (MODE))->p)
 
 /* Declare functions in real.c.  */
 
 /* Binary or unary arithmetic on tree_code.  */
 extern bool real_arithmetic (REAL_VALUE_TYPE *, int, const REAL_VALUE_TYPE *,
-                             const REAL_VALUE_TYPE *);
+			     const REAL_VALUE_TYPE *);
 
 /* Compare reals by tree_code.  */
 extern bool real_compare (int, const REAL_VALUE_TYPE *, const REAL_VALUE_TYPE *);
@@ -203,23 +203,23 @@ extern bool real_identical (const REAL_VALUE_TYPE *, const REAL_VALUE_TYPE *);
 
 /* Extend or truncate to a new mode.  */
 extern void real_convert (REAL_VALUE_TYPE *, enum machine_mode,
-                          const REAL_VALUE_TYPE *);
+			  const REAL_VALUE_TYPE *);
 
 /* Return true if truncating to NEW is exact.  */
 extern bool exact_real_truncate (enum machine_mode, const REAL_VALUE_TYPE *);
 
 /* Render R as a decimal floating point constant.  */
 extern void real_to_decimal (char *, const REAL_VALUE_TYPE *, size_t,
-                             size_t, int);
+			     size_t, int);
 
 /* Render R as a hexadecimal floating point constant.  */
 extern void real_to_hexadecimal (char *, const REAL_VALUE_TYPE *,
-                                 size_t, size_t, int);
+				 size_t, size_t, int);
 
 /* Render R as an integer.  */
 extern HOST_WIDE_INT real_to_integer (const REAL_VALUE_TYPE *);
 extern void real_to_integer2 (HOST_WIDE_INT *, HOST_WIDE_INT *,
-                              const REAL_VALUE_TYPE *);
+			      const REAL_VALUE_TYPE *);
 
 /* Initialize R from a decimal or hexadecimal string.  */
 extern void real_from_string (REAL_VALUE_TYPE *, const char *);
@@ -228,16 +228,16 @@ extern void real_from_string3 (REAL_VALUE_TYPE *, const char *, enum machine_mod
 
 /* Initialize R from an integer pair HIGH/LOW.  */
 extern void real_from_integer (REAL_VALUE_TYPE *, enum machine_mode,
-                               unsigned HOST_WIDE_INT, HOST_WIDE_INT, int);
+			       unsigned HOST_WIDE_INT, HOST_WIDE_INT, int);
 
 extern long real_to_target_fmt (long *, const REAL_VALUE_TYPE *,
-                                const struct real_format *);
+				const struct real_format *);
 extern long real_to_target (long *, const REAL_VALUE_TYPE *, enum machine_mode);
 
 extern void real_from_target_fmt (REAL_VALUE_TYPE *, const long *,
-                                  const struct real_format *);
+				  const struct real_format *);
 extern void real_from_target (REAL_VALUE_TYPE *, const long *,
-                              enum machine_mode);
+			      enum machine_mode);
 
 extern void real_inf (REAL_VALUE_TYPE *);
 
@@ -282,26 +282,26 @@ extern const struct real_format decimal_quad_format;
 #define REAL_ARITHMETIC(value, code, d1, d2) \
   real_arithmetic (&(value), code, &(d1), &(d2))
 
-#define REAL_VALUES_IDENTICAL(x, y)        real_identical (&(x), &(y))
-#define REAL_VALUES_EQUAL(x, y)                real_compare (EQ_EXPR, &(x), &(y))
-#define REAL_VALUES_LESS(x, y)                real_compare (LT_EXPR, &(x), &(y))
+#define REAL_VALUES_IDENTICAL(x, y)	real_identical (&(x), &(y))
+#define REAL_VALUES_EQUAL(x, y)		real_compare (EQ_EXPR, &(x), &(y))
+#define REAL_VALUES_LESS(x, y)		real_compare (LT_EXPR, &(x), &(y))
 
 /* Determine whether a floating-point value X is infinite.  */
-#define REAL_VALUE_ISINF(x)                real_isinf (&(x))
+#define REAL_VALUE_ISINF(x)		real_isinf (&(x))
 
 /* Determine whether a floating-point value X is a NaN.  */
-#define REAL_VALUE_ISNAN(x)                real_isnan (&(x))
+#define REAL_VALUE_ISNAN(x)		real_isnan (&(x))
 
 /* Determine whether a floating-point value X is negative.  */
-#define REAL_VALUE_NEGATIVE(x)                real_isneg (&(x))
+#define REAL_VALUE_NEGATIVE(x)		real_isneg (&(x))
 
 /* Determine whether a floating-point value X is minus zero.  */
-#define REAL_VALUE_MINUS_ZERO(x)        real_isnegzero (&(x))
+#define REAL_VALUE_MINUS_ZERO(x)	real_isnegzero (&(x))
 
 /* IN is a REAL_VALUE_TYPE.  OUT is an array of longs.  */
-#define REAL_VALUE_TO_TARGET_LONG_DOUBLE(IN, OUT)                        \
-  real_to_target (OUT, &(IN),                                                \
-                  mode_for_size (LONG_DOUBLE_TYPE_SIZE, MODE_FLOAT, 0))
+#define REAL_VALUE_TO_TARGET_LONG_DOUBLE(IN, OUT)			\
+  real_to_target (OUT, &(IN),						\
+		  mode_for_size (LONG_DOUBLE_TYPE_SIZE, MODE_FLOAT, 0))
 
 #define REAL_VALUE_TO_TARGET_DOUBLE(IN, OUT) \
   real_to_target (OUT, &(IN), mode_for_size (64, MODE_FLOAT, 0))
@@ -330,13 +330,13 @@ extern const struct real_format decimal_quad_format;
   ((OUT) = real_to_target (NULL, &(IN), mode_for_size (32, MODE_DECIMAL_FLOAT, 0)))
 
 extern REAL_VALUE_TYPE real_value_truncate (enum machine_mode,
-                                            REAL_VALUE_TYPE);
+					    REAL_VALUE_TYPE);
 
 #define REAL_VALUE_TO_INT(plow, phigh, r) \
   real_to_integer2 (plow, phigh, &(r))
 
 extern REAL_VALUE_TYPE real_arithmetic2 (int, const REAL_VALUE_TYPE *,
-                                         const REAL_VALUE_TYPE *);
+					 const REAL_VALUE_TYPE *);
 
 #define REAL_VALUE_NEGATE(X) \
   real_arithmetic2 (NEGATE_EXPR, &(X), NULL)
@@ -406,21 +406,21 @@ extern tree build_real (tree, REAL_VALUE_TYPE);
 
 /* Calculate R as the square root of X in the given machine mode.  */
 extern bool real_sqrt (REAL_VALUE_TYPE *, enum machine_mode,
-                       const REAL_VALUE_TYPE *);
+		       const REAL_VALUE_TYPE *);
 
 /* Calculate R as X raised to the integer exponent N in mode MODE.  */
 extern bool real_powi (REAL_VALUE_TYPE *, enum machine_mode,
-                       const REAL_VALUE_TYPE *, HOST_WIDE_INT);
+		       const REAL_VALUE_TYPE *, HOST_WIDE_INT);
 
 /* Standard round to integer value functions.  */
 extern void real_trunc (REAL_VALUE_TYPE *, enum machine_mode,
-                        const REAL_VALUE_TYPE *);
+			const REAL_VALUE_TYPE *);
 extern void real_floor (REAL_VALUE_TYPE *, enum machine_mode,
-                        const REAL_VALUE_TYPE *);
+			const REAL_VALUE_TYPE *);
 extern void real_ceil (REAL_VALUE_TYPE *, enum machine_mode,
-                       const REAL_VALUE_TYPE *);
+		       const REAL_VALUE_TYPE *);
 extern void real_round (REAL_VALUE_TYPE *, enum machine_mode,
-                        const REAL_VALUE_TYPE *);
+			const REAL_VALUE_TYPE *);
 
 /* Set the sign of R to the sign of X.  */
 extern void real_copysign (REAL_VALUE_TYPE *, const REAL_VALUE_TYPE *);

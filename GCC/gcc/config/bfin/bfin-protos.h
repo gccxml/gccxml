@@ -37,7 +37,7 @@ extern int log2constp (unsigned HOST_WIDE_INT);
 
 extern rtx legitimize_address (rtx, rtx, Mmode);
 extern int hard_regno_mode_ok (int, Mmode);
-extern void init_cumulative_args (CUMULATIVE_ARGS *, tree, rtx);          
+extern void init_cumulative_args (CUMULATIVE_ARGS *, tree, rtx);	  
 extern int bfin_frame_pointer_required (void);
 extern HOST_WIDE_INT bfin_initial_elimination_offset (int, int);
 
@@ -52,12 +52,12 @@ extern bool bfin_expand_strmov (rtx, rtx, rtx, rtx);
 
 extern void conditional_register_usage (void);
 extern int bfin_register_move_cost (enum machine_mode, enum reg_class,
-                                    enum reg_class);
+				    enum reg_class);
 extern int bfin_memory_move_cost (enum machine_mode, enum reg_class, int in);
 extern enum reg_class secondary_input_reload_class (enum reg_class, Mmode,
-                                                    rtx);
+						    rtx);
 extern enum reg_class secondary_output_reload_class (enum reg_class, Mmode,
-                                                     rtx);
+						     rtx);
 extern char *section_asm_op_1 (SECT_ENUM_T);
 extern char *section_asm_op (SECT_ENUM_T);
 extern void override_options (void);

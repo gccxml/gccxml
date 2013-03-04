@@ -25,20 +25,20 @@
 
 /* Run-time Target Specification.  */
 #ifndef TARGET_VERSION
-#define TARGET_VERSION        fputs (" (ARM/ELF)", stderr);
+#define TARGET_VERSION	fputs (" (ARM/ELF)", stderr);
 #endif
 
 /* Default to using software floating point.  */
 #ifndef TARGET_DEFAULT
-#define TARGET_DEFAULT        (0)
+#define TARGET_DEFAULT	(0)
 #endif
 
 /* Now we define the strings used to build the spec file.  */
 #undef  STARTFILE_SPEC
-#define STARTFILE_SPEC        " crti%O%s crtbegin%O%s crt0%O%s"
+#define STARTFILE_SPEC	" crti%O%s crtbegin%O%s crt0%O%s"
 
 #undef  ENDFILE_SPEC
-#define ENDFILE_SPEC        "crtend%O%s crtn%O%s"
+#define ENDFILE_SPEC	"crtend%O%s crtn%O%s"
 
 /* The __USES_INITFINI__ define is tested in newlib/libc/sys/arm/crt0.S
    to see if it needs to invoked _init() and _fini().  */
@@ -49,44 +49,44 @@
 #define PREFERRED_DEBUGGING_TYPE DWARF2_DEBUG
 
 /* Return a nonzero value if DECL has a section attribute.  */
-#define IN_NAMED_SECTION(DECL)                                                \
-  ((TREE_CODE (DECL) == FUNCTION_DECL || TREE_CODE (DECL) == VAR_DECL)        \
+#define IN_NAMED_SECTION(DECL)						\
+  ((TREE_CODE (DECL) == FUNCTION_DECL || TREE_CODE (DECL) == VAR_DECL)	\
    && DECL_SECTION_NAME (DECL) != NULL_TREE)
 
 #undef  ASM_OUTPUT_ALIGNED_BSS
-#define ASM_OUTPUT_ALIGNED_BSS(FILE, DECL, NAME, SIZE, ALIGN)           \
-  do                                                                        \
-    {                                                                        \
-      if (IN_NAMED_SECTION (DECL))                                        \
-        switch_to_section (get_named_section (DECL, NULL, 0));                \
-      else                                                                \
-        switch_to_section (bss_section);                                \
-                                                                              \
-      ASM_OUTPUT_ALIGN (FILE, floor_log2 (ALIGN / BITS_PER_UNIT));        \
-                                                                        \
-      last_assemble_variable_decl = DECL;                                \
-      ASM_DECLARE_OBJECT_NAME (FILE, NAME, DECL);                        \
-      ASM_OUTPUT_SKIP (FILE, SIZE ? (int)(SIZE) : 1);                        \
-    }                                                                         \
+#define ASM_OUTPUT_ALIGNED_BSS(FILE, DECL, NAME, SIZE, ALIGN)   	\
+  do									\
+    {									\
+      if (IN_NAMED_SECTION (DECL))					\
+	switch_to_section (get_named_section (DECL, NULL, 0));		\
+      else								\
+	switch_to_section (bss_section);				\
+      									\
+      ASM_OUTPUT_ALIGN (FILE, floor_log2 (ALIGN / BITS_PER_UNIT));	\
+									\
+      last_assemble_variable_decl = DECL;				\
+      ASM_DECLARE_OBJECT_NAME (FILE, NAME, DECL);			\
+      ASM_OUTPUT_SKIP (FILE, SIZE ? (int)(SIZE) : 1);			\
+    } 									\
   while (0)
 
 #undef  ASM_OUTPUT_ALIGNED_DECL_LOCAL
-#define ASM_OUTPUT_ALIGNED_DECL_LOCAL(FILE, DECL, NAME, SIZE, ALIGN)        \
-  do                                                                        \
-    {                                                                        \
-      if ((DECL) != NULL && IN_NAMED_SECTION (DECL))                        \
-        switch_to_section (get_named_section (DECL, NULL, 0));                \
-      else                                                                \
-        switch_to_section (bss_section);                                \
-                                                                        \
-      ASM_OUTPUT_ALIGN (FILE, floor_log2 (ALIGN / BITS_PER_UNIT));        \
-      ASM_OUTPUT_LABEL (FILE, NAME);                                        \
-      fprintf (FILE, "\t.space\t%d\n", SIZE ? (int)(SIZE) : 1);                \
-    }                                                                        \
+#define ASM_OUTPUT_ALIGNED_DECL_LOCAL(FILE, DECL, NAME, SIZE, ALIGN)	\
+  do									\
+    {									\
+      if ((DECL) != NULL && IN_NAMED_SECTION (DECL))			\
+	switch_to_section (get_named_section (DECL, NULL, 0));		\
+      else								\
+	switch_to_section (bss_section);				\
+									\
+      ASM_OUTPUT_ALIGN (FILE, floor_log2 (ALIGN / BITS_PER_UNIT));	\
+      ASM_OUTPUT_LABEL (FILE, NAME);					\
+      fprintf (FILE, "\t.space\t%d\n", SIZE ? (int)(SIZE) : 1);		\
+    }									\
   while (0)
 
 #ifndef SUBTARGET_CPU_DEFAULT
-#define SUBTARGET_CPU_DEFAULT                 TARGET_CPU_arm7tdmi
+#define SUBTARGET_CPU_DEFAULT 		TARGET_CPU_arm7tdmi
 #endif
 
 /* The libgcc udivmod functions may throw exceptions.  If newlib is

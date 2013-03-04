@@ -4,16 +4,16 @@
 #define TARGET_VERSION fprintf (stderr, " (Alpha GNU)");
 
 #undef TARGET_OS_CPP_BUILTINS /* config.gcc includes alpha/linux.h.  */
-#define TARGET_OS_CPP_BUILTINS()                \
-    do {                                        \
-        HURD_TARGET_OS_CPP_BUILTINS();                \
-        builtin_define ("_LONGLONG");                \
+#define TARGET_OS_CPP_BUILTINS()		\
+    do {					\
+	HURD_TARGET_OS_CPP_BUILTINS();		\
+	builtin_define ("_LONGLONG");		\
     } while (0)
 
 #undef ELF_DYNAMIC_LINKER
-#define ELF_DYNAMIC_LINKER        "/lib/ld.so"
+#define ELF_DYNAMIC_LINKER	"/lib/ld.so"
 
-#undef        STARTFILE_SPEC
+#undef	STARTFILE_SPEC
 #define STARTFILE_SPEC \
   "%{!shared: \
      %{!static: \

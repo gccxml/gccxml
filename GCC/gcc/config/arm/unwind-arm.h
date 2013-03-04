@@ -71,12 +71,12 @@ extern "C" {
 
   /* Provided only for for compatibility with existing code.  */
   typedef int _Unwind_Action;
-#define _UA_SEARCH_PHASE        1
-#define _UA_CLEANUP_PHASE        2
-#define _UA_HANDLER_FRAME        4
-#define _UA_FORCE_UNWIND        8
-#define _UA_END_OF_STACK        16
-#define _URC_NO_REASON         _URC_OK
+#define _UA_SEARCH_PHASE	1
+#define _UA_CLEANUP_PHASE	2
+#define _UA_HANDLER_FRAME	4
+#define _UA_FORCE_UNWIND	8
+#define _UA_END_OF_STACK	16
+#define _URC_NO_REASON 	_URC_OK
 
   typedef struct _Unwind_Control_Block _Unwind_Control_Block;
   typedef struct _Unwind_Context _Unwind_Context;
@@ -91,37 +91,37 @@ extern "C" {
       void (*exception_cleanup)(_Unwind_Reason_Code, _Unwind_Control_Block *);
       /* Unwinder cache, private fields for the unwinder's use */
       struct
-        {
-          _uw reserved1;  /* Forced unwind stop fn, 0 if not forced */
-          _uw reserved2;  /* Personality routine address */
-          _uw reserved3;  /* Saved callsite address */
-          _uw reserved4;  /* Forced unwind stop arg */
-          _uw reserved5;
-        }
+	{
+	  _uw reserved1;  /* Forced unwind stop fn, 0 if not forced */
+	  _uw reserved2;  /* Personality routine address */
+	  _uw reserved3;  /* Saved callsite address */
+	  _uw reserved4;  /* Forced unwind stop arg */
+	  _uw reserved5;
+	}
       unwinder_cache;
       /* Propagation barrier cache (valid after phase 1): */
       struct
-        {
-          _uw sp;
-          _uw bitpattern[5];
-        }
+	{
+	  _uw sp;
+	  _uw bitpattern[5];
+	}
       barrier_cache;
       /* Cleanup cache (preserved over cleanup): */
       struct
-        {
-          _uw bitpattern[4];
-        }
+	{
+	  _uw bitpattern[4];
+	}
       cleanup_cache;
       /* Pr cache (for pr's benefit): */
       struct
-        {
-          _uw fnstart;                        /* function start address */
-          _Unwind_EHT_Header *ehtp;        /* pointer to EHT entry header word */
-          _uw additional;                /* additional data */
-          _uw reserved1;
-        }
+	{
+	  _uw fnstart;			/* function start address */
+	  _Unwind_EHT_Header *ehtp;	/* pointer to EHT entry header word */
+	  _uw additional;		/* additional data */
+	  _uw reserved1;
+	}
       pr_cache;
-      long long int :0;        /* Force alignment to 8-byte boundary */
+      long long int :0;	/* Force alignment to 8-byte boundary */
     };
 
   /* Virtual Register Set*/
@@ -202,17 +202,17 @@ extern "C" {
 
   typedef _Unwind_Reason_Code (*_Unwind_Stop_Fn)
        (int, _Unwind_Action, _Unwind_Exception_Class,
-        _Unwind_Control_Block *, struct _Unwind_Context *, void *);
+	_Unwind_Control_Block *, struct _Unwind_Context *, void *);
   _Unwind_Reason_Code _Unwind_ForcedUnwind (_Unwind_Control_Block *,
-                                            _Unwind_Stop_Fn, void *);
+					    _Unwind_Stop_Fn, void *);
   _Unwind_Word _Unwind_GetCFA (struct _Unwind_Context *);
   void _Unwind_Complete(_Unwind_Control_Block *ucbp);
   void _Unwind_DeleteException (_Unwind_Exception *);
 
   _Unwind_Reason_Code __gnu_unwind_frame (_Unwind_Control_Block *,
-                                          _Unwind_Context *);
+					  _Unwind_Context *);
   _Unwind_Reason_Code __gnu_unwind_execute (_Unwind_Context *,
-                                            __gnu_unwind_state *);
+					    __gnu_unwind_state *);
 
   /* Decode an R_ARM_TARGET2 relocation.  */
   static inline _Unwind_Word
@@ -223,7 +223,7 @@ extern "C" {
       tmp = *(_Unwind_Word *) ptr;
       /* Zero values are always NULL.  */
       if (!tmp)
-        return 0;
+	return 0;
 
 #if defined(linux) || defined(__NetBSD__)
       /* Pc-relative indirect.  */

@@ -68,15 +68,15 @@
 /* Override the definition from sysv4.h.  */
 
 #undef TARGET_OS_CPP_BUILTINS
-#define TARGET_OS_CPP_BUILTINS()                \
-  do                                                \
-    {                                                \
-      builtin_define ("__BIG_ENDIAN__");        \
-      builtin_define ("__powerpc__");                \
-      builtin_assert ("cpu=powerpc");                \
-      builtin_assert ("machine=powerpc");        \
-      builtin_define ("__PPC__");                \
-    }                                                \
+#define TARGET_OS_CPP_BUILTINS()		\
+  do						\
+    {						\
+      builtin_define ("__BIG_ENDIAN__");	\
+      builtin_define ("__powerpc__");		\
+      builtin_assert ("cpu=powerpc");		\
+      builtin_assert ("machine=powerpc");	\
+      builtin_define ("__PPC__");		\
+    }						\
   while (0)
 
 /* Override the rs6000.h definition.  */
@@ -114,7 +114,7 @@
    text size of the executables to 32M.  */
 
 static void __do_global_dtors_aux (void) __attribute__ ((longcall));
-#endif        /* CRT_BEGIN */
+#endif	/* CRT_BEGIN */
 
 #ifdef CRT_END
 /* Similarly here.  This function resides in crtend*.o which is toward
@@ -122,4 +122,4 @@ static void __do_global_dtors_aux (void) __attribute__ ((longcall));
    beginning.  */
 
 static void __do_global_ctors_aux (void) __attribute__ ((longcall));
-#endif        /* CRT_END */
+#endif	/* CRT_END */

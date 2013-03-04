@@ -87,23 +87,23 @@ Boston, MA 02110-1301, USA.  */
    GAS version 1.38.1 doesn't understand the `repz' opcode mnemonic.
    So use `repe' instead.  */
 
-#define ASM_OUTPUT_OPCODE(STREAM, PTR)        \
-{                                                                        \
-  if ((PTR)[0] == 'r'                                                        \
-      && (PTR)[1] == 'e'                                                \
-      && (PTR)[2] == 'p')                                                \
-    {                                                                        \
-      if ((PTR)[3] == 'z')                                                \
-        {                                                                \
-          fprintf (STREAM, "repe");                                        \
-          (PTR) += 4;                                                        \
-        }                                                                \
-      else if ((PTR)[3] == 'n' && (PTR)[4] == 'z')                        \
-        {                                                                \
-          fprintf (STREAM, "repne");                                        \
-          (PTR) += 5;                                                        \
-        }                                                                \
-    }                                                                        \
+#define ASM_OUTPUT_OPCODE(STREAM, PTR)	\
+{									\
+  if ((PTR)[0] == 'r'							\
+      && (PTR)[1] == 'e'						\
+      && (PTR)[2] == 'p')						\
+    {									\
+      if ((PTR)[3] == 'z')						\
+	{								\
+	  fprintf (STREAM, "repe");					\
+	  (PTR) += 4;							\
+	}								\
+      else if ((PTR)[3] == 'n' && (PTR)[4] == 'z')			\
+	{								\
+	  fprintf (STREAM, "repne");					\
+	  (PTR) += 5;							\
+	}								\
+    }									\
 }
 
 /* Define macro used to output shift-double opcodes when the shift

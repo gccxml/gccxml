@@ -20,19 +20,19 @@ along with GCC; see the file COPYING.  If not, write to
 the Free Software Foundation, 51 Franklin Street, Fifth Floor,
 Boston, MA 02110-1301, USA.  */
 
-#define TARGET_OS_CPP_BUILTINS()                        \
-  do                                                        \
-    {                                                        \
-      builtin_define_std ("unix");                        \
-      builtin_define_std ("linux");                        \
-      builtin_define ("_LONGLONG");                        \
-      builtin_define ("__gnu_linux__");                        \
-      builtin_assert ("system=linux");                        \
-      builtin_assert ("system=unix");                        \
-      builtin_assert ("system=posix");                        \
-      if (TARGET_ARCH32 && TARGET_LONG_DOUBLE_128)        \
-        builtin_define ("__LONG_DOUBLE_128__");                \
-    }                                                        \
+#define TARGET_OS_CPP_BUILTINS()			\
+  do							\
+    {							\
+      builtin_define_std ("unix");			\
+      builtin_define_std ("linux");			\
+      builtin_define ("_LONGLONG");			\
+      builtin_define ("__gnu_linux__");			\
+      builtin_assert ("system=linux");			\
+      builtin_assert ("system=unix");			\
+      builtin_assert ("system=posix");			\
+      if (TARGET_ARCH32 && TARGET_LONG_DOUBLE_128)	\
+	builtin_define ("__LONG_DOUBLE_128__");		\
+    }							\
   while (0)
 
 /* Don't assume anything about the header files.  */
@@ -164,8 +164,8 @@ Boston, MA 02110-1301, USA.  */
 #define SUBTARGET_EXTRA_SPECS \
   { "link_arch32",       LINK_ARCH32_SPEC },              \
   { "link_arch64",       LINK_ARCH64_SPEC },              \
-  { "link_arch_default", LINK_ARCH_DEFAULT_SPEC },          \
-  { "link_arch",         LINK_ARCH_SPEC },
+  { "link_arch_default", LINK_ARCH_DEFAULT_SPEC },	  \
+  { "link_arch",	 LINK_ARCH_SPEC },
 
 #define LINK_ARCH32_SPEC "-m elf32_sparc -Y P,/usr/lib %{shared:-shared} \
   %{!shared: \
@@ -201,7 +201,7 @@ Boston, MA 02110-1301, USA.  */
 %{!mno-relax:%{!r:-relax}} \
 "
 
-#undef        CC1_SPEC
+#undef	CC1_SPEC
 #if DEFAULT_ARCH32_P
 #define CC1_SPEC "\
 %{sun4:} %{target:} \
@@ -290,12 +290,12 @@ Boston, MA 02110-1301, USA.  */
 #define DBX_REGISTER_NUMBER(REGNO) (REGNO)
 
 #undef ASM_OUTPUT_ALIGNED_LOCAL
-#define ASM_OUTPUT_ALIGNED_LOCAL(FILE, NAME, SIZE, ALIGN)                \
-do {                                                                        \
-  fputs ("\t.local\t", (FILE));                \
-  assemble_name ((FILE), (NAME));                                        \
-  putc ('\n', (FILE));                                                        \
-  ASM_OUTPUT_ALIGNED_COMMON (FILE, NAME, SIZE, ALIGN);                        \
+#define ASM_OUTPUT_ALIGNED_LOCAL(FILE, NAME, SIZE, ALIGN)		\
+do {									\
+  fputs ("\t.local\t", (FILE));		\
+  assemble_name ((FILE), (NAME));					\
+  putc ('\n', (FILE));							\
+  ASM_OUTPUT_ALIGNED_COMMON (FILE, NAME, SIZE, ALIGN);			\
 } while (0)
 
 #undef COMMON_ASM_OP
@@ -310,7 +310,7 @@ do {                                                                        \
    This is suitable for output with `assemble_name'.  */
 
 #undef  ASM_GENERATE_INTERNAL_LABEL
-#define ASM_GENERATE_INTERNAL_LABEL(LABEL,PREFIX,NUM)        \
+#define ASM_GENERATE_INTERNAL_LABEL(LABEL,PREFIX,NUM)	\
   sprintf (LABEL, "*.L%s%ld", PREFIX, (long)(NUM))
 
 /* DWARF bits.  */
@@ -372,7 +372,7 @@ do {                                                                        \
 #ifdef TARGET_LIBC_PROVIDES_SSP
 /* sparc glibc provides __stack_chk_guard in [%g7 + 0x14],
    sparc64 glibc provides it at [%g7 + 0x28].  */
-#define TARGET_THREAD_SSP_OFFSET        (TARGET_ARCH64 ? 0x28 : 0x14)
+#define TARGET_THREAD_SSP_OFFSET	(TARGET_ARCH64 ? 0x28 : 0x14)
 #endif
 
 /* Define if long doubles should be mangled as 'g'.  */

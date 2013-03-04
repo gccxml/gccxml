@@ -28,7 +28,7 @@ Boston, MA 02110-1301, USA.  */
 #define SUBTARGET_EXTRA_SPECS \
 { "elf_dynamic_linker", ELF_DYNAMIC_LINKER },
 
-#define GLIBC_DYNAMIC_LINKER        "/lib/ld-linux.so.2"
+#define GLIBC_DYNAMIC_LINKER	"/lib/ld-linux.so.2"
 #define UCLIBC_DYNAMIC_LINKER "/lib/ld-uClibc.so.0"
 #if UCLIBC_DEFAULT
 #define CHOOSE_DYNAMIC_LINKER(G, U) "%{mglibc:%{muclibc:%e-mglibc and -muclibc used together}" G ";:" U "}"
@@ -38,15 +38,15 @@ Boston, MA 02110-1301, USA.  */
 #define LINUX_DYNAMIC_LINKER \
   CHOOSE_DYNAMIC_LINKER (GLIBC_DYNAMIC_LINKER, UCLIBC_DYNAMIC_LINKER)
 
-#define ELF_DYNAMIC_LINKER        LINUX_DYNAMIC_LINKER
+#define ELF_DYNAMIC_LINKER	LINUX_DYNAMIC_LINKER
 
-#define LINK_SPEC "-m elf64alpha %{G*} %{relax:-relax}                \
-  %{O*:-O3} %{!O*:-O1}                                                \
-  %{shared:-shared}                                                \
-  %{!shared:                                                        \
-    %{!static:                                                        \
-      %{rdynamic:-export-dynamic}                                \
-      %{!dynamic-linker:-dynamic-linker %(elf_dynamic_linker)}}        \
+#define LINK_SPEC "-m elf64alpha %{G*} %{relax:-relax}		\
+  %{O*:-O3} %{!O*:-O1}						\
+  %{shared:-shared}						\
+  %{!shared:							\
+    %{!static:							\
+      %{rdynamic:-export-dynamic}				\
+      %{!dynamic-linker:-dynamic-linker %(elf_dynamic_linker)}}	\
     %{static:-static}}"
 
 #undef LIB_SPEC

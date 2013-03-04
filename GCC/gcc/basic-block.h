@@ -82,17 +82,17 @@ typedef bitmap regset;
 
 /* Copy the hard registers in a register set to the hard register set.  */
 extern void reg_set_to_hard_reg_set (HARD_REG_SET *, bitmap);
-#define REG_SET_TO_HARD_REG_SET(TO, FROM)                                \
-do {                                                                        \
-  CLEAR_HARD_REG_SET (TO);                                                \
-  reg_set_to_hard_reg_set (&TO, FROM);                                        \
+#define REG_SET_TO_HARD_REG_SET(TO, FROM)				\
+do {									\
+  CLEAR_HARD_REG_SET (TO);						\
+  reg_set_to_hard_reg_set (&TO, FROM);					\
 } while (0)
 
 typedef bitmap_iterator reg_set_iterator;
 
 /* Loop over all registers in REGSET, starting with MIN, setting REGNUM to the
    register number and executing CODE for all registers that are set.  */
-#define EXECUTE_IF_SET_IN_REG_SET(REGSET, MIN, REGNUM, RSI)        \
+#define EXECUTE_IF_SET_IN_REG_SET(REGSET, MIN, REGNUM, RSI)	\
   EXECUTE_IF_SET_IN_BITMAP (REGSET, MIN, REGNUM, RSI)
 
 /* Loop over all registers in REGSET1 and REGSET2, starting with MIN, setting
@@ -105,7 +105,7 @@ typedef bitmap_iterator reg_set_iterator;
    REGNUM to the register number and executing CODE for all registers that are
    set in both regsets.  */
 #define EXECUTE_IF_AND_IN_REG_SET(REGSET1, REGSET2, MIN, REGNUM, RSI) \
-  EXECUTE_IF_AND_IN_BITMAP (REGSET1, REGSET2, MIN, REGNUM, RSI)        \
+  EXECUTE_IF_AND_IN_BITMAP (REGSET1, REGSET2, MIN, REGNUM, RSI)	\
 
 /* Type we use to hold basic block counters.  Should be at least
    64bit.  Although a counter cannot be negative, we use a signed
@@ -133,10 +133,10 @@ struct edge_def GTY(())
   /* Location of any goto implicit in the edge, during tree-ssa.  */
   source_locus goto_locus;
 
-  int flags;                        /* see EDGE_* below  */
-  int probability;                /* biased by REG_BR_PROB_BASE */
-  gcov_type count;                /* Expected number of executions calculated
-                                   in profile.c  */
+  int flags;			/* see EDGE_* below  */
+  int probability;		/* biased by REG_BR_PROB_BASE */
+  gcov_type count;		/* Expected number of executions calculated
+				   in profile.c  */
 
   /* The index number corresponding to this edge in the edge vector
      dest->preds.  */
@@ -147,31 +147,31 @@ typedef struct edge_def *edge;
 DEF_VEC_P(edge);
 DEF_VEC_ALLOC_P(edge,gc);
 
-#define EDGE_FALLTHRU                1        /* 'Straight line' flow */
-#define EDGE_ABNORMAL                2        /* Strange flow, like computed
-                                           label, or eh */
-#define EDGE_ABNORMAL_CALL        4        /* Call with abnormal exit
-                                           like an exception, or sibcall */
-#define EDGE_EH                        8        /* Exception throw */
-#define EDGE_FAKE                16        /* Not a real edge (profile.c) */
-#define EDGE_DFS_BACK                32        /* A backwards edge */
-#define EDGE_CAN_FALLTHRU        64        /* Candidate for straight line
-                                           flow.  */
-#define EDGE_IRREDUCIBLE_LOOP        128        /* Part of irreducible loop.  */
-#define EDGE_SIBCALL                256        /* Edge from sibcall to exit.  */
-#define EDGE_LOOP_EXIT                512        /* Exit of a loop.  */
-#define EDGE_TRUE_VALUE                1024        /* Edge taken when controlling
-                                           predicate is nonzero.  */
-#define EDGE_FALSE_VALUE        2048        /* Edge taken when controlling
-                                           predicate is zero.  */
-#define EDGE_EXECUTABLE                4096        /* Edge is executable.  Only
-                                           valid during SSA-CCP.  */
-#define EDGE_CROSSING                8192    /* Edge crosses between hot
-                                           and cold sections, when we
-                                           do partitioning.  */
-#define EDGE_ALL_FLAGS               16383
+#define EDGE_FALLTHRU		1	/* 'Straight line' flow */
+#define EDGE_ABNORMAL		2	/* Strange flow, like computed
+					   label, or eh */
+#define EDGE_ABNORMAL_CALL	4	/* Call with abnormal exit
+					   like an exception, or sibcall */
+#define EDGE_EH			8	/* Exception throw */
+#define EDGE_FAKE		16	/* Not a real edge (profile.c) */
+#define EDGE_DFS_BACK		32	/* A backwards edge */
+#define EDGE_CAN_FALLTHRU	64	/* Candidate for straight line
+					   flow.  */
+#define EDGE_IRREDUCIBLE_LOOP	128	/* Part of irreducible loop.  */
+#define EDGE_SIBCALL		256	/* Edge from sibcall to exit.  */
+#define EDGE_LOOP_EXIT		512	/* Exit of a loop.  */
+#define EDGE_TRUE_VALUE		1024	/* Edge taken when controlling
+					   predicate is nonzero.  */
+#define EDGE_FALSE_VALUE	2048	/* Edge taken when controlling
+					   predicate is zero.  */
+#define EDGE_EXECUTABLE		4096	/* Edge is executable.  Only
+					   valid during SSA-CCP.  */
+#define EDGE_CROSSING		8192    /* Edge crosses between hot
+					   and cold sections, when we
+					   do partitioning.  */
+#define EDGE_ALL_FLAGS	       16383
 
-#define EDGE_COMPLEX        (EDGE_ABNORMAL | EDGE_ABNORMAL_CALL | EDGE_EH)
+#define EDGE_COMPLEX	(EDGE_ABNORMAL | EDGE_ABNORMAL_CALL | EDGE_EH)
 
 /* Counter summary from the last set of coverage counts read by
    profile.c.  */
@@ -341,15 +341,15 @@ enum bb_flags
 };
 
 /* Dummy flag for convenience in the hot/cold partitioning code.  */
-#define BB_UNPARTITIONED        0
+#define BB_UNPARTITIONED	0
 
 /* Partitions, to be used when partitioning hot and cold basic blocks into
    separate sections.  */
 #define BB_PARTITION(bb) ((bb)->flags & (BB_HOT_PARTITION|BB_COLD_PARTITION))
-#define BB_SET_PARTITION(bb, part) do {                                        \
-  basic_block bb_ = (bb);                                                \
-  bb_->flags = ((bb_->flags & ~(BB_HOT_PARTITION|BB_COLD_PARTITION))        \
-                | (part));                                                \
+#define BB_SET_PARTITION(bb, part) do {					\
+  basic_block bb_ = (bb);						\
+  bb_->flags = ((bb_->flags & ~(BB_HOT_PARTITION|BB_COLD_PARTITION))	\
+		| (part));						\
 } while (0)
 
 #define BB_COPY_PARTITION(dstbb, srcbb) \
@@ -391,10 +391,10 @@ struct control_flow_graph GTY(())
 
 /* Defines for accessing the fields of the CFG structure for function FN.  */
 #define ENTRY_BLOCK_PTR_FOR_FUNCTION(FN)     ((FN)->cfg->x_entry_block_ptr)
-#define EXIT_BLOCK_PTR_FOR_FUNCTION(FN)             ((FN)->cfg->x_exit_block_ptr)
+#define EXIT_BLOCK_PTR_FOR_FUNCTION(FN)	     ((FN)->cfg->x_exit_block_ptr)
 #define basic_block_info_for_function(FN)    ((FN)->cfg->x_basic_block_info)
-#define n_basic_blocks_for_function(FN)             ((FN)->cfg->x_n_basic_blocks)
-#define n_edges_for_function(FN)             ((FN)->cfg->x_n_edges)
+#define n_basic_blocks_for_function(FN)	     ((FN)->cfg->x_n_basic_blocks)
+#define n_edges_for_function(FN)	     ((FN)->cfg->x_n_edges)
 #define last_basic_block_for_function(FN)    ((FN)->cfg->x_last_basic_block)
 #define label_to_block_map_for_function(FN)  ((FN)->cfg->x_label_to_block_map)
 
@@ -402,17 +402,17 @@ struct control_flow_graph GTY(())
   (VEC_index (basic_block, basic_block_info_for_function(FN), (N)))
 
 /* Defines for textual backward source compatibility.  */
-#define ENTRY_BLOCK_PTR                (cfun->cfg->x_entry_block_ptr)
-#define EXIT_BLOCK_PTR                (cfun->cfg->x_exit_block_ptr)
-#define basic_block_info        (cfun->cfg->x_basic_block_info)
-#define n_basic_blocks                (cfun->cfg->x_n_basic_blocks)
-#define n_edges                        (cfun->cfg->x_n_edges)
-#define last_basic_block        (cfun->cfg->x_last_basic_block)
-#define label_to_block_map        (cfun->cfg->x_label_to_block_map)
-#define profile_status                (cfun->cfg->x_profile_status)
+#define ENTRY_BLOCK_PTR		(cfun->cfg->x_entry_block_ptr)
+#define EXIT_BLOCK_PTR		(cfun->cfg->x_exit_block_ptr)
+#define basic_block_info	(cfun->cfg->x_basic_block_info)
+#define n_basic_blocks		(cfun->cfg->x_n_basic_blocks)
+#define n_edges			(cfun->cfg->x_n_edges)
+#define last_basic_block	(cfun->cfg->x_last_basic_block)
+#define label_to_block_map	(cfun->cfg->x_label_to_block_map)
+#define profile_status		(cfun->cfg->x_profile_status)
 
-#define BASIC_BLOCK(N)                (VEC_index (basic_block, basic_block_info, (N)))
-#define SET_BASIC_BLOCK(N,BB)        (VEC_replace (basic_block, basic_block_info, (N), (BB)))
+#define BASIC_BLOCK(N)		(VEC_index (basic_block, basic_block_info, (N)))
+#define SET_BASIC_BLOCK(N,BB)	(VEC_replace (basic_block, basic_block_info, (N), (BB)))
 
 /* For iterating over basic blocks.  */
 #define FOR_BB_BETWEEN(BB, FROM, TO, DIR) \
@@ -429,14 +429,14 @@ struct control_flow_graph GTY(())
 #define FOR_EACH_BB_REVERSE(BB) FOR_EACH_BB_REVERSE_FN(BB, cfun)
 
 /* For iterating over insns in basic block.  */
-#define FOR_BB_INSNS(BB, INSN)                        \
-  for ((INSN) = BB_HEAD (BB);                        \
-       (INSN) && (INSN) != NEXT_INSN (BB_END (BB));        \
+#define FOR_BB_INSNS(BB, INSN)			\
+  for ((INSN) = BB_HEAD (BB);			\
+       (INSN) && (INSN) != NEXT_INSN (BB_END (BB));	\
        (INSN) = NEXT_INSN (INSN))
 
-#define FOR_BB_INSNS_REVERSE(BB, INSN)                \
-  for ((INSN) = BB_END (BB);                        \
-       (INSN) && (INSN) != PREV_INSN (BB_HEAD (BB));        \
+#define FOR_BB_INSNS_REVERSE(BB, INSN)		\
+  for ((INSN) = BB_END (BB);			\
+       (INSN) && (INSN) != PREV_INSN (BB_HEAD (BB));	\
        (INSN) = PREV_INSN (INSN))
 
 /* Cycles through _all_ basic blocks, even the fake ones (entry and
@@ -460,7 +460,7 @@ extern bitmap_obstack reg_obstack;
 #define REG_BLOCK_UNKNOWN -1
 #define REG_BLOCK_GLOBAL -2
 
-#define REG_BASIC_BLOCK(N)                                \
+#define REG_BASIC_BLOCK(N)				\
   (VEC_index (reg_info_p, reg_n_info, N)->basic_block)
 
 /* Stuff for recording basic block info.  */
@@ -476,7 +476,7 @@ extern bitmap_obstack reg_obstack;
 #define NUM_FIXED_BLOCKS (2)
 
 
-#define BLOCK_NUM(INSN)              (BLOCK_FOR_INSN (INSN)->index + 0)
+#define BLOCK_NUM(INSN)	      (BLOCK_FOR_INSN (INSN)->index + 0)
 #define set_block_for_insn(INSN, BB)  (BLOCK_FOR_INSN (INSN) = BB)
 
 extern void compute_bb_for_insn (void);
@@ -507,8 +507,8 @@ extern void clear_bb_flags (void);
 extern int post_order_compute (int *, bool);
 extern int pre_and_rev_post_order_compute (int *, int *, bool);
 extern int dfs_enumerate_from (basic_block, int,
-                               bool (*)(basic_block, void *),
-                               basic_block *, int, void *);
+			       bool (*)(basic_block, void *),
+			       basic_block *, int, void *);
 extern void compute_dominance_frontiers (bitmap *);
 extern void dump_bb_info (basic_block, bool, bool, int, const char *, FILE *);
 extern void dump_edge_info (FILE *, edge, int);
@@ -517,7 +517,7 @@ extern void clear_edges (void);
 extern rtx first_insn_after_basic_block_note (basic_block);
 extern void scale_bbs_frequencies_int (basic_block *, int, int, int);
 extern void scale_bbs_frequencies_gcov_type (basic_block *, int, gcov_type,
-                                             gcov_type);
+					     gcov_type);
 
 /* Structure to group all of the information to process IF-THEN and
    IF-THEN-ELSE blocks for the conditional execution support.  This
@@ -526,22 +526,22 @@ extern void scale_bbs_frequencies_gcov_type (basic_block *, int, gcov_type,
 
 typedef struct ce_if_block
 {
-  basic_block test_bb;                        /* First test block.  */
-  basic_block then_bb;                        /* THEN block.  */
-  basic_block else_bb;                        /* ELSE block or NULL.  */
-  basic_block join_bb;                        /* Join THEN/ELSE blocks.  */
-  basic_block last_test_bb;                /* Last bb to hold && or || tests.  */
-  int num_multiple_test_blocks;                /* # of && and || basic blocks.  */
-  int num_and_and_blocks;                /* # of && blocks.  */
-  int num_or_or_blocks;                        /* # of || blocks.  */
-  int num_multiple_test_insns;                /* # of insns in && and || blocks.  */
-  int and_and_p;                        /* Complex test is &&.  */
-  int num_then_insns;                        /* # of insns in THEN block.  */
-  int num_else_insns;                        /* # of insns in ELSE block.  */
-  int pass;                                /* Pass number.  */
+  basic_block test_bb;			/* First test block.  */
+  basic_block then_bb;			/* THEN block.  */
+  basic_block else_bb;			/* ELSE block or NULL.  */
+  basic_block join_bb;			/* Join THEN/ELSE blocks.  */
+  basic_block last_test_bb;		/* Last bb to hold && or || tests.  */
+  int num_multiple_test_blocks;		/* # of && and || basic blocks.  */
+  int num_and_and_blocks;		/* # of && blocks.  */
+  int num_or_or_blocks;			/* # of || blocks.  */
+  int num_multiple_test_insns;		/* # of insns in && and || blocks.  */
+  int and_and_p;			/* Complex test is &&.  */
+  int num_then_insns;			/* # of insns in THEN block.  */
+  int num_else_insns;			/* # of insns in ELSE block.  */
+  int pass;				/* Pass number.  */
 
 #ifdef IFCVT_EXTRA_FIELDS
-  IFCVT_EXTRA_FIELDS                        /* Any machine dependent fields.  */
+  IFCVT_EXTRA_FIELDS			/* Any machine dependent fields.  */
 #endif
 
 } ce_if_block_t;
@@ -558,7 +558,7 @@ struct edge_list
 #define REG_BR_PROB_BASE  10000
 
 /* This is the value which indicates no edge is present.  */
-#define EDGE_INDEX_NO_EDGE        -1
+#define EDGE_INDEX_NO_EDGE	-1
 
 /* EDGE_INDEX returns an integer index for an edge, or EDGE_INDEX_NO_EDGE
    if there is no edge between the 2 basic blocks.  */
@@ -566,37 +566,37 @@ struct edge_list
 
 /* INDEX_EDGE_PRED_BB and INDEX_EDGE_SUCC_BB return a pointer to the basic
    block which is either the pred or succ end of the indexed edge.  */
-#define INDEX_EDGE_PRED_BB(el, index)        ((el)->index_to_edge[(index)]->src)
-#define INDEX_EDGE_SUCC_BB(el, index)        ((el)->index_to_edge[(index)]->dest)
+#define INDEX_EDGE_PRED_BB(el, index)	((el)->index_to_edge[(index)]->src)
+#define INDEX_EDGE_SUCC_BB(el, index)	((el)->index_to_edge[(index)]->dest)
 
 /* INDEX_EDGE returns a pointer to the edge.  */
 #define INDEX_EDGE(el, index)           ((el)->index_to_edge[(index)])
 
 /* Number of edges in the compressed edge list.  */
-#define NUM_EDGES(el)                        ((el)->num_edges)
+#define NUM_EDGES(el)			((el)->num_edges)
 
 /* BB is assumed to contain conditional jump.  Return the fallthru edge.  */
-#define FALLTHRU_EDGE(bb)                (EDGE_SUCC ((bb), 0)->flags & EDGE_FALLTHRU \
-                                         ? EDGE_SUCC ((bb), 0) : EDGE_SUCC ((bb), 1))
+#define FALLTHRU_EDGE(bb)		(EDGE_SUCC ((bb), 0)->flags & EDGE_FALLTHRU \
+					 ? EDGE_SUCC ((bb), 0) : EDGE_SUCC ((bb), 1))
 
 /* BB is assumed to contain conditional jump.  Return the branch edge.  */
-#define BRANCH_EDGE(bb)                        (EDGE_SUCC ((bb), 0)->flags & EDGE_FALLTHRU \
-                                         ? EDGE_SUCC ((bb), 1) : EDGE_SUCC ((bb), 0))
+#define BRANCH_EDGE(bb)			(EDGE_SUCC ((bb), 0)->flags & EDGE_FALLTHRU \
+					 ? EDGE_SUCC ((bb), 1) : EDGE_SUCC ((bb), 0))
 
 /* Return expected execution frequency of the edge E.  */
-#define EDGE_FREQUENCY(e)                (((e)->src->frequency \
-                                          * (e)->probability \
-                                          + REG_BR_PROB_BASE / 2) \
-                                         / REG_BR_PROB_BASE)
+#define EDGE_FREQUENCY(e)		(((e)->src->frequency \
+					  * (e)->probability \
+					  + REG_BR_PROB_BASE / 2) \
+					 / REG_BR_PROB_BASE)
 
 /* Return nonzero if edge is critical.  */
-#define EDGE_CRITICAL_P(e)                (EDGE_COUNT ((e)->src->succs) >= 2 \
-                                         && EDGE_COUNT ((e)->dest->preds) >= 2)
+#define EDGE_CRITICAL_P(e)		(EDGE_COUNT ((e)->src->succs) >= 2 \
+					 && EDGE_COUNT ((e)->dest->preds) >= 2)
 
-#define EDGE_COUNT(ev)                        VEC_length (edge, (ev))
-#define EDGE_I(ev,i)                        VEC_index  (edge, (ev), (i))
-#define EDGE_PRED(bb,i)                        VEC_index  (edge, (bb)->preds, (i))
-#define EDGE_SUCC(bb,i)                        VEC_index  (edge, (bb)->succs, (i))
+#define EDGE_COUNT(ev)			VEC_length (edge, (ev))
+#define EDGE_I(ev,i)			VEC_index  (edge, (ev), (i))
+#define EDGE_PRED(bb,i)			VEC_index  (edge, (bb)->preds, (i))
+#define EDGE_SUCC(bb,i)			VEC_index  (edge, (bb)->succs, (i))
 
 /* Returns true if BB has precisely one successor.  */
 
@@ -768,16 +768,16 @@ ei_cond (edge_iterator ei, edge *p)
 
    FOR (ei = ei_start (bb->succs); (e = ei_safe_edge (ei)); )
      {
-        IF (e != taken_edge)
-          remove_edge (e);
-        ELSE
-          ei_next (&ei);
+	IF (e != taken_edge)
+	  remove_edge (e);
+	ELSE
+	  ei_next (&ei);
      }
 */
 
-#define FOR_EACH_EDGE(EDGE,ITER,EDGE_VEC)        \
-  for ((ITER) = ei_start ((EDGE_VEC));                \
-       ei_cond ((ITER), &(EDGE));                \
+#define FOR_EACH_EDGE(EDGE,ITER,EDGE_VEC)	\
+  for ((ITER) = ei_start ((EDGE_VEC));		\
+       ei_cond ((ITER), &(EDGE));		\
        ei_next (&(ITER)))
 
 struct edge_list * create_edge_list (void);
@@ -797,54 +797,54 @@ enum update_life_extent
 
 /* Flags for life_analysis and update_life_info.  */
 
-#define PROP_DEATH_NOTES        1        /* Create DEAD and UNUSED notes.  */
-#define PROP_LOG_LINKS                2        /* Create LOG_LINKS.  */
-#define PROP_REG_INFO                4        /* Update regs_ever_live et al.  */
-#define PROP_KILL_DEAD_CODE        8        /* Remove dead code.  */
-#define PROP_SCAN_DEAD_CODE        16        /* Scan for dead code.  */
-#define PROP_ALLOW_CFG_CHANGES        32        /* Allow the CFG to be changed
-                                           by dead code removal.  */
-#define PROP_AUTOINC                64        /* Create autoinc mem references.  */
-#define PROP_SCAN_DEAD_STORES        128        /* Scan for dead code.  */
-#define PROP_ASM_SCAN                256        /* Internal flag used within flow.c
-                                           to flag analysis of asms.  */
-#define PROP_DEAD_INSN                1024        /* Internal flag used within flow.c
-                                           to flag analysis of dead insn.  */
-#define PROP_POST_REGSTACK        2048        /* We run after reg-stack and need
-                                           to preserve REG_DEAD notes for
-                                           stack regs.  */
-#define PROP_FINAL                (PROP_DEATH_NOTES | PROP_LOG_LINKS  \
-                                 | PROP_REG_INFO | PROP_KILL_DEAD_CODE  \
-                                 | PROP_SCAN_DEAD_CODE | PROP_AUTOINC \
-                                 | PROP_ALLOW_CFG_CHANGES \
-                                 | PROP_SCAN_DEAD_STORES)
-#define PROP_POSTRELOAD                (PROP_DEATH_NOTES  \
-                                 | PROP_KILL_DEAD_CODE  \
-                                 | PROP_SCAN_DEAD_CODE \
-                                 | PROP_SCAN_DEAD_STORES)
+#define PROP_DEATH_NOTES	1	/* Create DEAD and UNUSED notes.  */
+#define PROP_LOG_LINKS		2	/* Create LOG_LINKS.  */
+#define PROP_REG_INFO		4	/* Update regs_ever_live et al.  */
+#define PROP_KILL_DEAD_CODE	8	/* Remove dead code.  */
+#define PROP_SCAN_DEAD_CODE	16	/* Scan for dead code.  */
+#define PROP_ALLOW_CFG_CHANGES	32	/* Allow the CFG to be changed
+					   by dead code removal.  */
+#define PROP_AUTOINC		64	/* Create autoinc mem references.  */
+#define PROP_SCAN_DEAD_STORES	128	/* Scan for dead code.  */
+#define PROP_ASM_SCAN		256	/* Internal flag used within flow.c
+					   to flag analysis of asms.  */
+#define PROP_DEAD_INSN		1024	/* Internal flag used within flow.c
+					   to flag analysis of dead insn.  */
+#define PROP_POST_REGSTACK	2048	/* We run after reg-stack and need
+					   to preserve REG_DEAD notes for
+					   stack regs.  */
+#define PROP_FINAL		(PROP_DEATH_NOTES | PROP_LOG_LINKS  \
+				 | PROP_REG_INFO | PROP_KILL_DEAD_CODE  \
+				 | PROP_SCAN_DEAD_CODE | PROP_AUTOINC \
+				 | PROP_ALLOW_CFG_CHANGES \
+				 | PROP_SCAN_DEAD_STORES)
+#define PROP_POSTRELOAD		(PROP_DEATH_NOTES  \
+				 | PROP_KILL_DEAD_CODE  \
+				 | PROP_SCAN_DEAD_CODE \
+				 | PROP_SCAN_DEAD_STORES)
 
-#define CLEANUP_EXPENSIVE        1        /* Do relatively expensive optimizations
-                                           except for edge forwarding */
-#define CLEANUP_CROSSJUMP        2        /* Do crossjumping.  */
-#define CLEANUP_POST_REGSTACK        4        /* We run after reg-stack and need
-                                           to care REG_DEAD notes.  */
-#define CLEANUP_UPDATE_LIFE        8        /* Keep life information up to date.  */
-#define CLEANUP_THREADING        16        /* Do jump threading.  */
-#define CLEANUP_NO_INSN_DEL        32        /* Do not try to delete trivially dead
-                                           insns.  */
-#define CLEANUP_CFGLAYOUT        64        /* Do cleanup in cfglayout mode.  */
-#define CLEANUP_LOG_LINKS        128        /* Update log links.  */
+#define CLEANUP_EXPENSIVE	1	/* Do relatively expensive optimizations
+					   except for edge forwarding */
+#define CLEANUP_CROSSJUMP	2	/* Do crossjumping.  */
+#define CLEANUP_POST_REGSTACK	4	/* We run after reg-stack and need
+					   to care REG_DEAD notes.  */
+#define CLEANUP_UPDATE_LIFE	8	/* Keep life information up to date.  */
+#define CLEANUP_THREADING	16	/* Do jump threading.  */
+#define CLEANUP_NO_INSN_DEL	32	/* Do not try to delete trivially dead
+					   insns.  */
+#define CLEANUP_CFGLAYOUT	64	/* Do cleanup in cfglayout mode.  */
+#define CLEANUP_LOG_LINKS	128	/* Update log links.  */
 
 /* The following are ORed in on top of the CLEANUP* flags in calls to
    struct_equiv_block_eq.  */
-#define STRUCT_EQUIV_START        256         /* Initializes the search range.  */
-#define STRUCT_EQUIV_RERUN        512        /* Rerun to find register use in
-                                           found equivalence.  */
-#define STRUCT_EQUIV_FINAL        1024        /* Make any changes necessary to get
-                                           actual equivalence.  */
+#define STRUCT_EQUIV_START	256	 /* Initializes the search range.  */
+#define STRUCT_EQUIV_RERUN	512	/* Rerun to find register use in
+					   found equivalence.  */
+#define STRUCT_EQUIV_FINAL	1024	/* Make any changes necessary to get
+					   actual equivalence.  */
 #define STRUCT_EQUIV_NEED_FULL_BLOCK 2048 /* struct_equiv_block_eq is required
-                                             to match only full blocks  */
-#define STRUCT_EQUIV_MATCH_JUMPS 4096        /* Also include the jumps at the end of the block in the comparison.  */
+					     to match only full blocks  */
+#define STRUCT_EQUIV_MATCH_JUMPS 4096	/* Also include the jumps at the end of the block in the comparison.  */
 
 extern void life_analysis (int);
 extern int update_life_info (sbitmap, enum update_life_extent, int);
@@ -860,12 +860,12 @@ extern void free_propagate_block_info (struct propagate_block_info *);
 
 /* In lcm.c */
 extern struct edge_list *pre_edge_lcm (int, sbitmap *, sbitmap *,
-                                       sbitmap *, sbitmap *, sbitmap **,
-                                       sbitmap **);
+				       sbitmap *, sbitmap *, sbitmap **,
+				       sbitmap **);
 extern struct edge_list *pre_edge_rev_lcm (int, sbitmap *,
-                                           sbitmap *, sbitmap *,
-                                           sbitmap *, sbitmap **,
-                                           sbitmap **);
+					   sbitmap *, sbitmap *,
+					   sbitmap *, sbitmap **,
+					   sbitmap **);
 extern void compute_available (sbitmap *, sbitmap *, sbitmap *, sbitmap *);
 
 /* In predict.c */
@@ -937,7 +937,7 @@ extern void conflict_graph_delete (conflict_graph);
 extern int conflict_graph_add (conflict_graph, int, int);
 extern int conflict_graph_conflict_p (conflict_graph, int, int);
 extern void conflict_graph_enum (conflict_graph, int, conflict_graph_enum_fn,
-                                 void *);
+				 void *);
 extern void conflict_graph_merge_regs (conflict_graph, int, int);
 extern void conflict_graph_print (conflict_graph, FILE*);
 extern bool mark_dfs_back_edges (void);
@@ -961,9 +961,9 @@ enum cdi_direction
 
 enum dom_state
 {
-  DOM_NONE,                /* Not computed at all.  */
-  DOM_NO_FAST_QUERY,        /* The data is OK, but the fast query data are not usable.  */
-  DOM_OK                /* Everything is ok.  */
+  DOM_NONE,		/* Not computed at all.  */
+  DOM_NO_FAST_QUERY,	/* The data is OK, but the fast query data are not usable.  */
+  DOM_OK		/* Everything is ok.  */
 };
 
 extern enum dom_state dom_computed[2];
@@ -972,21 +972,21 @@ extern bool dom_info_available_p (enum cdi_direction);
 extern void calculate_dominance_info (enum cdi_direction);
 extern void free_dominance_info (enum cdi_direction);
 extern basic_block nearest_common_dominator (enum cdi_direction,
-                                             basic_block, basic_block);
+					     basic_block, basic_block);
 extern basic_block nearest_common_dominator_for_set (enum cdi_direction,
-                                                     bitmap);
+						     bitmap);
 extern void set_immediate_dominator (enum cdi_direction, basic_block,
-                                     basic_block);
+				     basic_block);
 extern basic_block get_immediate_dominator (enum cdi_direction, basic_block);
 extern bool dominated_by_p (enum cdi_direction, basic_block, basic_block);
 extern int get_dominated_by (enum cdi_direction, basic_block, basic_block **);
 extern unsigned get_dominated_by_region (enum cdi_direction, basic_block *,
-                                         unsigned, basic_block *);
+					 unsigned, basic_block *);
 extern void add_to_dominance_info (enum cdi_direction, basic_block);
 extern void delete_from_dominance_info (enum cdi_direction, basic_block);
 basic_block recount_dominator (enum cdi_direction, basic_block);
 extern void redirect_immediate_dominators (enum cdi_direction, basic_block,
-                                           basic_block);
+					   basic_block);
 extern void iterate_fix_dominators (enum cdi_direction, basic_block *, int);
 extern void verify_dominators (enum cdi_direction);
 extern basic_block first_dom_son (enum cdi_direction, basic_block);
@@ -1185,7 +1185,7 @@ static inline bool bb_has_eh_pred (basic_block bb)
   FOR_EACH_EDGE (e, ei, bb->preds)
     {
       if (e->flags & EDGE_EH)
-        return true;
+	return true;
     }
   return false;
 }

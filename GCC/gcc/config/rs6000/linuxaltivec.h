@@ -24,8 +24,8 @@
 #define TARGET_VERSION fprintf (stderr, " (PowerPC AltiVec GNU/Linux)");
 
 /* Override rs6000.h and sysv4.h definition.  */
-#undef        TARGET_DEFAULT
-#define        TARGET_DEFAULT (MASK_POWERPC | MASK_NEW_MNEMONICS | MASK_ALTIVEC)
+#undef	TARGET_DEFAULT
+#define	TARGET_DEFAULT (MASK_POWERPC | MASK_NEW_MNEMONICS | MASK_ALTIVEC)
 
 #undef  SUBSUBTARGET_OVERRIDE_OPTIONS
 #define SUBSUBTARGET_OVERRIDE_OPTIONS rs6000_altivec_abi = 1

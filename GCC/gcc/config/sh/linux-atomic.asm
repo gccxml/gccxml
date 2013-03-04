@@ -28,70 +28,70 @@
 !! Linux kernel for SH3/4 has implemented the support for software
 !! atomic sequences.
 
-#define FUNC(X)                .type X,@function
-#define HIDDEN_FUNC(X)        FUNC(X); .hidden X
-#define ENDFUNC0(X)        .Lfe_##X: .size X,.Lfe_##X-X
-#define ENDFUNC(X)        ENDFUNC0(X)
+#define FUNC(X)		.type X,@function
+#define HIDDEN_FUNC(X)	FUNC(X); .hidden X
+#define ENDFUNC0(X)	.Lfe_##X: .size X,.Lfe_##X-X
+#define ENDFUNC(X)	ENDFUNC0(X)
 
 #if ! __SH5__
 
 #define ATOMIC_TEST_AND_SET(N,T) \
-        .global        __sync_lock_test_and_set_##N; \
-        HIDDEN_FUNC(__sync_lock_test_and_set_##N); \
-        .align        2; \
+	.global	__sync_lock_test_and_set_##N; \
+	HIDDEN_FUNC(__sync_lock_test_and_set_##N); \
+	.align	2; \
 __sync_lock_test_and_set_##N:; \
-        mova        1f, r0; \
-        nop; \
-        mov        r15, r1; \
-        mov        #(0f-1f), r15; \
-0:        mov.##T        @r4, r2; \
-        mov.##T        r5, @r4; \
-1:        mov        r1, r15; \
-        rts; \
-         mov        r2, r0; \
-        ENDFUNC(__sync_lock_test_and_set_##N)
+	mova	1f, r0; \
+	nop; \
+	mov	r15, r1; \
+	mov	#(0f-1f), r15; \
+0:	mov.##T	@r4, r2; \
+	mov.##T	r5, @r4; \
+1:	mov	r1, r15; \
+	rts; \
+	 mov	r2, r0; \
+	ENDFUNC(__sync_lock_test_and_set_##N)
 
 ATOMIC_TEST_AND_SET (1,b)
 ATOMIC_TEST_AND_SET (2,w)
 ATOMIC_TEST_AND_SET (4,l)
 
 #define ATOMIC_COMPARE_AND_SWAP(N,T) \
-        .global        __sync_compare_and_swap_##N; \
-        HIDDEN_FUNC(__sync_compare_and_swap_##N); \
-        .align        2; \
+	.global	__sync_compare_and_swap_##N; \
+	HIDDEN_FUNC(__sync_compare_and_swap_##N); \
+	.align	2; \
 __sync_compare_and_swap_##N:; \
-        mova        1f, r0; \
-        nop; \
-        mov        r15, r1; \
-        mov        #(0f-1f), r15; \
-0:        mov.##T        @r4, r2; \
-        cmp/eq        r2, r5; \
-        bf        1f; \
-        mov.##T        r6, @r4; \
-1:        mov        r1, r15; \
-        rts; \
-         mov        r2, r0; \
-        ENDFUNC(__sync_compare_and_swap_##N)
+	mova	1f, r0; \
+	nop; \
+	mov	r15, r1; \
+	mov	#(0f-1f), r15; \
+0:	mov.##T	@r4, r2; \
+	cmp/eq	r2, r5; \
+	bf	1f; \
+	mov.##T	r6, @r4; \
+1:	mov	r1, r15; \
+	rts; \
+	 mov	r2, r0; \
+	ENDFUNC(__sync_compare_and_swap_##N)
 
 ATOMIC_COMPARE_AND_SWAP (1,b)
 ATOMIC_COMPARE_AND_SWAP (2,w)
 ATOMIC_COMPARE_AND_SWAP (4,l)
 
 #define ATOMIC_FETCH_AND_OP(OP,N,T) \
-        .global        __sync_fetch_and_##OP##_##N; \
-        HIDDEN_FUNC(__sync_fetch_and_##OP##_##N); \
-        .align        2; \
+	.global	__sync_fetch_and_##OP##_##N; \
+	HIDDEN_FUNC(__sync_fetch_and_##OP##_##N); \
+	.align	2; \
 __sync_fetch_and_##OP##_##N:; \
-        mova        1f, r0; \
-        mov        r15, r1; \
-        mov        #(0f-1f), r15; \
-0:        mov.##T        @r4, r2; \
-        OP        r2, r5; \
-        mov.##T        r5, @r4; \
-1:        mov        r1, r15; \
-        rts; \
-         mov        r2, r0; \
-        ENDFUNC(__sync_fetch_and_##OP##_##N)
+	mova	1f, r0; \
+	mov	r15, r1; \
+	mov	#(0f-1f), r15; \
+0:	mov.##T	@r4, r2; \
+	OP	r2, r5; \
+	mov.##T	r5, @r4; \
+1:	mov	r1, r15; \
+	rts; \
+	 mov	r2, r0; \
+	ENDFUNC(__sync_fetch_and_##OP##_##N)
 
 ATOMIC_FETCH_AND_OP(add,1,b)
 ATOMIC_FETCH_AND_OP(add,2,w)
@@ -110,22 +110,22 @@ ATOMIC_FETCH_AND_OP(xor,2,w)
 ATOMIC_FETCH_AND_OP(xor,4,l)
 
 #define ATOMIC_FETCH_AND_COMBOP(OP,OP0,OP1,N,T) \
-        .global        __sync_fetch_and_##OP##_##N; \
-        HIDDEN_FUNC(__sync_fetch_and_##OP##_##N); \
-        .align        2; \
+	.global	__sync_fetch_and_##OP##_##N; \
+	HIDDEN_FUNC(__sync_fetch_and_##OP##_##N); \
+	.align	2; \
 __sync_fetch_and_##OP##_##N:; \
-        mova        1f, r0; \
-        nop; \
-        mov        r15, r1; \
-        mov        #(0f-1f), r15; \
-0:        mov.##T        @r4, r2; \
-        OP0        r2, r5; \
-        OP1        r5, r5; \
-        mov.##T        r5, @r4; \
-1:        mov        r1, r15; \
-        rts; \
-         mov        r2, r0; \
-        ENDFUNC(__sync_fetch_and_##OP##_##N)
+	mova	1f, r0; \
+	nop; \
+	mov	r15, r1; \
+	mov	#(0f-1f), r15; \
+0:	mov.##T	@r4, r2; \
+	OP0	r2, r5; \
+	OP1	r5, r5; \
+	mov.##T	r5, @r4; \
+1:	mov	r1, r15; \
+	rts; \
+	 mov	r2, r0; \
+	ENDFUNC(__sync_fetch_and_##OP##_##N)
 
 ATOMIC_FETCH_AND_COMBOP(sub,sub,neg,1,b)
 ATOMIC_FETCH_AND_COMBOP(sub,sub,neg,2,w)

@@ -50,7 +50,7 @@ ac_help="$ac_help
   --enable-serial-[{host,target,build}-]configure
                           Force sequential configuration of
                           sub-packages for the host, target or build
-                          machine, or all sub-packages"
+			  machine, or all sub-packages"
 ac_help="$ac_help
   --with-build-time-tools=path
                           use given path to find target tools during the build"
@@ -63,11 +63,11 @@ ac_help="$ac_help
 ac_help="$ac_help
   --enable-werror         enable -Werror in bootstrap stage2 and later"
 ac_help="$ac_help
-  --with-datarootdir        Use datarootdir as the data root directory."
+  --with-datarootdir	Use datarootdir as the data root directory."
 ac_help="$ac_help
-  --with-docdir        Install documentation in this directory."
+  --with-docdir	Install documentation in this directory."
 ac_help="$ac_help
-  --with-htmldir        Install html in this directory."
+  --with-htmldir	Install html in this directory."
 
 # Initialize some variables set by options.
 # The variables have the same names as the options, with
@@ -485,7 +485,7 @@ do
   | --no-cr | --no-c) ;;
   -no-recursion | --no-recursion | --no-recursio | --no-recursi \
   | --no-recurs | --no-recur | --no-recu | --no-rec | --no-re | --no-r) ;;
-  *" "*|*"        "*|*[\[\]\~\#\$\^\&\*\(\)\{\}\\\|\;\<\>\?]*)
+  *" "*|*"	"*|*[\[\]\~\#\$\^\&\*\(\)\{\}\\\|\;\<\>\?]*)
   ac_configure_args="$ac_configure_args '$ac_arg'" ;;
   *) ac_configure_args="$ac_configure_args $ac_arg" ;;
   esac
@@ -569,7 +569,7 @@ if (echo "testing\c"; echo 1,2,3) | grep c >/dev/null; then
   # Stardent Vistra SVR4 grep lacks -e, says ghazi@caip.rutgers.edu.
   if (echo -n testing; echo 1,2,3) | sed s/-n/xn/ | grep xn >/dev/null; then
     ac_n= ac_c='
-' ac_t='        '
+' ac_t='	'
   else
     ac_n=-n ac_c= ac_t=
   fi
@@ -725,7 +725,7 @@ if test -z "$INSTALL"; then
 if eval "test \"`echo '$''{'ac_cv_path_install'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
-    IFS="${IFS=         }"; ac_save_IFS="$IFS"; IFS=":"
+    IFS="${IFS= 	}"; ac_save_IFS="$IFS"; IFS=":"
   for ac_dir in $PATH; do
     # Account for people who put trailing slashes in PATH elements.
     case "$ac_dir/" in
@@ -736,15 +736,15 @@ else
       # by default.
       for ac_prog in ginstall scoinst install; do
         if test -f $ac_dir/$ac_prog; then
-          if test $ac_prog = install &&
+	  if test $ac_prog = install &&
             grep dspmsg $ac_dir/$ac_prog >/dev/null 2>&1; then
-            # AIX install.  It has an incompatible calling convention.
-            :
-          else
-            ac_cv_path_install="$ac_dir/$ac_prog -c"
-            break 2
-          fi
-        fi
+	    # AIX install.  It has an incompatible calling convention.
+	    :
+	  else
+	    ac_cv_path_install="$ac_dir/$ac_prog -c"
+	    break 2
+	  fi
+	fi
       done
       ;;
     esac
@@ -828,22 +828,22 @@ case "${OSTYPE}" in
   if test x${CONFIG_SHELL} = x ; then
     if test ! -f /bin/sh ; then
       if test x${SHELL} != x && test -f ${SHELL} ; then
-        CONFIG_SHELL=${SHELL}
-        export CONFIG_SHELL
+	CONFIG_SHELL=${SHELL}
+	export CONFIG_SHELL
       else
-        for prog in sh sh.exe bash bash.exe; do
-          IFS="${IFS=        }"; save_ifs="$IFS"; IFS="${IFS}:"
-          for dir in $PATH; do
-            test -z "$dir" && dir=.
-            if test -f $dir/$prog; then
-              CONFIG_SHELL=$dir/$prog
-              export CONFIG_SHELL
-              break
-            fi
-          done
-          IFS="$save_ifs"
-          test -n "${CONFIG_SHELL}" && break
-        done
+	for prog in sh sh.exe bash bash.exe; do
+	  IFS="${IFS=	}"; save_ifs="$IFS"; IFS="${IFS}:"
+	  for dir in $PATH; do
+	    test -z "$dir" && dir=.
+	    if test -f $dir/$prog; then
+	      CONFIG_SHELL=$dir/$prog
+	      export CONFIG_SHELL
+	      break
+	    fi
+	  done
+	  IFS="$save_ifs"
+	  test -n "${CONFIG_SHELL}" && break
+	done
       fi
     fi
   fi
@@ -922,25 +922,25 @@ host_tools="texinfo byacc flex bison binutils gas ld fixincludes gcc sid sim gdb
 
 # libgcj represents the runtime libraries only used by gcj.
 libgcj="target-libffi \
-        target-zlib \
-        target-qthreads \
-        target-libjava"
+	target-zlib \
+	target-qthreads \
+	target-libjava"
 
 # these libraries are built for the target environment, and are built after
 # the host libraries and the host tools (which may be a cross compiler)
 #
 target_libraries="target-libiberty \
-                target-libgloss \
-                target-newlib \
-                target-libstdc++-v3 \
-                target-libmudflap \
-                target-libssp \
-                target-libgfortran \
-                target-boehm-gc \
-                ${libgcj} \
-                target-libobjc \
-                target-libada \
-                target-libgomp"
+		target-libgloss \
+		target-newlib \
+		target-libstdc++-v3 \
+		target-libmudflap \
+		target-libssp \
+		target-libgfortran \
+		target-boehm-gc \
+		${libgcj} \
+		target-libobjc \
+		target-libada \
+		target-libgomp"
 
 # these tools are built using the target libraries, and are intended to
 # run only in the target environment
@@ -975,7 +975,7 @@ if test x"${host}" = x"${target}" ; then
   is_cross_compiler=no
 else
   is_cross_compiler=yes
-fi        
+fi	
 
 # Find the build and target subdir names.
  case ${build_alias} in
@@ -1174,14 +1174,14 @@ if test x$enable_libmudflap = x ; then
     case "${target}" in
     *-*-linux* | *-*-gnu* | *-*-k*bsd*-gnu)
         # Enable libmudflap by default in GNU and friends.
-        ;;
+	;;
     *-*-freebsd*)
         # Enable libmudflap by default in FreeBSD.
-        ;;
+	;;
     *)
         # Disable it by default everywhere else.
-        noconfigdirs="$noconfigdirs target-libmudflap"
-        ;;
+	noconfigdirs="$noconfigdirs target-libmudflap"
+	;;
     esac
 fi
 
@@ -1190,16 +1190,16 @@ if test x$enable_libgomp = x ; then
     # Enable libgomp by default on hosted POSIX systems.
     case "${target}" in
     *-*-linux* | *-*-gnu* | *-*-k*bsd*-gnu)
-        ;;
+	;;
     *-*-netbsd* | *-*-freebsd* | *-*-openbsd*)
-        ;;
+	;;
     *-*-solaris2* | *-*-sysv4* | *-*-irix6* | *-*-osf* | *-*-hpux11*)
-        ;;
+	;;
     *-*-darwin* | *-*-aix*)
-        ;;
+	;;
     *)
-        noconfigdirs="$noconfigdirs target-libgomp"
-        ;;
+	noconfigdirs="$noconfigdirs target-libgomp"
+	;;
     esac
 fi
 
@@ -1223,7 +1223,7 @@ case "${target}" in
   *-*-freebsd*)
     noconfigdirs="$noconfigdirs target-newlib target-libgloss"
     if test "x$with_gmp" = x && test "x$with_gmp_dir" = x \
-        && test -f /usr/local/include/gmp.h; then
+	&& test -f /usr/local/include/gmp.h; then
       with_gmp=/usr/local
     fi
 
@@ -1232,8 +1232,8 @@ case "${target}" in
       i*86-*-*) ;;
       alpha*-*-*) ;;
       *)
-        noconfigdirs="$noconfigdirs ${libgcj}"
-        ;;
+	noconfigdirs="$noconfigdirs ${libgcj}"
+	;;
     esac
     ;;
   *-*-kaos*)
@@ -1252,8 +1252,8 @@ case "${target}" in
       i*86-*-netbsdelf*) ;;
       arm*-*-netbsdelf*) ;;
       *)
-        noconfigdirs="$noconfigdirs ${libgcj}"
-        ;;
+	noconfigdirs="$noconfigdirs ${libgcj}"
+	;;
     esac
     ;;
   *-*-netware*)
@@ -1307,7 +1307,7 @@ case "${target}" in
     case "${host}" in
       *-*-cygwin*) ;; # keep gdb and readline
       *) noconfigdirs="$noconfigdirs gdb readline"
-         ;;
+	 ;;
     esac
     ;;
   arc-*-*)
@@ -1362,16 +1362,16 @@ case "${target}" in
     unsupported_languages="$unsupported_languages java"
     case "${target}" in
       *-*-aout)
-        unsupported_languages="$unsupported_languages fortran"
-        noconfigdirs="$noconfigdirs target-libffi target-boehm-gc";;
+	unsupported_languages="$unsupported_languages fortran"
+	noconfigdirs="$noconfigdirs target-libffi target-boehm-gc";;
       *-*-elf)
-        unsupported_languages="$unsupported_languages fortran"
-        noconfigdirs="$noconfigdirs target-boehm-gc";;
+	unsupported_languages="$unsupported_languages fortran"
+	noconfigdirs="$noconfigdirs target-boehm-gc";;
       *-*-linux*)
-        noconfigdirs="$noconfigdirs target-newlib target-libgloss";;
+	noconfigdirs="$noconfigdirs target-newlib target-libgloss";;
       *)
-        unsupported_languages="$unsupported_languages fortran"
-        noconfigdirs="$noconfigdirs ${libgcj} target-newlib target-libgloss";;
+	unsupported_languages="$unsupported_languages fortran"
+	noconfigdirs="$noconfigdirs ${libgcj} target-newlib target-libgloss";;
     esac
     ;;
   crx-*-*)
@@ -1440,7 +1440,7 @@ case "${target}" in
     # not build java stuff by default.
     case "${target}" in
       *-*-*libc1*)
-        noconfigdirs="$noconfigdirs ${libgcj}";;
+	noconfigdirs="$noconfigdirs ${libgcj}";;
     esac
 
     # This section makes it possible to build newlib natively on linux.
@@ -1824,7 +1824,7 @@ fi
 # of CC from the fragment.
 # Actually, use the 'pre-extracted' version above.
 if test -z "${CC}" && test "${build}" = "${host}" ; then
-  IFS="${IFS=         }"; save_ifs="$IFS"; IFS="${IFS}:"
+  IFS="${IFS= 	}"; save_ifs="$IFS"; IFS="${IFS}:"
   found=
   for dir in $PATH; do
     test -z "$dir" && dir=.
@@ -1869,7 +1869,7 @@ else
   if test -n "$CC"; then
   ac_cv_prog_CC="$CC" # Let the user override the test.
 else
-  IFS="${IFS=         }"; ac_save_ifs="$IFS"; IFS=":"
+  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS=":"
   ac_dummy="$PATH"
   for ac_dir in $ac_dummy; do
     test -z "$ac_dir" && ac_dir=.
@@ -1899,7 +1899,7 @@ else
   if test -n "$CC"; then
   ac_cv_prog_CC="$CC" # Let the user override the test.
 else
-  IFS="${IFS=         }"; ac_save_ifs="$IFS"; IFS=":"
+  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS=":"
   ac_prog_rejected=no
   ac_dummy="$PATH"
   for ac_dir in $ac_dummy; do
@@ -1907,7 +1907,7 @@ else
     if test -f $ac_dir/$ac_word; then
       if test "$ac_dir/$ac_word" = "/usr/ucb/cc"; then
         ac_prog_rejected=yes
-        continue
+	continue
       fi
       ac_cv_prog_CC="cc"
       break
@@ -1950,7 +1950,7 @@ else
   if test -n "$CC"; then
   ac_cv_prog_CC="$CC" # Let the user override the test.
 else
-  IFS="${IFS=         }"; ac_save_ifs="$IFS"; IFS=":"
+  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS=":"
   ac_dummy="$PATH"
   for ac_dir in $ac_dummy; do
     test -z "$ac_dir" && ac_dir=.
@@ -2089,9 +2089,9 @@ fi
     if test "$GCC" = yes; then
       case $build in
       *-*-mingw*)
-        gcc_prog_ld=`$CC -print-prog-name=ld 2>&1 | tr -d '\015'` ;;
+	gcc_prog_ld=`$CC -print-prog-name=ld 2>&1 | tr -d '\015'` ;;
       *)
-        gcc_prog_ld=`$CC -print-prog-name=ld 2>&1` ;;
+	gcc_prog_ld=`$CC -print-prog-name=ld 2>&1` ;;
       esac
       case $gcc_prog_ld in
       # Accept absolute paths.
@@ -2124,7 +2124,7 @@ else
   if test -n "$GNATBIND"; then
   ac_cv_prog_GNATBIND="$GNATBIND" # Let the user override the test.
 else
-  IFS="${IFS=         }"; ac_save_ifs="$IFS"; IFS=":"
+  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS=":"
   ac_dummy="$PATH"
   for ac_dir in $ac_dummy; do
     test -z "$ac_dir" && ac_dir=.
@@ -2156,7 +2156,7 @@ else
   if test -n "$GNATBIND"; then
   ac_cv_prog_GNATBIND="$GNATBIND" # Let the user override the test.
 else
-  IFS="${IFS=         }"; ac_save_ifs="$IFS"; IFS=":"
+  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS=":"
   ac_dummy="$PATH"
   for ac_dir in $ac_dummy; do
     test -z "$ac_dir" && ac_dir=.
@@ -2441,7 +2441,7 @@ if test -d ${srcdir}/gcc; then
       exit 1
     fi
   fi
-  enable_languages=`echo "${enable_languages}" | sed -e 's/[         ,][         ,]*/,/g' -e 's/,$//'`
+  enable_languages=`echo "${enable_languages}" | sed -e 's/[ 	,][ 	,]*/,/g' -e 's/,$//'`
 
   # 'f95' is the old name for the 'fortran' language. We issue a warning
   # and make the substitution.
@@ -2468,13 +2468,13 @@ if test -d ${srcdir}/gcc; then
         . ${lang_frag}
         for other in ${lang_requires} ; do
           case ,${enable_languages}, in
-            *,$other,*) ;;
-            *,all,*) ;;
-            *,$language,*)
-              echo " \`$other' language required by \`$language'; enabling" 1>&2
-              enable_languages="${enable_languages},${other}"
-              ;;
-          esac
+	    *,$other,*) ;;
+	    *,all,*) ;;
+	    *,$language,*)
+	      echo " \`$other' language required by \`$language'; enabling" 1>&2
+	      enable_languages="${enable_languages},${other}"
+	      ;;
+	  esac
         done
         ;;
     esac
@@ -2531,9 +2531,9 @@ if test -d ${srcdir}/gcc; then
         esac
 
         # Disable languages that need other directories if these aren't available.
-        for i in $subdir_requires; do
-          test -f "$srcdir/gcc/$i/config-lang.in" && continue
-          case ,${enable_languages}, in
+	for i in $subdir_requires; do
+	  test -f "$srcdir/gcc/$i/config-lang.in" && continue
+	  case ,${enable_languages}, in
             *,${language},*)
               # Specifically requested language; tell them.
               { echo "configure: error: The gcc/$i directory contains parts of $language but is missing" 1>&2; exit 1; }
@@ -2543,7 +2543,7 @@ if test -d ${srcdir}/gcc; then
               add_this_lang=no
               ;;
           esac
-        done
+	done
 
         # Disable languages that need GMP if it isn't available.
         case ,${enable_languages},:${have_gmp}:${need_gmp} in
@@ -2557,28 +2557,28 @@ if test -d ${srcdir}/gcc; then
             ;;
         esac
 
-        # Disable a language that is unsupported by the target.
-        case " $unsupported_languages " in
-          *" $language "*)
-            add_this_lang=no
-            ;;
-        esac
+	# Disable a language that is unsupported by the target.
+	case " $unsupported_languages " in
+	  *" $language "*)
+	    add_this_lang=no
+	    ;;
+	esac
 
-        case $add_this_lang in
-          no)
+	case $add_this_lang in
+	  no)
             # Remove language-dependent dirs.
             eval noconfigdirs='"$noconfigdirs "'\"$target_libs $lang_dirs\"
-            ;;
+	    ;;
           *)
-            new_enable_languages="$new_enable_languages,$language"
-            missing_languages=`echo "$missing_languages" | sed "s/,$language,/,/"`
-            case ${boot_language} in
-              yes)
-                # Add to (comma-separated) list of stage 1 languages.
-                stage1_languages="${stage1_languages},${language}"
-                ;;
-            esac
-            ;;
+	    new_enable_languages="$new_enable_languages,$language"
+	    missing_languages=`echo "$missing_languages" | sed "s/,$language,/,/"`
+	    case ${boot_language} in
+	      yes)
+		# Add to (comma-separated) list of stage 1 languages.
+		stage1_languages="${stage1_languages},${language}"
+		;;
+	    esac
+	    ;;
         esac
         ;;
     esac
@@ -2642,9 +2642,9 @@ for dir in . $skipdirs $noconfigdirs ; do
     configdirs=`echo " ${configdirs} " | sed -e "s/ ${dir} / /"`
     if test -r $srcdir/$dirname/configure ; then
       if echo " ${skipdirs} " | grep " ${dir} " >/dev/null 2>&1; then
-        true
+	true
       else
-        notsupp="$notsupp $dir"
+	notsupp="$notsupp $dir"
       fi
     fi
   fi
@@ -2652,9 +2652,9 @@ for dir in . $skipdirs $noconfigdirs ; do
     build_configdirs=`echo " ${build_configdirs} " | sed -e "s/ ${dir} / /"`
     if test -r $srcdir/$dirname/configure ; then
       if echo " ${skipdirs} " | grep " ${dir} " >/dev/null 2>&1; then
-        true
+	true
       else
-        notsupp="$notsupp $dir"
+	notsupp="$notsupp $dir"
       fi
     fi
   fi
@@ -2662,9 +2662,9 @@ for dir in . $skipdirs $noconfigdirs ; do
     target_configdirs=`echo " ${target_configdirs} " | sed -e "s/ ${dir} / /"`
     if test -r $srcdir/$dirname/configure ; then
       if echo " ${skipdirs} " | grep " ${dir} " >/dev/null 2>&1; then
-        true
+	true
       else
-        notsupp="$notsupp $dir"
+	notsupp="$notsupp $dir"
       fi
     fi
   fi
@@ -2677,8 +2677,8 @@ if test -n "${target_configdirs}" ; then
   for i in `echo ${target_configdirs} | sed -e s/target-//g` ; do
     if test "$i" != "libiberty" ; then
       if test -r $srcdir/$i/configure ; then
-        others=yes;
-        break;
+	others=yes;
+	break;
       fi
     fi
   done
@@ -2729,14 +2729,14 @@ if test -n "${notsupp}" && test -z "${norecursion}" ; then
   if test -n "$appdirs" ; then
     for dir in $appdirs ; do
       if test -r $dir/Makefile.in ; then
-        if echo " ${configdirs} " | grep " ${dir} " >/dev/null 2>&1; then
-          appdirs=""
-          break
-        fi
-        if echo " ${target_configdirs} " | grep " target-${dir} " >/dev/null 2>&1; then
-          appdirs=""
-          break
-        fi
+	if echo " ${configdirs} " | grep " ${dir} " >/dev/null 2>&1; then
+	  appdirs=""
+	  break
+	fi
+	if echo " ${target_configdirs} " | grep " target-${dir} " >/dev/null 2>&1; then
+	  appdirs=""
+	  break
+	fi
       fi
     done
     if test -n "$appdirs" ; then
@@ -2992,7 +2992,7 @@ fi
 # hpux11 in 64bit mode has libraries in a weird place.  Arrange to find
 # them automatically.
 case "${host}" in
-  hppa*64*-*-hpux11*)        
+  hppa*64*-*-hpux11*)	
     extra_host_args="$extra_host_args -x-libraries=/usr/lib/pa20_64 -x-includes=/usr/X11R6/include"
     ;;
 esac
@@ -3190,8 +3190,8 @@ for module in ${configdirs} ; do
   if test -z "${no_recursion}"; then
     for file in stage*-${module}/Makefile ${module}/Makefile; do
       if test -f ${file}; then
-        echo 1>&2 "*** removing ${file} to force reconfigure"
-        rm -f ${file}
+	echo 1>&2 "*** removing ${file} to force reconfigure"
+	rm -f ${file}
       fi
     done
   fi
@@ -3516,7 +3516,7 @@ else
   if test -n "$YACC"; then
   ac_cv_prog_YACC="$YACC" # Let the user override the test.
 else
-  IFS="${IFS=         }"; ac_save_ifs="$IFS"; IFS=":"
+  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS=":"
   ac_dummy="$PATH"
   for ac_dir in $ac_dummy; do
     test -z "$ac_dir" && ac_dir=.
@@ -3556,7 +3556,7 @@ else
   if test -n "$BISON"; then
   ac_cv_prog_BISON="$BISON" # Let the user override the test.
 else
-  IFS="${IFS=         }"; ac_save_ifs="$IFS"; IFS=":"
+  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS=":"
   ac_dummy="$PATH"
   for ac_dir in $ac_dummy; do
     test -z "$ac_dir" && ac_dir=.
@@ -3595,7 +3595,7 @@ else
   if test -n "$M4"; then
   ac_cv_prog_M4="$M4" # Let the user override the test.
 else
-  IFS="${IFS=         }"; ac_save_ifs="$IFS"; IFS=":"
+  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS=":"
   ac_dummy="$PATH"
   for ac_dir in $ac_dummy; do
     test -z "$ac_dir" && ac_dir=.
@@ -3634,7 +3634,7 @@ else
   if test -n "$LEX"; then
   ac_cv_prog_LEX="$LEX" # Let the user override the test.
 else
-  IFS="${IFS=         }"; ac_save_ifs="$IFS"; IFS=":"
+  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS=":"
   ac_dummy="$PATH"
   for ac_dir in $ac_dummy; do
     test -z "$ac_dir" && ac_dir=.
@@ -3674,7 +3674,7 @@ else
   if test -n "$FLEX"; then
   ac_cv_prog_FLEX="$FLEX" # Let the user override the test.
 else
-  IFS="${IFS=         }"; ac_save_ifs="$IFS"; IFS=":"
+  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS=":"
   ac_dummy="$PATH"
   for ac_dir in $ac_dummy; do
     test -z "$ac_dir" && ac_dir=.
@@ -3713,7 +3713,7 @@ else
   if test -n "$MAKEINFO"; then
   ac_cv_prog_MAKEINFO="$MAKEINFO" # Let the user override the test.
 else
-  IFS="${IFS=         }"; ac_save_ifs="$IFS"; IFS=":"
+  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS=":"
   ac_dummy="$PATH"
   for ac_dir in $ac_dummy; do
     test -z "$ac_dir" && ac_dir=.
@@ -3766,7 +3766,7 @@ else
   if test -n "$EXPECT"; then
   ac_cv_prog_EXPECT="$EXPECT" # Let the user override the test.
 else
-  IFS="${IFS=         }"; ac_save_ifs="$IFS"; IFS=":"
+  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS=":"
   ac_dummy="$PATH"
   for ac_dir in $ac_dummy; do
     test -z "$ac_dir" && ac_dir=.
@@ -3807,7 +3807,7 @@ else
   if test -n "$RUNTEST"; then
   ac_cv_prog_RUNTEST="$RUNTEST" # Let the user override the test.
 else
-  IFS="${IFS=         }"; ac_save_ifs="$IFS"; IFS=":"
+  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS=":"
   ac_dummy="$PATH"
   for ac_dir in $ac_dummy; do
     test -z "$ac_dir" && ac_dir=.
@@ -3855,7 +3855,7 @@ else
   if test -n "$AR"; then
   ac_cv_prog_AR="$AR" # Let the user override the test.
 else
-  IFS="${IFS=         }"; ac_save_ifs="$IFS"; IFS=":"
+  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS=":"
   ac_dummy="$PATH"
   for ac_dir in $ac_dummy; do
     test -z "$ac_dir" && ac_dir=.
@@ -3886,7 +3886,7 @@ else
   if test -n "$AR"; then
   ac_cv_prog_AR="$AR" # Let the user override the test.
 else
-  IFS="${IFS=         }"; ac_save_ifs="$IFS"; IFS=":"
+  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS=":"
   ac_dummy="$PATH"
   for ac_dir in $ac_dummy; do
     test -z "$ac_dir" && ac_dir=.
@@ -3930,7 +3930,7 @@ else
   if test -n "$AS"; then
   ac_cv_prog_AS="$AS" # Let the user override the test.
 else
-  IFS="${IFS=         }"; ac_save_ifs="$IFS"; IFS=":"
+  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS=":"
   ac_dummy="$PATH"
   for ac_dir in $ac_dummy; do
     test -z "$ac_dir" && ac_dir=.
@@ -3961,7 +3961,7 @@ else
   if test -n "$AS"; then
   ac_cv_prog_AS="$AS" # Let the user override the test.
 else
-  IFS="${IFS=         }"; ac_save_ifs="$IFS"; IFS=":"
+  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS=":"
   ac_dummy="$PATH"
   for ac_dir in $ac_dummy; do
     test -z "$ac_dir" && ac_dir=.
@@ -4005,7 +4005,7 @@ else
   if test -n "$DLLTOOL"; then
   ac_cv_prog_DLLTOOL="$DLLTOOL" # Let the user override the test.
 else
-  IFS="${IFS=         }"; ac_save_ifs="$IFS"; IFS=":"
+  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS=":"
   ac_dummy="$PATH"
   for ac_dir in $ac_dummy; do
     test -z "$ac_dir" && ac_dir=.
@@ -4036,7 +4036,7 @@ else
   if test -n "$DLLTOOL"; then
   ac_cv_prog_DLLTOOL="$DLLTOOL" # Let the user override the test.
 else
-  IFS="${IFS=         }"; ac_save_ifs="$IFS"; IFS=":"
+  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS=":"
   ac_dummy="$PATH"
   for ac_dir in $ac_dummy; do
     test -z "$ac_dir" && ac_dir=.
@@ -4080,7 +4080,7 @@ else
   if test -n "$LD"; then
   ac_cv_prog_LD="$LD" # Let the user override the test.
 else
-  IFS="${IFS=         }"; ac_save_ifs="$IFS"; IFS=":"
+  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS=":"
   ac_dummy="$PATH"
   for ac_dir in $ac_dummy; do
     test -z "$ac_dir" && ac_dir=.
@@ -4111,7 +4111,7 @@ else
   if test -n "$LD"; then
   ac_cv_prog_LD="$LD" # Let the user override the test.
 else
-  IFS="${IFS=         }"; ac_save_ifs="$IFS"; IFS=":"
+  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS=":"
   ac_dummy="$PATH"
   for ac_dir in $ac_dummy; do
     test -z "$ac_dir" && ac_dir=.
@@ -4155,7 +4155,7 @@ else
   if test -n "$LIPO"; then
   ac_cv_prog_LIPO="$LIPO" # Let the user override the test.
 else
-  IFS="${IFS=         }"; ac_save_ifs="$IFS"; IFS=":"
+  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS=":"
   ac_dummy="$PATH"
   for ac_dir in $ac_dummy; do
     test -z "$ac_dir" && ac_dir=.
@@ -4186,7 +4186,7 @@ else
   if test -n "$LIPO"; then
   ac_cv_prog_LIPO="$LIPO" # Let the user override the test.
 else
-  IFS="${IFS=         }"; ac_save_ifs="$IFS"; IFS=":"
+  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS=":"
   ac_dummy="$PATH"
   for ac_dir in $ac_dummy; do
     test -z "$ac_dir" && ac_dir=.
@@ -4230,7 +4230,7 @@ else
   if test -n "$NM"; then
   ac_cv_prog_NM="$NM" # Let the user override the test.
 else
-  IFS="${IFS=         }"; ac_save_ifs="$IFS"; IFS=":"
+  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS=":"
   ac_dummy="$PATH"
   for ac_dir in $ac_dummy; do
     test -z "$ac_dir" && ac_dir=.
@@ -4261,7 +4261,7 @@ else
   if test -n "$NM"; then
   ac_cv_prog_NM="$NM" # Let the user override the test.
 else
-  IFS="${IFS=         }"; ac_save_ifs="$IFS"; IFS=":"
+  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS=":"
   ac_dummy="$PATH"
   for ac_dir in $ac_dummy; do
     test -z "$ac_dir" && ac_dir=.
@@ -4305,7 +4305,7 @@ else
   if test -n "$RANLIB"; then
   ac_cv_prog_RANLIB="$RANLIB" # Let the user override the test.
 else
-  IFS="${IFS=         }"; ac_save_ifs="$IFS"; IFS=":"
+  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS=":"
   ac_dummy="$PATH"
   for ac_dir in $ac_dummy; do
     test -z "$ac_dir" && ac_dir=.
@@ -4336,7 +4336,7 @@ else
   if test -n "$RANLIB"; then
   ac_cv_prog_RANLIB="$RANLIB" # Let the user override the test.
 else
-  IFS="${IFS=         }"; ac_save_ifs="$IFS"; IFS=":"
+  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS=":"
   ac_dummy="$PATH"
   for ac_dir in $ac_dummy; do
     test -z "$ac_dir" && ac_dir=.
@@ -4375,7 +4375,7 @@ else
   if test -n "$STRIP"; then
   ac_cv_prog_STRIP="$STRIP" # Let the user override the test.
 else
-  IFS="${IFS=         }"; ac_save_ifs="$IFS"; IFS=":"
+  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS=":"
   ac_dummy="$PATH"
   for ac_dir in $ac_dummy; do
     test -z "$ac_dir" && ac_dir=.
@@ -4406,7 +4406,7 @@ else
   if test -n "$STRIP"; then
   ac_cv_prog_STRIP="$STRIP" # Let the user override the test.
 else
-  IFS="${IFS=         }"; ac_save_ifs="$IFS"; IFS=":"
+  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS=":"
   ac_dummy="$PATH"
   for ac_dir in $ac_dummy; do
     test -z "$ac_dir" && ac_dir=.
@@ -4445,7 +4445,7 @@ else
   if test -n "$WINDRES"; then
   ac_cv_prog_WINDRES="$WINDRES" # Let the user override the test.
 else
-  IFS="${IFS=         }"; ac_save_ifs="$IFS"; IFS=":"
+  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS=":"
   ac_dummy="$PATH"
   for ac_dir in $ac_dummy; do
     test -z "$ac_dir" && ac_dir=.
@@ -4476,7 +4476,7 @@ else
   if test -n "$WINDRES"; then
   ac_cv_prog_WINDRES="$WINDRES" # Let the user override the test.
 else
-  IFS="${IFS=         }"; ac_save_ifs="$IFS"; IFS=":"
+  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS=":"
   ac_dummy="$PATH"
   for ac_dir in $ac_dummy; do
     test -z "$ac_dir" && ac_dir=.
@@ -4520,7 +4520,7 @@ else
   if test -n "$OBJCOPY"; then
   ac_cv_prog_OBJCOPY="$OBJCOPY" # Let the user override the test.
 else
-  IFS="${IFS=         }"; ac_save_ifs="$IFS"; IFS=":"
+  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS=":"
   ac_dummy="$PATH"
   for ac_dir in $ac_dummy; do
     test -z "$ac_dir" && ac_dir=.
@@ -4551,7 +4551,7 @@ else
   if test -n "$OBJCOPY"; then
   ac_cv_prog_OBJCOPY="$OBJCOPY" # Let the user override the test.
 else
-  IFS="${IFS=         }"; ac_save_ifs="$IFS"; IFS=":"
+  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS=":"
   ac_dummy="$PATH"
   for ac_dir in $ac_dummy; do
     test -z "$ac_dir" && ac_dir=.
@@ -4595,7 +4595,7 @@ else
   if test -n "$OBJDUMP"; then
   ac_cv_prog_OBJDUMP="$OBJDUMP" # Let the user override the test.
 else
-  IFS="${IFS=         }"; ac_save_ifs="$IFS"; IFS=":"
+  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS=":"
   ac_dummy="$PATH"
   for ac_dir in $ac_dummy; do
     test -z "$ac_dir" && ac_dir=.
@@ -4626,7 +4626,7 @@ else
   if test -n "$OBJDUMP"; then
   ac_cv_prog_OBJDUMP="$OBJDUMP" # Let the user override the test.
 else
-  IFS="${IFS=         }"; ac_save_ifs="$IFS"; IFS=":"
+  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS=":"
   ac_dummy="$PATH"
   for ac_dir in $ac_dummy; do
     test -z "$ac_dir" && ac_dir=.
@@ -4707,7 +4707,7 @@ else
   if test -n "$CC_FOR_TARGET"; then
   ac_cv_prog_CC_FOR_TARGET="$CC_FOR_TARGET" # Let the user override the test.
 else
-  IFS="${IFS=         }"; ac_save_ifs="$IFS"; IFS=":"
+  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS=":"
   ac_dummy="$PATH"
   for ac_dir in $ac_dummy; do
     test -z "$ac_dir" && ac_dir=.
@@ -4738,7 +4738,7 @@ else
   if test -n "$CC_FOR_TARGET"; then
   ac_cv_prog_CC_FOR_TARGET="$CC_FOR_TARGET" # Let the user override the test.
 else
-  IFS="${IFS=         }"; ac_save_ifs="$IFS"; IFS=":"
+  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS=":"
   ac_dummy="$PATH"
   for ac_dir in $ac_dummy; do
     test -z "$ac_dir" && ac_dir=.
@@ -4800,7 +4800,7 @@ else
   if test -n "$CXX_FOR_TARGET"; then
   ac_cv_prog_CXX_FOR_TARGET="$CXX_FOR_TARGET" # Let the user override the test.
 else
-  IFS="${IFS=         }"; ac_save_ifs="$IFS"; IFS=":"
+  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS=":"
   ac_dummy="$PATH"
   for ac_dir in $ac_dummy; do
     test -z "$ac_dir" && ac_dir=.
@@ -4831,7 +4831,7 @@ else
   if test -n "$CXX_FOR_TARGET"; then
   ac_cv_prog_CXX_FOR_TARGET="$CXX_FOR_TARGET" # Let the user override the test.
 else
-  IFS="${IFS=         }"; ac_save_ifs="$IFS"; IFS=":"
+  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS=":"
   ac_dummy="$PATH"
   for ac_dir in $ac_dummy; do
     test -z "$ac_dir" && ac_dir=.
@@ -4893,7 +4893,7 @@ else
   if test -n "$GCC_FOR_TARGET"; then
   ac_cv_prog_GCC_FOR_TARGET="$GCC_FOR_TARGET" # Let the user override the test.
 else
-  IFS="${IFS=         }"; ac_save_ifs="$IFS"; IFS=":"
+  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS=":"
   ac_dummy="$PATH"
   for ac_dir in $ac_dummy; do
     test -z "$ac_dir" && ac_dir=.
@@ -4924,7 +4924,7 @@ else
   if test -n "$GCC_FOR_TARGET"; then
   ac_cv_prog_GCC_FOR_TARGET="$GCC_FOR_TARGET" # Let the user override the test.
 else
-  IFS="${IFS=         }"; ac_save_ifs="$IFS"; IFS=":"
+  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS=":"
   ac_dummy="$PATH"
   for ac_dir in $ac_dummy; do
     test -z "$ac_dir" && ac_dir=.
@@ -4981,7 +4981,7 @@ else
   if test -n "$GCJ_FOR_TARGET"; then
   ac_cv_prog_GCJ_FOR_TARGET="$GCJ_FOR_TARGET" # Let the user override the test.
 else
-  IFS="${IFS=         }"; ac_save_ifs="$IFS"; IFS=":"
+  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS=":"
   ac_dummy="$PATH"
   for ac_dir in $ac_dummy; do
     test -z "$ac_dir" && ac_dir=.
@@ -5012,7 +5012,7 @@ else
   if test -n "$GCJ_FOR_TARGET"; then
   ac_cv_prog_GCJ_FOR_TARGET="$GCJ_FOR_TARGET" # Let the user override the test.
 else
-  IFS="${IFS=         }"; ac_save_ifs="$IFS"; IFS=":"
+  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS=":"
   ac_dummy="$PATH"
   for ac_dir in $ac_dummy; do
     test -z "$ac_dir" && ac_dir=.
@@ -5074,7 +5074,7 @@ else
   if test -n "$GFORTRAN_FOR_TARGET"; then
   ac_cv_prog_GFORTRAN_FOR_TARGET="$GFORTRAN_FOR_TARGET" # Let the user override the test.
 else
-  IFS="${IFS=         }"; ac_save_ifs="$IFS"; IFS=":"
+  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS=":"
   ac_dummy="$PATH"
   for ac_dir in $ac_dummy; do
     test -z "$ac_dir" && ac_dir=.
@@ -5105,7 +5105,7 @@ else
   if test -n "$GFORTRAN_FOR_TARGET"; then
   ac_cv_prog_GFORTRAN_FOR_TARGET="$GFORTRAN_FOR_TARGET" # Let the user override the test.
 else
-  IFS="${IFS=         }"; ac_save_ifs="$IFS"; IFS=":"
+  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS=":"
   ac_dummy="$PATH"
   for ac_dir in $ac_dummy; do
     test -z "$ac_dir" && ac_dir=.
@@ -5233,11 +5233,11 @@ else
   /*)
   ac_cv_path_AR_FOR_TARGET="$AR_FOR_TARGET" # Let the user override the test with a path.
   ;;
-  ?:/*)                         
+  ?:/*)			 
   ac_cv_path_AR_FOR_TARGET="$AR_FOR_TARGET" # Let the user override the test with a dos path.
   ;;
   *)
-  IFS="${IFS=         }"; ac_save_ifs="$IFS"; IFS=":"
+  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS=":"
   ac_dummy="$gcc_cv_tool_dirs"
   for ac_dir in $ac_dummy; do 
     test -z "$ac_dir" && ac_dir=.
@@ -5286,7 +5286,7 @@ else
   if test -n "$AR_FOR_TARGET"; then
   ac_cv_prog_AR_FOR_TARGET="$AR_FOR_TARGET" # Let the user override the test.
 else
-  IFS="${IFS=         }"; ac_save_ifs="$IFS"; IFS=":"
+  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS=":"
   ac_dummy="$PATH"
   for ac_dir in $ac_dummy; do
     test -z "$ac_dir" && ac_dir=.
@@ -5317,7 +5317,7 @@ else
   if test -n "$AR_FOR_TARGET"; then
   ac_cv_prog_AR_FOR_TARGET="$AR_FOR_TARGET" # Let the user override the test.
 else
-  IFS="${IFS=         }"; ac_save_ifs="$IFS"; IFS=":"
+  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS=":"
   ac_dummy="$PATH"
   for ac_dir in $ac_dummy; do
     test -z "$ac_dir" && ac_dir=.
@@ -5388,11 +5388,11 @@ else
   /*)
   ac_cv_path_AS_FOR_TARGET="$AS_FOR_TARGET" # Let the user override the test with a path.
   ;;
-  ?:/*)                         
+  ?:/*)			 
   ac_cv_path_AS_FOR_TARGET="$AS_FOR_TARGET" # Let the user override the test with a dos path.
   ;;
   *)
-  IFS="${IFS=         }"; ac_save_ifs="$IFS"; IFS=":"
+  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS=":"
   ac_dummy="$gcc_cv_tool_dirs"
   for ac_dir in $ac_dummy; do 
     test -z "$ac_dir" && ac_dir=.
@@ -5441,7 +5441,7 @@ else
   if test -n "$AS_FOR_TARGET"; then
   ac_cv_prog_AS_FOR_TARGET="$AS_FOR_TARGET" # Let the user override the test.
 else
-  IFS="${IFS=         }"; ac_save_ifs="$IFS"; IFS=":"
+  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS=":"
   ac_dummy="$PATH"
   for ac_dir in $ac_dummy; do
     test -z "$ac_dir" && ac_dir=.
@@ -5472,7 +5472,7 @@ else
   if test -n "$AS_FOR_TARGET"; then
   ac_cv_prog_AS_FOR_TARGET="$AS_FOR_TARGET" # Let the user override the test.
 else
-  IFS="${IFS=         }"; ac_save_ifs="$IFS"; IFS=":"
+  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS=":"
   ac_dummy="$PATH"
   for ac_dir in $ac_dummy; do
     test -z "$ac_dir" && ac_dir=.
@@ -5543,11 +5543,11 @@ else
   /*)
   ac_cv_path_DLLTOOL_FOR_TARGET="$DLLTOOL_FOR_TARGET" # Let the user override the test with a path.
   ;;
-  ?:/*)                         
+  ?:/*)			 
   ac_cv_path_DLLTOOL_FOR_TARGET="$DLLTOOL_FOR_TARGET" # Let the user override the test with a dos path.
   ;;
   *)
-  IFS="${IFS=         }"; ac_save_ifs="$IFS"; IFS=":"
+  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS=":"
   ac_dummy="$gcc_cv_tool_dirs"
   for ac_dir in $ac_dummy; do 
     test -z "$ac_dir" && ac_dir=.
@@ -5596,7 +5596,7 @@ else
   if test -n "$DLLTOOL_FOR_TARGET"; then
   ac_cv_prog_DLLTOOL_FOR_TARGET="$DLLTOOL_FOR_TARGET" # Let the user override the test.
 else
-  IFS="${IFS=         }"; ac_save_ifs="$IFS"; IFS=":"
+  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS=":"
   ac_dummy="$PATH"
   for ac_dir in $ac_dummy; do
     test -z "$ac_dir" && ac_dir=.
@@ -5627,7 +5627,7 @@ else
   if test -n "$DLLTOOL_FOR_TARGET"; then
   ac_cv_prog_DLLTOOL_FOR_TARGET="$DLLTOOL_FOR_TARGET" # Let the user override the test.
 else
-  IFS="${IFS=         }"; ac_save_ifs="$IFS"; IFS=":"
+  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS=":"
   ac_dummy="$PATH"
   for ac_dir in $ac_dummy; do
     test -z "$ac_dir" && ac_dir=.
@@ -5698,11 +5698,11 @@ else
   /*)
   ac_cv_path_LD_FOR_TARGET="$LD_FOR_TARGET" # Let the user override the test with a path.
   ;;
-  ?:/*)                         
+  ?:/*)			 
   ac_cv_path_LD_FOR_TARGET="$LD_FOR_TARGET" # Let the user override the test with a dos path.
   ;;
   *)
-  IFS="${IFS=         }"; ac_save_ifs="$IFS"; IFS=":"
+  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS=":"
   ac_dummy="$gcc_cv_tool_dirs"
   for ac_dir in $ac_dummy; do 
     test -z "$ac_dir" && ac_dir=.
@@ -5751,7 +5751,7 @@ else
   if test -n "$LD_FOR_TARGET"; then
   ac_cv_prog_LD_FOR_TARGET="$LD_FOR_TARGET" # Let the user override the test.
 else
-  IFS="${IFS=         }"; ac_save_ifs="$IFS"; IFS=":"
+  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS=":"
   ac_dummy="$PATH"
   for ac_dir in $ac_dummy; do
     test -z "$ac_dir" && ac_dir=.
@@ -5782,7 +5782,7 @@ else
   if test -n "$LD_FOR_TARGET"; then
   ac_cv_prog_LD_FOR_TARGET="$LD_FOR_TARGET" # Let the user override the test.
 else
-  IFS="${IFS=         }"; ac_save_ifs="$IFS"; IFS=":"
+  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS=":"
   ac_dummy="$PATH"
   for ac_dir in $ac_dummy; do
     test -z "$ac_dir" && ac_dir=.
@@ -5853,11 +5853,11 @@ else
   /*)
   ac_cv_path_LIPO_FOR_TARGET="$LIPO_FOR_TARGET" # Let the user override the test with a path.
   ;;
-  ?:/*)                         
+  ?:/*)			 
   ac_cv_path_LIPO_FOR_TARGET="$LIPO_FOR_TARGET" # Let the user override the test with a dos path.
   ;;
   *)
-  IFS="${IFS=         }"; ac_save_ifs="$IFS"; IFS=":"
+  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS=":"
   ac_dummy="$gcc_cv_tool_dirs"
   for ac_dir in $ac_dummy; do 
     test -z "$ac_dir" && ac_dir=.
@@ -5906,7 +5906,7 @@ else
   if test -n "$LIPO_FOR_TARGET"; then
   ac_cv_prog_LIPO_FOR_TARGET="$LIPO_FOR_TARGET" # Let the user override the test.
 else
-  IFS="${IFS=         }"; ac_save_ifs="$IFS"; IFS=":"
+  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS=":"
   ac_dummy="$PATH"
   for ac_dir in $ac_dummy; do
     test -z "$ac_dir" && ac_dir=.
@@ -5937,7 +5937,7 @@ else
   if test -n "$LIPO_FOR_TARGET"; then
   ac_cv_prog_LIPO_FOR_TARGET="$LIPO_FOR_TARGET" # Let the user override the test.
 else
-  IFS="${IFS=         }"; ac_save_ifs="$IFS"; IFS=":"
+  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS=":"
   ac_dummy="$PATH"
   for ac_dir in $ac_dummy; do
     test -z "$ac_dir" && ac_dir=.
@@ -6008,11 +6008,11 @@ else
   /*)
   ac_cv_path_NM_FOR_TARGET="$NM_FOR_TARGET" # Let the user override the test with a path.
   ;;
-  ?:/*)                         
+  ?:/*)			 
   ac_cv_path_NM_FOR_TARGET="$NM_FOR_TARGET" # Let the user override the test with a dos path.
   ;;
   *)
-  IFS="${IFS=         }"; ac_save_ifs="$IFS"; IFS=":"
+  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS=":"
   ac_dummy="$gcc_cv_tool_dirs"
   for ac_dir in $ac_dummy; do 
     test -z "$ac_dir" && ac_dir=.
@@ -6061,7 +6061,7 @@ else
   if test -n "$NM_FOR_TARGET"; then
   ac_cv_prog_NM_FOR_TARGET="$NM_FOR_TARGET" # Let the user override the test.
 else
-  IFS="${IFS=         }"; ac_save_ifs="$IFS"; IFS=":"
+  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS=":"
   ac_dummy="$PATH"
   for ac_dir in $ac_dummy; do
     test -z "$ac_dir" && ac_dir=.
@@ -6092,7 +6092,7 @@ else
   if test -n "$NM_FOR_TARGET"; then
   ac_cv_prog_NM_FOR_TARGET="$NM_FOR_TARGET" # Let the user override the test.
 else
-  IFS="${IFS=         }"; ac_save_ifs="$IFS"; IFS=":"
+  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS=":"
   ac_dummy="$PATH"
   for ac_dir in $ac_dummy; do
     test -z "$ac_dir" && ac_dir=.
@@ -6163,11 +6163,11 @@ else
   /*)
   ac_cv_path_OBJDUMP_FOR_TARGET="$OBJDUMP_FOR_TARGET" # Let the user override the test with a path.
   ;;
-  ?:/*)                         
+  ?:/*)			 
   ac_cv_path_OBJDUMP_FOR_TARGET="$OBJDUMP_FOR_TARGET" # Let the user override the test with a dos path.
   ;;
   *)
-  IFS="${IFS=         }"; ac_save_ifs="$IFS"; IFS=":"
+  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS=":"
   ac_dummy="$gcc_cv_tool_dirs"
   for ac_dir in $ac_dummy; do 
     test -z "$ac_dir" && ac_dir=.
@@ -6216,7 +6216,7 @@ else
   if test -n "$OBJDUMP_FOR_TARGET"; then
   ac_cv_prog_OBJDUMP_FOR_TARGET="$OBJDUMP_FOR_TARGET" # Let the user override the test.
 else
-  IFS="${IFS=         }"; ac_save_ifs="$IFS"; IFS=":"
+  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS=":"
   ac_dummy="$PATH"
   for ac_dir in $ac_dummy; do
     test -z "$ac_dir" && ac_dir=.
@@ -6247,7 +6247,7 @@ else
   if test -n "$OBJDUMP_FOR_TARGET"; then
   ac_cv_prog_OBJDUMP_FOR_TARGET="$OBJDUMP_FOR_TARGET" # Let the user override the test.
 else
-  IFS="${IFS=         }"; ac_save_ifs="$IFS"; IFS=":"
+  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS=":"
   ac_dummy="$PATH"
   for ac_dir in $ac_dummy; do
     test -z "$ac_dir" && ac_dir=.
@@ -6318,11 +6318,11 @@ else
   /*)
   ac_cv_path_RANLIB_FOR_TARGET="$RANLIB_FOR_TARGET" # Let the user override the test with a path.
   ;;
-  ?:/*)                         
+  ?:/*)			 
   ac_cv_path_RANLIB_FOR_TARGET="$RANLIB_FOR_TARGET" # Let the user override the test with a dos path.
   ;;
   *)
-  IFS="${IFS=         }"; ac_save_ifs="$IFS"; IFS=":"
+  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS=":"
   ac_dummy="$gcc_cv_tool_dirs"
   for ac_dir in $ac_dummy; do 
     test -z "$ac_dir" && ac_dir=.
@@ -6371,7 +6371,7 @@ else
   if test -n "$RANLIB_FOR_TARGET"; then
   ac_cv_prog_RANLIB_FOR_TARGET="$RANLIB_FOR_TARGET" # Let the user override the test.
 else
-  IFS="${IFS=         }"; ac_save_ifs="$IFS"; IFS=":"
+  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS=":"
   ac_dummy="$PATH"
   for ac_dir in $ac_dummy; do
     test -z "$ac_dir" && ac_dir=.
@@ -6402,7 +6402,7 @@ else
   if test -n "$RANLIB_FOR_TARGET"; then
   ac_cv_prog_RANLIB_FOR_TARGET="$RANLIB_FOR_TARGET" # Let the user override the test.
 else
-  IFS="${IFS=         }"; ac_save_ifs="$IFS"; IFS=":"
+  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS=":"
   ac_dummy="$PATH"
   for ac_dir in $ac_dummy; do
     test -z "$ac_dir" && ac_dir=.
@@ -6473,11 +6473,11 @@ else
   /*)
   ac_cv_path_STRIP_FOR_TARGET="$STRIP_FOR_TARGET" # Let the user override the test with a path.
   ;;
-  ?:/*)                         
+  ?:/*)			 
   ac_cv_path_STRIP_FOR_TARGET="$STRIP_FOR_TARGET" # Let the user override the test with a dos path.
   ;;
   *)
-  IFS="${IFS=         }"; ac_save_ifs="$IFS"; IFS=":"
+  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS=":"
   ac_dummy="$gcc_cv_tool_dirs"
   for ac_dir in $ac_dummy; do 
     test -z "$ac_dir" && ac_dir=.
@@ -6526,7 +6526,7 @@ else
   if test -n "$STRIP_FOR_TARGET"; then
   ac_cv_prog_STRIP_FOR_TARGET="$STRIP_FOR_TARGET" # Let the user override the test.
 else
-  IFS="${IFS=         }"; ac_save_ifs="$IFS"; IFS=":"
+  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS=":"
   ac_dummy="$PATH"
   for ac_dir in $ac_dummy; do
     test -z "$ac_dir" && ac_dir=.
@@ -6557,7 +6557,7 @@ else
   if test -n "$STRIP_FOR_TARGET"; then
   ac_cv_prog_STRIP_FOR_TARGET="$STRIP_FOR_TARGET" # Let the user override the test.
 else
-  IFS="${IFS=         }"; ac_save_ifs="$IFS"; IFS=":"
+  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS=":"
   ac_dummy="$PATH"
   for ac_dir in $ac_dummy; do
     test -z "$ac_dir" && ac_dir=.
@@ -6628,11 +6628,11 @@ else
   /*)
   ac_cv_path_WINDRES_FOR_TARGET="$WINDRES_FOR_TARGET" # Let the user override the test with a path.
   ;;
-  ?:/*)                         
+  ?:/*)			 
   ac_cv_path_WINDRES_FOR_TARGET="$WINDRES_FOR_TARGET" # Let the user override the test with a dos path.
   ;;
   *)
-  IFS="${IFS=         }"; ac_save_ifs="$IFS"; IFS=":"
+  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS=":"
   ac_dummy="$gcc_cv_tool_dirs"
   for ac_dir in $ac_dummy; do 
     test -z "$ac_dir" && ac_dir=.
@@ -6681,7 +6681,7 @@ else
   if test -n "$WINDRES_FOR_TARGET"; then
   ac_cv_prog_WINDRES_FOR_TARGET="$WINDRES_FOR_TARGET" # Let the user override the test.
 else
-  IFS="${IFS=         }"; ac_save_ifs="$IFS"; IFS=":"
+  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS=":"
   ac_dummy="$PATH"
   for ac_dir in $ac_dummy; do
     test -z "$ac_dir" && ac_dir=.
@@ -6712,7 +6712,7 @@ else
   if test -n "$WINDRES_FOR_TARGET"; then
   ac_cv_prog_WINDRES_FOR_TARGET="$WINDRES_FOR_TARGET" # Let the user override the test.
 else
-  IFS="${IFS=         }"; ac_save_ifs="$IFS"; IFS=":"
+  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS=":"
   ac_dummy="$PATH"
   for ac_dir in $ac_dummy; do
     test -z "$ac_dir" && ac_dir=.
@@ -7331,7 +7331,7 @@ if test "$USE_MAINTAINER_MODE" = yes; then
 else
   MAINTAINER_MODE_TRUE='#'
   MAINTAINER_MODE_FALSE=
-fi        
+fi	
 MAINT=$MAINTAINER_MODE_TRUE
 
 # ---------------------
@@ -7369,7 +7369,7 @@ echo "configure:7366: checking whether -fkeep-inline-functions is supported" >&5
 
 #if (__GNUC__ < 3) \
     || (__GNUC__ == 3 && (__GNUC_MINOR__ < 3 \
-                          || (__GNUC_MINOR__ == 3 && __GNUC_PATCHLEVEL__ < 1)))
+			  || (__GNUC_MINOR__ == 3 && __GNUC_PATCHLEVEL__ < 1)))
 #error http://gcc.gnu.org/PR29382
 #endif
     
@@ -7517,7 +7517,7 @@ test "x$exec_prefix" = xNONE && exec_prefix='${prefix}'
 # the first set of double-colon rules, so remove it if not needed.
 # If there is a colon in the path, we need to keep it.
 if test "x$srcdir" = x.; then
-  ac_vpsub='/^[         ]*VPATH[         ]*=[^:]*$/d'
+  ac_vpsub='/^[ 	]*VPATH[ 	]*=[^:]*$/d'
 fi
 
 trap 'rm -f $CONFIG_STATUS conftest*; exit 1' 1 2 15
@@ -7527,7 +7527,7 @@ trap 'rm -f $CONFIG_STATUS conftest*; exit 1' 1 2 15
 # Protect against Makefile macro expansion.
 cat > conftest.defs <<\EOF
 s%#define \([A-Za-z_][A-Za-z0-9_]*\) *\(.*\)%-D\1=\2%g
-s%[         `~#$^&*(){}\\|;'"<>?]%\\&%g
+s%[ 	`~#$^&*(){}\\|;'"<>?]%\\&%g
 s%\[%\\&%g
 s%\]%\\&%g
 s%\$%$$%g

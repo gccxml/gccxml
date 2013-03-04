@@ -20,19 +20,19 @@ along with GCC; see the file COPYING.  If not, write to
 the Free Software Foundation, 51 Franklin Street, Fifth Floor,
 Boston, MA 02110-1301, USA.  */
 
-#define TARGET_OS_CPP_BUILTINS()                \
-  do                                                \
-    {                                                \
-      NETBSD_OS_CPP_BUILTINS_ELF();                \
-    }                                                \
+#define TARGET_OS_CPP_BUILTINS()		\
+  do						\
+    {						\
+      NETBSD_OS_CPP_BUILTINS_ELF();		\
+    }						\
   while (0)
 
 
 /* Extra specs needed for NetBSD/i386 ELF.  */
 
 #undef SUBTARGET_EXTRA_SPECS
-#define SUBTARGET_EXTRA_SPECS                        \
-  { "netbsd_cpp_spec", NETBSD_CPP_SPEC },        \
+#define SUBTARGET_EXTRA_SPECS			\
+  { "netbsd_cpp_spec", NETBSD_CPP_SPEC },	\
   { "netbsd_entry_point", NETBSD_ENTRY_POINT },
 
 
@@ -74,15 +74,15 @@ Boston, MA 02110-1301, USA.  */
 /* Output assembler code to FILE to call the profiler.  */
 
 #undef NO_PROFILE_COUNTERS
-#define NO_PROFILE_COUNTERS        1
+#define NO_PROFILE_COUNTERS	1
 
 #undef FUNCTION_PROFILER
-#define FUNCTION_PROFILER(FILE, LABELNO)                                \
-{                                                                        \
-  if (flag_pic)                                                                \
-    fprintf (FILE, "\tcall __mcount@PLT\n");                                \
-  else                                                                        \
-    fprintf (FILE, "\tcall __mcount\n");                                \
+#define FUNCTION_PROFILER(FILE, LABELNO)				\
+{									\
+  if (flag_pic)								\
+    fprintf (FILE, "\tcall __mcount@PLT\n");				\
+  else									\
+    fprintf (FILE, "\tcall __mcount\n");				\
 }
 
 
@@ -91,9 +91,9 @@ Boston, MA 02110-1301, USA.  */
 /* This is how we tell the assembler that two symbols have the same value.  */
 
 #define ASM_OUTPUT_DEF(FILE,NAME1,NAME2) \
-  do { assemble_name(FILE, NAME1);          \
-       fputs(" = ", FILE);                 \
-       assemble_name(FILE, NAME2);         \
+  do { assemble_name(FILE, NAME1); 	 \
+       fputs(" = ", FILE);		 \
+       assemble_name(FILE, NAME2);	 \
        fputc('\n', FILE); } while (0)
 
 /* A C statement to output to the stdio stream FILE an assembler
@@ -103,17 +103,17 @@ Boston, MA 02110-1301, USA.  */
    This is used to align code labels according to Intel recommendations.  */
 
 #ifdef HAVE_GAS_MAX_SKIP_P2ALIGN
-#define ASM_OUTPUT_MAX_SKIP_ALIGN(FILE, LOG, MAX_SKIP)                        \
-  if ((LOG) != 0) {                                                        \
-    if ((MAX_SKIP) == 0) fprintf ((FILE), "\t.p2align %d\n", (LOG));        \
-    else fprintf ((FILE), "\t.p2align %d,,%d\n", (LOG), (MAX_SKIP));        \
+#define ASM_OUTPUT_MAX_SKIP_ALIGN(FILE, LOG, MAX_SKIP)			\
+  if ((LOG) != 0) {							\
+    if ((MAX_SKIP) == 0) fprintf ((FILE), "\t.p2align %d\n", (LOG));	\
+    else fprintf ((FILE), "\t.p2align %d,,%d\n", (LOG), (MAX_SKIP));	\
   }
 #endif
 
 /* We always use gas here, so we don't worry about ECOFF assembler
    problems.  */
 #undef TARGET_GAS
-#define TARGET_GAS        1
+#define TARGET_GAS	1
 
 /* Default to pcc-struct-return, because this is the ELF abi and
    we don't care about compatibility with older gcc versions.  */

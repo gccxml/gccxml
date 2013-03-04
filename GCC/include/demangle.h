@@ -38,25 +38,25 @@ extern "C" {
 
 /* Options passed to cplus_demangle (in 2nd parameter). */
 
-#define DMGL_NO_OPTS         0                /* For readability... */
-#define DMGL_PARAMS         (1 << 0)        /* Include function args */
-#define DMGL_ANSI         (1 << 1)        /* Include const, volatile, etc */
-#define DMGL_JAVA         (1 << 2)        /* Demangle as Java rather than C++. */
-#define DMGL_VERBOSE         (1 << 3)        /* Include implementation details.  */
-#define DMGL_TYPES         (1 << 4)        /* Also try to demangle type encodings.  */
+#define DMGL_NO_OPTS	 0		/* For readability... */
+#define DMGL_PARAMS	 (1 << 0)	/* Include function args */
+#define DMGL_ANSI	 (1 << 1)	/* Include const, volatile, etc */
+#define DMGL_JAVA	 (1 << 2)	/* Demangle as Java rather than C++. */
+#define DMGL_VERBOSE	 (1 << 3)	/* Include implementation details.  */
+#define DMGL_TYPES	 (1 << 4)	/* Also try to demangle type encodings.  */
 #define DMGL_RET_POSTFIX (1 << 5)       /* Print function return types (when
                                            present) after function signature */
 
-#define DMGL_AUTO         (1 << 8)
-#define DMGL_GNU         (1 << 9)
-#define DMGL_LUCID         (1 << 10)
-#define DMGL_ARM         (1 << 11)
-#define DMGL_HP          (1 << 12)       /* For the HP aCC compiler;
+#define DMGL_AUTO	 (1 << 8)
+#define DMGL_GNU	 (1 << 9)
+#define DMGL_LUCID	 (1 << 10)
+#define DMGL_ARM	 (1 << 11)
+#define DMGL_HP 	 (1 << 12)       /* For the HP aCC compiler;
                                             same as ARM except for
                                             template arguments, etc. */
-#define DMGL_EDG         (1 << 13)
-#define DMGL_GNU_V3         (1 << 14)
-#define DMGL_GNAT         (1 << 15)
+#define DMGL_EDG	 (1 << 13)
+#define DMGL_GNU_V3	 (1 << 14)
+#define DMGL_GNAT	 (1 << 15)
 
 /* If none of these are set, use 'current_demangling_style' as the default. */
 #define DMGL_STYLE_MASK (DMGL_AUTO|DMGL_GNU|DMGL_LUCID|DMGL_ARM|DMGL_HP|DMGL_EDG|DMGL_GNU_V3|DMGL_JAVA|DMGL_GNAT)
@@ -87,12 +87,12 @@ extern enum demangling_styles
 /* Define string names for the various demangling styles. */
 
 #define NO_DEMANGLING_STYLE_STRING            "none"
-#define AUTO_DEMANGLING_STYLE_STRING              "auto"
-#define GNU_DEMANGLING_STYLE_STRING                  "gnu"
-#define LUCID_DEMANGLING_STYLE_STRING              "lucid"
-#define ARM_DEMANGLING_STYLE_STRING              "arm"
-#define HP_DEMANGLING_STYLE_STRING              "hp"
-#define EDG_DEMANGLING_STYLE_STRING              "edg"
+#define AUTO_DEMANGLING_STYLE_STRING	      "auto"
+#define GNU_DEMANGLING_STYLE_STRING    	      "gnu"
+#define LUCID_DEMANGLING_STYLE_STRING	      "lucid"
+#define ARM_DEMANGLING_STYLE_STRING	      "arm"
+#define HP_DEMANGLING_STYLE_STRING	      "hp"
+#define EDG_DEMANGLING_STYLE_STRING	      "edg"
 #define GNU_V3_DEMANGLING_STYLE_STRING        "gnu-v3"
 #define JAVA_DEMANGLING_STYLE_STRING          "java"
 #define GNAT_DEMANGLING_STYLE_STRING          "gnat"
@@ -159,7 +159,7 @@ enum gnu_v3_ctor_kinds {
    gnu_v3_ctor_kinds' value indicating what kind of constructor
    it is.  */
 extern enum gnu_v3_ctor_kinds
-        is_gnu_v3_mangled_ctor (const char *name);
+	is_gnu_v3_mangled_ctor (const char *name);
 
 
 enum gnu_v3_dtor_kinds {
@@ -173,7 +173,7 @@ enum gnu_v3_dtor_kinds {
    gnu_v3_dtor_kinds' value, indicating what kind of destructor
    it is.  */
 extern enum gnu_v3_dtor_kinds
-        is_gnu_v3_mangled_dtor (const char *name);
+	is_gnu_v3_mangled_dtor (const char *name);
 
 /* The V3 demangler works in two passes.  The first pass builds a tree
    representation of the mangled name, and the second pass turns the
@@ -371,7 +371,7 @@ struct demangle_component
     struct
     {
       /* A pointer to the name (which need not NULL terminated) and
-         its length.  */
+	 its length.  */
       const char *s;
       int len;
     } s_name;
@@ -542,4 +542,4 @@ cplus_demangle_print (int options,
 }
 #endif /* __cplusplus */
 
-#endif        /* DEMANGLE_H */
+#endif	/* DEMANGLE_H */

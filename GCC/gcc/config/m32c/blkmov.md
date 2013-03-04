@@ -64,59 +64,59 @@
 ;; 5 = count (in)
 (define_insn "movmemhi_bhi_op"
   [(set (mem:QI (match_operand:HI 3 "ap_operand" "0"))
-        (mem:QI (match_operand:HI 4 "ap_operand" "1")))
+	(mem:QI (match_operand:HI 4 "ap_operand" "1")))
    (set (match_operand:HI 2 "m32c_r3_operand" "=R3w")
-        (const_int 0))
+	(const_int 0))
    (set (match_operand:HI 0 "ap_operand" "=Ra1")
-        (plus:HI (match_dup 3)
-                  (zero_extend:HI (match_operand:HI 5 "m32c_r3_operand" "2"))))
+	(plus:HI (match_dup 3)
+		  (zero_extend:HI (match_operand:HI 5 "m32c_r3_operand" "2"))))
    (set (match_operand:HI 1 "ap_operand" "=Ra0")
-        (plus:HI (match_dup 4)
-                  (zero_extend:HI (match_dup 5))))
+	(plus:HI (match_dup 4)
+		  (zero_extend:HI (match_dup 5))))
    (use (reg:HI R1_REGNO))]
   "TARGET_A16"
   "mov.b:q\t#0,r1h\n\tsmovf.b\t; %0[0..%2-1]=r1h%1[]"
   )
 (define_insn "movmemhi_bpsi_op"
   [(set (mem:QI (match_operand:PSI 3 "ap_operand" "0"))
-        (mem:QI (match_operand:PSI 4 "ap_operand" "1")))
+	(mem:QI (match_operand:PSI 4 "ap_operand" "1")))
    (set (match_operand:HI 2 "m32c_r3_operand" "=R3w")
-        (const_int 0))
+	(const_int 0))
    (set (match_operand:PSI 0 "ap_operand" "=Ra1")
-        (plus:PSI (match_dup 3)
-                  (zero_extend:PSI (match_operand:HI 5 "m32c_r3_operand" "2"))))
+	(plus:PSI (match_dup 3)
+		  (zero_extend:PSI (match_operand:HI 5 "m32c_r3_operand" "2"))))
    (set (match_operand:PSI 1 "ap_operand" "=Ra0")
-        (plus:PSI (match_dup 4)
-                  (zero_extend:PSI (match_dup 5))))]
+	(plus:PSI (match_dup 4)
+		  (zero_extend:PSI (match_dup 5))))]
   "TARGET_A24"
   "smovf.b\t; %0[0..%2-1]=%1[]"
   )
 (define_insn "movmemhi_whi_op"
   [(set (mem:HI (match_operand:HI 3 "ap_operand" "0"))
-        (mem:HI (match_operand:HI 4 "ap_operand" "1")))
+	(mem:HI (match_operand:HI 4 "ap_operand" "1")))
    (set (match_operand:HI 2 "m32c_r3_operand" "=R3w")
-        (const_int 0))
+	(const_int 0))
    (set (match_operand:HI 0 "ap_operand" "=Ra1")
-        (plus:HI (match_dup 3)
-                  (zero_extend:HI (match_operand:HI 5 "m32c_r3_operand" "2"))))
+	(plus:HI (match_dup 3)
+		  (zero_extend:HI (match_operand:HI 5 "m32c_r3_operand" "2"))))
    (set (match_operand:HI 1 "ap_operand" "=Ra0")
-        (plus:HI (match_dup 4)
-                  (zero_extend:HI (match_dup 5))))
+	(plus:HI (match_dup 4)
+		  (zero_extend:HI (match_dup 5))))
    (use (reg:HI R1_REGNO))]
   "TARGET_A16"
   "mov.b:q\t#0,r1h\n\tsmovf.w\t; %0[0..%2-1]=r1h%1[]"
   )
 (define_insn "movmemhi_wpsi_op"
   [(set (mem:HI (match_operand:PSI 3 "ap_operand" "0"))
-        (mem:HI (match_operand:PSI 4 "ap_operand" "1")))
+	(mem:HI (match_operand:PSI 4 "ap_operand" "1")))
    (set (match_operand:HI 2 "m32c_r3_operand" "=R3w")
-        (const_int 0))
+	(const_int 0))
    (set (match_operand:PSI 0 "ap_operand" "=Ra1")
-        (plus:PSI (match_dup 3)
-                  (zero_extend:PSI (match_operand:HI 5 "m32c_r3_operand" "2"))))
+	(plus:PSI (match_dup 3)
+		  (zero_extend:PSI (match_operand:HI 5 "m32c_r3_operand" "2"))))
    (set (match_operand:PSI 1 "ap_operand" "=Ra0")
-        (plus:PSI (match_dup 4)
-                  (zero_extend:PSI (match_dup 5))))]
+	(plus:PSI (match_dup 4)
+		  (zero_extend:PSI (match_dup 5))))]
   "TARGET_A24"
   "smovf.w\t; %0[0..%2-1]=%1[]"
   )
@@ -144,24 +144,24 @@
 ;; 4 = count (in)
 (define_insn "setmemhi_b<mode>_op"
   [(set (mem:QI (match_operand:HPSI 3 "ap_operand" "0"))
-        (match_operand:QI 2 "m32c_r0_operand" "R0w"))
+	(match_operand:QI 2 "m32c_r0_operand" "R0w"))
    (set (match_operand:HI 1 "m32c_r3_operand" "=R3w")
-        (const_int 0))
+	(const_int 0))
    (set (match_operand:HPSI 0 "ap_operand" "=Ra1")
-        (plus:HPSI (match_dup 3)
-                  (zero_extend:HPSI (match_operand:HI 4 "m32c_r3_operand" "1"))))]
+	(plus:HPSI (match_dup 3)
+		  (zero_extend:HPSI (match_operand:HI 4 "m32c_r3_operand" "1"))))]
   "TARGET_A24"
   "sstr.b\t; %0[0..%1-1]=%2"
   )
 
 (define_insn "setmemhi_w<mode>_op"
   [(set (mem:HI (match_operand:HPSI 3 "ap_operand" "0"))
-        (match_operand:HI 2 "m32c_r0_operand" "R0w"))
+	(match_operand:HI 2 "m32c_r0_operand" "R0w"))
    (set (match_operand:HI 1 "m32c_r3_operand" "=R3w")
-        (const_int 0))
+	(const_int 0))
    (set (match_operand:HPSI 0 "ap_operand" "=Ra1")
-        (plus:HPSI (match_dup 3)
-                  (zero_extend:HPSI (match_operand:HI 4 "m32c_r3_operand" "1"))))]
+	(plus:HPSI (match_dup 3)
+		  (zero_extend:HPSI (match_operand:HI 4 "m32c_r3_operand" "1"))))]
   "TARGET_A24"
   "sstr.w\t; %0[0..%1-1]=%2"
   )
@@ -194,8 +194,8 @@
 
 (define_insn "cmpstrhi_op"
   [(set (reg:CC FLG_REGNO)
-        (compare:CC (mem:BLK (match_operand:PSI 0 "ap_operand" "Ra0"))
-                    (mem:BLK (match_operand:PSI 1 "ap_operand" "Ra1"))))
+	(compare:CC (mem:BLK (match_operand:PSI 0 "ap_operand" "Ra0"))
+		    (mem:BLK (match_operand:PSI 1 "ap_operand" "Ra1"))))
    (clobber (match_operand:PSI 2 "ap_operand" "=0"))
    (clobber (match_operand:PSI 3 "ap_operand" "=1"))]
   "TARGET_A24"
@@ -229,13 +229,13 @@
 ;; 3 = src (in)
 (define_insn "movstr_op"
   [(set (mem:BLK (match_operand:PSI 2 "ap_operand" "0"))
-        (mem:BLK (match_operand:PSI 3 "ap_operand" "1")))
+	(mem:BLK (match_operand:PSI 3 "ap_operand" "1")))
    (set (match_operand:PSI 0 "ap_operand" "=Ra1")
-        (plus:PSI (match_dup 2)
-                  (unspec:PSI [(const_int 0)] UNS_SMOVU)))
+	(plus:PSI (match_dup 2)
+		  (unspec:PSI [(const_int 0)] UNS_SMOVU)))
    (set (match_operand:PSI 1 "ap_operand" "=Ra0")
-        (plus:PSI (match_dup 3)
-                  (unspec:PSI [(const_int 0)] UNS_SMOVU)))]
+	(plus:PSI (match_dup 3)
+		  (unspec:PSI [(const_int 0)] UNS_SMOVU)))]
   "TARGET_A24"
   "smovu.b\t; while (*%2++ := *%3++) != 0"
   [(set_attr "flags" "*")]

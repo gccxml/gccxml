@@ -69,22 +69,22 @@ interpret_libc (reg_unit gprs[32], struct _Unwind_Context *context)
      This code is believed to support all released Libc/Libsystem builds since
      Jaguar 6C115, including all the security updates.  To be precise,
 
-     Libc        Libsystem        Build(s)
-     262~1        60~37                6C115
-     262~1        60.2~4                6D52
-     262~1        61~3                6F21-6F22
-     262~1        63~24                6G30-6G37
-     262~1        63~32                6I34-6I35
-     262~1        63~64                6L29-6L60
-     262.4.1~1        63~84                6L123-6R172
+     Libc	Libsystem	Build(s)
+     262~1	60~37		6C115
+     262~1	60.2~4		6D52
+     262~1	61~3		6F21-6F22
+     262~1	63~24		6G30-6G37
+     262~1	63~32		6I34-6I35
+     262~1	63~64		6L29-6L60
+     262.4.1~1	63~84		6L123-6R172
      
-     320~1        71~101                7B85-7D28
-     320~1        71~266                7F54-7F56
-     320~1        71~288                7F112
-     320~1        71~289                7F113
-     320.1.3~1        71.1.1~29        7H60-7H105
-     320.1.3~1        71.1.1~30        7H110-7H113
-     320.1.3~1        71.1.1~31        7H114
+     320~1	71~101		7B85-7D28
+     320~1	71~266		7F54-7F56
+     320~1	71~288		7F112
+     320~1	71~289		7F113
+     320.1.3~1	71.1.1~29	7H60-7H105
+     320.1.3~1	71.1.1~30	7H110-7H113
+     320.1.3~1	71.1.1~31	7H114
      
      That's a big table!  It would be insane to try to keep track of
      every little detail, so we just read the code itself and do what
@@ -96,129 +96,129 @@ interpret_libc (reg_unit gprs[32], struct _Unwind_Context *context)
       uint32_t ins = *pc++;
       
       if ((ins & 0xFC000003) == 0x48000000)  /* b instruction */
-        {
-          pc += ((((int32_t) ins & 0x3FFFFFC) ^ 0x2000000) - 0x2000004) / 4;
-          continue;
-        }
+	{
+	  pc += ((((int32_t) ins & 0x3FFFFFC) ^ 0x2000000) - 0x2000004) / 4;
+	  continue;
+	}
       if ((ins & 0xFC600000) == 0x2C000000)  /* cmpwi */
-        {
-          int32_t val1 = (int16_t) ins;
-          int32_t val2 = gprs[ins >> 16 & 0x1F];
-          /* Only beq and bne instructions are supported, so we only
-             need to set the EQ bit.  */
-          uint32_t mask = 0xF << ((ins >> 21 & 0x1C) ^ 0x1C);
-          if (val1 == val2)
-            cr |= mask;
-          else
-            cr &= ~mask;
-          continue;
-        }
+	{
+	  int32_t val1 = (int16_t) ins;
+	  int32_t val2 = gprs[ins >> 16 & 0x1F];
+	  /* Only beq and bne instructions are supported, so we only
+	     need to set the EQ bit.  */
+	  uint32_t mask = 0xF << ((ins >> 21 & 0x1C) ^ 0x1C);
+	  if (val1 == val2)
+	    cr |= mask;
+	  else
+	    cr &= ~mask;
+	  continue;
+	}
       if ((ins & 0xFEC38003) == 0x40820000)  /* forwards beq/bne */
-        {
-          if ((cr >> ((ins >> 16 & 0x1F) ^ 0x1F) & 1) == (ins >> 24 & 1))
-            pc += (ins & 0x7FFC) / 4 - 1;
-          continue;
-        }
+	{
+	  if ((cr >> ((ins >> 16 & 0x1F) ^ 0x1F) & 1) == (ins >> 24 & 1))
+	    pc += (ins & 0x7FFC) / 4 - 1;
+	  continue;
+	}
       if ((ins & 0xFC0007FF) == 0x7C000378) /* or, including mr */
-        {
-          gprs [ins >> 16 & 0x1F] = (gprs [ins >> 11 & 0x1F] 
-                                     | gprs [ins >> 21 & 0x1F]);
-          continue;
-        }
+	{
+	  gprs [ins >> 16 & 0x1F] = (gprs [ins >> 11 & 0x1F] 
+				     | gprs [ins >> 21 & 0x1F]);
+	  continue;
+	}
       if (ins >> 26 == 0x0E)  /* addi, including li */
-        {
-          reg_unit src = (ins >> 16 & 0x1F) == 0 ? 0 : gprs [ins >> 16 & 0x1F];
-          gprs [ins >> 21 & 0x1F] = src + (int16_t) ins;
-          continue;
-        }
+	{
+	  reg_unit src = (ins >> 16 & 0x1F) == 0 ? 0 : gprs [ins >> 16 & 0x1F];
+	  gprs [ins >> 21 & 0x1F] = src + (int16_t) ins;
+	  continue;
+	}
       if (ins >> 26 == 0x0F)  /* addis, including lis */
-        {
-          reg_unit src = (ins >> 16 & 0x1F) == 0 ? 0 : gprs [ins >> 16 & 0x1F];
-          gprs [ins >> 21 & 0x1F] = src + ((int16_t) ins << 16);
-          continue;
-        }
+	{
+	  reg_unit src = (ins >> 16 & 0x1F) == 0 ? 0 : gprs [ins >> 16 & 0x1F];
+	  gprs [ins >> 21 & 0x1F] = src + ((int16_t) ins << 16);
+	  continue;
+	}
       if (ins >> 26 == 0x20)  /* lwz */
-        {
-          reg_unit src = (ins >> 16 & 0x1F) == 0 ? 0 : gprs [ins >> 16 & 0x1F];
-          uint32_t *p = (uint32_t *)(src + (int16_t) ins);
-          if (p == invalid_address)
-            return false;
-          gprs [ins >> 21 & 0x1F] = *p;
-          continue;
-        }
+	{
+	  reg_unit src = (ins >> 16 & 0x1F) == 0 ? 0 : gprs [ins >> 16 & 0x1F];
+	  uint32_t *p = (uint32_t *)(src + (int16_t) ins);
+	  if (p == invalid_address)
+	    return false;
+	  gprs [ins >> 21 & 0x1F] = *p;
+	  continue;
+	}
       if (ins >> 26 == 0x21)  /* lwzu */
-        {
-          uint32_t *p = (uint32_t *)(gprs [ins >> 16 & 0x1F] += (int16_t) ins);
-          if (p == invalid_address)
-            return false;
-          gprs [ins >> 21 & 0x1F] = *p;
-          continue;
-        }
+	{
+	  uint32_t *p = (uint32_t *)(gprs [ins >> 16 & 0x1F] += (int16_t) ins);
+	  if (p == invalid_address)
+	    return false;
+	  gprs [ins >> 21 & 0x1F] = *p;
+	  continue;
+	}
       if (ins >> 26 == 0x24)  /* stw */
-        /* What we hope this is doing is '--in_sigtramp'.  We don't want
-           to actually store to memory, so just make a note of the
-           address and refuse to load from it.  */
-        {
-          reg_unit src = (ins >> 16 & 0x1F) == 0 ? 0 : gprs [ins >> 16 & 0x1F];
-          uint32_t *p = (uint32_t *)(src + (int16_t) ins);
-          if (p == NULL || invalid_address != NULL)
-            return false;
-          invalid_address = p;
-          continue;
-        }
+	/* What we hope this is doing is '--in_sigtramp'.  We don't want
+	   to actually store to memory, so just make a note of the
+	   address and refuse to load from it.  */
+	{
+	  reg_unit src = (ins >> 16 & 0x1F) == 0 ? 0 : gprs [ins >> 16 & 0x1F];
+	  uint32_t *p = (uint32_t *)(src + (int16_t) ins);
+	  if (p == NULL || invalid_address != NULL)
+	    return false;
+	  invalid_address = p;
+	  continue;
+	}
       if (ins >> 26 == 0x2E) /* lmw */
-        {
-          reg_unit src = (ins >> 16 & 0x1F) == 0 ? 0 : gprs [ins >> 16 & 0x1F];
-          uint32_t *p = (uint32_t *)(src + (int16_t) ins);
-          int i;
+	{
+	  reg_unit src = (ins >> 16 & 0x1F) == 0 ? 0 : gprs [ins >> 16 & 0x1F];
+	  uint32_t *p = (uint32_t *)(src + (int16_t) ins);
+	  int i;
 
-          for (i = (ins >> 21 & 0x1F); i < 32; i++)
-            {
-              if (p == invalid_address)
-                return false;
-              gprs[i] = *p++;
-            }
-          continue;
-        }
+	  for (i = (ins >> 21 & 0x1F); i < 32; i++)
+	    {
+	      if (p == invalid_address)
+		return false;
+	      gprs[i] = *p++;
+	    }
+	  continue;
+	}
       if ((ins & 0xFC1FFFFF) == 0x7c0803a6)  /* mtlr */
-        {
-          lr = gprs [ins >> 21 & 0x1F];
-          continue;
-        }
+	{
+	  lr = gprs [ins >> 21 & 0x1F];
+	  continue;
+	}
       if ((ins & 0xFC1FFFFF) == 0x7c0802a6)  /* mflr */
-        {
-          gprs [ins >> 21 & 0x1F] = lr;
-          continue;
-        }
+	{
+	  gprs [ins >> 21 & 0x1F] = lr;
+	  continue;
+	}
       if ((ins & 0xFC1FFFFF) == 0x7c0903a6)  /* mtctr */
-        {
-          ctr = gprs [ins >> 21 & 0x1F];
-          continue;
-        }
+	{
+	  ctr = gprs [ins >> 21 & 0x1F];
+	  continue;
+	}
       /* The PowerPC User's Manual says that bit 11 of the mtcrf
-         instruction is reserved and should be set to zero, but it
-         looks like the Darwin assembler doesn't do that... */
+	 instruction is reserved and should be set to zero, but it
+	 looks like the Darwin assembler doesn't do that... */
       if ((ins & 0xFC000FFF) == 0x7c000120) /* mtcrf */
-        {
-          int i;
-          uint32_t mask = 0;
-          for (i = 0; i < 8; i++)
-            mask |= ((-(ins >> (12 + i) & 1)) & 0xF) << 4 * i;
-          cr = (cr & ~mask) | (gprs [ins >> 21 & 0x1F] & mask);
-          continue;
-        }
+	{
+	  int i;
+	  uint32_t mask = 0;
+	  for (i = 0; i < 8; i++)
+	    mask |= ((-(ins >> (12 + i) & 1)) & 0xF) << 4 * i;
+	  cr = (cr & ~mask) | (gprs [ins >> 21 & 0x1F] & mask);
+	  continue;
+	}
       if (ins == 0x429f0005)  /* bcl- 20,4*cr7+so,.+4, loads pc into LR */
-        {
-          lr = (reg_unit) pc;
-          continue;
-        }
+	{
+	  lr = (reg_unit) pc;
+	  continue;
+	}
       if (ins == 0x4e800420) /* bctr */
-        {
-          pc = (uint32_t *) ctr;
-          continue;
-        }
+	{
+	  pc = (uint32_t *) ctr;
+	  continue;
+	}
       if (ins == 0x44000002) /* sc */
-        return true;
+	return true;
 
       return false;
     }
@@ -317,7 +317,7 @@ struct gcc_mcontext64 {
 
 static bool
 handle_syscall (_Unwind_FrameState *fs, const reg_unit gprs[32],
-                _Unwind_Ptr old_cfa)
+		_Unwind_Ptr old_cfa)
 {
   struct gcc_ucontext *uctx;
   bool is_64, is_vector;
@@ -335,24 +335,24 @@ handle_syscall (_Unwind_FrameState *fs, const reg_unit gprs[32],
     {
       uctx = (struct gcc_ucontext *) gprs[3];
       is_vector = (uctx->mcsize == UC_FLAVOR64_VEC_SIZE
-                   || uctx->mcsize == UC_FLAVOR_VEC_SIZE);
+		   || uctx->mcsize == UC_FLAVOR_VEC_SIZE);
       is_64 = (uctx->mcsize == UC_FLAVOR64_VEC_SIZE
-               || uctx->mcsize == UC_FLAVOR64_SIZE);
+	       || uctx->mcsize == UC_FLAVOR64_SIZE);
     }
   else if (gprs[0] == 0 && gprs[3] == 184)
     {
       int ctxstyle = gprs[5];
       uctx = (struct gcc_ucontext *) gprs[4];
       is_vector = (ctxstyle == UC_FLAVOR_VEC || ctxstyle == UC_FLAVOR64_VEC
-                   || ctxstyle == UC_TRAD_VEC || ctxstyle == UC_TRAD64_VEC);
+		   || ctxstyle == UC_TRAD_VEC || ctxstyle == UC_TRAD64_VEC);
       is_64 = (ctxstyle == UC_FLAVOR64_VEC || ctxstyle == UC_TRAD64_VEC
-               || ctxstyle == UC_FLAVOR64 || ctxstyle == UC_TRAD64);
+	       || ctxstyle == UC_FLAVOR64 || ctxstyle == UC_TRAD64);
     }
   else
     return false;
 
-#define set_offset(r, addr)                                        \
-  (fs->regs.reg[r].how = REG_SAVED_OFFSET,                        \
+#define set_offset(r, addr)					\
+  (fs->regs.reg[r].how = REG_SAVED_OFFSET,			\
    fs->regs.reg[r].loc.offset = (_Unwind_Ptr)(addr) - new_cfa)
 
   /* Restore even the registers that are not call-saved, since they
@@ -363,8 +363,8 @@ handle_syscall (_Unwind_FrameState *fs, const reg_unit gprs[32],
   if (is_64)
     {
       /* The context is 64-bit, but it doesn't carry any extra information
-         for us because only the low 32 bits of the registers are
-         call-saved.  */
+	 for us because only the low 32 bits of the registers are
+	 call-saved.  */
       struct gcc_mcontext64 *m64 = (struct gcc_mcontext64 *)uctx->mcontext;
       int i;
 
@@ -374,22 +374,22 @@ handle_syscall (_Unwind_FrameState *fs, const reg_unit gprs[32],
       
       set_offset (CR2_REGNO, &m64->cr);
       for (i = 0; i < 32; i++)
-        set_offset (i, m64->gpr[i] + 1);
+	set_offset (i, m64->gpr[i] + 1);
       set_offset (XER_REGNO, m64->xer + 1);
       set_offset (LINK_REGISTER_REGNUM, m64->lr + 1);
       set_offset (COUNT_REGISTER_REGNUM, m64->ctr + 1);
       if (is_vector)
-        set_offset (VRSAVE_REGNO, &m64->vrsave);
+	set_offset (VRSAVE_REGNO, &m64->vrsave);
       
       /* Sometimes, srr0 points to the instruction that caused the exception,
-         and sometimes to the next instruction to be executed; we want
-         the latter.  */
+	 and sometimes to the next instruction to be executed; we want
+	 the latter.  */
       if (m64->exception == 3 || m64->exception == 4
-          || m64->exception == 6
-          || (m64->exception == 7 && !(m64->srr1 & 0x10000)))
-        return_addr = m64->srr0 + 4;
+	  || m64->exception == 6
+	  || (m64->exception == 7 && !(m64->srr1 & 0x10000)))
+	return_addr = m64->srr0 + 4;
       else
-        return_addr = m64->srr0;
+	return_addr = m64->srr0;
     }
   else
     {
@@ -402,23 +402,23 @@ handle_syscall (_Unwind_FrameState *fs, const reg_unit gprs[32],
 
       set_offset (CR2_REGNO, &m->cr);
       for (i = 0; i < 32; i++)
-        set_offset (i, m->gpr + i);
+	set_offset (i, m->gpr + i);
       set_offset (XER_REGNO, &m->xer);
       set_offset (LINK_REGISTER_REGNUM, &m->lr);
       set_offset (COUNT_REGISTER_REGNUM, &m->ctr);
 
       if (is_vector)
-        set_offset (VRSAVE_REGNO, &m->vrsave);
+	set_offset (VRSAVE_REGNO, &m->vrsave);
 
       /* Sometimes, srr0 points to the instruction that caused the exception,
-         and sometimes to the next instruction to be executed; we want
-         the latter.  */
+	 and sometimes to the next instruction to be executed; we want
+	 the latter.  */
       if (m->exception == 3 || m->exception == 4
-          || m->exception == 6
-          || (m->exception == 7 && !(m->srr1 & 0x10000)))
-        return_addr = m->srr0 + 4;
+	  || m->exception == 6
+	  || (m->exception == 7 && !(m->srr1 & 0x10000)))
+	return_addr = m->srr0 + 4;
       else
-        return_addr = m->srr0;
+	return_addr = m->srr0;
     }
 
   fs->cfa_how = CFA_REG_OFFSET;
@@ -443,7 +443,7 @@ handle_syscall (_Unwind_FrameState *fs, const reg_unit gprs[32],
   if (is_vector)
     {
       for (i = 0; i < 32; i++)
-        set_offset (FIRST_ALTIVEC_REGNO + i, float_vector_state->save_vr + i);
+	set_offset (FIRST_ALTIVEC_REGNO + i, float_vector_state->save_vr + i);
       set_offset (VSCR_REGNO, float_vector_state->save_vscr);
     }
 
@@ -453,7 +453,7 @@ handle_syscall (_Unwind_FrameState *fs, const reg_unit gprs[32],
 /* This is also prototyped in rs6000/darwin.h, inside the
    MD_FALLBACK_FRAME_STATE_FOR macro.  */
 extern bool _Unwind_fallback_frame_state_for (struct _Unwind_Context *context,
-                                              _Unwind_FrameState *fs);
+					      _Unwind_FrameState *fs);
 
 /* Implement the MD_FALLBACK_FRAME_STATE_FOR macro,
    returning true iff the frame was a sigreturn() frame that we
@@ -461,7 +461,7 @@ extern bool _Unwind_fallback_frame_state_for (struct _Unwind_Context *context,
 
 bool
 _Unwind_fallback_frame_state_for (struct _Unwind_Context *context,
-                                  _Unwind_FrameState *fs)
+				  _Unwind_FrameState *fs)
 {
   reg_unit gprs[32];
 

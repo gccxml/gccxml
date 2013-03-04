@@ -29,17 +29,17 @@ Boston, MA 02110-1301, USA.  */
    extend the DUMP_FILES array in tree-dump.c.  */
 enum tree_dump_index
 {
-  TDI_none,                        /* No dump */
+  TDI_none,			/* No dump */
   TDI_cgraph,                   /* dump function call graph.  */
-  TDI_tu,                        /* dump the whole translation unit.  */
-  TDI_class,                        /* dump class hierarchy.  */
-  TDI_original,                        /* dump each function before optimizing it */
-  TDI_generic,                        /* dump each function after genericizing it */
-  TDI_nested,                        /* dump each function after unnesting it */
-  TDI_inlined,                        /* dump each function after inlining
-                                   within it.  */
-  TDI_vcg,                        /* create a VCG graph file for each
-                                   function's flowgraph.  */
+  TDI_tu,			/* dump the whole translation unit.  */
+  TDI_class,			/* dump class hierarchy.  */
+  TDI_original,			/* dump each function before optimizing it */
+  TDI_generic,			/* dump each function after genericizing it */
+  TDI_nested,			/* dump each function after unnesting it */
+  TDI_inlined,			/* dump each function after inlining
+				   within it.  */
+  TDI_vcg,			/* create a VCG graph file for each
+				   function's flowgraph.  */
   TDI_tree_all,                 /* enable all the GENERIC/GIMPLE dumps.  */
   TDI_rtl_all,                  /* enable all the RTL dumps.  */
   TDI_ipa_all,                  /* enable all the IPA dumps.  */
@@ -50,24 +50,24 @@ enum tree_dump_index
 /* Bit masks to control dumping. Not all values are applicable to
    all dumps. Add new ones at the end. When you define new
    values, extend the DUMP_OPTIONS array in tree-dump.c */
-#define TDF_ADDRESS        (1 << 0)        /* dump node addresses */
-#define TDF_SLIM        (1 << 1)        /* don't go wild following links */
-#define TDF_RAW          (1 << 2)        /* don't unparse the function */
-#define TDF_DETAILS        (1 << 3)        /* show more detailed info about
-                                           each pass */
-#define TDF_STATS        (1 << 4)        /* dump various statistics about
-                                           each pass */
-#define TDF_BLOCKS        (1 << 5)        /* display basic block boundaries */
-#define TDF_VOPS        (1 << 6)        /* display virtual operands */
-#define TDF_LINENO        (1 << 7)        /* display statement line numbers */
-#define TDF_UID                (1 << 8)        /* display decl UIDs */
+#define TDF_ADDRESS	(1 << 0)	/* dump node addresses */
+#define TDF_SLIM	(1 << 1)	/* don't go wild following links */
+#define TDF_RAW  	(1 << 2)	/* don't unparse the function */
+#define TDF_DETAILS	(1 << 3)	/* show more detailed info about
+					   each pass */
+#define TDF_STATS	(1 << 4)	/* dump various statistics about
+					   each pass */
+#define TDF_BLOCKS	(1 << 5)	/* display basic block boundaries */
+#define TDF_VOPS	(1 << 6)	/* display virtual operands */
+#define TDF_LINENO	(1 << 7)	/* display statement line numbers */
+#define TDF_UID		(1 << 8)	/* display decl UIDs */
 
-#define TDF_TREE        (1 << 9)        /* is a tree dump */
-#define TDF_RTL                (1 << 10)        /* is a RTL dump */
-#define TDF_IPA                (1 << 11)        /* is an IPA dump */
-#define TDF_STMTADDR        (1 << 12)        /* Address of stmt.  */
+#define TDF_TREE	(1 << 9)	/* is a tree dump */
+#define TDF_RTL		(1 << 10)	/* is a RTL dump */
+#define TDF_IPA		(1 << 11)	/* is an IPA dump */
+#define TDF_STMTADDR	(1 << 12)	/* Address of stmt.  */
 
-#define TDF_GRAPH        (1 << 13)        /* a graph dump is being emitted */
+#define TDF_GRAPH	(1 << 13)	/* a graph dump is being emitted */
 
 extern char *get_dump_file_name (enum tree_dump_index);
 extern int dump_enabled_p (enum tree_dump_index);
@@ -140,32 +140,32 @@ struct dump_file_info
 };
 
 /* Pass properties.  */
-#define PROP_gimple_any                (1 << 0)        /* entire gimple grammar */
-#define PROP_gimple_lcf                (1 << 1)        /* lowered control flow */
-#define PROP_gimple_leh                (1 << 2)        /* lowered eh */
-#define PROP_cfg                (1 << 3)
-#define PROP_referenced_vars        (1 << 4)
-#define PROP_pta                (1 << 5)
-#define PROP_ssa                (1 << 6)
+#define PROP_gimple_any		(1 << 0)	/* entire gimple grammar */
+#define PROP_gimple_lcf		(1 << 1)	/* lowered control flow */
+#define PROP_gimple_leh		(1 << 2)	/* lowered eh */
+#define PROP_cfg		(1 << 3)
+#define PROP_referenced_vars	(1 << 4)
+#define PROP_pta		(1 << 5)
+#define PROP_ssa		(1 << 6)
 #define PROP_no_crit_edges      (1 << 7)
-#define PROP_rtl                (1 << 8)
-#define PROP_alias                (1 << 9)
-#define PROP_gimple_lomp        (1 << 10)        /* lowered OpenMP directives */
+#define PROP_rtl		(1 << 8)
+#define PROP_alias		(1 << 9)
+#define PROP_gimple_lomp	(1 << 10)	/* lowered OpenMP directives */
 #define PROP_smt_usage          (1 << 11)       /* which SMT's are
-                                                   used alone.  */
+						   used alone.  */
 
 #define PROP_trees \
   (PROP_gimple_any | PROP_gimple_lcf | PROP_gimple_leh | PROP_gimple_lomp)
 
 /* To-do flags.  */
-#define TODO_dump_func                        (1 << 0)
-#define TODO_ggc_collect                (1 << 1)
-#define TODO_verify_ssa                        (1 << 2) 
-#define TODO_verify_flow                (1 << 3)
-#define TODO_verify_stmts                (1 << 4)
-#define TODO_cleanup_cfg                (1 << 5)
-#define TODO_verify_loops                (1 << 6)
-#define TODO_dump_cgraph                (1 << 7)
+#define TODO_dump_func			(1 << 0)
+#define TODO_ggc_collect		(1 << 1)
+#define TODO_verify_ssa			(1 << 2) 
+#define TODO_verify_flow		(1 << 3)
+#define TODO_verify_stmts		(1 << 4)
+#define TODO_cleanup_cfg        	(1 << 5)
+#define TODO_verify_loops		(1 << 6)
+#define TODO_dump_cgraph		(1 << 7)
 
 /* To-do flags for calls to update_ssa.  */
 
@@ -177,13 +177,13 @@ struct dump_file_info
    in blocks that have one or more edges with no incoming definition
    for O_j.  This would lead to uninitialized warnings for O_j's
    symbol.  */
-#define TODO_update_ssa                        (1 << 8)
+#define TODO_update_ssa			(1 << 8)
 
 /* Update the SSA form without inserting any new PHI nodes at all.
    This is used by passes that have either inserted all the PHI nodes
    themselves or passes that need only to patch use-def and def-def
    chains for virtuals (e.g., DCE).  */
-#define TODO_update_ssa_no_phi                (1 << 9)
+#define TODO_update_ssa_no_phi		(1 << 9)
 
 /* Insert PHI nodes everywhere they are needed.  No pruning of the
    IDF is done.  This is used by passes that need the PHI nodes for
@@ -194,7 +194,7 @@ struct dump_file_info
    may be doing something wrong.  Inserting PHI nodes for an old name
    where not all edges carry a new replacement may lead to silent
    codegen errors or spurious uninitialized warnings.  */
-#define TODO_update_ssa_full_phi        (1 << 10)
+#define TODO_update_ssa_full_phi	(1 << 10)
 
 /* Passes that update the SSA form on their own may want to delegate
    the updating of virtual names to the generic updater.  Since FUD
@@ -202,25 +202,25 @@ struct dump_file_info
    to do.  NOTE: If this flag is used, any OLD->NEW mappings for real
    names are explicitly destroyed and only the symbols marked for
    renaming are processed.  */
-#define TODO_update_ssa_only_virtuals        (1 << 11)
+#define TODO_update_ssa_only_virtuals	(1 << 11)
 
 /* Some passes leave unused local variables that can be removed from
    cfun->unexpanded_var_list.  This reduces the size of dump files and
    the memory footprint for VAR_DECLs.  */
-#define TODO_remove_unused_locals        (1 << 12)
+#define TODO_remove_unused_locals	(1 << 12)
 
 /* Internally used for the first in a sequence of passes.  It is set
    for the passes that are handed to register_dump_files.  */
-#define TODO_set_props                        (1 << 13)
+#define TODO_set_props			(1 << 13)
 
 /* Set by passes that may make SMT's that were previously never used
    in statements, used.  */
 #define TODO_update_smt_usage           (1 << 14)
 
-#define TODO_update_ssa_any                \
-    (TODO_update_ssa                        \
-     | TODO_update_ssa_no_phi                \
-     | TODO_update_ssa_full_phi                \
+#define TODO_update_ssa_any		\
+    (TODO_update_ssa			\
+     | TODO_update_ssa_no_phi		\
+     | TODO_update_ssa_full_phi		\
      | TODO_update_ssa_only_virtuals)
 
 #define TODO_verify_all \

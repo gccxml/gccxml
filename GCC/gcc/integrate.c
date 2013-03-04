@@ -48,7 +48,7 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
 #include "tree-pass.h"
 
 /* Round to the next highest integer that meets the alignment.  */
-#define CEIL_ROUND(VALUE,ALIGN)        (((VALUE) + (ALIGN) - 1) & ~((ALIGN)- 1))
+#define CEIL_ROUND(VALUE,ALIGN)	(((VALUE) + (ALIGN) - 1) & ~((ALIGN)- 1))
 
 
 /* Private type used by {get/has}_hard_reg_initial_val.  */
@@ -76,14 +76,14 @@ function_attribute_inlinable_p (tree fndecl)
       tree a;
 
       for (a = DECL_ATTRIBUTES (fndecl); a; a = TREE_CHAIN (a))
-        {
-          tree name = TREE_PURPOSE (a);
-          int i;
+	{
+	  tree name = TREE_PURPOSE (a);
+	  int i;
 
-          for (i = 0; targetm.attribute_table[i].name != NULL; i++)
-            if (is_attribute_p (targetm.attribute_table[i].name, name))
-              return targetm.function_attribute_inlinable_p (fndecl);
-        }
+	  for (i = 0; targetm.attribute_table[i].name != NULL; i++)
+	    if (is_attribute_p (targetm.attribute_table[i].name, name))
+	      return targetm.function_attribute_inlinable_p (fndecl);
+	}
     }
 
   return true;
@@ -107,21 +107,21 @@ set_block_origin_self (tree stmt)
       BLOCK_ABSTRACT_ORIGIN (stmt) = stmt;
 
       {
-        tree local_decl;
+	tree local_decl;
 
-        for (local_decl = BLOCK_VARS (stmt);
-             local_decl != NULL_TREE;
-             local_decl = TREE_CHAIN (local_decl))
-          set_decl_origin_self (local_decl);        /* Potential recursion.  */
+	for (local_decl = BLOCK_VARS (stmt);
+	     local_decl != NULL_TREE;
+	     local_decl = TREE_CHAIN (local_decl))
+	  set_decl_origin_self (local_decl);	/* Potential recursion.  */
       }
 
       {
-        tree subblock;
+	tree subblock;
 
-        for (subblock = BLOCK_SUBBLOCKS (stmt);
-             subblock != NULL_TREE;
-             subblock = BLOCK_CHAIN (subblock))
-          set_block_origin_self (subblock);        /* Recurse.  */
+	for (subblock = BLOCK_SUBBLOCKS (stmt);
+	     subblock != NULL_TREE;
+	     subblock = BLOCK_CHAIN (subblock))
+	  set_block_origin_self (subblock);	/* Recurse.  */
       }
     }
 }
@@ -144,15 +144,15 @@ set_decl_origin_self (tree decl)
     {
       DECL_ABSTRACT_ORIGIN (decl) = decl;
       if (TREE_CODE (decl) == FUNCTION_DECL)
-        {
-          tree arg;
+	{
+	  tree arg;
 
-          for (arg = DECL_ARGUMENTS (decl); arg; arg = TREE_CHAIN (arg))
-            DECL_ABSTRACT_ORIGIN (arg) = arg;
-          if (DECL_INITIAL (decl) != NULL_TREE
-              && DECL_INITIAL (decl) != error_mark_node)
-            set_block_origin_self (DECL_INITIAL (decl));
-        }
+	  for (arg = DECL_ARGUMENTS (decl); arg; arg = TREE_CHAIN (arg))
+	    DECL_ABSTRACT_ORIGIN (arg) = arg;
+	  if (DECL_INITIAL (decl) != NULL_TREE
+	      && DECL_INITIAL (decl) != error_mark_node)
+	    set_block_origin_self (DECL_INITIAL (decl));
+	}
     }
 }
 
@@ -195,10 +195,10 @@ set_decl_abstract_flags (tree decl, int setting)
       tree arg;
 
       for (arg = DECL_ARGUMENTS (decl); arg; arg = TREE_CHAIN (arg))
-        DECL_ABSTRACT (arg) = setting;
+	DECL_ABSTRACT (arg) = setting;
       if (DECL_INITIAL (decl) != NULL_TREE
-          && DECL_INITIAL (decl) != error_mark_node)
-        set_block_abstract_flags (DECL_INITIAL (decl), setting);
+	  && DECL_INITIAL (decl) != error_mark_node)
+	set_block_abstract_flags (DECL_INITIAL (decl), setting);
     }
 }
 
@@ -248,8 +248,8 @@ get_hard_reg_initial_val (enum machine_mode mode, unsigned int regno)
     {
       ivs->max_entries += 5;
       ivs->entries = ggc_realloc (ivs->entries,
-                                  ivs->max_entries
-                                  * sizeof (initial_value_pair));
+				  ivs->max_entries
+				  * sizeof (initial_value_pair));
     }
 
   ivs->entries[ivs->num_entries].hard_reg = gen_rtx_REG (mode, regno);
@@ -272,8 +272,8 @@ has_hard_reg_initial_val (enum machine_mode mode, unsigned int regno)
   if (ivs != 0)
     for (i = 0; i < ivs->num_entries; i++)
       if (GET_MODE (ivs->entries[i].hard_reg) == mode
-          && REGNO (ivs->entries[i].hard_reg) == regno)
-        return ivs->entries[i].pseudo;
+	  && REGNO (ivs->entries[i].hard_reg) == regno)
+	return ivs->entries[i].pseudo;
 
   return NULL_RTX;
 }
@@ -326,43 +326,43 @@ allocate_initial_values (rtx *reg_equiv_memory_loc ATTRIBUTE_UNUSED)
       int i;
 
       if (ivs == 0)
-        return;
+	return;
 
       for (i = 0; i < ivs->num_entries; i++)
-        {
-          int regno = REGNO (ivs->entries[i].pseudo);
-          rtx x = targetm.allocate_initial_value (ivs->entries[i].hard_reg);
+	{
+	  int regno = REGNO (ivs->entries[i].pseudo);
+	  rtx x = targetm.allocate_initial_value (ivs->entries[i].hard_reg);
   
-          if (x && REG_N_SETS (REGNO (ivs->entries[i].pseudo)) <= 1)
-            {
-              if (MEM_P (x))
-                reg_equiv_memory_loc[regno] = x;
-              else
-                {
-                  basic_block bb;
-                  int new_regno;
+	  if (x && REG_N_SETS (REGNO (ivs->entries[i].pseudo)) <= 1)
+	    {
+	      if (MEM_P (x))
+		reg_equiv_memory_loc[regno] = x;
+	      else
+		{
+		  basic_block bb;
+		  int new_regno;
 
-                  gcc_assert (REG_P (x));
-                  new_regno = REGNO (x);
-                  reg_renumber[regno] = new_regno;
-                  /* Poke the regno right into regno_reg_rtx so that even
-                     fixed regs are accepted.  */
-                  REGNO (ivs->entries[i].pseudo) = new_regno;
-                  /* Update global register liveness information.  */
-                  FOR_EACH_BB (bb)
-                    {
-                      struct rtl_bb_info *info = bb->il.rtl;
+		  gcc_assert (REG_P (x));
+		  new_regno = REGNO (x);
+		  reg_renumber[regno] = new_regno;
+		  /* Poke the regno right into regno_reg_rtx so that even
+		     fixed regs are accepted.  */
+		  REGNO (ivs->entries[i].pseudo) = new_regno;
+		  /* Update global register liveness information.  */
+		  FOR_EACH_BB (bb)
+		    {
+		      struct rtl_bb_info *info = bb->il.rtl;
 
-                      if (REGNO_REG_SET_P(info->global_live_at_start, regno))
-                        SET_REGNO_REG_SET (info->global_live_at_start,
-                                           new_regno);
-                      if (REGNO_REG_SET_P(info->global_live_at_end, regno))
-                        SET_REGNO_REG_SET (info->global_live_at_end,
-                                           new_regno);
-                    }
-                }
-            }
-        }
+		      if (REGNO_REG_SET_P(info->global_live_at_start, regno))
+			SET_REGNO_REG_SET (info->global_live_at_start,
+					   new_regno);
+		      if (REGNO_REG_SET_P(info->global_live_at_end, regno))
+			SET_REGNO_REG_SET (info->global_live_at_end,
+					   new_regno);
+		    }
+		}
+	    }
+	}
     }
 }
 

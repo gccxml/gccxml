@@ -28,8 +28,8 @@
      to be a register operand.  */
   /* XXX might have to check for lo regs only for thumb ??? */
   return (GET_CODE (op) == REG
-          && (REGNO (op) >= FIRST_PSEUDO_REGISTER
-              || REGNO_REG_CLASS (REGNO (op)) != NO_REGS));
+	  && (REGNO (op) >= FIRST_PSEUDO_REGISTER
+	      || REGNO_REG_CLASS (REGNO (op)) != NO_REGS));
 })
 
 ;; Any hard register.
@@ -47,8 +47,8 @@
     op = SUBREG_REG (op);
 
   return (GET_CODE (op) == REG
-          && (REGNO (op) <= LAST_ARM_REGNUM
-              || REGNO (op) >= FIRST_PSEUDO_REGISTER));
+	  && (REGNO (op) <= LAST_ARM_REGNUM
+	      || REGNO (op) >= FIRST_PSEUDO_REGISTER));
 })
 
 (define_predicate "f_register_operand"
@@ -60,8 +60,8 @@
   /* We don't consider registers whose class is NO_REGS
      to be a register operand.  */
   return (GET_CODE (op) == REG
-          && (REGNO (op) >= FIRST_PSEUDO_REGISTER
-              || REGNO_REG_CLASS (REGNO (op)) == FPA_REGS));
+	  && (REGNO (op) >= FIRST_PSEUDO_REGISTER
+	      || REGNO_REG_CLASS (REGNO (op)) == FPA_REGS));
 })
 
 ;; Reg, subreg(reg) or const_int.
@@ -108,51 +108,51 @@
   (and (match_code "mem")
        (match_test
         "offsettable_address_p (reload_completed | reload_in_progress,
-                                mode, XEXP (op, 0))")))
+				mode, XEXP (op, 0))")))
 
 ;; True if the operand is a memory operand that does not have an
 ;; automodified base register (and thus will not generate output reloads).
 (define_predicate "call_memory_operand"
   (and (match_code "mem")
        (and (match_test "GET_RTX_CLASS (GET_CODE (XEXP (op, 0)))
-                         != RTX_AUTOINC")
-            (match_operand 0 "memory_operand"))))
+			 != RTX_AUTOINC")
+	    (match_operand 0 "memory_operand"))))
 
 (define_predicate "arm_reload_memory_operand"
   (and (match_code "mem,reg,subreg")
        (match_test "(!CONSTANT_P (op)
-                     && (true_regnum(op) == -1
-                         || (GET_CODE (op) == REG
-                             && REGNO (op) >= FIRST_PSEUDO_REGISTER)))")))
+		     && (true_regnum(op) == -1
+			 || (GET_CODE (op) == REG
+			     && REGNO (op) >= FIRST_PSEUDO_REGISTER)))")))
 
 ;; True for valid operands for the rhs of an floating point insns.
 ;;   Allows regs or certain consts on FPA, just regs for everything else.
 (define_predicate "arm_float_rhs_operand"
   (ior (match_operand 0 "s_register_operand")
        (and (match_code "const_double")
-            (match_test "TARGET_FPA && arm_const_double_rtx (op)"))))
+	    (match_test "TARGET_FPA && arm_const_double_rtx (op)"))))
 
 (define_predicate "arm_float_add_operand"
   (ior (match_operand 0 "arm_float_rhs_operand")
        (and (match_code "const_double")
-            (match_test "TARGET_FPA && neg_const_double_rtx_ok_for_fpa (op)"))))
+	    (match_test "TARGET_FPA && neg_const_double_rtx_ok_for_fpa (op)"))))
 
 (define_predicate "vfp_compare_operand"
   (ior (match_operand 0 "s_register_operand")
        (and (match_code "const_double")
-            (match_test "arm_const_double_rtx (op)"))))
+	    (match_test "arm_const_double_rtx (op)"))))
 
 (define_predicate "arm_float_compare_operand"
   (if_then_else (match_test "TARGET_VFP")
-                (match_operand 0 "vfp_compare_operand")
-                (match_operand 0 "arm_float_rhs_operand")))
+		(match_operand 0 "vfp_compare_operand")
+		(match_operand 0 "arm_float_rhs_operand")))
 
 ;; True for valid index operands.
 (define_predicate "index_operand"
   (ior (match_operand 0 "s_register_operand")
        (and (match_operand 0 "immediate_operand")
-            (match_test "(GET_CODE (op) != CONST_INT
-                          || (INTVAL (op) < 4096 && INTVAL (op) > -4096))"))))
+	    (match_test "(GET_CODE (op) != CONST_INT
+			  || (INTVAL (op) < 4096 && INTVAL (op) > -4096))"))))
 
 ;; True for operators that can be combined with a shift in ARM state.
 (define_special_predicate "shiftable_operator"
@@ -167,11 +167,11 @@
 ;; True for shift operators.
 (define_special_predicate "shift_operator"
   (and (ior (ior (and (match_code "mult")
-                      (match_test "power_of_two_operand (XEXP (op, 1), mode)"))
-                 (and (match_code "rotate")
-                      (match_test "GET_CODE (XEXP (op, 1)) == CONST_INT
-                                   && ((unsigned HOST_WIDE_INT) INTVAL (XEXP (op, 1))) < 32")))
-            (match_code "ashift,ashiftrt,lshiftrt,rotatert"))
+		      (match_test "power_of_two_operand (XEXP (op, 1), mode)"))
+		 (and (match_code "rotate")
+		      (match_test "GET_CODE (XEXP (op, 1)) == CONST_INT
+				   && ((unsigned HOST_WIDE_INT) INTVAL (XEXP (op, 1))) < 32")))
+	    (match_code "ashift,ashiftrt,lshiftrt,rotatert"))
        (match_test "mode == GET_MODE (op)")))
 
 ;; True for EQ & NE
@@ -189,8 +189,8 @@
 (define_special_predicate "cc_register"
   (and (match_code "reg")
        (and (match_test "REGNO (op) == CC_REGNUM")
-            (ior (match_test "mode == GET_MODE (op)")
-                 (match_test "mode == VOIDmode && GET_MODE_CLASS (GET_MODE (op)) == MODE_CC")))))
+	    (ior (match_test "mode == GET_MODE (op)")
+		 (match_test "mode == VOIDmode && GET_MODE_CLASS (GET_MODE (op)) == MODE_CC")))))
 
 (define_special_predicate "dominant_cc_register"
   (match_code "reg")
@@ -200,26 +200,26 @@
       mode = GET_MODE (op);
       
       if (GET_MODE_CLASS (mode) != MODE_CC)
-        return false;
+	return false;
     }
 
   return (cc_register (op, mode)
-          && (mode == CC_DNEmode
-             || mode == CC_DEQmode
-             || mode == CC_DLEmode
-             || mode == CC_DLTmode
-             || mode == CC_DGEmode
-             || mode == CC_DGTmode
-             || mode == CC_DLEUmode
-             || mode == CC_DLTUmode
-             || mode == CC_DGEUmode
-             || mode == CC_DGTUmode));
+	  && (mode == CC_DNEmode
+	     || mode == CC_DEQmode
+	     || mode == CC_DLEmode
+	     || mode == CC_DLTmode
+	     || mode == CC_DGEmode
+	     || mode == CC_DGTmode
+	     || mode == CC_DLEUmode
+	     || mode == CC_DLTUmode
+	     || mode == CC_DGEUmode
+	     || mode == CC_DGTUmode));
 })
 
 (define_special_predicate "arm_extendqisi_mem_op"
   (and (match_operand 0 "memory_operand")
        (match_test "arm_legitimate_address_p (mode, XEXP (op, 0), SIGN_EXTEND,
-                                              0)")))
+					      0)")))
 
 (define_predicate "power_of_two_operand"
   (match_code "const_int")
@@ -244,7 +244,7 @@
 (define_predicate "di_operand"
   (ior (match_code "const_int,const_double")
        (and (match_code "reg,subreg,mem")
-            (match_operand 0 "nonimmediate_di_operand"))))
+	    (match_operand 0 "nonimmediate_di_operand"))))
 
 (define_predicate "nonimmediate_soft_df_operand"
   (match_code "reg,subreg,mem")
@@ -261,12 +261,12 @@
 (define_predicate "soft_df_operand"
   (ior (match_code "const_double")
        (and (match_code "reg,subreg,mem")
-            (match_operand 0 "nonimmediate_soft_df_operand"))))
+	    (match_operand 0 "nonimmediate_soft_df_operand"))))
 
 (define_predicate "const_shift_operand"
   (and (match_code "const_int")
        (ior (match_operand 0 "power_of_two_operand")
-            (match_test "((unsigned HOST_WIDE_INT) INTVAL (op)) < 32"))))
+	    (match_test "((unsigned HOST_WIDE_INT) INTVAL (op)) < 32"))))
 
 
 (define_special_predicate "load_multiple_operation"
@@ -401,9 +401,9 @@
 
 (define_predicate "thumb_cmp_operand"
   (ior (and (match_code "reg,subreg")
-            (match_operand 0 "s_register_operand"))
+	    (match_operand 0 "s_register_operand"))
        (and (match_code "const_int")
-            (match_test "((unsigned HOST_WIDE_INT) INTVAL (op)) < 256"))))
+	    (match_test "((unsigned HOST_WIDE_INT) INTVAL (op)) < 256"))))
 
 (define_predicate "thumb_cmpneg_operand"
   (and (match_code "const_int")
@@ -421,8 +421,8 @@
 (define_predicate "thumb_cbrch_target_operand"
   (and (match_code "reg,subreg,mem")
        (ior (match_operand 0 "s_register_operand")
-            (and (match_test "reload_in_progress || reload_completed")
-                 (match_operand 0 "memory_operand")))))
+	    (and (match_test "reload_in_progress || reload_completed")
+		 (match_operand 0 "memory_operand")))))
 
 ;;-------------------------------------------------------------------------
 ;;
@@ -436,8 +436,8 @@
     op = SUBREG_REG (op);
 
   return (GET_CODE (op) == REG
-          && (REGNO_REG_CLASS (REGNO (op)) == CIRRUS_REGS
-              || REGNO_REG_CLASS (REGNO (op)) == GENERAL_REGS));
+	  && (REGNO_REG_CLASS (REGNO (op)) == CIRRUS_REGS
+	      || REGNO_REG_CLASS (REGNO (op)) == GENERAL_REGS));
 })
 
 (define_predicate "cirrus_fp_register"
@@ -447,8 +447,8 @@
     op = SUBREG_REG (op);
 
   return (GET_CODE (op) == REG
-          && (REGNO (op) >= FIRST_PSEUDO_REGISTER
-              || REGNO_REG_CLASS (REGNO (op)) == CIRRUS_REGS));
+	  && (REGNO (op) >= FIRST_PSEUDO_REGISTER
+	      || REGNO_REG_CLASS (REGNO (op)) == CIRRUS_REGS));
 })
 
 (define_predicate "cirrus_shift_const"

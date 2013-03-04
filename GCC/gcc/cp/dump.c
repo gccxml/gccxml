@@ -91,63 +91,63 @@ dump_op (dump_info_p di, tree t)
       break;
     case PLUS_EXPR:
       if (DECL_ASSIGNMENT_OPERATOR_P (t))
-        dump_string (di, "plusassign");
+	dump_string (di, "plusassign");
       else
-        dump_string(di, "plus");
+	dump_string(di, "plus");
       break;
     case MINUS_EXPR:
       if (DECL_ASSIGNMENT_OPERATOR_P (t))
-        dump_string (di, "minusassign");
+	dump_string (di, "minusassign");
       else
-        dump_string(di, "minus");
+	dump_string(di, "minus");
       break;
     case MULT_EXPR:
       if (DECL_ASSIGNMENT_OPERATOR_P (t))
-        dump_string (di, "multassign");
+	dump_string (di, "multassign");
       else
-        dump_string (di, "mult");
+	dump_string (di, "mult");
       break;
     case TRUNC_DIV_EXPR:
       if (DECL_ASSIGNMENT_OPERATOR_P (t))
-        dump_string (di, "divassign");
+	dump_string (di, "divassign");
       else
-        dump_string (di, "div");
+	dump_string (di, "div");
       break;
     case TRUNC_MOD_EXPR:
       if (DECL_ASSIGNMENT_OPERATOR_P (t))
-         dump_string (di, "modassign");
+	 dump_string (di, "modassign");
       else
-        dump_string (di, "mod");
+	dump_string (di, "mod");
       break;
     case BIT_AND_EXPR:
       if (DECL_ASSIGNMENT_OPERATOR_P (t))
-        dump_string (di, "andassign");
+	dump_string (di, "andassign");
       else
-        dump_string (di, "and");
+	dump_string (di, "and");
       break;
     case BIT_IOR_EXPR:
       if (DECL_ASSIGNMENT_OPERATOR_P (t))
-        dump_string (di, "orassign");
+	dump_string (di, "orassign");
       else
-        dump_string (di, "or");
+	dump_string (di, "or");
       break;
     case BIT_XOR_EXPR:
       if (DECL_ASSIGNMENT_OPERATOR_P (t))
-        dump_string (di, "xorassign");
+	dump_string (di, "xorassign");
       else
-        dump_string (di, "xor");
+	dump_string (di, "xor");
       break;
     case LSHIFT_EXPR:
       if (DECL_ASSIGNMENT_OPERATOR_P (t))
-        dump_string (di, "lshiftassign");
+	dump_string (di, "lshiftassign");
       else
-        dump_string (di, "lshift");
+	dump_string (di, "lshift");
       break;
     case RSHIFT_EXPR:
       if (DECL_ASSIGNMENT_OPERATOR_P (t))
-        dump_string (di, "rshiftassign");
+	dump_string (di, "rshiftassign");
       else
-        dump_string (di, "rshift");
+	dump_string (di, "rshift");
       break;
     case EQ_EXPR:
       dump_string (di, "eq");
@@ -196,7 +196,7 @@ dump_op (dump_info_p di, tree t)
       break;
     case NOP_EXPR:
       if (DECL_ASSIGNMENT_OPERATOR_P (t))
-        dump_string (di, "assign");
+	dump_string (di, "assign");
       break;
     default:
       break;
@@ -215,22 +215,22 @@ cp_dump_tree (void* dump_info, tree t)
   if (DECL_P (t))
     {
       if (DECL_LANG_SPECIFIC (t) && DECL_LANGUAGE (t) != lang_cplusplus)
-        dump_string_field (di, "lang", language_to_string (DECL_LANGUAGE (t)));
+	dump_string_field (di, "lang", language_to_string (DECL_LANGUAGE (t)));
     }
 
   switch (code)
     {
     case IDENTIFIER_NODE:
       if (IDENTIFIER_OPNAME_P (t))
-        {
-          dump_string_field (di, "note", "operator");
-          return true;
-        }
+	{
+	  dump_string_field (di, "note", "operator");
+	  return true;
+	}
       else if (IDENTIFIER_TYPENAME_P (t))
-        {
-          dump_child ("tynm", TREE_TYPE (t));
-          return true;
-        }
+	{
+	  dump_child ("tynm", TREE_TYPE (t));
+	  return true;
+	}
       break;
 
     case OFFSET_TYPE:
@@ -241,114 +241,114 @@ cp_dump_tree (void* dump_info, tree t)
 
     case RECORD_TYPE:
       if (TYPE_PTRMEMFUNC_P (t))
-        {
-          dump_string_field (di, "note", "ptrmem");
-          dump_child ("ptd", TYPE_PTRMEM_POINTED_TO_TYPE (t));
-          dump_child ("cls", TYPE_PTRMEM_CLASS_TYPE (t));
-          return true;
-        }
+	{
+	  dump_string_field (di, "note", "ptrmem");
+	  dump_child ("ptd", TYPE_PTRMEM_POINTED_TO_TYPE (t));
+	  dump_child ("cls", TYPE_PTRMEM_CLASS_TYPE (t));
+	  return true;
+	}
       /* Fall through.  */
 
     case UNION_TYPE:
       /* Is it a type used as a base? */
       if (TYPE_CONTEXT (t) && TREE_CODE (TYPE_CONTEXT (t)) == TREE_CODE (t)
-          && CLASSTYPE_AS_BASE (TYPE_CONTEXT (t)) == t)
-        {
-          dump_child ("bfld", TYPE_CONTEXT (t));
-          return true;
-        }
+	  && CLASSTYPE_AS_BASE (TYPE_CONTEXT (t)) == t)
+	{
+	  dump_child ("bfld", TYPE_CONTEXT (t));
+	  return true;
+	}
 
       if (! IS_AGGR_TYPE (t))
-        break;
+	break;
 
       dump_child ("vfld", TYPE_VFIELD (t));
       if (CLASSTYPE_TEMPLATE_SPECIALIZATION(t))
-        dump_string(di, "spec");
+	dump_string(di, "spec");
 
       if (!dump_flag (di, TDF_SLIM, t) && TYPE_BINFO (t))
-        {
-          int i;
-          tree binfo;
-          tree base_binfo;
+	{
+	  int i;
+	  tree binfo;
+	  tree base_binfo;
 
-          for (binfo = TYPE_BINFO (t), i = 0;
-               BINFO_BASE_ITERATE (binfo, i, base_binfo); ++i)
-            {
-              dump_child ("base", BINFO_TYPE (base_binfo));
-              if (BINFO_VIRTUAL_P (base_binfo))
-                dump_string_field (di, "spec", "virt");
-              dump_access (di, base_binfo);
-            }
-        }
+	  for (binfo = TYPE_BINFO (t), i = 0;
+	       BINFO_BASE_ITERATE (binfo, i, base_binfo); ++i)
+	    {
+	      dump_child ("base", BINFO_TYPE (base_binfo));
+	      if (BINFO_VIRTUAL_P (base_binfo))
+		dump_string_field (di, "spec", "virt");
+	      dump_access (di, base_binfo);
+	    }
+	}
       break;
 
     case FIELD_DECL:
       dump_access (di, t);
       if (DECL_MUTABLE_P (t))
-        dump_string_field (di, "spec", "mutable");
+	dump_string_field (di, "spec", "mutable");
       break;
 
     case VAR_DECL:
       if (TREE_CODE (CP_DECL_CONTEXT (t)) == RECORD_TYPE)
-        dump_access (di, t);
+	dump_access (di, t);
       if (TREE_STATIC (t) && !TREE_PUBLIC (t))
-        dump_string_field (di, "link", "static");
+	dump_string_field (di, "link", "static");
       break;
 
     case FUNCTION_DECL:
       if (!DECL_THUNK_P (t))
-        {
-          if (DECL_OVERLOADED_OPERATOR_P (t)) {
-            dump_string_field (di, "note", "operator");
-            dump_op (di, t);
-          }
-          if (DECL_FUNCTION_MEMBER_P (t))
-            {
-              dump_string_field (di, "note", "member");
-              dump_access (di, t);
-            }
-          if (DECL_PURE_VIRTUAL_P (t))
-            dump_string_field (di, "spec", "pure");
-          if (DECL_VIRTUAL_P (t))
-            dump_string_field (di, "spec", "virt");
-          if (DECL_CONSTRUCTOR_P (t))
-            dump_string_field (di, "note", "constructor");
-          if (DECL_DESTRUCTOR_P (t))
-            dump_string_field (di, "note", "destructor");
-          if (DECL_CONV_FN_P (t))
-            dump_string_field (di, "note", "conversion");
-          if (DECL_GLOBAL_CTOR_P (t))
-            dump_string_field (di, "note", "global init");
-          if (DECL_GLOBAL_DTOR_P (t))
-            dump_string_field (di, "note", "global fini");
-          if (DECL_FRIEND_PSEUDO_TEMPLATE_INSTANTIATION (t))
-            dump_string_field (di, "note", "pseudo tmpl");
-        }
+	{
+	  if (DECL_OVERLOADED_OPERATOR_P (t)) {
+	    dump_string_field (di, "note", "operator");
+	    dump_op (di, t);
+	  }
+	  if (DECL_FUNCTION_MEMBER_P (t))
+	    {
+	      dump_string_field (di, "note", "member");
+	      dump_access (di, t);
+	    }
+	  if (DECL_PURE_VIRTUAL_P (t))
+	    dump_string_field (di, "spec", "pure");
+	  if (DECL_VIRTUAL_P (t))
+	    dump_string_field (di, "spec", "virt");
+	  if (DECL_CONSTRUCTOR_P (t))
+	    dump_string_field (di, "note", "constructor");
+	  if (DECL_DESTRUCTOR_P (t))
+	    dump_string_field (di, "note", "destructor");
+	  if (DECL_CONV_FN_P (t))
+	    dump_string_field (di, "note", "conversion");
+	  if (DECL_GLOBAL_CTOR_P (t))
+	    dump_string_field (di, "note", "global init");
+	  if (DECL_GLOBAL_DTOR_P (t))
+	    dump_string_field (di, "note", "global fini");
+	  if (DECL_FRIEND_PSEUDO_TEMPLATE_INSTANTIATION (t))
+	    dump_string_field (di, "note", "pseudo tmpl");
+	}
       else
-        {
-          tree virt = THUNK_VIRTUAL_OFFSET (t);
+	{
+	  tree virt = THUNK_VIRTUAL_OFFSET (t);
 
-          dump_string_field (di, "note", "thunk");
-          if (DECL_THIS_THUNK_P (t))
-            dump_string_field (di, "note", "this adjusting");
-          else
-            {
-              dump_string_field (di, "note", "result adjusting");
-              if (virt)
-                virt = BINFO_VPTR_FIELD (virt);
-            }
-          dump_int (di, "fixd", THUNK_FIXED_OFFSET (t));
-          if (virt)
-            dump_int (di, "virt", tree_low_cst (virt, 0));
-          dump_child ("fn", DECL_INITIAL (t));
-        }
+	  dump_string_field (di, "note", "thunk");
+	  if (DECL_THIS_THUNK_P (t))
+	    dump_string_field (di, "note", "this adjusting");
+	  else
+	    {
+	      dump_string_field (di, "note", "result adjusting");
+	      if (virt)
+		virt = BINFO_VPTR_FIELD (virt);
+	    }
+	  dump_int (di, "fixd", THUNK_FIXED_OFFSET (t));
+	  if (virt)
+	    dump_int (di, "virt", tree_low_cst (virt, 0));
+	  dump_child ("fn", DECL_INITIAL (t));
+	}
       break;
 
     case NAMESPACE_DECL:
       if (DECL_NAMESPACE_ALIAS (t))
-        dump_child ("alis", DECL_NAMESPACE_ALIAS (t));
+	dump_child ("alis", DECL_NAMESPACE_ALIAS (t));
       else if (!dump_flag (di, TDF_SLIM, t))
-        dump_child ("dcls", cp_namespace_decls (t));
+	dump_child ("dcls", cp_namespace_decls (t));
       break;
 
     case TEMPLATE_DECL:
@@ -366,7 +366,7 @@ cp_dump_tree (void* dump_info, tree t)
     case TRY_BLOCK:
       dump_stmt (di, t);
       if (CLEANUP_P (t))
-        dump_string_field (di, "note", "cleanup");
+	dump_string_field (di, "note", "cleanup");
       dump_child ("body", TRY_STMTS (t));
       dump_child ("hdlr", TRY_HANDLERS (t));
       break;

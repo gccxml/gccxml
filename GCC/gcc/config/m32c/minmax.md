@@ -24,8 +24,8 @@
 
 (define_insn "sminqi3"
   [(set (match_operand:QI 0 "mra_operand" "=RhlSd,RhlSd,??Rmm,??Rmm,Raa,Raa")
-        (smin:QI (match_operand:QI 1 "mra_operand" "%0,0,0,0,0,0")
-                 (match_operand:QI 2 "mrai_operand" "iRhlSdRaa,?Rmm,iRhlSdRaa,?Rmm,iRhlSd,?Rmm")))]
+	(smin:QI (match_operand:QI 1 "mra_operand" "%0,0,0,0,0,0")
+		 (match_operand:QI 2 "mrai_operand" "iRhlSdRaa,?Rmm,iRhlSdRaa,?Rmm,iRhlSd,?Rmm")))]
   "TARGET_A24"
   "min.b\t%2,%0"
   [(set_attr "flags" "n")]
@@ -33,8 +33,8 @@
 
 (define_insn "sminhi3"
   [(set (match_operand:HI 0 "mra_operand" "=RhiSd,RhiSd,??Rmm,??Rmm")
-        (smin:HI (match_operand:HI 1 "mra_operand" "%0,0,0,0")
-                 (match_operand:HI 2 "mrai_operand" "iRhiSd,?Rmm,iRhiSd,?Rmm")))]
+	(smin:HI (match_operand:HI 1 "mra_operand" "%0,0,0,0")
+		 (match_operand:HI 2 "mrai_operand" "iRhiSd,?Rmm,iRhiSd,?Rmm")))]
   "TARGET_A24"
   "min.w\t%2,%0"
   [(set_attr "flags" "n")]
@@ -42,8 +42,8 @@
 
 (define_insn "smaxqi3"
   [(set (match_operand:QI 0 "mra_operand" "=RhlSd,RhlSd,??Rmm,??Rmm,Raa,Raa")
-        (smax:QI (match_operand:QI 1 "mra_operand" "%0,0,0,0,0,0")
-                 (match_operand:QI 2 "mrai_operand" "iRhlSdRaa,?Rmm,iRhlSdRaa,?Rmm,iRhlSd,?Rmm")))]
+	(smax:QI (match_operand:QI 1 "mra_operand" "%0,0,0,0,0,0")
+		 (match_operand:QI 2 "mrai_operand" "iRhlSdRaa,?Rmm,iRhlSdRaa,?Rmm,iRhlSd,?Rmm")))]
   "TARGET_A24"
   "max.b\t%2,%0"
   [(set_attr "flags" "n")]
@@ -51,8 +51,8 @@
 
 (define_insn "smaxhi3"
   [(set (match_operand:HI 0 "mra_operand" "=RhiSd,RhiSd,??Rmm,??Rmm")
-        (smax:HI (match_operand:HI 1 "mra_operand" "%0,0,0,0")
-                 (match_operand:HI 2 "mrai_operand" "iRhiSd,?Rmm,iRhiSd,?Rmm")))]
+	(smax:HI (match_operand:HI 1 "mra_operand" "%0,0,0,0")
+		 (match_operand:HI 2 "mrai_operand" "iRhiSd,?Rmm,iRhiSd,?Rmm")))]
   "TARGET_A24"
   "max.w\t%2,%0"
   [(set_attr "flags" "n")]

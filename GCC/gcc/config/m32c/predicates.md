@@ -38,10 +38,10 @@
 ; TRUE if the operand is a pseudo-register.
 (define_predicate "m32c_pseudo"
   (ior (and (match_code "reg")
-            (match_test "REGNO(op) >= FIRST_PSEUDO_REGISTER"))
+	    (match_test "REGNO(op) >= FIRST_PSEUDO_REGISTER"))
        (and (match_code "subreg")
-            (and (match_test "GET_CODE (XEXP (op, 0)) == REG")
-                 (match_test "REGNO(XEXP (op,0)) >= FIRST_PSEUDO_REGISTER")))))
+	    (and (match_test "GET_CODE (XEXP (op, 0)) == REG")
+		 (match_test "REGNO(XEXP (op,0)) >= FIRST_PSEUDO_REGISTER")))))
        
 
 ; Returning true causes many predicates to NOT match.  We allow
@@ -62,50 +62,50 @@
 (define_predicate "r0123_operand"
   (ior (match_operand 0 "m32c_pseudo" "")
        (and (match_code "reg")
-            (match_test "REGNO(op) <= R3_REGNO"))))
+	    (match_test "REGNO(op) <= R3_REGNO"))))
 
 ; TRUE for r0
 (define_predicate "m32c_r0_operand"
   (ior (match_operand 0 "m32c_pseudo" "")
        (and (match_code "reg")
-            (match_test "REGNO(op) == R0_REGNO"))))
+	    (match_test "REGNO(op) == R0_REGNO"))))
 
 ; TRUE for r1
 (define_predicate "m32c_r1_operand"
   (ior (match_operand 0 "m32c_pseudo" "")
        (and (match_code "reg")
-            (match_test "REGNO(op) == R1_REGNO"))))
+	    (match_test "REGNO(op) == R1_REGNO"))))
 
 ; TRUE for HL_CLASS (r0 or r1)
 (define_predicate "m32c_hl_operand"
   (ior (match_operand 0 "m32c_pseudo" "")
        (and (match_code "reg")
-            (match_test "REGNO(op) == R0_REGNO || REGNO(op) == R1_REGNO"))))
+	    (match_test "REGNO(op) == R0_REGNO || REGNO(op) == R1_REGNO"))))
 
 
 ; TRUE for r2
 (define_predicate "m32c_r2_operand"
   (ior (match_operand 0 "m32c_pseudo" "")
        (and (match_code "reg")
-            (match_test "REGNO(op) == R2_REGNO"))))
+	    (match_test "REGNO(op) == R2_REGNO"))))
 
 ; TRUE for r3
 (define_predicate "m32c_r3_operand"
   (ior (match_operand 0 "m32c_pseudo" "")
        (and (match_code "reg")
-            (match_test "REGNO(op) == R3_REGNO"))))
+	    (match_test "REGNO(op) == R3_REGNO"))))
 
 ; TRUE for any general operand except r2.
 (define_predicate "m32c_notr2_operand"
   (and (match_operand 0 "general_operand")
        (ior (not (match_code "reg"))
-            (match_test "REGNO(op) != R2_REGNO"))))
+	    (match_test "REGNO(op) != R2_REGNO"))))
 
 ; TRUE for the stack pointer.
 (define_predicate "m32c_sp_operand"
   (ior (match_operand 0 "m32c_pseudo" "")
        (and (match_code "reg")
-            (match_test "REGNO(op) == SP_REGNO"))))
+	    (match_test "REGNO(op) == SP_REGNO"))))
 
 ; TRUE for control registers.
 (define_predicate "cr_operand"
@@ -122,18 +122,18 @@
 (define_predicate "ap_operand"
   (ior (match_operand 0 "m32c_pseudo" "")
        (and (match_code "reg")
-            (match_test "REGNO (op) == A0_REGNO || REGNO (op) == A1_REGNO"))))
+	    (match_test "REGNO (op) == A0_REGNO || REGNO (op) == A1_REGNO"))))
 
 ; TRUE for r0 through r3, or a0 or a1.
 (define_predicate "ra_operand"
   (and (and (match_operand 0 "register_operand" "")
-            (not (match_operand 1 "cr_operand" "")))
+	    (not (match_operand 1 "cr_operand" "")))
        (not (match_operand 2 "m32c_wide_subreg" ""))))
 
 ; Likewise, plus TRUE for memory references.
 (define_predicate "mra_operand"
   (and (and (match_operand 0 "nonimmediate_operand" "")
-            (not (match_operand 1 "cr_operand" "")))
+	    (not (match_operand 1 "cr_operand" "")))
        (not (match_operand 2 "m32c_wide_subreg" ""))))
 
 ; Likewise, plus TRUE for subregs.
@@ -147,7 +147,7 @@
 {
   if (GET_CODE (op) == MEM
       && (GET_CODE (XEXP (op, 0)) == PRE_DEC
-          || (GET_CODE (XEXP (op, 0)) == POST_INC)))
+	  || (GET_CODE (XEXP (op, 0)) == POST_INC)))
     return 0;
   return 1;
 })
@@ -155,7 +155,7 @@
 ; TRUE for memory, r0..r3, a0..a1, or immediates.
 (define_predicate "mrai_operand"
   (and (and (match_operand 0 "m32c_any_operand" "")
-            (not (match_operand 1 "cr_operand" "")))
+	    (not (match_operand 1 "cr_operand" "")))
        (not (match_operand 2 "m32c_wide_subreg" ""))))
 
 ; Likewise, plus true for subregs.
@@ -192,11 +192,11 @@
     rtx size = XEXP (op, 1);
     rtx pos = XEXP (op, 2);
     return (GET_CODE (reg) == REG
-            && REGNO (reg) == R1_REGNO
-            && GET_CODE (size) == CONST_INT
-            && INTVAL (size) == 8
-            && GET_CODE (pos) == CONST_INT
-            && INTVAL (pos) == 8);
+	    && REGNO (reg) == R1_REGNO
+	    && GET_CODE (size) == CONST_INT
+	    && INTVAL (size) == 8
+	    && GET_CODE (pos) == CONST_INT
+	    && INTVAL (pos) == 8);
   })
 
 ; TRUE if we can shift by this amount.  Constant shift counts have a
@@ -204,26 +204,26 @@
 (define_predicate "shiftcount_operand"
   (ior (match_operand 0 "mra_operand" "")
        (and (match_operand 2 "const_int_operand" "")
-            (match_test "-8 <= INTVAL (op) && INTVAL (op) && INTVAL (op) <= 8"))))
+	    (match_test "-8 <= INTVAL (op) && INTVAL (op) && INTVAL (op) <= 8"))))
 (define_predicate "longshiftcount_operand"
   (ior (match_operand 0 "mra_operand" "")
        (and (match_operand 2 "const_int_operand" "")
-            (match_test "-32 <= INTVAL (op) && INTVAL (op) && INTVAL (op) <= 32"))))
+	    (match_test "-32 <= INTVAL (op) && INTVAL (op) && INTVAL (op) <= 32"))))
 
 ; TRUE for r0..r3, a0..a1, or sp.
 (define_predicate "mra_or_sp_operand"
   (and (ior (match_operand 0 "mra_operand")
-            (match_operand 1 "m32c_sp_operand"))
+	    (match_operand 1 "m32c_sp_operand"))
        (not (match_operand 2 "m32c_wide_subreg" ""))))
 
 
 ; TRUE for r2 or r3.
 (define_predicate "m32c_r2r3_operand"
   (ior (and (match_code "reg")
-            (ior (match_test "REGNO(op) == R2_REGNO")
-                 (match_test "REGNO(op) == R3_REGNO")))
+	    (ior (match_test "REGNO(op) == R2_REGNO")
+		 (match_test "REGNO(op) == R3_REGNO")))
        (and (match_code "subreg")
-            (match_test "GET_CODE (XEXP (op, 0)) == REG && (REGNO (XEXP (op, 0)) == R2_REGNO || REGNO (XEXP (op, 0)) == R3_REGNO)"))))
+	    (match_test "GET_CODE (XEXP (op, 0)) == REG && (REGNO (XEXP (op, 0)) == R2_REGNO || REGNO (XEXP (op, 0)) == R3_REGNO)"))))
 
 ; Likewise, plus TRUE for a0..a1.
 (define_predicate "m32c_r2r3a_operand"
@@ -233,12 +233,12 @@
 ; These two are only for movqi - no subreg limit
 (define_predicate "mra_qi_operand"
   (and (and (match_operand 0 "m32c_nonimmediate_operand" "")
-            (not (match_operand 1 "cr_operand" "")))
+	    (not (match_operand 1 "cr_operand" "")))
        (not (match_operand 1 "m32c_r2r3a_operand" ""))))
 
 (define_predicate "mrai_qi_operand"
   (and (and (match_operand 0 "m32c_any_operand" "")
-            (not (match_operand 1 "cr_operand" "")))
+	    (not (match_operand 1 "cr_operand" "")))
        (not (match_operand 1 "m32c_r2r3a_operand" ""))))
 
 (define_predicate "a_qi_operand"
@@ -256,13 +256,13 @@
 (define_predicate "m32c_mem0_operand"
   (ior (match_operand 0 "m32c_pseudo" "")
        (and (match_code "reg")
-            (match_test "REGNO(op) == MEM0_REGNO"))))
+	    (match_test "REGNO(op) == MEM0_REGNO"))))
 
 ; TRUE for things the call patterns can return.
 (define_predicate "m32c_return_operand"
   (ior (match_operand 0 "m32c_r0_operand")
        (ior (match_operand 0 "m32c_mem0_operand")
-            (match_code "parallel"))))
+	    (match_code "parallel"))))
 
 ; TRUE for constants we can multiply pointers by
 (define_predicate "m32c_psi_scale"

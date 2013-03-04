@@ -68,19 +68,19 @@ strtod (char *str, char **ptr)
       && (p[2] == 'f' || p[2] == 'F'))
     {
       if ((p[3] == 'i' || p[3] == 'I')
-          && (p[4] == 'n' || p[4] == 'N')
-          && (p[5] == 'i' || p[5] == 'I')
-          && (p[6] == 't' || p[6] == 'T')
-          && (p[7] == 'y' || p[7] == 'Y'))
-        {
-          *ptr = p + 8;
-          return atof (str);
-        }
+	  && (p[4] == 'n' || p[4] == 'N')
+	  && (p[5] == 'i' || p[5] == 'I')
+	  && (p[6] == 't' || p[6] == 'T')
+	  && (p[7] == 'y' || p[7] == 'Y'))
+	{
+	  *ptr = p + 8;
+	  return atof (str);
+	}
       else
-        {
-          *ptr = p + 3;
-          return atof (str);
-        }
+	{
+	  *ptr = p + 3;
+	  return atof (str);
+	}
     }
 
   /* NAN or NAN(foo).  */
@@ -90,13 +90,13 @@ strtod (char *str, char **ptr)
     {
       p += 3;
       if (*p == '(')
-        {
-          ++p;
-          while (*p != '\0' && *p != ')')
-            ++p;
-          if (*p == ')')
-            ++p;
-        }
+	{
+	  ++p;
+	  while (*p != '\0' && *p != ')')
+	    ++p;
+	  if (*p == ')')
+	    ++p;
+	}
       *ptr = p;
       return atof (str);
     }
@@ -106,27 +106,27 @@ strtod (char *str, char **ptr)
     {
       int got_dot = 0;
       while (ISDIGIT (*p) || (!got_dot && *p == '.'))
-        {
-          if (*p == '.')
-            got_dot = 1;
-          ++p;
-        }
+	{
+	  if (*p == '.')
+	    got_dot = 1;
+	  ++p;
+	}
 
       /* Exponent.  */
       if (*p == 'e' || *p == 'E')
-        {
-          int i;
-          i = 1;
-          if (p[i] == '+' || p[i] == '-')
-            ++i;
-          if (ISDIGIT (p[i]))
-            {
-              while (ISDIGIT (p[i]))
-                ++i;
-              *ptr = p + i;
-              return atof (str);
-            }
-        }
+	{
+	  int i;
+	  i = 1;
+	  if (p[i] == '+' || p[i] == '-')
+	    ++i;
+	  if (ISDIGIT (p[i]))
+	    {
+	      while (ISDIGIT (p[i]))
+		++i;
+	      *ptr = p + i;
+	      return atof (str);
+	    }
+	}
       *ptr = p;
       return atof (str);
     }

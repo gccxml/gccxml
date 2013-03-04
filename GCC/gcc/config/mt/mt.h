@@ -56,7 +56,7 @@ march=ms1-64-001:-T 64-001.ld%s; \
 march=ms1-16-002:-T 16-002.ld%s; \
 march=ms1-16-003:-T 16-003.ld%s; \
 march=ms2:-T ms2.ld%s; \
-         :-T 16-002.ld}"
+	 :-T 16-002.ld}"
 
 /* A string to pass at the very beginning of the command given to the
    linker.  */
@@ -66,7 +66,7 @@ march=ms1-64-001:%{!mno-crt0:crt0-64-001.o%s} startup-64-001.o%s; \
 march=ms1-16-002:%{!mno-crt0:crt0-16-002.o%s} startup-16-002.o%s; \
 march=ms1-16-003:%{!mno-crt0:crt0-16-003.o%s} startup-16-003.o%s; \
 march=ms2:%{!mno-crt0:crt0-ms2.o%s} startup-ms2.o%s; \
-         :%{!mno-crt0:crt0-16-002.o%s} startup-16-002.o%s} \
+	 :%{!mno-crt0:crt0-16-002.o%s} startup-16-002.o%s} \
 crti.o%s crtbegin.o%s"
 
 /* A string to pass at the end of the command given to the linker.  */
@@ -76,17 +76,17 @@ march=ms1-64-001:exit-64-001.o%s; \
 march=ms1-16-002:exit-16-002.o%s; \
 march=ms1-16-003:exit-16-003.o%s; \
 march=ms2:exit-ms2.o%s; \
-         :exit-16-002.o%s} \
+	 :exit-16-002.o%s} \
  crtend.o%s crtn.o%s"
 
 /* Run-time target specifications.  */
 
-#define TARGET_CPU_CPP_BUILTINS()                 \
-  do                                                \
-    {                                                \
-      builtin_define_with_int_value ("__mt__", mt_cpu);        \
-      builtin_assert ("machine=mt");                \
-    }                                                \
+#define TARGET_CPU_CPP_BUILTINS() 		\
+  do						\
+    {						\
+      builtin_define_with_int_value ("__mt__", mt_cpu);	\
+      builtin_assert ("machine=mt");		\
+    }						\
   while (0)
 
 #define TARGET_MS1_64_001 (mt_cpu == PROCESSOR_MS1_64_001)
@@ -129,13 +129,13 @@ march=ms2:exit-ms2.o%s; \
    is more efficient.
 
    Do not define this macro if it would never modify MODE.  */
-#define PROMOTE_MODE(MODE,UNSIGNEDP,TYPE)                        \
-  do                                                                \
-    {                                                                \
-      if (GET_MODE_CLASS (MODE) == MODE_INT                        \
-          && GET_MODE_SIZE (MODE) < 4)                                \
-        (MODE) = SImode;                                        \
-    }                                                                \
+#define PROMOTE_MODE(MODE,UNSIGNEDP,TYPE)			\
+  do								\
+    {								\
+      if (GET_MODE_CLASS (MODE) == MODE_INT			\
+	  && GET_MODE_SIZE (MODE) < 4)				\
+	(MODE) = SImode;					\
+    }								\
   while (0)
 
 /* Normal alignment required for function parameters on the stack, in bits.
@@ -164,9 +164,9 @@ march=ms2:exit-ms2.o%s; \
    macro is used instead of that alignment to align the object.
 
    If this macro is not defined, then ALIGN is used.  */
-#define DATA_ALIGNMENT(TYPE, ALIGN)                \
-  (TREE_CODE (TYPE) == ARRAY_TYPE                \
-   && TYPE_MODE (TREE_TYPE (TYPE)) == QImode        \
+#define DATA_ALIGNMENT(TYPE, ALIGN)		\
+  (TREE_CODE (TYPE) == ARRAY_TYPE		\
+   && TYPE_MODE (TREE_TYPE (TYPE)) == QImode	\
    && (ALIGN) < BITS_PER_WORD ? BITS_PER_WORD : (ALIGN))
 
 /* If defined, a C expression to compute the alignment given to a constant that
@@ -180,7 +180,7 @@ march=ms2:exit-ms2.o%s; \
    to be word aligned so that `strcpy' calls that copy constants can be done
    inline.  */
 #define CONSTANT_ALIGNMENT(EXP, ALIGN)  \
-  (TREE_CODE (EXP) == STRING_CST        \
+  (TREE_CODE (EXP) == STRING_CST	\
    && (ALIGN) < BITS_PER_WORD ? BITS_PER_WORD : (ALIGN))
 
 /* Number of bits which any structure or union's size must be a multiple of.
@@ -222,66 +222,66 @@ march=ms2:exit-ms2.o%s; \
 
 /* General purpose registers.  */
 #define GPR_FIRST       0               /* First gpr */
-#define GPR_LAST        15                /* Last possible gpr */
+#define GPR_LAST        15		/* Last possible gpr */
 
-#define GPR_R0          0                /* Always 0 */
-#define GPR_R7          7                /* Used as a scratch register */
-#define GPR_R8          8                /* Used as a scratch register */
-#define GPR_R9          9                /* Used as a scratch register */
-#define GPR_R10         10                /* Used as a scratch register */
-#define GPR_R11         11                /* Used as a scratch register */
-#define GPR_FP          12                /* Frame pointer */
-#define GPR_SP          13                /* Stack pointer */
-#define GPR_LINK        14                /* Saved return address as
-                                           seen  by the caller */
-#define GPR_INTERRUPT_LINK 15                /* hold return addres for interrupts */
+#define GPR_R0          0		/* Always 0 */
+#define GPR_R7          7		/* Used as a scratch register */
+#define GPR_R8          8		/* Used as a scratch register */
+#define GPR_R9          9		/* Used as a scratch register */
+#define GPR_R10         10		/* Used as a scratch register */
+#define GPR_R11         11		/* Used as a scratch register */
+#define GPR_FP          12		/* Frame pointer */
+#define GPR_SP          13	        /* Stack pointer */
+#define GPR_LINK	14		/* Saved return address as
+					   seen  by the caller */
+#define GPR_INTERRUPT_LINK 15		/* hold return addres for interrupts */
 
 #define LOOP_FIRST         (GPR_LAST + 1)
-#define LOOP_LAST           (LOOP_FIRST + 3)
+#define LOOP_LAST	   (LOOP_FIRST + 3)
 
 /* Argument register that is eliminated in favor of the frame and/or stack
    pointer.  Also add register to point to where the return address is
    stored.  */
-#define SPECIAL_REG_FIRST                (LOOP_LAST + 1)
-#define SPECIAL_REG_LAST                (SPECIAL_REG_FIRST)
-#define ARG_POINTER_REGNUM                (SPECIAL_REG_FIRST + 0)
-#define SPECIAL_REG_P(R)                ((R) == SPECIAL_REG_FIRST)
+#define SPECIAL_REG_FIRST		(LOOP_LAST + 1)
+#define SPECIAL_REG_LAST		(SPECIAL_REG_FIRST)
+#define ARG_POINTER_REGNUM		(SPECIAL_REG_FIRST + 0)
+#define SPECIAL_REG_P(R)		((R) == SPECIAL_REG_FIRST)
 
 /* The first/last register that can contain the arguments to a function.  */
-#define FIRST_ARG_REGNUM        1
-#define LAST_ARG_REGNUM                4
+#define FIRST_ARG_REGNUM	1
+#define LAST_ARG_REGNUM		4
 
 /* The register used to hold functions return value */
-#define RETVAL_REGNUM                11
+#define RETVAL_REGNUM		11
 
 #define FIRST_PSEUDO_REGISTER (SPECIAL_REG_LAST + 1)
 
-#define IS_PSEUDO_P(R)        (REGNO (R) >= FIRST_PSEUDO_REGISTER)
+#define IS_PSEUDO_P(R)	(REGNO (R) >= FIRST_PSEUDO_REGISTER)
 
-/* R0                always has the value 0
+/* R0		always has the value 0
    R10          static link
-   R12        FP        pointer to active frame
-   R13        SP        pointer to top of stack
-   R14        RA        return address
-   R15        IRA        interrupt return address.  */
+   R12	FP	pointer to active frame
+   R13	SP	pointer to top of stack
+   R14	RA	return address
+   R15	IRA	interrupt return address.  */
 #define FIXED_REGISTERS { 1, 0, 0, 0, 0, 0, 0, 0, \
-                          0, 0, 0, 0, 1, 1, 1, 1, \
-                          1, 1, 1, 1, 1                  \
-                         }
+			  0, 0, 0, 0, 1, 1, 1, 1, \
+			  1, 1, 1, 1, 1		  \
+			 }
 
 /* Like `FIXED_REGISTERS' but has 1 for each register that is clobbered (in
    general) by function calls as well as for fixed registers.  This macro
    therefore identifies the registers that are not available for general
    allocation of values that must live across function calls.  */
-#define CALL_USED_REGISTERS        { 1, 1, 1, 1, 1, 0, 0, 1, \
-                                  1, 1, 1, 1, 1, 1, 1, 1, \
-                                  1, 1, 1, 1, 1                  \
-                                }
+#define CALL_USED_REGISTERS	{ 1, 1, 1, 1, 1, 0, 0, 1, \
+				  1, 1, 1, 1, 1, 1, 1, 1, \
+				  1, 1, 1, 1, 1		  \
+				}
 
 
 /* How Values Fit in Registers.  */
 
-#define HARD_REGNO_NREGS(REGNO, MODE)                                 \
+#define HARD_REGNO_NREGS(REGNO, MODE) 				\
   ((GET_MODE_SIZE (MODE) + UNITS_PER_WORD - 1) / UNITS_PER_WORD)
 
 #define HARD_REGNO_MODE_OK(REGNO, MODE) 1
@@ -299,16 +299,16 @@ enum reg_class
   LIM_REG_CLASSES
 };
 
-#define   GENERAL_REGS        ALL_REGS
+#define   GENERAL_REGS	ALL_REGS
 
 #define N_REG_CLASSES ((int) LIM_REG_CLASSES)
 
 #define REG_CLASS_NAMES {"NO_REGS", "ALL_REGS" }
 
 #define REG_CLASS_CONTENTS \
-   {                                                                \
-     { 0x0 },                                                        \
-     { 0x000fffff },                                                \
+   {								\
+     { 0x0 },							\
+     { 0x000fffff },						\
    }
 
 /* A C expression whose value is a register class containing hard register
@@ -345,25 +345,25 @@ enum reg_class
 
 /* For MorphoRISC1:
 
-   `I'        is used for the range of constants an arithmetic insn can
-        actually contain (16 bits signed integers).
+   `I'	is used for the range of constants an arithmetic insn can
+	actually contain (16 bits signed integers).
 
-   `J'        is used for the range which is just zero (ie, $r0).
+   `J'	is used for the range which is just zero (ie, $r0).
 
-   `K'        is used for the range of constants a logical insn can actually
-        contain (16 bit zero-extended integers).
+   `K'	is used for the range of constants a logical insn can actually
+	contain (16 bit zero-extended integers).
 
-   `L'        is used for the range of constants that be loaded with lui
-        (ie, the bottom 16 bits are zero).
+   `L'	is used for the range of constants that be loaded with lui
+	(ie, the bottom 16 bits are zero).
 
-   `M'        is used for the range of constants that take two words to load
-        (ie, not matched by `I', `K', and `L').
+   `M'	is used for the range of constants that take two words to load
+	(ie, not matched by `I', `K', and `L').
 
-   `N'        is used for negative 16 bit constants other than -65536.
+   `N'	is used for negative 16 bit constants other than -65536.
 
-   `O'        is a 15 bit signed integer.
+   `O'	is a 15 bit signed integer.
 
-   `P'        is used for positive 16 bit constants.  */
+   `P'	is used for positive 16 bit constants.  */
 
 #define SMALL_INT(X) ((unsigned HOST_WIDE_INT) (INTVAL (X) + 0x8000) < 0x10000)
 #define SMALL_INT_UNSIGNED(X) ((unsigned HOST_WIDE_INT) (INTVAL (X)) < 0x10000)
@@ -374,21 +374,21 @@ enum reg_class
    that VALUE, an integer, is in the appropriate range and return 1 if
    so, 0 otherwise.  If C is not one of those letters, the value
    should be 0 regardless of VALUE.  */
-#define CONST_OK_FOR_LETTER_P(VALUE, C)                                        \
-  ((C) == 'I' ? ((unsigned HOST_WIDE_INT) ((VALUE) + 0x8000) < 0x10000)        \
-   : (C) == 'J' ? ((VALUE) == 0)                                        \
-   : (C) == 'K' ? ((unsigned HOST_WIDE_INT) (VALUE) < 0x10000)                \
-   : (C) == 'L' ? (((VALUE) & 0x0000ffff) == 0                                \
-                   && (((VALUE) & ~2147483647) == 0                        \
-                       || ((VALUE) & ~2147483647) == ~2147483647))        \
-   : (C) == 'M' ? ((((VALUE) & ~0x0000ffff) != 0)                        \
-                   && (((VALUE) & ~0x0000ffff) != ~0x0000ffff)                \
-                   && (((VALUE) & 0x0000ffff) != 0                        \
-                       || (((VALUE) & ~2147483647) != 0                        \
-                           && ((VALUE) & ~2147483647) != ~2147483647)))        \
+#define CONST_OK_FOR_LETTER_P(VALUE, C)					\
+  ((C) == 'I' ? ((unsigned HOST_WIDE_INT) ((VALUE) + 0x8000) < 0x10000)	\
+   : (C) == 'J' ? ((VALUE) == 0)					\
+   : (C) == 'K' ? ((unsigned HOST_WIDE_INT) (VALUE) < 0x10000)		\
+   : (C) == 'L' ? (((VALUE) & 0x0000ffff) == 0				\
+		   && (((VALUE) & ~2147483647) == 0			\
+		       || ((VALUE) & ~2147483647) == ~2147483647))	\
+   : (C) == 'M' ? ((((VALUE) & ~0x0000ffff) != 0)			\
+		   && (((VALUE) & ~0x0000ffff) != ~0x0000ffff)		\
+		   && (((VALUE) & 0x0000ffff) != 0			\
+		       || (((VALUE) & ~2147483647) != 0			\
+			   && ((VALUE) & ~2147483647) != ~2147483647)))	\
    : (C) == 'N' ? ((unsigned HOST_WIDE_INT) ((VALUE) + 0xffff) < 0xffff) \
    : (C) == 'O' ? ((unsigned HOST_WIDE_INT) ((VALUE) + 0x4000) < 0x8000) \
-   : (C) == 'P' ? ((VALUE) != 0 && (((VALUE) & ~0x0000ffff) == 0))        \
+   : (C) == 'P' ? ((VALUE) != 0 && (((VALUE) & ~0x0000ffff) == 0))	\
    : 0)
 
 /* A C expression that defines the machine-dependent operand constraint letters
@@ -409,23 +409,23 @@ enum save_direction
 /* Tell prologue and epilogue if register REGNO should be saved / restored.
    The return address and frame pointer are treated separately.
    Don't consider them here.  */
-#define MUST_SAVE_REGISTER(regno)                                \
-  (   (regno) != GPR_LINK                                         \
-   && (regno) != GPR_FP                                                  \
-   && (regno) != GPR_SP                                                  \
-   && (regno) != GPR_R0                                                  \
+#define MUST_SAVE_REGISTER(regno)				\
+  (   (regno) != GPR_LINK 					\
+   && (regno) != GPR_FP		  				\
+   && (regno) != GPR_SP		  				\
+   && (regno) != GPR_R0		  				\
    &&   (( regs_ever_live [regno] && ! call_used_regs [regno] ) \
-       /* Save ira register in an interrupt handler.  */        \
-        || (interrupt_handler && (regno) == GPR_INTERRUPT_LINK)        \
-       /* Save any register used in an interrupt handler.  */        \
-        || (interrupt_handler && regs_ever_live [regno])        \
-       /* Save call clobbered registers in non-leaf interrupt        \
-          handlers.  */                                                \
-        || (interrupt_handler && call_used_regs[regno]                 \
-           && !current_function_is_leaf)                        \
-        ||(current_function_calls_eh_return                        \
-           && (regno == GPR_R7 || regno == GPR_R8))                \
-        )                                                        \
+       /* Save ira register in an interrupt handler.  */	\
+	|| (interrupt_handler && (regno) == GPR_INTERRUPT_LINK)	\
+       /* Save any register used in an interrupt handler.  */	\
+	|| (interrupt_handler && regs_ever_live [regno])	\
+       /* Save call clobbered registers in non-leaf interrupt	\
+	  handlers.  */						\
+	|| (interrupt_handler && call_used_regs[regno] 		\
+	   && !current_function_is_leaf)			\
+	||(current_function_calls_eh_return			\
+	   && (regno == GPR_R7 || regno == GPR_R8))		\
+	)							\
   )
 
 #define STACK_GROWS_DOWNWARD 1
@@ -446,7 +446,7 @@ enum save_direction
    argument's address.  */
 #define FIRST_PARM_OFFSET(FUNDECL) 0
 
-#define RETURN_ADDR_RTX(COUNT, FRAMEADDR)                                 \
+#define RETURN_ADDR_RTX(COUNT, FRAMEADDR) 				\
     mt_return_addr_rtx (COUNT)
 
 /* A C expression whose value is RTL representing the location of the incoming
@@ -474,7 +474,7 @@ enum save_direction
 
 /* The register number of the arg pointer register, which is used to
    access the function's argument list.  */
-#define ARG_POINTER_REGNUM                (SPECIAL_REG_FIRST + 0)
+#define ARG_POINTER_REGNUM		(SPECIAL_REG_FIRST + 0)
 
 /* Register numbers used for passing a function's static chain pointer.  */
 #define STATIC_CHAIN_REGNUM 10
@@ -505,25 +505,25 @@ extern struct mt_frame_info current_frame_info;
 
 /* If defined, this macro specifies a table of register pairs used to eliminate
    unneeded registers that point into the stack frame.  */
-#define ELIMINABLE_REGS                                                        \
-{                                                                        \
-  {ARG_POINTER_REGNUM,         STACK_POINTER_REGNUM},                                \
-  {ARG_POINTER_REGNUM,         FRAME_POINTER_REGNUM},                                \
-  {FRAME_POINTER_REGNUM, STACK_POINTER_REGNUM}                                \
+#define ELIMINABLE_REGS							\
+{									\
+  {ARG_POINTER_REGNUM,	 STACK_POINTER_REGNUM},				\
+  {ARG_POINTER_REGNUM,	 FRAME_POINTER_REGNUM},				\
+  {FRAME_POINTER_REGNUM, STACK_POINTER_REGNUM}				\
 }
 
 /* A C expression that returns nonzero if the compiler is allowed to try to
    replace register number FROM with register number TO.  */
-#define CAN_ELIMINATE(FROM, TO)                                                \
- ((FROM) == ARG_POINTER_REGNUM && (TO) == STACK_POINTER_REGNUM                \
-  ? ! frame_pointer_needed                                                \
+#define CAN_ELIMINATE(FROM, TO)						\
+ ((FROM) == ARG_POINTER_REGNUM && (TO) == STACK_POINTER_REGNUM		\
+  ? ! frame_pointer_needed						\
   : 1)
 
 /* This macro is similar to `INITIAL_FRAME_POINTER_OFFSET'.  It
    specifies the initial difference between the specified pair of
    registers.  This macro must be defined if `ELIMINABLE_REGS' is
    defined.  */
-#define INITIAL_ELIMINATION_OFFSET(FROM, TO, OFFSET)                        \
+#define INITIAL_ELIMINATION_OFFSET(FROM, TO, OFFSET)			\
   (OFFSET) = mt_initial_elimination_offset (FROM, TO)
 
 /* If defined, the maximum amount of space required for outgoing
@@ -560,16 +560,16 @@ extern struct mt_frame_info current_frame_info;
 #define INIT_CUMULATIVE_ARGS(CUM, FNTYPE, LIBNAME, FNDECL, N_NAMED_ARGS) \
     mt_init_cumulative_args (& (CUM), FNTYPE, LIBNAME, FNDECL, FALSE)
 
-#define FUNCTION_ARG_ADVANCE(CUM, MODE, TYPE, NAMED)                        \
+#define FUNCTION_ARG_ADVANCE(CUM, MODE, TYPE, NAMED)			\
     mt_function_arg_advance (&CUM, MODE, TYPE, NAMED)
 
-#define FUNCTION_ARG_BOUNDARY(MODE, TYPE)                                \
+#define FUNCTION_ARG_BOUNDARY(MODE, TYPE)				\
     mt_function_arg_boundary (MODE, TYPE)
 
-#define FUNCTION_ARG_REGNO_P(REGNO)                                        \
+#define FUNCTION_ARG_REGNO_P(REGNO)					\
   ((REGNO) >= FIRST_ARG_REGNUM && ((REGNO) <= LAST_ARG_REGNUM))
 
-#define RETURN_VALUE_REGNUM        RETVAL_REGNUM
+#define RETURN_VALUE_REGNUM	RETVAL_REGNUM
      
 #define FUNCTION_VALUE(VALTYPE, FUNC) \
    mt_function_value (VALTYPE, TYPE_MODE(VALTYPE), FUNC)
@@ -611,7 +611,7 @@ extern struct mt_frame_info current_frame_info;
 #define INITIALIZE_TRAMPOLINE(ADDR, FNADDR, STATIC_CHAIN)
 
 /* ?? What is this -- aldyh ?? */
-#define UCMPSI3_LIBCALL                "__ucmpsi3"
+#define UCMPSI3_LIBCALL		"__ucmpsi3"
 
 /* Addressing Modes.  */
 
@@ -625,16 +625,16 @@ extern struct mt_frame_info current_frame_info;
 #define MAX_REGS_PER_ADDRESS 1
 
 #ifdef REG_OK_STRICT
-#define GO_IF_LEGITIMATE_ADDRESS(MODE, X, ADDR)        \
-{                                                \
-  if (mt_legitimate_address_p (MODE, X, 1))        \
-    goto ADDR;                                        \
+#define GO_IF_LEGITIMATE_ADDRESS(MODE, X, ADDR)	\
+{						\
+  if (mt_legitimate_address_p (MODE, X, 1))	\
+    goto ADDR;					\
 }
 #else
-#define GO_IF_LEGITIMATE_ADDRESS(MODE, X, ADDR)        \
-{                                                \
-  if (mt_legitimate_address_p (MODE, X, 0))        \
-    goto ADDR;                                        \
+#define GO_IF_LEGITIMATE_ADDRESS(MODE, X, ADDR)	\
+{						\
+  if (mt_legitimate_address_p (MODE, X, 0))	\
+    goto ADDR;					\
 }
 #endif
 
@@ -686,34 +686,34 @@ extern struct mt_frame_info current_frame_info;
 #define ASM_APP_OFF "#NO_APP\n"
 
 /* This is how to output an assembler line defining a `char' constant.  */
-#define ASM_OUTPUT_CHAR(FILE, VALUE)                        \
-  do                                                        \
-    {                                                        \
-      fprintf (FILE, "\t.byte\t");                        \
-      output_addr_const (FILE, (VALUE));                \
-      fprintf (FILE, "\n");                                \
-    }                                                        \
+#define ASM_OUTPUT_CHAR(FILE, VALUE)			\
+  do							\
+    {							\
+      fprintf (FILE, "\t.byte\t");			\
+      output_addr_const (FILE, (VALUE));		\
+      fprintf (FILE, "\n");				\
+    }							\
   while (0)
 
 /* This is how to output an assembler line defining a `short' constant.  */
-#define ASM_OUTPUT_SHORT(FILE, VALUE)                        \
-  do                                                        \
-    {                                                        \
-      fprintf (FILE, "\t.hword\t");                        \
-      output_addr_const (FILE, (VALUE));                \
-      fprintf (FILE, "\n");                                \
-    }                                                        \
+#define ASM_OUTPUT_SHORT(FILE, VALUE)			\
+  do							\
+    {							\
+      fprintf (FILE, "\t.hword\t");			\
+      output_addr_const (FILE, (VALUE));		\
+      fprintf (FILE, "\n");				\
+    }							\
   while (0)
 
 /* This is how to output an assembler line defining an `int' constant.
    We also handle symbol output here.  */
-#define ASM_OUTPUT_INT(FILE, VALUE)                        \
-  do                                                        \
-    {                                                        \
-      fprintf (FILE, "\t.word\t");                        \
-      output_addr_const (FILE, (VALUE));                \
-      fprintf (FILE, "\n");                                \
-    }                                                        \
+#define ASM_OUTPUT_INT(FILE, VALUE)			\
+  do							\
+    {							\
+      fprintf (FILE, "\t.word\t");			\
+      output_addr_const (FILE, (VALUE));		\
+      fprintf (FILE, "\n");				\
+    }							\
   while (0)
 
 /* A C statement to output to the stdio stream STREAM an assembler instruction
@@ -726,9 +726,9 @@ extern struct mt_frame_info current_frame_info;
 /* Globalizing directive for a label.  */
 #define GLOBAL_ASM_OP "\t.globl "
 
-#define REGISTER_NAMES                                                        \
-{ "R0", "R1", "R2", "R3", "R4", "R5", "R6", "R7",                        \
-  "R8", "R9", "R10", "R11", "R12", "R13", "R14", "R15",                        \
+#define REGISTER_NAMES							\
+{ "R0", "R1", "R2", "R3", "R4", "R5", "R6", "R7",			\
+  "R8", "R9", "R10", "R11", "R12", "R13", "R14", "R15",			\
   "LOOP1", "LOOP2", "LOOP3", "LOOP4", "ap" }
 
 /* If defined, a C initializer for an array of structures containing a name and
@@ -800,12 +800,12 @@ fprintf (STREAM, "\t.word .L%d\n", VALUE)
 #define EH_RETURN_DATA_REGNO(N) \
   ((N) == 0 ? GPR_R7 : (N) == 1 ? GPR_R8 : INVALID_REGNUM)
 
-#define EH_RETURN_STACKADJ_REGNO        GPR_R11
-#define EH_RETURN_STACKADJ_RTX                \
-        gen_rtx_REG (SImode, EH_RETURN_STACKADJ_REGNO)
-#define EH_RETURN_HANDLER_REGNO                GPR_R10
-#define EH_RETURN_HANDLER_RTX                \
-        gen_rtx_REG (SImode, EH_RETURN_HANDLER_REGNO)
+#define EH_RETURN_STACKADJ_REGNO	GPR_R11
+#define EH_RETURN_STACKADJ_RTX		\
+	gen_rtx_REG (SImode, EH_RETURN_STACKADJ_REGNO)
+#define EH_RETURN_HANDLER_REGNO		GPR_R10
+#define EH_RETURN_HANDLER_RTX		\
+	gen_rtx_REG (SImode, EH_RETURN_HANDLER_REGNO)
 
 #define ASM_OUTPUT_ALIGN(STREAM, POWER) \
   fprintf ((STREAM), "\t.p2align %d\n", (POWER))

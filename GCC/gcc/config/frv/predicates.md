@@ -29,7 +29,7 @@
   if (GET_CODE (op) == SUBREG)
     {
       if (GET_CODE (SUBREG_REG (op)) != REG)
-        return register_operand (op, mode);
+	return register_operand (op, mode);
 
       op = SUBREG_REG (op);
     }
@@ -53,10 +53,10 @@
     {
       rtx tmp = op;
       if (GET_CODE (tmp) == SUBREG)
-        tmp = SUBREG_REG (tmp);
+	tmp = SUBREG_REG (tmp);
       if (GET_CODE (tmp) == REG
-          && REGNO (tmp) >= FIRST_PSEUDO_REGISTER)
-        op = reg_equiv_memory_loc[REGNO (tmp)];
+	  && REGNO (tmp) >= FIRST_PSEUDO_REGISTER)
+	op = reg_equiv_memory_loc[REGNO (tmp)];
     }
 
   return op && memory_operand (op, mode);
@@ -90,7 +90,7 @@
   if (GET_CODE (op) == SUBREG)
     {
       if (GET_CODE (SUBREG_REG (op)) != REG)
-        return register_operand (op, mode);
+	return register_operand (op, mode);
 
       op = SUBREG_REG (op);
     }
@@ -122,7 +122,7 @@
   if (GET_CODE (op) == SUBREG)
     {
       if (GET_CODE (SUBREG_REG (op)) != REG)
-        return register_operand (op, mode);
+	return register_operand (op, mode);
 
       op = SUBREG_REG (op);
     }
@@ -150,7 +150,7 @@
   if (GET_CODE (op) == SUBREG)
     {
       if (GET_CODE (SUBREG_REG (op)) != REG)
-        return register_operand (op, mode);
+	return register_operand (op, mode);
 
       op = SUBREG_REG (op);
     }
@@ -179,7 +179,7 @@
   if (GET_CODE (op) == SUBREG)
     {
       if (GET_CODE (SUBREG_REG (op)) != REG)
-        return register_operand (op, mode);
+	return register_operand (op, mode);
 
       op = SUBREG_REG (op);
     }
@@ -204,7 +204,7 @@
   if (GET_CODE (op) == SUBREG)
     {
       if (GET_CODE (SUBREG_REG (op)) != REG)
-        return register_operand (op, mode);
+	return register_operand (op, mode);
 
       op = SUBREG_REG (op);
     }
@@ -240,8 +240,8 @@
       subreg = SUBREG_REG (op);
       code = GET_CODE (subreg);
       if (code == MEM)
-        return frv_legitimate_address_p (mode, XEXP (subreg, 0),
-                                         reload_completed, FALSE, FALSE);
+	return frv_legitimate_address_p (mode, XEXP (subreg, 0),
+					 reload_completed, FALSE, FALSE);
 
       return (code == REG);
 
@@ -279,8 +279,8 @@
       subreg = SUBREG_REG (op);
       code = GET_CODE (subreg);
       if (code == MEM)
-        return frv_legitimate_address_p (mode, XEXP (subreg, 0),
-                                         reload_completed, FALSE, FALSE);
+	return frv_legitimate_address_p (mode, XEXP (subreg, 0),
+					 reload_completed, FALSE, FALSE);
 
       return (code == REG);
 
@@ -335,8 +335,8 @@
       subreg = SUBREG_REG (op);
       code = GET_CODE (subreg);
       if (code == MEM)
-        return frv_legitimate_address_p (mode, XEXP (subreg, 0),
-                                         reload_completed, TRUE, FALSE);
+	return frv_legitimate_address_p (mode, XEXP (subreg, 0),
+					 reload_completed, TRUE, FALSE);
 
       return (code == REG);
 
@@ -374,8 +374,8 @@
       subreg = SUBREG_REG (op);
       code = GET_CODE (subreg);
       if (code == MEM)
-        return frv_legitimate_address_p (mode, XEXP (subreg, 0),
-                                         reload_completed, TRUE, FALSE);
+	return frv_legitimate_address_p (mode, XEXP (subreg, 0),
+					 reload_completed, TRUE, FALSE);
 
       return (code == REG);
 
@@ -406,7 +406,7 @@
     case REG:
     case SUBREG:
       if (GET_MODE (op) != mode && mode != VOIDmode)
-        return FALSE;
+	return FALSE;
 
       return register_operand (op, mode);
 
@@ -441,7 +441,7 @@
   (match_code "reg,subreg,mem")
 {
   return (integer_register_operand (op, mode)
-          || frv_legitimate_memory_operand (op, mode, FALSE));
+	  || frv_legitimate_memory_operand (op, mode, FALSE));
 })
 
 ;; Return true if operand is a gpr register, a valid memory operand,
@@ -483,7 +483,7 @@
   (match_code "reg,subreg,mem")
 {
   return (fpr_operand (op, mode)
-          || frv_legitimate_memory_operand (op, mode, FALSE));
+	  || frv_legitimate_memory_operand (op, mode, FALSE));
 })
 
 ;; Return 1 if operand is a 12 bit signed immediate.
@@ -515,22 +515,22 @@
 
     case LABEL_REF:
       if (TARGET_FDPIC)
-        return FALSE;
+	return FALSE;
       
       return (flag_pic == 0);
 
     case CONST:
       if (flag_pic || TARGET_FDPIC)
-        return FALSE;
+	return FALSE;
 
       op = XEXP (op, 0);
       if (GET_CODE (op) == PLUS && GET_CODE (XEXP (op, 1)) == CONST_INT)
-        op = XEXP (op, 0);
+	op = XEXP (op, 0);
       return GET_CODE (op) == SYMBOL_REF || GET_CODE (op) == LABEL_REF;
 
     case SYMBOL_REF:
       if (TARGET_FDPIC)
-        return FALSE;
+	return FALSE;
       
       /* small data references are already 1 word */
       return (flag_pic == 0) && (! SYMBOL_REF_SMALL_P (op));
@@ -540,17 +540,17 @@
 
     case CONST_DOUBLE:
       if (GET_MODE (op) == SFmode)
-        {
-          REAL_VALUE_FROM_CONST_DOUBLE (rv, op);
-          REAL_VALUE_TO_TARGET_SINGLE (rv, l);
-          value = l;
-          return ! IN_RANGE_P (value, -32768, 32767);
-        }
+	{
+	  REAL_VALUE_FROM_CONST_DOUBLE (rv, op);
+	  REAL_VALUE_TO_TARGET_SINGLE (rv, l);
+	  value = l;
+	  return ! IN_RANGE_P (value, -32768, 32767);
+	}
       else if (GET_MODE (op) == VOIDmode)
-        {
-          value = CONST_DOUBLE_LOW (op);
-          return ! IN_RANGE_P (value, -32768, 32767);
-        }
+	{
+	  value = CONST_DOUBLE_LOW (op);
+	  return ! IN_RANGE_P (value, -32768, 32767);
+	}
       break;
     }
 
@@ -619,7 +619,7 @@
       case R_FRV_FUNCDESC_GOTOFF12:
       case R_FRV_GPREL12:
       case R_FRV_TLSMOFF12:
-        return true;
+	return true;
       }
   return false;
 })
@@ -1023,16 +1023,16 @@
       rtx addr1 = XEXP (addr, 1);
 
       if (GET_CODE (addr0) != REG)
-        return FALSE;
+	return FALSE;
 
       if (got12_operand (addr1, VOIDmode))
-        return TRUE;
+	return TRUE;
 
       if (GET_CODE (addr1) != CONST_INT)
-        return FALSE;
+	return FALSE;
 
       if ((INTVAL (addr1) & 7) != 0)
-        return FALSE;
+	return FALSE;
 
       addr_reg = addr0;
     }
@@ -1132,9 +1132,9 @@
     {
       /* Allow (const:SI (plus:SI (symbol_ref) (const_int))).  */
       return GET_MODE (op) == SImode
-        && GET_CODE (XEXP (op, 0)) == PLUS
-        && GET_CODE (XEXP (XEXP (op, 0), 0)) == SYMBOL_REF
-        && GET_CODE (XEXP (XEXP (op, 0), 1)) == CONST_INT;
+	&& GET_CODE (XEXP (op, 0)) == PLUS
+	&& GET_CODE (XEXP (XEXP (op, 0), 0)) == SYMBOL_REF
+	&& GET_CODE (XEXP (XEXP (op, 0), 1)) == CONST_INT;
     }
 
   return c == SYMBOL_REF || c == CONST_INT;
@@ -1146,7 +1146,7 @@
   (match_code "eq,ne,le,lt,ge,gt,leu,ltu,geu,gtu")
 {
   return (integer_relational_operator (op, mode)
-          || float_relational_operator (op, mode));
+	  || float_relational_operator (op, mode));
 })
 
 ;; Return true if OP is a relational operator suitable for CCmode,
@@ -1169,7 +1169,7 @@
     case LT:
     case GE:
       return (GET_MODE (XEXP (op, 0)) == CC_NZmode
-              || GET_MODE (XEXP (op, 0)) == CCmode);
+	      || GET_MODE (XEXP (op, 0)) == CCmode);
 
     case LE:
     case GT:
@@ -1180,7 +1180,7 @@
     case LTU:
     case LEU:
       return (GET_MODE (XEXP (op, 0)) == CC_NZmode
-              || GET_MODE (XEXP (op, 0)) == CC_UNSmode);
+	      || GET_MODE (XEXP (op, 0)) == CC_UNSmode);
     }
 })
 
@@ -1459,7 +1459,7 @@
   if (GET_CODE (op) == SUBREG)
     {
       if (GET_CODE (SUBREG_REG (op)) != REG)
-        return register_operand (op, mode);
+	return register_operand (op, mode);
 
       op = SUBREG_REG (op);
     }
@@ -1519,8 +1519,8 @@
   (match_code "reg,subreg")
 {
   return ((mode == VOIDmode || mode == GET_MODE (op))
-          && REG_P (op) && ACC_P (REGNO (op))
-          && ((REGNO (op) - ACC_FIRST) & ~ACC_MASK) == 0);
+	  && REG_P (op) && ACC_P (REGNO (op))
+	  && ((REGNO (op) - ACC_FIRST) & ~ACC_MASK) == 0);
 })
 
 ;; Return 1 if operand is a valid even ACC register number.
@@ -1545,6 +1545,6 @@
   (match_code "reg,subreg")
 {
   return ((mode == VOIDmode || mode == GET_MODE (op))
-          && REG_P (op) && ACCG_P (REGNO (op))
-          && ((REGNO (op) - ACCG_FIRST) & ~ACC_MASK) == 0);
+	  && REG_P (op) && ACCG_P (REGNO (op))
+	  && ((REGNO (op) - ACCG_FIRST) & ~ACC_MASK) == 0);
 })

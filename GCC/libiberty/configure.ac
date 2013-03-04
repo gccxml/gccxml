@@ -72,20 +72,20 @@ else
     BUILD_INFO=info
     case "$MAKEINFO" in
       */missing\ makeinfo*)
-        BUILD_INFO=
-        AC_MSG_WARN([
+	BUILD_INFO=
+	AC_MSG_WARN([
 *** Makeinfo is missing. Info documentation will not be built.])
         ;;
       *)
-        case x"`$MAKEINFO --version | grep 'GNU texinfo'`" in
-          x*\ [[1-3]].* )
-            MAKEINFO="@echo $MAKEINFO is too old, 4.0 or newer required; true"
-            BUILD_INFO=
-            AC_MSG_WARN([
+	case x"`$MAKEINFO --version | grep 'GNU texinfo'`" in
+	  x*\ [[1-3]].* )
+	    MAKEINFO="@echo $MAKEINFO is too old, 4.0 or newer required; true"
+	    BUILD_INFO=
+	    AC_MSG_WARN([
 *** Makeinfo is too old. Info documentation will not be built.])
-          ;;
-        esac
-        ;;
+	  ;;
+	esac
+	;;
     esac
 fi
 AC_SUBST(MAKEINFO)
@@ -177,11 +177,11 @@ frag=
 case "${host}" in
   rs6000-ibm-aix3.1 | rs6000-ibm-aix)
                         frag=mh-aix ;;
-  *-*-cxux7*)                frag=mh-cxux7 ;;
-  *-*-freebsd2.1.*)        frag=mh-fbsd21 ;;
-  *-*-freebsd2.2.[[012]])        frag=mh-fbsd21 ;;
+  *-*-cxux7*)		frag=mh-cxux7 ;;
+  *-*-freebsd2.1.*)	frag=mh-fbsd21 ;;
+  *-*-freebsd2.2.[[012]])	frag=mh-fbsd21 ;;
   i370-*-opened*)       frag=mh-openedition ;;
-  i[[34567]]86-*-windows*)        frag=mh-windows ;;
+  i[[34567]]86-*-windows*)	frag=mh-windows ;;
 esac
 
 if [[ -n "${frag}" ]]; then
@@ -200,17 +200,17 @@ esac
 if [[ "${shared}" = "yes" ]]; then
   frag=
   case "${host}" in
-    *-*-cygwin*)        ;;
-    alpha*-*-linux*)        frag=mh-elfalphapic ;;
-    arm*-*-*)                frag=mh-armpic ;;
-    hppa*-*-*)                frag=mh-papic ;;
+    *-*-cygwin*)	;;
+    alpha*-*-linux*)	frag=mh-elfalphapic ;;
+    arm*-*-*)		frag=mh-armpic ;;
+    hppa*-*-*)		frag=mh-papic ;;
     i[[34567]]86-*-* | x86_64-*-*)
-                        frag=mh-x86pic ;;
-    powerpc*-*-aix*)        ;;
-    powerpc*-*-*)        frag=mh-ppcpic ;;
-    sparc*-*-*)                frag=mh-sparcpic ;;
-    s390*-*-*)                frag=mh-s390pic ;;
-    *)                        frag=mh-${host_cpu}pic ;;
+			frag=mh-x86pic ;;
+    powerpc*-*-aix*)	;;
+    powerpc*-*-*)	frag=mh-ppcpic ;;
+    sparc*-*-*)		frag=mh-sparcpic ;;
+    s390*-*-*)		frag=mh-s390pic ;;
+    *)			frag=mh-${host_cpu}pic ;;
   esac
   if [[ -n "${frag}" ]]; then
     frags="${frags} ${libiberty_topdir}/config/${frag}"
@@ -400,12 +400,12 @@ if test -n "${with_target_subdir}"; then
 
     for f in $funcs; do
       case "$f" in
-        asprintf | basename | insque | random | strdup | vasprintf)
-          ;;
-        *)
-          n=HAVE_`echo $f | tr 'abcdefghijklmnopqrstuvwxyz' 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'`
-          AC_DEFINE_UNQUOTED($n)
-          ;;
+	asprintf | basename | insque | random | strdup | vasprintf)
+	  ;;
+	*)
+	  n=HAVE_`echo $f | tr 'abcdefghijklmnopqrstuvwxyz' 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'`
+	  AC_DEFINE_UNQUOTED($n)
+	  ;;
       esac
     done
 
@@ -448,12 +448,12 @@ if test -n "${with_target_subdir}"; then
 
     for f in $funcs; do
       case "$f" in
-        asprintf | basename | bcmp | bcopy | bzero | clock | ffs | getpagesize | index | insque | mempcpy | mkstemps | random | rindex | sigsetmask | stpcpy | stpncpy | strdup | strndup | strverscmp | vasprintf | waitpid)
-          ;;
-        *)
-          n=HAVE_`echo $f | tr 'abcdefghijklmnopqrstuvwxyz' 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'`
-          AC_DEFINE_UNQUOTED($n)
-          ;;
+	asprintf | basename | bcmp | bcopy | bzero | clock | ffs | getpagesize | index | insque | mempcpy | mkstemps | random | rindex | sigsetmask | stpcpy | stpncpy | strdup | strndup | strverscmp | vasprintf | waitpid)
+	  ;;
+	*)
+	  n=HAVE_`echo $f | tr 'abcdefghijklmnopqrstuvwxyz' 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'`
+	  AC_DEFINE_UNQUOTED($n)
+	  ;;
       esac
     done
 
@@ -525,14 +525,14 @@ if test -z "${setobjs}"; then
     AC_LIBOBJ([vasprintf])
     for f in $funcs; do
       case "$f" in
-        basename | getpagesize | insque | random | strcasecmp)
-          ;;
-        strncasecmp | strdup | vfork | waitpid | vasprintf)
-          ;;
-        *)
-          n=HAVE_`echo $f | tr 'abcdefghijklmnopqrstuvwxyz' 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'`
-          AC_DEFINE_UNQUOTED($n)
-          ;;
+	basename | getpagesize | insque | random | strcasecmp)
+	  ;;
+	strncasecmp | strdup | vfork | waitpid | vasprintf)
+	  ;;
+	*)
+	  n=HAVE_`echo $f | tr 'abcdefghijklmnopqrstuvwxyz' 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'`
+	  AC_DEFINE_UNQUOTED($n)
+	  ;;
       esac
     done
 
@@ -630,8 +630,8 @@ if test -z "${setobjs}"; then
     AC_MSG_CHECKING([for $v])
     AC_CACHE_VAL(libiberty_cv_var_$v,
       [AC_LINK_IFELSE([AC_LANG_PROGRAM([[int *p;]],[[extern int $v []; p = $v;]])],
-                      [eval "libiberty_cv_var_$v=yes"],
-                      [eval "libiberty_cv_var_$v=no"])])
+		      [eval "libiberty_cv_var_$v=yes"],
+		      [eval "libiberty_cv_var_$v=no"])])
     if eval "test \"`echo '$libiberty_cv_var_'$v`\" = yes"; then
       AC_MSG_RESULT(yes)
       n=HAVE_`echo $v | tr 'abcdefghijklmnopqrstuvwxyz' 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'`
@@ -645,10 +645,10 @@ if test -z "${setobjs}"; then
   # contain the `physmem' member.
   AC_MSG_CHECKING([for external symbol _system_configuration])
   AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <sys/systemcfg.h>]],
-                        [[double x = _system_configuration.physmem;]])],
+			[[double x = _system_configuration.physmem;]])],
     [AC_MSG_RESULT([yes])
     AC_DEFINE(HAVE__SYSTEM_CONFIGURATION, 1,
-              [Define if you have the _system_configuration variable.])],
+	      [Define if you have the _system_configuration variable.])],
     [AC_MSG_RESULT([no])])
 
   AC_CHECK_FUNCS($checkfuncs)
@@ -660,10 +660,10 @@ fi
 
 # Figure out which version of pexecute to use.
 case "${host}" in
-     *-*-mingw* | *-*-winnt*)        pexecute=./pex-win32.o  ;;
-     *-*-msdosdjgpp*)                pexecute=./pex-djgpp.o  ;;
-     *-*-msdos*)                pexecute=./pex-msdos.o  ;;
-     *)                                pexecute=./pex-unix.o   ;;
+     *-*-mingw* | *-*-winnt*)	pexecute=./pex-win32.o  ;;
+     *-*-msdosdjgpp*)		pexecute=./pex-djgpp.o  ;;
+     *-*-msdos*)		pexecute=./pex-msdos.o  ;;
+     *)				pexecute=./pex-unix.o   ;;
 esac
 AC_SUBST(pexecute)
 

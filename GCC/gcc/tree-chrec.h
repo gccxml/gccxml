@@ -45,8 +45,8 @@ static inline bool
 automatically_generated_chrec_p (tree chrec)
 {
   return (chrec == chrec_not_analyzed_yet 
-          || chrec == chrec_dont_know
-          || chrec == chrec_known);
+	  || chrec == chrec_dont_know
+	  || chrec == chrec_known);
 }
 
 /* The tree nodes aka. CHRECs.  */
@@ -98,8 +98,8 @@ extern unsigned nb_vars_in_chrec (tree);
 
 static inline tree 
 build_polynomial_chrec (unsigned loop_num, 
-                        tree left, 
-                        tree right)
+			tree left, 
+			tree right)
 {
   if (left == chrec_dont_know
       || right == chrec_dont_know)
@@ -108,7 +108,7 @@ build_polynomial_chrec (unsigned loop_num,
   gcc_assert (TREE_TYPE (left) == TREE_TYPE (right));
 
   return build3 (POLYNOMIAL_CHREC, TREE_TYPE (left), 
-                 build_int_cst (NULL_TREE, loop_num), left, right);
+		 build_int_cst (NULL_TREE, loop_num), left, right);
 }
 
 
@@ -161,12 +161,12 @@ evolution_function_is_affine_p (tree chrec)
     {
     case POLYNOMIAL_CHREC:
       if (evolution_function_is_invariant_p (CHREC_LEFT (chrec), 
-                                             CHREC_VARIABLE (chrec))
-          && evolution_function_is_invariant_p (CHREC_RIGHT (chrec),
-                                                CHREC_VARIABLE (chrec)))
-        return true;
+					     CHREC_VARIABLE (chrec))
+	  && evolution_function_is_invariant_p (CHREC_RIGHT (chrec),
+						CHREC_VARIABLE (chrec)))
+	return true;
       else
-        return false;
+	return false;
       
     default:
       return false;

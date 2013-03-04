@@ -72,17 +72,17 @@ calculate_allocation (const struct vec_prefix *pfx, int reserve, bool exact)
     {
       /* Exponential growth. */
       if (!alloc)
-        alloc = 4;
+	alloc = 4;
       else if (alloc < 16)
-        /* Double when small.  */
-        alloc = alloc * 2;
+	/* Double when small.  */
+	alloc = alloc * 2;
       else
-        /* Grow slower when large.  */
-        alloc = (alloc * 3 / 2);
+	/* Grow slower when large.  */
+	alloc = (alloc * 3 / 2);
       
       /* If this is still too small, set it to the right size. */
       if (alloc < num + reserve)
-        alloc = num + reserve;
+	alloc = num + reserve;
     }
   return alloc;
 }
@@ -95,7 +95,7 @@ calculate_allocation (const struct vec_prefix *pfx, int reserve, bool exact)
 
 static void *
 vec_gc_o_reserve_1 (void *vec, int reserve, size_t vec_offset, size_t elt_size,
-                    bool exact MEM_STAT_DECL)
+		    bool exact MEM_STAT_DECL)
 {
   struct vec_prefix *pfx = vec;
   unsigned alloc = alloc = calculate_allocation (pfx, reserve, exact);
@@ -120,9 +120,9 @@ void *
 vec_gc_p_reserve (void *vec, int reserve MEM_STAT_DECL)
 {
   return vec_gc_o_reserve_1 (vec, reserve,
-                             offsetof (struct vec_prefix, vec),
-                             sizeof (void *), false
-                             PASS_MEM_STAT);
+			     offsetof (struct vec_prefix, vec),
+			     sizeof (void *), false
+			     PASS_MEM_STAT);
 }
 
 /* Ensure there are at least RESERVE free slots in VEC, growing
@@ -134,9 +134,9 @@ void *
 vec_gc_p_reserve_exact (void *vec, int reserve MEM_STAT_DECL)
 {
   return vec_gc_o_reserve_1 (vec, reserve,
-                             offsetof (struct vec_prefix, vec),
-                             sizeof (void *), true
-                             PASS_MEM_STAT);
+			     offsetof (struct vec_prefix, vec),
+			     sizeof (void *), true
+			     PASS_MEM_STAT);
 }
 
 /* As for vec_gc_p_reserve, but for object vectors.  The vector's
@@ -145,10 +145,10 @@ vec_gc_p_reserve_exact (void *vec, int reserve MEM_STAT_DECL)
 
 void *
 vec_gc_o_reserve (void *vec, int reserve, size_t vec_offset, size_t elt_size
-                  MEM_STAT_DECL)
+		  MEM_STAT_DECL)
 {
   return vec_gc_o_reserve_1 (vec, reserve, vec_offset, elt_size, false
-                             PASS_MEM_STAT);
+			     PASS_MEM_STAT);
 }
 
 /* As for vec_gc_p_reserve_exact, but for object vectors.  The
@@ -157,17 +157,17 @@ vec_gc_o_reserve (void *vec, int reserve, size_t vec_offset, size_t elt_size
 
 void *
 vec_gc_o_reserve_exact (void *vec, int reserve, size_t vec_offset,
-                        size_t elt_size MEM_STAT_DECL)
+			size_t elt_size MEM_STAT_DECL)
 {
   return vec_gc_o_reserve_1 (vec, reserve, vec_offset, elt_size, true
-                             PASS_MEM_STAT);
+			     PASS_MEM_STAT);
 }
 
 /* As for vec_gc_o_reserve_1, but for heap allocated vectors.  */
 
 static void *
 vec_heap_o_reserve_1 (void *vec, int reserve, size_t vec_offset,
-                      size_t elt_size, bool exact MEM_STAT_DECL)
+		      size_t elt_size, bool exact MEM_STAT_DECL)
 {
   struct vec_prefix *pfx = vec;
   unsigned alloc = calculate_allocation (pfx, reserve, exact);
@@ -189,9 +189,9 @@ void *
 vec_heap_p_reserve (void *vec, int reserve MEM_STAT_DECL)
 {
   return vec_heap_o_reserve_1 (vec, reserve,
-                               offsetof (struct vec_prefix, vec),
-                               sizeof (void *), false
-                               PASS_MEM_STAT);
+			       offsetof (struct vec_prefix, vec),
+			       sizeof (void *), false
+			       PASS_MEM_STAT);
 }
 
 /* As for vec_gc_p_reserve_exact, but for heap allocated vectors.  */
@@ -200,29 +200,29 @@ void *
 vec_heap_p_reserve_exact (void *vec, int reserve MEM_STAT_DECL)
 {
   return vec_heap_o_reserve_1 (vec, reserve,
-                               offsetof (struct vec_prefix, vec),
-                               sizeof (void *), true
-                               PASS_MEM_STAT);
+			       offsetof (struct vec_prefix, vec),
+			       sizeof (void *), true
+			       PASS_MEM_STAT);
 }
 
 /* As for vec_gc_o_reserve, but for heap allocated vectors.  */
 
 void *
 vec_heap_o_reserve (void *vec, int reserve, size_t vec_offset, size_t elt_size
-                    MEM_STAT_DECL)
+		    MEM_STAT_DECL)
 {
   return vec_heap_o_reserve_1 (vec, reserve, vec_offset, elt_size, false
-                               PASS_MEM_STAT);
+			       PASS_MEM_STAT);
 }
 
 /* As for vec_gc_o_reserve_exact, but for heap allocated vectors.  */
 
 void *
 vec_heap_o_reserve_exact (void *vec, int reserve, size_t vec_offset,
-                          size_t elt_size MEM_STAT_DECL)
+			  size_t elt_size MEM_STAT_DECL)
 {
   return vec_heap_o_reserve_1 (vec, reserve, vec_offset, elt_size, true
-                               PASS_MEM_STAT);
+			       PASS_MEM_STAT);
 }
 
 #if ENABLE_CHECKING
@@ -230,9 +230,9 @@ vec_heap_o_reserve_exact (void *vec, int reserve, size_t vec_offset,
 
 void
 vec_assert_fail (const char *op, const char *struct_name,
-                 const char *file, unsigned int line, const char *function)
+		 const char *file, unsigned int line, const char *function)
 {
   internal_error ("vector %s %s domain error, in %s at %s:%u",
-                  struct_name, op, function, trim_filename (file), line);
+		  struct_name, op, function, trim_filename (file), line);
 }
 #endif

@@ -84,8 +84,8 @@
 ;; compare
 (define_insn "cmpdf"
   [(set (cc0)
-        (compare (match_operand:DF 0 "general_operand" "fR,Q,F")
-                 (match_operand:DF 1 "register_operand" "a,a,a")))]
+	(compare (match_operand:DF 0 "general_operand" "fR,Q,F")
+		 (match_operand:DF 1 "register_operand" "a,a,a")))]
   "TARGET_FPU"
   "*
 {
@@ -100,13 +100,13 @@
 
 (define_expand "cmpsi"
   [(set (reg:SI 0)
-        (match_operand:SI 0 "general_operand" "g"))
+	(match_operand:SI 0 "general_operand" "g"))
    (set (reg:SI 2)
-        (match_operand:SI 1 "general_operand" "g"))
+	(match_operand:SI 1 "general_operand" "g"))
    (parallel [(set (cc0)
-                   (compare (reg:SI 0)
-                            (reg:SI 2)))
-              (clobber (reg:SI 0))])]
+		   (compare (reg:SI 0)
+			    (reg:SI 2)))
+	      (clobber (reg:SI 0))])]
   "0" ;; disable for test
   "")
 
@@ -115,8 +115,8 @@
 
 (define_insn ""
   [(set (cc0)
-        (compare (reg:SI 0)
-                 (reg:SI 2)))
+	(compare (reg:SI 0)
+		 (reg:SI 2)))
    (clobber (reg:SI 0))]
   ""
   "*
@@ -155,27 +155,27 @@
 
 (define_insn "cmphi"
   [(set (cc0)
-        (compare (match_operand:HI 0 "general_operand" "rR,rR,Qi,Qi")
-                 (match_operand:HI 1 "general_operand" "rR,Qi,rR,Qi")))]
+	(compare (match_operand:HI 0 "general_operand" "rR,rR,Qi,Qi")
+		 (match_operand:HI 1 "general_operand" "rR,Qi,rR,Qi")))]
   ""
   "cmp %0,%1"
   [(set_attr "length" "1,2,2,3")])
 
 (define_insn "cmpqi"
   [(set (cc0)
-        (compare (match_operand:QI 0 "general_operand" "rR,rR,Qi,Qi")
-                 (match_operand:QI 1 "general_operand" "rR,Qi,rR,Qi")))]
+	(compare (match_operand:QI 0 "general_operand" "rR,rR,Qi,Qi")
+		 (match_operand:QI 1 "general_operand" "rR,Qi,rR,Qi")))]
   ""
   "cmpb %0,%1"
   [(set_attr "length" "1,2,2,3")])
-                           
+			   
 
 ;; We have to have this because cse can optimize the previous pattern
 ;; into this one.
 
 (define_insn "tstdf"
   [(set (cc0)
-        (match_operand:DF 0 "general_operand" "fR,Q"))]
+	(match_operand:DF 0 "general_operand" "fR,Q"))]
   "TARGET_FPU"
   "*
 {
@@ -187,16 +187,16 @@
 
 (define_expand "tstsi"
   [(set (reg:SI 0)
-        (match_operand:SI 0 "general_operand" "g"))
+	(match_operand:SI 0 "general_operand" "g"))
    (parallel [(set (cc0)
-                   (reg:SI 0))
-              (clobber (reg:SI 0))])]
+		   (reg:SI 0))
+	      (clobber (reg:SI 0))])]
   "0" ;; disable for test
   "")
 
 (define_insn ""
   [(set (cc0)
-        (reg:SI 0))
+	(reg:SI 0))
    (clobber (reg:SI 0))]
   ""
   "jsr pc, ___tstsi\;tst r0"
@@ -205,14 +205,14 @@
 
 (define_insn "tsthi"
   [(set (cc0)
-        (match_operand:HI 0 "general_operand" "rR,Q"))]
+	(match_operand:HI 0 "general_operand" "rR,Q"))]
   ""
   "tst %0"
   [(set_attr "length" "1,2")])
 
 (define_insn "tstqi"
   [(set (cc0)
-        (match_operand:QI 0 "general_operand" "rR,Q"))]
+	(match_operand:QI 0 "general_operand" "rR,Q"))]
   ""
   "tstb %0"
   [(set_attr "length" "1,2")])
@@ -222,15 +222,15 @@
 
 (define_insn ""
   [(set (pc)
-        (if_then_else
-         (ne (plus:HI (match_operand:HI 0 "register_operand" "+r")
-                      (const_int -1))
-             (const_int 0))
-         (label_ref (match_operand 1 "" ""))
-         (pc)))
+	(if_then_else
+	 (ne (plus:HI (match_operand:HI 0 "register_operand" "+r")
+		      (const_int -1))
+	     (const_int 0))
+	 (label_ref (match_operand 1 "" ""))
+	 (pc)))
    (set (match_dup 0)
-        (plus:HI (match_dup 0)
-                 (const_int -1)))]
+	(plus:HI (match_dup 0)
+		 (const_int -1)))]
   "TARGET_40_PLUS"
   "*
 {
@@ -254,13 +254,13 @@
  return \"\";
 }"
   [(set (attr "length") (if_then_else (ior (le (minus (match_dup 0)
-                                                       (pc))
-                                                (const_int -256))
-                                           (ge (minus (match_dup 0)
-                                                       (pc))
-                                                (const_int 0)))
-                                      (const_int 4)
-                                      (const_int 1)))])
+						       (pc))
+						(const_int -256))
+					   (ge (minus (match_dup 0)
+						       (pc))
+						(const_int 0)))
+				      (const_int 4)
+				      (const_int 1)))])
 
 ;; These control RTL generation for conditional jump insns
 ;; and match them for register allocation.
@@ -274,354 +274,354 @@
 
 (define_insn "beq"
   [(set (pc)
-        (if_then_else (eq (cc0)
-                          (const_int 0))
-                      (label_ref (match_operand 0 "" ""))
-                      (pc)))]
+	(if_then_else (eq (cc0)
+			  (const_int 0))
+		      (label_ref (match_operand 0 "" ""))
+		      (pc)))]
   ""
   "* return output_jump(\"beq\", \"bne\", get_attr_length(insn));"
   [(set (attr "length") (if_then_else (ior (le (minus (match_dup 0)
-                                                      (pc))
-                                               (const_int -128))
-                                           (ge (minus (match_dup 0)
-                                                      (pc))
-                                               (const_int 128)))
-                                      (const_int 3)
-                                      (const_int 1)))])
+						      (pc))
+					       (const_int -128))
+					   (ge (minus (match_dup 0)
+						      (pc))
+					       (const_int 128)))
+				      (const_int 3)
+				      (const_int 1)))])
 
 
 (define_insn "bne"
   [(set (pc)
-        (if_then_else (ne (cc0)
-                          (const_int 0))
-                      (label_ref (match_operand 0 "" ""))
-                      (pc)))]
+	(if_then_else (ne (cc0)
+			  (const_int 0))
+		      (label_ref (match_operand 0 "" ""))
+		      (pc)))]
   ""
   "* return output_jump(\"bne\", \"beq\", get_attr_length(insn));"
   [(set (attr "length") (if_then_else (ior (le (minus (match_dup 0)
-                                                      (pc))
-                                               (const_int -128))
-                                           (ge (minus (match_dup 0)
-                                                      (pc))
-                                               (const_int 128)))
-                                      (const_int 3)
-                                      (const_int 1)))])
+						      (pc))
+					       (const_int -128))
+					   (ge (minus (match_dup 0)
+						      (pc))
+					       (const_int 128)))
+				      (const_int 3)
+				      (const_int 1)))])
 
 (define_insn "bgt"
   [(set (pc)
-        (if_then_else (gt (cc0)
-                          (const_int 0))
-                      (label_ref (match_operand 0 "" ""))
-                      (pc)))]
+	(if_then_else (gt (cc0)
+			  (const_int 0))
+		      (label_ref (match_operand 0 "" ""))
+		      (pc)))]
   ""
   "* return output_jump(\"bgt\", \"ble\", get_attr_length(insn));"
   [(set (attr "length") (if_then_else (ior (le (minus (match_dup 0)
-                                                      (pc))
-                                               (const_int -128))
-                                           (ge (minus (match_dup 0)
-                                                      (pc))
-                                               (const_int 128)))
-                                      (const_int 3)
-                                      (const_int 1)))])
+						      (pc))
+					       (const_int -128))
+					   (ge (minus (match_dup 0)
+						      (pc))
+					       (const_int 128)))
+				      (const_int 3)
+				      (const_int 1)))])
 
 (define_insn "bgtu"
   [(set (pc)
-        (if_then_else (gtu (cc0)
-                           (const_int 0))
-                      (label_ref (match_operand 0 "" ""))
-                      (pc)))]
+	(if_then_else (gtu (cc0)
+			   (const_int 0))
+		      (label_ref (match_operand 0 "" ""))
+		      (pc)))]
   ""
   "* return output_jump(\"bhi\", \"blos\", get_attr_length(insn));"
   [(set (attr "length") (if_then_else (ior (le (minus (match_dup 0)
-                                                      (pc))
-                                               (const_int -128))
-                                           (ge (minus (match_dup 0)
-                                                      (pc))
-                                               (const_int 128)))
-                                      (const_int 3)
-                                      (const_int 1)))])
+						      (pc))
+					       (const_int -128))
+					   (ge (minus (match_dup 0)
+						      (pc))
+					       (const_int 128)))
+				      (const_int 3)
+				      (const_int 1)))])
 
 (define_insn "blt"
   [(set (pc)
-        (if_then_else (lt (cc0)
-                          (const_int 0))
-                      (label_ref (match_operand 0 "" ""))
-                      (pc)))]
+	(if_then_else (lt (cc0)
+			  (const_int 0))
+		      (label_ref (match_operand 0 "" ""))
+		      (pc)))]
   ""
   "* return output_jump(\"blt\", \"bge\", get_attr_length(insn));"
   [(set (attr "length") (if_then_else (ior (le (minus (match_dup 0)
-                                                      (pc))
-                                               (const_int -128))
-                                           (ge (minus (match_dup 0)
-                                                      (pc))
-                                               (const_int 128)))
-                                      (const_int 3)
-                                      (const_int 1)))])
+						      (pc))
+					       (const_int -128))
+					   (ge (minus (match_dup 0)
+						      (pc))
+					       (const_int 128)))
+				      (const_int 3)
+				      (const_int 1)))])
 
 
 (define_insn "bltu"
   [(set (pc)
-        (if_then_else (ltu (cc0)
-                           (const_int 0))
-                      (label_ref (match_operand 0 "" ""))
-                      (pc)))]
+	(if_then_else (ltu (cc0)
+			   (const_int 0))
+		      (label_ref (match_operand 0 "" ""))
+		      (pc)))]
   ""
   "* return output_jump(\"blo\", \"bhis\", get_attr_length(insn));"
   [(set (attr "length") (if_then_else (ior (le (minus (match_dup 0)
-                                                      (pc))
-                                               (const_int -128))
-                                           (ge (minus (match_dup 0)
-                                                      (pc))
-                                               (const_int 128)))
-                                      (const_int 3)
-                                      (const_int 1)))])
+						      (pc))
+					       (const_int -128))
+					   (ge (minus (match_dup 0)
+						      (pc))
+					       (const_int 128)))
+				      (const_int 3)
+				      (const_int 1)))])
 
 (define_insn "bge"
   [(set (pc)
-        (if_then_else (ge (cc0)
-                          (const_int 0))
-                      (label_ref (match_operand 0 "" ""))
-                      (pc)))]
+	(if_then_else (ge (cc0)
+			  (const_int 0))
+		      (label_ref (match_operand 0 "" ""))
+		      (pc)))]
   ""
   "* return output_jump(\"bge\", \"blt\", get_attr_length(insn));"
   [(set (attr "length") (if_then_else (ior (le (minus (match_dup 0)
-                                                      (pc))
-                                               (const_int -128))
-                                           (ge (minus (match_dup 0)
-                                                      (pc))
-                                               (const_int 128)))
-                                      (const_int 3)
-                                      (const_int 1)))])
+						      (pc))
+					       (const_int -128))
+					   (ge (minus (match_dup 0)
+						      (pc))
+					       (const_int 128)))
+				      (const_int 3)
+				      (const_int 1)))])
 
 (define_insn "bgeu"
   [(set (pc)
-        (if_then_else (geu (cc0)
-                           (const_int 0))
-                      (label_ref (match_operand 0 "" ""))
-                      (pc)))]
+	(if_then_else (geu (cc0)
+			   (const_int 0))
+		      (label_ref (match_operand 0 "" ""))
+		      (pc)))]
   ""
   "* return output_jump(\"bhis\", \"blo\", get_attr_length(insn));"
   [(set (attr "length") (if_then_else (ior (le (minus (match_dup 0)
-                                                      (pc))
-                                               (const_int -128))
-                                           (ge (minus (match_dup 0)
-                                                      (pc))
-                                               (const_int 128)))
-                                      (const_int 3)
-                                      (const_int 1)))])
+						      (pc))
+					       (const_int -128))
+					   (ge (minus (match_dup 0)
+						      (pc))
+					       (const_int 128)))
+				      (const_int 3)
+				      (const_int 1)))])
 
 (define_insn "ble"
   [(set (pc)
-        (if_then_else (le (cc0)
-                          (const_int 0))
-                      (label_ref (match_operand 0 "" ""))
-                      (pc)))]
+	(if_then_else (le (cc0)
+			  (const_int 0))
+		      (label_ref (match_operand 0 "" ""))
+		      (pc)))]
   ""
   "* return output_jump(\"ble\", \"bgt\", get_attr_length(insn));"
   [(set (attr "length") (if_then_else (ior (le (minus (match_dup 0)
-                                                      (pc))
-                                               (const_int -128))
-                                           (ge (minus (match_dup 0)
-                                                      (pc))
-                                               (const_int 128)))
-                                      (const_int 3)
-                                      (const_int 1)))])
+						      (pc))
+					       (const_int -128))
+					   (ge (minus (match_dup 0)
+						      (pc))
+					       (const_int 128)))
+				      (const_int 3)
+				      (const_int 1)))])
 
 (define_insn "bleu"
   [(set (pc)
-        (if_then_else (leu (cc0)
-                           (const_int 0))
-                      (label_ref (match_operand 0 "" ""))
-                      (pc)))]
+	(if_then_else (leu (cc0)
+			   (const_int 0))
+		      (label_ref (match_operand 0 "" ""))
+		      (pc)))]
   ""
   "* return output_jump(\"blos\", \"bhi\", get_attr_length(insn));"
   [(set (attr "length") (if_then_else (ior (le (minus (match_dup 0)
-                                                      (pc))
-                                               (const_int -128))
-                                           (ge (minus (match_dup 0)
-                                                      (pc))
-                                               (const_int 128)))
-                                      (const_int 3)
-                                      (const_int 1)))])
+						      (pc))
+					       (const_int -128))
+					   (ge (minus (match_dup 0)
+						      (pc))
+					       (const_int 128)))
+				      (const_int 3)
+				      (const_int 1)))])
 
 
 ;; These match inverted jump insns for register allocation.
 
 (define_insn ""
   [(set (pc)
-        (if_then_else (eq (cc0)
-                          (const_int 0))
-                      (pc)
-                      (label_ref (match_operand 0 "" ""))))]
+	(if_then_else (eq (cc0)
+			  (const_int 0))
+		      (pc)
+		      (label_ref (match_operand 0 "" ""))))]
   ""
   "* return output_jump(\"bne\", \"beq\", get_attr_length(insn));"
   [(set (attr "length") (if_then_else (ior (le (minus (match_dup 0)
-                                                      (pc))
-                                               (const_int -128))
-                                           (ge (minus (match_dup 0)
-                                                      (pc))
-                                               (const_int 128)))
-                                      (const_int 3)
-                                      (const_int 1)))])
+						      (pc))
+					       (const_int -128))
+					   (ge (minus (match_dup 0)
+						      (pc))
+					       (const_int 128)))
+				      (const_int 3)
+				      (const_int 1)))])
 
 (define_insn ""
   [(set (pc)
-        (if_then_else (ne (cc0)
-                          (const_int 0))
-                      (pc)
-                      (label_ref (match_operand 0 "" ""))))]
+	(if_then_else (ne (cc0)
+			  (const_int 0))
+		      (pc)
+		      (label_ref (match_operand 0 "" ""))))]
   ""
   "* return output_jump(\"beq\", \"bne\", get_attr_length(insn));"
   [(set (attr "length") (if_then_else (ior (le (minus (match_dup 0)
-                                                      (pc))
-                                               (const_int -128))
-                                           (ge (minus (match_dup 0)
-                                                      (pc))
-                                               (const_int 128)))
-                                      (const_int 3)
-                                      (const_int 1)))])
+						      (pc))
+					       (const_int -128))
+					   (ge (minus (match_dup 0)
+						      (pc))
+					       (const_int 128)))
+				      (const_int 3)
+				      (const_int 1)))])
 
 (define_insn ""
   [(set (pc)
-        (if_then_else (gt (cc0)
-                          (const_int 0))
-                      (pc)
-                      (label_ref (match_operand 0 "" ""))))]
+	(if_then_else (gt (cc0)
+			  (const_int 0))
+		      (pc)
+		      (label_ref (match_operand 0 "" ""))))]
   ""
   "* return output_jump(\"ble\", \"bgt\", get_attr_length(insn));"
   [(set (attr "length") (if_then_else (ior (le (minus (match_dup 0)
-                                                      (pc))
-                                               (const_int -128))
-                                           (ge (minus (match_dup 0)
-                                                      (pc))
-                                               (const_int 128)))
-                                      (const_int 3)
-                                      (const_int 1)))])
+						      (pc))
+					       (const_int -128))
+					   (ge (minus (match_dup 0)
+						      (pc))
+					       (const_int 128)))
+				      (const_int 3)
+				      (const_int 1)))])
 
 (define_insn ""
   [(set (pc)
-        (if_then_else (gtu (cc0)
-                           (const_int 0))
-                      (pc)
-                      (label_ref (match_operand 0 "" ""))))]
+	(if_then_else (gtu (cc0)
+			   (const_int 0))
+		      (pc)
+		      (label_ref (match_operand 0 "" ""))))]
   ""
   "* return output_jump(\"blos\", \"bhi\", get_attr_length(insn));"
   [(set (attr "length") (if_then_else (ior (le (minus (match_dup 0)
-                                                      (pc))
-                                               (const_int -128))
-                                           (ge (minus (match_dup 0)
-                                                      (pc))
-                                               (const_int 128)))
-                                      (const_int 3)
-                                      (const_int 1)))])
+						      (pc))
+					       (const_int -128))
+					   (ge (minus (match_dup 0)
+						      (pc))
+					       (const_int 128)))
+				      (const_int 3)
+				      (const_int 1)))])
 
 (define_insn ""
   [(set (pc)
-        (if_then_else (lt (cc0)
-                          (const_int 0))
-                      (pc)
-                      (label_ref (match_operand 0 "" ""))))]
+	(if_then_else (lt (cc0)
+			  (const_int 0))
+		      (pc)
+		      (label_ref (match_operand 0 "" ""))))]
   ""
   "* return output_jump(\"bge\", \"blt\", get_attr_length(insn));"
   [(set (attr "length") (if_then_else (ior (le (minus (match_dup 0)
-                                                      (pc))
-                                               (const_int -128))
-                                           (ge (minus (match_dup 0)
-                                                      (pc))
-                                               (const_int 128)))
-                                      (const_int 3)
-                                      (const_int 1)))])
+						      (pc))
+					       (const_int -128))
+					   (ge (minus (match_dup 0)
+						      (pc))
+					       (const_int 128)))
+				      (const_int 3)
+				      (const_int 1)))])
 
 (define_insn ""
   [(set (pc)
-        (if_then_else (ltu (cc0)
-                           (const_int 0))
-                      (pc)
-                      (label_ref (match_operand 0 "" ""))))]
+	(if_then_else (ltu (cc0)
+			   (const_int 0))
+		      (pc)
+		      (label_ref (match_operand 0 "" ""))))]
   ""
   "* return output_jump(\"bhis\", \"blo\", get_attr_length(insn));"
   [(set (attr "length") (if_then_else (ior (le (minus (match_dup 0)
-                                                      (pc))
-                                               (const_int -128))
-                                           (ge (minus (match_dup 0)
-                                                      (pc))
-                                               (const_int 128)))
-                                      (const_int 3)
-                                      (const_int 1)))])
+						      (pc))
+					       (const_int -128))
+					   (ge (minus (match_dup 0)
+						      (pc))
+					       (const_int 128)))
+				      (const_int 3)
+				      (const_int 1)))])
 
 (define_insn ""
   [(set (pc)
-        (if_then_else (ge (cc0)
-                          (const_int 0))
-                      (pc)
-                      (label_ref (match_operand 0 "" ""))))]
+	(if_then_else (ge (cc0)
+			  (const_int 0))
+		      (pc)
+		      (label_ref (match_operand 0 "" ""))))]
   ""  
   "* return output_jump(\"blt\", \"bge\", get_attr_length(insn));"
   [(set (attr "length") (if_then_else (ior (le (minus (match_dup 0)
-                                                      (pc))
-                                               (const_int -128))
-                                           (ge (minus (match_dup 0)
-                                                      (pc))
-                                               (const_int 128)))
-                                      (const_int 3)
-                                      (const_int 1)))])
+						      (pc))
+					       (const_int -128))
+					   (ge (minus (match_dup 0)
+						      (pc))
+					       (const_int 128)))
+				      (const_int 3)
+				      (const_int 1)))])
 
 (define_insn ""
   [(set (pc)
-        (if_then_else (geu (cc0)
-                           (const_int 0))
-                      (pc)
-                      (label_ref (match_operand 0 "" ""))))]
+	(if_then_else (geu (cc0)
+			   (const_int 0))
+		      (pc)
+		      (label_ref (match_operand 0 "" ""))))]
   ""
   "* return output_jump(\"blo\", \"bhis\", get_attr_length(insn));"
   [(set (attr "length") (if_then_else (ior (le (minus (match_dup 0)
-                                                      (pc))
-                                               (const_int -128))
-                                           (ge (minus (match_dup 0)
-                                                      (pc))
-                                               (const_int 128)))
-                                      (const_int 3)
-                                      (const_int 1)))])
+						      (pc))
+					       (const_int -128))
+					   (ge (minus (match_dup 0)
+						      (pc))
+					       (const_int 128)))
+				      (const_int 3)
+				      (const_int 1)))])
 
 (define_insn ""
   [(set (pc)
-        (if_then_else (le (cc0)
-                          (const_int 0))
-                      (pc)
-                      (label_ref (match_operand 0 "" ""))))]
+	(if_then_else (le (cc0)
+			  (const_int 0))
+		      (pc)
+		      (label_ref (match_operand 0 "" ""))))]
   ""
   "* return output_jump(\"bgt\", \"ble\", get_attr_length(insn));"
   [(set (attr "length") (if_then_else (ior (le (minus (match_dup 0)
-                                                      (pc))
-                                               (const_int -128))
-                                           (ge (minus (match_dup 0)
-                                                      (pc))
-                                               (const_int 128)))
-                                      (const_int 3)
-                                      (const_int 1)))])
+						      (pc))
+					       (const_int -128))
+					   (ge (minus (match_dup 0)
+						      (pc))
+					       (const_int 128)))
+				      (const_int 3)
+				      (const_int 1)))])
 
 (define_insn ""
   [(set (pc)
-        (if_then_else (leu (cc0)
-                           (const_int 0))
-                      (pc)
-                      (label_ref (match_operand 0 "" ""))))]
+	(if_then_else (leu (cc0)
+			   (const_int 0))
+		      (pc)
+		      (label_ref (match_operand 0 "" ""))))]
   ""
   "* return output_jump(\"bhi\", \"blos\", get_attr_length(insn));"
   [(set (attr "length") (if_then_else (ior (le (minus (match_dup 0)
-                                                      (pc))
-                                               (const_int -128))
-                                           (ge (minus (match_dup 0)
-                                                      (pc))
-                                               (const_int 128)))
-                                      (const_int 3)
-                                      (const_int 1)))])
+						      (pc))
+					       (const_int -128))
+					   (ge (minus (match_dup 0)
+						      (pc))
+					       (const_int 128)))
+				      (const_int 3)
+				      (const_int 1)))])
 
 ;; Move instructions
 
 (define_insn "movdi"
   [(set (match_operand:DI 0 "general_operand" "=g,rm,o")
-        (match_operand:DI 1 "general_operand" "m,r,a"))]
+	(match_operand:DI 1 "general_operand" "m,r,a"))]
   ""
   "* return output_move_quad (operands);"
 ;; what's the mose expensive code - say twice movsi = 16
@@ -629,7 +629,7 @@
 
 (define_insn "movsi"
   [(set (match_operand:SI 0 "general_operand" "=r,r,r,rm,m")
-        (match_operand:SI 1 "general_operand" "rN,IJ,K,m,r"))]
+	(match_operand:SI 1 "general_operand" "rN,IJ,K,m,r"))]
   ""
   "* return output_move_double (operands);"
 ;; what's the most expensive code ? - I think 8!
@@ -638,7 +638,7 @@
 
 (define_insn "movhi"
   [(set (match_operand:HI 0 "general_operand" "=rR,rR,Q,Q")
-        (match_operand:HI 1 "general_operand" "rRN,Qi,rRN,Qi"))]
+	(match_operand:HI 1 "general_operand" "rRN,Qi,rRN,Qi"))]
   ""
   "*
 {
@@ -651,7 +651,7 @@
 
 (define_insn "movqi"
   [(set (match_operand:QI 0 "nonimmediate_operand" "=g")
-        (match_operand:QI 1 "general_operand" "g"))]
+	(match_operand:QI 1 "general_operand" "g"))]
   ""
   "*
 {
@@ -689,22 +689,22 @@
 
 (define_expand "movmemhi"
   [(parallel [(set (match_operand:BLK 0 "general_operand" "=g,g")
-                   (match_operand:BLK 1 "general_operand" "g,g"))
-              (use (match_operand:HI 2 "arith_operand" "n,&mr"))
-              (use (match_operand:HI 3 "immediate_operand" "i,i"))
-              (clobber (match_scratch:HI 4 "=&r,X"))
-              (clobber (match_dup 5))
-              (clobber (match_dup 6))
-              (clobber (match_dup 2))])]
+		   (match_operand:BLK 1 "general_operand" "g,g"))
+	      (use (match_operand:HI 2 "arith_operand" "n,&mr"))
+	      (use (match_operand:HI 3 "immediate_operand" "i,i"))
+	      (clobber (match_scratch:HI 4 "=&r,X"))
+	      (clobber (match_dup 5))
+	      (clobber (match_dup 6))
+	      (clobber (match_dup 2))])]
   "(TARGET_BCOPY_BUILTIN)"
   "
 {
   operands[0]
     = replace_equiv_address (operands[0],
-                             copy_to_mode_reg (Pmode, XEXP (operands[0], 0)));
+			     copy_to_mode_reg (Pmode, XEXP (operands[0], 0)));
   operands[1]
     = replace_equiv_address (operands[1],
-                             copy_to_mode_reg (Pmode, XEXP (operands[1], 0)));
+			     copy_to_mode_reg (Pmode, XEXP (operands[1], 0)));
 
   operands[5] = XEXP (operands[0], 0);
   operands[6] = XEXP (operands[1], 0);
@@ -713,7 +713,7 @@
 
 (define_insn "" ; "movmemhi"
   [(set (mem:BLK (match_operand:HI 0 "general_operand" "=r,r"))
-        (mem:BLK (match_operand:HI 1 "general_operand" "r,r")))
+	(mem:BLK (match_operand:HI 1 "general_operand" "r,r")))
    (use (match_operand:HI 2 "arith_operand" "n,&r"))
    (use (match_operand:HI 3 "immediate_operand" "i,i"))
    (clobber (match_scratch:HI 4 "=&r,X"))
@@ -731,7 +731,7 @@
 
 (define_insn  "truncdfsf2"
   [(set (match_operand:SF 0 "general_operand" "=r,R,Q")
-        (float_truncate:SF (match_operand:DF 1 "register_operand" "a,a,a")))]
+	(float_truncate:SF (match_operand:DF 1 "register_operand" "a,a,a")))]
   "TARGET_FPU"
   "* if (which_alternative ==0)
      {
@@ -751,8 +751,8 @@
 
 (define_expand "truncsihi2"
   [(set (match_operand:HI 0 "general_operand" "=g")
-        (subreg:HI 
-          (match_operand:SI 1 "general_operand" "or")
+	(subreg:HI 
+	  (match_operand:SI 1 "general_operand" "or")
           0))]
   ""
   "")
@@ -762,11 +762,11 @@
 
 (define_insn "zero_extendqihi2"
   [(set (match_operand:HI 0 "general_operand" "=r")
-        (zero_extend:HI (match_operand:QI 1 "general_operand" "0")))]
+	(zero_extend:HI (match_operand:QI 1 "general_operand" "0")))]
   ""
   "bic $0177400, %0"
   [(set_attr "length" "2")])
-                         
+			 
 (define_expand "zero_extendhisi2"
   [(set (subreg:HI 
           (match_dup 0)
@@ -784,7 +784,7 @@
 
 (define_insn "extendsfdf2"
   [(set (match_operand:DF 0 "register_operand" "=a,a,a")
-        (float_extend:DF (match_operand:SF 1 "general_operand" "r,R,Q")))]
+	(float_extend:DF (match_operand:SF 1 "general_operand" "r,R,Q")))]
   "TARGET_FPU"
   "@
    mov %1, -(sp)\;{ldcfd|movof} (sp)+,%0
@@ -795,14 +795,14 @@
 ;; does movb sign extend in register-to-register move?
 (define_insn "extendqihi2"
   [(set (match_operand:HI 0 "register_operand" "=r,r")
-        (sign_extend:HI (match_operand:QI 1 "general_operand" "rR,Q")))]
+	(sign_extend:HI (match_operand:QI 1 "general_operand" "rR,Q")))]
   ""
   "movb %1, %0"
   [(set_attr "length" "1,2")])
 
 (define_insn "extendqisi2"
   [(set (match_operand:SI 0 "register_operand" "=r,r")
-        (sign_extend:SI (match_operand:QI 1 "general_operand" "rR,Q")))]
+	(sign_extend:SI (match_operand:QI 1 "general_operand" "rR,Q")))]
   "TARGET_40_PLUS"
   "*
 {
@@ -824,13 +824,13 @@
 
 (define_expand "extendhisi2"
   [(set (match_operand:SI 0 "general_operand" "=g")
-        (sign_extend:SI (match_operand:HI 1 "general_operand" "g")))]
+	(sign_extend:SI (match_operand:HI 1 "general_operand" "g")))]
   ""
   "")
   
 (define_insn "" ; "extendhisi2"
   [(set (match_operand:SI 0 "general_operand" "=o,<,r")
-        (sign_extend:SI (match_operand:HI 1 "general_operand" "g,g,g")))]
+	(sign_extend:SI (match_operand:HI 1 "general_operand" "g,g,g")))]
   "TARGET_40_PLUS"
   "*
 {
@@ -879,7 +879,7 @@
 
 (define_insn ""
   [(set (match_operand:SI 0 "register_operand" "=r")
-        (sign_extend:SI (match_operand:HI 1 "general_operand" "0")))]
+	(sign_extend:SI (match_operand:HI 1 "general_operand" "0")))]
   "(! TARGET_40_PLUS)"
   "*
 {
@@ -916,7 +916,7 @@
 
 (define_insn "floatsidf2"
   [(set (match_operand:DF 0 "register_operand" "=a,a,a")
-        (float:DF (match_operand:SI 1 "general_operand" "r,R,Q")))]
+	(float:DF (match_operand:SI 1 "general_operand" "r,R,Q")))]
   "TARGET_FPU"
   "* if (which_alternative ==0)
      {
@@ -941,15 +941,15 @@
 
 (define_insn "floathidf2"
   [(set (match_operand:DF 0 "register_operand" "=a,a")
-        (float:DF (match_operand:HI 1 "general_operand" "rR,Qi")))]
+	(float:DF (match_operand:HI 1 "general_operand" "rR,Qi")))]
   "TARGET_FPU"
   "{ldcid|movif} %1, %0"
   [(set_attr "length" "1,2")])
-        
+	
 ;; cut float to int
 (define_insn "fix_truncdfsi2"
   [(set (match_operand:SI 0 "general_operand" "=r,R,Q")
-        (fix:SI (fix:DF (match_operand:DF 1 "register_operand" "a,a,a"))))]
+	(fix:SI (fix:DF (match_operand:DF 1 "register_operand" "a,a,a"))))]
   "TARGET_FPU"
   "* if (which_alternative ==0)
      {
@@ -970,7 +970,7 @@
 
 (define_insn "fix_truncdfhi2"
   [(set (match_operand:HI 0 "general_operand" "=rR,Q")
-        (fix:HI (fix:DF (match_operand:DF 1 "register_operand" "a,a"))))]
+	(fix:HI (fix:DF (match_operand:DF 1 "register_operand" "a,a"))))]
   "TARGET_FPU"
   "{stcdi|movfi} %1, %0"
   [(set_attr "length" "1,2")])
@@ -981,16 +981,16 @@
 
 (define_insn "adddf3"
   [(set (match_operand:DF 0 "register_operand" "=a,a,a")
-        (plus:DF (match_operand:DF 1 "register_operand" "%0,0,0")
-                 (match_operand:DF 2 "general_operand" "fR,Q,F")))]
+	(plus:DF (match_operand:DF 1 "register_operand" "%0,0,0")
+		 (match_operand:DF 2 "general_operand" "fR,Q,F")))]
   "TARGET_FPU"
   "{addd|addf} %2, %0"
   [(set_attr "length" "1,2,5")])
 
 (define_insn "addsi3"
   [(set (match_operand:SI 0 "general_operand" "=r,r,o,o,r,r,r,o,o,o")
-        (plus:SI (match_operand:SI 1 "general_operand" "%0,0,0,0,0,0,0,0,0,0")
-                 (match_operand:SI 2 "general_operand" "r,o,r,o,I,J,K,I,J,K")))]
+	(plus:SI (match_operand:SI 1 "general_operand" "%0,0,0,0,0,0,0,0,0,0")
+		 (match_operand:SI 2 "general_operand" "r,o,r,o,I,J,K,I,J,K")))]
   ""
   "*
 { /* Here we trust that operands don't overlap 
@@ -1039,15 +1039,15 @@
 
 (define_insn "addhi3"
   [(set (match_operand:HI 0 "general_operand" "=rR,rR,Q,Q")
-        (plus:HI (match_operand:HI 1 "general_operand" "%0,0,0,0")
-                 (match_operand:HI 2 "general_operand" "rRLM,Qi,rRLM,Qi")))]
+	(plus:HI (match_operand:HI 1 "general_operand" "%0,0,0,0")
+		 (match_operand:HI 2 "general_operand" "rRLM,Qi,rRLM,Qi")))]
   ""
   "*
 {
   if (GET_CODE (operands[2]) == CONST_INT)
     {
       if (INTVAL(operands[2]) == 1)
-        return \"inc %0\";
+	return \"inc %0\";
       else if (INTVAL(operands[2]) == -1)
         return \"dec %0\";
     }
@@ -1058,17 +1058,17 @@
 
 (define_insn "addqi3"
   [(set (match_operand:QI 0 "general_operand" "=rR,rR,Q,Q")
-        (plus:QI (match_operand:QI 1 "general_operand" "%0,0,0,0")
-                 (match_operand:QI 2 "general_operand" "rRLM,Qi,rRLM,Qi")))]
+	(plus:QI (match_operand:QI 1 "general_operand" "%0,0,0,0")
+		 (match_operand:QI 2 "general_operand" "rRLM,Qi,rRLM,Qi")))]
   ""
   "*
 {
   if (GET_CODE (operands[2]) == CONST_INT)
     {
       if (INTVAL(operands[2]) == 1)
-        return \"incb %0\";
+	return \"incb %0\";
       else if (INTVAL(operands[2]) == -1)
-        return \"decb %0\";
+	return \"decb %0\";
     }
 
   return \"add %2, %0\";
@@ -1083,8 +1083,8 @@
 
 (define_insn "subdf3"
   [(set (match_operand:DF 0 "register_operand" "=a,a")
-        (minus:DF (match_operand:DF 1 "register_operand" "0,0")
-                  (match_operand:DF 2 "general_operand" "fR,Q")))]
+	(minus:DF (match_operand:DF 1 "register_operand" "0,0")
+		  (match_operand:DF 2 "general_operand" "fR,Q")))]
   "TARGET_FPU"
   "{subd|subf} %2, %0"
   [(set_attr "length" "1,2")])
@@ -1125,8 +1125,8 @@
 
 (define_insn "subhi3"
   [(set (match_operand:HI 0 "general_operand" "=rR,rR,Q,Q")
-        (minus:HI (match_operand:HI 1 "general_operand" "0,0,0,0")
-                  (match_operand:HI 2 "general_operand" "rR,Qi,rR,Qi")))]
+	(minus:HI (match_operand:HI 1 "general_operand" "0,0,0,0")
+		  (match_operand:HI 2 "general_operand" "rR,Qi,rR,Qi")))]
   ""
   "*
 {
@@ -1138,8 +1138,8 @@
 
 (define_insn "subqi3"
   [(set (match_operand:QI 0 "general_operand" "=rR,rR,Q,Q")
-        (minus:QI (match_operand:QI 1 "general_operand" "0,0,0,0")
-                  (match_operand:QI 2 "general_operand" "rR,Qi,rR,Qi")))]
+	(minus:QI (match_operand:QI 1 "general_operand" "0,0,0,0")
+		  (match_operand:QI 2 "general_operand" "rR,Qi,rR,Qi")))]
   ""
   "*
 {
@@ -1202,16 +1202,16 @@
 
 (define_insn "andhi3"
   [(set (match_operand:HI 0 "general_operand" "=rR,rR,Q,Q")
-        (and:HI (match_operand:HI 1 "general_operand" "0,0,0,0")
-                (not:HI (match_operand:HI 2 "general_operand" "rR,Qi,rR,Qi"))))]
+	(and:HI (match_operand:HI 1 "general_operand" "0,0,0,0")
+		(not:HI (match_operand:HI 2 "general_operand" "rR,Qi,rR,Qi"))))]
   ""
   "bic %2, %0"
   [(set_attr "length" "1,2,2,3")])
 
 (define_insn "andqi3"
   [(set (match_operand:QI 0 "general_operand" "=rR,rR,Q,Q")
-        (and:QI (match_operand:QI 1 "general_operand" "0,0,0,0")
-                (not:QI (match_operand:QI 2 "general_operand" "rR,Qi,rR,Qi"))))]
+	(and:QI (match_operand:QI 1 "general_operand" "0,0,0,0")
+		(not:QI (match_operand:QI 2 "general_operand" "rR,Qi,rR,Qi"))))]
   ""
   "bicb %2, %0"
   [(set_attr "length" "1,2,2,3")])
@@ -1241,9 +1241,9 @@
       lateoperands[2] = operands[2];
 
       if (REG_P (operands[2]))
-        operands[2] = gen_rtx_REG (HImode, REGNO (operands[2]) + 1);
+	operands[2] = gen_rtx_REG (HImode, REGNO (operands[2]) + 1);
       else
-        operands[2] = adjust_address (operands[2], HImode, 2);
+	operands[2] = adjust_address (operands[2], HImode, 2);
 
       output_asm_insn (\"bis %2, %0\", operands);
       output_asm_insn (\"bis %2, %0\", lateoperands);
@@ -1267,16 +1267,16 @@
 
 (define_insn "iorhi3"
   [(set (match_operand:HI 0 "general_operand" "=rR,rR,Q,Q")
-        (ior:HI (match_operand:HI 1 "general_operand" "%0,0,0,0")
-                (match_operand:HI 2 "general_operand" "rR,Qi,rR,Qi")))]
+	(ior:HI (match_operand:HI 1 "general_operand" "%0,0,0,0")
+		(match_operand:HI 2 "general_operand" "rR,Qi,rR,Qi")))]
   ""
   "bis %2, %0"
   [(set_attr "length" "1,2,2,3")])
 
 (define_insn "iorqi3"
   [(set (match_operand:QI 0 "general_operand" "=rR,rR,Q,Q")
-        (ior:QI (match_operand:QI 1 "general_operand" "%0,0,0,0")
-                (match_operand:QI 2 "general_operand" "rR,Qi,rR,Qi")))]
+	(ior:QI (match_operand:QI 1 "general_operand" "%0,0,0,0")
+		(match_operand:QI 2 "general_operand" "rR,Qi,rR,Qi")))]
   ""
   "bisb %2, %0")
 
@@ -1310,8 +1310,8 @@
 
 (define_insn "xorhi3"
   [(set (match_operand:HI 0 "general_operand" "=rR,Q")
-        (xor:HI (match_operand:HI 1 "general_operand" "%0,0")
-                (match_operand:HI 2 "register_operand" "r,r")))]
+	(xor:HI (match_operand:HI 1 "general_operand" "%0,0")
+		(match_operand:HI 2 "register_operand" "r,r")))]
   "TARGET_40_PLUS"
   "xor %2, %0"
   [(set_attr "length" "1,2")])
@@ -1337,8 +1337,8 @@
 ;;- arithmetic shift instructions
 (define_insn "ashlsi3"
   [(set (match_operand:SI 0 "register_operand" "=r,r")
-        (ashift:SI (match_operand:SI 1 "register_operand" "0,0")
-                   (match_operand:HI 2 "general_operand" "rR,Qi")))]
+	(ashift:SI (match_operand:SI 1 "register_operand" "0,0")
+		   (match_operand:HI 2 "general_operand" "rR,Qi")))]
   "TARGET_45"
   "ashc %2,%0"
   [(set_attr "length" "1,2")])
@@ -1346,8 +1346,8 @@
 ;; Arithmetic right shift on the pdp works by negating the shift count.
 (define_expand "ashrsi3"
   [(set (match_operand:SI 0 "register_operand" "=r")
-        (ashift:SI (match_operand:SI 1 "register_operand" "0")
-                   (match_operand:HI 2 "general_operand" "g")))]
+	(ashift:SI (match_operand:SI 1 "register_operand" "0")
+		   (match_operand:HI 2 "general_operand" "g")))]
   ""
   "
 {
@@ -1359,8 +1359,8 @@
 ;; asl 
 (define_insn "" 
   [(set (match_operand:HI 0 "general_operand" "=rR,Q")
-        (ashift:HI (match_operand:HI 1 "general_operand" "0,0")
-                   (const_int 1)))]
+	(ashift:HI (match_operand:HI 1 "general_operand" "0,0")
+		   (const_int 1)))]
   ""
   "asl %0"
   [(set_attr "length" "1,2")])
@@ -1372,8 +1372,8 @@
 ;; asr
 (define_insn "" 
   [(set (match_operand:HI 0 "general_operand" "=rR,Q")
-        (ashift:HI (match_operand:HI 1 "general_operand" "0,0")
-                   (const_int -1)))]
+	(ashift:HI (match_operand:HI 1 "general_operand" "0,0")
+		   (const_int -1)))]
   ""
   "asr %0"
   [(set_attr "length" "1,2")])
@@ -1381,15 +1381,15 @@
 ;; lsr
 (define_insn "" 
   [(set (match_operand:HI 0 "general_operand" "=rR,Q")
-        (lshiftrt:HI (match_operand:HI 1 "general_operand" "0,0")
-                   (const_int 1)))]
+	(lshiftrt:HI (match_operand:HI 1 "general_operand" "0,0")
+		   (const_int 1)))]
   ""
   "clc\;ror %0"
   [(set_attr "length" "1,2")])
 
 (define_insn "lshrsi3"
   [(set (match_operand:SI 0 "register_operand" "=r")
-        (lshiftrt:SI (match_operand:SI 1 "general_operand" "0")
+	(lshiftrt:SI (match_operand:SI 1 "general_operand" "0")
                    (const_int 1)))]
   ""
 {
@@ -1415,8 +1415,8 @@
 ;; space doesn't matter
 (define_insn "" 
   [(set (match_operand:HI 0 "general_operand" "=r")
-        (ashift:HI (match_operand:HI 1 "general_operand" "0")
-                   (match_operand:HI 2 "expand_shift_operand" "O")))]
+	(ashift:HI (match_operand:HI 1 "general_operand" "0")
+		   (match_operand:HI 2 "expand_shift_operand" "O")))]
   "! optimize_size"
   "*
 {
@@ -1436,8 +1436,8 @@
 ;; aslb
 (define_insn "" 
   [(set (match_operand:QI 0 "general_operand" "=r,o")
-        (ashift:QI (match_operand:QI 1 "general_operand" "0,0")
-                   (match_operand:HI 2 "const_immediate_operand" "n,n")))]
+	(ashift:QI (match_operand:QI 1 "general_operand" "0,0")
+		   (match_operand:HI 2 "const_immediate_operand" "n,n")))]
   ""
   "*
 { /* allowing predec or post_inc is possible, but hairy! */
@@ -1458,8 +1458,8 @@
 ;;; asr 
 ;(define_insn "" 
 ;  [(set (match_operand:HI 0 "general_operand" "=rR,Q")
-;        (ashiftrt:HI (match_operand:HI 1 "general_operand" "0,0")
-;                     (const_int 1)))]
+;	(ashiftrt:HI (match_operand:HI 1 "general_operand" "0,0")
+;		     (const_int 1)))]
 ;  ""
 ;  "asr %0"
 ;  [(set_attr "length" "1,2")])
@@ -1467,8 +1467,8 @@
 ;; asrb
 (define_insn "" 
   [(set (match_operand:QI 0 "general_operand" "=r,o")
-        (ashiftrt:QI (match_operand:QI 1 "general_operand" "0,0")
-                     (match_operand:HI 2 "const_immediate_operand" "n,n")))]
+	(ashiftrt:QI (match_operand:QI 1 "general_operand" "0,0")
+		     (match_operand:HI 2 "const_immediate_operand" "n,n")))]
   ""
   "*
 { /* allowing predec or post_inc is possible, but hairy! */
@@ -1498,17 +1498,17 @@
 
 (define_insn "ashlhi3"
   [(set (match_operand:HI 0 "register_operand" "=r,r")
-        (ashift:HI (match_operand:HI 1 "register_operand" "0,0")
-                   (match_operand:HI 2 "general_operand" "rR,Qi")))]
+	(ashift:HI (match_operand:HI 1 "register_operand" "0,0")
+		   (match_operand:HI 2 "general_operand" "rR,Qi")))]
   ""
   "*
 {
   if (GET_CODE(operands[2]) == CONST_INT)
     {
       if (INTVAL(operands[2]) == 1)
-        return \"asl %0\";
+	return \"asl %0\";
       else if (INTVAL(operands[2]) == -1)
-        return \"asr %0\";
+	return \"asr %0\";
     }
 
   return \"ash %2,%0\";
@@ -1518,8 +1518,8 @@
 ;; Arithmetic right shift on the pdp works by negating the shift count.
 (define_expand "ashrhi3"
   [(set (match_operand:HI 0 "register_operand" "=r")
-        (ashift:HI (match_operand:HI 1 "register_operand" "0")
-                   (match_operand:HI 2 "general_operand" "g")))]
+	(ashift:HI (match_operand:HI 1 "register_operand" "0")
+		   (match_operand:HI 2 "general_operand" "g")))]
   ""
   "
 {
@@ -1529,8 +1529,8 @@
 ;;;;- logical shift instructions
 ;;(define_insn "lshrsi3"
 ;;  [(set (match_operand:HI 0 "register_operand" "=r")
-;;        (lshiftrt:HI (match_operand:HI 1 "register_operand" "0")
-;;                     (match_operand:HI 2 "arith_operand" "rI")))]
+;;	(lshiftrt:HI (match_operand:HI 1 "register_operand" "0")
+;;		     (match_operand:HI 2 "arith_operand" "rI")))]
 ;;  ""
 ;;  "srl %0,%2")
 
@@ -1538,20 +1538,20 @@
 
 (define_insn "absdf2"
   [(set (match_operand:DF 0 "general_operand" "=fR,Q")
-        (abs:DF (match_operand:DF 1 "general_operand" "0,0")))]
+	(abs:DF (match_operand:DF 1 "general_operand" "0,0")))]
   "TARGET_FPU"
   "{absd|absf} %0"
   [(set_attr "length" "1,2")])
 
 (define_insn "abshi2"
   [(set (match_operand:HI 0 "general_operand" "=r,o")
-        (abs:HI (match_operand:HI 1 "general_operand" "0,0")))]
+	(abs:HI (match_operand:HI 1 "general_operand" "0,0")))]
   "TARGET_ABSHI_BUILTIN"
   "*
 {
   static int count = 0;
   char buf[200];
-        
+	
   output_asm_insn(\"tst %0\", operands);
   sprintf(buf, \"bge abshi%d\", count);
   output_asm_insn(buf, NULL);
@@ -1602,14 +1602,14 @@
 
 (define_insn "negdf2"
   [(set (match_operand:DF 0 "general_operand" "=fR,Q")
-        (neg:DF (match_operand:DF 1 "register_operand" "0,0")))]
+	(neg:DF (match_operand:DF 1 "register_operand" "0,0")))]
   "TARGET_FPU"
   "{negd|negf} %0"
   [(set_attr "length" "1,2")])
 
 (define_insn "negsi2"
   [(set (match_operand:SI 0 "register_operand" "=r")
-        (neg:SI (match_operand:SI 1 "general_operand" "0")))]
+	(neg:SI (match_operand:SI 1 "general_operand" "0")))]
   ""
 {
 
@@ -1632,14 +1632,14 @@
 
 (define_insn "neghi2"
   [(set (match_operand:HI 0 "general_operand" "=rR,Q")
-        (neg:HI (match_operand:HI 1 "general_operand" "0,0")))]
+	(neg:HI (match_operand:HI 1 "general_operand" "0,0")))]
   ""
   "neg %0"
   [(set_attr "length" "1,2")])
 
 (define_insn "negqi2"
   [(set (match_operand:QI 0 "general_operand" "=rR,Q")
-        (neg:QI (match_operand:QI 1 "general_operand" "0,0")))]
+	(neg:QI (match_operand:QI 1 "general_operand" "0,0")))]
   ""
   "negb %0"
   [(set_attr "length" "1,2")])
@@ -1648,7 +1648,7 @@
 ;; Unconditional and other jump instructions
 (define_insn "jump"
   [(set (pc)
-        (label_ref (match_operand 0 "" "")))]
+	(label_ref (match_operand 0 "" "")))]
   ""
   "jmp %l0"
   [(set_attr "length" "2")])
@@ -1681,7 +1681,7 @@
 
 (define_insn "call"
   [(call (match_operand:HI 0 "general_operand" "rR,Q")
-         (match_operand:HI 1 "general_operand" "g,g"))
+	 (match_operand:HI 1 "general_operand" "g,g"))
 ;;   (use (reg:HI 0)) what was that ???
   ]
   ;;- Don't use operand 1 for most machines.
@@ -1692,8 +1692,8 @@
 ;;- jump to subroutine
 (define_insn "call_value"
   [(set (match_operand 0 "" "")
-        (call (match_operand:HI 1 "general_operand" "rR,Q")
-              (match_operand:HI 2 "general_operand" "g,g")))
+	(call (match_operand:HI 1 "general_operand" "rR,Q")
+	      (match_operand:HI 2 "general_operand" "g,g")))
 ;;   (use (reg:HI 0)) - what was that ????
   ]
   ;;- Don't use operand 2 for most machines.
@@ -1712,8 +1712,8 @@
 
 (define_insn "muldf3"
   [(set (match_operand:DF 0 "register_operand" "=a,a,a")
-        (mult:DF (match_operand:DF 1 "register_operand" "%0,0,0")
-                 (match_operand:DF 2 "general_operand" "fR,Q,F")))]
+	(mult:DF (match_operand:DF 1 "register_operand" "%0,0,0")
+		 (match_operand:DF 2 "general_operand" "fR,Q,F")))]
   "TARGET_FPU"
   "{muld|mulf} %2, %0"
   [(set_attr "length" "1,2,5")])
@@ -1726,8 +1726,8 @@
 
 (define_insn "mulhi3"
   [(set (match_operand:HI 0 "register_operand" "=d,d") ; multiply regs
-        (mult:HI (match_operand:HI 1 "register_operand" "%0,0")
-                 (match_operand:HI 2 "general_operand" "rR,Qi")))]
+	(mult:HI (match_operand:HI 1 "register_operand" "%0,0")
+		 (match_operand:HI 2 "general_operand" "rR,Qi")))]
   "TARGET_45"
   "mul %2, %0"
   [(set_attr "length" "1,2")])
@@ -1735,28 +1735,28 @@
 ;; 32 bit result
 (define_expand "mulhisi3"
   [(set (match_dup 3)
-        (match_operand:HI 1 "general_operand" "g,g"))
+	(match_operand:HI 1 "general_operand" "g,g"))
    (set (match_operand:SI 0 "register_operand" "=r,r") ; even numbered!
-        (mult:SI (truncate:HI 
+	(mult:SI (truncate:HI 
                   (match_dup 0))
-                 (match_operand:HI 2 "general_operand" "rR,Qi")))]
+		 (match_operand:HI 2 "general_operand" "rR,Qi")))]
   "TARGET_45"
   "operands[3] = gen_lowpart(HImode, operands[1]);")
 
 (define_insn ""
   [(set (match_operand:SI 0 "register_operand" "=r,r") ; even numbered!
-        (mult:SI (truncate:HI 
+	(mult:SI (truncate:HI 
                   (match_operand:SI 1 "register_operand" "%0,0"))
-                 (match_operand:HI 2 "general_operand" "rR,Qi")))]
+		 (match_operand:HI 2 "general_operand" "rR,Qi")))]
   "TARGET_45"
   "mul %2, %0"
   [(set_attr "length" "1,2")])
 
 ;(define_insn "mulhisi3"
 ;  [(set (match_operand:SI 0 "register_operand" "=r,r") ; even numbered!
-;        (mult:SI (truncate:HI 
+;	(mult:SI (truncate:HI 
 ;                  (match_operand:SI 1 "register_operand" "%0,0"))
-;                 (match_operand:HI 2 "general_operand" "rR,Qi")))]
+;		 (match_operand:HI 2 "general_operand" "rR,Qi")))]
 ;  "TARGET_45"
 ;  "mul %2, %0"
 ;  [(set_attr "length" "1,2")])
@@ -1764,17 +1764,17 @@
 ;;- divide
 (define_insn "divdf3"
   [(set (match_operand:DF 0 "register_operand" "=a,a,a")
-        (div:DF (match_operand:DF 1 "register_operand" "0,0,0")
-                (match_operand:DF 2 "general_operand" "fR,Q,F")))]
+	(div:DF (match_operand:DF 1 "register_operand" "0,0,0")
+		(match_operand:DF 2 "general_operand" "fR,Q,F")))]
   "TARGET_FPU"
   "{divd|divf} %2, %0"
   [(set_attr "length" "1,2,5")])
 
-         
+	 
 (define_expand "divhi3"
   [(set (subreg:HI (match_dup 1) 0)
-        (div:HI (match_operand:SI 1 "general_operand" "0")
-                (match_operand:HI 2 "general_operand" "g")))
+	(div:HI (match_operand:SI 1 "general_operand" "0")
+		(match_operand:HI 2 "general_operand" "g")))
    (set (match_operand:HI 0 "general_operand" "=r")
         (subreg:HI (match_dup 1) 0))]
   "TARGET_45"
@@ -1782,16 +1782,16 @@
 
 (define_insn ""
   [(set (subreg:HI (match_operand:SI 0 "general_operand" "=r") 0)
-        (div:HI (match_operand:SI 1 "general_operand" "0")
-                (match_operand:HI 2 "general_operand" "g")))]
+	(div:HI (match_operand:SI 1 "general_operand" "0")
+		(match_operand:HI 2 "general_operand" "g")))]
   "TARGET_45"
   "div %2,%0"
   [(set_attr "length" "2")])
 
 (define_expand "modhi3"
   [(set (subreg:HI (match_dup 1) 2)
-        (mod:HI (match_operand:SI 1 "general_operand" "0")
-                (match_operand:HI 2 "general_operand" "g")))
+	(mod:HI (match_operand:SI 1 "general_operand" "0")
+		(match_operand:HI 2 "general_operand" "g")))
    (set (match_operand:HI 0 "general_operand" "=r")
         (subreg:HI (match_dup 1) 2))]
   "TARGET_45"
@@ -1799,19 +1799,19 @@
 
 (define_insn ""
   [(set (subreg:HI (match_operand:SI 0 "general_operand" "=r") 2)
-        (mod:HI (match_operand:SI 1 "general_operand" "0")
-                (match_operand:HI 2 "general_operand" "g")))]
+	(mod:HI (match_operand:SI 1 "general_operand" "0")
+		(match_operand:HI 2 "general_operand" "g")))]
   "TARGET_45"
   "div %2,%0"
   [(set_attr "length" "2")])
 
 ;(define_expand "divmodhi4"
 ;  [(parallel [(set (subreg:HI (match_dup 1) 0)
-;                   (div:HI (match_operand:SI 1 "general_operand" "0")
-;                           (match_operand:HI 2 "general_operand" "g")))
+;	           (div:HI (match_operand:SI 1 "general_operand" "0")
+;		           (match_operand:HI 2 "general_operand" "g")))
 ;              (set (subreg:HI (match_dup 1) 2)
-;                   (mod:HI (match_dup 1)
-;                           (match_dup 2)))])
+;	           (mod:HI (match_dup 1)
+;		           (match_dup 2)))])
 ;   (set (match_operand:HI 3 "general_operand" "=r")
 ;        (subreg:HI (match_dup 1) 2))
 ;   (set (match_operand:HI 0 "general_operand" "=r")
@@ -1821,11 +1821,11 @@
 ;
 ;(define_insn ""
 ;  [(set (subreg:HI (match_operand:SI 0 "general_operand" "=r") 0)
-;                   (div:HI (match_operand:SI 1 "general_operand" "0")
-;                           (match_operand:HI 2 "general_operand" "g")))
+;	           (div:HI (match_operand:SI 1 "general_operand" "0")
+;		           (match_operand:HI 2 "general_operand" "g")))
 ;   (set (subreg:HI (match_dup 0) 2)
-;                   (mod:HI (match_dup 1)
-;                           (match_dup 2)))]
+;	           (mod:HI (match_dup 1)
+;		           (match_dup 2)))]
 ;  "TARGET_45"
 ;  "div %2, %0")
 ;

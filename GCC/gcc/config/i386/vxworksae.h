@@ -21,7 +21,7 @@ Boston, MA 02110-1301, USA.  */
 
 /* On VxWorks AE, we only want SIMNT.  */
 #undef VXWORKS_CPU_DEFINE
-#define VXWORKS_CPU_DEFINE()                        \
-  do                                                \
-    builtin_define ("CPU=SIMNT");                \
+#define VXWORKS_CPU_DEFINE()			\
+  do						\
+    builtin_define ("CPU=SIMNT");		\
   while (0)

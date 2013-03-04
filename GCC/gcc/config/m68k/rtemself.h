@@ -21,13 +21,13 @@ Boston, MA 02110-1301, USA.  */
 
 
 /* Target OS builtins.  */
-#undef TARGET_OS_CPP_BUILTINS        /* Defined in m68kemb.h.  */
-#define TARGET_OS_CPP_BUILTINS()                \
-  do                                                \
-    {                                                \
-        builtin_define_std ("mc68000");                \
-        builtin_define ("__USE_INIT_FINI__");        \
-        builtin_define ("__rtems__");                \
-        builtin_assert ("system=rtems");        \
-    }                                                \
+#undef TARGET_OS_CPP_BUILTINS	/* Defined in m68kemb.h.  */
+#define TARGET_OS_CPP_BUILTINS()		\
+  do						\
+    {						\
+	builtin_define_std ("mc68000");		\
+	builtin_define ("__USE_INIT_FINI__");	\
+	builtin_define ("__rtems__");		\
+	builtin_assert ("system=rtems");	\
+    }						\
   while (0)

@@ -32,7 +32,7 @@ Boston, MA 02110-1301, USA.  */
 
 /* Needed for ELF (inspired by netbsd-elf).  */
 #undef LOCAL_LABEL_PREFIX
-#define LOCAL_LABEL_PREFIX        "."
+#define LOCAL_LABEL_PREFIX	"."
 
 /* The profiling lib spec here is not really correct but we leave
    it as it is until we have some kind of profiling working.  */
@@ -40,18 +40,18 @@ Boston, MA 02110-1301, USA.  */
 
 /* mips assembler uses .set for arcane purposes.  __attribute__((alias))
    and friends won't work until we get recent binutils with .weakext
-        support.  */
+	support.  */
 #undef SET_ASM_OP
 
-#define TARGET_OS_CPP_BUILTINS()                        \
-    do {                                                \
-        builtin_define ("__unix__");                        \
-        builtin_define ("__SYSTYPE_BSD__");                \
-        builtin_define ("__NO_LEADING_UNDERSCORES__");        \
-        builtin_define ("__GP_SUPPORT__");                \
-        builtin_define ("__OpenBSD__");                        \
-        builtin_assert ("system=unix");                        \
-        builtin_assert ("system=OpenBSD");                \
+#define TARGET_OS_CPP_BUILTINS()			\
+    do {						\
+	builtin_define ("__unix__");			\
+	builtin_define ("__SYSTYPE_BSD__");		\
+	builtin_define ("__NO_LEADING_UNDERSCORES__");	\
+	builtin_define ("__GP_SUPPORT__");		\
+	builtin_define ("__OpenBSD__");			\
+	builtin_assert ("system=unix");			\
+	builtin_assert ("system=OpenBSD");		\
 } while (0)
 
 /* Layout of source language data types.  */

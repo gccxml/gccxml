@@ -42,8 +42,8 @@ extern tree tree_coverage_counter_ref (unsigned /*counter*/, unsigned/*num*/);
 
 /* Get all the counters for the current function.  */
 extern gcov_type *get_coverage_counts (unsigned /*counter*/,
-                                       unsigned /*expected*/,
-                                       const struct gcov_ctr_summary **);
+				       unsigned /*expected*/,
+				       const struct gcov_ctr_summary **);
 
 extern tree get_gcov_type (void);
 

@@ -52,24 +52,24 @@ gen_attr (rtx attr)
   p = XSTR (attr, 1);
   if (*p == '\0')
     printf ("extern int get_attr_%s (%s);\n", XSTR (attr, 0),
-            (is_const ? "void" : "rtx"));
+	    (is_const ? "void" : "rtx"));
   else
     {
       printf ("enum attr_%s {", XSTR (attr, 0));
 
       while ((tag = scan_comma_elt (&p)) != 0)
-        {
-          write_upcase (XSTR (attr, 0));
-          putchar ('_');
-          while (tag != p)
-            putchar (TOUPPER (*tag++));
-          if (*p == ',')
-            fputs (", ", stdout);
-        }
+	{
+	  write_upcase (XSTR (attr, 0));
+	  putchar ('_');
+	  while (tag != p)
+	    putchar (TOUPPER (*tag++));
+	  if (*p == ',')
+	    fputs (", ", stdout);
+	}
 
       fputs ("};\n", stdout);
       printf ("extern enum attr_%s get_attr_%s (%s);\n\n",
-              XSTR (attr, 0), XSTR (attr, 0), (is_const ? "void" : "rtx"));
+	      XSTR (attr, 0), XSTR (attr, 0), (is_const ? "void" : "rtx"));
     }
 
   /* If `length' attribute, write additional function definitions and define
@@ -124,48 +124,48 @@ main (int argc, char **argv)
 
       desc = read_md_rtx (&line_no, &insn_code_number);
       if (desc == NULL)
-        break;
+	break;
 
       if (GET_CODE (desc) == DEFINE_ATTR)
-        gen_attr (desc);
+	gen_attr (desc);
 
       else if (GET_CODE (desc) == DEFINE_DELAY)
         {
-          if (! have_delay)
-            {
-              printf ("#define DELAY_SLOTS\n");
-              printf ("extern int num_delay_slots (rtx);\n");
-              printf ("extern int eligible_for_delay (rtx, int, rtx, int);\n\n");
-              printf ("extern int const_num_delay_slots (rtx);\n\n");
-              have_delay = 1;
-            }
+	  if (! have_delay)
+	    {
+	      printf ("#define DELAY_SLOTS\n");
+	      printf ("extern int num_delay_slots (rtx);\n");
+	      printf ("extern int eligible_for_delay (rtx, int, rtx, int);\n\n");
+	      printf ("extern int const_num_delay_slots (rtx);\n\n");
+	      have_delay = 1;
+	    }
 
-          for (i = 0; i < XVECLEN (desc, 1); i += 3)
-            {
-              if (XVECEXP (desc, 1, i + 1) && ! have_annul_true)
-                {
-                  printf ("#define ANNUL_IFTRUE_SLOTS\n");
-                  printf ("extern int eligible_for_annul_true (rtx, int, rtx, int);\n");
-                  have_annul_true = 1;
-                }
+	  for (i = 0; i < XVECLEN (desc, 1); i += 3)
+	    {
+	      if (XVECEXP (desc, 1, i + 1) && ! have_annul_true)
+		{
+		  printf ("#define ANNUL_IFTRUE_SLOTS\n");
+		  printf ("extern int eligible_for_annul_true (rtx, int, rtx, int);\n");
+		  have_annul_true = 1;
+		}
 
-              if (XVECEXP (desc, 1, i + 2) && ! have_annul_false)
-                {
-                  printf ("#define ANNUL_IFFALSE_SLOTS\n");
-                  printf ("extern int eligible_for_annul_false (rtx, int, rtx, int);\n");
-                  have_annul_false = 1;
-                }
-            }
+	      if (XVECEXP (desc, 1, i + 2) && ! have_annul_false)
+		{
+		  printf ("#define ANNUL_IFFALSE_SLOTS\n");
+		  printf ("extern int eligible_for_annul_false (rtx, int, rtx, int);\n");
+		  have_annul_false = 1;
+		}
+	    }
         }
 
       else if (GET_CODE (desc) == DEFINE_INSN_RESERVATION)
-        num_insn_reservations++;
+	num_insn_reservations++;
     }
 
   if (num_insn_reservations > 0)
     {
       /* Output interface for pipeline hazards recognition based on
-         DFA (deterministic finite state automata.  */
+	 DFA (deterministic finite state automata.  */
       printf ("\n#define INSN_SCHEDULING\n");
       printf ("\n/* DFA based pipeline interface.  */");
       printf ("\n#ifndef AUTOMATON_ALTS\n");
@@ -235,7 +235,7 @@ main (int argc, char **argv)
       printf ("    the insn and the state).  Data dependencies between\n");
       printf ("    the insns are ignored by the function.  */\n");
       printf
-        ("extern int min_insn_conflict_delay (state_t, rtx, rtx);\n");
+	("extern int min_insn_conflict_delay (state_t, rtx, rtx);\n");
       printf ("/* The following function outputs reservations for given\n");
       printf ("   insn as they are described in the corresponding\n");
       printf ("   define_insn_reservation.  */\n");
@@ -264,7 +264,7 @@ main (int argc, char **argv)
   else
     {
       /* Otherwise we do no scheduling, but we need these typedefs
-         in order to avoid uglifying other code with more ifdefs.  */
+	 in order to avoid uglifying other code with more ifdefs.  */
       printf ("typedef void *state_t;\n\n");
     }
 

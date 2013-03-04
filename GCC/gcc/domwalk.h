@@ -54,7 +54,7 @@ struct dom_walk_data
      that allows your optimizer to re-use those arrays rather than
      creating new ones.  */
   void (*initialize_block_local_data) (struct dom_walk_data *,
-                                       basic_block, bool);
+				       basic_block, bool);
 
   /* Function to call before the statement walk occurring before the
      recursive walk of the dominator children. 
@@ -62,27 +62,27 @@ struct dom_walk_data
      This typically initializes a block local data and pushes that
      data onto BLOCK_DATA_STACK.  */
   void (*before_dom_children_before_stmts) (struct dom_walk_data *,
-                                            basic_block);
+					    basic_block);
 
   /* Function to call to walk statements before the recursive walk
      of the dominator children.  */
   void (*before_dom_children_walk_stmts) (struct dom_walk_data *,
-                                          basic_block, block_stmt_iterator);
+					  basic_block, block_stmt_iterator);
 
   /* Function to call after the statement walk occurring before the
      recursive walk of the dominator children.  */
   void (*before_dom_children_after_stmts) (struct dom_walk_data *,
-                                           basic_block);
+					   basic_block);
 
   /* Function to call before the statement walk occurring after the
      recursive walk of the dominator children.  */
   void (*after_dom_children_before_stmts) (struct dom_walk_data *,
-                                           basic_block);
+					   basic_block);
 
   /* Function to call to walk statements after the recursive walk
      of the dominator children.  */
   void (*after_dom_children_walk_stmts) (struct dom_walk_data *,
-                                         basic_block, block_stmt_iterator);
+					 basic_block, block_stmt_iterator);
 
   /* Function to call after the statement walk occurring after the
      recursive walk of the dominator children. 
@@ -90,7 +90,7 @@ struct dom_walk_data
      This typically finalizes any block local data and pops
      that data from BLOCK_DATA_STACK.  */
   void (*after_dom_children_after_stmts) (struct dom_walk_data *,
-                                          basic_block);
+					  basic_block);
 
   /* Global data for a walk through the dominator tree.  */
   void *global_data;

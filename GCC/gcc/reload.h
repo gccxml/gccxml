@@ -42,24 +42,24 @@ extern int memory_move_secondary_cost (enum machine_mode, enum reg_class, int);
 
 /* Encode the usage of a reload.  The following codes are supported:
 
-   RELOAD_FOR_INPUT                reload of an input operand
-   RELOAD_FOR_OUTPUT                likewise, for output
-   RELOAD_FOR_INSN                a reload that must not conflict with anything
-                                used in the insn, but may conflict with
-                                something used before or after the insn
-   RELOAD_FOR_INPUT_ADDRESS        reload for parts of the address of an object
-                                that is an input reload
-   RELOAD_FOR_INPADDR_ADDRESS        reload needed for RELOAD_FOR_INPUT_ADDRESS
-   RELOAD_FOR_OUTPUT_ADDRESS        like RELOAD_FOR INPUT_ADDRESS, for output
-   RELOAD_FOR_OUTADDR_ADDRESS        reload needed for RELOAD_FOR_OUTPUT_ADDRESS
-   RELOAD_FOR_OPERAND_ADDRESS        reload for the address of a non-reloaded
-                                operand; these don't conflict with
-                                any other addresses.
-   RELOAD_FOR_OPADDR_ADDR        reload needed for RELOAD_FOR_OPERAND_ADDRESS
+   RELOAD_FOR_INPUT		reload of an input operand
+   RELOAD_FOR_OUTPUT		likewise, for output
+   RELOAD_FOR_INSN		a reload that must not conflict with anything
+				used in the insn, but may conflict with
+				something used before or after the insn
+   RELOAD_FOR_INPUT_ADDRESS	reload for parts of the address of an object
+				that is an input reload
+   RELOAD_FOR_INPADDR_ADDRESS	reload needed for RELOAD_FOR_INPUT_ADDRESS
+   RELOAD_FOR_OUTPUT_ADDRESS	like RELOAD_FOR INPUT_ADDRESS, for output
+   RELOAD_FOR_OUTADDR_ADDRESS	reload needed for RELOAD_FOR_OUTPUT_ADDRESS
+   RELOAD_FOR_OPERAND_ADDRESS	reload for the address of a non-reloaded
+				operand; these don't conflict with
+				any other addresses.
+   RELOAD_FOR_OPADDR_ADDR	reload needed for RELOAD_FOR_OPERAND_ADDRESS
                                 reloads; usually secondary reloads
-   RELOAD_OTHER                        none of the above, usually multiple uses
+   RELOAD_OTHER			none of the above, usually multiple uses
    RELOAD_FOR_OTHER_ADDRESS     reload for part of the address of an input
-                                that is marked RELOAD_OTHER.
+				that is marked RELOAD_OTHER.
 
    This used to be "enum reload_when_needed" but some debuggers have trouble
    with an enum tag and variable of the same name.  */
@@ -246,7 +246,7 @@ extern void compute_use_by_pseudos (HARD_REG_SET *, regset);
 /* Functions from reload.c:  */
 
 extern enum reg_class secondary_reload_class (bool, enum reg_class,
-                                              enum machine_mode, rtx);
+					      enum machine_mode, rtx);
 
 #ifdef GCC_INSN_CODES_H
 extern enum reg_class scratch_reload_class (enum insn_code);
@@ -311,7 +311,7 @@ extern int reg_overlap_mentioned_for_reload_p (rtx, rtx);
 /* Check the insns before INSN to see if there is a suitable register
    containing the same value as GOAL.  */
 extern rtx find_equiv_reg (rtx, rtx, enum reg_class, int, short *,
-                           int, enum machine_mode);
+			   int, enum machine_mode);
 
 /* Return 1 if register REGNO is the subject of a clobber in insn INSN.  */
 extern int regno_clobbered_p (unsigned int, rtx, enum machine_mode, int);
@@ -321,8 +321,8 @@ extern int earlyclobber_operand_p (rtx);
 
 /* Record one reload that needs to be performed.  */
 extern int push_reload (rtx, rtx, rtx *, rtx *, enum reg_class,
-                        enum machine_mode, enum machine_mode,
-                        int, int, int, enum reload_type);
+			enum machine_mode, enum machine_mode,
+			int, int, int, enum reload_type);
 
 /* Functions in postreload.c:  */
 extern void reload_cse_regs (rtx);

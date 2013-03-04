@@ -82,7 +82,7 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
 #undef BOOL
 
 /* Key structure for maintaining thread specific storage */
-static DWORD        __gthread_objc_data_tls = (DWORD) -1;
+static DWORD	__gthread_objc_data_tls = (DWORD) -1;
 
 /* Backend initialization functions */
 
@@ -112,11 +112,11 @@ __gthread_objc_close_thread_system (void)
 objc_thread_t
 __gthread_objc_thread_detach (void (*func)(void *arg), void *arg)
 {
-  DWORD        thread_id = 0;
+  DWORD	thread_id = 0;
   HANDLE win32_handle;
 
   if (!(win32_handle = CreateThread (NULL, 0, (LPTHREAD_START_ROUTINE) func,
-                                     arg, 0, &thread_id)))
+				     arg, 0, &thread_id)))
     thread_id = 0;
 
   return (objc_thread_t) thread_id;
@@ -380,11 +380,11 @@ __gthr_i486_lock_cmp_xchg(long *dest, long xchg, long comperand)
 {
   long result;
   __asm__ __volatile__ ("\n\
-        lock\n\
-        cmpxchg{l} {%4, %1|%1, %4}\n"
-        : "=a" (result), "=m" (*dest)
-        : "0" (comperand), "m" (*dest), "r" (xchg)
-        : "cc");
+	lock\n\
+	cmpxchg{l} {%4, %1|%1, %4}\n"
+	: "=a" (result), "=m" (*dest)
+	: "0" (comperand), "m" (*dest), "r" (xchg)
+	: "cc");
   return result;
 }
 #define __GTHR_W32_InterlockedCompareExchange __gthr_i486_lock_cmp_xchg
@@ -539,20 +539,20 @@ __gthread_once (__gthread_once_t *once, void (*func) (void))
   if (! once->done)
     {
       if (InterlockedIncrement (&(once->started)) == 0)
-        {
-          (*func) ();
-          once->done = TRUE;
-        }
+	{
+	  (*func) ();
+	  once->done = TRUE;
+	}
       else
-        {
-          /* Another thread is currently executing the code, so wait for it
-             to finish; yield the CPU in the meantime.  If performance
-             does become an issue, the solution is to use an Event that
-             we wait on here (and set above), but that implies a place to
-             create the event before this routine is called.  */
-          while (! once->done)
-            Sleep (0);
-        }
+	{
+	  /* Another thread is currently executing the code, so wait for it
+	     to finish; yield the CPU in the meantime.  If performance
+	     does become an issue, the solution is to use an Event that
+	     we wait on here (and set above), but that implies a place to
+	     create the event before this routine is called.  */
+	  while (! once->done)
+	    Sleep (0);
+	}
     }
 
   return 0;
@@ -622,15 +622,15 @@ __gthread_mutex_lock (__gthread_mutex_t *mutex)
   if (__gthread_active_p ())
     {
       if (InterlockedIncrement (&mutex->counter) == 0 ||
-          WaitForSingleObject (mutex->sema, INFINITE) == WAIT_OBJECT_0)
-        status = 0;
+	  WaitForSingleObject (mutex->sema, INFINITE) == WAIT_OBJECT_0)
+	status = 0;
       else
-        {
-          /* WaitForSingleObject returns WAIT_FAILED, and we can only do
-             some best-effort cleanup here.  */
-          InterlockedDecrement (&mutex->counter);
-          status = 1;
-        }
+	{
+	  /* WaitForSingleObject returns WAIT_FAILED, and we can only do
+	     some best-effort cleanup here.  */
+	  InterlockedDecrement (&mutex->counter);
+	  status = 1;
+	}
     }
   return status;
 }
@@ -643,9 +643,9 @@ __gthread_mutex_trylock (__gthread_mutex_t *mutex)
   if (__gthread_active_p ())
     {
       if (__GTHR_W32_InterlockedCompareExchange (&mutex->counter, 0, -1) < 0)
-        status = 0;
+	status = 0;
       else
-        status = 1;
+	status = 1;
     }
   return status;
 }
@@ -656,7 +656,7 @@ __gthread_mutex_unlock (__gthread_mutex_t *mutex)
   if (__gthread_active_p ())
     {
       if (InterlockedDecrement (&mutex->counter) >= 0)
-        return ReleaseSemaphore (mutex->sema, 1, NULL) ? 0 : 1;
+	return ReleaseSemaphore (mutex->sema, 1, NULL) ? 0 : 1;
     }
   return 0;
 }
@@ -677,27 +677,27 @@ __gthread_recursive_mutex_lock (__gthread_recursive_mutex_t *mutex)
     {
       DWORD me = GetCurrentThreadId();
       if (InterlockedIncrement (&mutex->counter) == 0)
-        {
-          mutex->depth = 1;
-          mutex->owner = me;
-        }
+	{
+	  mutex->depth = 1;
+	  mutex->owner = me;
+	}
       else if (mutex->owner == me)
-        {
-          InterlockedDecrement (&mutex->counter);
-          ++(mutex->depth);
-        }
+	{
+	  InterlockedDecrement (&mutex->counter);
+	  ++(mutex->depth);
+	}
       else if (WaitForSingleObject (mutex->sema, INFINITE) == WAIT_OBJECT_0)
-        {
-          mutex->depth = 1;
-          mutex->owner = me;
-        }
+	{
+	  mutex->depth = 1;
+	  mutex->owner = me;
+	}
       else
-        {
-          /* WaitForSingleObject returns WAIT_FAILED, and we can only do
-             some best-effort cleanup here.  */
-          InterlockedDecrement (&mutex->counter);
-          return 1;
-        }
+	{
+	  /* WaitForSingleObject returns WAIT_FAILED, and we can only do
+	     some best-effort cleanup here.  */
+	  InterlockedDecrement (&mutex->counter);
+	  return 1;
+	}
     }
   return 0;
 }
@@ -709,14 +709,14 @@ __gthread_recursive_mutex_trylock (__gthread_recursive_mutex_t *mutex)
     {
       DWORD me = GetCurrentThreadId();
       if (__GTHR_W32_InterlockedCompareExchange (&mutex->counter, 0, -1) < 0)
-        {
-          mutex->depth = 1;
-          mutex->owner = me;
-        }
+	{
+	  mutex->depth = 1;
+	  mutex->owner = me;
+	}
       else if (mutex->owner == me)
-        ++(mutex->depth);
+	++(mutex->depth);
       else
-        return 1;
+	return 1;
     }
   return 0;
 }
@@ -728,12 +728,12 @@ __gthread_recursive_mutex_unlock (__gthread_recursive_mutex_t *mutex)
     {
       --(mutex->depth);
       if (mutex->depth == 0)
-        {
-          mutex->owner = 0;
+	{
+	  mutex->owner = 0;
 
-          if (InterlockedDecrement (&mutex->counter) >= 0)
-            return ReleaseSemaphore (mutex->sema, 1, NULL) ? 0 : 1;
-        }
+	  if (InterlockedDecrement (&mutex->counter) >= 0)
+	    return ReleaseSemaphore (mutex->sema, 1, NULL) ? 0 : 1;
+	}
     }
   return 0;
 }

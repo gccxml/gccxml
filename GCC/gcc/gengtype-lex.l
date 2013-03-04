@@ -34,9 +34,9 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
 
 static unsigned macro_input (char *buffer, unsigned);
 static const char *push_macro_expansion (const char *, unsigned,
-                                         const char *, unsigned);
+					 const char *, unsigned);
 static char *mangle_macro_name (const char *, unsigned,
-                                       const char *, unsigned);
+       			        const char *, unsigned);
 static void update_lineno (const char *l, size_t len);
 
 struct fileloc lexer_line;
@@ -52,10 +52,10 @@ update_lineno (const char *l, size_t len)
 
 %}
 
-ID        [[:alpha:]_][[:alnum:]_]*
-WS        [[:space:]]+
-IWORD        short|long|(un)?signed|char|int|HOST_WIDE_INT|HOST_WIDEST_INT|bool|size_t|BOOL_BITFIELD
-ITYPE        {IWORD}({WS}{IWORD})*
+ID	[[:alpha:]_][[:alnum:]_]*
+WS	[[:space:]]+
+IWORD	short|long|(un)?signed|char|int|HOST_WIDE_INT|HOST_WIDEST_INT|bool|size_t|BOOL_BITFIELD
+ITYPE	{IWORD}({WS}{IWORD})*
 
 %x in_struct in_struct_comment in_comment in_yacc_escape
 %option warn noyywrap nounput nodefault perf-report
@@ -88,7 +88,7 @@ ITYPE        {IWORD}({WS}{IWORD})*
   for (namelen = 1; ISIDNUM (namestart[namelen]); namelen++)
     ;
   t = find_structure ((const char *) xmemdup (tagstart, taglen, taglen+1),
-                      union_p);
+		      union_p);
   if (is_pointer)
     t = create_pointer (t);
   namestart = (char *) xmemdup (namestart, namelen, namelen+1);
@@ -125,7 +125,7 @@ ITYPE        {IWORD}({WS}{IWORD})*
 
   t = create_scalar_type (typestart, typelen);
   do_typedef ((const char *) xmemdup (namestart, namelen, namelen+1), t,
-              &lexer_line);
+	      &lexer_line);
   update_lineno (yytext, yyleng);
 }
 
@@ -142,7 +142,7 @@ ITYPE        {IWORD}({WS}{IWORD})*
 
   t = create_scalar_type ("function type", sizeof ("function type")-1);
   do_typedef ((const char *) xmemdup (namestart, namelen, namelen+1), t,
-              &lexer_line);
+	      &lexer_line);
   update_lineno (yytext, yyleng);
 }
 
@@ -159,7 +159,7 @@ ITYPE        {IWORD}({WS}{IWORD})*
 
   t = create_scalar_type ("function type", sizeof ("function type")-1);
   do_typedef ((const char *) xmemdup (namestart, namelen, namelen+1), t,
-              &lexer_line);
+	      &lexer_line);
   update_lineno (yytext, yyleng);
 }
 
@@ -176,7 +176,7 @@ ITYPE        {IWORD}({WS}{IWORD})*
 
   t = create_scalar_type ("function type", sizeof ("function type")-1);
   do_typedef ((const char *) xmemdup (namestart, namelen, namelen+1), t,
-              &lexer_line);
+	      &lexer_line);
   update_lineno (yytext, yyleng);
 }
 
@@ -193,7 +193,7 @@ ITYPE        {IWORD}({WS}{IWORD})*
 
   t = create_scalar_type ("function type", sizeof ("function type")-1);
   do_typedef ((const char *) xmemdup (namestart, namelen, namelen+1), t,
-              &lexer_line);
+	      &lexer_line);
   update_lineno (yytext, yyleng);
 }
 
@@ -206,8 +206,8 @@ ITYPE        {IWORD}({WS}{IWORD})*
   typedef_p = yytext[1] == 't';
   if (typedef_p)
     for (tagstart = yytext + strlen (" typedef "); 
-         ISSPACE(*tagstart);
-         tagstart++)
+	 ISSPACE(*tagstart);
+	 tagstart++)
       ;
   else
     tagstart = yytext + 1;
@@ -220,8 +220,8 @@ ITYPE        {IWORD}({WS}{IWORD})*
     ;
 
   yylval.t = find_structure ((const char *) xmemdup (tagstart, taglen,
-                                                     taglen + 1),
-                             union_p);
+						     taglen + 1),
+			     union_p);
   BEGIN(in_struct);
   update_lineno (yytext, yyleng);
   return typedef_p ? ENT_TYPEDEF_STRUCT : ENT_STRUCT;
@@ -269,7 +269,7 @@ ITYPE        {IWORD}({WS}{IWORD})*
   if (additional)
     {
       ptr = mangle_macro_name (ptr, strlen (ptr),
-                               additional, strlen (additional));
+			       additional, strlen (additional));
       t = find_structure (ptr, 0);
       do_typedef (ptr, t, &lexer_line);
     }
@@ -277,27 +277,27 @@ ITYPE        {IWORD}({WS}{IWORD})*
 
 <in_struct>{
 
-"/*"                                { BEGIN(in_struct_comment); }
+"/*"				{ BEGIN(in_struct_comment); }
 
-^"%{"                                { BEGIN(in_yacc_escape); } /* } */
+^"%{"				{ BEGIN(in_yacc_escape); } /* } */
 
-{WS}                                { update_lineno (yytext, yyleng); }
+{WS}				{ update_lineno (yytext, yyleng); }
 
-"const"/[^[:alnum:]_]                /* don't care */
-"GTY"/[^[:alnum:]_]                { return GTY_TOKEN; }
-"union"/[^[:alnum:]_]                { return UNION; }
-"struct"/[^[:alnum:]_]                { return STRUCT; }
-"enum"/[^[:alnum:]_]                { return ENUM; }
-"ptr_alias"/[^[:alnum:]_]        { return ALIAS; }
-"nested_ptr"/[^[:alnum:]_]        { return NESTED_PTR; }
-[0-9]+                                { return NUM; }
-"param"[0-9]*"_is"/[^[:alnum:]_]                {
+"const"/[^[:alnum:]_]		/* don't care */
+"GTY"/[^[:alnum:]_]		{ return GTY_TOKEN; }
+"union"/[^[:alnum:]_]		{ return UNION; }
+"struct"/[^[:alnum:]_]		{ return STRUCT; }
+"enum"/[^[:alnum:]_]		{ return ENUM; }
+"ptr_alias"/[^[:alnum:]_]	{ return ALIAS; }
+"nested_ptr"/[^[:alnum:]_]	{ return NESTED_PTR; }
+[0-9]+				{ return NUM; }
+"param"[0-9]*"_is"/[^[:alnum:]_]		{
   yylval.s = (const char *) xmemdup (yytext, yyleng, yyleng+1);
   return PARAM_IS;
 }
 
-{IWORD}({WS}{IWORD})*/[^[:alnum:]_]                |
-"ENUM_BITFIELD"{WS}?"("{WS}?{ID}{WS}?")"        {
+{IWORD}({WS}{IWORD})*/[^[:alnum:]_]		|
+"ENUM_BITFIELD"{WS}?"("{WS}?{ID}{WS}?")"	{
   size_t len;
 
   for (len = yyleng; ISSPACE (yytext[len-1]); len--)
@@ -329,31 +329,31 @@ ITYPE        {IWORD}({WS}{IWORD})*
   return ID;
 }
 
-{ID}/[^[:alnum:]_]                {
+{ID}/[^[:alnum:]_]		{
   yylval.s = (const char *) xmemdup (yytext, yyleng, yyleng+1);
   return ID;
 }
 
-\"([^"\\]|\\.)*\"                {
+\"([^"\\]|\\.)*\"		{
   yylval.s = (const char *) xmemdup (yytext+1, yyleng-2, yyleng-1);
   return STRING;
 }
-"["[^\[\]]*"]"                        {
+"["[^\[\]]*"]"			{
   yylval.s = (const char *) xmemdup (yytext+1, yyleng-2, yyleng-1);
   return ARRAY;
 }
-^"%"{ID}                        {
+^"%"{ID}			{
   yylval.s = (const char *) xmemdup (yytext+1, yyleng-1, yyleng);
   return PERCENT_ID;
 }
-"'"("\\".|[^\\])"'"                {
+"'"("\\".|[^\\])"'"		{
   yylval.s = (const char *) xmemdup (yytext+1, yyleng-2, yyleng);
   return CHAR;
 }
 
-[(){},*:<>]                        { return yytext[0]; }
+[(){},*:<>]			{ return yytext[0]; }
 
-[;=]                                {
+[;=]				{
   if (lexer_toplevel_done)
     {
       BEGIN(INITIAL);
@@ -362,56 +362,56 @@ ITYPE        {IWORD}({WS}{IWORD})*
   return yytext[0];
 }
 
-^"%%"                                {
+^"%%"				{
   BEGIN(INITIAL);
   return PERCENTPERCENT;
 }
 
-"#define"[^\n]*\n                {lexer_line.line++;}
+"#define"[^\n]*\n		{lexer_line.line++;}
 
-.                                {
+.				{
   error_at_line (&lexer_line, "unexpected character `%s'", yytext);
 }
 }
 
-"/*"                        { BEGIN(in_comment); }
-\n                        { lexer_line.line++; }
-{ID}                        |
-"'"("\\".|[^\\])"'"        |
-[^"/\n]                        /* do nothing */
-\"([^"\\]|\\.|\\\n)*\"        { update_lineno (yytext, yyleng); }
-"/"/[^*]                /* do nothing */
+"/*"			{ BEGIN(in_comment); }
+\n			{ lexer_line.line++; }
+{ID}			|
+"'"("\\".|[^\\])"'"	|
+[^"/\n]			/* do nothing */
+\"([^"\\]|\\.|\\\n)*\"	{ update_lineno (yytext, yyleng); }
+"/"/[^*]		/* do nothing */
 
 <in_comment,in_struct_comment>{
-\n                { lexer_line.line++; }
-[^*\n]{16}        |
-[^*\n]                /* do nothing */
-"*"/[^/]        /* do nothing */
+\n		{ lexer_line.line++; }
+[^*\n]{16}	|
+[^*\n]		/* do nothing */
+"*"/[^/]	/* do nothing */
 }
-<in_comment>"*/"        { BEGIN(INITIAL); } 
-<in_struct_comment>"*/"        { BEGIN(in_struct); }
+<in_comment>"*/"	{ BEGIN(INITIAL); } 
+<in_struct_comment>"*/"	{ BEGIN(in_struct); }
 
 <in_yacc_escape>{
-\n                { lexer_line.line++; }
-[^%]{16}        |
-[^%]                /* do nothing */
-"%"/[^}]        /* do nothing */
-"%}"                { BEGIN(in_struct); }
-"%"                {
+\n		{ lexer_line.line++; }
+[^%]{16}	|
+[^%]		/* do nothing */
+"%"/[^}]	/* do nothing */
+"%}"		{ BEGIN(in_struct); }
+"%"		{
   error_at_line (&lexer_line, 
-                 "unterminated %%{; unexpected EOF");
+		 "unterminated %%{; unexpected EOF");
 }
 }
 
 
-["/]                    |
-<in_struct_comment,in_comment>"*"        {
+["/]    		|
+<in_struct_comment,in_comment>"*"	{
   error_at_line (&lexer_line, 
-                 "unterminated comment or string; unexpected EOF");
+		 "unterminated comment or string; unexpected EOF");
 }
 
 ^"#define"{WS}"GTY(" /* do nothing */
-{WS}"GTY"{WS}?"("        {
+{WS}"GTY"{WS}?"("	{
   error_at_line (&lexer_line, "stray GTY marker");
 }
 
@@ -423,7 +423,7 @@ ITYPE        {IWORD}({WS}{IWORD})*
    the compiler proper.  */
 static char *
 mangle_macro_name (const char *macro, unsigned macro_len,
-                   const char *arg, unsigned arg_len)
+		   const char *arg, unsigned arg_len)
 {
   char *ptr = (char *) xmemdup (macro, macro_len, macro_len + arg_len + 2);
 
@@ -471,7 +471,7 @@ static macro_t *macro_expns_end;
 
 static const char *
 push_macro_expansion (const char *name, unsigned name_len,
-                      const char *arg, unsigned arg_len)
+		      const char *arg, unsigned arg_len)
 {
   unsigned ix;
 
@@ -481,49 +481,49 @@ push_macro_expansion (const char *name, unsigned name_len,
       {
         macro_t *expansion = XNEW (macro_t);
         char *args;
-        unsigned argno, last_arg;
+	unsigned argno, last_arg;
 
-        expansion->def = &macro_defs[ix];
-        expansion->next = NULL;
-        args = (char *) xmemdup (arg, arg_len, arg_len+1);
-        args[arg_len] = 0;
+	expansion->def = &macro_defs[ix];
+	expansion->next = NULL;
+	args = (char *) xmemdup (arg, arg_len, arg_len+1);
+	args[arg_len] = 0;
         for (argno = 0; *args;)
-          {
-               expansion->args[argno++] = args;
-            while (*args && (ISALNUM (*args) || *args == '_'))
-              args++;
-            if (argno == 1)
-              expansion->args[argno++] = "base";
-            if (!*args)
-              break;
-            *args++ = 0;
-            while (*args && !(ISALNUM (*args) || *args == '_'))
-              args++;
+	  {
+   	    expansion->args[argno++] = args;
+	    while (*args && (ISALNUM (*args) || *args == '_'))
+	      args++;
+	    if (argno == 1)
+	      expansion->args[argno++] = "base";
+	    if (!*args)
+	      break;
+	    *args++ = 0;
+	    while (*args && !(ISALNUM (*args) || *args == '_'))
+	      args++;
           }
-        last_arg = argno;
+	last_arg = argno;
         for (; argno != 10; argno++)
-          expansion->args[argno] = NULL;
-        if (macro_expns_end)
+	  expansion->args[argno] = NULL;
+	if (macro_expns_end)
           macro_expns_end->next = expansion;
-        else
-          macro_expns = expansion;
-        macro_expns_end = expansion;
-        if (macro_defs[ix].additional)
-          {
-            macro_t *expn2 = XNEW (macro_t);
+	else
+	  macro_expns = expansion;
+	macro_expns_end = expansion;
+	if (macro_defs[ix].additional)
+	  {
+	    macro_t *expn2 = XNEW (macro_t);
             memcpy (expn2, expansion, sizeof (*expn2));
-            expansion = expn2;
-            expansion->def += 1;
-            expansion->args[last_arg++] = macro_defs[ix].additional;
-            macro_expns_end->next = expansion;
-            macro_expns_end = expansion;
-          }
+	    expansion = expn2;
+	    expansion->def += 1;
+	    expansion->args[last_arg++] = macro_defs[ix].additional;
+	    macro_expns_end->next = expansion;
+	    macro_expns_end = expansion;
+	  }
         if (last_arg > 2 && strcmp (expansion->args[last_arg - 1], "heap"))
-          expansion->args[last_arg++] = "GTY (())";
-        return macro_defs[ix].additional;
+	  expansion->args[last_arg++] = "GTY (())";
+	return macro_defs[ix].additional;
       }
   error_at_line (&lexer_line, "unrecognized macro `%.*s(%.*s)'",
-                 name_len, name, arg_len, arg);
+		 name_len, name, arg_len, arg);
   return NULL;
 }
 
@@ -548,35 +548,35 @@ macro_input (char *buffer, unsigned size)
 
       for (expn = macro_expns->def->expansion; *expn; expn++)
         {
-          if (*expn == '#')
-            {
-              int argno;
+	  if (*expn == '#')
+	    {
+	      int argno;
 
-              argno = expn[1] - '0';
-              expn += 1;
+	      argno = expn[1] - '0';
+	      expn += 1;
 
-              /* Remove inserted space? */
-              if (buffer[result-1] == ' ' && buffer[result-2] == '_')
-                result--;
+	      /* Remove inserted space? */
+	      if (buffer[result-1] == ' ' && buffer[result-2] == '_')
+	        result--;
 
-              /* Insert the argument value */
-              if (macro_expns->args[argno])
-                {
-                  len = strlen (macro_expns->args[argno]);
-                  memcpy (&buffer[result], macro_expns->args[argno], len);
-                  result += len;
-                }
+	      /* Insert the argument value */
+	      if (macro_expns->args[argno])
+	        {
+		  len = strlen (macro_expns->args[argno]);
+		  memcpy (&buffer[result], macro_expns->args[argno], len);
+		  result += len;
+		}
 
-              /* Skip next space? */
-              if (expn[1] == ' ' && expn[2] == '_')
-                expn++;
-            }
-          else
-            {
-              buffer[result++] = *expn;
-              if (*expn == ';' || *expn == '{')
-                buffer[result++] = '\n';
-            }
+	      /* Skip next space? */
+	      if (expn[1] == ' ' && expn[2] == '_')
+	        expn++;
+	    }
+	  else
+	    {
+	      buffer[result++] = *expn;
+	      if (*expn == ';' || *expn == '{')
+	        buffer[result++] = '\n';
+	    }
         }
       if (result > size)
         YY_FATAL_ERROR ("buffer too small to expand macro");

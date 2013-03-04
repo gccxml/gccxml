@@ -138,20 +138,20 @@ sets of characters:
 #define xd _sch_isxdigit
 
 /* Masks.  */
-#define L  (const unsigned short) (lo|is   |pr)        /* lower case letter */
-#define XL (const unsigned short) (lo|is|xd|pr)        /* lowercase hex digit */
-#define U  (const unsigned short) (up|is   |pr)        /* upper case letter */
-#define XU (const unsigned short) (up|is|xd|pr)        /* uppercase hex digit */
-#define D  (const unsigned short) (di   |xd|pr)        /* decimal digit */
-#define P  (const unsigned short) (pn      |pr)        /* punctuation */
-#define _  (const unsigned short) (pn|is   |pr)        /* underscore */
+#define L  (const unsigned short) (lo|is   |pr)	/* lower case letter */
+#define XL (const unsigned short) (lo|is|xd|pr)	/* lowercase hex digit */
+#define U  (const unsigned short) (up|is   |pr)	/* upper case letter */
+#define XU (const unsigned short) (up|is|xd|pr)	/* uppercase hex digit */
+#define D  (const unsigned short) (di   |xd|pr)	/* decimal digit */
+#define P  (const unsigned short) (pn      |pr)	/* punctuation */
+#define _  (const unsigned short) (pn|is   |pr)	/* underscore */
 
-#define C  (const unsigned short) (         cn)        /* control character */
-#define Z  (const unsigned short) (nv      |cn)        /* NUL */
-#define M  (const unsigned short) (nv|sp   |cn)        /* cursor movement: \f \v */
-#define V  (const unsigned short) (vs|sp   |cn)        /* vertical space: \r \n */
-#define T  (const unsigned short) (nv|sp|bl|cn)        /* tab */
-#define S  (const unsigned short) (nv|sp|bl|pr)        /* space */
+#define C  (const unsigned short) (         cn)	/* control character */
+#define Z  (const unsigned short) (nv      |cn)	/* NUL */
+#define M  (const unsigned short) (nv|sp   |cn)	/* cursor movement: \f \v */
+#define V  (const unsigned short) (vs|sp   |cn)	/* vertical space: \r \n */
+#define T  (const unsigned short) (nv|sp|bl|cn)	/* tab */
+#define S  (const unsigned short) (nv|sp|bl|pr)	/* space */
 
 /* Are we ASCII? */
 #if HOST_CHARSET == HOST_CHARSET_ASCII

@@ -21,7 +21,7 @@ Boston, MA 02110-1301, USA.  */
 #include "config.h"
 #endif
 
-#include <stdio.h>        /* May get P_tmpdir.  */
+#include <stdio.h>	/* May get P_tmpdir.  */
 #ifdef HAVE_STDLIB_H
 #include <stdlib.h>
 #endif

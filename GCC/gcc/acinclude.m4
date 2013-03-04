@@ -3,7 +3,7 @@ dnl The result is highly dependent on the INCLUDES passed in, so make sure
 dnl to use a different cache variable name in this macro if it is invoked
 dnl in a different context somewhere else.
 dnl gcc_AC_CHECK_DECL(SYMBOL,
-dnl         [ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND [, INCLUDES]]])
+dnl 	[ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND [, INCLUDES]]])
 AC_DEFUN([gcc_AC_CHECK_DECL],
 [AC_MSG_CHECKING([whether $1 is declared])
 AC_CACHE_VAL(gcc_cv_have_decl_$1,
@@ -21,7 +21,7 @@ fi
 dnl Check multiple functions to see whether each needs a declaration.
 dnl Arrange to define HAVE_DECL_<FUNCTION> to 0 or 1 as appropriate.
 dnl gcc_AC_CHECK_DECLS(SYMBOLS,
-dnl         [ACTION-IF-NEEDED [, ACTION-IF-NOT-NEEDED [, INCLUDES]]])
+dnl 	[ACTION-IF-NEEDED [, ACTION-IF-NOT-NEEDED [, INCLUDES]]])
 AC_DEFUN([gcc_AC_CHECK_DECLS],
 [AC_FOREACH([gcc_AC_Func], [$1],
   [AH_TEMPLATE(AS_TR_CPP(HAVE_DECL_[]gcc_AC_Func),
@@ -153,7 +153,7 @@ AC_DEFUN([gcc_AC_PROG_INSTALL],
 AC_MSG_CHECKING(for a BSD compatible install)
 if test -z "$INSTALL"; then
 AC_CACHE_VAL(ac_cv_path_install,
-[  IFS="${IFS=         }"; ac_save_IFS="$IFS"; IFS="${IFS}:"
+[  IFS="${IFS= 	}"; ac_save_IFS="$IFS"; IFS="${IFS}:"
   for ac_dir in $PATH; do
     # Account for people who put trailing slashes in PATH elements.
     case "$ac_dir/" in
@@ -162,16 +162,16 @@ AC_CACHE_VAL(ac_cv_path_install,
       # OSF1 and SCO ODT 3.0 have their own names for install.
       for ac_prog in ginstall scoinst install; do
         if test -f $ac_dir/$ac_prog; then
-          if test $ac_prog = install &&
+	  if test $ac_prog = install &&
             grep dspmsg $ac_dir/$ac_prog >/dev/null 2>&1; then
-            # AIX install.  It has an incompatible calling convention.
-            # OSF/1 installbsd also uses dspmsg, but is usable.
-            :
-          else
-            ac_cv_path_install="$ac_dir/$ac_prog -c"
-            break 2
-          fi
-        fi
+	    # AIX install.  It has an incompatible calling convention.
+	    # OSF/1 installbsd also uses dspmsg, but is usable.
+	    :
+	  else
+	    ac_cv_path_install="$ac_dir/$ac_prog -c"
+	    break 2
+	  fi
+	fi
       done
       ;;
     esac
@@ -207,7 +207,7 @@ AC_SUBST(INSTALL_DATA)dnl
 AC_DEFUN([gcc_AC_FUNC_MMAP_BLACKLIST],
 [
 AC_CHECK_HEADER([sys/mman.h],
-                [gcc_header_sys_mman_h=yes], [gcc_header_sys_mman_h=no])
+		[gcc_header_sys_mman_h=yes], [gcc_header_sys_mman_h=no])
 AC_CHECK_FUNC([mmap], [gcc_func_mmap=yes], [gcc_func_mmap=no])
 if test "$gcc_header_sys_mman_h" != yes \
  || test "$gcc_func_mmap" != yes; then
@@ -283,15 +283,15 @@ fi
 
 if test $gcc_cv_func_mmap_file = yes; then
   AC_DEFINE(HAVE_MMAP_FILE, 1,
-            [Define if read-only mmap of a plain file works.])
+	    [Define if read-only mmap of a plain file works.])
 fi
 if test $gcc_cv_func_mmap_dev_zero = yes; then
   AC_DEFINE(HAVE_MMAP_DEV_ZERO, 1,
-            [Define if mmap of /dev/zero works.])
+	    [Define if mmap of /dev/zero works.])
 fi
 if test $gcc_cv_func_mmap_anon = yes; then
   AC_DEFINE(HAVE_MMAP_ANON, 1,
-            [Define if mmap with MAP_ANON(YMOUS) works.])
+	    [Define if mmap with MAP_ANON(YMOUS) works.])
 fi
 ])
 
@@ -381,17 +381,17 @@ fi])
 
 AC_DEFUN([gcc_AC_INITFINI_ARRAY],
 [AC_ARG_ENABLE(initfini-array,
-        [  --enable-initfini-array        use .init_array/.fini_array sections],
-        [], [
+	[  --enable-initfini-array	use .init_array/.fini_array sections],
+	[], [
 AC_CACHE_CHECK(for .preinit_array/.init_array/.fini_array support,
-                 gcc_cv_initfini_array, [dnl
+		 gcc_cv_initfini_array, [dnl
   AC_RUN_IFELSE([AC_LANG_SOURCE([
 static int x = -1;
 int main (void) { return x; }
 int foo (void) { x = 0; }
 int (*fp) (void) __attribute__ ((section (".init_array"))) = foo;])],
-             [gcc_cv_initfini_array=yes], [gcc_cv_initfini_array=no],
-             [gcc_cv_initfini_array=no])])
+	     [gcc_cv_initfini_array=yes], [gcc_cv_initfini_array=no],
+	     [gcc_cv_initfini_array=no])])
   enable_initfini_array=$gcc_cv_initfini_array
 ])
 if test $enable_initfini_array = yes; then
@@ -411,7 +411,7 @@ for f in $gcc_cv_as_bfd_srcdir/configure \
          $gcc_cv_as_gas_srcdir/configure \
          $gcc_cv_as_gas_srcdir/configure.in \
          $gcc_cv_as_gas_srcdir/Makefile.in ; do
-  gcc_cv_gas_version=`sed -n -e 's/^[[         ]]*\(VERSION=[[0-9]]*\.[[0-9]]*.*\)/\1/p' < $f`
+  gcc_cv_gas_version=`sed -n -e 's/^[[ 	]]*\(VERSION=[[0-9]]*\.[[0-9]]*.*\)/\1/p' < $f`
   if test x$gcc_cv_gas_version != x; then
     break
   fi
@@ -423,8 +423,8 @@ case $gcc_cv_gas_patch_version in
   "") gcc_cv_gas_patch_version="0" ;;
 esac
 gcc_cv_gas_vers=`expr \( \( $gcc_cv_gas_major_version \* 1000 \) \
-                            + $gcc_cv_gas_minor_version \) \* 1000 \
-                            + $gcc_cv_gas_patch_version`
+			    + $gcc_cv_gas_minor_version \) \* 1000 \
+			    + $gcc_cv_gas_patch_version`
 ]) []dnl # _gcc_COMPUTE_GAS_VERSION
 
 dnl # gcc_GAS_VERSION_GTE_IFELSE([elf,] major, minor, patchlevel,
@@ -473,7 +473,7 @@ AC_DEFUN([gcc_GAS_CHECK_FEATURE],
     echo ifelse(m4_substr([$5],0,1),[$], "[$5]", '[$5]') > conftest.s
     if AC_TRY_COMMAND([$gcc_cv_as $4 -o conftest.o conftest.s >&AS_MESSAGE_LOG_FD])
     then
-        ifelse([$6],, [$2]=yes, [$6])
+	ifelse([$6],, [$2]=yes, [$6])
     else
       echo "configure: failed program was" >&AS_MESSAGE_LOG_FD
       cat conftest.s >&AS_MESSAGE_LOG_FD

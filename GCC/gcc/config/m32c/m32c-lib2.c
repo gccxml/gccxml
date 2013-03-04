@@ -56,10 +56,10 @@ udivmodsi4 (USItype num, USItype den, word_type modwanted)
   while (bit)
     {
       if (num >= den)
-        {
-          num -= den;
-          res |= bit;
-        }
+	{
+	  num -= den;
+	  res |= bit;
+	}
       bit >>= 1;
       den >>= 1;
     }

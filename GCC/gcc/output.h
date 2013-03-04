@@ -392,32 +392,32 @@ extern void default_function_pro_epilogue (FILE *, HOST_WIDE_INT);
 extern void no_asm_to_stream (FILE *);
 
 /* Flags controlling properties of a section.  */
-#define SECTION_ENTSIZE         0x000ff        /* entity size in section */
-#define SECTION_CODE         0x00100        /* contains code */
-#define SECTION_WRITE         0x00200        /* data is writable */
-#define SECTION_DEBUG         0x00400        /* contains debug data */
-#define SECTION_LINKONCE 0x00800        /* is linkonce */
-#define SECTION_SMALL         0x01000        /* contains "small data" */
-#define SECTION_BSS         0x02000        /* contains zeros only */
-#define SECTION_FORGET         0x04000        /* forget that we've entered the section */
-#define SECTION_MERGE         0x08000        /* contains mergeable data */
-#define SECTION_STRINGS  0x10000        /* contains zero terminated strings without
-                                           embedded zeros */
-#define SECTION_OVERRIDE 0x20000        /* allow override of default flags */
-#define SECTION_TLS         0x40000        /* contains thread-local storage */
-#define SECTION_NOTYPE         0x80000        /* don't output @progbits */
-#define SECTION_DECLARED 0x100000        /* section has been used */
-#define SECTION_STYLE_MASK 0x600000        /* bits used for SECTION_STYLE */
-#define SECTION_COMMON   0x800000        /* contains common data */
-#define SECTION_MACH_DEP 0x1000000        /* subsequent bits reserved for target */
+#define SECTION_ENTSIZE	 0x000ff	/* entity size in section */
+#define SECTION_CODE	 0x00100	/* contains code */
+#define SECTION_WRITE	 0x00200	/* data is writable */
+#define SECTION_DEBUG	 0x00400	/* contains debug data */
+#define SECTION_LINKONCE 0x00800	/* is linkonce */
+#define SECTION_SMALL	 0x01000	/* contains "small data" */
+#define SECTION_BSS	 0x02000	/* contains zeros only */
+#define SECTION_FORGET	 0x04000	/* forget that we've entered the section */
+#define SECTION_MERGE	 0x08000	/* contains mergeable data */
+#define SECTION_STRINGS  0x10000	/* contains zero terminated strings without
+					   embedded zeros */
+#define SECTION_OVERRIDE 0x20000	/* allow override of default flags */
+#define SECTION_TLS	 0x40000	/* contains thread-local storage */
+#define SECTION_NOTYPE	 0x80000	/* don't output @progbits */
+#define SECTION_DECLARED 0x100000	/* section has been used */
+#define SECTION_STYLE_MASK 0x600000	/* bits used for SECTION_STYLE */
+#define SECTION_COMMON   0x800000	/* contains common data */
+#define SECTION_MACH_DEP 0x1000000	/* subsequent bits reserved for target */
 
 /* This SECTION_STYLE is used for unnamed sections that we can switch
    to using a special assembler directive.  */
-#define SECTION_UNNAMED         0x000000
+#define SECTION_UNNAMED	 0x000000
 
 /* This SECTION_STYLE is used for named sections that we can switch
    to using a general section directive.  */
-#define SECTION_NAMED         0x200000
+#define SECTION_NAMED	 0x200000
 
 /* This SECTION_STYLE is used for sections that we cannot switch to at
    all.  The choice of section is implied by the directive that we use
@@ -441,13 +441,13 @@ enum section_category
 
   /* To optimize loading of shared programs, define following subsections
      of data section:
-        _REL        Contains data that has relocations, so they get grouped
-                together and dynamic linker will visit fewer pages in memory.
-        _RO        Contains data that is otherwise read-only.  This is useful
-                with prelinking as most relocations won't be dynamically
-                linked and thus stay read only.
-        _LOCAL        Marks data containing relocations only to local objects.
-                These relocations will get fully resolved by prelinking.  */
+	_REL	Contains data that has relocations, so they get grouped
+		together and dynamic linker will visit fewer pages in memory.
+	_RO	Contains data that is otherwise read-only.  This is useful
+		with prelinking as most relocations won't be dynamically
+		linked and thus stay read only.
+	_LOCAL	Marks data containing relocations only to local objects.
+		These relocations will get fully resolved by prelinking.  */
   SECCAT_DATA_REL,
   SECCAT_DATA_REL_LOCAL,
   SECCAT_DATA_REL_RO,
@@ -506,8 +506,8 @@ struct unnamed_section GTY(()) {
    alignment.  A false return value implies that we are relying
    on the rounded size to align the decl.  */
 typedef bool (*noswitch_section_callback) (tree decl, const char *name,
-                                           unsigned HOST_WIDE_INT size,
-                                           unsigned HOST_WIDE_INT rounded);
+					   unsigned HOST_WIDE_INT size,
+					   unsigned HOST_WIDE_INT rounded);
 
 /* Information about a SECTION_NOSWITCH section.  */
 struct noswitch_section GTY(()) {
@@ -551,15 +551,15 @@ extern GTY(()) section *in_section;
 extern GTY(()) bool in_cold_section_p;
 
 extern section *get_unnamed_section (unsigned int, void (*) (const void *),
-                                     const void *);
+				     const void *);
 extern section *get_section (const char *, unsigned int, tree);
 extern section *get_named_section (tree, const char *, int);
 extern void place_block_symbol (rtx);
 extern rtx get_section_anchor (struct object_block *, HOST_WIDE_INT,
-                               enum tls_model);
+			       enum tls_model);
 extern section *mergeable_constant_section (enum machine_mode,
-                                            unsigned HOST_WIDE_INT,
-                                            unsigned int);
+					    unsigned HOST_WIDE_INT,
+					    unsigned int);
 extern section *function_section (tree);
 extern section *unlikely_text_section (void);
 extern section *current_function_section (void);
@@ -590,9 +590,9 @@ extern void default_unique_section (tree, int);
 extern section *default_function_rodata_section (tree);
 extern section *default_no_function_rodata_section (tree);
 extern section *default_select_rtx_section (enum machine_mode, rtx,
-                                            unsigned HOST_WIDE_INT);
+					    unsigned HOST_WIDE_INT);
 extern section *default_elf_select_rtx_section (enum machine_mode, rtx,
-                                                unsigned HOST_WIDE_INT);
+						unsigned HOST_WIDE_INT);
 extern void default_encode_section_info (tree, rtx, int);
 extern const char *default_strip_name_encoding (const char *);
 extern void default_asm_output_anchor (rtx);
@@ -625,7 +625,7 @@ extern void dbxout_stab_value_label (const char *);
 extern void dbxout_stab_value_label_diff (const char *, const char *);
 extern void dbxout_stab_value_internal_label (const char *, int *);
 extern void dbxout_stab_value_internal_label_diff (const char *, int *,
-                                                   const char *);
+						   const char *);
 
 #endif
 

@@ -26,7 +26,7 @@
 #define FUNCTION_VALUE(VALTYPE,FUNC) LIBCALL_VALUE (TYPE_MODE (VALTYPE))
 
 #undef LIBCALL_VALUE
-#define LIBCALL_VALUE(MODE)                                        \
+#define LIBCALL_VALUE(MODE)					\
   m68k_libcall_value (MODE)
 
 #undef FUNCTION_VALUE_REGNO_P
@@ -36,11 +36,11 @@
 #define NEEDS_UNTYPED_CALL 1
 
 /* Target OS builtins.  */
-#define TARGET_OS_CPP_BUILTINS()                \
-  do                                                \
-    {                                                \
-      builtin_define ("__embedded__");                \
-    }                                                \
+#define TARGET_OS_CPP_BUILTINS()		\
+  do						\
+    {						\
+      builtin_define ("__embedded__");		\
+    }						\
   while (0)
 
 /* Override the default LIB_SPEC from gcc.c.  We don't currently support

@@ -52,18 +52,18 @@ static const size_t va_granularity = 0x10000;
 /* Print out the GetLastError() translation.  */ 
 static inline void
 w32_error (const char* function, const char* file, int line,
-           const char* my_msg)
+	   const char* my_msg)
 {
   LPSTR w32_msgbuf;
   FormatMessageA (FORMAT_MESSAGE_ALLOCATE_BUFFER
-                  | FORMAT_MESSAGE_FROM_SYSTEM
-                  | FORMAT_MESSAGE_IGNORE_INSERTS
-                  | FORMAT_MESSAGE_MAX_WIDTH_MASK,
-                      NULL, GetLastError(),
-                  MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-                  (LPSTR) &w32_msgbuf, 0, NULL);
+		  | FORMAT_MESSAGE_FROM_SYSTEM
+		  | FORMAT_MESSAGE_IGNORE_INSERTS
+		  | FORMAT_MESSAGE_MAX_WIDTH_MASK,
+    		  NULL, GetLastError(),
+		  MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+		  (LPSTR) &w32_msgbuf, 0, NULL);
   fprintf(stderr, "internal error in %s, at %s:%d: %s: %s\n",
-          function, trim_filename (file), line, my_msg, w32_msgbuf);
+	  function, trim_filename (file), line, my_msg, w32_msgbuf);
   LocalFree ((HLOCAL)w32_msgbuf);
 }
 
@@ -94,8 +94,8 @@ mingw32_gt_pch_get_address (size_t size, int fd  ATTRIBUTE_UNUSED)
      and at the same point in each invocation. */
  
   res = VirtualAlloc (NULL, pch_VA_max_size,
-                      MEM_RESERVE | MEM_TOP_DOWN,
-                      PAGE_NOACCESS);
+		      MEM_RESERVE | MEM_TOP_DOWN,
+		      PAGE_NOACCESS);
   if (!res)
     w32_error (__FUNCTION__, __FILE__, __LINE__, "VirtualAlloc");
   else
@@ -112,7 +112,7 @@ mingw32_gt_pch_get_address (size_t size, int fd  ATTRIBUTE_UNUSED)
 
 static int
 mingw32_gt_pch_use_address (void *addr, size_t size, int fd,
-                            size_t offset)
+			    size_t offset)
 {
   void * mmap_addr;
   static HANDLE mmap_handle;
@@ -126,15 +126,15 @@ mingw32_gt_pch_use_address (void *addr, size_t size, int fd,
     return -1;
 
   mmap_handle = CreateFileMapping ((HANDLE) _get_osfhandle (fd),
-                                   NULL, PAGE_WRITECOPY | SEC_COMMIT,
-                                   0, 0,  NULL);
+				   NULL, PAGE_WRITECOPY | SEC_COMMIT,
+				   0, 0,  NULL);
   if (mmap_handle == NULL)
     {
       w32_error (__FUNCTION__,  __FILE__, __LINE__, "CreateFileMapping");
       return -1; 
     }
   mmap_addr = MapViewOfFileEx (mmap_handle, FILE_MAP_COPY, 0, offset,
-                               size, addr);
+			       size, addr);
   if (mmap_addr != addr)
     {
       w32_error (__FUNCTION__, __FILE__, __LINE__, "MapViewOfFileEx");

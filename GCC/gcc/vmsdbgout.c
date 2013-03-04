@@ -79,7 +79,7 @@ dst_file_info_entry;
 #endif
 
 /* Maximum size (in bytes) of an artificially generated label.  */
-#define MAX_ARTIFICIAL_LABEL_BYTES        30
+#define MAX_ARTIFICIAL_LABEL_BYTES	30
 
 /* Make sure we know the sizes of the various types debug can describe. These
    are only defaults.  If the sizes are different for your target, you should
@@ -203,13 +203,13 @@ const struct gcc_debug_hooks vmsdbg_debug_hooks
    vmsdbgout_end_function,
    vmsdbgout_decl,
    vmsdbgout_global_decl,
-   debug_nothing_tree_int,          /* type_decl */
+   debug_nothing_tree_int,	  /* type_decl */
    debug_nothing_tree_tree,       /* imported_module_or_decl */
-   debug_nothing_tree,                  /* deferred_inline_function */
+   debug_nothing_tree,		  /* deferred_inline_function */
    vmsdbgout_abstract_function,
-   debug_nothing_rtx,                  /* label */
-   debug_nothing_int,                  /* handle_pch */
-   debug_nothing_rtx,                  /* var_location */
+   debug_nothing_rtx,		  /* label */
+   debug_nothing_int,		  /* handle_pch */
+   debug_nothing_rtx,		  /* var_location */
    debug_nothing_void,            /* switch_text_section */
    0                              /* start_end_main_source_file */
 };
@@ -221,27 +221,27 @@ const struct gcc_debug_hooks vmsdbg_debug_hooks
 #ifdef UNALIGNED_SHORT_ASM_OP
 #undef UNALIGNED_SHORT_ASM_OP
 #endif
-#define UNALIGNED_SHORT_ASM_OP        ".word"
+#define UNALIGNED_SHORT_ASM_OP	".word"
 
 #ifdef UNALIGNED_INT_ASM_OP
 #undef UNALIGNED_INT_ASM_OP
 #endif
-#define UNALIGNED_INT_ASM_OP        ".long"
+#define UNALIGNED_INT_ASM_OP	".long"
 
 #ifdef UNALIGNED_LONG_ASM_OP
 #undef UNALIGNED_LONG_ASM_OP
 #endif
-#define UNALIGNED_LONG_ASM_OP        ".long"
+#define UNALIGNED_LONG_ASM_OP	".long"
 
 #ifdef UNALIGNED_DOUBLE_INT_ASM_OP
 #undef UNALIGNED_DOUBLE_INT_ASM_OP
 #endif
-#define UNALIGNED_DOUBLE_INT_ASM_OP        ".quad"
+#define UNALIGNED_DOUBLE_INT_ASM_OP	".quad"
 
 #ifdef ASM_BYTE_OP
 #undef ASM_BYTE_OP
 #endif
-#define ASM_BYTE_OP        ".byte"
+#define ASM_BYTE_OP	".byte"
 
 #define NUMBYTES(I) ((I) < 256 ? 1 : (I) < 65536 ? 2 : 4)
 
@@ -268,75 +268,75 @@ const struct gcc_debug_hooks vmsdbg_debug_hooks
 static char text_end_label[MAX_ARTIFICIAL_LABEL_BYTES];
 
 #ifndef TEXT_END_LABEL
-#define TEXT_END_LABEL                "Lvetext"
+#define TEXT_END_LABEL		"Lvetext"
 #endif
 #ifndef FUNC_BEGIN_LABEL
-#define FUNC_BEGIN_LABEL        "LVFB"
+#define FUNC_BEGIN_LABEL	"LVFB"
 #endif
 #ifndef FUNC_PROLOG_LABEL
-#define FUNC_PROLOG_LABEL        "LVFP"
+#define FUNC_PROLOG_LABEL	"LVFP"
 #endif
 #ifndef FUNC_END_LABEL
-#define FUNC_END_LABEL                "LVFE"
+#define FUNC_END_LABEL		"LVFE"
 #endif
 #ifndef BLOCK_BEGIN_LABEL
-#define BLOCK_BEGIN_LABEL        "LVBB"
+#define BLOCK_BEGIN_LABEL	"LVBB"
 #endif
 #ifndef BLOCK_END_LABEL
-#define BLOCK_END_LABEL                "LVBE"
+#define BLOCK_END_LABEL		"LVBE"
 #endif
 #ifndef LINE_CODE_LABEL
-#define LINE_CODE_LABEL                "LVM"
+#define LINE_CODE_LABEL		"LVM"
 #endif
 
 #ifndef ASM_OUTPUT_DEBUG_DELTA2
-#define ASM_OUTPUT_DEBUG_DELTA2(FILE,LABEL1,LABEL2)                         \
-  do                                                                         \
-    {                                                                         \
-      fprintf ((FILE), "\t%s\t", UNALIGNED_SHORT_ASM_OP);                 \
-      assemble_name (FILE, LABEL1);                                         \
-      fprintf (FILE, "-");                                                 \
-      assemble_name (FILE, LABEL2);                                         \
-    }                                                                         \
+#define ASM_OUTPUT_DEBUG_DELTA2(FILE,LABEL1,LABEL2)			 \
+  do									 \
+    {									 \
+      fprintf ((FILE), "\t%s\t", UNALIGNED_SHORT_ASM_OP);		 \
+      assemble_name (FILE, LABEL1);					 \
+      fprintf (FILE, "-");						 \
+      assemble_name (FILE, LABEL2);					 \
+    }									 \
   while (0)
 #endif
 
 #ifndef ASM_OUTPUT_DEBUG_DELTA4
-#define ASM_OUTPUT_DEBUG_DELTA4(FILE,LABEL1,LABEL2)                         \
-  do                                                                         \
-    {                                                                         \
-      fprintf ((FILE), "\t%s\t", UNALIGNED_INT_ASM_OP);                         \
-      assemble_name (FILE, LABEL1);                                         \
-      fprintf (FILE, "-");                                                 \
-      assemble_name (FILE, LABEL2);                                         \
-    }                                                                         \
+#define ASM_OUTPUT_DEBUG_DELTA4(FILE,LABEL1,LABEL2)			 \
+  do									 \
+    {									 \
+      fprintf ((FILE), "\t%s\t", UNALIGNED_INT_ASM_OP);			 \
+      assemble_name (FILE, LABEL1);					 \
+      fprintf (FILE, "-");						 \
+      assemble_name (FILE, LABEL2);					 \
+    }									 \
   while (0)
 #endif
 
 #ifndef ASM_OUTPUT_DEBUG_ADDR_DELTA
-#define ASM_OUTPUT_DEBUG_ADDR_DELTA(FILE,LABEL1,LABEL2)                         \
-  do                                                                         \
-    {                                                                         \
-      fprintf ((FILE), "\t%s\t", UNALIGNED_PTR_ASM_OP);                         \
-      assemble_name (FILE, LABEL1);                                         \
-      fprintf (FILE, "-");                                                 \
-      assemble_name (FILE, LABEL2);                                         \
-    }                                                                         \
+#define ASM_OUTPUT_DEBUG_ADDR_DELTA(FILE,LABEL1,LABEL2)			 \
+  do									 \
+    {									 \
+      fprintf ((FILE), "\t%s\t", UNALIGNED_PTR_ASM_OP);			 \
+      assemble_name (FILE, LABEL1);					 \
+      fprintf (FILE, "-");						 \
+      assemble_name (FILE, LABEL2);					 \
+    }									 \
   while (0)
 #endif
 
 #ifndef ASM_OUTPUT_DEBUG_ADDR
-#define ASM_OUTPUT_DEBUG_ADDR(FILE,LABEL)                                 \
-  do                                                                         \
-    {                                                                         \
-      fprintf ((FILE), "\t%s\t", UNALIGNED_PTR_ASM_OP);                         \
-      assemble_name (FILE, LABEL);                                         \
-    }                                                                         \
+#define ASM_OUTPUT_DEBUG_ADDR(FILE,LABEL)				 \
+  do									 \
+    {									 \
+      fprintf ((FILE), "\t%s\t", UNALIGNED_PTR_ASM_OP);			 \
+      assemble_name (FILE, LABEL);					 \
+    }									 \
   while (0)
 #endif
 
 #ifndef ASM_OUTPUT_DEBUG_ADDR_CONST
-#define ASM_OUTPUT_DEBUG_ADDR_CONST(FILE,ADDR)                                \
+#define ASM_OUTPUT_DEBUG_ADDR_CONST(FILE,ADDR)				\
   fprintf ((FILE), "\t%s\t%s", UNALIGNED_PTR_ASM_OP, (ADDR))
 #endif
 
@@ -348,7 +348,7 @@ static char text_end_label[MAX_ARTIFICIAL_LABEL_BYTES];
 #ifndef ASM_OUTPUT_DEBUG_DATA2
 #define ASM_OUTPUT_DEBUG_DATA2(FILE,VALUE) \
   fprintf ((FILE), "\t%s\t0x%x", UNALIGNED_SHORT_ASM_OP, \
-           (unsigned short) VALUE)
+	   (unsigned short) VALUE)
 #endif
 
 #ifndef ASM_OUTPUT_DEBUG_DATA4
@@ -364,7 +364,7 @@ static char text_end_label[MAX_ARTIFICIAL_LABEL_BYTES];
 #ifndef ASM_OUTPUT_DEBUG_ADDR_DATA
 #define ASM_OUTPUT_DEBUG_ADDR_DATA(FILE,VALUE) \
   fprintf ((FILE), "\t%s\t0x%lx", UNALIGNED_PTR_ASM_OP, \
-           (unsigned long) VALUE)
+	   (unsigned long) VALUE)
 #endif
 
 #ifndef ASM_OUTPUT_DEBUG_DATA8
@@ -377,25 +377,25 @@ static char text_end_label[MAX_ARTIFICIAL_LABEL_BYTES];
    newline is produced.  When flag_verbose_asm is asserted, we add commentary
    at the end of the line, so we must avoid output of a newline here.  */
 #ifndef ASM_OUTPUT_DEBUG_STRING
-#define ASM_OUTPUT_DEBUG_STRING(FILE,P)                \
-  do                                                \
-    {                                                \
-      register int slen = strlen(P);                \
-      register char *p = (P);                        \
-      register int i;                                \
-      fprintf (FILE, "\t.ascii \"");                \
-      for (i = 0; i < slen; i++)                \
-        {                                        \
-          register int c = p[i];                \
-          if (c == '\"' || c == '\\')                \
-            putc ('\\', FILE);                        \
-          if (c >= ' ' && c < 0177)                \
-            putc (c, FILE);                        \
-          else                                        \
-            fprintf (FILE, "\\%o", c);                \
-        }                                        \
-      fprintf (FILE, "\"");                        \
-    }                                                \
+#define ASM_OUTPUT_DEBUG_STRING(FILE,P)		\
+  do						\
+    {						\
+      register int slen = strlen(P);		\
+      register char *p = (P);			\
+      register int i;				\
+      fprintf (FILE, "\t.ascii \"");		\
+      for (i = 0; i < slen; i++)		\
+	{					\
+	  register int c = p[i];		\
+	  if (c == '\"' || c == '\\')		\
+	    putc ('\\', FILE);			\
+	  if (c >= ' ' && c < 0177)		\
+	    putc (c, FILE);			\
+	  else					\
+	    fprintf (FILE, "\\%o", c);		\
+	}					\
+      fprintf (FILE, "\"");			\
+    }						\
   while (0)
 #endif
 
@@ -403,14 +403,14 @@ static char text_end_label[MAX_ARTIFICIAL_LABEL_BYTES];
    macro has the same effect as ASM_OUTPUT_LABELREF, but copies to
    a string rather than writing to a file.  */
 #ifndef ASM_NAME_TO_STRING
-#define ASM_NAME_TO_STRING(STR, NAME)                \
-  do                                                \
-    {                                                \
-      if ((NAME)[0] == '*')                        \
-        strcpy (STR, NAME+1);                        \
-      else                                        \
-        strcpy (STR, NAME);                        \
-    }                                                \
+#define ASM_NAME_TO_STRING(STR, NAME)		\
+  do						\
+    {						\
+      if ((NAME)[0] == '*')			\
+	strcpy (STR, NAME+1);			\
+      else					\
+	strcpy (STR, NAME);			\
+    }						\
   while (0)
 #endif
 
@@ -469,44 +469,44 @@ addr_const_to_string (char *str, rtx x)
 
     case CONST_DOUBLE:
       if (GET_MODE (x) == VOIDmode)
-        {
-          /* We can use %d if the number is one word and positive.  */
-          if (CONST_DOUBLE_HIGH (x))
-            sprintf (buf1, HOST_WIDE_INT_PRINT_DOUBLE_HEX,
-                     CONST_DOUBLE_HIGH (x), CONST_DOUBLE_LOW (x));
-          else if (CONST_DOUBLE_LOW (x) < 0)
-            sprintf (buf1, HOST_WIDE_INT_PRINT_HEX, CONST_DOUBLE_LOW (x));
-          else
-            sprintf (buf1, HOST_WIDE_INT_PRINT_DEC,
-                     CONST_DOUBLE_LOW (x));
-          strcat (str, buf1);
-        }
+	{
+	  /* We can use %d if the number is one word and positive.  */
+	  if (CONST_DOUBLE_HIGH (x))
+	    sprintf (buf1, HOST_WIDE_INT_PRINT_DOUBLE_HEX,
+		     CONST_DOUBLE_HIGH (x), CONST_DOUBLE_LOW (x));
+	  else if (CONST_DOUBLE_LOW (x) < 0)
+	    sprintf (buf1, HOST_WIDE_INT_PRINT_HEX, CONST_DOUBLE_LOW (x));
+	  else
+	    sprintf (buf1, HOST_WIDE_INT_PRINT_DEC,
+		     CONST_DOUBLE_LOW (x));
+	  strcat (str, buf1);
+	}
       else
-        /* We can't handle floating point constants; PRINT_OPERAND must
-           handle them.  */
-        output_operand_lossage ("floating constant misused");
+	/* We can't handle floating point constants; PRINT_OPERAND must
+	   handle them.  */
+	output_operand_lossage ("floating constant misused");
       break;
 
     case PLUS:
       /* Some assemblers need integer constants to appear last (eg masm).  */
       if (GET_CODE (XEXP (x, 0)) == CONST_INT)
-        {
-          addr_const_to_string (buf1, XEXP (x, 1));
-          strcat (str, buf1);
-          if (INTVAL (XEXP (x, 0)) >= 0)
-            strcat (str, "+");
-          addr_const_to_string (buf1, XEXP (x, 0));
-          strcat (str, buf1);
-        }
+	{
+	  addr_const_to_string (buf1, XEXP (x, 1));
+	  strcat (str, buf1);
+	  if (INTVAL (XEXP (x, 0)) >= 0)
+	    strcat (str, "+");
+	  addr_const_to_string (buf1, XEXP (x, 0));
+	  strcat (str, buf1);
+	}
       else
-        {
-          addr_const_to_string (buf1, XEXP (x, 0));
-          strcat (str, buf1);
-          if (INTVAL (XEXP (x, 1)) >= 0)
-            strcat (str, "+");
-          addr_const_to_string (buf1, XEXP (x, 1));
-          strcat (str, buf1);
-        }
+	{
+	  addr_const_to_string (buf1, XEXP (x, 0));
+	  strcat (str, buf1);
+	  if (INTVAL (XEXP (x, 1)) >= 0)
+	    strcat (str, "+");
+	  addr_const_to_string (buf1, XEXP (x, 1));
+	  strcat (str, buf1);
+	}
       break;
 
     case MINUS:
@@ -514,24 +514,24 @@ addr_const_to_string (char *str, rtx x)
          can't handle that.  */
       x = simplify_subtraction (x);
       if (GET_CODE (x) != MINUS)
-        goto restart;
+	goto restart;
 
       addr_const_to_string (buf1, XEXP (x, 0));
       strcat (str, buf1);
       strcat (str, "-");
       if (GET_CODE (XEXP (x, 1)) == CONST_INT
-          && INTVAL (XEXP (x, 1)) < 0)
-        {
-          strcat (str, "(");
-          addr_const_to_string (buf1, XEXP (x, 1));
-          strcat (str, buf1);
-          strcat (str, ")");
-        }
+	  && INTVAL (XEXP (x, 1)) < 0)
+	{
+	  strcat (str, "(");
+	  addr_const_to_string (buf1, XEXP (x, 1));
+	  strcat (str, buf1);
+	  strcat (str, ")");
+	}
       else
-        {
-          addr_const_to_string (buf1, XEXP (x, 1));
-          strcat (str, buf1);
-        }
+	{
+	  addr_const_to_string (buf1, XEXP (x, 1));
+	  strcat (str, buf1);
+	}
       break;
 
     case ZERO_EXTEND:
@@ -555,18 +555,18 @@ write_debug_header (DST_HEADER *header, const char *comment, int dosizeonly)
   if (!dosizeonly)
     {
       ASM_OUTPUT_DEBUG_DATA2 (asm_out_file,
-                              header->dst__header_length.dst_w_length);
+			      header->dst__header_length.dst_w_length);
 
       if (flag_verbose_asm)
-        fprintf (asm_out_file, "\t%s record length", ASM_COMMENT_START);
+	fprintf (asm_out_file, "\t%s record length", ASM_COMMENT_START);
       fputc ('\n', asm_out_file);
 
       ASM_OUTPUT_DEBUG_DATA2 (asm_out_file,
-                              header->dst__header_type.dst_w_type);
+			      header->dst__header_type.dst_w_type);
 
       if (flag_verbose_asm)
-        fprintf (asm_out_file, "\t%s record type (%s)", ASM_COMMENT_START,
-                 comment);
+	fprintf (asm_out_file, "\t%s record type (%s)", ASM_COMMENT_START,
+		 comment);
 
       fputc ('\n', asm_out_file);
     }
@@ -585,7 +585,7 @@ write_debug_addr (char *symbol, const char *comment, int dosizeonly)
     {
       ASM_OUTPUT_DEBUG_ADDR (asm_out_file, symbol);
       if (flag_verbose_asm)
-        fprintf (asm_out_file, "\t%s %s", ASM_COMMENT_START, comment);
+	fprintf (asm_out_file, "\t%s %s", ASM_COMMENT_START, comment);
       fputc ('\n', asm_out_file);
     }
 
@@ -603,7 +603,7 @@ write_debug_data1 (unsigned int data1, const char *comment, int dosizeonly)
     {
       ASM_OUTPUT_DEBUG_DATA1 (asm_out_file, data1);
       if (flag_verbose_asm)
-        fprintf (asm_out_file, "\t%s %s", ASM_COMMENT_START, comment);
+	fprintf (asm_out_file, "\t%s %s", ASM_COMMENT_START, comment);
       fputc ('\n', asm_out_file);
     }
 
@@ -621,7 +621,7 @@ write_debug_data2 (unsigned int data2, const char *comment, int dosizeonly)
     {
       ASM_OUTPUT_DEBUG_DATA2 (asm_out_file, data2);
       if (flag_verbose_asm)
-        fprintf (asm_out_file, "\t%s %s", ASM_COMMENT_START, comment);
+	fprintf (asm_out_file, "\t%s %s", ASM_COMMENT_START, comment);
       fputc ('\n', asm_out_file);
     }
 
@@ -638,7 +638,7 @@ write_debug_data4 (unsigned long data4, const char *comment, int dosizeonly)
     {
       ASM_OUTPUT_DEBUG_DATA4 (asm_out_file, data4);
       if (flag_verbose_asm)
-        fprintf (asm_out_file, "\t%s %s", ASM_COMMENT_START, comment);
+	fprintf (asm_out_file, "\t%s %s", ASM_COMMENT_START, comment);
       fputc ('\n', asm_out_file);
     }
 
@@ -650,13 +650,13 @@ write_debug_data4 (unsigned long data4, const char *comment, int dosizeonly)
 
 static int
 write_debug_data8 (unsigned long long data8, const char *comment,
-                   int dosizeonly)
+		   int dosizeonly)
 {
   if (!dosizeonly)
     {
       ASM_OUTPUT_DEBUG_DATA8 (asm_out_file, data8);
       if (flag_verbose_asm)
-        fprintf (asm_out_file, "\t%s %s", ASM_COMMENT_START, comment);
+	fprintf (asm_out_file, "\t%s %s", ASM_COMMENT_START, comment);
       fputc ('\n', asm_out_file);
     }
 
@@ -669,13 +669,13 @@ write_debug_data8 (unsigned long long data8, const char *comment,
 
 static int
 write_debug_delta4 (char *label1, char *label2, const char *comment,
-                    int dosizeonly)
+		    int dosizeonly)
 {
   if (!dosizeonly)
     {
       ASM_OUTPUT_DEBUG_DELTA4 (asm_out_file, label1, label2);
       if (flag_verbose_asm)
-        fprintf (asm_out_file, "\t%s %s", ASM_COMMENT_START, comment);
+	fprintf (asm_out_file, "\t%s %s", ASM_COMMENT_START, comment);
       fputc ('\n', asm_out_file);
     }
 
@@ -693,7 +693,7 @@ write_debug_string (char *string, const char *comment, int dosizeonly)
     {
       ASM_OUTPUT_DEBUG_STRING (asm_out_file, string);
       if (flag_verbose_asm)
-        fprintf (asm_out_file, "\t%s %s", ASM_COMMENT_START, comment);
+	fprintf (asm_out_file, "\t%s %s", ASM_COMMENT_START, comment);
       fputc ('\n', asm_out_file);
     }
 
@@ -742,22 +742,22 @@ write_modbeg (int dosizeonly)
   mb_trlr.dst_b_compiler = strlen (module_producer);
 
   totsize += write_debug_header (&modbeg.dst_a_modbeg_header,
-                                 "modbeg", dosizeonly);
+				 "modbeg", dosizeonly);
   totsize += write_debug_data1 (*((char *) &modbeg.dst_b_modbeg_flags),
-                                "flags", dosizeonly);
+				"flags", dosizeonly);
   totsize += write_debug_data1 (modbeg.dst_b_modbeg_unused,
-                                "unused", dosizeonly);
+				"unused", dosizeonly);
   totsize += write_debug_data4 (modbeg.dst_l_modbeg_language,
-                                "language", dosizeonly);
+				"language", dosizeonly);
   totsize += write_debug_data2 (modbeg.dst_w_version_major,
-                                "DST major version", dosizeonly);
+				"DST major version", dosizeonly);
   totsize += write_debug_data2 (modbeg.dst_w_version_minor,
-                                "DST minor version", dosizeonly);
+				"DST minor version", dosizeonly);
   totsize += write_debug_data1 (modbeg.dst_b_modbeg_name,
-                                "length of module name", dosizeonly);
+				"length of module name", dosizeonly);
   totsize += write_debug_string (module_name, "module name", dosizeonly);
   totsize += write_debug_data1 (mb_trlr.dst_b_compiler,
-                                "length of compiler name", dosizeonly);
+				"length of compiler name", dosizeonly);
   totsize += write_debug_string (module_producer, "compiler name", dosizeonly);
 
   return totsize;
@@ -777,7 +777,7 @@ write_modend (int dosizeonly)
   modend.dst_a_modend_header.dst__header_type.dst_w_type = DST_K_MODEND;
 
   totsize += write_debug_header (&modend.dst_a_modend_header, "modend",
-                                 dosizeonly);
+				 dosizeonly);
 
   return totsize;
 }
@@ -807,12 +807,12 @@ write_rtnbeg (int rtnnum, int dosizeonly)
       const char *go = "TRANSFER$BREAK$GO";
 
       /* This command isn't documented in DSTRECORDS, so it's made to
-         look like what DEC C does */
+	 look like what DEC C does */
 
       /* header size - 1st byte + flag byte + STO_LW size
-         + string count byte + string length */
+	 + string count byte + string length */
       header.dst__header_length.dst_w_length
-        = DST_K_DST_HEADER_SIZE - 1 + 1 + 4 + 1 + strlen (go);
+	= DST_K_DST_HEADER_SIZE - 1 + 1 + 4 + 1 + strlen (go);
       header.dst__header_type.dst_w_type = 0x17;
 
       totsize += write_debug_header (&header, "transfer", dosizeonly);
@@ -822,9 +822,9 @@ write_rtnbeg (int rtnnum, int dosizeonly)
 
       /* Routine Begin PD Address */
       totsize += write_debug_addr (rtnname, "main procedure descriptor",
-                                   dosizeonly);
+				   dosizeonly);
       totsize += write_debug_data1 (strlen (go), "length of main_name",
-                                    dosizeonly);
+				    dosizeonly);
       totsize += write_debug_string ((char *) go, "main name", dosizeonly);
     }
 
@@ -840,20 +840,20 @@ write_rtnbeg (int rtnnum, int dosizeonly)
   rtnbeg.dst_b_rtnbeg_name = rtnnamelen;
 
   totsize += write_debug_header (&rtnbeg.dst_a_rtnbeg_header, "rtnbeg",
-                                 dosizeonly);
+				 dosizeonly);
   totsize += write_debug_data1 (*((char *) &rtnbeg.dst_b_rtnbeg_flags),
-                                "flags", dosizeonly);
+				"flags", dosizeonly);
 
   /* Routine Begin Address */
   totsize += write_debug_addr (rtnentryname, "routine entry name", dosizeonly);
 
   /* Routine Begin PD Address */
   totsize += write_debug_addr (rtnname, "routine procedure descriptor",
-                               dosizeonly);
+			       dosizeonly);
 
   /* Routine Begin Name */
   totsize += write_debug_data1 (rtnbeg.dst_b_rtnbeg_name,
-                                "length of routine name", dosizeonly);
+				"length of routine name", dosizeonly);
 
   totsize += write_debug_string (rtnname, "routine name", dosizeonly);
 
@@ -862,15 +862,15 @@ write_rtnbeg (int rtnnum, int dosizeonly)
   if (debug_info_level > DINFO_LEVEL_TERSE)
     {
       prolog.dst_a_prolog_header.dst__header_length.dst_w_length
-        = DST_K_PROLOG_SIZE - 1;
+	= DST_K_PROLOG_SIZE - 1;
       prolog.dst_a_prolog_header.dst__header_type.dst_w_type = DST_K_PROLOG;
 
       totsize += write_debug_header (&prolog.dst_a_prolog_header, "prolog",
-                                     dosizeonly);
+				     dosizeonly);
 
       ASM_GENERATE_INTERNAL_LABEL (label, FUNC_PROLOG_LABEL, fde->funcdef_number);
       totsize += write_debug_addr (label, "prolog breakpoint addr",
-                                   dosizeonly);
+				   dosizeonly);
     }
 
   return totsize;
@@ -898,9 +898,9 @@ write_rtnend (int rtnnum, int dosizeonly)
   rtnend.dst_l_rtnend_size = 0; /* Calculated below.  */
 
   totsize += write_debug_header (&rtnend.dst_a_rtnend_header, "rtnend",
-                                 dosizeonly);
+				 dosizeonly);
   totsize += write_debug_data1 (rtnend.dst_b_rtnend_unused, "unused",
-                                dosizeonly);
+				dosizeonly);
 
   ASM_GENERATE_INTERNAL_LABEL (label1, FUNC_BEGIN_LABEL, corrected_rtnnum);
   ASM_GENERATE_INTERNAL_LABEL (label2, FUNC_END_LABEL, corrected_rtnnum);
@@ -955,9 +955,9 @@ write_pclines (int dosizeonly)
   pcline.dst_b_pcline_command = DST_K_SET_ABS_PC;
 
   totsize += write_debug_header (&line_num.dst_a_line_num_header,
-                                 "line_num", dosizeonly);
+				 "line_num", dosizeonly);
   totsize += write_debug_data1 (pcline.dst_b_pcline_command,
-                                "line_num (SET ABS PC)", dosizeonly);
+				"line_num (SET ABS PC)", dosizeonly);
 
   if (dosizeonly)
     totsize += 4;
@@ -965,20 +965,20 @@ write_pclines (int dosizeonly)
     {
       ASM_OUTPUT_DEBUG_ADDR (asm_out_file, TEXT_SECTION_ASM_OP);
       if (flag_verbose_asm)
-        fprintf (asm_out_file, "\t%s line_num", ASM_COMMENT_START);
+	fprintf (asm_out_file, "\t%s line_num", ASM_COMMENT_START);
       fputc ('\n', asm_out_file);
     }
 
   fn = line_info_table[1].dst_file_num;
   ln = (file_info_table[fn].listing_line_start
-        + line_info_table[1].dst_line_num);
+	+ line_info_table[1].dst_line_num);
   line_num.dst_a_line_num_header.dst__header_length.dst_w_length = 4 + 4;
   pcline.dst_b_pcline_command = DST_K_SET_LINUM_L;
 
   totsize += write_debug_header (&line_num.dst_a_line_num_header,
-                                 "line_num", dosizeonly);
+				 "line_num", dosizeonly);
   totsize += write_debug_data1 (pcline.dst_b_pcline_command,
-                                "line_num (SET LINUM LONG)", dosizeonly);
+				"line_num (SET LINUM LONG)", dosizeonly);
 
   sprintf (buff, "line_num (%d)", ln ? ln - 1 : 0);
   totsize += write_debug_data4 (ln ? ln - 1 : 0, buff, dosizeonly);
@@ -991,56 +991,56 @@ write_pclines (int dosizeonly)
 
       fn = line_info_table[i].dst_file_num;
       ln = (file_info_table[fn].listing_line_start
-            + line_info_table[i].dst_line_num);
+	    + line_info_table[i].dst_line_num);
 
       if (ln - lastln > 1)
-        extrabytes = 5; /* NUMBYTES (ln - lastln - 1) + 1; */
+	extrabytes = 5; /* NUMBYTES (ln - lastln - 1) + 1; */
       else if (ln <= lastln)
-        extrabytes = 5; /* NUMBYTES (ln - 1) + 1; */
+	extrabytes = 5; /* NUMBYTES (ln - 1) + 1; */
       else
-        extrabytes = 0;
+	extrabytes = 0;
 
       line_num.dst_a_line_num_header.dst__header_length.dst_w_length
-        = 8 + extrabytes;
+	= 8 + extrabytes;
 
       totsize += write_debug_header
-        (&line_num.dst_a_line_num_header, "line_num", dosizeonly);
+	(&line_num.dst_a_line_num_header, "line_num", dosizeonly);
 
       if (ln - lastln > 1)
-        {
-          int lndif = ln - lastln - 1;
+	{
+	  int lndif = ln - lastln - 1;
 
-          /* K_INCR_LINUM (lndif); */
-          pcline.dst_b_pcline_command = DST_K_INCR_LINUM_L;
+	  /* K_INCR_LINUM (lndif); */
+	  pcline.dst_b_pcline_command = DST_K_INCR_LINUM_L;
 
-          totsize += write_debug_data1 (pcline.dst_b_pcline_command,
-                                        "line_num (INCR LINUM LONG)",
-                                        dosizeonly);
+	  totsize += write_debug_data1 (pcline.dst_b_pcline_command,
+					"line_num (INCR LINUM LONG)",
+					dosizeonly);
 
-          sprintf (buff, "line_num (%d)", lndif);
-          totsize += write_debug_data4 (lndif, buff, dosizeonly);
-        }
+	  sprintf (buff, "line_num (%d)", lndif);
+	  totsize += write_debug_data4 (lndif, buff, dosizeonly);
+	}
       else if (ln <= lastln)
-        {
-          /* K_SET_LINUM (ln-1); */
-          pcline.dst_b_pcline_command = DST_K_SET_LINUM_L;
+	{
+	  /* K_SET_LINUM (ln-1); */
+	  pcline.dst_b_pcline_command = DST_K_SET_LINUM_L;
 
-          totsize += write_debug_data1 (pcline.dst_b_pcline_command,
-                                        "line_num (SET LINUM LONG)",
-                                        dosizeonly);
+	  totsize += write_debug_data1 (pcline.dst_b_pcline_command,
+					"line_num (SET LINUM LONG)",
+					dosizeonly);
 
-          sprintf (buff, "line_num (%d)", ln - 1);
-          totsize += write_debug_data4 (ln - 1, buff, dosizeonly);
-        }
+	  sprintf (buff, "line_num (%d)", ln - 1);
+	  totsize += write_debug_data4 (ln - 1, buff, dosizeonly);
+	}
 
       pcline.dst_b_pcline_command = DST_K_DELTA_PC_L;
 
       totsize += write_debug_data1 (pcline.dst_b_pcline_command,
-                                    "line_num (DELTA PC LONG)", dosizeonly);
+				    "line_num (DELTA PC LONG)", dosizeonly);
 
       ASM_GENERATE_INTERNAL_LABEL (label, LINE_CODE_LABEL, i);
       totsize += write_debug_delta4 (label, lastlabel, "increment line_num",
-                                     dosizeonly);
+				     dosizeonly);
 
       lastln = ln;
       strcpy (lastlabel, label);
@@ -1055,7 +1055,7 @@ write_pclines (int dosizeonly)
 
 static int
 write_srccorr (int fileid, dst_file_info_entry file_info_entry,
-               int dosizeonly)
+	       int dosizeonly)
 {
   int src_command_size;
   int linesleft = file_info_entry.max_line;
@@ -1075,17 +1075,17 @@ write_srccorr (int fileid, dst_file_info_entry file_info_entry,
   if (fileid == 1)
     {
       src_header.dst_a_source_corr_header.dst__header_length.dst_w_length
-        = DST_K_SOURCE_CORR_HEADER_SIZE + 1 - 1;
+	= DST_K_SOURCE_CORR_HEADER_SIZE + 1 - 1;
       src_header.dst_a_source_corr_header.dst__header_type.dst_w_type
-        = DST_K_SOURCE;
+	= DST_K_SOURCE;
       src_command.dst_b_src_command = DST_K_SRC_FORMFEED;
 
       totsize += write_debug_header (&src_header.dst_a_source_corr_header,
-                                     "source corr", dosizeonly);
+				     "source corr", dosizeonly);
 
       totsize += write_debug_data1 (src_command.dst_b_src_command,
-                                    "source_corr (SRC FORMFEED)",
-                                    dosizeonly);
+				    "source_corr (SRC FORMFEED)",
+				    dosizeonly);
     }
 
   src_command_size
@@ -1115,9 +1115,9 @@ write_srccorr (int fileid, dst_file_info_entry file_info_entry,
   src_cmdtrlr.dst_b_src_df_libmodname = 0;
 
   totsize += write_debug_header (&src_header.dst_a_source_corr_header,
-                                 "source corr", dosizeonly);
+				 "source corr", dosizeonly);
   totsize += write_debug_data1 (src_command.dst_b_src_command,
-                                "source_corr (DECL SRC FILE)", dosizeonly);
+				"source_corr (DECL SRC FILE)", dosizeonly);
   totsize += write_debug_data1
     (src_command.dst_a_src_cmd_fields.dst_a_src_decl_src.dst_b_src_df_length,
      "source_corr (length)", dosizeonly);
@@ -1151,9 +1151,9 @@ write_srccorr (int fileid, dst_file_info_entry file_info_entry,
      "source_corr (filename length)", dosizeonly);
 
   totsize += write_debug_string (file_info_entry.file_name,
-                                 "source file name", dosizeonly);
+				 "source file name", dosizeonly);
   totsize += write_debug_data1 (src_cmdtrlr.dst_b_src_df_libmodname,
-                                "source_corr (libmodname)", dosizeonly);
+				"source_corr (libmodname)", dosizeonly);
 
   src_command_sf.dst_b_src_command = DST_K_SRC_SETFILE;
   src_command_sf.dst_a_src_cmd_fields.dst_w_src_unsword = fileid;
@@ -1181,63 +1181,63 @@ write_srccorr (int fileid, dst_file_info_entry file_info_entry,
   if (src_command_dl.dst_a_src_cmd_fields.dst_w_src_unsword)
     {
       totsize += write_debug_header (&src_header.dst_a_source_corr_header,
-                                     "source corr", dosizeonly);
+				     "source corr", dosizeonly);
 
       totsize += write_debug_data1 (src_command_sf.dst_b_src_command,
-                                    "source_corr (src setfile)", dosizeonly);
+				    "source_corr (src setfile)", dosizeonly);
 
       totsize += write_debug_data2
-        (src_command_sf.dst_a_src_cmd_fields.dst_w_src_unsword,
-         "source_corr (fileid)", dosizeonly);
+	(src_command_sf.dst_a_src_cmd_fields.dst_w_src_unsword,
+	 "source_corr (fileid)", dosizeonly);
 
       totsize += write_debug_data1 (src_command_sr.dst_b_src_command,
-                                    "source_corr (setrec)", dosizeonly);
+				    "source_corr (setrec)", dosizeonly);
 
       totsize += write_debug_data2
-        (src_command_sr.dst_a_src_cmd_fields.dst_w_src_unsword,
-         "source_corr (recnum)", dosizeonly);
+	(src_command_sr.dst_a_src_cmd_fields.dst_w_src_unsword,
+	 "source_corr (recnum)", dosizeonly);
 
       totsize += write_debug_data1 (src_command_sl.dst_b_src_command,
-                                    "source_corr (setlnum)", dosizeonly);
+				    "source_corr (setlnum)", dosizeonly);
 
       totsize += write_debug_data4
-        (src_command_sl.dst_a_src_cmd_fields.dst_l_src_unslong,
-         "source_corr (linenum)", dosizeonly);
+	(src_command_sl.dst_a_src_cmd_fields.dst_l_src_unslong,
+	 "source_corr (linenum)", dosizeonly);
 
       totsize += write_debug_data1 (src_command_dl.dst_b_src_command,
-                                    "source_corr (deflines)", dosizeonly);
+				    "source_corr (deflines)", dosizeonly);
 
       sprintf (buff, "source_corr (%d)",
-               src_command_dl.dst_a_src_cmd_fields.dst_w_src_unsword);
+	       src_command_dl.dst_a_src_cmd_fields.dst_w_src_unsword);
       totsize += write_debug_data2
-        (src_command_dl.dst_a_src_cmd_fields.dst_w_src_unsword,
-         buff, dosizeonly);
+	(src_command_dl.dst_a_src_cmd_fields.dst_w_src_unsword,
+	 buff, dosizeonly);
 
       while (linesleft > 0)
-        {
-          src_header.dst_a_source_corr_header.dst__header_length.dst_w_length
-            = DST_K_SOURCE_CORR_HEADER_SIZE + 3 - 1;
-          src_header.dst_a_source_corr_header.dst__header_type.dst_w_type
-            = DST_K_SOURCE;
-          src_command_dl.dst_b_src_command = DST_K_SRC_DEFLINES_W;
+	{
+	  src_header.dst_a_source_corr_header.dst__header_length.dst_w_length
+	    = DST_K_SOURCE_CORR_HEADER_SIZE + 3 - 1;
+	  src_header.dst_a_source_corr_header.dst__header_type.dst_w_type
+	    = DST_K_SOURCE;
+	  src_command_dl.dst_b_src_command = DST_K_SRC_DEFLINES_W;
 
-          if (linesleft > 65534)
-            linesleft = linesleft - 65534, linestodo = 65534;
-          else
-            linestodo = linesleft, linesleft = 0;
+	  if (linesleft > 65534)
+	    linesleft = linesleft - 65534, linestodo = 65534;
+	  else
+	    linestodo = linesleft, linesleft = 0;
 
-          src_command_dl.dst_a_src_cmd_fields.dst_w_src_unsword = linestodo;
+	  src_command_dl.dst_a_src_cmd_fields.dst_w_src_unsword = linestodo;
 
-          totsize += write_debug_header (&src_header.dst_a_source_corr_header,
-                                         "source corr", dosizeonly);
-          totsize += write_debug_data1 (src_command_dl.dst_b_src_command,
-                                        "source_corr (deflines)", dosizeonly);
-          sprintf (buff, "source_corr (%d)",
-                   src_command_dl.dst_a_src_cmd_fields.dst_w_src_unsword);
-          totsize += write_debug_data2
-            (src_command_dl.dst_a_src_cmd_fields.dst_w_src_unsword,
-             buff, dosizeonly);
-        }
+	  totsize += write_debug_header (&src_header.dst_a_source_corr_header,
+					 "source corr", dosizeonly);
+	  totsize += write_debug_data1 (src_command_dl.dst_b_src_command,
+					"source_corr (deflines)", dosizeonly);
+	  sprintf (buff, "source_corr (%d)",
+		   src_command_dl.dst_a_src_cmd_fields.dst_w_src_unsword);
+	  totsize += write_debug_data2
+	    (src_command_dl.dst_a_src_cmd_fields.dst_w_src_unsword,
+	     buff, dosizeonly);
+	}
     }
 
   return totsize;
@@ -1272,7 +1272,7 @@ vmsdbgout_begin_prologue (unsigned int line, const char *file)
   if (debug_info_level > DINFO_LEVEL_NONE)
     {
       ASM_GENERATE_INTERNAL_LABEL (label, FUNC_BEGIN_LABEL,
-                                   current_function_funcdef_no);
+				   current_function_funcdef_no);
       ASM_OUTPUT_LABEL (asm_out_file, label);
     }
 }
@@ -1291,7 +1291,7 @@ vmsdbgout_end_prologue (unsigned int line, const char *file)
   if (debug_info_level > DINFO_LEVEL_TERSE)
     {
       ASM_GENERATE_INTERNAL_LABEL (label, FUNC_PROLOG_LABEL,
-                                   current_function_funcdef_no);
+				   current_function_funcdef_no);
       ASM_OUTPUT_LABEL (asm_out_file, label);
 
       /* VMS PCA expects every PC range to correlate to some line and file.  */
@@ -1325,7 +1325,7 @@ vmsdbgout_end_epilogue (unsigned int line, const char *file)
       /* Output a label to mark the endpoint of the code generated for this
          function.  */
       ASM_GENERATE_INTERNAL_LABEL (label, FUNC_END_LABEL,
-                                   current_function_funcdef_no);
+				   current_function_funcdef_no);
       ASM_OUTPUT_LABEL (asm_out_file, label);
 
       /* VMS PCA expects every PC range to correlate to some line and file.  */
@@ -1388,7 +1388,7 @@ vmsdbgout_begin_function (tree decl)
       func_table_allocated += FUNC_TABLE_INCREMENT;
       func_table
         = (vms_func_ref) xrealloc (func_table,
-                                   func_table_allocated * sizeof (vms_func_node));
+				   func_table_allocated * sizeof (vms_func_node));
     }
 
   /* Add the new entry to the end of the function name table.  */
@@ -1489,7 +1489,7 @@ lookup_filename (const char *file_name)
     {
       fn = file_info_table[last_file_lookup_index].file_name;
       if (strcmp (fnam, fn) == 0)
-        return last_file_lookup_index;
+	return last_file_lookup_index;
     }
 
   /* Didn't match the previous lookup, search the table */
@@ -1497,10 +1497,10 @@ lookup_filename (const char *file_name)
     {
       fn = file_info_table[i].file_name;
       if (strcmp (fnam, fn) == 0)
-        {
-          last_file_lookup_index = i;
-          return i;
-        }
+	{
+	  last_file_lookup_index = i;
+	  return i;
+	}
     }
 
   /* Prepare to add a new table entry by making sure there is enough space in
@@ -1510,8 +1510,8 @@ lookup_filename (const char *file_name)
 
       file_info_table_allocated += FILE_TABLE_INCREMENT;
       file_info_table = xrealloc (file_info_table,
-                                  (file_info_table_allocated
-                                   * sizeof (dst_file_info_entry)));
+				  (file_info_table_allocated
+				   * sizeof (dst_file_info_entry)));
     }
 
   /* Add the new entry to the end of the filename table.  */
@@ -1542,23 +1542,23 @@ vmsdbgout_source_line (register unsigned line, register const char *filename)
       dst_line_info_ref line_info;
 
       targetm.asm_out.internal_label (asm_out_file, LINE_CODE_LABEL,
-                                      line_info_table_in_use);
+				      line_info_table_in_use);
 
       /* Expand the line info table if necessary.  */
       if (line_info_table_in_use == line_info_table_allocated)
-        {
-          line_info_table_allocated += LINE_INFO_TABLE_INCREMENT;
-          line_info_table = xrealloc (line_info_table,
-                                      (line_info_table_allocated
-                                       * sizeof (dst_line_info_entry)));
-        }
+	{
+	  line_info_table_allocated += LINE_INFO_TABLE_INCREMENT;
+	  line_info_table = xrealloc (line_info_table,
+				      (line_info_table_allocated
+				       * sizeof (dst_line_info_entry)));
+	}
 
       /* Add the new entry at the end of the line_info_table.  */
       line_info = &line_info_table[line_info_table_in_use++];
       line_info->dst_file_num = lookup_filename (filename);
       line_info->dst_line_num = line;
       if (line > file_info_table[line_info->dst_file_num].max_line)
-        file_info_table[line_info->dst_file_num].max_line = line;
+	file_info_table[line_info->dst_file_num].max_line = line;
     }
 }
 

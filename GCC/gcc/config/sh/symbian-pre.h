@@ -22,10 +22,10 @@
    Boston, MA 02110-1301, USA.  */
 
 /* Enable Symbian specific code.  */
-#define SYMBIAN                1
+#define SYMBIAN		1
 
 /* Default to using the Renesas ABI.  */
-#define TARGET_ABI_DEFAULT        MASK_HITACHI
+#define TARGET_ABI_DEFAULT	MASK_HITACHI
 
 #define SUBTARGET_CPP_SPEC ""
 
@@ -37,5 +37,5 @@
 
 /* Create constructor/destructor sections without the writable flag.
    Symbian puts them into the text segment and munges them later on.  */
-#define CTORS_SECTION_ASM_OP        "\t.section\t.ctors,\"ax\",@progbits"
-#define DTORS_SECTION_ASM_OP        "\t.section\t.dtors,\"ax\",@progbits"
+#define CTORS_SECTION_ASM_OP	"\t.section\t.ctors,\"ax\",@progbits"
+#define DTORS_SECTION_ASM_OP	"\t.section\t.dtors,\"ax\",@progbits"

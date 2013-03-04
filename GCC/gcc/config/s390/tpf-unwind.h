@@ -57,7 +57,7 @@ __isPATrange (void *addr)
 
 static _Unwind_Reason_Code
 s390_fallback_frame_state (struct _Unwind_Context *context,
-                           _Unwind_FrameState *fs)
+			   _Unwind_FrameState *fs)
 {
   unsigned long int regs;
   unsigned long int new_cfa;
@@ -82,13 +82,13 @@ s390_fallback_frame_state (struct _Unwind_Context *context,
 
       /* All registers remain unchanged ...  */
       for (i = 0; i < 32; i++)
-        {
-          fs->regs.reg[i].how = REG_SAVED_REG;
-          fs->regs.reg[i].loc.reg = i;
-        }
+	{
+	  fs->regs.reg[i].how = REG_SAVED_REG;
+	  fs->regs.reg[i].loc.reg = i;
+	}
 
       /* ... except for %r14, which is stored at CFA-112
-         and used as return address.  */
+	 and used as return address.  */
       fs->regs.reg[14].how = REG_SAVED_OFFSET;
       fs->regs.reg[14].loc.offset = TPFRA_OFFSET - STACK_POINTER_OFFSET;
       fs->retaddr_column = 14;

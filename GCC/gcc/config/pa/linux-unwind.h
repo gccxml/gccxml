@@ -54,7 +54,7 @@ Boston, MA 02110-1301, USA.  */
 
 static _Unwind_Reason_Code
 pa32_fallback_frame_state (struct _Unwind_Context *context,
-                           _Unwind_FrameState *fs)
+			   _Unwind_FrameState *fs)
 {
   unsigned long sp = (unsigned long)context->ra & ~63;
   unsigned int *pc = (unsigned int *)sp;
@@ -88,18 +88,18 @@ pa32_fallback_frame_state (struct _Unwind_Context *context,
   else
     {
       /* We may have to unwind through an alternate signal stack.
-         We assume that the alignment of the alternate signal stack
-         is BIGGEST_ALIGNMENT (i.e., that it has been allocated using
-         malloc).  As a result, we can't distinguish trampolines
-         used prior to 2.6.5-rc2-pa4.  However after 2.6.5-rc2-pa4,
-         the return address of a signal trampoline will be on an odd
-         word boundary and we can then determine the frame offset.  */
+	 We assume that the alignment of the alternate signal stack
+	 is BIGGEST_ALIGNMENT (i.e., that it has been allocated using
+	 malloc).  As a result, we can't distinguish trampolines
+	 used prior to 2.6.5-rc2-pa4.  However after 2.6.5-rc2-pa4,
+	 the return address of a signal trampoline will be on an odd
+	 word boundary and we can then determine the frame offset.  */
       sp = (unsigned long)context->ra;
       pc = (unsigned int *)sp;
       if ((pc[0] == 0x34190000 || pc[0] == 0x34190002) && (sp & 4))
-        off = 5 * 4;
+	off = 5 * 4;
       else
-        return _URC_END_OF_STACK;
+	return _URC_END_OF_STACK;
     }
 
   if (pc[1] != 0x3414015a
@@ -124,10 +124,10 @@ pa32_fallback_frame_state (struct _Unwind_Context *context,
       /* FP regs have left and right halves */
       fs->regs.reg[2*i+24].how = REG_SAVED_OFFSET;
       fs->regs.reg[2*i+24].loc.offset
-        = (long)&sc->sc_fr[i] - new_cfa;
+	= (long)&sc->sc_fr[i] - new_cfa;
       fs->regs.reg[2*i+24+1].how = REG_SAVED_OFFSET;
       fs->regs.reg[2*i+24+1].loc.offset
-        = (long)&sc->sc_fr[i] + 4 - new_cfa;
+	= (long)&sc->sc_fr[i] + 4 - new_cfa;
     }
   fs->regs.reg[88].how = REG_SAVED_OFFSET;
   fs->regs.reg[88].loc.offset = (long) &sc->sc_sar - new_cfa;

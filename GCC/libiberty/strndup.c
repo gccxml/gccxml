@@ -33,9 +33,9 @@ memory was available.  The result is always NUL terminated.
 #include "ansidecl.h"
 #include <stddef.h>
 
-extern size_t        strlen (const char*);
-extern PTR        malloc (size_t);
-extern PTR        memcpy (PTR, const PTR, size_t);
+extern size_t	strlen (const char*);
+extern PTR	malloc (size_t);
+extern PTR	memcpy (PTR, const PTR, size_t);
 
 char *
 strndup (const char *s, size_t n)

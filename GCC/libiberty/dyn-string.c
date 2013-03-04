@@ -154,10 +154,10 @@ dyn_string_resize (dyn_string_t ds, int space)
 #ifdef RETURN_ON_ALLOCATION_FAILURE
       ds->s = (char *) realloc (ds->s, ds->allocated);
       if (ds->s == NULL)
-        {
-          free (ds);
-          return NULL;
-        }
+	{
+	  free (ds);
+	  return NULL;
+	}
 #else
       ds->s = XRESIZEVEC (char, ds->s, ds->allocated);
 #endif

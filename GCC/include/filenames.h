@@ -32,19 +32,19 @@ Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA. 
 #define HAVE_DOS_BASED_FILE_SYSTEM 1
 #endif
 
-#define IS_DIR_SEPARATOR(c)        ((c) == '/' || (c) == '\\')
+#define IS_DIR_SEPARATOR(c)	((c) == '/' || (c) == '\\')
 /* Note that IS_ABSOLUTE_PATH accepts d:foo as well, although it is
    only semi-absolute.  This is because the users of IS_ABSOLUTE_PATH
    want to know whether to prepend the current working directory to
    a file name, which should not be done with a name like d:foo.  */
-#define IS_ABSOLUTE_PATH(f)        (IS_DIR_SEPARATOR((f)[0]) || (((f)[0]) && ((f)[1] == ':')))
-#define FILENAME_CMP(s1, s2)        strcasecmp(s1, s2)
+#define IS_ABSOLUTE_PATH(f)	(IS_DIR_SEPARATOR((f)[0]) || (((f)[0]) && ((f)[1] == ':')))
+#define FILENAME_CMP(s1, s2)	strcasecmp(s1, s2)
 
 #else  /* not DOSish */
 
-#define IS_DIR_SEPARATOR(c)        ((c) == '/')
-#define IS_ABSOLUTE_PATH(f)        (IS_DIR_SEPARATOR((f)[0]))
-#define FILENAME_CMP(s1, s2)        strcmp(s1, s2)
+#define IS_DIR_SEPARATOR(c)	((c) == '/')
+#define IS_ABSOLUTE_PATH(f)	(IS_DIR_SEPARATOR((f)[0]))
+#define FILENAME_CMP(s1, s2)	strcmp(s1, s2)
 
 #endif /* not DOSish */
 

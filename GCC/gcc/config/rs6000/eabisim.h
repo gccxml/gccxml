@@ -39,17 +39,17 @@
   while (0)
 
 /* Make the simulator the default */
-#undef        LIB_DEFAULT_SPEC
+#undef	LIB_DEFAULT_SPEC
 #define LIB_DEFAULT_SPEC "%(lib_sim)"
 
-#undef        STARTFILE_DEFAULT_SPEC
+#undef	STARTFILE_DEFAULT_SPEC
 #define STARTFILE_DEFAULT_SPEC "%(startfile_sim)"
 
-#undef        ENDFILE_DEFAULT_SPEC
+#undef	ENDFILE_DEFAULT_SPEC
 #define ENDFILE_DEFAULT_SPEC "%(endfile_sim)"
 
-#undef        LINK_START_DEFAULT_SPEC
+#undef	LINK_START_DEFAULT_SPEC
 #define LINK_START_DEFAULT_SPEC "%(link_start_sim)"
 
-#undef        LINK_OS_DEFAULT_SPEC
+#undef	LINK_OS_DEFAULT_SPEC
 #define LINK_OS_DEFAULT_SPEC "%(link_os_sim)"

@@ -31,20 +31,20 @@
 
 #define __vector __attribute__((vector_size(8)))
 
-typedef int                          int32_t;
-typedef unsigned                 uint32_t;
-typedef short                    int16_t;
-typedef unsigned short          uint16_t;
-typedef long long                 int64_t;
-typedef unsigned long long        uint64_t;
+typedef int 	 		int32_t;
+typedef unsigned 		uint32_t;
+typedef short    		int16_t;
+typedef unsigned short  	uint16_t;
+typedef long long 		int64_t;
+typedef unsigned long long	uint64_t;
 
-typedef short                         __vector __ev64_s16__;
-typedef unsigned short          __vector __ev64_u16__;
-typedef int                         __vector __ev64_s32__;
-typedef unsigned                 __vector __ev64_u32__;
-typedef long long                 __vector __ev64_s64__;
-typedef unsigned long long         __vector __ev64_u64__;
-typedef float                         __vector __ev64_fs__;
+typedef short 			__vector __ev64_s16__;
+typedef unsigned short  	__vector __ev64_u16__;
+typedef int 			__vector __ev64_s32__;
+typedef unsigned 		__vector __ev64_u32__;
+typedef long long 		__vector __ev64_s64__;
+typedef unsigned long long 	__vector __ev64_u64__;
+typedef float 			__vector __ev64_fs__;
 
 #define __v2si __ev64_opaque__
 #define __v2sf __ev64_fs__
@@ -540,7 +540,7 @@ __ev_create_s16 (int16_t a, int16_t b, int16_t c, int16_t d)
 
 static inline __ev64_opaque__
 __ev_create_u16 (uint16_t a, uint16_t b, uint16_t c, uint16_t d)
-                                  
+				  
 {
   union
   {
@@ -921,108 +921,108 @@ __ev_set_s16_internal (__ev64_opaque__ a, int16_t b, uint32_t pos)
 
 /* Predicates.  */
 
-#define __pred_all        0
-#define __pred_any        1
-#define __pred_upper        2
-#define __pred_lower        3
+#define __pred_all	0
+#define __pred_any	1
+#define __pred_upper	2
+#define __pred_lower	3
 
-#define __ev_any_gts(a, b)                __builtin_spe_evcmpgts (__pred_any, (a), (b))
-#define __ev_all_gts(a, b)                __builtin_spe_evcmpgts (__pred_all, (a), (b))
-#define __ev_upper_gts(a, b)                __builtin_spe_evcmpgts (__pred_upper, (a), (b))
-#define __ev_lower_gts(a, b)                __builtin_spe_evcmpgts (__pred_lower, (a), (b))
-#define __ev_select_gts                        __builtin_spe_evsel_gts
+#define __ev_any_gts(a, b)		__builtin_spe_evcmpgts (__pred_any, (a), (b))
+#define __ev_all_gts(a, b)		__builtin_spe_evcmpgts (__pred_all, (a), (b))
+#define __ev_upper_gts(a, b)		__builtin_spe_evcmpgts (__pred_upper, (a), (b))
+#define __ev_lower_gts(a, b)		__builtin_spe_evcmpgts (__pred_lower, (a), (b))
+#define __ev_select_gts			__builtin_spe_evsel_gts
 
-#define __ev_any_gtu(a, b)                __builtin_spe_evcmpgtu (__pred_any, (a), (b))
-#define __ev_all_gtu(a, b)                __builtin_spe_evcmpgtu (__pred_all, (a), (b))
-#define __ev_upper_gtu(a, b)                __builtin_spe_evcmpgtu (__pred_upper, (a), (b))
-#define __ev_lower_gtu(a, b)                __builtin_spe_evcmpgtu (__pred_lower, (a), (b))
-#define __ev_select_gtu                        __builtin_spe_evsel_gtu
+#define __ev_any_gtu(a, b)		__builtin_spe_evcmpgtu (__pred_any, (a), (b))
+#define __ev_all_gtu(a, b)		__builtin_spe_evcmpgtu (__pred_all, (a), (b))
+#define __ev_upper_gtu(a, b)		__builtin_spe_evcmpgtu (__pred_upper, (a), (b))
+#define __ev_lower_gtu(a, b)		__builtin_spe_evcmpgtu (__pred_lower, (a), (b))
+#define __ev_select_gtu			__builtin_spe_evsel_gtu
 
-#define __ev_any_lts(a, b)                __builtin_spe_evcmplts (__pred_any, (a), (b))
-#define __ev_all_lts(a, b)                __builtin_spe_evcmplts (__pred_all, (a), (b))
-#define __ev_upper_lts(a, b)                __builtin_spe_evcmplts (__pred_upper, (a), (b))
-#define __ev_lower_lts(a, b)                __builtin_spe_evcmplts (__pred_lower, (a), (b))
-#define __ev_select_lts(a, b, c, d)         ((__v2si) __builtin_spe_evsel_lts ((a), (b), (c), (d)))
+#define __ev_any_lts(a, b)		__builtin_spe_evcmplts (__pred_any, (a), (b))
+#define __ev_all_lts(a, b)		__builtin_spe_evcmplts (__pred_all, (a), (b))
+#define __ev_upper_lts(a, b)		__builtin_spe_evcmplts (__pred_upper, (a), (b))
+#define __ev_lower_lts(a, b)		__builtin_spe_evcmplts (__pred_lower, (a), (b))
+#define __ev_select_lts(a, b, c, d) 	((__v2si) __builtin_spe_evsel_lts ((a), (b), (c), (d)))
 
-#define __ev_any_ltu(a, b)                __builtin_spe_evcmpltu (__pred_any, (a), (b))
-#define __ev_all_ltu(a, b)                __builtin_spe_evcmpltu (__pred_all, (a), (b))
-#define __ev_upper_ltu(a, b)                __builtin_spe_evcmpltu (__pred_upper, (a), (b))
-#define __ev_lower_ltu(a, b)                __builtin_spe_evcmpltu (__pred_lower, (a), (b))
-#define __ev_select_ltu                 __builtin_spe_evsel_ltu
-#define __ev_any_eq(a, b)                __builtin_spe_evcmpeq (__pred_any, (a), (b))
-#define __ev_all_eq(a, b)                __builtin_spe_evcmpeq (__pred_all, (a), (b))
-#define __ev_upper_eq(a, b)                __builtin_spe_evcmpeq (__pred_upper, (a), (b))
-#define __ev_lower_eq(a, b)                __builtin_spe_evcmpeq (__pred_lower, (a), (b))
-#define __ev_select_eq                        __builtin_spe_evsel_eq
+#define __ev_any_ltu(a, b)		__builtin_spe_evcmpltu (__pred_any, (a), (b))
+#define __ev_all_ltu(a, b)		__builtin_spe_evcmpltu (__pred_all, (a), (b))
+#define __ev_upper_ltu(a, b)		__builtin_spe_evcmpltu (__pred_upper, (a), (b))
+#define __ev_lower_ltu(a, b)		__builtin_spe_evcmpltu (__pred_lower, (a), (b))
+#define __ev_select_ltu 		__builtin_spe_evsel_ltu
+#define __ev_any_eq(a, b)		__builtin_spe_evcmpeq (__pred_any, (a), (b))
+#define __ev_all_eq(a, b)		__builtin_spe_evcmpeq (__pred_all, (a), (b))
+#define __ev_upper_eq(a, b)		__builtin_spe_evcmpeq (__pred_upper, (a), (b))
+#define __ev_lower_eq(a, b)		__builtin_spe_evcmpeq (__pred_lower, (a), (b))
+#define __ev_select_eq			__builtin_spe_evsel_eq
 
-#define __ev_any_fs_gt(a, b)                __builtin_spe_evfscmpgt (__pred_any, (a), (b))
-#define __ev_all_fs_gt(a, b)                __builtin_spe_evfscmpgt (__pred_all, (a), (b))
-#define __ev_upper_fs_gt(a, b)                __builtin_spe_evfscmpgt (__pred_upper, (a), (b))
-#define __ev_lower_fs_gt(a, b)                __builtin_spe_evfscmpgt (__pred_lower, (a), (b))
-#define __ev_select_fs_gt                __builtin_spe_evsel_fsgt
+#define __ev_any_fs_gt(a, b)		__builtin_spe_evfscmpgt (__pred_any, (a), (b))
+#define __ev_all_fs_gt(a, b)		__builtin_spe_evfscmpgt (__pred_all, (a), (b))
+#define __ev_upper_fs_gt(a, b)		__builtin_spe_evfscmpgt (__pred_upper, (a), (b))
+#define __ev_lower_fs_gt(a, b)		__builtin_spe_evfscmpgt (__pred_lower, (a), (b))
+#define __ev_select_fs_gt		__builtin_spe_evsel_fsgt
 
-#define __ev_any_fs_lt(a, b)                __builtin_spe_evfscmplt (__pred_any, (a), (b))
-#define __ev_all_fs_lt(a, b)                __builtin_spe_evfscmplt (__pred_all, (a), (b))
-#define __ev_upper_fs_lt(a, b)                __builtin_spe_evfscmplt (__pred_upper, (a), (b))
-#define __ev_lower_fs_lt(a, b)                __builtin_spe_evfscmplt (__pred_lower, (a), (b))
-#define __ev_select_fs_lt                __builtin_spe_evsel_fslt
+#define __ev_any_fs_lt(a, b)		__builtin_spe_evfscmplt (__pred_any, (a), (b))
+#define __ev_all_fs_lt(a, b)		__builtin_spe_evfscmplt (__pred_all, (a), (b))
+#define __ev_upper_fs_lt(a, b)		__builtin_spe_evfscmplt (__pred_upper, (a), (b))
+#define __ev_lower_fs_lt(a, b)		__builtin_spe_evfscmplt (__pred_lower, (a), (b))
+#define __ev_select_fs_lt		__builtin_spe_evsel_fslt
 
-#define __ev_any_fs_eq(a, b)                __builtin_spe_evfscmpeq (__pred_any, (a), (b))
-#define __ev_all_fs_eq(a, b)                __builtin_spe_evfscmpeq (__pred_all, (a), (b))
-#define __ev_upper_fs_eq(a, b)                __builtin_spe_evfscmpeq (__pred_upper, (a), (b))
-#define __ev_lower_fs_eq(a, b)                __builtin_spe_evfscmpeq (__pred_lower, (a), (b))
-#define __ev_select_fs_eq                __builtin_spe_evsel_fseq
+#define __ev_any_fs_eq(a, b)		__builtin_spe_evfscmpeq (__pred_any, (a), (b))
+#define __ev_all_fs_eq(a, b)		__builtin_spe_evfscmpeq (__pred_all, (a), (b))
+#define __ev_upper_fs_eq(a, b)		__builtin_spe_evfscmpeq (__pred_upper, (a), (b))
+#define __ev_lower_fs_eq(a, b)		__builtin_spe_evfscmpeq (__pred_lower, (a), (b))
+#define __ev_select_fs_eq		__builtin_spe_evsel_fseq
 
-#define __ev_any_fs_tst_gt(a, b)        __builtin_spe_evfststgt (__pred_any, (a), (b))
-#define __ev_all_fs_tst_gt(a, b)        __builtin_spe_evfststgt (__pred_all, (a), (b))
-#define __ev_upper_fs_tst_gt(a, b)        __builtin_spe_evfststgt (__pred_upper, (a), (b))
-#define __ev_lower_fs_tst_gt(a, b)        __builtin_spe_evfststgt (__pred_lower, (a), (b))
+#define __ev_any_fs_tst_gt(a, b)	__builtin_spe_evfststgt (__pred_any, (a), (b))
+#define __ev_all_fs_tst_gt(a, b)	__builtin_spe_evfststgt (__pred_all, (a), (b))
+#define __ev_upper_fs_tst_gt(a, b)	__builtin_spe_evfststgt (__pred_upper, (a), (b))
+#define __ev_lower_fs_tst_gt(a, b)	__builtin_spe_evfststgt (__pred_lower, (a), (b))
 #define __ev_select_fs_tst_gt           __builtin_spe_evsel_fststgt
 
-#define __ev_any_fs_tst_lt(a, b)        __builtin_spe_evfststlt (__pred_any, (a), (b))
-#define __ev_all_fs_tst_lt(a, b)        __builtin_spe_evfststlt (__pred_all, (a), (b))
-#define __ev_upper_fs_tst_lt(a, b)        __builtin_spe_evfststlt (__pred_upper, (a), (b))
-#define __ev_lower_fs_tst_lt(a, b)        __builtin_spe_evfststlt (__pred_lower, (a), (b))
-#define __ev_select_fs_tst_lt                __builtin_spe_evsel_fststlt
+#define __ev_any_fs_tst_lt(a, b)	__builtin_spe_evfststlt (__pred_any, (a), (b))
+#define __ev_all_fs_tst_lt(a, b)	__builtin_spe_evfststlt (__pred_all, (a), (b))
+#define __ev_upper_fs_tst_lt(a, b)	__builtin_spe_evfststlt (__pred_upper, (a), (b))
+#define __ev_lower_fs_tst_lt(a, b)	__builtin_spe_evfststlt (__pred_lower, (a), (b))
+#define __ev_select_fs_tst_lt		__builtin_spe_evsel_fststlt
 
-#define __ev_any_fs_tst_eq(a, b)        __builtin_spe_evfststeq (__pred_any, (a), (b))
-#define __ev_all_fs_tst_eq(a, b)        __builtin_spe_evfststeq (__pred_all, (a), (b))
-#define __ev_upper_fs_tst_eq(a, b)        __builtin_spe_evfststeq (__pred_upper, (a), (b))
-#define __ev_lower_fs_tst_eq(a, b)        __builtin_spe_evfststeq (__pred_lower, (a), (b))
-#define __ev_select_fs_tst_eq                __builtin_spe_evsel_fststeq
+#define __ev_any_fs_tst_eq(a, b)	__builtin_spe_evfststeq (__pred_any, (a), (b))
+#define __ev_all_fs_tst_eq(a, b)	__builtin_spe_evfststeq (__pred_all, (a), (b))
+#define __ev_upper_fs_tst_eq(a, b)	__builtin_spe_evfststeq (__pred_upper, (a), (b))
+#define __ev_lower_fs_tst_eq(a, b)	__builtin_spe_evfststeq (__pred_lower, (a), (b))
+#define __ev_select_fs_tst_eq		__builtin_spe_evsel_fststeq
 
 /* SPEFSCR accessor functions.  */
 
-#define __SPEFSCR_SOVH                0x80000000
-#define __SPEFSCR_OVH                0x40000000
-#define __SPEFSCR_FGH                0x20000000
-#define __SPEFSCR_FXH                0x10000000
-#define __SPEFSCR_FINVH                0x08000000
-#define __SPEFSCR_FDBZH                0x04000000
-#define __SPEFSCR_FUNFH                0x02000000
-#define __SPEFSCR_FOVFH                0x01000000
+#define __SPEFSCR_SOVH		0x80000000
+#define __SPEFSCR_OVH		0x40000000
+#define __SPEFSCR_FGH		0x20000000
+#define __SPEFSCR_FXH		0x10000000
+#define __SPEFSCR_FINVH		0x08000000
+#define __SPEFSCR_FDBZH		0x04000000
+#define __SPEFSCR_FUNFH		0x02000000
+#define __SPEFSCR_FOVFH		0x01000000
 /* 2 unused bits.  */
-#define __SPEFSCR_FINXS                0x00200000
-#define __SPEFSCR_FINVS                0x00100000
-#define __SPEFSCR_FDBZS                0x00080000
-#define __SPEFSCR_FUNFS                0x00040000
-#define __SPEFSCR_FOVFS                0x00020000
-#define __SPEFSCR_MODE                0x00010000
-#define __SPEFSCR_SOV                0x00008000
-#define __SPEFSCR_OV                0x00004000
-#define __SPEFSCR_FG                0x00002000
-#define __SPEFSCR_FX                0x00001000
-#define __SPEFSCR_FINV                0x00000800
-#define __SPEFSCR_FDBZ                0x00000400
-#define __SPEFSCR_FUNF                0x00000200
-#define __SPEFSCR_FOVF                0x00000100
+#define __SPEFSCR_FINXS		0x00200000
+#define __SPEFSCR_FINVS		0x00100000
+#define __SPEFSCR_FDBZS		0x00080000
+#define __SPEFSCR_FUNFS		0x00040000
+#define __SPEFSCR_FOVFS		0x00020000
+#define __SPEFSCR_MODE		0x00010000
+#define __SPEFSCR_SOV		0x00008000
+#define __SPEFSCR_OV		0x00004000
+#define __SPEFSCR_FG		0x00002000
+#define __SPEFSCR_FX		0x00001000
+#define __SPEFSCR_FINV		0x00000800
+#define __SPEFSCR_FDBZ		0x00000400
+#define __SPEFSCR_FUNF		0x00000200
+#define __SPEFSCR_FOVF		0x00000100
 /* 1 unused bit.  */
-#define __SPEFSCR_FINXE                0x00000040
-#define __SPEFSCR_FINVE                0x00000020
-#define __SPEFSCR_FDBZE                0x00000010
-#define __SPEFSCR_FUNFE                0x00000008
-#define __SPEFSCR_FOVFE                0x00000004
-#define __SPEFSCR_FRMC                0x00000003
+#define __SPEFSCR_FINXE		0x00000040
+#define __SPEFSCR_FINVE		0x00000020
+#define __SPEFSCR_FDBZE		0x00000010
+#define __SPEFSCR_FUNFE		0x00000008
+#define __SPEFSCR_FOVFE		0x00000004
+#define __SPEFSCR_FRMC		0x00000003
 
 #define __ev_get_spefscr_sovh() (__builtin_spe_mfspefscr () & __SPEFSCR_SOVH)
 #define __ev_get_spefscr_ovh() (__builtin_spe_mfspefscr () & __SPEFSCR_OVH)

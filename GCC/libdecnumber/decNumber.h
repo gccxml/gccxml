@@ -30,10 +30,10 @@
 
 #if !defined(DECNUMBER)
 #define DECNUMBER
-#define DECNAME     "decNumber"        /* Short name */
-#define DECVERSION  "decNumber 3.24"        /* Version [16 max.] */
-#define DECFULLNAME "Decimal Number Module"        /* Verbose name */
-#define DECAUTHOR   "Mike Cowlishaw"        /* Who to blame */
+#define DECNAME     "decNumber"	/* Short name */
+#define DECVERSION  "decNumber 3.24"	/* Version [16 max.] */
+#define DECFULLNAME "Decimal Number Module"	/* Verbose name */
+#define DECAUTHOR   "Mike Cowlishaw"	/* Who to blame */
 
 #if !defined(DECCONTEXT)
 #include "decContext.h"
@@ -41,12 +41,12 @@
 
 
   /* Bit settings for decNumber.bits */
-#define DECNEG    0x80                /* Sign; 1=negative, 0=positive or zero */
-#define DECINF    0x40                /* 1=Infinity */
-#define DECNAN    0x20                /* 1=NaN */
-#define DECSNAN   0x10                /* 1=sNaN */
+#define DECNEG    0x80		/* Sign; 1=negative, 0=positive or zero */
+#define DECINF    0x40		/* 1=Infinity */
+#define DECNAN    0x20		/* 1=NaN */
+#define DECSNAN   0x10		/* 1=sNaN */
   /* The remaining bits are reserved; they must be 0 */
-#define DECSPECIAL (DECINF|DECNAN|DECSNAN)        /* any special value */
+#define DECSPECIAL (DECINF|DECNAN|DECSNAN)	/* any special value */
 
   /* DECNUMDIGITS is the default number of digits we can hold in the */
   /* structure.  If undefined, 1 is assumed and it is assumed that the */
@@ -61,8 +61,8 @@
   /* units array in the structure is determined by the following */
   /* constant.  This must not be changed without recompiling the */
   /* decNumber library modules. */
-#define DECDPUN 4                /* Decimal Digits Per UNit [must be in */
-                                   /* range 1-9; power of 2 recommended]. */
+#define DECDPUN 4		/* Decimal Digits Per UNit [must be in */
+				   /* range 1-9; power of 2 recommended]. */
   /* The size (integer data type) of each unit is determined by the */
   /* number of digits it will hold. */
 #if   DECDPUN<=2
@@ -78,11 +78,11 @@
   /* The data structure... */
 typedef struct
 {
-  int32_t digits;                /* Count of digits in the coefficient; >0 */
-  int32_t exponent;                /* Unadjusted exponent, unbiased, in */
+  int32_t digits;		/* Count of digits in the coefficient; >0 */
+  int32_t exponent;		/* Unadjusted exponent, unbiased, in */
   /* range: -1999999997 through 999999999 */
-  uint8_t bits;                        /* Indicator bits (see above) */
-  decNumberUnit lsu[DECNUMUNITS];        /* Coefficient, from least significant unit */
+  uint8_t bits;			/* Indicator bits (see above) */
+  decNumberUnit lsu[DECNUMUNITS];	/* Coefficient, from least significant unit */
 } decNumber;
 
   /* Notes: */
@@ -145,36 +145,36 @@ char *decNumberToEngString (const decNumber *, char *);
   /* Operators */
 decNumber *decNumberAbs (decNumber *, const decNumber *, decContext *);
 decNumber *decNumberAdd (decNumber *, const decNumber *,
-                         const decNumber *, decContext *);
+			 const decNumber *, decContext *);
 decNumber *decNumberCompare (decNumber *, const decNumber *,
-                             const decNumber *, decContext *);
+			     const decNumber *, decContext *);
 decNumber *decNumberDivide (decNumber *, const decNumber *,
-                            const decNumber *, decContext *);
+			    const decNumber *, decContext *);
 decNumber *decNumberDivideInteger (decNumber *, const decNumber *,
-                                   const decNumber *, decContext *);
+				   const decNumber *, decContext *);
 decNumber *decNumberMax (decNumber *, const decNumber *,
-                         const decNumber *, decContext *);
+			 const decNumber *, decContext *);
 decNumber *decNumberMin (decNumber *, const decNumber *,
-                         const decNumber *, decContext *);
+			 const decNumber *, decContext *);
 decNumber *decNumberMinus (decNumber *, const decNumber *, decContext *);
 decNumber *decNumberMultiply (decNumber *, const decNumber *,
-                              const decNumber *, decContext *);
+			      const decNumber *, decContext *);
 decNumber *decNumberNormalize (decNumber *, const decNumber *, decContext *);
 decNumber *decNumberPlus (decNumber *, const decNumber *, decContext *);
 decNumber *decNumberPower (decNumber *, const decNumber *,
-                           const decNumber *, decContext *);
+			   const decNumber *, decContext *);
 decNumber *decNumberQuantize (decNumber *, const decNumber *,
-                              const decNumber *, decContext *);
+			      const decNumber *, decContext *);
 decNumber *decNumberRemainder (decNumber *, const decNumber *,
-                               const decNumber *, decContext *);
+			       const decNumber *, decContext *);
 decNumber *decNumberRemainderNear (decNumber *, const decNumber *,
-                                   const decNumber *, decContext *);
+				   const decNumber *, decContext *);
 decNumber *decNumberRescale (decNumber *, const decNumber *,
-                             const decNumber *, decContext *);
+			     const decNumber *, decContext *);
 decNumber *decNumberSameQuantum (decNumber *, const decNumber *, const decNumber *);
 decNumber *decNumberSquareRoot (decNumber *, const decNumber *, decContext *);
 decNumber *decNumberSubtract (decNumber *, const decNumber *,
-                              const decNumber *, decContext *);
+			      const decNumber *, decContext *);
 decNumber *decNumberToIntegralValue (decNumber *, const decNumber *, decContext *);
 
   /* Utilities */

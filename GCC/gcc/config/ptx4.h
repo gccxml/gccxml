@@ -59,9 +59,9 @@ Boston, MA 02110-1301, USA.
 /* This defines which multi-letter switches take arguments.  On svr4,
    there are no such switches except those implemented by GCC itself.  */
 
-#define WORD_SWITCH_TAKES_ARG(STR)                        \
- (DEFAULT_WORD_SWITCH_TAKES_ARG (STR)                        \
-  && strcmp (STR, "Tdata") && strcmp (STR, "Ttext")        \
+#define WORD_SWITCH_TAKES_ARG(STR)			\
+ (DEFAULT_WORD_SWITCH_TAKES_ARG (STR)			\
+  && strcmp (STR, "Tdata") && strcmp (STR, "Ttext")	\
   && strcmp (STR, "Tbss"))
 
 /* Provide an ASM_SPEC appropriate for svr4.  Here we try to support as
@@ -94,7 +94,7 @@ Boston, MA 02110-1301, USA.
 /* Provide a LIB_SPEC appropriate for svr4.  Here we tack on the default
    standard C library (unless we are building a shared library).  */
 
-#undef        LIB_SPEC
+#undef	LIB_SPEC
 #define LIB_SPEC "%{!shared:%{!symbolic:-lc}}"
 
 /* Provide a LIBGCC_SPEC appropriate for svr4.  We also want to exclude
@@ -135,17 +135,17 @@ Boston, MA 02110-1301, USA.
    When the -G link option is used (-shared and -symbolic) a final link is
    not being done.  */
 
-#undef        LINK_SPEC
+#undef	LINK_SPEC
 #define LINK_SPEC "%{h*} %{v:-V} \
-                   %{b} \
-                   %{static:-dn -Bstatic} \
-                   %{shared:-G -dy -z text} \
-                   %{symbolic:-Bsymbolic -G -dy -z text} \
-                   %{G:-G} \
-                   %{YP,*} \
-                   %{!YP,*:%{p:-Y P,/lib/libp:/usr/lib/libp:/lib:/usr/lib} \
-                    %{!p:-Y P,/lib:/usr/lib}} \
-                   %{Qy:} %{!Qn:-Qy}"
+		   %{b} \
+		   %{static:-dn -Bstatic} \
+		   %{shared:-G -dy -z text} \
+		   %{symbolic:-Bsymbolic -G -dy -z text} \
+		   %{G:-G} \
+		   %{YP,*} \
+		   %{!YP,*:%{p:-Y P,/lib/libp:/usr/lib/libp:/lib:/usr/lib} \
+		    %{!p:-Y P,/lib:/usr/lib}} \
+		   %{Qy:} %{!Qn:-Qy}"
 
 /* Gcc automatically adds in one of the files /lib/values-Xc.o
    or /lib/values-Xa.o, for each final link step (depending upon the other
@@ -158,14 +158,14 @@ Boston, MA 02110-1301, USA.
    ANSI conforming manner or not.
 */
 
-#undef        STARTFILE_SPEC
+#undef	STARTFILE_SPEC
 #define STARTFILE_SPEC "%{!shared: \
-                         %{!symbolic: \
-                          %{pg:gcrt1.o%s}%{!pg:%{p:mcrt1.o%s}%{!p:crt1.o%s}}}}\
-                        %{pg:gcrti.o%s}%{!pg:crti.o%s} \
-                        %{ansi:values-Xc.o%s} \
-                        %{!ansi:values-Xa.o%s} \
-                         crtbegin.o%s"
+			 %{!symbolic: \
+			  %{pg:gcrt1.o%s}%{!pg:%{p:mcrt1.o%s}%{!p:crt1.o%s}}}}\
+			%{pg:gcrti.o%s}%{!pg:crti.o%s} \
+			%{ansi:values-Xc.o%s} \
+			%{!ansi:values-Xa.o%s} \
+ 			crtbegin.o%s"
 
 /* Don't use bcopy, which doesn't handle overlaps before DYNIX/ptx 4.6.  */
 
@@ -214,10 +214,10 @@ Boston, MA 02110-1301, USA.
    ignore the ALIGN parameter.  */
 
 #undef ASM_OUTPUT_ALIGNED_COMMON
-#define ASM_OUTPUT_ALIGNED_COMMON(FILE, NAME, SIZE, ALIGN)                \
-do {                                                                        \
-  fprintf ((FILE), "%s", COMMON_ASM_OP);                                \
-  assemble_name ((FILE), (NAME));                                        \
+#define ASM_OUTPUT_ALIGNED_COMMON(FILE, NAME, SIZE, ALIGN)		\
+do {									\
+  fprintf ((FILE), "%s", COMMON_ASM_OP);				\
+  assemble_name ((FILE), (NAME));					\
   fprintf ((FILE), ",%lu\n", (unsigned long)(SIZE)); \
 } while (0)
 

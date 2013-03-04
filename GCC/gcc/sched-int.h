@@ -343,15 +343,15 @@ extern regset *glat_start, *glat_end;
 
 /* Accessor macros for h_i_d.  There are more in haifa-sched.c and
    sched-rgn.c.  */
-#define INSN_DEPEND(INSN)        (h_i_d[INSN_UID (INSN)].depend)
+#define INSN_DEPEND(INSN)	(h_i_d[INSN_UID (INSN)].depend)
 #define RESOLVED_DEPS(INSN)     (h_i_d[INSN_UID (INSN)].resolved_deps)
-#define INSN_LUID(INSN)                (h_i_d[INSN_UID (INSN)].luid)
-#define CANT_MOVE(insn)                (h_i_d[INSN_UID (insn)].cant_move)
-#define INSN_DEP_COUNT(INSN)        (h_i_d[INSN_UID (INSN)].dep_count)
-#define INSN_PRIORITY(INSN)        (h_i_d[INSN_UID (INSN)].priority)
+#define INSN_LUID(INSN)		(h_i_d[INSN_UID (INSN)].luid)
+#define CANT_MOVE(insn)		(h_i_d[INSN_UID (insn)].cant_move)
+#define INSN_DEP_COUNT(INSN)	(h_i_d[INSN_UID (INSN)].dep_count)
+#define INSN_PRIORITY(INSN)	(h_i_d[INSN_UID (INSN)].priority)
 #define INSN_PRIORITY_KNOWN(INSN) (h_i_d[INSN_UID (INSN)].priority_known)
-#define INSN_COST(INSN)                (h_i_d[INSN_UID (INSN)].cost)
-#define INSN_REG_WEIGHT(INSN)        (h_i_d[INSN_UID (INSN)].reg_weight)
+#define INSN_COST(INSN)		(h_i_d[INSN_UID (INSN)].cost)
+#define INSN_REG_WEIGHT(INSN)	(h_i_d[INSN_UID (INSN)].reg_weight)
 #define HAS_INTERNAL_DEP(INSN)  (h_i_d[INSN_UID (INSN)].has_internal_dep)
 #define TODO_SPEC(INSN)         (h_i_d[INSN_UID (INSN)].todo_spec)
 #define DONE_SPEC(INSN)         (h_i_d[INSN_UID (INSN)].done_spec)
@@ -519,8 +519,8 @@ enum SPEC_SCHED_FLAGS {
   PREFER_NON_CONTROL_SPEC = PREFER_NON_DATA_SPEC << 1
 };
 
-#define NOTE_NOT_BB_P(NOTE) (NOTE_P (NOTE) && (NOTE_LINE_NUMBER (NOTE)        \
-                                               != NOTE_INSN_BASIC_BLOCK))
+#define NOTE_NOT_BB_P(NOTE) (NOTE_P (NOTE) && (NOTE_LINE_NUMBER (NOTE)	\
+					       != NOTE_INSN_BASIC_BLOCK))
 
 extern FILE *sched_dump;
 extern int sched_verbose;
@@ -621,7 +621,7 @@ extern void init_dependency_caches (int);
 extern void free_dependency_caches (void);
 extern void extend_dependency_caches (int, bool);
 extern enum DEPS_ADJUST_RESULT add_or_update_back_dep (rtx, rtx, 
-                                                       enum reg_note, ds_t);
+						       enum reg_note, ds_t);
 extern void add_or_update_back_forw_dep (rtx, rtx, enum reg_note, ds_t);
 extern void add_back_forw_dep (rtx, rtx, enum reg_note, ds_t);
 extern void delete_back_forw_dep (rtx, rtx);

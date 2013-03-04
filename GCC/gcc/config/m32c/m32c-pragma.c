@@ -56,34 +56,34 @@ m32c_pragma_memregs (cpp_reader * reader ATTRIBUTE_UNUSED)
   if (type == CPP_NUMBER)
     {
       if (host_integerp (val, 1))
-        {
-          i = tree_low_cst (val, 1);
+	{
+	  i = tree_low_cst (val, 1);
 
-          type = pragma_lex (&val);
-          if (type != CPP_EOF)
-            warning (0, "junk at end of #pragma GCC memregs [0..16]");
+	  type = pragma_lex (&val);
+	  if (type != CPP_EOF)
+	    warning (0, "junk at end of #pragma GCC memregs [0..16]");
 
-          if (0 <= i && i <= 16)
-            {
-              if (!ok_to_change_target_memregs)
-                {
-                  warning (0,
-                           "#pragma GCC memregs must precede any function decls");
-                  return;
-                }
-              new_number[0] = (i / 10) + '0';
-              new_number[1] = (i % 10) + '0';
-              new_number[2] = 0;
-              target_memregs = new_number;
-              m32c_conditional_register_usage ();
-            }
-          else
-            {
-              warning (0, "#pragma GCC memregs takes a number [0..16]");
-            }
+	  if (0 <= i && i <= 16)
+	    {
+	      if (!ok_to_change_target_memregs)
+		{
+		  warning (0,
+			   "#pragma GCC memregs must precede any function decls");
+		  return;
+		}
+	      new_number[0] = (i / 10) + '0';
+	      new_number[1] = (i % 10) + '0';
+	      new_number[2] = 0;
+	      target_memregs = new_number;
+	      m32c_conditional_register_usage ();
+	    }
+	  else
+	    {
+	      warning (0, "#pragma GCC memregs takes a number [0..16]");
+	    }
 
-          return;
-        }
+	  return;
+	}
     }
 
   error ("#pragma GCC memregs takes a number [0..16]");

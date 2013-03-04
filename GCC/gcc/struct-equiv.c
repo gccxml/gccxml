@@ -137,65 +137,65 @@ merge_memattrs (rtx x, rtx y)
   if (code == MEM && MEM_ATTRS (x) != MEM_ATTRS (y))
     {
       if (! MEM_ATTRS (x))
-        MEM_ATTRS (y) = 0;
+	MEM_ATTRS (y) = 0;
       else if (! MEM_ATTRS (y))
-        MEM_ATTRS (x) = 0;
+	MEM_ATTRS (x) = 0;
       else
-        {
-          rtx mem_size;
+	{
+	  rtx mem_size;
 
-          if (MEM_ALIAS_SET (x) != MEM_ALIAS_SET (y))
-            {
-              set_mem_alias_set (x, 0);
-              set_mem_alias_set (y, 0);
-            }
+	  if (MEM_ALIAS_SET (x) != MEM_ALIAS_SET (y))
+	    {
+	      set_mem_alias_set (x, 0);
+	      set_mem_alias_set (y, 0);
+	    }
 
-          if (! mem_expr_equal_p (MEM_EXPR (x), MEM_EXPR (y)))
-            {
-              set_mem_expr (x, 0);
-              set_mem_expr (y, 0);
-              set_mem_offset (x, 0);
-              set_mem_offset (y, 0);
-            }
-          else if (MEM_OFFSET (x) != MEM_OFFSET (y))
-            {
-              set_mem_offset (x, 0);
-              set_mem_offset (y, 0);
-            }
+	  if (! mem_expr_equal_p (MEM_EXPR (x), MEM_EXPR (y)))
+	    {
+	      set_mem_expr (x, 0);
+	      set_mem_expr (y, 0);
+	      set_mem_offset (x, 0);
+	      set_mem_offset (y, 0);
+	    }
+	  else if (MEM_OFFSET (x) != MEM_OFFSET (y))
+	    {
+	      set_mem_offset (x, 0);
+	      set_mem_offset (y, 0);
+	    }
 
-          if (!MEM_SIZE (x))
-            mem_size = NULL_RTX;
-          else if (!MEM_SIZE (y))
-            mem_size = NULL_RTX;
-          else
-            mem_size = GEN_INT (MAX (INTVAL (MEM_SIZE (x)),
-                                     INTVAL (MEM_SIZE (y))));
-          set_mem_size (x, mem_size);
-          set_mem_size (y, mem_size);
+	  if (!MEM_SIZE (x))
+	    mem_size = NULL_RTX;
+	  else if (!MEM_SIZE (y))
+	    mem_size = NULL_RTX;
+	  else
+	    mem_size = GEN_INT (MAX (INTVAL (MEM_SIZE (x)),
+				     INTVAL (MEM_SIZE (y))));
+	  set_mem_size (x, mem_size);
+	  set_mem_size (y, mem_size);
 
-          set_mem_align (x, MIN (MEM_ALIGN (x), MEM_ALIGN (y)));
-          set_mem_align (y, MEM_ALIGN (x));
-        }
+	  set_mem_align (x, MIN (MEM_ALIGN (x), MEM_ALIGN (y)));
+	  set_mem_align (y, MEM_ALIGN (x));
+	}
     }
 
   fmt = GET_RTX_FORMAT (code);
   for (i = GET_RTX_LENGTH (code) - 1; i >= 0; i--)
     {
       switch (fmt[i])
-        {
-        case 'E':
-          /* Two vectors must have the same length.  */
-          if (XVECLEN (x, i) != XVECLEN (y, i))
-            return;
+	{
+	case 'E':
+	  /* Two vectors must have the same length.  */
+	  if (XVECLEN (x, i) != XVECLEN (y, i))
+	    return;
 
-          for (j = 0; j < XVECLEN (x, i); j++)
-            merge_memattrs (XVECEXP (x, i, j), XVECEXP (y, i, j));
+	  for (j = 0; j < XVECLEN (x, i); j++)
+	    merge_memattrs (XVECEXP (x, i, j), XVECEXP (y, i, j));
 
-          break;
+	  break;
 
-        case 'e':
-          merge_memattrs (XEXP (x, i), XEXP (y, i));
-        }
+	case 'e':
+	  merge_memattrs (XEXP (x, i), XEXP (y, i));
+	}
     }
   return;
 }
@@ -220,11 +220,11 @@ assign_reg_reg_set (regset set, rtx reg, int value)
   for (old = 0, i = nregs; --i >= 0; regno++)
     {
       if ((value != 0) == REGNO_REG_SET_P (set, regno))
-        continue;
+	continue;
       if (value)
-        old++, SET_REGNO_REG_SET (set, regno);
+	old++, SET_REGNO_REG_SET (set, regno);
       else
-        old--, CLEAR_REGNO_REG_SET (set, regno);
+	old--, CLEAR_REGNO_REG_SET (set, regno);
     }
   return old;
 }
@@ -233,7 +233,7 @@ assign_reg_reg_set (regset set, rtx reg, int value)
    in *P.  */
 static inline void
 struct_equiv_make_checkpoint (struct struct_equiv_checkpoint *p,
-                              struct equiv_info *info)
+			      struct equiv_info *info)
 {
   *p = info->cur;
 }
@@ -246,7 +246,7 @@ struct_equiv_make_checkpoint (struct struct_equiv_checkpoint *p,
    changes.  */
 static void
 struct_equiv_improve_checkpoint (struct struct_equiv_checkpoint *p,
-                                 struct equiv_info *info)
+				 struct equiv_info *info)
 {
 #ifdef HAVE_cc0
   if (reg_mentioned_p (cc0_rtx, info->cur.x_start)
@@ -257,18 +257,18 @@ struct_equiv_improve_checkpoint (struct struct_equiv_checkpoint *p,
     return;
   if (info->input_cost >= 0
       ? (COSTS_N_INSNS(info->cur.ninsns - p->ninsns)
-         > info->input_cost * (info->cur.input_count - p->input_count))
+	 > info->input_cost * (info->cur.input_count - p->input_count))
       : info->cur.ninsns > p->ninsns && !info->cur.input_count)
     {
       if (info->check_input_conflict && ! resolve_input_conflict (info))
-        return;
+	return;
       /* We have a profitable set of changes.  If this is the final pass,
-         commit them now.  Otherwise, we don't know yet if we can make any
-         change, so put the old code back for now.  */
+	 commit them now.  Otherwise, we don't know yet if we can make any
+	 change, so put the old code back for now.  */
       if (info->mode & STRUCT_EQUIV_FINAL)
-        confirm_change_group ();
+	confirm_change_group ();
       else
-        cancel_changes (0);
+	cancel_changes (0);
       struct_equiv_make_checkpoint (p, info);
     }
 }
@@ -277,7 +277,7 @@ struct_equiv_improve_checkpoint (struct struct_equiv_checkpoint *p,
    from P.  */
 static void
 struct_equiv_restore_checkpoint (struct struct_equiv_checkpoint *p,
-                                 struct equiv_info *info)
+				 struct equiv_info *info)
 {
   info->cur.ninsns = p->ninsns;
   info->cur.x_start = p->x_start;
@@ -289,14 +289,14 @@ struct_equiv_restore_checkpoint (struct struct_equiv_checkpoint *p,
       info->cur.local_count--;
       info->cur.version--;
       if (REGNO_REG_SET_P (info->x_local_live,
-                           REGNO (info->x_local[info->cur.local_count])))
-        {
-          assign_reg_reg_set (info->x_local_live,
-                              info->x_local[info->cur.local_count], 0);
-          assign_reg_reg_set (info->y_local_live,
-                              info->y_local[info->cur.local_count], 0);
-          info->cur.version--;
-        }
+			   REGNO (info->x_local[info->cur.local_count])))
+	{
+	  assign_reg_reg_set (info->x_local_live,
+			      info->x_local[info->cur.local_count], 0);
+	  assign_reg_reg_set (info->y_local_live,
+			      info->y_local[info->cur.local_count], 0);
+	  info->cur.version--;
+	}
     }
   if (info->cur.version != p->version)
     info->need_rerun = true;
@@ -313,9 +313,9 @@ note_local_live (struct equiv_info *info, rtx x, rtx y, int rvalue)
   unsigned x_regno = REGNO (x);
   unsigned y_regno = REGNO (y);
   int x_nominal_nregs = (x_regno >= FIRST_PSEUDO_REGISTER
-                         ? 1 : hard_regno_nregs[x_regno][GET_MODE (x)]);
+			 ? 1 : hard_regno_nregs[x_regno][GET_MODE (x)]);
   int y_nominal_nregs = (y_regno >= FIRST_PSEUDO_REGISTER
-                         ? 1 : hard_regno_nregs[y_regno][GET_MODE (y)]);
+			 ? 1 : hard_regno_nregs[y_regno][GET_MODE (y)]);
   int x_change = assign_reg_reg_set (info->x_local_live, x, rvalue);
   int y_change = assign_reg_reg_set (info->y_local_live, y, rvalue);
 
@@ -324,20 +324,20 @@ note_local_live (struct equiv_info *info, rtx x, rtx y, int rvalue)
   if (y_change)
     {
       if (reload_completed)
-        {
-          unsigned x_regno ATTRIBUTE_UNUSED = REGNO (x);
-          unsigned y_regno = REGNO (y);
-          enum machine_mode x_mode = GET_MODE (x);
+	{
+	  unsigned x_regno ATTRIBUTE_UNUSED = REGNO (x);
+	  unsigned y_regno = REGNO (y);
+	  enum machine_mode x_mode = GET_MODE (x);
 
-          if (secondary_reload_class (0, REGNO_REG_CLASS (y_regno), x_mode, x)
-              != NO_REGS
+	  if (secondary_reload_class (0, REGNO_REG_CLASS (y_regno), x_mode, x)
+	      != NO_REGS
 #ifdef SECONDARY_MEMORY_NEEDED
-              || SECONDARY_MEMORY_NEEDED (REGNO_REG_CLASS (y_regno),
-                                          REGNO_REG_CLASS (x_regno), x_mode)
+	      || SECONDARY_MEMORY_NEEDED (REGNO_REG_CLASS (y_regno),
+					  REGNO_REG_CLASS (x_regno), x_mode)
 #endif
-              )
-          y_change *= IMPOSSIBLE_MOVE_FACTOR;
-        }
+	      )
+	  y_change *= IMPOSSIBLE_MOVE_FACTOR;
+	}
       info->cur.input_count += y_change;
       info->cur.version++;
     }
@@ -377,206 +377,206 @@ rtx_equiv_p (rtx *xp, rtx y, int rvalue, struct equiv_info *info)
     {
     case REG:
       {
-        unsigned x_regno = REGNO (x);
-        unsigned y_regno = REGNO (y);
-        int x_common_live, y_common_live;
+	unsigned x_regno = REGNO (x);
+	unsigned y_regno = REGNO (y);
+	int x_common_live, y_common_live;
 
-        if (reload_completed
-            && (x_regno >= FIRST_PSEUDO_REGISTER
-                || y_regno >= FIRST_PSEUDO_REGISTER))
-          {
-            /* We should only see this in REG_NOTEs.  */
-            gcc_assert (!info->live_update);
-            /* Returning false will cause us to remove the notes.  */
-            return false;
-          }
+	if (reload_completed
+	    && (x_regno >= FIRST_PSEUDO_REGISTER
+		|| y_regno >= FIRST_PSEUDO_REGISTER))
+	  {
+	    /* We should only see this in REG_NOTEs.  */
+	    gcc_assert (!info->live_update);
+	    /* Returning false will cause us to remove the notes.  */
+	    return false;
+	  }
 #ifdef STACK_REGS
-        /* After reg-stack, can only accept literal matches of stack regs.  */
-        if (info->mode & CLEANUP_POST_REGSTACK
-            && (IN_RANGE (x_regno, FIRST_STACK_REG, LAST_STACK_REG)
-                || IN_RANGE (y_regno, FIRST_STACK_REG, LAST_STACK_REG)))
-          return x_regno == y_regno;
+	/* After reg-stack, can only accept literal matches of stack regs.  */
+	if (info->mode & CLEANUP_POST_REGSTACK
+	    && (IN_RANGE (x_regno, FIRST_STACK_REG, LAST_STACK_REG)
+		|| IN_RANGE (y_regno, FIRST_STACK_REG, LAST_STACK_REG)))
+	  return x_regno == y_regno;
 #endif
 
-        /* If the register is a locally live one in one block, the
-           corresponding one must be locally live in the other, too, and
-           match of identical regnos doesn't apply.  */
-        if (REGNO_REG_SET_P (info->x_local_live, x_regno))
-          {
-            if (!REGNO_REG_SET_P (info->y_local_live, y_regno))
-              return false;
-          }
-        else if (REGNO_REG_SET_P (info->y_local_live, y_regno))
-          return false;
-        else if (x_regno == y_regno)
-          {
-            if (!rvalue && info->cur.input_valid
-                && (reg_overlap_mentioned_p (x, info->x_input)
-                    || reg_overlap_mentioned_p (x, info->y_input)))
-              return false;
+	/* If the register is a locally live one in one block, the
+	   corresponding one must be locally live in the other, too, and
+	   match of identical regnos doesn't apply.  */
+	if (REGNO_REG_SET_P (info->x_local_live, x_regno))
+	  {
+	    if (!REGNO_REG_SET_P (info->y_local_live, y_regno))
+	      return false;
+	  }
+	else if (REGNO_REG_SET_P (info->y_local_live, y_regno))
+	  return false;
+	else if (x_regno == y_regno)
+	  {
+	    if (!rvalue && info->cur.input_valid
+		&& (reg_overlap_mentioned_p (x, info->x_input)
+		    || reg_overlap_mentioned_p (x, info->y_input)))
+	      return false;
 
-            /* Update liveness information.  */
-            if (info->live_update
-                && assign_reg_reg_set (info->common_live, x, rvalue))
-              info->cur.version++;
+	    /* Update liveness information.  */
+	    if (info->live_update
+		&& assign_reg_reg_set (info->common_live, x, rvalue))
+	      info->cur.version++;
 
-            return true;
-          }
+	    return true;
+	  }
 
-        x_common_live = REGNO_REG_SET_P (info->common_live, x_regno);
-        y_common_live = REGNO_REG_SET_P (info->common_live, y_regno);
-        if (x_common_live != y_common_live)
-          return false;
-        else if (x_common_live)
-          {
-            if (! rvalue || info->input_cost < 0 || no_new_pseudos)
-              return false;
-            /* If info->live_update is not set, we are processing notes.
-               We then allow a match with x_input / y_input found in a
-               previous pass.  */
-            if (info->live_update && !info->cur.input_valid)
-              {
-                info->cur.input_valid = true;
-                info->x_input = x;
-                info->y_input = y;
-                info->cur.input_count += optimize_size ? 2 : 1;
-                if (info->input_reg
-                    && GET_MODE (info->input_reg) != GET_MODE (info->x_input))
-                  info->input_reg = NULL_RTX;
-                if (!info->input_reg)
-                  info->input_reg = gen_reg_rtx (GET_MODE (info->x_input));
-              }
-            else if ((info->live_update
-                      ? ! info->cur.input_valid : ! info->x_input)
-                     || ! rtx_equal_p (x, info->x_input)
-                     || ! rtx_equal_p (y, info->y_input))
-              return false;
-            validate_change (info->cur.x_start, xp, info->input_reg, 1);
-          }
-        else
-          {
-            int x_nregs = (x_regno >= FIRST_PSEUDO_REGISTER
-                           ? 1 : hard_regno_nregs[x_regno][GET_MODE (x)]);
-            int y_nregs = (y_regno >= FIRST_PSEUDO_REGISTER
-                           ? 1 : hard_regno_nregs[y_regno][GET_MODE (y)]);
-            int size = GET_MODE_SIZE (GET_MODE (x));
-            enum machine_mode x_mode = GET_MODE (x);
-            unsigned x_regno_i, y_regno_i;
-            int x_nregs_i, y_nregs_i, size_i;
-            int local_count = info->cur.local_count;
+	x_common_live = REGNO_REG_SET_P (info->common_live, x_regno);
+	y_common_live = REGNO_REG_SET_P (info->common_live, y_regno);
+	if (x_common_live != y_common_live)
+	  return false;
+	else if (x_common_live)
+	  {
+	    if (! rvalue || info->input_cost < 0 || no_new_pseudos)
+	      return false;
+	    /* If info->live_update is not set, we are processing notes.
+	       We then allow a match with x_input / y_input found in a
+	       previous pass.  */
+	    if (info->live_update && !info->cur.input_valid)
+	      {
+		info->cur.input_valid = true;
+		info->x_input = x;
+		info->y_input = y;
+		info->cur.input_count += optimize_size ? 2 : 1;
+		if (info->input_reg
+		    && GET_MODE (info->input_reg) != GET_MODE (info->x_input))
+		  info->input_reg = NULL_RTX;
+		if (!info->input_reg)
+		  info->input_reg = gen_reg_rtx (GET_MODE (info->x_input));
+	      }
+	    else if ((info->live_update
+		      ? ! info->cur.input_valid : ! info->x_input)
+		     || ! rtx_equal_p (x, info->x_input)
+		     || ! rtx_equal_p (y, info->y_input))
+	      return false;
+	    validate_change (info->cur.x_start, xp, info->input_reg, 1);
+	  }
+	else
+	  {
+	    int x_nregs = (x_regno >= FIRST_PSEUDO_REGISTER
+			   ? 1 : hard_regno_nregs[x_regno][GET_MODE (x)]);
+	    int y_nregs = (y_regno >= FIRST_PSEUDO_REGISTER
+			   ? 1 : hard_regno_nregs[y_regno][GET_MODE (y)]);
+	    int size = GET_MODE_SIZE (GET_MODE (x));
+	    enum machine_mode x_mode = GET_MODE (x);
+	    unsigned x_regno_i, y_regno_i;
+	    int x_nregs_i, y_nregs_i, size_i;
+	    int local_count = info->cur.local_count;
 
-            /* This might be a register local to each block.  See if we have
-               it already registered.  */
-            for (i = local_count - 1; i >= 0; i--)
-              {
-                x_regno_i = REGNO (info->x_local[i]);
-                x_nregs_i = (x_regno_i >= FIRST_PSEUDO_REGISTER
-                             ? 1 : hard_regno_nregs[x_regno_i][GET_MODE (x)]);
-                y_regno_i = REGNO (info->y_local[i]);
-                y_nregs_i = (y_regno_i >= FIRST_PSEUDO_REGISTER
-                             ? 1 : hard_regno_nregs[y_regno_i][GET_MODE (y)]);
-                size_i = GET_MODE_SIZE (GET_MODE (info->x_local[i]));
+	    /* This might be a register local to each block.  See if we have
+	       it already registered.  */
+	    for (i = local_count - 1; i >= 0; i--)
+	      {
+		x_regno_i = REGNO (info->x_local[i]);
+		x_nregs_i = (x_regno_i >= FIRST_PSEUDO_REGISTER
+			     ? 1 : hard_regno_nregs[x_regno_i][GET_MODE (x)]);
+		y_regno_i = REGNO (info->y_local[i]);
+		y_nregs_i = (y_regno_i >= FIRST_PSEUDO_REGISTER
+			     ? 1 : hard_regno_nregs[y_regno_i][GET_MODE (y)]);
+		size_i = GET_MODE_SIZE (GET_MODE (info->x_local[i]));
 
-                /* If we have a new pair of registers that is wider than an
-                   old pair and enclosing it with matching offsets,
-                   remove the old pair.  If we find a matching, wider, old
-                   pair, use the old one.  If the width is the same, use the
-                   old one if the modes match, but the new if they don't.
-                   We don't want to get too fancy with subreg_regno_offset
-                   here, so we just test two straightforward cases each.  */
-                if (info->live_update
-                    && (x_mode != GET_MODE (info->x_local[i])
-                        ? size >= size_i : size > size_i))
-                  {
-                    /* If the new pair is fully enclosing a matching
-                       existing pair, remove the old one.  N.B. because
-                       we are removing one entry here, the check below
-                       if we have space for a new entry will succeed.  */
-                    if ((x_regno <= x_regno_i
-                         && x_regno + x_nregs >= x_regno_i + x_nregs_i
-                         && x_nregs == y_nregs && x_nregs_i == y_nregs_i
-                         && x_regno - x_regno_i == y_regno - y_regno_i)
-                        || (x_regno == x_regno_i && y_regno == y_regno_i
-                            && x_nregs >= x_nregs_i && y_nregs >= y_nregs_i))
-                      {
-                        info->cur.local_count = --local_count;
-                        info->x_local[i] = info->x_local[local_count];
-                        info->y_local[i] = info->y_local[local_count];
-                        continue;
-                      }
-                  }
-                else
-                  {
+		/* If we have a new pair of registers that is wider than an
+		   old pair and enclosing it with matching offsets,
+		   remove the old pair.  If we find a matching, wider, old
+		   pair, use the old one.  If the width is the same, use the
+		   old one if the modes match, but the new if they don't.
+		   We don't want to get too fancy with subreg_regno_offset
+		   here, so we just test two straightforward cases each.  */
+		if (info->live_update
+		    && (x_mode != GET_MODE (info->x_local[i])
+			? size >= size_i : size > size_i))
+		  {
+		    /* If the new pair is fully enclosing a matching
+		       existing pair, remove the old one.  N.B. because
+		       we are removing one entry here, the check below
+		       if we have space for a new entry will succeed.  */
+		    if ((x_regno <= x_regno_i
+			 && x_regno + x_nregs >= x_regno_i + x_nregs_i
+			 && x_nregs == y_nregs && x_nregs_i == y_nregs_i
+			 && x_regno - x_regno_i == y_regno - y_regno_i)
+			|| (x_regno == x_regno_i && y_regno == y_regno_i
+			    && x_nregs >= x_nregs_i && y_nregs >= y_nregs_i))
+		      {
+			info->cur.local_count = --local_count;
+			info->x_local[i] = info->x_local[local_count];
+			info->y_local[i] = info->y_local[local_count];
+			continue;
+		      }
+		  }
+		else
+		  {
 
-                    /* If the new pair is fully enclosed within a matching
-                       existing pair, succeed.  */
-                    if (x_regno >= x_regno_i
-                        && x_regno + x_nregs <= x_regno_i + x_nregs_i
-                        && x_nregs == y_nregs && x_nregs_i == y_nregs_i
-                        && x_regno - x_regno_i == y_regno - y_regno_i)
-                      break;
-                    if (x_regno == x_regno_i && y_regno == y_regno_i
-                        && x_nregs <= x_nregs_i && y_nregs <= y_nregs_i)
-                      break;
-                }
+		    /* If the new pair is fully enclosed within a matching
+		       existing pair, succeed.  */
+		    if (x_regno >= x_regno_i
+			&& x_regno + x_nregs <= x_regno_i + x_nregs_i
+			&& x_nregs == y_nregs && x_nregs_i == y_nregs_i
+			&& x_regno - x_regno_i == y_regno - y_regno_i)
+		      break;
+		    if (x_regno == x_regno_i && y_regno == y_regno_i
+			&& x_nregs <= x_nregs_i && y_nregs <= y_nregs_i)
+		      break;
+		}
 
-                /* Any other overlap causes a match failure.  */
-                if (x_regno + x_nregs > x_regno_i
-                    && x_regno_i + x_nregs_i > x_regno)
-                  return false;
-                if (y_regno + y_nregs > y_regno_i
-                    && y_regno_i + y_nregs_i > y_regno)
-                  return false;
-              }
-            if (i < 0)
-              {
-                /* Not found.  Create a new entry if possible.  */
-                if (!info->live_update
-                    || info->cur.local_count >= STRUCT_EQUIV_MAX_LOCAL)
-                  return false;
-                info->x_local[info->cur.local_count] = x;
-                info->y_local[info->cur.local_count] = y;
-                info->cur.local_count++;
-                info->cur.version++;
-              }
-            note_local_live (info, x, y, rvalue);
-          }
-        return true;
+		/* Any other overlap causes a match failure.  */
+		if (x_regno + x_nregs > x_regno_i
+		    && x_regno_i + x_nregs_i > x_regno)
+		  return false;
+		if (y_regno + y_nregs > y_regno_i
+		    && y_regno_i + y_nregs_i > y_regno)
+		  return false;
+	      }
+	    if (i < 0)
+	      {
+		/* Not found.  Create a new entry if possible.  */
+		if (!info->live_update
+		    || info->cur.local_count >= STRUCT_EQUIV_MAX_LOCAL)
+		  return false;
+		info->x_local[info->cur.local_count] = x;
+		info->y_local[info->cur.local_count] = y;
+		info->cur.local_count++;
+		info->cur.version++;
+	      }
+	    note_local_live (info, x, y, rvalue);
+	  }
+	return true;
       }
     case SET:
       gcc_assert (rvalue < 0);
       /* Ignore the destinations role as a destination.  Still, we have
-         to consider input registers embedded in the addresses of a MEM.
-         N.B., we process the rvalue aspect of STRICT_LOW_PART /
-         ZERO_EXTEND / SIGN_EXTEND along with their lvalue aspect.  */
+	 to consider input registers embedded in the addresses of a MEM.
+	 N.B., we process the rvalue aspect of STRICT_LOW_PART /
+	 ZERO_EXTEND / SIGN_EXTEND along with their lvalue aspect.  */
       if(!set_dest_addr_equiv_p (SET_DEST (x), SET_DEST (y), info))
-        return false;
+	return false;
       /* Process source.  */
       return rtx_equiv_p (&SET_SRC (x), SET_SRC (y), 1, info);
     case PRE_MODIFY:
       /* Process destination.  */
       if (!rtx_equiv_p (&XEXP (x, 0), XEXP (y, 0), 0, info))
-        return false;
+	return false;
       /* Process source.  */
       return rtx_equiv_p (&XEXP (x, 1), XEXP (y, 1), 1, info);
     case POST_MODIFY:
       {
-        rtx x_dest0, x_dest1;
+	rtx x_dest0, x_dest1;
 
-        /* Process destination.  */
-        x_dest0 = XEXP (x, 0);
-        gcc_assert (REG_P (x_dest0));
-        if (!rtx_equiv_p (&XEXP (x, 0), XEXP (y, 0), 0, info))
-          return false;
-        x_dest1 = XEXP (x, 0);
-        /* validate_change might have changed the destination.  Put it back
-           so that we can do a proper match for its role a an input.  */
-        XEXP (x, 0) = x_dest0;
-        if (!rtx_equiv_p (&XEXP (x, 0), XEXP (y, 0), 1, info))
-          return false;
-        gcc_assert (x_dest1 == XEXP (x, 0));
-        /* Process source.  */
-        return rtx_equiv_p (&XEXP (x, 1), XEXP (y, 1), 1, info);
+	/* Process destination.  */
+	x_dest0 = XEXP (x, 0);
+	gcc_assert (REG_P (x_dest0));
+	if (!rtx_equiv_p (&XEXP (x, 0), XEXP (y, 0), 0, info))
+	  return false;
+	x_dest1 = XEXP (x, 0);
+	/* validate_change might have changed the destination.  Put it back
+	   so that we can do a proper match for its role a an input.  */
+	XEXP (x, 0) = x_dest0;
+	if (!rtx_equiv_p (&XEXP (x, 0), XEXP (y, 0), 1, info))
+	  return false;
+	gcc_assert (x_dest1 == XEXP (x, 0));
+	/* Process source.  */
+	return rtx_equiv_p (&XEXP (x, 1), XEXP (y, 1), 1, info);
       }
     case CLOBBER:
       gcc_assert (rvalue < 0);
@@ -589,48 +589,48 @@ rtx_equiv_p (rtx *xp, rtx y, int rvalue, struct equiv_info *info)
     case ZERO_EXTEND:
     case SIGN_EXTEND:
       {
-        rtx x_inner, y_inner;
-        enum rtx_code code;
-        int change;
+	rtx x_inner, y_inner;
+	enum rtx_code code;
+	int change;
 
-        if (rvalue)
-          break;
-        x_inner = XEXP (x, 0);
-        y_inner = XEXP (y, 0);
-        if (GET_MODE (x_inner) != GET_MODE (y_inner))
-          return false;
-        code = GET_CODE (x_inner);
-        if (code != GET_CODE (y_inner))
-          return false;
-        /* The address of a MEM is an input that will be processed during
-           rvalue == -1 processing.  */
-        if (code == SUBREG)
-          {
-            if (SUBREG_BYTE (x_inner) != SUBREG_BYTE (y_inner))
-              return false;
-            x = x_inner;
-            x_inner = SUBREG_REG (x_inner);
-            y_inner = SUBREG_REG (y_inner);
-            if (GET_MODE (x_inner) != GET_MODE (y_inner))
-              return false;
-            code = GET_CODE (x_inner);
-            if (code != GET_CODE (y_inner))
-              return false;
-          }
-        if (code == MEM)
-          return true;
-        gcc_assert (code == REG);
-        if (! rtx_equiv_p (&XEXP (x, 0), y_inner, rvalue, info))
-          return false;
-        if (REGNO (x_inner) == REGNO (y_inner))
-          {
-            change = assign_reg_reg_set (info->common_live, x_inner, 1);
-            info->cur.version++;
-          }
-        else
-          change = note_local_live (info, x_inner, y_inner, 1);
-        gcc_assert (change);
-        return true;
+	if (rvalue)
+	  break;
+	x_inner = XEXP (x, 0);
+	y_inner = XEXP (y, 0);
+	if (GET_MODE (x_inner) != GET_MODE (y_inner))
+	  return false;
+	code = GET_CODE (x_inner);
+	if (code != GET_CODE (y_inner))
+	  return false;
+	/* The address of a MEM is an input that will be processed during
+	   rvalue == -1 processing.  */
+	if (code == SUBREG)
+	  {
+	    if (SUBREG_BYTE (x_inner) != SUBREG_BYTE (y_inner))
+	      return false;
+	    x = x_inner;
+	    x_inner = SUBREG_REG (x_inner);
+	    y_inner = SUBREG_REG (y_inner);
+	    if (GET_MODE (x_inner) != GET_MODE (y_inner))
+	      return false;
+	    code = GET_CODE (x_inner);
+	    if (code != GET_CODE (y_inner))
+	      return false;
+	  }
+	if (code == MEM)
+	  return true;
+	gcc_assert (code == REG);
+	if (! rtx_equiv_p (&XEXP (x, 0), y_inner, rvalue, info))
+	  return false;
+	if (REGNO (x_inner) == REGNO (y_inner))
+	  {
+	    change = assign_reg_reg_set (info->common_live, x_inner, 1);
+	    info->cur.version++;
+	  }
+	else
+	  change = note_local_live (info, x_inner, y_inner, 1);
+	gcc_assert (change);
+	return true;
       }
     /* The AUTO_INC / POST_MODIFY / PRE_MODIFY sets are modelled to take
        place during input processing, however, that is benign, since they
@@ -639,25 +639,25 @@ rtx_equiv_p (rtx *xp, rtx y, int rvalue, struct equiv_info *info)
       return !rvalue || rtx_equiv_p (&XEXP (x, 0), XEXP (y, 0), rvalue, info);
     case POST_INC: case POST_DEC: case PRE_INC: case PRE_DEC:
       return (rtx_equiv_p (&XEXP (x, 0), XEXP (y, 0), 0, info)
-              && rtx_equiv_p (&XEXP (x, 0), XEXP (y, 0), 1, info));
+	      && rtx_equiv_p (&XEXP (x, 0), XEXP (y, 0), 1, info));
     case PARALLEL:
       /* If this is a top-level PATTERN PARALLEL, we expect the caller to 
-         have handled the SET_DESTs.  A complex or vector PARALLEL can be
-         identified by having a mode.  */
+	 have handled the SET_DESTs.  A complex or vector PARALLEL can be
+	 identified by having a mode.  */
       gcc_assert (rvalue < 0 || GET_MODE (x) != VOIDmode);
       break;
     case LABEL_REF:
       /* Check special tablejump match case.  */
       if (XEXP (y, 0) == info->y_label)
-        return (XEXP (x, 0) == info->x_label);
+	return (XEXP (x, 0) == info->x_label);
       /* We can't assume nonlocal labels have their following insns yet.  */
       if (LABEL_REF_NONLOCAL_P (x) || LABEL_REF_NONLOCAL_P (y))
-        return XEXP (x, 0) == XEXP (y, 0);
+	return XEXP (x, 0) == XEXP (y, 0);
 
       /* Two label-refs are equivalent if they point at labels
-         in the same position in the instruction stream.  */
+	 in the same position in the instruction stream.  */
       return (next_real_insn (XEXP (x, 0))
-              == next_real_insn (XEXP (y, 0)));
+	      == next_real_insn (XEXP (y, 0)));
     case SYMBOL_REF:
       return XSTR (x, 0) == XSTR (y, 0);
     /* Some rtl is guaranteed to be shared, or unique;  If we didn't match
@@ -673,9 +673,9 @@ rtx_equiv_p (rtx *xp, rtx y, int rvalue, struct equiv_info *info)
      order.  */
   if (targetm.commutative_p (x, UNKNOWN))
     return ((rtx_equiv_p (&XEXP (x, 0), XEXP (y, 0), rvalue, info)
-             && rtx_equiv_p (&XEXP (x, 1), XEXP (y, 1), rvalue, info))
-            || (rtx_equiv_p (&XEXP (x, 0), XEXP (y, 1), rvalue, info)
-                && rtx_equiv_p (&XEXP (x, 1), XEXP (y, 0), rvalue, info)));
+	     && rtx_equiv_p (&XEXP (x, 1), XEXP (y, 1), rvalue, info))
+	    || (rtx_equiv_p (&XEXP (x, 0), XEXP (y, 1), rvalue, info)
+		&& rtx_equiv_p (&XEXP (x, 1), XEXP (y, 0), rvalue, info)));
 
   /* Process subexpressions - this is similar to rtx_equal_p.  */
   length = GET_RTX_LENGTH (code);
@@ -684,54 +684,54 @@ rtx_equiv_p (rtx *xp, rtx y, int rvalue, struct equiv_info *info)
   for (i = 0; i < length; ++i)
     {
       switch (format[i])
-        {
-        case 'w':
-          if (XWINT (x, i) != XWINT (y, i))
-            return false;
-          break;
-        case 'n':
-        case 'i':
-          if (XINT (x, i) != XINT (y, i))
-            return false;
-          break;
-        case 'V':
-        case 'E':
-          if (XVECLEN (x, i) != XVECLEN (y, i))
-            return false;
-          if (XVEC (x, i) != 0)
-            {
-              int j;
-              for (j = 0; j < XVECLEN (x, i); ++j)
-                {
-                  if (! rtx_equiv_p (&XVECEXP (x, i, j), XVECEXP (y, i, j),
-                                     rvalue, info))
-                    return false;
-                }
-            }
-          break;
-        case 'e':
-          if (! rtx_equiv_p (&XEXP (x, i), XEXP (y, i), rvalue, info))
-            return false;
-          break;
-        case 'S':
-        case 's':
-          if ((XSTR (x, i) || XSTR (y, i))
-              && (! XSTR (x, i) || ! XSTR (y, i)
-                  || strcmp (XSTR (x, i), XSTR (y, i))))
-            return false;
-          break;
-        case 'u':
-          /* These are just backpointers, so they don't matter.  */
-          break;
-        case '0':
-        case 't':
-          break;
-          /* It is believed that rtx's at this level will never
-             contain anything but integers and other rtx's,
-             except for within LABEL_REFs and SYMBOL_REFs.  */
-        default:
-          gcc_unreachable ();
-        }
+	{
+	case 'w':
+	  if (XWINT (x, i) != XWINT (y, i))
+	    return false;
+	  break;
+	case 'n':
+	case 'i':
+	  if (XINT (x, i) != XINT (y, i))
+	    return false;
+	  break;
+	case 'V':
+	case 'E':
+	  if (XVECLEN (x, i) != XVECLEN (y, i))
+	    return false;
+	  if (XVEC (x, i) != 0)
+	    {
+	      int j;
+	      for (j = 0; j < XVECLEN (x, i); ++j)
+		{
+		  if (! rtx_equiv_p (&XVECEXP (x, i, j), XVECEXP (y, i, j),
+				     rvalue, info))
+		    return false;
+		}
+	    }
+	  break;
+	case 'e':
+	  if (! rtx_equiv_p (&XEXP (x, i), XEXP (y, i), rvalue, info))
+	    return false;
+	  break;
+	case 'S':
+	case 's':
+	  if ((XSTR (x, i) || XSTR (y, i))
+	      && (! XSTR (x, i) || ! XSTR (y, i)
+		  || strcmp (XSTR (x, i), XSTR (y, i))))
+	    return false;
+	  break;
+	case 'u':
+	  /* These are just backpointers, so they don't matter.  */
+	  break;
+	case '0':
+	case 't':
+	  break;
+	  /* It is believed that rtx's at this level will never
+	     contain anything but integers and other rtx's,
+	     except for within LABEL_REFs and SYMBOL_REFs.  */
+	default:
+	  gcc_unreachable ();
+	}
     }
   return true;
 }
@@ -753,18 +753,18 @@ set_dest_equiv_p (rtx x, rtx y, struct equiv_info *info)
       int j;
 
       if (XVECLEN (x, 0) != XVECLEN (y, 0))
-        return false;
+	return false;
       for (j = 0; j < XVECLEN (x, 0); ++j)
-        {
-          rtx xe = XVECEXP (x, 0, j);
-          rtx ye = XVECEXP (y, 0, j);
+	{
+	  rtx xe = XVECEXP (x, 0, j);
+	  rtx ye = XVECEXP (y, 0, j);
 
-          if (GET_CODE (xe) != GET_CODE (ye))
-            return false;
-          if ((GET_CODE (xe) == SET || GET_CODE (xe) == CLOBBER)
-              && ! rtx_equiv_p (&XEXP (xe, 0), XEXP (ye, 0), 0, info))
-            return false;
-        }
+	  if (GET_CODE (xe) != GET_CODE (ye))
+	    return false;
+	  if ((GET_CODE (xe) == SET || GET_CODE (xe) == CLOBBER)
+	      && ! rtx_equiv_p (&XEXP (xe, 0), XEXP (ye, 0), 0, info))
+	    return false;
+	}
     }
   return true;
 }
@@ -795,29 +795,29 @@ set_dest_addr_equiv_p (rtx x, rtx y, struct equiv_info *info)
   for (i = 0; i < length; ++i)
     {
       switch (format[i])
-        {
-        case 'V':
-        case 'E':
-          if (XVECLEN (x, i) != XVECLEN (y, i))
-            return false;
-          if (XVEC (x, i) != 0)
-            {
-              int j;
-              for (j = 0; j < XVECLEN (x, i); ++j)
-                {
-                  if (! set_dest_addr_equiv_p (XVECEXP (x, i, j),
-                                               XVECEXP (y, i, j), info))
-                    return false;
-                }
-            }
-          break;
-        case 'e':
-          if (! set_dest_addr_equiv_p (XEXP (x, i), XEXP (y, i), info))
-            return false;
-          break;
-        default:
-          break;
-        }
+	{
+	case 'V':
+	case 'E':
+	  if (XVECLEN (x, i) != XVECLEN (y, i))
+	    return false;
+	  if (XVEC (x, i) != 0)
+	    {
+	      int j;
+	      for (j = 0; j < XVECLEN (x, i); ++j)
+		{
+		  if (! set_dest_addr_equiv_p (XVECEXP (x, i, j),
+					       XVECEXP (y, i, j), info))
+		    return false;
+		}
+	    }
+	  break;
+	case 'e':
+	  if (! set_dest_addr_equiv_p (XEXP (x, i), XEXP (y, i), info))
+	    return false;
+	  break;
+	default:
+	  break;
+	}
     }
   return true;
 }
@@ -828,7 +828,7 @@ set_dest_addr_equiv_p (rtx x, rtx y, struct equiv_info *info)
    set up.  */
 static bool
 death_notes_match_p (rtx i1 ATTRIBUTE_UNUSED, rtx i2 ATTRIBUTE_UNUSED,
-                     struct equiv_info *info ATTRIBUTE_UNUSED)
+		     struct equiv_info *info ATTRIBUTE_UNUSED)
 {
 #ifdef STACK_REGS
   /* If cross_jump_death_matters is not 0, the insn's mode
@@ -837,8 +837,8 @@ death_notes_match_p (rtx i1 ATTRIBUTE_UNUSED, rtx i2 ATTRIBUTE_UNUSED,
   if ((info->mode & CLEANUP_POST_REGSTACK) && stack_regs_mentioned (i1))
     {
       /* If register stack conversion has already been done, then
-         death notes must also be compared before it is certain that
-         the two instruction streams match.  */
+	 death notes must also be compared before it is certain that
+	 the two instruction streams match.  */
 
       rtx note;
       HARD_REG_SET i1_regset, i2_regset;
@@ -847,23 +847,23 @@ death_notes_match_p (rtx i1 ATTRIBUTE_UNUSED, rtx i2 ATTRIBUTE_UNUSED,
       CLEAR_HARD_REG_SET (i2_regset);
 
       for (note = REG_NOTES (i1); note; note = XEXP (note, 1))
-        if (REG_NOTE_KIND (note) == REG_DEAD && STACK_REG_P (XEXP (note, 0)))
-          SET_HARD_REG_BIT (i1_regset, REGNO (XEXP (note, 0)));
+	if (REG_NOTE_KIND (note) == REG_DEAD && STACK_REG_P (XEXP (note, 0)))
+	  SET_HARD_REG_BIT (i1_regset, REGNO (XEXP (note, 0)));
 
       for (note = REG_NOTES (i2); note; note = XEXP (note, 1))
-        if (REG_NOTE_KIND (note) == REG_DEAD && STACK_REG_P (XEXP (note, 0)))
-          {
-            unsigned regno = REGNO (XEXP (note, 0));
-            int i;
+	if (REG_NOTE_KIND (note) == REG_DEAD && STACK_REG_P (XEXP (note, 0)))
+	  {
+	    unsigned regno = REGNO (XEXP (note, 0));
+	    int i;
 
-            for (i = info->cur.local_count - 1; i >= 0; i--)
-              if (regno == REGNO (info->y_local[i]))
-                {
-                  regno = REGNO (info->x_local[i]);
-                  break;
-                }
-            SET_HARD_REG_BIT (i2_regset, regno);
-          }
+	    for (i = info->cur.local_count - 1; i >= 0; i--)
+	      if (regno == REGNO (info->y_local[i]))
+		{
+		  regno = REGNO (info->x_local[i]);
+		  break;
+		}
+	    SET_HARD_REG_BIT (i2_regset, regno);
+	  }
 
       GO_IF_HARD_REG_EQUAL (i1_regset, i2_regset, done);
 
@@ -904,23 +904,23 @@ insns_match_p (rtx i1, rtx i2, struct equiv_info *info)
   if (CALL_P (i1))
     {
       if (SIBLING_CALL_P (i1) != SIBLING_CALL_P (i2)
-          || ! set_dest_equiv_p (PATTERN (i1), PATTERN (i2), info)
-          || ! set_dest_equiv_p (CALL_INSN_FUNCTION_USAGE (i1),
-                                 CALL_INSN_FUNCTION_USAGE (i2), info)
-          || ! rtx_equiv_p (&CALL_INSN_FUNCTION_USAGE (i1),
-                            CALL_INSN_FUNCTION_USAGE (i2), -1, info))
-        {
-          cancel_changes (0);
-          return false;
-        }
+	  || ! set_dest_equiv_p (PATTERN (i1), PATTERN (i2), info)
+	  || ! set_dest_equiv_p (CALL_INSN_FUNCTION_USAGE (i1),
+				 CALL_INSN_FUNCTION_USAGE (i2), info)
+	  || ! rtx_equiv_p (&CALL_INSN_FUNCTION_USAGE (i1),
+			    CALL_INSN_FUNCTION_USAGE (i2), -1, info))
+	{
+	  cancel_changes (0);
+	  return false;
+	}
     }
   else if (INSN_P (i1))
     {
       if (! set_dest_equiv_p (PATTERN (i1), PATTERN (i2), info))
-        {
-          cancel_changes (0);
-          return false;
-        }
+	{
+	  cancel_changes (0);
+	  return false;
+	}
     }
   rvalue_change_start = num_validated_changes ();
   struct_equiv_make_checkpoint (&before_rvalue_change, info);
@@ -928,9 +928,9 @@ insns_match_p (rtx i1, rtx i2, struct equiv_info *info)
      so that local inputs will already have been set up.  */
   if (! INSN_P (i1)
       || (!bitmap_bit_p (info->equiv_used, info->cur.ninsns)
-          && rtx_equiv_p (&PATTERN (i1), PATTERN (i2), -1, info)
-          && death_notes_match_p (i1, i2, info)
-          && verify_changes (0)))
+	  && rtx_equiv_p (&PATTERN (i1), PATTERN (i2), -1, info)
+	  && death_notes_match_p (i1, i2, info)
+	  && verify_changes (0)))
     return true;
 
   /* Do not do EQUIV substitution after reload.  First, we're undoing the
@@ -949,34 +949,34 @@ insns_match_p (rtx i1, rtx i2, struct equiv_info *info)
       equiv1 = find_reg_equal_equiv_note (i1);
       equiv2 = find_reg_equal_equiv_note (i2);
       if (equiv1 && equiv2
-          /* If the equivalences are not to a constant, they may
-             reference pseudos that no longer exist, so we can't
-             use them.  */
-          && (! reload_completed
-              || (CONSTANT_P (XEXP (equiv1, 0))
-                  && rtx_equal_p (XEXP (equiv1, 0), XEXP (equiv2, 0)))))
-        {
-          rtx s1 = single_set (i1);
-          rtx s2 = single_set (i2);
+	  /* If the equivalences are not to a constant, they may
+	     reference pseudos that no longer exist, so we can't
+	     use them.  */
+	  && (! reload_completed
+	      || (CONSTANT_P (XEXP (equiv1, 0))
+		  && rtx_equal_p (XEXP (equiv1, 0), XEXP (equiv2, 0)))))
+	{
+	  rtx s1 = single_set (i1);
+	  rtx s2 = single_set (i2);
 
-          if (s1 != 0 && s2 != 0)
-            {
-              validate_change (i1, &SET_SRC (s1), XEXP (equiv1, 0), 1);
-              validate_change (i2, &SET_SRC (s2), XEXP (equiv2, 0), 1);
-              /* Only inspecting the new SET_SRC is not good enough,
-                 because there may also be bare USEs in a single_set
-                 PARALLEL.  */
-              if (rtx_equiv_p (&PATTERN (i1), PATTERN (i2), -1, info)
-                  && death_notes_match_p (i1, i2, info)
-                  && verify_changes (0))
-                {
-                  /* Mark this insn so that we'll use the equivalence in
-                     all subsequent passes.  */
-                  bitmap_set_bit (info->equiv_used, info->cur.ninsns);
-                  return true;
-                }
-            }
-        }
+	  if (s1 != 0 && s2 != 0)
+	    {
+	      validate_change (i1, &SET_SRC (s1), XEXP (equiv1, 0), 1);
+	      validate_change (i2, &SET_SRC (s2), XEXP (equiv2, 0), 1);
+	      /* Only inspecting the new SET_SRC is not good enough,
+		 because there may also be bare USEs in a single_set
+		 PARALLEL.  */
+	      if (rtx_equiv_p (&PATTERN (i1), PATTERN (i2), -1, info)
+		  && death_notes_match_p (i1, i2, info)
+		  && verify_changes (0))
+		{
+		  /* Mark this insn so that we'll use the equivalence in
+		     all subsequent passes.  */
+		  bitmap_set_bit (info->equiv_used, info->cur.ninsns);
+		  return true;
+		}
+	    }
+	}
     }
 
   cancel_changes (0);
@@ -989,30 +989,30 @@ struct_equiv_init (int mode, struct equiv_info *info)
 {
   if ((info->x_block->flags | info->y_block->flags) & BB_DIRTY)
     update_life_info_in_dirty_blocks (UPDATE_LIFE_GLOBAL_RM_NOTES,
-                                      (PROP_DEATH_NOTES
-                                       | ((mode & CLEANUP_POST_REGSTACK)
-                                          ? PROP_POST_REGSTACK : 0)));
+				      (PROP_DEATH_NOTES
+				       | ((mode & CLEANUP_POST_REGSTACK)
+					  ? PROP_POST_REGSTACK : 0)));
   if (!REG_SET_EQUAL_P (info->x_block->il.rtl->global_live_at_end,
-                        info->y_block->il.rtl->global_live_at_end))
+			info->y_block->il.rtl->global_live_at_end))
     {
 #ifdef STACK_REGS
       unsigned rn;
 
       if (!(mode & CLEANUP_POST_REGSTACK))
-        return false;
+	return false;
       /* After reg-stack.  Remove bogus live info about stack regs.  N.B.
-         these regs are not necessarily all dead - we swap random bogosity
-         against constant bogosity.  However, clearing these bits at
-         least makes the regsets comparable.  */
+	 these regs are not necessarily all dead - we swap random bogosity
+	 against constant bogosity.  However, clearing these bits at
+	 least makes the regsets comparable.  */
       for (rn = FIRST_STACK_REG; rn <= LAST_STACK_REG; rn++)
-        {
-          CLEAR_REGNO_REG_SET (info->x_block->il.rtl->global_live_at_end, rn);
-          CLEAR_REGNO_REG_SET (info->y_block->il.rtl->global_live_at_end, rn);
-        }
+	{
+	  CLEAR_REGNO_REG_SET (info->x_block->il.rtl->global_live_at_end, rn);
+	  CLEAR_REGNO_REG_SET (info->y_block->il.rtl->global_live_at_end, rn);
+	}
       if (!REG_SET_EQUAL_P (info->x_block->il.rtl->global_live_at_end,
-                            info->y_block->il.rtl->global_live_at_end))
+			    info->y_block->il.rtl->global_live_at_end))
 #endif
-        return false;
+	return false;
     }
   info->mode = mode;
   if (mode & STRUCT_EQUIV_START)
@@ -1056,8 +1056,8 @@ struct_equiv_merge (rtx xi, rtx yi, struct equiv_info *info)
   else if (!equiv1 && equiv2)
     remove_note (yi, equiv2);
   else if (equiv1 && equiv2
-           && !rtx_equiv_p (&XEXP (equiv1, 0), XEXP (equiv2, 0),
-                             1, info))
+  	 && !rtx_equiv_p (&XEXP (equiv1, 0), XEXP (equiv2, 0),
+  			   1, info))
     {
       remove_note (xi, equiv1);
       remove_note (yi, equiv2);
@@ -1089,7 +1089,7 @@ struct_equiv_block_eq (int mode, struct equiv_info *info)
       x_stop = BB_HEAD (info->x_block);
       y_stop = BB_HEAD (info->y_block);
       if (!x_stop || !y_stop)
-        return 0;
+	return 0;
     }
   else
     {
@@ -1117,36 +1117,36 @@ struct_equiv_block_eq (int mode, struct equiv_info *info)
       info->cur.y_start = yi;
       /* Count everything except for unconditional jump as insn.  */
       /* ??? Is it right to count unconditional jumps with a clobber?
-         Should we count conditional returns?  */
+	 Should we count conditional returns?  */
       if (!simplejump_p (yi) && !returnjump_p (yi) && info->cur.x_start)
-        info->cur.ninsns++;
+	info->cur.ninsns++;
       yi = PREV_INSN (yi);
     }
 
   if (mode & STRUCT_EQUIV_MATCH_JUMPS)
     {
       /* The caller is expected to have compared the jumps already, but we
-         need to match them again to get any local registers and inputs.  */
+	 need to match them again to get any local registers and inputs.  */
       gcc_assert (!info->cur.x_start == !info->cur.y_start);
       if (info->cur.x_start)
-        {
-          if (any_condjump_p (info->cur.x_start)
-              ? !condjump_equiv_p (info, false)
-              : !insns_match_p (info->cur.x_start, info->cur.y_start, info))
-            gcc_unreachable ();
-        }
+	{
+	  if (any_condjump_p (info->cur.x_start)
+	      ? !condjump_equiv_p (info, false)
+	      : !insns_match_p (info->cur.x_start, info->cur.y_start, info))
+	    gcc_unreachable ();
+	}
       else if (any_condjump_p (xi) && any_condjump_p (yi))
-        {
-          info->cur.x_start = xi;
-          info->cur.y_start = yi;
-          xi = PREV_INSN (xi);
-          yi = PREV_INSN (yi);
-          info->cur.ninsns++;
-          if (!condjump_equiv_p (info, false))
-            gcc_unreachable ();
-        }
+	{
+	  info->cur.x_start = xi;
+	  info->cur.y_start = yi;
+	  xi = PREV_INSN (xi);
+	  yi = PREV_INSN (yi);
+	  info->cur.ninsns++;
+	  if (!condjump_equiv_p (info, false))
+	    gcc_unreachable ();
+	}
       if (info->cur.x_start && info->mode & STRUCT_EQUIV_FINAL)
-        struct_equiv_merge (info->cur.x_start, info->cur.y_start, info);
+	struct_equiv_merge (info->cur.x_start, info->cur.y_start, info);
     }
 
   struct_equiv_improve_checkpoint (&info->best_match, info);
@@ -1155,42 +1155,42 @@ struct_equiv_block_eq (int mode, struct equiv_info *info)
   if (info->cur.x_start != x_stop)
     for (;;)
       {
-        /* Ignore notes.  */
-        while (!INSN_P (xi) && xi != x_stop)
-          xi = PREV_INSN (xi);
+	/* Ignore notes.  */
+	while (!INSN_P (xi) && xi != x_stop)
+	  xi = PREV_INSN (xi);
 
-        while (!INSN_P (yi) && yi != y_stop)
-          yi = PREV_INSN (yi);
+	while (!INSN_P (yi) && yi != y_stop)
+	  yi = PREV_INSN (yi);
 
-        if (!insns_match_p (xi, yi, info))
-          break;
-        if (INSN_P (xi))
-          {
-            if (info->mode & STRUCT_EQUIV_FINAL)
-              struct_equiv_merge (xi, yi, info);
-            info->cur.ninsns++;
-            struct_equiv_improve_checkpoint (&info->best_match, info);
-          }
-        if (xi == x_stop || yi == y_stop)
-          {
-            /* If we reached the start of at least one of the blocks, but
-               best_match hasn't been advanced back to the first valid insn
-               yet, represent the increased benefit of completing the block
-               as an increased instruction count.  */
-            if (info->best_match.x_start != info->cur.x_start
-                && (xi == BB_HEAD (info->x_block)
-                    || yi == BB_HEAD (info->y_block)))
-              {
-                info->cur.ninsns++;
-                struct_equiv_improve_checkpoint (&info->best_match, info);
-                info->cur.ninsns--;
-                if (info->best_match.ninsns > info->cur.ninsns)
-                  info->best_match.ninsns = info->cur.ninsns;
-              }
-            break;
-          }
-        xi = PREV_INSN (xi);
-        yi = PREV_INSN (yi);
+	if (!insns_match_p (xi, yi, info))
+	  break;
+	if (INSN_P (xi))
+	  {
+	    if (info->mode & STRUCT_EQUIV_FINAL)
+	      struct_equiv_merge (xi, yi, info);
+	    info->cur.ninsns++;
+	    struct_equiv_improve_checkpoint (&info->best_match, info);
+	  }
+	if (xi == x_stop || yi == y_stop)
+	  {
+	    /* If we reached the start of at least one of the blocks, but
+	       best_match hasn't been advanced back to the first valid insn
+	       yet, represent the increased benefit of completing the block
+	       as an increased instruction count.  */
+	    if (info->best_match.x_start != info->cur.x_start
+		&& (xi == BB_HEAD (info->x_block)
+		    || yi == BB_HEAD (info->y_block)))
+	      {
+		info->cur.ninsns++;
+		struct_equiv_improve_checkpoint (&info->best_match, info);
+		info->cur.ninsns--;
+		if (info->best_match.ninsns > info->cur.ninsns)
+		  info->best_match.ninsns = info->cur.ninsns;
+	      }
+	    break;
+	  }
+	xi = PREV_INSN (xi);
+	yi = PREV_INSN (yi);
       }
 
   /* If we failed to match an insn, but had some changes registered from
@@ -1208,10 +1208,10 @@ struct_equiv_block_eq (int mode, struct equiv_info *info)
       xi = info->cur.x_start;
       yi = info->cur.y_start;
       while (xi != x_stop && !INSN_P (PREV_INSN (xi)))
-        xi = PREV_INSN (xi);
+	xi = PREV_INSN (xi);
 
       while (yi != y_stop && !INSN_P (PREV_INSN (yi)))
-        yi = PREV_INSN (yi);
+	yi = PREV_INSN (yi);
 
       info->cur.x_start = xi;
       info->cur.y_start = yi;
@@ -1223,36 +1223,36 @@ struct_equiv_block_eq (int mode, struct equiv_info *info)
     {
       find_dying_inputs (info);
       if (info->mode & STRUCT_EQUIV_FINAL)
-        {
-          if (info->check_input_conflict && ! resolve_input_conflict (info))
-            gcc_unreachable ();
-        }
+	{
+	  if (info->check_input_conflict && ! resolve_input_conflict (info))
+	    gcc_unreachable ();
+	}
       else
-        {
-          bool input_conflict = info->had_input_conflict;
+	{
+	  bool input_conflict = info->had_input_conflict;
 
-          if (!input_conflict
-              && info->dying_inputs > 1
-              && bitmap_intersect_p (info->x_local_live, info->y_local_live))
-            {
-              regset_head clobbered_regs;
+	  if (!input_conflict
+	      && info->dying_inputs > 1
+	      && bitmap_intersect_p (info->x_local_live, info->y_local_live))
+	    {
+	      regset_head clobbered_regs;
 
-              INIT_REG_SET (&clobbered_regs);
-              for (i = 0; i < info->cur.local_count; i++)
-                {
-                  if (assign_reg_reg_set (&clobbered_regs, info->y_local[i], 0))
-                    {
-                      input_conflict = true;
-                      break;
-                    }
-                  assign_reg_reg_set (&clobbered_regs, info->x_local[i], 1);
-                }
-              CLEAR_REG_SET (&clobbered_regs);
-            }
-          if (input_conflict && !info->check_input_conflict)
-            info->need_rerun = true;
-          info->check_input_conflict = input_conflict;
-        }
+	      INIT_REG_SET (&clobbered_regs);
+	      for (i = 0; i < info->cur.local_count; i++)
+		{
+		  if (assign_reg_reg_set (&clobbered_regs, info->y_local[i], 0))
+		    {
+		      input_conflict = true;
+		      break;
+		    }
+		  assign_reg_reg_set (&clobbered_regs, info->x_local[i], 1);
+		}
+	      CLEAR_REG_SET (&clobbered_regs);
+	    }
+	  if (input_conflict && !info->check_input_conflict)
+	    info->need_rerun = true;
+	  info->check_input_conflict = input_conflict;
+	}
     }
 
   if (info->mode & STRUCT_EQUIV_NEED_FULL_BLOCK
@@ -1274,15 +1274,15 @@ find_dying_inputs (struct equiv_info *info)
       rtx x = info->x_local[i];
       unsigned regno = REGNO (x);
       int nregs = (regno >= FIRST_PSEUDO_REGISTER
-                   ? 1 : hard_regno_nregs[regno][GET_MODE (x)]);
+		   ? 1 : hard_regno_nregs[regno][GET_MODE (x)]);
 
       for (info->local_rvalue[i] = false; nregs > 0; regno++, --nregs)
-        if (REGNO_REG_SET_P (info->x_local_live, regno))
-          {
-            info->dying_inputs++;
-            info->local_rvalue[i] = true;
-            break;
-          }
+	if (REGNO_REG_SET_P (info->x_local_live, regno))
+	  {
+	    info->dying_inputs++;
+	    info->local_rvalue[i] = true;
+	    break;
+	  }
     }
 }
 
@@ -1307,41 +1307,41 @@ resolve_input_conflict (struct equiv_info *info)
   for (i = 0; i <= end; i++)
     {
       /* Cycle detection with regsets is expensive, so we just check that
-         we don't exceed the maximum number of swaps needed in the acyclic
-         case.  */
+	 we don't exceed the maximum number of swaps needed in the acyclic
+	 case.  */
       int max_swaps = end - i;
 
       /* Check if x_local[i] will be clobbered.  */
       if (!info->local_rvalue[i])
-        continue;
+	continue;
       /* Check if any later value needs to be copied earlier.  */
       for (j = i + 1; j <= end; j++)
-        {
-          rtx tmp;
+	{
+	  rtx tmp;
 
-          if (!info->local_rvalue[j])
-            continue;
-          if (!reg_overlap_mentioned_p (info->x_local[i], info->y_local[j]))
-            continue;
-          if (--max_swaps < 0)
-            {
-              memcpy (info->x_local, save_x_local, sizeof save_x_local);
-              memcpy (info->y_local, save_y_local, sizeof save_y_local);
-              return false;
-            }
-          nswaps++;
-          tmp = info->x_local[i];
-          info->x_local[i] = info->x_local[j];
-          info->x_local[j] = tmp;
-          tmp = info->y_local[i];
-          info->y_local[i] = info->y_local[j];
-          info->y_local[j] = tmp;
-          j = i;
-        }
+	  if (!info->local_rvalue[j])
+	    continue;
+	  if (!reg_overlap_mentioned_p (info->x_local[i], info->y_local[j]))
+	    continue;
+	  if (--max_swaps < 0)
+	    {
+	      memcpy (info->x_local, save_x_local, sizeof save_x_local);
+	      memcpy (info->y_local, save_y_local, sizeof save_y_local);
+	      return false;
+	    }
+	  nswaps++;
+	  tmp = info->x_local[i];
+	  info->x_local[i] = info->x_local[j];
+	  info->x_local[j] = tmp;
+	  tmp = info->y_local[i];
+	  info->y_local[i] = info->y_local[j];
+	  info->y_local[j] = tmp;
+	  j = i;
+	}
     }
   info->had_input_conflict = true;
   if (dump_file && nswaps)
     fprintf (dump_file, "Resolved input conflict, %d %s.\n",
-             nswaps, nswaps == 1 ? "swap" : "swaps");
+	     nswaps, nswaps == 1 ? "swap" : "swaps");
   return true;
 }

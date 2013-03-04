@@ -808,7 +808,7 @@ C ObjC C++ ObjC++ Joined Separate
 
 iwrapper
 C ObjC C++ ObjC++ Joined Separate
--iwrapper <dir>	Add <dir> to the end of the wrapper include path
+-iwrapper <dir>        Add <dir> to the end of the wrapper include path
 
 lang-asm
 C Undocumented

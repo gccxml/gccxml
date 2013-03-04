@@ -19,19 +19,19 @@
    Free Software Foundation, 51 Franklin Street, Fifth Floor, Boston,
    MA 02110-1301, USA.  */
 
-#undef        CPP_OS_DEFAULT_SPEC
+#undef	CPP_OS_DEFAULT_SPEC
 #define CPP_OS_DEFAULT_SPEC "%(cpp_os_gnu)"
 
-#undef        STARTFILE_DEFAULT_SPEC
+#undef	STARTFILE_DEFAULT_SPEC
 #define STARTFILE_DEFAULT_SPEC "%(startfile_gnu)"
 
-#undef        ENDFILE_DEFAULT_SPEC
+#undef	ENDFILE_DEFAULT_SPEC
 #define ENDFILE_DEFAULT_SPEC "%(endfile_gnu)"
 
-#undef        LINK_START_DEFAULT_SPEC
+#undef	LINK_START_DEFAULT_SPEC
 #define LINK_START_DEFAULT_SPEC "%(link_start_gnu)"
 
-#undef        LINK_OS_DEFAULT_SPEC
+#undef	LINK_OS_DEFAULT_SPEC
 #define LINK_OS_DEFAULT_SPEC "%(link_os_gnu)"
 
 #undef  TARGET_VERSION

@@ -162,7 +162,7 @@ __gthread_objc_thread_detach (void (*func)(void *), void *arg)
     return NULL;
 
   if (!(__gthrw_(pthread_create) (&new_thread_handle, pthread_attr_default,
-                        (void *) func, arg)))
+			(void *) func, arg)))
     {
       /* ??? May not work! (64bit) */
       thread_id = *(objc_thread_t *) &new_thread_handle;
@@ -214,15 +214,15 @@ __gthread_objc_thread_get_priority (void)
   if (__gthread_active_p ())
     {
       if ((sys_priority = pthread_getprio (__gthrw_(pthread_self) ())) >= 0)
-        {
-          if (sys_priority >= PRI_FG_MIN_NP
-              && sys_priority <= PRI_FG_MAX_NP)
-            return OBJC_THREAD_INTERACTIVE_PRIORITY;
-          if (sys_priority >= PRI_BG_MIN_NP
-              && sys_priority <= PRI_BG_MAX_NP)
-            return OBJC_THREAD_BACKGROUND_PRIORITY;
-          return OBJC_THREAD_LOW_PRIORITY;
-        }
+	{
+	  if (sys_priority >= PRI_FG_MIN_NP
+	      && sys_priority <= PRI_FG_MAX_NP)
+	    return OBJC_THREAD_INTERACTIVE_PRIORITY;
+	  if (sys_priority >= PRI_BG_MIN_NP
+	      && sys_priority <= PRI_BG_MAX_NP)
+	    return OBJC_THREAD_BACKGROUND_PRIORITY;
+	  return OBJC_THREAD_LOW_PRIORITY;
+	}
 
       /* Failed */
       return -1;
@@ -287,7 +287,7 @@ __gthread_objc_thread_get_data (void)
   if (__gthread_active_p ())
     {
       if (!(__gthrw_(pthread_getspecific) (_objc_thread_storage, &value)))
-        return value;
+	return value;
 
       return NULL;
     }
@@ -306,12 +306,12 @@ __gthread_objc_mutex_allocate (objc_mutex_t mutex)
       mutex->backend = objc_malloc (sizeof (pthread_mutex_t));
 
       if (__gthrw_(pthread_mutex_init) ((pthread_mutex_t *) mutex->backend,
-                              pthread_mutexattr_default))
-        {
-          objc_free (mutex->backend);
-          mutex->backend = NULL;
-          return -1;
-        }
+			      pthread_mutexattr_default))
+	{
+	  objc_free (mutex->backend);
+	  mutex->backend = NULL;
+	  return -1;
+	}
     }
 
   return 0;
@@ -324,7 +324,7 @@ __gthread_objc_mutex_deallocate (objc_mutex_t mutex)
   if (__gthread_active_p ())
     {
       if (__gthrw_(pthread_mutex_destroy) ((pthread_mutex_t *) mutex->backend))
-        return -1;
+	return -1;
 
       objc_free (mutex->backend);
       mutex->backend = NULL;
@@ -369,7 +369,7 @@ __gthread_objc_mutex_unlock (objc_mutex_t mutex)
 /* Allocate a condition.  */
 static inline int
 __gthread_objc_condition_allocate (objc_condition_t condition
-                                   __attribute__ ((__unused__)))
+				   __attribute__ ((__unused__)))
 {
   if (__gthread_active_p ())
     /* Unimplemented.  */
@@ -381,7 +381,7 @@ __gthread_objc_condition_allocate (objc_condition_t condition
 /* Deallocate a condition.  */
 static inline int
 __gthread_objc_condition_deallocate (objc_condition_t condition
-                                     __attribute__ ((__unused__)))
+				     __attribute__ ((__unused__)))
 {
   if (__gthread_active_p ())
     /* Unimplemented.  */
@@ -393,8 +393,8 @@ __gthread_objc_condition_deallocate (objc_condition_t condition
 /* Wait on the condition */
 static inline int
 __gthread_objc_condition_wait (objc_condition_t condition
-                               __attribute__ ((__unused__)),
-                               objc_mutex_t mutex __attribute__ ((__unused__)))
+			       __attribute__ ((__unused__)),
+			       objc_mutex_t mutex __attribute__ ((__unused__)))
 {
   if (__gthread_active_p ())
     /* Unimplemented.  */
@@ -406,7 +406,7 @@ __gthread_objc_condition_wait (objc_condition_t condition
 /* Wake up all threads waiting on this condition.  */
 static inline int
 __gthread_objc_condition_broadcast (objc_condition_t condition
-                                    __attribute__ ((__unused__)))
+				    __attribute__ ((__unused__)))
 {
   if (__gthread_active_p ())
     /* Unimplemented.  */
@@ -418,7 +418,7 @@ __gthread_objc_condition_broadcast (objc_condition_t condition
 /* Wake up one thread waiting on this condition.  */
 static inline int
 __gthread_objc_condition_signal (objc_condition_t condition
-                                 __attribute__ ((__unused__)))
+				 __attribute__ ((__unused__)))
 {
   if (__gthread_active_p ())
     /* Unimplemented.  */
@@ -511,11 +511,11 @@ __gthread_recursive_mutex_init_function (__gthread_recursive_mutex_t *mutex)
 
       r = __gthrw_(pthread_mutexattr_create) (&attr);
       if (!r)
-        r = __gthrw_(pthread_mutexattr_setkind_np) (&attr, MUTEX_RECURSIVE_NP);
+	r = __gthrw_(pthread_mutexattr_setkind_np) (&attr, MUTEX_RECURSIVE_NP);
       if (!r)
-        r = __gthrw_(pthread_mutex_init) (mutex, attr);
+	r = __gthrw_(pthread_mutex_init) (mutex, attr);
       if (!r)
-        r = __gthrw_(pthread_mutexattr_delete) (&attr);
+	r = __gthrw_(pthread_mutexattr_delete) (&attr);
       return r;
     }
   return 0;

@@ -146,7 +146,7 @@ extern void hppa_expand_epilogue (void);
 extern int hppa_can_use_return_insn_p (void);
 extern int ior_mask_p (unsigned HOST_WIDE_INT);
 extern void compute_zdepdi_operands (unsigned HOST_WIDE_INT,
-                                     unsigned *);
+				     unsigned *);
 #ifdef RTX_CODE
 extern const char * output_64bit_and (rtx *);
 extern const char * output_64bit_ior (rtx *);
@@ -159,21 +159,21 @@ extern int cmpib_comparison_operator (rtx, enum machine_mode);
 extern int reloc_needed (tree);
 #ifdef RTX_CODE
 extern rtx function_arg (CUMULATIVE_ARGS *, enum machine_mode,
-                         tree, int);
+			 tree, int);
 extern rtx function_value (tree, tree);
 #endif
 extern bool pa_return_in_memory (tree, tree);
 #endif /* TREE_CODE */
 
 extern void pa_asm_output_aligned_bss (FILE *, const char *,
-                                       unsigned HOST_WIDE_INT,
-                                       unsigned int);
+				       unsigned HOST_WIDE_INT,
+				       unsigned int);
 extern void pa_asm_output_aligned_common (FILE *, const char *,
-                                          unsigned HOST_WIDE_INT,
-                                          unsigned int);
+					  unsigned HOST_WIDE_INT,
+					  unsigned int);
 extern void pa_asm_output_aligned_local (FILE *, const char *,
-                                         unsigned HOST_WIDE_INT,
-                                         unsigned int);
+					 unsigned HOST_WIDE_INT,
+					 unsigned int);
 extern void pa_hpux_asm_output_external (FILE *, tree, const char *);
 
 extern const int magic_milli[];

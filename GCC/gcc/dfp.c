@@ -144,7 +144,7 @@ decimal_to_decnumber (const REAL_VALUE_TYPE *r, decNumber *dn)
 
 void
 encode_decimal32 (const struct real_format *fmt ATTRIBUTE_UNUSED,
-                  long *buf, const REAL_VALUE_TYPE *r)
+		  long *buf, const REAL_VALUE_TYPE *r)
 {
   decNumber dn;
   decimal32 d32;
@@ -166,7 +166,7 @@ encode_decimal32 (const struct real_format *fmt ATTRIBUTE_UNUSED,
 
 void
 decode_decimal32 (const struct real_format *fmt ATTRIBUTE_UNUSED,
-                  REAL_VALUE_TYPE *r, const long *buf)
+		  REAL_VALUE_TYPE *r, const long *buf)
 {
   decNumber dn;
   decimal32 d32;
@@ -188,7 +188,7 @@ decode_decimal32 (const struct real_format *fmt ATTRIBUTE_UNUSED,
 
 void
 encode_decimal64 (const struct real_format *fmt ATTRIBUTE_UNUSED,
-                  long *buf, const REAL_VALUE_TYPE *r)
+		  long *buf, const REAL_VALUE_TYPE *r)
 {
   decNumber dn;
   decimal64 d64;
@@ -216,7 +216,7 @@ encode_decimal64 (const struct real_format *fmt ATTRIBUTE_UNUSED,
 
 void
 decode_decimal64 (const struct real_format *fmt ATTRIBUTE_UNUSED,
-                  REAL_VALUE_TYPE *r, const long *buf)
+		  REAL_VALUE_TYPE *r, const long *buf)
 { 
   decNumber dn;
   decimal64 d64;
@@ -244,7 +244,7 @@ decode_decimal64 (const struct real_format *fmt ATTRIBUTE_UNUSED,
 
 void
 encode_decimal128 (const struct real_format *fmt ATTRIBUTE_UNUSED,
-                   long *buf, const REAL_VALUE_TYPE *r)
+		   long *buf, const REAL_VALUE_TYPE *r)
 {
   decNumber dn;
   decContext set;
@@ -276,7 +276,7 @@ encode_decimal128 (const struct real_format *fmt ATTRIBUTE_UNUSED,
 
 void
 decode_decimal128 (const struct real_format *fmt ATTRIBUTE_UNUSED,
-                   REAL_VALUE_TYPE *r, const long *buf)
+		   REAL_VALUE_TYPE *r, const long *buf)
 {
   decNumber dn;
   decimal128 d128;
@@ -309,7 +309,7 @@ decode_decimal128 (const struct real_format *fmt ATTRIBUTE_UNUSED,
 
 static void
 decimal_to_binary (REAL_VALUE_TYPE *to, const REAL_VALUE_TYPE *from,
-                   enum machine_mode mode)
+		   enum machine_mode mode)
 {
   char string[256];
   decimal128 *d128;
@@ -339,7 +339,7 @@ decimal_from_binary (REAL_VALUE_TYPE *to, const REAL_VALUE_TYPE *from)
 
 int
 decimal_do_compare (const REAL_VALUE_TYPE *a, const REAL_VALUE_TYPE *b,
-                    int nan_result)
+		    int nan_result)
 {
   decContext set;
   decNumber dn, dn2, dn3;
@@ -427,7 +427,7 @@ decimal_round_for_format (const struct real_format *fmt, REAL_VALUE_TYPE *r)
 
 void
 decimal_real_convert (REAL_VALUE_TYPE *r, enum machine_mode mode, 
-                      const REAL_VALUE_TYPE *a)
+		      const REAL_VALUE_TYPE *a)
 {
   const struct real_format *fmt = REAL_MODE_FORMAT (mode);
 
@@ -447,9 +447,9 @@ decimal_real_convert (REAL_VALUE_TYPE *r, enum machine_mode mode,
 
 void
 decimal_real_to_decimal (char *str, const REAL_VALUE_TYPE *r_orig,
-                         size_t buf_size,
-                         size_t digits ATTRIBUTE_UNUSED,
-                         int crop_trailing_zeros ATTRIBUTE_UNUSED)
+			 size_t buf_size,
+			 size_t digits ATTRIBUTE_UNUSED,
+			 int crop_trailing_zeros ATTRIBUTE_UNUSED)
 {
   decimal128 *d128 = (decimal128*) r_orig->sig;
 
@@ -461,7 +461,7 @@ decimal_real_to_decimal (char *str, const REAL_VALUE_TYPE *r_orig,
 
 static bool
 decimal_do_add (REAL_VALUE_TYPE *r, const REAL_VALUE_TYPE *op0,
-                const REAL_VALUE_TYPE *op1, int subtract_p)
+		const REAL_VALUE_TYPE *op1, int subtract_p)
 {
   decNumber dn;
   decContext set;
@@ -488,7 +488,7 @@ decimal_do_add (REAL_VALUE_TYPE *r, const REAL_VALUE_TYPE *op0,
 
 static bool
 decimal_do_multiply (REAL_VALUE_TYPE *r, const REAL_VALUE_TYPE *op0,
-                     const REAL_VALUE_TYPE *op1)
+		     const REAL_VALUE_TYPE *op1)
 {
   decContext set;
   decNumber dn, dn2, dn3;
@@ -510,7 +510,7 @@ decimal_do_multiply (REAL_VALUE_TYPE *r, const REAL_VALUE_TYPE *op0,
 
 static bool
 decimal_do_divide (REAL_VALUE_TYPE *r, const REAL_VALUE_TYPE *op0,
-                   const REAL_VALUE_TYPE *op1)
+		   const REAL_VALUE_TYPE *op1)
 {
   decContext set;
   decNumber dn, dn2, dn3;
@@ -576,7 +576,7 @@ decimal_real_to_integer (const REAL_VALUE_TYPE *r)
 
 void
 decimal_real_to_integer2 (HOST_WIDE_INT *plow, HOST_WIDE_INT *phigh,
-                          const REAL_VALUE_TYPE *r)
+			  const REAL_VALUE_TYPE *r)
 {
   decContext set;
   decNumber dn, dn2, dn3;
@@ -605,8 +605,8 @@ decimal_real_to_integer2 (HOST_WIDE_INT *plow, HOST_WIDE_INT *phigh,
 
 bool
 decimal_real_arithmetic (REAL_VALUE_TYPE *r, enum tree_code code,
-                         const REAL_VALUE_TYPE *op0,
-                         const REAL_VALUE_TYPE *op1)
+			 const REAL_VALUE_TYPE *op0,
+			 const REAL_VALUE_TYPE *op1)
 {
   REAL_VALUE_TYPE a, b;
 
@@ -656,13 +656,13 @@ decimal_real_arithmetic (REAL_VALUE_TYPE *r, enum tree_code code,
 
     case NEGATE_EXPR:
       {
-        decimal128 *d128;
-        *r = *op0;
-        d128 = (decimal128 *) r->sig;
-        /* Flip high bit.  */
-        d128->bytes[0] ^= 1 << 7;
-        /* Keep sign field in sync.  */
-        r->sign ^= 1;
+	decimal128 *d128;
+	*r = *op0;
+	d128 = (decimal128 *) r->sig;
+	/* Flip high bit.  */
+	d128->bytes[0] ^= 1 << 7;
+	/* Keep sign field in sync.  */
+	r->sign ^= 1;
       }
       return false;
 
@@ -671,10 +671,10 @@ decimal_real_arithmetic (REAL_VALUE_TYPE *r, enum tree_code code,
         decimal128 *d128;
         *r = *op0;
         d128 = (decimal128 *) r->sig;
-        /* Clear high bit.  */
+	/* Clear high bit.  */
         d128->bytes[0] &= 0x7f;
-        /* Keep sign field in sync.  */
-        r->sign = 0;
+	/* Keep sign field in sync.  */
+	r->sign = 0;
       }
       return false;
 

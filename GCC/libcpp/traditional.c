@@ -67,14 +67,14 @@ struct fun_macro
 };
 
 /* Lexing state.  It is mostly used to prevent macro expansion.  */
-enum ls {ls_none = 0,                /* Normal state.  */
-         ls_fun_open,                /* When looking for '('.  */
-         ls_fun_close,                /* When looking for ')'.  */
-         ls_defined,                /* After defined.  */
-         ls_defined_close,        /* Looking for ')' of defined().  */
-         ls_hash,                /* After # in preprocessor conditional.  */
-         ls_predicate,                /* After the predicate, maybe paren?  */
-         ls_answer};                /* In answer to predicate.  */
+enum ls {ls_none = 0,		/* Normal state.  */
+	 ls_fun_open,		/* When looking for '('.  */
+	 ls_fun_close,		/* When looking for ')'.  */
+	 ls_defined,		/* After defined.  */
+	 ls_defined_close,	/* Looking for ')' of defined().  */
+	 ls_hash,		/* After # in preprocessor conditional.  */
+	 ls_predicate,		/* After the predicate, maybe paren?  */
+	 ls_answer};		/* In answer to predicate.  */
 
 /* Lexing TODO: Maybe handle space in escaped newlines.  Stop lex.c
    from recognizing comments and directives during its lexing pass.  */
@@ -88,7 +88,7 @@ static bool scan_parameters (cpp_reader *, cpp_macro *);
 static bool recursive_macro (cpp_reader *, cpp_hashnode *);
 static void save_replacement_text (cpp_reader *, cpp_macro *, unsigned int);
 static void maybe_start_funlike (cpp_reader *, cpp_hashnode *, const uchar *,
-                                 struct fun_macro *);
+				 struct fun_macro *);
 static void save_argument (struct fun_macro *, size_t);
 static void replace_args_and_push (cpp_reader *, struct fun_macro *);
 static size_t canonicalize_text (uchar *, const uchar *, size_t, uchar *);
@@ -159,7 +159,7 @@ copy_comment (cpp_reader *pfile, const uchar *cur, int in_define)
     
   if (unterminated)
     cpp_error_with_line (pfile, CPP_DL_ERROR, src_loc, 0,
-                         "unterminated comment");
+			 "unterminated comment");
 
   /* Comments in directives become spaces so that tokens are properly
      separated when the ISO preprocessor re-lexes the line.  The
@@ -167,14 +167,14 @@ copy_comment (cpp_reader *pfile, const uchar *cur, int in_define)
   if (pfile->state.in_directive)
     {
       if (in_define)
-        {
-          if (CPP_OPTION (pfile, discard_comments_in_macro_exp))
-            pfile->out.cur--;
-          else
-            copy = true;
-        }
+	{
+	  if (CPP_OPTION (pfile, discard_comments_in_macro_exp))
+	    pfile->out.cur--;
+	  else
+	    copy = true;
+	}
       else
-        pfile->out.cur[-1] = ' ';
+	pfile->out.cur[-1] = ' ';
     }
   else if (CPP_OPTION (pfile, discard_comments))
     pfile->out.cur--;
@@ -187,10 +187,10 @@ copy_comment (cpp_reader *pfile, const uchar *cur, int in_define)
       memcpy (pfile->out.cur, cur, len);
       pfile->out.cur += len;
       if (unterminated)
-        {
-          *pfile->out.cur++ = '*';
-          *pfile->out.cur++ = '/';
-        }
+	{
+	  *pfile->out.cur++ = '*';
+	  *pfile->out.cur++ = '/';
+	}
     }
 
   return buffer->cur;
@@ -219,15 +219,15 @@ skip_whitespace (cpp_reader *pfile, const uchar *cur, int skip_comments)
       *out++ = c;
 
       if (is_nvspace (c))
-        continue;
+	continue;
 
       if (c == '/' && *cur == '*' && skip_comments)
-        {
-          pfile->out.cur = out;
-          cur = copy_comment (pfile, cur, false /* in_define */);
-          out = pfile->out.cur;
-          continue;
-        }
+	{
+	  pfile->out.cur = out;
+	  cur = copy_comment (pfile, cur, false /* in_define */);
+	  out = pfile->out.cur;
+	  continue;
+	}
 
       out--;
       break;
@@ -254,7 +254,7 @@ lex_identifier (cpp_reader *pfile, const uchar *cur)
   CUR (pfile->context) = cur;
   len = out - pfile->out.cur;
   result = (cpp_hashnode *) ht_lookup (pfile->hash_table, pfile->out.cur,
-                                       len, HT_ALLOC);
+				       len, HT_ALLOC);
   pfile->out.cur = out;
   return result;
 }
@@ -300,7 +300,7 @@ _cpp_read_logical_line_trad (cpp_reader *pfile)
   do
     {
       if (pfile->buffer->need_line && !_cpp_get_fresh_line (pfile))
-        return false;
+	return false;
     }
   while (!_cpp_scan_out_logical_line (pfile, NULL) || pfile->state.skipping);
 
@@ -372,296 +372,296 @@ _cpp_scan_out_logical_line (cpp_reader *pfile, cpp_macro *macro)
   for (;;)
     {
       if (!context->prev
-          && cur >= pfile->buffer->notes[pfile->buffer->cur_note].pos)
-        {
-          pfile->buffer->cur = cur;
-          _cpp_process_line_notes (pfile, false);
-        }
+	  && cur >= pfile->buffer->notes[pfile->buffer->cur_note].pos)
+	{
+	  pfile->buffer->cur = cur;
+	  _cpp_process_line_notes (pfile, false);
+	}
       c = *cur++;
       *out++ = c;
 
       /* Whitespace should "continue" out of the switch,
-         non-whitespace should "break" out of it.  */
+	 non-whitespace should "break" out of it.  */
       switch (c)
-        {
-        case ' ':
-        case '\t':
-        case '\f':
-        case '\v':
-        case '\0':
-          continue;
+	{
+	case ' ':
+	case '\t':
+	case '\f':
+	case '\v':
+	case '\0':
+	  continue;
 
-        case '\n':
-          /* If this is a macro's expansion, pop it.  */
-          if (context->prev)
-            {
-              pfile->out.cur = out - 1;
-              _cpp_pop_context (pfile);
-              goto new_context;
-            }
+	case '\n':
+	  /* If this is a macro's expansion, pop it.  */
+	  if (context->prev)
+	    {
+	      pfile->out.cur = out - 1;
+	      _cpp_pop_context (pfile);
+	      goto new_context;
+	    }
 
-          /* Omit the newline from the output buffer.  */
-          pfile->out.cur = out - 1;
-          pfile->buffer->cur = cur;
-          pfile->buffer->need_line = true;
-          CPP_INCREMENT_LINE (pfile, 0);
+	  /* Omit the newline from the output buffer.  */
+	  pfile->out.cur = out - 1;
+	  pfile->buffer->cur = cur;
+	  pfile->buffer->need_line = true;
+	  CPP_INCREMENT_LINE (pfile, 0);
 
-          if ((lex_state == ls_fun_open || lex_state == ls_fun_close)
-              && !pfile->state.in_directive
-              && _cpp_get_fresh_line (pfile))
-            {
-              /* Newlines in arguments become a space, but we don't
-                 clear any in-progress quote.  */
-              if (lex_state == ls_fun_close)
-                out[-1] = ' ';
-              cur = pfile->buffer->cur;
-              continue;
-            }
-          goto done;
+	  if ((lex_state == ls_fun_open || lex_state == ls_fun_close)
+	      && !pfile->state.in_directive
+	      && _cpp_get_fresh_line (pfile))
+	    {
+	      /* Newlines in arguments become a space, but we don't
+		 clear any in-progress quote.  */
+	      if (lex_state == ls_fun_close)
+		out[-1] = ' ';
+	      cur = pfile->buffer->cur;
+	      continue;
+	    }
+	  goto done;
 
-        case '<':
-          if (header_ok)
-            quote = '>';
-          break;
-        case '>':
-          if (c == quote)
-            quote = 0;
-          break;
+	case '<':
+	  if (header_ok)
+	    quote = '>';
+	  break;
+	case '>':
+	  if (c == quote)
+	    quote = 0;
+	  break;
 
-        case '"':
-        case '\'':
-          if (c == quote)
-            quote = 0;
-          else if (!quote)
-            quote = c;
-          break;
+	case '"':
+	case '\'':
+	  if (c == quote)
+	    quote = 0;
+	  else if (!quote)
+	    quote = c;
+	  break;
 
-        case '\\':
-          /* Skip escaped quotes here, it's easier than above.  */
-          if (*cur == '\\' || *cur == '"' || *cur == '\'')
-            *out++ = *cur++;
-          break;
+	case '\\':
+	  /* Skip escaped quotes here, it's easier than above.  */
+	  if (*cur == '\\' || *cur == '"' || *cur == '\'')
+	    *out++ = *cur++;
+	  break;
 
-        case '/':
-          /* Traditional CPP does not recognize comments within
-             literals.  */
-          if (!quote && *cur == '*')
-            {
-              pfile->out.cur = out;
-              cur = copy_comment (pfile, cur, macro != 0);
-              out = pfile->out.cur;
-              continue;
-            }
-          break;
+	case '/':
+	  /* Traditional CPP does not recognize comments within
+	     literals.  */
+	  if (!quote && *cur == '*')
+	    {
+	      pfile->out.cur = out;
+	      cur = copy_comment (pfile, cur, macro != 0);
+	      out = pfile->out.cur;
+	      continue;
+	    }
+	  break;
 
-        case '_':
-        case 'a': case 'b': case 'c': case 'd': case 'e': case 'f':
-        case 'g': case 'h': case 'i': case 'j': case 'k': case 'l':
-        case 'm': case 'n': case 'o': case 'p': case 'q': case 'r':
-        case 's': case 't': case 'u': case 'v': case 'w': case 'x':
-        case 'y': case 'z':
-        case 'A': case 'B': case 'C': case 'D': case 'E': case 'F':
-        case 'G': case 'H': case 'I': case 'J': case 'K': case 'L':
-        case 'M': case 'N': case 'O': case 'P': case 'Q': case 'R':
-        case 'S': case 'T': case 'U': case 'V': case 'W': case 'X':
-        case 'Y': case 'Z':
-          if (!pfile->state.skipping && (quote == 0 || macro))
-            {
-              cpp_hashnode *node;
-              uchar *out_start = out - 1;
+	case '_':
+	case 'a': case 'b': case 'c': case 'd': case 'e': case 'f':
+	case 'g': case 'h': case 'i': case 'j': case 'k': case 'l':
+	case 'm': case 'n': case 'o': case 'p': case 'q': case 'r':
+	case 's': case 't': case 'u': case 'v': case 'w': case 'x':
+	case 'y': case 'z':
+	case 'A': case 'B': case 'C': case 'D': case 'E': case 'F':
+	case 'G': case 'H': case 'I': case 'J': case 'K': case 'L':
+	case 'M': case 'N': case 'O': case 'P': case 'Q': case 'R':
+	case 'S': case 'T': case 'U': case 'V': case 'W': case 'X':
+	case 'Y': case 'Z':
+	  if (!pfile->state.skipping && (quote == 0 || macro))
+	    {
+	      cpp_hashnode *node;
+	      uchar *out_start = out - 1;
 
-              pfile->out.cur = out_start;
-              node = lex_identifier (pfile, cur - 1);
-              out = pfile->out.cur;
-              cur = CUR (context);
+	      pfile->out.cur = out_start;
+	      node = lex_identifier (pfile, cur - 1);
+	      out = pfile->out.cur;
+	      cur = CUR (context);
 
-              if (node->type == NT_MACRO
-                  /* Should we expand for ls_answer?  */
-                  && (lex_state == ls_none || lex_state == ls_fun_open)
-                  && !pfile->state.prevent_expansion)
-                {
-                  /* Macros invalidate MI optimization.  */
-                  pfile->mi_valid = false;
-                  if (! (node->flags & NODE_BUILTIN)
-                      && node->value.macro->fun_like)
-                    {
-                      maybe_start_funlike (pfile, node, out_start, &fmacro);
-                      lex_state = ls_fun_open;
-                      fmacro.line = pfile->line_table->highest_line;
-                      continue;
-                    }
-                  else if (!recursive_macro (pfile, node))
-                    {
-                      /* Remove the object-like macro's name from the
-                         output, and push its replacement text.  */
-                      pfile->out.cur = out_start;
-                      push_replacement_text (pfile, node);
-                      lex_state = ls_none;
-                      goto new_context;
-                    }
-                }
-              else if (macro && (node->flags & NODE_MACRO_ARG) != 0)
-                {
-                  /* Found a parameter in the replacement text of a
-                     #define.  Remove its name from the output.  */
-                  pfile->out.cur = out_start;
-                  save_replacement_text (pfile, macro, node->value.arg_index);
-                  out = pfile->out.base;
-                }
-              else if (lex_state == ls_hash)
-                {
-                  lex_state = ls_predicate;
-                  continue;
-                }
-              else if (pfile->state.in_expression
-                       && node == pfile->spec_nodes.n_defined)
-                {
-                  lex_state = ls_defined;
-                  continue;
-                }
-            }
-          break;
+	      if (node->type == NT_MACRO
+		  /* Should we expand for ls_answer?  */
+		  && (lex_state == ls_none || lex_state == ls_fun_open)
+		  && !pfile->state.prevent_expansion)
+		{
+		  /* Macros invalidate MI optimization.  */
+		  pfile->mi_valid = false;
+		  if (! (node->flags & NODE_BUILTIN)
+		      && node->value.macro->fun_like)
+		    {
+		      maybe_start_funlike (pfile, node, out_start, &fmacro);
+		      lex_state = ls_fun_open;
+		      fmacro.line = pfile->line_table->highest_line;
+		      continue;
+		    }
+		  else if (!recursive_macro (pfile, node))
+		    {
+		      /* Remove the object-like macro's name from the
+			 output, and push its replacement text.  */
+		      pfile->out.cur = out_start;
+		      push_replacement_text (pfile, node);
+		      lex_state = ls_none;
+		      goto new_context;
+		    }
+		}
+	      else if (macro && (node->flags & NODE_MACRO_ARG) != 0)
+		{
+		  /* Found a parameter in the replacement text of a
+		     #define.  Remove its name from the output.  */
+		  pfile->out.cur = out_start;
+		  save_replacement_text (pfile, macro, node->value.arg_index);
+		  out = pfile->out.base;
+		}
+	      else if (lex_state == ls_hash)
+		{
+		  lex_state = ls_predicate;
+		  continue;
+		}
+	      else if (pfile->state.in_expression
+		       && node == pfile->spec_nodes.n_defined)
+		{
+		  lex_state = ls_defined;
+		  continue;
+		}
+	    }
+	  break;
 
-        case '(':
-          if (quote == 0)
-            {
-              paren_depth++;
-              if (lex_state == ls_fun_open)
-                {
-                  if (recursive_macro (pfile, fmacro.node))
-                    lex_state = ls_none;
-                  else
-                    {
-                      lex_state = ls_fun_close;
-                      paren_depth = 1;
-                      out = pfile->out.base + fmacro.offset;
-                      fmacro.args[0] = fmacro.offset;
-                    }
-                }
-              else if (lex_state == ls_predicate)
-                lex_state = ls_answer;
-              else if (lex_state == ls_defined)
-                lex_state = ls_defined_close;
-            }
-          break;
+	case '(':
+	  if (quote == 0)
+	    {
+	      paren_depth++;
+	      if (lex_state == ls_fun_open)
+		{
+		  if (recursive_macro (pfile, fmacro.node))
+		    lex_state = ls_none;
+		  else
+		    {
+		      lex_state = ls_fun_close;
+		      paren_depth = 1;
+		      out = pfile->out.base + fmacro.offset;
+		      fmacro.args[0] = fmacro.offset;
+		    }
+		}
+	      else if (lex_state == ls_predicate)
+		lex_state = ls_answer;
+	      else if (lex_state == ls_defined)
+		lex_state = ls_defined_close;
+	    }
+	  break;
 
-        case ',':
-          if (quote == 0 && lex_state == ls_fun_close && paren_depth == 1)
-            save_argument (&fmacro, out - pfile->out.base);
-          break;
+	case ',':
+	  if (quote == 0 && lex_state == ls_fun_close && paren_depth == 1)
+	    save_argument (&fmacro, out - pfile->out.base);
+	  break;
 
-        case ')':
-          if (quote == 0)
-            {
-              paren_depth--;
-              if (lex_state == ls_fun_close && paren_depth == 0)
-                {
-                  cpp_macro *m = fmacro.node->value.macro;
+	case ')':
+	  if (quote == 0)
+	    {
+	      paren_depth--;
+	      if (lex_state == ls_fun_close && paren_depth == 0)
+		{
+		  cpp_macro *m = fmacro.node->value.macro;
 
-                  m->used = 1;
-                  lex_state = ls_none;
-                  save_argument (&fmacro, out - pfile->out.base);
+		  m->used = 1;
+		  lex_state = ls_none;
+		  save_argument (&fmacro, out - pfile->out.base);
 
-                  /* A single zero-length argument is no argument.  */
-                  if (fmacro.argc == 1
-                      && m->paramc == 0
-                      && out == pfile->out.base + fmacro.offset + 1)
-                    fmacro.argc = 0;
+		  /* A single zero-length argument is no argument.  */
+		  if (fmacro.argc == 1
+		      && m->paramc == 0
+		      && out == pfile->out.base + fmacro.offset + 1)
+		    fmacro.argc = 0;
 
-                  if (_cpp_arguments_ok (pfile, m, fmacro.node, fmacro.argc))
-                    {
-                      /* Remove the macro's invocation from the
-                         output, and push its replacement text.  */
-                      pfile->out.cur = (pfile->out.base
-                                             + fmacro.offset);
-                      CUR (context) = cur;
-                      replace_args_and_push (pfile, &fmacro);
-                      goto new_context;
-                    }
-                }
-              else if (lex_state == ls_answer || lex_state == ls_defined_close)
-                lex_state = ls_none;
-            }
-          break;
+		  if (_cpp_arguments_ok (pfile, m, fmacro.node, fmacro.argc))
+		    {
+		      /* Remove the macro's invocation from the
+			 output, and push its replacement text.  */
+		      pfile->out.cur = (pfile->out.base
+					     + fmacro.offset);
+		      CUR (context) = cur;
+		      replace_args_and_push (pfile, &fmacro);
+		      goto new_context;
+		    }
+		}
+	      else if (lex_state == ls_answer || lex_state == ls_defined_close)
+		lex_state = ls_none;
+	    }
+	  break;
 
-        case '#':
-          if (cur - 1 == start_of_input_line
-              /* A '#' from a macro doesn't start a directive.  */
-              && !pfile->context->prev
-              && !pfile->state.in_directive)
-            {
-              /* A directive.  With the way _cpp_handle_directive
-                 currently works, we only want to call it if either we
-                 know the directive is OK, or we want it to fail and
-                 be removed from the output.  If we want it to be
-                 passed through (the assembler case) then we must not
-                 call _cpp_handle_directive.  */
-              pfile->out.cur = out;
-              cur = skip_whitespace (pfile, cur, true /* skip_comments */);
-              out = pfile->out.cur;
+	case '#':
+	  if (cur - 1 == start_of_input_line
+	      /* A '#' from a macro doesn't start a directive.  */
+	      && !pfile->context->prev
+	      && !pfile->state.in_directive)
+	    {
+	      /* A directive.  With the way _cpp_handle_directive
+		 currently works, we only want to call it if either we
+		 know the directive is OK, or we want it to fail and
+		 be removed from the output.  If we want it to be
+		 passed through (the assembler case) then we must not
+		 call _cpp_handle_directive.  */
+	      pfile->out.cur = out;
+	      cur = skip_whitespace (pfile, cur, true /* skip_comments */);
+	      out = pfile->out.cur;
 
-              if (*cur == '\n')
-                {
-                  /* Null directive.  Ignore it and don't invalidate
-                     the MI optimization.  */
-                  pfile->buffer->need_line = true;
-                  CPP_INCREMENT_LINE (pfile, 0);
-                  result = false;
-                  goto done;
-                }
-              else
-                {
-                  bool do_it = false;
+	      if (*cur == '\n')
+		{
+		  /* Null directive.  Ignore it and don't invalidate
+		     the MI optimization.  */
+		  pfile->buffer->need_line = true;
+		  CPP_INCREMENT_LINE (pfile, 0);
+		  result = false;
+		  goto done;
+		}
+	      else
+		{
+		  bool do_it = false;
 
-                  if (is_numstart (*cur)
-                      && CPP_OPTION (pfile, lang) != CLK_ASM)
-                    do_it = true;
-                  else if (is_idstart (*cur))
-                    /* Check whether we know this directive, but don't
-                       advance.  */
-                    do_it = lex_identifier (pfile, cur)->is_directive;
+		  if (is_numstart (*cur)
+		      && CPP_OPTION (pfile, lang) != CLK_ASM)
+		    do_it = true;
+		  else if (is_idstart (*cur))
+		    /* Check whether we know this directive, but don't
+		       advance.  */
+		    do_it = lex_identifier (pfile, cur)->is_directive;
 
-                  if (do_it || CPP_OPTION (pfile, lang) != CLK_ASM)
-                    {
-                      /* This is a kludge.  We want to have the ISO
-                         preprocessor lex the next token.  */
-                      pfile->buffer->cur = cur;
-                      _cpp_handle_directive (pfile, false /* indented */);
-                      result = false;
-                      goto done;
-                    }
-                }
-            }
+		  if (do_it || CPP_OPTION (pfile, lang) != CLK_ASM)
+		    {
+		      /* This is a kludge.  We want to have the ISO
+			 preprocessor lex the next token.  */
+		      pfile->buffer->cur = cur;
+		      _cpp_handle_directive (pfile, false /* indented */);
+		      result = false;
+		      goto done;
+		    }
+		}
+	    }
 
-          if (pfile->state.in_expression)
-            {
-              lex_state = ls_hash;
-              continue;
-            }
-          break;
+	  if (pfile->state.in_expression)
+	    {
+	      lex_state = ls_hash;
+	      continue;
+	    }
+	  break;
 
-        default:
-          break;
-        }
+	default:
+	  break;
+	}
 
       /* Non-whitespace disables MI optimization and stops treating
-         '<' as a quote in #include.  */
+	 '<' as a quote in #include.  */
       header_ok = false;
       if (!pfile->state.in_directive)
-        pfile->mi_valid = false;
+	pfile->mi_valid = false;
 
       if (lex_state == ls_none)
-        continue;
+	continue;
 
       /* Some of these transitions of state are syntax errors.  The
-         ISO preprocessor will issue errors later.  */
+	 ISO preprocessor will issue errors later.  */
       if (lex_state == ls_fun_open)
-        /* Missing '('.  */
-        lex_state = ls_none;
+	/* Missing '('.  */
+	lex_state = ls_none;
       else if (lex_state == ls_hash
-               || lex_state == ls_predicate
-               || lex_state == ls_defined)
-        lex_state = ls_none;
+	       || lex_state == ls_predicate
+	       || lex_state == ls_defined)
+	lex_state = ls_none;
 
       /* ls_answer and ls_defined_close keep going until ')'.  */
     }
@@ -672,8 +672,8 @@ _cpp_scan_out_logical_line (cpp_reader *pfile, cpp_macro *macro)
 
   if (lex_state == ls_fun_close)
     cpp_error_with_line (pfile, CPP_DL_ERROR, fmacro.line, 0,
-                         "unterminated argument list invoking macro \"%s\"",
-                         NODE_NAME (fmacro.node));
+			 "unterminated argument list invoking macro \"%s\"",
+			 NODE_NAME (fmacro.node));
   return result;
 }
 
@@ -730,20 +730,20 @@ recursive_macro (cpp_reader *pfile, cpp_hashnode *node)
       cpp_context *context = pfile->context;
 
       do
-        {
-          depth++;
-          if (context->macro == node && depth > 20)
-            break;
-          context = context->prev;
-        }
+	{
+	  depth++;
+	  if (context->macro == node && depth > 20)
+	    break;
+	  context = context->prev;
+	}
       while (context);
       recursing = context != NULL;
     }
 
   if (recursing)
     cpp_error (pfile, CPP_DL_ERROR,
-               "detected recursion whilst expanding macro \"%s\"",
-               NODE_NAME (node));
+	       "detected recursion whilst expanding macro \"%s\"",
+	       NODE_NAME (node));
 
   return recursing;
 }
@@ -761,15 +761,15 @@ _cpp_replacement_text_len (const cpp_macro *macro)
 
       len = 0;
       for (exp = macro->exp.text;;)
-        {
-          struct block *b = (struct block *) exp;
+	{
+	  struct block *b = (struct block *) exp;
 
-          len += b->text_len;
-          if (b->arg_index == 0)
-            break;
-          len += NODE_LEN (macro->params[b->arg_index - 1]);
-          exp += BLOCK_LEN (b->text_len);
-        }
+	  len += b->text_len;
+	  if (b->arg_index == 0)
+	    break;
+	  len += NODE_LEN (macro->params[b->arg_index - 1]);
+	  exp += BLOCK_LEN (b->text_len);
+	}
     }
   else
     len = macro->count;
@@ -788,19 +788,19 @@ _cpp_copy_replacement_text (const cpp_macro *macro, uchar *dest)
       const uchar *exp;
 
       for (exp = macro->exp.text;;)
-        {
-          struct block *b = (struct block *) exp;
-          cpp_hashnode *param;
+	{
+	  struct block *b = (struct block *) exp;
+	  cpp_hashnode *param;
 
-          memcpy (dest, b->text, b->text_len);
-          dest += b->text_len;
-          if (b->arg_index == 0)
-            break;
-          param = macro->params[b->arg_index - 1];
-          memcpy (dest, NODE_NAME (param), NODE_LEN (param));
-          dest += NODE_LEN (param);
-          exp += BLOCK_LEN (b->text_len);
-        }
+	  memcpy (dest, b->text, b->text_len);
+	  dest += b->text_len;
+	  if (b->arg_index == 0)
+	    break;
+	  param = macro->params[b->arg_index - 1];
+	  memcpy (dest, NODE_NAME (param), NODE_LEN (param));
+	  dest += NODE_LEN (param);
+	  exp += BLOCK_LEN (b->text_len);
+	}
     }
   else
     {
@@ -830,16 +830,16 @@ replace_args_and_push (cpp_reader *pfile, struct fun_macro *fmacro)
 
       /* Calculate the length of the argument-replaced text.  */
       for (exp = macro->exp.text;;)
-        {
-          struct block *b = (struct block *) exp;
+	{
+	  struct block *b = (struct block *) exp;
 
-          len += b->text_len;
-          if (b->arg_index == 0)
-            break;
-          len += (fmacro->args[b->arg_index]
-                  - fmacro->args[b->arg_index - 1] - 1);
-          exp += BLOCK_LEN (b->text_len);
-        }
+	  len += b->text_len;
+	  if (b->arg_index == 0)
+	    break;
+	  len += (fmacro->args[b->arg_index]
+		  - fmacro->args[b->arg_index - 1] - 1);
+	  exp += BLOCK_LEN (b->text_len);
+	}
 
       /* Allocate room for the expansion plus \n.  */
       buff = _cpp_get_buff (pfile, len + 1);
@@ -847,21 +847,21 @@ replace_args_and_push (cpp_reader *pfile, struct fun_macro *fmacro)
       /* Copy the expansion and replace arguments.  */
       p = BUFF_FRONT (buff);
       for (exp = macro->exp.text;;)
-        {
-          struct block *b = (struct block *) exp;
-          size_t arglen;
+	{
+	  struct block *b = (struct block *) exp;
+	  size_t arglen;
 
-          memcpy (p, b->text, b->text_len);
-          p += b->text_len;
-          if (b->arg_index == 0)
-            break;
-          arglen = (fmacro->args[b->arg_index]
-                    - fmacro->args[b->arg_index - 1] - 1);
-          memcpy (p, pfile->out.base + fmacro->args[b->arg_index - 1],
-                  arglen);
-          p += arglen;
-          exp += BLOCK_LEN (b->text_len);
-        }
+	  memcpy (p, b->text, b->text_len);
+	  p += b->text_len;
+	  if (b->arg_index == 0)
+	    break;
+	  arglen = (fmacro->args[b->arg_index]
+		    - fmacro->args[b->arg_index - 1] - 1);
+	  memcpy (p, pfile->out.base + fmacro->args[b->arg_index - 1],
+		  arglen);
+	  p += arglen;
+	  exp += BLOCK_LEN (b->text_len);
+	}
 
       /* \n-terminate.  */
       *p = '\n';
@@ -889,20 +889,20 @@ scan_parameters (cpp_reader *pfile, cpp_macro *macro)
       cur = skip_whitespace (pfile, cur, true /* skip_comments */);
 
       if (is_idstart (*cur))
-        {
-          ok = false;
-          if (_cpp_save_parameter (pfile, macro, lex_identifier (pfile, cur)))
-            break;
-          cur = skip_whitespace (pfile, CUR (pfile->context),
-                                 true /* skip_comments */);
-          if (*cur == ',')
-            {
-              cur++;
-              continue;
-            }
-          ok = (*cur == ')');
-          break;
-        }
+	{
+	  ok = false;
+	  if (_cpp_save_parameter (pfile, macro, lex_identifier (pfile, cur)))
+	    break;
+	  cur = skip_whitespace (pfile, CUR (pfile->context),
+				 true /* skip_comments */);
+	  if (*cur == ',')
+	    {
+	      cur++;
+	      continue;
+	    }
+	  ok = (*cur == ')');
+	  break;
+	}
 
       ok = (*cur == ')' && macro->paramc == 0);
       break;
@@ -922,7 +922,7 @@ scan_parameters (cpp_reader *pfile, cpp_macro *macro)
    text.  */
 static void
 save_replacement_text (cpp_reader *pfile, cpp_macro *macro,
-                       unsigned int arg_index)
+		       unsigned int arg_index)
 {
   size_t len = pfile->out.cur - pfile->out.base;
   uchar *exp;
@@ -930,7 +930,7 @@ save_replacement_text (cpp_reader *pfile, cpp_macro *macro,
   if (macro->paramc == 0)
     {
       /* Object-like and function-like macros without parameters
-         simply store their \n-terminated replacement text.  */
+	 simply store their \n-terminated replacement text.  */
       exp = _cpp_unaligned_alloc (pfile, len + 1);
       memcpy (exp, pfile->out.base, len);
       exp[len] = '\n';
@@ -941,12 +941,12 @@ save_replacement_text (cpp_reader *pfile, cpp_macro *macro,
   else
     {
       /* Store the text's length (unsigned int), the argument index
-         (unsigned short, base 1) and then the text.  */
+	 (unsigned short, base 1) and then the text.  */
       size_t blen = BLOCK_LEN (len);
       struct block *block;
 
       if (macro->count + blen > BUFF_ROOM (pfile->a_buff))
-        _cpp_extend_buff (pfile, &pfile->a_buff, macro->count + blen);
+	_cpp_extend_buff (pfile, &pfile->a_buff, macro->count + blen);
 
       exp = BUFF_FRONT (pfile->a_buff);
       block = (struct block *) (exp + macro->count);
@@ -965,7 +965,7 @@ save_replacement_text (cpp_reader *pfile, cpp_macro *macro,
 
       /* If we've finished, commit the memory.  */
       if (arg_index == 0)
-        BUFF_FRONT (pfile->a_buff) += macro->count;
+	BUFF_FRONT (pfile->a_buff) += macro->count;
     }
 }
 
@@ -994,20 +994,20 @@ _cpp_create_trad_definition (cpp_reader *pfile, cpp_macro *macro)
       macro->params = (cpp_hashnode **) BUFF_FRONT (pfile->a_buff);
 
       /* Setting macro to NULL indicates an error occurred, and
-         prevents unnecessary work in _cpp_scan_out_logical_line.  */
+	 prevents unnecessary work in _cpp_scan_out_logical_line.  */
       if (!ok)
-        macro = NULL;
+	macro = NULL;
       else
-        {
-          BUFF_FRONT (pfile->a_buff) = (uchar *) &macro->params[macro->paramc];
-          macro->fun_like = 1;
-        }
+	{
+	  BUFF_FRONT (pfile->a_buff) = (uchar *) &macro->params[macro->paramc];
+	  macro->fun_like = 1;
+	}
     }
 
   /* Skip leading whitespace in the replacement text.  */
   pfile->buffer->cur
     = skip_whitespace (pfile, CUR (context),
-                       CPP_OPTION (pfile, discard_comments_in_macro_exp));
+		       CPP_OPTION (pfile, discard_comments_in_macro_exp));
 
   pfile->state.prevent_expansion++;
   _cpp_scan_out_logical_line (pfile, macro);
@@ -1040,23 +1040,23 @@ canonicalize_text (uchar *dest, const uchar *src, size_t len, uchar *pquote)
   while (len)
     {
       if (is_space (*src) && !quote)
-        {
-          do
-            src++, len--;
-          while (len && is_space (*src));
-          *dest++ = ' ';
-        }
+	{
+	  do
+	    src++, len--;
+	  while (len && is_space (*src));
+	  *dest++ = ' ';
+	}
       else
-        {
-          if (*src == '\'' || *src == '"')
-            {
-              if (!quote)
-                quote = *src;
-              else if (quote == *src)
-                quote = 0;
-            }
-          *dest++ = *src++, len--;
-        }
+	{
+	  if (*src == '\'' || *src == '"')
+	    {
+	      if (!quote)
+		quote = *src;
+	      else if (quote == *src)
+		quote = 0;
+	    }
+	  *dest++ = *src++, len--;
+	}
     }
 
   *pquote = quote;
@@ -1067,7 +1067,7 @@ canonicalize_text (uchar *dest, const uchar *src, size_t len, uchar *pquote)
    than in the form of their whitespace.  */
 bool
 _cpp_expansions_different_trad (const cpp_macro *macro1,
-                                const cpp_macro *macro2)
+				const cpp_macro *macro2)
 {
   uchar *p1 = XNEWVEC (uchar, macro1->count + macro2->count);
   uchar *p2 = p1 + macro1->count;
@@ -1081,25 +1081,25 @@ _cpp_expansions_different_trad (const cpp_macro *macro1,
 
       mismatch = true;
       for (;;)
-        {
-          struct block *b1 = (struct block *) exp1;
-          struct block *b2 = (struct block *) exp2;
+	{
+	  struct block *b1 = (struct block *) exp1;
+	  struct block *b2 = (struct block *) exp2;
 
-          if (b1->arg_index != b2->arg_index)
-            break;
+	  if (b1->arg_index != b2->arg_index)
+	    break;
 
-          len1 = canonicalize_text (p1, b1->text, b1->text_len, &quote1);
-          len2 = canonicalize_text (p2, b2->text, b2->text_len, &quote2);
-          if (len1 != len2 || memcmp (p1, p2, len1))
-            break;
-          if (b1->arg_index == 0)
-            {
-              mismatch = false;
-              break;
-            }
-          exp1 += BLOCK_LEN (b1->text_len);
-          exp2 += BLOCK_LEN (b2->text_len);
-        }
+	  len1 = canonicalize_text (p1, b1->text, b1->text_len, &quote1);
+	  len2 = canonicalize_text (p2, b2->text, b2->text_len, &quote2);
+	  if (len1 != len2 || memcmp (p1, p2, len1))
+	    break;
+	  if (b1->arg_index == 0)
+	    {
+	      mismatch = false;
+	      break;
+	    }
+	  exp1 += BLOCK_LEN (b1->text_len);
+	  exp2 += BLOCK_LEN (b2->text_len);
+	}
     }
   else
     {

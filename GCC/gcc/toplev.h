@@ -37,9 +37,9 @@ extern void _fatal_insn (const char *, rtx, const char *, int, const char *)
      ATTRIBUTE_NORETURN;
 
 #define fatal_insn(msgid, insn) \
-        _fatal_insn (msgid, insn, __FILE__, __LINE__, __FUNCTION__)
+	_fatal_insn (msgid, insn, __FILE__, __LINE__, __FUNCTION__)
 #define fatal_insn_not_found(insn) \
-        _fatal_insn_not_found (insn, __FILE__, __LINE__, __FUNCTION__)
+	_fatal_insn_not_found (insn, __FILE__, __LINE__, __FUNCTION__)
 
 /* If we haven't already defined a frontend specific diagnostics
    style, use the generic one.  */
@@ -81,14 +81,14 @@ extern void warning_for_asm (rtx, const char *, ...) ATTRIBUTE_GCC_DIAG(2,3);
 extern void warn_deprecated_use (tree);
 
 #ifdef BUFSIZ
-extern void output_quoted_string        (FILE *, const char *);
-extern void output_file_directive        (FILE *, const char *);
+extern void output_quoted_string	(FILE *, const char *);
+extern void output_file_directive	(FILE *, const char *);
 #endif
 
 #ifdef BUFSIZ
   /* N.B. Unlike all the others, fnotice is just gettext+fprintf, and
      therefore it can have ATTRIBUTE_PRINTF.  */
-extern void fnotice                        (FILE *, const char *, ...)
+extern void fnotice			(FILE *, const char *, ...)
      ATTRIBUTE_PRINTF_2;
 #endif
 
@@ -146,10 +146,10 @@ extern struct ht *ident_hash;
 extern void set_fast_math_flags         (int);
 
 /* Handle -d switch.  */
-extern void decode_d_option                (const char *);
+extern void decode_d_option		(const char *);
 
 /* Return true iff flags are set as if -ffast-math.  */
-extern bool fast_math_flags_set_p        (void);
+extern bool fast_math_flags_set_p	(void);
 
 /* Return log2, or -1 if not exact.  */
 extern int exact_log2                  (unsigned HOST_WIDE_INT);
@@ -186,7 +186,7 @@ exact_log2 (unsigned HOST_WIDE_INT x)
 /* Functions used to get and set GCC's notion of in what directory
    compilation was started.  */
 
-extern const char *get_src_pwd               (void);
-extern bool set_src_pwd                       (const char *);
+extern const char *get_src_pwd	       (void);
+extern bool set_src_pwd		       (const char *);
 
 #endif /* ! GCC_TOPLEV_H */

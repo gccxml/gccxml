@@ -30,12 +30,12 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
    This exception does not however invalidate any other reasons why
    the executable file might be covered by the GNU General Public License.  */
 
-/*        This file contains definitions and declarations of things
-        relating to the normal start-up-time invocation of C++
-        file-scope static object constructors.  These declarations
-        and definitions are used by *both* libgcc2.c and by crtstuff.c.
+/*	This file contains definitions and declarations of things
+	relating to the normal start-up-time invocation of C++
+	file-scope static object constructors.  These declarations
+	and definitions are used by *both* libgcc2.c and by crtstuff.c.
 
-        Note that this file should only be compiled with GCC.
+	Note that this file should only be compiled with GCC.
 */
 
 /*  Declare a pointer to void function type.  */
@@ -73,14 +73,14 @@ extern void __do_global_dtors (void);
 /* Some systems use a different strategy for finding the ctors.
    For example, svr3.  */
 #ifndef DO_GLOBAL_CTORS_BODY
-#define DO_GLOBAL_CTORS_BODY                                                \
-do {                                                                        \
-  unsigned long nptrs = (unsigned long) __CTOR_LIST__[0];                \
-  unsigned i;                                                                \
-  if (nptrs == (unsigned long)-1)                                        \
-    for (nptrs = 0; __CTOR_LIST__[nptrs + 1] != 0; nptrs++);                \
-  for (i = nptrs; i >= 1; i--)                                                \
-    __CTOR_LIST__[i] ();                                                \
+#define DO_GLOBAL_CTORS_BODY						\
+do {									\
+  unsigned long nptrs = (unsigned long) __CTOR_LIST__[0];		\
+  unsigned i;								\
+  if (nptrs == (unsigned long)-1)				        \
+    for (nptrs = 0; __CTOR_LIST__[nptrs + 1] != 0; nptrs++);		\
+  for (i = nptrs; i >= 1; i--)						\
+    __CTOR_LIST__[i] ();						\
 } while (0)
 #endif
 

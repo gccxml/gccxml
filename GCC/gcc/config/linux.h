@@ -38,7 +38,7 @@ Boston, MA 02110-1301, USA.  */
    provides part of the support for getting C++ file-scope static
    object constructed before entering `main'.  */
    
-#undef        STARTFILE_SPEC
+#undef	STARTFILE_SPEC
 #if defined HAVE_LD_PIE
 #define STARTFILE_SPEC \
   "%{!shared: %{pg|p|profile:gcrt1.o%s;pie:Scrt1.o%s;:crt1.o%s}} \
@@ -55,7 +55,7 @@ Boston, MA 02110-1301, USA.  */
    object constructed before entering `main', followed by a normal
    GNU/Linux "finalizer" file, `crtn.o'.  */
 
-#undef        ENDFILE_SPEC
+#undef	ENDFILE_SPEC
 #define ENDFILE_SPEC \
   "%{shared|pie:crtendS.o%s;:crtend.o%s} crtn.o%s"
 
@@ -68,20 +68,20 @@ Boston, MA 02110-1301, USA.  */
 #undef CPLUSPLUS_CPP_SPEC
 #define CPLUSPLUS_CPP_SPEC "-D_GNU_SOURCE %(cpp)"
 
-#undef        LIB_SPEC
+#undef	LIB_SPEC
 #define LIB_SPEC \
   "%{pthread:-lpthread} \
    %{shared:-lc} \
    %{!shared:%{mieee-fp:-lieee} %{profile:-lc_p}%{!profile:-lc}}"
 
-#define LINUX_TARGET_OS_CPP_BUILTINS()                                \
-    do {                                                        \
-        builtin_define ("__gnu_linux__");                        \
-        builtin_define_std ("linux");                                \
-        builtin_define_std ("unix");                                \
-        builtin_assert ("system=linux");                        \
-        builtin_assert ("system=unix");                                \
-        builtin_assert ("system=posix");                        \
+#define LINUX_TARGET_OS_CPP_BUILTINS()				\
+    do {							\
+	builtin_define ("__gnu_linux__");			\
+	builtin_define_std ("linux");				\
+	builtin_define_std ("unix");				\
+	builtin_assert ("system=linux");			\
+	builtin_assert ("system=unix");				\
+	builtin_assert ("system=posix");			\
     } while (0)
 
 #if defined(HAVE_LD_EH_FRAME_HDR)

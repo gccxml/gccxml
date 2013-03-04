@@ -20,14 +20,14 @@ Boston, MA 02110-1301, USA.  */
 
 /* Amend common OpenBSD definitions for VAX target.  */
 
-#define TARGET_OS_CPP_BUILTINS()                \
-  do                                                \
-    {                                                \
-      builtin_define ("__unix__");                \
-      builtin_define ("__OpenBSD__");                \
-      builtin_assert ("system=unix");                \
-      builtin_assert ("system=OpenBSD");        \
-    }                                                \
+#define TARGET_OS_CPP_BUILTINS()		\
+  do						\
+    {						\
+      builtin_define ("__unix__");		\
+      builtin_define ("__OpenBSD__");		\
+      builtin_assert ("system=unix");		\
+      builtin_assert ("system=OpenBSD");	\
+    }						\
   while (0)
 
 /* Layout of source language data types.  */

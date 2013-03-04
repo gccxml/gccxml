@@ -81,17 +81,17 @@ extern void ix86_expand_vector_move (enum machine_mode, rtx[]);
 extern void ix86_expand_vector_move_misalign (enum machine_mode, rtx[]);
 extern void ix86_expand_push (enum machine_mode, rtx);
 extern rtx ix86_fixup_binary_operands (enum rtx_code,
-                                       enum machine_mode, rtx[]);
+				       enum machine_mode, rtx[]);
 extern void ix86_fixup_binary_operands_no_copy (enum rtx_code,
-                                                enum machine_mode, rtx[]);
+						enum machine_mode, rtx[]);
 extern void ix86_expand_binary_operator (enum rtx_code,
-                                         enum machine_mode, rtx[]);
+					 enum machine_mode, rtx[]);
 extern int ix86_binary_operator_ok (enum rtx_code, enum machine_mode, rtx[]);
 extern void ix86_expand_unary_operator (enum rtx_code, enum machine_mode,
-                                        rtx[]);
+					rtx[]);
 extern rtx ix86_build_signbit_mask (enum machine_mode, bool, bool);
 extern void ix86_expand_fp_absneg_operator (enum rtx_code, enum machine_mode,
-                                            rtx[]);
+					    rtx[]);
 extern void ix86_expand_copysign (rtx []);
 extern void ix86_split_copysign_const (rtx []);
 extern void ix86_split_copysign_var (rtx []);
@@ -133,15 +133,15 @@ extern rtx ix86_va_arg (tree, tree);
 extern rtx ix86_force_to_memory (enum machine_mode, rtx);
 extern void ix86_free_from_memory (enum machine_mode);
 extern void ix86_split_fp_branch (enum rtx_code code, rtx, rtx,
-                                  rtx, rtx, rtx, rtx);
+				  rtx, rtx, rtx, rtx);
 extern bool ix86_hard_regno_mode_ok (int, enum machine_mode);
 extern bool ix86_modes_tieable_p (enum machine_mode, enum machine_mode);
 extern int ix86_register_move_cost (enum machine_mode, enum reg_class,
-                                    enum reg_class);
+				    enum reg_class);
 extern int ix86_secondary_memory_needed (enum reg_class, enum reg_class,
-                                         enum machine_mode, int);
+					 enum machine_mode, int);
 extern bool ix86_cannot_change_mode_class (enum machine_mode,
-                                           enum machine_mode, enum reg_class);
+					   enum machine_mode, enum reg_class);
 extern enum reg_class ix86_preferred_reload_class (rtx, enum reg_class);
 extern enum reg_class ix86_preferred_output_reload_class (rtx, enum reg_class);
 extern int ix86_memory_move_cost (enum machine_mode, enum reg_class, int);
@@ -161,7 +161,7 @@ extern enum rtx_code ix86_reverse_condition (enum rtx_code, enum machine_mode);
 extern void init_cumulative_args (CUMULATIVE_ARGS *, tree, rtx, tree);
 extern rtx function_arg (CUMULATIVE_ARGS *, enum machine_mode, tree, int);
 extern void function_arg_advance (CUMULATIVE_ARGS *, enum machine_mode,
-                                  tree, int);
+				  tree, int);
 extern rtx ix86_function_value (tree, tree, bool);
 #endif
 
@@ -224,13 +224,13 @@ struct ix86_address
 extern int ix86_decompose_address (rtx, struct ix86_address *);
 extern int memory_address_length (rtx addr);
 extern void x86_output_aligned_bss (FILE *, tree, const char *,
-                                    unsigned HOST_WIDE_INT, int);
+				    unsigned HOST_WIDE_INT, int);
 extern void x86_elf_aligned_common (FILE *, const char *,
-                                    unsigned HOST_WIDE_INT, int);
+				    unsigned HOST_WIDE_INT, int);
 
 #ifdef RTX_CODE
 extern void ix86_fp_comparison_codes (enum rtx_code code, enum rtx_code *,
-                                      enum rtx_code *, enum rtx_code *);
+				      enum rtx_code *, enum rtx_code *);
 extern enum rtx_code ix86_fp_compare_code_to_integer (enum rtx_code);
 #endif
 extern int asm_preferred_eh_data_format (int, int);

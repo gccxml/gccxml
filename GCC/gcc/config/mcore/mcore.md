@@ -48,11 +48,11 @@
 
 ;; Scheduling.  We only model a simple load latency.
 (define_insn_reservation "any_insn" 1
-                         (eq_attr "type" "!load")
-                         "nothing")
+			 (eq_attr "type" "!load")
+			 "nothing")
 (define_insn_reservation "memory" 2
-                         (eq_attr "type" "load")
-                         "nothing")
+			 (eq_attr "type" "load")
+			 "nothing")
 
 (include "predicates.md")
 
@@ -66,7 +66,7 @@
                          (const_int 1)
                          (match_operand:SI 1 "mcore_literal_K_operand" "K")))]
   ""
-  "btsti        %0,%1"
+  "btsti	%0,%1"
   [(set_attr "type" "shift")])
 
 (define_insn ""
@@ -75,18 +75,18 @@
                          (const_int 1)
                          (match_operand:SI 1 "mcore_literal_K_operand" "K")))]
   ""
-  "btsti        %0,%1"
+  "btsti	%0,%1"
   [(set_attr "type" "shift")])
 
 ;;; This is created by combine.
 (define_insn ""
   [(set (reg:CC 17)
-        (ne:CC (zero_extract:SI (match_operand:SI 0 "mcore_arith_reg_operand" "r")
-                                (const_int 1)
-                                (match_operand:SI 1 "mcore_literal_K_operand" "K"))
-               (const_int 0)))]
+	(ne:CC (zero_extract:SI (match_operand:SI 0 "mcore_arith_reg_operand" "r")
+				(const_int 1)
+				(match_operand:SI 1 "mcore_literal_K_operand" "K"))
+	       (const_int 0)))]
   ""
-  "btsti        %0,%1"
+  "btsti	%0,%1"
   [(set_attr "type" "shift")])
 
 
@@ -99,7 +99,7 @@
                (const_int 0)))]
   "GET_CODE(operands[0]) == SUBREG && 
       GET_MODE(SUBREG_REG(operands[0])) == QImode"
-  "btsti        %0,7"
+  "btsti	%0,7"
   [(set_attr "type" "shift")])
 
 (define_insn ""
@@ -109,43 +109,43 @@
                (const_int 0)))]
   "GET_CODE(operands[0]) == SUBREG && 
       GET_MODE(SUBREG_REG(operands[0])) == HImode"
-  "btsti        %0,15"
+  "btsti	%0,15"
   [(set_attr "type" "shift")])
 
 (define_split
   [(set (pc)
-        (if_then_else (ne (eq:CC (zero_extract:SI
-                                  (match_operand:SI 0 "mcore_arith_reg_operand" "")
-                                  (const_int 1)
-                                  (match_operand:SI 1 "mcore_literal_K_operand" ""))
-                                 (const_int 0))
-                          (const_int 0))
-                      (label_ref (match_operand 2 "" ""))
-                      (pc)))]
+	(if_then_else (ne (eq:CC (zero_extract:SI
+				  (match_operand:SI 0 "mcore_arith_reg_operand" "")
+				  (const_int 1)
+				  (match_operand:SI 1 "mcore_literal_K_operand" ""))
+				 (const_int 0))
+			  (const_int 0))
+		      (label_ref (match_operand 2 "" ""))
+		      (pc)))]
   ""
   [(set (reg:CC 17)
-        (zero_extract:SI (match_dup 0) (const_int 1) (match_dup 1)))
+	(zero_extract:SI (match_dup 0) (const_int 1) (match_dup 1)))
    (set (pc) (if_then_else (eq (reg:CC 17) (const_int 0))
-                           (label_ref (match_dup 2))
-                           (pc)))]
+			   (label_ref (match_dup 2))
+			   (pc)))]
   "")
 
 (define_split
   [(set (pc)
-        (if_then_else (eq (ne:CC (zero_extract:SI
-                                  (match_operand:SI 0 "mcore_arith_reg_operand" "")
-                                  (const_int 1)
-                                  (match_operand:SI 1 "mcore_literal_K_operand" ""))
-                                 (const_int 0))
-                          (const_int 0))
-                      (label_ref (match_operand 2 "" ""))
-                      (pc)))]
+	(if_then_else (eq (ne:CC (zero_extract:SI
+				  (match_operand:SI 0 "mcore_arith_reg_operand" "")
+				  (const_int 1)
+				  (match_operand:SI 1 "mcore_literal_K_operand" ""))
+				 (const_int 0))
+			  (const_int 0))
+		      (label_ref (match_operand 2 "" ""))
+		      (pc)))]
   ""
   [(set (reg:CC 17)
-        (zero_extract:SI (match_dup 0) (const_int 1) (match_dup 1)))
+	(zero_extract:SI (match_dup 0) (const_int 1) (match_dup 1)))
    (set (pc) (if_then_else (eq (reg:CC 17) (const_int 0))
-                           (label_ref (match_dup 2))
-                           (pc)))]
+			   (label_ref (match_dup 2))
+			   (pc)))]
   "")
 
 ;; XXX - disabled by nickc because it fails on libiberty/fnmatch.c
@@ -166,27 +166,27 @@
 ;; 
 ;; (define_insn ""
 ;;   [(set (reg:CC 17)
-;;         (ne:CC (and:SI (match_operand:SI 0 "mcore_arith_reg_operand" "r")
-;;                        (match_operand:SI 1 "mcore_arith_any_imm_operand" "rI"))
-;;                (const_int 0)))]
+;; 	(ne:CC (and:SI (match_operand:SI 0 "mcore_arith_reg_operand" "r")
+;; 		       (match_operand:SI 1 "mcore_arith_any_imm_operand" "rI"))
+;; 	       (const_int 0)))]
 ;;   "TARGET_RELAX_IMM"
-;;   "tst        %0,%1")
+;;   "tst	%0,%1")
 ;; 
 ;; (define_insn ""
 ;;   [(set (reg:CC 17)
-;;         (ne:CC (and:SI (match_operand:SI 0 "mcore_arith_reg_operand" "r")
-;;                        (match_operand:SI 1 "mcore_arith_M_operand" "r"))
-;;                (const_int 0)))]
+;; 	(ne:CC (and:SI (match_operand:SI 0 "mcore_arith_reg_operand" "r")
+;; 		       (match_operand:SI 1 "mcore_arith_M_operand" "r"))
+;; 	       (const_int 0)))]
 ;;   "!TARGET_RELAX_IMM"
-;;   "tst        %0,%1")
+;;   "tst	%0,%1")
 
 (define_insn ""
   [(set (reg:CC 17)
-        (ne:CC (and:SI (match_operand:SI 0 "mcore_arith_reg_operand" "r")
-                       (match_operand:SI 1 "mcore_arith_M_operand" "r"))
-               (const_int 0)))]
+	(ne:CC (and:SI (match_operand:SI 0 "mcore_arith_reg_operand" "r")
+		       (match_operand:SI 1 "mcore_arith_M_operand" "r"))
+	       (const_int 0)))]
   ""
-  "tst        %0,%1")
+  "tst	%0,%1")
 
 
 (define_split 
@@ -207,80 +207,80 @@
 
 (define_insn "decne_t"
   [(set (reg:CC 17) (ne:CC (plus:SI (match_operand:SI 0 "mcore_arith_reg_operand" "+r")
-                                    (const_int -1))                  
-                           (const_int 0)))
+				    (const_int -1))		  
+			   (const_int 0)))
    (set (match_dup 0)
-        (plus:SI (match_dup 0)
-                 (const_int -1)))]
+	(plus:SI (match_dup 0)
+		 (const_int -1)))]
   ""
-  "decne        %0")
+  "decne	%0")
 
 ;; The combiner seems to prefer the following to the former.
 ;;
 (define_insn ""
   [(set (reg:CC 17) (ne:CC (match_operand:SI 0 "mcore_arith_reg_operand" "+r")
-                           (const_int 1)))
+			   (const_int 1)))
    (set (match_dup 0)
-        (plus:SI (match_dup 0)
-                 (const_int -1)))]
+	(plus:SI (match_dup 0)
+		 (const_int -1)))]
   ""
-  "decne        %0")
+  "decne	%0")
 
 (define_insn "cmpnesi_t"
   [(set (reg:CC 17) (ne:CC (match_operand:SI 0 "mcore_arith_reg_operand" "r")
-                           (match_operand:SI 1 "mcore_arith_reg_operand" "r")))]
+			   (match_operand:SI 1 "mcore_arith_reg_operand" "r")))]
   ""
-  "cmpne        %0,%1")
+  "cmpne	%0,%1")
 
 (define_insn "cmpneisi_t"
   [(set (reg:CC 17) (ne:CC (match_operand:SI 0 "mcore_arith_reg_operand" "r")
-                           (match_operand:SI 1 "mcore_arith_K_operand" "K")))]
+			   (match_operand:SI 1 "mcore_arith_K_operand" "K")))]
   ""
-  "cmpnei        %0,%1")
+  "cmpnei	%0,%1")
 
 (define_insn "cmpgtsi_t"
   [(set (reg:CC 17) (gt:CC (match_operand:SI 0 "mcore_arith_reg_operand" "r")
-                           (match_operand:SI 1 "mcore_arith_reg_operand" "r")))]
+			   (match_operand:SI 1 "mcore_arith_reg_operand" "r")))]
   ""
-  "cmplt        %1,%0")
+  "cmplt	%1,%0")
 
 (define_insn ""
   [(set (reg:CC 17) (gt:CC (plus:SI
-                            (match_operand:SI 0 "mcore_arith_reg_operand" "+r")
-                            (const_int -1))
-                           (const_int 0)))
+			    (match_operand:SI 0 "mcore_arith_reg_operand" "+r")
+			    (const_int -1))
+			   (const_int 0)))
    (set (match_dup 0) (plus:SI (match_dup 0) (const_int -1)))]
   ""
-  "decgt        %0")
+  "decgt	%0")
 
 (define_insn "cmpltsi_t"
   [(set (reg:CC 17) (lt:CC (match_operand:SI 0 "mcore_arith_reg_operand" "r")
-                           (match_operand:SI 1 "mcore_arith_reg_operand" "r")))]
+			   (match_operand:SI 1 "mcore_arith_reg_operand" "r")))]
   ""
-  "cmplt        %0,%1")
+  "cmplt	%0,%1")
 
 ; cmplti is 1-32
 (define_insn "cmpltisi_t"
   [(set (reg:CC 17) (lt:CC (match_operand:SI 0 "mcore_arith_reg_operand" "r")
-                           (match_operand:SI 1 "mcore_arith_J_operand" "J")))]
+			   (match_operand:SI 1 "mcore_arith_J_operand" "J")))]
   ""
-  "cmplti        %0,%1")
+  "cmplti	%0,%1")
 
 ; covers cmplti x,0
 (define_insn ""
   [(set (reg:CC 17) (lt:CC (match_operand:SI 0 "mcore_arith_reg_operand" "r")
                          (const_int 0)))]
   ""
-  "btsti        %0,31")
+  "btsti	%0,31")
 
 (define_insn ""
   [(set (reg:CC 17) (lt:CC (plus:SI
-                            (match_operand:SI 0 "mcore_arith_reg_operand" "+r")
-                            (const_int -1))
-                           (const_int 0)))
+			    (match_operand:SI 0 "mcore_arith_reg_operand" "+r")
+			    (const_int -1))
+			   (const_int 0)))
    (set (match_dup 0) (plus:SI (match_dup 0) (const_int -1)))]
   ""
-  "declt        %0")
+  "declt	%0")
 
 ;; -------------------------------------------------------------------------
 ;; SImode unsigned integer comparisons
@@ -288,21 +288,21 @@
 
 (define_insn "cmpgeusi_t"
   [(set (reg:CC 17) (geu:CC (match_operand:SI 0 "mcore_arith_reg_operand" "r")
-                            (match_operand:SI 1 "mcore_arith_reg_operand" "r")))]
+			    (match_operand:SI 1 "mcore_arith_reg_operand" "r")))]
   ""
-  "cmphs        %0,%1")
+  "cmphs	%0,%1")
 
 (define_insn "cmpgeusi_0"
   [(set (reg:CC 17) (geu:CC (match_operand:SI 0 "mcore_arith_reg_operand" "r")
-                            (const_int 0)))]
+			    (const_int 0)))]
   ""
-  "cmpnei        %0, 0")
+  "cmpnei	%0, 0")
 
 (define_insn "cmpleusi_t"
   [(set (reg:CC 17) (leu:CC (match_operand:SI 0 "mcore_arith_reg_operand" "r")
-                            (match_operand:SI 1 "mcore_arith_reg_operand" "r")))]
+			    (match_operand:SI 1 "mcore_arith_reg_operand" "r")))]
   ""
-  "cmphs        %1,%0")
+  "cmphs	%1,%0")
 
 ;; We save the compare operands in the cmpxx patterns and use them when
 ;; we generate the branch.
@@ -312,7 +312,7 @@
 
 (define_expand "cmpsi"
   [(set (reg:CC 17) (compare:CC (match_operand:SI 0 "mcore_compare_operand" "")
-                                (match_operand:SI 1 "nonmemory_operand" "")))]
+				(match_operand:SI 1 "nonmemory_operand" "")))]
   ""
   "
 { arch_compare_op0 = operands[0];
@@ -332,23 +332,23 @@
 ;; RBE: I don't think we need both "S" and exact_log2() clauses.
 ;;(define_insn ""
 ;;  [(set (match_operand:SI 0 "mcore_arith_reg_operand" "=r")
-;;        (and:SI (match_operand:SI 1 "mcore_arith_reg_operand" "%0")
-;;                (match_operand:SI 2 "const_int_operand" "S")))]
+;;	(and:SI (match_operand:SI 1 "mcore_arith_reg_operand" "%0")
+;;		(match_operand:SI 2 "const_int_operand" "S")))]
 ;;  "mcore_arith_S_operand (operands[2])"
-;;  "bclri        %0,%Q2")
+;;  "bclri	%0,%Q2")
 ;;
 
 (define_insn "andnsi3"
   [(set (match_operand:SI 0 "mcore_arith_reg_operand" "=r")
-        (and:SI (not:SI (match_operand:SI 1 "mcore_arith_reg_operand" "r"))
-                (match_operand:SI 2 "mcore_arith_reg_operand" "0")))]
+	(and:SI (not:SI (match_operand:SI 1 "mcore_arith_reg_operand" "r"))
+		(match_operand:SI 2 "mcore_arith_reg_operand" "0")))]
   ""
-  "andn        %0,%1")
+  "andn	%0,%1")
 
 (define_expand "andsi3"
   [(set (match_operand:SI 0 "mcore_arith_reg_operand" "")
-        (and:SI (match_operand:SI 1 "mcore_arith_reg_operand" "")
-                (match_operand:SI 2 "nonmemory_operand" "")))]
+	(and:SI (match_operand:SI 1 "mcore_arith_reg_operand" "")
+		(match_operand:SI 2 "nonmemory_operand" "")))]
   ""
   "
 {
@@ -358,12 +358,12 @@
       int not_value = ~ INTVAL (operands[2]);
       if (   CONST_OK_FOR_I (not_value)
           || CONST_OK_FOR_M (not_value)
-          || CONST_OK_FOR_N (not_value))
-        {
-          operands[2] = copy_to_mode_reg (SImode, GEN_INT (not_value));
-          emit_insn (gen_andnsi3 (operands[0], operands[2], operands[1]));
-          DONE;
-        }
+	  || CONST_OK_FOR_N (not_value))
+	{
+	  operands[2] = copy_to_mode_reg (SImode, GEN_INT (not_value));
+	  emit_insn (gen_andnsi3 (operands[0], operands[2], operands[1]));
+	  DONE;
+	}
     }
 
   if (! mcore_arith_K_S_operand (operands[2], SImode))
@@ -372,37 +372,37 @@
 
 (define_insn ""
   [(set (match_operand:SI 0 "mcore_arith_reg_operand" "=r,r,r,r")
-        (and:SI (match_operand:SI 1 "mcore_arith_reg_operand" "0,0,r,0")
-                (match_operand:SI 2 "mcore_arith_any_imm_operand" "r,K,0,S")))]
+	(and:SI (match_operand:SI 1 "mcore_arith_reg_operand" "0,0,r,0")
+		(match_operand:SI 2 "mcore_arith_any_imm_operand" "r,K,0,S")))]
   "TARGET_RELAX_IMM"
   "*
 {
    switch (which_alternative)
      {
-     case 0: return \"and        %0,%2\";
-     case 1: return \"andi        %0,%2\";
-     case 2: return \"and        %0,%1\";
-     /* case -1: return \"bclri        %0,%Q2\";         will not happen */
+     case 0: return \"and	%0,%2\";
+     case 1: return \"andi	%0,%2\";
+     case 2: return \"and	%0,%1\";
+     /* case -1: return \"bclri	%0,%Q2\";	 will not happen */
      case 3: return mcore_output_bclri (operands[0], INTVAL (operands[2]));
      default: gcc_unreachable ();
      }
 }")
 
 ;; This was the old "S" which was "!(2^n)" */
-;; case -1: return \"bclri        %0,%Q2\";         will not happen */
+;; case -1: return \"bclri	%0,%Q2\";	 will not happen */
 
 (define_insn ""
   [(set (match_operand:SI 0 "mcore_arith_reg_operand" "=r,r,r,r")
-        (and:SI (match_operand:SI 1 "mcore_arith_reg_operand" "0,0,r,0")
-                (match_operand:SI 2 "mcore_arith_K_S_operand" "r,K,0,S")))]
+	(and:SI (match_operand:SI 1 "mcore_arith_reg_operand" "0,0,r,0")
+		(match_operand:SI 2 "mcore_arith_K_S_operand" "r,K,0,S")))]
   "!TARGET_RELAX_IMM"
   "*
 {
    switch (which_alternative)
      {
-     case 0: return \"and        %0,%2\";
-     case 1: return \"andi        %0,%2\";
-     case 2: return \"and        %0,%1\";
+     case 0: return \"and	%0,%2\";
+     case 1: return \"andi	%0,%2\";
+     case 2: return \"and	%0,%1\";
      case 3: return mcore_output_bclri (operands[0], INTVAL (operands[2]));
      default: gcc_unreachable ();
      }
@@ -410,16 +410,16 @@
 
 ;(define_insn "iorsi3"
 ;  [(set (match_operand:SI 0 "mcore_arith_reg_operand" "=r")
-;        (ior:SI (match_operand:SI 1 "mcore_arith_reg_operand" "%0")
-;                (match_operand:SI 2 "mcore_arith_reg_operand" "r")))]
+;	(ior:SI (match_operand:SI 1 "mcore_arith_reg_operand" "%0")
+;		(match_operand:SI 2 "mcore_arith_reg_operand" "r")))]
 ;  ""
-;  "or        %0,%2")
+;  "or	%0,%2")
 
 ; need an expand to resolve ambiguity betw. the two iors below.
 (define_expand "iorsi3"
   [(set (match_operand:SI 0 "mcore_arith_reg_operand" "")
-        (ior:SI (match_operand:SI 1 "mcore_arith_reg_operand" "")
-                (match_operand:SI 2 "nonmemory_operand" "")))]
+	(ior:SI (match_operand:SI 1 "mcore_arith_reg_operand" "")
+		(match_operand:SI 2 "nonmemory_operand" "")))]
   ""
   "
 {
@@ -429,15 +429,15 @@
 
 (define_insn ""
   [(set (match_operand:SI 0 "mcore_arith_reg_operand" "=r,r,r")
-        (ior:SI (match_operand:SI 1 "mcore_arith_reg_operand" "%0,0,0")
-                (match_operand:SI 2 "mcore_arith_any_imm_operand" "r,M,T")))]
+	(ior:SI (match_operand:SI 1 "mcore_arith_reg_operand" "%0,0,0")
+		(match_operand:SI 2 "mcore_arith_any_imm_operand" "r,M,T")))]
   "TARGET_RELAX_IMM"
   "*
 {
    switch (which_alternative)
      {
-     case 0: return \"or        %0,%2\";
-     case 1: return \"bseti        %0,%P2\";
+     case 0: return \"or	%0,%2\";
+     case 1: return \"bseti	%0,%P2\";
      case 2: return mcore_output_bseti (operands[0], INTVAL (operands[2]));
      default: gcc_unreachable ();
      }
@@ -445,15 +445,15 @@
 
 (define_insn ""
   [(set (match_operand:SI 0 "mcore_arith_reg_operand" "=r,r,r")
-        (ior:SI (match_operand:SI 1 "mcore_arith_reg_operand" "%0,0,0")
-                (match_operand:SI 2 "mcore_arith_M_operand" "r,M,T")))]
+	(ior:SI (match_operand:SI 1 "mcore_arith_reg_operand" "%0,0,0")
+		(match_operand:SI 2 "mcore_arith_M_operand" "r,M,T")))]
   "!TARGET_RELAX_IMM"
   "*
 {
    switch (which_alternative)
      {
-     case 0: return \"or        %0,%2\";
-     case 1: return \"bseti        %0,%P2\";
+     case 0: return \"or	%0,%2\";
+     case 1: return \"bseti	%0,%P2\";
      case 2: return mcore_output_bseti (operands[0], INTVAL (operands[2]));
      default: gcc_unreachable ();
      }
@@ -461,50 +461,50 @@
 
 ;(define_insn ""
 ;  [(set (match_operand:SI 0 "mcore_arith_reg_operand" "=r")
-;        (ior:SI (match_operand:SI 1 "mcore_arith_reg_operand" "0")
-;                (match_operand:SI 2 "const_int_operand" "M")))]
+;	(ior:SI (match_operand:SI 1 "mcore_arith_reg_operand" "0")
+;		(match_operand:SI 2 "const_int_operand" "M")))]
 ;  "exact_log2 (INTVAL (operands[2])) >= 0"
-;  "bseti        %0,%P2")
+;  "bseti	%0,%P2")
 
 ;(define_insn ""
 ;  [(set (match_operand:SI 0 "mcore_arith_reg_operand" "=r")
-;        (ior:SI (match_operand:SI 1 "mcore_arith_reg_operand" "0")
-;                (match_operand:SI 2 "const_int_operand" "i")))]
+;	(ior:SI (match_operand:SI 1 "mcore_arith_reg_operand" "0")
+;		(match_operand:SI 2 "const_int_operand" "i")))]
 ;  "mcore_num_ones (INTVAL (operands[2])) < 3"
 ;  "* return mcore_output_bseti (operands[0], INTVAL (operands[2]));")
 
 (define_insn "xorsi3"
   [(set (match_operand:SI 0 "mcore_arith_reg_operand" "=r")
-        (xor:SI (match_operand:SI 1 "mcore_arith_reg_operand" "%0")
-                (match_operand:SI 2 "mcore_arith_reg_operand" "r")))]
+	(xor:SI (match_operand:SI 1 "mcore_arith_reg_operand" "%0")
+		(match_operand:SI 2 "mcore_arith_reg_operand" "r")))]
   ""
-  "xor        %0,%2")
+  "xor	%0,%2")
 
 ; these patterns give better code then gcc invents if
 ; left to its own devices
 
 (define_insn "anddi3"
   [(set (match_operand:DI 0 "mcore_arith_reg_operand" "=r")
-        (and:DI (match_operand:DI 1 "mcore_arith_reg_operand" "%0")
-                (match_operand:DI 2 "mcore_arith_reg_operand" "r")))]
+	(and:DI (match_operand:DI 1 "mcore_arith_reg_operand" "%0")
+		(match_operand:DI 2 "mcore_arith_reg_operand" "r")))]
   ""
-  "and        %0,%2\;and        %R0,%R2"
+  "and	%0,%2\;and	%R0,%R2"
   [(set_attr "length" "4")])
 
 (define_insn "iordi3"
   [(set (match_operand:DI 0 "mcore_arith_reg_operand" "=r")
-        (ior:DI (match_operand:DI 1 "mcore_arith_reg_operand" "%0")
-                (match_operand:DI 2 "mcore_arith_reg_operand" "r")))]
+	(ior:DI (match_operand:DI 1 "mcore_arith_reg_operand" "%0")
+		(match_operand:DI 2 "mcore_arith_reg_operand" "r")))]
   ""
-  "or        %0,%2\;or        %R0,%R2"
+  "or	%0,%2\;or	%R0,%R2"
   [(set_attr "length" "4")])
 
 (define_insn "xordi3"
   [(set (match_operand:DI 0 "mcore_arith_reg_operand" "=r")
-        (xor:DI (match_operand:DI 1 "mcore_arith_reg_operand" "%0")
-                (match_operand:DI 2 "mcore_arith_reg_operand" "r")))]
+	(xor:DI (match_operand:DI 1 "mcore_arith_reg_operand" "%0")
+		(match_operand:DI 2 "mcore_arith_reg_operand" "r")))]
   ""
-  "xor        %0,%2\;xor        %R0,%R2"
+  "xor	%0,%2\;xor	%R0,%R2"
   [(set_attr "length" "4")])
 
 ;; -------------------------------------------------------------------------
@@ -514,69 +514,69 @@
 ;; Only allow these if the shift count is a convenient constant.
 (define_expand "rotlsi3"
   [(set (match_operand:SI            0 "mcore_arith_reg_operand" "")
-        (rotate:SI (match_operand:SI 1 "mcore_arith_reg_operand" "")
-                   (match_operand:SI 2 "nonmemory_operand" "")))]
+	(rotate:SI (match_operand:SI 1 "mcore_arith_reg_operand" "")
+		   (match_operand:SI 2 "nonmemory_operand" "")))]
   ""
   "if (! mcore_literal_K_operand (operands[2], SImode))
-         FAIL;
+	 FAIL;
   ")
 
 ;; We can only do constant rotates, which is what this pattern provides.
 ;; The combiner will put it together for us when we do:
-;;        (x << N) | (x >> (32 - N))
+;;	(x << N) | (x >> (32 - N))
 (define_insn ""
   [(set (match_operand:SI              0 "mcore_arith_reg_operand" "=r")
-        (rotate:SI (match_operand:SI   1 "mcore_arith_reg_operand"  "0")
-                     (match_operand:SI 2 "mcore_literal_K_operand"  "K")))]
+	(rotate:SI (match_operand:SI   1 "mcore_arith_reg_operand"  "0")
+		     (match_operand:SI 2 "mcore_literal_K_operand"  "K")))]
   ""
-  "rotli        %0,%2"
+  "rotli	%0,%2"
   [(set_attr "type" "shift")])
 
 (define_insn "ashlsi3"
   [(set (match_operand:SI 0 "mcore_arith_reg_operand" "=r,r")
-        (ashift:SI (match_operand:SI 1 "mcore_arith_reg_operand" "0,0")
-                   (match_operand:SI 2 "mcore_arith_K_operand_not_0" "r,K")))]
+	(ashift:SI (match_operand:SI 1 "mcore_arith_reg_operand" "0,0")
+		   (match_operand:SI 2 "mcore_arith_K_operand_not_0" "r,K")))]
   ""
   "@
-        lsl        %0,%2
-        lsli        %0,%2"
+	lsl	%0,%2
+	lsli	%0,%2"
   [(set_attr "type" "shift")])
 
 (define_insn ""
   [(set (match_operand:SI 0 "mcore_arith_reg_operand" "=r")
-        (ashift:SI (const_int 1)
-                   (match_operand:SI 1 "mcore_arith_reg_operand" "r")))]
+	(ashift:SI (const_int 1)
+		   (match_operand:SI 1 "mcore_arith_reg_operand" "r")))]
   ""
-  "bgenr        %0,%1"
+  "bgenr	%0,%1"
   [(set_attr "type" "shift")])
 
 (define_insn "ashrsi3"
   [(set (match_operand:SI 0 "mcore_arith_reg_operand" "=r,r")
-        (ashiftrt:SI (match_operand:SI 1 "mcore_arith_reg_operand" "0,0")
-                     (match_operand:SI 2 "mcore_arith_K_operand_not_0" "r,K")))]
+	(ashiftrt:SI (match_operand:SI 1 "mcore_arith_reg_operand" "0,0")
+		     (match_operand:SI 2 "mcore_arith_K_operand_not_0" "r,K")))]
   ""
   "@
-        asr        %0,%2
-        asri        %0,%2"
+	asr	%0,%2
+	asri	%0,%2"
   [(set_attr "type" "shift")])
 
 (define_insn "lshrsi3"
   [(set (match_operand:SI 0 "mcore_arith_reg_operand" "=r,r")
-        (lshiftrt:SI (match_operand:SI 1 "mcore_arith_reg_operand" "0,0")
-                     (match_operand:SI 2 "mcore_arith_K_operand_not_0" "r,K")))]
+	(lshiftrt:SI (match_operand:SI 1 "mcore_arith_reg_operand" "0,0")
+		     (match_operand:SI 2 "mcore_arith_K_operand_not_0" "r,K")))]
   ""
   "@
-        lsr        %0,%2
-        lsri        %0,%2"
+	lsr	%0,%2
+	lsri	%0,%2"
   [(set_attr "type" "shift")])
 
 ;(define_expand "ashldi3"
 ;  [(parallel[(set (match_operand:DI 0 "mcore_arith_reg_operand" "")
-;                  (ashift:DI (match_operand:DI 1 "mcore_arith_reg_operand" "")
-;                             (match_operand:DI 2 "immediate_operand" "")))
+;		  (ashift:DI (match_operand:DI 1 "mcore_arith_reg_operand" "")
+;			     (match_operand:DI 2 "immediate_operand" "")))
 ;
-;             (clobber (reg:CC 17))])]
-;            
+;	     (clobber (reg:CC 17))])]
+;	    
 ;  ""
 ;  "
 ;{
@@ -587,11 +587,11 @@
 ;
 ;(define_insn ""
 ;  [(set (match_operand:DI 0 "mcore_arith_reg_operand" "=r")
-;        (ashift:DI (match_operand:DI 1 "mcore_arith_reg_operand" "0")
-;                     (const_int 1)))
+;	(ashift:DI (match_operand:DI 1 "mcore_arith_reg_operand" "0")
+;		     (const_int 1)))
 ;   (clobber (reg:CC 17))]
 ;  ""
-;  "lsli        %R0,0\;rotli        %0,0"
+;  "lsli	%R0,0\;rotli	%0,0"
 ;  [(set_attr "length" "4") (set_attr "type" "shift")])
 
 ;; -------------------------------------------------------------------------
@@ -611,9 +611,9 @@
 
 (define_insn "indexdi_t"
   [(set (match_operand:SI 0 "mcore_arith_reg_operand" "=r")
-        (plus:SI (mult:SI (match_operand:SI 1 "mcore_arith_reg_operand" "r")
-                          (const_int 8))
-                 (match_operand:SI 2 "mcore_arith_reg_operand" "0")))]
+	(plus:SI (mult:SI (match_operand:SI 1 "mcore_arith_reg_operand" "r")
+			  (const_int 8))
+		 (match_operand:SI 2 "mcore_arith_reg_operand" "0")))]
   ""
   "*
     if (! mcore_is_same_reg (operands[1], operands[2]))
@@ -630,76 +630,76 @@
   "
 ;; if operands[1] == operands[2], the first option above is wrong! -- dac
 ;; was this... -- dac
-;; ixw        %0,%1\;ixw        %0,%1"
+;; ixw	%0,%1\;ixw	%0,%1"
 
   [(set_attr "length" "4")])
 
 (define_insn ""
   [(set (match_operand:SI 0 "mcore_reload_operand" "=r,r,r")
-        (plus:SI (plus:SI (mult:SI (match_operand:SI 1 "mcore_reload_operand" "r,r,r")
-                                   (const_int 8))
-                          (match_operand:SI 2 "mcore_arith_reg_operand" "0,0,0"))
-                 (match_operand:SI 3 "mcore_addsub_operand" "r,J,L")))]
+	(plus:SI (plus:SI (mult:SI (match_operand:SI 1 "mcore_reload_operand" "r,r,r")
+				   (const_int 8))
+			  (match_operand:SI 2 "mcore_arith_reg_operand" "0,0,0"))
+		 (match_operand:SI 3 "mcore_addsub_operand" "r,J,L")))]
   "reload_in_progress"
   "@
-        ixw        %0,%1\;ixw        %0,%1\;addu        %0,%3
-        ixw        %0,%1\;ixw        %0,%1\;addi        %0,%3
-        ixw        %0,%1\;ixw        %0,%1\;subi        %0,%M3"
+	ixw	%0,%1\;ixw	%0,%1\;addu	%0,%3
+	ixw	%0,%1\;ixw	%0,%1\;addi	%0,%3
+	ixw	%0,%1\;ixw	%0,%1\;subi	%0,%M3"
   [(set_attr "length" "6")])
 
 ;; indexing longs (4 bytes)
 
 (define_insn "indexsi_t"
   [(set (match_operand:SI 0 "mcore_arith_reg_operand" "=r")
-        (plus:SI (mult:SI (match_operand:SI 1 "mcore_arith_reg_operand" "r")
-                          (const_int 4))
-                 (match_operand:SI 2 "mcore_arith_reg_operand" "0")))]
+	(plus:SI (mult:SI (match_operand:SI 1 "mcore_arith_reg_operand" "r")
+			  (const_int 4))
+		 (match_operand:SI 2 "mcore_arith_reg_operand" "0")))]
   ""
-  "ixw        %0,%1")
+  "ixw	%0,%1")
 
 (define_insn ""
   [(set (match_operand:SI 0 "mcore_reload_operand" "=r,r,r")
-        (plus:SI (plus:SI (mult:SI (match_operand:SI 1 "mcore_reload_operand" "r,r,r")
-                                   (const_int 4))
-                          (match_operand:SI 2 "mcore_arith_reg_operand" "0,0,0"))
-                 (match_operand:SI 3 "mcore_addsub_operand" "r,J,L")))]
+	(plus:SI (plus:SI (mult:SI (match_operand:SI 1 "mcore_reload_operand" "r,r,r")
+				   (const_int 4))
+			  (match_operand:SI 2 "mcore_arith_reg_operand" "0,0,0"))
+		 (match_operand:SI 3 "mcore_addsub_operand" "r,J,L")))]
   "reload_in_progress"
   "@
-        ixw        %0,%1\;addu        %0,%3
-        ixw        %0,%1\;addi        %0,%3
-        ixw        %0,%1\;subi        %0,%M3"
+	ixw	%0,%1\;addu	%0,%3
+	ixw	%0,%1\;addi	%0,%3
+	ixw	%0,%1\;subi	%0,%M3"
   [(set_attr "length" "4")])
 
 ;; indexing shorts (2 bytes)
 
 (define_insn "indexhi_t"
   [(set (match_operand:SI 0 "mcore_arith_reg_operand" "=r")
-        (plus:SI (mult:SI (match_operand:SI 1 "mcore_arith_reg_operand" "r")
-                          (const_int 2))
-                 (match_operand:SI 2 "mcore_arith_reg_operand" "0")))]
+	(plus:SI (mult:SI (match_operand:SI 1 "mcore_arith_reg_operand" "r")
+			  (const_int 2))
+		 (match_operand:SI 2 "mcore_arith_reg_operand" "0")))]
   ""
-  "ixh        %0,%1")
+  "ixh	%0,%1")
 
 (define_insn ""
   [(set (match_operand:SI 0 "mcore_reload_operand" "=r,r,r")
-        (plus:SI (plus:SI (mult:SI (match_operand:SI 1 "mcore_reload_operand" "r,r,r")
-                                   (const_int 2))
-                          (match_operand:SI 2 "mcore_arith_reg_operand" "0,0,0"))
-                 (match_operand:SI 3 "mcore_addsub_operand" "r,J,L")))]
+	(plus:SI (plus:SI (mult:SI (match_operand:SI 1 "mcore_reload_operand" "r,r,r")
+				   (const_int 2))
+			  (match_operand:SI 2 "mcore_arith_reg_operand" "0,0,0"))
+		 (match_operand:SI 3 "mcore_addsub_operand" "r,J,L")))]
   "reload_in_progress"
   "@
-        ixh        %0,%1\;addu        %0,%3
-        ixh        %0,%1\;addi        %0,%3
-        ixh        %0,%1\;subi        %0,%M3"
+	ixh	%0,%1\;addu	%0,%3
+	ixh	%0,%1\;addi	%0,%3
+	ixh	%0,%1\;subi	%0,%M3"
   [(set_attr "length" "4")])
 
 ;;
 ;; Other sizes may be handy for indexing. 
 ;; the tradeoffs to consider when adding these are
-;;        code size, execution time [vs. mul it is easy to win],
-;;        and register pressure -- these patterns don't use an extra
-;;        register to build the offset from the base
-;;        and whether the compiler will not come up with some other idiom.
+;;	code size, execution time [vs. mul it is easy to win],
+;;	and register pressure -- these patterns don't use an extra
+;;	register to build the offset from the base
+;;	and whether the compiler will not come up with some other idiom.
 ;;
 
 ;; -------------------------------------------------------------------------
@@ -708,8 +708,8 @@
 
 (define_expand "addsi3"
   [(set (match_operand:SI 0 "mcore_arith_reg_operand" "")
-        (plus:SI (match_operand:SI 1 "mcore_arith_reg_operand" "")
-                 (match_operand:SI 2 "nonmemory_operand" "")))]
+	(plus:SI (match_operand:SI 1 "mcore_arith_reg_operand" "")
+		 (match_operand:SI 2 "nonmemory_operand" "")))]
   ""
   "
 {
@@ -721,7 +721,7 @@
   if (flag_omit_frame_pointer
       && GET_CODE (operands[1]) == REG
       && (REGNO (operands[1]) == VIRTUAL_STACK_VARS_REGNUM
-          || REGNO (operands[1]) == FRAME_POINTER_REGNUM))
+	  || REGNO (operands[1]) == FRAME_POINTER_REGNUM))
     {
       emit_insn (gen_addsi3_fp (operands[0], operands[1], operands[2]));
       DONE;
@@ -734,13 +734,13 @@
     {
       int neg_value = - INTVAL (operands[2]);
       if (   CONST_OK_FOR_I (neg_value)
-          || CONST_OK_FOR_M (neg_value)
-          || CONST_OK_FOR_N (neg_value))
-        {
-          operands[2] = copy_to_mode_reg (SImode, GEN_INT (neg_value));
-          emit_insn (gen_subsi3 (operands[0], operands[1], operands[2]));
-          DONE;
-        }
+	  || CONST_OK_FOR_M (neg_value)
+	  || CONST_OK_FOR_N (neg_value))
+	{
+	  operands[2] = copy_to_mode_reg (SImode, GEN_INT (neg_value));
+	  emit_insn (gen_subsi3 (operands[0], operands[1], operands[2]));
+	  DONE;
+	}
     } 
 
   if (! mcore_addsub_operand (operands[2], SImode))
@@ -781,13 +781,13 @@
 
 (define_insn "addsi3_i"
   [(set (match_operand:SI 0 "mcore_arith_reg_operand" "=r,r,r")
-        (plus:SI (match_operand:SI 1 "mcore_arith_reg_operand" "%0,0,0")
-                 (match_operand:SI 2 "mcore_addsub_operand" "r,J,L")))]
+	(plus:SI (match_operand:SI 1 "mcore_arith_reg_operand" "%0,0,0")
+		 (match_operand:SI 2 "mcore_addsub_operand" "r,J,L")))]
   ""
   "@
-        addu        %0,%2
-        addi        %0,%2
-        subi        %0,%M2")
+	addu	%0,%2
+	addi	%0,%2
+	subi	%0,%M2")
 
 ;; This exists so that address computations based on the frame pointer
 ;; can be folded in when frame pointer elimination occurs.  Ordinarily
@@ -796,14 +796,14 @@
 
 (define_insn "addsi3_fp"
   [(set (match_operand:SI 0 "mcore_arith_reg_operand" "=r,r,r")
-        (plus:SI (match_operand:SI 1 "mcore_arith_reg_operand" "%0,0,0")
-                 (match_operand:SI 2 "immediate_operand" "r,J,L")))]
+	(plus:SI (match_operand:SI 1 "mcore_arith_reg_operand" "%0,0,0")
+		 (match_operand:SI 2 "immediate_operand" "r,J,L")))]
   "flag_omit_frame_pointer
    && (reload_in_progress || reload_completed || REGNO (operands[1]) == FRAME_POINTER_REGNUM)"
   "@
-        addu        %0,%2
-        addi        %0,%2
-        subi        %0,%M2")
+	addu	%0,%2
+	addi	%0,%2
+	subi	%0,%M2")
 
 ;; RBE: for some constants which are not in the range which allows
 ;; us to do a single operation, we will try a paired addi/addi instead
@@ -839,14 +839,14 @@
 
 ;(define_insn "subsi3"
 ;  [(set (match_operand:SI 0 "mcore_arith_reg_operand" "=r,r,r,r")
-;        (minus:SI (match_operand:SI 1 "mcore_arith_K_operand" "0,0,r,K")
-;                  (match_operand:SI 2 "mcore_arith_J_operand" "r,J,0,0")))]
+;	(minus:SI (match_operand:SI 1 "mcore_arith_K_operand" "0,0,r,K")
+;		  (match_operand:SI 2 "mcore_arith_J_operand" "r,J,0,0")))]
 ;  ""
 ;  "@
-;        sub        %0,%2
-;        subi        %0,%2
-;        rsub        %0,%1
-;        rsubi        %0,%1")
+;	sub	%0,%2
+;	subi	%0,%2
+;	rsub	%0,%1
+;	rsubi	%0,%1")
 
 (define_insn "subsi3"
   [(set (match_operand:SI 0 "mcore_arith_reg_operand" "=r,r,r")
@@ -854,58 +854,58 @@
                   (match_operand:SI 2 "mcore_arith_J_operand" "r,J,0")))]
   ""
   "@
-        subu        %0,%2
-        subi        %0,%2
-        rsub        %0,%1")
+	subu	%0,%2
+	subi	%0,%2
+	rsub	%0,%1")
 
 (define_insn ""
   [(set (match_operand:SI 0 "mcore_arith_reg_operand" "=r")
         (minus:SI (match_operand:SI 1 "mcore_literal_K_operand" "K")
                   (match_operand:SI 2 "mcore_arith_reg_operand" "0")))]
   ""
-  "rsubi        %0,%1")
+  "rsubi	%0,%1")
 
 (define_insn "adddi3"
   [(set (match_operand:DI 0 "mcore_arith_reg_operand" "=&r")
-        (plus:DI (match_operand:DI 1 "mcore_arith_reg_operand" "%0")
-                 (match_operand:DI 2 "mcore_arith_reg_operand" "r")))
+	(plus:DI (match_operand:DI 1 "mcore_arith_reg_operand" "%0")
+		 (match_operand:DI 2 "mcore_arith_reg_operand" "r")))
    (clobber (reg:CC 17))]
   ""
   "*
   {
     if (TARGET_LITTLE_END)
-      return \"cmplt        %0,%0\;addc        %0,%2\;addc        %R0,%R2\";
-    return \"cmplt        %R0,%R0\;addc        %R0,%R2\;addc        %0,%2\";
+      return \"cmplt	%0,%0\;addc	%0,%2\;addc	%R0,%R2\";
+    return \"cmplt	%R0,%R0\;addc	%R0,%R2\;addc	%0,%2\";
   }"
   [(set_attr "length" "6")])
 
 ;; special case for "longlong += 1"
 (define_insn ""
   [(set (match_operand:DI 0 "mcore_arith_reg_operand" "=&r")
-        (plus:DI (match_operand:DI 1 "mcore_arith_reg_operand" "0")
-                 (const_int 1)))
+	(plus:DI (match_operand:DI 1 "mcore_arith_reg_operand" "0")
+		 (const_int 1)))
    (clobber (reg:CC 17))]
   ""
   "*
   {
    if (TARGET_LITTLE_END)
-      return \"addi        %0,1\;cmpnei %0,0\;incf        %R0\";
-    return \"addi        %R0,1\;cmpnei %R0,0\;incf        %0\";
+      return \"addi	%0,1\;cmpnei %0,0\;incf	%R0\";
+    return \"addi	%R0,1\;cmpnei %R0,0\;incf	%0\";
   }"
   [(set_attr "length" "6")])
 
 ;; special case for "longlong -= 1"
 (define_insn ""
   [(set (match_operand:DI 0 "mcore_arith_reg_operand" "=&r")
-        (plus:DI (match_operand:DI 1 "mcore_arith_reg_operand" "0")
-                 (const_int -1)))
+	(plus:DI (match_operand:DI 1 "mcore_arith_reg_operand" "0")
+		 (const_int -1)))
    (clobber (reg:CC 17))]
   ""
   "*
   {
     if (TARGET_LITTLE_END)
-       return \"cmpnei %0,0\;decf        %R0\;subi        %0,1\";
-    return \"cmpnei %R0,0\;decf        %0\;subi        %R0,1\";
+       return \"cmpnei %0,0\;decf	%R0\;subi	%0,1\";
+    return \"cmpnei %R0,0\;decf	%0\;subi	%R0,1\";
   }"
   [(set_attr "length" "6")])
 
@@ -921,8 +921,8 @@
 
 (define_insn ""
   [(set (match_operand:DI 0 "mcore_arith_reg_operand" "=&r")
-        (plus:DI (match_operand:DI 1 "mcore_arith_reg_operand" "0")
-                 (match_operand:SI 2 "const_int_operand" "r")))
+	(plus:DI (match_operand:DI 1 "mcore_arith_reg_operand" "0")
+		 (match_operand:SI 2 "const_int_operand" "r")))
    (clobber (reg:CC 17))]
   "GET_CODE (operands[2]) == CONST_INT
    && INTVAL (operands[2]) > 0 && ! (INTVAL (operands[2]) & 0x80000000)"
@@ -930,8 +930,8 @@
 {
   gcc_assert (GET_MODE (operands[2]) == SImode);
   if (TARGET_LITTLE_END)
-    return \"addu        %0,%2\;cmphs        %0,%2\;incf        %R0\";
-  return \"addu        %R0,%2\;cmphs        %R0,%2\;incf        %0\";
+    return \"addu	%0,%2\;cmphs	%0,%2\;incf	%R0\";
+  return \"addu	%R0,%2\;cmphs	%R0,%2\;incf	%0\";
 }"
   [(set_attr "length" "6")])
 
@@ -939,35 +939,35 @@
 ;; won't trigger because of how the extension is expanded upstream.
 ;; (define_insn ""
 ;;   [(set (match_operand:DI 0 "mcore_arith_reg_operand" "=&r")
-;;         (plus:DI (match_operand:DI 1 "mcore_arith_reg_operand" "%0")
-;;                  (zero_extend:DI (match_operand:SI 2 "mcore_arith_reg_operand" "r"))))
+;; 	(plus:DI (match_operand:DI 1 "mcore_arith_reg_operand" "%0")
+;; 		 (zero_extend:DI (match_operand:SI 2 "mcore_arith_reg_operand" "r"))))
 ;;    (clobber (reg:CC 17))]
 ;;   "0"
-;;   "cmplt        %R0,%R0\;addc        %R0,%2\;inct        %0"
+;;   "cmplt	%R0,%R0\;addc	%R0,%2\;inct	%0"
 ;;   [(set_attr "length" "6")])
 
 ;; optimize "long long" + "signed long"
 ;; won't trigger because of how the extension is expanded upstream.
 ;; (define_insn ""
 ;;   [(set (match_operand:DI 0 "mcore_arith_reg_operand" "=&r")
-;;         (plus:DI (match_operand:DI 1 "mcore_arith_reg_operand" "%0")
-;;                  (sign_extend:DI (match_operand:SI 2 "mcore_arith_reg_operand" "r"))))
+;; 	(plus:DI (match_operand:DI 1 "mcore_arith_reg_operand" "%0")
+;; 		 (sign_extend:DI (match_operand:SI 2 "mcore_arith_reg_operand" "r"))))
 ;;    (clobber (reg:CC 17))]
 ;;   "0"
-;;   "cmplt        %R0,%R0\;addc        %R0,%2\;inct        %0\;btsti        %2,31\;dect        %0"
+;;   "cmplt	%R0,%R0\;addc	%R0,%2\;inct	%0\;btsti	%2,31\;dect	%0"
 ;;   [(set_attr "length" "6")])
 
 (define_insn "subdi3"
   [(set (match_operand:DI 0 "mcore_arith_reg_operand" "=&r")
-        (minus:DI (match_operand:DI 1 "mcore_arith_reg_operand" "0")
-                  (match_operand:DI 2 "mcore_arith_reg_operand" "r")))
+	(minus:DI (match_operand:DI 1 "mcore_arith_reg_operand" "0")
+		  (match_operand:DI 2 "mcore_arith_reg_operand" "r")))
    (clobber (reg:CC 17))]
   ""
   "*
   {
     if (TARGET_LITTLE_END)
-      return \"cmphs        %0,%0\;subc        %0,%2\;subc        %R0,%R2\";
-    return \"cmphs        %R0,%R0\;subc        %R0,%R2\;subc        %0,%2\";
+      return \"cmphs	%0,%0\;subc	%0,%2\;subc	%R0,%R2\";
+    return \"cmphs	%R0,%R0\;subc	%R0,%R2\;subc	%0,%2\";
   }"
   [(set_attr "length" "6")])
 
@@ -977,10 +977,10 @@
 
 (define_insn "mulsi3"
   [(set (match_operand:SI 0 "mcore_arith_reg_operand" "=r")
-        (mult:SI (match_operand:SI 1 "mcore_arith_reg_operand" "%0")
-                 (match_operand:SI 2 "mcore_arith_reg_operand" "r")))]
+	(mult:SI (match_operand:SI 1 "mcore_arith_reg_operand" "%0")
+		 (match_operand:SI 2 "mcore_arith_reg_operand" "r")))]
   ""
-  "mult        %0,%2")
+  "mult	%0,%2")
 
 ;;
 ;; 32/32 signed division -- added to the MCORE instruction set spring 1997
@@ -1029,38 +1029,38 @@
 
 (define_insn "negsi2"
   [(set (match_operand:SI 0 "mcore_arith_reg_operand" "=r")
-        (neg:SI (match_operand:SI 1 "mcore_arith_reg_operand" "0")))]
+	(neg:SI (match_operand:SI 1 "mcore_arith_reg_operand" "0")))]
   ""
   "*
 {
-   return \"rsubi        %0,0\";
+   return \"rsubi	%0,0\";
 }")
 
 
 (define_insn "abssi2"
   [(set (match_operand:SI 0 "mcore_arith_reg_operand" "=r")
-        (abs:SI (match_operand:SI 1 "mcore_arith_reg_operand" "0")))]
+	(abs:SI (match_operand:SI 1 "mcore_arith_reg_operand" "0")))]
   ""
-  "abs        %0")
-             
+  "abs	%0")
+	     
 (define_insn "negdi2"
   [(set (match_operand:DI 0 "mcore_arith_reg_operand" "=&r")
-        (neg:DI (match_operand:DI 1 "mcore_arith_reg_operand" "0")))
+	(neg:DI (match_operand:DI 1 "mcore_arith_reg_operand" "0")))
    (clobber (reg:CC 17))]
   ""
   "*
 {
    if (TARGET_LITTLE_END)
-     return \"cmpnei        %0,0\\n\\trsubi        %0,0\\n\\tnot        %R0\\n\\tincf        %R0\";
-   return \"cmpnei        %R0,0\\n\\trsubi        %R0,0\\n\\tnot        %0\\n\\tincf        %0\";
+     return \"cmpnei	%0,0\\n\\trsubi	%0,0\\n\\tnot	%R0\\n\\tincf	%R0\";
+   return \"cmpnei	%R0,0\\n\\trsubi	%R0,0\\n\\tnot	%0\\n\\tincf	%0\";
 }"
   [(set_attr "length" "8")])
 
 (define_insn "one_cmplsi2"
   [(set (match_operand:SI 0 "mcore_arith_reg_operand" "=r")
-        (not:SI (match_operand:SI 1 "mcore_arith_reg_operand" "0")))]
+	(not:SI (match_operand:SI 1 "mcore_arith_reg_operand" "0")))]
   ""
-  "not        %0")
+  "not	%0")
 
 ;; -------------------------------------------------------------------------
 ;; Zero extension instructions
@@ -1068,86 +1068,86 @@
 
 (define_expand "zero_extendhisi2"
   [(set (match_operand:SI 0 "mcore_arith_reg_operand" "")
-        (zero_extend:SI (match_operand:HI 1 "mcore_arith_reg_operand" "")))]
+	(zero_extend:SI (match_operand:HI 1 "mcore_arith_reg_operand" "")))]
   ""
   "")
 
 (define_insn ""
   [(set (match_operand:SI 0 "mcore_arith_reg_operand" "=r,r")
-        (zero_extend:SI (match_operand:HI 1 "general_operand" "0,m")))]
+	(zero_extend:SI (match_operand:HI 1 "general_operand" "0,m")))]
   ""
   "@
-        zexth        %0
-        ld.h        %0,%1"
+	zexth	%0
+	ld.h	%0,%1"
   [(set_attr "type" "shift,load")])
 
 ;; ldh gives us a free zero-extension. The combiner picks up on this.
 (define_insn ""
   [(set (match_operand:SI 0 "mcore_arith_reg_operand" "=r")
-        (zero_extend:SI (mem:HI (match_operand:SI 1 "mcore_arith_reg_operand" "r"))))]
+	(zero_extend:SI (mem:HI (match_operand:SI 1 "mcore_arith_reg_operand" "r"))))]
   ""
-  "ld.h        %0,(%1)"
+  "ld.h	%0,(%1)"
   [(set_attr "type" "load")])
 
 (define_insn ""
   [(set (match_operand:SI 0 "mcore_arith_reg_operand" "=r")
-        (zero_extend:SI (mem:HI (plus:SI (match_operand:SI 1 "mcore_arith_reg_operand" "r")
-                                         (match_operand:SI 2 "const_int_operand" "")))))]
+	(zero_extend:SI (mem:HI (plus:SI (match_operand:SI 1 "mcore_arith_reg_operand" "r")
+				         (match_operand:SI 2 "const_int_operand" "")))))]
   "(INTVAL (operands[2]) >= 0) &&
    (INTVAL (operands[2]) < 32) &&
    ((INTVAL (operands[2])&1) == 0)"
-  "ld.h        %0,(%1,%2)"
+  "ld.h	%0,(%1,%2)"
   [(set_attr "type" "load")])
 
 (define_expand "zero_extendqisi2"
   [(set (match_operand:SI 0 "mcore_arith_reg_operand" "")
-        (zero_extend:SI (match_operand:QI 1 "general_operand" "")))]
+	(zero_extend:SI (match_operand:QI 1 "general_operand" "")))]
   ""
   "") 
 
 ;; RBE: XXX: we don't recognize that the xtrb3 kills the CC register.
 (define_insn ""
   [(set (match_operand:SI 0 "mcore_arith_reg_operand" "=r,b,r")
-        (zero_extend:SI (match_operand:QI 1 "general_operand" "0,r,m")))]
+	(zero_extend:SI (match_operand:QI 1 "general_operand" "0,r,m")))]
   ""
   "@
-        zextb        %0
-        xtrb3        %0,%1
-        ld.b        %0,%1"
+	zextb	%0
+	xtrb3	%0,%1
+	ld.b	%0,%1"
   [(set_attr "type" "shift,shift,load")])
 
 ;; ldb gives us a free zero-extension. The combiner picks up on this.
 (define_insn ""
   [(set (match_operand:SI 0 "mcore_arith_reg_operand" "=r")
-        (zero_extend:SI (mem:QI (match_operand:SI 1 "mcore_arith_reg_operand" "r"))))]
+	(zero_extend:SI (mem:QI (match_operand:SI 1 "mcore_arith_reg_operand" "r"))))]
   ""
-  "ld.b        %0,(%1)"
+  "ld.b	%0,(%1)"
   [(set_attr "type" "load")])
 
 (define_insn ""
   [(set (match_operand:SI 0 "mcore_arith_reg_operand" "=r")
-        (zero_extend:SI (mem:QI (plus:SI (match_operand:SI 1 "mcore_arith_reg_operand" "r")
-                                         (match_operand:SI 2 "const_int_operand" "")))))]
+	(zero_extend:SI (mem:QI (plus:SI (match_operand:SI 1 "mcore_arith_reg_operand" "r")
+				         (match_operand:SI 2 "const_int_operand" "")))))]
   "(INTVAL (operands[2]) >= 0) &&
    (INTVAL (operands[2]) < 16)"
-  "ld.b        %0,(%1,%2)"
+  "ld.b	%0,(%1,%2)"
   [(set_attr "type" "load")])
 
 (define_expand "zero_extendqihi2"
   [(set (match_operand:HI 0 "mcore_arith_reg_operand" "")
-        (zero_extend:HI (match_operand:QI 1 "general_operand" "")))]
+	(zero_extend:HI (match_operand:QI 1 "general_operand" "")))]
   ""
   "") 
 
 ;; RBE: XXX: we don't recognize that the xtrb3 kills the CC register.
 (define_insn ""
   [(set (match_operand:HI 0 "mcore_arith_reg_operand" "=r,b,r")
-        (zero_extend:HI (match_operand:QI 1 "general_operand" "0,r,m")))]
+	(zero_extend:HI (match_operand:QI 1 "general_operand" "0,r,m")))]
   ""
   "@
-        zextb        %0
-        xtrb3        %0,%1
-        ld.b        %0,%1"
+	zextb	%0
+	xtrb3	%0,%1
+	ld.b	%0,%1"
   [(set_attr "type" "shift,shift,load")])
 
 ;; ldb gives us a free zero-extension. The combiner picks up on this.
@@ -1156,18 +1156,18 @@
 ;; out that we're dealing with a volatile...
 (define_insn ""
   [(set (match_operand:HI 0 "mcore_arith_reg_operand" "=r")
-        (zero_extend:HI (mem:QI (match_operand:SI 1 "mcore_arith_reg_operand" "r"))))]
+	(zero_extend:HI (mem:QI (match_operand:SI 1 "mcore_arith_reg_operand" "r"))))]
   ""
-  "ld.b        %0,(%1)"
+  "ld.b	%0,(%1)"
   [(set_attr "type" "load")])
 
 (define_insn ""
   [(set (match_operand:HI 0 "mcore_arith_reg_operand" "=r")
-        (zero_extend:HI (mem:QI (plus:SI (match_operand:SI 1 "mcore_arith_reg_operand" "r")
-                                         (match_operand:SI 2 "const_int_operand" "")))))]
+	(zero_extend:HI (mem:QI (plus:SI (match_operand:SI 1 "mcore_arith_reg_operand" "r")
+				         (match_operand:SI 2 "const_int_operand" "")))))]
   "(INTVAL (operands[2]) >= 0) &&
    (INTVAL (operands[2]) < 16)"
-  "ld.b        %0,(%1,%2)"
+  "ld.b	%0,(%1,%2)"
   [(set_attr "type" "load")])
 
 
@@ -1177,7 +1177,7 @@
 
 (define_expand "extendsidi2"
   [(set (match_operand:DI 0 "mcore_arith_reg_operand" "=r") 
-        (match_operand:SI 1 "mcore_arith_reg_operand" "r"))]
+	(match_operand:SI 1 "mcore_arith_reg_operand" "r"))]
   ""
   "
   {
@@ -1189,32 +1189,32 @@
       low = 4, high = 0;
     
     emit_insn (gen_rtx_SET (VOIDmode, gen_rtx_SUBREG (SImode, operands[0], low),
-              operands[1]));
+	      operands[1]));
     emit_insn (gen_rtx_SET (VOIDmode, gen_rtx_SUBREG (SImode, operands[0], high),
-              gen_rtx_ASHIFTRT (SImode,
-                               gen_rtx_SUBREG (SImode, operands[0], low),
-                               GEN_INT (31))));
+	      gen_rtx_ASHIFTRT (SImode,
+			       gen_rtx_SUBREG (SImode, operands[0], low),
+			       GEN_INT (31))));
     DONE;
   }"
 )
 
 (define_insn "extendhisi2"
   [(set (match_operand:SI 0 "mcore_arith_reg_operand" "=r")
-        (sign_extend:SI (match_operand:HI 1 "mcore_arith_reg_operand" "0")))]
+	(sign_extend:SI (match_operand:HI 1 "mcore_arith_reg_operand" "0")))]
   ""
-  "sexth        %0")
+  "sexth	%0")
 
 (define_insn "extendqisi2"
   [(set (match_operand:SI 0 "mcore_arith_reg_operand" "=r")
-        (sign_extend:SI (match_operand:QI 1 "mcore_arith_reg_operand" "0")))]
+	(sign_extend:SI (match_operand:QI 1 "mcore_arith_reg_operand" "0")))]
   ""
-  "sextb        %0")
+  "sextb	%0")
 
 (define_insn "extendqihi2"
   [(set (match_operand:HI 0 "mcore_arith_reg_operand" "=r")
-        (sign_extend:HI (match_operand:QI 1 "mcore_arith_reg_operand" "0")))]
+	(sign_extend:HI (match_operand:QI 1 "mcore_arith_reg_operand" "0")))]
   ""
-  "sextb        %0")
+  "sextb	%0")
 
 ;; -------------------------------------------------------------------------
 ;; Move instructions
@@ -1224,7 +1224,7 @@
 
 (define_expand "movsi"
   [(set (match_operand:SI 0 "general_operand" "")
-        (match_operand:SI 1 "general_operand" ""))]
+	(match_operand:SI 1 "general_operand" ""))]
   ""
   "
 {
@@ -1234,7 +1234,7 @@
 
 (define_insn ""
   [(set (match_operand:SI 0 "mcore_general_movdst_operand" "=r,r,a,r,a,r,m")
-        (match_operand:SI 1 "mcore_general_movsrc_operand"  "r,P,i,c,R,m,r"))]
+	(match_operand:SI 1 "mcore_general_movsrc_operand"  "r,P,i,c,R,m,r"))]
   "(register_operand (operands[0], SImode)
     || register_operand (operands[1], SImode))"
   "* return mcore_output_move (insn, operands, SImode);"
@@ -1246,18 +1246,18 @@
 
 (define_expand "movhi"
   [(set (match_operand:HI 0 "general_operand" "")
-        (match_operand:HI 1 "general_operand"  ""))]
+	(match_operand:HI 1 "general_operand"  ""))]
   ""
   "
 {
   if (GET_CODE (operands[0]) == MEM)
     operands[1] = force_reg (HImode, operands[1]);
   else if (CONSTANT_P (operands[1])
-           && (GET_CODE (operands[1]) != CONST_INT
-               || (! CONST_OK_FOR_I (INTVAL (operands[1]))
-                   && ! CONST_OK_FOR_M (INTVAL (operands[1]))
-                   && ! CONST_OK_FOR_N (INTVAL (operands[1]))))
-           && ! reload_completed && ! reload_in_progress)
+	   && (GET_CODE (operands[1]) != CONST_INT
+	       || (! CONST_OK_FOR_I (INTVAL (operands[1]))
+		   && ! CONST_OK_FOR_M (INTVAL (operands[1]))
+		   && ! CONST_OK_FOR_N (INTVAL (operands[1]))))
+	   && ! reload_completed && ! reload_in_progress)
     {
       rtx reg = gen_reg_rtx (SImode);
       emit_insn (gen_movsi (reg, operands[1]));
@@ -1267,7 +1267,7 @@
   
 (define_insn ""
   [(set (match_operand:HI 0 "mcore_general_movdst_operand" "=r,r,a,r,r,m")
-        (match_operand:HI 1 "mcore_general_movsrc_operand"  "r,P,i,c,m,r"))]
+	(match_operand:HI 1 "mcore_general_movsrc_operand"  "r,P,i,c,m,r"))]
   "(register_operand (operands[0], HImode)
     || register_operand (operands[1], HImode))"
   "* return mcore_output_move (insn, operands, HImode);"
@@ -1279,18 +1279,18 @@
 
 (define_expand "movqi"
   [(set (match_operand:QI 0 "general_operand" "")
-        (match_operand:QI 1 "general_operand"  ""))]
+	(match_operand:QI 1 "general_operand"  ""))]
   ""
   "
 {
   if (GET_CODE (operands[0]) == MEM)
     operands[1] = force_reg (QImode, operands[1]);
   else if (CONSTANT_P (operands[1])
-           && (GET_CODE (operands[1]) != CONST_INT
-               || (! CONST_OK_FOR_I (INTVAL (operands[1]))
-                   && ! CONST_OK_FOR_M (INTVAL (operands[1]))
-                   && ! CONST_OK_FOR_N (INTVAL (operands[1]))))
-           && ! reload_completed && ! reload_in_progress)
+	   && (GET_CODE (operands[1]) != CONST_INT
+	       || (! CONST_OK_FOR_I (INTVAL (operands[1]))
+		   && ! CONST_OK_FOR_M (INTVAL (operands[1]))
+		   && ! CONST_OK_FOR_N (INTVAL (operands[1]))))
+	   && ! reload_completed && ! reload_in_progress)
     {
       rtx reg = gen_reg_rtx (SImode);
       emit_insn (gen_movsi (reg, operands[1]));
@@ -1300,7 +1300,7 @@
   
 (define_insn ""
   [(set (match_operand:QI 0 "mcore_general_movdst_operand" "=r,r,a,r,r,m")
-        (match_operand:QI 1 "mcore_general_movsrc_operand"  "r,P,i,c,m,r"))]
+	(match_operand:QI 1 "mcore_general_movsrc_operand"  "r,P,i,c,m,r"))]
   "(register_operand (operands[0], QImode)
     || register_operand (operands[1], QImode))"
   "* return mcore_output_move (insn, operands, QImode);"
@@ -1311,7 +1311,7 @@
 
 (define_expand "movdi"
   [(set (match_operand:DI 0 "general_operand" "")
-        (match_operand:DI 1 "general_operand" ""))]
+	(match_operand:DI 1 "general_operand" ""))]
   ""
   "
 {
@@ -1319,20 +1319,20 @@
     operands[1] = force_reg (DImode, operands[1]);
   else if (GET_CODE (operands[1]) == CONST_INT
            && ! CONST_OK_FOR_I (INTVAL (operands[1]))
-           && ! CONST_OK_FOR_M (INTVAL (operands[1]))
-           && ! CONST_OK_FOR_N (INTVAL (operands[1])))
+	   && ! CONST_OK_FOR_M (INTVAL (operands[1]))
+	   && ! CONST_OK_FOR_N (INTVAL (operands[1])))
     {
       int i;
       for (i = 0; i < UNITS_PER_WORD * 2; i += UNITS_PER_WORD)
         emit_move_insn (simplify_gen_subreg (SImode, operands[0], DImode, i),
-                        simplify_gen_subreg (SImode, operands[1], DImode, i));
+		        simplify_gen_subreg (SImode, operands[1], DImode, i));
       DONE;
     }
 }")
 
 (define_insn "movdi_i"
   [(set (match_operand:DI 0 "general_operand" "=r,r,r,r,a,r,m")
-        (match_operand:DI 1 "mcore_general_movsrc_operand" "I,M,N,r,R,m,r"))]
+	(match_operand:DI 1 "mcore_general_movsrc_operand" "I,M,N,r,R,m,r"))]
   ""
   "* return mcore_output_movedouble (operands, DImode);"
   [(set_attr "length" "4") (set_attr "type" "move,move,move,move,load,load,store")])
@@ -1341,7 +1341,7 @@
 
 (define_expand "movsf"
   [(set (match_operand:SF 0 "general_operand" "")
-        (match_operand:SF 1 "general_operand" ""))]
+	(match_operand:SF 1 "general_operand" ""))]
   ""
   "
 {
@@ -1351,19 +1351,19 @@
 
 (define_insn "movsf_i"
   [(set (match_operand:SF 0 "general_operand" "=r,r,m")
-        (match_operand:SF 1 "general_operand"  "r,m,r"))]
+	(match_operand:SF 1 "general_operand"  "r,m,r"))]
   ""
   "@
-        mov        %0,%1
-        ld.w        %0,%1
-        st.w        %1,%0"
+	mov	%0,%1
+	ld.w	%0,%1
+	st.w	%1,%0"
   [(set_attr "type" "move,load,store")])
 
 ;; DFmode
 
 (define_expand "movdf"
   [(set (match_operand:DF 0 "general_operand" "")
-        (match_operand:DF 1 "general_operand" ""))]
+	(match_operand:DF 1 "general_operand" ""))]
   ""
   "
 {
@@ -1373,7 +1373,7 @@
 
 (define_insn "movdf_k"
   [(set (match_operand:DF 0 "general_operand" "=r,r,m")
-        (match_operand:DF 1 "general_operand" "r,m,r"))]
+	(match_operand:DF 1 "general_operand" "r,m,r"))]
   ""
   "* return mcore_output_movedouble (operands, DFmode);"
   [(set_attr "length" "4") (set_attr "type" "move,load,store")])
@@ -1384,21 +1384,21 @@
 ;; ??? This is not currently used.
 (define_insn "ldm"
   [(set (match_operand:TI 0 "mcore_arith_reg_operand" "=r")
-        (mem:TI (match_operand:SI 1 "mcore_arith_reg_operand" "r")))]
+	(mem:TI (match_operand:SI 1 "mcore_arith_reg_operand" "r")))]
   ""
-  "ldq        %U0,(%1)")
+  "ldq	%U0,(%1)")
 
 ;; ??? This is not currently used.
 (define_insn "stm"
   [(set (mem:TI (match_operand:SI 0 "mcore_arith_reg_operand" "r"))
-        (match_operand:TI 1 "mcore_arith_reg_operand" "r"))]
+	(match_operand:TI 1 "mcore_arith_reg_operand" "r"))]
   ""
-  "stq        %U1,(%0)")
+  "stq	%U1,(%0)")
 
 (define_expand "load_multiple"
   [(match_par_dup 3 [(set (match_operand:SI 0 "" "")
-                          (match_operand:SI 1 "" ""))
-                     (use (match_operand:SI 2 "" ""))])]
+			  (match_operand:SI 1 "" ""))
+		     (use (match_operand:SI 2 "" ""))])]
   ""
   "
 {
@@ -1422,22 +1422,22 @@
   for (i = 0; i < count; i++)
     XVECEXP (operands[3], 0, i)
       = gen_rtx_SET (VOIDmode,
-                 gen_rtx_REG (SImode, regno + i),
-                 gen_rtx_MEM (SImode, plus_constant (stack_pointer_rtx,
-                                                      i * 4)));
+		 gen_rtx_REG (SImode, regno + i),
+		 gen_rtx_MEM (SImode, plus_constant (stack_pointer_rtx,
+						      i * 4)));
 }")
 
 (define_insn ""
   [(match_parallel 0 "mcore_load_multiple_operation"
-                   [(set (match_operand:SI 1 "mcore_arith_reg_operand" "=r")
-                         (mem:SI (match_operand:SI 2 "register_operand" "r")))])]
+		   [(set (match_operand:SI 1 "mcore_arith_reg_operand" "=r")
+			 (mem:SI (match_operand:SI 2 "register_operand" "r")))])]
   "GET_CODE (operands[2]) == REG && REGNO (operands[2]) == STACK_POINTER_REGNUM"
-  "ldm        %1-r15,(%2)")
+  "ldm	%1-r15,(%2)")
 
 (define_expand "store_multiple"
   [(match_par_dup 3 [(set (match_operand:SI 0 "" "")
-                          (match_operand:SI 1 "" ""))
-                     (use (match_operand:SI 2 "" ""))])]
+			  (match_operand:SI 1 "" ""))
+		     (use (match_operand:SI 2 "" ""))])]
   ""
   "
 {
@@ -1461,17 +1461,17 @@
   for (i = 0; i < count; i++)
     XVECEXP (operands[3], 0, i)
       = gen_rtx_SET (VOIDmode,
-                 gen_rtx_MEM (SImode, plus_constant (stack_pointer_rtx,
-                                                      i * 4)),
-                 gen_rtx_REG (SImode, regno + i));
+		 gen_rtx_MEM (SImode, plus_constant (stack_pointer_rtx,
+						      i * 4)),
+		 gen_rtx_REG (SImode, regno + i));
 }")
 
 (define_insn ""
   [(match_parallel 0 "mcore_store_multiple_operation"
-                   [(set (mem:SI (match_operand:SI 2 "register_operand" "r"))
-                         (match_operand:SI 1 "mcore_arith_reg_operand" "r"))])]
+		   [(set (mem:SI (match_operand:SI 2 "register_operand" "r"))
+			 (match_operand:SI 1 "mcore_arith_reg_operand" "r"))])]
   "GET_CODE (operands[2]) == REG && REGNO (operands[2]) == STACK_POINTER_REGNUM"
-  "stm        %1-r15,(%2)")
+  "stm	%1-r15,(%2)")
 
 ;; ------------------------------------------------------------------------
 ;; Define the real conditional branch instructions.
@@ -1479,34 +1479,34 @@
 
 (define_insn "branch_true"
   [(set (pc) (if_then_else (ne (reg:CC 17) (const_int 0))
-                           (label_ref (match_operand 0 "" ""))
-                           (pc)))]
+			   (label_ref (match_operand 0 "" ""))
+			   (pc)))]
   ""
-  "jbt        %l0"
+  "jbt	%l0"
   [(set_attr "type" "brcond")])
 
 (define_insn "branch_false"
   [(set (pc) (if_then_else (eq (reg:CC 17) (const_int 0))
-                           (label_ref (match_operand 0 "" ""))
-                           (pc)))]
+			   (label_ref (match_operand 0 "" ""))
+			   (pc)))]
   ""
-  "jbf        %l0"
+  "jbf	%l0"
   [(set_attr "type" "brcond")])
 
 (define_insn "inverse_branch_true"
   [(set (pc) (if_then_else (ne (reg:CC 17) (const_int 0))
-                           (pc)
-                           (label_ref (match_operand 0 "" ""))))]
+			   (pc)
+			   (label_ref (match_operand 0 "" ""))))]
   ""
-  "jbf        %l0"
+  "jbf	%l0"
   [(set_attr "type" "brcond")])
 
 (define_insn "inverse_branch_false"
   [(set (pc) (if_then_else (eq (reg:CC 17) (const_int 0))
-                              (pc)
-                           (label_ref (match_operand 0 "" ""))))]
+   			   (pc)
+			   (label_ref (match_operand 0 "" ""))))]
   ""
-  "jbt        %l0"
+  "jbt	%l0"
   [(set_attr "type" "brcond")])
 
 ;; Conditional branch insns
@@ -1519,8 +1519,8 @@
 
 (define_expand "beq"
   [(set (pc) (if_then_else (ne (match_dup 1) (const_int 0))
-                           (pc)
-                           (label_ref (match_operand 0 "" ""))))]
+			   (pc)
+			   (label_ref (match_operand 0 "" ""))))]
   ""
   "
 {
@@ -1529,8 +1529,8 @@
 
 (define_expand "bne"
   [(set (pc) (if_then_else (ne (match_dup 1) (const_int 0))
-                           (label_ref (match_operand 0 "" ""))
-                           (pc)))]
+			   (label_ref (match_operand 0 "" ""))
+			   (pc)))]
   ""
   "
 {
@@ -1542,8 +1542,8 @@
 
 (define_expand "bgt"
   [(set (pc) (if_then_else (ne (match_dup 1) (const_int 0))
-                           (label_ref (match_operand 0 "" ""))
-                           (pc)))]
+			   (label_ref (match_operand 0 "" ""))
+			   (pc)))]
   ""
   "
 {
@@ -1564,7 +1564,7 @@
 
 (define_expand "ble"
   [(set (pc) (if_then_else (eq (match_dup 1) (const_int 0))
-                           (label_ref (match_operand 0 "" ""))
+			   (label_ref (match_operand 0 "" ""))
                            (pc)))]
   ""
   "
@@ -1590,8 +1590,8 @@
 
 (define_expand "blt"
   [(set (pc) (if_then_else (ne (match_dup 1) (const_int 0))
-                           (label_ref (match_operand 0 "" ""))
-                           (pc)))]
+			   (label_ref (match_operand 0 "" ""))
+			   (pc)))]
   ""
   "
 {
@@ -1602,8 +1602,8 @@
 
 (define_expand "bge"
   [(set (pc) (if_then_else (ne (match_dup 1) (const_int 0))
-                           (pc)
-                           (label_ref (match_operand 0 "" ""))))]
+			   (pc)
+			   (label_ref (match_operand 0 "" ""))))]
   ""
   "
 {
@@ -1614,8 +1614,8 @@
 
 ;(define_expand "bgtu"
 ;  [(set (pc) (if_then_else (ne (match_dup 1) (const_int 0))
-;                           (pc)
-;                           (label_ref (match_operand 0 "" ""))))]
+;			   (pc)
+;			   (label_ref (match_operand 0 "" ""))))]
 ;  ""
 ;  "
 ;{
@@ -1624,18 +1624,18 @@
 ;    operands[1] = mcore_gen_compare_reg (NE);
 ;  else 
 ;    { if (mcore_modify_comparison (GTU))
-;        {
-;          emit_jump_insn (gen_bgeu (operands[0]));
-;          DONE;
-;        }
+;	{
+;	  emit_jump_insn (gen_bgeu (operands[0]));
+;	  DONE;
+;	}
 ;      operands[1] = mcore_gen_compare_reg (LEU);
 ;    }
 ;}")
 
 (define_expand "bgtu"
   [(set (pc) (if_then_else (ne (match_dup 1) (const_int 0))
-                           (pc)
-                           (label_ref (match_operand 0 "" ""))))]
+			   (pc)
+			   (label_ref (match_operand 0 "" ""))))]
   ""
   "
 {
@@ -1643,21 +1643,21 @@
       && INTVAL (arch_compare_op1) == 0)
     {
       /* The inverse of '> 0' for an unsigned test is
-         '== 0' but we do not have such an instruction available.
-         Instead we must reverse the branch (back to the normal
-         ordering) and test '!= 0'.  */
-         
+	 '== 0' but we do not have such an instruction available.
+	 Instead we must reverse the branch (back to the normal
+	 ordering) and test '!= 0'.  */
+	 
       operands[1] = mcore_gen_compare_reg (NE);
       
       emit_jump_insn (gen_rtx_SET (VOIDmode,
-        pc_rtx,
-        gen_rtx_IF_THEN_ELSE (VOIDmode,
-        gen_rtx_NE (VOIDmode,
-        operands[1],
-        const0_rtx),
-        gen_rtx_LABEL_REF (VOIDmode,operands[0]),
-        pc_rtx)));
-      DONE;              
+	pc_rtx,
+	gen_rtx_IF_THEN_ELSE (VOIDmode,
+	gen_rtx_NE (VOIDmode,
+	operands[1],
+	const0_rtx),
+	gen_rtx_LABEL_REF (VOIDmode,operands[0]),
+	pc_rtx)));
+      DONE;	      
     }
   operands[1] = mcore_gen_compare_reg (GTU);
 }")
@@ -1665,8 +1665,8 @@
 
 (define_expand "bleu"
   [(set (pc) (if_then_else (ne (match_dup 1) (const_int 0))
-                           (label_ref (match_operand 0 "" ""))
-                           (pc)))]
+			   (label_ref (match_operand 0 "" ""))
+			   (pc)))]
   ""
   "
 {
@@ -1676,8 +1676,8 @@
 ; There is no bltu compare, so we reverse the branch arms
 (define_expand "bltu"
   [(set (pc) (if_then_else (ne (match_dup 1) (const_int 0))
-                           (pc)
-                           (label_ref (match_operand 0 "" ""))))]
+			   (pc)
+			   (label_ref (match_operand 0 "" ""))))]
   ""
   "
 {
@@ -1686,8 +1686,8 @@
 
 (define_expand "bgeu"
   [(set (pc) (if_then_else (ne (match_dup 1) (const_int 0))
-                           (label_ref (match_operand 0 "" ""))
-                           (pc)))]
+			   (label_ref (match_operand 0 "" ""))
+			   (pc)))]
   ""
   "
 {
@@ -1701,9 +1701,9 @@
 
 (define_insn "jump_real"
   [(set (pc)
-        (label_ref (match_operand 0 "" "")))]
+	(label_ref (match_operand 0 "" "")))]
   ""
-  "jbr        %l0"
+  "jbr	%l0"
   [(set_attr "type" "branch")])
 
 (define_expand "jump"
@@ -1718,15 +1718,15 @@
 
 (define_insn "indirect_jump"
   [(set (pc)
-        (match_operand:SI 0 "mcore_arith_reg_operand" "r"))]
+	(match_operand:SI 0 "mcore_arith_reg_operand" "r"))]
   ""
-  "jmp        %0"
+  "jmp	%0"
   [(set_attr "type" "jmp")])
 
 (define_expand "call"
   [(parallel[(call (match_operand:SI 0 "" "")
-                   (match_operand 1 "" ""))
-             (clobber (reg:SI 15))])]
+		   (match_operand 1 "" ""))
+	     (clobber (reg:SI 15))])]
   ""
   "
 {
@@ -1734,21 +1734,21 @@
       && ! register_operand (XEXP (operands[0], 0), SImode)
       && ! mcore_symbolic_address_p (XEXP (operands[0], 0)))
     operands[0] = gen_rtx_MEM (GET_MODE (operands[0]),
-                           force_reg (Pmode, XEXP (operands[0], 0)));
+			   force_reg (Pmode, XEXP (operands[0], 0)));
 }")
 
 (define_insn "call_internal"
   [(call (mem:SI (match_operand:SI 0 "mcore_call_address_operand" "riR"))
-         (match_operand 1 "" ""))
+	 (match_operand 1 "" ""))
    (clobber (reg:SI 15))]
   ""
   "* return mcore_output_call (operands, 0);")
 
 (define_expand "call_value"
   [(parallel[(set (match_operand 0 "register_operand" "")
-                  (call (match_operand:SI 1 "" "")
-                        (match_operand 2 "" "")))
-             (clobber (reg:SI 15))])]
+		  (call (match_operand:SI 1 "" "")
+			(match_operand 2 "" "")))
+	     (clobber (reg:SI 15))])]
   ""
   "
 {
@@ -1756,24 +1756,24 @@
       && ! register_operand (XEXP (operands[0], 0), SImode)
       && ! mcore_symbolic_address_p (XEXP (operands[0], 0)))
     operands[1] = gen_rtx_MEM (GET_MODE (operands[1]),
-                           force_reg (Pmode, XEXP (operands[1], 0)));
+			   force_reg (Pmode, XEXP (operands[1], 0)));
 }")
 
 (define_insn "call_value_internal"
   [(set (match_operand 0 "register_operand" "=r")
-        (call (mem:SI (match_operand:SI 1 "mcore_call_address_operand" "riR"))
-              (match_operand 2 "" "")))
+	(call (mem:SI (match_operand:SI 1 "mcore_call_address_operand" "riR"))
+	      (match_operand 2 "" "")))
    (clobber (reg:SI 15))]
   ""
   "* return mcore_output_call (operands, 1);")
 
 (define_insn "call_value_struct"
   [(parallel [(set (match_parallel 0 ""
-                     [(expr_list (match_operand 3 "register_operand" "") (match_operand 4 "immediate_operand" ""))
-                      (expr_list (match_operand 5 "register_operand" "") (match_operand 6 "immediate_operand" ""))])
-                  (call (match_operand:SI 1 "" "")
-                        (match_operand 2 "" "")))
-             (clobber (reg:SI 15))])]
+	             [(expr_list (match_operand 3 "register_operand" "") (match_operand 4 "immediate_operand" ""))
+		      (expr_list (match_operand 5 "register_operand" "") (match_operand 6 "immediate_operand" ""))])
+		  (call (match_operand:SI 1 "" "")
+			(match_operand 2 "" "")))
+	     (clobber (reg:SI 15))])]
   ""
   "* return mcore_output_call (operands, 1);"
 )
@@ -1786,20 +1786,20 @@
 (define_insn "nop"
   [(const_int 0)]
   ""
-  "or        r0,r0")
+  "or	r0,r0")
 
 (define_insn "tablejump"
   [(set (pc)
-        (match_operand:SI 0 "mcore_arith_reg_operand" "r"))
+	(match_operand:SI 0 "mcore_arith_reg_operand" "r"))
    (use (label_ref (match_operand 1 "" "")))]
   ""
-  "jmp        %0"
+  "jmp	%0"
   [(set_attr "type" "jmp")])
 
 (define_insn "*return"
  [(return)]
  "reload_completed && ! mcore_naked_function_p ()"
- "jmp        r15"
+ "jmp	r15"
  [(set_attr "type" "jmp")])
 
 (define_insn "*no_return"
@@ -1825,16 +1825,16 @@
 
 (define_insn "mvc"
   [(set (match_operand:SI 0 "mcore_arith_reg_operand" "=r")
-        (ne:SI (reg:CC 17) (const_int 0)))]
+	(ne:SI (reg:CC 17) (const_int 0)))]
   ""
-  "mvc        %0"
+  "mvc	%0"
   [(set_attr "type" "move")])
 
 (define_insn "mvcv"
   [(set (match_operand:SI 0 "mcore_arith_reg_operand" "=r")
-        (eq:SI (reg:CC 17) (const_int 0)))]
+	(eq:SI (reg:CC 17) (const_int 0)))]
   ""
-  "mvcv        %0"
+  "mvcv	%0"
   [(set_attr "type" "move")])
 
 ; in 0.97 use (LE 0) with (LT 1) and complement c.  BRC
@@ -1853,7 +1853,7 @@
 
 (define_expand "seq"
   [(set (match_operand:SI 0 "mcore_arith_reg_operand" "")
-        (eq:SI (match_dup 1) (const_int 0)))]
+	(eq:SI (match_dup 1) (const_int 0)))]
   ""
   "
 {
@@ -1862,7 +1862,7 @@
 
 (define_expand "sne"
   [(set (match_operand:SI 0 "mcore_arith_reg_operand" "")
-        (ne:SI (match_dup 1) (const_int 0)))]
+	(ne:SI (match_dup 1) (const_int 0)))]
   ""
   "
 {
@@ -1871,7 +1871,7 @@
 
 (define_expand "slt"
   [(set (match_operand:SI 0 "mcore_arith_reg_operand" "")
-        (ne:SI (match_dup 1) (const_int 0)))]
+	(ne:SI (match_dup 1) (const_int 0)))]
   ""
   "
 {
@@ -1890,7 +1890,7 @@
 
 (define_expand "sge"
   [(set (match_operand:SI 0 "mcore_arith_reg_operand" "")
-        (eq:SI (match_dup 1) (const_int 0)))]
+	(eq:SI (match_dup 1) (const_int 0)))]
   ""
   "
 {
@@ -1902,7 +1902,7 @@
 
 (define_expand "sgt"
   [(set (match_operand:SI 0 "mcore_arith_reg_operand" "")
-        (ne:SI (match_dup 1) (const_int 0)))]
+	(ne:SI (match_dup 1) (const_int 0)))]
   ""
   "
 {
@@ -1917,7 +1917,7 @@
 
 (define_expand "sle"
   [(set (match_operand:SI 0 "mcore_arith_reg_operand" "")
-        (eq:SI (match_dup 1) (const_int 0)))]
+	(eq:SI (match_dup 1) (const_int 0)))]
   ""
   "
 {
@@ -1931,7 +1931,7 @@
 
 (define_expand "sltu"
   [(set (match_operand:SI 0 "mcore_arith_reg_operand" "")
-        (eq:SI (match_dup 1) (const_int 0)))]
+	(eq:SI (match_dup 1) (const_int 0)))]
   ""
   "
 {
@@ -1940,7 +1940,7 @@
 
 (define_expand "sgeu"
   [(set (match_operand:SI 0 "mcore_arith_reg_operand" "")
-        (ne:SI (match_dup 1) (const_int 0)))]
+	(ne:SI (match_dup 1) (const_int 0)))]
   ""
   "
 {
@@ -1949,7 +1949,7 @@
 
 (define_expand "sgtu"
   [(set (match_operand:SI 0 "mcore_arith_reg_operand" "")
-        (eq:SI (match_dup 1) (const_int 0)))]
+	(eq:SI (match_dup 1) (const_int 0)))]
   ""
   "
 {
@@ -1958,7 +1958,7 @@
 
 (define_expand "sleu"
   [(set (match_operand:SI 0 "mcore_arith_reg_operand" "")
-        (ne:SI (match_dup 1) (const_int 0)))]
+	(ne:SI (match_dup 1) (const_int 0)))]
   ""
   "
 {
@@ -1967,31 +1967,31 @@
 
 (define_insn "incscc"
   [(set (match_operand:SI 0 "mcore_arith_reg_operand" "=r")
-        (plus:SI (ne (reg:CC 17) (const_int 0))
-                 (match_operand:SI 1 "mcore_arith_reg_operand" "0")))]
+	(plus:SI (ne (reg:CC 17) (const_int 0))
+		 (match_operand:SI 1 "mcore_arith_reg_operand" "0")))]
   ""
-  "inct        %0")
+  "inct	%0")
 
 (define_insn "incscc_false"
   [(set (match_operand:SI 0 "mcore_arith_reg_operand" "=r")
-        (plus:SI (eq (reg:CC 17) (const_int 0))
-                 (match_operand:SI 1 "mcore_arith_reg_operand" "0")))]
+	(plus:SI (eq (reg:CC 17) (const_int 0))
+		 (match_operand:SI 1 "mcore_arith_reg_operand" "0")))]
   ""
-  "incf        %0")
+  "incf	%0")
 
 (define_insn "decscc"
   [(set (match_operand:SI 0 "mcore_arith_reg_operand" "=r")
-        (minus:SI (match_operand:SI 1 "mcore_arith_reg_operand" "0")
-                  (ne (reg:CC 17) (const_int 0))))]
+	(minus:SI (match_operand:SI 1 "mcore_arith_reg_operand" "0")
+		  (ne (reg:CC 17) (const_int 0))))]
   ""
-  "dect        %0")
+  "dect	%0")
 
 (define_insn "decscc_false"
   [(set (match_operand:SI 0 "mcore_arith_reg_operand" "=r")
-        (minus:SI (match_operand:SI 1 "mcore_arith_reg_operand" "0")
-                  (eq (reg:CC 17) (const_int 0))))]
+	(minus:SI (match_operand:SI 1 "mcore_arith_reg_operand" "0")
+		  (eq (reg:CC 17) (const_int 0))))]
   ""
-  "decf        %0")
+  "decf	%0")
 
 ;; ------------------------------------------------------------------------
 ;; Conditional move patterns.
@@ -1999,24 +1999,24 @@
 
 (define_expand "smaxsi3"
   [(set (reg:CC 17)
-        (lt:CC (match_operand:SI 1 "mcore_arith_reg_operand" "")
-               (match_operand:SI 2 "mcore_arith_reg_operand" "")))
+	(lt:CC (match_operand:SI 1 "mcore_arith_reg_operand" "")
+	       (match_operand:SI 2 "mcore_arith_reg_operand" "")))
    (set (match_operand:SI 0 "mcore_arith_reg_operand" "")
-        (if_then_else:SI (eq (reg:CC 17) (const_int 0))
-                         (match_dup 1) (match_dup 2)))]
+	(if_then_else:SI (eq (reg:CC 17) (const_int 0))
+			 (match_dup 1) (match_dup 2)))]
   ""
   "")
-               
+	       
 (define_split
   [(set (match_operand:SI 0 "mcore_arith_reg_operand" "")
-        (smax:SI (match_operand:SI 1 "mcore_arith_reg_operand" "")
-                 (match_operand:SI 2 "mcore_arith_reg_operand" "")))]
+	(smax:SI (match_operand:SI 1 "mcore_arith_reg_operand" "")
+		 (match_operand:SI 2 "mcore_arith_reg_operand" "")))]
   ""
   [(set (reg:CC 17)
-        (lt:SI (match_dup 1) (match_dup 2)))
+	(lt:SI (match_dup 1) (match_dup 2)))
    (set (match_dup 0)
-        (if_then_else:SI (eq (reg:CC 17) (const_int 0))
-                         (match_dup 1) (match_dup 2)))]
+	(if_then_else:SI (eq (reg:CC 17) (const_int 0))
+			 (match_dup 1) (match_dup 2)))]
   "")
 
 ; no tstgt in 0.97, so just use cmplti (btsti x,31) and reverse move 
@@ -2035,24 +2035,24 @@
 
 (define_expand "sminsi3"
   [(set (reg:CC 17)
-        (lt:CC (match_operand:SI 1 "mcore_arith_reg_operand" "")
-               (match_operand:SI 2 "mcore_arith_reg_operand" "")))
+	(lt:CC (match_operand:SI 1 "mcore_arith_reg_operand" "")
+	       (match_operand:SI 2 "mcore_arith_reg_operand" "")))
    (set (match_operand:SI 0 "mcore_arith_reg_operand" "")
-        (if_then_else:SI (ne (reg:CC 17) (const_int 0))
-                         (match_dup 1) (match_dup 2)))]
+	(if_then_else:SI (ne (reg:CC 17) (const_int 0))
+			 (match_dup 1) (match_dup 2)))]
   ""
   "")
 
 (define_split
   [(set (match_operand:SI 0 "mcore_arith_reg_operand" "")
-        (smin:SI (match_operand:SI 1 "mcore_arith_reg_operand" "")
-                 (match_operand:SI 2 "mcore_arith_reg_operand" "")))]
+	(smin:SI (match_operand:SI 1 "mcore_arith_reg_operand" "")
+		 (match_operand:SI 2 "mcore_arith_reg_operand" "")))]
   ""
   [(set (reg:CC 17)
-        (lt:SI (match_dup 1) (match_dup 2)))
+	(lt:SI (match_dup 1) (match_dup 2)))
    (set (match_dup 0)
-        (if_then_else:SI (ne (reg:CC 17) (const_int 0))
-                         (match_dup 1) (match_dup 2)))]
+	(if_then_else:SI (ne (reg:CC 17) (const_int 0))
+			 (match_dup 1) (match_dup 2)))]
   "")
 
 ;(define_split
@@ -2073,46 +2073,46 @@
 
 (define_expand "umaxsi3"
   [(set (reg:CC 17)
-        (geu:CC (match_operand:SI 1 "mcore_arith_reg_operand" "")
-                (match_operand:SI 2 "mcore_arith_reg_operand" "")))
+	(geu:CC (match_operand:SI 1 "mcore_arith_reg_operand" "")
+		(match_operand:SI 2 "mcore_arith_reg_operand" "")))
    (set (match_operand:SI 0 "mcore_arith_reg_operand" "")
-        (if_then_else:SI (eq (reg:CC 17) (const_int 0))
-                         (match_dup 2) (match_dup 1)))]
+	(if_then_else:SI (eq (reg:CC 17) (const_int 0))
+			 (match_dup 2) (match_dup 1)))]
   ""
   "")
-               
+	       
 (define_split
   [(set (match_operand:SI 0 "mcore_arith_reg_operand" "")
-        (umax:SI (match_operand:SI 1 "mcore_arith_reg_operand" "")
-                 (match_operand:SI 2 "mcore_arith_reg_operand" "")))]
+	(umax:SI (match_operand:SI 1 "mcore_arith_reg_operand" "")
+		 (match_operand:SI 2 "mcore_arith_reg_operand" "")))]
   ""
   [(set (reg:CC 17)
-        (geu:SI (match_dup 1) (match_dup 2)))
+	(geu:SI (match_dup 1) (match_dup 2)))
    (set (match_dup 0)
-        (if_then_else:SI (eq (reg:CC 17) (const_int 0))
-                         (match_dup 2) (match_dup 1)))]
+	(if_then_else:SI (eq (reg:CC 17) (const_int 0))
+			 (match_dup 2) (match_dup 1)))]
   "")
 
 (define_expand "uminsi3"
   [(set (reg:CC 17)
-        (geu:CC (match_operand:SI 1 "mcore_arith_reg_operand" "")
-                (match_operand:SI 2 "mcore_arith_reg_operand" "")))
+	(geu:CC (match_operand:SI 1 "mcore_arith_reg_operand" "")
+		(match_operand:SI 2 "mcore_arith_reg_operand" "")))
    (set (match_operand:SI 0 "mcore_arith_reg_operand" "")
-        (if_then_else:SI (ne (reg:CC 17) (const_int 0))
-                         (match_dup 2) (match_dup 1)))]
+	(if_then_else:SI (ne (reg:CC 17) (const_int 0))
+			 (match_dup 2) (match_dup 1)))]
   ""
   "")
 
 (define_split
   [(set (match_operand:SI 0 "mcore_arith_reg_operand" "")
-        (umin:SI (match_operand:SI 1 "mcore_arith_reg_operand" "")
-                 (match_operand:SI 2 "mcore_arith_reg_operand" "")))]
+	(umin:SI (match_operand:SI 1 "mcore_arith_reg_operand" "")
+		 (match_operand:SI 2 "mcore_arith_reg_operand" "")))]
   ""
   [(set (reg:CC 17)
-        (geu:SI (match_dup 1) (match_dup 2)))
+	(geu:SI (match_dup 1) (match_dup 2)))
    (set (match_dup 0)
-        (if_then_else:SI (ne (reg:CC 17) (const_int 0))
-                         (match_dup 2) (match_dup 1)))]
+	(if_then_else:SI (ne (reg:CC 17) (const_int 0))
+			 (match_dup 2) (match_dup 1)))]
   "")
 
 ;; ------------------------------------------------------------------------
@@ -2160,16 +2160,16 @@
 
 (define_insn "movt0"
   [(set (match_operand:SI 0 "mcore_arith_reg_operand" "=r,r,r,r")
-        (if_then_else:SI
-         (ne (reg:CC 17) (const_int 0))
-         (match_operand:SI 1 "mcore_arith_imm_operand" "r,0,U,0")
-         (match_operand:SI 2 "mcore_arith_imm_operand" "0,r,0,U")))]
+	(if_then_else:SI
+	 (ne (reg:CC 17) (const_int 0))
+	 (match_operand:SI 1 "mcore_arith_imm_operand" "r,0,U,0")
+	 (match_operand:SI 2 "mcore_arith_imm_operand" "0,r,0,U")))]
   ""
   "@
-    movt        %0,%1
-    movf        %0,%2
-    clrt        %0
-    clrf        %0")
+    movt	%0,%1
+    movf	%0,%2
+    clrt	%0
+    clrf	%0")
 
 ;; ------------------------------------------------------------------------
 ;; eq
@@ -2191,16 +2191,16 @@
 
 (define_insn "movf0"
   [(set (match_operand:SI 0 "mcore_arith_reg_operand" "=r,r,r,r")
-        (if_then_else:SI
-         (eq (reg:CC 17) (const_int 0))
-         (match_operand:SI 1 "mcore_arith_imm_operand" "r,0,U,0")
-         (match_operand:SI 2 "mcore_arith_imm_operand" "0,r,0,U")))]
+	(if_then_else:SI
+	 (eq (reg:CC 17) (const_int 0))
+	 (match_operand:SI 1 "mcore_arith_imm_operand" "r,0,U,0")
+	 (match_operand:SI 2 "mcore_arith_imm_operand" "0,r,0,U")))]
   ""
   "@
-    movf        %0,%1
-    movt        %0,%2
-    clrf        %0
-    clrt        %0")
+    movf	%0,%1
+    movt	%0,%2
+    clrf	%0
+    clrt	%0")
 
 ; turns lsli rx,imm/btsti rx,31 into btsti rx,imm.  not done by a peephole
 ; because the instructions are not adjacent (peepholes are related by posn -
@@ -2217,10 +2217,10 @@
                          (match_operand:SI 4 "mcore_arith_imm_operand" "0,r,0,U")))]
   ""
   "@
-    btsti        %1,%2\;movf        %0,%3
-    btsti        %1,%2\;movt        %0,%4
-    btsti        %1,%2\;clrf        %0
-    btsti        %1,%2\;clrt        %0"
+    btsti	%1,%2\;movf	%0,%3
+    btsti	%1,%2\;movt	%0,%4
+    btsti	%1,%2\;clrf	%0
+    btsti	%1,%2\;clrt	%0"
   [(set_attr "length" "4")])
 
 ; turns sextb rx/btsti rx,31 into btsti rx,7.  must be QImode to be safe.  BRC
@@ -2236,10 +2236,10 @@
   "GET_CODE (operands[1]) == SUBREG && 
       GET_MODE (SUBREG_REG (operands[1])) == QImode"
   "@
-    btsti        %1,7\;movf        %0,%2
-    btsti        %1,7\;movt        %0,%3
-    btsti        %1,7\;clrf        %0
-    btsti        %1,7\;clrt        %0"
+    btsti	%1,7\;movf	%0,%2
+    btsti	%1,7\;movt	%0,%3
+    btsti	%1,7\;clrf	%0
+    btsti	%1,7\;clrt	%0"
   [(set_attr "length" "4")])
 
 
@@ -2270,23 +2270,23 @@
   out_operands[2] = operands[3];
   out_operands[3] = operands[1];
 
-  return mcore_output_cmov (out_operands, 1, \"cmpnei        %3,0\");
+  return mcore_output_cmov (out_operands, 1, \"cmpnei	%3,0\");
 
 }"
   [(set_attr "length" "6")])
 
 (define_insn "movt2"
   [(set (match_operand:SI 0 "mcore_arith_reg_operand" "=r,r,r,r")
-        (if_then_else:SI (ne (match_operand:SI 1 "mcore_arith_reg_operand" "r,r,r,r")
-                             (const_int 0))
-                         (match_operand:SI 2 "mcore_arith_imm_operand" "r,0,U,0")
-                         (match_operand:SI 3 "mcore_arith_imm_operand" "0,r,0,U")))]
+	(if_then_else:SI (ne (match_operand:SI 1 "mcore_arith_reg_operand" "r,r,r,r")
+			     (const_int 0))
+			 (match_operand:SI 2 "mcore_arith_imm_operand" "r,0,U,0")
+			 (match_operand:SI 3 "mcore_arith_imm_operand" "0,r,0,U")))]
   ""      
   "@
-    cmpnei        %1,0\;movt        %0,%2
-    cmpnei        %1,0\;movf        %0,%3
-    cmpnei        %1,0\;clrt        %0
-    cmpnei        %1,0\;clrf        %0"
+    cmpnei	%1,0\;movt	%0,%2
+    cmpnei	%1,0\;movf	%0,%3
+    cmpnei	%1,0\;clrt	%0
+    cmpnei	%1,0\;clrf	%0"
   [(set_attr "length" "4")])
 
 ; turns lsli rx,imm/btsti rx,31 into btsti rx,imm.  not done by a peephole
@@ -2304,10 +2304,10 @@
                          (match_operand:SI 4 "mcore_arith_imm_operand" "0,r,0,U")))]
   ""
   "@
-    btsti        %1,%2\;movt        %0,%3
-    btsti        %1,%2\;movf        %0,%4
-    btsti        %1,%2\;clrt        %0
-    btsti        %1,%2\;clrf        %0"
+    btsti	%1,%2\;movt	%0,%3
+    btsti	%1,%2\;movf	%0,%4
+    btsti	%1,%2\;clrt	%0
+    btsti	%1,%2\;clrf	%0"
   [(set_attr "length" "4")])
 
 ; turns sextb rx/btsti rx,31 into btsti rx,7.  must be QImode to be safe.  BRC
@@ -2323,10 +2323,10 @@
   "GET_CODE (operands[1]) == SUBREG && 
       GET_MODE (SUBREG_REG (operands[1])) == QImode"
   "@
-    btsti        %1,7\;movt        %0,%2
-    btsti        %1,7\;movf        %0,%3
-    btsti        %1,7\;clrt        %0
-    btsti        %1,7\;clrf        %0"
+    btsti	%1,7\;movt	%0,%2
+    btsti	%1,7\;movf	%0,%3
+    btsti	%1,7\;clrt	%0
+    btsti	%1,7\;clrf	%0"
   [(set_attr "length" "4")])
 
 ;; ------------------------------------------------------------------------
@@ -2349,16 +2349,16 @@
 
 (define_insn "movt3"
   [(set (match_operand:SI 0 "mcore_arith_reg_operand" "=r,r,r,r")
-        (if_then_else:SI
-         (eq (eq:SI (reg:CC 17) (const_int 0)) (const_int 0))
-         (match_operand:SI 1 "mcore_arith_imm_operand" "r,0,U,0")
-         (match_operand:SI 2 "mcore_arith_imm_operand" "0,r,0,U")))]
+	(if_then_else:SI
+	 (eq (eq:SI (reg:CC 17) (const_int 0)) (const_int 0))
+	 (match_operand:SI 1 "mcore_arith_imm_operand" "r,0,U,0")
+	 (match_operand:SI 2 "mcore_arith_imm_operand" "0,r,0,U")))]
   ""
   "@
-    movt        %0,%1
-    movf        %0,%2
-    clrt        %0
-    clrf        %0")
+    movt	%0,%1
+    movf	%0,%2
+    clrt	%0
+    clrf	%0")
 
 ;; ------------------------------------------------------------------------
 ;; eq/ne
@@ -2380,16 +2380,16 @@
 
 (define_insn "movf1"
   [(set (match_operand:SI 0 "mcore_arith_reg_operand" "=r,r,r,r")
-        (if_then_else:SI
-         (eq (ne:SI (reg:CC 17) (const_int 0)) (const_int 0))
-         (match_operand:SI 1 "mcore_arith_imm_operand" "r,0,U,0")
-         (match_operand:SI 2 "mcore_arith_imm_operand" "0,r,0,U")))]
+	(if_then_else:SI
+	 (eq (ne:SI (reg:CC 17) (const_int 0)) (const_int 0))
+	 (match_operand:SI 1 "mcore_arith_imm_operand" "r,0,U,0")
+	 (match_operand:SI 2 "mcore_arith_imm_operand" "0,r,0,U")))]
   ""
   "@
-    movf        %0,%1
-    movt        %0,%2
-    clrf        %0
-    clrt        %0")
+    movf	%0,%1
+    movt	%0,%2
+    clrf	%0
+    clrt	%0")
 
 ;; ------------------------------------------------------------------------
 ;; eq
@@ -2419,22 +2419,22 @@
    out_operands[2] = operands[3];
    out_operands[3] = operands[1];
 
-   return mcore_output_cmov (out_operands, 0, \"cmpnei        %3,0\");
+   return mcore_output_cmov (out_operands, 0, \"cmpnei	%3,0\");
 }"
   [(set_attr "length" "6")])
 
 (define_insn "movf3"
   [(set (match_operand:SI 0 "mcore_arith_reg_operand" "=r,r,r,r")
-        (if_then_else:SI (eq (match_operand:SI 1 "mcore_arith_reg_operand" "r,r,r,r")
-                             (const_int 0))
-                         (match_operand:SI 2 "mcore_arith_imm_operand" "r,0,U,0")
-                         (match_operand:SI 3 "mcore_arith_imm_operand" "0,r,0,U")))]
+	(if_then_else:SI (eq (match_operand:SI 1 "mcore_arith_reg_operand" "r,r,r,r")
+			     (const_int 0))
+			 (match_operand:SI 2 "mcore_arith_imm_operand" "r,0,U,0")
+			 (match_operand:SI 3 "mcore_arith_imm_operand" "0,r,0,U")))]
   ""
   "@
-    cmpnei        %1,0\;movf        %0,%2
-    cmpnei        %1,0\;movt        %0,%3
-    cmpnei        %1,0\;clrf        %0
-    cmpnei        %1,0\;clrt        %0"
+    cmpnei	%1,0\;movf	%0,%2
+    cmpnei	%1,0\;movt	%0,%3
+    cmpnei	%1,0\;clrf	%0
+    cmpnei	%1,0\;clrt	%0"
   [(set_attr "length" "4")])
 
 ;; ------------------------------------------------------------------------
@@ -2457,16 +2457,16 @@
 
 (define_insn "movf4"
   [(set (match_operand:SI 0 "mcore_arith_reg_operand" "=r,r,r,r")
-        (if_then_else:SI
-         (ne (eq:SI (reg:CC 17) (const_int 0)) (const_int 0))
-         (match_operand:SI 1 "mcore_arith_imm_operand" "r,0,U,0")
-         (match_operand:SI 2 "mcore_arith_imm_operand" "0,r,0,U")))]
+	(if_then_else:SI
+	 (ne (eq:SI (reg:CC 17) (const_int 0)) (const_int 0))
+	 (match_operand:SI 1 "mcore_arith_imm_operand" "r,0,U,0")
+	 (match_operand:SI 2 "mcore_arith_imm_operand" "0,r,0,U")))]
   ""
   "@
-    movf        %0,%1
-    movt        %0,%2
-    clrf        %0
-    clrt        %0")
+    movf	%0,%1
+    movt	%0,%2
+    clrf	%0
+    clrt	%0")
 
 ;; ------------------------------------------------------------------------
 ;; ne/ne
@@ -2488,16 +2488,16 @@
 
 (define_insn "movt4"
   [(set (match_operand:SI 0 "mcore_arith_reg_operand" "=r,r,r,r")
-        (if_then_else:SI
-         (ne (ne:SI (reg:CC 17) (const_int 0)) (const_int 0))
-         (match_operand:SI 1 "mcore_arith_imm_operand" "r,0,U,0")
-         (match_operand:SI 2 "mcore_arith_imm_operand" "0,r,0,U")))]
+	(if_then_else:SI
+	 (ne (ne:SI (reg:CC 17) (const_int 0)) (const_int 0))
+	 (match_operand:SI 1 "mcore_arith_imm_operand" "r,0,U,0")
+	 (match_operand:SI 2 "mcore_arith_imm_operand" "0,r,0,U")))]
   ""
   "@
-    movt        %0,%1
-    movf        %0,%2
-    clrt        %0
-    clrf        %0")
+    movt	%0,%1
+    movf	%0,%2
+    clrt	%0
+    clrf	%0")
 
 ;; Also need patterns to recognize lt/ge, since otherwise the compiler will
 ;; try to output not/asri/tstne/movf.
@@ -2526,22 +2526,22 @@
    out_operands[2] = operands[3];
    out_operands[3] = operands[1];
 
-   return mcore_output_cmov (out_operands, 1, \"btsti        %3,31\");
+   return mcore_output_cmov (out_operands, 1, \"btsti	%3,31\");
 }"
   [(set_attr "length" "6")])
 
 (define_insn "movt5"
   [(set (match_operand:SI 0 "mcore_arith_reg_operand" "=r,r,r,r")
-        (if_then_else:SI (lt (match_operand:SI 1 "mcore_arith_reg_operand" "r,r,r,r")
-                             (const_int 0))
-                         (match_operand:SI 2 "mcore_arith_imm_operand" "r,0,U,0")
-                         (match_operand:SI 3 "mcore_arith_imm_operand" "0,r,0,U")))]
+	(if_then_else:SI (lt (match_operand:SI 1 "mcore_arith_reg_operand" "r,r,r,r")
+			     (const_int 0))
+			 (match_operand:SI 2 "mcore_arith_imm_operand" "r,0,U,0")
+			 (match_operand:SI 3 "mcore_arith_imm_operand" "0,r,0,U")))]
   ""
   "@
-    btsti        %1,31\;movt        %0,%2
-    btsti        %1,31\;movf        %0,%3
-    btsti        %1,31\;clrt        %0
-    btsti        %1,31\;clrf        %0"
+    btsti	%1,31\;movt	%0,%2
+    btsti	%1,31\;movf	%0,%3
+    btsti	%1,31\;clrt	%0
+    btsti	%1,31\;clrf	%0"
   [(set_attr "length" "4")])
 
 
@@ -2569,22 +2569,22 @@
   out_operands[2] = operands[3];
   out_operands[3] = operands[1];
 
-   return mcore_output_cmov (out_operands, 0, \"btsti        %3,31\");
+   return mcore_output_cmov (out_operands, 0, \"btsti	%3,31\");
 }"
   [(set_attr "length" "6")])
 
 (define_insn "movf5"
   [(set (match_operand:SI 0 "mcore_arith_reg_operand" "=r,r,r,r")
-        (if_then_else:SI (ge (match_operand:SI 1 "mcore_arith_reg_operand" "r,r,r,r")
-                             (const_int 0))
-                         (match_operand:SI 2 "mcore_arith_imm_operand" "r,0,U,0")
-                         (match_operand:SI 3 "mcore_arith_imm_operand" "0,r,0,U")))]
+	(if_then_else:SI (ge (match_operand:SI 1 "mcore_arith_reg_operand" "r,r,r,r")
+			     (const_int 0))
+			 (match_operand:SI 2 "mcore_arith_imm_operand" "r,0,U,0")
+			 (match_operand:SI 3 "mcore_arith_imm_operand" "0,r,0,U")))]
   ""
   "@
-    btsti        %1,31\;movf        %0,%2
-    btsti        %1,31\;movt        %0,%3
-    btsti        %1,31\;clrf        %0
-    btsti        %1,31\;clrt        %0"
+    btsti	%1,31\;movf	%0,%2
+    btsti	%1,31\;movt	%0,%3
+    btsti	%1,31\;clrf	%0
+    btsti	%1,31\;clrt	%0"
   [(set_attr "length" "4")])
 
 ;; ------------------------------------------------------------------------
@@ -2594,7 +2594,7 @@
 ; sometimes we're better off using QI/HI mode and letting the machine indep.
 ; part expand insv and extv.
 ;
-; e.g., sequences like:a        [an insertion]
+; e.g., sequences like:a	[an insertion]
 ;
 ;      ldw r8,(r6)
 ;      movi r7,0x00ffffff
@@ -2617,9 +2617,9 @@
 
 ;(define_expand "extv"
 ;  [(set (match_operand:SI 0 "mcore_arith_reg_operand" "")
-;        (sign_extract:SI (match_operand:SI 1 "mcore_arith_reg_operand" "")
-;                         (match_operand:SI 2 "const_int_operand" "")
-;                         (match_operand:SI 3 "const_int_operand" "")))
+;	(sign_extract:SI (match_operand:SI 1 "mcore_arith_reg_operand" "")
+;			 (match_operand:SI 2 "const_int_operand" "")
+;			 (match_operand:SI 3 "const_int_operand" "")))
 ;   (clobber (reg:CC 17))]
 ;  ""
 ;  "
@@ -2645,9 +2645,9 @@
 
 (define_expand "extv"
   [(set (match_operand:SI 0 "mcore_arith_reg_operand" "")
-        (sign_extract:SI (match_operand:SI 1 "mcore_arith_reg_operand" "")
-                         (match_operand:SI 2 "const_int_operand" "")
-                         (match_operand:SI 3 "const_int_operand" "")))
+	(sign_extract:SI (match_operand:SI 1 "mcore_arith_reg_operand" "")
+			 (match_operand:SI 2 "const_int_operand" "")
+			 (match_operand:SI 3 "const_int_operand" "")))
    (clobber (reg:CC 17))]
   ""
   "
@@ -2682,9 +2682,9 @@
 
 (define_expand "extzv"
   [(set (match_operand:SI 0 "mcore_arith_reg_operand" "")
-        (zero_extract:SI (match_operand:SI 1 "mcore_arith_reg_operand" "")
-                         (match_operand:SI 2 "const_int_operand" "")
-                         (match_operand:SI 3 "const_int_operand" "")))
+	(zero_extract:SI (match_operand:SI 1 "mcore_arith_reg_operand" "")
+			 (match_operand:SI 2 "const_int_operand" "")
+			 (match_operand:SI 3 "const_int_operand" "")))
    (clobber (reg:CC 17))]
   ""
   "
@@ -2745,9 +2745,9 @@
 
 (define_expand "insv"
   [(set (zero_extract:SI (match_operand:SI 0 "mcore_arith_reg_operand" "")
-                         (match_operand:SI 1 "const_int_operand" "")
-                         (match_operand:SI 2 "const_int_operand" ""))
-        (match_operand:SI 3 "general_operand" ""))
+			 (match_operand:SI 1 "const_int_operand" "")
+			 (match_operand:SI 2 "const_int_operand" ""))
+	(match_operand:SI 3 "general_operand" ""))
    (clobber (reg:CC 17))]
   ""
   "
@@ -2780,67 +2780,67 @@
 ;;
 (define_insn ""
   [(set (match_operand:SI 0 "mcore_arith_reg_operand" "=r,b")
-        (sign_extract:SI (match_operand:SI 1 "mcore_arith_reg_operand" "0,r") (const_int 8) (const_int 24)))]
+	(sign_extract:SI (match_operand:SI 1 "mcore_arith_reg_operand" "0,r") (const_int 8) (const_int 24)))]
   ""
   "@
-        asri        %0,24
-        xtrb0        %0,%1\;sextb        %0"
+	asri	%0,24
+	xtrb0	%0,%1\;sextb	%0"
   [(set_attr "type" "shift")])
 
 (define_insn ""
   [(set (match_operand:SI 0 "mcore_arith_reg_operand" "=b")
-        (sign_extract:SI (match_operand:SI 1 "mcore_arith_reg_operand" "r") (const_int 8) (const_int 16)))]
+	(sign_extract:SI (match_operand:SI 1 "mcore_arith_reg_operand" "r") (const_int 8) (const_int 16)))]
   ""
-  "xtrb1        %0,%1\;sextb        %0"
+  "xtrb1	%0,%1\;sextb	%0"
   [(set_attr "type" "shift")])
 
 (define_insn ""
   [(set (match_operand:SI 0 "mcore_arith_reg_operand" "=b")
-        (sign_extract:SI (match_operand:SI 1 "mcore_arith_reg_operand" "r") (const_int 8) (const_int 8)))]
+	(sign_extract:SI (match_operand:SI 1 "mcore_arith_reg_operand" "r") (const_int 8) (const_int 8)))]
   ""
-  "xtrb2        %0,%1\;sextb        %0"
+  "xtrb2	%0,%1\;sextb	%0"
   [(set_attr "type" "shift")])
 
 (define_insn ""
   [(set (match_operand:SI 0 "mcore_arith_reg_operand" "=r")
-        (sign_extract:SI (match_operand:SI 1 "mcore_arith_reg_operand" "0") (const_int 8) (const_int 0)))]
+	(sign_extract:SI (match_operand:SI 1 "mcore_arith_reg_operand" "0") (const_int 8) (const_int 0)))]
   ""
-  "sextb        %0"
+  "sextb	%0"
   [(set_attr "type" "shift")])
 
 ;; the UNSIGNED uses of xtrb[0123]
 ;;
 (define_insn ""
   [(set (match_operand:SI 0 "mcore_arith_reg_operand" "=r,b")
-        (zero_extract:SI (match_operand:SI 1 "mcore_arith_reg_operand" "0,r") (const_int 8) (const_int 24)))]
+	(zero_extract:SI (match_operand:SI 1 "mcore_arith_reg_operand" "0,r") (const_int 8) (const_int 24)))]
   ""
   "@
-        lsri        %0,24
-        xtrb0        %0,%1"
+	lsri	%0,24
+	xtrb0	%0,%1"
   [(set_attr "type" "shift")])
 
 (define_insn ""
   [(set (match_operand:SI 0 "mcore_arith_reg_operand" "=b")
-        (zero_extract:SI (match_operand:SI 1 "mcore_arith_reg_operand" "r") (const_int 8) (const_int 16)))]
+	(zero_extract:SI (match_operand:SI 1 "mcore_arith_reg_operand" "r") (const_int 8) (const_int 16)))]
   ""
-  "xtrb1        %0,%1"
+  "xtrb1	%0,%1"
   [(set_attr "type" "shift")])
 
 (define_insn ""
   [(set (match_operand:SI 0 "mcore_arith_reg_operand" "=b")
-        (zero_extract:SI (match_operand:SI 1 "mcore_arith_reg_operand" "r") (const_int 8) (const_int 8)))]
+	(zero_extract:SI (match_operand:SI 1 "mcore_arith_reg_operand" "r") (const_int 8) (const_int 8)))]
   ""
-  "xtrb2        %0,%1"
+  "xtrb2	%0,%1"
   [(set_attr "type" "shift")])
 
 ;; This can be peepholed if it follows a ldb ...
 (define_insn ""
   [(set (match_operand:SI 0 "mcore_arith_reg_operand" "=r,b")
-        (zero_extract:SI (match_operand:SI 1 "mcore_arith_reg_operand" "0,r") (const_int 8) (const_int 0)))]
+	(zero_extract:SI (match_operand:SI 1 "mcore_arith_reg_operand" "0,r") (const_int 8) (const_int 0)))]
   ""
   "@
-        zextb        %0
-        xtrb3        %0,%1\;zextb        %0"
+	zextb	%0
+	xtrb3	%0,%1\;zextb	%0"
   [(set_attr "type" "shift")])
 
 
@@ -2850,9 +2850,9 @@
 
 (define_expand "movmemsi"
   [(parallel [(set (mem:BLK (match_operand:BLK 0 "" ""))
-                   (mem:BLK (match_operand:BLK 1 "" "")))
-              (use (match_operand:SI 2 "general_operand" ""))
-              (use (match_operand:SI 3 "immediate_operand" ""))])]
+		   (mem:BLK (match_operand:BLK 1 "" "")))
+	      (use (match_operand:SI 2 "general_operand" ""))
+	      (use (match_operand:SI 3 "immediate_operand" ""))])]
   ""
   "
 {
@@ -2867,44 +2867,44 @@
 ;; 
 ;; (define_insn ""
 ;;   [(set (match_operand:QI 0 "mcore_arith_reg_operand" "=r")
-;;         (match_operand:BLK 1 "mcore_general_movsrc_operand" "m"))]
+;; 	(match_operand:BLK 1 "mcore_general_movsrc_operand" "m"))]
 ;;   ""
-;;   "ld.b        %0,%1"
+;;   "ld.b	%0,%1"
 ;;   [(set_attr "type" "load")])
 ;; 
 ;; (define_insn ""
 ;;   [(set (match_operand:HI 0 "mcore_arith_reg_operand" "=r")
-;;         (match_operand:BLK 1 "mcore_general_movsrc_operand" "m"))]
+;; 	(match_operand:BLK 1 "mcore_general_movsrc_operand" "m"))]
 ;;   ""
-;;   "ld.h        %0,%1"
+;;   "ld.h	%0,%1"
 ;;   [(set_attr "type" "load")])
 ;; 
 ;; (define_insn ""
 ;;   [(set (match_operand:SI 0 "mcore_arith_reg_operand" "=r")
-;;         (match_operand:BLK 1 "mcore_general_movsrc_operand" "m"))]
+;; 	(match_operand:BLK 1 "mcore_general_movsrc_operand" "m"))]
 ;;   ""
-;;   "ld.w        %0,%1"
+;;   "ld.w	%0,%1"
 ;;   [(set_attr "type" "load")])
 ;; 
 ;; (define_insn ""
 ;;   [(set (match_operand:BLK 0 "mcore_general_movdst_operand" "=m")
-;;         (match_operand:QI 1 "mcore_arith_reg_operand" "r"))]
+;; 	(match_operand:QI 1 "mcore_arith_reg_operand" "r"))]
 ;;   ""
-;;   "st.b        %1,%0"
+;;   "st.b	%1,%0"
 ;;   [(set_attr "type" "store")])
 ;; 
 ;; (define_insn ""
 ;;   [(set (match_operand:BLK 0 "mcore_general_movdst_operand" "=m")
-;;         (match_operand:HI 1 "mcore_arith_reg_operand" "r"))]
+;; 	(match_operand:HI 1 "mcore_arith_reg_operand" "r"))]
 ;;   ""
-;;   "st.h        %1,%0"
+;;   "st.h	%1,%0"
 ;;   [(set_attr "type" "store")])
 ;; 
 ;; (define_insn ""
 ;;   [(set (match_operand:BLK 0 "mcore_general_movdst_operand" "=m")
-;;         (match_operand:SI 1 "mcore_arith_reg_operand" "r"))]
+;; 	(match_operand:SI 1 "mcore_arith_reg_operand" "r"))]
 ;;   ""
-;;   "st.w        %1,%0"
+;;   "st.w	%1,%0"
 ;;   [(set_attr "type" "store")])
 
 ;; ------------------------------------------------------------------------
@@ -2917,7 +2917,7 @@
 (define_insn ""
   [(parallel[
       (set (match_operand:SI 0 "mcore_arith_reg_operand" "=r")
-           (match_operand:SI 1 "mcore_arith_reg_operand" "+r"))
+	   (match_operand:SI 1 "mcore_arith_reg_operand" "+r"))
       (set (match_dup 1) (plus:SI (match_dup 1) (match_operand 2 "mcore_arith_any_imm_operand" "")))])]
   "GET_CODE(operands[2]) == CONST_INT"
   "#"
@@ -2926,7 +2926,7 @@
 (define_split 
   [(parallel[
       (set (match_operand:SI 0 "mcore_arith_reg_operand" "")
-           (match_operand:SI 1 "mcore_arith_reg_operand" ""))
+	   (match_operand:SI 1 "mcore_arith_reg_operand" ""))
       (set (match_dup 1) (plus:SI (match_dup 1) (match_operand 2 "mcore_arith_any_imm_operand" "")))])]
   "GET_CODE(operands[2]) == CONST_INT &&
    operands[0] != operands[1]"
@@ -2945,13 +2945,13 @@
 ;;; ??? This probably never matches anymore.
 (define_peephole
   [(set (match_operand:SI 0 "mcore_arith_reg_operand" "r")
-        (match_operand:SI 1 "const_int_operand" "J"))
+	(match_operand:SI 1 "const_int_operand" "J"))
    (set (match_dup 0) (neg:SI (match_dup 0)))
    (set (match_dup 0)
-        (plus:SI (match_dup 0)
-                 (match_operand:SI 2 "mcore_arith_reg_operand" "r")))]
+	(plus:SI (match_dup 0)
+		 (match_operand:SI 2 "mcore_arith_reg_operand" "r")))]
   "CONST_OK_FOR_J (INTVAL (operands[1]))"
-  "error\;mov        %0,%2\;subi        %0,%1")
+  "error\;mov	%0,%2\;subi	%0,%1")
 
 ;; Moves of inlinable constants are done late, so when a 'not' is generated
 ;; it is never combined with the following 'and' to generate an 'andn' b/c 
@@ -2964,7 +2964,7 @@
    (set (match_operand:SI 2 "mcore_arith_reg_operand" "r")
         (and:SI (match_dup 2) (match_dup 0)))]
   "mcore_const_trick_uses_not (INTVAL (operands[1])) &&
-         operands[0] != operands[2] &&
+ 	operands[0] != operands[2] &&
         mcore_is_dead (insn, operands[0])"
   "* return mcore_output_andn (insn, operands);")
 
@@ -3080,9 +3080,9 @@
       operands[4] = gen_rtx_MEM (mode, base_reg);
 
    if (mode == QImode)
-      return \"movi        %0,0\\n\\tst.b        %0,%4\";
+      return \"movi	%0,0\\n\\tst.b	%0,%4\";
 
-   return \"movi        %0,0\\n\\tst.h        %0,%4\";
+   return \"movi	%0,0\\n\\tst.h	%0,%4\";
 }")
 
 ; from sop11. get btsti's for (LT A 0) where A is a QI or HI value
@@ -3091,19 +3091,19 @@
   [(set (match_operand:SI 0 "mcore_arith_reg_operand" "r")
         (sign_extend:SI (match_operand:QI 1 "mcore_arith_reg_operand" "0")))
    (set (reg:CC 17)
-        (lt:CC (match_dup 0)
-            (const_int 0)))]
+	(lt:CC (match_dup 0)
+	    (const_int 0)))]
   "mcore_is_dead (insn, operands[0])"
-  "btsti        %0,7")
+  "btsti	%0,7")
 
 (define_peephole
   [(set (match_operand:SI 0 "mcore_arith_reg_operand" "r")
         (sign_extend:SI (match_operand:HI 1 "mcore_arith_reg_operand" "0")))
    (set (reg:CC 17)
-        (lt:CC (match_dup 0)
-            (const_int 0)))]
+	(lt:CC (match_dup 0)
+	    (const_int 0)))]
   "mcore_is_dead (insn, operands[0])"
-  "btsti        %0,15")
+  "btsti	%0,15")
 
 ; Pick up a tst.  This combination happens because the immediate is not
 ; allowed to fold into one of the operands of the tst.  Does not happen
@@ -3117,16 +3117,16 @@
                 (match_operand:SI 2 "mcore_literal_K_operand" "")))
    (set (reg:CC 17) (ne:CC (match_dup 0) (const_int 0)))]
   "mcore_is_dead (insn, operands[0])"
-  "movi        %0,%2\;tst        %1,%0")
+  "movi	%0,%2\;tst	%1,%0")
 
 (define_peephole
   [(set (match_operand:SI 0 "mcore_arith_reg_operand" "")
         (if_then_else:SI (ne (zero_extract:SI 
                                 (match_operand:SI 1 "mcore_arith_reg_operand" "")
                                 (const_int 1)
-                                (match_operand:SI 2 "mcore_literal_K_operand" ""))
-                             (const_int 0))
-           (match_operand:SI 3 "mcore_arith_imm_operand" "")
+	                        (match_operand:SI 2 "mcore_literal_K_operand" ""))
+			     (const_int 0))
+	   (match_operand:SI 3 "mcore_arith_imm_operand" "")
            (match_operand:SI 4 "mcore_arith_imm_operand" "")))
     (set (reg:CC 17) (ne:CC (match_dup 0) (const_int 0)))]
   ""
@@ -3137,22 +3137,22 @@
   if (GET_CODE (operands[3]) == REG)
     {
      if (REGNO (operands[3]) == op0 && GET_CODE (operands[4]) == CONST_INT
-         && INTVAL (operands[4]) == 0)
-        return \"btsti        %1,%2\\n\\tclrf        %0\";
+	 && INTVAL (operands[4]) == 0)
+        return \"btsti	%1,%2\\n\\tclrf	%0\";
      else if (GET_CODE (operands[4]) == REG)
        {
         if (REGNO (operands[4]) == op0)
-              return \"btsti        %1,%2\\n\\tmovf        %0,%3\";
+   	   return \"btsti	%1,%2\\n\\tmovf	%0,%3\";
         else if (REGNO (operands[3]) == op0)
-            return \"btsti        %1,%2\\n\\tmovt        %0,%4\";
+ 	   return \"btsti	%1,%2\\n\\tmovt	%0,%4\";
        }
 
      gcc_unreachable ();
     }
   else if (GET_CODE (operands[3]) == CONST_INT
            && INTVAL (operands[3]) == 0
-           && GET_CODE (operands[4]) == REG)
-     return \"btsti        %1,%2\\n\\tclrt        %0\";
+	   && GET_CODE (operands[4]) == REG)
+     return \"btsti	%1,%2\\n\\tclrt	%0\";
 
   gcc_unreachable ();
 }")
@@ -3185,7 +3185,7 @@
 ;  
 ;  output_inline_const (SImode, out_operands);
 ;
-;  output_asm_insn (\"and        %2,%0\", operands);
+;  output_asm_insn (\"and	%2,%0\", operands);
 ;
 ;  return \"\";   
 ;}")
@@ -3204,12 +3204,12 @@
 ;{
 ;  if (get_attr_length (insn) == 10)
 ;    {
-;      output_asm_insn (\"bt        2f\\n\\tjmpi        [1f]\", operands);
-;      output_asm_insn (\".align        2\\n1:\", operands);
-;      output_asm_insn (\".long        %1\\n2:\", operands);
+;      output_asm_insn (\"bt	2f\\n\\tjmpi	[1f]\", operands);
+;      output_asm_insn (\".align	2\\n1:\", operands);
+;      output_asm_insn (\".long	%1\\n2:\", operands);
 ;      return \"\";
 ;    }
-;  return \"bf        %l1\";
+;  return \"bf	%l1\";
 ;}")
 
 
@@ -3257,8 +3257,8 @@
 ;;
 (define_expand "allocate_stack"
   [(set (reg:SI 0)
-        (plus:SI (reg:SI 0)
-                 (match_operand:SI 1 "general_operand" "")))
+	(plus:SI (reg:SI 0)
+		 (match_operand:SI 1 "general_operand" "")))
    (set (match_operand:SI 0 "register_operand" "=r")
         (match_dup 2))]
   ""
@@ -3280,20 +3280,20 @@
 
       /* If it's a long way, get close enough for a last shot.  */
       if (left >= STACK_UNITS_MAXSTEP)
-        {
-          rtx tmp = gen_reg_rtx (Pmode);
-          emit_insn (gen_movsi (tmp, GEN_INT (STACK_UNITS_MAXSTEP)));
-          do
-            {
-              rtx memref = gen_rtx_MEM (SImode, stack_pointer_rtx);
+	{
+	  rtx tmp = gen_reg_rtx (Pmode);
+	  emit_insn (gen_movsi (tmp, GEN_INT (STACK_UNITS_MAXSTEP)));
+	  do
+	    {
+	      rtx memref = gen_rtx_MEM (SImode, stack_pointer_rtx);
 
               MEM_VOLATILE_P (memref) = 1;
-              emit_insn (gen_subsi3 (stack_pointer_rtx, stack_pointer_rtx, tmp));
-              emit_insn (gen_movsi (memref, stack_pointer_rtx));
-              left -= STACK_UNITS_MAXSTEP;
-            }
-          while (left > STACK_UNITS_MAXSTEP);
-        }
+	      emit_insn (gen_subsi3 (stack_pointer_rtx, stack_pointer_rtx, tmp));
+	      emit_insn (gen_movsi (memref, stack_pointer_rtx));
+	      left -= STACK_UNITS_MAXSTEP;
+	    }
+	  while (left > STACK_UNITS_MAXSTEP);
+	}
       /* Perform the final adjustment.  */
       emit_insn (gen_addsi3 (stack_pointer_rtx,stack_pointer_rtx,GEN_INT(-left)));
 ;;      emit_move_insn (operands[0], virtual_stack_dynamic_rtx);
@@ -3312,11 +3312,11 @@
       emit_insn (gen_movsi (step, GEN_INT(STACK_UNITS_MAXSTEP)));
 
       if (GET_CODE (operands[1]) != CONST_INT)
-        {
-          out_label = gen_label_rtx ();
-          emit_insn (gen_cmpsi (step, tmp));                /* quick out */
-          emit_jump_insn (gen_bgeu (out_label));
-        }
+	{
+	  out_label = gen_label_rtx ();
+	  emit_insn (gen_cmpsi (step, tmp));		/* quick out */
+	  emit_jump_insn (gen_bgeu (out_label));
+	}
 
       /* Run a loop that steps it incrementally.  */
       emit_label (loop_label);
@@ -3333,7 +3333,7 @@
       emit_jump_insn (gen_bltu (loop_label));
 
       if (out_label)
-        emit_label (out_label);
+	emit_label (out_label);
 
       /* Bump the residual.  */
       emit_insn (gen_subsi3 (stack_pointer_rtx, stack_pointer_rtx, tmp));

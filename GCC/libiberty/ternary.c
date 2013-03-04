@@ -48,26 +48,26 @@ ternary_insert (ternary_tree *root, const char *s, PTR data, int replace)
       diff = *s - curr->splitchar;
       /* Handle current char equal to node splitchar */
       if (diff == 0)
-        {
-          /* Handle the case of a string we already have */
-          if (*s++ == 0)
-            {
-              if (replace)
-                curr->eqkid = (ternary_tree) data;
-              return (PTR) curr->eqkid;
-            }
-          pcurr = &(curr->eqkid);
-        }
+	{
+	  /* Handle the case of a string we already have */
+	  if (*s++ == 0)
+	    {
+	      if (replace)
+		curr->eqkid = (ternary_tree) data;
+	      return (PTR) curr->eqkid;
+	    }
+	  pcurr = &(curr->eqkid);
+	}
       /* Handle current char less than node splitchar */
       else if (diff < 0)
-        {
-          pcurr = &(curr->lokid);
-        }
+	{
+	  pcurr = &(curr->lokid);
+	}
       /* Handle current char greater than node splitchar */
       else
-        {
-          pcurr = &(curr->hikid);
-        }
+	{
+	  pcurr = &(curr->hikid);
+	}
     }
   /* It's not a duplicate string, and we should insert what's left of
      the string, into the tree rooted at curr */
@@ -84,10 +84,10 @@ ternary_insert (ternary_tree *root, const char *s, PTR data, int replace)
          return.
        */
       if (*s++ == 0)
-        {
-          curr->eqkid = (ternary_tree) data;
-          return data;
-        }
+	{
+	  curr->eqkid = (ternary_tree) data;
+	  return data;
+	}
       pcurr = &(curr->eqkid);
     }
 }
@@ -100,7 +100,7 @@ ternary_cleanup (ternary_tree p)
     {
       ternary_cleanup (p->lokid);
       if (p->splitchar)
-        ternary_cleanup (p->eqkid);
+	ternary_cleanup (p->eqkid);
       ternary_cleanup (p->hikid);
       free (p);
     }
@@ -121,18 +121,18 @@ ternary_search (const ternary_node *p, const char *s)
       diff = spchar - curr->splitchar;
       /* Handle the equal case */
       if (diff == 0)
-        {
-          if (spchar == 0)
-            return (PTR) curr->eqkid;
-          spchar = *++s;
-          curr = curr->eqkid;
-        }
+	{
+	  if (spchar == 0)
+	    return (PTR) curr->eqkid;
+	  spchar = *++s;
+	  curr = curr->eqkid;
+	}
       /* Handle the less than case */
       else if (diff < 0)
-        curr = curr->lokid;
+	curr = curr->lokid;
       /* All that's left is greater than */
       else
-        curr = curr->hikid;
+	curr = curr->hikid;
     }
   return NULL;
 }
@@ -151,7 +151,7 @@ ternary_recursivesearch (const ternary_node *p, const char *s)
   else
     {
       if (*s == 0)
-        return (PTR) p->eqkid;
+	return (PTR) p->eqkid;
       return ternary_recursivesearch (p->eqkid, ++s);
     }
 }

@@ -104,14 +104,14 @@ typedef enum fallback_t {
 } fallback_t;
 
 enum gimplify_status {
-  GS_ERROR        = -2,        /* Something Bad Seen.  */
-  GS_UNHANDLED        = -1,        /* A langhook result for "I dunno".  */
-  GS_OK                = 0,        /* We did something, maybe more to do.  */
-  GS_ALL_DONE        = 1        /* The expression is fully gimplified.  */
+  GS_ERROR	= -2,	/* Something Bad Seen.  */
+  GS_UNHANDLED	= -1,	/* A langhook result for "I dunno".  */
+  GS_OK		= 0,	/* We did something, maybe more to do.  */
+  GS_ALL_DONE	= 1	/* The expression is fully gimplified.  */
 };
 
 extern enum gimplify_status gimplify_expr (tree *, tree *, tree *,
-                                           bool (*) (tree), fallback_t);
+					   bool (*) (tree), fallback_t);
 extern void gimplify_type_sizes (tree, tree *);
 extern void gimplify_one_sizepos (tree *, tree *);
 extern void gimplify_stmt (tree *);

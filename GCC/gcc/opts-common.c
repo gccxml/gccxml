@@ -67,9 +67,9 @@ find_opt (const char *input, int lang_mask)
       comp = strncmp (input, cl_options[md].opt_text + 1, opt_len);
 
       if (comp < 0)
-        mx = md;
+	mx = md;
       else
-        mn = md;
+	mn = md;
     }
 
   /* This is the switch that is the best match but for a different
@@ -84,22 +84,22 @@ find_opt (const char *input, int lang_mask)
       const struct cl_option *opt = &cl_options[mn];
 
       /* Is the input either an exact match or a prefix that takes a
-         joined argument?  */
+	 joined argument?  */
       if (!strncmp (input, opt->opt_text + 1, opt->opt_len)
-          && (input[opt->opt_len] == '\0' || (opt->flags & CL_JOINED)))
-        {
-          /* If language is OK, return it.  */
-          if (opt->flags & lang_mask)
-            return mn;
+	  && (input[opt->opt_len] == '\0' || (opt->flags & CL_JOINED)))
+	{
+	  /* If language is OK, return it.  */
+	  if (opt->flags & lang_mask)
+	    return mn;
 
-          /* If we haven't remembered a prior match, remember this
-             one.  Any prior match is necessarily better.  */
-          if (match_wrong_lang == cl_options_count)
-            match_wrong_lang = mn;
-        }
+	  /* If we haven't remembered a prior match, remember this
+	     one.  Any prior match is necessarily better.  */
+	  if (match_wrong_lang == cl_options_count)
+	    match_wrong_lang = mn;
+	}
 
       /* Try the next possibility.  This is cl_options_count if there
-         are no more.  */
+	 are no more.  */
       mn = opt->back_chain;
     }
   while (mn != cl_options_count);
@@ -121,7 +121,7 @@ cancel_option (int opt_idx, int next_opt_idx, int orig_next_opt_idx)
 
   if (cl_options [next_opt_idx].neg_index != orig_next_opt_idx)
     return cancel_option (opt_idx, cl_options [next_opt_idx].neg_index,
-                          orig_next_opt_idx);
+			  orig_next_opt_idx);
     
   return false;
 }
@@ -146,43 +146,43 @@ prune_options (int *argcp, char ***argvp)
 
       opt_index = find_opt (opt + 1, -1);
       if (opt_index == cl_options_count
-          && (opt[1] == 'W' || opt[1] == 'f' || opt[1] == 'm')
-          && opt[2] == 'n' && opt[3] == 'o' && opt[4] == '-')
-        {
-          char *dup;
+	  && (opt[1] == 'W' || opt[1] == 'f' || opt[1] == 'm')
+	  && opt[2] == 'n' && opt[3] == 'o' && opt[4] == '-')
+	{
+	  char *dup;
 
-          /* Drop the "no-" from negative switches.  */
-          size_t len = strlen (opt) - 3;
+	  /* Drop the "no-" from negative switches.  */
+	  size_t len = strlen (opt) - 3;
 
-          dup = XNEWVEC (char, len + 1);
-          dup[0] = '-';
-          dup[1] = opt[1];
-          memcpy (dup + 2, opt + 5, len - 2 + 1);
-          opt = dup;
-          value = 0;
-          opt_index = find_opt (opt + 1, -1);
-          free (dup);
-        }
+	  dup = XNEWVEC (char, len + 1);
+	  dup[0] = '-';
+	  dup[1] = opt[1];
+	  memcpy (dup + 2, opt + 5, len - 2 + 1);
+	  opt = dup;
+	  value = 0;
+	  opt_index = find_opt (opt + 1, -1);
+	  free (dup);
+	}
 
       if (opt_index == cl_options_count)
-        {
+	{
 cont:
-          options [i] = 0;
-          continue;
-        }
+	  options [i] = 0;
+	  continue;
+	}
 
       option = &cl_options[opt_index];
       if (option->neg_index < 0)
-        goto cont;
+	goto cont;
 
       /* Skip joined switches.  */
       if ((option->flags & CL_JOINED))
-        goto cont;
+	goto cont;
 
       /* Reject negative form of switches that don't take negatives as
-         unrecognized.  */
+	 unrecognized.  */
       if (!value && (option->flags & CL_REJECT_NEGATIVE))
-        goto cont;
+	goto cont;
 
       options [i] = (int) opt_index;
       need_prune |= options [i];
@@ -200,26 +200,26 @@ cont:
 
       opt_idx = options [i];
       if (opt_idx)
-        {
-          int next_opt_idx;
-          for (j = i + 1; j < argc; j++)
-            {
-              next_opt_idx = options [j];
-              if (next_opt_idx
-                  && cancel_option (opt_idx, next_opt_idx,
-                                    next_opt_idx))
-                break;
-            }
-        }
+	{
+	  int next_opt_idx;
+	  for (j = i + 1; j < argc; j++)
+	    {
+	      next_opt_idx = options [j];
+	      if (next_opt_idx
+		  && cancel_option (opt_idx, next_opt_idx,
+				    next_opt_idx))
+		break;
+	    }
+	}
       else
-        goto keep;
+	goto keep;
 
       if (j == argc)
-        {
+	{
 keep:
-          argv [arg_count] = (*argvp) [i];
-          arg_count++;
-        }
+	  argv [arg_count] = (*argvp) [i];
+	  arg_count++;
+	}
     }
 
   if (arg_count != argc)

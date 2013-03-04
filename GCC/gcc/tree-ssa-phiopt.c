@@ -37,13 +37,13 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
 
 static unsigned int tree_ssa_phiopt (void);
 static bool conditional_replacement (basic_block, basic_block,
-                                     edge, edge, tree, tree, tree);
+				     edge, edge, tree, tree, tree);
 static bool value_replacement (basic_block, basic_block,
-                               edge, edge, tree, tree, tree);
+			       edge, edge, tree, tree, tree);
 static bool minmax_replacement (basic_block, basic_block,
-                                edge, edge, tree, tree, tree);
+				edge, edge, tree, tree, tree);
 static bool abs_replacement (basic_block, basic_block,
-                             edge, edge, tree, tree, tree);
+			     edge, edge, tree, tree, tree);
 static void replace_phi_edge_with_variable (basic_block, edge, tree, tree);
 static basic_block *blocks_in_phiopt_order (void);
 
@@ -180,7 +180,7 @@ tree_ssa_phiopt (void)
       /* If either bb1's succ or bb2 or bb2's succ is non NULL.  */
       if (EDGE_COUNT (bb1->succs) == 0
           || bb2 == NULL
-          || EDGE_COUNT (bb2->succs) == 0)
+	  || EDGE_COUNT (bb2->succs) == 0)
         continue;
 
       /* Find the bb which is the fall through to the other.  */
@@ -188,13 +188,13 @@ tree_ssa_phiopt (void)
         ;
       else if (EDGE_SUCC (bb2, 0)->dest == bb1)
         {
-          basic_block bb_tmp = bb1;
-          edge e_tmp = e1;
-          bb1 = bb2;
-          bb2 = bb_tmp;
-          e1 = e2;
-          e2 = e_tmp;
-        }
+	  basic_block bb_tmp = bb1;
+	  edge e_tmp = e1;
+	  bb1 = bb2;
+	  bb2 = bb_tmp;
+	  e1 = e2;
+	  e2 = e_tmp;
+	}
       else
         continue;
 
@@ -202,39 +202,39 @@ tree_ssa_phiopt (void)
 
       /* Make sure that bb1 is just a fall through.  */
       if (!single_succ_p (bb1)
-          || (e1->flags & EDGE_FALLTHRU) == 0)
+	  || (e1->flags & EDGE_FALLTHRU) == 0)
         continue;
 
       /* Also make sure that bb1 only have one predecessor and that it
-         is bb.  */
+	 is bb.  */
       if (!single_pred_p (bb1)
           || single_pred (bb1) != bb)
-        continue;
+	continue;
 
       phi = phi_nodes (bb2);
 
       /* Check to make sure that there is only one PHI node.
          TODO: we could do it with more than one iff the other PHI nodes
-         have the same elements for these two edges.  */
+	 have the same elements for these two edges.  */
       if (!phi || PHI_CHAIN (phi) != NULL)
-        continue;
+	continue;
 
       arg0 = PHI_ARG_DEF_TREE (phi, e1->dest_idx);
       arg1 = PHI_ARG_DEF_TREE (phi, e2->dest_idx);
 
       /* Something is wrong if we cannot find the arguments in the PHI
-         node.  */
+	 node.  */
       gcc_assert (arg0 != NULL && arg1 != NULL);
 
       /* Do the replacement of conditional if it can be done.  */
       if (conditional_replacement (bb, bb1, e1, e2, phi, arg0, arg1))
-        cfgchanged = true;
+	cfgchanged = true;
       else if (value_replacement (bb, bb1, e1, e2, phi, arg0, arg1))
-        cfgchanged = true;
+	cfgchanged = true;
       else if (abs_replacement (bb, bb1, e1, e2, phi, arg0, arg1))
-        cfgchanged = true;
+	cfgchanged = true;
       else if (minmax_replacement (bb, bb1, e1, e2, phi, arg0, arg1))
-        cfgchanged = true;
+	cfgchanged = true;
     }
 
   free (bb_order);
@@ -265,22 +265,22 @@ blocks_in_phiopt_order (void)
   FOR_EACH_BB (x)
     {
       if (VISITED_P (x))
-        continue;
+	continue;
 
       /* Walk the predecessors of x as long as they have precisely one
-         predecessor and add them to the list, so that they get stored
-         after x.  */
+	 predecessor and add them to the list, so that they get stored
+	 after x.  */
       for (y = x, np = 1;
-           single_pred_p (y) && !VISITED_P (single_pred (y));
-           y = single_pred (y))
-        np++;
+	   single_pred_p (y) && !VISITED_P (single_pred (y));
+	   y = single_pred (y))
+	np++;
       for (y = x, i = n - np;
-           single_pred_p (y) && !VISITED_P (single_pred (y));
-           y = single_pred (y), i++)
-        {
-          order[i] = y;
-          MARK_VISITED (y);
-        }
+	   single_pred_p (y) && !VISITED_P (single_pred (y));
+	   y = single_pred (y), i++)
+	{
+	  order[i] = y;
+	  MARK_VISITED (y);
+	}
       order[i] = y;
       MARK_VISITED (y);
 
@@ -306,8 +306,8 @@ empty_block_p (basic_block bb)
   /* BB must have no executable statements.  */
   bsi = bsi_start (bb);
   while (!bsi_end_p (bsi)
-          && (TREE_CODE (bsi_stmt (bsi)) == LABEL_EXPR
-              || IS_EMPTY_STMT (bsi_stmt (bsi))))
+	  && (TREE_CODE (bsi_stmt (bsi)) == LABEL_EXPR
+	      || IS_EMPTY_STMT (bsi_stmt (bsi))))
     bsi_next (&bsi);
 
   if (!bsi_end_p (bsi))
@@ -322,7 +322,7 @@ empty_block_p (basic_block bb)
 
 static void
 replace_phi_edge_with_variable (basic_block cond_block,
-                                edge e, tree phi, tree new)
+				edge e, tree phi, tree new)
 {
   basic_block bb = bb_for_stmt (phi);
   basic_block block_to_remove;
@@ -345,7 +345,7 @@ replace_phi_edge_with_variable (basic_block cond_block,
     {
       EDGE_SUCC (cond_block, 1)->flags |= EDGE_FALLTHRU;
       EDGE_SUCC (cond_block, 1)->flags
-        &= ~(EDGE_TRUE_VALUE | EDGE_FALSE_VALUE);
+	&= ~(EDGE_TRUE_VALUE | EDGE_FALSE_VALUE);
       EDGE_SUCC (cond_block, 1)->probability = REG_BR_PROB_BASE;
       EDGE_SUCC (cond_block, 1)->count += EDGE_SUCC (cond_block, 0)->count;
 
@@ -359,9 +359,9 @@ replace_phi_edge_with_variable (basic_block cond_block,
 
   if (dump_file && (dump_flags & TDF_DETAILS))
     fprintf (dump_file,
-              "COND_EXPR in block %d and PHI in block %d converted to straightline code.\n",
-              cond_block->index,
-              bb->index);
+	      "COND_EXPR in block %d and PHI in block %d converted to straightline code.\n",
+	      cond_block->index,
+	      bb->index);
 }
 
 /*  The function conditional_replacement does the main work of doing the
@@ -372,8 +372,8 @@ replace_phi_edge_with_variable (basic_block cond_block,
 
 static bool
 conditional_replacement (basic_block cond_bb, basic_block middle_bb,
-                         edge e0, edge e1, tree phi,
-                         tree arg0, tree arg1)
+			 edge e0, edge e1, tree phi,
+			 tree arg0, tree arg1)
 {
   tree result;
   tree old_result = NULL;
@@ -407,7 +407,7 @@ conditional_replacement (basic_block cond_bb, basic_block middle_bb,
       tree tmp;
 
       if (!COMPARISON_CLASS_P (cond))
-        return false;
+	return false;
 
       tmp = create_tmp_var (TREE_TYPE (cond), NULL);
       add_referenced_var (tmp);
@@ -436,8 +436,8 @@ conditional_replacement (basic_block cond_bb, basic_block middle_bb,
       tree new1;
 
       new1 = build2 (TREE_CODE (old_result), TREE_TYPE (old_result),
-                     TREE_OPERAND (old_result, 0),
-                     TREE_OPERAND (old_result, 1));
+		     TREE_OPERAND (old_result, 0),
+		     TREE_OPERAND (old_result, 1));
 
       new1 = build2 (MODIFY_EXPR, TREE_TYPE (old_result), new_var, new1);
       SSA_NAME_DEF_STMT (new_var) = new1;
@@ -479,47 +479,47 @@ conditional_replacement (basic_block cond_bb, basic_block middle_bb,
       cond = cond1;
 
       /* If what we get back is a conditional expression, there is no
-          way that it can be gimple.  */
+	  way that it can be gimple.  */
       if (TREE_CODE (cond) == COND_EXPR)
-        {
-          release_ssa_name (new_var1);
-          return false;
-        }
+	{
+	  release_ssa_name (new_var1);
+	  return false;
+	}
 
       /* If COND is not something we can expect to be reducible to a GIMPLE
-         condition, return early.  */
+	 condition, return early.  */
       if (is_gimple_cast (cond))
-        cond1 = TREE_OPERAND (cond, 0);
+	cond1 = TREE_OPERAND (cond, 0);
       if (TREE_CODE (cond1) == TRUTH_NOT_EXPR
-          && !is_gimple_val (TREE_OPERAND (cond1, 0)))
-        {
-          release_ssa_name (new_var1);
-          return false;
-        }
+	  && !is_gimple_val (TREE_OPERAND (cond1, 0)))
+	{
+	  release_ssa_name (new_var1);
+	  return false;
+	}
 
       /* If what we get back is not gimple try to create it as gimple by
-         using a temporary variable.  */
+	 using a temporary variable.  */
       if (is_gimple_cast (cond)
-          && !is_gimple_val (TREE_OPERAND (cond, 0)))
-        {
-          tree op0, tmp, cond_tmp;
+	  && !is_gimple_val (TREE_OPERAND (cond, 0)))
+	{
+	  tree op0, tmp, cond_tmp;
 
-          /* Only "real" casts are OK here, not everything that is
-             acceptable to is_gimple_cast.  Make sure we don't do
-             anything stupid here.  */
-          gcc_assert (TREE_CODE (cond) == NOP_EXPR
-                      || TREE_CODE (cond) == CONVERT_EXPR);
+	  /* Only "real" casts are OK here, not everything that is
+	     acceptable to is_gimple_cast.  Make sure we don't do
+	     anything stupid here.  */
+	  gcc_assert (TREE_CODE (cond) == NOP_EXPR
+		      || TREE_CODE (cond) == CONVERT_EXPR);
 
-          op0 = TREE_OPERAND (cond, 0);
-          tmp = create_tmp_var (TREE_TYPE (op0), NULL);
-          add_referenced_var (tmp);
-          cond_tmp = make_ssa_name (tmp, NULL);
-          new = build2 (MODIFY_EXPR, TREE_TYPE (cond_tmp), cond_tmp, op0);
-          SSA_NAME_DEF_STMT (cond_tmp) = new;
+	  op0 = TREE_OPERAND (cond, 0);
+	  tmp = create_tmp_var (TREE_TYPE (op0), NULL);
+	  add_referenced_var (tmp);
+	  cond_tmp = make_ssa_name (tmp, NULL);
+	  new = build2 (MODIFY_EXPR, TREE_TYPE (cond_tmp), cond_tmp, op0);
+	  SSA_NAME_DEF_STMT (cond_tmp) = new;
 
-          bsi_insert_after (&bsi, new, BSI_NEW_STMT);
-          cond = fold_convert (TREE_TYPE (result), cond_tmp);
-        }
+	  bsi_insert_after (&bsi, new, BSI_NEW_STMT);
+	  cond = fold_convert (TREE_TYPE (result), cond_tmp);
+	}
 
       new = build2 (MODIFY_EXPR, TREE_TYPE (new_var1), new_var1, cond);
     }
@@ -542,8 +542,8 @@ conditional_replacement (basic_block cond_bb, basic_block middle_bb,
 
 static bool
 value_replacement (basic_block cond_bb, basic_block middle_bb,
-                   edge e0, edge e1, tree phi,
-                   tree arg0, tree arg1)
+		   edge e0, edge e1, tree phi,
+		   tree arg0, tree arg1)
 {
   tree cond;
   edge true_edge, false_edge;
@@ -580,29 +580,29 @@ value_replacement (basic_block cond_bb, basic_block middle_bb,
   if ((operand_equal_for_phi_arg_p (arg0, TREE_OPERAND (cond, 0))
        && operand_equal_for_phi_arg_p (arg1, TREE_OPERAND (cond, 1)))
       || (operand_equal_for_phi_arg_p (arg1, TREE_OPERAND (cond, 0))
-          && operand_equal_for_phi_arg_p (arg0, TREE_OPERAND (cond, 1))))
+	  && operand_equal_for_phi_arg_p (arg0, TREE_OPERAND (cond, 1))))
     {
       edge e;
       tree arg;
 
       /* For NE_EXPR, we want to build an assignment result = arg where
-         arg is the PHI argument associated with the true edge.  For
-         EQ_EXPR we want the PHI argument associated with the false edge.  */
+	 arg is the PHI argument associated with the true edge.  For
+	 EQ_EXPR we want the PHI argument associated with the false edge.  */
       e = (TREE_CODE (cond) == NE_EXPR ? true_edge : false_edge);
 
       /* Unfortunately, E may not reach BB (it may instead have gone to
-         OTHER_BLOCK).  If that is the case, then we want the single outgoing
-         edge from OTHER_BLOCK which reaches BB and represents the desired
-         path from COND_BLOCK.  */
+	 OTHER_BLOCK).  If that is the case, then we want the single outgoing
+	 edge from OTHER_BLOCK which reaches BB and represents the desired
+	 path from COND_BLOCK.  */
       if (e->dest == middle_bb)
-        e = single_succ_edge (e->dest);
+	e = single_succ_edge (e->dest);
 
       /* Now we know the incoming edge to BB that has the argument for the
-         RHS of our new assignment statement.  */
+	 RHS of our new assignment statement.  */
       if (e0 == e)
-        arg = arg0;
+	arg = arg0;
       else
-        arg = arg1;
+	arg = arg1;
 
       replace_phi_edge_with_variable (cond_bb, e1, phi, arg);
 
@@ -620,8 +620,8 @@ value_replacement (basic_block cond_bb, basic_block middle_bb,
 
 static bool
 minmax_replacement (basic_block cond_bb, basic_block middle_bb,
-                    edge e0, edge e1, tree phi,
-                    tree arg0, tree arg1)
+		    edge e0, edge e1, tree phi,
+		    tree arg0, tree arg1)
 {
   tree result, type;
   tree cond, new;
@@ -682,168 +682,168 @@ minmax_replacement (basic_block cond_bb, basic_block middle_bb,
   if (empty_block_p (middle_bb))
     {
       if (operand_equal_for_phi_arg_p (arg_true, smaller)
-          && operand_equal_for_phi_arg_p (arg_false, larger))
-        {
-          /* Case
-         
-             if (smaller < larger)
-             rslt = smaller;
-             else
-             rslt = larger;  */
-          minmax = MIN_EXPR;
-        }
+	  && operand_equal_for_phi_arg_p (arg_false, larger))
+	{
+	  /* Case
+	 
+	     if (smaller < larger)
+	     rslt = smaller;
+	     else
+	     rslt = larger;  */
+	  minmax = MIN_EXPR;
+	}
       else if (operand_equal_for_phi_arg_p (arg_false, smaller)
-               && operand_equal_for_phi_arg_p (arg_true, larger))
-        minmax = MAX_EXPR;
+	       && operand_equal_for_phi_arg_p (arg_true, larger))
+	minmax = MAX_EXPR;
       else
-        return false;
+	return false;
     }
   else
     {
       /* Recognize the following case, assuming d <= u:
 
-         if (a <= u)
-           b = MAX (a, d);
-         x = PHI <b, u>
+	 if (a <= u)
+	   b = MAX (a, d);
+	 x = PHI <b, u>
 
-         This is equivalent to
+	 This is equivalent to
 
-         b = MAX (a, d);
-         x = MIN (b, u);  */
+	 b = MAX (a, d);
+	 x = MIN (b, u);  */
 
       tree assign = last_and_only_stmt (middle_bb);
       tree lhs, rhs, op0, op1, bound;
 
       if (!assign
-          || TREE_CODE (assign) != MODIFY_EXPR)
-        return false;
+	  || TREE_CODE (assign) != MODIFY_EXPR)
+	return false;
 
       lhs = TREE_OPERAND (assign, 0);
       rhs = TREE_OPERAND (assign, 1);
       ass_code = TREE_CODE (rhs);
       if (ass_code != MAX_EXPR && ass_code != MIN_EXPR)
-        return false;
+	return false;
       op0 = TREE_OPERAND (rhs, 0);
       op1 = TREE_OPERAND (rhs, 1);
 
       if (true_edge->src == middle_bb)
-        {
-          /* We got here if the condition is true, i.e., SMALLER < LARGER.  */
-          if (!operand_equal_for_phi_arg_p (lhs, arg_true))
-            return false;
+	{
+	  /* We got here if the condition is true, i.e., SMALLER < LARGER.  */
+	  if (!operand_equal_for_phi_arg_p (lhs, arg_true))
+	    return false;
 
-          if (operand_equal_for_phi_arg_p (arg_false, larger))
-            {
-              /* Case
+	  if (operand_equal_for_phi_arg_p (arg_false, larger))
+	    {
+	      /* Case
 
-                 if (smaller < larger)
-                   {
-                     r' = MAX_EXPR (smaller, bound)
-                   }
-                 r = PHI <r', larger>  --> to be turned to MIN_EXPR.  */
-              if (ass_code != MAX_EXPR)
-                return false;
+		 if (smaller < larger)
+		   {
+		     r' = MAX_EXPR (smaller, bound)
+		   }
+		 r = PHI <r', larger>  --> to be turned to MIN_EXPR.  */
+	      if (ass_code != MAX_EXPR)
+		return false;
 
-              minmax = MIN_EXPR;
-              if (operand_equal_for_phi_arg_p (op0, smaller))
-                bound = op1;
-              else if (operand_equal_for_phi_arg_p (op1, smaller))
-                bound = op0;
-              else
-                return false;
+	      minmax = MIN_EXPR;
+	      if (operand_equal_for_phi_arg_p (op0, smaller))
+		bound = op1;
+	      else if (operand_equal_for_phi_arg_p (op1, smaller))
+		bound = op0;
+	      else
+		return false;
 
-              /* We need BOUND <= LARGER.  */
-              if (!integer_nonzerop (fold_build2 (LE_EXPR, boolean_type_node,
-                                                  bound, larger)))
-                return false;
-            }
-          else if (operand_equal_for_phi_arg_p (arg_false, smaller))
-            {
-              /* Case
+	      /* We need BOUND <= LARGER.  */
+	      if (!integer_nonzerop (fold_build2 (LE_EXPR, boolean_type_node,
+						  bound, larger)))
+		return false;
+	    }
+	  else if (operand_equal_for_phi_arg_p (arg_false, smaller))
+	    {
+	      /* Case
 
-                 if (smaller < larger)
-                   {
-                     r' = MIN_EXPR (larger, bound)
-                   }
-                 r = PHI <r', smaller>  --> to be turned to MAX_EXPR.  */
-              if (ass_code != MIN_EXPR)
-                return false;
+		 if (smaller < larger)
+		   {
+		     r' = MIN_EXPR (larger, bound)
+		   }
+		 r = PHI <r', smaller>  --> to be turned to MAX_EXPR.  */
+	      if (ass_code != MIN_EXPR)
+		return false;
 
-              minmax = MAX_EXPR;
-              if (operand_equal_for_phi_arg_p (op0, larger))
-                bound = op1;
-              else if (operand_equal_for_phi_arg_p (op1, larger))
-                bound = op0;
-              else
-                return false;
+	      minmax = MAX_EXPR;
+	      if (operand_equal_for_phi_arg_p (op0, larger))
+		bound = op1;
+	      else if (operand_equal_for_phi_arg_p (op1, larger))
+		bound = op0;
+	      else
+		return false;
 
-              /* We need BOUND >= SMALLER.  */
-              if (!integer_nonzerop (fold_build2 (GE_EXPR, boolean_type_node,
-                                                  bound, smaller)))
-                return false;
-            }
-          else
-            return false;
-        }
+	      /* We need BOUND >= SMALLER.  */
+	      if (!integer_nonzerop (fold_build2 (GE_EXPR, boolean_type_node,
+						  bound, smaller)))
+		return false;
+	    }
+	  else
+	    return false;
+	}
       else
-        {
-          /* We got here if the condition is false, i.e., SMALLER > LARGER.  */
-          if (!operand_equal_for_phi_arg_p (lhs, arg_false))
-            return false;
+	{
+	  /* We got here if the condition is false, i.e., SMALLER > LARGER.  */
+	  if (!operand_equal_for_phi_arg_p (lhs, arg_false))
+	    return false;
 
-          if (operand_equal_for_phi_arg_p (arg_true, larger))
-            {
-              /* Case
+	  if (operand_equal_for_phi_arg_p (arg_true, larger))
+	    {
+	      /* Case
 
-                 if (smaller > larger)
-                   {
-                     r' = MIN_EXPR (smaller, bound)
-                   }
-                 r = PHI <r', larger>  --> to be turned to MAX_EXPR.  */
-              if (ass_code != MIN_EXPR)
-                return false;
+		 if (smaller > larger)
+		   {
+		     r' = MIN_EXPR (smaller, bound)
+		   }
+		 r = PHI <r', larger>  --> to be turned to MAX_EXPR.  */
+	      if (ass_code != MIN_EXPR)
+		return false;
 
-              minmax = MAX_EXPR;
-              if (operand_equal_for_phi_arg_p (op0, smaller))
-                bound = op1;
-              else if (operand_equal_for_phi_arg_p (op1, smaller))
-                bound = op0;
-              else
-                return false;
+	      minmax = MAX_EXPR;
+	      if (operand_equal_for_phi_arg_p (op0, smaller))
+		bound = op1;
+	      else if (operand_equal_for_phi_arg_p (op1, smaller))
+		bound = op0;
+	      else
+		return false;
 
-              /* We need BOUND >= LARGER.  */
-              if (!integer_nonzerop (fold_build2 (GE_EXPR, boolean_type_node,
-                                                  bound, larger)))
-                return false;
-            }
-          else if (operand_equal_for_phi_arg_p (arg_true, smaller))
-            {
-              /* Case
+	      /* We need BOUND >= LARGER.  */
+	      if (!integer_nonzerop (fold_build2 (GE_EXPR, boolean_type_node,
+						  bound, larger)))
+		return false;
+	    }
+	  else if (operand_equal_for_phi_arg_p (arg_true, smaller))
+	    {
+	      /* Case
 
-                 if (smaller > larger)
-                   {
-                     r' = MAX_EXPR (larger, bound)
-                   }
-                 r = PHI <r', smaller>  --> to be turned to MIN_EXPR.  */
-              if (ass_code != MAX_EXPR)
-                return false;
+		 if (smaller > larger)
+		   {
+		     r' = MAX_EXPR (larger, bound)
+		   }
+		 r = PHI <r', smaller>  --> to be turned to MIN_EXPR.  */
+	      if (ass_code != MAX_EXPR)
+		return false;
 
-              minmax = MIN_EXPR;
-              if (operand_equal_for_phi_arg_p (op0, larger))
-                bound = op1;
-              else if (operand_equal_for_phi_arg_p (op1, larger))
-                bound = op0;
-              else
-                return false;
+	      minmax = MIN_EXPR;
+	      if (operand_equal_for_phi_arg_p (op0, larger))
+		bound = op1;
+	      else if (operand_equal_for_phi_arg_p (op1, larger))
+		bound = op0;
+	      else
+		return false;
 
-              /* We need BOUND <= SMALLER.  */
-              if (!integer_nonzerop (fold_build2 (LE_EXPR, boolean_type_node,
-                                                  bound, smaller)))
-                return false;
-            }
-          else
-            return false;
-        }
+	      /* We need BOUND <= SMALLER.  */
+	      if (!integer_nonzerop (fold_build2 (LE_EXPR, boolean_type_node,
+						  bound, smaller)))
+		return false;
+	    }
+	  else
+	    return false;
+	}
 
       /* Move the statement from the middle block.  */
       bsi = bsi_last (cond_bb);
@@ -854,7 +854,7 @@ minmax_replacement (basic_block cond_bb, basic_block middle_bb,
   /* Emit the statement to compute min/max.  */
   result = duplicate_ssa_name (PHI_RESULT (phi), NULL);
   new = build2 (MODIFY_EXPR, type, result,
-                build2 (minmax, type, arg0, arg1));
+		build2 (minmax, type, arg0, arg1));
   SSA_NAME_DEF_STMT (result) = new;
   bsi = bsi_last (cond_bb);
   bsi_insert_before (&bsi, new, BSI_NEW_STMT);
@@ -871,8 +871,8 @@ minmax_replacement (basic_block cond_bb, basic_block middle_bb,
 
 static bool
 abs_replacement (basic_block cond_bb, basic_block middle_bb,
-                 edge e0 ATTRIBUTE_UNUSED, edge e1,
-                 tree phi, tree arg0, tree arg1)
+		 edge e0 ATTRIBUTE_UNUSED, edge e1,
+		 tree phi, tree arg0, tree arg1)
 {
   tree result;
   tree new, cond;
@@ -931,8 +931,8 @@ abs_replacement (basic_block cond_bb, basic_block middle_bb,
     return false;
 
   if (FLOAT_TYPE_P (TREE_TYPE (TREE_OPERAND (cond, 1)))
-               ? real_zerop (TREE_OPERAND (cond, 1))
-               : integer_zerop (TREE_OPERAND (cond, 1)))
+	       ? real_zerop (TREE_OPERAND (cond, 1))
+	       : integer_zerop (TREE_OPERAND (cond, 1)))
     ;
   else
     return false;
@@ -967,7 +967,7 @@ abs_replacement (basic_block cond_bb, basic_block middle_bb,
 
   /* Build the modify expression with abs expression.  */
   new = build2 (MODIFY_EXPR, TREE_TYPE (lhs),
-                lhs, build1 (ABS_EXPR, TREE_TYPE (lhs), rhs));
+		lhs, build1 (ABS_EXPR, TREE_TYPE (lhs), rhs));
   SSA_NAME_DEF_STMT (lhs) = new;
 
   bsi = bsi_last (cond_bb);
@@ -976,10 +976,10 @@ abs_replacement (basic_block cond_bb, basic_block middle_bb,
   if (negate)
     {
       /* Get the right BSI.  We want to insert after the recently
-         added ABS_EXPR statement (which we know is the first statement
-         in the block.  */
+	 added ABS_EXPR statement (which we know is the first statement
+	 in the block.  */
       new = build2 (MODIFY_EXPR, TREE_TYPE (result),
-                    result, build1 (NEGATE_EXPR, TREE_TYPE (lhs), lhs));
+		    result, build1 (NEGATE_EXPR, TREE_TYPE (lhs), lhs));
       SSA_NAME_DEF_STMT (result) = new;
 
       bsi_insert_after (&bsi, new, BSI_NEW_STMT);
@@ -1002,21 +1002,21 @@ gate_phiopt (void)
 
 struct tree_opt_pass pass_phiopt =
 {
-  "phiopt",                                /* name */
-  gate_phiopt,                                /* gate */
-  tree_ssa_phiopt,                        /* execute */
-  NULL,                                        /* sub */
-  NULL,                                        /* next */
-  0,                                        /* static_pass_number */
-  TV_TREE_PHIOPT,                        /* tv_id */
-  PROP_cfg | PROP_ssa | PROP_alias,        /* properties_required */
-  0,                                        /* properties_provided */
-  0,                                        /* properties_destroyed */
-  0,                                        /* todo_flags_start */
+  "phiopt",				/* name */
+  gate_phiopt,				/* gate */
+  tree_ssa_phiopt,			/* execute */
+  NULL,					/* sub */
+  NULL,					/* next */
+  0,					/* static_pass_number */
+  TV_TREE_PHIOPT,			/* tv_id */
+  PROP_cfg | PROP_ssa | PROP_alias,	/* properties_required */
+  0,					/* properties_provided */
+  0,					/* properties_destroyed */
+  0,					/* todo_flags_start */
   TODO_dump_func
     | TODO_ggc_collect
     | TODO_verify_ssa
     | TODO_verify_flow
-    | TODO_verify_stmts,                /* todo_flags_finish */
-  0                                        /* letter */
+    | TODO_verify_stmts,		/* todo_flags_finish */
+  0					/* letter */
 };

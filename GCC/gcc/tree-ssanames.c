@@ -124,7 +124,7 @@ make_ssa_name (tree var, tree stmt)
   use_operand_p imm;
 
   gcc_assert (DECL_P (var)
-              || TREE_CODE (var) == INDIRECT_REF);
+	      || TREE_CODE (var) == INDIRECT_REF);
 
   gcc_assert (!stmt || EXPR_P (stmt) || TREE_CODE (stmt) == PHI_NODE);
 
@@ -138,7 +138,7 @@ make_ssa_name (tree var, tree stmt)
 #endif
 
       /* The node was cleared out when we put it on the free list, so
-         there is no need to do so again here.  */
+	 there is no need to do so again here.  */
       gcc_assert (ssa_name (SSA_NAME_VERSION (t)) == NULL);
       VEC_replace (tree, ssa_names, SSA_NAME_VERSION (t), t);
     }
@@ -211,7 +211,7 @@ release_ssa_name (tree var)
       verify_imm_links (stderr, var);
 #endif
       while (imm->next != imm)
-        delink_imm_use (imm->next);
+	delink_imm_use (imm->next);
 
       VEC_replace (tree, ssa_names, SSA_NAME_VERSION (var), NULL_TREE);
       memset (var, 0, tree_size (var));
@@ -220,7 +220,7 @@ release_ssa_name (tree var)
       imm->next = imm;
       imm->stmt = var;
       /* First put back the right tree node so that the tree checking
-         macros do not complain.  */
+	 macros do not complain.  */
       TREE_SET_CODE (var, SSA_NAME);
 
       /* Restore the version number.  */

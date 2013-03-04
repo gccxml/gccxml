@@ -24,14 +24,14 @@ along with GCC; see the file COPYING.  If not, write to
 the Free Software Foundation, 51 Franklin Street, Fifth Floor,
 Boston, MA 02110-1301, USA.  */
 
-#define TARGET_OS_CPP_BUILTINS()                \
-  do                                                \
-    {                                                \
-      NETBSD_OS_CPP_BUILTINS_ELF();                \
-      builtin_define ("__m68k__");                \
-      builtin_define ("__SVR4_ABI__");                \
-      builtin_define ("__motorola__");                \
-    }                                                \
+#define TARGET_OS_CPP_BUILTINS()		\
+  do						\
+    {						\
+      NETBSD_OS_CPP_BUILTINS_ELF();		\
+      builtin_define ("__m68k__");		\
+      builtin_define ("__SVR4_ABI__");		\
+      builtin_define ("__motorola__");		\
+    }						\
   while (0)
 
 /* Default target comes from config.gcc */
@@ -41,7 +41,7 @@ Boston, MA 02110-1301, USA.  */
 
 /* Don't try using XFmode on the 68010.  */ 
 #undef LONG_DOUBLE_TYPE_SIZE
-#define LONG_DOUBLE_TYPE_SIZE                        \
+#define LONG_DOUBLE_TYPE_SIZE			\
   ((TARGET_68020 || TARGET_68040 || TARGET_68040_ONLY || \
     TARGET_68060) ? 80 : 64)
 
@@ -118,15 +118,15 @@ Boston, MA 02110-1301, USA.  */
    for profiling a function only.  */
 
 #undef FUNCTION_PROFILER
-#define FUNCTION_PROFILER(FILE, LABELNO)                                \
-do                                                                        \
-  {                                                                        \
-    asm_fprintf (FILE, "\tlea (%LLP%d,%Rpc),%Ra1\n", (LABELNO));        \
-    if (flag_pic)                                                        \
-      fprintf (FILE, "\tbsr.l __mcount@PLTPC\n");                        \
-    else                                                                \
-      fprintf (FILE, "\tjbsr __mcount\n");                                \
-  }                                                                        \
+#define FUNCTION_PROFILER(FILE, LABELNO)				\
+do									\
+  {									\
+    asm_fprintf (FILE, "\tlea (%LLP%d,%Rpc),%Ra1\n", (LABELNO));	\
+    if (flag_pic)							\
+      fprintf (FILE, "\tbsr.l __mcount@PLTPC\n");			\
+    else								\
+      fprintf (FILE, "\tjbsr __mcount\n");				\
+  }									\
 while (0)
 
 
@@ -184,17 +184,17 @@ while (0)
 
 /* Use the default action for outputting the case label.  */
 #undef ASM_OUTPUT_CASE_LABEL
-#define ASM_RETURN_CASE_JUMP                                \
-  do {                                                        \
-    if (TARGET_COLDFIRE)                                \
-      {                                                        \
-        if (ADDRESS_REG_P (operands[0]))                \
-          return "jmp %%pc@(2,%0:l)";                        \
-        else                                                \
-          return "ext%.l %0\n\tjmp %%pc@(2,%0:l)";        \
-      }                                                        \
-    else                                                \
-      return "jmp %%pc@(2,%0:w)";                        \
+#define ASM_RETURN_CASE_JUMP				\
+  do {							\
+    if (TARGET_COLDFIRE)				\
+      {							\
+	if (ADDRESS_REG_P (operands[0]))		\
+	  return "jmp %%pc@(2,%0:l)";			\
+	else						\
+	  return "ext%.l %0\n\tjmp %%pc@(2,%0:l)";	\
+      }							\
+    else						\
+      return "jmp %%pc@(2,%0:w)";			\
   } while (0)
 
 
@@ -202,12 +202,12 @@ while (0)
    location counter to a multiple of 2**LOG bytes.  */
 
 #undef ASM_OUTPUT_ALIGN
-#define ASM_OUTPUT_ALIGN(FILE,LOG)                                        \
-do                                                                        \
-  {                                                                        \
-    if ((LOG) > 0)                                                        \
-      fprintf ((FILE), "%s%u\n", ALIGN_ASM_OP, 1 << (LOG));                \
-  }                                                                        \
+#define ASM_OUTPUT_ALIGN(FILE,LOG)					\
+do									\
+  {									\
+    if ((LOG) > 0)							\
+      fprintf ((FILE), "%s%u\n", ALIGN_ASM_OP, 1 << (LOG));		\
+  }									\
 while (0)
 
 
@@ -215,7 +215,7 @@ while (0)
    assembler operation to identify the following data as uninitialized global
    data.  */
 
-#define BSS_SECTION_ASM_OP        ".section\t.bss"
+#define BSS_SECTION_ASM_OP	".section\t.bss"
 
 
 /* Like `ASM_OUTPUT_BSS' except takes the required alignment as a
@@ -228,20 +228,20 @@ while (0)
    `varasm.c' when defining this macro.  */
 
 #undef ASM_OUTPUT_ALIGNED_BSS
-#define ASM_OUTPUT_ALIGNED_BSS(FILE, DECL, NAME, SIZE, ALIGN)                \
+#define ASM_OUTPUT_ALIGNED_BSS(FILE, DECL, NAME, SIZE, ALIGN)		\
   asm_output_aligned_bss (FILE, DECL, NAME, SIZE, ALIGN)
 
 
 #undef ASM_OUTPUT_COMMON
-#define ASM_OUTPUT_COMMON(FILE, NAME, SIZE, ROUNDED)                        \
-( fputs (".comm ", (FILE)),                                                \
-  assemble_name ((FILE), (NAME)),                                        \
+#define ASM_OUTPUT_COMMON(FILE, NAME, SIZE, ROUNDED)			\
+( fputs (".comm ", (FILE)),						\
+  assemble_name ((FILE), (NAME)),					\
   fprintf ((FILE), ",%u\n", (int)(SIZE)))
 
 #undef ASM_OUTPUT_LOCAL
-#define ASM_OUTPUT_LOCAL(FILE, NAME, SIZE, ROUNDED)                        \
-( fputs (".lcomm ", (FILE)),                                                \
-  assemble_name ((FILE), (NAME)),                                        \
+#define ASM_OUTPUT_LOCAL(FILE, NAME, SIZE, ROUNDED)			\
+( fputs (".lcomm ", (FILE)),						\
+  assemble_name ((FILE), (NAME)),					\
   fprintf ((FILE), ",%u\n", (int)(SIZE)))
 
 
@@ -287,7 +287,7 @@ while (0)
    a 68881 coprocessor.  */
 
 #undef FUNCTION_VALUE_REGNO_P
-#define FUNCTION_VALUE_REGNO_P(N)                                        \
+#define FUNCTION_VALUE_REGNO_P(N)					\
   ((N) == 0 || (N) == 8 || (TARGET_68881 && (N) == 16))
 
 
@@ -306,7 +306,7 @@ while (0)
    result in d0, a0, or fp0 as appropriate.  */
 
 #undef FUNCTION_VALUE
-#define FUNCTION_VALUE(VALTYPE, FUNC)                                        \
+#define FUNCTION_VALUE(VALTYPE, FUNC)					\
   m68k_function_value (VALTYPE, FUNC)
 
 
@@ -318,13 +318,13 @@ while (0)
    still find the correct return value.  */
 
 extern int current_function_returns_pointer;
-#define FUNCTION_EXTRA_EPILOGUE(FILE, SIZE)                                 \
-do                                                                        \
-  {                                                                        \
-    if (current_function_returns_pointer                                \
-        && ! find_equiv_reg (0, get_last_insn (), 0, 0, 0, 8, Pmode))        \
-      asm_fprintf (FILE, "\tmove.l %Ra0,%Rd0\n");                        \
-  }                                                                        \
+#define FUNCTION_EXTRA_EPILOGUE(FILE, SIZE) 				\
+do									\
+  {									\
+    if (current_function_returns_pointer				\
+	&& ! find_equiv_reg (0, get_last_insn (), 0, 0, 0, 8, Pmode))	\
+      asm_fprintf (FILE, "\tmove.l %Ra0,%Rd0\n");			\
+  }									\
 while (0)
 
 
@@ -334,7 +334,7 @@ while (0)
    (returned in both d0 and a0), and floating values in fp0.  */
 
 #undef LIBCALL_VALUE
-#define LIBCALL_VALUE(MODE)                                                \
+#define LIBCALL_VALUE(MODE)						\
   m68k_libcall_value (MODE)
 
 
@@ -379,15 +379,15 @@ while (0)
    in that we use a1 as the static call chain.  */
 
 #undef TRAMPOLINE_TEMPLATE
-#define TRAMPOLINE_TEMPLATE(FILE)                                        \
-{                                                                        \
-  assemble_aligned_integer (2, GEN_INT (0x227a));                        \
-  assemble_aligned_integer (2, GEN_INT (8));                                \
-  assemble_aligned_integer (2, GEN_INT (0x2f3a));                        \
-  assemble_aligned_integer (2, GEN_INT (8));                                \
-  assemble_aligned_integer (2, GEN_INT (0x4e75));                        \
-  assemble_aligned_integer (4, const0_rtx);                                \
-  assemble_aligned_integer (4, const0_rtx);                                \
+#define TRAMPOLINE_TEMPLATE(FILE)					\
+{									\
+  assemble_aligned_integer (2, GEN_INT (0x227a));			\
+  assemble_aligned_integer (2, GEN_INT (8));				\
+  assemble_aligned_integer (2, GEN_INT (0x2f3a));			\
+  assemble_aligned_integer (2, GEN_INT (8));				\
+  assemble_aligned_integer (2, GEN_INT (0x4e75));			\
+  assemble_aligned_integer (4, const0_rtx);				\
+  assemble_aligned_integer (4, const0_rtx);				\
 }
 
 /* Redefine since we are using a different trampoline */
@@ -399,8 +399,8 @@ while (0)
    CXT is an RTX for the static chain value for the function.  */
 
 #undef INITIALIZE_TRAMPOLINE
-#define INITIALIZE_TRAMPOLINE(TRAMP, FNADDR, CXT)                        \
-{                                                                        \
+#define INITIALIZE_TRAMPOLINE(TRAMP, FNADDR, CXT)			\
+{									\
   emit_move_insn (gen_rtx_MEM (SImode, plus_constant (TRAMP, 10)), CXT); \
   emit_move_insn (gen_rtx_MEM (SImode, plus_constant (TRAMP, 14)), FNADDR); \
 }

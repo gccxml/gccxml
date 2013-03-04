@@ -28,7 +28,7 @@
 
 (define_insn_reservation "mpccore-load" 2
   (and (eq_attr "type" "load,load_ext,load_ext_u,load_ext_ux,load_ux,load_u,\
-                        load_l,store_c,sync")
+			load_l,store_c,sync")
        (eq_attr "cpu" "mpccore"))
   "lsu_mpc")
 

@@ -7,12 +7,12 @@
 #undef SPARC_DEFAULT_CMODEL
 #define SPARC_DEFAULT_CMODEL CM_MEDMID
 
-#define AS_SPARC64_FLAG        "-xarch=v9"
+#define AS_SPARC64_FLAG	"-xarch=v9"
 
 #undef ASM_CPU32_DEFAULT_SPEC
-#define ASM_CPU32_DEFAULT_SPEC        ""
+#define ASM_CPU32_DEFAULT_SPEC	""
 #undef ASM_CPU64_DEFAULT_SPEC
-#define ASM_CPU64_DEFAULT_SPEC        AS_SPARC64_FLAG
+#define ASM_CPU64_DEFAULT_SPEC	AS_SPARC64_FLAG
 
 #if TARGET_CPU_DEFAULT == TARGET_CPU_v9
 #undef CPP_CPU64_DEFAULT_SPEC
@@ -146,11 +146,11 @@
 
 #undef SUBTARGET_EXTRA_SPECS
 #define SUBTARGET_EXTRA_SPECS \
-  { "startfile_arch",         STARTFILE_ARCH_SPEC },                  \
+  { "startfile_arch",	 STARTFILE_ARCH_SPEC },		  \
   { "link_arch32",       LINK_ARCH32_SPEC },              \
   { "link_arch64",       LINK_ARCH64_SPEC },              \
-  { "link_arch_default", LINK_ARCH_DEFAULT_SPEC },          \
-  { "link_arch",         LINK_ARCH_SPEC },
+  { "link_arch_default", LINK_ARCH_DEFAULT_SPEC },	  \
+  { "link_arch",	 LINK_ARCH_SPEC },
     
 /*
  * This should be the same as in sol2.h, except with "/sparcv9"
@@ -197,7 +197,7 @@
 #define LINK_ARCH_DEFAULT_SPEC \
 (DEFAULT_ARCH32_P ? LINK_ARCH32_SPEC : LINK_ARCH64_SPEC)
 
-#undef        CC1_SPEC
+#undef	CC1_SPEC
 #if DEFAULT_ARCH32_P
 #define CC1_SPEC "\
 %{sun4:} %{target:} \

@@ -90,7 +90,7 @@ static pid_t pex_wait (struct pex_obj *, pid_t, int *, struct pex_time *);
 
 static pid_t
 pex_wait (struct pex_obj *obj ATTRIBUTE_UNUSED, pid_t pid, int *status,
-          struct pex_time *time)
+	  struct pex_time *time)
 {
   pid_t ret;
   struct rusage r;
@@ -121,7 +121,7 @@ pex_wait (struct pex_obj *obj ATTRIBUTE_UNUSED, pid_t pid, int *status,
 
 static pid_t
 pex_wait (struct pex_obj *obj ATTRIBUTE_UNUSED, pid_t pid, int *status,
-          struct pex_time *time)
+	  struct pex_time *time)
 {
   if (time != NULL)
     memset (time, 0, sizeof (struct pex_time));
@@ -132,7 +132,7 @@ pex_wait (struct pex_obj *obj ATTRIBUTE_UNUSED, pid_t pid, int *status,
 
 static pid_t
 pex_wait (struct pex_obj *obj ATTRIBUTE_UNUSED, pid_t pid, int *status,
-          struct pex_time *time)
+	  struct pex_time *time)
 {
   struct rusage r1, r2;
   pid_t ret;
@@ -189,17 +189,17 @@ pex_wait (struct pex_obj *obj, pid_t pid, int *status, struct pex_time *time)
        pp = &(*pp)->next)
     {
       if ((*pp)->pid == pid)
-        {
-          struct status_list *p;
+	{
+	  struct status_list *p;
 
-          p = *pp;
-          *status = p->status;
-          if (time != NULL)
-            *time = p->time;
-          *pp = p->next;
-          free (p);
-          return pid;
-        }
+	  p = *pp;
+	  *status = p->status;
+	  if (time != NULL)
+	    *time = p->time;
+	  *pp = p->next;
+	  free (p);
+	  return pid;
+	}
     }
 
   while (1)
@@ -212,51 +212,51 @@ pex_wait (struct pex_obj *obj, pid_t pid, int *status, struct pex_time *time)
 #endif
 
       if (time != NULL)
-        {
+	{
 #ifdef HAVE_GETRUSAGE
-          getrusage (RUSAGE_CHILDREN, &r1);
+	  getrusage (RUSAGE_CHILDREN, &r1);
 #else
-          memset (&pt, 0, sizeof (struct pex_time));
+	  memset (&pt, 0, sizeof (struct pex_time));
 #endif
-        }
+	}
 
       cpid = wait (status);
 
 #ifdef HAVE_GETRUSAGE
       if (time != NULL && cpid >= 0)
-        {
-          getrusage (RUSAGE_CHILDREN, &r2);
+	{
+	  getrusage (RUSAGE_CHILDREN, &r2);
 
-          pt.user_seconds = r2.ru_utime.tv_sec - r1.ru_utime.tv_sec;
-          pt.user_microseconds = r2.ru_utime.tv_usec - r1.ru_utime.tv_usec;
-          if (pt.user_microseconds < 0)
-            {
-              --pt.user_seconds;
-              pt.user_microseconds += 1000000;
-            }
+	  pt.user_seconds = r2.ru_utime.tv_sec - r1.ru_utime.tv_sec;
+	  pt.user_microseconds = r2.ru_utime.tv_usec - r1.ru_utime.tv_usec;
+	  if (pt.user_microseconds < 0)
+	    {
+	      --pt.user_seconds;
+	      pt.user_microseconds += 1000000;
+	    }
 
-          pt.system_seconds = r2.ru_stime.tv_sec - r1.ru_stime.tv_sec;
-          pt.system_microseconds = r2.ru_stime.tv_usec - r1.ru_stime.tv_usec;
-          if (pt.system_microseconds < 0)
-            {
-              --pt.system_seconds;
-              pt.system_microseconds += 1000000;
-            }
-        }
+	  pt.system_seconds = r2.ru_stime.tv_sec - r1.ru_stime.tv_sec;
+	  pt.system_microseconds = r2.ru_stime.tv_usec - r1.ru_stime.tv_usec;
+	  if (pt.system_microseconds < 0)
+	    {
+	      --pt.system_seconds;
+	      pt.system_microseconds += 1000000;
+	    }
+	}
 #endif
 
       if (cpid < 0 || cpid == pid)
-        {
-          if (time != NULL)
-            *time = pt;
-          return cpid;
-        }
+	{
+	  if (time != NULL)
+	    *time = pt;
+	  return cpid;
+	}
 
       psl = XNEW (struct status_list);
       psl->pid = cpid;
       psl->status = *status;
       if (time != NULL)
-        psl->time = pt;
+	psl->time = pt;
       psl->next = (struct status_list *) obj->sysdep;
       obj->sysdep = (void *) psl;
     }
@@ -270,12 +270,12 @@ static void pex_child_error (struct pex_obj *, const char *, const char *, int)
 static int pex_unix_open_read (struct pex_obj *, const char *, int);
 static int pex_unix_open_write (struct pex_obj *, const char *, int);
 static long pex_unix_exec_child (struct pex_obj *, int, const char *,
-                                 char * const *, char * const *,
-                                 int, int, int, int,
-                                 const char **, int *);
+				 char * const *, char * const *,
+				 int, int, int, int,
+				 const char **, int *);
 static int pex_unix_close (struct pex_obj *, int);
 static int pex_unix_wait (struct pex_obj *, long, int *, struct pex_time *,
-                          int, const char **, int *);
+			  int, const char **, int *);
 static int pex_unix_pipe (struct pex_obj *, int *, int);
 static FILE *pex_unix_fdopenr (struct pex_obj *, int, int);
 static FILE *pex_unix_fdopenw (struct pex_obj *, int, int);
@@ -308,7 +308,7 @@ pex_init (int flags, const char *pname, const char *tempbase)
 
 static int
 pex_unix_open_read (struct pex_obj *obj ATTRIBUTE_UNUSED, const char *name,
-                    int binary ATTRIBUTE_UNUSED)
+		    int binary ATTRIBUTE_UNUSED)
 {
   return open (name, O_RDONLY);
 }
@@ -317,7 +317,7 @@ pex_unix_open_read (struct pex_obj *obj ATTRIBUTE_UNUSED, const char *name,
 
 static int
 pex_unix_open_write (struct pex_obj *obj ATTRIBUTE_UNUSED, const char *name,
-                     int binary ATTRIBUTE_UNUSED)
+		     int binary ATTRIBUTE_UNUSED)
 {
   /* Note that we can't use O_EXCL here because gcc may have already
      created the temporary file via make_temp_file.  */
@@ -337,7 +337,7 @@ pex_unix_close (struct pex_obj *obj ATTRIBUTE_UNUSED, int fd)
 
 static void
 pex_child_error (struct pex_obj *obj, const char *executable,
-                 const char *errmsg, int err)
+		 const char *errmsg, int err)
 {
 #define writeerr(s) write (STDERR_FILE_NO, s, strlen (s))
   writeerr (obj->pname);
@@ -357,9 +357,9 @@ extern char **environ;
 
 static long
 pex_unix_exec_child (struct pex_obj *obj, int flags, const char *executable,
-                     char * const * argv, char * const * env,
+		     char * const * argv, char * const * env,
                      int in, int out, int errdes,
-                     int toclose, const char **errmsg, int *err)
+		     int toclose, const char **errmsg, int *err)
 {
   pid_t pid;
 
@@ -374,7 +374,7 @@ pex_unix_exec_child (struct pex_obj *obj, int flags, const char *executable,
     {
       pid = vfork ();
       if (pid >= 0)
-        break;
+	break;
       sleep (sleep_interval);
       sleep_interval *= 2;
     }
@@ -389,50 +389,50 @@ pex_unix_exec_child (struct pex_obj *obj, int flags, const char *executable,
     case 0:
       /* Child process.  */
       if (in != STDIN_FILE_NO)
-        {
-          if (dup2 (in, STDIN_FILE_NO) < 0)
-            pex_child_error (obj, executable, "dup2", errno);
-          if (close (in) < 0)
-            pex_child_error (obj, executable, "close", errno);
-        }
+	{
+	  if (dup2 (in, STDIN_FILE_NO) < 0)
+	    pex_child_error (obj, executable, "dup2", errno);
+	  if (close (in) < 0)
+	    pex_child_error (obj, executable, "close", errno);
+	}
       if (out != STDOUT_FILE_NO)
-        {
-          if (dup2 (out, STDOUT_FILE_NO) < 0)
-            pex_child_error (obj, executable, "dup2", errno);
-          if (close (out) < 0)
-            pex_child_error (obj, executable, "close", errno);
-        }
+	{
+	  if (dup2 (out, STDOUT_FILE_NO) < 0)
+	    pex_child_error (obj, executable, "dup2", errno);
+	  if (close (out) < 0)
+	    pex_child_error (obj, executable, "close", errno);
+	}
       if (errdes != STDERR_FILE_NO)
-        {
-          if (dup2 (errdes, STDERR_FILE_NO) < 0)
-            pex_child_error (obj, executable, "dup2", errno);
-          if (close (errdes) < 0)
-            pex_child_error (obj, executable, "close", errno);
-        }
+	{
+	  if (dup2 (errdes, STDERR_FILE_NO) < 0)
+	    pex_child_error (obj, executable, "dup2", errno);
+	  if (close (errdes) < 0)
+	    pex_child_error (obj, executable, "close", errno);
+	}
       if (toclose >= 0)
-        {
-          if (close (toclose) < 0)
-            pex_child_error (obj, executable, "close", errno);
-        }
+	{
+	  if (close (toclose) < 0)
+	    pex_child_error (obj, executable, "close", errno);
+	}
       if ((flags & PEX_STDERR_TO_STDOUT) != 0)
-        {
-          if (dup2 (STDOUT_FILE_NO, STDERR_FILE_NO) < 0)
-            pex_child_error (obj, executable, "dup2", errno);
-        }
+	{
+	  if (dup2 (STDOUT_FILE_NO, STDERR_FILE_NO) < 0)
+	    pex_child_error (obj, executable, "dup2", errno);
+	}
 
       if (env)
         environ = (char**) env;
 
       if ((flags & PEX_SEARCH) != 0)
-        {
-          execvp (executable, argv);
-          pex_child_error (obj, executable, "execvp", errno);
-        }
+	{
+	  execvp (executable, argv);
+	  pex_child_error (obj, executable, "execvp", errno);
+	}
       else
-        {
-          execv (executable, argv);
-          pex_child_error (obj, executable, "execv", errno);
-        }
+	{
+	  execv (executable, argv);
+	  pex_child_error (obj, executable, "execv", errno);
+	}
 
       /* NOTREACHED */
       return -1;
@@ -440,32 +440,32 @@ pex_unix_exec_child (struct pex_obj *obj, int flags, const char *executable,
     default:
       /* Parent process.  */
       if (in != STDIN_FILE_NO)
-        {
-          if (close (in) < 0)
-            {
-              *err = errno;
-              *errmsg = "close";
-              return -1;
-            }
-        }
+	{
+	  if (close (in) < 0)
+	    {
+	      *err = errno;
+	      *errmsg = "close";
+	      return -1;
+	    }
+	}
       if (out != STDOUT_FILE_NO)
-        {
-          if (close (out) < 0)
-            {
-              *err = errno;
-              *errmsg = "close";
-              return -1;
-            }
-        }
+	{
+	  if (close (out) < 0)
+	    {
+	      *err = errno;
+	      *errmsg = "close";
+	      return -1;
+	    }
+	}
       if (errdes != STDERR_FILE_NO)
-        {
-          if (close (errdes) < 0)
-            {
-              *err = errno;
-              *errmsg = "close";
-              return -1;
-            }
-        }
+	{
+	  if (close (errdes) < 0)
+	    {
+	      *err = errno;
+	      *errmsg = "close";
+	      return -1;
+	    }
+	}
 
       return (long) pid;
     }
@@ -475,8 +475,8 @@ pex_unix_exec_child (struct pex_obj *obj, int flags, const char *executable,
 
 static int
 pex_unix_wait (struct pex_obj *obj, long pid, int *status,
-               struct pex_time *time, int done, const char **errmsg,
-               int *err)
+	       struct pex_time *time, int done, const char **errmsg,
+	       int *err)
 {
   /* If we are cleaning up when the caller didn't retrieve process
      status for some reason, encourage the process to go away.  */
@@ -497,7 +497,7 @@ pex_unix_wait (struct pex_obj *obj, long pid, int *status,
 
 static int
 pex_unix_pipe (struct pex_obj *obj ATTRIBUTE_UNUSED, int *p,
-               int binary ATTRIBUTE_UNUSED)
+	       int binary ATTRIBUTE_UNUSED)
 {
   return pipe (p);
 }
@@ -506,14 +506,14 @@ pex_unix_pipe (struct pex_obj *obj ATTRIBUTE_UNUSED, int *p,
 
 static FILE *
 pex_unix_fdopenr (struct pex_obj *obj ATTRIBUTE_UNUSED, int fd,
-                  int binary ATTRIBUTE_UNUSED)
+		  int binary ATTRIBUTE_UNUSED)
 {
   return fdopen (fd, "r");
 }
 
 static FILE *
 pex_unix_fdopenw (struct pex_obj *obj ATTRIBUTE_UNUSED, int fd,
-                  int binary ATTRIBUTE_UNUSED)
+		  int binary ATTRIBUTE_UNUSED)
 {
   if (fcntl (fd, F_SETFD, FD_CLOEXEC) < 0)
     return NULL;

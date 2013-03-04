@@ -41,9 +41,9 @@
     case QFmode:
     case HFmode:
       if (GET_CODE (op) != CONST_DOUBLE
-          || GET_MODE (op) != mode
-          || GET_MODE_CLASS (mode) != MODE_FLOAT)
-        return 0;
+	  || GET_MODE (op) != mode
+	  || GET_MODE_CLASS (mode) != MODE_FLOAT)
+	return 0;
 
       return c4x_immed_float_p (op);
 
@@ -52,9 +52,9 @@
 #endif
     case QImode:
       if (GET_CODE (op) != CONST_INT
-          || (GET_MODE (op) != VOIDmode && GET_MODE (op) != mode)
-          || GET_MODE_CLASS (mode) != MODE_INT)
-        return 0;
+	  || (GET_MODE (op) != VOIDmode && GET_MODE (op) != mode)
+	  || GET_MODE_CLASS (mode) != MODE_INT)
+	return 0;
 
       return IS_HIGH_CONST (INTVAL (op)) || IS_INT16_CONST (INTVAL (op));
 
@@ -286,8 +286,8 @@
      HIGH/LO_SUM pair if TARGET_EXPOSE_LDP is nonzero.  */
   if (GET_CODE (op) == MEM
       && ((GET_CODE (XEXP (op, 0)) == SYMBOL_REF
-           || GET_CODE (XEXP (op, 0)) == LABEL_REF
-           || GET_CODE (XEXP (op, 0)) == CONST)))
+	   || GET_CODE (XEXP (op, 0)) == LABEL_REF
+	   || GET_CODE (XEXP (op, 0)) == CONST)))
     return !TARGET_EXPOSE_LDP &&
       ! TARGET_LOAD_DIRECT_MEMS && GET_MODE (op) == mode;
 

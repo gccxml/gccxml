@@ -20,35 +20,35 @@
    Free Software Foundation, 51 Franklin Street, Fifth Floor, Boston,
    MA 02110-1301, USA.  */
 
-#undef  TARGET_OS_CPP_BUILTINS        /* FIXME: sysv4.h should not define this! */
-#define TARGET_OS_CPP_BUILTINS()                \
-  do                                                \
-    {                                                \
-      NETBSD_OS_CPP_BUILTINS_ELF();                \
-      builtin_define ("__powerpc__");                \
-      builtin_assert ("cpu=powerpc");                \
-      builtin_assert ("machine=powerpc");        \
-    }                                                \
+#undef  TARGET_OS_CPP_BUILTINS	/* FIXME: sysv4.h should not define this! */
+#define TARGET_OS_CPP_BUILTINS()		\
+  do						\
+    {						\
+      NETBSD_OS_CPP_BUILTINS_ELF();		\
+      builtin_define ("__powerpc__");		\
+      builtin_assert ("cpu=powerpc");		\
+      builtin_assert ("machine=powerpc");	\
+    }						\
   while (0)
 
 /* Override the default from rs6000.h to avoid conflicts with macros
    defined in NetBSD header files.  */
 
 #undef  RS6000_CPU_CPP_ENDIAN_BUILTINS
-#define RS6000_CPU_CPP_ENDIAN_BUILTINS()        \
-  do                                                \
-    {                                                \
-      if (BYTES_BIG_ENDIAN)                        \
-        {                                        \
-          builtin_define ("__BIG_ENDIAN__");        \
-          builtin_assert ("machine=bigendian");        \
-        }                                        \
-      else                                        \
-        {                                        \
-          builtin_define ("__LITTLE_ENDIAN__");        \
-          builtin_assert ("machine=littleendian"); \
-        }                                        \
-    }                                                \
+#define RS6000_CPU_CPP_ENDIAN_BUILTINS()	\
+  do						\
+    {						\
+      if (BYTES_BIG_ENDIAN)			\
+	{					\
+	  builtin_define ("__BIG_ENDIAN__");	\
+	  builtin_assert ("machine=bigendian");	\
+	}					\
+      else					\
+	{					\
+	  builtin_define ("__LITTLE_ENDIAN__");	\
+	  builtin_assert ("machine=littleendian"); \
+	}					\
+    }						\
   while (0)
 
 /* Make GCC agree with <machine/ansi.h>.  */
@@ -83,10 +83,10 @@
 #define LIB_SPEC NETBSD_LIB_SPEC
 
 #undef  SUBTARGET_EXTRA_SPECS
-#define SUBTARGET_EXTRA_SPECS                                        \
-  { "netbsd_link_spec",                NETBSD_LINK_SPEC_ELF },                \
-  { "netbsd_entry_point",        NETBSD_ENTRY_POINT },                \
-  { "netbsd_endfile_spec",        NETBSD_ENDFILE_SPEC },
+#define SUBTARGET_EXTRA_SPECS					\
+  { "netbsd_link_spec",		NETBSD_LINK_SPEC_ELF },		\
+  { "netbsd_entry_point",	NETBSD_ENTRY_POINT },		\
+  { "netbsd_endfile_spec",	NETBSD_ENDFILE_SPEC },
 
 
 #undef  TARGET_VERSION

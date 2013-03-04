@@ -97,29 +97,29 @@ extern char sizeof_long_long_must_be_8[sizeof(long long) == 8 ? 1 : -1];
 
 #if HOST_BITS_PER_WIDE_INT >= 64 \
     || (HOST_BITS_PER_LONGLONG < 64 && HOST_BITS_PER___INT64 < 64)
-# define HOST_WIDEST_INT                      HOST_WIDE_INT
-# define HOST_BITS_PER_WIDEST_INT              HOST_BITS_PER_WIDE_INT
-# define HOST_WIDEST_INT_PRINT_DEC              HOST_WIDE_INT_PRINT_DEC
-# define HOST_WIDEST_INT_PRINT_DEC_C              HOST_WIDE_INT_PRINT_DEC_C
-# define HOST_WIDEST_INT_PRINT_UNSIGNED              HOST_WIDE_INT_PRINT_UNSIGNED
-# define HOST_WIDEST_INT_PRINT_HEX              HOST_WIDE_INT_PRINT_HEX
+# define HOST_WIDEST_INT		      HOST_WIDE_INT
+# define HOST_BITS_PER_WIDEST_INT	      HOST_BITS_PER_WIDE_INT
+# define HOST_WIDEST_INT_PRINT_DEC	      HOST_WIDE_INT_PRINT_DEC
+# define HOST_WIDEST_INT_PRINT_DEC_C	      HOST_WIDE_INT_PRINT_DEC_C
+# define HOST_WIDEST_INT_PRINT_UNSIGNED	      HOST_WIDE_INT_PRINT_UNSIGNED
+# define HOST_WIDEST_INT_PRINT_HEX	      HOST_WIDE_INT_PRINT_HEX
 # define HOST_WIDEST_INT_PRINT_DOUBLE_HEX     HOST_WIDE_INT_PRINT_DOUBLE_HEX
 #else
 # if HOST_BITS_PER_LONGLONG >= 64
-#  define HOST_BITS_PER_WIDEST_INT              HOST_BITS_PER_LONGLONG
-#  define HOST_WIDEST_INT                      long long
+#  define HOST_BITS_PER_WIDEST_INT	      HOST_BITS_PER_LONGLONG
+#  define HOST_WIDEST_INT		      long long
 # else
 #  if HOST_BITS_PER___INT64 >= 64
-#   define HOST_BITS_PER_WIDEST_INT              HOST_BITS_PER___INT64
-#   define HOST_WIDEST_INT                      __int64
+#   define HOST_BITS_PER_WIDEST_INT	      HOST_BITS_PER___INT64
+#   define HOST_WIDEST_INT		      __int64
 #  else
     #error "This line should be impossible to reach"
 #  endif
 # endif
-# define HOST_WIDEST_INT_PRINT_DEC              "%" HOST_LONG_LONG_FORMAT "d"
-# define HOST_WIDEST_INT_PRINT_DEC_C              "%" HOST_LONG_LONG_FORMAT "dLL"
-# define HOST_WIDEST_INT_PRINT_UNSIGNED              "%" HOST_LONG_LONG_FORMAT "u"
-# define HOST_WIDEST_INT_PRINT_HEX              "0x%" HOST_LONG_LONG_FORMAT "x"
+# define HOST_WIDEST_INT_PRINT_DEC	      "%" HOST_LONG_LONG_FORMAT "d"
+# define HOST_WIDEST_INT_PRINT_DEC_C	      "%" HOST_LONG_LONG_FORMAT "dLL"
+# define HOST_WIDEST_INT_PRINT_UNSIGNED	      "%" HOST_LONG_LONG_FORMAT "u"
+# define HOST_WIDEST_INT_PRINT_HEX	      "0x%" HOST_LONG_LONG_FORMAT "x"
 # define HOST_WIDEST_INT_PRINT_DOUBLE_HEX     \
     "0x%" HOST_LONG_LONG_FORMAT "x%016" HOST_LONG_LONG_FORMAT "x"
 #endif

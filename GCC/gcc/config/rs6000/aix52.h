@@ -30,28 +30,28 @@
    get control.  */
 
 #define NON_POWERPC_MASKS (MASK_POWER | MASK_POWER2)
-#define SUBTARGET_OVERRIDE_OPTIONS                                        \
-do {                                                                        \
-  if (TARGET_64BIT && (target_flags & NON_POWERPC_MASKS))                \
-    {                                                                        \
-      target_flags &= ~NON_POWERPC_MASKS;                                \
-      warning (0, "-maix64 and POWER architecture are incompatible");        \
-    }                                                                        \
-  if (TARGET_64BIT && ! TARGET_POWERPC64)                                \
-    {                                                                        \
-      target_flags |= MASK_POWERPC64;                                        \
+#define SUBTARGET_OVERRIDE_OPTIONS					\
+do {									\
+  if (TARGET_64BIT && (target_flags & NON_POWERPC_MASKS))		\
+    {									\
+      target_flags &= ~NON_POWERPC_MASKS;				\
+      warning (0, "-maix64 and POWER architecture are incompatible");	\
+    }									\
+  if (TARGET_64BIT && ! TARGET_POWERPC64)				\
+    {									\
+      target_flags |= MASK_POWERPC64;					\
       warning (0, "-maix64 requires PowerPC64 architecture remain enabled"); \
-    }                                                                        \
-  if (TARGET_SOFT_FLOAT && TARGET_LONG_DOUBLE_128)                        \
-    {                                                                        \
-      rs6000_long_double_type_size = 64;                                \
-      if (rs6000_explicit_options.long_double)                                \
-        warning (0, "soft-float and long-double-128 are incompatible");        \
-    }                                                                        \
-  if (TARGET_POWERPC64 && ! TARGET_64BIT)                                \
-    {                                                                        \
+    }									\
+  if (TARGET_SOFT_FLOAT && TARGET_LONG_DOUBLE_128)			\
+    {									\
+      rs6000_long_double_type_size = 64;				\
+      if (rs6000_explicit_options.long_double)				\
+	warning (0, "soft-float and long-double-128 are incompatible");	\
+    }									\
+  if (TARGET_POWERPC64 && ! TARGET_64BIT)				\
+    {									\
       error ("-maix64 required: 64-bit computation with 32-bit addressing not yet supported"); \
-    }                                                                        \
+    }									\
 } while (0);
 
 #undef ASM_SPEC
@@ -80,7 +80,7 @@ do {                                                                        \
 %{mcpu=970: -m620} \
 %{mcpu=G5: -m620}"
 
-#undef        ASM_DEFAULT_SPEC
+#undef	ASM_DEFAULT_SPEC
 #define ASM_DEFAULT_SPEC "-mppc"
 
 #undef TARGET_OS_CPP_BUILTINS
@@ -95,19 +95,19 @@ do {                                                                        \
   while (0)
 
 #undef CPP_SPEC
-#define CPP_SPEC "%{posix: -D_POSIX_SOURCE}        \
-  %{ansi: -D_ANSI_C_SOURCE}                        \
-  %{maix64: -D__64BIT__}                        \
-  %{mpe: -I/usr/lpp/ppe.poe/include}                \
+#define CPP_SPEC "%{posix: -D_POSIX_SOURCE}	\
+  %{ansi: -D_ANSI_C_SOURCE}			\
+  %{maix64: -D__64BIT__}			\
+  %{mpe: -I/usr/lpp/ppe.poe/include}		\
   %{pthread: -D_THREAD_SAFE}"
 
 /* The GNU C++ standard library requires that these macros be 
    defined.  Synchronize with libstdc++ os_defines.h.  */
 #undef CPLUSPLUS_CPP_SPEC                       
-#define CPLUSPLUS_CPP_SPEC                        \
-  "-D_ALL_SOURCE                                \
-   %{maix64: -D__64BIT__}                        \
-   %{mpe: -I/usr/lpp/ppe.poe/include}                \
+#define CPLUSPLUS_CPP_SPEC			\
+  "-D_ALL_SOURCE				\
+   %{maix64: -D__64BIT__}			\
+   %{mpe: -I/usr/lpp/ppe.poe/include}		\
    %{pthread: -D_THREAD_SAFE}"
 
 #undef  TARGET_DEFAULT
@@ -130,7 +130,7 @@ do {                                                                        \
    the target makefile fragment or if none of the options listed in
    `MULTILIB_OPTIONS' are set by default.  *Note Target Fragment::.  */
 
-#undef        MULTILIB_DEFAULTS
+#undef	MULTILIB_DEFAULTS
 
 #undef LIB_SPEC
 #define LIB_SPEC "%{pg:-L/lib/profiled -L/usr/lib/profiled}\

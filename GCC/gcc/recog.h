@@ -116,7 +116,7 @@ extern int peep2_regno_dead_p (int, int);
 extern int peep2_reg_dead_p (int, rtx);
 #ifdef CLEAR_HARD_REG_SET
 extern rtx peep2_find_free_register (int, int, const char *,
-                                     enum machine_mode, HARD_REG_SET *);
+				     enum machine_mode, HARD_REG_SET *);
 #endif
 extern rtx peephole2_insns (rtx, rtx, int *);
 
@@ -233,10 +233,10 @@ struct insn_operand_data
 
 /* Legal values for insn_data.output_format.  Indicate what type of data
    is stored in insn_data.output.  */
-#define INSN_OUTPUT_FORMAT_NONE                0        /* abort */
-#define INSN_OUTPUT_FORMAT_SINGLE        1        /* const char * */
-#define INSN_OUTPUT_FORMAT_MULTI        2        /* const char * const * */
-#define INSN_OUTPUT_FORMAT_FUNCTION        3        /* const char * (*)(...) */
+#define INSN_OUTPUT_FORMAT_NONE		0	/* abort */
+#define INSN_OUTPUT_FORMAT_SINGLE	1	/* const char * */
+#define INSN_OUTPUT_FORMAT_MULTI	2	/* const char * const * */
+#define INSN_OUTPUT_FORMAT_FUNCTION	3	/* const char * (*)(...) */
 
 struct insn_data
 {

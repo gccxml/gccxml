@@ -37,7 +37,7 @@ static int c4x_parse_pragma (const char *, tree *, tree *);
 /* Handle machine specific pragmas for compatibility with existing
    compilers for the C3x/C4x.
 
-   pragma                                   attribute
+   pragma				   attribute
    ----------------------------------------------------------
    CODE_SECTION(symbol,"section")          section("section")
    DATA_SECTION(symbol,"section")          section("section")
@@ -77,9 +77,9 @@ c4x_parse_pragma (name, func, sect)
   if (sect)
     {
       if (pragma_lex (&x) != CPP_COMMA)
-        BAD ("malformed '#pragma %s' - ignored", name);
+	BAD ("malformed '#pragma %s' - ignored", name);
       if (pragma_lex (&s) != CPP_STRING)
-        BAD ("missing section name in '#pragma %s' - ignored", name);
+	BAD ("missing section name in '#pragma %s' - ignored", name);
       *sect = s;
     }
 
@@ -102,8 +102,8 @@ c4x_pr_CODE_SECTION (pfile)
   if (c4x_parse_pragma ("CODE_SECTION", &func, &sect))
     return;
   code_tree = chainon (code_tree,
-                       build_tree_list (func,
-                                        build_tree_list (NULL_TREE, sect)));
+		       build_tree_list (func,
+					build_tree_list (NULL_TREE, sect)));
 }
 
 void
@@ -115,8 +115,8 @@ c4x_pr_DATA_SECTION (pfile)
   if (c4x_parse_pragma ("DATA_SECTION", &func, &sect))
     return;
   data_tree = chainon (data_tree,
-                       build_tree_list (func,
-                                        build_tree_list (NULL_TREE, sect)));
+		       build_tree_list (func,
+					build_tree_list (NULL_TREE, sect)));
 }
 
 void

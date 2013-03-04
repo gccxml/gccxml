@@ -20,11 +20,11 @@ the Free Software Foundation, 51 Franklin Street, Fifth Floor,
 Boston, MA 02110-1301, USA.  */
 
 /* TARGET_OS_CPP_BUILTINS() common to all NetBSD ELF targets.  */
-#define NETBSD_OS_CPP_BUILTINS_ELF()                \
-  do                                                \
-    {                                                \
-      NETBSD_OS_CPP_BUILTINS_COMMON();                \
-    }                                                \
+#define NETBSD_OS_CPP_BUILTINS_ELF()		\
+  do						\
+    {						\
+      NETBSD_OS_CPP_BUILTINS_COMMON();		\
+    }						\
   while (0)
 
 /* This defines which switch letters take arguments.  On NetBSD, most
@@ -32,10 +32,10 @@ Boston, MA 02110-1301, USA.  */
    and -z* options (for the linker) (coming from SVR4).  */
 
 #undef SWITCH_TAKES_ARG
-#define SWITCH_TAKES_ARG(CHAR)                        \
-  (DEFAULT_SWITCH_TAKES_ARG (CHAR)                \
-   || (CHAR) == 'h'                                \
-   || (CHAR) == 'z'                                \
+#define SWITCH_TAKES_ARG(CHAR)			\
+  (DEFAULT_SWITCH_TAKES_ARG (CHAR)		\
+   || (CHAR) == 'h'				\
+   || (CHAR) == 'z'				\
    || (CHAR) == 'R')
 
 
@@ -45,13 +45,13 @@ Boston, MA 02110-1301, USA.  */
    of the support for getting C++ file-scope static objects
    constructed before entering "main".  */
 
-#define NETBSD_STARTFILE_SPEC        \
-  "%{!shared:                        \
-     %{pg:gcrt0%O%s}                \
-     %{!pg:                        \
-       %{p:gcrt0%O%s}                \
-       %{!p:crt0%O%s}}}                \
-   %:if-exists(crti%O%s)        \
+#define NETBSD_STARTFILE_SPEC	\
+  "%{!shared:			\
+     %{pg:gcrt0%O%s}		\
+     %{!pg:			\
+       %{p:gcrt0%O%s}		\
+       %{!p:crt0%O%s}}}		\
+   %:if-exists(crti%O%s)	\
    %{static:%:if-exists-else(crtbeginT%O%s crtbegin%O%s)} \
    %{!static: \
      %{!shared:crtbegin%O%s} %{shared:crtbeginS%O%s}}"
@@ -64,7 +64,7 @@ Boston, MA 02110-1301, USA.  */
    add crtend.o, which provides part of the support for getting
    C++ file-scope static objects deconstructed after exiting "main".  */
 
-#define NETBSD_ENDFILE_SPEC        \
+#define NETBSD_ENDFILE_SPEC	\
   "%{!shared:crtend%O%s} %{shared:crtendS%O%s} \
    %:if-exists(crtn%O%s)"
 
@@ -87,7 +87,7 @@ Boston, MA 02110-1301, USA.  */
      -dc -dp \
      %{!nostdlib: \
        %{!r*: \
-         %{!e*:-e %(netbsd_entry_point)}}} \
+	 %{!e*:-e %(netbsd_entry_point)}}} \
      %{!static: \
        %{rdynamic:-export-dynamic} \
        %{!dynamic-linker:-dynamic-linker /usr/libexec/ld.elf_so}} \

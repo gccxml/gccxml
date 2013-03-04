@@ -22,8 +22,8 @@ AC_CHECK_PROGS([AUTOHEADER], [autoheader], [$MISSING autoheader])
 # See config/warnings.m4 for details.
 
 ACX_PROG_CC_WARNING_OPTS([-W -Wall -Wwrite-strings -Wstrict-prototypes \
-                          -Wmissing-prototypes -Wold-style-definition \
-                          -Wmissing-format-attribute])
+			  -Wmissing-prototypes -Wold-style-definition \
+			  -Wmissing-format-attribute])
 ACX_PROG_CC_WARNING_ALMOST_PEDANTIC([-Wno-long-long])
 
 # Only enable with --enable-werror-always until existing warnings are
@@ -38,7 +38,7 @@ ZW_PROG_COMPILER_DEPENDENCIES([CC])
 AC_HEADER_TIME
 ACX_HEADER_STRING
 AC_CHECK_HEADERS(iconv.h locale.h fcntl.h limits.h stddef.h \
-        stdlib.h strings.h string.h sys/file.h unistd.h)
+	stdlib.h strings.h string.h sys/file.h unistd.h)
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
@@ -112,31 +112,31 @@ fi
 
 m4_changequote(,)
 case $target in
-        alpha*-*-* | \
-        arm*-*-*eabi* | \
-        arm*-*-symbianelf* | \
-        x86_64-*-* | \
-        ia64-*-* | \
-        hppa*64*-*-* | parisc*64*-*-* | \
-        i[34567]86-*-darwin* | \
-        i[34567]86-*-solaris2.1[0-9]* | \
-        mips*-*-* | \
-        mmix-*-* | \
-        powerpc*-*-* | \
-        rs6000*-*-* | \
-        s390*-*-* | \
-        sparc64*-*-* | ultrasparc-*-freebsd* | \
-        sparcv9-*-solaris2* | \
-        sparc-*-solaris2.[789] | sparc-*-solaris2.1[0-9]* | \
-        sh[123456789l]*-*-*)
-                need_64bit_hwint=yes ;;
-        *)
-                need_64bit_hwint=no ;;
+	alpha*-*-* | \
+	arm*-*-*eabi* | \
+	arm*-*-symbianelf* | \
+	x86_64-*-* | \
+	ia64-*-* | \
+	hppa*64*-*-* | parisc*64*-*-* | \
+	i[34567]86-*-darwin* | \
+	i[34567]86-*-solaris2.1[0-9]* | \
+	mips*-*-* | \
+	mmix-*-* | \
+	powerpc*-*-* | \
+	rs6000*-*-* | \
+	s390*-*-* | \
+	sparc64*-*-* | ultrasparc-*-freebsd* | \
+	sparcv9-*-solaris2* | \
+	sparc-*-solaris2.[789] | sparc-*-solaris2.1[0-9]* | \
+	sh[123456789l]*-*-*)
+		need_64bit_hwint=yes ;;
+	*)
+		need_64bit_hwint=no ;;
 esac
 
 case $need_64bit_hwint:$ac_cv_sizeof_long in
-        *:8 | no:*) host_wide_int=long ;;
-        *) host_wide_int='long long' ;;
+	*:8 | no:*) host_wide_int=long ;;
+	*) host_wide_int='long long' ;;
 esac
 m4_changequote([,])
 

@@ -134,7 +134,7 @@ extern const struct line_map *linemap_lookup
    which led to the map MAP, if any, to stderr.  Nothing is output if
    the most recently listed stack is the same as the current one.  */
 extern void linemap_print_containing_files (struct line_maps *,
-                                            const struct line_map *);
+					    const struct line_map *);
 
 /* Converts a map and a source_location to source line.  */
 #define SOURCE_LINE(MAP, LINE) \
@@ -149,7 +149,7 @@ extern void linemap_print_containing_files (struct line_maps *,
   SOURCE_LINE (MAP, LAST_SOURCE_LINE_LOCATION (MAP))
 #define LAST_SOURCE_LINE_LOCATION(MAP) \
   ((((MAP)[1].start_location - 1 - (MAP)->start_location) \
-    & ~((1 << (MAP)->column_bits) - 1))                          \
+    & ~((1 << (MAP)->column_bits) - 1))			  \
    + (MAP)->start_location)
 
 /* Returns the map a given map was included from.  */
@@ -171,7 +171,7 @@ extern void linemap_print_containing_files (struct line_maps *,
     r = r + to_column; \
     if (r >= set->highest_location) \
       set->highest_location = r; \
-    (LOC) = r;                         \
+    (LOC) = r;			 \
   }}
     
 

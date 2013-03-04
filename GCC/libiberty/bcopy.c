@@ -19,7 +19,7 @@ bcopy (const void *src, void *dest, size_t len)
       const char *firsts = src;
       char *firstd = dest;
       while (len--)
-        *firstd++ = *firsts++;
+	*firstd++ = *firsts++;
     }
   else
     {

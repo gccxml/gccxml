@@ -23,29 +23,29 @@ Boston, MA 02110-1301, USA.  */
 
 /* Names to predefine in the preprocessor for this target machine.  */
 
-#define TARGET_CPU_CPP_BUILTINS()                \
-  do                                                \
-    {                                                \
-      builtin_define_std ("AVR");                \
-      if (avr_base_arch_macro)                        \
-        builtin_define (avr_base_arch_macro);        \
-      if (avr_extra_arch_macro)                        \
-        builtin_define (avr_extra_arch_macro);        \
-      if (avr_have_movw_lpmx_p)                        \
-        builtin_define ("__AVR_HAVE_MOVW__");        \
-      if (avr_have_movw_lpmx_p)                        \
-        builtin_define ("__AVR_HAVE_LPMX__");        \
-      if (avr_asm_only_p)                        \
-        builtin_define ("__AVR_ASM_ONLY__");        \
-      if (avr_enhanced_p)                        \
-        builtin_define ("__AVR_ENHANCED__");        \
-      if (avr_enhanced_p)                        \
-        builtin_define ("__AVR_HAVE_MUL__");        \
-      if (avr_mega_p)                                \
-        builtin_define ("__AVR_MEGA__");        \
-      if (TARGET_NO_INTERRUPTS)                        \
-        builtin_define ("__NO_INTERRUPTS__");        \
-    }                                                \
+#define TARGET_CPU_CPP_BUILTINS()		\
+  do						\
+    {						\
+      builtin_define_std ("AVR");		\
+      if (avr_base_arch_macro)			\
+	builtin_define (avr_base_arch_macro);	\
+      if (avr_extra_arch_macro)			\
+	builtin_define (avr_extra_arch_macro);	\
+      if (avr_have_movw_lpmx_p)			\
+	builtin_define ("__AVR_HAVE_MOVW__");	\
+      if (avr_have_movw_lpmx_p)			\
+	builtin_define ("__AVR_HAVE_LPMX__");	\
+      if (avr_asm_only_p)			\
+	builtin_define ("__AVR_ASM_ONLY__");	\
+      if (avr_enhanced_p)			\
+	builtin_define ("__AVR_ENHANCED__");	\
+      if (avr_enhanced_p)			\
+	builtin_define ("__AVR_HAVE_MUL__");	\
+      if (avr_mega_p)				\
+	builtin_define ("__AVR_MEGA__");	\
+      if (TARGET_NO_INTERRUPTS)			\
+	builtin_define ("__NO_INTERRUPTS__");	\
+    }						\
   while (0)
 
 extern const char *avr_base_arch_macro;
@@ -136,37 +136,37 @@ extern GTY(()) section *progmem_section;
   1,1,/*  STACK */\
   1,1 /* arg pointer */  }
 
-#define CALL_USED_REGISTERS {                        \
-  1,1,/* r0 r1 */                                \
-    0,0,/* r2 r3 */                                \
-    0,0,/* r4 r5 */                                \
-    0,0,/* r6 r7 */                                \
-    0,0,/* r8 r9 */                                \
-    0,0,/* r10 r11 */                                \
-    0,0,/* r12 r13 */                                \
-    0,0,/* r14 r15 */                                \
-    0,0,/* r16 r17 */                                \
-    1,1,/* r18 r19 */                                \
-    1,1,/* r20 r21 */                                \
-    1,1,/* r22 r23 */                                \
-    1,1,/* r24 r25 */                                \
-    1,1,/* r26 r27 */                                \
-    0,0,/* r28 r29 */                                \
-    1,1,/* r30 r31 */                                \
-    1,1,/*  STACK */                                \
+#define CALL_USED_REGISTERS {			\
+  1,1,/* r0 r1 */				\
+    0,0,/* r2 r3 */				\
+    0,0,/* r4 r5 */				\
+    0,0,/* r6 r7 */				\
+    0,0,/* r8 r9 */				\
+    0,0,/* r10 r11 */				\
+    0,0,/* r12 r13 */				\
+    0,0,/* r14 r15 */				\
+    0,0,/* r16 r17 */				\
+    1,1,/* r18 r19 */				\
+    1,1,/* r20 r21 */				\
+    1,1,/* r22 r23 */				\
+    1,1,/* r24 r25 */				\
+    1,1,/* r26 r27 */				\
+    0,0,/* r28 r29 */				\
+    1,1,/* r30 r31 */				\
+    1,1,/*  STACK */				\
     1,1 /* arg pointer */  }
 
-#define REG_ALLOC_ORDER {                        \
-    24,25,                                        \
-    18,19,                                        \
-    20,21,                                        \
-    22,23,                                        \
-    30,31,                                        \
-    26,27,                                        \
-    28,29,                                        \
-    17,16,15,14,13,12,11,10,9,8,7,6,5,4,3,2,        \
-    0,1,                                        \
-    32,33,34,35                                        \
+#define REG_ALLOC_ORDER {			\
+    24,25,					\
+    18,19,					\
+    20,21,					\
+    22,23,					\
+    30,31,					\
+    26,27,					\
+    28,29,					\
+    17,16,15,14,13,12,11,10,9,8,7,6,5,4,3,2,	\
+    0,1,					\
+    32,33,34,35					\
     }
 
 #define ORDER_REGS_FOR_LOCAL_ALLOC order_regs_for_local_alloc ()
@@ -180,59 +180,59 @@ extern GTY(()) section *progmem_section;
 
 enum reg_class {
   NO_REGS,
-  R0_REG,                        /* r0 */
-  POINTER_X_REGS,                /* r26 - r27 */
-  POINTER_Y_REGS,                /* r28 - r29 */
-  POINTER_Z_REGS,                /* r30 - r31 */
-  STACK_REG,                        /* STACK */
-  BASE_POINTER_REGS,                /* r28 - r31 */
-  POINTER_REGS,                        /* r26 - r31 */
-  ADDW_REGS,                        /* r24 - r31 */
-  SIMPLE_LD_REGS,                /* r16 - r23 */
-  LD_REGS,                        /* r16 - r31 */
-  NO_LD_REGS,                        /* r0 - r15 */
-  GENERAL_REGS,                        /* r0 - r31 */
+  R0_REG,			/* r0 */
+  POINTER_X_REGS,		/* r26 - r27 */
+  POINTER_Y_REGS,		/* r28 - r29 */
+  POINTER_Z_REGS,		/* r30 - r31 */
+  STACK_REG,			/* STACK */
+  BASE_POINTER_REGS,		/* r28 - r31 */
+  POINTER_REGS,			/* r26 - r31 */
+  ADDW_REGS,			/* r24 - r31 */
+  SIMPLE_LD_REGS,		/* r16 - r23 */
+  LD_REGS,			/* r16 - r31 */
+  NO_LD_REGS,			/* r0 - r15 */
+  GENERAL_REGS,			/* r0 - r31 */
   ALL_REGS, LIM_REG_CLASSES
 };
 
 
 #define N_REG_CLASSES (int)LIM_REG_CLASSES
 
-#define REG_CLASS_NAMES {                                        \
-                 "NO_REGS",                                        \
-                   "R0_REG",        /* r0 */                        \
-                   "POINTER_X_REGS", /* r26 - r27 */                \
-                   "POINTER_Y_REGS", /* r28 - r29 */                \
-                   "POINTER_Z_REGS", /* r30 - r31 */                \
-                   "STACK_REG",        /* STACK */                        \
-                   "BASE_POINTER_REGS",        /* r28 - r31 */                \
-                   "POINTER_REGS", /* r26 - r31 */                \
-                   "ADDW_REGS",        /* r24 - r31 */                        \
+#define REG_CLASS_NAMES {					\
+		 "NO_REGS",					\
+		   "R0_REG",	/* r0 */                        \
+		   "POINTER_X_REGS", /* r26 - r27 */		\
+		   "POINTER_Y_REGS", /* r28 - r29 */		\
+		   "POINTER_Z_REGS", /* r30 - r31 */		\
+		   "STACK_REG",	/* STACK */			\
+		   "BASE_POINTER_REGS",	/* r28 - r31 */		\
+		   "POINTER_REGS", /* r26 - r31 */		\
+		   "ADDW_REGS",	/* r24 - r31 */			\
                    "SIMPLE_LD_REGS", /* r16 - r23 */            \
-                   "LD_REGS",        /* r16 - r31 */                        \
+		   "LD_REGS",	/* r16 - r31 */			\
                    "NO_LD_REGS", /* r0 - r15 */                 \
-                   "GENERAL_REGS", /* r0 - r31 */                \
-                   "ALL_REGS" }
+		   "GENERAL_REGS", /* r0 - r31 */		\
+		   "ALL_REGS" }
 
-#define REG_CLASS_CONTENTS {                                                \
-  {0x00000000,0x00000000},        /* NO_REGS */                                \
-  {0x00000001,0x00000000},        /* R0_REG */                            \
-  {3 << REG_X,0x00000000},      /* POINTER_X_REGS, r26 - r27 */                \
-  {3 << REG_Y,0x00000000},      /* POINTER_Y_REGS, r28 - r29 */                \
-  {3 << REG_Z,0x00000000},      /* POINTER_Z_REGS, r30 - r31 */                \
-  {0x00000000,0x00000003},        /* STACK_REG, STACK */                        \
-  {(3 << REG_Y) | (3 << REG_Z),                                                \
-     0x00000000},                /* BASE_POINTER_REGS, r28 - r31 */        \
-  {(3 << REG_X) | (3 << REG_Y) | (3 << REG_Z),                                \
-     0x00000000},                /* POINTER_REGS, r26 - r31 */                \
-  {(3 << REG_X) | (3 << REG_Y) | (3 << REG_Z) | (3 << REG_W),                \
-     0x00000000},                /* ADDW_REGS, r24 - r31 */                \
-  {0x00ff0000,0x00000000},        /* SIMPLE_LD_REGS r16 - r23 */          \
-  {(3 << REG_X)|(3 << REG_Y)|(3 << REG_Z)|(3 << REG_W)|(0xff << 16),        \
-     0x00000000},        /* LD_REGS, r16 - r31 */                        \
-  {0x0000ffff,0x00000000},        /* NO_LD_REGS  r0 - r15 */              \
-  {0xffffffff,0x00000000},        /* GENERAL_REGS, r0 - r31 */                \
-  {0xffffffff,0x00000003}        /* ALL_REGS */                                \
+#define REG_CLASS_CONTENTS {						\
+  {0x00000000,0x00000000},	/* NO_REGS */				\
+  {0x00000001,0x00000000},	/* R0_REG */                            \
+  {3 << REG_X,0x00000000},      /* POINTER_X_REGS, r26 - r27 */		\
+  {3 << REG_Y,0x00000000},      /* POINTER_Y_REGS, r28 - r29 */		\
+  {3 << REG_Z,0x00000000},      /* POINTER_Z_REGS, r30 - r31 */		\
+  {0x00000000,0x00000003},	/* STACK_REG, STACK */			\
+  {(3 << REG_Y) | (3 << REG_Z),						\
+     0x00000000},		/* BASE_POINTER_REGS, r28 - r31 */	\
+  {(3 << REG_X) | (3 << REG_Y) | (3 << REG_Z),				\
+     0x00000000},		/* POINTER_REGS, r26 - r31 */		\
+  {(3 << REG_X) | (3 << REG_Y) | (3 << REG_Z) | (3 << REG_W),		\
+     0x00000000},		/* ADDW_REGS, r24 - r31 */		\
+  {0x00ff0000,0x00000000},	/* SIMPLE_LD_REGS r16 - r23 */          \
+  {(3 << REG_X)|(3 << REG_Y)|(3 << REG_Z)|(3 << REG_W)|(0xff << 16),	\
+     0x00000000},	/* LD_REGS, r16 - r31 */			\
+  {0x0000ffff,0x00000000},	/* NO_LD_REGS  r0 - r15 */              \
+  {0xffffffff,0x00000000},	/* GENERAL_REGS, r0 - r31 */		\
+  {0xffffffff,0x00000003}	/* ALL_REGS */				\
 }
 
 #define REGNO_REG_CLASS(R) avr_regno_reg_class(R)
@@ -241,17 +241,17 @@ enum reg_class {
 
 #define INDEX_REG_CLASS NO_REGS
 
-#define REGNO_OK_FOR_BASE_P(r) (((r) < FIRST_PSEUDO_REGISTER                \
-                                 && ((r) == REG_X                        \
-                                     || (r) == REG_Y                        \
-                                     || (r) == REG_Z                        \
-                                     || (r) == ARG_POINTER_REGNUM))        \
-                                || (reg_renumber                        \
-                                    && (reg_renumber[r] == REG_X        \
-                                        || reg_renumber[r] == REG_Y        \
-                                        || reg_renumber[r] == REG_Z        \
-                                        || (reg_renumber[r]                \
-                                            == ARG_POINTER_REGNUM))))
+#define REGNO_OK_FOR_BASE_P(r) (((r) < FIRST_PSEUDO_REGISTER		\
+				 && ((r) == REG_X			\
+				     || (r) == REG_Y			\
+				     || (r) == REG_Z			\
+				     || (r) == ARG_POINTER_REGNUM))	\
+				|| (reg_renumber			\
+				    && (reg_renumber[r] == REG_X	\
+					|| reg_renumber[r] == REG_Y	\
+					|| reg_renumber[r] == REG_Z	\
+					|| (reg_renumber[r]		\
+					    == ARG_POINTER_REGNUM))))
 
 #define REGNO_OK_FOR_INDEX_P(NUM) 0
 
@@ -288,19 +288,19 @@ enum reg_class {
 /* Offset from the frame pointer register value to the top of the stack.  */
 #define FRAME_POINTER_CFA_OFFSET(FNDECL) 0
 
-#define ELIMINABLE_REGS {                                        \
-      {ARG_POINTER_REGNUM, FRAME_POINTER_REGNUM},                \
-        {FRAME_POINTER_REGNUM, STACK_POINTER_REGNUM}                \
+#define ELIMINABLE_REGS {					\
+      {ARG_POINTER_REGNUM, FRAME_POINTER_REGNUM},		\
+	{FRAME_POINTER_REGNUM, STACK_POINTER_REGNUM}		\
        ,{FRAME_POINTER_REGNUM+1,STACK_POINTER_REGNUM+1}}
 
-#define CAN_ELIMINATE(FROM, TO) (((FROM) == ARG_POINTER_REGNUM                   \
-                                  && (TO) == FRAME_POINTER_REGNUM)           \
-                                 || (((FROM) == FRAME_POINTER_REGNUM           \
-                                      || (FROM) == FRAME_POINTER_REGNUM+1) \
-                                     && ! FRAME_POINTER_REQUIRED           \
-                                     ))
+#define CAN_ELIMINATE(FROM, TO) (((FROM) == ARG_POINTER_REGNUM		   \
+				  && (TO) == FRAME_POINTER_REGNUM)	   \
+				 || (((FROM) == FRAME_POINTER_REGNUM	   \
+				      || (FROM) == FRAME_POINTER_REGNUM+1) \
+				     && ! FRAME_POINTER_REQUIRED	   \
+				     ))
 
-#define INITIAL_ELIMINATION_OFFSET(FROM, TO, OFFSET)                        \
+#define INITIAL_ELIMINATION_OFFSET(FROM, TO, OFFSET)			\
      OFFSET = initial_elimination_offset (FROM, TO)
 
 #define RETURN_ADDR_RTX(count, x) \
@@ -313,14 +313,14 @@ enum reg_class {
 #define FUNCTION_ARG(CUM, MODE, TYPE, NAMED) (function_arg (&(CUM), MODE, TYPE, NAMED))
 
 typedef struct avr_args {
-  int nregs;                        /* # registers available for passing */
-  int regno;                        /* next available register number */
+  int nregs;			/* # registers available for passing */
+  int regno;			/* next available register number */
 } CUMULATIVE_ARGS;
 
 #define INIT_CUMULATIVE_ARGS(CUM, FNTYPE, LIBNAME, FNDECL, N_NAMED_ARGS) \
   init_cumulative_args (&(CUM), FNTYPE, LIBNAME, FNDECL)
 
-#define FUNCTION_ARG_ADVANCE(CUM, MODE, TYPE, NAMED)        \
+#define FUNCTION_ARG_ADVANCE(CUM, MODE, TYPE, NAMED)	\
   (function_arg_advance (&CUM, MODE, TYPE, NAMED))
 
 #define FUNCTION_ARG_REGNO_P(r) function_arg_regno_p(r)
@@ -347,16 +347,16 @@ extern int avr_reg_order[];
 #define MAX_REGS_PER_ADDRESS 1
 
 #ifdef REG_OK_STRICT
-#  define GO_IF_LEGITIMATE_ADDRESS(mode, operand, ADDR)        \
-{                                                        \
-  if (legitimate_address_p (mode, operand, 1))                \
-    goto ADDR;                                                \
+#  define GO_IF_LEGITIMATE_ADDRESS(mode, operand, ADDR)	\
+{							\
+  if (legitimate_address_p (mode, operand, 1))		\
+    goto ADDR;						\
 }
 #  else
-#  define GO_IF_LEGITIMATE_ADDRESS(mode, operand, ADDR)        \
-{                                                        \
-  if (legitimate_address_p (mode, operand, 0))                \
-    goto ADDR;                                                \
+#  define GO_IF_LEGITIMATE_ADDRESS(mode, operand, ADDR)	\
+{							\
+  if (legitimate_address_p (mode, operand, 0))		\
+    goto ADDR;						\
 }
 #endif
 
@@ -373,72 +373,72 @@ extern int avr_reg_order[];
 
 #define REG_OK_FOR_INDEX_P(X) 0
 
-#define LEGITIMIZE_ADDRESS(X, OLDX, MODE, WIN)                                \
-{                                                                        \
-  (X) = legitimize_address (X, OLDX, MODE);                                \
-  if (memory_address_p (MODE, X))                                        \
-    goto WIN;                                                                \
+#define LEGITIMIZE_ADDRESS(X, OLDX, MODE, WIN)				\
+{									\
+  (X) = legitimize_address (X, OLDX, MODE);				\
+  if (memory_address_p (MODE, X))					\
+    goto WIN;								\
 }
 
 #define XEXP_(X,Y) (X)
 #define LEGITIMIZE_RELOAD_ADDRESS(X, MODE, OPNUM, TYPE, IND_LEVELS, WIN)    \
-do {                                                                            \
-  if (1&&(GET_CODE (X) == POST_INC || GET_CODE (X) == PRE_DEC))            \
-    {                                                                            \
-      push_reload (XEXP (X,0), XEXP (X,0), &XEXP (X,0), &XEXP (X,0),            \
-                   POINTER_REGS, GET_MODE (X),GET_MODE (X) , 0, 0,            \
-                   OPNUM, RELOAD_OTHER);                                    \
-      goto WIN;                                                                    \
-    }                                                                            \
-  if (GET_CODE (X) == PLUS                                                    \
-      && REG_P (XEXP (X, 0))                                                    \
-      && GET_CODE (XEXP (X, 1)) == CONST_INT                                    \
-      && INTVAL (XEXP (X, 1)) >= 1)                                            \
-    {                                                                            \
-      int fit = INTVAL (XEXP (X, 1)) <= (64 - GET_MODE_SIZE (MODE));            \
-      if (fit)                                                                    \
-        {                                                                    \
-          if (reg_equiv_address[REGNO (XEXP (X, 0))] != 0)                    \
-            {                                                                    \
-              int regno = REGNO (XEXP (X, 0));                                    \
-              rtx mem = make_memloc (X, regno);                                    \
-              push_reload (XEXP (mem,0), NULL, &XEXP (mem,0), NULL,         \
-                           POINTER_REGS, Pmode, VOIDmode, 0, 0,                    \
-                           1, ADDR_TYPE (TYPE));                            \
-              push_reload (mem, NULL_RTX, &XEXP (X, 0), NULL,                    \
-                           BASE_POINTER_REGS, GET_MODE (X), VOIDmode, 0, 0, \
-                           OPNUM, TYPE);                                    \
-              goto WIN;                                                            \
-            }                                                                    \
-          push_reload (XEXP (X, 0), NULL_RTX, &XEXP (X, 0), NULL,            \
-                       BASE_POINTER_REGS, GET_MODE (X), VOIDmode, 0, 0,            \
-                       OPNUM, TYPE);                                            \
-          goto WIN;                                                            \
-        }                                                                    \
+do {									    \
+  if (1&&(GET_CODE (X) == POST_INC || GET_CODE (X) == PRE_DEC))	    \
+    {									    \
+      push_reload (XEXP (X,0), XEXP (X,0), &XEXP (X,0), &XEXP (X,0),	    \
+	           POINTER_REGS, GET_MODE (X),GET_MODE (X) , 0, 0,	    \
+		   OPNUM, RELOAD_OTHER);				    \
+      goto WIN;								    \
+    }									    \
+  if (GET_CODE (X) == PLUS						    \
+      && REG_P (XEXP (X, 0))						    \
+      && GET_CODE (XEXP (X, 1)) == CONST_INT				    \
+      && INTVAL (XEXP (X, 1)) >= 1)					    \
+    {									    \
+      int fit = INTVAL (XEXP (X, 1)) <= (64 - GET_MODE_SIZE (MODE));	    \
+      if (fit)								    \
+	{								    \
+          if (reg_equiv_address[REGNO (XEXP (X, 0))] != 0)		    \
+	    {								    \
+	      int regno = REGNO (XEXP (X, 0));				    \
+	      rtx mem = make_memloc (X, regno);				    \
+	      push_reload (XEXP (mem,0), NULL, &XEXP (mem,0), NULL,         \
+		           POINTER_REGS, Pmode, VOIDmode, 0, 0,		    \
+		           1, ADDR_TYPE (TYPE));			    \
+	      push_reload (mem, NULL_RTX, &XEXP (X, 0), NULL,		    \
+		           BASE_POINTER_REGS, GET_MODE (X), VOIDmode, 0, 0, \
+		           OPNUM, TYPE);				    \
+	      goto WIN;							    \
+	    }								    \
+	  push_reload (XEXP (X, 0), NULL_RTX, &XEXP (X, 0), NULL,	    \
+		       BASE_POINTER_REGS, GET_MODE (X), VOIDmode, 0, 0,	    \
+		       OPNUM, TYPE);					    \
+          goto WIN;							    \
+	}								    \
       else if (! (frame_pointer_needed && XEXP (X,0) == frame_pointer_rtx)) \
-        {                                                                    \
-          push_reload (X, NULL_RTX, &X, NULL,                                    \
-                       POINTER_REGS, GET_MODE (X), VOIDmode, 0, 0,            \
-                       OPNUM, TYPE);                                            \
-          goto WIN;                                                            \
-        }                                                                    \
-    }                                                                            \
+	{								    \
+	  push_reload (X, NULL_RTX, &X, NULL,				    \
+		       POINTER_REGS, GET_MODE (X), VOIDmode, 0, 0,	    \
+		       OPNUM, TYPE);					    \
+          goto WIN;							    \
+	}								    \
+    }									    \
 } while(0)
 
-#define GO_IF_MODE_DEPENDENT_ADDRESS(ADDR,LABEL)                        \
-      if (GET_CODE (ADDR) == POST_INC || GET_CODE (ADDR) == PRE_DEC)        \
+#define GO_IF_MODE_DEPENDENT_ADDRESS(ADDR,LABEL)			\
+      if (GET_CODE (ADDR) == POST_INC || GET_CODE (ADDR) == PRE_DEC)	\
         goto LABEL
 
 #define LEGITIMATE_CONSTANT_P(X) 1
 
 #define REGISTER_MOVE_COST(MODE, FROM, TO) ((FROM) == STACK_REG ? 6 \
-                                            : (TO) == STACK_REG ? 12 \
-                                            : 2)
+					    : (TO) == STACK_REG ? 12 \
+					    : 2)
 
-#define MEMORY_MOVE_COST(MODE,CLASS,IN) ((MODE)==QImode ? 2 :        \
-                                         (MODE)==HImode ? 4 :        \
-                                         (MODE)==SImode ? 8 :        \
-                                         (MODE)==SFmode ? 8 : 16)
+#define MEMORY_MOVE_COST(MODE,CLASS,IN) ((MODE)==QImode ? 2 :	\
+					 (MODE)==HImode ? 4 :	\
+					 (MODE)==SImode ? 8 :	\
+					 (MODE)==SFmode ? 8 : 16)
 
 #define BRANCH_COST 0
 
@@ -478,34 +478,34 @@ do {                                                                            
 #define TARGET_ASM_NAMED_SECTION default_elf_asm_named_section
 #define TARGET_ASM_INIT_SECTIONS avr_asm_init_sections
 
-#define ASM_OUTPUT_ASCII(FILE, P, SIZE)         gas_output_ascii (FILE,P,SIZE)
+#define ASM_OUTPUT_ASCII(FILE, P, SIZE)	 gas_output_ascii (FILE,P,SIZE)
 
-#define IS_ASM_LOGICAL_LINE_SEPARATOR(C) ((C) == '\n'                         \
-                                          || ((C) == '$'))
+#define IS_ASM_LOGICAL_LINE_SEPARATOR(C) ((C) == '\n'			 \
+					  || ((C) == '$'))
 
-#define ASM_OUTPUT_COMMON(STREAM, NAME, SIZE, ROUNDED)                           \
-do {                                                                           \
-     fputs ("\t.comm ", (STREAM));                                           \
-     assemble_name ((STREAM), (NAME));                                           \
-     fprintf ((STREAM), ",%lu,1\n", (unsigned long)(SIZE));                   \
+#define ASM_OUTPUT_COMMON(STREAM, NAME, SIZE, ROUNDED)			   \
+do {									   \
+     fputs ("\t.comm ", (STREAM));					   \
+     assemble_name ((STREAM), (NAME));					   \
+     fprintf ((STREAM), ",%lu,1\n", (unsigned long)(SIZE));		   \
 } while (0)
 
-#define ASM_OUTPUT_BSS(FILE, DECL, NAME, SIZE, ROUNDED)                        \
+#define ASM_OUTPUT_BSS(FILE, DECL, NAME, SIZE, ROUNDED)			\
   asm_output_bss ((FILE), (DECL), (NAME), (SIZE), (ROUNDED))
 
-#define ASM_OUTPUT_LOCAL(STREAM, NAME, SIZE, ROUNDED)                        \
-do {                                                                        \
-     fputs ("\t.lcomm ", (STREAM));                                        \
-     assemble_name ((STREAM), (NAME));                                        \
-     fprintf ((STREAM), ",%d\n", (int)(SIZE));                                \
+#define ASM_OUTPUT_LOCAL(STREAM, NAME, SIZE, ROUNDED)			\
+do {									\
+     fputs ("\t.lcomm ", (STREAM));					\
+     assemble_name ((STREAM), (NAME));					\
+     fprintf ((STREAM), ",%d\n", (int)(SIZE));				\
 } while (0)
 
 #undef TYPE_ASM_OP
 #undef SIZE_ASM_OP
 #undef WEAK_ASM_OP
-#define TYPE_ASM_OP        "\t.type\t"
-#define SIZE_ASM_OP        "\t.size\t"
-#define WEAK_ASM_OP        "\t.weak\t"
+#define TYPE_ASM_OP	"\t.type\t"
+#define SIZE_ASM_OP	"\t.size\t"
+#define WEAK_ASM_OP	"\t.weak\t"
 /* Define the strings used for the special svr4 .type and .size directives.
    These strings generally do not vary from one system running svr4 to
    another, but if a given system (e.g. m88k running svr) needs to use
@@ -514,52 +514,52 @@ do {                                                                        \
 
 
 #undef TYPE_OPERAND_FMT
-#define TYPE_OPERAND_FMT        "@%s"
+#define TYPE_OPERAND_FMT	"@%s"
 /* The following macro defines the format used to output the second
    operand of the .type assembler directive.  Different svr4 assemblers
    expect various different forms for this operand.  The one given here
    is just a default.  You may need to override it in your machine-
    specific tm.h file (depending upon the particulars of your assembler).  */
 
-#define ASM_DECLARE_FUNCTION_NAME(FILE, NAME, DECL)                \
-do {                                                                \
-     ASM_OUTPUT_TYPE_DIRECTIVE (FILE, NAME, "function");        \
-     ASM_OUTPUT_LABEL (FILE, NAME);                                \
+#define ASM_DECLARE_FUNCTION_NAME(FILE, NAME, DECL)		\
+do {								\
+     ASM_OUTPUT_TYPE_DIRECTIVE (FILE, NAME, "function");	\
+     ASM_OUTPUT_LABEL (FILE, NAME);				\
 } while (0)
 
-#define ASM_DECLARE_FUNCTION_SIZE(FILE, FNAME, DECL)                        \
-  do {                                                                        \
-    if (!flag_inhibit_size_directive)                                        \
-      ASM_OUTPUT_MEASURED_SIZE (FILE, FNAME);                                \
+#define ASM_DECLARE_FUNCTION_SIZE(FILE, FNAME, DECL)			\
+  do {									\
+    if (!flag_inhibit_size_directive)					\
+      ASM_OUTPUT_MEASURED_SIZE (FILE, FNAME);				\
   } while (0)
 
-#define ASM_DECLARE_OBJECT_NAME(FILE, NAME, DECL)                        \
-do {                                                                        \
-  ASM_OUTPUT_TYPE_DIRECTIVE (FILE, NAME, "object");                        \
-  size_directive_output = 0;                                                \
-  if (!flag_inhibit_size_directive && DECL_SIZE (DECL))                        \
-    {                                                                        \
-      size_directive_output = 1;                                        \
-      ASM_OUTPUT_SIZE_DIRECTIVE (FILE, NAME,                                \
-                                 int_size_in_bytes (TREE_TYPE (DECL)));        \
-    }                                                                        \
-  ASM_OUTPUT_LABEL(FILE, NAME);                                                \
+#define ASM_DECLARE_OBJECT_NAME(FILE, NAME, DECL)			\
+do {									\
+  ASM_OUTPUT_TYPE_DIRECTIVE (FILE, NAME, "object");			\
+  size_directive_output = 0;						\
+  if (!flag_inhibit_size_directive && DECL_SIZE (DECL))			\
+    {									\
+      size_directive_output = 1;					\
+      ASM_OUTPUT_SIZE_DIRECTIVE (FILE, NAME,				\
+				 int_size_in_bytes (TREE_TYPE (DECL)));	\
+    }									\
+  ASM_OUTPUT_LABEL(FILE, NAME);						\
 } while (0)
 
 #undef ASM_FINISH_DECLARE_OBJECT
-#define ASM_FINISH_DECLARE_OBJECT(FILE, DECL, TOP_LEVEL, AT_END)         \
-do {                                                                         \
-     const char *name = XSTR (XEXP (DECL_RTL (DECL), 0), 0);                 \
-     HOST_WIDE_INT size;                                                 \
-     if (!flag_inhibit_size_directive && DECL_SIZE (DECL)                 \
-         && ! AT_END && TOP_LEVEL                                         \
-         && DECL_INITIAL (DECL) == error_mark_node                         \
-         && !size_directive_output)                                         \
-       {                                                                 \
-         size_directive_output = 1;                                         \
-         size = int_size_in_bytes (TREE_TYPE (DECL));                         \
-         ASM_OUTPUT_SIZE_DIRECTIVE (FILE, name, size);                         \
-       }                                                                 \
+#define ASM_FINISH_DECLARE_OBJECT(FILE, DECL, TOP_LEVEL, AT_END)	 \
+do {									 \
+     const char *name = XSTR (XEXP (DECL_RTL (DECL), 0), 0);		 \
+     HOST_WIDE_INT size;						 \
+     if (!flag_inhibit_size_directive && DECL_SIZE (DECL)		 \
+         && ! AT_END && TOP_LEVEL					 \
+	 && DECL_INITIAL (DECL) == error_mark_node			 \
+	 && !size_directive_output)					 \
+       {								 \
+	 size_directive_output = 1;					 \
+	 size = int_size_in_bytes (TREE_TYPE (DECL));			 \
+	 ASM_OUTPUT_SIZE_DIRECTIVE (FILE, name, size);			 \
+       }								 \
    } while (0)
 
 
@@ -586,8 +586,8 @@ do {                                                                         \
    the i386) don't know about that.  Also, we don't use \v
    since some versions of gas, such as 2.2 did not accept it.  */
 
-#define STRING_LIMIT        ((unsigned) 64)
-#define STRING_ASM_OP        "\t.string\t"
+#define STRING_LIMIT	((unsigned) 64)
+#define STRING_ASM_OP	"\t.string\t"
 /* Some svr4 assemblers have a limit on the number of characters which
    can appear in the operand of a .string directive.  If your assembler
    has such a limitation, you should define STRING_LIMIT to reflect that
@@ -602,29 +602,29 @@ do {                                                                         \
 /* Globalizing directive for a label.  */
 #define GLOBAL_ASM_OP ".global\t"
 
-#define SET_ASM_OP        "\t.set\t"
+#define SET_ASM_OP	"\t.set\t"
 
-#define ASM_WEAKEN_LABEL(FILE, NAME)        \
-  do                                        \
-    {                                        \
-      fputs ("\t.weak\t", (FILE));        \
-      assemble_name ((FILE), (NAME));        \
-      fputc ('\n', (FILE));                \
-    }                                        \
+#define ASM_WEAKEN_LABEL(FILE, NAME)	\
+  do					\
+    {					\
+      fputs ("\t.weak\t", (FILE));	\
+      assemble_name ((FILE), (NAME));	\
+      fputc ('\n', (FILE));		\
+    }					\
   while (0)
 
 #define SUPPORTS_WEAK 1
 
-#define ASM_GENERATE_INTERNAL_LABEL(STRING, PREFIX, NUM)        \
+#define ASM_GENERATE_INTERNAL_LABEL(STRING, PREFIX, NUM)	\
 sprintf (STRING, "*.%s%lu", PREFIX, (unsigned long)(NUM))
 
 #define HAS_INIT_SECTION 1
 
-#define REGISTER_NAMES {                                \
-  "r0","r1","r2","r3","r4","r5","r6","r7",                \
-    "r8","r9","r10","r11","r12","r13","r14","r15",        \
-    "r16","r17","r18","r19","r20","r21","r22","r23",        \
-    "r24","r25","r26","r27","r28","r29","r30","r31",        \
+#define REGISTER_NAMES {				\
+  "r0","r1","r2","r3","r4","r5","r6","r7",		\
+    "r8","r9","r10","r11","r12","r13","r14","r15",	\
+    "r16","r17","r18","r19","r20","r21","r22","r23",	\
+    "r24","r25","r26","r27","r28","r29","r30","r31",	\
     "__SPL__","__SPH__","argL","argH"}
 
 #define FINAL_PRESCAN_INSN(insn, operand, nop) final_prescan_insn (insn, operand,nop)
@@ -639,32 +639,32 @@ sprintf (STRING, "*.%s%lu", PREFIX, (unsigned long)(NUM))
 
 #define ASSEMBLER_DIALECT AVR_HAVE_MOVW
 
-#define ASM_OUTPUT_REG_PUSH(STREAM, REGNO)        \
-{                                                \
-  gcc_assert (REGNO < 32);                        \
-  fprintf (STREAM, "\tpush\tr%d", REGNO);        \
+#define ASM_OUTPUT_REG_PUSH(STREAM, REGNO)	\
+{						\
+  gcc_assert (REGNO < 32);			\
+  fprintf (STREAM, "\tpush\tr%d", REGNO);	\
 }
 
-#define ASM_OUTPUT_REG_POP(STREAM, REGNO)        \
-{                                                \
-  gcc_assert (REGNO < 32);                        \
-  fprintf (STREAM, "\tpop\tr%d", REGNO);        \
+#define ASM_OUTPUT_REG_POP(STREAM, REGNO)	\
+{						\
+  gcc_assert (REGNO < 32);			\
+  fprintf (STREAM, "\tpop\tr%d", REGNO);	\
 }
 
-#define ASM_OUTPUT_ADDR_VEC_ELT(STREAM, VALUE)                \
+#define ASM_OUTPUT_ADDR_VEC_ELT(STREAM, VALUE)		\
   avr_output_addr_vec_elt(STREAM, VALUE)
 
 #define ASM_OUTPUT_CASE_LABEL(STREAM, PREFIX, NUM, TABLE) \
   (switch_to_section (progmem_section), \
    (*targetm.asm_out.internal_label) (STREAM, PREFIX, NUM))
 
-#define ASM_OUTPUT_SKIP(STREAM, N)                \
+#define ASM_OUTPUT_SKIP(STREAM, N)		\
 fprintf (STREAM, "\t.skip %lu,0\n", (unsigned long)(N))
 
-#define ASM_OUTPUT_ALIGN(STREAM, POWER)                        \
-  do {                                                        \
-      if ((POWER) > 1)                                        \
-          fprintf (STREAM, "\t.p2align\t%d\n", POWER);        \
+#define ASM_OUTPUT_ALIGN(STREAM, POWER)			\
+  do {							\
+      if ((POWER) > 1)					\
+          fprintf (STREAM, "\t.p2align\t%d\n", POWER);	\
   } while (0)
 
 #define CASE_VECTOR_MODE HImode
@@ -692,8 +692,8 @@ extern int avr_case_values_threshold;
 
 #define TRAMPOLINE_SIZE 4
 
-#define INITIALIZE_TRAMPOLINE(TRAMP, FNADDR, CXT)                              \
-{                                                                              \
+#define INITIALIZE_TRAMPOLINE(TRAMP, FNADDR, CXT)			      \
+{									      \
   emit_move_insn (gen_rtx_MEM (HImode, plus_constant ((TRAMP), 2)), CXT);    \
   emit_move_insn (gen_rtx_MEM (HImode, plus_constant ((TRAMP), 6)), FNADDR); \
 }
@@ -721,7 +721,7 @@ extern int avr_case_values_threshold;
   fprintf (FILE, "/* profiler %d */", (LABELNO))
 
 #define ADJUST_INSN_LENGTH(INSN, LENGTH) (LENGTH =\
-                                          adjust_insn_length (INSN, LENGTH))
+					  adjust_insn_length (INSN, LENGTH))
 
 #define CPP_SPEC "%{posix:-D_POSIX_SOURCE}"
 
@@ -918,10 +918,10 @@ mmcu=*:-mmcu=%*}"
 #define AS3(a,b,c,d) #a " " #b "," #c "," #d
 #define AS1(a,b) #a " " #b
 #else
-#define AS1(a,b) "a        b"
-#define AS2(a,b,c) "a        b,c"
+#define AS1(a,b) "a	b"
+#define AS2(a,b,c) "a	b,c"
 #define AS2C(b,c) " b,c"
-#define AS3(a,b,c,d) "a        b,c,d"
+#define AS3(a,b,c,d) "a	b,c,d"
 #endif
 #define OUT_AS1(a,b) output_asm_insn (AS1(a,b), operands)
 #define OUT_AS2(a,b,c) output_asm_insn (AS2(a,b,c), operands)

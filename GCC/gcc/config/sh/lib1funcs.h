@@ -27,25 +27,25 @@ the Free Software Foundation, 51 Franklin Street, Fifth Floor,
 Boston, MA 02110-1301, USA.  */
 
 #ifdef __ELF__
-#define LOCAL(X)        .L_##X
-#define FUNC(X)                .type X,@function
-#define HIDDEN_FUNC(X)        FUNC(X); .hidden X
+#define LOCAL(X)	.L_##X
+#define FUNC(X)		.type X,@function
+#define HIDDEN_FUNC(X)	FUNC(X); .hidden X
 #define HIDDEN_ALIAS(X,Y) ALIAS (X,Y); .hidden GLOBAL(X)
-#define ENDFUNC0(X)        .Lfe_##X: .size X,.Lfe_##X-X
-#define ENDFUNC(X)        ENDFUNC0(X)
+#define ENDFUNC0(X)	.Lfe_##X: .size X,.Lfe_##X-X
+#define ENDFUNC(X)	ENDFUNC0(X)
 #else
-#define LOCAL(X)        L_##X
+#define LOCAL(X)	L_##X
 #define FUNC(X)
 #define HIDDEN_FUNC(X)
 #define HIDDEN_ALIAS(X,Y) ALIAS (X,Y)
 #define ENDFUNC(X)
 #endif
 
-#define        CONCAT(A,B)        A##B
-#define        GLOBAL0(U,X)        CONCAT(U,__##X)
-#define        GLOBAL(X)        GLOBAL0(__USER_LABEL_PREFIX__,X)
+#define	CONCAT(A,B)	A##B
+#define	GLOBAL0(U,X)	CONCAT(U,__##X)
+#define	GLOBAL(X)	GLOBAL0(__USER_LABEL_PREFIX__,X)
 
-#define ALIAS(X,Y)        .global GLOBAL(X); .set GLOBAL(X),GLOBAL(Y)
+#define ALIAS(X,Y)	.global GLOBAL(X); .set GLOBAL(X),GLOBAL(Y)
 
 #ifdef __SH2A__
 #undef FMOVD_WORKS
@@ -70,12 +70,12 @@ Boston, MA 02110-1301, USA.  */
 
 #ifdef __sh1__
 #define SL(branch, dest, in_slot, in_slot_arg2) \
-        in_slot, in_slot_arg2; branch dest
+	in_slot, in_slot_arg2; branch dest
 #define SL1(branch, dest, in_slot) \
-        in_slot; branch dest
+	in_slot; branch dest
 #else /* ! __sh1__ */
 #define SL(branch, dest, in_slot, in_slot_arg2) \
-        branch##.s dest; in_slot, in_slot_arg2
+	branch##.s dest; in_slot, in_slot_arg2
 #define SL1(branch, dest, in_slot) \
-        branch##/s dest; in_slot
+	branch##/s dest; in_slot
 #endif /* !__sh1__ */

@@ -21,18 +21,18 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
 /* Currently, the only mini-pass in this file tries to CSE reciprocal
    operations.  These are common in sequences such as this one:
 
-        modulus = sqrt(x*x + y*y + z*z);
-        x = x / modulus;
-        y = y / modulus;
-        z = z / modulus;
+	modulus = sqrt(x*x + y*y + z*z);
+	x = x / modulus;
+	y = y / modulus;
+	z = z / modulus;
 
    that can be optimized to
 
-        modulus = sqrt(x*x + y*y + z*z);
+	modulus = sqrt(x*x + y*y + z*z);
         rmodulus = 1.0 / modulus;
-        x = x * rmodulus;
-        y = y * rmodulus;
-        z = z * rmodulus;
+	x = x * rmodulus;
+	y = y * rmodulus;
+	z = z * rmodulus;
 
    We do this for loop invariant divisors, and with this pass whenever
    we notice that a division has the same divisor multiple times.
@@ -170,7 +170,7 @@ occ_new (basic_block bb, struct occurrence *children)
 
 static void
 insert_bb (struct occurrence *new_occ, basic_block idom,
-           struct occurrence **p_head)
+	   struct occurrence **p_head)
 {
   struct occurrence *occ, **p_occ;
 
@@ -179,45 +179,45 @@ insert_bb (struct occurrence *new_occ, basic_block idom,
       basic_block bb = new_occ->bb, occ_bb = occ->bb;
       basic_block dom = nearest_common_dominator (CDI_DOMINATORS, occ_bb, bb);
       if (dom == bb)
-        {
-          /* BB dominates OCC_BB.  OCC becomes NEW_OCC's child: remove OCC
-             from its list.  */
-          *p_occ = occ->next;
-          occ->next = new_occ->children;
-          new_occ->children = occ;
+	{
+	  /* BB dominates OCC_BB.  OCC becomes NEW_OCC's child: remove OCC
+	     from its list.  */
+	  *p_occ = occ->next;
+	  occ->next = new_occ->children;
+	  new_occ->children = occ;
 
-          /* Try the next block (it may as well be dominated by BB).  */
-        }
+	  /* Try the next block (it may as well be dominated by BB).  */
+	}
 
       else if (dom == occ_bb)
-        {
-          /* OCC_BB dominates BB.  Tail recurse to look deeper.  */
-          insert_bb (new_occ, dom, &occ->children);
-          return;
-        }
+	{
+	  /* OCC_BB dominates BB.  Tail recurse to look deeper.  */
+	  insert_bb (new_occ, dom, &occ->children);
+	  return;
+	}
 
       else if (dom != idom)
-        {
-          gcc_assert (!dom->aux);
+	{
+	  gcc_assert (!dom->aux);
 
-          /* There is a dominator between IDOM and BB, add it and make
-             two children out of NEW_OCC and OCC.  First, remove OCC from
-             its list.        */
-          *p_occ = occ->next;
-          new_occ->next = occ;
-          occ->next = NULL;
+	  /* There is a dominator between IDOM and BB, add it and make
+	     two children out of NEW_OCC and OCC.  First, remove OCC from
+	     its list.	*/
+	  *p_occ = occ->next;
+	  new_occ->next = occ;
+	  occ->next = NULL;
 
-          /* None of the previous blocks has DOM as a dominator: if we tail
-             recursed, we would reexamine them uselessly. Just switch BB with
-             DOM, and go on looking for blocks dominated by DOM.  */
+	  /* None of the previous blocks has DOM as a dominator: if we tail
+	     recursed, we would reexamine them uselessly. Just switch BB with
+	     DOM, and go on looking for blocks dominated by DOM.  */
           new_occ = occ_new (dom, new_occ);
-        }
+	}
 
       else
-        {
-          /* Nothing special, go on with the next element.  */
-          p_occ = &occ->next;
-        }
+	{
+	  /* Nothing special, go on with the next element.  */
+	  p_occ = &occ->next;
+	}
     }
 
   /* No place was found as a child of IDOM.  Make BB a sibling of IDOM.  */
@@ -260,9 +260,9 @@ compute_merit (struct occurrence *occ)
         compute_merit (occ_child);
 
       if (flag_exceptions)
-        bb = single_noncomplex_succ (dom);
+	bb = single_noncomplex_succ (dom);
       else
-        bb = dom;
+	bb = dom;
 
       if (dominated_by_p (CDI_POST_DOMINATORS, bb, occ_child->bb))
         occ->num_divisions += occ_child->num_divisions;
@@ -275,8 +275,8 @@ static inline bool
 is_division_by (tree use_stmt, tree def)
 {
   return TREE_CODE (use_stmt) == MODIFY_EXPR
-         && TREE_CODE (TREE_OPERAND (use_stmt, 1)) == RDIV_EXPR
-         && TREE_OPERAND (TREE_OPERAND (use_stmt, 1), 1) == def;
+	 && TREE_CODE (TREE_OPERAND (use_stmt, 1)) == RDIV_EXPR
+	 && TREE_OPERAND (TREE_OPERAND (use_stmt, 1), 1) == def;
 }
 
 /* Walk the subset of the dominator tree rooted at OCC, setting the
@@ -290,7 +290,7 @@ is_division_by (tree use_stmt, tree def)
 
 static void
 insert_reciprocals (block_stmt_iterator *def_bsi, struct occurrence *occ,
-                    tree def, tree recip_def, int threshold)
+		    tree def, tree recip_def, int threshold)
 {
   tree type, new_stmt;
   block_stmt_iterator bsi;
@@ -304,8 +304,8 @@ insert_reciprocals (block_stmt_iterator *def_bsi, struct occurrence *occ,
       type = TREE_TYPE (def);
       recip_def = make_rename_temp (type, "reciptmp");
       new_stmt = build2 (MODIFY_EXPR, void_type_node, recip_def,
-                         fold_build2 (RDIV_EXPR, type, build_one_cst (type),
-                                      def));
+		         fold_build2 (RDIV_EXPR, type, build_one_cst (type),
+				      def));
   
   
       if (occ->bb_has_division)
@@ -313,16 +313,16 @@ insert_reciprocals (block_stmt_iterator *def_bsi, struct occurrence *occ,
           /* Case 1: insert before an existing division.  */
           bsi = bsi_after_labels (occ->bb);
           while (!bsi_end_p (bsi) && !is_division_by (bsi_stmt (bsi), def))
-            bsi_next (&bsi);
+	    bsi_next (&bsi);
 
           bsi_insert_before (&bsi, new_stmt, BSI_SAME_STMT);
         }
       else if (def_bsi && occ->bb == def_bsi->bb)
         {
           /* Case 2: insert right after the definition.  Note that this will
-             never happen if the definition statement can throw, because in
-             that case the sole successor of the statement's basic block will
-             dominate all the uses as well.  */
+	     never happen if the definition statement can throw, because in
+	     that case the sole successor of the statement's basic block will
+	     dominate all the uses as well.  */
           bsi_insert_after (def_bsi, new_stmt, BSI_NEW_STMT);
         }
       else
@@ -380,7 +380,7 @@ free_bb (struct occurrence *occ)
   else
     {
       while (next)
-        next = free_bb (next);
+	next = free_bb (next);
 
       return child;
     }
@@ -407,10 +407,10 @@ execute_cse_reciprocals_1 (block_stmt_iterator *def_bsi, tree def)
     {
       tree use_stmt = USE_STMT (use_p);
       if (is_division_by (use_stmt, def))
-        {
-          register_division_in (bb_for_stmt (use_stmt));
-          count++;
-        }
+	{
+	  register_division_in (bb_for_stmt (use_stmt));
+	  count++;
+	}
     }
   
   /* Do the expensive part only if we can hope to optimize something.  */
@@ -419,19 +419,19 @@ execute_cse_reciprocals_1 (block_stmt_iterator *def_bsi, tree def)
     {
       tree use_stmt;
       for (occ = occ_head; occ; occ = occ->next)
-        {
-          compute_merit (occ);
-          insert_reciprocals (def_bsi, occ, def, NULL, threshold);
-        }
+	{
+	  compute_merit (occ);
+	  insert_reciprocals (def_bsi, occ, def, NULL, threshold);
+	}
 
       FOR_EACH_IMM_USE_STMT (use_stmt, use_iter, def)
-        {
-          if (is_division_by (use_stmt, def))
-            {
-              FOR_EACH_IMM_USE_ON_STMT (use_p, use_iter)
-                replace_reciprocal (use_p);
-            }
-        }
+	{
+	  if (is_division_by (use_stmt, def))
+	    {
+	      FOR_EACH_IMM_USE_ON_STMT (use_p, use_iter)
+		replace_reciprocal (use_p);
+	    }
+	}
     }
 
   for (occ = occ_head; occ; )
@@ -457,8 +457,8 @@ execute_cse_reciprocals (void)
   tree arg;
 
   occ_pool = create_alloc_pool ("dominators for recip",
-                                sizeof (struct occurrence),
-                                n_basic_blocks / 3 + 1);
+				sizeof (struct occurrence),
+				n_basic_blocks / 3 + 1);
 
   calculate_dominance_info (CDI_DOMINATORS);
   calculate_dominance_info (CDI_POST_DOMINATORS);
@@ -470,8 +470,8 @@ execute_cse_reciprocals (void)
 
   for (arg = DECL_ARGUMENTS (cfun->decl); arg; arg = TREE_CHAIN (arg))
     if (default_def (arg)
-        && FLOAT_TYPE_P (TREE_TYPE (arg))
-        && is_gimple_reg (arg))
+	&& FLOAT_TYPE_P (TREE_TYPE (arg))
+	&& is_gimple_reg (arg))
       execute_cse_reciprocals_1 (NULL, default_def (arg));
 
   FOR_EACH_BB (bb)
@@ -480,22 +480,22 @@ execute_cse_reciprocals (void)
       tree phi, def;
 
       for (phi = phi_nodes (bb); phi; phi = PHI_CHAIN (phi))
-        {
-          def = PHI_RESULT (phi);
-          if (FLOAT_TYPE_P (TREE_TYPE (def))
-              && is_gimple_reg (def))
-            execute_cse_reciprocals_1 (NULL, def);
-        }
+	{
+	  def = PHI_RESULT (phi);
+	  if (FLOAT_TYPE_P (TREE_TYPE (def))
+	      && is_gimple_reg (def))
+	    execute_cse_reciprocals_1 (NULL, def);
+	}
 
       for (bsi = bsi_after_labels (bb); !bsi_end_p (bsi); bsi_next (&bsi))
         {
-          tree stmt = bsi_stmt (bsi);
-          if (TREE_CODE (stmt) == MODIFY_EXPR
-              && (def = SINGLE_SSA_TREE_OPERAND (stmt, SSA_OP_DEF)) != NULL
-              && FLOAT_TYPE_P (TREE_TYPE (def))
-              && TREE_CODE (def) == SSA_NAME)
-            execute_cse_reciprocals_1 (&bsi, def);
-        }
+	  tree stmt = bsi_stmt (bsi);
+	  if (TREE_CODE (stmt) == MODIFY_EXPR
+	      && (def = SINGLE_SSA_TREE_OPERAND (stmt, SSA_OP_DEF)) != NULL
+	      && FLOAT_TYPE_P (TREE_TYPE (def))
+	      && TREE_CODE (def) == SSA_NAME)
+	    execute_cse_reciprocals_1 (&bsi, def);
+	}
     }
 
   free_dominance_info (CDI_DOMINATORS);
@@ -506,18 +506,18 @@ execute_cse_reciprocals (void)
 
 struct tree_opt_pass pass_cse_reciprocals =
 {
-  "recip",                                /* name */
-  gate_cse_reciprocals,                        /* gate */
-  execute_cse_reciprocals,                /* execute */
-  NULL,                                        /* sub */
-  NULL,                                        /* next */
-  0,                                        /* static_pass_number */
-  0,                                        /* tv_id */
-  PROP_ssa,                                /* properties_required */
-  0,                                        /* properties_provided */
-  0,                                        /* properties_destroyed */
-  0,                                        /* todo_flags_start */
+  "recip",				/* name */
+  gate_cse_reciprocals,			/* gate */
+  execute_cse_reciprocals,		/* execute */
+  NULL,					/* sub */
+  NULL,					/* next */
+  0,					/* static_pass_number */
+  0,					/* tv_id */
+  PROP_ssa,				/* properties_required */
+  0,					/* properties_provided */
+  0,					/* properties_destroyed */
+  0,					/* todo_flags_start */
   TODO_dump_func | TODO_update_ssa | TODO_verify_ssa
     | TODO_verify_stmts,                /* todo_flags_finish */
-  0                                        /* letter */
+  0				        /* letter */
 };

@@ -22,9 +22,9 @@ Boston, MA 02110-1301, USA.  */
 
 typedef struct dyn_string
 {
-  int allocated;        /* The amount of space allocated for the string.  */
-  int length;                /* The actual length of the string.  */
-  char *s;                /* The string itself, NUL-terminated.  */
+  int allocated;	/* The amount of space allocated for the string.  */
+  int length;		/* The actual length of the string.  */
+  char *s;		/* The string itself, NUL-terminated.  */
 }* dyn_string_t;
 
 /* The length STR, in bytes, not including the terminating NUL.  */

@@ -30,35 +30,35 @@ Boston, MA 02110-1301, USA.  */
    to be covered by the GNU General Public License.
    This exception does not however invalidate any other reasons why
    the executable file might be covered by the GNU General Public License.  */
-        
+	
 ;-----------------------------------------
 ; startup code
 ;-----------------------------------------
-        .file        "crt0.s"
+	.file	"crt0.s"
 
 #ifdef __HAVE_SHORT_INT__
-        .mode mshort
+	.mode mshort
 #else
-        .mode mlong
+	.mode mlong
 #endif
 
 #if defined(__USE_RTC__) && defined(mc68hc12)
-        .macro jsr name
-        call        \name
-        .endm
+	.macro jsr name
+	call	\name
+	.endm
 #endif
 ;; 
 ;; 
 ;; The linker concatenate the .install* sections in the following order:
 ;; 
-;; .install0        Setup the stack pointer
-;; .install1        Place holder for applications
-;; .install2        Optional installation of data section in memory
-;; .install3        Place holder for applications
-;; .install4        Invokes the main
+;; .install0	Setup the stack pointer
+;; .install1	Place holder for applications
+;; .install2	Optional installation of data section in memory
+;; .install3	Place holder for applications
+;; .install4	Invokes the main
 ;; 
-        .sect   .install0,"ax",@progbits
-        .globl _start
+	.sect   .install0,"ax",@progbits
+	.globl _start
 
 _start:
 ;;
@@ -69,30 +69,30 @@ _start:
 ;; the end of some memory region.  The _stack symbol is defined by
 ;; the linker.
 ;;
-        lds        #_stack
-        
-        .sect        .install2,"ax",@progbits
+	lds	#_stack
+	
+	.sect	.install2,"ax",@progbits
 ;;
 ;; Call a specific initialization operation.  The default is empty.
 ;; It can be overridden by applications.  It is intended to initialize
 ;; the 68hc11 registers.  Function prototype is:
 ;; 
-;;        int __premain(void);
+;;	int __premain(void);
 ;; 
-        jsr        __premain
-        
+	jsr	__premain
+	
 ;;
 ;; 
 ;;
-        .sect        .install4,"ax",@progbits
-        jsr     main
+	.sect	.install4,"ax",@progbits
+	jsr     main
 fatal:
-        jsr        exit
-        bra fatal
+	jsr	exit
+	bra fatal
 
 ;-----------------------------------------
 ; end startup code
 ;-----------------------------------------
 ;; Force loading of data section mapping and bss clear
-        .2byte        __map_data_section
-        .2byte  __init_bss_section
+	.2byte	__map_data_section
+	.2byte  __init_bss_section

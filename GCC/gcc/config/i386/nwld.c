@@ -41,11 +41,11 @@ nwld_named_section_asm_out_constructor (rtx symbol, int priority)
   char section[20];
 
   sprintf (section,
-           ".ctors"TARGET_SUB_SECTION_SEPARATOR"%.5u",
-           /* Invert the numbering so the linker puts us in the proper
-              order; constructors are run from right to left, and the
-              linker sorts in increasing order.  */
-           MAX_INIT_PRIORITY - priority);
+	   ".ctors"TARGET_SUB_SECTION_SEPARATOR"%.5u",
+	   /* Invert the numbering so the linker puts us in the proper
+	      order; constructors are run from right to left, and the
+	      linker sorts in increasing order.  */
+	   MAX_INIT_PRIORITY - priority);
 #endif
 
   switch_to_section (get_section (section, 0, NULL));
@@ -62,10 +62,10 @@ nwld_named_section_asm_out_destructor (rtx symbol, int priority)
   char section[20];
 
   sprintf (section, ".dtors"TARGET_SUB_SECTION_SEPARATOR"%.5u",
-           /* Invert the numbering so the linker puts us in the proper
-              order; destructors are run from left to right, and the
-              linker sorts in increasing order.  */
-           MAX_INIT_PRIORITY - priority);
+	   /* Invert the numbering so the linker puts us in the proper
+	      order; destructors are run from left to right, and the
+	      linker sorts in increasing order.  */
+	   MAX_INIT_PRIORITY - priority);
 #endif
 
   switch_to_section (get_section (section, 0, NULL));

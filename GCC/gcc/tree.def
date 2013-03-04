@@ -196,9 +196,9 @@ DEFTREECODE (VECTOR_TYPE, "vector_type", tcc_type, 0)
    Note that this range overlaps the previous range.  */
      
 /* Types of arrays.  Special fields:
-   TREE_TYPE                  Type of an array element.
-   TYPE_DOMAIN                  Type to index by.
-                            Its range of values specifies the array length.
+   TREE_TYPE		  Type of an array element.
+   TYPE_DOMAIN		  Type to index by.
+			    Its range of values specifies the array length.
  The field TYPE_POINTER_TO (TREE_TYPE (array_type)) is always nonzero
  and holds the type to coerce a value of that array type to in C.
  TYPE_STRING_FLAG indicates a string (in contrast to an array of chars)
@@ -220,7 +220,7 @@ DEFTREECODE (RECORD_TYPE, "record_type", tcc_type, 0)
    will all be zero.  */
 /* See the comment above, before ENUMERAL_TYPE, for how
    forward references to union tags are handled in C.  */
-DEFTREECODE (UNION_TYPE, "union_type", tcc_type, 0)        /* C union type */
+DEFTREECODE (UNION_TYPE, "union_type", tcc_type, 0)	/* C union type */
 
 /* Similar to UNION_TYPE, except that the expressions in DECL_QUALIFIER
    in each FIELD_DECL determine what the union contains.  The first
@@ -236,9 +236,9 @@ DEFTREECODE (QUAL_UNION_TYPE, "qual_union_type", tcc_type, 0)
 DEFTREECODE (VOID_TYPE, "void_type", tcc_type, 0)
 
 /* Type of functions.  Special fields:
-   TREE_TYPE                    type of value returned.
+   TREE_TYPE		    type of value returned.
    TYPE_ARG_TYPES      list of types of arguments expected.
-        this list is made of TREE_LIST nodes.
+	this list is made of TREE_LIST nodes.
    Types of "Procedures" in languages where they are different from functions
    have code FUNCTION_TYPE also, but then TREE_TYPE is zero or void type.  */
 DEFTREECODE (FUNCTION_TYPE, "function_type", tcc_type, 0)
@@ -367,7 +367,7 @@ DEFTREECODE (NAMESPACE_DECL, "namespace_decl", tcc_declaration, 0)
 /* A translation unit.  This is not technically a declaration, since it
    can't be looked up, but it's close enough.  */
 DEFTREECODE (TRANSLATION_UNIT_DECL, "translation_unit_decl",\
-             tcc_declaration, 0)
+	     tcc_declaration, 0)
 
 /* References to storage.  */
 
@@ -909,9 +909,9 @@ DEFTREECODE (VALUE_HANDLE, "value_handle", tcc_exceptional, 0)
    Given X = ASSERT_EXPR <Y, EXPR>, the optimizers can infer
    two things:
 
-           1- X is a copy of Y.
-        2- EXPR is a GIMPLE conditional expression (as defined by
-           is_gimple_condexpr) and is known to be true.
+   	1- X is a copy of Y.
+	2- EXPR is a GIMPLE conditional expression (as defined by
+	   is_gimple_condexpr) and is known to be true.
 
    The type of the expression is the same as Y.  */
 DEFTREECODE (ASSERT_EXPR, "assert_expr", tcc_expression, 2)
@@ -959,11 +959,11 @@ DEFTREECODE (TARGET_MEM_REF, "target_mem_ref", tcc_reference, 7)
    Operand 0: OMP_PARALLEL_BODY: Code to be executed by all threads.
    Operand 1: OMP_PARALLEL_CLAUSES: List of clauses.
    Operand 2: OMP_PARALLEL_FN: FUNCTION_DECL used when outlining the
-              body of the parallel region.  Only valid after
-              pass_lower_omp.
+	      body of the parallel region.  Only valid after
+	      pass_lower_omp.
    Operand 3: OMP_PARALLEL_DATA_ARG: Local variable in the parent
-              function containing data to be shared with the child
-              function.  */
+	      function containing data to be shared with the child
+	      function.  */
 
 DEFTREECODE (OMP_PARALLEL, "omp_parallel", tcc_statement, 4)
 
@@ -971,15 +971,15 @@ DEFTREECODE (OMP_PARALLEL, "omp_parallel", tcc_statement, 4)
    Operand 0: OMP_FOR_BODY: Loop body.
    Operand 1: OMP_FOR_CLAUSES: List of clauses.
    Operand 2: OMP_FOR_INIT: Initialization code of the form
-                                     VAR = N1.
+                             	VAR = N1.
    Operand 3: OMP_FOR_COND: Loop conditional expression of the form
-                                     VAR { <, >, <=, >= } N2.
+                             	VAR { <, >, <=, >= } N2.
    Operand 4: OMP_FOR_INCR: Loop index increment of the form
-                                     VAR { +=, -= } INCR.
+			     	VAR { +=, -= } INCR.
    Operand 5: OMP_FOR_PRE_BODY: Filled by the gimplifier with things
-        from INIT, COND, and INCR that are technically part of the
-        OMP_FOR structured block, but are evaluated before the loop
-        body begins.
+	from INIT, COND, and INCR that are technically part of the
+	OMP_FOR structured block, but are evaluated before the loop
+	body begins.
 
    VAR must be a signed integer variable, which is implicitly thread
    private.  N1, N2 and INCR are required to be loop invariant integer
@@ -1024,10 +1024,10 @@ DEFTREECODE (OMP_CONTINUE, "omp_continue", tcc_statement, 0)
 
 /* OpenMP - #pragma omp atomic
    Operand 0: The address at which the atomic operation is to be performed.
-        This address should be stabilized with save_expr.
+	This address should be stabilized with save_expr.
    Operand 1: The expression to evaluate.  When the old value of the object
-        at the address is used in the expression, it should appear as if
-        build_fold_indirect_ref of the address.  */
+	at the address is used in the expression, it should appear as if
+	build_fold_indirect_ref of the address.  */
 DEFTREECODE (OMP_ATOMIC, "omp_atomic", tcc_statement, 2)
 
 /* OpenMP clauses.  */
@@ -1047,11 +1047,11 @@ DEFTREECODE (REDUC_PLUS_EXPR, "reduc_plus_expr", tcc_unary, 1)
    The first two arguments are of type t1.
    The third argument and the result are of type t2, such that t2 is at least
    twice the size of t1. DOT_PROD_EXPR(arg1,arg2,arg3) is equivalent to:
-           tmp = WIDEN_MULT_EXPR(arg1, arg2);
-           arg3 = PLUS_EXPR (tmp, arg3);
+   	tmp = WIDEN_MULT_EXPR(arg1, arg2);
+   	arg3 = PLUS_EXPR (tmp, arg3);
    or: 
-        tmp = WIDEN_MULT_EXPR(arg1, arg2);
-        arg3 = WIDEN_SUM_EXPR (tmp, arg3);                 */
+	tmp = WIDEN_MULT_EXPR(arg1, arg2);
+        arg3 = WIDEN_SUM_EXPR (tmp, arg3);		 */
 DEFTREECODE (DOT_PROD_EXPR, "dot_prod_expr", tcc_expression, 3)
 
 /* Widenning summation.

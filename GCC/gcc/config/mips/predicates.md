@@ -60,7 +60,7 @@
 
 (define_predicate "reg_or_0_operand"
   (ior (and (match_operand 0 "const_0_operand")
-            (match_test "!TARGET_MIPS16"))
+	    (match_test "!TARGET_MIPS16"))
        (match_operand 0 "register_operand")))
 
 (define_predicate "const_1_operand"
@@ -75,7 +75,7 @@
 (define_predicate "const_0_or_1_operand"
   (and (match_code "const_int")
        (ior (match_test "op == CONST0_RTX (GET_MODE (op))")
-            (match_test "op == CONST1_RTX (GET_MODE (op))"))))
+	    (match_test "op == CONST1_RTX (GET_MODE (op))"))))
 
 (define_predicate "fpr_operand"
   (and (match_code "reg")
@@ -104,26 +104,26 @@
     {
     case SYMBOL_GENERAL:
       /* We can only use direct calls for TARGET_ABSOLUTE_ABICALLS if we
-         are sure that the target function does not need $25 to be live
-         on entry.  This is true for any locally-defined function because
-         any such function will use %hi/%lo accesses to set up $gp.  */
+	 are sure that the target function does not need $25 to be live
+	 on entry.  This is true for any locally-defined function because
+	 any such function will use %hi/%lo accesses to set up $gp.  */
       if (TARGET_ABSOLUTE_ABICALLS
           && !(GET_CODE (op) == SYMBOL_REF
-               && SYMBOL_REF_DECL (op)
-               && !DECL_EXTERNAL (SYMBOL_REF_DECL (op))))
-        return false;
+	       && SYMBOL_REF_DECL (op)
+	       && !DECL_EXTERNAL (SYMBOL_REF_DECL (op))))
+	return false;
 
       /* If -mlong-calls, force all calls to use register addressing.  Also,
-         if this function has the long_call attribute, we must use register
-         addressing.  */
+	 if this function has the long_call attribute, we must use register
+	 addressing.  */
       return !TARGET_LONG_CALLS && !SYMBOL_REF_LONG_CALL_P (op);
 
     case SYMBOL_GOT_GLOBAL:
       /* Without explicit relocs, there is no special syntax for
-         loading the address of a call destination into a register.
-         Using "la $25,foo; jal $25" would prevent the lazy binding
-         of "foo", so keep the address of global symbols with the
-         jal macro.  */
+	 loading the address of a call destination into a register.
+	 Using "la $25,foo; jal $25" would prevent the lazy binding
+	 of "foo", so keep the address of global symbols with the
+	 jal macro.  */
       return !TARGET_EXPLICIT_RELOCS;
 
     default:
@@ -162,7 +162,7 @@
 {
   enum mips_symbol_type symbol_type;
   return (mips_symbolic_constant_p (op, &symbol_type)
-          && mips_split_p[symbol_type]);
+	  && mips_split_p[symbol_type]);
 })
 
 (define_predicate "move_operand"
@@ -173,35 +173,35 @@
   /* The thinking here is as follows:
 
      (1) The move expanders should split complex load sequences into
-         individual instructions.  Those individual instructions can
-         then be optimized by all rtl passes.
+	 individual instructions.  Those individual instructions can
+	 then be optimized by all rtl passes.
 
      (2) The target of pre-reload load sequences should not be used
-         to store temporary results.  If the target register is only
-         assigned one value, reload can rematerialize that value
-         on demand, rather than spill it to the stack.
+	 to store temporary results.  If the target register is only
+	 assigned one value, reload can rematerialize that value
+	 on demand, rather than spill it to the stack.
 
      (3) If we allowed pre-reload passes like combine and cse to recreate
-         complex load sequences, we would want to be able to split the
-         sequences before reload as well, so that the pre-reload scheduler
-         can see the individual instructions.  This falls foul of (2);
-         the splitter would be forced to reuse the target register for
-         intermediate results.
+	 complex load sequences, we would want to be able to split the
+	 sequences before reload as well, so that the pre-reload scheduler
+	 can see the individual instructions.  This falls foul of (2);
+	 the splitter would be forced to reuse the target register for
+	 intermediate results.
 
      (4) We want to define complex load splitters for combine.  These
-         splitters can request a temporary scratch register, which avoids
-         the problem in (2).  They allow things like:
+	 splitters can request a temporary scratch register, which avoids
+	 the problem in (2).  They allow things like:
 
-              (set (reg T1) (high SYM))
-              (set (reg T2) (low (reg T1) SYM))
-              (set (reg X) (plus (reg T2) (const_int OFFSET)))
+	      (set (reg T1) (high SYM))
+	      (set (reg T2) (low (reg T1) SYM))
+	      (set (reg X) (plus (reg T2) (const_int OFFSET)))
 
-         to be combined into:
+	 to be combined into:
 
-              (set (reg T3) (high SYM+OFFSET))
-              (set (reg X) (lo_sum (reg T3) SYM+OFFSET))
+	      (set (reg T3) (high SYM+OFFSET))
+	      (set (reg X) (lo_sum (reg T3) SYM+OFFSET))
 
-         if T2 is only used this once.  */
+	 if T2 is only used this once.  */
   switch (GET_CODE (op))
     {
     case CONST_INT:
@@ -211,9 +211,9 @@
     case SYMBOL_REF:
     case LABEL_REF:
       if (CONST_GP_P (op))
-        return true;
+	return true;
       return (mips_symbolic_constant_p (op, &symbol_type)
-              && !mips_split_p[symbol_type]);
+	      && !mips_split_p[symbol_type]);
 
     default:
       return true;
@@ -262,9 +262,9 @@
   rtx mult = XEXP (op, GET_CODE (op) == PLUS ? 0 : 1);
   rtx accum = XEXP (op, GET_CODE (op) == PLUS ? 1 : 0);
   return (GET_CODE (mult) == MULT
-          && REG_P (XEXP (mult, 0))
-          && REG_P (XEXP (mult, 1))
-          && REG_P (accum));
+	  && REG_P (XEXP (mult, 0))
+	  && REG_P (XEXP (mult, 1))
+	  && REG_P (accum));
 })
 
 

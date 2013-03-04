@@ -36,8 +36,8 @@ typedef void (*lang_print_tree_hook) (FILE *, tree, int indent);
 struct lang_hooks_for_tree_inlining
 {
   tree (*walk_subtrees) (tree *, int *,
-                         tree (*) (tree *, int *, void *),
-                         void *, struct pointer_set_t*);
+			 tree (*) (tree *, int *, void *),
+			 void *, struct pointer_set_t*);
   int (*cannot_inline_tree_fn) (tree *);
   int (*disregard_inline_limits) (tree);
   tree (*add_pending_fn_decls) (void *, tree);
@@ -452,8 +452,8 @@ struct lang_hooks
      the name to be called if we can't opencode the function.  If
      ATTRS is nonzero, use that for the function's attribute list.  */
   tree (*builtin_function) (const char *name, tree type, int function_code,
-                            enum built_in_class bt_class,
-                            const char *library_name, tree attrs);
+			    enum built_in_class bt_class,
+			    const char *library_name, tree attrs);
 
   /* Used to set up the tree_contains_structure array for a frontend. */
   void (*init_ts) (void);

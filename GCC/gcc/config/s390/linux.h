@@ -51,11 +51,11 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
 
 /* Target specific preprocessor settings.  */
 
-#define TARGET_OS_CPP_BUILTINS()                \
-  do                                                \
-    {                                                \
-      LINUX_TARGET_OS_CPP_BUILTINS();                \
-    }                                                \
+#define TARGET_OS_CPP_BUILTINS()		\
+  do						\
+    {						\
+      LINUX_TARGET_OS_CPP_BUILTINS();		\
+    }						\
   while (0)
 
 
@@ -83,8 +83,8 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
    %{!shared: \
       %{static:-static} \
       %{!static: \
-        %{rdynamic:-export-dynamic} \
-        %{!dynamic-linker: \
+	%{rdynamic:-export-dynamic} \
+	%{!dynamic-linker: \
           %{m31:-dynamic-linker " LINUX_DYNAMIC_LINKER32 "} \
           %{m64:-dynamic-linker " LINUX_DYNAMIC_LINKER64 "}}}}"
 

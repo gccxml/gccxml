@@ -3,43 +3,43 @@
 # Michel Robitaille <robitail@IRO.UMontreal.CA>, traducteur depuis/since 1996.
 #
 # Vocabulaire utilisé
-#         lvalue                 = membre gauche
-#         deprecated        = obsolète
-#         out of range        = hors des limites
-#         range                = gamme
-#         scope                = porté, champ
-#         shadowing        = masquer
-#         embedded PIC        = PIC enchâssé
-#         CPU                = processeur
-#         structure with flexible member
-#                         = structure ayant un membre flexible
-#         flag                = fanion
-#         forward declaration
-#                         = déclaration anticipée
-#         token                 = élément lexical (dans le contexte du parsing)
-#         to subscript        = indicer
-#         top-level        = hors de toute fonction
-#         member function        = fonction membre
+# 	lvalue	 	= membre gauche
+# 	deprecated	= obsolète
+# 	out of range	= hors des limites
+# 	range		= gamme
+# 	scope		= porté, champ
+# 	shadowing	= masquer
+# 	embedded PIC	= PIC enchâssé
+# 	CPU		= processeur
+# 	structure with flexible member
+# 			= structure ayant un membre flexible
+# 	flag		= fanion
+# 	forward declaration
+# 			= déclaration anticipée
+# 	token 		= élément lexical (dans le contexte du parsing)
+# 	to subscript	= indicer
+# 	top-level	= hors de toute fonction
+# 	member function	= fonction membre
 #
 # Pas traduit:
-#         thread
+# 	thread
 #
 # J'ai des doutes pour :
-#         inline                 = enligne (pas systématiquement)
+# 	inline 		= enligne (pas systématiquement)
 #                         oui dans le contexte du langage C par exemple MR
 #                         non autrement ...de manière générale MR
-#         section attribute        attribut de section OK MR
-#         wide char                caractère long  ...non mieux caractère large MR 
+# 	section attribute	attribut de section OK MR
+# 	wide char		caractère long  ...non mieux caractère large MR 
 #                               plus conforme à l'esprit.
 #
 # ------
-#         literals                littéral, ou mot composé ?
+# 	literals		littéral, ou mot composé ?
 # msgid "ISO C89 forbids compound literals"
 # msgstr "le C89 ISO interdit les mots composés"
 #
-#         symbol table                table des symboles ou table de symbole
-#         command map                carte des commandes
-#         Combiner                combinateur
+# 	symbol table		table des symboles ou table de symbole
+# 	command map		carte des commandes
+# 	Combiner		combinateur
 # msgid ""
 # ";; Combiner statistics: %d attempts, %d substitutions (%d requiring new space),\n"
 # ";; %d successes.\n"
@@ -49,11 +49,11 @@
 # ";; %d succès.\n"
 # "\n"
 #
-#         promote                        promouvoir
+# 	promote			promouvoir
 # msgid "the left operand of \"%s\" changes sign when promoted"
 # msgstr "L'opérande gauche de « %s » change de signe lors de sa promotion"
 #
-#        include guards               ???
+#        include guards	       ???
 # msgid "Multiple include guards may be useful for:\n"
 # msgstr "De multiples balises pour les inclusions peuvent être utiles pour :\n"
 #
@@ -63,19 +63,19 @@
 # msgid "non-hex digit '%c' in universal-character-name"
 # msgid "universal-character-name on EBCDIC target"
 #
-#       poisoning                        empoisonnement
+#       poisoning			empoisonnement
 # msgid "poisoning existing macro \"%s\""
 # msgstr "empoisonnement de la macro existente « %s »"
 # MR  9-jan 2004: poisoning etc... transformé par corruption corrompu etc..
 # MR 24-mai 2004: poison etc...suite au msg concernant le #pragma once et #pragma poison 
 #
 # Autres règles:
-#         - j'ai ajouté un adjectif par rapport à l'anglais si le message est
-#              une phrase avec verbe conjugé. 
-#         - ISO est considéré comme un adjectif dans « C ISO »
+# 	- j'ai ajouté un adjectif par rapport à l'anglais si le message est
+#    	  une phrase avec verbe conjugé. 
+# 	- ISO est considéré comme un adjectif dans « C ISO »
 #         
 # Erreurs corrigées:
-#         librairies, assumer
+# 	librairies, assumer
 #
 # A faire:
 #   - s/en ligne/en-ligne/  modifié 9-janv-2004 MR

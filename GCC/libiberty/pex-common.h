@@ -108,8 +108,8 @@ struct pex_funcs
                       const char */* executable */, char * const * /* argv */,
                       char * const * /* env */,
                       int /* in */, int /* out */, int /* errdes */,
-                      int /* toclose */, const char **/* errmsg */,
-                      int */* err */);
+		      int /* toclose */, const char **/* errmsg */,
+		      int */* err */);
   /* Close a descriptor.  Return 0 on success, -1 on error.  */
   int (*close) (struct pex_obj *, int);
   /* Wait for a child to complete, returning exit status in *STATUS
@@ -138,6 +138,6 @@ struct pex_funcs
 };
 
 extern struct pex_obj *pex_init_common (int, const char *, const char *,
-                                        const struct pex_funcs *);
+					const struct pex_funcs *);
 
 #endif

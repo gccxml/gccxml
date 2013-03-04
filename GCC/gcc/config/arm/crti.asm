@@ -41,44 +41,44 @@
 #define TYPE(x)
 #endif
 
-        # Note - this macro is complemented by the FUNC_END macro
-        # in crtn.asm.  If you change this macro you must also change
-        # that macro match.
+	# Note - this macro is complemented by the FUNC_END macro
+	# in crtn.asm.  If you change this macro you must also change
+	# that macro match.
 .macro FUNC_START
 #ifdef __thumb__
-        .thumb
-        
-        push        {r3, r4, r5, r6, r7, lr}
+	.thumb
+	
+	push	{r3, r4, r5, r6, r7, lr}
 #else
-        .arm
-        #  Create a stack frame and save any call-preserved registers
-        mov        ip, sp
-        stmdb        sp!, {r3, r4, r5, r6, r7, r8, r9, sl, fp, ip, lr, pc}
-        sub        fp, ip, #4
+	.arm
+	#  Create a stack frame and save any call-preserved registers
+	mov	ip, sp
+	stmdb	sp!, {r3, r4, r5, r6, r7, r8, r9, sl, fp, ip, lr, pc}
+	sub	fp, ip, #4
 #endif
 .endm
-                
-        .file                "crti.asm"
+		
+	.file		"crti.asm"
 
-        .section        ".init"
-        .align 2
-        .global        _init
+	.section	".init"
+	.align 2
+	.global	_init
 #ifdef __thumb__
-        .thumb_func
+	.thumb_func
 #endif
-        TYPE(_init)
+	TYPE(_init)
 _init:
-        FUNC_START
-        
-                
-        .section        ".fini"
-        .align        2
-        .global        _fini
+	FUNC_START
+	
+		
+	.section	".fini"
+	.align	2
+	.global	_fini
 #ifdef __thumb__
-        .thumb_func
+	.thumb_func
 #endif
-        TYPE(_fini)
+	TYPE(_fini)
 _fini:
-        FUNC_START
-        
+	FUNC_START
+	
 # end of crti.asm

@@ -43,7 +43,7 @@ static void print_pattern (char *, rtx, int);
 static char *
 safe_concat (char *buf, char *cur, const char *str)
 {
-  char *end = buf + BUF_LEN - 2;        /* Leave room for null.  */
+  char *end = buf + BUF_LEN - 2;	/* Leave room for null.  */
   int c;
 
   if (cur > end)
@@ -85,16 +85,16 @@ print_exp (char *buf, rtx x, int verbose)
     case PLUS:
       op[0] = XEXP (x, 0);
       if (GET_CODE (XEXP (x, 1)) == CONST_INT
-          && INTVAL (XEXP (x, 1)) < 0)
-        {
-          st[1] = "-";
-          op[1] = GEN_INT (-INTVAL (XEXP (x, 1)));
-        }
+	  && INTVAL (XEXP (x, 1)) < 0)
+	{
+	  st[1] = "-";
+	  op[1] = GEN_INT (-INTVAL (XEXP (x, 1)));
+	}
       else
-        {
-          st[1] = "+";
-          op[1] = XEXP (x, 1);
-        }
+	{
+	  st[1] = "+";
+	  op[1] = XEXP (x, 1);
+	}
       break;
     case LO_SUM:
       op[0] = XEXP (x, 0);
@@ -335,10 +335,10 @@ print_exp (char *buf, rtx x, int verbose)
       st[0] = "call ";
       op[0] = XEXP (x, 0);
       if (verbose)
-        {
-          st[1] = " argc:";
-          op[1] = XEXP (x, 1);
-        }
+	{
+	  st[1] = " argc:";
+	  op[1] = XEXP (x, 1);
+	}
       break;
     case IF_THEN_ELSE:
       st[0] = "{(";
@@ -362,21 +362,21 @@ print_exp (char *buf, rtx x, int verbose)
     case UNSPEC:
     case UNSPEC_VOLATILE:
       {
-        cur = safe_concat (buf, cur, "unspec");
-        if (GET_CODE (x) == UNSPEC_VOLATILE)
-          cur = safe_concat (buf, cur, "/v");
-        cur = safe_concat (buf, cur, "[");
-        sep = "";
-        for (i = 0; i < XVECLEN (x, 0); i++)
-          {
-            print_pattern (tmp, XVECEXP (x, 0, i), verbose);
-            cur = safe_concat (buf, cur, sep);
-            cur = safe_concat (buf, cur, tmp);
-            sep = ",";
-          }
-        cur = safe_concat (buf, cur, "] ");
-        sprintf (tmp, "%d", XINT (x, 1));
-        cur = safe_concat (buf, cur, tmp);
+	cur = safe_concat (buf, cur, "unspec");
+	if (GET_CODE (x) == UNSPEC_VOLATILE)
+	  cur = safe_concat (buf, cur, "/v");
+	cur = safe_concat (buf, cur, "[");
+	sep = "";
+	for (i = 0; i < XVECLEN (x, 0); i++)
+	  {
+	    print_pattern (tmp, XVECEXP (x, 0, i), verbose);
+	    cur = safe_concat (buf, cur, sep);
+	    cur = safe_concat (buf, cur, tmp);
+	    sep = ",";
+	  }
+	cur = safe_concat (buf, cur, "] ");
+	sprintf (tmp, "%d", XINT (x, 1));
+	cur = safe_concat (buf, cur, tmp);
       }
       break;
     default:
@@ -395,21 +395,21 @@ print_exp (char *buf, rtx x, int verbose)
   for (i = 0; i < 4; i++)
     {
       if (st[i])
-        cur = safe_concat (buf, cur, st[i]);
+	cur = safe_concat (buf, cur, st[i]);
 
       if (op[i])
-        {
-          if (fun && i != 0)
-            cur = safe_concat (buf, cur, ",");
+	{
+	  if (fun && i != 0)
+	    cur = safe_concat (buf, cur, ",");
 
-          print_value (tmp, op[i], verbose);
-          cur = safe_concat (buf, cur, tmp);
-        }
+	  print_value (tmp, op[i], verbose);
+	  cur = safe_concat (buf, cur, tmp);
+	}
     }
 
   if (fun)
     cur = safe_concat (buf, cur, ")");
-}                /* print_exp */
+}		/* print_exp */
 
 /* Prints rtxes, I customarily classified as values.  They're constants,
    registers, labels, symbols and memory accesses.  */
@@ -428,9 +428,9 @@ print_value (char *buf, rtx x, int verbose)
       break;
     case CONST_DOUBLE:
       if (FLOAT_MODE_P (GET_MODE (x)))
-        real_to_decimal (t, CONST_DOUBLE_REAL_VALUE (x), sizeof (t), 0, 1);
+	real_to_decimal (t, CONST_DOUBLE_REAL_VALUE (x), sizeof (t), 0, 1);
       else
-        sprintf (t, "<0x%lx,0x%lx>", (long) CONST_DOUBLE_LOW (x), (long) CONST_DOUBLE_HIGH (x));
+	sprintf (t, "<0x%lx,0x%lx>", (long) CONST_DOUBLE_LOW (x), (long) CONST_DOUBLE_HIGH (x));
       cur = safe_concat (buf, cur, t);
       break;
     case CONST_STRING:
@@ -461,27 +461,27 @@ print_value (char *buf, rtx x, int verbose)
       break;
     case REG:
       if (REGNO (x) < FIRST_PSEUDO_REGISTER)
-        {
-          int c = reg_names[REGNO (x)][0];
-          if (ISDIGIT (c))
-            cur = safe_concat (buf, cur, "%");
+	{
+	  int c = reg_names[REGNO (x)][0];
+	  if (ISDIGIT (c))
+	    cur = safe_concat (buf, cur, "%");
 
-          cur = safe_concat (buf, cur, reg_names[REGNO (x)]);
-        }
+	  cur = safe_concat (buf, cur, reg_names[REGNO (x)]);
+	}
       else
-        {
-          sprintf (t, "r%d", REGNO (x));
-          cur = safe_concat (buf, cur, t);
-        }
+	{
+	  sprintf (t, "r%d", REGNO (x));
+	  cur = safe_concat (buf, cur, t);
+	}
       if (verbose
 #ifdef INSN_SCHEDULING
-          && !current_sched_info
+	  && !current_sched_info
 #endif
-         )
-        {
-          sprintf (t, ":%s", GET_MODE_NAME (GET_MODE (x)));
-          cur = safe_concat (buf, cur, t);
-        }
+	 )
+	{
+	  sprintf (t, ":%s", GET_MODE_NAME (GET_MODE (x)));
+	  cur = safe_concat (buf, cur, t);
+	}
       break;
     case SUBREG:
       print_value (t, SUBREG_REG (x), verbose);
@@ -509,7 +509,7 @@ print_value (char *buf, rtx x, int verbose)
       cur = safe_concat (buf, cur, t);
       break;
     }
-}                                /* print_value */
+}				/* print_value */
 
 /* The next step in insn detalization, its pattern recognition.  */
 
@@ -541,31 +541,31 @@ print_pattern (char *buf, rtx x, int verbose)
       break;
     case COND_EXEC:
       if (GET_CODE (COND_EXEC_TEST (x)) == NE
-          && XEXP (COND_EXEC_TEST (x), 1) == const0_rtx)
-        print_value (t1, XEXP (COND_EXEC_TEST (x), 0), verbose);
+	  && XEXP (COND_EXEC_TEST (x), 1) == const0_rtx)
+	print_value (t1, XEXP (COND_EXEC_TEST (x), 0), verbose);
       else if (GET_CODE (COND_EXEC_TEST (x)) == EQ
-               && XEXP (COND_EXEC_TEST (x), 1) == const0_rtx)
-        {
-          t1[0] = '!';
-          print_value (t1 + 1, XEXP (COND_EXEC_TEST (x), 0), verbose);
-        }
+	       && XEXP (COND_EXEC_TEST (x), 1) == const0_rtx)
+	{
+	  t1[0] = '!';
+	  print_value (t1 + 1, XEXP (COND_EXEC_TEST (x), 0), verbose);
+	}
       else
-        print_value (t1, COND_EXEC_TEST (x), verbose);
+	print_value (t1, COND_EXEC_TEST (x), verbose);
       print_pattern (t2, COND_EXEC_CODE (x), verbose);
       sprintf (buf, "(%s) %s", t1, t2);
       break;
     case PARALLEL:
       {
-        int i;
+	int i;
 
-        sprintf (t1, "{");
-        for (i = 0; i < XVECLEN (x, 0); i++)
-          {
-            print_pattern (t2, XVECEXP (x, 0, i), verbose);
-            sprintf (t3, "%s%s;", t1, t2);
-            strcpy (t1, t3);
-          }
-        sprintf (buf, "%s}", t1);
+	sprintf (t1, "{");
+	for (i = 0; i < XVECLEN (x, 0); i++)
+	  {
+	    print_pattern (t2, XVECEXP (x, 0, i), verbose);
+	    sprintf (t3, "%s%s;", t1, t2);
+	    strcpy (t1, t3);
+	  }
+	sprintf (buf, "%s}", t1);
       }
       break;
     case SEQUENCE:
@@ -585,36 +585,36 @@ print_pattern (char *buf, rtx x, int verbose)
       break;
     case UNSPEC:
       {
-        int i;
+	int i;
 
-        sprintf (t1, "unspec{");
-        for (i = 0; i < XVECLEN (x, 0); i++)
-          {
-            print_pattern (t2, XVECEXP (x, 0, i), verbose);
-            sprintf (t3, "%s%s;", t1, t2);
-            strcpy (t1, t3);
-          }
-        sprintf (buf, "%s}", t1);
+	sprintf (t1, "unspec{");
+	for (i = 0; i < XVECLEN (x, 0); i++)
+	  {
+	    print_pattern (t2, XVECEXP (x, 0, i), verbose);
+	    sprintf (t3, "%s%s;", t1, t2);
+	    strcpy (t1, t3);
+	  }
+	sprintf (buf, "%s}", t1);
       }
       break;
     case UNSPEC_VOLATILE:
       {
-        int i;
+	int i;
 
-        sprintf (t1, "unspec/v{");
-        for (i = 0; i < XVECLEN (x, 0); i++)
-          {
-            print_pattern (t2, XVECEXP (x, 0, i), verbose);
-            sprintf (t3, "%s%s;", t1, t2);
-            strcpy (t1, t3);
-          }
-        sprintf (buf, "%s}", t1);
+	sprintf (t1, "unspec/v{");
+	for (i = 0; i < XVECLEN (x, 0); i++)
+	  {
+	    print_pattern (t2, XVECEXP (x, 0, i), verbose);
+	    sprintf (t3, "%s%s;", t1, t2);
+	    strcpy (t1, t3);
+	  }
+	sprintf (buf, "%s}", t1);
       }
       break;
     default:
       print_value (buf, x, verbose);
     }
-}                                /* print_pattern */
+}				/* print_pattern */
 
 /* This is the main function in rtl visualization mechanism. It
    accepts an rtx and tries to recognize it as an insn, then prints it
@@ -635,37 +635,37 @@ print_insn (char *buf, rtx x, int verbose)
       print_pattern (t, PATTERN (x), verbose);
 #ifdef INSN_SCHEDULING
       if (verbose && current_sched_info)
-        sprintf (buf, "%s: %s", (*current_sched_info->print_insn) (x, 1),
-                 t);
+	sprintf (buf, "%s: %s", (*current_sched_info->print_insn) (x, 1),
+		 t);
       else
 #endif
-        sprintf (buf, " %4d %s", INSN_UID (x), t);
+	sprintf (buf, " %4d %s", INSN_UID (x), t);
       break;
     case JUMP_INSN:
       print_pattern (t, PATTERN (x), verbose);
 #ifdef INSN_SCHEDULING
       if (verbose && current_sched_info)
-        sprintf (buf, "%s: jump %s", (*current_sched_info->print_insn) (x, 1),
-                 t);
+	sprintf (buf, "%s: jump %s", (*current_sched_info->print_insn) (x, 1),
+		 t);
       else
 #endif
-        sprintf (buf, " %4d %s", INSN_UID (x), t);
+	sprintf (buf, " %4d %s", INSN_UID (x), t);
       break;
     case CALL_INSN:
       x = PATTERN (insn);
       if (GET_CODE (x) == PARALLEL)
-        {
-          x = XVECEXP (x, 0, 0);
-          print_pattern (t, x, verbose);
-        }
+	{
+	  x = XVECEXP (x, 0, 0);
+	  print_pattern (t, x, verbose);
+	}
       else
-        strcpy (t, "call <...>");
+	strcpy (t, "call <...>");
 #ifdef INSN_SCHEDULING
       if (verbose && current_sched_info)
-        sprintf (buf, "%s: %s", (*current_sched_info->print_insn) (x, 1), t);
+	sprintf (buf, "%s: %s", (*current_sched_info->print_insn) (x, 1), t);
       else
 #endif
-        sprintf (buf, " %4d %s", INSN_UID (insn), t);
+	sprintf (buf, " %4d %s", INSN_UID (insn), t);
       break;
     case CODE_LABEL:
       sprintf (buf, "L%d:", INSN_UID (x));
@@ -675,21 +675,21 @@ print_insn (char *buf, rtx x, int verbose)
       break;
     case NOTE:
       if (NOTE_LINE_NUMBER (x) > 0)
-        {
-          expanded_location xloc;
-          NOTE_EXPANDED_LOCATION (xloc, x);
-          sprintf (buf, " %4d note \"%s\" %d", INSN_UID (x),
-                   xloc.file, xloc.line);
-        }
+	{
+	  expanded_location xloc;
+	  NOTE_EXPANDED_LOCATION (xloc, x);
+	  sprintf (buf, " %4d note \"%s\" %d", INSN_UID (x),
+		   xloc.file, xloc.line);
+	}
       else
-        sprintf (buf, " %4d %s", INSN_UID (x),
-                 GET_NOTE_INSN_NAME (NOTE_LINE_NUMBER (x)));
+	sprintf (buf, " %4d %s", INSN_UID (x),
+		 GET_NOTE_INSN_NAME (NOTE_LINE_NUMBER (x)));
       break;
     default:
       sprintf (buf, "i%4d  <What %s?>", INSN_UID (x),
-               GET_RTX_NAME (GET_CODE (x)));
+	       GET_RTX_NAME (GET_CODE (x)));
     }
-}                                /* print_insn */
+}				/* print_insn */
 
 
 /* Emit a slim dump of X (an insn) to the file F, including any register
@@ -707,8 +707,8 @@ dump_insn_slim (FILE *f, rtx x)
     for (note = REG_NOTES (x); note; note = XEXP (note, 1))
       {
         print_value (t, XEXP (note, 0), 1);
-        fprintf (f, "      %s: %s\n",
-                 GET_REG_NOTE_NAME (REG_NOTE_KIND (note)), t);
+	fprintf (f, "      %s: %s\n",
+		 GET_REG_NOTE_NAME (REG_NOTE_KIND (note)), t);
       }
 }
 
@@ -731,23 +731,23 @@ print_rtl_slim_with_bb (FILE *f, rtx first, int flags)
   for (insn = first; NULL != insn; insn = NEXT_INSN (insn))
     {
       if ((flags & TDF_BLOCKS)
-          && (INSN_P (insn) || GET_CODE (insn) == NOTE)
-          && BLOCK_FOR_INSN (insn)
-          && !current_bb)
-        {
-          current_bb = BLOCK_FOR_INSN (insn);
-          dump_bb_info (current_bb, true, false, flags, ";; ", f);
-        }
+	  && (INSN_P (insn) || GET_CODE (insn) == NOTE)
+	  && BLOCK_FOR_INSN (insn)
+	  && !current_bb)
+	{
+	  current_bb = BLOCK_FOR_INSN (insn);
+	  dump_bb_info (current_bb, true, false, flags, ";; ", f);
+	}
 
       dump_insn_slim (f, insn);
 
       if ((flags & TDF_BLOCKS)
-          && current_bb
-          && insn == BB_END (current_bb))
-        {
-          dump_bb_info (current_bb, false, true, flags, ";; ", f);
-          current_bb = NULL;
-        }
+	  && current_bb
+	  && insn == BB_END (current_bb))
+	{
+	  dump_bb_info (current_bb, false, true, flags, ";; ", f);
+	  current_bb = NULL;
+	}
     }
 }
 

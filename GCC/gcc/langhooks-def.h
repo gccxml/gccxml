@@ -58,7 +58,7 @@ extern int lhd_types_compatible_p (tree, tree);
 extern rtx lhd_expand_expr (tree, rtx, enum machine_mode, int, rtx *);
 extern int lhd_expand_decl (tree);
 extern void lhd_print_error_function (struct diagnostic_context *,
-                                      const char *);
+				      const char *);
 extern void lhd_set_decl_assembler_name (tree);
 extern bool lhd_can_use_bit_fields_p (void);
 extern bool lhd_warn_unused_global_decl (tree);
@@ -74,7 +74,7 @@ extern tree lhd_expr_to_decl (tree, bool *, bool *, bool *);
 
 /* Declarations of default tree inlining hooks.  */
 extern tree lhd_tree_inlining_walk_subtrees (tree *, int *, walk_tree_fn,
-                                             void *, struct pointer_set_t*);
+					     void *, struct pointer_set_t*);
 extern int lhd_tree_inlining_cannot_inline_tree_fn (tree *);
 extern int lhd_tree_inlining_disregard_inline_limits (tree);
 extern tree lhd_tree_inlining_add_pending_fn_decls (void *, tree);
@@ -93,58 +93,58 @@ extern enum omp_clause_default_kind lhd_omp_predetermined_sharing (tree);
 extern tree lhd_omp_assignment (tree, tree, tree);
 struct gimplify_omp_ctx;
 extern void lhd_omp_firstprivatize_type_sizes (struct gimplify_omp_ctx *,
-                                               tree);
+					       tree);
 
-#define LANG_HOOKS_NAME                        "GNU unknown"
-#define LANG_HOOKS_IDENTIFIER_SIZE        sizeof (struct lang_identifier)
-#define LANG_HOOKS_INIT                        hook_bool_void_false
-#define LANG_HOOKS_FINISH                lhd_do_nothing
-#define LANG_HOOKS_PARSE_FILE                lhd_do_nothing_i
-#define LANG_HOOKS_CLEAR_BINDING_STACK        lhd_do_nothing
-#define LANG_HOOKS_INIT_OPTIONS                hook_uint_uint_constcharptrptr_0
+#define LANG_HOOKS_NAME			"GNU unknown"
+#define LANG_HOOKS_IDENTIFIER_SIZE	sizeof (struct lang_identifier)
+#define LANG_HOOKS_INIT			hook_bool_void_false
+#define LANG_HOOKS_FINISH		lhd_do_nothing
+#define LANG_HOOKS_PARSE_FILE		lhd_do_nothing_i
+#define LANG_HOOKS_CLEAR_BINDING_STACK	lhd_do_nothing
+#define LANG_HOOKS_INIT_OPTIONS		hook_uint_uint_constcharptrptr_0
 #define LANG_HOOKS_INITIALIZE_DIAGNOSTICS lhd_initialize_diagnostics
-#define LANG_HOOKS_HANDLE_OPTION        hook_int_size_t_constcharptr_int_0
-#define LANG_HOOKS_MISSING_ARGUMENT        hook_bool_constcharptr_size_t_false
-#define LANG_HOOKS_POST_OPTIONS                lhd_post_options
-#define LANG_HOOKS_GET_ALIAS_SET        lhd_get_alias_set
-#define LANG_HOOKS_EXPAND_CONSTANT        lhd_return_tree
-#define LANG_HOOKS_EXPAND_EXPR                lhd_expand_expr
-#define LANG_HOOKS_EXPAND_DECL                lhd_expand_decl
-#define LANG_HOOKS_SAFE_FROM_P                lhd_safe_from_p
+#define LANG_HOOKS_HANDLE_OPTION	hook_int_size_t_constcharptr_int_0
+#define LANG_HOOKS_MISSING_ARGUMENT	hook_bool_constcharptr_size_t_false
+#define LANG_HOOKS_POST_OPTIONS		lhd_post_options
+#define LANG_HOOKS_GET_ALIAS_SET	lhd_get_alias_set
+#define LANG_HOOKS_EXPAND_CONSTANT	lhd_return_tree
+#define LANG_HOOKS_EXPAND_EXPR		lhd_expand_expr
+#define LANG_HOOKS_EXPAND_DECL		lhd_expand_decl
+#define LANG_HOOKS_SAFE_FROM_P		lhd_safe_from_p
 #define LANG_HOOKS_FINISH_INCOMPLETE_DECL lhd_do_nothing_t
-#define LANG_HOOKS_STATICP                lhd_staticp
+#define LANG_HOOKS_STATICP		lhd_staticp
 #define LANG_HOOKS_DUP_LANG_SPECIFIC_DECL lhd_do_nothing_t
 #define LANG_HOOKS_SET_DECL_ASSEMBLER_NAME lhd_set_decl_assembler_name
 #define LANG_HOOKS_CAN_USE_BIT_FIELDS_P lhd_can_use_bit_fields_p
 #define LANG_HOOKS_REDUCE_BIT_FIELD_OPERATIONS false
-#define LANG_HOOKS_NO_BODY_BLOCKS        false
-#define LANG_HOOKS_PRINT_STATISTICS        lhd_do_nothing
-#define LANG_HOOKS_PRINT_XNODE                lhd_print_tree_nothing
-#define LANG_HOOKS_PRINT_DECL                lhd_print_tree_nothing
-#define LANG_HOOKS_PRINT_TYPE                lhd_print_tree_nothing
-#define LANG_HOOKS_PRINT_IDENTIFIER        lhd_print_tree_nothing
+#define LANG_HOOKS_NO_BODY_BLOCKS	false
+#define LANG_HOOKS_PRINT_STATISTICS	lhd_do_nothing
+#define LANG_HOOKS_PRINT_XNODE		lhd_print_tree_nothing
+#define LANG_HOOKS_PRINT_DECL		lhd_print_tree_nothing
+#define LANG_HOOKS_PRINT_TYPE		lhd_print_tree_nothing
+#define LANG_HOOKS_PRINT_IDENTIFIER	lhd_print_tree_nothing
 #define LANG_HOOKS_PRINT_ERROR_FUNCTION lhd_print_error_function
-#define LANG_HOOKS_DECL_PRINTABLE_NAME        lhd_decl_printable_name
-#define LANG_HOOKS_DWARF_NAME                lhd_dwarf_name
-#define LANG_HOOKS_GET_CALLEE_FNDECL        lhd_return_null_tree
-#define LANG_HOOKS_EXPR_SIZE                lhd_expr_size
-#define LANG_HOOKS_TREE_SIZE                lhd_tree_size
-#define LANG_HOOKS_TYPES_COMPATIBLE_P        lhd_types_compatible_p
-#define LANG_HOOKS_BUILTIN_FUNCTION        builtin_function
-#define LANG_HOOKS_EXPR_TO_DECL                lhd_expr_to_decl
-#define LANG_HOOKS_TO_TARGET_CHARSET        lhd_to_target_charset
-#define LANG_HOOKS_INIT_TS                lhd_do_nothing
+#define LANG_HOOKS_DECL_PRINTABLE_NAME	lhd_decl_printable_name
+#define LANG_HOOKS_DWARF_NAME		lhd_dwarf_name
+#define LANG_HOOKS_GET_CALLEE_FNDECL	lhd_return_null_tree
+#define LANG_HOOKS_EXPR_SIZE		lhd_expr_size
+#define LANG_HOOKS_TREE_SIZE		lhd_tree_size
+#define LANG_HOOKS_TYPES_COMPATIBLE_P	lhd_types_compatible_p
+#define LANG_HOOKS_BUILTIN_FUNCTION	builtin_function
+#define LANG_HOOKS_EXPR_TO_DECL		lhd_expr_to_decl
+#define LANG_HOOKS_TO_TARGET_CHARSET	lhd_to_target_charset
+#define LANG_HOOKS_INIT_TS		lhd_do_nothing
 
-#define LANG_HOOKS_FUNCTION_INIT        lhd_do_nothing_f
-#define LANG_HOOKS_FUNCTION_FINAL        lhd_do_nothing_f
+#define LANG_HOOKS_FUNCTION_INIT	lhd_do_nothing_f
+#define LANG_HOOKS_FUNCTION_FINAL	lhd_do_nothing_f
 #define LANG_HOOKS_FUNCTION_ENTER_NESTED lhd_do_nothing_f
 #define LANG_HOOKS_FUNCTION_LEAVE_NESTED lhd_do_nothing_f
 #define LANG_HOOKS_FUNCTION_MISSING_NORETURN_OK_P hook_bool_tree_true
 
 /* Attribute hooks.  */
-#define LANG_HOOKS_ATTRIBUTE_TABLE                NULL
-#define LANG_HOOKS_COMMON_ATTRIBUTE_TABLE        NULL
-#define LANG_HOOKS_FORMAT_ATTRIBUTE_TABLE        NULL
+#define LANG_HOOKS_ATTRIBUTE_TABLE		NULL
+#define LANG_HOOKS_COMMON_ATTRIBUTE_TABLE	NULL
+#define LANG_HOOKS_FORMAT_ATTRIBUTE_TABLE	NULL
 
 /* Tree inlining hooks.  */
 #define LANG_HOOKS_TREE_INLINING_WALK_SUBTREES lhd_tree_inlining_walk_subtrees
@@ -188,12 +188,12 @@ extern void lhd_omp_firstprivatize_type_sizes (struct gimplify_omp_ctx *,
   LANG_HOOKS_CALLGRAPH_EXPAND_FUNCTION, \
 }
 
-#define LANG_HOOKS_FUNCTION_INITIALIZER {        \
-  LANG_HOOKS_FUNCTION_INIT,                        \
-  LANG_HOOKS_FUNCTION_FINAL,                        \
-  LANG_HOOKS_FUNCTION_ENTER_NESTED,                \
-  LANG_HOOKS_FUNCTION_LEAVE_NESTED,                \
-  LANG_HOOKS_FUNCTION_MISSING_NORETURN_OK_P        \
+#define LANG_HOOKS_FUNCTION_INITIALIZER {	\
+  LANG_HOOKS_FUNCTION_INIT,			\
+  LANG_HOOKS_FUNCTION_FINAL,			\
+  LANG_HOOKS_FUNCTION_ENTER_NESTED,		\
+  LANG_HOOKS_FUNCTION_LEAVE_NESTED,		\
+  LANG_HOOKS_FUNCTION_MISSING_NORETURN_OK_P	\
 }
 
 /* Hooks for tree gimplification.  */
@@ -219,10 +219,10 @@ extern tree lhd_make_node (enum tree_code);
 #define LANG_HOOKS_INCOMPLETE_TYPE_ERROR lhd_incomplete_type_error
 #define LANG_HOOKS_TYPE_PROMOTES_TO lhd_type_promotes_to
 #define LANG_HOOKS_REGISTER_BUILTIN_TYPE lhd_register_builtin_type
-#define LANG_HOOKS_TYPE_MAX_SIZE        lhd_return_null_tree
+#define LANG_HOOKS_TYPE_MAX_SIZE	lhd_return_null_tree
 #define LANG_HOOKS_OMP_FIRSTPRIVATIZE_TYPE_SIZES \
   lhd_omp_firstprivatize_type_sizes
-#define LANG_HOOKS_HASH_TYPES                true
+#define LANG_HOOKS_HASH_TYPES		true
 
 #define LANG_HOOKS_FOR_TYPES_INITIALIZER { \
   LANG_HOOKS_MAKE_TYPE, \
@@ -241,13 +241,13 @@ extern tree lhd_make_node (enum tree_code);
 
 /* Declaration hooks.  */
 #define LANG_HOOKS_GLOBAL_BINDINGS_P global_bindings_p
-#define LANG_HOOKS_INSERT_BLOCK        insert_block
-#define LANG_HOOKS_PUSHDECL        pushdecl
-#define LANG_HOOKS_GETDECLS        getdecls
+#define LANG_HOOKS_INSERT_BLOCK	insert_block
+#define LANG_HOOKS_PUSHDECL	pushdecl
+#define LANG_HOOKS_GETDECLS	getdecls
 #define LANG_HOOKS_WARN_UNUSED_GLOBAL_DECL lhd_warn_unused_global_decl
 #define LANG_HOOKS_WRITE_GLOBALS write_global_declarations
 #define LANG_HOOKS_PREPARE_ASSEMBLE_VARIABLE NULL
-#define LANG_HOOKS_DECL_OK_FOR_SIBCALL        lhd_decl_ok_for_sibcall
+#define LANG_HOOKS_DECL_OK_FOR_SIBCALL	lhd_decl_ok_for_sibcall
 #define LANG_HOOKS_COMDAT_GROUP lhd_comdat_group
 #define LANG_HOOKS_OMP_PRIVATIZE_BY_REFERENCE hook_bool_tree_false
 #define LANG_HOOKS_OMP_PREDETERMINED_SHARING lhd_omp_predetermined_sharing

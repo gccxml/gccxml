@@ -25,7 +25,7 @@ Boston, MA 02110-1301, USA.  */
 #define GCC_H8300_COFF_H
 
 #define SDB_DEBUGGING_INFO 1
-#define SDB_DELIM        "\n"
+#define SDB_DELIM	"\n"
 
 /* Generate a blank trailing N_SO to mark the end of the .o file, since
    we can't depend upon the linker to mark .o file boundaries with
@@ -36,7 +36,7 @@ Boston, MA 02110-1301, USA.  */
 /* This is how to output an assembler line
    that says to advance the location counter by SIZE bytes.  */
 
-#define ASM_OUTPUT_IDENT(FILE, NAME)                        \
+#define ASM_OUTPUT_IDENT(FILE, NAME)			\
   fprintf (FILE, "%s\"%s\"\n", IDENT_ASM_OP, NAME)
 
 #define IDENT_ASM_OP "\t.ident\t"

@@ -43,7 +43,7 @@ typedef int __gthread_mutex_t;
 #define __gthread_mutex_unlock(x) (void)(x)
 
 static const fde * _Unwind_Find_registered_FDE (void *pc,
-                                                struct dwarf_eh_bases *bases);
+						struct dwarf_eh_bases *bases);
 
 #define _Unwind_Find_FDE _Unwind_Find_registered_FDE
 #include "unwind-dw2-fde.c"
@@ -60,9 +60,9 @@ extern void _keymgr_unlock_processwide_ptr (int);
 struct mach_header;
 struct mach_header_64;
 extern char *getsectdatafromheader (struct mach_header*, const char*,
-                                    const char *, unsigned long *);
+				    const char *, unsigned long *);
 extern char *getsectdatafromheader_64 (struct mach_header_64*, const char*,
-                                       const char *, unsigned long *);
+				       const char *, unsigned long *);
 
 /* This is referenced from KEYMGR_GCC3_DW2_OBJ_LIST.  */
 struct km_object_info {
@@ -86,14 +86,14 @@ struct live_images {
 
 /* Bits in the examined_p field of struct live_images.  */
 enum {
-  EXAMINED_IMAGE_MASK = 1,        /* We've seen this one.  */
-  ALLOCED_IMAGE_MASK = 2,        /* The FDE entries were allocated by
-                                   malloc, and must be freed.  This isn't
-                                   used by newer libgcc versions.  */
-  IMAGE_IS_TEXT_MASK = 4,        /* This image is in the TEXT segment.  */
+  EXAMINED_IMAGE_MASK = 1,	/* We've seen this one.  */
+  ALLOCED_IMAGE_MASK = 2,	/* The FDE entries were allocated by
+				   malloc, and must be freed.  This isn't
+				   used by newer libgcc versions.  */
+  IMAGE_IS_TEXT_MASK = 4,	/* This image is in the TEXT segment.  */
   DESTRUCTOR_MAY_BE_CALLED_LIVE = 8  /* The destructor may be called on an
-                                        object that's part of the live
-                                        image list.  */
+					object that's part of the live
+					image list.  */
 };
 
 /* Delete any data we allocated on a live_images structure.  Either
@@ -111,25 +111,25 @@ live_image_destructor (struct live_images *image)
       struct km_object_info *the_obj_info;
 
       the_obj_info =
-        _keymgr_get_and_lock_processwide_ptr (KEYMGR_GCC3_DW2_OBJ_LIST);
+	_keymgr_get_and_lock_processwide_ptr (KEYMGR_GCC3_DW2_OBJ_LIST);
       if (the_obj_info)
-        {
-          seen_objects = the_obj_info->seen_objects;
-          unseen_objects = the_obj_info->unseen_objects;
+	{
+	  seen_objects = the_obj_info->seen_objects;
+	  unseen_objects = the_obj_info->unseen_objects;
 
-          /* Free any sorted arrays.  */
-          __deregister_frame_info_bases (image->fde);
+	  /* Free any sorted arrays.  */
+	  __deregister_frame_info_bases (image->fde);
 
-          the_obj_info->seen_objects = seen_objects;
-          the_obj_info->unseen_objects = unseen_objects;
-        }
+	  the_obj_info->seen_objects = seen_objects;
+	  the_obj_info->unseen_objects = unseen_objects;
+	}
       _keymgr_set_and_unlock_processwide_ptr (KEYMGR_GCC3_DW2_OBJ_LIST,
-                                              the_obj_info);
+					      the_obj_info);
 
       free (image->object_info);
       image->object_info = NULL;
       if (image->examined_p & ALLOCED_IMAGE_MASK)
-        free (image->fde);
+	free (image->fde);
       image->fde = NULL;
     }
   image->examined_p = 0;
@@ -152,90 +152,90 @@ examine_objects (void *pc, struct dwarf_eh_bases *bases, int dont_alloc)
   for (; image != NULL; image = image->next)
     if ((image->examined_p & EXAMINED_IMAGE_MASK) == 0)
       {
-        char *fde = NULL;
-        unsigned long sz;
+	char *fde = NULL;
+	unsigned long sz;
 
-        /* For ppc only check whether or not we have __DATA eh frames.  */
+	/* For ppc only check whether or not we have __DATA eh frames.  */
 #ifdef __ppc__
-        fde = getsectdatafromheader (image->mh, "__DATA", "__eh_frame", &sz);
+	fde = getsectdatafromheader (image->mh, "__DATA", "__eh_frame", &sz);
 #endif
 
-        if (fde == NULL)
-          {
+	if (fde == NULL)
+	  {
 #if __LP64__
-            fde = getsectdatafromheader_64 ((struct mach_header_64 *) image->mh,
-                                            "__TEXT", "__eh_frame", &sz);
+	    fde = getsectdatafromheader_64 ((struct mach_header_64 *) image->mh,
+					    "__TEXT", "__eh_frame", &sz);
 #else
-            fde = getsectdatafromheader (image->mh, "__TEXT",
-                                         "__eh_frame", &sz);
+	    fde = getsectdatafromheader (image->mh, "__TEXT",
+					 "__eh_frame", &sz);
 #endif
-            if (fde != NULL)
-              image->examined_p |= IMAGE_IS_TEXT_MASK;
-          }
+	    if (fde != NULL)
+	      image->examined_p |= IMAGE_IS_TEXT_MASK;
+	  }
 
-        /* If .eh_frame is empty, don't register at all.  */
-        if (fde != NULL && sz > 0)
-          {
-            char *real_fde = (fde + image->vm_slide);
-            struct object *ob = NULL;
-            struct object panicob;
+	/* If .eh_frame is empty, don't register at all.  */
+	if (fde != NULL && sz > 0)
+	  {
+	    char *real_fde = (fde + image->vm_slide);
+	    struct object *ob = NULL;
+	    struct object panicob;
 
-            if (! dont_alloc)
-              ob = calloc (1, sizeof (struct object));
-            dont_alloc |= ob == NULL;
-            if (dont_alloc)
-              ob = &panicob;
+	    if (! dont_alloc)
+	      ob = calloc (1, sizeof (struct object));
+	    dont_alloc |= ob == NULL;
+	    if (dont_alloc)
+	      ob = &panicob;
 
-            ob->pc_begin = (void *)-1;
-            ob->tbase = 0;
-            ob->dbase = 0;
-            ob->u.single = (struct dwarf_fde *)real_fde;
-            ob->s.i = 0;
-            ob->s.b.encoding = DW_EH_PE_omit;
-            ob->fde_end = real_fde + sz;
+	    ob->pc_begin = (void *)-1;
+	    ob->tbase = 0;
+	    ob->dbase = 0;
+	    ob->u.single = (struct dwarf_fde *)real_fde;
+	    ob->s.i = 0;
+	    ob->s.b.encoding = DW_EH_PE_omit;
+	    ob->fde_end = real_fde + sz;
 
-            image->fde = real_fde;
+	    image->fde = real_fde;
 
-            result = search_object (ob, pc);
+	    result = search_object (ob, pc);
 
-            if (! dont_alloc)
-              {
-                struct object **p;
+	    if (! dont_alloc)
+	      {
+		struct object **p;
 
-                image->destructor = live_image_destructor;
-                image->object_info = ob;
+		image->destructor = live_image_destructor;
+		image->object_info = ob;
 
-                image->examined_p |= (EXAMINED_IMAGE_MASK
-                                      | DESTRUCTOR_MAY_BE_CALLED_LIVE);
+		image->examined_p |= (EXAMINED_IMAGE_MASK
+				      | DESTRUCTOR_MAY_BE_CALLED_LIVE);
 
-                /* Insert the object into the classified list.  */
-                for (p = &seen_objects; *p ; p = &(*p)->next)
-                  if ((*p)->pc_begin < ob->pc_begin)
-                    break;
-                ob->next = *p;
-                *p = ob;
-              }
+		/* Insert the object into the classified list.  */
+		for (p = &seen_objects; *p ; p = &(*p)->next)
+		  if ((*p)->pc_begin < ob->pc_begin)
+		    break;
+		ob->next = *p;
+		*p = ob;
+	      }
 
-            if (result)
-              {
-                int encoding;
-                _Unwind_Ptr func;
+	    if (result)
+	      {
+		int encoding;
+		_Unwind_Ptr func;
 
-                bases->tbase = ob->tbase;
-                bases->dbase = ob->dbase;
+		bases->tbase = ob->tbase;
+		bases->dbase = ob->dbase;
 
-                encoding = ob->s.b.encoding;
-                if (ob->s.b.mixed_encoding)
-                  encoding = get_fde_encoding (result);
-                read_encoded_value_with_base (encoding,
-                                              base_from_object (encoding, ob),
-                                              result->pc_begin, &func);
-                bases->func = (void *) func;
-                break;
-              }
-          }
-        else
-          image->examined_p |= EXAMINED_IMAGE_MASK;
+		encoding = ob->s.b.encoding;
+		if (ob->s.b.mixed_encoding)
+		  encoding = get_fde_encoding (result);
+		read_encoded_value_with_base (encoding,
+					      base_from_object (encoding, ob),
+					      result->pc_begin, &func);
+		bases->func = (void *) func;
+		break;
+	      }
+	  }
+	else
+	  image->examined_p |= EXAMINED_IMAGE_MASK;
       }
 
   _keymgr_unlock_processwide_ptr (KEYMGR_GCC3_LIVE_IMAGE_LIST);
@@ -273,6 +273,6 @@ _Unwind_Find_FDE (void *pc, struct dwarf_eh_bases *bases)
       the_obj_info->unseen_objects = unseen_objects;
     }
   _keymgr_set_and_unlock_processwide_ptr (KEYMGR_GCC3_DW2_OBJ_LIST,
-                                          the_obj_info);
+					  the_obj_info);
   return ret;
 }

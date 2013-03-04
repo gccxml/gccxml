@@ -36,25 +36,25 @@ Boston, MA 02110-1301, USA.  */
 #undef DEC32_MANT_DIG
 #undef DEC64_MANT_DIG
 #undef DEC128_MANT_DIG
-#define DEC32_MANT_DIG        __DEC32_MANT_DIG__
-#define DEC64_MANT_DIG        __DEC64_MANT_DIG__
-#define DEC128_MANT_DIG        __DEC128_MANT_DIG__
+#define DEC32_MANT_DIG	__DEC32_MANT_DIG__
+#define DEC64_MANT_DIG	__DEC64_MANT_DIG__
+#define DEC128_MANT_DIG	__DEC128_MANT_DIG__
 
 /* Minimum exponent. */
 #undef DEC32_MIN_EXP
 #undef DEC64_MIN_EXP
 #undef DEC128_MIN_EXP
-#define DEC32_MIN_EXP        __DEC32_MIN_EXP__
-#define DEC64_MIN_EXP        __DEC64_MIN_EXP__
-#define DEC128_MIN_EXP        __DEC128_MIN_EXP__
+#define DEC32_MIN_EXP	__DEC32_MIN_EXP__
+#define DEC64_MIN_EXP	__DEC64_MIN_EXP__
+#define DEC128_MIN_EXP	__DEC128_MIN_EXP__
 
 /* Maximum exponent. */
 #undef DEC32_MAX_EXP
 #undef DEC64_MAX_EXP
 #undef DEC128_MAX_EXP
-#define DEC32_MAX_EXP        __DEC32_MAX_EXP__
-#define DEC64_MAX_EXP        __DEC64_MAX_EXP__
-#define DEC128_MAX_EXP        __DEC128_MAX_EXP__
+#define DEC32_MAX_EXP	__DEC32_MAX_EXP__
+#define DEC64_MAX_EXP	__DEC64_MAX_EXP__
+#define DEC128_MAX_EXP	__DEC128_MAX_EXP__
 
 /* Maximum representable finite decimal floating-point number
    (there are 6, 15, and 33 9s after the decimal points respectively). */
@@ -70,17 +70,17 @@ Boston, MA 02110-1301, USA.  */
 #undef DEC32_EPSILON
 #undef DEC64_EPSILON
 #undef DEC128_EPSILON
-#define DEC32_EPSILON        __DEC32_EPSILON__
-#define DEC64_EPSILON        __DEC64_EPSILON__
-#define DEC128_EPSILON        __DEC128_EPSILON__
+#define DEC32_EPSILON	__DEC32_EPSILON__
+#define DEC64_EPSILON	__DEC64_EPSILON__
+#define DEC128_EPSILON	__DEC128_EPSILON__
 
 /* Minimum normalized positive floating-point number. */
 #undef DEC32_MIN
 #undef DEC64_MIN
 #undef DEC128_MIN
-#define DEC32_MIN        __DEC32_MIN__
-#define DEC64_MIN        __DEC64_MIN__
-#define DEC128_MIN        __DEC128_MIN__
+#define DEC32_MIN	__DEC32_MIN__
+#define DEC64_MIN	__DEC64_MIN__
+#define DEC128_MIN	__DEC128_MIN__
 
 /* Minimum denormalized positive floating-point number. */
 #undef DEC32_DEN
@@ -95,14 +95,14 @@ Boston, MA 02110-1301, USA.  */
          0  evaluate all operations and constants just to the range and
             precision of the type
          1  evaluate operations and constants of type _Decimal32 
-            and _Decimal64 to the range and precision of the _Decimal64 
+	    and _Decimal64 to the range and precision of the _Decimal64 
             type, evaluate _Decimal128 operations and constants to the 
-            range and precision of the _Decimal128 type;
-         2  evaluate all operations and constants to the range and
-            precision of the _Decimal128 type.
+	    range and precision of the _Decimal128 type;
+	 2  evaluate all operations and constants to the range and
+	    precision of the _Decimal128 type.
 */
 
 #undef DECFLT_EVAL_METHOD
-#define DECFLT_EVAL_METHOD        __DECFLT_EVAL_METHOD__
+#define DECFLT_EVAL_METHOD	__DECFLT_EVAL_METHOD__
 
 #endif /* _DECFLOAT_H___ */

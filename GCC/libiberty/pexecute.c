@@ -37,8 +37,8 @@ static int idx;
 
 int
 pexecute (const char *program, char * const *argv, const char *pname,
-          const char *temp_base, char **errmsg_fmt, char **errmsg_arg,
-          int flags)
+	  const char *temp_base, char **errmsg_fmt, char **errmsg_arg,
+	  int flags)
 {
   const char *errmsg;
   int err;
@@ -46,28 +46,28 @@ pexecute (const char *program, char * const *argv, const char *pname,
   if ((flags & PEXECUTE_FIRST) != 0)
     {
       if (pex != NULL)
-        {
-          *errmsg_fmt = (char *) "pexecute already in progress";
-          *errmsg_arg = NULL;
-          return -1;
-        }
+	{
+	  *errmsg_fmt = (char *) "pexecute already in progress";
+	  *errmsg_arg = NULL;
+	  return -1;
+	}
       pex = pex_init (PEX_USE_PIPES, pname, temp_base);
       idx = 0;
     }
   else
     {
       if (pex == NULL)
-        {
-          *errmsg_fmt = (char *) "pexecute not in progress";
-          *errmsg_arg = NULL;
-          return -1;
-        }
+	{
+	  *errmsg_fmt = (char *) "pexecute not in progress";
+	  *errmsg_arg = NULL;
+	  return -1;
+	}
     }
 
   errmsg = pex_run (pex,
-                    (((flags & PEXECUTE_LAST) != 0 ? PEX_LAST : 0)
-                     | ((flags & PEXECUTE_SEARCH) != 0 ? PEX_SEARCH : 0)),
-                    program, argv, NULL, NULL, &err);
+		    (((flags & PEXECUTE_LAST) != 0 ? PEX_LAST : 0)
+		     | ((flags & PEXECUTE_SEARCH) != 0 ? PEX_SEARCH : 0)),
+		    program, argv, NULL, NULL, &err);
   if (errmsg != NULL)
     {
       *errmsg_fmt = (char *) errmsg;
@@ -93,7 +93,7 @@ pwait (int pid, int *status, int flags ATTRIBUTE_UNUSED)
   if (pid == 0 && idx == 1)
     {
       if (!pex_get_status (pex, 1, status))
-        return -1;
+	return -1;
     }
   else
     {
@@ -101,10 +101,10 @@ pwait (int pid, int *status, int flags ATTRIBUTE_UNUSED)
 
       vector = XNEWVEC (int, idx);
       if (!pex_get_status (pex, idx, vector))
-        {
-          free (vector);
-          return -1;
-        }
+	{
+	  free (vector);
+	  return -1;
+	}
       *status = vector[pid];
       free (vector);
     }

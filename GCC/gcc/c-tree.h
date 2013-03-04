@@ -87,12 +87,12 @@ struct lang_type GTY(())
 
 /* For FUNCTION_DECLs, evaluates true if the decl is built-in but has
    been declared.  */
-#define C_DECL_DECLARED_BUILTIN(EXP)                \
+#define C_DECL_DECLARED_BUILTIN(EXP)		\
   DECL_LANG_FLAG_3 (FUNCTION_DECL_CHECK (EXP))
 
 /* For FUNCTION_DECLs, evaluates true if the decl is built-in, has a
    built-in prototype and does not have a non-built-in prototype.  */
-#define C_DECL_BUILTIN_PROTOTYPE(EXP)                \
+#define C_DECL_BUILTIN_PROTOTYPE(EXP)		\
   DECL_LANG_FLAG_6 (FUNCTION_DECL_CHECK (EXP))
 
 /* Record whether a decl was declared register.  This is strictly a
@@ -108,25 +108,25 @@ struct lang_type GTY(())
 
 /* Record whether a label was defined in a statement expression which
    has finished and so can no longer be jumped to.  */
-#define C_DECL_UNJUMPABLE_STMT_EXPR(EXP)        \
+#define C_DECL_UNJUMPABLE_STMT_EXPR(EXP)	\
   DECL_LANG_FLAG_6 (LABEL_DECL_CHECK (EXP))
 
 /* Record whether a label was the subject of a goto from outside the
    current level of statement expression nesting and so cannot be
    defined right now.  */
-#define C_DECL_UNDEFINABLE_STMT_EXPR(EXP)        \
+#define C_DECL_UNDEFINABLE_STMT_EXPR(EXP)	\
   DECL_LANG_FLAG_7 (LABEL_DECL_CHECK (EXP))
 
 /* Record whether a label was defined in the scope of an identifier
    with variably modified type which has finished and so can no longer
    be jumped to.  */
-#define C_DECL_UNJUMPABLE_VM(EXP)        \
+#define C_DECL_UNJUMPABLE_VM(EXP)	\
   DECL_LANG_FLAG_3 (LABEL_DECL_CHECK (EXP))
 
 /* Record whether a label was the subject of a goto from outside the
    current level of scopes of identifiers with variably modified type
    and so cannot be defined right now.  */
-#define C_DECL_UNDEFINABLE_VM(EXP)        \
+#define C_DECL_UNDEFINABLE_VM(EXP)	\
   DECL_LANG_FLAG_5 (LABEL_DECL_CHECK (EXP))
 
 /* Record whether a variable has been declared threadprivate by
@@ -136,10 +136,10 @@ struct lang_type GTY(())
 /* Nonzero for a decl which either doesn't exist or isn't a prototype.
    N.B. Could be simplified if all built-in decls had complete prototypes
    (but this is presently difficult because some of them need FILE*).  */
-#define C_DECL_ISNT_PROTOTYPE(EXP)                        \
-       (EXP == 0                                        \
-        || (TYPE_ARG_TYPES (TREE_TYPE (EXP)) == 0        \
-            && !DECL_BUILT_IN (EXP)))
+#define C_DECL_ISNT_PROTOTYPE(EXP)			\
+       (EXP == 0					\
+	|| (TYPE_ARG_TYPES (TREE_TYPE (EXP)) == 0	\
+	    && !DECL_BUILT_IN (EXP)))
 
 /* For FUNCTION_TYPE, a hidden list of types of arguments.  The same as
    TYPE_ARG_TYPES for functions with prototypes, but created for functions
@@ -449,7 +449,7 @@ extern void c_dup_lang_specific_decl (tree);
 extern void c_print_identifier (FILE *, tree, int);
 extern int quals_from_declspecs (const struct c_declspecs *);
 extern struct c_declarator *build_array_declarator (tree, struct c_declspecs *,
-                                                    bool, bool);
+						    bool, bool);
 extern tree build_enumerator (tree, tree);
 extern tree check_for_loop_decls (void);
 extern void mark_forward_parm_decls (void);
@@ -473,16 +473,16 @@ extern void c_push_function_context (struct function *);
 extern void c_pop_function_context (struct function *);
 extern void push_parm_decl (const struct c_parm *);
 extern struct c_declarator *set_array_declarator_inner (struct c_declarator *,
-                                                        struct c_declarator *,
-                                                        bool);
+							struct c_declarator *,
+							bool);
 extern tree builtin_function (const char *, tree, int, enum built_in_class,
-                              const char *, tree);
+			      const char *, tree);
 extern void shadow_tag (const struct c_declspecs *);
 extern void shadow_tag_warned (const struct c_declspecs *, int);
 extern tree start_enum (tree);
 extern int  start_function (struct c_declspecs *, struct c_declarator *, tree);
 extern tree start_decl (struct c_declarator *, struct c_declspecs *, bool,
-                        tree);
+			tree);
 extern tree start_struct (enum tree_code, tree);
 extern void store_parm_decls (void);
 extern void store_parm_decls_from (struct c_arg_info *);
@@ -490,18 +490,18 @@ extern tree xref_tag (enum tree_code, tree);
 extern struct c_typespec parser_xref_tag (enum tree_code, tree);
 extern int c_expand_decl (tree);
 extern struct c_parm *build_c_parm (struct c_declspecs *, tree,
-                                    struct c_declarator *);
+				    struct c_declarator *);
 extern struct c_declarator *build_attrs_declarator (tree,
-                                                    struct c_declarator *);
+						    struct c_declarator *);
 extern struct c_declarator *build_function_declarator (struct c_arg_info *,
-                                                       struct c_declarator *);
+						       struct c_declarator *);
 extern struct c_declarator *build_id_declarator (tree);
 extern struct c_declarator *make_pointer_declarator (struct c_declspecs *,
-                                                     struct c_declarator *);
+						     struct c_declarator *);
 extern struct c_declspecs *build_null_declspecs (void);
 extern struct c_declspecs *declspecs_add_qual (struct c_declspecs *, tree);
 extern struct c_declspecs *declspecs_add_type (struct c_declspecs *,
-                                               struct c_typespec);
+					       struct c_typespec);
 extern struct c_declspecs *declspecs_add_scspec (struct c_declspecs *, tree);
 extern struct c_declspecs *declspecs_add_attrs (struct c_declspecs *, tree);
 extern struct c_declspecs *finish_declspecs (struct c_declspecs *);
@@ -516,10 +516,10 @@ extern bool c_warn_unused_global_decl (tree);
 extern void c_initialize_diagnostics (diagnostic_context *);
 extern bool c_vla_unspec_p (tree x, tree fn);
 
-#define c_build_type_variant(TYPE, CONST_P, VOLATILE_P)                  \
-  c_build_qualified_type ((TYPE),                                  \
-                          ((CONST_P) ? TYPE_QUAL_CONST : 0) |          \
-                          ((VOLATILE_P) ? TYPE_QUAL_VOLATILE : 0))
+#define c_build_type_variant(TYPE, CONST_P, VOLATILE_P)		  \
+  c_build_qualified_type ((TYPE),				  \
+			  ((CONST_P) ? TYPE_QUAL_CONST : 0) |	  \
+			  ((VOLATILE_P) ? TYPE_QUAL_VOLATILE : 0))
 
 /* in c-typeck.c */
 extern int in_alignof;
@@ -547,7 +547,7 @@ extern struct c_expr c_expr_sizeof_expr (struct c_expr);
 extern struct c_expr c_expr_sizeof_type (struct c_type_name *);
 extern struct c_expr parser_build_unary_op (enum tree_code, struct c_expr);
 extern struct c_expr parser_build_binary_op (enum tree_code, struct c_expr,
-                                             struct c_expr);
+					     struct c_expr);
 extern tree build_conditional_expr (tree, tree, tree);
 extern tree build_compound_expr (tree, tree);
 extern tree c_cast_expr (struct c_type_name *, tree);

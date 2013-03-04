@@ -66,16 +66,16 @@ extern const unsigned int cl_options_count;
 extern const char *const lang_names[];
 extern bool no_unit_at_a_time_default;
 
-#define CL_DISABLED                (1 << 21) /* Disabled in this configuration.  */
-#define CL_TARGET                (1 << 22) /* Target-specific option.  */
-#define CL_REPORT                (1 << 23) /* Report argument with -fverbose-asm  */
-#define CL_JOINED                (1 << 24) /* If takes joined argument.  */
-#define CL_SEPARATE                (1 << 25) /* If takes a separate argument.  */
-#define CL_REJECT_NEGATIVE        (1 << 26) /* Reject no- form.  */
-#define CL_MISSING_OK                (1 << 27) /* Missing argument OK (joined).  */
-#define CL_UINTEGER                (1 << 28) /* Argument is an integer >=0.  */
-#define CL_COMMON                (1 << 29) /* Language-independent.  */
-#define CL_UNDOCUMENTED                (1 << 30) /* Do not output with --help.  */
+#define CL_DISABLED		(1 << 21) /* Disabled in this configuration.  */
+#define CL_TARGET		(1 << 22) /* Target-specific option.  */
+#define CL_REPORT		(1 << 23) /* Report argument with -fverbose-asm  */
+#define CL_JOINED		(1 << 24) /* If takes joined argument.  */
+#define CL_SEPARATE		(1 << 25) /* If takes a separate argument.  */
+#define CL_REJECT_NEGATIVE	(1 << 26) /* Reject no- form.  */
+#define CL_MISSING_OK		(1 << 27) /* Missing argument OK (joined).  */
+#define CL_UINTEGER		(1 << 28) /* Argument is an integer >=0.  */
+#define CL_COMMON		(1 << 29) /* Language-independent.  */
+#define CL_UNDOCUMENTED		(1 << 30) /* Do not output with --help.  */
 
 /* Input file names.  */
 

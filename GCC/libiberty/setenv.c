@@ -59,7 +59,7 @@ extern int errno;
 # include <unistd.h>
 #endif
 
-#define __environ        environ
+#define __environ	environ
 #ifndef HAVE_ENVIRON_DECL
 extern char **environ;
 #endif
@@ -93,40 +93,40 @@ setenv (const char *name, const char *value, int replace)
   if (__environ != NULL)
     {
       for (ep = __environ; *ep != NULL; ++ep)
-        if (!strncmp (*ep, name, namelen) && (*ep)[namelen] == '=')
-          break;
-        else
-          ++size;
+	if (!strncmp (*ep, name, namelen) && (*ep)[namelen] == '=')
+	  break;
+	else
+	  ++size;
     }
 
   if (__environ == NULL || *ep == NULL)
     {
       char **new_environ;
       if (__environ == last_environ && __environ != NULL)
-        /* We allocated this space; we can extend it.  */
-        new_environ = (char **) realloc (last_environ,
-                                         (size + 2) * sizeof (char *));
+	/* We allocated this space; we can extend it.  */
+	new_environ = (char **) realloc (last_environ,
+					 (size + 2) * sizeof (char *));
       else
-        new_environ = (char **) malloc ((size + 2) * sizeof (char *));
+	new_environ = (char **) malloc ((size + 2) * sizeof (char *));
 
       if (new_environ == NULL)
-        {
-          UNLOCK;
-          return -1;
-        }
+	{
+	  UNLOCK;
+	  return -1;
+	}
 
       new_environ[size] = (char *) malloc (namelen + 1 + vallen);
       if (new_environ[size] == NULL)
-        {
-          free ((char *) new_environ);
-          __set_errno (ENOMEM);
-          UNLOCK;
-          return -1;
-        }
+	{
+	  free ((char *) new_environ);
+	  __set_errno (ENOMEM);
+	  UNLOCK;
+	  return -1;
+	}
 
       if (__environ != last_environ)
-        memcpy ((char *) new_environ, (char *) __environ,
-                size * sizeof (char *));
+	memcpy ((char *) new_environ, (char *) __environ,
+		size * sizeof (char *));
 
       memcpy (new_environ[size], name, namelen);
       new_environ[size][namelen] = '=';
@@ -140,16 +140,16 @@ setenv (const char *name, const char *value, int replace)
     {
       size_t len = strlen (*ep);
       if (len + 1 < namelen + 1 + vallen)
-        {
-          /* The existing string is too short; malloc a new one.  */
-          char *new_string = (char *) malloc (namelen + 1 + vallen);
-          if (new_string == NULL)
-            {
-              UNLOCK;
-              return -1;
-            }
-          *ep = new_string;
-        }
+	{
+	  /* The existing string is too short; malloc a new one.  */
+	  char *new_string = (char *) malloc (namelen + 1 + vallen);
+	  if (new_string == NULL)
+	    {
+	      UNLOCK;
+	      return -1;
+	    }
+	  *ep = new_string;
+	}
       memcpy (*ep, name, namelen);
       (*ep)[namelen] = '=';
       memcpy (&(*ep)[namelen + 1], value, vallen);
@@ -171,12 +171,12 @@ unsetenv (const char *name)
   for (ep = __environ; *ep; ++ep)
     if (!strncmp (*ep, name, len) && (*ep)[len] == '=')
       {
-        /* Found it.  Remove this pointer by moving later ones back.  */
-        char **dp = ep;
-        do
-          dp[0] = dp[1];
-        while (*dp++);
-        /* Continue the loop in case NAME appears again.  */
+	/* Found it.  Remove this pointer by moving later ones back.  */
+	char **dp = ep;
+	do
+	  dp[0] = dp[1];
+	while (*dp++);
+	/* Continue the loop in case NAME appears again.  */
       }
 
   UNLOCK;

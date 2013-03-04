@@ -28,13 +28,13 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
 #define GET_ENVIRONMENT(VALUE, NAME) do { (VALUE) = getenv (NAME); } while (0)
 #endif
 
-#define obstack_chunk_alloc        ((void *(*) (long)) xmalloc)
-#define obstack_chunk_free        ((void (*) (void *)) free)
-#define OBSTACK_CHUNK_SIZE        0
-#define gcc_obstack_init(OBSTACK)                        \
-  _obstack_begin ((OBSTACK), OBSTACK_CHUNK_SIZE, 0,        \
-                  obstack_chunk_alloc,                        \
-                  obstack_chunk_free)
+#define obstack_chunk_alloc	((void *(*) (long)) xmalloc)
+#define obstack_chunk_free	((void (*) (void *)) free)
+#define OBSTACK_CHUNK_SIZE	0
+#define gcc_obstack_init(OBSTACK)			\
+  _obstack_begin ((OBSTACK), OBSTACK_CHUNK_SIZE, 0,	\
+		  obstack_chunk_alloc,			\
+		  obstack_chunk_free)
 
 /* Store in OUTPUT a string (made with alloca) containing an
    assembler-name for a local static variable or function named NAME.
@@ -56,7 +56,7 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
 # define ASM_FORMAT_PRIVATE_NAME(OUTPUT, NAME, LABELNO) \
   do { const char *const name_ = (NAME); \
        char *const output_ = (OUTPUT) = \
-         (char *) alloca (strlen (name_) + 32); \
+	 (char *) alloca (strlen (name_) + 32); \
        sprintf (output_, ASM_PN_FORMAT, name_, (unsigned long)(LABELNO)); \
   } while (0)
 #endif
@@ -65,64 +65,64 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
 
 #ifndef ASM_OUTPUT_ASCII
 #define ASM_OUTPUT_ASCII(MYFILE, MYSTRING, MYLENGTH) \
-  do {                                                                              \
-    FILE *_hide_asm_out_file = (MYFILE);                                      \
-    const unsigned char *_hide_p = (const unsigned char *) (MYSTRING);              \
-    int _hide_thissize = (MYLENGTH);                                              \
-    {                                                                              \
-      FILE *asm_out_file = _hide_asm_out_file;                                      \
-      const unsigned char *p = _hide_p;                                              \
-      int thissize = _hide_thissize;                                              \
-      int i;                                                                      \
-      fprintf (asm_out_file, "\t.ascii \"");                                      \
-                                                                              \
-      for (i = 0; i < thissize; i++)                                              \
-        {                                                                      \
-          int c = p[i];                                                                 \
-          if (c == '\"' || c == '\\')                                              \
-            putc ('\\', asm_out_file);                                              \
-          if (ISPRINT(c))                                                      \
-            putc (c, asm_out_file);                                              \
-          else                                                                      \
-            {                                                                      \
-              fprintf (asm_out_file, "\\%o", c);                              \
-              /* After an octal-escape, if a digit follows,                      \
-                 terminate one string constant and start another.              \
-                 The VAX assembler fails to stop reading the escape              \
-                 after three digits, so this is the only way we                      \
-                 can get it to parse the data properly.  */                      \
-              if (i < thissize - 1 && ISDIGIT(p[i + 1]))                      \
-                fprintf (asm_out_file, "\"\n\t.ascii \"");                      \
-          }                                                                      \
-        }                                                                      \
-      fprintf (asm_out_file, "\"\n");                                              \
-    }                                                                              \
-  }                                                                              \
+  do {									      \
+    FILE *_hide_asm_out_file = (MYFILE);				      \
+    const unsigned char *_hide_p = (const unsigned char *) (MYSTRING);	      \
+    int _hide_thissize = (MYLENGTH);					      \
+    {									      \
+      FILE *asm_out_file = _hide_asm_out_file;				      \
+      const unsigned char *p = _hide_p;					      \
+      int thissize = _hide_thissize;					      \
+      int i;								      \
+      fprintf (asm_out_file, "\t.ascii \"");				      \
+									      \
+      for (i = 0; i < thissize; i++)					      \
+	{								      \
+	  int c = p[i];			   				      \
+	  if (c == '\"' || c == '\\')					      \
+	    putc ('\\', asm_out_file);					      \
+	  if (ISPRINT(c))						      \
+	    putc (c, asm_out_file);					      \
+	  else								      \
+	    {								      \
+	      fprintf (asm_out_file, "\\%o", c);			      \
+	      /* After an octal-escape, if a digit follows,		      \
+		 terminate one string constant and start another.	      \
+		 The VAX assembler fails to stop reading the escape	      \
+		 after three digits, so this is the only way we		      \
+		 can get it to parse the data properly.  */		      \
+	      if (i < thissize - 1 && ISDIGIT(p[i + 1]))		      \
+		fprintf (asm_out_file, "\"\n\t.ascii \"");		      \
+	  }								      \
+	}								      \
+      fprintf (asm_out_file, "\"\n");					      \
+    }									      \
+  }									      \
   while (0)
 #endif
 
 /* This is how we tell the assembler to equate two values.  */
 #ifdef SET_ASM_OP
 #ifndef ASM_OUTPUT_DEF
-#define ASM_OUTPUT_DEF(FILE,LABEL1,LABEL2)                                \
- do {        fprintf ((FILE), "%s", SET_ASM_OP);                                \
-        assemble_name (FILE, LABEL1);                                        \
-        fprintf (FILE, ",");                                                \
-        assemble_name (FILE, LABEL2);                                        \
-        fprintf (FILE, "\n");                                                \
+#define ASM_OUTPUT_DEF(FILE,LABEL1,LABEL2)				\
+ do {	fprintf ((FILE), "%s", SET_ASM_OP);				\
+	assemble_name (FILE, LABEL1);					\
+	fprintf (FILE, ",");						\
+	assemble_name (FILE, LABEL2);					\
+	fprintf (FILE, "\n");						\
   } while (0)
 #endif
 #endif
 
 #if defined (HAVE_AS_TLS) && !defined (ASM_OUTPUT_TLS_COMMON)
-#define ASM_OUTPUT_TLS_COMMON(FILE, DECL, NAME, SIZE)                        \
-  do                                                                        \
-    {                                                                        \
-      fprintf ((FILE), "\t.tls_common\t");                                \
-      assemble_name ((FILE), (NAME));                                        \
-      fprintf ((FILE), ","HOST_WIDE_INT_PRINT_UNSIGNED",%u\n",                \
-               (SIZE), DECL_ALIGN (DECL) / BITS_PER_UNIT);                \
-    }                                                                        \
+#define ASM_OUTPUT_TLS_COMMON(FILE, DECL, NAME, SIZE)			\
+  do									\
+    {									\
+      fprintf ((FILE), "\t.tls_common\t");				\
+      assemble_name ((FILE), (NAME));					\
+      fprintf ((FILE), ","HOST_WIDE_INT_PRINT_UNSIGNED",%u\n",		\
+	       (SIZE), DECL_ALIGN (DECL) / BITS_PER_UNIT);		\
+    }									\
   while (0)
 #endif
 
@@ -142,10 +142,10 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
 
 /* Output the definition of a compiler-generated label named NAME.  */
 #ifndef ASM_OUTPUT_INTERNAL_LABEL
-#define ASM_OUTPUT_INTERNAL_LABEL(FILE,NAME)        \
-  do {                                                \
-    assemble_name_raw ((FILE), (NAME));                \
-    fputs (":\n", (FILE));                        \
+#define ASM_OUTPUT_INTERNAL_LABEL(FILE,NAME)	\
+  do {						\
+    assemble_name_raw ((FILE), (NAME));		\
+    fputs (":\n", (FILE));			\
   } while (0)
 #endif
 
@@ -167,13 +167,13 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
 /* This is how we tell the assembler that a symbol is weak.  */
 #ifndef ASM_OUTPUT_WEAK_ALIAS
 #if defined (ASM_WEAKEN_LABEL) && defined (ASM_OUTPUT_DEF)
-#define ASM_OUTPUT_WEAK_ALIAS(STREAM, NAME, VALUE)        \
-  do                                                        \
-    {                                                        \
-      ASM_WEAKEN_LABEL (STREAM, NAME);                        \
-      if (VALUE)                                        \
-        ASM_OUTPUT_DEF (STREAM, NAME, VALUE);                \
-    }                                                        \
+#define ASM_OUTPUT_WEAK_ALIAS(STREAM, NAME, VALUE)	\
+  do							\
+    {							\
+      ASM_WEAKEN_LABEL (STREAM, NAME);			\
+      if (VALUE)					\
+        ASM_OUTPUT_DEF (STREAM, NAME, VALUE);		\
+    }							\
   while (0)
 #endif
 #endif
@@ -186,15 +186,15 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
    the latter is referenced directly, a strong reference prevails.  */
 #ifndef ASM_OUTPUT_WEAKREF
 #if defined HAVE_GAS_WEAKREF
-#define ASM_OUTPUT_WEAKREF(FILE, DECL, NAME, VALUE)                        \
-  do                                                                        \
-    {                                                                        \
-      fprintf ((FILE), "\t.weakref\t");                                        \
-      assemble_name ((FILE), (NAME));                                        \
-      fprintf ((FILE), ",");                                                \
-      assemble_name ((FILE), (VALUE));                                        \
-      fprintf ((FILE), "\n");                                                \
-    }                                                                        \
+#define ASM_OUTPUT_WEAKREF(FILE, DECL, NAME, VALUE)			\
+  do									\
+    {									\
+      fprintf ((FILE), "\t.weakref\t");					\
+      assemble_name ((FILE), (NAME));					\
+      fprintf ((FILE), ",");						\
+      assemble_name ((FILE), (VALUE));					\
+      fprintf ((FILE), "\n");						\
+    }									\
   while (0)
 #endif
 #endif
@@ -202,15 +202,15 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
 /* How to emit a .type directive.  */
 #ifndef ASM_OUTPUT_TYPE_DIRECTIVE
 #if defined TYPE_ASM_OP && defined TYPE_OPERAND_FMT
-#define ASM_OUTPUT_TYPE_DIRECTIVE(STREAM, NAME, TYPE)        \
-  do                                                        \
-    {                                                        \
-      fputs (TYPE_ASM_OP, STREAM);                        \
-      assemble_name (STREAM, NAME);                        \
-      fputs (", ", STREAM);                                \
-      fprintf (STREAM, TYPE_OPERAND_FMT, TYPE);                \
-      putc ('\n', STREAM);                                \
-    }                                                        \
+#define ASM_OUTPUT_TYPE_DIRECTIVE(STREAM, NAME, TYPE)	\
+  do							\
+    {							\
+      fputs (TYPE_ASM_OP, STREAM);			\
+      assemble_name (STREAM, NAME);			\
+      fputs (", ", STREAM);				\
+      fprintf (STREAM, TYPE_OPERAND_FMT, TYPE);		\
+      putc ('\n', STREAM);				\
+    }							\
   while (0)
 #endif
 #endif
@@ -218,25 +218,25 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
 /* How to emit a .size directive.  */
 #ifndef ASM_OUTPUT_SIZE_DIRECTIVE
 #ifdef SIZE_ASM_OP
-#define ASM_OUTPUT_SIZE_DIRECTIVE(STREAM, NAME, SIZE)        \
-  do                                                        \
-    {                                                        \
-      HOST_WIDE_INT size_ = (SIZE);                        \
-      fputs (SIZE_ASM_OP, STREAM);                        \
-      assemble_name (STREAM, NAME);                        \
+#define ASM_OUTPUT_SIZE_DIRECTIVE(STREAM, NAME, SIZE)	\
+  do							\
+    {							\
+      HOST_WIDE_INT size_ = (SIZE);			\
+      fputs (SIZE_ASM_OP, STREAM);			\
+      assemble_name (STREAM, NAME);			\
       fprintf (STREAM, ", " HOST_WIDE_INT_PRINT_DEC "\n", size_); \
-    }                                                        \
+    }							\
   while (0)
 
-#define ASM_OUTPUT_MEASURED_SIZE(STREAM, NAME)                \
-  do                                                        \
-    {                                                        \
-      fputs (SIZE_ASM_OP, STREAM);                        \
-      assemble_name (STREAM, NAME);                        \
-      fputs (", .-", STREAM);                                \
-      assemble_name (STREAM, NAME);                        \
-      putc ('\n', STREAM);                                \
-    }                                                        \
+#define ASM_OUTPUT_MEASURED_SIZE(STREAM, NAME)		\
+  do							\
+    {							\
+      fputs (SIZE_ASM_OP, STREAM);			\
+      assemble_name (STREAM, NAME);			\
+      fputs (", .-", STREAM);				\
+      assemble_name (STREAM, NAME);			\
+      putc ('\n', STREAM);				\
+    }							\
   while (0)
 
 #endif
@@ -493,9 +493,9 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
 /* Supply a default definition for PUSH_ARGS.  */
 #ifndef PUSH_ARGS
 #ifdef PUSH_ROUNDING
-#define PUSH_ARGS        !ACCUMULATE_OUTGOING_ARGS
+#define PUSH_ARGS	!ACCUMULATE_OUTGOING_ARGS
 #else
-#define PUSH_ARGS        0
+#define PUSH_ARGS	0
 #endif
 #endif
 
@@ -628,7 +628,7 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
 
 /* Default to IEEE float if not specified.  Nearly all machines use it.  */
 #ifndef TARGET_FLOAT_FORMAT
-#define        TARGET_FLOAT_FORMAT        IEEE_FLOAT_FORMAT
+#define	TARGET_FLOAT_FORMAT	IEEE_FLOAT_FORMAT
 #endif
 
 #ifndef LARGEST_EXPONENT_IS_NORMAL
@@ -640,16 +640,16 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
 #endif
 
 #ifndef MODE_HAS_NANS
-#define MODE_HAS_NANS(MODE)                                        \
-  (FLOAT_MODE_P (MODE)                                                \
-   && TARGET_FLOAT_FORMAT == IEEE_FLOAT_FORMAT                        \
+#define MODE_HAS_NANS(MODE)					\
+  (FLOAT_MODE_P (MODE)						\
+   && TARGET_FLOAT_FORMAT == IEEE_FLOAT_FORMAT			\
    && !LARGEST_EXPONENT_IS_NORMAL (GET_MODE_BITSIZE (MODE)))
 #endif
 
 #ifndef MODE_HAS_INFINITIES
-#define MODE_HAS_INFINITIES(MODE)                                \
-  (FLOAT_MODE_P (MODE)                                                \
-   && TARGET_FLOAT_FORMAT == IEEE_FLOAT_FORMAT                        \
+#define MODE_HAS_INFINITIES(MODE)				\
+  (FLOAT_MODE_P (MODE)						\
+   && TARGET_FLOAT_FORMAT == IEEE_FLOAT_FORMAT			\
    && !LARGEST_EXPONENT_IS_NORMAL (GET_MODE_BITSIZE (MODE)))
 #endif
 
@@ -659,9 +659,9 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
 #endif
 
 #ifndef MODE_HAS_SIGN_DEPENDENT_ROUNDING
-#define MODE_HAS_SIGN_DEPENDENT_ROUNDING(MODE)                        \
-  (FLOAT_MODE_P (MODE)                                                \
-   && TARGET_FLOAT_FORMAT == IEEE_FLOAT_FORMAT                        \
+#define MODE_HAS_SIGN_DEPENDENT_ROUNDING(MODE)			\
+  (FLOAT_MODE_P (MODE)						\
+   && TARGET_FLOAT_FORMAT == IEEE_FLOAT_FORMAT			\
    && !ROUND_TOWARDS_ZERO)
 #endif
 
@@ -722,16 +722,16 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
    technique of defining constraints in the machine description.
    tm_p.h will define those macros that machine-independent code
    still uses.  */
-#if  !defined CONSTRAINT_LEN                        \
-  && !defined REG_CLASS_FROM_LETTER                \
-  && !defined REG_CLASS_FROM_CONSTRAINT                \
-  && !defined CONST_OK_FOR_LETTER_P                \
-  && !defined CONST_OK_FOR_CONSTRAINT_P                \
-  && !defined CONST_DOUBLE_OK_FOR_LETTER_P        \
+#if  !defined CONSTRAINT_LEN			\
+  && !defined REG_CLASS_FROM_LETTER		\
+  && !defined REG_CLASS_FROM_CONSTRAINT		\
+  && !defined CONST_OK_FOR_LETTER_P		\
+  && !defined CONST_OK_FOR_CONSTRAINT_P		\
+  && !defined CONST_DOUBLE_OK_FOR_LETTER_P	\
   && !defined CONST_DOUBLE_OK_FOR_CONSTRAINT_P  \
-  && !defined EXTRA_CONSTRAINT                        \
-  && !defined EXTRA_CONSTRAINT_STR                \
-  && !defined EXTRA_MEMORY_CONSTRAINT                \
+  && !defined EXTRA_CONSTRAINT			\
+  && !defined EXTRA_CONSTRAINT_STR		\
+  && !defined EXTRA_MEMORY_CONSTRAINT		\
   && !defined EXTRA_ADDRESS_CONSTRAINT
 
 #define USE_MD_CONSTRAINTS

@@ -58,8 +58,8 @@
   (match_code "mem")
 {
   return (GET_CODE (op) == MEM
-          && (GET_CODE (XEXP (op, 0)) == SYMBOL_REF
-              || GET_CODE (XEXP (op, 0)) == REG));
+	  && (GET_CODE (XEXP (op, 0)) == SYMBOL_REF
+	      || GET_CODE (XEXP (op, 0)) == REG));
 })
 
 ;; Returns TRUE if OP is a valid operand of a DImode operation.
@@ -119,6 +119,6 @@
   return
     (GET_CODE (op) == REG
      || (GET_CODE (op) == CONST_INT
-         && INTVAL (op) >= -16
-         && INTVAL (op) <=  15));
+	 && INTVAL (op) >= -16
+	 && INTVAL (op) <=  15));
 })

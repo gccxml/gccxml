@@ -35,9 +35,9 @@ extern const char *arm_strip_name_encoding (const char *);
 extern void arm_asm_output_labelref (FILE *, const char *);
 extern unsigned long arm_current_func_type (void);
 extern HOST_WIDE_INT arm_compute_initial_elimination_offset (unsigned int,
-                                                             unsigned int);
+							     unsigned int);
 extern HOST_WIDE_INT thumb_compute_initial_elimination_offset (unsigned int,
-                                                               unsigned int);
+							       unsigned int);
 extern unsigned int arm_dbx_register_number (unsigned int);
 extern void arm_output_fn_unwind (FILE *, bool);
   
@@ -51,9 +51,9 @@ extern bool arm_vector_mode_supported_p (enum machine_mode);
 extern int arm_hard_regno_mode_ok (unsigned int, enum machine_mode);
 extern int const_ok_for_arm (HOST_WIDE_INT);
 extern int arm_split_constant (RTX_CODE, enum machine_mode, rtx,
-                               HOST_WIDE_INT, rtx, rtx, int);
+			       HOST_WIDE_INT, rtx, rtx, int);
 extern RTX_CODE arm_canonicalize_comparison (RTX_CODE, enum machine_mode,
-                                             rtx *);
+					     rtx *);
 extern int legitimate_pic_operand_p (rtx);
 extern rtx legitimize_pic_address (rtx, enum machine_mode, rtx);
 extern rtx legitimize_tls_address (rtx, rtx);
@@ -63,11 +63,11 @@ extern int thumb_legitimate_offset_p (enum machine_mode, HOST_WIDE_INT);
 extern rtx arm_legitimize_address (rtx, rtx, enum machine_mode);
 extern rtx thumb_legitimize_address (rtx, rtx, enum machine_mode);
 extern rtx thumb_legitimize_reload_address (rtx *, enum machine_mode, int, int,
-                                            int);
+					    int);
 extern int arm_const_double_rtx (rtx);
 extern int neg_const_double_rtx_ok_for_fpa (rtx);
 extern enum reg_class coproc_secondary_reload_class (enum machine_mode, rtx,
-                                                     bool);
+						     bool);
 extern bool arm_tls_referenced_p (rtx);
 
 extern int cirrus_memory_offset (rtx);
@@ -87,13 +87,13 @@ extern const char *emit_ldm_seq (rtx *, int);
 extern int store_multiple_sequence (rtx *, int, int *, int *, HOST_WIDE_INT *);
 extern const char * emit_stm_seq (rtx *, int);
 extern rtx arm_gen_load_multiple (int, int, rtx, int, int,
-                                  rtx, HOST_WIDE_INT *);
+				  rtx, HOST_WIDE_INT *);
 extern rtx arm_gen_store_multiple (int, int, rtx, int, int,
-                                   rtx, HOST_WIDE_INT *);
+				   rtx, HOST_WIDE_INT *);
 extern int arm_gen_movmemqi (rtx *);
 extern enum machine_mode arm_select_cc_mode (RTX_CODE, rtx, rtx);
 extern enum machine_mode arm_select_dominance_cc_mode (rtx, rtx,
-                                                       HOST_WIDE_INT);
+						       HOST_WIDE_INT);
 extern rtx arm_gen_compare_reg (RTX_CODE, rtx, rtx);
 extern rtx arm_gen_return_addr_mask (void);
 extern void arm_reload_in_hi (rtx *);

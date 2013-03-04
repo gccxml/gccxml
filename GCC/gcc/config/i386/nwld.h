@@ -21,10 +21,10 @@ along with GCC; see the file COPYING.  If not, write to
 the Free Software Foundation, 51 Franklin Street, Fifth Floor,
 Boston, MA 02110-1301, USA.  */
 
-#undef        LIB_SPEC
+#undef	LIB_SPEC
 #define LIB_SPEC "-lc --def-file libc.def%s"
 
-#undef        LIBGCC_SPEC
+#undef	LIBGCC_SPEC
 #define LIBGCC_SPEC "-lgcc %{!static-libgcc:--def-file libgcc.def%s}"
 
 #undef  LINKER_NAME
@@ -32,19 +32,19 @@ Boston, MA 02110-1301, USA.  */
 
 #undef  LINK_SPEC
 #define LINK_SPEC "--format:NLM --extensions:GNU" \
-        " %{static:%{!nostdlib:%{!nodefaultlib:%eStatic linking is not supported.\n}}}"
+	" %{static:%{!nostdlib:%{!nodefaultlib:%eStatic linking is not supported.\n}}}"
 
 #undef  LINK_GCC_C_SEQUENCE_SPEC
 #define LINK_GCC_C_SEQUENCE_SPEC "%L %G"
 
 /* In order to permit the linker to derive the output filename from the first
    input file, put the common startup code as the last object. */
-#undef        STARTFILE_SPEC
+#undef	STARTFILE_SPEC
 #define STARTFILE_SPEC ""
 
-#undef        ENDFILE_SPEC
+#undef	ENDFILE_SPEC
 #define ENDFILE_SPEC "crt0%O%s ../imports/%{!posix:libc}%{posix:posix}pre.gcc%O%s" \
-        " --def-file %{!posix:libc}%{posix:posix}pre.def%s"
+	" --def-file %{!posix:libc}%{posix:posix}pre.def%s"
 
 #define DRIVER_SELF_SPECS "%{!static-libgcc:-shared-libgcc}"
 

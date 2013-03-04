@@ -23,7 +23,7 @@ Boston, MA 02110-1301, USA.
 
    To use this file, make up a line like that in config.gcc:
 
-        tm_file="$tm_file elfos.h svr4.h MACHINE/svr4.h"
+	tm_file="$tm_file elfos.h svr4.h MACHINE/svr4.h"
 
    where MACHINE is replaced by the name of the basic hardware that you
    are targeting for.  Then, in the file MACHINE/svr4.h, put any really
@@ -42,18 +42,18 @@ Boston, MA 02110-1301, USA.
    thing as a -T option for svr4.  */
 
 #undef  SWITCH_TAKES_ARG
-#define SWITCH_TAKES_ARG(CHAR)                \
-  (DEFAULT_SWITCH_TAKES_ARG (CHAR)        \
-   || (CHAR) == 'h'                        \
-   || (CHAR) == 'x'                        \
+#define SWITCH_TAKES_ARG(CHAR)		\
+  (DEFAULT_SWITCH_TAKES_ARG (CHAR)	\
+   || (CHAR) == 'h'			\
+   || (CHAR) == 'x'			\
    || (CHAR) == 'z')
 
 /* This defines which multi-letter switches take arguments.  On svr4,
    there are no such switches except those implemented by GCC itself.  */
 
-#define WORD_SWITCH_TAKES_ARG(STR)                        \
- (DEFAULT_WORD_SWITCH_TAKES_ARG (STR)                        \
-  && strcmp (STR, "Tdata") && strcmp (STR, "Ttext")        \
+#define WORD_SWITCH_TAKES_ARG(STR)			\
+ (DEFAULT_WORD_SWITCH_TAKES_ARG (STR)			\
+  && strcmp (STR, "Tdata") && strcmp (STR, "Ttext")	\
   && strcmp (STR, "Tbss"))
 
 /* Provide an ASM_SPEC appropriate for svr4.  Here we try to support as
@@ -100,7 +100,7 @@ Boston, MA 02110-1301, USA.
 /* Provide a LIB_SPEC appropriate for svr4.  Here we tack on the default
    standard C library (unless we are building a shared library).  */
 
-#undef        LIB_SPEC
+#undef	LIB_SPEC
 #define LIB_SPEC "%{!shared:%{!symbolic:-lc}}"
 
 /* Provide an ENDFILE_SPEC appropriate for svr4.  Here we tack on our own
@@ -135,27 +135,27 @@ Boston, MA 02110-1301, USA.
    When the -G link option is used (-shared and -symbolic) a final link is
    not being done.  */
 
-#undef        LINK_SPEC
+#undef	LINK_SPEC
 #ifdef CROSS_COMPILE
 #define LINK_SPEC "%{h*} %{v:-V} \
-                   %{b} \
-                   %{static:-dn -Bstatic} \
-                   %{shared:-G -dy -z text} \
-                   %{symbolic:-Bsymbolic -G -dy -z text} \
-                   %{G:-G} \
-                   %{YP,*} \
-                   %{Qy:} %{!Qn:-Qy}"
+		   %{b} \
+		   %{static:-dn -Bstatic} \
+		   %{shared:-G -dy -z text} \
+		   %{symbolic:-Bsymbolic -G -dy -z text} \
+		   %{G:-G} \
+		   %{YP,*} \
+		   %{Qy:} %{!Qn:-Qy}"
 #else
 #define LINK_SPEC "%{h*} %{v:-V} \
-                   %{b} \
-                   %{static:-dn -Bstatic} \
-                   %{shared:-G -dy -z text} \
-                   %{symbolic:-Bsymbolic -G -dy -z text} \
-                   %{G:-G} \
-                   %{YP,*} \
-                   %{!YP,*:%{p:-Y P,/usr/ccs/lib/libp:/usr/lib/libp:/usr/ccs/lib:/usr/lib} \
-                    %{!p:-Y P,/usr/ccs/lib:/usr/lib}} \
-                   %{Qy:} %{!Qn:-Qy}"
+		   %{b} \
+		   %{static:-dn -Bstatic} \
+		   %{shared:-G -dy -z text} \
+		   %{symbolic:-Bsymbolic -G -dy -z text} \
+		   %{G:-G} \
+		   %{YP,*} \
+		   %{!YP,*:%{p:-Y P,/usr/ccs/lib/libp:/usr/lib/libp:/usr/ccs/lib:/usr/lib} \
+		    %{!p:-Y P,/usr/ccs/lib:/usr/lib}} \
+		   %{Qy:} %{!Qn:-Qy}"
 #endif
 
 /* Gcc automatically adds in one of the files /usr/ccs/lib/values-Xc.o
@@ -168,14 +168,14 @@ Boston, MA 02110-1301, USA.
    Specifically, they decide (based upon the value of `_lib_version')
    if they will act in a strictly ANSI conforming manner or not.  */
 
-#undef        STARTFILE_SPEC
+#undef	STARTFILE_SPEC
 #define STARTFILE_SPEC "%{!shared: \
-                         %{!symbolic: \
-                          %{pg:gcrt1.o%s}%{!pg:%{p:mcrt1.o%s}%{!p:crt1.o%s}}}}\
-                        %{pg:gcrti.o%s}%{!pg:crti.o%s} \
-                        %{ansi:values-Xc.o%s} \
-                        %{!ansi:values-Xa.o%s} \
-                         crtbegin.o%s"
+			 %{!symbolic: \
+			  %{pg:gcrt1.o%s}%{!pg:%{p:mcrt1.o%s}%{!p:crt1.o%s}}}}\
+			%{pg:gcrti.o%s}%{!pg:crti.o%s} \
+			%{ansi:values-Xc.o%s} \
+			%{!ansi:values-Xa.o%s} \
+ 			crtbegin.o%s"
 
 /* The numbers used to denote specific machine registers in the System V
    Release 4 DWARF debugging information are quite likely to be totally

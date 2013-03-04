@@ -36,8 +36,8 @@ and inode numbers.
 
 BUGS
 
-        (FIXME: does this work for networks?)
-        It works for NFS, which assigns a device number to each mount.
+	(FIXME: does this work for networks?)
+	It works for NFS, which assigns a device number to each mount.
 
 */
 

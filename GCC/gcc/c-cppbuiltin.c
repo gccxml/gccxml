@@ -29,9 +29,9 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
 #include "c-common.h"
 #include "c-pragma.h"
 #include "output.h"
-#include "except.h"                /* For USING_SJLJ_EXCEPTIONS.  */
+#include "except.h"		/* For USING_SJLJ_EXCEPTIONS.  */
 #include "toplev.h"
-#include "tm_p.h"                /* Target prototypes.  */
+#include "tm_p.h"		/* Target prototypes.  */
 #include "target.h"
 
 #ifndef TARGET_OS_CPP_BUILTINS
@@ -49,19 +49,19 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
 /* Non-static as some targets don't use it.  */
 void builtin_define_std (const char *) ATTRIBUTE_UNUSED;
 static void builtin_define_with_value_n (const char *, const char *,
-                                         size_t);
+					 size_t);
 static void builtin_define_with_int_value (const char *, HOST_WIDE_INT);
 static void builtin_define_with_hex_fp_value (const char *, tree,
-                                              int, const char *,
-                                              const char *,
-                                              const char *);
+					      int, const char *,
+					      const char *,
+					      const char *);
 static void builtin_define_stdint_macros (void);
 static void builtin_define_type_max (const char *, tree, int);
 static void builtin_define_type_precision (const char *, tree);
 static void builtin_define_float_constants (const char *, 
-                                            const char *,
-                                            const char *,
-                                            tree);
+					    const char *,
+					    const char *,
+					    tree);
 static void define__GNUC__ (void);
 
 /* Define NAME with value TYPE precision.  */
@@ -75,9 +75,9 @@ builtin_define_type_precision (const char *name, tree type)
    and FP_CAST. */
 static void
 builtin_define_float_constants (const char *name_prefix, 
-                                const char *fp_suffix, 
-                                const char *fp_cast, 
-                                tree type)
+		                const char *fp_suffix, 
+				const char *fp_cast, 
+				tree type)
 {
   /* Used to convert radix-based values to base 10 values in several cases.
 
@@ -111,8 +111,8 @@ builtin_define_float_constants (const char *name_prefix,
      with q decimal digits can be rounded into a floating-point number with
      p radix b digits and back again without change to the q decimal digits,
 
-        p log10 b                        if b is a power of 10
-        floor((p - 1) log10 b)                otherwise
+	p log10 b			if b is a power of 10
+	floor((p - 1) log10 b)		otherwise
   */
   dig = (fmt->p - 1) * log10_b;
   sprintf (name, "__%s_DIG__", name_prefix);
@@ -125,8 +125,8 @@ builtin_define_float_constants (const char *name_prefix,
 
   /* The minimum negative int x such that 10**x is a normalized float,
 
-          ceil (log10 (b ** (emin - 1)))
-        = ceil (log10 (b) * (emin - 1))
+	  ceil (log10 (b ** (emin - 1)))
+	= ceil (log10 (b) * (emin - 1))
 
      Recall that emin is negative, so the integer truncation calculates
      the ceiling, not the floor, in this case.  */
@@ -142,9 +142,9 @@ builtin_define_float_constants (const char *name_prefix,
   /* The maximum int x such that 10**x is in the range of representable
      finite floating-point numbers,
 
-          floor (log10((1 - b**-p) * b**emax))
-        = floor (log10(1 - b**-p) + log10(b**emax))
-        = floor (log10(1 - b**-p) + log10(b)*emax)
+	  floor (log10((1 - b**-p) * b**emax))
+	= floor (log10(1 - b**-p) + log10(b**emax))
+	= floor (log10(1 - b**-p) + log10(b)*emax)
 
      The safest thing to do here is to just compute this number.  But since
      we don't link cc1 with libm, we cannot.  We could implement log10 here
@@ -173,8 +173,8 @@ builtin_define_float_constants (const char *name_prefix,
      can be rounded to n decimal digits and back again without change to
      the value.
 
-        p * log10(b)                        if b is a power of 10
-        ceil(1 + p * log10(b))                otherwise
+	p * log10(b)			if b is a power of 10
+	ceil(1 + p * log10(b))		otherwise
 
      The only macro we care about is this number for the widest supported
      floating type, but we want this value for rendering constants below.  */
@@ -206,13 +206,13 @@ builtin_define_float_constants (const char *name_prefix,
     sprintf (p, "p%d", fmt->emax * fmt->log2_b);
     if (fmt->pnan < fmt->p)
       {
-        /* This is an IBM extended double format made up of two IEEE
-           doubles.  The value of the long double is the sum of the
-           values of the two parts.  The most significant part is
-           required to be the value of the long double rounded to the
-           nearest double.  Rounding means we need a slightly smaller
-           value for LDBL_MAX.  */
-        buf[4 + fmt->pnan / 4] = "7bde"[fmt->pnan % 4];
+	/* This is an IBM extended double format made up of two IEEE
+	   doubles.  The value of the long double is the sum of the
+	   values of the two parts.  The most significant part is
+	   required to be the value of the long double rounded to the
+	   nearest double.  Rounding means we need a slightly smaller
+	   value for LDBL_MAX.  */
+	buf[4 + fmt->pnan / 4] = "7bde"[fmt->pnan % 4];
       }
   }
   sprintf (name, "__%s_MAX__", name_prefix);
@@ -243,7 +243,7 @@ builtin_define_float_constants (const char *name_prefix,
     {
       sprintf (buf, "0x1p%d", (fmt->emin - fmt->p) * fmt->log2_b);
       builtin_define_with_hex_fp_value (name, type, decimal_dig,
-                                        buf, fp_suffix, fp_cast);
+					buf, fp_suffix, fp_cast);
     }
   else
     {
@@ -257,7 +257,7 @@ builtin_define_float_constants (const char *name_prefix,
   /* For C++ std::numeric_limits<T>::has_infinity.  */
   sprintf (name, "__%s_HAS_INFINITY__", name_prefix);
   builtin_define_with_int_value (name,
-                                 MODE_HAS_INFINITIES (TYPE_MODE (type)));
+				 MODE_HAS_INFINITIES (TYPE_MODE (type)));
   /* For C++ std::numeric_limits<T>::has_quiet_NaN.  We do not have a
      predicate to distinguish a target that has both quiet and
      signalling NaNs from a target that has only quiet NaNs or only
@@ -270,8 +270,8 @@ builtin_define_float_constants (const char *name_prefix,
 /* Define __DECx__ constants for TYPE using NAME_PREFIX and SUFFIX. */
 static void
 builtin_define_decimal_float_constants (const char *name_prefix, 
-                                        const char *suffix, 
-                                        tree type)
+					const char *suffix, 
+					tree type)
 {
   const struct real_format *fmt;
   char name[64], buf[128], *p;
@@ -304,7 +304,7 @@ builtin_define_decimal_float_constants (const char *name_prefix,
     {
       *p++ = '9';
       if (digits == fmt->p)
-        *p++ = '.';
+	*p++ = '.';
     }
   *p = 0;
   /* fmt->p plus 1, to account for the decimal point.  */
@@ -324,7 +324,7 @@ builtin_define_decimal_float_constants (const char *name_prefix,
     {
       *p++ = '0';
       if (digits == fmt->p)
-        *p++ = '.';
+	*p++ = '.';
     }
   *p = 0;
   sprintf (&buf[fmt->p], "1E%d%s", fmt->emin, suffix); 
@@ -362,7 +362,7 @@ define__GNUC__ (void)
       gcc_assert (ISDIGIT (v[1]));
       q = ++v;
       while (ISDIGIT (*v))
-        v++;
+	v++;
       builtin_define_with_value_n ("__GNUC_PATCHLEVEL__", q, v - q);
     }
   else
@@ -404,11 +404,11 @@ c_cpp_builtins (cpp_reader *pfile)
   if (c_dialect_cxx ())
     {
       if (flag_weak && SUPPORTS_ONE_ONLY)
-        cpp_define (pfile, "__GXX_WEAK__=1");
+	cpp_define (pfile, "__GXX_WEAK__=1");
       else
-        cpp_define (pfile, "__GXX_WEAK__=0");
+	cpp_define (pfile, "__GXX_WEAK__=0");
       if (warn_deprecated)
-        cpp_define (pfile, "__DEPRECATED");
+	cpp_define (pfile, "__DEPRECATED");
     }
   /* Note that we define this for C as well, so that we know if
      __attribute__((cleanup)) will interface with EH.  */
@@ -420,7 +420,7 @@ c_cpp_builtins (cpp_reader *pfile)
   if (flag_abi_version == 0)
     /* Use a very large value so that:
 
-         #if __GXX_ABI_VERSION >= <value for version X>
+	 #if __GXX_ABI_VERSION >= <value for version X>
 
        will work whether the user explicitly says "-fabi-version=x" or
        "-fabi-version=0".  Do not use INT_MAX because that will be
@@ -433,7 +433,7 @@ c_cpp_builtins (cpp_reader *pfile)
   else
     /* Newer versions have values 1002, 1003, ....  */
     builtin_define_with_int_value ("__GXX_ABI_VERSION",
-                                   1000 + flag_abi_version);
+				   1000 + flag_abi_version);
 
   /* libgcc needs to know this.  */
   if (USING_SJLJ_EXCEPTIONS)
@@ -455,7 +455,7 @@ c_cpp_builtins (cpp_reader *pfile)
   /* float.h needs to know these.  */
 
   builtin_define_with_int_value ("__FLT_EVAL_METHOD__",
-                                 TARGET_FLT_EVAL_METHOD);
+				 TARGET_FLT_EVAL_METHOD);
 
   /* And decfloat.h needs this.  */
   builtin_define_with_int_value ("__DEC_EVAL_METHOD__",
@@ -591,9 +591,9 @@ builtin_define_std (const char *macro)
   if (!( *p == '_' && (p[1] == '_' || ISUPPER (p[1]))))
     {
       if (*p != '_')
-        *--p = '_';
+	*--p = '_';
       if (p[1] != '_')
-        *--p = '_';
+	*--p = '_';
     }
   cpp_define (parse_in, p);
 
@@ -602,15 +602,15 @@ builtin_define_std (const char *macro)
     {
       /* Define the macro with leading and following __.  */
       if (q[-1] != '_')
-        *q++ = '_';
+	*q++ = '_';
       if (q[-2] != '_')
-        *q++ = '_';
+	*q++ = '_';
       *q = '\0';
       cpp_define (parse_in, p);
 
       /* Finally, define the original macro if permitted.  */
       if (!flag_iso)
-        cpp_define (parse_in, macro);
+	cpp_define (parse_in, macro);
     }
 }
 
@@ -675,10 +675,10 @@ builtin_define_with_int_value (const char *macro, HOST_WIDE_INT value)
 /* Pass an object-like macro a hexadecimal floating-point value.  */
 static void
 builtin_define_with_hex_fp_value (const char *macro,
-                                  tree type ATTRIBUTE_UNUSED, int digits,
-                                  const char *hex_str, 
-                                  const char *fp_suffix,
-                                  const char *fp_cast)
+				  tree type ATTRIBUTE_UNUSED, int digits,
+				  const char *hex_str, 
+				  const char *fp_suffix,
+				  const char *fp_cast)
 {
   REAL_VALUE_TYPE real;
   char dec_str[64], buf1[256], buf2[256];
@@ -714,11 +714,11 @@ builtin_define_type_max (const char *macro, tree type, int is_long)
 {
   static const char *const values[]
     = { "127", "255",
-        "32767", "65535",
-        "2147483647", "4294967295",
-        "9223372036854775807", "18446744073709551615",
-        "170141183460469231731687303715884105727",
-        "340282366920938463463374607431768211455" };
+	"32767", "65535",
+	"2147483647", "4294967295",
+	"9223372036854775807", "18446744073709551615",
+	"170141183460469231731687303715884105727",
+	"340282366920938463463374607431768211455" };
   static const char *const suffixes[] = { "", "U", "L", "UL", "LL", "ULL" };
 
   const char *value, *suffix;
@@ -730,11 +730,11 @@ builtin_define_type_max (const char *macro, tree type, int is_long)
      precisions that we support, so it's really a waste of time.  */
   switch (TYPE_PRECISION (type))
     {
-    case 8:        idx = 0; break;
-    case 16:        idx = 2; break;
-    case 32:        idx = 4; break;
-    case 64:        idx = 6; break;
-    case 128:        idx = 8; break;
+    case 8:	idx = 0; break;
+    case 16:	idx = 2; break;
+    case 32:	idx = 4; break;
+    case 64:	idx = 6; break;
+    case 128:	idx = 8; break;
     default:    gcc_unreachable ();
     }
 

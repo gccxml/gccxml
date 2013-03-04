@@ -23,15 +23,15 @@ Boston, MA 02110-1301, USA.  */
 #define SUBTARGET_EXTRA_SPECS \
   { "fbsd_dynamic_linker", FBSD_DYNAMIC_LINKER }
 
-#define LINK_SPEC "                                                        \
-  %{p:%nconsider using `-pg' instead of `-p' with gprof(1)}                \
-  %{assert*} %{R*} %{rpath*} %{defsym*}                                        \
-  %{shared:-Bshareable %{h*} %{soname*}}                                \
-  %{symbolic:-Bsymbolic}                                                \
-  %{!shared:                                                                \
-    %{!static:                                                                \
-      %{rdynamic:-export-dynamic}                                        \
-      %{!dynamic-linker:-dynamic-linker %(fbsd_dynamic_linker) }}        \
+#define LINK_SPEC "							\
+  %{p:%nconsider using `-pg' instead of `-p' with gprof(1)}		\
+  %{assert*} %{R*} %{rpath*} %{defsym*}					\
+  %{shared:-Bshareable %{h*} %{soname*}}				\
+  %{symbolic:-Bsymbolic}						\
+  %{!shared:								\
+    %{!static:								\
+      %{rdynamic:-export-dynamic}					\
+      %{!dynamic-linker:-dynamic-linker %(fbsd_dynamic_linker) }}	\
     %{static:-Bstatic}}"
 
 
@@ -51,6 +51,6 @@ Boston, MA 02110-1301, USA.  */
 #undef  TARGET_VERSION
 #define TARGET_VERSION fprintf (stderr, " (FreeBSD/IA-64 ELF)");
 
-#define TARGET_ELF                1
+#define TARGET_ELF		1
 
 #define JMP_BUF_SIZE  76

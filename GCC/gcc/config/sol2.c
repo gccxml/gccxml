@@ -45,56 +45,56 @@ solaris_insert_attributes (tree decl, tree *attributes)
   if (solaris_pending_aligns != NULL && TREE_CODE (decl) == VAR_DECL)
     for (x = &solaris_pending_aligns; *x; x = &TREE_CHAIN (*x))
       {
-        tree name = TREE_PURPOSE (*x);
-        tree value = TREE_VALUE (*x);
-        if (DECL_NAME (decl) == name)
-          {
-            if (lookup_attribute ("aligned", DECL_ATTRIBUTES (decl))
-                || lookup_attribute ("aligned", *attributes))
-              warning (0, "ignoring %<#pragma align%> for explicitly "
-                       "aligned %q+D", decl);
-            else
-              *attributes = tree_cons (get_identifier ("aligned"), value,
-                                       *attributes);
-            next = TREE_CHAIN (*x);
-            ggc_free (*x);
-            *x = next;
-            break;
-          }
+	tree name = TREE_PURPOSE (*x);
+	tree value = TREE_VALUE (*x);
+	if (DECL_NAME (decl) == name)
+	  {
+	    if (lookup_attribute ("aligned", DECL_ATTRIBUTES (decl))
+		|| lookup_attribute ("aligned", *attributes))
+	      warning (0, "ignoring %<#pragma align%> for explicitly "
+		       "aligned %q+D", decl);
+	    else
+	      *attributes = tree_cons (get_identifier ("aligned"), value,
+				       *attributes);
+	    next = TREE_CHAIN (*x);
+	    ggc_free (*x);
+	    *x = next;
+	    break;
+	  }
       }
 
   if (solaris_pending_inits != NULL && TREE_CODE (decl) == FUNCTION_DECL)
     for (x = &solaris_pending_inits; *x; x = &TREE_CHAIN (*x))
       {
-        tree name = TREE_PURPOSE (*x);
-        if (DECL_NAME (decl) == name)
-          {
-            *attributes = tree_cons (get_identifier ("init"), NULL,
-                                     *attributes);
-            *attributes = tree_cons (get_identifier ("used"), NULL,
-                                     *attributes);
-            next = TREE_CHAIN (*x);
-            ggc_free (*x);
-            *x = next;
-            break;
-          }
+	tree name = TREE_PURPOSE (*x);
+	if (DECL_NAME (decl) == name)
+	  {
+	    *attributes = tree_cons (get_identifier ("init"), NULL,
+				     *attributes);
+	    *attributes = tree_cons (get_identifier ("used"), NULL,
+				     *attributes);
+	    next = TREE_CHAIN (*x);
+	    ggc_free (*x);
+	    *x = next;
+	    break;
+	  }
       }
 
   if (solaris_pending_finis != NULL && TREE_CODE (decl) == FUNCTION_DECL)
     for (x = &solaris_pending_finis; *x; x = &TREE_CHAIN (*x))
       {
-        tree name = TREE_PURPOSE (*x);
-        if (DECL_NAME (decl) == name)
-          {
-            *attributes = tree_cons (get_identifier ("fini"), NULL,
-                                     *attributes);
-            *attributes = tree_cons (get_identifier ("used"), NULL,
-                                     *attributes);
-            next = TREE_CHAIN (*x);
-            ggc_free (*x);
-            *x = next;
-            break;
-          }
+	tree name = TREE_PURPOSE (*x);
+	if (DECL_NAME (decl) == name)
+	  {
+	    *attributes = tree_cons (get_identifier ("fini"), NULL,
+				     *attributes);
+	    *attributes = tree_cons (get_identifier ("used"), NULL,
+				     *attributes);
+	    next = TREE_CHAIN (*x);
+	    ggc_free (*x);
+	    *x = next;
+	    break;
+	  }
       }
 }
 

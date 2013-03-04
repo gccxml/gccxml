@@ -134,41 +134,41 @@ extern short int __get_eh_table_version (struct exception_descriptor *);
    because the sizes for those types can be configured to be anything.
    Instead we use the following special type names.  */
 
-typedef                 int QItype        __attribute__ ((mode (QI)));
-typedef unsigned int UQItype        __attribute__ ((mode (QI)));
-typedef                 int HItype        __attribute__ ((mode (HI)));
-typedef unsigned int UHItype        __attribute__ ((mode (HI)));
+typedef		 int QItype	__attribute__ ((mode (QI)));
+typedef unsigned int UQItype	__attribute__ ((mode (QI)));
+typedef		 int HItype	__attribute__ ((mode (HI)));
+typedef unsigned int UHItype	__attribute__ ((mode (HI)));
 #if MIN_UNITS_PER_WORD > 1
 /* These typedefs are usually forbidden on dsp's with UNITS_PER_WORD 1.  */
-typedef          int SItype        __attribute__ ((mode (SI)));
-typedef unsigned int USItype        __attribute__ ((mode (SI)));
+typedef 	 int SItype	__attribute__ ((mode (SI)));
+typedef unsigned int USItype	__attribute__ ((mode (SI)));
 #if LONG_LONG_TYPE_SIZE > 32
 /* These typedefs are usually forbidden on archs with UNITS_PER_WORD 2.  */
-typedef                 int DItype        __attribute__ ((mode (DI)));
-typedef unsigned int UDItype        __attribute__ ((mode (DI)));
+typedef		 int DItype	__attribute__ ((mode (DI)));
+typedef unsigned int UDItype	__attribute__ ((mode (DI)));
 #if MIN_UNITS_PER_WORD > 4
 /* These typedefs are usually forbidden on archs with UNITS_PER_WORD 4.  */
-typedef                 int TItype        __attribute__ ((mode (TI)));
-typedef unsigned int UTItype        __attribute__ ((mode (TI)));
+typedef		 int TItype	__attribute__ ((mode (TI)));
+typedef unsigned int UTItype	__attribute__ ((mode (TI)));
 #endif
 #endif
 #endif
 
 #if LIBGCC2_HAS_SF_MODE
-typedef         float SFtype        __attribute__ ((mode (SF)));
-typedef _Complex float SCtype        __attribute__ ((mode (SC)));
+typedef 	float SFtype	__attribute__ ((mode (SF)));
+typedef _Complex float SCtype	__attribute__ ((mode (SC)));
 #endif
 #if LIBGCC2_HAS_DF_MODE
-typedef                float DFtype        __attribute__ ((mode (DF)));
-typedef _Complex float DCtype        __attribute__ ((mode (DC)));
+typedef		float DFtype	__attribute__ ((mode (DF)));
+typedef _Complex float DCtype	__attribute__ ((mode (DC)));
 #endif
 #if LIBGCC2_HAS_XF_MODE
-typedef                float XFtype        __attribute__ ((mode (XF)));
-typedef _Complex float XCtype        __attribute__ ((mode (XC)));
+typedef		float XFtype	__attribute__ ((mode (XF)));
+typedef _Complex float XCtype	__attribute__ ((mode (XC)));
 #endif
 #if LIBGCC2_HAS_TF_MODE
-typedef                float TFtype        __attribute__ ((mode (TF)));
-typedef _Complex float TCtype        __attribute__ ((mode (TC)));
+typedef		float TFtype	__attribute__ ((mode (TF)));
+typedef _Complex float TCtype	__attribute__ ((mode (TC)));
 #endif
 
 typedef int word_type __attribute__ ((mode (__word__)));
@@ -199,116 +199,116 @@ typedef int word_type __attribute__ ((mode (__word__)));
 
 #if LIBGCC2_UNITS_PER_WORD == 8
 #define W_TYPE_SIZE (8 * BITS_PER_UNIT)
-#define Wtype        DItype
-#define UWtype        UDItype
-#define HWtype        DItype
-#define UHWtype        UDItype
-#define DWtype        TItype
-#define UDWtype        UTItype
-#define __NW(a,b)        __ ## a ## di ## b
-#define __NDW(a,b)        __ ## a ## ti ## b
+#define Wtype	DItype
+#define UWtype	UDItype
+#define HWtype	DItype
+#define UHWtype	UDItype
+#define DWtype	TItype
+#define UDWtype	UTItype
+#define __NW(a,b)	__ ## a ## di ## b
+#define __NDW(a,b)	__ ## a ## ti ## b
 #define COMPAT_SIMODE_TRAPPING_ARITHMETIC
 #elif LIBGCC2_UNITS_PER_WORD == 4
 #define W_TYPE_SIZE (4 * BITS_PER_UNIT)
-#define Wtype        SItype
-#define UWtype        USItype
-#define HWtype        SItype
-#define UHWtype        USItype
-#define DWtype        DItype
-#define UDWtype        UDItype
-#define __NW(a,b)        __ ## a ## si ## b
-#define __NDW(a,b)        __ ## a ## di ## b
+#define Wtype	SItype
+#define UWtype	USItype
+#define HWtype	SItype
+#define UHWtype	USItype
+#define DWtype	DItype
+#define UDWtype	UDItype
+#define __NW(a,b)	__ ## a ## si ## b
+#define __NDW(a,b)	__ ## a ## di ## b
 #elif LIBGCC2_UNITS_PER_WORD == 2
 #define W_TYPE_SIZE (2 * BITS_PER_UNIT)
-#define Wtype        HItype
-#define UWtype        UHItype
-#define HWtype        HItype
-#define UHWtype        UHItype
-#define DWtype        SItype
-#define UDWtype        USItype
-#define __NW(a,b)        __ ## a ## hi ## b
-#define __NDW(a,b)        __ ## a ## si ## b
+#define Wtype	HItype
+#define UWtype	UHItype
+#define HWtype	HItype
+#define UHWtype	UHItype
+#define DWtype	SItype
+#define UDWtype	USItype
+#define __NW(a,b)	__ ## a ## hi ## b
+#define __NDW(a,b)	__ ## a ## si ## b
 #else
 #define W_TYPE_SIZE BITS_PER_UNIT
-#define Wtype        QItype
+#define Wtype	QItype
 #define UWtype  UQItype
-#define HWtype        QItype
-#define UHWtype        UQItype
-#define DWtype        HItype
-#define UDWtype        UHItype
-#define __NW(a,b)        __ ## a ## qi ## b
-#define __NDW(a,b)        __ ## a ## hi ## b
+#define HWtype	QItype
+#define UHWtype	UQItype
+#define DWtype	HItype
+#define UDWtype	UHItype
+#define __NW(a,b)	__ ## a ## qi ## b
+#define __NDW(a,b)	__ ## a ## hi ## b
 #endif
 
 #define Wtype_MAX ((Wtype)(((UWtype)1 << (W_TYPE_SIZE - 1)) - 1))
 #define Wtype_MIN (- Wtype_MAX - 1)
 
 #if W_TYPE_SIZE == 8
-# define Wtype_MAXp1_F        0x1p8f
+# define Wtype_MAXp1_F	0x1p8f
 #elif W_TYPE_SIZE == 16
-# define Wtype_MAXp1_F        0x1p16f
+# define Wtype_MAXp1_F	0x1p16f
 #elif W_TYPE_SIZE == 32
-# define Wtype_MAXp1_F        0x1p32f
+# define Wtype_MAXp1_F	0x1p32f
 #elif W_TYPE_SIZE == 64
-# define Wtype_MAXp1_F        0x1p64f
+# define Wtype_MAXp1_F	0x1p64f
 #else
 # error "expand the table"
 #endif
 
-#define __muldi3        __NDW(mul,3)
-#define __divdi3        __NDW(div,3)
-#define __udivdi3        __NDW(udiv,3)
-#define __moddi3        __NDW(mod,3)
-#define __umoddi3        __NDW(umod,3)
-#define __negdi2        __NDW(neg,2)
-#define __lshrdi3        __NDW(lshr,3)
-#define __ashldi3        __NDW(ashl,3)
-#define __ashrdi3        __NDW(ashr,3)
-#define __cmpdi2        __NDW(cmp,2)
-#define __ucmpdi2        __NDW(ucmp,2)
-#define __udivmoddi4        __NDW(udivmod,4)
-#define __fixunstfDI        __NDW(fixunstf,)
-#define __fixtfdi        __NDW(fixtf,)
-#define __fixunsxfDI        __NDW(fixunsxf,)
-#define __fixxfdi        __NDW(fixxf,)
-#define __fixunsdfDI        __NDW(fixunsdf,)
-#define __fixdfdi        __NDW(fixdf,)
-#define __fixunssfDI        __NDW(fixunssf,)
-#define __fixsfdi        __NDW(fixsf,)
-#define __floatdixf        __NDW(float,xf)
-#define __floatditf        __NDW(float,tf)
-#define __floatdidf        __NDW(float,df)
-#define __floatdisf        __NDW(float,sf)
-#define __floatundixf        __NDW(floatun,xf)
-#define __floatunditf        __NDW(floatun,tf)
-#define __floatundidf        __NDW(floatun,df)
-#define __floatundisf        __NDW(floatun,sf)
-#define __fixunsxfSI        __NW(fixunsxf,)
-#define __fixunstfSI        __NW(fixunstf,)
-#define __fixunsdfSI        __NW(fixunsdf,)
-#define __fixunssfSI        __NW(fixunssf,)
+#define __muldi3	__NDW(mul,3)
+#define __divdi3	__NDW(div,3)
+#define __udivdi3	__NDW(udiv,3)
+#define __moddi3	__NDW(mod,3)
+#define __umoddi3	__NDW(umod,3)
+#define __negdi2	__NDW(neg,2)
+#define __lshrdi3	__NDW(lshr,3)
+#define __ashldi3	__NDW(ashl,3)
+#define __ashrdi3	__NDW(ashr,3)
+#define __cmpdi2	__NDW(cmp,2)
+#define __ucmpdi2	__NDW(ucmp,2)
+#define __udivmoddi4	__NDW(udivmod,4)
+#define __fixunstfDI	__NDW(fixunstf,)
+#define __fixtfdi	__NDW(fixtf,)
+#define __fixunsxfDI	__NDW(fixunsxf,)
+#define __fixxfdi	__NDW(fixxf,)
+#define __fixunsdfDI	__NDW(fixunsdf,)
+#define __fixdfdi	__NDW(fixdf,)
+#define __fixunssfDI	__NDW(fixunssf,)
+#define __fixsfdi	__NDW(fixsf,)
+#define __floatdixf	__NDW(float,xf)
+#define __floatditf	__NDW(float,tf)
+#define __floatdidf	__NDW(float,df)
+#define __floatdisf	__NDW(float,sf)
+#define __floatundixf	__NDW(floatun,xf)
+#define __floatunditf	__NDW(floatun,tf)
+#define __floatundidf	__NDW(floatun,df)
+#define __floatundisf	__NDW(floatun,sf)
+#define __fixunsxfSI	__NW(fixunsxf,)
+#define __fixunstfSI	__NW(fixunstf,)
+#define __fixunsdfSI	__NW(fixunsdf,)
+#define __fixunssfSI	__NW(fixunssf,)
 
-#define __absvSI2        __NW(absv,2)
-#define __addvSI3        __NW(addv,3)
-#define __subvSI3        __NW(subv,3)
-#define __mulvSI3        __NW(mulv,3)
-#define __negvSI2        __NW(negv,2)
-#define __absvDI2        __NDW(absv,2)
-#define __addvDI3        __NDW(addv,3)
-#define __subvDI3        __NDW(subv,3)
-#define __mulvDI3        __NDW(mulv,3)
-#define __negvDI2        __NDW(negv,2)
+#define __absvSI2	__NW(absv,2)
+#define __addvSI3	__NW(addv,3)
+#define __subvSI3	__NW(subv,3)
+#define __mulvSI3	__NW(mulv,3)
+#define __negvSI2	__NW(negv,2)
+#define __absvDI2	__NDW(absv,2)
+#define __addvDI3	__NDW(addv,3)
+#define __subvDI3	__NDW(subv,3)
+#define __mulvDI3	__NDW(mulv,3)
+#define __negvDI2	__NDW(negv,2)
 
-#define __ffsSI2        __NW(ffs,2)
-#define __clzSI2        __NW(clz,2)
-#define __ctzSI2        __NW(ctz,2)
-#define __popcountSI2        __NW(popcount,2)
-#define __paritySI2        __NW(parity,2)
-#define __ffsDI2        __NDW(ffs,2)
-#define __clzDI2        __NDW(clz,2)
-#define __ctzDI2        __NDW(ctz,2)
-#define __popcountDI2        __NDW(popcount,2)
-#define __parityDI2        __NDW(parity,2)
+#define __ffsSI2	__NW(ffs,2)
+#define __clzSI2	__NW(clz,2)
+#define __ctzSI2	__NW(ctz,2)
+#define __popcountSI2	__NW(popcount,2)
+#define __paritySI2	__NW(parity,2)
+#define __ffsDI2	__NDW(ffs,2)
+#define __clzDI2	__NDW(clz,2)
+#define __ctzDI2	__NDW(ctz,2)
+#define __popcountDI2	__NDW(popcount,2)
+#define __parityDI2	__NDW(parity,2)
 
 extern DWtype __muldi3 (DWtype, DWtype);
 extern DWtype __divdi3 (DWtype, DWtype);

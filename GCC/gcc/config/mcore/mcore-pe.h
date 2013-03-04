@@ -23,11 +23,11 @@ Boston, MA 02110-1301, USA.  */
 /* Run-time Target Specification.  */
 #define TARGET_VERSION fputs (" (MCORE/pe)", stderr)
 
-#define TARGET_OS_CPP_BUILTINS()                                \
-  do                                                                \
-    {                                                                \
-      builtin_define ("__pe__");                                \
-    }                                                                \
+#define TARGET_OS_CPP_BUILTINS()				\
+  do								\
+    {								\
+      builtin_define ("__pe__");				\
+    }								\
   while (0)
 
 /* The MCore ABI says that bitfields are unsigned by default.  */
@@ -41,44 +41,44 @@ Boston, MA 02110-1301, USA.  */
 /* Computed in toplev.c.  */
 #undef  PREFERRED_DEBUGGING_TYPE
 
-#define READONLY_DATA_SECTION_ASM_OP        "\t.section .rdata"
+#define READONLY_DATA_SECTION_ASM_OP	"\t.section .rdata"
 
-#define MCORE_EXPORT_NAME(STREAM, NAME)                        \
-  do                                                        \
-    {                                                        \
-      fprintf (STREAM, "\t.section .drectve\n");        \
-      fprintf (STREAM, "\t.ascii \" -export:%s\"\n",        \
-               (* targetm.strip_name_encoding) (NAME));        \
-      in_section = NULL;                                \
-    }                                                        \
+#define MCORE_EXPORT_NAME(STREAM, NAME)			\
+  do							\
+    {							\
+      fprintf (STREAM, "\t.section .drectve\n");	\
+      fprintf (STREAM, "\t.ascii \" -export:%s\"\n",	\
+	       (* targetm.strip_name_encoding) (NAME));	\
+      in_section = NULL;				\
+    }							\
   while (0);
 
 /* Output the label for an initialized variable.  */
 #undef  ASM_DECLARE_OBJECT_NAME
-#define ASM_DECLARE_OBJECT_NAME(STREAM, NAME, DECL)                \
-  do                                                                \
-    {                                                                \
-      if (mcore_dllexport_name_p (NAME))                        \
-        {                                                        \
-          section *save_section = in_section;                        \
-          MCORE_EXPORT_NAME (STREAM, NAME);                        \
-          switch_to_section (save_section);                        \
-        }                                                        \
-      ASM_OUTPUT_LABEL ((STREAM), (NAME));                        \
-    }                                                                \
+#define ASM_DECLARE_OBJECT_NAME(STREAM, NAME, DECL)		\
+  do								\
+    {								\
+      if (mcore_dllexport_name_p (NAME))			\
+        {							\
+	  section *save_section = in_section;			\
+	  MCORE_EXPORT_NAME (STREAM, NAME);			\
+	  switch_to_section (save_section);			\
+        }							\
+      ASM_OUTPUT_LABEL ((STREAM), (NAME));			\
+    }								\
   while (0)
 
 /* Output a function label definition.  */
-#define ASM_DECLARE_FUNCTION_NAME(STREAM, NAME, DECL)                \
-  do                                                                \
-    {                                                                \
-      if (mcore_dllexport_name_p (NAME))                        \
-        {                                                        \
-          MCORE_EXPORT_NAME (STREAM, NAME);                        \
-          switch_to_section (function_section (DECL));                \
-        }                                                        \
-      ASM_OUTPUT_LABEL ((STREAM), (NAME));                        \
-    }                                                                \
+#define ASM_DECLARE_FUNCTION_NAME(STREAM, NAME, DECL)		\
+  do								\
+    {								\
+      if (mcore_dllexport_name_p (NAME))			\
+	{							\
+          MCORE_EXPORT_NAME (STREAM, NAME);			\
+	  switch_to_section (function_section (DECL));		\
+	}							\
+      ASM_OUTPUT_LABEL ((STREAM), (NAME));			\
+    }								\
   while (0);
 
 #define TARGET_ASM_FILE_START_FILE_DIRECTIVE true

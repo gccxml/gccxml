@@ -10,6 +10,6 @@ __floatunsixf (USItype u)
   XFtype r = (XFtype) s;
   if (s < 0)
     r += (XFtype)2.0 * (XFtype) ((USItype) 1
-                                 << (sizeof (USItype) * __CHAR_BIT__ - 1));
+				 << (sizeof (USItype) * __CHAR_BIT__ - 1));
   return r;
 }

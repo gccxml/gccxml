@@ -152,13 +152,13 @@ get_name_of_type (tree type)
   if (TREE_CODE (name) == TYPE_DECL)
     {
       /*  Each DECL has a DECL_NAME field which contains an
-          IDENTIFIER_NODE.  (Some decls, most often labels, may have
-          zero as the DECL_NAME).  */
+	  IDENTIFIER_NODE.  (Some decls, most often labels, may have
+	  zero as the DECL_NAME).  */
       if (DECL_NAME (name))
-        return (char*)IDENTIFIER_POINTER (DECL_NAME (name));
+	return (char*)IDENTIFIER_POINTER (DECL_NAME (name));
       else
-        /* Unnamed type, do what you like here.  */
-        return (char*)"<UNNAMED>";
+	/* Unnamed type, do what you like here.  */
+	return (char*)"<UNNAMED>";
     }
   else if (TREE_CODE (name) == IDENTIFIER_NODE)
     return (char*)IDENTIFIER_POINTER (name);
@@ -212,44 +212,44 @@ discover_unique_type (tree type)
       result = splay_tree_lookup (all_canon_types, (splay_tree_key) brand);
 
       if (result)
-        {
-          /* Create an alias since this is just the same as
-             other_type.  */
-          tree other_type = (tree) result->value;
-          if (lang_hooks.types_compatible_p (type, other_type) == 1)
-            {
-              free (brand);
-              /* Insert this new type as an alias for other_type.  */
-              splay_tree_insert (type_to_canon_type,
-                                 (splay_tree_key) type,
-                                 (splay_tree_value) other_type);
-              return other_type;
-            }
-          /* Not compatible, look for next instance with same name.  */
-        }
+	{
+	  /* Create an alias since this is just the same as
+	     other_type.  */
+	  tree other_type = (tree) result->value;
+	  if (lang_hooks.types_compatible_p (type, other_type) == 1)
+	    {
+	      free (brand);
+	      /* Insert this new type as an alias for other_type.  */
+	      splay_tree_insert (type_to_canon_type,
+				 (splay_tree_key) type,
+				 (splay_tree_value) other_type);
+	      return other_type;
+	    }
+	  /* Not compatible, look for next instance with same name.  */
+	}
       else
-        {
-          /* No more instances, create new one since this is the first
-             time we saw this type.  */
-          brand->seq = i++;
-          /* Insert the new brand.  */
-          splay_tree_insert (all_canon_types,
-                             (splay_tree_key) brand,
-                             (splay_tree_value) type);
+	{
+	  /* No more instances, create new one since this is the first
+	     time we saw this type.  */
+	  brand->seq = i++;
+	  /* Insert the new brand.  */
+	  splay_tree_insert (all_canon_types,
+			     (splay_tree_key) brand,
+			     (splay_tree_value) type);
 
-          /* Insert this new type as an alias for itself.  */
-          splay_tree_insert (type_to_canon_type,
-                             (splay_tree_key) type,
-                             (splay_tree_value) type);
+	  /* Insert this new type as an alias for itself.  */
+	  splay_tree_insert (type_to_canon_type,
+			     (splay_tree_key) type,
+			     (splay_tree_value) type);
 
-          /* Insert the uid for reverse lookup; */
-          splay_tree_insert (uid_to_canon_type,
-                             (splay_tree_key) TYPE_UID (type),
-                             (splay_tree_value) type);
+	  /* Insert the uid for reverse lookup; */
+	  splay_tree_insert (uid_to_canon_type,
+			     (splay_tree_key) TYPE_UID (type),
+			     (splay_tree_value) type);
 
-          bitmap_set_bit (global_types_seen, TYPE_UID (type));
-          return type;
-        }
+	  bitmap_set_bit (global_types_seen, TYPE_UID (type));
+	  return type;
+	}
     }
 }
 
@@ -302,7 +302,7 @@ get_canon_type (tree type, bool see_thru_ptrs, bool see_thru_arrays)
 
   else if (see_thru_ptrs) 
     while (POINTER_TYPE_P (type))
-        type = TYPE_MAIN_VARIANT (TREE_TYPE (type));
+	type = TYPE_MAIN_VARIANT (TREE_TYPE (type));
 
   result = splay_tree_lookup(type_to_canon_type, (splay_tree_key) type);
   
@@ -391,7 +391,7 @@ ipa_type_escape_type_contained_p (tree type)
   if (!initialized)
     return false;
   return !bitmap_bit_p (global_types_full_escape, 
-                        get_canon_type_uid (type, true, false));
+			get_canon_type_uid (type, true, false));
 }
 
 /* Return true if a modification to a field of type FIELD_TYPE cannot
@@ -415,22 +415,22 @@ ipa_type_escape_field_does_not_clobber_p (tree record_type, tree field_type)
     {
       record_type = TYPE_MAIN_VARIANT (TREE_TYPE (record_type));
       if (POINTER_TYPE_P (field_type)) 
-        field_type = TYPE_MAIN_VARIANT (TREE_TYPE (field_type));
+	field_type = TYPE_MAIN_VARIANT (TREE_TYPE (field_type));
       else 
-        /* However, if field_type is a union, this quick test is not
-           correct since one of the variants of the union may be a
-           pointer to type and we cannot see across that here.  So we
-           just strip the remaining pointer tos off the record type
-           and fall thru to the more precise code.  */
-        if (TREE_CODE (field_type) == QUAL_UNION_TYPE 
-            || TREE_CODE (field_type) == UNION_TYPE)
-          {
-            while (POINTER_TYPE_P (record_type))
-              record_type = TYPE_MAIN_VARIANT (TREE_TYPE (record_type));
-            break;
-          } 
-        else 
-          return true;
+	/* However, if field_type is a union, this quick test is not
+	   correct since one of the variants of the union may be a
+	   pointer to type and we cannot see across that here.  So we
+	   just strip the remaining pointer tos off the record type
+	   and fall thru to the more precise code.  */
+	if (TREE_CODE (field_type) == QUAL_UNION_TYPE 
+	    || TREE_CODE (field_type) == UNION_TYPE)
+	  {
+	    while (POINTER_TYPE_P (record_type))
+	      record_type = TYPE_MAIN_VARIANT (TREE_TYPE (record_type));
+	    break;
+	  } 
+	else 
+	  return true;
     }
   
   record_type = get_canon_type (record_type, true, true);
@@ -447,7 +447,7 @@ ipa_type_escape_field_does_not_clobber_p (tree record_type, tree field_type)
       bitmap field_type_map = (bitmap) result->value;
       uid = get_canon_type_uid (field_type, true, true);
       /* If the bit is there, the address was taken. If not, it
-         wasn't.  */
+	 wasn't.  */
       return !bitmap_bit_p (field_type_map, uid);
     }
   else
@@ -486,11 +486,11 @@ mark_type (tree type, enum escape_t escape_status)
     {
       bitmap_set_bit (map, uid);
       if (escape_status == FULL_ESCAPE)
-        {
-          /* Efficiency hack. When things are bad, do not mess around
-             with this type anymore.  */
-          bitmap_set_bit (global_types_exposed_parameter, uid);
-        }      
+	{
+	  /* Efficiency hack. When things are bad, do not mess around
+	     with this type anymore.  */
+	  bitmap_set_bit (global_types_exposed_parameter, uid);
+	}      
     }
   return type;
 }
@@ -506,13 +506,13 @@ mark_interesting_type (tree type, enum escape_t escape_status)
   if (ipa_type_escape_star_count_of_interesting_type (type) >= 0)
     {
       if ((escape_status == EXPOSED_PARAMETER)
-          && POINTER_TYPE_P (type))
-        /* EXPOSED_PARAMETERs are only structs or unions are passed by
-           value.  Anything passed by reference to an external
-           function fully exposes the type.  */
-        mark_type (type, FULL_ESCAPE);
+	  && POINTER_TYPE_P (type))
+	/* EXPOSED_PARAMETERs are only structs or unions are passed by
+	   value.  Anything passed by reference to an external
+	   function fully exposes the type.  */
+	mark_type (type, FULL_ESCAPE);
       else
-        mark_type (type, escape_status);
+	mark_type (type, escape_status);
     }
 }
 
@@ -526,78 +526,78 @@ parent_type_p (tree parent, tree child)
   tree binfo, base_binfo;
   if (TYPE_BINFO (parent)) 
     for (binfo = TYPE_BINFO (parent), i = 0;
-         BINFO_BASE_ITERATE (binfo, i, base_binfo); i++)
+	 BINFO_BASE_ITERATE (binfo, i, base_binfo); i++)
       {
-        tree binfotype = BINFO_TYPE (base_binfo);
-        if (binfotype == child) 
-          return true;
-        else if (parent_type_p (binfotype, child))
-          return true;
+	tree binfotype = BINFO_TYPE (base_binfo);
+	if (binfotype == child) 
+	  return true;
+	else if (parent_type_p (binfotype, child))
+	  return true;
       }
   if (TREE_CODE (parent) == UNION_TYPE
       || TREE_CODE (parent) == QUAL_UNION_TYPE) 
     {
       tree field;
       /* Search all of the variants in the union to see if one of them
-         is the child.  */
+	 is the child.  */
       for (field = TYPE_FIELDS (parent);
-           field;
-           field = TREE_CHAIN (field))
-        {
-          tree field_type;
-          if (TREE_CODE (field) != FIELD_DECL)
-            continue;
-          
-          field_type = TREE_TYPE (field);
-          if (field_type == child) 
-            return true;
-        }
+	   field;
+	   field = TREE_CHAIN (field))
+	{
+	  tree field_type;
+	  if (TREE_CODE (field) != FIELD_DECL)
+	    continue;
+	  
+	  field_type = TREE_TYPE (field);
+	  if (field_type == child) 
+	    return true;
+	}
 
       /* If we did not find it, recursively ask the variants if one of
-         their children is the child type.  */
+	 their children is the child type.  */
       for (field = TYPE_FIELDS (parent);
-           field;
-           field = TREE_CHAIN (field))
-        {
-          tree field_type;
-          if (TREE_CODE (field) != FIELD_DECL)
-            continue;
-          
-          field_type = TREE_TYPE (field);
-          if (TREE_CODE (field_type) == RECORD_TYPE 
-              || TREE_CODE (field_type) == QUAL_UNION_TYPE 
-              || TREE_CODE (field_type) == UNION_TYPE)
-            if (parent_type_p (field_type, child)) 
-              return true;
-        }
+	   field;
+	   field = TREE_CHAIN (field))
+	{
+	  tree field_type;
+	  if (TREE_CODE (field) != FIELD_DECL)
+	    continue;
+	  
+	  field_type = TREE_TYPE (field);
+	  if (TREE_CODE (field_type) == RECORD_TYPE 
+	      || TREE_CODE (field_type) == QUAL_UNION_TYPE 
+	      || TREE_CODE (field_type) == UNION_TYPE)
+	    if (parent_type_p (field_type, child)) 
+	      return true;
+	}
     }
   
   if (TREE_CODE (parent) == RECORD_TYPE)
     {
       tree field;
       for (field = TYPE_FIELDS (parent);
-           field;
-           field = TREE_CHAIN (field))
-        {
-          tree field_type;
-          if (TREE_CODE (field) != FIELD_DECL)
-            continue;
-          
-          field_type = TREE_TYPE (field);
-          if (field_type == child) 
-            return true;
-          /* You can only cast to the first field so if it does not
-             match, quit.  */
-          if (TREE_CODE (field_type) == RECORD_TYPE 
-              || TREE_CODE (field_type) == QUAL_UNION_TYPE 
-              || TREE_CODE (field_type) == UNION_TYPE)
-            {
-              if (parent_type_p (field_type, child)) 
-                return true;
-              else 
-                break;
-            }
-        }
+	   field;
+	   field = TREE_CHAIN (field))
+	{
+	  tree field_type;
+	  if (TREE_CODE (field) != FIELD_DECL)
+	    continue;
+	  
+	  field_type = TREE_TYPE (field);
+	  if (field_type == child) 
+	    return true;
+	  /* You can only cast to the first field so if it does not
+	     match, quit.  */
+	  if (TREE_CODE (field_type) == RECORD_TYPE 
+	      || TREE_CODE (field_type) == QUAL_UNION_TYPE 
+	      || TREE_CODE (field_type) == UNION_TYPE)
+	    {
+	      if (parent_type_p (field_type, child)) 
+		return true;
+	      else 
+		break;
+	    }
+	}
     }
   return false;
 }
@@ -668,31 +668,31 @@ check_cast (tree to_type, tree from)
   if (to_interesting_type) 
     if (from_interesting_type)
       {
-        /* Both types are interesting. This can be one of four types
-           of cast: useless, up, down, or sideways.  We do not care
-           about up or useless.  Sideways casts are always bad and
-           both sides get marked as escaping.  Downcasts are not
-           interesting here because if type is marked as escaping, all
-           of its subtypes escape.  */
-        switch (check_cast_type (to_type, from_type)) 
-          {
-          case CT_UP:
-          case CT_USELESS:
-          case CT_DOWN:
-            break;
+	/* Both types are interesting. This can be one of four types
+	   of cast: useless, up, down, or sideways.  We do not care
+	   about up or useless.  Sideways casts are always bad and
+	   both sides get marked as escaping.  Downcasts are not
+	   interesting here because if type is marked as escaping, all
+	   of its subtypes escape.  */
+	switch (check_cast_type (to_type, from_type)) 
+	  {
+	  case CT_UP:
+	  case CT_USELESS:
+	  case CT_DOWN:
+	    break;
 
-          case CT_SIDEWAYS:
-            mark_type (to_type, FULL_ESCAPE);
-            mark_type (from_type, FULL_ESCAPE);
-            break;
-          }
+	  case CT_SIDEWAYS:
+	    mark_type (to_type, FULL_ESCAPE);
+	    mark_type (from_type, FULL_ESCAPE);
+	    break;
+	  }
       }
     else
       {
-        /* If this is a cast from the local that is a result from a
-           call to malloc, do not mark the cast as bad.  */
-        if (DECL_P (from) && !bitmap_bit_p (results_of_malloc, DECL_UID (from)))
-          mark_type (to_type, FULL_ESCAPE);
+	/* If this is a cast from the local that is a result from a
+	   call to malloc, do not mark the cast as bad.  */
+	if (DECL_P (from) && !bitmap_bit_p (results_of_malloc, DECL_UID (from)))
+	  mark_type (to_type, FULL_ESCAPE);
       }
   else if (from_interesting_type)
     mark_type (from_type, FULL_ESCAPE);
@@ -709,27 +709,27 @@ check_function_parameter_and_return_types (tree fn, bool escapes)
   if (TYPE_ARG_TYPES (TREE_TYPE (fn)))
     {
       for (arg = TYPE_ARG_TYPES (TREE_TYPE (fn));
-           arg && TREE_VALUE (arg) != void_type_node;
-           arg = TREE_CHAIN (arg))
-        {
-          tree type = get_canon_type (TREE_VALUE (arg), false, false);
-          if (escapes)
-            mark_interesting_type (type, EXPOSED_PARAMETER);
-        }
+	   arg && TREE_VALUE (arg) != void_type_node;
+	   arg = TREE_CHAIN (arg))
+	{
+	  tree type = get_canon_type (TREE_VALUE (arg), false, false);
+	  if (escapes)
+	    mark_interesting_type (type, EXPOSED_PARAMETER);
+	}
     }
   else
     {
       /* FIXME - According to Geoff Keating, we should never have to
-         do this; the front ends should always process the arg list
-         from the TYPE_ARG_LIST. However, Geoff is wrong, this code
-         does seem to be live.  */
+	 do this; the front ends should always process the arg list
+	 from the TYPE_ARG_LIST. However, Geoff is wrong, this code
+	 does seem to be live.  */
 
       for (arg = DECL_ARGUMENTS (fn); arg; arg = TREE_CHAIN (arg))
-        {
-          tree type = get_canon_type (TREE_TYPE (arg), false, false);
-          if (escapes)
-            mark_interesting_type (type, EXPOSED_PARAMETER);
-        }
+	{
+	  tree type = get_canon_type (TREE_TYPE (arg), false, false);
+	  if (escapes)
+	    mark_interesting_type (type, EXPOSED_PARAMETER);
+	}
     }
   if (escapes)
     {
@@ -767,19 +767,19 @@ has_proper_scope_for_analysis (tree t)
   if (DECL_EXTERNAL (t) || TREE_PUBLIC (t))
     {
       /* If the front end set the variable to be READONLY and
-         constant, we can allow this variable in pure or const
-         functions but the scope is too large for our analysis to set
-         these bits ourselves.  */
+	 constant, we can allow this variable in pure or const
+	 functions but the scope is too large for our analysis to set
+	 these bits ourselves.  */
       
       if (TREE_READONLY (t)
-          && DECL_INITIAL (t)
-          && is_gimple_min_invariant (DECL_INITIAL (t)))
-        ; /* Read of a constant, do not change the function state.  */
+	  && DECL_INITIAL (t)
+	  && is_gimple_min_invariant (DECL_INITIAL (t)))
+	; /* Read of a constant, do not change the function state.  */
       else 
-        {
-          /* The type escapes for all public and externs. */
-          mark_interesting_type (type, FULL_ESCAPE);
-        }
+	{
+	  /* The type escapes for all public and externs. */
+	  mark_interesting_type (type, FULL_ESCAPE);
+	}
     }
 }
 
@@ -809,11 +809,11 @@ check_tree (tree t)
     return;
 
   while (TREE_CODE (t) == REALPART_EXPR 
-         || TREE_CODE (t) == IMAGPART_EXPR
-         || handled_component_p (t))
+	 || TREE_CODE (t) == IMAGPART_EXPR
+	 || handled_component_p (t))
     {
       if (TREE_CODE (t) == ARRAY_REF)
-        check_operand (TREE_OPERAND (t, 1));
+	check_operand (TREE_OPERAND (t, 1));
       t = TREE_OPERAND (t, 0);
     }
 
@@ -847,7 +847,7 @@ mark_interesting_addressof (tree to_type, tree from_type)
   
   /* Process the Y into X map pointer.  */
   result = splay_tree_lookup (uid_to_addressof_down_map, 
-                              (splay_tree_key) from_uid);
+			      (splay_tree_key) from_uid);
   
   if (result) 
     type_map = (bitmap) result->value;  
@@ -855,8 +855,8 @@ mark_interesting_addressof (tree to_type, tree from_type)
     {
       type_map = BITMAP_ALLOC (&ipa_obstack);
       splay_tree_insert (uid_to_addressof_down_map,
-                         from_uid, 
-                         (splay_tree_value)type_map);
+			 from_uid, 
+			 (splay_tree_value)type_map);
     }
   bitmap_set_bit (type_map, TYPE_UID (to_type));
   
@@ -870,8 +870,8 @@ mark_interesting_addressof (tree to_type, tree from_type)
     {
       type_map = BITMAP_ALLOC (&ipa_obstack);
       splay_tree_insert (uid_to_addressof_up_map,
-                         to_uid, 
-                         (splay_tree_value)type_map);
+			 to_uid, 
+			 (splay_tree_value)type_map);
     }
   bitmap_set_bit (type_map, TYPE_UID (to_type));
 }
@@ -887,24 +887,24 @@ look_for_address_of (tree t)
       tree cref = TREE_OPERAND (t, 0);
 
       /* If we have an expression of the form "&a.b.c.d", mark a.b,
-         b.c and c.d. as having its address taken.  */ 
+	 b.c and c.d. as having its address taken.  */ 
       tree fielddecl = NULL_TREE;
       while (cref!= x)
-        {
-          if (TREE_CODE (cref) == COMPONENT_REF)
-            {
-              fielddecl =  TREE_OPERAND (cref, 1);
-              mark_interesting_addressof (TREE_TYPE (fielddecl), 
-                                          DECL_FIELD_CONTEXT (fielddecl));
-            }
-          else if (TREE_CODE (cref) == ARRAY_REF)
-            get_canon_type (TREE_TYPE (cref), false, false);
+	{
+	  if (TREE_CODE (cref) == COMPONENT_REF)
+	    {
+	      fielddecl =  TREE_OPERAND (cref, 1);
+	      mark_interesting_addressof (TREE_TYPE (fielddecl), 
+					  DECL_FIELD_CONTEXT (fielddecl));
+	    }
+	  else if (TREE_CODE (cref) == ARRAY_REF)
+	    get_canon_type (TREE_TYPE (cref), false, false);
 
-          cref = TREE_OPERAND (cref, 0);
-        }
+	  cref = TREE_OPERAND (cref, 0);
+	}
 
       if (TREE_CODE (x) == VAR_DECL) 
-        has_proper_scope_for_analysis (x);
+	has_proper_scope_for_analysis (x);
     }
 }
 
@@ -921,24 +921,24 @@ look_for_casts (tree lhs __attribute__((unused)), tree t)
       check_cast (TREE_TYPE (t), castfromvar);
     }
   else if (TREE_CODE (t) == COMPONENT_REF
-           || TREE_CODE (t) == INDIRECT_REF
-           || TREE_CODE (t) == BIT_FIELD_REF)
+	   || TREE_CODE (t) == INDIRECT_REF
+	   || TREE_CODE (t) == BIT_FIELD_REF)
     {
       tree base = get_base_address (t);
       while (t != base)
-        {
-          t = TREE_OPERAND (t, 0);
-          if (TREE_CODE (t) == VIEW_CONVERT_EXPR)
-            {
-              /* This may be some part of a component ref.
-                 IE it may be a.b.VIEW_CONVERT_EXPR<weird_type>(c).d, AFAIK.
-                 castfromref will give you a.b.c, not a. */
-              tree castfromref = TREE_OPERAND (t, 0);
-              check_cast (TREE_TYPE (t), castfromref);
-            }
-          else if (TREE_CODE (t) == COMPONENT_REF)
-            get_canon_type (TREE_TYPE (TREE_OPERAND (t, 1)), false, false);
-        }
+	{
+	  t = TREE_OPERAND (t, 0);
+	  if (TREE_CODE (t) == VIEW_CONVERT_EXPR)
+	    {
+	      /* This may be some part of a component ref.
+		 IE it may be a.b.VIEW_CONVERT_EXPR<weird_type>(c).d, AFAIK.
+		 castfromref will give you a.b.c, not a. */
+	      tree castfromref = TREE_OPERAND (t, 0);
+	      check_cast (TREE_TYPE (t), castfromref);
+	    }
+	  else if (TREE_CODE (t) == COMPONENT_REF)
+	    get_canon_type (TREE_TYPE (TREE_OPERAND (t, 1)), false, false);
+	}
     } 
 } 
 
@@ -982,9 +982,9 @@ get_asm_expr_operands (tree stmt)
   for (i=0, link = ASM_OUTPUTS (stmt); link; ++i, link = TREE_CHAIN (link))
     {
       oconstraints[i] = constraint
-        = TREE_STRING_POINTER (TREE_VALUE (TREE_PURPOSE (link)));
+	= TREE_STRING_POINTER (TREE_VALUE (TREE_PURPOSE (link)));
       parse_output_constraint (&constraint, i, 0, 0,
-                               &allows_mem, &allows_reg, &is_inout);
+			       &allows_mem, &allows_reg, &is_inout);
       
       check_lhs_var (TREE_VALUE (link));
     }
@@ -992,9 +992,9 @@ get_asm_expr_operands (tree stmt)
   for (link = ASM_INPUTS (stmt); link; link = TREE_CHAIN (link))
     {
       constraint
-        = TREE_STRING_POINTER (TREE_VALUE (TREE_PURPOSE (link)));
+	= TREE_STRING_POINTER (TREE_VALUE (TREE_PURPOSE (link)));
       parse_input_constraint (&constraint, 0, 0, noutputs, 0,
-                              oconstraints, &allows_mem, &allows_reg);
+			      oconstraints, &allows_mem, &allows_reg);
       
       check_rhs_var (TREE_VALUE (link));
     }
@@ -1039,74 +1039,74 @@ check_call (tree call_expr)
       avail = cgraph_function_body_availability (callee);
       
       /* Check that there are no implicit casts in the passing of
-         parameters.  */
+	 parameters.  */
       if (TYPE_ARG_TYPES (TREE_TYPE (callee_t)))
-        {
-          operand = operand_list;
-          for (arg_type = TYPE_ARG_TYPES (TREE_TYPE (callee_t));
-               arg_type && TREE_VALUE (arg_type) != void_type_node;
-               arg_type = TREE_CHAIN (arg_type))
-            {
-              if (operand)
-                {
-                  argument = TREE_VALUE (operand);
-                  last_arg_type = TREE_VALUE(arg_type);
-                  check_cast (last_arg_type, argument);
-                  operand = TREE_CHAIN (operand);
-                }
-              else 
-                /* The code reaches here for some unfortunate
-                   builtin functions that do not have a list of
-                   argument types.  */
-                break; 
-            }
-        } 
+	{
+	  operand = operand_list;
+	  for (arg_type = TYPE_ARG_TYPES (TREE_TYPE (callee_t));
+	       arg_type && TREE_VALUE (arg_type) != void_type_node;
+	       arg_type = TREE_CHAIN (arg_type))
+	    {
+	      if (operand)
+		{
+		  argument = TREE_VALUE (operand);
+		  last_arg_type = TREE_VALUE(arg_type);
+		  check_cast (last_arg_type, argument);
+		  operand = TREE_CHAIN (operand);
+		}
+	      else 
+		/* The code reaches here for some unfortunate
+		   builtin functions that do not have a list of
+		   argument types.  */
+		break; 
+	    }
+	} 
       else  
-        { 
-          /* FIXME - According to Geoff Keating, we should never
-             have to do this; the front ends should always process
-             the arg list from the TYPE_ARG_LIST. */
-          operand = operand_list;
-          for (arg_type = DECL_ARGUMENTS (callee_t); 
-               arg_type;
-               arg_type = TREE_CHAIN (arg_type))
-            {
-              if (operand)
-                {
-                  argument = TREE_VALUE (operand);
-                  last_arg_type = TREE_TYPE(arg_type);
-                  check_cast (last_arg_type, argument);
-                  operand = TREE_CHAIN (operand);
-                } 
-              else 
-                /* The code reaches here for some unfortunate
-                   builtin functions that do not have a list of
-                   argument types.  */
-                break; 
-            }
-        }
+	{ 
+	  /* FIXME - According to Geoff Keating, we should never
+	     have to do this; the front ends should always process
+	     the arg list from the TYPE_ARG_LIST. */
+	  operand = operand_list;
+	  for (arg_type = DECL_ARGUMENTS (callee_t); 
+	       arg_type;
+	       arg_type = TREE_CHAIN (arg_type))
+	    {
+	      if (operand)
+		{
+		  argument = TREE_VALUE (operand);
+		  last_arg_type = TREE_TYPE(arg_type);
+		  check_cast (last_arg_type, argument);
+		  operand = TREE_CHAIN (operand);
+		} 
+	      else 
+		/* The code reaches here for some unfortunate
+		   builtin functions that do not have a list of
+		   argument types.  */
+		break; 
+	    }
+	}
       
       /* In the case where we have a var_args function, we need to
-         check the remaining parameters against the last argument.  */
+	 check the remaining parameters against the last argument.  */
       arg_type = last_arg_type;
       for (;
-           operand != NULL_TREE;
-           operand = TREE_CHAIN (operand))
-        {
-          argument = TREE_VALUE (operand);
-          if (arg_type)
-            check_cast (arg_type, argument);
-          else 
-            {
-              /* The code reaches here for some unfortunate
-                 builtin functions that do not have a list of
-                 argument types.  Most of these functions have
-                 been marked as having their parameters not
-                 escape, but for the rest, the type is doomed.  */
-              tree type = get_canon_type (TREE_TYPE (argument), false, false);
-              mark_interesting_type (type, FULL_ESCAPE);
-            }
-        }
+	   operand != NULL_TREE;
+	   operand = TREE_CHAIN (operand))
+	{
+	  argument = TREE_VALUE (operand);
+	  if (arg_type)
+	    check_cast (arg_type, argument);
+	  else 
+	    {
+	      /* The code reaches here for some unfortunate
+		 builtin functions that do not have a list of
+		 argument types.  Most of these functions have
+		 been marked as having their parameters not
+		 escape, but for the rest, the type is doomed.  */
+	      tree type = get_canon_type (TREE_TYPE (argument), false, false);
+	      mark_interesting_type (type, FULL_ESCAPE);
+	    }
+	}
     }
 
   /* The callee is either unknown (indirect call) or there is just no
@@ -1118,22 +1118,22 @@ check_call (tree call_expr)
   if (avail == AVAIL_NOT_AVAILABLE || avail == AVAIL_OVERWRITABLE)
     {
       /* If this is a direct call to an external function, mark all of
-         the parameter and return types.  */
+	 the parameter and return types.  */
       for (operand = operand_list;
-           operand != NULL_TREE;
-           operand = TREE_CHAIN (operand))
-        {
-          tree type = 
-            get_canon_type (TREE_TYPE (TREE_VALUE (operand)), false, false);
-          mark_interesting_type (type, EXPOSED_PARAMETER);
+	   operand != NULL_TREE;
+	   operand = TREE_CHAIN (operand))
+	{
+	  tree type = 
+	    get_canon_type (TREE_TYPE (TREE_VALUE (operand)), false, false);
+	  mark_interesting_type (type, EXPOSED_PARAMETER);
     }
-          
+	  
       if (callee_t) 
-        {
-          tree type = 
-            get_canon_type (TREE_TYPE (TREE_TYPE (callee_t)), false, false);
-          mark_interesting_type (type, EXPOSED_PARAMETER);
-        }
+	{
+	  tree type = 
+	    get_canon_type (TREE_TYPE (TREE_TYPE (callee_t)), false, false);
+	  mark_interesting_type (type, EXPOSED_PARAMETER);
+	}
     }
   return (flags & ECF_MALLOC);
 }
@@ -1154,7 +1154,7 @@ okay_pointer_operation (enum tree_code code, tree op0, tree op1)
     case MINUS_EXPR:
       /* TODO: Handle multiples of op0 size as well */
       if (operand_equal_p (size_in_bytes (op0type), op1, 0))
-        return true;
+	return true;
       /* fallthrough */
 
     default:
@@ -1180,109 +1180,109 @@ scan_for_refs (tree *tp, int *walk_subtrees, void *data)
     {
     case VAR_DECL:
       if (DECL_INITIAL (t))
-        walk_tree (&DECL_INITIAL (t), scan_for_refs, fn, visited_nodes);
+	walk_tree (&DECL_INITIAL (t), scan_for_refs, fn, visited_nodes);
       *walk_subtrees = 0;
       break;
 
     case MODIFY_EXPR:
       {
-        /* First look on the lhs and see what variable is stored to */
-        tree lhs = TREE_OPERAND (t, 0);
-        tree rhs = TREE_OPERAND (t, 1);
+	/* First look on the lhs and see what variable is stored to */
+	tree lhs = TREE_OPERAND (t, 0);
+	tree rhs = TREE_OPERAND (t, 1);
 
-        check_lhs_var (lhs);
-         check_cast (TREE_TYPE (lhs), rhs);
+	check_lhs_var (lhs);
+ 	check_cast (TREE_TYPE (lhs), rhs);
 
-        /* For the purposes of figuring out what the cast affects */
+	/* For the purposes of figuring out what the cast affects */
 
-        /* Next check the operands on the rhs to see if they are ok. */
-        switch (TREE_CODE_CLASS (TREE_CODE (rhs))) 
-          {
-          case tcc_binary:            
-             {
-               tree op0 = TREE_OPERAND (rhs, 0);
-              tree type0 = get_canon_type (TREE_TYPE (op0), false, false);
-               tree op1 = TREE_OPERAND (rhs, 1);
-              tree type1 = get_canon_type (TREE_TYPE (op1), false, false);
+	/* Next check the operands on the rhs to see if they are ok. */
+	switch (TREE_CODE_CLASS (TREE_CODE (rhs))) 
+	  {
+	  case tcc_binary:	    
+ 	    {
+ 	      tree op0 = TREE_OPERAND (rhs, 0);
+	      tree type0 = get_canon_type (TREE_TYPE (op0), false, false);
+ 	      tree op1 = TREE_OPERAND (rhs, 1);
+	      tree type1 = get_canon_type (TREE_TYPE (op1), false, false);
  
-               /* If this is pointer arithmetic of any bad sort, then
-                  we need to mark the types as bad.  For binary
-                  operations, no binary operator we currently support
-                  is always "safe" in regard to what it would do to
-                  pointers for purposes of determining which types
-                  escape, except operations of the size of the type.
-                  It is possible that min and max under the right set
-                  of circumstances and if the moon is in the correct
-                  place could be safe, but it is hard to see how this
-                  is worth the effort.  */
+ 	      /* If this is pointer arithmetic of any bad sort, then
+ 		 we need to mark the types as bad.  For binary
+ 		 operations, no binary operator we currently support
+ 		 is always "safe" in regard to what it would do to
+ 		 pointers for purposes of determining which types
+ 		 escape, except operations of the size of the type.
+ 		 It is possible that min and max under the right set
+ 		 of circumstances and if the moon is in the correct
+ 		 place could be safe, but it is hard to see how this
+ 		 is worth the effort.  */
  
-               if (type0 && POINTER_TYPE_P (type0)
-                  && !okay_pointer_operation (TREE_CODE (rhs), op0, op1))
-                 mark_interesting_type (type0, FULL_ESCAPE);
-               if (type1 && POINTER_TYPE_P (type1)
-                  && !okay_pointer_operation (TREE_CODE (rhs), op1, op0))
-                 mark_interesting_type (type1, FULL_ESCAPE);
-               
-              look_for_casts (lhs, op0);
-              look_for_casts (lhs, op1);
-               check_rhs_var (op0);
-               check_rhs_var (op1);
-            }
-            break;
-          case tcc_unary:
-             {
-               tree op0 = TREE_OPERAND (rhs, 0);
-              tree type0 = get_canon_type (TREE_TYPE (op0), false, false);
-              /* For unary operations, if the operation is NEGATE or
-                 ABS on a pointer, this is also considered pointer
-                 arithmetic and thus, bad for business.  */
-               if (type0 && (TREE_CODE (op0) == NEGATE_EXPR
-                    || TREE_CODE (op0) == ABS_EXPR)
-                   && POINTER_TYPE_P (type0))
-                 {
-                   mark_interesting_type (type0, FULL_ESCAPE);
-                 }
-               check_rhs_var (op0);
-              look_for_casts (lhs, op0);
-              look_for_casts (lhs, rhs);
-             }
+ 	      if (type0 && POINTER_TYPE_P (type0)
+		  && !okay_pointer_operation (TREE_CODE (rhs), op0, op1))
+ 		mark_interesting_type (type0, FULL_ESCAPE);
+ 	      if (type1 && POINTER_TYPE_P (type1)
+		  && !okay_pointer_operation (TREE_CODE (rhs), op1, op0))
+ 		mark_interesting_type (type1, FULL_ESCAPE);
+ 	      
+	      look_for_casts (lhs, op0);
+	      look_for_casts (lhs, op1);
+ 	      check_rhs_var (op0);
+ 	      check_rhs_var (op1);
+	    }
+	    break;
+	  case tcc_unary:
+ 	    {
+ 	      tree op0 = TREE_OPERAND (rhs, 0);
+	      tree type0 = get_canon_type (TREE_TYPE (op0), false, false);
+	      /* For unary operations, if the operation is NEGATE or
+		 ABS on a pointer, this is also considered pointer
+		 arithmetic and thus, bad for business.  */
+ 	      if (type0 && (TREE_CODE (op0) == NEGATE_EXPR
+ 		   || TREE_CODE (op0) == ABS_EXPR)
+ 		  && POINTER_TYPE_P (type0))
+ 		{
+ 		  mark_interesting_type (type0, FULL_ESCAPE);
+ 		}
+ 	      check_rhs_var (op0);
+	      look_for_casts (lhs, op0);
+	      look_for_casts (lhs, rhs);
+ 	    }
 
-            break;
-          case tcc_reference:
-            look_for_casts (lhs, rhs);
-            check_rhs_var (rhs);
-            break;
-          case tcc_declaration:
-            check_rhs_var (rhs);
-            break;
-          case tcc_expression:
-            switch (TREE_CODE (rhs)) 
-              {
-              case ADDR_EXPR:
-                look_for_casts (lhs, TREE_OPERAND (rhs, 0));
-                check_rhs_var (rhs);
-                break;
-              case CALL_EXPR: 
-                /* If this is a call to malloc, squirrel away the
-                   result so we do mark the resulting cast as being
-                   bad.  */
-                if (check_call (rhs))
-                  bitmap_set_bit (results_of_malloc, DECL_UID (lhs));
-                break;
-              default:
-                break;
-              }
-            break;
-          default:
-            break;
-          }
-        *walk_subtrees = 0;
+	    break;
+	  case tcc_reference:
+	    look_for_casts (lhs, rhs);
+	    check_rhs_var (rhs);
+	    break;
+	  case tcc_declaration:
+	    check_rhs_var (rhs);
+	    break;
+	  case tcc_expression:
+	    switch (TREE_CODE (rhs)) 
+	      {
+	      case ADDR_EXPR:
+		look_for_casts (lhs, TREE_OPERAND (rhs, 0));
+		check_rhs_var (rhs);
+		break;
+	      case CALL_EXPR: 
+		/* If this is a call to malloc, squirrel away the
+		   result so we do mark the resulting cast as being
+		   bad.  */
+		if (check_call (rhs))
+		  bitmap_set_bit (results_of_malloc, DECL_UID (lhs));
+		break;
+	      default:
+		break;
+	      }
+	    break;
+	  default:
+	    break;
+	  }
+	*walk_subtrees = 0;
       }
       break;
 
     case ADDR_EXPR:
       /* This case is here to find addresses on rhs of constructors in
-         decl_initial of static variables. */
+	 decl_initial of static variables. */
       check_rhs_var (t);
       *walk_subtrees = 0;
       break;
@@ -1362,7 +1362,7 @@ analyze_function (struct cgraph_node *fn)
 {
   tree decl = fn->decl;
   check_function_parameter_and_return_types (decl, 
-                                             fn->local.externally_visible);
+					     fn->local.externally_visible);
   if (dump_file)
     fprintf (dump_file, "\n local analysis of %s", cgraph_node_name (fn));
   
@@ -1372,10 +1372,10 @@ analyze_function (struct cgraph_node *fn)
 
     FOR_EACH_BB_FN (this_block, this_cfun)
       {
-        block_stmt_iterator bsi;
-        for (bsi = bsi_start (this_block); !bsi_end_p (bsi); bsi_next (&bsi))
-          walk_tree (bsi_stmt_ptr (bsi), scan_for_refs, 
-                     fn, visited_nodes);
+	block_stmt_iterator bsi;
+	for (bsi = bsi_start (this_block); !bsi_end_p (bsi); bsi_next (&bsi))
+	  walk_tree (bsi_stmt_ptr (bsi), scan_for_refs, 
+		     fn, visited_nodes);
       }
   }
 
@@ -1384,17 +1384,17 @@ analyze_function (struct cgraph_node *fn)
     {
       tree step;
       for (step = DECL_STRUCT_FUNCTION (decl)->unexpanded_var_list;
-           step;
-           step = TREE_CHAIN (step))
-        {
-          tree var = TREE_VALUE (step);
-          if (TREE_CODE (var) == VAR_DECL 
-              && DECL_INITIAL (var)
-              && !TREE_STATIC (var))
-            walk_tree (&DECL_INITIAL (var), scan_for_refs, 
-                       fn, visited_nodes);
-          get_canon_type (TREE_TYPE (var), false, false);
-        }
+	   step;
+	   step = TREE_CHAIN (step))
+	{
+	  tree var = TREE_VALUE (step);
+	  if (TREE_CODE (var) == VAR_DECL 
+	      && DECL_INITIAL (var)
+	      && !TREE_STATIC (var))
+	    walk_tree (&DECL_INITIAL (var), scan_for_refs, 
+		       fn, visited_nodes);
+	  get_canon_type (TREE_TYPE (var), false, false);
+	}
     }
 }
 
@@ -1420,7 +1420,7 @@ static bitmap
 subtype_map_for_uid (int uid, bool create)
 {
   splay_tree_node result = splay_tree_lookup (uid_to_subtype_map, 
-                              (splay_tree_key) uid);
+			      (splay_tree_key) uid);
   
   if (result) 
     return (bitmap) result->value;  
@@ -1428,8 +1428,8 @@ subtype_map_for_uid (int uid, bool create)
     {
       bitmap subtype_map = BITMAP_ALLOC (&ipa_obstack);
       splay_tree_insert (uid_to_subtype_map,
-                         uid, 
-                         (splay_tree_value)subtype_map);
+			 uid, 
+			 (splay_tree_value)subtype_map);
       return subtype_map;
     }
   else return NULL;
@@ -1462,13 +1462,13 @@ close_type_seen (tree type)
      the superclasses.  */
   if (TYPE_BINFO (type)) 
     for (binfo = TYPE_BINFO (type), i = 0;
-         BINFO_BASE_ITERATE (binfo, i, base_binfo); i++)
+	 BINFO_BASE_ITERATE (binfo, i, base_binfo); i++)
       {
-        tree binfo_type = BINFO_TYPE (base_binfo);
-        bitmap subtype_map = subtype_map_for_uid 
-          (TYPE_UID (TYPE_MAIN_VARIANT (binfo_type)), true);
-        bitmap_set_bit (subtype_map, uid);
-        close_type_seen (get_canon_type (binfo_type, true, true));
+	tree binfo_type = BINFO_TYPE (base_binfo);
+	bitmap subtype_map = subtype_map_for_uid 
+	  (TYPE_UID (TYPE_MAIN_VARIANT (binfo_type)), true);
+	bitmap_set_bit (subtype_map, uid);
+	close_type_seen (get_canon_type (binfo_type, true, true));
       }
       
   /* If the field is a struct or union type, mark all of the
@@ -1479,11 +1479,11 @@ close_type_seen (tree type)
     {
       tree field_type;
       if (TREE_CODE (field) != FIELD_DECL)
-        continue;
+	continue;
 
       field_type = TREE_TYPE (field);
       if (ipa_type_escape_star_count_of_interesting_or_array_type (field_type) >= 0)
-        close_type_seen (get_canon_type (field_type, true, true));
+	close_type_seen (get_canon_type (field_type, true, true));
     }
 }
 
@@ -1517,14 +1517,14 @@ close_type_exposed_parameter (tree type)
       tree field_type;
 
       if (TREE_CODE (field) != FIELD_DECL)
-        continue;
+	continue;
 
       field_type = get_canon_type (TREE_TYPE (field), false, false);
       mark_interesting_type (field_type, EXPOSED_PARAMETER);
 
       /* Only recurse for non pointer types of structures and unions.  */
       if (ipa_type_escape_star_count_of_interesting_type (field_type) == 0) 
-        close_type_exposed_parameter (field_type);
+	close_type_exposed_parameter (field_type);
     }
 }
 
@@ -1569,11 +1569,11 @@ close_type_full_escape (tree type)
      the superclasses.  */
   if (TYPE_BINFO (type)) 
     for (binfo = TYPE_BINFO (type), i = 0;
-         BINFO_BASE_ITERATE (binfo, i, base_binfo); i++)
+	 BINFO_BASE_ITERATE (binfo, i, base_binfo); i++)
       {
-        tree binfotype = BINFO_TYPE (base_binfo);
-        binfotype = mark_type (binfotype, FULL_ESCAPE);
-        close_type_full_escape (binfotype);
+	tree binfotype = BINFO_TYPE (base_binfo);
+	binfotype = mark_type (binfotype, FULL_ESCAPE);
+	close_type_full_escape (binfotype);
       }
       
   /* Mark as escaped any types that have been down casted to
@@ -1581,9 +1581,9 @@ close_type_full_escape (tree type)
   if (subtype_map)
     EXECUTE_IF_SET_IN_BITMAP (subtype_map, 0, i, bi)
       {
-        tree subtype = type_for_uid (i); 
-        subtype = mark_type (subtype, FULL_ESCAPE);
-        close_type_full_escape (subtype);
+	tree subtype = type_for_uid (i); 
+	subtype = mark_type (subtype, FULL_ESCAPE);
+	close_type_full_escape (subtype);
       }
 
   /* If the field is a struct or union type, mark all of the
@@ -1594,27 +1594,27 @@ close_type_full_escape (tree type)
     {
       tree field_type;
       if (TREE_CODE (field) != FIELD_DECL)
-        continue;
+	continue;
 
       field_type = TREE_TYPE (field);
       if (ipa_type_escape_star_count_of_interesting_or_array_type (field_type) >= 0)
-        {
-          field_type = mark_type (field_type, FULL_ESCAPE);
-          close_type_full_escape (field_type);
-        }
+	{
+	  field_type = mark_type (field_type, FULL_ESCAPE);
+	  close_type_full_escape (field_type);
+	}
     }
 
   /* For all of the types A that contain this type B and were part of
      an expression like "&...A.B...", mark the A's as escaping.  */
   address_result = splay_tree_lookup (uid_to_addressof_up_map, 
-                                      (splay_tree_key) uid);
+				      (splay_tree_key) uid);
   if (address_result)
     {
       bitmap containing_classes = (bitmap) address_result->value;
       EXECUTE_IF_SET_IN_BITMAP (containing_classes, 0, i, bi)
-        {
-          close_type_full_escape (type_for_uid (i));
-        }
+	{
+	  close_type_full_escape (type_for_uid (i));
+	}
     }
 }
 
@@ -1659,7 +1659,7 @@ close_addressof_down (int uid)
       bitmap submap = close_addressof_down (i);
       bitmap_set_bit (new_map, i);
       if (submap) 
-        bitmap_ior_into (new_map, submap);
+	bitmap_ior_into (new_map, submap);
     }      
   result->value = (splay_tree_value) new_map;
 
@@ -1694,8 +1694,8 @@ type_escape_execute (void)
   */
   for (node = cgraph_nodes; node; node = node->next)
     if (node->analyzed 
-        && (cgraph_is_master_clone (node)
-            || (cgraph_function_body_availability (node) == AVAIL_OVERWRITABLE)))
+	&& (cgraph_is_master_clone (node)
+	    || (cgraph_function_body_availability (node) == AVAIL_OVERWRITABLE)))
       analyze_function (node);
 
 
@@ -1717,7 +1717,7 @@ type_escape_execute (void)
       tree type = type_for_uid (i);
       /* Only look at records and unions and pointer tos.  */
       if (ipa_type_escape_star_count_of_interesting_or_array_type (type) >= 0)
-        close_type_seen (type);
+	close_type_seen (type);
     }
   bitmap_clear (been_there_done_that);
 
@@ -1749,7 +1749,7 @@ type_escape_execute (void)
     {
       int uid = result->key;
       /* Close the addressof map, i.e. copy all of the transitive
-         substructures up to this level.  */
+	 substructures up to this level.  */
       close_addressof_down (uid);
       result = splay_tree_successor (uid_to_addressof_down_map, uid);
     }
@@ -1762,31 +1762,31 @@ type_escape_execute (void)
       tree type = (tree) result->value;
       tree key = (tree) result->key;
       if (POINTER_TYPE_P (type) 
-          || TREE_CODE (type) == ARRAY_TYPE)
-        {
-          splay_tree_remove (all_canon_types, (splay_tree_key) result->key);
-          splay_tree_remove (type_to_canon_type, (splay_tree_key) type);
-          splay_tree_remove (uid_to_canon_type, (splay_tree_key) TYPE_UID (type));
-          bitmap_clear_bit (global_types_seen, TYPE_UID (type));
-        }
+	  || TREE_CODE (type) == ARRAY_TYPE)
+	{
+	  splay_tree_remove (all_canon_types, (splay_tree_key) result->key);
+	  splay_tree_remove (type_to_canon_type, (splay_tree_key) type);
+	  splay_tree_remove (uid_to_canon_type, (splay_tree_key) TYPE_UID (type));
+	  bitmap_clear_bit (global_types_seen, TYPE_UID (type));
+	}
       result = splay_tree_successor (all_canon_types, (splay_tree_key) key);
     }
 
   if (dump_file)
     { 
       EXECUTE_IF_SET_IN_BITMAP (global_types_seen, 0, i, bi)
-        {
-          /* The pointer types are in the global_types_full_escape
-             bitmap but not in the backwards map.  They also contain
-             no useful information since they are not marked.  */
-          tree type = type_for_uid (i);
-          fprintf(dump_file, "type %d ", i);
-          print_generic_expr (dump_file, type, 0);
-          if (bitmap_bit_p (global_types_full_escape, i))
-            fprintf(dump_file, " escaped\n");
-          else 
-            fprintf(dump_file, " contained\n");
-        }
+	{
+	  /* The pointer types are in the global_types_full_escape
+	     bitmap but not in the backwards map.  They also contain
+	     no useful information since they are not marked.  */
+	  tree type = type_for_uid (i);
+	  fprintf(dump_file, "type %d ", i);
+	  print_generic_expr (dump_file, type, 0);
+	  if (bitmap_bit_p (global_types_full_escape, i))
+	    fprintf(dump_file, " escaped\n");
+	  else 
+	    fprintf(dump_file, " contained\n");
+	}
     }
 
   /* Get rid of uid_to_addressof_up_map and its bitmaps.  */
@@ -1824,24 +1824,24 @@ static bool
 gate_type_escape_vars (void)
 {
   return (flag_unit_at_a_time != 0 && flag_ipa_type_escape
-          /* Don't bother doing anything if the program has errors.  */
-          && !(errorcount || sorrycount));
+	  /* Don't bother doing anything if the program has errors.  */
+	  && !(errorcount || sorrycount));
 }
 
 struct tree_opt_pass pass_ipa_type_escape =
 {
-  "type-escape-var",                        /* name */
-  gate_type_escape_vars,                /* gate */
-  type_escape_execute,                        /* execute */
-  NULL,                                        /* sub */
-  NULL,                                        /* next */
-  0,                                        /* static_pass_number */
-  TV_IPA_TYPE_ESCAPE,                        /* tv_id */
-  0,                                        /* properties_required */
-  0,                                        /* properties_provided */
-  0,                                        /* properties_destroyed */
-  0,                                        /* todo_flags_start */
+  "type-escape-var",			/* name */
+  gate_type_escape_vars,		/* gate */
+  type_escape_execute,			/* execute */
+  NULL,					/* sub */
+  NULL,					/* next */
+  0,					/* static_pass_number */
+  TV_IPA_TYPE_ESCAPE,	        	/* tv_id */
+  0,	                                /* properties_required */
+  0,					/* properties_provided */
+  0,					/* properties_destroyed */
+  0,					/* todo_flags_start */
   0,                                    /* todo_flags_finish */
-  0                                        /* letter */
+  0					/* letter */
 };
 

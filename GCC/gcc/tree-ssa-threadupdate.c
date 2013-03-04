@@ -45,27 +45,27 @@ Boston, MA 02110-1301, USA.  */
    side effects of executing B.
 
      1. Make a copy of B (including its outgoing edges and statements).  Call
-        the copy B'.  Note B' has no incoming edges or PHIs at this time.
+	the copy B'.  Note B' has no incoming edges or PHIs at this time.
 
      2. Remove the control statement at the end of B' and all outgoing edges
-        except B'->C.
+	except B'->C.
 
      3. Add a new argument to each PHI in C with the same value as the existing
-        argument associated with edge B->C.  Associate the new PHI arguments
-        with the edge B'->C.
+	argument associated with edge B->C.  Associate the new PHI arguments
+	with the edge B'->C.
 
      4. For each PHI in B, find or create a PHI in B' with an identical
-        PHI_RESULT.  Add an argument to the PHI in B' which has the same
-        value as the PHI in B associated with the edge A->B.  Associate
-        the new argument in the PHI in B' with the edge A->B.
+	PHI_RESULT.  Add an argument to the PHI in B' which has the same
+	value as the PHI in B associated with the edge A->B.  Associate
+	the new argument in the PHI in B' with the edge A->B.
 
      5. Change the edge A->B to A->B'.
 
-        5a. This automatically deletes any PHI arguments associated with the
-            edge A->B in B.
+	5a. This automatically deletes any PHI arguments associated with the
+	    edge A->B in B.
 
-        5b. This automatically associates each new argument added in step 4
-            with the edge A->B'.
+	5b. This automatically associates each new argument added in step 4
+	    with the edge A->B'.
 
      6. Repeat for other incoming edges into B.
 
@@ -184,16 +184,16 @@ remove_ctrl_stmt_and_useless_edges (basic_block bb, basic_block dest_bb)
   if (!bsi_end_p (bsi)
       && bsi_stmt (bsi)
       && (TREE_CODE (bsi_stmt (bsi)) == COND_EXPR
-          || TREE_CODE (bsi_stmt (bsi)) == GOTO_EXPR
-          || TREE_CODE (bsi_stmt (bsi)) == SWITCH_EXPR))
+	  || TREE_CODE (bsi_stmt (bsi)) == GOTO_EXPR
+	  || TREE_CODE (bsi_stmt (bsi)) == SWITCH_EXPR))
     bsi_remove (&bsi, true);
 
   for (ei = ei_start (bb->succs); (e = ei_safe_edge (ei)); )
     {
       if (e->dest != dest_bb)
-        remove_edge (e);
+	remove_edge (e);
       else
-        ei_next (&ei);
+	ei_next (&ei);
     }
 }
 
@@ -281,21 +281,21 @@ lookup_redirection_data (edge e, edge incoming_edge, enum insert_option insert)
   else
     {
       /* Free ELT as we do not need it anymore, we will extract the
-         relevant entry from the hash table itself.  */
+	 relevant entry from the hash table itself.  */
       free (elt);
 
       /* Get the entry stored in the hash table.  */
       elt = (struct redirection_data *) *slot;
 
       /* If insertion was requested, then we need to add INCOMING_EDGE
-         to the list of incoming edges associated with E.  */
+	 to the list of incoming edges associated with E.  */
       if (insert)
-        {
+	{
           struct el *el = XNEW (struct el);
-          el->next = elt->incoming_edges;
-          el->e = incoming_edge;
-          elt->incoming_edges = el;
-        }
+	  el->next = elt->incoming_edges;
+	  el->e = incoming_edge;
+	  elt->incoming_edges = el;
+	}
 
       return elt;
     }
@@ -349,8 +349,8 @@ create_duplicates (void **slot, void *data)
       local_info->template_block = rd->dup_block;
 
       /* We do not create any outgoing edges for the template.  We will
-         take care of that in a later traversal.  That way we do not
-         create edges that are going to just be deleted.  */
+	 take care of that in a later traversal.  That way we do not
+	 create edges that are going to just be deleted.  */
     }
   else
     {
@@ -412,7 +412,7 @@ prune_undesirable_thread_requests (basic_block bb)
       edge backedge = NULL;
 
       /* Consider the effect of threading the edge (0, 1) to 2 on the left
-         CFG to produce the right CFG:
+	 CFG to produce the right CFG:
     
 
              0            0
@@ -426,13 +426,13 @@ prune_undesirable_thread_requests (basic_block bb)
              E              3---+
 
 
-         Threading the (0, 1) edge to 2 effectively creates two loops
-         (2, 4, 1) and (4, 1, 3) which are neither disjoint nor nested.
-        This is not good.
+ 	Threading the (0, 1) edge to 2 effectively creates two loops
+ 	(2, 4, 1) and (4, 1, 3) which are neither disjoint nor nested.
+	This is not good.
 
-        However, we do need to be able to thread  (0, 1) to 2 or 3
-        in the left CFG below (which creates the middle and right
-        CFGs with nested loops).
+	However, we do need to be able to thread  (0, 1) to 2 or 3
+	in the left CFG below (which creates the middle and right
+	CFGs with nested loops).
 
              0          0             0
              |          |             |
@@ -442,28 +442,28 @@ prune_undesirable_thread_requests (basic_block bb)
             \|   |      |  |  |       |     |
              3---+      1--+--+       2-----+
 
-         
-         A safe heuristic appears to be to only allow threading if BB
-         has a single incoming backedge from one of its direct successors.  */
+	 
+	 A safe heuristic appears to be to only allow threading if BB
+	 has a single incoming backedge from one of its direct successors.  */
 
       FOR_EACH_EDGE (e, ei, bb->preds)
-        {
-          if (e->flags & EDGE_DFS_BACK)
-            {
-              if (backedge)
-                {
-                  backedge = NULL;
-                  break;
-                }
-              else
-                {
-                  backedge = e;
-                }
-            }
-        }
+	{
+	  if (e->flags & EDGE_DFS_BACK)
+	    {
+	      if (backedge)
+		{
+		  backedge = NULL;
+		  break;
+		}
+	      else
+		{
+		  backedge = e;
+		}
+	    }
+	}
 
       if (backedge && find_edge (bb, backedge->src))
-        ;
+	;
       else
         may_create_irreducible_region = true;
     }
@@ -472,10 +472,10 @@ prune_undesirable_thread_requests (basic_block bb)
       edge dest = NULL;
 
       /* If we thread across the loop entry block (BB) into the
-         loop and BB is still reached from outside the loop, then
-         we would create an irreducible CFG.  Consider the effect
-         of threading the edge (1, 4) to 5 on the left CFG to produce
-         the right CFG
+	 loop and BB is still reached from outside the loop, then
+	 we would create an irreducible CFG.  Consider the effect
+	 of threading the edge (1, 4) to 5 on the left CFG to produce
+	 the right CFG
 
              0               0
             / \             / \
@@ -486,59 +486,59 @@ prune_undesirable_thread_requests (basic_block bb)
            E   5---+           E
 
 
-         Threading the (1, 4) edge to 5 creates two entry points
-         into the loop (4, 5) (one from block 1, the other from
-         block 2).  A classic irreducible region. 
+	 Threading the (1, 4) edge to 5 creates two entry points
+	 into the loop (4, 5) (one from block 1, the other from
+	 block 2).  A classic irreducible region. 
 
-         So look at all of BB's incoming edges which are not
-         backedges and which are not threaded to the loop exit.
-         If that subset of incoming edges do not all thread
-         to the same block, then threading any of them will create
-         an irreducible region.  */
+	 So look at all of BB's incoming edges which are not
+	 backedges and which are not threaded to the loop exit.
+	 If that subset of incoming edges do not all thread
+	 to the same block, then threading any of them will create
+	 an irreducible region.  */
 
       FOR_EACH_EDGE (e, ei, bb->preds)
-        {
-          edge e2;
+	{
+	  edge e2;
 
-          /* We ignore back edges for now.  This may need refinement
-                 as threading a backedge creates an inner loop which
-             we would need to verify has a single entry point. 
+	  /* We ignore back edges for now.  This may need refinement
+    	     as threading a backedge creates an inner loop which
+	     we would need to verify has a single entry point. 
 
-             If all backedges thread to new locations, then this
-             block will no longer have incoming backedges and we
-             need not worry about creating irreducible regions
-             by threading through BB.  I don't think this happens
-             enough in practice to worry about it.  */
-          if (e->flags & EDGE_DFS_BACK)
-            continue;
+	     If all backedges thread to new locations, then this
+	     block will no longer have incoming backedges and we
+	     need not worry about creating irreducible regions
+	     by threading through BB.  I don't think this happens
+	     enough in practice to worry about it.  */
+	  if (e->flags & EDGE_DFS_BACK)
+	    continue;
 
-          /* If the incoming edge threads to the loop exit, then it
-             is clearly safe.  */
-          e2 = e->aux;
-          if (e2 && (e2->flags & EDGE_LOOP_EXIT))
-            continue;
+	  /* If the incoming edge threads to the loop exit, then it
+	     is clearly safe.  */
+	  e2 = e->aux;
+	  if (e2 && (e2->flags & EDGE_LOOP_EXIT))
+	    continue;
 
-          /* E enters the loop header and is not threaded.  We can
-             not allow any other incoming edges to thread into
-             the loop as that would create an irreducible region.  */
-          if (!e2)
-            {
-              may_create_irreducible_region = true;
-              break;
-            }
+	  /* E enters the loop header and is not threaded.  We can
+	     not allow any other incoming edges to thread into
+	     the loop as that would create an irreducible region.  */
+	  if (!e2)
+	    {
+	      may_create_irreducible_region = true;
+	      break;
+	    }
 
-          /* We know that this incoming edge threads to a block inside
-             the loop.  This edge must thread to the same target in
-             the loop as any previously seen threaded edges.  Otherwise
-             we will create an irreducible region.  */
-          if (!dest)
-            dest = e2;
-          else if (e2 != dest)
-            {
-              may_create_irreducible_region = true;
-              break;
-            }
-        }
+	  /* We know that this incoming edge threads to a block inside
+	     the loop.  This edge must thread to the same target in
+	     the loop as any previously seen threaded edges.  Otherwise
+	     we will create an irreducible region.  */
+	  if (!dest)
+	    dest = e2;
+	  else if (e2 != dest)
+	    {
+	      may_create_irreducible_region = true;
+	      break;
+	    }
+	}
     }
 
   /* If we might create an irreducible region, then cancel any of
@@ -547,35 +547,35 @@ prune_undesirable_thread_requests (basic_block bb)
   if (may_create_irreducible_region)
     {
       FOR_EACH_EDGE (e, ei, bb->preds)
-        {
-          edge e2;
+	{
+	  edge e2;
 
-          /* Ignore back edges.  */
-          if (e->flags & EDGE_DFS_BACK)
-            continue;
+	  /* Ignore back edges.  */
+	  if (e->flags & EDGE_DFS_BACK)
+	    continue;
 
-          e2 = e->aux;
+	  e2 = e->aux;
 
-          /* If this incoming edge was not threaded, then there is
-             nothing to do.  */
-          if (!e2)
-            continue;
+	  /* If this incoming edge was not threaded, then there is
+	     nothing to do.  */
+	  if (!e2)
+	    continue;
 
-          /* If this incoming edge threaded to the loop exit,
-             then it can be ignored as it is safe.  */
-          if (e2->flags & EDGE_LOOP_EXIT)
-            continue;
+	  /* If this incoming edge threaded to the loop exit,
+	     then it can be ignored as it is safe.  */
+	  if (e2->flags & EDGE_LOOP_EXIT)
+	    continue;
 
-          if (e2)
-            {
-              /* This edge threaded into the loop and the jump thread
-                 request must be cancelled.  */
-              if (dump_file && (dump_flags & TDF_DETAILS))
-                fprintf (dump_file, "  Not threading jump %d --> %d to %d\n",
-                         e->src->index, e->dest->index, e2->dest->index);
-              e->aux = NULL;
-            }
-        }
+	  if (e2)
+	    {
+	      /* This edge threaded into the loop and the jump thread
+		 request must be cancelled.  */
+	      if (dump_file && (dump_flags & TDF_DETAILS))
+		fprintf (dump_file, "  Not threading jump %d --> %d to %d\n",
+			 e->src->index, e->dest->index, e2->dest->index);
+	      e->aux = NULL;
+	    }
+	}
     }
 }
 
@@ -596,8 +596,8 @@ redirect_edges (void **slot, void *data)
       edge e = el->e;
 
       /* Go ahead and free this element from the list.  Doing this now
-         avoids the need for another list walk when we destroy the hash
-         table.  */
+	 avoids the need for another list walk when we destroy the hash
+	 table.  */
       next = el->next;
       free (el);
 
@@ -608,41 +608,41 @@ redirect_edges (void **slot, void *data)
       thread_stats.num_threaded_edges++;
 
       if (rd->dup_block)
-        {
-          edge e2;
+	{
+	  edge e2;
 
-          if (dump_file && (dump_flags & TDF_DETAILS))
-            fprintf (dump_file, "  Threaded jump %d --> %d to %d\n",
-                     e->src->index, e->dest->index, rd->dup_block->index);
+	  if (dump_file && (dump_flags & TDF_DETAILS))
+	    fprintf (dump_file, "  Threaded jump %d --> %d to %d\n",
+		     e->src->index, e->dest->index, rd->dup_block->index);
 
-          rd->dup_block->count += e->count;
-          rd->dup_block->frequency += EDGE_FREQUENCY (e);
-          EDGE_SUCC (rd->dup_block, 0)->count += e->count;
-          /* Redirect the incoming edge to the appropriate duplicate
-             block.  */
-          e2 = redirect_edge_and_branch (e, rd->dup_block);
-          flush_pending_stmts (e2);
+	  rd->dup_block->count += e->count;
+	  rd->dup_block->frequency += EDGE_FREQUENCY (e);
+	  EDGE_SUCC (rd->dup_block, 0)->count += e->count;
+	  /* Redirect the incoming edge to the appropriate duplicate
+	     block.  */
+	  e2 = redirect_edge_and_branch (e, rd->dup_block);
+	  flush_pending_stmts (e2);
 
-          if ((dump_file && (dump_flags & TDF_DETAILS))
-              && e->src != e2->src)
-            fprintf (dump_file, "    basic block %d created\n", e2->src->index);
-        }
+	  if ((dump_file && (dump_flags & TDF_DETAILS))
+	      && e->src != e2->src)
+	    fprintf (dump_file, "    basic block %d created\n", e2->src->index);
+	}
       else
-        {
-          if (dump_file && (dump_flags & TDF_DETAILS))
-            fprintf (dump_file, "  Threaded jump %d --> %d to %d\n",
-                     e->src->index, e->dest->index, local_info->bb->index);
+	{
+	  if (dump_file && (dump_flags & TDF_DETAILS))
+	    fprintf (dump_file, "  Threaded jump %d --> %d to %d\n",
+		     e->src->index, e->dest->index, local_info->bb->index);
 
-          /* We are using BB as the duplicate.  Remove the unnecessary
-             outgoing edges and statements from BB.  */
-          remove_ctrl_stmt_and_useless_edges (local_info->bb,
-                                              rd->outgoing_edge->dest);
+	  /* We are using BB as the duplicate.  Remove the unnecessary
+	     outgoing edges and statements from BB.  */
+	  remove_ctrl_stmt_and_useless_edges (local_info->bb,
+					      rd->outgoing_edge->dest);
 
-          /* And fixup the flags on the single remaining edge.  */
-          single_succ_edge (local_info->bb)->flags
-            &= ~(EDGE_TRUE_VALUE | EDGE_FALSE_VALUE | EDGE_ABNORMAL);
-          single_succ_edge (local_info->bb)->flags |= EDGE_FALLTHRU;
-        }
+	  /* And fixup the flags on the single remaining edge.  */
+	  single_succ_edge (local_info->bb)->flags
+	    &= ~(EDGE_TRUE_VALUE | EDGE_FALSE_VALUE | EDGE_ABNORMAL);
+	  single_succ_edge (local_info->bb)->flags |= EDGE_FALLTHRU;
+	}
     }
 
   /* Indicate that we actually threaded one or more jumps.  */
@@ -674,9 +674,9 @@ redirection_block_p (basic_block bb)
 
   /* Test that we've reached the terminating control statement.  */
   return bsi_stmt (bsi)
-         && (TREE_CODE (bsi_stmt (bsi)) == COND_EXPR
-             || TREE_CODE (bsi_stmt (bsi)) == GOTO_EXPR
-             || TREE_CODE (bsi_stmt (bsi)) == SWITCH_EXPR);
+	 && (TREE_CODE (bsi_stmt (bsi)) == COND_EXPR
+	     || TREE_CODE (bsi_stmt (bsi)) == GOTO_EXPR
+	     || TREE_CODE (bsi_stmt (bsi)) == SWITCH_EXPR);
 }
 
 /* BB is a block which ends with a COND_EXPR or SWITCH_EXPR and when BB
@@ -733,7 +733,7 @@ thread_block (basic_block bb)
       && !redirection_block_p (bb))
     {
       FOR_EACH_EDGE (e, ei, bb->preds)
-        e->aux = NULL;
+	e->aux = NULL;
       return false;
     }
 
@@ -742,9 +742,9 @@ thread_block (basic_block bb)
      difference.  However, if we have a block with a large number of
      incoming and outgoing edges such linear searches can get expensive.  */
   redirection_data = htab_create (EDGE_COUNT (bb->succs),
-                                  redirection_data_hash,
-                                  redirection_data_eq,
-                                  free);
+				  redirection_data_hash,
+				  redirection_data_eq,
+				  free);
 
   FOR_EACH_EDGE (e, ei, bb->preds)
     found_backedge |= ((e->flags & EDGE_DFS_BACK) != 0);
@@ -762,19 +762,19 @@ thread_block (basic_block bb)
   FOR_EACH_EDGE (e, ei, bb->preds)
     {
       if (!e->aux)
-        {
-          all = false;
-        }
+	{
+	  all = false;
+	}
       else
-        {
-          edge e2 = e->aux;
-          update_bb_profile_for_threading (e->dest, EDGE_FREQUENCY (e),
-                                           e->count, e->aux);
+	{
+	  edge e2 = e->aux;
+	  update_bb_profile_for_threading (e->dest, EDGE_FREQUENCY (e),
+					   e->count, e->aux);
 
-          /* Insert the outgoing edge into the hash table if it is not
-             already in the hash table.  */
-          lookup_redirection_data (e2, e, INSERT);
-        }
+	  /* Insert the outgoing edge into the hash table if it is not
+	     already in the hash table.  */
+	  lookup_redirection_data (e2, e, INSERT);
+	}
     }
 
   /* If we are going to thread all incoming edges to an outgoing edge, then
@@ -880,12 +880,12 @@ thread_through_all_blocks (void)
       basic_block bb = BASIC_BLOCK (i);
 
       if (EDGE_COUNT (bb->preds) > 0)
-        retval |= thread_block (bb);
+	retval |= thread_block (bb);
     }
 
   if (dump_file && (dump_flags & TDF_STATS))
     fprintf (dump_file, "\nJumps threaded: %lu\n",
-             thread_stats.num_threaded_edges);
+	     thread_stats.num_threaded_edges);
 
   BITMAP_FREE (threaded_blocks);
   threaded_blocks = NULL;

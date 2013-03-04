@@ -106,25 +106,25 @@ do_31div (unsigned long a, unsigned long b)
   if (a & 0x40000000)
     {
       /* Then make b:s highest bit max 0x40000000, because it must have
-         been 0x80000000 to be 1 bit higher than a.  */
+	 been 0x80000000 to be 1 bit higher than a.  */
       b >>= 1;
 
       /* Adjust a to be maximum 0x3fffffff, i.e. two upper bits zero.  */
       if (a >= b)
-        {
-          a -= b;
-          extra = 1 << (quot_digits - 1);
-        }
+	{
+	  a -= b;
+	  extra = 1 << (quot_digits - 1);
+	}
       else
-        {
-          a -= b >> 1;
+	{
+	  a -= b >> 1;
 
-          /* Remember that we adjusted a by subtracting b * 2 ** Something.  */
-          extra = 1 << quot_digits;
-        }
+	  /* Remember that we adjusted a by subtracting b * 2 ** Something.  */
+	  extra = 1 << quot_digits;
+	}
 
       /* The number of quotient digits will be one less, because
-         we just adjusted b.  */
+	 we just adjusted b.  */
       quot_digits--;
     }
 
@@ -177,26 +177,26 @@ __Udiv (unsigned long a, unsigned long b)
       int tmp = 0;
 
       if (b == 0)
-        return 0xffffffff;
+	return 0xffffffff;
 #ifdef LZ
       tmp = LZ (b);
 #else
       for (tmp = 31; (((long) b & (1 << tmp)) == 0); tmp--)
-        ;
+	;
 
       tmp = 31 - tmp;
 #endif
 
       if ((b << tmp) > a)
-        {
-          extra = 1 << (tmp-1);
-          a -= b << (tmp - 1);
-        }
+	{
+	  extra = 1 << (tmp-1);
+	  a -= b << (tmp - 1);
+	}
       else
-        {
-          extra = 1 << tmp;
-          a -= b << tmp;
-        }
+	{
+	  extra = 1 << tmp;
+	  a -= b << tmp;
+	}
     }
 
   return do_31div (a, b).quot+extra;
@@ -225,11 +225,11 @@ __Div (long a, long b)
       sign = -sign;
 
       if ((a & 0x7fffffff) == 0)
-        {
-          /* We're at 0x80000000.  Tread carefully.  */
-          a -= b * sign;
-          extra = sign;
-        }
+	{
+	  /* We're at 0x80000000.  Tread carefully.  */
+	  a -= b * sign;
+	  extra = sign;
+	}
       a = -a;
     }
 
@@ -256,23 +256,23 @@ __Umod (unsigned long a, unsigned long b)
       int tmp = 0;
 
       if (b == 0)
-        return a;
+	return a;
 #ifdef LZ
       tmp = LZ (b);
 #else
       for (tmp = 31; (((long) b & (1 << tmp)) == 0); tmp--)
-        ;
+	;
       tmp = 31 - tmp;
 #endif
 
       if ((b << tmp) > a)
-        {
-          a -= b << (tmp - 1);
-        }
+	{
+	  a -= b << (tmp - 1);
+	}
       else
-        {
-          a -= b << tmp;
-        }
+	{
+	  a -= b << tmp;
+	}
     }
 
   return do_31div (a, b).rem;
@@ -299,8 +299,8 @@ __Mod (long a, long b)
     {
       sign = -1;
       if ((a & 0x7fffffff) == 0)
-        /* We're at 0x80000000.  Tread carefully.  */
-        a += __builtin_labs (b);
+	/* We're at 0x80000000.  Tread carefully.  */
+	a += __builtin_labs (b);
       a = -a;
     }
 

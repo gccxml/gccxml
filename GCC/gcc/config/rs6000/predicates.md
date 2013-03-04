@@ -30,14 +30,14 @@
 (define_predicate "count_register_operand"
   (and (match_code "reg")
        (match_test "REGNO (op) == COUNT_REGISTER_REGNUM
-                    || REGNO (op) > LAST_VIRTUAL_REGISTER")))
+		    || REGNO (op) > LAST_VIRTUAL_REGISTER")))
   
 ;; Return 1 if op is an Altivec register.
 (define_predicate "altivec_register_operand"
    (and (match_operand 0 "register_operand")
-        (match_test "GET_CODE (op) != REG
-                     || ALTIVEC_REGNO_P (REGNO (op))
-                     || REGNO (op) > LAST_VIRTUAL_REGISTER")))
+	(match_test "GET_CODE (op) != REG
+		     || ALTIVEC_REGNO_P (REGNO (op))
+		     || REGNO (op) > LAST_VIRTUAL_REGISTER")))
 
 ;; Return 1 if op is XER register.
 (define_predicate "xer_operand"
@@ -74,7 +74,7 @@
 (define_predicate "non_short_cint_operand"
   (and (match_code "const_int")
        (match_test "(unsigned HOST_WIDE_INT)
-                    (INTVAL (op) + 0x8000) >= 0x10000")))
+		    (INTVAL (op) + 0x8000) >= 0x10000")))
 
 ;; Return 1 if op is a positive constant integer that is an exact power of 2.
 (define_predicate "exact_log2_cint_operand"
@@ -84,26 +84,26 @@
 ;; Return 1 if op is a register that is not special.
 (define_predicate "gpc_reg_operand"
    (and (match_operand 0 "register_operand")
-        (match_test "(GET_CODE (op) != REG
-                      || (REGNO (op) >= ARG_POINTER_REGNUM
-                          && !XER_REGNO_P (REGNO (op)))
-                      || REGNO (op) < MQ_REGNO)
-                     && !((TARGET_E500_DOUBLE || TARGET_SPE)
-                          && invalid_e500_subreg (op, mode))")))
+	(match_test "(GET_CODE (op) != REG
+		      || (REGNO (op) >= ARG_POINTER_REGNUM
+			  && !XER_REGNO_P (REGNO (op)))
+		      || REGNO (op) < MQ_REGNO)
+		     && !((TARGET_E500_DOUBLE || TARGET_SPE)
+			  && invalid_e500_subreg (op, mode))")))
 
 ;; Return 1 if op is a register that is a condition register field.
 (define_predicate "cc_reg_operand"
    (and (match_operand 0 "register_operand")
-        (match_test "GET_CODE (op) != REG
-                     || REGNO (op) > LAST_VIRTUAL_REGISTER
-                     || CR_REGNO_P (REGNO (op))")))
+	(match_test "GET_CODE (op) != REG
+		     || REGNO (op) > LAST_VIRTUAL_REGISTER
+		     || CR_REGNO_P (REGNO (op))")))
 
 ;; Return 1 if op is a register that is a condition register field not cr0.
 (define_predicate "cc_reg_not_cr0_operand"
    (and (match_operand 0 "register_operand")
-        (match_test "GET_CODE (op) != REG
-                     || REGNO (op) > LAST_VIRTUAL_REGISTER
-                     || CR_REGNO_NOT_CR0_P (REGNO (op))")))
+	(match_test "GET_CODE (op) != REG
+		     || REGNO (op) > LAST_VIRTUAL_REGISTER
+		     || CR_REGNO_NOT_CR0_P (REGNO (op))")))
 
 ;; Return 1 if op is a constant integer valid for D field
 ;; or non-special register register.
@@ -120,7 +120,7 @@
 (define_predicate "reg_or_neg_short_operand"
   (if_then_else (match_code "const_int")
     (match_test "satisfies_constraint_P (op)
-                 && INTVAL (op) != 0")
+		 && INTVAL (op) != 0")
     (match_operand 0 "gpc_reg_operand")))
 
 ;; Return 1 if op is a constant integer valid for DS field
@@ -128,7 +128,7 @@
 (define_predicate "reg_or_aligned_short_operand"
   (if_then_else (match_code "const_int")
     (and (match_operand 0 "short_cint_operand")
-         (match_test "!(INTVAL (op) & 3)"))
+	 (match_test "!(INTVAL (op) & 3)"))
     (match_operand 0 "gpc_reg_operand")))
 
 ;; Return 1 if op is a constant integer whose high-order 16 bits are zero
@@ -149,9 +149,9 @@
 (define_predicate "reg_or_add_cint_operand"
   (if_then_else (match_code "const_int")
     (match_test "(HOST_BITS_PER_WIDE_INT == 32
-                  && (mode == SImode || INTVAL (op) < 0x7fff8000))
-                 || ((unsigned HOST_WIDE_INT) (INTVAL (op) + 0x80008000)
-                     < (unsigned HOST_WIDE_INT) 0x100000000ll)")
+		  && (mode == SImode || INTVAL (op) < 0x7fff8000))
+		 || ((unsigned HOST_WIDE_INT) (INTVAL (op) + 0x80008000)
+		     < (unsigned HOST_WIDE_INT) 0x100000000ll)")
     (match_operand 0 "gpc_reg_operand")))
 
 ;; Return 1 if op is a constant integer valid for subtraction
@@ -159,11 +159,11 @@
 (define_predicate "reg_or_sub_cint_operand"
   (if_then_else (match_code "const_int")
     (match_test "(HOST_BITS_PER_WIDE_INT == 32
-                  && (mode == SImode || - INTVAL (op) < 0x7fff8000))
-                 || ((unsigned HOST_WIDE_INT) (- INTVAL (op) 
-                                               + (mode == SImode
-                                                  ? 0x80000000 : 0x80008000))
-                     < (unsigned HOST_WIDE_INT) 0x100000000ll)")
+		  && (mode == SImode || - INTVAL (op) < 0x7fff8000))
+		 || ((unsigned HOST_WIDE_INT) (- INTVAL (op) 
+					       + (mode == SImode
+						  ? 0x80000000 : 0x80008000))
+		     < (unsigned HOST_WIDE_INT) 0x100000000ll)")
     (match_operand 0 "gpc_reg_operand")))
 
 ;; Return 1 if op is any 32-bit unsigned constant integer
@@ -171,13 +171,13 @@
 (define_predicate "reg_or_logical_cint_operand"
   (if_then_else (match_code "const_int")
     (match_test "(GET_MODE_BITSIZE (mode) > HOST_BITS_PER_WIDE_INT
-                  && INTVAL (op) >= 0)
-                 || ((INTVAL (op) & GET_MODE_MASK (mode)
-                      & (~ (unsigned HOST_WIDE_INT) 0xffffffff)) == 0)")
+		  && INTVAL (op) >= 0)
+		 || ((INTVAL (op) & GET_MODE_MASK (mode)
+		      & (~ (unsigned HOST_WIDE_INT) 0xffffffff)) == 0)")
     (if_then_else (match_code "const_double")
       (match_test "GET_MODE_BITSIZE (mode) > HOST_BITS_PER_WIDE_INT
-                   && mode == DImode
-                   && CONST_DOUBLE_HIGH (op) == 0")
+		   && mode == DImode
+		   && CONST_DOUBLE_HIGH (op) == 0")
       (match_operand 0 "gpc_reg_operand"))))
 
 ;; Return 1 if operand is a CONST_DOUBLE that can be set in a register
@@ -218,40 +218,40 @@
       REAL_VALUE_TO_TARGET_LONG_DOUBLE (rv, k);
 
       return (num_insns_constant_wide ((HOST_WIDE_INT) k[0]) == 1
-              && num_insns_constant_wide ((HOST_WIDE_INT) k[1]) == 1
-              && num_insns_constant_wide ((HOST_WIDE_INT) k[2]) == 1
-              && num_insns_constant_wide ((HOST_WIDE_INT) k[3]) == 1);
+	      && num_insns_constant_wide ((HOST_WIDE_INT) k[1]) == 1
+	      && num_insns_constant_wide ((HOST_WIDE_INT) k[2]) == 1
+	      && num_insns_constant_wide ((HOST_WIDE_INT) k[3]) == 1);
 
     case DFmode:
       /* Force constants to memory before reload to utilize
-         compress_float_constant.
-         Avoid this when flag_unsafe_math_optimizations is enabled
-         because RDIV division to reciprocal optimization is not able
-         to regenerate the division.  */
+	 compress_float_constant.
+	 Avoid this when flag_unsafe_math_optimizations is enabled
+	 because RDIV division to reciprocal optimization is not able
+	 to regenerate the division.  */
       if (TARGET_E500_DOUBLE
           || (!reload_in_progress && !reload_completed
-              && !flag_unsafe_math_optimizations))
+	      && !flag_unsafe_math_optimizations))
         return 0;
 
       REAL_VALUE_FROM_CONST_DOUBLE (rv, op);
       REAL_VALUE_TO_TARGET_DOUBLE (rv, k);
 
       return (num_insns_constant_wide ((HOST_WIDE_INT) k[0]) == 1
-              && num_insns_constant_wide ((HOST_WIDE_INT) k[1]) == 1);
+	      && num_insns_constant_wide ((HOST_WIDE_INT) k[1]) == 1);
 
     case SFmode:
       /* The constant 0.f is easy.  */
       if (op == CONST0_RTX (SFmode))
-        return 1;
+	return 1;
 
       /* Force constants to memory before reload to utilize
-         compress_float_constant.
-         Avoid this when flag_unsafe_math_optimizations is enabled
-         because RDIV division to reciprocal optimization is not able
-         to regenerate the division.  */
+	 compress_float_constant.
+	 Avoid this when flag_unsafe_math_optimizations is enabled
+	 because RDIV division to reciprocal optimization is not able
+	 to regenerate the division.  */
       if (!reload_in_progress && !reload_completed
           && !flag_unsafe_math_optimizations)
-        return 0;
+	return 0;
 
       REAL_VALUE_FROM_CONST_DOUBLE (rv, op);
       REAL_VALUE_TO_TARGET_SINGLE (rv, k[0]);
@@ -260,8 +260,8 @@
 
   case DImode:
     return ((TARGET_POWERPC64
-             && GET_CODE (op) == CONST_DOUBLE && CONST_DOUBLE_LOW (op) == 0)
-            || (num_insns_constant (op, DImode) <= 2));
+	     && GET_CODE (op) == CONST_DOUBLE && CONST_DOUBLE_LOW (op) == 0)
+	    || (num_insns_constant (op, DImode) <= 2));
 
   case SImode:
     return 1;
@@ -287,26 +287,26 @@
     {
       int cst, cst2;
       if (zero_constant (op, mode))
-        return true;
+	return true;
       if (GET_MODE_CLASS (mode) != MODE_VECTOR_INT)
         return false;
 
       /* Limit SPE vectors to 15 bits signed.  These we can generate with:
-           li r0, CONSTANT1
-           evmergelo r0, r0, r0
-           li r0, CONSTANT2
+	   li r0, CONSTANT1
+	   evmergelo r0, r0, r0
+	   li r0, CONSTANT2
 
-         I don't know how efficient it would be to allow bigger constants,
-         considering we'll have an extra 'ori' for every 'li'.  I doubt 5
-         instructions is better than a 64-bit memory load, but I don't
-         have the e500 timing specs.  */
+	 I don't know how efficient it would be to allow bigger constants,
+	 considering we'll have an extra 'ori' for every 'li'.  I doubt 5
+	 instructions is better than a 64-bit memory load, but I don't
+	 have the e500 timing specs.  */
       if (mode == V2SImode)
-        {
-          cst  = INTVAL (CONST_VECTOR_ELT (op, 0));
-          cst2 = INTVAL (CONST_VECTOR_ELT (op, 1));
-          return cst  >= -0x7fff && cst <= 0x7fff
-                 && cst2 >= -0x7fff && cst2 <= 0x7fff;
-        }
+	{
+	  cst  = INTVAL (CONST_VECTOR_ELT (op, 0));
+	  cst2 = INTVAL (CONST_VECTOR_ELT (op, 1));
+	  return cst  >= -0x7fff && cst <= 0x7fff
+	         && cst2 >= -0x7fff && cst2 <= 0x7fff;
+	}
     }
 
   return false;
@@ -316,7 +316,7 @@
 (define_predicate "easy_vector_constant_add_self"
   (and (match_code "const_vector")
        (and (match_test "TARGET_ALTIVEC")
-            (match_test "easy_altivec_constant (op, mode)")))
+	    (match_test "easy_altivec_constant (op, mode)")))
 {
   rtx last = CONST_VECTOR_ELT (op, GET_MODE_NUNITS (mode) - 1);
   HOST_WIDE_INT val = ((INTVAL (last) & 0xff) ^ 0x80) - 0x80;
@@ -333,7 +333,7 @@
 (define_predicate "zero_fp_constant"
   (and (match_code "const_double")
        (match_test "SCALAR_FLOAT_MODE_P (mode)
-                    && op == CONST0_RTX (mode)")))
+		    && op == CONST0_RTX (mode)")))
 
 ;; Return 1 if the operand is in volatile memory.  Note that during the
 ;; RTL generation phase, memory_operand does not return TRUE for volatile
@@ -341,27 +341,27 @@
 ;; references where it's safe.
 (define_predicate "volatile_mem_operand"
   (and (and (match_code "mem")
-            (match_test "MEM_VOLATILE_P (op)"))
+	    (match_test "MEM_VOLATILE_P (op)"))
        (if_then_else (match_test "reload_completed")
          (match_operand 0 "memory_operand")
          (if_then_else (match_test "reload_in_progress")
-           (match_test "strict_memory_address_p (mode, XEXP (op, 0))")
-           (match_test "memory_address_p (mode, XEXP (op, 0))")))))
+	   (match_test "strict_memory_address_p (mode, XEXP (op, 0))")
+	   (match_test "memory_address_p (mode, XEXP (op, 0))")))))
 
 ;; Return 1 if the operand is an offsettable memory operand.
 (define_predicate "offsettable_mem_operand"
   (and (match_code "mem")
        (match_test "offsettable_address_p (reload_completed
-                                           || reload_in_progress,
-                                           mode, XEXP (op, 0))")))
+					   || reload_in_progress,
+					   mode, XEXP (op, 0))")))
 
 ;; Return 1 if the operand is a memory operand with an address divisible by 4
 (define_predicate "word_offset_memref_operand"
   (and (match_operand 0 "memory_operand")
        (match_test "GET_CODE (XEXP (op, 0)) != PLUS
-                    || ! REG_P (XEXP (XEXP (op, 0), 0)) 
-                    || GET_CODE (XEXP (XEXP (op, 0), 1)) != CONST_INT
-                    || INTVAL (XEXP (XEXP (op, 0), 1)) % 4 == 0")))
+		    || ! REG_P (XEXP (XEXP (op, 0), 0)) 
+		    || GET_CODE (XEXP (XEXP (op, 0), 1)) != CONST_INT
+		    || INTVAL (XEXP (XEXP (op, 0), 1)) % 4 == 0")))
 
 ;; Return 1 if the operand is an indexed or indirect memory operand.
 (define_predicate "indexed_or_indirect_operand"
@@ -381,9 +381,9 @@
 ;; Return 1 if the operand is an indexed or indirect address.
 (define_special_predicate "indexed_or_indirect_address"
   (and (match_test "REG_P (op)
-                    || (GET_CODE (op) == PLUS
-                        /* Omit testing REG_P (XEXP (op, 0)).  */
-                        && REG_P (XEXP (op, 1)))")
+		    || (GET_CODE (op) == PLUS
+			/* Omit testing REG_P (XEXP (op, 0)).  */
+			&& REG_P (XEXP (op, 1)))")
        (match_operand 0 "address_operand")))
 
 ;; Used for the destination of the fix_truncdfsi2 expander.
@@ -400,14 +400,14 @@
 (define_predicate "add_operand"
   (if_then_else (match_code "const_int")
     (match_test "satisfies_constraint_I (op)
-                 || satisfies_constraint_L (op)")
+		 || satisfies_constraint_L (op)")
     (match_operand 0 "gpc_reg_operand")))
 
 ;; Return 1 if OP is a constant but not a valid add_operand.
 (define_predicate "non_add_cint_operand"
   (and (match_code "const_int")
        (match_test "!satisfies_constraint_I (op)
-                    && !satisfies_constraint_L (op)")))
+		    && !satisfies_constraint_L (op)")))
 
 ;; Return 1 if the operand is a constant that can be used as the operand
 ;; of an OR or XOR.
@@ -421,8 +421,8 @@
       opl = INTVAL (op) & GET_MODE_MASK (mode);
 
       if (HOST_BITS_PER_WIDE_INT <= 32
-          && GET_MODE_BITSIZE (mode) > HOST_BITS_PER_WIDE_INT && opl < 0)
-        return 0;
+	  && GET_MODE_BITSIZE (mode) > HOST_BITS_PER_WIDE_INT && opl < 0)
+	return 0;
     }
   else if (GET_CODE (op) == CONST_DOUBLE)
     {
@@ -431,13 +431,13 @@
       opl = CONST_DOUBLE_LOW (op);
       oph = CONST_DOUBLE_HIGH (op);
       if (oph != 0)
-        return 0;
+	return 0;
     }
   else
     return 0;
 
   return ((opl & ~ (unsigned HOST_WIDE_INT) 0xffff) == 0
-          || (opl & ~ (unsigned HOST_WIDE_INT) 0xffff0000) == 0);
+	  || (opl & ~ (unsigned HOST_WIDE_INT) 0xffff0000) == 0);
 })
 
 ;; Return 1 if the operand is a non-special register or a constant that
@@ -451,7 +451,7 @@
 (define_predicate "non_logical_cint_operand"
   (and (match_code "const_int,const_double")
        (and (not (match_operand 0 "logical_operand"))
-            (match_operand 0 "reg_or_logical_cint_operand"))))
+	    (match_operand 0 "reg_or_logical_cint_operand"))))
 
 ;; Return 1 if op is a constant that can be encoded in a 32-bit mask,
 ;; suitable for use with rlwinm (no more than two 1->0 or 0->1
@@ -468,12 +468,12 @@
     {
       /* Fail if the mask is not 32-bit.  */
       if (mode == DImode && (c & ~(unsigned HOST_WIDE_INT) 0xffffffff) != 0)
-        return 0;
+	return 0;
 
       /* Fail if the mask wraps around because the upper 32-bits of the
-         mask will all be 1s, contrary to GCC's internal view.  */
+	 mask will all be 1s, contrary to GCC's internal view.  */
       if ((c & 0x80000001) == 0x80000001)
-        return 0;
+	return 0;
     }
 
   /* We don't change the number of transitions by inverting,
@@ -599,18 +599,18 @@
 (define_predicate "and64_2_operand"
   (ior (match_operand 0 "mask64_2_operand")
        (if_then_else (match_test "fixed_regs[CR0_REGNO]")
-         (match_operand 0 "gpc_reg_operand")
-         (match_operand 0 "logical_operand"))))
+	 (match_operand 0 "gpc_reg_operand")
+	 (match_operand 0 "logical_operand"))))
 
 ;; Return 1 if the operand is either a non-special register or a
 ;; constant that can be used as the operand of a logical AND.
 (define_predicate "and_operand"
   (ior (match_operand 0 "mask_operand")
        (ior (and (match_test "TARGET_POWERPC64 && mode == DImode")
-                 (match_operand 0 "mask64_operand"))
+		 (match_operand 0 "mask64_operand"))
             (if_then_else (match_test "fixed_regs[CR0_REGNO]")
-              (match_operand 0 "gpc_reg_operand")
-              (match_operand 0 "logical_operand")))))
+	      (match_operand 0 "gpc_reg_operand")
+	      (match_operand 0 "logical_operand")))))
 
 ;; Return 1 if the operand is either a logical operand or a short cint operand.
 (define_predicate "scc_eq_operand"
@@ -620,18 +620,18 @@
 ;; Return 1 if the operand is a general non-special register or memory operand.
 (define_predicate "reg_or_mem_operand"
      (ior (match_operand 0 "memory_operand")
-          (ior (and (match_code "mem")
-                    (match_test "macho_lo_sum_memory_operand (op, mode)"))
-               (ior (match_operand 0 "volatile_mem_operand")
-                    (match_operand 0 "gpc_reg_operand")))))
+	  (ior (and (match_code "mem")
+		    (match_test "macho_lo_sum_memory_operand (op, mode)"))
+	       (ior (match_operand 0 "volatile_mem_operand")
+		    (match_operand 0 "gpc_reg_operand")))))
 
 ;; Return 1 if the operand is either an easy FP constant or memory or reg.
 (define_predicate "reg_or_none500mem_operand"
   (if_then_else (match_code "mem")
      (and (match_test "!TARGET_E500_DOUBLE")
-          (ior (match_operand 0 "memory_operand")
-               (ior (match_test "macho_lo_sum_memory_operand (op, mode)")
-                    (match_operand 0 "volatile_mem_operand"))))
+	  (ior (match_operand 0 "memory_operand")
+	       (ior (match_test "macho_lo_sum_memory_operand (op, mode)")
+		    (match_operand 0 "volatile_mem_operand"))))
      (match_operand 0 "gpc_reg_operand")))
 
 ;; Return 1 if the operand is CONST_DOUBLE 0, register or memory operand.
@@ -652,18 +652,18 @@
 
   return gpc_reg_operand (inner, mode)
     || (memory_operand (inner, mode)
-        && GET_CODE (XEXP (inner, 0)) != PRE_INC
-        && GET_CODE (XEXP (inner, 0)) != PRE_DEC
-        && (GET_CODE (XEXP (inner, 0)) != PLUS
-            || GET_CODE (XEXP (XEXP (inner, 0), 1)) != CONST_INT
-            || INTVAL (XEXP (XEXP (inner, 0), 1)) % 4 == 0));
+	&& GET_CODE (XEXP (inner, 0)) != PRE_INC
+	&& GET_CODE (XEXP (inner, 0)) != PRE_DEC
+	&& (GET_CODE (XEXP (inner, 0)) != PLUS
+	    || GET_CODE (XEXP (XEXP (inner, 0), 1)) != CONST_INT
+	    || INTVAL (XEXP (XEXP (inner, 0), 1)) % 4 == 0));
 })
 
 ;; Return 1 if the operand, used inside a MEM, is a SYMBOL_REF.
 (define_predicate "symbol_ref_operand"
   (and (match_code "symbol_ref")
        (match_test "(mode == VOIDmode || GET_MODE (op) == mode)
-                    && (DEFAULT_ABI != ABI_AIX || SYMBOL_REF_FUNCTION_P (op))")))
+		    && (DEFAULT_ABI != ABI_AIX || SYMBOL_REF_FUNCTION_P (op))")))
 
 ;; Return 1 if op is an operand that can be loaded via the GOT.
 ;; or non-special register register field no cr0
@@ -685,8 +685,8 @@
 (define_predicate "call_operand"
   (if_then_else (match_code "reg")
      (match_test "REGNO (op) == LINK_REGISTER_REGNUM
-                  || REGNO (op) == COUNT_REGISTER_REGNUM
-                  || REGNO (op) >= FIRST_PSEUDO_REGISTER")
+		  || REGNO (op) == COUNT_REGISTER_REGNUM
+		  || REGNO (op) >= FIRST_PSEUDO_REGISTER")
      (match_code "symbol_ref")))
 
 ;; Return 1 if the operand is a SYMBOL_REF for a function known to be in
@@ -694,16 +694,16 @@
 (define_predicate "current_file_function_operand"
   (and (match_code "symbol_ref")
        (match_test "(DEFAULT_ABI != ABI_AIX || SYMBOL_REF_FUNCTION_P (op))
-                    && ((SYMBOL_REF_LOCAL_P (op)
-                         && (DEFAULT_ABI != ABI_AIX
-                             || !SYMBOL_REF_EXTERNAL_P (op)))
-                        || (op == XEXP (DECL_RTL (current_function_decl),
-                                                  0)))")))
+		    && ((SYMBOL_REF_LOCAL_P (op)
+			 && (DEFAULT_ABI != ABI_AIX
+			     || !SYMBOL_REF_EXTERNAL_P (op)))
+		        || (op == XEXP (DECL_RTL (current_function_decl),
+						  0)))")))
 
 ;; Return 1 if this operand is a valid input for a move insn.
 (define_predicate "input_operand"
   (match_code "label_ref,symbol_ref,const,high,reg,subreg,mem,
-               const_double,const_vector,const_int,plus")
+	       const_double,const_vector,const_int,plus")
 {
   /* Memory is always valid.  */
   if (memory_operand (op, mode))
@@ -718,7 +718,7 @@
   /* Allow any integer constant.  */
   if (GET_MODE_CLASS (mode) == MODE_INT
       && (GET_CODE (op) == CONST_INT
-          || GET_CODE (op) == CONST_DOUBLE))
+	  || GET_CODE (op) == CONST_DOUBLE))
     return 1;
 
   /* Allow easy vector constants.  */
@@ -795,10 +795,10 @@
 ;; validate_condition_mode is an assertion.
 (define_predicate "branch_comparison_operator"
    (and (match_operand 0 "comparison_operator")
-        (and (match_test "GET_MODE_CLASS (GET_MODE (XEXP (op, 0))) == MODE_CC")
-             (match_test "validate_condition_mode (GET_CODE (op),
-                                                   GET_MODE (XEXP (op, 0))),
-                          1"))))
+	(and (match_test "GET_MODE_CLASS (GET_MODE (XEXP (op, 0))) == MODE_CC")
+	     (match_test "validate_condition_mode (GET_CODE (op),
+						   GET_MODE (XEXP (op, 0))),
+			  1"))))
 
 ;; Return 1 if OP is a comparison operation that is valid for an SCC insn --
 ;; it must be a positive comparison.
@@ -815,7 +815,7 @@
 ;; Return 1 is OP is a comparison operation that is valid for a trap insn.
 (define_predicate "trap_comparison_operator"
    (and (match_operand 0 "comparison_operator")
-        (match_code "eq,ne,le,lt,ge,gt,leu,ltu,geu,gtu")))
+	(match_code "eq,ne,le,lt,ge,gt,leu,ltu,geu,gtu")))
 
 ;; Return 1 if OP is a load multiple operation, known to be a PARALLEL.
 (define_predicate "load_multiple_operation"
@@ -841,16 +841,16 @@
       rtx elt = XVECEXP (op, 0, i);
 
       if (GET_CODE (elt) != SET
-          || GET_CODE (SET_DEST (elt)) != REG
-          || GET_MODE (SET_DEST (elt)) != SImode
-          || REGNO (SET_DEST (elt)) != dest_regno + i
-          || GET_CODE (SET_SRC (elt)) != MEM
-          || GET_MODE (SET_SRC (elt)) != SImode
-          || GET_CODE (XEXP (SET_SRC (elt), 0)) != PLUS
-          || ! rtx_equal_p (XEXP (XEXP (SET_SRC (elt), 0), 0), src_addr)
-          || GET_CODE (XEXP (XEXP (SET_SRC (elt), 0), 1)) != CONST_INT
-          || INTVAL (XEXP (XEXP (SET_SRC (elt), 0), 1)) != i * 4)
-        return 0;
+	  || GET_CODE (SET_DEST (elt)) != REG
+	  || GET_MODE (SET_DEST (elt)) != SImode
+	  || REGNO (SET_DEST (elt)) != dest_regno + i
+	  || GET_CODE (SET_SRC (elt)) != MEM
+	  || GET_MODE (SET_SRC (elt)) != SImode
+	  || GET_CODE (XEXP (SET_SRC (elt), 0)) != PLUS
+	  || ! rtx_equal_p (XEXP (XEXP (SET_SRC (elt), 0), 0), src_addr)
+	  || GET_CODE (XEXP (XEXP (SET_SRC (elt), 0), 1)) != CONST_INT
+	  || INTVAL (XEXP (XEXP (SET_SRC (elt), 0), 1)) != i * 4)
+	return 0;
     }
 
   return 1;
@@ -881,16 +881,16 @@
       rtx elt = XVECEXP (op, 0, i + 1);
 
       if (GET_CODE (elt) != SET
-          || GET_CODE (SET_SRC (elt)) != REG
-          || GET_MODE (SET_SRC (elt)) != SImode
-          || REGNO (SET_SRC (elt)) != src_regno + i
-          || GET_CODE (SET_DEST (elt)) != MEM
-          || GET_MODE (SET_DEST (elt)) != SImode
-          || GET_CODE (XEXP (SET_DEST (elt), 0)) != PLUS
-          || ! rtx_equal_p (XEXP (XEXP (SET_DEST (elt), 0), 0), dest_addr)
-          || GET_CODE (XEXP (XEXP (SET_DEST (elt), 0), 1)) != CONST_INT
-          || INTVAL (XEXP (XEXP (SET_DEST (elt), 0), 1)) != i * 4)
-        return 0;
+	  || GET_CODE (SET_SRC (elt)) != REG
+	  || GET_MODE (SET_SRC (elt)) != SImode
+	  || REGNO (SET_SRC (elt)) != src_regno + i
+	  || GET_CODE (SET_DEST (elt)) != MEM
+	  || GET_MODE (SET_DEST (elt)) != SImode
+	  || GET_CODE (XEXP (SET_DEST (elt), 0)) != PLUS
+	  || ! rtx_equal_p (XEXP (XEXP (SET_DEST (elt), 0), 0), dest_addr)
+	  || GET_CODE (XEXP (XEXP (SET_DEST (elt), 0), 1)) != CONST_INT
+	  || INTVAL (XEXP (XEXP (SET_DEST (elt), 0), 1)) != i * 4)
+	return 0;
     }
 
   return 1;
@@ -918,32 +918,32 @@
     {
       elt = XVECEXP (op, 0, index++);
       if (GET_CODE (elt) != SET
-          || GET_CODE (SET_DEST (elt)) != MEM
-          || ! memory_operand (SET_DEST (elt), DFmode)
-          || GET_CODE (SET_SRC (elt)) != REG
-          || GET_MODE (SET_SRC (elt)) != DFmode)
-        return 0;
+	  || GET_CODE (SET_DEST (elt)) != MEM
+	  || ! memory_operand (SET_DEST (elt), DFmode)
+	  || GET_CODE (SET_SRC (elt)) != REG
+	  || GET_MODE (SET_SRC (elt)) != DFmode)
+	return 0;
     }
 
   for (i=1; i <= 12; i++)
     {
       elt = XVECEXP (op, 0, index++);
       if (GET_CODE (elt) != SET
-          || GET_CODE (SET_DEST (elt)) != MEM
-          || GET_CODE (SET_SRC (elt)) != REG
-          || GET_MODE (SET_SRC (elt)) != V4SImode)
-        return 0;
+	  || GET_CODE (SET_DEST (elt)) != MEM
+	  || GET_CODE (SET_SRC (elt)) != REG
+	  || GET_MODE (SET_SRC (elt)) != V4SImode)
+	return 0;
     }
 
   for (i=1; i <= 19; i++)
     {
       elt = XVECEXP (op, 0, index++);
       if (GET_CODE (elt) != SET
-          || GET_CODE (SET_DEST (elt)) != MEM
-          || ! memory_operand (SET_DEST (elt), Pmode)
-          || GET_CODE (SET_SRC (elt)) != REG
-          || GET_MODE (SET_SRC (elt)) != Pmode)
-        return 0;
+	  || GET_CODE (SET_DEST (elt)) != MEM
+	  || ! memory_operand (SET_DEST (elt), Pmode)
+	  || GET_CODE (SET_SRC (elt)) != REG
+	  || GET_MODE (SET_SRC (elt)) != Pmode)
+	return 0;
     }
 
   elt = XVECEXP (op, 0, index++);
@@ -995,32 +995,32 @@
     {
       elt = XVECEXP (op, 0, index++);
       if (GET_CODE (elt) != SET
-          || GET_CODE (SET_SRC (elt)) != MEM
-          || ! memory_operand (SET_SRC (elt), Pmode)
-          || GET_CODE (SET_DEST (elt)) != REG
-          || GET_MODE (SET_DEST (elt)) != Pmode)
-        return 0;
+	  || GET_CODE (SET_SRC (elt)) != MEM
+	  || ! memory_operand (SET_SRC (elt), Pmode)
+	  || GET_CODE (SET_DEST (elt)) != REG
+	  || GET_MODE (SET_DEST (elt)) != Pmode)
+	return 0;
     }
 
   for (i=1; i <= 12; i++)
     {
       elt = XVECEXP (op, 0, index++);
       if (GET_CODE (elt) != SET
-          || GET_CODE (SET_SRC (elt)) != MEM
-          || GET_CODE (SET_DEST (elt)) != REG
-          || GET_MODE (SET_DEST (elt)) != V4SImode)
-        return 0;
+	  || GET_CODE (SET_SRC (elt)) != MEM
+	  || GET_CODE (SET_DEST (elt)) != REG
+	  || GET_MODE (SET_DEST (elt)) != V4SImode)
+	return 0;
     }
 
   for (i=1; i <= 18; i++)
     {
       elt = XVECEXP (op, 0, index++);
       if (GET_CODE (elt) != SET
-          || GET_CODE (SET_SRC (elt)) != MEM
-          || ! memory_operand (SET_SRC (elt), DFmode)
-          || GET_CODE (SET_DEST (elt)) != REG
-          || GET_MODE (SET_DEST (elt)) != DFmode)
-        return 0;
+	  || GET_CODE (SET_SRC (elt)) != MEM
+	  || ! memory_operand (SET_SRC (elt), DFmode)
+	  || GET_CODE (SET_DEST (elt)) != REG
+	  || GET_MODE (SET_DEST (elt)) != DFmode)
+	return 0;
     }
 
   if (GET_CODE (XVECEXP (op, 0, index++)) != CLOBBER
@@ -1058,8 +1058,8 @@
       rtx elt = XVECEXP (op, 0, i);
 
       if (GET_CODE (elt) != CLOBBER
-          && GET_CODE (elt) != SET)
-        return 0;
+	  && GET_CODE (elt) != SET)
+	return 0;
     }
 
   return 1;
@@ -1089,25 +1089,25 @@
       src_reg = XVECEXP (SET_SRC (exp), 0, 0);
 
       if (GET_CODE (src_reg) != REG
-          || GET_MODE (src_reg) != CCmode
-          || ! CR_REGNO_P (REGNO (src_reg)))
-        return 0;
+	  || GET_MODE (src_reg) != CCmode
+	  || ! CR_REGNO_P (REGNO (src_reg)))
+	return 0;
 
       if (GET_CODE (exp) != SET
-          || GET_CODE (SET_DEST (exp)) != REG
-          || GET_MODE (SET_DEST (exp)) != SImode
-          || ! INT_REGNO_P (REGNO (SET_DEST (exp))))
-        return 0;
+	  || GET_CODE (SET_DEST (exp)) != REG
+	  || GET_MODE (SET_DEST (exp)) != SImode
+	  || ! INT_REGNO_P (REGNO (SET_DEST (exp))))
+	return 0;
       unspec = SET_SRC (exp);
       maskval = 1 << (MAX_CR_REGNO - REGNO (src_reg));
 
       if (GET_CODE (unspec) != UNSPEC
-          || XINT (unspec, 1) != UNSPEC_MOVESI_FROM_CR
-          || XVECLEN (unspec, 0) != 2
-          || XVECEXP (unspec, 0, 0) != src_reg
-          || GET_CODE (XVECEXP (unspec, 0, 1)) != CONST_INT
-          || INTVAL (XVECEXP (unspec, 0, 1)) != maskval)
-        return 0;
+	  || XINT (unspec, 1) != UNSPEC_MOVESI_FROM_CR
+	  || XVECLEN (unspec, 0) != 2
+	  || XVECEXP (unspec, 0, 0) != src_reg
+	  || GET_CODE (XVECEXP (unspec, 0, 1)) != CONST_INT
+	  || INTVAL (XVECEXP (unspec, 0, 1)) != maskval)
+	return 0;
     }
   return 1;
 })
@@ -1140,20 +1140,20 @@
       int maskval;
 
       if (GET_CODE (exp) != SET
-          || GET_CODE (SET_DEST (exp)) != REG
-          || GET_MODE (SET_DEST (exp)) != CCmode
-          || ! CR_REGNO_P (REGNO (SET_DEST (exp))))
-        return 0;
+	  || GET_CODE (SET_DEST (exp)) != REG
+	  || GET_MODE (SET_DEST (exp)) != CCmode
+	  || ! CR_REGNO_P (REGNO (SET_DEST (exp))))
+	return 0;
       unspec = SET_SRC (exp);
       maskval = 1 << (MAX_CR_REGNO - REGNO (SET_DEST (exp)));
 
       if (GET_CODE (unspec) != UNSPEC
-          || XINT (unspec, 1) != UNSPEC_MOVESI_TO_CR
-          || XVECLEN (unspec, 0) != 2
-          || XVECEXP (unspec, 0, 0) != src_reg
-          || GET_CODE (XVECEXP (unspec, 0, 1)) != CONST_INT
-          || INTVAL (XVECEXP (unspec, 0, 1)) != maskval)
-        return 0;
+	  || XINT (unspec, 1) != UNSPEC_MOVESI_TO_CR
+	  || XVECLEN (unspec, 0) != 2
+	  || XVECEXP (unspec, 0, 0) != src_reg
+	  || GET_CODE (XVECEXP (unspec, 0, 1)) != CONST_INT
+	  || INTVAL (XVECEXP (unspec, 0, 1)) != maskval)
+	return 0;
     }
   return 1;
 })
@@ -1188,7 +1188,7 @@
       offset = 0;
       base_regno = REGNO (src_addr);
       if (base_regno == 0)
-        return 0;
+	return 0;
     }
   else if (rs6000_legitimate_offset_address_p (SImode, src_addr, 0))
     {
@@ -1206,28 +1206,28 @@
       HOST_WIDE_INT newoffset;
 
       if (GET_CODE (elt) != SET
-          || GET_CODE (SET_DEST (elt)) != REG
-          || GET_MODE (SET_DEST (elt)) != SImode
-          || REGNO (SET_DEST (elt)) != dest_regno + i
-          || GET_CODE (SET_SRC (elt)) != MEM
-          || GET_MODE (SET_SRC (elt)) != SImode)
-        return 0;
+	  || GET_CODE (SET_DEST (elt)) != REG
+	  || GET_MODE (SET_DEST (elt)) != SImode
+	  || REGNO (SET_DEST (elt)) != dest_regno + i
+	  || GET_CODE (SET_SRC (elt)) != MEM
+	  || GET_MODE (SET_SRC (elt)) != SImode)
+	return 0;
       newaddr = XEXP (SET_SRC (elt), 0);
       if (legitimate_indirect_address_p (newaddr, 0))
-        {
-          newoffset = 0;
-          addr_reg = newaddr;
-        }
+	{
+	  newoffset = 0;
+	  addr_reg = newaddr;
+	}
       else if (rs6000_legitimate_offset_address_p (SImode, newaddr, 0))
-        {
-          addr_reg = XEXP (newaddr, 0);
-          newoffset = INTVAL (XEXP (newaddr, 1));
-        }
+	{
+	  addr_reg = XEXP (newaddr, 0);
+	  newoffset = INTVAL (XEXP (newaddr, 1));
+	}
       else
-        return 0;
+	return 0;
       if (REGNO (addr_reg) != base_regno
-          || newoffset != offset + 4 * i)
-        return 0;
+	  || newoffset != offset + 4 * i)
+	return 0;
     }
 
   return 1;
@@ -1263,7 +1263,7 @@
       offset = 0;
       base_regno = REGNO (dest_addr);
       if (base_regno == 0)
-        return 0;
+	return 0;
     }
   else if (rs6000_legitimate_offset_address_p (SImode, dest_addr, 0))
     {
@@ -1281,28 +1281,28 @@
       HOST_WIDE_INT newoffset;
 
       if (GET_CODE (elt) != SET
-          || GET_CODE (SET_SRC (elt)) != REG
-          || GET_MODE (SET_SRC (elt)) != SImode
-          || REGNO (SET_SRC (elt)) != src_regno + i
-          || GET_CODE (SET_DEST (elt)) != MEM
-          || GET_MODE (SET_DEST (elt)) != SImode)
-        return 0;
+	  || GET_CODE (SET_SRC (elt)) != REG
+	  || GET_MODE (SET_SRC (elt)) != SImode
+	  || REGNO (SET_SRC (elt)) != src_regno + i
+	  || GET_CODE (SET_DEST (elt)) != MEM
+	  || GET_MODE (SET_DEST (elt)) != SImode)
+	return 0;
       newaddr = XEXP (SET_DEST (elt), 0);
       if (legitimate_indirect_address_p (newaddr, 0))
-        {
-          newoffset = 0;
-          addr_reg = newaddr;
-        }
+	{
+	  newoffset = 0;
+	  addr_reg = newaddr;
+	}
       else if (rs6000_legitimate_offset_address_p (SImode, newaddr, 0))
-        {
-          addr_reg = XEXP (newaddr, 0);
-          newoffset = INTVAL (XEXP (newaddr, 1));
-        }
+	{
+	  addr_reg = XEXP (newaddr, 0);
+	  newoffset = INTVAL (XEXP (newaddr, 1));
+	}
       else
-        return 0;
+	return 0;
       if (REGNO (addr_reg) != base_regno
-          || newoffset != offset + 4 * i)
-        return 0;
+	  || newoffset != offset + 4 * i)
+	return 0;
     }
 
   return 1;

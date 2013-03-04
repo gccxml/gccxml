@@ -21,15 +21,15 @@ the Free Software Foundation, 51 Franklin Street, Fifth Floor,
 Boston, MA 02110-1301, USA.  */
 
 #undef LINUX_TARGET_OS_CPP_BUILTINS    
-#define LINUX_TARGET_OS_CPP_BUILTINS()                \
-  do                                                \
-    {                                                \
-        builtin_define ("__NetBSD_kernel__");        \
-        builtin_define ("__GLIBC__");                \
-        builtin_define_std ("unix");                \
-        builtin_assert ("system=unix");                \
-        builtin_assert ("system=posix");        \
-    }                                                \
+#define LINUX_TARGET_OS_CPP_BUILTINS()		\
+  do						\
+    {						\
+	builtin_define ("__NetBSD_kernel__");	\
+	builtin_define ("__GLIBC__");		\
+	builtin_define_std ("unix");		\
+	builtin_assert ("system=unix");		\
+	builtin_assert ("system=posix");	\
+    }						\
   while (0)
 
 

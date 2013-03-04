@@ -56,7 +56,7 @@ const unsigned char rtx_length[NUM_RTX_CODE] = {
 #define DEF_RTL_EXPR(ENUM, NAME, FORMAT, CLASS)   NAME ,
 
 const char * const rtx_name[NUM_RTX_CODE] = {
-#include "rtl.def"                /* rtl expressions are documented here */
+#include "rtl.def"		/* rtl expressions are documented here */
 };
 
 #undef DEF_RTL_EXPR
@@ -78,7 +78,7 @@ const char * const rtx_format[NUM_RTX_CODE] = {
      "s" a pointer to a string
          prints the string
      "S" like "s", but optional:
-         the containing rtx may end before this operand
+	 the containing rtx may end before this operand
      "T" like "s", but treated specially by the RTL reader;
          only found in machine description patterns.
      "e" a pointer to an rtl expression
@@ -86,7 +86,7 @@ const char * const rtx_format[NUM_RTX_CODE] = {
      "E" a pointer to a vector that points to a number of rtl expressions
          prints a list of the rtl expressions
      "V" like "E", but optional:
-         the containing rtx may end before this operand
+	 the containing rtx may end before this operand
      "u" a pointer to another insn
          prints the uid of the insn.
      "b" is a pointer to a bitmap header.
@@ -94,7 +94,7 @@ const char * const rtx_format[NUM_RTX_CODE] = {
      "t" is a tree pointer.  */
 
 #define DEF_RTL_EXPR(ENUM, NAME, FORMAT, CLASS)   FORMAT ,
-#include "rtl.def"                /* rtl expressions are defined here */
+#include "rtl.def"		/* rtl expressions are defined here */
 #undef DEF_RTL_EXPR
 };
 
@@ -103,16 +103,16 @@ const char * const rtx_format[NUM_RTX_CODE] = {
 
 const enum rtx_class rtx_class[NUM_RTX_CODE] = {
 #define DEF_RTL_EXPR(ENUM, NAME, FORMAT, CLASS)   CLASS,
-#include "rtl.def"                /* rtl expressions are defined here */
+#include "rtl.def"		/* rtl expressions are defined here */
 #undef DEF_RTL_EXPR
 };
 
 /* Indexed by rtx code, gives the size of the rtx in bytes.  */
 
 const unsigned char rtx_code_size[NUM_RTX_CODE] = {
-#define DEF_RTL_EXPR(ENUM, NAME, FORMAT, CLASS)                                \
-  ((ENUM) == CONST_INT || (ENUM) == CONST_DOUBLE                        \
-   ? RTX_HDR_SIZE + (sizeof FORMAT - 1) * sizeof (HOST_WIDE_INT)        \
+#define DEF_RTL_EXPR(ENUM, NAME, FORMAT, CLASS)				\
+  ((ENUM) == CONST_INT || (ENUM) == CONST_DOUBLE			\
+   ? RTX_HDR_SIZE + (sizeof FORMAT - 1) * sizeof (HOST_WIDE_INT)	\
    : RTX_HDR_SIZE + (sizeof FORMAT - 1) * sizeof (rtunion)),
 
 #include "rtl.def"
@@ -235,22 +235,22 @@ copy_rtx (rtx orig)
       return orig;
     case CLOBBER:
       if (REG_P (XEXP (orig, 0)) && REGNO (XEXP (orig, 0)) < FIRST_PSEUDO_REGISTER)
-        return orig;
+	return orig;
       break;
 
     case CONST:
       /* CONST can be shared if it contains a SYMBOL_REF.  If it contains
-         a LABEL_REF, it isn't sharable.  */
+	 a LABEL_REF, it isn't sharable.  */
       if (GET_CODE (XEXP (orig, 0)) == PLUS
-          && GET_CODE (XEXP (XEXP (orig, 0), 0)) == SYMBOL_REF
-          && GET_CODE (XEXP (XEXP (orig, 0), 1)) == CONST_INT)
-        return orig;
+	  && GET_CODE (XEXP (XEXP (orig, 0), 0)) == SYMBOL_REF
+	  && GET_CODE (XEXP (XEXP (orig, 0), 1)) == CONST_INT)
+	return orig;
       break;
 
       /* A MEM with a constant address is not sharable.  The problem is that
-         the constant address may need to be reloaded.  If the mem is shared,
-         then reloading one copy of this mem will cause all copies to appear
-         to have been reloaded.  */
+	 the constant address may need to be reloaded.  If the mem is shared,
+	 then reloading one copy of this mem will cause all copies to appear
+	 to have been reloaded.  */
 
     default:
       break;
@@ -278,19 +278,19 @@ copy_rtx (rtx orig)
     switch (*format_ptr++)
       {
       case 'e':
-        if (XEXP (orig, i) != NULL)
-          XEXP (copy, i) = copy_rtx (XEXP (orig, i));
-        break;
+	if (XEXP (orig, i) != NULL)
+	  XEXP (copy, i) = copy_rtx (XEXP (orig, i));
+	break;
 
       case 'E':
       case 'V':
-        if (XVEC (orig, i) != NULL)
-          {
-            XVEC (copy, i) = rtvec_alloc (XVECLEN (orig, i));
-            for (j = 0; j < XVECLEN (copy, i); j++)
-              XVECEXP (copy, i, j) = copy_rtx (XVECEXP (orig, i, j));
-          }
-        break;
+	if (XVEC (orig, i) != NULL)
+	  {
+	    XVEC (copy, i) = rtvec_alloc (XVECLEN (orig, i));
+	    for (j = 0; j < XVECLEN (copy, i); j++)
+	      XVECEXP (copy, i, j) = copy_rtx (XVECEXP (orig, i, j));
+	  }
+	break;
 
       case 't':
       case 'w':
@@ -301,11 +301,11 @@ copy_rtx (rtx orig)
       case 'u':
       case 'B':
       case '0':
-        /* These are left unchanged.  */
-        break;
+	/* These are left unchanged.  */
+	break;
 
       default:
-        gcc_unreachable ();
+	gcc_unreachable ();
       }
   return copy;
 }
@@ -386,57 +386,57 @@ rtx_equal_p (rtx x, rtx y)
   for (i = GET_RTX_LENGTH (code) - 1; i >= 0; i--)
     {
       switch (fmt[i])
-        {
-        case 'w':
-          if (XWINT (x, i) != XWINT (y, i))
-            return 0;
-          break;
+	{
+	case 'w':
+	  if (XWINT (x, i) != XWINT (y, i))
+	    return 0;
+	  break;
 
-        case 'n':
-        case 'i':
-          if (XINT (x, i) != XINT (y, i))
-            return 0;
-          break;
+	case 'n':
+	case 'i':
+	  if (XINT (x, i) != XINT (y, i))
+	    return 0;
+	  break;
 
-        case 'V':
-        case 'E':
-          /* Two vectors must have the same length.  */
-          if (XVECLEN (x, i) != XVECLEN (y, i))
-            return 0;
+	case 'V':
+	case 'E':
+	  /* Two vectors must have the same length.  */
+	  if (XVECLEN (x, i) != XVECLEN (y, i))
+	    return 0;
 
-          /* And the corresponding elements must match.  */
-          for (j = 0; j < XVECLEN (x, i); j++)
-            if (rtx_equal_p (XVECEXP (x, i, j), XVECEXP (y, i, j)) == 0)
-              return 0;
-          break;
+	  /* And the corresponding elements must match.  */
+	  for (j = 0; j < XVECLEN (x, i); j++)
+	    if (rtx_equal_p (XVECEXP (x, i, j), XVECEXP (y, i, j)) == 0)
+	      return 0;
+	  break;
 
-        case 'e':
-          if (rtx_equal_p (XEXP (x, i), XEXP (y, i)) == 0)
-            return 0;
-          break;
+	case 'e':
+	  if (rtx_equal_p (XEXP (x, i), XEXP (y, i)) == 0)
+	    return 0;
+	  break;
 
-        case 'S':
-        case 's':
-          if ((XSTR (x, i) || XSTR (y, i))
-              && (! XSTR (x, i) || ! XSTR (y, i)
-                  || strcmp (XSTR (x, i), XSTR (y, i))))
-            return 0;
-          break;
+	case 'S':
+	case 's':
+	  if ((XSTR (x, i) || XSTR (y, i))
+	      && (! XSTR (x, i) || ! XSTR (y, i)
+		  || strcmp (XSTR (x, i), XSTR (y, i))))
+	    return 0;
+	  break;
 
-        case 'u':
-          /* These are just backpointers, so they don't matter.  */
-          break;
+	case 'u':
+	  /* These are just backpointers, so they don't matter.  */
+	  break;
 
-        case '0':
-        case 't':
-          break;
+	case '0':
+	case 't':
+	  break;
 
-          /* It is believed that rtx's at this level will never
-             contain anything but integers and other rtx's,
-             except for within LABEL_REFs and SYMBOL_REFs.  */
-        default:
-          gcc_unreachable ();
-        }
+	  /* It is believed that rtx's at this level will never
+	     contain anything but integers and other rtx's,
+	     except for within LABEL_REFs and SYMBOL_REFs.  */
+	default:
+	  gcc_unreachable ();
+	}
     }
   return 1;
 }
@@ -475,7 +475,7 @@ dump_rtx_statistics (void)
 #if defined ENABLE_RTL_CHECKING && (GCC_VERSION >= 2007)
 void
 rtl_check_failed_bounds (rtx r, int n, const char *file, int line,
-                         const char *func)
+			 const char *func)
 {
   internal_error
     ("RTL check: access of elt %d of '%s' with last elt %d in %s, at %s:%d",
@@ -485,7 +485,7 @@ rtl_check_failed_bounds (rtx r, int n, const char *file, int line,
 
 void
 rtl_check_failed_type1 (rtx r, int n, int c1, const char *file, int line,
-                        const char *func)
+			const char *func)
 {
   internal_error
     ("RTL check: expected elt %d type '%c', have '%c' (rtx %s) in %s, at %s:%d",
@@ -495,7 +495,7 @@ rtl_check_failed_type1 (rtx r, int n, int c1, const char *file, int line,
 
 void
 rtl_check_failed_type2 (rtx r, int n, int c1, int c2, const char *file,
-                        int line, const char *func)
+			int line, const char *func)
 {
   internal_error
     ("RTL check: expected elt %d type '%c' or '%c', have '%c' (rtx %s) in %s, at %s:%d",
@@ -505,16 +505,16 @@ rtl_check_failed_type2 (rtx r, int n, int c1, int c2, const char *file,
 
 void
 rtl_check_failed_code1 (rtx r, enum rtx_code code, const char *file,
-                        int line, const char *func)
+			int line, const char *func)
 {
   internal_error ("RTL check: expected code '%s', have '%s' in %s, at %s:%d",
-                  GET_RTX_NAME (code), GET_RTX_NAME (GET_CODE (r)), func,
-                  trim_filename (file), line);
+		  GET_RTX_NAME (code), GET_RTX_NAME (GET_CODE (r)), func,
+		  trim_filename (file), line);
 }
 
 void
 rtl_check_failed_code2 (rtx r, enum rtx_code code1, enum rtx_code code2,
-                        const char *file, int line, const char *func)
+			const char *file, int line, const char *func)
 {
   internal_error
     ("RTL check: expected code '%s' or '%s', have '%s' in %s, at %s:%d",
@@ -524,17 +524,17 @@ rtl_check_failed_code2 (rtx r, enum rtx_code code1, enum rtx_code code2,
 
 void
 rtl_check_failed_code_mode (rtx r, enum rtx_code code, enum machine_mode mode,
-                            bool not_mode, const char *file, int line,
-                            const char *func)
+			    bool not_mode, const char *file, int line,
+			    const char *func)
 {
   internal_error ((not_mode
-                   ? ("RTL check: expected code '%s' and not mode '%s', "
-                      "have code '%s' and mode '%s' in %s, at %s:%d")
-                   : ("RTL check: expected code '%s' and mode '%s', "
-                      "have code '%s' and mode '%s' in %s, at %s:%d")),
-                  GET_RTX_NAME (code), GET_MODE_NAME (mode),
-                  GET_RTX_NAME (GET_CODE (r)), GET_MODE_NAME (GET_MODE (r)),
-                  func, trim_filename (file), line);
+		   ? ("RTL check: expected code '%s' and not mode '%s', "
+		      "have code '%s' and mode '%s' in %s, at %s:%d")
+		   : ("RTL check: expected code '%s' and mode '%s', "
+		      "have code '%s' and mode '%s' in %s, at %s:%d")),
+		  GET_RTX_NAME (code), GET_MODE_NAME (mode),
+		  GET_RTX_NAME (GET_CODE (r)), GET_MODE_NAME (GET_MODE (r)),
+		  func, trim_filename (file), line);
 }
 
 /* Report that line LINE of FILE tried to access the block symbol fields
@@ -551,7 +551,7 @@ rtl_check_failed_block_symbol (const char *file, int line, const char *func)
 /* XXX Maybe print the vector?  */
 void
 rtvec_check_failed_bounds (rtvec r, int n, const char *file, int line,
-                           const char *func)
+			   const char *func)
 {
   internal_error
     ("RTL check: access of elt %d of vector with last elt %d in %s, at %s:%d",
@@ -562,7 +562,7 @@ rtvec_check_failed_bounds (rtvec r, int n, const char *file, int line,
 #if defined ENABLE_RTL_FLAG_CHECKING
 void
 rtl_check_failed_flag (const char *name, rtx r, const char *file,
-                       int line, const char *func)
+		       int line, const char *func)
 {
   internal_error
     ("RTL flag check: %s used with unexpected rtx code '%s' in %s, at %s:%d",

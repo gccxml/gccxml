@@ -65,7 +65,7 @@ __main (arg1, arg2, arg3, image_file_desc, arg5, arg6)
 
   lib$establish (handler);
   decc$main (arg1, arg2, arg3, image_file_desc, arg5, arg6,
-             &argc, &argv, &envp);
+	     &argc, &argv, &envp);
 
   status = main (argc, argv, envp);
 
@@ -79,16 +79,16 @@ __main (arg1, arg2, arg3, image_file_desc, arg5, arg6)
       status = C$_EXIT1 + ((status - 1) << STS$V_MSG_NO);
 
       /* An exit failure status requires a "severe" error
-         All status values are defined in errno with a successful
-         (1) severity but can be changed to an error (2) severity by adding 1.
-         In addition for compatibility with UNIX exit() routines we inhibit
-         a run-time error message from being generated on exit(1).  */
+	 All status values are defined in errno with a successful
+	 (1) severity but can be changed to an error (2) severity by adding 1.
+	 In addition for compatibility with UNIX exit() routines we inhibit
+	 a run-time error message from being generated on exit(1).  */
 
       if (save_status == 1)
-        {
-          status++;
-          status |= STS$M_INHIB_MSG;
-        }
+	{
+	  status++;
+	  status |= STS$M_INHIB_MSG;
+	}
     }
 
   if (status == 0)

@@ -30,19 +30,19 @@ understand.
 Frame
 =====
 
-        +--------------------
-        | incoming args
-        +--------------------
-        | return Address
-osp ->        +--------------------
-        | saved fp
-fp ->        +--------------------
-        | local data
-        +--------------------
-        | saved regs
-        +--------------------
-        | outgoing args (opt)
-sp ->        +--------------------
+	+--------------------
+	| incoming args
+	+--------------------
+	| return Address
+osp ->	+--------------------
+	| saved fp
+fp ->	+--------------------
+	| local data
+	+--------------------
+	| saved regs
+	+--------------------
+	| outgoing args (opt)
+sp ->	+--------------------
 
 Argument Passing
 ================
@@ -117,17 +117,17 @@ The stack frame is slightly different for interrupt handlers, because
 special instructions to return and thus must save/restore everything
 differently.
 
-        +--------------------
-        | program state
-osp ->        +--------------------
-        | return address
-        +--------------------
-        | saved r0..fp (pushm)
-fp ->        +--------------------
-        | local data
-        +--------------------
-        | saved regs mem0..mem15
-        +--------------------
-        | outgoing args (opt)
-sp ->        +--------------------
+	+--------------------
+	| program state
+osp ->	+--------------------
+	| return address
+	+--------------------
+	| saved r0..fp (pushm)
+fp ->	+--------------------
+	| local data
+	+--------------------
+	| saved regs mem0..mem15
+	+--------------------
+	| outgoing args (opt)
+sp ->	+--------------------
 

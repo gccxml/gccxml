@@ -151,12 +151,12 @@ Boston, MA 02110-1301, USA.  */
    the .align directive with GAS.  */
 
 #ifndef ASM_OUTPUT_ALIGN
-# define ASM_OUTPUT_ALIGN(FILE, LOG)                         \
-  do                                                        \
-    {                                                        \
-      if ((LOG) != 0)                                        \
-        fprintf ((FILE), "\t.balign %d\n", 1 << (LOG));        \
-    }                                                        \
+# define ASM_OUTPUT_ALIGN(FILE, LOG) 			\
+  do							\
+    {							\
+      if ((LOG) != 0)					\
+	fprintf ((FILE), "\t.balign %d\n", 1 << (LOG));	\
+    }							\
   while (0)
 #endif
 

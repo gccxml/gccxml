@@ -120,58 +120,58 @@ tree_nrv (void)
   FOR_EACH_BB (bb)
     {
       for (bsi = bsi_start (bb); !bsi_end_p (bsi); bsi_next (&bsi))
-        {
-          tree stmt = bsi_stmt (bsi);
-          tree ret_expr;
+	{
+	  tree stmt = bsi_stmt (bsi);
+	  tree ret_expr;
 
-          if (TREE_CODE (stmt) == RETURN_EXPR)
-            {
-              /* In a function with an aggregate return value, the
-                 gimplifier has changed all non-empty RETURN_EXPRs to
-                 return the RESULT_DECL.  */
-              ret_expr = TREE_OPERAND (stmt, 0);
-              if (ret_expr)
-                gcc_assert (ret_expr == result);
-            }
-          else if (TREE_CODE (stmt) == MODIFY_EXPR
-                   && TREE_OPERAND (stmt, 0) == result)
-            {
-              ret_expr = TREE_OPERAND (stmt, 1);
+	  if (TREE_CODE (stmt) == RETURN_EXPR)
+	    {
+	      /* In a function with an aggregate return value, the
+		 gimplifier has changed all non-empty RETURN_EXPRs to
+		 return the RESULT_DECL.  */
+	      ret_expr = TREE_OPERAND (stmt, 0);
+	      if (ret_expr)
+		gcc_assert (ret_expr == result);
+	    }
+	  else if (TREE_CODE (stmt) == MODIFY_EXPR
+		   && TREE_OPERAND (stmt, 0) == result)
+	    {
+	      ret_expr = TREE_OPERAND (stmt, 1);
 
-              /* Now verify that this return statement uses the same value
-                 as any previously encountered return statement.  */
-              if (found != NULL)
-                {
-                  /* If we found a return statement using a different variable
-                     than previous return statements, then we can not perform
-                     NRV optimizations.  */
-                  if (found != ret_expr)
-                    return 0;
-                }
-              else
-                found = ret_expr;
+	      /* Now verify that this return statement uses the same value
+		 as any previously encountered return statement.  */
+	      if (found != NULL)
+		{
+		  /* If we found a return statement using a different variable
+		     than previous return statements, then we can not perform
+		     NRV optimizations.  */
+		  if (found != ret_expr)
+		    return 0;
+		}
+	      else
+		found = ret_expr;
 
-              /* The returned value must be a local automatic variable of the
-                 same type and alignment as the function's result.  */
-              if (TREE_CODE (found) != VAR_DECL
-                  || TREE_THIS_VOLATILE (found)
-                  || DECL_CONTEXT (found) != current_function_decl
-                  || TREE_STATIC (found)
-                  || TREE_ADDRESSABLE (found)
-                  || DECL_ALIGN (found) > DECL_ALIGN (result)
-                  || !lang_hooks.types_compatible_p (TREE_TYPE (found), 
-                                                     result_type))
-                return 0;
-            }
-          else if (TREE_CODE (stmt) == MODIFY_EXPR)
-            {
-              tree addr = get_base_address (TREE_OPERAND (stmt, 0));
-               /* If there's any MODIFY of component of RESULT, 
-                  then bail out.  */
-              if (addr && addr == result)
-                return 0;
-            }
-        }
+	      /* The returned value must be a local automatic variable of the
+		 same type and alignment as the function's result.  */
+	      if (TREE_CODE (found) != VAR_DECL
+		  || TREE_THIS_VOLATILE (found)
+		  || DECL_CONTEXT (found) != current_function_decl
+		  || TREE_STATIC (found)
+		  || TREE_ADDRESSABLE (found)
+		  || DECL_ALIGN (found) > DECL_ALIGN (result)
+		  || !lang_hooks.types_compatible_p (TREE_TYPE (found), 
+						     result_type))
+		return 0;
+	    }
+	  else if (TREE_CODE (stmt) == MODIFY_EXPR)
+	    {
+	      tree addr = get_base_address (TREE_OPERAND (stmt, 0));
+	       /* If there's any MODIFY of component of RESULT, 
+		  then bail out.  */
+	      if (addr && addr == result)
+		return 0;
+	    }
+	}
     }
 
   if (!found)
@@ -202,19 +202,19 @@ tree_nrv (void)
   FOR_EACH_BB (bb)
     {
       for (bsi = bsi_start (bb); !bsi_end_p (bsi); )
-        {
-          tree *tp = bsi_stmt_ptr (bsi);
-          /* If this is a copy from VAR to RESULT, remove it.  */
-          if (TREE_CODE (*tp) == MODIFY_EXPR
-              && TREE_OPERAND (*tp, 0) == result
-              && TREE_OPERAND (*tp, 1) == found)
-            bsi_remove (&bsi, true);
-          else
-            {
-              walk_tree (tp, finalize_nrv_r, &data, 0);
-              bsi_next (&bsi);
-            }
-        }
+	{
+	  tree *tp = bsi_stmt_ptr (bsi);
+	  /* If this is a copy from VAR to RESULT, remove it.  */
+	  if (TREE_CODE (*tp) == MODIFY_EXPR
+	      && TREE_OPERAND (*tp, 0) == result
+	      && TREE_OPERAND (*tp, 1) == found)
+	    bsi_remove (&bsi, true);
+	  else
+	    {
+	      walk_tree (tp, finalize_nrv_r, &data, 0);
+	      bsi_next (&bsi);
+	    }
+	}
     }
 
   /* FOUND is no longer used.  Ensure it gets removed.  */
@@ -224,19 +224,19 @@ tree_nrv (void)
 
 struct tree_opt_pass pass_nrv = 
 {
-  "nrv",                                /* name */
-  NULL,                                        /* gate */
-  tree_nrv,                                /* execute */
-  NULL,                                        /* sub */
-  NULL,                                        /* next */
-  0,                                        /* static_pass_number */
-  TV_TREE_NRV,                                /* tv_id */
-  PROP_cfg,                                /* properties_required */
-  0,                                        /* properties_provided */
-  0,                                        /* properties_destroyed */
-  0,                                        /* todo_flags_start */
-  TODO_dump_func | TODO_ggc_collect,                        /* todo_flags_finish */
-  0                                        /* letter */
+  "nrv",				/* name */
+  NULL,					/* gate */
+  tree_nrv,				/* execute */
+  NULL,					/* sub */
+  NULL,					/* next */
+  0,					/* static_pass_number */
+  TV_TREE_NRV,				/* tv_id */
+  PROP_cfg,				/* properties_required */
+  0,					/* properties_provided */
+  0,					/* properties_destroyed */
+  0,					/* todo_flags_start */
+  TODO_dump_func | TODO_ggc_collect,			/* todo_flags_finish */
+  0					/* letter */
 };
 
 /* Determine (pessimistically) whether DEST is available for NRV
@@ -253,22 +253,22 @@ dest_safe_for_nrv_p (tree dest)
   switch (TREE_CODE (dest))
     {
       case VAR_DECL:
-        {
-          subvar_t subvar;
-          if (is_call_clobbered (dest))
-            return false;
-          for (subvar = get_subvars_for_var (dest);
-               subvar;
-               subvar = subvar->next)
-            if (is_call_clobbered (subvar->var))
-              return false;
-          return true;
-        }
+	{
+	  subvar_t subvar;
+	  if (is_call_clobbered (dest))
+	    return false;
+	  for (subvar = get_subvars_for_var (dest);
+	       subvar;
+	       subvar = subvar->next)
+	    if (is_call_clobbered (subvar->var))
+	      return false;
+	  return true;
+	}
       case ARRAY_REF:
       case COMPONENT_REF:
-        return dest_safe_for_nrv_p (TREE_OPERAND (dest, 0));
+	return dest_safe_for_nrv_p (TREE_OPERAND (dest, 0));
       default:
-        return false;
+	return false;
     }
 }
 
@@ -293,37 +293,37 @@ execute_return_slot_opt (void)
     {
       block_stmt_iterator i;
       for (i = bsi_start (bb); !bsi_end_p (i); bsi_next (&i))
-        {
-          tree stmt = bsi_stmt (i);
-          tree call;
+	{
+	  tree stmt = bsi_stmt (i);
+	  tree call;
 
-          if (TREE_CODE (stmt) == MODIFY_EXPR
-              && (call = TREE_OPERAND (stmt, 1),
-                  TREE_CODE (call) == CALL_EXPR)
-              && !CALL_EXPR_RETURN_SLOT_OPT (call)
-              && aggregate_value_p (call, call))
-            /* Check if the location being assigned to is
-               call-clobbered.  */
-            CALL_EXPR_RETURN_SLOT_OPT (call) =
-              dest_safe_for_nrv_p (TREE_OPERAND (stmt, 0)) ? 1 : 0;
-        }
+	  if (TREE_CODE (stmt) == MODIFY_EXPR
+	      && (call = TREE_OPERAND (stmt, 1),
+		  TREE_CODE (call) == CALL_EXPR)
+	      && !CALL_EXPR_RETURN_SLOT_OPT (call)
+	      && aggregate_value_p (call, call))
+	    /* Check if the location being assigned to is
+	       call-clobbered.  */
+	    CALL_EXPR_RETURN_SLOT_OPT (call) =
+	      dest_safe_for_nrv_p (TREE_OPERAND (stmt, 0)) ? 1 : 0;
+	}
     }
   return 0;
 }
 
 struct tree_opt_pass pass_return_slot = 
 {
-  "retslot",                                /* name */
-  NULL,                                        /* gate */
-  execute_return_slot_opt,                /* execute */
-  NULL,                                        /* sub */
-  NULL,                                        /* next */
-  0,                                        /* static_pass_number */
-  0,                                        /* tv_id */
-  PROP_ssa | PROP_alias,                /* properties_required */
-  0,                                        /* properties_provided */
-  0,                                        /* properties_destroyed */
-  0,                                        /* todo_flags_start */
-  0,                                        /* todo_flags_finish */
-  0                                        /* letter */
+  "retslot",				/* name */
+  NULL,					/* gate */
+  execute_return_slot_opt,		/* execute */
+  NULL,					/* sub */
+  NULL,					/* next */
+  0,					/* static_pass_number */
+  0,					/* tv_id */
+  PROP_ssa | PROP_alias,		/* properties_required */
+  0,					/* properties_provided */
+  0,					/* properties_destroyed */
+  0,					/* todo_flags_start */
+  0,					/* todo_flags_finish */
+  0					/* letter */
 };

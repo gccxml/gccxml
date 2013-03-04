@@ -98,7 +98,7 @@ is_gimple_reg_rhs (tree t)
 
   if (is_gimple_reg_type (TREE_TYPE (t))
       && ((TREE_CODE (t) == CALL_EXPR && TREE_SIDE_EFFECTS (t))
-          || tree_could_throw_p (t)))
+	  || tree_could_throw_p (t)))
     return false;
 
   return is_gimple_formal_tmp_rhs (t);
@@ -116,7 +116,7 @@ is_gimple_mem_rhs (tree t)
      tailcalls (PR 17526).  */
   if (is_gimple_reg_type (TREE_TYPE (t))
       || (TYPE_MODE (TREE_TYPE (t)) != BLKmode
-          && (TREE_CODE (t) != CALL_EXPR
+	  && (TREE_CODE (t) != CALL_EXPR
               || ! aggregate_value_p (t, t))))
     return is_gimple_val (t);
   else
@@ -142,10 +142,10 @@ bool
 is_gimple_lvalue (tree t)
 {
   return (is_gimple_addressable (t)
-          || TREE_CODE (t) == WITH_SIZE_EXPR
-          /* These are complex lvalues, but don't have addresses, so they
-             go here.  */
-          || TREE_CODE (t) == BIT_FIELD_REF);
+	  || TREE_CODE (t) == WITH_SIZE_EXPR
+	  /* These are complex lvalues, but don't have addresses, so they
+	     go here.  */
+	  || TREE_CODE (t) == BIT_FIELD_REF);
 }
 
 /*  Return true if T is a GIMPLE condition.  */
@@ -162,7 +162,7 @@ bool
 is_gimple_addressable (tree t)
 {
   return (is_gimple_id (t) || handled_component_p (t)
-          || INDIRECT_REF_P (t));
+	  || INDIRECT_REF_P (t));
 }
 
 /* Return true if T is function invariant.  Or rather a restricted
@@ -248,9 +248,9 @@ bool
 is_gimple_variable (tree t)
 {
   return (TREE_CODE (t) == VAR_DECL
-          || TREE_CODE (t) == PARM_DECL
-          || TREE_CODE (t) == RESULT_DECL
-          || TREE_CODE (t) == SSA_NAME);
+	  || TREE_CODE (t) == PARM_DECL
+	  || TREE_CODE (t) == RESULT_DECL
+	  || TREE_CODE (t) == SSA_NAME);
 }
 
 /*  Return true if T is a GIMPLE identifier (something with an address).  */
@@ -259,11 +259,11 @@ bool
 is_gimple_id (tree t)
 {
   return (is_gimple_variable (t)
-          || TREE_CODE (t) == FUNCTION_DECL
-          || TREE_CODE (t) == LABEL_DECL
-          || TREE_CODE (t) == CONST_DECL
-          /* Allow string constants, since they are addressable.  */
-          || TREE_CODE (t) == STRING_CST);
+	  || TREE_CODE (t) == FUNCTION_DECL
+	  || TREE_CODE (t) == LABEL_DECL
+	  || TREE_CODE (t) == CONST_DECL
+	  /* Allow string constants, since they are addressable.  */
+	  || TREE_CODE (t) == STRING_CST);
 }
 
 /* Return true if TYPE is a suitable type for a scalar register variable.  */
@@ -399,7 +399,7 @@ bool
 is_gimple_min_lval (tree t)
 {
   return (is_gimple_id (t)
-          || TREE_CODE (t) == INDIRECT_REF);
+	  || TREE_CODE (t) == INDIRECT_REF);
 }
 
 /* Return true if T is a typecast operation.  */
@@ -408,7 +408,7 @@ bool
 is_gimple_cast (tree t)
 {
   return (TREE_CODE (t) == NOP_EXPR
-          || TREE_CODE (t) == CONVERT_EXPR
+	  || TREE_CODE (t) == CONVERT_EXPR
           || TREE_CODE (t) == FIX_TRUNC_EXPR
           || TREE_CODE (t) == FIX_CEIL_EXPR
           || TREE_CODE (t) == FIX_FLOOR_EXPR
@@ -421,7 +421,7 @@ bool
 is_gimple_call_addr (tree t)
 {
   return (TREE_CODE (t) == OBJ_TYPE_REF
-          || is_gimple_val (t));
+	  || is_gimple_val (t));
 }
 
 /* If T makes a function call, return the corresponding CALL_EXPR operand.
@@ -474,21 +474,21 @@ recalculate_side_effects (tree t)
     {
     case tcc_expression:
       switch (code)
-        {
-        case INIT_EXPR:
-        case MODIFY_EXPR:
-        case VA_ARG_EXPR:
-        case PREDECREMENT_EXPR:
-        case PREINCREMENT_EXPR:
-        case POSTDECREMENT_EXPR:
-        case POSTINCREMENT_EXPR:
-          /* All of these have side-effects, no matter what their
-             operands are.  */
-          return;
+	{
+	case INIT_EXPR:
+	case MODIFY_EXPR:
+	case VA_ARG_EXPR:
+	case PREDECREMENT_EXPR:
+	case PREINCREMENT_EXPR:
+	case POSTDECREMENT_EXPR:
+	case POSTINCREMENT_EXPR:
+	  /* All of these have side-effects, no matter what their
+	     operands are.  */
+	  return;
 
-        default:
-          break;
-        }
+	default:
+	  break;
+	}
       /* Fall through.  */
 
     case tcc_comparison:  /* a comparison expression */
@@ -497,11 +497,11 @@ recalculate_side_effects (tree t)
     case tcc_reference:   /* a reference */
       TREE_SIDE_EFFECTS (t) = TREE_THIS_VOLATILE (t);
       for (i = 0; i < len; ++i)
-        {
-          tree op = TREE_OPERAND (t, i);
-          if (op && TREE_SIDE_EFFECTS (op))
-            TREE_SIDE_EFFECTS (t) = 1;
-        }
+	{
+	  tree op = TREE_OPERAND (t, i);
+	  if (op && TREE_SIDE_EFFECTS (op))
+	    TREE_SIDE_EFFECTS (t) = 1;
+	}
       break;
 
     default:

@@ -265,8 +265,8 @@ void cgraph_remove_edge (struct cgraph_edge *);
 void cgraph_remove_node (struct cgraph_node *);
 void cgraph_node_remove_callees (struct cgraph_node *node);
 struct cgraph_edge *cgraph_create_edge (struct cgraph_node *,
-                                        struct cgraph_node *,
-                                        tree, gcov_type, int);
+					struct cgraph_node *,
+					tree, gcov_type, int);
 struct cgraph_node *cgraph_node (tree);
 struct cgraph_node *cgraph_node_for_asm (tree asmname);
 struct cgraph_edge *cgraph_edge (struct cgraph_node *, tree);
@@ -276,10 +276,10 @@ struct cgraph_global_info *cgraph_global_info (tree);
 struct cgraph_rtl_info *cgraph_rtl_info (tree);
 const char * cgraph_node_name (struct cgraph_node *);
 struct cgraph_edge * cgraph_clone_edge (struct cgraph_edge *,
-                                        struct cgraph_node *,
-                                        tree, gcov_type, int, bool);
+					struct cgraph_node *,
+					tree, gcov_type, int, bool);
 struct cgraph_node * cgraph_clone_node (struct cgraph_node *, gcov_type,
-                                        int, bool);
+					int, bool);
 
 struct cgraph_varpool_node *cgraph_varpool_node (tree);
 struct cgraph_varpool_node *cgraph_varpool_node_for_asm (tree asmname);
@@ -317,8 +317,8 @@ void cgraph_build_static_cdtor (char which, tree body, int priority);
 void cgraph_reset_static_var_maps (void);
 void init_cgraph (void);
 struct cgraph_node *cgraph_function_versioning (struct cgraph_node *,
-                                                VEC(cgraph_edge_p,heap)*,
-                                                varray_type);
+						VEC(cgraph_edge_p,heap)*,
+						varray_type);
 void cgraph_analyze_function (struct cgraph_node *);
 struct cgraph_node *save_inline_function_body (struct cgraph_node *);
 

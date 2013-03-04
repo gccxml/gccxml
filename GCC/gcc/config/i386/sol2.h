@@ -34,10 +34,10 @@ Boston, MA 02110-1301, USA.  */
 /* Old versions of the Solaris assembler can not handle the difference of
    labels in different sections, so force DW_EH_PE_datarel.  */
 #undef ASM_PREFERRED_EH_DATA_FORMAT
-#define ASM_PREFERRED_EH_DATA_FORMAT(CODE,GLOBAL)                        \
-  (flag_pic ? ((GLOBAL ? DW_EH_PE_indirect : 0)                                \
-               | (TARGET_64BIT ? DW_EH_PE_pcrel | DW_EH_PE_sdata4        \
-                  : DW_EH_PE_datarel))                                        \
+#define ASM_PREFERRED_EH_DATA_FORMAT(CODE,GLOBAL)			\
+  (flag_pic ? ((GLOBAL ? DW_EH_PE_indirect : 0)				\
+	       | (TARGET_64BIT ? DW_EH_PE_pcrel | DW_EH_PE_sdata4	\
+		  : DW_EH_PE_datarel))					\
    : DW_EH_PE_absptr)
 
 /* The Solaris linker will not merge a read-only .eh_frame section
@@ -65,10 +65,10 @@ Boston, MA 02110-1301, USA.  */
  
 #undef SUBTARGET_EXTRA_SPECS
 #define SUBTARGET_EXTRA_SPECS \
-  { "cpp_subtarget",        CPP_SUBTARGET_SPEC },        \
-  { "asm_cpu",                ASM_CPU_SPEC },                \
-  { "startfile_arch",        STARTFILE_ARCH_SPEC },        \
-  { "link_arch",        LINK_ARCH_SPEC }
+  { "cpp_subtarget",	CPP_SUBTARGET_SPEC },	\
+  { "asm_cpu",		ASM_CPU_SPEC },		\
+  { "startfile_arch",	STARTFILE_ARCH_SPEC },	\
+  { "link_arch",	LINK_ARCH_SPEC }
 
 #undef LOCAL_LABEL_PREFIX
 #define LOCAL_LABEL_PREFIX "."
@@ -79,18 +79,18 @@ Boston, MA 02110-1301, USA.  */
 #endif
 
 /* The Solaris assembler wants a .local for non-exported aliases.  */
-#define ASM_OUTPUT_DEF_FROM_DECLS(FILE, DECL, TARGET)        \
-  do {                                                        \
-    const char *declname =                                \
-      IDENTIFIER_POINTER (DECL_ASSEMBLER_NAME (DECL));        \
-    ASM_OUTPUT_DEF ((FILE), declname,                        \
-                    IDENTIFIER_POINTER (TARGET));        \
-    if (! TREE_PUBLIC (DECL))                                \
-      {                                                        \
-        fprintf ((FILE), "%s", LOCAL_ASM_OP);                \
-        assemble_name ((FILE), declname);                \
-        fprintf ((FILE), "\n");                                \
-      }                                                        \
+#define ASM_OUTPUT_DEF_FROM_DECLS(FILE, DECL, TARGET)	\
+  do {							\
+    const char *declname =				\
+      IDENTIFIER_POINTER (DECL_ASSEMBLER_NAME (DECL));	\
+    ASM_OUTPUT_DEF ((FILE), declname,			\
+		    IDENTIFIER_POINTER (TARGET));	\
+    if (! TREE_PUBLIC (DECL))				\
+      {							\
+	fprintf ((FILE), "%s", LOCAL_ASM_OP);		\
+	assemble_name ((FILE), declname);		\
+	fprintf ((FILE), "\n");				\
+      }							\
   } while (0)
 
 /* Solaris-specific #pragmas are implemented on top of attributes.  Hook in
@@ -99,13 +99,13 @@ Boston, MA 02110-1301, USA.  */
 #define SUBTARGET_ATTRIBUTE_TABLE SOLARIS_ATTRIBUTE_TABLE
 
 /* Output a simple call for .init/.fini.  */
-#define ASM_OUTPUT_CALL(FILE, FN)                                \
-  do                                                                \
-    {                                                                \
-      fprintf (FILE, "\tcall\t");                                \
-      print_operand (FILE, XEXP (DECL_RTL (FN), 0), 'P');        \
-      fprintf (FILE, "\n");                                        \
-    }                                                                \
+#define ASM_OUTPUT_CALL(FILE, FN)				\
+  do								\
+    {								\
+      fprintf (FILE, "\tcall\t");				\
+      print_operand (FILE, XEXP (DECL_RTL (FN), 0), 'P');	\
+      fprintf (FILE, "\n");					\
+    }								\
   while (0)
 
 /* We do not need NT_VERSION notes.  */

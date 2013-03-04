@@ -282,7 +282,7 @@ uw_frame_state_for (struct _Unwind_Context *context, _Unwind_FrameState *fs)
 
 static inline void
 uw_update_context (struct _Unwind_Context *context,
-                   _Unwind_FrameState *fs __attribute__((unused)) )
+		   _Unwind_FrameState *fs __attribute__((unused)) )
 {
   context->fc = context->fc->prev;
 }
@@ -318,10 +318,10 @@ uw_identify_context (struct _Unwind_Context *context)
 /* Play games with unwind symbols so that we can have call frame
    and sjlj symbols in the same shared library.  Not that you can
    use them simultaneously...  */
-#define _Unwind_RaiseException                _Unwind_SjLj_RaiseException
-#define _Unwind_ForcedUnwind                _Unwind_SjLj_ForcedUnwind
-#define _Unwind_Resume                        _Unwind_SjLj_Resume
-#define _Unwind_Resume_or_Rethrow        _Unwind_SjLj_Resume_or_Rethrow
+#define _Unwind_RaiseException		_Unwind_SjLj_RaiseException
+#define _Unwind_ForcedUnwind		_Unwind_SjLj_ForcedUnwind
+#define _Unwind_Resume			_Unwind_SjLj_Resume
+#define _Unwind_Resume_or_Rethrow	_Unwind_SjLj_Resume_or_Rethrow
 
 #include "unwind.inc"
 

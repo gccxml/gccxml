@@ -20,20 +20,20 @@ along with GCC; see the file COPYING.  If not, write to
 the Free Software Foundation, 51 Franklin Street, Fifth Floor,
 Boston, MA 02110-1301, USA.  */
 
-#define TARGET_OS_CPP_BUILTINS()                        \
-  do                                                        \
-    {                                                        \
-      NETBSD_OS_CPP_BUILTINS_ELF();                        \
-      if (TARGET_ARCH64)                                \
-        {                                                \
-          builtin_define ("__sparc64__");                \
-          builtin_define ("__sparc_v9__");                \
-          builtin_define ("__sparcv9");                        \
-        }                                                \
-      else                                                \
-        builtin_define ("__sparc");                        \
-      builtin_define ("__sparc__");                        \
-    }                                                        \
+#define TARGET_OS_CPP_BUILTINS()			\
+  do							\
+    {							\
+      NETBSD_OS_CPP_BUILTINS_ELF();			\
+      if (TARGET_ARCH64)				\
+	{						\
+	  builtin_define ("__sparc64__");		\
+	  builtin_define ("__sparc_v9__");		\
+	  builtin_define ("__sparcv9");			\
+	}						\
+      else						\
+	builtin_define ("__sparc");			\
+      builtin_define ("__sparc__");			\
+    }							\
   while (0)
 
 /* Make sure these are undefined.  */
@@ -65,7 +65,7 @@ Boston, MA 02110-1301, USA.  */
    This is suitable for output with `assemble_name'.  */
 
 #undef  ASM_GENERATE_INTERNAL_LABEL
-#define ASM_GENERATE_INTERNAL_LABEL(LABEL,PREFIX,NUM)        \
+#define ASM_GENERATE_INTERNAL_LABEL(LABEL,PREFIX,NUM)	\
   sprintf ((LABEL), "*.L%s%ld", (PREFIX), (long)(NUM))
 
 #undef USER_LABEL_PREFIX
@@ -129,10 +129,10 @@ Boston, MA 02110-1301, USA.  */
     %{!mcpu*: \
       %{!mcypress: \
         %{!msparclite: \
-          %{!mf930: \
-            %{!mf934: \
-              %{!mv8*: \
-                %{!msupersparc:-mcpu=ultrasparc}}}}}}} \
+	  %{!mf930: \
+	    %{!mf934: \
+	      %{!mv8*: \
+	        %{!msupersparc:-mcpu=ultrasparc}}}}}}} \
     %{!mno-vis:%{!mcpu=v9:-mvis}} \
     %{p:-mcmodel=medlow} \
     %{pg:-mcmodel=medlow}}"
@@ -148,11 +148,11 @@ Boston, MA 02110-1301, USA.  */
     %{!mlong-double-128:-mlong-double-64} \
     %{!mcpu*: \
       %{!mcypress: \
-        %{!msparclite: \
-          %{!mf930: \
-            %{!mf934: \
-              %{!mv8*: \
-                %{!msupersparc:-mcpu=cypress}}}}}}}} \
+	%{!msparclite: \
+	  %{!mf930: \
+	    %{!mf934: \
+	      %{!mv8*: \
+		%{!msupersparc:-mcpu=cypress}}}}}}}} \
   %{!m32: \
     %{p:-mcmodel=medlow} \
     %{pg:-mcmodel=medlow}}"
@@ -186,13 +186,13 @@ Boston, MA 02110-1301, USA.  */
 /* What extra spec entries do we need?  */
 #undef SUBTARGET_EXTRA_SPECS
 #define SUBTARGET_EXTRA_SPECS \
-  { "link_arch32",                LINK_ARCH32_SPEC }, \
-  { "link_arch64",                LINK_ARCH64_SPEC }, \
-  { "link_arch_default",        LINK_ARCH_DEFAULT_SPEC }, \
-  { "link_arch",                LINK_ARCH_SPEC }, \
-  { "netbsd_cpp_spec",                NETBSD_CPP_SPEC }, \
-  { "netbsd_link_spec",                NETBSD_LINK_SPEC_ELF }, \
-  { "netbsd_entry_point",        NETBSD_ENTRY_POINT },
+  { "link_arch32",		LINK_ARCH32_SPEC }, \
+  { "link_arch64",		LINK_ARCH64_SPEC }, \
+  { "link_arch_default",	LINK_ARCH_DEFAULT_SPEC }, \
+  { "link_arch",		LINK_ARCH_SPEC }, \
+  { "netbsd_cpp_spec",		NETBSD_CPP_SPEC }, \
+  { "netbsd_link_spec",		NETBSD_LINK_SPEC_ELF }, \
+  { "netbsd_entry_point",	NETBSD_ENTRY_POINT },
 
 
 /* Build a compiler that supports -m32 and -m64?  */
@@ -225,7 +225,7 @@ Boston, MA 02110-1301, USA.  */
 #undef TARGET_NAME
 #define TARGET_NAME     (DEFAULT_ARCH32_P ? TARGET_NAME32 : TARGET_NAME64)
 
-#else        /* SPARC_BI_ARCH */
+#else	/* SPARC_BI_ARCH */
 
 #if TARGET_CPU_DEFAULT == TARGET_CPU_v9 \
  || TARGET_CPU_DEFAULT == TARGET_CPU_ultrasparc
@@ -242,8 +242,8 @@ Boston, MA 02110-1301, USA.  */
 #undef TARGET_NAME
 #define TARGET_NAME     TARGET_NAME64
 
-#else        /* TARGET_CPU_DEFAULT == TARGET_CPU_v9 \
-        || TARGET_CPU_DEFAULT == TARGET_CPU_ultrasparc */
+#else	/* TARGET_CPU_DEFAULT == TARGET_CPU_v9 \
+	|| TARGET_CPU_DEFAULT == TARGET_CPU_ultrasparc */
 
 /* A 32-bit only compiler.  NetBSD don't support 128 bit `long double'
    for 32-bit code, unlike Solaris.  */
@@ -260,10 +260,10 @@ Boston, MA 02110-1301, USA.  */
 #undef TARGET_NAME
 #define TARGET_NAME     TARGET_NAME32
 
-#endif        /* TARGET_CPU_DEFAULT == TARGET_CPU_v9 \
-        || TARGET_CPU_DEFAULT == TARGET_CPU_ultrasparc */
+#endif	/* TARGET_CPU_DEFAULT == TARGET_CPU_v9 \
+	|| TARGET_CPU_DEFAULT == TARGET_CPU_ultrasparc */
 
-#endif        /* SPARC_BI_ARCH */
+#endif	/* SPARC_BI_ARCH */
 
 /* We use GNU ld so undefine this so that attribute((init_priority)) works.  */
 #undef CTORS_SECTION_ASM_OP

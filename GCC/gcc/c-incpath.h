@@ -18,8 +18,8 @@ Foundation, 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.  */
 extern void split_quote_chain (void);
 extern void add_path (char *, int, int, bool);
 extern void register_include_chains (cpp_reader *, const char *,
-                                     const char *, const char *,
-                                     int, int, int);
+				     const char *, const char *,
+				     int, int, int);
 extern void add_cpp_dir_path (struct cpp_dir *, int);
 
 struct target_c_incpath_s {

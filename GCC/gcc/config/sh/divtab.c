@@ -151,20 +151,20 @@ main ()
 
       factor = (1./x_low- 1./x_high) / step * 256. + 0.5;
       if (factor == 256)
-        factor = 255;
+	factor = 255;
       factors[i] = factor;
       /* Use minimum of error function for x_med.  */
       x_med = sqrt (256./factor);
       if (x_low < 0)
-        x_med = - x_med;
+	x_med = - x_med;
       low_defect = 1. / x_low + x_low * factor / 256.;
       high_defect = 1. / x_high + x_high * factor / 256.;
       med_defect = 1. / x_med + x_med * factor / 256.;
       max_defect
-        = ((low_defect > high_defect) ^ (x_med < 0)) ? low_defect : high_defect;
+	= ((low_defect > high_defect) ^ (x_med < 0)) ? low_defect : high_defect;
       constant = (med_defect + max_defect) * 0.5 * 16384. + 0.5;
       if (constant < -32768 || constant > 32767)
-        abort ();
+	abort ();
       constants[i] = constant;
       calc_defect (x_low, constant, factor);
       calc_defect (x_med, constant, factor);
@@ -179,9 +179,9 @@ main ()
     printf ("   Max div defect: %e at %d:%e\n", max_defect3, max_defect3_val, max_defect3_x);
     printf ("   Min div defect: %e at %d:%e\n", min_defect3, min_defect3_val, min_defect3_x);
     printf ("   Defect at 1: %e\n",
-            calc_defect (1., constants[0], factors[0]));
+	    calc_defect (1., constants[0], factors[0]));
     printf ("   Defect at -2: %e */\n",
-            calc_defect (-2., constants[steps], factors[steps]));
+	    calc_defect (-2., constants[steps], factors[steps]));
     printf ("\t.section\t.rodata\n");
     printf ("\t.balign 2\n");
     printf ("/* negative division constants */\n");
@@ -191,7 +191,7 @@ main ()
     for (i = steps; i < 2*steps; i++)
       printf ("\t.byte\t%d\n", factors[i]);
     printf ("\t.skip %d\n", steps);
-    printf ("\t.global        GLOBAL(div_table):\n");
+    printf ("\t.global	GLOBAL(div_table):\n");
     printf ("GLOBAL(div_table):\n");
     printf ("\t.skip %d\n", steps);
     printf ("/* positive division factors */\n");

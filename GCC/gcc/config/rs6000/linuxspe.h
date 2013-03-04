@@ -24,8 +24,8 @@
 #define TARGET_VERSION fprintf (stderr, " (PowerPC E500 GNU/Linux)");
 
 /* Override rs6000.h and sysv4.h definition.  */
-#undef        TARGET_DEFAULT
-#define        TARGET_DEFAULT (MASK_POWERPC | MASK_NEW_MNEMONICS | MASK_STRICT_ALIGN)
+#undef	TARGET_DEFAULT
+#define	TARGET_DEFAULT (MASK_POWERPC | MASK_NEW_MNEMONICS | MASK_STRICT_ALIGN)
 
 #undef TARGET_SPE_ABI
 #undef TARGET_SPE
@@ -73,4 +73,4 @@
 */
 
 #undef  ASM_DEFAULT_SPEC
-#define        ASM_DEFAULT_SPEC "-mppc -mspe -me500"
+#define	ASM_DEFAULT_SPEC "-mppc -mspe -me500"

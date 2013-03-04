@@ -22,11 +22,11 @@ Boston, MA 02110-1301, USA.  */
 /* If defined, this macro specifies a table of register pairs used to
    eliminate unneeded registers that point into the stack frame.  */
 
-#define ELIMINABLE_REGS                                                        \
-{                                                                        \
-  {FRAME_POINTER_REGNUM, STACK_POINTER_REGNUM},                                \
-  {ARG_POINTER_REGNUM,         STACK_POINTER_REGNUM},                                \
-  {ARG_POINTER_REGNUM,         FRAME_POINTER_REGNUM},                                \
+#define ELIMINABLE_REGS							\
+{									\
+  {FRAME_POINTER_REGNUM, STACK_POINTER_REGNUM},				\
+  {ARG_POINTER_REGNUM,	 STACK_POINTER_REGNUM},				\
+  {ARG_POINTER_REGNUM,	 FRAME_POINTER_REGNUM},				\
 }
 
 /* A C expression that returns nonzero if the compiler is allowed to try to
@@ -40,32 +40,32 @@ Boston, MA 02110-1301, USA.  */
    registers.  This macro must be defined if `ELIMINABLE_REGS' is
    defined.  */
 #define INITIAL_ELIMINATION_OFFSET(FROM, TO, OFFSET) \
-  do                                                                \
-    {                                                                \
-      int fsize;                                                \
-                                                                \
-      fsize = compute_frame_size (get_frame_size (), 0);        \
-      if ((TO) == FRAME_POINTER_REGNUM                                \
-          && (FROM) == ARG_POINTER_REGNUM)                        \
-        {                                                        \
-          (OFFSET) = -16;                                        \
-          break;                                                \
-        }                                                        \
-                                                                \
-      gcc_assert ((TO) == STACK_POINTER_REGNUM);                \
-                                                                \
-      switch (FROM)                                                \
-        {                                                        \
-        case FRAME_POINTER_REGNUM:                                \
-          (OFFSET) = - fsize;                                        \
-          break;                                                \
-                                                                \
-        case ARG_POINTER_REGNUM:                                \
-          (OFFSET) = - fsize - 16;                                \
-          break;                                                \
-                                                                \
-        default:                                                \
-          gcc_unreachable ();                                        \
-        }                                                        \
+  do								\
+    {								\
+      int fsize;						\
+								\
+      fsize = compute_frame_size (get_frame_size (), 0);	\
+      if ((TO) == FRAME_POINTER_REGNUM				\
+	  && (FROM) == ARG_POINTER_REGNUM)			\
+	{							\
+	  (OFFSET) = -16;					\
+	  break;						\
+	}							\
+								\
+      gcc_assert ((TO) == STACK_POINTER_REGNUM);		\
+								\
+      switch (FROM)						\
+	{							\
+	case FRAME_POINTER_REGNUM:				\
+	  (OFFSET) = - fsize;					\
+	  break;						\
+								\
+	case ARG_POINTER_REGNUM:				\
+	  (OFFSET) = - fsize - 16;				\
+	  break;						\
+								\
+	default:						\
+	  gcc_unreachable ();					\
+	}							\
     } while (0)
 #endif
