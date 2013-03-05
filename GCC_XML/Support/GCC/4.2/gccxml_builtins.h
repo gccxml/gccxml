@@ -130,7 +130,5 @@ float       __complex__ __builtin_cpowf(float __complex__, float __complex__);
 double      __complex__ __builtin_cpow(double __complex__, double __complex__);
 long double __complex__ __builtin_cpowl(long double __complex__, long double __complex__);
 
-#ifdef __llvm__
 extern unsigned int  __builtin_bswap32(unsigned int _data);
 extern unsigned long __builtin_bswap64(unsigned long _data);
-#endif
