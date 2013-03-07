@@ -150,17 +150,17 @@ copy_rename_partition_coalesce (var_map map, tree var1, tree var2, FILE *debug)
   if (p1 == p2)
     {
       if (debug)
-        fprintf (debug, " : Already coalesced.\n");
+	fprintf (debug, " : Already coalesced.\n");
       return;
     }
 
   /* Don't coalesce if one of the variables occurs in an abnormal PHI.  */
   abnorm = (SSA_NAME_OCCURS_IN_ABNORMAL_PHI (rep1)
-            || SSA_NAME_OCCURS_IN_ABNORMAL_PHI (rep2));
+	    || SSA_NAME_OCCURS_IN_ABNORMAL_PHI (rep2));
   if (abnorm)
     {
       if (debug)
-        fprintf (debug, " : Abnormal PHI barrier.  No coalesce.\n");
+	fprintf (debug, " : Abnormal PHI barrier.  No coalesce.\n");
       return;
     }
 
@@ -169,7 +169,7 @@ copy_rename_partition_coalesce (var_map map, tree var1, tree var2, FILE *debug)
     {
       p1 = partition_union (map->var_partition, p1, p2);
       if (debug)
-        fprintf (debug, " : Same root, coalesced --> P%d.\n", p1);
+	fprintf (debug, " : Same root, coalesced --> P%d.\n", p1);
       return;
     }
 
@@ -198,13 +198,13 @@ copy_rename_partition_coalesce (var_map map, tree var1, tree var2, FILE *debug)
       if (DECL_FROM_INLINE (root2))
         ign2 = true;
       else if (DECL_FROM_INLINE (root1))
-        ign1 = true;
+	ign1 = true;
       else 
-        {
-          if (debug)
-            fprintf (debug, " : 2 different USER vars. No coalesce.\n");
-          return;
-        }
+	{
+	  if (debug)
+	    fprintf (debug, " : 2 different USER vars. No coalesce.\n");
+	  return;
+	}
     }
 
   /* Don't coalesce if there are two different memory tags.  */
@@ -213,7 +213,7 @@ copy_rename_partition_coalesce (var_map map, tree var1, tree var2, FILE *debug)
       && ann1->symbol_mem_tag != ann2->symbol_mem_tag)
     {
       if (debug)
-        fprintf (debug, " : 2 memory tags. No coalesce.\n");
+	fprintf (debug, " : 2 memory tags. No coalesce.\n");
       return;
     }
 
@@ -222,16 +222,16 @@ copy_rename_partition_coalesce (var_map map, tree var1, tree var2, FILE *debug)
   if (default_def (root1))
     {
       if (default_def (root2))
-        {
-          if (debug)
-            fprintf (debug, " : 2 default defs. No coalesce.\n");
-          return;
-        }
+	{
+	  if (debug)
+	    fprintf (debug, " : 2 default defs. No coalesce.\n");
+	  return;
+	}
       else
         {
-          ign2 = true;
-          ign1 = false;
-        }
+	  ign2 = true;
+	  ign1 = false;
+	}
     }
   else if (default_def (root2))
     {
@@ -243,7 +243,7 @@ copy_rename_partition_coalesce (var_map map, tree var1, tree var2, FILE *debug)
   if (!lang_hooks.types_compatible_p (TREE_TYPE (root1), TREE_TYPE (root2)))
     {
       if (debug)
-        fprintf (debug, " : Incompatible types.  No coalesce.\n");
+	fprintf (debug, " : Incompatible types.  No coalesce.\n");
       return;
     }
 
@@ -254,7 +254,7 @@ copy_rename_partition_coalesce (var_map map, tree var1, tree var2, FILE *debug)
           != get_alias_set (TREE_TYPE (TREE_TYPE (root2))))
     {
       if (debug)
-        fprintf (debug, " : 2 different aliasing sets. No coalesce.\n");
+	fprintf (debug, " : 2 different aliasing sets. No coalesce.\n");
       return;
     }
 
@@ -280,7 +280,7 @@ copy_rename_partition_coalesce (var_map map, tree var1, tree var2, FILE *debug)
     {
       fprintf (debug, " --> P%d ", p3);
       print_generic_expr (debug, SSA_NAME_VAR (partition_to_var (map, p3)), 
-                          TDF_SLIM);
+			  TDF_SLIM);
       fprintf (debug, "\n");
     }
 }
@@ -313,17 +313,17 @@ rename_ssa_copies (void)
     {
       /* Scan for real copies.  */
       for (bsi = bsi_start (bb); !bsi_end_p (bsi); bsi_next (&bsi))
-        {
-          stmt = bsi_stmt (bsi); 
-          if (TREE_CODE (stmt) == MODIFY_EXPR)
-            {
-              tree lhs = TREE_OPERAND (stmt, 0);
-              tree rhs = TREE_OPERAND (stmt, 1);
+	{
+	  stmt = bsi_stmt (bsi); 
+	  if (TREE_CODE (stmt) == MODIFY_EXPR)
+	    {
+	      tree lhs = TREE_OPERAND (stmt, 0);
+	      tree rhs = TREE_OPERAND (stmt, 1);
 
               if (TREE_CODE (lhs) == SSA_NAME && TREE_CODE (rhs) == SSA_NAME)
-                copy_rename_partition_coalesce (map, lhs, rhs, debug);
-            }
-        }
+		copy_rename_partition_coalesce (map, lhs, rhs, debug);
+	    }
+	}
     }
 
   FOR_EACH_BB (bb)
@@ -332,17 +332,17 @@ rename_ssa_copies (void)
       for (phi = phi_nodes (bb); phi; phi = PHI_CHAIN (phi))
         {
           int i;
-          tree res = PHI_RESULT (phi);
+	  tree res = PHI_RESULT (phi);
 
-          /* Do not process virtual SSA_NAMES.  */
-          if (!is_gimple_reg (SSA_NAME_VAR (res)))
-            continue;
+	  /* Do not process virtual SSA_NAMES.  */
+	  if (!is_gimple_reg (SSA_NAME_VAR (res)))
+	    continue;
 
           for (i = 0; i < PHI_NUM_ARGS (phi); i++)
             {
               tree arg = PHI_ARG_DEF (phi, i);
               if (TREE_CODE (arg) == SSA_NAME)
-                copy_rename_partition_coalesce (map, res, arg, debug);
+		copy_rename_partition_coalesce (map, res, arg, debug);
             }
         }
     }
@@ -361,15 +361,15 @@ rename_ssa_copies (void)
       var = map->partition_to_var[x];
       if (debug)
         {
-          if (SSA_NAME_VAR (var) != SSA_NAME_VAR (part_var))
-            {
-              fprintf (debug, "Coalesced ");
-              print_generic_expr (debug, var, TDF_SLIM);
-              fprintf (debug, " to ");
-              print_generic_expr (debug, part_var, TDF_SLIM);
-              fprintf (debug, "\n");
-            }
-        }
+	  if (SSA_NAME_VAR (var) != SSA_NAME_VAR (part_var))
+	    {
+	      fprintf (debug, "Coalesced ");
+	      print_generic_expr (debug, var, TDF_SLIM);
+	      fprintf (debug, " to ");
+	      print_generic_expr (debug, part_var, TDF_SLIM);
+	      fprintf (debug, "\n");
+	    }
+	}
       replace_ssa_name_symbol (var, SSA_NAME_VAR (part_var));
     }
 
@@ -387,18 +387,18 @@ gate_copyrename (void)
 
 struct tree_opt_pass pass_rename_ssa_copies = 
 {  
-  "copyrename",                                /* name */
-  gate_copyrename,                        /* gate */
-  rename_ssa_copies,                        /* execute */
-  NULL,                                        /* sub */
-  NULL,                                        /* next */
-  0,                                        /* static_pass_number */
-  TV_TREE_COPY_RENAME,                        /* tv_id */
-  PROP_cfg | PROP_ssa | PROP_alias,        /* properties_required */
-  0,                                        /* properties_provided */
-  0,                                        /* properties_destroyed */
-  0,                                        /* todo_flags_start */ 
+  "copyrename",				/* name */
+  gate_copyrename,			/* gate */
+  rename_ssa_copies,			/* execute */
+  NULL,					/* sub */
+  NULL,					/* next */
+  0,					/* static_pass_number */
+  TV_TREE_COPY_RENAME,			/* tv_id */
+  PROP_cfg | PROP_ssa | PROP_alias,	/* properties_required */
+  0,					/* properties_provided */
+  0,					/* properties_destroyed */
+  0,					/* todo_flags_start */ 
   TODO_dump_func | TODO_verify_ssa,     /* todo_flags_finish */
-  0                                        /* letter */
+  0					/* letter */
 }; 
 

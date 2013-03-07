@@ -29,17 +29,17 @@
 
 extern long long __divdi3 (long long, long long);
 extern unsigned long long __udivdi3 (unsigned long long, 
-                                     unsigned long long);
+				     unsigned long long);
 extern long long __gnu_ldivmod_helper (long long, long long, long long *);
 extern unsigned long long __gnu_uldivmod_helper (unsigned long long, 
-                                                 unsigned long long, 
-                                                 unsigned long long *);
+						 unsigned long long, 
+						 unsigned long long *);
 
 
 long long
 __gnu_ldivmod_helper (long long a, 
-                      long long b, 
-                      long long *remainder)
+		      long long b, 
+		      long long *remainder)
 {
   long long quotient;
 
@@ -50,8 +50,8 @@ __gnu_ldivmod_helper (long long a,
 
 unsigned long long
 __gnu_uldivmod_helper (unsigned long long a, 
-                       unsigned long long b,
-                       unsigned long long *remainder)
+		       unsigned long long b,
+		       unsigned long long *remainder)
 {
   unsigned long long quotient;
 

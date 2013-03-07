@@ -69,30 +69,30 @@ tree_init_edge_profiler (void)
 
       /* void (*) (gcov_type *, gcov_type, int, unsigned)  */
       interval_profiler_fn_type
-              = build_function_type_list (void_type_node,
-                                          gcov_type_ptr, gcov_type_node,
-                                          integer_type_node,
-                                          unsigned_type_node, NULL_TREE);
+	      = build_function_type_list (void_type_node,
+					  gcov_type_ptr, gcov_type_node,
+					  integer_type_node,
+					  unsigned_type_node, NULL_TREE);
       tree_interval_profiler_fn
-              = build_fn_decl ("__gcov_interval_profiler",
-                                     interval_profiler_fn_type);
+	      = build_fn_decl ("__gcov_interval_profiler",
+				     interval_profiler_fn_type);
 
       /* void (*) (gcov_type *, gcov_type)  */
       pow2_profiler_fn_type
-              = build_function_type_list (void_type_node,
-                                          gcov_type_ptr, gcov_type_node,
-                                          NULL_TREE);
+	      = build_function_type_list (void_type_node,
+					  gcov_type_ptr, gcov_type_node,
+					  NULL_TREE);
       tree_pow2_profiler_fn = build_fn_decl ("__gcov_pow2_profiler",
-                                                   pow2_profiler_fn_type);
+						   pow2_profiler_fn_type);
 
       /* void (*) (gcov_type *, gcov_type)  */
       one_value_profiler_fn_type
-              = build_function_type_list (void_type_node,
-                                          gcov_type_ptr, gcov_type_node,
-                                          NULL_TREE);
+	      = build_function_type_list (void_type_node,
+					  gcov_type_ptr, gcov_type_node,
+					  NULL_TREE);
       tree_one_value_profiler_fn
-              = build_fn_decl ("__gcov_one_value_profiler",
-                                     one_value_profiler_fn_type);
+	      = build_fn_decl ("__gcov_one_value_profiler",
+				     one_value_profiler_fn_type);
     }
 }
 
@@ -108,8 +108,8 @@ tree_gen_edge_profiler (int edgeno, edge e)
   tree ref = tree_coverage_counter_ref (GCOV_COUNTER_ARCS, edgeno);
   tree stmt1 = build2 (MODIFY_EXPR, gcov_type_node, tmp1, ref);
   tree stmt2 = build2 (MODIFY_EXPR, gcov_type_node, tmp2,
-                       build2 (PLUS_EXPR, gcov_type_node, 
-                              tmp1, integer_one_node));
+		       build2 (PLUS_EXPR, gcov_type_node, 
+			      tmp1, integer_one_node));
   tree stmt3 = build2 (MODIFY_EXPR, gcov_type_node, ref, tmp2);
   bsi_insert_on_edge (e, stmt1);
   bsi_insert_on_edge (e, stmt2);
@@ -121,11 +121,11 @@ tree_gen_edge_profiler (int edgeno, edge e)
 
 static tree
 prepare_instrumented_value (block_stmt_iterator *bsi,
-                            histogram_value value)
+			    histogram_value value)
 {
   tree val = value->hvalue.value;
   return force_gimple_operand_bsi (bsi, fold_convert (gcov_type_node, val),
-                                   true, NULL_TREE);
+				   true, NULL_TREE);
 }
 
 /* Output instructions as GIMPLE trees to increment the interval histogram 
@@ -143,14 +143,14 @@ tree_gen_interval_profiler (histogram_value value, unsigned tag, unsigned base)
   tree steps = build_int_cst_type (unsigned_type_node, value->hdata.intvl.steps);
   
   ref_ptr = force_gimple_operand_bsi (&bsi,
-                                      build_addr (ref, current_function_decl),
-                                      true, NULL_TREE);
+				      build_addr (ref, current_function_decl),
+				      true, NULL_TREE);
   val = prepare_instrumented_value (&bsi, value);
   args = tree_cons (NULL_TREE, ref_ptr,
-                    tree_cons (NULL_TREE, val,
-                               tree_cons (NULL_TREE, start,
-                                          tree_cons (NULL_TREE, steps,
-                                                     NULL_TREE))));
+		    tree_cons (NULL_TREE, val,
+			       tree_cons (NULL_TREE, start,
+					  tree_cons (NULL_TREE, steps,
+						     NULL_TREE))));
   call = build_function_call_expr (tree_interval_profiler_fn, args);
   bsi_insert_before (&bsi, call, BSI_SAME_STMT);
 }
@@ -168,12 +168,12 @@ tree_gen_pow2_profiler (histogram_value value, unsigned tag, unsigned base)
   tree args, call, val;
   
   ref_ptr = force_gimple_operand_bsi (&bsi,
-                                      build_addr (ref, current_function_decl),
-                                      true, NULL_TREE);
+				      build_addr (ref, current_function_decl),
+				      true, NULL_TREE);
   val = prepare_instrumented_value (&bsi, value);
   args = tree_cons (NULL_TREE, ref_ptr,
-                    tree_cons (NULL_TREE, val,
-                               NULL_TREE));
+		    tree_cons (NULL_TREE, val,
+			       NULL_TREE));
   call = build_function_call_expr (tree_pow2_profiler_fn, args);
   bsi_insert_before (&bsi, call, BSI_SAME_STMT);
 }
@@ -191,12 +191,12 @@ tree_gen_one_value_profiler (histogram_value value, unsigned tag, unsigned base)
   tree args, call, val;
   
   ref_ptr = force_gimple_operand_bsi (&bsi,
-                                      build_addr (ref, current_function_decl),
-                                      true, NULL_TREE);
+				      build_addr (ref, current_function_decl),
+				      true, NULL_TREE);
   val = prepare_instrumented_value (&bsi, value);
   args = tree_cons (NULL_TREE, ref_ptr,
-                    tree_cons (NULL_TREE, val,
-                               NULL_TREE));
+		    tree_cons (NULL_TREE, val,
+			       NULL_TREE));
   call = build_function_call_expr (tree_one_value_profiler_fn, args);
   bsi_insert_before (&bsi, call, BSI_SAME_STMT);
 }
@@ -208,8 +208,8 @@ tree_gen_one_value_profiler (histogram_value value, unsigned tag, unsigned base)
 
 static void
 tree_gen_const_delta_profiler (histogram_value value ATTRIBUTE_UNUSED, 
-                                unsigned tag ATTRIBUTE_UNUSED,
-                                unsigned base ATTRIBUTE_UNUSED)
+				unsigned tag ATTRIBUTE_UNUSED,
+				unsigned base ATTRIBUTE_UNUSED)
 {
   /* FIXME implement this.  */
 #ifdef ENABLE_CHECKING
@@ -252,19 +252,19 @@ tree_profiling (void)
 
 struct tree_opt_pass pass_tree_profile = 
 {
-  "tree_profile",                        /* name */
-  do_tree_profiling,                        /* gate */
-  tree_profiling,                        /* execute */
-  NULL,                                        /* sub */
-  NULL,                                        /* next */
-  0,                                        /* static_pass_number */
-  TV_BRANCH_PROB,                        /* tv_id */
-  PROP_gimple_leh | PROP_cfg,                /* properties_required */
-  PROP_gimple_leh | PROP_cfg,                /* properties_provided */
-  0,                                        /* properties_destroyed */
-  0,                                        /* todo_flags_start */
-  TODO_verify_stmts,                        /* todo_flags_finish */
-  0                                        /* letter */
+  "tree_profile",			/* name */
+  do_tree_profiling,			/* gate */
+  tree_profiling,			/* execute */
+  NULL,					/* sub */
+  NULL,					/* next */
+  0,					/* static_pass_number */
+  TV_BRANCH_PROB,			/* tv_id */
+  PROP_gimple_leh | PROP_cfg,		/* properties_required */
+  PROP_gimple_leh | PROP_cfg,		/* properties_provided */
+  0,					/* properties_destroyed */
+  0,					/* todo_flags_start */
+  TODO_verify_stmts,			/* todo_flags_finish */
+  0					/* letter */
 };
 
 /* Return 1 if tree-based profiling is in effect, else 0.
@@ -279,25 +279,25 @@ do_early_tree_profiling (void)
 
 struct tree_opt_pass pass_early_tree_profile = 
 {
-  "early_tree_profile",                        /* name */
-  do_early_tree_profiling,                /* gate */
-  tree_profiling,                        /* execute */
-  NULL,                                        /* sub */
-  NULL,                                        /* next */
-  0,                                        /* static_pass_number */
-  TV_BRANCH_PROB,                        /* tv_id */
-  PROP_gimple_leh | PROP_cfg,                /* properties_required */
-  PROP_gimple_leh | PROP_cfg,                /* properties_provided */
-  0,                                        /* properties_destroyed */
-  0,                                        /* todo_flags_start */
-  TODO_verify_stmts,                        /* todo_flags_finish */
-  0                                        /* letter */
+  "early_tree_profile",			/* name */
+  do_early_tree_profiling,		/* gate */
+  tree_profiling,			/* execute */
+  NULL,					/* sub */
+  NULL,					/* next */
+  0,					/* static_pass_number */
+  TV_BRANCH_PROB,			/* tv_id */
+  PROP_gimple_leh | PROP_cfg,		/* properties_required */
+  PROP_gimple_leh | PROP_cfg,		/* properties_provided */
+  0,					/* properties_destroyed */
+  0,					/* todo_flags_start */
+  TODO_verify_stmts,			/* todo_flags_finish */
+  0					/* letter */
 };
 
 struct profile_hooks tree_profile_hooks =
 {
   tree_init_edge_profiler,      /* init_edge_profiler */
-  tree_gen_edge_profiler,        /* gen_edge_profiler */
+  tree_gen_edge_profiler,	/* gen_edge_profiler */
   tree_gen_interval_profiler,   /* gen_interval_profiler */
   tree_gen_pow2_profiler,       /* gen_pow2_profiler */
   tree_gen_one_value_profiler,  /* gen_one_value_profiler */

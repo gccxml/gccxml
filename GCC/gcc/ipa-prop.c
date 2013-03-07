@@ -249,16 +249,16 @@ ipa_method_modify_stmt (struct cgraph_node *mt, tree stmt)
     {
     case MODIFY_EXPR:
       if (TREE_CODE (TREE_OPERAND (stmt, 0)) == PARM_DECL)
-        {
-          i = ipa_method_tree_map (mt, TREE_OPERAND (stmt, 0));
-          if (i >= 0)
+	{
+	  i = ipa_method_tree_map (mt, TREE_OPERAND (stmt, 0));
+	  if (i >= 0)
             ipa_method_modify_set (mt, i, true);
-        }
+	}
       break;
     case ASM_EXPR:
       /* Asm code could modify any of the parameters.  */
       for (j = 0; j < ipa_method_formal_count (mt); j++)
-        ipa_method_modify_set (mt, j, true);
+	ipa_method_modify_set (mt, j, true);
       break;
     default:
       break;
@@ -300,7 +300,7 @@ ipa_method_compute_modify (struct cgraph_node *mt)
   if (DECL_UNINLINABLE (decl))
     {
       for (j = 0; j < count; j++)
-        ipa_method_modify_set (mt, j, true);
+	ipa_method_modify_set (mt, j, true);
       return;
     }
   /* Formals whose address is taken are considered modified.  */
@@ -308,7 +308,7 @@ ipa_method_compute_modify (struct cgraph_node *mt)
     {
       parm_tree = ipa_method_get_tree (mt, j);
       if (TREE_ADDRESSABLE (parm_tree))
-        ipa_method_modify_set (mt, j, true);
+	ipa_method_modify_set (mt, j, true);
     }
   body = DECL_SAVED_TREE (decl);
   if (body != NULL)
@@ -316,11 +316,11 @@ ipa_method_compute_modify (struct cgraph_node *mt)
       func = DECL_STRUCT_FUNCTION (decl);
       FOR_EACH_BB_FN (bb, func)
       {
-        for (bsi = bsi_start (bb); !bsi_end_p (bsi); bsi_next (&bsi))
-          {
-            stmt = bsi_stmt (bsi);
-            ipa_method_modify_stmt (mt, stmt);
-          }
+	for (bsi = bsi_start (bb); !bsi_end_p (bsi); bsi_next (&bsi))
+	  {
+	    stmt = bsi_stmt (bsi);
+	    ipa_method_modify_stmt (mt, stmt);
+	  }
       }
     }
 }
@@ -361,7 +361,7 @@ ipa_callsite_callee (struct cgraph_edge *cs)
    in callsite CS.  */
 static inline void
 ipa_callsite_param_set_type (struct cgraph_edge *cs, int i,
-                             enum jump_func_type type1)
+			     enum jump_func_type type1)
 {
   IPA_EDGE_REF (cs)->ipa_param_map[i].type = type1;
 }
@@ -370,7 +370,7 @@ ipa_callsite_param_set_type (struct cgraph_edge *cs, int i,
    of argument I of callsite CS.  */
 static inline void
 ipa_callsite_param_set_info_type_formal (struct cgraph_edge *cs, int i,
-                                         unsigned int formal)
+					 unsigned int formal)
 {
   ipa_callsite_param (cs, i)->info_type.formal_id = formal;
 }
@@ -450,47 +450,47 @@ ipa_callsite_compute_param (struct cgraph_edge *cs)
          FORMAL_IPATYPE and its index in the caller as the jump function 
          of this argument.  */
       if (TREE_CODE (TREE_VALUE (arg)) == PARM_DECL)
-        {
-          mt = ipa_callsite_caller (cs);
-          i = ipa_method_tree_map (mt, TREE_VALUE (arg));
-          if (i < 0 || ipa_method_is_modified (mt, i))
-            ipa_callsite_param_set_type (cs, arg_num, UNKNOWN_IPATYPE);
-          else
-            {
-              ipa_callsite_param_set_type (cs, arg_num, FORMAL_IPATYPE);
-              ipa_callsite_param_set_info_type_formal (cs, arg_num, i);
-            }
-        }
+	{
+	  mt = ipa_callsite_caller (cs);
+	  i = ipa_method_tree_map (mt, TREE_VALUE (arg));
+	  if (i < 0 || ipa_method_is_modified (mt, i))
+	    ipa_callsite_param_set_type (cs, arg_num, UNKNOWN_IPATYPE);
+	  else
+	    {
+	      ipa_callsite_param_set_type (cs, arg_num, FORMAL_IPATYPE);
+	      ipa_callsite_param_set_info_type_formal (cs, arg_num, i);
+	    }
+	}
       /* If a constant value was passed as argument, 
          we store CONST_IPATYPE and its value as the jump function 
          of this argument.  */
       else if (TREE_CODE (TREE_VALUE (arg)) == INTEGER_CST
-               || TREE_CODE (TREE_VALUE (arg)) == REAL_CST)
-        {
-          ipa_callsite_param_set_type (cs, arg_num, CONST_IPATYPE);
-          ipa_callsite_param_set_info_type (cs, arg_num,
-                                            TREE_VALUE (arg));
-        }
+	       || TREE_CODE (TREE_VALUE (arg)) == REAL_CST)
+	{
+	  ipa_callsite_param_set_type (cs, arg_num, CONST_IPATYPE);
+	  ipa_callsite_param_set_info_type (cs, arg_num,
+					    TREE_VALUE (arg));
+	}
       /* This is for the case of Fortran. If the address of a const_decl 
          was passed as argument then we store 
          CONST_IPATYPE_REF/CONST_IPATYPE_REF and the constant 
          value as the jump function corresponding to this argument.  */
       else if (TREE_CODE (TREE_VALUE (arg)) == ADDR_EXPR
-               && TREE_CODE (TREE_OPERAND (TREE_VALUE (arg), 0)) ==
-               CONST_DECL)
-        {
-          cst_decl = TREE_OPERAND (TREE_VALUE (arg), 0);
-          if (TREE_CODE (DECL_INITIAL (cst_decl)) == INTEGER_CST
-              || TREE_CODE (DECL_INITIAL (cst_decl)) == REAL_CST)
-            {
-              ipa_callsite_param_set_type (cs, arg_num,
-                                           CONST_IPATYPE_REF);
-              ipa_callsite_param_set_info_type (cs, arg_num,
-                                                DECL_INITIAL (cst_decl));
-            }
-        }
+	       && TREE_CODE (TREE_OPERAND (TREE_VALUE (arg), 0)) ==
+	       CONST_DECL)
+	{
+	  cst_decl = TREE_OPERAND (TREE_VALUE (arg), 0);
+	  if (TREE_CODE (DECL_INITIAL (cst_decl)) == INTEGER_CST
+	      || TREE_CODE (DECL_INITIAL (cst_decl)) == REAL_CST)
+	    {
+	      ipa_callsite_param_set_type (cs, arg_num,
+					   CONST_IPATYPE_REF);
+	      ipa_callsite_param_set_info_type (cs, arg_num,
+						DECL_INITIAL (cst_decl));
+	    }
+	}
       else
-        ipa_callsite_param_set_type (cs, arg_num, UNKNOWN_IPATYPE);
+	ipa_callsite_param_set_type (cs, arg_num, UNKNOWN_IPATYPE);
       arg_num++;
     }
 }
@@ -563,8 +563,8 @@ ipa_edges_free (void)
   for (node = cgraph_nodes; node; node = node->next)
     for (cs = node->callees; cs; cs = cs->next_callee)
       {
-        free (cs->aux);
-        cs->aux = NULL;
+	free (cs->aux);
+	cs->aux = NULL;
       }
 }
 
@@ -578,19 +578,19 @@ ipa_free (void)
   for (node = cgraph_nodes; node; node = node->next)
     {
       if (node->aux == NULL)
-        continue;
+	continue;
       if (IPA_NODE_REF (node)->ipcp_cval)
-        free (IPA_NODE_REF (node)->ipcp_cval);
+	free (IPA_NODE_REF (node)->ipcp_cval);
       if (IPA_NODE_REF (node)->ipa_param_tree)
-        free (IPA_NODE_REF (node)->ipa_param_tree);
+	free (IPA_NODE_REF (node)->ipa_param_tree);
       if (IPA_NODE_REF (node)->ipa_mod)
-        free (IPA_NODE_REF (node)->ipa_mod);
+	free (IPA_NODE_REF (node)->ipa_mod);
       for (cs = node->callees; cs; cs = cs->next_callee)
-        {
-          if (cs->aux)
-            if (IPA_EDGE_REF (cs)->ipa_param_map)
-              free (IPA_EDGE_REF (cs)->ipa_param_map);
-        }
+	{
+	  if (cs->aux)
+	    if (IPA_EDGE_REF (cs)->ipa_param_map)
+	      free (IPA_EDGE_REF (cs)->ipa_param_map);
+	}
     }
 }
 
@@ -609,12 +609,12 @@ ipa_method_tree_print (FILE * f)
       fprintf (f, "method  %s Trees :: \n", cgraph_node_name (node));
       count = ipa_method_formal_count (node);
       for (i = 0; i < count; i++)
-        {
-          temp = ipa_method_get_tree (node, i);
-          if (TREE_CODE (temp) == PARM_DECL)
-            fprintf (f, "  param [%d] : %s\n", i,
-                     (*lang_hooks.decl_printable_name) (temp, 2));
-        }
+	{
+	  temp = ipa_method_get_tree (node, i);
+	  if (TREE_CODE (temp) == PARM_DECL)
+	    fprintf (f, "  param [%d] : %s\n", i,
+		     (*lang_hooks.decl_printable_name) (temp, 2));
+	}
 
     }
 }
@@ -634,12 +634,12 @@ ipa_method_modify_print (FILE * f)
       fprintf (f, "method  %s :: \n", cgraph_node_name (node));
       count = ipa_method_formal_count (node);
       for (i = 0; i < count; i++)
-        {
-          temp = ipa_method_is_modified (node, i);
-          if (temp)
-            fprintf (f, " param [%d] true \n", i);
-          else
-            fprintf (f, " param [%d] false \n", i);
-        }
+	{
+	  temp = ipa_method_is_modified (node, i);
+	  if (temp)
+	    fprintf (f, " param [%d] true \n", i);
+	  else
+	    fprintf (f, " param [%d] false \n", i);
+	}
     }
 }

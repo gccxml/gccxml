@@ -213,7 +213,7 @@
 (exclusion_set "2_0m.fi" "2_0m.mf, 2_0b.bb, 2_0m.bb, 2_0m.ib, 2_0m.mb,\
                           2_0m.fb, 2_0m.lx")
 (exclusion_set "2_0m.mf" "2_0b.bb, 2_0m.bb, 2_0m.ib, 2_0m.mb, 2_0m.fb,\
-                          2_0m.lx")
+	                  2_0m.lx")
 (exclusion_set "2_0b.bb" "2_0m.bb, 2_0m.ib, 2_0m.mb, 2_0m.fb, 2_0m.lx")
 (exclusion_set "2_0m.bb" "2_0m.ib, 2_0m.mb, 2_0m.fb, 2_0m.lx")
 (exclusion_set "2_0m.ib" "2_0m.mb, 2_0m.fb, 2_0m.lx")
@@ -605,7 +605,7 @@
    "two")
 
 (define_cpu_unit "2_m_cont, 2_mi_cont, 2_mm_cont, 2_mf_cont, 2_mb_cont,\
-                  2_b_cont, 2_bb_cont" "two")
+	          2_b_cont, 2_bb_cont" "two")
 
 ;; For stop in the middle of the bundles.
 (define_cpu_unit "2_m_stop, 2_m0_stop, 2_m1_stop, 2_0mmi_cont" "two")
@@ -752,14 +752,14 @@
 
 (define_insn_reservation "2_fldp"    6
   (and (and (and (eq_attr "cpu" "itanium2")
-                 (eq_attr "itanium_class" "fldp"))
-            (eq_attr "check_load" "no"))
+		 (eq_attr "itanium_class" "fldp"))
+	    (eq_attr "check_load" "no"))
        (eq (symbol_ref "bundling_p") (const_int 0)))
   "2_M_only_um01")
 (define_insn_reservation "2_fldpc"   0
   (and (and (and (eq_attr "cpu" "itanium2")
-                 (eq_attr "itanium_class" "fldp"))
-            (eq_attr "check_load" "yes"))
+		 (eq_attr "itanium_class" "fldp"))
+	    (eq_attr "check_load" "yes"))
        (eq (symbol_ref "bundling_p") (const_int 0)))
   "2_M_only_um01")
 
@@ -1079,13 +1079,13 @@
 (define_bypass  0 "2_fcvtfx,2_fld,2_flda,2_fldc,2_fmac,2_fmisc,2_frar_i,2_frar_m,\
                    2_frbr,2_frfr,2_frpr,2_ialu,2_ilog,2_ishf,2_ld,2_ldc,2_long_i,\
                    2_mmalua,2_mmmul,2_mmshf,2_mmshfi,2_toar_m,2_tofr,\
-                   2_xmpy,2_xtd"
+		   2_xmpy,2_xtd"
                   "2_scall")
 
 (define_bypass  0 "2_unknown,2_ignore,2_stop_bit,2_br,2_fcmp,2_fcvtfx,2_fld,2_flda,2_fldc,\
                    2_fmac,2_fmisc,2_frar_i,2_frar_m,2_frbr,2_frfr,2_frpr,\
                    2_ialu,2_icmp,2_ilog,2_ishf,2_ld,2_ldc,2_chk_s_i,2_chk_s_f,2_chk_a,2_long_i,\
-                   2_mmalua,2_mmmul,2_mmshf,2_mmshfi,2_nop,2_nop_b,2_nop_f,\
+		   2_mmalua,2_mmmul,2_mmshf,2_mmshfi,2_nop,2_nop_b,2_nop_f,\
                    2_nop_i,2_nop_m,2_nop_x,2_rse_m,2_scall,2_sem,2_stf,2_st,\
                    2_syst_m0,2_syst_m,2_tbit,2_toar_i,2_toar_m,2_tobr,2_tofr,\
                    2_topr,2_xmpy,2_xtd,2_lfetch" "2_ignore")
@@ -1459,7 +1459,7 @@
    "twob")
 
 (define_cpu_unit "2b_m_cont, 2b_mi_cont, 2b_mm_cont, 2b_mf_cont, 2b_mb_cont,\
-                  2b_b_cont, 2b_bb_cont" "twob")
+	          2b_b_cont, 2b_bb_cont" "twob")
 
 ;; For stop in the middle of the bundles.
 (define_cpu_unit "2b_m_stop, 2b_m0_stop, 2b_m1_stop, 2b_0mmi_cont" "twob")
@@ -1607,14 +1607,14 @@
 
 (define_insn_reservation "2b_fldp"    6
   (and (and (and (eq_attr "cpu" "itanium2")
-                 (eq_attr "itanium_class" "fldp"))
-            (eq_attr "check_load" "no"))
+		 (eq_attr "itanium_class" "fldp"))
+	    (eq_attr "check_load" "no"))
        (ne (symbol_ref "bundling_p") (const_int 0)))
   "2b_M_only_um01")
 (define_insn_reservation "2b_fldpc"   0
   (and (and (and (eq_attr "cpu" "itanium2")
-                 (eq_attr "itanium_class" "fldp"))
-            (eq_attr "check_load" "yes"))
+		 (eq_attr "itanium_class" "fldp"))
+	    (eq_attr "check_load" "yes"))
        (ne (symbol_ref "bundling_p") (const_int 0)))
   "2b_M_only_um01")
 
@@ -1644,12 +1644,12 @@
             (eq_attr "itanium_class" "frbr"))
        (ne (symbol_ref "bundling_p") (const_int 0)))
   "2b_I+2b_only_ui0")
-(define_insn_reservation "2b_frfr"    5                                  
+(define_insn_reservation "2b_frfr"    5				  
   (and (and (eq_attr "cpu" "itanium2")
             (eq_attr "itanium_class" "frfr"))
        (ne (symbol_ref "bundling_p") (const_int 0)))
   "2b_M_only_um2")
-(define_insn_reservation "2b_frpr"    2                                  
+(define_insn_reservation "2b_frpr"    2				  
   (and (and (eq_attr "cpu" "itanium2")
             (eq_attr "itanium_class" "frpr"))
        (ne (symbol_ref "bundling_p") (const_int 0)))

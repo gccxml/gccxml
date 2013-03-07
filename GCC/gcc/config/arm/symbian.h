@@ -38,10 +38,10 @@
 
    The wchar_t type is a 2-byte type, unless explicitly
    overridden.  */
-#define CC1_SPEC                                                \
-  "%{!fbuiltin:%{!fno-builtin:-fno-builtin}} "                        \
-  "%{!fvisibility=*:-fvisibility=hidden} "                        \
-  "%{!fshort-enums:%{!fno-short-enums:-fno-short-enums}} "        \
+#define CC1_SPEC						\
+  "%{!fbuiltin:%{!fno-builtin:-fno-builtin}} "			\
+  "%{!fvisibility=*:-fvisibility=hidden} "			\
+  "%{!fshort-enums:%{!fno-short-enums:-fno-short-enums}} "	\
   "%{!fshort-wchar:%{!fno-short-wchar:-fshort-wchar}} "
 #define CC1PLUS_SPEC CC1_SPEC
 
@@ -79,13 +79,13 @@
 
 /* Define the __symbian__ macro.  */
 #undef TARGET_OS_CPP_BUILTINS
-#define TARGET_OS_CPP_BUILTINS()                \
-  do                                                \
-    {                                                \
-      /* Include the default BPABI stuff.  */        \
-      TARGET_BPABI_CPP_BUILTINS ();                \
-      builtin_define ("__symbian__");                \
-    }                                                \
+#define TARGET_OS_CPP_BUILTINS()		\
+  do						\
+    {						\
+      /* Include the default BPABI stuff.  */	\
+      TARGET_BPABI_CPP_BUILTINS ();		\
+      builtin_define ("__symbian__");		\
+    }						\
   while (false)
 
 /* On SymbianOS, these sections are not writable, so we use "a",

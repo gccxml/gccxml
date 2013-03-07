@@ -29,8 +29,8 @@ const char *host_detect_local_cpu (int argc, const char **argv);
 #ifdef GCC_VERSION
 #define cpuid(num,a,b,c,d) \
   asm volatile ("xchgl %%ebx, %1; cpuid; xchgl %%ebx, %1" \
-                : "=a" (a), "=r" (b), "=c" (c), "=d" (d)  \
-                : "0" (num))
+		: "=a" (a), "=r" (b), "=c" (c), "=d" (d)  \
+		: "0" (num))
 
 #define bit_CMPXCHG8B (1 << 8)
 #define bit_CMOV (1 << 15)
@@ -82,9 +82,9 @@ const char *host_detect_local_cpu (int argc, const char **argv)
 #ifndef __x86_64__
   /* See if we can use cpuid.  */
   asm volatile ("pushfl; pushfl; popl %0; movl %0,%1; xorl %2,%0;"
-                "pushl %0; popfl; pushfl; popl %0; popfl"
-                : "=&r" (eax), "=&r" (ebx)
-                : "i" (0x00200000));
+		"pushl %0; popfl; pushfl; popl %0; popfl"
+		: "=&r" (eax), "=&r" (ebx)
+		: "i" (0x00200000));
 
   if (((eax ^ ebx) & 0x00200000) == 0)
     goto done;
@@ -125,52 +125,52 @@ const char *host_detect_local_cpu (int argc, const char **argv)
   if (is_amd)
     {
       if (has_mmx)
-        processor = PROCESSOR_K6;
+	processor = PROCESSOR_K6;
       if (has_3dnowp)
-        processor = PROCESSOR_ATHLON;
+	processor = PROCESSOR_ATHLON;
       if (has_sse2 || has_longmode)
-        processor = PROCESSOR_K8;
+	processor = PROCESSOR_K8;
     }
   else
     {
       switch (family)
-        {
-        case 5:
-          /* Default is PROCESSOR_PENTIUM.  */
-          break;
-        case 6:
-          processor = PROCESSOR_PENTIUMPRO;
-          break;
-        case 15:
-          processor = PROCESSOR_PENTIUM4;
-          break;
-        default:
-          /* We have no idea.  Use something reasonable.  */
-          if (arch)
-            {
-              if (has_sse3)
-                {
-                  if (has_longmode)
-                    cpu = "nocona";
-                  else
-                    cpu = "prescott";
-                }
-              else if (has_sse2)
-                cpu = "pentium4";
-              else if (has_cmov)
-                cpu = "pentiumpro";
-              else if (has_mmx)
-                cpu = "pentium-mmx";
-              else if (has_cmpxchg8b)
-                cpu = "pentium";
-              else
-                cpu = "i386";
-            }
-          else
-            cpu = "generic";
-          goto done;
-          break;
-        }
+	{
+	case 5:
+	  /* Default is PROCESSOR_PENTIUM.  */
+	  break;
+	case 6:
+	  processor = PROCESSOR_PENTIUMPRO;
+	  break;
+	case 15:
+	  processor = PROCESSOR_PENTIUM4;
+	  break;
+	default:
+	  /* We have no idea.  Use something reasonable.  */
+	  if (arch)
+	    {
+	      if (has_sse3)
+		{
+		  if (has_longmode)
+		    cpu = "nocona";
+		  else
+		    cpu = "prescott";
+		}
+	      else if (has_sse2)
+		cpu = "pentium4";
+	      else if (has_cmov)
+		cpu = "pentiumpro";
+	      else if (has_mmx)
+		cpu = "pentium-mmx";
+	      else if (has_cmpxchg8b)
+		cpu = "pentium";
+	      else
+		cpu = "i386";
+	    }
+	  else
+	    cpu = "generic";
+	  goto done;
+	  break;
+	}
     }
 
   switch (processor)
@@ -183,75 +183,75 @@ const char *host_detect_local_cpu (int argc, const char **argv)
       break;
     case PROCESSOR_PENTIUM:
       if (has_mmx)
-        cpu = "pentium-mmx";
+	cpu = "pentium-mmx";
       else
-        cpu = "pentium";
+	cpu = "pentium";
       break;
     case PROCESSOR_PENTIUMPRO:
       if (arch)
-        {
-          if (has_sse3)
-            {
-              if (has_longmode)
-                {
-                  /* It is Core 2 Duo.  */
-                  cpu = "nocona";
-                }
-              else
-                {
-                  /* It is Core Duo.  */
-                  cpu = "prescott";
-                }
-            }
-          else if (has_sse2)
-            {
-              /* It is Pentium M.  */
-              cpu = "pentium4";
-            }
-          else if (has_sse)
-            {
-              /* It is Pentium III.  */
-              cpu = "pentium3";
-            }
-          else if (has_mmx)
-            {
-              /* It is Pentium II.  */
-              cpu = "pentium2";
-            }
-          else
-            {
-              /* Default to Pentium Pro.  */
-              cpu = "pentiumpro";
-            }
-        }
+	{
+	  if (has_sse3)
+	    {
+	      if (has_longmode)
+		{
+		  /* It is Core 2 Duo.  */
+		  cpu = "nocona";
+		}
+	      else
+		{
+		  /* It is Core Duo.  */
+		  cpu = "prescott";
+		}
+	    }
+	  else if (has_sse2)
+	    {
+	      /* It is Pentium M.  */
+	      cpu = "pentium4";
+	    }
+	  else if (has_sse)
+	    {
+	      /* It is Pentium III.  */
+	      cpu = "pentium3";
+	    }
+	  else if (has_mmx)
+	    {
+	      /* It is Pentium II.  */
+	      cpu = "pentium2";
+	    }
+	  else
+	    {
+	      /* Default to Pentium Pro.  */
+	      cpu = "pentiumpro";
+	    }
+	}
       else
-        {
-          /* For -mtune, we default to -mtune=generic.  */
-          cpu = "generic";
-        }
+	{
+	  /* For -mtune, we default to -mtune=generic.  */
+	  cpu = "generic";
+	}
       break;
     case PROCESSOR_K6:
       if (has_3dnow)
         cpu = "k6-3";
       else
-        cpu = "k6";
+	cpu = "k6";
       break;
     case PROCESSOR_ATHLON:
       if (has_sse)
-        cpu = "athlon-4";
+	cpu = "athlon-4";
       else
-        cpu = "athlon";
+	cpu = "athlon";
       break;
     case PROCESSOR_PENTIUM4:
       if (has_sse3)
-        {
-          if (has_longmode)
-            cpu = "nocona";
-          else
-            cpu = "prescott";
-        }
+	{
+	  if (has_longmode)
+	    cpu = "nocona";
+	  else
+	    cpu = "prescott";
+	}
       else
-        cpu = "pentium4";
+	cpu = "pentium4";
       break;
     case PROCESSOR_K8:
       cpu = "k8";
@@ -289,7 +289,7 @@ const char *host_detect_local_cpu (int argc, const char **argv)
   if (arch)
     {
       /* FIXME: i386 is wrong for 64bit compiler.  How can we tell if
-         we are generating 64bit or 32bit code?  */
+	 we are generating 64bit or 32bit code?  */
       cpu = "i386";
     }
   else

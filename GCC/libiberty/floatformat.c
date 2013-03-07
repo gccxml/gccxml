@@ -149,7 +149,7 @@ const struct floatformat floatformat_vax_g =
 };
 
 static int floatformat_i387_ext_is_valid (const struct floatformat *fmt,
-                                          const void *from);
+					  const void *from);
 
 static int
 floatformat_i387_ext_is_valid (const struct floatformat *fmt, const void *from)
@@ -162,9 +162,9 @@ floatformat_i387_ext_is_valid (const struct floatformat *fmt, const void *from)
   const unsigned char *ufrom = (const unsigned char *) from;
 
   exponent = get_field (ufrom, fmt->byteorder, fmt->totalsize,
-                        fmt->exp_start, fmt->exp_len);
+			fmt->exp_start, fmt->exp_len);
   int_bit = get_field (ufrom, fmt->byteorder, fmt->totalsize,
-                       fmt->man_start, 1);
+		       fmt->man_start, 1);
 
   if ((exponent == 0) != (int_bit == 0))
     return 0;
@@ -283,18 +283,18 @@ get_field (const unsigned char *data, enum floatformat_byteorders order,
   while ((unsigned int) cur_bitshift < len)
     {
       if (len - cur_bitshift < FLOATFORMAT_CHAR_BIT)
-        /* This is the last byte; zero out the bits which are not part of
-           this field.  */
-        result |=
-          (*(data + cur_byte) & ((1 << (len - cur_bitshift)) - 1))
-            << cur_bitshift;
+	/* This is the last byte; zero out the bits which are not part of
+	   this field.  */
+	result |=
+	  (*(data + cur_byte) & ((1 << (len - cur_bitshift)) - 1))
+	    << cur_bitshift;
       else
-        result |= *(data + cur_byte) << cur_bitshift;
+	result |= *(data + cur_byte) << cur_bitshift;
       cur_bitshift += FLOATFORMAT_CHAR_BIT;
       if (order == floatformat_little)
-        ++cur_byte;
+	++cur_byte;
       else
-        --cur_byte;
+	--cur_byte;
     }
   return result;
 }
@@ -317,10 +317,10 @@ floatformat_to_double (const struct floatformat *fmt,
   unsigned long mant;
   unsigned int mant_bits, mant_off;
   int mant_bits_left;
-  int special_exponent;                /* It's a NaN, denorm or zero */
+  int special_exponent;		/* It's a NaN, denorm or zero */
 
   exponent = get_field (ufrom, fmt->byteorder, fmt->totalsize,
-                        fmt->exp_start, fmt->exp_len);
+			fmt->exp_start, fmt->exp_len);
 
   /* If the exponent indicates a NaN, we don't have information to
      decide what to do.  So we handle it like IEEE, except that we
@@ -333,35 +333,35 @@ floatformat_to_double (const struct floatformat *fmt,
       mant_bits_left = fmt->man_len;
       nan = 0;
       while (mant_bits_left > 0)
-        {
-          mant_bits = min (mant_bits_left, 32);
+	{
+	  mant_bits = min (mant_bits_left, 32);
 
-          if (get_field (ufrom, fmt->byteorder, fmt->totalsize,
-                         mant_off, mant_bits) != 0)
-            {
-              /* This is a NaN.  */
-              nan = 1;
-              break;
-            }
+	  if (get_field (ufrom, fmt->byteorder, fmt->totalsize,
+			 mant_off, mant_bits) != 0)
+	    {
+	      /* This is a NaN.  */
+	      nan = 1;
+	      break;
+	    }
 
-          mant_off += mant_bits;
-          mant_bits_left -= mant_bits;
-        }
+	  mant_off += mant_bits;
+	  mant_bits_left -= mant_bits;
+	}
 
       /* On certain systems (such as GNU/Linux), the use of the
-         INFINITY macro below may generate a warning that can not be
-         silenced due to a bug in GCC (PR preprocessor/11931).  The
-         preprocessor fails to recognise the __extension__ keyword in
-         conjunction with the GNU/C99 extension for hexadecimal
-         floating point constants and will issue a warning when
-         compiling with -pedantic.  */
+	 INFINITY macro below may generate a warning that can not be
+	 silenced due to a bug in GCC (PR preprocessor/11931).  The
+	 preprocessor fails to recognise the __extension__ keyword in
+	 conjunction with the GNU/C99 extension for hexadecimal
+	 floating point constants and will issue a warning when
+	 compiling with -pedantic.  */
       if (nan)
-        dto = NAN;
+	dto = NAN;
       else
-        dto = INFINITY;
+	dto = INFINITY;
 
       if (get_field (ufrom, fmt->byteorder, fmt->totalsize, fmt->sign_start, 1))
-        dto = -dto;
+	dto = -dto;
 
       *to = dto;
 
@@ -387,9 +387,9 @@ floatformat_to_double (const struct floatformat *fmt,
   if (!special_exponent)
     {
       if (fmt->intbit == floatformat_intbit_no)
-        dto = ldexp (1.0, exponent);
+	dto = ldexp (1.0, exponent);
       else
-        exponent++;
+	exponent++;
     }
 
   while (mant_bits_left > 0)
@@ -397,20 +397,20 @@ floatformat_to_double (const struct floatformat *fmt,
       mant_bits = min (mant_bits_left, 32);
 
       mant = get_field (ufrom, fmt->byteorder, fmt->totalsize,
-                         mant_off, mant_bits);
+			 mant_off, mant_bits);
 
       /* Handle denormalized numbers.  FIXME: What should we do for
-         non-IEEE formats?  */
+	 non-IEEE formats?  */
       if (special_exponent && exponent == 0 && mant != 0)
-        dto += ldexp ((double)mant,
-                      (- fmt->exp_bias
-                       - mant_bits
-                       - (mant_off - fmt->man_start)
-                       + 1));
+	dto += ldexp ((double)mant,
+		      (- fmt->exp_bias
+		       - mant_bits
+		       - (mant_off - fmt->man_start)
+		       + 1));
       else
-        dto += ldexp ((double)mant, exponent - mant_bits);
+	dto += ldexp ((double)mant, exponent - mant_bits);
       if (exponent != 0)
-        exponent -= mant_bits;
+	exponent -= mant_bits;
       mant_off += mant_bits;
       mant_bits_left -= mant_bits;
     }
@@ -457,20 +457,20 @@ put_field (unsigned char *data, enum floatformat_byteorders order,
   while ((unsigned int) cur_bitshift < len)
     {
       if (len - cur_bitshift < FLOATFORMAT_CHAR_BIT)
-        {
-          /* This is the last byte.  */
-          *(data + cur_byte) &=
-            ~((1 << (len - cur_bitshift)) - 1);
-          *(data + cur_byte) |= (stuff_to_put >> cur_bitshift);
-        }
+	{
+	  /* This is the last byte.  */
+	  *(data + cur_byte) &=
+	    ~((1 << (len - cur_bitshift)) - 1);
+	  *(data + cur_byte) |= (stuff_to_put >> cur_bitshift);
+	}
       else
-        *(data + cur_byte) = ((stuff_to_put >> cur_bitshift)
-                              & ((1 << FLOATFORMAT_CHAR_BIT) - 1));
+	*(data + cur_byte) = ((stuff_to_put >> cur_bitshift)
+			      & ((1 << FLOATFORMAT_CHAR_BIT) - 1));
       cur_bitshift += FLOATFORMAT_CHAR_BIT;
       if (order == floatformat_little)
-        ++cur_byte;
+	++cur_byte;
       else
-        --cur_byte;
+	--cur_byte;
     }
 }
 
@@ -509,32 +509,32 @@ floatformat_from_double (const struct floatformat *fmt,
     {
       /* NaN.  */
       put_field (uto, fmt->byteorder, fmt->totalsize, fmt->exp_start,
-                 fmt->exp_len, fmt->exp_nan);
+		 fmt->exp_len, fmt->exp_nan);
       /* Be sure it's not infinity, but NaN value is irrelevant.  */
       put_field (uto, fmt->byteorder, fmt->totalsize, fmt->man_start,
-                 32, 1);
+		 32, 1);
       return;
     }
 
   if (dfrom + dfrom == dfrom)
     {
       /* This can only happen for an infinite value (or zero, which we
-         already handled above).  */
+	 already handled above).  */
       put_field (uto, fmt->byteorder, fmt->totalsize, fmt->exp_start,
-                 fmt->exp_len, fmt->exp_nan);
+		 fmt->exp_len, fmt->exp_nan);
       return;
     }
 
   mant = frexp (dfrom, &exponent);
   if (exponent + fmt->exp_bias - 1 > 0)
     put_field (uto, fmt->byteorder, fmt->totalsize, fmt->exp_start,
-               fmt->exp_len, exponent + fmt->exp_bias - 1);
+	       fmt->exp_len, exponent + fmt->exp_bias - 1);
   else
     {
       /* Handle a denormalized number.  FIXME: What should we do for
-         non-IEEE formats?  */
+	 non-IEEE formats?  */
       put_field (uto, fmt->byteorder, fmt->totalsize, fmt->exp_start,
-                 fmt->exp_len, 0);
+		 fmt->exp_len, 0);
       mant = ldexp (mant, exponent + fmt->exp_bias - 1);
     }
 
@@ -550,23 +550,23 @@ floatformat_from_double (const struct floatformat *fmt,
       mant -= mant_long;
 
       /* If the integer bit is implicit, and we are not creating a
-         denormalized number, then we need to discard it.  */
+	 denormalized number, then we need to discard it.  */
       if ((unsigned int) mant_bits_left == fmt->man_len
-          && fmt->intbit == floatformat_intbit_no
-          && exponent + fmt->exp_bias - 1 > 0)
-        {
-          mant_long &= 0x7fffffff;
-          mant_bits -= 1;
-        }
+	  && fmt->intbit == floatformat_intbit_no
+	  && exponent + fmt->exp_bias - 1 > 0)
+	{
+	  mant_long &= 0x7fffffff;
+	  mant_bits -= 1;
+	}
       else if (mant_bits < 32)
-        {
-          /* The bits we want are in the most significant MANT_BITS bits of
-             mant_long.  Move them to the least significant.  */
-          mant_long >>= 32 - mant_bits;
-        }
+	{
+	  /* The bits we want are in the most significant MANT_BITS bits of
+	     mant_long.  Move them to the least significant.  */
+	  mant_long >>= 32 - mant_bits;
+	}
 
       put_field (uto, fmt->byteorder, fmt->totalsize,
-                 mant_off, mant_bits, mant_long);
+		 mant_off, mant_bits, mant_long);
       mant_off += mant_bits;
       mant_bits_left -= mant_bits;
     }

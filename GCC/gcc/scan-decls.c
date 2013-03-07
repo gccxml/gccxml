@@ -51,7 +51,7 @@ get_a_token (cpp_reader *pfile)
     {
       const cpp_token *result = cpp_get_token (pfile);
       if (result->type != CPP_PADDING)
-        return result;
+	return result;
     }
 }
 
@@ -64,11 +64,11 @@ skip_to_closing_brace (cpp_reader *pfile)
       enum cpp_ttype token = get_a_token (pfile)->type;
 
       if (token == CPP_EOF)
-        break;
+	break;
       if (token == CPP_OPEN_BRACE)
-        nesting++;
+	nesting++;
       if (token == CPP_CLOSE_BRACE && --nesting == 0)
-        break;
+	break;
     }
 }
 
@@ -96,7 +96,7 @@ Here dname is the actual name being declared.
 
 int
 scan_decls (cpp_reader *pfile, int argc ATTRIBUTE_UNUSED,
-            char **argv ATTRIBUTE_UNUSED)
+	    char **argv ATTRIBUTE_UNUSED)
 {
   int saw_extern, saw_inline;
   cpp_token prev_id;
@@ -113,8 +113,8 @@ scan_decls (cpp_reader *pfile, int argc ATTRIBUTE_UNUSED,
     {
       /* Pop an 'extern "C"' nesting level, if appropriate.  */
       if (extern_C_braces_length
-          && extern_C_braces[extern_C_braces_length - 1] == brace_nesting)
-        extern_C_braces_length--;
+	  && extern_C_braces[extern_C_braces_length - 1] == brace_nesting)
+	extern_C_braces_length--;
       brace_nesting--;
       goto new_statement;
     }
@@ -136,115 +136,115 @@ scan_decls (cpp_reader *pfile, int argc ATTRIBUTE_UNUSED,
   for (;;)
     {
       switch (token->type)
-        {
-        default:
-          goto handle_statement;
-        case CPP_MULT:
-        case CPP_AND:
-          /* skip */
-          break;
+	{
+	default:
+	  goto handle_statement;
+	case CPP_MULT:
+	case CPP_AND:
+	  /* skip */
+	  break;
 
-        case CPP_COMMA:
-        case CPP_SEMICOLON:
-          if (prev_id.type != CPP_EOF && saw_extern)
-            {
-              recognized_extern (&prev_id);
-            }
-          if (token->type == CPP_COMMA)
-            break;
-          /* ... fall through ...  */
-        case CPP_OPEN_BRACE:  case CPP_CLOSE_BRACE:
-          goto new_statement;
+	case CPP_COMMA:
+	case CPP_SEMICOLON:
+	  if (prev_id.type != CPP_EOF && saw_extern)
+	    {
+	      recognized_extern (&prev_id);
+	    }
+	  if (token->type == CPP_COMMA)
+	    break;
+	  /* ... fall through ...  */
+	case CPP_OPEN_BRACE:  case CPP_CLOSE_BRACE:
+	  goto new_statement;
 
-        case CPP_EOF:
-          return 0;
+	case CPP_EOF:
+	  return 0;
 
-        case CPP_OPEN_PAREN:
-          /* Looks like this is the start of a formal parameter list.  */
-          if (prev_id.type != CPP_EOF)
-            {
-              int nesting = 1;
-              int have_arg_list = 0;
-              const struct line_map *map;
-              unsigned int line;
-              for (;;)
-                {
-                  token = get_a_token (pfile);
-                  if (token->type == CPP_OPEN_PAREN)
-                    nesting++;
-                  else if (token->type == CPP_CLOSE_PAREN)
-                    {
-                      nesting--;
-                      if (nesting == 0)
-                        break;
-                    }
-                  else if (token->type == CPP_EOF)
-                    break;
-                  else if (token->type == CPP_NAME
-                           || token->type == CPP_ELLIPSIS)
-                    have_arg_list = 1;
-                }
-              map = linemap_lookup (&line_table, token->src_loc);
-              line = SOURCE_LINE (map, token->src_loc);
-              recognized_function (&prev_id, line,
-                                   (saw_inline ? 'I'
-                                    : in_extern_C_brace || current_extern_C
-                                    ? 'F' : 'f'), have_arg_list);
-              token = get_a_token (pfile);
-              if (token->type == CPP_OPEN_BRACE)
-                {
-                  /* skip body of (normally) inline function */
-                  skip_to_closing_brace (pfile);
-                  goto new_statement;
-                }
+	case CPP_OPEN_PAREN:
+	  /* Looks like this is the start of a formal parameter list.  */
+	  if (prev_id.type != CPP_EOF)
+	    {
+	      int nesting = 1;
+	      int have_arg_list = 0;
+	      const struct line_map *map;
+	      unsigned int line;
+	      for (;;)
+		{
+		  token = get_a_token (pfile);
+		  if (token->type == CPP_OPEN_PAREN)
+		    nesting++;
+		  else if (token->type == CPP_CLOSE_PAREN)
+		    {
+		      nesting--;
+		      if (nesting == 0)
+			break;
+		    }
+		  else if (token->type == CPP_EOF)
+		    break;
+		  else if (token->type == CPP_NAME
+			   || token->type == CPP_ELLIPSIS)
+		    have_arg_list = 1;
+		}
+	      map = linemap_lookup (&line_table, token->src_loc);
+	      line = SOURCE_LINE (map, token->src_loc);
+	      recognized_function (&prev_id, line,
+				   (saw_inline ? 'I'
+				    : in_extern_C_brace || current_extern_C
+				    ? 'F' : 'f'), have_arg_list);
+	      token = get_a_token (pfile);
+	      if (token->type == CPP_OPEN_BRACE)
+		{
+		  /* skip body of (normally) inline function */
+		  skip_to_closing_brace (pfile);
+		  goto new_statement;
+		}
 
-              /* skip a possible __attribute__ or throw expression after the
-                 parameter list */
-              while (token->type != CPP_SEMICOLON && token->type != CPP_EOF)
-                token = get_a_token (pfile);
-              if (token->type == CPP_EOF)
-                return 0;
-              goto new_statement;
-            }
-          break;
-        case CPP_NAME:
-          /* "inline" and "extern" are recognized but skipped */
-          if (cpp_ideq (token, "inline"))
-            {
-              saw_inline = 1;
-            }
-          else if (cpp_ideq (token, "extern"))
-            {
-              saw_extern = 1;
-              token = get_a_token (pfile);
-              if (token->type == CPP_STRING
-                  && token->val.str.len == 1
-                  && token->val.str.text[0] == 'C')
-                {
-                  current_extern_C = 1;
-                  token = get_a_token (pfile);
-                  if (token->type == CPP_OPEN_BRACE)
-                    {
-                      brace_nesting++;
-                      extern_C_braces[extern_C_braces_length++]
-                        = brace_nesting;
-                      if (extern_C_braces_length >= MAX_EXTERN_C_BRACES)
-                        {
-                          fprintf (stderr,
-                                     "Internal error: out-of-bounds index\n");
-                          exit (FATAL_EXIT_CODE);
-                        }
-                      goto new_statement;
-                    }
-                }
-              else
-                continue;
-              break;
-            }
-          /* This may be the name of a variable or function.  */
-          prev_id = *token;
-          break;
-        }
+	      /* skip a possible __attribute__ or throw expression after the
+		 parameter list */
+	      while (token->type != CPP_SEMICOLON && token->type != CPP_EOF)
+		token = get_a_token (pfile);
+	      if (token->type == CPP_EOF)
+		return 0;
+	      goto new_statement;
+	    }
+	  break;
+	case CPP_NAME:
+	  /* "inline" and "extern" are recognized but skipped */
+	  if (cpp_ideq (token, "inline"))
+	    {
+	      saw_inline = 1;
+	    }
+	  else if (cpp_ideq (token, "extern"))
+	    {
+	      saw_extern = 1;
+	      token = get_a_token (pfile);
+	      if (token->type == CPP_STRING
+		  && token->val.str.len == 1
+		  && token->val.str.text[0] == 'C')
+		{
+		  current_extern_C = 1;
+		  token = get_a_token (pfile);
+		  if (token->type == CPP_OPEN_BRACE)
+		    {
+		      brace_nesting++;
+		      extern_C_braces[extern_C_braces_length++]
+			= brace_nesting;
+		      if (extern_C_braces_length >= MAX_EXTERN_C_BRACES)
+			{
+			  fprintf (stderr,
+			  	   "Internal error: out-of-bounds index\n");
+			  exit (FATAL_EXIT_CODE);
+			}
+		      goto new_statement;
+		    }
+		}
+	      else
+		continue;
+	      break;
+	    }
+	  /* This may be the name of a variable or function.  */
+	  prev_id = *token;
+	  break;
+	}
       token = get_a_token (pfile);
     }
 }

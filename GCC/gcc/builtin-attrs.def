@@ -46,10 +46,10 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
 DEF_ATTR_NULL_TREE (ATTR_NULL)
 
 /* Construct a tree for a given integer and a list containing it.  */
-#define DEF_ATTR_FOR_INT(VALUE)                                        \
-  DEF_ATTR_INT (ATTR_##VALUE, VALUE)                        \
-  DEF_ATTR_TREE_LIST (ATTR_LIST_##VALUE, ATTR_NULL,        \
-                      ATTR_##VALUE, ATTR_NULL)
+#define DEF_ATTR_FOR_INT(VALUE)					\
+  DEF_ATTR_INT (ATTR_##VALUE, VALUE)			\
+  DEF_ATTR_TREE_LIST (ATTR_LIST_##VALUE, ATTR_NULL,	\
+		      ATTR_##VALUE, ATTR_NULL)
 DEF_ATTR_FOR_INT (0)
 DEF_ATTR_FOR_INT (1)
 DEF_ATTR_FOR_INT (2)
@@ -60,9 +60,9 @@ DEF_ATTR_FOR_INT (6)
 #undef DEF_ATTR_FOR_INT
 
 /* Construct a tree for a list of two integers.  */
-#define DEF_LIST_INT_INT(VALUE1, VALUE2)                                 \
-  DEF_ATTR_TREE_LIST (ATTR_LIST_##VALUE1##_##VALUE2, ATTR_NULL,                 \
-                      ATTR_##VALUE1, ATTR_LIST_##VALUE2)
+#define DEF_LIST_INT_INT(VALUE1, VALUE2)				 \
+  DEF_ATTR_TREE_LIST (ATTR_LIST_##VALUE1##_##VALUE2, ATTR_NULL,		 \
+		      ATTR_##VALUE1, ATTR_LIST_##VALUE2)
 DEF_LIST_INT_INT (1,0)
 DEF_LIST_INT_INT (1,2)
 DEF_LIST_INT_INT (2,0)
@@ -99,18 +99,18 @@ DEF_ATTR_TREE_LIST (ATTR_NOVOPS_LIST, ATTR_NOVOPS, ATTR_NULL, ATTR_NULL)
 
 DEF_ATTR_TREE_LIST (ATTR_NOTHROW_LIST, ATTR_NOTHROW, ATTR_NULL, ATTR_NULL)
 
-DEF_ATTR_TREE_LIST (ATTR_CONST_NOTHROW_LIST, ATTR_CONST,        \
-                        ATTR_NULL, ATTR_NOTHROW_LIST)
-DEF_ATTR_TREE_LIST (ATTR_PURE_NOTHROW_LIST, ATTR_PURE,                \
-                        ATTR_NULL, ATTR_NOTHROW_LIST)
-DEF_ATTR_TREE_LIST (ATTR_PURE_NOTHROW_NOVOPS_LIST, ATTR_NOVOPS,        \
-                        ATTR_NULL, ATTR_PURE_NOTHROW_LIST)
-DEF_ATTR_TREE_LIST (ATTR_NORETURN_NOTHROW_LIST, ATTR_NORETURN,        \
-                        ATTR_NULL, ATTR_NOTHROW_LIST)
-DEF_ATTR_TREE_LIST (ATTR_MALLOC_NOTHROW_LIST, ATTR_MALLOC,        \
-                        ATTR_NULL, ATTR_NOTHROW_LIST)
-DEF_ATTR_TREE_LIST (ATTR_SENTINEL_NOTHROW_LIST, ATTR_SENTINEL,        \
-                        ATTR_NULL, ATTR_NOTHROW_LIST)
+DEF_ATTR_TREE_LIST (ATTR_CONST_NOTHROW_LIST, ATTR_CONST,	\
+			ATTR_NULL, ATTR_NOTHROW_LIST)
+DEF_ATTR_TREE_LIST (ATTR_PURE_NOTHROW_LIST, ATTR_PURE,		\
+			ATTR_NULL, ATTR_NOTHROW_LIST)
+DEF_ATTR_TREE_LIST (ATTR_PURE_NOTHROW_NOVOPS_LIST, ATTR_NOVOPS,	\
+			ATTR_NULL, ATTR_PURE_NOTHROW_LIST)
+DEF_ATTR_TREE_LIST (ATTR_NORETURN_NOTHROW_LIST, ATTR_NORETURN,	\
+			ATTR_NULL, ATTR_NOTHROW_LIST)
+DEF_ATTR_TREE_LIST (ATTR_MALLOC_NOTHROW_LIST, ATTR_MALLOC,	\
+			ATTR_NULL, ATTR_NOTHROW_LIST)
+DEF_ATTR_TREE_LIST (ATTR_SENTINEL_NOTHROW_LIST, ATTR_SENTINEL,	\
+			ATTR_NULL, ATTR_NOTHROW_LIST)
 
 /* Functions whose pointer parameter(s) are all nonnull.  */
 DEF_ATTR_TREE_LIST (ATTR_NONNULL_LIST, ATTR_NONNULL, ATTR_NULL, ATTR_NULL)
@@ -120,41 +120,41 @@ DEF_ATTR_TREE_LIST (ATTR_NONNULL_1, ATTR_NONNULL, ATTR_LIST_1, ATTR_NULL)
 DEF_ATTR_TREE_LIST (ATTR_NONNULL_2, ATTR_NONNULL, ATTR_LIST_2, ATTR_NULL)
 /* Nothrow functions with the sentinel(1) attribute. */
 DEF_ATTR_TREE_LIST (ATTR_NOTHROW_SENTINEL_1, ATTR_SENTINEL, ATTR_LIST_1, \
-                        ATTR_NOTHROW_LIST)
+			ATTR_NOTHROW_LIST)
 /* Nothrow functions whose pointer parameter(s) are all nonnull.  */
 DEF_ATTR_TREE_LIST (ATTR_NOTHROW_NONNULL, ATTR_NONNULL, ATTR_NULL, \
-                        ATTR_NOTHROW_LIST)
+			ATTR_NOTHROW_LIST)
 /* Nothrow functions whose first parameter is a nonnull pointer.  */
 DEF_ATTR_TREE_LIST (ATTR_NOTHROW_NONNULL_1, ATTR_NONNULL, ATTR_LIST_1, \
-                        ATTR_NOTHROW_LIST)
+			ATTR_NOTHROW_LIST)
 /* Nothrow functions whose second parameter is a nonnull pointer.  */
 DEF_ATTR_TREE_LIST (ATTR_NOTHROW_NONNULL_2, ATTR_NONNULL, ATTR_LIST_2, \
-                        ATTR_NOTHROW_LIST)
+			ATTR_NOTHROW_LIST)
 /* Nothrow functions whose third parameter is a nonnull pointer.  */
 DEF_ATTR_TREE_LIST (ATTR_NOTHROW_NONNULL_3, ATTR_NONNULL, ATTR_LIST_3, \
-                        ATTR_NOTHROW_LIST)
+			ATTR_NOTHROW_LIST)
 /* Nothrow functions whose fourth parameter is a nonnull pointer.  */
 DEF_ATTR_TREE_LIST (ATTR_NOTHROW_NONNULL_4, ATTR_NONNULL, ATTR_LIST_4, \
-                        ATTR_NOTHROW_LIST)
+			ATTR_NOTHROW_LIST)
 /* Nothrow functions whose fifth parameter is a nonnull pointer.  */
 DEF_ATTR_TREE_LIST (ATTR_NOTHROW_NONNULL_5, ATTR_NONNULL, ATTR_LIST_5, \
-                        ATTR_NOTHROW_LIST)
+			ATTR_NOTHROW_LIST)
 /* Nothrow const functions whose pointer parameter(s) are all nonnull.  */
 DEF_ATTR_TREE_LIST (ATTR_CONST_NOTHROW_NONNULL, ATTR_CONST, ATTR_NULL, \
-                        ATTR_NOTHROW_NONNULL)
+			ATTR_NOTHROW_NONNULL)
 /* Nothrow pure functions whose pointer parameter(s) are all nonnull.  */
 DEF_ATTR_TREE_LIST (ATTR_PURE_NOTHROW_NONNULL, ATTR_PURE, ATTR_NULL, \
-                        ATTR_NOTHROW_NONNULL)
+			ATTR_NOTHROW_NONNULL)
 /* Nothrow malloc functions whose pointer parameter(s) are all nonnull.  */
 DEF_ATTR_TREE_LIST (ATTR_MALLOC_NOTHROW_NONNULL, ATTR_MALLOC, ATTR_NULL, \
-                        ATTR_NOTHROW_NONNULL)
+			ATTR_NOTHROW_NONNULL)
 
 /* Construct a tree for a format attribute.  */
-#define DEF_FORMAT_ATTRIBUTE(TYPE, FA, VALUES)                                 \
-  DEF_ATTR_TREE_LIST (ATTR_##TYPE##_##VALUES, ATTR_NULL,                 \
-                      ATTR_##TYPE, ATTR_LIST_##VALUES)                         \
-  DEF_ATTR_TREE_LIST (ATTR_FORMAT_##TYPE##_##VALUES, ATTR_FORMAT,         \
-                      ATTR_##TYPE##_##VALUES, ATTR_NOTHROW_NONNULL_##FA)
+#define DEF_FORMAT_ATTRIBUTE(TYPE, FA, VALUES)				 \
+  DEF_ATTR_TREE_LIST (ATTR_##TYPE##_##VALUES, ATTR_NULL,		 \
+		      ATTR_##TYPE, ATTR_LIST_##VALUES)			 \
+  DEF_ATTR_TREE_LIST (ATTR_FORMAT_##TYPE##_##VALUES, ATTR_FORMAT,	 \
+		      ATTR_##TYPE##_##VALUES, ATTR_NOTHROW_NONNULL_##FA)
 DEF_FORMAT_ATTRIBUTE(PRINTF,1,1_0)
 DEF_FORMAT_ATTRIBUTE(PRINTF,1,1_2)
 DEF_FORMAT_ATTRIBUTE(PRINTF,2,2_0)
@@ -174,9 +174,9 @@ DEF_FORMAT_ATTRIBUTE(STRFMON,3,3_4)
 #undef DEF_FORMAT_ATTRIBUTE
 
 /* Construct a tree for a format_arg attribute.  */
-#define DEF_FORMAT_ARG_ATTRIBUTE(FA)                                        \
-  DEF_ATTR_TREE_LIST (ATTR_FORMAT_ARG_##FA, ATTR_FORMAT_ARG,                \
-                      ATTR_LIST_##FA, ATTR_NOTHROW_NONNULL_##FA)
+#define DEF_FORMAT_ARG_ATTRIBUTE(FA)					\
+  DEF_ATTR_TREE_LIST (ATTR_FORMAT_ARG_##FA, ATTR_FORMAT_ARG,		\
+		      ATTR_LIST_##FA, ATTR_NOTHROW_NONNULL_##FA)
 DEF_FORMAT_ARG_ATTRIBUTE(1)
 DEF_FORMAT_ARG_ATTRIBUTE(2)
 #undef DEF_FORMAT_ARG_ATTRIBUTE

@@ -20,4 +20,4 @@
    Boston, MA 02110-1301, USA.  */
 
 #undef  TARGET_VERSION
-#define TARGET_VERSION        fputs (" (StrongARM/PE)", stderr);
+#define TARGET_VERSION	fputs (" (StrongARM/PE)", stderr);

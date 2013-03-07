@@ -33,11 +33,11 @@ Boston, MA 02110-1301, USA.  */
 
 /* Solaris 2 uses a wint_t different from the default. This is required
    by the SCD 2.4.1, p. 6-83, Figure 6-66.  */
-#undef        WINT_TYPE
-#define        WINT_TYPE "long int"
+#undef	WINT_TYPE
+#define	WINT_TYPE "long int"
 
-#undef        WINT_TYPE_SIZE
-#define        WINT_TYPE_SIZE BITS_PER_WORD
+#undef	WINT_TYPE_SIZE
+#define	WINT_TYPE_SIZE BITS_PER_WORD
 
 #define TARGET_HANDLE_PRAGMA_REDEFINE_EXTNAME 1
 
@@ -54,25 +54,25 @@ Boston, MA 02110-1301, USA.  */
 
 /* Names to predefine in the preprocessor for this target machine.  */
 #define TARGET_SUB_OS_CPP_BUILTINS()
-#define TARGET_OS_CPP_BUILTINS()                        \
-    do {                                                \
-        builtin_define_std ("unix");                        \
-        builtin_define_std ("sun");                        \
-        builtin_define ("__svr4__");                        \
-        builtin_define ("__SVR4");                        \
-        builtin_assert ("system=unix");                        \
-        builtin_assert ("system=svr4");                        \
-        /* For C++ we need to add some additional macro        \
-           definitions required by the C++ standard        \
-           library.  */                                        \
-        if (c_dialect_cxx ())                                \
-          {                                                \
-            builtin_define ("_XOPEN_SOURCE=500");        \
-            builtin_define ("_LARGEFILE_SOURCE=1");        \
-            builtin_define ("_LARGEFILE64_SOURCE=1");        \
-            builtin_define ("__EXTENSIONS__");                \
-          }                                                \
-        TARGET_SUB_OS_CPP_BUILTINS();                        \
+#define TARGET_OS_CPP_BUILTINS()			\
+    do {						\
+	builtin_define_std ("unix");			\
+	builtin_define_std ("sun");			\
+	builtin_define ("__svr4__");			\
+	builtin_define ("__SVR4");			\
+	builtin_assert ("system=unix");			\
+	builtin_assert ("system=svr4");			\
+	/* For C++ we need to add some additional macro	\
+	   definitions required by the C++ standard	\
+	   library.  */					\
+	if (c_dialect_cxx ())				\
+	  {						\
+	    builtin_define ("_XOPEN_SOURCE=500");	\
+	    builtin_define ("_LARGEFILE_SOURCE=1");	\
+	    builtin_define ("_LARGEFILE64_SOURCE=1");	\
+	    builtin_define ("__EXTENSIONS__");		\
+	  }						\
+	TARGET_SUB_OS_CPP_BUILTINS();			\
     } while (0)
 
 /* The system headers under Solaris 2 are C++-aware since 2.0.  */
@@ -103,17 +103,17 @@ Boston, MA 02110-1301, USA.  */
 /* We don't use the standard svr4 STARTFILE_SPEC because it's wrong for us.  */
 #undef STARTFILE_SPEC
 #define STARTFILE_SPEC "%{!shared: \
-                         %{!symbolic: \
-                          %{p:mcrt1.o%s} \
+			 %{!symbolic: \
+			  %{p:mcrt1.o%s} \
                           %{!p: \
-                            %{pg:gcrt1.o%s gmon.o%s} \
+	                    %{pg:gcrt1.o%s gmon.o%s} \
                             %{!pg:crt1.o%s}}}} \
-                        crti.o%s %(startfile_arch) \
-                        crtbegin.o%s"
+			crti.o%s %(startfile_arch) \
+			crtbegin.o%s"
 
 #undef STARTFILE_ARCH32_SPEC
 #define STARTFILE_ARCH32_SPEC "%{ansi:values-Xc.o%s} \
-                            %{!ansi:values-Xa.o%s}"
+			    %{!ansi:values-Xa.o%s}"
 
 #undef STARTFILE_ARCH_SPEC
 #define STARTFILE_ARCH_SPEC STARTFILE_ARCH32_SPEC
@@ -178,38 +178,38 @@ Boston, MA 02110-1301, USA.  */
    that use sol2.h, so ENABLE_EXECUTE_STACK must use a magic
    number instead of the appropriate PROT_* flags.  */
 
-#define ENABLE_EXECUTE_STACK                                        \
-                                                                        \
-/* #define STACK_PROT_RWX (PROT_READ | PROT_WRITE | PROT_EXEC) */        \
-                                                                        \
-static int need_enable_exec_stack;                                        \
-                                                                        \
-static void check_enabling(void) __attribute__ ((constructor));                \
-static void check_enabling(void)                                        \
-{                                                                        \
-  extern long sysconf(int);                                                \
-                                                                        \
-  int prot = (int) sysconf(515 /* _SC_STACK_PROT */);                        \
-  if (prot != 7 /* STACK_PROT_RWX */)                                        \
-    need_enable_exec_stack = 1;                                                \
-}                                                                        \
-                                                                        \
-extern void __enable_execute_stack (void *);                                \
-void                                                                        \
-__enable_execute_stack (void *addr)                                        \
-{                                                                        \
-  extern int mprotect(void *, size_t, int);                                \
-  if (!need_enable_exec_stack)                                                \
-    return;                                                                \
-  else {                                                                \
-    long size = getpagesize ();                                                \
-    long mask = ~(size-1);                                                \
-    char *page = (char *) (((long) addr) & mask);                         \
+#define ENABLE_EXECUTE_STACK					\
+									\
+/* #define STACK_PROT_RWX (PROT_READ | PROT_WRITE | PROT_EXEC) */	\
+									\
+static int need_enable_exec_stack;					\
+									\
+static void check_enabling(void) __attribute__ ((constructor));		\
+static void check_enabling(void)					\
+{									\
+  extern long sysconf(int);						\
+									\
+  int prot = (int) sysconf(515 /* _SC_STACK_PROT */);			\
+  if (prot != 7 /* STACK_PROT_RWX */)					\
+    need_enable_exec_stack = 1;						\
+}									\
+									\
+extern void __enable_execute_stack (void *);				\
+void									\
+__enable_execute_stack (void *addr)					\
+{									\
+  extern int mprotect(void *, size_t, int);				\
+  if (!need_enable_exec_stack)						\
+    return;								\
+  else {								\
+    long size = getpagesize ();						\
+    long mask = ~(size-1);						\
+    char *page = (char *) (((long) addr) & mask); 			\
     char *end  = (char *) ((((long) (addr + TRAMPOLINE_SIZE)) & mask) + size); \
-                                                                        \
-    if (mprotect (page, end - page, 7 /* STACK_PROT_RWX */) < 0)        \
-      perror ("mprotect of trampoline code");                                \
-  }                                                                        \
+									\
+    if (mprotect (page, end - page, 7 /* STACK_PROT_RWX */) < 0)	\
+      perror ("mprotect of trampoline code");				\
+  }									\
 }
 
 /* Support Solaris-specific format checking for cmn_err.  */
@@ -218,20 +218,20 @@ __enable_execute_stack (void *addr)                                        \
 
 /* #pragma init and #pragma fini are implemented on top of init and
    fini attributes.  */
-#define SOLARIS_ATTRIBUTE_TABLE                                                \
-  { "init",      0, 0, true,  false,  false, NULL },                        \
+#define SOLARIS_ATTRIBUTE_TABLE						\
+  { "init",      0, 0, true,  false,  false, NULL },			\
   { "fini",      0, 0, true,  false,  false, NULL }
 
 /* This is how to declare the size of a function.  For Solaris, we output
    any .init or .fini entries here.  */
 #undef ASM_DECLARE_FUNCTION_SIZE
-#define ASM_DECLARE_FUNCTION_SIZE(FILE, FNAME, DECL)                \
-  do                                                                \
-    {                                                                \
-      if (!flag_inhibit_size_directive)                                \
-        ASM_OUTPUT_MEASURED_SIZE (FILE, FNAME);                        \
-      solaris_output_init_fini (FILE, DECL);                        \
-    }                                                                \
+#define ASM_DECLARE_FUNCTION_SIZE(FILE, FNAME, DECL)		\
+  do								\
+    {								\
+      if (!flag_inhibit_size_directive)				\
+	ASM_OUTPUT_MEASURED_SIZE (FILE, FNAME);			\
+      solaris_output_init_fini (FILE, DECL);			\
+    }								\
   while (0)
 
 /* Register the Solaris-specific #pragma directives.  */

@@ -43,4 +43,4 @@ Boston, MA 02110-1301, USA.  */
  %{fshort-double:-D__HAVE_SHORT_DOUBLE__}"
 
 /* Default target_flags if no switches specified.  */
-#define TARGET_DEFAULT                (MASK_M6812)
+#define TARGET_DEFAULT		(MASK_M6812)

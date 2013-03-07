@@ -42,14 +42,14 @@
 (define_predicate "rhs_andsi3_operand"
   (ior (match_operand 0 "register_operand")
        (and (match_code "const_int")
-            (match_test "log2constp (~INTVAL (op)) || INTVAL (op) == 255 || INTVAL (op) == 65535"))))
+	    (match_test "log2constp (~INTVAL (op)) || INTVAL (op) == 255 || INTVAL (op) == 65535"))))
 
 ;; Return nonzero if OP is a register or a constant with exactly one bit
 ;; set.
 (define_predicate "regorlog2_operand"
   (ior (match_operand 0 "register_operand")
        (and (match_code "const_int")
-            (match_test "log2constp (INTVAL (op))"))))
+	    (match_test "log2constp (INTVAL (op))"))))
 
 ;; Return nonzero if OP is a register or an integer constant.
 (define_predicate "reg_or_const_int_operand"
@@ -62,7 +62,7 @@
 
 (define_predicate "vec_shift_operand"
   (ior (and (match_code "const_int")
-            (match_test "INTVAL (op) >= -16 && INTVAL (op) < 15"))
+	    (match_test "INTVAL (op) >= -16 && INTVAL (op) < 15"))
        (match_operand 0 "register_operand")))
 
 ;; Like register_operand, but make sure that hard regs have a valid mode.
@@ -95,7 +95,7 @@
 (define_predicate "reg_or_7bit_operand"
   (ior (match_operand 0 "register_operand")
        (and (match_code "const_int")
-            (match_test "CONST_7BIT_IMM_P (INTVAL (op))"))))
+	    (match_test "CONST_7BIT_IMM_P (INTVAL (op))"))))
 
 ;; Return nonzero if OP is a register other than DREG and PREG.
 (define_predicate "nondp_register_operand"
@@ -119,7 +119,7 @@
 (define_predicate "reg_or_neg7bit_operand"
   (ior (match_operand 0 "register_operand")
        (and (match_code "const_int")
-            (match_test "CONST_7BIT_IMM_P (-INTVAL (op))"))))
+	    (match_test "CONST_7BIT_IMM_P (-INTVAL (op))"))))
 
 ;; Used for secondary reloads, this function returns 1 if OP is of the
 ;; form (plus (fp) (const_int)).
@@ -131,9 +131,9 @@
   op1 = XEXP (op, 0);
   op2 = XEXP (op, 1);
   return (REG_P (op1)
-          && (REGNO (op1) == FRAME_POINTER_REGNUM
-              || REGNO (op1) == STACK_POINTER_REGNUM)
-          && GET_CODE (op2) == CONST_INT);
+	  && (REGNO (op1) == FRAME_POINTER_REGNUM
+	      || REGNO (op1) == STACK_POINTER_REGNUM)
+	  && GET_CODE (op2) == CONST_INT);
 })
 
 ;; Returns 1 if OP is a symbolic operand, i.e. a symbol_ref or a label_ref,
@@ -141,10 +141,10 @@
 (define_predicate "symbolic_operand"
   (ior (match_code "symbol_ref,label_ref")
        (and (match_code "const")
-            (match_test "GET_CODE (XEXP (op,0)) == PLUS
-                         && (GET_CODE (XEXP (XEXP (op, 0), 0)) == SYMBOL_REF
-                             || GET_CODE (XEXP (XEXP (op, 0), 0)) == LABEL_REF)
-                         && GET_CODE (XEXP (XEXP (op, 0), 1)) == CONST_INT"))))
+	    (match_test "GET_CODE (XEXP (op,0)) == PLUS
+			 && (GET_CODE (XEXP (XEXP (op, 0), 0)) == SYMBOL_REF
+			     || GET_CODE (XEXP (XEXP (op, 0), 0)) == LABEL_REF)
+			 && GET_CODE (XEXP (XEXP (op, 0), 1)) == CONST_INT"))))
 
 ;; Returns 1 if OP is a plain constant or matched by symbolic_operand.
 (define_predicate "symbolic_or_const_operand"
@@ -163,9 +163,9 @@
   if (GET_CODE (op) == SUBREG)
     op = SUBREG_REG (op);
   return !(op == arg_pointer_rtx
-           || op == frame_pointer_rtx
-           || (REGNO (op) >= FIRST_PSEUDO_REGISTER
-               && REGNO (op) <= LAST_VIRTUAL_REGISTER));
+	   || op == frame_pointer_rtx
+	   || (REGNO (op) >= FIRST_PSEUDO_REGISTER
+	       && REGNO (op) <= LAST_VIRTUAL_REGISTER));
 })
 
 ;; Test for an operator valid in a conditional branch

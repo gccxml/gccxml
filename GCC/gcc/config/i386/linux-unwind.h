@@ -41,7 +41,7 @@ Boston, MA 02110-1301, USA.  */
 
 static _Unwind_Reason_Code
 x86_64_fallback_frame_state (struct _Unwind_Context *context,
-                             _Unwind_FrameState *fs)
+			     _Unwind_FrameState *fs)
 {
   unsigned char *pc = context->ra;
   struct sigcontext *sc;
@@ -119,7 +119,7 @@ x86_64_fallback_frame_state (struct _Unwind_Context *context,
 
 static _Unwind_Reason_Code
 x86_fallback_frame_state (struct _Unwind_Context *context,
-                          _Unwind_FrameState *fs)
+			  _Unwind_FrameState *fs)
 {
   unsigned char *pc = context->ra;
   struct sigcontext *sc;
@@ -132,15 +132,15 @@ x86_fallback_frame_state (struct _Unwind_Context *context,
     sc = context->cfa + 4;
   /* movl $__NR_rt_sigreturn,%eax ; int $0x80  */
   else if (*(unsigned char *)(pc+0) == 0xb8
-           && *(unsigned int *)(pc+1) == 173
-           && *(unsigned short *)(pc+5) == 0x80cd)
+	   && *(unsigned int *)(pc+1) == 173
+	   && *(unsigned short *)(pc+5) == 0x80cd)
     {
       struct rt_sigframe {
-        int sig;
-        struct siginfo *pinfo;
-        void *puc;
-        struct siginfo info;
-        struct ucontext uc;
+	int sig;
+	struct siginfo *pinfo;
+	void *puc;
+	struct siginfo info;
+	struct ucontext uc;
       } *rt_ = context->cfa;
       /* The void * cast is necessary to avoid an aliasing warning.
          The aliasing warning is correct, but should not be a problem

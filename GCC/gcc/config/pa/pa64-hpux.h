@@ -59,10 +59,10 @@ Boston, MA 02110-1301, USA.  */
 #define LIB_SPEC \
   "%{!shared:\
      %{!p:%{!pg: %{static|mt|pthread:-lpthread} -lc\
-            %{static:%{!nolibdld:-a shared -ldld -a archive -lc}}}}\
+	    %{static:%{!nolibdld:-a shared -ldld -a archive -lc}}}}\
      %{p:%{!pg:%{static:%{!mhp-ld:-a shared}%{mhp-ld:-a archive_shared}}\
-           -lprof %{static:-a archive} %{static|mt|pthread:-lpthread} -lc\
-           %{static:%{!nolibdld:-a shared -ldld -a archive -lc}}}}\
+	   -lprof %{static:-a archive} %{static|mt|pthread:-lpthread} -lc\
+	   %{static:%{!nolibdld:-a shared -ldld -a archive -lc}}}}\
      %{pg:%{static:%{!mhp-ld:-a shared}%{mhp-ld:-a archive_shared}}\
        -lgprof %{static:-a archive} %{static|mt|pthread:-lpthread} -lc\
        %{static:%{!nolibdld:-a shared -ldld -a archive -lc}}}}"
@@ -70,10 +70,10 @@ Boston, MA 02110-1301, USA.  */
 #define LIB_SPEC \
   "%{!shared:\
      %{!p:%{!pg: %{static|mt|pthread:-lpthread} -lc\
-            %{static:%{!nolibdld:-a shared -ldld -a archive -lc}}}}\
+	    %{static:%{!nolibdld:-a shared -ldld -a archive -lc}}}}\
      %{p:%{!pg:%{static:%{mgnu-ld:-a shared}%{!mgnu-ld:-a archive_shared}}\
-           -lprof %{static:-a archive} %{static|mt|pthread:-lpthread} -lc\
-           %{static:%{!nolibdld:-a shared -ldld -a archive -lc}}}}\
+	   -lprof %{static:-a archive} %{static|mt|pthread:-lpthread} -lc\
+	   %{static:%{!nolibdld:-a shared -ldld -a archive -lc}}}}\
      %{pg:%{static:%{mgnu-ld:-a shared}%{!mgnu-ld:-a archive_shared}}\
        -lgprof %{static:-a archive} %{static|mt|pthread:-lpthread} -lc\
        %{static:%{!nolibdld:-a shared -ldld -a archive -lc}}}}"
@@ -140,28 +140,28 @@ Boston, MA 02110-1301, USA.  */
 
 /* This is how we output a null terminated string.  */
 #undef STRING_ASM_OP
-#define STRING_ASM_OP        "\t.stringz\t"
+#define STRING_ASM_OP	"\t.stringz\t"
 
-#define TEXT_SECTION_ASM_OP        "\t.text"
-#define DATA_SECTION_ASM_OP        "\t.data"
-#define BSS_SECTION_ASM_OP        "\t.section\t.bss"
+#define TEXT_SECTION_ASM_OP	"\t.text"
+#define DATA_SECTION_ASM_OP	"\t.data"
+#define BSS_SECTION_ASM_OP	"\t.section\t.bss"
 
-#define JCR_SECTION_NAME        ".jcr"
+#define JCR_SECTION_NAME	".jcr"
 
-#define HP_INIT_ARRAY_SECTION_ASM_OP        "\t.section\t.init"
-#define GNU_INIT_ARRAY_SECTION_ASM_OP        "\t.section\t.init_array"
-#define HP_FINI_ARRAY_SECTION_ASM_OP        "\t.section\t.fini"
-#define GNU_FINI_ARRAY_SECTION_ASM_OP        "\t.section\t.fini_array"
+#define HP_INIT_ARRAY_SECTION_ASM_OP	"\t.section\t.init"
+#define GNU_INIT_ARRAY_SECTION_ASM_OP	"\t.section\t.init_array"
+#define HP_FINI_ARRAY_SECTION_ASM_OP	"\t.section\t.fini"
+#define GNU_FINI_ARRAY_SECTION_ASM_OP	"\t.section\t.fini_array"
 
 /* We need to override the following two macros defined in elfos.h since
    the .comm directive has a different syntax and it can't be used for
    local common symbols.  */
 #undef ASM_OUTPUT_ALIGNED_COMMON
-#define ASM_OUTPUT_ALIGNED_COMMON(FILE, NAME, SIZE, ALIGN)                \
+#define ASM_OUTPUT_ALIGNED_COMMON(FILE, NAME, SIZE, ALIGN)		\
   pa_asm_output_aligned_common (FILE, NAME, SIZE, ALIGN)
 
 #undef ASM_OUTPUT_ALIGNED_LOCAL
-#define ASM_OUTPUT_ALIGNED_LOCAL(FILE, NAME, SIZE, ALIGN)                \
+#define ASM_OUTPUT_ALIGNED_LOCAL(FILE, NAME, SIZE, ALIGN)		\
   pa_asm_output_aligned_local (FILE, NAME, SIZE, ALIGN)
 
 /* The define in pa.h doesn't work with the alias attribute.  The
@@ -169,42 +169,42 @@ Boston, MA 02110-1301, USA.  */
 #undef TARGET_ASM_GLOBALIZE_LABEL
 
 /* This is how we globalize a label.  */
-#define GLOBAL_ASM_OP        "\t.globl\t"
+#define GLOBAL_ASM_OP	"\t.globl\t"
 
 /* Hacked version from defaults.h that uses assemble_name_raw
    instead of assemble_name.  A symbol in a type directive that
    isn't otherwise referenced doesn't cause the symbol to be
    placed in the symbol table of the assembled object.  */
 #undef ASM_OUTPUT_TYPE_DIRECTIVE
-#define ASM_OUTPUT_TYPE_DIRECTIVE(STREAM, NAME, TYPE)                \
-do {                                                                \
-  fputs (TYPE_ASM_OP, STREAM);                                        \
-  assemble_name_raw (STREAM, NAME);                                \
-  fputs (", ", STREAM);                                                \
-  fprintf (STREAM, TYPE_OPERAND_FMT, TYPE);                        \
-  putc ('\n', STREAM);                                                \
+#define ASM_OUTPUT_TYPE_DIRECTIVE(STREAM, NAME, TYPE)		\
+do {								\
+  fputs (TYPE_ASM_OP, STREAM);					\
+  assemble_name_raw (STREAM, NAME);				\
+  fputs (", ", STREAM);						\
+  fprintf (STREAM, TYPE_OPERAND_FMT, TYPE);			\
+  putc ('\n', STREAM);						\
 } while (0)
 
 /* Hacked version from elfos.h that doesn't output a label.  */
 #undef ASM_DECLARE_FUNCTION_NAME
-#define ASM_DECLARE_FUNCTION_NAME(FILE, NAME, DECL)                \
-do {                                                                \
-  ASM_OUTPUT_TYPE_DIRECTIVE (FILE, NAME, "function");                \
-  ASM_DECLARE_RESULT (FILE, DECL_RESULT (DECL));                \
+#define ASM_DECLARE_FUNCTION_NAME(FILE, NAME, DECL)		\
+do {								\
+  ASM_OUTPUT_TYPE_DIRECTIVE (FILE, NAME, "function");		\
+  ASM_DECLARE_RESULT (FILE, DECL_RESULT (DECL));		\
 } while (0)
 
 /* The type of external references must be set correctly for the
    dynamic loader to work correctly.  This is equivalent to the
    HP assembler's .IMPORT directive but relates more directly to
    ELF object file types.  */
-#define ASM_OUTPUT_EXTERNAL(FILE, DECL, NAME)                        \
+#define ASM_OUTPUT_EXTERNAL(FILE, DECL, NAME)			\
   pa_hpux_asm_output_external ((FILE), (DECL), (NAME))
-#define ASM_OUTPUT_EXTERNAL_REAL(FILE, DECL, NAME)                \
-do {                                                                \
-  if (FUNCTION_NAME_P (NAME))                                        \
-    ASM_OUTPUT_TYPE_DIRECTIVE (FILE, NAME, "function");                \
-  else                                                                \
-    ASM_OUTPUT_TYPE_DIRECTIVE (FILE, NAME, "object");                \
+#define ASM_OUTPUT_EXTERNAL_REAL(FILE, DECL, NAME)		\
+do {								\
+  if (FUNCTION_NAME_P (NAME))					\
+    ASM_OUTPUT_TYPE_DIRECTIVE (FILE, NAME, "function");		\
+  else								\
+    ASM_OUTPUT_TYPE_DIRECTIVE (FILE, NAME, "object");		\
 } while (0)
 
 /* We need set the type for external libcalls.  Also note that not all
@@ -212,16 +212,16 @@ do {                                                                \
    Thus, we also have to do the section encoding if it hasn't been done
    already.  */
 #undef ASM_OUTPUT_EXTERNAL_LIBCALL
-#define ASM_OUTPUT_EXTERNAL_LIBCALL(FILE, FUN)                        \
-do {                                                                \
-  if (!FUNCTION_NAME_P (XSTR (FUN, 0)))                                \
-    hppa_encode_label (FUN);                                        \
-  ASM_OUTPUT_TYPE_DIRECTIVE (FILE, XSTR (FUN, 0), "function");        \
+#define ASM_OUTPUT_EXTERNAL_LIBCALL(FILE, FUN)			\
+do {								\
+  if (!FUNCTION_NAME_P (XSTR (FUN, 0)))				\
+    hppa_encode_label (FUN);					\
+  ASM_OUTPUT_TYPE_DIRECTIVE (FILE, XSTR (FUN, 0), "function");	\
 } while (0)
 
 /* We need to use the HP style for internal labels.  */
 #undef ASM_GENERATE_INTERNAL_LABEL
-#define ASM_GENERATE_INTERNAL_LABEL(LABEL, PREFIX, NUM)        \
+#define ASM_GENERATE_INTERNAL_LABEL(LABEL, PREFIX, NUM)	\
   sprintf (LABEL, "*%c$%s%04ld", (PREFIX)[0], (PREFIX) + 1, (long)(NUM))
 
 #else /* USING_ELFOS_H */
@@ -247,13 +247,13 @@ do {                                                                \
 #define TARGET_ASM_FILE_START pa_hpux64_hpas_file_start
 
 #undef TEXT_SECTION_ASM_OP
-#define TEXT_SECTION_ASM_OP                "\t.SUBSPA $CODE$\n"
+#define TEXT_SECTION_ASM_OP		"\t.SUBSPA $CODE$\n"
 #undef READONLY_DATA_SECTION_ASM_OP
-#define READONLY_DATA_SECTION_ASM_OP        "\t.SUBSPA $LIT$\n"
+#define READONLY_DATA_SECTION_ASM_OP	"\t.SUBSPA $LIT$\n"
 #undef DATA_SECTION_ASM_OP
-#define DATA_SECTION_ASM_OP                "\t.SUBSPA $DATA$\n"
+#define DATA_SECTION_ASM_OP		"\t.SUBSPA $DATA$\n"
 #undef BSS_SECTION_ASM_OP
-#define BSS_SECTION_ASM_OP                "\t.SUBSPA $BSS$\n"
+#define BSS_SECTION_ASM_OP		"\t.SUBSPA $BSS$\n"
 
 /* We provide explicit defines for CTORS_SECTION_ASM_OP and
    DTORS_SECTION_ASM_OP since we don't yet have support for
@@ -359,46 +359,46 @@ do {                                                                \
 /* The following hack sets up the .init, .init_array, .fini and
    .fini_array sections.  */
 #define PA_CRTBEGIN_HACK \
-asm (TEXT_SECTION_ASM_OP);                                                \
-static void __attribute__((used))                                        \
-__do_global_ctors_aux (void)                                                \
-{                                                                        \
-  func_ptr *p = __CTOR_LIST__;                                                \
-  while (*(p + 1))                                                        \
-    p++;                                                                \
-  for (; *p != (func_ptr) -1; p--)                                        \
-    (*p) ();                                                                \
-}                                                                        \
-                                                                        \
-asm (HP_INIT_ARRAY_SECTION_ASM_OP);                                        \
-asm (".align 8");                                                        \
-asm (".dword P%__do_global_ctors_aux");                                        \
-asm (PA_INIT_FRAME_DUMMY_ASM_OP);                                        \
-asm (GNU_INIT_ARRAY_SECTION_ASM_OP);                                        \
-asm (".align 8");                                                        \
-asm (".dword P%__do_global_ctors_aux");                                        \
-asm (PA_INIT_FRAME_DUMMY_ASM_OP);                                        \
-asm (HP_FINI_ARRAY_SECTION_ASM_OP);                                        \
-asm (".align 8");                                                        \
-asm (".dword P%__do_global_dtors_aux");                                        \
-asm (GNU_FINI_ARRAY_SECTION_ASM_OP);                                        \
-asm (".align 8");                                                        \
+asm (TEXT_SECTION_ASM_OP);						\
+static void __attribute__((used))					\
+__do_global_ctors_aux (void)						\
+{									\
+  func_ptr *p = __CTOR_LIST__;						\
+  while (*(p + 1))							\
+    p++;								\
+  for (; *p != (func_ptr) -1; p--)					\
+    (*p) ();								\
+}									\
+									\
+asm (HP_INIT_ARRAY_SECTION_ASM_OP);					\
+asm (".align 8");							\
+asm (".dword P%__do_global_ctors_aux");					\
+asm (PA_INIT_FRAME_DUMMY_ASM_OP);					\
+asm (GNU_INIT_ARRAY_SECTION_ASM_OP);					\
+asm (".align 8");							\
+asm (".dword P%__do_global_ctors_aux");					\
+asm (PA_INIT_FRAME_DUMMY_ASM_OP);					\
+asm (HP_FINI_ARRAY_SECTION_ASM_OP);					\
+asm (".align 8");							\
+asm (".dword P%__do_global_dtors_aux");					\
+asm (GNU_FINI_ARRAY_SECTION_ASM_OP);					\
+asm (".align 8");							\
 asm (".dword P%__do_global_dtors_aux")
 
 /* The following two variants of DTOR_LIST_BEGIN are identical to those
    in crtstuff.c except for the addition of the above crtbegin hack.  */
 #ifdef DTORS_SECTION_ASM_OP
 #define DTOR_LIST_BEGIN \
-asm (DTORS_SECTION_ASM_OP);                                                \
-STATIC func_ptr __DTOR_LIST__[1]                                        \
-  __attribute__ ((aligned(sizeof(func_ptr))))                                \
-  = { (func_ptr) (-1) };                                                \
+asm (DTORS_SECTION_ASM_OP);						\
+STATIC func_ptr __DTOR_LIST__[1]					\
+  __attribute__ ((aligned(sizeof(func_ptr))))				\
+  = { (func_ptr) (-1) };						\
 PA_CRTBEGIN_HACK
 #else
 #define DTOR_LIST_BEGIN \
-STATIC func_ptr __DTOR_LIST__[1]                                        \
-  __attribute__ ((section(".dtors"), aligned(sizeof(func_ptr))))        \
-  = { (func_ptr) (-1) };                                                \
+STATIC func_ptr __DTOR_LIST__[1]					\
+  __attribute__ ((section(".dtors"), aligned(sizeof(func_ptr))))	\
+  = { (func_ptr) (-1) };						\
 PA_CRTBEGIN_HACK
 #endif
 

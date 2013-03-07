@@ -86,7 +86,7 @@ default_cc_modes_compatible (enum machine_mode m1, enum machine_mode m2)
 
 bool
 default_return_in_memory (tree type,
-                          tree fntype ATTRIBUTE_UNUSED)
+			  tree fntype ATTRIBUTE_UNUSED)
 {
 #ifndef RETURN_IN_MEMORY
   return (TYPE_MODE (type) == BLKmode);
@@ -104,10 +104,10 @@ default_expand_builtin_saveregs (void)
 
 void
 default_setup_incoming_varargs (CUMULATIVE_ARGS *ca ATTRIBUTE_UNUSED,
-                                enum machine_mode mode ATTRIBUTE_UNUSED,
-                                tree type ATTRIBUTE_UNUSED,
-                                int *pretend_arg_size ATTRIBUTE_UNUSED,
-                                int second_time ATTRIBUTE_UNUSED)
+				enum machine_mode mode ATTRIBUTE_UNUSED,
+				tree type ATTRIBUTE_UNUSED,
+				int *pretend_arg_size ATTRIBUTE_UNUSED,
+				int second_time ATTRIBUTE_UNUSED)
 {
 }
 
@@ -131,7 +131,7 @@ bool
 default_pretend_outgoing_varargs_named (CUMULATIVE_ARGS *ca ATTRIBUTE_UNUSED)
 {
   return (targetm.calls.setup_incoming_varargs
-          != default_setup_incoming_varargs);
+	  != default_setup_incoming_varargs);
 }
 
 enum machine_mode
@@ -160,7 +160,7 @@ default_min_divisions_for_recip_mul (enum machine_mode mode ATTRIBUTE_UNUSED)
 
 int
 default_mode_rep_extended (enum machine_mode mode ATTRIBUTE_UNUSED,
-                           enum machine_mode mode_rep ATTRIBUTE_UNUSED)
+			   enum machine_mode mode_rep ATTRIBUTE_UNUSED)
 {
   return UNKNOWN;
 }
@@ -211,8 +211,8 @@ default_cxx_get_cookie_size (tree type)
 
 bool
 hook_pass_by_reference_must_pass_in_stack (CUMULATIVE_ARGS *c ATTRIBUTE_UNUSED,
-        enum machine_mode mode ATTRIBUTE_UNUSED, tree type ATTRIBUTE_UNUSED,
-        bool named_arg ATTRIBUTE_UNUSED)
+	enum machine_mode mode ATTRIBUTE_UNUSED, tree type ATTRIBUTE_UNUSED,
+	bool named_arg ATTRIBUTE_UNUSED)
 {
   return targetm.calls.must_pass_in_stack (mode, type);
 }
@@ -222,8 +222,8 @@ hook_pass_by_reference_must_pass_in_stack (CUMULATIVE_ARGS *c ATTRIBUTE_UNUSED,
 
 bool
 hook_callee_copies_named (CUMULATIVE_ARGS *ca ATTRIBUTE_UNUSED,
-                          enum machine_mode mode ATTRIBUTE_UNUSED,
-                          tree type ATTRIBUTE_UNUSED, bool named)
+			  enum machine_mode mode ATTRIBUTE_UNUSED,
+			  tree type ATTRIBUTE_UNUSED, bool named)
 {
   return named;
 }
@@ -232,7 +232,7 @@ hook_callee_copies_named (CUMULATIVE_ARGS *ca ATTRIBUTE_UNUSED,
 
 void
 default_unwind_emit (FILE * stream ATTRIBUTE_UNUSED,
-                     rtx insn ATTRIBUTE_UNUSED)
+		     rtx insn ATTRIBUTE_UNUSED)
 {
   /* Should never happen.  */
   gcc_unreachable ();
@@ -257,26 +257,26 @@ default_scalar_mode_supported_p (enum machine_mode mode)
     case MODE_PARTIAL_INT:
     case MODE_INT:
       if (precision == CHAR_TYPE_SIZE)
-        return true;
+	return true;
       if (precision == SHORT_TYPE_SIZE)
-        return true;
+	return true;
       if (precision == INT_TYPE_SIZE)
-        return true;
+	return true;
       if (precision == LONG_TYPE_SIZE)
-        return true;
+	return true;
       if (precision == LONG_LONG_TYPE_SIZE)
-        return true;
+	return true;
       if (precision == 2 * BITS_PER_WORD)
-        return true;
+	return true;
       return false;
 
     case MODE_FLOAT:
       if (precision == FLOAT_TYPE_SIZE)
-        return true;
+	return true;
       if (precision == DOUBLE_TYPE_SIZE)
-        return true;
+	return true;
       if (precision == LONG_DOUBLE_TYPE_SIZE)
-        return true;
+	return true;
       return false;
 
     case MODE_DECIMAL_FLOAT:
@@ -313,7 +313,7 @@ default_invalid_within_doloop (rtx insn)
   
   if (JUMP_P (insn)
       && (GET_CODE (PATTERN (insn)) == ADDR_DIFF_VEC
-          || GET_CODE (PATTERN (insn)) == ADDR_VEC))
+	  || GET_CODE (PATTERN (insn)) == ADDR_VEC))
     return "Computed branch in the loop.";
   
   return NULL;
@@ -321,27 +321,27 @@ default_invalid_within_doloop (rtx insn)
 
 bool
 hook_bool_CUMULATIVE_ARGS_mode_tree_bool_false (
-        CUMULATIVE_ARGS *ca ATTRIBUTE_UNUSED,
-        enum machine_mode mode ATTRIBUTE_UNUSED,
-        tree type ATTRIBUTE_UNUSED, bool named ATTRIBUTE_UNUSED)
+	CUMULATIVE_ARGS *ca ATTRIBUTE_UNUSED,
+	enum machine_mode mode ATTRIBUTE_UNUSED,
+	tree type ATTRIBUTE_UNUSED, bool named ATTRIBUTE_UNUSED)
 {
   return false;
 }
 
 bool
 hook_bool_CUMULATIVE_ARGS_mode_tree_bool_true (
-        CUMULATIVE_ARGS *ca ATTRIBUTE_UNUSED,
-        enum machine_mode mode ATTRIBUTE_UNUSED,
-        tree type ATTRIBUTE_UNUSED, bool named ATTRIBUTE_UNUSED)
+	CUMULATIVE_ARGS *ca ATTRIBUTE_UNUSED,
+	enum machine_mode mode ATTRIBUTE_UNUSED,
+	tree type ATTRIBUTE_UNUSED, bool named ATTRIBUTE_UNUSED)
 {
   return true;
 }
 
 int
 hook_int_CUMULATIVE_ARGS_mode_tree_bool_0 (
-        CUMULATIVE_ARGS *ca ATTRIBUTE_UNUSED,
-        enum machine_mode mode ATTRIBUTE_UNUSED,
-        tree type ATTRIBUTE_UNUSED, bool named ATTRIBUTE_UNUSED)
+	CUMULATIVE_ARGS *ca ATTRIBUTE_UNUSED,
+	enum machine_mode mode ATTRIBUTE_UNUSED,
+	tree type ATTRIBUTE_UNUSED, bool named ATTRIBUTE_UNUSED)
 {
   return 0;
 }
@@ -353,9 +353,9 @@ hook_void_bitmap (bitmap regs ATTRIBUTE_UNUSED)
 
 const char *
 hook_invalid_arg_for_unprototyped_fn (
-        tree typelist ATTRIBUTE_UNUSED,
-        tree funcdecl ATTRIBUTE_UNUSED,
-        tree val ATTRIBUTE_UNUSED)
+	tree typelist ATTRIBUTE_UNUSED,
+	tree funcdecl ATTRIBUTE_UNUSED,
+	tree val ATTRIBUTE_UNUSED)
 {
   return NULL;
 }
@@ -373,7 +373,7 @@ default_stack_protect_guard (void)
   if (t == NULL)
     {
       t = build_decl (VAR_DECL, get_identifier ("__stack_chk_guard"),
-                      ptr_type_node);
+		      ptr_type_node);
       TREE_STATIC (t) = 1;
       TREE_PUBLIC (t) = 1;
       DECL_EXTERNAL (t) = 1;
@@ -431,7 +431,7 @@ default_hidden_stack_protect_fail (void)
     {
       t = build_function_type_list (void_type_node, NULL_TREE);
       t = build_decl (FUNCTION_DECL,
-                      get_identifier ("__stack_chk_fail_local"), t);
+		      get_identifier ("__stack_chk_fail_local"), t);
       TREE_STATIC (t) = 1;
       TREE_PUBLIC (t) = 1;
       DECL_EXTERNAL (t) = 1;
@@ -458,8 +458,8 @@ hook_bool_rtx_commutative_p (rtx x, int outer_code ATTRIBUTE_UNUSED)
 
 rtx
 default_function_value (tree ret_type ATTRIBUTE_UNUSED,
-                        tree fn_decl_or_type,
-                        bool outgoing ATTRIBUTE_UNUSED)
+			tree fn_decl_or_type,
+			bool outgoing ATTRIBUTE_UNUSED)
 {
   /* The old interface doesn't handle receiving the function type.  */
   if (fn_decl_or_type
@@ -487,7 +487,7 @@ default_internal_arg_pointer (void)
      considered fixed even though it is not marked as such.  */
   if ((ARG_POINTER_REGNUM == STACK_POINTER_REGNUM
        || ! (fixed_regs[ARG_POINTER_REGNUM]
-             || ARG_POINTER_REGNUM == FRAME_POINTER_REGNUM)))
+	     || ARG_POINTER_REGNUM == FRAME_POINTER_REGNUM)))
     return copy_to_reg (virtual_incoming_args_rtx);
   else
     return virtual_incoming_args_rtx;
@@ -495,9 +495,9 @@ default_internal_arg_pointer (void)
 
 enum reg_class
 default_secondary_reload (bool in_p ATTRIBUTE_UNUSED, rtx x ATTRIBUTE_UNUSED,
-                          enum reg_class reload_class ATTRIBUTE_UNUSED,
-                          enum machine_mode reload_mode ATTRIBUTE_UNUSED,
-                          secondary_reload_info *sri)
+			  enum reg_class reload_class ATTRIBUTE_UNUSED,
+			  enum machine_mode reload_mode ATTRIBUTE_UNUSED,
+			  secondary_reload_info *sri)
 {
   enum reg_class class = NO_REGS;
 
@@ -517,66 +517,66 @@ default_secondary_reload (bool in_p ATTRIBUTE_UNUSED, rtx x ATTRIBUTE_UNUSED,
   if (class != NO_REGS)
     {
       enum insn_code icode = (in_p ? reload_in_optab[(int) reload_mode]
-                              : reload_out_optab[(int) reload_mode]);
+			      : reload_out_optab[(int) reload_mode]);
 
       if (icode != CODE_FOR_nothing
-          && insn_data[(int) icode].operand[in_p].predicate
-          && ! insn_data[(int) icode].operand[in_p].predicate (x, reload_mode))
-        icode = CODE_FOR_nothing;
+	  && insn_data[(int) icode].operand[in_p].predicate
+	  && ! insn_data[(int) icode].operand[in_p].predicate (x, reload_mode))
+	icode = CODE_FOR_nothing;
       else if (icode != CODE_FOR_nothing)
-        {
-          const char *insn_constraint, *scratch_constraint;
-          char insn_letter, scratch_letter;
-          enum reg_class insn_class, scratch_class;
+	{
+	  const char *insn_constraint, *scratch_constraint;
+	  char insn_letter, scratch_letter;
+	  enum reg_class insn_class, scratch_class;
 
-          gcc_assert (insn_data[(int) icode].n_operands == 3);
-          insn_constraint = insn_data[(int) icode].operand[!in_p].constraint;
-          if (!*insn_constraint)
-            insn_class = ALL_REGS;
-          else
-            {
-              if (in_p)
-                {
-                  gcc_assert (*insn_constraint == '=');
-                  insn_constraint++;
-                }
-              insn_letter = *insn_constraint;
-              insn_class
-                = (insn_letter == 'r' ? GENERAL_REGS
-                   : REG_CLASS_FROM_CONSTRAINT ((unsigned char) insn_letter,
-                                                insn_constraint));
-              gcc_assert (insn_class != NO_REGS);
-            }
+	  gcc_assert (insn_data[(int) icode].n_operands == 3);
+	  insn_constraint = insn_data[(int) icode].operand[!in_p].constraint;
+	  if (!*insn_constraint)
+	    insn_class = ALL_REGS;
+	  else
+	    {
+	      if (in_p)
+		{
+		  gcc_assert (*insn_constraint == '=');
+		  insn_constraint++;
+		}
+	      insn_letter = *insn_constraint;
+	      insn_class
+		= (insn_letter == 'r' ? GENERAL_REGS
+		   : REG_CLASS_FROM_CONSTRAINT ((unsigned char) insn_letter,
+						insn_constraint));
+	      gcc_assert (insn_class != NO_REGS);
+	    }
 
-          scratch_constraint = insn_data[(int) icode].operand[2].constraint;
-          /* The scratch register's constraint must start with "=&",
-             except for an input reload, where only "=" is necessary,
-             and where it might be beneficial to re-use registers from
-             the input.  */
-          gcc_assert (scratch_constraint[0] == '='
-                      && (in_p || scratch_constraint[1] == '&'));
-          scratch_constraint++;
-          if (*scratch_constraint == '&')
-            scratch_constraint++;
-          scratch_letter = *scratch_constraint;
-          scratch_class
-            = (scratch_letter == 'r' ? GENERAL_REGS
-               : REG_CLASS_FROM_CONSTRAINT ((unsigned char) scratch_letter,
-                                            scratch_constraint));
+	  scratch_constraint = insn_data[(int) icode].operand[2].constraint;
+	  /* The scratch register's constraint must start with "=&",
+	     except for an input reload, where only "=" is necessary,
+	     and where it might be beneficial to re-use registers from
+	     the input.  */
+	  gcc_assert (scratch_constraint[0] == '='
+		      && (in_p || scratch_constraint[1] == '&'));
+	  scratch_constraint++;
+	  if (*scratch_constraint == '&')
+	    scratch_constraint++;
+	  scratch_letter = *scratch_constraint;
+	  scratch_class
+	    = (scratch_letter == 'r' ? GENERAL_REGS
+	       : REG_CLASS_FROM_CONSTRAINT ((unsigned char) scratch_letter,
+					    scratch_constraint));
 
-          if (reg_class_subset_p (reload_class, insn_class))
-            {
-              gcc_assert (scratch_class == class);
-              class = NO_REGS;
-            }
-          else
-            class = insn_class;
+	  if (reg_class_subset_p (reload_class, insn_class))
+	    {
+	      gcc_assert (scratch_class == class);
+	      class = NO_REGS;
+	    }
+	  else
+	    class = insn_class;
 
         }
       if (class == NO_REGS)
-        sri->icode = icode;
+	sri->icode = icode;
       else
-        sri->t_icode = icode;
+	sri->t_icode = icode;
     }
   return class;
 }

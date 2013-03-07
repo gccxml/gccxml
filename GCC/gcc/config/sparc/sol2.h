@@ -57,8 +57,8 @@ Boston, MA 02110-1301, USA.  */
 
 #undef SUBTARGET_EXTRA_SPECS
 #define SUBTARGET_EXTRA_SPECS \
-  { "startfile_arch",        STARTFILE_ARCH_SPEC },        \
-  { "link_arch",        LINK_ARCH_SPEC }
+  { "startfile_arch",	STARTFILE_ARCH_SPEC },	\
+  { "link_arch",	LINK_ARCH_SPEC }
 
 /* However it appears that Solaris 2.0 uses the same reg numbering as
    the old BSD-style system did.  */
@@ -77,34 +77,34 @@ Boston, MA 02110-1301, USA.  */
    This is suitable for output with `assemble_name'.  */
 
 #undef  ASM_GENERATE_INTERNAL_LABEL
-#define ASM_GENERATE_INTERNAL_LABEL(LABEL,PREFIX,NUM)        \
+#define ASM_GENERATE_INTERNAL_LABEL(LABEL,PREFIX,NUM)	\
   sprintf ((LABEL), "*.L%s%lu", (PREFIX), (unsigned long)(NUM))
 
 /* The native TLS-enabled assembler requires the directive #tls_object
    to be put on objects in TLS sections (as of v7.1).  This is not
    required by the GNU assembler but supported on SPARC.  */
 #undef  ASM_DECLARE_OBJECT_NAME
-#define ASM_DECLARE_OBJECT_NAME(FILE, NAME, DECL)                \
-  do                                                                \
-    {                                                                \
-      HOST_WIDE_INT size;                                        \
-                                                                \
-      if (DECL_THREAD_LOCAL_P (DECL))                                \
-        ASM_OUTPUT_TYPE_DIRECTIVE (FILE, NAME, "tls_object");        \
-      else                                                        \
-        ASM_OUTPUT_TYPE_DIRECTIVE (FILE, NAME, "object");        \
-                                                                \
-      size_directive_output = 0;                                \
-      if (!flag_inhibit_size_directive                                \
-          && (DECL) && DECL_SIZE (DECL))                        \
-        {                                                        \
-          size_directive_output = 1;                                \
-          size = int_size_in_bytes (TREE_TYPE (DECL));                \
-          ASM_OUTPUT_SIZE_DIRECTIVE (FILE, NAME, size);                \
-        }                                                        \
-                                                                \
-      ASM_OUTPUT_LABEL (FILE, NAME);                                \
-    }                                                                \
+#define ASM_DECLARE_OBJECT_NAME(FILE, NAME, DECL)		\
+  do								\
+    {								\
+      HOST_WIDE_INT size;					\
+								\
+      if (DECL_THREAD_LOCAL_P (DECL))				\
+	ASM_OUTPUT_TYPE_DIRECTIVE (FILE, NAME, "tls_object");	\
+      else							\
+	ASM_OUTPUT_TYPE_DIRECTIVE (FILE, NAME, "object");	\
+								\
+      size_directive_output = 0;				\
+      if (!flag_inhibit_size_directive				\
+	  && (DECL) && DECL_SIZE (DECL))			\
+	{							\
+	  size_directive_output = 1;				\
+	  size = int_size_in_bytes (TREE_TYPE (DECL));		\
+	  ASM_OUTPUT_SIZE_DIRECTIVE (FILE, NAME, size);		\
+	}							\
+								\
+      ASM_OUTPUT_LABEL (FILE, NAME);				\
+    }								\
   while (0)
 
 /* The Solaris assembler cannot grok .stabd directives.  */
@@ -124,7 +124,7 @@ Boston, MA 02110-1301, USA.  */
    Some Solaris dynamic linkers don't handle unaligned section relative
    relocs properly, so force them to be aligned.  */
 #ifndef HAVE_AS_SPARC_UA_PCREL
-#define ASM_PREFERRED_EH_DATA_FORMAT(CODE,GLOBAL)                \
+#define ASM_PREFERRED_EH_DATA_FORMAT(CODE,GLOBAL)		\
   ((flag_pic || GLOBAL) ? DW_EH_PE_aligned : DW_EH_PE_absptr)
 #endif
 
@@ -140,7 +140,7 @@ Boston, MA 02110-1301, USA.  */
    memory before the inputs are fully consumed.  */
 
 #undef TARGET_BUGGY_QP_LIB
-#define TARGET_BUGGY_QP_LIB        1
+#define TARGET_BUGGY_QP_LIB	1
 
 #undef SUN_CONVERSION_LIBFUNCS
 #define SUN_CONVERSION_LIBFUNCS 1
@@ -155,7 +155,7 @@ Boston, MA 02110-1301, USA.  */
    sparc_override_options will disable V8+ if not generating V9 code.  */
 #undef TARGET_DEFAULT
 #define TARGET_DEFAULT (MASK_V8PLUS + MASK_APP_REGS + MASK_FPU \
-                        + MASK_LONG_DOUBLE_128)
+			+ MASK_LONG_DOUBLE_128)
 
 /* Solaris-specific #pragmas are implemented on top of attributes.  Hook in
    the bits from config/sol2.c.  */
@@ -163,11 +163,11 @@ Boston, MA 02110-1301, USA.  */
 #define SUBTARGET_ATTRIBUTE_TABLE SOLARIS_ATTRIBUTE_TABLE
 
 /* Output a simple call for .init/.fini.  */
-#define ASM_OUTPUT_CALL(FILE, FN)                                \
-  do                                                                \
-    {                                                                \
-      fprintf (FILE, "\tcall\t");                                \
-      print_operand (FILE, XEXP (DECL_RTL (FN), 0), 0);        \
-      fprintf (FILE, "\n\tnop\n");                                \
-    }                                                                \
+#define ASM_OUTPUT_CALL(FILE, FN)			        \
+  do								\
+    {								\
+      fprintf (FILE, "\tcall\t");				\
+      print_operand (FILE, XEXP (DECL_RTL (FN), 0), 0);	\
+      fprintf (FILE, "\n\tnop\n");				\
+    }								\
   while (0)

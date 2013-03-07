@@ -47,21 +47,21 @@ extern int avr_progmem_p (tree decl, tree attributes);
 #ifdef RTX_CODE /* inside TREE_CODE */
 extern rtx avr_function_value (tree type, tree func);
 extern void init_cumulative_args (CUMULATIVE_ARGS *cum, tree fntype,
-                                  rtx libname, tree fndecl);
+				  rtx libname, tree fndecl);
 extern rtx function_arg (CUMULATIVE_ARGS *cum, enum machine_mode mode,
-                         tree type, int named);
+			 tree type, int named);
 #endif /* RTX_CODE inside TREE_CODE */
 
 #ifdef HAVE_MACHINE_MODES /* inside TREE_CODE */
 extern void function_arg_advance (CUMULATIVE_ARGS *cum,
-                                  enum machine_mode mode, tree type,
-                                  int named);
+				  enum machine_mode mode, tree type,
+				  int named);
 #endif /* HAVE_MACHINE_MODES inside TREE_CODE*/
 #endif /* TREE_CODE */
 
 #ifdef RTX_CODE
 extern void asm_output_external_libcall (FILE *file, rtx symref);
-extern int legitimate_address_p (enum machine_mode mode, rtx x,        int strict);
+extern int legitimate_address_p (enum machine_mode mode, rtx x,	int strict);
 extern int compare_diff_p (rtx insn);
 extern const char *output_movqi (rtx insn, rtx operands[], int *l);
 extern const char *output_movhi (rtx insn, rtx operands[], int *l);
@@ -100,8 +100,8 @@ extern rtx avr_libcall_value (enum machine_mode mode);
 extern const char *output_reload_inhi (rtx insn, rtx *operands, int *len);
 extern const char *output_reload_insisf (rtx insn, rtx *operands, int *len);
 extern enum reg_class secondary_input_reload_class (enum reg_class,
-                                                    enum machine_mode,
-                                                    rtx);
+						    enum machine_mode,
+						    rtx);
 extern void notice_update_cc (rtx body, rtx insn);
 extern void print_operand (FILE *file, rtx x, int code);
 extern void print_operand_address (FILE *file, rtx addr);
@@ -116,11 +116,11 @@ extern int avr_hard_regno_mode_ok (int regno, enum machine_mode mode);
 extern int call_insn_operand (rtx op, enum machine_mode mode);
 extern void final_prescan_insn (rtx insn, rtx *operand, int num_operands);
 extern int avr_simplify_comparison_p (enum machine_mode mode,
-                                      RTX_CODE operator, rtx x);
+				      RTX_CODE operator, rtx x);
 extern RTX_CODE avr_normalize_condition (RTX_CODE condition);
 extern int compare_eq_p (rtx insn);
 extern void out_shift_with_cnt (const char *template, rtx insn,
-                                rtx operands[], int *len, int t_len);
+				rtx operands[], int *len, int t_len);
 extern int avr_io_address_p (rtx x, int size);
 extern int const_int_pow2_p (rtx x);
 extern int avr_peep2_scratch_safe (rtx reg_rtx);

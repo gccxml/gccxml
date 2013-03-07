@@ -35,7 +35,7 @@ Boston, MA 02110-1301, USA.  */
 #include "fibheap.h"
 
 
-#define FIBHEAPKEY_MIN        LONG_MIN
+#define FIBHEAPKEY_MIN	LONG_MIN
 
 static void fibheap_ins_root (fibheap_t, fibnode_t);
 static void fibheap_rem_root (fibheap_t, fibnode_t);
@@ -290,7 +290,7 @@ fibheap_extr_min_node (fibheap_t heap)
   for (x = ret->child, orig = NULL; x != orig && x != NULL; x = y)
     {
       if (orig == NULL)
-        orig = x;
+	orig = x;
       y = x->right;
       x->parent = NULL;
       fibheap_ins_root (heap, x);
@@ -365,28 +365,28 @@ fibheap_consolidate (fibheap_t heap)
       fibheap_rem_root (heap, w);
       d = x->degree;
       while (a[d] != NULL)
-        {
-          y = a[d];
-          if (fibheap_compare (heap, x, y) > 0)
-            {
-              fibnode_t temp;
-              temp = x;
-              x = y;
-              y = temp;
-            }
-          fibheap_link (heap, y, x);
-          a[d] = NULL;
-          d++;
-        }
+	{
+	  y = a[d];
+	  if (fibheap_compare (heap, x, y) > 0)
+	    {
+	      fibnode_t temp;
+	      temp = x;
+	      x = y;
+	      y = temp;
+	    }
+	  fibheap_link (heap, y, x);
+	  a[d] = NULL;
+	  d++;
+	}
       a[d] = x;
     }
   heap->min = NULL;
   for (i = 0; i < D; i++)
     if (a[i] != NULL)
       {
-        fibheap_ins_root (heap, a[i]);
-        if (heap->min == NULL || fibheap_compare (heap, a[i], heap->min) < 0)
-          heap->min = a[i];
+	fibheap_ins_root (heap, a[i]);
+	if (heap->min == NULL || fibheap_compare (heap, a[i], heap->min) < 0)
+	  heap->min = a[i];
       }
 }
 
@@ -423,15 +423,15 @@ fibheap_cascading_cut (fibheap_t heap, fibnode_t y)
   while ((z = y->parent) != NULL)
     {
       if (y->mark == 0)
-        {
-          y->mark = 1;
-          return;
-        }
+	{
+	  y->mark = 1;
+	  return;
+	}
       else
-        {
-          fibheap_cut (heap, y, z);
-          y = z;
-        }
+	{
+	  fibheap_cut (heap, y, z);
+	  y = z;
+	}
     }
 }
 

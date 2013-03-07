@@ -28,7 +28,7 @@ extern int direct_return (void);
 
 extern int alpha_sa_size (void);
 extern HOST_WIDE_INT alpha_initial_elimination_offset (unsigned int,
-                                                       unsigned int);
+						       unsigned int);
 extern int alpha_pv_save_size (void);
 extern int alpha_using_fp (void);
 extern void alpha_expand_prologue (void);
@@ -46,7 +46,7 @@ extern bool alpha_legitimate_constant_p (rtx);
 extern bool alpha_legitimate_address_p (enum machine_mode, rtx, int);
 extern rtx alpha_legitimize_address (rtx, rtx, enum machine_mode);
 extern rtx alpha_legitimize_reload_address (rtx, enum machine_mode,
-                                            int, int, int);
+					    int, int, int);
 
 extern rtx split_small_symbolic_operand (rtx);
 
@@ -55,8 +55,8 @@ extern rtx get_unaligned_address (rtx);
 extern rtx get_unaligned_offset (rtx, HOST_WIDE_INT);
 extern enum reg_class alpha_preferred_reload_class (rtx, enum reg_class);
 extern enum reg_class alpha_secondary_reload_class (enum reg_class,
-                                                    enum machine_mode, rtx,
-                                                    int);
+						    enum machine_mode, rtx,
+						    int);
 
 extern void alpha_set_memflags (rtx, rtx);
 extern bool alpha_split_const_mov (enum machine_mode, rtx *);
@@ -68,15 +68,15 @@ extern rtx alpha_emit_conditional_move (rtx, enum machine_mode);
 extern void alpha_split_tmode_pair (rtx[], enum machine_mode, bool);
 extern void alpha_split_tfmode_frobsign (rtx[], rtx (*)(rtx, rtx, rtx));
 extern void alpha_expand_unaligned_load (rtx, rtx, HOST_WIDE_INT,
-                                         HOST_WIDE_INT, int);
+					 HOST_WIDE_INT, int);
 extern void alpha_expand_unaligned_store (rtx, rtx, HOST_WIDE_INT,
-                                          HOST_WIDE_INT);
+					  HOST_WIDE_INT);
 extern int alpha_expand_block_move (rtx []);
 extern int alpha_expand_block_clear (rtx []);
 extern rtx alpha_expand_zap_mask (HOST_WIDE_INT);
 extern void alpha_expand_builtin_vector_binop (rtx (*)(rtx, rtx, rtx),
-                                               enum machine_mode,
-                                               rtx, rtx, rtx);
+					       enum machine_mode,
+					       rtx, rtx, rtx);
 extern rtx alpha_return_addr (int, rtx);
 extern rtx alpha_gp_save_rtx (void);
 extern void print_operand (FILE *, rtx, int);
@@ -107,11 +107,11 @@ extern void alpha_split_atomic_op (enum rtx_code, rtx, rtx, rtx, rtx, rtx);
 extern void alpha_split_compare_and_swap (rtx, rtx, rtx, rtx, rtx);
 extern void alpha_expand_compare_and_swap_12 (rtx, rtx, rtx, rtx);
 extern void alpha_split_compare_and_swap_12 (enum machine_mode, rtx, rtx,
-                                             rtx, rtx, rtx, rtx, rtx);
+					     rtx, rtx, rtx, rtx, rtx);
 extern void alpha_split_lock_test_and_set (rtx, rtx, rtx, rtx);
 extern void alpha_expand_lock_test_and_set_12 (rtx, rtx, rtx);
 extern void alpha_split_lock_test_and_set_12 (enum machine_mode, rtx, rtx,
-                                              rtx, rtx, rtx);
+					      rtx, rtx, rtx);
 #endif
 
 extern rtx alpha_need_linkage (const char *, int);

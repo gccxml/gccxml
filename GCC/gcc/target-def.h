@@ -231,52 +231,52 @@ Foundation, 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 #define TARGET_ASM_OUTPUT_DWARF_DTPREL NULL
 #endif
 
-#define TARGET_ASM_ALIGNED_INT_OP                                \
-                       {TARGET_ASM_ALIGNED_HI_OP,                \
-                        TARGET_ASM_ALIGNED_SI_OP,                \
-                        TARGET_ASM_ALIGNED_DI_OP,                \
-                        TARGET_ASM_ALIGNED_TI_OP}
+#define TARGET_ASM_ALIGNED_INT_OP				\
+		       {TARGET_ASM_ALIGNED_HI_OP,		\
+			TARGET_ASM_ALIGNED_SI_OP,		\
+			TARGET_ASM_ALIGNED_DI_OP,		\
+			TARGET_ASM_ALIGNED_TI_OP}
 
-#define TARGET_ASM_UNALIGNED_INT_OP                                \
-                       {TARGET_ASM_UNALIGNED_HI_OP,                \
-                        TARGET_ASM_UNALIGNED_SI_OP,                \
-                        TARGET_ASM_UNALIGNED_DI_OP,                \
-                        TARGET_ASM_UNALIGNED_TI_OP}
+#define TARGET_ASM_UNALIGNED_INT_OP				\
+		       {TARGET_ASM_UNALIGNED_HI_OP,		\
+			TARGET_ASM_UNALIGNED_SI_OP,		\
+			TARGET_ASM_UNALIGNED_DI_OP,		\
+			TARGET_ASM_UNALIGNED_TI_OP}
 
-#define TARGET_ASM_OUT {TARGET_ASM_OPEN_PAREN,                        \
-                        TARGET_ASM_CLOSE_PAREN,                        \
-                        TARGET_ASM_BYTE_OP,                        \
-                        TARGET_ASM_ALIGNED_INT_OP,                \
-                        TARGET_ASM_UNALIGNED_INT_OP,                \
-                        TARGET_ASM_INTEGER,                        \
-                        TARGET_ASM_GLOBALIZE_LABEL,                \
+#define TARGET_ASM_OUT {TARGET_ASM_OPEN_PAREN,			\
+			TARGET_ASM_CLOSE_PAREN,			\
+			TARGET_ASM_BYTE_OP,			\
+			TARGET_ASM_ALIGNED_INT_OP,		\
+			TARGET_ASM_UNALIGNED_INT_OP,		\
+			TARGET_ASM_INTEGER,			\
+			TARGET_ASM_GLOBALIZE_LABEL,		\
                         TARGET_ASM_EMIT_UNWIND_LABEL,           \
-                        TARGET_ASM_EMIT_EXCEPT_TABLE_LABEL,        \
-                        TARGET_UNWIND_EMIT,                        \
-                        TARGET_ASM_INTERNAL_LABEL,                \
-                        TARGET_ASM_TTYPE,                        \
-                        TARGET_ASM_ASSEMBLE_VISIBILITY,                \
-                        TARGET_ASM_FUNCTION_PROLOGUE,                \
-                        TARGET_ASM_FUNCTION_END_PROLOGUE,        \
-                        TARGET_ASM_FUNCTION_BEGIN_EPILOGUE,        \
-                        TARGET_ASM_FUNCTION_EPILOGUE,                \
-                        TARGET_ASM_INIT_SECTIONS,                \
-                        TARGET_ASM_NAMED_SECTION,                \
-                        TARGET_ASM_RELOC_RW_MASK,                \
-                        TARGET_ASM_SELECT_SECTION,                \
-                        TARGET_ASM_SELECT_RTX_SECTION,                \
-                        TARGET_ASM_UNIQUE_SECTION,                \
-                        TARGET_ASM_FUNCTION_RODATA_SECTION,        \
-                        TARGET_ASM_CONSTRUCTOR,                        \
-                        TARGET_ASM_DESTRUCTOR,                  \
+			TARGET_ASM_EMIT_EXCEPT_TABLE_LABEL,	\
+			TARGET_UNWIND_EMIT,			\
+			TARGET_ASM_INTERNAL_LABEL,		\
+			TARGET_ASM_TTYPE,			\
+			TARGET_ASM_ASSEMBLE_VISIBILITY,		\
+			TARGET_ASM_FUNCTION_PROLOGUE,		\
+			TARGET_ASM_FUNCTION_END_PROLOGUE,	\
+			TARGET_ASM_FUNCTION_BEGIN_EPILOGUE,	\
+			TARGET_ASM_FUNCTION_EPILOGUE,		\
+			TARGET_ASM_INIT_SECTIONS,		\
+			TARGET_ASM_NAMED_SECTION,		\
+			TARGET_ASM_RELOC_RW_MASK,		\
+			TARGET_ASM_SELECT_SECTION,		\
+			TARGET_ASM_SELECT_RTX_SECTION,		\
+			TARGET_ASM_UNIQUE_SECTION,		\
+			TARGET_ASM_FUNCTION_RODATA_SECTION,	\
+			TARGET_ASM_CONSTRUCTOR,			\
+			TARGET_ASM_DESTRUCTOR,                  \
                         TARGET_ASM_OUTPUT_MI_THUNK,             \
                         TARGET_ASM_CAN_OUTPUT_MI_THUNK,         \
                         TARGET_ASM_FILE_START,                  \
-                        TARGET_ASM_FILE_END,                        \
-                        TARGET_ASM_EXTERNAL_LIBCALL,            \
-                        TARGET_ASM_MARK_DECL_PRESERVED,                \
-                        TARGET_ASM_OUTPUT_ANCHOR,                \
-                        TARGET_ASM_OUTPUT_DWARF_DTPREL}
+                        TARGET_ASM_FILE_END,			\
+			TARGET_ASM_EXTERNAL_LIBCALL,            \
+                        TARGET_ASM_MARK_DECL_PRESERVED,		\
+			TARGET_ASM_OUTPUT_ANCHOR,		\
+			TARGET_ASM_OUTPUT_DWARF_DTPREL}
 
 /* Scheduler hooks.  All of these default to null pointers, which
    haifa-sched.c looks for and handles.  */
@@ -308,28 +308,28 @@ Foundation, 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 #define TARGET_SCHED_SET_SCHED_FLAGS 0
 
 
-#define TARGET_SCHED                                                \
-  {TARGET_SCHED_ADJUST_COST,                                        \
-   TARGET_SCHED_ADJUST_PRIORITY,                                \
-   TARGET_SCHED_ISSUE_RATE,                                        \
-   TARGET_SCHED_VARIABLE_ISSUE,                                        \
-   TARGET_SCHED_INIT,                                                \
-   TARGET_SCHED_FINISH,                                                \
-   TARGET_SCHED_INIT_GLOBAL,                                        \
-   TARGET_SCHED_FINISH_GLOBAL,                                        \
-   TARGET_SCHED_REORDER,                                        \
-   TARGET_SCHED_REORDER2,                                        \
-   TARGET_SCHED_DEPENDENCIES_EVALUATION_HOOK,                        \
-   TARGET_SCHED_INIT_DFA_PRE_CYCLE_INSN,                        \
-   TARGET_SCHED_DFA_PRE_CYCLE_INSN,                                \
-   TARGET_SCHED_INIT_DFA_POST_CYCLE_INSN,                        \
-   TARGET_SCHED_DFA_POST_CYCLE_INSN,                                \
-   TARGET_SCHED_FIRST_CYCLE_MULTIPASS_DFA_LOOKAHEAD,                \
-   TARGET_SCHED_FIRST_CYCLE_MULTIPASS_DFA_LOOKAHEAD_GUARD,        \
-   TARGET_SCHED_DFA_NEW_CYCLE,                                        \
+#define TARGET_SCHED						\
+  {TARGET_SCHED_ADJUST_COST,					\
+   TARGET_SCHED_ADJUST_PRIORITY,				\
+   TARGET_SCHED_ISSUE_RATE,					\
+   TARGET_SCHED_VARIABLE_ISSUE,					\
+   TARGET_SCHED_INIT,						\
+   TARGET_SCHED_FINISH,						\
+   TARGET_SCHED_INIT_GLOBAL,					\
+   TARGET_SCHED_FINISH_GLOBAL,					\
+   TARGET_SCHED_REORDER,					\
+   TARGET_SCHED_REORDER2,					\
+   TARGET_SCHED_DEPENDENCIES_EVALUATION_HOOK,			\
+   TARGET_SCHED_INIT_DFA_PRE_CYCLE_INSN,			\
+   TARGET_SCHED_DFA_PRE_CYCLE_INSN,				\
+   TARGET_SCHED_INIT_DFA_POST_CYCLE_INSN,			\
+   TARGET_SCHED_DFA_POST_CYCLE_INSN,				\
+   TARGET_SCHED_FIRST_CYCLE_MULTIPASS_DFA_LOOKAHEAD,		\
+   TARGET_SCHED_FIRST_CYCLE_MULTIPASS_DFA_LOOKAHEAD_GUARD,	\
+   TARGET_SCHED_DFA_NEW_CYCLE,					\
    TARGET_SCHED_IS_COSTLY_DEPENDENCE,                           \
    TARGET_SCHED_ADJUST_COST_2,                                  \
-   TARGET_SCHED_H_I_D_EXTENDED,                                        \
+   TARGET_SCHED_H_I_D_EXTENDED,					\
    TARGET_SCHED_SPECULATE_INSN,                                 \
    TARGET_SCHED_NEEDS_BLOCK_P,                                  \
    TARGET_SCHED_GEN_CHECK,                                      \
@@ -509,25 +509,25 @@ Foundation, 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 #define TARGET_FUNCTION_VALUE default_function_value
 #define TARGET_INTERNAL_ARG_POINTER default_internal_arg_pointer
 
-#define TARGET_CALLS {                                                \
-   TARGET_PROMOTE_FUNCTION_ARGS,                                \
-   TARGET_PROMOTE_FUNCTION_RETURN,                                \
-   TARGET_PROMOTE_PROTOTYPES,                                        \
-   TARGET_STRUCT_VALUE_RTX,                                        \
-   TARGET_RETURN_IN_MEMORY,                                        \
-   TARGET_RETURN_IN_MSB,                                        \
-   TARGET_PASS_BY_REFERENCE,                                        \
-   TARGET_EXPAND_BUILTIN_SAVEREGS,                                \
-   TARGET_SETUP_INCOMING_VARARGS,                                \
-   TARGET_STRICT_ARGUMENT_NAMING,                                \
-   TARGET_PRETEND_OUTGOING_VARARGS_NAMED,                        \
-   TARGET_SPLIT_COMPLEX_ARG,                                        \
-   TARGET_MUST_PASS_IN_STACK,                                        \
-   TARGET_CALLEE_COPIES,                                        \
-   TARGET_ARG_PARTIAL_BYTES,                                        \
-   TARGET_INVALID_ARG_FOR_UNPROTOTYPED_FN,                        \
-   TARGET_FUNCTION_VALUE,                                        \
-   TARGET_INTERNAL_ARG_POINTER                                        \
+#define TARGET_CALLS {						\
+   TARGET_PROMOTE_FUNCTION_ARGS,				\
+   TARGET_PROMOTE_FUNCTION_RETURN,				\
+   TARGET_PROMOTE_PROTOTYPES,					\
+   TARGET_STRUCT_VALUE_RTX,					\
+   TARGET_RETURN_IN_MEMORY,					\
+   TARGET_RETURN_IN_MSB,					\
+   TARGET_PASS_BY_REFERENCE,					\
+   TARGET_EXPAND_BUILTIN_SAVEREGS,				\
+   TARGET_SETUP_INCOMING_VARARGS,				\
+   TARGET_STRICT_ARGUMENT_NAMING,				\
+   TARGET_PRETEND_OUTGOING_VARARGS_NAMED,			\
+   TARGET_SPLIT_COMPLEX_ARG,					\
+   TARGET_MUST_PASS_IN_STACK,					\
+   TARGET_CALLEE_COPIES,					\
+   TARGET_ARG_PARTIAL_BYTES,					\
+   TARGET_INVALID_ARG_FOR_UNPROTOTYPED_FN,			\
+   TARGET_FUNCTION_VALUE,					\
+   TARGET_INTERNAL_ARG_POINTER					\
    }
 
 #ifndef TARGET_UNWIND_TABLES_DEFAULT
@@ -592,113 +592,113 @@ Foundation, 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 #define TARGET_CXX_ADJUST_CLASS_AT_DEFINITION hook_void_tree
 #endif
 
-#define TARGET_CXX                                \
-  {                                                \
-    TARGET_CXX_GUARD_TYPE,                        \
-    TARGET_CXX_GUARD_MASK_BIT,                        \
-    TARGET_CXX_GET_COOKIE_SIZE,                        \
-    TARGET_CXX_COOKIE_HAS_SIZE,                        \
-    TARGET_CXX_IMPORT_EXPORT_CLASS,                \
-    TARGET_CXX_CDTOR_RETURNS_THIS,                \
-    TARGET_CXX_KEY_METHOD_MAY_BE_INLINE,        \
-    TARGET_CXX_DETERMINE_CLASS_DATA_VISIBILITY,        \
+#define TARGET_CXX				\
+  {						\
+    TARGET_CXX_GUARD_TYPE,			\
+    TARGET_CXX_GUARD_MASK_BIT,			\
+    TARGET_CXX_GET_COOKIE_SIZE,			\
+    TARGET_CXX_COOKIE_HAS_SIZE,			\
+    TARGET_CXX_IMPORT_EXPORT_CLASS,		\
+    TARGET_CXX_CDTOR_RETURNS_THIS,		\
+    TARGET_CXX_KEY_METHOD_MAY_BE_INLINE,	\
+    TARGET_CXX_DETERMINE_CLASS_DATA_VISIBILITY,	\
     TARGET_CXX_CLASS_DATA_ALWAYS_COMDAT,        \
-    TARGET_CXX_USE_AEABI_ATEXIT,                \
-    TARGET_CXX_ADJUST_CLASS_AT_DEFINITION        \
+    TARGET_CXX_USE_AEABI_ATEXIT,		\
+    TARGET_CXX_ADJUST_CLASS_AT_DEFINITION	\
   }
 
 /* The whole shebang.  */
-#define TARGET_INITIALIZER                        \
-{                                                \
-  TARGET_ASM_OUT,                                \
-  TARGET_SCHED,                                        \
-  TARGET_VECTORIZE,                                \
-  TARGET_DEFAULT_TARGET_FLAGS,                        \
-  TARGET_HANDLE_OPTION,                                \
-  TARGET_EH_RETURN_FILTER_MODE,                        \
-  TARGET_MERGE_DECL_ATTRIBUTES,                        \
-  TARGET_MERGE_TYPE_ATTRIBUTES,                        \
-  TARGET_ATTRIBUTE_TABLE,                        \
-  TARGET_COMP_TYPE_ATTRIBUTES,                        \
-  TARGET_SET_DEFAULT_TYPE_ATTRIBUTES,                \
-  TARGET_INSERT_ATTRIBUTES,                        \
-  TARGET_FUNCTION_ATTRIBUTE_INLINABLE_P,        \
-  TARGET_MS_BITFIELD_LAYOUT_P,                        \
-  TARGET_DECIMAL_FLOAT_SUPPORTED_P,                \
-  TARGET_ALIGN_ANON_BITFIELD,                        \
-  TARGET_NARROW_VOLATILE_BITFIELD,                \
-  TARGET_INIT_BUILTINS,                                \
-  TARGET_EXPAND_BUILTIN,                        \
-  TARGET_RESOLVE_OVERLOADED_BUILTIN,                \
-  TARGET_FOLD_BUILTIN,                                \
-  TARGET_MANGLE_FUNDAMENTAL_TYPE,                \
-  TARGET_INIT_LIBFUNCS,                                \
-  TARGET_SECTION_TYPE_FLAGS,                        \
-  TARGET_CANNOT_MODIFY_JUMPS_P,                        \
-  TARGET_BRANCH_TARGET_REGISTER_CLASS,                \
-  TARGET_BRANCH_TARGET_REGISTER_CALLEE_SAVED,        \
-  TARGET_CANNOT_FORCE_CONST_MEM,                \
-  TARGET_CANNOT_COPY_INSN_P,                        \
-  TARGET_COMMUTATIVE_P,                                \
-  TARGET_DELEGITIMIZE_ADDRESS,                        \
-  TARGET_USE_BLOCKS_FOR_CONSTANT_P,                \
-  TARGET_MIN_ANCHOR_OFFSET,                        \
-  TARGET_MAX_ANCHOR_OFFSET,                        \
-  TARGET_USE_ANCHORS_FOR_SYMBOL_P,                \
-  TARGET_FUNCTION_OK_FOR_SIBCALL,                \
-  TARGET_IN_SMALL_DATA_P,                        \
-  TARGET_BINDS_LOCAL_P,                                \
-  TARGET_ENCODE_SECTION_INFO,                        \
-  TARGET_STRIP_NAME_ENCODING,                        \
-  TARGET_SHIFT_TRUNCATION_MASK,                        \
-  TARGET_MIN_DIVISIONS_FOR_RECIP_MUL,                \
-  TARGET_MODE_REP_EXTENDED,                        \
+#define TARGET_INITIALIZER			\
+{						\
+  TARGET_ASM_OUT,				\
+  TARGET_SCHED,					\
+  TARGET_VECTORIZE,				\
+  TARGET_DEFAULT_TARGET_FLAGS,			\
+  TARGET_HANDLE_OPTION,				\
+  TARGET_EH_RETURN_FILTER_MODE,			\
+  TARGET_MERGE_DECL_ATTRIBUTES,			\
+  TARGET_MERGE_TYPE_ATTRIBUTES,			\
+  TARGET_ATTRIBUTE_TABLE,			\
+  TARGET_COMP_TYPE_ATTRIBUTES,			\
+  TARGET_SET_DEFAULT_TYPE_ATTRIBUTES,		\
+  TARGET_INSERT_ATTRIBUTES,			\
+  TARGET_FUNCTION_ATTRIBUTE_INLINABLE_P,	\
+  TARGET_MS_BITFIELD_LAYOUT_P,			\
+  TARGET_DECIMAL_FLOAT_SUPPORTED_P,		\
+  TARGET_ALIGN_ANON_BITFIELD,			\
+  TARGET_NARROW_VOLATILE_BITFIELD,		\
+  TARGET_INIT_BUILTINS,				\
+  TARGET_EXPAND_BUILTIN,			\
+  TARGET_RESOLVE_OVERLOADED_BUILTIN,		\
+  TARGET_FOLD_BUILTIN,				\
+  TARGET_MANGLE_FUNDAMENTAL_TYPE,		\
+  TARGET_INIT_LIBFUNCS,				\
+  TARGET_SECTION_TYPE_FLAGS,			\
+  TARGET_CANNOT_MODIFY_JUMPS_P,			\
+  TARGET_BRANCH_TARGET_REGISTER_CLASS,		\
+  TARGET_BRANCH_TARGET_REGISTER_CALLEE_SAVED,	\
+  TARGET_CANNOT_FORCE_CONST_MEM,		\
+  TARGET_CANNOT_COPY_INSN_P,			\
+  TARGET_COMMUTATIVE_P,				\
+  TARGET_DELEGITIMIZE_ADDRESS,			\
+  TARGET_USE_BLOCKS_FOR_CONSTANT_P,		\
+  TARGET_MIN_ANCHOR_OFFSET,			\
+  TARGET_MAX_ANCHOR_OFFSET,			\
+  TARGET_USE_ANCHORS_FOR_SYMBOL_P,		\
+  TARGET_FUNCTION_OK_FOR_SIBCALL,		\
+  TARGET_IN_SMALL_DATA_P,			\
+  TARGET_BINDS_LOCAL_P,				\
+  TARGET_ENCODE_SECTION_INFO,			\
+  TARGET_STRIP_NAME_ENCODING,			\
+  TARGET_SHIFT_TRUNCATION_MASK,			\
+  TARGET_MIN_DIVISIONS_FOR_RECIP_MUL,		\
+  TARGET_MODE_REP_EXTENDED,			\
   TARGET_VALID_POINTER_MODE,                    \
-  TARGET_SCALAR_MODE_SUPPORTED_P,                \
+  TARGET_SCALAR_MODE_SUPPORTED_P,		\
   TARGET_VECTOR_MODE_SUPPORTED_P,               \
-  TARGET_VECTOR_OPAQUE_P,                        \
-  TARGET_RTX_COSTS,                                \
-  TARGET_ADDRESS_COST,                                \
-  TARGET_ALLOCATE_INITIAL_VALUE,                \
+  TARGET_VECTOR_OPAQUE_P,			\
+  TARGET_RTX_COSTS,				\
+  TARGET_ADDRESS_COST,				\
+  TARGET_ALLOCATE_INITIAL_VALUE,		\
   TARGET_DWARF_REGISTER_SPAN,                   \
-  TARGET_FIXED_CONDITION_CODE_REGS,                \
-  TARGET_CC_MODES_COMPATIBLE,                        \
-  TARGET_MACHINE_DEPENDENT_REORG,                \
-  TARGET_BUILD_BUILTIN_VA_LIST,                        \
-  TARGET_GIMPLIFY_VA_ARG_EXPR,                        \
-  TARGET_GET_PCH_VALIDITY,                        \
-  TARGET_PCH_VALID_P,                                \
-  TARGET_CHECK_PCH_TARGET_FLAGS,                \
-  TARGET_DEFAULT_SHORT_ENUMS,                        \
-  TARGET_BUILTIN_SETJMP_FRAME_VALUE,                \
-  TARGET_MD_ASM_CLOBBERS,                        \
+  TARGET_FIXED_CONDITION_CODE_REGS,		\
+  TARGET_CC_MODES_COMPATIBLE,			\
+  TARGET_MACHINE_DEPENDENT_REORG,		\
+  TARGET_BUILD_BUILTIN_VA_LIST,			\
+  TARGET_GIMPLIFY_VA_ARG_EXPR,			\
+  TARGET_GET_PCH_VALIDITY,			\
+  TARGET_PCH_VALID_P,				\
+  TARGET_CHECK_PCH_TARGET_FLAGS,		\
+  TARGET_DEFAULT_SHORT_ENUMS,			\
+  TARGET_BUILTIN_SETJMP_FRAME_VALUE,		\
+  TARGET_MD_ASM_CLOBBERS,			\
   TARGET_DWARF_CALLING_CONVENTION,              \
-  TARGET_DWARF_HANDLE_FRAME_UNSPEC,                \
-  TARGET_STDARG_OPTIMIZE_HOOK,                        \
-  TARGET_STACK_PROTECT_GUARD,                        \
-  TARGET_STACK_PROTECT_FAIL,                        \
-  TARGET_INVALID_WITHIN_DOLOOP,                        \
-  TARGET_VALID_DLLIMPORT_ATTRIBUTE_P,                \
-  TARGET_CALLS,                                        \
-  TARGET_INVALID_CONVERSION,                        \
-  TARGET_INVALID_UNARY_OP,                        \
-  TARGET_INVALID_BINARY_OP,                        \
-  TARGET_SECONDARY_RELOAD,                        \
-  TARGET_CXX,                                        \
+  TARGET_DWARF_HANDLE_FRAME_UNSPEC,		\
+  TARGET_STDARG_OPTIMIZE_HOOK,			\
+  TARGET_STACK_PROTECT_GUARD,			\
+  TARGET_STACK_PROTECT_FAIL,			\
+  TARGET_INVALID_WITHIN_DOLOOP,			\
+  TARGET_VALID_DLLIMPORT_ATTRIBUTE_P,		\
+  TARGET_CALLS,					\
+  TARGET_INVALID_CONVERSION,			\
+  TARGET_INVALID_UNARY_OP,			\
+  TARGET_INVALID_BINARY_OP,			\
+  TARGET_SECONDARY_RELOAD,			\
+  TARGET_CXX,					\
   TARGET_EXTRA_LIVE_ON_ENTRY,                    \
-  TARGET_UNWIND_TABLES_DEFAULT,                        \
-  TARGET_HAVE_NAMED_SECTIONS,                        \
-  TARGET_HAVE_SWITCHABLE_BSS_SECTIONS,                \
-  TARGET_HAVE_CTORS_DTORS,                        \
-  TARGET_HAVE_TLS,                                \
-  TARGET_HAVE_SRODATA_SECTION,                        \
-  TARGET_TERMINATE_DW2_EH_FRAME_INFO,                \
-  TARGET_ASM_FILE_START_APP_OFF,                \
-  TARGET_ASM_FILE_START_FILE_DIRECTIVE,                \
-  TARGET_HANDLE_PRAGMA_REDEFINE_EXTNAME,        \
-  TARGET_HANDLE_PRAGMA_EXTERN_PREFIX,                \
-  TARGET_RELAXED_ORDERING,                        \
-  TARGET_ARM_EABI_UNWINDER                        \
+  TARGET_UNWIND_TABLES_DEFAULT,			\
+  TARGET_HAVE_NAMED_SECTIONS,			\
+  TARGET_HAVE_SWITCHABLE_BSS_SECTIONS,		\
+  TARGET_HAVE_CTORS_DTORS,			\
+  TARGET_HAVE_TLS,				\
+  TARGET_HAVE_SRODATA_SECTION,			\
+  TARGET_TERMINATE_DW2_EH_FRAME_INFO,		\
+  TARGET_ASM_FILE_START_APP_OFF,		\
+  TARGET_ASM_FILE_START_FILE_DIRECTIVE,		\
+  TARGET_HANDLE_PRAGMA_REDEFINE_EXTNAME,	\
+  TARGET_HANDLE_PRAGMA_EXTERN_PREFIX,		\
+  TARGET_RELAXED_ORDERING,			\
+  TARGET_ARM_EABI_UNWINDER			\
 }
 
 #include "hooks.h"

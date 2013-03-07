@@ -69,8 +69,8 @@ potentially_threadable_block (basic_block bb)
   if (bsi_end_p (bsi)
       || ! bsi_stmt (bsi)
       || (TREE_CODE (bsi_stmt (bsi)) != COND_EXPR
-          && TREE_CODE (bsi_stmt (bsi)) != GOTO_EXPR
-          && TREE_CODE (bsi_stmt (bsi)) != SWITCH_EXPR))
+	  && TREE_CODE (bsi_stmt (bsi)) != GOTO_EXPR
+	  && TREE_CODE (bsi_stmt (bsi)) != SWITCH_EXPR))
     return false;
 
   return true;
@@ -94,10 +94,10 @@ lhs_of_dominating_assert (tree op, basic_block bb, tree stmt)
           && TREE_CODE (use_stmt) == MODIFY_EXPR
           && TREE_CODE (TREE_OPERAND (use_stmt, 1)) == ASSERT_EXPR
           && TREE_OPERAND (TREE_OPERAND (use_stmt, 1), 0) == op
-          && dominated_by_p (CDI_DOMINATORS, bb, bb_for_stmt (use_stmt)))
-        {
-          return TREE_OPERAND (use_stmt, 0);
-        }
+	  && dominated_by_p (CDI_DOMINATORS, bb, bb_for_stmt (use_stmt)))
+	{
+	  return TREE_OPERAND (use_stmt, 0);
+	}
     }
   return op;
 }
@@ -123,9 +123,9 @@ remove_temporary_equivalences (VEC(tree, heap) **stack)
       dest = VEC_pop (tree, *stack);
 
       /* A NULL value indicates we should stop unwinding, otherwise
-         pop off the next entry as they're recorded in pairs.  */
+	 pop off the next entry as they're recorded in pairs.  */
       if (dest == NULL)
-        break;
+	break;
 
       prev_value = VEC_pop (tree, *stack);
       SSA_NAME_VALUE (dest) = prev_value;
@@ -173,18 +173,18 @@ record_temporary_equivalences_from_phis (edge e, VEC(tree, heap) **stack)
       tree dst = PHI_RESULT (phi);
 
       /* If the desired argument is not the same as this PHI's result 
-         and it is set by a PHI in E->dest, then we can not thread
-         through E->dest.  */
+	 and it is set by a PHI in E->dest, then we can not thread
+	 through E->dest.  */
       if (src != dst
-          && TREE_CODE (src) == SSA_NAME
-          && TREE_CODE (SSA_NAME_DEF_STMT (src)) == PHI_NODE
-          && bb_for_stmt (SSA_NAME_DEF_STMT (src)) == e->dest)
-        return false;
+	  && TREE_CODE (src) == SSA_NAME
+	  && TREE_CODE (SSA_NAME_DEF_STMT (src)) == PHI_NODE
+	  && bb_for_stmt (SSA_NAME_DEF_STMT (src)) == e->dest)
+	return false;
 
       /* We consider any non-virtual PHI as a statement since it
-         count result in a constant assignment or copy operation.  */
+	 count result in a constant assignment or copy operation.  */
       if (is_gimple_reg (dst))
-        stmt_count++;
+	stmt_count++;
 
       record_temporary_equivalence (dst, src, stack);
     }
@@ -210,9 +210,9 @@ record_temporary_equivalences_from_phis (edge e, VEC(tree, heap) **stack)
 
 static tree
 record_temporary_equivalences_from_stmts_at_dest (edge e,
-                                                  VEC(tree, heap) **stack,
-                                                  tree (*simplify) (tree,
-                                                                    tree))
+						  VEC(tree, heap) **stack,
+						  tree (*simplify) (tree,
+								    tree))
 {
   block_stmt_iterator bsi;
   tree stmt = NULL;
@@ -232,109 +232,109 @@ record_temporary_equivalences_from_stmts_at_dest (edge e,
 
       /* Ignore empty statements and labels.  */
       if (IS_EMPTY_STMT (stmt) || TREE_CODE (stmt) == LABEL_EXPR)
-        continue;
+	continue;
 
       /* If the statement has volatile operands, then we assume we
-         can not thread through this block.  This is overly
-         conservative in some ways.  */
+	 can not thread through this block.  This is overly
+	 conservative in some ways.  */
       if (TREE_CODE (stmt) == ASM_EXPR && ASM_VOLATILE_P (stmt))
-        return NULL;
+	return NULL;
 
       /* If duplicating this block is going to cause too much code
-         expansion, then do not thread through this block.  */
+	 expansion, then do not thread through this block.  */
       stmt_count++;
       if (stmt_count > max_stmt_count)
-        return NULL;
+	return NULL;
 
       /* If this is not a MODIFY_EXPR which sets an SSA_NAME to a new
-         value, then do not try to simplify this statement as it will
-         not simplify in any way that is helpful for jump threading.  */
+	 value, then do not try to simplify this statement as it will
+	 not simplify in any way that is helpful for jump threading.  */
       if (TREE_CODE (stmt) != MODIFY_EXPR
-          || TREE_CODE (TREE_OPERAND (stmt, 0)) != SSA_NAME)
-        continue;
+	  || TREE_CODE (TREE_OPERAND (stmt, 0)) != SSA_NAME)
+	continue;
 
       /* At this point we have a statement which assigns an RHS to an
-         SSA_VAR on the LHS.  We want to try and simplify this statement
-         to expose more context sensitive equivalences which in turn may
-         allow us to simplify the condition at the end of the loop. 
+	 SSA_VAR on the LHS.  We want to try and simplify this statement
+	 to expose more context sensitive equivalences which in turn may
+	 allow us to simplify the condition at the end of the loop. 
 
-         Handle simple copy operations as well as implied copies from
-         ASSERT_EXPRs.  */
+	 Handle simple copy operations as well as implied copies from
+	 ASSERT_EXPRs.  */
       if (TREE_CODE (TREE_OPERAND (stmt, 1)) == SSA_NAME)
-        cached_lhs = TREE_OPERAND (stmt, 1);
+	cached_lhs = TREE_OPERAND (stmt, 1);
       else if (TREE_CODE (TREE_OPERAND (stmt, 1)) == ASSERT_EXPR)
-        cached_lhs = TREE_OPERAND (TREE_OPERAND (stmt, 1), 0);
+	cached_lhs = TREE_OPERAND (TREE_OPERAND (stmt, 1), 0);
       else
-        {
-          /* A statement that is not a trivial copy or ASSERT_EXPR.
-             We're going to temporarily copy propagate the operands
-             and see if that allows us to simplify this statement.  */
-          tree *copy, pre_fold_expr;
-          ssa_op_iter iter;
-          use_operand_p use_p;
-          unsigned int num, i = 0;
+	{
+	  /* A statement that is not a trivial copy or ASSERT_EXPR.
+	     We're going to temporarily copy propagate the operands
+	     and see if that allows us to simplify this statement.  */
+	  tree *copy, pre_fold_expr;
+	  ssa_op_iter iter;
+	  use_operand_p use_p;
+	  unsigned int num, i = 0;
 
-          num = NUM_SSA_OPERANDS (stmt, (SSA_OP_USE | SSA_OP_VUSE));
-          copy = XCNEWVEC (tree, num);
+	  num = NUM_SSA_OPERANDS (stmt, (SSA_OP_USE | SSA_OP_VUSE));
+	  copy = XCNEWVEC (tree, num);
 
-          /* Make a copy of the uses & vuses into USES_COPY, then cprop into
-             the operands.  */
-          FOR_EACH_SSA_USE_OPERAND (use_p, stmt, iter, SSA_OP_USE | SSA_OP_VUSE)
-            {
-              tree tmp = NULL;
-              tree use = USE_FROM_PTR (use_p);
+	  /* Make a copy of the uses & vuses into USES_COPY, then cprop into
+	     the operands.  */
+	  FOR_EACH_SSA_USE_OPERAND (use_p, stmt, iter, SSA_OP_USE | SSA_OP_VUSE)
+	    {
+	      tree tmp = NULL;
+	      tree use = USE_FROM_PTR (use_p);
 
-              copy[i++] = use;
-              if (TREE_CODE (use) == SSA_NAME)
-                tmp = SSA_NAME_VALUE (use);
-              if (tmp && TREE_CODE (tmp) != VALUE_HANDLE)
-                SET_USE (use_p, tmp);
-            }
+	      copy[i++] = use;
+	      if (TREE_CODE (use) == SSA_NAME)
+		tmp = SSA_NAME_VALUE (use);
+	      if (tmp && TREE_CODE (tmp) != VALUE_HANDLE)
+		SET_USE (use_p, tmp);
+	    }
 
-          /* Try to fold/lookup the new expression.  Inserting the
-             expression into the hash table is unlikely to help
-             Sadly, we have to handle conditional assignments specially
-             here, because fold expects all the operands of an expression
-             to be folded before the expression itself is folded, but we
-             can't just substitute the folded condition here.  */
-          if (TREE_CODE (TREE_OPERAND (stmt, 1)) == COND_EXPR)
-            {
-              tree cond = COND_EXPR_COND (TREE_OPERAND (stmt, 1));
-              cond = fold (cond);
-              if (cond == boolean_true_node)
-                pre_fold_expr = COND_EXPR_THEN (TREE_OPERAND (stmt, 1));
-              else if (cond == boolean_false_node)
-                pre_fold_expr = COND_EXPR_ELSE (TREE_OPERAND (stmt, 1));
-              else
-                pre_fold_expr = TREE_OPERAND (stmt, 1);
-            }
-          else
-            pre_fold_expr = TREE_OPERAND (stmt, 1);
+	  /* Try to fold/lookup the new expression.  Inserting the
+	     expression into the hash table is unlikely to help
+	     Sadly, we have to handle conditional assignments specially
+	     here, because fold expects all the operands of an expression
+	     to be folded before the expression itself is folded, but we
+	     can't just substitute the folded condition here.  */
+	  if (TREE_CODE (TREE_OPERAND (stmt, 1)) == COND_EXPR)
+	    {
+	      tree cond = COND_EXPR_COND (TREE_OPERAND (stmt, 1));
+	      cond = fold (cond);
+	      if (cond == boolean_true_node)
+		pre_fold_expr = COND_EXPR_THEN (TREE_OPERAND (stmt, 1));
+	      else if (cond == boolean_false_node)
+		pre_fold_expr = COND_EXPR_ELSE (TREE_OPERAND (stmt, 1));
+	      else
+		pre_fold_expr = TREE_OPERAND (stmt, 1);
+	    }
+	  else
+	    pre_fold_expr = TREE_OPERAND (stmt, 1);
 
-          if (pre_fold_expr)
-            {
-              cached_lhs = fold (pre_fold_expr);
-              if (TREE_CODE (cached_lhs) != SSA_NAME
-                  && !is_gimple_min_invariant (cached_lhs))
-                cached_lhs = (*simplify) (stmt, stmt);
-            }
+	  if (pre_fold_expr)
+	    {
+	      cached_lhs = fold (pre_fold_expr);
+	      if (TREE_CODE (cached_lhs) != SSA_NAME
+		  && !is_gimple_min_invariant (cached_lhs))
+	        cached_lhs = (*simplify) (stmt, stmt);
+	    }
 
-          /* Restore the statement's original uses/defs.  */
-          i = 0;
-          FOR_EACH_SSA_USE_OPERAND (use_p, stmt, iter, SSA_OP_USE | SSA_OP_VUSE)
-            SET_USE (use_p, copy[i++]);
+	  /* Restore the statement's original uses/defs.  */
+	  i = 0;
+	  FOR_EACH_SSA_USE_OPERAND (use_p, stmt, iter, SSA_OP_USE | SSA_OP_VUSE)
+	    SET_USE (use_p, copy[i++]);
 
-          free (copy);
-        }
+	  free (copy);
+	}
 
       /* Record the context sensitive equivalence if we were able
-         to simplify this statement.  */
+	 to simplify this statement.  */
       if (cached_lhs
-          && (TREE_CODE (cached_lhs) == SSA_NAME
-              || is_gimple_min_invariant (cached_lhs)))
-        record_temporary_equivalence (TREE_OPERAND (stmt, 0),
-                                      cached_lhs,
-                                      stack);
+	  && (TREE_CODE (cached_lhs) == SSA_NAME
+	      || is_gimple_min_invariant (cached_lhs)))
+	record_temporary_equivalence (TREE_OPERAND (stmt, 0),
+				      cached_lhs,
+				      stack);
     }
   return stmt;
 }
@@ -352,10 +352,10 @@ record_temporary_equivalences_from_stmts_at_dest (edge e,
 
 static tree
 simplify_control_stmt_condition (edge e,
-                                 tree stmt,
-                                 tree dummy_cond,
-                                 tree (*simplify) (tree, tree),
-                                 bool handle_dominating_asserts)
+				 tree stmt,
+				 tree dummy_cond,
+				 tree (*simplify) (tree, tree),
+				 bool handle_dominating_asserts)
 {
   tree cond, cached_lhs;
 
@@ -379,47 +379,47 @@ simplify_control_stmt_condition (edge e,
 
       /* Get the current value of both operands.  */
       if (TREE_CODE (op0) == SSA_NAME)
-        {
+	{
           tree tmp = SSA_NAME_VALUE (op0);
-          if (tmp && TREE_CODE (tmp) != VALUE_HANDLE)
-            op0 = tmp;
-        }
+	  if (tmp && TREE_CODE (tmp) != VALUE_HANDLE)
+	    op0 = tmp;
+	}
 
       if (TREE_CODE (op1) == SSA_NAME)
-        {
-          tree tmp = SSA_NAME_VALUE (op1);
-          if (tmp && TREE_CODE (tmp) != VALUE_HANDLE)
-            op1 = tmp;
-        }
+	{
+	  tree tmp = SSA_NAME_VALUE (op1);
+	  if (tmp && TREE_CODE (tmp) != VALUE_HANDLE)
+	    op1 = tmp;
+	}
 
       if (handle_dominating_asserts)
-        {
-          /* Now see if the operand was consumed by an ASSERT_EXPR
-             which dominates E->src.  If so, we want to replace the
-             operand with the LHS of the ASSERT_EXPR.  */
-          if (TREE_CODE (op0) == SSA_NAME)
-            op0 = lhs_of_dominating_assert (op0, e->src, stmt);
+	{
+	  /* Now see if the operand was consumed by an ASSERT_EXPR
+	     which dominates E->src.  If so, we want to replace the
+	     operand with the LHS of the ASSERT_EXPR.  */
+	  if (TREE_CODE (op0) == SSA_NAME)
+	    op0 = lhs_of_dominating_assert (op0, e->src, stmt);
 
-          if (TREE_CODE (op1) == SSA_NAME)
-            op1 = lhs_of_dominating_assert (op1, e->src, stmt);
-        }
+	  if (TREE_CODE (op1) == SSA_NAME)
+	    op1 = lhs_of_dominating_assert (op1, e->src, stmt);
+	}
 
       /* We may need to canonicalize the comparison.  For
-         example, op0 might be a constant while op1 is an
-         SSA_NAME.  Failure to canonicalize will cause us to
-         miss threading opportunities.  */
+	 example, op0 might be a constant while op1 is an
+	 SSA_NAME.  Failure to canonicalize will cause us to
+	 miss threading opportunities.  */
       if (cond_code != SSA_NAME
-          && tree_swap_operands_p (op0, op1, false))
-        {
-          tree tmp;
-          cond_code = swap_tree_comparison (TREE_CODE (cond));
-          tmp = op0;
-          op0 = op1;
-          op1 = tmp;
-        }
+	  && tree_swap_operands_p (op0, op1, false))
+	{
+	  tree tmp;
+	  cond_code = swap_tree_comparison (TREE_CODE (cond));
+	  tmp = op0;
+	  op0 = op1;
+	  op1 = tmp;
+	}
 
       /* Stuff the operator and operands into our dummy conditional
-         expression.  */
+	 expression.  */
       TREE_SET_CODE (COND_EXPR_COND (dummy_cond), cond_code);
       TREE_OPERAND (COND_EXPR_COND (dummy_cond), 0) = op0;
       TREE_OPERAND (COND_EXPR_COND (dummy_cond), 1) = op1;
@@ -430,17 +430,17 @@ simplify_control_stmt_condition (edge e,
 
       cached_lhs = fold (COND_EXPR_COND (dummy_cond));
       while (TREE_CODE (cached_lhs) == NOP_EXPR
-             || TREE_CODE (cached_lhs) == CONVERT_EXPR
-             || TREE_CODE (cached_lhs) == NON_LVALUE_EXPR)
-        cached_lhs = TREE_OPERAND (cached_lhs, 0);
+	     || TREE_CODE (cached_lhs) == CONVERT_EXPR
+	     || TREE_CODE (cached_lhs) == NON_LVALUE_EXPR)
+	cached_lhs = TREE_OPERAND (cached_lhs, 0);
 
       fold_undefer_overflow_warnings (is_gimple_min_invariant (cached_lhs),
-                                      stmt, WARN_STRICT_OVERFLOW_CONDITIONAL);
+				      stmt, WARN_STRICT_OVERFLOW_CONDITIONAL);
 
       /* If we have not simplified the condition down to an invariant,
-         then use the pass specific callback to simplify the condition.  */
+	 then use the pass specific callback to simplify the condition.  */
       if (! is_gimple_min_invariant (cached_lhs))
-        cached_lhs = (*simplify) (dummy_cond, stmt);
+	cached_lhs = (*simplify) (dummy_cond, stmt);
     }
 
   /* We can have conditionals which just test the state of a variable
@@ -451,21 +451,21 @@ simplify_control_stmt_condition (edge e,
 
       /* Get the variable's current value from the equivalency chains.
 
-         It is possible to get loops in the SSA_NAME_VALUE chains
-         (consider threading the backedge of a loop where we have
-         a loop invariant SSA_NAME used in the condition.  */
+	 It is possible to get loops in the SSA_NAME_VALUE chains
+	 (consider threading the backedge of a loop where we have
+	 a loop invariant SSA_NAME used in the condition.  */
       if (cached_lhs
-          && TREE_CODE (cached_lhs) == SSA_NAME
-          && SSA_NAME_VALUE (cached_lhs))
-        cached_lhs = SSA_NAME_VALUE (cached_lhs);
+	  && TREE_CODE (cached_lhs) == SSA_NAME
+	  && SSA_NAME_VALUE (cached_lhs))
+	cached_lhs = SSA_NAME_VALUE (cached_lhs);
 
       /* If we're dominated by a suitable ASSERT_EXPR, then
-         update CACHED_LHS appropriately.  */
+	 update CACHED_LHS appropriately.  */
       if (handle_dominating_asserts && TREE_CODE (cached_lhs) == SSA_NAME)
-        cached_lhs = lhs_of_dominating_assert (cached_lhs, e->src, stmt);
+	cached_lhs = lhs_of_dominating_assert (cached_lhs, e->src, stmt);
 
       /* If we haven't simplified to an invariant yet, then use the
-         pass specific callback to try and simplify it further.  */
+	 pass specific callback to try and simplify it further.  */
       if (cached_lhs && ! is_gimple_min_invariant (cached_lhs))
         cached_lhs = (*simplify) (stmt, stmt);
     }
@@ -492,10 +492,10 @@ simplify_control_stmt_condition (edge e,
 
 void
 thread_across_edge (tree dummy_cond,
-                    edge e,
-                    bool handle_dominating_asserts,
-                    VEC(tree, heap) **stack,
-                    tree (*simplify) (tree, tree))
+		    edge e,
+		    bool handle_dominating_asserts,
+		    VEC(tree, heap) **stack,
+		    tree (*simplify) (tree, tree))
 {
   tree stmt;
 
@@ -510,14 +510,14 @@ thread_across_edge (tree dummy_cond,
       tree last = bsi_stmt (bsi_last (e->dest));
 
       FOR_EACH_SSA_USE_OPERAND (use_p, last, iter, SSA_OP_USE | SSA_OP_VUSE)
-        {
-          tree use = USE_FROM_PTR (use_p);
+	{
+	  tree use = USE_FROM_PTR (use_p);
 
           if (TREE_CODE (use) == SSA_NAME
-              && TREE_CODE (SSA_NAME_DEF_STMT (use)) != PHI_NODE
-              && bb_for_stmt (SSA_NAME_DEF_STMT (use)) == e->dest)
-            goto fail;
-        }
+	      && TREE_CODE (SSA_NAME_DEF_STMT (use)) != PHI_NODE
+	      && bb_for_stmt (SSA_NAME_DEF_STMT (use)) == e->dest)
+	    goto fail;
+	}
     }
      
   stmt_count = 0;
@@ -544,16 +544,16 @@ thread_across_edge (tree dummy_cond,
       cond = simplify_control_stmt_condition (e, stmt, dummy_cond, simplify, handle_dominating_asserts);
 
       if (cond && is_gimple_min_invariant (cond))
-        {
-          edge taken_edge = find_taken_edge (e->dest, cond);
-          basic_block dest = (taken_edge ? taken_edge->dest : NULL);
+	{
+	  edge taken_edge = find_taken_edge (e->dest, cond);
+	  basic_block dest = (taken_edge ? taken_edge->dest : NULL);
 
-          if (dest == e->dest)
-            goto fail;
+	  if (dest == e->dest)
+	    goto fail;
 
-          remove_temporary_equivalences (stack);
-          register_jump_thread (e, taken_edge);
-        }
+	  remove_temporary_equivalences (stack);
+	  register_jump_thread (e, taken_edge);
+	}
     }
 
  fail:

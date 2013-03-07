@@ -89,41 +89,41 @@ void sort_pointers (size_t n, void **pointers, void **work)
       void **pointerp;
 
       /* The offset from the start of the pointer will depend on the
-         endianness of the machine.  */
+	 endianness of the machine.  */
       if (big_endian_p)
-        j = sizeof (void *) / sizeof (digit_t) - i;
+	j = sizeof (void *) / sizeof (digit_t) - i;
       else
-        j = i;
-        
+	j = i;
+	
       /* Now, perform a stable sort on this digit.  We use counting
-         sort.  */
+	 sort.  */
       memset (count, 0, DIGIT_MAX * sizeof (unsigned int));
 
       /* Compute the address of the appropriate digit in the first and
-         one-past-the-end elements of the array.  On a little-endian
-         machine, the least-significant digit is closest to the front.  */
+	 one-past-the-end elements of the array.  On a little-endian
+	 machine, the least-significant digit is closest to the front.  */
       bias = ((digit_t *) pointers) + j;
       top = ((digit_t *) (pointers + n)) + j;
 
       /* Count how many there are of each value.  At the end of this
-         loop, COUNT[K] will contain the number of pointers whose Ith
-         digit is K.  */
+	 loop, COUNT[K] will contain the number of pointers whose Ith
+	 digit is K.  */
       for (digit = bias; 
-           digit < top; 
-           digit += sizeof (void *) / sizeof (digit_t))
-        ++count[*digit];
+	   digit < top; 
+	   digit += sizeof (void *) / sizeof (digit_t))
+	++count[*digit];
 
       /* Now, make COUNT[K] contain the number of pointers whose Ith
-         digit is less than or equal to K.  */
+	 digit is less than or equal to K.  */
       for (countp = count + 1; countp < count + DIGIT_MAX; ++countp)
-        *countp += countp[-1];
+	*countp += countp[-1];
 
       /* Now, drop the pointers into their correct locations.  */
       for (pointerp = pointers + n - 1; pointerp >= pointers; --pointerp)
-        work[--count[((digit_t *) pointerp)[j]]] = *pointerp;
+	work[--count[((digit_t *) pointerp)[j]]] = *pointerp;
 
       /* Swap WORK and POINTERS so that POINTERS contains the sorted
-         array.  */
+	 array.  */
       pointerp = pointers;
       pointers = work;
       work = pointerp;
@@ -174,7 +174,7 @@ int main (int argc, char **argv)
     {
       printf ("%x\n", pointers[i]);
       if (i > 0 && (char*) pointers[i] < (char*) pointers[i - 1])
-        result = 1;
+	result = 1;
     }
 
   free (pointers);

@@ -23,15 +23,15 @@
 #undef  TARGET_DEFAULT
 #define TARGET_DEFAULT (MASK_POWERPC | MASK_NEW_MNEMONICS | MASK_LITTLE_ENDIAN)
 
-#undef        CC1_ENDIAN_DEFAULT_SPEC
-#define        CC1_ENDIAN_DEFAULT_SPEC "%(cc1_endian_little)"
+#undef	CC1_ENDIAN_DEFAULT_SPEC
+#define	CC1_ENDIAN_DEFAULT_SPEC "%(cc1_endian_little)"
 
-#undef        LINK_TARGET_SPEC
-#define        LINK_TARGET_SPEC "\
+#undef	LINK_TARGET_SPEC
+#define	LINK_TARGET_SPEC "\
 %{mbig: --oformat elf32-powerpc } %{mbig-endian: --oformat elf32-powerpc } \
 %{!mlittle: %{!mlittle-endian: %{!mbig: %{!mbig-endian: \
     %{mcall-linux: --oformat elf32-powerpc} \
   }}}}"
 
-#undef        MULTILIB_DEFAULTS
-#define        MULTILIB_DEFAULTS { "mlittle", "mcall-sysv" }
+#undef	MULTILIB_DEFAULTS
+#define	MULTILIB_DEFAULTS { "mlittle", "mcall-sysv" }

@@ -37,7 +37,7 @@ extern int mn10300_get_live_callee_saved_regs (void);
 extern void mn10300_gen_multiple_store (int);
 extern void notice_update_cc (rtx, rtx);
 extern enum reg_class mn10300_secondary_reload_class (enum reg_class,
-                                                      enum machine_mode, rtx);
+						      enum machine_mode, rtx);
 extern const char *output_tst (rtx, rtx);
 extern int store_multiple_operation (rtx, enum machine_mode);
 extern int symbolic_operand (rtx, enum machine_mode);
@@ -48,7 +48,7 @@ extern bool mn10300_wide_const_load_uses_clr (rtx operands[2]);
 
 #ifdef TREE_CODE
 extern struct rtx_def *function_arg (CUMULATIVE_ARGS *,
-                                     enum machine_mode, tree, int);
+				     enum machine_mode, tree, int);
 extern rtx mn10300_function_value (tree, tree, int);
 #endif /* TREE_CODE */
 

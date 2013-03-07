@@ -30,6 +30,6 @@ waitpid (pid_t pid, int *stat_loc, int options ATTRIBUTE_UNUSED)
     {
       int wpid = wait(stat_loc);
       if (wpid == pid || wpid == -1)
-        return wpid;
+	return wpid;
     }
 }

@@ -20,13 +20,13 @@ along with GCC; see the file COPYING.  If not, write to
 the Free Software Foundation, 51 Franklin Street, Fifth Floor,
 Boston, MA 02110-1301, USA.  */
 
-#define TARGET_OS_CPP_BUILTINS()                                        \
-  do                                                                        \
-    {                                                                        \
-        builtin_define_std ("unix");                                        \
-        builtin_define ("__svr4__");                                        \
-        builtin_assert ("system=unix");                                        \
-        builtin_assert ("system=svr4");                                        \
-    }                                                                        \
+#define TARGET_OS_CPP_BUILTINS()					\
+  do									\
+    {									\
+	builtin_define_std ("unix");					\
+	builtin_define ("__svr4__");					\
+	builtin_assert ("system=unix");					\
+	builtin_assert ("system=svr4");					\
+    }									\
   while (0)
 

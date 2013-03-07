@@ -26,8 +26,8 @@
 
 (define_expand "memory_barrier"
   [(set (mem:BLK (match_dup 0))
-        (unspec_volatile:BLK [(mem:BLK (match_dup 0)) (match_dup 1)]
-                             UNSPECV_MEMBAR))]
+	(unspec_volatile:BLK [(mem:BLK (match_dup 0)) (match_dup 1)]
+			     UNSPECV_MEMBAR))]
   "TARGET_V8 || TARGET_V9"
 {
   operands[0] = gen_rtx_MEM (BLKmode, gen_rtx_SCRATCH (DImode));
@@ -42,17 +42,17 @@
 
 (define_insn "*stbar"
   [(set (match_operand:BLK 0 "" "")
-        (unspec_volatile:BLK [(match_operand:BLK 1 "" "")
-                              (const_int 8)] UNSPECV_MEMBAR))]
+	(unspec_volatile:BLK [(match_operand:BLK 1 "" "")
+			      (const_int 8)] UNSPECV_MEMBAR))]
   "TARGET_V8"
   "stbar"
   [(set_attr "type" "multi")])
 
 (define_insn "*membar"
   [(set (match_operand:BLK 0 "" "")
-        (unspec_volatile:BLK [(match_operand:BLK 1 "" "")
-                              (match_operand:SI 2 "immediate_operand" "I")]
-                              UNSPECV_MEMBAR))]
+	(unspec_volatile:BLK [(match_operand:BLK 1 "" "")
+			      (match_operand:SI 2 "immediate_operand" "I")]
+			      UNSPECV_MEMBAR))]
   "TARGET_V9"
   "membar\t%2"
   [(set_attr "type" "multi")])
@@ -65,19 +65,19 @@
   "TARGET_V9"
 {
   sparc_expand_compare_and_swap_12 (operands[0], operands[1],
-                                    operands[2], operands[3]);
+				    operands[2], operands[3]);
   DONE;
 })
 
 (define_expand "sync_compare_and_swap<mode>"
   [(parallel
      [(set (match_operand:I48MODE 0 "register_operand" "=r")
-           (match_operand:I48MODE 1 "memory_operand" ""))
+	   (match_operand:I48MODE 1 "memory_operand" ""))
       (set (match_dup 1)
-           (unspec_volatile:I48MODE
-             [(match_operand:I48MODE 2 "register_operand" "")
-              (match_operand:I48MODE 3 "register_operand" "")]
-             UNSPECV_CAS))])]
+	   (unspec_volatile:I48MODE
+	     [(match_operand:I48MODE 2 "register_operand" "")
+	      (match_operand:I48MODE 3 "register_operand" "")]
+	     UNSPECV_CAS))])]
   "TARGET_V9"
 {
   if (! REG_P (XEXP (operands[1], 0)))
@@ -90,24 +90,24 @@
 
 (define_insn "*sync_compare_and_swap<mode>"
   [(set (match_operand:I48MODE 0 "register_operand" "=r")
-        (match_operand:I48MODE 1 "memory_reg_operand" "+m"))
+	(match_operand:I48MODE 1 "memory_reg_operand" "+m"))
    (set (match_dup 1)
-        (unspec_volatile:I48MODE
-          [(match_operand:I48MODE 2 "register_operand" "r")
-           (match_operand:I48MODE 3 "register_operand" "0")]
-          UNSPECV_CAS))]
+	(unspec_volatile:I48MODE
+	  [(match_operand:I48MODE 2 "register_operand" "r")
+	   (match_operand:I48MODE 3 "register_operand" "0")]
+	  UNSPECV_CAS))]
   "TARGET_V9 && (<MODE>mode == SImode || TARGET_ARCH64)"
   "cas<modesuffix>\t%1, %2, %0"
   [(set_attr "type" "multi")])
 
 (define_insn "*sync_compare_and_swapdi_v8plus"
   [(set (match_operand:DI 0 "register_operand" "=h")
-        (match_operand:DI 1 "memory_reg_operand" "+m"))
+	(match_operand:DI 1 "memory_reg_operand" "+m"))
    (set (match_dup 1)
-        (unspec_volatile:DI
-          [(match_operand:DI 2 "register_operand" "h")
-           (match_operand:DI 3 "register_operand" "0")]
-          UNSPECV_CAS))]
+	(unspec_volatile:DI
+	  [(match_operand:DI 2 "register_operand" "h")
+	   (match_operand:DI 3 "register_operand" "0")]
+	  UNSPECV_CAS))]
   "TARGET_V8PLUS"
 {
   if (sparc_check_64 (operands[3], insn) <= 0)
@@ -143,16 +143,16 @@
 (define_expand "sync_lock_test_and_setsi"
   [(parallel
      [(set (match_operand:SI 0 "register_operand" "")
-           (unspec_volatile:SI [(match_operand:SI 1 "memory_operand" "")]
-                               UNSPECV_SWAP))
+	   (unspec_volatile:SI [(match_operand:SI 1 "memory_operand" "")]
+			       UNSPECV_SWAP))
       (set (match_dup 1)
-           (match_operand:SI 2 "arith_operand" ""))])]
+	   (match_operand:SI 2 "arith_operand" ""))])]
   ""
 {
   if (! TARGET_V8 && ! TARGET_V9)
     {
       if (operands[2] != const1_rtx)
-        FAIL;
+	FAIL;
       operands[1] = adjust_address (operands[1], QImode, 0);
       emit_insn (gen_ldstubsi (operands[0], operands[1]));
       DONE;
@@ -163,35 +163,35 @@
 
 (define_insn "*swapsi"
   [(set (match_operand:SI 0 "register_operand" "=r")
-        (unspec_volatile:SI [(match_operand:SI 1 "memory_operand" "+m")]
-                            UNSPECV_SWAP))
+	(unspec_volatile:SI [(match_operand:SI 1 "memory_operand" "+m")]
+			    UNSPECV_SWAP))
    (set (match_dup 1)
-        (match_operand:SI 2 "register_operand" "0"))]
+	(match_operand:SI 2 "register_operand" "0"))]
   "TARGET_V8 || TARGET_V9"
   "swap\t%1, %0"
   [(set_attr "type" "multi")])
 
 (define_expand "ldstubqi"
   [(parallel [(set (match_operand:QI 0 "register_operand" "")
-                   (unspec_volatile:QI [(match_operand:QI 1 "memory_operand" "")]
-                                       UNSPECV_LDSTUB))
-              (set (match_dup 1) (const_int -1))])]
+		   (unspec_volatile:QI [(match_operand:QI 1 "memory_operand" "")]
+				       UNSPECV_LDSTUB))
+	      (set (match_dup 1) (const_int -1))])]
   ""
   "")
 
 (define_expand "ldstub<mode>"
   [(parallel [(set (match_operand:I24MODE 0 "register_operand" "")
-                   (zero_extend:I24MODE
-                      (unspec_volatile:QI [(match_operand:QI 1 "memory_operand" "")]
-                                          UNSPECV_LDSTUB)))
-              (set (match_dup 1) (const_int -1))])]
+		   (zero_extend:I24MODE
+		      (unspec_volatile:QI [(match_operand:QI 1 "memory_operand" "")]
+					  UNSPECV_LDSTUB)))
+	      (set (match_dup 1) (const_int -1))])]
   ""
   "")
 
 (define_insn "*ldstubqi"
   [(set (match_operand:QI 0 "register_operand" "=r")
-        (unspec_volatile:QI [(match_operand:QI 1 "memory_operand" "+m")]
-                            UNSPECV_LDSTUB))
+	(unspec_volatile:QI [(match_operand:QI 1 "memory_operand" "+m")]
+			    UNSPECV_LDSTUB))
    (set (match_dup 1) (const_int -1))]
   ""
   "ldstub\t%1, %0"
@@ -199,9 +199,9 @@
 
 (define_insn "*ldstub<mode>"
   [(set (match_operand:I24MODE 0 "register_operand" "=r")
-        (zero_extend:I24MODE
-          (unspec_volatile:QI [(match_operand:QI 1 "memory_operand" "+m")]
-                              UNSPECV_LDSTUB)))
+	(zero_extend:I24MODE
+	  (unspec_volatile:QI [(match_operand:QI 1 "memory_operand" "+m")]
+			      UNSPECV_LDSTUB)))
    (set (match_dup 1) (const_int -1))]
   ""
   "ldstub\t%1, %0"

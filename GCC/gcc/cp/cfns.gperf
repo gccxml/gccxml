@@ -19,7 +19,7 @@ const char * libc_name_p (const char *, unsigned int);
 #
 # Specific functions are commented out for the reason noted in each case.
 #
-# abort                        -- synchronous exception from SIGABRT handler
+# abort			-- synchronous exception from SIGABRT handler
 abs
 acos
 asctime
@@ -30,7 +30,7 @@ atexit
 atof
 atoi
 atol
-#bsearch                -- calls user function which may throw exception
+#bsearch		-- calls user function which may throw exception
 btowc
 calloc
 ceil
@@ -44,41 +44,41 @@ div
 exit
 exp
 fabs
-#fclose                        -- POSIX thread cancellation point
+#fclose			-- POSIX thread cancellation point
 feof
 ferror
-#fflush                        -- POSIX thread cancellation point
-#fgetc                        -- POSIX thread cancellation point
-#fgetpos                -- POSIX thread cancellation point
-#fgets                        -- POSIX thread cancellation point
-#fgetwc                        -- POSIX thread cancellation point
-#fgetws                        -- POSIX thread cancellation point
+#fflush			-- POSIX thread cancellation point
+#fgetc			-- POSIX thread cancellation point
+#fgetpos		-- POSIX thread cancellation point
+#fgets			-- POSIX thread cancellation point
+#fgetwc			-- POSIX thread cancellation point
+#fgetws			-- POSIX thread cancellation point
 floor
 fmod
-#fopen                        -- POSIX thread cancellation point
-#fprintf                -- POSIX thread cancellation point
-#fputc                        -- POSIX thread cancellation point
-#fputs                        -- POSIX thread cancellation point
-#fputwc                        -- POSIX thread cancellation point
-#fputws                        -- POSIX thread cancellation point
-#fread                        -- POSIX thread cancellation point
+#fopen			-- POSIX thread cancellation point
+#fprintf		-- POSIX thread cancellation point
+#fputc			-- POSIX thread cancellation point
+#fputs			-- POSIX thread cancellation point
+#fputwc			-- POSIX thread cancellation point
+#fputws			-- POSIX thread cancellation point
+#fread			-- POSIX thread cancellation point
 free
-#freopen                -- POSIX thread cancellation point
+#freopen		-- POSIX thread cancellation point
 frexp
-#fscanf                        -- POSIX thread cancellation point
+#fscanf			-- POSIX thread cancellation point
 fseek
-#fsetpos                -- POSIX thread cancellation point
-#ftell                        -- POSIX thread cancellation point
+#fsetpos		-- POSIX thread cancellation point
+#ftell			-- POSIX thread cancellation point
 fwide
-#fwprintf                -- POSIX thread cancellation point
-#fwrite                        -- POSIX thread cancellation point
-#fwscanf                -- POSIX thread cancellation point
-#getc                        -- POSIX thread cancellation point
-#getchar                -- POSIX thread cancellation point
+#fwprintf		-- POSIX thread cancellation point
+#fwrite			-- POSIX thread cancellation point
+#fwscanf		-- POSIX thread cancellation point
+#getc			-- POSIX thread cancellation point
+#getchar		-- POSIX thread cancellation point
 getenv
-#gets                        -- POSIX thread cancellation point
-#getwc                        -- POSIX thread cancellation point
-#getwchar                -- POSIX thread cancellation point
+#gets			-- POSIX thread cancellation point
+#getwc			-- POSIX thread cancellation point
+#getwchar		-- POSIX thread cancellation point
 gmtime
 isalnum
 isalpha
@@ -126,22 +126,22 @@ memmove
 memset
 mktime
 modf
-#perror                        -- POSIX thread cancellation point
+#perror			-- POSIX thread cancellation point
 pow
-#printf                        -- POSIX thread cancellation point
-#putc                        -- POSIX thread cancellation point
-#putchar                -- POSIX thread cancellation point
-#puts                        -- POSIX thread cancellation point
-#putwc                        -- POSIX thread cancellation point
-#putwchar                -- POSIX thread cancellation point
-#qsort                        -- calls user function which may throw exception
-#raise                        -- synchronous exception from signal handler
+#printf			-- POSIX thread cancellation point
+#putc			-- POSIX thread cancellation point
+#putchar		-- POSIX thread cancellation point
+#puts			-- POSIX thread cancellation point
+#putwc			-- POSIX thread cancellation point
+#putwchar		-- POSIX thread cancellation point
+#qsort			-- calls user function which may throw exception
+#raise			-- synchronous exception from signal handler
 rand
 realloc
-#remove                        -- POSIX thread cancellation point
-#rename                        -- POSIX thread cancellation point
-#rewind                        -- POSIX thread cancellation point
-#scanf                        -- POSIX thread cancellation point
+#remove			-- POSIX thread cancellation point
+#rename			-- POSIX thread cancellation point
+#rewind			-- POSIX thread cancellation point
+#scanf			-- POSIX thread cancellation point
 setbuf
 setlocale
 setvbuf
@@ -158,7 +158,7 @@ strcmp
 strcoll
 strcpy
 strcspn
-#strerror                -- POSIX thread cancellation point
+#strerror		-- POSIX thread cancellation point
 strftime
 strlen
 strncat
@@ -175,25 +175,25 @@ strtoul
 strxfrm
 swprintf
 swscanf
-#system                        -- POSIX thread cancellation point
+#system			-- POSIX thread cancellation point
 tan
 tanh
 time
-#tmpfile                -- POSIX thread cancellation point
-#tmpnam                        -- POSIX thread cancellation point
+#tmpfile		-- POSIX thread cancellation point
+#tmpnam			-- POSIX thread cancellation point
 tolower
 toupper
 towctrans
 towlower
 towupper
-#ungetc                        -- POSIX thread cancellation point
-#ungetwc                -- POSIX thread cancellation point
-#vfprintf                -- POSIX thread cancellation point
-#vfwprintf                -- POSIX thread cancellation point
-#vprintf                -- POSIX thread cancellation point
+#ungetc			-- POSIX thread cancellation point
+#ungetwc		-- POSIX thread cancellation point
+#vfprintf		-- POSIX thread cancellation point
+#vfwprintf		-- POSIX thread cancellation point
+#vprintf		-- POSIX thread cancellation point
 vsprintf
 vswprintf
-#vwprintf                -- POSIX thread cancellation point
+#vwprintf		-- POSIX thread cancellation point
 wcrtomb
 wcscat
 wcschr
@@ -226,5 +226,5 @@ wmemcmp
 wmemcpy
 wmemmove
 wmemset
-#wprintf                -- POSIX thread cancellation point
-#wscanf                        -- POSIX thread cancellation point
+#wprintf		-- POSIX thread cancellation point
+#wscanf			-- POSIX thread cancellation point

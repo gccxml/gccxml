@@ -52,7 +52,7 @@ static const char *const known_suffixes[] =
 /* Filter argc and argv before processing by the gcc driver proper.  */
 void
 lang_specific_driver (int *in_argc, const char *const **in_argv,
-                      int *in_added_libraries ATTRIBUTE_UNUSED)
+		      int *in_added_libraries ATTRIBUTE_UNUSED)
 {
   int argc = *in_argc;
   const char *const *argv = *in_argv;
@@ -88,79 +88,79 @@ lang_specific_driver (int *in_argc, const char *const **in_argv,
   for (i = 1; i < argc; i++)
     {
       if (quote == 1)
-        {
-          quote = 0;
-          continue;
-        }
+	{
+	  quote = 0;
+	  continue;
+	}
 
       if (argv[i][0] == '-')
-        {
-          if (argv[i][1] == '\0')
-            read_stdin = 0;
-          else if (argv[i][2] == '\0')
-            {
-              if (argv[i][1] == 'E')
-                need_E = 0;
-              else if (argv[i][1] == 'S' || argv[i][1] == 'c')
-                {
-                  fatal ("\"%s\" is not a valid option to the preprocessor",
-                         argv[i]);
-                  return;
-                }
-              else if (argv[i][1] == 'x')
-                {
-                  need_fixups = 0;
-                  quote = 1;
-                }
-              else if (SWITCH_TAKES_ARG (argv[i][1]))
-                quote = 1;
-            }
-          else if (argv[i][1] == 'x')
-            need_fixups = 0;
-          else if (WORD_SWITCH_TAKES_ARG (&argv[i][1]))
-            quote = 1;
-        }
+	{
+	  if (argv[i][1] == '\0')
+	    read_stdin = 0;
+	  else if (argv[i][2] == '\0')
+	    {
+	      if (argv[i][1] == 'E')
+		need_E = 0;
+	      else if (argv[i][1] == 'S' || argv[i][1] == 'c')
+		{
+		  fatal ("\"%s\" is not a valid option to the preprocessor",
+			 argv[i]);
+		  return;
+		}
+	      else if (argv[i][1] == 'x')
+		{
+		  need_fixups = 0;
+		  quote = 1;
+		}
+	      else if (SWITCH_TAKES_ARG (argv[i][1]))
+		quote = 1;
+	    }
+	  else if (argv[i][1] == 'x')
+	    need_fixups = 0;
+	  else if (WORD_SWITCH_TAKES_ARG (&argv[i][1]))
+	    quote = 1;
+	}
       else /* not an option */
-        {
-          seen_input++;
-          if (seen_input == 3)
-            {
-              fatal ("too many input files");
-              return;
-            }
-          else if (seen_input == 2)
-            {
-              o_here = i;
-            }
-          else
-            {
-              read_stdin = 0;
-              if (need_fixups)
-                {
-                  int l = strlen (argv[i]);
-                  int known = 0;
-                  const char *const *suff;
+	{
+	  seen_input++;
+	  if (seen_input == 3)
+	    {
+	      fatal ("too many input files");
+	      return;
+	    }
+	  else if (seen_input == 2)
+	    {
+	      o_here = i;
+	    }
+	  else
+	    {
+	      read_stdin = 0;
+	      if (need_fixups)
+		{
+		  int l = strlen (argv[i]);
+		  int known = 0;
+		  const char *const *suff;
 
-                  for (suff = known_suffixes; *suff; suff++)
-                    if (!strcmp (*suff, &argv[i][l - strlen(*suff)]))
-                      {
-                        known = 1;
-                        break;
-                      }
+		  for (suff = known_suffixes; *suff; suff++)
+		    if (!strcmp (*suff, &argv[i][l - strlen(*suff)]))
+		      {
+			known = 1;
+			break;
+		      }
 
-                  if (! known)
-                    {
-                      /* .s files are a special case; we have to treat
-                         them like .S files so -D__ASSEMBLER__ will be
-                         in effect.  */
-                      if (!strcmp (".s", &argv[i][l - 2]))
-                        lang_S_here = i;
-                      else
-                        lang_c_here = i;
-                    }
-                }
-            }
-        }
+		  if (! known)
+		    {
+		      /* .s files are a special case; we have to treat
+			 them like .S files so -D__ASSEMBLER__ will be
+			 in effect.  */
+		      if (!strcmp (".s", &argv[i][l - 2]))
+			lang_S_here = i;
+		      else
+			lang_c_here = i;
+		    }
+		}
+	    }
+	}
     }
 
   /* If we don't need to edit the command line, we can bail early.  */
@@ -183,11 +183,11 @@ lang_specific_driver (int *in_argc, const char *const **in_argv,
   for (i = 1; i < argc; i++, j++)
     {
       if (i == lang_c_here)
-        new_argv[j++] = "-xc";
+	new_argv[j++] = "-xc";
       else if (i == lang_S_here)
-        new_argv[j++] = "-xassembler-with-cpp";
+	new_argv[j++] = "-xassembler-with-cpp";
       else if (i == o_here)
-        new_argv[j++] = "-o";
+	new_argv[j++] = "-o";
 
       new_argv[j] = argv[i];
     }

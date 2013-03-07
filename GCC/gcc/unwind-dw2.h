@@ -45,17 +45,17 @@ typedef struct
   {
     struct {
       union {
-        _Unwind_Word reg;
-        _Unwind_Sword offset;
-        const unsigned char *exp;
+	_Unwind_Word reg;
+	_Unwind_Sword offset;
+	const unsigned char *exp;
       } loc;
       enum {
-        REG_UNSAVED,
-        REG_SAVED_OFFSET,
-        REG_SAVED_REG,
-        REG_SAVED_EXP,
-        REG_SAVED_VAL_OFFSET,
-        REG_SAVED_VAL_EXP
+	REG_UNSAVED,
+	REG_SAVED_OFFSET,
+	REG_SAVED_REG,
+	REG_SAVED_EXP,
+	REG_SAVED_VAL_OFFSET,
+	REG_SAVED_VAL_EXP
       } how;
     } reg[DWARF_FRAME_REGISTERS+1];
 

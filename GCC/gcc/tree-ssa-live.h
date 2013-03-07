@@ -52,12 +52,12 @@ typedef struct _var_map
 #define VAR_ANN_PARTITION(ann) (ann->partition)
 #define VAR_ANN_ROOT_INDEX(ann) (ann->root_index)
 
-#define NO_PARTITION                -1
+#define NO_PARTITION		-1
 
 /* Flags to pass to compact_var_map  */
 
-#define VARMAP_NORMAL                0
-#define VARMAP_NO_SINGLE_DEFS        1
+#define VARMAP_NORMAL		0
+#define VARMAP_NO_SINGLE_DEFS	1
 
 extern var_map init_var_map (int);
 extern void delete_var_map (var_map);
@@ -77,7 +77,7 @@ static inline tree version_to_var (var_map, int);
 static inline int version_ref_count (var_map, tree);
 static inline void register_ssa_partition (var_map, tree, bool);
 
-#define SSA_VAR_MAP_REF_COUNT         0x01
+#define SSA_VAR_MAP_REF_COUNT	 0x01
 extern var_map create_ssa_var_map (int);
 
 /* Number of partitions in MAP.  */
@@ -142,13 +142,13 @@ var_to_partition (var_map map, tree var)
     {
       part = partition_find (map->var_partition, SSA_NAME_VERSION (var));
       if (map->partition_to_compact)
-        part = map->partition_to_compact[part];
+	part = map->partition_to_compact[part];
     }
   else
     {
       ann = var_ann (var);
       if (ann->out_of_ssa_tag)
-        part = VAR_ANN_PARTITION (ann);
+	part = VAR_ANN_PARTITION (ann);
       else
         part = NO_PARTITION;
     }
@@ -246,9 +246,9 @@ extern tree_live_info_p calculate_live_on_entry (var_map);
 extern void calculate_live_on_exit (tree_live_info_p);
 extern void delete_tree_live_info (tree_live_info_p);
 
-#define LIVEDUMP_ENTRY        0x01
-#define LIVEDUMP_EXIT        0x02
-#define LIVEDUMP_ALL        (LIVEDUMP_ENTRY | LIVEDUMP_EXIT)
+#define LIVEDUMP_ENTRY	0x01
+#define LIVEDUMP_EXIT	0x02
+#define LIVEDUMP_ALL	(LIVEDUMP_ENTRY | LIVEDUMP_EXIT)
 extern void dump_live_info (FILE *, tree_live_info_p, int);
 
 static inline int partition_is_global (tree_live_info_p, int);
@@ -348,7 +348,7 @@ typedef struct tree_partition_associator_d
 } *tpa_p;
 
 /* Value returned when there are no more partitions associated with a tree.  */
-#define TPA_NONE                -1
+#define TPA_NONE		-1
 
 static inline tree tpa_tree (tpa_p, int);
 static inline int tpa_first_partition (tpa_p, int);
@@ -456,7 +456,7 @@ extern root_var_p root_var_init (var_map);
 
 /* Value returned when there are no more partitions associated with a root
    variable.  */
-#define ROOT_VAR_NONE                TPA_NONE
+#define ROOT_VAR_NONE		TPA_NONE
 
 
 /* Return the number of distinct root variables in RV.  */
@@ -571,7 +571,7 @@ static inline void type_var_decompact (type_var_p);
 extern type_var_p type_var_init (var_map);
 
 /* Value returned when there is no partitions associated with a list.  */
-#define TYPE_VAR_NONE                TPA_NONE
+#define TYPE_VAR_NONE		TPA_NONE
 
 
 /* Return the number of distinct type lists in TV.  */
@@ -706,12 +706,12 @@ extern void sort_coalesce_list (coalesce_list_p);
 extern void dump_coalesce_list (FILE *, coalesce_list_p);
 extern void delete_coalesce_list (coalesce_list_p);
 
-#define NO_BEST_COALESCE        -1
+#define NO_BEST_COALESCE	-1
 
 extern conflict_graph build_tree_conflict_graph (tree_live_info_p, tpa_p,
-                                                 coalesce_list_p);
+						 coalesce_list_p);
 extern void coalesce_tpa_members (tpa_p tpa, conflict_graph graph, var_map map,
-                                  coalesce_list_p cl, FILE *);
+				  coalesce_list_p cl, FILE *);
 
 
 #endif /* _TREE_SSA_LIVE_H  */

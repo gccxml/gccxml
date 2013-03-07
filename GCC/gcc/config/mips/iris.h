@@ -38,15 +38,15 @@ Boston, MA 02110-1301, USA.  */
 /* MIPS assemblers don't have the usual .set foo,bar construct;
    .set is used for assembler options instead.  */
 #undef SET_ASM_OP
-#define ASM_OUTPUT_DEF(FILE, LABEL1, LABEL2)                        \
-  do                                                                \
-    {                                                                \
-      fputc ('\t', FILE);                                        \
-      assemble_name (FILE, LABEL1);                                \
-      fputs (" = ", FILE);                                        \
-      assemble_name (FILE, LABEL2);                                \
-      fputc ('\n', FILE);                                        \
-    }                                                                \
+#define ASM_OUTPUT_DEF(FILE, LABEL1, LABEL2)			\
+  do								\
+    {								\
+      fputc ('\t', FILE);					\
+      assemble_name (FILE, LABEL1);				\
+      fputs (" = ", FILE);					\
+      assemble_name (FILE, LABEL2);				\
+      fputc ('\n', FILE);					\
+    }								\
   while (0)
 
 /* The MIPSpro o32 linker warns about not linking .comment sections.  */
@@ -86,84 +86,84 @@ Boston, MA 02110-1301, USA.  */
 #undef DEFAULT_SIGNED_CHAR
 #define DEFAULT_SIGNED_CHAR 0
 
-#define WORD_SWITCH_TAKES_ARG(STR)                        \
-  (DEFAULT_WORD_SWITCH_TAKES_ARG (STR)                        \
+#define WORD_SWITCH_TAKES_ARG(STR)			\
+  (DEFAULT_WORD_SWITCH_TAKES_ARG (STR)			\
    || strcmp (STR, "rpath") == 0)
 
-#define TARGET_OS_CPP_BUILTINS()                                \
-  do                                                                \
-    {                                                                \
-      builtin_define_std ("host_mips");                                \
-      builtin_define_std ("sgi");                                \
-      builtin_define_std ("unix");                                \
-      builtin_define_std ("SYSTYPE_SVR4");                        \
-      builtin_define ("_MODERN_C");                                \
-      builtin_define ("_SVR4_SOURCE");                                \
-      builtin_define ("__DSO__");                                \
-      builtin_assert ("system=unix");                                \
-      builtin_assert ("system=svr4");                                \
-      builtin_assert ("machine=sgi");                                \
-                                                                \
-      if (mips_abi == ABI_32)                                        \
-        {                                                        \
-          builtin_define ("_ABIO32=1");                                \
-          builtin_define ("_MIPS_SIM=_ABIO32");                        \
-          builtin_define ("_MIPS_SZINT=32");                        \
-          builtin_define ("_MIPS_SZLONG=32");                        \
-          builtin_define ("_MIPS_SZPTR=32");                        \
-        }                                                        \
-      else if (mips_abi == ABI_64)                                \
-        {                                                        \
-          builtin_define ("_ABI64=3");                                \
-          builtin_define ("_MIPS_SIM=_ABI64");                        \
-          builtin_define ("_MIPS_SZINT=32");                        \
-          builtin_define ("_MIPS_SZLONG=64");                        \
-          builtin_define ("_MIPS_SZPTR=64");                        \
-        }                                                        \
-      else                                                        \
-        {                                                        \
-          builtin_define ("_ABIN32=2");                                \
-          builtin_define ("_MIPS_SIM=_ABIN32");                        \
-          builtin_define ("_MIPS_SZINT=32");                        \
-          builtin_define ("_MIPS_SZLONG=32");                        \
-          builtin_define ("_MIPS_SZPTR=32");                        \
-        }                                                        \
-                                                                \
-      if (!ISA_MIPS1 && !ISA_MIPS2)                                \
-        builtin_define ("_COMPILER_VERSION=601");                \
-                                                                \
-      if (!TARGET_FLOAT64)                                        \
-        builtin_define ("_MIPS_FPSET=16");                        \
-      else                                                        \
-        builtin_define ("_MIPS_FPSET=32");                        \
-                                                                \
-      /* We must always define _LONGLONG, even when -ansi is        \
-         used, because IRIX 5 system header files require it.        \
-         This is OK, because gcc never warns when long long        \
-         is used in system header files.                        \
-                                                                \
-         An alternative would be to support the SGI builtin        \
-         type __long_long.  */                                        \
-      builtin_define ("_LONGLONG");                                \
-                                                                \
-      /* IRIX 6.5.18 and above provide many ISO C99                \
-         features protected by the __c99 macro.                        \
-         libstdc++ v3 needs them as well.  */                        \
-      if (TARGET_IRIX6)                                                \
-        if (flag_isoc99 || c_dialect_cxx ())                        \
-          builtin_define ("__c99");                                \
-                                                                \
-      /* The GNU C++ standard library requires that                \
-         __EXTENSIONS__ and _SGI_SOURCE be defined on at        \
-         least IRIX 6.2 and probably all IRIX 6 prior to 6.5.        \
-         We don't need this on IRIX 6.5 itself, but it                \
-         shouldn't hurt other than the namespace pollution.  */        \
-      if (!flag_iso || (TARGET_IRIX6 && c_dialect_cxx ()))        \
-        {                                                        \
-          builtin_define ("__EXTENSIONS__");                        \
-          builtin_define ("_SGI_SOURCE");                        \
-        }                                                        \
-    }                                                                \
+#define TARGET_OS_CPP_BUILTINS()				\
+  do								\
+    {								\
+      builtin_define_std ("host_mips");				\
+      builtin_define_std ("sgi");				\
+      builtin_define_std ("unix");				\
+      builtin_define_std ("SYSTYPE_SVR4");			\
+      builtin_define ("_MODERN_C");				\
+      builtin_define ("_SVR4_SOURCE");				\
+      builtin_define ("__DSO__");				\
+      builtin_assert ("system=unix");				\
+      builtin_assert ("system=svr4");				\
+      builtin_assert ("machine=sgi");				\
+								\
+      if (mips_abi == ABI_32)					\
+	{							\
+	  builtin_define ("_ABIO32=1");				\
+	  builtin_define ("_MIPS_SIM=_ABIO32");			\
+	  builtin_define ("_MIPS_SZINT=32");			\
+	  builtin_define ("_MIPS_SZLONG=32");			\
+	  builtin_define ("_MIPS_SZPTR=32");			\
+	}							\
+      else if (mips_abi == ABI_64)				\
+	{							\
+	  builtin_define ("_ABI64=3");				\
+	  builtin_define ("_MIPS_SIM=_ABI64");			\
+	  builtin_define ("_MIPS_SZINT=32");			\
+	  builtin_define ("_MIPS_SZLONG=64");			\
+	  builtin_define ("_MIPS_SZPTR=64");			\
+	}							\
+      else							\
+	{							\
+	  builtin_define ("_ABIN32=2");				\
+	  builtin_define ("_MIPS_SIM=_ABIN32");			\
+	  builtin_define ("_MIPS_SZINT=32");			\
+	  builtin_define ("_MIPS_SZLONG=32");			\
+	  builtin_define ("_MIPS_SZPTR=32");			\
+        }							\
+								\
+      if (!ISA_MIPS1 && !ISA_MIPS2)				\
+	builtin_define ("_COMPILER_VERSION=601");		\
+								\
+      if (!TARGET_FLOAT64)					\
+	builtin_define ("_MIPS_FPSET=16");			\
+      else							\
+	builtin_define ("_MIPS_FPSET=32");			\
+								\
+      /* We must always define _LONGLONG, even when -ansi is	\
+	 used, because IRIX 5 system header files require it.	\
+	 This is OK, because gcc never warns when long long	\
+	 is used in system header files.			\
+								\
+	 An alternative would be to support the SGI builtin	\
+	 type __long_long.  */					\
+      builtin_define ("_LONGLONG");				\
+								\
+      /* IRIX 6.5.18 and above provide many ISO C99		\
+	 features protected by the __c99 macro.			\
+	 libstdc++ v3 needs them as well.  */			\
+      if (TARGET_IRIX6)						\
+	if (flag_isoc99 || c_dialect_cxx ())			\
+	  builtin_define ("__c99");				\
+								\
+      /* The GNU C++ standard library requires that		\
+	 __EXTENSIONS__ and _SGI_SOURCE be defined on at	\
+	 least IRIX 6.2 and probably all IRIX 6 prior to 6.5.	\
+	 We don't need this on IRIX 6.5 itself, but it		\
+	 shouldn't hurt other than the namespace pollution.  */	\
+      if (!flag_iso || (TARGET_IRIX6 && c_dialect_cxx ()))	\
+	{							\
+	  builtin_define ("__EXTENSIONS__");			\
+	  builtin_define ("_SGI_SOURCE");			\
+	}							\
+    }								\
   while (0)
 
 #undef SUBTARGET_CC1_SPEC

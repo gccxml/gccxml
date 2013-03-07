@@ -34,8 +34,8 @@
   (match_code "const_int")
 {
   return (GET_CODE (op) == CONST_INT
-          && INTVAL (op) >= 0
-          && INTVAL (op) < 256);
+	  && INTVAL (op) >= 0
+	  && INTVAL (op) < 256);
 })
 
 ;; Return true if OP is a valid call operand.

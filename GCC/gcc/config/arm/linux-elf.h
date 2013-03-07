@@ -40,7 +40,7 @@
 
 #undef  MULTILIB_DEFAULTS
 #define MULTILIB_DEFAULTS \
-        { "marm", "mlittle-endian", "mhard-float", "mno-thumb-interwork" }
+	{ "marm", "mlittle-endian", "mhard-float", "mno-thumb-interwork" }
 
 /* Now we define the strings used to build the spec file.  */
 #undef  LIB_SPEC
@@ -67,22 +67,22 @@
 #undef  LINK_SPEC
 #define LINK_SPEC LINUX_TARGET_LINK_SPEC
 
-#define TARGET_OS_CPP_BUILTINS()                \
-  do                                                \
-    {                                                \
-        LINUX_TARGET_OS_CPP_BUILTINS();                \
-    }                                                \
+#define TARGET_OS_CPP_BUILTINS()		\
+  do						\
+    {						\
+	LINUX_TARGET_OS_CPP_BUILTINS();		\
+    }						\
   while (0)
 
 /* This is how we tell the assembler that two symbols have the same value.  */
 #define ASM_OUTPUT_DEF(FILE, NAME1, NAME2) \
-  do                                           \
-    {                                           \
-      assemble_name (FILE, NAME1);            \
-      fputs (" = ", FILE);                   \
-      assemble_name (FILE, NAME2);           \
-      fputc ('\n', FILE);                   \
-    }                                           \
+  do					   \
+    {					   \
+      assemble_name (FILE, NAME1); 	   \
+      fputs (" = ", FILE);		   \
+      assemble_name (FILE, NAME2);	   \
+      fputc ('\n', FILE);		   \
+    }					   \
   while (0)
 
 /* NWFPE always understands FPA instructions.  */
@@ -91,15 +91,15 @@
 
 /* Call the function profiler with a given profile label.  */
 #undef  ARM_FUNCTION_PROFILER
-#define ARM_FUNCTION_PROFILER(STREAM, LABELNO)                          \
-{                                                                        \
-  fprintf (STREAM, "\tbl\tmcount%s\n",                                        \
-           (TARGET_ARM && NEED_PLT_RELOC) ? "(PLT)" : "");                \
+#define ARM_FUNCTION_PROFILER(STREAM, LABELNO)  			\
+{									\
+  fprintf (STREAM, "\tbl\tmcount%s\n",					\
+	   (TARGET_ARM && NEED_PLT_RELOC) ? "(PLT)" : "");		\
 }
 
 /* The GNU/Linux profiler clobbers the link register.  Make sure the
    prologue knows to save it.  */
-#define PROFILE_HOOK(X)                                                \
+#define PROFILE_HOOK(X)						\
   emit_insn (gen_rtx_CLOBBER (VOIDmode, gen_rtx_REG (SImode, LR_REGNUM)))
 
 /* The GNU/Linux profiler needs a frame pointer.  */

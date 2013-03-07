@@ -48,14 +48,14 @@ Boston, MA 02110-1301, USA.  */
 /* mingw32 headers may not define the following.  */
 
 #ifndef _P_WAIT
-#  define _P_WAIT        0
-#  define _P_NOWAIT        1
-#  define _P_OVERLAY        2
-#  define _P_NOWAITO        3
-#  define _P_DETACH        4
+#  define _P_WAIT	0
+#  define _P_NOWAIT	1
+#  define _P_OVERLAY	2
+#  define _P_NOWAITO	3
+#  define _P_DETACH	4
 
-#  define WAIT_CHILD                0
-#  define WAIT_GRANDCHILD        1
+#  define WAIT_CHILD		0
+#  define WAIT_GRANDCHILD	1
 #endif
 
 #define MINGW_NAME "Minimalist GNU for Windows"
@@ -80,12 +80,12 @@ backslashify (char *s)
 static int pex_win32_open_read (struct pex_obj *, const char *, int);
 static int pex_win32_open_write (struct pex_obj *, const char *, int);
 static long pex_win32_exec_child (struct pex_obj *, int, const char *,
-                                  char * const *, char * const *,
+				  char * const *, char * const *,
                                   int, int, int, int,
-                                  const char **, int *);
+				  const char **, int *);
 static int pex_win32_close (struct pex_obj *, int);
 static int pex_win32_wait (struct pex_obj *, long, int *,
-                           struct pex_time *, int, const char **, int *);
+			   struct pex_time *, int, const char **, int *);
 static int pex_win32_pipe (struct pex_obj *, int *, int);
 static FILE *pex_win32_fdopenr (struct pex_obj *, int, int);
 static FILE *pex_win32_fdopenw (struct pex_obj *, int, int);
@@ -117,7 +117,7 @@ pex_init (int flags, const char *pname, const char *tempbase)
 
 static int
 pex_win32_open_read (struct pex_obj *obj ATTRIBUTE_UNUSED, const char *name,
-                     int binary)
+		     int binary)
 {
   return _open (name, _O_RDONLY | (binary ? _O_BINARY : _O_TEXT));
 }
@@ -126,14 +126,14 @@ pex_win32_open_read (struct pex_obj *obj ATTRIBUTE_UNUSED, const char *name,
 
 static int
 pex_win32_open_write (struct pex_obj *obj ATTRIBUTE_UNUSED, const char *name,
-                      int binary)
+		      int binary)
 {
   /* Note that we can't use O_EXCL here because gcc may have already
      created the temporary file via make_temp_file.  */
   return _open (name,
-                (_O_WRONLY | _O_CREAT | _O_TRUNC
-                 | (binary ? _O_BINARY : _O_TEXT)),
-                _S_IREAD | _S_IWRITE);
+		(_O_WRONLY | _O_CREAT | _O_TRUNC
+		 | (binary ? _O_BINARY : _O_TEXT)),
+		_S_IREAD | _S_IWRITE);
 }
 
 /* Close a file.  */
@@ -171,10 +171,10 @@ openkey (HKEY hStart, const char *keys[])
       res = RegOpenKey (hTmp, *keys, &hKey);
 
       if (hTmp != HKEY_LOCAL_MACHINE)
-        RegCloseKey (hTmp);
+	RegCloseKey (hTmp);
 
       if (res != ERROR_SUCCESS)
-        return NULL;
+	return NULL;
     }
   return hKey;
 }
@@ -199,7 +199,7 @@ mingw_rootify (const char *executable)
   /* Need to enumerate all of the keys here looking for one the most recent
      one for MinGW. */
   if (RegQueryInfoKey (hKey, NULL, NULL, NULL, NULL, &maxlen, NULL, NULL,
-                       NULL, NULL, NULL, NULL) != ERROR_SUCCESS)
+		       NULL, NULL, NULL, NULL) != ERROR_SUCCESS)
     {
       RegCloseKey (hKey);
       return executable;
@@ -211,9 +211,9 @@ mingw_rootify (const char *executable)
     {
       RegCloseKey (hKey);
       if (namebuf)
-        free (namebuf);
+	free (namebuf);
       if (foundbuf)
-        free (foundbuf);
+	free (foundbuf);
       return executable;
     }
 
@@ -224,11 +224,11 @@ mingw_rootify (const char *executable)
     {
       int match = strcasecmp (namebuf, MINGW_NAME);
       if (match < 0)
-        continue;
+	continue;
       if (match > 0 && strncasecmp (namebuf, MINGW_NAME, MINGW_NAME_LEN) > 0)
-        continue;
+	continue;
       if (strcasecmp (namebuf, foundbuf) > 0)
-        strcpy (foundbuf, namebuf);
+	strcpy (foundbuf, namebuf);
     }
   free (namebuf);
 
@@ -252,7 +252,7 @@ mingw_rootify (const char *executable)
   maxlen = 0;
   /* Get the length of the value pointed to by InstallLocation */
   if (RegQueryValueEx (hTmp, "InstallLocation", 0, NULL, NULL,
-                       &maxlen) != ERROR_SUCCESS || maxlen == 0)
+		       &maxlen) != ERROR_SUCCESS || maxlen == 0)
     {
       RegCloseKey (hTmp);
       return executable;
@@ -268,7 +268,7 @@ mingw_rootify (const char *executable)
 
   /* Read the install location into the buffer */
   res = RegQueryValueEx (hTmp, "InstallLocation", 0, NULL, (LPBYTE) foundbuf,
-                         &maxlen);
+			 &maxlen);
   RegCloseKey (hTmp);
   if (res != ERROR_SUCCESS)
     {
@@ -294,21 +294,21 @@ msys_rootify (const char *executable)
     {
       buf = XNEWVEC (char, bufsize + execlen);
       if (!buf)
-        break;
+	break;
       res = GetPrivateProfileString ("InstallSettings", "InstallPath", NULL,
-                                     buf, bufsize, "msys.ini");
+				     buf, bufsize, "msys.ini");
       if (!res)
-        break;
+	break;
       if (strlen (buf) < bufsize)
-        break;
+	break;
       res = 0;
       free (buf);
       bufsize *= 2;
       if (bufsize > 65536)
-        {
-          buf = NULL;
-          break;
-        }
+	{
+	  buf = NULL;
+	  break;
+	}
     }
 
   if (res)
@@ -336,25 +336,25 @@ argv_to_cmdline (char *const *argv)
   for (i = 0; argv[i]; i++)
     {
       /* We quote every last argument.  This simplifies the problem;
-         we need only escape embedded double-quotes and immediately
-         preceeding backslash characters.  A sequence of backslach characters
-         that is not follwed by a double quote character will not be
-         escaped.  */
+	 we need only escape embedded double-quotes and immediately
+	 preceeding backslash characters.  A sequence of backslach characters
+	 that is not follwed by a double quote character will not be
+	 escaped.  */
       for (j = 0; argv[i][j]; j++)
-        {
-          if (argv[i][j] == '"')
-            {
-              /* Escape preceeding backslashes.  */
-              for (k = j - 1; k >= 0 && argv[i][k] == '\\'; k--)
-                cmdline_len++;
-              /* Escape the qote character.  */
-              cmdline_len++;
-            }
-        }
+	{
+	  if (argv[i][j] == '"')
+	    {
+	      /* Escape preceeding backslashes.  */
+	      for (k = j - 1; k >= 0 && argv[i][k] == '\\'; k--)
+		cmdline_len++;
+	      /* Escape the qote character.  */
+	      cmdline_len++;
+	    }
+	}
       /* Trailing backslashes also need to be escaped because they will be
          followed by the terminating quote.  */
       for (k = j - 1; k >= 0 && argv[i][k] == '\\'; k--)
-        cmdline_len++;
+	cmdline_len++;
       cmdline_len += j;
       cmdline_len += 3;  /* for leading and trailing quotes and space */
     }
@@ -364,17 +364,17 @@ argv_to_cmdline (char *const *argv)
     {
       *p++ = '"';
       for (j = 0; argv[i][j]; j++)
-        {
-          if (argv[i][j] == '"')
-            {
-              for (k = j - 1; k >= 0 && argv[i][k] == '\\'; k--)
-                *p++ = '\\';
-              *p++ = '\\';
-            }
-          *p++ = argv[i][j];
-        }
+	{
+	  if (argv[i][j] == '"')
+	    {
+	      for (k = j - 1; k >= 0 && argv[i][k] == '\\'; k--)
+		*p++ = '\\';
+	      *p++ = '\\';
+	    }
+	  *p++ = argv[i][j];
+	}
       for (k = j - 1; k >= 0 && argv[i][k] == '\\'; k--)
-        *p++ = '\\';
+	*p++ = '\\';
       *p++ = '"';
       *p++ = ' ';
     }
@@ -426,11 +426,11 @@ find_executable (const char *program, BOOL search)
     {
       q = p;
       while (*q != ';' && *q != '\0')
-        q++;
+	q++;
       if ((size_t)(q - p) > fe_len)
-        fe_len = q - p;
+	fe_len = q - p;
       if (*q == ';')
-        q++;
+	q++;
     }
   fe_len = fe_len + 1 + proglen + (has_extension ? 1 : 5);
   full_executable = xmalloc (fe_len);
@@ -440,38 +440,38 @@ find_executable (const char *program, BOOL search)
     {
       q = p;
       while (*q != ';' && *q != '\0')
-        q++;
+	q++;
 
       e = full_executable;
       memcpy (e, p, q - p);
       e += (q - p);
       if (q - p)
-        *e++ = '\\';
+	*e++ = '\\';
       strcpy (e, program);
 
       if (*q == ';')
-        q++;
+	q++;
 
       for (e = full_executable; *e; e++)
-        if (*e == '/')
-          *e = '\\';
+	if (*e == '/')
+	  *e = '\\';
 
       /* At this point, e points to the terminating NUL character for
          full_executable.  */
       for (ext = has_extension ? no_suffixes : std_suffixes; *ext; ext++)
-        {
-          /* Remove any current extension.  */
-          *e = '\0';
-          /* Add the new one.  */
-          strcat (full_executable, *ext);
+	{
+	  /* Remove any current extension.  */
+	  *e = '\0';
+	  /* Add the new one.  */
+	  strcat (full_executable, *ext);
 
-          /* Attempt to open this file.  */
-          h = CreateFile (full_executable, GENERIC_READ,
-                          FILE_SHARE_READ | FILE_SHARE_WRITE,
-                          0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
-          if (h != INVALID_HANDLE_VALUE)
-            goto found;
-        }
+	  /* Attempt to open this file.  */
+	  h = CreateFile (full_executable, GENERIC_READ,
+			  FILE_SHARE_READ | FILE_SHARE_WRITE,
+			  0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
+	  if (h != INVALID_HANDLE_VALUE)
+	    goto found;
+	}
       p = q;
     }
   while (*p);
@@ -523,12 +523,12 @@ env_compare (const void *a_ptr, const void *b_ptr)
 
 static long
 win32_spawn (const char *executable,
-             BOOL search,
-             char *const *argv,
+	     BOOL search,
+	     char *const *argv,
              char *const *env, /* array of strings of the form: VAR=VALUE */
-             DWORD dwCreationFlags,
-             LPSTARTUPINFO si,
-             LPPROCESS_INFORMATION pi)
+	     DWORD dwCreationFlags,
+	     LPSTARTUPINFO si,
+	     LPPROCESS_INFORMATION pi)
 {
   char *full_executable;
   char *cmdline;
@@ -582,14 +582,14 @@ win32_spawn (const char *executable,
     
   /* Create the child process.  */  
   if (!CreateProcess (full_executable, cmdline, 
-                      /*lpProcessAttributes=*/NULL,
-                      /*lpThreadAttributes=*/NULL,
-                      /*bInheritHandles=*/TRUE,
-                      dwCreationFlags,
-                      (LPVOID) env_block,
-                      /*lpCurrentDirectory=*/NULL,
-                      si,
-                      pi))
+		      /*lpProcessAttributes=*/NULL,
+		      /*lpThreadAttributes=*/NULL,
+		      /*bInheritHandles=*/TRUE,
+		      dwCreationFlags,
+		      (LPVOID) env_block,
+		      /*lpCurrentDirectory=*/NULL,
+		      si,
+		      pi))
     {
       if (env_block)
         free (env_block);
@@ -621,9 +621,9 @@ win32_spawn (const char *executable,
 static long
 spawn_script (const char *executable, char *const *argv,
               char* const *env,
-              DWORD dwCreationFlags,
-              LPSTARTUPINFO si,
-              LPPROCESS_INFORMATION pi)
+	      DWORD dwCreationFlags,
+	      LPSTARTUPINFO si,
+	      LPPROCESS_INFORMATION pi)
 {
   int pid = -1;
   int save_errno = errno;
@@ -635,58 +635,58 @@ spawn_script (const char *executable, char *const *argv,
       int len = _read (fd, buf, sizeof (buf) - 1);
       _close (fd);
       if (len > 3)
-        {
-          char *eol;
-          buf[len] = '\0';
-          eol = strchr (buf, '\n');
-          if (eol && strncmp (buf, "#!", 2) == 0)
-            {
-              char *executable1;
-              const char ** avhere = (const char **) --argv;
-              do
-                *eol = '\0';
-              while (*--eol == '\r' || *eol == ' ' || *eol == '\t');
-              for (executable1 = buf + 2; *executable1 == ' ' || *executable1 == '\t'; executable1++)
-                continue;
+	{
+	  char *eol;
+	  buf[len] = '\0';
+	  eol = strchr (buf, '\n');
+	  if (eol && strncmp (buf, "#!", 2) == 0)
+	    {
+	      char *executable1;
+	      const char ** avhere = (const char **) --argv;
+	      do
+		*eol = '\0';
+	      while (*--eol == '\r' || *eol == ' ' || *eol == '\t');
+	      for (executable1 = buf + 2; *executable1 == ' ' || *executable1 == '\t'; executable1++)
+		continue;
 
-              backslashify (executable1);
-              *avhere = executable1;
+	      backslashify (executable1);
+	      *avhere = executable1;
 #ifndef USE_MINGW_MSYS
-              executable = strrchr (executable1, '\\') + 1;
-              if (!executable)
-                executable = executable1;
-              pid = win32_spawn (executable, TRUE, argv, env,
-                                 dwCreationFlags, si, pi);
+	      executable = strrchr (executable1, '\\') + 1;
+	      if (!executable)
+		executable = executable1;
+	      pid = win32_spawn (executable, TRUE, argv, env,
+				 dwCreationFlags, si, pi);
 #else
-              if (strchr (executable1, '\\') == NULL)
-                pid = win32_spawn (executable1, TRUE, argv, env,
-                                   dwCreationFlags, si, pi);
-              else if (executable1[0] != '\\')
-                pid = win32_spawn (executable1, FALSE, argv, env,
-                                   dwCreationFlags, si, pi);
-              else
-                {
-                  const char *newex = mingw_rootify (executable1);
-                  *avhere = newex;
-                  pid = win32_spawn (newex, FALSE, argv, env,
-                                     dwCreationFlags, si, pi);
-                  if (executable1 != newex)
-                    free ((char *) newex);
-                  if (pid < 0)
-                    {
-                      newex = msys_rootify (executable1);
-                      if (newex != executable1)
-                        {
-                          *avhere = newex;
-                          pid = win32_spawn (newex, FALSE, argv, env,
-                                             dwCreationFlags, si, pi);
-                          free ((char *) newex);
-                        }
-                    }
-                }
+	      if (strchr (executable1, '\\') == NULL)
+		pid = win32_spawn (executable1, TRUE, argv, env,
+				   dwCreationFlags, si, pi);
+	      else if (executable1[0] != '\\')
+		pid = win32_spawn (executable1, FALSE, argv, env,
+				   dwCreationFlags, si, pi);
+	      else
+		{
+		  const char *newex = mingw_rootify (executable1);
+		  *avhere = newex;
+		  pid = win32_spawn (newex, FALSE, argv, env,
+				     dwCreationFlags, si, pi);
+		  if (executable1 != newex)
+		    free ((char *) newex);
+		  if (pid < 0)
+		    {
+		      newex = msys_rootify (executable1);
+		      if (newex != executable1)
+			{
+			  *avhere = newex;
+			  pid = win32_spawn (newex, FALSE, argv, env,
+					     dwCreationFlags, si, pi);
+			  free ((char *) newex);
+			}
+		    }
+		}
 #endif
-            }
-        }
+	    }
+	}
     }
   if (pid < 0)
     errno = save_errno;
@@ -697,12 +697,12 @@ spawn_script (const char *executable, char *const *argv,
 
 static long
 pex_win32_exec_child (struct pex_obj *obj ATTRIBUTE_UNUSED, int flags,
-                      const char *executable, char * const * argv,
+		      const char *executable, char * const * argv,
                       char* const* env,
-                      int in, int out, int errdes,
-                      int toclose ATTRIBUTE_UNUSED,
-                      const char **errmsg,
-                      int *err)
+		      int in, int out, int errdes,
+		      int toclose ATTRIBUTE_UNUSED,
+		      const char **errmsg,
+		      int *err)
 {
   long pid;
   HANDLE stdin_handle;
@@ -737,30 +737,30 @@ pex_win32_exec_child (struct pex_obj *obj ATTRIBUTE_UNUSED, int flags,
 
       /* Determine whether or not we have an associated console.  */
       conout_handle = CreateFile("CONOUT$", 
-                                 GENERIC_WRITE,
-                                 FILE_SHARE_WRITE,
-                                 /*lpSecurityAttributes=*/NULL,
-                                 OPEN_EXISTING,
-                                 FILE_ATTRIBUTE_NORMAL,
-                                 /*hTemplateFile=*/NULL);
+				 GENERIC_WRITE,
+				 FILE_SHARE_WRITE,
+				 /*lpSecurityAttributes=*/NULL,
+				 OPEN_EXISTING,
+				 FILE_ATTRIBUTE_NORMAL,
+				 /*hTemplateFile=*/NULL);
       if (conout_handle == INVALID_HANDLE_VALUE)
-        /* There is no console associated with this process.  Since
-           the child is a console process, the OS would normally
-           create a new console Window for the child.  Since we'll be
-           redirecting the child's standard streams, we do not need
-           the console window.  */ 
-        dwCreationFlags = CREATE_NO_WINDOW;
+	/* There is no console associated with this process.  Since
+	   the child is a console process, the OS would normally
+	   create a new console Window for the child.  Since we'll be
+	   redirecting the child's standard streams, we do not need
+	   the console window.  */ 
+	dwCreationFlags = CREATE_NO_WINDOW;
       else 
-        {
-          /* There is a console associated with the process, so the OS
-             will not create a new console.  And, if we use
-             CREATE_NO_WINDOW in this situation, the child will have
-             no associated console.  Therefore, if the child's
-             standard streams are connected to the console, the output
-             will be discarded.  */
-          CloseHandle(conout_handle);
-          dwCreationFlags = 0;
-        }
+	{
+	  /* There is a console associated with the process, so the OS
+	     will not create a new console.  And, if we use
+	     CREATE_NO_WINDOW in this situation, the child will have
+	     no associated console.  Therefore, if the child's
+	     standard streams are connected to the console, the output
+	     will be discarded.  */
+	  CloseHandle(conout_handle);
+	  dwCreationFlags = 0;
+	}
     }
 
   /* Since the child will be a console process, it will, by default,
@@ -778,7 +778,7 @@ pex_win32_exec_child (struct pex_obj *obj ATTRIBUTE_UNUSED, int flags,
 
   /* Create the child process.  */  
   pid = win32_spawn (executable, (flags & PEX_SEARCH) != 0,
-                     argv, env, dwCreationFlags, &si, &pi);
+		     argv, env, dwCreationFlags, &si, &pi);
   if (pid == -1)
     pid = spawn_script (executable, argv, env, dwCreationFlags,
                         &si, &pi);
@@ -808,8 +808,8 @@ pex_win32_exec_child (struct pex_obj *obj ATTRIBUTE_UNUSED, int flags,
 
 static int
 pex_win32_wait (struct pex_obj *obj ATTRIBUTE_UNUSED, long pid,
-                int *status, struct pex_time *time, int done ATTRIBUTE_UNUSED,
-                const char **errmsg, int *err)
+		int *status, struct pex_time *time, int done ATTRIBUTE_UNUSED,
+		const char **errmsg, int *err)
 {
   DWORD termstat;
   HANDLE h;
@@ -847,7 +847,7 @@ pex_win32_wait (struct pex_obj *obj ATTRIBUTE_UNUSED, long pid,
 
 static int
 pex_win32_pipe (struct pex_obj *obj ATTRIBUTE_UNUSED, int *p,
-                int binary)
+		int binary)
 {
   return _pipe (p, 256, binary ? _O_BINARY : _O_TEXT);
 }
@@ -856,14 +856,14 @@ pex_win32_pipe (struct pex_obj *obj ATTRIBUTE_UNUSED, int *p,
 
 static FILE *
 pex_win32_fdopenr (struct pex_obj *obj ATTRIBUTE_UNUSED, int fd,
-                   int binary)
+		   int binary)
 {
   return fdopen (fd, binary ? "rb" : "r");
 }
 
 static FILE *
 pex_win32_fdopenw (struct pex_obj *obj ATTRIBUTE_UNUSED, int fd,
-                   int binary)
+		   int binary)
 {
   HANDLE h = (HANDLE) _get_osfhandle (fd);
   if (h == INVALID_HANDLE_VALUE)

@@ -161,7 +161,7 @@ ipcp_method_is_cloned (struct cgraph_node *node)
 /* Set ORIG_NODE in ipa_node associated with method NODE.  */
 static inline void
 ipcp_method_set_orig_node (struct cgraph_node *node,
-                           struct cgraph_node *orig_node)
+			   struct cgraph_node *orig_node)
 {
   IPA_NODE_REF (node)->ipcp_orig_node = orig_node;
 }
@@ -170,7 +170,7 @@ ipcp_method_set_orig_node (struct cgraph_node *node,
    Set ORIG_NODE as the orig_node field in ipa_node.  */
 static void
 ipcp_cloned_create (struct cgraph_node *orig_node,
-                    struct cgraph_node *new_node)
+		    struct cgraph_node *new_node)
 {
   ipa_node_create (new_node);
   ipcp_method_set_orig_node (new_node, orig_node);
@@ -216,7 +216,7 @@ ipcp_cval_get_cvalue (struct ipcp_formal *cval)
 /* Set VALUE as cvalue field  CVAL.  */
 static inline void
 ipcp_cval_set_cvalue (struct ipcp_formal *cval, union parameter_info *value,
-                      enum cvalue_type type)
+		      enum cvalue_type type)
 {
   if (type == CONST_VALUE || type == CONST_VALUE_REF)
     cval->cvalue.value =  value->value;
@@ -235,8 +235,8 @@ ipcp_type_is_const (enum cvalue_type type)
 /* Return true if CONST_VAL1 and CONST_VAL2 are equal.  */
 static inline bool
 ipcp_cval_equal_cvalues (union parameter_info *const_val1,
-                         union parameter_info *const_val2,
-                         enum cvalue_type type1, enum cvalue_type type2)
+			 union parameter_info *const_val2,
+			 enum cvalue_type type1, enum cvalue_type type2)
 {
   gcc_assert (ipcp_type_is_const (type1) && ipcp_type_is_const (type2));
   if (type1 != type2)
@@ -255,7 +255,7 @@ ipcp_cval_equal_cvalues (union parameter_info *const_val1,
    MEET (const_a,const_b) = const_a, if const_a == const_b.*/
 static void
 ipcp_cval_meet (struct ipcp_formal *cval, struct ipcp_formal *cval1,
-                struct ipcp_formal *cval2)
+		struct ipcp_formal *cval2)
 {
   if (ipcp_cval_get_cvalue_type (cval1) == BOTTOM
       || ipcp_cval_get_cvalue_type (cval2) == BOTTOM)
@@ -267,27 +267,27 @@ ipcp_cval_meet (struct ipcp_formal *cval, struct ipcp_formal *cval1,
     {
       ipcp_cval_set_cvalue_type (cval, ipcp_cval_get_cvalue_type (cval2));
       ipcp_cval_set_cvalue (cval, ipcp_cval_get_cvalue (cval2),
-                            ipcp_cval_get_cvalue_type (cval2));
+			    ipcp_cval_get_cvalue_type (cval2));
       return;
     }
   if (ipcp_cval_get_cvalue_type (cval2) == TOP)
     {
       ipcp_cval_set_cvalue_type (cval, ipcp_cval_get_cvalue_type (cval1));
       ipcp_cval_set_cvalue (cval, ipcp_cval_get_cvalue (cval1),
-                            ipcp_cval_get_cvalue_type (cval1));
+			    ipcp_cval_get_cvalue_type (cval1));
       return;
     }
   if (!ipcp_cval_equal_cvalues (ipcp_cval_get_cvalue (cval1),
-                                ipcp_cval_get_cvalue (cval2),
-                                ipcp_cval_get_cvalue_type (cval1),
-                                ipcp_cval_get_cvalue_type (cval2)))
+				ipcp_cval_get_cvalue (cval2),
+				ipcp_cval_get_cvalue_type (cval1),
+				ipcp_cval_get_cvalue_type (cval2)))
     {
       ipcp_cval_set_cvalue_type (cval, BOTTOM);
       return;
     }
   ipcp_cval_set_cvalue_type (cval, ipcp_cval_get_cvalue_type (cval1));
   ipcp_cval_set_cvalue (cval, ipcp_cval_get_cvalue (cval1),
-                        ipcp_cval_get_cvalue_type (cval1));
+			ipcp_cval_get_cvalue_type (cval1));
 }
 
 /* Return cval structure for the formal at index INFO_TYPE in MT.  */
@@ -302,7 +302,7 @@ ipcp_method_cval (struct cgraph_node *mt, int info_type)
    drawn from MT.  */
 static void
 ipcp_cval_compute (struct ipcp_formal *cval, struct cgraph_node *mt,
-                   enum jump_func_type type, union parameter_info *info_type)
+		   enum jump_func_type type, union parameter_info *info_type)
 {
   if (type == UNKNOWN_IPATYPE)
     ipcp_cval_set_cvalue_type (cval, BOTTOM);
@@ -319,13 +319,13 @@ ipcp_cval_compute (struct ipcp_formal *cval, struct cgraph_node *mt,
   else if (type == FORMAL_IPATYPE)
     {
       enum cvalue_type type =
-        ipcp_cval_get_cvalue_type (ipcp_method_cval
-                                   (mt, info_type->formal_id));
+	ipcp_cval_get_cvalue_type (ipcp_method_cval
+				   (mt, info_type->formal_id));
       ipcp_cval_set_cvalue_type (cval, type);
       ipcp_cval_set_cvalue (cval,
-                            ipcp_cval_get_cvalue (ipcp_method_cval
-                                                  (mt, info_type->formal_id)),
-                            type);
+			    ipcp_cval_get_cvalue (ipcp_method_cval
+						  (mt, info_type->formal_id)),
+			    type);
     }
 }
 
@@ -336,13 +336,13 @@ ipcp_cval_changed (struct ipcp_formal *cval1, struct ipcp_formal *cval2)
   if (ipcp_cval_get_cvalue_type (cval1) == ipcp_cval_get_cvalue_type (cval2))
     {
       if (ipcp_cval_get_cvalue_type (cval1) != CONST_VALUE &&
-          ipcp_cval_get_cvalue_type (cval1) != CONST_VALUE_REF)         
-        return false;
+	  ipcp_cval_get_cvalue_type (cval1) != CONST_VALUE_REF)	 
+	return false;
       if (ipcp_cval_equal_cvalues (ipcp_cval_get_cvalue (cval1),
-                                   ipcp_cval_get_cvalue (cval2),
-                                   ipcp_cval_get_cvalue_type (cval1),
-                                   ipcp_cval_get_cvalue_type (cval2)))
-        return false;
+				   ipcp_cval_get_cvalue (cval2),
+				   ipcp_cval_get_cvalue_type (cval1),
+				   ipcp_cval_get_cvalue_type (cval2)))
+	return false;
     }
   return true;
 }
@@ -361,13 +361,13 @@ ipcp_method_cval_set (struct cgraph_node *mt, int i, struct ipcp_formal *cval)
 {
   IPA_NODE_REF (mt)->ipcp_cval[i].cval_type = cval->cval_type;
   ipcp_cval_set_cvalue (ipcp_method_cval (mt, i),
-                        ipcp_cval_get_cvalue (cval), cval->cval_type);
+			ipcp_cval_get_cvalue (cval), cval->cval_type);
 }
 
 /* Set type of cval structure of formal I of MT to CVAL_TYPE1.  */
 static inline void
 ipcp_method_cval_set_cvalue_type (struct cgraph_node *mt, int i,
-                                  enum cvalue_type cval_type1)
+				  enum cvalue_type cval_type1)
 {
   IPA_NODE_REF (mt)->ipcp_cval[i].cval_type = cval_type1;
 }
@@ -386,25 +386,25 @@ ipcp_method_cval_print (FILE * f)
       fprintf (f, "Printing cvals %s:\n", cgraph_node_name (node));
       count = ipa_method_formal_count (node);
       for (i = 0; i < count; i++)
-        {
-          if (ipcp_cval_get_cvalue_type (ipcp_method_cval (node, i))
-              == CONST_VALUE
-              || ipcp_cval_get_cvalue_type (ipcp_method_cval (node, i)) ==
-              CONST_VALUE_REF)
-            {
-              fprintf (f, " param [%d]: ", i);
-              fprintf (f, "type is CONST ");
-              cvalue =
-                ipcp_cval_get_cvalue (ipcp_method_cval (node, i))->
-                  value;
+	{
+	  if (ipcp_cval_get_cvalue_type (ipcp_method_cval (node, i))
+	      == CONST_VALUE
+	      || ipcp_cval_get_cvalue_type (ipcp_method_cval (node, i)) ==
+	      CONST_VALUE_REF)
+	    {
+	      fprintf (f, " param [%d]: ", i);
+	      fprintf (f, "type is CONST ");
+	      cvalue =
+		ipcp_cval_get_cvalue (ipcp_method_cval (node, i))->
+		  value;
               print_generic_expr (f, cvalue, 0);
               fprintf (f, "\n");
-            }
-          else if (ipcp_method_cval (node, i)->cval_type == TOP)
-            fprintf (f, "param [%d]: type is TOP  \n", i);
-          else
-            fprintf (f, "param [%d]: type is BOTTOM  \n", i);
-        }
+	    }
+	  else if (ipcp_method_cval (node, i)->cval_type == TOP)
+	    fprintf (f, "param [%d]: type is TOP  \n", i);
+	  else
+	    fprintf (f, "param [%d]: type is BOTTOM  \n", i);
+	}
     }
 }
 
@@ -425,11 +425,11 @@ ipcp_method_cval_init (struct cgraph_node *mt)
     {
       parm_tree = ipa_method_get_tree (mt, i);
       if (INTEGRAL_TYPE_P (TREE_TYPE (parm_tree)) 
-          || SCALAR_FLOAT_TYPE_P (TREE_TYPE (parm_tree)) 
-          || POINTER_TYPE_P (TREE_TYPE (parm_tree)))
-        ipcp_method_cval_set_cvalue_type (mt, i, TOP);
+	  || SCALAR_FLOAT_TYPE_P (TREE_TYPE (parm_tree)) 
+	  || POINTER_TYPE_P (TREE_TYPE (parm_tree)))
+	ipcp_method_cval_set_cvalue_type (mt, i, TOP);
       else
-        ipcp_method_cval_set_cvalue_type (mt, i, BOTTOM);
+	ipcp_method_cval_set_cvalue_type (mt, i, BOTTOM);
     }
 }
 
@@ -459,7 +459,7 @@ constant_val_insert (tree fn, tree parm1, tree val)
    value according to CVALUE. Return the tree.   */
 static tree
 build_const_val (union parameter_info *cvalue, enum cvalue_type type,
-                 tree tree_type)
+		 tree tree_type)
 {
   tree const_val = NULL;
 
@@ -472,7 +472,7 @@ build_const_val (union parameter_info *cvalue, enum cvalue_type type,
    constant_val_insert().  */
 static void
 ipcp_propagate_const (struct cgraph_node *mt, int param,
-                      union parameter_info *cvalue ,enum cvalue_type type)
+		      union parameter_info *cvalue ,enum cvalue_type type)
 {
   tree fndecl;
   tree const_val;
@@ -528,19 +528,19 @@ ipcp_init_stage (void)
     {
       /* building jump functions  */
       for (cs = node->callees; cs; cs = cs->next_callee)
-        {
-          ipa_callsite_compute_count (cs);
-          if (ipa_callsite_param_count (cs)
-              != ipa_method_formal_count (cs->callee))
-            {
-              /* Handle cases of functions with 
-                 a variable number of parameters.  */
-              ipa_callsite_param_count_set (cs, 0);
-              ipa_method_formal_count_set (cs->callee, 0);
-            }
-          else
-            ipa_callsite_compute_param (cs);
-        }
+	{
+	  ipa_callsite_compute_count (cs);
+	  if (ipa_callsite_param_count (cs)
+	      != ipa_method_formal_count (cs->callee))
+	    {
+	      /* Handle cases of functions with 
+	         a variable number of parameters.  */
+	      ipa_callsite_param_count_set (cs, 0);
+	      ipa_method_formal_count_set (cs->callee, 0);
+	    }
+	  else
+	    ipa_callsite_compute_param (cs);
+	}
     }
 }
 
@@ -558,11 +558,11 @@ ipcp_after_propagate (void)
     {
       count = ipa_method_formal_count (node);
       for (i = 0; i < count; i++)
-        if (ipcp_cval_get_cvalue_type (ipcp_method_cval (node, i)) == TOP)
-          {
-            prop_again = true;
-            ipcp_method_cval_set_cvalue_type (node, i, BOTTOM);
-          }
+	if (ipcp_cval_get_cvalue_type (ipcp_method_cval (node, i)) == TOP)
+	  {
+	    prop_again = true;
+	    ipcp_method_cval_set_cvalue_type (node, i, BOTTOM);
+	  }
     }
   return prop_again;
 }
@@ -589,24 +589,24 @@ ipcp_propagate_stage (void)
     {
       mt = ipa_remove_method (&wl);
       for (cs = mt->callees; cs; cs = cs->next_callee)
-        {
-          callee = ipa_callsite_callee (cs);
-          count = ipa_callsite_param_count (cs);
-          for (i = 0; i < count; i++)
-            {
-              jump_func = ipa_callsite_param (cs, i);
-              type = get_type (jump_func);
-              info_type = ipa_jf_get_info_type (jump_func);
-              ipcp_cval_compute (&cval1, mt, type, info_type);
-              cval2 = ipcp_method_cval (callee, i);
-              ipcp_cval_meet (&cval, &cval1, cval2);
-              if (ipcp_cval_changed (&cval, cval2))
-                {
-                  ipcp_method_cval_set (callee, i, &cval);
-                  ipa_add_method (&wl, callee);
-                }
-            }
-        }
+	{
+	  callee = ipa_callsite_callee (cs);
+	  count = ipa_callsite_param_count (cs);
+	  for (i = 0; i < count; i++)
+	    {
+	      jump_func = ipa_callsite_param (cs, i);
+	      type = get_type (jump_func);
+	      info_type = ipa_jf_get_info_type (jump_func);
+	      ipcp_cval_compute (&cval1, mt, type, info_type);
+	      cval2 = ipcp_method_cval (callee, i);
+	      ipcp_cval_meet (&cval, &cval1, cval2);
+	      if (ipcp_cval_changed (&cval, cval2))
+		{
+		  ipcp_method_cval_set (callee, i, &cval);
+		  ipa_add_method (&wl, callee);
+		}
+	    }
+	}
     }
 }
 
@@ -647,34 +647,34 @@ ipcp_callsite_param_print (FILE * f)
   for (node = cgraph_nodes; node; node = node->next)
     {
       for (cs = node->callees; cs; cs = cs->next_callee)
-        {
-          fprintf (f, "callsite  %s ", cgraph_node_name (node));
-          fprintf (f, "-> %s :: \n", cgraph_node_name (cs->callee));
-          count = ipa_callsite_param_count (cs);
-          for (i = 0; i < count; i++)
-            {
-              jump_func = ipa_callsite_param (cs, i);
-              type = get_type (jump_func);
+	{
+	  fprintf (f, "callsite  %s ", cgraph_node_name (node));
+	  fprintf (f, "-> %s :: \n", cgraph_node_name (cs->callee));
+	  count = ipa_callsite_param_count (cs);
+	  for (i = 0; i < count; i++)
+	    {
+	      jump_func = ipa_callsite_param (cs, i);
+	      type = get_type (jump_func);
 
-              fprintf (f, " param %d: ", i);
-              if (type == UNKNOWN_IPATYPE)
-                fprintf (f, "UNKNOWN\n");
-              else if (type == CONST_IPATYPE || type == CONST_IPATYPE_REF)
-                {
-                  info_type =
-                    ipa_jf_get_info_type (jump_func)->value;
+	      fprintf (f, " param %d: ", i);
+	      if (type == UNKNOWN_IPATYPE)
+		fprintf (f, "UNKNOWN\n");
+	      else if (type == CONST_IPATYPE || type == CONST_IPATYPE_REF)
+		{
+		  info_type =
+		    ipa_jf_get_info_type (jump_func)->value;
                   fprintf (f, "CONST : ");
                   print_generic_expr (f, info_type, 0);
                   fprintf (f, "\n");
-                }
-              else if (type == FORMAL_IPATYPE)
-                {
-                  fprintf (f, "FORMAL : ");
-                  fprintf (f, "%d\n",
-                           ipa_jf_get_info_type (jump_func)->formal_id);
-                }
-            }
-        }
+		}
+	      else if (type == FORMAL_IPATYPE)
+		{
+		  fprintf (f, "FORMAL : ");
+		  fprintf (f, "%d\n",
+			   ipa_jf_get_info_type (jump_func)->formal_id);
+		}
+	    }
+	}
     }
 }
 
@@ -688,7 +688,7 @@ ipcp_method_scale_print (FILE * f)
     {
       fprintf (f, "printing scale for %s: ", cgraph_node_name (node));
       fprintf (f, "value is  " HOST_WIDE_INT_PRINT_DEC
-               "  \n", (HOST_WIDE_INT) ipcp_method_get_scale (node));
+	       "  \n", (HOST_WIDE_INT) ipcp_method_get_scale (node));
     }
 }
 
@@ -702,7 +702,7 @@ ipcp_profile_mt_count_print (FILE * f)
     {
       fprintf (f, "method %s: ", cgraph_node_name (node));
       fprintf (f, "count is  " HOST_WIDE_INT_PRINT_DEC
-               "  \n", (HOST_WIDE_INT) node->count);
+	       "  \n", (HOST_WIDE_INT) node->count);
     }
 }
 
@@ -716,12 +716,12 @@ ipcp_profile_cs_count_print (FILE * f)
   for (node = cgraph_nodes; node; node = node->next)
     {
       for (cs = node->callees; cs; cs = cs->next_callee)
-        {
-          fprintf (f, "%s -> %s ", cgraph_node_name (cs->caller),
-                   cgraph_node_name (cs->callee));
-          fprintf (f, "count is  " HOST_WIDE_INT_PRINT_DEC "  \n",
-                   (HOST_WIDE_INT) cs->count);
-        }
+	{
+	  fprintf (f, "%s -> %s ", cgraph_node_name (cs->caller),
+		   cgraph_node_name (cs->callee));
+	  fprintf (f, "count is  " HOST_WIDE_INT_PRINT_DEC "  \n",
+		   (HOST_WIDE_INT) cs->count);
+	}
     }
 }
 
@@ -738,45 +738,45 @@ ipcp_profile_edge_print (FILE * f)
     {
       fprintf (f, "method %s: \n", cgraph_node_name (node));
       if (DECL_SAVED_TREE (node->decl))
-        {
-          bb =
-            ENTRY_BLOCK_PTR_FOR_FUNCTION (DECL_STRUCT_FUNCTION (node->decl));
-          fprintf (f, "ENTRY: ");
-          fprintf (f, " " HOST_WIDE_INT_PRINT_DEC
-                   " %d\n", (HOST_WIDE_INT) bb->count, bb->frequency);
+	{
+	  bb =
+	    ENTRY_BLOCK_PTR_FOR_FUNCTION (DECL_STRUCT_FUNCTION (node->decl));
+	  fprintf (f, "ENTRY: ");
+	  fprintf (f, " " HOST_WIDE_INT_PRINT_DEC
+		   " %d\n", (HOST_WIDE_INT) bb->count, bb->frequency);
 
-          if (bb->succs)
-            FOR_EACH_EDGE (e, ei, bb->succs)
-            {
-              if (e->dest ==
-                  EXIT_BLOCK_PTR_FOR_FUNCTION (DECL_STRUCT_FUNCTION
-                                               (node->decl)))
-                fprintf (f, "edge ENTRY -> EXIT,  Count");
-              else
-                fprintf (f, "edge ENTRY -> %d,  Count", e->dest->index);
-              fprintf (f, " " HOST_WIDE_INT_PRINT_DEC
-                       " Prob %d\n", (HOST_WIDE_INT) e->count,
-                       e->probability);
-            }
-          FOR_EACH_BB_FN (bb, DECL_STRUCT_FUNCTION (node->decl))
-          {
-            fprintf (f, "bb[%d]: ", bb->index);
-            fprintf (f, " " HOST_WIDE_INT_PRINT_DEC
-                     " %d\n", (HOST_WIDE_INT) bb->count, bb->frequency);
-            FOR_EACH_EDGE (e, ei, bb->succs)
-            {
-              if (e->dest ==
-                  EXIT_BLOCK_PTR_FOR_FUNCTION (DECL_STRUCT_FUNCTION
-                                               (node->decl)))
-                fprintf (f, "edge %d -> EXIT,  Count", e->src->index);
-              else
-                fprintf (f, "edge %d -> %d,  Count", e->src->index,
-                         e->dest->index);
-              fprintf (f, " " HOST_WIDE_INT_PRINT_DEC " Prob %d\n",
-                       (HOST_WIDE_INT) e->count, e->probability);
-            }
-          }
-        }
+	  if (bb->succs)
+	    FOR_EACH_EDGE (e, ei, bb->succs)
+	    {
+	      if (e->dest ==
+		  EXIT_BLOCK_PTR_FOR_FUNCTION (DECL_STRUCT_FUNCTION
+					       (node->decl)))
+		fprintf (f, "edge ENTRY -> EXIT,  Count");
+	      else
+		fprintf (f, "edge ENTRY -> %d,  Count", e->dest->index);
+	      fprintf (f, " " HOST_WIDE_INT_PRINT_DEC
+		       " Prob %d\n", (HOST_WIDE_INT) e->count,
+		       e->probability);
+	    }
+	  FOR_EACH_BB_FN (bb, DECL_STRUCT_FUNCTION (node->decl))
+	  {
+	    fprintf (f, "bb[%d]: ", bb->index);
+	    fprintf (f, " " HOST_WIDE_INT_PRINT_DEC
+		     " %d\n", (HOST_WIDE_INT) bb->count, bb->frequency);
+	    FOR_EACH_EDGE (e, ei, bb->succs)
+	    {
+	      if (e->dest ==
+		  EXIT_BLOCK_PTR_FOR_FUNCTION (DECL_STRUCT_FUNCTION
+					       (node->decl)))
+		fprintf (f, "edge %d -> EXIT,  Count", e->src->index);
+	      else
+		fprintf (f, "edge %d -> %d,  Count", e->src->index,
+			 e->dest->index);
+	      fprintf (f, " " HOST_WIDE_INT_PRINT_DEC " Prob %d\n",
+		       (HOST_WIDE_INT) e->count, e->probability);
+	    }
+	  }
+	}
     }
 }
 
@@ -791,29 +791,29 @@ ipcp_profile_bb_print (FILE * f)
     {
       fprintf (f, "method %s: \n", cgraph_node_name (node));
       if (DECL_SAVED_TREE (node->decl))
-        {
-          bb =
-            ENTRY_BLOCK_PTR_FOR_FUNCTION (DECL_STRUCT_FUNCTION (node->decl));
-          fprintf (f, "ENTRY: Count");
-          fprintf (f, " " HOST_WIDE_INT_PRINT_DEC
-                   " Frquency  %d\n", (HOST_WIDE_INT) bb->count,
-                   bb->frequency);
+	{
+	  bb =
+	    ENTRY_BLOCK_PTR_FOR_FUNCTION (DECL_STRUCT_FUNCTION (node->decl));
+	  fprintf (f, "ENTRY: Count");
+	  fprintf (f, " " HOST_WIDE_INT_PRINT_DEC
+		   " Frquency  %d\n", (HOST_WIDE_INT) bb->count,
+		   bb->frequency);
 
-          FOR_EACH_BB_FN (bb, DECL_STRUCT_FUNCTION (node->decl))
-          {
-            fprintf (f, "bb[%d]: Count", bb->index);
-            fprintf (f, " " HOST_WIDE_INT_PRINT_DEC
-                     " Frequency %d\n", (HOST_WIDE_INT) bb->count,
-                     bb->frequency);
-          }
-          bb =
-            EXIT_BLOCK_PTR_FOR_FUNCTION (DECL_STRUCT_FUNCTION (node->decl));
-          fprintf (f, "EXIT: Count");
-          fprintf (f, " " HOST_WIDE_INT_PRINT_DEC
-                   " Frequency %d\n", (HOST_WIDE_INT) bb->count,
-                   bb->frequency);
+	  FOR_EACH_BB_FN (bb, DECL_STRUCT_FUNCTION (node->decl))
+	  {
+	    fprintf (f, "bb[%d]: Count", bb->index);
+	    fprintf (f, " " HOST_WIDE_INT_PRINT_DEC
+		     " Frequency %d\n", (HOST_WIDE_INT) bb->count,
+		     bb->frequency);
+	  }
+	  bb =
+	    EXIT_BLOCK_PTR_FOR_FUNCTION (DECL_STRUCT_FUNCTION (node->decl));
+	  fprintf (f, "EXIT: Count");
+	  fprintf (f, " " HOST_WIDE_INT_PRINT_DEC
+		   " Frequency %d\n", (HOST_WIDE_INT) bb->count,
+		   bb->frequency);
 
-        }
+	}
     }
 }
 
@@ -848,7 +848,7 @@ ipcp_profile_print (FILE * f)
    formal's tree found to be constant.  CVALUE represents the constant.  */
 static struct ipa_replace_map *
 ipcp_replace_map_create (enum cvalue_type type, tree parm_tree,
-                         union parameter_info *cvalue)
+			 union parameter_info *cvalue)
 {
   struct ipa_replace_map *replace_map;
   tree const_val;
@@ -858,7 +858,7 @@ ipcp_replace_map_create (enum cvalue_type type, tree parm_tree,
   if (type == CONST_VALUE_REF )
     {
       const_val =
-        build_const_val (cvalue, type, TREE_TYPE (TREE_TYPE (parm_tree)));
+	build_const_val (cvalue, type, TREE_TYPE (TREE_TYPE (parm_tree)));
       replace_map->old_tree = parm_tree;
       replace_map->new_tree = const_val;
       replace_map->replace_p = true;
@@ -901,15 +901,15 @@ ipcp_redirect (struct cgraph_edge *cs)
   for (i = 0; i < count; i++)
     {
       cval_type =
-        ipcp_cval_get_cvalue_type (ipcp_method_cval (orig_callee, i));
+	ipcp_cval_get_cvalue_type (ipcp_method_cval (orig_callee, i));
       if (ipcp_type_is_const (cval_type))
-        {
-          jump_func = ipa_callsite_param (cs, i);
-          type = get_type (jump_func);
-          if (type != CONST_IPATYPE 
-              && type != CONST_IPATYPE_REF)
-            return true;
-        }
+	{
+	  jump_func = ipa_callsite_param (cs, i);
+	  type = get_type (jump_func);
+	  if (type != CONST_IPATYPE 
+	      && type != CONST_IPATYPE_REF)
+	    return true;
+	}
     }
 
   return false;
@@ -926,20 +926,20 @@ ipcp_update_callgraph (void)
     {
       /* want to fix only original nodes  */
       if (ipcp_method_is_cloned (node))
-        continue;
+	continue;
       for (cs = node->callees; cs; cs = cs->next_callee)
-        if (ipcp_method_is_cloned (cs->callee))
-          {
-            /* Callee is a cloned node  */
-            orig_callee = ipcp_method_orig_node (cs->callee);
-            if (ipcp_redirect (cs))
-              {
-                cgraph_redirect_edge_callee (cs, orig_callee);
-                TREE_OPERAND (TREE_OPERAND
-                              (get_call_expr_in (cs->call_stmt), 0), 0) =
-                  orig_callee->decl;
-              }
-          }
+	if (ipcp_method_is_cloned (cs->callee))
+	  {
+	    /* Callee is a cloned node  */
+	    orig_callee = ipcp_method_orig_node (cs->callee);
+	    if (ipcp_redirect (cs))
+	      {
+		cgraph_redirect_edge_callee (cs, orig_callee);
+		TREE_OPERAND (TREE_OPERAND
+			      (get_call_expr_in (cs->call_stmt), 0), 0) =
+		  orig_callee->decl;
+	      }
+	  }
     }
 }
 
@@ -978,22 +978,22 @@ ipcp_update_profiling (void)
   for (node = cgraph_nodes; node; node = node->next)
     {
       if (ipcp_method_is_cloned (node))
-        {
-          orig_node = ipcp_method_orig_node (node);
-          scale = ipcp_method_get_scale (orig_node);
-          node->count = orig_node->count * scale / REG_BR_PROB_BASE;
-          scale_complement = REG_BR_PROB_BASE - scale;
-          orig_node->count =
-            orig_node->count * scale_complement / REG_BR_PROB_BASE;
-          for (cs = node->callees; cs; cs = cs->next_callee)
-            cs->count = cs->count * scale / REG_BR_PROB_BASE;
-          for (cs = orig_node->callees; cs; cs = cs->next_callee)
-            cs->count = cs->count * scale_complement / REG_BR_PROB_BASE;
-          ipcp_update_bb_counts (node, scale);
-          ipcp_update_bb_counts (orig_node, scale_complement);
-          ipcp_update_edges_counts (node, scale);
-          ipcp_update_edges_counts (orig_node, scale_complement);
-        }
+	{
+	  orig_node = ipcp_method_orig_node (node);
+	  scale = ipcp_method_get_scale (orig_node);
+	  node->count = orig_node->count * scale / REG_BR_PROB_BASE;
+	  scale_complement = REG_BR_PROB_BASE - scale;
+	  orig_node->count =
+	    orig_node->count * scale_complement / REG_BR_PROB_BASE;
+	  for (cs = node->callees; cs; cs = cs->next_callee)
+	    cs->count = cs->count * scale / REG_BR_PROB_BASE;
+	  for (cs = orig_node->callees; cs; cs = cs->next_callee)
+	    cs->count = cs->count * scale_complement / REG_BR_PROB_BASE;
+	  ipcp_update_bb_counts (node, scale);
+	  ipcp_update_bb_counts (orig_node, scale_complement);
+	  ipcp_update_edges_counts (node, scale);
+	  ipcp_update_edges_counts (orig_node, scale_complement);
+	}
     }
 }
 
@@ -1018,61 +1018,61 @@ ipcp_insert_stage (void)
       /* Propagation of the constant is forbidden in 
          certain conditions.  */
       if (ipcp_method_dont_insert_const (node))
-        continue;
+	continue;
       const_param = 0;
       count = ipa_method_formal_count (node);
       for (i = 0; i < count; i++)
-        {
-          type = ipcp_cval_get_cvalue_type (ipcp_method_cval (node, i));
-          if (ipcp_type_is_const (type))
-            const_param++;
-        }
+	{
+	  type = ipcp_cval_get_cvalue_type (ipcp_method_cval (node, i));
+	  if (ipcp_type_is_const (type))
+	    const_param++;
+	}
       if (const_param == 0)
-        continue;
+	continue;
       VARRAY_GENERIC_PTR_INIT (replace_trees, const_param, "replace_trees");
       for (i = 0; i < count; i++)
-        {
-          type = ipcp_cval_get_cvalue_type (ipcp_method_cval (node, i));
-          if (ipcp_type_is_const (type))
-            {
-              cvalue = ipcp_cval_get_cvalue (ipcp_method_cval (node, i));
-              parm_tree = ipa_method_get_tree (node, i);
-              replace_param =
-                ipcp_replace_map_create (type, parm_tree, cvalue);
-              VARRAY_PUSH_GENERIC_PTR (replace_trees, replace_param);
-            }
-        }
+	{
+	  type = ipcp_cval_get_cvalue_type (ipcp_method_cval (node, i));
+	  if (ipcp_type_is_const (type))
+	    {
+	      cvalue = ipcp_cval_get_cvalue (ipcp_method_cval (node, i));
+	      parm_tree = ipa_method_get_tree (node, i);
+	      replace_param =
+		ipcp_replace_map_create (type, parm_tree, cvalue);
+	      VARRAY_PUSH_GENERIC_PTR (replace_trees, replace_param);
+	    }
+	}
       /* Compute how many callers node has.  */
       node_callers = 0;
       for (cs = node->callers; cs != NULL; cs = cs->next_caller)
-        node_callers++;
+	node_callers++;
       redirect_callers = VEC_alloc (cgraph_edge_p, heap, node_callers);
       for (cs = node->callers; cs != NULL; cs = cs->next_caller)
-        VEC_quick_push (cgraph_edge_p, redirect_callers, cs);
+	VEC_quick_push (cgraph_edge_p, redirect_callers, cs);
       /* Redirecting all the callers of the node to the
          new versioned node.  */
       node1 =
-        cgraph_function_versioning (node, redirect_callers, replace_trees);
+	cgraph_function_versioning (node, redirect_callers, replace_trees);
       VEC_free (cgraph_edge_p, heap, redirect_callers);
       VARRAY_CLEAR (replace_trees);
       if (node1 == NULL)
-        continue;
+	continue;
       if (dump_file)
-        fprintf (dump_file, "versioned function %s\n",
-                 cgraph_node_name (node));
+	fprintf (dump_file, "versioned function %s\n",
+		 cgraph_node_name (node));
       ipcp_cloned_create (node, node1);
       for (i = 0; i < count; i++)
-        {
-          type = ipcp_cval_get_cvalue_type (ipcp_method_cval (node, i));
-          if (ipcp_type_is_const (type))
-            {
-              cvalue = ipcp_cval_get_cvalue (ipcp_method_cval (node, i));
-              parm_tree = ipa_method_get_tree (node, i);
-              if (type != CONST_VALUE_REF 
-                  && !TREE_READONLY (parm_tree))
-                ipcp_propagate_const (node1, i, cvalue, type);
-            }
-        }
+	{
+	  type = ipcp_cval_get_cvalue_type (ipcp_method_cval (node, i));
+	  if (ipcp_type_is_const (type))
+	    {
+	      cvalue = ipcp_cval_get_cvalue (ipcp_method_cval (node, i));
+	      parm_tree = ipa_method_get_tree (node, i);
+	      if (type != CONST_VALUE_REF 
+		  && !TREE_READONLY (parm_tree))
+		ipcp_propagate_const (node1, i, cvalue, type);
+	    }
+	}
     }
   ipcp_update_callgraph ();
   ipcp_update_profiling ();
@@ -1128,17 +1128,17 @@ cgraph_gate_cp (void)
 }
 
 struct tree_opt_pass pass_ipa_cp = {
-  "cp",                                /* name */
-  cgraph_gate_cp,                /* gate */
-  ipcp_driver,                        /* execute */
-  NULL,                                /* sub */
-  NULL,                                /* next */
-  0,                                /* static_pass_number */
-  TV_IPA_CONSTANT_PROP,                /* tv_id */
-  0,                                /* properties_required */
-  PROP_trees,                        /* properties_provided */
-  0,                                /* properties_destroyed */
-  0,                                /* todo_flags_start */
-  TODO_dump_cgraph | TODO_dump_func,        /* todo_flags_finish */
-  0                                /* letter */
+  "cp",				/* name */
+  cgraph_gate_cp,		/* gate */
+  ipcp_driver,			/* execute */
+  NULL,				/* sub */
+  NULL,				/* next */
+  0,				/* static_pass_number */
+  TV_IPA_CONSTANT_PROP,		/* tv_id */
+  0,				/* properties_required */
+  PROP_trees,			/* properties_provided */
+  0,				/* properties_destroyed */
+  0,				/* todo_flags_start */
+  TODO_dump_cgraph | TODO_dump_func,	/* todo_flags_finish */
+  0				/* letter */
 };

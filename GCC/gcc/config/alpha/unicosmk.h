@@ -32,17 +32,17 @@ Boston, MA 02110-1301, USA.  */
 /* The following defines are necessary for the standard headers to work
    correctly.  */
 
-#define TARGET_OS_CPP_BUILTINS()                                \
-    do {                                                        \
-        builtin_define ("__unix");                                \
-        builtin_define ("_UNICOS=205");                                \
-        builtin_define ("_CRAY");                                \
-        builtin_define ("_CRAYT3E");                                \
-        builtin_define ("_CRAYMPP");                                \
-        builtin_define ("_CRAYIEEE");                                \
-        builtin_define ("_ADDR64");                                \
-        builtin_define ("_LD64");                                \
-        builtin_define ("__UNICOSMK__");                        \
+#define TARGET_OS_CPP_BUILTINS()				\
+    do {							\
+	builtin_define ("__unix");				\
+	builtin_define ("_UNICOS=205");				\
+	builtin_define ("_CRAY");				\
+	builtin_define ("_CRAYT3E");				\
+	builtin_define ("_CRAYMPP");				\
+	builtin_define ("_CRAYIEEE");				\
+	builtin_define ("_ADDR64");				\
+	builtin_define ("_LD64");				\
+	builtin_define ("__UNICOSMK__");			\
     } while (0)
 
 #define SHORT_TYPE_SIZE 32
@@ -87,11 +87,11 @@ Boston, MA 02110-1301, USA.  */
    eliminate $15 increments/decrements in frameless functions.  */
 
 #undef CONDITIONAL_REGISTER_USAGE
-#define CONDITIONAL_REGISTER_USAGE        \
-  do {                                        \
-    fixed_regs[15] = 1;                        \
-    call_used_regs[15] = 1;                \
-    global_regs[15] = 1;                \
+#define CONDITIONAL_REGISTER_USAGE	\
+  do {					\
+    fixed_regs[15] = 1;			\
+    call_used_regs[15] = 1;		\
+    global_regs[15] = 1;		\
   } while(0)
 
 /* The stack frame grows downward.  */
@@ -103,9 +103,9 @@ Boston, MA 02110-1301, USA.  */
    complicated on the T3E which is why we use a function.  */
 
 #undef INITIAL_ELIMINATION_OFFSET
-#define INITIAL_ELIMINATION_OFFSET(FROM, TO, OFFSET)                        \
-  do {                                                                        \
-    (OFFSET) = unicosmk_initial_elimination_offset ((FROM), (TO));        \
+#define INITIAL_ELIMINATION_OFFSET(FROM, TO, OFFSET)			\
+  do {									\
+    (OFFSET) = unicosmk_initial_elimination_offset ((FROM), (TO));	\
   } while (0)
 
 
@@ -168,10 +168,10 @@ typedef struct {
 
 #undef INIT_CUMULATIVE_ARGS
 #define INIT_CUMULATIVE_ARGS(CUM, FNTYPE, LIBNAME, INDIRECT, N_NAMED_ARGS) \
-  do { (CUM).num_args = 0;                                        \
-       (CUM).num_arg_words = 0;                                        \
-       (CUM).num_reg_words = 0;                                        \
-       (CUM).force_stack = 0;                                        \
+  do { (CUM).num_args = 0;					\
+       (CUM).num_arg_words = 0;					\
+       (CUM).num_reg_words = 0;					\
+       (CUM).force_stack = 0;					\
   } while(0)
 
 /* Update the data in CUM to advance over an argument of mode MODE and data
@@ -183,31 +183,31 @@ typedef struct {
    passed on stack.  */
 
 #undef FUNCTION_ARG_ADVANCE
-#define FUNCTION_ARG_ADVANCE(CUM, MODE, TYPE, NAMED)                \
-do {                                                                \
-  int size;                                                        \
+#define FUNCTION_ARG_ADVANCE(CUM, MODE, TYPE, NAMED)		\
+do {								\
+  int size;							\
+								\
+  size = ALPHA_ARG_SIZE (MODE, TYPE, NAMED);			\
                                                                 \
-  size = ALPHA_ARG_SIZE (MODE, TYPE, NAMED);                        \
+  if (size > 2							\
+      || (CUM).num_reg_words + size > 6				\
+      || targetm.calls.must_pass_in_stack (MODE, TYPE))		\
+    (CUM).force_stack = 1;					\
                                                                 \
-  if (size > 2                                                        \
-      || (CUM).num_reg_words + size > 6                                \
-      || targetm.calls.must_pass_in_stack (MODE, TYPE))                \
-    (CUM).force_stack = 1;                                        \
-                                                                \
-  if (! (CUM).force_stack)                                        \
-    {                                                                \
-      int i;                                                        \
-      int isfloat;                                                \
-      isfloat = (GET_MODE_CLASS (MODE) == MODE_COMPLEX_FLOAT        \
-              || GET_MODE_CLASS (MODE) == MODE_FLOAT);                \
-      for (i = 0; i < size; i++)                                \
-        {                                                        \
-          (CUM).reg_args_type[(CUM).num_reg_words] = isfloat;        \
-          ++(CUM).num_reg_words;                                \
-        }                                                        \
-    }                                                                \
-  (CUM).num_arg_words += size;                                        \
-  ++(CUM).num_args;                                                \
+  if (! (CUM).force_stack)					\
+    {								\
+      int i;							\
+      int isfloat;						\
+      isfloat = (GET_MODE_CLASS (MODE) == MODE_COMPLEX_FLOAT	\
+              || GET_MODE_CLASS (MODE) == MODE_FLOAT);		\
+      for (i = 0; i < size; i++)				\
+        {							\
+          (CUM).reg_args_type[(CUM).num_reg_words] = isfloat;	\
+          ++(CUM).num_reg_words;				\
+        }							\
+    }								\
+  (CUM).num_arg_words += size;					\
+  ++(CUM).num_args;						\
 } while(0)
 
 /* This ensures that $15 increments/decrements in leaf functions won't get
@@ -218,13 +218,13 @@ do {                                                                \
 
 /* Would have worked, only the stack doesn't seem to be executable
 #undef TRAMPOLINE_TEMPLATE
-#define TRAMPOLINE_TEMPLATE(FILE)                        \
-do { fprintf (FILE, "\tbr $1,0\n");                        \
-     fprintf (FILE, "\tldq $0,12($1)\n");                \
-     fprintf (FILE, "\tldq $1,20($1)\n");                \
-     fprintf (FILE, "\tjmp $31,(r0)\n");                \
-     fprintf (FILE, "\tbis $31,$31,$31\n");                \
-     fprintf (FILE, "\tbis $31,$31,$31\n");                \
+#define TRAMPOLINE_TEMPLATE(FILE)			\
+do { fprintf (FILE, "\tbr $1,0\n");			\
+     fprintf (FILE, "\tldq $0,12($1)\n");		\
+     fprintf (FILE, "\tldq $1,20($1)\n");		\
+     fprintf (FILE, "\tjmp $31,(r0)\n");		\
+     fprintf (FILE, "\tbis $31,$31,$31\n");		\
+     fprintf (FILE, "\tbis $31,$31,$31\n");		\
 } while (0) */
 
 /* We don't support nested functions (yet).  */
@@ -257,7 +257,7 @@ do { fprintf (FILE, "\tbr $1,0\n");                        \
    passed.  */
 
 #undef ASM_OUTPUT_CASE_LABEL
-#define ASM_OUTPUT_CASE_LABEL(FILE,PREFIX,NUM,TABLEINSN)        \
+#define ASM_OUTPUT_CASE_LABEL(FILE,PREFIX,NUM,TABLEINSN)	\
   (*targetm.asm_out.internal_label) (FILE, PREFIX, NUM)
 
 /* CAM has some restrictions with respect to string literals. It won't
@@ -268,64 +268,64 @@ do { fprintf (FILE, "\tbr $1,0\n");                        \
 
 #undef ASM_OUTPUT_ASCII
 #define ASM_OUTPUT_ASCII(MYFILE, MYSTRING, MYLENGTH) \
-  do {                                                                              \
-    FILE *_hide_asm_out_file = (MYFILE);                                      \
-    const unsigned char *_hide_p = (const unsigned char *) (MYSTRING);              \
-    int _hide_thissize = (MYLENGTH);                                              \
-    int _size_so_far = 0;                                                      \
-    {                                                                              \
-      FILE *asm_out_file = _hide_asm_out_file;                                      \
-      const unsigned char *p = _hide_p;                                              \
-      int thissize = _hide_thissize;                                              \
-      int in_ascii = 0;                                                              \
-      int i;                                                                      \
-                                                                              \
-      for (i = 0; i < thissize; i++)                                              \
-        {                                                                      \
-          register int c = p[i];                                              \
-                                                                              \
-          if (c > 127)                                                              \
-            {                                                                      \
-              if (in_ascii)                                                      \
-                {                                                              \
-                  fprintf (asm_out_file, "\"\n");                              \
-                  in_ascii = 0;                                                      \
-                }                                                              \
-                                                                              \
-              fprintf (asm_out_file, "\t.byte\t%d\n", c);                      \
-            }                                                                      \
-          else                                                                      \
-            {                                                                      \
-              if (! in_ascii)                                                      \
-                {                                                              \
-                  fprintf (asm_out_file, "\t.ascii\t\"");                      \
-                  in_ascii = 1;                                                      \
-                  _size_so_far = 0;                                              \
-                }                                                              \
-              else if (_size_so_far >= 64)                                      \
-                {                                                              \
-                  fprintf (asm_out_file, "\"\n\t.ascii\t\"");                      \
-                  _size_so_far = 0;                                              \
-                }                                                              \
-                                                                              \
-              if (c == '\"' || c == '\\' || c == '`')                              \
-                putc ('\\', asm_out_file);                                      \
-              if (c >= ' ')                                                      \
-                putc (c, asm_out_file);                                              \
-              else                                                              \
-                fprintf (asm_out_file, "\\%.3o", c);                              \
-              ++ _size_so_far;                                                      \
-            }                                                                      \
-        }                                                                      \
-      if (in_ascii)                                                              \
-        fprintf (asm_out_file, "\"\n");                                              \
-    }                                                                              \
+  do {									      \
+    FILE *_hide_asm_out_file = (MYFILE);				      \
+    const unsigned char *_hide_p = (const unsigned char *) (MYSTRING);	      \
+    int _hide_thissize = (MYLENGTH);					      \
+    int _size_so_far = 0;						      \
+    {									      \
+      FILE *asm_out_file = _hide_asm_out_file;				      \
+      const unsigned char *p = _hide_p;					      \
+      int thissize = _hide_thissize;					      \
+      int in_ascii = 0;							      \
+      int i;								      \
+									      \
+      for (i = 0; i < thissize; i++)					      \
+	{								      \
+	  register int c = p[i];					      \
+									      \
+	  if (c > 127)							      \
+	    {								      \
+	      if (in_ascii)						      \
+		{							      \
+		  fprintf (asm_out_file, "\"\n");			      \
+		  in_ascii = 0;						      \
+		}							      \
+									      \
+	      fprintf (asm_out_file, "\t.byte\t%d\n", c);		      \
+	    }								      \
+	  else								      \
+	    {								      \
+	      if (! in_ascii)						      \
+		{							      \
+		  fprintf (asm_out_file, "\t.ascii\t\"");		      \
+		  in_ascii = 1;						      \
+		  _size_so_far = 0;					      \
+		}							      \
+	      else if (_size_so_far >= 64)				      \
+		{							      \
+		  fprintf (asm_out_file, "\"\n\t.ascii\t\"");		      \
+		  _size_so_far = 0;					      \
+		}							      \
+									      \
+	      if (c == '\"' || c == '\\' || c == '`')			      \
+		putc ('\\', asm_out_file);				      \
+	      if (c >= ' ')						      \
+		putc (c, asm_out_file);					      \
+	      else							      \
+		fprintf (asm_out_file, "\\%.3o", c);			      \
+	      ++ _size_so_far;						      \
+	    }								      \
+	}								      \
+      if (in_ascii)							      \
+	fprintf (asm_out_file, "\"\n");					      \
+    }									      \
   } while(0)
 
 /* This is how to output an element of a case-vector that is absolute.  */
 
 #undef ASM_OUTPUT_ADDR_VEC_ELT
-#define ASM_OUTPUT_ADDR_VEC_ELT(FILE, VALUE)        \
+#define ASM_OUTPUT_ADDR_VEC_ELT(FILE, VALUE)	\
   fprintf (FILE, "\t.quad $L%d\n", (VALUE))
 
 /* This is how to output an element of a case-vector that is relative.
@@ -355,25 +355,25 @@ do { fprintf (FILE, "\tbr $1,0\n");                        \
 /* This is how to advance the location counter by SIZE bytes.  */
 
 #undef ASM_OUTPUT_SKIP
-#define ASM_OUTPUT_SKIP(STREAM,SIZE)                        \
+#define ASM_OUTPUT_SKIP(STREAM,SIZE)			\
   fprintf ((STREAM), "\t.byte\t0:"HOST_WIDE_INT_PRINT_UNSIGNED"\n",\
-           (SIZE));
+	   (SIZE));
 
 /* This says how to output an assembler line to define a global common
    symbol. We need the alignment information because it has to be supplied
    in the section header.  */ 
 
 #undef ASM_OUTPUT_COMMON
-#define ASM_OUTPUT_ALIGNED_COMMON(FILE, NAME, SIZE, ALIGN)        \
+#define ASM_OUTPUT_ALIGNED_COMMON(FILE, NAME, SIZE, ALIGN)	\
   unicosmk_output_common ((FILE), (NAME), (SIZE), (ALIGN))
 
 /* This says how to output an assembler line to define a local symbol.  */
 
 #undef ASM_OUTPUT_LOCAL
 #define ASM_OUTPUT_ALIGNED_LOCAL(FILE, NAME, SIZE, ALIGN) \
-  do { switch_to_section (data_section);                \
+  do { switch_to_section (data_section);		\
        fprintf (FILE, "\t.align\t%d\n", floor_log2 ((ALIGN) / BITS_PER_UNIT));\
-       ASM_OUTPUT_LABEL ((FILE), (NAME));                \
+       ASM_OUTPUT_LABEL ((FILE), (NAME));		\
        fprintf (FILE, "\t.byte 0:"HOST_WIDE_INT_PRINT_UNSIGNED"\n",(SIZE));\
   } while (0)
 
@@ -385,7 +385,7 @@ do { fprintf (FILE, "\tbr $1,0\n");                        \
 #define ASM_OUTPUT_EXTERNAL(FILE,DECL,NAME) \
   unicosmk_add_extern ((NAME))
 
-#define ASM_OUTPUT_EXTERNAL_LIBCALL(STREAM,SYMREF)        \
+#define ASM_OUTPUT_EXTERNAL_LIBCALL(STREAM,SYMREF)	\
   unicosmk_add_extern (XSTR ((SYMREF), 0))
 
 /* This is how to declare an object. We don't have to output anything if
@@ -394,15 +394,15 @@ do { fprintf (FILE, "\tbr $1,0\n");                        \
    output the label. In any case, we have to record that no extern
    declaration should be generated for the symbol.  */
 
-#define ASM_DECLARE_OBJECT_NAME(STREAM,NAME,DECL)         \
-  do { tree name_tree;                                        \
-       name_tree = get_identifier ((NAME));                \
-       TREE_ASM_WRITTEN (name_tree) = 1;                \
-       if (!TREE_PUBLIC (DECL))                                \
-         {                                                \
-           assemble_name (STREAM, NAME);                \
-           fputs (":\n", STREAM);                        \
-         }                                                \
+#define ASM_DECLARE_OBJECT_NAME(STREAM,NAME,DECL) 	\
+  do { tree name_tree;					\
+       name_tree = get_identifier ((NAME));		\
+       TREE_ASM_WRITTEN (name_tree) = 1;		\
+       if (!TREE_PUBLIC (DECL))				\
+	 {						\
+	   assemble_name (STREAM, NAME);		\
+	   fputs (":\n", STREAM);			\
+         }						\
   } while(0)
 
 /* Switch into a generic section.  */

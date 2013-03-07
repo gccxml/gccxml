@@ -241,100 +241,100 @@ gen_insn (rtx insn)
       int matches = 1;
 
       for (pp = optabs[pindex]; pp[0] != '$' || pp[1] != '('; pp++)
-        ;
+	;
 
       for (pp += 2, np = name; matches && ! (pp[0] == '$' && pp[1] == ')');
-           pp++)
-        {
-          if (*pp != '$')
-            {
-              if (*pp != *np++)
-                break;
-            }
-          else
-            switch (*++pp)
-              {
-              case 'N':
-                force_consec = 1;
-                break;
-              case 'I':
-                force_int = 1;
-                break;
-              case 'P':
+	   pp++)
+	{
+	  if (*pp != '$')
+	    {
+	      if (*pp != *np++)
+		break;
+	    }
+	  else
+	    switch (*++pp)
+	      {
+	      case 'N':
+		force_consec = 1;
+		break;
+	      case 'I':
+		force_int = 1;
+		break;
+	      case 'P':
                 force_partial_int = 1;
                 break;
-              case 'F':
-                force_float = 1;
+	      case 'F':
+		force_float = 1;
+		break;
+	      case 'V':
                 break;
-              case 'V':
-                break;
-              case 'c':
-                for (op = 0; op < NUM_RTX_CODE; op++)
-                  {
-                    for (p = GET_RTX_NAME(op), q = np; *p; p++, q++)
-                      if (*p != *q)
-                        break;
+	      case 'c':
+		for (op = 0; op < NUM_RTX_CODE; op++)
+		  {
+		    for (p = GET_RTX_NAME(op), q = np; *p; p++, q++)
+		      if (*p != *q)
+			break;
 
-                    /* We have to be concerned about matching "gt" and
-                       missing "gtu", e.g., so verify we have reached the
-                       end of thing we are to match.  */
-                    if (*p == 0 && *q == 0
-                        && (GET_RTX_CLASS (op) == RTX_COMPARE
-                            || GET_RTX_CLASS (op) == RTX_COMM_COMPARE))
-                      break;
-                  }
+		    /* We have to be concerned about matching "gt" and
+		       missing "gtu", e.g., so verify we have reached the
+		       end of thing we are to match.  */
+		    if (*p == 0 && *q == 0
+			&& (GET_RTX_CLASS (op) == RTX_COMPARE
+			    || GET_RTX_CLASS (op) == RTX_COMM_COMPARE))
+		      break;
+		  }
 
-                if (op == NUM_RTX_CODE)
-                  matches = 0;
-                else
-                  np += strlen (GET_RTX_NAME(op));
-                break;
-              case 'a':
-              case 'b':
-                /* This loop will stop at the first prefix match, so
+		if (op == NUM_RTX_CODE)
+		  matches = 0;
+		else
+		  np += strlen (GET_RTX_NAME(op));
+		break;
+	      case 'a':
+	      case 'b':
+		/* This loop will stop at the first prefix match, so
                    look through the modes in reverse order, in case
                    there are extra CC modes and CC is a prefix of the
                    CC modes (as it should be).  */
-                for (i = (MAX_MACHINE_MODE) - 1; i >= 0; i--)
-                  {
-                    for (p = GET_MODE_NAME(i), q = np; *p; p++, q++)
-                      if (TOLOWER (*p) != *q)
-                        break;
+		for (i = (MAX_MACHINE_MODE) - 1; i >= 0; i--)
+		  {
+		    for (p = GET_MODE_NAME(i), q = np; *p; p++, q++)
+		      if (TOLOWER (*p) != *q)
+			break;
 
-                    if (*p == 0
-                        && (! force_int || mode_class[i] == MODE_INT 
-                            || mode_class[i] == MODE_VECTOR_INT)
-                        && (! force_partial_int
+		    if (*p == 0
+			&& (! force_int || mode_class[i] == MODE_INT 
+			    || mode_class[i] == MODE_VECTOR_INT)
+		        && (! force_partial_int
                             || mode_class[i] == MODE_INT
                             || mode_class[i] == MODE_PARTIAL_INT
-                            || mode_class[i] == MODE_VECTOR_INT)
-                        && (! force_float
-                            || mode_class[i] == MODE_FLOAT 
-                            || mode_class[i] == MODE_DECIMAL_FLOAT
-                            || mode_class[i] == MODE_COMPLEX_FLOAT
-                            || mode_class[i] == MODE_VECTOR_FLOAT))
-                      break;
-                  }
+			    || mode_class[i] == MODE_VECTOR_INT)
+			&& (! force_float
+			    || mode_class[i] == MODE_FLOAT 
+			    || mode_class[i] == MODE_DECIMAL_FLOAT
+			    || mode_class[i] == MODE_COMPLEX_FLOAT
+			    || mode_class[i] == MODE_VECTOR_FLOAT))
+		      break;
+		  }
 
-                if (i < 0)
-                  matches = 0;
-                else if (*pp == 'a')
-                  m1 = i, np += strlen (GET_MODE_NAME(i));
-                else
-                  m2 = i, np += strlen (GET_MODE_NAME(i));
+		if (i < 0)
+		  matches = 0;
+		else if (*pp == 'a')
+		  m1 = i, np += strlen (GET_MODE_NAME(i));
+		else
+		  m2 = i, np += strlen (GET_MODE_NAME(i));
 
-                force_int = force_partial_int = force_float = 0;
-                break;
+		force_int = force_partial_int = force_float = 0;
+		break;
 
-              default:
-                gcc_unreachable ();
-              }
-        }
+	      default:
+		gcc_unreachable ();
+	      }
+	}
 
       if (matches && pp[0] == '$' && pp[1] == ')'
-          && *np == 0
-          && (! force_consec || (int) GET_MODE_WIDER_MODE(m1) == m2))
-        break;
+	  && *np == 0
+	  && (! force_consec || (int) GET_MODE_WIDER_MODE(m1) == m2))
+	break;
     }
 
   if (pindex == ARRAY_SIZE (optabs))
@@ -352,39 +352,39 @@ gen_insn (rtx insn)
   for (pp = optabs[pindex]; *pp; pp++)
     {
       if (*pp != '$')
-        putchar (*pp);
+	putchar (*pp);
       else
-        switch (*++pp)
-          {
-          case '(':  case ')':
-          case 'I':  case 'F':  case 'N':
-            break;
-          case 'V':
-            if (SCALAR_FLOAT_MODE_P (m1))
+	switch (*++pp)
+	  {
+	  case '(':  case ')':
+	  case 'I':  case 'F':  case 'N':
+	    break;
+	  case 'V':
+	    if (SCALAR_FLOAT_MODE_P (m1))
               printf ("v");
             break;
-          case 'a':
-            for (np = GET_MODE_NAME(m1); *np; np++)
-              putchar (TOLOWER (*np));
-            break;
-          case 'b':
-            for (np = GET_MODE_NAME(m2); *np; np++)
-              putchar (TOLOWER (*np));
-            break;
-          case 'A':
-            printf ("%smode", GET_MODE_NAME(m1));
-            break;
-          case 'B':
-            printf ("%smode", GET_MODE_NAME(m2));
-            break;
-          case 'c':
-            printf ("%s", GET_RTX_NAME(op));
-            break;
-          case 'C':
-            for (np = GET_RTX_NAME(op); *np; np++)
-              putchar (TOUPPER (*np));
-            break;
-          }
+	  case 'a':
+	    for (np = GET_MODE_NAME(m1); *np; np++)
+	      putchar (TOLOWER (*np));
+	    break;
+	  case 'b':
+	    for (np = GET_MODE_NAME(m2); *np; np++)
+	      putchar (TOLOWER (*np));
+	    break;
+	  case 'A':
+	    printf ("%smode", GET_MODE_NAME(m1));
+	    break;
+	  case 'B':
+	    printf ("%smode", GET_MODE_NAME(m2));
+	    break;
+	  case 'c':
+	    printf ("%s", GET_RTX_NAME(op));
+	    break;
+	  case 'C':
+	    for (np = GET_RTX_NAME(op); *np; np++)
+	      putchar (TOUPPER (*np));
+	    break;
+	  }
     }
 
   printf (";\n");
@@ -436,10 +436,10 @@ from the machine description file `md'.  */\n\n");
 
       desc = read_md_rtx (&line_no, &insn_code_number);
       if (desc == NULL)
-        break;
+	break;
 
       if (GET_CODE (desc) == DEFINE_INSN || GET_CODE (desc) == DEFINE_EXPAND)
-        gen_insn (desc);
+	gen_insn (desc);
     }
 
   puts ("\

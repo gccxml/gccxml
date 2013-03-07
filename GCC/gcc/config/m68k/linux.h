@@ -75,20 +75,20 @@ Boston, MA 02110-1301, USA.  */
 #define WCHAR_TYPE_SIZE BITS_PER_WORD
 
 /* Target OS builtins.  */
-#define TARGET_OS_CPP_BUILTINS()                \
-  do                                                \
-    {                                                \
-        LINUX_TARGET_OS_CPP_BUILTINS();                \
-        builtin_define_std ("mc68000");                \
-        builtin_define_std ("mc68020");                \
-   }                                                \
+#define TARGET_OS_CPP_BUILTINS()		\
+  do						\
+    {						\
+	LINUX_TARGET_OS_CPP_BUILTINS();		\
+	builtin_define_std ("mc68000");		\
+	builtin_define_std ("mc68020");		\
+   }						\
   while (0)
 
-#define TARGET_OBJFMT_CPP_BUILTINS()                \
-  do                                                \
-    {                                                \
-        builtin_define ("__ELF__");                \
-    }                                                \
+#define TARGET_OBJFMT_CPP_BUILTINS()		\
+  do						\
+    {						\
+	builtin_define ("__ELF__");		\
+    }						\
   while (0)
 
 #undef CPP_SPEC
@@ -125,7 +125,7 @@ Boston, MA 02110-1301, USA.  */
 
 #define GLIBC_DYNAMIC_LINKER "/lib/ld.so.1"
 
-#undef        LINK_SPEC
+#undef	LINK_SPEC
 #define LINK_SPEC "-m m68kelf %{shared} \
   %{!shared: \
     %{!static: \
@@ -144,25 +144,25 @@ Boston, MA 02110-1301, USA.  */
 
 /* Use the default action for outputting the case label.  */
 #undef ASM_OUTPUT_CASE_LABEL
-#define ASM_RETURN_CASE_JUMP                                \
-  do {                                                        \
-    if (TARGET_COLDFIRE)                                \
-      {                                                        \
-        if (ADDRESS_REG_P (operands[0]))                \
-          return "jmp %%pc@(2,%0:l)";                        \
-        else                                                \
-          return "ext%.l %0\n\tjmp %%pc@(2,%0:l)";        \
-      }                                                        \
-    else                                                \
-      return "jmp %%pc@(2,%0:w)";                        \
+#define ASM_RETURN_CASE_JUMP				\
+  do {							\
+    if (TARGET_COLDFIRE)				\
+      {							\
+	if (ADDRESS_REG_P (operands[0]))		\
+	  return "jmp %%pc@(2,%0:l)";			\
+	else						\
+	  return "ext%.l %0\n\tjmp %%pc@(2,%0:l)";	\
+      }							\
+    else						\
+      return "jmp %%pc@(2,%0:w)";			\
   } while (0)
 
 /* This is how to output an assembler line that says to advance the
    location counter to a multiple of 2**LOG bytes.  */
 
 #undef ASM_OUTPUT_ALIGN
-#define ASM_OUTPUT_ALIGN(FILE,LOG)                                \
-  if ((LOG) > 0)                                                \
+#define ASM_OUTPUT_ALIGN(FILE,LOG)				\
+  if ((LOG) > 0)						\
     fprintf ((FILE), "%s%u\n", ALIGN_ASM_OP, 1 << (LOG));
 
 /* If defined, a C expression whose value is a string containing the
@@ -184,12 +184,12 @@ Boston, MA 02110-1301, USA.  */
 
 #undef FUNCTION_PROFILER
 #define FUNCTION_PROFILER(FILE, LABELNO) \
-{                                                                        \
-  asm_fprintf (FILE, "\tlea (%LLP%d,%Rpc),%Ra1\n", (LABELNO));                \
-  if (flag_pic)                                                                \
-    fprintf (FILE, "\tbsr.l _mcount@PLTPC\n");                                \
-  else                                                                        \
-    fprintf (FILE, "\tjbsr _mcount\n");                                        \
+{									\
+  asm_fprintf (FILE, "\tlea (%LLP%d,%Rpc),%Ra1\n", (LABELNO));		\
+  if (flag_pic)								\
+    fprintf (FILE, "\tbsr.l _mcount@PLTPC\n");				\
+  else									\
+    fprintf (FILE, "\tjbsr _mcount\n");					\
 }
 
 /* How to renumber registers for dbx and gdb.
@@ -225,7 +225,7 @@ Boston, MA 02110-1301, USA.  */
    result in d0, a0, or fp0 as appropriate.  */
 
 #undef FUNCTION_VALUE
-#define FUNCTION_VALUE(VALTYPE, FUNC)                                        \
+#define FUNCTION_VALUE(VALTYPE, FUNC)					\
   m68k_function_value (VALTYPE, FUNC)
 
 /* For compatibility with the large body of existing code which does
@@ -235,11 +235,11 @@ Boston, MA 02110-1301, USA.  */
    callers that have neglected to properly declare the callee can
    still find the correct return value.  */
 
-#define FUNCTION_EXTRA_EPILOGUE(FILE, SIZE)                                \
-do {                                                                        \
-  if (current_function_returns_pointer                                        \
-      && ! find_equiv_reg (0, get_last_insn (), 0, 0, 0, 8, Pmode))        \
-    asm_fprintf (FILE, "\tmove.l %Ra0,%Rd0\n");                                \
+#define FUNCTION_EXTRA_EPILOGUE(FILE, SIZE)				\
+do {									\
+  if (current_function_returns_pointer					\
+      && ! find_equiv_reg (0, get_last_insn (), 0, 0, 0, 8, Pmode))	\
+    asm_fprintf (FILE, "\tmove.l %Ra0,%Rd0\n");				\
 } while (0);
 
 /* Define how to find the value returned by a library function
@@ -248,7 +248,7 @@ do {                                                                        \
    (returned in both d0 and a0), and floating values in fp0.  */
 
 #undef LIBCALL_VALUE
-#define LIBCALL_VALUE(MODE)                                                \
+#define LIBCALL_VALUE(MODE)						\
   m68k_libcall_value (MODE)
 
 /* For m68k SVR4, structures are returned using the reentrant
@@ -259,36 +259,36 @@ do {                                                                        \
 /* Finalize the trampoline by flushing the insn cache.  */
 
 #undef FINALIZE_TRAMPOLINE
-#define FINALIZE_TRAMPOLINE(TRAMP)                                        \
-  emit_library_call (gen_rtx_SYMBOL_REF (Pmode, "__clear_cache"),        \
-                     0, VOIDmode, 2, TRAMP, Pmode,                        \
-                     plus_constant (TRAMP, TRAMPOLINE_SIZE), Pmode);
+#define FINALIZE_TRAMPOLINE(TRAMP)					\
+  emit_library_call (gen_rtx_SYMBOL_REF (Pmode, "__clear_cache"),	\
+		     0, VOIDmode, 2, TRAMP, Pmode,			\
+		     plus_constant (TRAMP, TRAMPOLINE_SIZE), Pmode);
 
 /* Clear the instruction cache from `beg' to `end'.  This makes an
    inline system call to SYS_cacheflush.  The arguments are as
    follows:
 
-        cacheflush (addr, scope, cache, len)
+	cacheflush (addr, scope, cache, len)
 
-   addr          - the start address for the flush
+   addr	  - the start address for the flush
    scope  - the scope of the flush (see the cpush insn)
    cache  - which cache to flush (see the cpush insn)
    len    - a factor relating to the number of flushes to perform:
-            len/16 lines, or len/4096 pages.  */
+	    len/16 lines, or len/4096 pages.  */
 
-#define CLEAR_INSN_CACHE(BEG, END)                                        \
-{                                                                        \
-  register unsigned long _beg __asm ("%d1") = (unsigned long) (BEG);        \
-  unsigned long _end = (unsigned long) (END);                                \
-  register unsigned long _len __asm ("%d4") = (_end - _beg + 32);        \
-  __asm __volatile                                                        \
-    ("move%.l #123, %/d0\n\t"        /* system call nr */                        \
-     "move%.l #1, %/d2\n\t"        /* clear lines */                        \
-     "move%.l #3, %/d3\n\t"        /* insn+data caches */                        \
-     "trap #0"                                                                \
-     : /* no outputs */                                                        \
-     : "d" (_beg), "d" (_len)                                                \
-     : "%d0", "%d2", "%d3");                                                \
+#define CLEAR_INSN_CACHE(BEG, END)					\
+{									\
+  register unsigned long _beg __asm ("%d1") = (unsigned long) (BEG);	\
+  unsigned long _end = (unsigned long) (END);				\
+  register unsigned long _len __asm ("%d4") = (_end - _beg + 32);	\
+  __asm __volatile							\
+    ("move%.l #123, %/d0\n\t"	/* system call nr */			\
+     "move%.l #1, %/d2\n\t"	/* clear lines */			\
+     "move%.l #3, %/d3\n\t"	/* insn+data caches */			\
+     "trap #0"								\
+     : /* no outputs */							\
+     : "d" (_beg), "d" (_len)						\
+     : "%d0", "%d2", "%d3");						\
 }
 
 #define TARGET_ASM_FILE_END file_end_indicate_exec_stack

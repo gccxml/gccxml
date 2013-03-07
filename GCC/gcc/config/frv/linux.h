@@ -51,19 +51,19 @@
   {"cpu", "%{!mcpu=*:-mcpu=%(VALUE)}" }
 
 /* Define OS-specific predefined preprocessor macros.  */
-#define TARGET_OS_CPP_BUILTINS()        \
-  do {                                        \
-    builtin_define ("__gnu_linux__");        \
-    builtin_define_std ("linux");        \
-    builtin_define_std ("unix");        \
-    builtin_assert ("system=linux");        \
+#define TARGET_OS_CPP_BUILTINS()	\
+  do {					\
+    builtin_define ("__gnu_linux__");	\
+    builtin_define_std ("linux");	\
+    builtin_define_std ("unix");	\
+    builtin_assert ("system=linux");	\
   } while (0)
 
 #define HAS_INIT_SECTION 1
-#define INIT_SECTION_ASM_OP        "\t.section .init,\"ax\""
-#define FINI_SECTION_ASM_OP        "\t.section .fini,\"ax\""
+#define INIT_SECTION_ASM_OP	"\t.section .init,\"ax\""
+#define FINI_SECTION_ASM_OP	"\t.section .fini,\"ax\""
 
-#define CRT_CALL_STATIC_FUNCTION(SECTION_OP, FUNC)        \
+#define CRT_CALL_STATIC_FUNCTION(SECTION_OP, FUNC)	\
 asm (SECTION_OP); \
 asm ("ldi.p @(fp,4), gr15 ! call " #FUNC); \
 asm (TEXT_SECTION_ASM_OP);

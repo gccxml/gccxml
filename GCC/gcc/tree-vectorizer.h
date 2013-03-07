@@ -321,7 +321,7 @@ extern void slpeel_verify_cfg_after_peeling (struct loop *, struct loop *);
 /** In tree-vectorizer.c **/
 extern tree get_vectype_for_scalar_type (tree);
 extern bool vect_is_simple_use (tree, loop_vec_info, tree *, tree *,
-                                enum vect_def_type *);
+				enum vect_def_type *);
 extern bool vect_is_simple_iv_evolution (unsigned, tree, tree *, tree *);
 extern tree vect_is_simple_reduction (struct loop *, tree);
 extern bool vect_can_force_dr_alignment_p (tree, unsigned int);

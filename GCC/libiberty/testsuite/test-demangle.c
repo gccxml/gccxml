@@ -72,10 +72,10 @@ getline(buf)
   while (c != EOF && c != '\n')
     {
       if (count + 1 >= alloc)
-        {
-          alloc *= 2;
-          data = xrealloc (data, alloc);
-        }
+	{
+	  alloc *= 2;
+	  data = xrealloc (data, alloc);
+	}
       data[count++] = c;
       c = getchar();
     }
@@ -99,7 +99,7 @@ FAIL at line %d, options %s:\n\
 in:  %s\n\
 out: %s\n\
 exp: %s\n",
-          lineno, opts, in, out != NULL ? out : "(null)", exp);
+	  lineno, opts, in, out != NULL ? out : "(null)", exp);
 }
 
 /* The tester operates on a data file consisting of groups of lines:
@@ -152,7 +152,7 @@ main(argc, argv)
     {
       getline (&format);
       if (feof (stdin))
-        break;
+	break;
 
       getline (&input);
       getline (&expect);
@@ -164,128 +164,128 @@ main(argc, argv)
       is_v3_ctor = 0;
       is_v3_dtor = 0;
       if (format.data[0] == '\0')
-        style = auto_demangling;
+	style = auto_demangling;
       else if (format.data[0] != '-')
-        {
-          style = cplus_demangle_name_to_style (format.data);
-          if (style == unknown_demangling)
-            {
-              printf ("FAIL at line %d: unknown demangling style %s\n",
-                      lineno, format.data);
-              failures++;
-              continue;
-            }
-        }
+	{
+	  style = cplus_demangle_name_to_style (format.data);
+	  if (style == unknown_demangling)
+	    {
+	      printf ("FAIL at line %d: unknown demangling style %s\n",
+		      lineno, format.data);
+	      failures++;
+	      continue;
+	    }
+	}
       else
-        {
-          char *p;
-          char *opt;
+	{
+	  char *p;
+	  char *opt;
 
-          p = format.data;
-          while (*p != '\0')
-            {
-              char c;
+	  p = format.data;
+	  while (*p != '\0')
+	    {
+	      char c;
 
-              opt = p;
-              p += strcspn (p, " \t=");
-              c = *p;
-              *p = '\0';
-              if (strcmp (opt, "--format") == 0 && c == '=')
-                {
-                  char *fstyle;
+	      opt = p;
+	      p += strcspn (p, " \t=");
+	      c = *p;
+	      *p = '\0';
+	      if (strcmp (opt, "--format") == 0 && c == '=')
+		{
+		  char *fstyle;
 
-                  *p = c;
-                  ++p;
-                  fstyle = p;
-                  p += strcspn (p, " \t");
-                  c = *p;
-                  *p = '\0';
-                  style = cplus_demangle_name_to_style (fstyle);
-                  if (style == unknown_demangling)
-                    {
-                      printf ("FAIL at line %d: unknown demangling style %s\n",
-                              lineno, fstyle);
-                      failures++;
-                      continue;
-                    }
-                }
-              else if (strcmp (opt, "--no-params") == 0)
-                no_params = 1;
-              else if (strcmp (opt, "--is-v3-ctor") == 0)
-                is_v3_ctor = 1;
-              else if (strcmp (opt, "--is-v3-dtor") == 0)
-                is_v3_dtor = 1;
-              else if (strcmp (opt, "--ret-postfix") == 0)
-                ret_postfix = 1;
-              else
-                {
-                  printf ("FAIL at line %d: unrecognized option %s\n",
-                          lineno, opt);
-                  failures++;
-                  continue;
-                }
-              *p = c;
-              p += strspn (p, " \t");
-            }
-        }
+		  *p = c;
+		  ++p;
+		  fstyle = p;
+		  p += strcspn (p, " \t");
+		  c = *p;
+		  *p = '\0';
+		  style = cplus_demangle_name_to_style (fstyle);
+		  if (style == unknown_demangling)
+		    {
+		      printf ("FAIL at line %d: unknown demangling style %s\n",
+			      lineno, fstyle);
+		      failures++;
+		      continue;
+		    }
+		}
+	      else if (strcmp (opt, "--no-params") == 0)
+		no_params = 1;
+	      else if (strcmp (opt, "--is-v3-ctor") == 0)
+		is_v3_ctor = 1;
+	      else if (strcmp (opt, "--is-v3-dtor") == 0)
+		is_v3_dtor = 1;
+	      else if (strcmp (opt, "--ret-postfix") == 0)
+		ret_postfix = 1;
+	      else
+		{
+		  printf ("FAIL at line %d: unrecognized option %s\n",
+			  lineno, opt);
+		  failures++;
+		  continue;
+		}
+	      *p = c;
+	      p += strspn (p, " \t");
+	    }
+	}
 
       if (is_v3_ctor || is_v3_dtor)
-        {
-          char buf[20];
+	{
+	  char buf[20];
 
-          if (is_v3_ctor)
-            {
-              enum gnu_v3_ctor_kinds kc;
+	  if (is_v3_ctor)
+	    {
+	      enum gnu_v3_ctor_kinds kc;
 
-              kc = is_gnu_v3_mangled_ctor (input.data);
-              sprintf (buf, "%d", (int) kc);
-            }
-          else
-            {
-              enum gnu_v3_dtor_kinds kd;
+	      kc = is_gnu_v3_mangled_ctor (input.data);
+	      sprintf (buf, "%d", (int) kc);
+	    }
+	  else
+	    {
+	      enum gnu_v3_dtor_kinds kd;
 
-              kd = is_gnu_v3_mangled_dtor (input.data);
-              sprintf (buf, "%d", (int) kd);
-            }
+	      kd = is_gnu_v3_mangled_dtor (input.data);
+	      sprintf (buf, "%d", (int) kd);
+	    }
 
-          if (strcmp (buf, expect.data) != 0)
-            {
-              fail (lineno, format.data, input.data, buf, expect.data);
-              failures++;
-            }
+	  if (strcmp (buf, expect.data) != 0)
+	    {
+	      fail (lineno, format.data, input.data, buf, expect.data);
+	      failures++;
+	    }
 
-          continue;
-        }
+	  continue;
+	}
 
       cplus_demangle_set_style (style);
 
       result = cplus_demangle (input.data,
-                               DMGL_PARAMS|DMGL_ANSI|DMGL_TYPES
-                               |(ret_postfix ? DMGL_RET_POSTFIX : 0));
+			       DMGL_PARAMS|DMGL_ANSI|DMGL_TYPES
+			       |(ret_postfix ? DMGL_RET_POSTFIX : 0));
 
       if (result
-          ? strcmp (result, expect.data)
-          : strcmp (input.data, expect.data))
-        {
-          fail (lineno, format.data, input.data, result, expect.data);
-          failures++;
-        }
+	  ? strcmp (result, expect.data)
+	  : strcmp (input.data, expect.data))
+	{
+	  fail (lineno, format.data, input.data, result, expect.data);
+	  failures++;
+	}
       free (result);
 
       if (no_params)
-        {
-          getline (&expect);
-          result = cplus_demangle (input.data, DMGL_ANSI|DMGL_TYPES);
+	{
+	  getline (&expect);
+	  result = cplus_demangle (input.data, DMGL_ANSI|DMGL_TYPES);
 
-          if (result
-              ? strcmp (result, expect.data)
-              : strcmp (input.data, expect.data))
-            {
-              fail (lineno, format.data, input.data, result, expect.data);
-              failures++;
-            }
-          free (result);
-        }
+	  if (result
+	      ? strcmp (result, expect.data)
+	      : strcmp (input.data, expect.data))
+	    {
+	      fail (lineno, format.data, input.data, result, expect.data);
+	      failures++;
+	    }
+	  free (result);
+	}
     }
 
   free (format.data);

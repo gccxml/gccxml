@@ -117,15 +117,15 @@ static bool uses_code_macro_p (rtx, int);
 static void apply_code_macro (rtx, int);
 static const char *apply_macro_to_string (const char *, struct mapping *, int);
 static rtx apply_macro_to_rtx (rtx, struct mapping *, int,
-                               struct map_value *, FILE *, const char **);
+			       struct map_value *, FILE *, const char **);
 static bool uses_macro_p (rtx, struct mapping *);
 static const char *add_condition_to_string (const char *, const char *);
 static void add_condition_to_rtx (rtx, const char *);
 static int apply_macro_traverse (void **, void *);
 static struct mapping *add_mapping (struct macro_group *, htab_t t,
-                                    const char *, FILE *);
+				    const char *, FILE *);
 static struct map_value **add_map_value (struct map_value **,
-                                         int, const char *);
+					 int, const char *);
 static void initialize_macros (void);
 static void read_name (char *, FILE *);
 static hashval_t leading_ptr_hash (const void *);
@@ -199,15 +199,15 @@ fatal_with_file_and_line (FILE *infile, const char *msg, ...)
     {
       c = getc (infile);
       if (c == EOF)
-        break;
+	break;
       if (c == '\r' || c == '\n')
-        break;
+	break;
       context[i] = c;
     }
   context[i] = '\0';
 
   fprintf (stderr, "%s:%d: following context is `%s'\n",
-           read_rtx_filename, read_rtx_lineno, context);
+	   read_rtx_filename, read_rtx_lineno, context);
 
   va_end (ap);
   exit (1);
@@ -220,7 +220,7 @@ static void
 fatal_expected_char (FILE *infile, int expected_c, int actual_c)
 {
   fatal_with_file_and_line (infile, "expected character `%c', found `%c'",
-                            expected_c, actual_c);
+			    expected_c, actual_c);
 }
 
 /* Implementations of the macro_group callbacks for modes.  */
@@ -293,8 +293,8 @@ map_attr_string (const char *p, struct mapping *macro, int value)
   else
     {
       if (strncmp (p, macro->name, attr - p) != 0
-          || macro->name[attr - p] != 0)
-        return 0;
+	  || macro->name[attr - p] != 0)
+	return 0;
       attr++;
     }
 
@@ -347,7 +347,7 @@ mode_attr_index (struct map_value **mode_maps, const char *string)
 
 static void
 apply_mode_maps (rtx x, struct map_value *mode_maps, struct mapping *macro,
-                 int value, FILE *infile, const char **unknown)
+		 int value, FILE *infile, const char **unknown)
 {
   unsigned int offset;
   int indx;
@@ -361,16 +361,16 @@ apply_mode_maps (rtx x, struct map_value *mode_maps, struct mapping *macro,
   for (pm = mode_maps; pm; pm = pm->next)
     {
       if (pm->number == indx)
-        {
-          struct map_value *v;
+	{
+	  struct map_value *v;
 
-          v = map_attr_string (pm->string, macro, value);
-          if (v)
-            PUT_MODE (x, (enum machine_mode) find_mode (v->string, infile));
-          else
-            *unknown = pm->string;
-          return;
-        }
+	  v = map_attr_string (pm->string, macro, value);
+	  if (v)
+	    PUT_MODE (x, (enum machine_mode) find_mode (v->string, infile));
+	  else
+	    *unknown = pm->string;
+	  return;
+	}
     }
 }
 
@@ -396,10 +396,10 @@ apply_macro_to_string (const char *string, struct mapping *macro, int value)
       v = map_attr_string (p, macro, value);
       *end = '>';
       if (v == 0)
-        continue;
+	continue;
 
       /* Add everything between the last copied byte and the '<',
-         then add in the attribute value.  */
+	 then add in the attribute value.  */
       obstack_grow (&string_obstack, base, start - base);
       obstack_grow (&string_obstack, v->string, strlen (v->string));
       base = end + 1;
@@ -422,8 +422,8 @@ apply_macro_to_string (const char *string, struct mapping *macro, int value)
 
 static rtx
 apply_macro_to_rtx (rtx original, struct mapping *macro, int value,
-                    struct map_value *mode_maps, FILE *infile,
-                    const char **unknown_mode_attr)
+		    struct map_value *mode_maps, FILE *infile,
+		    const char **unknown_mode_attr)
 {
   struct macro_group *group;
   const char *format_ptr;
@@ -453,35 +453,35 @@ apply_macro_to_rtx (rtx original, struct mapping *macro, int value,
     switch (format_ptr[i])
       {
       case 'T':
-        XTMPL (x, i) = apply_macro_to_string (XTMPL (x, i), macro, value);
-        break;
+	XTMPL (x, i) = apply_macro_to_string (XTMPL (x, i), macro, value);
+	break;
 
       case 'S':
       case 's':
-        XSTR (x, i) = apply_macro_to_string (XSTR (x, i), macro, value);
-        break;
+	XSTR (x, i) = apply_macro_to_string (XSTR (x, i), macro, value);
+	break;
 
       case 'e':
-        XEXP (x, i) = apply_macro_to_rtx (XEXP (x, i), macro, value,
-                                          mode_maps, infile,
-                                          unknown_mode_attr);
-        break;
+	XEXP (x, i) = apply_macro_to_rtx (XEXP (x, i), macro, value,
+					  mode_maps, infile,
+					  unknown_mode_attr);
+	break;
 
       case 'V':
       case 'E':
-        if (XVEC (original, i))
-          {
-            XVEC (x, i) = rtvec_alloc (XVECLEN (original, i));
-            for (j = 0; j < XVECLEN (x, i); j++)
-              XVECEXP (x, i, j) = apply_macro_to_rtx (XVECEXP (original, i, j),
-                                                      macro, value, mode_maps,
-                                                      infile,
-                                                      unknown_mode_attr);
-          }
-        break;
+	if (XVEC (original, i))
+	  {
+	    XVEC (x, i) = rtvec_alloc (XVECLEN (original, i));
+	    for (j = 0; j < XVECLEN (x, i); j++)
+	      XVECEXP (x, i, j) = apply_macro_to_rtx (XVECEXP (original, i, j),
+						      macro, value, mode_maps,
+						      infile,
+						      unknown_mode_attr);
+	  }
+	break;
 
       default:
-        break;
+	break;
       }
   return x;
 }
@@ -507,20 +507,20 @@ uses_macro_p (rtx x, struct mapping *macro)
     switch (format_ptr[i])
       {
       case 'e':
-        if (uses_macro_p (XEXP (x, i), macro))
-          return true;
-        break;
+	if (uses_macro_p (XEXP (x, i), macro))
+	  return true;
+	break;
 
       case 'V':
       case 'E':
-        if (XVEC (x, i))
-          for (j = 0; j < XVECLEN (x, i); j++)
-            if (uses_macro_p (XVECEXP (x, i, j), macro))
-              return true;
-        break;
+	if (XVEC (x, i))
+	  for (j = 0; j < XVECLEN (x, i); j++)
+	    if (uses_macro_p (XVECEXP (x, i, j), macro))
+	      return true;
+	break;
 
       default:
-        break;
+	break;
       }
   return false;
 }
@@ -582,32 +582,32 @@ apply_macro_traverse (void **slot, void *data)
   for (elem = mtd->queue; elem != 0; elem = XEXP (elem, 1))
     if (uses_macro_p (XEXP (elem, 0), macro))
       {
-        /* For each macro we expand, we set UNKNOWN_MODE_ATTR to NULL.
-           If apply_macro_rtx finds an unknown attribute for a mode,
-           it will set it to the attribute.  We want to know whether
-           the attribute is unknown after we have expanded all
-           possible macros, so setting it to NULL here gives us the
-           right result when the hash table traversal is complete.  */
-        mtd->unknown_mode_attr = NULL;
+	/* For each macro we expand, we set UNKNOWN_MODE_ATTR to NULL.
+	   If apply_macro_rtx finds an unknown attribute for a mode,
+	   it will set it to the attribute.  We want to know whether
+	   the attribute is unknown after we have expanded all
+	   possible macros, so setting it to NULL here gives us the
+	   right result when the hash table traversal is complete.  */
+	mtd->unknown_mode_attr = NULL;
 
-        original = XEXP (elem, 0);
-        for (v = macro->values; v != 0; v = v->next)
-          {
-            x = apply_macro_to_rtx (original, macro, v->number,
-                                    mtd->mode_maps, mtd->infile,
-                                    &mtd->unknown_mode_attr);
-            add_condition_to_rtx (x, v->string);
-            if (v != macro->values)
-              {
-                /* Insert a new EXPR_LIST node after ELEM and put the
-                   new expansion there.  */
-                new_elem = rtx_alloc (EXPR_LIST);
-                XEXP (new_elem, 1) = XEXP (elem, 1);
-                XEXP (elem, 1) = new_elem;
-                elem = new_elem;
-              }
-            XEXP (elem, 0) = x;
-          }
+	original = XEXP (elem, 0);
+	for (v = macro->values; v != 0; v = v->next)
+	  {
+	    x = apply_macro_to_rtx (original, macro, v->number,
+				    mtd->mode_maps, mtd->infile,
+				    &mtd->unknown_mode_attr);
+	    add_condition_to_rtx (x, v->string);
+	    if (v != macro->values)
+	      {
+		/* Insert a new EXPR_LIST node after ELEM and put the
+		   new expansion there.  */
+		new_elem = rtx_alloc (EXPR_LIST);
+		XEXP (new_elem, 1) = XEXP (elem, 1);
+		XEXP (elem, 1) = new_elem;
+		elem = new_elem;
+	      }
+	    XEXP (elem, 0) = x;
+	  }
     }
   return 1;
 }
@@ -618,7 +618,7 @@ apply_macro_traverse (void **slot, void *data)
 
 static struct mapping *
 add_mapping (struct macro_group *group, htab_t table,
-             const char *name, FILE *infile)
+	     const char *name, FILE *infile)
 {
   struct mapping *m;
   void **slot;
@@ -687,7 +687,7 @@ initialize_macros (void)
     {
       copy = xstrdup (GET_MODE_NAME (i));
       for (p = copy; *p != 0; p++)
-        *p = TOLOWER (*p);
+	*p = TOLOWER (*p);
 
       upper_ptr = add_map_value (upper_ptr, i, GET_MODE_NAME (i));
       lower_ptr = add_map_value (lower_ptr, i, copy);
@@ -701,7 +701,7 @@ initialize_macros (void)
     {
       copy = xstrdup (GET_RTX_NAME (i));
       for (p = copy; *p != 0; p++)
-        *p = TOUPPER (*p);
+	*p = TOUPPER (*p);
 
       lower_ptr = add_map_value (lower_ptr, i, GET_RTX_NAME (i));
       upper_ptr = add_map_value (upper_ptr, i, copy);
@@ -732,7 +732,7 @@ set_rtx_ptr_loc (const void *ptr, const char *filename, int lineno)
   struct ptr_loc *loc;
 
   loc = (struct ptr_loc *) obstack_alloc (&ptr_loc_obstack,
-                                          sizeof (struct ptr_loc));
+					  sizeof (struct ptr_loc));
   loc->ptr = ptr;
   loc->filename = filename;
   loc->lineno = lineno;
@@ -832,43 +832,43 @@ read_skip_spaces (FILE *infile)
     {
       c = getc (infile);
       switch (c)
-        {
-        case '\n':
-          read_rtx_lineno++;
-          break;
+	{
+	case '\n':
+	  read_rtx_lineno++;
+	  break;
 
-        case ' ': case '\t': case '\f': case '\r':
-          break;
+	case ' ': case '\t': case '\f': case '\r':
+	  break;
 
-        case ';':
-          do
-            c = getc (infile);
-          while (c != '\n' && c != EOF);
-          read_rtx_lineno++;
-          break;
+	case ';':
+	  do
+	    c = getc (infile);
+	  while (c != '\n' && c != EOF);
+	  read_rtx_lineno++;
+	  break;
 
-        case '/':
-          {
-            int prevc;
-            c = getc (infile);
-            if (c != '*')
-              fatal_expected_char (infile, '*', c);
+	case '/':
+	  {
+	    int prevc;
+	    c = getc (infile);
+	    if (c != '*')
+	      fatal_expected_char (infile, '*', c);
 
-            prevc = 0;
-            while ((c = getc (infile)) && c != EOF)
-              {
-                if (c == '\n')
-                   read_rtx_lineno++;
-                else if (prevc == '*' && c == '/')
-                  break;
-                prevc = c;
-              }
-          }
-          break;
+	    prevc = 0;
+	    while ((c = getc (infile)) && c != EOF)
+	      {
+		if (c == '\n')
+		   read_rtx_lineno++;
+	        else if (prevc == '*' && c == '/')
+		  break;
+	        prevc = c;
+	      }
+	  }
+	  break;
 
-        default:
-          return c;
-        }
+	default:
+	  return c;
+	}
     }
 }
 
@@ -887,13 +887,13 @@ read_name (char *str, FILE *infile)
   while (1)
     {
       if (c == ' ' || c == '\n' || c == '\t' || c == '\f' || c == '\r' || c == EOF)
-        break;
+	break;
       if (c == ':' || c == ')' || c == ']' || c == '"' || c == '/'
-          || c == '(' || c == '[')
-        {
-          ungetc (c, infile);
-          break;
-        }
+	  || c == '(' || c == '[')
+	{
+	  ungetc (c, infile);
+	  break;
+	}
       *p++ = c;
       c = getc (infile);
     }
@@ -911,16 +911,16 @@ read_name (char *str, FILE *infile)
 
       p = str;
       do
-        {
-          struct md_constant tmp_def;
+	{
+	  struct md_constant tmp_def;
 
-          tmp_def.name = p;
-          def = (struct md_constant *) htab_find (md_constants, &tmp_def);
-          if (def)
-            p = def->value;
-        } while (def);
+	  tmp_def.name = p;
+	  def = (struct md_constant *) htab_find (md_constants, &tmp_def);
+	  if (def)
+	    p = def->value;
+	} while (def);
       if (p != str)
-        strcpy (str, p);
+	strcpy (str, p);
     }
 }
 
@@ -945,14 +945,14 @@ read_escape (FILE *infile)
       break;
 
       /* Standard C string escapes:
-         \a \b \f \n \r \t \v
-         \[0-7] \x
-         all are passed through to the output string unmolested.
-         In normal use these wind up in a string constant processed
-         by the C compiler, which will translate them appropriately.
-         We do not bother checking that \[0-7] are followed by up to
-         two octal digits, or that \x is followed by N hex digits.
-         \? \u \U are left out because they are not in traditional C.  */
+	 \a \b \f \n \r \t \v
+	 \[0-7] \x
+	 all are passed through to the output string unmolested.
+	 In normal use these wind up in a string constant processed
+	 by the C compiler, which will translate them appropriately.
+	 We do not bother checking that \[0-7] are followed by up to
+	 two octal digits, or that \x is followed by N hex digits.
+	 \? \u \U are left out because they are not in traditional C.  */
     case 'a': case 'b': case 'f': case 'n': case 'r': case 't': case 'v':
     case '0': case '1': case '2': case '3': case '4': case '5': case '6':
     case '7': case 'x':
@@ -960,7 +960,7 @@ read_escape (FILE *infile)
       break;
 
       /* \; makes stuff for a C string constant containing
-         newline and tab.  */
+	 newline and tab.  */
     case ';':
       obstack_grow (&string_obstack, "\\n\\t", 4);
       return;
@@ -968,7 +968,7 @@ read_escape (FILE *infile)
       /* pass anything else through, but issue a warning.  */
     default:
       fprintf (stderr, "%s:%d: warning: unrecognized escape \\%c\n",
-               read_rtx_filename, read_rtx_lineno, c);
+	       read_rtx_filename, read_rtx_lineno, c);
       obstack_1grow (&string_obstack, '\\');
       break;
     }
@@ -988,14 +988,14 @@ read_quoted_string (FILE *infile)
     {
       c = getc (infile); /* Read the string  */
       if (c == '\n')
-        read_rtx_lineno++;
+	read_rtx_lineno++;
       else if (c == '\\')
-        {
-          read_escape (infile);
-          continue;
-        }
+	{
+	  read_escape (infile);
+	  continue;
+	}
       else if (c == '"' || c == EOF)
-        break;
+	break;
 
       obstack_1grow (&string_obstack, c);
     }
@@ -1020,20 +1020,20 @@ read_braced_string (FILE *infile)
       c = getc (infile); /* Read the string  */
 
       if (c == '\n')
-        read_rtx_lineno++;
+	read_rtx_lineno++;
       else if (c == '{')
-        brace_depth++;
+	brace_depth++;
       else if (c == '}')
-        brace_depth--;
+	brace_depth--;
       else if (c == '\\')
-        {
-          read_escape (infile);
-          continue;
-        }
+	{
+	  read_escape (infile);
+	  continue;
+	}
       else if (c == EOF)
-        fatal_with_file_and_line
-          (infile, "missing closing } for opening brace on line %lu",
-           starting_read_rtx_lineno);
+	fatal_with_file_and_line
+	  (infile, "missing closing } for opening brace on line %lu",
+	   starting_read_rtx_lineno);
 
       obstack_1grow (&string_obstack, c);
     }
@@ -1066,7 +1066,7 @@ read_string (FILE *infile, int star_if_braced)
   else if (c == '{')
     {
       if (star_if_braced)
-        obstack_1grow (&string_obstack, '*');
+	obstack_1grow (&string_obstack, '*');
       stringbuf = read_braced_string (infile);
     }
   else
@@ -1076,7 +1076,7 @@ read_string (FILE *infile, int star_if_braced)
     {
       c = read_skip_spaces (infile);
       if (c != ')')
-        fatal_expected_char (infile, ')', c);
+	fatal_expected_char (infile, ')', c);
     }
 
   set_rtx_ptr_loc (stringbuf, read_rtx_filename, old_lineno);
@@ -1106,11 +1106,11 @@ atoll (const char *p)
     {
       HOST_WIDE_INT new_wide = tmp_wide*10 + (*p - '0');
       if (new_wide < tmp_wide)
-        {
-          /* Return INT_MAX equiv on overflow.  */
-          tmp_wide = (~(unsigned HOST_WIDE_INT) 0) >> 1;
-          break;
-        }
+	{
+	  /* Return INT_MAX equiv on overflow.  */
+	  tmp_wide = (~(unsigned HOST_WIDE_INT) 0) >> 1;
+	  break;
+	}
       tmp_wide = new_wide;
       p++;
     }
@@ -1140,7 +1140,7 @@ static int
 def_name_eq_p (const void *def1, const void *def2)
 {
   return ! strcmp (*(const char *const *) def1,
-                   *(const char *const *) def2);
+		   *(const char *const *) def2);
 }
 
 /* INFILE is a FILE pointer to read text from.  TMP_CHAR is a buffer suitable
@@ -1166,32 +1166,32 @@ read_constants (FILE *infile, char *tmp_char)
       void **entry_ptr;
 
       if (c != '(')
-        fatal_expected_char (infile, '(', c);
+	fatal_expected_char (infile, '(', c);
       def = XNEW (struct md_constant);
       def->name = tmp_char;
       read_name (tmp_char, infile);
       entry_ptr = htab_find_slot (defs, def, INSERT);
       if (! *entry_ptr)
-        def->name = xstrdup (tmp_char);
+	def->name = xstrdup (tmp_char);
       c = read_skip_spaces (infile);
       ungetc (c, infile);
       read_name (tmp_char, infile);
       if (! *entry_ptr)
-        {
-          def->value = xstrdup (tmp_char);
-          *entry_ptr = def;
-        }
+	{
+	  def->value = xstrdup (tmp_char);
+	  *entry_ptr = def;
+	}
       else
-        {
-          def = (struct md_constant *) *entry_ptr;
-          if (strcmp (def->value, tmp_char))
-            fatal_with_file_and_line (infile,
-                                      "redefinition of %s, was %s, now %s",
-                                      def->name, def->value, tmp_char);
-        }
+	{
+	  def = (struct md_constant *) *entry_ptr;
+	  if (strcmp (def->value, tmp_char))
+	    fatal_with_file_and_line (infile,
+				      "redefinition of %s, was %s, now %s",
+				      def->name, def->value, tmp_char);
+	}
       c = read_skip_spaces (infile);
       if (c != ')')
-        fatal_expected_char (infile, ')', c);
+	fatal_expected_char (infile, ')', c);
     }
   md_constants = defs;
   c = read_skip_spaces (infile);
@@ -1239,7 +1239,7 @@ read_conditions (FILE *infile, char *tmp_char)
       int value;
 
       if (c != '(')
-        fatal_expected_char (infile, '(', c);
+	fatal_expected_char (infile, '(', c);
 
       read_name (tmp_char, infile);
       validate_const_int (infile, tmp_char);
@@ -1247,12 +1247,12 @@ read_conditions (FILE *infile, char *tmp_char)
 
       c = read_skip_spaces (infile);
       if (c != '"')
-        fatal_expected_char (infile, '"', c);
+	fatal_expected_char (infile, '"', c);
       expr = read_quoted_string (infile);
 
       c = read_skip_spaces (infile);
       if (c != ')')
-        fatal_expected_char (infile, ')', c);
+	fatal_expected_char (infile, ')', c);
 
       add_c_test (expr, value);
     }
@@ -1328,22 +1328,22 @@ read_mapping (struct macro_group *group, htab_t table, FILE *infile)
   do
     {
       if (c != '(')
-        {
-          /* A bare symbol name that is implicitly paired to an
-             empty string.  */
-          ungetc (c, infile);
-          read_name (tmp_char, infile);
-          string = "";
-        }
+	{
+	  /* A bare symbol name that is implicitly paired to an
+	     empty string.  */
+	  ungetc (c, infile);
+	  read_name (tmp_char, infile);
+	  string = "";
+	}
       else
-        {
-          /* A "(name string)" pair.  */
-          read_name (tmp_char, infile);
-          string = read_string (infile, false);
-          c = read_skip_spaces (infile);
-          if (c != ')')
-            fatal_expected_char (infile, ')', c);
-        }
+	{
+	  /* A "(name string)" pair.  */
+	  read_name (tmp_char, infile);
+	  string = read_string (infile, false);
+	  c = read_skip_spaces (infile);
+	  if (c != ')')
+	    fatal_expected_char (infile, ')', c);
+	}
       number = group->find_builtin (tmp_char, infile);
       end_ptr = add_map_value (end_ptr, number, string);
       c = read_skip_spaces (infile);
@@ -1370,10 +1370,10 @@ check_code_macro (struct mapping *macro, FILE *infile)
   for (v = macro->values->next; v != 0; v = v->next)
     if (strcmp (GET_RTX_FORMAT (bellwether), GET_RTX_FORMAT (v->number)) != 0)
       fatal_with_file_and_line (infile, "code macro `%s' combines "
-                                "different rtx formats", macro->name);
+				"different rtx formats", macro->name);
 
   bellwether_codes = XRESIZEVEC (enum rtx_code, bellwether_codes,
-                                 macro->index + 1);
+				 macro->index + 1);
   bellwether_codes[macro->index] = bellwether;
 }
 
@@ -1401,7 +1401,7 @@ read_rtx (FILE *infile, rtx *x, int *lineno)
       ptr_locs = htab_create (161, leading_ptr_hash, leading_ptr_eq_p, 0);
       obstack_init (&ptr_loc_obstack);
       joined_conditions = htab_create (161, leading_ptr_hash,
-                                       leading_ptr_eq_p, 0);
+				       leading_ptr_eq_p, 0);
       obstack_init (&joined_conditions_obstack);
     }
 
@@ -1413,16 +1413,16 @@ read_rtx (FILE *infile, rtx *x, int *lineno)
 
       c = read_skip_spaces (infile);
       if (c == EOF)
-        return false;
+	return false;
       ungetc (c, infile);
 
       queue_lineno = read_rtx_lineno;
       mode_maps = 0;
       from_file = read_rtx_1 (infile, &mode_maps);
       if (from_file == 0)
-        return false;  /* This confuses a top level (nil) with end of
-                          file, but a top level (nil) would have
-                          crashed our caller anyway.  */
+	return false;  /* This confuses a top level (nil) with end of
+			  file, but a top level (nil) would have
+			  crashed our caller anyway.  */
 
       queue_next = queue_head;
       XEXP (queue_next, 0) = from_file;
@@ -1435,9 +1435,9 @@ read_rtx (FILE *infile, rtx *x, int *lineno)
       htab_traverse (modes.macros, apply_macro_traverse, &mtd);
       htab_traverse (codes.macros, apply_macro_traverse, &mtd);
       if (mtd.unknown_mode_attr)
-        fatal_with_file_and_line (infile,
-                                  "undefined attribute '%s' used for mode",
-                                  mtd.unknown_mode_attr);
+	fatal_with_file_and_line (infile,
+				  "undefined attribute '%s' used for mode",
+				  mtd.unknown_mode_attr);
     }
 
   *x = XEXP (queue_next, 0);
@@ -1469,7 +1469,7 @@ read_rtx_1 (FILE *infile, struct map_value **mode_maps)
   struct rtx_list
     {
       struct rtx_list *next;
-      rtx value;                /* Value of this node.  */
+      rtx value;		/* Value of this node.  */
     };
 
  again:
@@ -1487,7 +1487,7 @@ read_rtx_1 (FILE *infile, struct map_value **mode_maps)
       /* (nil) stands for an expression that isn't there.  */
       c = read_skip_spaces (infile);
       if (c != ')')
-        fatal_expected_char (infile, ')', c);
+	fatal_expected_char (infile, ')', c);
       return 0;
     }
   if (strcmp (tmp_char, "define_constants") == 0)
@@ -1538,12 +1538,12 @@ read_rtx_1 (FILE *infile, struct map_value **mode_maps)
 
       read_name (tmp_char, infile);
       if (tmp_char[0] != '<' || tmp_char[strlen (tmp_char) - 1] != '>')
-        mode = find_macro (&modes, tmp_char, infile);
+	mode = find_macro (&modes, tmp_char, infile);
       else
-        mode = mode_attr_index (mode_maps, tmp_char);
+	mode = mode_attr_index (mode_maps, tmp_char);
       PUT_MODE (return_rtx, (enum machine_mode) mode);
       if (GET_MODE (return_rtx) != mode)
-        fatal_with_file_and_line (infile, "mode too large");
+	fatal_with_file_and_line (infile, "mode too large");
     }
   else
     ungetc (i, infile);
@@ -1551,160 +1551,160 @@ read_rtx_1 (FILE *infile, struct map_value **mode_maps)
   for (i = 0; format_ptr[i] != 0; i++)
     switch (format_ptr[i])
       {
-        /* 0 means a field for internal use only.
-           Don't expect it to be present in the input.  */
+	/* 0 means a field for internal use only.
+	   Don't expect it to be present in the input.  */
       case '0':
-        break;
+	break;
 
       case 'e':
       case 'u':
-        XEXP (return_rtx, i) = read_rtx_1 (infile, mode_maps);
-        break;
+	XEXP (return_rtx, i) = read_rtx_1 (infile, mode_maps);
+	break;
 
       case 'V':
-        /* 'V' is an optional vector: if a closeparen follows,
-           just store NULL for this element.  */
-        c = read_skip_spaces (infile);
-        ungetc (c, infile);
-        if (c == ')')
-          {
-            XVEC (return_rtx, i) = 0;
-            break;
-          }
-        /* Now process the vector.  */
+	/* 'V' is an optional vector: if a closeparen follows,
+	   just store NULL for this element.  */
+	c = read_skip_spaces (infile);
+	ungetc (c, infile);
+	if (c == ')')
+	  {
+	    XVEC (return_rtx, i) = 0;
+	    break;
+	  }
+	/* Now process the vector.  */
 
       case 'E':
-        {
-          /* Obstack to store scratch vector in.  */
-          struct obstack vector_stack;
-          int list_counter = 0;
-          rtvec return_vec = NULL_RTVEC;
+	{
+	  /* Obstack to store scratch vector in.  */
+	  struct obstack vector_stack;
+	  int list_counter = 0;
+	  rtvec return_vec = NULL_RTVEC;
 
-          c = read_skip_spaces (infile);
-          if (c != '[')
-            fatal_expected_char (infile, '[', c);
+	  c = read_skip_spaces (infile);
+	  if (c != '[')
+	    fatal_expected_char (infile, '[', c);
 
-          /* Add expressions to a list, while keeping a count.  */
-          obstack_init (&vector_stack);
-          while ((c = read_skip_spaces (infile)) && c != ']')
-            {
-              ungetc (c, infile);
-              list_counter++;
-              obstack_ptr_grow (&vector_stack, read_rtx_1 (infile, mode_maps));
-            }
-          if (list_counter > 0)
-            {
-              return_vec = rtvec_alloc (list_counter);
-              memcpy (&return_vec->elem[0], obstack_finish (&vector_stack),
-                      list_counter * sizeof (rtx));
-            }
-          else if (format_ptr[i] == 'E')
-            fatal_with_file_and_line (infile,
-                                      "vector must have at least one element");
-          XVEC (return_rtx, i) = return_vec;
-          obstack_free (&vector_stack, NULL);
-          /* close bracket gotten */
-        }
-        break;
+	  /* Add expressions to a list, while keeping a count.  */
+	  obstack_init (&vector_stack);
+	  while ((c = read_skip_spaces (infile)) && c != ']')
+	    {
+	      ungetc (c, infile);
+	      list_counter++;
+	      obstack_ptr_grow (&vector_stack, read_rtx_1 (infile, mode_maps));
+	    }
+	  if (list_counter > 0)
+	    {
+	      return_vec = rtvec_alloc (list_counter);
+	      memcpy (&return_vec->elem[0], obstack_finish (&vector_stack),
+		      list_counter * sizeof (rtx));
+	    }
+	  else if (format_ptr[i] == 'E')
+	    fatal_with_file_and_line (infile,
+				      "vector must have at least one element");
+	  XVEC (return_rtx, i) = return_vec;
+	  obstack_free (&vector_stack, NULL);
+	  /* close bracket gotten */
+	}
+	break;
 
       case 'S':
       case 'T':
       case 's':
-        {
-          char *stringbuf;
-          int star_if_braced;
+	{
+	  char *stringbuf;
+	  int star_if_braced;
 
-          c = read_skip_spaces (infile);
-          ungetc (c, infile);
-          if (c == ')')
-            {
-              /* 'S' fields are optional and should be NULL if no string
-                 was given.  Also allow normal 's' and 'T' strings to be
-                 omitted, treating them in the same way as empty strings.  */
-              XSTR (return_rtx, i) = (format_ptr[i] == 'S' ? NULL : "");
-              break;
-            }
+	  c = read_skip_spaces (infile);
+	  ungetc (c, infile);
+	  if (c == ')')
+	    {
+	      /* 'S' fields are optional and should be NULL if no string
+		 was given.  Also allow normal 's' and 'T' strings to be
+		 omitted, treating them in the same way as empty strings.  */
+	      XSTR (return_rtx, i) = (format_ptr[i] == 'S' ? NULL : "");
+	      break;
+	    }
 
-          /* The output template slot of a DEFINE_INSN,
-             DEFINE_INSN_AND_SPLIT, or DEFINE_PEEPHOLE automatically
-             gets a star inserted as its first character, if it is
-             written with a brace block instead of a string constant.  */
-          star_if_braced = (format_ptr[i] == 'T');
+	  /* The output template slot of a DEFINE_INSN,
+	     DEFINE_INSN_AND_SPLIT, or DEFINE_PEEPHOLE automatically
+	     gets a star inserted as its first character, if it is
+	     written with a brace block instead of a string constant.  */
+	  star_if_braced = (format_ptr[i] == 'T');
 
-          stringbuf = read_string (infile, star_if_braced);
+	  stringbuf = read_string (infile, star_if_braced);
 
-          /* For insn patterns, we want to provide a default name
-             based on the file and line, like "*foo.md:12", if the
-             given name is blank.  These are only for define_insn and
-             define_insn_and_split, to aid debugging.  */
-          if (*stringbuf == '\0'
-              && i == 0
-              && (GET_CODE (return_rtx) == DEFINE_INSN
-                  || GET_CODE (return_rtx) == DEFINE_INSN_AND_SPLIT))
-            {
-              char line_name[20];
-              const char *fn = (read_rtx_filename ? read_rtx_filename : "rtx");
-              const char *slash;
-              for (slash = fn; *slash; slash ++)
-                if (*slash == '/' || *slash == '\\' || *slash == ':')
-                  fn = slash + 1;
-              obstack_1grow (&string_obstack, '*');
-              obstack_grow (&string_obstack, fn, strlen (fn));
-              sprintf (line_name, ":%d", read_rtx_lineno);
-              obstack_grow (&string_obstack, line_name, strlen (line_name)+1);
-              stringbuf = XOBFINISH (&string_obstack, char *);
-            }
+	  /* For insn patterns, we want to provide a default name
+	     based on the file and line, like "*foo.md:12", if the
+	     given name is blank.  These are only for define_insn and
+	     define_insn_and_split, to aid debugging.  */
+	  if (*stringbuf == '\0'
+	      && i == 0
+	      && (GET_CODE (return_rtx) == DEFINE_INSN
+		  || GET_CODE (return_rtx) == DEFINE_INSN_AND_SPLIT))
+	    {
+	      char line_name[20];
+	      const char *fn = (read_rtx_filename ? read_rtx_filename : "rtx");
+	      const char *slash;
+	      for (slash = fn; *slash; slash ++)
+		if (*slash == '/' || *slash == '\\' || *slash == ':')
+		  fn = slash + 1;
+	      obstack_1grow (&string_obstack, '*');
+	      obstack_grow (&string_obstack, fn, strlen (fn));
+	      sprintf (line_name, ":%d", read_rtx_lineno);
+	      obstack_grow (&string_obstack, line_name, strlen (line_name)+1);
+	      stringbuf = XOBFINISH (&string_obstack, char *);
+	    }
 
-          if (star_if_braced)
-            XTMPL (return_rtx, i) = stringbuf;
-          else
-            XSTR (return_rtx, i) = stringbuf;
-        }
-        break;
+	  if (star_if_braced)
+	    XTMPL (return_rtx, i) = stringbuf;
+	  else
+	    XSTR (return_rtx, i) = stringbuf;
+	}
+	break;
 
       case 'w':
-        read_name (tmp_char, infile);
-        validate_const_int (infile, tmp_char);
+	read_name (tmp_char, infile);
+	validate_const_int (infile, tmp_char);
 #if HOST_BITS_PER_WIDE_INT == HOST_BITS_PER_INT
-        tmp_wide = atoi (tmp_char);
+	tmp_wide = atoi (tmp_char);
 #else
 #if HOST_BITS_PER_WIDE_INT == HOST_BITS_PER_LONG
-        tmp_wide = atol (tmp_char);
+	tmp_wide = atol (tmp_char);
 #else
-        /* Prefer atoll over atoq, since the former is in the ISO C99 standard.
-           But prefer not to use our hand-rolled function above either.  */
+	/* Prefer atoll over atoq, since the former is in the ISO C99 standard.
+	   But prefer not to use our hand-rolled function above either.  */
 #if defined(HAVE_ATOLL) || !defined(HAVE_ATOQ)
-        tmp_wide = atoll (tmp_char);
+	tmp_wide = atoll (tmp_char);
 #else
-        tmp_wide = atoq (tmp_char);
+	tmp_wide = atoq (tmp_char);
 #endif
 #endif
 #endif
-        XWINT (return_rtx, i) = tmp_wide;
-        break;
+	XWINT (return_rtx, i) = tmp_wide;
+	break;
 
       case 'i':
       case 'n':
-        read_name (tmp_char, infile);
-        validate_const_int (infile, tmp_char);
-        tmp_int = atoi (tmp_char);
-        XINT (return_rtx, i) = tmp_int;
-        break;
+	read_name (tmp_char, infile);
+	validate_const_int (infile, tmp_char);
+	tmp_int = atoi (tmp_char);
+	XINT (return_rtx, i) = tmp_int;
+	break;
 
       default:
-        gcc_unreachable ();
+	gcc_unreachable ();
       }
 
   c = read_skip_spaces (infile);
   if (c != ')')
     {
       /* Syntactic sugar for AND and IOR, allowing Lisp-like
-         arbitrary number of arguments for them.  */
+	 arbitrary number of arguments for them.  */
       if (c == '(' && (GET_CODE (return_rtx) == AND
-                       || GET_CODE (return_rtx) == IOR))
-        return read_rtx_variadic (infile, mode_maps, return_rtx);
+		       || GET_CODE (return_rtx) == IOR))
+	return read_rtx_variadic (infile, mode_maps, return_rtx);
       else
-        fatal_expected_char (infile, ')', c);
+	fatal_expected_char (infile, ')', c);
     }
 
   return return_rtx;

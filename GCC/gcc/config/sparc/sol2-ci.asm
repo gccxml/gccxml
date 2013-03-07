@@ -40,29 +40,29 @@
 ! This file is linked in before the Values-Xx.o files and also before
 ! crtbegin, with which perhaps it should be merged.
  
-        .file                "crti.s"
+	.file		"crti.s"
 
-        .section        ".init"
-        .proc        022
-        .global        _init
-        .type        _init,#function
-        .align        4
+	.section	".init"
+	.proc	022
+	.global	_init
+	.type	_init,#function
+	.align	4
 _init:
 #ifdef __sparcv9
-        save        %sp, -176, %sp
+	save	%sp, -176, %sp
 #else
-        save        %sp, -96, %sp
+	save	%sp, -96, %sp
 #endif
 
 
-        .section        ".fini"
-        .proc        022
-        .global        _fini
-        .type        _fini,#function
-        .align        4
+	.section	".fini"
+	.proc	022
+	.global	_fini
+	.type	_fini,#function
+	.align	4
 _fini:
 #ifdef __sparcv9
-        save        %sp, -176, %sp
+	save	%sp, -176, %sp
 #else
-        save        %sp, -96, %sp
+	save	%sp, -96, %sp
 #endif

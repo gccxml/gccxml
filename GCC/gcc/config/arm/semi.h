@@ -48,7 +48,7 @@
 
 #ifndef SUBTARGET_EXTRA_SPECS
 #define SUBTARGET_EXTRA_SPECS \
-  { "subtarget_extra_asm_spec",        SUBTARGET_EXTRA_ASM_SPEC },
+  { "subtarget_extra_asm_spec",	SUBTARGET_EXTRA_ASM_SPEC },
 #endif
 
 #ifndef SUBTARGET_EXTRA_ASM_SPEC

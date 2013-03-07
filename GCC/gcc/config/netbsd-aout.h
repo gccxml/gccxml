@@ -20,18 +20,18 @@ the Free Software Foundation, 51 Franklin Street, Fifth Floor,
 Boston, MA 02110-1301, USA.  */
 
 /* TARGET_OS_CPP_BUILTINS() common to all NetBSD a.out targets.  */
-#define NETBSD_OS_CPP_BUILTINS_AOUT()                \
-  do                                                \
-    {                                                \
-      NETBSD_OS_CPP_BUILTINS_COMMON();                \
-    }                                                \
+#define NETBSD_OS_CPP_BUILTINS_AOUT()		\
+  do						\
+    {						\
+      NETBSD_OS_CPP_BUILTINS_COMMON();		\
+    }						\
   while (0)
 
 /* This defines which switch letters take arguments.  */
 
 #undef SWITCH_TAKES_ARG
-#define SWITCH_TAKES_ARG(CHAR)                \
-  (DEFAULT_SWITCH_TAKES_ARG(CHAR)        \
+#define SWITCH_TAKES_ARG(CHAR)		\
+  (DEFAULT_SWITCH_TAKES_ARG(CHAR)	\
    || (CHAR) == 'R')
 
 
@@ -48,29 +48,29 @@ Boston, MA 02110-1301, USA.  */
    provide support for the special GCC option -static.  */
 
 #undef STARTFILE_SPEC
-#define STARTFILE_SPEC                        \
-  "%{!shared:                                \
-     %{pg:gcrt0%O%s}                        \
-     %{!pg:                                \
-       %{p:mcrt0%O%s}                        \
-       %{!p:                                \
-         %{!static:crt0%O%s}                \
-         %{static:scrt0%O%s}}}}"
+#define STARTFILE_SPEC			\
+  "%{!shared:				\
+     %{pg:gcrt0%O%s}			\
+     %{!pg:				\
+       %{p:mcrt0%O%s}			\
+       %{!p:				\
+	 %{!static:crt0%O%s}		\
+	 %{static:scrt0%O%s}}}}"
 
 /* Provide a LINK_SPEC appropriate for NetBSD a.out.  Here we provide
    support for the special GCC options -static, -assert, and -nostdlib.  */
 
 #undef NETBSD_LINK_SPEC_AOUT
-#define NETBSD_LINK_SPEC_AOUT                \
-  "%{nostdlib:-nostdlib}                \
-   %{!shared:                                \
-     %{!nostdlib:                        \
-       %{!r*:                                \
-         %{!e*:-e start}}}                \
-     -dc -dp                                \
-     %{static:-Bstatic}}                \
-   %{shared:-Bshareable}                \
-   %{R*}                                \
+#define NETBSD_LINK_SPEC_AOUT		\
+  "%{nostdlib:-nostdlib}		\
+   %{!shared:				\
+     %{!nostdlib:			\
+       %{!r*:				\
+	 %{!e*:-e start}}}		\
+     -dc -dp				\
+     %{static:-Bstatic}}		\
+   %{shared:-Bshareable}		\
+   %{R*}				\
    %{assert*}"
 
 /* Default LINK_SPEC.  */
@@ -88,22 +88,22 @@ Boston, MA 02110-1301, USA.  */
 #undef TYPE_ASM_OP
 #undef SIZE_ASM_OP
 #undef SET_ASM_OP                
-#define TYPE_ASM_OP        "\t.type\t"
-#define SIZE_ASM_OP        "\t.size\t"
-#define SET_ASM_OP        "\t.set\t"
+#define TYPE_ASM_OP	"\t.type\t"
+#define SIZE_ASM_OP	"\t.size\t"
+#define SET_ASM_OP	"\t.set\t"
 
 
 /* This is how we tell the assembler that a symbol is weak.  */
 
 #undef ASM_WEAKEN_LABEL
-#define ASM_WEAKEN_LABEL(FILE,NAME)                                        \
-  do                                                                         \
-    {                                                                        \
-      fputs ("\t.globl\t", FILE); assemble_name (FILE, NAME);                \
-      fputc ('\n', FILE);                                                \
-      fputs ("\t.weak\t", FILE); assemble_name (FILE, NAME);                \
-      fputc ('\n', FILE);                                                \
-    }                                                                        \
+#define ASM_WEAKEN_LABEL(FILE,NAME)					\
+  do 									\
+    {									\
+      fputs ("\t.globl\t", FILE); assemble_name (FILE, NAME);		\
+      fputc ('\n', FILE);						\
+      fputs ("\t.weak\t", FILE); assemble_name (FILE, NAME);		\
+      fputc ('\n', FILE);						\
+    }									\
   while (0)
 
 
@@ -114,7 +114,7 @@ Boston, MA 02110-1301, USA.  */
    specific tm.h file (depending on the particulars of your assembler).  */
 
 #undef TYPE_OPERAND_FMT
-#define TYPE_OPERAND_FMT        "@%s"
+#define TYPE_OPERAND_FMT	"@%s"
 
 
 /* Write the extra assembler code needed to declare a function's result.
@@ -137,36 +137,36 @@ Boston, MA 02110-1301, USA.  */
    function's return value.  We allow for that here.  */
 
 #undef ASM_DECLARE_FUNCTION_NAME
-#define ASM_DECLARE_FUNCTION_NAME(FILE, NAME, DECL)                        \
-  do                                                                        \
-    {                                                                        \
-      ASM_OUTPUT_TYPE_DIRECTIVE (FILE, NAME, "function");                \
-      ASM_DECLARE_RESULT (FILE, DECL_RESULT (DECL));                        \
-      ASM_OUTPUT_LABEL(FILE, NAME);                                        \
-    }                                                                        \
+#define ASM_DECLARE_FUNCTION_NAME(FILE, NAME, DECL)			\
+  do									\
+    {									\
+      ASM_OUTPUT_TYPE_DIRECTIVE (FILE, NAME, "function");		\
+      ASM_DECLARE_RESULT (FILE, DECL_RESULT (DECL));			\
+      ASM_OUTPUT_LABEL(FILE, NAME);					\
+    }									\
   while (0)
 
 
 /* Write the extra assembler code needed to declare an object properly.  */
 
-#define ASM_DECLARE_OBJECT_NAME(FILE, NAME, DECL)                \
-  do                                                                \
-    {                                                                \
-      HOST_WIDE_INT size;                                        \
-                                                                \
-      ASM_OUTPUT_TYPE_DIRECTIVE (FILE, NAME, "object");                \
-                                                                \
-      size_directive_output = 0;                                \
-      if (!flag_inhibit_size_directive                                \
-          && (DECL) && DECL_SIZE (DECL))                        \
-        {                                                        \
-          size_directive_output = 1;                                \
-          size = int_size_in_bytes (TREE_TYPE (DECL));                \
-          ASM_OUTPUT_SIZE_DIRECTIVE (FILE, NAME, size);                \
-        }                                                        \
-                                                                \
-      ASM_OUTPUT_LABEL (FILE, NAME);                                \
-    }                                                                \
+#define ASM_DECLARE_OBJECT_NAME(FILE, NAME, DECL)		\
+  do								\
+    {								\
+      HOST_WIDE_INT size;					\
+								\
+      ASM_OUTPUT_TYPE_DIRECTIVE (FILE, NAME, "object");		\
+								\
+      size_directive_output = 0;				\
+      if (!flag_inhibit_size_directive				\
+	  && (DECL) && DECL_SIZE (DECL))			\
+	{							\
+	  size_directive_output = 1;				\
+	  size = int_size_in_bytes (TREE_TYPE (DECL));		\
+	  ASM_OUTPUT_SIZE_DIRECTIVE (FILE, NAME, size);		\
+	}							\
+								\
+      ASM_OUTPUT_LABEL (FILE, NAME);				\
+    }								\
   while (0)
 
 /* Output the size directive for a decl in rest_of_decl_compilation
@@ -176,31 +176,31 @@ Boston, MA 02110-1301, USA.  */
    by ASM_DECLARE_OBJECT_NAME when it was run for the same decl.  */
 
 #undef ASM_FINISH_DECLARE_OBJECT
-#define ASM_FINISH_DECLARE_OBJECT(FILE, DECL, TOP_LEVEL, AT_END)        \
-  do                                                                        \
-    {                                                                        \
-      const char *name = XSTR (XEXP (DECL_RTL (DECL), 0), 0);                \
-      HOST_WIDE_INT size;                                                \
-      if (!flag_inhibit_size_directive && DECL_SIZE (DECL)                \
-          && ! AT_END && TOP_LEVEL                                        \
-          && DECL_INITIAL (DECL) == error_mark_node                        \
-          && !size_directive_output)                                        \
-        {                                                                \
-          size_directive_output = 1;                                        \
-          size = int_size_in_bytes (TREE_TYPE (DECL));                        \
-          ASM_OUTPUT_SIZE_DIRECTIVE (FILE, name, size);                        \
-        }                                                                \
-    }                                                                        \
+#define ASM_FINISH_DECLARE_OBJECT(FILE, DECL, TOP_LEVEL, AT_END)	\
+  do									\
+    {									\
+      const char *name = XSTR (XEXP (DECL_RTL (DECL), 0), 0);		\
+      HOST_WIDE_INT size;						\
+      if (!flag_inhibit_size_directive && DECL_SIZE (DECL)		\
+	  && ! AT_END && TOP_LEVEL					\
+	  && DECL_INITIAL (DECL) == error_mark_node			\
+	  && !size_directive_output)					\
+	{								\
+	  size_directive_output = 1;					\
+	  size = int_size_in_bytes (TREE_TYPE (DECL));			\
+	  ASM_OUTPUT_SIZE_DIRECTIVE (FILE, name, size);			\
+	}								\
+    }									\
   while (0)
 
 
 /* This is how to declare the size of a function.  */
 
 #undef ASM_DECLARE_FUNCTION_SIZE
-#define ASM_DECLARE_FUNCTION_SIZE(FILE, FNAME, DECL)                        \
-  do                                                                        \
-    {                                                                        \
-      if (!flag_inhibit_size_directive)                                        \
-        ASM_OUTPUT_MEASURED_SIZE (FILE, FNAME);                                \
-    }                                                                        \
+#define ASM_DECLARE_FUNCTION_SIZE(FILE, FNAME, DECL)			\
+  do									\
+    {									\
+      if (!flag_inhibit_size_directive)					\
+	ASM_OUTPUT_MEASURED_SIZE (FILE, FNAME);				\
+    }									\
   while (0)

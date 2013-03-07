@@ -48,7 +48,7 @@ typedef struct _sig_ucontext {
 
 static _Unwind_Reason_Code
 mips_fallback_frame_state (struct _Unwind_Context *context,
-                           _Unwind_FrameState *fs)
+			   _Unwind_FrameState *fs)
 {
   u_int32_t *pc = (u_int32_t *) context->ra;
   struct sigcontext *sc;
@@ -66,8 +66,8 @@ mips_fallback_frame_state (struct _Unwind_Context *context,
   if (pc[0] == (0x24020000 | __NR_sigreturn))
     {
       struct sigframe {
-        u_int32_t trampoline[2];
-        struct sigcontext sigctx;
+	u_int32_t trampoline[2];
+	struct sigcontext sigctx;
       } *rt_ = context->ra;
       sc = &rt_->sigctx;
     }
@@ -76,9 +76,9 @@ mips_fallback_frame_state (struct _Unwind_Context *context,
   if (pc[0] == (0x24020000 | __NR_rt_sigreturn))
     {
       struct rt_sigframe {
-        u_int32_t trampoline[2];
-        struct siginfo info;
-        _sig_ucontext_t uc;
+	u_int32_t trampoline[2];
+	struct siginfo info;
+	_sig_ucontext_t uc;
       } *rt_ = context->ra;
       sc = &rt_->uc.uc_mcontext;
     }

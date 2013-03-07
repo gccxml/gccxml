@@ -10,6 +10,6 @@ __floatunsidf (USItype u)
   DFtype r = (DFtype) s;
   if (s < 0)
     r += (DFtype)2.0 * (DFtype) ((USItype) 1
-                                 << (sizeof (USItype) * __CHAR_BIT__ - 1));
+				 << (sizeof (USItype) * __CHAR_BIT__ - 1));
   return r;
 }

@@ -32,8 +32,8 @@
 
 (define_insn "ashlqi3_i"
   [(set (match_operand:QI 0 "mra_operand" "=RqiSd*Rmm,RqiSd*Rmm")
-        (ashift:QI (match_operand:QI 1 "mra_operand" "0,0")
-                   (match_operand:QI 2 "mrai_operand" "In4,RqiSd")))
+	(ashift:QI (match_operand:QI 1 "mra_operand" "0,0")
+		   (match_operand:QI 2 "mrai_operand" "In4,RqiSd")))
    (clobber (match_scratch:HI 3 "=X,R1w"))]
   ""
   "@
@@ -44,8 +44,8 @@
 
 (define_insn "ashrqi3_i"
   [(set (match_operand:QI 0 "mra_operand" "=RqiSd*Rmm,RqiSd*Rmm")
-        (ashiftrt:QI (match_operand:QI 1 "mra_operand" "0,0")
-                     (neg:QI (match_operand:QI 2 "mrai_operand" "In4,RqiSd"))))
+	(ashiftrt:QI (match_operand:QI 1 "mra_operand" "0,0")
+		     (neg:QI (match_operand:QI 2 "mrai_operand" "In4,RqiSd"))))
    (clobber (match_scratch:HI 3 "=X,R1w"))]
   ""
   "@
@@ -56,8 +56,8 @@
 
 (define_insn "lshrqi3_i"
   [(set (match_operand:QI 0 "mra_operand" "=RqiSd*Rmm,RqiSd*Rmm")
-        (lshiftrt:QI (match_operand:QI 1 "mra_operand" "0,0")
-                     (neg:QI (match_operand:QI 2 "mrai_operand" "In4,RqiSd"))))
+	(lshiftrt:QI (match_operand:QI 1 "mra_operand" "0,0")
+		     (neg:QI (match_operand:QI 2 "mrai_operand" "In4,RqiSd"))))
    (clobber (match_scratch:HI 3 "=X,R1w"))]
   ""
   "@
@@ -69,8 +69,8 @@
 
 (define_expand "ashlqi3"
   [(parallel [(set (match_operand:QI 0 "mra_operand" "")
-        (ashift:QI (match_operand:QI 1 "mra_operand" "")
-                   (match_operand:QI 2 "general_operand" "")))
+	(ashift:QI (match_operand:QI 1 "mra_operand" "")
+		   (match_operand:QI 2 "general_operand" "")))
    (clobber (match_scratch:HI 3 ""))])]
   ""
   "if (m32c_prepare_shift (operands, 1, ASHIFT))
@@ -79,8 +79,8 @@
 
 (define_expand "ashrqi3"
   [(parallel [(set (match_operand:QI 0 "mra_operand" "")
-        (ashiftrt:QI (match_operand:QI 1 "mra_operand" "")
-                     (neg:QI (match_operand:QI 2 "general_operand" ""))))
+	(ashiftrt:QI (match_operand:QI 1 "mra_operand" "")
+		     (neg:QI (match_operand:QI 2 "general_operand" ""))))
    (clobber (match_scratch:HI 3 ""))])]
   ""
   "if (m32c_prepare_shift (operands, -1, ASHIFTRT))
@@ -89,9 +89,9 @@
 
 (define_expand "lshrqi3"
   [(parallel [(set (match_operand:QI 0 "mra_operand" "")
-                   (lshiftrt:QI (match_operand:QI 1 "mra_operand" "")
-                                (neg:QI (match_operand:QI 2 "general_operand" ""))))
-              (clobber (match_scratch:HI 3 ""))])]
+		   (lshiftrt:QI (match_operand:QI 1 "mra_operand" "")
+				(neg:QI (match_operand:QI 2 "general_operand" ""))))
+	      (clobber (match_scratch:HI 3 ""))])]
   ""
   "if (m32c_prepare_shift (operands, -1, LSHIFTRT))
      DONE;"
@@ -101,8 +101,8 @@
 
 (define_insn "ashlhi3_i"
   [(set (match_operand:HI 0 "mra_operand" "=SdRhi*Rmm,SdRhi*Rmm")
-        (ashift:HI (match_operand:HI 1 "mra_operand" "0,0")
-                   (match_operand:QI 2 "mrai_operand" "In4,RqiSd")))
+	(ashift:HI (match_operand:HI 1 "mra_operand" "0,0")
+		   (match_operand:QI 2 "mrai_operand" "In4,RqiSd")))
    (clobber (match_scratch:HI 3 "=X,R1w"))]
   ""
   "@
@@ -113,8 +113,8 @@
 
 (define_insn "ashrhi3_i"
   [(set (match_operand:HI 0 "mra_operand" "=SdRhi*Rmm,SdRhi*Rmm")
-        (ashiftrt:HI (match_operand:HI 1 "mra_operand" "0,0")
-                     (neg:QI (match_operand:QI 2 "mrai_operand" "In4,RqiSd"))))
+	(ashiftrt:HI (match_operand:HI 1 "mra_operand" "0,0")
+		     (neg:QI (match_operand:QI 2 "mrai_operand" "In4,RqiSd"))))
    (clobber (match_scratch:HI 3 "=X,R1w"))]
   ""
   "@
@@ -125,8 +125,8 @@
 
 (define_insn "lshrhi3_i"
   [(set (match_operand:HI 0 "mra_operand" "=RhiSd*Rmm,RhiSd*Rmm")
-        (lshiftrt:HI (match_operand:HI 1 "mra_operand" "0,0")
-                     (neg:QI (match_operand:QI 2 "mrai_operand" "In4,RqiSd"))))
+	(lshiftrt:HI (match_operand:HI 1 "mra_operand" "0,0")
+		     (neg:QI (match_operand:QI 2 "mrai_operand" "In4,RqiSd"))))
    (clobber (match_scratch:HI 3 "=X,R1w"))]
   ""
   "@
@@ -138,9 +138,9 @@
 
 (define_expand "ashlhi3"
   [(parallel [(set (match_operand:HI 0 "mra_operand" "")
-                   (ashift:HI (match_operand:HI 1 "mra_operand" "")
-                              (match_operand:QI 2 "general_operand" "")))
-              (clobber (match_scratch:HI 3 ""))])]
+		   (ashift:HI (match_operand:HI 1 "mra_operand" "")
+			      (match_operand:QI 2 "general_operand" "")))
+	      (clobber (match_scratch:HI 3 ""))])]
   ""
   "if (m32c_prepare_shift (operands, 1, ASHIFT))
      DONE;"
@@ -148,9 +148,9 @@
 
 (define_expand "ashrhi3"
   [(parallel [(set (match_operand:HI 0 "mra_operand" "")
-                   (ashiftrt:HI (match_operand:HI 1 "mra_operand" "")
-                                (neg:QI (match_operand:QI 2 "general_operand" ""))))
-              (clobber (match_scratch:HI 3 ""))])]
+		   (ashiftrt:HI (match_operand:HI 1 "mra_operand" "")
+				(neg:QI (match_operand:QI 2 "general_operand" ""))))
+	      (clobber (match_scratch:HI 3 ""))])]
   ""
   "if (m32c_prepare_shift (operands, -1, ASHIFTRT))
      DONE;"
@@ -158,9 +158,9 @@
 
 (define_expand "lshrhi3"
   [(parallel [(set (match_operand:HI 0 "mra_operand" "")
-                   (lshiftrt:HI (match_operand:HI 1 "mra_operand" "")
-                                (neg:QI (match_operand:QI 2 "general_operand" ""))))
-              (clobber (match_scratch:HI 3 ""))])]
+		   (lshiftrt:HI (match_operand:HI 1 "mra_operand" "")
+				(neg:QI (match_operand:QI 2 "general_operand" ""))))
+	      (clobber (match_scratch:HI 3 ""))])]
   ""
   "if (m32c_prepare_shift (operands, -1, LSHIFTRT))
      DONE;"
@@ -174,8 +174,8 @@
 
 (define_insn "ashlpsi3_i"
   [(set (match_operand:PSI 0 "mra_operand" "=R02RaaSd*Rmm,R02RaaSd*Rmm")
-        (ashift:PSI (match_operand:PSI 1 "mra_operand" "0,0")
-                    (match_operand:QI 2 "mrai_operand" "In4,RqiSd")))
+	(ashift:PSI (match_operand:PSI 1 "mra_operand" "0,0")
+		    (match_operand:QI 2 "mrai_operand" "In4,RqiSd")))
    (clobber (match_scratch:HI 3 "=X,R1w"))]
   "TARGET_A24"
   "@
@@ -186,8 +186,8 @@
 
 (define_insn "ashrpsi3_i"
   [(set (match_operand:PSI 0 "mra_operand" "=R02RaaSd*Rmm,R02RaaSd*Rmm")
-        (ashiftrt:PSI (match_operand:PSI 1 "mra_operand" "0,0")
-                      (neg:QI (match_operand:QI 2 "mrai_operand" "In4,RqiSd"))))
+	(ashiftrt:PSI (match_operand:PSI 1 "mra_operand" "0,0")
+		      (neg:QI (match_operand:QI 2 "mrai_operand" "In4,RqiSd"))))
    (clobber (match_scratch:HI 3 "=X,R1w"))]
   "TARGET_A24"
   "@
@@ -198,8 +198,8 @@
 
 (define_insn "lshrpsi3_i"
   [(set (match_operand:PSI 0 "mra_operand" "=R02RaaSd,??Rmm")
-        (lshiftrt:PSI (match_operand:PSI 1 "mra_operand" "0,0")
-                      (neg:QI (match_operand:QI 2 "shiftcount_operand" "In4,RqiSd"))))
+	(lshiftrt:PSI (match_operand:PSI 1 "mra_operand" "0,0")
+		      (neg:QI (match_operand:QI 2 "shiftcount_operand" "In4,RqiSd"))))
    (clobber (match_scratch:HI 3 "=X,R1w"))]
   "TARGET_A24"
   "@
@@ -211,9 +211,9 @@
 
 (define_expand "ashlpsi3"
   [(parallel [(set (match_operand:PSI 0 "mra_operand" "")
-                   (ashift:PSI (match_operand:PSI 1 "mra_operand" "")
-                               (match_operand:QI 2 "mrai_operand" "")))
-              (clobber (match_scratch:HI 3 ""))])]
+		   (ashift:PSI (match_operand:PSI 1 "mra_operand" "")
+			       (match_operand:QI 2 "mrai_operand" "")))
+	      (clobber (match_scratch:HI 3 ""))])]
   "TARGET_A24"
   "if (m32c_prepare_shift (operands, 1, ASHIFT))
      DONE;"
@@ -221,9 +221,9 @@
 
 (define_expand "ashrpsi3"
   [(parallel [(set (match_operand:PSI 0 "mra_operand" "")
-                   (ashiftrt:PSI (match_operand:PSI 1 "mra_operand" "")
-                                 (neg:QI (match_operand:QI 2 "mrai_operand" ""))))
-              (clobber (match_scratch:HI 3 ""))])]
+		   (ashiftrt:PSI (match_operand:PSI 1 "mra_operand" "")
+				 (neg:QI (match_operand:QI 2 "mrai_operand" ""))))
+	      (clobber (match_scratch:HI 3 ""))])]
   "TARGET_A24"
   "if (m32c_prepare_shift (operands, -1, ASHIFTRT))
      DONE;"
@@ -231,9 +231,9 @@
 
 (define_expand "lshrpsi3"
   [(parallel [(set (match_operand:PSI 0 "mra_operand" "")
-                   (lshiftrt:PSI (match_operand:PSI 1 "mra_operand" "")
-                                 (neg:QI (match_operand:QI 2 "mrai_operand" ""))))
-              (clobber (match_scratch:HI 3 ""))])]
+		   (lshiftrt:PSI (match_operand:PSI 1 "mra_operand" "")
+				 (neg:QI (match_operand:QI 2 "mrai_operand" ""))))
+	      (clobber (match_scratch:HI 3 ""))])]
   "TARGET_A24"
   "if (m32c_prepare_shift (operands, -1, LSHIFTRT))
      DONE;"
@@ -250,8 +250,8 @@
 
 (define_insn "ashlsi3_16"
   [(set (match_operand:SI 0 "r0123_operand" "=R03,R03")
-        (ashift:SI (match_operand:SI 1 "r0123_operand" "0,0")
-                   (match_operand:QI 2 "shiftcount_operand" "In4,RqiSd")))
+	(ashift:SI (match_operand:SI 1 "r0123_operand" "0,0")
+		   (match_operand:QI 2 "shiftcount_operand" "In4,RqiSd")))
    (clobber (match_scratch:HI 3 "=X,R1w"))]
   "TARGET_A16"
   "@
@@ -262,8 +262,8 @@
 
 (define_insn "ashrsi3_16"
   [(set (match_operand:SI 0 "r0123_operand" "=R03,R03")
-        (ashiftrt:SI (match_operand:SI 1 "r0123_operand" "0,0")
-                     (neg:QI (match_operand:QI 2 "shiftcount_operand" "In4,RqiSd"))))
+	(ashiftrt:SI (match_operand:SI 1 "r0123_operand" "0,0")
+		     (neg:QI (match_operand:QI 2 "shiftcount_operand" "In4,RqiSd"))))
    (clobber (match_scratch:HI 3 "=X,R1w"))]
   "TARGET_A16"
   "@
@@ -274,8 +274,8 @@
 
 (define_insn "lshrsi3_16"
   [(set (match_operand:SI 0 "r0123_operand" "=R03,R03")
-        (lshiftrt:SI (match_operand:SI 1 "r0123_operand" "0,0")
-                     (neg:QI (match_operand:QI 2 "shiftcount_operand" "In4,RqiSd"))))
+	(lshiftrt:SI (match_operand:SI 1 "r0123_operand" "0,0")
+		     (neg:QI (match_operand:QI 2 "shiftcount_operand" "In4,RqiSd"))))
    (clobber (match_scratch:HI 3 "=X,R1w"))]
   "TARGET_A16"
   "@
@@ -288,8 +288,8 @@
 
 (define_insn "ashlsi3_24"
   [(set (match_operand:SI 0 "r0123_operand" "=R03,R03")
-        (ashift:SI (match_operand:SI 1 "r0123_operand" "0,0")
-                   (match_operand:QI 2 "longshiftcount_operand" "In6,RqiSd")))
+	(ashift:SI (match_operand:SI 1 "r0123_operand" "0,0")
+		   (match_operand:QI 2 "longshiftcount_operand" "In6,RqiSd")))
    (clobber (match_scratch:HI 3 "=X,R1w"))]
   "TARGET_A24"
   "@
@@ -299,8 +299,8 @@
 
 (define_insn "ashrsi3_24"
   [(set (match_operand:SI 0 "r0123_operand" "=R03,R03")
-        (ashiftrt:SI (match_operand:SI 1 "r0123_operand" "0,0")
-                     (neg:QI (match_operand:QI 2 "longshiftcount_operand" "In6,RqiSd"))))
+	(ashiftrt:SI (match_operand:SI 1 "r0123_operand" "0,0")
+		     (neg:QI (match_operand:QI 2 "longshiftcount_operand" "In6,RqiSd"))))
    (clobber (match_scratch:HI 3 "=X,R1w"))]
   "TARGET_A24"
   "@
@@ -310,8 +310,8 @@
 
 (define_insn "lshrsi3_24"
   [(set (match_operand:SI 0 "r0123_operand" "=R03,R03")
-        (lshiftrt:SI (match_operand:SI 1 "r0123_operand" "0,0")
-                     (neg:QI (match_operand:QI 2 "longshiftcount_operand" "In6,RqiSd"))))
+	(lshiftrt:SI (match_operand:SI 1 "r0123_operand" "0,0")
+		     (neg:QI (match_operand:QI 2 "longshiftcount_operand" "In6,RqiSd"))))
    (clobber (match_scratch:HI 3 "=X,R1w"))]
   "TARGET_A24"
   "@
@@ -324,9 +324,9 @@
 
 (define_expand "ashlsi3"
   [(parallel [(set (match_operand:SI 0 "r0123_operand" "")
-                   (ashift:SI (match_operand:SI 1 "r0123_operand" "")
-                              (match_operand:QI 2 "mrai_operand" "")))
-              (clobber (match_scratch:HI 3 ""))])]
+		   (ashift:SI (match_operand:SI 1 "r0123_operand" "")
+			      (match_operand:QI 2 "mrai_operand" "")))
+	      (clobber (match_scratch:HI 3 ""))])]
   ""
   "if (m32c_prepare_shift (operands, 1, ASHIFT))
      DONE;"
@@ -334,9 +334,9 @@
 
 (define_expand "ashrsi3"
   [(parallel [(set (match_operand:SI 0 "r0123_operand" "")
-                   (ashiftrt:SI (match_operand:SI 1 "r0123_operand" "")
-                                (neg:QI (match_operand:QI 2 "mrai_operand" ""))))
-              (clobber (match_scratch:HI 3 ""))])]
+		   (ashiftrt:SI (match_operand:SI 1 "r0123_operand" "")
+				(neg:QI (match_operand:QI 2 "mrai_operand" ""))))
+	      (clobber (match_scratch:HI 3 ""))])]
   ""
   "if (m32c_prepare_shift (operands, -1, ASHIFTRT))
      DONE;"
@@ -344,9 +344,9 @@
 
 (define_expand "lshrsi3"
   [(parallel [(set (match_operand:SI 0 "r0123_operand" "")
-                   (lshiftrt:SI (match_operand:SI 1 "r0123_operand" "")
-                                (neg:QI (match_operand:QI 2 "mrai_operand" ""))))
-              (clobber (match_scratch:HI 3 ""))])]
+		   (lshiftrt:SI (match_operand:SI 1 "r0123_operand" "")
+				(neg:QI (match_operand:QI 2 "mrai_operand" ""))))
+	      (clobber (match_scratch:HI 3 ""))])]
   ""
   "if (m32c_prepare_shift (operands, -1, LSHIFTRT))
      DONE;"

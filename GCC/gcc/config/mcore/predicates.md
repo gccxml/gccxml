@@ -142,7 +142,7 @@
   if (GET_CODE (op) == CONST_INT)
     {
       if (CONST_OK_FOR_K (INTVAL (op)) || CONST_OK_FOR_M (~INTVAL (op)))
-        return 1;
+	return 1;
     }
 
   return 0;
@@ -215,13 +215,13 @@
       return 1;
 
       /* The following is removed because it precludes large constants from being
-         returned as valid source operands for and add/sub insn.  While large
-         constants may not directly be used in an add/sub, they may if first loaded
-         into a register.  Thus, this predicate should indicate that they are valid,
-         and the constraint in mcore.md should control whether an additional load to
-         register is needed. (see mcore.md, addsi). -- DAC 4/2/1998  */
+	 returned as valid source operands for and add/sub insn.  While large
+	 constants may not directly be used in an add/sub, they may if first loaded
+	 into a register.  Thus, this predicate should indicate that they are valid,
+	 and the constraint in mcore.md should control whether an additional load to
+	 register is needed. (see mcore.md, addsi). -- DAC 4/2/1998  */
       /*
-        if (CONST_OK_FOR_J(INTVAL(op)) || CONST_OK_FOR_L(INTVAL(op)))
+	if (CONST_OK_FOR_J(INTVAL(op)) || CONST_OK_FOR_L(INTVAL(op)))
           return 1;
       */
     }
@@ -269,16 +269,16 @@
       rtx elt = XVECEXP (op, 0, i);
 
       if (GET_CODE (elt) != SET
-          || GET_CODE (SET_DEST (elt)) != REG
-          || GET_MODE (SET_DEST (elt)) != SImode
-          || REGNO (SET_DEST (elt))    != (unsigned) (dest_regno + i)
-          || GET_CODE (SET_SRC (elt))  != MEM
-          || GET_MODE (SET_SRC (elt))  != SImode
-          || GET_CODE (XEXP (SET_SRC (elt), 0)) != PLUS
-          || ! rtx_equal_p (XEXP (XEXP (SET_SRC (elt), 0), 0), src_addr)
-          || GET_CODE (XEXP (XEXP (SET_SRC (elt), 0), 1)) != CONST_INT
-          || INTVAL (XEXP (XEXP (SET_SRC (elt), 0), 1)) != i * 4)
-        return 0;
+	  || GET_CODE (SET_DEST (elt)) != REG
+	  || GET_MODE (SET_DEST (elt)) != SImode
+	  || REGNO (SET_DEST (elt))    != (unsigned) (dest_regno + i)
+	  || GET_CODE (SET_SRC (elt))  != MEM
+	  || GET_MODE (SET_SRC (elt))  != SImode
+	  || GET_CODE (XEXP (SET_SRC (elt), 0)) != PLUS
+	  || ! rtx_equal_p (XEXP (XEXP (SET_SRC (elt), 0), 0), src_addr)
+	  || GET_CODE (XEXP (XEXP (SET_SRC (elt), 0), 1)) != CONST_INT
+	  || INTVAL (XEXP (XEXP (SET_SRC (elt), 0), 1)) != i * 4)
+	return 0;
     }
 
   return 1;
@@ -309,16 +309,16 @@
       rtx elt = XVECEXP (op, 0, i);
 
       if (GET_CODE (elt) != SET
-          || GET_CODE (SET_SRC (elt)) != REG
-          || GET_MODE (SET_SRC (elt)) != SImode
-          || REGNO (SET_SRC (elt)) != (unsigned) (src_regno + i)
-          || GET_CODE (SET_DEST (elt)) != MEM
-          || GET_MODE (SET_DEST (elt)) != SImode
-          || GET_CODE (XEXP (SET_DEST (elt), 0)) != PLUS
-          || ! rtx_equal_p (XEXP (XEXP (SET_DEST (elt), 0), 0), dest_addr)
-          || GET_CODE (XEXP (XEXP (SET_DEST (elt), 0), 1)) != CONST_INT
-          || INTVAL (XEXP (XEXP (SET_DEST (elt), 0), 1)) != i * 4)
-        return 0;
+	  || GET_CODE (SET_SRC (elt)) != REG
+	  || GET_MODE (SET_SRC (elt)) != SImode
+	  || REGNO (SET_SRC (elt)) != (unsigned) (src_regno + i)
+	  || GET_CODE (SET_DEST (elt)) != MEM
+	  || GET_MODE (SET_DEST (elt)) != SImode
+	  || GET_CODE (XEXP (SET_DEST (elt), 0)) != PLUS
+	  || ! rtx_equal_p (XEXP (XEXP (SET_DEST (elt), 0), 0), dest_addr)
+	  || GET_CODE (XEXP (XEXP (SET_DEST (elt), 0), 1)) != CONST_INT
+	  || INTVAL (XEXP (XEXP (SET_DEST (elt), 0), 1)) != i * 4)
+	return 0;
     }
 
   return 1;

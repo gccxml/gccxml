@@ -78,13 +78,13 @@ Boston, MA 02110-1301, USA.  */
         (((NAME)[0] == '/') || ((NAME)[0] == '\\') || \
         (((NAME)[0] >= 'A') && ((NAME)[0] <= 'z') && ((NAME)[1] == ':')))
 
-#define TARGET_OS_CPP_BUILTINS()                \
-  do                                                \
-    {                                                \
-        builtin_define_std ("MSDOS");                \
-        builtin_define_std ("GO32");                \
-        builtin_assert ("system=msdos");        \
-    }                                                \
+#define TARGET_OS_CPP_BUILTINS()		\
+  do						\
+    {						\
+	builtin_define_std ("MSDOS");		\
+	builtin_define_std ("GO32");		\
+	builtin_assert ("system=msdos");	\
+    }						\
   while (0)
 
 /* Include <sys/version.h> so __DJGPP__ and __DJGPP_MINOR__ are defined.  */
@@ -177,9 +177,9 @@ Boston, MA 02110-1301, USA.  */
 do \
   { \
     if (TARGET_BNU210) \
-      {        \
+      {	\
         warning (0, "-mbnu210 is ignored (option is obsolete)"); \
-      }        \
+      }	\
   } \
 while (0)
 

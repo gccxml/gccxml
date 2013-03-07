@@ -188,7 +188,7 @@ __gthread_objc_condition_deallocate (objc_condition_t UNUSED(condition))
 /* Wait on the condition */
 static inline int
 __gthread_objc_condition_wait (objc_condition_t UNUSED(condition),
-                               objc_mutex_t UNUSED(mutex))
+			       objc_mutex_t UNUSED(mutex))
 {
   return 0;
 }

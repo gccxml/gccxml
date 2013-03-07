@@ -28,8 +28,8 @@
   if (TARGET_PCREL
       && GET_CODE (op) == MEM
       && (GET_CODE (XEXP (op, 0)) == SYMBOL_REF
-          || GET_CODE (XEXP (op, 0)) == LABEL_REF
-          || GET_CODE (XEXP (op, 0)) == CONST))
+	  || GET_CODE (XEXP (op, 0)) == LABEL_REF
+	  || GET_CODE (XEXP (op, 0)) == CONST))
     return 1;
   return general_operand (op, mode);
 })
@@ -43,8 +43,8 @@
 {
   if (TARGET_PCREL && GET_CODE (op) == MEM
       && (GET_CODE (XEXP (op, 0)) == SYMBOL_REF
-          || GET_CODE (XEXP (op, 0)) == LABEL_REF
-          || GET_CODE (XEXP (op, 0)) == CONST))
+	  || GET_CODE (XEXP (op, 0)) == LABEL_REF
+	  || GET_CODE (XEXP (op, 0)) == CONST))
     return 1;
   return nonimmediate_operand (op, mode);
 })
@@ -57,8 +57,8 @@
 {
   if (TARGET_PCREL && GET_CODE (op) == MEM
       && (GET_CODE (XEXP (op, 0)) == SYMBOL_REF
-          || GET_CODE (XEXP (op, 0)) == LABEL_REF
-          || GET_CODE (XEXP (op, 0)) == CONST))
+	  || GET_CODE (XEXP (op, 0)) == LABEL_REF
+	  || GET_CODE (XEXP (op, 0)) == CONST))
     return 1;
   return memory_operand (op, mode);
 })
@@ -93,10 +93,10 @@
 #if HOST_BITS_PER_WIDE_INT > 32
   /* All allowed constants will fit a CONST_INT.  */
   return (GET_CODE (op) == CONST_INT
-          && (INTVAL (op) >= 0 && INTVAL (op) <= 0xffffffffL));
+	  && (INTVAL (op) >= 0 && INTVAL (op) <= 0xffffffffL));
 #else
   return (GET_CODE (op) == CONST_INT
-          || (GET_CODE (op) == CONST_DOUBLE && CONST_DOUBLE_HIGH (op) == 0));
+	  || (GET_CODE (op) == CONST_DOUBLE && CONST_DOUBLE_HIGH (op) == 0));
 #endif
 })
 
@@ -113,7 +113,7 @@
 
   /* All allowed constants will fit a CONST_INT.  */
   return (GET_CODE (op) == CONST_INT
-          && (INTVAL (op) >= (-0x7fffffff - 1) && INTVAL (op) <= 0x7fffffff));
+	  && (INTVAL (op) >= (-0x7fffffff - 1) && INTVAL (op) <= 0x7fffffff));
 })
 
 ;; Return true if X is a valid comparison operator for the dbcc
@@ -145,11 +145,11 @@
     case CONST:
       op = XEXP (op, 0);
       return ((GET_CODE (XEXP (op, 0)) == SYMBOL_REF
-               || GET_CODE (XEXP (op, 0)) == LABEL_REF)
-              && GET_CODE (XEXP (op, 1)) == CONST_INT);
+	       || GET_CODE (XEXP (op, 0)) == LABEL_REF)
+	      && GET_CODE (XEXP (op, 1)) == CONST_INT);
 
 #if 0 /* Deleted, with corresponding change in m68k.h,
-         so as to fit the specs.  No CONST_DOUBLE is ever symbolic.  */
+	 so as to fit the specs.  No CONST_DOUBLE is ever symbolic.  */
     case CONST_DOUBLE:
       return GET_MODE (op) == mode;
 #endif

@@ -51,10 +51,10 @@
 
 /* Condition register codes for AltiVec predicates. */
 
-#define __CR6_EQ                0
-#define __CR6_EQ_REV                1
-#define __CR6_LT                2
-#define __CR6_LT_REV                3
+#define __CR6_EQ		0
+#define __CR6_EQ_REV		1
+#define __CR6_LT		2
+#define __CR6_LT_REV		3
 
 /* Synonyms.  */
 #define vec_vaddcuw vec_addc

@@ -55,17 +55,17 @@ Boston, MA 02110-1301, USA.  */
 /* config/m68k.md has an explicit reference to the program counter,
    prefix this by the register prefix.  */
 
-#define ASM_RETURN_CASE_JUMP                                \
-  do {                                                        \
-    if (TARGET_COLDFIRE)                                \
-      {                                                        \
-        if (ADDRESS_REG_P (operands[0]))                \
-          return "jmp %%pc@(2,%0:l)";                        \
-        else                                                \
-          return "ext%.l %0\n\tjmp %%pc@(2,%0:l)";        \
-      }                                                        \
-    else                                                \
-      return "jmp %%pc@(2,%0:w)";                        \
+#define ASM_RETURN_CASE_JUMP				\
+  do {							\
+    if (TARGET_COLDFIRE)				\
+      {							\
+	if (ADDRESS_REG_P (operands[0]))		\
+	  return "jmp %%pc@(2,%0:l)";			\
+	else						\
+	  return "ext%.l %0\n\tjmp %%pc@(2,%0:l)";	\
+      }							\
+    else						\
+      return "jmp %%pc@(2,%0:w)";			\
   } while (0)
 
 #define TARGET_ASM_FILE_START_FILE_DIRECTIVE true
@@ -74,7 +74,7 @@ Boston, MA 02110-1301, USA.  */
    assembler operation to identify the following data as uninitialized global
    data.  */
 
-#define BSS_SECTION_ASM_OP        "\t.section\t.bss"
+#define BSS_SECTION_ASM_OP	"\t.section\t.bss"
 
 /* A C statement (sans semicolon) to output to the stdio stream
    FILE the assembler definition of uninitialized global DECL named

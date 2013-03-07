@@ -47,40 +47,40 @@ cgraph_postorder (struct cgraph_node **order)
   for (node = cgraph_nodes; node; node = node->next)
     if (!node->aux)
       {
-        node2 = node;
-        if (!node->callers)
-          node->aux = &last;
-        else
-          node->aux = node->callers;
-        while (node2)
-          {
-            while (node2->aux != &last)
-              {
-                edge = node2->aux;
-                if (edge->next_caller)
-                  node2->aux = edge->next_caller;
-                else
-                  node2->aux = &last;
-                if (!edge->caller->aux)
-                  {
-                    if (!edge->caller->callers)
-                      edge->caller->aux = &last;
-                    else
-                      edge->caller->aux = edge->caller->callers;
-                    stack[stack_size++] = node2;
-                    node2 = edge->caller;
-                    break;
-                  }
-              }
-            if (node2->aux == &last)
-              {
-                order[order_pos++] = node2;
-                if (stack_size)
-                  node2 = stack[--stack_size];
-                else
-                  node2 = NULL;
-              }
-          }
+	node2 = node;
+	if (!node->callers)
+	  node->aux = &last;
+	else
+	  node->aux = node->callers;
+	while (node2)
+	  {
+	    while (node2->aux != &last)
+	      {
+		edge = node2->aux;
+		if (edge->next_caller)
+		  node2->aux = edge->next_caller;
+		else
+		  node2->aux = &last;
+		if (!edge->caller->aux)
+		  {
+		    if (!edge->caller->callers)
+		      edge->caller->aux = &last;
+		    else
+		      edge->caller->aux = edge->caller->callers;
+		    stack[stack_size++] = node2;
+		    node2 = edge->caller;
+		    break;
+		  }
+	      }
+	    if (node2->aux == &last)
+	      {
+		order[order_pos++] = node2;
+		if (stack_size)
+		  node2 = stack[--stack_size];
+		else
+		  node2 = NULL;
+	      }
+	  }
       }
   free (stack);
   for (node = cgraph_nodes; node; node = node->next)
@@ -112,12 +112,12 @@ cgraph_remove_unreachable_nodes (bool before_inlining_p, FILE *file)
 #endif
   for (node = cgraph_nodes; node; node = node->next)
     if (node->needed && !node->global.inlined_to
-        && ((!DECL_EXTERNAL (node->decl)) 
+	&& ((!DECL_EXTERNAL (node->decl)) 
             || !node->analyzed
             || before_inlining_p))
       {
-        node->aux = first;
-        first = node;
+	node->aux = first;
+	first = node;
       }
     else
       gcc_assert (!node->aux);
@@ -132,15 +132,15 @@ cgraph_remove_unreachable_nodes (bool before_inlining_p, FILE *file)
       first = first->aux;
 
       for (e = node->callees; e; e = e->next_callee)
-        if (!e->callee->aux
-            && node->analyzed
-            && (!e->inline_failed || !e->callee->analyzed
-                || (!DECL_EXTERNAL (e->callee->decl))
+	if (!e->callee->aux
+	    && node->analyzed
+	    && (!e->inline_failed || !e->callee->analyzed
+		|| (!DECL_EXTERNAL (e->callee->decl))
                 || before_inlining_p))
-          {
-            e->callee->aux = first;
-            first = e->callee;
-          }
+	  {
+	    e->callee->aux = first;
+	    first = e->callee;
+	  }
     }
 
   /* Remove unreachable nodes.  Extern inline functions need special care;
@@ -155,52 +155,52 @@ cgraph_remove_unreachable_nodes (bool before_inlining_p, FILE *file)
     {
       next = node->next;
       if (!node->aux)
-        {
-          int local_insns;
-          tree decl = node->decl;
+	{
+	  int local_insns;
+	  tree decl = node->decl;
 
           node->global.inlined_to = NULL;
-          if (DECL_STRUCT_FUNCTION (decl))
-            local_insns = node->local.self_insns;
-          else
-            local_insns = 0;
-          if (file)
-            fprintf (file, " %s", cgraph_node_name (node));
-          if (!node->analyzed || !DECL_EXTERNAL (node->decl)
-              || before_inlining_p)
-            cgraph_remove_node (node);
-          else
-            {
-              struct cgraph_edge *e;
+	  if (DECL_STRUCT_FUNCTION (decl))
+	    local_insns = node->local.self_insns;
+	  else
+	    local_insns = 0;
+	  if (file)
+	    fprintf (file, " %s", cgraph_node_name (node));
+	  if (!node->analyzed || !DECL_EXTERNAL (node->decl)
+	      || before_inlining_p)
+	    cgraph_remove_node (node);
+	  else
+	    {
+	      struct cgraph_edge *e;
 
-              for (e = node->callers; e; e = e->next_caller)
-                if (e->caller->aux)
-                  break;
-              if (e || node->needed)
-                {
-                  struct cgraph_node *clone;
+	      for (e = node->callers; e; e = e->next_caller)
+		if (e->caller->aux)
+		  break;
+	      if (e || node->needed)
+		{
+		  struct cgraph_node *clone;
 
-                  for (clone = node->next_clone; clone;
-                       clone = clone->next_clone)
-                    if (clone->aux)
-                      break;
-                  if (!clone)
-                    {
-                      DECL_SAVED_TREE (node->decl) = NULL;
-                      DECL_STRUCT_FUNCTION (node->decl) = NULL;
-                      DECL_INITIAL (node->decl) = error_mark_node;
-                      node->analyzed = false;
-                    }
-                  cgraph_node_remove_callees (node);
-                  node->analyzed = false;
-                }
-              else
-                cgraph_remove_node (node);
-            }
-          if (!DECL_SAVED_TREE (decl))
-            insns += local_insns;
-          changed = true;
-        }
+		  for (clone = node->next_clone; clone;
+		       clone = clone->next_clone)
+		    if (clone->aux)
+		      break;
+		  if (!clone)
+		    {
+		      DECL_SAVED_TREE (node->decl) = NULL;
+		      DECL_STRUCT_FUNCTION (node->decl) = NULL;
+		      DECL_INITIAL (node->decl) = error_mark_node;
+		      node->analyzed = false;
+		    }
+		  cgraph_node_remove_callees (node);
+		  node->analyzed = false;
+		}
+	      else
+		cgraph_remove_node (node);
+	    }
+	  if (!DECL_SAVED_TREE (decl))
+	    insns += local_insns;
+	  changed = true;
+	}
     }
   for (node = cgraph_nodes; node; node = node->next)
     node->aux = NULL;

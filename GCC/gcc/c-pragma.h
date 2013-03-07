@@ -84,7 +84,7 @@ extern void init_pragma (void);
 typedef void (*pragma_handler)(struct cpp_reader *);
 extern void c_register_pragma (const char *, const char *, pragma_handler);
 extern void c_register_pragma_with_expansion (const char *, const char *,
-                                              pragma_handler);
+					      pragma_handler);
 extern void c_invoke_pragma_handler (unsigned int);
 
 extern void maybe_apply_pragma_weak (tree);

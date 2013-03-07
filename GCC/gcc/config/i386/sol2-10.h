@@ -27,11 +27,11 @@ Boston, MA 02110-1301, USA.  */
 #undef ASM_SPEC
 #ifdef USE_GAS
 #define ASM_SPEC "%{v:-V} %{Qy:} %{!Qn:-Qy} %{n} %{T} %{Ym,*} %{Yd,*} " \
-                 "%{Wa,*:%*} %{m32:--32} %{m64:--64} -s %(asm_cpu)"
+		 "%{Wa,*:%*} %{m32:--32} %{m64:--64} -s %(asm_cpu)"
 #else
 #define ASM_SPEC "%{v:-V} %{Qy:} %{!Qn:-Qy} %{n} %{T} %{Ym,*} %{Yd,*} " \
-                 "%{Wa,*:%*} %{m32:-xarch=generic} %{m64:-xarch=generic64} " \
-                 "-s %(asm_cpu)"
+		 "%{Wa,*:%*} %{m32:-xarch=generic} %{m64:-xarch=generic64} " \
+		 "-s %(asm_cpu)"
 #endif
 
 #undef NO_PROFILE_COUNTERS
@@ -49,24 +49,24 @@ Boston, MA 02110-1301, USA.  */
 #undef WINT_TYPE_SIZE
 #define WINT_TYPE_SIZE 32
 
-#define SUBTARGET_OVERRIDE_OPTIONS                                \
-  do                                                                \
-    {                                                                \
-      if (flag_omit_frame_pointer == 2)                                \
-        flag_omit_frame_pointer = 0;                                \
-    }                                                                \
+#define SUBTARGET_OVERRIDE_OPTIONS				\
+  do								\
+    {								\
+      if (flag_omit_frame_pointer == 2)				\
+	flag_omit_frame_pointer = 0;				\
+    }								\
   while (0)
 
 #undef TARGET_SUBTARGET_DEFAULT
-#define TARGET_SUBTARGET_DEFAULT (MASK_80387 | MASK_IEEE_FP        \
-                                  | MASK_FLOAT_RETURNS)
+#define TARGET_SUBTARGET_DEFAULT (MASK_80387 | MASK_IEEE_FP	\
+				  | MASK_FLOAT_RETURNS)
 
-#define SUBTARGET_OPTIMIZATION_OPTIONS                        \
-  do                                                        \
-    {                                                        \
-      if (optimize >= 1)                                \
-        target_flags |= MASK_OMIT_LEAF_FRAME_POINTER;        \
-    }                                                        \
+#define SUBTARGET_OPTIMIZATION_OPTIONS			\
+  do							\
+    {							\
+      if (optimize >= 1)				\
+	target_flags |= MASK_OMIT_LEAF_FRAME_POINTER;	\
+    }							\
   while (0)
 
 #define MULTILIB_DEFAULTS { "m32" }
@@ -95,7 +95,7 @@ Boston, MA 02110-1301, USA.  */
 
 #undef LINK_ARCH_SPEC
 #define LINK_ARCH_SPEC TARGET_LD_EMULATION \
-                       "%{m64:" LINK_ARCH64_SPEC "}%{!m64:" LINK_ARCH32_SPEC "}"
+		       "%{m64:" LINK_ARCH64_SPEC "}%{!m64:" LINK_ARCH32_SPEC "}"
 
 /* We do not need to search a special directory for startup files.  */
 #undef MD_STARTFILE_PREFIX
@@ -106,9 +106,9 @@ Boston, MA 02110-1301, USA.  */
 /* In 32-bit mode, follow the SVR4 ABI definition; in 64-bit mode, use
    the AMD64 ABI definition.  */
 #undef RETURN_IN_MEMORY
-#define RETURN_IN_MEMORY(TYPE)                        \
-  (TARGET_64BIT                                 \
-   ? ix86_return_in_memory (TYPE)                \
-   : (TYPE_MODE (TYPE) == BLKmode                \
-      || (VECTOR_MODE_P (TYPE_MODE (TYPE))         \
-          && int_size_in_bytes (TYPE) == 8)))
+#define RETURN_IN_MEMORY(TYPE)			\
+  (TARGET_64BIT 				\
+   ? ix86_return_in_memory (TYPE)		\
+   : (TYPE_MODE (TYPE) == BLKmode		\
+      || (VECTOR_MODE_P (TYPE_MODE (TYPE)) 	\
+	  && int_size_in_bytes (TYPE) == 8)))

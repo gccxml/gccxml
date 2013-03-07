@@ -61,24 +61,24 @@ Software Foundation, 59 Temple Place - Suite 330, Boston, MA
 
       char *a;
       for (i = 0; i < max; i++)
-        {
-          a[255] = ...;                (0)
-          a[i] = ...;                (1)
-          a[i + 64] = ...;        (2)
-          a[16*i] = ...;        (3)
-          a[187*i] = ...;        (4)
-          a[187*i + 50] = ...;        (5)
-        }
+	{
+	  a[255] = ...;		(0)
+	  a[i] = ...;		(1)
+	  a[i + 64] = ...;	(2)
+	  a[16*i] = ...;	(3)
+	  a[187*i] = ...;	(4)
+	  a[187*i + 50] = ...;	(5)
+	}
 
        (0) obviously has PREFETCH_BEFORE 1
        (1) has PREFETCH_BEFORE 64, since (2) accesses the same memory
            location 64 iterations before it, and PREFETCH_MOD 64 (since
-           it hits the same cache line otherwise).
+	   it hits the same cache line otherwise).
        (2) has PREFETCH_MOD 64
        (3) has PREFETCH_MOD 4
        (4) has PREFETCH_MOD 1.  We do not set PREFETCH_BEFORE here, since
            the cache line accessed by (4) is the same with probability only
-           7/32.
+	   7/32.
        (5) has PREFETCH_MOD 1 as well.
 
    3) We determine how much ahead we need to prefetch.  The number of
@@ -105,12 +105,12 @@ Software Foundation, 59 Temple Place - Suite 330, Boston, MA
 
    Some other TODO:
       -- write and use more general reuse analysis (that could be also used
-         in other cache aimed loop optimizations)
+	 in other cache aimed loop optimizations)
       -- make it behave sanely together with the prefetches given by user
-         (now we just ignore them; at the very least we should avoid
-         optimizing loops in that user put his own prefetches)
+	 (now we just ignore them; at the very least we should avoid
+	 optimizing loops in that user put his own prefetches)
       -- we assume cache line size alignment of arrays; this could be
-         improved.  */
+	 improved.  */
 
 /* Magic constants follow.  These should be replaced by machine specific
    numbers.  */
@@ -175,33 +175,33 @@ Software Foundation, 59 Temple Place - Suite 330, Boston, MA
 
 struct mem_ref_group
 {
-  tree base;                        /* Base of the reference.  */
-  HOST_WIDE_INT step;                /* Step of the reference.  */
-  struct mem_ref *refs;                /* References in the group.  */
-  struct mem_ref_group *next;        /* Next group of references.  */
+  tree base;			/* Base of the reference.  */
+  HOST_WIDE_INT step;		/* Step of the reference.  */
+  struct mem_ref *refs;		/* References in the group.  */
+  struct mem_ref_group *next;	/* Next group of references.  */
 };
 
 /* Assigned to PREFETCH_BEFORE when all iterations are to be prefetched.  */
 
-#define PREFETCH_ALL                (~(unsigned HOST_WIDE_INT) 0)
+#define PREFETCH_ALL		(~(unsigned HOST_WIDE_INT) 0)
 
 /* The memory reference.  */
 
 struct mem_ref
 {
-  tree stmt;                        /* Statement in that the reference appears.  */
-  tree mem;                        /* The reference.  */
-  HOST_WIDE_INT delta;                /* Constant offset of the reference.  */
-  bool write_p;                        /* Is it a write?  */
-  struct mem_ref_group *group;        /* The group of references it belongs to.  */
+  tree stmt;			/* Statement in that the reference appears.  */
+  tree mem;			/* The reference.  */
+  HOST_WIDE_INT delta;		/* Constant offset of the reference.  */
+  bool write_p;			/* Is it a write?  */
+  struct mem_ref_group *group;	/* The group of references it belongs to.  */
   unsigned HOST_WIDE_INT prefetch_mod;
-                                /* Prefetch only each PREFETCH_MOD-th
-                                   iteration.  */
+				/* Prefetch only each PREFETCH_MOD-th
+				   iteration.  */
   unsigned HOST_WIDE_INT prefetch_before;
-                                /* Prefetch only first PREFETCH_BEFORE
-                                   iterations.  */
-  bool issue_prefetch_p;        /* Should we really issue the prefetch?  */
-  struct mem_ref *next;                /* The next reference in the group.  */
+				/* Prefetch only first PREFETCH_BEFORE
+				   iterations.  */
+  bool issue_prefetch_p;	/* Should we really issue the prefetch?  */
+  struct mem_ref *next;		/* The next reference in the group.  */
 };
 
 /* Dumps information about reference REF to FILE.  */
@@ -231,19 +231,19 @@ dump_mem_ref (FILE *file, struct mem_ref *ref)
 
 static struct mem_ref_group *
 find_or_create_group (struct mem_ref_group **groups, tree base,
-                      HOST_WIDE_INT step)
+		      HOST_WIDE_INT step)
 {
   struct mem_ref_group *group;
 
   for (; *groups; groups = &(*groups)->next)
     {
       if ((*groups)->step == step
-          && operand_equal_p ((*groups)->base, base, 0))
-        return *groups;
+	  && operand_equal_p ((*groups)->base, base, 0))
+	return *groups;
 
       /* Keep the list of groups sorted by decreasing step.  */
       if ((*groups)->step < step)
-        break;
+	break;
     }
 
   group = xcalloc (1, sizeof (struct mem_ref_group));
@@ -261,7 +261,7 @@ find_or_create_group (struct mem_ref_group **groups, tree base,
 
 static void
 record_ref (struct mem_ref_group *group, tree stmt, tree mem,
-            HOST_WIDE_INT delta, bool write_p)
+	    HOST_WIDE_INT delta, bool write_p)
 {
   struct mem_ref **aref;
 
@@ -269,18 +269,18 @@ record_ref (struct mem_ref_group *group, tree stmt, tree mem,
   for (aref = &group->refs; *aref; aref = &(*aref)->next)
     {
       /* It does not have to be possible for write reference to reuse the read
-         prefetch, or vice versa.  */
+	 prefetch, or vice versa.  */
       if (!WRITE_CAN_USE_READ_PREFETCH
-          && write_p
-          && !(*aref)->write_p)
-        continue;
+	  && write_p
+	  && !(*aref)->write_p)
+	continue;
       if (!READ_CAN_USE_WRITE_PREFETCH
-          && !write_p
-          && (*aref)->write_p)
-        continue;
+	  && !write_p
+	  && (*aref)->write_p)
+	continue;
 
       if ((*aref)->delta == delta)
-        return;
+	return;
     }
 
   (*aref) = xcalloc (1, sizeof (struct mem_ref));
@@ -310,10 +310,10 @@ release_mem_refs (struct mem_ref_group *groups)
     {
       next_g = groups->next;
       for (ref = groups->refs; ref; ref = next_r)
-        {
-          next_r = ref->next;
-          free (ref);
-        }
+	{
+	  next_r = ref->next;
+	  free (ref);
+	}
       free (groups);
     }
 }
@@ -322,10 +322,10 @@ release_mem_refs (struct mem_ref_group *groups)
 
 struct ar_data
 {
-  struct loop *loop;                        /* Loop of the reference.  */
-  tree stmt;                                /* Statement of the reference.  */
-  HOST_WIDE_INT *step;                        /* Step of the memory reference.  */
-  HOST_WIDE_INT *delta;                        /* Offset of the memory reference.  */
+  struct loop *loop;			/* Loop of the reference.  */
+  tree stmt;				/* Statement of the reference.  */
+  HOST_WIDE_INT *step;			/* Step of the memory reference.  */
+  HOST_WIDE_INT *delta;			/* Offset of the memory reference.  */
 };
 
 /* Analyzes a single INDEX of a memory reference to obtain information
@@ -353,7 +353,7 @@ idx_analyze_ref (tree base, tree *index, void *data)
   else
     {
       if (!cst_and_fits_in_hwi (step))
-        return false;
+	return false;
       istep = int_cst_value (step);
     }
 
@@ -373,7 +373,7 @@ idx_analyze_ref (tree base, tree *index, void *data)
     {
       stepsize = array_ref_element_size (base);
       if (!cst_and_fits_in_hwi (stepsize))
-        return false;
+	return false;
       imult = int_cst_value (stepsize);
 
       istep *= imult;
@@ -394,8 +394,8 @@ idx_analyze_ref (tree base, tree *index, void *data)
 
 static bool
 analyze_ref (struct loop *loop, tree *ref_p, tree *base,
-             HOST_WIDE_INT *step, HOST_WIDE_INT *delta,
-             tree stmt)
+	     HOST_WIDE_INT *step, HOST_WIDE_INT *delta,
+	     tree stmt)
 {
   struct ar_data ar_data;
   tree off;
@@ -434,7 +434,7 @@ analyze_ref (struct loop *loop, tree *ref_p, tree *base,
 
 static void
 gather_memory_references_ref (struct loop *loop, struct mem_ref_group **refs,
-                              tree ref, bool write_p, tree stmt)
+			      tree ref, bool write_p, tree stmt)
 {
   tree base;
   HOST_WIDE_INT step, delta;
@@ -467,22 +467,22 @@ gather_memory_references (struct loop *loop)
     {
       bb = body[i];
       if (bb->loop_father != loop)
-        continue;
+	continue;
 
       for (bsi = bsi_start (bb); !bsi_end_p (bsi); bsi_next (&bsi))
-        {
-          stmt = bsi_stmt (bsi);
-          if (TREE_CODE (stmt) != MODIFY_EXPR)
-            continue;
+	{
+	  stmt = bsi_stmt (bsi);
+	  if (TREE_CODE (stmt) != MODIFY_EXPR)
+	    continue;
 
-          lhs = TREE_OPERAND (stmt, 0);
-          rhs = TREE_OPERAND (stmt, 1);
+	  lhs = TREE_OPERAND (stmt, 0);
+	  rhs = TREE_OPERAND (stmt, 1);
 
-          if (REFERENCE_CLASS_P (rhs))
-            gather_memory_references_ref (loop, &refs, rhs, false, stmt);
-          if (REFERENCE_CLASS_P (lhs))
-            gather_memory_references_ref (loop, &refs, lhs, true, stmt);
-        }
+	  if (REFERENCE_CLASS_P (rhs))
+	    gather_memory_references_ref (loop, &refs, rhs, false, stmt);
+	  if (REFERENCE_CLASS_P (lhs))
+	    gather_memory_references_ref (loop, &refs, lhs, true, stmt);
+	}
     }
   free (body);
 
@@ -538,7 +538,7 @@ ddown (HOST_WIDE_INT x, unsigned HOST_WIDE_INT by)
 
 static void
 prune_ref_by_group_reuse (struct mem_ref *ref, struct mem_ref *by,
-                          bool by_is_before)
+			  bool by_is_before)
 {
   HOST_WIDE_INT step = ref->group->step;
   bool backward = step < 0;
@@ -550,9 +550,9 @@ prune_ref_by_group_reuse (struct mem_ref *ref, struct mem_ref *by,
   if (delta == 0)
     {
       /* If the references has the same address, only prefetch the
-         former.  */
+	 former.  */
       if (by_is_before)
-        ref->prefetch_before = 0;
+	ref->prefetch_before = 0;
       
       return;
     }
@@ -560,13 +560,13 @@ prune_ref_by_group_reuse (struct mem_ref *ref, struct mem_ref *by,
   if (!step)
     {
       /* If the reference addresses are invariant and fall into the
-         same cache line, prefetch just the first one.  */
+	 same cache line, prefetch just the first one.  */
       if (!by_is_before)
-        return;
+	return;
 
       if (ddown (ref->delta, PREFETCH_BLOCK)
-          != ddown (by->delta, PREFETCH_BLOCK))
-        return;
+	  != ddown (by->delta, PREFETCH_BLOCK))
+	return;
 
       ref->prefetch_before = 0;
       return;
@@ -576,10 +576,10 @@ prune_ref_by_group_reuse (struct mem_ref *ref, struct mem_ref *by,
   if (backward)
     {
       if (delta > 0)
-        return;
+	return;
 
       /* Transform the data so that we may assume that the accesses
-         are forward.  */
+	 are forward.  */
       delta = - delta;
       step = -step;
       delta_r = PREFETCH_BLOCK - 1 - delta_r;
@@ -588,7 +588,7 @@ prune_ref_by_group_reuse (struct mem_ref *ref, struct mem_ref *by,
   else
     {
       if (delta < 0)
-        return;
+	return;
     }
 
   /* Check whether the two references are likely to hit the same cache
@@ -602,7 +602,7 @@ prune_ref_by_group_reuse (struct mem_ref *ref, struct mem_ref *by,
       prefetch_before = (hit_from - delta_r + step - 1) / step;
 
       if (prefetch_before < ref->prefetch_before)
-        ref->prefetch_before = prefetch_before;
+	ref->prefetch_before = prefetch_before;
 
       return;
     }
@@ -612,7 +612,7 @@ prune_ref_by_group_reuse (struct mem_ref *ref, struct mem_ref *by,
      of two.  */
   prefetch_block = PREFETCH_BLOCK;
   while ((step & 1) == 0
-         && prefetch_block > 1)
+	 && prefetch_block > 1)
     {
       step >>= 1;
       prefetch_block >>= 1;
@@ -628,7 +628,7 @@ prune_ref_by_group_reuse (struct mem_ref *ref, struct mem_ref *by,
       <= (prefetch_block * ACCEPTABLE_MISS_RATE / 1000))
     {
       if (prefetch_before < ref->prefetch_before)
-        ref->prefetch_before = prefetch_before;
+	ref->prefetch_before = prefetch_before;
 
       return;
     }
@@ -640,7 +640,7 @@ prune_ref_by_group_reuse (struct mem_ref *ref, struct mem_ref *by,
       <= (prefetch_block * ACCEPTABLE_MISS_RATE / 1000))
     {
       if (prefetch_before < ref->prefetch_before)
-        ref->prefetch_before = prefetch_before;
+	ref->prefetch_before = prefetch_before;
 
       return;
     }
@@ -663,19 +663,19 @@ prune_ref_by_reuse (struct mem_ref *ref, struct mem_ref *refs)
   for (prune_by = refs; prune_by; prune_by = prune_by->next)
     {
       if (prune_by == ref)
-        {
-          before = false;
-          continue;
-        }
+	{
+	  before = false;
+	  continue;
+	}
 
       if (!WRITE_CAN_USE_READ_PREFETCH
-          && ref->write_p
-          && !prune_by->write_p)
-        continue;
+	  && ref->write_p
+	  && !prune_by->write_p)
+	continue;
       if (!READ_CAN_USE_WRITE_PREFETCH
-          && !ref->write_p
-          && prune_by->write_p)
-        continue;
+	  && !ref->write_p
+	  && prune_by->write_p)
+	continue;
 
       prune_ref_by_group_reuse (ref, prune_by, before);
     }
@@ -693,33 +693,33 @@ prune_group_by_reuse (struct mem_ref_group *group)
       prune_ref_by_reuse (ref_pruned, group->refs);
 
       if (dump_file && (dump_flags & TDF_DETAILS))
-        {
-          fprintf (dump_file, "Reference %p:", (void *) ref_pruned);
+	{
+	  fprintf (dump_file, "Reference %p:", (void *) ref_pruned);
 
-          if (ref_pruned->prefetch_before == PREFETCH_ALL
-              && ref_pruned->prefetch_mod == 1)
-            fprintf (dump_file, " no restrictions");
-          else if (ref_pruned->prefetch_before == 0)
-            fprintf (dump_file, " do not prefetch");
-          else if (ref_pruned->prefetch_before <= ref_pruned->prefetch_mod)
-            fprintf (dump_file, " prefetch once");
-          else
-            {
-              if (ref_pruned->prefetch_before != PREFETCH_ALL)
-                {
-                  fprintf (dump_file, " prefetch before ");
-                  fprintf (dump_file, HOST_WIDE_INT_PRINT_DEC,
-                           ref_pruned->prefetch_before);
-                }
-              if (ref_pruned->prefetch_mod != 1)
-                {
-                  fprintf (dump_file, " prefetch mod ");
-                  fprintf (dump_file, HOST_WIDE_INT_PRINT_DEC,
-                           ref_pruned->prefetch_mod);
-                }
-            }
-          fprintf (dump_file, "\n");
-        }
+	  if (ref_pruned->prefetch_before == PREFETCH_ALL
+	      && ref_pruned->prefetch_mod == 1)
+	    fprintf (dump_file, " no restrictions");
+	  else if (ref_pruned->prefetch_before == 0)
+	    fprintf (dump_file, " do not prefetch");
+	  else if (ref_pruned->prefetch_before <= ref_pruned->prefetch_mod)
+	    fprintf (dump_file, " prefetch once");
+	  else
+	    {
+	      if (ref_pruned->prefetch_before != PREFETCH_ALL)
+		{
+		  fprintf (dump_file, " prefetch before ");
+		  fprintf (dump_file, HOST_WIDE_INT_PRINT_DEC,
+			   ref_pruned->prefetch_before);
+		}
+	      if (ref_pruned->prefetch_mod != 1)
+		{
+		  fprintf (dump_file, " prefetch mod ");
+		  fprintf (dump_file, HOST_WIDE_INT_PRINT_DEC,
+			   ref_pruned->prefetch_mod);
+		}
+	    }
+	  fprintf (dump_file, "\n");
+	}
     }
 }
 
@@ -753,7 +753,7 @@ should_issue_prefetch_p (struct mem_ref *ref)
 
 static bool
 schedule_prefetches (struct mem_ref_group *groups, unsigned unroll_factor,
-                     unsigned ahead)
+		     unsigned ahead)
 {
   unsigned max_prefetches, n_prefetches;
   struct mem_ref *ref;
@@ -777,20 +777,20 @@ schedule_prefetches (struct mem_ref_group *groups, unsigned unroll_factor,
   for (; groups; groups = groups->next)
     for (ref = groups->refs; ref; ref = ref->next)
       {
-        if (!should_issue_prefetch_p (ref))
-          continue;
+	if (!should_issue_prefetch_p (ref))
+	  continue;
 
-        ref->issue_prefetch_p = true;
+	ref->issue_prefetch_p = true;
 
-        /* If prefetch_mod is less then unroll_factor, we need to insert
-           several prefetches for the reference.  */
-        n_prefetches = ((unroll_factor + ref->prefetch_mod - 1)
-                        / ref->prefetch_mod);
-        if (max_prefetches <= n_prefetches)
-          return true;
+	/* If prefetch_mod is less then unroll_factor, we need to insert
+	   several prefetches for the reference.  */
+	n_prefetches = ((unroll_factor + ref->prefetch_mod - 1)
+			/ ref->prefetch_mod);
+	if (max_prefetches <= n_prefetches)
+	  return true;
 
-        max_prefetches -= n_prefetches;
-        any = true;
+	max_prefetches -= n_prefetches;
+	any = true;
       }
 
   return any;
@@ -807,7 +807,7 @@ anything_to_prefetch_p (struct mem_ref_group *groups)
   for (; groups; groups = groups->next)
     for (ref = groups->refs; ref; ref = ref->next)
       if (should_issue_prefetch_p (ref))
-        return true;
+	return true;
 
   return false;
 }
@@ -830,7 +830,7 @@ issue_prefetch_ref (struct mem_ref *ref, unsigned unroll_factor, unsigned ahead)
   bsi = bsi_for_stmt (ref->stmt);
 
   n_prefetches = ((unroll_factor + ref->prefetch_mod - 1)
-                  / ref->prefetch_mod);
+		  / ref->prefetch_mod);
   addr_base = build_fold_addr_expr_with_type (ref->mem, ptr_type_node);
   addr_base = force_gimple_operand_bsi (&bsi, unshare_expr (addr_base), true, NULL);
 
@@ -839,16 +839,16 @@ issue_prefetch_ref (struct mem_ref *ref, unsigned unroll_factor, unsigned ahead)
       /* Determine the address to prefetch.  */
       delta = (ahead + ap * ref->prefetch_mod) * ref->group->step;
       addr = fold_build2 (PLUS_EXPR, ptr_type_node,
-                          addr_base, build_int_cst (ptr_type_node, delta));
+			  addr_base, build_int_cst (ptr_type_node, delta));
       addr = force_gimple_operand_bsi (&bsi, unshare_expr (addr), true, NULL);
 
       /* Create the prefetch instruction.  */
       write_p = ref->write_p ? integer_one_node : integer_zero_node;
       params = tree_cons (NULL_TREE, addr,
-                          tree_cons (NULL_TREE, write_p, NULL_TREE));
-                                 
+			  tree_cons (NULL_TREE, write_p, NULL_TREE));
+				 
       prefetch = build_function_call_expr (built_in_decls[BUILT_IN_PREFETCH],
-                                           params);
+					   params);
       bsi_insert_before (&bsi, prefetch, BSI_SAME_STMT);
     }
 }
@@ -859,14 +859,14 @@ issue_prefetch_ref (struct mem_ref *ref, unsigned unroll_factor, unsigned ahead)
 
 static void
 issue_prefetches (struct mem_ref_group *groups,
-                  unsigned unroll_factor, unsigned ahead)
+		  unsigned unroll_factor, unsigned ahead)
 {
   struct mem_ref *ref;
 
   for (; groups; groups = groups->next)
     for (ref = groups->refs; ref; ref = ref->next)
       if (ref->issue_prefetch_p)
-        issue_prefetch_ref (ref, unroll_factor, ahead);
+	issue_prefetch_ref (ref, unroll_factor, ahead);
 }
 
 /* Determines whether we can profitably unroll LOOP FACTOR times, and if
@@ -875,7 +875,7 @@ issue_prefetches (struct mem_ref_group *groups,
 
 static bool
 should_unroll_loop_p (struct loop *loop, struct tree_niter_desc *desc,
-                      unsigned factor)
+		      unsigned factor)
 {
   if (!can_unroll_loop_p (loop, factor, desc))
     return false;
@@ -899,8 +899,8 @@ should_unroll_loop_p (struct loop *loop, struct tree_niter_desc *desc,
 
 static unsigned
 determine_unroll_factor (struct loop *loop, struct mem_ref_group *refs,
-                         unsigned ahead, unsigned ninsns,
-                         struct tree_niter_desc *desc)
+			 unsigned ahead, unsigned ninsns,
+			 struct tree_niter_desc *desc)
 {
   unsigned upper_bound, size_factor, constraint_factor;
   unsigned factor, max_mod_constraint, ahead_factor;
@@ -921,8 +921,8 @@ determine_unroll_factor (struct loop *loop, struct mem_ref_group *refs,
   for (agp = refs; agp; agp = agp->next)
     for (ref = agp->refs; ref; ref = ref->next)
       if (should_issue_prefetch_p (ref)
-          && ref->prefetch_mod > max_mod_constraint)
-        max_mod_constraint = ref->prefetch_mod;
+	  && ref->prefetch_mod > max_mod_constraint)
+	max_mod_constraint = ref->prefetch_mod;
 
   /* Set constraint_factor as large as needed to be able to satisfy the
      largest modulo constraint.  */
@@ -932,7 +932,7 @@ determine_unroll_factor (struct loop *loop, struct mem_ref_group *refs,
      prefetches, unroll the loop as much as needed to be able to prefetch
      at least partially some of the references in the loop.  */
   ahead_factor = ((ahead + SIMULTANEOUS_PREFETCHES - 1)
-                  / SIMULTANEOUS_PREFETCHES);
+		  / SIMULTANEOUS_PREFETCHES);
 
   /* Unroll as much as useful, but bound the code size growth.  */
   if (constraint_factor < ahead_factor)
@@ -976,7 +976,7 @@ loop_prefetch_arrays (struct loops *loops, struct loop *loop)
   ninsns = tree_num_loop_insns (loop);
   ahead = (PREFETCH_LATENCY + ninsns - 1) / ninsns;
   unroll_factor = determine_unroll_factor (loop, refs, ahead, ninsns,
-                                           &desc);
+					   &desc);
   if (dump_file && (dump_flags & TDF_DETAILS))
     fprintf (dump_file, "Ahead %d, unroll factor %d\n", ahead, unroll_factor);
 
@@ -996,7 +996,7 @@ loop_prefetch_arrays (struct loops *loops, struct loop *loop)
   if (unroll_factor != 1)
     {
       tree_unroll_loop (loops, loop, unroll_factor,
-                        single_dom_exit (loop), &desc);
+			single_dom_exit (loop), &desc);
       unrolled = true;
     }
 
@@ -1020,9 +1020,9 @@ tree_ssa_prefetch_arrays (struct loops *loops)
 
   if (!HAVE_prefetch
       /* It is possible to ask compiler for say -mtune=i486 -march=pentium4.
-         -mtune=i486 causes us having PREFETCH_BLOCK 0, since this is part
-         of processor costs and i486 does not have prefetch, but
-         -march=pentium4 causes HAVE_prefetch to be true.  Ugh.  */
+	 -mtune=i486 causes us having PREFETCH_BLOCK 0, since this is part
+	 of processor costs and i486 does not have prefetch, but
+	 -march=pentium4 causes HAVE_prefetch to be true.  Ugh.  */
       || PREFETCH_BLOCK == 0)
     return 0;
 
@@ -1031,12 +1031,12 @@ tree_ssa_prefetch_arrays (struct loops *loops)
   if (!built_in_decls[BUILT_IN_PREFETCH])
     {
       tree type = build_function_type (void_type_node,
-                                       tree_cons (NULL_TREE,
-                                                  const_ptr_type_node,
-                                                  NULL_TREE));
+				       tree_cons (NULL_TREE,
+						  const_ptr_type_node,
+						  NULL_TREE));
       tree decl = lang_hooks.builtin_function ("__builtin_prefetch", type,
-                        BUILT_IN_PREFETCH, BUILT_IN_NORMAL,
-                        NULL, NULL_TREE);
+			BUILT_IN_PREFETCH, BUILT_IN_NORMAL,
+			NULL, NULL_TREE);
       DECL_IS_NOVOPS (decl) = true;
       built_in_decls[BUILT_IN_PREFETCH] = decl;
     }
@@ -1050,13 +1050,13 @@ tree_ssa_prefetch_arrays (struct loops *loops)
       loop = loops->parray[i];
 
       if (dump_file && (dump_flags & TDF_DETAILS))
-        fprintf (dump_file, "Processing loop %d:\n", loop->num);
+	fprintf (dump_file, "Processing loop %d:\n", loop->num);
 
       if (loop)
-        unrolled |= loop_prefetch_arrays (loops, loop);
+	unrolled |= loop_prefetch_arrays (loops, loop);
 
       if (dump_file && (dump_flags & TDF_DETAILS))
-        fprintf (dump_file, "\n\n");
+	fprintf (dump_file, "\n\n");
     }
 
   if (unrolled)

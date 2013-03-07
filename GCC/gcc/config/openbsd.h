@@ -54,35 +54,35 @@ Boston, MA 02110-1301, USA.  */
 
 /* The compiler is configured with ONLY the gcc/g++ standard headers.  */
 #undef INCLUDE_DEFAULTS
-#define INCLUDE_DEFAULTS                        \
-  {                                                \
-    { GPLUSPLUS_INCLUDE_DIR, "G++", 1, 1 },        \
+#define INCLUDE_DEFAULTS			\
+  {						\
+    { GPLUSPLUS_INCLUDE_DIR, "G++", 1, 1 },	\
     { GPLUSPLUS_TOOL_INCLUDE_DIR, "G++", 1, 1 }, \
     { GPLUSPLUS_BACKWARD_INCLUDE_DIR, "G++", 1, 1 }, \
     { STANDARD_INCLUDE_DIR, STANDARD_INCLUDE_COMPONENT, 0, 0 }, \
-    { 0, 0, 0, 0 }                                \
+    { 0, 0, 0, 0 }				\
   }
 
 /* Under OpenBSD, the normal location of the various *crt*.o files is the
    /usr/lib directory.  */
 #undef STANDARD_STARTFILE_PREFIX
-#define STANDARD_STARTFILE_PREFIX        "/usr/local/lib/"
+#define STANDARD_STARTFILE_PREFIX	"/usr/local/lib/"
 
 #endif
 
 
 /* Controlling the compilation driver.  */
 /* TARGET_OS_CPP_BUILTINS() common to all OpenBSD targets.  */
-#define OPENBSD_OS_CPP_BUILTINS()                \
-  do                                                \
-    {                                                \
-      builtin_define ("__OpenBSD__");                \
-      builtin_define ("__unix__");                \
-      builtin_define ("__ANSI_COMPAT");                \
-      builtin_assert ("system=unix");                \
-      builtin_assert ("system=bsd");                \
-      builtin_assert ("system=OpenBSD");        \
-    }                                                \
+#define OPENBSD_OS_CPP_BUILTINS()		\
+  do						\
+    {						\
+      builtin_define ("__OpenBSD__");		\
+      builtin_define ("__unix__");		\
+      builtin_define ("__ANSI_COMPAT");		\
+      builtin_assert ("system=unix");		\
+      builtin_assert ("system=bsd");		\
+      builtin_assert ("system=OpenBSD");	\
+    }						\
   while (0)
 
 /* CPP_SPEC appropriate for OpenBSD. We deal with -posix and -pthread.
@@ -180,15 +180,15 @@ Boston, MA 02110-1301, USA.  */
 #undef SET_ASM_OP
 #undef GLOBAL_ASM_OP
 
-#define TYPE_ASM_OP        "\t.type\t"
-#define SIZE_ASM_OP        "\t.size\t"
-#define SET_ASM_OP        "\t.set\t"
-#define GLOBAL_ASM_OP        "\t.globl\t"
+#define TYPE_ASM_OP	"\t.type\t"
+#define SIZE_ASM_OP	"\t.size\t"
+#define SET_ASM_OP	"\t.set\t"
+#define GLOBAL_ASM_OP	"\t.globl\t"
 
 /* The following macro defines the format used to output the second
    operand of the .type assembler directive.  */
 #undef TYPE_OPERAND_FMT
-#define TYPE_OPERAND_FMT        "@%s"
+#define TYPE_OPERAND_FMT	"@%s"
 
 /* Provision if extra assembler code is needed to declare a function's result
    (taken from svr4, not needed yet actually).  */
@@ -206,40 +206,40 @@ Boston, MA 02110-1301, USA.  */
    Some assemblers may also need to also have something extra said 
    about the function's return value.  We allow for that here.  */
 #undef ASM_DECLARE_FUNCTION_NAME
-#define ASM_DECLARE_FUNCTION_NAME(FILE, NAME, DECL)                        \
-  do {                                                                        \
-    ASM_OUTPUT_TYPE_DIRECTIVE (FILE, NAME, "function");                        \
-    ASM_DECLARE_RESULT (FILE, DECL_RESULT (DECL));                        \
-    ASM_OUTPUT_LABEL(FILE, NAME);                                        \
+#define ASM_DECLARE_FUNCTION_NAME(FILE, NAME, DECL)			\
+  do {									\
+    ASM_OUTPUT_TYPE_DIRECTIVE (FILE, NAME, "function");			\
+    ASM_DECLARE_RESULT (FILE, DECL_RESULT (DECL));			\
+    ASM_OUTPUT_LABEL(FILE, NAME);					\
   } while (0)
 #endif
 
 #ifndef OBSD_HAS_DECLARE_FUNCTION_SIZE
 /* Declare the size of a function.  */
 #undef ASM_DECLARE_FUNCTION_SIZE
-#define ASM_DECLARE_FUNCTION_SIZE(FILE, FNAME, DECL)                \
-  do {                                                                \
-    if (!flag_inhibit_size_directive)                                \
-      ASM_OUTPUT_MEASURED_SIZE (FILE, FNAME);                        \
+#define ASM_DECLARE_FUNCTION_SIZE(FILE, FNAME, DECL)		\
+  do {								\
+    if (!flag_inhibit_size_directive)				\
+      ASM_OUTPUT_MEASURED_SIZE (FILE, FNAME);			\
   } while (0)
 #endif
 
 #ifndef OBSD_HAS_DECLARE_OBJECT
 /* Extra assembler code needed to declare an object properly.  */
 #undef ASM_DECLARE_OBJECT_NAME
-#define ASM_DECLARE_OBJECT_NAME(FILE, NAME, DECL)                \
-  do {                                                                \
-      HOST_WIDE_INT size;                                        \
-      ASM_OUTPUT_TYPE_DIRECTIVE (FILE, NAME, "object");                \
-      size_directive_output = 0;                                \
-      if (!flag_inhibit_size_directive                                \
-          && (DECL) && DECL_SIZE (DECL))                        \
-        {                                                        \
-          size_directive_output = 1;                                \
-          size = int_size_in_bytes (TREE_TYPE (DECL));                \
-          ASM_OUTPUT_SIZE_DIRECTIVE (FILE, NAME, size);                \
-        }                                                        \
-      ASM_OUTPUT_LABEL (FILE, NAME);                                \
+#define ASM_DECLARE_OBJECT_NAME(FILE, NAME, DECL)		\
+  do {								\
+      HOST_WIDE_INT size;					\
+      ASM_OUTPUT_TYPE_DIRECTIVE (FILE, NAME, "object");		\
+      size_directive_output = 0;				\
+      if (!flag_inhibit_size_directive				\
+	  && (DECL) && DECL_SIZE (DECL))			\
+	{							\
+	  size_directive_output = 1;				\
+	  size = int_size_in_bytes (TREE_TYPE (DECL));		\
+	  ASM_OUTPUT_SIZE_DIRECTIVE (FILE, NAME, size);		\
+	}							\
+      ASM_OUTPUT_LABEL (FILE, NAME);				\
   } while (0)
 
 /* Output the size directive for a decl in rest_of_decl_compilation
@@ -248,19 +248,19 @@ Boston, MA 02110-1301, USA.  */
    size_directive_output was set by ASM_DECLARE_OBJECT_NAME 
    when it was run for the same decl.  */
 #undef ASM_FINISH_DECLARE_OBJECT
-#define ASM_FINISH_DECLARE_OBJECT(FILE, DECL, TOP_LEVEL, AT_END)         \
-do {                                                                         \
-     const char *name = XSTR (XEXP (DECL_RTL (DECL), 0), 0);                 \
-     HOST_WIDE_INT size;                                                 \
-     if (!flag_inhibit_size_directive && DECL_SIZE (DECL)                 \
-         && ! AT_END && TOP_LEVEL                                         \
-         && DECL_INITIAL (DECL) == error_mark_node                         \
-         && !size_directive_output)                                         \
-       {                                                                 \
-         size_directive_output = 1;                                         \
-         size = int_size_in_bytes (TREE_TYPE (DECL));                         \
-         ASM_OUTPUT_SIZE_DIRECTIVE (FILE, name, size);                         \
-       }                                                                 \
+#define ASM_FINISH_DECLARE_OBJECT(FILE, DECL, TOP_LEVEL, AT_END)	 \
+do {									 \
+     const char *name = XSTR (XEXP (DECL_RTL (DECL), 0), 0);		 \
+     HOST_WIDE_INT size;						 \
+     if (!flag_inhibit_size_directive && DECL_SIZE (DECL)		 \
+         && ! AT_END && TOP_LEVEL					 \
+	 && DECL_INITIAL (DECL) == error_mark_node			 \
+	 && !size_directive_output)					 \
+       {								 \
+	 size_directive_output = 1;					 \
+	 size = int_size_in_bytes (TREE_TYPE (DECL));			 \
+	 ASM_OUTPUT_SIZE_DIRECTIVE (FILE, name, size);			 \
+       }								 \
    } while (0)
 #endif
 
@@ -293,18 +293,18 @@ do {                                                                         \
 #define HANDLE_SYSV_PRAGMA 1
 
 /* Stack is explicitly denied execution rights on OpenBSD platforms.  */
-#define ENABLE_EXECUTE_STACK                                                \
-extern void __enable_execute_stack (void *);                                \
-void                                                                        \
-__enable_execute_stack (void *addr)                                        \
-{                                                                        \
-  long size = getpagesize ();                                                \
-  long mask = ~(size-1);                                                \
-  char *page = (char *) (((long) addr) & mask);                         \
+#define ENABLE_EXECUTE_STACK						\
+extern void __enable_execute_stack (void *);				\
+void									\
+__enable_execute_stack (void *addr)					\
+{									\
+  long size = getpagesize ();						\
+  long mask = ~(size-1);						\
+  char *page = (char *) (((long) addr) & mask); 			\
   char *end  = (char *) ((((long) (addr + TRAMPOLINE_SIZE)) & mask) + size); \
-                                                                      \
+								      \
   if (mprotect (page, end - page, PROT_READ | PROT_WRITE | PROT_EXEC) < 0) \
-    perror ("mprotect of trampoline code");                                \
+    perror ("mprotect of trampoline code");				\
 }
 
 #include <sys/types.h>

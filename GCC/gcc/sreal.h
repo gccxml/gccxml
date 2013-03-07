@@ -45,12 +45,12 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
 typedef struct sreal
 {
 #if SREAL_PART_BITS < 32
-  unsigned HOST_WIDE_INT sig_lo;        /* Significant (lower part).  */
-  unsigned HOST_WIDE_INT sig_hi;        /* Significant (higher part).  */
+  unsigned HOST_WIDE_INT sig_lo;	/* Significant (lower part).  */
+  unsigned HOST_WIDE_INT sig_hi;	/* Significant (higher part).  */
 #else
-  unsigned HOST_WIDE_INT sig;                /* Significant.  */
+  unsigned HOST_WIDE_INT sig;		/* Significant.  */
 #endif
-  signed int exp;                        /* Exponent.  */
+  signed int exp;			/* Exponent.  */
 } sreal;
 
 extern void dump_sreal (FILE *, sreal *);

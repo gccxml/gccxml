@@ -57,42 +57,42 @@ static bool
 gate_all_optimizations (void)
 {
   return (optimize >= 1
-          /* Don't bother doing anything if the program has errors.  */
-          && !(errorcount || sorrycount));
+	  /* Don't bother doing anything if the program has errors.  */
+	  && !(errorcount || sorrycount));
 }
 
 struct tree_opt_pass pass_all_optimizations =
 {
-  NULL,                                        /* name */
-  gate_all_optimizations,                /* gate */
-  NULL,                                        /* execute */
-  NULL,                                        /* sub */
-  NULL,                                        /* next */
-  0,                                        /* static_pass_number */
-  0,                                        /* tv_id */
-  0,                                        /* properties_required */
-  0,                                        /* properties_provided */
-  0,                                        /* properties_destroyed */
-  0,                                        /* todo_flags_start */
-  0,                                        /* todo_flags_finish */
-  0                                        /* letter */
+  NULL,					/* name */
+  gate_all_optimizations,		/* gate */
+  NULL,					/* execute */
+  NULL,					/* sub */
+  NULL,					/* next */
+  0,					/* static_pass_number */
+  0,					/* tv_id */
+  0,					/* properties_required */
+  0,					/* properties_provided */
+  0,					/* properties_destroyed */
+  0,					/* todo_flags_start */
+  0,					/* todo_flags_finish */
+  0					/* letter */
 };
 
 struct tree_opt_pass pass_early_local_passes =
 {
-  NULL,                                        /* name */
-  gate_all_optimizations,                /* gate */
-  NULL,                                        /* execute */
-  NULL,                                        /* sub */
-  NULL,                                        /* next */
-  0,                                        /* static_pass_number */
-  0,                                        /* tv_id */
-  0,                                        /* properties_required */
-  0,                                        /* properties_provided */
-  0,                                        /* properties_destroyed */
-  0,                                        /* todo_flags_start */
-  0,                                        /* todo_flags_finish */
-  0                                        /* letter */
+  NULL,					/* name */
+  gate_all_optimizations,		/* gate */
+  NULL,					/* execute */
+  NULL,					/* sub */
+  NULL,					/* next */
+  0,					/* static_pass_number */
+  0,					/* tv_id */
+  0,					/* properties_required */
+  0,					/* properties_provided */
+  0,					/* properties_destroyed */
+  0,					/* todo_flags_start */
+  0,					/* todo_flags_finish */
+  0					/* letter */
 };
 
 /* Pass: cleanup the CFG just before expanding trees to RTL.
@@ -109,19 +109,19 @@ execute_cleanup_cfg_pre_ipa (void)
 
 struct tree_opt_pass pass_cleanup_cfg =
 {
-  "cleanup_cfg",                        /* name */
-  NULL,                                        /* gate */
-  execute_cleanup_cfg_pre_ipa,                /* execute */
-  NULL,                                        /* sub */
-  NULL,                                        /* next */
-  0,                                        /* static_pass_number */
-  0,                                        /* tv_id */
-  PROP_cfg,                                /* properties_required */
-  0,                                        /* properties_provided */
-  0,                                        /* properties_destroyed */
-  0,                                        /* todo_flags_start */
-  TODO_dump_func,                                        /* todo_flags_finish */
-  0                                        /* letter */
+  "cleanup_cfg",			/* name */
+  NULL,					/* gate */
+  execute_cleanup_cfg_pre_ipa,		/* execute */
+  NULL,					/* sub */
+  NULL,					/* next */
+  0,					/* static_pass_number */
+  0,					/* tv_id */
+  PROP_cfg,				/* properties_required */
+  0,					/* properties_provided */
+  0,					/* properties_destroyed */
+  0,					/* todo_flags_start */
+  TODO_dump_func,					/* todo_flags_finish */
+  0					/* letter */
 };
 
 
@@ -142,19 +142,19 @@ execute_cleanup_cfg_post_optimizing (void)
 
 struct tree_opt_pass pass_cleanup_cfg_post_optimizing =
 {
-  "final_cleanup",                        /* name */
-  NULL,                                        /* gate */
-  execute_cleanup_cfg_post_optimizing,        /* execute */
-  NULL,                                        /* sub */
-  NULL,                                        /* next */
-  0,                                        /* static_pass_number */
-  0,                                        /* tv_id */
-  PROP_cfg,                                /* properties_required */
-  0,                                        /* properties_provided */
-  0,                                        /* properties_destroyed */
-  0,                                        /* todo_flags_start */
-  TODO_dump_func,                                        /* todo_flags_finish */
-  0                                        /* letter */
+  "final_cleanup",			/* name */
+  NULL,					/* gate */
+  execute_cleanup_cfg_post_optimizing,	/* execute */
+  NULL,					/* sub */
+  NULL,					/* next */
+  0,					/* static_pass_number */
+  0,					/* tv_id */
+  PROP_cfg,				/* properties_required */
+  0,					/* properties_provided */
+  0,					/* properties_destroyed */
+  0,					/* todo_flags_start */
+  TODO_dump_func,					/* todo_flags_finish */
+  0					/* letter */
 };
 
 /* Pass: do the actions required to finish with tree-ssa optimization
@@ -176,19 +176,19 @@ execute_free_datastructures (void)
 
 struct tree_opt_pass pass_free_datastructures =
 {
-  NULL,                                        /* name */
-  NULL,                                        /* gate */
-  execute_free_datastructures,                        /* execute */
-  NULL,                                        /* sub */
-  NULL,                                        /* next */
-  0,                                        /* static_pass_number */
-  0,                                        /* tv_id */
-  PROP_cfg,                                /* properties_required */
-  0,                                        /* properties_provided */
-  0,                                        /* properties_destroyed */
-  0,                                        /* todo_flags_start */
-  0,                                        /* todo_flags_finish */
-  0                                        /* letter */
+  NULL,					/* name */
+  NULL,					/* gate */
+  execute_free_datastructures,			/* execute */
+  NULL,					/* sub */
+  NULL,					/* next */
+  0,					/* static_pass_number */
+  0,					/* tv_id */
+  PROP_cfg,				/* properties_required */
+  0,					/* properties_provided */
+  0,					/* properties_destroyed */
+  0,					/* todo_flags_start */
+  0,					/* todo_flags_finish */
+  0					/* letter */
 };
 /* Pass: free cfg annotations.  */
 
@@ -205,9 +205,9 @@ execute_free_cfg_annotations (void)
   FOR_EACH_BB (bb)
     for (bsi = bsi_start (bb); !bsi_end_p (bsi); bsi_next (&bsi))
       {
-        tree stmt = bsi_stmt (bsi);
-        ggc_free (stmt->common.ann);
-        stmt->common.ann = NULL;
+	tree stmt = bsi_stmt (bsi);
+	ggc_free (stmt->common.ann);
+	stmt->common.ann = NULL;
       }
 
   /* And get rid of annotations we no longer need.  */
@@ -223,19 +223,19 @@ execute_free_cfg_annotations (void)
 
 struct tree_opt_pass pass_free_cfg_annotations =
 {
-  NULL,                                        /* name */
-  NULL,                                        /* gate */
-  execute_free_cfg_annotations,                /* execute */
-  NULL,                                        /* sub */
-  NULL,                                        /* next */
-  0,                                        /* static_pass_number */
-  0,                                        /* tv_id */
-  PROP_cfg,                                /* properties_required */
-  0,                                        /* properties_provided */
-  0,                                        /* properties_destroyed */
-  0,                                        /* todo_flags_start */
-  0,                                        /* todo_flags_finish */
-  0                                        /* letter */
+  NULL,					/* name */
+  NULL,					/* gate */
+  execute_free_cfg_annotations,		/* execute */
+  NULL,					/* sub */
+  NULL,					/* next */
+  0,					/* static_pass_number */
+  0,					/* tv_id */
+  PROP_cfg,				/* properties_required */
+  0,					/* properties_provided */
+  0,					/* properties_destroyed */
+  0,					/* todo_flags_start */
+  0,					/* todo_flags_finish */
+  0					/* letter */
 };
 
 /* Return true if BB has at least one abnormal outgoing edge.  */
@@ -267,41 +267,41 @@ execute_fixup_cfg (void)
   if (cfun->eh)
     FOR_EACH_BB (bb)
       {
-        for (bsi = bsi_start (bb); !bsi_end_p (bsi); bsi_next (&bsi))
-          {
-            tree stmt = bsi_stmt (bsi);
-            tree call = get_call_expr_in (stmt);
+	for (bsi = bsi_start (bb); !bsi_end_p (bsi); bsi_next (&bsi))
+	  {
+	    tree stmt = bsi_stmt (bsi);
+	    tree call = get_call_expr_in (stmt);
 
-            if (call && call_expr_flags (call) & (ECF_CONST | ECF_PURE))
-              TREE_SIDE_EFFECTS (call) = 0;
-            if (!tree_could_throw_p (stmt) && lookup_stmt_eh_region (stmt))
-              remove_stmt_from_eh_region (stmt);
-          }
-        tree_purge_dead_eh_edges (bb);
+	    if (call && call_expr_flags (call) & (ECF_CONST | ECF_PURE))
+	      TREE_SIDE_EFFECTS (call) = 0;
+	    if (!tree_could_throw_p (stmt) && lookup_stmt_eh_region (stmt))
+	      remove_stmt_from_eh_region (stmt);
+	  }
+	tree_purge_dead_eh_edges (bb);
       }
 
   if (current_function_has_nonlocal_label)
     FOR_EACH_BB (bb)
       {
-        for (bsi = bsi_start (bb); !bsi_end_p (bsi); bsi_next (&bsi))
-          {
-            tree stmt = bsi_stmt (bsi);
-            if (tree_can_make_abnormal_goto (stmt))
-              {
-                if (stmt == bsi_stmt (bsi_last (bb)))
-                  {
-                    if (!has_abnormal_outgoing_edge_p (bb))
-                      make_abnormal_goto_edges (bb, true);
-                  }
-                else
-                  {
-                    edge e = split_block (bb, stmt);
-                    bb = e->src;
-                    make_abnormal_goto_edges (bb, true);
-                  }
-                break;
-              }
-          }
+	for (bsi = bsi_start (bb); !bsi_end_p (bsi); bsi_next (&bsi))
+	  {
+	    tree stmt = bsi_stmt (bsi);
+	    if (tree_can_make_abnormal_goto (stmt))
+	      {
+		if (stmt == bsi_stmt (bsi_last (bb)))
+		  {
+		    if (!has_abnormal_outgoing_edge_p (bb))
+		      make_abnormal_goto_edges (bb, true);
+		  }
+		else
+		  {
+		    edge e = split_block (bb, stmt);
+		    bb = e->src;
+		    make_abnormal_goto_edges (bb, true);
+		  }
+		break;
+	      }
+	  }
       }
 
   cleanup_tree_cfg ();
@@ -315,19 +315,19 @@ execute_fixup_cfg (void)
 
 struct tree_opt_pass pass_fixup_cfg =
 {
-  "fixupcfg",                                /* name */
-  NULL,                                        /* gate */
-  execute_fixup_cfg,                        /* execute */
-  NULL,                                        /* sub */
-  NULL,                                        /* next */
-  0,                                        /* static_pass_number */
-  0,                                        /* tv_id */
-  PROP_cfg,                                /* properties_required */
-  0,                                        /* properties_provided */
-  0,                                        /* properties_destroyed */
-  0,                                        /* todo_flags_start */
-  0,                                        /* todo_flags_finish */
-  0                                        /* letter */
+  "fixupcfg",				/* name */
+  NULL,					/* gate */
+  execute_fixup_cfg,			/* execute */
+  NULL,					/* sub */
+  NULL,					/* next */
+  0,					/* static_pass_number */
+  0,					/* tv_id */
+  PROP_cfg,				/* properties_required */
+  0,					/* properties_provided */
+  0,					/* properties_destroyed */
+  0,					/* todo_flags_start */
+  0,					/* todo_flags_finish */
+  0					/* letter */
 };
 
 /* Do the actions required to initialize internal data structures used
@@ -343,19 +343,19 @@ execute_init_datastructures (void)
 
 struct tree_opt_pass pass_init_datastructures =
 {
-  NULL,                                        /* name */
-  NULL,                                        /* gate */
-  execute_init_datastructures,                /* execute */
-  NULL,                                        /* sub */
-  NULL,                                        /* next */
-  0,                                        /* static_pass_number */
-  0,                                        /* tv_id */
-  PROP_cfg,                                /* properties_required */
-  0,                                        /* properties_provided */
-  0,                                        /* properties_destroyed */
-  0,                                        /* todo_flags_start */
-  0,                                        /* todo_flags_finish */
-  0                                        /* letter */
+  NULL,					/* name */
+  NULL,					/* gate */
+  execute_init_datastructures,		/* execute */
+  NULL,					/* sub */
+  NULL,					/* next */
+  0,					/* static_pass_number */
+  0,					/* tv_id */
+  PROP_cfg,				/* properties_required */
+  0,					/* properties_provided */
+  0,					/* properties_destroyed */
+  0,					/* todo_flags_start */
+  0,					/* todo_flags_finish */
+  0					/* letter */
 };
 
 void
@@ -379,16 +379,16 @@ tree_lowering_passes (tree fn)
    inlined into NODE to INLINED_TO.  */
 static void
 update_inlined_to_pointers (struct cgraph_node *node,
-                            struct cgraph_node *inlined_to)
+			    struct cgraph_node *inlined_to)
 {
   struct cgraph_edge *e;
   for (e = node->callees; e; e = e->next_callee)
     {
       if (e->callee->global.inlined_to)
-        {
-          e->callee->global.inlined_to = inlined_to;
-          update_inlined_to_pointers (e->callee, inlined_to);
-        }
+	{
+	  e->callee->global.inlined_to = inlined_to;
+	  update_inlined_to_pointers (e->callee, inlined_to);
+	}
     }
 }
 
@@ -430,14 +430,14 @@ tree_rest_of_compilation (tree fndecl)
     {
       struct cgraph_edge *e;
       for (e = node->callees; e; e = e->next_callee)
-        if (!e->inline_failed || warn_inline)
-          break;
+	if (!e->inline_failed || warn_inline)
+	  break;
       if (e)
-        {
-          timevar_push (TV_INTEGRATION);
-          optimize_inline_calls (fndecl);
-          timevar_pop (TV_INTEGRATION);
-        }
+	{
+	  timevar_push (TV_INTEGRATION);
+	  optimize_inline_calls (fndecl);
+	  timevar_pop (TV_INTEGRATION);
+	}
     }
   /* In non-unit-at-a-time we must mark all referenced functions as needed.
      */
@@ -445,7 +445,7 @@ tree_rest_of_compilation (tree fndecl)
     {
       struct cgraph_edge *e;
       for (e = node->callees; e; e = e->next_callee)
-        if (e->callee->analyzed)
+	if (e->callee->analyzed)
           cgraph_mark_needed_node (e->callee);
     }
 
@@ -478,36 +478,36 @@ tree_rest_of_compilation (tree fndecl)
       tree ret_type = TREE_TYPE (TREE_TYPE (fndecl));
 
       if (ret_type && TYPE_SIZE_UNIT (ret_type)
-          && TREE_CODE (TYPE_SIZE_UNIT (ret_type)) == INTEGER_CST
-          && 0 < compare_tree_int (TYPE_SIZE_UNIT (ret_type),
-                                   larger_than_size))
-        {
-          unsigned int size_as_int
-            = TREE_INT_CST_LOW (TYPE_SIZE_UNIT (ret_type));
+	  && TREE_CODE (TYPE_SIZE_UNIT (ret_type)) == INTEGER_CST
+	  && 0 < compare_tree_int (TYPE_SIZE_UNIT (ret_type),
+				   larger_than_size))
+	{
+	  unsigned int size_as_int
+	    = TREE_INT_CST_LOW (TYPE_SIZE_UNIT (ret_type));
 
-          if (compare_tree_int (TYPE_SIZE_UNIT (ret_type), size_as_int) == 0)
-            warning (0, "size of return value of %q+D is %u bytes",
+	  if (compare_tree_int (TYPE_SIZE_UNIT (ret_type), size_as_int) == 0)
+	    warning (0, "size of return value of %q+D is %u bytes",
                      fndecl, size_as_int);
-          else
-            warning (0, "size of return value of %q+D is larger than %wd bytes",
+	  else
+	    warning (0, "size of return value of %q+D is larger than %wd bytes",
                      fndecl, larger_than_size);
-        }
+	}
     }
 
   if (!flag_inline_trees)
     {
       DECL_SAVED_TREE (fndecl) = NULL;
       if (DECL_STRUCT_FUNCTION (fndecl) == 0
-          && !cgraph_node (fndecl)->origin)
-        {
-          /* Stop pointing to the local nodes about to be freed.
-             But DECL_INITIAL must remain nonzero so we know this
-             was an actual function definition.
-             For a nested function, this is done in c_pop_function_context.
-             If rest_of_compilation set this to 0, leave it 0.  */
-          if (DECL_INITIAL (fndecl) != 0)
-            DECL_INITIAL (fndecl) = error_mark_node;
-        }
+	  && !cgraph_node (fndecl)->origin)
+	{
+	  /* Stop pointing to the local nodes about to be freed.
+	     But DECL_INITIAL must remain nonzero so we know this
+	     was an actual function definition.
+	     For a nested function, this is done in c_pop_function_context.
+	     If rest_of_compilation set this to 0, leave it 0.  */
+	  if (DECL_INITIAL (fndecl) != 0)
+	    DECL_INITIAL (fndecl) = error_mark_node;
+	}
     }
 
   input_location = saved_loc;

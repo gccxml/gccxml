@@ -93,18 +93,18 @@ struct address_walk_data
 static bool gate_dse (void);
 static unsigned int tree_ssa_dse (void);
 static void dse_initialize_block_local_data (struct dom_walk_data *,
-                                             basic_block,
-                                             bool);
+					     basic_block,
+					     bool);
 static void dse_optimize_stmt (struct dom_walk_data *,
-                               basic_block,
-                               block_stmt_iterator);
+			       basic_block,
+			       block_stmt_iterator);
 static void dse_record_phis (struct dom_walk_data *, basic_block);
 static void dse_finalize_block (struct dom_walk_data *, basic_block);
 static void record_voperand_set (bitmap, bitmap *, unsigned int);
 
-static unsigned max_stmt_uid;        /* Maximal uid of a statement.  Uids to phi
-                                   nodes are assigned using the versions of
-                                   ssa names they define.  */
+static unsigned max_stmt_uid;	/* Maximal uid of a statement.  Uids to phi
+				   nodes are assigned using the versions of
+				   ssa names they define.  */
 
 /* Returns uid of statement STMT.  */
 
@@ -137,8 +137,8 @@ record_voperand_set (bitmap global, bitmap *local, unsigned int uid)
 
 static void
 dse_initialize_block_local_data (struct dom_walk_data *walk_data,
-                                 basic_block bb ATTRIBUTE_UNUSED,
-                                 bool recycled)
+				 basic_block bb ATTRIBUTE_UNUSED,
+				 bool recycled)
 {
   struct dse_block_local_data *bd
     = VEC_last (void_p, walk_data->block_data_stack);
@@ -148,7 +148,7 @@ dse_initialize_block_local_data (struct dom_walk_data *walk_data,
   if (recycled)
     {
       if (bd->stores)
-        bitmap_clear (bd->stores);
+	bitmap_clear (bd->stores);
     }
 }
 
@@ -161,7 +161,7 @@ dse_initialize_block_local_data (struct dom_walk_data *walk_data,
 
 static tree
 memory_ssa_name_same (tree *expr_p, int *walk_subtrees ATTRIBUTE_UNUSED,
-                      void *data)
+		      void *data)
 {
   struct address_walk_data *walk_data = data;
   tree expr = *expr_p;
@@ -185,10 +185,10 @@ memory_ssa_name_same (tree *expr_p, int *walk_subtrees ATTRIBUTE_UNUSED,
       && dominated_by_p (CDI_POST_DOMINATORS, walk_data->store1_bb, def_bb))
     {
       if (walk_data->store2_bb == def_bb
-          || !dominated_by_p (CDI_POST_DOMINATORS, walk_data->store2_bb,
-                              def_bb))
-        /* Return non-NULL to stop the walk.  */
-        return def_stmt;
+	  || !dominated_by_p (CDI_POST_DOMINATORS, walk_data->store2_bb,
+			      def_bb))
+	/* Return non-NULL to stop the walk.  */
+	return def_stmt;
     }
 
   return NULL_TREE;
@@ -206,8 +206,8 @@ memory_address_same (tree store1, tree store2)
   walk_data.store2_bb = bb_for_stmt (store2);
 
   return (walk_tree (&TREE_OPERAND (store1, 0), memory_ssa_name_same,
-                     &walk_data, NULL)
-          == NULL);
+		     &walk_data, NULL)
+	  == NULL);
 }
 
 /* Attempt to eliminate dead stores in the statement referenced by BSI.
@@ -223,8 +223,8 @@ memory_address_same (tree store1, tree store2)
 
 static void
 dse_optimize_stmt (struct dom_walk_data *walk_data,
-                   basic_block bb ATTRIBUTE_UNUSED,
-                   block_stmt_iterator bsi)
+		   basic_block bb ATTRIBUTE_UNUSED,
+		   block_stmt_iterator bsi)
 {
   struct dse_block_local_data *bd
     = VEC_last (void_p, walk_data->block_data_stack);
@@ -257,104 +257,104 @@ dse_optimize_stmt (struct dom_walk_data *walk_data,
       ssa_op_iter op_iter;
 
       /* We want to verify that each virtual definition in STMT has
-         precisely one use and that all the virtual definitions are
-         used by the same single statement.  When complete, we
-         want USE_STMT to refer to the one statement which uses
-         all of the virtual definitions from STMT.  */
+	 precisely one use and that all the virtual definitions are
+	 used by the same single statement.  When complete, we
+	 want USE_STMT to refer to the one statement which uses
+	 all of the virtual definitions from STMT.  */
       use_stmt = NULL;
       FOR_EACH_SSA_MUST_AND_MAY_DEF_OPERAND (var1, var2, stmt, op_iter)
-        {
-          defvar = DEF_FROM_PTR (var1);
-          usevar = USE_FROM_PTR (var2);
+	{
+	  defvar = DEF_FROM_PTR (var1);
+	  usevar = USE_FROM_PTR (var2);
 
-          /* If this virtual def does not have precisely one use, then
-             we will not be able to eliminate STMT.  */
-          if (! has_single_use (defvar))
-            {
-              fail = true;
-              break;
-            }
+	  /* If this virtual def does not have precisely one use, then
+	     we will not be able to eliminate STMT.  */
+	  if (! has_single_use (defvar))
+	    {
+	      fail = true;
+	      break;
+	    }
 
-          /* Get the one and only immediate use of DEFVAR.  */
-          single_imm_use (defvar, &use_p, &temp);
-          gcc_assert (use_p != NULL_USE_OPERAND_P);
-          first_use_p = use_p;
+	  /* Get the one and only immediate use of DEFVAR.  */
+	  single_imm_use (defvar, &use_p, &temp);
+	  gcc_assert (use_p != NULL_USE_OPERAND_P);
+	  first_use_p = use_p;
 
-          /* If the immediate use of DEF_VAR is not the same as the
-             previously find immediate uses, then we will not be able
-             to eliminate STMT.  */
-          if (use_stmt == NULL)
-            use_stmt = temp;
-          else if (temp != use_stmt)
-            {
-              fail = true;
-              break;
-            }
-        }
+	  /* If the immediate use of DEF_VAR is not the same as the
+	     previously find immediate uses, then we will not be able
+	     to eliminate STMT.  */
+	  if (use_stmt == NULL)
+	    use_stmt = temp;
+	  else if (temp != use_stmt)
+	    {
+	      fail = true;
+	      break;
+	    }
+	}
 
       if (fail)
-        {
-          record_voperand_set (dse_gd->stores, &bd->stores, ann->uid);
-          return;
-        }
+	{
+	  record_voperand_set (dse_gd->stores, &bd->stores, ann->uid);
+	  return;
+	}
 
       /* Skip through any PHI nodes we have already seen if the PHI
-         represents the only use of this store.
+	 represents the only use of this store.
 
-         Note this does not handle the case where the store has
-         multiple V_{MAY,MUST}_DEFs which all reach a set of PHI nodes in the
-         same block.  */
+	 Note this does not handle the case where the store has
+	 multiple V_{MAY,MUST}_DEFs which all reach a set of PHI nodes in the
+	 same block.  */
       while (use_p != NULL_USE_OPERAND_P
-             && TREE_CODE (use_stmt) == PHI_NODE
-             && bitmap_bit_p (dse_gd->stores, get_stmt_uid (use_stmt)))
-        {
-          /* A PHI node can both define and use the same SSA_NAME if
-             the PHI is at the top of a loop and the PHI_RESULT is
-             a loop invariant and copies have not been fully propagated.
+	     && TREE_CODE (use_stmt) == PHI_NODE
+	     && bitmap_bit_p (dse_gd->stores, get_stmt_uid (use_stmt)))
+	{
+	  /* A PHI node can both define and use the same SSA_NAME if
+	     the PHI is at the top of a loop and the PHI_RESULT is
+	     a loop invariant and copies have not been fully propagated.
 
-             The safe thing to do is exit assuming no optimization is
-             possible.  */
-          if (SSA_NAME_DEF_STMT (PHI_RESULT (use_stmt)) == use_stmt)
-            return;
+	     The safe thing to do is exit assuming no optimization is
+	     possible.  */
+	  if (SSA_NAME_DEF_STMT (PHI_RESULT (use_stmt)) == use_stmt)
+	    return;
 
-          /* Skip past this PHI and loop again in case we had a PHI
-             chain.  */
-          single_imm_use (PHI_RESULT (use_stmt), &use_p, &use_stmt);
-        }
+	  /* Skip past this PHI and loop again in case we had a PHI
+	     chain.  */
+	  single_imm_use (PHI_RESULT (use_stmt), &use_p, &use_stmt);
+	}
 
       /* If we have precisely one immediate use at this point, then we may
-         have found redundant store.  Make sure that the stores are to
-         the same memory location.  This includes checking that any
-         SSA-form variables in the address will have the same values.  */
+	 have found redundant store.  Make sure that the stores are to
+	 the same memory location.  This includes checking that any
+	 SSA-form variables in the address will have the same values.  */
       if (use_p != NULL_USE_OPERAND_P
-          && bitmap_bit_p (dse_gd->stores, get_stmt_uid (use_stmt))
-          && operand_equal_p (TREE_OPERAND (stmt, 0),
-                              TREE_OPERAND (use_stmt, 0), 0)
-          && memory_address_same (stmt, use_stmt))
-        {
-          /* Make sure we propagate the ABNORMAL bit setting.  */
-          if (SSA_NAME_OCCURS_IN_ABNORMAL_PHI (USE_FROM_PTR (first_use_p)))
-            SSA_NAME_OCCURS_IN_ABNORMAL_PHI (usevar) = 1;
+	  && bitmap_bit_p (dse_gd->stores, get_stmt_uid (use_stmt))
+	  && operand_equal_p (TREE_OPERAND (stmt, 0),
+			      TREE_OPERAND (use_stmt, 0), 0)
+	  && memory_address_same (stmt, use_stmt))
+	{
+	  /* Make sure we propagate the ABNORMAL bit setting.  */
+	  if (SSA_NAME_OCCURS_IN_ABNORMAL_PHI (USE_FROM_PTR (first_use_p)))
+	    SSA_NAME_OCCURS_IN_ABNORMAL_PHI (usevar) = 1;
 
-          if (dump_file && (dump_flags & TDF_DETAILS))
+	  if (dump_file && (dump_flags & TDF_DETAILS))
             {
               fprintf (dump_file, "  Deleted dead store '");
               print_generic_expr (dump_file, bsi_stmt (bsi), dump_flags);
               fprintf (dump_file, "'\n");
             }
-          /* Then we need to fix the operand of the consuming stmt.  */
-          FOR_EACH_SSA_MUST_AND_MAY_DEF_OPERAND (var1, var2, stmt, op_iter)
-            {
-              single_imm_use (DEF_FROM_PTR (var1), &use_p, &temp);
-              SET_USE (use_p, USE_FROM_PTR (var2));
-            }
-          /* Remove the dead store.  */
-          bsi_remove (&bsi, true);
+	  /* Then we need to fix the operand of the consuming stmt.  */
+	  FOR_EACH_SSA_MUST_AND_MAY_DEF_OPERAND (var1, var2, stmt, op_iter)
+	    {
+	      single_imm_use (DEF_FROM_PTR (var1), &use_p, &temp);
+	      SET_USE (use_p, USE_FROM_PTR (var2));
+	    }
+	  /* Remove the dead store.  */
+	  bsi_remove (&bsi, true);
 
-          /* And release any SSA_NAMEs set in this statement back to the
-             SSA_NAME manager.  */
-          release_defs (stmt);
-        }
+	  /* And release any SSA_NAMEs set in this statement back to the
+	     SSA_NAME manager.  */
+	  release_defs (stmt);
+	}
 
       record_voperand_set (dse_gd->stores, &bd->stores, ann->uid);
     }
@@ -373,13 +373,13 @@ dse_record_phis (struct dom_walk_data *walk_data, basic_block bb)
   for (phi = phi_nodes (bb); phi; phi = PHI_CHAIN (phi))
     if (!is_gimple_reg (PHI_RESULT (phi)))
       record_voperand_set (dse_gd->stores,
-                           &bd->stores,
-                           get_stmt_uid (phi));
+			   &bd->stores,
+			   get_stmt_uid (phi));
 }
 
 static void
 dse_finalize_block (struct dom_walk_data *walk_data,
-                    basic_block bb ATTRIBUTE_UNUSED)
+		    basic_block bb ATTRIBUTE_UNUSED)
 {
   struct dse_block_local_data *bd
     = VEC_last (void_p, walk_data->block_data_stack);
@@ -392,7 +392,7 @@ dse_finalize_block (struct dom_walk_data *walk_data,
   if (bd->stores)
     EXECUTE_IF_SET_IN_BITMAP (bd->stores, 0, i, bi)
       {
-        bitmap_clear_bit (stores, i);
+	bitmap_clear_bit (stores, i);
       }
 }
 
@@ -411,7 +411,7 @@ tree_ssa_dse (void)
       block_stmt_iterator bsi;
 
       for (bsi = bsi_start (bb); !bsi_end_p (bsi); bsi_next (&bsi))
-        stmt_ann (bsi_stmt (bsi))->uid = max_stmt_uid++;
+	stmt_ann (bsi_stmt (bsi))->uid = max_stmt_uid++;
     }
 
   /* We might consider making this a property of each pass so that it
@@ -463,21 +463,21 @@ gate_dse (void)
 }
 
 struct tree_opt_pass pass_dse = {
-  "dse",                        /* name */
-  gate_dse,                        /* gate */
-  tree_ssa_dse,                        /* execute */
-  NULL,                                /* sub */
-  NULL,                                /* next */
-  0,                                /* static_pass_number */
-  TV_TREE_DSE,                        /* tv_id */
+  "dse",			/* name */
+  gate_dse,			/* gate */
+  tree_ssa_dse,			/* execute */
+  NULL,				/* sub */
+  NULL,				/* next */
+  0,				/* static_pass_number */
+  TV_TREE_DSE,			/* tv_id */
   PROP_cfg
     | PROP_ssa
-    | PROP_alias,                /* properties_required */
-  0,                                /* properties_provided */
-  0,                                /* properties_destroyed */
-  0,                                /* todo_flags_start */
+    | PROP_alias,		/* properties_required */
+  0,				/* properties_provided */
+  0,				/* properties_destroyed */
+  0,				/* todo_flags_start */
   TODO_dump_func
     | TODO_ggc_collect
-    | TODO_verify_ssa,                /* todo_flags_finish */
-  0                                /* letter */
+    | TODO_verify_ssa,		/* todo_flags_finish */
+  0				/* letter */
 };

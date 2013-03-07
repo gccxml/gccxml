@@ -21,11 +21,11 @@ the Free Software Foundation, 51 Franklin Street, Fifth Floor,
 Boston, MA 02110-1301, USA.  */
 
 
-#define TARGET_OS_CPP_BUILTINS()                \
-  do                                                \
-    {                                                \
-      NETBSD_OS_CPP_BUILTINS_AOUT();                \
-    }                                                \
+#define TARGET_OS_CPP_BUILTINS()		\
+  do						\
+    {						\
+      NETBSD_OS_CPP_BUILTINS_AOUT();		\
+    }						\
   while (0)
 
 #undef CPP_SPEC

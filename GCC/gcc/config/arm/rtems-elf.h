@@ -24,10 +24,10 @@
 
 #define HAS_INIT_SECTION
 
-#define TARGET_OS_CPP_BUILTINS()                \
-    do {                                        \
-        builtin_define ("__rtems__");                \
-        builtin_assert ("system=rtems");        \
+#define TARGET_OS_CPP_BUILTINS()		\
+    do {					\
+	builtin_define ("__rtems__");		\
+	builtin_assert ("system=rtems");	\
     } while (0)
 
 /*

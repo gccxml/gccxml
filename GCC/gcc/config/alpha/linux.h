@@ -24,18 +24,18 @@ Boston, MA 02110-1301, USA.  */
 #undef TARGET_DEFAULT
 #define TARGET_DEFAULT (MASK_FPREGS | MASK_GAS)
 
-#define TARGET_OS_CPP_BUILTINS()                                \
-    do {                                                        \
-        builtin_define ("__gnu_linux__");                        \
-        builtin_define ("_LONGLONG");                                \
-        builtin_define_std ("linux");                                \
-        builtin_define_std ("unix");                                \
-        builtin_assert ("system=linux");                        \
-        builtin_assert ("system=unix");                                \
-        builtin_assert ("system=posix");                        \
-        /* The GNU C++ standard library requires this.  */        \
-        if (c_dialect_cxx ())                                        \
-          builtin_define ("_GNU_SOURCE");                        \
+#define TARGET_OS_CPP_BUILTINS()				\
+    do {							\
+	builtin_define ("__gnu_linux__");			\
+	builtin_define ("_LONGLONG");				\
+	builtin_define_std ("linux");				\
+	builtin_define_std ("unix");				\
+	builtin_assert ("system=linux");			\
+	builtin_assert ("system=unix");				\
+	builtin_assert ("system=posix");			\
+	/* The GNU C++ standard library requires this.  */	\
+	if (c_dialect_cxx ())					\
+	  builtin_define ("_GNU_SOURCE");			\
     } while (0)
 
 #undef LIB_SPEC

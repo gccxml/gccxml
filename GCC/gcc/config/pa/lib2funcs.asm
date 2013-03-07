@@ -29,37 +29,37 @@
 ;  Boston, MA 02110-1301, USA.
 
 #if !defined(__pro__) && !defined(__rtems__)
-        .SPACE $PRIVATE$
-        .SUBSPA $DATA$,QUAD=1,ALIGN=8,ACCESS=31
-        .SUBSPA $BSS$,QUAD=1,ALIGN=8,ACCESS=31,ZERO,SORT=82
-        .SPACE $TEXT$
-        .SUBSPA $LIT$,QUAD=0,ALIGN=8,ACCESS=44
-        .SUBSPA $CODE$,QUAD=0,ALIGN=8,ACCESS=44,CODE_ONLY
-        .SUBSPA $MILLICODE$,QUAD=0,ALIGN=8,ACCESS=44,SORT=8
+	.SPACE $PRIVATE$
+	.SUBSPA $DATA$,QUAD=1,ALIGN=8,ACCESS=31
+	.SUBSPA $BSS$,QUAD=1,ALIGN=8,ACCESS=31,ZERO,SORT=82
+	.SPACE $TEXT$
+	.SUBSPA $LIT$,QUAD=0,ALIGN=8,ACCESS=44
+	.SUBSPA $CODE$,QUAD=0,ALIGN=8,ACCESS=44,CODE_ONLY
+	.SUBSPA $MILLICODE$,QUAD=0,ALIGN=8,ACCESS=44,SORT=8
 #endif
-        .IMPORT $$dyncall,MILLICODE
+	.IMPORT $$dyncall,MILLICODE
 #if !defined(__pro__) && !defined(__rtems__)
-        .SPACE $TEXT$
-        .SUBSPA $CODE$
+	.SPACE $TEXT$
+	.SUBSPA $CODE$
 #else
-        .text
+	.text
 #endif
 
 ; Simply call with the address of the desired import stub in %r22 and
 ; arguments in the normal place (%r26-%r23 and stack slots).
 ;
-        .align 4
-        .EXPORT __gcc_plt_call,ENTRY,PRIV_LEV=3,RTNVAL=GR
+	.align 4
+	.EXPORT __gcc_plt_call,ENTRY,PRIV_LEV=3,RTNVAL=GR
 __gcc_plt_call
-        .PROC
-        .CALLINFO
-        .ENTRY
-        ; Our return address comes in %r31, not %r2!
-        stw %r31,-8(%r30)
+	.PROC
+	.CALLINFO
+	.ENTRY
+	; Our return address comes in %r31, not %r2!
+	stw %r31,-8(%r30)
 
-        ; An inline version of dyncall so we don't have to worry
-        ; about long calls to millicode, PIC and other complexities.
-        bb,>=,n %r22,30,L$foo
+	; An inline version of dyncall so we don't have to worry
+	; about long calls to millicode, PIC and other complexities.
+	bb,>=,n %r22,30,L$foo
         depi 0,31,2,%r22
         ldw 4(%r22),%r19
         ldw 0(%r22),%r22
@@ -67,13 +67,13 @@ L$foo
         ldsid (%r22),%r1
         mtsp %r1,%sr0
         ble 0(%sr0,%r22)
-        copy %r31,%r2
-        ldw -8(%r30),%r2
+	copy %r31,%r2
+	ldw -8(%r30),%r2
 
-        ; We're going to be returning to a stack address, so we
-        ; need to do an intra-space return.
-        ldsid (%rp),%r1
-        mtsp %r1,%sr0
-        be,n 0(%sr0,%rp)
-        .EXIT
-        .PROCEND
+	; We're going to be returning to a stack address, so we
+	; need to do an intra-space return.
+	ldsid (%rp),%r1
+	mtsp %r1,%sr0
+	be,n 0(%sr0,%rp)
+	.EXIT
+	.PROCEND

@@ -65,7 +65,7 @@ objc_is_reserved_word (tree ARG_UNUSED (ident))
 
 bool
 objc_compare_types (tree ARG_UNUSED (ltyp), tree ARG_UNUSED (rtyp),
-                    int ARG_UNUSED (argno), tree ARG_UNUSED (callee))
+		    int ARG_UNUSED (argno), tree ARG_UNUSED (callee))
 {
   return false;
 }
@@ -110,21 +110,21 @@ objc_declare_protocols (tree ARG_UNUSED (list))
 
 void
 objc_start_protocol (tree ARG_UNUSED (proto),
-                     tree ARG_UNUSED (protorefs))
+		     tree ARG_UNUSED (protorefs))
 {
 }
 
 void
 objc_start_class_interface (tree ARG_UNUSED (name),
-                            tree ARG_UNUSED (super),
-                            tree ARG_UNUSED (protos))
+			    tree ARG_UNUSED (super),
+			    tree ARG_UNUSED (protos))
 {
 }
 
 void
 objc_start_category_interface (tree ARG_UNUSED (name),
-                               tree ARG_UNUSED (categ),
-                               tree ARG_UNUSED (protos))
+			       tree ARG_UNUSED (categ),
+			       tree ARG_UNUSED (protos))
 {
 }
 
@@ -155,13 +155,13 @@ objc_set_method_type (enum tree_code ARG_UNUSED (code))
 
 void
 objc_start_class_implementation (tree ARG_UNUSED (name),
-                                 tree ARG_UNUSED (super))
+				 tree ARG_UNUSED (super))
 {
 }
 
 void
 objc_start_category_implementation (tree ARG_UNUSED (name),
-                                    tree ARG_UNUSED (categ))
+				    tree ARG_UNUSED (categ))
 {
 }
 
@@ -197,17 +197,17 @@ objc_finish_method_definition (tree ARG_UNUSED (fndecl))
 
 tree
 objc_build_keyword_decl (tree ARG_UNUSED (selector),
-                         tree ARG_UNUSED (typename),
-                         tree ARG_UNUSED (identifier))
+			 tree ARG_UNUSED (typename),
+			 tree ARG_UNUSED (identifier))
 {
   return 0;
 }
 
 tree
 objc_build_method_signature (tree ARG_UNUSED (rettype),
-                             tree ARG_UNUSED (selectors),
-                             tree ARG_UNUSED (optparms),
-                             bool ARG_UNUSED (ellipsis))
+			     tree ARG_UNUSED (selectors),
+			     tree ARG_UNUSED (optparms),
+			     bool ARG_UNUSED (ellipsis))
 {
   return 0;
 }
@@ -250,7 +250,7 @@ objc_get_class_reference (tree ARG_UNUSED (name))
 
 tree
 objc_get_protocol_qualified_type (tree ARG_UNUSED (name),
-                                  tree ARG_UNUSED (protos))
+				  tree ARG_UNUSED (protos))
 {
   return 0;
 }
@@ -287,7 +287,7 @@ objc_build_throw_stmt (tree ARG_UNUSED (expr))
 
 tree
 objc_build_synchronized (location_t ARG_UNUSED (start_locus),
-                         tree ARG_UNUSED (mutex), tree ARG_UNUSED (body))
+			 tree ARG_UNUSED (mutex), tree ARG_UNUSED (body))
 {
   return 0;
 }
@@ -309,7 +309,7 @@ objc_finish_catch_clause (void)
 
 void
 objc_build_finally_clause (location_t ARG_UNUSED (finally_locus),
-                           tree ARG_UNUSED (body))
+			   tree ARG_UNUSED (body))
 {
 }
 
@@ -321,8 +321,8 @@ objc_finish_try_stmt (void)
 
 tree
 objc_generate_write_barrier (tree ARG_UNUSED (lhs),
-                             enum tree_code ARG_UNUSED (modifycode),
-                             tree ARG_UNUSED (rhs))
+			     enum tree_code ARG_UNUSED (modifycode),
+			     tree ARG_UNUSED (rhs))
 {
   return 0;
 }  

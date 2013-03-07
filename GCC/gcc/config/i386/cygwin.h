@@ -47,7 +47,7 @@ Boston, MA 02110-1301, USA.  */
 
 #undef LIBGCC_SPEC
 #define LIBGCC_SPEC \
-  "%{mno-cygwin: %{mthreads:-lmingwthrd} -lmingw32} -lgcc        \
+  "%{mno-cygwin: %{mthreads:-lmingwthrd} -lmingw32} -lgcc	\
    %{mno-cygwin:-lmoldname -lmingwex -lmsvcrt}"
 
 /* We have to dynamic link to get to the system DLLs.  All of libc, libm and
@@ -86,7 +86,7 @@ Boston, MA 02110-1301, USA.  */
 
 #ifdef GPLUSPLUS_INCLUDE_DIR
 char cygwin_gplusplus_include_dir[sizeof (GPLUSPLUS_INCLUDE_DIR) + 1
-                                  + (CYGWIN_MINGW_SUBDIR_LEN)]
+				  + (CYGWIN_MINGW_SUBDIR_LEN)]
   = GPLUSPLUS_INCLUDE_DIR;
 #undef GPLUSPLUS_INCLUDE_DIR
 #define GPLUSPLUS_INCLUDE_DIR ((const char *) cygwin_gplusplus_include_dir)
@@ -97,7 +97,7 @@ char cygwin_gplusplus_include_dir[sizeof (GPLUSPLUS_INCLUDE_DIR) + 1
 
 #ifdef GPLUSPLUS_TOOL_INCLUDE_DIR
 char cygwin_gplusplus_tool_include_dir[sizeof (GPLUSPLUS_TOOL_INCLUDE_DIR) + 1
-                                       + CYGWIN_MINGW_SUBDIR_LEN]
+				       + CYGWIN_MINGW_SUBDIR_LEN]
   = GPLUSPLUS_TOOL_INCLUDE_DIR;
 #undef GPLUSPLUS_TOOL_INCLUDE_DIR
 #define GPLUSPLUS_TOOL_INCLUDE_DIR ((const char *) cygwin_gplusplus_tool_include_dir)
@@ -108,7 +108,7 @@ char cygwin_gplusplus_tool_include_dir[sizeof (GPLUSPLUS_TOOL_INCLUDE_DIR) + 1
 
 #ifdef GPLUSPLUS_BACKWARD_INCLUDE_DIR
 char cygwin_gplusplus_backward_include_dir[sizeof (GPLUSPLUS_BACKWARD_INCLUDE_DIR)  + 1
-                                           + CYGWIN_MINGW_SUBDIR_LEN]
+					   + CYGWIN_MINGW_SUBDIR_LEN]
   = GPLUSPLUS_BACKWARD_INCLUDE_DIR;
 #undef GPLUSPLUS_BACKWARD_INCLUDE_DIR
 #define GPLUSPLUS_BACKWARD_INCLUDE_DIR ((const char *) cygwin_gplusplus_backward_include_dir)
@@ -119,7 +119,7 @@ char cygwin_gplusplus_backward_include_dir[sizeof (GPLUSPLUS_BACKWARD_INCLUDE_DI
 
 #ifdef LOCAL_INCLUDE_DIR
 char cygwin_local_include_dir[sizeof (LOCAL_INCLUDE_DIR)  + 1
-                              + CYGWIN_MINGW_SUBDIR_LEN]
+			      + CYGWIN_MINGW_SUBDIR_LEN]
   = LOCAL_INCLUDE_DIR;
 #undef LOCAL_INCLUDE_DIR
 #define LOCAL_INCLUDE_DIR ((const char *) cygwin_local_include_dir)
@@ -130,7 +130,7 @@ char cygwin_local_include_dir[sizeof (LOCAL_INCLUDE_DIR)  + 1
 
 #ifdef CROSS_INCLUDE_DIR
 char cygwin_cross_include_dir[sizeof (CROSS_INCLUDE_DIR) + 1
-                              + CYGWIN_MINGW_SUBDIR_LEN]
+			      + CYGWIN_MINGW_SUBDIR_LEN]
   = CROSS_INCLUDE_DIR;
 #undef CROSS_INCLUDE_DIR
 #define CROSS_INCLUDE_DIR ((const char *) cygwin_cross_include_dir)
@@ -141,7 +141,7 @@ char cygwin_cross_include_dir[sizeof (CROSS_INCLUDE_DIR) + 1
 
 #ifdef TOOL_INCLUDE_DIR
 char cygwin_tool_include_dir[sizeof (GCC_TO_STRING(TOOL_INCLUDE_DIR)) + 1
-                             + CYGWIN_MINGW_SUBDIR_LEN]
+			     + CYGWIN_MINGW_SUBDIR_LEN]
   = GCC_TO_STRING(TOOL_INCLUDE_DIR);
 #undef TOOL_INCLUDE_DIR
 #define TOOL_INCLUDE_DIR ((const char *) cygwin_tool_include_dir)
@@ -150,7 +150,7 @@ char cygwin_tool_include_dir[sizeof (GCC_TO_STRING(TOOL_INCLUDE_DIR)) + 1
 #undef STANDARD_INCLUDE_DIR
 #define STANDARD_INCLUDE_DIR "/usr/include"
 char cygwin_standard_include_dir[sizeof (STANDARD_INCLUDE_DIR) + 1
-                                 + CYGWIN_MINGW_SUBDIR_LEN]
+				 + CYGWIN_MINGW_SUBDIR_LEN]
   = STANDARD_INCLUDE_DIR;
 #undef STANDARD_INCLUDE_DIR
 #define STANDARD_INCLUDE_DIR ((const char *) cygwin_standard_include_dir)
@@ -212,18 +212,18 @@ while (0)
 do \
 { \
   char *cprefix = concat (tooldir_base_prefix, spec_machine, \
-                          dir_separator_str, NULL); \
+			  dir_separator_str, NULL); \
   if (!IS_ABSOLUTE_PATH (cprefix)) \
     cprefix = concat (standard_exec_prefix, spec_machine, dir_separator_str, \
-                      spec_version, dir_separator_str, tooldir_prefix, NULL); \
+		      spec_version, dir_separator_str, tooldir_prefix, NULL); \
   add_prefix (&exec_prefixes,\
-              concat (cprefix, "../../../../", spec_machine, "/bin/", NULL), \
-              "BINUTILS", PREFIX_PRIORITY_LAST, 0, NULL); \
+	      concat (cprefix, "../../../../", spec_machine, "/bin/", NULL), \
+	      "BINUTILS", PREFIX_PRIORITY_LAST, 0, NULL); \
   add_prefix (&exec_prefixes, cprefix, \
-              "BINUTILS", PREFIX_PRIORITY_LAST, 0, NULL); \
+	      "BINUTILS", PREFIX_PRIORITY_LAST, 0, NULL); \
   add_prefix (&startfile_prefixes,\
-              concat (standard_startfile_prefix, "w32api", NULL),\
-              "GCC", PREFIX_PRIORITY_LAST, 0, NULL);\
+	      concat (standard_startfile_prefix, "w32api", NULL),\
+	      "GCC", PREFIX_PRIORITY_LAST, 0, NULL);\
   mingw_scan(argc, (const char * const *) argv, &spec_machine); \
   } \
 while (0)

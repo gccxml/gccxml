@@ -54,10 +54,10 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
 /* Depending on WIDTH, define a number of macros:
 
    DFP_C_TYPE: type of the arguments to the libgcc functions;
-        (eg _Decimal32)
+	(eg _Decimal32)
 
    IEEE_TYPE: the corresponding (encoded) IEEE754R type;
-        (eg decimal32)
+	(eg decimal32)
    
    TO_INTERNAL: the name of the decNumber function to convert an
    encoded value into the decNumber internal representation;
@@ -73,32 +73,32 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
    encoded value to a string.  */
 
 #if WIDTH == 32
-#define DFP_C_TYPE        _Decimal32
-#define IEEE_TYPE        decimal32
-#define HOST_TO_IEEE        __host_to_ieee_32
-#define IEEE_TO_HOST        __ieee_to_host_32
-#define TO_INTERNAL        __decimal32ToNumber
-#define TO_ENCODED        __decimal32FromNumber
-#define FROM_STRING        __decimal32FromString
-#define TO_STRING        __decimal32ToString
+#define DFP_C_TYPE	_Decimal32
+#define IEEE_TYPE	decimal32
+#define HOST_TO_IEEE	__host_to_ieee_32
+#define IEEE_TO_HOST	__ieee_to_host_32
+#define TO_INTERNAL	__decimal32ToNumber
+#define TO_ENCODED	__decimal32FromNumber
+#define FROM_STRING	__decimal32FromString
+#define TO_STRING	__decimal32ToString
 #elif WIDTH == 64
-#define DFP_C_TYPE        _Decimal64
-#define IEEE_TYPE        decimal64
-#define HOST_TO_IEEE        __host_to_ieee_64
-#define IEEE_TO_HOST        __ieee_to_host_64
-#define TO_INTERNAL        __decimal64ToNumber
-#define TO_ENCODED        __decimal64FromNumber
-#define FROM_STRING        __decimal64FromString
-#define TO_STRING        __decimal64ToString
+#define DFP_C_TYPE	_Decimal64
+#define IEEE_TYPE	decimal64
+#define HOST_TO_IEEE	__host_to_ieee_64
+#define IEEE_TO_HOST	__ieee_to_host_64
+#define TO_INTERNAL	__decimal64ToNumber
+#define TO_ENCODED	__decimal64FromNumber
+#define FROM_STRING	__decimal64FromString
+#define TO_STRING	__decimal64ToString
 #elif WIDTH == 128
-#define DFP_C_TYPE        _Decimal128
-#define IEEE_TYPE        decimal128
-#define HOST_TO_IEEE        __host_to_ieee_128
-#define IEEE_TO_HOST        __ieee_to_host_128
-#define TO_INTERNAL        __decimal128ToNumber
-#define TO_ENCODED        __decimal128FromNumber
-#define FROM_STRING        __decimal128FromString
-#define TO_STRING        __decimal128ToString
+#define DFP_C_TYPE	_Decimal128
+#define IEEE_TYPE	decimal128
+#define HOST_TO_IEEE	__host_to_ieee_128
+#define IEEE_TO_HOST	__ieee_to_host_128
+#define TO_INTERNAL	__decimal128ToNumber
+#define TO_ENCODED	__decimal128FromNumber
+#define FROM_STRING	__decimal128FromString
+#define TO_STRING	__decimal128ToString
 #else
 #error invalid decimal float word width
 #endif
@@ -115,14 +115,14 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
 #endif
 
 /* Define CONTEXT_ROUND to obtain the current decNumber rounding mode.  */
-extern enum rounding        __decGetRound (void);
-#define CONTEXT_ROUND        __decGetRound ()
+extern enum rounding	__decGetRound (void);
+#define CONTEXT_ROUND	__decGetRound ()
 
 extern int __dfp_traps;
-#define CONTEXT_TRAPS        __dfp_traps
-#define CONTEXT_ERRORS(context)        context.status & DEC_Errors
+#define CONTEXT_TRAPS	__dfp_traps
+#define CONTEXT_ERRORS(context)	context.status & DEC_Errors
 extern void __dfp_raise (int);
-#define DFP_RAISE(A)        __dfp_raise(A)
+#define DFP_RAISE(A)	__dfp_raise(A)
 
 /* Conversions between different decimal float types use WIDTH_TO to
    determine additional macros to define.  */
@@ -146,19 +146,19 @@ extern void __dfp_raise (int);
    for the destination.  */
 
 #if WIDTH_TO == 32
-#define DFP_C_TYPE_TO        _Decimal32
-#define IEEE_TYPE_TO        decimal32
-#define TO_ENCODED_TO        __decimal32FromNumber
+#define DFP_C_TYPE_TO	_Decimal32
+#define IEEE_TYPE_TO	decimal32
+#define TO_ENCODED_TO	__decimal32FromNumber
 #define IEEE_TO_HOST_TO __ieee_to_host_32
 #elif WIDTH_TO == 64
-#define DFP_C_TYPE_TO        _Decimal64
-#define IEEE_TYPE_TO        decimal64
-#define TO_ENCODED_TO        __decimal64FromNumber
+#define DFP_C_TYPE_TO	_Decimal64
+#define IEEE_TYPE_TO	decimal64
+#define TO_ENCODED_TO	__decimal64FromNumber
 #define IEEE_TO_HOST_TO __ieee_to_host_64
 #elif WIDTH_TO == 128
-#define DFP_C_TYPE_TO        _Decimal128
-#define IEEE_TYPE_TO        decimal128
-#define TO_ENCODED_TO        __decimal128FromNumber
+#define DFP_C_TYPE_TO	_Decimal128
+#define IEEE_TYPE_TO	decimal128
+#define TO_ENCODED_TO	__decimal128FromNumber
 #define IEEE_TO_HOST_TO __ieee_to_host_128
 #endif
 
@@ -271,62 +271,62 @@ extern float strtof (const char *, char **);
 /* Names of arithmetic functions.  */
 
 #if WIDTH == 32
-#define DFP_ADD                __addsd3
-#define DFP_SUB                __subsd3
-#define DFP_MULTIPLY        __mulsd3
-#define DFP_DIVIDE        __divsd3
-#define DFP_EQ                __eqsd2
-#define DFP_NE                __nesd2
-#define DFP_LT                __ltsd2
-#define DFP_GT                __gtsd2
-#define DFP_LE                __lesd2
-#define DFP_GE                __gesd2
-#define DFP_UNORD        __unordsd2
+#define DFP_ADD		__addsd3
+#define DFP_SUB		__subsd3
+#define DFP_MULTIPLY	__mulsd3
+#define DFP_DIVIDE	__divsd3
+#define DFP_EQ		__eqsd2
+#define DFP_NE		__nesd2
+#define DFP_LT		__ltsd2
+#define DFP_GT		__gtsd2
+#define DFP_LE		__lesd2
+#define DFP_GE		__gesd2
+#define DFP_UNORD	__unordsd2
 #elif WIDTH == 64
-#define DFP_ADD                __adddd3
-#define DFP_SUB                __subdd3
-#define DFP_MULTIPLY        __muldd3
-#define DFP_DIVIDE        __divdd3
-#define DFP_EQ                __eqdd2
-#define DFP_NE                __nedd2
-#define DFP_LT                __ltdd2
-#define DFP_GT                __gtdd2
-#define DFP_LE                __ledd2
-#define DFP_GE                __gedd2
-#define DFP_UNORD        __unorddd2
+#define DFP_ADD		__adddd3
+#define DFP_SUB		__subdd3
+#define DFP_MULTIPLY	__muldd3
+#define DFP_DIVIDE	__divdd3
+#define DFP_EQ		__eqdd2
+#define DFP_NE		__nedd2
+#define DFP_LT		__ltdd2
+#define DFP_GT		__gtdd2
+#define DFP_LE		__ledd2
+#define DFP_GE		__gedd2
+#define DFP_UNORD	__unorddd2
 #elif WIDTH == 128
-#define DFP_ADD                __addtd3
-#define DFP_SUB                __subtd3
-#define DFP_MULTIPLY        __multd3
-#define DFP_DIVIDE        __divtd3
-#define DFP_EQ                __eqtd2
-#define DFP_NE                __netd2
-#define DFP_LT                __lttd2
-#define DFP_GT                __gttd2
-#define DFP_LE                __letd2
-#define DFP_GE                __getd2
-#define DFP_UNORD        __unordtd2
+#define DFP_ADD		__addtd3
+#define DFP_SUB		__subtd3
+#define DFP_MULTIPLY	__multd3
+#define DFP_DIVIDE	__divtd3
+#define DFP_EQ		__eqtd2
+#define DFP_NE		__netd2
+#define DFP_LT		__lttd2
+#define DFP_GT		__gttd2
+#define DFP_LE		__letd2
+#define DFP_GE		__getd2
+#define DFP_UNORD	__unordtd2
 #endif
 
 /* Names of functions to convert between different decimal float types.  */
 
 #if WIDTH == 32
 #if WIDTH_TO == 64
-#define DFP_TO_DFP        __extendsddd2
+#define DFP_TO_DFP	__extendsddd2
 #elif WIDTH_TO == 128
-#define DFP_TO_DFP        __extendsdtd2
+#define DFP_TO_DFP	__extendsdtd2
 #endif
-#elif WIDTH == 64        
+#elif WIDTH == 64	
 #if WIDTH_TO == 32
-#define DFP_TO_DFP        __truncddsd2
+#define DFP_TO_DFP	__truncddsd2
 #elif WIDTH_TO == 128
-#define DFP_TO_DFP        __extendddtd2
+#define DFP_TO_DFP	__extendddtd2
 #endif
 #elif WIDTH == 128
 #if WIDTH_TO == 32
-#define DFP_TO_DFP        __trunctdsd2
+#define DFP_TO_DFP	__trunctdsd2
 #elif WIDTH_TO == 64
-#define DFP_TO_DFP        __trunctddd2
+#define DFP_TO_DFP	__trunctddd2
 #endif
 #endif
 
@@ -334,45 +334,45 @@ extern float strtof (const char *, char **);
 
 #if WIDTH == 32
 #if INT_KIND == 1
-#define INT_TO_DFP        __floatsisd
-#define DFP_TO_INT        __fixsdsi
+#define INT_TO_DFP	__floatsisd
+#define DFP_TO_INT	__fixsdsi
 #elif INT_KIND == 2
-#define INT_TO_DFP        __floatdisd
-#define DFP_TO_INT        __fixsddi
+#define INT_TO_DFP	__floatdisd
+#define DFP_TO_INT	__fixsddi
 #elif INT_KIND == 3
-#define INT_TO_DFP        __floatunssisd
-#define DFP_TO_INT        __fixunssdsi
+#define INT_TO_DFP	__floatunssisd
+#define DFP_TO_INT	__fixunssdsi
 #elif INT_KIND == 4
-#define INT_TO_DFP        __floatunsdisd
-#define DFP_TO_INT        __fixunssddi
+#define INT_TO_DFP	__floatunsdisd
+#define DFP_TO_INT	__fixunssddi
 #endif
 #elif WIDTH == 64
 #if INT_KIND == 1
-#define INT_TO_DFP        __floatsidd
-#define DFP_TO_INT        __fixddsi
+#define INT_TO_DFP	__floatsidd
+#define DFP_TO_INT	__fixddsi
 #elif INT_KIND == 2
-#define INT_TO_DFP        __floatdidd
-#define DFP_TO_INT        __fixdddi
+#define INT_TO_DFP	__floatdidd
+#define DFP_TO_INT	__fixdddi
 #elif INT_KIND == 3
-#define INT_TO_DFP        __floatunssidd
-#define DFP_TO_INT        __fixunsddsi
+#define INT_TO_DFP	__floatunssidd
+#define DFP_TO_INT	__fixunsddsi
 #elif INT_KIND == 4
-#define INT_TO_DFP        __floatunsdidd
-#define DFP_TO_INT        __fixunsdddi
+#define INT_TO_DFP	__floatunsdidd
+#define DFP_TO_INT	__fixunsdddi
 #endif
 #elif WIDTH == 128
 #if INT_KIND == 1
-#define INT_TO_DFP        __floatsitd
-#define DFP_TO_INT        __fixtdsi
+#define INT_TO_DFP	__floatsitd
+#define DFP_TO_INT	__fixtdsi
 #elif INT_KIND == 2
-#define INT_TO_DFP        __floatditd
-#define DFP_TO_INT        __fixtddi
+#define INT_TO_DFP	__floatditd
+#define DFP_TO_INT	__fixtddi
 #elif INT_KIND == 3
-#define INT_TO_DFP        __floatunssitd
-#define DFP_TO_INT        __fixunstdsi
+#define INT_TO_DFP	__floatunssitd
+#define DFP_TO_INT	__fixunstdsi
 #elif INT_KIND == 4
-#define INT_TO_DFP        __floatunsditd
-#define DFP_TO_INT        __fixunstddi
+#define INT_TO_DFP	__floatunsditd
+#define DFP_TO_INT	__fixunstddi
 #endif
 #endif
 
@@ -380,38 +380,38 @@ extern float strtof (const char *, char **);
 
 #if WIDTH == 32
 #if BFP_KIND == 1
-#define BFP_TO_DFP        __extendsfsd
-#define DFP_TO_BFP        __truncsdsf
+#define BFP_TO_DFP	__extendsfsd
+#define DFP_TO_BFP	__truncsdsf
 #elif BFP_KIND == 2
-#define BFP_TO_DFP        __truncdfsd
-#define DFP_TO_BFP        __extendsddf
+#define BFP_TO_DFP	__truncdfsd
+#define DFP_TO_BFP	__extendsddf
 #elif BFP_KIND == 3
-#define BFP_TO_DFP        __truncxfsd
-#define DFP_TO_BFP        __extendsdxf
+#define BFP_TO_DFP	__truncxfsd
+#define DFP_TO_BFP	__extendsdxf
 #endif /* BFP_KIND */
 
 #elif WIDTH == 64
 #if BFP_KIND == 1
-#define BFP_TO_DFP        __extendsfdd
-#define DFP_TO_BFP        __truncddsf
+#define BFP_TO_DFP	__extendsfdd
+#define DFP_TO_BFP	__truncddsf
 #elif BFP_KIND == 2
-#define BFP_TO_DFP        __extenddfdd
-#define DFP_TO_BFP        __truncdddf
+#define BFP_TO_DFP	__extenddfdd
+#define DFP_TO_BFP	__truncdddf
 #elif BFP_KIND == 3
-#define BFP_TO_DFP        __truncxfdd
-#define DFP_TO_BFP        __extendddxf
+#define BFP_TO_DFP	__truncxfdd
+#define DFP_TO_BFP	__extendddxf
 #endif /* BFP_KIND */
 
 #elif WIDTH == 128
 #if BFP_KIND == 1
-#define BFP_TO_DFP        __extendsftd
-#define DFP_TO_BFP        __trunctdsf
+#define BFP_TO_DFP	__extendsftd
+#define DFP_TO_BFP	__trunctdsf
 #elif BFP_KIND == 2
-#define BFP_TO_DFP        __extenddftd
-#define DFP_TO_BFP        __trunctddf
+#define BFP_TO_DFP	__extenddftd
+#define DFP_TO_BFP	__trunctddf
 #elif BFP_KIND == 3
-#define BFP_TO_DFP        __extendxftd
-#define DFP_TO_BFP        __trunctdxf
+#define BFP_TO_DFP	__extendxftd
+#define DFP_TO_BFP	__trunctdxf
 #endif /* BFP_KIND */
 
 #endif /* WIDTH */

@@ -85,18 +85,18 @@ verify_flow_info (void)
   FOR_BB_BETWEEN (bb, ENTRY_BLOCK_PTR->next_bb, NULL, next_bb)
     {
       if (bb != EXIT_BLOCK_PTR
-          && bb != BASIC_BLOCK (bb->index))
-        {
-          error ("bb %d on wrong place", bb->index);
-          err = 1;
-        }
+	  && bb != BASIC_BLOCK (bb->index))
+	{
+	  error ("bb %d on wrong place", bb->index);
+	  err = 1;
+	}
 
       if (bb->prev_bb != last_bb_seen)
-        {
-          error ("prev_bb of %d should be %d, not %d",
-                 bb->index, last_bb_seen->index, bb->prev_bb->index);
-          err = 1;
-        }
+	{
+	  error ("prev_bb of %d should be %d, not %d",
+		 bb->index, last_bb_seen->index, bb->prev_bb->index);
+	  err = 1;
+	}
 
       last_bb_seen = bb;
     }
@@ -109,91 +109,91 @@ verify_flow_info (void)
       edge_iterator ei;
 
       if (bb->count < 0)
-        {
-          error ("verify_flow_info: Wrong count of block %i %i",
-                 bb->index, (int)bb->count);
-          err = 1;
-        }
+	{
+	  error ("verify_flow_info: Wrong count of block %i %i",
+		 bb->index, (int)bb->count);
+	  err = 1;
+	}
       if (bb->frequency < 0)
-        {
-          error ("verify_flow_info: Wrong frequency of block %i %i",
-                 bb->index, bb->frequency);
-          err = 1;
-        }
+	{
+	  error ("verify_flow_info: Wrong frequency of block %i %i",
+		 bb->index, bb->frequency);
+	  err = 1;
+	}
       FOR_EACH_EDGE (e, ei, bb->succs)
-        {
-          if (last_visited [e->dest->index] == bb)
-            {
-              error ("verify_flow_info: Duplicate edge %i->%i",
-                     e->src->index, e->dest->index);
-              err = 1;
-            }
-          if (e->probability < 0 || e->probability > REG_BR_PROB_BASE)
-            {
-              error ("verify_flow_info: Wrong probability of edge %i->%i %i",
-                     e->src->index, e->dest->index, e->probability);
-              err = 1;
-            }
-          if (e->count < 0)
-            {
-              error ("verify_flow_info: Wrong count of edge %i->%i %i",
-                     e->src->index, e->dest->index, (int)e->count);
-              err = 1;
-            }
+	{
+	  if (last_visited [e->dest->index] == bb)
+	    {
+	      error ("verify_flow_info: Duplicate edge %i->%i",
+		     e->src->index, e->dest->index);
+	      err = 1;
+	    }
+	  if (e->probability < 0 || e->probability > REG_BR_PROB_BASE)
+	    {
+	      error ("verify_flow_info: Wrong probability of edge %i->%i %i",
+		     e->src->index, e->dest->index, e->probability);
+	      err = 1;
+	    }
+	  if (e->count < 0)
+	    {
+	      error ("verify_flow_info: Wrong count of edge %i->%i %i",
+		     e->src->index, e->dest->index, (int)e->count);
+	      err = 1;
+	    }
 
-          last_visited [e->dest->index] = bb;
+	  last_visited [e->dest->index] = bb;
 
-          if (e->flags & EDGE_FALLTHRU)
-            n_fallthru++;
+	  if (e->flags & EDGE_FALLTHRU)
+	    n_fallthru++;
 
-          if (e->src != bb)
-            {
-              error ("verify_flow_info: Basic block %d succ edge is corrupted",
-                     bb->index);
-              fprintf (stderr, "Predecessor: ");
-              dump_edge_info (stderr, e, 0);
-              fprintf (stderr, "\nSuccessor: ");
-              dump_edge_info (stderr, e, 1);
-              fprintf (stderr, "\n");
-              err = 1;
-            }
+	  if (e->src != bb)
+	    {
+	      error ("verify_flow_info: Basic block %d succ edge is corrupted",
+		     bb->index);
+	      fprintf (stderr, "Predecessor: ");
+	      dump_edge_info (stderr, e, 0);
+	      fprintf (stderr, "\nSuccessor: ");
+	      dump_edge_info (stderr, e, 1);
+	      fprintf (stderr, "\n");
+	      err = 1;
+	    }
 
-          edge_checksum[e->dest->index] += (size_t) e;
-        }
+	  edge_checksum[e->dest->index] += (size_t) e;
+	}
       if (n_fallthru > 1)
-        {
-          error ("wrong amount of branch edges after unconditional jump %i", bb->index);
-          err = 1;
-        }
+	{
+	  error ("wrong amount of branch edges after unconditional jump %i", bb->index);
+	  err = 1;
+	}
 
       FOR_EACH_EDGE (e, ei, bb->preds)
-        {
-          if (e->dest != bb)
-            {
-              error ("basic block %d pred edge is corrupted", bb->index);
-              fputs ("Predecessor: ", stderr);
-              dump_edge_info (stderr, e, 0);
-              fputs ("\nSuccessor: ", stderr);
-              dump_edge_info (stderr, e, 1);
-              fputc ('\n', stderr);
-              err = 1;
-            }
+	{
+	  if (e->dest != bb)
+	    {
+	      error ("basic block %d pred edge is corrupted", bb->index);
+	      fputs ("Predecessor: ", stderr);
+	      dump_edge_info (stderr, e, 0);
+	      fputs ("\nSuccessor: ", stderr);
+	      dump_edge_info (stderr, e, 1);
+	      fputc ('\n', stderr);
+	      err = 1;
+	    }
 
-          if (ei.index != e->dest_idx)
-            {
-              error ("basic block %d pred edge is corrupted", bb->index);
-              error ("its dest_idx should be %d, not %d",
-                     ei.index, e->dest_idx);
-              fputs ("Predecessor: ", stderr);
-              dump_edge_info (stderr, e, 0);
-              fputs ("\nSuccessor: ", stderr);
-              dump_edge_info (stderr, e, 1);
-              fputc ('\n', stderr);
-              err = 1;
-            }
+	  if (ei.index != e->dest_idx)
+	    {
+	      error ("basic block %d pred edge is corrupted", bb->index);
+	      error ("its dest_idx should be %d, not %d",
+		     ei.index, e->dest_idx);
+	      fputs ("Predecessor: ", stderr);
+	      dump_edge_info (stderr, e, 0);
+	      fputs ("\nSuccessor: ", stderr);
+	      dump_edge_info (stderr, e, 1);
+	      fputc ('\n', stderr);
+	      err = 1;
+	    }
 
-          edge_checksum[e->dest->index] -= (size_t) e;
-        }
+	  edge_checksum[e->dest->index] -= (size_t) e;
+	}
     }
 
   /* Complete edge checksumming for ENTRY and EXIT.  */
@@ -211,8 +211,8 @@ verify_flow_info (void)
   FOR_BB_BETWEEN (bb, ENTRY_BLOCK_PTR, NULL, next_bb)
     if (edge_checksum[bb->index])
       {
-        error ("basic block %i edge lists are corrupted", bb->index);
-        err = 1;
+	error ("basic block %i edge lists are corrupted", bb->index);
+	err = 1;
       }
 
   last_bb_seen = ENTRY_BLOCK_PTR;
@@ -244,7 +244,7 @@ dump_bb (basic_block bb, FILE *outf, int indent)
   s_indent[indent] = '\0';
 
   fprintf (outf, ";;%s basic block %d, loop depth %d, count ",
-           s_indent, bb->index, bb->loop_depth);
+	   s_indent, bb->index, bb->loop_depth);
   fprintf (outf, HOST_WIDEST_INT_PRINT_DEC, (HOST_WIDEST_INT) bb->count);
   putc ('\n', outf);
 
@@ -286,7 +286,7 @@ redirect_edge_and_branch (edge e, basic_block dest)
 
   if (!cfg_hooks->redirect_edge_and_branch)
     internal_error ("%s does not support redirect_edge_and_branch",
-                    cfg_hooks->name);
+		    cfg_hooks->name);
 
   ret = cfg_hooks->redirect_edge_and_branch (e, dest);
 
@@ -304,7 +304,7 @@ redirect_edge_and_branch_force (edge e, basic_block dest)
 
   if (!cfg_hooks->redirect_edge_and_branch_force)
     internal_error ("%s does not support redirect_edge_and_branch_force",
-                    cfg_hooks->name);
+		    cfg_hooks->name);
 
   ret = cfg_hooks->redirect_edge_and_branch_force (e, dest);
 
@@ -424,30 +424,30 @@ split_edge (edge e)
     {
       /* There are two cases:
 
-         If the immediate dominator of e->dest is not e->src, it
-         remains unchanged.
+	 If the immediate dominator of e->dest is not e->src, it
+	 remains unchanged.
 
-         If immediate dominator of e->dest is e->src, it may become
-         ret, provided that all other predecessors of e->dest are
-         dominated by e->dest.  */
+	 If immediate dominator of e->dest is e->src, it may become
+	 ret, provided that all other predecessors of e->dest are
+	 dominated by e->dest.  */
 
       if (get_immediate_dominator (CDI_DOMINATORS, single_succ (ret))
-          == single_pred (ret))
-        {
-          edge_iterator ei;
-          FOR_EACH_EDGE (f, ei, single_succ (ret)->preds)
-            {
-              if (f == single_succ_edge (ret))
-                continue;
+	  == single_pred (ret))
+	{
+	  edge_iterator ei;
+	  FOR_EACH_EDGE (f, ei, single_succ (ret)->preds)
+	    {
+	      if (f == single_succ_edge (ret))
+		continue;
 
-              if (!dominated_by_p (CDI_DOMINATORS, f->src,
-                                   single_succ (ret)))
-                break;
-            }
+	      if (!dominated_by_p (CDI_DOMINATORS, f->src,
+				   single_succ (ret)))
+		break;
+	    }
 
-          if (!f)
-            set_immediate_dominator (CDI_DOMINATORS, single_succ (ret), ret);
-        }
+	  if (!f)
+	    set_immediate_dominator (CDI_DOMINATORS, single_succ (ret), ret);
+	}
     };
 
   return ret;
@@ -563,7 +563,7 @@ merge_blocks (basic_block a, basic_block b)
 
 edge
 make_forwarder_block (basic_block bb, bool (*redirect_edge_p) (edge),
-                      void (*new_bb_cbk) (basic_block))
+		      void (*new_bb_cbk) (basic_block))
 {
   edge e, fallthru;
   edge_iterator ei;
@@ -571,7 +571,7 @@ make_forwarder_block (basic_block bb, bool (*redirect_edge_p) (edge),
 
   if (!cfg_hooks->make_forwarder_block)
     internal_error ("%s does not support make_forwarder_block",
-                    cfg_hooks->name);
+		    cfg_hooks->name);
 
   fallthru = split_block_after_labels (bb);
   dummy = fallthru->src;
@@ -581,24 +581,24 @@ make_forwarder_block (basic_block bb, bool (*redirect_edge_p) (edge),
   for (ei = ei_start (dummy->preds); (e = ei_safe_edge (ei)); )
     {
       if (redirect_edge_p (e))
-        {
-          ei_next (&ei);
-          continue;
-        }
+	{
+	  ei_next (&ei);
+	  continue;
+	}
 
       dummy->frequency -= EDGE_FREQUENCY (e);
       dummy->count -= e->count;
       if (dummy->frequency < 0)
-        dummy->frequency = 0;
+	dummy->frequency = 0;
       if (dummy->count < 0)
-        dummy->count = 0;
+	dummy->count = 0;
       fallthru->count -= e->count;
       if (fallthru->count < 0)
-        fallthru->count = 0;
+	fallthru->count = 0;
 
       jump = redirect_edge_and_branch_force (e, bb);
       if (jump)
-        new_bb_cbk (jump);
+	new_bb_cbk (jump);
     }
 
   if (dom_info_available_p (CDI_DOMINATORS))
@@ -645,25 +645,25 @@ tidy_fallthru_edges (void)
       c = b->next_bb;
 
       /* We care about simple conditional or unconditional jumps with
-         a single successor.
+	 a single successor.
 
-         If we had a conditional branch to the next instruction when
-         find_basic_blocks was called, then there will only be one
-         out edge for the block which ended with the conditional
-         branch (since we do not create duplicate edges).
+	 If we had a conditional branch to the next instruction when
+	 find_basic_blocks was called, then there will only be one
+	 out edge for the block which ended with the conditional
+	 branch (since we do not create duplicate edges).
 
-         Furthermore, the edge will be marked as a fallthru because we
-         merge the flags for the duplicate edges.  So we do not want to
-         check that the edge is not a FALLTHRU edge.  */
+	 Furthermore, the edge will be marked as a fallthru because we
+	 merge the flags for the duplicate edges.  So we do not want to
+	 check that the edge is not a FALLTHRU edge.  */
 
       if (single_succ_p (b))
-        {
-          s = single_succ_edge (b);
-          if (! (s->flags & EDGE_COMPLEX)
-              && s->dest == c
-              && !find_reg_note (BB_END (b), REG_CROSSING_JUMP, NULL_RTX))
-            tidy_fallthru_edge (s);
-        }
+	{
+	  s = single_succ_edge (b);
+	  if (! (s->flags & EDGE_COMPLEX)
+	      && s->dest == c
+	      && !find_reg_note (BB_END (b), REG_CROSSING_JUMP, NULL_RTX))
+	    tidy_fallthru_edge (s);
+	}
     }
 }
 
@@ -676,7 +676,7 @@ can_duplicate_block_p (basic_block bb)
 
   if (!cfg_hooks->can_duplicate_block_p)
     internal_error ("%s does not support can_duplicate_block_p",
-                    cfg_hooks->name);
+		    cfg_hooks->name);
 
   if (bb == EXIT_BLOCK_PTR || bb == ENTRY_BLOCK_PTR)
     return false;
@@ -704,7 +704,7 @@ duplicate_block (basic_block bb, edge e, basic_block after)
 
   if (!cfg_hooks->duplicate_block)
     internal_error ("%s does not support duplicate_block",
-                    cfg_hooks->name);
+		    cfg_hooks->name);
 
   if (bb->count < new_count)
     new_count = bb->count;
@@ -722,18 +722,18 @@ duplicate_block (basic_block bb, edge e, basic_block after)
   FOR_EACH_EDGE (s, ei, bb->succs)
     {
       /* Since we are creating edges from a new block to successors
-         of another block (which therefore are known to be disjoint), there
-         is no need to actually check for duplicated edges.  */
+	 of another block (which therefore are known to be disjoint), there
+	 is no need to actually check for duplicated edges.  */
       n = unchecked_make_edge (new_bb, s->dest, s->flags);
       n->probability = s->probability;
       if (e && bb->count)
-        {
-          /* Take care for overflows!  */
-          n->count = s->count * (new_count * 10000 / bb->count) / 10000;
-          s->count -= n->count;
-        }
+	{
+	  /* Take care for overflows!  */
+	  n->count = s->count * (new_count * 10000 / bb->count) / 10000;
+	  s->count -= n->count;
+	}
       else
-        n->count = s->count;
+	n->count = s->count;
       n->aux = s->aux;
     }
 
@@ -748,9 +748,9 @@ duplicate_block (basic_block bb, edge e, basic_block after)
       redirect_edge_and_branch_force (e, new_bb);
 
       if (bb->count < 0)
-        bb->count = 0;
+	bb->count = 0;
       if (bb->frequency < 0)
-        bb->frequency = 0;
+	bb->frequency = 0;
     }
   else
     {
@@ -783,7 +783,7 @@ block_ends_with_condjump_p (basic_block bb)
 {
   if (!cfg_hooks->block_ends_with_condjump_p)
     internal_error ("%s does not support block_ends_with_condjump_p",
-                    cfg_hooks->name);
+		    cfg_hooks->name);
 
   return (cfg_hooks->block_ends_with_condjump_p) (bb);
 }
@@ -801,7 +801,7 @@ flow_call_edges_add (sbitmap blocks)
 {
   if (!cfg_hooks->flow_call_edges_add)
     internal_error ("%s does not support flow_call_edges_add",
-                    cfg_hooks->name);
+		    cfg_hooks->name);
 
   return (cfg_hooks->flow_call_edges_add) (blocks);
 }
@@ -845,16 +845,16 @@ lv_flush_pending_stmts (edge e)
    than duplicate_loop_to_header_edge when we are in tree mode.  */
 bool
 cfg_hook_duplicate_loop_to_header_edge (struct loop *loop, edge e,
-                                        struct loops *loops, unsigned int ndupl,
-                                        sbitmap wont_exit, edge orig,
-                                        edge *to_remove,
-                                        unsigned int *n_to_remove, int flags)
+					struct loops *loops, unsigned int ndupl,
+					sbitmap wont_exit, edge orig,
+					edge *to_remove,
+					unsigned int *n_to_remove, int flags)
 {
   gcc_assert (cfg_hooks->cfg_hook_duplicate_loop_to_header_edge);
   return cfg_hooks->cfg_hook_duplicate_loop_to_header_edge (loop, e, loops,
-                                                            ndupl, wont_exit,
-                                                            orig, to_remove,
-                                                            n_to_remove, flags);
+							    ndupl, wont_exit,
+							    orig, to_remove,
+							    n_to_remove, flags);
 }
 
 /* Conditional jumps are represented differently in trees and RTL,
@@ -872,7 +872,7 @@ extract_cond_bb_edges (basic_block b, edge *e1, edge *e2)
    new condition basic block that guards the versioned loop.  */
 void
 lv_adjust_loop_header_phi (basic_block first, basic_block second,
-                           basic_block new, edge e)
+			   basic_block new, edge e)
 {
   if (cfg_hooks->lv_adjust_loop_header_phi)
     cfg_hooks->lv_adjust_loop_header_phi (first, second, new, e);
@@ -883,7 +883,7 @@ lv_adjust_loop_header_phi (basic_block first, basic_block second,
    versioning code.  */
 void
 lv_add_condition_to_bb (basic_block first, basic_block second,
-                        basic_block new, void *cond)
+			basic_block new, void *cond)
 {
   gcc_assert (cfg_hooks->lv_add_condition_to_bb);
   cfg_hooks->lv_add_condition_to_bb (first, second, new, cond);

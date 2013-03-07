@@ -29,16 +29,16 @@ Boston, MA 02110-1301, USA.  */
 
 #define NO_EXTERNAL_INDIRECT_ADDRESS
 
-#define TARGET_OS_CPP_BUILTINS()                \
-    do {                                        \
-        builtin_define_std ("vms");                \
-        builtin_define_std ("VMS");                \
-        builtin_define ("__ALPHA");                \
-        builtin_assert ("system=vms");                \
-        if (TARGET_FLOAT_VAX)                        \
-          builtin_define ("__G_FLOAT");                \
-        else                                        \
-          builtin_define ("__IEEE_FLOAT");        \
+#define TARGET_OS_CPP_BUILTINS()		\
+    do {					\
+	builtin_define_std ("vms");		\
+	builtin_define_std ("VMS");		\
+	builtin_define ("__ALPHA");		\
+	builtin_assert ("system=vms");		\
+	if (TARGET_FLOAT_VAX)			\
+	  builtin_define ("__G_FLOAT");		\
+	else					\
+	  builtin_define ("__IEEE_FLOAT");	\
     } while (0)
 
 #undef TARGET_DEFAULT
@@ -83,44 +83,44 @@ Boston, MA 02110-1301, USA.  */
    listed once, even those in FIXED_REGISTERS.
 
    We allocate in the following order:
-   $f1                        (nonsaved floating-point register)
-   $f10-$f15                (likewise)
-   $f22-$f30                (likewise)
-   $f21-$f16                (likewise, but input args)
-   $f0                        (nonsaved, but return value)
-   $f2-$f9                (saved floating-point registers)
-   $1                        (nonsaved integer registers)
-   $22-$25                (likewise)
-   $28                        (likewise)
-   $0                        (likewise, but return value)
-   $21-$16                (likewise, but input args)
-   $27                        (procedure value in OSF, nonsaved in NT)
-   $2-$8                (saved integer registers)
-   $9-$14                (saved integer registers)
-   $26                        (return PC)
-   $15                        (frame pointer)
-   $29                        (global pointer)
-   $30, $31, $f31        (stack pointer and always zero/ap & fp)  */
+   $f1			(nonsaved floating-point register)
+   $f10-$f15		(likewise)
+   $f22-$f30		(likewise)
+   $f21-$f16		(likewise, but input args)
+   $f0			(nonsaved, but return value)
+   $f2-$f9		(saved floating-point registers)
+   $1			(nonsaved integer registers)
+   $22-$25		(likewise)
+   $28			(likewise)
+   $0			(likewise, but return value)
+   $21-$16		(likewise, but input args)
+   $27			(procedure value in OSF, nonsaved in NT)
+   $2-$8		(saved integer registers)
+   $9-$14		(saved integer registers)
+   $26			(return PC)
+   $15			(frame pointer)
+   $29			(global pointer)
+   $30, $31, $f31	(stack pointer and always zero/ap & fp)  */
 
 #undef REG_ALLOC_ORDER
-#define REG_ALLOC_ORDER                \
-  {33,                                        \
-   42, 43, 44, 45, 46, 47,                \
-   54, 55, 56, 57, 58, 59, 60, 61, 62,        \
-   53, 52, 51, 50, 49, 48,                \
-   32,                                        \
-   34, 35, 36, 37, 38, 39, 40, 41,        \
-   1,                                        \
-   22, 23, 24, 25,                        \
-   28,                                        \
-   0,                                        \
-   21, 20, 19, 18, 17, 16,                \
-   27,                                        \
-   2, 3, 4, 5, 6, 7, 8,                        \
-   9, 10, 11, 12, 13, 14,                \
-   26,                                        \
-   15,                                        \
-   29,                                        \
+#define REG_ALLOC_ORDER		\
+  {33,					\
+   42, 43, 44, 45, 46, 47,		\
+   54, 55, 56, 57, 58, 59, 60, 61, 62,	\
+   53, 52, 51, 50, 49, 48,		\
+   32,					\
+   34, 35, 36, 37, 38, 39, 40, 41,	\
+   1,					\
+   22, 23, 24, 25,			\
+   28,					\
+   0,					\
+   21, 20, 19, 18, 17, 16,		\
+   27,					\
+   2, 3, 4, 5, 6, 7, 8,			\
+   9, 10, 11, 12, 13, 14,		\
+   26,					\
+   15,					\
+   29,					\
    30, 31, 63 }
 
 #undef HARD_FRAME_POINTER_REGNUM
@@ -135,23 +135,23 @@ Boston, MA 02110-1301, USA.  */
 ((TO) != STACK_POINTER_REGNUM || ! alpha_using_fp ())
 
 #undef INITIAL_ELIMINATION_OFFSET
-#define INITIAL_ELIMINATION_OFFSET(FROM, TO, OFFSET)                        \
-{ switch (FROM)                                                                \
-    {                                                                        \
-    case FRAME_POINTER_REGNUM:                                                \
-      (OFFSET) = alpha_sa_size () + alpha_pv_save_size ();                \
-      break;                                                                \
-    case ARG_POINTER_REGNUM:                                                \
-      (OFFSET) = (ALPHA_ROUND (alpha_sa_size () + alpha_pv_save_size ()        \
-                               + get_frame_size ()                        \
-                               + current_function_pretend_args_size)        \
-                  - current_function_pretend_args_size);                \
-      break;                                                                \
-    default:                                                                \
-      gcc_unreachable ();                                                \
-    }                                                                        \
-  if ((TO) == STACK_POINTER_REGNUM)                                        \
-    (OFFSET) += ALPHA_ROUND (current_function_outgoing_args_size);        \
+#define INITIAL_ELIMINATION_OFFSET(FROM, TO, OFFSET)			\
+{ switch (FROM)								\
+    {									\
+    case FRAME_POINTER_REGNUM:						\
+      (OFFSET) = alpha_sa_size () + alpha_pv_save_size ();		\
+      break;								\
+    case ARG_POINTER_REGNUM:						\
+      (OFFSET) = (ALPHA_ROUND (alpha_sa_size () + alpha_pv_save_size ()	\
+			       + get_frame_size ()			\
+			       + current_function_pretend_args_size)	\
+		  - current_function_pretend_args_size);		\
+      break;								\
+    default:								\
+      gcc_unreachable ();						\
+    }									\
+  if ((TO) == STACK_POINTER_REGNUM)					\
+    (OFFSET) += ALPHA_ROUND (current_function_outgoing_args_size);	\
 }
 
 /* Define a data type for recording info about an argument list
@@ -178,20 +178,20 @@ typedef struct {int num_args; enum avms_arg_type atypes[6];} avms_arg_info;
 
 #undef INIT_CUMULATIVE_ARGS
 #define INIT_CUMULATIVE_ARGS(CUM, FNTYPE, LIBNAME, INDIRECT, N_NAMED_ARGS) \
-  (CUM).num_args = 0;                                                \
-  (CUM).atypes[0] = (CUM).atypes[1] = (CUM).atypes[2] = I64;        \
+  (CUM).num_args = 0;						\
+  (CUM).atypes[0] = (CUM).atypes[1] = (CUM).atypes[2] = I64;	\
   (CUM).atypes[3] = (CUM).atypes[4] = (CUM).atypes[5] = I64;
 
 #undef FUNCTION_ARG_ADVANCE
-#define FUNCTION_ARG_ADVANCE(CUM, MODE, TYPE, NAMED)                        \
-  if (targetm.calls.must_pass_in_stack (MODE, TYPE))                        \
-    (CUM).num_args += 6;                                                \
-  else                                                                        \
-    {                                                                        \
-      if ((CUM).num_args < 6)                                                \
-        (CUM).atypes[(CUM).num_args] = alpha_arg_type (MODE);                \
-                                                                        \
-     (CUM).num_args += ALPHA_ARG_SIZE (MODE, TYPE, NAMED);                \
+#define FUNCTION_ARG_ADVANCE(CUM, MODE, TYPE, NAMED)			\
+  if (targetm.calls.must_pass_in_stack (MODE, TYPE))			\
+    (CUM).num_args += 6;						\
+  else									\
+    {									\
+      if ((CUM).num_args < 6)						\
+        (CUM).atypes[(CUM).num_args] = alpha_arg_type (MODE);		\
+									\
+     (CUM).num_args += ALPHA_ARG_SIZE (MODE, TYPE, NAMED);		\
     }
 
 /* ABI has stack checking, but it's broken.  */
@@ -214,7 +214,7 @@ typedef struct {int num_args; enum avms_arg_type atypes[6];} avms_arg_info;
 #undef CASE_VECTOR_PC_RELATIVE
 
 #undef ASM_OUTPUT_CASE_LABEL
-#define ASM_OUTPUT_CASE_LABEL(FILE,PREFIX,NUM,TABLEINSN)        \
+#define ASM_OUTPUT_CASE_LABEL(FILE,PREFIX,NUM,TABLEINSN)	\
 { ASM_OUTPUT_ALIGN (FILE, 3); (*targetm.asm_out.internal_label) (FILE, PREFIX, NUM); }
 
 /* This says how to output assembler code to declare an                
@@ -223,11 +223,11 @@ typedef struct {int num_args; enum avms_arg_type atypes[6];} avms_arg_info;
 #define COMMON_ASM_OP "\t.comm\t"
 
 #undef ASM_OUTPUT_ALIGNED_COMMON
-#define ASM_OUTPUT_ALIGNED_COMMON(FILE, NAME, SIZE, ALIGN)                \
-do {                                                                        \
-  fprintf ((FILE), "%s", COMMON_ASM_OP);                                \
-  assemble_name ((FILE), (NAME));                                        \
-  fprintf ((FILE), "," HOST_WIDE_INT_PRINT_UNSIGNED ",%u\n", (SIZE), (ALIGN) / BITS_PER_UNIT);        \
+#define ASM_OUTPUT_ALIGNED_COMMON(FILE, NAME, SIZE, ALIGN)		\
+do {									\
+  fprintf ((FILE), "%s", COMMON_ASM_OP);				\
+  assemble_name ((FILE), (NAME));					\
+  fprintf ((FILE), "," HOST_WIDE_INT_PRINT_UNSIGNED ",%u\n", (SIZE), (ALIGN) / BITS_PER_UNIT);	\
 } while (0)
 
 
@@ -240,11 +240,11 @@ do {                                                                        \
    use it for addressability of the two data items.  */
 
 #undef TRAMPOLINE_TEMPLATE
-#define TRAMPOLINE_TEMPLATE(FILE)                \
-{                                                \
-  fprintf (FILE, "\t.quad 0\n");                \
-  fprintf (FILE, "\t.linkage __tramp\n");        \
-  fprintf (FILE, "\t.quad 0\n");                \
+#define TRAMPOLINE_TEMPLATE(FILE)		\
+{						\
+  fprintf (FILE, "\t.quad 0\n");		\
+  fprintf (FILE, "\t.linkage __tramp\n");	\
+  fprintf (FILE, "\t.quad 0\n");		\
 }
 
 /* Length in units of the trampoline for entering a nested function.  */
@@ -291,20 +291,20 @@ do {                                                                        \
    to a multiple of 2**LOG bytes.  */
 
 #undef ASM_OUTPUT_ALIGN
-#define ASM_OUTPUT_ALIGN(FILE,LOG)        \
+#define ASM_OUTPUT_ALIGN(FILE,LOG)	\
     fprintf (FILE, "\t.align %d\n", LOG);
 
 /* Switch into a generic section.  */
 #define TARGET_ASM_NAMED_SECTION vms_asm_named_section
 
-#define ASM_OUTPUT_DEF(FILE,LABEL1,LABEL2)                                \
-  do {        fprintf ((FILE), "\t.literals\n");                                \
-        in_section = NULL;                                                \
-        fprintf ((FILE), "\t");                                                \
-        assemble_name (FILE, LABEL1);                                        \
-        fprintf (FILE, " = ");                                                \
-        assemble_name (FILE, LABEL2);                                        \
-        fprintf (FILE, "\n");                                                \
+#define ASM_OUTPUT_DEF(FILE,LABEL1,LABEL2)				\
+  do {	fprintf ((FILE), "\t.literals\n");				\
+	in_section = NULL;						\
+	fprintf ((FILE), "\t");						\
+	assemble_name (FILE, LABEL1);					\
+	fprintf (FILE, " = ");						\
+	assemble_name (FILE, LABEL2);					\
+	fprintf (FILE, "\n");						\
   } while (0)
 
 #undef PREFERRED_DEBUGGING_TYPE
@@ -357,13 +357,13 @@ do {                                                                        \
 #define MD_STARTFILE_PREFIX "/gnu/lib/gcc-lib/"
 
 /* Specify the list of include file directories.  */
-#define INCLUDE_DEFAULTS                   \
-{                                           \
+#define INCLUDE_DEFAULTS		   \
+{					   \
   { "/gnu/lib/gcc-lib/include", 0, 0, 0 }, \
-  { "/gnu_gxx_include", 0, 1, 1 },           \
-  { "/gnu_cc_include", 0, 0, 0 },           \
-  { "/gnu/include", 0, 0, 0 },                   \
-  { 0, 0, 0, 0 }                           \
+  { "/gnu_gxx_include", 0, 1, 1 },	   \
+  { "/gnu_cc_include", 0, 0, 0 },	   \
+  { "/gnu/include", 0, 0, 0 },	           \
+  { 0, 0, 0, 0 }			   \
 }
 
 #define LONGLONG_STANDALONE 1

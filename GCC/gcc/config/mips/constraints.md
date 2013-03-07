@@ -43,8 +43,8 @@
   "@internal")
 
 (define_register_constraint "c" "TARGET_ABICALLS ? PIC_FN_ADDR_REG
-                                 : TARGET_MIPS16 ? M16_NA_REGS
-                                 : GR_REGS"
+				 : TARGET_MIPS16 ? M16_NA_REGS
+				 : GR_REGS"
   "A register suitable for use in an indirect jump.  This will always be
    @code{$25} for @option{-mabicalls}.")
 
@@ -173,8 +173,8 @@
   (and (match_code "mem")
        (match_operand 0 "memory_operand")
        (ior (match_test "!TARGET_MIPS16")
-            (and (not (match_operand 0 "stack_operand"))
-                 (not (match_test "CONSTANT_P (XEXP (op, 0))"))))))
+	    (and (not (match_operand 0 "stack_operand"))
+		 (not (match_test "CONSTANT_P (XEXP (op, 0))"))))))
 
 (define_constraint "YG"
   "@internal

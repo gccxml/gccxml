@@ -59,11 +59,11 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
 
 enum unroll_level
 {
-  UL_SINGLE_ITER,        /* Only loops that exit immediately in the first
-                           iteration.  */
-  UL_NO_GROWTH,                /* Only loops whose unrolling will not cause increase
-                           of code size.  */
-  UL_ALL                /* All suitable loops.  */
+  UL_SINGLE_ITER,	/* Only loops that exit immediately in the first
+			   iteration.  */
+  UL_NO_GROWTH,		/* Only loops whose unrolling will not cause increase
+			   of code size.  */
+  UL_ALL		/* All suitable loops.  */
 };
 
 /* Adds a canonical induction variable to LOOP iterating NITER times.  EXIT
@@ -96,18 +96,18 @@ create_canonical_iv (struct loop *loop, edge exit, tree niter)
 
   type = TREE_TYPE (niter);
   niter = fold_build2 (PLUS_EXPR, type,
-                       niter,
-                       build_int_cst (type, 1));
+		       niter,
+		       build_int_cst (type, 1));
   incr_at = bsi_last (in->src);
   create_iv (niter,
-             build_int_cst (type, -1),
-             NULL_TREE, loop,
-             &incr_at, false, NULL, &var);
+	     build_int_cst (type, -1),
+	     NULL_TREE, loop,
+	     &incr_at, false, NULL, &var);
 
   cmp = (exit->flags & EDGE_TRUE_VALUE) ? EQ_EXPR : NE_EXPR;
   COND_EXPR_COND (cond) = build2 (cmp, boolean_type_node,
-                                  var,
-                                  build_int_cst (type, 0));
+				  var,
+				  build_int_cst (type, 0));
   update_stmt (cond);
 }
 
@@ -144,7 +144,7 @@ tree_num_loop_insns (struct loop *loop)
 
 static unsigned HOST_WIDE_INT
 estimated_unrolled_size (unsigned HOST_WIDE_INT ninsns,
-                         unsigned HOST_WIDE_INT nunroll)
+			 unsigned HOST_WIDE_INT nunroll)
 {
   HOST_WIDE_INT unr_insns = 2 * ((HOST_WIDE_INT) ninsns - 4) / 3;
   if (unr_insns <= 0)
@@ -160,9 +160,9 @@ estimated_unrolled_size (unsigned HOST_WIDE_INT ninsns,
 
 static bool
 try_unroll_loop_completely (struct loops *loops ATTRIBUTE_UNUSED,
-                            struct loop *loop,
-                            edge exit, tree niter,
-                            enum unroll_level ul)
+			    struct loop *loop,
+			    edge exit, tree niter,
+			    enum unroll_level ul)
 {
   unsigned HOST_WIDE_INT n_unroll, ninsns, max_unroll, unr_insns;
   tree old_cond, cond, dont_exit, do_exit;
@@ -181,32 +181,32 @@ try_unroll_loop_completely (struct loops *loops ATTRIBUTE_UNUSED,
   if (n_unroll)
     {
       if (ul == UL_SINGLE_ITER)
-        return false;
+	return false;
 
       ninsns = tree_num_loop_insns (loop);
 
       if (n_unroll * ninsns
-          > (unsigned) PARAM_VALUE (PARAM_MAX_COMPLETELY_PEELED_INSNS))
-        return false;
+	  > (unsigned) PARAM_VALUE (PARAM_MAX_COMPLETELY_PEELED_INSNS))
+	return false;
 
       if (ul == UL_NO_GROWTH)
-        {
-          unr_insns = estimated_unrolled_size (ninsns, n_unroll);
-          
-          if (dump_file && (dump_flags & TDF_DETAILS))
-            {
-              fprintf (dump_file, "  Loop size: %d\n", (int) ninsns);
-              fprintf (dump_file, "  Estimated size after unrolling: %d\n",
-                       (int) unr_insns);
-            }
-          
-          if (unr_insns > ninsns)
-            {
-              if (dump_file && (dump_flags & TDF_DETAILS))
-                fprintf (dump_file, "Not unrolling loop %d:\n", loop->num);
-              return false;
-            }
-        }
+	{
+	  unr_insns = estimated_unrolled_size (ninsns, n_unroll);
+	  
+	  if (dump_file && (dump_flags & TDF_DETAILS))
+	    {
+	      fprintf (dump_file, "  Loop size: %d\n", (int) ninsns);
+	      fprintf (dump_file, "  Estimated size after unrolling: %d\n",
+		       (int) unr_insns);
+	    }
+	  
+	  if (unr_insns > ninsns)
+	    {
+	      if (dump_file && (dump_flags & TDF_DETAILS))
+		fprintf (dump_file, "Not unrolling loop %d:\n", loop->num);
+	      return false;
+	    }
+	}
     }
 
   if (exit->flags & EDGE_TRUE_VALUE)
@@ -237,19 +237,19 @@ try_unroll_loop_completely (struct loops *loops ATTRIBUTE_UNUSED,
       RESET_BIT (wont_exit, 0);
 
       if (!tree_duplicate_loop_to_header_edge (loop, loop_preheader_edge (loop),
-                                               loops, n_unroll, wont_exit,
-                                               exit, edges_to_remove,
-                                               &n_to_remove,
-                                               DLTHE_FLAG_UPDATE_FREQ
-                                               | DLTHE_FLAG_COMPLETTE_PEEL))
-        {
-          COND_EXPR_COND (cond) = old_cond;
-          update_stmt (cond);
+					       loops, n_unroll, wont_exit,
+					       exit, edges_to_remove,
+					       &n_to_remove,
+					       DLTHE_FLAG_UPDATE_FREQ
+					       | DLTHE_FLAG_COMPLETTE_PEEL))
+	{
+	  COND_EXPR_COND (cond) = old_cond;
+	  update_stmt (cond);
           free_original_copy_tables ();
-          free (wont_exit);
-          free (edges_to_remove);
-          return false;
-        }
+	  free (wont_exit);
+	  free (edges_to_remove);
+	  return false;
+	}
       free (wont_exit);
       free (edges_to_remove);
       free_original_copy_tables ();
@@ -274,8 +274,8 @@ try_unroll_loop_completely (struct loops *loops ATTRIBUTE_UNUSED,
 
 static bool
 canonicalize_loop_induction_variables (struct loops *loops, struct loop *loop,
-                                       bool create_iv, enum unroll_level ul,
-                                       bool try_eval)
+				       bool create_iv, enum unroll_level ul,
+				       bool try_eval)
 {
   edge exit = NULL;
   tree niter;
@@ -285,30 +285,30 @@ canonicalize_loop_induction_variables (struct loops *loops, struct loop *loop,
     {
       exit = loop->single_exit;
       if (!just_once_each_iteration_p (loop, exit->src))
-        return false;
+	return false;
 
       /* The result of number_of_iterations_in_loop is by one higher than
-         we expect (i.e. it returns number of executions of the exit
-         condition, not of the loop latch edge).  */
+	 we expect (i.e. it returns number of executions of the exit
+	 condition, not of the loop latch edge).  */
       niter = fold_build2 (MINUS_EXPR, TREE_TYPE (niter), niter,
-                           build_int_cst (TREE_TYPE (niter), 1));
+			   build_int_cst (TREE_TYPE (niter), 1));
     }
   else
     {
       /* If the loop has more than one exit, try checking all of them
-         for # of iterations determinable through scev.  */
+	 for # of iterations determinable through scev.  */
       if (!loop->single_exit)
-        niter = find_loop_niter (loop, &exit);
+	niter = find_loop_niter (loop, &exit);
 
       /* Finally if everything else fails, try brute force evaluation.  */
       if (try_eval
-          && (chrec_contains_undetermined (niter)
-              || TREE_CODE (niter) != INTEGER_CST))
-        niter = find_loop_niter_by_eval (loop, &exit);
+	  && (chrec_contains_undetermined (niter)
+	      || TREE_CODE (niter) != INTEGER_CST))
+	niter = find_loop_niter_by_eval (loop, &exit);
 
       if (chrec_contains_undetermined (niter)
-          || TREE_CODE (niter) != INTEGER_CST)
-        return false;
+	  || TREE_CODE (niter) != INTEGER_CST)
+	return false;
     }
 
   if (dump_file && (dump_flags & TDF_DETAILS))
@@ -342,9 +342,9 @@ canonicalize_induction_variables (struct loops *loops)
       loop = loops->parray[i];
 
       if (loop)
-        changed |= canonicalize_loop_induction_variables (loops, loop,
-                                                          true, UL_SINGLE_ITER,
-                                                          true);
+	changed |= canonicalize_loop_induction_variables (loops, loop,
+							  true, UL_SINGLE_ITER,
+							  true);
     }
 
   /* Clean up the information about numbers of iterations, since brute force
@@ -373,15 +373,15 @@ tree_unroll_loops_completely (struct loops *loops, bool may_increase_size)
       loop = loops->parray[i];
 
       if (!loop)
-        continue;
+	continue;
 
       if (may_increase_size && maybe_hot_bb_p (loop->header))
-        ul = UL_ALL;
+	ul = UL_ALL;
       else
-        ul = UL_NO_GROWTH;
+	ul = UL_NO_GROWTH;
       changed |= canonicalize_loop_induction_variables (loops, loop,
-                                                        false, ul,
-                                                        !flag_tree_loop_ivcanon);
+							false, ul,
+							!flag_tree_loop_ivcanon);
     }
 
   /* Clean up the information about numbers of iterations, since complete
@@ -421,12 +421,12 @@ empty_loop_p (struct loop *loop)
   for (phi = phi_nodes (exit->dest); phi; phi = PHI_CHAIN (phi))
     {
       if (!is_gimple_reg (PHI_RESULT (phi)))
-        continue;
+	continue;
 
       def = PHI_ARG_DEF_FROM_EDGE (phi, exit);
 
       if (!expr_invariant_in_loop_p (loop, def))
-        return false;
+	return false;
     }
 
   /* And there should be no memory modifying or from other reasons
@@ -436,52 +436,52 @@ empty_loop_p (struct loop *loop)
     {
       /* Irreducible region might be infinite.  */
       if (body[i]->flags & BB_IRREDUCIBLE_LOOP)
-        {
-          free (body);
-          return false;
-        }
-        
+	{
+	  free (body);
+	  return false;
+	}
+	
       for (bsi = bsi_start (body[i]); !bsi_end_p (bsi); bsi_next (&bsi))
-        {
-          stmt = bsi_stmt (bsi);
-          if (!ZERO_SSA_OPERANDS (stmt, SSA_OP_VIRTUAL_DEFS)
-              || stmt_ann (stmt)->has_volatile_ops)
-            {
-              free (body);
-              return false;
-            }
+	{
+	  stmt = bsi_stmt (bsi);
+	  if (!ZERO_SSA_OPERANDS (stmt, SSA_OP_VIRTUAL_DEFS)
+	      || stmt_ann (stmt)->has_volatile_ops)
+	    {
+	      free (body);
+	      return false;
+	    }
 
-          /* Also, asm statements and calls may have side effects and we
-             cannot change the number of times they are executed.  */
-          switch (TREE_CODE (stmt))
-            {
-            case RETURN_EXPR:
-            case MODIFY_EXPR:
-              stmt = get_call_expr_in (stmt);
-              if (!stmt)
-                break;
+	  /* Also, asm statements and calls may have side effects and we
+	     cannot change the number of times they are executed.  */
+	  switch (TREE_CODE (stmt))
+	    {
+	    case RETURN_EXPR:
+	    case MODIFY_EXPR:
+	      stmt = get_call_expr_in (stmt);
+	      if (!stmt)
+		break;
 
-            case CALL_EXPR:
-              if (TREE_SIDE_EFFECTS (stmt))
-                {
-                  free (body);
-                  return false;
-                }
-              break;
+	    case CALL_EXPR:
+	      if (TREE_SIDE_EFFECTS (stmt))
+		{
+		  free (body);
+		  return false;
+		}
+	      break;
 
-            case ASM_EXPR:
-              /* We cannot remove volatile assembler.  */
-              if (ASM_VOLATILE_P (stmt))
-                {
-                  free (body);
-                  return false;
-                }
-              break;
+	    case ASM_EXPR:
+	      /* We cannot remove volatile assembler.  */
+	      if (ASM_VOLATILE_P (stmt))
+		{
+		  free (body);
+		  return false;
+		}
+	      break;
 
-            default:
-              break;
-            }
-        }
+	    default:
+	      break;
+	    }
+	}
       }
   free (body);
 
@@ -528,11 +528,11 @@ remove_empty_loop (struct loop *loop)
     {
       body = get_loop_body_in_dom_order (loop);
       for (n_before = 1; n_before <= loop->num_nodes; n_before++)
-        if (body[n_before - 1] == exit->src)
-          break;
+	if (body[n_before - 1] == exit->src)
+	  break;
       scale_bbs_frequencies_int (body, n_before, freq_in, freq_h);
       scale_bbs_frequencies_int (body + n_before, loop->num_nodes - n_before,
-                                 0, 1);
+				 0, 1);
       free (body);
     }
 

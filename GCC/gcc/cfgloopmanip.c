@@ -33,7 +33,7 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
 
 static void duplicate_subloops (struct loops *, struct loop *, struct loop *);
 static void copy_loops_to (struct loops *, struct loop **, int,
-                           struct loop *);
+			   struct loop *);
 static void loop_redirect_edge (edge, basic_block);
 static bool loop_delete_branch_edge (edge, int);
 static void remove_bbs (basic_block *, int);
@@ -86,7 +86,7 @@ find_path (edge e, basic_block **bbs)
   /* Find bbs in the path.  */
   *bbs = XCNEWVEC (basic_block, n_basic_blocks);
   return dfs_enumerate_from (e->dest, 0, rpe_enum_p, *bbs,
-                             n_basic_blocks, e->dest);
+			     n_basic_blocks, e->dest);
 }
 
 /* Fix placement of basic block BB inside loop hierarchy stored in LOOPS --
@@ -106,14 +106,14 @@ fix_bb_placement (struct loops *loops, basic_block bb)
   FOR_EACH_EDGE (e, ei, bb->succs)
     {
       if (e->dest == EXIT_BLOCK_PTR)
-        continue;
+	continue;
 
       act = e->dest->loop_father;
       if (act->header == e->dest)
-        act = act->outer;
+	act = act->outer;
 
       if (flow_loop_nested_p (loop, act))
-        loop = act;
+	loop = act;
     }
 
   if (loop == bb->loop_father)
@@ -139,7 +139,7 @@ fix_bb_placement (struct loops *loops, basic_block bb)
 
 static void
 fix_bb_placements (struct loops *loops, basic_block from,
-                   bool *irred_invalidated)
+		   bool *irred_invalidated)
 {
   sbitmap in_queue;
   basic_block *queue, *qtop, *qbeg, *qend;
@@ -175,64 +175,64 @@ fix_bb_placements (struct loops *loops, basic_block from,
       from = *qbeg;
       qbeg++;
       if (qbeg == qtop)
-        qbeg = queue;
+	qbeg = queue;
       RESET_BIT (in_queue, from->index);
 
       if (from->loop_father->header == from)
-        {
-          /* Subloop header, maybe move the loop upward.  */
-          if (!fix_loop_placement (from->loop_father))
-            continue;
-        }
+	{
+	  /* Subloop header, maybe move the loop upward.  */
+	  if (!fix_loop_placement (from->loop_father))
+	    continue;
+	}
       else
-        {
-          /* Ordinary basic block.  */
-          if (!fix_bb_placement (loops, from))
-            continue;
-        }
+	{
+	  /* Ordinary basic block.  */
+	  if (!fix_bb_placement (loops, from))
+	    continue;
+	}
 
       FOR_EACH_EDGE (e, ei, from->succs)
-        {
-          if (e->flags & EDGE_IRREDUCIBLE_LOOP)
-            *irred_invalidated = true;
-        }
+	{
+	  if (e->flags & EDGE_IRREDUCIBLE_LOOP)
+	    *irred_invalidated = true;
+	}
 
       /* Something has changed, insert predecessors into queue.  */
       FOR_EACH_EDGE (e, ei, from->preds)
-        {
-          basic_block pred = e->src;
-          struct loop *nca;
+	{
+	  basic_block pred = e->src;
+	  struct loop *nca;
 
-          if (e->flags & EDGE_IRREDUCIBLE_LOOP)
-            *irred_invalidated = true;
+	  if (e->flags & EDGE_IRREDUCIBLE_LOOP)
+	    *irred_invalidated = true;
 
-          if (TEST_BIT (in_queue, pred->index))
-            continue;
+	  if (TEST_BIT (in_queue, pred->index))
+	    continue;
 
-          /* If it is subloop, then it either was not moved, or
-             the path up the loop tree from base_loop do not contain
-             it.  */
-          nca = find_common_loop (pred->loop_father, base_loop);
-          if (pred->loop_father != base_loop
-              && (nca == base_loop
-                  || nca != pred->loop_father))
-            pred = pred->loop_father->header;
-          else if (!flow_loop_nested_p (from->loop_father, pred->loop_father))
-            {
-              /* No point in processing it.  */
-              continue;
-            }
+	  /* If it is subloop, then it either was not moved, or
+	     the path up the loop tree from base_loop do not contain
+	     it.  */
+	  nca = find_common_loop (pred->loop_father, base_loop);
+	  if (pred->loop_father != base_loop
+	      && (nca == base_loop
+		  || nca != pred->loop_father))
+	    pred = pred->loop_father->header;
+	  else if (!flow_loop_nested_p (from->loop_father, pred->loop_father))
+	    {
+	      /* No point in processing it.  */
+	      continue;
+	    }
 
-          if (TEST_BIT (in_queue, pred->index))
-            continue;
+	  if (TEST_BIT (in_queue, pred->index))
+	    continue;
 
-          /* Schedule the basic block.  */
-          *qend = pred;
-          qend++;
-          if (qend == qtop)
-            qend = queue;
-          SET_BIT (in_queue, pred->index);
-        }
+	  /* Schedule the basic block.  */
+	  *qend = pred;
+	  qend++;
+	  if (qend == qtop)
+	    qend = queue;
+	  SET_BIT (in_queue, pred->index);
+	}
     }
   free (in_queue);
   free (queue);
@@ -274,8 +274,8 @@ remove_path (struct loops *loops, edge e)
      normally.   We may assume that e->dest is not a header of any loop,
      as it now has exactly one predecessor.  */
   while (e->src->loop_father->outer
-         && dominated_by_p (CDI_DOMINATORS,
-                            e->src->loop_father->latch, e->dest))
+	 && dominated_by_p (CDI_DOMINATORS,
+			    e->src->loop_father->latch, e->dest))
     unloop (loops, e->src->loop_father, &irred_invalidated);
 
   /* Identify the path.  */
@@ -294,14 +294,14 @@ remove_path (struct loops *loops, edge e)
       edge_iterator ei;
       bb = rem_bbs[i];
       FOR_EACH_EDGE (ae, ei, rem_bbs[i]->succs)
-        if (ae->dest != EXIT_BLOCK_PTR && !TEST_BIT (seen, ae->dest->index))
-          {
-            SET_BIT (seen, ae->dest->index);
-            bord_bbs[n_bord_bbs++] = ae->dest;
-          
-            if (ae->flags & EDGE_IRREDUCIBLE_LOOP)
-              irred_invalidated = true;
-          }
+	if (ae->dest != EXIT_BLOCK_PTR && !TEST_BIT (seen, ae->dest->index))
+	  {
+	    SET_BIT (seen, ae->dest->index);
+	    bord_bbs[n_bord_bbs++] = ae->dest;
+	  
+	    if (ae->flags & EDGE_IRREDUCIBLE_LOOP)
+	      irred_invalidated = true;
+	  }
     }
 
   /* Remove the path.  */
@@ -327,14 +327,14 @@ remove_path (struct loops *loops, edge e)
 
       bb = get_immediate_dominator (CDI_DOMINATORS, bord_bbs[i]);
       if (TEST_BIT (seen, bb->index))
-        continue;
+	continue;
       SET_BIT (seen, bb->index);
 
       for (ldom = first_dom_son (CDI_DOMINATORS, bb);
-           ldom;
-           ldom = next_dom_son (CDI_DOMINATORS, ldom))
-        if (!dominated_by_p (CDI_DOMINATORS, from, ldom))
-          dom_bbs[n_dom_bbs++] = ldom;
+	   ldom;
+	   ldom = next_dom_son (CDI_DOMINATORS, ldom))
+	if (!dominated_by_p (CDI_DOMINATORS, from, ldom))
+	  dom_bbs[n_dom_bbs++] = ldom;
     }
 
   free (seen);
@@ -378,7 +378,7 @@ add_loop (struct loops *loops, struct loop *loop)
   /* Find its nodes.  */
   bbs = XCNEWVEC (basic_block, n_basic_blocks);
   n = dfs_enumerate_from (loop->latch, 1, alp_enum_p,
-                          bbs, n_basic_blocks, loop->header);
+			  bbs, n_basic_blocks, loop->header);
 
   for (i = 0; i < n; i++)
     add_bb_to_loop (bbs[i], loop);
@@ -409,8 +409,8 @@ scale_loop_frequencies (struct loop *loop, int num, int den)
 
 struct loop *
 loopify (struct loops *loops, edge latch_edge, edge header_edge,
-         basic_block switch_bb, edge true_edge, edge false_edge,
-         bool redirect_all_edges)
+	 basic_block switch_bb, edge true_edge, edge false_edge,
+	 bool redirect_all_edges)
 {
   basic_block succ_bb = latch_edge->dest;
   basic_block pred_bb = header_edge->src;
@@ -482,13 +482,13 @@ loopify (struct loops *loops, edge latch_edge, edge header_edge,
       basic_block ldom;
 
       for (ldom = first_dom_son (CDI_DOMINATORS, body[i]);
-           ldom;
-           ldom = next_dom_son (CDI_DOMINATORS, ldom))
-        if (!TEST_BIT (seen, ldom->index))
-          {
-            SET_BIT (seen, ldom->index);
-            dom_bbs[n_dom_bbs++] = ldom;
-          }
+	   ldom;
+	   ldom = next_dom_son (CDI_DOMINATORS, ldom))
+	if (!TEST_BIT (seen, ldom->index))
+	  {
+	    SET_BIT (seen, ldom->index);
+	    dom_bbs[n_dom_bbs++] = ldom;
+	  }
     }
 
   iterate_fix_dominators (CDI_DOMINATORS, dom_bbs, n_dom_bbs);
@@ -530,8 +530,8 @@ unloop (struct loops *loops, struct loop *loop, bool *irred_invalidated)
   for (i = 0; i < n; i++)
     if (body[i]->loop_father == loop)
       {
-        remove_bb_from_loops (body[i]);
-        add_bb_to_loop (body[i], loop->outer);
+	remove_bb_from_loops (body[i]);
+	add_bb_to_loop (body[i], loop->outer);
       }
   free(body);
 
@@ -573,17 +573,17 @@ fix_loop_placement (struct loop *loop)
   for (i = 0; i < loop->num_nodes; i++)
     FOR_EACH_EDGE (e, ei, body[i]->succs)
       if (!flow_bb_inside_loop_p (loop, e->dest))
-        {
-          act = find_common_loop (loop, e->dest->loop_father);
-          if (flow_loop_nested_p (father, act))
-            father = act;
-        }
+	{
+	  act = find_common_loop (loop, e->dest->loop_father);
+	  if (flow_loop_nested_p (father, act))
+	    father = act;
+	}
   free (body);
 
   if (father != loop->outer)
     {
       for (act = loop->outer; act != father; act = act->outer)
-        act->num_nodes -= loop->num_nodes;
+	act->num_nodes -= loop->num_nodes;
       flow_loop_tree_node_remove (loop);
       flow_loop_tree_node_add (father, loop);
       return 1;
@@ -601,7 +601,7 @@ fix_loop_placement (struct loop *loop)
 
 static void
 fix_loop_placements (struct loops *loops, struct loop *loop,
-                     bool *irred_invalidated)
+		     bool *irred_invalidated)
 {
   struct loop *outer;
 
@@ -609,15 +609,15 @@ fix_loop_placements (struct loops *loops, struct loop *loop,
     {
       outer = loop->outer;
       if (!fix_loop_placement (loop))
-        break;
+	break;
 
       /* Changing the placement of a loop in the loop tree may alter the
-         validity of condition 2) of the description of fix_bb_placement
-         for its preheader, because the successor is the header and belongs
-         to the loop.  So call fix_bb_placements to fix up the placement
-         of the preheader and (possibly) of its predecessors.  */
+	 validity of condition 2) of the description of fix_bb_placement
+	 for its preheader, because the successor is the header and belongs
+	 to the loop.  So call fix_bb_placements to fix up the placement
+	 of the preheader and (possibly) of its predecessors.  */
       fix_bb_placements (loops, loop_preheader_edge (loop)->src,
-                         irred_invalidated);
+			 irred_invalidated);
       loop = outer;
     }
 }
@@ -750,7 +750,7 @@ can_duplicate_loop_p (struct loop *loop)
 
 static void
 update_single_exits_after_duplication (basic_block *bbs, unsigned nbbs,
-                                       struct loop *loop)
+				       struct loop *loop)
 {
   unsigned i;
 
@@ -760,10 +760,10 @@ update_single_exits_after_duplication (basic_block *bbs, unsigned nbbs,
   for (; loop->outer; loop = loop->outer)
     {
       if (!loop->single_exit)
-        continue;
+	continue;
 
       if (loop->single_exit->src->flags & BB_DUPLICATED)
-        loop->single_exit = NULL;
+	loop->single_exit = NULL;
     }
 
   for (i = 0; i < nbbs; i++)
@@ -782,9 +782,9 @@ update_single_exits_after_duplication (basic_block *bbs, unsigned nbbs,
    impossible.  */
 bool
 duplicate_loop_to_header_edge (struct loop *loop, edge e, struct loops *loops,
-                               unsigned int ndupl, sbitmap wont_exit,
-                               edge orig, edge *to_remove,
-                               unsigned int *n_to_remove, int flags)
+			       unsigned int ndupl, sbitmap wont_exit,
+			       edge orig, edge *to_remove,
+			       unsigned int *n_to_remove, int flags)
 {
   struct loop *target, *aloop;
   struct loop **orig_loops;
@@ -838,74 +838,74 @@ duplicate_loop_to_header_edge (struct loop *loop, edge e, struct loops *loops,
   if (flags & DLTHE_FLAG_UPDATE_FREQ)
     {
       /* Calculate coefficients by that we have to scale frequencies
-         of duplicated loop bodies.  */
+	 of duplicated loop bodies.  */
       freq_in = header->frequency;
       freq_le = EDGE_FREQUENCY (latch_edge);
       if (freq_in == 0)
-        freq_in = 1;
+	freq_in = 1;
       if (freq_in < freq_le)
-        freq_in = freq_le;
+	freq_in = freq_le;
       freq_out_orig = orig ? EDGE_FREQUENCY (orig) : freq_in - freq_le;
       if (freq_out_orig > freq_in - freq_le)
-        freq_out_orig = freq_in - freq_le;
+	freq_out_orig = freq_in - freq_le;
       prob_pass_thru = RDIV (REG_BR_PROB_BASE * freq_le, freq_in);
       prob_pass_wont_exit =
-              RDIV (REG_BR_PROB_BASE * (freq_le + freq_out_orig), freq_in);
+	      RDIV (REG_BR_PROB_BASE * (freq_le + freq_out_orig), freq_in);
 
       scale_step = XNEWVEC (int, ndupl);
 
-        for (i = 1; i <= ndupl; i++)
-          scale_step[i - 1] = TEST_BIT (wont_exit, i)
-                                ? prob_pass_wont_exit
-                                : prob_pass_thru;
+	for (i = 1; i <= ndupl; i++)
+	  scale_step[i - 1] = TEST_BIT (wont_exit, i)
+				? prob_pass_wont_exit
+				: prob_pass_thru;
 
       /* Complete peeling is special as the probability of exit in last
-         copy becomes 1.  */
+	 copy becomes 1.  */
       if (flags & DLTHE_FLAG_COMPLETTE_PEEL)
-        {
-          int wanted_freq = EDGE_FREQUENCY (e);
+	{
+	  int wanted_freq = EDGE_FREQUENCY (e);
 
-          if (wanted_freq > freq_in)
-            wanted_freq = freq_in;
+	  if (wanted_freq > freq_in)
+	    wanted_freq = freq_in;
 
-          gcc_assert (!is_latch);
-          /* First copy has frequency of incoming edge.  Each subsequent
-             frequency should be reduced by prob_pass_wont_exit.  Caller
-             should've managed the flags so all except for original loop
-             has won't exist set.  */
-          scale_act = RDIV (wanted_freq * REG_BR_PROB_BASE, freq_in);
-          /* Now simulate the duplication adjustments and compute header
-             frequency of the last copy.  */
-          for (i = 0; i < ndupl; i++)
-            wanted_freq = RDIV (wanted_freq * scale_step[i], REG_BR_PROB_BASE);
-          scale_main = RDIV (wanted_freq * REG_BR_PROB_BASE, freq_in);
-        }
+	  gcc_assert (!is_latch);
+	  /* First copy has frequency of incoming edge.  Each subsequent
+	     frequency should be reduced by prob_pass_wont_exit.  Caller
+	     should've managed the flags so all except for original loop
+	     has won't exist set.  */
+	  scale_act = RDIV (wanted_freq * REG_BR_PROB_BASE, freq_in);
+	  /* Now simulate the duplication adjustments and compute header
+	     frequency of the last copy.  */
+	  for (i = 0; i < ndupl; i++)
+	    wanted_freq = RDIV (wanted_freq * scale_step[i], REG_BR_PROB_BASE);
+	  scale_main = RDIV (wanted_freq * REG_BR_PROB_BASE, freq_in);
+	}
       else if (is_latch)
-        {
-          prob_pass_main = TEST_BIT (wont_exit, 0)
-                                ? prob_pass_wont_exit
-                                : prob_pass_thru;
-          p = prob_pass_main;
-          scale_main = REG_BR_PROB_BASE;
-          for (i = 0; i < ndupl; i++)
-            {
-              scale_main += p;
-              p = RDIV (p * scale_step[i], REG_BR_PROB_BASE);
-            }
-          scale_main = RDIV (REG_BR_PROB_BASE * REG_BR_PROB_BASE, scale_main);
-          scale_act = RDIV (scale_main * prob_pass_main, REG_BR_PROB_BASE);
-        }
+	{
+	  prob_pass_main = TEST_BIT (wont_exit, 0)
+				? prob_pass_wont_exit
+				: prob_pass_thru;
+	  p = prob_pass_main;
+	  scale_main = REG_BR_PROB_BASE;
+	  for (i = 0; i < ndupl; i++)
+	    {
+	      scale_main += p;
+	      p = RDIV (p * scale_step[i], REG_BR_PROB_BASE);
+	    }
+	  scale_main = RDIV (REG_BR_PROB_BASE * REG_BR_PROB_BASE, scale_main);
+	  scale_act = RDIV (scale_main * prob_pass_main, REG_BR_PROB_BASE);
+	}
       else
-        {
-          scale_main = REG_BR_PROB_BASE;
-          for (i = 0; i < ndupl; i++)
-            scale_main = RDIV (scale_main * scale_step[i], REG_BR_PROB_BASE);
-          scale_act = REG_BR_PROB_BASE - prob_pass_thru;
-        }
+	{
+	  scale_main = REG_BR_PROB_BASE;
+	  for (i = 0; i < ndupl; i++)
+	    scale_main = RDIV (scale_main * scale_step[i], REG_BR_PROB_BASE);
+	  scale_act = REG_BR_PROB_BASE - prob_pass_thru;
+	}
       for (i = 0; i < ndupl; i++)
-        gcc_assert (scale_step[i] >= 0 && scale_step[i] <= REG_BR_PROB_BASE);
+	gcc_assert (scale_step[i] >= 0 && scale_step[i] <= REG_BR_PROB_BASE);
       gcc_assert (scale_main >= 0 && scale_main <= REG_BR_PROB_BASE
-                  && scale_act >= 0  && scale_act <= REG_BR_PROB_BASE);
+		  && scale_act >= 0  && scale_act <= REG_BR_PROB_BASE);
     }
 
   /* Loop the new bbs will belong to.  */
@@ -947,75 +947,75 @@ duplicate_loop_to_header_edge (struct loop *loop, edge e, struct loops *loops,
 
       /* Copy bbs.  */
       copy_bbs (bbs, n, new_bbs, spec_edges, 2, new_spec_edges, loop,
-                place_after);
+		place_after);
       place_after = new_spec_edges[SE_LATCH]->src;
 
       if (flags & DLTHE_RECORD_COPY_NUMBER)
-        for (i = 0; i < n; i++)
-          {
-            gcc_assert (!new_bbs[i]->aux);
-            new_bbs[i]->aux = (void *)(size_t)(j + 1);
-          }
+	for (i = 0; i < n; i++)
+	  {
+	    gcc_assert (!new_bbs[i]->aux);
+	    new_bbs[i]->aux = (void *)(size_t)(j + 1);
+	  }
 
       /* Note whether the blocks and edges belong to an irreducible loop.  */
       if (add_irreducible_flag)
-        {
-          for (i = 0; i < n; i++)
-            new_bbs[i]->flags |= BB_DUPLICATED;
-          for (i = 0; i < n; i++)
-            {
-              edge_iterator ei;
-              new_bb = new_bbs[i];
-              if (new_bb->loop_father == target)
-                new_bb->flags |= BB_IRREDUCIBLE_LOOP;
+	{
+	  for (i = 0; i < n; i++)
+	    new_bbs[i]->flags |= BB_DUPLICATED;
+	  for (i = 0; i < n; i++)
+	    {
+	      edge_iterator ei;
+	      new_bb = new_bbs[i];
+	      if (new_bb->loop_father == target)
+		new_bb->flags |= BB_IRREDUCIBLE_LOOP;
 
-              FOR_EACH_EDGE (ae, ei, new_bb->succs)
-                if ((ae->dest->flags & BB_DUPLICATED)
-                    && (ae->src->loop_father == target
-                        || ae->dest->loop_father == target))
-                  ae->flags |= EDGE_IRREDUCIBLE_LOOP;
-            }
-          for (i = 0; i < n; i++)
-            new_bbs[i]->flags &= ~BB_DUPLICATED;
-        }
+	      FOR_EACH_EDGE (ae, ei, new_bb->succs)
+		if ((ae->dest->flags & BB_DUPLICATED)
+		    && (ae->src->loop_father == target
+			|| ae->dest->loop_father == target))
+		  ae->flags |= EDGE_IRREDUCIBLE_LOOP;
+	    }
+	  for (i = 0; i < n; i++)
+	    new_bbs[i]->flags &= ~BB_DUPLICATED;
+	}
 
       /* Redirect the special edges.  */
       if (is_latch)
-        {
-          redirect_edge_and_branch_force (latch_edge, new_bbs[0]);
-          redirect_edge_and_branch_force (new_spec_edges[SE_LATCH],
-                                          loop->header);
-          set_immediate_dominator (CDI_DOMINATORS, new_bbs[0], latch);
-          latch = loop->latch = new_bbs[n - 1];
-          e = latch_edge = new_spec_edges[SE_LATCH];
-        }
+	{
+	  redirect_edge_and_branch_force (latch_edge, new_bbs[0]);
+	  redirect_edge_and_branch_force (new_spec_edges[SE_LATCH],
+					  loop->header);
+	  set_immediate_dominator (CDI_DOMINATORS, new_bbs[0], latch);
+	  latch = loop->latch = new_bbs[n - 1];
+	  e = latch_edge = new_spec_edges[SE_LATCH];
+	}
       else
-        {
-          redirect_edge_and_branch_force (new_spec_edges[SE_LATCH],
-                                          loop->header);
-          redirect_edge_and_branch_force (e, new_bbs[0]);
-          set_immediate_dominator (CDI_DOMINATORS, new_bbs[0], e->src);
-          e = new_spec_edges[SE_LATCH];
-        }
+	{
+	  redirect_edge_and_branch_force (new_spec_edges[SE_LATCH],
+					  loop->header);
+	  redirect_edge_and_branch_force (e, new_bbs[0]);
+	  set_immediate_dominator (CDI_DOMINATORS, new_bbs[0], e->src);
+	  e = new_spec_edges[SE_LATCH];
+	}
 
       /* Record exit edge in this copy.  */
       if (orig && TEST_BIT (wont_exit, j + 1))
-        to_remove[(*n_to_remove)++] = new_spec_edges[SE_ORIG];
+	to_remove[(*n_to_remove)++] = new_spec_edges[SE_ORIG];
 
       /* Record the first copy in the control flow order if it is not
-         the original loop (i.e. in case of peeling).  */
+	 the original loop (i.e. in case of peeling).  */
       if (!first_active_latch)
-        {
-          memcpy (first_active, new_bbs, n * sizeof (basic_block));
-          first_active_latch = new_bbs[n - 1];
-        }
+	{
+	  memcpy (first_active, new_bbs, n * sizeof (basic_block));
+	  first_active_latch = new_bbs[n - 1];
+	}
 
       /* Set counts and frequencies.  */
       if (flags & DLTHE_FLAG_UPDATE_FREQ)
-        {
-          scale_bbs_frequencies_int (new_bbs, n, scale_act, REG_BR_PROB_BASE);
-          scale_act = RDIV (scale_act * scale_step[j], REG_BR_PROB_BASE);
-        }
+	{
+	  scale_bbs_frequencies_int (new_bbs, n, scale_act, REG_BR_PROB_BASE);
+	  scale_act = RDIV (scale_act * scale_step[j], REG_BR_PROB_BASE);
+	}
     }
   free (new_bbs);
   free (orig_loops);
@@ -1040,14 +1040,14 @@ duplicate_loop_to_header_edge (struct loop *loop, edge e, struct loops *loops,
 
       n_dom_bbs = get_dominated_by (CDI_DOMINATORS, bb, &dom_bbs);
       for (j = 0; j < n_dom_bbs; j++)
-        {
-          dominated = dom_bbs[j];
-          if (flow_bb_inside_loop_p (loop, dominated))
-            continue;
-          dom_bb = nearest_common_dominator (
-                        CDI_DOMINATORS, first_active[i], first_active_latch);
-          set_immediate_dominator (CDI_DOMINATORS, dominated, dom_bb);
-        }
+	{
+	  dominated = dom_bbs[j];
+	  if (flow_bb_inside_loop_p (loop, dominated))
+	    continue;
+	  dom_bb = nearest_common_dominator (
+			CDI_DOMINATORS, first_active[i], first_active_latch);
+	  set_immediate_dominator (CDI_DOMINATORS, dominated, dom_bb);
+	}
       free (dom_bbs);
     }
   free (first_active);
@@ -1105,28 +1105,28 @@ create_preheader (struct loop *loop, int flags)
   FOR_EACH_EDGE (e, ei, loop->header->preds)
     {
       if (e->src == loop->latch)
-        continue;
+	continue;
       irred |= (e->flags & EDGE_IRREDUCIBLE_LOOP) != 0;
       nentry++;
       if (single_succ_p (e->src))
-        one_succ_pred = e;
+	one_succ_pred = e;
     }
   gcc_assert (nentry);
   if (nentry == 1)
     {
       /* Get an edge that is different from the one from loop->latch
-         to loop->header.  */
+	 to loop->header.  */
       e = EDGE_PRED (loop->header,
-                     EDGE_PRED (loop->header, 0)->src == loop->latch);
+		     EDGE_PRED (loop->header, 0)->src == loop->latch);
 
       if (!(flags & CP_SIMPLE_PREHEADERS) || single_succ_p (e->src))
-        return NULL;
+	return NULL;
     }
 
   mfb_kj_edge = loop_latch_edge (loop);
   latch_edge_was_fallthru = (mfb_kj_edge->flags & EDGE_FALLTHRU) != 0;
   fallthru = make_forwarder_block (loop->header, mfb_keep_just,
-                                   mfb_update_loops);
+				   mfb_update_loops);
   dummy = fallthru->src;
   loop->header = fallthru->dest;
 
@@ -1147,9 +1147,9 @@ create_preheader (struct loop *loop, int flags)
   if (latch_edge_was_fallthru)
     {
       if (one_succ_pred)
-        e = one_succ_pred;
+	e = one_succ_pred;
       else
-        e = EDGE_PRED (dummy, 0);
+	e = EDGE_PRED (dummy, 0);
 
       move_block_after (dummy, e->src);
     }
@@ -1165,7 +1165,7 @@ create_preheader (struct loop *loop, int flags)
 
   if (dump_file)
     fprintf (dump_file, "Created preheader block for loop %i\n",
-             loop->num);
+	     loop->num);
 
   return dummy;
 }
@@ -1194,7 +1194,7 @@ force_single_succ_latches (struct loops *loops)
     {
       loop = loops->parray[i];
       if (loop->latch != loop->header && single_succ_p (loop->latch))
-        continue;
+	continue;
 
       e = find_edge (loop->latch, loop->header);
 
@@ -1244,15 +1244,15 @@ loop_split_edge_with (edge e, rtx insns)
    Split it and insert new conditional expression and adjust edges.
 
     --- edge e ---> [cond expr] ---> [first_head]
-                        |
-                        +---------> [second_head]
+			|
+			+---------> [second_head]
 */
 
 static basic_block
 lv_adjust_loop_entry_edge (basic_block first_head,
-                           basic_block second_head,
-                           edge e,
-                           void *cond_expr)
+			   basic_block second_head,
+			   edge e,
+			   void *cond_expr)
 {
   basic_block new_head = NULL;
   edge e1;
@@ -1265,7 +1265,7 @@ lv_adjust_loop_entry_edge (basic_block first_head,
 
 
   lv_add_condition_to_bb (first_head, second_head, new_head,
-                          cond_expr);
+			  cond_expr);
 
   /* Don't set EDGE_TRUE_VALUE in RTL mode, as it's invalid there.  */
   e1 = make_edge (new_head, first_head, ir_type () ? EDGE_TRUE_VALUE : 0);
@@ -1292,8 +1292,8 @@ lv_adjust_loop_entry_edge (basic_block first_head,
 
 struct loop *
 loop_version (struct loops *loops, struct loop * loop,
-              void *cond_expr, basic_block *condition_bb,
-              bool place_after)
+	      void *cond_expr, basic_block *condition_bb,
+	      bool place_after)
 {
   basic_block first_head, second_head;
   edge entry, latch_edge, exit, true_edge, false_edge;
@@ -1315,7 +1315,7 @@ loop_version (struct loops *loops, struct loop * loop,
 
   /* Duplicate loop.  */
   if (!cfg_hook_duplicate_loop_to_header_edge (loop, entry, loops, 1,
-                                               NULL, NULL, NULL, NULL, 0))
+					       NULL, NULL, NULL, NULL, 0))
     return NULL;
 
   /* After duplication entry edge now points to new loop head block.
@@ -1324,7 +1324,7 @@ loop_version (struct loops *loops, struct loop * loop,
 
   /* Split loop entry edge and insert new block with cond expr.  */
   cond_bb =  lv_adjust_loop_entry_edge (first_head, second_head,
-                                        entry, cond_expr);
+					entry, cond_expr);
   if (condition_bb)
     *condition_bb = cond_bb;
 
@@ -1338,10 +1338,10 @@ loop_version (struct loops *loops, struct loop * loop,
 
   extract_cond_bb_edges (cond_bb, &true_edge, &false_edge);
   nloop = loopify (loops,
-                   latch_edge,
-                   single_pred_edge (get_bb_copy (loop->header)),
-                   cond_bb, true_edge, false_edge,
-                   false /* Do not redirect all edges.  */);
+		   latch_edge,
+		   single_pred_edge (get_bb_copy (loop->header)),
+		   cond_bb, true_edge, false_edge,
+		   false /* Do not redirect all edges.  */);
 
   exit = loop->single_exit;
   if (exit)
@@ -1370,10 +1370,10 @@ loop_version (struct loops *loops, struct loop * loop,
       after = loop->latch;
 
       for (i = 0; i < nloop->num_nodes; i++)
-        {
-          move_block_after (bbs[i], after);
-          after = bbs[i];
-        }
+	{
+	  move_block_after (bbs[i], after);
+	  after = bbs[i];
+	}
       free (bbs);
     }
 
@@ -1417,18 +1417,18 @@ fix_loop_structure (struct loops *loops, bitmap changed_bbs)
     {
       loop = loops->parray[i];
       if (!loop)
-        continue;
+	continue;
 
       loop->num_nodes = 0;
       if (loop->header)
-        continue;
+	continue;
 
       while (loop->inner)
-        {
-          ploop = loop->inner;
-          flow_loop_tree_node_remove (ploop);
-          flow_loop_tree_node_add (loop->outer, ploop);
-        }
+	{
+	  ploop = loop->inner;
+	  flow_loop_tree_node_remove (ploop);
+	  flow_loop_tree_node_add (loop->outer, ploop);
+	}
 
       /* Remove the loop and free its data.  */
       flow_loop_tree_node_remove (loop);
@@ -1441,17 +1441,17 @@ fix_loop_structure (struct loops *loops, bitmap changed_bbs)
   while (1)
     {
       if (loop->inner)
-        loop = loop->inner;
+	loop = loop->inner;
       else
-        {
-          while (!loop->next
-                 && loop != loops->tree_root)
-            loop = loop->outer;
-          if (loop == loops->tree_root)
-            break;
+	{
+	  while (!loop->next
+		 && loop != loops->tree_root)
+	    loop = loop->outer;
+	  if (loop == loops->tree_root)
+	    break;
 
-          loop = loop->next;
-        }
+	  loop = loop->next;
+	}
 
       loop->num_nodes = flow_loop_nodes_find (loop->header, loop);
     }
@@ -1461,22 +1461,22 @@ fix_loop_structure (struct loops *loops, bitmap changed_bbs)
     {
       loop = loops->parray[i];
       if (!loop)
-        continue;
+	continue;
 
       bb = loop_preheader_edge (loop)->src;
       if (bb->loop_father != loop->outer)
-        {
-          flow_loop_tree_node_remove (loop);
-          flow_loop_tree_node_add (bb->loop_father, loop);
-        }
+	{
+	  flow_loop_tree_node_remove (loop);
+	  flow_loop_tree_node_add (bb->loop_father, loop);
+	}
     }
 
   /* Mark the blocks whose loop has changed.  */
   FOR_EACH_BB (bb)
     {
       if (changed_bbs
-          && (void *) (size_t) bb->loop_father->depth != bb->aux)
-        bitmap_set_bit (changed_bbs, bb->index);
+	  && (void *) (size_t) bb->loop_father->depth != bb->aux)
+	bitmap_set_bit (changed_bbs, bb->index);
 
       bb->aux = NULL;
     }

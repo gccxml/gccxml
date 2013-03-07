@@ -81,13 +81,13 @@ addarg (const char *str)
   if (++comp_arg_index >= comp_arg_max)
     {
       const char **new_comp_args
-        = (const char **) xcalloc (comp_arg_max + 1000, sizeof (char *));
+	= (const char **) xcalloc (comp_arg_max + 1000, sizeof (char *));
 
       for (i = 0; i <= comp_arg_max; i++)
-        new_comp_args [i] = comp_args [i];
+	new_comp_args [i] = comp_args [i];
 
       if (comp_args)
-        free (comp_args);
+	free (comp_args);
 
       comp_arg_max += 1000;
       comp_args = new_comp_args;
@@ -104,15 +104,15 @@ preprocess_args (int *p_argc, char *argv[])
   for (i = 1; i < *p_argc; i++)
     {
       if (strcmp (argv[i], "-o") == 0)
-        {
-          char *buff, *ptr;
+	{
+	  char *buff, *ptr;
 
-          i++;
-          ptr = to_host_file_spec (argv[i]);
-          objfilename = xstrdup (ptr);
-          buff = concat ("/obj=", ptr, NULL);
-          addarg (buff);
-        }
+	  i++;
+	  ptr = to_host_file_spec (argv[i]);
+	  objfilename = xstrdup (ptr);
+	  buff = concat ("/obj=", ptr, NULL);
+	  addarg (buff);
+	}
     }
 }
 
@@ -124,51 +124,51 @@ process_args (int *p_argc, char *argv[])
   for (i = 1; i < *p_argc; i++)
     {
       if (strlen (argv[i]) < 2)
-        continue;
+	continue;
 
       if (strncmp (argv[i], "-I", 2) == 0)
-        {
-          char *ptr;
-          int new_len, search_dirs_len;
+	{
+	  char *ptr;
+	  int new_len, search_dirs_len;
 
-          ptr = to_host_dir_spec (&argv[i][2]);
-          new_len = strlen (ptr);
-          search_dirs_len = strlen (search_dirs);
+	  ptr = to_host_dir_spec (&argv[i][2]);
+	  new_len = strlen (ptr);
+	  search_dirs_len = strlen (search_dirs);
 
-          search_dirs = xrealloc (search_dirs, search_dirs_len + new_len + 2);
-          if (search_dirs_len > 0)
-            strcat (search_dirs, PATH_SEPARATOR_STR);
-          strcat (search_dirs, ptr);
-        }
+	  search_dirs = xrealloc (search_dirs, search_dirs_len + new_len + 2);
+	  if (search_dirs_len > 0)
+	    strcat (search_dirs, PATH_SEPARATOR_STR);
+	  strcat (search_dirs, ptr);
+	}
       else if (strncmp (argv[i], "-D", 2) == 0)
-        {
-          char *ptr;
-          int new_len, defines_len;
+	{
+	  char *ptr;
+	  int new_len, defines_len;
 
-          ptr = &argv[i][2];
-          new_len = strlen (ptr);
-          defines_len = strlen (defines);
+	  ptr = &argv[i][2];
+	  new_len = strlen (ptr);
+	  defines_len = strlen (defines);
 
-          defines = xrealloc (defines, defines_len + new_len + 4);
-          if (defines_len > 0)
-            strcat (defines, ",");
+	  defines = xrealloc (defines, defines_len + new_len + 4);
+	  if (defines_len > 0)
+	    strcat (defines, ",");
 
-          strcat (defines, "\"");
-          strcat (defines, ptr);
-          strcat (defines, "\"");
-        }
+	  strcat (defines, "\"");
+	  strcat (defines, ptr);
+	  strcat (defines, "\"");
+	}
       else if (strcmp (argv[i], "-v") == 0)
-        verbose = 1;
+	verbose = 1;
       else if (strcmp (argv[i], "-g0") == 0)
-        addarg ("/nodebug");
+	addarg ("/nodebug");
       else if (strcmp (argv[i], "-O0") == 0)
-        addarg ("/noopt");
+	addarg ("/noopt");
       else if (strncmp (argv[i], "-g", 2) == 0)
-        addarg ("/debug");
+	addarg ("/debug");
       else if (strcmp (argv[i], "-E") == 0)
-        addarg ("/preprocess");
+	addarg ("/preprocess");
       else if (strcmp (argv[i], "-save-temps") == 0)
-        save_temps = 1;
+	save_temps = 1;
     }
 }
 
@@ -216,40 +216,40 @@ main (int argc, char **argv)
       int arg_len = strlen (argv[i]);
 
       if (strcmp (argv[i], "-o") == 0)
-        i++;
+	i++;
       else if (strcmp (argv[i], "-v" ) == 0
-               || strcmp (argv[i], "-E") == 0
-               || strcmp (argv[i], "-c") == 0
-               || strncmp (argv[i], "-g", 2 ) == 0
-               || strncmp (argv[i], "-O", 2 ) == 0
-               || strcmp (argv[i], "-save-temps") == 0
-               || (arg_len > 2 && strncmp (argv[i], "-I", 2) == 0)
-               || (arg_len > 2 && strncmp (argv[i], "-D", 2) == 0))
-        ;
+	       || strcmp (argv[i], "-E") == 0
+	       || strcmp (argv[i], "-c") == 0
+	       || strncmp (argv[i], "-g", 2 ) == 0
+	       || strncmp (argv[i], "-O", 2 ) == 0
+	       || strcmp (argv[i], "-save-temps") == 0
+	       || (arg_len > 2 && strncmp (argv[i], "-I", 2) == 0)
+	       || (arg_len > 2 && strncmp (argv[i], "-D", 2) == 0))
+	;
 
       /* Unix style file specs and VMS style switches look alike, so assume
-         an arg consisting of one and only one slash, and that being first, is
-         really a switch.  */
+	 an arg consisting of one and only one slash, and that being first, is
+	 really a switch.  */
       else if ((argv[i][0] == '/') && (strchr (&argv[i][1], '/') == 0))
-        addarg (argv[i]);
+	addarg (argv[i]);
       else
-        {
-          /* Assume filename arg */
-          char buff [256], *ptr;
+	{
+	  /* Assume filename arg */
+	  char buff [256], *ptr;
 
-          ptr = to_host_file_spec (argv[i]);
-          arg_len = strlen (ptr);
+	  ptr = to_host_file_spec (argv[i]);
+	  arg_len = strlen (ptr);
 
-          if (ptr[0] == '[')
-            sprintf (buff, "%s%s", cwdev, ptr);
-          else if (strchr (ptr, ':'))
-            sprintf (buff, "%s", ptr);
-          else
-            sprintf (buff, "%s%s", cwd, ptr);
+	  if (ptr[0] == '[')
+	    sprintf (buff, "%s%s", cwdev, ptr);
+	  else if (strchr (ptr, ':'))
+	    sprintf (buff, "%s", ptr);
+	  else
+	    sprintf (buff, "%s%s", cwd, ptr);
 
-          ptr = xstrdup (buff);
-          addarg (ptr);
-        }
+	  ptr = xstrdup (buff);
+	  addarg (ptr);
+	}
     }
 
   addarg (NULL);
@@ -259,7 +259,7 @@ main (int argc, char **argv)
       int i;
 
       for (i = 0; i < comp_arg_index; i++)
-        printf ("%s ", comp_args [i]);
+	printf ("%s ", comp_args [i]);
 
       putchar ('\n');
     }
@@ -278,13 +278,13 @@ main (int argc, char **argv)
       int status1 = 1;
 
       for (i = 0; i < len + 1; i++)
-        allargs [i] = 0;
+	allargs [i] = 0;
 
       for (i = 0; comp_args [i]; i++)
-        {
-          strcat (allargs, comp_args [i]);
-          strcat (allargs, " ");
-        }
+	{
+	  strcat (allargs, comp_args [i]);
+	  strcat (allargs, " ");
+	}
 
       cmd.adr = allargs;
       cmd.len = len;
@@ -293,13 +293,13 @@ main (int argc, char **argv)
       i = LIB$SPAWN (&cmd, 0, 0, 0, 0, 0, &status);
 
       if ((i & 1) != 1)
-        {
-          LIB$SIGNAL (i);
-          exit (1);
-        }
+	{
+	  LIB$SIGNAL (i);
+	  exit (1);
+	}
 
       if ((status & 1) == 1 && (status1 & 1) == 1)
-        exit (0);
+	exit (0);
 
       exit (1);
     }

@@ -43,7 +43,7 @@ tmpnam (char *s)
       sprintf (s, "%s/%s%x.%x", P_tmpdir, "t", pid, tmpnam_counter);
       f = fopen (s, "r");
       if (f == NULL)
-        break;
+	break;
       tmpnam_counter++;
       fclose (f);
     }

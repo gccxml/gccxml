@@ -362,7 +362,7 @@ extern void abort (void);
 #endif
 
 #ifndef offsetof
-#define offsetof(TYPE, MEMBER)        ((size_t) &((TYPE *) 0)->MEMBER)
+#define offsetof(TYPE, MEMBER)	((size_t) &((TYPE *) 0)->MEMBER)
 #endif
 
 /* __builtin_expect(A, B) evaluates to A, but notifies the compiler that

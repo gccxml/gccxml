@@ -27,9 +27,9 @@ Boston, MA 02110-1301, USA.  */
 #ifdef TREE_CODE
 extern struct rtx_def *function_value (tree, enum machine_mode, int);
 extern void function_arg_advance (CUMULATIVE_ARGS *,
-                                  enum machine_mode, tree, int);
+				  enum machine_mode, tree, int);
 extern struct rtx_def *function_arg (const CUMULATIVE_ARGS *,
-                                     enum machine_mode, tree, int, int);
+				     enum machine_mode, tree, int, int);
 #ifdef RTX_CODE
 extern void init_cumulative_args (CUMULATIVE_ARGS *, tree, rtx, tree);
 extern void sparc_va_start (tree, rtx);

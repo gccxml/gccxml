@@ -28,23 +28,23 @@
 #include "auto-host.h"
 
 .section .ctors,"aw","progbits"
-        .align        8
+	.align	8
 __CTOR_END__:
-        data8        0
+	data8	0
 
 .section .dtors,"aw","progbits"
-        .align 8
+	.align 8
 __DTOR_END__:
-        data8        0
+	data8	0
 
 .section .jcr,"aw","progbits"
-        .align 8
+	.align 8
 __JCR_END__:
-        data8        0
+	data8	0
 
 #ifdef HAVE_INITFINI_ARRAY
-        .global __do_global_ctors_aux
-        .hidden        __do_global_ctors_aux
+	.global __do_global_ctors_aux
+	.hidden	__do_global_ctors_aux
 #else /* !HAVE_INITFINI_ARRAY */
 /*
  * Fragment of the ELF _init routine that invokes our dtor cleanup.
@@ -60,65 +60,65 @@ __JCR_END__:
  * so that the next fragment in .fini gets the right value.
  */
 .section .init,"ax","progbits"
-        { .mlx
-          movl r2 = @pcrel(__do_global_ctors_aux - 16)
-        }
-        { .mii
-          mov r3 = ip
-          ;;
-          add r2 = r2, r3
-          ;;
-        }
-        { .mib
-          mov b6 = r2
-          br.call.sptk.many b0 = b6
-          ;;
-        }
+	{ .mlx
+	  movl r2 = @pcrel(__do_global_ctors_aux - 16)
+	}
+	{ .mii
+	  mov r3 = ip
+	  ;;
+	  add r2 = r2, r3
+	  ;;
+	}
+	{ .mib
+	  mov b6 = r2
+	  br.call.sptk.many b0 = b6
+	  ;;
+	}
 #endif /* !HAVE_INITFINI_ARRAY */
 
 .text
-        .align 32
-        .proc __do_global_ctors_aux
+	.align 32
+	.proc __do_global_ctors_aux
 __do_global_ctors_aux:
-        .prologue
-        /*
-                for (loc0 = __CTOR_END__-1; *p != -1; --p)
-                  (*p) ();
-        */
-        .save ar.pfs, r34
-        alloc loc2 = ar.pfs, 0, 5, 0, 0
-        movl loc0 = @gprel(__CTOR_END__ - 8)
-        ;;
+	.prologue
+	/*
+		for (loc0 = __CTOR_END__-1; *p != -1; --p)
+		  (*p) ();
+	*/
+	.save ar.pfs, r34
+	alloc loc2 = ar.pfs, 0, 5, 0, 0
+	movl loc0 = @gprel(__CTOR_END__ - 8)
+	;;
 
-        add loc0 = loc0, gp
-        ;;
-        ld8 loc3 = [loc0], -8
-        .save rp, loc1
-        mov loc1 = rp
-        .body
-        ;;
+	add loc0 = loc0, gp
+	;;
+	ld8 loc3 = [loc0], -8
+	.save rp, loc1
+	mov loc1 = rp
+	.body
+	;;
 
-        cmp.eq p6, p0 = -1, loc3
-        mov loc4 = gp
-(p6)        br.cond.spnt.few .exit
+	cmp.eq p6, p0 = -1, loc3
+	mov loc4 = gp
+(p6)	br.cond.spnt.few .exit
 
-.loop:        ld8 r15 = [loc3], 8
-        ;;
-        ld8 gp = [loc3]
-        mov b6 = r15
+.loop:	ld8 r15 = [loc3], 8
+	;;
+	ld8 gp = [loc3]
+	mov b6 = r15
 
-        ld8 loc3 = [loc0], -8
-        nop 0
-        br.call.sptk.many rp = b6
-        ;;
+	ld8 loc3 = [loc0], -8
+	nop 0
+	br.call.sptk.many rp = b6
+	;;
 
-        cmp.ne p6, p0 = -1, loc3
-        nop 0
-(p6)        br.cond.sptk.few .loop
+	cmp.ne p6, p0 = -1, loc3
+	nop 0
+(p6)	br.cond.sptk.few .loop
 
-.exit:        mov gp = loc3
-        mov rp = loc1
-        mov ar.pfs = loc2
+.exit:	mov gp = loc3
+	mov rp = loc1
+	mov ar.pfs = loc2
 
-        br.ret.sptk.many rp
-        .endp __do_global_ctors_aux
+	br.ret.sptk.many rp
+	.endp __do_global_ctors_aux

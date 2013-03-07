@@ -53,7 +53,7 @@ getcwd (char *buf, size_t len)
        buf = (char*)malloc(len);
        if (!buf) {
            errno = ENOMEM;
-           return 0;
+	   return 0;
        }
     }
     strcpy (buf, ourbuf);

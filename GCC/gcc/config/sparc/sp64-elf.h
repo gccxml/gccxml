@@ -96,7 +96,7 @@ crtbegin.o%s \
    This is suitable for output with `assemble_name'.  */
 
 #undef  ASM_GENERATE_INTERNAL_LABEL
-#define ASM_GENERATE_INTERNAL_LABEL(LABEL,PREFIX,NUM)        \
+#define ASM_GENERATE_INTERNAL_LABEL(LABEL,PREFIX,NUM)	\
   sprintf ((LABEL), "*.L%s%ld", (PREFIX), (long)(NUM))
 
 /* ??? This should be 32 bits for v9 but what can we do?  */

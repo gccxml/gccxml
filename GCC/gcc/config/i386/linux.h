@@ -47,7 +47,7 @@ Boston, MA 02110-1301, USA.  */
    To the best of my knowledge, no Linux libc has required the label
    argument to mcount.  */
 
-#define NO_PROFILE_COUNTERS        1
+#define NO_PROFILE_COUNTERS	1
 
 #undef MCOUNT_NAME
 #define MCOUNT_NAME "mcount"
@@ -70,11 +70,11 @@ Boston, MA 02110-1301, USA.  */
 #undef WCHAR_TYPE_SIZE
 #define WCHAR_TYPE_SIZE BITS_PER_WORD
     
-#define TARGET_OS_CPP_BUILTINS()                \
-  do                                                \
-    {                                                \
-        LINUX_TARGET_OS_CPP_BUILTINS();                \
-    }                                                \
+#define TARGET_OS_CPP_BUILTINS()		\
+  do						\
+    {						\
+	LINUX_TARGET_OS_CPP_BUILTINS();		\
+    }						\
   while (0)
 
 #undef CPP_SPEC
@@ -108,14 +108,14 @@ Boston, MA 02110-1301, USA.  */
   { "link_emulation", LINK_EMULATION },\
   { "dynamic_linker", LINUX_DYNAMIC_LINKER }
 
-#undef        LINK_SPEC
+#undef	LINK_SPEC
 #define LINK_SPEC "-m %(link_emulation) %{shared:-shared} \
   %{!shared: \
     %{!ibcs: \
       %{!static: \
-        %{rdynamic:-export-dynamic} \
-        %{!dynamic-linker:-dynamic-linker %(dynamic_linker)}} \
-        %{static:-static}}}"
+	%{rdynamic:-export-dynamic} \
+	%{!dynamic-linker:-dynamic-linker %(dynamic_linker)}} \
+	%{static:-static}}}"
 
 /* Similar to standard Linux, but adding -ffast-math support.  */
 #undef  ENDFILE_SPEC
@@ -138,46 +138,46 @@ Boston, MA 02110-1301, USA.  */
    This is used to align code labels according to Intel recommendations.  */
 
 #ifdef HAVE_GAS_MAX_SKIP_P2ALIGN
-#define ASM_OUTPUT_MAX_SKIP_ALIGN(FILE,LOG,MAX_SKIP)                        \
-  do {                                                                        \
-    if ((LOG) != 0) {                                                        \
-      if ((MAX_SKIP) == 0) fprintf ((FILE), "\t.p2align %d\n", (LOG));        \
-      else fprintf ((FILE), "\t.p2align %d,,%d\n", (LOG), (MAX_SKIP));        \
-    }                                                                        \
+#define ASM_OUTPUT_MAX_SKIP_ALIGN(FILE,LOG,MAX_SKIP)			\
+  do {									\
+    if ((LOG) != 0) {							\
+      if ((MAX_SKIP) == 0) fprintf ((FILE), "\t.p2align %d\n", (LOG));	\
+      else fprintf ((FILE), "\t.p2align %d,,%d\n", (LOG), (MAX_SKIP));	\
+    }									\
   } while (0)
 #endif
 
 /* Handle special EH pointer encodings.  Absolute, pc-relative, and
    indirect are handled automatically.  */
 #define ASM_MAYBE_OUTPUT_ENCODED_ADDR_RTX(FILE, ENCODING, SIZE, ADDR, DONE) \
-  do {                                                                        \
-    if ((SIZE) == 4 && ((ENCODING) & 0x70) == DW_EH_PE_datarel)                \
-      {                                                                        \
-        fputs (ASM_LONG, FILE);                        \
-        assemble_name (FILE, XSTR (ADDR, 0));                                \
-        fputs (((ENCODING) & DW_EH_PE_indirect ? "@GOT" : "@GOTOFF"), FILE); \
-        goto DONE;                                                        \
-      }                                                                        \
+  do {									\
+    if ((SIZE) == 4 && ((ENCODING) & 0x70) == DW_EH_PE_datarel)		\
+      {									\
+        fputs (ASM_LONG, FILE);			\
+        assemble_name (FILE, XSTR (ADDR, 0));				\
+	fputs (((ENCODING) & DW_EH_PE_indirect ? "@GOT" : "@GOTOFF"), FILE); \
+        goto DONE;							\
+      }									\
   } while (0)
 
 /* Used by crtstuff.c to initialize the base of data-relative relocations.
    These are GOT relative on x86, so return the pic register.  */
 #ifdef __PIC__
-#define CRT_GET_RFIB_DATA(BASE)                        \
-  {                                                \
-    register void *ebx_ __asm__("ebx");                \
-    BASE = ebx_;                                \
+#define CRT_GET_RFIB_DATA(BASE)			\
+  {						\
+    register void *ebx_ __asm__("ebx");		\
+    BASE = ebx_;				\
   }
 #else
-#define CRT_GET_RFIB_DATA(BASE)                                                \
-  __asm__ ("call\t.LPR%=\n"                                                \
-           ".LPR%=:\n\t"                                                \
-           "popl\t%0\n\t"                                                \
-           /* Due to a GAS bug, this cannot use EAX.  That encodes        \
-              smaller than the traditional EBX, which results in the        \
-              offset being off by one.  */                                \
-           "addl\t$_GLOBAL_OFFSET_TABLE_+[.-.LPR%=],%0"                        \
-           : "=d"(BASE))
+#define CRT_GET_RFIB_DATA(BASE)						\
+  __asm__ ("call\t.LPR%=\n"						\
+	   ".LPR%=:\n\t"						\
+	   "popl\t%0\n\t"						\
+	   /* Due to a GAS bug, this cannot use EAX.  That encodes	\
+	      smaller than the traditional EBX, which results in the	\
+	      offset being off by one.  */				\
+	   "addl\t$_GLOBAL_OFFSET_TABLE_+[.-.LPR%=],%0"			\
+	   : "=d"(BASE))
 #endif
 
 #undef NEED_INDICATE_EXEC_STACK
@@ -190,5 +190,5 @@ Boston, MA 02110-1301, USA.  */
 
 #ifdef TARGET_LIBC_PROVIDES_SSP
 /* i386 glibc provides __stack_chk_guard in %gs:0x14.  */
-#define TARGET_THREAD_SSP_OFFSET        0x14
+#define TARGET_THREAD_SSP_OFFSET	0x14
 #endif

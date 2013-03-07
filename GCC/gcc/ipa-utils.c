@@ -48,9 +48,9 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
 
 void 
 ipa_utils_print_order (FILE* out, 
-                       const char * note, 
-                       struct cgraph_node** order, 
-                       int count) 
+		       const char * note, 
+		       struct cgraph_node** order, 
+		       int count) 
 {
   int i;
   fprintf (out, "\n\n ordered call graph: %s\n", note);
@@ -103,25 +103,25 @@ searchc (struct searchc_env* env, struct cgraph_node *v)
       struct ipa_dfs_info * w_info;
       struct cgraph_node *w = edge->callee;
       /* Bypass the clones and only look at the master node.  Skip
-         external and other bogus nodes.  */
+	 external and other bogus nodes.  */
       w = cgraph_master_clone (w);
       if (w && w->aux) 
-        {
-          w_info = w->aux;
-          if (w_info->new) 
-            {
-              searchc (env, w);
-              v_info->low_link =
-                (v_info->low_link < w_info->low_link) ?
-                v_info->low_link : w_info->low_link;
-            } 
-          else 
-            if ((w_info->dfn_number < v_info->dfn_number) 
-                && (w_info->on_stack)) 
-              v_info->low_link =
-                (w_info->dfn_number < v_info->low_link) ?
-                w_info->dfn_number : v_info->low_link;
-        }
+	{
+	  w_info = w->aux;
+	  if (w_info->new) 
+	    {
+	      searchc (env, w);
+	      v_info->low_link =
+		(v_info->low_link < w_info->low_link) ?
+		v_info->low_link : w_info->low_link;
+	    } 
+	  else 
+	    if ((w_info->dfn_number < v_info->dfn_number) 
+		&& (w_info->on_stack)) 
+	      v_info->low_link =
+		(w_info->dfn_number < v_info->low_link) ?
+		w_info->dfn_number : v_info->low_link;
+	}
     }
 
 
@@ -131,21 +131,21 @@ searchc (struct searchc_env* env, struct cgraph_node *v)
       struct cgraph_node *x;
       struct ipa_dfs_info *x_info;
       do {
-        x = env->stack[--(env->stack_size)];
-        x_info = x->aux;
-        x_info->on_stack = false;
-        
-        if (env->reduce) 
-          {
-            x_info->next_cycle = last;
-            last = x;
-          } 
-        else 
-          env->result[env->order_pos++] = x;
+	x = env->stack[--(env->stack_size)];
+	x_info = x->aux;
+	x_info->on_stack = false;
+	
+	if (env->reduce) 
+	  {
+	    x_info->next_cycle = last;
+	    last = x;
+	  } 
+	else 
+	  env->result[env->order_pos++] = x;
       } 
       while (v != x);
       if (env->reduce) 
-        env->result[env->order_pos++] = v;
+	env->result[env->order_pos++] = v;
     }
 }
 
@@ -156,7 +156,7 @@ searchc (struct searchc_env* env, struct cgraph_node *v)
 
 int
 ipa_utils_reduced_inorder (struct cgraph_node **order, 
-                           bool reduce, bool allow_overwritable)
+			   bool reduce, bool allow_overwritable)
 {
   struct cgraph_node *node;
   struct searchc_env env;
@@ -171,23 +171,23 @@ ipa_utils_reduced_inorder (struct cgraph_node **order,
   
   for (node = cgraph_nodes; node; node = node->next) 
     if ((node->analyzed)
-        && (cgraph_is_master_clone (node) 
-         || (allow_overwritable 
-             && (cgraph_function_body_availability (node) == 
-                 AVAIL_OVERWRITABLE))))
+	&& (cgraph_is_master_clone (node) 
+	 || (allow_overwritable 
+	     && (cgraph_function_body_availability (node) == 
+		 AVAIL_OVERWRITABLE))))
       {
-        /* Reuse the info if it is already there.  */
-        struct ipa_dfs_info *info = node->aux;
-        if (!info)
-          info = xcalloc (1, sizeof (struct ipa_dfs_info));
-        info->new = true;
-        info->on_stack = false;
-        info->next_cycle = NULL;
-        node->aux = info;
-        
-        splay_tree_insert (env.nodes_marked_new,
-                           (splay_tree_key)node->uid, 
-                           (splay_tree_value)node);
+	/* Reuse the info if it is already there.  */
+	struct ipa_dfs_info *info = node->aux;
+	if (!info)
+	  info = xcalloc (1, sizeof (struct ipa_dfs_info));
+	info->new = true;
+	info->on_stack = false;
+	info->next_cycle = NULL;
+	node->aux = info;
+	
+	splay_tree_insert (env.nodes_marked_new,
+			   (splay_tree_key)node->uid, 
+			   (splay_tree_value)node);
       } 
     else 
       node->aux = NULL;
@@ -216,10 +216,10 @@ get_base_var (tree t)
     return t;
 
   while (!SSA_VAR_P (t) 
-         && (!CONSTANT_CLASS_P (t))
-         && TREE_CODE (t) != LABEL_DECL
-         && TREE_CODE (t) != FUNCTION_DECL
-         && TREE_CODE (t) != CONST_DECL)
+	 && (!CONSTANT_CLASS_P (t))
+	 && TREE_CODE (t) != LABEL_DECL
+	 && TREE_CODE (t) != FUNCTION_DECL
+	 && TREE_CODE (t) != CONST_DECL)
     {
       t = TREE_OPERAND (t, 0);
     }

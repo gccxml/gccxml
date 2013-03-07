@@ -48,7 +48,7 @@ typedef struct
 
 static const unsigned char *
 parse_lsda_header (struct _Unwind_Context *context, const unsigned char *p,
-                   lsda_header_info *info)
+		   lsda_header_info *info)
 {
   _Unwind_Word tmp;
   unsigned char lpstart_encoding;
@@ -84,12 +84,12 @@ parse_lsda_header (struct _Unwind_Context *context, const unsigned char *p,
 #ifdef __ARM_EABI_UNWINDER__
 /* ARM EABI personality routines must also unwind the stack.  */
 #define CONTINUE_UNWINDING \
-  do                                                                \
-    {                                                                \
-      if (__gnu_unwind_frame (ue_header, context) != _URC_OK)        \
-        return _URC_FAILURE;                                        \
-      return _URC_CONTINUE_UNWIND;                                \
-    }                                                                \
+  do								\
+    {								\
+      if (__gnu_unwind_frame (ue_header, context) != _URC_OK)	\
+	return _URC_FAILURE;					\
+      return _URC_CONTINUE_UNWIND;				\
+    }								\
   while (0)
 #else
 #define CONTINUE_UNWINDING return _URC_CONTINUE_UNWIND
@@ -105,23 +105,23 @@ parse_lsda_header (struct _Unwind_Context *context, const unsigned char *p,
 #ifdef __ARM_EABI_UNWINDER__
 _Unwind_Reason_Code
 PERSONALITY_FUNCTION (_Unwind_State, struct _Unwind_Exception *,
-                      struct _Unwind_Context *);
+		      struct _Unwind_Context *);
 
 _Unwind_Reason_Code
 PERSONALITY_FUNCTION (_Unwind_State state,
-                      struct _Unwind_Exception * ue_header,
-                      struct _Unwind_Context * context)
+		      struct _Unwind_Exception * ue_header,
+		      struct _Unwind_Context * context)
 #else
 _Unwind_Reason_Code
 PERSONALITY_FUNCTION (int, _Unwind_Action, _Unwind_Exception_Class,
-                      struct _Unwind_Exception *, struct _Unwind_Context *);
+		      struct _Unwind_Exception *, struct _Unwind_Context *);
 
 _Unwind_Reason_Code
 PERSONALITY_FUNCTION (int version,
-                      _Unwind_Action actions,
-                      _Unwind_Exception_Class exception_class ATTRIBUTE_UNUSED,
-                      struct _Unwind_Exception *ue_header,
-                      struct _Unwind_Context *context)
+		      _Unwind_Action actions,
+		      _Unwind_Exception_Class exception_class ATTRIBUTE_UNUSED,
+		      struct _Unwind_Exception *ue_header,
+		      struct _Unwind_Context *context)
 #endif
 {
   lsda_header_info info;
@@ -177,17 +177,17 @@ PERSONALITY_FUNCTION (int version,
     {
       _Unwind_Word cs_lp, cs_action;
       do
-        {
-          p = read_uleb128 (p, &cs_lp);
-          p = read_uleb128 (p, &cs_action);
-        }
+	{
+	  p = read_uleb128 (p, &cs_lp);
+	  p = read_uleb128 (p, &cs_action);
+	}
       while (--ip);
 
       /* Can never have null landing pad for sjlj -- that would have
-         been indicated by a -1 call site index.  */
+	 been indicated by a -1 call site index.  */
       landing_pad = cs_lp + 1;
       if (cs_action)
-        action_record = info.action_table + cs_action - 1;
+	action_record = info.action_table + cs_action - 1;
       goto found_something;
     }
 #else
@@ -205,15 +205,15 @@ PERSONALITY_FUNCTION (int version,
 
       /* The table is sorted, so if we've passed the ip, stop.  */
       if (ip < info.Start + cs_start)
-        p = info.action_table;
+	p = info.action_table;
       else if (ip < info.Start + cs_start + cs_len)
-        {
-          if (cs_lp)
-            landing_pad = info.LPStart + cs_lp;
-          if (cs_action)
-            action_record = info.action_table + cs_action - 1;
-          goto found_something;
-        }
+	{
+	  if (cs_lp)
+	    landing_pad = info.LPStart + cs_lp;
+	  if (cs_action)
+	    action_record = info.action_table + cs_action - 1;
+	  goto found_something;
+	}
     }
 #endif
 
@@ -226,12 +226,12 @@ PERSONALITY_FUNCTION (int version,
   if (landing_pad == 0)
     {
       /* IP is present, but has a null landing pad.
-         No handler to be run.  */
+	 No handler to be run.  */
       CONTINUE_UNWINDING;
     }
 
   _Unwind_SetGR (context, __builtin_eh_return_data_regno (0),
-                 (_Unwind_Ptr) ue_header);
+		 (_Unwind_Ptr) ue_header);
   _Unwind_SetGR (context, __builtin_eh_return_data_regno (1), 0);
   _Unwind_SetIP (context, landing_pad);
   return _URC_INSTALL_CONTEXT;

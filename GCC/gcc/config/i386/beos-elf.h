@@ -58,16 +58,16 @@ Boston, MA 02110-1301, USA.  */
 
 #define TARGET_DECLSPEC 1
 
-#define TARGET_OS_CPP_BUILTINS()                                        \
-  do                                                                        \
-    {                                                                        \
-        builtin_define ("__BEOS__");                                        \
-        builtin_define ("__INTEL__");                                        \
-        builtin_define ("_X86_");                                        \
-        builtin_define ("__stdcall=__attribute__((__stdcall__))");        \
-        builtin_define ("__cdecl=__attribute__((__cdecl__))");                \
-        builtin_assert ("system=beos");                                        \
-    }                                                                        \
+#define TARGET_OS_CPP_BUILTINS()					\
+  do									\
+    {									\
+	builtin_define ("__BEOS__");					\
+	builtin_define ("__INTEL__");					\
+	builtin_define ("_X86_");					\
+	builtin_define ("__stdcall=__attribute__((__stdcall__))");	\
+	builtin_define ("__cdecl=__attribute__((__cdecl__))");		\
+	builtin_assert ("system=beos");					\
+    }									\
   while (0)
     
 /* BeOS uses lots of multichars, so don't warn about them unless the
@@ -87,7 +87,7 @@ Boston, MA 02110-1301, USA.  */
 
 /* If ELF is the default format, we should not use /lib/elf.  */
 
-#undef        LINK_SPEC
+#undef	LINK_SPEC
 #define LINK_SPEC "%{!o*:-o %b} -m elf_i386_be -shared -Bsymbolic %{nostart:-e 0}"
 
 /* Provide start and end file specs appropriate to glibc.  */
@@ -178,8 +178,8 @@ Boston, MA 02110-1301, USA.  */
     { 0, 0, 0, 0 } \
     }
 #else /* CROSS_COMPILE */
-#undef        INCLUDE_DEFAULTS
-#define INCLUDE_DEFAULTS                                \
+#undef	INCLUDE_DEFAULTS
+#define INCLUDE_DEFAULTS				\
     { \
     { GPLUSPLUS_INCLUDE_DIR, "G++", 1, 1 },\
     { GCC_INCLUDE_DIR, "GCC", 0, 0 },\

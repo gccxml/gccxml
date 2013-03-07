@@ -78,29 +78,29 @@ reachable_at_most_once (basic_block va_arg_bb, basic_block va_start_bb)
       src = e->src;
 
       if (e->flags & EDGE_COMPLEX)
-        {
-          ret = false;
-          break;
-        }
+	{
+	  ret = false;
+	  break;
+	}
 
       if (src == va_start_bb)
-        continue;
+	continue;
 
       /* va_arg_bb can be executed more times than va_start_bb.  */
       if (src == va_arg_bb)
-        {
-          ret = false;
-          break;
-        }
+	{
+	  ret = false;
+	  break;
+	}
 
       gcc_assert (src != ENTRY_BLOCK_PTR);
 
       if (! TEST_BIT (visited, src->index))
-        {
-          SET_BIT (visited, src->index);
-          FOR_EACH_EDGE (e, ei, src->preds)
-            stack[sp++] = e;
-        }
+	{
+	  SET_BIT (visited, src->index);
+	  FOR_EACH_EDGE (e, ei, src->preds)
+	    stack[sp++] = e;
+	}
     }
 
   free (stack);
@@ -115,7 +115,7 @@ reachable_at_most_once (basic_block va_arg_bb, basic_block va_start_bb)
 
 static unsigned HOST_WIDE_INT
 va_list_counter_bump (struct stdarg_info *si, tree counter, tree rhs,
-                      bool gpr_p)
+		      bool gpr_p)
 {
   tree stmt, lhs, orig_lhs;
   unsigned HOST_WIDE_INT ret = 0, val, counter_val;
@@ -127,7 +127,7 @@ va_list_counter_bump (struct stdarg_info *si, tree counter, tree rhs,
 
       si->offsets = XNEWVEC (int, num_ssa_names);
       for (i = 0; i < num_ssa_names; ++i)
-        si->offsets[i] = -1;
+	si->offsets[i] = -1;
     }
 
   counter_val = gpr_p ? cfun->va_list_gpr_size : cfun->va_list_fpr_size;
@@ -136,63 +136,63 @@ va_list_counter_bump (struct stdarg_info *si, tree counter, tree rhs,
   while (lhs)
     {
       if (si->offsets[SSA_NAME_VERSION (lhs)] != -1)
-        {
-          if (counter_val >= max_size)
-            {
-              ret = max_size;
-              break;
-            }
+	{
+	  if (counter_val >= max_size)
+	    {
+	      ret = max_size;
+	      break;
+	    }
 
-          ret -= counter_val - si->offsets[SSA_NAME_VERSION (lhs)];
-          break;
-        }
+	  ret -= counter_val - si->offsets[SSA_NAME_VERSION (lhs)];
+	  break;
+	}
 
       stmt = SSA_NAME_DEF_STMT (lhs);
 
       if (TREE_CODE (stmt) != MODIFY_EXPR
-          || TREE_OPERAND (stmt, 0) != lhs)
-        return (unsigned HOST_WIDE_INT) -1;
+	  || TREE_OPERAND (stmt, 0) != lhs)
+	return (unsigned HOST_WIDE_INT) -1;
 
       rhs = TREE_OPERAND (stmt, 1);
       if (TREE_CODE (rhs) == WITH_SIZE_EXPR)
-        rhs = TREE_OPERAND (rhs, 0);
+	rhs = TREE_OPERAND (rhs, 0);
 
       if (TREE_CODE (rhs) == SSA_NAME)
-        {
-          lhs = rhs;
-          continue;
-        }
+	{
+	  lhs = rhs;
+	  continue;
+	}
 
       if ((TREE_CODE (rhs) == NOP_EXPR
-           || TREE_CODE (rhs) == CONVERT_EXPR)
-          && TREE_CODE (TREE_OPERAND (rhs, 0)) == SSA_NAME)
-        {
-          lhs = TREE_OPERAND (rhs, 0);
-          continue;
-        }
+	   || TREE_CODE (rhs) == CONVERT_EXPR)
+	  && TREE_CODE (TREE_OPERAND (rhs, 0)) == SSA_NAME)
+	{
+	  lhs = TREE_OPERAND (rhs, 0);
+	  continue;
+	}
 
       if (TREE_CODE (rhs) == PLUS_EXPR
-          && TREE_CODE (TREE_OPERAND (rhs, 0)) == SSA_NAME
-          && TREE_CODE (TREE_OPERAND (rhs, 1)) == INTEGER_CST
-          && host_integerp (TREE_OPERAND (rhs, 1), 1))
-        {
-          ret += tree_low_cst (TREE_OPERAND (rhs, 1), 1);
-          lhs = TREE_OPERAND (rhs, 0);
-          continue;
-        }
+	  && TREE_CODE (TREE_OPERAND (rhs, 0)) == SSA_NAME
+	  && TREE_CODE (TREE_OPERAND (rhs, 1)) == INTEGER_CST
+	  && host_integerp (TREE_OPERAND (rhs, 1), 1))
+	{
+	  ret += tree_low_cst (TREE_OPERAND (rhs, 1), 1);
+	  lhs = TREE_OPERAND (rhs, 0);
+	  continue;
+	}
 
       if (TREE_CODE (counter) != TREE_CODE (rhs))
-        return (unsigned HOST_WIDE_INT) -1;
+	return (unsigned HOST_WIDE_INT) -1;
 
       if (TREE_CODE (counter) == COMPONENT_REF)
-        {
-          if (get_base_address (counter) != get_base_address (rhs)
-              || TREE_CODE (TREE_OPERAND (rhs, 1)) != FIELD_DECL
-              || TREE_OPERAND (counter, 1) != TREE_OPERAND (rhs, 1))
-            return (unsigned HOST_WIDE_INT) -1;
-        }
+	{
+	  if (get_base_address (counter) != get_base_address (rhs)
+	      || TREE_CODE (TREE_OPERAND (rhs, 1)) != FIELD_DECL
+	      || TREE_OPERAND (counter, 1) != TREE_OPERAND (rhs, 1))
+	    return (unsigned HOST_WIDE_INT) -1;
+	}
       else if (counter != rhs)
-        return (unsigned HOST_WIDE_INT) -1;
+	return (unsigned HOST_WIDE_INT) -1;
 
       lhs = NULL;
     }
@@ -202,42 +202,42 @@ va_list_counter_bump (struct stdarg_info *si, tree counter, tree rhs,
   while (lhs)
     {
       if (si->offsets[SSA_NAME_VERSION (lhs)] != -1)
-        break;
+	break;
 
       if (val >= max_size)
-        si->offsets[SSA_NAME_VERSION (lhs)] = max_size;
+	si->offsets[SSA_NAME_VERSION (lhs)] = max_size;
       else
-        si->offsets[SSA_NAME_VERSION (lhs)] = val;
+	si->offsets[SSA_NAME_VERSION (lhs)] = val;
 
       stmt = SSA_NAME_DEF_STMT (lhs);
 
       rhs = TREE_OPERAND (stmt, 1);
       if (TREE_CODE (rhs) == WITH_SIZE_EXPR)
-        rhs = TREE_OPERAND (rhs, 0);
+	rhs = TREE_OPERAND (rhs, 0);
 
       if (TREE_CODE (rhs) == SSA_NAME)
-        {
-          lhs = rhs;
-          continue;
-        }
+	{
+	  lhs = rhs;
+	  continue;
+	}
 
       if ((TREE_CODE (rhs) == NOP_EXPR
-           || TREE_CODE (rhs) == CONVERT_EXPR)
-          && TREE_CODE (TREE_OPERAND (rhs, 0)) == SSA_NAME)
-        {
-          lhs = TREE_OPERAND (rhs, 0);
-          continue;
-        }
+	   || TREE_CODE (rhs) == CONVERT_EXPR)
+	  && TREE_CODE (TREE_OPERAND (rhs, 0)) == SSA_NAME)
+	{
+	  lhs = TREE_OPERAND (rhs, 0);
+	  continue;
+	}
 
       if (TREE_CODE (rhs) == PLUS_EXPR
-          && TREE_CODE (TREE_OPERAND (rhs, 0)) == SSA_NAME
-          && TREE_CODE (TREE_OPERAND (rhs, 1)) == INTEGER_CST
-          && host_integerp (TREE_OPERAND (rhs, 1), 1))
-        {
-          val -= tree_low_cst (TREE_OPERAND (rhs, 1), 1);
-          lhs = TREE_OPERAND (rhs, 0);
-          continue;
-        }
+	  && TREE_CODE (TREE_OPERAND (rhs, 0)) == SSA_NAME
+	  && TREE_CODE (TREE_OPERAND (rhs, 1)) == INTEGER_CST
+	  && host_integerp (TREE_OPERAND (rhs, 1), 1))
+	{
+	  val -= tree_low_cst (TREE_OPERAND (rhs, 1), 1);
+	  lhs = TREE_OPERAND (rhs, 0);
+	  continue;
+	}
 
       lhs = NULL;
     }
@@ -250,7 +250,7 @@ va_list_counter_bump (struct stdarg_info *si, tree counter, tree rhs,
 
 static tree
 find_va_list_reference (tree *tp, int *walk_subtrees ATTRIBUTE_UNUSED,
-                        void *data)
+			void *data)
 {
   bitmap va_list_vars = (bitmap) data;
   tree var = *tp;
@@ -274,7 +274,7 @@ find_va_list_reference (tree *tp, int *walk_subtrees ATTRIBUTE_UNUSED,
 
 static void
 va_list_counter_op (struct stdarg_info *si, tree ap, tree var, bool gpr_p,
-                    bool write_p)
+		    bool write_p)
 {
   unsigned HOST_WIDE_INT increment;
 
@@ -282,14 +282,14 @@ va_list_counter_op (struct stdarg_info *si, tree ap, tree var, bool gpr_p,
     {
       si->compute_sizes = 0;
       if (si->va_start_count == 1
-          && reachable_at_most_once (si->bb, si->va_start_bb))
-        si->compute_sizes = 1;
+	  && reachable_at_most_once (si->bb, si->va_start_bb))
+	si->compute_sizes = 1;
 
       if (dump_file && (dump_flags & TDF_DETAILS))
-        fprintf (dump_file,
-                 "bb%d will %sbe executed at most once for each va_start "
-                 "in bb%d\n", si->bb->index, si->compute_sizes ? "" : "not ",
-                 si->va_start_bb->index);
+	fprintf (dump_file,
+		 "bb%d will %sbe executed at most once for each va_start "
+		 "in bb%d\n", si->bb->index, si->compute_sizes ? "" : "not ",
+		 si->va_start_bb->index);
     }
 
   if (write_p
@@ -297,24 +297,24 @@ va_list_counter_op (struct stdarg_info *si, tree ap, tree var, bool gpr_p,
       && (increment = va_list_counter_bump (si, ap, var, gpr_p)) + 1 > 1)
     {
       if (gpr_p && cfun->va_list_gpr_size + increment < VA_LIST_MAX_GPR_SIZE)
-        {
-          cfun->va_list_gpr_size += increment;
-          return;
-        }
+	{
+	  cfun->va_list_gpr_size += increment;
+	  return;
+	}
 
       if (!gpr_p && cfun->va_list_fpr_size + increment < VA_LIST_MAX_FPR_SIZE)
-        {
-          cfun->va_list_fpr_size += increment;
-          return;
-        }
+	{
+	  cfun->va_list_fpr_size += increment;
+	  return;
+	}
     }
 
   if (write_p || !si->compute_sizes)
     {
       if (gpr_p)
-        cfun->va_list_gpr_size = VA_LIST_MAX_GPR_SIZE;
+	cfun->va_list_gpr_size = VA_LIST_MAX_GPR_SIZE;
       else
-        cfun->va_list_fpr_size = VA_LIST_MAX_FPR_SIZE;
+	cfun->va_list_fpr_size = VA_LIST_MAX_FPR_SIZE;
     }
 }
 
@@ -328,7 +328,7 @@ va_list_counter_op (struct stdarg_info *si, tree ap, tree var, bool gpr_p,
 
 static bool
 va_list_counter_struct_op (struct stdarg_info *si, tree ap, tree var,
-                           bool write_p)
+			   bool write_p)
 {
   tree base;
 
@@ -366,7 +366,7 @@ va_list_ptr_read (struct stdarg_info *si, tree ap, tree tem)
 
   if (TREE_CODE (tem) != SSA_NAME
       || bitmap_bit_p (si->va_list_vars,
-                       DECL_UID (SSA_NAME_VAR (tem)))
+		       DECL_UID (SSA_NAME_VAR (tem)))
       || is_global_var (SSA_NAME_VAR (tem)))
     return false;
 
@@ -374,14 +374,14 @@ va_list_ptr_read (struct stdarg_info *si, tree ap, tree tem)
     {
       si->compute_sizes = 0;
       if (si->va_start_count == 1
-          && reachable_at_most_once (si->bb, si->va_start_bb))
-        si->compute_sizes = 1;
+	  && reachable_at_most_once (si->bb, si->va_start_bb))
+	si->compute_sizes = 1;
 
       if (dump_file && (dump_flags & TDF_DETAILS))
-        fprintf (dump_file,
-                 "bb%d will %sbe executed at most once for each va_start "
-                 "in bb%d\n", si->bb->index, si->compute_sizes ? "" : "not ",
-                 si->va_start_bb->index);
+	fprintf (dump_file,
+		 "bb%d will %sbe executed at most once for each va_start "
+		 "in bb%d\n", si->bb->index, si->compute_sizes ? "" : "not ",
+		 si->va_start_bb->index);
     }
 
   /* For void * or char * va_list types, there is just one counter.
@@ -396,7 +396,7 @@ va_list_ptr_read (struct stdarg_info *si, tree ap, tree tem)
   /* Note the temporary, as we need to track whether it doesn't escape
      the current function.  */
   bitmap_set_bit (si->va_list_escape_vars,
-                  DECL_UID (SSA_NAME_VAR (tem)));
+		  DECL_UID (SSA_NAME_VAR (tem)));
   return true;
 }
 
@@ -455,7 +455,7 @@ check_va_list_escapes (struct stdarg_info *si, tree lhs, tree rhs)
 
   if (TREE_CODE (rhs) != SSA_NAME
       || ! bitmap_bit_p (si->va_list_escape_vars,
-                         DECL_UID (SSA_NAME_VAR (rhs))))
+			 DECL_UID (SSA_NAME_VAR (rhs))))
     return;
 
   if (TREE_CODE (lhs) != SSA_NAME || is_global_var (SSA_NAME_VAR (lhs)))
@@ -468,14 +468,14 @@ check_va_list_escapes (struct stdarg_info *si, tree lhs, tree rhs)
     {
       si->compute_sizes = 0;
       if (si->va_start_count == 1
-          && reachable_at_most_once (si->bb, si->va_start_bb))
-        si->compute_sizes = 1;
+	  && reachable_at_most_once (si->bb, si->va_start_bb))
+	si->compute_sizes = 1;
 
       if (dump_file && (dump_flags & TDF_DETAILS))
-        fprintf (dump_file,
-                 "bb%d will %sbe executed at most once for each va_start "
-                 "in bb%d\n", si->bb->index, si->compute_sizes ? "" : "not ",
-                 si->va_start_bb->index);
+	fprintf (dump_file,
+		 "bb%d will %sbe executed at most once for each va_start "
+		 "in bb%d\n", si->bb->index, si->compute_sizes ? "" : "not ",
+		 si->va_start_bb->index);
     }
 
   /* For void * or char * va_list types, there is just one counter.
@@ -495,7 +495,7 @@ check_va_list_escapes (struct stdarg_info *si, tree lhs, tree rhs)
     }
 
   bitmap_set_bit (si->va_list_escape_vars,
-                  DECL_UID (SSA_NAME_VAR (lhs)));
+		  DECL_UID (SSA_NAME_VAR (lhs)));
 }
 
 
@@ -512,78 +512,78 @@ check_all_va_list_escapes (struct stdarg_info *si)
       block_stmt_iterator i;
 
       for (i = bsi_start (bb); !bsi_end_p (i); bsi_next (&i))
-        {
-          tree stmt = bsi_stmt (i), use;
-          ssa_op_iter iter;
+	{
+	  tree stmt = bsi_stmt (i), use;
+	  ssa_op_iter iter;
 
-          FOR_EACH_SSA_TREE_OPERAND (use, stmt, iter, SSA_OP_ALL_USES)
-            {
-              if (! bitmap_bit_p (si->va_list_escape_vars,
-                                  DECL_UID (SSA_NAME_VAR (use))))
-                continue;
+	  FOR_EACH_SSA_TREE_OPERAND (use, stmt, iter, SSA_OP_ALL_USES)
+	    {
+	      if (! bitmap_bit_p (si->va_list_escape_vars,
+				  DECL_UID (SSA_NAME_VAR (use))))
+		continue;
 
-              if (TREE_CODE (stmt) == MODIFY_EXPR)
-                {
-                  tree lhs = TREE_OPERAND (stmt, 0);
-                  tree rhs = TREE_OPERAND (stmt, 1);
+	      if (TREE_CODE (stmt) == MODIFY_EXPR)
+		{
+		  tree lhs = TREE_OPERAND (stmt, 0);
+		  tree rhs = TREE_OPERAND (stmt, 1);
 
-                  if (TREE_CODE (rhs) == WITH_SIZE_EXPR)
-                    rhs = TREE_OPERAND (rhs, 0);
+		  if (TREE_CODE (rhs) == WITH_SIZE_EXPR)
+		    rhs = TREE_OPERAND (rhs, 0);
 
-                  /* x = *ap_temp;  */
-                  if (TREE_CODE (rhs) == INDIRECT_REF
-                      && TREE_OPERAND (rhs, 0) == use
-                      && TYPE_SIZE_UNIT (TREE_TYPE (rhs))
-                      && host_integerp (TYPE_SIZE_UNIT (TREE_TYPE (rhs)), 1)
-                      && si->offsets[SSA_NAME_VERSION (use)] != -1)
-                    {
-                      unsigned HOST_WIDE_INT gpr_size;
-                      tree access_size = TYPE_SIZE_UNIT (TREE_TYPE (rhs));
+		  /* x = *ap_temp;  */
+		  if (TREE_CODE (rhs) == INDIRECT_REF
+		      && TREE_OPERAND (rhs, 0) == use
+		      && TYPE_SIZE_UNIT (TREE_TYPE (rhs))
+		      && host_integerp (TYPE_SIZE_UNIT (TREE_TYPE (rhs)), 1)
+		      && si->offsets[SSA_NAME_VERSION (use)] != -1)
+		    {
+		      unsigned HOST_WIDE_INT gpr_size;
+		      tree access_size = TYPE_SIZE_UNIT (TREE_TYPE (rhs));
 
-                      gpr_size = si->offsets[SSA_NAME_VERSION (use)]
-                                 + tree_low_cst (access_size, 1);
-                      if (gpr_size >= VA_LIST_MAX_GPR_SIZE)
-                        cfun->va_list_gpr_size = VA_LIST_MAX_GPR_SIZE;
-                      else if (gpr_size > cfun->va_list_gpr_size)
-                        cfun->va_list_gpr_size = gpr_size;
-                      continue;
-                    }
+		      gpr_size = si->offsets[SSA_NAME_VERSION (use)]
+				 + tree_low_cst (access_size, 1);
+		      if (gpr_size >= VA_LIST_MAX_GPR_SIZE)
+			cfun->va_list_gpr_size = VA_LIST_MAX_GPR_SIZE;
+		      else if (gpr_size > cfun->va_list_gpr_size)
+			cfun->va_list_gpr_size = gpr_size;
+		      continue;
+		    }
 
-                  /* va_arg sequences may contain
-                     other_ap_temp = ap_temp;
-                     other_ap_temp = ap_temp + constant;
-                     other_ap_temp = (some_type *) ap_temp;
-                     ap = ap_temp;
-                     statements.  */
-                  if ((TREE_CODE (rhs) == PLUS_EXPR
-                       && TREE_CODE (TREE_OPERAND (rhs, 1)) == INTEGER_CST)
-                      || TREE_CODE (rhs) == NOP_EXPR
-                      || TREE_CODE (rhs) == CONVERT_EXPR)
-                    rhs = TREE_OPERAND (rhs, 0);
+		  /* va_arg sequences may contain
+		     other_ap_temp = ap_temp;
+		     other_ap_temp = ap_temp + constant;
+		     other_ap_temp = (some_type *) ap_temp;
+		     ap = ap_temp;
+		     statements.  */
+		  if ((TREE_CODE (rhs) == PLUS_EXPR
+		       && TREE_CODE (TREE_OPERAND (rhs, 1)) == INTEGER_CST)
+		      || TREE_CODE (rhs) == NOP_EXPR
+		      || TREE_CODE (rhs) == CONVERT_EXPR)
+		    rhs = TREE_OPERAND (rhs, 0);
 
-                  if (rhs == use)
-                    {
-                      if (TREE_CODE (lhs) == SSA_NAME
-                          && bitmap_bit_p (si->va_list_escape_vars,
-                                           DECL_UID (SSA_NAME_VAR (lhs))))
-                        continue;
+		  if (rhs == use)
+		    {
+		      if (TREE_CODE (lhs) == SSA_NAME
+			  && bitmap_bit_p (si->va_list_escape_vars,
+					   DECL_UID (SSA_NAME_VAR (lhs))))
+			continue;
 
-                      if (TREE_CODE (lhs) == VAR_DECL
-                          && bitmap_bit_p (si->va_list_vars,
-                                           DECL_UID (lhs)))
-                        continue;
-                    }
-                }
+		      if (TREE_CODE (lhs) == VAR_DECL
+			  && bitmap_bit_p (si->va_list_vars,
+					   DECL_UID (lhs)))
+			continue;
+		    }
+		}
 
-              if (dump_file && (dump_flags & TDF_DETAILS))
-                {
-                  fputs ("va_list escapes in ", dump_file);
-                  print_generic_expr (dump_file, stmt, dump_flags);
-                  fputc ('\n', dump_file);
-                }
-              return true;
-            }
-        }
+	      if (dump_file && (dump_flags & TDF_DETAILS))
+		{
+		  fputs ("va_list escapes in ", dump_file);
+		  print_generic_expr (dump_file, stmt, dump_flags);
+		  fputc ('\n', dump_file);
+		}
+	      return true;
+	    }
+	}
     }
 
   return false;
@@ -622,8 +622,8 @@ execute_optimize_stdarg (void)
     funcname = lang_hooks.decl_printable_name (current_function_decl, 2);
 
   va_list_simple_ptr = POINTER_TYPE_P (va_list_type_node)
-                       && (TREE_TYPE (va_list_type_node) == void_type_node
-                           || TREE_TYPE (va_list_type_node) == char_type_node);
+		       && (TREE_TYPE (va_list_type_node) == void_type_node
+			   || TREE_TYPE (va_list_type_node) == char_type_node);
   gcc_assert (is_gimple_reg_type (va_list_type_node) == va_list_simple_ptr);
 
   FOR_EACH_BB (bb)
@@ -631,76 +631,76 @@ execute_optimize_stdarg (void)
       block_stmt_iterator i;
 
       for (i = bsi_start (bb); !bsi_end_p (i); bsi_next (&i))
-        {
-          tree stmt = bsi_stmt (i);
-          tree call = get_call_expr_in (stmt), callee;
-          tree ap;
+	{
+	  tree stmt = bsi_stmt (i);
+	  tree call = get_call_expr_in (stmt), callee;
+	  tree ap;
 
-          if (!call)
-            continue;
+	  if (!call)
+	    continue;
 
-          callee = get_callee_fndecl (call);
-          if (!callee
-              || DECL_BUILT_IN_CLASS (callee) != BUILT_IN_NORMAL)
-            continue;
+	  callee = get_callee_fndecl (call);
+	  if (!callee
+	      || DECL_BUILT_IN_CLASS (callee) != BUILT_IN_NORMAL)
+	    continue;
 
-          switch (DECL_FUNCTION_CODE (callee))
-            {
-            case BUILT_IN_VA_START:
-              break;
-              /* If old style builtins are used, don't optimize anything.  */
-            case BUILT_IN_SAVEREGS:
-            case BUILT_IN_STDARG_START:
-            case BUILT_IN_ARGS_INFO:
-            case BUILT_IN_NEXT_ARG:
-              va_list_escapes = true;
-              continue;
-            default:
-              continue;
-            }
+	  switch (DECL_FUNCTION_CODE (callee))
+	    {
+	    case BUILT_IN_VA_START:
+	      break;
+	      /* If old style builtins are used, don't optimize anything.  */
+	    case BUILT_IN_SAVEREGS:
+	    case BUILT_IN_STDARG_START:
+	    case BUILT_IN_ARGS_INFO:
+	    case BUILT_IN_NEXT_ARG:
+	      va_list_escapes = true;
+	      continue;
+	    default:
+	      continue;
+	    }
 
-          si.va_start_count++;
-          ap = TREE_VALUE (TREE_OPERAND (call, 1));
+	  si.va_start_count++;
+	  ap = TREE_VALUE (TREE_OPERAND (call, 1));
 
-          if (TREE_CODE (ap) != ADDR_EXPR)
-            {
-              va_list_escapes = true;
-              break;
-            }
-          ap = TREE_OPERAND (ap, 0);
-          if (TREE_CODE (ap) == ARRAY_REF)
-            {
-              if (! integer_zerop (TREE_OPERAND (ap, 1)))
-                {
-                  va_list_escapes = true;
-                  break;
-                }
-              ap = TREE_OPERAND (ap, 0);
-            }
-          if (TYPE_MAIN_VARIANT (TREE_TYPE (ap))
-              != TYPE_MAIN_VARIANT (va_list_type_node)
-              || TREE_CODE (ap) != VAR_DECL)
-            {
-              va_list_escapes = true;
-              break;
-            }
+	  if (TREE_CODE (ap) != ADDR_EXPR)
+	    {
+	      va_list_escapes = true;
+	      break;
+	    }
+	  ap = TREE_OPERAND (ap, 0);
+	  if (TREE_CODE (ap) == ARRAY_REF)
+	    {
+	      if (! integer_zerop (TREE_OPERAND (ap, 1)))
+	        {
+	          va_list_escapes = true;
+	          break;
+		}
+	      ap = TREE_OPERAND (ap, 0);
+	    }
+	  if (TYPE_MAIN_VARIANT (TREE_TYPE (ap))
+	      != TYPE_MAIN_VARIANT (va_list_type_node)
+	      || TREE_CODE (ap) != VAR_DECL)
+	    {
+	      va_list_escapes = true;
+	      break;
+	    }
 
-          if (is_global_var (ap))
-            {
-              va_list_escapes = true;
-              break;
-            }
+	  if (is_global_var (ap))
+	    {
+	      va_list_escapes = true;
+	      break;
+	    }
 
-          bitmap_set_bit (si.va_list_vars, DECL_UID (ap));
+	  bitmap_set_bit (si.va_list_vars, DECL_UID (ap));
 
-          /* VA_START_BB and VA_START_AP will be only used if there is just
-             one va_start in the function.  */
-          si.va_start_bb = bb;
-          si.va_start_ap = ap;
-        }
+	  /* VA_START_BB and VA_START_AP will be only used if there is just
+	     one va_start in the function.  */
+	  si.va_start_bb = bb;
+	  si.va_start_ap = ap;
+	}
 
       if (va_list_escapes)
-        break;
+	break;
     }
 
   /* If there were no va_start uses in the function, there is no need to
@@ -745,132 +745,132 @@ execute_optimize_stdarg (void)
       si.bb = bb;
 
       /* For va_list_simple_ptr, we have to check PHI nodes too.  We treat
-         them as assignments for the purpose of escape analysis.  This is
-         not needed for non-simple va_list because virtual phis don't perform
-         any real data movement.  */
+	 them as assignments for the purpose of escape analysis.  This is
+	 not needed for non-simple va_list because virtual phis don't perform
+	 any real data movement.  */
       if (va_list_simple_ptr)
-        {
-          tree phi, lhs, rhs;
-          use_operand_p uop;
-          ssa_op_iter soi;
+	{
+	  tree phi, lhs, rhs;
+	  use_operand_p uop;
+	  ssa_op_iter soi;
 
-          for (phi = phi_nodes (bb); phi; phi = PHI_CHAIN (phi))
-            {
-              lhs = PHI_RESULT (phi);
+	  for (phi = phi_nodes (bb); phi; phi = PHI_CHAIN (phi))
+	    {
+	      lhs = PHI_RESULT (phi);
 
-              if (!is_gimple_reg (lhs))
-                continue;
+	      if (!is_gimple_reg (lhs))
+		continue;
 
-              FOR_EACH_PHI_ARG (uop, phi, soi, SSA_OP_USE)
-                {
-                  rhs = USE_FROM_PTR (uop);
-                  if (va_list_ptr_read (&si, rhs, lhs))
-                    continue;
-                  else if (va_list_ptr_write (&si, lhs, rhs))
-                    continue;
-                  else
-                    check_va_list_escapes (&si, lhs, rhs);
+	      FOR_EACH_PHI_ARG (uop, phi, soi, SSA_OP_USE)
+		{
+		  rhs = USE_FROM_PTR (uop);
+		  if (va_list_ptr_read (&si, rhs, lhs))
+		    continue;
+		  else if (va_list_ptr_write (&si, lhs, rhs))
+		    continue;
+		  else
+		    check_va_list_escapes (&si, lhs, rhs);
 
-                  if (si.va_list_escapes
-                      || walk_tree (&phi, find_va_list_reference,
-                                    si.va_list_vars, NULL))
-                    {
-                      if (dump_file && (dump_flags & TDF_DETAILS))
-                        {
-                          fputs ("va_list escapes in ", dump_file);
-                          print_generic_expr (dump_file, phi, dump_flags);
-                          fputc ('\n', dump_file);
-                        }
-                      va_list_escapes = true;
-                    }
-                }
-            }
-        }
+		  if (si.va_list_escapes
+		      || walk_tree (&phi, find_va_list_reference,
+				    si.va_list_vars, NULL))
+		    {
+		      if (dump_file && (dump_flags & TDF_DETAILS))
+			{
+			  fputs ("va_list escapes in ", dump_file);
+			  print_generic_expr (dump_file, phi, dump_flags);
+			  fputc ('\n', dump_file);
+			}
+		      va_list_escapes = true;
+		    }
+		}
+	    }
+	}
 
       for (i = bsi_start (bb);
-           !bsi_end_p (i) && !va_list_escapes;
-           bsi_next (&i))
-        {
-          tree stmt = bsi_stmt (i);
-          tree call;
+	   !bsi_end_p (i) && !va_list_escapes;
+	   bsi_next (&i))
+	{
+	  tree stmt = bsi_stmt (i);
+	  tree call;
 
-          /* Don't look at __builtin_va_{start,end}, they are ok.  */
-          call = get_call_expr_in (stmt);
-          if (call)
-            {
-              tree callee = get_callee_fndecl (call);
+	  /* Don't look at __builtin_va_{start,end}, they are ok.  */
+	  call = get_call_expr_in (stmt);
+	  if (call)
+	    {
+	      tree callee = get_callee_fndecl (call);
 
-              if (callee
-                  && DECL_BUILT_IN_CLASS (callee) == BUILT_IN_NORMAL
-                  && (DECL_FUNCTION_CODE (callee) == BUILT_IN_VA_START
-                      || DECL_FUNCTION_CODE (callee) == BUILT_IN_VA_END))
-                continue;
-            }
+	      if (callee
+		  && DECL_BUILT_IN_CLASS (callee) == BUILT_IN_NORMAL
+		  && (DECL_FUNCTION_CODE (callee) == BUILT_IN_VA_START
+		      || DECL_FUNCTION_CODE (callee) == BUILT_IN_VA_END))
+		continue;
+	    }
 
-          if (TREE_CODE (stmt) == MODIFY_EXPR)
-            {
-              tree lhs = TREE_OPERAND (stmt, 0);
-              tree rhs = TREE_OPERAND (stmt, 1);
+	  if (TREE_CODE (stmt) == MODIFY_EXPR)
+	    {
+	      tree lhs = TREE_OPERAND (stmt, 0);
+	      tree rhs = TREE_OPERAND (stmt, 1);
 
-              if (TREE_CODE (rhs) == WITH_SIZE_EXPR)
-                rhs = TREE_OPERAND (rhs, 0);
+	      if (TREE_CODE (rhs) == WITH_SIZE_EXPR)
+		rhs = TREE_OPERAND (rhs, 0);
 
-              if (va_list_simple_ptr)
-                {
-                  /* Check for tem = ap.  */
-                  if (va_list_ptr_read (&si, rhs, lhs))
-                    continue;
+	      if (va_list_simple_ptr)
+		{
+		  /* Check for tem = ap.  */
+		  if (va_list_ptr_read (&si, rhs, lhs))
+		    continue;
 
-                  /* Check for the last insn in:
-                     tem1 = ap;
-                     tem2 = tem1 + CST;
-                     ap = tem2;
-                     sequence.  */
-                  else if (va_list_ptr_write (&si, lhs, rhs))
-                    continue;
+		  /* Check for the last insn in:
+		     tem1 = ap;
+		     tem2 = tem1 + CST;
+		     ap = tem2;
+		     sequence.  */
+		  else if (va_list_ptr_write (&si, lhs, rhs))
+		    continue;
 
-                  else
-                    check_va_list_escapes (&si, lhs, rhs);
-                }
-              else
-                {
-                  /* Check for ap[0].field = temp.  */
-                  if (va_list_counter_struct_op (&si, lhs, rhs, true))
-                    continue;
+		  else
+		    check_va_list_escapes (&si, lhs, rhs);
+		}
+	      else
+		{
+		  /* Check for ap[0].field = temp.  */
+		  if (va_list_counter_struct_op (&si, lhs, rhs, true))
+		    continue;
 
-                  /* Check for temp = ap[0].field.  */
-                  else if (va_list_counter_struct_op (&si, rhs, lhs, false))
-                    continue;
+		  /* Check for temp = ap[0].field.  */
+		  else if (va_list_counter_struct_op (&si, rhs, lhs, false))
+		    continue;
 
-                  /* Do any architecture specific checking.  */
-                  else if (targetm.stdarg_optimize_hook
-                           && targetm.stdarg_optimize_hook (&si, lhs, rhs))
-                    continue;
-                }
-            }
+		  /* Do any architecture specific checking.  */
+		  else if (targetm.stdarg_optimize_hook
+			   && targetm.stdarg_optimize_hook (&si, lhs, rhs))
+		    continue;
+		}
+	    }
 
-          /* All other uses of va_list are either va_copy (that is not handled
-             in this optimization), taking address of va_list variable or
-             passing va_list to other functions (in that case va_list might
-             escape the function and therefore va_start needs to set it up
-             fully), or some unexpected use of va_list.  None of these should
-             happen in a gimplified VA_ARG_EXPR.  */
-          if (si.va_list_escapes
-              || walk_tree (&stmt, find_va_list_reference,
-                            si.va_list_vars, NULL))
-            {
-              if (dump_file && (dump_flags & TDF_DETAILS))
-                {
-                  fputs ("va_list escapes in ", dump_file);
-                  print_generic_expr (dump_file, stmt, dump_flags);
-                  fputc ('\n', dump_file);
-                }
-              va_list_escapes = true;
-            }
-        }
+	  /* All other uses of va_list are either va_copy (that is not handled
+	     in this optimization), taking address of va_list variable or
+	     passing va_list to other functions (in that case va_list might
+	     escape the function and therefore va_start needs to set it up
+	     fully), or some unexpected use of va_list.  None of these should
+	     happen in a gimplified VA_ARG_EXPR.  */
+	  if (si.va_list_escapes
+	      || walk_tree (&stmt, find_va_list_reference,
+			    si.va_list_vars, NULL))
+	    {
+	      if (dump_file && (dump_flags & TDF_DETAILS))
+		{
+		  fputs ("va_list escapes in ", dump_file);
+		  print_generic_expr (dump_file, stmt, dump_flags);
+		  fputc ('\n', dump_file);
+		}
+	      va_list_escapes = true;
+	    }
+	}
 
       if (va_list_escapes)
-        break;
+	break;
     }
 
   if (! va_list_escapes
@@ -891,16 +891,16 @@ finish:
   if (dump_file)
     {
       fprintf (dump_file, "%s: va_list escapes %d, needs to save ",
-               funcname, (int) va_list_escapes);
+	       funcname, (int) va_list_escapes);
       if (cfun->va_list_gpr_size >= VA_LIST_MAX_GPR_SIZE)
-        fputs ("all", dump_file);
+	fputs ("all", dump_file);
       else
-        fprintf (dump_file, "%d", cfun->va_list_gpr_size);
+	fprintf (dump_file, "%d", cfun->va_list_gpr_size);
       fputs (" GPR units and ", dump_file);
       if (cfun->va_list_fpr_size >= VA_LIST_MAX_FPR_SIZE)
-        fputs ("all", dump_file);
+	fputs ("all", dump_file);
       else
-        fprintf (dump_file, "%d", cfun->va_list_fpr_size);
+	fprintf (dump_file, "%d", cfun->va_list_fpr_size);
       fputs (" FPR units.\n", dump_file);
     }
   return 0;
@@ -909,17 +909,17 @@ finish:
 
 struct tree_opt_pass pass_stdarg =
 {
-  "stdarg",                                /* name */
-  gate_optimize_stdarg,                        /* gate */
-  execute_optimize_stdarg,                /* execute */
-  NULL,                                        /* sub */
-  NULL,                                        /* next */
-  0,                                        /* static_pass_number */
-  0,                                        /* tv_id */
-  PROP_cfg | PROP_ssa | PROP_alias,        /* properties_required */
-  0,                                        /* properties_provided */
-  0,                                        /* properties_destroyed */
-  0,                                        /* todo_flags_start */
-  TODO_dump_func,                        /* todo_flags_finish */
-  0                                        /* letter */
+  "stdarg",				/* name */
+  gate_optimize_stdarg,			/* gate */
+  execute_optimize_stdarg,		/* execute */
+  NULL,					/* sub */
+  NULL,					/* next */
+  0,					/* static_pass_number */
+  0,					/* tv_id */
+  PROP_cfg | PROP_ssa | PROP_alias,	/* properties_required */
+  0,					/* properties_provided */
+  0,					/* properties_destroyed */
+  0,					/* todo_flags_start */
+  TODO_dump_func,			/* todo_flags_finish */
+  0					/* letter */
 };

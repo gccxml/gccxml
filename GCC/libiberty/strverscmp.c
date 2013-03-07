@@ -146,8 +146,8 @@ strverscmp (const char *s1, const char *s2)
       
     case LEN:
       while (ISDIGIT (*p1++))
-        if (!ISDIGIT (*p2++))
-          return 1;
+	if (!ISDIGIT (*p2++))
+	  return 1;
       
       return ISDIGIT (*p2) ? -1 : diff;
       

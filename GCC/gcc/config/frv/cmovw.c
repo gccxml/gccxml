@@ -38,17 +38,17 @@ __cmovw (int *dest, const int *src, unsigned len)
   if (dest_byte < src_byte || dest_byte > src_byte+len)
     {
       for (i = 0; i < num; i++)
-        dest[i] = src[i];
+	dest[i] = src[i];
 
       while (len > xlen)
-        {
-          dest_byte[xlen] = src_byte[xlen];
-          xlen++;
-        }
+	{
+	  dest_byte[xlen] = src_byte[xlen];
+	  xlen++;
+	}
     }
   else
     {
       while (len-- > 0)
-        dest_byte[len] = src_byte[len];
+	dest_byte[len] = src_byte[len];
     }
 }

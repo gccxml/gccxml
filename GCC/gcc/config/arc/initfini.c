@@ -81,29 +81,29 @@ __do_global_dtors (void)
    This must appear at the start of the .init section.  */
 
 asm ("\n\
-        .section .init\n\
-        .global init\n\
-        .word 0\n\
+	.section .init\n\
+	.global init\n\
+	.word 0\n\
 init:\n\
-        st blink,[sp,4]\n\
-        st fp,[sp]\n\
-        mov fp,sp\n\
-        sub sp,sp,16\n\
+	st blink,[sp,4]\n\
+	st fp,[sp]\n\
+	mov fp,sp\n\
+	sub sp,sp,16\n\
 ");
 
 /* .fini section start.
    This must appear at the start of the .init section.  */
 
 asm ("\n\
-        .section .fini\n\
-        .global fini\n\
-        .word 0\n\
+	.section .fini\n\
+	.global fini\n\
+	.word 0\n\
 fini:\n\
-        st blink,[sp,4]\n\
-        st fp,[sp]\n\
-        mov fp,sp\n\
-        sub sp,sp,16\n\
-        bl.nd __do_global_dtors\n\
+	st blink,[sp,4]\n\
+	st fp,[sp]\n\
+	mov fp,sp\n\
+	sub sp,sp,16\n\
+	bl.nd __do_global_dtors\n\
 ");
 
 #endif /* CRT_INIT */
@@ -140,21 +140,21 @@ __do_global_ctors (void)
    This must live at the end of the .init section.  */
 
 asm ("\n\
-        .section .init\n\
-        bl.nd __do_global_ctors\n\
-        ld blink,[fp,4]\n\
-        j.d blink\n\
-        ld.a fp,[sp,16]\n\
+	.section .init\n\
+	bl.nd __do_global_ctors\n\
+	ld blink,[fp,4]\n\
+	j.d blink\n\
+	ld.a fp,[sp,16]\n\
 ");
 
 /* .fini section end.
    This must live at the end of the .fini section.  */
 
 asm ("\n\
-        .section .fini\n\
-        ld blink,[fp,4]\n\
-        j.d blink\n\
-        ld.a fp,[sp,16]\n\
+	.section .fini\n\
+	ld blink,[fp,4]\n\
+	j.d blink\n\
+	ld.a fp,[sp,16]\n\
 ");
 
 #endif /* CRT_FINI */

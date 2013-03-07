@@ -133,12 +133,12 @@ allocate_phi_node (int len)
   tree phi;
   int bucket = NUM_BUCKETS - 2;
   int size = (sizeof (struct tree_phi_node)
-              + (len - 1) * sizeof (struct phi_arg_d));
+	      + (len - 1) * sizeof (struct phi_arg_d));
 
   if (free_phinode_count)
     for (bucket = len - 2; bucket < NUM_BUCKETS - 2; bucket++)
       if (free_phinodes[bucket])
-        break;
+	break;
 
   /* If our free list has an element, then use it.  */
   if (bucket < NUM_BUCKETS - 2
@@ -214,7 +214,7 @@ make_phi_node (tree var, int len)
      portion, because we represent a "missing PHI argument" by placing
      NULL_TREE in PHI_ARG_DEF.  */
   memset (phi, 0, (sizeof (struct tree_phi_node) - sizeof (struct phi_arg_d)
-                   + sizeof (struct phi_arg_d) * len));
+		   + sizeof (struct phi_arg_d) * len));
   TREE_SET_CODE (phi, PHI_NODE);
   PHI_NUM_ARGS (phi) = len;
   PHI_ARG_CAPACITY (phi) = capacity;
@@ -274,7 +274,7 @@ resize_phi_node (tree *phi, int len)
      first PHI_NUM_ARGS elements.  Therefore, all we have to copy is a
      portion of the PHI node currently in use.  */
   old_size = (sizeof (struct tree_phi_node)
-             + (PHI_NUM_ARGS (*phi) - 1) * sizeof (struct phi_arg_d));
+	     + (PHI_NUM_ARGS (*phi) - 1) * sizeof (struct phi_arg_d));
 
   new_phi = allocate_phi_node (len);
 
@@ -319,24 +319,24 @@ reserve_phi_args_for_new_edge (basic_block bb)
        loc = &PHI_CHAIN (*loc))
     {
       if (len > PHI_ARG_CAPACITY (*loc))
-        {
-          tree old_phi = *loc;
+	{
+	  tree old_phi = *loc;
 
-          resize_phi_node (loc, cap);
+	  resize_phi_node (loc, cap);
 
-          /* The result of the phi is defined by this phi node.  */
-          SSA_NAME_DEF_STMT (PHI_RESULT (*loc)) = *loc;
+	  /* The result of the phi is defined by this phi node.  */
+	  SSA_NAME_DEF_STMT (PHI_RESULT (*loc)) = *loc;
 
-          release_phi_node (old_phi);
-        }
+	  release_phi_node (old_phi);
+	}
 
       /* We represent a "missing PHI argument" by placing NULL_TREE in
-         the corresponding slot.  If PHI arguments were added
-         immediately after an edge is created, this zeroing would not
-         be necessary, but unfortunately this is not the case.  For
-         example, the loop optimizer duplicates several basic blocks,
-         redirects edges, and then fixes up PHI arguments later in
-         batch.  */
+	 the corresponding slot.  If PHI arguments were added
+	 immediately after an edge is created, this zeroing would not
+	 be necessary, but unfortunately this is not the case.  For
+	 example, the loop optimizer duplicates several basic blocks,
+	 redirects edges, and then fixes up PHI arguments later in
+	 batch.  */
       SET_PHI_ARG_DEF (*loc, len - 1, NULL_TREE);
 
       PHI_NUM_ARGS (*loc)++;
@@ -454,9 +454,9 @@ remove_phi_node (tree phi, tree prev)
   else
     {
       for (loc = &(bb_for_stmt (phi)->phi_nodes);
-           *loc != phi;
-           loc = &PHI_CHAIN (*loc))
-        ;
+	   *loc != phi;
+	   loc = &PHI_CHAIN (*loc))
+	;
     }
 
   /* Remove PHI from the chain.  */

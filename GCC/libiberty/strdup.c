@@ -12,9 +12,9 @@ Returns a pointer to a copy of @var{s} in memory obtained from
 #include <ansidecl.h>
 #include <stddef.h>
 
-extern size_t        strlen (const char*);
-extern PTR        malloc (size_t);
-extern PTR        memcpy (PTR, const PTR, size_t);
+extern size_t	strlen (const char*);
+extern PTR	malloc (size_t);
+extern PTR	memcpy (PTR, const PTR, size_t);
 
 char *
 strdup(const char *s)

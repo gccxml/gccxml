@@ -67,16 +67,16 @@ done
 if [ -n "$HEADERS" ]; then
     set $HEADERS
     case "$1" in auto-* )
-        echo "#include \"$1\"" >> ${output}T
-        shift
-        ;;
+	echo "#include \"$1\"" >> ${output}T
+	shift
+	;;
     esac
     if [ $# -ge 1 ]; then
-        echo '#ifdef IN_GCC' >> ${output}T
-        for file in "$@"; do
-            echo "# include \"$file\"" >> ${output}T
-        done
-        echo '#endif' >> ${output}T
+	echo '#ifdef IN_GCC' >> ${output}T
+	for file in "$@"; do
+	    echo "# include \"$file\"" >> ${output}T
+	done
+	echo '#endif' >> ${output}T
     fi
 fi
 

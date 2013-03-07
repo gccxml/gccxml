@@ -91,7 +91,7 @@
 /* end M32R/X overrides.  */
 
 /* Print subsidiary information on the compiler version in use.  */
-#ifndef        TARGET_VERSION
+#ifndef	TARGET_VERSION
 #define TARGET_VERSION fprintf (stderr, " (m32r)")
 #endif
 
@@ -103,16 +103,16 @@
 
 /* Names to predefine in the preprocessor for this target machine.  */
 /* __M32R__ is defined by the existing compiler so we use that.  */
-#define TARGET_CPU_CPP_BUILTINS()                \
-  do                                                \
-    {                                                \
-      builtin_define ("__M32R__");                \
-      builtin_define ("__m32r__");                \
-      builtin_assert ("cpu=m32r");                \
-      builtin_assert ("machine=m32r");                \
-      builtin_define (TARGET_BIG_ENDIAN                \
+#define TARGET_CPU_CPP_BUILTINS()		\
+  do						\
+    {						\
+      builtin_define ("__M32R__");		\
+      builtin_define ("__m32r__");		\
+      builtin_assert ("cpu=m32r");		\
+      builtin_assert ("machine=m32r");		\
+      builtin_define (TARGET_BIG_ENDIAN		\
                       ? "__BIG_ENDIAN__" : "__LITTLE_ENDIAN__"); \
-    }                                                \
+    }						\
   while (0)
 
 /* This macro defines names of additional specifications to put in the specs
@@ -129,20 +129,20 @@
 #define SUBTARGET_EXTRA_SPECS
 #endif
 
-#ifndef        ASM_CPU_SPEC
-#define        ASM_CPU_SPEC ""
+#ifndef	ASM_CPU_SPEC
+#define	ASM_CPU_SPEC ""
 #endif
 
-#ifndef        CPP_CPU_SPEC
-#define        CPP_CPU_SPEC ""
+#ifndef	CPP_CPU_SPEC
+#define	CPP_CPU_SPEC ""
 #endif
 
-#ifndef        CC1_CPU_SPEC
-#define        CC1_CPU_SPEC ""
+#ifndef	CC1_CPU_SPEC
+#define	CC1_CPU_SPEC ""
 #endif
 
-#ifndef        LINK_CPU_SPEC
-#define        LINK_CPU_SPEC ""
+#ifndef	LINK_CPU_SPEC
+#define	LINK_CPU_SPEC ""
 #endif
 
 #ifndef STARTFILE_CPU_SPEC
@@ -161,14 +161,14 @@
 #endif
 #endif
 
-#define EXTRA_SPECS                                                        \
-  { "asm_cpu",                        ASM_CPU_SPEC },                                \
-  { "cpp_cpu",                        CPP_CPU_SPEC },                                \
-  { "cc1_cpu",                        CC1_CPU_SPEC },                                \
-  { "link_cpu",                        LINK_CPU_SPEC },                        \
-  { "startfile_cpu",                STARTFILE_CPU_SPEC },                        \
-  { "endfile_cpu",                ENDFILE_CPU_SPEC },                        \
-  { "relax",                        RELAX_SPEC },                                \
+#define EXTRA_SPECS							\
+  { "asm_cpu",			ASM_CPU_SPEC },				\
+  { "cpp_cpu",			CPP_CPU_SPEC },				\
+  { "cc1_cpu",			CC1_CPU_SPEC },				\
+  { "link_cpu",			LINK_CPU_SPEC },			\
+  { "startfile_cpu",		STARTFILE_CPU_SPEC },			\
+  { "endfile_cpu",		ENDFILE_CPU_SPEC },			\
+  { "relax",			RELAX_SPEC },				\
   SUBTARGET_EXTRA_SPECS
 
 #define CPP_SPEC "%(cpp_cpu)"
@@ -195,7 +195,7 @@
 #define TARGET_M32R             (! TARGET_M32RX && ! TARGET_M32R2)
 
 #ifndef TARGET_LITTLE_ENDIAN
-#define TARGET_LITTLE_ENDIAN        0
+#define TARGET_LITTLE_ENDIAN	0
 #endif
 #define TARGET_BIG_ENDIAN       (! TARGET_LITTLE_ENDIAN)
 
@@ -316,33 +316,33 @@ extern enum m32r_sdata m32r_sdata;
 #define SUBTARGET_OVERRIDE_OPTIONS
 #endif
 
-#define OVERRIDE_OPTIONS                        \
-  do                                                \
-    {                                                \
-      /* These need to be done at start up.        \
-         It's convenient to do them here.  */        \
-      m32r_init ();                                \
-      SUBTARGET_OVERRIDE_OPTIONS                \
-    }                                                \
+#define OVERRIDE_OPTIONS			\
+  do						\
+    {						\
+      /* These need to be done at start up.	\
+	 It's convenient to do them here.  */	\
+      m32r_init ();				\
+      SUBTARGET_OVERRIDE_OPTIONS		\
+    }						\
   while (0)
 
 #ifndef SUBTARGET_OPTIMIZATION_OPTIONS
 #define SUBTARGET_OPTIMIZATION_OPTIONS
 #endif
 
-#define OPTIMIZATION_OPTIONS(LEVEL, SIZE)        \
-  do                                                \
-    {                                                \
-      if (LEVEL == 1)                                \
-        flag_regmove = TRUE;                        \
-                                                      \
-      if (SIZE)                                        \
-        {                                        \
-          flag_omit_frame_pointer = TRUE;        \
-        }                                        \
-                                                      \
-      SUBTARGET_OPTIMIZATION_OPTIONS                \
-    }                                                \
+#define OPTIMIZATION_OPTIONS(LEVEL, SIZE)	\
+  do						\
+    {						\
+      if (LEVEL == 1)				\
+	flag_regmove = TRUE;			\
+      						\
+      if (SIZE)					\
+	{					\
+	  flag_omit_frame_pointer = TRUE;	\
+	}					\
+      						\
+      SUBTARGET_OPTIMIZATION_OPTIONS		\
+    }						\
   while (0)
 
 /* Define this macro if debugging can be performed even without a
@@ -377,11 +377,11 @@ extern enum m32r_sdata m32r_sdata;
    the value is constrained to be within the bounds of the declared
    type, but kept valid in the wider mode.  The signedness of the
    extension may differ from that of the type.  */
-#define PROMOTE_MODE(MODE, UNSIGNEDP, TYPE)        \
-  if (GET_MODE_CLASS (MODE) == MODE_INT                \
-      && GET_MODE_SIZE (MODE) < UNITS_PER_WORD)        \
-    {                                                \
-      (MODE) = SImode;                                \
+#define PROMOTE_MODE(MODE, UNSIGNEDP, TYPE)	\
+  if (GET_MODE_CLASS (MODE) == MODE_INT		\
+      && GET_MODE_SIZE (MODE) < UNITS_PER_WORD)	\
+    {						\
+      (MODE) = SImode;				\
     }
 
 /* Allocation boundary (in *bits*) for storing arguments in argument list.  */
@@ -412,15 +412,15 @@ extern enum m32r_sdata m32r_sdata;
 #define FASTEST_ALIGNMENT 32
 
 /* Make strings word-aligned so strcpy from constants will be faster.  */
-#define CONSTANT_ALIGNMENT(EXP, ALIGN)        \
-  ((TREE_CODE (EXP) == STRING_CST        \
-    && (ALIGN) < FASTEST_ALIGNMENT)        \
+#define CONSTANT_ALIGNMENT(EXP, ALIGN)	\
+  ((TREE_CODE (EXP) == STRING_CST	\
+    && (ALIGN) < FASTEST_ALIGNMENT)	\
    ? FASTEST_ALIGNMENT : (ALIGN))
 
 /* Make arrays of chars word-aligned for the same reasons.  */
-#define DATA_ALIGNMENT(TYPE, ALIGN)                                        \
-  (TREE_CODE (TYPE) == ARRAY_TYPE                                        \
-   && TYPE_MODE (TREE_TYPE (TYPE)) == QImode                                \
+#define DATA_ALIGNMENT(TYPE, ALIGN)					\
+  (TREE_CODE (TYPE) == ARRAY_TYPE					\
+   && TYPE_MODE (TREE_TYPE (TYPE)) == QImode				\
    && (ALIGN) < FASTEST_ALIGNMENT ? FASTEST_ALIGNMENT : (ALIGN))
 
 /* Set this nonzero if move instructions will actually fail to work
@@ -432,13 +432,13 @@ extern enum m32r_sdata m32r_sdata;
 
 /* Layout of source language data types.  */
 
-#define SHORT_TYPE_SIZE                16
-#define INT_TYPE_SIZE                32
-#define LONG_TYPE_SIZE                32
-#define LONG_LONG_TYPE_SIZE        64
-#define FLOAT_TYPE_SIZE                32
-#define DOUBLE_TYPE_SIZE        64
-#define LONG_DOUBLE_TYPE_SIZE        64
+#define SHORT_TYPE_SIZE		16
+#define INT_TYPE_SIZE		32
+#define LONG_TYPE_SIZE		32
+#define LONG_LONG_TYPE_SIZE	64
+#define FLOAT_TYPE_SIZE		32
+#define DOUBLE_TYPE_SIZE	64
+#define LONG_DOUBLE_TYPE_SIZE	64
 
 /* Define this as 1 if `char' should by default be signed; else as 0.  */
 #define DEFAULT_SIGNED_CHAR 1
@@ -456,14 +456,14 @@ extern enum m32r_sdata m32r_sdata;
    All registers that the compiler knows about must be given numbers,
    even those that are not normally considered general registers.  */
 
-#define M32R_NUM_REGISTERS         19
+#define M32R_NUM_REGISTERS 	19
 
 #ifndef SUBTARGET_NUM_REGISTERS
 #define SUBTARGET_NUM_REGISTERS 0
 #endif
 
 #define FIRST_PSEUDO_REGISTER (M32R_NUM_REGISTERS + SUBTARGET_NUM_REGISTERS)
-        
+	
 /* 1 for registers that have pervasive standard uses
    and are not available for the register allocator.
 
@@ -478,7 +478,7 @@ extern enum m32r_sdata m32r_sdata;
    15    - stack pointer
    16    - arg pointer
    17    - carry flag
-   18         - accumulator
+   18	 - accumulator
    19    - accumulator 1 in the m32r/x
    By default, the extension registers are not available.  */
 
@@ -486,12 +486,12 @@ extern enum m32r_sdata m32r_sdata;
 #define SUBTARGET_FIXED_REGISTERS
 #endif
 
-#define FIXED_REGISTERS                \
-{                                \
-  0, 0, 0, 0, 0, 0, 0, 0,        \
-  0, 0, 0, 0, 0, 0, 0, 1,        \
-  1, 1, 1                        \
-  SUBTARGET_FIXED_REGISTERS        \
+#define FIXED_REGISTERS		\
+{				\
+  0, 0, 0, 0, 0, 0, 0, 0,	\
+  0, 0, 0, 0, 0, 0, 0, 1,	\
+  1, 1, 1			\
+  SUBTARGET_FIXED_REGISTERS	\
 }
 
 /* 1 for registers not available across function calls.
@@ -505,12 +505,12 @@ extern enum m32r_sdata m32r_sdata;
 #define SUBTARGET_CALL_USED_REGISTERS
 #endif
 
-#define CALL_USED_REGISTERS        \
-{                                \
-  1, 1, 1, 1, 1, 1, 1, 1,        \
-  0, 0, 0, 0, 0, 0, 1, 1,        \
-  1, 1, 1                        \
-  SUBTARGET_CALL_USED_REGISTERS        \
+#define CALL_USED_REGISTERS	\
+{				\
+  1, 1, 1, 1, 1, 1, 1, 1,	\
+  0, 0, 0, 0, 0, 0, 1, 1,	\
+  1, 1, 1			\
+  SUBTARGET_CALL_USED_REGISTERS	\
 }
 
 #define CALL_REALLY_USED_REGISTERS CALL_USED_REGISTERS
@@ -527,15 +527,15 @@ extern enum m32r_sdata m32r_sdata;
 #ifdef SUBTARGET_CONDITIONAL_REGISTER_USAGE
 #define CONDITIONAL_REGISTER_USAGE SUBTARGET_CONDITIONAL_REGISTER_USAGE
 #else
-#define CONDITIONAL_REGISTER_USAGE                         \
-  do                                                         \
-    {                                                         \
-      if (flag_pic)                                         \
-       {                                                 \
-         fixed_regs[PIC_OFFSET_TABLE_REGNUM] = 1;         \
-         call_used_regs[PIC_OFFSET_TABLE_REGNUM] = 1;         \
-       }                                                 \
-    }                                                         \
+#define CONDITIONAL_REGISTER_USAGE			 \
+  do							 \
+    {							 \
+      if (flag_pic)					 \
+       {						 \
+         fixed_regs[PIC_OFFSET_TABLE_REGNUM] = 1;	 \
+         call_used_regs[PIC_OFFSET_TABLE_REGNUM] = 1;	 \
+       }						 \
+    }							 \
   while (0)
 #endif
 
@@ -548,19 +548,19 @@ extern enum m32r_sdata m32r_sdata;
 #endif
 
 #if 1 /* Better for int code.  */
-#define REG_ALLOC_ORDER                                \
-{                                                \
-  4,  5,  6,  7,  2,  3,  8,  9, 10,                \
-  11, 12, 13, 14,  0,  1, 15, 16, 17, 18        \
-  SUBTARGET_REG_ALLOC_ORDER                        \
+#define REG_ALLOC_ORDER				\
+{						\
+  4,  5,  6,  7,  2,  3,  8,  9, 10,		\
+  11, 12, 13, 14,  0,  1, 15, 16, 17, 18	\
+  SUBTARGET_REG_ALLOC_ORDER			\
 }
 
 #else /* Better for fp code at expense of int code.  */
-#define REG_ALLOC_ORDER                                \
-{                                                \
-   0,  1,  2,  3,  4,  5,  6,  7,  8,                \
-   9, 10, 11, 12, 13, 14, 15, 16, 17, 18        \
-  SUBTARGET_REG_ALLOC_ORDER                        \
+#define REG_ALLOC_ORDER				\
+{						\
+   0,  1,  2,  3,  4,  5,  6,  7,  8,		\
+   9, 10, 11, 12, 13, 14, 15, 16, 17, 18	\
+  SUBTARGET_REG_ALLOC_ORDER			\
 }
 #endif
 
@@ -586,10 +586,10 @@ extern unsigned int m32r_mode_class[];
    MODE2)' must be zero.  */
 
 /* Tie QI/HI/SI modes together.  */
-#define MODES_TIEABLE_P(MODE1, MODE2)                 \
-  (   GET_MODE_CLASS (MODE1) == MODE_INT        \
-   && GET_MODE_CLASS (MODE2) == MODE_INT        \
-   && GET_MODE_SIZE (MODE1) <= UNITS_PER_WORD        \
+#define MODES_TIEABLE_P(MODE1, MODE2) 		\
+  (   GET_MODE_CLASS (MODE1) == MODE_INT	\
+   && GET_MODE_CLASS (MODE2) == MODE_INT	\
+   && GET_MODE_SIZE (MODE1) <= UNITS_PER_WORD	\
    && GET_MODE_SIZE (MODE2) <= UNITS_PER_WORD)
 
 #define HARD_REGNO_RENAME_OK(OLD_REG, NEW_REG) \
@@ -651,13 +651,13 @@ enum reg_class
 #define SUBTARGET_REG_CLASS_ALL 0
 #endif
 
-#define REG_CLASS_CONTENTS                                                \
-{                                                                        \
-  { 0x00000 },                                                                \
-  { 0x20000 | SUBTARGET_REG_CLASS_CARRY },                                \
-  { 0x40000 | SUBTARGET_REG_CLASS_ACCUM },                                \
-  { 0x1ffff | SUBTARGET_REG_CLASS_GENERAL },                                \
-  { 0x7ffff | SUBTARGET_REG_CLASS_ALL },                                \
+#define REG_CLASS_CONTENTS						\
+{									\
+  { 0x00000 },								\
+  { 0x20000 | SUBTARGET_REG_CLASS_CARRY },				\
+  { 0x40000 | SUBTARGET_REG_CLASS_ACCUM },				\
+  { 0x1ffff | SUBTARGET_REG_CLASS_GENERAL },				\
+  { 0x7ffff | SUBTARGET_REG_CLASS_ALL },				\
 }
 
 /* The same information, inverted:
@@ -671,10 +671,10 @@ extern enum reg_class m32r_regno_reg_class[FIRST_PSEUDO_REGISTER];
 #define INDEX_REG_CLASS GENERAL_REGS
 #define BASE_REG_CLASS GENERAL_REGS
 
-#define REG_CLASS_FROM_LETTER(C)                        \
-  (  (C) == 'c'        ? CARRY_REG                                \
-   : (C) == 'a'        ? ACCUM_REGS                                \
-   :                  NO_REGS)
+#define REG_CLASS_FROM_LETTER(C)			\
+  (  (C) == 'c'	? CARRY_REG				\
+   : (C) == 'a'	? ACCUM_REGS				\
+   :		  NO_REGS)
 
 /* These assume that REGNO is a hard or pseudo reg number.
    They give nonzero only if REGNO is a hard reg of the suitable class
@@ -682,8 +682,8 @@ extern enum reg_class m32r_regno_reg_class[FIRST_PSEUDO_REGISTER];
    Since they use reg_renumber, they are safe only once reg_renumber
    has been allocated, which happens in local-alloc.c.  */
 #define REGNO_OK_FOR_BASE_P(REGNO) \
-  ((REGNO) < FIRST_PSEUDO_REGISTER                        \
-   ? GPR_P (REGNO) || (REGNO) == ARG_POINTER_REGNUM        \
+  ((REGNO) < FIRST_PSEUDO_REGISTER			\
+   ? GPR_P (REGNO) || (REGNO) == ARG_POINTER_REGNUM	\
    : GPR_P (reg_renumber[REGNO]))
 
 #define REGNO_OK_FOR_INDEX_P(REGNO) REGNO_OK_FOR_BASE_P(REGNO)
@@ -715,41 +715,41 @@ extern enum reg_class m32r_regno_reg_class[FIRST_PSEUDO_REGISTER];
        (values in the range -32767 to +32768).  */
 
 /* Return true if a value is inside a range.  */
-#define IN_RANGE_P(VALUE, LOW, HIGH)                                        \
-  (((unsigned HOST_WIDE_INT)((VALUE) - (LOW)))                                \
+#define IN_RANGE_P(VALUE, LOW, HIGH)					\
+  (((unsigned HOST_WIDE_INT)((VALUE) - (LOW)))				\
    <= ((unsigned HOST_WIDE_INT)((HIGH) - (LOW))))
 
 /* Local to this file.  */
 #define INT8_P(X)      ((X) >= -   0x80 && (X) <= 0x7f)
 #define INT16_P(X)     ((X) >= - 0x8000 && (X) <= 0x7fff)
 #define CMP_INT16_P(X) ((X) >= - 0x7fff && (X) <= 0x8000)
-#define UPPER16_P(X)  (((X) & 0xffff) == 0                                \
-                        && ((X) >> 16) >= - 0x8000                        \
-                        && ((X) >> 16) <= 0x7fff)
+#define UPPER16_P(X)  (((X) & 0xffff) == 0				\
+		        && ((X) >> 16) >= - 0x8000			\
+		        && ((X) >> 16) <= 0x7fff)
 #define UINT16_P(X)   (((unsigned HOST_WIDE_INT) (X)) <= 0x0000ffff)
 #define UINT24_P(X)   (((unsigned HOST_WIDE_INT) (X)) <= 0x00ffffff)
 #define UINT32_P(X)   (((unsigned HOST_WIDE_INT) (X)) <= 0xffffffff)
 #define UINT5_P(X)    ((X) >= 0 && (X) < 32)
 #define INVERTED_SIGNED_8BIT(VAL) ((VAL) >= -127 && (VAL) <= 128)
 
-#define CONST_OK_FOR_LETTER_P(VALUE, C)                                        \
-  (  (C) == 'I' ? INT8_P (VALUE)                                        \
-   : (C) == 'J' ? INT16_P (VALUE)                                        \
-   : (C) == 'K' ? UINT16_P (VALUE)                                        \
-   : (C) == 'L' ? UPPER16_P (VALUE)                                        \
-   : (C) == 'M' ? UINT24_P (VALUE)                                        \
-   : (C) == 'N' ? INVERTED_SIGNED_8BIT (VALUE)                                \
-   : (C) == 'O' ? UINT5_P (VALUE)                                        \
-   : (C) == 'P' ? CMP_INT16_P (VALUE)                                        \
+#define CONST_OK_FOR_LETTER_P(VALUE, C)					\
+  (  (C) == 'I' ? INT8_P (VALUE)					\
+   : (C) == 'J' ? INT16_P (VALUE)					\
+   : (C) == 'K' ? UINT16_P (VALUE)					\
+   : (C) == 'L' ? UPPER16_P (VALUE)					\
+   : (C) == 'M' ? UINT24_P (VALUE)					\
+   : (C) == 'N' ? INVERTED_SIGNED_8BIT (VALUE)				\
+   : (C) == 'O' ? UINT5_P (VALUE)					\
+   : (C) == 'P' ? CMP_INT16_P (VALUE)					\
    : 0)
 
 /* Similar, but for floating constants, and defining letters G and H.
    Here VALUE is the CONST_DOUBLE rtx itself.
    For the m32r, handle a few constants inline.
    ??? We needn't treat DI and DF modes differently, but for now we do.  */
-#define CONST_DOUBLE_OK_FOR_LETTER_P(VALUE, C)                                \
-  (  (C) == 'G' ? easy_di_const (VALUE)                                        \
-   : (C) == 'H' ? easy_df_const (VALUE)                                        \
+#define CONST_DOUBLE_OK_FOR_LETTER_P(VALUE, C)				\
+  (  (C) == 'G' ? easy_di_const (VALUE)					\
+   : (C) == 'H' ? easy_df_const (VALUE)					\
    : 0)
 
 /* A C expression that defines the optional machine-dependent constraint
@@ -764,19 +764,19 @@ extern enum reg_class m32r_regno_reg_class[FIRST_PSEUDO_REGISTER];
    T is for indirect of a pointer.
    U is for loads with post increment.  */
 
-#define EXTRA_CONSTRAINT(VALUE, C)                                        \
-  (  (C) == 'Q' ? ((TARGET_ADDR24 && GET_CODE (VALUE) == LABEL_REF)        \
-                 || addr24_operand (VALUE, VOIDmode))                        \
-   : (C) == 'R' ? ((TARGET_ADDR32 && GET_CODE (VALUE) == LABEL_REF)        \
-                 || addr32_operand (VALUE, VOIDmode))                        \
-   : (C) == 'S' ? (GET_CODE (VALUE) == MEM                                \
-                 && STORE_PREINC_PREDEC_P (GET_MODE (VALUE),                \
-                                           XEXP (VALUE, 0)))                \
-   : (C) == 'T' ? (GET_CODE (VALUE) == MEM                                \
-                 && memreg_operand (VALUE, GET_MODE (VALUE)))                \
-   : (C) == 'U' ? (GET_CODE (VALUE) == MEM                                \
-                 && LOAD_POSTINC_P (GET_MODE (VALUE),                        \
-                                    XEXP (VALUE, 0)))                        \
+#define EXTRA_CONSTRAINT(VALUE, C)					\
+  (  (C) == 'Q' ? ((TARGET_ADDR24 && GET_CODE (VALUE) == LABEL_REF)	\
+		 || addr24_operand (VALUE, VOIDmode))			\
+   : (C) == 'R' ? ((TARGET_ADDR32 && GET_CODE (VALUE) == LABEL_REF)	\
+		 || addr32_operand (VALUE, VOIDmode))			\
+   : (C) == 'S' ? (GET_CODE (VALUE) == MEM				\
+		 && STORE_PREINC_PREDEC_P (GET_MODE (VALUE),		\
+					   XEXP (VALUE, 0)))		\
+   : (C) == 'T' ? (GET_CODE (VALUE) == MEM				\
+		 && memreg_operand (VALUE, GET_MODE (VALUE)))		\
+   : (C) == 'U' ? (GET_CODE (VALUE) == MEM				\
+		 && LOAD_POSTINC_P (GET_MODE (VALUE),			\
+				    XEXP (VALUE, 0)))			\
    : 0)
 
 /* Stack layout and stack pointer usage.  */
@@ -863,9 +863,9 @@ extern enum reg_class m32r_regno_reg_class[FIRST_PSEUDO_REGISTER];
    Note that the elimination of the argument pointer with the stack
    pointer is specified first since that is the preferred elimination.  */
 
-#define ELIMINABLE_REGS                                        \
-{{ FRAME_POINTER_REGNUM, STACK_POINTER_REGNUM },        \
- { ARG_POINTER_REGNUM,         STACK_POINTER_REGNUM },        \
+#define ELIMINABLE_REGS					\
+{{ FRAME_POINTER_REGNUM, STACK_POINTER_REGNUM },	\
+ { ARG_POINTER_REGNUM,	 STACK_POINTER_REGNUM },	\
  { ARG_POINTER_REGNUM,   FRAME_POINTER_REGNUM }}
 
 /* A C expression that returns nonzero if the compiler is allowed to
@@ -875,9 +875,9 @@ extern enum reg_class m32r_regno_reg_class[FIRST_PSEUDO_REGISTER];
    cases preventing register elimination are things that the compiler
    already knows about.  */
 
-#define CAN_ELIMINATE(FROM, TO)                                                \
-  ((FROM) == ARG_POINTER_REGNUM && (TO) == STACK_POINTER_REGNUM                \
-   ? ! frame_pointer_needed                                                \
+#define CAN_ELIMINATE(FROM, TO)						\
+  ((FROM) == ARG_POINTER_REGNUM && (TO) == STACK_POINTER_REGNUM		\
+   ? ! frame_pointer_needed						\
    : 1)
 
 /* This macro is similar to `INITIAL_FRAME_POINTER_OFFSET'.  It
@@ -885,20 +885,20 @@ extern enum reg_class m32r_regno_reg_class[FIRST_PSEUDO_REGISTER];
    registers.  This macro must be defined if `ELIMINABLE_REGS' is
    defined.  */
 
-#define INITIAL_ELIMINATION_OFFSET(FROM, TO, OFFSET)                                \
-  do                                                                                \
-    {                                                                                \
-      int size = m32r_compute_frame_size (get_frame_size ());                        \
-                                                                                \
-      if ((FROM) == FRAME_POINTER_REGNUM && (TO) == STACK_POINTER_REGNUM)        \
-        (OFFSET) = 0;                                                                \
-      else if ((FROM) == ARG_POINTER_REGNUM && (TO) == FRAME_POINTER_REGNUM)        \
-        (OFFSET) = size - current_function_pretend_args_size;                        \
-      else if ((FROM) == ARG_POINTER_REGNUM && (TO) == STACK_POINTER_REGNUM)        \
-        (OFFSET) = size - current_function_pretend_args_size;                        \
-      else                                                                        \
-        gcc_unreachable ();                                                                \
-    }                                                                                \
+#define INITIAL_ELIMINATION_OFFSET(FROM, TO, OFFSET)				\
+  do										\
+    {										\
+      int size = m32r_compute_frame_size (get_frame_size ());			\
+										\
+      if ((FROM) == FRAME_POINTER_REGNUM && (TO) == STACK_POINTER_REGNUM)	\
+	(OFFSET) = 0;								\
+      else if ((FROM) == ARG_POINTER_REGNUM && (TO) == FRAME_POINTER_REGNUM)	\
+	(OFFSET) = size - current_function_pretend_args_size;			\
+      else if ((FROM) == ARG_POINTER_REGNUM && (TO) == STACK_POINTER_REGNUM)	\
+	(OFFSET) = size - current_function_pretend_args_size;			\
+      else									\
+	gcc_unreachable ();								\
+    }										\
   while (0)
 
 /* Function argument passing.  */
@@ -945,8 +945,8 @@ extern enum reg_class m32r_regno_reg_class[FIRST_PSEUDO_REGISTER];
 
 /* Round arg MODE/TYPE up to the next word boundary.  */
 #define ROUND_ADVANCE_ARG(MODE, TYPE) \
-  ((MODE) == BLKmode                                \
-   ? ROUND_ADVANCE ((unsigned int) int_size_in_bytes (TYPE))        \
+  ((MODE) == BLKmode				\
+   ? ROUND_ADVANCE ((unsigned int) int_size_in_bytes (TYPE))	\
    : ROUND_ADVANCE ((unsigned int) GET_MODE_SIZE (MODE)))
 
 /* Round CUM up to the necessary point for argument MODE/TYPE.  */
@@ -975,8 +975,8 @@ extern enum reg_class m32r_regno_reg_class[FIRST_PSEUDO_REGISTER];
 /* On the M32R the first M32R_MAX_PARM_REGS args are normally in registers
    and the rest are pushed.  */
 #define FUNCTION_ARG(CUM, MODE, TYPE, NAMED) \
-  (PASS_IN_REG_P ((CUM), (MODE), (TYPE))                        \
-   ? gen_rtx_REG ((MODE), ROUND_ADVANCE_CUM ((CUM), (MODE), (TYPE)))        \
+  (PASS_IN_REG_P ((CUM), (MODE), (TYPE))			\
+   ? gen_rtx_REG ((MODE), ROUND_ADVANCE_CUM ((CUM), (MODE), (TYPE)))	\
    : 0)
 
 /* Update the data in CUM to advance over an argument
@@ -984,7 +984,7 @@ extern enum reg_class m32r_regno_reg_class[FIRST_PSEUDO_REGISTER];
    (TYPE is null for libcalls where that information may not be available.)  */
 #define FUNCTION_ARG_ADVANCE(CUM, MODE, TYPE, NAMED) \
   ((CUM) = (ROUND_ADVANCE_CUM ((CUM), (MODE), (TYPE)) \
-          + ROUND_ADVANCE_ARG ((MODE), (TYPE))))
+	  + ROUND_ADVANCE_ARG ((MODE), (TYPE))))
 
 /* If defined, a C expression that gives the alignment boundary, in bits,
    of an argument with the specified mode and type.  If it is not defined, 
@@ -1031,29 +1031,29 @@ extern enum reg_class m32r_regno_reg_class[FIRST_PSEUDO_REGISTER];
 /* Output assembler code to FILE to increment profiler label # LABELNO
    for profiling a function entry.  */
 #undef  FUNCTION_PROFILER
-#define FUNCTION_PROFILER(FILE, LABELNO)                        \
-  do                                                                \
-    {                                                                \
-      if (flag_pic)                                                \
-        {                                                        \
-          fprintf (FILE, "\tld24 r14,#mcount\n");                \
-          fprintf (FILE, "\tadd r14,r12\n");                        \
-          fprintf (FILE, "\tld r14,@r14\n");                        \
-          fprintf (FILE, "\tjl r14\n");                                \
-        }                                                        \
-      else                                                        \
-        {                                                        \
-          if (TARGET_ADDR24)                                        \
-            fprintf (FILE, "\tbl mcount\n");                        \
-          else                                                        \
-            {                                                        \
-              fprintf (FILE, "\tseth r14,#high(mcount)\n");        \
-              fprintf (FILE, "\tor3 r14,r14,#low(mcount)\n");        \
-              fprintf (FILE, "\tjl r14\n");                        \
-            }                                                        \
-        }                                                        \
-      fprintf (FILE, "\taddi sp,#4\n");                                \
-    }                                                                \
+#define FUNCTION_PROFILER(FILE, LABELNO)			\
+  do								\
+    {								\
+      if (flag_pic)						\
+	{							\
+	  fprintf (FILE, "\tld24 r14,#mcount\n");		\
+	  fprintf (FILE, "\tadd r14,r12\n");			\
+	  fprintf (FILE, "\tld r14,@r14\n");			\
+	  fprintf (FILE, "\tjl r14\n");				\
+	}							\
+      else							\
+	{							\
+	  if (TARGET_ADDR24)					\
+	    fprintf (FILE, "\tbl mcount\n");			\
+	  else							\
+	    {							\
+	      fprintf (FILE, "\tseth r14,#high(mcount)\n");	\
+	      fprintf (FILE, "\tor3 r14,r14,#low(mcount)\n");	\
+	      fprintf (FILE, "\tjl r14\n");			\
+	    }							\
+	}							\
+      fprintf (FILE, "\taddi sp,#4\n");				\
+    }								\
   while (0)
 
 /* Trampolines.  */
@@ -1080,34 +1080,34 @@ L2:     .word STATIC
 /* Emit RTL insns to initialize the variable parts of a trampoline.
    FNADDR is an RTX for the address of the function's pure code.
    CXT is an RTX for the static chain value for the function.  */
-#define INITIALIZE_TRAMPOLINE(TRAMP, FNADDR, CXT)                                 \
-  do                                                                                \
-    {                                                                                \
-      emit_move_insn (gen_rtx_MEM (SImode, plus_constant (TRAMP, 0)),                \
-                      GEN_INT                                                        \
-                      (TARGET_LITTLE_ENDIAN ? 0x017e8e17 : 0x178e7e01));        \
-      emit_move_insn (gen_rtx_MEM (SImode, plus_constant (TRAMP, 4)),                \
-                      GEN_INT                                                        \
-                      (TARGET_LITTLE_ENDIAN ? 0x0c00ae86 : 0x86ae000c));        \
-      emit_move_insn (gen_rtx_MEM (SImode, plus_constant (TRAMP, 8)),                \
-                      GEN_INT                                                        \
-                      (TARGET_LITTLE_ENDIAN ? 0xe627871e : 0x1e8727e6));        \
-      emit_move_insn (gen_rtx_MEM (SImode, plus_constant (TRAMP, 12)),                \
-                      GEN_INT                                                        \
-                      (TARGET_LITTLE_ENDIAN ? 0xc616c626 : 0x26c61fc6));        \
-      emit_move_insn (gen_rtx_MEM (SImode, plus_constant (TRAMP, 16)),                \
-                      (CXT));                                                        \
-      emit_move_insn (gen_rtx_MEM (SImode, plus_constant (TRAMP, 20)),                \
-                      (FNADDR));                                                \
-      if (m32r_cache_flush_trap >= 0)                                                \
-        emit_insn (gen_flush_icache (validize_mem (gen_rtx_MEM (SImode, TRAMP)),\
-                                     GEN_INT (m32r_cache_flush_trap) ));        \
-      else if (m32r_cache_flush_func && m32r_cache_flush_func[0])                \
-        emit_library_call (m32r_function_symbol (m32r_cache_flush_func),         \
-                           0, VOIDmode, 3, TRAMP, Pmode,                        \
-                           GEN_INT (TRAMPOLINE_SIZE), SImode,                        \
-                           GEN_INT (3), SImode);                                \
-    }                                                                                \
+#define INITIALIZE_TRAMPOLINE(TRAMP, FNADDR, CXT) 				\
+  do										\
+    {										\
+      emit_move_insn (gen_rtx_MEM (SImode, plus_constant (TRAMP, 0)),		\
+		      GEN_INT							\
+		      (TARGET_LITTLE_ENDIAN ? 0x017e8e17 : 0x178e7e01));	\
+      emit_move_insn (gen_rtx_MEM (SImode, plus_constant (TRAMP, 4)),		\
+		      GEN_INT							\
+		      (TARGET_LITTLE_ENDIAN ? 0x0c00ae86 : 0x86ae000c));	\
+      emit_move_insn (gen_rtx_MEM (SImode, plus_constant (TRAMP, 8)),		\
+		      GEN_INT							\
+		      (TARGET_LITTLE_ENDIAN ? 0xe627871e : 0x1e8727e6));	\
+      emit_move_insn (gen_rtx_MEM (SImode, plus_constant (TRAMP, 12)),		\
+		      GEN_INT							\
+		      (TARGET_LITTLE_ENDIAN ? 0xc616c626 : 0x26c61fc6));	\
+      emit_move_insn (gen_rtx_MEM (SImode, plus_constant (TRAMP, 16)),		\
+		      (CXT));							\
+      emit_move_insn (gen_rtx_MEM (SImode, plus_constant (TRAMP, 20)),		\
+		      (FNADDR));						\
+      if (m32r_cache_flush_trap >= 0)						\
+	emit_insn (gen_flush_icache (validize_mem (gen_rtx_MEM (SImode, TRAMP)),\
+				     GEN_INT (m32r_cache_flush_trap) ));	\
+      else if (m32r_cache_flush_func && m32r_cache_flush_func[0])		\
+	emit_library_call (m32r_function_symbol (m32r_cache_flush_func), 	\
+			   0, VOIDmode, 3, TRAMP, Pmode,			\
+			   GEN_INT (TRAMPOLINE_SIZE), SImode,			\
+			   GEN_INT (3), SImode);				\
+    }										\
   while (0)
 
 #define RETURN_ADDR_RTX(COUNT, FRAME) m32r_return_addr (COUNT)
@@ -1139,11 +1139,11 @@ L2:     .word STATIC
    We allow all CONST_DOUBLE's as the md file patterns will force the
    constant to memory if they can't handle them.  */
 
-#define LEGITIMATE_CONSTANT_P(X)                                        \
-  (! (GET_CODE (X) == CONST                                                \
-      && GET_CODE (XEXP (X, 0)) == PLUS                                        \
-      && GET_CODE (XEXP (XEXP (X, 0), 0)) == SYMBOL_REF                        \
-      && GET_CODE (XEXP (XEXP (X, 0), 1)) == CONST_INT                        \
+#define LEGITIMATE_CONSTANT_P(X)					\
+  (! (GET_CODE (X) == CONST						\
+      && GET_CODE (XEXP (X, 0)) == PLUS					\
+      && GET_CODE (XEXP (XEXP (X, 0), 0)) == SYMBOL_REF			\
+      && GET_CODE (XEXP (XEXP (X, 0), 1)) == CONST_INT			\
       && (unsigned HOST_WIDE_INT) INTVAL (XEXP (XEXP (X, 0), 1)) > 32767))
 
 /* The macros REG_OK_FOR..._P assume that the arg is a REG rtx
@@ -1170,9 +1170,9 @@ L2:     .word STATIC
 
 /* Nonzero if X is a hard reg that can be used as a base reg
    or if it is a pseudo reg.  */
-#define REG_OK_FOR_BASE_P(X)                \
-  (GPR_P (REGNO (X))                        \
-   || (REGNO (X)) == ARG_POINTER_REGNUM        \
+#define REG_OK_FOR_BASE_P(X)		\
+  (GPR_P (REGNO (X))			\
+   || (REGNO (X)) == ARG_POINTER_REGNUM	\
    || REGNO (X) >= FIRST_PSEUDO_REGISTER)
 /* Nonzero if X is a hard reg that can be used as an index
    or if it is a pseudo reg.  */
@@ -1193,50 +1193,50 @@ L2:     .word STATIC
   (GET_CODE (X) == CONST_INT && INT16_P (INTVAL (X)))
 
 /* Local to this file.  */
-#define LEGITIMATE_OFFSET_ADDRESS_P(MODE, X)                        \
-  (GET_CODE (X) == PLUS                                                \
-   && RTX_OK_FOR_BASE_P (XEXP (X, 0))                                \
+#define LEGITIMATE_OFFSET_ADDRESS_P(MODE, X)			\
+  (GET_CODE (X) == PLUS						\
+   && RTX_OK_FOR_BASE_P (XEXP (X, 0))				\
    && RTX_OK_FOR_OFFSET_P (XEXP (X, 1)))
 
 /* Local to this file.  */
 /* For LO_SUM addresses, do not allow them if the MODE is > 1 word,
    since more than one instruction will be required.  */
-#define LEGITIMATE_LO_SUM_ADDRESS_P(MODE, X)                        \
-  (GET_CODE (X) == LO_SUM                                        \
+#define LEGITIMATE_LO_SUM_ADDRESS_P(MODE, X)			\
+  (GET_CODE (X) == LO_SUM					\
    && (MODE != BLKmode && GET_MODE_SIZE (MODE) <= UNITS_PER_WORD)\
-   && RTX_OK_FOR_BASE_P (XEXP (X, 0))                                \
+   && RTX_OK_FOR_BASE_P (XEXP (X, 0))				\
    && CONSTANT_P (XEXP (X, 1)))
 
 /* Local to this file.  */
 /* Is this a load and increment operation.  */
-#define LOAD_POSTINC_P(MODE, X)                                        \
-  (((MODE) == SImode || (MODE) == SFmode)                        \
-   && GET_CODE (X) == POST_INC                                        \
-   && GET_CODE (XEXP (X, 0)) == REG                                \
+#define LOAD_POSTINC_P(MODE, X)					\
+  (((MODE) == SImode || (MODE) == SFmode)			\
+   && GET_CODE (X) == POST_INC					\
+   && GET_CODE (XEXP (X, 0)) == REG				\
    && RTX_OK_FOR_BASE_P (XEXP (X, 0)))
 
 /* Local to this file.  */
 /* Is this an increment/decrement and store operation.  */
-#define STORE_PREINC_PREDEC_P(MODE, X)                                \
-  (((MODE) == SImode || (MODE) == SFmode)                        \
-   && (GET_CODE (X) == PRE_INC || GET_CODE (X) == PRE_DEC)        \
-   && GET_CODE (XEXP (X, 0)) == REG                                \
+#define STORE_PREINC_PREDEC_P(MODE, X)				\
+  (((MODE) == SImode || (MODE) == SFmode)			\
+   && (GET_CODE (X) == PRE_INC || GET_CODE (X) == PRE_DEC)	\
+   && GET_CODE (XEXP (X, 0)) == REG				\
    && RTX_OK_FOR_BASE_P (XEXP (X, 0)))
 
-#define GO_IF_LEGITIMATE_ADDRESS(MODE, X, ADDR)                        \
-  do                                                                \
-    {                                                                \
-      if (RTX_OK_FOR_BASE_P (X))                                \
-        goto ADDR;                                                \
-      if (LEGITIMATE_OFFSET_ADDRESS_P ((MODE), (X)))                \
-        goto ADDR;                                                \
-      if (LEGITIMATE_LO_SUM_ADDRESS_P ((MODE), (X)))                \
-        goto ADDR;                                                \
-      if (LOAD_POSTINC_P ((MODE), (X)))                                \
-        goto ADDR;                                                \
-      if (STORE_PREINC_PREDEC_P ((MODE), (X)))                        \
-        goto ADDR;                                                \
-    }                                                                \
+#define GO_IF_LEGITIMATE_ADDRESS(MODE, X, ADDR)			\
+  do								\
+    {								\
+      if (RTX_OK_FOR_BASE_P (X))				\
+	goto ADDR;						\
+      if (LEGITIMATE_OFFSET_ADDRESS_P ((MODE), (X)))		\
+	goto ADDR;						\
+      if (LEGITIMATE_LO_SUM_ADDRESS_P ((MODE), (X)))		\
+	goto ADDR;						\
+      if (LOAD_POSTINC_P ((MODE), (X)))				\
+	goto ADDR;						\
+      if (STORE_PREINC_PREDEC_P ((MODE), (X)))			\
+	goto ADDR;						\
+    }								\
   while (0)
 
 /* Try machine-dependent ways of modifying an illegitimate address
@@ -1252,27 +1252,27 @@ L2:     .word STATIC
    It is always safe for this macro to do nothing.  It exists to recognize
    opportunities to optimize the output.  */
 
-#define LEGITIMIZE_ADDRESS(X, OLDX, MODE, WIN)                         \
-  do                                                                 \
-    {                                                                 \
-      if (flag_pic)                                                 \
-        (X) = m32r_legitimize_pic_address (X, NULL_RTX);         \
-      if (memory_address_p (MODE, X))                                 \
-        goto WIN;                                                 \
-    }                                                                 \
+#define LEGITIMIZE_ADDRESS(X, OLDX, MODE, WIN)			 \
+  do								 \
+    {								 \
+      if (flag_pic)						 \
+	(X) = m32r_legitimize_pic_address (X, NULL_RTX);	 \
+      if (memory_address_p (MODE, X))				 \
+	goto WIN;						 \
+    }								 \
   while (0)
 
 /* Go to LABEL if ADDR (a legitimate address expression)
    has an effect that depends on the machine mode it is used for.  */
-#define GO_IF_MODE_DEPENDENT_ADDRESS(ADDR, LABEL)                \
-  do                                                                \
-    {                                                                 \
-      if (   GET_CODE (ADDR) == PRE_DEC                                 \
-          || GET_CODE (ADDR) == PRE_INC                                 \
-          || GET_CODE (ADDR) == POST_INC                         \
-          || GET_CODE (ADDR) == LO_SUM)                                 \
-        goto LABEL;                                                 \
-    }                                                                \
+#define GO_IF_MODE_DEPENDENT_ADDRESS(ADDR, LABEL)		\
+  do								\
+    {						 		\
+      if (   GET_CODE (ADDR) == PRE_DEC		 		\
+	  || GET_CODE (ADDR) == PRE_INC		 		\
+	  || GET_CODE (ADDR) == POST_INC		 	\
+	  || GET_CODE (ADDR) == LO_SUM)		 		\
+	goto LABEL;					 	\
+    }								\
   while (0)
 
 /* Condition code usage.  */
@@ -1311,9 +1311,9 @@ L2:     .word STATIC
 
 /* Section selection.  */
 
-#define TEXT_SECTION_ASM_OP        "\t.section .text"
-#define DATA_SECTION_ASM_OP        "\t.section .data"
-#define BSS_SECTION_ASM_OP        "\t.section .bss"
+#define TEXT_SECTION_ASM_OP	"\t.section .text"
+#define DATA_SECTION_ASM_OP	"\t.section .data"
+#define BSS_SECTION_ASM_OP	"\t.section .bss"
 
 /* Define this macro if jump tables (for tablejump insns) should be
    output in the text section, along with the assembler instructions.
@@ -1369,23 +1369,23 @@ L2:     .word STATIC
    dbxout_stab_value_internal_label_diff here because
    we need to use .debugsym for the line label.  */
 
-#define DBX_OUTPUT_SOURCE_LINE(file, line, counter)                        \
-  do                                                                        \
-    {                                                                        \
-      const char * begin_label =                                        \
-        XSTR (XEXP (DECL_RTL (current_function_decl), 0), 0);                \
-      char label[64];                                                        \
-      ASM_GENERATE_INTERNAL_LABEL (label, "LM", counter);                \
-                                                                        \
-      dbxout_begin_stabn_sline (line);                                        \
-      assemble_name (file, label);                                        \
-      putc ('-', file);                                                        \
-      assemble_name (file, begin_label);                                \
-      fputs ("\n\t.debugsym ", file);                                        \
-      assemble_name (file, label);                                        \
-      putc ('\n', file);                                                \
-      counter += 1;                                                        \
-     }                                                                        \
+#define DBX_OUTPUT_SOURCE_LINE(file, line, counter)			\
+  do									\
+    {									\
+      const char * begin_label =					\
+	XSTR (XEXP (DECL_RTL (current_function_decl), 0), 0);		\
+      char label[64];							\
+      ASM_GENERATE_INTERNAL_LABEL (label, "LM", counter);		\
+									\
+      dbxout_begin_stabn_sline (line);					\
+      assemble_name (file, label);					\
+      putc ('-', file);							\
+      assemble_name (file, begin_label);				\
+      fputs ("\n\t.debugsym ", file);					\
+      assemble_name (file, label);					\
+      putc ('\n', file);						\
+      counter += 1;							\
+     }									\
   while (0)
 
 /* How to refer to registers in assembler output.
@@ -1394,12 +1394,12 @@ L2:     .word STATIC
 #define SUBTARGET_REGISTER_NAMES
 #endif
 
-#define REGISTER_NAMES                                        \
-{                                                        \
-  "r0", "r1", "r2", "r3", "r4", "r5", "r6", "r7",        \
-  "r8", "r9", "r10", "r11", "r12", "fp", "lr", "sp",        \
-  "ap", "cbit", "a0"                                        \
-  SUBTARGET_REGISTER_NAMES                                \
+#define REGISTER_NAMES					\
+{							\
+  "r0", "r1", "r2", "r3", "r4", "r5", "r6", "r7",	\
+  "r8", "r9", "r10", "r11", "r12", "fp", "lr", "sp",	\
+  "ap", "cbit", "a0"					\
+  SUBTARGET_REGISTER_NAMES				\
 }
 
 /* If defined, a C initializer for an array of structures containing
@@ -1410,13 +1410,13 @@ L2:     .word STATIC
 #define SUBTARGET_ADDITIONAL_REGISTER_NAMES
 #endif
 
-#define ADDITIONAL_REGISTER_NAMES        \
-{                                        \
-  /*{ "gp", GP_REGNUM },*/                \
-  { "r13", FRAME_POINTER_REGNUM },        \
-  { "r14", RETURN_ADDR_REGNUM },        \
-  { "r15", STACK_POINTER_REGNUM },        \
-  SUBTARGET_ADDITIONAL_REGISTER_NAMES        \
+#define ADDITIONAL_REGISTER_NAMES	\
+{					\
+  /*{ "gp", GP_REGNUM },*/		\
+  { "r13", FRAME_POINTER_REGNUM },	\
+  { "r14", RETURN_ADDR_REGNUM },	\
+  { "r15", STACK_POINTER_REGNUM },	\
+  SUBTARGET_ADDITIONAL_REGISTER_NAMES	\
 }
 
 /* A C expression which evaluates to true if CODE is a valid
@@ -1442,36 +1442,36 @@ extern char m32r_punct_chars[256];
    are useful when a single `md' file must support multiple assembler
    formats.  In that case, the various `tm.h' files can define these
    macros differently.  */
-#define REGISTER_PREFIX                ""
-#define LOCAL_LABEL_PREFIX        ".L"
-#define USER_LABEL_PREFIX        ""
-#define IMMEDIATE_PREFIX        "#"
+#define REGISTER_PREFIX		""
+#define LOCAL_LABEL_PREFIX	".L"
+#define USER_LABEL_PREFIX	""
+#define IMMEDIATE_PREFIX	"#"
 
 /* This is how to output an element of a case-vector that is absolute.  */
-#define ASM_OUTPUT_ADDR_VEC_ELT(FILE, VALUE)                \
-   do                                                        \
-     {                                                        \
-       char label[30];                                        \
-       ASM_GENERATE_INTERNAL_LABEL (label, "L", VALUE);        \
-       fprintf (FILE, "\t.word\t");                        \
-       assemble_name (FILE, label);                        \
-       fprintf (FILE, "\n");                                \
-     }                                                        \
+#define ASM_OUTPUT_ADDR_VEC_ELT(FILE, VALUE)		\
+   do							\
+     {							\
+       char label[30];					\
+       ASM_GENERATE_INTERNAL_LABEL (label, "L", VALUE);	\
+       fprintf (FILE, "\t.word\t");			\
+       assemble_name (FILE, label);			\
+       fprintf (FILE, "\n");				\
+     }							\
   while (0)
 
 /* This is how to output an element of a case-vector that is relative.  */
 #define ASM_OUTPUT_ADDR_DIFF_ELT(FILE, BODY, VALUE, REL)\
-  do                                                        \
-    {                                                        \
-      char label[30];                                        \
-      ASM_GENERATE_INTERNAL_LABEL (label, "L", VALUE);        \
-      fprintf (FILE, "\t.word\t");                        \
-      assemble_name (FILE, label);                        \
-      fprintf (FILE, "-");                                \
-      ASM_GENERATE_INTERNAL_LABEL (label, "L", REL);        \
-      assemble_name (FILE, label);                        \
-      fprintf (FILE, "\n");                                \
-    }                                                        \
+  do							\
+    {							\
+      char label[30];					\
+      ASM_GENERATE_INTERNAL_LABEL (label, "L", VALUE);	\
+      fprintf (FILE, "\t.word\t");			\
+      assemble_name (FILE, label);			\
+      fprintf (FILE, "-");				\
+      ASM_GENERATE_INTERNAL_LABEL (label, "L", REL);	\
+      assemble_name (FILE, label);			\
+      fprintf (FILE, "\n");				\
+    }							\
   while (0)
 
 /* The desired alignment for the location counter at the beginning
@@ -1486,20 +1486,20 @@ extern char m32r_punct_chars[256];
 
    Loop unrolling currently doesn't like this optimization, so
    disable doing if we are unrolling loops and saving space.  */
-#define LOOP_TEST_THRESHOLD (optimize_size                                \
-                             && !flag_unroll_loops                        \
-                             && !flag_unroll_all_loops ? 2 : 30)
+#define LOOP_TEST_THRESHOLD (optimize_size				\
+			     && !flag_unroll_loops			\
+			     && !flag_unroll_all_loops ? 2 : 30)
 
 /* This is how to output an assembler line
    that says to advance the location counter
    to a multiple of 2**LOG bytes.  */
 /* .balign is used to avoid confusion.  */
-#define ASM_OUTPUT_ALIGN(FILE,LOG)                        \
-  do                                                        \
-    {                                                        \
-      if ((LOG) != 0)                                        \
-        fprintf (FILE, "\t.balign %d\n", 1 << (LOG));        \
-    }                                                        \
+#define ASM_OUTPUT_ALIGN(FILE,LOG)			\
+  do							\
+    {							\
+      if ((LOG) != 0)					\
+	fprintf (FILE, "\t.balign %d\n", 1 << (LOG));	\
+    }							\
   while (0)
 
 /* Like `ASM_OUTPUT_COMMON' except takes the required alignment as a
@@ -1511,32 +1511,32 @@ extern char m32r_punct_chars[256];
 #define SCOMMON_ASM_OP "\t.scomm\t"
 
 #undef  ASM_OUTPUT_ALIGNED_COMMON
-#define ASM_OUTPUT_ALIGNED_COMMON(FILE, NAME, SIZE, ALIGN)                \
-  do                                                                        \
-    {                                                                        \
-      if (! TARGET_SDATA_NONE                                                \
-          && (SIZE) > 0 && (SIZE) <= g_switch_value)                        \
-        fprintf ((FILE), "%s", SCOMMON_ASM_OP);                                \
-      else                                                                \
-        fprintf ((FILE), "%s", COMMON_ASM_OP);                                \
-      assemble_name ((FILE), (NAME));                                        \
+#define ASM_OUTPUT_ALIGNED_COMMON(FILE, NAME, SIZE, ALIGN)		\
+  do									\
+    {									\
+      if (! TARGET_SDATA_NONE						\
+	  && (SIZE) > 0 && (SIZE) <= g_switch_value)			\
+	fprintf ((FILE), "%s", SCOMMON_ASM_OP);				\
+      else								\
+	fprintf ((FILE), "%s", COMMON_ASM_OP);				\
+      assemble_name ((FILE), (NAME));					\
       fprintf ((FILE), ",%u,%u\n", (int)(SIZE), (ALIGN) / BITS_PER_UNIT);\
-    }                                                                        \
+    }									\
   while (0)
 
-#define ASM_OUTPUT_ALIGNED_BSS(FILE, DECL, NAME, SIZE, ALIGN)                \
-  do                                                                        \
-    {                                                                        \
-      if (! TARGET_SDATA_NONE                                                \
-          && (SIZE) > 0 && (SIZE) <= g_switch_value)                        \
-        switch_to_section (get_named_section (NULL, ".sbss", 0));        \
-      else                                                                \
-        switch_to_section (bss_section);                                \
-      ASM_OUTPUT_ALIGN (FILE, floor_log2 (ALIGN / BITS_PER_UNIT));        \
-      last_assemble_variable_decl = DECL;                                \
-      ASM_DECLARE_OBJECT_NAME (FILE, NAME, DECL);                        \
-      ASM_OUTPUT_SKIP (FILE, SIZE ? SIZE : 1);                                \
-    }                                                                        \
+#define ASM_OUTPUT_ALIGNED_BSS(FILE, DECL, NAME, SIZE, ALIGN)		\
+  do									\
+    {									\
+      if (! TARGET_SDATA_NONE						\
+          && (SIZE) > 0 && (SIZE) <= g_switch_value)			\
+        switch_to_section (get_named_section (NULL, ".sbss", 0));	\
+      else								\
+        switch_to_section (bss_section);				\
+      ASM_OUTPUT_ALIGN (FILE, floor_log2 (ALIGN / BITS_PER_UNIT));	\
+      last_assemble_variable_decl = DECL;				\
+      ASM_DECLARE_OBJECT_NAME (FILE, NAME, DECL);			\
+      ASM_OUTPUT_SKIP (FILE, SIZE ? SIZE : 1);				\
+    }									\
   while (0)
 
 /* Debugging information.  */

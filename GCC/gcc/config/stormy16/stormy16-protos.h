@@ -32,7 +32,7 @@ extern void xstormy16_function_profiler (void);
 
 #if defined (TREE_CODE)
 extern void xstormy16_asm_output_aligned_common (FILE *, tree, const char *,
-                                                 int, int, int);
+						 int, int, int);
 #endif
 
 #if defined (TREE_CODE) && defined (HAVE_MACHINE_MODES)
@@ -79,9 +79,9 @@ extern int xstormy16_legitimate_address_p (enum machine_mode, rtx, int);
 extern void xstormy16_split_move (enum machine_mode, rtx, rtx);
 extern void xstormy16_expand_move (enum machine_mode, rtx, rtx);
 extern void xstormy16_expand_arith (enum machine_mode, enum rtx_code, 
-                                    rtx, rtx, rtx, rtx);
+				    rtx, rtx, rtx, rtx);
 extern const char * xstormy16_output_shift (enum machine_mode, enum rtx_code, 
-                                            rtx, rtx, rtx);
+					    rtx, rtx, rtx);
 extern int  xstormy16_below100_symbol (rtx, enum machine_mode);
 extern int  xstormy16_splittable_below100_operand (rtx, enum machine_mode);
 #endif

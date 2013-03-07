@@ -66,18 +66,18 @@ gcc_init_libintl (void)
       const char *encoding;
 #endif
       /* Untranslated quotes that it may be possible to replace with
-         U+2018 and U+2019; but otherwise use "'" instead of "`" as
-         opening quote.  */
+	 U+2018 and U+2019; but otherwise use "'" instead of "`" as
+	 opening quote.  */
       open_quote = "'";
 #if defined HAVE_LANGINFO_CODESET
       encoding = nl_langinfo (CODESET);
       if (encoding != NULL
-          && (!strcasecmp (encoding, "utf-8")
-              || !strcasecmp (encoding, "utf8")))
-        {
-          open_quote = "\xe2\x80\x98";
-          close_quote = "\xe2\x80\x99";
-        }
+	  && (!strcasecmp (encoding, "utf-8")
+	      || !strcasecmp (encoding, "utf8")))
+	{
+	  open_quote = "\xe2\x80\x98";
+	  close_quote = "\xe2\x80\x99";
+	}
 #endif
     }
 }

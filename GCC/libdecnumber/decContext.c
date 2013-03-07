@@ -31,10 +31,10 @@
 /*  This module compirises the routines for handling the arithmetic
     context structures. */
 
-#include <string.h>                /* for strcmp */
+#include <string.h>		/* for strcmp */
 #include "config.h"
-#include "decContext.h"                /* context and base types */
-#include "decNumberLocal.h"        /* decNumber local types, etc. */
+#include "decContext.h"		/* context and base types */
+#include "decNumberLocal.h"	/* decNumber local types, etc. */
 
 /* ------------------------------------------------------------------ */
 /* decContextDefault -- initialize a context structure                */
@@ -53,15 +53,15 @@ decContext *
 decContextDefault (decContext * context, Int kind)
 {
   /* set defaults... */
-  context->digits = 9;                /* 9 digits */
-  context->emax = DEC_MAX_EMAX;        /* 9-digit exponents */
-  context->emin = DEC_MIN_EMIN;        /* .. balanced */
-  context->round = DEC_ROUND_HALF_UP;        /* 0.5 rises */
-  context->traps = DEC_Errors;        /* all but informational */
-  context->status = 0;                /* cleared */
-  context->clamp = 0;                /* no clamping */
+  context->digits = 9;		/* 9 digits */
+  context->emax = DEC_MAX_EMAX;	/* 9-digit exponents */
+  context->emin = DEC_MIN_EMIN;	/* .. balanced */
+  context->round = DEC_ROUND_HALF_UP;	/* 0.5 rises */
+  context->traps = DEC_Errors;	/* all but informational */
+  context->status = 0;		/* cleared */
+  context->clamp = 0;		/* no clamping */
 #if DECSUBSET
-  context->extended = 0;        /* cleared */
+  context->extended = 0;	/* cleared */
 #endif
   switch (kind)
     {
@@ -69,45 +69,45 @@ decContextDefault (decContext * context, Int kind)
       /* [use defaults] */
       break;
     case DEC_INIT_DECIMAL32:
-      context->digits = 7;        /* digits */
-      context->emax = 96;        /* Emax */
-      context->emin = -95;        /* Emin */
-      context->round = DEC_ROUND_HALF_EVEN;        /* 0.5 to nearest even */
-      context->traps = 0;        /* no traps set */
-      context->clamp = 1;        /* clamp exponents */
+      context->digits = 7;	/* digits */
+      context->emax = 96;	/* Emax */
+      context->emin = -95;	/* Emin */
+      context->round = DEC_ROUND_HALF_EVEN;	/* 0.5 to nearest even */
+      context->traps = 0;	/* no traps set */
+      context->clamp = 1;	/* clamp exponents */
 #if DECSUBSET
-      context->extended = 1;        /* set */
+      context->extended = 1;	/* set */
 #endif
       break;
     case DEC_INIT_DECIMAL64:
-      context->digits = 16;        /* digits */
-      context->emax = 384;        /* Emax */
-      context->emin = -383;        /* Emin */
-      context->round = DEC_ROUND_HALF_EVEN;        /* 0.5 to nearest even */
-      context->traps = 0;        /* no traps set */
-      context->clamp = 1;        /* clamp exponents */
+      context->digits = 16;	/* digits */
+      context->emax = 384;	/* Emax */
+      context->emin = -383;	/* Emin */
+      context->round = DEC_ROUND_HALF_EVEN;	/* 0.5 to nearest even */
+      context->traps = 0;	/* no traps set */
+      context->clamp = 1;	/* clamp exponents */
 #if DECSUBSET
-      context->extended = 1;        /* set */
+      context->extended = 1;	/* set */
 #endif
       break;
     case DEC_INIT_DECIMAL128:
-      context->digits = 34;        /* digits */
-      context->emax = 6144;        /* Emax */
-      context->emin = -6143;        /* Emin */
-      context->round = DEC_ROUND_HALF_EVEN;        /* 0.5 to nearest even */
-      context->traps = 0;        /* no traps set */
-      context->clamp = 1;        /* clamp exponents */
+      context->digits = 34;	/* digits */
+      context->emax = 6144;	/* Emax */
+      context->emin = -6143;	/* Emin */
+      context->round = DEC_ROUND_HALF_EVEN;	/* 0.5 to nearest even */
+      context->traps = 0;	/* no traps set */
+      context->clamp = 1;	/* clamp exponents */
 #if DECSUBSET
-      context->extended = 1;        /* set */
+      context->extended = 1;	/* set */
 #endif
       break;
 
-    default:                        /* invalid Kind */
+    default:			/* invalid Kind */
       /* use defaults, and .. */
-      decContextSetStatus (context, DEC_Invalid_operation);        /* trap */
+      decContextSetStatus (context, DEC_Invalid_operation);	/* trap */
     }
   return context;
-}                                /* decContextDefault */
+}				/* decContextDefault */
 
 /* ------------------------------------------------------------------ */
 /* decContextStatusToString -- convert status flags to a string       */
@@ -153,8 +153,8 @@ decContextStatusToString (const decContext * context)
     return DEC_Condition_UN;
   if (status == 0)
     return DEC_Condition_ZE;
-  return DEC_Condition_MU;        /* Multiple errors */
-}                                /* decContextStatusToString */
+  return DEC_Condition_MU;	/* Multiple errors */
+}				/* decContextStatusToString */
 
 /* ------------------------------------------------------------------ */
 /* decContextSetStatusFromString -- set status from a string          */
@@ -205,8 +205,8 @@ decContextSetStatusFromString (decContext * context, const char *string)
     return decContextSetStatus (context, DEC_Underflow);
   if (strcmp (string, DEC_Condition_ZE) == 0)
     return context;
-  return NULL;                        /* Multiple status, or unknown */
-}                                /* decContextSetStatusFromString */
+  return NULL;			/* Multiple status, or unknown */
+}				/* decContextSetStatusFromString */
 
 /* ------------------------------------------------------------------ */
 /* decContextSetStatus -- set status and raise trap if appropriate    */
@@ -225,4 +225,4 @@ decContextSetStatus (decContext * context, uInt status)
   if (status & context->traps)
     raise (SIGFPE);
   return context;
-}                                /* decContextSetStatus */
+}				/* decContextSetStatus */

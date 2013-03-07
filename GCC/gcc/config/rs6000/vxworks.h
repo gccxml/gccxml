@@ -31,20 +31,20 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
 /* CPP predefined macros.  */
 
 #undef TARGET_OS_CPP_BUILTINS
-#define TARGET_OS_CPP_BUILTINS()                \
-  do                                                \
-    {                                                \
-      builtin_define ("__ppc");                        \
-      builtin_define ("__EABI__");                \
-      builtin_define ("__ELF__");                \
-      builtin_define ("__vxworks");                \
-      builtin_define ("__VXWORKS__");                \
-      if (!TARGET_SOFT_FLOAT)                        \
-        builtin_define ("__hardfp");                \
-                                                \
-      /* C89 namespace violation! */                \
-      builtin_define ("CPU_FAMILY=PPC");        \
-    }                                                \
+#define TARGET_OS_CPP_BUILTINS()		\
+  do						\
+    {						\
+      builtin_define ("__ppc");			\
+      builtin_define ("__EABI__");		\
+      builtin_define ("__ELF__");		\
+      builtin_define ("__vxworks");		\
+      builtin_define ("__VXWORKS__");		\
+      if (!TARGET_SOFT_FLOAT)			\
+	builtin_define ("__hardfp");		\
+						\
+      /* C89 namespace violation! */		\
+      builtin_define ("CPU_FAMILY=PPC");	\
+    }						\
   while (0)
 
 /* Only big endian PPC is supported by VxWorks.  */
@@ -65,7 +65,7 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
 /* FIXME: The only reason we allow no -mcpu switch at all is because
    config-ml.in insists on a "." multilib. */
 #define CPP_SPEC \
-"%{!DCPU=*:                  \
+"%{!DCPU=*:		  \
    %{mcpu=403 : -DCPU=PPC403  ; \
      mcpu=405 : -DCPU=PPC405  ; \
      mcpu=440 : -DCPU=PPC440  ; \
@@ -76,10 +76,10 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
               : -DCPU=PPC604  }}" \
 VXWORKS_ADDITIONAL_CPP_SPEC
 
-#define CC1_SPEC                                                \
-"%{G*} %{mno-sdata:-msdata=none} %{msdata:-msdata=default}        \
- %{mlittle|mlittle-endian:-mstrict-align}                        \
- %{profile: -p}                \
+#define CC1_SPEC						\
+"%{G*} %{mno-sdata:-msdata=none} %{msdata:-msdata=default}	\
+ %{mlittle|mlittle-endian:-mstrict-align}			\
+ %{profile: -p}		\
  %{fvec:-maltivec} %{fvec-eabi:-maltivec -mabi=altivec}"
 
 #define ASM_SPEC \
@@ -134,18 +134,18 @@ VXWORKS_ADDITIONAL_CPP_SPEC
    others must be done by hand.  Handle -mrtp.  Disable -fPIC
    for -mrtp - the VxWorks PIC model is not compatible with it.  */
 #undef SUBSUBTARGET_OVERRIDE_OPTIONS
-#define SUBSUBTARGET_OVERRIDE_OPTIONS                \
-  do {                                                \
-    if (TARGET_E500)                                \
-      {                                                \
-        rs6000_spe = 1;                                \
-        rs6000_spe_abi = 1;                        \
-        rs6000_float_gprs = 1;                        \
-      }                                                \
-                                                \
-  if (!g_switch_set)                                \
-    g_switch_value = SDATA_DEFAULT_SIZE;        \
-  VXWORKS_OVERRIDE_OPTIONS;                        \
+#define SUBSUBTARGET_OVERRIDE_OPTIONS		\
+  do {						\
+    if (TARGET_E500)				\
+      {						\
+	rs6000_spe = 1;				\
+	rs6000_spe_abi = 1;			\
+	rs6000_float_gprs = 1;			\
+      }						\
+						\
+  if (!g_switch_set)				\
+    g_switch_value = SDATA_DEFAULT_SIZE;	\
+  VXWORKS_OVERRIDE_OPTIONS;			\
   } while (0)
 
 /* No _mcount profiling on VxWorks.  */

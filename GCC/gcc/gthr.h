@@ -49,19 +49,19 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
    The threads interface must define the following macros:
 
      __GTHREAD_ONCE_INIT
-                     to initialize __gthread_once_t
+     		to initialize __gthread_once_t
      __GTHREAD_MUTEX_INIT
-                     to initialize __gthread_mutex_t to get a fast
-                non-recursive mutex.
+     		to initialize __gthread_mutex_t to get a fast
+		non-recursive mutex.
      __GTHREAD_MUTEX_INIT_FUNCTION
-                     some systems can't initialize a mutex without a
-                function call.  On such systems, define this to a
-                function which looks like this:
-                  void __GTHREAD_MUTEX_INIT_FUNCTION (__gthread_mutex_t *)
-                Don't define __GTHREAD_MUTEX_INIT in this case
+     		some systems can't initialize a mutex without a
+		function call.  On such systems, define this to a
+		function which looks like this:
+		  void __GTHREAD_MUTEX_INIT_FUNCTION (__gthread_mutex_t *)
+		Don't define __GTHREAD_MUTEX_INIT in this case
      __GTHREAD_RECURSIVE_MUTEX_INIT
      __GTHREAD_RECURSIVE_MUTEX_INIT_FUNCTION
-                     as above, but for a recursive mutex.
+     		as above, but for a recursive mutex.
 
    The threads interface must define the following static functions:
 

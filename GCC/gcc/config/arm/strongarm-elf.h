@@ -21,10 +21,10 @@
 
 /* Run-time Target Specification.  */
 #ifndef TARGET_VERSION
-#define TARGET_VERSION        fputs (" (StrongARM/ELF non-Linux)", stderr);
+#define TARGET_VERSION	fputs (" (StrongARM/ELF non-Linux)", stderr);
 #endif
 
 #ifndef SUBTARGET_CPU_DEFAULT
-#define SUBTARGET_CPU_DEFAULT                 TARGET_CPU_strongarm
+#define SUBTARGET_CPU_DEFAULT 		TARGET_CPU_strongarm
 #endif
 

@@ -85,11 +85,11 @@ Note:
 #define STARTFILE_SPEC "crt1%O%s"
 
 /* Names to predefine in the preprocessor for this target machine.  */
-#define TARGET_CPU_CPP_BUILTINS()                \
-  do                                                \
-    {                                                \
-      builtin_define_std ("mc68hc1x");                \
-    }                                                \
+#define TARGET_CPU_CPP_BUILTINS()		\
+  do						\
+    {						\
+      builtin_define_std ("mc68hc1x");		\
+    }						\
   while (0)
 
 /* As an embedded target, we have no libc.  */
@@ -118,14 +118,14 @@ typedef int enum_machine_mode;
 
 /* Run-time compilation parameters selecting different hardware subsets.  */
 
-extern short *reg_renumber;        /* def in local_alloc.c */
+extern short *reg_renumber;	/* def in local_alloc.c */
 
-#define TARGET_OP_TIME                (optimize && optimize_size == 0)
+#define TARGET_OP_TIME		(optimize && optimize_size == 0)
 #define TARGET_RELAX            (TARGET_NO_DIRECT_MODE)
 
 /* Default target_flags if no switches specified.  */
 #ifndef TARGET_DEFAULT
-# define TARGET_DEFAULT                0
+# define TARGET_DEFAULT		0
 #endif
 
 /* Define this macro as a C expression for the initializer of an
@@ -141,7 +141,7 @@ extern short *reg_renumber;        /* def in local_alloc.c */
 #endif
 
 /* Print subsidiary information on the compiler version in use.  */
-#define TARGET_VERSION        fprintf (stderr, " (MC68HC11/MC68HC12/MC68HCS12)")
+#define TARGET_VERSION	fprintf (stderr, " (MC68HC11/MC68HC12/MC68HCS12)")
 
 /* Sometimes certain combinations of command options do not make
    sense on a particular target machine.  You can define a macro
@@ -152,12 +152,12 @@ extern short *reg_renumber;        /* def in local_alloc.c */
    Don't use this macro to turn on various extra optimizations for
    `-O'.  That is what `OPTIMIZATION_OPTIONS' is for.  */
 
-#define OVERRIDE_OPTIONS        m68hc11_override_options ();
+#define OVERRIDE_OPTIONS	m68hc11_override_options ();
 
 
 /* Define cost parameters for a given processor variant.  */
 struct processor_costs {
-  const int add;                /* cost of an add instruction */
+  const int add;		/* cost of an add instruction */
   const int logical;          /* cost of a logical instruction */
   const int shift_var;
   const int shiftQI_const[8];
@@ -177,17 +177,17 @@ extern const struct processor_costs *m68hc11_cost;
 /* target machine storage layout */
 
 /* Define this if most significant byte of a word is the lowest numbered.  */
-#define BYTES_BIG_ENDIAN         1
+#define BYTES_BIG_ENDIAN 	1
 
 /* Define this if most significant bit is lowest numbered
    in instructions that operate on numbered bit-fields.  */
 #define BITS_BIG_ENDIAN         0
 
 /* Define this if most significant word of a multiword number is numbered.  */
-#define WORDS_BIG_ENDIAN         1
+#define WORDS_BIG_ENDIAN 	1
 
 /* Width of a word, in units (bytes).  */
-#define UNITS_PER_WORD                2
+#define UNITS_PER_WORD		2
 
 /* Definition of size_t.  This is really an unsigned short as the
    68hc11 only handles a 64K address space.  */
@@ -200,22 +200,22 @@ extern const struct processor_costs *m68hc11_cost;
 #define PTRDIFF_TYPE            "short int"
 
 /* Allocation boundary (bits) for storing pointers in memory.  */
-#define POINTER_BOUNDARY        8
+#define POINTER_BOUNDARY	8
 
 /* Normal alignment required for function parameters on the stack, in bits.
    This can't be less than BITS_PER_WORD */
-#define PARM_BOUNDARY                (BITS_PER_WORD)
+#define PARM_BOUNDARY		(BITS_PER_WORD)
 
 /* Boundary (bits) on which stack pointer should be aligned.  */
-#define STACK_BOUNDARY                8
+#define STACK_BOUNDARY		8
 
 /* Allocation boundary (bits) for the code of a function.  */
-#define FUNCTION_BOUNDARY        8
+#define FUNCTION_BOUNDARY	8
 
-#define BIGGEST_ALIGNMENT        8
+#define BIGGEST_ALIGNMENT	8
 
 /* Alignment of field after `int : 0' in a structure.  */
-#define EMPTY_FIELD_BOUNDARY        8
+#define EMPTY_FIELD_BOUNDARY	8
 
 /* Every structure's size must be a multiple of this.  */
 #define STRUCTURE_SIZE_BOUNDARY 8
@@ -223,13 +223,13 @@ extern const struct processor_costs *m68hc11_cost;
 /* Define this if instructions will fail to work if given data not
    on the nominal alignment.  If instructions will merely go slower
    in that case, do not define this macro.  */
-#define STRICT_ALIGNMENT        0
+#define STRICT_ALIGNMENT	0
 
 /* An integer expression for the size in bits of the largest integer
    machine mode that should actually be used.  All integer machine modes of
    this size or smaller can be used for structures and unions with the
    appropriate sizes.  */
-#define MAX_FIXED_MODE_SIZE        64
+#define MAX_FIXED_MODE_SIZE	64
 
 /* target machine storage layout */
 
@@ -238,10 +238,10 @@ extern const struct processor_costs *m68hc11_cost;
 #define INT_TYPE_SIZE           (TARGET_SHORT ? 16 : 32)
 
 /* Size (bits) of the type "short" on target machine */
-#define SHORT_TYPE_SIZE                16
+#define SHORT_TYPE_SIZE		16
 
 /* Size (bits) of the type "long" on target machine */
-#define LONG_TYPE_SIZE                32
+#define LONG_TYPE_SIZE		32
 
 /* Size (bits) of the type "long long" on target machine */
 #define LONG_LONG_TYPE_SIZE     64
@@ -259,7 +259,7 @@ extern const struct processor_costs *m68hc11_cost;
 #define LONG_DOUBLE_TYPE_SIZE   64
 
 /* Define this as 1 if `char' should by default be signed; else as 0.  */
-#define DEFAULT_SIGNED_CHAR        0
+#define DEFAULT_SIGNED_CHAR	0
 
 /* Define these to avoid dependence on meaning of `int'.
    Note that WCHAR_TYPE_SIZE is used in cexp.y,
@@ -277,14 +277,14 @@ extern const struct processor_costs *m68hc11_cost;
    X register is first so that GCC allocates X+D for 32-bit integers and
    the lowpart of that integer will be D.  Having the lower part in D is
    better for 32<->16bit conversions and for many arithmetic operations.  */
-#define HARD_X_REGNUM                0
-#define HARD_D_REGNUM                1
-#define HARD_Y_REGNUM                2
-#define HARD_SP_REGNUM                3
-#define HARD_PC_REGNUM                4
-#define HARD_A_REGNUM                5
-#define HARD_B_REGNUM                6
-#define HARD_CCR_REGNUM                7
+#define HARD_X_REGNUM		0
+#define HARD_D_REGNUM		1
+#define HARD_Y_REGNUM		2
+#define HARD_SP_REGNUM		3
+#define HARD_PC_REGNUM		4
+#define HARD_A_REGNUM		5
+#define HARD_B_REGNUM		6
+#define HARD_CCR_REGNUM		7
 
 /* The Z register does not really exist in the 68HC11.  This a fake register
    for GCC.  It is treated exactly as an index register (X or Y).  It is only
@@ -302,8 +302,8 @@ extern const struct processor_costs *m68hc11_cost;
 /* The frame pointer is a soft-register.  It's treated as such by GCC:
    it is not and must not be part of the BASE_REG_CLASS.  */
 #define DEFAULT_HARD_FP_REGNUM  (9)
-#define HARD_FP_REGNUM                (9)
-#define HARD_AP_REGNUM                (HARD_FP_REGNUM)
+#define HARD_FP_REGNUM		(9)
+#define HARD_AP_REGNUM		(HARD_FP_REGNUM)
 
 /* Temporary soft-register used in some cases when an operand came
    up into a bad register class (D, X, Y, SP) and gcc failed to
@@ -330,14 +330,14 @@ extern const struct processor_costs *m68hc11_cost;
 
 #define MAX_SOFT_REG_COUNT      (32)
 #define SOFT_REG_FIXED          0, 0, 0, 0, 0, 0, 0, 0, \
-                                0, 0, 0, 0, 1, 1, 1, 1, \
-                                1, 1, 1, 1, 1, 1, 1, 1, \
-                                1, 1, 1, 1, 1, 1, 1, 1
+				0, 0, 0, 0, 1, 1, 1, 1, \
+				1, 1, 1, 1, 1, 1, 1, 1, \
+				1, 1, 1, 1, 1, 1, 1, 1
 #define SOFT_REG_USED           0, 0, 0, 0, 0, 0, 0, 0, \
-                                0, 0, 0, 0, 1, 1, 1, 1, \
-                                1, 1, 1, 1, 1, 1, 1, 1, \
-                                1, 1, 1, 1, 1, 1, 1, 1
-#define SOFT_REG_ORDER                \
+				0, 0, 0, 0, 1, 1, 1, 1, \
+				1, 1, 1, 1, 1, 1, 1, 1, \
+				1, 1, 1, 1, 1, 1, 1, 1
+#define SOFT_REG_ORDER		\
 SOFT_REG_FIRST, SOFT_REG_FIRST+1,SOFT_REG_FIRST+2,SOFT_REG_FIRST+3,\
 SOFT_REG_FIRST+4, SOFT_REG_FIRST+5,SOFT_REG_FIRST+6,SOFT_REG_FIRST+7,\
 SOFT_REG_FIRST+8, SOFT_REG_FIRST+9,SOFT_REG_FIRST+10,SOFT_REG_FIRST+11,\
@@ -347,11 +347,11 @@ SOFT_REG_FIRST+20, SOFT_REG_FIRST+21,SOFT_REG_FIRST+22,SOFT_REG_FIRST+23,\
 SOFT_REG_FIRST+24, SOFT_REG_FIRST+25,SOFT_REG_FIRST+26,SOFT_REG_FIRST+27,\
 SOFT_REG_FIRST+28, SOFT_REG_FIRST+29,SOFT_REG_FIRST+30,SOFT_REG_FIRST+31
 
-#define SOFT_REG_NAMES                                                        \
+#define SOFT_REG_NAMES							\
 "*_.d1",  "*_.d2",  "*_.d3",  "*_.d4", \
-"*_.d5",  "*_.d6",  "*_.d7",  "*_.d8",        \
+"*_.d5",  "*_.d6",  "*_.d7",  "*_.d8",	\
 "*_.d9",  "*_.d10", "*_.d11", "*_.d12", \
-"*_.d13", "*_.d14", "*_.d15", "*_.d16",        \
+"*_.d13", "*_.d14", "*_.d15", "*_.d16",	\
 "*_.d17", "*_.d18", "*_.d19", "*_.d20", \
 "*_.d21", "*_.d22", "*_.d23", "*_.d24", \
 "*_.d25", "*_.d26", "*_.d27", "*_.d28", \
@@ -362,14 +362,14 @@ SOFT_REG_FIRST+28, SOFT_REG_FIRST+29,SOFT_REG_FIRST+30,SOFT_REG_FIRST+31
 
 /* Last available soft-register for GCC.  */
 #define SOFT_REG_LAST           (SOFT_REG_FIRST+MAX_SOFT_REG_COUNT)
-#define SOFT_FP_REGNUM                (SOFT_REG_LAST)
-#define SOFT_AP_REGNUM                (SOFT_FP_REGNUM+1)
+#define SOFT_FP_REGNUM		(SOFT_REG_LAST)
+#define SOFT_AP_REGNUM		(SOFT_FP_REGNUM+1)
 
 /* Number of actual hardware registers. The hardware registers are assigned
    numbers for the compiler from 0 to just below FIRST_PSEUDO_REGISTER. 
    All registers that the compiler knows about must be given numbers, even
    those that are not normally considered general registers.  */
-#define FIRST_PSEUDO_REGISTER        (SOFT_REG_LAST+2)
+#define FIRST_PSEUDO_REGISTER	(SOFT_REG_LAST+2)
 
 /* 1 for registers that have pervasive standard uses and are not available
    for the register allocator.  */
@@ -394,10 +394,10 @@ SOFT_REG_FIRST+28, SOFT_REG_FIRST+29,SOFT_REG_FIRST+30,SOFT_REG_FIRST+31
 
 /* List the order in which to allocate registers.  Each register must be
    listed once, even those in FIXED_REGISTERS.  */
-#define REG_ALLOC_ORDER                                                        \
-{ HARD_D_REGNUM, HARD_X_REGNUM, HARD_Y_REGNUM,                                \
-  SOFT_REG_ORDER, HARD_Z_REGNUM, HARD_PC_REGNUM, HARD_A_REGNUM,                \
-  HARD_B_REGNUM, HARD_CCR_REGNUM, HARD_FP_REGNUM, SOFT_FP_REGNUM,        \
+#define REG_ALLOC_ORDER							\
+{ HARD_D_REGNUM, HARD_X_REGNUM, HARD_Y_REGNUM,				\
+  SOFT_REG_ORDER, HARD_Z_REGNUM, HARD_PC_REGNUM, HARD_A_REGNUM,		\
+  HARD_B_REGNUM, HARD_CCR_REGNUM, HARD_FP_REGNUM, SOFT_FP_REGNUM,	\
   HARD_SP_REGNUM, SOFT_TMP_REGNUM, SOFT_Z_REGNUM, SOFT_SAVED_XY_REGNUM, \
   SOFT_AP_REGNUM, FAKE_CLOBBER_REGNUM  }
 
@@ -458,49 +458,49 @@ SOFT_REG_FIRST+28, SOFT_REG_FIRST+29,SOFT_REG_FIRST+30,SOFT_REG_FIRST+31
 enum reg_class
 {
   NO_REGS,
-  D_REGS,                        /* 16-bit data register */
-  X_REGS,                        /* 16-bit X register */
-  Y_REGS,                        /* 16-bit Y register */
-  SP_REGS,                        /* 16 bit stack pointer */
-  DA_REGS,                        /* 8-bit A reg.  */
-  DB_REGS,                        /* 8-bit B reg.  */
-  Z_REGS,                        /* 16-bit fake Z register */
-  D8_REGS,                        /* 8-bit A or B reg.  */
-  Q_REGS,                        /* 8-bit (byte (QI)) data (A, B or D) */
-  D_OR_X_REGS,                        /* D or X register */
-  D_OR_Y_REGS,                        /* D or Y register */
-  D_OR_SP_REGS,                        /* D or SP register */
-  X_OR_Y_REGS,                        /* IX or Y register */
-  A_REGS,                        /* 16-bit address register (X, Y, Z) */
-  X_OR_SP_REGS,                        /* X or SP register */
-  Y_OR_SP_REGS,                        /* Y or SP register */
-  X_OR_Y_OR_D_REGS,                /* X, Y or D */
-  A_OR_D_REGS,                        /* X, Y, Z or D */
-  A_OR_SP_REGS,                        /* X, Y, Z or SP */
-  H_REGS,                        /* 16-bit hard register (D, X, Y, Z, SP) */
-  S_REGS,                        /* 16-bit soft register */
-  D_OR_S_REGS,                        /* 16-bit soft register or D register */
-  X_OR_S_REGS,                        /* 16-bit soft register or X register */
-  Y_OR_S_REGS,                        /* 16-bit soft register or Y register */
-  Z_OR_S_REGS,                        /* 16-bit soft register or Z register */
-  SP_OR_S_REGS,                        /* 16-bit soft register or SP register */
-  D_OR_X_OR_S_REGS,                /* 16-bit soft register or D or X register */
-  D_OR_Y_OR_S_REGS,                /* 16-bit soft register or D or Y register */
-  D_OR_SP_OR_S_REGS,                /* 16-bit soft register or D or SP register */
-  A_OR_S_REGS,                        /* 16-bit soft register or X, Y registers */
-  D_OR_A_OR_S_REGS,                /* 16-bit soft register or D, X, Y registers */
-  TMP_REGS,                        /* 16 bit fake scratch register */
-  D_OR_A_OR_TMP_REGS,                /* General scratch register */
-  G_REGS,                        /* 16-bit general register
+  D_REGS,			/* 16-bit data register */
+  X_REGS,			/* 16-bit X register */
+  Y_REGS,			/* 16-bit Y register */
+  SP_REGS,			/* 16 bit stack pointer */
+  DA_REGS,			/* 8-bit A reg.  */
+  DB_REGS,			/* 8-bit B reg.  */
+  Z_REGS,			/* 16-bit fake Z register */
+  D8_REGS,			/* 8-bit A or B reg.  */
+  Q_REGS,			/* 8-bit (byte (QI)) data (A, B or D) */
+  D_OR_X_REGS,			/* D or X register */
+  D_OR_Y_REGS,			/* D or Y register */
+  D_OR_SP_REGS,			/* D or SP register */
+  X_OR_Y_REGS,			/* IX or Y register */
+  A_REGS,			/* 16-bit address register (X, Y, Z) */
+  X_OR_SP_REGS,			/* X or SP register */
+  Y_OR_SP_REGS,			/* Y or SP register */
+  X_OR_Y_OR_D_REGS,		/* X, Y or D */
+  A_OR_D_REGS,			/* X, Y, Z or D */
+  A_OR_SP_REGS,			/* X, Y, Z or SP */
+  H_REGS,			/* 16-bit hard register (D, X, Y, Z, SP) */
+  S_REGS,			/* 16-bit soft register */
+  D_OR_S_REGS,			/* 16-bit soft register or D register */
+  X_OR_S_REGS,			/* 16-bit soft register or X register */
+  Y_OR_S_REGS,			/* 16-bit soft register or Y register */
+  Z_OR_S_REGS,			/* 16-bit soft register or Z register */
+  SP_OR_S_REGS,			/* 16-bit soft register or SP register */
+  D_OR_X_OR_S_REGS,		/* 16-bit soft register or D or X register */
+  D_OR_Y_OR_S_REGS,		/* 16-bit soft register or D or Y register */
+  D_OR_SP_OR_S_REGS,		/* 16-bit soft register or D or SP register */
+  A_OR_S_REGS,			/* 16-bit soft register or X, Y registers */
+  D_OR_A_OR_S_REGS,		/* 16-bit soft register or D, X, Y registers */
+  TMP_REGS,			/* 16 bit fake scratch register */
+  D_OR_A_OR_TMP_REGS,		/* General scratch register */
+  G_REGS,			/* 16-bit general register
                                    (H_REGS + soft registers) */
   ALL_REGS,
   LIM_REG_CLASSES
 };
 
 /* alias GENERAL_REGS to G_REGS.  */
-#define GENERAL_REGS        G_REGS
+#define GENERAL_REGS	G_REGS
 
-#define N_REG_CLASSES        (int) LIM_REG_CLASSES
+#define N_REG_CLASSES	(int) LIM_REG_CLASSES
 
 /* Give names of register classes as strings for dump file.  */
 #define REG_CLASS_NAMES \
@@ -536,8 +536,8 @@ enum reg_class
       "D_OR_SP_OR_S_REGS",                      \
       "A_OR_S_REGS",                            \
       "D_OR_A_OR_S_REGS",                       \
-      "TMP_REGS",                                \
-      "D_OR_A_OR_TMP_REGS",                        \
+      "TMP_REGS",				\
+      "D_OR_A_OR_TMP_REGS",			\
       "G_REGS",                                 \
       "ALL_REGS" }
 
@@ -547,74 +547,74 @@ enum reg_class
    that register R is in the class if `MASK & (1 << R)' is 1.  */
 
 /*--------------------------------------------------------------
-   X                0x00000001
-   D                0x00000002
-   Y                0x00000004
-   SP                0x00000008
-   PC                0x00000010
-   A                0x00000020
-   B                0x00000040
-   CCR                0x00000080
-   Z                0x00000100
+   X		0x00000001
+   D		0x00000002
+   Y		0x00000004
+   SP		0x00000008
+   PC		0x00000010
+   A		0x00000020
+   B		0x00000040
+   CCR		0x00000080
+   Z		0x00000100
    FRAME        0x00000200
-   ZTMP                0x00000400
-   ZREG                0x00000800
-   XYREG        0x00001000
+   ZTMP		0x00000400
+   ZREG		0x00000800
+   XYREG	0x00001000
    FAKE         0x00002000
-   Di                0xFFFFc000, 0x03FFF
+   Di		0xFFFFc000, 0x03FFF
    SFRAME       0x00000000, 0x04000
    AP           0x00000000, 0x08000
 
    D_OR_X_REGS represents D+X. It is used for 32-bits numbers.
    A_REGS      represents a valid base register for indexing. It represents
-               X,Y and the Z register.
+	       X,Y and the Z register.
    S_REGS      represents the soft-registers. This includes the hard frame
-               and soft frame registers.
+	       and soft frame registers.
 --------------------------------------------------------------*/
 
 #define REG_CLASS_CONTENTS \
-/* NO_REGS */                {{ 0x00000000, 0x00000000 },                        \
-/* D_REGS  */                 { 0x00000002, 0x00000000 }, /* D */            \
-/* X_REGS  */                 { 0x00000001, 0x00000000 }, /* X */            \
-/* Y_REGS  */                 { 0x00000004, 0x00000000 }, /* Y */            \
-/* SP_REGS */                 { 0x00000008, 0x00000000 }, /* SP */           \
-/* DA_REGS */                 { 0x00000020, 0x00000000 }, /* A */            \
-/* DB_REGS */                 { 0x00000040, 0x00000000 }, /* B */            \
-/* Z_REGS  */                 { 0x00000100, 0x00000000 }, /* Z */            \
-/* D8_REGS */                 { 0x00000060, 0x00000000 }, /* A B */          \
-/* Q_REGS  */                 { 0x00000062, 0x00000000 }, /* A B D */        \
+/* NO_REGS */		{{ 0x00000000, 0x00000000 },			\
+/* D_REGS  */		 { 0x00000002, 0x00000000 }, /* D */            \
+/* X_REGS  */		 { 0x00000001, 0x00000000 }, /* X */            \
+/* Y_REGS  */		 { 0x00000004, 0x00000000 }, /* Y */            \
+/* SP_REGS */		 { 0x00000008, 0x00000000 }, /* SP */           \
+/* DA_REGS */		 { 0x00000020, 0x00000000 }, /* A */            \
+/* DB_REGS */		 { 0x00000040, 0x00000000 }, /* B */            \
+/* Z_REGS  */		 { 0x00000100, 0x00000000 }, /* Z */            \
+/* D8_REGS */		 { 0x00000060, 0x00000000 }, /* A B */          \
+/* Q_REGS  */		 { 0x00000062, 0x00000000 }, /* A B D */        \
 /* D_OR_X_REGS */        { 0x00000003, 0x00000000 }, /* D X */          \
 /* D_OR_Y_REGS */        { 0x00000006, 0x00000000 }, /* D Y */          \
 /* D_OR_SP_REGS */       { 0x0000000A, 0x00000000 }, /* D SP */         \
-/* X_OR_Y_REGS  */         { 0x00000005, 0x00000000 }, /* X Y */          \
-/* A_REGS  */                 { 0x00000105, 0x00000000 }, /* X Y Z */        \
+/* X_OR_Y_REGS  */	 { 0x00000005, 0x00000000 }, /* X Y */          \
+/* A_REGS  */		 { 0x00000105, 0x00000000 }, /* X Y Z */        \
 /* X_OR_SP_REGS */       { 0x00000009, 0x00000000 }, /* X SP */         \
 /* Y_OR_SP_REGS */       { 0x0000000C, 0x00000000 }, /* Y SP */         \
 /* X_OR_Y_OR_D_REGS */   { 0x00000007, 0x00000000 }, /* D X Y */        \
 /* A_OR_D_REGS  */       { 0x00000107, 0x00000000 }, /* D X Y Z */      \
 /* A_OR_SP_REGS */       { 0x0000010D, 0x00000000 }, /* X Y SP */       \
-/* H_REGS  */                 { 0x0000010F, 0x00000000 }, /* D X Y SP */     \
-/* S_REGS  */                 { 0xFFFFDE00, 0x00007FFF }, /* _.D,..,FP,Z*  */  \
-/* D_OR_S_REGS */         { 0xFFFFDE02, 0x00007FFF }, /* D _.D */        \
-/* X_OR_S_REGS */         { 0xFFFFDE01, 0x00007FFF }, /* X _.D */        \
-/* Y_OR_S_REGS */         { 0xFFFFDE04, 0x00007FFF }, /* Y _.D */        \
-/* Z_OR_S_REGS */         { 0xFFFFDF00, 0x00007FFF }, /* Z _.D */        \
-/* SP_OR_S_REGS */         { 0xFFFFDE08, 0x00007FFF }, /* SP _.D */        \
-/* D_OR_X_OR_S_REGS */         { 0xFFFFDE03, 0x00007FFF }, /* D X _.D */      \
-/* D_OR_Y_OR_S_REGS */         { 0xFFFFDE06, 0x00007FFF }, /* D Y _.D */      \
-/* D_OR_SP_OR_S_REGS */         { 0xFFFFDE0A, 0x00007FFF }, /* D SP _.D */     \
-/* A_OR_S_REGS */         { 0xFFFFDF05, 0x00007FFF }, /* X Y _.D */      \
-/* D_OR_A_OR_S_REGS */         { 0xFFFFDF07, 0x00007FFF }, /* D X Y _.D */    \
-/* TMP_REGS  */                 { 0x00002000, 0x00000000 }, /* FAKE */                \
+/* H_REGS  */		 { 0x0000010F, 0x00000000 }, /* D X Y SP */     \
+/* S_REGS  */		 { 0xFFFFDE00, 0x00007FFF }, /* _.D,..,FP,Z*  */  \
+/* D_OR_S_REGS */	 { 0xFFFFDE02, 0x00007FFF }, /* D _.D */        \
+/* X_OR_S_REGS */	 { 0xFFFFDE01, 0x00007FFF }, /* X _.D */        \
+/* Y_OR_S_REGS */	 { 0xFFFFDE04, 0x00007FFF }, /* Y _.D */        \
+/* Z_OR_S_REGS */	 { 0xFFFFDF00, 0x00007FFF }, /* Z _.D */        \
+/* SP_OR_S_REGS */	 { 0xFFFFDE08, 0x00007FFF }, /* SP _.D */	\
+/* D_OR_X_OR_S_REGS */	 { 0xFFFFDE03, 0x00007FFF }, /* D X _.D */      \
+/* D_OR_Y_OR_S_REGS */	 { 0xFFFFDE06, 0x00007FFF }, /* D Y _.D */      \
+/* D_OR_SP_OR_S_REGS */	 { 0xFFFFDE0A, 0x00007FFF }, /* D SP _.D */     \
+/* A_OR_S_REGS */	 { 0xFFFFDF05, 0x00007FFF }, /* X Y _.D */      \
+/* D_OR_A_OR_S_REGS */	 { 0xFFFFDF07, 0x00007FFF }, /* D X Y _.D */    \
+/* TMP_REGS  */	         { 0x00002000, 0x00000000 }, /* FAKE */		\
 /* D_OR_A_OR_TMP_REGS*/  { 0x00002107, 0x00000000 }, /* D X Y Z Fake */  \
-/* G_REGS  */                 { 0xFFFFFF1F, 0x00007FFF }, /* ? _.D D X Y */   \
-/* ALL_REGS*/                 { 0xFFFFFFFF, 0x00007FFF }}
+/* G_REGS  */		 { 0xFFFFFF1F, 0x00007FFF }, /* ? _.D D X Y */   \
+/* ALL_REGS*/		 { 0xFFFFFFFF, 0x00007FFF }}
 
 
 /* set up a C expression whose value is a register class containing hard
    register REGNO */
-#define Q_REGNO_P(REGNO)        ((REGNO) == HARD_A_REGNUM \
-                                 || (REGNO) == HARD_B_REGNUM)
+#define Q_REGNO_P(REGNO)	((REGNO) == HARD_A_REGNUM \
+				 || (REGNO) == HARD_B_REGNUM)
 #define Q_REG_P(X)              (REG_P (X) && Q_REGNO_P (REGNO (X)))
 
 #define D_REGNO_P(REGNO)        ((REGNO) == HARD_D_REGNUM)
@@ -645,7 +645,7 @@ enum reg_class
 
 /* M68hc11 hard registers.  */
 #define H_REGNO_P(REGNO)        (D_REGNO_P (REGNO) || A_REGNO_P (REGNO) \
-                                 || SP_REGNO_P (REGNO) || Q_REGNO_P (REGNO))
+				 || SP_REGNO_P (REGNO) || Q_REGNO_P (REGNO))
 #define H_REG_P(X)              (REG_P (X) && H_REGNO_P (REGNO (X)))
 
 #define FAKE_REGNO_P(REGNO)     ((REGNO) == FAKE_CLOBBER_REGNUM)
@@ -665,10 +665,10 @@ enum reg_class
 /* General register.  */
 #define G_REGNO_P(REGNO)        (H_REGNO_P (REGNO) || S_REGNO_P (REGNO) \
                                  || ((REGNO) == HARD_PC_REGNUM) \
-                                 || ((REGNO) == HARD_FP_REGNUM) \
-                                 || ((REGNO) == SOFT_FP_REGNUM) \
-                                 || ((REGNO) == FAKE_CLOBBER_REGNUM) \
-                                 || ((REGNO) == SOFT_AP_REGNUM))
+				 || ((REGNO) == HARD_FP_REGNUM) \
+				 || ((REGNO) == SOFT_FP_REGNUM) \
+				 || ((REGNO) == FAKE_CLOBBER_REGNUM) \
+				 || ((REGNO) == SOFT_AP_REGNUM))
 
 #define G_REG_P(X)              (REG_P (X) && G_REGNO_P (REGNO (X)))
 
@@ -680,9 +680,9 @@ enum reg_class
       (Z_REGNO_P (REGNO) ? Z_REGS : \
        (H_REGNO_P (REGNO) ? H_REGS : \
         (FAKE_REGNO_P (REGNO) ? TMP_REGS : \
-         (S_REGNO_P (REGNO) ? S_REGS : \
-          (DA_REGNO_P (REGNO) ? DA_REGS: \
-           (DB_REGNO_P (REGNO) ? DB_REGS: \
+	 (S_REGNO_P (REGNO) ? S_REGS : \
+	  (DA_REGNO_P (REGNO) ? DA_REGS: \
+	   (DB_REGNO_P (REGNO) ? DB_REGS: \
             (G_REGNO_P (REGNO) ? G_REGS : ALL_REGS)))))))))))
 
 
@@ -706,7 +706,7 @@ extern enum reg_class m68hc11_tmp_regs_class;
     (C) == 'y' ? Y_REGS : \
     (C) == 'z' ? Z_REGS : NO_REGS)
 
-#define PREFERRED_RELOAD_CLASS(X,CLASS)        preferred_reload_class(X,CLASS)
+#define PREFERRED_RELOAD_CLASS(X,CLASS)	preferred_reload_class(X,CLASS)
 
 #define SMALL_REGISTER_CLASSES 1
 
@@ -732,8 +732,8 @@ extern enum reg_class m68hc11_tmp_regs_class;
    definition of this macro since the only effect of such a
    definition would be to slow down register allocation.  */
 
-#define CLASS_LIKELY_SPILLED_P(CLASS)                                        \
-  (((CLASS) == D_REGS)                                                        \
+#define CLASS_LIKELY_SPILLED_P(CLASS)					\
+  (((CLASS) == D_REGS)							\
    || ((CLASS) == X_REGS)                                               \
    || ((CLASS) == Y_REGS)                                               \
    || ((CLASS) == A_REGS)                                               \
@@ -746,7 +746,7 @@ extern enum reg_class m68hc11_tmp_regs_class;
 
 /* Return the maximum number of consecutive registers needed to represent
    mode MODE in a register of class CLASS.  */
-#define CLASS_MAX_NREGS(CLASS, MODE)                \
+#define CLASS_MAX_NREGS(CLASS, MODE)		\
 (((CLASS) == DA_REGS || (CLASS) == DB_REGS \
    || (CLASS) == D8_REGS || (CLASS) == Q_REGS) ? GET_MODE_SIZE (MODE) \
  : ((GET_MODE_SIZE (MODE) + UNITS_PER_WORD - 1) / UNITS_PER_WORD))
@@ -780,7 +780,7 @@ extern enum reg_class m68hc11_tmp_regs_class;
    `G' is for 0.0.  */
 #define CONST_DOUBLE_OK_FOR_LETTER_P(VALUE, C) \
   ((C) == 'G' ? (GET_MODE_CLASS (GET_MODE (VALUE)) == MODE_FLOAT \
-                 && VALUE == CONST0_RTX (GET_MODE (VALUE))) : 0) 
+		 && VALUE == CONST0_RTX (GET_MODE (VALUE))) : 0) 
 
 /* 'U' represents certain kind of memory indexed operand for 68HC12.
    and any memory operand for 68HC11.
@@ -791,7 +791,7 @@ extern enum reg_class m68hc11_tmp_regs_class;
  : (C) == 'Q' ? m68hc11_symbolic_p (OP, GET_MODE (OP)) \
  : (C) == 'R' ? m68hc11_indirect_p (OP, GET_MODE (OP)) \
  : (C) == 'S' ? (memory_operand (OP, GET_MODE (OP)) \
-                 && non_push_operand (OP, GET_MODE (OP))) : 0)
+		 && non_push_operand (OP, GET_MODE (OP))) : 0)
 
 
 /* Stack layout; function entry, exit and calling.  */
@@ -807,7 +807,7 @@ extern enum reg_class m68hc11_tmp_regs_class;
 
    Define to 0 for 68HC11, the frame pointer is the bottom
    of local variables.  */
-#define FRAME_GROWS_DOWNWARD                0
+#define FRAME_GROWS_DOWNWARD		0
 
 /* Define this if successive arguments to a function occupy decreasing 
    addresses in the stack.  */
@@ -817,15 +817,15 @@ extern enum reg_class m68hc11_tmp_regs_class;
    If FRAME_GROWS_DOWNWARD, this is the offset to the END of the
    first local allocated.  Otherwise, it is the offset to the BEGINNING
    of the first local allocated.  */
-#define STARTING_FRAME_OFFSET                0
+#define STARTING_FRAME_OFFSET		0
 
 /* Offset of first parameter from the argument pointer register value.  */
 
-#define FIRST_PARM_OFFSET(FNDECL)        2
+#define FIRST_PARM_OFFSET(FNDECL)	2
 
 /* After the prologue, RA is at 0(AP) in the current frame.  */
-#define RETURN_ADDR_RTX(COUNT, FRAME)                                        \
-  ((COUNT) == 0                                                                \
+#define RETURN_ADDR_RTX(COUNT, FRAME)					\
+  ((COUNT) == 0								\
    ? gen_rtx_MEM (Pmode, arg_pointer_rtx)                               \
    : 0)
 
@@ -842,7 +842,7 @@ extern enum reg_class m68hc11_tmp_regs_class;
    This space can either be allocated by the caller or be a part of the
    machine-dependent stack frame: `OUTGOING_REG_PARM_STACK_SPACE'
    says which.  */
-/* #define REG_PARM_STACK_SPACE(FNDECL)        2 */
+/* #define REG_PARM_STACK_SPACE(FNDECL)	2 */
 
 /* Define this macro if REG_PARM_STACK_SPACE is defined but stack
    parameters don't skip the area specified by REG_PARM_STACK_SPACE.
@@ -853,18 +853,18 @@ extern enum reg_class m68hc11_tmp_regs_class;
 /* #define STACK_PARMS_IN_REG_PARM_AREA */
 
 /* Register to use for pushing function arguments.  */
-#define STACK_POINTER_REGNUM                HARD_SP_REGNUM
+#define STACK_POINTER_REGNUM		HARD_SP_REGNUM
 
 /* Base register for access to local variables of the function.  */
-#define FRAME_POINTER_REGNUM                SOFT_FP_REGNUM
+#define FRAME_POINTER_REGNUM		SOFT_FP_REGNUM
 
-#define HARD_FRAME_POINTER_REGNUM        HARD_FP_REGNUM
+#define HARD_FRAME_POINTER_REGNUM	HARD_FP_REGNUM
 
 /* Base register for access to arguments of the function.  */
-#define ARG_POINTER_REGNUM                SOFT_AP_REGNUM
+#define ARG_POINTER_REGNUM		SOFT_AP_REGNUM
 
 /* Register in which static-chain is passed to a function.  */
-#define STATIC_CHAIN_REGNUM                SOFT_Z_REGNUM
+#define STATIC_CHAIN_REGNUM	        SOFT_Z_REGNUM
 
 
 /* Definitions for register eliminations.
@@ -878,33 +878,33 @@ extern enum reg_class m68hc11_tmp_regs_class;
    pointer and pseudo frame pointer registers can always be eliminated;
    they are replaced with either the stack or the real frame pointer.  */
 
-#define ELIMINABLE_REGS                                        \
-{{ARG_POINTER_REGNUM,   STACK_POINTER_REGNUM},                \
- {ARG_POINTER_REGNUM,   HARD_FRAME_POINTER_REGNUM},        \
- {FRAME_POINTER_REGNUM, STACK_POINTER_REGNUM},                \
+#define ELIMINABLE_REGS					\
+{{ARG_POINTER_REGNUM,   STACK_POINTER_REGNUM},		\
+ {ARG_POINTER_REGNUM,   HARD_FRAME_POINTER_REGNUM},	\
+ {FRAME_POINTER_REGNUM, STACK_POINTER_REGNUM},		\
  {FRAME_POINTER_REGNUM, HARD_FRAME_POINTER_REGNUM}}
 
 /* Value should be nonzero if functions must have frame pointers.
    Zero means the frame pointer need not be set up (and parms may be
    accessed via the stack pointer) in functions that seem suitable.
    This is computed in `reload', in reload1.c.  */
-#define FRAME_POINTER_REQUIRED        0
+#define FRAME_POINTER_REQUIRED	0
 
 /* Given FROM and TO register numbers, say whether this elimination is allowed.
    Frame pointer elimination is automatically handled.
 
    All other eliminations are valid.  */
 
-#define CAN_ELIMINATE(FROM, TO)                                        \
- ((FROM) == ARG_POINTER_REGNUM && (TO) == STACK_POINTER_REGNUM        \
-  ? ! frame_pointer_needed                                        \
+#define CAN_ELIMINATE(FROM, TO)					\
+ ((FROM) == ARG_POINTER_REGNUM && (TO) == STACK_POINTER_REGNUM	\
+  ? ! frame_pointer_needed					\
   : 1)
 
 
 /* Define the offset between two registers, one to be eliminated, and the other
    its replacement, at the start of a routine.  */
 
-#define INITIAL_ELIMINATION_OFFSET(FROM, TO, OFFSET)                        \
+#define INITIAL_ELIMINATION_OFFSET(FROM, TO, OFFSET)			\
     { OFFSET = m68hc11_initial_elimination_offset (FROM, TO); }
 
 
@@ -913,7 +913,7 @@ extern enum reg_class m68hc11_tmp_regs_class;
 /* If we generate an insn to push BYTES bytes, this says how many the
    stack pointer really advances by. No rounding or alignment needed
    for MC6811.  */
-#define PUSH_ROUNDING(BYTES)        (BYTES)
+#define PUSH_ROUNDING(BYTES)	(BYTES)
 
 /* Value is 1 if returning from a function call automatically pops the
    arguments described by the number-of-args field in the call. FUNTYPE is
@@ -922,7 +922,7 @@ extern enum reg_class m68hc11_tmp_regs_class;
   
    The standard MC6811 call, with arg count word, includes popping the
    args as part of the call template.  */
-#define RETURN_POPS_ARGS(FUNDECL,FUNTYPE,SIZE)        0
+#define RETURN_POPS_ARGS(FUNDECL,FUNTYPE,SIZE)	0
 
 /* Passing Arguments in Registers.  */
 
@@ -987,7 +987,7 @@ typedef struct m68hc11_args
 
 /* 1 if N is a possible register number for function argument passing.
    D is for 16-bit values, X is for 32-bit (X+D).  */
-#define FUNCTION_ARG_REGNO_P(N)        \
+#define FUNCTION_ARG_REGNO_P(N)	\
      (((N) == HARD_D_REGNUM) || ((N) == HARD_X_REGNUM))
 
 /* All return values are in the D or X+D registers:
@@ -996,15 +996,15 @@ typedef struct m68hc11_args
     - 32-bit values are returned in X + D.
       The high part is passed in X and the low part in D.
       For GCC, the register number must be HARD_X_REGNUM.  */
-#define FUNCTION_VALUE(VALTYPE, FUNC)                                        \
-     gen_rtx_REG (TYPE_MODE (VALTYPE),                                        \
-              ((TYPE_MODE (VALTYPE) == BLKmode                                \
-                || GET_MODE_SIZE (TYPE_MODE (VALTYPE)) <= 2)                \
-                   ? HARD_D_REGNUM : HARD_X_REGNUM))
+#define FUNCTION_VALUE(VALTYPE, FUNC)					\
+     gen_rtx_REG (TYPE_MODE (VALTYPE),					\
+              ((TYPE_MODE (VALTYPE) == BLKmode				\
+	        || GET_MODE_SIZE (TYPE_MODE (VALTYPE)) <= 2)		\
+		   ? HARD_D_REGNUM : HARD_X_REGNUM))
 
-#define LIBCALL_VALUE(MODE)                                                \
-     gen_rtx_REG (MODE,                                                \
-              (((MODE) == BLKmode || GET_MODE_SIZE (MODE) <= 2)                \
+#define LIBCALL_VALUE(MODE)						\
+     gen_rtx_REG (MODE,						\
+              (((MODE) == BLKmode || GET_MODE_SIZE (MODE) <= 2)		\
                    ? HARD_D_REGNUM : HARD_X_REGNUM))
 
 /* 1 if N is a possible register number for a function value.  */
@@ -1014,17 +1014,17 @@ typedef struct m68hc11_args
 /* EXIT_IGNORE_STACK should be nonzero if, when returning from a function,
    the stack pointer does not matter.  The value is tested only in functions
    that have frame pointers. No definition is equivalent to always zero.  */
-#define EXIT_IGNORE_STACK        0
+#define EXIT_IGNORE_STACK	0
 
 
 /* Generating Code for Profiling.  */
 
 /* Output assembler code to FILE to increment profiler label # LABELNO
    for profiling a function entry.  */
-#define FUNCTION_PROFILER(FILE, LABELNO)                \
+#define FUNCTION_PROFILER(FILE, LABELNO)		\
     fprintf (FILE, "\tldy\t.LP%d\n\tjsr mcount\n", (LABELNO))
 /* Length in units of the trampoline for entering a nested function.  */
-#define TRAMPOLINE_SIZE                (TARGET_M6811 ? 11 : 9)
+#define TRAMPOLINE_SIZE		(TARGET_M6811 ? 11 : 9)
 
 /* A C statement to initialize the variable parts of a trampoline.
    ADDR is an RTX for the address of the trampoline; FNADDR is an
@@ -1054,12 +1054,12 @@ typedef struct m68hc11_args
    A_REGS for 68HC11 and A_OR_SP_REGS for 68HC12.  The class value
    is stored at init time.  */
 extern enum reg_class m68hc11_base_reg_class;
-#define BASE_REG_CLASS                m68hc11_base_reg_class
+#define BASE_REG_CLASS		m68hc11_base_reg_class
 
 /* The class value for index registers.  This is NO_REGS for 68HC11.  */
 
 extern enum reg_class m68hc11_index_reg_class;
-#define INDEX_REG_CLASS                m68hc11_index_reg_class
+#define INDEX_REG_CLASS	        m68hc11_index_reg_class
 
 /* These assume that REGNO is a hard or pseudo reg number. They give nonzero
    only if REGNO is a hard reg of the suitable class or a pseudo reg currently
@@ -1137,10 +1137,10 @@ extern unsigned char m68hc11_reg_valid_for_index[FIRST_PSEUDO_REGISTER];
      && (SP_REG_P (XEXP (XEXP (operand, 0), 0))))
 
 /* 1 if X is an rtx for a constant that is a valid address.  */
-#define CONSTANT_ADDRESS_P(X)        (CONSTANT_P (X))
+#define CONSTANT_ADDRESS_P(X)	(CONSTANT_P (X))
 
 /* Maximum number of registers that can appear in a valid memory address */
-#define MAX_REGS_PER_ADDRESS        2
+#define MAX_REGS_PER_ADDRESS	2
 
 /* GO_IF_LEGITIMATE_ADDRESS recognizes an RTL expression that is a
    valid memory address for an instruction. The MODE argument is the
@@ -1149,9 +1149,9 @@ extern unsigned char m68hc11_reg_valid_for_index[FIRST_PSEUDO_REGISTER];
 /*--------------------------------------------------------------
    Valid addresses are either direct or indirect (MEM) versions
    of the following forms:
-        constant                N
-        register                ,X
-        indexed                        N,X
+	constant		N
+	register		,X
+	indexed			N,X
 --------------------------------------------------------------*/
 
 /* The range of index that is allowed by indirect addressing.  */
@@ -1163,11 +1163,11 @@ extern unsigned char m68hc11_reg_valid_for_index[FIRST_PSEUDO_REGISTER];
    Take into account the size of the mode because we may have to add
    a mode offset to access the lowest part of the data.
    (For example, for an SImode, the last valid offset is 252.) */
-#define VALID_CONSTANT_OFFSET_P(X,MODE)                \
-(((GET_CODE (X) == CONST_INT) &&                        \
-  ((INTVAL (X) >= VALID_MIN_OFFSET)                \
-     && ((INTVAL (X) <= VALID_MAX_OFFSET                \
-                - (HOST_WIDE_INT) (GET_MODE_SIZE (MODE) + 1))))) \
+#define VALID_CONSTANT_OFFSET_P(X,MODE)		\
+(((GET_CODE (X) == CONST_INT) &&			\
+  ((INTVAL (X) >= VALID_MIN_OFFSET)		\
+     && ((INTVAL (X) <= VALID_MAX_OFFSET		\
+		- (HOST_WIDE_INT) (GET_MODE_SIZE (MODE) + 1))))) \
 || (TARGET_M6812 \
     && ((GET_CODE (X) == SYMBOL_REF) \
         || GET_CODE (X) == LABEL_REF \
@@ -1177,7 +1177,7 @@ extern unsigned char m68hc11_reg_valid_for_index[FIRST_PSEUDO_REGISTER];
    md and m6811.c files exist to support this.  */
 #define PUSH_POP_ADDRESS_P(X) \
   (((GET_CODE (X) == PRE_DEC) || (GET_CODE (X) == POST_INC)) \
-        && SP_REG_P (XEXP (X, 0)))
+	&& SP_REG_P (XEXP (X, 0)))
 
 /* Go to ADDR if X is a valid address.  */
 #ifndef REG_OK_STRICT
@@ -1186,8 +1186,8 @@ extern unsigned char m68hc11_reg_valid_for_index[FIRST_PSEUDO_REGISTER];
   if (m68hc11_go_if_legitimate_address ((X), (MODE), 0)) goto ADDR; \
 }
 #else
-#define GO_IF_LEGITIMATE_ADDRESS(MODE, X, ADDR)                 \
-{                                                         \
+#define GO_IF_LEGITIMATE_ADDRESS(MODE, X, ADDR)		 \
+{							 \
   if (m68hc11_go_if_legitimate_address ((X), (MODE), 1)) goto ADDR; \
 }
 #endif
@@ -1230,7 +1230,7 @@ extern unsigned char m68hc11_reg_valid_for_index[FIRST_PSEUDO_REGISTER];
 
 #define LEGITIMIZE_ADDRESS(X,OLDX,MODE,WIN)                     \
 { rtx operand = (X);                                            \
-  if (m68hc11_legitimize_address (&operand, (OLDX), (MODE)))        \
+  if (m68hc11_legitimize_address (&operand, (OLDX), (MODE)))	\
     {                                                           \
       (X) = operand;                                            \
       GO_IF_LEGITIMATE_ADDRESS (MODE,X,WIN);                    \
@@ -1240,31 +1240,31 @@ extern unsigned char m68hc11_reg_valid_for_index[FIRST_PSEUDO_REGISTER];
 /* Go to LABEL if ADDR (a legitimate address expression)
    has an effect that depends on the machine mode it is used for.  */
 #define GO_IF_MODE_DEPENDENT_ADDRESS(ADDR,LABEL)  \
-{                                                                        \
-  if (GET_CODE (ADDR) == PRE_DEC || GET_CODE (ADDR) == POST_DEC                \
-      || GET_CODE (ADDR) == PRE_INC || GET_CODE (ADDR) == POST_INC)        \
-    goto LABEL;                                                                \
+{									\
+  if (GET_CODE (ADDR) == PRE_DEC || GET_CODE (ADDR) == POST_DEC		\
+      || GET_CODE (ADDR) == PRE_INC || GET_CODE (ADDR) == POST_INC)	\
+    goto LABEL;								\
 }
 
 /* Nonzero if the constant value X is a legitimate general operand.
    It is given that X satisfies CONSTANT_P or is a CONST_DOUBLE.  */
 
-#define LEGITIMATE_CONSTANT_P(X)        1
+#define LEGITIMATE_CONSTANT_P(X)	1
 
 
 /* Tell final.c how to eliminate redundant test instructions.  */
 
 #define NOTICE_UPDATE_CC(EXP, INSN) \
-        m68hc11_notice_update_cc ((EXP), (INSN))
+	m68hc11_notice_update_cc ((EXP), (INSN))
 
 /* Move costs between classes of registers */
-#define REGISTER_MOVE_COST(MODE, CLASS1, CLASS2)        \
+#define REGISTER_MOVE_COST(MODE, CLASS1, CLASS2)	\
     (m68hc11_register_move_cost (MODE, CLASS1, CLASS2))
 
 /* Move cost between register and memory.
     - Move to a 16-bit register is reasonable,
     - Move to a soft register can be expensive.  */
-#define MEMORY_MOVE_COST(MODE,CLASS,IN)                \
+#define MEMORY_MOVE_COST(MODE,CLASS,IN)		\
     m68hc11_memory_move_cost ((MODE),(CLASS),(IN))
 
 /* A C expression for the cost of a branch instruction.  A value of 1
@@ -1275,7 +1275,7 @@ extern unsigned char m68hc11_reg_valid_for_index[FIRST_PSEUDO_REGISTER];
 #define BRANCH_COST 0
 
 /* Nonzero if access to memory by bytes is slow and undesirable.  */
-#define SLOW_BYTE_ACCESS        0
+#define SLOW_BYTE_ACCESS	0
 
 /* It is as good to call a constant function address as to call an address
    kept in a register.  */
@@ -1294,20 +1294,20 @@ extern unsigned char m68hc11_reg_valid_for_index[FIRST_PSEUDO_REGISTER];
 #define LEGITIMIZE_RELOAD_ADDRESS(X,MODE,OPNUM,TYPE,IND_LEVELS,WIN)     \
 do {                                                                    \
   /* We must recognize output that we have already generated ourselves.  */ \
-  if (GET_CODE (X) == PLUS                                                \
-      && GET_CODE (XEXP (X, 0)) == PLUS                                        \
-      && GET_CODE (XEXP (XEXP (X, 0), 0)) == REG                        \
-      && GET_CODE (XEXP (XEXP (X, 0), 1)) == CONST_INT                        \
-      && GET_CODE (XEXP (X, 1)) == CONST_INT)                                \
-    {                                                                        \
+  if (GET_CODE (X) == PLUS						\
+      && GET_CODE (XEXP (X, 0)) == PLUS					\
+      && GET_CODE (XEXP (XEXP (X, 0), 0)) == REG			\
+      && GET_CODE (XEXP (XEXP (X, 0), 1)) == CONST_INT			\
+      && GET_CODE (XEXP (X, 1)) == CONST_INT)				\
+    {									\
       push_reload (XEXP (X, 0), NULL_RTX, &XEXP (X, 0), NULL,           \
                    BASE_REG_CLASS, GET_MODE (X), VOIDmode, 0, 0,        \
                    OPNUM, TYPE);                                        \
       goto WIN;                                                         \
-    }                                                                        \
+    }									\
   if (GET_CODE (X) == PLUS                                              \
       && GET_CODE (XEXP (X, 0)) == REG                                  \
-      && GET_CODE (XEXP (X, 1)) == CONST_INT                                \
+      && GET_CODE (XEXP (X, 1)) == CONST_INT				\
       && !VALID_CONSTANT_OFFSET_P (XEXP (X, 1), MODE))                  \
     {                                                                   \
       HOST_WIDE_INT val = INTVAL (XEXP (X, 1));                         \
@@ -1318,8 +1318,8 @@ do {                                                                    \
       /* Reload the high part into a base reg; leave the low part       \
          in the mem directly.  */                                       \
                                                                         \
-      X = gen_rtx_PLUS (Pmode,                                                \
-                        gen_rtx_PLUS (Pmode, XEXP (X, 0),                \
+      X = gen_rtx_PLUS (Pmode,						\
+                        gen_rtx_PLUS (Pmode, XEXP (X, 0),		\
                                       GEN_INT (high)),                  \
                         GEN_INT (low));                                 \
                                                                         \
@@ -1339,37 +1339,37 @@ do {                                                                    \
    includes this file.  */
 
 /* Output before read-only data.  */
-#define TEXT_SECTION_ASM_OP        ("\t.sect\t.text")
+#define TEXT_SECTION_ASM_OP	("\t.sect\t.text")
 
 /* Output before writable data.  */
-#define DATA_SECTION_ASM_OP        ("\t.sect\t.data")
+#define DATA_SECTION_ASM_OP	("\t.sect\t.data")
 
 /* Output before uninitialized data.  */
-#define BSS_SECTION_ASM_OP         ("\t.sect\t.bss")
+#define BSS_SECTION_ASM_OP 	("\t.sect\t.bss")
 
 /* Define the pseudo-ops used to switch to the .ctors and .dtors sections.
 
    Same as config/elfos.h but don't mark these section SHF_WRITE since
    there is no shared library problem.  */
 #undef CTORS_SECTION_ASM_OP
-#define CTORS_SECTION_ASM_OP        "\t.section\t.ctors,\"a\""
+#define CTORS_SECTION_ASM_OP	"\t.section\t.ctors,\"a\""
 
 #undef DTORS_SECTION_ASM_OP
-#define DTORS_SECTION_ASM_OP        "\t.section\t.dtors,\"a\""
+#define DTORS_SECTION_ASM_OP	"\t.section\t.dtors,\"a\""
 
 #define TARGET_ASM_CONSTRUCTOR  m68hc11_asm_out_constructor
 #define TARGET_ASM_DESTRUCTOR   m68hc11_asm_out_destructor
 
 /* Comment character */
-#define ASM_COMMENT_START        ";"
+#define ASM_COMMENT_START	";"
 
 /* Output to assembler file text saying following lines
    may contain character constants, extra white space, comments, etc.  */
-#define ASM_APP_ON                 "; Begin inline assembler code\n#APP\n"
+#define ASM_APP_ON 		"; Begin inline assembler code\n#APP\n"
 
 /* Output to assembler file text saying following lines
    no longer contain unusual constructs.  */
-#define ASM_APP_OFF                 "; End of inline assembler code\n#NO_APP\n"
+#define ASM_APP_OFF 		"; End of inline assembler code\n#NO_APP\n"
 
 /* Write the extra assembler code needed to declare a function properly.
    Some svr4 assemblers need to also have something extra said about the
@@ -1383,31 +1383,31 @@ do {                                                                    \
    compute the correct stack frame.  */
 
 #undef ASM_DECLARE_FUNCTION_NAME
-#define ASM_DECLARE_FUNCTION_NAME(FILE, NAME, DECL)        \
-  do                                                        \
-    {                                                        \
-      fprintf (FILE, "%s", TYPE_ASM_OP);                \
-      assemble_name (FILE, NAME);                        \
-      putc (',', FILE);                                        \
-      fprintf (FILE, TYPE_OPERAND_FMT, "function");        \
-      putc ('\n', FILE);                                \
-                                                              \
+#define ASM_DECLARE_FUNCTION_NAME(FILE, NAME, DECL)	\
+  do							\
+    {							\
+      fprintf (FILE, "%s", TYPE_ASM_OP);		\
+      assemble_name (FILE, NAME);			\
+      putc (',', FILE);					\
+      fprintf (FILE, TYPE_OPERAND_FMT, "function");	\
+      putc ('\n', FILE);				\
+      							\
       if (current_function_far)                         \
-        {                                                \
-          fprintf (FILE, "\t.far\t");                        \
-          assemble_name (FILE, NAME);                        \
-          putc ('\n', FILE);                                \
-        }                                                \
-      else if (current_function_interrupt                \
-               || current_function_trap)                \
-        {                                                \
-          fprintf (FILE, "\t.interrupt\t");                \
-          assemble_name (FILE, NAME);                        \
-          putc ('\n', FILE);                                \
-        }                                                \
-      ASM_DECLARE_RESULT (FILE, DECL_RESULT (DECL));        \
-      ASM_OUTPUT_LABEL(FILE, NAME);                        \
-    }                                                        \
+        {						\
+          fprintf (FILE, "\t.far\t");			\
+	  assemble_name (FILE, NAME);			\
+	  putc ('\n', FILE);				\
+	}						\
+      else if (current_function_interrupt		\
+	       || current_function_trap)		\
+        {						\
+	  fprintf (FILE, "\t.interrupt\t");		\
+	  assemble_name (FILE, NAME);			\
+	  putc ('\n', FILE);				\
+	}						\
+      ASM_DECLARE_RESULT (FILE, DECL_RESULT (DECL));	\
+      ASM_OUTPUT_LABEL(FILE, NAME);			\
+    }							\
   while (0)
 
 /* Output #ident as a .ident.  */
@@ -1420,9 +1420,9 @@ do {                                                                    \
 
 /* How to refer to registers in assembler output.  This sequence is indexed
    by compiler's hard-register-number (see above).  */
-#define REGISTER_NAMES                                                \
-{ "x", "d", "y", "sp", "pc", "a", "b", "ccr", "z",                \
-  "*_.frame", "*_.tmp", "*_.z", "*_.xy", "*fake clobber",        \
+#define REGISTER_NAMES						\
+{ "x", "d", "y", "sp", "pc", "a", "b", "ccr", "z",		\
+  "*_.frame", "*_.tmp", "*_.z", "*_.xy", "*fake clobber",	\
   SOFT_REG_NAMES, "*sframe", "*ap"}
 
 /* Print an instruction operand X on file FILE. CODE is the code from the
@@ -1457,7 +1457,7 @@ do {                                                                    \
 
 /* This is how to output an assembler line that says to advance the
    location counter to a multiple of 2**LOG bytes.  */
-#define ASM_OUTPUT_ALIGN(FILE,LOG)                        \
+#define ASM_OUTPUT_ALIGN(FILE,LOG)			\
   do {                                                  \
       if ((LOG) > 1)                                    \
           fprintf ((FILE), "%s\n", ALIGN_ASM_OP); \
@@ -1500,7 +1500,7 @@ do {                                                                    \
 
 /* Specify the machine mode that this machine uses
    for the index in the tablejump instruction.  */
-#define CASE_VECTOR_MODE        Pmode
+#define CASE_VECTOR_MODE	Pmode
 
 /* This flag, if defined, says the same insns that convert to a signed fixnum
    also convert validly to an unsigned one.  */
@@ -1508,29 +1508,29 @@ do {                                                                    \
 
 /* Max number of bytes we can move from memory to memory in one
    reasonably fast instruction.  */
-#define MOVE_MAX                 2
+#define MOVE_MAX 		2
 
 /* MOVE_RATIO is the number of move instructions that is better than a
    block move.  Make this small on 6811, since the code size grows very
    large with each move.  */
-#define MOVE_RATIO                3
+#define MOVE_RATIO		3
 
 /* Define if shifts truncate the shift count which implies one can omit
    a sign-extension or zero-extension of a shift count.  */
-#define SHIFT_COUNT_TRUNCATED        1
+#define SHIFT_COUNT_TRUNCATED	1
 
 /* Value is 1 if truncating an integer of INPREC bits to OUTPREC bits
    is done just by pretending it is already truncated.  */
-#define TRULY_NOOP_TRUNCATION(OUTPREC, INPREC)        1
+#define TRULY_NOOP_TRUNCATION(OUTPREC, INPREC)	1
 
 /* Specify the machine mode that pointers have. After generation of rtl, the
    compiler makes no further distinction between pointers and any other
    objects of this machine mode.  */
-#define Pmode                        HImode
+#define Pmode			HImode
 
 /* A function address in a call instruction is a byte address (for indexing
    purposes) so give the MEM rtx a byte's mode.  */
-#define FUNCTION_MODE                QImode
+#define FUNCTION_MODE		QImode
 
 extern int debug_m6811;
 extern int z_replacement_completed;

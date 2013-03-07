@@ -73,7 +73,7 @@ pop_stmt_list (tree t)
       chain = TREE_CHAIN (u);
       TREE_CHAIN (u) = NULL_TREE;
       if (t == u)
-        break;
+	break;
       u = chain;
     }
   cur_stmt_list = chain;
@@ -88,14 +88,14 @@ pop_stmt_list (tree t)
       tree_stmt_iterator i = tsi_start (t);
 
       /* If the statement list contained exactly one statement, then
-         extract it immediately.  */
+	 extract it immediately.  */
       if (tsi_one_before_end_p (i))
-        {
-          u = tsi_stmt (i);
-          tsi_delink (&i);
-          free_stmt_list (t);
-          t = u;
-        }
+	{
+	  u = tsi_stmt (i);
+	  tsi_delink (&i);
+	  free_stmt_list (t);
+	  t = u;
+	}
     }
 
   return t;
@@ -132,7 +132,7 @@ build_stmt (enum tree_code code, ...)
     {
       tree t = va_arg (p, tree);
       if (t && !TYPE_P (t))
-        side_effects |= TREE_SIDE_EFFECTS (t);
+	side_effects |= TREE_SIDE_EFFECTS (t);
       TREE_OPERAND (ret, i) = t;
     }
 
@@ -151,11 +151,11 @@ emit_local_var (tree decl)
   if (!DECL_RTL_SET_P (decl))
     {
       if (DECL_HARD_REGISTER (decl))
-        /* The user specified an assembler name for this variable.
-           Set that up now.  */
-        rest_of_decl_compilation (decl, 0, 0);
+	/* The user specified an assembler name for this variable.
+	   Set that up now.  */
+	rest_of_decl_compilation (decl, 0, 0);
       else
-        expand_decl (decl);
+	expand_decl (decl);
     }
 }
 

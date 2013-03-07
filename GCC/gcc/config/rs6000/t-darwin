@@ -1,12 +1,12 @@
 LIB2FUNCS_EXTRA = $(srcdir)/config/rs6000/darwin-tramp.asm \
-        $(srcdir)/config/rs6000/ppc64-fp.c \
-        $(srcdir)/config/darwin-64.c \
-        $(srcdir)/config/rs6000/darwin-ldouble.c \
-        $(srcdir)/config/rs6000/darwin-world.asm
+	$(srcdir)/config/rs6000/ppc64-fp.c \
+	$(srcdir)/config/darwin-64.c \
+	$(srcdir)/config/rs6000/darwin-ldouble.c \
+	$(srcdir)/config/rs6000/darwin-world.asm
 
 LIB2FUNCS_STATIC_EXTRA = \
-        $(srcdir)/config/rs6000/darwin-fpsave.asm  \
-        $(srcdir)/config/rs6000/darwin-vecsave.asm
+	$(srcdir)/config/rs6000/darwin-fpsave.asm  \
+	$(srcdir)/config/rs6000/darwin-vecsave.asm
 
 DARWIN_EXTRA_CRT_BUILD_CFLAGS = -mlongcall
 
@@ -27,11 +27,11 @@ SHLIB_VERPFX = $(srcdir)/config/rs6000/darwin-libgcc
 
 LIB2ADDEH += $(srcdir)/config/rs6000/darwin-fallback.c
 
-darwin-fpsave.o:        $(srcdir)/config/rs6000/darwin-asm.h
-darwin-tramp.o:                $(srcdir)/config/rs6000/darwin-asm.h
+darwin-fpsave.o:	$(srcdir)/config/rs6000/darwin-asm.h
+darwin-tramp.o:		$(srcdir)/config/rs6000/darwin-asm.h
 
 # Explain how to build crt2.o
 $(T)crt2$(objext): $(srcdir)/config/darwin-crt2.c $(GCC_PASSES) \
-        $(TCONFIG_H) stmp-int-hdrs tsystem.h
-        $(GCC_FOR_TARGET) $(GCC_CFLAGS) $(INCLUDES) $(MULTILIB_CFLAGS) \
-          -c $(srcdir)/config/darwin-crt2.c -o $(T)crt2$(objext)
+	$(TCONFIG_H) stmp-int-hdrs tsystem.h
+	$(GCC_FOR_TARGET) $(GCC_CFLAGS) $(INCLUDES) $(MULTILIB_CFLAGS) \
+	  -c $(srcdir)/config/darwin-crt2.c -o $(T)crt2$(objext)

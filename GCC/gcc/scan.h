@@ -52,7 +52,7 @@ extern int scan_string (FILE *, sstring *, int);
 extern int read_upto (FILE *, sstring *, int);
 extern unsigned long hash (const char *);
 extern void recognized_function (const struct cpp_token *,
-                                 unsigned int, int, int);
+				 unsigned int, int, int);
 extern void recognized_extern (const struct cpp_token *);
 extern unsigned int hashstr (const char *, unsigned int);
 

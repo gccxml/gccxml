@@ -76,11 +76,11 @@ extern rtx legitimize_address (rtx, rtx, enum machine_mode);
 extern rtx legitimize_reload_address (rtx, enum machine_mode, int, int);
 extern enum reg_class s390_preferred_reload_class (rtx, enum reg_class);
 extern enum reg_class s390_secondary_input_reload_class (enum reg_class,
-                                                         enum machine_mode,
-                                                         rtx);
+							 enum machine_mode,
+							 rtx);
 extern enum reg_class s390_secondary_output_reload_class (enum reg_class,
-                                                          enum machine_mode,
-                                                          rtx);
+							  enum machine_mode,
+							  rtx);
 extern void s390_expand_plus_operand (rtx, rtx, rtx);
 extern void emit_symbolic_move (rtx *);
 extern void s390_load_address (rtx, rtx);
@@ -91,12 +91,12 @@ extern bool s390_expand_addcc (enum rtx_code, rtx, rtx, rtx, rtx, rtx);
 extern bool s390_expand_insv (rtx, rtx, rtx, rtx);
 extern void s390_expand_cs_hqi (enum machine_mode, rtx, rtx, rtx, rtx);
 extern void s390_expand_atomic (enum machine_mode, enum rtx_code, 
-                                rtx, rtx, rtx, bool);
+				rtx, rtx, rtx, bool);
 extern rtx s390_return_addr_rtx (int, rtx);
 extern rtx s390_back_chain_rtx (void);
 extern rtx s390_emit_call (rtx, rtx, rtx, rtx);
 extern void s390_expand_logical_operator (enum rtx_code,
-                                          enum machine_mode, rtx *);
+					  enum machine_mode, rtx *);
 extern bool s390_logical_operator_ok_p (rtx *);
 extern void s390_narrow_logical_operator (enum rtx_code, rtx *, rtx *);
 extern void s390_split_access_reg (rtx, rtx *, rtx *);
@@ -120,7 +120,7 @@ extern int s390_branch_condition_mask (rtx);
 
 #ifdef TREE_CODE
 extern void s390_function_arg_advance (CUMULATIVE_ARGS *, enum machine_mode,
-                                       tree, int);
+				       tree, int);
 #ifdef RTX_CODE
 extern rtx s390_function_arg (CUMULATIVE_ARGS *, enum machine_mode, tree, int);
 extern rtx s390_function_value (tree, enum machine_mode);

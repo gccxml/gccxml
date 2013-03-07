@@ -38,92 +38,92 @@ Boston, MA 02110-1301, USA.  */
    or .fini sections, and ENDFILE_SPEC should list crtn.o after any
    such object files.  */
 
-        .section .init
+	.section .init
 /* The alignment below can't be smaller, otherwise the mova below
    breaks.  Yes, we might align just the label, but then we'd be
    exchanging an alignment here for one there, since the code fragment
    below ensures 4-byte alignment on __ELF__.  */
 #ifdef __ELF__
-        .p2align 2
+	.p2align 2
 #else
-        .p2align 1
+	.p2align 1
 #endif
-        .global         _init
+	.global	 _init
 _init:
 #if __SHMEDIA__
-        addi        r15, -16, r15
-        st.q        r15, 8, r14
-        st.q        r15, 0, r18
-        add        r15, r63, r14
+	addi	r15, -16, r15
+	st.q	r15, 8, r14
+	st.q	r15, 0, r18
+	add	r15, r63, r14
 #elif __SH5__ && ! __SHMEDIA__
-        mov        r15,r0
-        add        #-8,r15
-        mov.l        r14,@-r0
-        sts.l        pr,@-r0
-        mov        r15,r14
-        nop
+	mov	r15,r0
+	add	#-8,r15
+	mov.l	r14,@-r0
+	sts.l	pr,@-r0
+	mov	r15,r14
+	nop
 #else
 #ifdef __ELF__
-        mov.l        r12,@-r15
-        mova        0f,r0
-        mov.l        0f,r12
+	mov.l	r12,@-r15
+	mova	0f,r0
+	mov.l	0f,r12
 #endif
-        mov.l        r14,@-r15
+	mov.l	r14,@-r15
 #ifdef __ELF__
-        add        r0,r12
+	add	r0,r12
 #endif
-        sts.l        pr,@-r15
+	sts.l	pr,@-r15
 #ifdef __ELF__
-        bra        1f
+	bra	1f
 #endif
-        mov        r15,r14
+	mov	r15,r14
 #ifdef __ELF__
-0:        .long        _GLOBAL_OFFSET_TABLE_
+0:	.long	_GLOBAL_OFFSET_TABLE_
 1:
 #endif
 #endif /* __SHMEDIA__ */
 
-        .section .fini
+	.section .fini
 /* The alignment below can't be smaller, otherwise the mova below
    breaks.  Yes, we might align just the label, but then we'd be
    exchanging an alignment here for one there, since the code fragment
    below ensures 4-byte alignment on __ELF__.  */
 #ifdef __ELF__
-        .p2align 2
+	.p2align 2
 #else
-        .p2align 1
+	.p2align 1
 #endif
-        .global  _fini
-_fini:        
+	.global  _fini
+_fini:	
 #if __SHMEDIA__
-        addi        r15, -16, r15
-        st.q        r15, 8, r14
-        st.q        r15, 0, r18
-        add        r15, r63, r14
+	addi	r15, -16, r15
+	st.q	r15, 8, r14
+	st.q	r15, 0, r18
+	add	r15, r63, r14
 #elif __SH5__ && ! __SHMEDIA__
-        mov        r15,r0
-        add        #-8,r15
-        mov.l        r14,@-r0
-        sts.l        pr,@-r0
-        mov        r15,r14
-        nop
+	mov	r15,r0
+	add	#-8,r15
+	mov.l	r14,@-r0
+	sts.l	pr,@-r0
+	mov	r15,r14
+	nop
 #else
 #ifdef __ELF__
-        mov.l        r12,@-r15
-        mova        0f,r0
-        mov.l        0f,r12
+	mov.l	r12,@-r15
+	mova	0f,r0
+	mov.l	0f,r12
 #endif
-        mov.l        r14,@-r15
+	mov.l	r14,@-r15
 #ifdef __ELF__
-        add        r0,r12
+	add	r0,r12
 #endif
-        sts.l        pr,@-r15
+	sts.l	pr,@-r15
 #ifdef __ELF__
-        bra        1f
+	bra	1f
 #endif
-        mov        r15,r14
+	mov	r15,r14
 #ifdef __ELF__
-0:        .long        _GLOBAL_OFFSET_TABLE_
+0:	.long	_GLOBAL_OFFSET_TABLE_
 1:
 #endif
 #endif /* __SHMEDIA__ */

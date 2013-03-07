@@ -63,41 +63,41 @@ read_ucnid (const char *fname)
       char line[256];
 
       if (!fgets (line, sizeof (line), f))
-        break;
+	break;
       if (strcmp (line, "[C99]\n") == 0)
-        fl = C99;
+	fl = C99;
       else if (strcmp (line, "[CXX]\n") == 0)
-        fl = CXX;
+	fl = CXX;
       else if (isxdigit (line[0]))
-        {
-          char *l = line;
-          while (*l)
-            {
-              unsigned long start, end;
-              char *endptr;
-              start = strtoul (l, &endptr, 16);
-              if (endptr == l || (*endptr != '-' && ! isspace (*endptr)))
-                fail ("parsing ucnid.tab [1]");
-              l = endptr;
-              if (*l != '-')
-                end = start;
-              else
-                {
-                  end = strtoul (l + 1, &endptr, 16);
-                  if (end < start)
-                    fail ("parsing ucnid.tab, end before start");
-                  l = endptr;
-                  if (! isspace (*l))
-                    fail ("parsing ucnid.tab, junk after range");
-                }
-              while (isspace (*l))
-                l++;
-              if (end > 0xFFFF)
-                fail ("parsing ucnid.tab, end too large");
-              while (start <= end)
-                flags[start++] |= fl;
-            }
-        }
+	{
+	  char *l = line;
+	  while (*l)
+	    {
+	      unsigned long start, end;
+	      char *endptr;
+	      start = strtoul (l, &endptr, 16);
+	      if (endptr == l || (*endptr != '-' && ! isspace (*endptr)))
+		fail ("parsing ucnid.tab [1]");
+	      l = endptr;
+	      if (*l != '-')
+		end = start;
+	      else
+		{
+		  end = strtoul (l + 1, &endptr, 16);
+		  if (end < start)
+		    fail ("parsing ucnid.tab, end before start");
+		  l = endptr;
+		  if (! isspace (*l))
+		    fail ("parsing ucnid.tab, junk after range");
+		}
+	      while (isspace (*l))
+		l++;
+	      if (end > 0xFFFF)
+		fail ("parsing ucnid.tab, end too large");
+	      while (start <= end)
+		flags[start++] |= fl;
+	    }
+	}
     }
   if (ferror (f))
     fail ("reading ucnid.tab");
@@ -125,57 +125,57 @@ read_table (char *fname)
       int decomp_useful;
 
       if (!fgets (line, sizeof (line), f))
-        break;
+	break;
       codepoint = strtoul (line, &l, 16);
       if (l == line || *l != ';')
-        fail ("parsing UnicodeData.txt, reading code point");
+	fail ("parsing UnicodeData.txt, reading code point");
       if (codepoint > 0xffff || ! (flags[codepoint] & (C99 | CXX)))
-        continue;
+	continue;
 
       do {
-        l++;
+	l++;
       } while (*l != ';');
       /* Category value; things starting with 'N' are numbers of some
-         kind.  */
+	 kind.  */
       if (*++l == 'N')
-        flags[codepoint] |= digit;
+	flags[codepoint] |= digit;
 
       do {
-        l++;
+	l++;
       } while (*l != ';');
       /* Canonical combining class; in NFC/NFKC, they must be increasing
-         (or zero).  */
+	 (or zero).  */
       if (! isdigit (*++l))
-        fail ("parsing UnicodeData.txt, combining class not number");
+	fail ("parsing UnicodeData.txt, combining class not number");
       combining_value[codepoint] = strtoul (l, &l, 10);
       if (*l++ != ';')
-        fail ("parsing UnicodeData.txt, junk after combining class");
-        
+	fail ("parsing UnicodeData.txt, junk after combining class");
+	
       /* Skip over bidi value.  */
       do {
-        l++;
+	l++;
       } while (*l != ';');
       
       /* Decomposition mapping.  */
       decomp_useful = flags[codepoint];
       if (*++l == '<')  /* Compatibility mapping. */
-        continue;
+	continue;
       for (i = 0; i < 4; i++)
-        {
-          if (*l == ';')
-            break;
-          if (!isxdigit (*l))
-            fail ("parsing UnicodeData.txt, decomposition format");
-          this_decomp[i] = strtoul (l, &l, 16);
-          decomp_useful &= flags[this_decomp[i]];
-          while (isspace (*l))
-            l++;
-        }
+	{
+	  if (*l == ';')
+	    break;
+	  if (!isxdigit (*l))
+	    fail ("parsing UnicodeData.txt, decomposition format");
+	  this_decomp[i] = strtoul (l, &l, 16);
+	  decomp_useful &= flags[this_decomp[i]];
+	  while (isspace (*l))
+	    l++;
+	}
       if (i > 2)  /* Decomposition too long.  */
-        fail ("parsing UnicodeData.txt, decomposition too long");
+	fail ("parsing UnicodeData.txt, decomposition too long");
       if (decomp_useful)
-        while (--i >= 0)
-          decomp[codepoint][i] = this_decomp[i];
+	while (--i >= 0)
+	  decomp[codepoint][i] = this_decomp[i];
     }
   if (ferror (f))
     fail ("reading UnicodeData.txt");
@@ -200,28 +200,28 @@ read_derived (const char *fname)
       bool not_NFC_p, not_NFKC_p, maybe_not_NFC_p;
 
       if (!fgets (line, sizeof (line), f))
-        break;
+	break;
       not_NFC_p = (strstr (line, "; NFC_QC; N") != NULL);
       not_NFKC_p = (strstr (line, "; NFKC_QC; N") != NULL);
       maybe_not_NFC_p = (strstr (line, "; NFC_QC; M") != NULL);
       if (! not_NFC_p && ! not_NFKC_p && ! maybe_not_NFC_p)
-        continue;
-        
+	continue;
+	
       start = strtoul (line, &l, 16);
       if (l == line)
-        fail ("parsing DerivedNormalizationProps.txt, reading start");
+	fail ("parsing DerivedNormalizationProps.txt, reading start");
       if (start > 0xffff)
-        continue;
+	continue;
       if (*l == '.' && l[1] == '.')
-        end = strtoul (l + 2, &l, 16);
+	end = strtoul (l + 2, &l, 16);
       else
-        end = start;
+	end = start;
 
       while (start <= end)
-        flags[start++] |= ((not_NFC_p ? not_NFC : 0) 
-                           | (not_NFKC_p ? not_NFKC : 0)
-                           | (maybe_not_NFC_p ? maybe_not_NFC : 0)
-                           );
+	flags[start++] |= ((not_NFC_p ? not_NFC : 0) 
+			   | (not_NFKC_p ? not_NFKC : 0)
+			   | (maybe_not_NFC_p ? maybe_not_NFC : 0)
+			   );
     }
   if (ferror (f))
     fail ("reading DerivedNormalizationProps.txt");
@@ -242,23 +242,23 @@ write_table (void)
   
   for (i = 1; i <= 65536; i++)
     if (i == 65536
-        || (flags[i] != last_flag && ((flags[i] | last_flag) & (C99 | CXX)))
-        || really_safe != (decomp[i][0] == 0)
-        || combining_value[i] != last_combine)
+	|| (flags[i] != last_flag && ((flags[i] | last_flag) & (C99 | CXX)))
+	|| really_safe != (decomp[i][0] == 0)
+	|| combining_value[i] != last_combine)
       {
-        printf ("{ %s|%s|%s|%s|%s|%s|%s, %3d, %#06x },\n",
-                last_flag & C99 ? "C99" : "  0",
-                last_flag & digit ? "DIG" : "  0",
-                last_flag & CXX ? "CXX" : "  0",
-                really_safe ? "CID" : "  0",
-                last_flag & not_NFC ? "  0" : "NFC",
-                last_flag & not_NFKC ? "  0" : "NKC",
-                last_flag & maybe_not_NFC ? "CTX" : "  0",
-                combining_value[i - 1],
-                i - 1);
-        last_flag = flags[i];
-        last_combine = combining_value[0];
-        really_safe = decomp[i][0] == 0;
+	printf ("{ %s|%s|%s|%s|%s|%s|%s, %3d, %#06x },\n",
+		last_flag & C99 ? "C99" : "  0",
+		last_flag & digit ? "DIG" : "  0",
+		last_flag & CXX ? "CXX" : "  0",
+		really_safe ? "CID" : "  0",
+		last_flag & not_NFC ? "  0" : "NFC",
+		last_flag & not_NFKC ? "  0" : "NKC",
+		last_flag & maybe_not_NFC ? "CTX" : "  0",
+		combining_value[i - 1],
+		i - 1);
+	last_flag = flags[i];
+	last_combine = combining_value[0];
+	really_safe = decomp[i][0] == 0;
       }
 }
 

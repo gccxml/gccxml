@@ -44,12 +44,12 @@
 
 /* Clear the instruction cache from `beg' to `end'.  This makes an
    inline system call to SYS_cacheflush.  */
-#define CLEAR_INSN_CACHE(BEG, END)                                        \
-{                                                                        \
-  register unsigned long _beg __asm ("a1") = (unsigned long) (BEG);        \
-  register unsigned long _end __asm ("a2") = (unsigned long) (END);        \
-  register unsigned long _flg __asm ("a3") = 0;                                \
-  __asm __volatile ("swi 0x9f0002                @ sys_cacheflush"        \
-                    : "=r" (_beg)                                        \
-                    : "0" (_beg), "r" (_end), "r" (_flg));                \
+#define CLEAR_INSN_CACHE(BEG, END)					\
+{									\
+  register unsigned long _beg __asm ("a1") = (unsigned long) (BEG);	\
+  register unsigned long _end __asm ("a2") = (unsigned long) (END);	\
+  register unsigned long _flg __asm ("a3") = 0;				\
+  __asm __volatile ("swi 0x9f0002		@ sys_cacheflush"	\
+		    : "=r" (_beg)					\
+		    : "0" (_beg), "r" (_end), "r" (_flg));		\
 }

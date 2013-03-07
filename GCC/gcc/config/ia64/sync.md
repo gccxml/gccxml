@@ -30,26 +30,26 @@
 
 (define_insn "memory_barrier"
   [(set (mem:BLK (match_scratch:DI 0 "X"))
-        (unspec:BLK [(mem:BLK (match_scratch:DI 1 "X"))] UNSPEC_MF))]
+	(unspec:BLK [(mem:BLK (match_scratch:DI 1 "X"))] UNSPEC_MF))]
   ""
   "mf"
   [(set_attr "itanium_class" "syst_m")])
 
 (define_insn "fetchadd_acq_<mode>"
   [(set (match_operand:I48MODE 0 "gr_register_operand" "=r")
-        (match_operand:I48MODE 1 "not_postinc_memory_operand" "+S"))
+	(match_operand:I48MODE 1 "not_postinc_memory_operand" "+S"))
    (set (match_dup 1)
-        (unspec:I48MODE [(match_dup 1)
-                         (match_operand:I48MODE 2 "fetchadd_operand" "n")]
-                        UNSPEC_FETCHADD_ACQ))]
+	(unspec:I48MODE [(match_dup 1)
+			 (match_operand:I48MODE 2 "fetchadd_operand" "n")]
+		        UNSPEC_FETCHADD_ACQ))]
   ""
   "fetchadd<modesuffix>.acq %0 = %1, %2"
   [(set_attr "itanium_class" "sem")])
 
 (define_expand "sync_<fetchop_name><mode>"
   [(set (match_operand:IMODE 0 "memory_operand" "")
-        (FETCHOP:IMODE (match_dup 0)
-          (match_operand:IMODE 1 "general_operand" "")))]
+	(FETCHOP:IMODE (match_dup 0)
+	  (match_operand:IMODE 1 "general_operand" "")))]
   ""
 {
   ia64_expand_atomic_op (<CODE>, operands[0], operands[1], NULL, NULL);
@@ -58,8 +58,8 @@
 
 (define_expand "sync_nand<mode>"
   [(set (match_operand:IMODE 0 "memory_operand" "")
-        (and:IMODE (not:IMODE (match_dup 0))
-          (match_operand:IMODE 1 "general_operand" "")))]
+	(and:IMODE (not:IMODE (match_dup 0))
+	  (match_operand:IMODE 1 "general_operand" "")))]
   ""
 {
   ia64_expand_atomic_op (NOT, operands[0], operands[1], NULL, NULL);
@@ -68,9 +68,9 @@
 
 (define_expand "sync_old_<fetchop_name><mode>"
   [(set (match_operand:IMODE 0 "gr_register_operand" "")
-        (FETCHOP:IMODE 
-          (match_operand:IMODE 1 "memory_operand" "")
-          (match_operand:IMODE 2 "general_operand" "")))]
+	(FETCHOP:IMODE 
+	  (match_operand:IMODE 1 "memory_operand" "")
+	  (match_operand:IMODE 2 "general_operand" "")))]
   ""
 {
   ia64_expand_atomic_op (<CODE>, operands[1], operands[2], operands[0], NULL);
@@ -79,9 +79,9 @@
 
 (define_expand "sync_old_nand<mode>"
   [(set (match_operand:IMODE 0 "gr_register_operand" "")
-        (and:IMODE 
-          (not:IMODE (match_operand:IMODE 1 "memory_operand" ""))
-          (match_operand:IMODE 2 "general_operand" "")))]
+	(and:IMODE 
+	  (not:IMODE (match_operand:IMODE 1 "memory_operand" ""))
+	  (match_operand:IMODE 2 "general_operand" "")))]
   ""
 {
   ia64_expand_atomic_op (NOT, operands[1], operands[2], operands[0], NULL);
@@ -90,9 +90,9 @@
 
 (define_expand "sync_new_<fetchop_name><mode>"
   [(set (match_operand:IMODE 0 "gr_register_operand" "")
-        (FETCHOP:IMODE 
-          (match_operand:IMODE 1 "memory_operand" "")
-          (match_operand:IMODE 2 "general_operand" "")))]
+	(FETCHOP:IMODE 
+	  (match_operand:IMODE 1 "memory_operand" "")
+	  (match_operand:IMODE 2 "general_operand" "")))]
   ""
 {
   ia64_expand_atomic_op (<CODE>, operands[1], operands[2], NULL, operands[0]);
@@ -101,9 +101,9 @@
 
 (define_expand "sync_new_nand<mode>"
   [(set (match_operand:IMODE 0 "gr_register_operand" "")
-        (and:IMODE 
-          (not:IMODE (match_operand:IMODE 1 "memory_operand" ""))
-          (match_operand:IMODE 2 "general_operand" "")))]
+	(and:IMODE 
+	  (not:IMODE (match_operand:IMODE 1 "memory_operand" ""))
+	  (match_operand:IMODE 2 "general_operand" "")))]
   ""
 {
   ia64_expand_atomic_op (NOT, operands[1], operands[2], NULL, operands[0]);
@@ -136,26 +136,26 @@
 
 (define_insn "cmpxchg_rel_<mode>"
   [(set (match_operand:DI 0 "gr_register_operand" "=r")
-        (zero_extend:DI
-          (match_operand:I124MODE 1 "not_postinc_memory_operand" "+S")))
+	(zero_extend:DI
+	  (match_operand:I124MODE 1 "not_postinc_memory_operand" "+S")))
    (set (match_dup 1)
         (unspec:I124MODE
-          [(match_dup 1)
-           (match_operand:DI 2 "ar_ccv_reg_operand" "")
-           (match_operand:I124MODE 3 "gr_register_operand" "r")]
-          UNSPEC_CMPXCHG_ACQ))]
+	  [(match_dup 1)
+	   (match_operand:DI 2 "ar_ccv_reg_operand" "")
+	   (match_operand:I124MODE 3 "gr_register_operand" "r")]
+	  UNSPEC_CMPXCHG_ACQ))]
   ""
   "cmpxchg<modesuffix>.rel %0 = %1, %3, %2"
   [(set_attr "itanium_class" "sem")])
 
 (define_insn "cmpxchg_rel_di"
   [(set (match_operand:DI 0 "gr_register_operand" "=r")
-        (match_operand:DI 1 "not_postinc_memory_operand" "+S"))
+	(match_operand:DI 1 "not_postinc_memory_operand" "+S"))
    (set (match_dup 1)
         (unspec:DI [(match_dup 1)
-                    (match_operand:DI 2 "ar_ccv_reg_operand" "")
-                    (match_operand:DI 3 "gr_register_operand" "r")]
-                   UNSPEC_CMPXCHG_ACQ))]
+		    (match_operand:DI 2 "ar_ccv_reg_operand" "")
+		    (match_operand:DI 3 "gr_register_operand" "r")]
+		   UNSPEC_CMPXCHG_ACQ))]
   ""
   "cmpxchg8.rel %0 = %1, %3, %2"
   [(set_attr "itanium_class" "sem")])
@@ -171,7 +171,7 @@
 
 (define_expand "sync_lock_release<mode>"
   [(set (match_operand:IMODE 0 "memory_operand" "")
-        (match_operand:IMODE 1 "gr_reg_or_0_operand" ""))]
+	(match_operand:IMODE 1 "gr_reg_or_0_operand" ""))]
   ""
 {
   gcc_assert (MEM_VOLATILE_P (operands[0]));

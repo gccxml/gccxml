@@ -49,9 +49,9 @@ do                                                         \
   {                                                        \
     while (stat (NAME, &ST) >= 0 && S_ISREG (ST.st_mode))  \
       if (unlink (NAME) < 0)                               \
-        {                                                  \
-          if (VERBOSE_FLAG)                                \
-            perror_with_name (NAME);                       \
-          break;                                           \
-        }                                                  \
+	{                                                  \
+	  if (VERBOSE_FLAG)                                \
+	    perror_with_name (NAME);                       \
+	  break;                                           \
+	}                                                  \
   } while (0)

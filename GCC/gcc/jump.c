@@ -112,13 +112,13 @@ cleanup_barriers (void)
     {
       next = NEXT_INSN (insn);
       if (BARRIER_P (insn))
-        {
-          prev = prev_nonnote_insn (insn);
-          if (BARRIER_P (prev))
-            delete_insn (insn);
-          else if (prev != PREV_INSN (insn))
-            reorder_insns (insn, insn, prev);
-        }
+	{
+	  prev = prev_nonnote_insn (insn);
+	  if (BARRIER_P (prev))
+	    delete_insn (insn);
+	  else if (prev != PREV_INSN (insn))
+	    reorder_insns (insn, insn, prev);
+	}
     }
   return 0;
 }
@@ -153,28 +153,28 @@ purge_line_number_notes (void)
   for (insn = get_insns (); insn; insn = NEXT_INSN (insn))
     if (NOTE_P (insn))
       {
-        if (NOTE_LINE_NUMBER (insn) == NOTE_INSN_FUNCTION_BEG)
-          /* Any previous line note was for the prologue; gdb wants a new
-             note after the prologue even if it is for the same line.  */
-          last_note = NULL_RTX;
-        else if (NOTE_LINE_NUMBER (insn) >= 0)
-          {
-            /* Delete this note if it is identical to previous note.  */
-            if (last_note
+	if (NOTE_LINE_NUMBER (insn) == NOTE_INSN_FUNCTION_BEG)
+	  /* Any previous line note was for the prologue; gdb wants a new
+	     note after the prologue even if it is for the same line.  */
+	  last_note = NULL_RTX;
+	else if (NOTE_LINE_NUMBER (insn) >= 0)
+	  {
+	    /* Delete this note if it is identical to previous note.  */
+	    if (last_note
 #ifdef USE_MAPPED_LOCATION
-                && NOTE_SOURCE_LOCATION (insn) == NOTE_SOURCE_LOCATION (last_note)
+		&& NOTE_SOURCE_LOCATION (insn) == NOTE_SOURCE_LOCATION (last_note)
 #else
-                && NOTE_SOURCE_FILE (insn) == NOTE_SOURCE_FILE (last_note)
-                && NOTE_LINE_NUMBER (insn) == NOTE_LINE_NUMBER (last_note)
+		&& NOTE_SOURCE_FILE (insn) == NOTE_SOURCE_FILE (last_note)
+		&& NOTE_LINE_NUMBER (insn) == NOTE_LINE_NUMBER (last_note)
 #endif
 )
-              {
-                delete_related_insns (insn);
-                continue;
-              }
+	      {
+		delete_related_insns (insn);
+		continue;
+	      }
 
-            last_note = insn;
-          }
+	    last_note = insn;
+	  }
       }
   return 0;
 }
@@ -212,15 +212,15 @@ init_label_info (rtx f)
       JUMP_LABEL (insn) = 0;
     else if (NONJUMP_INSN_P (insn) || CALL_P (insn))
       {
-        rtx note, next;
+	rtx note, next;
 
-        for (note = REG_NOTES (insn); note; note = next)
-          {
-            next = XEXP (note, 1);
-            if (REG_NOTE_KIND (note) == REG_LABEL
-                && ! reg_mentioned_p (XEXP (note, 0), PATTERN (insn)))
-              remove_note (insn, note);
-          }
+	for (note = REG_NOTES (insn); note; note = next)
+	  {
+	    next = XEXP (note, 1);
+	    if (REG_NOTE_KIND (note) == REG_LABEL
+		&& ! reg_mentioned_p (XEXP (note, 0), PATTERN (insn)))
+	      remove_note (insn, note);
+	  }
       }
 }
 
@@ -235,28 +235,28 @@ mark_all_labels (rtx f)
   for (insn = f; insn; insn = NEXT_INSN (insn))
     if (INSN_P (insn))
       {
-        mark_jump_label (PATTERN (insn), insn, 0);
-        if (! INSN_DELETED_P (insn) && JUMP_P (insn))
-          {
-            /* When we know the LABEL_REF contained in a REG used in
-               an indirect jump, we'll have a REG_LABEL note so that
-               flow can tell where it's going.  */
-            if (JUMP_LABEL (insn) == 0)
-              {
-                rtx label_note = find_reg_note (insn, REG_LABEL, NULL_RTX);
-                if (label_note)
-                  {
-                    /* But a LABEL_REF around the REG_LABEL note, so
-                       that we can canonicalize it.  */
-                    rtx label_ref = gen_rtx_LABEL_REF (Pmode,
-                                                       XEXP (label_note, 0));
+	mark_jump_label (PATTERN (insn), insn, 0);
+	if (! INSN_DELETED_P (insn) && JUMP_P (insn))
+	  {
+	    /* When we know the LABEL_REF contained in a REG used in
+	       an indirect jump, we'll have a REG_LABEL note so that
+	       flow can tell where it's going.  */
+	    if (JUMP_LABEL (insn) == 0)
+	      {
+		rtx label_note = find_reg_note (insn, REG_LABEL, NULL_RTX);
+		if (label_note)
+		  {
+		    /* But a LABEL_REF around the REG_LABEL note, so
+		       that we can canonicalize it.  */
+		    rtx label_ref = gen_rtx_LABEL_REF (Pmode,
+						       XEXP (label_note, 0));
 
-                    mark_jump_label (label_ref, insn, 0);
-                    XEXP (label_note, 0) = XEXP (label_ref, 0);
-                    JUMP_LABEL (insn) = XEXP (label_note, 0);
-                  }
-              }
-          }
+		    mark_jump_label (label_ref, insn, 0);
+		    XEXP (label_note, 0) = XEXP (label_ref, 0);
+		    JUMP_LABEL (insn) = XEXP (label_note, 0);
+		  }
+	      }
+	  }
       }
 }
 
@@ -281,28 +281,28 @@ squeeze_notes (rtx* startp, rtx* endp)
     {
       next = NEXT_INSN (insn);
       if (NOTE_P (insn)
-          && (NOTE_LINE_NUMBER (insn) == NOTE_INSN_BLOCK_END
-              || NOTE_LINE_NUMBER (insn) == NOTE_INSN_BLOCK_BEG))
-        {
-          /* BLOCK_BEG or BLOCK_END notes only exist in the `final' pass.  */
-          gcc_assert (NOTE_LINE_NUMBER (insn) != NOTE_INSN_BLOCK_BEG
-                      && NOTE_LINE_NUMBER (insn) != NOTE_INSN_BLOCK_END);
+	  && (NOTE_LINE_NUMBER (insn) == NOTE_INSN_BLOCK_END
+	      || NOTE_LINE_NUMBER (insn) == NOTE_INSN_BLOCK_BEG))
+	{
+	  /* BLOCK_BEG or BLOCK_END notes only exist in the `final' pass.  */
+	  gcc_assert (NOTE_LINE_NUMBER (insn) != NOTE_INSN_BLOCK_BEG
+		      && NOTE_LINE_NUMBER (insn) != NOTE_INSN_BLOCK_END);
 
-          if (insn == start)
-            start = next;
-          else
-            {
-              rtx prev = PREV_INSN (insn);
-              PREV_INSN (insn) = PREV_INSN (start);
-              NEXT_INSN (insn) = start;
-              NEXT_INSN (PREV_INSN (insn)) = insn;
-              PREV_INSN (NEXT_INSN (insn)) = insn;
-              NEXT_INSN (prev) = next;
-              PREV_INSN (next) = prev;
-            }
-        }
+	  if (insn == start)
+	    start = next;
+	  else
+	    {
+	      rtx prev = PREV_INSN (insn);
+	      PREV_INSN (insn) = PREV_INSN (start);
+	      NEXT_INSN (insn) = start;
+	      NEXT_INSN (PREV_INSN (insn)) = insn;
+	      PREV_INSN (NEXT_INSN (insn)) = insn;
+	      NEXT_INSN (prev) = next;
+	      PREV_INSN (next) = prev;
+	    }
+	}
       else
-        last = insn;
+	last = insn;
     }
 
   /* There were no real instructions.  */
@@ -400,15 +400,15 @@ reversed_comparison_code_parts (enum rtx_code code, rtx arg0, rtx arg1, rtx insn
     case NE:
     case EQ:
       /* It is always safe to reverse EQ and NE, even for the floating
-         point.  Similarly the unsigned comparisons are never used for
-         floating point so we can reverse them in the default way.  */
+	 point.  Similarly the unsigned comparisons are never used for
+	 floating point so we can reverse them in the default way.  */
       return reverse_condition (code);
     case ORDERED:
     case UNORDERED:
     case LTGT:
     case UNEQ:
       /* In case we already see unordered comparison, we can be sure to
-         be dealing with floating point so we don't need any more tests.  */
+	 be dealing with floating point so we don't need any more tests.  */
       return reverse_condition_maybe_unordered (code);
     case UNLT:
     case UNLE:
@@ -428,48 +428,48 @@ reversed_comparison_code_parts (enum rtx_code code, rtx arg0, rtx arg1, rtx insn
          will be never used, since REVERSIBLE_CC_MODE will return true
          in all cases.  */
       if (! insn)
-        return UNKNOWN;
+	return UNKNOWN;
 
       for (prev = prev_nonnote_insn (insn);
-           prev != 0 && !LABEL_P (prev);
-           prev = prev_nonnote_insn (prev))
-        {
-          rtx set = set_of (arg0, prev);
-          if (set && GET_CODE (set) == SET
-              && rtx_equal_p (SET_DEST (set), arg0))
-            {
-              rtx src = SET_SRC (set);
+	   prev != 0 && !LABEL_P (prev);
+	   prev = prev_nonnote_insn (prev))
+	{
+	  rtx set = set_of (arg0, prev);
+	  if (set && GET_CODE (set) == SET
+	      && rtx_equal_p (SET_DEST (set), arg0))
+	    {
+	      rtx src = SET_SRC (set);
 
-              if (GET_CODE (src) == COMPARE)
-                {
-                  rtx comparison = src;
-                  arg0 = XEXP (src, 0);
-                  mode = GET_MODE (arg0);
-                  if (mode == VOIDmode)
-                    mode = GET_MODE (XEXP (comparison, 1));
-                  break;
-                }
-              /* We can get past reg-reg moves.  This may be useful for model
-                 of i387 comparisons that first move flag registers around.  */
-              if (REG_P (src))
-                {
-                  arg0 = src;
-                  continue;
-                }
-            }
-          /* If register is clobbered in some ununderstandable way,
-             give up.  */
-          if (set)
-            return UNKNOWN;
-        }
+	      if (GET_CODE (src) == COMPARE)
+		{
+		  rtx comparison = src;
+		  arg0 = XEXP (src, 0);
+		  mode = GET_MODE (arg0);
+		  if (mode == VOIDmode)
+		    mode = GET_MODE (XEXP (comparison, 1));
+		  break;
+		}
+	      /* We can get past reg-reg moves.  This may be useful for model
+	         of i387 comparisons that first move flag registers around.  */
+	      if (REG_P (src))
+		{
+		  arg0 = src;
+		  continue;
+		}
+	    }
+	  /* If register is clobbered in some ununderstandable way,
+	     give up.  */
+	  if (set)
+	    return UNKNOWN;
+	}
     }
 
   /* Test for an integer condition, or a floating-point comparison
      in which NaNs can be ignored.  */
   if (GET_CODE (arg0) == CONST_INT
       || (GET_MODE (arg0) != VOIDmode
-          && GET_MODE_CLASS (mode) != MODE_CC
-          && !HONOR_NANS (mode)))
+	  && GET_MODE_CLASS (mode) != MODE_CC
+	  && !HONOR_NANS (mode)))
     return reverse_condition (code);
 
   return UNKNOWN;
@@ -483,8 +483,8 @@ reversed_comparison_code (rtx comparison, rtx insn)
   if (!COMPARISON_P (comparison))
     return UNKNOWN;
   return reversed_comparison_code_parts (GET_CODE (comparison),
-                                         XEXP (comparison, 0),
-                                         XEXP (comparison, 1), insn);
+					 XEXP (comparison, 0),
+					 XEXP (comparison, 1), insn);
 }
 
 /* Return comparison with reversed code of EXP.
@@ -720,60 +720,60 @@ comparison_dominates_p (enum rtx_code code1, enum rtx_code code2)
     {
     case UNEQ:
       if (code2 == UNLE || code2 == UNGE)
-        return 1;
+	return 1;
       break;
 
     case EQ:
       if (code2 == LE || code2 == LEU || code2 == GE || code2 == GEU
-          || code2 == ORDERED)
-        return 1;
+	  || code2 == ORDERED)
+	return 1;
       break;
 
     case UNLT:
       if (code2 == UNLE || code2 == NE)
-        return 1;
+	return 1;
       break;
 
     case LT:
       if (code2 == LE || code2 == NE || code2 == ORDERED || code2 == LTGT)
-        return 1;
+	return 1;
       break;
 
     case UNGT:
       if (code2 == UNGE || code2 == NE)
-        return 1;
+	return 1;
       break;
 
     case GT:
       if (code2 == GE || code2 == NE || code2 == ORDERED || code2 == LTGT)
-        return 1;
+	return 1;
       break;
 
     case GE:
     case LE:
       if (code2 == ORDERED)
-        return 1;
+	return 1;
       break;
 
     case LTGT:
       if (code2 == NE || code2 == ORDERED)
-        return 1;
+	return 1;
       break;
 
     case LTU:
       if (code2 == LEU || code2 == NE)
-        return 1;
+	return 1;
       break;
 
     case GTU:
       if (code2 == GEU || code2 == NE)
-        return 1;
+	return 1;
       break;
 
     case UNORDERED:
       if (code2 == NE || code2 == UNEQ || code2 == UNLE || code2 == UNLT
-          || code2 == UNGE || code2 == UNGT)
-        return 1;
+	  || code2 == UNGE || code2 == UNGT)
+	return 1;
       break;
 
     default:
@@ -789,9 +789,9 @@ int
 simplejump_p (rtx insn)
 {
   return (JUMP_P (insn)
-          && GET_CODE (PATTERN (insn)) == SET
-          && GET_CODE (SET_DEST (PATTERN (insn))) == PC
-          && GET_CODE (SET_SRC (PATTERN (insn))) == LABEL_REF);
+	  && GET_CODE (PATTERN (insn)) == SET
+	  && GET_CODE (SET_DEST (PATTERN (insn))) == PC
+	  && GET_CODE (SET_SRC (PATTERN (insn))) == LABEL_REF);
 }
 
 /* Return nonzero if INSN is a (possibly) conditional jump
@@ -814,12 +814,12 @@ condjump_p (rtx insn)
     return 1;
   else
     return (GET_CODE (x) == IF_THEN_ELSE
-            && ((GET_CODE (XEXP (x, 2)) == PC
-                 && (GET_CODE (XEXP (x, 1)) == LABEL_REF
-                     || GET_CODE (XEXP (x, 1)) == RETURN))
-                || (GET_CODE (XEXP (x, 1)) == PC
-                    && (GET_CODE (XEXP (x, 2)) == LABEL_REF
-                        || GET_CODE (XEXP (x, 2)) == RETURN))));
+	    && ((GET_CODE (XEXP (x, 2)) == PC
+		 && (GET_CODE (XEXP (x, 1)) == LABEL_REF
+		     || GET_CODE (XEXP (x, 1)) == RETURN))
+		|| (GET_CODE (XEXP (x, 1)) == PC
+		    && (GET_CODE (XEXP (x, 2)) == LABEL_REF
+			|| GET_CODE (XEXP (x, 2)) == RETURN))));
 }
 
 /* Return nonzero if INSN is a (possibly) conditional jump inside a
@@ -848,11 +848,11 @@ condjump_in_parallel_p (rtx insn)
     return 0;
   if (XEXP (SET_SRC (x), 2) == pc_rtx
       && (GET_CODE (XEXP (SET_SRC (x), 1)) == LABEL_REF
-          || GET_CODE (XEXP (SET_SRC (x), 1)) == RETURN))
+	  || GET_CODE (XEXP (SET_SRC (x), 1)) == RETURN))
     return 1;
   if (XEXP (SET_SRC (x), 1) == pc_rtx
       && (GET_CODE (XEXP (SET_SRC (x), 2)) == LABEL_REF
-          || GET_CODE (XEXP (SET_SRC (x), 2)) == RETURN))
+	  || GET_CODE (XEXP (SET_SRC (x), 2)) == RETURN))
     return 1;
   return 0;
 }
@@ -915,7 +915,7 @@ any_condjump_p (rtx insn)
   b = GET_CODE (XEXP (SET_SRC (x), 2));
 
   return ((b == PC && (a == LABEL_REF || a == RETURN))
-          || (a == PC && (b == LABEL_REF || b == RETURN)));
+	  || (a == PC && (b == LABEL_REF || b == RETURN)));
 }
 
 /* Return the label of a conditional jump.  */
@@ -947,7 +947,7 @@ returnjump_p_1 (rtx *loc, void *data ATTRIBUTE_UNUSED)
   rtx x = *loc;
 
   return x && (GET_CODE (x) == RETURN
-               || (GET_CODE (x) == SET && SET_IS_RETURN_P (x)));
+	       || (GET_CODE (x) == SET && SET_IS_RETURN_P (x)));
 }
 
 int
@@ -1019,13 +1019,13 @@ sets_cc0_p (rtx x)
       int sets_cc0 = 0;
       int other_things = 0;
       for (i = XVECLEN (x, 0) - 1; i >= 0; i--)
-        {
-          if (GET_CODE (XVECEXP (x, 0, i)) == SET
-              && SET_DEST (XVECEXP (x, 0, i)) == cc0_rtx)
-            sets_cc0 = 1;
-          else if (GET_CODE (XVECEXP (x, 0, i)) == SET)
-            other_things = 1;
-        }
+	{
+	  if (GET_CODE (XVECEXP (x, 0, i)) == SET
+	      && SET_DEST (XVECEXP (x, 0, i)) == cc0_rtx)
+	    sets_cc0 = 1;
+	  else if (GET_CODE (XVECEXP (x, 0, i)) == SET)
+	    other_things = 1;
+	}
       return ! sets_cc0 ? 0 : other_things ? -1 : 1;
     }
   return 0;
@@ -1051,33 +1051,33 @@ follow_jumps (rtx label)
 
   for (depth = 0;
        (depth < 10
-        && (insn = next_active_insn (value)) != 0
-        && JUMP_P (insn)
-        && ((JUMP_LABEL (insn) != 0 && any_uncondjump_p (insn)
-             && onlyjump_p (insn))
-            || GET_CODE (PATTERN (insn)) == RETURN)
-        && (next = NEXT_INSN (insn))
-        && BARRIER_P (next));
+	&& (insn = next_active_insn (value)) != 0
+	&& JUMP_P (insn)
+	&& ((JUMP_LABEL (insn) != 0 && any_uncondjump_p (insn)
+	     && onlyjump_p (insn))
+	    || GET_CODE (PATTERN (insn)) == RETURN)
+	&& (next = NEXT_INSN (insn))
+	&& BARRIER_P (next));
        depth++)
     {
       rtx tem;
       if (!reload_completed && flag_test_coverage)
-        {
-          /* ??? Optional.  Disables some optimizations, but makes
-             gcov output more accurate with -O.  */
-          for (tem = value; tem != insn; tem = NEXT_INSN (tem))
-            if (NOTE_P (tem) && NOTE_LINE_NUMBER (tem) > 0)
-              return value;
-        }
+	{
+	  /* ??? Optional.  Disables some optimizations, but makes
+	     gcov output more accurate with -O.  */
+	  for (tem = value; tem != insn; tem = NEXT_INSN (tem))
+	    if (NOTE_P (tem) && NOTE_LINE_NUMBER (tem) > 0)
+	      return value;
+	}
 
       /* If we have found a cycle, make the insn jump to itself.  */
       if (JUMP_LABEL (insn) == label)
-        return label;
+	return label;
 
       tem = next_active_insn (JUMP_LABEL (insn));
       if (tem && (GET_CODE (PATTERN (tem)) == ADDR_VEC
-                  || GET_CODE (PATTERN (tem)) == ADDR_DIFF_VEC))
-        break;
+		  || GET_CODE (PATTERN (tem)) == ADDR_DIFF_VEC))
+	break;
 
       value = JUMP_LABEL (insn);
     }
@@ -1124,49 +1124,49 @@ mark_jump_label (rtx x, rtx insn, int in_mem)
 
     case SYMBOL_REF:
       if (!in_mem)
-        return;
+	return;
 
       /* If this is a constant-pool reference, see if it is a label.  */
       if (CONSTANT_POOL_ADDRESS_P (x))
-        mark_jump_label (get_pool_constant (x), insn, in_mem);
+	mark_jump_label (get_pool_constant (x), insn, in_mem);
       break;
 
     case LABEL_REF:
       {
-        rtx label = XEXP (x, 0);
+	rtx label = XEXP (x, 0);
 
-        /* Ignore remaining references to unreachable labels that
-           have been deleted.  */
-        if (NOTE_P (label)
-            && NOTE_LINE_NUMBER (label) == NOTE_INSN_DELETED_LABEL)
-          break;
+	/* Ignore remaining references to unreachable labels that
+	   have been deleted.  */
+	if (NOTE_P (label)
+	    && NOTE_LINE_NUMBER (label) == NOTE_INSN_DELETED_LABEL)
+	  break;
 
-        gcc_assert (LABEL_P (label));
+	gcc_assert (LABEL_P (label));
 
-        /* Ignore references to labels of containing functions.  */
-        if (LABEL_REF_NONLOCAL_P (x))
-          break;
+	/* Ignore references to labels of containing functions.  */
+	if (LABEL_REF_NONLOCAL_P (x))
+	  break;
 
-        XEXP (x, 0) = label;
-        if (! insn || ! INSN_DELETED_P (insn))
-          ++LABEL_NUSES (label);
+	XEXP (x, 0) = label;
+	if (! insn || ! INSN_DELETED_P (insn))
+	  ++LABEL_NUSES (label);
 
-        if (insn)
-          {
-            if (JUMP_P (insn))
-              JUMP_LABEL (insn) = label;
-            else
-              {
-                /* Add a REG_LABEL note for LABEL unless there already
-                   is one.  All uses of a label, except for labels
-                   that are the targets of jumps, must have a
-                   REG_LABEL note.  */
-                if (! find_reg_note (insn, REG_LABEL, label))
-                  REG_NOTES (insn) = gen_rtx_INSN_LIST (REG_LABEL, label,
-                                                        REG_NOTES (insn));
-              }
-          }
-        return;
+	if (insn)
+	  {
+	    if (JUMP_P (insn))
+	      JUMP_LABEL (insn) = label;
+	    else
+	      {
+		/* Add a REG_LABEL note for LABEL unless there already
+		   is one.  All uses of a label, except for labels
+		   that are the targets of jumps, must have a
+		   REG_LABEL note.  */
+		if (! find_reg_note (insn, REG_LABEL, label))
+		  REG_NOTES (insn) = gen_rtx_INSN_LIST (REG_LABEL, label,
+							REG_NOTES (insn));
+	      }
+	  }
+	return;
       }
 
   /* Do walk the labels in a vector, but not the first operand of an
@@ -1174,12 +1174,12 @@ mark_jump_label (rtx x, rtx insn, int in_mem)
     case ADDR_VEC:
     case ADDR_DIFF_VEC:
       if (! INSN_DELETED_P (insn))
-        {
-          int eltnum = code == ADDR_DIFF_VEC ? 1 : 0;
+	{
+	  int eltnum = code == ADDR_DIFF_VEC ? 1 : 0;
 
-          for (i = 0; i < XVECLEN (x, eltnum); i++)
-            mark_jump_label (XVECEXP (x, eltnum, i), NULL_RTX, in_mem);
-        }
+	  for (i = 0; i < XVECLEN (x, eltnum); i++)
+	    mark_jump_label (XVECEXP (x, eltnum, i), NULL_RTX, in_mem);
+	}
       return;
 
     default:
@@ -1190,13 +1190,13 @@ mark_jump_label (rtx x, rtx insn, int in_mem)
   for (i = GET_RTX_LENGTH (code) - 1; i >= 0; i--)
     {
       if (fmt[i] == 'e')
-        mark_jump_label (XEXP (x, i), insn, in_mem);
+	mark_jump_label (XEXP (x, i), insn, in_mem);
       else if (fmt[i] == 'E')
-        {
-          int j;
-          for (j = 0; j < XVECLEN (x, i); j++)
-            mark_jump_label (XVECEXP (x, i, j), insn, in_mem);
-        }
+	{
+	  int j;
+	  for (j = 0; j < XVECLEN (x, i); j++)
+	    mark_jump_label (XVECEXP (x, i, j), insn, in_mem);
+	}
     }
 }
 
@@ -1225,108 +1225,108 @@ delete_prior_computation (rtx note, rtx insn)
 
   for (our_prev = prev_nonnote_insn (insn);
        our_prev && (NONJUMP_INSN_P (our_prev)
-                    || CALL_P (our_prev));
+		    || CALL_P (our_prev));
        our_prev = prev_nonnote_insn (our_prev))
     {
       rtx pat = PATTERN (our_prev);
 
       /* If we reach a CALL which is not calling a const function
-         or the callee pops the arguments, then give up.  */
+	 or the callee pops the arguments, then give up.  */
       if (CALL_P (our_prev)
-          && (! CONST_OR_PURE_CALL_P (our_prev)
-              || GET_CODE (pat) != SET || GET_CODE (SET_SRC (pat)) != CALL))
-        break;
+	  && (! CONST_OR_PURE_CALL_P (our_prev)
+	      || GET_CODE (pat) != SET || GET_CODE (SET_SRC (pat)) != CALL))
+	break;
 
       /* If we reach a SEQUENCE, it is too complex to try to
-         do anything with it, so give up.  We can be run during
-         and after reorg, so SEQUENCE rtl can legitimately show
-         up here.  */
+	 do anything with it, so give up.  We can be run during
+	 and after reorg, so SEQUENCE rtl can legitimately show
+	 up here.  */
       if (GET_CODE (pat) == SEQUENCE)
-        break;
+	break;
 
       if (GET_CODE (pat) == USE
-          && NONJUMP_INSN_P (XEXP (pat, 0)))
-        /* reorg creates USEs that look like this.  We leave them
-           alone because reorg needs them for its own purposes.  */
-        break;
+	  && NONJUMP_INSN_P (XEXP (pat, 0)))
+	/* reorg creates USEs that look like this.  We leave them
+	   alone because reorg needs them for its own purposes.  */
+	break;
 
       if (reg_set_p (reg, pat))
-        {
-          if (side_effects_p (pat) && !CALL_P (our_prev))
-            break;
+	{
+	  if (side_effects_p (pat) && !CALL_P (our_prev))
+	    break;
 
-          if (GET_CODE (pat) == PARALLEL)
-            {
-              /* If we find a SET of something else, we can't
-                 delete the insn.  */
+	  if (GET_CODE (pat) == PARALLEL)
+	    {
+	      /* If we find a SET of something else, we can't
+		 delete the insn.  */
 
-              int i;
+	      int i;
 
-              for (i = 0; i < XVECLEN (pat, 0); i++)
-                {
-                  rtx part = XVECEXP (pat, 0, i);
+	      for (i = 0; i < XVECLEN (pat, 0); i++)
+		{
+		  rtx part = XVECEXP (pat, 0, i);
 
-                  if (GET_CODE (part) == SET
-                      && SET_DEST (part) != reg)
-                    break;
-                }
+		  if (GET_CODE (part) == SET
+		      && SET_DEST (part) != reg)
+		    break;
+		}
 
-              if (i == XVECLEN (pat, 0))
-                delete_computation (our_prev);
-            }
-          else if (GET_CODE (pat) == SET
-                   && REG_P (SET_DEST (pat)))
-            {
-              int dest_regno = REGNO (SET_DEST (pat));
-              int dest_endregno
-                = (dest_regno
-                   + (dest_regno < FIRST_PSEUDO_REGISTER
-                      ? hard_regno_nregs[dest_regno]
-                                        [GET_MODE (SET_DEST (pat))] : 1));
-              int regno = REGNO (reg);
-              int endregno
-                = (regno
-                   + (regno < FIRST_PSEUDO_REGISTER
-                      ? hard_regno_nregs[regno][GET_MODE (reg)] : 1));
+	      if (i == XVECLEN (pat, 0))
+		delete_computation (our_prev);
+	    }
+	  else if (GET_CODE (pat) == SET
+		   && REG_P (SET_DEST (pat)))
+	    {
+	      int dest_regno = REGNO (SET_DEST (pat));
+	      int dest_endregno
+		= (dest_regno
+		   + (dest_regno < FIRST_PSEUDO_REGISTER
+		      ? hard_regno_nregs[dest_regno]
+					[GET_MODE (SET_DEST (pat))] : 1));
+	      int regno = REGNO (reg);
+	      int endregno
+		= (regno
+		   + (regno < FIRST_PSEUDO_REGISTER
+		      ? hard_regno_nregs[regno][GET_MODE (reg)] : 1));
 
-              if (dest_regno >= regno
-                  && dest_endregno <= endregno)
-                delete_computation (our_prev);
+	      if (dest_regno >= regno
+		  && dest_endregno <= endregno)
+		delete_computation (our_prev);
 
-              /* We may have a multi-word hard register and some, but not
-                 all, of the words of the register are needed in subsequent
-                 insns.  Write REG_UNUSED notes for those parts that were not
-                 needed.  */
-              else if (dest_regno <= regno
-                       && dest_endregno >= endregno)
-                {
-                  int i;
+	      /* We may have a multi-word hard register and some, but not
+		 all, of the words of the register are needed in subsequent
+		 insns.  Write REG_UNUSED notes for those parts that were not
+		 needed.  */
+	      else if (dest_regno <= regno
+		       && dest_endregno >= endregno)
+		{
+		  int i;
 
-                  REG_NOTES (our_prev)
-                    = gen_rtx_EXPR_LIST (REG_UNUSED, reg,
-                                         REG_NOTES (our_prev));
+		  REG_NOTES (our_prev)
+		    = gen_rtx_EXPR_LIST (REG_UNUSED, reg,
+					 REG_NOTES (our_prev));
 
-                  for (i = dest_regno; i < dest_endregno; i++)
-                    if (! find_regno_note (our_prev, REG_UNUSED, i))
-                      break;
+		  for (i = dest_regno; i < dest_endregno; i++)
+		    if (! find_regno_note (our_prev, REG_UNUSED, i))
+		      break;
 
-                  if (i == dest_endregno)
-                    delete_computation (our_prev);
-                }
-            }
+		  if (i == dest_endregno)
+		    delete_computation (our_prev);
+		}
+	    }
 
-          break;
-        }
+	  break;
+	}
 
       /* If PAT references the register that dies here, it is an
-         additional use.  Hence any prior SET isn't dead.  However, this
-         insn becomes the new place for the REG_DEAD note.  */
+	 additional use.  Hence any prior SET isn't dead.  However, this
+	 insn becomes the new place for the REG_DEAD note.  */
       if (reg_overlap_mentioned_p (reg, pat))
-        {
-          XEXP (note, 1) = REG_NOTES (our_prev);
-          REG_NOTES (our_prev) = note;
-          break;
-        }
+	{
+	  XEXP (note, 1) = REG_NOTES (our_prev);
+	  REG_NOTES (our_prev) = note;
+	  break;
+	}
     }
 }
 
@@ -1353,22 +1353,22 @@ delete_computation (rtx insn)
     {
       rtx prev = prev_nonnote_insn (insn);
       /* We assume that at this stage
-         CC's are always set explicitly
-         and always immediately before the jump that
-         will use them.  So if the previous insn
-         exists to set the CC's, delete it
-         (unless it performs auto-increments, etc.).  */
+	 CC's are always set explicitly
+	 and always immediately before the jump that
+	 will use them.  So if the previous insn
+	 exists to set the CC's, delete it
+	 (unless it performs auto-increments, etc.).  */
       if (prev && NONJUMP_INSN_P (prev)
-          && sets_cc0_p (PATTERN (prev)))
-        {
-          if (sets_cc0_p (PATTERN (prev)) > 0
-              && ! side_effects_p (PATTERN (prev)))
-            delete_computation (prev);
-          else
-            /* Otherwise, show that cc0 won't be used.  */
-            REG_NOTES (prev) = gen_rtx_EXPR_LIST (REG_UNUSED,
-                                                  cc0_rtx, REG_NOTES (prev));
-        }
+	  && sets_cc0_p (PATTERN (prev)))
+	{
+	  if (sets_cc0_p (PATTERN (prev)) > 0
+	      && ! side_effects_p (PATTERN (prev)))
+	    delete_computation (prev);
+	  else
+	    /* Otherwise, show that cc0 won't be used.  */
+	    REG_NOTES (prev) = gen_rtx_EXPR_LIST (REG_UNUSED,
+						  cc0_rtx, REG_NOTES (prev));
+	}
     }
 #endif
 
@@ -1377,9 +1377,9 @@ delete_computation (rtx insn)
       next = XEXP (note, 1);
 
       if (REG_NOTE_KIND (note) != REG_DEAD
-          /* Verify that the REG_NOTE is legitimate.  */
-          || !REG_P (XEXP (note, 0)))
-        continue;
+	  /* Verify that the REG_NOTE is legitimate.  */
+	  || !REG_P (XEXP (note, 0)))
+	continue;
 
       delete_prior_computation (note, insn);
     }
@@ -1425,45 +1425,45 @@ delete_related_insns (rtx insn)
       rtx lab = JUMP_LABEL (insn), lab_next;
 
       if (LABEL_NUSES (lab) == 0)
-        {
-          /* This can delete NEXT or PREV,
-             either directly if NEXT is JUMP_LABEL (INSN),
-             or indirectly through more levels of jumps.  */
-          delete_related_insns (lab);
+	{
+	  /* This can delete NEXT or PREV,
+	     either directly if NEXT is JUMP_LABEL (INSN),
+	     or indirectly through more levels of jumps.  */
+	  delete_related_insns (lab);
 
-          /* I feel a little doubtful about this loop,
-             but I see no clean and sure alternative way
-             to find the first insn after INSN that is not now deleted.
-             I hope this works.  */
-          while (next && INSN_DELETED_P (next))
-            next = NEXT_INSN (next);
-          return next;
-        }
+	  /* I feel a little doubtful about this loop,
+	     but I see no clean and sure alternative way
+	     to find the first insn after INSN that is not now deleted.
+	     I hope this works.  */
+	  while (next && INSN_DELETED_P (next))
+	    next = NEXT_INSN (next);
+	  return next;
+	}
       else if (tablejump_p (insn, NULL, &lab_next))
-        {
-          /* If we're deleting the tablejump, delete the dispatch table.
-             We may not be able to kill the label immediately preceding
-             just yet, as it might be referenced in code leading up to
-             the tablejump.  */
-          delete_related_insns (lab_next);
-        }
+	{
+	  /* If we're deleting the tablejump, delete the dispatch table.
+	     We may not be able to kill the label immediately preceding
+	     just yet, as it might be referenced in code leading up to
+	     the tablejump.  */
+	  delete_related_insns (lab_next);
+	}
     }
 
   /* Likewise if we're deleting a dispatch table.  */
 
   if (JUMP_P (insn)
       && (GET_CODE (PATTERN (insn)) == ADDR_VEC
-          || GET_CODE (PATTERN (insn)) == ADDR_DIFF_VEC))
+	  || GET_CODE (PATTERN (insn)) == ADDR_DIFF_VEC))
     {
       rtx pat = PATTERN (insn);
       int i, diff_vec_p = GET_CODE (pat) == ADDR_DIFF_VEC;
       int len = XVECLEN (pat, diff_vec_p);
 
       for (i = 0; i < len; i++)
-        if (LABEL_NUSES (XEXP (XVECEXP (pat, diff_vec_p, i), 0)) == 0)
-          delete_related_insns (XEXP (XVECEXP (pat, diff_vec_p, i), 0));
+	if (LABEL_NUSES (XEXP (XVECEXP (pat, diff_vec_p, i), 0)) == 0)
+	  delete_related_insns (XEXP (XVECEXP (pat, diff_vec_p, i), 0));
       while (next && INSN_DELETED_P (next))
-        next = NEXT_INSN (next);
+	next = NEXT_INSN (next);
       return next;
     }
 
@@ -1471,10 +1471,10 @@ delete_related_insns (rtx insn)
   if (NONJUMP_INSN_P (insn) || CALL_P (insn))
     for (note = REG_NOTES (insn); note; note = XEXP (note, 1))
       if (REG_NOTE_KIND (note) == REG_LABEL
-          /* This could also be a NOTE_INSN_DELETED_LABEL note.  */
-          && LABEL_P (XEXP (note, 0)))
-        if (LABEL_NUSES (XEXP (note, 0)) == 0)
-          delete_related_insns (XEXP (note, 0));
+	  /* This could also be a NOTE_INSN_DELETED_LABEL note.  */
+	  && LABEL_P (XEXP (note, 0)))
+	if (LABEL_NUSES (XEXP (note, 0)) == 0)
+	  delete_related_insns (XEXP (note, 0));
 
   while (prev && (INSN_DELETED_P (prev) || NOTE_P (prev)))
     prev = PREV_INSN (prev);
@@ -1487,7 +1487,7 @@ delete_related_insns (rtx insn)
       && NEXT_INSN (insn) != 0
       && JUMP_P (NEXT_INSN (insn))
       && (GET_CODE (PATTERN (NEXT_INSN (insn))) == ADDR_VEC
-          || GET_CODE (PATTERN (NEXT_INSN (insn))) == ADDR_DIFF_VEC))
+	  || GET_CODE (PATTERN (NEXT_INSN (insn))) == ADDR_DIFF_VEC))
     next = delete_related_insns (NEXT_INSN (insn));
 
   /* If INSN was a label, delete insns following it if now unreachable.  */
@@ -1496,23 +1496,23 @@ delete_related_insns (rtx insn)
     {
       enum rtx_code code;
       while (next)
-        {
-          code = GET_CODE (next);
-          if (code == NOTE
-              && NOTE_LINE_NUMBER (next) != NOTE_INSN_FUNCTION_END)
-            next = NEXT_INSN (next);
-          /* Keep going past other deleted labels to delete what follows.  */
-          else if (code == CODE_LABEL && INSN_DELETED_P (next))
-            next = NEXT_INSN (next);
-          else if (code == BARRIER || INSN_P (next))
-            /* Note: if this deletes a jump, it can cause more
-               deletion of unreachable code, after a different label.
-               As long as the value from this recursive call is correct,
-               this invocation functions correctly.  */
-            next = delete_related_insns (next);
-          else
-            break;
-        }
+	{
+	  code = GET_CODE (next);
+	  if (code == NOTE
+	      && NOTE_LINE_NUMBER (next) != NOTE_INSN_FUNCTION_END)
+	    next = NEXT_INSN (next);
+	  /* Keep going past other deleted labels to delete what follows.  */
+	  else if (code == CODE_LABEL && INSN_DELETED_P (next))
+	    next = NEXT_INSN (next);
+	  else if (code == BARRIER || INSN_P (next))
+	    /* Note: if this deletes a jump, it can cause more
+	       deletion of unreachable code, after a different label.
+	       As long as the value from this recursive call is correct,
+	       this invocation functions correctly.  */
+	    next = delete_related_insns (next);
+	  else
+	    break;
+	}
     }
 
   return next;
@@ -1534,21 +1534,21 @@ delete_for_peephole (rtx from, rtx to)
       rtx prev = PREV_INSN (insn);
 
       if (!NOTE_P (insn))
-        {
-          INSN_DELETED_P (insn) = 1;
+	{
+	  INSN_DELETED_P (insn) = 1;
 
-          /* Patch this insn out of the chain.  */
-          /* We don't do this all at once, because we
-             must preserve all NOTEs.  */
-          if (prev)
-            NEXT_INSN (prev) = next;
+	  /* Patch this insn out of the chain.  */
+	  /* We don't do this all at once, because we
+	     must preserve all NOTEs.  */
+	  if (prev)
+	    NEXT_INSN (prev) = next;
 
-          if (next)
-            PREV_INSN (next) = prev;
-        }
+	  if (next)
+	    PREV_INSN (next) = prev;
+	}
 
       if (insn == to)
-        break;
+	break;
       insn = next;
     }
 
@@ -1572,25 +1572,25 @@ redirect_exp_1 (rtx *loc, rtx olabel, rtx nlabel, rtx insn)
   if (code == LABEL_REF)
     {
       if (XEXP (x, 0) == olabel)
-        {
-          rtx n;
-          if (nlabel)
-            n = gen_rtx_LABEL_REF (Pmode, nlabel);
-          else
-            n = gen_rtx_RETURN (VOIDmode);
+	{
+	  rtx n;
+	  if (nlabel)
+	    n = gen_rtx_LABEL_REF (Pmode, nlabel);
+	  else
+	    n = gen_rtx_RETURN (VOIDmode);
 
-          validate_change (insn, loc, n, 1);
-          return;
-        }
+	  validate_change (insn, loc, n, 1);
+	  return;
+	}
     }
   else if (code == RETURN && olabel == 0)
     {
       if (nlabel)
-        x = gen_rtx_LABEL_REF (Pmode, nlabel);
+	x = gen_rtx_LABEL_REF (Pmode, nlabel);
       else
-        x = gen_rtx_RETURN (VOIDmode);
+	x = gen_rtx_RETURN (VOIDmode);
       if (loc == &PATTERN (insn))
-        x = gen_rtx_SET (VOIDmode, pc_rtx, x);
+	x = gen_rtx_SET (VOIDmode, pc_rtx, x);
       validate_change (insn, loc, x, 1);
       return;
     }
@@ -1607,13 +1607,13 @@ redirect_exp_1 (rtx *loc, rtx olabel, rtx nlabel, rtx insn)
   for (i = GET_RTX_LENGTH (code) - 1; i >= 0; i--)
     {
       if (fmt[i] == 'e')
-        redirect_exp_1 (&XEXP (x, i), olabel, nlabel, insn);
+	redirect_exp_1 (&XEXP (x, i), olabel, nlabel, insn);
       else if (fmt[i] == 'E')
-        {
-          int j;
-          for (j = 0; j < XVECLEN (x, i); j++)
-            redirect_exp_1 (&XVECEXP (x, i, j), olabel, nlabel, insn);
-        }
+	{
+	  int j;
+	  for (j = 0; j < XVECLEN (x, i); j++)
+	    redirect_exp_1 (&XVECEXP (x, i, j), olabel, nlabel, insn);
+	}
     }
 }
 
@@ -1668,7 +1668,7 @@ redirect_jump (rtx jump, rtx nlabel, int delete_unused)
    count has dropped to zero.  */
 void
 redirect_jump_2 (rtx jump, rtx olabel, rtx nlabel, int delete_unused,
-                 int invert)
+		 int invert)
 {
   rtx note;
 
@@ -1680,12 +1680,12 @@ redirect_jump_2 (rtx jump, rtx olabel, rtx nlabel, int delete_unused,
   if ((note = find_reg_note (jump, REG_EQUAL, NULL_RTX)) != NULL_RTX)
     {
       if (!nlabel || (invert && !invert_exp_1 (XEXP (note, 0), jump)))
-        remove_note (jump, note);
+	remove_note (jump, note);
       else
-        {
-          redirect_exp_1 (&XEXP (note, 0), olabel, nlabel, jump);
-          confirm_change_group ();
-        }
+	{
+	  redirect_exp_1 (&XEXP (note, 0), olabel, nlabel, jump);
+	  confirm_change_group ();
+	}
     }
 
   /* If we're eliding the jump over exception cleanups at the end of a
@@ -1719,21 +1719,21 @@ invert_exp_1 (rtx x, rtx insn)
       enum rtx_code reversed_code;
 
       /* We can do this in two ways:  The preferable way, which can only
-         be done if this is not an integer comparison, is to reverse
-         the comparison code.  Otherwise, swap the THEN-part and ELSE-part
-         of the IF_THEN_ELSE.  If we can't do either, fail.  */
+	 be done if this is not an integer comparison, is to reverse
+	 the comparison code.  Otherwise, swap the THEN-part and ELSE-part
+	 of the IF_THEN_ELSE.  If we can't do either, fail.  */
 
       reversed_code = reversed_comparison_code (comp, insn);
 
       if (reversed_code != UNKNOWN)
-        {
-          validate_change (insn, &XEXP (x, 0),
-                           gen_rtx_fmt_ee (reversed_code,
-                                           GET_MODE (comp), XEXP (comp, 0),
-                                           XEXP (comp, 1)),
-                           1);
-          return 1;
-        }
+	{
+	  validate_change (insn, &XEXP (x, 0),
+			   gen_rtx_fmt_ee (reversed_code,
+					   GET_MODE (comp), XEXP (comp, 0),
+					   XEXP (comp, 1)),
+			   1);
+	  return 1;
+	}
 
       tem = XEXP (x, 1);
       validate_change (insn, &XEXP (x, 1), XEXP (x, 2), 1);
@@ -1804,60 +1804,60 @@ rtx_renumbered_equal_p (rtx x, rtx y)
 
   if ((code == REG || (code == SUBREG && REG_P (SUBREG_REG (x))))
       && (REG_P (y) || (GET_CODE (y) == SUBREG
-                                  && REG_P (SUBREG_REG (y)))))
+				  && REG_P (SUBREG_REG (y)))))
     {
       int reg_x = -1, reg_y = -1;
       int byte_x = 0, byte_y = 0;
 
       if (GET_MODE (x) != GET_MODE (y))
-        return 0;
+	return 0;
 
       /* If we haven't done any renumbering, don't
-         make any assumptions.  */
+	 make any assumptions.  */
       if (reg_renumber == 0)
-        return rtx_equal_p (x, y);
+	return rtx_equal_p (x, y);
 
       if (code == SUBREG)
-        {
-          reg_x = REGNO (SUBREG_REG (x));
-          byte_x = SUBREG_BYTE (x);
+	{
+	  reg_x = REGNO (SUBREG_REG (x));
+	  byte_x = SUBREG_BYTE (x);
 
-          if (reg_renumber[reg_x] >= 0)
-            {
-              reg_x = subreg_regno_offset (reg_renumber[reg_x],
-                                           GET_MODE (SUBREG_REG (x)),
-                                           byte_x,
-                                           GET_MODE (x));
-              byte_x = 0;
-            }
-        }
+	  if (reg_renumber[reg_x] >= 0)
+	    {
+	      reg_x = subreg_regno_offset (reg_renumber[reg_x],
+					   GET_MODE (SUBREG_REG (x)),
+					   byte_x,
+					   GET_MODE (x));
+	      byte_x = 0;
+	    }
+	}
       else
-        {
-          reg_x = REGNO (x);
-          if (reg_renumber[reg_x] >= 0)
-            reg_x = reg_renumber[reg_x];
-        }
+	{
+	  reg_x = REGNO (x);
+	  if (reg_renumber[reg_x] >= 0)
+	    reg_x = reg_renumber[reg_x];
+	}
 
       if (GET_CODE (y) == SUBREG)
-        {
-          reg_y = REGNO (SUBREG_REG (y));
-          byte_y = SUBREG_BYTE (y);
+	{
+	  reg_y = REGNO (SUBREG_REG (y));
+	  byte_y = SUBREG_BYTE (y);
 
-          if (reg_renumber[reg_y] >= 0)
-            {
-              reg_y = subreg_regno_offset (reg_renumber[reg_y],
-                                           GET_MODE (SUBREG_REG (y)),
-                                           byte_y,
-                                           GET_MODE (y));
-              byte_y = 0;
-            }
-        }
+	  if (reg_renumber[reg_y] >= 0)
+	    {
+	      reg_y = subreg_regno_offset (reg_renumber[reg_y],
+					   GET_MODE (SUBREG_REG (y)),
+					   byte_y,
+					   GET_MODE (y));
+	      byte_y = 0;
+	    }
+	}
       else
-        {
-          reg_y = REGNO (y);
-          if (reg_renumber[reg_y] >= 0)
-            reg_y = reg_renumber[reg_y];
-        }
+	{
+	  reg_y = REGNO (y);
+	  if (reg_renumber[reg_y] >= 0)
+	    reg_y = reg_renumber[reg_y];
+	}
 
       return reg_x >= 0 && reg_x == reg_y && byte_x == byte_y;
     }
@@ -1880,12 +1880,12 @@ rtx_renumbered_equal_p (rtx x, rtx y)
     case LABEL_REF:
       /* We can't assume nonlocal labels have their following insns yet.  */
       if (LABEL_REF_NONLOCAL_P (x) || LABEL_REF_NONLOCAL_P (y))
-        return XEXP (x, 0) == XEXP (y, 0);
+	return XEXP (x, 0) == XEXP (y, 0);
 
       /* Two label-refs are equivalent if they point at labels
-         in the same position in the instruction stream.  */
+	 in the same position in the instruction stream.  */
       return (next_real_insn (XEXP (x, 0))
-              == next_real_insn (XEXP (y, 0)));
+	      == next_real_insn (XEXP (y, 0)));
 
     case SYMBOL_REF:
       return XSTR (x, 0) == XSTR (y, 0);
@@ -1907,12 +1907,12 @@ rtx_renumbered_equal_p (rtx x, rtx y)
      order.  Also handle the simple binary and unary cases without a loop.  */
   if (targetm.commutative_p (x, UNKNOWN))
     return ((rtx_renumbered_equal_p (XEXP (x, 0), XEXP (y, 0))
-             && rtx_renumbered_equal_p (XEXP (x, 1), XEXP (y, 1)))
-            || (rtx_renumbered_equal_p (XEXP (x, 0), XEXP (y, 1))
-                && rtx_renumbered_equal_p (XEXP (x, 1), XEXP (y, 0))));
+	     && rtx_renumbered_equal_p (XEXP (x, 1), XEXP (y, 1)))
+	    || (rtx_renumbered_equal_p (XEXP (x, 0), XEXP (y, 1))
+		&& rtx_renumbered_equal_p (XEXP (x, 1), XEXP (y, 0))));
   else if (NON_COMMUTATIVE_P (x))
     return (rtx_renumbered_equal_p (XEXP (x, 0), XEXP (y, 0))
-            && rtx_renumbered_equal_p (XEXP (x, 1), XEXP (y, 1)));
+	    && rtx_renumbered_equal_p (XEXP (x, 1), XEXP (y, 1)));
   else if (UNARY_P (x))
     return rtx_renumbered_equal_p (XEXP (x, 0), XEXP (y, 0));
 
@@ -1924,50 +1924,50 @@ rtx_renumbered_equal_p (rtx x, rtx y)
     {
       int j;
       switch (fmt[i])
-        {
-        case 'w':
-          if (XWINT (x, i) != XWINT (y, i))
-            return 0;
-          break;
+	{
+	case 'w':
+	  if (XWINT (x, i) != XWINT (y, i))
+	    return 0;
+	  break;
 
-        case 'i':
-          if (XINT (x, i) != XINT (y, i))
-            return 0;
-          break;
+	case 'i':
+	  if (XINT (x, i) != XINT (y, i))
+	    return 0;
+	  break;
 
-        case 't':
-          if (XTREE (x, i) != XTREE (y, i))
-            return 0;
-          break;
+	case 't':
+	  if (XTREE (x, i) != XTREE (y, i))
+	    return 0;
+	  break;
 
-        case 's':
-          if (strcmp (XSTR (x, i), XSTR (y, i)))
-            return 0;
-          break;
+	case 's':
+	  if (strcmp (XSTR (x, i), XSTR (y, i)))
+	    return 0;
+	  break;
 
-        case 'e':
-          if (! rtx_renumbered_equal_p (XEXP (x, i), XEXP (y, i)))
-            return 0;
-          break;
+	case 'e':
+	  if (! rtx_renumbered_equal_p (XEXP (x, i), XEXP (y, i)))
+	    return 0;
+	  break;
 
-        case 'u':
-          if (XEXP (x, i) != XEXP (y, i))
-            return 0;
-          /* Fall through.  */
-        case '0':
-          break;
+	case 'u':
+	  if (XEXP (x, i) != XEXP (y, i))
+	    return 0;
+	  /* Fall through.  */
+	case '0':
+	  break;
 
-        case 'E':
-          if (XVECLEN (x, i) != XVECLEN (y, i))
-            return 0;
-          for (j = XVECLEN (x, i) - 1; j >= 0; j--)
-            if (!rtx_renumbered_equal_p (XVECEXP (x, i, j), XVECEXP (y, i, j)))
-              return 0;
-          break;
+	case 'E':
+	  if (XVECLEN (x, i) != XVECLEN (y, i))
+	    return 0;
+	  for (j = XVECLEN (x, i) - 1; j >= 0; j--)
+	    if (!rtx_renumbered_equal_p (XVECEXP (x, i, j), XVECEXP (y, i, j)))
+	      return 0;
+	  break;
 
-        default:
-          gcc_unreachable ();
-        }
+	default:
+	  gcc_unreachable ();
+	}
     }
   return 1;
 }
@@ -1983,20 +1983,20 @@ true_regnum (rtx x)
   if (REG_P (x))
     {
       if (REGNO (x) >= FIRST_PSEUDO_REGISTER && reg_renumber[REGNO (x)] >= 0)
-        return reg_renumber[REGNO (x)];
+	return reg_renumber[REGNO (x)];
       return REGNO (x);
     }
   if (GET_CODE (x) == SUBREG)
     {
       int base = true_regnum (SUBREG_REG (x));
       if (base >= 0
-          && base < FIRST_PSEUDO_REGISTER
-          && subreg_offset_representable_p (REGNO (SUBREG_REG (x)),
-                                            GET_MODE (SUBREG_REG (x)),
-                                            SUBREG_BYTE (x), GET_MODE (x)))
-        return base + subreg_regno_offset (REGNO (SUBREG_REG (x)),
-                                           GET_MODE (SUBREG_REG (x)),
-                                           SUBREG_BYTE (x), GET_MODE (x));
+	  && base < FIRST_PSEUDO_REGISTER
+	  && subreg_offset_representable_p (REGNO (SUBREG_REG (x)),
+					    GET_MODE (SUBREG_REG (x)),
+					    SUBREG_BYTE (x), GET_MODE (x)))
+	return base + subreg_regno_offset (REGNO (SUBREG_REG (x)),
+					   GET_MODE (SUBREG_REG (x)),
+					   SUBREG_BYTE (x), GET_MODE (x));
     }
   return -1;
 }

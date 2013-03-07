@@ -32,9 +32,9 @@ sigsetmask (int set)
     
     sigemptyset (&new_sig);
     if (set != 0) {
-      abort();        /* FIXME, we don't know how to translate old mask to new */
+      abort();	/* FIXME, we don't know how to translate old mask to new */
     }
     sigprocmask(SIG_SETMASK, &new_sig, &old_sig);
-    return 1;        /* FIXME, we always return 1 as old value.  */
+    return 1;	/* FIXME, we always return 1 as old value.  */
 }
 #endif

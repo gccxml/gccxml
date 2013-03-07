@@ -55,9 +55,9 @@ Boston, MA 02110-1301, USA.  */
 
 /* Run-time target specifications */
 
-#define TARGET_CPU_CPP_BUILTINS() do {        \
-  builtin_define_std ("xstormy16");        \
-  builtin_assert ("machine=xstormy16");        \
+#define TARGET_CPU_CPP_BUILTINS() do {	\
+  builtin_define_std ("xstormy16");	\
+  builtin_assert ("machine=xstormy16");	\
   builtin_assert ("cpu=xstormy16");     \
 } while (0)
 
@@ -76,11 +76,11 @@ Boston, MA 02110-1301, USA.  */
 
 #define UNITS_PER_WORD 2
 
-#define PROMOTE_MODE(MODE,UNSIGNEDP,TYPE)                                \
-do {                                                                        \
-  if (GET_MODE_CLASS (MODE) == MODE_INT                                        \
-      && GET_MODE_SIZE (MODE) < 2)                                        \
-    (MODE) = HImode;                                                        \
+#define PROMOTE_MODE(MODE,UNSIGNEDP,TYPE)				\
+do {									\
+  if (GET_MODE_CLASS (MODE) == MODE_INT					\
+      && GET_MODE_SIZE (MODE) < 2)					\
+    (MODE) = HImode;							\
 } while (0)
 
 #define PARM_BOUNDARY 16
@@ -94,13 +94,13 @@ do {                                                                        \
 /* Defined in svr4.h.  */
 /* #define MAX_OFILE_ALIGNMENT */
 
-#define DATA_ALIGNMENT(TYPE, ALIGN)                \
-  (TREE_CODE (TYPE) == ARRAY_TYPE                \
-   && TYPE_MODE (TREE_TYPE (TYPE)) == QImode        \
+#define DATA_ALIGNMENT(TYPE, ALIGN)		\
+  (TREE_CODE (TYPE) == ARRAY_TYPE		\
+   && TYPE_MODE (TREE_TYPE (TYPE)) == QImode	\
    && (ALIGN) < BITS_PER_WORD ? BITS_PER_WORD : (ALIGN))
 
 #define CONSTANT_ALIGNMENT(EXP, ALIGN)  \
-  (TREE_CODE (EXP) == STRING_CST        \
+  (TREE_CODE (EXP) == STRING_CST	\
    && (ALIGN) < BITS_PER_WORD ? BITS_PER_WORD : (ALIGN))
 
 #define STRICT_ALIGNMENT 1
@@ -164,7 +164,7 @@ do {                                                                        \
 
 /* How Values Fit in Registers */
 
-#define HARD_REGNO_NREGS(REGNO, MODE)                                 \
+#define HARD_REGNO_NREGS(REGNO, MODE) 				\
   ((GET_MODE_SIZE (MODE) + UNITS_PER_WORD - 1) / UNITS_PER_WORD)
 
 #define HARD_REGNO_MODE_OK(REGNO, MODE) ((REGNO) != 16 || (MODE) == BImode)
@@ -199,44 +199,44 @@ enum reg_class
 
 #define N_REG_CLASSES ((int) LIM_REG_CLASSES)
 
-#define REG_CLASS_NAMES                                \
-{                                                \
-  "NO_REGS",                                         \
-  "R0_REGS",                                         \
-  "R1_REGS",                                        \
-  "TWO_REGS",                                        \
-  "R2_REGS",                                        \
-  "EIGHT_REGS",                                        \
-  "R8_REGS",                                        \
-  "ICALL_REGS",                                        \
-  "GENERAL_REGS",                                \
-  "CARRY_REGS",                                        \
-  "ALL_REGS"                                        \
+#define REG_CLASS_NAMES				\
+{						\
+  "NO_REGS", 					\
+  "R0_REGS", 					\
+  "R1_REGS",					\
+  "TWO_REGS",					\
+  "R2_REGS",					\
+  "EIGHT_REGS",					\
+  "R8_REGS",					\
+  "ICALL_REGS",					\
+  "GENERAL_REGS",				\
+  "CARRY_REGS",					\
+  "ALL_REGS"					\
 }
 
-#define REG_CLASS_CONTENTS                        \
-{                                                \
-  { 0x00000 },                                        \
-  { 0x00001 },                                        \
-  { 0x00002 },                                        \
-  { 0x00003 },                                        \
-  { 0x00004 },                                        \
-  { 0x000FF },                                        \
-  { 0x00100 },                                        \
-  { 0x00300 },                                        \
-  { 0x6FFFF },                                        \
-  { 0x10000 },                                        \
-  { (1 << FIRST_PSEUDO_REGISTER) - 1 }                \
+#define REG_CLASS_CONTENTS			\
+{						\
+  { 0x00000 },					\
+  { 0x00001 },					\
+  { 0x00002 },					\
+  { 0x00003 },					\
+  { 0x00004 },					\
+  { 0x000FF },					\
+  { 0x00100 },					\
+  { 0x00300 },					\
+  { 0x6FFFF },					\
+  { 0x10000 },					\
+  { (1 << FIRST_PSEUDO_REGISTER) - 1 }		\
 }
 
-#define REGNO_REG_CLASS(REGNO)                         \
-  ((REGNO) == 0   ? R0_REGS                        \
-   : (REGNO) == 1 ? R1_REGS                        \
-   : (REGNO) == 2 ? R2_REGS                        \
-   : (REGNO) < 8  ? EIGHT_REGS                        \
-   : (REGNO) == 8 ? R8_REGS                        \
-   : (REGNO) == 16 ? CARRY_REGS                        \
-   : (REGNO) <= 18 ? GENERAL_REGS                \
+#define REGNO_REG_CLASS(REGNO) 			\
+  ((REGNO) == 0   ? R0_REGS			\
+   : (REGNO) == 1 ? R1_REGS			\
+   : (REGNO) == 2 ? R2_REGS			\
+   : (REGNO) < 8  ? EIGHT_REGS			\
+   : (REGNO) == 8 ? R8_REGS			\
+   : (REGNO) == 16 ? CARRY_REGS			\
+   : (REGNO) <= 18 ? GENERAL_REGS		\
    : ALL_REGS)
 
 #define BASE_REG_CLASS GENERAL_REGS
@@ -245,23 +245,23 @@ enum reg_class
 
 /*   The following letters are unavailable, due to being used as
    constraints:
-        '0'..'9'
-        '<', '>'
-        'E', 'F', 'G', 'H'
-        'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P'
-        'Q', 'R', 'S', 'T', 'U'
-        'V', 'X'
-        'g', 'i', 'm', 'n', 'o', 'p', 'r', 's' */
+	'0'..'9'
+	'<', '>'
+	'E', 'F', 'G', 'H'
+	'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P'
+	'Q', 'R', 'S', 'T', 'U'
+	'V', 'X'
+	'g', 'i', 'm', 'n', 'o', 'p', 'r', 's' */
 
-#define REG_CLASS_FROM_LETTER(CHAR)                \
- (  (CHAR) == 'a' ? R0_REGS                        \
-  : (CHAR) == 'b' ? R1_REGS                        \
-  : (CHAR) == 'c' ? R2_REGS                        \
-  : (CHAR) == 'd' ? R8_REGS                        \
-  : (CHAR) == 'e' ? EIGHT_REGS                        \
-  : (CHAR) == 't' ? TWO_REGS                        \
-  : (CHAR) == 'y' ? CARRY_REGS                        \
-  : (CHAR) == 'z' ? ICALL_REGS                        \
+#define REG_CLASS_FROM_LETTER(CHAR)		\
+ (  (CHAR) == 'a' ? R0_REGS			\
+  : (CHAR) == 'b' ? R1_REGS			\
+  : (CHAR) == 'c' ? R2_REGS			\
+  : (CHAR) == 'd' ? R8_REGS			\
+  : (CHAR) == 'e' ? EIGHT_REGS			\
+  : (CHAR) == 't' ? TWO_REGS			\
+  : (CHAR) == 'y' ? CARRY_REGS			\
+  : (CHAR) == 'z' ? ICALL_REGS			\
   : NO_REGS)
 
 #define REGNO_OK_FOR_BASE_P(NUM) 1
@@ -277,7 +277,7 @@ enum reg_class
 
 /* This chip has the interesting property that only the first eight
    registers can be moved to/from memory.  */
-#define SECONDARY_RELOAD_CLASS(CLASS, MODE, X)                        \
+#define SECONDARY_RELOAD_CLASS(CLASS, MODE, X)			\
   xstormy16_secondary_reload_class (CLASS, MODE, X)
 
 /* Normally the compiler avoids choosing registers that have been explicitly
@@ -314,15 +314,15 @@ enum reg_class
    Therefore, `alpha.h' defines this macro as `FLOAT_REGS'.  */
 /* #define CLASS_CANNOT_CHANGE_SIZE */
 
-#define CONST_OK_FOR_LETTER_P(VALUE, C)                        \
-  (  (C) == 'I' ? (VALUE) >= 0 && (VALUE) <= 3                \
-   : (C) == 'J' ? exact_log2 (VALUE) != -1                \
-   : (C) == 'K' ? exact_log2 (~(VALUE)) != -1                \
-   : (C) == 'L' ? (VALUE) >= 0 && (VALUE) <= 255        \
-   : (C) == 'M' ? (VALUE) >= -255 && (VALUE) <= 0        \
-   : (C) == 'N' ? (VALUE) >= -3 && (VALUE) <= 0                \
-   : (C) == 'O' ? (VALUE) >= 1 && (VALUE) <= 4                \
-   : (C) == 'P' ? (VALUE) >= -4 && (VALUE) <= -1        \
+#define CONST_OK_FOR_LETTER_P(VALUE, C)			\
+  (  (C) == 'I' ? (VALUE) >= 0 && (VALUE) <= 3		\
+   : (C) == 'J' ? exact_log2 (VALUE) != -1		\
+   : (C) == 'K' ? exact_log2 (~(VALUE)) != -1		\
+   : (C) == 'L' ? (VALUE) >= 0 && (VALUE) <= 255	\
+   : (C) == 'M' ? (VALUE) >= -255 && (VALUE) <= 0	\
+   : (C) == 'N' ? (VALUE) >= -3 && (VALUE) <= 0		\
+   : (C) == 'O' ? (VALUE) >= 1 && (VALUE) <= 4		\
+   : (C) == 'P' ? (VALUE) >= -4 && (VALUE) <= -1	\
    : 0 )
 
 #define CONST_DOUBLE_OK_FOR_LETTER_P(VALUE, C) 0
@@ -345,9 +345,9 @@ enum reg_class
 
 #define FIRST_PARM_OFFSET(FUNDECL) 0
 
-#define RETURN_ADDR_RTX(COUNT, FRAMEADDR)        \
-  ((COUNT) == 0                                        \
-   ? gen_rtx_MEM (Pmode, arg_pointer_rtx)        \
+#define RETURN_ADDR_RTX(COUNT, FRAMEADDR)	\
+  ((COUNT) == 0					\
+   ? gen_rtx_MEM (Pmode, arg_pointer_rtx)	\
    : NULL_RTX)
 
 #define INCOMING_RETURN_ADDR_RTX  \
@@ -373,17 +373,17 @@ enum reg_class
 
 #define FRAME_POINTER_REQUIRED 0
 
-#define ELIMINABLE_REGS                                        \
-{                                                        \
-  {FRAME_POINTER_REGNUM, STACK_POINTER_REGNUM},                \
-  {FRAME_POINTER_REGNUM, HARD_FRAME_POINTER_REGNUM},        \
-  {ARG_POINTER_REGNUM,         STACK_POINTER_REGNUM},                \
-  {ARG_POINTER_REGNUM,         HARD_FRAME_POINTER_REGNUM},        \
+#define ELIMINABLE_REGS					\
+{							\
+  {FRAME_POINTER_REGNUM, STACK_POINTER_REGNUM},		\
+  {FRAME_POINTER_REGNUM, HARD_FRAME_POINTER_REGNUM},	\
+  {ARG_POINTER_REGNUM,	 STACK_POINTER_REGNUM},		\
+  {ARG_POINTER_REGNUM,	 HARD_FRAME_POINTER_REGNUM},	\
 }
 
-#define CAN_ELIMINATE(FROM, TO)                                                \
- ((FROM) == ARG_POINTER_REGNUM && (TO) == STACK_POINTER_REGNUM                \
-  ? ! frame_pointer_needed                                                \
+#define CAN_ELIMINATE(FROM, TO)						\
+ ((FROM) == ARG_POINTER_REGNUM && (TO) == STACK_POINTER_REGNUM		\
+  ? ! frame_pointer_needed						\
   : 1)
 
 #define INITIAL_ELIMINATION_OFFSET(FROM, TO, OFFSET) \
@@ -402,13 +402,13 @@ enum reg_class
 #define NUM_ARGUMENT_REGISTERS 6
 #define FIRST_ARGUMENT_REGISTER 2
 
-#define XSTORMY16_WORD_SIZE(TYPE, MODE)                                \
-  ((((TYPE) ? int_size_in_bytes (TYPE) : GET_MODE_SIZE (MODE))        \
-    + 1)                                                         \
+#define XSTORMY16_WORD_SIZE(TYPE, MODE)				\
+  ((((TYPE) ? int_size_in_bytes (TYPE) : GET_MODE_SIZE (MODE))	\
+    + 1) 							\
    / 2)
 
 #define FUNCTION_ARG(CUM, MODE, TYPE, NAMED) \
-        xstormy16_function_arg (CUM, MODE, TYPE, NAMED)
+	xstormy16_function_arg (CUM, MODE, TYPE, NAMED)
 
 /* For this platform, the value of CUMULATIVE_ARGS is the number of words
    of arguments that have been passed in registers so far.  */
@@ -417,11 +417,11 @@ enum reg_class
 #define INIT_CUMULATIVE_ARGS(CUM, FNTYPE, LIBNAME, INDIRECT, N_NAMED_ARGS) \
   (CUM) = 0
 
-#define FUNCTION_ARG_ADVANCE(CUM, MODE, TYPE, NAMED)                        \
+#define FUNCTION_ARG_ADVANCE(CUM, MODE, TYPE, NAMED)			\
   ((CUM) = xstormy16_function_arg_advance (CUM, MODE, TYPE, NAMED))
 
-#define FUNCTION_ARG_REGNO_P(REGNO)                                        \
-  ((REGNO) >= FIRST_ARGUMENT_REGISTER                                         \
+#define FUNCTION_ARG_REGNO_P(REGNO)					\
+  ((REGNO) >= FIRST_ARGUMENT_REGISTER 					\
    && (REGNO) < FIRST_ARGUMENT_REGISTER + NUM_ARGUMENT_REGISTERS)
 
 
@@ -429,7 +429,7 @@ enum reg_class
 
 /* The number of the hard register that is used to return a scalar value from a
    function call.  */
-#define RETURN_VALUE_REGNUM        FIRST_ARGUMENT_REGISTER
+#define RETURN_VALUE_REGNUM	FIRST_ARGUMENT_REGISTER
      
 #define FUNCTION_VALUE(VALTYPE, FUNC) \
   xstormy16_function_value (VALTYPE, FUNC)
@@ -553,21 +553,21 @@ enum reg_class
 #define MAX_REGS_PER_ADDRESS 1
 
 #ifdef REG_OK_STRICT
-#define GO_IF_LEGITIMATE_ADDRESS(MODE, X, LABEL)        \
-do {                                                        \
-  if (xstormy16_legitimate_address_p (MODE, X, 1))        \
-    goto LABEL;                                                \
+#define GO_IF_LEGITIMATE_ADDRESS(MODE, X, LABEL)	\
+do {							\
+  if (xstormy16_legitimate_address_p (MODE, X, 1))	\
+    goto LABEL;						\
 } while (0)
 #else
-#define GO_IF_LEGITIMATE_ADDRESS(MODE, X, LABEL)        \
-do {                                                        \
-  if (xstormy16_legitimate_address_p (MODE, X, 0))        \
-    goto LABEL;                                                \
+#define GO_IF_LEGITIMATE_ADDRESS(MODE, X, LABEL)	\
+do {							\
+  if (xstormy16_legitimate_address_p (MODE, X, 0))	\
+    goto LABEL;						\
 } while (0)
 #endif
 
 #ifdef REG_OK_STRICT
-#define REG_OK_FOR_BASE_P(X)                                                    \
+#define REG_OK_FOR_BASE_P(X) 						   \
   (REGNO_OK_FOR_BASE_P (REGNO (X)) && (REGNO (X) < FIRST_PSEUDO_REGISTER))
 #else
 #define REG_OK_FOR_BASE_P(X) REGNO_OK_FOR_BASE_P (REGNO (X))
@@ -580,8 +580,8 @@ do {                                                        \
    address for DImode or DFmode, or if the address is a post-increment
    or pre-decrement address.
 */
-#define GO_IF_MODE_DEPENDENT_ADDRESS(ADDR,LABEL)                        \
-  if (xstormy16_mode_dependent_address_p (ADDR))                                \
+#define GO_IF_MODE_DEPENDENT_ADDRESS(ADDR,LABEL)			\
+  if (xstormy16_mode_dependent_address_p (ADDR))				\
     goto LABEL
 
 #define LEGITIMATE_CONSTANT_P(X) 1
@@ -616,8 +616,8 @@ do {                                                        \
 
 #undef CTORS_SECTION_ASM_OP
 #undef DTORS_SECTION_ASM_OP
-#define CTORS_SECTION_ASM_OP        "\t.section\t.ctors,\"a\""
-#define DTORS_SECTION_ASM_OP        "\t.section\t.dtors,\"a\""
+#define CTORS_SECTION_ASM_OP	"\t.section\t.ctors,\"a\""
+#define DTORS_SECTION_ASM_OP	"\t.section\t.dtors,\"a\""
 
 #define TARGET_ASM_INIT_SECTIONS xstormy16_asm_init_sections
 
@@ -642,22 +642,22 @@ do {                                                        \
 
 
 /* Output and Generation of Labels.  */
-#define SYMBOL_FLAG_XSTORMY16_BELOW100        (SYMBOL_FLAG_MACH_DEP << 0)
+#define SYMBOL_FLAG_XSTORMY16_BELOW100	(SYMBOL_FLAG_MACH_DEP << 0)
 
-#define ASM_OUTPUT_SYMBOL_REF(STREAM, SYMBOL)                                \
-  do {                                                                        \
-    const char *rn = XSTR (SYMBOL, 0);                                        \
-    if (SYMBOL_REF_FUNCTION_P (SYMBOL))                                        \
-      ASM_OUTPUT_LABEL_REF ((STREAM), rn);                                \
-    else                                                                \
-      assemble_name (STREAM, rn);                                        \
+#define ASM_OUTPUT_SYMBOL_REF(STREAM, SYMBOL)				\
+  do {									\
+    const char *rn = XSTR (SYMBOL, 0);					\
+    if (SYMBOL_REF_FUNCTION_P (SYMBOL))					\
+      ASM_OUTPUT_LABEL_REF ((STREAM), rn);				\
+    else								\
+      assemble_name (STREAM, rn);					\
   } while (0)
 
-#define ASM_OUTPUT_LABEL_REF(STREAM, NAME)        \
-do  {                                                \
-  fputs ("@fptr(", STREAM);                        \
-  assemble_name (STREAM, NAME);                        \
-  fputc (')', STREAM);                                \
+#define ASM_OUTPUT_LABEL_REF(STREAM, NAME)	\
+do  {						\
+  fputs ("@fptr(", STREAM);			\
+  assemble_name (STREAM, NAME);			\
+  fputc (')', STREAM);				\
 } while (0)
 
 /* Globalizing directive for a label.  */
@@ -704,12 +704,12 @@ do  {                                                \
 
 /* Output of Assembler Instructions.  */
 
-#define REGISTER_NAMES                                                        \
-{ "r0", "r1", "r2", "r3", "r4", "r5", "r6", "r7", "r8", "r9", "r10",        \
+#define REGISTER_NAMES							\
+{ "r0", "r1", "r2", "r3", "r4", "r5", "r6", "r7", "r8", "r9", "r10",	\
   "r11", "r12", "r13", "psw", "sp", "carry", "fp", "ap" }
 
-#define ADDITIONAL_REGISTER_NAMES                \
-  { { "r14", 14 },                                \
+#define ADDITIONAL_REGISTER_NAMES		\
+  { { "r14", 14 },				\
     { "r15", 15 } }
 
 #define PRINT_OPERAND(STREAM, X, CODE) xstormy16_print_operand (STREAM, X, CODE)

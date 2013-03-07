@@ -82,9 +82,9 @@ else
 softfp_file_list := $(addsuffix .c,$(softfp_func_list))
 
 $(softfp_file_list):
-        echo $(softfp_wrap_start) > $@
-        echo '#include "config/soft-fp/$@"' >> $@
-        echo $(softfp_wrap_end) >> $@
+	echo $(softfp_wrap_start) > $@
+	echo '#include "config/soft-fp/$@"' >> $@
+	echo $(softfp_wrap_end) >> $@
 endif
 
 LIB2FUNCS_EXTRA += $(softfp_file_list)
@@ -105,4 +105,4 @@ endif
 SFP_MACHINE := sfp-machine.h
 
 $(SFP_MACHINE): $(srcdir)/config/$(softfp_machine_header)
-        cp $(srcdir)/config/$(softfp_machine_header) $(SFP_MACHINE)
+	cp $(srcdir)/config/$(softfp_machine_header) $(SFP_MACHINE)

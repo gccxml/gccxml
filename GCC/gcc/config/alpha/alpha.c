@@ -134,37 +134,37 @@ struct alpha_rtx_cost_data
 static struct alpha_rtx_cost_data const alpha_rtx_cost_data[PROCESSOR_MAX] =
 {
   { /* EV4 */
-    COSTS_N_INSNS (6),                /* fp_add */
-    COSTS_N_INSNS (6),                /* fp_mult */
-    COSTS_N_INSNS (34),                /* fp_div_sf */
-    COSTS_N_INSNS (63),                /* fp_div_df */
-    COSTS_N_INSNS (23),                /* int_mult_si */
-    COSTS_N_INSNS (23),                /* int_mult_di */
-    COSTS_N_INSNS (2),                /* int_shift */
-    COSTS_N_INSNS (2),                /* int_cmov */
-    COSTS_N_INSNS (97),                /* int_div */
+    COSTS_N_INSNS (6),		/* fp_add */
+    COSTS_N_INSNS (6),		/* fp_mult */
+    COSTS_N_INSNS (34),		/* fp_div_sf */
+    COSTS_N_INSNS (63),		/* fp_div_df */
+    COSTS_N_INSNS (23),		/* int_mult_si */
+    COSTS_N_INSNS (23),		/* int_mult_di */
+    COSTS_N_INSNS (2),		/* int_shift */
+    COSTS_N_INSNS (2),		/* int_cmov */
+    COSTS_N_INSNS (97),		/* int_div */
   },
   { /* EV5 */
-    COSTS_N_INSNS (4),                /* fp_add */
-    COSTS_N_INSNS (4),                /* fp_mult */
-    COSTS_N_INSNS (15),                /* fp_div_sf */
-    COSTS_N_INSNS (22),                /* fp_div_df */
-    COSTS_N_INSNS (8),                /* int_mult_si */
-    COSTS_N_INSNS (12),                /* int_mult_di */
-    COSTS_N_INSNS (1) + 1,        /* int_shift */
-    COSTS_N_INSNS (1),                /* int_cmov */
-    COSTS_N_INSNS (83),                /* int_div */
+    COSTS_N_INSNS (4),		/* fp_add */
+    COSTS_N_INSNS (4),		/* fp_mult */
+    COSTS_N_INSNS (15),		/* fp_div_sf */
+    COSTS_N_INSNS (22),		/* fp_div_df */
+    COSTS_N_INSNS (8),		/* int_mult_si */
+    COSTS_N_INSNS (12),		/* int_mult_di */
+    COSTS_N_INSNS (1) + 1,	/* int_shift */
+    COSTS_N_INSNS (1),		/* int_cmov */
+    COSTS_N_INSNS (83),		/* int_div */
   },
   { /* EV6 */
-    COSTS_N_INSNS (4),                /* fp_add */
-    COSTS_N_INSNS (4),                /* fp_mult */
-    COSTS_N_INSNS (12),                /* fp_div_sf */
-    COSTS_N_INSNS (15),                /* fp_div_df */
-    COSTS_N_INSNS (7),                /* int_mult_si */
-    COSTS_N_INSNS (7),                /* int_mult_di */
-    COSTS_N_INSNS (1),                /* int_shift */
-    COSTS_N_INSNS (2),                /* int_cmov */
-    COSTS_N_INSNS (86),                /* int_div */
+    COSTS_N_INSNS (4),		/* fp_add */
+    COSTS_N_INSNS (4),		/* fp_mult */
+    COSTS_N_INSNS (12),		/* fp_div_sf */
+    COSTS_N_INSNS (15),		/* fp_div_df */
+    COSTS_N_INSNS (7),		/* int_mult_si */
+    COSTS_N_INSNS (7),		/* int_mult_di */
+    COSTS_N_INSNS (1),		/* int_shift */
+    COSTS_N_INSNS (2),		/* int_cmov */
+    COSTS_N_INSNS (86),		/* int_div */
   },
 };
 
@@ -175,15 +175,15 @@ static struct alpha_rtx_cost_data const alpha_rtx_cost_data[PROCESSOR_MAX] =
 
 static struct alpha_rtx_cost_data const alpha_rtx_cost_size =
 {
-  COSTS_N_INSNS (1),                /* fp_add */
-  COSTS_N_INSNS (1),                /* fp_mult */
-  COSTS_N_INSNS (1),                /* fp_div_sf */
-  COSTS_N_INSNS (1) + 1,        /* fp_div_df */
-  COSTS_N_INSNS (1) + 1,        /* int_mult_si */
-  COSTS_N_INSNS (1) + 2,        /* int_mult_di */
-  COSTS_N_INSNS (1),                /* int_shift */
-  COSTS_N_INSNS (1),                /* int_cmov */
-  COSTS_N_INSNS (6),                /* int_div */
+  COSTS_N_INSNS (1),		/* fp_add */
+  COSTS_N_INSNS (1),		/* fp_mult */
+  COSTS_N_INSNS (1),		/* fp_div_sf */
+  COSTS_N_INSNS (1) + 1,	/* fp_div_df */
+  COSTS_N_INSNS (1) + 1,	/* int_mult_si */
+  COSTS_N_INSNS (1) + 2,	/* int_mult_di */
+  COSTS_N_INSNS (1),		/* int_shift */
+  COSTS_N_INSNS (1),		/* int_cmov */
+  COSTS_N_INSNS (6),		/* int_div */
 };
 
 /* Get the number of args of a function in one of two ways.  */
@@ -218,7 +218,7 @@ alpha_handle_option (size_t code, const char *arg, int value)
     {
     case OPT_mfp_regs:
       if (value == 0)
-        target_flags |= MASK_SOFT_FP;
+	target_flags |= MASK_SOFT_FP;
       break;
 
     case OPT_mieee:
@@ -228,7 +228,7 @@ alpha_handle_option (size_t code, const char *arg, int value)
 
     case OPT_mtls_size_:
       if (value != 16 && value != 32 && value != 64)
-        error ("bad value %qs for -mtls-size switch", arg);
+	error ("bad value %qs for -mtls-size switch", arg);
       break;
     }
 
@@ -260,20 +260,20 @@ override_options (void)
     const enum processor_type processor;
     const int flags;
   } cpu_table[] = {
-    { "ev4",        PROCESSOR_EV4, 0 },
-    { "ev45",        PROCESSOR_EV4, 0 },
-    { "21064",        PROCESSOR_EV4, 0 },
-    { "ev5",        PROCESSOR_EV5, 0 },
-    { "21164",        PROCESSOR_EV5, 0 },
-    { "ev56",        PROCESSOR_EV5, MASK_BWX },
-    { "21164a",        PROCESSOR_EV5, MASK_BWX },
-    { "pca56",        PROCESSOR_EV5, MASK_BWX|MASK_MAX },
+    { "ev4",	PROCESSOR_EV4, 0 },
+    { "ev45",	PROCESSOR_EV4, 0 },
+    { "21064",	PROCESSOR_EV4, 0 },
+    { "ev5",	PROCESSOR_EV5, 0 },
+    { "21164",	PROCESSOR_EV5, 0 },
+    { "ev56",	PROCESSOR_EV5, MASK_BWX },
+    { "21164a",	PROCESSOR_EV5, MASK_BWX },
+    { "pca56",	PROCESSOR_EV5, MASK_BWX|MASK_MAX },
     { "21164PC",PROCESSOR_EV5, MASK_BWX|MASK_MAX },
     { "21164pc",PROCESSOR_EV5, MASK_BWX|MASK_MAX },
-    { "ev6",        PROCESSOR_EV6, MASK_BWX|MASK_MAX|MASK_FIX },
-    { "21264",        PROCESSOR_EV6, MASK_BWX|MASK_MAX|MASK_FIX },
-    { "ev67",        PROCESSOR_EV6, MASK_BWX|MASK_MAX|MASK_FIX|MASK_CIX },
-    { "21264a",        PROCESSOR_EV6, MASK_BWX|MASK_MAX|MASK_FIX|MASK_CIX },
+    { "ev6",	PROCESSOR_EV6, MASK_BWX|MASK_MAX|MASK_FIX },
+    { "21264",	PROCESSOR_EV6, MASK_BWX|MASK_MAX|MASK_FIX },
+    { "ev67",	PROCESSOR_EV6, MASK_BWX|MASK_MAX|MASK_FIX|MASK_CIX },
+    { "21264a",	PROCESSOR_EV6, MASK_BWX|MASK_MAX|MASK_FIX|MASK_CIX },
     { 0, 0, 0 }
   };
 
@@ -283,7 +283,7 @@ override_options (void)
   if (TARGET_ABI_UNICOSMK && flag_pic)
     {
       warning (0, "-f%s ignored for Unicos/Mk (not supported)",
-               (flag_pic > 1) ? "PIC" : "pic");
+	       (flag_pic > 1) ? "PIC" : "pic");
       flag_pic = 0;
     }
 
@@ -306,90 +306,90 @@ override_options (void)
   if (TARGET_IEEE)
     {
       if (TARGET_ABI_UNICOSMK)
-        warning (0, "-mieee not supported on Unicos/Mk");
+	warning (0, "-mieee not supported on Unicos/Mk");
       else
-        {
-          alpha_tp = ALPHA_TP_INSN;
-          alpha_fptm = ALPHA_FPTM_SU;
-        }
+	{
+	  alpha_tp = ALPHA_TP_INSN;
+	  alpha_fptm = ALPHA_FPTM_SU;
+	}
     }
 
   if (TARGET_IEEE_WITH_INEXACT)
     {
       if (TARGET_ABI_UNICOSMK)
-        warning (0, "-mieee-with-inexact not supported on Unicos/Mk");
+	warning (0, "-mieee-with-inexact not supported on Unicos/Mk");
       else
-        {
-          alpha_tp = ALPHA_TP_INSN;
-          alpha_fptm = ALPHA_FPTM_SUI;
-        }
+	{
+	  alpha_tp = ALPHA_TP_INSN;
+	  alpha_fptm = ALPHA_FPTM_SUI;
+	}
     }
 
   if (alpha_tp_string)
     {
       if (! strcmp (alpha_tp_string, "p"))
-        alpha_tp = ALPHA_TP_PROG;
+	alpha_tp = ALPHA_TP_PROG;
       else if (! strcmp (alpha_tp_string, "f"))
-        alpha_tp = ALPHA_TP_FUNC;
+	alpha_tp = ALPHA_TP_FUNC;
       else if (! strcmp (alpha_tp_string, "i"))
-        alpha_tp = ALPHA_TP_INSN;
+	alpha_tp = ALPHA_TP_INSN;
       else
-        error ("bad value %qs for -mtrap-precision switch", alpha_tp_string);
+	error ("bad value %qs for -mtrap-precision switch", alpha_tp_string);
     }
 
   if (alpha_fprm_string)
     {
       if (! strcmp (alpha_fprm_string, "n"))
-        alpha_fprm = ALPHA_FPRM_NORM;
+	alpha_fprm = ALPHA_FPRM_NORM;
       else if (! strcmp (alpha_fprm_string, "m"))
-        alpha_fprm = ALPHA_FPRM_MINF;
+	alpha_fprm = ALPHA_FPRM_MINF;
       else if (! strcmp (alpha_fprm_string, "c"))
-        alpha_fprm = ALPHA_FPRM_CHOP;
+	alpha_fprm = ALPHA_FPRM_CHOP;
       else if (! strcmp (alpha_fprm_string,"d"))
-        alpha_fprm = ALPHA_FPRM_DYN;
+	alpha_fprm = ALPHA_FPRM_DYN;
       else
-        error ("bad value %qs for -mfp-rounding-mode switch",
-               alpha_fprm_string);
+	error ("bad value %qs for -mfp-rounding-mode switch",
+	       alpha_fprm_string);
     }
 
   if (alpha_fptm_string)
     {
       if (strcmp (alpha_fptm_string, "n") == 0)
-        alpha_fptm = ALPHA_FPTM_N;
+	alpha_fptm = ALPHA_FPTM_N;
       else if (strcmp (alpha_fptm_string, "u") == 0)
-        alpha_fptm = ALPHA_FPTM_U;
+	alpha_fptm = ALPHA_FPTM_U;
       else if (strcmp (alpha_fptm_string, "su") == 0)
-        alpha_fptm = ALPHA_FPTM_SU;
+	alpha_fptm = ALPHA_FPTM_SU;
       else if (strcmp (alpha_fptm_string, "sui") == 0)
-        alpha_fptm = ALPHA_FPTM_SUI;
+	alpha_fptm = ALPHA_FPTM_SUI;
       else
-        error ("bad value %qs for -mfp-trap-mode switch", alpha_fptm_string);
+	error ("bad value %qs for -mfp-trap-mode switch", alpha_fptm_string);
     }
 
   if (alpha_cpu_string)
     {
       for (i = 0; cpu_table [i].name; i++)
-        if (! strcmp (alpha_cpu_string, cpu_table [i].name))
-          {
-            alpha_tune = alpha_cpu = cpu_table [i].processor;
-            target_flags &= ~ (MASK_BWX | MASK_MAX | MASK_FIX | MASK_CIX);
-            target_flags |= cpu_table [i].flags;
-            break;
-          }
+	if (! strcmp (alpha_cpu_string, cpu_table [i].name))
+	  {
+	    alpha_tune = alpha_cpu = cpu_table [i].processor;
+	    target_flags &= ~ (MASK_BWX | MASK_MAX | MASK_FIX | MASK_CIX);
+	    target_flags |= cpu_table [i].flags;
+	    break;
+	  }
       if (! cpu_table [i].name)
-        error ("bad value %qs for -mcpu switch", alpha_cpu_string);
+	error ("bad value %qs for -mcpu switch", alpha_cpu_string);
     }
 
   if (alpha_tune_string)
     {
       for (i = 0; cpu_table [i].name; i++)
-        if (! strcmp (alpha_tune_string, cpu_table [i].name))
-          {
-            alpha_tune = cpu_table [i].processor;
-            break;
-          }
+	if (! strcmp (alpha_tune_string, cpu_table [i].name))
+	  {
+	    alpha_tune = cpu_table [i].processor;
+	    break;
+	  }
       if (! cpu_table [i].name)
-        error ("bad value %qs for -mcpu switch", alpha_tune_string);
+	error ("bad value %qs for -mcpu switch", alpha_tune_string);
     }
 
   /* Do some sanity checks on the above options.  */
@@ -410,25 +410,25 @@ override_options (void)
   if (alpha_cpu == PROCESSOR_EV6)
     {
       /* Except for EV6 pass 1 (not released), we always have precise
-         arithmetic traps.  Which means we can do software completion
-         without minding trap shadows.  */
+	 arithmetic traps.  Which means we can do software completion
+	 without minding trap shadows.  */
       alpha_tp = ALPHA_TP_PROG;
     }
 
   if (TARGET_FLOAT_VAX)
     {
       if (alpha_fprm == ALPHA_FPRM_MINF || alpha_fprm == ALPHA_FPRM_DYN)
-        {
-          warning (0, "rounding mode not supported for VAX floats");
-          alpha_fprm = ALPHA_FPRM_NORM;
-        }
+	{
+	  warning (0, "rounding mode not supported for VAX floats");
+	  alpha_fprm = ALPHA_FPRM_NORM;
+	}
       if (alpha_fptm == ALPHA_FPTM_SUI)
-        {
-          warning (0, "trap mode not supported for VAX floats");
-          alpha_fptm = ALPHA_FPTM_SU;
-        }
+	{
+	  warning (0, "trap mode not supported for VAX floats");
+	  alpha_fptm = ALPHA_FPTM_SU;
+	}
       if (target_flags_explicit & MASK_LONG_DOUBLE_128)
-        warning (0, "128-bit long double not supported for VAX floats");
+	warning (0, "128-bit long double not supported for VAX floats");
       target_flags &= ~MASK_LONG_DOUBLE_128;
     }
 
@@ -440,39 +440,39 @@ override_options (void)
       alpha_mlat_string = "L1";
 
     if (ISDIGIT ((unsigned char)alpha_mlat_string[0])
-        && (lat = strtol (alpha_mlat_string, &end, 10), *end == '\0'))
+	&& (lat = strtol (alpha_mlat_string, &end, 10), *end == '\0'))
       ;
     else if ((alpha_mlat_string[0] == 'L' || alpha_mlat_string[0] == 'l')
-             && ISDIGIT ((unsigned char)alpha_mlat_string[1])
-             && alpha_mlat_string[2] == '\0')
+	     && ISDIGIT ((unsigned char)alpha_mlat_string[1])
+	     && alpha_mlat_string[2] == '\0')
       {
-        static int const cache_latency[][4] =
-        {
-          { 3, 30, -1 },        /* ev4 -- Bcache is a guess */
-          { 2, 12, 38 },        /* ev5 -- Bcache from PC164 LMbench numbers */
-          { 3, 12, 30 },        /* ev6 -- Bcache from DS20 LMbench.  */
-        };
+	static int const cache_latency[][4] =
+	{
+	  { 3, 30, -1 },	/* ev4 -- Bcache is a guess */
+	  { 2, 12, 38 },	/* ev5 -- Bcache from PC164 LMbench numbers */
+	  { 3, 12, 30 },	/* ev6 -- Bcache from DS20 LMbench.  */
+	};
 
-        lat = alpha_mlat_string[1] - '0';
-        if (lat <= 0 || lat > 3 || cache_latency[alpha_tune][lat-1] == -1)
-          {
-            warning (0, "L%d cache latency unknown for %s",
-                     lat, alpha_cpu_name[alpha_tune]);
-            lat = 3;
-          }
-        else
-          lat = cache_latency[alpha_tune][lat-1];
+	lat = alpha_mlat_string[1] - '0';
+	if (lat <= 0 || lat > 3 || cache_latency[alpha_tune][lat-1] == -1)
+	  {
+	    warning (0, "L%d cache latency unknown for %s",
+		     lat, alpha_cpu_name[alpha_tune]);
+	    lat = 3;
+	  }
+	else
+	  lat = cache_latency[alpha_tune][lat-1];
       }
     else if (! strcmp (alpha_mlat_string, "main"))
       {
-        /* Most current memories have about 370ns latency.  This is
-           a reasonable guess for a fast cpu.  */
-        lat = 150;
+	/* Most current memories have about 370ns latency.  This is
+	   a reasonable guess for a fast cpu.  */
+	lat = 150;
       }
     else
       {
-        warning (0, "bad value %qs for -mmemory-latency", alpha_mlat_string);
-        lat = 3;
+	warning (0, "bad value %qs for -mmemory-latency", alpha_mlat_string);
+	lat = 3;
       }
 
     alpha_memory_latency = lat;
@@ -494,9 +494,9 @@ override_options (void)
   if (optimize > 0 && write_symbols != SDB_DEBUG)
     {
       if (align_loops <= 0)
-        align_loops = 16;
+	align_loops = 16;
       if (align_jumps <= 0)
-        align_jumps = 16;
+	align_jumps = 16;
     }
   if (align_functions <= 0)
     align_functions = 16;
@@ -576,14 +576,14 @@ resolve_reload_operand (rtx op)
     {
       rtx tmp = op;
       if (GET_CODE (tmp) == SUBREG)
-        tmp = SUBREG_REG (tmp);
+	tmp = SUBREG_REG (tmp);
       if (GET_CODE (tmp) == REG
-          && REGNO (tmp) >= FIRST_PSEUDO_REGISTER)
-        {
-          op = reg_equiv_memory_loc[REGNO (tmp)];
-          if (op == 0)
-            return 0;
-        }
+	  && REGNO (tmp) >= FIRST_PSEUDO_REGISTER)
+	{
+	  op = reg_equiv_memory_loc[REGNO (tmp)];
+	  if (op == 0)
+	    return 0;
+	}
     }
   return op;
 }
@@ -638,13 +638,13 @@ alpha_const_double_ok_for_letter_p (rtx value, int c)
     case 'G':
       /* The floating point zero constant.  */
       return (GET_MODE_CLASS (GET_MODE (value)) == MODE_FLOAT
-              && value == CONST0_RTX (GET_MODE (value)));
+	      && value == CONST0_RTX (GET_MODE (value)));
 
     case 'H':
       /* A valid operand of a ZAP insn.  */
       return (GET_MODE (value) == VOIDmode
-              && zap_mask (CONST_DOUBLE_LOW (value))
-              && zap_mask (CONST_DOUBLE_HIGH (value)));
+	      && zap_mask (CONST_DOUBLE_LOW (value))
+	      && zap_mask (CONST_DOUBLE_HIGH (value)));
 
     default:
       return false;
@@ -665,14 +665,14 @@ alpha_extra_constraint (rtx value, int c)
       return direct_call_operand (value, Pmode);
     case 'S':
       return (GET_CODE (value) == CONST_INT
-              && (unsigned HOST_WIDE_INT) INTVAL (value) < 64);
+	      && (unsigned HOST_WIDE_INT) INTVAL (value) < 64);
     case 'T':
       return GET_CODE (value) == HIGH;
     case 'U':
       return TARGET_ABI_UNICOSMK && symbolic_operand (value, VOIDmode);
     case 'W':
       return (GET_CODE (value) == CONST_VECTOR
-              && value == CONST0_RTX (GET_MODE (value)));
+	      && value == CONST0_RTX (GET_MODE (value)));
     default:
       return false;
     }
@@ -724,11 +724,11 @@ int
 direct_return (void)
 {
   return (! TARGET_ABI_OPEN_VMS && ! TARGET_ABI_UNICOSMK
-          && reload_completed
-          && alpha_sa_size () == 0
-          && get_frame_size () == 0
-          && current_function_outgoing_args_size == 0
-          && current_function_pretend_args_size == 0);
+	  && reload_completed
+	  && alpha_sa_size () == 0
+	  && get_frame_size () == 0
+	  && current_function_outgoing_args_size == 0
+	  && current_function_pretend_args_size == 0);
 }
 
 /* Return the ADDR_VEC associated with a tablejump insn.  */
@@ -768,17 +768,17 @@ alpha_tablejump_best_label (rtx insn)
       int i, j;
 
       for (i = 0; i < n_labels; i++)
-        {
-          int count = 1;
+	{
+	  int count = 1;
 
-          for (j = i + 1; j < n_labels; j++)
-            if (XEXP (XVECEXP (jump_table, 1, i), 0)
-                == XEXP (XVECEXP (jump_table, 1, j), 0))
-              count++;
+	  for (j = i + 1; j < n_labels; j++)
+	    if (XEXP (XVECEXP (jump_table, 1, i), 0)
+		== XEXP (XVECEXP (jump_table, 1, j), 0))
+	      count++;
 
-          if (count > best_count)
-            best_count = count, best_label = XVECEXP (jump_table, 1, i);
-        }
+	  if (count > best_count)
+	    best_count = count, best_label = XVECEXP (jump_table, 1, i);
+	}
     }
 
   return best_label ? best_label : const0_rtx;
@@ -843,17 +843,17 @@ alpha_in_small_data_p (tree exp)
     {
       const char *section = TREE_STRING_POINTER (DECL_SECTION_NAME (exp));
       if (strcmp (section, ".sdata") == 0
-          || strcmp (section, ".sbss") == 0)
-        return true;
+	  || strcmp (section, ".sbss") == 0)
+	return true;
     }
   else
     {
       HOST_WIDE_INT size = int_size_in_bytes (TREE_TYPE (exp));
 
       /* If this is an incomplete type with size 0, then we can't put it
-         in sdata because it might be too big when completed.  */
+	 in sdata because it might be too big when completed.  */
       if (size > 0 && (unsigned HOST_WIDE_INT) size <= g_switch_value)
-        return true;
+	return true;
     }
 
   return false;
@@ -902,14 +902,14 @@ alpha_legitimate_address_p (enum machine_mode mode, rtx x, int strict)
   /* Discard non-paradoxical subregs.  */
   if (GET_CODE (x) == SUBREG
       && (GET_MODE_SIZE (GET_MODE (x))
-          < GET_MODE_SIZE (GET_MODE (SUBREG_REG (x)))))
+	  < GET_MODE_SIZE (GET_MODE (SUBREG_REG (x)))))
     x = SUBREG_REG (x);
 
   /* Unadorned general registers are valid.  */
   if (REG_P (x)
       && (strict
-          ? STRICT_REG_OK_FOR_BASE_P (x)
-          : NONSTRICT_REG_OK_FOR_BASE_P (x)))
+	  ? STRICT_REG_OK_FOR_BASE_P (x)
+	  : NONSTRICT_REG_OK_FOR_BASE_P (x)))
     return true;
 
   /* Constant addresses (i.e. +/- 32k) are valid.  */
@@ -930,21 +930,21 @@ alpha_legitimate_address_p (enum machine_mode mode, rtx x, int strict)
       /* Discard non-paradoxical subregs.  */
       if (GET_CODE (x) == SUBREG
           && (GET_MODE_SIZE (GET_MODE (x))
-              < GET_MODE_SIZE (GET_MODE (SUBREG_REG (x)))))
-        x = SUBREG_REG (x);
+	      < GET_MODE_SIZE (GET_MODE (SUBREG_REG (x)))))
+	x = SUBREG_REG (x);
 
       if (REG_P (x))
-        {
-          if (! strict
-              && NONSTRICT_REG_OK_FP_BASE_P (x)
-              && GET_CODE (ofs) == CONST_INT)
-            return true;
-          if ((strict
-               ? STRICT_REG_OK_FOR_BASE_P (x)
-               : NONSTRICT_REG_OK_FOR_BASE_P (x))
-              && CONSTANT_ADDRESS_P (ofs))
-            return true;
-        }
+	{
+	  if (! strict
+	      && NONSTRICT_REG_OK_FP_BASE_P (x)
+	      && GET_CODE (ofs) == CONST_INT)
+	    return true;
+	  if ((strict
+	       ? STRICT_REG_OK_FOR_BASE_P (x)
+	       : NONSTRICT_REG_OK_FOR_BASE_P (x))
+	      && CONSTANT_ADDRESS_P (ofs))
+	    return true;
+	}
     }
 
   /* If we're managing explicit relocations, LO_SUM is valid, as
@@ -952,32 +952,32 @@ alpha_legitimate_address_p (enum machine_mode mode, rtx x, int strict)
   else if (TARGET_EXPLICIT_RELOCS)
     {
       if (small_symbolic_operand (x, Pmode))
-        return true;
+	return true;
 
       if (GET_CODE (x) == LO_SUM)
-        {
-          rtx ofs = XEXP (x, 1);
-          x = XEXP (x, 0);
+	{
+	  rtx ofs = XEXP (x, 1);
+	  x = XEXP (x, 0);
 
-          /* Discard non-paradoxical subregs.  */
-          if (GET_CODE (x) == SUBREG
-              && (GET_MODE_SIZE (GET_MODE (x))
-                  < GET_MODE_SIZE (GET_MODE (SUBREG_REG (x)))))
-            x = SUBREG_REG (x);
+	  /* Discard non-paradoxical subregs.  */
+	  if (GET_CODE (x) == SUBREG
+	      && (GET_MODE_SIZE (GET_MODE (x))
+		  < GET_MODE_SIZE (GET_MODE (SUBREG_REG (x)))))
+	    x = SUBREG_REG (x);
 
-          /* Must have a valid base register.  */
-          if (! (REG_P (x)
-                 && (strict
-                     ? STRICT_REG_OK_FOR_BASE_P (x)
-                     : NONSTRICT_REG_OK_FOR_BASE_P (x))))
-            return false;
+	  /* Must have a valid base register.  */
+	  if (! (REG_P (x)
+		 && (strict
+		     ? STRICT_REG_OK_FOR_BASE_P (x)
+		     : NONSTRICT_REG_OK_FOR_BASE_P (x))))
+	    return false;
 
-          /* The symbol must be local.  */
-          if (local_symbolic_operand (ofs, Pmode)
-              || dtp32_symbolic_operand (ofs, Pmode)
-              || tp32_symbolic_operand (ofs, Pmode))
-            return true;
-        }
+	  /* The symbol must be local.  */
+	  if (local_symbolic_operand (ofs, Pmode)
+	      || dtp32_symbolic_operand (ofs, Pmode)
+	      || tp32_symbolic_operand (ofs, Pmode))
+	    return true;
+	}
     }
 
   return false;
@@ -1000,7 +1000,7 @@ get_tls_get_addr (void)
 
 rtx
 alpha_legitimize_address (rtx x, rtx scratch,
-                          enum machine_mode mode ATTRIBUTE_UNUSED)
+			  enum machine_mode mode ATTRIBUTE_UNUSED)
 {
   HOST_WIDE_INT addend;
 
@@ -1043,8 +1043,8 @@ alpha_legitimize_address (rtx x, rtx scratch,
     {
       addend = INTVAL (XEXP (XEXP (XEXP (x, 1), 0), 1));
       x = expand_simple_binop (Pmode, PLUS, XEXP (x, 0),
-                               XEXP (XEXP (XEXP (x, 1), 0), 0),
-                               NULL_RTX, 1, OPTAB_LIB_WIDEN);
+			       XEXP (XEXP (XEXP (x, 1), 0), 0),
+			       NULL_RTX, 1, OPTAB_LIB_WIDEN);
       goto split_addend;
     }
 
@@ -1054,116 +1054,116 @@ alpha_legitimize_address (rtx x, rtx scratch,
       rtx r0, r16, eqv, tga, tp, insn, dest, seq;
 
       switch (tls_symbolic_operand_type (x))
-        {
-        case TLS_MODEL_NONE:
-          break;
+	{
+	case TLS_MODEL_NONE:
+	  break;
 
-        case TLS_MODEL_GLOBAL_DYNAMIC:
-          start_sequence ();
+	case TLS_MODEL_GLOBAL_DYNAMIC:
+	  start_sequence ();
 
-          r0 = gen_rtx_REG (Pmode, 0);
-          r16 = gen_rtx_REG (Pmode, 16);
-          tga = get_tls_get_addr ();
-          dest = gen_reg_rtx (Pmode);
-          seq = GEN_INT (alpha_next_sequence_number++);
+	  r0 = gen_rtx_REG (Pmode, 0);
+	  r16 = gen_rtx_REG (Pmode, 16);
+	  tga = get_tls_get_addr ();
+	  dest = gen_reg_rtx (Pmode);
+	  seq = GEN_INT (alpha_next_sequence_number++);
 
-          emit_insn (gen_movdi_er_tlsgd (r16, pic_offset_table_rtx, x, seq));
-          insn = gen_call_value_osf_tlsgd (r0, tga, seq);
-          insn = emit_call_insn (insn);
-          CONST_OR_PURE_CALL_P (insn) = 1;
-          use_reg (&CALL_INSN_FUNCTION_USAGE (insn), r16);
-
-          insn = get_insns ();
-          end_sequence ();
-
-          emit_libcall_block (insn, dest, r0, x);
-          return dest;
-
-        case TLS_MODEL_LOCAL_DYNAMIC:
-          start_sequence ();
-
-          r0 = gen_rtx_REG (Pmode, 0);
-          r16 = gen_rtx_REG (Pmode, 16);
-          tga = get_tls_get_addr ();
-          scratch = gen_reg_rtx (Pmode);
-          seq = GEN_INT (alpha_next_sequence_number++);
-
-          emit_insn (gen_movdi_er_tlsldm (r16, pic_offset_table_rtx, seq));
-          insn = gen_call_value_osf_tlsldm (r0, tga, seq);
-          insn = emit_call_insn (insn);
-          CONST_OR_PURE_CALL_P (insn) = 1;
-          use_reg (&CALL_INSN_FUNCTION_USAGE (insn), r16);
+	  emit_insn (gen_movdi_er_tlsgd (r16, pic_offset_table_rtx, x, seq));
+	  insn = gen_call_value_osf_tlsgd (r0, tga, seq);
+	  insn = emit_call_insn (insn);
+	  CONST_OR_PURE_CALL_P (insn) = 1;
+	  use_reg (&CALL_INSN_FUNCTION_USAGE (insn), r16);
 
           insn = get_insns ();
-          end_sequence ();
+	  end_sequence ();
 
-          eqv = gen_rtx_UNSPEC (Pmode, gen_rtvec (1, const0_rtx),
-                                UNSPEC_TLSLDM_CALL);
-          emit_libcall_block (insn, scratch, r0, eqv);
+	  emit_libcall_block (insn, dest, r0, x);
+	  return dest;
 
-          eqv = gen_rtx_UNSPEC (Pmode, gen_rtvec (1, x), UNSPEC_DTPREL);
-          eqv = gen_rtx_CONST (Pmode, eqv);
+	case TLS_MODEL_LOCAL_DYNAMIC:
+	  start_sequence ();
 
-          if (alpha_tls_size == 64)
-            {
-              dest = gen_reg_rtx (Pmode);
-              emit_insn (gen_rtx_SET (VOIDmode, dest, eqv));
-              emit_insn (gen_adddi3 (dest, dest, scratch));
-              return dest;
-            }
-          if (alpha_tls_size == 32)
-            {
-              insn = gen_rtx_HIGH (Pmode, eqv);
-              insn = gen_rtx_PLUS (Pmode, scratch, insn);
-              scratch = gen_reg_rtx (Pmode);
-              emit_insn (gen_rtx_SET (VOIDmode, scratch, insn));
-            }
-          return gen_rtx_LO_SUM (Pmode, scratch, eqv);
+	  r0 = gen_rtx_REG (Pmode, 0);
+	  r16 = gen_rtx_REG (Pmode, 16);
+	  tga = get_tls_get_addr ();
+	  scratch = gen_reg_rtx (Pmode);
+	  seq = GEN_INT (alpha_next_sequence_number++);
 
-        case TLS_MODEL_INITIAL_EXEC:
-          eqv = gen_rtx_UNSPEC (Pmode, gen_rtvec (1, x), UNSPEC_TPREL);
-          eqv = gen_rtx_CONST (Pmode, eqv);
-          tp = gen_reg_rtx (Pmode);
-          scratch = gen_reg_rtx (Pmode);
-          dest = gen_reg_rtx (Pmode);
+	  emit_insn (gen_movdi_er_tlsldm (r16, pic_offset_table_rtx, seq));
+	  insn = gen_call_value_osf_tlsldm (r0, tga, seq);
+	  insn = emit_call_insn (insn);
+	  CONST_OR_PURE_CALL_P (insn) = 1;
+	  use_reg (&CALL_INSN_FUNCTION_USAGE (insn), r16);
 
-          emit_insn (gen_load_tp (tp));
-          emit_insn (gen_rtx_SET (VOIDmode, scratch, eqv));
-          emit_insn (gen_adddi3 (dest, tp, scratch));
-          return dest;
+          insn = get_insns ();
+	  end_sequence ();
 
-        case TLS_MODEL_LOCAL_EXEC:
-          eqv = gen_rtx_UNSPEC (Pmode, gen_rtvec (1, x), UNSPEC_TPREL);
-          eqv = gen_rtx_CONST (Pmode, eqv);
-          tp = gen_reg_rtx (Pmode);
+	  eqv = gen_rtx_UNSPEC (Pmode, gen_rtvec (1, const0_rtx),
+				UNSPEC_TLSLDM_CALL);
+	  emit_libcall_block (insn, scratch, r0, eqv);
 
-          emit_insn (gen_load_tp (tp));
-          if (alpha_tls_size == 32)
-            {
-              insn = gen_rtx_HIGH (Pmode, eqv);
-              insn = gen_rtx_PLUS (Pmode, tp, insn);
-              tp = gen_reg_rtx (Pmode);
-              emit_insn (gen_rtx_SET (VOIDmode, tp, insn));
-            }
-          return gen_rtx_LO_SUM (Pmode, tp, eqv);
+	  eqv = gen_rtx_UNSPEC (Pmode, gen_rtvec (1, x), UNSPEC_DTPREL);
+	  eqv = gen_rtx_CONST (Pmode, eqv);
 
-        default:
-          gcc_unreachable ();
-        }
+	  if (alpha_tls_size == 64)
+	    {
+	      dest = gen_reg_rtx (Pmode);
+	      emit_insn (gen_rtx_SET (VOIDmode, dest, eqv));
+	      emit_insn (gen_adddi3 (dest, dest, scratch));
+	      return dest;
+	    }
+	  if (alpha_tls_size == 32)
+	    {
+	      insn = gen_rtx_HIGH (Pmode, eqv);
+	      insn = gen_rtx_PLUS (Pmode, scratch, insn);
+	      scratch = gen_reg_rtx (Pmode);
+	      emit_insn (gen_rtx_SET (VOIDmode, scratch, insn));
+	    }
+	  return gen_rtx_LO_SUM (Pmode, scratch, eqv);
+
+	case TLS_MODEL_INITIAL_EXEC:
+	  eqv = gen_rtx_UNSPEC (Pmode, gen_rtvec (1, x), UNSPEC_TPREL);
+	  eqv = gen_rtx_CONST (Pmode, eqv);
+	  tp = gen_reg_rtx (Pmode);
+	  scratch = gen_reg_rtx (Pmode);
+	  dest = gen_reg_rtx (Pmode);
+
+	  emit_insn (gen_load_tp (tp));
+	  emit_insn (gen_rtx_SET (VOIDmode, scratch, eqv));
+	  emit_insn (gen_adddi3 (dest, tp, scratch));
+	  return dest;
+
+	case TLS_MODEL_LOCAL_EXEC:
+	  eqv = gen_rtx_UNSPEC (Pmode, gen_rtvec (1, x), UNSPEC_TPREL);
+	  eqv = gen_rtx_CONST (Pmode, eqv);
+	  tp = gen_reg_rtx (Pmode);
+
+	  emit_insn (gen_load_tp (tp));
+	  if (alpha_tls_size == 32)
+	    {
+	      insn = gen_rtx_HIGH (Pmode, eqv);
+	      insn = gen_rtx_PLUS (Pmode, tp, insn);
+	      tp = gen_reg_rtx (Pmode);
+	      emit_insn (gen_rtx_SET (VOIDmode, tp, insn));
+	    }
+	  return gen_rtx_LO_SUM (Pmode, tp, eqv);
+
+	default:
+	  gcc_unreachable ();
+	}
 
       if (local_symbolic_operand (x, Pmode))
-        {
-          if (small_symbolic_operand (x, Pmode))
-            return x;
-          else
-            {
-              if (!no_new_pseudos)
-                scratch = gen_reg_rtx (Pmode);
-              emit_insn (gen_rtx_SET (VOIDmode, scratch,
-                                      gen_rtx_HIGH (Pmode, x)));
-              return gen_rtx_LO_SUM (Pmode, scratch, x);
-            }
-        }
+	{
+	  if (small_symbolic_operand (x, Pmode))
+	    return x;
+	  else
+	    {
+	      if (!no_new_pseudos)
+	        scratch = gen_reg_rtx (Pmode);
+	      emit_insn (gen_rtx_SET (VOIDmode, scratch,
+				      gen_rtx_HIGH (Pmode, x)));
+	      return gen_rtx_LO_SUM (Pmode, scratch, x);
+	    }
+	}
     }
 
   return NULL;
@@ -1179,12 +1179,12 @@ alpha_legitimize_address (rtx x, rtx scratch,
 
     if (addend)
       x = expand_simple_binop (Pmode, PLUS, x, GEN_INT (addend),
-                               (no_new_pseudos ? scratch : NULL_RTX),
-                               1, OPTAB_LIB_WIDEN);
+			       (no_new_pseudos ? scratch : NULL_RTX),
+			       1, OPTAB_LIB_WIDEN);
     if (high)
       x = expand_simple_binop (Pmode, PLUS, x, GEN_INT (high),
-                               (no_new_pseudos ? scratch : NULL_RTX),
-                               1, OPTAB_LIB_WIDEN);
+			       (no_new_pseudos ? scratch : NULL_RTX),
+			       1, OPTAB_LIB_WIDEN);
 
     return plus_constant (x, low);
   }
@@ -1288,9 +1288,9 @@ alpha_cannot_copy_insn_p (rtx insn)
 
 rtx
 alpha_legitimize_reload_address (rtx x,
-                                 enum machine_mode mode ATTRIBUTE_UNUSED,
-                                 int opnum, int type,
-                                 int ind_levels ATTRIBUTE_UNUSED)
+				 enum machine_mode mode ATTRIBUTE_UNUSED,
+				 int opnum, int type,
+				 int ind_levels ATTRIBUTE_UNUSED)
 {
   /* We must recognize output that we have already generated ourselves.  */
   if (GET_CODE (x) == PLUS
@@ -1300,8 +1300,8 @@ alpha_legitimize_reload_address (rtx x,
       && GET_CODE (XEXP (x, 1)) == CONST_INT)
     {
       push_reload (XEXP (x, 0), NULL_RTX, &XEXP (x, 0), NULL,
-                   BASE_REG_CLASS, GET_MODE (x), VOIDmode, 0, 0,
-                   opnum, type);
+		   BASE_REG_CLASS, GET_MODE (x), VOIDmode, 0, 0,
+		   opnum, type);
       return x;
     }
 
@@ -1317,22 +1317,22 @@ alpha_legitimize_reload_address (rtx x,
       HOST_WIDE_INT val = INTVAL (XEXP (x, 1));
       HOST_WIDE_INT low = ((val & 0xffff) ^ 0x8000) - 0x8000;
       HOST_WIDE_INT high
-        = (((val - low) & 0xffffffff) ^ 0x80000000) - 0x80000000;
+	= (((val - low) & 0xffffffff) ^ 0x80000000) - 0x80000000;
 
       /* Check for 32-bit overflow.  */
       if (high + low != val)
-        return NULL_RTX;
+	return NULL_RTX;
 
       /* Reload the high part into a base reg; leave the low part
-         in the mem directly.  */
+	 in the mem directly.  */
       x = gen_rtx_PLUS (GET_MODE (x),
-                        gen_rtx_PLUS (GET_MODE (x), XEXP (x, 0),
-                                      GEN_INT (high)),
-                        GEN_INT (low));
+			gen_rtx_PLUS (GET_MODE (x), XEXP (x, 0),
+				      GEN_INT (high)),
+			GEN_INT (low));
 
       push_reload (XEXP (x, 0), NULL_RTX, &XEXP (x, 0), NULL,
-                   BASE_REG_CLASS, GET_MODE (x), VOIDmode, 0, 0,
-                   opnum, type);
+		   BASE_REG_CLASS, GET_MODE (x), VOIDmode, 0, 0,
+		   opnum, type);
       return x;
     }
 
@@ -1359,43 +1359,43 @@ alpha_rtx_costs (rtx x, int code, int outer_code, int *total)
     {
     case CONST_INT:
       /* If this is an 8-bit constant, return zero since it can be used
-         nearly anywhere with no cost.  If it is a valid operand for an
-         ADD or AND, likewise return 0 if we know it will be used in that
-         context.  Otherwise, return 2 since it might be used there later.
-         All other constants take at least two insns.  */
+	 nearly anywhere with no cost.  If it is a valid operand for an
+	 ADD or AND, likewise return 0 if we know it will be used in that
+	 context.  Otherwise, return 2 since it might be used there later.
+	 All other constants take at least two insns.  */
       if (INTVAL (x) >= 0 && INTVAL (x) < 256)
-        {
-          *total = 0;
-          return true;
-        }
+	{
+	  *total = 0;
+	  return true;
+	}
       /* FALLTHRU */
 
     case CONST_DOUBLE:
       if (x == CONST0_RTX (mode))
-        *total = 0;
+	*total = 0;
       else if ((outer_code == PLUS && add_operand (x, VOIDmode))
-               || (outer_code == AND && and_operand (x, VOIDmode)))
-        *total = 0;
+	       || (outer_code == AND && and_operand (x, VOIDmode)))
+	*total = 0;
       else if (add_operand (x, VOIDmode) || and_operand (x, VOIDmode))
-        *total = 2;
+	*total = 2;
       else
-        *total = COSTS_N_INSNS (2);
+	*total = COSTS_N_INSNS (2);
       return true;
 
     case CONST:
     case SYMBOL_REF:
     case LABEL_REF:
       if (TARGET_EXPLICIT_RELOCS && small_symbolic_operand (x, VOIDmode))
-        *total = COSTS_N_INSNS (outer_code != MEM);
+	*total = COSTS_N_INSNS (outer_code != MEM);
       else if (TARGET_EXPLICIT_RELOCS && local_symbolic_operand (x, VOIDmode))
-        *total = COSTS_N_INSNS (1 + (outer_code != MEM));
+	*total = COSTS_N_INSNS (1 + (outer_code != MEM));
       else if (tls_symbolic_operand_type (x))
-        /* Estimate of cost for call_pal rduniq.  */
-        /* ??? How many insns do we emit here?  More than one...  */
-        *total = COSTS_N_INSNS (15);
+	/* Estimate of cost for call_pal rduniq.  */
+	/* ??? How many insns do we emit here?  More than one...  */
+	*total = COSTS_N_INSNS (15);
       else
-        /* Otherwise we do a load from the GOT.  */
-        *total = COSTS_N_INSNS (optimize_size ? 1 : alpha_memory_latency);
+	/* Otherwise we do a load from the GOT.  */
+	*total = COSTS_N_INSNS (optimize_size ? 1 : alpha_memory_latency);
       return true;
 
     case HIGH:
@@ -1406,32 +1406,32 @@ alpha_rtx_costs (rtx x, int code, int outer_code, int *total)
     case PLUS:
     case MINUS:
       if (float_mode_p)
-        *total = cost_data->fp_add;
+	*total = cost_data->fp_add;
       else if (GET_CODE (XEXP (x, 0)) == MULT
-               && const48_operand (XEXP (XEXP (x, 0), 1), VOIDmode))
-        {
-          *total = (rtx_cost (XEXP (XEXP (x, 0), 0), outer_code)
-                    + rtx_cost (XEXP (x, 1), outer_code) + COSTS_N_INSNS (1));
-          return true;
-        }
+	       && const48_operand (XEXP (XEXP (x, 0), 1), VOIDmode))
+	{
+	  *total = (rtx_cost (XEXP (XEXP (x, 0), 0), outer_code)
+		    + rtx_cost (XEXP (x, 1), outer_code) + COSTS_N_INSNS (1));
+	  return true;
+	}
       return false;
 
     case MULT:
       if (float_mode_p)
-        *total = cost_data->fp_mult;
+	*total = cost_data->fp_mult;
       else if (mode == DImode)
-        *total = cost_data->int_mult_di;
+	*total = cost_data->int_mult_di;
       else
-        *total = cost_data->int_mult_si;
+	*total = cost_data->int_mult_si;
       return false;
 
     case ASHIFT:
       if (GET_CODE (XEXP (x, 1)) == CONST_INT
-          && INTVAL (XEXP (x, 1)) <= 3)
-        {
-          *total = COSTS_N_INSNS (1);
-          return false;
-        }
+	  && INTVAL (XEXP (x, 1)) <= 3)
+	{
+	  *total = COSTS_N_INSNS (1);
+	  return false;
+	}
       /* FALLTHRU */
 
     case ASHIFTRT:
@@ -1451,7 +1451,7 @@ alpha_rtx_costs (rtx x, int code, int outer_code, int *total)
     case MOD:
     case UMOD:
       if (!float_mode_p)
-        *total = cost_data->int_div;
+	*total = cost_data->int_div;
       else if (mode == SFmode)
         *total = cost_data->fp_div_sf;
       else
@@ -1464,18 +1464,18 @@ alpha_rtx_costs (rtx x, int code, int outer_code, int *total)
 
     case NEG:
       if (! float_mode_p)
-        {
-          *total = COSTS_N_INSNS (1);
-          return false;
-        }
+	{
+	  *total = COSTS_N_INSNS (1);
+	  return false;
+	}
       /* FALLTHRU */
 
     case ABS:
       if (! float_mode_p)
-        {
-          *total = COSTS_N_INSNS (1) + cost_data->int_cmov;
-          return false;
-        }
+	{
+	  *total = COSTS_N_INSNS (1) + cost_data->int_cmov;
+	  return false;
+	}
       /* FALLTHRU */
 
     case FLOAT:
@@ -1488,9 +1488,9 @@ alpha_rtx_costs (rtx x, int code, int outer_code, int *total)
 
     case FLOAT_EXTEND:
       if (GET_CODE (XEXP (x, 0)) == MEM)
-        *total = 0;
+	*total = 0;
       else
-        *total = cost_data->fp_add;
+	*total = cost_data->fp_add;
       return false;
 
     default:
@@ -1585,7 +1585,7 @@ get_unaligned_offset (rtx addr, HOST_WIDE_INT ofs)
     }
 
   return expand_simple_binop (Pmode, PLUS, addr, GEN_INT (ofs & 7),
-                              NULL_RTX, 1, OPTAB_LIB_WIDEN);
+			      NULL_RTX, 1, OPTAB_LIB_WIDEN);
 }
 
 /* On the Alpha, all (non-symbolic) constants except zero go into
@@ -1606,9 +1606,9 @@ alpha_preferred_reload_class(rtx x, enum reg_class class)
       || GET_CODE (x) == CONST_VECTOR)
     {
       if (class == FLOAT_REGS)
-        return NO_REGS;
+	return NO_REGS;
       if (class == ALL_REGS)
-        return GENERAL_REGS;
+	return GENERAL_REGS;
       return class;
     }
 
@@ -1634,35 +1634,35 @@ alpha_preferred_reload_class(rtx x, enum reg_class class)
 
 enum reg_class
 alpha_secondary_reload_class (enum reg_class class, enum machine_mode mode,
-                        rtx x, int in)
+			rtx x, int in)
 {
   if ((mode == QImode || mode == HImode) && ! TARGET_BWX)
     {
       if (GET_CODE (x) == MEM
-          || (GET_CODE (x) == REG && REGNO (x) >= FIRST_PSEUDO_REGISTER)
-          || (GET_CODE (x) == SUBREG
-              && (GET_CODE (SUBREG_REG (x)) == MEM
-                  || (GET_CODE (SUBREG_REG (x)) == REG
-                      && REGNO (SUBREG_REG (x)) >= FIRST_PSEUDO_REGISTER))))
-        {
-          if (!in || !aligned_memory_operand(x, mode))
-            return GENERAL_REGS;
-        }
+	  || (GET_CODE (x) == REG && REGNO (x) >= FIRST_PSEUDO_REGISTER)
+	  || (GET_CODE (x) == SUBREG
+	      && (GET_CODE (SUBREG_REG (x)) == MEM
+		  || (GET_CODE (SUBREG_REG (x)) == REG
+		      && REGNO (SUBREG_REG (x)) >= FIRST_PSEUDO_REGISTER))))
+	{
+	  if (!in || !aligned_memory_operand(x, mode))
+	    return GENERAL_REGS;
+	}
     }
 
   if (class == FLOAT_REGS)
     {
       if (GET_CODE (x) == MEM && GET_CODE (XEXP (x, 0)) == AND)
-        return GENERAL_REGS;
+	return GENERAL_REGS;
 
       if (GET_CODE (x) == SUBREG
-          && (GET_MODE_SIZE (GET_MODE (x))
-              > GET_MODE_SIZE (GET_MODE (SUBREG_REG (x)))))
-        return GENERAL_REGS;
+	  && (GET_MODE_SIZE (GET_MODE (x))
+	      > GET_MODE_SIZE (GET_MODE (SUBREG_REG (x)))))
+	return GENERAL_REGS;
 
       if (in && INTEGRAL_MODE_P (mode)
-          && ! (memory_operand (x, mode) || x == const0_rtx))
-        return GENERAL_REGS;
+	  && ! (memory_operand (x, mode) || x == const0_rtx))
+	return GENERAL_REGS;
     }
 
   return NO_REGS;
@@ -1726,7 +1726,7 @@ alpha_set_memflags (rtx insn, rtx ref)
 }
 
 static rtx alpha_emit_set_const (rtx, enum machine_mode, HOST_WIDE_INT,
-                                 int, bool);
+				 int, bool);
 
 /* Internal routine for alpha_emit_set_const to check for N or below insns.
    If NO_OUTPUT is true, then we only check to see if N insns are possible,
@@ -1734,7 +1734,7 @@ static rtx alpha_emit_set_const (rtx, enum machine_mode, HOST_WIDE_INT,
 
 static rtx
 alpha_emit_set_const_1 (rtx target, enum machine_mode mode,
-                        HOST_WIDE_INT c, int n, bool no_output)
+			HOST_WIDE_INT c, int n, bool no_output)
 {
   HOST_WIDE_INT new;
   int i, bits;
@@ -1756,66 +1756,66 @@ alpha_emit_set_const_1 (rtx target, enum machine_mode mode,
       HOST_WIDE_INT extra = 0;
 
       /* If HIGH will be interpreted as negative but the constant is
-         positive, we must adjust it to do two ldha insns.  */
+	 positive, we must adjust it to do two ldha insns.  */
 
       if ((high & 0x8000) != 0 && c >= 0)
-        {
-          extra = 0x4000;
-          tmp1 -= 0x40000000;
-          high = ((tmp1 >> 16) & 0xffff) - 2 * ((tmp1 >> 16) & 0x8000);
-        }
+	{
+	  extra = 0x4000;
+	  tmp1 -= 0x40000000;
+	  high = ((tmp1 >> 16) & 0xffff) - 2 * ((tmp1 >> 16) & 0x8000);
+	}
 
       if (c == low || (low == 0 && extra == 0))
-        {
-          /* We used to use copy_to_suggested_reg (GEN_INT (c), target, mode)
-             but that meant that we can't handle INT_MIN on 32-bit machines
-             (like NT/Alpha), because we recurse indefinitely through
-             emit_move_insn to gen_movdi.  So instead, since we know exactly
-             what we want, create it explicitly.  */
+	{
+	  /* We used to use copy_to_suggested_reg (GEN_INT (c), target, mode)
+	     but that meant that we can't handle INT_MIN on 32-bit machines
+	     (like NT/Alpha), because we recurse indefinitely through
+	     emit_move_insn to gen_movdi.  So instead, since we know exactly
+	     what we want, create it explicitly.  */
 
-          if (no_output)
-            return pc_rtx;
-          if (target == NULL)
-            target = gen_reg_rtx (mode);
-          emit_insn (gen_rtx_SET (VOIDmode, target, GEN_INT (c)));
-          return target;
-        }
+	  if (no_output)
+	    return pc_rtx;
+	  if (target == NULL)
+	    target = gen_reg_rtx (mode);
+	  emit_insn (gen_rtx_SET (VOIDmode, target, GEN_INT (c)));
+	  return target;
+	}
       else if (n >= 2 + (extra != 0))
-        {
-          if (no_output)
-            return pc_rtx;
-          if (no_new_pseudos)
-            {
-              emit_insn (gen_rtx_SET (VOIDmode, target, GEN_INT (high << 16)));
-              temp = target;
-            }
-          else
-            temp = copy_to_suggested_reg (GEN_INT (high << 16),
-                                          subtarget, mode);
+	{
+	  if (no_output)
+	    return pc_rtx;
+	  if (no_new_pseudos)
+	    {
+	      emit_insn (gen_rtx_SET (VOIDmode, target, GEN_INT (high << 16)));
+	      temp = target;
+	    }
+	  else
+	    temp = copy_to_suggested_reg (GEN_INT (high << 16),
+					  subtarget, mode);
 
-          /* As of 2002-02-23, addsi3 is only available when not optimizing.
-             This means that if we go through expand_binop, we'll try to
-             generate extensions, etc, which will require new pseudos, which
-             will fail during some split phases.  The SImode add patterns
-             still exist, but are not named.  So build the insns by hand.  */
+	  /* As of 2002-02-23, addsi3 is only available when not optimizing.
+	     This means that if we go through expand_binop, we'll try to
+	     generate extensions, etc, which will require new pseudos, which
+	     will fail during some split phases.  The SImode add patterns
+	     still exist, but are not named.  So build the insns by hand.  */
 
-          if (extra != 0)
-            {
-              if (! subtarget)
-                subtarget = gen_reg_rtx (mode);
-              insn = gen_rtx_PLUS (mode, temp, GEN_INT (extra << 16));
-              insn = gen_rtx_SET (VOIDmode, subtarget, insn);
-              emit_insn (insn);
-              temp = subtarget;
-            }
+	  if (extra != 0)
+	    {
+	      if (! subtarget)
+		subtarget = gen_reg_rtx (mode);
+	      insn = gen_rtx_PLUS (mode, temp, GEN_INT (extra << 16));
+	      insn = gen_rtx_SET (VOIDmode, subtarget, insn);
+	      emit_insn (insn);
+	      temp = subtarget;
+	    }
 
-          if (target == NULL)
-            target = gen_reg_rtx (mode);
-          insn = gen_rtx_PLUS (mode, temp, GEN_INT (low));
-          insn = gen_rtx_SET (VOIDmode, target, insn);
-          emit_insn (insn);
-          return target;
-        }
+	  if (target == NULL)
+	    target = gen_reg_rtx (mode);
+	  insn = gen_rtx_PLUS (mode, temp, GEN_INT (low));
+	  insn = gen_rtx_SET (VOIDmode, target, insn);
+	  emit_insn (insn);
+	  return target;
+	}
     }
 
   /* If we couldn't do it that way, try some other methods.  But if we have
@@ -1833,113 +1833,113 @@ alpha_emit_set_const_1 (rtx target, enum machine_mode mode,
   for (i = 1; i < n; i++)
     {
       /* First, see if minus some low bits, we've an easy load of
-         high bits.  */
+	 high bits.  */
 
       new = ((c & 0xffff) ^ 0x8000) - 0x8000;
       if (new != 0)
-        {
+	{
           temp = alpha_emit_set_const (subtarget, mode, c - new, i, no_output);
-          if (temp)
-            {
-              if (no_output)
-                return temp;
-              return expand_binop (mode, add_optab, temp, GEN_INT (new),
-                                   target, 0, OPTAB_WIDEN);
-            }
-        }
+	  if (temp)
+	    {
+	      if (no_output)
+		return temp;
+	      return expand_binop (mode, add_optab, temp, GEN_INT (new),
+				   target, 0, OPTAB_WIDEN);
+	    }
+	}
 
       /* Next try complementing.  */
       temp = alpha_emit_set_const (subtarget, mode, ~c, i, no_output);
       if (temp)
-        {
-          if (no_output)
-            return temp;
-          return expand_unop (mode, one_cmpl_optab, temp, target, 0);
-        }
+	{
+	  if (no_output)
+	    return temp;
+	  return expand_unop (mode, one_cmpl_optab, temp, target, 0);
+	}
 
       /* Next try to form a constant and do a left shift.  We can do this
-         if some low-order bits are zero; the exact_log2 call below tells
-         us that information.  The bits we are shifting out could be any
-         value, but here we'll just try the 0- and sign-extended forms of
-         the constant.  To try to increase the chance of having the same
-         constant in more than one insn, start at the highest number of
-         bits to shift, but try all possibilities in case a ZAPNOT will
-         be useful.  */
+	 if some low-order bits are zero; the exact_log2 call below tells
+	 us that information.  The bits we are shifting out could be any
+	 value, but here we'll just try the 0- and sign-extended forms of
+	 the constant.  To try to increase the chance of having the same
+	 constant in more than one insn, start at the highest number of
+	 bits to shift, but try all possibilities in case a ZAPNOT will
+	 be useful.  */
 
       bits = exact_log2 (c & -c);
       if (bits > 0)
-        for (; bits > 0; bits--)
-          {
-            new = c >> bits;
-            temp = alpha_emit_set_const (subtarget, mode, new, i, no_output);
-            if (!temp && c < 0)
-              {
-                new = (unsigned HOST_WIDE_INT)c >> bits;
-                temp = alpha_emit_set_const (subtarget, mode, new,
-                                             i, no_output);
-              }
-            if (temp)
-              {
-                if (no_output)
-                  return temp;
-                return expand_binop (mode, ashl_optab, temp, GEN_INT (bits),
-                                     target, 0, OPTAB_WIDEN);
-              }
-          }
+	for (; bits > 0; bits--)
+	  {
+	    new = c >> bits;
+	    temp = alpha_emit_set_const (subtarget, mode, new, i, no_output);
+	    if (!temp && c < 0)
+	      {
+		new = (unsigned HOST_WIDE_INT)c >> bits;
+		temp = alpha_emit_set_const (subtarget, mode, new,
+					     i, no_output);
+	      }
+	    if (temp)
+	      {
+		if (no_output)
+		  return temp;
+	        return expand_binop (mode, ashl_optab, temp, GEN_INT (bits),
+				     target, 0, OPTAB_WIDEN);
+	      }
+	  }
 
       /* Now try high-order zero bits.  Here we try the shifted-in bits as
-         all zero and all ones.  Be careful to avoid shifting outside the
-         mode and to avoid shifting outside the host wide int size.  */
+	 all zero and all ones.  Be careful to avoid shifting outside the
+	 mode and to avoid shifting outside the host wide int size.  */
       /* On narrow hosts, don't shift a 1 into the high bit, since we'll
-         confuse the recursive call and set all of the high 32 bits.  */
+	 confuse the recursive call and set all of the high 32 bits.  */
 
       bits = (MIN (HOST_BITS_PER_WIDE_INT, GET_MODE_SIZE (mode) * 8)
-              - floor_log2 (c) - 1 - (HOST_BITS_PER_WIDE_INT < 64));
+	      - floor_log2 (c) - 1 - (HOST_BITS_PER_WIDE_INT < 64));
       if (bits > 0)
-        for (; bits > 0; bits--)
-          {
-            new = c << bits;
-            temp = alpha_emit_set_const (subtarget, mode, new, i, no_output);
-            if (!temp)
-              {
-                new = (c << bits) | (((HOST_WIDE_INT) 1 << bits) - 1);
-                temp = alpha_emit_set_const (subtarget, mode, new,
-                                             i, no_output);
-              }
-            if (temp)
-              {
-                if (no_output)
-                  return temp;
-                return expand_binop (mode, lshr_optab, temp, GEN_INT (bits),
-                                     target, 1, OPTAB_WIDEN);
-              }
-          }
+	for (; bits > 0; bits--)
+	  {
+	    new = c << bits;
+	    temp = alpha_emit_set_const (subtarget, mode, new, i, no_output);
+	    if (!temp)
+	      {
+		new = (c << bits) | (((HOST_WIDE_INT) 1 << bits) - 1);
+	        temp = alpha_emit_set_const (subtarget, mode, new,
+					     i, no_output);
+	      }
+	    if (temp)
+	      {
+		if (no_output)
+		  return temp;
+		return expand_binop (mode, lshr_optab, temp, GEN_INT (bits),
+				     target, 1, OPTAB_WIDEN);
+	      }
+	  }
 
       /* Now try high-order 1 bits.  We get that with a sign-extension.
-         But one bit isn't enough here.  Be careful to avoid shifting outside
-         the mode and to avoid shifting outside the host wide int size.  */
+	 But one bit isn't enough here.  Be careful to avoid shifting outside
+	 the mode and to avoid shifting outside the host wide int size.  */
 
       bits = (MIN (HOST_BITS_PER_WIDE_INT, GET_MODE_SIZE (mode) * 8)
-              - floor_log2 (~ c) - 2);
+	      - floor_log2 (~ c) - 2);
       if (bits > 0)
-        for (; bits > 0; bits--)
-          {
-            new = c << bits;
-            temp = alpha_emit_set_const (subtarget, mode, new, i, no_output);
-            if (!temp)
-              {
-                new = (c << bits) | (((HOST_WIDE_INT) 1 << bits) - 1);
-                temp = alpha_emit_set_const (subtarget, mode, new,
-                                             i, no_output);
-              }
-            if (temp)
-              {
-                if (no_output)
-                  return temp;
-                return expand_binop (mode, ashr_optab, temp, GEN_INT (bits),
-                                     target, 0, OPTAB_WIDEN);
-              }
-          }
+	for (; bits > 0; bits--)
+	  {
+	    new = c << bits;
+	    temp = alpha_emit_set_const (subtarget, mode, new, i, no_output);
+	    if (!temp)
+	      {
+		new = (c << bits) | (((HOST_WIDE_INT) 1 << bits) - 1);
+	        temp = alpha_emit_set_const (subtarget, mode, new,
+					     i, no_output);
+	      }
+	    if (temp)
+	      {
+		if (no_output)
+		  return temp;
+		return expand_binop (mode, ashr_optab, temp, GEN_INT (bits),
+				     target, 0, OPTAB_WIDEN);
+	      }
+	  }
     }
 
 #if HOST_BITS_PER_WIDE_INT == 64
@@ -1962,12 +1962,12 @@ alpha_emit_set_const_1 (rtx target, enum machine_mode mode,
     {
       temp = alpha_emit_set_const (subtarget, mode, new, n - 1, no_output);
       if (temp)
-        {
-          if (no_output)
-            return temp;
-          return expand_binop (mode, and_optab, temp, GEN_INT (c | ~ new),
-                               target, 0, OPTAB_WIDEN);
-        }
+	{
+	  if (no_output)
+	    return temp;
+	  return expand_binop (mode, and_optab, temp, GEN_INT (c | ~ new),
+			       target, 0, OPTAB_WIDEN);
+	}
     }
 #endif
 
@@ -1982,7 +1982,7 @@ alpha_emit_set_const_1 (rtx target, enum machine_mode mode,
 
 static rtx
 alpha_emit_set_const (rtx target, enum machine_mode mode,
-                      HOST_WIDE_INT c, int n, bool no_output)
+		      HOST_WIDE_INT c, int n, bool no_output)
 {
   enum machine_mode orig_mode = mode;
   rtx orig_target = target;
@@ -1996,7 +1996,7 @@ alpha_emit_set_const (rtx target, enum machine_mode mode,
     {
       result = alpha_emit_set_const_1 (target, mode, c, 1, no_output);
       if (result)
-        return result;
+	return result;
 
       target = no_output ? NULL : gen_lowpart (DImode, target);
       mode = DImode;
@@ -2012,27 +2012,27 @@ alpha_emit_set_const (rtx target, enum machine_mode mode,
     {
       result = alpha_emit_set_const_1 (target, mode, c, i, no_output);
       if (result)
-        {
-          rtx insn, set;
+	{
+	  rtx insn, set;
 
-          if (no_output)
-            return result;
+	  if (no_output)
+	    return result;
 
-          insn = get_last_insn ();
-          set = single_set (insn);
-          if (! CONSTANT_P (SET_SRC (set)))
-            set_unique_reg_note (get_last_insn (), REG_EQUAL, GEN_INT (c));
-          break;
-        }
+	  insn = get_last_insn ();
+	  set = single_set (insn);
+	  if (! CONSTANT_P (SET_SRC (set)))
+	    set_unique_reg_note (get_last_insn (), REG_EQUAL, GEN_INT (c));
+	  break;
+	}
     }
 
   /* Allow for the case where we changed the mode of TARGET.  */
   if (result)
     {
       if (result == target)
-        result = orig_target;
+	result = orig_target;
       else if (mode != orig_mode)
-        result = gen_lowpart (orig_mode, result);
+	result = gen_lowpart (orig_mode, result);
     }
 
   return result;
@@ -2076,7 +2076,7 @@ alpha_emit_set_long_const (rtx target, HOST_WIDE_INT c1, HOST_WIDE_INT c2)
     {
       emit_move_insn (target, GEN_INT (d4));
       if (d3)
-        emit_move_insn (target, gen_rtx_PLUS (DImode, target, GEN_INT (d3)));
+	emit_move_insn (target, gen_rtx_PLUS (DImode, target, GEN_INT (d3)));
     }
   else
     emit_move_insn (target, GEN_INT (d3));
@@ -2149,24 +2149,24 @@ alpha_legitimate_constant_p (rtx x)
 
     case CONST_DOUBLE:
       if (x == CONST0_RTX (mode))
-        return true;
+	return true;
       if (FLOAT_MODE_P (mode))
-        return false;
+	return false;
       goto do_integer;
 
     case CONST_VECTOR:
       if (x == CONST0_RTX (mode))
-        return true;
+	return true;
       if (GET_MODE_CLASS (mode) != MODE_VECTOR_INT)
-        return false;
+	return false;
       if (GET_MODE_SIZE (mode) != 8)
-        return false;
+	return false;
       goto do_integer;
 
     case CONST_INT:
     do_integer:
       if (TARGET_BUILD_CONSTANTS)
-        return true;
+	return true;
       alpha_extract_integer (x, &i0, &i1);
       if (HOST_BITS_PER_WIDE_INT >= 64 || i1 == (-i0 < 0))
         return alpha_emit_set_const_1 (x, mode, i0, 3, true) != NULL;
@@ -2197,7 +2197,7 @@ alpha_split_const_mov (enum machine_mode mode, rtx *operands)
   if (temp)
     {
       if (!rtx_equal_p (operands[0], temp))
-        emit_move_insn (operands[0], temp);
+	emit_move_insn (operands[0], temp);
       return true;
     }
 
@@ -2222,12 +2222,12 @@ alpha_expand_mov (enum machine_mode mode, rtx *operands)
 
       tmp = alpha_legitimize_address (operands[1], operands[0], mode);
       if (tmp)
-        {
-          if (tmp == operands[0])
-            return true;
-          operands[1] = tmp;
-          return false;
-        }
+	{
+	  if (tmp == operands[0])
+	    return true;
+	  operands[1] = tmp;
+	  return false;
+	}
     }
 
   /* Early out for non-constants and valid constants.  */
@@ -2240,7 +2240,7 @@ alpha_expand_mov (enum machine_mode mode, rtx *operands)
       || GET_CODE (operands[1]) == CONST_VECTOR)
     {
       if (alpha_split_const_mov (mode, operands))
-        return true;
+	return true;
     }
 
   /* Otherwise we've nothing left but to drop the thing to memory.  */
@@ -2272,113 +2272,113 @@ alpha_expand_mov_nobwx (enum machine_mode mode, rtx *operands)
 
   if (GET_CODE (operands[1]) == MEM
       || (GET_CODE (operands[1]) == SUBREG
-          && GET_CODE (SUBREG_REG (operands[1])) == MEM)
+	  && GET_CODE (SUBREG_REG (operands[1])) == MEM)
       || (reload_in_progress && GET_CODE (operands[1]) == REG
-          && REGNO (operands[1]) >= FIRST_PSEUDO_REGISTER)
+	  && REGNO (operands[1]) >= FIRST_PSEUDO_REGISTER)
       || (reload_in_progress && GET_CODE (operands[1]) == SUBREG
-          && GET_CODE (SUBREG_REG (operands[1])) == REG
-          && REGNO (SUBREG_REG (operands[1])) >= FIRST_PSEUDO_REGISTER))
+	  && GET_CODE (SUBREG_REG (operands[1])) == REG
+	  && REGNO (SUBREG_REG (operands[1])) >= FIRST_PSEUDO_REGISTER))
     {
       if (aligned_memory_operand (operands[1], mode))
-        {
-          if (reload_in_progress)
-            {
-              emit_insn ((mode == QImode
-                          ? gen_reload_inqi_help
-                          : gen_reload_inhi_help)
-                         (operands[0], operands[1],
-                          gen_rtx_REG (SImode, REGNO (operands[0]))));
-            }
-          else
-            {
-              rtx aligned_mem, bitnum;
-              rtx scratch = gen_reg_rtx (SImode);
-              rtx subtarget;
-              bool copyout;
+	{
+	  if (reload_in_progress)
+	    {
+	      emit_insn ((mode == QImode
+			  ? gen_reload_inqi_help
+			  : gen_reload_inhi_help)
+		         (operands[0], operands[1],
+			  gen_rtx_REG (SImode, REGNO (operands[0]))));
+	    }
+	  else
+	    {
+	      rtx aligned_mem, bitnum;
+	      rtx scratch = gen_reg_rtx (SImode);
+	      rtx subtarget;
+	      bool copyout;
 
-              get_aligned_mem (operands[1], &aligned_mem, &bitnum);
+	      get_aligned_mem (operands[1], &aligned_mem, &bitnum);
 
-              subtarget = operands[0];
-              if (GET_CODE (subtarget) == REG)
-                subtarget = gen_lowpart (DImode, subtarget), copyout = false;
-              else
-                subtarget = gen_reg_rtx (DImode), copyout = true;
+	      subtarget = operands[0];
+	      if (GET_CODE (subtarget) == REG)
+		subtarget = gen_lowpart (DImode, subtarget), copyout = false;
+	      else
+		subtarget = gen_reg_rtx (DImode), copyout = true;
 
-              emit_insn ((mode == QImode
-                          ? gen_aligned_loadqi
-                          : gen_aligned_loadhi)
-                         (subtarget, aligned_mem, bitnum, scratch));
+	      emit_insn ((mode == QImode
+			  ? gen_aligned_loadqi
+			  : gen_aligned_loadhi)
+			 (subtarget, aligned_mem, bitnum, scratch));
 
-              if (copyout)
-                emit_move_insn (operands[0], gen_lowpart (mode, subtarget));
-            }
-        }
+	      if (copyout)
+		emit_move_insn (operands[0], gen_lowpart (mode, subtarget));
+	    }
+	}
       else
-        {
-          /* Don't pass these as parameters since that makes the generated
-             code depend on parameter evaluation order which will cause
-             bootstrap failures.  */
+	{
+	  /* Don't pass these as parameters since that makes the generated
+	     code depend on parameter evaluation order which will cause
+	     bootstrap failures.  */
 
-          rtx temp1, temp2, seq, subtarget;
-          bool copyout;
+	  rtx temp1, temp2, seq, subtarget;
+	  bool copyout;
 
-          temp1 = gen_reg_rtx (DImode);
-          temp2 = gen_reg_rtx (DImode);
+	  temp1 = gen_reg_rtx (DImode);
+	  temp2 = gen_reg_rtx (DImode);
 
-          subtarget = operands[0];
-          if (GET_CODE (subtarget) == REG)
-            subtarget = gen_lowpart (DImode, subtarget), copyout = false;
-          else
-            subtarget = gen_reg_rtx (DImode), copyout = true;
+	  subtarget = operands[0];
+	  if (GET_CODE (subtarget) == REG)
+	    subtarget = gen_lowpart (DImode, subtarget), copyout = false;
+	  else
+	    subtarget = gen_reg_rtx (DImode), copyout = true;
 
-          seq = ((mode == QImode
-                  ? gen_unaligned_loadqi
-                  : gen_unaligned_loadhi)
-                 (subtarget, get_unaligned_address (operands[1]),
-                  temp1, temp2));
-          alpha_set_memflags (seq, operands[1]);
-          emit_insn (seq);
+	  seq = ((mode == QImode
+		  ? gen_unaligned_loadqi
+		  : gen_unaligned_loadhi)
+		 (subtarget, get_unaligned_address (operands[1]),
+		  temp1, temp2));
+	  alpha_set_memflags (seq, operands[1]);
+	  emit_insn (seq);
 
-          if (copyout)
-            emit_move_insn (operands[0], gen_lowpart (mode, subtarget));
-        }
+	  if (copyout)
+	    emit_move_insn (operands[0], gen_lowpart (mode, subtarget));
+	}
       return true;
     }
 
   if (GET_CODE (operands[0]) == MEM
       || (GET_CODE (operands[0]) == SUBREG
-          && GET_CODE (SUBREG_REG (operands[0])) == MEM)
+	  && GET_CODE (SUBREG_REG (operands[0])) == MEM)
       || (reload_in_progress && GET_CODE (operands[0]) == REG
-          && REGNO (operands[0]) >= FIRST_PSEUDO_REGISTER)
+	  && REGNO (operands[0]) >= FIRST_PSEUDO_REGISTER)
       || (reload_in_progress && GET_CODE (operands[0]) == SUBREG
-          && GET_CODE (SUBREG_REG (operands[0])) == REG
-          && REGNO (operands[0]) >= FIRST_PSEUDO_REGISTER))
+	  && GET_CODE (SUBREG_REG (operands[0])) == REG
+	  && REGNO (operands[0]) >= FIRST_PSEUDO_REGISTER))
     {
       if (aligned_memory_operand (operands[0], mode))
-        {
-          rtx aligned_mem, bitnum;
-          rtx temp1 = gen_reg_rtx (SImode);
-          rtx temp2 = gen_reg_rtx (SImode);
+	{
+	  rtx aligned_mem, bitnum;
+	  rtx temp1 = gen_reg_rtx (SImode);
+	  rtx temp2 = gen_reg_rtx (SImode);
 
-          get_aligned_mem (operands[0], &aligned_mem, &bitnum);
+	  get_aligned_mem (operands[0], &aligned_mem, &bitnum);
 
-          emit_insn (gen_aligned_store (aligned_mem, operands[1], bitnum,
-                                        temp1, temp2));
-        }
+	  emit_insn (gen_aligned_store (aligned_mem, operands[1], bitnum,
+					temp1, temp2));
+	}
       else
-        {
-          rtx temp1 = gen_reg_rtx (DImode);
-          rtx temp2 = gen_reg_rtx (DImode);
-          rtx temp3 = gen_reg_rtx (DImode);
-          rtx seq = ((mode == QImode
-                      ? gen_unaligned_storeqi
-                      : gen_unaligned_storehi)
-                     (get_unaligned_address (operands[0]),
-                      operands[1], temp1, temp2, temp3));
+	{
+	  rtx temp1 = gen_reg_rtx (DImode);
+	  rtx temp2 = gen_reg_rtx (DImode);
+	  rtx temp3 = gen_reg_rtx (DImode);
+	  rtx seq = ((mode == QImode
+		      ? gen_unaligned_storeqi
+		      : gen_unaligned_storehi)
+		     (get_unaligned_address (operands[0]),
+		      operands[1], temp1, temp2, temp3));
 
-          alpha_set_memflags (seq, operands[0]);
-          emit_insn (seq);
-        }
+	  alpha_set_memflags (seq, operands[0]);
+	  emit_insn (seq);
+	}
       return true;
     }
 
@@ -2397,18 +2397,18 @@ alpha_expand_movmisalign (enum machine_mode mode, rtx *operands)
       rtx tmp;
 
       if (register_operand (operands[0], mode))
-        tmp = operands[0];
+	tmp = operands[0];
       else
-        tmp = gen_reg_rtx (mode);
+	tmp = gen_reg_rtx (mode);
 
       alpha_expand_unaligned_load (tmp, operands[1], 8, 0, 0);
       if (tmp != operands[0])
-        emit_move_insn (operands[0], tmp);
+	emit_move_insn (operands[0], tmp);
     }
   else if (MEM_P (operands[0]))
     {
       if (!reg_or_0_operand (operands[1], mode))
-        operands[1] = force_reg (mode, operands[1]);
+	operands[1] = force_reg (mode, operands[1]);
       alpha_expand_unaligned_store (operands[0], operands[1], 8, 0);
     }
   else
@@ -2428,16 +2428,16 @@ alpha_expand_movmisalign (enum machine_mode mode, rtx *operands)
    it wrong or there's something else cause I wound up with the exact
    same single-bit error.  There is a branch-less form of this same code:
 
-        srl     $16,1,$1
-        and     $16,1,$2
-        cmplt   $16,0,$3
-        or      $1,$2,$2
-        cmovge  $16,$16,$2
-        itoft        $3,$f10
-        itoft        $2,$f11
-        cvtqs   $f11,$f11
-        adds    $f11,$f11,$f0
-        fcmoveq $f10,$f11,$f0
+	srl     $16,1,$1
+	and     $16,1,$2
+	cmplt   $16,0,$3
+	or      $1,$2,$2
+	cmovge  $16,$16,$2
+	itoft	$3,$f10
+	itoft	$2,$f11
+	cvtqs   $f11,$f11
+	adds    $f11,$f11,$f0
+	fcmoveq $f10,$f11,$f0
 
    I'm not using it because it's the same number of instructions as
    this branch-full form, and it has more serialized long latency
@@ -2448,17 +2448,17 @@ alpha_expand_movmisalign (enum machine_mode mode, rtx *operands)
 
    LC0: .long 0,0x5f800000
 
-        itoft        $16,$f11
-        lda        $2,LC0
-        cmplt        $16,0,$1
-        cpyse        $f11,$f31,$f10
-        cpyse        $f31,$f11,$f11
-        s4addq        $1,$2,$1
-        lds        $f12,0($1)
-        cvtqt        $f10,$f10
-        cvtqt        $f11,$f11
-        addt        $f12,$f10,$f0
-        addt        $f0,$f11,$f0
+	itoft	$16,$f11
+	lda	$2,LC0
+	cmplt	$16,0,$1
+	cpyse	$f11,$f31,$f10
+	cpyse	$f31,$f11,$f11
+	s4addq	$1,$2,$1
+	lds	$f12,0($1)
+	cvtqt	$f10,$f10
+	cvtqt	$f11,$f11
+	addt	$f12,$f10,$f0
+	addt	$f0,$f11,$f0
 
    This doesn't seem to be a clear-cut win over the optabs form.
    It probably all depends on the distribution of numbers being
@@ -2533,16 +2533,16 @@ alpha_emit_conditional_branch (enum rtx_code code)
     case GE:  case GT: case GEU:  case GTU:
       /* For FP, we swap them, for INT, we reverse them.  */
       if (alpha_compare.fp_p)
-        {
-          cmp_code = swap_condition (code);
-          branch_code = NE;
-          tem = op0, op0 = op1, op1 = tem;
-        }
+	{
+	  cmp_code = swap_condition (code);
+	  branch_code = NE;
+	  tem = op0, op0 = op1, op1 = tem;
+	}
       else
-        {
-          cmp_code = reverse_condition (code);
-          branch_code = EQ;
-        }
+	{
+	  cmp_code = reverse_condition (code);
+	  branch_code = EQ;
+	}
       break;
 
     default:
@@ -2553,26 +2553,26 @@ alpha_emit_conditional_branch (enum rtx_code code)
     {
       cmp_mode = DFmode;
       if (flag_unsafe_math_optimizations)
-        {
-          /* When we are not as concerned about non-finite values, and we
-             are comparing against zero, we can branch directly.  */
-          if (op1 == CONST0_RTX (DFmode))
-            cmp_code = UNKNOWN, branch_code = code;
-          else if (op0 == CONST0_RTX (DFmode))
-            {
-              /* Undo the swap we probably did just above.  */
-              tem = op0, op0 = op1, op1 = tem;
-              branch_code = swap_condition (cmp_code);
-              cmp_code = UNKNOWN;
-            }
-        }
+	{
+	  /* When we are not as concerned about non-finite values, and we
+	     are comparing against zero, we can branch directly.  */
+	  if (op1 == CONST0_RTX (DFmode))
+	    cmp_code = UNKNOWN, branch_code = code;
+	  else if (op0 == CONST0_RTX (DFmode))
+	    {
+	      /* Undo the swap we probably did just above.  */
+	      tem = op0, op0 = op1, op1 = tem;
+	      branch_code = swap_condition (cmp_code);
+	      cmp_code = UNKNOWN;
+	    }
+	}
       else
-        {
-          /* ??? We mark the branch mode to be CCmode to prevent the
-             compare and branch from being combined, since the compare
-             insn follows IEEE rules that the branch does not.  */
-          branch_mode = CCmode;
-        }
+	{
+	  /* ??? We mark the branch mode to be CCmode to prevent the
+	     compare and branch from being combined, since the compare
+	     insn follows IEEE rules that the branch does not.  */
+	  branch_mode = CCmode;
+	}
     }
   else
     {
@@ -2580,38 +2580,38 @@ alpha_emit_conditional_branch (enum rtx_code code)
 
       /* The following optimizations are only for signed compares.  */
       if (code != LEU && code != LTU && code != GEU && code != GTU)
-        {
-          /* Whee.  Compare and branch against 0 directly.  */
-          if (op1 == const0_rtx)
-            cmp_code = UNKNOWN, branch_code = code;
+	{
+	  /* Whee.  Compare and branch against 0 directly.  */
+	  if (op1 == const0_rtx)
+	    cmp_code = UNKNOWN, branch_code = code;
 
-          /* If the constants doesn't fit into an immediate, but can
-              be generated by lda/ldah, we adjust the argument and
-              compare against zero, so we can use beq/bne directly.  */
-          /* ??? Don't do this when comparing against symbols, otherwise
-             we'll reduce (&x == 0x1234) to (&x-0x1234 == 0), which will
-             be declared false out of hand (at least for non-weak).  */
-          else if (GET_CODE (op1) == CONST_INT
-                   && (code == EQ || code == NE)
-                   && !(symbolic_operand (op0, VOIDmode)
-                        || (GET_CODE (op0) == REG && REG_POINTER (op0))))
-            {
-              HOST_WIDE_INT v = INTVAL (op1), n = -v;
+	  /* If the constants doesn't fit into an immediate, but can
+ 	     be generated by lda/ldah, we adjust the argument and
+ 	     compare against zero, so we can use beq/bne directly.  */
+	  /* ??? Don't do this when comparing against symbols, otherwise
+	     we'll reduce (&x == 0x1234) to (&x-0x1234 == 0), which will
+	     be declared false out of hand (at least for non-weak).  */
+	  else if (GET_CODE (op1) == CONST_INT
+		   && (code == EQ || code == NE)
+		   && !(symbolic_operand (op0, VOIDmode)
+			|| (GET_CODE (op0) == REG && REG_POINTER (op0))))
+	    {
+	      HOST_WIDE_INT v = INTVAL (op1), n = -v;
 
-              if (! CONST_OK_FOR_LETTER_P (v, 'I')
-                  && (CONST_OK_FOR_LETTER_P (n, 'K')
-                      || CONST_OK_FOR_LETTER_P (n, 'L')))
-                {
-                  cmp_code = PLUS, branch_code = code;
-                  op1 = GEN_INT (n);
-                }
-            }
-        }
+	      if (! CONST_OK_FOR_LETTER_P (v, 'I')
+		  && (CONST_OK_FOR_LETTER_P (n, 'K')
+		      || CONST_OK_FOR_LETTER_P (n, 'L')))
+		{
+		  cmp_code = PLUS, branch_code = code;
+		  op1 = GEN_INT (n);
+		}
+	    }
+	}
 
       if (!reg_or_0_operand (op0, DImode))
-        op0 = force_reg (DImode, op0);
+	op0 = force_reg (DImode, op0);
       if (cmp_code != PLUS && !reg_or_8bit_operand (op1, DImode))
-        op1 = force_reg (DImode, op1);
+	op1 = force_reg (DImode, op1);
     }
 
   /* Emit an initial compare instruction, if necessary.  */
@@ -2663,12 +2663,12 @@ alpha_emit_setcc (enum rtx_code code)
     case UNORDERED:
       /* We have these compares.  */
       if (fp_p)
-        cmp_code = code, code = NE;
+	cmp_code = code, code = NE;
       break;
 
     case NE:
       if (!fp_p && op1 == const0_rtx)
-        break;
+	break;
       /* FALLTHRU */
 
     case ORDERED:
@@ -2678,12 +2678,12 @@ alpha_emit_setcc (enum rtx_code code)
 
     case GE:  case GT: case GEU:  case GTU:
       /* These normally need swapping, but for integer zero we have
-         special patterns that recognize swapped operands.  */
+	 special patterns that recognize swapped operands.  */
       if (!fp_p && op1 == const0_rtx)
-        break;
+	break;
       code = swap_condition (code);
       if (fp_p)
-        cmp_code = code, code = NE;
+	cmp_code = code, code = NE;
       tmp = op0, op0 = op1, op1 = tmp;
       break;
 
@@ -2694,9 +2694,9 @@ alpha_emit_setcc (enum rtx_code code)
   if (!fp_p)
     {
       if (!register_operand (op0, DImode))
-        op0 = force_reg (DImode, op0);
+	op0 = force_reg (DImode, op0);
       if (!reg_or_8bit_operand (op1, DImode))
-        op1 = force_reg (DImode, op1);
+	op1 = force_reg (DImode, op1);
     }
 
   /* Emit an initial compare instruction, if necessary.  */
@@ -2706,7 +2706,7 @@ alpha_emit_setcc (enum rtx_code code)
 
       tmp = gen_reg_rtx (mode);
       emit_insn (gen_rtx_SET (VOIDmode, tmp,
-                              gen_rtx_fmt_ee (cmp_code, mode, op0, op1)));
+			      gen_rtx_fmt_ee (cmp_code, mode, op0, op1)));
 
       op0 = fp_p ? gen_lowpart (DImode, tmp) : tmp;
       op1 = const0_rtx;
@@ -2747,46 +2747,46 @@ alpha_emit_conditional_move (rtx cmp, enum machine_mode mode)
       enum rtx_code cmp_code;
 
       if (! TARGET_FIX)
-        return 0;
+	return 0;
 
       /* If we have fp<->int register move instructions, do a cmov by
-         performing the comparison in fp registers, and move the
-         zero/nonzero value to integer registers, where we can then
-         use a normal cmov, or vice-versa.  */
+	 performing the comparison in fp registers, and move the
+	 zero/nonzero value to integer registers, where we can then
+	 use a normal cmov, or vice-versa.  */
 
       switch (code)
-        {
-        case EQ: case LE: case LT: case LEU: case LTU:
-          /* We have these compares.  */
-          cmp_code = code, code = NE;
-          break;
+	{
+	case EQ: case LE: case LT: case LEU: case LTU:
+	  /* We have these compares.  */
+	  cmp_code = code, code = NE;
+	  break;
 
-        case NE:
-          /* This must be reversed.  */
-          cmp_code = EQ, code = EQ;
-          break;
+	case NE:
+	  /* This must be reversed.  */
+	  cmp_code = EQ, code = EQ;
+	  break;
 
-        case GE: case GT: case GEU: case GTU:
-          /* These normally need swapping, but for integer zero we have
-             special patterns that recognize swapped operands.  */
-          if (!fp_p && op1 == const0_rtx)
-            cmp_code = code, code = NE;
-          else
-            {
-              cmp_code = swap_condition (code);
-              code = NE;
-              tem = op0, op0 = op1, op1 = tem;
-            }
-          break;
+	case GE: case GT: case GEU: case GTU:
+	  /* These normally need swapping, but for integer zero we have
+	     special patterns that recognize swapped operands.  */
+	  if (!fp_p && op1 == const0_rtx)
+	    cmp_code = code, code = NE;
+	  else
+	    {
+	      cmp_code = swap_condition (code);
+	      code = NE;
+	      tem = op0, op0 = op1, op1 = tem;
+	    }
+	  break;
 
-        default:
-          gcc_unreachable ();
-        }
+	default:
+	  gcc_unreachable ();
+	}
 
       tem = gen_reg_rtx (cmp_op_mode);
       emit_insn (gen_rtx_SET (VOIDmode, tem,
-                              gen_rtx_fmt_ee (cmp_code, cmp_op_mode,
-                                              op0, op1)));
+			      gen_rtx_fmt_ee (cmp_code, cmp_op_mode,
+					      op0, op1)));
 
       cmp_mode = cmp_op_mode = fp_p ? DImode : DFmode;
       op0 = gen_lowpart (cmp_op_mode, tem);
@@ -2825,10 +2825,10 @@ alpha_emit_conditional_move (rtx cmp, enum machine_mode mode)
     case GE:  case GT:  case GEU:  case GTU:
       /* These must be swapped.  */
       if (op1 != CONST0_RTX (cmp_mode))
-        {
-          code = swap_condition (code);
-          tem = op0, op0 = op1, op1 = tem;
-        }
+	{
+	  code = swap_condition (code);
+	  tem = op0, op0 = op1, op1 = tem;
+	}
       break;
 
     default:
@@ -2838,9 +2838,9 @@ alpha_emit_conditional_move (rtx cmp, enum machine_mode mode)
   if (!fp_p)
     {
       if (!reg_or_0_operand (op0, DImode))
-        op0 = force_reg (DImode, op0);
+	op0 = force_reg (DImode, op0);
       if (!reg_or_8bit_operand (op1, DImode))
-        op1 = force_reg (DImode, op1);
+	op1 = force_reg (DImode, op1);
     }
 
   /* ??? We mark the branch mode to be CCmode to prevent the compare
@@ -2861,7 +2861,7 @@ alpha_emit_conditional_move (rtx cmp, enum machine_mode mode)
 
 int
 alpha_split_conditional_move (enum rtx_code code, rtx dest, rtx cond,
-                              rtx t_rtx, rtx f_rtx)
+			      rtx t_rtx, rtx f_rtx)
 {
   HOST_WIDE_INT t, f, diff;
   enum machine_mode mode;
@@ -2887,7 +2887,7 @@ alpha_split_conditional_move (enum rtx_code code, rtx dest, rtx cond,
       if (! no_new_pseudos)
         subtarget = gen_reg_rtx (DImode);
       else
-        subtarget = target;
+	subtarget = target;
     }
   /* Below, we must be careful to use copy_rtx on target and subtarget
      in intermediate insns, as they may be a subreg rtx, which may not
@@ -2895,15 +2895,15 @@ alpha_split_conditional_move (enum rtx_code code, rtx dest, rtx cond,
 
   if (f == 0 && exact_log2 (diff) > 0
       /* On EV6, we've got enough shifters to make non-arithmetic shifts
-         viable over a longer latency cmove.  On EV5, the E0 slot is a
-         scarce resource, and on EV4 shift has the same latency as a cmove.  */
+	 viable over a longer latency cmove.  On EV5, the E0 slot is a
+	 scarce resource, and on EV4 shift has the same latency as a cmove.  */
       && (diff <= 8 || alpha_tune == PROCESSOR_EV6))
     {
       tmp = gen_rtx_fmt_ee (code, DImode, cond, const0_rtx);
       emit_insn (gen_rtx_SET (VOIDmode, copy_rtx (subtarget), tmp));
 
       tmp = gen_rtx_ASHIFT (DImode, copy_rtx (subtarget),
-                            GEN_INT (exact_log2 (t)));
+			    GEN_INT (exact_log2 (t)));
       emit_insn (gen_rtx_SET (VOIDmode, target, tmp));
     }
   else if (f == 0 && t == -1)
@@ -2921,20 +2921,20 @@ alpha_split_conditional_move (enum rtx_code code, rtx dest, rtx cond,
       emit_insn (gen_rtx_SET (VOIDmode, copy_rtx (subtarget), tmp));
 
       if (diff == 1)
-        emit_insn (gen_adddi3 (target, copy_rtx (subtarget), GEN_INT (f)));
+	emit_insn (gen_adddi3 (target, copy_rtx (subtarget), GEN_INT (f)));
       else
-        {
-          add_op = GEN_INT (f);
-          if (sext_add_operand (add_op, mode))
-            {
-              tmp = gen_rtx_MULT (DImode, copy_rtx (subtarget),
-                                  GEN_INT (diff));
-              tmp = gen_rtx_PLUS (DImode, tmp, add_op);
-              emit_insn (gen_rtx_SET (VOIDmode, target, tmp));
-            }
-          else
-            return 0;
-        }
+	{
+	  add_op = GEN_INT (f);
+	  if (sext_add_operand (add_op, mode))
+	    {
+	      tmp = gen_rtx_MULT (DImode, copy_rtx (subtarget),
+				  GEN_INT (diff));
+	      tmp = gen_rtx_PLUS (DImode, tmp, add_op);
+	      emit_insn (gen_rtx_SET (VOIDmode, target, tmp));
+	    }
+	  else
+	    return 0;
+	}
     }
   else
     return 0;
@@ -2955,27 +2955,27 @@ struct xfloating_op GTY(())
 
 static GTY(()) struct xfloating_op xfloating_ops[] =
 {
-  { PLUS,                "_OtsAddX", "OTS$ADD_X", 0 },
-  { MINUS,                "_OtsSubX", "OTS$SUB_X", 0 },
-  { MULT,                "_OtsMulX", "OTS$MUL_X", 0 },
-  { DIV,                "_OtsDivX", "OTS$DIV_X", 0 },
-  { EQ,                        "_OtsEqlX", "OTS$EQL_X", 0 },
-  { NE,                        "_OtsNeqX", "OTS$NEQ_X", 0 },
-  { LT,                        "_OtsLssX", "OTS$LSS_X", 0 },
-  { LE,                        "_OtsLeqX", "OTS$LEQ_X", 0 },
-  { GT,                        "_OtsGtrX", "OTS$GTR_X", 0 },
-  { GE,                        "_OtsGeqX", "OTS$GEQ_X", 0 },
-  { FIX,                "_OtsCvtXQ", "OTS$CVTXQ", 0 },
-  { FLOAT,                "_OtsCvtQX", "OTS$CVTQX", 0 },
-  { UNSIGNED_FLOAT,        "_OtsCvtQUX", "OTS$CVTQUX", 0 },
-  { FLOAT_EXTEND,        "_OtsConvertFloatTX", "OTS$CVT_FLOAT_T_X", 0 },
-  { FLOAT_TRUNCATE,        "_OtsConvertFloatXT", "OTS$CVT_FLOAT_X_T", 0 }
+  { PLUS,		"_OtsAddX", "OTS$ADD_X", 0 },
+  { MINUS,		"_OtsSubX", "OTS$SUB_X", 0 },
+  { MULT,		"_OtsMulX", "OTS$MUL_X", 0 },
+  { DIV,		"_OtsDivX", "OTS$DIV_X", 0 },
+  { EQ,			"_OtsEqlX", "OTS$EQL_X", 0 },
+  { NE,			"_OtsNeqX", "OTS$NEQ_X", 0 },
+  { LT,			"_OtsLssX", "OTS$LSS_X", 0 },
+  { LE,			"_OtsLeqX", "OTS$LEQ_X", 0 },
+  { GT,			"_OtsGtrX", "OTS$GTR_X", 0 },
+  { GE,			"_OtsGeqX", "OTS$GEQ_X", 0 },
+  { FIX,		"_OtsCvtXQ", "OTS$CVTXQ", 0 },
+  { FLOAT,		"_OtsCvtQX", "OTS$CVTQX", 0 },
+  { UNSIGNED_FLOAT,	"_OtsCvtQUX", "OTS$CVTQUX", 0 },
+  { FLOAT_EXTEND,	"_OtsConvertFloatTX", "OTS$CVT_FLOAT_T_X", 0 },
+  { FLOAT_TRUNCATE,	"_OtsConvertFloatXT", "OTS$CVT_FLOAT_X_T", 0 }
 };
 
 static GTY(()) struct xfloating_op vax_cvt_ops[] =
 {
-  { FLOAT_EXTEND,        "_OtsConvertFloatGX", "OTS$CVT_FLOAT_G_X", 0 },
-  { FLOAT_TRUNCATE,        "_OtsConvertFloatXG", "OTS$CVT_FLOAT_X_G", 0 }
+  { FLOAT_EXTEND,	"_OtsConvertFloatGX", "OTS$CVT_FLOAT_G_X", 0 },
+  { FLOAT_TRUNCATE,	"_OtsConvertFloatXG", "OTS$CVT_FLOAT_X_G", 0 }
 };
 
 static rtx
@@ -2997,13 +2997,13 @@ alpha_lookup_xfloating_lib_func (enum rtx_code code)
   for (i = 0; i < n; ++i, ++ops)
     if (ops->code == code)
       {
-        rtx func = ops->libcall;
-        if (!func)
-          {
-            func = init_one_libfunc (TARGET_ABI_OPEN_VMS
-                                     ? ops->vms_func : ops->osf_func);
-            ops->libcall = func;
-          }
+	rtx func = ops->libcall;
+	if (!func)
+	  {
+	    func = init_one_libfunc (TARGET_ABI_OPEN_VMS
+				     ? ops->vms_func : ops->osf_func);
+	    ops->libcall = func;
+	  }
         return func;
       }
 
@@ -3015,7 +3015,7 @@ alpha_lookup_xfloating_lib_func (enum rtx_code code)
 
 static int
 alpha_compute_xfloating_mode_arg (enum rtx_code code,
-                                  enum alpha_fp_rounding_mode round)
+				  enum alpha_fp_rounding_mode round)
 {
   int mode;
 
@@ -3060,7 +3060,7 @@ alpha_compute_xfloating_mode_arg (enum rtx_code code,
 
 static void
 alpha_emit_xfloating_libcall (rtx func, rtx target, rtx operands[],
-                              int noperands, rtx equiv)
+			      int noperands, rtx equiv)
 {
   rtx usage = NULL_RTX, tmp, reg;
   int regno = 16, i;
@@ -3070,28 +3070,28 @@ alpha_emit_xfloating_libcall (rtx func, rtx target, rtx operands[],
   for (i = 0; i < noperands; ++i)
     {
       switch (GET_MODE (operands[i]))
-        {
-        case TFmode:
-          reg = gen_rtx_REG (TFmode, regno);
-          regno += 2;
-          break;
+	{
+	case TFmode:
+	  reg = gen_rtx_REG (TFmode, regno);
+	  regno += 2;
+	  break;
 
-        case DFmode:
-          reg = gen_rtx_REG (DFmode, regno + 32);
-          regno += 1;
-          break;
+	case DFmode:
+	  reg = gen_rtx_REG (DFmode, regno + 32);
+	  regno += 1;
+	  break;
 
-        case VOIDmode:
-          gcc_assert (GET_CODE (operands[i]) == CONST_INT);
-          /* FALLTHRU */
-        case DImode:
-          reg = gen_rtx_REG (DImode, regno);
-          regno += 1;
-          break;
+	case VOIDmode:
+	  gcc_assert (GET_CODE (operands[i]) == CONST_INT);
+	  /* FALLTHRU */
+	case DImode:
+	  reg = gen_rtx_REG (DImode, regno);
+	  regno += 1;
+	  break;
 
-        default:
-          gcc_unreachable ();
-        }
+	default:
+	  gcc_unreachable ();
+	}
 
       emit_move_insn (reg, operands[i]);
       usage = alloc_EXPR_LIST (0, gen_rtx_USE (VOIDmode, reg), usage);
@@ -3114,7 +3114,7 @@ alpha_emit_xfloating_libcall (rtx func, rtx target, rtx operands[],
 
   tmp = gen_rtx_MEM (QImode, func);
   tmp = emit_call_insn (GEN_CALL_VALUE (reg, tmp, const0_rtx,
-                                        const0_rtx, const0_rtx));
+					const0_rtx, const0_rtx));
   CALL_INSN_FUNCTION_USAGE (tmp) = usage;
   CONST_OR_PURE_CALL_P (tmp) = 1;
 
@@ -3140,8 +3140,8 @@ alpha_emit_xfloating_arith (enum rtx_code code, rtx operands[])
   out_operands[1] = operands[2];
   out_operands[2] = GEN_INT (mode);
   alpha_emit_xfloating_libcall (func, operands[0], out_operands, 3,
-                                gen_rtx_fmt_ee (code, TFmode, operands[1],
-                                                operands[2]));
+				gen_rtx_fmt_ee (code, TFmode, operands[1],
+						operands[2]));
 }
 
 /* Emit an X_floating library function call for a comparison.  */
@@ -3153,9 +3153,9 @@ alpha_emit_xfloating_compare (enum rtx_code *pcode, rtx op0, rtx op1)
   rtx func, out, operands[2];
 
   /* X_floating library comparison functions return
-           -1  unordered
-            0  false
-            1  true
+	   -1  unordered
+	    0  false
+	    1  true
      Convert the compare against the raw return value.  */
 
   cmp_code = *pcode;
@@ -3193,7 +3193,7 @@ alpha_emit_xfloating_compare (enum rtx_code *pcode, rtx op0, rtx op1)
   /* ??? Strange mode for equiv because what's actually returned
      is -1,0,1, not a proper boolean value.  */
   alpha_emit_xfloating_libcall (func, out, operands, 2,
-                                gen_rtx_fmt_ee (cmp_code, CCmode, op0, op1));
+				gen_rtx_fmt_ee (cmp_code, CCmode, op0, op1));
 
   return out;
 }
@@ -3232,9 +3232,9 @@ alpha_emit_xfloating_cvt (enum rtx_code orig_code, rtx operands[])
     }
 
   alpha_emit_xfloating_libcall (func, operands[0], out_operands, noperands,
-                                gen_rtx_fmt_e (orig_code,
-                                               GET_MODE (operands[0]),
-                                               operands[1]));
+				gen_rtx_fmt_e (orig_code,
+					       GET_MODE (operands[0]),
+					       operands[1]));
 }
 
 /* Split a TImode or TFmode move from OP[1] to OP[0] into a pair of
@@ -3247,7 +3247,7 @@ alpha_emit_xfloating_cvt (enum rtx_code orig_code, rtx operands[])
   
 void
 alpha_split_tmode_pair (rtx operands[4], enum machine_mode mode,
-                        bool fixup_overlap)
+			bool fixup_overlap)
 {
   switch (GET_CODE (operands[1]))
     {
@@ -3315,9 +3315,9 @@ alpha_split_tfmode_frobsign (rtx operands[3], rtx (*operation) (rtx, rtx, rtx))
   else if (rtx_equal_p (operands[1], operands[2]))
     {
       if (rtx_equal_p (operands[0], high_bit))
-        move = 2;
+	move = 2;
       else
-        move = -1;
+	move = -1;
     }
 
   if (move < 0)
@@ -3335,7 +3335,7 @@ alpha_split_tfmode_frobsign (rtx operands[3], rtx (*operation) (rtx, rtx, rtx))
     {
       emit_move_insn (operands[0], operands[2]);
       if (move > 1)
-        emit_move_insn (operands[1], scratch);
+	emit_move_insn (operands[1], scratch);
     }
 }
 
@@ -3368,7 +3368,7 @@ alpha_split_tfmode_frobsign (rtx operands[3], rtx (*operation) (rtx, rtx, rtx))
 
 void
 alpha_expand_unaligned_load (rtx tgt, rtx mem, HOST_WIDE_INT size,
-                             HOST_WIDE_INT ofs, int sign)
+			     HOST_WIDE_INT ofs, int sign)
 {
   rtx meml, memh, addr, extl, exth, tmp, mema;
   enum machine_mode mode;
@@ -3378,27 +3378,27 @@ alpha_expand_unaligned_load (rtx tgt, rtx mem, HOST_WIDE_INT size,
       meml = adjust_address (mem, QImode, ofs);
       memh = adjust_address (mem, QImode, ofs+1);
       if (BYTES_BIG_ENDIAN)
-        tmp = meml, meml = memh, memh = tmp;
+	tmp = meml, meml = memh, memh = tmp;
       extl = gen_reg_rtx (DImode);
       exth = gen_reg_rtx (DImode);
       emit_insn (gen_zero_extendqidi2 (extl, meml));
       emit_insn (gen_zero_extendqidi2 (exth, memh));
       exth = expand_simple_binop (DImode, ASHIFT, exth, GEN_INT (8),
-                                  NULL, 1, OPTAB_LIB_WIDEN);
+				  NULL, 1, OPTAB_LIB_WIDEN);
       addr = expand_simple_binop (DImode, IOR, extl, exth,
-                                  NULL, 1, OPTAB_LIB_WIDEN);
+				  NULL, 1, OPTAB_LIB_WIDEN);
 
       if (sign && GET_MODE (tgt) != HImode)
-        {
-          addr = gen_lowpart (HImode, addr);
-          emit_insn (gen_extend_insn (tgt, addr, GET_MODE (tgt), HImode, 0));
-        }
+	{
+	  addr = gen_lowpart (HImode, addr);
+	  emit_insn (gen_extend_insn (tgt, addr, GET_MODE (tgt), HImode, 0));
+	}
       else
-        {
-          if (GET_MODE (tgt) != DImode)
-            addr = gen_lowpart (GET_MODE (tgt), addr);
-          emit_move_insn (tgt, addr);
-        }
+	{
+	  if (GET_MODE (tgt) != DImode)
+	    addr = gen_lowpart (GET_MODE (tgt), addr);
+	  emit_move_insn (tgt, addr);
+	}
       return;
     }
 
@@ -3417,16 +3417,16 @@ alpha_expand_unaligned_load (rtx tgt, rtx mem, HOST_WIDE_INT size,
      covered all types except those with alignment 8 or higher.  */
 
   tmp = change_address (mem, DImode,
-                        gen_rtx_AND (DImode,
-                                     plus_constant (mema, ofs),
-                                     GEN_INT (-8)));
+			gen_rtx_AND (DImode,
+				     plus_constant (mema, ofs),
+				     GEN_INT (-8)));
   set_mem_alias_set (tmp, 0);
   emit_move_insn (meml, tmp);
 
   tmp = change_address (mem, DImode,
-                        gen_rtx_AND (DImode,
-                                     plus_constant (mema, ofs + size - 1),
-                                     GEN_INT (-8)));
+			gen_rtx_AND (DImode,
+				     plus_constant (mema, ofs + size - 1),
+				     GEN_INT (-8)));
   set_mem_alias_set (tmp, 0);
   emit_move_insn (memh, tmp);
 
@@ -3439,7 +3439,7 @@ alpha_expand_unaligned_load (rtx tgt, rtx mem, HOST_WIDE_INT size,
 
       addr = expand_binop (DImode, ior_optab, extl, exth, tgt, 1, OPTAB_WIDEN);
       addr = expand_binop (DImode, ashr_optab, addr, GEN_INT (64 - size*8),
-                           addr, 1, OPTAB_WIDEN);
+			   addr, 1, OPTAB_WIDEN);
     }
   else if (sign && size == 2)
     {
@@ -3449,68 +3449,68 @@ alpha_expand_unaligned_load (rtx tgt, rtx mem, HOST_WIDE_INT size,
       emit_insn (gen_extqh_le (exth, memh, addr));
 
       /* We must use tgt here for the target.  Alpha-vms port fails if we use
-         addr for the target, because addr is marked as a pointer and combine
-         knows that pointers are always sign-extended 32 bit values.  */
+	 addr for the target, because addr is marked as a pointer and combine
+	 knows that pointers are always sign-extended 32 bit values.  */
       addr = expand_binop (DImode, ior_optab, extl, exth, tgt, 1, OPTAB_WIDEN);
       addr = expand_binop (DImode, ashr_optab, addr, GEN_INT (48),
-                           addr, 1, OPTAB_WIDEN);
+			   addr, 1, OPTAB_WIDEN);
     }
   else
     {
       if (WORDS_BIG_ENDIAN)
-        {
-          emit_move_insn (addr, plus_constant (mema, ofs+size-1));
-          switch ((int) size)
-            {
-            case 2:
-              emit_insn (gen_extwh_be (extl, meml, addr));
-              mode = HImode;
-              break;
+	{
+	  emit_move_insn (addr, plus_constant (mema, ofs+size-1));
+	  switch ((int) size)
+	    {
+	    case 2:
+	      emit_insn (gen_extwh_be (extl, meml, addr));
+	      mode = HImode;
+	      break;
 
-            case 4:
-              emit_insn (gen_extlh_be (extl, meml, addr));
-              mode = SImode;
-              break;
+	    case 4:
+	      emit_insn (gen_extlh_be (extl, meml, addr));
+	      mode = SImode;
+	      break;
 
-            case 8:
-              emit_insn (gen_extqh_be (extl, meml, addr));
-              mode = DImode;
-              break;
+	    case 8:
+	      emit_insn (gen_extqh_be (extl, meml, addr));
+	      mode = DImode;
+	      break;
 
-            default:
-              gcc_unreachable ();
-            }
-          emit_insn (gen_extxl_be (exth, memh, GEN_INT (size*8), addr));
-        }
+	    default:
+	      gcc_unreachable ();
+	    }
+	  emit_insn (gen_extxl_be (exth, memh, GEN_INT (size*8), addr));
+	}
       else
-        {
-          emit_move_insn (addr, plus_constant (mema, ofs));
-          emit_insn (gen_extxl_le (extl, meml, GEN_INT (size*8), addr));
-          switch ((int) size)
-            {
-            case 2:
-              emit_insn (gen_extwh_le (exth, memh, addr));
-              mode = HImode;
-              break;
+	{
+	  emit_move_insn (addr, plus_constant (mema, ofs));
+	  emit_insn (gen_extxl_le (extl, meml, GEN_INT (size*8), addr));
+	  switch ((int) size)
+	    {
+	    case 2:
+	      emit_insn (gen_extwh_le (exth, memh, addr));
+	      mode = HImode;
+	      break;
 
-            case 4:
-              emit_insn (gen_extlh_le (exth, memh, addr));
-              mode = SImode;
-              break;
+	    case 4:
+	      emit_insn (gen_extlh_le (exth, memh, addr));
+	      mode = SImode;
+	      break;
 
-            case 8:
-              emit_insn (gen_extqh_le (exth, memh, addr));
-              mode = DImode;
-              break;
+	    case 8:
+	      emit_insn (gen_extqh_le (exth, memh, addr));
+	      mode = DImode;
+	      break;
 
-            default:
-              gcc_unreachable ();
-            }
-        }
+	    default:
+	      gcc_unreachable ();
+	    }
+	}
 
       addr = expand_binop (mode, ior_optab, gen_lowpart (mode, extl),
-                           gen_lowpart (mode, exth), gen_lowpart (mode, tgt),
-                           sign, OPTAB_WIDEN);
+			   gen_lowpart (mode, exth), gen_lowpart (mode, tgt),
+			   sign, OPTAB_WIDEN);
     }
 
   if (addr != tgt)
@@ -3521,26 +3521,26 @@ alpha_expand_unaligned_load (rtx tgt, rtx mem, HOST_WIDE_INT size,
 
 void
 alpha_expand_unaligned_store (rtx dst, rtx src,
-                              HOST_WIDE_INT size, HOST_WIDE_INT ofs)
+			      HOST_WIDE_INT size, HOST_WIDE_INT ofs)
 {
   rtx dstl, dsth, addr, insl, insh, meml, memh, dsta;
 
   if (TARGET_BWX && size == 2)
     {
       if (src != const0_rtx)
-        {
-          dstl = gen_lowpart (QImode, src);
-          dsth = expand_simple_binop (DImode, LSHIFTRT, src, GEN_INT (8),
-                                      NULL, 1, OPTAB_LIB_WIDEN);
-          dsth = gen_lowpart (QImode, dsth);
-        }
+	{
+	  dstl = gen_lowpart (QImode, src);
+	  dsth = expand_simple_binop (DImode, LSHIFTRT, src, GEN_INT (8),
+				      NULL, 1, OPTAB_LIB_WIDEN);
+	  dsth = gen_lowpart (QImode, dsth);
+	}
       else
-        dstl = dsth = const0_rtx;
+	dstl = dsth = const0_rtx;
 
       meml = adjust_address (dst, QImode, ofs);
       memh = adjust_address (dst, QImode, ofs+1);
       if (BYTES_BIG_ENDIAN)
-        addr = meml, meml = memh, memh = addr;
+	addr = meml, meml = memh, memh = addr;
 
       emit_move_insn (meml, dstl);
       emit_move_insn (memh, dsth);
@@ -3561,15 +3561,15 @@ alpha_expand_unaligned_store (rtx dst, rtx src,
      covered all types except those with alignment 8 or higher.  */
 
   meml = change_address (dst, DImode,
-                         gen_rtx_AND (DImode,
-                                      plus_constant (dsta, ofs),
-                                      GEN_INT (-8)));
+			 gen_rtx_AND (DImode,
+				      plus_constant (dsta, ofs),
+				      GEN_INT (-8)));
   set_mem_alias_set (meml, 0);
 
   memh = change_address (dst, DImode,
-                         gen_rtx_AND (DImode,
-                                      plus_constant (dsta, ofs + size - 1),
-                                      GEN_INT (-8)));
+			 gen_rtx_AND (DImode,
+				      plus_constant (dsta, ofs + size - 1),
+				      GEN_INT (-8)));
   set_mem_alias_set (memh, 0);
 
   emit_move_insn (dsth, memh);
@@ -3579,38 +3579,38 @@ alpha_expand_unaligned_store (rtx dst, rtx src,
       addr = copy_addr_to_reg (plus_constant (dsta, ofs+size-1));
 
       if (src != const0_rtx)
-        {
-          switch ((int) size)
-            {
-            case 2:
-              emit_insn (gen_inswl_be (insh, gen_lowpart (HImode,src), addr));
-              break;
-            case 4:
-              emit_insn (gen_insll_be (insh, gen_lowpart (SImode,src), addr));
-              break;
-            case 8:
-              emit_insn (gen_insql_be (insh, gen_lowpart (DImode,src), addr));
-              break;
-            }
-          emit_insn (gen_insxh (insl, gen_lowpart (DImode, src),
-                                GEN_INT (size*8), addr));
-        }
+	{
+	  switch ((int) size)
+	    {
+	    case 2:
+	      emit_insn (gen_inswl_be (insh, gen_lowpart (HImode,src), addr));
+	      break;
+	    case 4:
+	      emit_insn (gen_insll_be (insh, gen_lowpart (SImode,src), addr));
+	      break;
+	    case 8:
+	      emit_insn (gen_insql_be (insh, gen_lowpart (DImode,src), addr));
+	      break;
+	    }
+	  emit_insn (gen_insxh (insl, gen_lowpart (DImode, src),
+				GEN_INT (size*8), addr));
+	}
 
       switch ((int) size)
-        {
-        case 2:
-          emit_insn (gen_mskxl_be (dsth, dsth, GEN_INT (0xffff), addr));
-          break;
-        case 4:
-          {
-            rtx msk = immed_double_const (0xffffffff, 0, DImode);
-            emit_insn (gen_mskxl_be (dsth, dsth, msk, addr));
-            break;
-          }
-        case 8:
-          emit_insn (gen_mskxl_be (dsth, dsth, constm1_rtx, addr));
-          break;
-        }
+	{
+	case 2:
+	  emit_insn (gen_mskxl_be (dsth, dsth, GEN_INT (0xffff), addr));
+	  break;
+	case 4:
+	  {
+	    rtx msk = immed_double_const (0xffffffff, 0, DImode);
+	    emit_insn (gen_mskxl_be (dsth, dsth, msk, addr));
+	    break;
+	  }
+	case 8:
+	  emit_insn (gen_mskxl_be (dsth, dsth, constm1_rtx, addr));
+	  break;
+	}
 
       emit_insn (gen_mskxh (dstl, dstl, GEN_INT (size*8), addr));
     }
@@ -3619,41 +3619,41 @@ alpha_expand_unaligned_store (rtx dst, rtx src,
       addr = copy_addr_to_reg (plus_constant (dsta, ofs));
 
       if (src != CONST0_RTX (GET_MODE (src)))
-        {
-          emit_insn (gen_insxh (insh, gen_lowpart (DImode, src),
-                                GEN_INT (size*8), addr));
+	{
+	  emit_insn (gen_insxh (insh, gen_lowpart (DImode, src),
+				GEN_INT (size*8), addr));
 
-          switch ((int) size)
-            {
-            case 2:
-              emit_insn (gen_inswl_le (insl, gen_lowpart (HImode, src), addr));
-              break;
-            case 4:
-              emit_insn (gen_insll_le (insl, gen_lowpart (SImode, src), addr));
-              break;
-            case 8:
-              emit_insn (gen_insql_le (insl, src, addr));
-              break;
-            }
-        }
+	  switch ((int) size)
+	    {
+	    case 2:
+	      emit_insn (gen_inswl_le (insl, gen_lowpart (HImode, src), addr));
+	      break;
+	    case 4:
+	      emit_insn (gen_insll_le (insl, gen_lowpart (SImode, src), addr));
+	      break;
+	    case 8:
+	      emit_insn (gen_insql_le (insl, src, addr));
+	      break;
+	    }
+	}
 
       emit_insn (gen_mskxh (dsth, dsth, GEN_INT (size*8), addr));
 
       switch ((int) size)
-        {
-        case 2:
-          emit_insn (gen_mskxl_le (dstl, dstl, GEN_INT (0xffff), addr));
-          break;
-        case 4:
-          {
-            rtx msk = immed_double_const (0xffffffff, 0, DImode);
-            emit_insn (gen_mskxl_le (dstl, dstl, msk, addr));
-            break;
-          }
-        case 8:
-          emit_insn (gen_mskxl_le (dstl, dstl, constm1_rtx, addr));
-          break;
-        }
+	{
+	case 2:
+	  emit_insn (gen_mskxl_le (dstl, dstl, GEN_INT (0xffff), addr));
+	  break;
+	case 4:
+	  {
+	    rtx msk = immed_double_const (0xffffffff, 0, DImode);
+	    emit_insn (gen_mskxl_le (dstl, dstl, msk, addr));
+	    break;
+	  }
+	case 8:
+	  emit_insn (gen_mskxl_le (dstl, dstl, constm1_rtx, addr));
+	  break;
+	}
     }
 
   if (src != CONST0_RTX (GET_MODE (src)))
@@ -3681,13 +3681,13 @@ alpha_expand_unaligned_store (rtx dst, rtx src,
    mentioning, that this speeds copying to/from aligned and unaligned
    buffers, and that it makes the code significantly easier to write.  */
 
-#define MAX_MOVE_WORDS        8
+#define MAX_MOVE_WORDS	8
 
 /* Load an integral number of consecutive unaligned quadwords.  */
 
 static void
 alpha_expand_unaligned_load_words (rtx *out_regs, rtx smem,
-                                   HOST_WIDE_INT words, HOST_WIDE_INT ofs)
+				   HOST_WIDE_INT words, HOST_WIDE_INT ofs)
 {
   rtx const im8 = GEN_INT (-8);
   rtx const i64 = GEN_INT (64);
@@ -3714,17 +3714,17 @@ alpha_expand_unaligned_load_words (rtx *out_regs, rtx smem,
   for (i = 0; i < words; ++i)
     {
       tmp = change_address (smem, DImode,
-                            gen_rtx_AND (DImode,
-                                         plus_constant (smema, 8*i),
-                                         im8));
+			    gen_rtx_AND (DImode,
+					 plus_constant (smema, 8*i),
+					 im8));
       set_mem_alias_set (tmp, 0);
       emit_move_insn (data_regs[i], tmp);
     }
 
   tmp = change_address (smem, DImode,
-                        gen_rtx_AND (DImode,
-                                     plus_constant (smema, 8*words - 1),
-                                     im8));
+			gen_rtx_AND (DImode,
+				     plus_constant (smema, 8*words - 1),
+				     im8));
   set_mem_alias_set (tmp, 0);
   emit_move_insn (data_regs[words], tmp);
 
@@ -3734,33 +3734,33 @@ alpha_expand_unaligned_load_words (rtx *out_regs, rtx smem,
 
   sreg = copy_addr_to_reg (smema);
   areg = expand_binop (DImode, and_optab, sreg, GEN_INT (7), NULL,
-                       1, OPTAB_WIDEN);
+		       1, OPTAB_WIDEN);
   if (WORDS_BIG_ENDIAN)
     emit_move_insn (sreg, plus_constant (sreg, 7));
   for (i = 0; i < words; ++i)
     {
       if (WORDS_BIG_ENDIAN)
-        {
-          emit_insn (gen_extqh_be (data_regs[i], data_regs[i], sreg));
-          emit_insn (gen_extxl_be (ext_tmps[i], data_regs[i+1], i64, sreg));
-        }
+	{
+	  emit_insn (gen_extqh_be (data_regs[i], data_regs[i], sreg));
+	  emit_insn (gen_extxl_be (ext_tmps[i], data_regs[i+1], i64, sreg));
+	}
       else
-        {
-          emit_insn (gen_extxl_le (data_regs[i], data_regs[i], i64, sreg));
-          emit_insn (gen_extqh_le (ext_tmps[i], data_regs[i+1], sreg));
-        }
+	{
+	  emit_insn (gen_extxl_le (data_regs[i], data_regs[i], i64, sreg));
+	  emit_insn (gen_extqh_le (ext_tmps[i], data_regs[i+1], sreg));
+	}
       emit_insn (gen_rtx_SET (VOIDmode, ext_tmps[i],
-                              gen_rtx_IF_THEN_ELSE (DImode,
-                                                    gen_rtx_EQ (DImode, areg,
-                                                                const0_rtx),
-                                                    const0_rtx, ext_tmps[i])));
+			      gen_rtx_IF_THEN_ELSE (DImode,
+						    gen_rtx_EQ (DImode, areg,
+								const0_rtx),
+						    const0_rtx, ext_tmps[i])));
     }
 
   /* Merge the half-words into whole words.  */
   for (i = 0; i < words; ++i)
     {
       out_regs[i] = expand_binop (DImode, ior_optab, data_regs[i],
-                                  ext_tmps[i], data_regs[i], 1, OPTAB_WIDEN);
+				  ext_tmps[i], data_regs[i], 1, OPTAB_WIDEN);
     }
 }
 
@@ -3769,7 +3769,7 @@ alpha_expand_unaligned_load_words (rtx *out_regs, rtx smem,
 
 static void
 alpha_expand_unaligned_store_words (rtx *data_regs, rtx dmem,
-                                    HOST_WIDE_INT words, HOST_WIDE_INT ofs)
+				    HOST_WIDE_INT words, HOST_WIDE_INT ofs)
 {
   rtx const im8 = GEN_INT (-8);
   rtx const i64 = GEN_INT (64);
@@ -3793,13 +3793,13 @@ alpha_expand_unaligned_store_words (rtx *data_regs, rtx dmem,
     dmem = adjust_address (dmem, GET_MODE (dmem), ofs);
 
   st_addr_2 = change_address (dmem, DImode,
-                              gen_rtx_AND (DImode,
-                                           plus_constant (dmema, words*8 - 1),
-                                       im8));
+			      gen_rtx_AND (DImode,
+					   plus_constant (dmema, words*8 - 1),
+				       im8));
   set_mem_alias_set (st_addr_2, 0);
 
   st_addr_1 = change_address (dmem, DImode,
-                              gen_rtx_AND (DImode, dmema, im8));
+			      gen_rtx_AND (DImode, dmema, im8));
   set_mem_alias_set (st_addr_1, 0);
 
   /* Load up the destination end bits.  */
@@ -3813,24 +3813,24 @@ alpha_expand_unaligned_store_words (rtx *data_regs, rtx dmem,
   if (data_regs != NULL)
     {
       for (i = words-1; i >= 0; --i)
-        {
-          if (WORDS_BIG_ENDIAN)
-            {
-              emit_insn (gen_insql_be (ins_tmps[i], data_regs[i], dreg));
-              emit_insn (gen_insxh (data_regs[i], data_regs[i], i64, dreg));
-            }
-          else
-            {
-              emit_insn (gen_insxh (ins_tmps[i], data_regs[i], i64, dreg));
-              emit_insn (gen_insql_le (data_regs[i], data_regs[i], dreg));
-            }
-        }
+	{
+	  if (WORDS_BIG_ENDIAN)
+	    {
+	      emit_insn (gen_insql_be (ins_tmps[i], data_regs[i], dreg));
+	      emit_insn (gen_insxh (data_regs[i], data_regs[i], i64, dreg));
+	    }
+	  else
+	    {
+	      emit_insn (gen_insxh (ins_tmps[i], data_regs[i], i64, dreg));
+	      emit_insn (gen_insql_le (data_regs[i], data_regs[i], dreg));
+	    }
+	}
       for (i = words-1; i > 0; --i)
-        {
-          ins_tmps[i-1] = expand_binop (DImode, ior_optab, data_regs[i],
-                                        ins_tmps[i-1], ins_tmps[i-1], 1,
-                                        OPTAB_WIDEN);
-        }
+	{
+	  ins_tmps[i-1] = expand_binop (DImode, ior_optab, data_regs[i],
+					ins_tmps[i-1], ins_tmps[i-1], 1,
+					OPTAB_WIDEN);
+	}
     }
 
   /* Split and merge the ends with the destination data.  */
@@ -3848,9 +3848,9 @@ alpha_expand_unaligned_store_words (rtx *data_regs, rtx dmem,
   if (data_regs != NULL)
     {
       st_tmp_2 = expand_binop (DImode, ior_optab, st_tmp_2, ins_tmps[words-1],
-                               st_tmp_2, 1, OPTAB_WIDEN);
+			       st_tmp_2, 1, OPTAB_WIDEN);
       st_tmp_1 = expand_binop (DImode, ior_optab, st_tmp_1, data_regs[0],
-                               st_tmp_1, 1, OPTAB_WIDEN);
+			       st_tmp_1, 1, OPTAB_WIDEN);
     }
 
   /* Store it all.  */
@@ -3861,10 +3861,10 @@ alpha_expand_unaligned_store_words (rtx *data_regs, rtx dmem,
   for (i = words-1; i > 0; --i)
     {
       rtx tmp = change_address (dmem, DImode,
-                                gen_rtx_AND (DImode,
-                                             plus_constant(dmema,
-                                             WORDS_BIG_ENDIAN ? i*8-1 : i*8),
-                                             im8));
+				gen_rtx_AND (DImode,
+					     plus_constant(dmema,
+					     WORDS_BIG_ENDIAN ? i*8-1 : i*8),
+					     im8));
       set_mem_alias_set (tmp, 0);
       emit_move_insn (tmp, data_regs ? ins_tmps[i-1] : const0_rtx);
     }
@@ -3885,7 +3885,7 @@ alpha_expand_unaligned_store_words (rtx *data_regs, rtx dmem,
 int
 alpha_expand_block_move (rtx operands[])
 {
-  rtx bytes_rtx        = operands[2];
+  rtx bytes_rtx	= operands[2];
   rtx align_rtx = operands[3];
   HOST_WIDE_INT orig_bytes = INTVAL (bytes_rtx);
   HOST_WIDE_INT bytes = orig_bytes;
@@ -3908,42 +3908,42 @@ alpha_expand_block_move (rtx operands[])
   if (GET_CODE (tmp) == REG)
     src_align = MAX (src_align, REGNO_POINTER_ALIGN (REGNO (tmp)));
   else if (GET_CODE (tmp) == PLUS
-           && GET_CODE (XEXP (tmp, 0)) == REG
-           && GET_CODE (XEXP (tmp, 1)) == CONST_INT)
+	   && GET_CODE (XEXP (tmp, 0)) == REG
+	   && GET_CODE (XEXP (tmp, 1)) == CONST_INT)
     {
       unsigned HOST_WIDE_INT c = INTVAL (XEXP (tmp, 1));
       unsigned int a = REGNO_POINTER_ALIGN (REGNO (XEXP (tmp, 0)));
 
       if (a > src_align)
-        {
+	{
           if (a >= 64 && c % 8 == 0)
-            src_align = 64;
+	    src_align = 64;
           else if (a >= 32 && c % 4 == 0)
-            src_align = 32;
+	    src_align = 32;
           else if (a >= 16 && c % 2 == 0)
-            src_align = 16;
-        }
+	    src_align = 16;
+	}
     }
 
   tmp = XEXP (orig_dst, 0);
   if (GET_CODE (tmp) == REG)
     dst_align = MAX (dst_align, REGNO_POINTER_ALIGN (REGNO (tmp)));
   else if (GET_CODE (tmp) == PLUS
-           && GET_CODE (XEXP (tmp, 0)) == REG
-           && GET_CODE (XEXP (tmp, 1)) == CONST_INT)
+	   && GET_CODE (XEXP (tmp, 0)) == REG
+	   && GET_CODE (XEXP (tmp, 1)) == CONST_INT)
     {
       unsigned HOST_WIDE_INT c = INTVAL (XEXP (tmp, 1));
       unsigned int a = REGNO_POINTER_ALIGN (REGNO (XEXP (tmp, 0)));
 
       if (a > dst_align)
-        {
+	{
           if (a >= 64 && c % 8 == 0)
-            dst_align = 64;
+	    dst_align = 64;
           else if (a >= 32 && c % 4 == 0)
-            dst_align = 32;
+	    dst_align = 32;
           else if (a >= 16 && c % 2 == 0)
-            dst_align = 16;
-        }
+	    dst_align = 16;
+	}
     }
 
   ofs = 0;
@@ -3952,11 +3952,11 @@ alpha_expand_block_move (rtx operands[])
       words = bytes / 8;
 
       for (i = 0; i < words; ++i)
-        data_regs[nregs + i] = gen_reg_rtx (DImode);
+	data_regs[nregs + i] = gen_reg_rtx (DImode);
 
       for (i = 0; i < words; ++i)
-        emit_move_insn (data_regs[nregs + i],
-                        adjust_address (orig_src, DImode, ofs + i * 8));
+	emit_move_insn (data_regs[nregs + i],
+			adjust_address (orig_src, DImode, ofs + i * 8));
 
       nregs += words;
       bytes -= words * 8;
@@ -3968,11 +3968,11 @@ alpha_expand_block_move (rtx operands[])
       words = bytes / 4;
 
       for (i = 0; i < words; ++i)
-        data_regs[nregs + i] = gen_reg_rtx (SImode);
+	data_regs[nregs + i] = gen_reg_rtx (SImode);
 
       for (i = 0; i < words; ++i)
-        emit_move_insn (data_regs[nregs + i],
-                        adjust_address (orig_src, SImode, ofs + i * 4));
+	emit_move_insn (data_regs[nregs + i],
+			adjust_address (orig_src, SImode, ofs + i * 4));
 
       nregs += words;
       bytes -= words * 4;
@@ -3984,10 +3984,10 @@ alpha_expand_block_move (rtx operands[])
       words = bytes / 8;
 
       for (i = 0; i < words+1; ++i)
-        data_regs[nregs + i] = gen_reg_rtx (DImode);
+	data_regs[nregs + i] = gen_reg_rtx (DImode);
 
       alpha_expand_unaligned_load_words (data_regs + nregs, orig_src,
-                                         words, ofs);
+					 words, ofs);
 
       nregs += words;
       bytes -= words * 8;
@@ -4005,21 +4005,21 @@ alpha_expand_block_move (rtx operands[])
   if (bytes >= 2)
     {
       if (src_align >= 16)
-        {
-          do {
-            data_regs[nregs++] = tmp = gen_reg_rtx (HImode);
-            emit_move_insn (tmp, adjust_address (orig_src, HImode, ofs));
-            bytes -= 2;
-            ofs += 2;
-          } while (bytes >= 2);
-        }
+	{
+	  do {
+	    data_regs[nregs++] = tmp = gen_reg_rtx (HImode);
+	    emit_move_insn (tmp, adjust_address (orig_src, HImode, ofs));
+	    bytes -= 2;
+	    ofs += 2;
+	  } while (bytes >= 2);
+	}
       else if (! TARGET_BWX)
-        {
-          data_regs[nregs++] = tmp = gen_reg_rtx (HImode);
-          alpha_expand_unaligned_load (tmp, orig_src, 2, ofs, 0);
-          bytes -= 2;
-          ofs += 2;
-        }
+	{
+	  data_regs[nregs++] = tmp = gen_reg_rtx (HImode);
+	  alpha_expand_unaligned_load (tmp, orig_src, 2, ofs, 0);
+	  bytes -= 2;
+	  ofs += 2;
+	}
     }
 
   while (bytes > 0)
@@ -4040,38 +4040,38 @@ alpha_expand_block_move (rtx operands[])
   if (dst_align >= 64)
     {
       while (i < nregs && GET_MODE (data_regs[i]) == DImode)
-        {
-          emit_move_insn (adjust_address (orig_dst, DImode, ofs),
-                          data_regs[i]);
-          ofs += 8;
-          i++;
-        }
+	{
+	  emit_move_insn (adjust_address (orig_dst, DImode, ofs),
+			  data_regs[i]);
+	  ofs += 8;
+	  i++;
+	}
     }
 
   if (dst_align >= 32)
     {
       /* If the source has remaining DImode regs, write them out in
-         two pieces.  */
+	 two pieces.  */
       while (i < nregs && GET_MODE (data_regs[i]) == DImode)
-        {
-          tmp = expand_binop (DImode, lshr_optab, data_regs[i], GEN_INT (32),
-                              NULL_RTX, 1, OPTAB_WIDEN);
+	{
+	  tmp = expand_binop (DImode, lshr_optab, data_regs[i], GEN_INT (32),
+			      NULL_RTX, 1, OPTAB_WIDEN);
 
-          emit_move_insn (adjust_address (orig_dst, SImode, ofs),
-                          gen_lowpart (SImode, data_regs[i]));
-          emit_move_insn (adjust_address (orig_dst, SImode, ofs + 4),
-                          gen_lowpart (SImode, tmp));
-          ofs += 8;
-          i++;
-        }
+	  emit_move_insn (adjust_address (orig_dst, SImode, ofs),
+			  gen_lowpart (SImode, data_regs[i]));
+	  emit_move_insn (adjust_address (orig_dst, SImode, ofs + 4),
+			  gen_lowpart (SImode, tmp));
+	  ofs += 8;
+	  i++;
+	}
 
       while (i < nregs && GET_MODE (data_regs[i]) == SImode)
-        {
-          emit_move_insn (adjust_address (orig_dst, SImode, ofs),
-                          data_regs[i]);
-          ofs += 4;
-          i++;
-        }
+	{
+	  emit_move_insn (adjust_address (orig_dst, SImode, ofs),
+			  data_regs[i]);
+	  ofs += 4;
+	  i++;
+	}
     }
 
   if (i < nregs && GET_MODE (data_regs[i]) == DImode)
@@ -4079,14 +4079,14 @@ alpha_expand_block_move (rtx operands[])
       /* Write out a remaining block of words using unaligned methods.  */
 
       for (words = 1; i + words < nregs; words++)
-        if (GET_MODE (data_regs[i + words]) != DImode)
-          break;
+	if (GET_MODE (data_regs[i + words]) != DImode)
+	  break;
 
       if (words == 1)
-        alpha_expand_unaligned_store (orig_dst, data_regs[i], 8, ofs);
+	alpha_expand_unaligned_store (orig_dst, data_regs[i], 8, ofs);
       else
         alpha_expand_unaligned_store_words (data_regs + i, orig_dst,
-                                            words, ofs);
+					    words, ofs);
 
       i += words;
       ofs += words * 8;
@@ -4105,16 +4105,16 @@ alpha_expand_block_move (rtx operands[])
   if (dst_align >= 16)
     while (i < nregs && GET_MODE (data_regs[i]) == HImode)
       {
-        emit_move_insn (adjust_address (orig_dst, HImode, ofs), data_regs[i]);
-        i++;
-        ofs += 2;
+	emit_move_insn (adjust_address (orig_dst, HImode, ofs), data_regs[i]);
+	i++;
+	ofs += 2;
       }
   else
     while (i < nregs && GET_MODE (data_regs[i]) == HImode)
       {
-        alpha_expand_unaligned_store (orig_dst, data_regs[i], 2, ofs);
-        i++;
-        ofs += 2;
+	alpha_expand_unaligned_store (orig_dst, data_regs[i], 2, ofs);
+	i++;
+	ofs += 2;
       }
 
   /* The remainder must be byte copies.  */
@@ -4132,7 +4132,7 @@ alpha_expand_block_move (rtx operands[])
 int
 alpha_expand_block_clear (rtx operands[])
 {
-  rtx bytes_rtx        = operands[1];
+  rtx bytes_rtx	= operands[1];
   rtx align_rtx = operands[3];
   HOST_WIDE_INT orig_bytes = INTVAL (bytes_rtx);
   HOST_WIDE_INT bytes = orig_bytes;
@@ -4152,21 +4152,21 @@ alpha_expand_block_clear (rtx operands[])
   if (GET_CODE (tmp) == REG)
     align = MAX (align, REGNO_POINTER_ALIGN (REGNO (tmp)));
   else if (GET_CODE (tmp) == PLUS
-           && GET_CODE (XEXP (tmp, 0)) == REG
-           && GET_CODE (XEXP (tmp, 1)) == CONST_INT)
+	   && GET_CODE (XEXP (tmp, 0)) == REG
+	   && GET_CODE (XEXP (tmp, 1)) == CONST_INT)
     {
       HOST_WIDE_INT c = INTVAL (XEXP (tmp, 1));
       int a = REGNO_POINTER_ALIGN (REGNO (XEXP (tmp, 0)));
 
       if (a > align)
-        {
+	{
           if (a >= 64)
-            align = a, alignofs = 8 - c % 8;
+	    align = a, alignofs = 8 - c % 8;
           else if (a >= 32)
-            align = a, alignofs = 4 - c % 4;
+	    align = a, alignofs = 4 - c % 4;
           else if (a >= 16)
-            align = a, alignofs = 2 - c % 2;
-        }
+	    align = a, alignofs = 2 - c % 2;
+	}
     }
 
   /* Handle an unaligned prefix first.  */
@@ -4175,70 +4175,70 @@ alpha_expand_block_clear (rtx operands[])
     {
 #if HOST_BITS_PER_WIDE_INT >= 64
       /* Given that alignofs is bounded by align, the only time BWX could
-         generate three stores is for a 7 byte fill.  Prefer two individual
-         stores over a load/mask/store sequence.  */
+	 generate three stores is for a 7 byte fill.  Prefer two individual
+	 stores over a load/mask/store sequence.  */
       if ((!TARGET_BWX || alignofs == 7)
-               && align >= 32
-               && !(alignofs == 4 && bytes >= 4))
-        {
-          enum machine_mode mode = (align >= 64 ? DImode : SImode);
-          int inv_alignofs = (align >= 64 ? 8 : 4) - alignofs;
-          rtx mem, tmp;
-          HOST_WIDE_INT mask;
+	       && align >= 32
+	       && !(alignofs == 4 && bytes >= 4))
+	{
+	  enum machine_mode mode = (align >= 64 ? DImode : SImode);
+	  int inv_alignofs = (align >= 64 ? 8 : 4) - alignofs;
+	  rtx mem, tmp;
+	  HOST_WIDE_INT mask;
 
-          mem = adjust_address (orig_dst, mode, ofs - inv_alignofs);
-          set_mem_alias_set (mem, 0);
+	  mem = adjust_address (orig_dst, mode, ofs - inv_alignofs);
+	  set_mem_alias_set (mem, 0);
 
-          mask = ~(~(HOST_WIDE_INT)0 << (inv_alignofs * 8));
-          if (bytes < alignofs)
-            {
-              mask |= ~(HOST_WIDE_INT)0 << ((inv_alignofs + bytes) * 8);
-              ofs += bytes;
-              bytes = 0;
-            }
-          else
-            {
-              bytes -= alignofs;
-              ofs += alignofs;
-            }
-          alignofs = 0;
+	  mask = ~(~(HOST_WIDE_INT)0 << (inv_alignofs * 8));
+	  if (bytes < alignofs)
+	    {
+	      mask |= ~(HOST_WIDE_INT)0 << ((inv_alignofs + bytes) * 8);
+	      ofs += bytes;
+	      bytes = 0;
+	    }
+	  else
+	    {
+	      bytes -= alignofs;
+	      ofs += alignofs;
+	    }
+	  alignofs = 0;
 
-          tmp = expand_binop (mode, and_optab, mem, GEN_INT (mask),
-                              NULL_RTX, 1, OPTAB_WIDEN);
+	  tmp = expand_binop (mode, and_optab, mem, GEN_INT (mask),
+			      NULL_RTX, 1, OPTAB_WIDEN);
 
-          emit_move_insn (mem, tmp);
-        }
+	  emit_move_insn (mem, tmp);
+	}
 #endif
 
       if (TARGET_BWX && (alignofs & 1) && bytes >= 1)
-        {
-          emit_move_insn (adjust_address (orig_dst, QImode, ofs), const0_rtx);
-          bytes -= 1;
-          ofs += 1;
-          alignofs -= 1;
-        }
+	{
+	  emit_move_insn (adjust_address (orig_dst, QImode, ofs), const0_rtx);
+	  bytes -= 1;
+	  ofs += 1;
+	  alignofs -= 1;
+	}
       if (TARGET_BWX && align >= 16 && (alignofs & 3) == 2 && bytes >= 2)
-        {
-          emit_move_insn (adjust_address (orig_dst, HImode, ofs), const0_rtx);
-          bytes -= 2;
-          ofs += 2;
-          alignofs -= 2;
-        }
+	{
+	  emit_move_insn (adjust_address (orig_dst, HImode, ofs), const0_rtx);
+	  bytes -= 2;
+	  ofs += 2;
+	  alignofs -= 2;
+	}
       if (alignofs == 4 && bytes >= 4)
-        {
-          emit_move_insn (adjust_address (orig_dst, SImode, ofs), const0_rtx);
-          bytes -= 4;
-          ofs += 4;
-          alignofs = 0;
-        }
+	{
+	  emit_move_insn (adjust_address (orig_dst, SImode, ofs), const0_rtx);
+	  bytes -= 4;
+	  ofs += 4;
+	  alignofs = 0;
+	}
 
       /* If we've not used the extra lead alignment information by now,
-         we won't be able to.  Downgrade align to match what's left over.  */
+	 we won't be able to.  Downgrade align to match what's left over.  */
       if (alignofs > 0)
-        {
-          alignofs = alignofs & -alignofs;
-          align = MIN (align, alignofs * BITS_PER_UNIT);
-        }
+	{
+	  alignofs = alignofs & -alignofs;
+	  align = MIN (align, alignofs * BITS_PER_UNIT);
+	}
     }
 
   /* Handle a block of contiguous long-words.  */
@@ -4248,8 +4248,8 @@ alpha_expand_block_clear (rtx operands[])
       words = bytes / 8;
 
       for (i = 0; i < words; ++i)
-        emit_move_insn (adjust_address (orig_dst, DImode, ofs + i * 8),
-                        const0_rtx);
+	emit_move_insn (adjust_address (orig_dst, DImode, ofs + i * 8),
+			const0_rtx);
 
       bytes -= words * 8;
       ofs += words * 8;
@@ -4268,24 +4268,24 @@ alpha_expand_block_clear (rtx operands[])
 
       orig_dsta = XEXP (orig_dst, 0);
       if (GET_CODE (orig_dsta) == LO_SUM)
-        orig_dsta = force_reg (Pmode, orig_dsta);
+	orig_dsta = force_reg (Pmode, orig_dsta);
 
       words = bytes / 8;
       for (i = 0; i < words; ++i)
-        {
-          rtx mem
-            = change_address (orig_dst, DImode,
-                              gen_rtx_AND (DImode,
-                                           plus_constant (orig_dsta, ofs + i*8),
-                                           GEN_INT (-8)));
-          set_mem_alias_set (mem, 0);
-          emit_move_insn (mem, const0_rtx);
-        }
+	{
+	  rtx mem
+	    = change_address (orig_dst, DImode,
+			      gen_rtx_AND (DImode,
+					   plus_constant (orig_dsta, ofs + i*8),
+					   GEN_INT (-8)));
+	  set_mem_alias_set (mem, 0);
+	  emit_move_insn (mem, const0_rtx);
+	}
 
       /* Depending on the alignment, the first stq_u may have overlapped
-         with the initial stl, which means that the last stq_u didn't
-         write as much as it would appear.  Leave those questionable bytes
-         unaccounted for.  */
+	 with the initial stl, which means that the last stq_u didn't
+	 write as much as it would appear.  Leave those questionable bytes
+	 unaccounted for.  */
       bytes -= words * 8 - 4;
       ofs += words * 8 - 4;
     }
@@ -4298,8 +4298,8 @@ alpha_expand_block_clear (rtx operands[])
       words = bytes / 4;
 
       for (i = 0; i < words; ++i)
-        emit_move_insn (adjust_address (orig_dst, SImode, ofs + i * 4),
-                        const0_rtx);
+	emit_move_insn (adjust_address (orig_dst, SImode, ofs + i * 4),
+			const0_rtx);
 
       bytes -= words * 4;
       ofs += words * 4;
@@ -4332,37 +4332,37 @@ alpha_expand_block_clear (rtx operands[])
   if (TARGET_BWX ? words > 2 : bytes > 0)
     {
       if (align >= 64)
-        {
-          rtx mem, tmp;
-          HOST_WIDE_INT mask;
+	{
+	  rtx mem, tmp;
+	  HOST_WIDE_INT mask;
 
-          mem = adjust_address (orig_dst, DImode, ofs);
-          set_mem_alias_set (mem, 0);
+	  mem = adjust_address (orig_dst, DImode, ofs);
+	  set_mem_alias_set (mem, 0);
 
-          mask = ~(HOST_WIDE_INT)0 << (bytes * 8);
+	  mask = ~(HOST_WIDE_INT)0 << (bytes * 8);
 
-          tmp = expand_binop (DImode, and_optab, mem, GEN_INT (mask),
-                              NULL_RTX, 1, OPTAB_WIDEN);
+	  tmp = expand_binop (DImode, and_optab, mem, GEN_INT (mask),
+			      NULL_RTX, 1, OPTAB_WIDEN);
 
-          emit_move_insn (mem, tmp);
-          return 1;
-        }
+	  emit_move_insn (mem, tmp);
+	  return 1;
+	}
       else if (align >= 32 && bytes < 4)
-        {
-          rtx mem, tmp;
-          HOST_WIDE_INT mask;
+	{
+	  rtx mem, tmp;
+	  HOST_WIDE_INT mask;
 
-          mem = adjust_address (orig_dst, SImode, ofs);
-          set_mem_alias_set (mem, 0);
+	  mem = adjust_address (orig_dst, SImode, ofs);
+	  set_mem_alias_set (mem, 0);
 
-          mask = ~(HOST_WIDE_INT)0 << (bytes * 8);
+	  mask = ~(HOST_WIDE_INT)0 << (bytes * 8);
 
-          tmp = expand_binop (SImode, and_optab, mem, GEN_INT (mask),
-                              NULL_RTX, 1, OPTAB_WIDEN);
+	  tmp = expand_binop (SImode, and_optab, mem, GEN_INT (mask),
+			      NULL_RTX, 1, OPTAB_WIDEN);
 
-          emit_move_insn (mem, tmp);
-          return 1;
-        }
+	  emit_move_insn (mem, tmp);
+	  return 1;
+	}
     }
 #endif
 
@@ -4376,20 +4376,20 @@ alpha_expand_block_clear (rtx operands[])
   if (bytes >= 2)
     {
       if (align >= 16)
-        {
-          do {
-            emit_move_insn (adjust_address (orig_dst, HImode, ofs),
-                            const0_rtx);
-            bytes -= 2;
-            ofs += 2;
-          } while (bytes >= 2);
-        }
+	{
+	  do {
+	    emit_move_insn (adjust_address (orig_dst, HImode, ofs),
+			    const0_rtx);
+	    bytes -= 2;
+	    ofs += 2;
+	  } while (bytes >= 2);
+	}
       else if (! TARGET_BWX)
-        {
-          alpha_expand_unaligned_store (orig_dst, const0_rtx, 2, ofs);
-          bytes -= 2;
-          ofs += 2;
-        }
+	{
+	  alpha_expand_unaligned_store (orig_dst, const0_rtx, 2, ofs);
+	  bytes -= 2;
+	  ofs += 2;
+	}
     }
 
   while (bytes > 0)
@@ -4415,11 +4415,11 @@ alpha_expand_zap_mask (HOST_WIDE_INT value)
       HOST_WIDE_INT mask = 0;
 
       for (i = 7; i >= 0; --i)
-        {
-          mask <<= 8;
-          if (!((value >> i) & 1))
-            mask |= 0xff;
-        }
+	{
+	  mask <<= 8;
+	  if (!((value >> i) & 1))
+	    mask |= 0xff;
+	}
 
       result = gen_int_mode (mask, DImode);
     }
@@ -4430,18 +4430,18 @@ alpha_expand_zap_mask (HOST_WIDE_INT value)
       gcc_assert (HOST_BITS_PER_WIDE_INT == 32);
       
       for (i = 7; i >= 4; --i)
-        {
-          mask_hi <<= 8;
-          if (!((value >> i) & 1))
-            mask_hi |= 0xff;
-        }
+	{
+	  mask_hi <<= 8;
+	  if (!((value >> i) & 1))
+	    mask_hi |= 0xff;
+	}
 
       for (i = 3; i >= 0; --i)
-        {
-          mask_lo <<= 8;
-          if (!((value >> i) & 1))
-            mask_lo |= 0xff;
-        }
+	{
+	  mask_lo <<= 8;
+	  if (!((value >> i) & 1))
+	    mask_lo |= 0xff;
+	}
 
       result = immed_double_const (mask_lo, mask_hi, DImode);
     }
@@ -4451,8 +4451,8 @@ alpha_expand_zap_mask (HOST_WIDE_INT value)
 
 void
 alpha_expand_builtin_vector_binop (rtx (*gen) (rtx, rtx, rtx),
-                                   enum machine_mode mode,
-                                   rtx op0, rtx op1, rtx op2)
+				   enum machine_mode mode,
+				   rtx op0, rtx op1, rtx op2)
 {
   op0 = gen_lowpart (mode, op0);
 
@@ -4523,16 +4523,16 @@ emit_insxl (enum machine_mode mode, rtx op1, rtx op2)
   if (WORDS_BIG_ENDIAN)
     {
       if (mode == QImode)
-        fn = gen_insbl_be;
+	fn = gen_insbl_be;
       else
-        fn = gen_inswl_be;
+	fn = gen_inswl_be;
     }
   else
     {
       if (mode == QImode)
-        fn = gen_insbl_le;
+	fn = gen_insbl_le;
       else
-        fn = gen_inswl_le;
+	fn = gen_inswl_le;
     }
   emit_insn (fn (ret, op1, op2));
 
@@ -4547,7 +4547,7 @@ emit_insxl (enum machine_mode mode, rtx op1, rtx op2)
 
 void
 alpha_split_atomic_op (enum rtx_code code, rtx mem, rtx val,
-                       rtx before, rtx after, rtx scratch)
+		       rtx before, rtx after, rtx scratch)
 {
   enum machine_mode mode = GET_MODE (mem);
   rtx label, x, cond = gen_rtx_REG (DImode, REGNO (scratch));
@@ -4582,7 +4582,7 @@ alpha_split_atomic_op (enum rtx_code code, rtx mem, rtx val,
 
 void
 alpha_split_compare_and_swap (rtx retval, rtx mem, rtx oldval, rtx newval,
-                              rtx scratch)
+			      rtx scratch)
 {
   enum machine_mode mode = GET_MODE (mem);
   rtx label1, label2, x, cond = gen_lowpart (DImode, scratch);
@@ -4625,7 +4625,7 @@ alpha_expand_compare_and_swap_12 (rtx dst, rtx mem, rtx oldval, rtx newval)
 
   addr = force_reg (DImode, XEXP (mem, 0));
   align = expand_simple_binop (Pmode, AND, addr, GEN_INT (-8),
-                               NULL_RTX, 1, OPTAB_DIRECT);
+			       NULL_RTX, 1, OPTAB_DIRECT);
 
   oldval = convert_modes (DImode, mode, oldval, 1);
   newval = emit_insxl (mode, newval, addr);
@@ -4642,8 +4642,8 @@ alpha_expand_compare_and_swap_12 (rtx dst, rtx mem, rtx oldval, rtx newval)
 
 void
 alpha_split_compare_and_swap_12 (enum machine_mode mode, rtx dest, rtx addr,
-                                 rtx oldval, rtx newval, rtx align,
-                                 rtx scratch, rtx cond)
+				 rtx oldval, rtx newval, rtx align,
+				 rtx scratch, rtx cond)
 {
   rtx label1, label2, mem, width, mask, x;
 
@@ -4722,7 +4722,7 @@ alpha_expand_lock_test_and_set_12 (rtx dst, rtx mem, rtx val)
 
   /* Align it to a multiple of 8.  */
   align = expand_simple_binop (Pmode, AND, addr, GEN_INT (-8),
-                               NULL_RTX, 1, OPTAB_DIRECT);
+			       NULL_RTX, 1, OPTAB_DIRECT);
 
   /* Insert val into the correct byte location within the word.  */
   val = emit_insxl (mode, val, addr);
@@ -4739,7 +4739,7 @@ alpha_expand_lock_test_and_set_12 (rtx dst, rtx mem, rtx val)
 
 void
 alpha_split_lock_test_and_set_12 (enum machine_mode mode, rtx dest, rtx addr,
-                                  rtx val, rtx align, rtx scratch)
+				  rtx val, rtx align, rtx scratch)
 {
   rtx label, mem, width, mask, x;
 
@@ -4852,7 +4852,7 @@ static struct machine_function *
 alpha_init_machine_status (void)
 {
   return ((struct machine_function *)
-                ggc_alloc_cleared (sizeof (struct machine_function)));
+		ggc_alloc_cleared (sizeof (struct machine_function)));
 }
 
 /* Functions to save and restore alpha_return_addr_rtx.  */
@@ -4925,58 +4925,58 @@ get_trap_mode_suffix (void)
 
     case TRAP_SUFFIX_SU:
       if (alpha_fptm >= ALPHA_FPTM_SU)
-        return "su";
+	return "su";
       return NULL;
 
     case TRAP_SUFFIX_SUI:
       if (alpha_fptm >= ALPHA_FPTM_SUI)
-        return "sui";
+	return "sui";
       return NULL;
 
     case TRAP_SUFFIX_V_SV:
       switch (alpha_fptm)
-        {
-        case ALPHA_FPTM_N:
-          return NULL;
-        case ALPHA_FPTM_U:
-          return "v";
-        case ALPHA_FPTM_SU:
-        case ALPHA_FPTM_SUI:
-          return "sv";
-        default:
-          gcc_unreachable ();
-        }
+	{
+	case ALPHA_FPTM_N:
+	  return NULL;
+	case ALPHA_FPTM_U:
+	  return "v";
+	case ALPHA_FPTM_SU:
+	case ALPHA_FPTM_SUI:
+	  return "sv";
+	default:
+	  gcc_unreachable ();
+	}
 
     case TRAP_SUFFIX_V_SV_SVI:
       switch (alpha_fptm)
-        {
-        case ALPHA_FPTM_N:
-          return NULL;
-        case ALPHA_FPTM_U:
-          return "v";
-        case ALPHA_FPTM_SU:
-          return "sv";
-        case ALPHA_FPTM_SUI:
-          return "svi";
-        default:
-          gcc_unreachable ();
-        }
+	{
+	case ALPHA_FPTM_N:
+	  return NULL;
+	case ALPHA_FPTM_U:
+	  return "v";
+	case ALPHA_FPTM_SU:
+	  return "sv";
+	case ALPHA_FPTM_SUI:
+	  return "svi";
+	default:
+	  gcc_unreachable ();
+	}
       break;
 
     case TRAP_SUFFIX_U_SU_SUI:
       switch (alpha_fptm)
-        {
-        case ALPHA_FPTM_N:
-          return NULL;
-        case ALPHA_FPTM_U:
-          return "u";
-        case ALPHA_FPTM_SU:
-          return "su";
-        case ALPHA_FPTM_SUI:
-          return "sui";
-        default:
-          gcc_unreachable ();
-        }
+	{
+	case ALPHA_FPTM_N:
+	  return NULL;
+	case ALPHA_FPTM_U:
+	  return "u";
+	case ALPHA_FPTM_SU:
+	  return "su";
+	case ALPHA_FPTM_SUI:
+	  return "sui";
+	default:
+	  gcc_unreachable ();
+	}
       break;
       
     default:
@@ -4999,18 +4999,18 @@ get_round_mode_suffix (void)
       return NULL;
     case ROUND_SUFFIX_NORMAL:
       switch (alpha_fprm)
-        {
-        case ALPHA_FPRM_NORM:
-          return NULL;
-        case ALPHA_FPRM_MINF:
-          return "m";
-        case ALPHA_FPRM_CHOP:
-          return "c";
-        case ALPHA_FPRM_DYN:
-          return "d";
-        default:
-          gcc_unreachable ();
-        }
+	{
+	case ALPHA_FPRM_NORM:
+	  return NULL;
+	case ALPHA_FPRM_MINF:
+	  return "m";
+	case ALPHA_FPRM_CHOP:
+	  return "c";
+	case ALPHA_FPRM_DYN:
+	  return "d";
+	default:
+	  gcc_unreachable ();
+	}
       break;
 
     case ROUND_SUFFIX_C:
@@ -5050,7 +5050,7 @@ get_some_local_dynamic_name (void)
 
   for (insn = get_insns (); insn ; insn = NEXT_INSN (insn))
     if (INSN_P (insn)
-        && for_each_rtx (&PATTERN (insn), get_some_local_dynamic_name_1, 0))
+	&& for_each_rtx (&PATTERN (insn), get_some_local_dynamic_name_1, 0))
       return cfun->machine->some_ld_name;
 
   gcc_unreachable ();
@@ -5076,13 +5076,13 @@ print_operand (FILE *file, rtx x, int code)
 
     case '/':
       {
-        const char *trap = get_trap_mode_suffix ();
-        const char *round = get_round_mode_suffix ();
+	const char *trap = get_trap_mode_suffix ();
+	const char *round = get_round_mode_suffix ();
 
-        if (trap || round)
-          fprintf (file, (TARGET_AS_SLASH_BEFORE_SUFFIX ? "/%s%s" : "%s%s"),
-                   (trap ? trap : ""), (round ? round : ""));
-        break;
+	if (trap || round)
+	  fprintf (file, (TARGET_AS_SLASH_BEFORE_SUFFIX ? "/%s%s" : "%s%s"),
+		   (trap ? trap : ""), (round ? round : ""));
+	break;
       }
 
     case ',':
@@ -5097,95 +5097,95 @@ print_operand (FILE *file, rtx x, int code)
 
     case '+':
       /* Generates a nop after a noreturn call at the very end of the
-         function.  */
+	 function.  */
       if (next_real_insn (current_output_insn) == 0)
-        fprintf (file, "\n\tnop");
+	fprintf (file, "\n\tnop");
       break;
 
     case '#':
       if (alpha_this_literal_sequence_number == 0)
-        alpha_this_literal_sequence_number = alpha_next_sequence_number++;
+	alpha_this_literal_sequence_number = alpha_next_sequence_number++;
       fprintf (file, "%d", alpha_this_literal_sequence_number);
       break;
 
     case '*':
       if (alpha_this_gpdisp_sequence_number == 0)
-        alpha_this_gpdisp_sequence_number = alpha_next_sequence_number++;
+	alpha_this_gpdisp_sequence_number = alpha_next_sequence_number++;
       fprintf (file, "%d", alpha_this_gpdisp_sequence_number);
       break;
 
     case 'H':
       if (GET_CODE (x) == HIGH)
-        output_addr_const (file, XEXP (x, 0));
+	output_addr_const (file, XEXP (x, 0));
       else
-        output_operand_lossage ("invalid %%H value");
+	output_operand_lossage ("invalid %%H value");
       break;
 
     case 'J':
       {
-        const char *lituse;
+	const char *lituse;
 
         if (GET_CODE (x) == UNSPEC && XINT (x, 1) == UNSPEC_TLSGD_CALL)
-          {
-            x = XVECEXP (x, 0, 0);
-            lituse = "lituse_tlsgd";
-          }
-        else if (GET_CODE (x) == UNSPEC && XINT (x, 1) == UNSPEC_TLSLDM_CALL)
-          {
-            x = XVECEXP (x, 0, 0);
-            lituse = "lituse_tlsldm";
-          }
-        else if (GET_CODE (x) == CONST_INT)
-          lituse = "lituse_jsr";
-        else
-          {
-            output_operand_lossage ("invalid %%J value");
-            break;
-          }
+	  {
+	    x = XVECEXP (x, 0, 0);
+	    lituse = "lituse_tlsgd";
+	  }
+	else if (GET_CODE (x) == UNSPEC && XINT (x, 1) == UNSPEC_TLSLDM_CALL)
+	  {
+	    x = XVECEXP (x, 0, 0);
+	    lituse = "lituse_tlsldm";
+	  }
+	else if (GET_CODE (x) == CONST_INT)
+	  lituse = "lituse_jsr";
+	else
+	  {
+	    output_operand_lossage ("invalid %%J value");
+	    break;
+	  }
 
-        if (x != const0_rtx)
-          fprintf (file, "\t\t!%s!%d", lituse, (int) INTVAL (x));
+	if (x != const0_rtx)
+	  fprintf (file, "\t\t!%s!%d", lituse, (int) INTVAL (x));
       }
       break;
 
     case 'j':
       {
-        const char *lituse;
+	const char *lituse;
 
 #ifdef HAVE_AS_JSRDIRECT_RELOCS
-        lituse = "lituse_jsrdirect";
+	lituse = "lituse_jsrdirect";
 #else
-        lituse = "lituse_jsr";
+	lituse = "lituse_jsr";
 #endif
 
-        gcc_assert (INTVAL (x) != 0);
-        fprintf (file, "\t\t!%s!%d", lituse, (int) INTVAL (x));
+	gcc_assert (INTVAL (x) != 0);
+	fprintf (file, "\t\t!%s!%d", lituse, (int) INTVAL (x));
       }
       break;
     case 'r':
       /* If this operand is the constant zero, write it as "$31".  */
       if (GET_CODE (x) == REG)
-        fprintf (file, "%s", reg_names[REGNO (x)]);
+	fprintf (file, "%s", reg_names[REGNO (x)]);
       else if (x == CONST0_RTX (GET_MODE (x)))
-        fprintf (file, "$31");
+	fprintf (file, "$31");
       else
-        output_operand_lossage ("invalid %%r value");
+	output_operand_lossage ("invalid %%r value");
       break;
 
     case 'R':
       /* Similar, but for floating-point.  */
       if (GET_CODE (x) == REG)
-        fprintf (file, "%s", reg_names[REGNO (x)]);
+	fprintf (file, "%s", reg_names[REGNO (x)]);
       else if (x == CONST0_RTX (GET_MODE (x)))
-        fprintf (file, "$f31");
+	fprintf (file, "$f31");
       else
-        output_operand_lossage ("invalid %%R value");
+	output_operand_lossage ("invalid %%R value");
       break;
 
     case 'N':
       /* Write the 1's complement of a constant.  */
       if (GET_CODE (x) != CONST_INT)
-        output_operand_lossage ("invalid %%N value");
+	output_operand_lossage ("invalid %%N value");
 
       fprintf (file, HOST_WIDE_INT_PRINT_DEC, ~ INTVAL (x));
       break;
@@ -5193,7 +5193,7 @@ print_operand (FILE *file, rtx x, int code)
     case 'P':
       /* Write 1 << C, for a constant C.  */
       if (GET_CODE (x) != CONST_INT)
-        output_operand_lossage ("invalid %%P value");
+	output_operand_lossage ("invalid %%P value");
 
       fprintf (file, HOST_WIDE_INT_PRINT_DEC, (HOST_WIDE_INT) 1 << INTVAL (x));
       break;
@@ -5201,7 +5201,7 @@ print_operand (FILE *file, rtx x, int code)
     case 'h':
       /* Write the high-order 16 bits of a constant, sign-extended.  */
       if (GET_CODE (x) != CONST_INT)
-        output_operand_lossage ("invalid %%h value");
+	output_operand_lossage ("invalid %%h value");
 
       fprintf (file, HOST_WIDE_INT_PRINT_DEC, INTVAL (x) >> 16);
       break;
@@ -5209,124 +5209,124 @@ print_operand (FILE *file, rtx x, int code)
     case 'L':
       /* Write the low-order 16 bits of a constant, sign-extended.  */
       if (GET_CODE (x) != CONST_INT)
-        output_operand_lossage ("invalid %%L value");
+	output_operand_lossage ("invalid %%L value");
 
       fprintf (file, HOST_WIDE_INT_PRINT_DEC,
-               (INTVAL (x) & 0xffff) - 2 * (INTVAL (x) & 0x8000));
+	       (INTVAL (x) & 0xffff) - 2 * (INTVAL (x) & 0x8000));
       break;
 
     case 'm':
       /* Write mask for ZAP insn.  */
       if (GET_CODE (x) == CONST_DOUBLE)
-        {
-          HOST_WIDE_INT mask = 0;
-          HOST_WIDE_INT value;
+	{
+	  HOST_WIDE_INT mask = 0;
+	  HOST_WIDE_INT value;
 
-          value = CONST_DOUBLE_LOW (x);
-          for (i = 0; i < HOST_BITS_PER_WIDE_INT / HOST_BITS_PER_CHAR;
-               i++, value >>= 8)
-            if (value & 0xff)
-              mask |= (1 << i);
+	  value = CONST_DOUBLE_LOW (x);
+	  for (i = 0; i < HOST_BITS_PER_WIDE_INT / HOST_BITS_PER_CHAR;
+	       i++, value >>= 8)
+	    if (value & 0xff)
+	      mask |= (1 << i);
 
-          value = CONST_DOUBLE_HIGH (x);
-          for (i = 0; i < HOST_BITS_PER_WIDE_INT / HOST_BITS_PER_CHAR;
-               i++, value >>= 8)
-            if (value & 0xff)
-              mask |= (1 << (i + sizeof (int)));
+	  value = CONST_DOUBLE_HIGH (x);
+	  for (i = 0; i < HOST_BITS_PER_WIDE_INT / HOST_BITS_PER_CHAR;
+	       i++, value >>= 8)
+	    if (value & 0xff)
+	      mask |= (1 << (i + sizeof (int)));
 
-          fprintf (file, HOST_WIDE_INT_PRINT_DEC, mask & 0xff);
-        }
+	  fprintf (file, HOST_WIDE_INT_PRINT_DEC, mask & 0xff);
+	}
 
       else if (GET_CODE (x) == CONST_INT)
-        {
-          HOST_WIDE_INT mask = 0, value = INTVAL (x);
+	{
+	  HOST_WIDE_INT mask = 0, value = INTVAL (x);
 
-          for (i = 0; i < 8; i++, value >>= 8)
-            if (value & 0xff)
-              mask |= (1 << i);
+	  for (i = 0; i < 8; i++, value >>= 8)
+	    if (value & 0xff)
+	      mask |= (1 << i);
 
-          fprintf (file, HOST_WIDE_INT_PRINT_DEC, mask);
-        }
+	  fprintf (file, HOST_WIDE_INT_PRINT_DEC, mask);
+	}
       else
-        output_operand_lossage ("invalid %%m value");
+	output_operand_lossage ("invalid %%m value");
       break;
 
     case 'M':
       /* 'b', 'w', 'l', or 'q' as the value of the constant.  */
       if (GET_CODE (x) != CONST_INT
-          || (INTVAL (x) != 8 && INTVAL (x) != 16
-              && INTVAL (x) != 32 && INTVAL (x) != 64))
-        output_operand_lossage ("invalid %%M value");
+	  || (INTVAL (x) != 8 && INTVAL (x) != 16
+	      && INTVAL (x) != 32 && INTVAL (x) != 64))
+	output_operand_lossage ("invalid %%M value");
 
       fprintf (file, "%s",
-               (INTVAL (x) == 8 ? "b"
-                : INTVAL (x) == 16 ? "w"
-                : INTVAL (x) == 32 ? "l"
-                : "q"));
+	       (INTVAL (x) == 8 ? "b"
+		: INTVAL (x) == 16 ? "w"
+		: INTVAL (x) == 32 ? "l"
+		: "q"));
       break;
 
     case 'U':
       /* Similar, except do it from the mask.  */
       if (GET_CODE (x) == CONST_INT)
-        {
-          HOST_WIDE_INT value = INTVAL (x);
+	{
+	  HOST_WIDE_INT value = INTVAL (x);
 
-          if (value == 0xff)
-            {
-              fputc ('b', file);
-              break;
-            }
-          if (value == 0xffff)
-            {
-              fputc ('w', file);
-              break;
-            }
-          if (value == 0xffffffff)
-            {
-              fputc ('l', file);
-              break;
-            }
-          if (value == -1)
-            {
-              fputc ('q', file);
-              break;
-            }
-        }
+	  if (value == 0xff)
+	    {
+	      fputc ('b', file);
+	      break;
+	    }
+	  if (value == 0xffff)
+	    {
+	      fputc ('w', file);
+	      break;
+	    }
+	  if (value == 0xffffffff)
+	    {
+	      fputc ('l', file);
+	      break;
+	    }
+	  if (value == -1)
+	    {
+	      fputc ('q', file);
+	      break;
+	    }
+	}
       else if (HOST_BITS_PER_WIDE_INT == 32
-               && GET_CODE (x) == CONST_DOUBLE
-               && CONST_DOUBLE_LOW (x) == 0xffffffff
-               && CONST_DOUBLE_HIGH (x) == 0)
-        {
-          fputc ('l', file);
-          break;
-        }
+	       && GET_CODE (x) == CONST_DOUBLE
+	       && CONST_DOUBLE_LOW (x) == 0xffffffff
+	       && CONST_DOUBLE_HIGH (x) == 0)
+	{
+	  fputc ('l', file);
+	  break;
+	}
       output_operand_lossage ("invalid %%U value");
       break;
 
     case 's':
       /* Write the constant value divided by 8 for little-endian mode or
-         (56 - value) / 8 for big-endian mode.  */
+	 (56 - value) / 8 for big-endian mode.  */
 
       if (GET_CODE (x) != CONST_INT
-          || (unsigned HOST_WIDE_INT) INTVAL (x) >= (WORDS_BIG_ENDIAN
-                                                     ? 56
-                                                     : 64)
-          || (INTVAL (x) & 7) != 0)
-        output_operand_lossage ("invalid %%s value");
+	  || (unsigned HOST_WIDE_INT) INTVAL (x) >= (WORDS_BIG_ENDIAN
+						     ? 56
+						     : 64)
+	  || (INTVAL (x) & 7) != 0)
+	output_operand_lossage ("invalid %%s value");
 
       fprintf (file, HOST_WIDE_INT_PRINT_DEC,
-               WORDS_BIG_ENDIAN
-               ? (56 - INTVAL (x)) / 8
-               : INTVAL (x) / 8);
+	       WORDS_BIG_ENDIAN
+	       ? (56 - INTVAL (x)) / 8
+	       : INTVAL (x) / 8);
       break;
 
     case 'S':
       /* Same, except compute (64 - c) / 8 */
 
       if (GET_CODE (x) != CONST_INT
-          && (unsigned HOST_WIDE_INT) INTVAL (x) >= 64
-          && (INTVAL (x) & 7) != 8)
-        output_operand_lossage ("invalid %%s value");
+	  && (unsigned HOST_WIDE_INT) INTVAL (x) >= 64
+	  && (INTVAL (x) & 7) != 8)
+	output_operand_lossage ("invalid %%s value");
 
       fprintf (file, HOST_WIDE_INT_PRINT_DEC, (64 - INTVAL (x)) / 8);
       break;
@@ -5334,89 +5334,89 @@ print_operand (FILE *file, rtx x, int code)
     case 't':
       {
         /* On Unicos/Mk systems: use a DEX expression if the symbol
-           clashes with a register name.  */
-        int dex = unicosmk_need_dex (x);
-        if (dex)
-          fprintf (file, "DEX(%d)", dex);
-        else
-          output_addr_const (file, x);
+	   clashes with a register name.  */
+	int dex = unicosmk_need_dex (x);
+	if (dex)
+	  fprintf (file, "DEX(%d)", dex);
+	else
+	  output_addr_const (file, x);
       }
       break;
 
     case 'C': case 'D': case 'c': case 'd':
       /* Write out comparison name.  */
       {
-        enum rtx_code c = GET_CODE (x);
+	enum rtx_code c = GET_CODE (x);
 
         if (!COMPARISON_P (x))
-          output_operand_lossage ("invalid %%C value");
+	  output_operand_lossage ("invalid %%C value");
 
-        else if (code == 'D')
-          c = reverse_condition (c);
-        else if (code == 'c')
-          c = swap_condition (c);
-        else if (code == 'd')
-          c = swap_condition (reverse_condition (c));
+	else if (code == 'D')
+	  c = reverse_condition (c);
+	else if (code == 'c')
+	  c = swap_condition (c);
+	else if (code == 'd')
+	  c = swap_condition (reverse_condition (c));
 
         if (c == LEU)
-          fprintf (file, "ule");
+	  fprintf (file, "ule");
         else if (c == LTU)
-          fprintf (file, "ult");
-        else if (c == UNORDERED)
-          fprintf (file, "un");
+	  fprintf (file, "ult");
+	else if (c == UNORDERED)
+	  fprintf (file, "un");
         else
-          fprintf (file, "%s", GET_RTX_NAME (c));
+	  fprintf (file, "%s", GET_RTX_NAME (c));
       }
       break;
 
     case 'E':
       /* Write the divide or modulus operator.  */
       switch (GET_CODE (x))
-        {
-        case DIV:
-          fprintf (file, "div%s", GET_MODE (x) == SImode ? "l" : "q");
-          break;
-        case UDIV:
-          fprintf (file, "div%su", GET_MODE (x) == SImode ? "l" : "q");
-          break;
-        case MOD:
-          fprintf (file, "rem%s", GET_MODE (x) == SImode ? "l" : "q");
-          break;
-        case UMOD:
-          fprintf (file, "rem%su", GET_MODE (x) == SImode ? "l" : "q");
-          break;
-        default:
-          output_operand_lossage ("invalid %%E value");
-          break;
-        }
+	{
+	case DIV:
+	  fprintf (file, "div%s", GET_MODE (x) == SImode ? "l" : "q");
+	  break;
+	case UDIV:
+	  fprintf (file, "div%su", GET_MODE (x) == SImode ? "l" : "q");
+	  break;
+	case MOD:
+	  fprintf (file, "rem%s", GET_MODE (x) == SImode ? "l" : "q");
+	  break;
+	case UMOD:
+	  fprintf (file, "rem%su", GET_MODE (x) == SImode ? "l" : "q");
+	  break;
+	default:
+	  output_operand_lossage ("invalid %%E value");
+	  break;
+	}
       break;
 
     case 'A':
       /* Write "_u" for unaligned access.  */
       if (GET_CODE (x) == MEM && GET_CODE (XEXP (x, 0)) == AND)
-        fprintf (file, "_u");
+	fprintf (file, "_u");
       break;
 
     case 0:
       if (GET_CODE (x) == REG)
-        fprintf (file, "%s", reg_names[REGNO (x)]);
+	fprintf (file, "%s", reg_names[REGNO (x)]);
       else if (GET_CODE (x) == MEM)
-        output_address (XEXP (x, 0));
+	output_address (XEXP (x, 0));
       else if (GET_CODE (x) == CONST && GET_CODE (XEXP (x, 0)) == UNSPEC)
-        {
-          switch (XINT (XEXP (x, 0), 1))
-            {
-            case UNSPEC_DTPREL:
-            case UNSPEC_TPREL:
-              output_addr_const (file, XVECEXP (XEXP (x, 0), 0, 0));
-              break;
-            default:
-              output_operand_lossage ("unknown relocation unspec");
-              break;
-            }
-        }
+	{
+	  switch (XINT (XEXP (x, 0), 1))
+	    {
+	    case UNSPEC_DTPREL:
+	    case UNSPEC_TPREL:
+	      output_addr_const (file, XVECEXP (XEXP (x, 0), 0, 0));
+	      break;
+	    default:
+	      output_operand_lossage ("unknown relocation unspec");
+	      break;
+	    }
+	}
       else
-        output_addr_const (file, x);
+	output_addr_const (file, x);
       break;
 
     default:
@@ -5446,52 +5446,52 @@ print_operand_address (FILE *file, rtx addr)
       rtx op1 = XEXP (addr, 1);
 
       if (GET_CODE (op1) == CONST && GET_CODE (XEXP (op1, 0)) == UNSPEC)
-        {
-          op1 = XEXP (op1, 0);
-          switch (XINT (op1, 1))
-            {
-            case UNSPEC_DTPREL:
-              reloc16 = NULL;
-              reloclo = (alpha_tls_size == 16 ? "dtprel" : "dtprello");
-              break;
-            case UNSPEC_TPREL:
-              reloc16 = NULL;
-              reloclo = (alpha_tls_size == 16 ? "tprel" : "tprello");
-              break;
-            default:
-              output_operand_lossage ("unknown relocation unspec");
-              return;
-            }
+	{
+	  op1 = XEXP (op1, 0);
+	  switch (XINT (op1, 1))
+	    {
+	    case UNSPEC_DTPREL:
+	      reloc16 = NULL;
+	      reloclo = (alpha_tls_size == 16 ? "dtprel" : "dtprello");
+	      break;
+	    case UNSPEC_TPREL:
+	      reloc16 = NULL;
+	      reloclo = (alpha_tls_size == 16 ? "tprel" : "tprello");
+	      break;
+	    default:
+	      output_operand_lossage ("unknown relocation unspec");
+	      return;
+	    }
 
-          output_addr_const (file, XVECEXP (op1, 0, 0));
-        }
+	  output_addr_const (file, XVECEXP (op1, 0, 0));
+	}
       else
-        {
-          reloc16 = "gprel";
-          reloclo = "gprellow";
-          output_addr_const (file, op1);
-        }
+	{
+	  reloc16 = "gprel";
+	  reloclo = "gprellow";
+	  output_addr_const (file, op1);
+	}
 
       if (offset)
-        fprintf (file, "+" HOST_WIDE_INT_PRINT_DEC, offset);
+	fprintf (file, "+" HOST_WIDE_INT_PRINT_DEC, offset);
 
       addr = XEXP (addr, 0);
       switch (GET_CODE (addr))
-        {
-        case REG:
-          basereg = REGNO (addr);
-          break;
+	{
+	case REG:
+	  basereg = REGNO (addr);
+	  break;
 
-        case SUBREG:
-          basereg = subreg_regno (addr);
-          break;
+	case SUBREG:
+	  basereg = subreg_regno (addr);
+	  break;
 
-        default:
-          gcc_unreachable ();
-        }
+	default:
+	  gcc_unreachable ();
+	}
 
       fprintf (file, "($%d)\t\t!%s", basereg,
-               (basereg == 29 ? reloc16 : reloclo));
+	       (basereg == 29 ? reloc16 : reloclo));
       return;
     }
 
@@ -5516,10 +5516,10 @@ print_operand_address (FILE *file, rtx addr)
 
     case CONST:
       gcc_assert (GET_CODE (XEXP (addr, 0)) == PLUS
-                  && GET_CODE (XEXP (XEXP (addr, 0), 0)) == SYMBOL_REF);
+		  && GET_CODE (XEXP (XEXP (addr, 0), 0)) == SYMBOL_REF);
       fprintf (file, "%s+" HOST_WIDE_INT_PRINT_DEC,
-               XSTR (XEXP (XEXP (addr, 0), 0), 0),
-               INTVAL (XEXP (XEXP (addr, 0), 1)));
+	       XSTR (XEXP (XEXP (addr, 0), 0), 0),
+	       INTVAL (XEXP (XEXP (addr, 0), 1)));
       return;
     
 #endif
@@ -5545,7 +5545,7 @@ print_operand_address (FILE *file, rtx addr)
 
 void
 alpha_initialize_trampoline (rtx tramp, rtx fnaddr, rtx cxt,
-                             int fnofs, int cxtofs, int jmpofs)
+			     int fnofs, int cxtofs, int jmpofs)
 {
   rtx temp, temp1, addr;
   /* VMS really uses DImode pointers in memory at this point.  */
@@ -5569,24 +5569,24 @@ alpha_initialize_trampoline (rtx tramp, rtx fnaddr, rtx cxt,
       /* Compute hint value.  */
       temp = force_operand (plus_constant (tramp, jmpofs+4), NULL_RTX);
       temp = expand_binop (DImode, sub_optab, fnaddr, temp, temp, 1,
-                           OPTAB_WIDEN);
+			   OPTAB_WIDEN);
       temp = expand_shift (RSHIFT_EXPR, Pmode, temp,
-                           build_int_cst (NULL_TREE, 2), NULL_RTX, 1);
+		           build_int_cst (NULL_TREE, 2), NULL_RTX, 1);
       temp = expand_and (SImode, gen_lowpart (SImode, temp),
-                         GEN_INT (0x3fff), 0);
+			 GEN_INT (0x3fff), 0);
 
       /* Merge in the hint.  */
       addr = memory_address (SImode, plus_constant (tramp, jmpofs));
       temp1 = force_reg (SImode, gen_rtx_MEM (SImode, addr));
       temp1 = expand_and (SImode, temp1, GEN_INT (0xffffc000), NULL_RTX);
       temp1 = expand_binop (SImode, ior_optab, temp1, temp, temp1, 1,
-                            OPTAB_WIDEN);
+			    OPTAB_WIDEN);
       emit_move_insn (gen_rtx_MEM (SImode, addr), temp1);
     }
 
 #ifdef ENABLE_EXECUTE_STACK
   emit_library_call (init_one_libfunc ("__enable_execute_stack"),
-                     0, VOIDmode, 1, tramp, Pmode);
+		     0, VOIDmode, 1, tramp, Pmode);
 #endif
 
   if (jmpofs >= 0)
@@ -5611,7 +5611,7 @@ alpha_initialize_trampoline (rtx tramp, rtx fnaddr, rtx cxt,
 
 rtx
 function_arg (CUMULATIVE_ARGS cum, enum machine_mode mode, tree type,
-              int named ATTRIBUTE_UNUSED)
+	      int named ATTRIBUTE_UNUSED)
 {
   int basereg;
   int num_args;
@@ -5623,16 +5623,16 @@ function_arg (CUMULATIVE_ARGS cum, enum machine_mode mode, tree type,
     {
 #ifdef ENABLE_CHECKING
       /* With alpha_split_complex_arg, we shouldn't see any raw complex
-         values here.  */
+	 values here.  */
       gcc_assert (!COMPLEX_MODE_P (mode));
 #endif
 
       /* Set up defaults for FP operands passed in FP registers, and
-         integral operands passed in integer registers.  */
+	 integral operands passed in integer registers.  */
       if (TARGET_FPREGS && GET_MODE_CLASS (mode) == MODE_FLOAT)
-        basereg = 32 + 16;
+	basereg = 32 + 16;
       else
-        basereg = 16;
+	basereg = 16;
     }
 
   /* ??? Irritatingly, the definition of CUMULATIVE_ARGS is different for
@@ -5640,12 +5640,12 @@ function_arg (CUMULATIVE_ARGS cum, enum machine_mode mode, tree type,
 #if TARGET_ABI_OPEN_VMS
     {
       if (mode == VOIDmode)
-        return alpha_arg_info_reg_val (cum);
+	return alpha_arg_info_reg_val (cum);
 
       num_args = cum.num_args;
       if (num_args >= 6
-          || targetm.calls.must_pass_in_stack (mode, type))
-        return NULL_RTX;
+	  || targetm.calls.must_pass_in_stack (mode, type))
+	return NULL_RTX;
     }
 #elif TARGET_ABI_UNICOSMK
     {
@@ -5653,76 +5653,76 @@ function_arg (CUMULATIVE_ARGS cum, enum machine_mode mode, tree type,
 
       /* If this is the last argument, generate the call info word (CIW).  */
       /* ??? We don't include the caller's line number in the CIW because
-         I don't know how to determine it if debug infos are turned off.  */
+	 I don't know how to determine it if debug infos are turned off.  */
       if (mode == VOIDmode)
-        {
-          int i;
-          HOST_WIDE_INT lo;
-          HOST_WIDE_INT hi;
-          rtx ciw;
+	{
+	  int i;
+	  HOST_WIDE_INT lo;
+	  HOST_WIDE_INT hi;
+	  rtx ciw;
 
-          lo = 0;
+	  lo = 0;
 
-          for (i = 0; i < cum.num_reg_words && i < 5; i++)
-            if (cum.reg_args_type[i])
-              lo |= (1 << (7 - i));
+	  for (i = 0; i < cum.num_reg_words && i < 5; i++)
+	    if (cum.reg_args_type[i])
+	      lo |= (1 << (7 - i));
 
-          if (cum.num_reg_words == 6 && cum.reg_args_type[5])
-            lo |= 7;
-          else
-            lo |= cum.num_reg_words;
+	  if (cum.num_reg_words == 6 && cum.reg_args_type[5])
+	    lo |= 7;
+	  else
+	    lo |= cum.num_reg_words;
 
 #if HOST_BITS_PER_WIDE_INT == 32
-          hi = (cum.num_args << 20) | cum.num_arg_words;
+	  hi = (cum.num_args << 20) | cum.num_arg_words;
 #else
-          lo = lo | ((HOST_WIDE_INT) cum.num_args << 52)
-            | ((HOST_WIDE_INT) cum.num_arg_words << 32);
-          hi = 0;
+	  lo = lo | ((HOST_WIDE_INT) cum.num_args << 52)
+	    | ((HOST_WIDE_INT) cum.num_arg_words << 32);
+	  hi = 0;
 #endif
-          ciw = immed_double_const (lo, hi, DImode);
+	  ciw = immed_double_const (lo, hi, DImode);
 
-          return gen_rtx_UNSPEC (DImode, gen_rtvec (1, ciw),
-                                 UNSPEC_UMK_LOAD_CIW);
-        }
+	  return gen_rtx_UNSPEC (DImode, gen_rtvec (1, ciw),
+				 UNSPEC_UMK_LOAD_CIW);
+	}
 
       size = ALPHA_ARG_SIZE (mode, type, named);
       num_args = cum.num_reg_words;
       if (cum.force_stack
-          || cum.num_reg_words + size > 6
-          || targetm.calls.must_pass_in_stack (mode, type))
-        return NULL_RTX;
+	  || cum.num_reg_words + size > 6
+	  || targetm.calls.must_pass_in_stack (mode, type))
+	return NULL_RTX;
       else if (type && TYPE_MODE (type) == BLKmode)
-        {
-          rtx reg1, reg2;
+	{
+	  rtx reg1, reg2;
 
-          reg1 = gen_rtx_REG (DImode, num_args + 16);
-          reg1 = gen_rtx_EXPR_LIST (DImode, reg1, const0_rtx);
+	  reg1 = gen_rtx_REG (DImode, num_args + 16);
+	  reg1 = gen_rtx_EXPR_LIST (DImode, reg1, const0_rtx);
 
-          /* The argument fits in two registers. Note that we still need to
-             reserve a register for empty structures.  */
-          if (size == 0)
-            return NULL_RTX;
-          else if (size == 1)
-            return gen_rtx_PARALLEL (mode, gen_rtvec (1, reg1));
-          else
-            {
-              reg2 = gen_rtx_REG (DImode, num_args + 17);
-              reg2 = gen_rtx_EXPR_LIST (DImode, reg2, GEN_INT (8));
-              return gen_rtx_PARALLEL (mode, gen_rtvec (2, reg1, reg2));
-            }
-        }
+	  /* The argument fits in two registers. Note that we still need to
+	     reserve a register for empty structures.  */
+	  if (size == 0)
+	    return NULL_RTX;
+	  else if (size == 1)
+	    return gen_rtx_PARALLEL (mode, gen_rtvec (1, reg1));
+	  else
+	    {
+	      reg2 = gen_rtx_REG (DImode, num_args + 17);
+	      reg2 = gen_rtx_EXPR_LIST (DImode, reg2, GEN_INT (8));
+	      return gen_rtx_PARALLEL (mode, gen_rtvec (2, reg1, reg2));
+	    }
+	}
     }
 #elif TARGET_ABI_OSF
     {
       if (cum >= 6)
-        return NULL_RTX;
+	return NULL_RTX;
       num_args = cum;
 
       /* VOID is passed as a special flag for "last argument".  */
       if (type == void_type_node)
-        basereg = 16;
+	basereg = 16;
       else if (targetm.calls.must_pass_in_stack (mode, type))
-        return NULL_RTX;
+	return NULL_RTX;
     }
 #else
 #error Unhandled ABI
@@ -5733,9 +5733,9 @@ function_arg (CUMULATIVE_ARGS cum, enum machine_mode mode, tree type,
 
 static int
 alpha_arg_partial_bytes (CUMULATIVE_ARGS *cum ATTRIBUTE_UNUSED,
-                         enum machine_mode mode ATTRIBUTE_UNUSED,
-                         tree type ATTRIBUTE_UNUSED,
-                         bool named ATTRIBUTE_UNUSED)
+			 enum machine_mode mode ATTRIBUTE_UNUSED,
+			 tree type ATTRIBUTE_UNUSED,
+			 bool named ATTRIBUTE_UNUSED)
 {
   int words = 0;
 
@@ -5770,7 +5770,7 @@ alpha_return_in_memory (tree type, tree fndecl ATTRIBUTE_UNUSED)
 
       /* All aggregates are returned in memory.  */
       if (AGGREGATE_TYPE_P (type))
-        return true;
+	return true;
     }
 
   size = GET_MODE_SIZE (mode);
@@ -5782,7 +5782,7 @@ alpha_return_in_memory (tree type, tree fndecl ATTRIBUTE_UNUSED)
 
     case MODE_COMPLEX_FLOAT:
       /* We judge complex floats on the size of their element,
-         not the size of the whole type.  */
+	 not the size of the whole type.  */
       size = GET_MODE_UNIT_SIZE (mode);
       break;
 
@@ -5794,9 +5794,9 @@ alpha_return_in_memory (tree type, tree fndecl ATTRIBUTE_UNUSED)
 
     default:
       /* ??? We get called on all sorts of random stuff from
-         aggregate_value_p.  We must return something, but it's not
-         clear what's safe to return.  Pretend it's a struct I
-         guess.  */
+	 aggregate_value_p.  We must return something, but it's not
+	 clear what's safe to return.  Pretend it's a struct I
+	 guess.  */
       return true;
     }
 
@@ -5808,9 +5808,9 @@ alpha_return_in_memory (tree type, tree fndecl ATTRIBUTE_UNUSED)
 
 static bool
 alpha_pass_by_reference (CUMULATIVE_ARGS *ca ATTRIBUTE_UNUSED,
-                         enum machine_mode mode,
-                         tree type ATTRIBUTE_UNUSED,
-                         bool named ATTRIBUTE_UNUSED)
+			 enum machine_mode mode,
+			 tree type ATTRIBUTE_UNUSED,
+			 bool named ATTRIBUTE_UNUSED)
 {
   return mode == TFmode || mode == TCmode;
 }
@@ -5825,7 +5825,7 @@ alpha_pass_by_reference (CUMULATIVE_ARGS *ca ATTRIBUTE_UNUSED,
 
 rtx
 function_value (tree valtype, tree func ATTRIBUTE_UNUSED,
-                enum machine_mode mode)
+		enum machine_mode mode)
 {
   unsigned int regnum, dummy;
   enum mode_class class;
@@ -5853,15 +5853,15 @@ function_value (tree valtype, tree func ATTRIBUTE_UNUSED,
 
     case MODE_COMPLEX_FLOAT:
       {
-        enum machine_mode cmode = GET_MODE_INNER (mode);
+	enum machine_mode cmode = GET_MODE_INNER (mode);
 
-        return gen_rtx_PARALLEL
-          (VOIDmode,
-           gen_rtvec (2,
-                      gen_rtx_EXPR_LIST (VOIDmode, gen_rtx_REG (cmode, 32),
-                                         const0_rtx),
-                      gen_rtx_EXPR_LIST (VOIDmode, gen_rtx_REG (cmode, 33),
-                                         GEN_INT (GET_MODE_SIZE (cmode)))));
+	return gen_rtx_PARALLEL
+	  (VOIDmode,
+	   gen_rtvec (2,
+		      gen_rtx_EXPR_LIST (VOIDmode, gen_rtx_REG (cmode, 32),
+				         const0_rtx),
+		      gen_rtx_EXPR_LIST (VOIDmode, gen_rtx_REG (cmode, 33),
+				         GEN_INT (GET_MODE_SIZE (cmode)))));
       }
 
     default:
@@ -5902,12 +5902,12 @@ alpha_build_builtin_va_list (void)
   DECL_IGNORED_P (space) = 1;
 
   ofs = build_decl (FIELD_DECL, get_identifier ("__offset"),
-                    integer_type_node);
+		    integer_type_node);
   DECL_FIELD_CONTEXT (ofs) = record;
   TREE_CHAIN (ofs) = space;
 
   base = build_decl (FIELD_DECL, get_identifier ("__base"),
-                     ptr_type_node);
+		     ptr_type_node);
   DECL_FIELD_CONTEXT (base) = record;
   TREE_CHAIN (base) = ofs;
 
@@ -5935,23 +5935,23 @@ va_list_skip_additions (tree lhs)
       stmt = SSA_NAME_DEF_STMT (lhs);
 
       if (TREE_CODE (stmt) == PHI_NODE)
-        return stmt;
+	return stmt;
 
       if (TREE_CODE (stmt) != MODIFY_EXPR
-          || TREE_OPERAND (stmt, 0) != lhs)
-        return lhs;
+	  || TREE_OPERAND (stmt, 0) != lhs)
+	return lhs;
 
       rhs = TREE_OPERAND (stmt, 1);
       if (TREE_CODE (rhs) == WITH_SIZE_EXPR)
-        rhs = TREE_OPERAND (rhs, 0);
+	rhs = TREE_OPERAND (rhs, 0);
 
       if ((TREE_CODE (rhs) != NOP_EXPR
-           && TREE_CODE (rhs) != CONVERT_EXPR
-           && (TREE_CODE (rhs) != PLUS_EXPR
-               || TREE_CODE (TREE_OPERAND (rhs, 1)) != INTEGER_CST
-               || !host_integerp (TREE_OPERAND (rhs, 1), 1)))
-          || TREE_CODE (TREE_OPERAND (rhs, 0)) != SSA_NAME)
-        return rhs;
+	   && TREE_CODE (rhs) != CONVERT_EXPR
+	   && (TREE_CODE (rhs) != PLUS_EXPR
+	       || TREE_CODE (TREE_OPERAND (rhs, 1)) != INTEGER_CST
+	       || !host_integerp (TREE_OPERAND (rhs, 1), 1)))
+	  || TREE_CODE (TREE_OPERAND (rhs, 0)) != SSA_NAME)
+	return rhs;
 
       lhs = TREE_OPERAND (rhs, 0);
     }
@@ -5961,8 +5961,8 @@ va_list_skip_additions (tree lhs)
    LHS = *(ap.__base + ap.__offset + cst)
    or
    LHS = *(ap.__base
-           + ((ap.__offset + cst <= 47)
-              ? ap.__offset + cst - 48 : ap.__offset + cst) + cst2).
+	   + ((ap.__offset + cst <= 47)
+	      ? ap.__offset + cst - 48 : ap.__offset + cst) + cst2).
    If the former, indicate that GPR registers are needed,
    if the latter, indicate that FPR registers are needed.
    On alpha, cfun->va_list_gpr_size is used as size of the needed
@@ -5995,11 +5995,11 @@ alpha_stdarg_optimize_hook (struct stdarg_info *si, tree lhs, tree rhs)
     {
       base = TREE_OPERAND (lhs, 0);
       if (TREE_CODE (base) == SSA_NAME)
-        base = va_list_skip_additions (base);
+	base = va_list_skip_additions (base);
 
       if (TREE_CODE (base) != COMPONENT_REF
-          || TREE_OPERAND (base, 1) != TYPE_FIELDS (va_list_type_node))
-        return false;
+	  || TREE_OPERAND (base, 1) != TYPE_FIELDS (va_list_type_node))
+	return false;
 
       offset_arg = 0;
     }
@@ -6018,46 +6018,46 @@ alpha_stdarg_optimize_hook (struct stdarg_info *si, tree lhs, tree rhs)
       HOST_WIDE_INT sub;
 
       if (PHI_NUM_ARGS (offset) != 2)
-        goto escapes;
+	goto escapes;
 
       arg1 = va_list_skip_additions (PHI_ARG_DEF (offset, 0));
       arg2 = va_list_skip_additions (PHI_ARG_DEF (offset, 1));
       if (TREE_CODE (arg2) != MINUS_EXPR && TREE_CODE (arg2) != PLUS_EXPR)
-        {
-          tree tem = arg1;
-          arg1 = arg2;
-          arg2 = tem;
+	{
+	  tree tem = arg1;
+	  arg1 = arg2;
+	  arg2 = tem;
 
-          if (TREE_CODE (arg2) != MINUS_EXPR && TREE_CODE (arg2) != PLUS_EXPR)
-            goto escapes;
-        }
+	  if (TREE_CODE (arg2) != MINUS_EXPR && TREE_CODE (arg2) != PLUS_EXPR)
+	    goto escapes;
+	}
       if (!host_integerp (TREE_OPERAND (arg2, 1), 0))
-        goto escapes;
+	goto escapes;
 
       sub = tree_low_cst (TREE_OPERAND (arg2, 1), 0);
       if (TREE_CODE (arg2) == MINUS_EXPR)
-        sub = -sub;
+	sub = -sub;
       if (sub < -48 || sub > -32)
-        goto escapes;
+	goto escapes;
 
       arg2 = va_list_skip_additions (TREE_OPERAND (arg2, 0));
       if (arg1 != arg2)
-        goto escapes;
+	goto escapes;
 
       if (TREE_CODE (arg1) == SSA_NAME)
-        arg1 = va_list_skip_additions (arg1);
+	arg1 = va_list_skip_additions (arg1);
 
       if (TREE_CODE (arg1) != COMPONENT_REF
-          || TREE_OPERAND (arg1, 1) != va_list_gpr_counter_field
-          || get_base_address (arg1) != base)
-        goto escapes;
+	  || TREE_OPERAND (arg1, 1) != va_list_gpr_counter_field
+	  || get_base_address (arg1) != base)
+	goto escapes;
 
       /* Need floating point regs.  */
       cfun->va_list_fpr_size |= 2;
     }
   else if (TREE_CODE (offset) != COMPONENT_REF
-           || TREE_OPERAND (offset, 1) != va_list_gpr_counter_field
-           || get_base_address (offset) != base)
+	   || TREE_OPERAND (offset, 1) != va_list_gpr_counter_field
+	   || get_base_address (offset) != base)
     goto escapes;
   else
     /* Need general regs.  */
@@ -6075,7 +6075,7 @@ escapes:
 
 static void
 alpha_setup_incoming_varargs (CUMULATIVE_ARGS *pcum, enum machine_mode mode,
-                              tree type, int *pretend_size, int no_rtl)
+			      tree type, int *pretend_size, int no_rtl)
 {
   CUMULATIVE_ARGS cum = *pcum;
 
@@ -6090,10 +6090,10 @@ alpha_setup_incoming_varargs (CUMULATIVE_ARGS *pcum, enum machine_mode mode,
   if (cum.num_reg_words < 6)
     {
       if (!no_rtl)
-        {
-          emit_insn (gen_umk_mismatch_args (GEN_INT (cum.num_reg_words)));
-          emit_insn (gen_arg_home_umk ());
-        }
+	{
+	  emit_insn (gen_umk_mismatch_args (GEN_INT (cum.num_reg_words)));
+	  emit_insn (gen_arg_home_umk ());
+	}
       *pretend_size = 0;
     }
 #elif TARGET_ABI_OPEN_VMS
@@ -6106,10 +6106,10 @@ alpha_setup_incoming_varargs (CUMULATIVE_ARGS *pcum, enum machine_mode mode,
   if (cum.num_args < 6)
     {
       if (!no_rtl)
-        {
-          emit_move_insn (gen_rtx_REG (DImode, 1), virtual_incoming_args_rtx);
-          emit_insn (gen_arg_home ());
-        }
+	{
+	  emit_move_insn (gen_rtx_REG (DImode, 1), virtual_incoming_args_rtx);
+	  emit_insn (gen_arg_home ());
+	}
       *pretend_size = 7 * UNITS_PER_WORD;
     }
 #else
@@ -6134,34 +6134,34 @@ alpha_setup_incoming_varargs (CUMULATIVE_ARGS *pcum, enum machine_mode mode,
 
       count = cfun->va_list_gpr_size / UNITS_PER_WORD;
       if (count > 6 - cum)
-        count = 6 - cum;
+	count = 6 - cum;
 
       /* Detect whether integer registers or floating-point registers
-         are needed by the detected va_arg statements.  See above for
-         how these values are computed.  Note that the "escape" value
-         is VA_LIST_MAX_FPR_SIZE, which is 255, which has both of 
-         these bits set.  */
+	 are needed by the detected va_arg statements.  See above for
+	 how these values are computed.  Note that the "escape" value
+	 is VA_LIST_MAX_FPR_SIZE, which is 255, which has both of 
+	 these bits set.  */
       gcc_assert ((VA_LIST_MAX_FPR_SIZE & 3) == 3);
 
       if (cfun->va_list_fpr_size & 1)
-        {
-          tmp = gen_rtx_MEM (BLKmode,
-                             plus_constant (virtual_incoming_args_rtx,
-                                            (cum + 6) * UNITS_PER_WORD));
-          MEM_NOTRAP_P (tmp) = 1;
-          set_mem_alias_set (tmp, set);
-          move_block_from_reg (16 + cum, tmp, count);
-        }
+	{
+	  tmp = gen_rtx_MEM (BLKmode,
+			     plus_constant (virtual_incoming_args_rtx,
+					    (cum + 6) * UNITS_PER_WORD));
+	  MEM_NOTRAP_P (tmp) = 1;
+	  set_mem_alias_set (tmp, set);
+	  move_block_from_reg (16 + cum, tmp, count);
+	}
 
       if (cfun->va_list_fpr_size & 2)
-        {
-          tmp = gen_rtx_MEM (BLKmode,
-                             plus_constant (virtual_incoming_args_rtx,
-                                            cum * UNITS_PER_WORD));
-          MEM_NOTRAP_P (tmp) = 1;
-          set_mem_alias_set (tmp, set);
-          move_block_from_reg (16 + cum + TARGET_FPREGS*32, tmp, count);
-        }
+	{
+	  tmp = gen_rtx_MEM (BLKmode,
+			     plus_constant (virtual_incoming_args_rtx,
+					    cum * UNITS_PER_WORD));
+	  MEM_NOTRAP_P (tmp) = 1;
+	  set_mem_alias_set (tmp, set);
+	  move_block_from_reg (16 + cum + TARGET_FPREGS*32, tmp, count);
+	}
      }
   *pretend_size = 12 * UNITS_PER_WORD;
 #endif
@@ -6201,7 +6201,7 @@ alpha_va_start (tree valist, rtx nextarg ATTRIBUTE_UNUSED)
       nextarg = plus_constant (nextarg, offset);
       nextarg = plus_constant (nextarg, NUM_ARGS * UNITS_PER_WORD);
       t = build2 (MODIFY_EXPR, TREE_TYPE (valist), valist,
-                  make_tree (ptr_type_node, nextarg));
+		  make_tree (ptr_type_node, nextarg));
       TREE_SIDE_EFFECTS (t) = 1;
 
       expand_expr (t, const0_rtx, VOIDmode, EXPAND_NORMAL);
@@ -6212,13 +6212,13 @@ alpha_va_start (tree valist, rtx nextarg ATTRIBUTE_UNUSED)
       offset_field = TREE_CHAIN (base_field);
 
       base_field = build3 (COMPONENT_REF, TREE_TYPE (base_field),
-                           valist, base_field, NULL_TREE);
+			   valist, base_field, NULL_TREE);
       offset_field = build3 (COMPONENT_REF, TREE_TYPE (offset_field),
-                             valist, offset_field, NULL_TREE);
+			     valist, offset_field, NULL_TREE);
 
       t = make_tree (ptr_type_node, virtual_incoming_args_rtx);
       t = build2 (PLUS_EXPR, ptr_type_node, t,
-                  build_int_cst (NULL_TREE, offset));
+		  build_int_cst (NULL_TREE, offset));
       t = build2 (MODIFY_EXPR, TREE_TYPE (base_field), base_field, t);
       TREE_SIDE_EFFECTS (t) = 1;
       expand_expr (t, const0_rtx, VOIDmode, EXPAND_NORMAL);
@@ -6241,7 +6241,7 @@ alpha_gimplify_va_arg_1 (tree type, tree base, tree offset, tree *pre_p)
     {
       t = build_int_cst (TREE_TYPE (offset), 6*8);
       t = build2 (MODIFY_EXPR, TREE_TYPE (offset), offset,
-                  build2 (MAX_EXPR, TREE_TYPE (offset), offset, t));
+		  build2 (MAX_EXPR, TREE_TYPE (offset), offset, t));
       gimplify_and_add (t, pre_p);
     }
 
@@ -6253,14 +6253,14 @@ alpha_gimplify_va_arg_1 (tree type, tree base, tree offset, tree *pre_p)
       tree real_part, imag_part, real_temp;
 
       real_part = alpha_gimplify_va_arg_1 (TREE_TYPE (type), base,
-                                           offset, pre_p);
+					   offset, pre_p);
 
       /* Copy the value into a new temporary, lest the formal temporary
-         be reused out from under us.  */
+	 be reused out from under us.  */
       real_temp = get_initialized_tmp_var (real_part, pre_p, NULL);
 
       imag_part = alpha_gimplify_va_arg_1 (TREE_TYPE (type), base,
-                                           offset, pre_p);
+					   offset, pre_p);
 
       return build2 (COMPLEX_EXPR, type, real_temp, imag_part);
     }
@@ -6270,15 +6270,15 @@ alpha_gimplify_va_arg_1 (tree type, tree base, tree offset, tree *pre_p)
 
       fourtyeight = build_int_cst (TREE_TYPE (addend), 6*8);
       fpaddend = fold_build2 (MINUS_EXPR, TREE_TYPE (addend),
-                              addend, fourtyeight);
+			      addend, fourtyeight);
       cond = fold_build2 (LT_EXPR, boolean_type_node, addend, fourtyeight);
       addend = fold_build3 (COND_EXPR, TREE_TYPE (addend), cond,
-                            fpaddend, addend);
+			    fpaddend, addend);
     }
 
   /* Build the final address and force that value into a temporary.  */
   addr = build2 (PLUS_EXPR, ptr_type, fold_convert (ptr_type, base),
-                 fold_convert (ptr_type, addend));
+	         fold_convert (ptr_type, addend));
   internal_post = NULL;
   gimplify_expr (&addr, pre_p, &internal_post, is_gimple_val, fb_rvalue);
   append_to_statement_list (internal_post, pre_p);
@@ -6295,7 +6295,7 @@ alpha_gimplify_va_arg_1 (tree type, tree base, tree offset, tree *pre_p)
     }
   t = fold_convert (TREE_TYPE (offset), t);
   t = build2 (MODIFY_EXPR, void_type_node, offset,
-              build2 (PLUS_EXPR, TREE_TYPE (offset), offset, t));
+	      build2 (PLUS_EXPR, TREE_TYPE (offset), offset, t));
   gimplify_and_add (t, pre_p);
 
   return build_va_arg_indirect_ref (addr);
@@ -6313,9 +6313,9 @@ alpha_gimplify_va_arg (tree valist, tree type, tree *pre_p, tree *post_p)
   base_field = TYPE_FIELDS (va_list_type_node);
   offset_field = TREE_CHAIN (base_field);
   base_field = build3 (COMPONENT_REF, TREE_TYPE (base_field),
-                       valist, base_field, NULL_TREE);
+		       valist, base_field, NULL_TREE);
   offset_field = build3 (COMPONENT_REF, TREE_TYPE (offset_field),
-                         valist, offset_field, NULL_TREE);
+			 valist, offset_field, NULL_TREE);
 
   /* Pull the fields of the structure out into temporaries.  Since we never
      modify the base field, we can use a formal temporary.  Sign-extend the
@@ -6335,7 +6335,7 @@ alpha_gimplify_va_arg (tree valist, tree type, tree *pre_p, tree *post_p)
 
   /* Stuff the offset temporary back into its field.  */
   t = build2 (MODIFY_EXPR, void_type_node, offset_field,
-              fold_convert (TREE_TYPE (offset_field), offset));
+	      fold_convert (TREE_TYPE (offset_field), offset));
   gimplify_and_add (t, pre_p);
 
   if (indirect)
@@ -6464,56 +6464,56 @@ struct alpha_builtin_def
 };
 
 static struct alpha_builtin_def const zero_arg_builtins[] = {
-  { "__builtin_alpha_implver",        ALPHA_BUILTIN_IMPLVER,        0, true },
-  { "__builtin_alpha_rpcc",        ALPHA_BUILTIN_RPCC,        0, false }
+  { "__builtin_alpha_implver",	ALPHA_BUILTIN_IMPLVER,	0, true },
+  { "__builtin_alpha_rpcc",	ALPHA_BUILTIN_RPCC,	0, false }
 };
 
 static struct alpha_builtin_def const one_arg_builtins[] = {
-  { "__builtin_alpha_amask",        ALPHA_BUILTIN_AMASK,        0, true },
-  { "__builtin_alpha_pklb",        ALPHA_BUILTIN_PKLB,        MASK_MAX, true },
-  { "__builtin_alpha_pkwb",        ALPHA_BUILTIN_PKWB,        MASK_MAX, true },
-  { "__builtin_alpha_unpkbl",        ALPHA_BUILTIN_UNPKBL,        MASK_MAX, true },
-  { "__builtin_alpha_unpkbw",        ALPHA_BUILTIN_UNPKBW,        MASK_MAX, true },
-  { "__builtin_alpha_cttz",        ALPHA_BUILTIN_CTTZ,        MASK_CIX, true },
-  { "__builtin_alpha_ctlz",        ALPHA_BUILTIN_CTLZ,        MASK_CIX, true },
-  { "__builtin_alpha_ctpop",        ALPHA_BUILTIN_CTPOP,        MASK_CIX, true }
+  { "__builtin_alpha_amask",	ALPHA_BUILTIN_AMASK,	0, true },
+  { "__builtin_alpha_pklb",	ALPHA_BUILTIN_PKLB,	MASK_MAX, true },
+  { "__builtin_alpha_pkwb",	ALPHA_BUILTIN_PKWB,	MASK_MAX, true },
+  { "__builtin_alpha_unpkbl",	ALPHA_BUILTIN_UNPKBL,	MASK_MAX, true },
+  { "__builtin_alpha_unpkbw",	ALPHA_BUILTIN_UNPKBW,	MASK_MAX, true },
+  { "__builtin_alpha_cttz",	ALPHA_BUILTIN_CTTZ,	MASK_CIX, true },
+  { "__builtin_alpha_ctlz",	ALPHA_BUILTIN_CTLZ,	MASK_CIX, true },
+  { "__builtin_alpha_ctpop",	ALPHA_BUILTIN_CTPOP,	MASK_CIX, true }
 };
 
 static struct alpha_builtin_def const two_arg_builtins[] = {
-  { "__builtin_alpha_cmpbge",        ALPHA_BUILTIN_CMPBGE,        0, true },
-  { "__builtin_alpha_extbl",        ALPHA_BUILTIN_EXTBL,        0, true },
-  { "__builtin_alpha_extwl",        ALPHA_BUILTIN_EXTWL,        0, true },
-  { "__builtin_alpha_extll",        ALPHA_BUILTIN_EXTLL,        0, true },
-  { "__builtin_alpha_extql",        ALPHA_BUILTIN_EXTQL,        0, true },
-  { "__builtin_alpha_extwh",        ALPHA_BUILTIN_EXTWH,        0, true },
-  { "__builtin_alpha_extlh",        ALPHA_BUILTIN_EXTLH,        0, true },
-  { "__builtin_alpha_extqh",        ALPHA_BUILTIN_EXTQH,        0, true },
-  { "__builtin_alpha_insbl",        ALPHA_BUILTIN_INSBL,        0, true },
-  { "__builtin_alpha_inswl",        ALPHA_BUILTIN_INSWL,        0, true },
-  { "__builtin_alpha_insll",        ALPHA_BUILTIN_INSLL,        0, true },
-  { "__builtin_alpha_insql",        ALPHA_BUILTIN_INSQL,        0, true },
-  { "__builtin_alpha_inswh",        ALPHA_BUILTIN_INSWH,        0, true },
-  { "__builtin_alpha_inslh",        ALPHA_BUILTIN_INSLH,        0, true },
-  { "__builtin_alpha_insqh",        ALPHA_BUILTIN_INSQH,        0, true },
-  { "__builtin_alpha_mskbl",        ALPHA_BUILTIN_MSKBL,        0, true },
-  { "__builtin_alpha_mskwl",        ALPHA_BUILTIN_MSKWL,        0, true },
-  { "__builtin_alpha_mskll",        ALPHA_BUILTIN_MSKLL,        0, true },
-  { "__builtin_alpha_mskql",        ALPHA_BUILTIN_MSKQL,        0, true },
-  { "__builtin_alpha_mskwh",        ALPHA_BUILTIN_MSKWH,        0, true },
-  { "__builtin_alpha_msklh",        ALPHA_BUILTIN_MSKLH,        0, true },
-  { "__builtin_alpha_mskqh",        ALPHA_BUILTIN_MSKQH,        0, true },
-  { "__builtin_alpha_umulh",        ALPHA_BUILTIN_UMULH,        0, true },
-  { "__builtin_alpha_zap",        ALPHA_BUILTIN_ZAP,        0, true },
-  { "__builtin_alpha_zapnot",        ALPHA_BUILTIN_ZAPNOT,        0, true },
-  { "__builtin_alpha_minub8",        ALPHA_BUILTIN_MINUB8,        MASK_MAX, true },
-  { "__builtin_alpha_minsb8",        ALPHA_BUILTIN_MINSB8,        MASK_MAX, true },
-  { "__builtin_alpha_minuw4",        ALPHA_BUILTIN_MINUW4,        MASK_MAX, true },
-  { "__builtin_alpha_minsw4",        ALPHA_BUILTIN_MINSW4,        MASK_MAX, true },
-  { "__builtin_alpha_maxub8",        ALPHA_BUILTIN_MAXUB8,        MASK_MAX, true },
-  { "__builtin_alpha_maxsb8",        ALPHA_BUILTIN_MAXSB8,        MASK_MAX, true },
-  { "__builtin_alpha_maxuw4",        ALPHA_BUILTIN_MAXUW4,        MASK_MAX, true },
-  { "__builtin_alpha_maxsw4",        ALPHA_BUILTIN_MAXSW4,        MASK_MAX, true },
-  { "__builtin_alpha_perr",        ALPHA_BUILTIN_PERR,        MASK_MAX, true }
+  { "__builtin_alpha_cmpbge",	ALPHA_BUILTIN_CMPBGE,	0, true },
+  { "__builtin_alpha_extbl",	ALPHA_BUILTIN_EXTBL,	0, true },
+  { "__builtin_alpha_extwl",	ALPHA_BUILTIN_EXTWL,	0, true },
+  { "__builtin_alpha_extll",	ALPHA_BUILTIN_EXTLL,	0, true },
+  { "__builtin_alpha_extql",	ALPHA_BUILTIN_EXTQL,	0, true },
+  { "__builtin_alpha_extwh",	ALPHA_BUILTIN_EXTWH,	0, true },
+  { "__builtin_alpha_extlh",	ALPHA_BUILTIN_EXTLH,	0, true },
+  { "__builtin_alpha_extqh",	ALPHA_BUILTIN_EXTQH,	0, true },
+  { "__builtin_alpha_insbl",	ALPHA_BUILTIN_INSBL,	0, true },
+  { "__builtin_alpha_inswl",	ALPHA_BUILTIN_INSWL,	0, true },
+  { "__builtin_alpha_insll",	ALPHA_BUILTIN_INSLL,	0, true },
+  { "__builtin_alpha_insql",	ALPHA_BUILTIN_INSQL,	0, true },
+  { "__builtin_alpha_inswh",	ALPHA_BUILTIN_INSWH,	0, true },
+  { "__builtin_alpha_inslh",	ALPHA_BUILTIN_INSLH,	0, true },
+  { "__builtin_alpha_insqh",	ALPHA_BUILTIN_INSQH,	0, true },
+  { "__builtin_alpha_mskbl",	ALPHA_BUILTIN_MSKBL,	0, true },
+  { "__builtin_alpha_mskwl",	ALPHA_BUILTIN_MSKWL,	0, true },
+  { "__builtin_alpha_mskll",	ALPHA_BUILTIN_MSKLL,	0, true },
+  { "__builtin_alpha_mskql",	ALPHA_BUILTIN_MSKQL,	0, true },
+  { "__builtin_alpha_mskwh",	ALPHA_BUILTIN_MSKWH,	0, true },
+  { "__builtin_alpha_msklh",	ALPHA_BUILTIN_MSKLH,	0, true },
+  { "__builtin_alpha_mskqh",	ALPHA_BUILTIN_MSKQH,	0, true },
+  { "__builtin_alpha_umulh",	ALPHA_BUILTIN_UMULH,	0, true },
+  { "__builtin_alpha_zap",	ALPHA_BUILTIN_ZAP,	0, true },
+  { "__builtin_alpha_zapnot",	ALPHA_BUILTIN_ZAPNOT,	0, true },
+  { "__builtin_alpha_minub8",	ALPHA_BUILTIN_MINUB8,	MASK_MAX, true },
+  { "__builtin_alpha_minsb8",	ALPHA_BUILTIN_MINSB8,	MASK_MAX, true },
+  { "__builtin_alpha_minuw4",	ALPHA_BUILTIN_MINUW4,	MASK_MAX, true },
+  { "__builtin_alpha_minsw4",	ALPHA_BUILTIN_MINSW4,	MASK_MAX, true },
+  { "__builtin_alpha_maxub8",	ALPHA_BUILTIN_MAXUB8,	MASK_MAX, true },
+  { "__builtin_alpha_maxsb8",	ALPHA_BUILTIN_MAXSB8,	MASK_MAX, true },
+  { "__builtin_alpha_maxuw4",	ALPHA_BUILTIN_MAXUW4,	MASK_MAX, true },
+  { "__builtin_alpha_maxsw4",	ALPHA_BUILTIN_MAXSW4,	MASK_MAX, true },
+  { "__builtin_alpha_perr",	ALPHA_BUILTIN_PERR,	MASK_MAX, true }
 };
 
 static GTY(()) tree alpha_v8qi_u;
@@ -6540,36 +6540,36 @@ alpha_init_builtins (void)
   for (i = 0; i < ARRAY_SIZE (zero_arg_builtins); ++i, ++p)
     if ((target_flags & p->target_mask) == p->target_mask)
       lang_hooks.builtin_function (p->name, ftype, p->code, BUILT_IN_MD,
-                                   NULL, attrs[p->is_const]);
+				   NULL, attrs[p->is_const]);
 
   ftype = build_function_type_list (dimode_integer_type_node,
-                                    dimode_integer_type_node, NULL_TREE);
+				    dimode_integer_type_node, NULL_TREE);
 
   p = one_arg_builtins;
   for (i = 0; i < ARRAY_SIZE (one_arg_builtins); ++i, ++p)
     if ((target_flags & p->target_mask) == p->target_mask)
       lang_hooks.builtin_function (p->name, ftype, p->code, BUILT_IN_MD,
-                                   NULL, attrs[p->is_const]);
+				   NULL, attrs[p->is_const]);
 
   ftype = build_function_type_list (dimode_integer_type_node,
-                                    dimode_integer_type_node,
-                                    dimode_integer_type_node, NULL_TREE);
+				    dimode_integer_type_node,
+				    dimode_integer_type_node, NULL_TREE);
 
   p = two_arg_builtins;
   for (i = 0; i < ARRAY_SIZE (two_arg_builtins); ++i, ++p)
     if ((target_flags & p->target_mask) == p->target_mask)
       lang_hooks.builtin_function (p->name, ftype, p->code, BUILT_IN_MD,
-                                   NULL, attrs[p->is_const]);
+				   NULL, attrs[p->is_const]);
 
   ftype = build_function_type (ptr_type_node, void_list_node);
   lang_hooks.builtin_function ("__builtin_thread_pointer", ftype,
-                               ALPHA_BUILTIN_THREAD_POINTER, BUILT_IN_MD,
-                               NULL, attrs[0]);
+			       ALPHA_BUILTIN_THREAD_POINTER, BUILT_IN_MD,
+			       NULL, attrs[0]);
 
   ftype = build_function_type_list (void_type_node, ptr_type_node, NULL_TREE);
   lang_hooks.builtin_function ("__builtin_set_thread_pointer", ftype,
-                               ALPHA_BUILTIN_SET_THREAD_POINTER, BUILT_IN_MD,
-                               NULL, attrs[0]);
+			       ALPHA_BUILTIN_SET_THREAD_POINTER, BUILT_IN_MD,
+			       NULL, attrs[0]);
 
   alpha_v8qi_u = build_vector_type (unsigned_intQI_type_node, 8);
   alpha_v8qi_s = build_vector_type (intQI_type_node, 8);
@@ -6585,9 +6585,9 @@ alpha_init_builtins (void)
 
 static rtx
 alpha_expand_builtin (tree exp, rtx target,
-                      rtx subtarget ATTRIBUTE_UNUSED,
-                      enum machine_mode mode ATTRIBUTE_UNUSED,
-                      int ignore ATTRIBUTE_UNUSED)
+		      rtx subtarget ATTRIBUTE_UNUSED,
+		      enum machine_mode mode ATTRIBUTE_UNUSED,
+		      int ignore ATTRIBUTE_UNUSED)
 {
 #define MAX_ARGS 2
 
@@ -6615,25 +6615,25 @@ alpha_expand_builtin (tree exp, rtx target,
 
       tree arg = TREE_VALUE (arglist);
       if (arg == error_mark_node)
-        return NULL_RTX;
+	return NULL_RTX;
       if (arity > MAX_ARGS)
-        return NULL_RTX;
+	return NULL_RTX;
 
       insn_op = &insn_data[icode].operand[arity + nonvoid];
 
       op[arity] = expand_expr (arg, NULL_RTX, insn_op->mode, 0);
 
       if (!(*insn_op->predicate) (op[arity], insn_op->mode))
-        op[arity] = copy_to_mode_reg (insn_op->mode, op[arity]);
+	op[arity] = copy_to_mode_reg (insn_op->mode, op[arity]);
     }
 
   if (nonvoid)
     {
       enum machine_mode tmode = insn_data[icode].operand[0].mode;
       if (!target
-          || GET_MODE (target) != tmode
-          || !(*insn_data[icode].operand[0].predicate) (target, tmode))
-        target = gen_reg_rtx (tmode);
+	  || GET_MODE (target) != tmode
+	  || !(*insn_data[icode].operand[0].predicate) (target, tmode))
+	target = gen_reg_rtx (tmode);
     }
 
   switch (arity)
@@ -6645,7 +6645,7 @@ alpha_expand_builtin (tree exp, rtx target,
       if (nonvoid)
         pat = GEN_FCN (icode) (target, op[0]);
       else
-        pat = GEN_FCN (icode) (op[0]);
+	pat = GEN_FCN (icode) (op[0]);
       break;
     case 2:
       pat = GEN_FCN (icode) (target, op[0], op[1]);
@@ -6681,12 +6681,12 @@ alpha_fold_builtin_cmpbge (unsigned HOST_WIDE_INT opint[], long op_const)
     {
       int i, val;
       for (i = 0, val = 0; i < 8; ++i)
-        {
-          unsigned HOST_WIDE_INT c0 = (opint[0] >> (i * 8)) & 0xff;
-          unsigned HOST_WIDE_INT c1 = (opint[1] >> (i * 8)) & 0xff;
-          if (c0 >= c1)
-            val |= 1 << i;
-        }
+	{
+	  unsigned HOST_WIDE_INT c0 = (opint[0] >> (i * 8)) & 0xff;
+	  unsigned HOST_WIDE_INT c1 = (opint[1] >> (i * 8)) & 0xff;
+	  if (c0 >= c1)
+	    val |= 1 << i;
+	}
       return build_int_cst (long_integer_type_node, val);
     }
   else if (op_const == 2 && opint[1] == 0)
@@ -6705,7 +6705,7 @@ alpha_fold_builtin_cmpbge (unsigned HOST_WIDE_INT opint[], long op_const)
 
 static tree
 alpha_fold_builtin_zapnot (tree *op, unsigned HOST_WIDE_INT opint[],
-                           long op_const)
+			   long op_const)
 {
   if (op_const & 2)
     {
@@ -6713,15 +6713,15 @@ alpha_fold_builtin_zapnot (tree *op, unsigned HOST_WIDE_INT opint[],
       int i;
 
       for (i = 0; i < 8; ++i)
-        if ((opint[1] >> i) & 1)
-          mask |= (unsigned HOST_WIDE_INT)0xff << (i * 8);
+	if ((opint[1] >> i) & 1)
+	  mask |= (unsigned HOST_WIDE_INT)0xff << (i * 8);
 
       if (op_const & 1)
-        return build_int_cst (long_integer_type_node, opint[0] & mask);
+	return build_int_cst (long_integer_type_node, opint[0] & mask);
 
       if (op)
-        return fold (build2 (BIT_AND_EXPR, long_integer_type_node, op[0],
-                             build_int_cst (long_integer_type_node, mask)));
+	return fold (build2 (BIT_AND_EXPR, long_integer_type_node, op[0],
+			     build_int_cst (long_integer_type_node, mask)));
     }
   else if ((op_const & 1) && opint[0] == 0)
     return build_int_cst (long_integer_type_node, 0);
@@ -6732,8 +6732,8 @@ alpha_fold_builtin_zapnot (tree *op, unsigned HOST_WIDE_INT opint[],
 
 static tree
 alpha_fold_builtin_extxx (tree op[], unsigned HOST_WIDE_INT opint[],
-                          long op_const, unsigned HOST_WIDE_INT bytemask,
-                          bool is_high)
+			  long op_const, unsigned HOST_WIDE_INT bytemask,
+			  bool is_high)
 {
   long zap_const = 2;
   tree *zap_op = NULL;
@@ -6748,20 +6748,20 @@ alpha_fold_builtin_extxx (tree op[], unsigned HOST_WIDE_INT opint[],
       loc *= 8;
 
       if (loc != 0)
-        {
-          if (op_const & 1)
-            {
-              unsigned HOST_WIDE_INT temp = opint[0];
-              if (is_high)
-                temp <<= loc;
-              else
-                temp >>= loc;
-              opint[0] = temp;
-              zap_const = 3;
-            }
-        }
+	{
+	  if (op_const & 1)
+	    {
+	      unsigned HOST_WIDE_INT temp = opint[0];
+	      if (is_high)
+		temp <<= loc;
+	      else
+		temp >>= loc;
+	      opint[0] = temp;
+	      zap_const = 3;
+	    }
+	}
       else
-        zap_op = op;
+	zap_op = op;
     }
   
   opint[1] = bytemask;
@@ -6772,8 +6772,8 @@ alpha_fold_builtin_extxx (tree op[], unsigned HOST_WIDE_INT opint[],
 
 static tree
 alpha_fold_builtin_insxx (tree op[], unsigned HOST_WIDE_INT opint[],
-                          long op_const, unsigned HOST_WIDE_INT bytemask,
-                          bool is_high)
+			  long op_const, unsigned HOST_WIDE_INT bytemask,
+			  bool is_high)
 {
   if ((op_const & 1) && opint[0] == 0)
     return build_int_cst (long_integer_type_node, 0);
@@ -6790,22 +6790,22 @@ alpha_fold_builtin_insxx (tree op[], unsigned HOST_WIDE_INT opint[],
 
       temp = opint[0];
       if (is_high)
-        {
-          byteloc = (64 - (loc * 8)) & 0x3f;
-          if (byteloc == 0)
-            zap_op = op;
-          else
-            temp >>= byteloc;
-          bytemask >>= 8;
-        }
+	{
+	  byteloc = (64 - (loc * 8)) & 0x3f;
+	  if (byteloc == 0)
+	    zap_op = op;
+	  else
+	    temp >>= byteloc;
+	  bytemask >>= 8;
+	}
       else
-        {
-          byteloc = loc * 8;
-          if (byteloc == 0)
-            zap_op = op;
-          else
-            temp <<= byteloc;
-        }
+	{
+	  byteloc = loc * 8;
+	  if (byteloc == 0)
+	    zap_op = op;
+	  else
+	    temp <<= byteloc;
+	}
 
       opint[0] = temp;
       opint[1] = bytemask;
@@ -6817,8 +6817,8 @@ alpha_fold_builtin_insxx (tree op[], unsigned HOST_WIDE_INT opint[],
 
 static tree
 alpha_fold_builtin_mskxx (tree op[], unsigned HOST_WIDE_INT opint[],
-                          long op_const, unsigned HOST_WIDE_INT bytemask,
-                          bool is_high)
+			  long op_const, unsigned HOST_WIDE_INT bytemask,
+			  bool is_high)
 {
   if (op_const & 2)
     {
@@ -6830,7 +6830,7 @@ alpha_fold_builtin_mskxx (tree op[], unsigned HOST_WIDE_INT opint[],
       bytemask <<= loc;
 
       if (is_high)
-        bytemask >>= 8;
+	bytemask >>= 8;
 
       opint[1] = bytemask ^ 0xff;
     }
@@ -6845,16 +6845,16 @@ alpha_fold_builtin_umulh (unsigned HOST_WIDE_INT opint[], long op_const)
     {
     case 3:
       {
-        unsigned HOST_WIDE_INT l;
-        HOST_WIDE_INT h;
+	unsigned HOST_WIDE_INT l;
+	HOST_WIDE_INT h;
 
-        mul_double (opint[0], 0, opint[1], 0, &l, &h);
+	mul_double (opint[0], 0, opint[1], 0, &l, &h);
 
 #if HOST_BITS_PER_WIDE_INT > 64
 # error fixme
 #endif
 
-        return build_int_cst (long_integer_type_node, h);
+	return build_int_cst (long_integer_type_node, h);
       }
 
     case 1:
@@ -6863,7 +6863,7 @@ alpha_fold_builtin_umulh (unsigned HOST_WIDE_INT opint[], long op_const)
     case 2:
       /* Note that (X*1) >> 64 == 0.  */
       if (opint[1] == 0 || opint[1] == 1)
-        return build_int_cst (long_integer_type_node, 0);
+	return build_int_cst (long_integer_type_node, 0);
       break;
     }
   return NULL;
@@ -6892,9 +6892,9 @@ alpha_fold_builtin_perr (unsigned HOST_WIDE_INT opint[], long op_const)
       unsigned HOST_WIDE_INT a = (opint[0] >> (i * 8)) & 0xff;
       unsigned HOST_WIDE_INT b = (opint[1] >> (i * 8)) & 0xff;
       if (a >= b)
-        temp += a - b;
+	temp += a - b;
       else
-        temp += b - a;
+	temp += b - a;
     }
 
   return build_int_cst (long_integer_type_node, temp);
@@ -7021,17 +7021,17 @@ alpha_fold_builtin (tree fndecl, tree arglist, bool ignore ATTRIBUTE_UNUSED)
     {
       tree arg = TREE_VALUE (t);
       if (arg == error_mark_node)
-        return NULL;
+	return NULL;
       if (arity >= MAX_ARGS)
-        return NULL;
+	return NULL;
 
       op[arity] = arg;
       opint[arity] = 0;
       if (TREE_CODE (arg) == INTEGER_CST)
-        {
+	{
           op_const |= 1L << arity;
-          opint[arity] = int_cst_value (arg);
-        }
+	  opint[arity] = int_cst_value (arg);
+	}
     }
 
   switch (DECL_FUNCTION_CODE (fndecl))
@@ -7189,25 +7189,25 @@ alpha_sa_mask (unsigned long *imaskP, unsigned long *fmaskP)
   /* One for every register we have to save.  */
   for (i = 0; i < FIRST_PSEUDO_REGISTER; i++)
     if (! fixed_regs[i] && ! call_used_regs[i]
-        && regs_ever_live[i] && i != REG_RA
-        && (!TARGET_ABI_UNICOSMK || i != HARD_FRAME_POINTER_REGNUM))
+	&& regs_ever_live[i] && i != REG_RA
+	&& (!TARGET_ABI_UNICOSMK || i != HARD_FRAME_POINTER_REGNUM))
       {
-        if (i < 32)
-          imask |= (1UL << i);
-        else
-          fmask |= (1UL << (i - 32));
+	if (i < 32)
+	  imask |= (1UL << i);
+	else
+	  fmask |= (1UL << (i - 32));
       }
 
   /* We need to restore these for the handler.  */
   if (current_function_calls_eh_return)
     {
       for (i = 0; ; ++i)
-        {
-          unsigned regno = EH_RETURN_DATA_REGNO (i);
-          if (regno == INVALID_REGNUM)
-            break;
-          imask |= 1UL << regno;
-        }
+	{
+	  unsigned regno = EH_RETURN_DATA_REGNO (i);
+	  if (regno == INVALID_REGNUM)
+	    break;
+	  imask |= 1UL << regno;
+	}
     }
 
   /* If any register spilled, then spill the return address also.  */
@@ -7232,92 +7232,92 @@ alpha_sa_size (void)
   if (TARGET_ABI_UNICOSMK)
     {
       if (mask[0] || mask[1])
-        sa_size = 14;
+	sa_size = 14;
     }
   else
     {
       for (j = 0; j < 2; ++j)
-        for (i = 0; i < 32; ++i)
-          if ((mask[j] >> i) & 1)
-            sa_size++;
+	for (i = 0; i < 32; ++i)
+	  if ((mask[j] >> i) & 1)
+	    sa_size++;
     }
 
   if (TARGET_ABI_UNICOSMK)
     {
       /* We might not need to generate a frame if we don't make any calls
-         (including calls to __T3E_MISMATCH if this is a vararg function),
-         don't have any local variables which require stack slots, don't
-         use alloca and have not determined that we need a frame for other
-         reasons.  */
+	 (including calls to __T3E_MISMATCH if this is a vararg function),
+	 don't have any local variables which require stack slots, don't
+	 use alloca and have not determined that we need a frame for other
+	 reasons.  */
 
       alpha_procedure_type
-        = (sa_size || get_frame_size() != 0
-           || current_function_outgoing_args_size
-           || current_function_stdarg || current_function_calls_alloca
-           || frame_pointer_needed)
-          ? PT_STACK : PT_REGISTER;
+	= (sa_size || get_frame_size() != 0
+	   || current_function_outgoing_args_size
+	   || current_function_stdarg || current_function_calls_alloca
+	   || frame_pointer_needed)
+	  ? PT_STACK : PT_REGISTER;
 
       /* Always reserve space for saving callee-saved registers if we
-         need a frame as required by the calling convention.  */
+	 need a frame as required by the calling convention.  */
       if (alpha_procedure_type == PT_STACK)
         sa_size = 14;
     }
   else if (TARGET_ABI_OPEN_VMS)
     {
       /* Start by assuming we can use a register procedure if we don't
-         make any calls (REG_RA not used) or need to save any
-         registers and a stack procedure if we do.  */
+	 make any calls (REG_RA not used) or need to save any
+	 registers and a stack procedure if we do.  */
       if ((mask[0] >> REG_RA) & 1)
-        alpha_procedure_type = PT_STACK;
+	alpha_procedure_type = PT_STACK;
       else if (get_frame_size() != 0)
-        alpha_procedure_type = PT_REGISTER;
+	alpha_procedure_type = PT_REGISTER;
       else
-        alpha_procedure_type = PT_NULL;
+	alpha_procedure_type = PT_NULL;
 
       /* Don't reserve space for saving FP & RA yet.  Do that later after we've
-         made the final decision on stack procedure vs register procedure.  */
+	 made the final decision on stack procedure vs register procedure.  */
       if (alpha_procedure_type == PT_STACK)
-        sa_size -= 2;
+	sa_size -= 2;
 
       /* Decide whether to refer to objects off our PV via FP or PV.
-         If we need FP for something else or if we receive a nonlocal
-         goto (which expects PV to contain the value), we must use PV.
-         Otherwise, start by assuming we can use FP.  */
+	 If we need FP for something else or if we receive a nonlocal
+	 goto (which expects PV to contain the value), we must use PV.
+	 Otherwise, start by assuming we can use FP.  */
 
       vms_base_regno
-        = (frame_pointer_needed
-           || current_function_has_nonlocal_label
-           || alpha_procedure_type == PT_STACK
-           || current_function_outgoing_args_size)
-          ? REG_PV : HARD_FRAME_POINTER_REGNUM;
+	= (frame_pointer_needed
+	   || current_function_has_nonlocal_label
+	   || alpha_procedure_type == PT_STACK
+	   || current_function_outgoing_args_size)
+	  ? REG_PV : HARD_FRAME_POINTER_REGNUM;
 
       /* If we want to copy PV into FP, we need to find some register
-         in which to save FP.  */
+	 in which to save FP.  */
 
       vms_save_fp_regno = -1;
       if (vms_base_regno == HARD_FRAME_POINTER_REGNUM)
-        for (i = 0; i < 32; i++)
-          if (! fixed_regs[i] && call_used_regs[i] && ! regs_ever_live[i])
-            vms_save_fp_regno = i;
+	for (i = 0; i < 32; i++)
+	  if (! fixed_regs[i] && call_used_regs[i] && ! regs_ever_live[i])
+	    vms_save_fp_regno = i;
 
       if (vms_save_fp_regno == -1 && alpha_procedure_type == PT_REGISTER)
-        vms_base_regno = REG_PV, alpha_procedure_type = PT_STACK;
+	vms_base_regno = REG_PV, alpha_procedure_type = PT_STACK;
       else if (alpha_procedure_type == PT_NULL)
-        vms_base_regno = REG_PV;
+	vms_base_regno = REG_PV;
 
       /* Stack unwinding should be done via FP unless we use it for PV.  */
       vms_unwind_regno = (vms_base_regno == REG_PV
-                          ? HARD_FRAME_POINTER_REGNUM : STACK_POINTER_REGNUM);
+			  ? HARD_FRAME_POINTER_REGNUM : STACK_POINTER_REGNUM);
 
       /* If this is a stack procedure, allow space for saving FP and RA.  */
       if (alpha_procedure_type == PT_STACK)
-        sa_size += 2;
+	sa_size += 2;
     }
   else
     {
       /* Our size must be even (multiple of 16 bytes).  */
       if (sa_size & 1)
-        sa_size++;
+	sa_size++;
     }
 
   return sa_size * 8;
@@ -7328,7 +7328,7 @@ alpha_sa_size (void)
 
 HOST_WIDE_INT
 alpha_initial_elimination_offset (unsigned int from,
-                                  unsigned int to ATTRIBUTE_UNUSED)
+				  unsigned int to ATTRIBUTE_UNUSED)
 {
   HOST_WIDE_INT ret;
 
@@ -7342,8 +7342,8 @@ alpha_initial_elimination_offset (unsigned int from,
 
     case ARG_POINTER_REGNUM:
       ret += (ALPHA_ROUND (get_frame_size ()
-                           + current_function_pretend_args_size)
-              - current_function_pretend_args_size);
+			   + current_function_pretend_args_size)
+	      - current_function_pretend_args_size);
       break;
 
     default:
@@ -7426,10 +7426,10 @@ alpha_does_function_need_gp (void)
 
   for (; insn; insn = NEXT_INSN (insn))
     if (INSN_P (insn)
-        && ! JUMP_TABLE_DATA_P (insn)
-        && GET_CODE (PATTERN (insn)) != USE
-        && GET_CODE (PATTERN (insn)) != CLOBBER
-        && get_attr_usegp (insn))
+	&& ! JUMP_TABLE_DATA_P (insn)
+	&& GET_CODE (PATTERN (insn)) != USE
+	&& GET_CODE (PATTERN (insn)) != CLOBBER
+	&& get_attr_usegp (insn))
       return 1;
 
   return 0;
@@ -7454,10 +7454,10 @@ set_frame_related_p (void)
     {
       insn = seq;
       while (insn != NULL_RTX)
-        {
-          RTX_FRAME_RELATED_P (insn) = 1;
-          insn = NEXT_INSN (insn);
-        }
+	{
+	  RTX_FRAME_RELATED_P (insn) = 1;
+	  insn = NEXT_INSN (insn);
+	}
       seq = emit_insn (seq);
     }
   else
@@ -7478,7 +7478,7 @@ set_frame_related_p (void)
 
 static void
 emit_frame_store_1 (rtx value, rtx base_reg, HOST_WIDE_INT frame_bias,
-                    HOST_WIDE_INT base_ofs, rtx frame_reg)
+		    HOST_WIDE_INT base_ofs, rtx frame_reg)
 {
   rtx addr, mem, insn;
 
@@ -7492,21 +7492,21 @@ emit_frame_store_1 (rtx value, rtx base_reg, HOST_WIDE_INT frame_bias,
   if (frame_bias || value != frame_reg)
     {
       if (frame_bias)
-        {
-          addr = plus_constant (stack_pointer_rtx, frame_bias + base_ofs);
-          mem = gen_rtx_MEM (DImode, addr);
-        }
+	{
+	  addr = plus_constant (stack_pointer_rtx, frame_bias + base_ofs);
+	  mem = gen_rtx_MEM (DImode, addr);
+	}
 
       REG_NOTES (insn)
-        = gen_rtx_EXPR_LIST (REG_FRAME_RELATED_EXPR,
-                             gen_rtx_SET (VOIDmode, mem, frame_reg),
-                             REG_NOTES (insn));
+	= gen_rtx_EXPR_LIST (REG_FRAME_RELATED_EXPR,
+			     gen_rtx_SET (VOIDmode, mem, frame_reg),
+			     REG_NOTES (insn));
     }
 }
 
 static void
 emit_frame_store (unsigned int regno, rtx base_reg,
-                  HOST_WIDE_INT frame_bias, HOST_WIDE_INT base_ofs)
+		  HOST_WIDE_INT frame_bias, HOST_WIDE_INT base_ofs)
 {
   rtx reg = gen_rtx_REG (DImode, regno);
   emit_frame_store_1 (reg, base_reg, frame_bias, base_ofs, reg);
@@ -7517,10 +7517,10 @@ emit_frame_store (unsigned int regno, rtx base_reg,
 /* On vms we have two kinds of functions:
 
    - stack frame (PROC_STACK)
-        these are 'normal' functions with local vars and which are
-        calling other functions
+	these are 'normal' functions with local vars and which are
+	calling other functions
    - register frame (PROC_REGISTER)
-        keeps all data in registers, needs no stack
+	keeps all data in registers, needs no stack
 
    We must pass this to the assembler so it can generate the
    proper pdsc (procedure descriptor)
@@ -7549,20 +7549,20 @@ alpha_expand_prologue (void)
   frame_size = get_frame_size ();
   if (TARGET_ABI_OPEN_VMS)
     frame_size = ALPHA_ROUND (sa_size
-                              + (alpha_procedure_type == PT_STACK ? 8 : 0)
-                              + frame_size
-                              + current_function_pretend_args_size);
+			      + (alpha_procedure_type == PT_STACK ? 8 : 0)
+			      + frame_size
+			      + current_function_pretend_args_size);
   else if (TARGET_ABI_UNICOSMK)
     /* We have to allocate space for the DSIB if we generate a frame.  */
     frame_size = ALPHA_ROUND (sa_size
-                              + (alpha_procedure_type == PT_STACK ? 48 : 0))
-                 + ALPHA_ROUND (frame_size
-                                + current_function_outgoing_args_size);
+			      + (alpha_procedure_type == PT_STACK ? 48 : 0))
+		 + ALPHA_ROUND (frame_size
+				+ current_function_outgoing_args_size);
   else
     frame_size = (ALPHA_ROUND (current_function_outgoing_args_size)
-                  + sa_size
-                  + ALPHA_ROUND (frame_size
-                                 + current_function_pretend_args_size));
+		  + sa_size
+		  + ALPHA_ROUND (frame_size
+				 + current_function_pretend_args_size));
 
   if (TARGET_ABI_OPEN_VMS)
     reg_offset = 8;
@@ -7576,7 +7576,7 @@ alpha_expand_prologue (void)
     {
       alpha_function_needs_gp = alpha_does_function_need_gp ();
       if (alpha_function_needs_gp)
-        emit_insn (gen_prologue_ldgp ());
+	emit_insn (gen_prologue_ldgp ());
     }
 
   /* TARGET_PROFILING_NEEDS_GP actually implies that we need to insert
@@ -7601,32 +7601,32 @@ alpha_expand_prologue (void)
   if (frame_size <= 32768)
     {
       if (frame_size > 4096)
-        {
-          int probed;
+	{
+	  int probed;
 
-          for (probed = 4096; probed < frame_size; probed += 8192)
-            emit_insn (gen_probe_stack (GEN_INT (TARGET_ABI_UNICOSMK
-                                                 ? -probed + 64
-                                                 : -probed)));
+	  for (probed = 4096; probed < frame_size; probed += 8192)
+	    emit_insn (gen_probe_stack (GEN_INT (TARGET_ABI_UNICOSMK
+						 ? -probed + 64
+						 : -probed)));
 
-          /* We only have to do this probe if we aren't saving registers.  */
-          if (sa_size == 0 && frame_size > probed - 4096)
-            emit_insn (gen_probe_stack (GEN_INT (-frame_size)));
-        }
+	  /* We only have to do this probe if we aren't saving registers.  */
+	  if (sa_size == 0 && frame_size > probed - 4096)
+	    emit_insn (gen_probe_stack (GEN_INT (-frame_size)));
+	}
 
       if (frame_size != 0)
-        FRP (emit_insn (gen_adddi3 (stack_pointer_rtx, stack_pointer_rtx,
-                                    GEN_INT (TARGET_ABI_UNICOSMK
-                                             ? -frame_size + 64
-                                             : -frame_size))));
+	FRP (emit_insn (gen_adddi3 (stack_pointer_rtx, stack_pointer_rtx,
+				    GEN_INT (TARGET_ABI_UNICOSMK
+					     ? -frame_size + 64
+					     : -frame_size))));
     }
   else
     {
       /* Here we generate code to set R22 to SP + 4096 and set R23 to the
-         number of 8192 byte blocks to probe.  We then probe each block
-         in the loop and then set SP to the proper location.  If the
-         amount remaining is > 4096, we have to do one more probe if we
-         are not saving any registers.  */
+	 number of 8192 byte blocks to probe.  We then probe each block
+	 in the loop and then set SP to the proper location.  If the
+	 amount remaining is > 4096, we have to do one more probe if we
+	 are not saving any registers.  */
 
       HOST_WIDE_INT blocks = (frame_size + 4096) / 8192;
       HOST_WIDE_INT leftover = frame_size + 4096 - blocks * 8192;
@@ -7636,43 +7636,43 @@ alpha_expand_prologue (void)
 
       emit_move_insn (count, GEN_INT (blocks));
       emit_insn (gen_adddi3 (ptr, stack_pointer_rtx,
-                             GEN_INT (TARGET_ABI_UNICOSMK ? 4096 - 64 : 4096)));
+			     GEN_INT (TARGET_ABI_UNICOSMK ? 4096 - 64 : 4096)));
 
       /* Because of the difficulty in emitting a new basic block this
-         late in the compilation, generate the loop as a single insn.  */
+	 late in the compilation, generate the loop as a single insn.  */
       emit_insn (gen_prologue_stack_probe_loop (count, ptr));
 
       if (leftover > 4096 && sa_size == 0)
-        {
-          rtx last = gen_rtx_MEM (DImode, plus_constant (ptr, -leftover));
-          MEM_VOLATILE_P (last) = 1;
-          emit_move_insn (last, const0_rtx);
-        }
+	{
+	  rtx last = gen_rtx_MEM (DImode, plus_constant (ptr, -leftover));
+	  MEM_VOLATILE_P (last) = 1;
+	  emit_move_insn (last, const0_rtx);
+	}
 
       if (TARGET_ABI_WINDOWS_NT)
-        {
-          /* For NT stack unwind (done by 'reverse execution'), it's
-             not OK to take the result of a loop, even though the value
-             is already in ptr, so we reload it via a single operation
-             and subtract it to sp.
+	{
+	  /* For NT stack unwind (done by 'reverse execution'), it's
+	     not OK to take the result of a loop, even though the value
+	     is already in ptr, so we reload it via a single operation
+	     and subtract it to sp.
 
-             Yes, that's correct -- we have to reload the whole constant
-             into a temporary via ldah+lda then subtract from sp.  */
+	     Yes, that's correct -- we have to reload the whole constant
+	     into a temporary via ldah+lda then subtract from sp.  */
 
-          HOST_WIDE_INT lo, hi;
-          lo = ((frame_size & 0xffff) ^ 0x8000) - 0x8000;
-          hi = frame_size - lo;
+	  HOST_WIDE_INT lo, hi;
+	  lo = ((frame_size & 0xffff) ^ 0x8000) - 0x8000;
+	  hi = frame_size - lo;
 
-          emit_move_insn (ptr, GEN_INT (hi));
-          emit_insn (gen_adddi3 (ptr, ptr, GEN_INT (lo)));
-          seq = emit_insn (gen_subdi3 (stack_pointer_rtx, stack_pointer_rtx,
-                                       ptr));
-        }
+	  emit_move_insn (ptr, GEN_INT (hi));
+	  emit_insn (gen_adddi3 (ptr, ptr, GEN_INT (lo)));
+	  seq = emit_insn (gen_subdi3 (stack_pointer_rtx, stack_pointer_rtx,
+				       ptr));
+	}
       else
-        {
-          seq = emit_insn (gen_adddi3 (stack_pointer_rtx, ptr,
-                                       GEN_INT (-leftover)));
-        }
+	{
+	  seq = emit_insn (gen_adddi3 (stack_pointer_rtx, ptr,
+				       GEN_INT (-leftover)));
+	}
 
       /* This alternative is special, because the DWARF code cannot
          possibly intuit through the loop above.  So we invent this
@@ -7680,12 +7680,12 @@ alpha_expand_prologue (void)
       RTX_FRAME_RELATED_P (seq) = 1;
       REG_NOTES (seq)
         = gen_rtx_EXPR_LIST (REG_FRAME_RELATED_EXPR,
-                             gen_rtx_SET (VOIDmode, stack_pointer_rtx,
-                               gen_rtx_PLUS (Pmode, stack_pointer_rtx,
-                                             GEN_INT (TARGET_ABI_UNICOSMK
-                                                      ? -frame_size + 64
-                                                      : -frame_size))),
-                             REG_NOTES (seq));
+			     gen_rtx_SET (VOIDmode, stack_pointer_rtx,
+			       gen_rtx_PLUS (Pmode, stack_pointer_rtx,
+					     GEN_INT (TARGET_ABI_UNICOSMK
+						      ? -frame_size + 64
+						      : -frame_size))),
+			     REG_NOTES (seq));
     }
 
   if (!TARGET_ABI_UNICOSMK)
@@ -7695,132 +7695,132 @@ alpha_expand_prologue (void)
       /* Cope with very large offsets to the register save area.  */
       sa_reg = stack_pointer_rtx;
       if (reg_offset + sa_size > 0x8000)
-        {
-          int low = ((reg_offset & 0xffff) ^ 0x8000) - 0x8000;
-          rtx sa_bias_rtx;
+	{
+	  int low = ((reg_offset & 0xffff) ^ 0x8000) - 0x8000;
+	  rtx sa_bias_rtx;
 
-          if (low + sa_size <= 0x8000)
-            sa_bias = reg_offset - low, reg_offset = low;
-          else
-            sa_bias = reg_offset, reg_offset = 0;
+	  if (low + sa_size <= 0x8000)
+	    sa_bias = reg_offset - low, reg_offset = low;
+	  else
+	    sa_bias = reg_offset, reg_offset = 0;
 
-          sa_reg = gen_rtx_REG (DImode, 24);
-          sa_bias_rtx = GEN_INT (sa_bias);
+	  sa_reg = gen_rtx_REG (DImode, 24);
+	  sa_bias_rtx = GEN_INT (sa_bias);
 
-          if (add_operand (sa_bias_rtx, DImode))
-            emit_insn (gen_adddi3 (sa_reg, stack_pointer_rtx, sa_bias_rtx));
-          else
-            {
-              emit_move_insn (sa_reg, sa_bias_rtx);
-              emit_insn (gen_adddi3 (sa_reg, stack_pointer_rtx, sa_reg));
-            }
-        }
+	  if (add_operand (sa_bias_rtx, DImode))
+	    emit_insn (gen_adddi3 (sa_reg, stack_pointer_rtx, sa_bias_rtx));
+	  else
+	    {
+	      emit_move_insn (sa_reg, sa_bias_rtx);
+	      emit_insn (gen_adddi3 (sa_reg, stack_pointer_rtx, sa_reg));
+	    }
+	}
 
       /* Save regs in stack order.  Beginning with VMS PV.  */
       if (TARGET_ABI_OPEN_VMS && alpha_procedure_type == PT_STACK)
-        emit_frame_store (REG_PV, stack_pointer_rtx, 0, 0);
+	emit_frame_store (REG_PV, stack_pointer_rtx, 0, 0);
 
       /* Save register RA next.  */
       if (imask & (1UL << REG_RA))
-        {
-          emit_frame_store (REG_RA, sa_reg, sa_bias, reg_offset);
-          imask &= ~(1UL << REG_RA);
-          reg_offset += 8;
-        }
+	{
+	  emit_frame_store (REG_RA, sa_reg, sa_bias, reg_offset);
+	  imask &= ~(1UL << REG_RA);
+	  reg_offset += 8;
+	}
 
       /* Now save any other registers required to be saved.  */
       for (i = 0; i < 31; i++)
-        if (imask & (1UL << i))
-          {
-            emit_frame_store (i, sa_reg, sa_bias, reg_offset);
-            reg_offset += 8;
-          }
+	if (imask & (1UL << i))
+	  {
+	    emit_frame_store (i, sa_reg, sa_bias, reg_offset);
+	    reg_offset += 8;
+	  }
 
       for (i = 0; i < 31; i++)
-        if (fmask & (1UL << i))
-          {
-            emit_frame_store (i+32, sa_reg, sa_bias, reg_offset);
-            reg_offset += 8;
-          }
+	if (fmask & (1UL << i))
+	  {
+	    emit_frame_store (i+32, sa_reg, sa_bias, reg_offset);
+	    reg_offset += 8;
+	  }
     }
   else if (TARGET_ABI_UNICOSMK && alpha_procedure_type == PT_STACK)
     {
       /* The standard frame on the T3E includes space for saving registers.
-         We just have to use it. We don't have to save the return address and
-         the old frame pointer here - they are saved in the DSIB.  */
+	 We just have to use it. We don't have to save the return address and
+	 the old frame pointer here - they are saved in the DSIB.  */
 
       reg_offset = -56;
       for (i = 9; i < 15; i++)
-        if (imask & (1UL << i))
-          {
-            emit_frame_store (i, hard_frame_pointer_rtx, 0, reg_offset);
-            reg_offset -= 8;
-          }
+	if (imask & (1UL << i))
+	  {
+	    emit_frame_store (i, hard_frame_pointer_rtx, 0, reg_offset);
+	    reg_offset -= 8;
+	  }
       for (i = 2; i < 10; i++)
-        if (fmask & (1UL << i))
-          {
-            emit_frame_store (i+32, hard_frame_pointer_rtx, 0, reg_offset);
-            reg_offset -= 8;
-          }
+	if (fmask & (1UL << i))
+	  {
+	    emit_frame_store (i+32, hard_frame_pointer_rtx, 0, reg_offset);
+	    reg_offset -= 8;
+	  }
     }
 
   if (TARGET_ABI_OPEN_VMS)
     {
       if (alpha_procedure_type == PT_REGISTER)
-        /* Register frame procedures save the fp.
-           ?? Ought to have a dwarf2 save for this.  */
-        emit_move_insn (gen_rtx_REG (DImode, vms_save_fp_regno),
-                        hard_frame_pointer_rtx);
+	/* Register frame procedures save the fp.
+	   ?? Ought to have a dwarf2 save for this.  */
+	emit_move_insn (gen_rtx_REG (DImode, vms_save_fp_regno),
+			hard_frame_pointer_rtx);
 
       if (alpha_procedure_type != PT_NULL && vms_base_regno != REG_PV)
-        emit_insn (gen_force_movdi (gen_rtx_REG (DImode, vms_base_regno),
-                                    gen_rtx_REG (DImode, REG_PV)));
+	emit_insn (gen_force_movdi (gen_rtx_REG (DImode, vms_base_regno),
+				    gen_rtx_REG (DImode, REG_PV)));
 
       if (alpha_procedure_type != PT_NULL
-          && vms_unwind_regno == HARD_FRAME_POINTER_REGNUM)
-        FRP (emit_move_insn (hard_frame_pointer_rtx, stack_pointer_rtx));
+	  && vms_unwind_regno == HARD_FRAME_POINTER_REGNUM)
+	FRP (emit_move_insn (hard_frame_pointer_rtx, stack_pointer_rtx));
 
       /* If we have to allocate space for outgoing args, do it now.  */
       if (current_function_outgoing_args_size != 0)
-        {
-          rtx seq
-            = emit_move_insn (stack_pointer_rtx,
-                              plus_constant
-                              (hard_frame_pointer_rtx,
-                               - (ALPHA_ROUND
-                                  (current_function_outgoing_args_size))));
+	{
+	  rtx seq
+	    = emit_move_insn (stack_pointer_rtx,
+			      plus_constant
+			      (hard_frame_pointer_rtx,
+			       - (ALPHA_ROUND
+				  (current_function_outgoing_args_size))));
 
-          /* Only set FRAME_RELATED_P on the stack adjustment we just emitted
-             if ! frame_pointer_needed. Setting the bit will change the CFA
-             computation rule to use sp again, which would be wrong if we had
-             frame_pointer_needed, as this means sp might move unpredictably
-             later on.
+	  /* Only set FRAME_RELATED_P on the stack adjustment we just emitted
+	     if ! frame_pointer_needed. Setting the bit will change the CFA
+	     computation rule to use sp again, which would be wrong if we had
+	     frame_pointer_needed, as this means sp might move unpredictably
+	     later on.
 
-             Also, note that
-               frame_pointer_needed
-               => vms_unwind_regno == HARD_FRAME_POINTER_REGNUM
-             and
-               current_function_outgoing_args_size != 0
-               => alpha_procedure_type != PT_NULL,
+	     Also, note that
+	       frame_pointer_needed
+	       => vms_unwind_regno == HARD_FRAME_POINTER_REGNUM
+	     and
+	       current_function_outgoing_args_size != 0
+	       => alpha_procedure_type != PT_NULL,
 
-             so when we are not setting the bit here, we are guaranteed to
-             have emitted an FRP frame pointer update just before.  */
-          RTX_FRAME_RELATED_P (seq) = ! frame_pointer_needed;
-        }
+	     so when we are not setting the bit here, we are guaranteed to
+	     have emitted an FRP frame pointer update just before.  */
+	  RTX_FRAME_RELATED_P (seq) = ! frame_pointer_needed;
+	}
     }
   else if (!TARGET_ABI_UNICOSMK)
     {
       /* If we need a frame pointer, set it from the stack pointer.  */
       if (frame_pointer_needed)
-        {
-          if (TARGET_CAN_FAULT_IN_PROLOGUE)
-            FRP (emit_move_insn (hard_frame_pointer_rtx, stack_pointer_rtx));
-          else
-            /* This must always be the last instruction in the
-               prologue, thus we emit a special move + clobber.  */
-              FRP (emit_insn (gen_init_fp (hard_frame_pointer_rtx,
-                                           stack_pointer_rtx, sa_reg)));
-        }
+	{
+	  if (TARGET_CAN_FAULT_IN_PROLOGUE)
+	    FRP (emit_move_insn (hard_frame_pointer_rtx, stack_pointer_rtx));
+	  else
+	    /* This must always be the last instruction in the
+	       prologue, thus we emit a special move + clobber.  */
+	      FRP (emit_insn (gen_init_fp (hard_frame_pointer_rtx,
+				           stack_pointer_rtx, sa_reg)));
+	}
     }
 
   /* The ABIs for VMS and OSF/1 say that while we can schedule insns into
@@ -7844,7 +7844,7 @@ int num_source_filenames = 0;
 
 void
 alpha_start_function (FILE *file, const char *fnname,
-                      tree decl ATTRIBUTE_UNUSED)
+		      tree decl ATTRIBUTE_UNUSED)
 {
   unsigned long imask = 0;
   unsigned long fmask = 0;
@@ -7854,8 +7854,8 @@ alpha_start_function (FILE *file, const char *fnname,
   unsigned HOST_WIDE_INT frame_size;
   /* The maximum debuggable frame size (512 Kbytes using Tru64 as).  */
   unsigned HOST_WIDE_INT max_frame_size = TARGET_ABI_OSF && !TARGET_GAS
-                                          ? 524288
-                                          : 1UL << 31;
+					  ? 524288
+					  : 1UL << 31;
   /* Offset from base reg to register save area.  */
   HOST_WIDE_INT reg_offset;
   char *entry_label = (char *) alloca (strlen (fnname) + 6);
@@ -7875,19 +7875,19 @@ alpha_start_function (FILE *file, const char *fnname,
   frame_size = get_frame_size ();
   if (TARGET_ABI_OPEN_VMS)
     frame_size = ALPHA_ROUND (sa_size
-                              + (alpha_procedure_type == PT_STACK ? 8 : 0)
-                              + frame_size
-                              + current_function_pretend_args_size);
+			      + (alpha_procedure_type == PT_STACK ? 8 : 0)
+			      + frame_size
+			      + current_function_pretend_args_size);
   else if (TARGET_ABI_UNICOSMK)
     frame_size = ALPHA_ROUND (sa_size
-                              + (alpha_procedure_type == PT_STACK ? 48 : 0))
-                 + ALPHA_ROUND (frame_size
-                              + current_function_outgoing_args_size);
+			      + (alpha_procedure_type == PT_STACK ? 48 : 0))
+		 + ALPHA_ROUND (frame_size
+			      + current_function_outgoing_args_size);
   else
     frame_size = (ALPHA_ROUND (current_function_outgoing_args_size)
-                  + sa_size
-                  + ALPHA_ROUND (frame_size
-                                 + current_function_pretend_args_size));
+		  + sa_size
+		  + ALPHA_ROUND (frame_size
+				 + current_function_pretend_args_size));
 
   if (TARGET_ABI_OPEN_VMS)
     reg_offset = 8;
@@ -7908,12 +7908,12 @@ alpha_start_function (FILE *file, const char *fnname,
     {
 #ifdef ASM_OUTPUT_SOURCE_FILENAME
       ASM_OUTPUT_SOURCE_FILENAME (file,
-                                  DECL_SOURCE_FILE (current_function_decl));
+				  DECL_SOURCE_FILE (current_function_decl));
 #endif
 #ifdef SDB_OUTPUT_SOURCE_LINE
       if (debug_info_level != DINFO_LEVEL_TERSE)
         SDB_OUTPUT_SOURCE_LINE (file,
-                                DECL_SOURCE_LINE (current_function_decl));
+				DECL_SOURCE_LINE (current_function_decl));
 #endif
     }
 
@@ -7926,15 +7926,15 @@ alpha_start_function (FILE *file, const char *fnname,
       putc ('\n', file);
 
       /* If the function needs GP, we'll write the "..ng" label there.
-         Otherwise, do it here.  */
+	 Otherwise, do it here.  */
       if (TARGET_ABI_OSF
           && ! alpha_function_needs_gp
-          && ! current_function_is_thunk)
-        {
-          putc ('$', file);
-          assemble_name (file, fnname);
-          fputs ("..ng:\n", file);
-        }
+	  && ! current_function_is_thunk)
+	{
+	  putc ('$', file);
+	  assemble_name (file, fnname);
+	  fputs ("..ng:\n", file);
+	}
     }
 
   strcpy (entry_label, fnname);
@@ -7956,8 +7956,8 @@ alpha_start_function (FILE *file, const char *fnname,
       && !flag_inhibit_size_directive)
     {
       /* Set flags in procedure descriptor to request IEEE-conformant
-         math-library routines.  The value we set it to is PDSC_EXC_IEEE
-         (/usr/include/pdsc.h).  */
+	 math-library routines.  The value we set it to is PDSC_EXC_IEEE
+	 (/usr/include/pdsc.h).  */
       fputs ("\t.eflag 48\n", file);
     }
 
@@ -7972,16 +7972,16 @@ alpha_start_function (FILE *file, const char *fnname,
     ;
   else if (TARGET_ABI_OPEN_VMS)
     fprintf (file, "\t.frame $%d," HOST_WIDE_INT_PRINT_DEC ",$26,"
-             HOST_WIDE_INT_PRINT_DEC "\n",
-             vms_unwind_regno,
-             frame_size >= (1UL << 31) ? 0 : frame_size,
-             reg_offset);
+	     HOST_WIDE_INT_PRINT_DEC "\n",
+	     vms_unwind_regno,
+	     frame_size >= (1UL << 31) ? 0 : frame_size,
+	     reg_offset);
   else if (!flag_inhibit_size_directive)
     fprintf (file, "\t.frame $%d," HOST_WIDE_INT_PRINT_DEC ",$26,%d\n",
-             (frame_pointer_needed
-              ? HARD_FRAME_POINTER_REGNUM : STACK_POINTER_REGNUM),
-             frame_size >= max_frame_size ? 0 : frame_size,
-             current_function_pretend_args_size);
+	     (frame_pointer_needed
+	      ? HARD_FRAME_POINTER_REGNUM : STACK_POINTER_REGNUM),
+	     frame_size >= max_frame_size ? 0 : frame_size,
+	     current_function_pretend_args_size);
 
   /* Describe which registers were spilled.  */
   if (TARGET_ABI_UNICOSMK)
@@ -7991,27 +7991,27 @@ alpha_start_function (FILE *file, const char *fnname,
       if (imask)
         /* ??? Does VMS care if mask contains ra?  The old code didn't
            set it, so I don't here.  */
-        fprintf (file, "\t.mask 0x%lx,0\n", imask & ~(1UL << REG_RA));
+	fprintf (file, "\t.mask 0x%lx,0\n", imask & ~(1UL << REG_RA));
       if (fmask)
-        fprintf (file, "\t.fmask 0x%lx,0\n", fmask);
+	fprintf (file, "\t.fmask 0x%lx,0\n", fmask);
       if (alpha_procedure_type == PT_REGISTER)
-        fprintf (file, "\t.fp_save $%d\n", vms_save_fp_regno);
+	fprintf (file, "\t.fp_save $%d\n", vms_save_fp_regno);
     }
   else if (!flag_inhibit_size_directive)
     {
       if (imask)
-        {
-          fprintf (file, "\t.mask 0x%lx," HOST_WIDE_INT_PRINT_DEC "\n", imask,
-                   frame_size >= max_frame_size ? 0 : reg_offset - frame_size);
+	{
+	  fprintf (file, "\t.mask 0x%lx," HOST_WIDE_INT_PRINT_DEC "\n", imask,
+		   frame_size >= max_frame_size ? 0 : reg_offset - frame_size);
 
-          for (i = 0; i < 32; ++i)
-            if (imask & (1UL << i))
-              reg_offset += 8;
-        }
+	  for (i = 0; i < 32; ++i)
+	    if (imask & (1UL << i))
+	      reg_offset += 8;
+	}
 
       if (fmask)
-        fprintf (file, "\t.fmask 0x%lx," HOST_WIDE_INT_PRINT_DEC "\n", fmask,
-                 frame_size >= max_frame_size ? 0 : reg_offset - frame_size);
+	fprintf (file, "\t.fmask 0x%lx," HOST_WIDE_INT_PRINT_DEC "\n", fmask,
+		 frame_size >= max_frame_size ? 0 : reg_offset - frame_size);
     }
 
 #if TARGET_ABI_OPEN_VMS
@@ -8040,7 +8040,7 @@ alpha_output_function_end_prologue (FILE *file)
     fputs ("\t.prologue 0\n", file);
   else if (!flag_inhibit_size_directive)
     fprintf (file, "\t.prologue %d\n",
-             alpha_function_needs_gp || current_function_is_thunk);
+	     alpha_function_needs_gp || current_function_is_thunk);
 }
 
 /* Write function epilogue.  */
@@ -8074,19 +8074,19 @@ alpha_expand_epilogue (void)
   frame_size = get_frame_size ();
   if (TARGET_ABI_OPEN_VMS)
     frame_size = ALPHA_ROUND (sa_size
-                              + (alpha_procedure_type == PT_STACK ? 8 : 0)
-                              + frame_size
-                              + current_function_pretend_args_size);
+			      + (alpha_procedure_type == PT_STACK ? 8 : 0)
+			      + frame_size
+			      + current_function_pretend_args_size);
   else if (TARGET_ABI_UNICOSMK)
     frame_size = ALPHA_ROUND (sa_size
-                              + (alpha_procedure_type == PT_STACK ? 48 : 0))
-                 + ALPHA_ROUND (frame_size
-                              + current_function_outgoing_args_size);
+			      + (alpha_procedure_type == PT_STACK ? 48 : 0))
+		 + ALPHA_ROUND (frame_size
+			      + current_function_outgoing_args_size);
   else
     frame_size = (ALPHA_ROUND (current_function_outgoing_args_size)
-                  + sa_size
-                  + ALPHA_ROUND (frame_size
-                                 + current_function_pretend_args_size));
+		  + sa_size
+		  + ALPHA_ROUND (frame_size
+				 + current_function_pretend_args_size));
 
   if (TARGET_ABI_OPEN_VMS)
     {
@@ -8115,26 +8115,26 @@ alpha_expand_epilogue (void)
     {
       /* If we have a frame pointer, restore SP from it.  */
       if ((TARGET_ABI_OPEN_VMS
-           && vms_unwind_regno == HARD_FRAME_POINTER_REGNUM)
-          || (!TARGET_ABI_OPEN_VMS && frame_pointer_needed))
-        FRP (emit_move_insn (stack_pointer_rtx, hard_frame_pointer_rtx));
+	   && vms_unwind_regno == HARD_FRAME_POINTER_REGNUM)
+	  || (!TARGET_ABI_OPEN_VMS && frame_pointer_needed))
+	FRP (emit_move_insn (stack_pointer_rtx, hard_frame_pointer_rtx));
 
       /* Cope with very large offsets to the register save area.  */
       if (reg_offset + sa_size > 0x8000)
-        {
-          int low = ((reg_offset & 0xffff) ^ 0x8000) - 0x8000;
-          HOST_WIDE_INT bias;
+	{
+	  int low = ((reg_offset & 0xffff) ^ 0x8000) - 0x8000;
+	  HOST_WIDE_INT bias;
 
-          if (low + sa_size <= 0x8000)
-            bias = reg_offset - low, reg_offset = low;
-          else
-            bias = reg_offset, reg_offset = 0;
+	  if (low + sa_size <= 0x8000)
+	    bias = reg_offset - low, reg_offset = low;
+	  else
+	    bias = reg_offset, reg_offset = 0;
 
-          sa_reg = gen_rtx_REG (DImode, 22);
-          sa_reg_exp = plus_constant (stack_pointer_rtx, bias);
+	  sa_reg = gen_rtx_REG (DImode, 22);
+	  sa_reg_exp = plus_constant (stack_pointer_rtx, bias);
 
-          FRP (emit_move_insn (sa_reg, sa_reg_exp));
-        }
+	  FRP (emit_move_insn (sa_reg, sa_reg_exp));
+	}
 
       /* Restore registers in order, excepting a true frame pointer.  */
 
@@ -8147,27 +8147,27 @@ alpha_expand_epilogue (void)
       imask &= ~(1UL << REG_RA);
 
       for (i = 0; i < 31; ++i)
-        if (imask & (1UL << i))
-          {
-            if (i == HARD_FRAME_POINTER_REGNUM && fp_is_frame_pointer)
-              fp_offset = reg_offset;
-            else
-              {
-                mem = gen_rtx_MEM (DImode, plus_constant(sa_reg, reg_offset));
-                set_mem_alias_set (mem, alpha_sr_alias_set);
-                FRP (emit_move_insn (gen_rtx_REG (DImode, i), mem));
-              }
-            reg_offset += 8;
-          }
+	if (imask & (1UL << i))
+	  {
+	    if (i == HARD_FRAME_POINTER_REGNUM && fp_is_frame_pointer)
+	      fp_offset = reg_offset;
+	    else
+	      {
+		mem = gen_rtx_MEM (DImode, plus_constant(sa_reg, reg_offset));
+		set_mem_alias_set (mem, alpha_sr_alias_set);
+		FRP (emit_move_insn (gen_rtx_REG (DImode, i), mem));
+	      }
+	    reg_offset += 8;
+	  }
 
       for (i = 0; i < 31; ++i)
-        if (fmask & (1UL << i))
-          {
-            mem = gen_rtx_MEM (DFmode, plus_constant(sa_reg, reg_offset));
-            set_mem_alias_set (mem, alpha_sr_alias_set);
-            FRP (emit_move_insn (gen_rtx_REG (DFmode, i+32), mem));
-            reg_offset += 8;
-          }
+	if (fmask & (1UL << i))
+	  {
+	    mem = gen_rtx_MEM (DFmode, plus_constant(sa_reg, reg_offset));
+	    set_mem_alias_set (mem, alpha_sr_alias_set);
+	    FRP (emit_move_insn (gen_rtx_REG (DFmode, i+32), mem));
+	    reg_offset += 8;
+	  }
     }
   else if (TARGET_ABI_UNICOSMK && alpha_procedure_type == PT_STACK)
     {
@@ -8176,24 +8176,24 @@ alpha_expand_epilogue (void)
       reg_offset = -56;
 
       for (i = 9; i < 15; i++)
-        if (imask & (1UL << i))
-          {
-            mem = gen_rtx_MEM (DImode, plus_constant(hard_frame_pointer_rtx,
-                                                     reg_offset));
-            set_mem_alias_set (mem, alpha_sr_alias_set);
-            FRP (emit_move_insn (gen_rtx_REG (DImode, i), mem));
-            reg_offset -= 8;
-          }
+	if (imask & (1UL << i))
+	  {
+	    mem = gen_rtx_MEM (DImode, plus_constant(hard_frame_pointer_rtx,
+						     reg_offset));
+	    set_mem_alias_set (mem, alpha_sr_alias_set);
+	    FRP (emit_move_insn (gen_rtx_REG (DImode, i), mem));
+	    reg_offset -= 8;
+	  }
 
       for (i = 2; i < 10; i++)
-        if (fmask & (1UL << i))
-          {
-            mem = gen_rtx_MEM (DFmode, plus_constant(hard_frame_pointer_rtx,
-                                                     reg_offset));
-            set_mem_alias_set (mem, alpha_sr_alias_set);
-            FRP (emit_move_insn (gen_rtx_REG (DFmode, i+32), mem));
-            reg_offset -= 8;
-          }
+	if (fmask & (1UL << i))
+	  {
+	    mem = gen_rtx_MEM (DFmode, plus_constant(hard_frame_pointer_rtx,
+						     reg_offset));
+	    set_mem_alias_set (mem, alpha_sr_alias_set);
+	    FRP (emit_move_insn (gen_rtx_REG (DFmode, i+32), mem));
+	    reg_offset -= 8;
+	  }
 
       /* Restore the return address from the DSIB.  */
 
@@ -8207,85 +8207,85 @@ alpha_expand_epilogue (void)
       sp_adj1 = stack_pointer_rtx;
 
       if (eh_ofs)
-        {
-          sp_adj1 = gen_rtx_REG (DImode, 23);
-          emit_move_insn (sp_adj1,
-                          gen_rtx_PLUS (Pmode, stack_pointer_rtx, eh_ofs));
-        }
+	{
+	  sp_adj1 = gen_rtx_REG (DImode, 23);
+	  emit_move_insn (sp_adj1,
+			  gen_rtx_PLUS (Pmode, stack_pointer_rtx, eh_ofs));
+	}
 
       /* If the stack size is large, begin computation into a temporary
-         register so as not to interfere with a potential fp restore,
-         which must be consecutive with an SP restore.  */
+	 register so as not to interfere with a potential fp restore,
+	 which must be consecutive with an SP restore.  */
       if (frame_size < 32768
-          && ! (TARGET_ABI_UNICOSMK && current_function_calls_alloca))
-        sp_adj2 = GEN_INT (frame_size);
+	  && ! (TARGET_ABI_UNICOSMK && current_function_calls_alloca))
+	sp_adj2 = GEN_INT (frame_size);
       else if (TARGET_ABI_UNICOSMK)
-        {
-          sp_adj1 = gen_rtx_REG (DImode, 23);
-          FRP (emit_move_insn (sp_adj1, hard_frame_pointer_rtx));
-          sp_adj2 = const0_rtx;
-        }
+	{
+	  sp_adj1 = gen_rtx_REG (DImode, 23);
+	  FRP (emit_move_insn (sp_adj1, hard_frame_pointer_rtx));
+	  sp_adj2 = const0_rtx;
+	}
       else if (frame_size < 0x40007fffL)
-        {
-          int low = ((frame_size & 0xffff) ^ 0x8000) - 0x8000;
+	{
+	  int low = ((frame_size & 0xffff) ^ 0x8000) - 0x8000;
 
-          sp_adj2 = plus_constant (sp_adj1, frame_size - low);
-          if (sa_reg_exp && rtx_equal_p (sa_reg_exp, sp_adj2))
-            sp_adj1 = sa_reg;
-          else
-            {
-              sp_adj1 = gen_rtx_REG (DImode, 23);
-              FRP (emit_move_insn (sp_adj1, sp_adj2));
-            }
-          sp_adj2 = GEN_INT (low);
-        }
+	  sp_adj2 = plus_constant (sp_adj1, frame_size - low);
+	  if (sa_reg_exp && rtx_equal_p (sa_reg_exp, sp_adj2))
+	    sp_adj1 = sa_reg;
+	  else
+	    {
+	      sp_adj1 = gen_rtx_REG (DImode, 23);
+	      FRP (emit_move_insn (sp_adj1, sp_adj2));
+	    }
+	  sp_adj2 = GEN_INT (low);
+	}
       else
-        {
-          rtx tmp = gen_rtx_REG (DImode, 23);
-          FRP (sp_adj2 = alpha_emit_set_const (tmp, DImode, frame_size,
-                                               3, false));
-          if (!sp_adj2)
-            {
-              /* We can't drop new things to memory this late, afaik,
-                 so build it up by pieces.  */
-              FRP (sp_adj2 = alpha_emit_set_long_const (tmp, frame_size,
-                                                        -(frame_size < 0)));
-              gcc_assert (sp_adj2);
-            }
-        }
+	{
+	  rtx tmp = gen_rtx_REG (DImode, 23);
+	  FRP (sp_adj2 = alpha_emit_set_const (tmp, DImode, frame_size,
+					       3, false));
+	  if (!sp_adj2)
+	    {
+	      /* We can't drop new things to memory this late, afaik,
+		 so build it up by pieces.  */
+	      FRP (sp_adj2 = alpha_emit_set_long_const (tmp, frame_size,
+							-(frame_size < 0)));
+	      gcc_assert (sp_adj2);
+	    }
+	}
 
       /* From now on, things must be in order.  So emit blockages.  */
 
       /* Restore the frame pointer.  */
       if (TARGET_ABI_UNICOSMK)
-        {
-          emit_insn (gen_blockage ());
-          mem = gen_rtx_MEM (DImode,
-                             plus_constant (hard_frame_pointer_rtx, -16));
-          set_mem_alias_set (mem, alpha_sr_alias_set);
-          FRP (emit_move_insn (hard_frame_pointer_rtx, mem));
-        }
+	{
+	  emit_insn (gen_blockage ());
+	  mem = gen_rtx_MEM (DImode,
+			     plus_constant (hard_frame_pointer_rtx, -16));
+	  set_mem_alias_set (mem, alpha_sr_alias_set);
+	  FRP (emit_move_insn (hard_frame_pointer_rtx, mem));
+	}
       else if (fp_is_frame_pointer)
-        {
-          emit_insn (gen_blockage ());
-          mem = gen_rtx_MEM (DImode, plus_constant (sa_reg, fp_offset));
-          set_mem_alias_set (mem, alpha_sr_alias_set);
-          FRP (emit_move_insn (hard_frame_pointer_rtx, mem));
-        }
+	{
+	  emit_insn (gen_blockage ());
+	  mem = gen_rtx_MEM (DImode, plus_constant (sa_reg, fp_offset));
+	  set_mem_alias_set (mem, alpha_sr_alias_set);
+	  FRP (emit_move_insn (hard_frame_pointer_rtx, mem));
+	}
       else if (TARGET_ABI_OPEN_VMS)
-        {
-          emit_insn (gen_blockage ());
-          FRP (emit_move_insn (hard_frame_pointer_rtx,
-                               gen_rtx_REG (DImode, vms_save_fp_regno)));
-        }
+	{
+	  emit_insn (gen_blockage ());
+	  FRP (emit_move_insn (hard_frame_pointer_rtx,
+			       gen_rtx_REG (DImode, vms_save_fp_regno)));
+	}
 
       /* Restore the stack pointer.  */
       emit_insn (gen_blockage ());
       if (sp_adj2 == const0_rtx)
-        FRP (emit_move_insn (stack_pointer_rtx, sp_adj1));
+	FRP (emit_move_insn (stack_pointer_rtx, sp_adj1));
       else
-        FRP (emit_move_insn (stack_pointer_rtx,
-                             gen_rtx_PLUS (DImode, sp_adj1, sp_adj2)));
+	FRP (emit_move_insn (stack_pointer_rtx,
+			     gen_rtx_PLUS (DImode, sp_adj1, sp_adj2)));
     }
   else
     {
@@ -8293,16 +8293,16 @@ alpha_expand_epilogue (void)
         {
           emit_insn (gen_blockage ());
           FRP (emit_move_insn (hard_frame_pointer_rtx,
-                               gen_rtx_REG (DImode, vms_save_fp_regno)));
+			       gen_rtx_REG (DImode, vms_save_fp_regno)));
         }
       else if (TARGET_ABI_UNICOSMK && alpha_procedure_type != PT_STACK)
-        {
-          /* Decrement the frame pointer if the function does not have a
-             frame.  */
+	{
+	  /* Decrement the frame pointer if the function does not have a
+	     frame.  */
 
-          emit_insn (gen_blockage ());
-          FRP (emit_insn (gen_adddi3 (hard_frame_pointer_rtx,
-                                      hard_frame_pointer_rtx, constm1_rtx)));
+	  emit_insn (gen_blockage ());
+	  FRP (emit_insn (gen_adddi3 (hard_frame_pointer_rtx,
+				      hard_frame_pointer_rtx, constm1_rtx)));
         }
     }
 }
@@ -8345,8 +8345,8 @@ alpha_end_function (FILE *file, const char *fnname, tree decl ATTRIBUTE_UNUSED)
 
 static void
 alpha_output_mi_thunk_osf (FILE *file, tree thunk_fndecl ATTRIBUTE_UNUSED,
-                           HOST_WIDE_INT delta, HOST_WIDE_INT vcall_offset,
-                           tree function)
+			   HOST_WIDE_INT delta, HOST_WIDE_INT vcall_offset,
+			   tree function)
 {
   HOST_WIDE_INT hi, lo;
   rtx this, insn, funexp;
@@ -8371,14 +8371,14 @@ alpha_output_mi_thunk_osf (FILE *file, tree thunk_fndecl ATTRIBUTE_UNUSED,
   if (hi + lo == delta)
     {
       if (hi)
-        emit_insn (gen_adddi3 (this, this, GEN_INT (hi)));
+	emit_insn (gen_adddi3 (this, this, GEN_INT (hi)));
       if (lo)
-        emit_insn (gen_adddi3 (this, this, GEN_INT (lo)));
+	emit_insn (gen_adddi3 (this, this, GEN_INT (lo)));
     }
   else
     {
       rtx tmp = alpha_emit_set_long_const (gen_rtx_REG (Pmode, 0),
-                                           delta, -(delta < 0));
+					   delta, -(delta < 0));
       emit_insn (gen_adddi3 (this, this, tmp));
     }
 
@@ -8393,21 +8393,21 @@ alpha_output_mi_thunk_osf (FILE *file, tree thunk_fndecl ATTRIBUTE_UNUSED,
       lo = ((vcall_offset & 0xffff) ^ 0x8000) - 0x8000;
       hi = (((vcall_offset - lo) & 0xffffffff) ^ 0x80000000) - 0x80000000;
       if (hi + lo == vcall_offset)
-        {
-          if (hi)
-            emit_insn (gen_adddi3 (tmp, tmp, GEN_INT (hi)));
-        }
+	{
+	  if (hi)
+	    emit_insn (gen_adddi3 (tmp, tmp, GEN_INT (hi)));
+	}
       else
-        {
-          tmp2 = alpha_emit_set_long_const (gen_rtx_REG (Pmode, 1),
-                                            vcall_offset, -(vcall_offset < 0));
+	{
+	  tmp2 = alpha_emit_set_long_const (gen_rtx_REG (Pmode, 1),
+					    vcall_offset, -(vcall_offset < 0));
           emit_insn (gen_adddi3 (tmp, tmp, tmp2));
-          lo = 0;
-        }
+	  lo = 0;
+	}
       if (lo)
-        tmp2 = gen_rtx_PLUS (Pmode, tmp, GEN_INT (lo));
+	tmp2 = gen_rtx_PLUS (Pmode, tmp, GEN_INT (lo));
       else
-        tmp2 = tmp;
+	tmp2 = tmp;
       emit_move_insn (tmp, gen_rtx_MEM (Pmode, tmp2));
 
       emit_insn (gen_adddi3 (this, this, tmp));
@@ -8471,7 +8471,7 @@ alpha_output_filename (FILE *stream, const char *name)
       output_quoted_string (stream, name);
       fprintf (stream, "\n");
       if (!TARGET_GAS && write_symbols == DBX_DEBUG)
-        fprintf (stream, "\t#@stabs\n");
+	fprintf (stream, "\t#@stabs\n");
     }
 
   else if (write_symbols == DBX_DEBUG)
@@ -8479,16 +8479,16 @@ alpha_output_filename (FILE *stream, const char *name)
     return;
 
   else if (name != current_function_file
-           && strcmp (name, current_function_file) != 0)
+	   && strcmp (name, current_function_file) != 0)
     {
       if (inside_function && ! TARGET_GAS)
-        fprintf (stream, "\t#.file\t%d ", num_source_filenames);
+	fprintf (stream, "\t#.file\t%d ", num_source_filenames);
       else
-        {
-          ++num_source_filenames;
-          current_function_file = name;
-          fprintf (stream, "\t.file\t%d ", num_source_filenames);
-        }
+	{
+	  ++num_source_filenames;
+	  current_function_file = name;
+	  fprintf (stream, "\t.file\t%d ", num_source_filenames);
+	}
 
       output_quoted_string (stream, name);
       fprintf (stream, "\n");
@@ -8500,9 +8500,9 @@ alpha_output_filename (FILE *stream, const char *name)
 struct shadow_summary
 {
   struct {
-    unsigned int i     : 31;        /* Mask of int regs */
-    unsigned int fp    : 31;        /* Mask of fp regs */
-    unsigned int mem   :  1;        /* mem == imem | fpmem */
+    unsigned int i     : 31;	/* Mask of int regs */
+    unsigned int fp    : 31;	/* Mask of fp regs */
+    unsigned int mem   :  1;	/* mem == imem | fpmem */
   } used, defd;
 };
 
@@ -8522,7 +8522,7 @@ summarize_insn (rtx x, struct shadow_summary *sum, int set)
   switch (GET_CODE (x))
     {
       /* ??? Note that this case would be incorrect if the Alpha had a
-         ZERO_EXTRACT in SET_DEST.  */
+	 ZERO_EXTRACT in SET_DEST.  */
     case SET:
       summarize_insn (SET_SRC (x), sum, 0);
       summarize_insn (SET_DEST (x), sum, 1);
@@ -8538,12 +8538,12 @@ summarize_insn (rtx x, struct shadow_summary *sum, int set)
 
     case ASM_OPERANDS:
       for (i = ASM_OPERANDS_INPUT_LENGTH (x) - 1; i >= 0; i--)
-        summarize_insn (ASM_OPERANDS_INPUT (x, i), sum, 0);
+	summarize_insn (ASM_OPERANDS_INPUT (x, i), sum, 0);
       break;
 
     case PARALLEL:
       for (i = XVECLEN (x, 0) - 1; i >= 0; i--)
-        summarize_insn (XVECEXP (x, 0, i), sum, 0);
+	summarize_insn (XVECEXP (x, 0, i), sum, 0);
       break;
 
     case SUBREG:
@@ -8552,34 +8552,34 @@ summarize_insn (rtx x, struct shadow_summary *sum, int set)
 
     case REG:
       {
-        int regno = REGNO (x);
-        unsigned long mask = ((unsigned long) 1) << (regno % 32);
+	int regno = REGNO (x);
+	unsigned long mask = ((unsigned long) 1) << (regno % 32);
 
-        if (regno == 31 || regno == 63)
-          break;
+	if (regno == 31 || regno == 63)
+	  break;
 
-        if (set)
-          {
-            if (regno < 32)
-              sum->defd.i |= mask;
-            else
-              sum->defd.fp |= mask;
-          }
-        else
-          {
-            if (regno < 32)
-              sum->used.i  |= mask;
-            else
-              sum->used.fp |= mask;
-          }
-        }
+	if (set)
+	  {
+	    if (regno < 32)
+	      sum->defd.i |= mask;
+	    else
+	      sum->defd.fp |= mask;
+	  }
+	else
+	  {
+	    if (regno < 32)
+	      sum->used.i  |= mask;
+	    else
+	      sum->used.fp |= mask;
+	  }
+	}
       break;
 
     case MEM:
       if (set)
-        sum->defd.mem = 1;
+	sum->defd.mem = 1;
       else
-        sum->used.mem = 1;
+	sum->used.mem = 1;
 
       /* Find the regs used in memory address computation: */
       summarize_insn (XEXP (x, 0), sum, 0);
@@ -8611,23 +8611,23 @@ summarize_insn (rtx x, struct shadow_summary *sum, int set)
     default:
       format_ptr = GET_RTX_FORMAT (GET_CODE (x));
       for (i = GET_RTX_LENGTH (GET_CODE (x)) - 1; i >= 0; i--)
-        switch (format_ptr[i])
-          {
-          case 'e':
-            summarize_insn (XEXP (x, i), sum, 0);
-            break;
+	switch (format_ptr[i])
+	  {
+	  case 'e':
+	    summarize_insn (XEXP (x, i), sum, 0);
+	    break;
 
-          case 'E':
-            for (j = XVECLEN (x, i) - 1; j >= 0; j--)
-              summarize_insn (XVECEXP (x, i, j), sum, 0);
-            break;
+	  case 'E':
+	    for (j = XVECLEN (x, i) - 1; j >= 0; j--)
+	      summarize_insn (XVECEXP (x, i, j), sum, 0);
+	    break;
 
-          case 'i':
-            break;
+	  case 'i':
+	    break;
 
-          default:
-            gcc_unreachable ();
-          }
+	  default:
+	    gcc_unreachable ();
+	  }
     }
 }
 
@@ -8681,118 +8681,118 @@ alpha_handle_trap_shadows (void)
   for (i = get_insns (); i ; i = NEXT_INSN (i))
     {
       if (GET_CODE (i) == NOTE)
-        {
-          switch (NOTE_LINE_NUMBER (i))
-            {
-            case NOTE_INSN_EH_REGION_BEG:
-              exception_nesting++;
-              if (trap_pending)
-                goto close_shadow;
-              break;
+	{
+	  switch (NOTE_LINE_NUMBER (i))
+	    {
+	    case NOTE_INSN_EH_REGION_BEG:
+	      exception_nesting++;
+	      if (trap_pending)
+		goto close_shadow;
+	      break;
 
-            case NOTE_INSN_EH_REGION_END:
-              exception_nesting--;
-              if (trap_pending)
-                goto close_shadow;
-              break;
+	    case NOTE_INSN_EH_REGION_END:
+	      exception_nesting--;
+	      if (trap_pending)
+		goto close_shadow;
+	      break;
 
-            case NOTE_INSN_EPILOGUE_BEG:
-              if (trap_pending && alpha_tp >= ALPHA_TP_FUNC)
-                goto close_shadow;
-              break;
-            }
-        }
+	    case NOTE_INSN_EPILOGUE_BEG:
+	      if (trap_pending && alpha_tp >= ALPHA_TP_FUNC)
+		goto close_shadow;
+	      break;
+	    }
+	}
       else if (trap_pending)
-        {
-          if (alpha_tp == ALPHA_TP_FUNC)
-            {
-              if (GET_CODE (i) == JUMP_INSN
-                  && GET_CODE (PATTERN (i)) == RETURN)
-                goto close_shadow;
-            }
-          else if (alpha_tp == ALPHA_TP_INSN)
-            {
-              if (optimize > 0)
-                {
-                  struct shadow_summary sum;
+	{
+	  if (alpha_tp == ALPHA_TP_FUNC)
+	    {
+	      if (GET_CODE (i) == JUMP_INSN
+		  && GET_CODE (PATTERN (i)) == RETURN)
+		goto close_shadow;
+	    }
+	  else if (alpha_tp == ALPHA_TP_INSN)
+	    {
+	      if (optimize > 0)
+		{
+		  struct shadow_summary sum;
 
-                  sum.used.i = 0;
-                  sum.used.fp = 0;
-                  sum.used.mem = 0;
-                  sum.defd = sum.used;
+		  sum.used.i = 0;
+		  sum.used.fp = 0;
+		  sum.used.mem = 0;
+		  sum.defd = sum.used;
 
-                  switch (GET_CODE (i))
-                    {
-                    case INSN:
-                      /* Annoyingly, get_attr_trap will die on these.  */
-                      if (GET_CODE (PATTERN (i)) == USE
-                          || GET_CODE (PATTERN (i)) == CLOBBER)
-                        break;
+		  switch (GET_CODE (i))
+		    {
+		    case INSN:
+		      /* Annoyingly, get_attr_trap will die on these.  */
+		      if (GET_CODE (PATTERN (i)) == USE
+			  || GET_CODE (PATTERN (i)) == CLOBBER)
+			break;
 
-                      summarize_insn (PATTERN (i), &sum, 0);
+		      summarize_insn (PATTERN (i), &sum, 0);
 
-                      if ((sum.defd.i & shadow.defd.i)
-                          || (sum.defd.fp & shadow.defd.fp))
-                        {
-                          /* (c) would be violated */
-                          goto close_shadow;
-                        }
+		      if ((sum.defd.i & shadow.defd.i)
+			  || (sum.defd.fp & shadow.defd.fp))
+			{
+			  /* (c) would be violated */
+			  goto close_shadow;
+			}
 
-                      /* Combine shadow with summary of current insn: */
-                      shadow.used.i   |= sum.used.i;
-                      shadow.used.fp  |= sum.used.fp;
-                      shadow.used.mem |= sum.used.mem;
-                      shadow.defd.i   |= sum.defd.i;
-                      shadow.defd.fp  |= sum.defd.fp;
-                      shadow.defd.mem |= sum.defd.mem;
+		      /* Combine shadow with summary of current insn: */
+		      shadow.used.i   |= sum.used.i;
+		      shadow.used.fp  |= sum.used.fp;
+		      shadow.used.mem |= sum.used.mem;
+		      shadow.defd.i   |= sum.defd.i;
+		      shadow.defd.fp  |= sum.defd.fp;
+		      shadow.defd.mem |= sum.defd.mem;
 
-                      if ((sum.defd.i & shadow.used.i)
-                          || (sum.defd.fp & shadow.used.fp)
-                          || (sum.defd.mem & shadow.used.mem))
-                        {
-                          /* (a) would be violated (also takes care of (b))  */
-                          gcc_assert (get_attr_trap (i) != TRAP_YES
-                                      || (!(sum.defd.i & sum.used.i)
-                                          && !(sum.defd.fp & sum.used.fp)));
+		      if ((sum.defd.i & shadow.used.i)
+			  || (sum.defd.fp & shadow.used.fp)
+			  || (sum.defd.mem & shadow.used.mem))
+			{
+			  /* (a) would be violated (also takes care of (b))  */
+			  gcc_assert (get_attr_trap (i) != TRAP_YES
+				      || (!(sum.defd.i & sum.used.i)
+					  && !(sum.defd.fp & sum.used.fp)));
 
-                          goto close_shadow;
-                        }
-                      break;
+			  goto close_shadow;
+			}
+		      break;
 
-                    case JUMP_INSN:
-                    case CALL_INSN:
-                    case CODE_LABEL:
-                      goto close_shadow;
+		    case JUMP_INSN:
+		    case CALL_INSN:
+		    case CODE_LABEL:
+		      goto close_shadow;
 
-                    default:
-                      gcc_unreachable ();
-                    }
-                }
-              else
-                {
-                close_shadow:
-                  n = emit_insn_before (gen_trapb (), i);
-                  PUT_MODE (n, TImode);
-                  PUT_MODE (i, TImode);
-                  trap_pending = 0;
-                  shadow.used.i = 0;
-                  shadow.used.fp = 0;
-                  shadow.used.mem = 0;
-                  shadow.defd = shadow.used;
-                }
-            }
-        }
+		    default:
+		      gcc_unreachable ();
+		    }
+		}
+	      else
+		{
+		close_shadow:
+		  n = emit_insn_before (gen_trapb (), i);
+		  PUT_MODE (n, TImode);
+		  PUT_MODE (i, TImode);
+		  trap_pending = 0;
+		  shadow.used.i = 0;
+		  shadow.used.fp = 0;
+		  shadow.used.mem = 0;
+		  shadow.defd = shadow.used;
+		}
+	    }
+	}
 
       if ((exception_nesting > 0 || alpha_tp >= ALPHA_TP_FUNC)
-          && GET_CODE (i) == INSN
-          && GET_CODE (PATTERN (i)) != USE
-          && GET_CODE (PATTERN (i)) != CLOBBER
-          && get_attr_trap (i) == TRAP_YES)
-        {
-          if (optimize && !trap_pending)
-            summarize_insn (PATTERN (i), &shadow, 0);
-          trap_pending = 1;
-        }
+	  && GET_CODE (i) == INSN
+	  && GET_CODE (PATTERN (i)) != USE
+	  && GET_CODE (PATTERN (i)) != CLOBBER
+	  && get_attr_trap (i) == TRAP_YES)
+	{
+	  if (optimize && !trap_pending)
+	    summarize_insn (PATTERN (i), &shadow, 0);
+	  trap_pending = 1;
+	}
     }
 }
 
@@ -8846,7 +8846,7 @@ alphaev4_insn_pipe (rtx insn)
     case TYPE_SHIFT:
     case TYPE_IMUL:
     case TYPE_FBR:
-    case TYPE_MVI:                /* fake */
+    case TYPE_MVI:		/* fake */
       return EV4_IB0;
 
     case TYPE_IST:
@@ -8861,9 +8861,9 @@ alphaev4_insn_pipe (rtx insn)
     case TYPE_FMUL:
     case TYPE_ST_C:
     case TYPE_MB:
-    case TYPE_FSQRT:                /* fake */
-    case TYPE_FTOI:                /* fake */
-    case TYPE_ITOF:                /* fake */
+    case TYPE_FSQRT:		/* fake */
+    case TYPE_FTOI:		/* fake */
+    case TYPE_ITOF:		/* fake */
       return EV4_IB1;
 
     default:
@@ -8899,8 +8899,8 @@ alphaev5_insn_pipe (rtx insn)
     case TYPE_LD_L:
     case TYPE_ST_C:
     case TYPE_MB:
-    case TYPE_FTOI:                /* fake */
-    case TYPE_ITOF:                /* fake */
+    case TYPE_FTOI:		/* fake */
+    case TYPE_ITOF:		/* fake */
       return EV5_E0;
 
     case TYPE_IBR:
@@ -8915,7 +8915,7 @@ alphaev5_insn_pipe (rtx insn)
     case TYPE_FCMOV:
     case TYPE_FADD:
     case TYPE_FDIV:
-    case TYPE_FSQRT:                /* fake */
+    case TYPE_FSQRT:		/* fake */
       return EV5_FA;
 
     case TYPE_FMUL:
@@ -8950,69 +8950,69 @@ alphaev4_next_group (rtx insn, int *pin_use, int *plen)
 
       pipe = alphaev4_insn_pipe (insn);
       switch (pipe)
-        {
-        case EV4_STOP:
-          /* Force complex instructions to start new groups.  */
-          if (in_use)
-            goto done;
+	{
+	case EV4_STOP:
+	  /* Force complex instructions to start new groups.  */
+	  if (in_use)
+	    goto done;
 
-          /* If this is a completely unrecognized insn, it's an asm.
-             We don't know how long it is, so record length as -1 to
-             signal a needed realignment.  */
-          if (recog_memoized (insn) < 0)
-            len = -1;
-          else
-            len = get_attr_length (insn);
-          goto next_and_done;
+	  /* If this is a completely unrecognized insn, it's an asm.
+	     We don't know how long it is, so record length as -1 to
+	     signal a needed realignment.  */
+	  if (recog_memoized (insn) < 0)
+	    len = -1;
+	  else
+	    len = get_attr_length (insn);
+	  goto next_and_done;
 
-        case EV4_IBX:
-          if (in_use & EV4_IB0)
-            {
-              if (in_use & EV4_IB1)
-                goto done;
-              in_use |= EV4_IB1;
-            }
-          else
-            in_use |= EV4_IB0 | EV4_IBX;
-          break;
+	case EV4_IBX:
+	  if (in_use & EV4_IB0)
+	    {
+	      if (in_use & EV4_IB1)
+		goto done;
+	      in_use |= EV4_IB1;
+	    }
+	  else
+	    in_use |= EV4_IB0 | EV4_IBX;
+	  break;
 
-        case EV4_IB0:
-          if (in_use & EV4_IB0)
-            {
-              if (!(in_use & EV4_IBX) || (in_use & EV4_IB1))
-                goto done;
-              in_use |= EV4_IB1;
-            }
-          in_use |= EV4_IB0;
-          break;
+	case EV4_IB0:
+	  if (in_use & EV4_IB0)
+	    {
+	      if (!(in_use & EV4_IBX) || (in_use & EV4_IB1))
+		goto done;
+	      in_use |= EV4_IB1;
+	    }
+	  in_use |= EV4_IB0;
+	  break;
 
-        case EV4_IB1:
-          if (in_use & EV4_IB1)
-            goto done;
-          in_use |= EV4_IB1;
-          break;
+	case EV4_IB1:
+	  if (in_use & EV4_IB1)
+	    goto done;
+	  in_use |= EV4_IB1;
+	  break;
 
-        default:
-          gcc_unreachable ();
-        }
+	default:
+	  gcc_unreachable ();
+	}
       len += 4;
 
       /* Haifa doesn't do well scheduling branches.  */
       if (GET_CODE (insn) == JUMP_INSN)
-        goto next_and_done;
+	goto next_and_done;
 
     next:
       insn = next_nonnote_insn (insn);
 
       if (!insn || ! INSN_P (insn))
-        goto done;
+	goto done;
 
       /* Let Haifa tell us where it thinks insn group boundaries are.  */
       if (GET_MODE (insn) == TImode)
-        goto done;
+	goto done;
 
       if (GET_CODE (insn) == CLOBBER || GET_CODE (insn) == USE)
-        goto next;
+	goto next;
     }
 
  next_and_done:
@@ -9048,102 +9048,102 @@ alphaev5_next_group (rtx insn, int *pin_use, int *plen)
 
       pipe = alphaev5_insn_pipe (insn);
       switch (pipe)
-        {
-        case EV5_STOP:
-          /* Force complex instructions to start new groups.  */
-          if (in_use)
-            goto done;
+	{
+	case EV5_STOP:
+	  /* Force complex instructions to start new groups.  */
+	  if (in_use)
+	    goto done;
 
-          /* If this is a completely unrecognized insn, it's an asm.
-             We don't know how long it is, so record length as -1 to
-             signal a needed realignment.  */
-          if (recog_memoized (insn) < 0)
-            len = -1;
-          else
-            len = get_attr_length (insn);
-          goto next_and_done;
+	  /* If this is a completely unrecognized insn, it's an asm.
+	     We don't know how long it is, so record length as -1 to
+	     signal a needed realignment.  */
+	  if (recog_memoized (insn) < 0)
+	    len = -1;
+	  else
+	    len = get_attr_length (insn);
+	  goto next_and_done;
 
-        /* ??? Most of the places below, we would like to assert never
-           happen, as it would indicate an error either in Haifa, or
-           in the scheduling description.  Unfortunately, Haifa never
-           schedules the last instruction of the BB, so we don't have
-           an accurate TI bit to go off.  */
-        case EV5_E01:
-          if (in_use & EV5_E0)
-            {
-              if (in_use & EV5_E1)
-                goto done;
-              in_use |= EV5_E1;
-            }
-          else
-            in_use |= EV5_E0 | EV5_E01;
-          break;
+	/* ??? Most of the places below, we would like to assert never
+	   happen, as it would indicate an error either in Haifa, or
+	   in the scheduling description.  Unfortunately, Haifa never
+	   schedules the last instruction of the BB, so we don't have
+	   an accurate TI bit to go off.  */
+	case EV5_E01:
+	  if (in_use & EV5_E0)
+	    {
+	      if (in_use & EV5_E1)
+		goto done;
+	      in_use |= EV5_E1;
+	    }
+	  else
+	    in_use |= EV5_E0 | EV5_E01;
+	  break;
 
-        case EV5_E0:
-          if (in_use & EV5_E0)
-            {
-              if (!(in_use & EV5_E01) || (in_use & EV5_E1))
-                goto done;
-              in_use |= EV5_E1;
-            }
-          in_use |= EV5_E0;
-          break;
+	case EV5_E0:
+	  if (in_use & EV5_E0)
+	    {
+	      if (!(in_use & EV5_E01) || (in_use & EV5_E1))
+		goto done;
+	      in_use |= EV5_E1;
+	    }
+	  in_use |= EV5_E0;
+	  break;
 
-        case EV5_E1:
-          if (in_use & EV5_E1)
-            goto done;
-          in_use |= EV5_E1;
-          break;
+	case EV5_E1:
+	  if (in_use & EV5_E1)
+	    goto done;
+	  in_use |= EV5_E1;
+	  break;
 
-        case EV5_FAM:
-          if (in_use & EV5_FA)
-            {
-              if (in_use & EV5_FM)
-                goto done;
-              in_use |= EV5_FM;
-            }
-          else
-            in_use |= EV5_FA | EV5_FAM;
-          break;
+	case EV5_FAM:
+	  if (in_use & EV5_FA)
+	    {
+	      if (in_use & EV5_FM)
+		goto done;
+	      in_use |= EV5_FM;
+	    }
+	  else
+	    in_use |= EV5_FA | EV5_FAM;
+	  break;
 
-        case EV5_FA:
-          if (in_use & EV5_FA)
-            goto done;
-          in_use |= EV5_FA;
-          break;
+	case EV5_FA:
+	  if (in_use & EV5_FA)
+	    goto done;
+	  in_use |= EV5_FA;
+	  break;
 
-        case EV5_FM:
-          if (in_use & EV5_FM)
-            goto done;
-          in_use |= EV5_FM;
-          break;
+	case EV5_FM:
+	  if (in_use & EV5_FM)
+	    goto done;
+	  in_use |= EV5_FM;
+	  break;
 
-        case EV5_NONE:
-          break;
+	case EV5_NONE:
+	  break;
 
-        default:
-          gcc_unreachable ();
-        }
+	default:
+	  gcc_unreachable ();
+	}
       len += 4;
 
       /* Haifa doesn't do well scheduling branches.  */
       /* ??? If this is predicted not-taken, slotting continues, except
-         that no more IBR, FBR, or JSR insns may be slotted.  */
+	 that no more IBR, FBR, or JSR insns may be slotted.  */
       if (GET_CODE (insn) == JUMP_INSN)
-        goto next_and_done;
+	goto next_and_done;
 
     next:
       insn = next_nonnote_insn (insn);
 
       if (!insn || ! INSN_P (insn))
-        goto done;
+	goto done;
 
       /* Let Haifa tell us where it thinks insn group boundaries are.  */
       if (GET_MODE (insn) == TImode)
-        goto done;
+	goto done;
 
       if (GET_CODE (insn) == CLOBBER || GET_CODE (insn) == USE)
-        goto next;
+	goto next;
     }
 
  next_and_done:
@@ -9215,8 +9215,8 @@ alphaev5_next_nop (int *pin_use)
 
 static void
 alpha_align_insns (unsigned int max_align,
-                   rtx (*next_group) (rtx, int *, int *),
-                   rtx (*next_nop) (int *))
+		   rtx (*next_group) (rtx, int *, int *),
+		   rtx (*next_nop) (int *))
 {
   /* ALIGN is the known alignment for the insn group.  */
   unsigned int align;
@@ -9248,92 +9248,92 @@ alpha_align_insns (unsigned int max_align,
 
       /* When we see a label, resync alignment etc.  */
       if (GET_CODE (i) == CODE_LABEL)
-        {
-          unsigned int new_align = 1 << label_to_alignment (i);
+	{
+	  unsigned int new_align = 1 << label_to_alignment (i);
 
-          if (new_align >= align)
-            {
-              align = new_align < max_align ? new_align : max_align;
-              ofs = 0;
-            }
+	  if (new_align >= align)
+	    {
+	      align = new_align < max_align ? new_align : max_align;
+	      ofs = 0;
+	    }
 
-          else if (ofs & (new_align-1))
-            ofs = (ofs | (new_align-1)) + 1;
-          gcc_assert (!len);
-        }
+	  else if (ofs & (new_align-1))
+	    ofs = (ofs | (new_align-1)) + 1;
+	  gcc_assert (!len);
+	}
 
       /* Handle complex instructions special.  */
       else if (in_use == 0)
-        {
-          /* Asms will have length < 0.  This is a signal that we have
-             lost alignment knowledge.  Assume, however, that the asm
-             will not mis-align instructions.  */
-          if (len < 0)
-            {
-              ofs = 0;
-              align = 4;
-              len = 0;
-            }
-        }
+	{
+	  /* Asms will have length < 0.  This is a signal that we have
+	     lost alignment knowledge.  Assume, however, that the asm
+	     will not mis-align instructions.  */
+	  if (len < 0)
+	    {
+	      ofs = 0;
+	      align = 4;
+	      len = 0;
+	    }
+	}
 
       /* If the known alignment is smaller than the recognized insn group,
-         realign the output.  */
+	 realign the output.  */
       else if ((int) align < len)
-        {
-          unsigned int new_log_align = len > 8 ? 4 : 3;
-          rtx prev, where;
+	{
+	  unsigned int new_log_align = len > 8 ? 4 : 3;
+	  rtx prev, where;
 
-          where = prev = prev_nonnote_insn (i);
-          if (!where || GET_CODE (where) != CODE_LABEL)
-            where = i;
+	  where = prev = prev_nonnote_insn (i);
+	  if (!where || GET_CODE (where) != CODE_LABEL)
+	    where = i;
 
-          /* Can't realign between a call and its gp reload.  */
-          if (! (TARGET_EXPLICIT_RELOCS
-                 && prev && GET_CODE (prev) == CALL_INSN))
-            {
-              emit_insn_before (gen_realign (GEN_INT (new_log_align)), where);
-              align = 1 << new_log_align;
-              ofs = 0;
-            }
-        }
+	  /* Can't realign between a call and its gp reload.  */
+	  if (! (TARGET_EXPLICIT_RELOCS
+		 && prev && GET_CODE (prev) == CALL_INSN))
+	    {
+	      emit_insn_before (gen_realign (GEN_INT (new_log_align)), where);
+	      align = 1 << new_log_align;
+	      ofs = 0;
+	    }
+	}
 
       /* We may not insert padding inside the initial ldgp sequence.  */
       else if (ldgp > 0)
-        ldgp -= len;
+	ldgp -= len;
 
       /* If the group won't fit in the same INT16 as the previous,
-         we need to add padding to keep the group together.  Rather
-         than simply leaving the insn filling to the assembler, we
-         can make use of the knowledge of what sorts of instructions
-         were issued in the previous group to make sure that all of
-         the added nops are really free.  */
+	 we need to add padding to keep the group together.  Rather
+	 than simply leaving the insn filling to the assembler, we
+	 can make use of the knowledge of what sorts of instructions
+	 were issued in the previous group to make sure that all of
+	 the added nops are really free.  */
       else if (ofs + len > (int) align)
-        {
-          int nop_count = (align - ofs) / 4;
-          rtx where;
+	{
+	  int nop_count = (align - ofs) / 4;
+	  rtx where;
 
-          /* Insert nops before labels, branches, and calls to truly merge
-             the execution of the nops with the previous instruction group.  */
-          where = prev_nonnote_insn (i);
-          if (where)
-            {
-              if (GET_CODE (where) == CODE_LABEL)
-                {
-                  rtx where2 = prev_nonnote_insn (where);
-                  if (where2 && GET_CODE (where2) == JUMP_INSN)
-                    where = where2;
-                }
-              else if (GET_CODE (where) == INSN)
-                where = i;
-            }
-          else
-            where = i;
+	  /* Insert nops before labels, branches, and calls to truly merge
+	     the execution of the nops with the previous instruction group.  */
+	  where = prev_nonnote_insn (i);
+	  if (where)
+	    {
+	      if (GET_CODE (where) == CODE_LABEL)
+		{
+		  rtx where2 = prev_nonnote_insn (where);
+		  if (where2 && GET_CODE (where2) == JUMP_INSN)
+		    where = where2;
+		}
+	      else if (GET_CODE (where) == INSN)
+		where = i;
+	    }
+	  else
+	    where = i;
 
-          do
-            emit_insn_before ((*next_nop)(&prev_in_use), where);
-          while (--nop_count);
-          ofs = 0;
-        }
+	  do
+	    emit_insn_before ((*next_nop)(&prev_in_use), where);
+	  while (--nop_count);
+	  ofs = 0;
+	}
 
       ofs = (ofs + len) & (align - 1);
       prev_in_use = in_use;
@@ -9357,9 +9357,9 @@ alpha_reorg (void)
       && flag_schedule_insns_after_reload)
     {
       if (alpha_tune == PROCESSOR_EV4)
-        alpha_align_insns (8, alphaev4_next_group, alphaev4_next_nop);
+	alpha_align_insns (8, alphaev4_next_group, alphaev4_next_nop);
       else if (alpha_tune == PROCESSOR_EV5)
-        alpha_align_insns (16, alphaev5_next_group, alphaev5_next_nop);
+	alpha_align_insns (16, alphaev5_next_group, alphaev5_next_nop);
     }
 }
 
@@ -9395,15 +9395,15 @@ alpha_file_start (void)
       const char *arch;
 
       if (alpha_cpu == PROCESSOR_EV6 || TARGET_FIX || TARGET_CIX)
-        arch = "ev6";
+	arch = "ev6";
       else if (TARGET_MAX)
-        arch = "pca56";
+	arch = "pca56";
       else if (TARGET_BWX)
-        arch = "ev56";
+	arch = "ev56";
       else if (alpha_cpu == PROCESSOR_EV5)
-        arch = "ev5";
+	arch = "ev5";
       else
-        arch = "ev4";
+	arch = "ev4";
 
       fprintf (asm_out_file, "\t.arch %s\n", arch);
     }
@@ -9425,7 +9425,7 @@ alpha_elf_reloc_rw_mask (void)
 
 static section *
 alpha_elf_select_rtx_section (enum machine_mode mode, rtx x,
-                              unsigned HOST_WIDE_INT align)
+			      unsigned HOST_WIDE_INT align)
 {
   if (TARGET_SMALL_DATA && GET_MODE_SIZE (mode) <= g_switch_value)
     /* ??? Consider using mergeable sdata sections.  */
@@ -9534,7 +9534,7 @@ alpha_need_linkage (const char *name, int is_local)
 
       if (!alpha_funcs_tree)
         alpha_funcs_tree = splay_tree_new_ggc ((splay_tree_compare_fn)
-                                               splay_tree_compare_pointers);
+					       splay_tree_compare_pointers);
 
       cfaf = (struct alpha_funcs *) ggc_alloc (sizeof (struct alpha_funcs));
 
@@ -9542,8 +9542,8 @@ alpha_need_linkage (const char *name, int is_local)
       cfaf->num = ++alpha_funcs_num;
 
       splay_tree_insert (alpha_funcs_tree,
-                         (splay_tree_key) current_function_decl,
-                         (splay_tree_value) cfaf);
+			 (splay_tree_key) current_function_decl,
+			 (splay_tree_value) cfaf);
     }
 
   if (alpha_links_tree)
@@ -9552,22 +9552,22 @@ alpha_need_linkage (const char *name, int is_local)
 
       node = splay_tree_lookup (alpha_links_tree, (splay_tree_key) name);
       if (node)
-        {
-          al = (struct alpha_links *) node->value;
-          if (is_local)
-            {
-              /* Defined here but external assumed.  */
-              if (al->lkind == KIND_EXTERN)
-                al->lkind = KIND_LOCAL;
-            }
-          else
-            {
-              /* Used here but unused assumed.  */
-              if (al->lkind == KIND_UNUSED)
-                al->lkind = KIND_LOCAL;
-            }
-          return al->linkage;
-        }
+	{
+	  al = (struct alpha_links *) node->value;
+	  if (is_local)
+	    {
+	      /* Defined here but external assumed.  */
+	      if (al->lkind == KIND_EXTERN)
+		al->lkind = KIND_LOCAL;
+	    }
+	  else
+	    {
+	      /* Used here but unused assumed.  */
+	      if (al->lkind == KIND_UNUSED)
+		al->lkind = KIND_LOCAL;
+	    }
+	  return al->linkage;
+	}
     }
   else
     alpha_links_tree = splay_tree_new_ggc ((splay_tree_compare_fn) strcmp);
@@ -9589,11 +9589,11 @@ alpha_need_linkage (const char *name, int is_local)
     memcpy (linksym + 1, name, name_len);
     memcpy (linksym + 1 + name_len, "..lk", 5);
     al->linkage = gen_rtx_SYMBOL_REF (Pmode,
-                                      ggc_alloc_string (linksym, name_len + 5));
+				      ggc_alloc_string (linksym, name_len + 5));
   }
 
   splay_tree_insert (alpha_links_tree, (splay_tree_key) name,
-                     (splay_tree_value) al);
+		     (splay_tree_value) al);
 
   return al->linkage;
 }
@@ -9620,7 +9620,7 @@ alpha_use_linkage (rtx linkage, tree cfundecl, int lflag, int rflag)
 
       lnode = splay_tree_lookup (cfaf->links, (splay_tree_key) name);
       if (lnode)
-        al = (struct alpha_links *) lnode->value;
+	al = (struct alpha_links *) lnode->value;
     }
   else
     cfaf->links = splay_tree_new_ggc ((splay_tree_compare_fn) strcmp);
@@ -9635,7 +9635,7 @@ alpha_use_linkage (rtx linkage, tree cfundecl, int lflag, int rflag)
       struct alpha_links *anl;
 
       if (name[0] == '*')
-        name++;
+	name++;
 
       name_len = strlen (name);
 
@@ -9644,10 +9644,10 @@ alpha_use_linkage (rtx linkage, tree cfundecl, int lflag, int rflag)
 
       node = splay_tree_lookup (alpha_links_tree, (splay_tree_key) name);
       if (node)
-        {
-          anl = (struct alpha_links *) node->value;
-          al->lkind = anl->lkind;
-        }
+	{
+	  anl = (struct alpha_links *) node->value;
+	  al->lkind = anl->lkind;
+	}
 
       sprintf (buf, "$%d..%s..lk", cfaf->num, name);
       buflen = strlen (buf);
@@ -9655,10 +9655,10 @@ alpha_use_linkage (rtx linkage, tree cfundecl, int lflag, int rflag)
       memcpy (linksym, buf, buflen + 1);
 
       al->linkage = gen_rtx_SYMBOL_REF
-        (Pmode, ggc_alloc_string (linksym, buflen + 1));
+	(Pmode, ggc_alloc_string (linksym, buflen + 1));
 
       splay_tree_insert (cfaf->links, (splay_tree_key) name,
-                         (splay_tree_value) al);
+			 (splay_tree_value) al);
     }
 
   if (rflag)
@@ -9683,29 +9683,29 @@ alpha_write_one_linkage (splay_tree_node node, void *data)
   if (link->rkind == KIND_CODEADDR)
     {
       if (link->lkind == KIND_LOCAL)
-        {
-          /* Local and used */
-          fprintf (stream, "\t.quad %s..en\n", name);
-        }
+	{
+	  /* Local and used */
+	  fprintf (stream, "\t.quad %s..en\n", name);
+	}
       else
-        {
-          /* External and used, request code address.  */
-          fprintf (stream, "\t.code_address %s\n", name);
-        }
+	{
+	  /* External and used, request code address.  */
+	  fprintf (stream, "\t.code_address %s\n", name);
+	}
     }
   else
     {
       if (link->lkind == KIND_LOCAL)
-        {
-          /* Local and used, build linkage pair.  */
-          fprintf (stream, "\t.quad %s..en\n", name);
-          fprintf (stream, "\t.quad %s\n", name);
-        }
+	{
+	  /* Local and used, build linkage pair.  */
+	  fprintf (stream, "\t.quad %s..en\n", name);
+	  fprintf (stream, "\t.quad %s\n", name);
+	}
       else
-        {
-          /* External and used, request linkage pair.  */
-          fprintf (stream, "\t.linkage %s\n", name);
-        }
+	{
+	  /* External and used, request linkage pair.  */
+	  fprintf (stream, "\t.linkage %s\n", name);
+	}
     }
 
   return 0;
@@ -9731,8 +9731,8 @@ alpha_write_linkage (FILE *stream, const char *funname, tree fundecl)
   fprintf (stream, "\t.pdesc ");
   assemble_name (stream, funname);
   fprintf (stream, "..en,%s\n",
-           alpha_procedure_type == PT_STACK ? "stack"
-           : alpha_procedure_type == PT_REGISTER ? "reg" : "null");
+	   alpha_procedure_type == PT_STACK ? "stack"
+	   : alpha_procedure_type == PT_REGISTER ? "reg" : "null");
 
   if (func->links)
     {
@@ -9744,7 +9744,7 @@ alpha_write_linkage (FILE *stream, const char *funname, tree fundecl)
 /* Given a decl, a section name, and whether the decl initializer
    has relocs, choose attributes for the section.  */
 
-#define SECTION_VMS_OVERLAY        SECTION_FORGET
+#define SECTION_VMS_OVERLAY	SECTION_FORGET
 #define SECTION_VMS_GLOBAL SECTION_MACH_DEP
 #define SECTION_VMS_INITIALIZE (SECTION_VMS_GLOBAL << 1)
 
@@ -9772,7 +9772,7 @@ vms_section_type_flags (tree decl, const char *name, int reloc)
 
 static void
 vms_asm_named_section (const char *name, unsigned int flags, 
-                       tree decl ATTRIBUTE_UNUSED)
+		       tree decl ATTRIBUTE_UNUSED)
 {
   fputc ('\n', asm_out_file);
   fprintf (asm_out_file, ".section\t%s", name);
@@ -9816,16 +9816,16 @@ vms_asm_out_destructor (rtx symbol, int priority ATTRIBUTE_UNUSED)
 
 rtx
 alpha_need_linkage (const char *name ATTRIBUTE_UNUSED,
-                    int is_local ATTRIBUTE_UNUSED)
+		    int is_local ATTRIBUTE_UNUSED)
 {
   return NULL_RTX;
 }
 
 rtx
 alpha_use_linkage (rtx linkage ATTRIBUTE_UNUSED,
-                   tree cfundecl ATTRIBUTE_UNUSED,
-                   int lflag ATTRIBUTE_UNUSED,
-                   int rflag ATTRIBUTE_UNUSED)
+		   tree cfundecl ATTRIBUTE_UNUSED,
+		   int lflag ATTRIBUTE_UNUSED,
+		   int rflag ATTRIBUTE_UNUSED)
 {
   return NULL_RTX;
 }
@@ -9870,11 +9870,11 @@ unicosmk_initial_elimination_offset (int from, int to)
     return 0;
   else if (from == FRAME_POINTER_REGNUM && to == STACK_POINTER_REGNUM)
     return (ALPHA_ROUND (current_function_outgoing_args_size)
-            + ALPHA_ROUND (get_frame_size()));
+	    + ALPHA_ROUND (get_frame_size()));
   else if (from == ARG_POINTER_REGNUM && to == STACK_POINTER_REGNUM)
     return (ALPHA_ROUND (fixed_size)
-            + ALPHA_ROUND (get_frame_size()
-                           + current_function_outgoing_args_size));
+	    + ALPHA_ROUND (get_frame_size()
+			   + current_function_outgoing_args_size));
   else
     gcc_unreachable ();
 }
@@ -9953,17 +9953,17 @@ static void
 unicosmk_init_sections (void)
 {
   text_section = get_unnamed_section (SECTION_CODE,
-                                      unicosmk_output_text_section_asm_op,
-                                      NULL);
+				      unicosmk_output_text_section_asm_op,
+				      NULL);
   data_section = get_unnamed_section (SECTION_WRITE,
-                                      unicosmk_output_data_section_asm_op,
-                                      NULL);
+				      unicosmk_output_data_section_asm_op,
+				      NULL);
   readonly_data_section = data_section;
 }
 
 static unsigned int
 unicosmk_section_type_flags (tree decl, const char *name,
-                             int reloc ATTRIBUTE_UNUSED)
+			     int reloc ATTRIBUTE_UNUSED)
 {
   unsigned int flags = default_section_type_flags (decl, name, reloc);
 
@@ -9974,10 +9974,10 @@ unicosmk_section_type_flags (tree decl, const char *name,
     {
       current_section_align = floor_log2 (FUNCTION_BOUNDARY / BITS_PER_UNIT);
       if (align_functions_log > current_section_align)
-        current_section_align = align_functions_log;
+	current_section_align = align_functions_log;
 
       if (! strcmp (IDENTIFIER_POINTER (DECL_ASSEMBLER_NAME (decl)), "main"))
-        flags |= SECTION_MAIN;
+	flags |= SECTION_MAIN;
     }
   else
     current_section_align = floor_log2 (DECL_ALIGN (decl) / BITS_PER_UNIT);
@@ -10008,8 +10008,8 @@ unicosmk_unique_section (tree decl, int reloc ATTRIBUTE_UNUSED)
       char *string;
 
       /* It is essential that we prefix the section name here because
-         otherwise the section names generated for constructors and
-         destructors confuse collect2.  */
+	 otherwise the section names generated for constructors and
+	 destructors confuse collect2.  */
 
       string = alloca (len + 6);
       sprintf (string, "code@%s", name);
@@ -10033,7 +10033,7 @@ unicosmk_unique_section (tree decl, int reloc ATTRIBUTE_UNUSED)
 
 static void
 unicosmk_asm_named_section (const char *name, unsigned int flags, 
-                            tree decl ATTRIBUTE_UNUSED)
+			    tree decl ATTRIBUTE_UNUSED)
 {
   const char *kind;
 
@@ -10055,7 +10055,7 @@ unicosmk_asm_named_section (const char *name, unsigned int flags,
 
   if (current_section_align != 0)
     fprintf (asm_out_file, "\t.psect\t%s,%d,%s\n", name,
-             current_section_align, kind);
+	     current_section_align, kind);
   else
     fprintf (asm_out_file, "\t.psect\t%s,%s\n", name, kind);
 }
@@ -10091,7 +10091,7 @@ unicosmk_defer_case_vector (rtx lab, rtx vec)
 
   vec = gen_rtx_EXPR_LIST (VOIDmode, lab, vec);
   machine->addr_list = gen_rtx_EXPR_LIST (VOIDmode, vec,
-                                          machine->addr_list);
+					  machine->addr_list);
 }
 
 /* Output a case vector.  */
@@ -10245,7 +10245,7 @@ unicosmk_output_ssib (FILE *file, const char *fnname)
 
   in_section = NULL;
   fprintf (file, "\t.endp\n\n\t.psect\t%s%s,data\n", user_label_prefix,
-           unicosmk_ssib_name ());
+	   unicosmk_ssib_name ());
 
   /* Some required stuff and the function name length.  */
 
@@ -10284,7 +10284,7 @@ unicosmk_output_ssib (FILE *file, const char *fnname)
       ciw = XEXP (x, 0);
 #if HOST_BITS_PER_WIDE_INT == 32
       fprintf (file, "\t.quad\t" HOST_WIDE_INT_PRINT_DOUBLE_HEX "\n",
-               CONST_DOUBLE_HIGH (ciw), CONST_DOUBLE_LOW (ciw));
+	       CONST_DOUBLE_HIGH (ciw), CONST_DOUBLE_LOW (ciw));
 #else
       fprintf (file, "\t.quad\t" HOST_WIDE_INT_PRINT_HEX "\n", INTVAL (ciw));
 #endif
@@ -10312,7 +10312,7 @@ unicosmk_add_call_info_word (rtx x)
   ++machine->ciw_count;
 
   return GEN_INT (machine->ciw_count
-                  + strlen (current_function_name ())/8 + 5);
+		  + strlen (current_function_name ())/8 + 5);
 }
 
 /* The Cray assembler doesn't accept extern declarations for symbols which
@@ -10365,21 +10365,21 @@ unicosmk_output_externs (FILE *file)
   for (p = unicosmk_extern_head; p != 0; p = p->next)
     {
       /* We have to strip the encoding and possibly remove user_label_prefix
-         from the identifier in order to handle -fleading-underscore and
-         explicit asm names correctly (cf. gcc.dg/asm-names-1.c).  */
+	 from the identifier in order to handle -fleading-underscore and
+	 explicit asm names correctly (cf. gcc.dg/asm-names-1.c).  */
       real_name = default_strip_name_encoding (p->name);
       if (len && p->name[0] == '*'
-          && !memcmp (real_name, user_label_prefix, len))
-        real_name += len;
+	  && !memcmp (real_name, user_label_prefix, len))
+	real_name += len;
 
       name_tree = get_identifier (real_name);
       if (! TREE_ASM_WRITTEN (name_tree))
-        {
-          TREE_ASM_WRITTEN (name_tree) = 1;
-          fputs ("\t.extern\t", file);
-          assemble_name (file, p->name);
-          putc ('\n', file);
-        }
+	{
+	  TREE_ASM_WRITTEN (name_tree) = 1;
+	  fputs ("\t.extern\t", file);
+	  assemble_name (file, p->name);
+	  putc ('\n', file);
+	}
     }
 }
 
@@ -10440,7 +10440,7 @@ unicosmk_special_name (const char *name)
 
     case '3':
       return (name[2] == '\0'
-               || ((name[2] == '0' || name[2] == '1') && name[3] == '\0'));
+	       || ((name[2] == '0' || name[2] == '1') && name[3] == '\0'));
 
     default:
       return (ISDIGIT (name[1]) && name[2] == '\0');
@@ -10593,7 +10593,7 @@ unicosmk_gen_dsib (unsigned long *imaskP ATTRIBUTE_UNUSED)
 
 static void
 unicosmk_output_ssib (FILE * file ATTRIBUTE_UNUSED,
-                      const char * fnname ATTRIBUTE_UNUSED)
+		      const char * fnname ATTRIBUTE_UNUSED)
 {}
 
 rtx
@@ -10620,14 +10620,14 @@ alpha_init_libfuncs (void)
       set_optab_libfunc (udiv_optab, SImode, 0);
 
       /* Use the functions provided by the system library
-         for DImode integer division.  */
+	 for DImode integer division.  */
       set_optab_libfunc (sdiv_optab, DImode, "$sldiv");
       set_optab_libfunc (udiv_optab, DImode, "$uldiv");
     }
   else if (TARGET_ABI_OPEN_VMS)
     {
       /* Use the VMS runtime library functions for division and
-         remainder.  */
+	 remainder.  */
       set_optab_libfunc (sdiv_optab, SImode, "OTS$DIV_I");
       set_optab_libfunc (sdiv_optab, DImode, "OTS$DIV_L");
       set_optab_libfunc (udiv_optab, SImode, "OTS$DIV_UI");
@@ -10685,8 +10685,8 @@ alpha_init_libfuncs (void)
 #ifdef OBJECT_FORMAT_ELF
 #undef  TARGET_ASM_RELOC_RW_MASK
 #define TARGET_ASM_RELOC_RW_MASK  alpha_elf_reloc_rw_mask
-#undef        TARGET_ASM_SELECT_RTX_SECTION
-#define        TARGET_ASM_SELECT_RTX_SECTION  alpha_elf_select_rtx_section
+#undef	TARGET_ASM_SELECT_RTX_SECTION
+#define	TARGET_ASM_SELECT_RTX_SECTION  alpha_elf_select_rtx_section
 #undef  TARGET_SECTION_TYPE_FLAGS
 #define TARGET_SECTION_TYPE_FLAGS  alpha_elf_section_type_flags
 #endif

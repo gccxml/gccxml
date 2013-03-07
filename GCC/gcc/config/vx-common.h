@@ -37,10 +37,10 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
    "config/vxworksae.h" and are here merely for documentation
    purposes.  */
 #define VXWORKS_ADDITIONAL_CPP_SPEC ""
-#define        VXWORKS_LIB_SPEC ""
+#define	VXWORKS_LIB_SPEC ""
 #define VXWORKS_LINK_SPEC ""
 #define VXWORKS_LIBGCC_SPEC ""
-#define        VXWORKS_STARTFILE_SPEC ""
+#define	VXWORKS_STARTFILE_SPEC ""
 #define VXWORKS_ENDFILE_SPEC ""
 
 /* VxWorks cannot have dots in constructor labels, because it uses a
@@ -78,9 +78,9 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
 #define MATH_LIBRARY ""
 
 /* No profiling.  */
-#define VXWORKS_FUNCTION_PROFILER(FILE, LABELNO) do        \
-{                                                        \
-  sorry ("profiler support for VxWorks");                \
+#define VXWORKS_FUNCTION_PROFILER(FILE, LABELNO) do	\
+{							\
+  sorry ("profiler support for VxWorks");		\
 } while (0)
 
 /* We occasionally need to distinguish between the VxWorks variants.  */

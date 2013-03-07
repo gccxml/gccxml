@@ -63,10 +63,10 @@
 
 (define_special_predicate "bras_sym_operand"
   (ior (and (match_code "symbol_ref")
-            (match_test "!flag_pic || SYMBOL_REF_LOCAL_P (op)"))
+	    (match_test "!flag_pic || SYMBOL_REF_LOCAL_P (op)"))
        (and (match_code "const")
-            (and (match_test "GET_CODE (XEXP (op, 0)) == UNSPEC")
-                 (match_test "XINT (XEXP (op, 0), 1) == UNSPEC_PLT")))))
+	    (and (match_test "GET_CODE (XEXP (op, 0)) == UNSPEC")
+		 (match_test "XINT (XEXP (op, 0), 1) == UNSPEC_PLT")))))
 
 ;; Return true if OP is a PLUS that is not a legitimate
 ;; operand for the LA instruction.
@@ -74,7 +74,7 @@
 (define_predicate "s390_plus_operand"
   (and (match_code "plus")
        (and (match_test "mode == Pmode")
-            (match_test "!legitimate_la_operand_p (op)"))))
+	    (match_test "!legitimate_la_operand_p (op)"))))
 
 ;; Return true if OP is a valid operand as shift count or setmem.
 
@@ -112,8 +112,8 @@
     return true;
   if (GET_CODE (op) == SYMBOL_REF)
     return ((SYMBOL_REF_FLAGS (op) & SYMBOL_FLAG_ALIGN1) == 0
-            && SYMBOL_REF_TLS_MODEL (op) == 0
-            && (!flag_pic || SYMBOL_REF_LOCAL_P (op)));
+	    && SYMBOL_REF_TLS_MODEL (op) == 0
+	    && (!flag_pic || SYMBOL_REF_LOCAL_P (op)));
 
   /* Everything else must have a CONST, so strip it.  */
   if (GET_CODE (op) != CONST)
@@ -127,7 +127,7 @@
           || (INTVAL (XEXP (op, 1)) & 1) != 0)
         return false;
       if (INTVAL (XEXP (op, 1)) >= (HOST_WIDE_INT)1 << 31
-          || INTVAL (XEXP (op, 1)) < -((HOST_WIDE_INT)1 << 31))
+	  || INTVAL (XEXP (op, 1)) < -((HOST_WIDE_INT)1 << 31))
         return false;
       op = XEXP (op, 0);
     }
@@ -137,8 +137,8 @@
     return true;
   if (GET_CODE (op) == SYMBOL_REF)
     return ((SYMBOL_REF_FLAGS (op) & SYMBOL_FLAG_ALIGN1) == 0
-            && SYMBOL_REF_TLS_MODEL (op) == 0
-            && (!flag_pic || SYMBOL_REF_LOCAL_P (op)));
+	    && SYMBOL_REF_TLS_MODEL (op) == 0
+	    && (!flag_pic || SYMBOL_REF_LOCAL_P (op)));
 
   /* Now we must have a @GOTENT offset or @PLT stub
      or an @INDNTPOFF TLS offset.  */
@@ -162,8 +162,8 @@
 
 (define_predicate "s390_comparison"
   (match_code "eq, ne, lt, gt, le, ge, ltu, gtu, leu, geu,
-               uneq, unlt, ungt, unle, unge, ltgt,
-               unordered, ordered")
+	       uneq, unlt, ungt, unle, unge, ltgt,
+	       unordered, ordered")
 {
   if (GET_CODE (XEXP (op, 0)) != REG
       || REGNO (XEXP (op, 0)) != CC_REGNUM
@@ -291,8 +291,8 @@
   if (GET_CODE (src_addr) == REG)
     off = 0;
   else if (GET_CODE (src_addr) == PLUS
-           && GET_CODE (XEXP (src_addr, 0)) == REG
-           && GET_CODE (XEXP (src_addr, 1)) == CONST_INT)
+	   && GET_CODE (XEXP (src_addr, 0)) == REG
+	   && GET_CODE (XEXP (src_addr, 1)) == CONST_INT)
     {
       off = INTVAL (XEXP (src_addr, 1));
       src_addr = XEXP (src_addr, 0);
@@ -305,17 +305,17 @@
       rtx elt = XVECEXP (op, 0, i);
 
       if (GET_CODE (elt) != SET
-          || GET_CODE (SET_DEST (elt)) != REG
-          || GET_MODE (SET_DEST (elt)) != elt_mode
-          || REGNO (SET_DEST (elt)) != dest_regno + i
-          || GET_CODE (SET_SRC (elt)) != MEM
-          || GET_MODE (SET_SRC (elt)) != elt_mode
-          || GET_CODE (XEXP (SET_SRC (elt), 0)) != PLUS
-          || ! rtx_equal_p (XEXP (XEXP (SET_SRC (elt), 0), 0), src_addr)
-          || GET_CODE (XEXP (XEXP (SET_SRC (elt), 0), 1)) != CONST_INT
-          || INTVAL (XEXP (XEXP (SET_SRC (elt), 0), 1))
-             != off + i * GET_MODE_SIZE (elt_mode))
-        return false;
+	  || GET_CODE (SET_DEST (elt)) != REG
+	  || GET_MODE (SET_DEST (elt)) != elt_mode
+	  || REGNO (SET_DEST (elt)) != dest_regno + i
+	  || GET_CODE (SET_SRC (elt)) != MEM
+	  || GET_MODE (SET_SRC (elt)) != elt_mode
+	  || GET_CODE (XEXP (SET_SRC (elt), 0)) != PLUS
+	  || ! rtx_equal_p (XEXP (XEXP (SET_SRC (elt), 0), 0), src_addr)
+	  || GET_CODE (XEXP (XEXP (SET_SRC (elt), 0), 1)) != CONST_INT
+	  || INTVAL (XEXP (XEXP (SET_SRC (elt), 0), 1))
+	     != off + i * GET_MODE_SIZE (elt_mode))
+	return false;
     }
 
   return true;
@@ -349,8 +349,8 @@
   if (GET_CODE (dest_addr) == REG)
     off = 0;
   else if (GET_CODE (dest_addr) == PLUS
-           && GET_CODE (XEXP (dest_addr, 0)) == REG
-           && GET_CODE (XEXP (dest_addr, 1)) == CONST_INT)
+	   && GET_CODE (XEXP (dest_addr, 0)) == REG
+	   && GET_CODE (XEXP (dest_addr, 1)) == CONST_INT)
     {
       off = INTVAL (XEXP (dest_addr, 1));
       dest_addr = XEXP (dest_addr, 0);
@@ -363,17 +363,17 @@
       rtx elt = XVECEXP (op, 0, i);
 
       if (GET_CODE (elt) != SET
-          || GET_CODE (SET_SRC (elt)) != REG
-          || GET_MODE (SET_SRC (elt)) != elt_mode
-          || REGNO (SET_SRC (elt)) != src_regno + i
-          || GET_CODE (SET_DEST (elt)) != MEM
-          || GET_MODE (SET_DEST (elt)) != elt_mode
-          || GET_CODE (XEXP (SET_DEST (elt), 0)) != PLUS
-          || ! rtx_equal_p (XEXP (XEXP (SET_DEST (elt), 0), 0), dest_addr)
-          || GET_CODE (XEXP (XEXP (SET_DEST (elt), 0), 1)) != CONST_INT
-          || INTVAL (XEXP (XEXP (SET_DEST (elt), 0), 1))
-             != off + i * GET_MODE_SIZE (elt_mode))
-        return false;
+	  || GET_CODE (SET_SRC (elt)) != REG
+	  || GET_MODE (SET_SRC (elt)) != elt_mode
+	  || REGNO (SET_SRC (elt)) != src_regno + i
+	  || GET_CODE (SET_DEST (elt)) != MEM
+	  || GET_MODE (SET_DEST (elt)) != elt_mode
+	  || GET_CODE (XEXP (SET_DEST (elt), 0)) != PLUS
+	  || ! rtx_equal_p (XEXP (XEXP (SET_DEST (elt), 0), 0), dest_addr)
+	  || GET_CODE (XEXP (XEXP (SET_DEST (elt), 0), 1)) != CONST_INT
+	  || INTVAL (XEXP (XEXP (SET_DEST (elt), 0), 1))
+	     != off + i * GET_MODE_SIZE (elt_mode))
+	return false;
     }
   return true;
 })

@@ -116,9 +116,9 @@
  of the lattice.  */
 
 static bool perfect_nestify (struct loops *, 
-                             struct loop *, VEC(tree,heap) *, 
-                             VEC(tree,heap) *, VEC(int,heap) *,
-                             VEC(tree,heap) *);
+			     struct loop *, VEC(tree,heap) *, 
+			     VEC(tree,heap) *, VEC(int,heap) *,
+			     VEC(tree,heap) *);
 /* Lattice stuff that is internal to the code generation algorithm.  */
 
 typedef struct
@@ -142,7 +142,7 @@ typedef struct
 #define LATTICE_INVARIANTS(T) ((T)->invariants)
 
 static bool lle_equal (lambda_linear_expression, lambda_linear_expression,
-                       int, int);
+		       int, int);
 static lambda_lattice lambda_lattice_new (int, int);
 static lambda_lattice lambda_lattice_compute_base (lambda_loopnest);
 
@@ -168,7 +168,7 @@ lambda_body_vector_new (int size)
 
 lambda_body_vector
 lambda_body_vector_compute_new (lambda_trans_matrix transform,
-                                lambda_body_vector vect)
+				lambda_body_vector vect)
 {
   lambda_body_vector temp;
   int depth;
@@ -182,8 +182,8 @@ lambda_body_vector_compute_new (lambda_trans_matrix transform,
   LBV_DENOMINATOR (temp) =
     LBV_DENOMINATOR (vect) * LTM_DENOMINATOR (transform);
   lambda_vector_matrix_mult (LBV_COEFFICIENTS (vect), depth,
-                             LTM_MATRIX (transform), depth,
-                             LBV_COEFFICIENTS (temp));
+			     LTM_MATRIX (transform), depth,
+			     LBV_COEFFICIENTS (temp));
   LBV_SIZE (temp) = LBV_SIZE (vect);
   return temp;
 }
@@ -200,7 +200,7 @@ print_lambda_body_vector (FILE * outfile, lambda_body_vector body)
 
 static bool
 lle_equal (lambda_linear_expression lle1, lambda_linear_expression lle2,
-           int depth, int invariants)
+	   int depth, int invariants)
 {
   int i;
 
@@ -215,7 +215,7 @@ lle_equal (lambda_linear_expression lle1, lambda_linear_expression lle2,
       return false;
   for (i = 0; i < invariants; i++)
     if (LLE_INVARIANT_COEFFICIENTS (lle1)[i] !=
-        LLE_INVARIANT_COEFFICIENTS (lle2)[i])
+	LLE_INVARIANT_COEFFICIENTS (lle2)[i])
       return false;
   return true;
 }
@@ -244,29 +244,29 @@ lambda_linear_expression_new (int dim, int invariants)
 
 static void
 print_linear_expression (FILE * outfile, lambda_vector expr, int size,
-                         char start)
+			 char start)
 {
   int i;
   bool first = true;
   for (i = 0; i < size; i++)
     {
       if (expr[i] != 0)
-        {
-          if (first)
-            {
-              if (expr[i] < 0)
-                fprintf (outfile, "-");
-              first = false;
-            }
-          else if (expr[i] > 0)
-            fprintf (outfile, " + ");
-          else
-            fprintf (outfile, " - ");
-          if (abs (expr[i]) == 1)
-            fprintf (outfile, "%c", start + i);
-          else
-            fprintf (outfile, "%d%c", abs (expr[i]), start + i);
-        }
+	{
+	  if (first)
+	    {
+	      if (expr[i] < 0)
+		fprintf (outfile, "-");
+	      first = false;
+	    }
+	  else if (expr[i] > 0)
+	    fprintf (outfile, " + ");
+	  else
+	    fprintf (outfile, " - ");
+	  if (abs (expr[i]) == 1)
+	    fprintf (outfile, "%c", start + i);
+	  else
+	    fprintf (outfile, "%d%c", abs (expr[i]), start + i);
+	}
     }
 }
 
@@ -277,15 +277,15 @@ print_linear_expression (FILE * outfile, lambda_vector expr, int size,
 
 void
 print_lambda_linear_expression (FILE * outfile,
-                                lambda_linear_expression expr,
-                                int depth, int invariants, char start)
+				lambda_linear_expression expr,
+				int depth, int invariants, char start)
 {
   fprintf (outfile, "\tLinear expression: ");
   print_linear_expression (outfile, LLE_COEFFICIENTS (expr), depth, start);
   fprintf (outfile, " constant: %d ", LLE_CONSTANT (expr));
   fprintf (outfile, "  invariants: ");
   print_linear_expression (outfile, LLE_INVARIANT_COEFFICIENTS (expr),
-                           invariants, 'A');
+			   invariants, 'A');
   fprintf (outfile, "  denominator: %d\n", LLE_DENOMINATOR (expr));
 }
 
@@ -296,7 +296,7 @@ print_lambda_linear_expression (FILE * outfile,
 
 void
 print_lambda_loop (FILE * outfile, lambda_loop loop, int depth,
-                   int invariants, char start)
+		   int invariants, char start)
 {
   int step;
   lambda_linear_expression expr;
@@ -311,7 +311,7 @@ print_lambda_loop (FILE * outfile, lambda_loop loop, int depth,
     {
       fprintf (outfile, "  linear offset: \n");
       print_lambda_linear_expression (outfile, expr, depth, invariants,
-                                      start);
+				      start);
     }
 
   fprintf (outfile, "  lower bound: \n");
@@ -349,7 +349,7 @@ print_lambda_loopnest (FILE * outfile, lambda_loopnest nest, char start)
     {
       fprintf (outfile, "Loop %c\n", start + i);
       print_lambda_loop (outfile, LN_LOOPS (nest)[i], LN_DEPTH (nest),
-                         LN_INVARIANTS (nest), 'i');
+			 LN_INVARIANTS (nest), 'i');
       fprintf (outfile, "\n");
     }
 }
@@ -401,41 +401,41 @@ lambda_lattice_compute_base (lambda_loopnest nest)
       /* If we have a step of 1, then the base is one, and the
          origin and invariant coefficients are 0.  */
       if (step == 1)
-        {
-          for (j = 0; j < depth; j++)
-            base[i][j] = 0;
-          base[i][i] = 1;
-          LATTICE_ORIGIN (ret)[i] = 0;
-          for (j = 0; j < invariants; j++)
-            LATTICE_ORIGIN_INVARIANTS (ret)[i][j] = 0;
-        }
+	{
+	  for (j = 0; j < depth; j++)
+	    base[i][j] = 0;
+	  base[i][i] = 1;
+	  LATTICE_ORIGIN (ret)[i] = 0;
+	  for (j = 0; j < invariants; j++)
+	    LATTICE_ORIGIN_INVARIANTS (ret)[i][j] = 0;
+	}
       else
-        {
-          /* Otherwise, we need the lower bound expression (which must
-             be an affine function)  to determine the base.  */
-          expression = LL_LOWER_BOUND (loop);
-          gcc_assert (expression && !LLE_NEXT (expression) 
-                      && LLE_DENOMINATOR (expression) == 1);
+	{
+	  /* Otherwise, we need the lower bound expression (which must
+	     be an affine function)  to determine the base.  */
+	  expression = LL_LOWER_BOUND (loop);
+	  gcc_assert (expression && !LLE_NEXT (expression) 
+		      && LLE_DENOMINATOR (expression) == 1);
 
-          /* The lower triangular portion of the base is going to be the
-             coefficient times the step */
-          for (j = 0; j < i; j++)
-            base[i][j] = LLE_COEFFICIENTS (expression)[j]
-              * LL_STEP (LN_LOOPS (nest)[j]);
-          base[i][i] = step;
-          for (j = i + 1; j < depth; j++)
-            base[i][j] = 0;
+	  /* The lower triangular portion of the base is going to be the
+	     coefficient times the step */
+	  for (j = 0; j < i; j++)
+	    base[i][j] = LLE_COEFFICIENTS (expression)[j]
+	      * LL_STEP (LN_LOOPS (nest)[j]);
+	  base[i][i] = step;
+	  for (j = i + 1; j < depth; j++)
+	    base[i][j] = 0;
 
-          /* Origin for this loop is the constant of the lower bound
-             expression.  */
-          LATTICE_ORIGIN (ret)[i] = LLE_CONSTANT (expression);
+	  /* Origin for this loop is the constant of the lower bound
+	     expression.  */
+	  LATTICE_ORIGIN (ret)[i] = LLE_CONSTANT (expression);
 
-          /* Coefficient for the invariants are equal to the invariant
-             coefficients in the expression.  */
-          for (j = 0; j < invariants; j++)
-            LATTICE_ORIGIN_INVARIANTS (ret)[i][j] =
-              LLE_INVARIANT_COEFFICIENTS (expression)[j];
-        }
+	  /* Coefficient for the invariants are equal to the invariant
+	     coefficients in the expression.  */
+	  for (j = 0; j < invariants; j++)
+	    LATTICE_ORIGIN_INVARIANTS (ret)[i][j] =
+	      LLE_INVARIANT_COEFFICIENTS (expression)[j];
+	}
     }
   return ret;
 }
@@ -477,11 +477,11 @@ lcm (int a, int b)
 
 static lambda_loopnest 
 compute_nest_using_fourier_motzkin (int size,
-                                    int depth, 
-                                    int invariants,
-                                    lambda_matrix A,
-                                    lambda_matrix B,
-                                    lambda_vector a)
+				    int depth, 
+				    int invariants,
+				    lambda_matrix A,
+				    lambda_matrix B,
+				    lambda_vector a)
 {
 
   int multiple, f1, f2;
@@ -506,91 +506,91 @@ compute_nest_using_fourier_motzkin (int size,
       LL_STEP (loop) = 1;
 
       for (j = 0; j < size; j++)
-        {
-          if (A[j][i] < 0)
-            {
-              /* Any linear expression in the matrix with a coefficient less
-                 than 0 becomes part of the new lower bound.  */ 
-              expression = lambda_linear_expression_new (depth, invariants);
+	{
+	  if (A[j][i] < 0)
+	    {
+	      /* Any linear expression in the matrix with a coefficient less
+		 than 0 becomes part of the new lower bound.  */ 
+	      expression = lambda_linear_expression_new (depth, invariants);
 
-              for (k = 0; k < i; k++)
-                LLE_COEFFICIENTS (expression)[k] = A[j][k];
+	      for (k = 0; k < i; k++)
+		LLE_COEFFICIENTS (expression)[k] = A[j][k];
 
-              for (k = 0; k < invariants; k++)
-                LLE_INVARIANT_COEFFICIENTS (expression)[k] = -1 * B[j][k];
+	      for (k = 0; k < invariants; k++)
+		LLE_INVARIANT_COEFFICIENTS (expression)[k] = -1 * B[j][k];
 
-              LLE_DENOMINATOR (expression) = -1 * A[j][i];
-              LLE_CONSTANT (expression) = -1 * a[j];
+	      LLE_DENOMINATOR (expression) = -1 * A[j][i];
+	      LLE_CONSTANT (expression) = -1 * a[j];
 
-              /* Ignore if identical to the existing lower bound.  */
-              if (!lle_equal (LL_LOWER_BOUND (loop),
-                              expression, depth, invariants))
-                {
-                  LLE_NEXT (expression) = LL_LOWER_BOUND (loop);
-                  LL_LOWER_BOUND (loop) = expression;
-                }
+	      /* Ignore if identical to the existing lower bound.  */
+	      if (!lle_equal (LL_LOWER_BOUND (loop),
+			      expression, depth, invariants))
+		{
+		  LLE_NEXT (expression) = LL_LOWER_BOUND (loop);
+		  LL_LOWER_BOUND (loop) = expression;
+		}
 
-            }
-          else if (A[j][i] > 0)
-            {
-              /* Any linear expression with a coefficient greater than 0
-                 becomes part of the new upper bound.  */ 
-              expression = lambda_linear_expression_new (depth, invariants);
-              for (k = 0; k < i; k++)
-                LLE_COEFFICIENTS (expression)[k] = -1 * A[j][k];
+	    }
+	  else if (A[j][i] > 0)
+	    {
+	      /* Any linear expression with a coefficient greater than 0
+		 becomes part of the new upper bound.  */ 
+	      expression = lambda_linear_expression_new (depth, invariants);
+	      for (k = 0; k < i; k++)
+		LLE_COEFFICIENTS (expression)[k] = -1 * A[j][k];
 
-              for (k = 0; k < invariants; k++)
-                LLE_INVARIANT_COEFFICIENTS (expression)[k] = B[j][k];
+	      for (k = 0; k < invariants; k++)
+		LLE_INVARIANT_COEFFICIENTS (expression)[k] = B[j][k];
 
-              LLE_DENOMINATOR (expression) = A[j][i];
-              LLE_CONSTANT (expression) = a[j];
+	      LLE_DENOMINATOR (expression) = A[j][i];
+	      LLE_CONSTANT (expression) = a[j];
 
-              /* Ignore if identical to the existing upper bound.  */
-              if (!lle_equal (LL_UPPER_BOUND (loop),
-                              expression, depth, invariants))
-                {
-                  LLE_NEXT (expression) = LL_UPPER_BOUND (loop);
-                  LL_UPPER_BOUND (loop) = expression;
-                }
+	      /* Ignore if identical to the existing upper bound.  */
+	      if (!lle_equal (LL_UPPER_BOUND (loop),
+			      expression, depth, invariants))
+		{
+		  LLE_NEXT (expression) = LL_UPPER_BOUND (loop);
+		  LL_UPPER_BOUND (loop) = expression;
+		}
 
-            }
-        }
+	    }
+	}
 
       /* This portion creates a new system of linear inequalities by deleting
-         the i'th variable, reducing the system by one variable.  */
+	 the i'th variable, reducing the system by one variable.  */
       newsize = 0;
       for (j = 0; j < size; j++)
-        {
-          /* If the coefficient for the i'th variable is 0, then we can just
-             eliminate the variable straightaway.  Otherwise, we have to
-             multiply through by the coefficients we are eliminating.  */
-          if (A[j][i] == 0)
-            {
-              lambda_vector_copy (A[j], A1[newsize], depth);
-              lambda_vector_copy (B[j], B1[newsize], invariants);
-              a1[newsize] = a[j];
-              newsize++;
-            }
-          else if (A[j][i] > 0)
-            {
-              for (k = 0; k < size; k++)
-                {
-                  if (A[k][i] < 0)
-                    {
-                      multiple = lcm (A[j][i], A[k][i]);
-                      f1 = multiple / A[j][i];
-                      f2 = -1 * multiple / A[k][i];
+	{
+	  /* If the coefficient for the i'th variable is 0, then we can just
+	     eliminate the variable straightaway.  Otherwise, we have to
+	     multiply through by the coefficients we are eliminating.  */
+	  if (A[j][i] == 0)
+	    {
+	      lambda_vector_copy (A[j], A1[newsize], depth);
+	      lambda_vector_copy (B[j], B1[newsize], invariants);
+	      a1[newsize] = a[j];
+	      newsize++;
+	    }
+	  else if (A[j][i] > 0)
+	    {
+	      for (k = 0; k < size; k++)
+		{
+		  if (A[k][i] < 0)
+		    {
+		      multiple = lcm (A[j][i], A[k][i]);
+		      f1 = multiple / A[j][i];
+		      f2 = -1 * multiple / A[k][i];
 
-                      lambda_vector_add_mc (A[j], f1, A[k], f2,
-                                            A1[newsize], depth);
-                      lambda_vector_add_mc (B[j], f1, B[k], f2,
-                                            B1[newsize], invariants);
-                      a1[newsize] = f1 * a[j] + f2 * a[k];
-                      newsize++;
-                    }
-                }
-            }
-        }
+		      lambda_vector_add_mc (A[j], f1, A[k], f2,
+					    A1[newsize], depth);
+		      lambda_vector_add_mc (B[j], f1, B[k], f2,
+					    B1[newsize], invariants);
+		      a1[newsize] = f1 * a[j] + f2 * a[k];
+		      newsize++;
+		    }
+		}
+	    }
+	}
 
       swapmatrix = A;
       A = A1;
@@ -627,7 +627,7 @@ compute_nest_using_fourier_motzkin (int size,
 
 static lambda_loopnest
 lambda_compute_auxillary_space (lambda_loopnest nest,
-                                lambda_trans_matrix trans)
+				lambda_trans_matrix trans)
 {
   lambda_matrix A, B, A1, B1;
   lambda_vector a, a1;
@@ -663,64 +663,64 @@ lambda_compute_auxillary_space (lambda_loopnest nest,
 
       /* First we do the lower bound.  */
       if (LL_STEP (loop) > 0)
-        expression = LL_LOWER_BOUND (loop);
+	expression = LL_LOWER_BOUND (loop);
       else
-        expression = LL_UPPER_BOUND (loop);
+	expression = LL_UPPER_BOUND (loop);
 
       for (; expression != NULL; expression = LLE_NEXT (expression))
-        {
-          /* Fill in the coefficient.  */
-          for (j = 0; j < i; j++)
-            A[size][j] = LLE_COEFFICIENTS (expression)[j];
+	{
+	  /* Fill in the coefficient.  */
+	  for (j = 0; j < i; j++)
+	    A[size][j] = LLE_COEFFICIENTS (expression)[j];
 
-          /* And the invariant coefficient.  */
-          for (j = 0; j < invariants; j++)
-            B[size][j] = LLE_INVARIANT_COEFFICIENTS (expression)[j];
+	  /* And the invariant coefficient.  */
+	  for (j = 0; j < invariants; j++)
+	    B[size][j] = LLE_INVARIANT_COEFFICIENTS (expression)[j];
 
-          /* And the constant.  */
-          a[size] = LLE_CONSTANT (expression);
+	  /* And the constant.  */
+	  a[size] = LLE_CONSTANT (expression);
 
-          /* Convert (2x+3y+2+b)/4 <= z to 2x+3y-4z <= -2-b.  IE put all
-             constants and single variables on   */
-          A[size][i] = -1 * LLE_DENOMINATOR (expression);
-          a[size] *= -1;
-          for (j = 0; j < invariants; j++)
-            B[size][j] *= -1;
+	  /* Convert (2x+3y+2+b)/4 <= z to 2x+3y-4z <= -2-b.  IE put all
+	     constants and single variables on   */
+	  A[size][i] = -1 * LLE_DENOMINATOR (expression);
+	  a[size] *= -1;
+	  for (j = 0; j < invariants; j++)
+	    B[size][j] *= -1;
 
-          size++;
-          /* Need to increase matrix sizes above.  */
-          gcc_assert (size <= 127);
-          
-        }
+	  size++;
+	  /* Need to increase matrix sizes above.  */
+	  gcc_assert (size <= 127);
+	  
+	}
 
       /* Then do the exact same thing for the upper bounds.  */
       if (LL_STEP (loop) > 0)
-        expression = LL_UPPER_BOUND (loop);
+	expression = LL_UPPER_BOUND (loop);
       else
-        expression = LL_LOWER_BOUND (loop);
+	expression = LL_LOWER_BOUND (loop);
 
       for (; expression != NULL; expression = LLE_NEXT (expression))
-        {
-          /* Fill in the coefficient.  */
-          for (j = 0; j < i; j++)
-            A[size][j] = LLE_COEFFICIENTS (expression)[j];
+	{
+	  /* Fill in the coefficient.  */
+	  for (j = 0; j < i; j++)
+	    A[size][j] = LLE_COEFFICIENTS (expression)[j];
 
-          /* And the invariant coefficient.  */
-          for (j = 0; j < invariants; j++)
-            B[size][j] = LLE_INVARIANT_COEFFICIENTS (expression)[j];
+	  /* And the invariant coefficient.  */
+	  for (j = 0; j < invariants; j++)
+	    B[size][j] = LLE_INVARIANT_COEFFICIENTS (expression)[j];
 
-          /* And the constant.  */
-          a[size] = LLE_CONSTANT (expression);
+	  /* And the constant.  */
+	  a[size] = LLE_CONSTANT (expression);
 
-          /* Convert z <= (2x+3y+2+b)/4 to -2x-3y+4z <= 2+b.  */
-          for (j = 0; j < i; j++)
-            A[size][j] *= -1;
-          A[size][i] = LLE_DENOMINATOR (expression);
-          size++;
-          /* Need to increase matrix sizes above.  */
-          gcc_assert (size <= 127);
+	  /* Convert z <= (2x+3y+2+b)/4 to -2x-3y+4z <= 2+b.  */
+	  for (j = 0; j < i; j++)
+	    A[size][j] *= -1;
+	  A[size][i] = LLE_DENOMINATOR (expression);
+	  size++;
+	  /* Need to increase matrix sizes above.  */
+	  gcc_assert (size <= 127);
 
-        }
+	}
     }
 
   /* Compute the lattice base x = base * y + origin, where y is the
@@ -738,7 +738,7 @@ lambda_compute_auxillary_space (lambda_loopnest nest,
 
   /* B1 = B - A * origin invariant.  */
   lambda_matrix_mult (A, LATTICE_ORIGIN_INVARIANTS (lattice), B1, size, depth,
-                      invariants);
+		      invariants);
   lambda_matrix_add_mc (B, 1, B1, -1, B1, size, invariants);
 
   /* Now compute the auxiliary space bounds by first inverting U, multiplying
@@ -748,13 +748,13 @@ lambda_compute_auxillary_space (lambda_loopnest nest,
 
   /* Compute the inverse of U.  */
   lambda_matrix_inverse (LTM_MATRIX (trans),
-                         invertedtrans, depth);
+			 invertedtrans, depth);
 
   /* A = A1 inv(U).  */
   lambda_matrix_mult (A1, invertedtrans, A, size, depth, depth);
 
   return compute_nest_using_fourier_motzkin (size, depth, invariants,
-                                             A, B1, a1);
+					     A, B1, a1);
 }
 
 /* Compute the loop bounds for the target space, using the bounds of
@@ -767,7 +767,7 @@ lambda_compute_auxillary_space (lambda_loopnest nest,
 
 static lambda_loopnest
 lambda_compute_target_space (lambda_loopnest auxillary_nest,
-                             lambda_trans_matrix H, lambda_vector stepsigns)
+			     lambda_trans_matrix H, lambda_vector stepsigns)
 {
   lambda_matrix inverse, H1;
   int determinant, i, j;
@@ -815,14 +815,14 @@ lambda_compute_target_space (lambda_loopnest auxillary_nest,
 
       /* Now divide through by the gcd.  */
       for (j = 0; j < i; j++)
-        target[i][j] = target[i][j] / gcd1;
+	target[i][j] = target[i][j] / gcd1;
 
       expression = lambda_linear_expression_new (depth, invariants);
       lambda_vector_copy (target[i], LLE_COEFFICIENTS (expression), depth);
       LLE_DENOMINATOR (expression) = determinant / gcd1;
       LLE_CONSTANT (expression) = 0;
       lambda_vector_clear (LLE_INVARIANT_COEFFICIENTS (expression),
-                           invariants);
+			   invariants);
       LL_LINEAR_OFFSET (target_loop) = expression;
     }
 
@@ -838,115 +838,115 @@ lambda_compute_target_space (lambda_loopnest auxillary_nest,
       auxillary_expr = LL_LOWER_BOUND (auxillary_loop);
 
       for (; auxillary_expr != NULL;
-           auxillary_expr = LLE_NEXT (auxillary_expr))
-        {
-          target_expr = lambda_linear_expression_new (depth, invariants);
-          lambda_vector_matrix_mult (LLE_COEFFICIENTS (auxillary_expr),
-                                     depth, inverse, depth,
-                                     LLE_COEFFICIENTS (target_expr));
-          lambda_vector_mult_const (LLE_COEFFICIENTS (target_expr),
-                                    LLE_COEFFICIENTS (target_expr), depth,
-                                    factor);
+	   auxillary_expr = LLE_NEXT (auxillary_expr))
+	{
+	  target_expr = lambda_linear_expression_new (depth, invariants);
+	  lambda_vector_matrix_mult (LLE_COEFFICIENTS (auxillary_expr),
+				     depth, inverse, depth,
+				     LLE_COEFFICIENTS (target_expr));
+	  lambda_vector_mult_const (LLE_COEFFICIENTS (target_expr),
+				    LLE_COEFFICIENTS (target_expr), depth,
+				    factor);
 
-          LLE_CONSTANT (target_expr) = LLE_CONSTANT (auxillary_expr) * factor;
-          lambda_vector_copy (LLE_INVARIANT_COEFFICIENTS (auxillary_expr),
-                              LLE_INVARIANT_COEFFICIENTS (target_expr),
-                              invariants);
-          lambda_vector_mult_const (LLE_INVARIANT_COEFFICIENTS (target_expr),
-                                    LLE_INVARIANT_COEFFICIENTS (target_expr),
-                                    invariants, factor);
-          LLE_DENOMINATOR (target_expr) = LLE_DENOMINATOR (auxillary_expr);
+	  LLE_CONSTANT (target_expr) = LLE_CONSTANT (auxillary_expr) * factor;
+	  lambda_vector_copy (LLE_INVARIANT_COEFFICIENTS (auxillary_expr),
+			      LLE_INVARIANT_COEFFICIENTS (target_expr),
+			      invariants);
+	  lambda_vector_mult_const (LLE_INVARIANT_COEFFICIENTS (target_expr),
+				    LLE_INVARIANT_COEFFICIENTS (target_expr),
+				    invariants, factor);
+	  LLE_DENOMINATOR (target_expr) = LLE_DENOMINATOR (auxillary_expr);
 
-          if (!lambda_vector_zerop (LLE_COEFFICIENTS (target_expr), depth))
-            {
-              LLE_CONSTANT (target_expr) = LLE_CONSTANT (target_expr)
-                * determinant;
-              lambda_vector_mult_const (LLE_INVARIANT_COEFFICIENTS
-                                        (target_expr),
-                                        LLE_INVARIANT_COEFFICIENTS
-                                        (target_expr), invariants,
-                                        determinant);
-              LLE_DENOMINATOR (target_expr) =
-                LLE_DENOMINATOR (target_expr) * determinant;
-            }
-          /* Find the gcd and divide by it here, rather than doing it
-             at the tree level.  */
-          gcd1 = lambda_vector_gcd (LLE_COEFFICIENTS (target_expr), depth);
-          gcd2 = lambda_vector_gcd (LLE_INVARIANT_COEFFICIENTS (target_expr),
-                                    invariants);
-          gcd1 = gcd (gcd1, gcd2);
-          gcd1 = gcd (gcd1, LLE_CONSTANT (target_expr));
-          gcd1 = gcd (gcd1, LLE_DENOMINATOR (target_expr));
-          for (j = 0; j < depth; j++)
-            LLE_COEFFICIENTS (target_expr)[j] /= gcd1;
-          for (j = 0; j < invariants; j++)
-            LLE_INVARIANT_COEFFICIENTS (target_expr)[j] /= gcd1;
-          LLE_CONSTANT (target_expr) /= gcd1;
-          LLE_DENOMINATOR (target_expr) /= gcd1;
-          /* Ignore if identical to existing bound.  */
-          if (!lle_equal (LL_LOWER_BOUND (target_loop), target_expr, depth,
-                          invariants))
-            {
-              LLE_NEXT (target_expr) = LL_LOWER_BOUND (target_loop);
-              LL_LOWER_BOUND (target_loop) = target_expr;
-            }
-        }
+	  if (!lambda_vector_zerop (LLE_COEFFICIENTS (target_expr), depth))
+	    {
+	      LLE_CONSTANT (target_expr) = LLE_CONSTANT (target_expr)
+		* determinant;
+	      lambda_vector_mult_const (LLE_INVARIANT_COEFFICIENTS
+					(target_expr),
+					LLE_INVARIANT_COEFFICIENTS
+					(target_expr), invariants,
+					determinant);
+	      LLE_DENOMINATOR (target_expr) =
+		LLE_DENOMINATOR (target_expr) * determinant;
+	    }
+	  /* Find the gcd and divide by it here, rather than doing it
+	     at the tree level.  */
+	  gcd1 = lambda_vector_gcd (LLE_COEFFICIENTS (target_expr), depth);
+	  gcd2 = lambda_vector_gcd (LLE_INVARIANT_COEFFICIENTS (target_expr),
+				    invariants);
+	  gcd1 = gcd (gcd1, gcd2);
+	  gcd1 = gcd (gcd1, LLE_CONSTANT (target_expr));
+	  gcd1 = gcd (gcd1, LLE_DENOMINATOR (target_expr));
+	  for (j = 0; j < depth; j++)
+	    LLE_COEFFICIENTS (target_expr)[j] /= gcd1;
+	  for (j = 0; j < invariants; j++)
+	    LLE_INVARIANT_COEFFICIENTS (target_expr)[j] /= gcd1;
+	  LLE_CONSTANT (target_expr) /= gcd1;
+	  LLE_DENOMINATOR (target_expr) /= gcd1;
+	  /* Ignore if identical to existing bound.  */
+	  if (!lle_equal (LL_LOWER_BOUND (target_loop), target_expr, depth,
+			  invariants))
+	    {
+	      LLE_NEXT (target_expr) = LL_LOWER_BOUND (target_loop);
+	      LL_LOWER_BOUND (target_loop) = target_expr;
+	    }
+	}
       /* Now do the upper bound.  */
       auxillary_expr = LL_UPPER_BOUND (auxillary_loop);
 
       for (; auxillary_expr != NULL;
-           auxillary_expr = LLE_NEXT (auxillary_expr))
-        {
-          target_expr = lambda_linear_expression_new (depth, invariants);
-          lambda_vector_matrix_mult (LLE_COEFFICIENTS (auxillary_expr),
-                                     depth, inverse, depth,
-                                     LLE_COEFFICIENTS (target_expr));
-          lambda_vector_mult_const (LLE_COEFFICIENTS (target_expr),
-                                    LLE_COEFFICIENTS (target_expr), depth,
-                                    factor);
-          LLE_CONSTANT (target_expr) = LLE_CONSTANT (auxillary_expr) * factor;
-          lambda_vector_copy (LLE_INVARIANT_COEFFICIENTS (auxillary_expr),
-                              LLE_INVARIANT_COEFFICIENTS (target_expr),
-                              invariants);
-          lambda_vector_mult_const (LLE_INVARIANT_COEFFICIENTS (target_expr),
-                                    LLE_INVARIANT_COEFFICIENTS (target_expr),
-                                    invariants, factor);
-          LLE_DENOMINATOR (target_expr) = LLE_DENOMINATOR (auxillary_expr);
+	   auxillary_expr = LLE_NEXT (auxillary_expr))
+	{
+	  target_expr = lambda_linear_expression_new (depth, invariants);
+	  lambda_vector_matrix_mult (LLE_COEFFICIENTS (auxillary_expr),
+				     depth, inverse, depth,
+				     LLE_COEFFICIENTS (target_expr));
+	  lambda_vector_mult_const (LLE_COEFFICIENTS (target_expr),
+				    LLE_COEFFICIENTS (target_expr), depth,
+				    factor);
+	  LLE_CONSTANT (target_expr) = LLE_CONSTANT (auxillary_expr) * factor;
+	  lambda_vector_copy (LLE_INVARIANT_COEFFICIENTS (auxillary_expr),
+			      LLE_INVARIANT_COEFFICIENTS (target_expr),
+			      invariants);
+	  lambda_vector_mult_const (LLE_INVARIANT_COEFFICIENTS (target_expr),
+				    LLE_INVARIANT_COEFFICIENTS (target_expr),
+				    invariants, factor);
+	  LLE_DENOMINATOR (target_expr) = LLE_DENOMINATOR (auxillary_expr);
 
-          if (!lambda_vector_zerop (LLE_COEFFICIENTS (target_expr), depth))
-            {
-              LLE_CONSTANT (target_expr) = LLE_CONSTANT (target_expr)
-                * determinant;
-              lambda_vector_mult_const (LLE_INVARIANT_COEFFICIENTS
-                                        (target_expr),
-                                        LLE_INVARIANT_COEFFICIENTS
-                                        (target_expr), invariants,
-                                        determinant);
-              LLE_DENOMINATOR (target_expr) =
-                LLE_DENOMINATOR (target_expr) * determinant;
-            }
-          /* Find the gcd and divide by it here, instead of at the
-             tree level.  */
-          gcd1 = lambda_vector_gcd (LLE_COEFFICIENTS (target_expr), depth);
-          gcd2 = lambda_vector_gcd (LLE_INVARIANT_COEFFICIENTS (target_expr),
-                                    invariants);
-          gcd1 = gcd (gcd1, gcd2);
-          gcd1 = gcd (gcd1, LLE_CONSTANT (target_expr));
-          gcd1 = gcd (gcd1, LLE_DENOMINATOR (target_expr));
-          for (j = 0; j < depth; j++)
-            LLE_COEFFICIENTS (target_expr)[j] /= gcd1;
-          for (j = 0; j < invariants; j++)
-            LLE_INVARIANT_COEFFICIENTS (target_expr)[j] /= gcd1;
-          LLE_CONSTANT (target_expr) /= gcd1;
-          LLE_DENOMINATOR (target_expr) /= gcd1;
-          /* Ignore if equal to existing bound.  */
-          if (!lle_equal (LL_UPPER_BOUND (target_loop), target_expr, depth,
-                          invariants))
-            {
-              LLE_NEXT (target_expr) = LL_UPPER_BOUND (target_loop);
-              LL_UPPER_BOUND (target_loop) = target_expr;
-            }
-        }
+	  if (!lambda_vector_zerop (LLE_COEFFICIENTS (target_expr), depth))
+	    {
+	      LLE_CONSTANT (target_expr) = LLE_CONSTANT (target_expr)
+		* determinant;
+	      lambda_vector_mult_const (LLE_INVARIANT_COEFFICIENTS
+					(target_expr),
+					LLE_INVARIANT_COEFFICIENTS
+					(target_expr), invariants,
+					determinant);
+	      LLE_DENOMINATOR (target_expr) =
+		LLE_DENOMINATOR (target_expr) * determinant;
+	    }
+	  /* Find the gcd and divide by it here, instead of at the
+	     tree level.  */
+	  gcd1 = lambda_vector_gcd (LLE_COEFFICIENTS (target_expr), depth);
+	  gcd2 = lambda_vector_gcd (LLE_INVARIANT_COEFFICIENTS (target_expr),
+				    invariants);
+	  gcd1 = gcd (gcd1, gcd2);
+	  gcd1 = gcd (gcd1, LLE_CONSTANT (target_expr));
+	  gcd1 = gcd (gcd1, LLE_DENOMINATOR (target_expr));
+	  for (j = 0; j < depth; j++)
+	    LLE_COEFFICIENTS (target_expr)[j] /= gcd1;
+	  for (j = 0; j < invariants; j++)
+	    LLE_INVARIANT_COEFFICIENTS (target_expr)[j] /= gcd1;
+	  LLE_CONSTANT (target_expr) /= gcd1;
+	  LLE_DENOMINATOR (target_expr) /= gcd1;
+	  /* Ignore if equal to existing bound.  */
+	  if (!lle_equal (LL_UPPER_BOUND (target_loop), target_expr, depth,
+			  invariants))
+	    {
+	      LLE_NEXT (target_expr) = LL_UPPER_BOUND (target_loop);
+	      LL_UPPER_BOUND (target_loop) = target_expr;
+	    }
+	}
     }
   for (i = 0; i < depth; i++)
     {
@@ -954,12 +954,12 @@ lambda_compute_target_space (lambda_loopnest auxillary_nest,
       /* If necessary, exchange the upper and lower bounds and negate
          the step size.  */
       if (stepsigns[i] < 0)
-        {
-          LL_STEP (target_loop) *= -1;
-          tmp_expr = LL_LOWER_BOUND (target_loop);
-          LL_LOWER_BOUND (target_loop) = LL_UPPER_BOUND (target_loop);
-          LL_UPPER_BOUND (target_loop) = tmp_expr;
-        }
+	{
+	  LL_STEP (target_loop) *= -1;
+	  tmp_expr = LL_LOWER_BOUND (target_loop);
+	  LL_LOWER_BOUND (target_loop) = LL_UPPER_BOUND (target_loop);
+	  LL_UPPER_BOUND (target_loop) = tmp_expr;
+	}
     }
   return target_nest;
 }
@@ -990,23 +990,23 @@ lambda_compute_step_signs (lambda_trans_matrix trans, lambda_vector stepsigns)
       lambda_vector row;
       row = H[j];
       for (i = j; i < size; i++)
-        if (row[i] < 0)
-          lambda_matrix_col_negate (H, size, i);
+	if (row[i] < 0)
+	  lambda_matrix_col_negate (H, size, i);
       while (lambda_vector_first_nz (row, size, j + 1) < size)
-        {
-          minimum_column = lambda_vector_min_nz (row, size, j);
-          lambda_matrix_col_exchange (H, size, j, minimum_column);
+	{
+	  minimum_column = lambda_vector_min_nz (row, size, j);
+	  lambda_matrix_col_exchange (H, size, j, minimum_column);
 
-          temp = newsteps[j];
-          newsteps[j] = newsteps[minimum_column];
-          newsteps[minimum_column] = temp;
+	  temp = newsteps[j];
+	  newsteps[j] = newsteps[minimum_column];
+	  newsteps[minimum_column] = temp;
 
-          for (i = j + 1; i < size; i++)
-            {
-              factor = row[i] / row[j];
-              lambda_matrix_col_add (H, size, j, i, -1 * factor);
-            }
-        }
+	  for (i = j + 1; i < size; i++)
+	    {
+	      factor = row[i] / row[j];
+	      lambda_matrix_col_add (H, size, j, i, -1 * factor);
+	    }
+	}
     }
   return newsteps;
 }
@@ -1045,9 +1045,9 @@ lambda_loopnest_transform (lambda_loopnest nest, lambda_trans_matrix trans)
   for (i = 0; i < depth; i++)
     {
       if (LL_STEP (LN_LOOPS (nest)[i]) > 0)
-        stepsigns[i] = 1;
+	stepsigns[i] = 1;
       else
-        stepsigns[i] = -1;
+	stepsigns[i] = -1;
     }
 
   /* Compute the lattice base.  */
@@ -1057,13 +1057,13 @@ lambda_loopnest_transform (lambda_loopnest nest, lambda_trans_matrix trans)
   /* Multiply the transformation matrix by the lattice base.  */
 
   lambda_matrix_mult (LTM_MATRIX (trans), LATTICE_BASE (lattice),
-                      LTM_MATRIX (trans1), depth, depth, depth);
+		      LTM_MATRIX (trans1), depth, depth, depth);
 
   /* Compute the Hermite normal form for the new transformation matrix.  */
   H = lambda_trans_matrix_new (depth, depth);
   U = lambda_trans_matrix_new (depth, depth);
   lambda_matrix_hermite (LTM_MATRIX (trans1), depth, LTM_MATRIX (H),
-                         LTM_MATRIX (U));
+			 LTM_MATRIX (U));
 
   /* Compute the auxiliary loop nest's space from the unimodular
      portion.  */
@@ -1079,24 +1079,24 @@ lambda_loopnest_transform (lambda_loopnest nest, lambda_trans_matrix trans)
   origin = lambda_vector_new (depth);
   origin_invariants = lambda_matrix_new (depth, invariants);
   lambda_matrix_vector_mult (LTM_MATRIX (trans), depth, depth,
-                             LATTICE_ORIGIN (lattice), origin);
+			     LATTICE_ORIGIN (lattice), origin);
   lambda_matrix_mult (LTM_MATRIX (trans), LATTICE_ORIGIN_INVARIANTS (lattice),
-                      origin_invariants, depth, depth, invariants);
+		      origin_invariants, depth, depth, invariants);
 
   for (i = 0; i < depth; i++)
     {
       loop = LN_LOOPS (target_nest)[i];
       expression = LL_LINEAR_OFFSET (loop);
       if (lambda_vector_zerop (LLE_COEFFICIENTS (expression), depth))
-        f = 1;
+	f = 1;
       else
-        f = LLE_DENOMINATOR (expression);
+	f = LLE_DENOMINATOR (expression);
 
       LLE_CONSTANT (expression) += f * origin[i];
 
       for (j = 0; j < invariants; j++)
-        LLE_INVARIANT_COEFFICIENTS (expression)[j] +=
-          f * origin_invariants[i][j];
+	LLE_INVARIANT_COEFFICIENTS (expression)[j] +=
+	  f * origin_invariants[i][j];
     }
 
   return target_nest;
@@ -1112,51 +1112,51 @@ lambda_loopnest_transform (lambda_loopnest nest, lambda_trans_matrix trans)
 
 static lambda_linear_expression
 gcc_tree_to_linear_expression (int depth, tree expr,
-                               VEC(tree,heap) *outerinductionvars,
-                               VEC(tree,heap) *invariants, int extra)
+			       VEC(tree,heap) *outerinductionvars,
+			       VEC(tree,heap) *invariants, int extra)
 {
   lambda_linear_expression lle = NULL;
   switch (TREE_CODE (expr))
     {
     case INTEGER_CST:
       {
-        lle = lambda_linear_expression_new (depth, 2 * depth);
-        LLE_CONSTANT (lle) = TREE_INT_CST_LOW (expr);
-        if (extra != 0)
-          LLE_CONSTANT (lle) += extra;
+	lle = lambda_linear_expression_new (depth, 2 * depth);
+	LLE_CONSTANT (lle) = TREE_INT_CST_LOW (expr);
+	if (extra != 0)
+	  LLE_CONSTANT (lle) += extra;
 
-        LLE_DENOMINATOR (lle) = 1;
+	LLE_DENOMINATOR (lle) = 1;
       }
       break;
     case SSA_NAME:
       {
-        tree iv, invar;
-        size_t i;
-        for (i = 0; VEC_iterate (tree, outerinductionvars, i, iv); i++)
-          if (iv != NULL)
-            {
-              if (SSA_NAME_VAR (iv) == SSA_NAME_VAR (expr))
-                {
-                  lle = lambda_linear_expression_new (depth, 2 * depth);
-                  LLE_COEFFICIENTS (lle)[i] = 1;
-                  if (extra != 0)
-                    LLE_CONSTANT (lle) = extra;
+	tree iv, invar;
+	size_t i;
+	for (i = 0; VEC_iterate (tree, outerinductionvars, i, iv); i++)
+	  if (iv != NULL)
+	    {
+	      if (SSA_NAME_VAR (iv) == SSA_NAME_VAR (expr))
+		{
+		  lle = lambda_linear_expression_new (depth, 2 * depth);
+		  LLE_COEFFICIENTS (lle)[i] = 1;
+		  if (extra != 0)
+		    LLE_CONSTANT (lle) = extra;
 
-                  LLE_DENOMINATOR (lle) = 1;
-                }
-            }
-        for (i = 0; VEC_iterate (tree, invariants, i, invar); i++)
-          if (invar != NULL)
-            {
-              if (SSA_NAME_VAR (invar) == SSA_NAME_VAR (expr))
-                {
-                  lle = lambda_linear_expression_new (depth, 2 * depth);
-                  LLE_INVARIANT_COEFFICIENTS (lle)[i] = 1;
-                  if (extra != 0)
-                    LLE_CONSTANT (lle) = extra;
-                  LLE_DENOMINATOR (lle) = 1;
-                }
-            }
+		  LLE_DENOMINATOR (lle) = 1;
+		}
+	    }
+	for (i = 0; VEC_iterate (tree, invariants, i, invar); i++)
+	  if (invar != NULL)
+	    {
+	      if (SSA_NAME_VAR (invar) == SSA_NAME_VAR (expr))
+		{
+		  lle = lambda_linear_expression_new (depth, 2 * depth);
+		  LLE_INVARIANT_COEFFICIENTS (lle)[i] = 1;
+		  if (extra != 0)
+		    LLE_CONSTANT (lle) = extra;
+		  LLE_DENOMINATOR (lle) = 1;
+		}
+	    }
       }
       break;
     default:
@@ -1208,12 +1208,12 @@ invariant_in_loop_and_outer_loops (struct loop *loop, tree op)
 
 static lambda_loop
 gcc_loop_to_lambda_loop (struct loop *loop, int depth,
-                         VEC(tree,heap) ** invariants,
-                         tree * ourinductionvar,
-                         VEC(tree,heap) * outerinductionvars,
-                         VEC(tree,heap) ** lboundvars,
-                         VEC(tree,heap) ** uboundvars,
-                         VEC(int,heap) ** steps)
+			 VEC(tree,heap) ** invariants,
+			 tree * ourinductionvar,
+			 VEC(tree,heap) * outerinductionvars,
+			 VEC(tree,heap) ** lboundvars,
+			 VEC(tree,heap) ** uboundvars,
+			 VEC(int,heap) ** steps)
 {
   tree phi;
   tree exit_cond;
@@ -1233,8 +1233,8 @@ gcc_loop_to_lambda_loop (struct loop *loop, int depth,
   if (inductionvar == NULL || exit_cond == NULL)
     {
       if (dump_file && (dump_flags & TDF_DETAILS))
-        fprintf (dump_file,
-                 "Unable to convert loop: Cannot determine exit condition or induction variable for loop.\n");
+	fprintf (dump_file,
+		 "Unable to convert loop: Cannot determine exit condition or induction variable for loop.\n");
       return NULL;
     }
 
@@ -1244,8 +1244,8 @@ gcc_loop_to_lambda_loop (struct loop *loop, int depth,
     {
 
       if (dump_file && (dump_flags & TDF_DETAILS))
-        fprintf (dump_file,
-                 "Unable to convert loop: Cannot find PHI node for induction variable\n");
+	fprintf (dump_file,
+		 "Unable to convert loop: Cannot find PHI node for induction variable\n");
 
       return NULL;
     }
@@ -1255,24 +1255,24 @@ gcc_loop_to_lambda_loop (struct loop *loop, int depth,
     {
       phi = SINGLE_SSA_TREE_OPERAND (phi, SSA_OP_USE);
       if (!phi)
-        {
+	{
 
-          if (dump_file && (dump_flags & TDF_DETAILS))
-            fprintf (dump_file,
-                     "Unable to convert loop: Cannot find PHI node for induction variable\n");
+	  if (dump_file && (dump_flags & TDF_DETAILS))
+	    fprintf (dump_file,
+		     "Unable to convert loop: Cannot find PHI node for induction variable\n");
 
-          return NULL;
-        }
+	  return NULL;
+	}
 
       phi = SSA_NAME_DEF_STMT (phi);
       if (TREE_CODE (phi) != PHI_NODE)
-        {
+	{
 
-          if (dump_file && (dump_flags & TDF_DETAILS))
-            fprintf (dump_file,
-                     "Unable to convert loop: Cannot find PHI node for induction variable\n");
-          return NULL;
-        }
+	  if (dump_file && (dump_flags & TDF_DETAILS))
+	    fprintf (dump_file,
+		     "Unable to convert loop: Cannot find PHI node for induction variable\n");
+	  return NULL;
+	}
 
     }
 
@@ -1284,8 +1284,8 @@ gcc_loop_to_lambda_loop (struct loop *loop, int depth,
   if (access_fn == chrec_dont_know)
     {
       if (dump_file && (dump_flags & TDF_DETAILS))
-        fprintf (dump_file,
-                 "Unable to convert loop: Access function for induction variable phi is unknown\n");
+	fprintf (dump_file,
+		 "Unable to convert loop: Access function for induction variable phi is unknown\n");
 
       return NULL;
     }
@@ -1294,8 +1294,8 @@ gcc_loop_to_lambda_loop (struct loop *loop, int depth,
   if (!step || step == chrec_dont_know)
     {
       if (dump_file && (dump_flags & TDF_DETAILS))
-        fprintf (dump_file,
-                 "Unable to convert loop: Cannot determine step of loop.\n");
+	fprintf (dump_file,
+		 "Unable to convert loop: Cannot determine step of loop.\n");
 
       return NULL;
     }
@@ -1303,8 +1303,8 @@ gcc_loop_to_lambda_loop (struct loop *loop, int depth,
     {
 
       if (dump_file && (dump_flags & TDF_DETAILS))
-        fprintf (dump_file,
-                 "Unable to convert loop: Step of loop is not integer.\n");
+	fprintf (dump_file,
+		 "Unable to convert loop: Step of loop is not integer.\n");
       return NULL;
     }
 
@@ -1315,8 +1315,8 @@ gcc_loop_to_lambda_loop (struct loop *loop, int depth,
   if (PHI_NUM_ARGS (phi) != 2)
     {
       if (dump_file && (dump_flags & TDF_DETAILS))
-        fprintf (dump_file,
-                 "Unable to convert loop: PHI node for induction variable has >2 arguments\n");
+	fprintf (dump_file,
+		 "Unable to convert loop: PHI node for induction variable has >2 arguments\n");
       return NULL;
     }
 
@@ -1327,8 +1327,8 @@ gcc_loop_to_lambda_loop (struct loop *loop, int depth,
     {
 
       if (dump_file && (dump_flags & TDF_DETAILS))
-        fprintf (dump_file,
-                 "Unable to convert loop: PHI edges both inside loop, or both outside loop.\n");
+	fprintf (dump_file,
+		 "Unable to convert loop: PHI edges both inside loop, or both outside loop.\n");
 
       return NULL;
     }
@@ -1337,23 +1337,23 @@ gcc_loop_to_lambda_loop (struct loop *loop, int depth,
     {
       lboundvar = PHI_ARG_DEF (phi, 1);
       lbound = gcc_tree_to_linear_expression (depth, lboundvar,
-                                              outerinductionvars, *invariants,
-                                              0);
+					      outerinductionvars, *invariants,
+					      0);
     }
   else
     {
       lboundvar = PHI_ARG_DEF (phi, 0);
       lbound = gcc_tree_to_linear_expression (depth, lboundvar,
-                                              outerinductionvars, *invariants,
-                                              0);
+					      outerinductionvars, *invariants,
+					      0);
     }
   
   if (!lbound)
     {
 
       if (dump_file && (dump_flags & TDF_DETAILS))
-        fprintf (dump_file,
-                 "Unable to convert loop: Cannot convert lower bound to linear expression\n");
+	fprintf (dump_file,
+		 "Unable to convert loop: Cannot convert lower bound to linear expression\n");
 
       return NULL;
     }
@@ -1363,7 +1363,7 @@ gcc_loop_to_lambda_loop (struct loop *loop, int depth,
       && invariant_in_loop_and_outer_loops (loop, TREE_OPERAND (test, 1)))
     VEC_quick_push (tree, *invariants, TREE_OPERAND (test, 1));
   else if (TREE_CODE (TREE_OPERAND (test, 0)) == SSA_NAME
-           && invariant_in_loop_and_outer_loops (loop, TREE_OPERAND (test, 0)))
+	   && invariant_in_loop_and_outer_loops (loop, TREE_OPERAND (test, 0)))
     VEC_quick_push (tree, *invariants, TREE_OPERAND (test, 0));
   
   /* The non-induction variable part of the test is the upper bound variable.
@@ -1392,18 +1392,18 @@ gcc_loop_to_lambda_loop (struct loop *loop, int depth,
     extra = 1 * stepint;
   
   ubound = gcc_tree_to_linear_expression (depth, uboundvar,
-                                          outerinductionvars,
-                                          *invariants, extra);
+					  outerinductionvars,
+					  *invariants, extra);
   uboundresult = build2 (PLUS_EXPR, TREE_TYPE (uboundvar), uboundvar,
-                         build_int_cst (TREE_TYPE (uboundvar), extra));
+			 build_int_cst (TREE_TYPE (uboundvar), extra));
   VEC_safe_push (tree, heap, *uboundvars, uboundresult);
   VEC_safe_push (tree, heap, *lboundvars, lboundvar);
   VEC_safe_push (int, heap, *steps, stepint);
   if (!ubound)
     {
       if (dump_file && (dump_flags & TDF_DETAILS))
-        fprintf (dump_file,
-                 "Unable to convert loop: Cannot convert upper bound to linear expression\n");
+	fprintf (dump_file,
+		 "Unable to convert loop: Cannot convert upper bound to linear expression\n");
       return NULL;
     }
 
@@ -1458,9 +1458,9 @@ DEF_VEC_ALLOC_P(lambda_loop,heap);
 
 lambda_loopnest
 gcc_loopnest_to_lambda_loopnest (struct loops *currloops,
-                                 struct loop *loop_nest,
-                                 VEC(tree,heap) **inductionvars,
-                                 VEC(tree,heap) **invariants)
+				 struct loop *loop_nest,
+				 VEC(tree,heap) **inductionvars,
+				 VEC(tree,heap) **invariants)
 {
   lambda_loopnest ret = NULL;
   struct loop *temp = loop_nest;
@@ -1480,11 +1480,11 @@ gcc_loopnest_to_lambda_loopnest (struct loops *currloops,
   while (temp)
     {
       newloop = gcc_loop_to_lambda_loop (temp, depth, invariants,
-                                         &inductionvar, *inductionvars,
-                                         &lboundvars, &uboundvars,
-                                         &steps);
+					 &inductionvar, *inductionvars,
+					 &lboundvars, &uboundvars,
+					 &steps);
       if (!newloop)
-        goto fail;
+	goto fail;
 
       VEC_safe_push (tree, heap, *inductionvars, inductionvar);
       VEC_safe_push (lambda_loop, heap, loops, newloop);
@@ -1494,16 +1494,16 @@ gcc_loopnest_to_lambda_loopnest (struct loops *currloops,
   if (!perfect_nest)
     {
       if (!perfect_nestify (currloops, loop_nest, 
-                            lboundvars, uboundvars, steps, *inductionvars))
-        {
-          if (dump_file)
-            fprintf (dump_file,
-                     "Not a perfect loop nest and couldn't convert to one.\n");    
-          goto fail;
-        }
+			    lboundvars, uboundvars, steps, *inductionvars))
+	{
+	  if (dump_file)
+	    fprintf (dump_file,
+		     "Not a perfect loop nest and couldn't convert to one.\n");    
+	  goto fail;
+	}
       else if (dump_file)
-        fprintf (dump_file,
-                 "Successfully converted loop nest to perfect loop nest.\n");
+	fprintf (dump_file,
+		 "Successfully converted loop nest to perfect loop nest.\n");
     }
 
   ret = lambda_loopnest_new (depth, 2 * depth);
@@ -1528,8 +1528,8 @@ gcc_loopnest_to_lambda_loopnest (struct loops *currloops,
 
 static tree
 lbv_to_gcc_expression (lambda_body_vector lbv, 
-                       tree type, VEC(tree,heap) *induction_vars, 
-                       tree *stmts_to_insert)
+		       tree type, VEC(tree,heap) *induction_vars, 
+		       tree *stmts_to_insert)
 {
   tree stmts, stmt, resvar, name;
   tree iv;
@@ -1551,31 +1551,31 @@ lbv_to_gcc_expression (lambda_body_vector lbv,
   for (i = 0; VEC_iterate (tree, induction_vars, i, iv); i++)
     {
       if (LBV_COEFFICIENTS (lbv)[i] != 0)
-        {
-          tree newname;
-          tree coeffmult;
-          
-          /* newname = coefficient * induction_variable */
-          coeffmult = build_int_cst (type, LBV_COEFFICIENTS (lbv)[i]);
-          stmt = build2 (MODIFY_EXPR, void_type_node, resvar,
-                         fold_build2 (MULT_EXPR, type, iv, coeffmult));
+	{
+	  tree newname;
+	  tree coeffmult;
+	  
+	  /* newname = coefficient * induction_variable */
+	  coeffmult = build_int_cst (type, LBV_COEFFICIENTS (lbv)[i]);
+	  stmt = build2 (MODIFY_EXPR, void_type_node, resvar,
+			 fold_build2 (MULT_EXPR, type, iv, coeffmult));
 
-          newname = make_ssa_name (resvar, stmt);
-          TREE_OPERAND (stmt, 0) = newname;
-          fold_stmt (&stmt);
-          tsi = tsi_last (stmts);
-          tsi_link_after (&tsi, stmt, TSI_CONTINUE_LINKING);
+	  newname = make_ssa_name (resvar, stmt);
+	  TREE_OPERAND (stmt, 0) = newname;
+	  fold_stmt (&stmt);
+	  tsi = tsi_last (stmts);
+	  tsi_link_after (&tsi, stmt, TSI_CONTINUE_LINKING);
 
-          /* name = name + newname */
-          stmt = build2 (MODIFY_EXPR, void_type_node, resvar,
-                         build2 (PLUS_EXPR, type, name, newname));
-          name = make_ssa_name (resvar, stmt);
-          TREE_OPERAND (stmt, 0) = name;
-          fold_stmt (&stmt);
-          tsi = tsi_last (stmts);
-          tsi_link_after (&tsi, stmt, TSI_CONTINUE_LINKING);
+	  /* name = name + newname */
+	  stmt = build2 (MODIFY_EXPR, void_type_node, resvar,
+			 build2 (PLUS_EXPR, type, name, newname));
+	  name = make_ssa_name (resvar, stmt);
+	  TREE_OPERAND (stmt, 0) = name;
+	  fold_stmt (&stmt);
+	  tsi = tsi_last (stmts);
+	  tsi_link_after (&tsi, stmt, TSI_CONTINUE_LINKING);
 
-        }
+	}
     }
 
   /* Handle any denominator that occurs.  */
@@ -1583,7 +1583,7 @@ lbv_to_gcc_expression (lambda_body_vector lbv,
     {
       tree denominator = build_int_cst (type, LBV_DENOMINATOR (lbv));
       stmt = build2 (MODIFY_EXPR, void_type_node, resvar,
-                     build2 (CEIL_DIV_EXPR, type, name, denominator));
+		     build2 (CEIL_DIV_EXPR, type, name, denominator));
       name = make_ssa_name (resvar, stmt);
       TREE_OPERAND (stmt, 0) = name;
       fold_stmt (&stmt);
@@ -1609,11 +1609,11 @@ lbv_to_gcc_expression (lambda_body_vector lbv,
 
 static tree
 lle_to_gcc_expression (lambda_linear_expression lle,
-                       lambda_linear_expression offset,
-                       tree type,
-                       VEC(tree,heap) *induction_vars,
-                       VEC(tree,heap) *invariants,
-                       enum tree_code wrap, tree *stmts_to_insert)
+		       lambda_linear_expression offset,
+		       tree type,
+		       VEC(tree,heap) *induction_vars,
+		       VEC(tree,heap) *invariants,
+		       enum tree_code wrap, tree *stmts_to_insert)
 {
   tree stmts, stmt, resvar, name;
   size_t i;
@@ -1644,127 +1644,127 @@ lle_to_gcc_expression (lambda_linear_expression lle,
          at the end, name = name + all the induction variables added
          together.  */
       for (i = 0; VEC_iterate (tree, induction_vars, i, iv); i++)
-        {
-          if (LLE_COEFFICIENTS (lle)[i] != 0)
-            {
-              tree newname;
-              tree mult;
-              tree coeff;
+	{
+	  if (LLE_COEFFICIENTS (lle)[i] != 0)
+	    {
+	      tree newname;
+	      tree mult;
+	      tree coeff;
 
-              /* mult = induction variable * coefficient.  */
-              if (LLE_COEFFICIENTS (lle)[i] == 1)
-                {
-                  mult = VEC_index (tree, induction_vars, i);
-                }
-              else
-                {
-                  coeff = build_int_cst (type,
-                                         LLE_COEFFICIENTS (lle)[i]);
-                  mult = fold_build2 (MULT_EXPR, type, iv, coeff);
-                }
+	      /* mult = induction variable * coefficient.  */
+	      if (LLE_COEFFICIENTS (lle)[i] == 1)
+		{
+		  mult = VEC_index (tree, induction_vars, i);
+		}
+	      else
+		{
+		  coeff = build_int_cst (type,
+					 LLE_COEFFICIENTS (lle)[i]);
+		  mult = fold_build2 (MULT_EXPR, type, iv, coeff);
+		}
 
-              /* newname = mult */
-              stmt = build2 (MODIFY_EXPR, void_type_node, resvar, mult);
-              newname = make_ssa_name (resvar, stmt);
-              TREE_OPERAND (stmt, 0) = newname;
-              fold_stmt (&stmt);
-              tsi = tsi_last (stmts);
-              tsi_link_after (&tsi, stmt, TSI_CONTINUE_LINKING);
+	      /* newname = mult */
+	      stmt = build2 (MODIFY_EXPR, void_type_node, resvar, mult);
+	      newname = make_ssa_name (resvar, stmt);
+	      TREE_OPERAND (stmt, 0) = newname;
+	      fold_stmt (&stmt);
+	      tsi = tsi_last (stmts);
+	      tsi_link_after (&tsi, stmt, TSI_CONTINUE_LINKING);
 
-              /* name = name + newname */
-              stmt = build2 (MODIFY_EXPR, void_type_node, resvar,
-                             build2 (PLUS_EXPR, type, name, newname));
-              name = make_ssa_name (resvar, stmt);
-              TREE_OPERAND (stmt, 0) = name;
-              fold_stmt (&stmt);
-              tsi = tsi_last (stmts);
-              tsi_link_after (&tsi, stmt, TSI_CONTINUE_LINKING);
-            }
-        }
+	      /* name = name + newname */
+	      stmt = build2 (MODIFY_EXPR, void_type_node, resvar,
+			     build2 (PLUS_EXPR, type, name, newname));
+	      name = make_ssa_name (resvar, stmt);
+	      TREE_OPERAND (stmt, 0) = name;
+	      fold_stmt (&stmt);
+	      tsi = tsi_last (stmts);
+	      tsi_link_after (&tsi, stmt, TSI_CONTINUE_LINKING);
+	    }
+	}
 
       /* Handle our invariants.
          At the end, we have name = name + result of adding all multiplied
          invariants.  */
       for (i = 0; VEC_iterate (tree, invariants, i, invar); i++)
-        {
-          if (LLE_INVARIANT_COEFFICIENTS (lle)[i] != 0)
-            {
-              tree newname;
-              tree mult;
-              tree coeff;
-              int invcoeff = LLE_INVARIANT_COEFFICIENTS (lle)[i];
-              /* mult = invariant * coefficient  */
-              if (invcoeff == 1)
-                {
-                  mult = invar;
-                }
-              else
-                {
-                  coeff = build_int_cst (type, invcoeff);
-                  mult = fold_build2 (MULT_EXPR, type, invar, coeff);
-                }
+	{
+	  if (LLE_INVARIANT_COEFFICIENTS (lle)[i] != 0)
+	    {
+	      tree newname;
+	      tree mult;
+	      tree coeff;
+	      int invcoeff = LLE_INVARIANT_COEFFICIENTS (lle)[i];
+	      /* mult = invariant * coefficient  */
+	      if (invcoeff == 1)
+		{
+		  mult = invar;
+		}
+	      else
+		{
+		  coeff = build_int_cst (type, invcoeff);
+		  mult = fold_build2 (MULT_EXPR, type, invar, coeff);
+		}
 
-              /* newname = mult */
-              stmt = build2 (MODIFY_EXPR, void_type_node, resvar, mult);
-              newname = make_ssa_name (resvar, stmt);
-              TREE_OPERAND (stmt, 0) = newname;
-              fold_stmt (&stmt);
-              tsi = tsi_last (stmts);
-              tsi_link_after (&tsi, stmt, TSI_CONTINUE_LINKING);
+	      /* newname = mult */
+	      stmt = build2 (MODIFY_EXPR, void_type_node, resvar, mult);
+	      newname = make_ssa_name (resvar, stmt);
+	      TREE_OPERAND (stmt, 0) = newname;
+	      fold_stmt (&stmt);
+	      tsi = tsi_last (stmts);
+	      tsi_link_after (&tsi, stmt, TSI_CONTINUE_LINKING);
 
-              /* name = name + newname */
-              stmt = build2 (MODIFY_EXPR, void_type_node, resvar,
-                             build2 (PLUS_EXPR, type, name, newname));
-              name = make_ssa_name (resvar, stmt);
-              TREE_OPERAND (stmt, 0) = name;
-              fold_stmt (&stmt);
-              tsi = tsi_last (stmts);
-              tsi_link_after (&tsi, stmt, TSI_CONTINUE_LINKING);
-            }
-        }
+	      /* name = name + newname */
+	      stmt = build2 (MODIFY_EXPR, void_type_node, resvar,
+			     build2 (PLUS_EXPR, type, name, newname));
+	      name = make_ssa_name (resvar, stmt);
+	      TREE_OPERAND (stmt, 0) = name;
+	      fold_stmt (&stmt);
+	      tsi = tsi_last (stmts);
+	      tsi_link_after (&tsi, stmt, TSI_CONTINUE_LINKING);
+	    }
+	}
 
       /* Now handle the constant.
          name = name + constant.  */
       if (LLE_CONSTANT (lle) != 0)
-        {
-          stmt = build2 (MODIFY_EXPR, void_type_node, resvar,
-                         build2 (PLUS_EXPR, type, name, 
-                                 build_int_cst (type, LLE_CONSTANT (lle))));
-          name = make_ssa_name (resvar, stmt);
-          TREE_OPERAND (stmt, 0) = name;
-          fold_stmt (&stmt);
-          tsi = tsi_last (stmts);
-          tsi_link_after (&tsi, stmt, TSI_CONTINUE_LINKING);
-        }
+	{
+	  stmt = build2 (MODIFY_EXPR, void_type_node, resvar,
+			 build2 (PLUS_EXPR, type, name, 
+			         build_int_cst (type, LLE_CONSTANT (lle))));
+	  name = make_ssa_name (resvar, stmt);
+	  TREE_OPERAND (stmt, 0) = name;
+	  fold_stmt (&stmt);
+	  tsi = tsi_last (stmts);
+	  tsi_link_after (&tsi, stmt, TSI_CONTINUE_LINKING);
+	}
 
       /* Now handle the offset.
          name = name + linear offset.  */
       if (LLE_CONSTANT (offset) != 0)
-        {
-          stmt = build2 (MODIFY_EXPR, void_type_node, resvar,
-                         build2 (PLUS_EXPR, type, name, 
-                                 build_int_cst (type, LLE_CONSTANT (offset))));
-          name = make_ssa_name (resvar, stmt);
-          TREE_OPERAND (stmt, 0) = name;
-          fold_stmt (&stmt);
-          tsi = tsi_last (stmts);
-          tsi_link_after (&tsi, stmt, TSI_CONTINUE_LINKING);
-        }
+	{
+	  stmt = build2 (MODIFY_EXPR, void_type_node, resvar,
+			 build2 (PLUS_EXPR, type, name, 
+			         build_int_cst (type, LLE_CONSTANT (offset))));
+	  name = make_ssa_name (resvar, stmt);
+	  TREE_OPERAND (stmt, 0) = name;
+	  fold_stmt (&stmt);
+	  tsi = tsi_last (stmts);
+	  tsi_link_after (&tsi, stmt, TSI_CONTINUE_LINKING);
+	}
 
       /* Handle any denominator that occurs.  */
       if (LLE_DENOMINATOR (lle) != 1)
-        {
-          stmt = build_int_cst (type, LLE_DENOMINATOR (lle));
-          stmt = build2 (wrap == MAX_EXPR ? CEIL_DIV_EXPR : FLOOR_DIV_EXPR,
-                         type, name, stmt);
-          stmt = build2 (MODIFY_EXPR, void_type_node, resvar, stmt);
+	{
+	  stmt = build_int_cst (type, LLE_DENOMINATOR (lle));
+	  stmt = build2 (wrap == MAX_EXPR ? CEIL_DIV_EXPR : FLOOR_DIV_EXPR,
+			 type, name, stmt);
+	  stmt = build2 (MODIFY_EXPR, void_type_node, resvar, stmt);
 
-          /* name = {ceil, floor}(name/denominator) */
-          name = make_ssa_name (resvar, stmt);
-          TREE_OPERAND (stmt, 0) = name;
-          tsi = tsi_last (stmts);
-          tsi_link_after (&tsi, stmt, TSI_CONTINUE_LINKING);
-        }
+	  /* name = {ceil, floor}(name/denominator) */
+	  name = make_ssa_name (resvar, stmt);
+	  TREE_OPERAND (stmt, 0) = name;
+	  tsi = tsi_last (stmts);
+	  tsi_link_after (&tsi, stmt, TSI_CONTINUE_LINKING);
+	}
       VEC_safe_push (tree, heap, results, name);
     }
 
@@ -1778,7 +1778,7 @@ lle_to_gcc_expression (lambda_linear_expression lle,
       tree op1 = VEC_index (tree, results, 0);
       tree op2 = VEC_index (tree, results, 1);
       stmt = build2 (MODIFY_EXPR, void_type_node, resvar,
-                     build2 (wrap, type, op1, op2));
+		     build2 (wrap, type, op1, op2));
       name = make_ssa_name (resvar, stmt);
       TREE_OPERAND (stmt, 0) = name;
       tsi = tsi_last (stmts);
@@ -1805,10 +1805,10 @@ lle_to_gcc_expression (lambda_linear_expression lle,
 
 void
 lambda_loopnest_to_gcc_loopnest (struct loop *old_loopnest,
-                                 VEC(tree,heap) *old_ivs,
-                                 VEC(tree,heap) *invariants,
-                                 lambda_loopnest new_loopnest,
-                                 lambda_trans_matrix transform)
+				 VEC(tree,heap) *old_ivs,
+				 VEC(tree,heap) *invariants,
+				 lambda_loopnest new_loopnest,
+				 lambda_trans_matrix transform)
 {
   struct loop *temp;
   size_t i = 0;
@@ -1857,24 +1857,24 @@ lambda_loopnest_to_gcc_loopnest (struct loop *old_loopnest,
       offset = LL_LINEAR_OFFSET (newloop);
       
       gcc_assert (LLE_DENOMINATOR (offset) == 1 &&
-                  lambda_vector_zerop (LLE_COEFFICIENTS (offset), depth));
-            
+		  lambda_vector_zerop (LLE_COEFFICIENTS (offset), depth));
+	    
       /* Now build the  new lower bounds, and insert the statements
          necessary to generate it on the loop preheader.  */
       newlowerbound = lle_to_gcc_expression (LL_LOWER_BOUND (newloop),
-                                             LL_LINEAR_OFFSET (newloop),
-                                             type,
-                                             new_ivs,
-                                             invariants, MAX_EXPR, &stmts);
+					     LL_LINEAR_OFFSET (newloop),
+					     type,
+					     new_ivs,
+					     invariants, MAX_EXPR, &stmts);
       bsi_insert_on_edge (loop_preheader_edge (temp), stmts);
       bsi_commit_edge_inserts ();
       /* Build the new upper bound and insert its statements in the
          basic block of the exit condition */
       newupperbound = lle_to_gcc_expression (LL_UPPER_BOUND (newloop),
-                                             LL_LINEAR_OFFSET (newloop),
-                                             type,
-                                             new_ivs,
-                                             invariants, MIN_EXPR, &stmts);
+					     LL_LINEAR_OFFSET (newloop),
+					     type,
+					     new_ivs,
+					     invariants, MIN_EXPR, &stmts);
       exit = temp->single_exit;
       exitcond = get_loop_exit_condition (temp);
       bb = bb_for_stmt (exitcond);
@@ -1885,18 +1885,18 @@ lambda_loopnest_to_gcc_loopnest (struct loop *old_loopnest,
 
       standard_iv_increment_position (temp, &bsi, &insert_after);
       create_iv (newlowerbound,
-                 build_int_cst (type, LL_STEP (newloop)),
-                 ivvar, temp, &bsi, insert_after, &ivvar,
-                 NULL);
+		 build_int_cst (type, LL_STEP (newloop)),
+		 ivvar, temp, &bsi, insert_after, &ivvar,
+		 NULL);
 
       /* Unfortunately, the incremented ivvar that create_iv inserted may not
-         dominate the block containing the exit condition.
-         So we simply create our own incremented iv to use in the new exit
-         test,  and let redundancy elimination sort it out.  */
+	 dominate the block containing the exit condition.
+	 So we simply create our own incremented iv to use in the new exit
+	 test,  and let redundancy elimination sort it out.  */
       inc_stmt = build2 (PLUS_EXPR, type, 
-                         ivvar, build_int_cst (type, LL_STEP (newloop)));
+			 ivvar, build_int_cst (type, LL_STEP (newloop)));
       inc_stmt = build2 (MODIFY_EXPR, void_type_node, SSA_NAME_VAR (ivvar),
-                         inc_stmt);
+			 inc_stmt);
       ivvarinced = make_ssa_name (SSA_NAME_VAR (ivvar), inc_stmt);
       TREE_OPERAND (inc_stmt, 0) = ivvarinced;
       bsi = bsi_for_stmt (exitcond);
@@ -1908,15 +1908,15 @@ lambda_loopnest_to_gcc_loopnest (struct loop *old_loopnest,
       testtype = LL_STEP (newloop) >= 0 ? LE_EXPR : GE_EXPR;
       
       /* We want to build a conditional where true means exit the loop, and
-         false means continue the loop.
-         So swap the testtype if this isn't the way things are.*/
+	 false means continue the loop.
+	 So swap the testtype if this isn't the way things are.*/
 
       if (exit->flags & EDGE_FALSE_VALUE)
-        testtype = swap_tree_comparison (testtype);
+	testtype = swap_tree_comparison (testtype);
 
       COND_EXPR_COND (exitcond) = build2 (testtype,
-                                          boolean_type_node,
-                                          newupperbound, ivvarinced);
+					  boolean_type_node,
+					  newupperbound, ivvarinced);
       update_stmt (exitcond);
       VEC_replace (tree, new_ivs, i, ivvar);
 
@@ -1938,35 +1938,35 @@ lambda_loopnest_to_gcc_loopnest (struct loop *old_loopnest,
       if (TREE_CODE (oldiv_stmt) == PHI_NODE)
         oldiv_def = PHI_RESULT (oldiv_stmt);
       else
-        oldiv_def = SINGLE_SSA_TREE_OPERAND (oldiv_stmt, SSA_OP_DEF);
+	oldiv_def = SINGLE_SSA_TREE_OPERAND (oldiv_stmt, SSA_OP_DEF);
       gcc_assert (oldiv_def != NULL_TREE);
 
       FOR_EACH_IMM_USE_STMT (stmt, imm_iter, oldiv_def)
         {
-          tree newiv, stmts;
-          lambda_body_vector lbv, newlbv;
+	  tree newiv, stmts;
+	  lambda_body_vector lbv, newlbv;
 
-          gcc_assert (TREE_CODE (stmt) != PHI_NODE);
+	  gcc_assert (TREE_CODE (stmt) != PHI_NODE);
 
-          /* Compute the new expression for the induction
-             variable.  */
-          depth = VEC_length (tree, new_ivs);
-          lbv = lambda_body_vector_new (depth);
-          LBV_COEFFICIENTS (lbv)[i] = 1;
-          
-          newlbv = lambda_body_vector_compute_new (transform, lbv);
+	  /* Compute the new expression for the induction
+	     variable.  */
+	  depth = VEC_length (tree, new_ivs);
+	  lbv = lambda_body_vector_new (depth);
+	  LBV_COEFFICIENTS (lbv)[i] = 1;
+	  
+	  newlbv = lambda_body_vector_compute_new (transform, lbv);
 
-          newiv = lbv_to_gcc_expression (newlbv, TREE_TYPE (oldiv),
-                                         new_ivs, &stmts);
-          bsi = bsi_for_stmt (stmt);
-          /* Insert the statements to build that
-             expression.  */
-          bsi_insert_before (&bsi, stmts, BSI_SAME_STMT);
+	  newiv = lbv_to_gcc_expression (newlbv, TREE_TYPE (oldiv),
+					 new_ivs, &stmts);
+	  bsi = bsi_for_stmt (stmt);
+	  /* Insert the statements to build that
+	     expression.  */
+	  bsi_insert_before (&bsi, stmts, BSI_SAME_STMT);
 
-          FOR_EACH_IMM_USE_ON_STMT (use_p, imm_iter)
-            propagate_value (use_p, newiv);
-          update_stmt (stmt);
-        }
+	  FOR_EACH_IMM_USE_ON_STMT (use_p, imm_iter)
+	    propagate_value (use_p, newiv);
+	  update_stmt (stmt);
+	}
     }
   VEC_free (tree, heap, new_ivs);
 }
@@ -1995,7 +1995,7 @@ phi_loop_edge_uses_def (struct loop *loop, tree phi, tree def)
   for (i = 0; i < PHI_NUM_ARGS (phi); i++)
     if (flow_bb_inside_loop_p (loop, PHI_ARG_EDGE (phi, i)->src))
       if (PHI_ARG_DEF (phi, i) == def)
-        return true;
+	return true;
   return false;
 }
 
@@ -2033,11 +2033,11 @@ stmt_is_bumper_for_loop (struct loop *loop, tree stmt)
     {
       use = USE_STMT (use_p);
       if (TREE_CODE (use) == PHI_NODE)
-        {
-          if (phi_loop_edge_uses_def (loop, use, def))
-            if (stmt_uses_phi_result (stmt, PHI_RESULT (use)))
-              return true;
-        } 
+	{
+	  if (phi_loop_edge_uses_def (loop, use, def))
+	    if (stmt_uses_phi_result (stmt, PHI_RESULT (use)))
+	      return true;
+	} 
     }
   return false;
 }
@@ -2060,7 +2060,7 @@ stmt_is_bumper_for_loop (struct loop *loop, tree stmt)
    DO I = 1, 20
       DO J = 1, 20
         S1
-        ...
+	...
       END DO
    END DO 
    is a perfect loop nest.  
@@ -2083,19 +2083,19 @@ perfect_nest_p (struct loop *loop)
   for (i = 0; i < loop->num_nodes; i++)
     {
       if (bbs[i]->loop_father == loop)
-        {
-          block_stmt_iterator bsi;
-          for (bsi = bsi_start (bbs[i]); !bsi_end_p (bsi); bsi_next (&bsi))
-            {
-              tree stmt = bsi_stmt (bsi);
-              if (stmt == exit_cond
-                  || not_interesting_stmt (stmt)
-                  || stmt_is_bumper_for_loop (loop, stmt))
-                continue;
-              free (bbs);
-              return false;
-            }
-        }
+	{
+	  block_stmt_iterator bsi;
+	  for (bsi = bsi_start (bbs[i]); !bsi_end_p (bsi); bsi_next (&bsi))
+	    {
+	      tree stmt = bsi_stmt (bsi);
+	      if (stmt == exit_cond
+		  || not_interesting_stmt (stmt)
+		  || stmt_is_bumper_for_loop (loop, stmt))
+		continue;
+	      free (bbs);
+	      return false;
+	    }
+	}
     }
   free (bbs);
   /* See if the inner loops are perfectly nested as well.  */
@@ -2112,9 +2112,9 @@ perfect_nest_p (struct loop *loop)
 
 static void
 replace_uses_equiv_to_x_with_y (struct loop *loop, tree stmt, tree x, 
-                                int xstep, tree y, tree yinit,
-                                htab_t replacements,
-                                block_stmt_iterator *firstbsi)
+				int xstep, tree y, tree yinit,
+				htab_t replacements,
+				block_stmt_iterator *firstbsi)
 {
   ssa_op_iter iter;
   use_operand_p use_p;
@@ -2129,61 +2129,61 @@ replace_uses_equiv_to_x_with_y (struct loop *loop, tree stmt, tree x,
 
       /* Replace uses of X with Y right away.  */
       if (use == x)
-        {
-          SET_USE (use_p, y);
-          continue;
-        }
+	{
+	  SET_USE (use_p, y);
+	  continue;
+	}
 
       scev = instantiate_parameters (loop,
-                                     analyze_scalar_evolution (loop, use));
+				     analyze_scalar_evolution (loop, use));
 
       if (scev == NULL || scev == chrec_dont_know)
-        continue;
+	continue;
 
       step = evolution_part_in_loop_num (scev, loop->num);
       if (step == NULL
-          || step == chrec_dont_know
-          || TREE_CODE (step) != INTEGER_CST
-          || int_cst_value (step) != xstep)
-        continue;
+	  || step == chrec_dont_know
+	  || TREE_CODE (step) != INTEGER_CST
+	  || int_cst_value (step) != xstep)
+	continue;
 
       /* Use REPLACEMENTS hash table to cache already created
-         temporaries.  */
+	 temporaries.  */
       in.hash = htab_hash_pointer (use);
       in.from = use;
       h = htab_find_with_hash (replacements, &in, in.hash);
       if (h != NULL)
-        {
-          SET_USE (use_p, h->to);
-          continue;
-        }
+	{
+	  SET_USE (use_p, h->to);
+	  continue;
+	}
 
       /* USE which has the same step as X should be replaced
-         with a temporary set to Y + YINIT - INIT.  */
+	 with a temporary set to Y + YINIT - INIT.  */
       init = initial_condition_in_loop_num (scev, loop->num);
       gcc_assert (init != NULL && init != chrec_dont_know);
       if (TREE_TYPE (use) == TREE_TYPE (y))
-        {
-          val = fold_build2 (MINUS_EXPR, TREE_TYPE (y), init, yinit);
-          val = fold_build2 (PLUS_EXPR, TREE_TYPE (y), y, val);
-          if (val == y)
-             {
-              /* If X has the same type as USE, the same step
-                 and same initial value, it can be replaced by Y.  */
-              SET_USE (use_p, y);
-              continue;
-            }
-        }
+	{
+	  val = fold_build2 (MINUS_EXPR, TREE_TYPE (y), init, yinit);
+	  val = fold_build2 (PLUS_EXPR, TREE_TYPE (y), y, val);
+	  if (val == y)
+ 	    {
+	      /* If X has the same type as USE, the same step
+		 and same initial value, it can be replaced by Y.  */
+	      SET_USE (use_p, y);
+	      continue;
+	    }
+	}
       else
-        {
-          val = fold_build2 (MINUS_EXPR, TREE_TYPE (y), y, yinit);
-          val = fold_convert (TREE_TYPE (use), val);
-          val = fold_build2 (PLUS_EXPR, TREE_TYPE (use), val, init);
-        }
+	{
+	  val = fold_build2 (MINUS_EXPR, TREE_TYPE (y), y, yinit);
+	  val = fold_convert (TREE_TYPE (use), val);
+	  val = fold_build2 (PLUS_EXPR, TREE_TYPE (use), val, init);
+	}
 
       /* Create a temporary variable and insert it at the beginning
-         of the loop body basic block, right after the PHI node
-         which sets Y.  */
+	 of the loop body basic block, right after the PHI node
+	 which sets Y.  */
       var = create_tmp_var (TREE_TYPE (use), "perfecttmp");
       add_referenced_var (var);
       val = force_gimple_operand_bsi (firstbsi, val, false, NULL);
@@ -2234,12 +2234,12 @@ can_put_in_inner_loop (struct loop *inner, tree stmt)
   FOR_EACH_IMM_USE_FAST (use_p, imm_iter, TREE_OPERAND (stmt, 0))
     {
       if (!exit_phi_for_loop_p (inner, USE_STMT (use_p)))
-        {
-          basic_block immbb = bb_for_stmt (USE_STMT (use_p));
+	{
+	  basic_block immbb = bb_for_stmt (USE_STMT (use_p));
 
-          if (!flow_bb_inside_loop_p (inner, immbb))
-            return false;
-        }
+	  if (!flow_bb_inside_loop_p (inner, immbb))
+	    return false;
+	}
     }
   return true;  
 }
@@ -2257,15 +2257,15 @@ can_put_after_inner_loop (struct loop *loop, tree stmt)
   FOR_EACH_IMM_USE_FAST (use_p, imm_iter, TREE_OPERAND (stmt, 0))
     {
       if (!exit_phi_for_loop_p (loop, USE_STMT (use_p)))
-        {
-          basic_block immbb = bb_for_stmt (USE_STMT (use_p));
-          
-          if (!dominated_by_p (CDI_DOMINATORS,
-                               immbb,
-                               loop->inner->header)
-              && !can_put_in_inner_loop (loop->inner, stmt))
-            return false;
-        }
+	{
+	  basic_block immbb = bb_for_stmt (USE_STMT (use_p));
+	  
+	  if (!dominated_by_p (CDI_DOMINATORS,
+			       immbb,
+			       loop->inner->header)
+	      && !can_put_in_inner_loop (loop->inner, stmt))
+	    return false;
+	}
     }
   return true;
 }
@@ -2294,94 +2294,94 @@ can_convert_to_perfect_nest (struct loop *loop)
   for (i = 0; i < loop->num_nodes; i++)
     {
       if (bbs[i]->loop_father == loop)
-        {
-          for (bsi = bsi_start (bbs[i]); !bsi_end_p (bsi); bsi_next (&bsi))
-            { 
-              tree stmt = bsi_stmt (bsi);
+	{
+	  for (bsi = bsi_start (bbs[i]); !bsi_end_p (bsi); bsi_next (&bsi))
+	    { 
+	      tree stmt = bsi_stmt (bsi);
 
-              if (stmt == exit_condition
-                  || not_interesting_stmt (stmt)
-                  || stmt_is_bumper_for_loop (loop, stmt))
-                continue;
+	      if (stmt == exit_condition
+		  || not_interesting_stmt (stmt)
+		  || stmt_is_bumper_for_loop (loop, stmt))
+		continue;
 
-              /* If this is a scalar operation that can be put back
-                 into the inner loop, or after the inner loop, through
-                 copying, then do so. This works on the theory that
-                 any amount of scalar code we have to reduplicate
-                 into or after the loops is less expensive that the
-                 win we get from rearranging the memory walk
-                 the loop is doing so that it has better
-                 cache behavior.  */
-              if (TREE_CODE (stmt) == MODIFY_EXPR)
-                {
-                  use_operand_p use_a, use_b;
-                  imm_use_iterator imm_iter;
-                  ssa_op_iter op_iter, op_iter1;
-                  tree op0 = TREE_OPERAND (stmt, 0);
-                  tree scev = instantiate_parameters
-                    (loop, analyze_scalar_evolution (loop, op0));
+	      /* If this is a scalar operation that can be put back
+	         into the inner loop, or after the inner loop, through
+		 copying, then do so. This works on the theory that
+		 any amount of scalar code we have to reduplicate
+		 into or after the loops is less expensive that the
+		 win we get from rearranging the memory walk
+		 the loop is doing so that it has better
+		 cache behavior.  */
+	      if (TREE_CODE (stmt) == MODIFY_EXPR)
+		{
+		  use_operand_p use_a, use_b;
+		  imm_use_iterator imm_iter;
+		  ssa_op_iter op_iter, op_iter1;
+		  tree op0 = TREE_OPERAND (stmt, 0);
+		  tree scev = instantiate_parameters
+		    (loop, analyze_scalar_evolution (loop, op0));
 
-                  /* If the IV is simple, it can be duplicated.  */
-                  if (!automatically_generated_chrec_p (scev))
-                    {
-                      tree step = evolution_part_in_loop_num (scev, loop->num);
-                      if (step && step != chrec_dont_know 
-                          && TREE_CODE (step) == INTEGER_CST)
-                        continue;
-                    }
+		  /* If the IV is simple, it can be duplicated.  */
+		  if (!automatically_generated_chrec_p (scev))
+		    {
+		      tree step = evolution_part_in_loop_num (scev, loop->num);
+		      if (step && step != chrec_dont_know 
+			  && TREE_CODE (step) == INTEGER_CST)
+			continue;
+		    }
 
-                  /* The statement should not define a variable used
-                     in the inner loop.  */
-                  if (TREE_CODE (op0) == SSA_NAME)
-                    FOR_EACH_IMM_USE_FAST (use_a, imm_iter, op0)
-                      if (bb_for_stmt (USE_STMT (use_a))->loop_father
-                          == loop->inner)
-                        goto fail;
+		  /* The statement should not define a variable used
+		     in the inner loop.  */
+		  if (TREE_CODE (op0) == SSA_NAME)
+		    FOR_EACH_IMM_USE_FAST (use_a, imm_iter, op0)
+		      if (bb_for_stmt (USE_STMT (use_a))->loop_father
+			  == loop->inner)
+			goto fail;
 
-                  FOR_EACH_SSA_USE_OPERAND (use_a, stmt, op_iter, SSA_OP_USE)
-                    {
-                      tree node, op = USE_FROM_PTR (use_a);
+		  FOR_EACH_SSA_USE_OPERAND (use_a, stmt, op_iter, SSA_OP_USE)
+		    {
+		      tree node, op = USE_FROM_PTR (use_a);
 
-                      /* The variables should not be used in both loops.  */
-                      FOR_EACH_IMM_USE_FAST (use_b, imm_iter, op)
-                      if (bb_for_stmt (USE_STMT (use_b))->loop_father
-                          == loop->inner)
-                        goto fail;
+		      /* The variables should not be used in both loops.  */
+		      FOR_EACH_IMM_USE_FAST (use_b, imm_iter, op)
+		      if (bb_for_stmt (USE_STMT (use_b))->loop_father
+			  == loop->inner)
+			goto fail;
 
-                      /* The statement should not use the value of a
-                         scalar that was modified in the loop.  */
-                      node = SSA_NAME_DEF_STMT (op);
-                      if (TREE_CODE (node) == PHI_NODE)
-                        FOR_EACH_PHI_ARG (use_b, node, op_iter1, SSA_OP_USE)
-                          {
-                            tree arg = USE_FROM_PTR (use_b);
+		      /* The statement should not use the value of a
+			 scalar that was modified in the loop.  */
+		      node = SSA_NAME_DEF_STMT (op);
+		      if (TREE_CODE (node) == PHI_NODE)
+			FOR_EACH_PHI_ARG (use_b, node, op_iter1, SSA_OP_USE)
+			  {
+			    tree arg = USE_FROM_PTR (use_b);
 
-                            if (TREE_CODE (arg) == SSA_NAME)
-                              {
-                                tree arg_stmt = SSA_NAME_DEF_STMT (arg);
+			    if (TREE_CODE (arg) == SSA_NAME)
+			      {
+				tree arg_stmt = SSA_NAME_DEF_STMT (arg);
 
-                                if (bb_for_stmt (arg_stmt)->loop_father
-                                    == loop->inner)
-                                  goto fail;
-                              }
-                          }
-                    }
+				if (bb_for_stmt (arg_stmt)->loop_father
+				    == loop->inner)
+				  goto fail;
+			      }
+			  }
+		    }
 
-                  if (can_put_in_inner_loop (loop->inner, stmt)
-                      || can_put_after_inner_loop (loop, stmt))
-                    continue;
-                }
+		  if (can_put_in_inner_loop (loop->inner, stmt)
+		      || can_put_after_inner_loop (loop, stmt))
+		    continue;
+		}
 
-              /* Otherwise, if the bb of a statement we care about isn't
-                 dominated by the header of the inner loop, then we can't
-                 handle this case right now.  This test ensures that the
-                 statement comes completely *after* the inner loop.  */
-              if (!dominated_by_p (CDI_DOMINATORS,
-                                   bb_for_stmt (stmt), 
-                                   loop->inner->header))
-                goto fail;
-            }
-        }
+	      /* Otherwise, if the bb of a statement we care about isn't
+		 dominated by the header of the inner loop, then we can't
+		 handle this case right now.  This test ensures that the
+		 statement comes completely *after* the inner loop.  */
+	      if (!dominated_by_p (CDI_DOMINATORS,
+				   bb_for_stmt (stmt), 
+				   loop->inner->header))
+		goto fail;
+	    }
+	}
     }
 
   /* We also need to make sure the loop exit only has simple copy phis in it,
@@ -2440,11 +2440,11 @@ can_convert_to_perfect_nest (struct loop *loop)
 
 static bool
 perfect_nestify (struct loops *loops,
-                 struct loop *loop,
-                 VEC(tree,heap) *lbounds,
-                 VEC(tree,heap) *ubounds,
-                 VEC(int,heap) *steps,
-                 VEC(tree,heap) *loopivs)
+		 struct loop *loop,
+		 VEC(tree,heap) *lbounds,
+		 VEC(tree,heap) *ubounds,
+		 VEC(int,heap) *steps,
+		 VEC(tree,heap) *loopivs)
 {
   basic_block *bbs;
   tree exit_condition;
@@ -2503,10 +2503,10 @@ perfect_nestify (struct loops *loops,
   then_label = build1 (GOTO_EXPR, void_type_node, tree_block_label (latchbb));
   else_label = build1 (GOTO_EXPR, void_type_node, tree_block_label (olddest));
   cond_stmt = build3 (COND_EXPR, void_type_node,
-                      build2 (NE_EXPR, boolean_type_node, 
-                              integer_one_node, 
-                              integer_zero_node), 
-                      then_label, else_label);
+		      build2 (NE_EXPR, boolean_type_node, 
+			      integer_one_node, 
+			      integer_zero_node), 
+		      then_label, else_label);
   bsi = bsi_start (bodybb);
   bsi_insert_after (&bsi, cond_stmt, BSI_NEW_STMT);
   e = make_edge (bodybb, olddest, EDGE_FALSE_VALUE);
@@ -2524,7 +2524,7 @@ perfect_nestify (struct loops *loops,
   set_immediate_dominator (CDI_DOMINATORS, bodybb, headerbb);
   set_immediate_dominator (CDI_DOMINATORS, headerbb, preheaderbb);
   set_immediate_dominator (CDI_DOMINATORS, preheaderbb, 
-                           loop->single_exit->src);
+			   loop->single_exit->src);
   set_immediate_dominator (CDI_DOMINATORS, latchbb, bodybb);
   set_immediate_dominator (CDI_DOMINATORS, olddest, bodybb);
   /* Create the new iv.  */
@@ -2533,8 +2533,8 @@ perfect_nestify (struct loops *loops,
   add_referenced_var (ivvar);
   standard_iv_increment_position (newloop, &bsi, &insert_after);
   create_iv (VEC_index (tree, lbounds, 0),
-             build_int_cst (TREE_TYPE (oldivvar), VEC_index (int, steps, 0)),
-             ivvar, newloop, &bsi, insert_after, &ivvar, &ivvarinced);             
+	     build_int_cst (TREE_TYPE (oldivvar), VEC_index (int, steps, 0)),
+	     ivvar, newloop, &bsi, insert_after, &ivvar, &ivvarinced);	     
 
   /* Create the new upper bound.  This may be not just a variable, so we copy
      it to one just in case.  */
@@ -2543,7 +2543,7 @@ perfect_nestify (struct loops *loops,
   uboundvar = create_tmp_var (integer_type_node, "uboundvar");
   add_referenced_var (uboundvar);
   stmt = build2 (MODIFY_EXPR, void_type_node, uboundvar, 
-                 VEC_index (tree, ubounds, 0));
+		 VEC_index (tree, ubounds, 0));
   uboundvar = make_ssa_name (uboundvar, stmt);
   TREE_OPERAND (stmt, 0) = uboundvar;
 
@@ -2553,12 +2553,12 @@ perfect_nestify (struct loops *loops,
     bsi_insert_before (&bsi, stmt, BSI_SAME_STMT);
   update_stmt (stmt);
   COND_EXPR_COND (exit_condition) = build2 (GE_EXPR, 
-                                            boolean_type_node,
-                                            uboundvar,
-                                            ivvarinced);
+					    boolean_type_node,
+					    uboundvar,
+					    ivvarinced);
   update_stmt (exit_condition);
   replacements = htab_create_ggc (20, tree_map_hash,
-                                  tree_map_eq, NULL);
+				  tree_map_eq, NULL);
   bbs = get_loop_body_in_dom_order (loop); 
   /* Now move the statements, and replace the induction variable in the moved
      statements with the correct loop induction variable.  */
@@ -2568,71 +2568,71 @@ perfect_nestify (struct loops *loops,
     {
       block_stmt_iterator tobsi = bsi_last (bodybb);
       if (bbs[i]->loop_father == loop)
-        {
-          /* If this is true, we are *before* the inner loop.
-             If this isn't true, we are *after* it.
+	{
+	  /* If this is true, we are *before* the inner loop.
+	     If this isn't true, we are *after* it.
 
-             The only time can_convert_to_perfect_nest returns true when we
-             have statements before the inner loop is if they can be moved
-             into the inner loop. 
+	     The only time can_convert_to_perfect_nest returns true when we
+	     have statements before the inner loop is if they can be moved
+	     into the inner loop. 
 
-             The only time can_convert_to_perfect_nest returns true when we
-             have statements after the inner loop is if they can be moved into
-             the new split loop.  */
+	     The only time can_convert_to_perfect_nest returns true when we
+	     have statements after the inner loop is if they can be moved into
+	     the new split loop.  */
 
-          if (dominated_by_p (CDI_DOMINATORS, loop->inner->header, bbs[i]))
-            {
-              block_stmt_iterator header_bsi 
-                = bsi_after_labels (loop->inner->header);
+	  if (dominated_by_p (CDI_DOMINATORS, loop->inner->header, bbs[i]))
+	    {
+	      block_stmt_iterator header_bsi 
+		= bsi_after_labels (loop->inner->header);
 
-              for (bsi = bsi_start (bbs[i]); !bsi_end_p (bsi);)
-                { 
-                  tree stmt = bsi_stmt (bsi);
+	      for (bsi = bsi_start (bbs[i]); !bsi_end_p (bsi);)
+		{ 
+		  tree stmt = bsi_stmt (bsi);
 
-                  if (stmt == exit_condition
-                      || not_interesting_stmt (stmt)
-                      || stmt_is_bumper_for_loop (loop, stmt))
-                    {
-                      bsi_next (&bsi);
-                      continue;
-                    }
+		  if (stmt == exit_condition
+		      || not_interesting_stmt (stmt)
+		      || stmt_is_bumper_for_loop (loop, stmt))
+		    {
+		      bsi_next (&bsi);
+		      continue;
+		    }
 
-                  bsi_move_before (&bsi, &header_bsi);
-                }
-            }
-          else
-            { 
-              /* Note that the bsi only needs to be explicitly incremented
-                 when we don't move something, since it is automatically
-                 incremented when we do.  */
-              for (bsi = bsi_start (bbs[i]); !bsi_end_p (bsi);)
-                { 
-                  ssa_op_iter i;
-                  tree n, stmt = bsi_stmt (bsi);
-                  
-                  if (stmt == exit_condition
-                      || not_interesting_stmt (stmt)
-                      || stmt_is_bumper_for_loop (loop, stmt))
-                    {
-                      bsi_next (&bsi);
-                      continue;
-                    }
-                  
-                  replace_uses_equiv_to_x_with_y 
-                    (loop, stmt, oldivvar, VEC_index (int, steps, 0), ivvar,
-                     VEC_index (tree, lbounds, 0), replacements, &firstbsi);
+		  bsi_move_before (&bsi, &header_bsi);
+		}
+	    }
+	  else
+	    { 
+	      /* Note that the bsi only needs to be explicitly incremented
+		 when we don't move something, since it is automatically
+		 incremented when we do.  */
+	      for (bsi = bsi_start (bbs[i]); !bsi_end_p (bsi);)
+		{ 
+		  ssa_op_iter i;
+		  tree n, stmt = bsi_stmt (bsi);
+		  
+		  if (stmt == exit_condition
+		      || not_interesting_stmt (stmt)
+		      || stmt_is_bumper_for_loop (loop, stmt))
+		    {
+		      bsi_next (&bsi);
+		      continue;
+		    }
+		  
+		  replace_uses_equiv_to_x_with_y 
+		    (loop, stmt, oldivvar, VEC_index (int, steps, 0), ivvar,
+		     VEC_index (tree, lbounds, 0), replacements, &firstbsi);
 
-                  bsi_move_before (&bsi, &tobsi);
-                  
-                  /* If the statement has any virtual operands, they may
-                     need to be rewired because the original loop may
-                     still reference them.  */
-                  FOR_EACH_SSA_TREE_OPERAND (n, stmt, i, SSA_OP_ALL_VIRTUALS)
-                    mark_sym_for_renaming (SSA_NAME_VAR (n));
-                }
-            }
-          
-        }
+		  bsi_move_before (&bsi, &tobsi);
+		  
+		  /* If the statement has any virtual operands, they may
+		     need to be rewired because the original loop may
+		     still reference them.  */
+		  FOR_EACH_SSA_TREE_OPERAND (n, stmt, i, SSA_OP_ALL_VIRTUALS)
+		    mark_sym_for_renaming (SSA_NAME_VAR (n));
+		}
+	    }
+	  
+	}
     }
 
   free (bbs);
@@ -2655,15 +2655,15 @@ perfect_nestify (struct loops *loops,
 
 bool
 lambda_transform_legal_p (lambda_trans_matrix trans, 
-                          int nb_loops,
-                          VEC (ddr_p, heap) *dependence_relations)
+			  int nb_loops,
+			  VEC (ddr_p, heap) *dependence_relations)
 {
   unsigned int i, j;
   lambda_vector distres;
   struct data_dependence_relation *ddr;
 
   gcc_assert (LTM_COLSIZE (trans) == nb_loops
-              && LTM_ROWSIZE (trans) == nb_loops);
+	      && LTM_ROWSIZE (trans) == nb_loops);
 
   /* When there is an unknown relation in the dependence_relations, we
      know that it is no worth looking at this loop nest: give up.  */
@@ -2679,30 +2679,30 @@ lambda_transform_legal_p (lambda_trans_matrix trans,
   for (i = 0; VEC_iterate (ddr_p, dependence_relations, i, ddr); i++)
     {
       /* Don't care about relations for which we know that there is no
-         dependence, nor about read-read (aka. output-dependences):
-         these data accesses can happen in any order.  */
+	 dependence, nor about read-read (aka. output-dependences):
+	 these data accesses can happen in any order.  */
       if (DDR_ARE_DEPENDENT (ddr) == chrec_known
-          || (DR_IS_READ (DDR_A (ddr)) && DR_IS_READ (DDR_B (ddr))))
-        continue;
+	  || (DR_IS_READ (DDR_A (ddr)) && DR_IS_READ (DDR_B (ddr))))
+	continue;
 
       /* Conservatively answer: "this transformation is not valid".  */
       if (DDR_ARE_DEPENDENT (ddr) == chrec_dont_know)
-        return false;
-          
+	return false;
+	  
       /* If the dependence could not be captured by a distance vector,
-         conservatively answer that the transform is not valid.  */
+	 conservatively answer that the transform is not valid.  */
       if (DDR_NUM_DIST_VECTS (ddr) == 0)
-        return false;
+	return false;
 
       /* Compute trans.dist_vect */
       for (j = 0; j < DDR_NUM_DIST_VECTS (ddr); j++)
-        {
-          lambda_matrix_vector_mult (LTM_MATRIX (trans), nb_loops, nb_loops, 
-                                     DDR_DIST_VECT (ddr, j), distres);
+	{
+	  lambda_matrix_vector_mult (LTM_MATRIX (trans), nb_loops, nb_loops, 
+				     DDR_DIST_VECT (ddr, j), distres);
 
-          if (!lambda_vector_lexico_pos (distres, nb_loops))
-            return false;
-        }
+	  if (!lambda_vector_lexico_pos (distres, nb_loops))
+	    return false;
+	}
     }
   return true;
 }

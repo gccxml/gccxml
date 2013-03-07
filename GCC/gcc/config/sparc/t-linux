@@ -2,4 +2,4 @@
 # the symbol versions that glibc used.
 # Avoid the t-linux version file.
 SHLIB_MAPFILES = $(srcdir)/libgcc-std.ver \
-                 $(srcdir)/config/sparc/libgcc-sparc-glibc.ver
+		 $(srcdir)/config/sparc/libgcc-sparc-glibc.ver

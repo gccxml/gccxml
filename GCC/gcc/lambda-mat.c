@@ -27,7 +27,7 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
 #include "lambda.h"
 
 static void lambda_matrix_get_column (lambda_matrix, int, int, 
-                                      lambda_vector);
+				      lambda_vector);
 
 /* Allocate a matrix of M rows x  N cols.  */
 
@@ -49,7 +49,7 @@ lambda_matrix_new (int m, int n)
 
 void
 lambda_matrix_copy (lambda_matrix mat1, lambda_matrix mat2,
-                    int m, int n)
+		    int m, int n)
 {
   int i;
 
@@ -78,16 +78,16 @@ lambda_matrix_id_p (lambda_matrix mat, int size)
   for (i = 0; i < size; i++)
     for (j = 0; j < size; j++)
       {
-        if (i == j)
-          {
-            if (mat[i][j] != 1)
-              return false;
-          }
-        else
-          {
-            if (mat[i][j] != 0)
-              return false;
-          }
+	if (i == j)
+	  {
+	    if (mat[i][j] != 1)
+	      return false;
+	  }
+	else
+	  {
+	    if (mat[i][j] != 0)
+	      return false;
+	  }
       }
   return true;
 }
@@ -121,7 +121,7 @@ lambda_matrix_transpose (lambda_matrix mat1, lambda_matrix mat2, int m, int n)
 
 void
 lambda_matrix_add (lambda_matrix mat1, lambda_matrix mat2,
-                   lambda_matrix mat3, int m, int n)
+		   lambda_matrix mat3, int m, int n)
 {
   int i;
 
@@ -133,8 +133,8 @@ lambda_matrix_add (lambda_matrix mat1, lambda_matrix mat2,
 
 void
 lambda_matrix_add_mc (lambda_matrix mat1, int const1,
-                      lambda_matrix mat2, int const2,
-                      lambda_matrix mat3, int m, int n)
+		      lambda_matrix mat2, int const2,
+		      lambda_matrix mat3, int m, int n)
 {
   int i;
 
@@ -148,7 +148,7 @@ lambda_matrix_add_mc (lambda_matrix mat1, int const1,
 
 void
 lambda_matrix_mult (lambda_matrix mat1, lambda_matrix mat2,
-                    lambda_matrix mat3, int m, int r, int n)
+		    lambda_matrix mat3, int m, int r, int n)
 {
 
   int i, j, k;
@@ -156,11 +156,11 @@ lambda_matrix_mult (lambda_matrix mat1, lambda_matrix mat2,
   for (i = 0; i < m; i++)
     {
       for (j = 0; j < n; j++)
-        {
-          mat3[i][j] = 0;
-          for (k = 0; k < r; k++)
-            mat3[i][j] += mat1[i][k] * mat2[k][j];
-        }
+	{
+	  mat3[i][j] = 0;
+	  for (k = 0; k < r; k++)
+	    mat3[i][j] += mat1[i][k] * mat2[k][j];
+	}
     }
 }
 
@@ -169,7 +169,7 @@ lambda_matrix_mult (lambda_matrix mat1, lambda_matrix mat2,
 
 static void
 lambda_matrix_get_column (lambda_matrix mat, int n, int col,
-                          lambda_vector vec)
+			  lambda_vector vec)
 {
   int i;
 
@@ -324,13 +324,13 @@ lambda_matrix_inverse (lambda_matrix mat, lambda_matrix inv, int n)
       inv[1][1] =  a;
       det = (a * d - b * c);
       if (det < 0)
-        {
-          det *= -1;
-          inv[0][0] *= -1;
-          inv[1][0] *= -1;
-          inv[0][1] *= -1;
-          inv[1][1] *= -1;
-        }
+	{
+	  det *= -1;
+	  inv[0][0] *= -1;
+	  inv[1][0] *= -1;
+	  inv[0][1] *= -1;
+	  inv[1][1] *= -1;
+	}
       return det;
     }
   else
@@ -360,32 +360,32 @@ lambda_matrix_inverse_hard (lambda_matrix mat, lambda_matrix inv, int n)
 
       /* Make every element in the current row positive.  */
       for (i = j; i < n; i++)
-        if (row[i] < 0)
-          {
-            lambda_matrix_col_negate (temp, n, i);
-            lambda_matrix_col_negate (inv, n, i);
-          }
+	if (row[i] < 0)
+	  {
+	    lambda_matrix_col_negate (temp, n, i);
+	    lambda_matrix_col_negate (inv, n, i);
+	  }
 
       /* Sweep the upper triangle.  Stop when only the diagonal element in the
-         current row is nonzero.  */
+	 current row is nonzero.  */
       while (lambda_vector_first_nz (row, n, j + 1) < n)
-        {
-          int min_col = lambda_vector_min_nz (row, n, j);
-          lambda_matrix_col_exchange (temp, n, j, min_col);
-          lambda_matrix_col_exchange (inv, n, j, min_col);
+	{
+	  int min_col = lambda_vector_min_nz (row, n, j);
+	  lambda_matrix_col_exchange (temp, n, j, min_col);
+	  lambda_matrix_col_exchange (inv, n, j, min_col);
 
-          for (i = j + 1; i < n; i++)
-            {
-              int factor;
+	  for (i = j + 1; i < n; i++)
+	    {
+	      int factor;
 
-              factor = -1 * row[i];
-              if (row[j] != 1)
-                factor /= row[j];
+	      factor = -1 * row[i];
+	      if (row[j] != 1)
+		factor /= row[j];
 
-              lambda_matrix_col_add (temp, n, j, i, factor);
-              lambda_matrix_col_add (inv, n, j, i, factor);
-            }
-        }
+	      lambda_matrix_col_add (temp, n, j, i, factor);
+	      lambda_matrix_col_add (inv, n, j, i, factor);
+	    }
+	}
     }
 
   /* Reduce TEMP from a lower triangular to the identity matrix.  Also compute
@@ -409,26 +409,26 @@ lambda_matrix_inverse_hard (lambda_matrix mat, lambda_matrix inv, int n)
          diagonal so that the middle number is now 1, rather than a
          rational.  */
       if (diagonal != 1)
-        {
-          for (i = 0; i < j; i++)
-            lambda_matrix_col_mc (inv, n, i, diagonal);
-          for (i = j + 1; i < n; i++)
-            lambda_matrix_col_mc (inv, n, i, diagonal);
+	{
+	  for (i = 0; i < j; i++)
+	    lambda_matrix_col_mc (inv, n, i, diagonal);
+	  for (i = j + 1; i < n; i++)
+	    lambda_matrix_col_mc (inv, n, i, diagonal);
 
-          row[j] = diagonal = 1;
-        }
+	  row[j] = diagonal = 1;
+	}
 
       /* Sweep the lower triangle column wise.  */
       for (i = j - 1; i >= 0; i--)
-        {
-          if (row[i])
-            {
-              int factor = -row[i];
-              lambda_matrix_col_add (temp, n, j, i, factor);
-              lambda_matrix_col_add (inv, n, j, i, factor);
-            }
+	{
+	  if (row[i])
+	    {
+	      int factor = -row[i];
+	      lambda_matrix_col_add (temp, n, j, i, factor);
+	      lambda_matrix_col_add (inv, n, j, i, factor);
+	    }
 
-        }
+	}
     }
 
   return determinant;
@@ -440,7 +440,7 @@ lambda_matrix_inverse_hard (lambda_matrix mat, lambda_matrix inv, int n)
 
 void
 lambda_matrix_hermite (lambda_matrix mat, int n,
-                       lambda_matrix H, lambda_matrix U)
+		       lambda_matrix H, lambda_matrix U)
 {
   lambda_vector row;
   int i, j, factor, minimum_col;
@@ -454,28 +454,28 @@ lambda_matrix_hermite (lambda_matrix mat, int n,
 
       /* Make every element of H[j][j..n] positive.  */
       for (i = j; i < n; i++)
-        {
-          if (row[i] < 0)
-            {
-              lambda_matrix_col_negate (H, n, i);
-              lambda_vector_negate (U[i], U[i], n);
-            }
-        }
+	{
+	  if (row[i] < 0)
+	    {
+	      lambda_matrix_col_negate (H, n, i);
+	      lambda_vector_negate (U[i], U[i], n);
+	    }
+	}
 
       /* Stop when only the diagonal element is nonzero.  */
       while (lambda_vector_first_nz (row, n, j + 1) < n)
-        {
-          minimum_col = lambda_vector_min_nz (row, n, j);
-          lambda_matrix_col_exchange (H, n, j, minimum_col);
-          lambda_matrix_row_exchange (U, j, minimum_col);
+	{
+	  minimum_col = lambda_vector_min_nz (row, n, j);
+	  lambda_matrix_col_exchange (H, n, j, minimum_col);
+	  lambda_matrix_row_exchange (U, j, minimum_col);
 
-          for (i = j + 1; i < n; i++)
-            {
-              factor = row[i] / row[j];
-              lambda_matrix_col_add (H, n, j, i, -1 * factor);
-              lambda_matrix_row_add (U, n, i, j, factor);
-            }
-        }
+	  for (i = j + 1; i < n; i++)
+	    {
+	      factor = row[i] / row[j];
+	      lambda_matrix_col_add (H, n, j, i, -1 * factor);
+	      lambda_matrix_row_add (U, n, i, j, factor);
+	    }
+	}
     }
 }
 
@@ -488,7 +488,7 @@ lambda_matrix_hermite (lambda_matrix mat, int n,
 
 void
 lambda_matrix_right_hermite (lambda_matrix A, int m, int n,
-                             lambda_matrix S, lambda_matrix U)
+			     lambda_matrix S, lambda_matrix U)
 {
   int i, j, i0 = 0;
 
@@ -498,29 +498,29 @@ lambda_matrix_right_hermite (lambda_matrix A, int m, int n,
   for (j = 0; j < n; j++)
     {
       if (lambda_vector_first_nz (S[j], m, i0) < m)
-        {
-          ++i0;
-          for (i = m - 1; i >= i0; i--)
-            {
-              while (S[i][j] != 0)
-                {
-                  int sigma, factor, a, b;
+	{
+	  ++i0;
+	  for (i = m - 1; i >= i0; i--)
+	    {
+	      while (S[i][j] != 0)
+		{
+		  int sigma, factor, a, b;
 
-                  a = S[i-1][j];
-                  b = S[i][j];
-                  sigma = (a * b < 0) ? -1: 1;
-                  a = abs (a);
-                  b = abs (b);
-                  factor = sigma * (a / b);
+		  a = S[i-1][j];
+		  b = S[i][j];
+		  sigma = (a * b < 0) ? -1: 1;
+		  a = abs (a);
+		  b = abs (b);
+		  factor = sigma * (a / b);
 
-                  lambda_matrix_row_add (S, n, i, i-1, -factor);
-                  lambda_matrix_row_exchange (S, i, i-1);
+		  lambda_matrix_row_add (S, n, i, i-1, -factor);
+		  lambda_matrix_row_exchange (S, i, i-1);
 
-                  lambda_matrix_row_add (U, m, i, i-1, -factor);
-                  lambda_matrix_row_exchange (U, i, i-1);
-                }
-            }
-        }
+		  lambda_matrix_row_add (U, m, i, i-1, -factor);
+		  lambda_matrix_row_exchange (U, i, i-1);
+		}
+	    }
+	}
     }
 }
 
@@ -533,7 +533,7 @@ lambda_matrix_right_hermite (lambda_matrix A, int m, int n,
 
 void
 lambda_matrix_left_hermite (lambda_matrix A, int m, int n,
-                             lambda_matrix S, lambda_matrix V)
+			     lambda_matrix S, lambda_matrix V)
 {
   int i, j, i0 = 0;
 
@@ -543,29 +543,29 @@ lambda_matrix_left_hermite (lambda_matrix A, int m, int n,
   for (j = 0; j < n; j++)
     {
       if (lambda_vector_first_nz (S[j], m, i0) < m)
-        {
-          ++i0;
-          for (i = m - 1; i >= i0; i--)
-            {
-              while (S[i][j] != 0)
-                {
-                  int sigma, factor, a, b;
+	{
+	  ++i0;
+	  for (i = m - 1; i >= i0; i--)
+	    {
+	      while (S[i][j] != 0)
+		{
+		  int sigma, factor, a, b;
 
-                  a = S[i-1][j];
-                  b = S[i][j];
-                  sigma = (a * b < 0) ? -1: 1;
-                  a = abs (a);
+		  a = S[i-1][j];
+		  b = S[i][j];
+		  sigma = (a * b < 0) ? -1: 1;
+		  a = abs (a);
       b = abs (b);
-                  factor = sigma * (a / b);
+		  factor = sigma * (a / b);
 
-                  lambda_matrix_row_add (S, n, i, i-1, -factor);
-                  lambda_matrix_row_exchange (S, i, i-1);
+		  lambda_matrix_row_add (S, n, i, i-1, -factor);
+		  lambda_matrix_row_exchange (S, i, i-1);
 
-                  lambda_matrix_col_add (V, m, i-1, i, factor);
-                  lambda_matrix_col_exchange (V, m, i, i-1);
-                }
-            }
-        }
+		  lambda_matrix_col_add (V, m, i-1, i, factor);
+		  lambda_matrix_col_exchange (V, m, i, i-1);
+		}
+	    }
+	}
     }
 }
 
@@ -574,7 +574,7 @@ lambda_matrix_left_hermite (lambda_matrix A, int m, int n,
 
 int
 lambda_matrix_first_nz_vec (lambda_matrix mat, int rowsize, int colsize,
-                            int startrow)
+			    int startrow)
 {
   int j;
   bool found = false;
@@ -582,8 +582,8 @@ lambda_matrix_first_nz_vec (lambda_matrix mat, int rowsize, int colsize,
   for (j = startrow; (j < rowsize) && !found; j++)
     {
       if ((mat[j] != NULL)
-          && (lambda_vector_first_nz (mat[j], colsize, startrow) < colsize))
-        found = true;
+	  && (lambda_vector_first_nz (mat[j], colsize, startrow) < colsize))
+	found = true;
     }
 
   if (found)
@@ -595,7 +595,7 @@ lambda_matrix_first_nz_vec (lambda_matrix mat, int rowsize, int colsize,
 
 void
 lambda_matrix_project_to_null (lambda_matrix B, int rowsize,
-                               int colsize, int k, lambda_vector x)
+			       int colsize, int k, lambda_vector x)
 {
   lambda_matrix M1, M2, M3, I;
   int determinant;
@@ -636,7 +636,7 @@ lambda_matrix_project_to_null (lambda_matrix B, int rowsize,
 
 void
 lambda_matrix_vector_mult (lambda_matrix matrix, int m, int n,
-                           lambda_vector vec, lambda_vector dest)
+			   lambda_vector vec, lambda_vector dest)
 {
   int i, j;
 

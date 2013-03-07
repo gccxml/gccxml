@@ -63,14 +63,14 @@ extern void xtensa_output_literal (FILE *, rtx, enum machine_mode, int);
 extern rtx xtensa_return_addr (int, rtx);
 extern enum reg_class xtensa_preferred_reload_class (rtx, enum reg_class, int);
 extern enum reg_class xtensa_secondary_reload_class (enum reg_class,
-                                                     enum machine_mode, rtx,
-                                                     int);
+						     enum machine_mode, rtx,
+						     int);
 #endif /* RTX_CODE */
 
 #ifdef TREE_CODE
 extern void function_arg_advance (CUMULATIVE_ARGS *, enum machine_mode, tree);
 extern struct rtx_def *function_arg (CUMULATIVE_ARGS *, enum machine_mode,
-                                     tree, int);
+				     tree, int);
 #endif /* TREE_CODE */
 
 extern void xtensa_setup_frame_addresses (void);

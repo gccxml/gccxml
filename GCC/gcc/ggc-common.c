@@ -77,7 +77,7 @@ static int call_alloc (void **, void *);
 static int compare_ptr_data (const void *, const void *);
 static void relocate_ptrs (void *, void *);
 static void write_pch_globals (const struct ggc_root_tab * const *tab,
-                               struct traversal_state *state);
+			       struct traversal_state *state);
 static double ggc_rlimit_bound (double);
 
 /* Maintain global roots that are preserved during GC.  */
@@ -115,7 +115,7 @@ ggc_mark_roots (void)
   for (rt = gt_ggc_rtab; *rt; rt++)
     for (rti = *rt; rti->base != NULL; rti++)
       for (i = 0; i < rti->nelt; i++)
-        (*rti->cb)(*(void **)((char *)rti->base + rti->stride * i));
+	(*rti->cb)(*(void **)((char *)rti->base + rti->stride * i));
 
   ggc_mark_stringpool ();
 
@@ -124,11 +124,11 @@ ggc_mark_roots (void)
   for (ct = gt_ggc_cache_rtab; *ct; ct++)
     for (cti = *ct; cti->base != NULL; cti++)
       if (*cti->base)
-        {
-          ggc_set_mark (*cti->base);
-          htab_traverse_noresize (*cti->base, ggc_htab_delete, (void *) cti);
-          ggc_set_mark ((*cti->base)->entries);
-        }
+	{
+	  ggc_set_mark (*cti->base);
+	  htab_traverse_noresize (*cti->base, ggc_htab_delete, (void *) cti);
+	  ggc_set_mark ((*cti->base)->entries);
+	}
 }
 
 /* Allocate a block of memory, then clear it.  */
@@ -155,17 +155,17 @@ ggc_realloc_stat (void *x, size_t size MEM_STAT_DECL)
   if (size <= old_size)
     {
       /* Mark the unwanted memory as unaccessible.  We also need to make
-         the "new" size accessible, since ggc_get_size returns the size of
-         the pool, not the size of the individually allocated object, the
-         size which was previously made accessible.  Unfortunately, we
-         don't know that previously allocated size.  Without that
-         knowledge we have to lose some initialization-tracking for the
-         old parts of the object.  An alternative is to mark the whole
-         old_size as reachable, but that would lose tracking of writes
-         after the end of the object (by small offsets).  Discard the
-         handle to avoid handle leak.  */
+	 the "new" size accessible, since ggc_get_size returns the size of
+	 the pool, not the size of the individually allocated object, the
+	 size which was previously made accessible.  Unfortunately, we
+	 don't know that previously allocated size.  Without that
+	 knowledge we have to lose some initialization-tracking for the
+	 old parts of the object.  An alternative is to mark the whole
+	 old_size as reachable, but that would lose tracking of writes
+	 after the end of the object (by small offsets).  Discard the
+	 handle to avoid handle leak.  */
       VALGRIND_DISCARD (VALGRIND_MAKE_NOACCESS ((char *) x + size,
-                                                old_size - size));
+						old_size - size));
       VALGRIND_DISCARD (VALGRIND_MAKE_READABLE (x, size));
       return x;
     }
@@ -209,15 +209,15 @@ ggc_splay_dont_free (void * x ATTRIBUTE_UNUSED, void *nl)
 
 /* Print statistics that are independent of the collector in use.  */
 #define SCALE(x) ((unsigned long) ((x) < 1024*10 \
-                  ? (x) \
-                  : ((x) < 1024*1024*10 \
-                     ? (x) / 1024 \
-                     : (x) / (1024*1024))))
+		  ? (x) \
+		  : ((x) < 1024*1024*10 \
+		     ? (x) / 1024 \
+		     : (x) / (1024*1024))))
 #define LABEL(x) ((x) < 1024*10 ? ' ' : ((x) < 1024*1024*10 ? 'k' : 'M'))
 
 void
 ggc_print_common_statistics (FILE *stream ATTRIBUTE_UNUSED,
-                             ggc_statistics *stats)
+			     ggc_statistics *stats)
 {
   /* Set the pointer so that during collection we will actually gather
      the statistics.  */
@@ -253,8 +253,8 @@ struct ptr_data
 
 int
 gt_pch_note_object (void *obj, void *note_ptr_cookie,
-                    gt_note_pointers note_ptr_fn,
-                    enum gt_types_enum type)
+		    gt_note_pointers note_ptr_fn,
+		    enum gt_types_enum type)
 {
   struct ptr_data **slot;
 
@@ -263,11 +263,11 @@ gt_pch_note_object (void *obj, void *note_ptr_cookie,
 
   slot = (struct ptr_data **)
     htab_find_slot_with_hash (saving_htab, obj, POINTER_HASH (obj),
-                              INSERT);
+			      INSERT);
   if (*slot != NULL)
     {
       gcc_assert ((*slot)->note_ptr_fn == note_ptr_fn
-                  && (*slot)->note_ptr_cookie == note_ptr_cookie);
+		  && (*slot)->note_ptr_cookie == note_ptr_cookie);
       return 0;
     }
 
@@ -287,7 +287,7 @@ gt_pch_note_object (void *obj, void *note_ptr_cookie,
 
 void
 gt_pch_note_reorder (void *obj, void *note_ptr_cookie,
-                     gt_handle_reorder reorder_fn)
+		     gt_handle_reorder reorder_fn)
 {
   struct ptr_data *data;
 
@@ -334,8 +334,8 @@ call_count (void **slot, void *state_p)
   struct traversal_state *state = (struct traversal_state *)state_p;
 
   ggc_pch_count_object (state->d, d->obj, d->size,
-                        d->note_ptr_fn == gt_pch_p_S,
-                        d->type);
+			d->note_ptr_fn == gt_pch_p_S,
+			d->type);
   state->count++;
   return 1;
 }
@@ -347,8 +347,8 @@ call_alloc (void **slot, void *state_p)
   struct traversal_state *state = (struct traversal_state *)state_p;
 
   d->new_addr = ggc_pch_alloc_object (state->d, d->obj, d->size,
-                                      d->note_ptr_fn == gt_pch_p_S,
-                                      d->type);
+				      d->note_ptr_fn == gt_pch_p_S,
+				      d->type);
   state->ptrs[state->ptrs_i++] = d;
   return 1;
 }
@@ -361,7 +361,7 @@ compare_ptr_data (const void *p1_p, const void *p2_p)
   struct ptr_data *p1 = *(struct ptr_data *const *)p1_p;
   struct ptr_data *p2 = *(struct ptr_data *const *)p2_p;
   return (((size_t)p1->new_addr > (size_t)p2->new_addr)
-          - ((size_t)p1->new_addr < (size_t)p2->new_addr));
+	  - ((size_t)p1->new_addr < (size_t)p2->new_addr));
 }
 
 /* Callbacks for note_ptr_fn.  */
@@ -385,7 +385,7 @@ relocate_ptrs (void *ptr_p, void *state_p)
 /* Write out, after relocation, the pointers in TAB.  */
 static void
 write_pch_globals (const struct ggc_root_tab * const *tab,
-                   struct traversal_state *state)
+		   struct traversal_state *state)
 {
   const struct ggc_root_tab *const *rt;
   const struct ggc_root_tab *rti;
@@ -394,24 +394,24 @@ write_pch_globals (const struct ggc_root_tab * const *tab,
   for (rt = tab; *rt; rt++)
     for (rti = *rt; rti->base != NULL; rti++)
       for (i = 0; i < rti->nelt; i++)
-        {
-          void *ptr = *(void **)((char *)rti->base + rti->stride * i);
-          struct ptr_data *new_ptr;
-          if (ptr == NULL || ptr == (void *)1)
-            {
-              if (fwrite (&ptr, sizeof (void *), 1, state->f)
-                  != 1)
-                fatal_error ("can't write PCH file: %m");
-            }
-          else
-            {
-              new_ptr = htab_find_with_hash (saving_htab, ptr,
-                                             POINTER_HASH (ptr));
-              if (fwrite (&new_ptr->new_addr, sizeof (void *), 1, state->f)
-                  != 1)
-                fatal_error ("can't write PCH file: %m");
-            }
-        }
+	{
+	  void *ptr = *(void **)((char *)rti->base + rti->stride * i);
+	  struct ptr_data *new_ptr;
+	  if (ptr == NULL || ptr == (void *)1)
+	    {
+	      if (fwrite (&ptr, sizeof (void *), 1, state->f)
+		  != 1)
+		fatal_error ("can't write PCH file: %m");
+	    }
+	  else
+	    {
+	      new_ptr = htab_find_with_hash (saving_htab, ptr,
+					     POINTER_HASH (ptr));
+	      if (fwrite (&new_ptr->new_addr, sizeof (void *), 1, state->f)
+		  != 1)
+		fatal_error ("can't write PCH file: %m");
+	    }
+	}
 }
 
 /* Hold the information we need to mmap the file back in.  */
@@ -444,12 +444,12 @@ gt_pch_save (FILE *f)
   for (rt = gt_ggc_rtab; *rt; rt++)
     for (rti = *rt; rti->base != NULL; rti++)
       for (i = 0; i < rti->nelt; i++)
-        (*rti->pchw)(*(void **)((char *)rti->base + rti->stride * i));
+	(*rti->pchw)(*(void **)((char *)rti->base + rti->stride * i));
 
   for (rt = gt_pch_cache_rtab; *rt; rt++)
     for (rti = *rt; rti->base != NULL; rti++)
       for (i = 0; i < rti->nelt; i++)
-        (*rti->pchw)(*(void **)((char *)rti->base + rti->stride * i));
+	(*rti->pchw)(*(void **)((char *)rti->base + rti->stride * i));
 
   /* Prepare the objects for writing, determine addresses and such.  */
   state.f = f;
@@ -477,7 +477,7 @@ gt_pch_save (FILE *f)
   for (rt = gt_pch_scalar_rtab; *rt; rt++)
     for (rti = *rt; rti->base != NULL; rti++)
       if (fwrite (rti->base, rti->stride, 1, f) != 1)
-        fatal_error ("can't write PCH file: %m");
+	fatal_error ("can't write PCH file: %m");
 
   /* Write out all the global pointers, after translation.  */
   write_pch_globals (gt_ggc_rtab, &state);
@@ -507,23 +507,23 @@ gt_pch_save (FILE *f)
   for (i = 0; i < state.count; i++)
     {
       if (this_object_size < state.ptrs[i]->size)
-        {
-          this_object_size = state.ptrs[i]->size;
-          this_object = xrealloc (this_object, this_object_size);
-        }
+	{
+	  this_object_size = state.ptrs[i]->size;
+	  this_object = xrealloc (this_object, this_object_size);
+	}
       memcpy (this_object, state.ptrs[i]->obj, state.ptrs[i]->size);
       if (state.ptrs[i]->reorder_fn != NULL)
-        state.ptrs[i]->reorder_fn (state.ptrs[i]->obj,
-                                   state.ptrs[i]->note_ptr_cookie,
-                                   relocate_ptrs, &state);
+	state.ptrs[i]->reorder_fn (state.ptrs[i]->obj,
+				   state.ptrs[i]->note_ptr_cookie,
+				   relocate_ptrs, &state);
       state.ptrs[i]->note_ptr_fn (state.ptrs[i]->obj,
-                                  state.ptrs[i]->note_ptr_cookie,
-                                  relocate_ptrs, &state);
+				  state.ptrs[i]->note_ptr_cookie,
+				  relocate_ptrs, &state);
       ggc_pch_write_object (state.d, state.f, state.ptrs[i]->obj,
-                            state.ptrs[i]->new_addr, state.ptrs[i]->size,
-                            state.ptrs[i]->note_ptr_fn == gt_pch_p_S);
+			    state.ptrs[i]->new_addr, state.ptrs[i]->size,
+			    state.ptrs[i]->note_ptr_fn == gt_pch_p_S);
       if (state.ptrs[i]->note_ptr_fn != gt_pch_p_S)
-        memcpy (state.ptrs[i]->obj, this_object, state.ptrs[i]->size);
+	memcpy (state.ptrs[i]->obj, this_object, state.ptrs[i]->size);
     }
   ggc_pch_finish (state.d, state.f);
   gt_pch_fixup_stringpool ();
@@ -554,35 +554,35 @@ gt_pch_restore (FILE *f)
   for (rt = gt_pch_scalar_rtab; *rt; rt++)
     for (rti = *rt; rti->base != NULL; rti++)
       if (fread (rti->base, rti->stride, 1, f) != 1)
-        fatal_error ("can't read PCH file: %m");
+	fatal_error ("can't read PCH file: %m");
 
   /* Read in all the global pointers, in 6 easy loops.  */
   for (rt = gt_ggc_rtab; *rt; rt++)
     for (rti = *rt; rti->base != NULL; rti++)
       for (i = 0; i < rti->nelt; i++)
-        if (fread ((char *)rti->base + rti->stride * i,
-                   sizeof (void *), 1, f) != 1)
-          fatal_error ("can't read PCH file: %m");
+	if (fread ((char *)rti->base + rti->stride * i,
+		   sizeof (void *), 1, f) != 1)
+	  fatal_error ("can't read PCH file: %m");
 
   for (rt = gt_pch_cache_rtab; *rt; rt++)
     for (rti = *rt; rti->base != NULL; rti++)
       for (i = 0; i < rti->nelt; i++)
-        if (fread ((char *)rti->base + rti->stride * i,
-                   sizeof (void *), 1, f) != 1)
-          fatal_error ("can't read PCH file: %m");
+	if (fread ((char *)rti->base + rti->stride * i,
+		   sizeof (void *), 1, f) != 1)
+	  fatal_error ("can't read PCH file: %m");
 
   if (fread (&mmi, sizeof (mmi), 1, f) != 1)
     fatal_error ("can't read PCH file: %m");
 
   result = host_hooks.gt_pch_use_address (mmi.preferred_base, mmi.size,
-                                          fileno (f), mmi.offset);
+					  fileno (f), mmi.offset);
   if (result < 0)
     fatal_error ("had to relocate PCH");
   if (result == 0)
     {
       if (fseek (f, mmi.offset, SEEK_SET) != 0
-          || fread (mmi.preferred_base, mmi.size, 1, f) != 1)
-        fatal_error ("can't read PCH file: %m");
+	  || fread (mmi.preferred_base, mmi.size, 1, f) != 1)
+	fatal_error ("can't read PCH file: %m");
     }
   else if (fseek (f, mmi.offset + mmi.size, SEEK_SET) != 0)
     fatal_error ("can't read PCH file: %m");
@@ -598,7 +598,7 @@ gt_pch_restore (FILE *f)
 
 void *
 default_gt_pch_get_address (size_t size ATTRIBUTE_UNUSED,
-                            int fd ATTRIBUTE_UNUSED)
+			    int fd ATTRIBUTE_UNUSED)
 {
   return NULL;
 }
@@ -611,7 +611,7 @@ default_gt_pch_get_address (size_t size ATTRIBUTE_UNUSED,
 
 int
 default_gt_pch_use_address (void *base, size_t size, int fd ATTRIBUTE_UNUSED,
-                            size_t offset ATTRIBUTE_UNUSED)
+			    size_t offset ATTRIBUTE_UNUSED)
 {
   void *addr = xmalloc (size);
   return (addr == base) - 1;
@@ -667,7 +667,7 @@ mmap_gt_pch_use_address (void *base, size_t size, int fd, size_t offset)
     return -1;
 
   addr = mmap (base, size, PROT_READ | PROT_WRITE, MAP_PRIVATE,
-               fd, offset);
+	       fd, offset);
 
   return addr == base ? 1 : -1;
 }
@@ -694,10 +694,10 @@ ggc_rlimit_bound (double limit)
       && rlim.rlim_cur != (rlim_t) RLIM_INFINITY
       && rlim.rlim_cur < limit
       /* Darwin has this horribly bogus default setting of
-         RLIMIT_DATA, to 6144Kb.  No-one notices because RLIMIT_DATA
-         appears to be ignored.  Ignore such silliness.  If a limit
-         this small was actually effective for mmap, GCC wouldn't even
-         start up.  */
+	 RLIMIT_DATA, to 6144Kb.  No-one notices because RLIMIT_DATA
+	 appears to be ignored.  Ignore such silliness.  If a limit
+	 this small was actually effective for mmap, GCC wouldn't even
+	 start up.  */
       && rlim.rlim_cur >= 8 * 1024 * 1024)
     limit = rlim.rlim_cur;
 # endif /* RLIMIT_AS or RLIMIT_DATA */
@@ -807,7 +807,7 @@ eq_descriptor (const void *p1, const void *p2)
   const struct loc_descriptor *d2 = p2;
 
   return (d->file == d2->file && d->line == d2->line
-          && d->function == d2->function);
+	  && d->function == d2->function);
 }
 
 /* Hashtable converting address of allocated field to loc descriptor.  */
@@ -862,7 +862,7 @@ loc_descriptor (const char *name, int line, const char *function)
 /* Record ALLOCATED and OVERHEAD bytes to descriptor NAME:LINE (FUNCTION).  */
 void
 ggc_record_overhead (size_t allocated, size_t overhead, void *ptr,
-                     const char *name, int line, const char *function)
+		     const char *name, int line, const char *function)
 {
   struct loc_descriptor *loc = loc_descriptor (name, line, function);
   struct ptr_hash_entry *p = XNEW (struct ptr_hash_entry);
@@ -910,7 +910,7 @@ void
 ggc_free_overhead (void *ptr)
 {
   PTR *slot = htab_find_slot_with_hash (ptr_hash, ptr, htab_hash_pointer (ptr),
-                                        NO_INSERT);
+					NO_INSERT);
   struct ptr_hash_entry *p = *slot;
   p->loc->freed += p->size;
   htab_clear_slot (ptr_hash, slot);
@@ -924,7 +924,7 @@ cmp_statistic (const void *loc1, const void *loc2)
   struct loc_descriptor *l1 = *(struct loc_descriptor **) loc1;
   struct loc_descriptor *l2 = *(struct loc_descriptor **) loc2;
   return ((l1->allocated + l1->overhead - l1->freed) -
-          (l2->allocated + l2->overhead - l2->freed));
+	  (l2->allocated + l2->overhead - l2->freed));
 }
 
 /* Collect array of the descriptors from hashtable.  */
@@ -955,7 +955,7 @@ dump_ggc_loc_statistics (void)
   loc_array = xcalloc (sizeof (*loc_array), loc_hash->n_elements);
   fprintf (stderr, "-------------------------------------------------------\n");
   fprintf (stderr, "\n%-48s %10s       %10s       %10s       %10s       %10s\n",
-           "source location", "Garbage", "Freed", "Leak", "Overhead", "Times");
+	   "source location", "Garbage", "Freed", "Leak", "Overhead", "Times");
   fprintf (stderr, "-------------------------------------------------------\n");
   htab_traverse (loc_hash, add_statistics, &nentries);
   qsort (loc_array, nentries, sizeof (*loc_array), cmp_statistic);
@@ -972,32 +972,32 @@ dump_ggc_loc_statistics (void)
     {
       struct loc_descriptor *d = loc_array[i];
       if (d->allocated)
-        {
-          const char *s1 = d->file;
-          const char *s2;
-          while ((s2 = strstr (s1, "gcc/")))
-            s1 = s2 + 4;
-          sprintf (s, "%s:%i (%s)", s1, d->line, d->function);
-          s[48] = 0;
-          fprintf (stderr, "%-48s %10li:%4.1f%% %10li:%4.1f%% %10li:%4.1f%% %10li:%4.1f%% %10li\n", s,
-                   (long)d->collected,
-                   (d->collected) * 100.0 / collected,
-                   (long)d->freed,
-                   (d->freed) * 100.0 / freed,
-                   (long)(d->allocated + d->overhead - d->freed - d->collected),
-                   (d->allocated + d->overhead - d->freed - d->collected) * 100.0
-                   / (allocated + overhead - freed - collected),
-                   (long)d->overhead,
-                   d->overhead * 100.0 / overhead,
-                   (long)d->times);
-        }
+	{
+	  const char *s1 = d->file;
+	  const char *s2;
+	  while ((s2 = strstr (s1, "gcc/")))
+	    s1 = s2 + 4;
+	  sprintf (s, "%s:%i (%s)", s1, d->line, d->function);
+	  s[48] = 0;
+	  fprintf (stderr, "%-48s %10li:%4.1f%% %10li:%4.1f%% %10li:%4.1f%% %10li:%4.1f%% %10li\n", s,
+		   (long)d->collected,
+		   (d->collected) * 100.0 / collected,
+		   (long)d->freed,
+		   (d->freed) * 100.0 / freed,
+		   (long)(d->allocated + d->overhead - d->freed - d->collected),
+		   (d->allocated + d->overhead - d->freed - d->collected) * 100.0
+		   / (allocated + overhead - freed - collected),
+		   (long)d->overhead,
+		   d->overhead * 100.0 / overhead,
+		   (long)d->times);
+	}
     }
   fprintf (stderr, "%-48s %10ld       %10ld       %10ld       %10ld       %10ld\n",
-           "Total", (long)collected, (long)freed,
-           (long)(allocated + overhead - freed - collected), (long)overhead,
-           (long)times);
+	   "Total", (long)collected, (long)freed,
+	   (long)(allocated + overhead - freed - collected), (long)overhead,
+	   (long)times);
   fprintf (stderr, "%-48s %10s       %10s       %10s       %10s       %10s\n",
-           "source location", "Garbage", "Freed", "Leak", "Overhead", "Times");
+	   "source location", "Garbage", "Freed", "Leak", "Overhead", "Times");
   fprintf (stderr, "-------------------------------------------------------\n");
 #endif
 }

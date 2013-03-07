@@ -70,7 +70,7 @@ extern void ia64_print_operand_address (FILE *, rtx);
 extern void ia64_print_operand (FILE *, rtx, int);
 extern enum reg_class ia64_preferred_reload_class (rtx, enum reg_class);
 extern enum reg_class ia64_secondary_reload_class (enum reg_class,
-                                                   enum machine_mode, rtx);
+						   enum machine_mode, rtx);
 extern void process_for_unwind_directive (FILE *, rtx);
 extern const char *get_bundle_name (int);
 #endif /* RTX_CODE */
@@ -78,20 +78,20 @@ extern const char *get_bundle_name (int);
 #ifdef TREE_CODE
 #ifdef RTX_CODE
 extern rtx ia64_function_arg (CUMULATIVE_ARGS *, enum machine_mode,
-                              tree, int, int);
+			      tree, int, int);
 extern rtx ia64_expand_builtin (tree, rtx, rtx, enum machine_mode, int);
 extern rtx ia64_va_arg (tree, tree);
 extern rtx ia64_function_value (tree, tree);
 #endif /* RTX_CODE */
 
 extern void ia64_function_arg_advance (CUMULATIVE_ARGS *, enum machine_mode,
-                                       tree, int);
+				       tree, int);
 extern int ia64_function_arg_boundary (enum machine_mode, tree);
 extern void ia64_asm_output_external (FILE *, tree, const char *);
 #endif /* TREE_CODE */
 
 extern int ia64_register_move_cost (enum machine_mode, enum reg_class,
-                                    enum reg_class);
+				    enum reg_class);
 extern int ia64_epilogue_uses (int);
 extern int ia64_eh_uses (int);
 extern void emit_safe_across_calls (void);

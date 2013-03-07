@@ -52,12 +52,12 @@ _cpp_init_hashtable (cpp_reader *pfile, hash_table *table)
   if (table == NULL)
     {
       pfile->our_hashtable = 1;
-      table = ht_create (13);        /* 8K (=2^13) entries.  */
+      table = ht_create (13);	/* 8K (=2^13) entries.  */
       table->alloc_node = (hashnode (*) (hash_table *)) alloc_node;
 
       _obstack_begin (&pfile->hash_ob, 0, 0,
-                      (void *(*) (long)) xmalloc,
-                      (void (*) (void *)) free);
+		      (void *(*) (long)) xmalloc,
+		      (void (*) (void *)) free);
     }
 
   table->pfile = pfile;
@@ -68,9 +68,9 @@ _cpp_init_hashtable (cpp_reader *pfile, hash_table *table)
   _cpp_init_internal_pragmas (pfile);
 
   s = &pfile->spec_nodes;
-  s->n_defined                = cpp_lookup (pfile, DSC("defined"));
-  s->n_true                = cpp_lookup (pfile, DSC("true"));
-  s->n_false                = cpp_lookup (pfile, DSC("false"));
+  s->n_defined		= cpp_lookup (pfile, DSC("defined"));
+  s->n_true		= cpp_lookup (pfile, DSC("true"));
+  s->n_false		= cpp_lookup (pfile, DSC("false"));
   s->n__VA_ARGS__       = cpp_lookup (pfile, DSC("__VA_ARGS__"));
   s->n__VA_ARGS__->flags |= NODE_DIAGNOSTIC;
 }

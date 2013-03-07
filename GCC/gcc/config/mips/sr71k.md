@@ -174,13 +174,13 @@
 (define_insn_reservation "ir_sr70_xfer_from" 6
   (and (eq_attr "cpu" "sr71000")
        (and (eq_attr "type" "xfer")
-            (eq_attr "mode" "!SF,DF,FPSW")))
+	    (eq_attr "mode" "!SF,DF,FPSW")))
   "(cpu_iss+cp1_iss),(fpu_mov+ri_mem)")
 
 (define_insn_reservation "ir_sr70_xfer_to" 9
   (and (eq_attr "cpu" "sr71000")
        (and (eq_attr "type" "xfer")
-            (eq_attr "mode" "SF,DF")))
+	    (eq_attr "mode" "SF,DF")))
   "(cpu_iss+cp1_iss),(ri_mem+rf_ldmem)")
 
 (define_insn_reservation "ir_sr70_hilo" 1
@@ -198,13 +198,13 @@
 (define_insn_reservation "ir_sr70_imul_si" 4
   (and (eq_attr "cpu" "sr71000")
        (and (eq_attr "type" "imul,imul3,imadd")
-            (eq_attr "mode" "SI")))
+	    (eq_attr "mode" "SI")))
   "ri_alux,ipu_alux,ipu_macc_iter")
 
 (define_insn_reservation "ir_sr70_imul_di" 6
   (and (eq_attr "cpu" "sr71000")
        (and (eq_attr "type" "imul,imul3,imadd")
-            (eq_attr "mode" "DI")))
+	    (eq_attr "mode" "DI")))
   "ri_alux,ipu_alux,(ipu_macc_iter*3)")
 
 ;; Divide algorithm is early out with best latency of 7 pcycles.
@@ -212,26 +212,26 @@
 (define_insn_reservation "ir_sr70_idiv_si" 41
   (and (eq_attr "cpu" "sr71000")
        (and (eq_attr "type" "idiv")
-            (eq_attr "mode" "SI")))
+	    (eq_attr "mode" "SI")))
   "ri_alux,ipu_alux,(ipu_macc_iter*38)")
 
 (define_insn_reservation "ir_sr70_idiv_di" 73
   (and (eq_attr "cpu" "sr71000")
        (and (eq_attr "type" "idiv")
-            (eq_attr "mode" "DI")))
+	    (eq_attr "mode" "DI")))
   "ri_alux,ipu_alux,(ipu_macc_iter*70)")
 
 ;; extra reservations of fpu_fpu are for repeat latency
 (define_insn_reservation "ir_sr70_fadd_sf" 8
   (and (eq_attr "cpu" "sr71000")
        (and (eq_attr "type" "fadd")
-            (eq_attr "mode" "SF")))
+	    (eq_attr "mode" "SF")))
   "rf_insn,fpu_fpu")
 
 (define_insn_reservation "ir_sr70_fadd_df" 10
   (and (eq_attr "cpu" "sr71000")
        (and (eq_attr "type" "fadd")
-            (eq_attr "mode" "DF")))
+	    (eq_attr "mode" "DF")))
   "rf_insn,fpu_fpu")
 
 ;; Latencies for MADD,MSUB, NMADD, NMSUB assume the Multiply is fused
@@ -239,7 +239,7 @@
 (define_insn_reservation "ir_sr70_fmul_sf" 8
   (and (eq_attr "cpu" "sr71000")
        (and (eq_attr "type" "fmul,fmadd")
-            (eq_attr "mode" "SF")))
+	    (eq_attr "mode" "SF")))
   "rf_insn,fpu_fpu")
 
 ;; tie up the fpu unit to emulate the balance for the "repeat
@@ -247,7 +247,7 @@
 (define_insn_reservation "ir_sr70_fmul_df" 16
   (and (eq_attr "cpu" "sr71000")
        (and (eq_attr "type" "fmul,fmadd")
-            (eq_attr "mode" "DF")))
+	    (eq_attr "mode" "DF")))
   "rf_insn,fpu_fpu*6")
 
 
@@ -259,13 +259,13 @@
 (define_insn_reservation "ir_sr70_fdiv_sf" 60
   (and (eq_attr "cpu" "sr71000")
        (and (eq_attr "type" "fdiv,frdiv")
-            (eq_attr "mode" "SF")))
+	    (eq_attr "mode" "SF")))
   "rf_multi1+(fpu_iter*51)")
 
 (define_insn_reservation "ir_sr70_fdiv_df" 120
   (and (eq_attr "cpu" "sr71000")
        (and (eq_attr "type" "fdiv,frdiv")
-            (eq_attr "mode" "DF")))
+	    (eq_attr "mode" "DF")))
   "rf_multi1+(fpu_iter*109)")
 
 (define_insn_reservation "ir_sr70_fabs" 4
@@ -289,25 +289,25 @@
 (define_insn_reservation "ir_sr70_fsqrt_sf" 62
   (and (eq_attr "cpu" "sr71000")
        (and (eq_attr "type" "fsqrt")
-            (eq_attr "mode" "SF")))
+	    (eq_attr "mode" "SF")))
   "rf_multi1+(fpu_iter*53)")
 
 (define_insn_reservation "ir_sr70_fsqrt_df" 122
   (and (eq_attr "cpu" "sr71000")
        (and (eq_attr "type" "fsqrt")
-            (eq_attr "mode" "DF")))
+	    (eq_attr "mode" "DF")))
   "rf_multi1+(fpu_iter*111)")
 
 (define_insn_reservation "ir_sr70_frsqrt_sf" 48
   (and (eq_attr "cpu" "sr71000")
        (and (eq_attr "type" "frsqrt")
-            (eq_attr "mode" "SF")))
+	    (eq_attr "mode" "SF")))
   "rf_multi1+(fpu_iter*39)")
 
 (define_insn_reservation "ir_sr70_frsqrt_df" 240
   (and (eq_attr "cpu" "sr71000")
        (and (eq_attr "type" "frsqrt")
-            (eq_attr "mode" "DF")))
+	    (eq_attr "mode" "DF")))
   "rf_multi1+(fpu_iter*229)")
 
 (define_insn_reservation "ir_sr70_multi" 1

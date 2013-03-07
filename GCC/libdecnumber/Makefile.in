@@ -55,13 +55,13 @@ INCLUDES = -I$(srcdir) -I.
 ALL_CFLAGS = $(CFLAGS) $(WARN_CFLAGS) $(INCLUDES) $(CPPFLAGS)
 
 libdecnumber_a_OBJS = decNumber.o decContext.o decUtility.o \
-        decimal32.o decimal64.o decimal128.o
+	decimal32.o decimal64.o decimal128.o
 
 libdecnumber_a_SOURCES = decContext.c decContext.h decDPD.h \
-        decNumber.c decNumber.h decNumberLocal.h \
-        decUtility.c decUtility.h \
-        decRound.c decimal128.c decimal128.h decimal32.c decimal32.h \
-        decimal64.c decimal64.h
+	decNumber.c decNumber.h decNumberLocal.h \
+	decUtility.c decUtility.h \
+	decRound.c decimal128.c decimal128.h decimal32.c decimal32.h \
+	decimal64.c decimal64.h
 
 all: libdecnumber.a
 
@@ -69,36 +69,36 @@ all: libdecnumber.a
 .SUFFIXES: .c .o .obj
 
 libdecnumber.a: $(libdecnumber_a_OBJS)
-        -rm -f $@
-        $(AR) $(ARFLAGS) $@ $(libdecnumber_a_OBJS)
-        $(RANLIB) $@
+	-rm -f $@
+	$(AR) $(ARFLAGS) $@ $(libdecnumber_a_OBJS)
+	$(RANLIB) $@
 
 # Rules to rebuild the configuration
 
 Makefile: $(srcdir)/Makefile.in config.status
-        $(SHELL) ./config.status Makefile
+	$(SHELL) ./config.status Makefile
 
 config.status: $(srcdir)/configure
-        $(SHELL) ./config.status --recheck
+	$(SHELL) ./config.status --recheck
 
 $(srcdir)/configure: @MAINT@ $(srcdir)/aclocal.m4
-        cd $(srcdir) && $(AUTOCONF)
+	cd $(srcdir) && $(AUTOCONF)
 
 $(srcdir)/aclocal.m4: @MAINT@ $(srcdir)/../config/acx.m4 \
-        $(srcdir)/../config/warnings.m4 \
-        $(srcdir)/configure.ac
-        cd $(srcdir) && $(ACLOCAL) -I ../config
+	$(srcdir)/../config/warnings.m4 \
+	$(srcdir)/configure.ac
+	cd $(srcdir) && $(ACLOCAL) -I ../config
 
 config.h: stamp-h1
-        test -f config.h || (rm -f stamp-h1 && $(MAKE) stamp-h1)
+	test -f config.h || (rm -f stamp-h1 && $(MAKE) stamp-h1)
 
 stamp-h1: $(srcdir)/config.in config.status
-        -rm -f stamp-h1
-        $(SHELL) ./config.status config.h
+	-rm -f stamp-h1
+	$(SHELL) ./config.status config.h
 
 $(srcdir)/config.in: @MAINT@ $(srcdir)/configure
-        cd $(srcdir) && $(AUTOHEADER)
-        -rm -f stamp-h1
+	cd $(srcdir) && $(AUTOHEADER)
+	-rm -f stamp-h1
 
 # Dependencies.
 
@@ -114,20 +114,20 @@ decimal128.o: decimal128.c decNumber.h decNumberLocal.h decimal128.h \
 # Other miscellaneous targets.
 
 mostlyclean:
-        -rm -f *.o
+	-rm -f *.o
 
 clean: mostlyclean
-        -rm -rf makedepend$(EXEEXT) libdecnumber.a $(srcdir)/autom4te.cache
+	-rm -rf makedepend$(EXEEXT) libdecnumber.a $(srcdir)/autom4te.cache
 
 distclean: clean
-        -rm -f config.h stamp-h1 config.status config.cache config.log \
-          configure.lineno configure.status.lineno Makefile localedir.h \
-          localedir.hs
+	-rm -f config.h stamp-h1 config.status config.cache config.log \
+	  configure.lineno configure.status.lineno Makefile localedir.h \
+	  localedir.hs
 
 maintainer-clean: distclean
-        @echo "This command is intended for maintainers to use"
-        @echo "it deletes files that may require special tools to rebuild."
-        -rm -f $(srcdir)/configure $(srcdir)/aclocal.m4
+	@echo "This command is intended for maintainers to use"
+	@echo "it deletes files that may require special tools to rebuild."
+	-rm -f $(srcdir)/configure $(srcdir)/aclocal.m4
 
 check:
 installcheck:
@@ -149,7 +149,7 @@ COMPILE = source='$<' object='$@' libtool=no $(CC) $(DEFS) $(INCLUDES) $(CPPFLAG
 # Implicit rules
 
 .c.o:
-        $(COMPILE) $<
+	$(COMPILE) $<
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

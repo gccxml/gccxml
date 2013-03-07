@@ -20,8 +20,8 @@
 #define SYM_CAT_H
 
 #if defined (__STDC__) || defined (ALMOST_STDC) || defined (HAVE_STRINGIZE)
-#define CONCAT2(a,b)         a##b
-#define CONCAT3(a,b,c)         a##b##c
+#define CONCAT2(a,b)	 a##b
+#define CONCAT3(a,b,c)	 a##b##c
 #define CONCAT4(a,b,c,d) a##b##c##d
 #define STRINGX(s) #s
 #else
@@ -29,8 +29,8 @@
    e.g. CONCAT2(foo, bar) because traditonal C will keep the space between
    the two labels instead of concatenating them.  Instead, make sure to
    write CONCAT2(foo,bar).  */
-#define CONCAT2(a,b)         a/**/b
-#define CONCAT3(a,b,c)         a/**/b/**/c
+#define CONCAT2(a,b)	 a/**/b
+#define CONCAT3(a,b,c)	 a/**/b/**/c
 #define CONCAT4(a,b,c,d) a/**/b/**/c/**/d
 #define STRINGX(s) "s"
 #endif

@@ -23,8 +23,8 @@
 ;; True for insns that behave like prefixed insns on the Pentium.
 (define_attr "pent_prefix" "false,true"
   (if_then_else (ior (eq_attr "prefix_0f" "1")
-                       (ior (eq_attr "prefix_data16" "1")
-                          (eq_attr "prefix_rep" "1")))
+  		     (ior (eq_attr "prefix_data16" "1")
+			  (eq_attr "prefix_rep" "1")))
     (const_string "true")
     (const_string "false")))
 
@@ -38,35 +38,35 @@
 
 (define_attr "pent_pair" "uv,pu,pv,np"
   (cond [(eq_attr "imm_disp" "true")
-           (const_string "np")
-         (ior (eq_attr "type" "alu1,alu,imov,icmp,test,lea,incdec")
-              (and (eq_attr "type" "pop,push")
-                   (eq_attr "memory" "!both")))
-           (if_then_else (eq_attr "pent_prefix" "true")
-             (const_string "pu")
-             (const_string "uv"))
-         (eq_attr "type" "ibr")
-           (const_string "pv")
-         (and (eq_attr "type" "ishift")
-              (match_operand 2 "const_int_operand" ""))
-           (const_string "pu")
-         (and (eq_attr "type" "rotate")
-              (match_operand 2 "const1_operand" ""))
-           (const_string "pu")
-         (and (eq_attr "type" "ishift1")
-              (match_operand 1 "const_int_operand" ""))
-           (const_string "pu")
-         (and (eq_attr "type" "rotate1")
-              (match_operand 1 "const1_operand" ""))
-           (const_string "pu")
-         (and (eq_attr "type" "call")
-              (match_operand 0 "constant_call_address_operand" ""))
-           (const_string "pv")
-         (and (eq_attr "type" "callv")
-              (match_operand 1 "constant_call_address_operand" ""))
-           (const_string "pv")
-        ]
-        (const_string "np")))
+	   (const_string "np")
+	 (ior (eq_attr "type" "alu1,alu,imov,icmp,test,lea,incdec")
+	      (and (eq_attr "type" "pop,push")
+		   (eq_attr "memory" "!both")))
+	   (if_then_else (eq_attr "pent_prefix" "true")
+	     (const_string "pu")
+	     (const_string "uv"))
+	 (eq_attr "type" "ibr")
+	   (const_string "pv")
+	 (and (eq_attr "type" "ishift")
+	      (match_operand 2 "const_int_operand" ""))
+	   (const_string "pu")
+	 (and (eq_attr "type" "rotate")
+	      (match_operand 2 "const1_operand" ""))
+	   (const_string "pu")
+	 (and (eq_attr "type" "ishift1")
+	      (match_operand 1 "const_int_operand" ""))
+	   (const_string "pu")
+	 (and (eq_attr "type" "rotate1")
+	      (match_operand 1 "const1_operand" ""))
+	   (const_string "pu")
+	 (and (eq_attr "type" "call")
+	      (match_operand 0 "constant_call_address_operand" ""))
+	   (const_string "pv")
+	 (and (eq_attr "type" "callv")
+	      (match_operand 1 "constant_call_address_operand" ""))
+	   (const_string "pv")
+	]
+	(const_string "np")))
 
 (define_automaton "pentium,pentium_fpu")
 
@@ -120,16 +120,16 @@
 (define_reservation "pentium-firstuload" "(pentium-load + pentium-firstu)")
 (define_reservation "pentium-firstvload" "(pentium-load + pentium-firstv)")
 (define_reservation "pentium-firstuvload" "(pentium-load + pentium-firstuv)
-                                           | (pentium-firstv,pentium-v,
-                                              (pentium-load+pentium-firstv))")
+					   | (pentium-firstv,pentium-v,
+					      (pentium-load+pentium-firstv))")
 (define_reservation "pentium-firstuboth" "(pentium-load + pentium-firstu
-                                           + pentium-memory)")
+					   + pentium-memory)")
 (define_reservation "pentium-firstvboth" "(pentium-load + pentium-firstv
-                                           + pentium-memory)")
+					   + pentium-memory)")
 (define_reservation "pentium-firstuvboth" "(pentium-load + pentium-firstuv
-                                            + pentium-memory)
-                                           | (pentium-firstv,pentium-v,
-                                              (pentium-load+pentium-firstv))")
+					    + pentium-memory)
+					   | (pentium-firstv,pentium-v,
+					      (pentium-load+pentium-firstv))")
 
 ;; Few common long latency instructions
 (define_insn_reservation "pent_mul" 11
@@ -160,21 +160,21 @@
 (define_insn_reservation "pent_fmov" 1
   (and (eq_attr "cpu" "pentium")
        (and (eq_attr "type" "fmov")
-            (eq_attr "memory" "none,load")))
+	    (eq_attr "memory" "none,load")))
   "(pentium-fp+pentium-np)")
 
 (define_insn_reservation "pent_fpmovxf" 3
   (and (eq_attr "cpu" "pentium")
        (and (eq_attr "type" "fmov")
-            (and (eq_attr "memory" "load,store")
-                 (eq_attr "mode" "XF"))))
+	    (and (eq_attr "memory" "load,store")
+		 (eq_attr "mode" "XF"))))
   "(pentium-fp+pentium-np)*3")
 
 (define_insn_reservation "pent_fpstore" 2
   (and (eq_attr "cpu" "pentium")
        (and (eq_attr "type" "fmov")
-            (ior (match_operand 1 "immediate_operand" "")
-                 (eq_attr "memory" "store"))))
+	    (ior (match_operand 1 "immediate_operand" "")
+		 (eq_attr "memory" "store"))))
   "(pentium-fp+pentium-np)*2")
 
 (define_insn_reservation "pent_imov" 1
@@ -189,7 +189,7 @@
 (define_insn_reservation "pent_push" 1
   (and (eq_attr "cpu" "pentium")
        (and (eq_attr "type" "push")
-            (eq_attr "memory" "store")))
+	    (eq_attr "memory" "store")))
   "pentium-firstuv")
 
 (define_insn_reservation "pent_pop" 1
@@ -241,72 +241,72 @@
 (define_insn_reservation "pent_uv_both" 3
   (and (eq_attr "cpu" "pentium")
        (and (eq_attr "pent_pair" "uv")
-            (eq_attr "memory" "both")))
+	    (eq_attr "memory" "both")))
   "pentium-firstuvboth,pentium-uv+pentium-memory,pentium-uv")
 
 (define_insn_reservation "pent_u_both" 3
   (and (eq_attr "cpu" "pentium")
        (and (eq_attr "pent_pair" "pu")
-            (eq_attr "memory" "both")))
+	    (eq_attr "memory" "both")))
   "pentium-firstuboth,pentium-u+pentium-memory,pentium-u")
 
 (define_insn_reservation "pent_v_both" 3
   (and (eq_attr "cpu" "pentium")
        (and (eq_attr "pent_pair" "pv")
-            (eq_attr "memory" "both")))
+	    (eq_attr "memory" "both")))
   "pentium-firstvboth,pentium-v+pentium-memory,pentium-v")
 
 (define_insn_reservation "pent_np_both" 3
   (and (eq_attr "cpu" "pentium")
        (and (eq_attr "pent_pair" "np")
-            (eq_attr "memory" "both")))
+	    (eq_attr "memory" "both")))
   "pentium-np,pentium-np,pentium-np")
 
 (define_insn_reservation "pent_uv_load" 2
   (and (eq_attr "cpu" "pentium")
        (and (eq_attr "pent_pair" "uv")
-            (eq_attr "memory" "load")))
+	    (eq_attr "memory" "load")))
   "pentium-firstuvload,pentium-uv")
 
 (define_insn_reservation "pent_u_load" 2
   (and (eq_attr "cpu" "pentium")
        (and (eq_attr "pent_pair" "pu")
-            (eq_attr "memory" "load")))
+	    (eq_attr "memory" "load")))
   "pentium-firstuload,pentium-u")
 
 (define_insn_reservation "pent_v_load" 2
   (and (eq_attr "cpu" "pentium")
        (and (eq_attr "pent_pair" "pv")
-            (eq_attr "memory" "load")))
+	    (eq_attr "memory" "load")))
   "pentium-firstvload,pentium-v")
 
 (define_insn_reservation "pent_np_load" 2
   (and (eq_attr "cpu" "pentium")
        (and (eq_attr "pent_pair" "np")
-            (eq_attr "memory" "load")))
+	    (eq_attr "memory" "load")))
   "pentium-np,pentium-np")
 
 (define_insn_reservation "pent_uv" 1
   (and (eq_attr "cpu" "pentium")
        (and (eq_attr "pent_pair" "uv")
-            (eq_attr "memory" "none")))
+	    (eq_attr "memory" "none")))
   "pentium-firstuv")
 
 (define_insn_reservation "pent_u" 1
   (and (eq_attr "cpu" "pentium")
        (and (eq_attr "pent_pair" "pu")
-            (eq_attr "memory" "none")))
+	    (eq_attr "memory" "none")))
   "pentium-firstu")
 
 (define_insn_reservation "pent_v" 1
   (and (eq_attr "cpu" "pentium")
        (and (eq_attr "pent_pair" "pv")
-            (eq_attr "memory" "none")))
+	    (eq_attr "memory" "none")))
   "pentium-firstv")
 
 (define_insn_reservation "pent_np" 1
   (and (eq_attr "cpu" "pentium")
        (and (eq_attr "pent_pair" "np")
-            (eq_attr "memory" "none")))
+	    (eq_attr "memory" "none")))
   "pentium-np")
 

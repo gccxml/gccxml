@@ -235,7 +235,7 @@ entry_and_rtx_equal_p (const void *entry, const void *x_arg)
   enum machine_mode mode = GET_MODE (x);
 
   gcc_assert (GET_CODE (x) != CONST_INT
-              && (mode != VOIDmode || GET_CODE (x) != CONST_DOUBLE));
+	      && (mode != VOIDmode || GET_CODE (x) != CONST_DOUBLE));
   
   if (mode != GET_MODE (v->u.val_rtx))
     return 0;
@@ -243,7 +243,7 @@ entry_and_rtx_equal_p (const void *entry, const void *x_arg)
   /* Unwrap X if necessary.  */
   if (GET_CODE (x) == CONST
       && (GET_CODE (XEXP (x, 0)) == CONST_INT
-          || GET_CODE (XEXP (x, 0)) == CONST_DOUBLE))
+	  || GET_CODE (XEXP (x, 0)) == CONST_DOUBLE))
     x = XEXP (x, 0);
 
   /* We don't guarantee that distinct rtx's have different hash values,
@@ -285,11 +285,11 @@ references_value_p (rtx x, int only_useless)
   for (i = GET_RTX_LENGTH (code) - 1; i >= 0; i--)
     {
       if (fmt[i] == 'e' && references_value_p (XEXP (x, i), only_useless))
-        return 1;
+	return 1;
       else if (fmt[i] == 'E')
-        for (j = 0; j < XVECLEN (x, i); j++)
-          if (references_value_p (XVECEXP (x, i, j), only_useless))
-            return 1;
+	for (j = 0; j < XVECLEN (x, i); j++)
+	  if (references_value_p (XVECEXP (x, i, j), only_useless))
+	    return 1;
     }
 
   return 0;
@@ -309,9 +309,9 @@ discard_useless_locs (void **x, void *info ATTRIBUTE_UNUSED)
   while (*p)
     {
       if (references_value_p ((*p)->loc, 1))
-        unchain_one_elt_loc_list (p);
+	unchain_one_elt_loc_list (p);
       else
-        p = &(*p)->next;
+	p = &(*p)->next;
     }
 
   if (had_locs && v->locs == 0)
@@ -362,8 +362,8 @@ remove_useless_values (void)
   for (v = *p; v != &dummy_val; v = v->next_containing_mem)
     if (v->locs)
       {
-        *p = v;
-        p = &(*p)->next_containing_mem;
+	*p = v;
+	p = &(*p)->next_containing_mem;
       }
   *p = &dummy_val;
 
@@ -405,7 +405,7 @@ rtx_equal_for_cselib_p (rtx x, rtx y)
       cselib_val *e = cselib_lookup (x, GET_MODE (x), 0);
 
       if (e)
-        x = e->u.val_rtx;
+	x = e->u.val_rtx;
     }
 
   if (REG_P (y) || MEM_P (y))
@@ -413,7 +413,7 @@ rtx_equal_for_cselib_p (rtx x, rtx y)
       cselib_val *e = cselib_lookup (y, GET_MODE (y), 0);
 
       if (e)
-        y = e->u.val_rtx;
+	y = e->u.val_rtx;
     }
 
   if (x == y)
@@ -428,15 +428,15 @@ rtx_equal_for_cselib_p (rtx x, rtx y)
       struct elt_loc_list *l;
 
       for (l = e->locs; l; l = l->next)
-        {
-          rtx t = l->loc;
+	{
+	  rtx t = l->loc;
 
-          /* Avoid infinite recursion.  */
-          if (REG_P (t) || MEM_P (t))
-            continue;
-          else if (rtx_equal_for_cselib_p (t, y))
-            return 1;
-        }
+	  /* Avoid infinite recursion.  */
+	  if (REG_P (t) || MEM_P (t))
+	    continue;
+	  else if (rtx_equal_for_cselib_p (t, y))
+	    return 1;
+	}
 
       return 0;
     }
@@ -447,14 +447,14 @@ rtx_equal_for_cselib_p (rtx x, rtx y)
       struct elt_loc_list *l;
 
       for (l = e->locs; l; l = l->next)
-        {
-          rtx t = l->loc;
+	{
+	  rtx t = l->loc;
 
-          if (REG_P (t) || MEM_P (t))
-            continue;
-          else if (rtx_equal_for_cselib_p (x, t))
-            return 1;
-        }
+	  if (REG_P (t) || MEM_P (t))
+	    continue;
+	  else if (rtx_equal_for_cselib_p (x, t))
+	    return 1;
+	}
 
       return 0;
     }
@@ -483,61 +483,61 @@ rtx_equal_for_cselib_p (rtx x, rtx y)
       int j;
 
       switch (fmt[i])
-        {
-        case 'w':
-          if (XWINT (x, i) != XWINT (y, i))
-            return 0;
-          break;
+	{
+	case 'w':
+	  if (XWINT (x, i) != XWINT (y, i))
+	    return 0;
+	  break;
 
-        case 'n':
-        case 'i':
-          if (XINT (x, i) != XINT (y, i))
-            return 0;
-          break;
+	case 'n':
+	case 'i':
+	  if (XINT (x, i) != XINT (y, i))
+	    return 0;
+	  break;
 
-        case 'V':
-        case 'E':
-          /* Two vectors must have the same length.  */
-          if (XVECLEN (x, i) != XVECLEN (y, i))
-            return 0;
+	case 'V':
+	case 'E':
+	  /* Two vectors must have the same length.  */
+	  if (XVECLEN (x, i) != XVECLEN (y, i))
+	    return 0;
 
-          /* And the corresponding elements must match.  */
-          for (j = 0; j < XVECLEN (x, i); j++)
-            if (! rtx_equal_for_cselib_p (XVECEXP (x, i, j),
-                                          XVECEXP (y, i, j)))
-              return 0;
-          break;
+	  /* And the corresponding elements must match.  */
+	  for (j = 0; j < XVECLEN (x, i); j++)
+	    if (! rtx_equal_for_cselib_p (XVECEXP (x, i, j),
+					  XVECEXP (y, i, j)))
+	      return 0;
+	  break;
 
-        case 'e':
-          if (i == 1
-              && targetm.commutative_p (x, UNKNOWN)
-              && rtx_equal_for_cselib_p (XEXP (x, 1), XEXP (y, 0))
-              && rtx_equal_for_cselib_p (XEXP (x, 0), XEXP (y, 1)))
-            return 1;
-          if (! rtx_equal_for_cselib_p (XEXP (x, i), XEXP (y, i)))
-            return 0;
-          break;
+	case 'e':
+	  if (i == 1
+	      && targetm.commutative_p (x, UNKNOWN)
+	      && rtx_equal_for_cselib_p (XEXP (x, 1), XEXP (y, 0))
+	      && rtx_equal_for_cselib_p (XEXP (x, 0), XEXP (y, 1)))
+	    return 1;
+	  if (! rtx_equal_for_cselib_p (XEXP (x, i), XEXP (y, i)))
+	    return 0;
+	  break;
 
-        case 'S':
-        case 's':
-          if (strcmp (XSTR (x, i), XSTR (y, i)))
-            return 0;
-          break;
+	case 'S':
+	case 's':
+	  if (strcmp (XSTR (x, i), XSTR (y, i)))
+	    return 0;
+	  break;
 
-        case 'u':
-          /* These are just backpointers, so they don't matter.  */
-          break;
+	case 'u':
+	  /* These are just backpointers, so they don't matter.  */
+	  break;
 
-        case '0':
-        case 't':
-          break;
+	case '0':
+	case 't':
+	  break;
 
-          /* It is believed that rtx's at this level will never
-             contain anything but integers and other rtx's,
-             except for within LABEL_REFs and SYMBOL_REFs.  */
-        default:
-          gcc_unreachable ();
-        }
+	  /* It is believed that rtx's at this level will never
+	     contain anything but integers and other rtx's,
+	     except for within LABEL_REFs and SYMBOL_REFs.  */
+	default:
+	  gcc_unreachable ();
+	}
     }
   return 1;
 }
@@ -593,7 +593,7 @@ cselib_hash_rtx (rtx x, int create)
     case REG:
       e = cselib_lookup (x, GET_MODE (x), create);
       if (! e)
-        return 0;
+	return 0;
 
       return e->value;
 
@@ -603,54 +603,54 @@ cselib_hash_rtx (rtx x, int create)
 
     case CONST_DOUBLE:
       /* This is like the general case, except that it only counts
-         the integers representing the constant.  */
+	 the integers representing the constant.  */
       hash += (unsigned) code + (unsigned) GET_MODE (x);
       if (GET_MODE (x) != VOIDmode)
-        hash += real_hash (CONST_DOUBLE_REAL_VALUE (x));
+	hash += real_hash (CONST_DOUBLE_REAL_VALUE (x));
       else
-        hash += ((unsigned) CONST_DOUBLE_LOW (x)
-                 + (unsigned) CONST_DOUBLE_HIGH (x));
+	hash += ((unsigned) CONST_DOUBLE_LOW (x)
+		 + (unsigned) CONST_DOUBLE_HIGH (x));
       return hash ? hash : (unsigned int) CONST_DOUBLE;
 
     case CONST_VECTOR:
       {
-        int units;
-        rtx elt;
+	int units;
+	rtx elt;
 
-        units = CONST_VECTOR_NUNITS (x);
+	units = CONST_VECTOR_NUNITS (x);
 
-        for (i = 0; i < units; ++i)
-          {
-            elt = CONST_VECTOR_ELT (x, i);
-            hash += cselib_hash_rtx (elt, 0);
-          }
+	for (i = 0; i < units; ++i)
+	  {
+	    elt = CONST_VECTOR_ELT (x, i);
+	    hash += cselib_hash_rtx (elt, 0);
+	  }
 
-        return hash;
+	return hash;
       }
 
       /* Assume there is only one rtx object for any given label.  */
     case LABEL_REF:
       /* We don't hash on the address of the CODE_LABEL to avoid bootstrap
-         differences and differences between each stage's debugging dumps.  */
+	 differences and differences between each stage's debugging dumps.  */
       hash += (((unsigned int) LABEL_REF << 7)
-               + CODE_LABEL_NUMBER (XEXP (x, 0)));
+	       + CODE_LABEL_NUMBER (XEXP (x, 0)));
       return hash ? hash : (unsigned int) LABEL_REF;
 
     case SYMBOL_REF:
       {
-        /* Don't hash on the symbol's address to avoid bootstrap differences.
-           Different hash values may cause expressions to be recorded in
-           different orders and thus different registers to be used in the
-           final assembler.  This also avoids differences in the dump files
-           between various stages.  */
-        unsigned int h = 0;
-        const unsigned char *p = (const unsigned char *) XSTR (x, 0);
+	/* Don't hash on the symbol's address to avoid bootstrap differences.
+	   Different hash values may cause expressions to be recorded in
+	   different orders and thus different registers to be used in the
+	   final assembler.  This also avoids differences in the dump files
+	   between various stages.  */
+	unsigned int h = 0;
+	const unsigned char *p = (const unsigned char *) XSTR (x, 0);
 
-        while (*p)
-          h += (h << 7) + *p++; /* ??? revisit */
+	while (*p)
+	  h += (h << 7) + *p++; /* ??? revisit */
 
-        hash += ((unsigned int) SYMBOL_REF << 7) + h;
-        return hash ? hash : (unsigned int) SYMBOL_REF;
+	hash += ((unsigned int) SYMBOL_REF << 7) + h;
+	return hash ? hash : (unsigned int) SYMBOL_REF;
       }
 
     case PRE_DEC:
@@ -667,7 +667,7 @@ cselib_hash_rtx (rtx x, int create)
 
     case ASM_OPERANDS:
       if (MEM_VOLATILE_P (x))
-        return 0;
+	return 0;
 
       break;
 
@@ -680,53 +680,53 @@ cselib_hash_rtx (rtx x, int create)
   for (; i >= 0; i--)
     {
       switch (fmt[i])
-        {
-        case 'e':
-          {
-            rtx tem = XEXP (x, i);
-            unsigned int tem_hash = cselib_hash_rtx (tem, create);
-            
-            if (tem_hash == 0)
-              return 0;
-            
-            hash += tem_hash;
-          }
-          break;
-        case 'E':
-          for (j = 0; j < XVECLEN (x, i); j++)
-            {
-              unsigned int tem_hash
-                = cselib_hash_rtx (XVECEXP (x, i, j), create);
-              
-              if (tem_hash == 0)
-                return 0;
-              
-              hash += tem_hash;
-            }
-          break;
+	{
+	case 'e':
+	  {
+	    rtx tem = XEXP (x, i);
+	    unsigned int tem_hash = cselib_hash_rtx (tem, create);
+	    
+	    if (tem_hash == 0)
+	      return 0;
+	    
+	    hash += tem_hash;
+	  }
+	  break;
+	case 'E':
+	  for (j = 0; j < XVECLEN (x, i); j++)
+	    {
+	      unsigned int tem_hash
+		= cselib_hash_rtx (XVECEXP (x, i, j), create);
+	      
+	      if (tem_hash == 0)
+		return 0;
+	      
+	      hash += tem_hash;
+	    }
+	  break;
 
-        case 's':
-          {
-            const unsigned char *p = (const unsigned char *) XSTR (x, i);
-            
-            if (p)
-              while (*p)
-                hash += *p++;
-            break;
-          }
-          
-        case 'i':
-          hash += XINT (x, i);
-          break;
+	case 's':
+	  {
+	    const unsigned char *p = (const unsigned char *) XSTR (x, i);
+	    
+	    if (p)
+	      while (*p)
+		hash += *p++;
+	    break;
+	  }
+	  
+	case 'i':
+	  hash += XINT (x, i);
+	  break;
 
-        case '0':
-        case 't':
-          /* unused */
-          break;
-          
-        default:
-          gcc_unreachable ();
-        }
+	case '0':
+	case 't':
+	  /* unused */
+	  break;
+	  
+	default:
+	  gcc_unreachable ();
+	}
     }
 
   return hash ? hash : 1 + (unsigned int) GET_CODE (x);
@@ -771,13 +771,13 @@ add_mem_for_addr (cselib_val *addr_elt, cselib_val *mem_elt, rtx x)
   /* Avoid duplicates.  */
   for (l = mem_elt->locs; l; l = l->next)
     if (MEM_P (l->loc)
-        && CSELIB_VAL_PTR (XEXP (l->loc, 0)) == addr_elt)
+	&& CSELIB_VAL_PTR (XEXP (l->loc, 0)) == addr_elt)
       return;
 
   addr_elt->addr_list = new_elt_list (addr_elt->addr_list, mem_elt);
   mem_elt->locs
     = new_elt_loc_list (mem_elt->locs,
-                        replace_equiv_address_nv (x, addr_elt->u.val_rtx));
+			replace_equiv_address_nv (x, addr_elt->u.val_rtx));
   if (mem_elt->next_containing_mem == NULL)
     {
       mem_elt->next_containing_mem = first_containing_mem;
@@ -818,7 +818,7 @@ cselib_lookup_mem (rtx x, int create)
   mem_elt = new_cselib_val (++next_unknown_value, mode);
   add_mem_for_addr (addr, mem_elt, x);
   slot = htab_find_slot_with_hash (cselib_hash_table, wrap_constant (mode, x),
-                                   mem_elt->value, INSERT);
+				   mem_elt->value, INSERT);
   *slot = mem_elt;
   return mem_elt;
 }
@@ -844,21 +844,21 @@ cselib_subst_to_values (rtx x)
     case REG:
       l = REG_VALUES (REGNO (x));
       if (l && l->elt == NULL)
-        l = l->next;
+	l = l->next;
       for (; l; l = l->next)
-        if (GET_MODE (l->elt->u.val_rtx) == GET_MODE (x))
-          return l->elt->u.val_rtx;
+	if (GET_MODE (l->elt->u.val_rtx) == GET_MODE (x))
+	  return l->elt->u.val_rtx;
 
       gcc_unreachable ();
 
     case MEM:
       e = cselib_lookup_mem (x, 0);
       if (! e)
-        {
-          /* This happens for autoincrements.  Assign a value that doesn't
-             match any other.  */
-          e = new_cselib_val (++next_unknown_value, GET_MODE (x));
-        }
+	{
+	  /* This happens for autoincrements.  Assign a value that doesn't
+	     match any other.  */
+	  e = new_cselib_val (++next_unknown_value, GET_MODE (x));
+	}
       return e->u.val_rtx;
 
     case CONST_DOUBLE:
@@ -882,35 +882,35 @@ cselib_subst_to_values (rtx x)
   for (i = GET_RTX_LENGTH (code) - 1; i >= 0; i--)
     {
       if (fmt[i] == 'e')
-        {
-          rtx t = cselib_subst_to_values (XEXP (x, i));
+	{
+	  rtx t = cselib_subst_to_values (XEXP (x, i));
 
-          if (t != XEXP (x, i) && x == copy)
-            copy = shallow_copy_rtx (x);
+	  if (t != XEXP (x, i) && x == copy)
+	    copy = shallow_copy_rtx (x);
 
-          XEXP (copy, i) = t;
-        }
+	  XEXP (copy, i) = t;
+	}
       else if (fmt[i] == 'E')
-        {
-          int j, k;
+	{
+	  int j, k;
 
-          for (j = 0; j < XVECLEN (x, i); j++)
-            {
-              rtx t = cselib_subst_to_values (XVECEXP (x, i, j));
+	  for (j = 0; j < XVECLEN (x, i); j++)
+	    {
+	      rtx t = cselib_subst_to_values (XVECEXP (x, i, j));
 
-              if (t != XVECEXP (x, i, j) && XVEC (x, i) == XVEC (copy, i))
-                {
-                  if (x == copy)
-                    copy = shallow_copy_rtx (x);
+	      if (t != XVECEXP (x, i, j) && XVEC (x, i) == XVEC (copy, i))
+		{
+		  if (x == copy)
+		    copy = shallow_copy_rtx (x);
 
-                  XVEC (copy, i) = rtvec_alloc (XVECLEN (x, i));
-                  for (k = 0; k < j; k++)
-                    XVECEXP (copy, i, k) = XVECEXP (x, i, k);
-                }
+		  XVEC (copy, i) = rtvec_alloc (XVECLEN (x, i));
+		  for (k = 0; k < j; k++)
+		    XVECEXP (copy, i, k) = XVECEXP (x, i, k);
+		}
 
-              XVECEXP (copy, i, j) = t;
-            }
-        }
+	      XVECEXP (copy, i, j) = t;
+	    }
+	}
     }
 
   return copy;
@@ -941,32 +941,32 @@ cselib_lookup (rtx x, enum machine_mode mode, int create)
 
       l = REG_VALUES (i);
       if (l && l->elt == NULL)
-        l = l->next;
+	l = l->next;
       for (; l; l = l->next)
-        if (mode == GET_MODE (l->elt->u.val_rtx))
-          return l->elt;
+	if (mode == GET_MODE (l->elt->u.val_rtx))
+	  return l->elt;
 
       if (! create)
-        return 0;
+	return 0;
 
       if (i < FIRST_PSEUDO_REGISTER)
-        {
-          unsigned int n = hard_regno_nregs[i][mode];
+	{
+	  unsigned int n = hard_regno_nregs[i][mode];
 
-          if (n > max_value_regs)
-            max_value_regs = n;
-        }
+	  if (n > max_value_regs)
+	    max_value_regs = n;
+	}
 
       e = new_cselib_val (++next_unknown_value, GET_MODE (x));
       e->locs = new_elt_loc_list (e->locs, x);
       if (REG_VALUES (i) == 0)
-        {
-          /* Maintain the invariant that the first entry of
-             REG_VALUES, if present, must be the value used to set the
-             register, or NULL.  */
-          used_regs[n_used_regs++] = i;
-          REG_VALUES (i) = new_elt_list (REG_VALUES (i), NULL);
-        }
+	{
+	  /* Maintain the invariant that the first entry of
+	     REG_VALUES, if present, must be the value used to set the
+	     register, or NULL.  */
+	  used_regs[n_used_regs++] = i;
+	  REG_VALUES (i) = new_elt_list (REG_VALUES (i), NULL);
+	}
       REG_VALUES (i)->next = new_elt_list (REG_VALUES (i)->next, e);
       slot = htab_find_slot_with_hash (cselib_hash_table, x, e->value, INSERT);
       *slot = e;
@@ -982,7 +982,7 @@ cselib_lookup (rtx x, enum machine_mode mode, int create)
     return 0;
 
   slot = htab_find_slot_with_hash (cselib_hash_table, wrap_constant (mode, x),
-                                   hashval, create ? INSERT : NO_INSERT);
+				   hashval, create ? INSERT : NO_INSERT);
   if (slot == 0)
     return 0;
 
@@ -1014,7 +1014,7 @@ cselib_invalidate_regno (unsigned int regno, enum machine_mode mode)
 
   /* If we see pseudos after reload, something is _wrong_.  */
   gcc_assert (!reload_completed || regno < FIRST_PSEUDO_REGISTER
-              || reg_renumber[regno] < 0);
+	      || reg_renumber[regno] < 0);
 
   /* Determine the range of registers that must be invalidated.  For
      pseudos, only REGNO is affected.  For hard regs, we must take MODE
@@ -1025,9 +1025,9 @@ cselib_invalidate_regno (unsigned int regno, enum machine_mode mode)
       gcc_assert (mode != VOIDmode);
 
       if (regno < max_value_regs)
-        i = 0;
+	i = 0;
       else
-        i = regno - max_value_regs;
+	i = regno - max_value_regs;
 
       endregno = regno + hard_regno_nregs[regno][mode];
     }
@@ -1042,51 +1042,51 @@ cselib_invalidate_regno (unsigned int regno, enum machine_mode mode)
       struct elt_list **l = &REG_VALUES (i);
 
       /* Go through all known values for this reg; if it overlaps the range
-         we're invalidating, remove the value.  */
+	 we're invalidating, remove the value.  */
       while (*l)
-        {
-          cselib_val *v = (*l)->elt;
-          struct elt_loc_list **p;
-          unsigned int this_last = i;
+	{
+	  cselib_val *v = (*l)->elt;
+	  struct elt_loc_list **p;
+	  unsigned int this_last = i;
 
-          if (i < FIRST_PSEUDO_REGISTER && v != NULL)
-            this_last += hard_regno_nregs[i][GET_MODE (v->u.val_rtx)] - 1;
+	  if (i < FIRST_PSEUDO_REGISTER && v != NULL)
+	    this_last += hard_regno_nregs[i][GET_MODE (v->u.val_rtx)] - 1;
 
-          if (this_last < regno || v == NULL)
-            {
-              l = &(*l)->next;
-              continue;
-            }
+	  if (this_last < regno || v == NULL)
+	    {
+	      l = &(*l)->next;
+	      continue;
+	    }
 
-          /* We have an overlap.  */
-          if (*l == REG_VALUES (i))
-            {
-              /* Maintain the invariant that the first entry of
-                 REG_VALUES, if present, must be the value used to set
-                 the register, or NULL.  This is also nice because
-                 then we won't push the same regno onto user_regs
-                 multiple times.  */
-              (*l)->elt = NULL;
-              l = &(*l)->next;
-            }
-          else
-            unchain_one_elt_list (l);
+	  /* We have an overlap.  */
+	  if (*l == REG_VALUES (i))
+	    {
+	      /* Maintain the invariant that the first entry of
+		 REG_VALUES, if present, must be the value used to set
+		 the register, or NULL.  This is also nice because
+		 then we won't push the same regno onto user_regs
+		 multiple times.  */
+	      (*l)->elt = NULL;
+	      l = &(*l)->next;
+	    }
+	  else
+	    unchain_one_elt_list (l);
 
-          /* Now, we clear the mapping from value to reg.  It must exist, so
-             this code will crash intentionally if it doesn't.  */
-          for (p = &v->locs; ; p = &(*p)->next)
-            {
-              rtx x = (*p)->loc;
+	  /* Now, we clear the mapping from value to reg.  It must exist, so
+	     this code will crash intentionally if it doesn't.  */
+	  for (p = &v->locs; ; p = &(*p)->next)
+	    {
+	      rtx x = (*p)->loc;
 
-              if (REG_P (x) && REGNO (x) == i)
-                {
-                  unchain_one_elt_loc_list (p);
-                  break;
-                }
-            }
-          if (v->locs == 0)
-            n_useless_values++;
-        }
+	      if (REG_P (x) && REGNO (x) == i)
+		{
+		  unchain_one_elt_loc_list (p);
+		  break;
+		}
+	    }
+	  if (v->locs == 0)
+	    n_useless_values++;
+	}
     }
 }
 
@@ -1126,58 +1126,58 @@ cselib_invalidate_mem (rtx mem_rtx)
       int had_locs = v->locs != 0;
 
       while (*p)
-        {
-          rtx x = (*p)->loc;
-          cselib_val *addr;
-          struct elt_list **mem_chain;
+	{
+	  rtx x = (*p)->loc;
+	  cselib_val *addr;
+	  struct elt_list **mem_chain;
 
-          /* MEMs may occur in locations only at the top level; below
-             that every MEM or REG is substituted by its VALUE.  */
-          if (!MEM_P (x))
-            {
-              p = &(*p)->next;
-              continue;
-            }
-          if (num_mems < PARAM_VALUE (PARAM_MAX_CSELIB_MEMORY_LOCATIONS)
-              && ! canon_true_dependence (mem_rtx, GET_MODE (mem_rtx), mem_addr,
-                                                x, cselib_rtx_varies_p))
-            {
-              has_mem = true;
-              num_mems++;
-              p = &(*p)->next;
-              continue;
-            }
+	  /* MEMs may occur in locations only at the top level; below
+	     that every MEM or REG is substituted by its VALUE.  */
+	  if (!MEM_P (x))
+	    {
+	      p = &(*p)->next;
+	      continue;
+	    }
+	  if (num_mems < PARAM_VALUE (PARAM_MAX_CSELIB_MEMORY_LOCATIONS)
+	      && ! canon_true_dependence (mem_rtx, GET_MODE (mem_rtx), mem_addr,
+		      			  x, cselib_rtx_varies_p))
+	    {
+	      has_mem = true;
+	      num_mems++;
+	      p = &(*p)->next;
+	      continue;
+	    }
 
-          /* This one overlaps.  */
-          /* We must have a mapping from this MEM's address to the
-             value (E).  Remove that, too.  */
-          addr = cselib_lookup (XEXP (x, 0), VOIDmode, 0);
-          mem_chain = &addr->addr_list;
-          for (;;)
-            {
-              if ((*mem_chain)->elt == v)
-                {
-                  unchain_one_elt_list (mem_chain);
-                  break;
-                }
+	  /* This one overlaps.  */
+	  /* We must have a mapping from this MEM's address to the
+	     value (E).  Remove that, too.  */
+	  addr = cselib_lookup (XEXP (x, 0), VOIDmode, 0);
+	  mem_chain = &addr->addr_list;
+	  for (;;)
+	    {
+	      if ((*mem_chain)->elt == v)
+		{
+		  unchain_one_elt_list (mem_chain);
+		  break;
+		}
 
-              mem_chain = &(*mem_chain)->next;
-            }
+	      mem_chain = &(*mem_chain)->next;
+	    }
 
-          unchain_one_elt_loc_list (p);
-        }
+	  unchain_one_elt_loc_list (p);
+	}
 
       if (had_locs && v->locs == 0)
-        n_useless_values++;
+	n_useless_values++;
 
       next = v->next_containing_mem;
       if (has_mem)
-        {
-          *vp = v;
-          vp = &(*vp)->next_containing_mem;
-        }
+	{
+	  *vp = v;
+	  vp = &(*vp)->next_containing_mem;
+	}
       else
-        v->next_containing_mem = NULL;
+	v->next_containing_mem = NULL;
     }
   *vp = &dummy_val;
 }
@@ -1188,8 +1188,8 @@ void
 cselib_invalidate_rtx (rtx dest)
 {
   while (GET_CODE (dest) == SUBREG
-         || GET_CODE (dest) == ZERO_EXTRACT
-         || GET_CODE (dest) == STRICT_LOW_PART)
+	 || GET_CODE (dest) == ZERO_EXTRACT
+	 || GET_CODE (dest) == STRICT_LOW_PART)
     dest = XEXP (dest, 0);
 
   if (REG_P (dest))
@@ -1209,7 +1209,7 @@ cselib_invalidate_rtx (rtx dest)
 
 static void
 cselib_invalidate_rtx_note_stores (rtx dest, rtx ignore ATTRIBUTE_UNUSED,
-                                   void *data ATTRIBUTE_UNUSED)
+				   void *data ATTRIBUTE_UNUSED)
 {
   cselib_invalidate_rtx (dest);
 }
@@ -1229,34 +1229,34 @@ cselib_record_set (rtx dest, cselib_val *src_elt, cselib_val *dest_addr_elt)
   if (dreg >= 0)
     {
       if (dreg < FIRST_PSEUDO_REGISTER)
-        {
-          unsigned int n = hard_regno_nregs[dreg][GET_MODE (dest)];
+	{
+	  unsigned int n = hard_regno_nregs[dreg][GET_MODE (dest)];
 
-          if (n > max_value_regs)
-            max_value_regs = n;
-        }
+	  if (n > max_value_regs)
+	    max_value_regs = n;
+	}
 
       if (REG_VALUES (dreg) == 0)
-        {
-          used_regs[n_used_regs++] = dreg;
-          REG_VALUES (dreg) = new_elt_list (REG_VALUES (dreg), src_elt);
-        }
+	{
+	  used_regs[n_used_regs++] = dreg;
+	  REG_VALUES (dreg) = new_elt_list (REG_VALUES (dreg), src_elt);
+	}
       else
-        {
-          /* The register should have been invalidated.  */
-          gcc_assert (REG_VALUES (dreg)->elt == 0);
-          REG_VALUES (dreg)->elt = src_elt;
-        }
+	{
+	  /* The register should have been invalidated.  */
+	  gcc_assert (REG_VALUES (dreg)->elt == 0);
+	  REG_VALUES (dreg)->elt = src_elt;
+	}
 
       if (src_elt->locs == 0)
-        n_useless_values--;
+	n_useless_values--;
       src_elt->locs = new_elt_loc_list (src_elt->locs, dest);
     }
   else if (MEM_P (dest) && dest_addr_elt != 0
-           && cselib_record_memory)
+	   && cselib_record_memory)
     {
       if (src_elt->locs == 0)
-        n_useless_values--;
+	n_useless_values--;
       add_mem_for_addr (dest_addr_elt, src_elt, dest);
     }
 }
@@ -1301,18 +1301,18 @@ cselib_record_sets (rtx insn)
   else if (GET_CODE (body) == PARALLEL)
     {
       /* Look through the PARALLEL and record the values being
-         set, if possible.  Also handle any CLOBBERs.  */
+	 set, if possible.  Also handle any CLOBBERs.  */
       for (i = XVECLEN (body, 0) - 1; i >= 0; --i)
-        {
-          rtx x = XVECEXP (body, 0, i);
+	{
+	  rtx x = XVECEXP (body, 0, i);
 
-          if (GET_CODE (x) == SET)
-            {
-              sets[n_sets].src = SET_SRC (x);
-              sets[n_sets].dest = SET_DEST (x);
-              n_sets++;
-            }
-        }
+	  if (GET_CODE (x) == SET)
+	    {
+	      sets[n_sets].src = SET_SRC (x);
+	      sets[n_sets].dest = SET_DEST (x);
+	      n_sets++;
+	    }
+	}
     }
 
   /* Look up the values that are read.  Do this before invalidating the
@@ -1324,21 +1324,21 @@ cselib_record_sets (rtx insn)
       /* A STRICT_LOW_PART can be ignored; we'll record the equivalence for
          the low part after invalidating any knowledge about larger modes.  */
       if (GET_CODE (sets[i].dest) == STRICT_LOW_PART)
-        sets[i].dest = dest = XEXP (dest, 0);
+	sets[i].dest = dest = XEXP (dest, 0);
 
       /* We don't know how to record anything but REG or MEM.  */
       if (REG_P (dest)
-          || (MEM_P (dest) && cselib_record_memory))
+	  || (MEM_P (dest) && cselib_record_memory))
         {
-          rtx src = sets[i].src;
-          if (cond)
-            src = gen_rtx_IF_THEN_ELSE (GET_MODE (src), cond, src, dest);
-          sets[i].src_elt = cselib_lookup (src, GET_MODE (dest), 1);
-          if (MEM_P (dest))
-            sets[i].dest_addr_elt = cselib_lookup (XEXP (dest, 0), Pmode, 1);
-          else
-            sets[i].dest_addr_elt = 0;
-        }
+	  rtx src = sets[i].src;
+	  if (cond)
+	    src = gen_rtx_IF_THEN_ELSE (GET_MODE (src), cond, src, dest);
+	  sets[i].src_elt = cselib_lookup (src, GET_MODE (dest), 1);
+	  if (MEM_P (dest))
+	    sets[i].dest_addr_elt = cselib_lookup (XEXP (dest, 0), Pmode, 1);
+	  else
+	    sets[i].dest_addr_elt = 0;
+	}
     }
 
   /* Invalidate all locations written by this insn.  Note that the elts we
@@ -1354,19 +1354,19 @@ cselib_record_sets (rtx insn)
   if (n_sets >= 2 && asm_noperands (body) >= 0)
     {
       for (i = 0; i < n_sets; i++)
-        {
-          rtx dest = sets[i].dest;
-          if (REG_P (dest) || MEM_P (dest))
-            {
-              int j;
-              for (j = i + 1; j < n_sets; j++)
-                if (rtx_equal_p (dest, sets[j].dest))
-                  {
-                    sets[i].dest = pc_rtx;
-                    sets[j].dest = pc_rtx;
-                  }
-            }
-        }
+	{
+	  rtx dest = sets[i].dest;
+	  if (REG_P (dest) || MEM_P (dest))
+	    {
+	      int j;
+	      for (j = i + 1; j < n_sets; j++)
+		if (rtx_equal_p (dest, sets[j].dest))
+		  {
+		    sets[i].dest = pc_rtx;
+		    sets[j].dest = pc_rtx;
+		  }
+	    }
+	}
     }
 
   /* Now enter the equivalences in our tables.  */
@@ -1374,8 +1374,8 @@ cselib_record_sets (rtx insn)
     {
       rtx dest = sets[i].dest;
       if (REG_P (dest)
-          || (MEM_P (dest) && cselib_record_memory))
-        cselib_record_set (dest, sets[i].src_elt, sets[i].dest_addr_elt);
+	  || (MEM_P (dest) && cselib_record_memory))
+	cselib_record_set (dest, sets[i].src_elt, sets[i].dest_addr_elt);
     }
 }
 
@@ -1394,10 +1394,10 @@ cselib_process_insn (rtx insn)
   /* Forget everything at a CODE_LABEL, a volatile asm, or a setjmp.  */
   if (LABEL_P (insn)
       || (CALL_P (insn)
-          && find_reg_note (insn, REG_SETJMP, NULL))
+	  && find_reg_note (insn, REG_SETJMP, NULL))
       || (NONJUMP_INSN_P (insn)
-          && GET_CODE (PATTERN (insn)) == ASM_OPERANDS
-          && MEM_VOLATILE_P (PATTERN (insn))))
+	  && GET_CODE (PATTERN (insn)) == ASM_OPERANDS
+	  && MEM_VOLATILE_P (PATTERN (insn))))
     {
       if (find_reg_note (insn, REG_RETVAL, NULL))
         cselib_current_insn_in_libcall = false;
@@ -1419,14 +1419,14 @@ cselib_process_insn (rtx insn)
   if (CALL_P (insn))
     {
       for (i = 0; i < FIRST_PSEUDO_REGISTER; i++)
-        if (call_used_regs[i]
-            || (REG_VALUES (i) && REG_VALUES (i)->elt
-                && HARD_REGNO_CALL_PART_CLOBBERED (i, 
-                      GET_MODE (REG_VALUES (i)->elt->u.val_rtx))))
-          cselib_invalidate_regno (i, reg_raw_mode[i]);
+	if (call_used_regs[i]
+	    || (REG_VALUES (i) && REG_VALUES (i)->elt
+		&& HARD_REGNO_CALL_PART_CLOBBERED (i, 
+		      GET_MODE (REG_VALUES (i)->elt->u.val_rtx))))
+	  cselib_invalidate_regno (i, reg_raw_mode[i]);
 
       if (! CONST_OR_PURE_CALL_P (insn))
-        cselib_invalidate_mem (callmem);
+	cselib_invalidate_mem (callmem);
     }
 
   cselib_record_sets (insn);
@@ -1445,7 +1445,7 @@ cselib_process_insn (rtx insn)
   if (CALL_P (insn))
     for (x = CALL_INSN_FUNCTION_USAGE (insn); x; x = XEXP (x, 1))
       if (GET_CODE (XEXP (x, 0)) == CLOBBER)
-        cselib_invalidate_rtx (XEXP (XEXP (x, 0), 0));
+	cselib_invalidate_rtx (XEXP (XEXP (x, 0), 0));
 
   if (find_reg_note (insn, REG_RETVAL, NULL))
     cselib_current_insn_in_libcall = false;
@@ -1454,7 +1454,7 @@ cselib_process_insn (rtx insn)
   if (n_useless_values > MAX_USELESS_VALUES
       /* remove_useless_values is linear in the hash table size.  Avoid
          quadratic behaviour for very large hashtables with very few
-         useless elements.  */
+	 useless elements.  */
       && (unsigned int)n_useless_values > cselib_hash_table->n_elements / 4)
     remove_useless_values ();
 }
@@ -1466,11 +1466,11 @@ void
 cselib_init (bool record_memory)
 {
   elt_list_pool = create_alloc_pool ("elt_list", 
-                                     sizeof (struct elt_list), 10);
+				     sizeof (struct elt_list), 10);
   elt_loc_list_pool = create_alloc_pool ("elt_loc_list", 
-                                         sizeof (struct elt_loc_list), 10);
+				         sizeof (struct elt_loc_list), 10);
   cselib_val_pool = create_alloc_pool ("cselib_val_list", 
-                                       sizeof (cselib_val), 10);
+				       sizeof (cselib_val), 10);
   value_pool = create_alloc_pool ("value", RTX_CODE_SIZE (VALUE), 100);
   cselib_record_memory = record_memory;
   /* This is only created once.  */
@@ -1485,16 +1485,16 @@ cselib_init (bool record_memory)
       || (reg_values_size > 10 && reg_values_size > cselib_nregs * 4))
     {
       if (reg_values)
-        free (reg_values);
+	free (reg_values);
       /* Some space for newly emit instructions so we don't end up
-         reallocating in between passes.  */
+	 reallocating in between passes.  */
       reg_values_size = cselib_nregs + (63 + cselib_nregs) / 16;
       reg_values = XCNEWVEC (struct elt_list *, reg_values_size);
     }
   used_regs = XNEWVEC (unsigned int, cselib_nregs);
   n_used_regs = 0;
   cselib_hash_table = htab_create (31, get_value_hash,
-                                   entry_and_rtx_equal_p, NULL);
+				   entry_and_rtx_equal_p, NULL);
   cselib_current_insn_in_libcall = false;
 }
 

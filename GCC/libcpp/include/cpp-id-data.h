@@ -38,9 +38,9 @@ struct cpp_macro GTY(())
 {
   /* Parameters, if any.  */
   cpp_hashnode ** GTY ((nested_ptr (union tree_node,
-                "%h ? CPP_HASHNODE (GCC_IDENT_TO_HT_IDENT (%h)) : NULL",
-                        "%h ? HT_IDENT_TO_GCC_IDENT (HT_NODE (%h)) : NULL"),
-                        length ("%h.paramc")))
+		"%h ? CPP_HASHNODE (GCC_IDENT_TO_HT_IDENT (%h)) : NULL",
+			"%h ? HT_IDENT_TO_GCC_IDENT (HT_NODE (%h)) : NULL"),
+			length ("%h.paramc")))
     params;
 
   /* Replacement tokens (ISO) or replacement text (traditional).  See

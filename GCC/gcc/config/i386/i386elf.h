@@ -46,9 +46,9 @@ Boston, MA 02110-1301, USA.  */
 #define ENDFILE_SPEC "crtend.o%s"
 
 #define STARTFILE_SPEC "%{!shared: \
-                         %{!symbolic: \
-                          %{pg:gcrt0.o%s}%{!pg:%{p:mcrt0.o%s}%{!p:crt0.o%s}}}}\
-                        crtbegin.o%s"
+			 %{!symbolic: \
+			  %{pg:gcrt0.o%s}%{!pg:%{p:mcrt0.o%s}%{!p:crt0.o%s}}}}\
+			crtbegin.o%s"
 
 #undef DBX_REGISTER_NUMBER
 #define DBX_REGISTER_NUMBER(n) \
@@ -62,49 +62,49 @@ Boston, MA 02110-1301, USA.  */
    STRING_LIMIT) we output those using ASM_OUTPUT_LIMITED_STRING.  */
 
 #undef ASM_OUTPUT_ASCII
-#define ASM_OUTPUT_ASCII(FILE, STR, LENGTH)                                \
-  do                                                                        \
-    {                                                                        \
-      const unsigned char *_ascii_bytes =                                \
-        (const unsigned char *) (STR);                                        \
-      const unsigned char *limit = _ascii_bytes + (LENGTH);                \
-      unsigned bytes_in_chunk = 0;                                        \
-      for (; _ascii_bytes < limit; _ascii_bytes++)                        \
-        {                                                                \
-          const unsigned char *p;                                        \
-          if (bytes_in_chunk >= 64)                                        \
-            {                                                                \
-              fputc ('\n', (FILE));                                        \
-              bytes_in_chunk = 0;                                        \
-            }                                                                \
-          for (p = _ascii_bytes; p < limit && *p != '\0'; p++)                \
-            continue;                                                        \
-          if (p < limit && (p - _ascii_bytes) <= (long) STRING_LIMIT)        \
-            {                                                                \
-              if (bytes_in_chunk > 0)                                        \
-                {                                                        \
-                  fputc ('\n', (FILE));                                        \
-                  bytes_in_chunk = 0;                                        \
-                }                                                        \
-              ASM_OUTPUT_LIMITED_STRING ((FILE), _ascii_bytes);                \
-              _ascii_bytes = p;                                                \
-            }                                                                \
-          else                                                                \
-            {                                                                \
-              if (bytes_in_chunk == 0)                                        \
-                fprintf ((FILE), "\t.byte\t");                                \
-              else                                                        \
-                fputc (',', (FILE));                                        \
-              fprintf ((FILE), "0x%02x", *_ascii_bytes);                \
-              bytes_in_chunk += 5;                                        \
-            }                                                                \
-        }                                                                \
-      if (bytes_in_chunk > 0)                                                \
-        fprintf ((FILE), "\n");                                                \
-    }                                                                        \
+#define ASM_OUTPUT_ASCII(FILE, STR, LENGTH)				\
+  do									\
+    {									\
+      const unsigned char *_ascii_bytes =				\
+        (const unsigned char *) (STR);					\
+      const unsigned char *limit = _ascii_bytes + (LENGTH);		\
+      unsigned bytes_in_chunk = 0;					\
+      for (; _ascii_bytes < limit; _ascii_bytes++)			\
+        {								\
+	  const unsigned char *p;					\
+	  if (bytes_in_chunk >= 64)					\
+	    {								\
+	      fputc ('\n', (FILE));					\
+	      bytes_in_chunk = 0;					\
+	    }								\
+	  for (p = _ascii_bytes; p < limit && *p != '\0'; p++)		\
+	    continue;							\
+	  if (p < limit && (p - _ascii_bytes) <= (long) STRING_LIMIT)	\
+	    {								\
+	      if (bytes_in_chunk > 0)					\
+		{							\
+		  fputc ('\n', (FILE));					\
+		  bytes_in_chunk = 0;					\
+		}							\
+	      ASM_OUTPUT_LIMITED_STRING ((FILE), _ascii_bytes);		\
+	      _ascii_bytes = p;						\
+	    }								\
+	  else								\
+	    {								\
+	      if (bytes_in_chunk == 0)					\
+		fprintf ((FILE), "\t.byte\t");				\
+	      else							\
+		fputc (',', (FILE));					\
+	      fprintf ((FILE), "0x%02x", *_ascii_bytes);		\
+	      bytes_in_chunk += 5;					\
+	    }								\
+	}								\
+      if (bytes_in_chunk > 0)						\
+        fprintf ((FILE), "\n");						\
+    }									\
   while (0)
 
-#define LOCAL_LABEL_PREFIX        "."
+#define LOCAL_LABEL_PREFIX	"."
 
 /* Switch into a generic section.  */
 #define TARGET_ASM_NAMED_SECTION  default_elf_asm_named_section

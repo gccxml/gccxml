@@ -63,7 +63,7 @@ extern int registers_ok_for_quad_peep (rtx, rtx);
 extern int mems_ok_for_quad_peep (rtx, rtx);
 extern bool gpr_or_gpr_p (rtx, rtx);
 extern enum reg_class rs6000_secondary_reload_class (enum reg_class,
-                                                     enum machine_mode, rtx);
+						     enum machine_mode, rtx);
 extern int ccr_bit (rtx, int);
 extern int extract_MB (rtx);
 extern int extract_ME (rtx);
@@ -71,7 +71,7 @@ extern void rs6000_output_function_entry (FILE *, const char *);
 extern void print_operand (FILE *, rtx, int);
 extern void print_operand_address (FILE *, rtx);
 extern enum rtx_code rs6000_reverse_condition (enum machine_mode,
-                                               enum rtx_code);
+					       enum rtx_code);
 extern void rs6000_emit_sCOND (enum rtx_code, rtx);
 extern void rs6000_emit_cbranch (enum rtx_code, rtx);
 extern char * output_cbranch (rtx, const char *, int, rtx);
@@ -81,7 +81,7 @@ extern int rs6000_emit_cmove (rtx, rtx, rtx, rtx);
 extern int rs6000_emit_vector_cond_expr (rtx, rtx, rtx, rtx, rtx, rtx);
 extern void rs6000_emit_minmax (rtx, enum rtx_code, rtx, rtx);
 extern void rs6000_emit_sync (enum rtx_code, enum machine_mode,
-                              rtx, rtx, rtx, rtx, bool);
+			      rtx, rtx, rtx, rtx, bool);
 extern void rs6000_split_atomic_op (enum rtx_code, rtx, rtx, rtx, rtx, rtx);
 extern void rs6000_split_compare_and_swap (rtx, rtx, rtx, rtx, rtx);
 extern void rs6000_expand_compare_and_swapqhi (rtx, rtx, rtx, rtx);
@@ -98,7 +98,7 @@ extern void rs6000_split_multireg_move (rtx, rtx);
 extern void rs6000_emit_move (rtx, rtx, enum machine_mode);
 extern rtx rs6000_legitimize_address (rtx, rtx, enum machine_mode);
 extern rtx rs6000_legitimize_reload_address (rtx, enum machine_mode,
-                                             int, int, int, int *);
+					     int, int, int, int *);
 extern int rs6000_legitimate_address (enum machine_mode, rtx, int);
 extern bool rs6000_legitimate_offset_address_p (enum machine_mode, rtx, int);
 extern bool rs6000_mode_dependent_address (rtx);
@@ -108,14 +108,14 @@ extern void rs6000_output_symbol_ref (FILE*, rtx);
 extern HOST_WIDE_INT rs6000_initial_elimination_offset (int, int);
 
 extern rtx rs6000_machopic_legitimize_pic_address (rtx, enum machine_mode,
-                                                   rtx);
+						   rtx);
 #endif /* RTX_CODE */
 
 #ifdef TREE_CODE
 extern unsigned int rs6000_special_round_type_align (tree, unsigned int,
-                                                     unsigned int);
+						     unsigned int);
 extern void function_arg_advance (CUMULATIVE_ARGS *, enum machine_mode,
-                                  tree, int, int);
+				  tree, int, int);
 extern int function_arg_boundary (enum machine_mode, tree);
 extern rtx function_arg (CUMULATIVE_ARGS *, enum machine_mode, tree, int);
 extern tree altivec_resolve_overloaded_builtin (tree, tree);
@@ -151,7 +151,7 @@ extern void rs6000_emit_epilogue (int);
 extern void rs6000_emit_eh_reg_restore (rtx, rtx);
 extern const char * output_isel (rtx *);
 extern int rs6000_register_move_cost (enum machine_mode,
-                                      enum reg_class, enum reg_class);
+				      enum reg_class, enum reg_class);
 extern int rs6000_memory_move_cost (enum machine_mode, enum reg_class, int);
 extern bool rs6000_tls_referenced_p (rtx);
 extern int rs6000_hard_regno_nregs (int, enum machine_mode);

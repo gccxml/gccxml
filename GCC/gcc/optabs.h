@@ -513,19 +513,19 @@ extern rtx expand_widen_pattern_expr (tree exp, rtx op0, rtx op1, rtx wide_op,
                                       rtx target, int unsignedp);
 
 extern rtx expand_ternary_op (enum machine_mode mode, optab ternary_optab,
-                              rtx op0, rtx op1, rtx op2, rtx target,
-                              int unsignedp);
+			      rtx op0, rtx op1, rtx op2, rtx target,
+			      int unsignedp);
 
 /* Expand a binary operation given optab and rtx operands.  */
 extern rtx expand_binop (enum machine_mode, optab, rtx, rtx, rtx, int,
-                         enum optab_methods);
+			 enum optab_methods);
 
 extern bool force_expand_binop (enum machine_mode, optab, rtx, rtx, rtx, int,
-                                enum optab_methods);
+				enum optab_methods);
 
 /* Expand a binary operation with both signed and unsigned forms.  */
 extern rtx sign_expand_binop (enum machine_mode, optab, optab, rtx, rtx,
-                              rtx, int, enum optab_methods);
+			      rtx, int, enum optab_methods);
 
 /* Generate code to perform an operation on one operand with two results.  */
 extern int expand_twoval_unop (optab, rtx, rtx, rtx, int);
@@ -536,7 +536,7 @@ extern int expand_twoval_binop (optab, rtx, rtx, rtx, rtx, int);
 /* Generate code to perform an operation on two operands with two
    results, using a library function.  */
 extern bool expand_twoval_binop_libfunc (optab, rtx, rtx, rtx, rtx,
-                                         enum rtx_code);
+					 enum rtx_code);
 
 /* Expand a unary arithmetic operation given optab rtx operand.  */
 extern rtx expand_unop (enum machine_mode, optab, rtx, rtx, int);
@@ -558,7 +558,7 @@ extern rtx emit_no_conflict_block (rtx, rtx, rtx, rtx, rtx);
 
 /* Emit one rtl insn to compare two rtx's.  */
 extern void emit_cmp_insn (rtx, rtx, enum rtx_code, rtx, enum machine_mode,
-                           int);
+			   int);
 
 /* The various uses that a comparison can have; used by can_compare_p:
    jumps, conditional moves, store flag operations.  */
@@ -576,7 +576,7 @@ extern optab optab_for_tree_code (enum tree_code, tree);
 /* Nonzero if a compare of mode MODE can be done straightforwardly
    (without splitting it into pieces).  */
 extern int can_compare_p (enum rtx_code, enum machine_mode,
-                          enum can_compare_purpose);
+			  enum can_compare_purpose);
 
 /* Return the INSN_CODE to use for an extend operation.  */
 extern enum insn_code can_extend_p (enum machine_mode, enum machine_mode, int);
@@ -584,12 +584,12 @@ extern enum insn_code can_extend_p (enum machine_mode, enum machine_mode, int);
 /* Generate the body of an insn to extend Y (with mode MFROM)
    into X (with mode MTO).  Do zero-extension if UNSIGNEDP is nonzero.  */
 extern rtx gen_extend_insn (rtx, rtx, enum machine_mode,
-                            enum machine_mode, int);
+			    enum machine_mode, int);
 
 /* Call this to reset the function entry for one optab.  */
 extern void set_optab_libfunc (optab, enum machine_mode, const char *);
 extern void set_conv_libfunc (convert_optab, enum machine_mode,
-                              enum machine_mode, const char *);
+			      enum machine_mode, const char *);
 
 /* Generate code for a FLOAT_EXPR.  */
 extern void expand_float (rtx, rtx, int);

@@ -39,9 +39,9 @@ Boston, MA 02110-1301, USA.  */
 
 static void splay_tree_delete_helper (splay_tree, splay_tree_node);
 static inline void rotate_left (splay_tree_node *,
-                                splay_tree_node, splay_tree_node);
+				splay_tree_node, splay_tree_node);
 static inline void rotate_right (splay_tree_node *,
-                                splay_tree_node, splay_tree_node);
+				splay_tree_node, splay_tree_node);
 static void splay_tree_splay (splay_tree, splay_tree_key);
 static int splay_tree_foreach_helper (splay_tree, splay_tree_node,
                                       splay_tree_foreach_fn, void*);
@@ -76,31 +76,31 @@ splay_tree_delete_helper (splay_tree sp, splay_tree_node node)
       active = pending;
       pending = 0;
       while (active)
-        {
-          splay_tree_node temp;
+	{
+	  splay_tree_node temp;
 
-          /* active points to a node which has its key and value
-             deallocated, we just need to process left and right.  */
+	  /* active points to a node which has its key and value
+	     deallocated, we just need to process left and right.  */
 
-          if (active->left)
-            {
-              KDEL (active->left->key);
-              VDEL (active->left->value);
-              active->left->key = (splay_tree_key)pending;
-              pending = (splay_tree_node)(active->left);
-            }
-          if (active->right)
-            {
-              KDEL (active->right->key);
-              VDEL (active->right->value);
-              active->right->key = (splay_tree_key)pending;
-              pending = (splay_tree_node)(active->right);
-            }
+	  if (active->left)
+	    {
+	      KDEL (active->left->key);
+	      VDEL (active->left->value);
+	      active->left->key = (splay_tree_key)pending;
+	      pending = (splay_tree_node)(active->left);
+	    }
+	  if (active->right)
+	    {
+	      KDEL (active->right->key);
+	      VDEL (active->right->value);
+	      active->right->key = (splay_tree_key)pending;
+	      pending = (splay_tree_node)(active->right);
+	    }
 
-          temp = active;
-          active = (splay_tree_node)(temp->key);
-          (*sp->deallocate) ((char*) temp, sp->allocate_data);
-        }
+	  temp = active;
+	  active = (splay_tree_node)(temp->key);
+	  (*sp->deallocate) ((char*) temp, sp->allocate_data);
+	}
     }
 #undef KDEL
 #undef VDEL
@@ -166,33 +166,33 @@ splay_tree_splay (splay_tree sp, splay_tree_key key)
         || (cmp2 < 0 && !c->left)
         || (cmp2 > 0 && !c->right))
       {
-        if (cmp1 < 0)
-          rotate_left (&sp->root, n, c);
-        else
-          rotate_right (&sp->root, n, c);
+	if (cmp1 < 0)
+	  rotate_left (&sp->root, n, c);
+	else
+	  rotate_right (&sp->root, n, c);
         return;
       }
 
     /* Now we have the four cases of double-rotation.  */
     if (cmp1 < 0 && cmp2 < 0)
       {
-        rotate_left (&n->left, c, c->left);
-        rotate_left (&sp->root, n, n->left);
+	rotate_left (&n->left, c, c->left);
+	rotate_left (&sp->root, n, n->left);
       }
     else if (cmp1 > 0 && cmp2 > 0)
       {
-        rotate_right (&n->right, c, c->right);
-        rotate_right (&sp->root, n, n->right);
+	rotate_right (&n->right, c, c->right);
+	rotate_right (&sp->root, n, n->right);
       }
     else if (cmp1 < 0 && cmp2 > 0)
       {
-        rotate_right (&n->left, c, c->right);
-        rotate_left (&sp->root, n, n->left);
+	rotate_right (&n->left, c, c->right);
+	rotate_left (&sp->root, n, n->left);
       }
     else if (cmp1 > 0 && cmp2 < 0)
       {
-        rotate_left (&n->right, c, c->left);
-        rotate_right (&sp->root, n, n->right);
+	rotate_left (&n->right, c, c->left);
+	rotate_right (&sp->root, n, n->right);
       }
   } while (1);
 }
@@ -304,9 +304,9 @@ splay_tree_insert (splay_tree sp, splay_tree_key key, splay_tree_value value)
   if (sp->root && comparison == 0)
     {
       /* If the root of the tree already has the indicated KEY, just
-         replace the value with VALUE.  */
+	 replace the value with VALUE.  */
       if (sp->delete_value)
-        (*sp->delete_value)(sp->root->value);
+	(*sp->delete_value)(sp->root->value);
       sp->root->value = value;
     } 
   else 
@@ -321,19 +321,19 @@ splay_tree_insert (splay_tree sp, splay_tree_key key, splay_tree_value value)
       node->value = value;
       
       if (!sp->root)
-        node->left = node->right = 0;
+	node->left = node->right = 0;
       else if (comparison < 0)
-        {
-          node->left = sp->root;
-          node->right = node->left->right;
-          node->left->right = 0;
-        }
+	{
+	  node->left = sp->root;
+	  node->right = node->left->right;
+	  node->left->right = 0;
+	}
       else
-        {
-          node->right = sp->root;
-          node->left = node->right->left;
-          node->right->left = 0;
-        }
+	{
+	  node->right = sp->root;
+	  node->left = node->right->left;
+	  node->right->left = 0;
+	}
 
       sp->root = node;
     }
@@ -357,26 +357,26 @@ splay_tree_remove (splay_tree sp, splay_tree_key key)
 
       /* Delete the root node itself.  */
       if (sp->delete_value)
-        (*sp->delete_value) (sp->root->value);
+	(*sp->delete_value) (sp->root->value);
       (*sp->deallocate) (sp->root, sp->allocate_data);
 
       /* One of the children is now the root.  Doesn't matter much
-         which, so long as we preserve the properties of the tree.  */
+	 which, so long as we preserve the properties of the tree.  */
       if (left)
-        {
-          sp->root = left;
+	{
+	  sp->root = left;
 
-          /* If there was a right child as well, hang it off the 
-             right-most leaf of the left child.  */
-          if (right)
-            {
-              while (left->right)
-                left = left->right;
-              left->right = right;
-            }
-        }
+	  /* If there was a right child as well, hang it off the 
+	     right-most leaf of the left child.  */
+	  if (right)
+	    {
+	      while (left->right)
+		left = left->right;
+	      left->right = right;
+	    }
+	}
       else
-        sp->root = right;
+	sp->root = right;
     }
 }
 

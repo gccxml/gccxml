@@ -32,14 +32,14 @@ pointer encountered.  Pointers to empty strings are ignored.
 
 NOTES
 
-        This function uses xmalloc() which is expected to be a front end
-        function to malloc() that deals with low memory situations.  In
-        typical use, if malloc() returns NULL then xmalloc() diverts to an
-        error handler routine which never returns, and thus xmalloc will
-        never return a NULL pointer.  If the client application wishes to
-        deal with low memory situations itself, it should supply an xmalloc
-        that just directly invokes malloc and blindly returns whatever
-        malloc returns.
+	This function uses xmalloc() which is expected to be a front end
+	function to malloc() that deals with low memory situations.  In
+	typical use, if malloc() returns NULL then xmalloc() diverts to an
+	error handler routine which never returns, and thus xmalloc will
+	never return a NULL pointer.  If the client application wishes to
+	deal with low memory situations itself, it should supply an xmalloc
+	that just directly invokes malloc and blindly returns whatever
+	malloc returns.
 
 */
 
@@ -49,7 +49,7 @@ NOTES
 #endif
 #include "ansidecl.h"
 #include "libiberty.h"
-#include <sys/types.h>                /* size_t */
+#include <sys/types.h>		/* size_t */
 
 #include <stdarg.h>
 

@@ -35,7 +35,7 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
 #include "intl.h"
 #include "cppdefault.h"
 #include "c-incpath.h"
-#include "debug.h"                /* For debug_hooks.  */
+#include "debug.h"		/* For debug_hooks.  */
 #include "opts.h"
 #include "options.h"
 #include "mkdeps.h"
@@ -211,15 +211,15 @@ c_common_init_options (unsigned int argc, const char **argv)
   if (c_dialect_cxx ())
     {
       /* By default wrap lines at 80 characters.  Is getenv
-         ("COLUMNS") preferable?  */
+	 ("COLUMNS") preferable?  */
       diagnostic_line_cutoff (global_dc) = 80;
       /* By default, emit location information once for every
-         diagnostic message.  */
+	 diagnostic message.  */
       diagnostic_prefixing_rule (global_dc) = DIAGNOSTICS_SHOW_PREFIX_ONCE;
     }
 
   parse_in = cpp_create_reader (c_dialect_cxx () ? CLK_GNUCXX: CLK_GNUC89,
-                                ident_hash, &line_table);
+				ident_hash, &line_table);
 
   cpp_opts = cpp_get_options (parse_in);
   cpp_opts->dollars_in_ident = DOLLARS_IN_IDENTIFIERS;
@@ -240,21 +240,21 @@ c_common_init_options (unsigned int argc, const char **argv)
   if (c_language == clk_c)
     {
       /* If preprocessing assembly language, accept any of the C-family
-         front end options since the driver may pass them through.  */
+	 front end options since the driver may pass them through.  */
       for (i = 1; i < argc; i++)
-        if (! strcmp (argv[i], "-lang-asm"))
-          {
-            result |= CL_C | CL_ObjC | CL_CXX | CL_ObjCXX;
-            break;
-          }
+	if (! strcmp (argv[i], "-lang-asm"))
+	  {
+	    result |= CL_C | CL_ObjC | CL_CXX | CL_ObjCXX;
+	    break;
+	  }
 
 #ifdef CL_Fortran
       for (i = 1; i < argc; i++)
-        if (! strcmp (argv[i], "-lang-fortran"))
-        {
-            result |= CL_Fortran;
-            break;
-        }
+	if (! strcmp (argv[i], "-lang-fortran"))
+	{
+	    result |= CL_Fortran;
+	    break;
+	}
 #endif
     }
 
@@ -280,10 +280,10 @@ c_common_handle_option (size_t scode, const char *arg, int value)
     {
     default:
       if (cl_options[code].flags & (CL_C | CL_CXX | CL_ObjC | CL_ObjCXX))
-        break;
+	break;
 #ifdef CL_Fortran
       if (lang_fortran && (cl_options[code].flags & (CL_Fortran)))
-        break;
+	break;
 #endif
       result = 0;
       break;
@@ -323,23 +323,23 @@ c_common_handle_option (size_t scode, const char *arg, int value)
 
     case OPT_I:
       if (strcmp (arg, "-"))
-        add_path (xstrdup (arg), BRACKET, 0, true);
+	add_path (xstrdup (arg), BRACKET, 0, true);
       else
-        {
-          if (quote_chain_split)
-            error ("-I- specified twice");
-          quote_chain_split = true;
-          split_quote_chain ();
-          inform ("obsolete option -I- used, please use -iquote instead");
-        }
+	{
+	  if (quote_chain_split)
+	    error ("-I- specified twice");
+	  quote_chain_split = true;
+	  split_quote_chain ();
+	  inform ("obsolete option -I- used, please use -iquote instead");
+	}
       break;
 
     case OPT_M:
     case OPT_MM:
       /* When doing dependencies with -M or -MM, suppress normal
-         preprocessed output, but still do -dM etc. as software
-         depends on this.  Preprocessed output does occur if -MD, -MMD
-         or environment var dependency generation is used.  */
+	 preprocessed output, but still do -dM etc. as software
+	 depends on this.  Preprocessed output does occur if -MD, -MMD
+	 or environment var dependency generation is used.  */
       cpp_opts->deps.style = (code == OPT_M ? DEPS_SYSTEM: DEPS_USER);
       flag_no_output = 1;
       cpp_opts->inhibit_warnings = 1;
@@ -392,42 +392,42 @@ c_common_handle_option (size_t scode, const char *arg, int value)
       warn_missing_braces = value;
       warn_parentheses = value;
       warn_return_type = value;
-      warn_sequence_point = value;        /* Was C only.  */
+      warn_sequence_point = value;	/* Was C only.  */
       if (c_dialect_cxx ())
-        warn_sign_compare = value;
+	warn_sign_compare = value;
       warn_switch = value;
       warn_strict_aliasing = value;
       warn_strict_overflow = value;
       warn_address = value;
 
       /* Only warn about unknown pragmas that are not in system
-         headers.  */
+	 headers.  */
       warn_unknown_pragmas = value;
 
       /* We save the value of warn_uninitialized, since if they put
-         -Wuninitialized on the command line, we need to generate a
-         warning about not using it without also specifying -O.  */
+	 -Wuninitialized on the command line, we need to generate a
+	 warning about not using it without also specifying -O.  */
       if (warn_uninitialized != 1)
-        warn_uninitialized = (value ? 2 : 0);
+	warn_uninitialized = (value ? 2 : 0);
 
       if (!c_dialect_cxx ())
-        /* We set this to 2 here, but 1 in -Wmain, so -ffreestanding
-           can turn it off only if it's not explicit.  */
-        warn_main = value * 2;
+	/* We set this to 2 here, but 1 in -Wmain, so -ffreestanding
+	   can turn it off only if it's not explicit.  */
+	warn_main = value * 2;
       else
-        {
-          /* C++-specific warnings.  */
-          warn_reorder = value;
-          warn_nontemplate_friend = value;
-        }
+	{
+	  /* C++-specific warnings.  */
+	  warn_reorder = value;
+	  warn_nontemplate_friend = value;
+	}
 
       cpp_opts->warn_trigraphs = value;
       cpp_opts->warn_comments = value;
       cpp_opts->warn_num_sign_change = value;
-      cpp_opts->warn_multichar = value;        /* Was C++ only.  */
+      cpp_opts->warn_multichar = value;	/* Was C++ only.  */
 
       if (warn_pointer_sign == -1)
-        warn_pointer_sign = 1;
+	warn_pointer_sign = 1;
       break;
 
     case OPT_Wcomment:
@@ -474,9 +474,9 @@ c_common_handle_option (size_t scode, const char *arg, int value)
 
     case OPT_Wmain:
       if (value)
-        warn_main = 1;
+	warn_main = 1;
       else
-        warn_main = -1;
+	warn_main = -1;
       break;
 
     case OPT_Wmissing_include_dirs:
@@ -489,15 +489,15 @@ c_common_handle_option (size_t scode, const char *arg, int value)
 
     case OPT_Wnormalized_:
       if (!value || (arg && strcasecmp (arg, "none") == 0))
-        cpp_opts->warn_normalize = normalized_none;
+	cpp_opts->warn_normalize = normalized_none;
       else if (!arg || strcasecmp (arg, "nfkc") == 0)
-        cpp_opts->warn_normalize = normalized_KC;
+	cpp_opts->warn_normalize = normalized_KC;
       else if (strcasecmp (arg, "id") == 0)
-        cpp_opts->warn_normalize = normalized_identifier_C;
+	cpp_opts->warn_normalize = normalized_identifier_C;
       else if (strcasecmp (arg, "nfc") == 0)
-        cpp_opts->warn_normalize = normalized_C;
+	cpp_opts->warn_normalize = normalized_C;
       else
-        error ("argument %qs to %<-Wnormalized%> not recognized", arg);
+	error ("argument %qs to %<-Wnormalized%> not recognized", arg);
       break;
 
     case OPT_Wreturn_type:
@@ -526,7 +526,7 @@ c_common_handle_option (size_t scode, const char *arg, int value)
 
     case OPT_Wunknown_pragmas:
       /* Set to greater than 1, so that even unknown pragmas in
-         system headers will be warned about.  */
+	 system headers will be warned about.  */
       warn_unknown_pragmas = value * 2;
       break;
 
@@ -550,9 +550,9 @@ c_common_handle_option (size_t scode, const char *arg, int value)
 
     case OPT_ansi:
       if (!c_dialect_cxx ())
-        set_std_c89 (false, true);
+	set_std_c89 (false, true);
       else
-        set_std_cxx98 (true);
+	set_std_cxx98 (true);
       break;
 
     case OPT_d:
@@ -561,10 +561,10 @@ c_common_handle_option (size_t scode, const char *arg, int value)
 
     case OPT_fcond_mismatch:
       if (!c_dialect_cxx ())
-        {
-          flag_cond_mismatch = value;
-          break;
-        }
+	{
+	  flag_cond_mismatch = value;
+	  break;
+	}
       /* Fall through.  */
 
     case OPT_fall_virtual:
@@ -611,9 +611,9 @@ c_common_handle_option (size_t scode, const char *arg, int value)
 
     case OPT_fbuiltin_:
       if (value)
-        result = 0;
+	result = 0;
       else
-        disable_builtin_function (arg);
+	disable_builtin_function (arg);
       break;
 
     case OPT_fdollars_in_identifiers:
@@ -628,7 +628,7 @@ c_common_handle_option (size_t scode, const char *arg, int value)
       flag_no_builtin = !value;
       /* warn_main will be 2 if set by -Wall, 1 if set by -Wmain */
       if (!value && warn_main == 2)
-        warn_main = 0;
+	warn_main = 0;
       break;
 
     case OPT_fshort_double:
@@ -763,7 +763,7 @@ c_common_handle_option (size_t scode, const char *arg, int value)
     case OPT_frepo:
       flag_use_repository = value;
       if (value)
-        flag_implicit_templates = 0;
+	flag_implicit_templates = 0;
       break;
 
     case OPT_frtti:
@@ -781,7 +781,7 @@ c_common_handle_option (size_t scode, const char *arg, int value)
     case OPT_ftabstop_:
       /* It is documented that we silently ignore silly values.  */
       if (value >= 1 && value <= 100)
-        cpp_opts->tabstop = value;
+	cpp_opts->tabstop = value;
       break;
 
     case OPT_fexec_charset_:
@@ -897,14 +897,14 @@ c_common_handle_option (size_t scode, const char *arg, int value)
 
     case OPT_o:
       if (!out_fname)
-        out_fname = arg;
+	out_fname = arg;
       else
-        error ("output filename specified twice");
+	error ("output filename specified twice");
       break;
 
       /* We need to handle the -pedantic switches here, rather than in
-         c_common_post_options, so that a subsequent -Wno-endif-labels
-         is not overridden.  */
+	 c_common_post_options, so that a subsequent -Wno-endif-labels
+	 is not overridden.  */
     case OPT_pedantic_errors:
       cpp_opts->pedantic_errors = 1;
       /* Fall through.  */
@@ -912,9 +912,9 @@ c_common_handle_option (size_t scode, const char *arg, int value)
       cpp_opts->pedantic = 1;
       cpp_opts->warn_endif_labels = 1;
       if (warn_pointer_sign == -1)
-        warn_pointer_sign = 1;
+	warn_pointer_sign = 1;
       if (warn_overlength_strings == -1)
-        warn_overlength_strings = 1;
+	warn_overlength_strings = 1;
       break;
 
     case OPT_print_objc_runtime_info:
@@ -933,19 +933,19 @@ c_common_handle_option (size_t scode, const char *arg, int value)
     case OPT_std_c__98:
     case OPT_std_gnu__98:
       if (!preprocessing_asm_p)
-        set_std_cxx98 (code == OPT_std_c__98 /* ISO */);
+	set_std_cxx98 (code == OPT_std_c__98 /* ISO */);
       break;
 
     case OPT_std_c89:
     case OPT_std_iso9899_1990:
     case OPT_std_iso9899_199409:
       if (!preprocessing_asm_p)
-        set_std_c89 (code == OPT_std_iso9899_199409 /* c94 */, true /* ISO */);
+	set_std_c89 (code == OPT_std_iso9899_199409 /* c94 */, true /* ISO */);
       break;
 
     case OPT_std_gnu89:
       if (!preprocessing_asm_p)
-        set_std_c89 (false /* c94 */, false /* ISO */);
+	set_std_c89 (false /* c94 */, false /* ISO */);
       break;
 
     case OPT_std_c99:
@@ -953,13 +953,13 @@ c_common_handle_option (size_t scode, const char *arg, int value)
     case OPT_std_iso9899_1999:
     case OPT_std_iso9899_199x:
       if (!preprocessing_asm_p)
-        set_std_c99 (true /* ISO */);
+	set_std_c99 (true /* ISO */);
       break;
 
     case OPT_std_gnu99:
     case OPT_std_gnu9x:
       if (!preprocessing_asm_p)
-        set_std_c99 (false /* ISO */);
+	set_std_c99 (false /* ISO */);
       break;
 
     case OPT_trigraphs:
@@ -1012,7 +1012,7 @@ c_common_post_options (const char **pfilename)
   sanitize_cpp_opts ();
 
   register_include_chains (parse_in, sysroot, iprefix, imultilib,
-                           std_inc, std_cxx_inc && c_dialect_cxx (), verbose);
+			   std_inc, std_cxx_inc && c_dialect_cxx (), verbose);
 
 #ifdef C_COMMON_OVERRIDE_OPTIONS
   /* Some machines may reject certain combinations of C
@@ -1070,15 +1070,15 @@ c_common_post_options (const char **pfilename)
   if (!warn_format)
     {
       warning (OPT_Wformat_y2k,
-               "-Wformat-y2k ignored without -Wformat");
+	       "-Wformat-y2k ignored without -Wformat");
       warning (OPT_Wformat_extra_args,
-               "-Wformat-extra-args ignored without -Wformat");
+	       "-Wformat-extra-args ignored without -Wformat");
       warning (OPT_Wformat_zero_length,
-               "-Wformat-zero-length ignored without -Wformat");
+	       "-Wformat-zero-length ignored without -Wformat");
       warning (OPT_Wformat_nonliteral,
-               "-Wformat-nonliteral ignored without -Wformat");
+	       "-Wformat-nonliteral ignored without -Wformat");
       warning (OPT_Wformat_security,
-               "-Wformat-security ignored without -Wformat");
+	       "-Wformat-security ignored without -Wformat");
     }
 
   /* C99 requires special handling of complex multiplication and division;
@@ -1089,22 +1089,22 @@ c_common_post_options (const char **pfilename)
   if (flag_preprocess_only)
     {
       /* Open the output now.  We must do so even if flag_no_output is
-         on, because there may be other output than from the actual
-         preprocessing (e.g. from -dM).  */
+	 on, because there may be other output than from the actual
+	 preprocessing (e.g. from -dM).  */
       if (out_fname[0] == '\0')
-        out_stream = stdout;
+	out_stream = stdout;
       else
-        out_stream = fopen (out_fname, "w");
+	out_stream = fopen (out_fname, "w");
 
       if (out_stream == NULL)
-        {
-          fatal_error ("opening output file %s: %m", out_fname);
-          return false;
-        }
+	{
+	  fatal_error ("opening output file %s: %m", out_fname);
+	  return false;
+	}
 
       if (num_in_fnames > 1)
-        error ("too many filenames given.  Type %s --help for usage",
-               progname);
+	error ("too many filenames given.  Type %s --help for usage",
+	       progname);
 
       init_pp_output (out_stream);
     }
@@ -1197,7 +1197,7 @@ c_common_parse_file (int set_yydebug)
     {
       /* Start the main input file, if the debug writer wants it. */
       if (debug_hooks->start_end_main_source_file)
-        (*debug_hooks->start_source_file) (0, this_input_filename);
+	(*debug_hooks->start_source_file) (0, this_input_filename);
       finish_options ();
       pch_init ();
       push_file_scope ();
@@ -1206,16 +1206,16 @@ c_common_parse_file (int set_yydebug)
       pop_file_scope ();
       /* And end the main input file, if the debug writer wants it  */
       if (debug_hooks->start_end_main_source_file)
-        (*debug_hooks->end_source_file) (0);
+	(*debug_hooks->end_source_file) (0);
       if (++i >= num_in_fnames)
-        break;
+	break;
       cpp_undef_all (parse_in);
       this_input_filename
-        = cpp_read_main_file (parse_in, in_fnames[i]);
+	= cpp_read_main_file (parse_in, in_fnames[i]);
       /* If an input file is missing, abandon further compilation.
-         cpplib has issued a diagnostic.  */
+	 cpplib has issued a diagnostic.  */
       if (!this_input_filename)
-        break;
+	break;
     }
 }
 
@@ -1228,15 +1228,15 @@ c_common_finish (void)
   if (cpp_opts->deps.style != DEPS_NONE)
     {
       /* If -M or -MM was seen without -MF, default output to the
-         output stream.  */
+	 output stream.  */
       if (!deps_file)
-        deps_stream = out_stream;
+	deps_stream = out_stream;
       else
-        {
-          deps_stream = fopen (deps_file, deps_append ? "a": "w");
-          if (!deps_stream)
-            fatal_error ("opening dependency file %s: %m", deps_file);
-        }
+	{
+	  deps_stream = fopen (deps_file, deps_append ? "a": "w");
+	  if (!deps_stream)
+	    fatal_error ("opening dependency file %s: %m", deps_file);
+	}
     }
 
   /* For performance, avoid tearing down cpplib's internal structures
@@ -1270,10 +1270,10 @@ check_deps_environment_vars (void)
     {
       GET_ENVIRONMENT (spec, "SUNPRO_DEPENDENCIES");
       if (spec)
-        {
-          cpp_opts->deps.style = DEPS_SYSTEM;
-          cpp_opts->deps.ignore_main_file = true;
-        }
+	{
+	  cpp_opts->deps.style = DEPS_SYSTEM;
+	  cpp_opts->deps.ignore_main_file = true;
+	}
     }
 
   if (spec)
@@ -1281,15 +1281,15 @@ check_deps_environment_vars (void)
       /* Find the space before the DEPS_TARGET, if there is one.  */
       char *s = strchr (spec, ' ');
       if (s)
-        {
-          /* Let the caller perform MAKE quoting.  */
-          defer_opt (OPT_MT, s + 1);
-          *s = '\0';
-        }
+	{
+	  /* Let the caller perform MAKE quoting.  */
+	  defer_opt (OPT_MT, s + 1);
+	  *s = '\0';
+	}
 
       /* Command line -MF overrides environment variables and default.  */
       if (!deps_file)
-        deps_file = spec;
+	deps_file = spec;
 
       deps_append = 1;
       deps_seen = true;
@@ -1316,7 +1316,7 @@ handle_deferred_opts (void)
       struct deferred_opt *opt = &deferred_opts[i];
 
       if (opt->code == OPT_MT || opt->code == OPT_MQ)
-        deps_add_target (deps, opt->arg, opt->code == OPT_MQ);
+	deps_add_target (deps, opt->arg, opt->code == OPT_MQ);
     }
 }
 
@@ -1341,7 +1341,7 @@ sanitize_cpp_opts (void)
   if (flag_no_output)
     {
       if (flag_dump_macros != 'M')
-        flag_dump_macros = 0;
+	flag_dump_macros = 0;
       flag_dump_includes = 0;
       flag_no_line_commands = 1;
     }
@@ -1396,57 +1396,57 @@ finish_options (void)
       size_t i;
 
       cb_file_change (parse_in,
-                      linemap_add (&line_table, LC_RENAME, 0,
-                                   _("<built-in>"), 0));
+		      linemap_add (&line_table, LC_RENAME, 0,
+				   _("<built-in>"), 0));
 
       cpp_init_builtins (parse_in, flag_hosted);
       c_cpp_builtins (parse_in);
 
       /* We're about to send user input to cpplib, so make it warn for
-         things that we previously (when we sent it internal definitions)
-         told it to not warn.
+	 things that we previously (when we sent it internal definitions)
+	 told it to not warn.
 
-         C99 permits implementation-defined characters in identifiers.
-         The documented meaning of -std= is to turn off extensions that
-         conflict with the specified standard, and since a strictly
-         conforming program cannot contain a '$', we do not condition
-         their acceptance on the -std= setting.  */
+	 C99 permits implementation-defined characters in identifiers.
+	 The documented meaning of -std= is to turn off extensions that
+	 conflict with the specified standard, and since a strictly
+	 conforming program cannot contain a '$', we do not condition
+	 their acceptance on the -std= setting.  */
       cpp_opts->warn_dollars = (cpp_opts->pedantic && !cpp_opts->c99);
 
       cb_file_change (parse_in,
-                      linemap_add (&line_table, LC_RENAME, 0,
-                                   _("<command-line>"), 0));
+		      linemap_add (&line_table, LC_RENAME, 0,
+				   _("<command-line>"), 0));
 
       for (i = 0; i < deferred_count; i++)
-        {
-          struct deferred_opt *opt = &deferred_opts[i];
+	{
+	  struct deferred_opt *opt = &deferred_opts[i];
 
-          if (opt->code == OPT_D)
-            cpp_define (parse_in, opt->arg);
-          else if (opt->code == OPT_U)
-            cpp_undef (parse_in, opt->arg);
-          else if (opt->code == OPT_A)
-            {
-              if (opt->arg[0] == '-')
-                cpp_unassert (parse_in, opt->arg + 1);
-              else
-                cpp_assert (parse_in, opt->arg);
-            }
-        }
+	  if (opt->code == OPT_D)
+	    cpp_define (parse_in, opt->arg);
+	  else if (opt->code == OPT_U)
+	    cpp_undef (parse_in, opt->arg);
+	  else if (opt->code == OPT_A)
+	    {
+	      if (opt->arg[0] == '-')
+		cpp_unassert (parse_in, opt->arg + 1);
+	      else
+		cpp_assert (parse_in, opt->arg);
+	    }
+	}
 
       /* Handle -imacros after -D and -U.  */
       for (i = 0; i < deferred_count; i++)
-        {
-          struct deferred_opt *opt = &deferred_opts[i];
+	{
+	  struct deferred_opt *opt = &deferred_opts[i];
 
-          if (opt->code == OPT_imacros
-              && cpp_push_include (parse_in, opt->arg))
-            {
-              /* Disable push_command_line_include callback for now.  */
-              include_cursor = deferred_count + 1;
-              cpp_scan_nooutput (parse_in);
-            }
-        }
+	  if (opt->code == OPT_imacros
+	      && cpp_push_include (parse_in, opt->arg))
+	    {
+	      /* Disable push_command_line_include callback for now.  */
+	      include_cursor = deferred_count + 1;
+	      cpp_scan_nooutput (parse_in);
+	    }
+	}
     }
 
   include_cursor = 0;
@@ -1462,8 +1462,8 @@ push_command_line_include (void)
       struct deferred_opt *opt = &deferred_opts[include_cursor++];
 
       if (!cpp_opts->preprocessed && opt->code == OPT_include
-          && cpp_push_include (parse_in, opt->arg))
-        return;
+	  && cpp_push_include (parse_in, opt->arg))
+	return;
     }
 
   if (include_cursor == deferred_count)
@@ -1473,10 +1473,10 @@ push_command_line_include (void)
       cpp_opts->warn_unused_macros = warn_unused_macros;
       /* Restore the line map from <command line>.  */
       if (!cpp_opts->preprocessed)
-        cpp_change_file (parse_in, LC_RENAME, this_input_filename);
+	cpp_change_file (parse_in, LC_RENAME, this_input_filename);
 
       /* Set this here so the client can change the option if it wishes,
-         and after stacking the main file so we don't trace the main file.  */
+	 and after stacking the main file so we don't trace the main file.  */
       line_table.trace_includes = cpp_opts->print_include_names;
     }
 }
@@ -1484,7 +1484,7 @@ push_command_line_include (void)
 /* File change callback.  Has to handle -include files.  */
 static void
 cb_file_change (cpp_reader * ARG_UNUSED (pfile),
-                const struct line_map *new_map)
+		const struct line_map *new_map)
 {
   if (flag_preprocess_only)
     pp_file_change (new_map);
@@ -1547,7 +1547,7 @@ set_Wimplicit (int on)
   if (on)
     {
       if (mesg_implicit_function_declaration != 2)
-        mesg_implicit_function_declaration = 1;
+	mesg_implicit_function_declaration = 1;
     }
   else
     mesg_implicit_function_declaration = 0;
@@ -1563,14 +1563,14 @@ handle_OPT_d (const char *arg)
   while ((c = *arg++) != '\0')
     switch (c)
       {
-      case 'M':                        /* Dump macros only.  */
-      case 'N':                        /* Dump names.  */
-      case 'D':                        /* Dump definitions.  */
-        flag_dump_macros = c;
-        break;
+      case 'M':			/* Dump macros only.  */
+      case 'N':			/* Dump names.  */
+      case 'D':			/* Dump definitions.  */
+	flag_dump_macros = c;
+	break;
 
       case 'I':
-        flag_dump_includes = 1;
-        break;
+	flag_dump_includes = 1;
+	break;
       }
 }

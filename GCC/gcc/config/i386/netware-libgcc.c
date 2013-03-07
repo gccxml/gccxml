@@ -30,13 +30,13 @@ static rtag_t allocRTag;
 
 BOOL
 DllMain (HINSTANCE libraryId __attribute__ ((__unused__)),
-         DWORD reason, void *hModule)
+	 DWORD reason, void *hModule)
 {
   switch (reason)
     {
     case DLL_NLM_STARTUP:
       allocRTag = AllocateResourceTag (hModule,
-                                       "libgcc memory", AllocSignature);
+				       "libgcc memory", AllocSignature);
       return allocRTag != NULL;
     case DLL_NLM_SHUTDOWN:
       /* This does not recover resources associated with the tag...

@@ -55,7 +55,7 @@
 #undef CC1PLUS_SPEC
 #define CC1PLUS_SPEC "%{!fbuiltin: -fno-builtin}"
 
-#undef        ASM_DEFAULT_SPEC
+#undef	ASM_DEFAULT_SPEC
 #define ASM_DEFAULT_SPEC "-mppc"
 
 #undef TARGET_DEFAULT
@@ -73,8 +73,8 @@
    the target makefile fragment or if none of the options listed in
    `MULTILIB_OPTIONS' are set by default.  *Note Target Fragment::.  */
 
-#undef        MULTILIB_DEFAULTS
-#define        MULTILIB_DEFAULTS { "mcpu=powerpc" }
+#undef	MULTILIB_DEFAULTS
+#define	MULTILIB_DEFAULTS { "mcpu=powerpc" }
 
 /* These empty definitions get rid of the attempt to link in crt0.o
    and any libraries like libc.a.
@@ -103,7 +103,7 @@
 #define BIGGEST_FIELD_ALIGNMENT 32
 
 /* STANDARD_INCLUDE_DIR is the equivalent of "/usr/include" on UNIX.  */
-#define STANDARD_INCLUDE_DIR        "/boot/develop/headers/posix"
+#define STANDARD_INCLUDE_DIR	"/boot/develop/headers/posix"
 
 /* SYSTEM_INCLUDE_DIR is the location for system specific, non-POSIX headers.  */
-#define SYSTEM_INCLUDE_DIR        "/boot/develop/headers/be"
+#define SYSTEM_INCLUDE_DIR	"/boot/develop/headers/be"

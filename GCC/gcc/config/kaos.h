@@ -20,9 +20,9 @@ the Free Software Foundation, 51 Franklin Street, Fifth Floor,
 Boston, MA 02110-1301, USA.  */
 
 /* Specify predefined symbols in preprocessor.  */
-#define TARGET_OS_CPP_BUILTINS()                \
-    do {                                        \
-        builtin_define ("__kaOS__");        \
+#define TARGET_OS_CPP_BUILTINS()		\
+    do {					\
+	builtin_define ("__kaOS__");	\
     } while (0)
 
 

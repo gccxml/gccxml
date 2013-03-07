@@ -42,9 +42,9 @@
 
 (define_insn "bset_qi"
   [(set (match_operand:QI 0 "memsym_operand" "+Si")
-        (ior:QI (subreg:QI (ashift:HI (const_int 1)
-                                      (subreg:QI (match_operand:HI 1 "a_qi_operand" "Raa") 0)) 0)
-                (match_operand:QI 2 "" "0")))]
+	(ior:QI (subreg:QI (ashift:HI (const_int 1)
+				      (subreg:QI (match_operand:HI 1 "a_qi_operand" "Raa") 0)) 0)
+		(match_operand:QI 2 "" "0")))]
   "TARGET_A16"
   "bset\t%0[%1]"
   [(set_attr "flags" "n")]
@@ -52,9 +52,9 @@
 
 (define_insn "bset_hi"
   [(set (zero_extract:HI (match_operand:QI 0 "memsym_operand" "+Si")
-                         (const_int 1)
-                         (zero_extend:HI (subreg:QI (match_operand:HI 1 "a_qi_operand" "Raa") 0)))
-        (const_int 1))]
+			 (const_int 1)
+			 (zero_extend:HI (subreg:QI (match_operand:HI 1 "a_qi_operand" "Raa") 0)))
+	(const_int 1))]
   "TARGET_A16"
   "bset\t%0[%1]"
   [(set_attr "flags" "n")]
@@ -68,9 +68,9 @@
 ; easily put QI in $aN without causing problems elsewhere.
 (define_insn "bclr_qi"
   [(set (zero_extract:HI (match_operand:QI 0 "memsym_operand" "+Si")
-                         (const_int 1)
-                         (zero_extend:HI (subreg:QI (match_operand:HI 1 "a_qi_operand" "Raa") 0)))
-        (const_int 0))]
+			 (const_int 1)
+			 (zero_extend:HI (subreg:QI (match_operand:HI 1 "a_qi_operand" "Raa") 0)))
+	(const_int 0))]
   "TARGET_A16"
   "bclr\t%0[%1]"
   [(set_attr "flags" "n")]
@@ -83,8 +83,8 @@
 
 (define_insn "andqi3_16"
   [(set (match_operand:QI 0 "mra_operand" "=Sp,Rqi,RhlSd,RhlSd,??Rmm,??Rmm")
-        (and:QI (match_operand:QI 1 "mra_operand" "%0,0,0,0,0,0")
-                (match_operand 2 "mrai_operand" "Imb,Imb,iRhlSd,?Rmm,iRhlSd,?Rmm")))]
+	(and:QI (match_operand:QI 1 "mra_operand" "%0,0,0,0,0,0")
+		(match_operand 2 "mrai_operand" "Imb,Imb,iRhlSd,?Rmm,iRhlSd,?Rmm")))]
   "TARGET_A16"
   "@
    bclr\t%B2,%0
@@ -98,8 +98,8 @@
 
 (define_insn "andhi3_16"
   [(set (match_operand:HI 0 "mra_operand" "=Sp,Sp,Rhi,RhiSd,??Rmm,RhiSd,??Rmm")
-        (and:HI (match_operand:HI 1 "mra_operand" "%0,0,0,0,0,0,0")
-                (match_operand:HI 2 "mrai_operand" "Imb,Imw,Imw,iRhiSd,?Rmm,?Rmm,iRhiSd")))]
+	(and:HI (match_operand:HI 1 "mra_operand" "%0,0,0,0,0,0,0")
+		(match_operand:HI 2 "mrai_operand" "Imb,Imw,Imw,iRhiSd,?Rmm,?Rmm,iRhiSd")))]
   "TARGET_A16"
   "@
    
@@ -144,8 +144,8 @@
 
 (define_insn "iorqi3_16"
   [(set (match_operand:QI 0 "mra_operand" "=Sp,Rqi,RqiSd,??Rmm,RqiSd,??Rmm")
-        (ior:QI (match_operand:QI 1 "mra_operand" "%0,0,0,0,0,0")
-                (match_operand:QI 2 "mrai_operand" "Ilb,Ilb,iRhlSd,iRhlSd,?Rmm,?Rmm")))]
+	(ior:QI (match_operand:QI 1 "mra_operand" "%0,0,0,0,0,0")
+		(match_operand:QI 2 "mrai_operand" "Ilb,Ilb,iRhlSd,iRhlSd,?Rmm,?Rmm")))]
   "TARGET_A16"
   "@
    bset\t%B2,%0
@@ -159,8 +159,8 @@
 
 (define_insn "iorhi3_16"
   [(set (match_operand:HI 0 "mra_operand" "=Sp,Sp,Rhi,RhiSd,RhiSd,??Rmm,??Rmm")
-        (ior:HI (match_operand:HI 1 "mra_operand" "%0,0,0,0,0,0,0")
-                (match_operand:HI 2 "mrai_operand" "Imb,Imw,Ilw,iRhiSd,?Rmm,iRhiSd,?Rmm")))]
+	(ior:HI (match_operand:HI 1 "mra_operand" "%0,0,0,0,0,0,0")
+		(match_operand:HI 2 "mrai_operand" "Imb,Imw,Ilw,iRhiSd,?Rmm,iRhiSd,?Rmm")))]
   "TARGET_A16"
   "@
    bset %B2,%0
@@ -177,8 +177,8 @@
 
 (define_insn "andqi3_24"
   [(set (match_operand:QI 0 "mra_operand" "=Sd,Rqi,RhlSd,RhlSd,??Rmm,??Rmm")
-        (and:QI (match_operand:QI 1 "mra_operand" "%0,0,0,0,0,0")
-                (match_operand 2 "mrai_operand" "Imb,Imb,iRhlSd,?Rmm,iRhlSd,?Rmm")))]
+	(and:QI (match_operand:QI 1 "mra_operand" "%0,0,0,0,0,0")
+		(match_operand 2 "mrai_operand" "Imb,Imb,iRhlSd,?Rmm,iRhlSd,?Rmm")))]
   "TARGET_A24"
   "@
    bclr\t%B2,%0
@@ -192,8 +192,8 @@
 
 (define_insn "andhi3_24"
   [(set (match_operand:HI 0 "mra_operand" "=Sd,Sd,Rqi,Rqi,RhiSd,??Rmm,RhiSd,??Rmm")
-        (and:HI (match_operand:HI 1 "mra_operand" "%0,0,0,0,0,0,0,0")
-                (match_operand:HI 2 "mrai_operand" "Imb,Imw,Imb,Imw,iRhiSd,?Rmm,?Rmm,iRhiSd")))]
+	(and:HI (match_operand:HI 1 "mra_operand" "%0,0,0,0,0,0,0,0")
+		(match_operand:HI 2 "mrai_operand" "Imb,Imw,Imb,Imw,iRhiSd,?Rmm,?Rmm,iRhiSd")))]
   "TARGET_A24"
   "@
    bclr\t%B2,%0
@@ -211,8 +211,8 @@
 
 (define_insn "iorqi3_24"
   [(set (match_operand:QI 0 "mra_operand" "=RqiSd,RqiSd,??Rmm,RqiSd,??Rmm")
-        (ior:QI (match_operand:QI 1 "mra_operand" "%0,0,0,0,0")
-                (match_operand:QI 2 "mrai_operand" "Ilb,iRhlSd,iRhlSd,?Rmm,?Rmm")))]
+	(ior:QI (match_operand:QI 1 "mra_operand" "%0,0,0,0,0")
+		(match_operand:QI 2 "mrai_operand" "Ilb,iRhlSd,iRhlSd,?Rmm,?Rmm")))]
   "TARGET_A24"
   "@
    bset\t%B2,%0
@@ -225,8 +225,8 @@
 
 (define_insn "iorhi3_24"
   [(set (match_operand:HI 0 "mra_operand" "=Sd,Sd,Rqi,Rqi,RhiSd,RhiSd,??Rmm,??Rmm")
-        (ior:HI (match_operand:HI 1 "mra_operand" "%0,0,0,0,0,0,0,0")
-                (match_operand:HI 2 "mrai_operand" "Ilb,Ilw,Ilb,Ilw,iRhiSd,?Rmm,iRhiSd,?Rmm")))]
+	(ior:HI (match_operand:HI 1 "mra_operand" "%0,0,0,0,0,0,0,0")
+		(match_operand:HI 2 "mrai_operand" "Ilb,Ilw,Ilb,Ilw,iRhiSd,?Rmm,iRhiSd,?Rmm")))]
   "TARGET_A24"
   "@
    bset\t%B2,%0
@@ -245,8 +245,8 @@
 
 (define_expand "andqi3"
   [(set (match_operand:QI 0 "mra_operand" "")
-        (and:QI (match_operand:QI 1 "mra_operand" "")
-                (match_operand:QI 2 "mrai_operand" "")))]
+	(and:QI (match_operand:QI 1 "mra_operand" "")
+		(match_operand:QI 2 "mrai_operand" "")))]
   ""
   "if (TARGET_A16)
      emit_insn (gen_andqi3_16 (operands[0], operands[1], operands[2]));
@@ -257,8 +257,8 @@
 
 (define_expand "andhi3"
   [(set (match_operand:HI 0 "mra_operand" "")
-        (and:HI (match_operand:HI 1 "mra_operand" "")
-                (match_operand:HI 2 "mrai_operand" "")))]
+	(and:HI (match_operand:HI 1 "mra_operand" "")
+		(match_operand:HI 2 "mrai_operand" "")))]
   ""
   "if (TARGET_A16)
      emit_insn (gen_andhi3_16 (operands[0], operands[1], operands[2]));
@@ -269,8 +269,8 @@
 
 (define_expand "iorqi3"
   [(set (match_operand:QI 0 "mra_operand" "")
-        (ior:QI (match_operand:QI 1 "mra_operand" "")
-                (match_operand:QI 2 "mrai_operand" "")))]
+	(ior:QI (match_operand:QI 1 "mra_operand" "")
+		(match_operand:QI 2 "mrai_operand" "")))]
   ""
   "if (TARGET_A16)
      emit_insn (gen_iorqi3_16 (operands[0], operands[1], operands[2]));
@@ -281,8 +281,8 @@
 
 (define_expand "iorhi3"
   [(set (match_operand:HI 0 "mra_operand" "")
-        (ior:HI (match_operand:HI 1 "mra_operand" "")
-                (match_operand:HI 2 "mrai_operand" "")))]
+	(ior:HI (match_operand:HI 1 "mra_operand" "")
+		(match_operand:HI 2 "mrai_operand" "")))]
   ""
   "if (TARGET_A16)
      emit_insn (gen_iorhi3_16 (operands[0], operands[1], operands[2]));
@@ -321,8 +321,8 @@
 
 (define_insn "xorqi3"
   [(set (match_operand:QI 0 "mra_operand" "=RhlSd,RhlSd,??Rmm,??Rmm")
-        (xor:QI (match_operand:QI 1 "mra_operand" "%0,0,0,0")
-                (match_operand:QI 2 "mrai_operand" "iRhlSd,?Rmm,iRhlSd,?Rmm")))]
+	(xor:QI (match_operand:QI 1 "mra_operand" "%0,0,0,0")
+		(match_operand:QI 2 "mrai_operand" "iRhlSd,?Rmm,iRhlSd,?Rmm")))]
   ""
   "xor.b\t%x2,%0"
   [(set_attr "flags" "sz,sz,sz,sz")]
@@ -330,8 +330,8 @@
 
 (define_insn "xorhi3"
   [(set (match_operand:HI 0 "mra_operand" "=RhiSd,RhiSd,??Rmm,??Rmm")
-        (xor:HI (match_operand:HI 1 "mra_operand" "%0,0,0,0")
-                (match_operand:HI 2 "mrai_operand" "iRhiSd,?Rmm,iRhiSd,?Rmm")))]
+	(xor:HI (match_operand:HI 1 "mra_operand" "%0,0,0,0")
+		(match_operand:HI 2 "mrai_operand" "iRhiSd,?Rmm,iRhiSd,?Rmm")))]
   ""
   "xor.w\t%X2,%0"
   [(set_attr "flags" "sz,sz,sz,sz")]
@@ -367,7 +367,7 @@
 
 (define_insn "one_cmplqi2"
   [(set (match_operand:QI 0 "mra_operand" "=RhlSd,??Rmm")
-        (not:QI (match_operand:QI 1 "mra_operand" "0,0")))]
+	(not:QI (match_operand:QI 1 "mra_operand" "0,0")))]
   ""
   "not.b\t%0"
   [(set_attr "flags" "sz,sz")]
@@ -375,7 +375,7 @@
 
 (define_insn "one_cmplhi2"
   [(set (match_operand:HI 0 "mra_operand" "=RhiSd,??Rmm")
-        (not:HI (match_operand:HI 1 "mra_operand" "0,0")))]
+	(not:HI (match_operand:HI 1 "mra_operand" "0,0")))]
   ""
   "not.w\t%0"
   [(set_attr "flags" "sz,sz")]
@@ -389,15 +389,15 @@
 ; by a constant, so gcc should do that itself.
 (define_insn "shift1_qi"
   [(set (match_operand:QI 0 "mra_operand" "=Rqi")
-        (ashift:QI (const_int 1)
-                   (match_operand 1 "const_int_operand" "In4")))]
+	(ashift:QI (const_int 1)
+		   (match_operand 1 "const_int_operand" "In4")))]
   ""
   "mov.b\t#1,%0\n\tshl.b\t%1,%0"
   )
 (define_insn "shift1_hi"
   [(set (match_operand:HI 0 "mra_operand" "=Rhi")
-        (ashift:HI (const_int 1)
-                   (match_operand 1 "const_int_operand" "In4")))]
+	(ashift:HI (const_int 1)
+		   (match_operand 1 "const_int_operand" "In4")))]
   ""
   "mov.w\t#1,%0\n\tshl.w\t%1,%0"
   )
@@ -407,9 +407,9 @@
 
 (define_expand "insv"
   [(set (zero_extract:HI (match_operand:HI 0 "mra_operand" "")
-                         (match_operand 1 "const_int_operand" "")
-                         (match_operand 2 "const_int_operand" ""))
-        (match_operand:HI 3 "const_int_operand" ""))]
+			 (match_operand 1 "const_int_operand" "")
+			 (match_operand 2 "const_int_operand" ""))
+	(match_operand:HI 3 "const_int_operand" ""))]
   ""
   "if (m32c_expand_insv (operands))
      FAIL;

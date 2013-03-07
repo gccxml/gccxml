@@ -208,11 +208,11 @@ __gthread_recursive_mutex_init_function (__gthread_recursive_mutex_t *mutex)
 
       r = __gthrw_(pthread_mutexattr_init) (&attr);
       if (!r)
-        r = __gthrw_(pthread_mutexattr_settype) (&attr, PTHREAD_MUTEX_RECURSIVE);
+	r = __gthrw_(pthread_mutexattr_settype) (&attr, PTHREAD_MUTEX_RECURSIVE);
       if (!r)
-        r = __gthrw_(pthread_mutex_init) (mutex, &attr);
+	r = __gthrw_(pthread_mutex_init) (mutex, &attr);
       if (!r)
-        r = __gthrw_(pthread_mutexattr_destroy) (&attr);
+	r = __gthrw_(pthread_mutexattr_destroy) (&attr);
       return r;
     }
   return 0;

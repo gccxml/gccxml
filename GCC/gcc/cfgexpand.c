@@ -53,30 +53,30 @@ add_reg_br_prob_note (rtx last, int probability)
   for (last = NEXT_INSN (last); last && NEXT_INSN (last); last = NEXT_INSN (last))
     if (JUMP_P (last))
       {
-        /* It is common to emit condjump-around-jump sequence when we don't know
-           how to reverse the conditional.  Special case this.  */
-        if (!any_condjump_p (last)
-            || !JUMP_P (NEXT_INSN (last))
-            || !simplejump_p (NEXT_INSN (last))
-            || !NEXT_INSN (NEXT_INSN (last))
-            || !BARRIER_P (NEXT_INSN (NEXT_INSN (last)))
-            || !NEXT_INSN (NEXT_INSN (NEXT_INSN (last)))
-            || !LABEL_P (NEXT_INSN (NEXT_INSN (NEXT_INSN (last))))
-            || NEXT_INSN (NEXT_INSN (NEXT_INSN (NEXT_INSN (last)))))
-          goto failed;
-        gcc_assert (!find_reg_note (last, REG_BR_PROB, 0));
-        REG_NOTES (last)
-          = gen_rtx_EXPR_LIST (REG_BR_PROB,
-                               GEN_INT (REG_BR_PROB_BASE - probability),
-                               REG_NOTES (last));
-        return;
+	/* It is common to emit condjump-around-jump sequence when we don't know
+	   how to reverse the conditional.  Special case this.  */
+	if (!any_condjump_p (last)
+	    || !JUMP_P (NEXT_INSN (last))
+	    || !simplejump_p (NEXT_INSN (last))
+	    || !NEXT_INSN (NEXT_INSN (last))
+	    || !BARRIER_P (NEXT_INSN (NEXT_INSN (last)))
+	    || !NEXT_INSN (NEXT_INSN (NEXT_INSN (last)))
+	    || !LABEL_P (NEXT_INSN (NEXT_INSN (NEXT_INSN (last))))
+	    || NEXT_INSN (NEXT_INSN (NEXT_INSN (NEXT_INSN (last)))))
+	  goto failed;
+	gcc_assert (!find_reg_note (last, REG_BR_PROB, 0));
+	REG_NOTES (last)
+	  = gen_rtx_EXPR_LIST (REG_BR_PROB,
+			       GEN_INT (REG_BR_PROB_BASE - probability),
+			       REG_NOTES (last));
+	return;
       }
   if (!last || !JUMP_P (last) || !any_condjump_p (last))
     goto failed;
   gcc_assert (!find_reg_note (last, REG_BR_PROB, 0));
   REG_NOTES (last)
     = gen_rtx_EXPR_LIST (REG_BR_PROB,
-                         GEN_INT (probability), REG_NOTES (last));
+			 GEN_INT (probability), REG_NOTES (last));
   return;
 failed:
   if (dump_file)
@@ -208,11 +208,11 @@ add_stack_var (tree decl)
   if (stack_vars_num >= stack_vars_alloc)
     {
       if (stack_vars_alloc)
-        stack_vars_alloc = stack_vars_alloc * 3 / 2;
+	stack_vars_alloc = stack_vars_alloc * 3 / 2;
       else
-        stack_vars_alloc = 32;
+	stack_vars_alloc = 32;
       stack_vars
-        = XRESIZEVEC (struct stack_var, stack_vars, stack_vars_alloc);
+	= XRESIZEVEC (struct stack_var, stack_vars, stack_vars_alloc);
     }
   stack_vars[stack_vars_num].decl = decl;
   stack_vars[stack_vars_num].offset = 0;
@@ -254,7 +254,7 @@ resize_stack_vars_conflict (size_t n)
 
   stack_vars_conflict = XRESIZEVEC (bool, stack_vars_conflict, size);
   memset (stack_vars_conflict + stack_vars_conflict_alloc, 0,
-          (size - stack_vars_conflict_alloc) * sizeof (bool));
+	  (size - stack_vars_conflict_alloc) * sizeof (bool));
   stack_vars_conflict_alloc = size;
 }
 
@@ -296,7 +296,7 @@ aggregate_contains_union_type (tree type)
   for (field = TYPE_FIELDS (type); field; field = TREE_CHAIN (field))
     if (TREE_CODE (field) == FIELD_DECL)
       if (aggregate_contains_union_type (TREE_TYPE (field)))
-        return true;
+	return true;
 
   return false;
 }
@@ -324,21 +324,21 @@ add_alias_set_conflicts (void)
 
       contains_union = aggregate_contains_union_type (type_i);
       for (j = 0; j < i; ++j)
-        {
-          tree type_j = TREE_TYPE (stack_vars[j].decl);
-          bool aggr_j = AGGREGATE_TYPE_P (type_j);
-          if (aggr_i != aggr_j
-              /* Either the objects conflict by means of type based
-                 aliasing rules, or we need to add a conflict.  */
-              || !objects_must_conflict_p (type_i, type_j)
-              /* In case the types do not conflict ensure that access
-                 to elements will conflict.  In case of unions we have
-                 to be careful as type based aliasing rules may say
-                 access to the same memory does not conflict.  So play
-                 safe and add a conflict in this case.  */
-              || contains_union)
-            add_stack_var_conflict (i, j);
-        }
+	{
+	  tree type_j = TREE_TYPE (stack_vars[j].decl);
+	  bool aggr_j = AGGREGATE_TYPE_P (type_j);
+	  if (aggr_i != aggr_j
+	      /* Either the objects conflict by means of type based
+		 aliasing rules, or we need to add a conflict.  */
+	      || !objects_must_conflict_p (type_i, type_j)
+	      /* In case the types do not conflict ensure that access
+		 to elements will conflict.  In case of unions we have
+		 to be careful as type based aliasing rules may say
+		 access to the same memory does not conflict.  So play
+		 safe and add a conflict in this case.  */
+	      || contains_union)
+	    add_stack_var_conflict (i, j);
+	}
     }
 }
 
@@ -403,18 +403,18 @@ union_stack_vars (size_t a, size_t b, HOST_WIDE_INT offset)
    partitions constrained by the interference graph.  The overall
    algorithm used is as follows:
 
-        Sort the objects by size.
-        For each object A {
-          S = size(A)
-          O = 0
-          loop {
-            Look for the largest non-conflicting object B with size <= S.
-            UNION (A, B)
-            offset(B) = O
-            O += size(B)
-            S -= size(B)
-          }
-        }
+	Sort the objects by size.
+	For each object A {
+	  S = size(A)
+	  O = 0
+	  loop {
+	    Look for the largest non-conflicting object B with size <= S.
+	    UNION (A, B)
+	    offset(B) = O
+	    O += size(B)
+	    S -= size(B)
+	  }
+	}
 */
 
 static void
@@ -447,43 +447,43 @@ partition_stack_vars (void)
       HOST_WIDE_INT offset = 0;
 
       for (sj = si; sj-- > 0; )
-        {
-          size_t j = stack_vars_sorted[sj];
-          HOST_WIDE_INT jsize = stack_vars[j].size;
-          unsigned int jalign = stack_vars[j].alignb;
+	{
+	  size_t j = stack_vars_sorted[sj];
+	  HOST_WIDE_INT jsize = stack_vars[j].size;
+	  unsigned int jalign = stack_vars[j].alignb;
 
-          /* Ignore objects that aren't partition representatives.  */
-          if (stack_vars[j].representative != j)
-            continue;
+	  /* Ignore objects that aren't partition representatives.  */
+	  if (stack_vars[j].representative != j)
+	    continue;
 
-          /* Ignore objects too large for the remaining space.  */
-          if (isize < jsize)
-            continue;
+	  /* Ignore objects too large for the remaining space.  */
+	  if (isize < jsize)
+	    continue;
 
-          /* Ignore conflicting objects.  */
-          if (stack_var_conflict_p (i, j))
-            continue;
+	  /* Ignore conflicting objects.  */
+	  if (stack_var_conflict_p (i, j))
+	    continue;
 
-          /* Refine the remaining space check to include alignment.  */
-          if (offset & (jalign - 1))
-            {
-              HOST_WIDE_INT toff = offset;
-              toff += jalign - 1;
-              toff &= -(HOST_WIDE_INT)jalign;
-              if (isize - (toff - offset) < jsize)
-                continue;
+	  /* Refine the remaining space check to include alignment.  */
+	  if (offset & (jalign - 1))
+	    {
+	      HOST_WIDE_INT toff = offset;
+	      toff += jalign - 1;
+	      toff &= -(HOST_WIDE_INT)jalign;
+	      if (isize - (toff - offset) < jsize)
+		continue;
 
-              isize -= toff - offset;
-              offset = toff;
-            }
+	      isize -= toff - offset;
+	      offset = toff;
+	    }
 
-          /* UNION the objects, placing J at OFFSET.  */
-          union_stack_vars (i, j, offset);
+	  /* UNION the objects, placing J at OFFSET.  */
+	  union_stack_vars (i, j, offset);
 
-          isize -= jsize;
-          if (isize == 0)
-            break;
-        }
+	  isize -= jsize;
+	  if (isize == 0)
+	    break;
+	}
     }
 }
 
@@ -500,19 +500,19 @@ dump_stack_var_partition (void)
 
       /* Skip variables that aren't partition representatives, for now.  */
       if (stack_vars[i].representative != i)
-        continue;
+	continue;
 
       fprintf (dump_file, "Partition %lu: size " HOST_WIDE_INT_PRINT_DEC
-               " align %u\n", (unsigned long) i, stack_vars[i].size,
-               stack_vars[i].alignb);
+	       " align %u\n", (unsigned long) i, stack_vars[i].size,
+	       stack_vars[i].alignb);
 
       for (j = i; j != EOC; j = stack_vars[j].next)
-        {
-          fputc ('\t', dump_file);
-          print_generic_expr (dump_file, stack_vars[j].decl, dump_flags);
-          fprintf (dump_file, ", offset " HOST_WIDE_INT_PRINT_DEC "\n",
-                   stack_vars[i].offset);
-        }
+	{
+	  fputc ('\t', dump_file);
+	  print_generic_expr (dump_file, stack_vars[j].decl, dump_flags);
+	  fprintf (dump_file, ", offset " HOST_WIDE_INT_PRINT_DEC "\n",
+		   stack_vars[i].offset);
+	}
     }
 }
 
@@ -560,26 +560,26 @@ expand_stack_vars (bool (*pred) (tree))
 
       /* Skip variables that aren't partition representatives, for now.  */
       if (stack_vars[i].representative != i)
-        continue;
+	continue;
 
       /* Skip variables that have already had rtl assigned.  See also
-         add_stack_var where we perpetrate this pc_rtx hack.  */
+	 add_stack_var where we perpetrate this pc_rtx hack.  */
       if (DECL_RTL (stack_vars[i].decl) != pc_rtx)
-        continue;
+	continue;
 
       /* Check the predicate to see whether this variable should be
-         allocated in this pass.  */
+	 allocated in this pass.  */
       if (pred && !pred (stack_vars[i].decl))
-        continue;
+	continue;
 
       offset = alloc_stack_frame_space (stack_vars[i].size,
-                                        stack_vars[i].alignb);
+					stack_vars[i].alignb);
 
       /* Create rtl for each variable based on their location within the
-         partition.  */
+	 partition.  */
       for (j = i; j != EOC; j = stack_vars[j].next)
-        expand_one_stack_var_at (stack_vars[j].decl,
-                                 stack_vars[j].offset + offset);
+	expand_one_stack_var_at (stack_vars[j].decl,
+				 stack_vars[j].offset + offset);
     }
 }
 
@@ -654,13 +654,13 @@ expand_one_register_var (tree var)
       mark_user_reg (x);
 
       /* Trust user variables which have a pointer type to really
-         be pointers.  Do not trust compiler generated temporaries
-         as our type system is totally busted as it relates to
-         pointer arithmetic which translates into lots of compiler
-         generated objects with pointer types, but which are not really
-         pointers.  */
+	 be pointers.  Do not trust compiler generated temporaries
+	 as our type system is totally busted as it relates to
+	 pointer arithmetic which translates into lots of compiler
+	 generated objects with pointer types, but which are not really
+	 pointers.  */
       if (POINTER_TYPE_P (type))
-        mark_reg_pointer (x, TYPE_ALIGN (TREE_TYPE (TREE_TYPE (var))));
+	mark_reg_pointer (x, TYPE_ALIGN (TREE_TYPE (TREE_TYPE (var))));
     }
 }
 
@@ -765,11 +765,11 @@ expand_used_vars_for_block (tree block, bool toplevel)
   /* Expand all variables at this level.  */
   for (t = BLOCK_VARS (block); t ; t = TREE_CHAIN (t))
     if (TREE_USED (t)
-        /* Force local static variables to be output when marked by
-           used attribute.  For unit-at-a-time, cgraph code already takes
-           care of this.  */
-        || (!flag_unit_at_a_time && TREE_STATIC (t)
-            && DECL_PRESERVE_P (t)))
+	/* Force local static variables to be output when marked by
+	   used attribute.  For unit-at-a-time, cgraph code already takes
+	   care of this.  */
+	|| (!flag_unit_at_a_time && TREE_STATIC (t)
+	    && DECL_PRESERVE_P (t)))
       expand_one_var (t, toplevel);
 
   this_sv_num = stack_vars_num;
@@ -789,8 +789,8 @@ expand_used_vars_for_block (tree block, bool toplevel)
       resize_stack_vars_conflict (new_sv_num);
 
       for (i = old_sv_num; i < new_sv_num; ++i)
-        for (j = i < this_sv_num ? i+1 : this_sv_num; j-- > old_sv_num ;)
-          add_stack_var_conflict (i, j);
+	for (j = i < this_sv_num ? i+1 : this_sv_num; j-- > old_sv_num ;)
+	  add_stack_var_conflict (i, j);
     }
 }
 
@@ -812,10 +812,10 @@ clear_tree_used (tree block)
 
 /* Examine TYPE and determine a bit mask of the following features.  */
 
-#define SPCT_HAS_LARGE_CHAR_ARRAY        1
-#define SPCT_HAS_SMALL_CHAR_ARRAY        2
-#define SPCT_HAS_ARRAY                        4
-#define SPCT_HAS_AGGREGATE                8
+#define SPCT_HAS_LARGE_CHAR_ARRAY	1
+#define SPCT_HAS_SMALL_CHAR_ARRAY	2
+#define SPCT_HAS_ARRAY			4
+#define SPCT_HAS_AGGREGATE		8
 
 static unsigned int
 stack_protect_classify_type (tree type)
@@ -828,25 +828,25 @@ stack_protect_classify_type (tree type)
     case ARRAY_TYPE:
       t = TYPE_MAIN_VARIANT (TREE_TYPE (type));
       if (t == char_type_node
-          || t == signed_char_type_node
-          || t == unsigned_char_type_node)
-        {
-          unsigned HOST_WIDE_INT max = PARAM_VALUE (PARAM_SSP_BUFFER_SIZE);
-          unsigned HOST_WIDE_INT len;
+	  || t == signed_char_type_node
+	  || t == unsigned_char_type_node)
+	{
+	  unsigned HOST_WIDE_INT max = PARAM_VALUE (PARAM_SSP_BUFFER_SIZE);
+	  unsigned HOST_WIDE_INT len;
 
-          if (!TYPE_SIZE_UNIT (type)
-              || !host_integerp (TYPE_SIZE_UNIT (type), 1))
-            len = max;
-          else
-            len = tree_low_cst (TYPE_SIZE_UNIT (type), 1);
+	  if (!TYPE_SIZE_UNIT (type)
+	      || !host_integerp (TYPE_SIZE_UNIT (type), 1))
+	    len = max;
+	  else
+	    len = tree_low_cst (TYPE_SIZE_UNIT (type), 1);
 
-          if (len < max)
-            ret = SPCT_HAS_SMALL_CHAR_ARRAY | SPCT_HAS_ARRAY;
-          else
-            ret = SPCT_HAS_LARGE_CHAR_ARRAY | SPCT_HAS_ARRAY;
-        }
+	  if (len < max)
+	    ret = SPCT_HAS_SMALL_CHAR_ARRAY | SPCT_HAS_ARRAY;
+	  else
+	    ret = SPCT_HAS_LARGE_CHAR_ARRAY | SPCT_HAS_ARRAY;
+	}
       else
-        ret = SPCT_HAS_ARRAY;
+	ret = SPCT_HAS_ARRAY;
       break;
 
     case UNION_TYPE:
@@ -854,8 +854,8 @@ stack_protect_classify_type (tree type)
     case RECORD_TYPE:
       ret = SPCT_HAS_AGGREGATE;
       for (t = TYPE_FIELDS (type); t ; t = TREE_CHAIN (t))
-        if (TREE_CODE (t) == FIELD_DECL)
-          ret |= stack_protect_classify_type (TREE_TYPE (t));
+	if (TREE_CODE (t) == FIELD_DECL)
+	  ret |= stack_protect_classify_type (TREE_TYPE (t));
       break;
 
     default:
@@ -882,10 +882,10 @@ stack_protect_decl_phase (tree decl)
   if (flag_stack_protect == 2)
     {
       if ((bits & (SPCT_HAS_SMALL_CHAR_ARRAY | SPCT_HAS_LARGE_CHAR_ARRAY))
-          && !(bits & SPCT_HAS_AGGREGATE))
-        ret = 1;
+	  && !(bits & SPCT_HAS_AGGREGATE))
+	ret = 1;
       else if (bits & SPCT_HAS_ARRAY)
-        ret = 2;
+	ret = 2;
     }
   else
     ret = (bits & SPCT_HAS_LARGE_CHAR_ARRAY) != 0;
@@ -928,8 +928,8 @@ add_stack_protection_conflicts (void)
     {
       unsigned char ph_i = phase[i];
       for (j = 0; j < i; ++j)
-        if (ph_i != phase[j])
-          add_stack_var_conflict (i, j);
+	if (ph_i != phase[j])
+	  add_stack_var_conflict (i, j);
     }
 
   XDELETEVEC (phase);
@@ -980,32 +980,32 @@ expand_used_vars (void)
       bool expand_now = false;
 
       /* We didn't set a block for static or extern because it's hard
-         to tell the difference between a global variable (re)declared
-         in a local scope, and one that's really declared there to
-         begin with.  And it doesn't really matter much, since we're
-         not giving them stack space.  Expand them now.  */
+	 to tell the difference between a global variable (re)declared
+	 in a local scope, and one that's really declared there to
+	 begin with.  And it doesn't really matter much, since we're
+	 not giving them stack space.  Expand them now.  */
       if (TREE_STATIC (var) || DECL_EXTERNAL (var))
-        expand_now = true;
+	expand_now = true;
 
       /* Any variable that could have been hoisted into an SSA_NAME
-         will have been propagated anywhere the optimizers chose,
-         i.e. not confined to their original block.  Allocate them
-         as if they were defined in the outermost scope.  */
+	 will have been propagated anywhere the optimizers chose,
+	 i.e. not confined to their original block.  Allocate them
+	 as if they were defined in the outermost scope.  */
       else if (is_gimple_reg (var))
-        expand_now = true;
+	expand_now = true;
 
       /* If the variable is not associated with any block, then it
-         was created by the optimizers, and could be live anywhere
-         in the function.  */
+	 was created by the optimizers, and could be live anywhere
+	 in the function.  */
       else if (TREE_USED (var))
-        expand_now = true;
+	expand_now = true;
 
       /* Finally, mark all variables on the list as used.  We'll use
-         this in a moment when we expand those associated with scopes.  */
+	 this in a moment when we expand those associated with scopes.  */
       TREE_USED (var) = 1;
 
       if (expand_now)
-        expand_one_var (var, true);
+	expand_one_var (var, true);
     }
   cfun->unexpanded_var_list = NULL_TREE;
 
@@ -1016,46 +1016,46 @@ expand_used_vars (void)
   if (stack_vars_num > 0)
     {
       /* Due to the way alias sets work, no variables with non-conflicting
-         alias sets may be assigned the same address.  Add conflicts to
-         reflect this.  */
+	 alias sets may be assigned the same address.  Add conflicts to
+	 reflect this.  */
       add_alias_set_conflicts ();
 
       /* If stack protection is enabled, we don't share space between
-         vulnerable data and non-vulnerable data.  */
+	 vulnerable data and non-vulnerable data.  */
       if (flag_stack_protect)
-        add_stack_protection_conflicts ();
+	add_stack_protection_conflicts ();
 
       /* Now that we have collected all stack variables, and have computed a
-         minimal interference graph, attempt to save some stack space.  */
+	 minimal interference graph, attempt to save some stack space.  */
       partition_stack_vars ();
       if (dump_file)
-        dump_stack_var_partition ();
+	dump_stack_var_partition ();
     }
 
   /* There are several conditions under which we should create a
      stack guard: protect-all, alloca used, protected decls present.  */
   if (flag_stack_protect == 2
       || (flag_stack_protect
-          && (current_function_calls_alloca || has_protected_decls)))
+	  && (current_function_calls_alloca || has_protected_decls)))
     create_stack_guard ();
 
   /* Assign rtl to each variable based on these partitions.  */
   if (stack_vars_num > 0)
     {
       /* Reorder decls to be protected by iterating over the variables
-         array multiple times, and allocating out of each phase in turn.  */
+	 array multiple times, and allocating out of each phase in turn.  */
       /* ??? We could probably integrate this into the qsort we did
-         earlier, such that we naturally see these variables first,
-         and thus naturally allocate things in the right order.  */
+	 earlier, such that we naturally see these variables first,
+	 and thus naturally allocate things in the right order.  */
       if (has_protected_decls)
-        {
-          /* Phase 1 contains only character arrays.  */
-          expand_stack_vars (stack_protect_decl_phase_1);
+	{
+	  /* Phase 1 contains only character arrays.  */
+	  expand_stack_vars (stack_protect_decl_phase_1);
 
-          /* Phase 2 contains other kinds of arrays.  */
-          if (flag_stack_protect == 2)
-            expand_stack_vars (stack_protect_decl_phase_2);
-        }
+	  /* Phase 2 contains other kinds of arrays.  */
+	  if (flag_stack_protect == 2)
+	    expand_stack_vars (stack_protect_decl_phase_2);
+	}
 
       expand_stack_vars (NULL);
 
@@ -1074,7 +1074,7 @@ expand_used_vars (void)
     {
       HOST_WIDE_INT align = PREFERRED_STACK_BOUNDARY / BITS_PER_UNIT;
       if (!FRAME_GROWS_DOWNWARD)
-        frame_offset += align - 1;
+	frame_offset += align - 1;
       frame_offset &= -align;
     }
 }
@@ -1134,7 +1134,7 @@ expand_gimple_cond_expr (basic_block bb, tree stmt)
       add_reg_br_prob_note (last, true_edge->probability);
       maybe_dump_rtl_for_tree_stmt (stmt, last);
       if (EXPR_LOCUS (then_exp))
-        emit_line_note (*(EXPR_LOCUS (then_exp)));
+	emit_line_note (*(EXPR_LOCUS (then_exp)));
       return NULL;
     }
   if (TREE_CODE (else_exp) == GOTO_EXPR && IS_EMPTY_STMT (then_exp))
@@ -1143,11 +1143,11 @@ expand_gimple_cond_expr (basic_block bb, tree stmt)
       add_reg_br_prob_note (last, false_edge->probability);
       maybe_dump_rtl_for_tree_stmt (stmt, last);
       if (EXPR_LOCUS (else_exp))
-        emit_line_note (*(EXPR_LOCUS (else_exp)));
+	emit_line_note (*(EXPR_LOCUS (else_exp)));
       return NULL;
     }
   gcc_assert (TREE_CODE (then_exp) == GOTO_EXPR
-              && TREE_CODE (else_exp) == GOTO_EXPR);
+	      && TREE_CODE (else_exp) == GOTO_EXPR);
 
   jumpif (pred, label_rtx (GOTO_DESTINATION (then_exp)));
   add_reg_br_prob_note (last, true_edge->probability);
@@ -1230,22 +1230,22 @@ expand_gimple_tailcall (basic_block bb, tree stmt, bool *can_fallthru)
   for (ei = ei_start (bb->succs); (e = ei_safe_edge (ei)); )
     {
       if (!(e->flags & (EDGE_ABNORMAL | EDGE_EH)))
-        {
-          if (e->dest != EXIT_BLOCK_PTR)
-            {
-              e->dest->count -= e->count;
-              e->dest->frequency -= EDGE_FREQUENCY (e);
-              if (e->dest->count < 0)
-                e->dest->count = 0;
-              if (e->dest->frequency < 0)
-                e->dest->frequency = 0;
-            }
-          count += e->count;
-          probability += e->probability;
-          remove_edge (e);
-        }
+	{
+	  if (e->dest != EXIT_BLOCK_PTR)
+	    {
+	      e->dest->count -= e->count;
+	      e->dest->frequency -= EDGE_FREQUENCY (e);
+	      if (e->dest->count < 0)
+		e->dest->count = 0;
+	      if (e->dest->frequency < 0)
+		e->dest->frequency = 0;
+	    }
+	  count += e->count;
+	  probability += e->probability;
+	  remove_edge (e);
+	}
       else
-        ei_next (&ei);
+	ei_next (&ei);
     }
 
   /* This is somewhat ugly: the call_expr expander often emits instructions
@@ -1258,12 +1258,12 @@ expand_gimple_tailcall (basic_block bb, tree stmt, bool *can_fallthru)
   while (NEXT_INSN (last))
     {
       /* For instance an sqrt builtin expander expands if with
-         sibcall in the then and label for `else`.  */
+	 sibcall in the then and label for `else`.  */
       if (LABEL_P (NEXT_INSN (last)))
-        {
-          *can_fallthru = true;
-          break;
-        }
+	{
+	  *can_fallthru = true;
+	  break;
+	}
       delete_insn (NEXT_INSN (last));
     }
 
@@ -1279,7 +1279,7 @@ expand_gimple_tailcall (basic_block bb, tree stmt, bool *can_fallthru)
 
       last = BB_END (bb);
       if (BARRIER_P (last))
-        BB_END (bb) = PREV_INSN (last);
+	BB_END (bb) = PREV_INSN (last);
     }
 
   maybe_dump_rtl_for_tree_stmt (stmt, last2);
@@ -1301,8 +1301,8 @@ expand_gimple_basic_block (basic_block bb)
   if (dump_file)
     {
       fprintf (dump_file,
-               "\n;; Generating RTL for tree basic block %d\n",
-               bb->index);
+	       "\n;; Generating RTL for tree basic block %d\n",
+	       bb->index);
     }
 
   init_rtl_bb_info (bb);
@@ -1318,10 +1318,10 @@ expand_gimple_basic_block (basic_block bb)
       expand_expr_stmt (stmt);
 
       /* Java emits line number notes in the top of labels.
-         ??? Make this go away once line number notes are obsoleted.  */
+	 ??? Make this go away once line number notes are obsoleted.  */
       BB_HEAD (bb) = NEXT_INSN (last);
       if (NOTE_P (BB_HEAD (bb)))
-        BB_HEAD (bb) = NEXT_INSN (BB_HEAD (bb));
+	BB_HEAD (bb) = NEXT_INSN (BB_HEAD (bb));
       bsi_next (&bsi);
       note = emit_note_after (NOTE_INSN_BASIC_BLOCK, BB_HEAD (bb));
 
@@ -1338,12 +1338,12 @@ expand_gimple_basic_block (basic_block bb)
       e->flags &= ~EDGE_EXECUTABLE;
 
       /* At the moment not all abnormal edges match the RTL representation.
-         It is safe to remove them here as find_many_sub_basic_blocks will
-         rediscover them.  In the future we should get this fixed properly.  */
+	 It is safe to remove them here as find_many_sub_basic_blocks will
+	 rediscover them.  In the future we should get this fixed properly.  */
       if (e->flags & EDGE_ABNORMAL)
-        remove_edge (e);
+	remove_edge (e);
       else
-        ei_next (&ei);
+	ei_next (&ei);
     }
 
   for (; !bsi_end_p (bsi); bsi_next (&bsi))
@@ -1352,38 +1352,38 @@ expand_gimple_basic_block (basic_block bb)
       basic_block new_bb;
 
       if (!stmt)
-        continue;
+	continue;
 
       /* Expand this statement, then evaluate the resulting RTL and
-         fixup the CFG accordingly.  */
+	 fixup the CFG accordingly.  */
       if (TREE_CODE (stmt) == COND_EXPR)
-        {
-          new_bb = expand_gimple_cond_expr (bb, stmt);
-          if (new_bb)
-            return new_bb;
-        }
+	{
+	  new_bb = expand_gimple_cond_expr (bb, stmt);
+	  if (new_bb)
+	    return new_bb;
+	}
       else
-        {
-          tree call = get_call_expr_in (stmt);
-          if (call && CALL_EXPR_TAILCALL (call))
-            {
-              bool can_fallthru;
-              new_bb = expand_gimple_tailcall (bb, stmt, &can_fallthru);
-              if (new_bb)
-                {
-                  if (can_fallthru)
-                    bb = new_bb;
-                  else
-                    return new_bb;
-                }
-            }
-          else
-            {
-              last = get_last_insn ();
-              expand_expr_stmt (stmt);
-              maybe_dump_rtl_for_tree_stmt (stmt, last);
-            }
-        }
+	{
+	  tree call = get_call_expr_in (stmt);
+	  if (call && CALL_EXPR_TAILCALL (call))
+	    {
+	      bool can_fallthru;
+	      new_bb = expand_gimple_tailcall (bb, stmt, &can_fallthru);
+	      if (new_bb)
+		{
+		  if (can_fallthru)
+		    bb = new_bb;
+		  else
+		    return new_bb;
+		}
+	    }
+	  else
+	    {
+	      last = get_last_insn ();
+	      expand_expr_stmt (stmt);
+	      maybe_dump_rtl_for_tree_stmt (stmt, last);
+	    }
+	}
     }
 
   do_pending_stack_adjust ();
@@ -1434,8 +1434,8 @@ construct_init_block (void)
     flags = EDGE_FALLTHRU;
 
   init_block = create_basic_block (NEXT_INSN (get_insns ()),
-                                   get_last_insn (),
-                                   ENTRY_BLOCK_PTR);
+				   get_last_insn (),
+				   ENTRY_BLOCK_PTR);
   init_block->frequency = ENTRY_BLOCK_PTR->frequency;
   init_block->count = ENTRY_BLOCK_PTR->count;
   if (e)
@@ -1487,7 +1487,7 @@ construct_exit_block (void)
   while (NEXT_INSN (head) && NOTE_P (NEXT_INSN (head)))
     head = NEXT_INSN (head);
   exit_block = create_basic_block (NEXT_INSN (head), end,
-                                   EXIT_BLOCK_PTR->prev_bb);
+				   EXIT_BLOCK_PTR->prev_bb);
   exit_block->frequency = EXIT_BLOCK_PTR->frequency;
   exit_block->count = EXIT_BLOCK_PTR->count;
 
@@ -1496,9 +1496,9 @@ construct_exit_block (void)
     {
       e = EDGE_PRED (EXIT_BLOCK_PTR, ix);
       if (!(e->flags & EDGE_ABNORMAL))
-        redirect_edge_succ (e, exit_block);
+	redirect_edge_succ (e, exit_block);
       else
-        ix++;
+	ix++;
     }
 
   e = make_edge (exit_block, EXIT_BLOCK_PTR, EDGE_FALLTHRU);
@@ -1507,9 +1507,9 @@ construct_exit_block (void)
   FOR_EACH_EDGE (e2, ei, EXIT_BLOCK_PTR->preds)
     if (e2 != e)
       {
-        e->count -= e2->count;
-        exit_block->count -= e2->count;
-        exit_block->frequency -= EDGE_FREQUENCY (e2);
+	e->count -= e2->count;
+	exit_block->count -= e2->count;
+	exit_block->frequency -= EDGE_FREQUENCY (e2);
       }
   if (e->count < 0)
     e->count = 0;
@@ -1526,7 +1526,7 @@ construct_exit_block (void)
 
 static tree
 discover_nonconstant_array_refs_r (tree * tp, int *walk_subtrees,
-                                   void *data ATTRIBUTE_UNUSED)
+				   void *data ATTRIBUTE_UNUSED)
 {
   tree t = *tp;
 
@@ -1535,26 +1535,26 @@ discover_nonconstant_array_refs_r (tree * tp, int *walk_subtrees,
   else if (TREE_CODE (t) == ARRAY_REF || TREE_CODE (t) == ARRAY_RANGE_REF)
     {
       while (((TREE_CODE (t) == ARRAY_REF || TREE_CODE (t) == ARRAY_RANGE_REF)
-              && is_gimple_min_invariant (TREE_OPERAND (t, 1))
-              && (!TREE_OPERAND (t, 2)
-                  || is_gimple_min_invariant (TREE_OPERAND (t, 2))))
-             || (TREE_CODE (t) == COMPONENT_REF
-                 && (!TREE_OPERAND (t,2)
-                     || is_gimple_min_invariant (TREE_OPERAND (t, 2))))
-             || TREE_CODE (t) == BIT_FIELD_REF
-             || TREE_CODE (t) == REALPART_EXPR
-             || TREE_CODE (t) == IMAGPART_EXPR
-             || TREE_CODE (t) == VIEW_CONVERT_EXPR
-             || TREE_CODE (t) == NOP_EXPR
-             || TREE_CODE (t) == CONVERT_EXPR)
-        t = TREE_OPERAND (t, 0);
+	      && is_gimple_min_invariant (TREE_OPERAND (t, 1))
+	      && (!TREE_OPERAND (t, 2)
+		  || is_gimple_min_invariant (TREE_OPERAND (t, 2))))
+	     || (TREE_CODE (t) == COMPONENT_REF
+		 && (!TREE_OPERAND (t,2)
+		     || is_gimple_min_invariant (TREE_OPERAND (t, 2))))
+	     || TREE_CODE (t) == BIT_FIELD_REF
+	     || TREE_CODE (t) == REALPART_EXPR
+	     || TREE_CODE (t) == IMAGPART_EXPR
+	     || TREE_CODE (t) == VIEW_CONVERT_EXPR
+	     || TREE_CODE (t) == NOP_EXPR
+	     || TREE_CODE (t) == CONVERT_EXPR)
+	t = TREE_OPERAND (t, 0);
 
       if (TREE_CODE (t) == ARRAY_REF || TREE_CODE (t) == ARRAY_RANGE_REF)
-        {
-          t = get_base_address (t);
-          if (t && DECL_P (t))
-            TREE_ADDRESSABLE (t) = 1;
-        }
+	{
+	  t = get_base_address (t);
+	  if (t && DECL_P (t))
+	    TREE_ADDRESSABLE (t) = 1;
+	}
 
       *walk_subtrees = 0;
     }
@@ -1576,8 +1576,8 @@ discover_nonconstant_array_refs (void)
   FOR_EACH_BB (bb)
     {
       for (bsi = bsi_start (bb); !bsi_end_p (bsi); bsi_next (&bsi))
-        walk_tree (bsi_stmt_ptr (bsi), discover_nonconstant_array_refs_r,
-                   NULL , NULL);
+	walk_tree (bsi_stmt_ptr (bsi), discover_nonconstant_array_refs_r,
+		   NULL , NULL);
     }
 }
 
@@ -1614,10 +1614,10 @@ tree_expand_cfg (void)
   if (warn_stack_protect)
     {
       if (current_function_calls_alloca)
-        warning (0, "not protecting local variables: variable length buffer");
+	warning (0, "not protecting local variables: variable length buffer");
       if (has_short_buffer && !cfun->stack_protect_guard)
-        warning (0, "not protecting function: no buffer at least %d bytes long",
-                 (int) PARAM_VALUE (PARAM_SSP_BUFFER_SIZE));
+	warning (0, "not protecting function: no buffer at least %d bytes long",
+		 (int) PARAM_VALUE (PARAM_SSP_BUFFER_SIZE));
     }
 
   /* Set up parameters and prepare for return, for the function.  */
@@ -1684,7 +1684,7 @@ tree_expand_cfg (void)
   if (dump_file)
     {
       fprintf (dump_file,
-               "\n\n;;\n;; Full RTL generated for this function:\n;;\n");
+	       "\n\n;;\n;; Full RTL generated for this function:\n;;\n");
       /* And the pass manager will dump RTL for us.  */
     }
 
@@ -1693,10 +1693,10 @@ tree_expand_cfg (void)
   {
     tree parent;
     for (parent = DECL_CONTEXT (current_function_decl);
-         parent != NULL_TREE;
-         parent = get_containing_scope (parent))
+	 parent != NULL_TREE;
+	 parent = get_containing_scope (parent))
       if (TREE_CODE (parent) == FUNCTION_DECL)
-        TREE_SYMBOL_REFERENCED (DECL_ASSEMBLER_NAME (parent)) = 1;
+	TREE_SYMBOL_REFERENCED (DECL_ASSEMBLER_NAME (parent)) = 1;
   }
 
   /* We are now committed to emitting code for this function.  Do any
@@ -1715,18 +1715,18 @@ tree_expand_cfg (void)
 
 struct tree_opt_pass pass_expand =
 {
-  "expand",                                /* name */
+  "expand",				/* name */
   NULL,                                 /* gate */
-  tree_expand_cfg,                        /* execute */
+  tree_expand_cfg,			/* execute */
   NULL,                                 /* sub */
   NULL,                                 /* next */
   0,                                    /* static_pass_number */
-  TV_EXPAND,                                /* tv_id */
+  TV_EXPAND,				/* tv_id */
   /* ??? If TER is enabled, we actually receive GENERIC.  */
   PROP_gimple_leh | PROP_cfg,           /* properties_required */
   PROP_rtl,                             /* properties_provided */
-  PROP_trees,                                /* properties_destroyed */
+  PROP_trees,				/* properties_destroyed */
   0,                                    /* todo_flags_start */
   TODO_dump_func,                       /* todo_flags_finish */
-  'r'                                        /* letter */
+  'r'					/* letter */
 };

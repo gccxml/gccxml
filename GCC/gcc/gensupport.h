@@ -60,26 +60,26 @@ extern int cmp_c_test (const void *, const void *);
 extern void traverse_c_tests (htab_trav, void *);
 #endif
 
-extern int n_comma_elts        (const char *);
+extern int n_comma_elts	(const char *);
 extern const char *scan_comma_elt (const char **);
 
 /* Predicate handling: helper functions and data structures.  */
 
 struct pred_data
 {
-  struct pred_data *next;        /* for iterating over the set of all preds */
-  const char *name;                /* predicate name */
-  bool special;                        /* special handling of modes? */
+  struct pred_data *next;	/* for iterating over the set of all preds */
+  const char *name;		/* predicate name */
+  bool special;			/* special handling of modes? */
 
   /* data used primarily by genpreds.c */
-  const char *c_block;                /* C test block */
-  rtx exp;                        /* RTL test expression */
+  const char *c_block;		/* C test block */
+  rtx exp;			/* RTL test expression */
 
   /* data used primarily by genrecog.c */
-  enum rtx_code singleton;        /* if pred takes only one code, that code */
-  bool allows_non_lvalue;        /* if pred allows non-lvalue expressions */
-  bool allows_non_const;        /* if pred allows non-const expressions */
-  bool codes[NUM_RTX_CODE];        /* set of codes accepted */
+  enum rtx_code singleton;	/* if pred takes only one code, that code */
+  bool allows_non_lvalue;	/* if pred allows non-lvalue expressions */
+  bool allows_non_const;	/* if pred allows non-const expressions */
+  bool codes[NUM_RTX_CODE];	/* set of codes accepted */
 };
 
 extern struct pred_data *first_predicate;

@@ -64,18 +64,18 @@
 (define_predicate "cris_bdap_const_operand"
   (and (match_code "label_ref, symbol_ref, const_int, const_double, const")
        (ior (not (match_test "flag_pic"))
-            (match_test "cris_valid_pic_const (op)"))))
+	    (match_test "cris_valid_pic_const (op)"))))
 
 (define_predicate "cris_simple_address_operand"
   (ior (match_operand:SI 0 "register_operand")
        (and (match_code "post_inc")
-            (match_test "register_operand (XEXP (op, 0), Pmode)"))))
+	    (match_test "register_operand (XEXP (op, 0), Pmode)"))))
 
 (define_predicate "cris_simple_operand"
   (ior (match_operand 0 "register_operand")
        (and (match_code "mem")
-            (match_test "cris_simple_address_operand (XEXP (op, 0),
-                                                      Pmode)"))))
+	    (match_test "cris_simple_address_operand (XEXP (op, 0),
+						      Pmode)"))))
 
 ;; The caller needs to use :SI.
 (define_predicate "cris_bdap_sign_extend_operand"
@@ -84,23 +84,23 @@
   (match_test "0"))
 ;  (and (match_code "sign_extend")
 ;       (and (match_test "MEM_P (XEXP (op, 0))")
-;            (match_test "cris_simple_address_operand (XEXP (XEXP (op, 0), 0),
-;                                                      Pmode)"))))
+;	    (match_test "cris_simple_address_operand (XEXP (XEXP (op, 0), 0),
+;						      Pmode)"))))
 
 ;; FIXME: Should not have to test for 1.
 (define_predicate "cris_scale_int_operand"
   (and (match_code "const_int")
        (ior (ior (match_test "op == GEN_INT (4)")
-                 (match_test "op == const2_rtx"))
-            (match_test "op == const1_rtx"))))
+		 (match_test "op == const2_rtx"))
+	    (match_test "op == const1_rtx"))))
 
 ;; FIXME: Should be able to assume (reg int).
 (define_predicate "cris_biap_mult_operand"
   (and (match_code "mult")
        (ior (and (match_test "register_operand (XEXP (op, 0), Pmode)")
-                 (match_test "cris_scale_int_operand (XEXP (op, 1), Pmode)"))
-            (and (match_test "cris_scale_int_operand (XEXP (op, 0), Pmode)")
-                 (match_test "register_operand (XEXP (op, 1), Pmode)")))))
+		 (match_test "cris_scale_int_operand (XEXP (op, 1), Pmode)"))
+	    (and (match_test "cris_scale_int_operand (XEXP (op, 0), Pmode)")
+		 (match_test "register_operand (XEXP (op, 1), Pmode)")))))
 
 
 ;; Operand predicates.
@@ -115,7 +115,7 @@
 (define_predicate "cris_bdap_operand"
   (ior (match_operand 0 "cris_bdap_const_operand")
        (ior (match_operand:SI 0 "cris_simple_operand")
-            (match_operand:SI 0 "cris_bdap_sign_extend_operand"))))
+	    (match_operand:SI 0 "cris_bdap_sign_extend_operand"))))
 
 ;; This is similar to cris_bdap_operand:
 ;; It checks a part of an address, the one that is not a plain register
@@ -138,8 +138,8 @@
 (define_special_predicate "cris_general_operand_or_symbol"
   (ior (match_operand 0 "general_operand")
        (and (match_code "const, symbol_ref, label_ref")
-                   ; The following test is actually just an assertion.
-            (match_test "cris_pic_symbol_type_of (op) != cris_no_symbol"))))
+       	    ; The following test is actually just an assertion.
+	    (match_test "cris_pic_symbol_type_of (op) != cris_no_symbol"))))
 
 ;; Since a PLT symbol is not a general_operand, we have to have a
 ;; predicate that matches it when we need it.  We use this in the expanded
@@ -148,8 +148,8 @@
 (define_predicate "cris_general_operand_or_plt_symbol"
   (ior (match_operand 0 "general_operand")
        (and (match_code "const")
-            (and (match_test "GET_CODE (XEXP (op, 0)) == UNSPEC")
-                 (not (match_test "TARGET_AVOID_GOTPLT"))))))
+	    (and (match_test "GET_CODE (XEXP (op, 0)) == UNSPEC")
+		 (not (match_test "TARGET_AVOID_GOTPLT"))))))
 
 ;; This matches a (MEM (general_operand)) or
 ;; (MEM (cris_general_operand_or_symbol)).  The second one isn't a valid
@@ -160,5 +160,5 @@
 (define_predicate "cris_mem_call_operand"
   (and (match_code "mem")
        (ior (match_operand 0 "memory_operand")
-            (match_test "cris_general_operand_or_symbol (XEXP (op, 0),
-                                                         Pmode)"))))
+	    (match_test "cris_general_operand_or_symbol (XEXP (op, 0),
+							 Pmode)"))))

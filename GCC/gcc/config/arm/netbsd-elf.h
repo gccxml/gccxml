@@ -34,39 +34,39 @@
 
 /* Default it to use ATPCS with soft-VFP.  */
 #undef TARGET_DEFAULT
-#define TARGET_DEFAULT                        \
-  (MASK_APCS_FRAME                        \
+#define TARGET_DEFAULT			\
+  (MASK_APCS_FRAME			\
    | TARGET_ENDIAN_DEFAULT)
 
 #undef ARM_DEFAULT_ABI
 #define ARM_DEFAULT_ABI ARM_ABI_ATPCS
 
-#define TARGET_OS_CPP_BUILTINS()        \
-  do                                        \
-    {                                        \
-      NETBSD_OS_CPP_BUILTINS_ELF();        \
-    }                                        \
+#define TARGET_OS_CPP_BUILTINS()	\
+  do					\
+    {					\
+      NETBSD_OS_CPP_BUILTINS_ELF();	\
+    }					\
   while (0)
 
 #undef SUBTARGET_CPP_SPEC
 #define SUBTARGET_CPP_SPEC NETBSD_CPP_SPEC
 
 #undef SUBTARGET_EXTRA_ASM_SPEC
-#define SUBTARGET_EXTRA_ASM_SPEC        \
+#define SUBTARGET_EXTRA_ASM_SPEC	\
   "-matpcs %{fpic|fpie:-k} %{fPIC|fPIE:-k}"
 
 /* Default to full VFP if -mhard-float is specified.  */
 #undef SUBTARGET_ASM_FLOAT_SPEC
-#define SUBTARGET_ASM_FLOAT_SPEC        \
+#define SUBTARGET_ASM_FLOAT_SPEC	\
   "%{mhard-float:{!mfpu=*:-mfpu=vfp}}   \
    %{mfloat-abi=hard:{!mfpu=*:-mfpu=vfp}}"
 
 #undef SUBTARGET_EXTRA_SPECS
-#define SUBTARGET_EXTRA_SPECS                                \
-  { "subtarget_extra_asm_spec",        SUBTARGET_EXTRA_ASM_SPEC }, \
+#define SUBTARGET_EXTRA_SPECS				\
+  { "subtarget_extra_asm_spec",	SUBTARGET_EXTRA_ASM_SPEC }, \
   { "subtarget_asm_float_spec", SUBTARGET_ASM_FLOAT_SPEC }, \
-  { "netbsd_link_spec",                NETBSD_LINK_SPEC_ELF },        \
-  { "netbsd_entry_point",        NETBSD_ENTRY_POINT },
+  { "netbsd_link_spec",		NETBSD_LINK_SPEC_ELF },	\
+  { "netbsd_entry_point",	NETBSD_ENTRY_POINT },
 
 #define NETBSD_ENTRY_POINT "__start"
 
@@ -93,12 +93,12 @@
    compatibility below a little more won't hurt.  */
    
 #undef ARM_FUNCTION_PROFILER                                  
-#define ARM_FUNCTION_PROFILER(STREAM,LABELNO)                \
-{                                                        \
-  asm_fprintf (STREAM, "\tmov\t%Rip, %Rlr\n");                \
-  asm_fprintf (STREAM, "\tbl\t__mcount%s\n",                \
-               (TARGET_ARM && NEED_PLT_RELOC)                \
-               ? "(PLT)" : "");                                \
+#define ARM_FUNCTION_PROFILER(STREAM,LABELNO)		\
+{							\
+  asm_fprintf (STREAM, "\tmov\t%Rip, %Rlr\n");		\
+  asm_fprintf (STREAM, "\tbl\t__mcount%s\n",		\
+	       (TARGET_ARM && NEED_PLT_RELOC)		\
+	       ? "(PLT)" : "");				\
 }
 
 /* VERY BIG NOTE: Change of structure alignment for NetBSD/arm.
@@ -138,19 +138,19 @@
 
 /* Clear the instruction cache from `BEG' to `END'.  This makes a
    call to the ARM_SYNC_ICACHE architecture specific syscall.  */
-#define CLEAR_INSN_CACHE(BEG, END)                                        \
-do                                                                        \
-  {                                                                        \
-    extern int sysarch(int number, void *args);                                \
-    struct                                                                \
-      {                                                                        \
-        unsigned int addr;                                                \
-        int          len;                                                \
-      } s;                                                                \
-    s.addr = (unsigned int)(BEG);                                        \
-    s.len = (END) - (BEG);                                                \
-    (void) sysarch (0, &s);                                                \
-  }                                                                        \
+#define CLEAR_INSN_CACHE(BEG, END)					\
+do									\
+  {									\
+    extern int sysarch(int number, void *args);				\
+    struct								\
+      {									\
+	unsigned int addr;						\
+	int          len;						\
+      } s;								\
+    s.addr = (unsigned int)(BEG);					\
+    s.len = (END) - (BEG);						\
+    (void) sysarch (0, &s);						\
+  }									\
 while (0)
 
 #undef FPUTYPE_DEFAULT

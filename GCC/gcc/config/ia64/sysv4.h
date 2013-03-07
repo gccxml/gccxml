@@ -44,14 +44,14 @@ extern int size_directive_output;
 
 #undef ASM_OUTPUT_ALIGNED_LOCAL
 #define ASM_OUTPUT_ALIGNED_DECL_LOCAL(FILE, DECL, NAME, SIZE, ALIGN) \
-do {                                                                        \
+do {									\
   if ((DECL) && sdata_symbolic_operand (XEXP (DECL_RTL (DECL), 0), Pmode)) \
-    switch_to_section (sbss_section);                                        \
-  else                                                                        \
-    switch_to_section (bss_section);                                        \
-  ASM_OUTPUT_ALIGN (FILE, floor_log2 ((ALIGN) / BITS_PER_UNIT));        \
-  ASM_DECLARE_OBJECT_NAME (FILE, NAME, DECL);                                \
-  ASM_OUTPUT_SKIP (FILE, SIZE ? SIZE : 1);                                \
+    switch_to_section (sbss_section);					\
+  else									\
+    switch_to_section (bss_section);					\
+  ASM_OUTPUT_ALIGN (FILE, floor_log2 ((ALIGN) / BITS_PER_UNIT));	\
+  ASM_DECLARE_OBJECT_NAME (FILE, NAME, DECL);				\
+  ASM_OUTPUT_SKIP (FILE, SIZE ? SIZE : 1);				\
 } while (0)
 
 /* The # tells the Intel assembler that this is not a register name.
@@ -61,24 +61,24 @@ do {                                                                        \
    we have to scan it for a non-label character and insert the # there.  */
 
 #undef ASM_OUTPUT_LABELREF
-#define ASM_OUTPUT_LABELREF(STREAM, NAME)        \
-do {                                                \
-  const char *name_ = NAME;                        \
-  if (*name_ == '*')                                \
-    name_++;                                        \
-  else                                                \
-    fputs (user_label_prefix, STREAM);                \
-  fputs (name_, STREAM);                        \
-  if (!ia64_asm_output_label)                        \
-    fputc ('#', STREAM);                        \
+#define ASM_OUTPUT_LABELREF(STREAM, NAME)	\
+do {						\
+  const char *name_ = NAME;			\
+  if (*name_ == '*')				\
+    name_++;					\
+  else						\
+    fputs (user_label_prefix, STREAM);		\
+  fputs (name_, STREAM);			\
+  if (!ia64_asm_output_label)			\
+    fputc ('#', STREAM);			\
 } while (0)
 
 /* Intel assembler requires both flags and type if declaring a non-predefined
    section.  */
 #undef INIT_SECTION_ASM_OP
-#define INIT_SECTION_ASM_OP        "\t.section\t.init,\"ax\",\"progbits\""
+#define INIT_SECTION_ASM_OP	"\t.section\t.init,\"ax\",\"progbits\""
 #undef FINI_SECTION_ASM_OP
-#define FINI_SECTION_ASM_OP        "\t.section\t.fini,\"ax\",\"progbits\""
+#define FINI_SECTION_ASM_OP	"\t.section\t.fini,\"ax\",\"progbits\""
 
 /* svr4.h undefines this, so we need to define it here.  */
 #define DBX_REGISTER_NUMBER(REGNO) \
@@ -103,27 +103,27 @@ do {                                                \
 
 #undef ASM_DECLARE_FUNCTION_NAME
 #define ASM_DECLARE_FUNCTION_NAME(FILE, NAME, DECL) \
-do {                                                                        \
-  fputs ("\t.proc ", FILE);                                                \
-  assemble_name (FILE, NAME);                                                \
-  fputc ('\n', FILE);                                                        \
-  ASM_OUTPUT_LABEL (FILE, NAME);                                        \
+do {									\
+  fputs ("\t.proc ", FILE);						\
+  assemble_name (FILE, NAME);						\
+  fputc ('\n', FILE);							\
+  ASM_OUTPUT_LABEL (FILE, NAME);					\
 } while (0)
 
 /* We redefine this to use the ia64 .endp pseudo-op.  */
 
 #undef ASM_DECLARE_FUNCTION_SIZE
 #define ASM_DECLARE_FUNCTION_SIZE(FILE, NAME, DECL) \
-do {                                                                        \
-  fputs ("\t.endp ", FILE);                                                \
-  assemble_name (FILE, NAME);                                                \
-  fputc ('\n', FILE);                                                        \
+do {									\
+  fputs ("\t.endp ", FILE);						\
+  assemble_name (FILE, NAME);						\
+  fputc ('\n', FILE);							\
 } while (0)
 
 /* Override default elf definition.  */
 #undef  TARGET_ASM_RELOC_RW_MASK
 #define TARGET_ASM_RELOC_RW_MASK  ia64_reloc_rw_mask
-#undef        TARGET_ASM_SELECT_RTX_SECTION
+#undef	TARGET_ASM_SELECT_RTX_SECTION
 #define TARGET_ASM_SELECT_RTX_SECTION  ia64_select_rtx_section
 
 #define SDATA_SECTION_ASM_OP "\t.sdata"

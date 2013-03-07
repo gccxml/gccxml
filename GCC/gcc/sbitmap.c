@@ -41,7 +41,7 @@ sbitmap_alloc (unsigned int n_elms)
   size = SBITMAP_SET_SIZE (n_elms);
   bytes = size * sizeof (SBITMAP_ELT_TYPE);
   amt = (sizeof (struct simple_bitmap_def)
-         + bytes - sizeof (SBITMAP_ELT_TYPE));
+	 + bytes - sizeof (SBITMAP_ELT_TYPE));
   bmap = xmalloc (amt);
   bmap->n_bits = n_elms;
   bmap->size = size;
@@ -64,38 +64,38 @@ sbitmap_resize (sbitmap bmap, unsigned int n_elms, int def)
   if (bytes > bmap->bytes)
     {
       amt = (sizeof (struct simple_bitmap_def)
-            + bytes - sizeof (SBITMAP_ELT_TYPE));
+	    + bytes - sizeof (SBITMAP_ELT_TYPE));
       bmap = xrealloc (bmap, amt);
     }
 
   if (n_elms > bmap->n_bits)
     {
       if (def)
-        {
-          memset (bmap->elms + bmap->size, -1, bytes - bmap->bytes);
+	{
+	  memset (bmap->elms + bmap->size, -1, bytes - bmap->bytes);
 
-          /* Set the new bits if the original last element.  */
-          last_bit = bmap->n_bits % SBITMAP_ELT_BITS;
-          if (last_bit)
-            bmap->elms[bmap->size - 1]
-              |= ~((SBITMAP_ELT_TYPE)-1 >> (SBITMAP_ELT_BITS - last_bit));
+	  /* Set the new bits if the original last element.  */
+	  last_bit = bmap->n_bits % SBITMAP_ELT_BITS;
+	  if (last_bit)
+	    bmap->elms[bmap->size - 1]
+	      |= ~((SBITMAP_ELT_TYPE)-1 >> (SBITMAP_ELT_BITS - last_bit));
 
-          /* Clear the unused bit in the new last element.  */
-          last_bit = n_elms % SBITMAP_ELT_BITS;
-          if (last_bit)
-            bmap->elms[size - 1]
-              &= (SBITMAP_ELT_TYPE)-1 >> (SBITMAP_ELT_BITS - last_bit);
-        }
+	  /* Clear the unused bit in the new last element.  */
+	  last_bit = n_elms % SBITMAP_ELT_BITS;
+	  if (last_bit)
+	    bmap->elms[size - 1]
+	      &= (SBITMAP_ELT_TYPE)-1 >> (SBITMAP_ELT_BITS - last_bit);
+	}
       else
-        memset (bmap->elms + bmap->size, 0, bytes - bmap->bytes);
+	memset (bmap->elms + bmap->size, 0, bytes - bmap->bytes);
     }
   else if (n_elms < bmap->n_bits)
     {
       /* Clear the surplus bits in the last word.  */
       last_bit = n_elms % SBITMAP_ELT_BITS;
       if (last_bit)
-        bmap->elms[size - 1]
-          &= (SBITMAP_ELT_TYPE)-1 >> (SBITMAP_ELT_BITS - last_bit);
+	bmap->elms[size - 1]
+	  &= (SBITMAP_ELT_TYPE)-1 >> (SBITMAP_ELT_BITS - last_bit);
     }
 
   bmap->n_bits = n_elms;
@@ -115,7 +115,7 @@ sbitmap_realloc (sbitmap src, unsigned int n_elms)
   size = SBITMAP_SET_SIZE (n_elms);
   bytes = size * sizeof (SBITMAP_ELT_TYPE);
   amt = (sizeof (struct simple_bitmap_def)
-         + bytes - sizeof (SBITMAP_ELT_TYPE));
+	 + bytes - sizeof (SBITMAP_ELT_TYPE));
 
   if (src->bytes  >= bytes)
     {
@@ -141,7 +141,7 @@ sbitmap_vector_alloc (unsigned int n_vecs, unsigned int n_elms)
   size = SBITMAP_SET_SIZE (n_elms);
   bytes = size * sizeof (SBITMAP_ELT_TYPE);
   elm_bytes = (sizeof (struct simple_bitmap_def)
-               + bytes - sizeof (SBITMAP_ELT_TYPE));
+	       + bytes - sizeof (SBITMAP_ELT_TYPE));
   vector_bytes = n_vecs * sizeof (sbitmap *);
 
   /* Round up `vector_bytes' to account for the alignment requirements
@@ -539,7 +539,7 @@ sbitmap_intersection_of_succs (sbitmap dst, sbitmap *src, int bb)
     {
       e = EDGE_SUCC (b, ix);
       if (e->dest == EXIT_BLOCK_PTR)
-        continue;
+	continue;
       
       sbitmap_copy (dst, src[e->dest->index]);
       break;
@@ -550,17 +550,17 @@ sbitmap_intersection_of_succs (sbitmap dst, sbitmap *src, int bb)
   else
     for (++ix; ix < EDGE_COUNT (b->succs); ix++)
       {
-        unsigned int i;
-        sbitmap_ptr p, r;
+	unsigned int i;
+	sbitmap_ptr p, r;
 
-        e = EDGE_SUCC (b, ix);
-        if (e->dest == EXIT_BLOCK_PTR)
-          continue;
+	e = EDGE_SUCC (b, ix);
+	if (e->dest == EXIT_BLOCK_PTR)
+	  continue;
 
-        p = src[e->dest->index]->elms;
-        r = dst->elms;
-        for (i = 0; i < set_size; i++)
-          *r++ &= *p++;
+	p = src[e->dest->index]->elms;
+	r = dst->elms;
+	for (i = 0; i < set_size; i++)
+	  *r++ &= *p++;
       }
 }
 
@@ -579,7 +579,7 @@ sbitmap_intersection_of_preds (sbitmap dst, sbitmap *src, int bb)
     {
       e = EDGE_PRED (b, ix);
       if (e->src == ENTRY_BLOCK_PTR)
-        continue;
+	continue;
 
       sbitmap_copy (dst, src[e->src->index]);
       break;
@@ -590,17 +590,17 @@ sbitmap_intersection_of_preds (sbitmap dst, sbitmap *src, int bb)
   else
     for (++ix; ix < EDGE_COUNT (b->preds); ix++)
       {
-        unsigned int i;
-        sbitmap_ptr p, r;
+	unsigned int i;
+	sbitmap_ptr p, r;
 
-        e = EDGE_PRED (b, ix);
-        if (e->src == ENTRY_BLOCK_PTR)
-          continue;
+	e = EDGE_PRED (b, ix);
+	if (e->src == ENTRY_BLOCK_PTR)
+	  continue;
 
-        p = src[e->src->index]->elms;
-        r = dst->elms;
-        for (i = 0; i < set_size; i++)
-          *r++ &= *p++;
+	p = src[e->src->index]->elms;
+	r = dst->elms;
+	for (i = 0; i < set_size; i++)
+	  *r++ &= *p++;
       }
 }
 
@@ -619,7 +619,7 @@ sbitmap_union_of_succs (sbitmap dst, sbitmap *src, int bb)
     {
       e = EDGE_SUCC (b, ix);
       if (e->dest == EXIT_BLOCK_PTR)
-        continue;
+	continue;
 
       sbitmap_copy (dst, src[e->dest->index]);
       break;
@@ -630,17 +630,17 @@ sbitmap_union_of_succs (sbitmap dst, sbitmap *src, int bb)
   else
     for (ix++; ix < EDGE_COUNT (b->succs); ix++)
       {
-        unsigned int i;
-        sbitmap_ptr p, r;
+	unsigned int i;
+	sbitmap_ptr p, r;
 
-        e = EDGE_SUCC (b, ix);
-        if (e->dest == EXIT_BLOCK_PTR)
-          continue;
+	e = EDGE_SUCC (b, ix);
+	if (e->dest == EXIT_BLOCK_PTR)
+	  continue;
 
-        p = src[e->dest->index]->elms;
-        r = dst->elms;
-        for (i = 0; i < set_size; i++)
-          *r++ |= *p++;
+	p = src[e->dest->index]->elms;
+	r = dst->elms;
+	for (i = 0; i < set_size; i++)
+	  *r++ |= *p++;
       }
 }
 
@@ -659,7 +659,7 @@ sbitmap_union_of_preds (sbitmap dst, sbitmap *src, int bb)
     {
       e = EDGE_PRED (b, ix);
       if (e->src== ENTRY_BLOCK_PTR)
-        continue;
+	continue;
 
       sbitmap_copy (dst, src[e->src->index]);
       break;
@@ -670,17 +670,17 @@ sbitmap_union_of_preds (sbitmap dst, sbitmap *src, int bb)
   else
     for (ix++; ix < EDGE_COUNT (b->preds); ix++)
       {
-        unsigned int i;
-        sbitmap_ptr p, r;
+	unsigned int i;
+	sbitmap_ptr p, r;
 
-        e = EDGE_PRED (b, ix);
-        if (e->src == ENTRY_BLOCK_PTR)
-          continue;
+	e = EDGE_PRED (b, ix);
+	if (e->src == ENTRY_BLOCK_PTR)
+	  continue;
 
-        p = src[e->src->index]->elms;
-        r = dst->elms;
-        for (i = 0; i < set_size; i++)
-          *r++ |= *p++;
+	p = src[e->src->index]->elms;
+	r = dst->elms;
+	for (i = 0; i < set_size; i++)
+	  *r++ |= *p++;
       }
 }
 #endif
@@ -711,20 +711,20 @@ sbitmap_last_set_bit (sbitmap bmap)
       SBITMAP_ELT_TYPE word = ptr[i];
 
       if (word != 0)
-        {
-          unsigned int index = (i + 1) * SBITMAP_ELT_BITS - 1;
-          SBITMAP_ELT_TYPE mask
-            = (SBITMAP_ELT_TYPE) 1 << (SBITMAP_ELT_BITS - 1);
+	{
+	  unsigned int index = (i + 1) * SBITMAP_ELT_BITS - 1;
+	  SBITMAP_ELT_TYPE mask
+	    = (SBITMAP_ELT_TYPE) 1 << (SBITMAP_ELT_BITS - 1);
 
-          while (1)
-            {
-              if ((word & mask) != 0)
-                return index;
+	  while (1)
+	    {
+	      if ((word & mask) != 0)
+		return index;
 
-              mask >>= 1;
-              index--;
-            }
-        }
+	      mask >>= 1;
+	      index--;
+	    }
+	}
     }
 
   return -1;
@@ -741,11 +741,11 @@ dump_sbitmap (FILE *file, sbitmap bmap)
   for (i = n = 0; i < set_size && n < total_bits; i++)
     for (j = 0; j < SBITMAP_ELT_BITS && n < total_bits; j++, n++)
       {
-        if (n != 0 && n % 10 == 0)
-          fprintf (file, " ");
+	if (n != 0 && n % 10 == 0)
+	  fprintf (file, " ");
 
-        fprintf (file, "%d",
-                 (bmap->elms[i] & ((SBITMAP_ELT_TYPE) 1 << j)) != 0);
+	fprintf (file, "%d",
+		 (bmap->elms[i] & ((SBITMAP_ELT_TYPE) 1 << j)) != 0);
       }
 
   fprintf (file, "\n");
@@ -761,14 +761,14 @@ dump_sbitmap_file (FILE *file, sbitmap bmap)
   for (pos = 30, i = 0; i < bmap->n_bits; i++)
     if (TEST_BIT (bmap, i))
       {
-        if (pos > 70)
-          {
-            fprintf (file, "\n  ");
-            pos = 0;
-          }
+	if (pos > 70)
+	  {
+	    fprintf (file, "\n  ");
+	    pos = 0;
+	  }
 
-        fprintf (file, "%d ", i);
-        pos += 2 + (i >= 10) + (i >= 100) + (i >= 1000);
+	fprintf (file, "%d ", i);
+	pos += 2 + (i >= 10) + (i >= 100) + (i >= 1000);
       }
 
   fprintf (file, "}\n");
@@ -782,7 +782,7 @@ debug_sbitmap (sbitmap bmap)
 
 void
 dump_sbitmap_vector (FILE *file, const char *title, const char *subtitle,
-                     sbitmap *bmaps, int n_maps)
+		     sbitmap *bmaps, int n_maps)
 {
   int bb;
 

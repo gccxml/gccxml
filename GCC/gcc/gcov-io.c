@@ -107,15 +107,15 @@ gcov_open (const char *name, int mode)
       struct stat st;
 
       if (fstat (fd, &st) < 0)
-        {
-          fclose (gcov_var.file);
-          gcov_var.file = 0;
-          return 0;
-        }
+	{
+	  fclose (gcov_var.file);
+	  gcov_var.file = 0;
+	  return 0;
+	}
       if (st.st_size != 0)
-        gcov_var.mode = 1;
+	gcov_var.mode = 1;
       else
-        gcov_var.mode = mode * 2 + 1;
+	gcov_var.mode = mode * 2 + 1;
     }
   else
     gcov_var.mode = mode * 2 + 1;
@@ -128,7 +128,7 @@ gcov_open (const char *name, int mode)
     {
       gcov_var.file = fopen (name, "w+b");
       if (gcov_var.file)
-        gcov_var.mode = mode * 2 + 1;
+	gcov_var.mode = mode * 2 + 1;
     }
   if (!gcov_var.file)
     return 0;
@@ -149,7 +149,7 @@ gcov_close (void)
     {
 #if !IN_GCOV
       if (gcov_var.offset && gcov_var.mode < 0)
-        gcov_write_block (gcov_var.offset);
+	gcov_write_block (gcov_var.offset);
 #endif
       fclose (gcov_var.file);
       gcov_var.file = 0;
@@ -227,10 +227,10 @@ gcov_write_words (unsigned words)
     {
       gcov_write_block (GCOV_BLOCK_SIZE);
       if (gcov_var.offset)
-        {
-          gcc_assert (gcov_var.offset == 1);
-          memcpy (gcov_var.buffer, gcov_var.buffer + GCOV_BLOCK_SIZE, 4);
-        }
+	{
+	  gcc_assert (gcov_var.offset == 1);
+	  memcpy (gcov_var.buffer, gcov_var.buffer + GCOV_BLOCK_SIZE, 4);
+	}
     }
 #else
   if (gcov_var.offset + words > gcov_var.alloc)
@@ -386,10 +386,10 @@ gcov_read_words (unsigned words)
       gcov_var.start += gcov_var.offset;
 #if IN_LIBGCOV
       if (excess)
-        {
-          gcc_assert (excess == 1);
-          memcpy (gcov_var.buffer, gcov_var.buffer + gcov_var.offset, 4);
-        }
+	{
+	  gcc_assert (excess == 1);
+	  memcpy (gcov_var.buffer, gcov_var.buffer + gcov_var.offset, 4);
+	}
 #else
       memmove (gcov_var.buffer, gcov_var.buffer + gcov_var.offset, excess * 4);
 #endif
@@ -400,18 +400,18 @@ gcov_read_words (unsigned words)
       excess = GCOV_BLOCK_SIZE;
 #else
       if (gcov_var.length + words > gcov_var.alloc)
-        gcov_allocate (gcov_var.length + words);
+	gcov_allocate (gcov_var.length + words);
       excess = gcov_var.alloc - gcov_var.length;
 #endif
       excess = fread (gcov_var.buffer + gcov_var.length,
-                      1, excess << 2, gcov_var.file) >> 2;
+		      1, excess << 2, gcov_var.file) >> 2;
       gcov_var.length += excess;
       if (gcov_var.length < words)
-        {
-          gcov_var.overread += words - gcov_var.length;
-          gcov_var.length = 0;
-          return 0;
-        }
+	{
+	  gcov_var.overread += words - gcov_var.length;
+	  gcov_var.length = 0;
+	  return 0;
+	}
     }
   result = &gcov_var.buffer[gcov_var.offset];
   gcov_var.offset += words;

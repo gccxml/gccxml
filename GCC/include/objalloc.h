@@ -84,17 +84,17 @@ extern void *_objalloc_alloc (struct objalloc *, unsigned long);
 #define __extension__
 #endif
 
-#define objalloc_alloc(o, l)                                                \
-  __extension__                                                                \
-  ({ struct objalloc *__o = (o);                                        \
-     unsigned long __len = (l);                                                \
-     if (__len == 0)                                                        \
-       __len = 1;                                                        \
-     __len = (__len + OBJALLOC_ALIGN - 1) &~ (OBJALLOC_ALIGN - 1);        \
-     (__len <= __o->current_space                                        \
-      ? (__o->current_ptr += __len,                                        \
-         __o->current_space -= __len,                                        \
-         (void *) (__o->current_ptr - __len))                                \
+#define objalloc_alloc(o, l)						\
+  __extension__								\
+  ({ struct objalloc *__o = (o);					\
+     unsigned long __len = (l);						\
+     if (__len == 0)							\
+       __len = 1;							\
+     __len = (__len + OBJALLOC_ALIGN - 1) &~ (OBJALLOC_ALIGN - 1);	\
+     (__len <= __o->current_space					\
+      ? (__o->current_ptr += __len,					\
+	 __o->current_space -= __len,					\
+	 (void *) (__o->current_ptr - __len))				\
       : _objalloc_alloc (__o, __len)); })
 
 #else /* ! __GNUC__ */

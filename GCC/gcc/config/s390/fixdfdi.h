@@ -22,12 +22,12 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
 
 #ifdef L_fixunstfdi
 
-#define EXPD(fp)           (((fp.l.i[0]) >> 16) & 0x7FFF)
-#define EXPONENT_BIAS           16383
+#define EXPD(fp)	   (((fp.l.i[0]) >> 16) & 0x7FFF)
+#define EXPONENT_BIAS	   16383
 #define MANTISSA_BITS      112
 #define PRECISION          (MANTISSA_BITS + 1)
-#define SIGNBIT                   0x80000000
-#define SIGND(fp)           ((fp.l.i[0]) & SIGNBIT)
+#define SIGNBIT		   0x80000000
+#define SIGND(fp)	   ((fp.l.i[0]) & SIGNBIT)
 #define MANTD_HIGH_LL(fp)  ((fp.ll[0] & HIGH_LL_FRAC_MASK) | HIGH_LL_UNIT_BIT)
 #define MANTD_LOW_LL(fp)   (fp.ll[1])
 #define FRACD_ZERO_P(fp)   (!fp.ll[1] && !(fp.ll[0] & HIGH_LL_FRAC_MASK))
@@ -95,12 +95,12 @@ __fixunstfdi (long double a1)
 #undef L_fixunstfdi
 
 #ifdef L_fixtfdi
-#define EXPD(fp)           (((fp.l.i[0]) >> 16) & 0x7FFF)
-#define EXPONENT_BIAS           16383
+#define EXPD(fp)	   (((fp.l.i[0]) >> 16) & 0x7FFF)
+#define EXPONENT_BIAS	   16383
 #define MANTISSA_BITS      112
 #define PRECISION          (MANTISSA_BITS + 1)
-#define SIGNBIT                   0x80000000
-#define SIGND(fp)           ((fp.l.i[0]) & SIGNBIT)
+#define SIGNBIT		   0x80000000
+#define SIGND(fp)	   ((fp.l.i[0]) & SIGNBIT)
 #define MANTD_HIGH_LL(fp)  ((fp.ll[0] & HIGH_LL_FRAC_MASK) | HIGH_LL_UNIT_BIT)
 #define MANTD_LOW_LL(fp)   (fp.ll[1])
 #define FRACD_ZERO_P(fp)   (!fp.ll[1] && !(fp.ll[0] & HIGH_LL_FRAC_MASK))
@@ -154,8 +154,8 @@ __fixtfdi (long double a1)
        zeroed out after shifting the number would be to large.  */
     if (exp >= -HIGH_LL_FRAC_BITS)
       {
-        l = (long long)1 << 63; /* long int min */
-        return SIGND (dl1) ? l : l - 1;
+	l = (long long)1 << 63; /* long int min */
+	return SIGND (dl1) ? l : l - 1;
       }
 
     /* The extra bit is needed for the sign bit.  */
@@ -171,13 +171,13 @@ __fixtfdi (long double a1)
 #undef L_fixtfdi
 
 #ifdef L_fixunsdfdi
-#define EXPD(fp)        (((fp.l.upper) >> 20) & 0x7FF)
-#define EXCESSD                1022
-#define SIGNBIT                0x80000000
-#define SIGND(fp)        ((fp.l.upper) & SIGNBIT)
-#define MANTD_LL(fp)        ((fp.ll & (HIDDEND_LL-1)) | HIDDEND_LL)
-#define FRACD_LL(fp)        (fp.ll & (HIDDEND_LL-1))
-#define HIDDEND_LL        ((UDItype_x)1 << 52)
+#define EXPD(fp)	(((fp.l.upper) >> 20) & 0x7FF)
+#define EXCESSD		1022
+#define SIGNBIT		0x80000000
+#define SIGND(fp)	((fp.l.upper) & SIGNBIT)
+#define MANTD_LL(fp)	((fp.ll & (HIDDEND_LL-1)) | HIDDEND_LL)
+#define FRACD_LL(fp)	(fp.ll & (HIDDEND_LL-1))
+#define HIDDEND_LL	((UDItype_x)1 << 52)
 
 typedef int DItype_x __attribute__ ((mode (DI)));
 typedef unsigned int UDItype_x __attribute__ ((mode (DI)));
@@ -243,13 +243,13 @@ __fixunsdfdi (double a1)
 #undef L_fixunsdfdi
 
 #ifdef L_fixdfdi
-#define EXPD(fp)        (((fp.l.upper) >> 20) & 0x7FF)
-#define EXCESSD                1022
-#define SIGNBIT                0x80000000
-#define SIGND(fp)        ((fp.l.upper) & SIGNBIT)
-#define MANTD_LL(fp)        ((fp.ll & (HIDDEND_LL-1)) | HIDDEND_LL)
-#define FRACD_LL(fp)        (fp.ll & (HIDDEND_LL-1))
-#define HIDDEND_LL        ((UDItype_x)1 << 52)
+#define EXPD(fp)	(((fp.l.upper) >> 20) & 0x7FF)
+#define EXCESSD		1022
+#define SIGNBIT		0x80000000
+#define SIGND(fp)	((fp.l.upper) & SIGNBIT)
+#define MANTD_LL(fp)	((fp.ll & (HIDDEND_LL-1)) | HIDDEND_LL)
+#define FRACD_LL(fp)	(fp.ll & (HIDDEND_LL-1))
+#define HIDDEND_LL	((UDItype_x)1 << 52)
 
 typedef int DItype_x __attribute__ ((mode (DI)));
 typedef unsigned int UDItype_x __attribute__ ((mode (DI)));
@@ -297,10 +297,10 @@ __fixdfdi (double a1)
     /* Number big number & +/- inf */
 
     if (exp >= 11) {
-        l = (long long)1<<63;
-        if (!SIGND(dl1))
-            l--;
-        return l;
+	l = (long long)1<<63;
+	if (!SIGND(dl1))
+	    l--;
+	return l;
     }
 
     l = MANTD_LL(dl1);
@@ -437,10 +437,10 @@ __fixsfdi (float a1)
     /* Number big number & +/- inf */
 
     if (exp >= 40) {
-        l = (long long)1<<63;
-        if (!SIGN(fl1))
-            l--;
-        return l;
+	l = (long long)1<<63;
+	if (!SIGN(fl1))
+	    l--;
+	return l;
     }
 
     l = MANT(fl1);

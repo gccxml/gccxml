@@ -45,12 +45,12 @@ add_hash (const char *fname)
     {
       collisions++;
       for (;;)
-        {
-          i = (i+1) % HASH_SIZE;
-          gcc_assert (i != i0);
-          if (hash_tab[i] == 0)
-            break;
-        }
+	{
+	  i = (i+1) % HASH_SIZE;
+	  gcc_assert (i != i0);
+	  if (hash_tab[i] == 0)
+	    break;
+	}
     }
   hash_tab[i] = next_index;
 
@@ -88,9 +88,9 @@ parse_fn_proto (char *start, char *end, struct fn_decl *fn)
     {
       int c = *--ptr;
       if (c == '(' && --param_nesting == 0)
-        break;
+	break;
       else if (c == ')')
-        param_nesting++;
+	param_nesting++;
     }
   param_start = ptr+1;
 
@@ -100,8 +100,8 @@ parse_fn_proto (char *start, char *end, struct fn_decl *fn)
   if (!ISALNUM ((unsigned char)*ptr))
     {
       if (verbose)
-        fprintf (stderr, "%s: Can't handle this complex prototype: %s\n",
-                 progname, start);
+	fprintf (stderr, "%s: Can't handle this complex prototype: %s\n",
+		 progname, start);
       return 0;
     }
   name_end = ptr+1;
@@ -159,25 +159,25 @@ main (int argc ATTRIBUTE_UNUSED, char **argv)
       int c = skip_spaces (inf, ' ');
 
       if (c == EOF)
-        break;
+	break;
       linebuf.ptr = linebuf.base;
       ungetc (c, inf);
       c = read_upto (inf, &linebuf, '\n');
       if (linebuf.base[0] == '#') /* skip cpp command */
-        continue;
+	continue;
       if (linebuf.base[0] == '\0') /* skip empty line */
-        continue;
+	continue;
 
       if (! parse_fn_proto (linebuf.base, linebuf.ptr, &fn_decl))
-        continue;
+	continue;
 
       add_hash (fn_decl.fname);
 
       fprintf (outf, "  {\"%s\", \"%s\", \"%s\", 0},\n",
-               fn_decl.fname, fn_decl.rtype, fn_decl.params);
+	       fn_decl.fname, fn_decl.rtype, fn_decl.params);
 
       if (c == EOF)
-        break;
+	break;
     }
   fprintf (outf, "  {0, 0, 0, 0}\n};\n");
 
@@ -189,7 +189,7 @@ main (int argc ATTRIBUTE_UNUSED, char **argv)
   fprintf (outf, "};\n");
 
   fprintf (stderr, "gen-protos: %d entries %d collisions\n",
-           next_index, collisions);
+	   next_index, collisions);
 
   return 0;
 }

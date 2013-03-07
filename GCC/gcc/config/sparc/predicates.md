@@ -50,13 +50,13 @@
 {
 #if HOST_BITS_PER_WIDE_INT == 32
   return ((GET_CODE (op) == CONST_INT && (unsigned) INTVAL (op) < 0x1000)
-          || (GET_CODE (op) == CONST_DOUBLE
-              && CONST_DOUBLE_HIGH (op) == 0
-              && (unsigned) CONST_DOUBLE_LOW (op) - 0xFFFFF000 < 0x1000));
+	  || (GET_CODE (op) == CONST_DOUBLE
+	      && CONST_DOUBLE_HIGH (op) == 0
+	      && (unsigned) CONST_DOUBLE_LOW (op) - 0xFFFFF000 < 0x1000));
 #else
   return (GET_CODE (op) == CONST_INT
-          && ((INTVAL (op) >= 0 && INTVAL (op) < 0x1000)
-              || (INTVAL (op) >= 0xFFFFF000
+	  && ((INTVAL (op) >= 0 && INTVAL (op) < 0x1000)
+	      || (INTVAL (op) >= 0xFFFFF000
                   && INTVAL (op) <= 0xFFFFFFFF)));
 #endif
 })
@@ -108,9 +108,9 @@
     case CONST:
       op = XEXP (op, 0);
       return (((GET_CODE (XEXP (op, 0)) == SYMBOL_REF
-                && !SYMBOL_REF_TLS_MODEL (XEXP (op, 0)))
-               || GET_CODE (XEXP (op, 0)) == LABEL_REF)
-              && GET_CODE (XEXP (op, 1)) == CONST_INT);
+		&& !SYMBOL_REF_TLS_MODEL (XEXP (op, 0)))
+	       || GET_CODE (XEXP (op, 0)) == LABEL_REF)
+	      && GET_CODE (XEXP (op, 1)) == CONST_INT);
 
     default:
       gcc_unreachable ();
@@ -171,7 +171,7 @@
       return ! SYMBOL_REF_FUNCTION_P (op);
     case PLUS :
       /* Assume canonical format of symbol + constant.
-         Fall through.  */
+	 Fall through.  */
     case CONST :
       return data_segment_operand (XEXP (op, 0), VOIDmode);
     default :
@@ -192,7 +192,7 @@
       return SYMBOL_REF_FUNCTION_P (op);
     case PLUS :
       /* Assume canonical format of symbol + constant.
-         Fall through.  */
+	 Fall through.  */
     case CONST :
       return text_segment_operand (XEXP (op, 0), VOIDmode);
     default :
@@ -261,10 +261,10 @@
   if (REGNO (op) == SPARC_ICC_REG)
     {
       if (mode != VOIDmode && mode != GET_MODE (op))
-        return false;
+	return false;
       if (mode == VOIDmode
-          && GET_MODE (op) != CCmode && GET_MODE (op) != CCXmode)
-        return false;
+	  && GET_MODE (op) != CCmode && GET_MODE (op) != CCXmode)
+	return false;
 
       return true;
     }
@@ -357,15 +357,15 @@
 {
   if (GET_CODE (op) == ZERO_EXTRACT)
     return (register_operand (XEXP (op, 0), mode)
-            && small_int_operand (XEXP (op, 1), mode)
-            && small_int_operand (XEXP (op, 2), mode)
-            /* This matches cmp_zero_extract.  */
-            && ((mode == SImode
-                 && INTVAL (XEXP (op, 2)) > 19)
-                /* This matches cmp_zero_extract_sp64.  */
-                || (TARGET_ARCH64
-                    && mode == DImode
-                    && INTVAL (XEXP (op, 2)) > 51)));
+	    && small_int_operand (XEXP (op, 1), mode)
+	    && small_int_operand (XEXP (op, 2), mode)
+	    /* This matches cmp_zero_extract.  */
+	    && ((mode == SImode
+		 && INTVAL (XEXP (op, 2)) > 19)
+		/* This matches cmp_zero_extract_sp64.  */
+		|| (TARGET_ARCH64
+		    && mode == DImode
+		    && INTVAL (XEXP (op, 2)) > 51)));
   else
     return register_operand (op, mode);
 })
@@ -475,4 +475,4 @@
 (define_predicate "memory_reg_operand"
   (and (match_code "mem")
        (and (match_operand 0 "memory_operand")
-            (match_test "REG_P (XEXP (op, 0))"))))
+	    (match_test "REG_P (XEXP (op, 0))"))))

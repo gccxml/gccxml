@@ -24,7 +24,7 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
 extern void do_tlink (char **, char **);
 
 extern struct pex_obj *collect_execute (const char *, char **, const char *,
-                                        const char *);
+					const char *);
 
 extern void collect_exit (int) ATTRIBUTE_NORETURN;
 

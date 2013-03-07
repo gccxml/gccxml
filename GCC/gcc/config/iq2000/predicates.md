@@ -133,17 +133,17 @@
       plus0 = XEXP (addr, 0);
       plus1 = XEXP (addr, 1);
       if (GET_CODE (plus0) == REG
-          && GET_CODE (plus1) == CONST_INT && SMALL_INT (plus1)
-          && SMALL_INT_UNSIGNED (plus1) /* No negative offsets.  */)
-        return 1;
+	  && GET_CODE (plus1) == CONST_INT && SMALL_INT (plus1)
+	  && SMALL_INT_UNSIGNED (plus1) /* No negative offsets.  */)
+	return 1;
 
       else if (GET_CODE (plus1) == REG
-               && GET_CODE (plus0) == CONST_INT && SMALL_INT (plus0)
-               && SMALL_INT_UNSIGNED (plus1) /* No negative offsets.  */)
-        return 1;
+	       && GET_CODE (plus0) == CONST_INT && SMALL_INT (plus0)
+	       && SMALL_INT_UNSIGNED (plus1) /* No negative offsets.  */)
+	return 1;
 
       else
-        return 0;
+	return 0;
 
     case SYMBOL_REF:
       return 0;
@@ -198,9 +198,9 @@
   (match_code "const_int,const,symbol_ref,reg")
 {
   return (CONSTANT_ADDRESS_P (op)
-          || (GET_CODE (op) == REG && op != arg_pointer_rtx
-              && ! (REGNO (op) >= FIRST_PSEUDO_REGISTER
-                    && REGNO (op) <= LAST_VIRTUAL_REGISTER)));
+	  || (GET_CODE (op) == REG && op != arg_pointer_rtx
+	      && ! (REGNO (op) >= FIRST_PSEUDO_REGISTER
+		    && REGNO (op) <= LAST_VIRTUAL_REGISTER)));
 })
 
 ;; Return nonzero if OP is valid as a source operand for a move
@@ -213,8 +213,8 @@
      avoids losing if reload does an in-place replacement of a register
      with a SYMBOL_REF or CONST.  */
   return (general_operand (op, mode)
-          && (! (iq2000_check_split (op, mode))
-              || reload_in_progress || reload_completed));
+	  && (! (iq2000_check_split (op, mode))
+	      || reload_in_progress || reload_completed));
 })
 
 ;; Return nonzero if OP is a constant power of 2.

@@ -37,23 +37,23 @@ Boston, MA 02110-1301, USA.  */
 #endif /* MASK_SH5 */
 
 #undef TARGET_VERSION
-#define TARGET_VERSION        fprintf (stderr, " (NetBSD/%s%s ELF)",                \
+#define TARGET_VERSION	fprintf (stderr, " (NetBSD/%s%s ELF)",		\
                                  TARGET_VERSION_CPU, TARGET_VERSION_ENDIAN)
 
 
 /* Extra specs needed for NetBSD SuperH ELF targets.  */
 
 #undef SUBTARGET_EXTRA_SPECS
-#define SUBTARGET_EXTRA_SPECS                                                \
+#define SUBTARGET_EXTRA_SPECS						\
   { "netbsd_entry_point", NETBSD_ENTRY_POINT },
 
 
-#define TARGET_OS_CPP_BUILTINS()                                        \
-  do                                                                        \
-    {                                                                        \
-      NETBSD_OS_CPP_BUILTINS_ELF();                                        \
-      builtin_define ("__NO_LEADING_UNDERSCORES__");                        \
-    }                                                                        \
+#define TARGET_OS_CPP_BUILTINS()					\
+  do									\
+    {									\
+      NETBSD_OS_CPP_BUILTINS_ELF();					\
+      builtin_define ("__NO_LEADING_UNDERSCORES__");			\
+    }									\
   while (0)
 
 /* Provide a LINK_SPEC appropriate for a NetBSD/sh ELF target.
@@ -86,28 +86,28 @@ Boston, MA 02110-1301, USA.  */
 #define NO_PROFILE_COUNTERS 1
  
 #undef FUNCTION_PROFILER
-#define FUNCTION_PROFILER(STREAM,LABELNO)                                \
-do                                                                        \
-  {                                                                        \
-    if (TARGET_SHMEDIA32 || TARGET_SHMEDIA64)                                \
-      {                                                                        \
-        /* FIXME */                                                        \
-        sorry ("unimplemented-shmedia profiling");                        \
-      }                                                                        \
-    else                                                                \
-      {                                                                        \
-        fprintf((STREAM), "\tmov.l\t%sLP%d,r1\n",                        \
-                LOCAL_LABEL_PREFIX, (LABELNO));                                \
-        fprintf((STREAM), "\tmova\t%sLP%dr,r0\n",                        \
-                LOCAL_LABEL_PREFIX, (LABELNO));                                \
-        fprintf((STREAM), "\tjmp\t@r1\n");                                \
-        fprintf((STREAM), "\tnop\n");                                        \
-        fprintf((STREAM), "\t.align\t2\n");                                \
-        fprintf((STREAM), "%sLP%d:\t.long\t__mcount\n",                        \
-                LOCAL_LABEL_PREFIX, (LABELNO));                                \
-        fprintf((STREAM), "%sLP%dr:\n", LOCAL_LABEL_PREFIX, (LABELNO));        \
-      }                                                                        \
-  }                                                                        \
+#define FUNCTION_PROFILER(STREAM,LABELNO)				\
+do									\
+  {									\
+    if (TARGET_SHMEDIA32 || TARGET_SHMEDIA64)				\
+      {									\
+	/* FIXME */							\
+	sorry ("unimplemented-shmedia profiling");			\
+      }									\
+    else								\
+      {									\
+        fprintf((STREAM), "\tmov.l\t%sLP%d,r1\n",			\
+                LOCAL_LABEL_PREFIX, (LABELNO));				\
+        fprintf((STREAM), "\tmova\t%sLP%dr,r0\n",			\
+                LOCAL_LABEL_PREFIX, (LABELNO));				\
+        fprintf((STREAM), "\tjmp\t@r1\n");				\
+        fprintf((STREAM), "\tnop\n");					\
+        fprintf((STREAM), "\t.align\t2\n");				\
+        fprintf((STREAM), "%sLP%d:\t.long\t__mcount\n",			\
+                LOCAL_LABEL_PREFIX, (LABELNO));				\
+        fprintf((STREAM), "%sLP%dr:\n", LOCAL_LABEL_PREFIX, (LABELNO));	\
+      }									\
+  }									\
 while (0)
 
 /* Since libgcc is compiled with -fpic for this target, we can't use

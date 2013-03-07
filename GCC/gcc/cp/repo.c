@@ -65,21 +65,21 @@ extract_string (char **pp)
     {
       char c = *p;
       if (c == '\0')
-        break;
+	break;
       ++p;
       if (backquote)
-        {
-          obstack_1grow (&temporary_obstack, c);
-          backquote = 0;
-        }
+	{
+	  obstack_1grow (&temporary_obstack, c);
+	  backquote = 0;
+	}
       else if (! inside && c == ' ')
-        break;
+	break;
       else if (! inside && c == '\\')
-        backquote = 1;
+	backquote = 1;
       else if (c == '\'')
-        inside = !inside;
+	inside = !inside;
       else
-        obstack_1grow (&temporary_obstack, c);
+	obstack_1grow (&temporary_obstack, c);
     }
 
   obstack_1grow (&temporary_obstack, '\0');
@@ -99,9 +99,9 @@ get_base_filename (const char *filename)
       char *q = extract_string (&p);
 
       if (strcmp (q, "-o") == 0)
-        output = extract_string (&p);
+	output = extract_string (&p);
       else if (strcmp (q, "-c") == 0)
-        compiling = 1;
+	compiling = 1;
     }
 
   if (compiling && output)
@@ -175,31 +175,31 @@ init_repo (void)
   while ((buf = afgets (repo_file)))
     {
       switch (buf[0])
-        {
-        case 'A':
-          old_args = ggc_strdup (buf + 2);
-          break;
-        case 'D':
-          old_dir = ggc_strdup (buf + 2);
-          break;
-        case 'M':
-          old_main = ggc_strdup (buf + 2);
-          break;
-        case 'O':
-          /* A symbol that we were able to define the last time this
-             file was compiled.  */
-          break;
-        case 'C':
-          /* A symbol that the prelinker has requested that we
-             define.  */
-          {
-            tree id = get_identifier (buf + 2);
-            IDENTIFIER_REPO_CHOSEN (id) = 1;
-          }
-          break;
-        default:
-          error ("mysterious repository information in %s", repo_name);
-        }
+	{
+	case 'A':
+	  old_args = ggc_strdup (buf + 2);
+	  break;
+	case 'D':
+	  old_dir = ggc_strdup (buf + 2);
+	  break;
+	case 'M':
+	  old_main = ggc_strdup (buf + 2);
+	  break;
+	case 'O':
+	  /* A symbol that we were able to define the last time this
+	     file was compiled.  */
+	  break;
+	case 'C':
+	  /* A symbol that the prelinker has requested that we
+	     define.  */
+	  {
+	    tree id = get_identifier (buf + 2);
+	    IDENTIFIER_REPO_CHOSEN (id) = 1;
+	  }
+	  break;
+	default:
+	  error ("mysterious repository information in %s", repo_name);
+	}
       obstack_free (&temporary_obstack, buf);
     }
   fclose (repo_file);
@@ -246,11 +246,11 @@ finish_repo (void)
     {
       fprintf (repo_file, "A %s", args);
       /* If -frandom-seed is not among the ARGS, then add the value
-         that we chose.  That will ensure that the names of types from
-         anonymous namespaces will get the same mangling when this
-         file is recompiled.  */
+	 that we chose.  That will ensure that the names of types from
+	 anonymous namespaces will get the same mangling when this
+	 file is recompiled.  */
       if (!strstr (args, "'-frandom-seed="))
-        fprintf (repo_file, " '-frandom-seed=%s'", flag_random_seed);
+	fprintf (repo_file, " '-frandom-seed=%s'", flag_random_seed);
       fprintf (repo_file, "\n");
     }
 
@@ -279,7 +279,7 @@ repo_emit_p (tree decl)
 {
   gcc_assert (TREE_PUBLIC (decl));
   gcc_assert (TREE_CODE (decl) == FUNCTION_DECL
-              || TREE_CODE (decl) == VAR_DECL);
+	      || TREE_CODE (decl) == VAR_DECL);
   gcc_assert (!DECL_REALLY_EXTERN (decl));
 
   /* When not using the repository, emit everything.  */
@@ -294,19 +294,19 @@ repo_emit_p (tree decl)
     {
       tree type = NULL_TREE;
       if (DECL_VTABLE_OR_VTT_P (decl))
-        type = DECL_CONTEXT (decl);
+	type = DECL_CONTEXT (decl);
       else if (DECL_TINFO_P (decl))
-        type = TREE_TYPE (DECL_NAME (decl));
+	type = TREE_TYPE (DECL_NAME (decl));
       if (!DECL_TEMPLATE_INSTANTIATION (decl)
-          && (!TYPE_LANG_SPECIFIC (type)
-              || !CLASSTYPE_TEMPLATE_INSTANTIATION (type)))
-        return 2;
+	  && (!TYPE_LANG_SPECIFIC (type)
+	      || !CLASSTYPE_TEMPLATE_INSTANTIATION (type)))
+	return 2;
       /* Static data members initialized by constant expressions must
-         be processed where needed so that their definitions are
-         available.  */
+	 be processed where needed so that their definitions are
+	 available.  */
       if (DECL_INITIALIZED_BY_CONSTANT_EXPRESSION_P (decl)
-          && DECL_CLASS_SCOPE_P (decl))
-        return 2;
+	  && DECL_CLASS_SCOPE_P (decl))
+	return 2;
     }
   else if (!DECL_TEMPLATE_INSTANTIATION (decl))
     return 2;
@@ -320,13 +320,13 @@ repo_emit_p (tree decl)
       int emit_p = 0;
       tree clone;
       /* There is no early exit from this loop because we want to
-         ensure that all of the clones are marked as available in this
-         object file.  */
+	 ensure that all of the clones are marked as available in this
+	 object file.  */
       FOR_EACH_CLONE (clone, decl)
-        /* The only possible results from the recursive call to
-           repo_emit_p are 0 or 1.  */
-        if (repo_emit_p (clone))
-          emit_p = 1;
+	/* The only possible results from the recursive call to
+	   repo_emit_p are 0 or 1.  */
+	if (repo_emit_p (clone))
+	  emit_p = 1;
       return emit_p;
     }
 
@@ -353,7 +353,7 @@ repo_export_class_p (tree class_type)
   /* If the virtual table has been assigned to this translation unit,
      export the class.  */
   return (IDENTIFIER_REPO_CHOSEN
-          (DECL_ASSEMBLER_NAME (CLASSTYPE_VTABLES (class_type))));
+	  (DECL_ASSEMBLER_NAME (CLASSTYPE_VTABLES (class_type))));
 }
 
 #include "gt-cp-repo.h"

@@ -62,72 +62,72 @@
       if (TARGET_64BIT) builtin_define ("__ppc64__");  \
       builtin_define ("__POWERPC__");           \
       builtin_define ("__NATURAL_ALIGNMENT__"); \
-      darwin_cpp_builtins (pfile);                \
+      darwin_cpp_builtins (pfile);		\
     }                                           \
   while (0)
 
 
-#define SUBTARGET_OVERRIDE_OPTIONS                                        \
-do {                                                                        \
-  /* The Darwin ABI always includes AltiVec, can't be (validly) turned        \
-     off.  */                                                                \
-  rs6000_altivec_abi = 1;                                                \
-  TARGET_ALTIVEC_VRSAVE = 1;                                                \
-  if (DEFAULT_ABI == ABI_DARWIN)                                        \
-  {                                                                        \
-    if (MACHO_DYNAMIC_NO_PIC_P)                                                \
-      {                                                                        \
-        if (flag_pic)                                                        \
-            warning (0, "-mdynamic-no-pic overrides -fpic or -fPIC");        \
-        flag_pic = 0;                                                        \
-      }                                                                        \
-    else if (flag_pic == 1)                                                \
-      {                                                                        \
-        flag_pic = 2;                                                        \
-      }                                                                        \
-  }                                                                        \
-  if (TARGET_64BIT && ! TARGET_POWERPC64)                                \
-    {                                                                        \
-      target_flags |= MASK_POWERPC64;                                        \
-      warning (0, "-m64 requires PowerPC64 architecture, enabling");        \
-    }                                                                        \
-  if (flag_mkernel)                                                        \
-    {                                                                        \
-      rs6000_default_long_calls = 1;                                        \
-      target_flags |= MASK_SOFT_FLOAT;                                        \
-    }                                                                        \
-                                                                        \
-  /* Make -m64 imply -maltivec.  Darwin's 64-bit ABI includes                \
-     Altivec.  */                                                        \
-  if (!flag_mkernel && !flag_apple_kext                                        \
-      && TARGET_64BIT                                                        \
-      && ! (target_flags_explicit & MASK_ALTIVEC))                        \
-    target_flags |= MASK_ALTIVEC;                                        \
-                                                                        \
-  /* Unless the user (not the configurer) has explicitly overridden        \
-     it with -mcpu=G3 or -mno-altivec, then 10.5+ targets default to        \
-     G4 unless targetting the kernel.  */                                \
-  if (!flag_mkernel                                                        \
-      && !flag_apple_kext                                                \
-      && darwin_macosx_version_min                                        \
-      && strverscmp (darwin_macosx_version_min, "10.5") >= 0                \
-      && ! (target_flags_explicit & MASK_ALTIVEC)                        \
-      && ! rs6000_select[1].string)                                        \
-    {                                                                        \
-      target_flags |= MASK_ALTIVEC;                                        \
-    }                                                                        \
+#define SUBTARGET_OVERRIDE_OPTIONS					\
+do {									\
+  /* The Darwin ABI always includes AltiVec, can't be (validly) turned	\
+     off.  */								\
+  rs6000_altivec_abi = 1;						\
+  TARGET_ALTIVEC_VRSAVE = 1;						\
+  if (DEFAULT_ABI == ABI_DARWIN)					\
+  {									\
+    if (MACHO_DYNAMIC_NO_PIC_P)						\
+      {									\
+        if (flag_pic)							\
+            warning (0, "-mdynamic-no-pic overrides -fpic or -fPIC");	\
+        flag_pic = 0;							\
+      }									\
+    else if (flag_pic == 1)						\
+      {									\
+        flag_pic = 2;							\
+      }									\
+  }									\
+  if (TARGET_64BIT && ! TARGET_POWERPC64)				\
+    {									\
+      target_flags |= MASK_POWERPC64;					\
+      warning (0, "-m64 requires PowerPC64 architecture, enabling");	\
+    }									\
+  if (flag_mkernel)							\
+    {									\
+      rs6000_default_long_calls = 1;					\
+      target_flags |= MASK_SOFT_FLOAT;					\
+    }									\
+									\
+  /* Make -m64 imply -maltivec.  Darwin's 64-bit ABI includes		\
+     Altivec.  */							\
+  if (!flag_mkernel && !flag_apple_kext					\
+      && TARGET_64BIT							\
+      && ! (target_flags_explicit & MASK_ALTIVEC))			\
+    target_flags |= MASK_ALTIVEC;					\
+									\
+  /* Unless the user (not the configurer) has explicitly overridden	\
+     it with -mcpu=G3 or -mno-altivec, then 10.5+ targets default to	\
+     G4 unless targetting the kernel.  */				\
+  if (!flag_mkernel							\
+      && !flag_apple_kext						\
+      && darwin_macosx_version_min					\
+      && strverscmp (darwin_macosx_version_min, "10.5") >= 0		\
+      && ! (target_flags_explicit & MASK_ALTIVEC)			\
+      && ! rs6000_select[1].string)					\
+    {									\
+      target_flags |= MASK_ALTIVEC;					\
+    }									\
 } while(0)
 
-#define C_COMMON_OVERRIDE_OPTIONS do {                                        \
-  /* On powerpc, __cxa_get_exception_ptr is available starting in the        \
-     10.4.6 libstdc++.dylib.  */                                        \
-  if ((! darwin_macosx_version_min                                        \
-       || strverscmp (darwin_macosx_version_min, "10.4.6") < 0)                \
-      && flag_use_cxa_get_exception_ptr == 2)                                \
-    flag_use_cxa_get_exception_ptr = 0;                                        \
-  if (flag_mkernel)                                                        \
-    flag_no_builtin = 1;                                                \
-  SUBTARGET_C_COMMON_OVERRIDE_OPTIONS;                                        \
+#define C_COMMON_OVERRIDE_OPTIONS do {					\
+  /* On powerpc, __cxa_get_exception_ptr is available starting in the	\
+     10.4.6 libstdc++.dylib.  */					\
+  if ((! darwin_macosx_version_min					\
+       || strverscmp (darwin_macosx_version_min, "10.4.6") < 0)		\
+      && flag_use_cxa_get_exception_ptr == 2)				\
+    flag_use_cxa_get_exception_ptr = 0;					\
+  if (flag_mkernel)							\
+    flag_no_builtin = 1;						\
+  SUBTARGET_C_COMMON_OVERRIDE_OPTIONS;					\
 } while (0)
 
 /* Darwin has 128-bit long double support in libc in 10.4 and later.
@@ -148,23 +148,23 @@ do {                                                                        \
 
 #define DARWIN_ARCH_SPEC "%{m64:ppc64;:ppc}"
 
-#define DARWIN_SUBARCH_SPEC "                        \
- %{m64: ppc64}                                        \
- %{!m64:                                        \
- %{mcpu=601:ppc601;                                \
-   mcpu=603:ppc603;                                \
-   mcpu=603e:ppc603;                                \
-   mcpu=604:ppc604;                                \
-   mcpu=604e:ppc604e;                                \
-   mcpu=740:ppc750;                                \
-   mcpu=750:ppc750;                                \
-   mcpu=G3:ppc750;                                \
-   mcpu=7400:ppc7400;                                \
-   mcpu=G4:ppc7400;                                \
-   mcpu=7450:ppc7450;                                \
-   mcpu=970:ppc970;                                \
-   mcpu=power4:ppc970;                                \
-   mcpu=G5:ppc970;                                \
+#define DARWIN_SUBARCH_SPEC "			\
+ %{m64: ppc64}					\
+ %{!m64:					\
+ %{mcpu=601:ppc601;				\
+   mcpu=603:ppc603;				\
+   mcpu=603e:ppc603;				\
+   mcpu=604:ppc604;				\
+   mcpu=604e:ppc604e;				\
+   mcpu=740:ppc750;				\
+   mcpu=750:ppc750;				\
+   mcpu=G3:ppc750;				\
+   mcpu=7400:ppc7400;				\
+   mcpu=G4:ppc7400;				\
+   mcpu=7450:ppc7450;				\
+   mcpu=970:ppc970;				\
+   mcpu=power4:ppc970;				\
+   mcpu=G5:ppc970;				\
    :ppc}}"
 
 /* crt2.o is at least partially required for 10.3.x and earlier.  */
@@ -172,9 +172,9 @@ do {                                                                        \
   "%{!m64:%:version-compare(!> 10.4 mmacosx-version-min= crt2.o%s)}"
 
 #undef SUBTARGET_EXTRA_SPECS
-#define SUBTARGET_EXTRA_SPECS                        \
-  { "darwin_arch", DARWIN_ARCH_SPEC },                \
-  { "darwin_crt2", DARWIN_CRT2_SPEC },                \
+#define SUBTARGET_EXTRA_SPECS			\
+  { "darwin_arch", DARWIN_ARCH_SPEC },		\
+  { "darwin_crt2", DARWIN_CRT2_SPEC },		\
   { "darwin_subarch", DARWIN_SUBARCH_SPEC },
 
 /* Output a .machine directive.  */
@@ -185,12 +185,12 @@ do {                                                                        \
    along.  -ffix-and-continue and -findirect-data is for compatibility
    for old compilers.  */
 
-#define SUBTARGET_OPTION_TRANSLATE_TABLE                                \
-  { "-ffix-and-continue", "-mfix-and-continue" },                        \
-  { "-findirect-data", "-mfix-and-continue" },                                \
-  { "-faltivec", "-maltivec -include altivec.h" },                        \
-  { "-fno-altivec", "-mno-altivec" },                                        \
-  { "-Waltivec-long-deprecated",        "-mwarn-altivec-long" },        \
+#define SUBTARGET_OPTION_TRANSLATE_TABLE				\
+  { "-ffix-and-continue", "-mfix-and-continue" },			\
+  { "-findirect-data", "-mfix-and-continue" },				\
+  { "-faltivec", "-maltivec -include altivec.h" },			\
+  { "-fno-altivec", "-mno-altivec" },					\
+  { "-Waltivec-long-deprecated",	"-mwarn-altivec-long" },	\
   { "-Wno-altivec-long-deprecated", "-mno-warn-altivec-long" }
 
 /* Make both r2 and r13 available for allocation.  */
@@ -208,15 +208,15 @@ do {                                                                        \
 /* Pad the outgoing args area to 16 bytes instead of the usual 8.  */
 
 #undef STARTING_FRAME_OFFSET
-#define STARTING_FRAME_OFFSET                                                \
-  (FRAME_GROWS_DOWNWARD                                                        \
-   ? 0                                                                        \
-   : (RS6000_ALIGN (current_function_outgoing_args_size, 16)                \
+#define STARTING_FRAME_OFFSET						\
+  (FRAME_GROWS_DOWNWARD							\
+   ? 0									\
+   : (RS6000_ALIGN (current_function_outgoing_args_size, 16)		\
       + RS6000_SAVE_AREA))
 
 #undef STACK_DYNAMIC_OFFSET
-#define STACK_DYNAMIC_OFFSET(FUNDECL)                                        \
-  (RS6000_ALIGN (current_function_outgoing_args_size, 16)                \
+#define STACK_DYNAMIC_OFFSET(FUNDECL)					\
+  (RS6000_ALIGN (current_function_outgoing_args_size, 16)		\
    + (STACK_POINTER_OFFSET))
 
 /* These are used by -fbranch-probabilities */
@@ -227,7 +227,7 @@ do {                                                                        \
 /* Define cutoff for using external functions to save floating point.
    Currently on Darwin, always use inline stores.  */
 
-#undef        FP_SAVE_INLINE
+#undef	FP_SAVE_INLINE
 #define FP_SAVE_INLINE(FIRST_REG) ((FIRST_REG) < 64)
 
 /* Darwin uses a function call if everything needs to be saved/restored.  */
@@ -237,32 +237,32 @@ do {                                                                        \
 /* The assembler wants the alternate register names, but without
    leading percent sign.  */
 #undef REGISTER_NAMES
-#define REGISTER_NAMES                                                        \
-{                                                                        \
-     "r0",  "r1",  "r2",  "r3",  "r4",  "r5",  "r6",  "r7",                \
-     "r8",  "r9", "r10", "r11", "r12", "r13", "r14", "r15",                \
-    "r16", "r17", "r18", "r19", "r20", "r21", "r22", "r23",                \
-    "r24", "r25", "r26", "r27", "r28", "r29", "r30", "r31",                \
-     "f0",  "f1",  "f2",  "f3",  "f4",  "f5",  "f6",  "f7",                \
-     "f8",  "f9", "f10", "f11", "f12", "f13", "f14", "f15",                \
-    "f16", "f17", "f18", "f19", "f20", "f21", "f22", "f23",                \
-    "f24", "f25", "f26", "f27", "f28", "f29", "f30", "f31",                \
-     "mq",  "lr", "ctr",  "ap",                                                \
-    "cr0", "cr1", "cr2", "cr3", "cr4", "cr5", "cr6", "cr7",                \
-    "xer",                                                                \
+#define REGISTER_NAMES							\
+{									\
+     "r0",  "r1",  "r2",  "r3",  "r4",  "r5",  "r6",  "r7",		\
+     "r8",  "r9", "r10", "r11", "r12", "r13", "r14", "r15",		\
+    "r16", "r17", "r18", "r19", "r20", "r21", "r22", "r23",		\
+    "r24", "r25", "r26", "r27", "r28", "r29", "r30", "r31",		\
+     "f0",  "f1",  "f2",  "f3",  "f4",  "f5",  "f6",  "f7",		\
+     "f8",  "f9", "f10", "f11", "f12", "f13", "f14", "f15",		\
+    "f16", "f17", "f18", "f19", "f20", "f21", "f22", "f23",		\
+    "f24", "f25", "f26", "f27", "f28", "f29", "f30", "f31",		\
+     "mq",  "lr", "ctr",  "ap",						\
+    "cr0", "cr1", "cr2", "cr3", "cr4", "cr5", "cr6", "cr7",		\
+    "xer",								\
      "v0",  "v1",  "v2",  "v3",  "v4",  "v5",  "v6",  "v7",             \
      "v8",  "v9", "v10", "v11", "v12", "v13", "v14", "v15",             \
     "v16", "v17", "v18", "v19", "v20", "v21", "v22", "v23",             \
     "v24", "v25", "v26", "v27", "v28", "v29", "v30", "v31",             \
-    "vrsave", "vscr",                                                        \
+    "vrsave", "vscr",							\
     "spe_acc", "spefscr",                                               \
-    "sfp"                                                                \
+    "sfp"								\
 }
 
 /* This outputs NAME to FILE.  */
 
 #undef  RS6000_OUTPUT_BASENAME
-#define RS6000_OUTPUT_BASENAME(FILE, NAME)        \
+#define RS6000_OUTPUT_BASENAME(FILE, NAME)	\
     assemble_name (FILE, NAME)
 
 /* Globalizing directive for a label.  */
@@ -275,18 +275,18 @@ do {                                                                        \
 /* Not really used for Darwin?  */
 
 #undef ASM_OUTPUT_INTERNAL_LABEL_PREFIX
-#define ASM_OUTPUT_INTERNAL_LABEL_PREFIX(FILE,PREFIX)        \
+#define ASM_OUTPUT_INTERNAL_LABEL_PREFIX(FILE,PREFIX)	\
   fprintf (FILE, "%s", PREFIX)
 
 /* This says how to output an assembler line to define a global common
    symbol.  */
-#define ASM_OUTPUT_COMMON(FILE, NAME, SIZE, ROUNDED)                        \
-  do {                                                                        \
-    unsigned HOST_WIDE_INT _new_size = SIZE;                                \
-    fputs (".comm ", (FILE));                                                \
-    RS6000_OUTPUT_BASENAME ((FILE), (NAME));                                \
-    if (_new_size == 0) _new_size = 1;                                        \
-    fprintf ((FILE), ","HOST_WIDE_INT_PRINT_UNSIGNED"\n", _new_size);        \
+#define ASM_OUTPUT_COMMON(FILE, NAME, SIZE, ROUNDED)			\
+  do {									\
+    unsigned HOST_WIDE_INT _new_size = SIZE;				\
+    fputs (".comm ", (FILE));						\
+    RS6000_OUTPUT_BASENAME ((FILE), (NAME));				\
+    if (_new_size == 0) _new_size = 1;					\
+    fprintf ((FILE), ","HOST_WIDE_INT_PRINT_UNSIGNED"\n", _new_size);	\
   } while (0)
 
 /* Override the standard rs6000 definition.  */
@@ -295,9 +295,9 @@ do {                                                                        \
 #define ASM_COMMENT_START ";"
 
 /* FP save and restore routines.  */
-#define        SAVE_FP_PREFIX "._savef"
+#define	SAVE_FP_PREFIX "._savef"
 #define SAVE_FP_SUFFIX ""
-#define        RESTORE_FP_PREFIX "._restf"
+#define	RESTORE_FP_PREFIX "._restf"
 #define RESTORE_FP_SUFFIX ""
 
 /* This is how to output an assembler line that says to advance
@@ -379,41 +379,41 @@ do {                                                                        \
    a SYMBOL_REF.  */
 
 #undef PREFERRED_RELOAD_CLASS
-#define PREFERRED_RELOAD_CLASS(X,CLASS)                                \
-  ((CONSTANT_P (X)                                                \
-    && reg_classes_intersect_p ((CLASS), FLOAT_REGS))                \
-   ? NO_REGS                                                        \
-   : ((GET_CODE (X) == SYMBOL_REF || GET_CODE (X) == HIGH)        \
-      && reg_class_subset_p (BASE_REGS, (CLASS)))                \
-   ? BASE_REGS                                                        \
-   : (GET_MODE_CLASS (GET_MODE (X)) == MODE_INT                        \
-      && (CLASS) == NON_SPECIAL_REGS)                                \
-   ? GENERAL_REGS                                                \
+#define PREFERRED_RELOAD_CLASS(X,CLASS)				\
+  ((CONSTANT_P (X)						\
+    && reg_classes_intersect_p ((CLASS), FLOAT_REGS))		\
+   ? NO_REGS							\
+   : ((GET_CODE (X) == SYMBOL_REF || GET_CODE (X) == HIGH)	\
+      && reg_class_subset_p (BASE_REGS, (CLASS)))		\
+   ? BASE_REGS							\
+   : (GET_MODE_CLASS (GET_MODE (X)) == MODE_INT			\
+      && (CLASS) == NON_SPECIAL_REGS)				\
+   ? GENERAL_REGS						\
    : (CLASS))
 
 /* Fix for emit_group_load (): force large constants to be pushed via regs.  */
-#define ALWAYS_PUSH_CONSTS_USING_REGS_P                1
+#define ALWAYS_PUSH_CONSTS_USING_REGS_P		1
 
 /* This now supports a natural alignment mode */
 /* Darwin word-aligns FP doubles but doubleword-aligns 64-bit ints.  */
 #define ADJUST_FIELD_ALIGN(FIELD, COMPUTED) \
   (TARGET_ALIGN_NATURAL ? (COMPUTED) : \
   (TYPE_MODE (TREE_CODE (TREE_TYPE (FIELD)) == ARRAY_TYPE \
-              ? get_inner_array_type (FIELD) \
-              : TREE_TYPE (FIELD)) == DFmode \
+	      ? get_inner_array_type (FIELD) \
+	      : TREE_TYPE (FIELD)) == DFmode \
    ? MIN ((COMPUTED), 32) : (COMPUTED)))
 
 /* Darwin increases natural record alignment to doubleword if the first
    field is an FP double while the FP fields remain word aligned.  */
-#define ROUND_TYPE_ALIGN(STRUCT, COMPUTED, SPECIFIED)                        \
-  ((TREE_CODE (STRUCT) == RECORD_TYPE                                        \
-    || TREE_CODE (STRUCT) == UNION_TYPE                                        \
-    || TREE_CODE (STRUCT) == QUAL_UNION_TYPE)                                \
-   && TARGET_ALIGN_NATURAL == 0                                         \
-   ? rs6000_special_round_type_align (STRUCT, COMPUTED, SPECIFIED)        \
-   : (TREE_CODE (STRUCT) == VECTOR_TYPE                                        \
-      && ALTIVEC_VECTOR_MODE (TYPE_MODE (STRUCT)))                         \
-   ? MAX (MAX ((COMPUTED), (SPECIFIED)), 128)                                   \
+#define ROUND_TYPE_ALIGN(STRUCT, COMPUTED, SPECIFIED)			\
+  ((TREE_CODE (STRUCT) == RECORD_TYPE					\
+    || TREE_CODE (STRUCT) == UNION_TYPE					\
+    || TREE_CODE (STRUCT) == QUAL_UNION_TYPE)				\
+   && TARGET_ALIGN_NATURAL == 0                         		\
+   ? rs6000_special_round_type_align (STRUCT, COMPUTED, SPECIFIED)	\
+   : (TREE_CODE (STRUCT) == VECTOR_TYPE					\
+      && ALTIVEC_VECTOR_MODE (TYPE_MODE (STRUCT))) 			\
+   ? MAX (MAX ((COMPUTED), (SPECIFIED)), 128)          			 \
    : MAX ((COMPUTED), (SPECIFIED)))
 
 /* Specify padding for the last element of a block move between
@@ -457,16 +457,16 @@ do {                                                                        \
 #define TARGET_FIX_AND_CONTINUE (darwin_fix_and_continue)
 
 /* This is the reserved direct dispatch address for Objective-C.  */
-#define OFFS_MSGSEND_FAST                0xFFFEFF00
+#define OFFS_MSGSEND_FAST		0xFFFEFF00
 
 /* This is the reserved ivar address Objective-C.  */
-#define OFFS_ASSIGNIVAR_FAST                0xFFFEFEC0
+#define OFFS_ASSIGNIVAR_FAST		0xFFFEFEC0
 
 /* Old versions of Mac OS/Darwin don't have C99 functions available.  */
 #undef TARGET_C99_FUNCTIONS
-#define TARGET_C99_FUNCTIONS                                        \
-  (TARGET_64BIT                                                        \
-   || (darwin_macosx_version_min                                \
+#define TARGET_C99_FUNCTIONS					\
+  (TARGET_64BIT							\
+   || (darwin_macosx_version_min				\
        && strverscmp (darwin_macosx_version_min, "10.3") >= 0))
 
 /* When generating kernel code or kexts, we don't use Altivec by

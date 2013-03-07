@@ -27,17 +27,17 @@
 #undef  SUBTARGET_CPP_SPEC
 #define SUBTARGET_CPP_SPEC FBSD_CPP_SPEC
 
-#undef        LINK_SPEC
-#define LINK_SPEC "                                                        \
-  %{p:%nconsider using `-pg' instead of `-p' with gprof(1) }                \
-  %{v:-V}                                                                \
-  %{assert*} %{R*} %{rpath*} %{defsym*}                                        \
-  %{shared:-Bshareable %{h*} %{soname*}}                                \
-  %{!shared:                                                                \
-    %{!static:                                                                \
-      %{rdynamic:-export-dynamic}                                        \
-      %{!dynamic-linker:-dynamic-linker %(fbsd_dynamic_linker) }}        \
-    %{static:-Bstatic}}                                                        \
+#undef	LINK_SPEC
+#define LINK_SPEC "							\
+  %{p:%nconsider using `-pg' instead of `-p' with gprof(1) }		\
+  %{v:-V}								\
+  %{assert*} %{R*} %{rpath*} %{defsym*}					\
+  %{shared:-Bshareable %{h*} %{soname*}}				\
+  %{!shared:								\
+    %{!static:								\
+      %{rdynamic:-export-dynamic}					\
+      %{!dynamic-linker:-dynamic-linker %(fbsd_dynamic_linker) }}	\
+    %{static:-Bstatic}}							\
   %{symbolic:-Bsymbolic}"
 
 
@@ -50,10 +50,10 @@
 /* arm.h gets this wrong for FreeBSD.  We use the GCC defaults instead.  */
 
 #undef  SIZE_TYPE
-#define SIZE_TYPE        "unsigned int"
+#define SIZE_TYPE	"unsigned int"
 
 #undef  PTRDIFF_TYPE
-#define PTRDIFF_TYPE        "int"
+#define PTRDIFF_TYPE	"int"
 
 /* We use the GCC defaults here.  */
 #undef WCHAR_TYPE
@@ -62,7 +62,7 @@
 #define WCHAR_TYPE_SIZE 32
 
 #undef  SUBTARGET_CPU_DEFAULT
-#define SUBTARGET_CPU_DEFAULT        TARGET_CPU_strongarm
+#define SUBTARGET_CPU_DEFAULT	TARGET_CPU_strongarm
 
 #undef  TARGET_VERSION
 #define TARGET_VERSION fprintf (stderr, " (FreeBSD/StrongARM ELF)");

@@ -26,8 +26,8 @@
   enum rtx_code code = GET_CODE (op);
 
   return (code == ASHIFT
-          || code == ASHIFTRT
-          || code == LSHIFTRT);
+	  || code == ASHIFTRT
+	  || code == LSHIFTRT);
 })
 
 ;; Return 1 if this is an EQ or NE operator.
@@ -36,7 +36,7 @@
   (match_code "eq,ne")
 {
   return ((mode == VOIDmode || GET_MODE (op) == mode)
-          && (GET_CODE (op) == EQ || GET_CODE (op) == NE));
+	  && (GET_CODE (op) == EQ || GET_CODE (op) == NE));
 })
 
 ;; Return 1 if this is a comparison operator but not an EQ or NE
@@ -56,7 +56,7 @@
   enum rtx_code code = GET_CODE (op);
   
   return ((mode == VOIDmode || GET_MODE (op) == mode)
-          && (code == LT || code == GE || code == LTU || code == GEU));
+	  && (code == LT || code == GE || code == LTU || code == GEU));
 })
 
 ;; Predicate for MEMs that can use special 8-bit addressing.
@@ -69,8 +69,8 @@
   if (GET_CODE (op) == MEM)
     op = XEXP (op, 0);
   else if (GET_CODE (op) == SUBREG
-           && GET_CODE (XEXP (op, 0)) == MEM
-           && !MEM_VOLATILE_P (XEXP (op, 0)))
+	   && GET_CODE (XEXP (op, 0)) == MEM
+	   && !MEM_VOLATILE_P (XEXP (op, 0)))
     op = XEXP (XEXP (op, 0), 0);
   else
     return 0;
@@ -88,7 +88,7 @@
   (match_code "mem,reg,subreg")
 {
   return (xstormy16_below100_operand (op, mode)
-          || register_operand (op, mode));
+	  || register_operand (op, mode));
 })
 
 ;; TODO: Add a comment here.
@@ -99,7 +99,7 @@
   if (GET_CODE (op) == MEM && MEM_VOLATILE_P (op))
     return 0;
   return (xstormy16_below100_operand (op, mode)
-          || register_operand (op, mode));
+	  || register_operand (op, mode));
 })
 
 ;; Predicate for constants with exactly one bit not set.
@@ -141,6 +141,6 @@
 {
   /* 'Q' is for pushes, 'R' for pops.  */
   return (nonimmediate_operand (op, mode) 
-          && ! xstormy16_extra_constraint_p (op, 'Q')
-          && ! xstormy16_extra_constraint_p (op, 'R'));
+	  && ! xstormy16_extra_constraint_p (op, 'Q')
+	  && ! xstormy16_extra_constraint_p (op, 'R'));
 })

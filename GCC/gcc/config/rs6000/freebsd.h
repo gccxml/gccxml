@@ -21,23 +21,23 @@
 
 /* Override the defaults, which exist to force the proper definition.  */
 
-#undef        CPP_OS_DEFAULT_SPEC
+#undef	CPP_OS_DEFAULT_SPEC
 #define CPP_OS_DEFAULT_SPEC "%(cpp_os_freebsd)"
 
-#undef        STARTFILE_DEFAULT_SPEC
+#undef	STARTFILE_DEFAULT_SPEC
 #define STARTFILE_DEFAULT_SPEC "%(startfile_freebsd)"
 
-#undef        ENDFILE_DEFAULT_SPEC
+#undef	ENDFILE_DEFAULT_SPEC
 #define ENDFILE_DEFAULT_SPEC "%(endfile_freebsd)"
 
-#undef        LIB_DEFAULT_SPEC
+#undef	LIB_DEFAULT_SPEC
 #define LIB_DEFAULT_SPEC "%(lib_freebsd)"
 
-#undef        LINK_START_DEFAULT_SPEC
+#undef	LINK_START_DEFAULT_SPEC
 #define LINK_START_DEFAULT_SPEC "%(link_start_freebsd)"
 
-#undef        LINK_OS_DEFAULT_SPEC
-#define        LINK_OS_DEFAULT_SPEC "%(link_os_freebsd)"
+#undef	LINK_OS_DEFAULT_SPEC
+#define	LINK_OS_DEFAULT_SPEC "%(link_os_freebsd)"
 
 /* XXX: This is wrong for many platforms in sysv4.h.
    We should work on getting that definition fixed.  */

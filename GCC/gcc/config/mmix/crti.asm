@@ -44,49 +44,49 @@ Boston, MA 02110-1301, USA.  */
 % will not be zero.  Because of truncation, that would cause testcase
 % gcc.c-torture/execute/980701-1.c to incorrectly fail.
 
-        .data        ! mmixal:= 8H LOC Data_Segment
-        .p2align 3
-        LOC @+(8-@)@7
-        OCTA 2009
+	.data	! mmixal:= 8H LOC Data_Segment
+	.p2align 3
+	LOC @+(8-@)@7
+	OCTA 2009
 
-        .text        ! mmixal:= 9H LOC 8B; LOC #100
-        .global Main
+	.text	! mmixal:= 9H LOC 8B; LOC #100
+	.global Main
 
 % The __Stack_start symbol is provided by the link script.
-stackpp        OCTA __Stack_start
+stackpp	OCTA __Stack_start
 
 % "Main" is the magic symbol the simulator jumps to.  We want to go
 % on to "main".
 % We need to set rG explicitly to avoid hard-to-debug situations.
-Main        SETL        $255,32
-        PUT        rG,$255
+Main	SETL	$255,32
+	PUT	rG,$255
 
 % Initialize the stack pointer.  It is supposedly made a global
 % zero-initialized (allowed to change) register in crtn.asm; we use the
 % explicit number.
-        GETA        $255,stackpp
-        LDOU        $254,$255,0
+	GETA	$255,stackpp
+	LDOU	$254,$255,0
 
 % Make sure we get more than one mem, to simplify counting cycles.
-        LDBU        $255,$1,0
-        LDBU        $255,$1,1
+	LDBU	$255,$1,0
+	LDBU	$255,$1,1
 
-        PUSHJ        $2,_init
+	PUSHJ	$2,_init
 
 #ifdef __MMIX_ABI_GNU__
 % Copy argc and argv from their initial position to argument registers
 % where necessary.
-        SET        $231,$0
-        SET        $232,$1
+	SET	$231,$0
+	SET	$232,$1
 #else
 % For the mmixware ABI, we need to move arguments.  The return value will
 % appear in $0.
-        SET        $2,$1
-        SET        $1,$0
+	SET	$2,$1
+	SET	$1,$0
 #endif
 
-        PUSHJ        $0,main
-        JMP        exit
+	PUSHJ	$0,main
+	JMP	exit
 
 % Provide the first part of _init and _fini.  Save the return address on the
 % register stack.  We eventually ignore the return address of these
@@ -94,28 +94,28 @@ Main        SETL        $255,32
 % functions or where they store rJ.  We shouldn't get there, so die
 % (TRAP Halt) if that happens.
 
-        .section .init,"ax",@progbits
-        .global        _init
+	.section .init,"ax",@progbits
+	.global	_init
 _init:
-        GET        $0,:rJ
-        PUSHJ        $1,0F
-        SETL        $255,255
-        TRAP        0,0,0
-0H        IS        @
+	GET	$0,:rJ
+	PUSHJ	$1,0F
+	SETL	$255,255
+	TRAP	0,0,0
+0H	IS	@
 
 % Register _fini to be executed as the last atexit function.
 #ifdef __MMIX_ABI_GNU__
-        GETA        $231,_fini
+	GETA	$231,_fini
 #else
-        GETA        $1,_fini
+	GETA	$1,_fini
 #endif
-        PUSHJ        $0,atexit
+	PUSHJ	$0,atexit
 
-        .section .fini,"ax",@progbits
-        .global        _fini
+	.section .fini,"ax",@progbits
+	.global	_fini
 _fini:
-        GET        $0,:rJ
-        PUSHJ        $1,0F
-        SETL        $255,255
-        TRAP        0,0,0
-0H        IS        @
+	GET	$0,:rJ
+	PUSHJ	$1,0F
+	SETL	$255,255
+	TRAP	0,0,0
+0H	IS	@

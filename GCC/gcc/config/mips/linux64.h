@@ -54,9 +54,9 @@ Boston, MA 02110-1301, USA.  */
       %{!static: \
         %{rdynamic:-export-dynamic} \
         %{!dynamic-linker: \
-          %{mabi=n32: -dynamic-linker " LINUX_DYNAMIC_LINKERN32 "} \
-          %{mabi=64: -dynamic-linker " LINUX_DYNAMIC_LINKER64 "} \
-          %{mabi=32: -dynamic-linker " LINUX_DYNAMIC_LINKER32 "}}} \
+	  %{mabi=n32: -dynamic-linker " LINUX_DYNAMIC_LINKERN32 "} \
+	  %{mabi=64: -dynamic-linker " LINUX_DYNAMIC_LINKER64 "} \
+	  %{mabi=32: -dynamic-linker " LINUX_DYNAMIC_LINKER32 "}}} \
       %{static:-static}}} \
 %{mabi=n32:-melf32%{EB:b}%{EL:l}tsmipn32} \
 %{mabi=64:-melf64%{EB:b}%{EL:l}tsmip} \

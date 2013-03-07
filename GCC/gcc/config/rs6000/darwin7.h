@@ -25,7 +25,7 @@ Boston, MA 02110-1301, USA.  */
    looked for in libmx first.  Include libmx by default because otherwise
    libstdc++ isn't usable.  */
 
-#undef        LIB_SPEC
+#undef	LIB_SPEC
 #define LIB_SPEC "%{!static:\
   %:version-compare(!< 10.3 mmacosx-version-min= -lmx)\
   -lSystem}"

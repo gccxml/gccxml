@@ -34,24 +34,24 @@ Boston, MA 02110-1301, USA.  */
 #include "insn-constants.h"
 
 # if defined (__SH5__)
-#define SH_DWARF_FRAME_GP0        0
-#define SH_DWARF_FRAME_FP0        77
-#define SH_DWARF_FRAME_BT0        68
-#define SH_DWARF_FRAME_PR_MEDIA        18
-#define SH_DWARF_FRAME_SR        65
-#define SH_DWARF_FRAME_FPSCR        76
+#define SH_DWARF_FRAME_GP0	0
+#define SH_DWARF_FRAME_FP0	77
+#define SH_DWARF_FRAME_BT0	68
+#define SH_DWARF_FRAME_PR_MEDIA	18
+#define SH_DWARF_FRAME_SR	65
+#define SH_DWARF_FRAME_FPSCR	76
 #else
-#define SH_DWARF_FRAME_GP0        0
-#define SH_DWARF_FRAME_FP0        25
-#define SH_DWARF_FRAME_XD0        87
-#define SH_DWARF_FRAME_PR        17
-#define SH_DWARF_FRAME_GBR        19
-#define SH_DWARF_FRAME_MACH        20
-#define SH_DWARF_FRAME_MACL        21
-#define SH_DWARF_FRAME_PC        16
-#define SH_DWARF_FRAME_SR        22
-#define SH_DWARF_FRAME_FPUL        23
-#define SH_DWARF_FRAME_FPSCR        24
+#define SH_DWARF_FRAME_GP0	0
+#define SH_DWARF_FRAME_FP0	25
+#define SH_DWARF_FRAME_XD0	87
+#define SH_DWARF_FRAME_PR	17
+#define SH_DWARF_FRAME_GBR	19
+#define SH_DWARF_FRAME_MACH	20
+#define SH_DWARF_FRAME_MACL	21
+#define SH_DWARF_FRAME_PC	16
+#define SH_DWARF_FRAME_SR	22
+#define SH_DWARF_FRAME_FPUL	23
+#define SH_DWARF_FRAME_FPSCR	24
 #endif /* defined (__SH5__) */
 
 #if defined (__SH5__)
@@ -60,30 +60,30 @@ Boston, MA 02110-1301, USA.  */
 
 static _Unwind_Reason_Code
 shmedia_fallback_frame_state (struct _Unwind_Context *context,
-                              _Unwind_FrameState *fs)
+			      _Unwind_FrameState *fs)
 {
   unsigned char *pc = context->ra;
   struct sigcontext *sc;
   long new_cfa;
   int i, r;
 
-  /* movi 0x10,r9; shori 0x77,r9; trapa        r9; nop (sigreturn)  */
-  /* movi 0x10,r9; shori 0xad,r9; trapa        r9; nop (rt_sigreturn)  */
+  /* movi 0x10,r9; shori 0x77,r9; trapa	r9; nop (sigreturn)  */
+  /* movi 0x10,r9; shori 0xad,r9; trapa	r9; nop (rt_sigreturn)  */
   if ((*(unsigned long *) (pc-1)  == 0xcc004090)
       && (*(unsigned long *) (pc+3)  == 0xc801dc90)
       && (*(unsigned long *) (pc+7)  == 0x6c91fff0)
       && (*(unsigned long *) (pc+11)  == 0x6ff0fff0))
     sc = context->cfa;
   else if ((*(unsigned long *) (pc-1)  == 0xcc004090)
-           && (*(unsigned long *) (pc+3)  == 0xc802b490)
-           && (*(unsigned long *) (pc+7)  == 0x6c91fff0)
-           && (*(unsigned long *) (pc+11)  == 0x6ff0fff0))
+	   && (*(unsigned long *) (pc+3)  == 0xc802b490)
+	   && (*(unsigned long *) (pc+7)  == 0x6c91fff0)
+	   && (*(unsigned long *) (pc+11)  == 0x6ff0fff0))
     {
       struct rt_sigframe {
-        struct siginfo *pinfo;
-        void *puc;
-        struct siginfo info;
-        struct ucontext uc;
+	struct siginfo *pinfo;
+	void *puc;
+	struct siginfo info;
+	struct ucontext uc;
       } *rt_ = context->cfa;
       /* The void * cast is necessary to avoid an aliasing warning.
          The aliasing warning is correct, but should not be a problem
@@ -101,11 +101,11 @@ shmedia_fallback_frame_state (struct _Unwind_Context *context,
   for (i = 0; i < 63; i++)
     {
       if (i == 15)
-        continue;
+	continue;
 
       fs->regs.reg[i].how = REG_SAVED_OFFSET;
       fs->regs.reg[i].loc.offset
-        = (long)&(sc->sc_regs[i]) - new_cfa;
+	= (long)&(sc->sc_regs[i]) - new_cfa;
     }
 
   fs->regs.reg[SH_DWARF_FRAME_SR].how = REG_SAVED_OFFSET;
@@ -117,7 +117,7 @@ shmedia_fallback_frame_state (struct _Unwind_Context *context,
     {
       fs->regs.reg[r+i].how = REG_SAVED_OFFSET;
       fs->regs.reg[r+i].loc.offset
-        = (long)&(sc->sc_tregs[i]) - new_cfa;
+	= (long)&(sc->sc_tregs[i]) - new_cfa;
     }
 
   r = SH_DWARF_FRAME_FP0;
@@ -125,7 +125,7 @@ shmedia_fallback_frame_state (struct _Unwind_Context *context,
     {
       fs->regs.reg[r+i].how = REG_SAVED_OFFSET;
       fs->regs.reg[r+i].loc.offset
-        = (long)&(sc->sc_fpregs[i]) - new_cfa;
+	= (long)&(sc->sc_fpregs[i]) - new_cfa;
     }
 
   fs->regs.reg[SH_DWARF_FRAME_FPSCR].how = REG_SAVED_OFFSET;
@@ -147,7 +147,7 @@ shmedia_fallback_frame_state (struct _Unwind_Context *context,
 
 static _Unwind_Reason_Code
 sh_fallback_frame_state (struct _Unwind_Context *context,
-                         _Unwind_FrameState *fs)
+			 _Unwind_FrameState *fs)
 {
   unsigned char *pc = context->ra;
   struct sigcontext *sc;
@@ -168,19 +168,19 @@ sh_fallback_frame_state (struct _Unwind_Context *context,
        && (*(unsigned short *) (pc+2)  == 0xc310)
        && (*(unsigned short *) (pc+4)  == 0x0077))
       || (((*(unsigned short *) (pc+0)  == 0x9305)
-           && (*(unsigned short *) (pc+2)  == 0xc310)
-           && (*(unsigned short *) (pc+14)  == 0x0077))))
+	   && (*(unsigned short *) (pc+2)  == 0xc310)
+	   && (*(unsigned short *) (pc+14)  == 0x0077))))
     sc = context->cfa;
   else if (((*(unsigned short *) (pc+0) == 0x9300)
-            && (*(unsigned short *) (pc+2)  == 0xc310)
-            && (*(unsigned short *) (pc+4)  == 0x00ad))
-           || (((*(unsigned short *) (pc+0) == 0x9305)
-                && (*(unsigned short *) (pc+2)  == 0xc310)
-                && (*(unsigned short *) (pc+14)  == 0x00ad))))
+	    && (*(unsigned short *) (pc+2)  == 0xc310)
+	    && (*(unsigned short *) (pc+4)  == 0x00ad))
+	   || (((*(unsigned short *) (pc+0) == 0x9305)
+		&& (*(unsigned short *) (pc+2)  == 0xc310)
+		&& (*(unsigned short *) (pc+14)  == 0x00ad))))
     {
       struct rt_sigframe {
-        struct siginfo info;
-        struct ucontext uc;
+	struct siginfo info;
+	struct ucontext uc;
       } *rt_ = context->cfa;
       /* The void * cast is necessary to avoid an aliasing warning.
          The aliasing warning is correct, but should not be a problem
@@ -199,7 +199,7 @@ sh_fallback_frame_state (struct _Unwind_Context *context,
     {
       fs->regs.reg[i].how = REG_SAVED_OFFSET;
       fs->regs.reg[i].loc.offset
-        = (long)&(sc->sc_regs[i]) - new_cfa;
+	= (long)&(sc->sc_regs[i]) - new_cfa;
     }
 
   fs->regs.reg[SH_DWARF_FRAME_PR].how = REG_SAVED_OFFSET;
@@ -224,7 +224,7 @@ sh_fallback_frame_state (struct _Unwind_Context *context,
     {
       fs->regs.reg[r+i].how = REG_SAVED_OFFSET;
       fs->regs.reg[r+i].loc.offset
-        = (long)&(sc->sc_fpregs[i]) - new_cfa;
+	= (long)&(sc->sc_fpregs[i]) - new_cfa;
     }
 
   r = SH_DWARF_FRAME_XD0;
@@ -232,7 +232,7 @@ sh_fallback_frame_state (struct _Unwind_Context *context,
     {
       fs->regs.reg[i].how = REG_SAVED_OFFSET;
       fs->regs.reg[i].loc.offset
-        = (long)&(sc->sc_xfpregs[2*i]) - new_cfa;
+	= (long)&(sc->sc_xfpregs[2*i]) - new_cfa;
     }
 
   fs->regs.reg[SH_DWARF_FRAME_FPUL].how = REG_SAVED_OFFSET;

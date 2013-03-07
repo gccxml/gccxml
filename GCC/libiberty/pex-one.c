@@ -22,8 +22,8 @@ Boston, MA 02110-1301, USA.  */
 
 const char *
 pex_one (int flags, const char *executable, char * const *argv,
-         const char *pname, const char *outname, const char *errname,
-         int *status, int *err)
+	 const char *pname, const char *outname, const char *errname,
+	 int *status, int *err)
 {
   struct pex_obj *obj;
   const char *errmsg;
@@ -33,10 +33,10 @@ pex_one (int flags, const char *executable, char * const *argv,
   if (errmsg == NULL)
     {
       if (!pex_get_status (obj, 1, status))
-        {
-          *err = 0;
-          errmsg = "pex_get_status failed";
-        }
+	{
+	  *err = 0;
+	  errmsg = "pex_get_status failed";
+	}
     }
   pex_free (obj);
   return errmsg;  

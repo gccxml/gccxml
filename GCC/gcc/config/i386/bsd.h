@@ -54,23 +54,23 @@ Boston, MA 02110-1301, USA.  */
    to define a global common symbol.  */
 
 #define ASM_OUTPUT_COMMON(FILE, NAME, SIZE, ROUNDED)  \
-( fputs (".comm ", (FILE)),                        \
-  assemble_name ((FILE), (NAME)),                \
+( fputs (".comm ", (FILE)),			\
+  assemble_name ((FILE), (NAME)),		\
   fprintf ((FILE), ",%u\n", (int)(ROUNDED)))
 
 /* This says how to output an assembler line
    to define a local common symbol.  */
 
 #define ASM_OUTPUT_LOCAL(FILE, NAME, SIZE, ROUNDED)  \
-( fputs (".lcomm ", (FILE)),                        \
-  assemble_name ((FILE), (NAME)),                \
+( fputs (".lcomm ", (FILE)),			\
+  assemble_name ((FILE), (NAME)),		\
   fprintf ((FILE), ",%u\n", (int)(ROUNDED)))
 
 /* This is how to output an assembler line
    that says to advance the location counter
    to a multiple of 2**LOG bytes.  */
 
-#define ASM_OUTPUT_ALIGN(FILE,LOG)        \
+#define ASM_OUTPUT_ALIGN(FILE,LOG)	\
   if ((LOG)!=0) fprintf ((FILE), "\t.align %d\n", (LOG))
 
 /* This is how to store into the string BUF
@@ -78,7 +78,7 @@ Boston, MA 02110-1301, USA.  */
    PREFIX is the class of label and NUM is the number within the class.
    This is suitable for output with `assemble_name'.  */
 
-#define ASM_GENERATE_INTERNAL_LABEL(BUF,PREFIX,NUMBER)        \
+#define ASM_GENERATE_INTERNAL_LABEL(BUF,PREFIX,NUMBER)	\
     sprintf ((BUF), "*%s%ld", (PREFIX), (long)(NUMBER))
 
 /* The prefix to add to user-visible assembler symbols.  */

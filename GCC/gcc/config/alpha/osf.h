@@ -32,29 +32,29 @@ Boston, MA 02110-1301, USA.  */
 
 /* Names to predefine in the preprocessor for this target machine.  */
 
-#define TARGET_OS_CPP_BUILTINS()                        \
-    do {                                                \
-        builtin_define_std ("unix");                        \
-        builtin_define_std ("SYSTYPE_BSD");                \
-        builtin_define ("_SYSTYPE_BSD");                \
-        builtin_define ("__osf__");                        \
-        builtin_define ("__digital__");                        \
-        builtin_define ("__arch64__");                        \
-        builtin_define ("_LONGLONG");                        \
-        builtin_assert ("system=unix");                        \
-        builtin_assert ("system=xpg4");                        \
-        /* Tru64 UNIX V5 has a 16 byte long                \
-           double type and requires __X_FLOAT                \
-           to be defined for <math.h>.  */                \
-        if (LONG_DOUBLE_TYPE_SIZE == 128)                \
-          builtin_define ("__X_FLOAT");                        \
-                                                        \
-        /* Tru64 UNIX V4/V5 provide several ISO C94        \
-           features protected by the corresponding        \
-           __STDC_VERSION__ macro.  libstdc++ v3        \
-           needs them as well.  */                        \
-        if (c_dialect_cxx ())                                \
-          builtin_define ("__STDC_VERSION__=199409L");        \
+#define TARGET_OS_CPP_BUILTINS()			\
+    do {						\
+	builtin_define_std ("unix");			\
+	builtin_define_std ("SYSTYPE_BSD");		\
+	builtin_define ("_SYSTYPE_BSD");		\
+	builtin_define ("__osf__");			\
+	builtin_define ("__digital__");			\
+	builtin_define ("__arch64__");			\
+	builtin_define ("_LONGLONG");			\
+	builtin_assert ("system=unix");			\
+	builtin_assert ("system=xpg4");			\
+	/* Tru64 UNIX V5 has a 16 byte long		\
+	   double type and requires __X_FLOAT		\
+	   to be defined for <math.h>.  */		\
+        if (LONG_DOUBLE_TYPE_SIZE == 128)		\
+          builtin_define ("__X_FLOAT");			\
+							\
+	/* Tru64 UNIX V4/V5 provide several ISO C94	\
+	   features protected by the corresponding	\
+	   __STDC_VERSION__ macro.  libstdc++ v3	\
+	   needs them as well.  */			\
+	if (c_dialect_cxx ())				\
+	  builtin_define ("__STDC_VERSION__=199409L");	\
     } while (0)
 
 /* Accept DEC C flags for multithreaded programs.  We use _PTHREAD_USE_D4
@@ -117,20 +117,20 @@ Boston, MA 02110-1301, USA.  */
 
 #define ASM_FINAL_SPEC "\
 %{malpha-as: %{!mno-mips-tfile: \
-        \n mips-tfile %{v*: -v} \
-                %{K: -I %b.o~} \
-                %{!K: %{save-temps: -I %b.o~}} \
-                %{c:%W{o*}%{!o*:-o %b.o}}%{!c:-o %U.o} \
-                %{.s:%i} %{!.s:%g.s}}}"
+	\n mips-tfile %{v*: -v} \
+		%{K: -I %b.o~} \
+		%{!K: %{save-temps: -I %b.o~}} \
+		%{c:%W{o*}%{!o*:-o %b.o}}%{!c:-o %U.o} \
+		%{.s:%i} %{!.s:%g.s}}}"
 
 #else
 #define ASM_FINAL_SPEC "\
 %{!mgas: %{!mno-mips-tfile: \
-        \n mips-tfile %{v*: -v} \
-                %{K: -I %b.o~} \
-                %{!K: %{save-temps: -I %b.o~}} \
-                %{c:%W{o*}%{!o*:-o %b.o}}%{!c:-o %U.o} \
-                %{.s:%i} %{!.s:%g.s}}}"
+	\n mips-tfile %{v*: -v} \
+		%{K: -I %b.o~} \
+		%{!K: %{save-temps: -I %b.o~}} \
+		%{c:%W{o*}%{!o*:-o %b.o}}%{!c:-o %U.o} \
+		%{.s:%i} %{!.s:%g.s}}}"
 
 #endif
 
@@ -144,24 +144,24 @@ Boston, MA 02110-1301, USA.  */
 
 /* Attempt to turn on access permissions for the stack.  */
 
-#define ENABLE_EXECUTE_STACK                                                \
-void                                                                        \
-__enable_execute_stack (void *addr)                                        \
-{                                                                        \
-  extern int mprotect (const void *, size_t, int);                        \
-  long size = getpagesize ();                                                \
-  long mask = ~(size-1);                                                \
-  char *page = (char *) (((long) addr) & mask);                                \
+#define ENABLE_EXECUTE_STACK						\
+void									\
+__enable_execute_stack (void *addr)					\
+{									\
+  extern int mprotect (const void *, size_t, int);			\
+  long size = getpagesize ();						\
+  long mask = ~(size-1);						\
+  char *page = (char *) (((long) addr) & mask);				\
   char *end  = (char *) ((((long) (addr + TRAMPOLINE_SIZE)) & mask) + size); \
-                                                                        \
-  /* 7 is PROT_READ | PROT_WRITE | PROT_EXEC */                                \
-  if (mprotect (page, end - page, 7) < 0)                                \
-    perror ("mprotect of trampoline code");                                \
+									\
+  /* 7 is PROT_READ | PROT_WRITE | PROT_EXEC */				\
+  if (mprotect (page, end - page, 7) < 0)				\
+    perror ("mprotect of trampoline code");				\
 }
 
 /* Digital UNIX V4.0E (1091)/usr/include/sys/types.h 4.3.49.9 1997/08/14 */
-#define SIZE_TYPE        "long unsigned int"
-#define PTRDIFF_TYPE        "long int"
+#define SIZE_TYPE	"long unsigned int"
+#define PTRDIFF_TYPE	"long int"
 
 /* The linker will stick __main into the .init section.  */
 #define HAS_INIT_SECTION
@@ -181,26 +181,26 @@ __enable_execute_stack (void *addr)                                        \
    and Compaq has no plans to rectify this.  Worse, the dynamic loader
    cannot handle unaligned relocations, so we have to make sure that
    things get padded appropriately.  */
-#define ASM_PREFERRED_EH_DATA_FORMAT(CODE,GLOBAL)                             \
-  (TARGET_GAS                                                                     \
+#define ASM_PREFERRED_EH_DATA_FORMAT(CODE,GLOBAL)			     \
+  (TARGET_GAS								     \
    ? (((GLOBAL) ? DW_EH_PE_indirect : 0) | DW_EH_PE_pcrel | DW_EH_PE_sdata4) \
    : DW_EH_PE_aligned)
 
 /* This is how we tell the assembler that a symbol is weak.  */
 
-#define ASM_OUTPUT_WEAK_ALIAS(FILE, NAME, VALUE)        \
-  do                                                        \
-    {                                                        \
+#define ASM_OUTPUT_WEAK_ALIAS(FILE, NAME, VALUE)	\
+  do							\
+    {							\
       (*targetm.asm_out.globalize_label) (FILE, NAME);  \
-      fputs ("\t.weakext\t", FILE);                        \
-      assemble_name (FILE, NAME);                        \
-      if (VALUE)                                        \
-        {                                                \
-          fputc (' ', FILE);                                \
-          assemble_name (FILE, VALUE);                        \
-        }                                                \
-      fputc ('\n', FILE);                                \
-    }                                                        \
+      fputs ("\t.weakext\t", FILE);			\
+      assemble_name (FILE, NAME);			\
+      if (VALUE)					\
+        {						\
+          fputc (' ', FILE);				\
+          assemble_name (FILE, VALUE);			\
+        }						\
+      fputc ('\n', FILE);				\
+    }							\
   while (0)
 
 #define ASM_WEAKEN_LABEL(FILE, NAME) ASM_OUTPUT_WEAK_ALIAS(FILE, NAME, 0)

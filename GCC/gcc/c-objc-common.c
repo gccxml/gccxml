@@ -41,7 +41,7 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
 #include "c-objc-common.h"
 
 static bool c_tree_printer (pretty_printer *, text_info *, const char *,
-                            int, bool, bool, bool);
+			    int, bool, bool, bool);
 
 bool
 c_missing_noreturn_ok_p (tree decl)
@@ -62,7 +62,7 @@ c_disregard_inline_limits (tree fn)
     return 1;
 
   return (!flag_really_no_inline && DECL_DECLARED_INLINE_P (fn)
-          && DECL_EXTERNAL (fn));
+	  && DECL_EXTERNAL (fn));
 }
 
 int
@@ -70,16 +70,16 @@ c_cannot_inline_tree_fn (tree *fnp)
 {
   tree fn = *fnp;
   bool do_warning = (warn_inline
-                     && DECL_INLINE (fn)
-                     && DECL_DECLARED_INLINE_P (fn)
-                     && !DECL_IN_SYSTEM_HEADER (fn));
+		     && DECL_INLINE (fn)
+		     && DECL_DECLARED_INLINE_P (fn)
+		     && !DECL_IN_SYSTEM_HEADER (fn));
 
   if (flag_really_no_inline
       && lookup_attribute ("always_inline", DECL_ATTRIBUTES (fn)) == NULL)
     {
       if (do_warning)
-        warning (OPT_Winline, "function %q+F can never be inlined because it "
-                 "is suppressed using -fno-inline", fn);
+	warning (OPT_Winline, "function %q+F can never be inlined because it "
+		 "is suppressed using -fno-inline", fn);
       goto cannot_inline;
     }
 
@@ -88,16 +88,16 @@ c_cannot_inline_tree_fn (tree *fnp)
   if (!DECL_DECLARED_INLINE_P (fn) && !targetm.binds_local_p (fn))
     {
       if (do_warning)
-        warning (OPT_Winline, "function %q+F can never be inlined because it "
-                 "might not be bound within this unit of translation", fn);
+	warning (OPT_Winline, "function %q+F can never be inlined because it "
+		 "might not be bound within this unit of translation", fn);
       goto cannot_inline;
     }
 
   if (!function_attribute_inlinable_p (fn))
     {
       if (do_warning)
-        warning (OPT_Winline, "function %q+F can never be inlined because it "
-                 "uses attributes conflicting with inlining", fn);
+	warning (OPT_Winline, "function %q+F can never be inlined because it "
+		 "uses attributes conflicting with inlining", fn);
       goto cannot_inline;
     }
 
@@ -140,9 +140,9 @@ c_objc_common_init (void)
   if (mesg_implicit_function_declaration < 0)
     {
       if (flag_isoc99)
-        mesg_implicit_function_declaration = flag_pedantic_errors ? 2 : 1;
+	mesg_implicit_function_declaration = flag_pedantic_errors ? 2 : 1;
       else
-        mesg_implicit_function_declaration = 0;
+	mesg_implicit_function_declaration = 0;
     }
 
   return true;
@@ -162,7 +162,7 @@ c_objc_common_init (void)
    diagnostic machinery.  */
 static bool
 c_tree_printer (pretty_printer *pp, text_info *text, const char *spec,
-                int precision, bool wide, bool set_locus, bool hash)
+		int precision, bool wide, bool set_locus, bool hash)
 {
   tree t = va_arg (*text->args_ptr, tree);
   tree name;
@@ -180,19 +180,19 @@ c_tree_printer (pretty_printer *pp, text_info *text, const char *spec,
     {
     case 'D':
       if (DECL_DEBUG_EXPR_IS_FROM (t) && DECL_DEBUG_EXPR (t))
-        {
-          t = DECL_DEBUG_EXPR (t);
-          if (!DECL_P (t))
-            {
-              pp_c_expression (cpp, t);
-              return true;
-            }
-        }
+	{
+	  t = DECL_DEBUG_EXPR (t);
+	  if (!DECL_P (t))
+	    {
+	      pp_c_expression (cpp, t);
+	      return true;
+	    }
+	}
       /* FALLTHRU */
 
     case 'F':
       if (DECL_NAME (t))
-        n = lang_hooks.decl_printable_name (t, 2);
+	n = lang_hooks.decl_printable_name (t, 2);
       break;
 
     case 'T':
@@ -200,28 +200,28 @@ c_tree_printer (pretty_printer *pp, text_info *text, const char *spec,
       name = TYPE_NAME (t);
 
       if (name && TREE_CODE (name) == TYPE_DECL)
-        {
-          if (DECL_NAME (name))
-            pp_string (cpp, lang_hooks.decl_printable_name (name, 2));
-          else
-            pp_type_id (cpp, t);
-          return true;
-        }
+	{
+	  if (DECL_NAME (name))
+	    pp_string (cpp, lang_hooks.decl_printable_name (name, 2));
+	  else
+	    pp_type_id (cpp, t);
+	  return true;
+	}
       else
-        {
-          pp_type_id (cpp, t);
-          return true;
-        }
+	{
+	  pp_type_id (cpp, t);
+	  return true;
+	}
       break;
 
     case 'E':
       if (TREE_CODE (t) == IDENTIFIER_NODE)
-        n = IDENTIFIER_POINTER (t);
+	n = IDENTIFIER_POINTER (t);
       else
-        {
-          pp_expression (cpp, t);
-          return true;
-        }
+	{
+	  pp_expression (cpp, t);
+	  return true;
+	}
       break;
 
     default:

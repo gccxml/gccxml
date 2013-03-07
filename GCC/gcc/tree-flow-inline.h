@@ -37,7 +37,7 @@ first_htab_element (htab_iterator *hti, htab_t table)
     {
       PTR x = *(hti->slot);
       if (x != HTAB_EMPTY_ENTRY && x != HTAB_DELETED_ENTRY)
-        break;
+	break;
     } while (++(hti->slot) < hti->limit);
   
   if (hti->slot < hti->limit)
@@ -66,7 +66,7 @@ next_htab_element (htab_iterator *hti)
     {
       PTR x = *(hti->slot);
       if (x != HTAB_EMPTY_ENTRY && x != HTAB_DELETED_ENTRY)
-        return x;
+	return x;
     };
   return NULL;
 }
@@ -578,7 +578,7 @@ phi_arg_index_from_use (use_operand_p use)
   /* Make sure the calculation doesn't have any leftover bytes.  If it does, 
      then imm_use is likely not the first element in phi_arg_d.  */
   gcc_assert (
-          (((char *)element - (char *)root) % sizeof (struct phi_arg_d)) == 0);
+	  (((char *)element - (char *)root) % sizeof (struct phi_arg_d)) == 0);
   gcc_assert (index >= 0 && index < PHI_ARG_CAPACITY (phi));
 #endif
  
@@ -613,12 +613,12 @@ is_label_stmt (tree t)
   if (t)
     switch (TREE_CODE (t))
       {
-        case LABEL_DECL:
-        case LABEL_EXPR:
-        case CASE_LABEL_EXPR:
-          return true;
-        default:
-          return false;
+	case LABEL_DECL:
+	case LABEL_EXPR:
+	case CASE_LABEL_EXPR:
+	  return true;
+	default:
+	  return false;
       }
   return false;
 }
@@ -1020,7 +1020,7 @@ op_iter_init_tree (ssa_op_iter *ptr, tree stmt, int flags)
    KILL and DEF.  */
 static inline void
 op_iter_next_maymustdef (use_operand_p *use, def_operand_p *def, 
-                         ssa_op_iter *ptr)
+			 ssa_op_iter *ptr)
 {
 #ifdef ENABLE_CHECKING
   gcc_assert (ptr->iter_type == ssa_op_iter_maymustdef);
@@ -1052,7 +1052,7 @@ op_iter_next_maymustdef (use_operand_p *use, def_operand_p *def,
    in USE and DEF.  */
 static inline void
 op_iter_init_maydef (ssa_op_iter *ptr, tree stmt, use_operand_p *use, 
-                     def_operand_p *def)
+		     def_operand_p *def)
 {
   gcc_assert (TREE_CODE (stmt) != PHI_NODE);
 
@@ -1066,7 +1066,7 @@ op_iter_init_maydef (ssa_op_iter *ptr, tree stmt, use_operand_p *use,
    in KILL and DEF.  */
 static inline void
 op_iter_init_mustdef (ssa_op_iter *ptr, tree stmt, use_operand_p *kill, 
-                     def_operand_p *def)
+		     def_operand_p *def)
 {
   gcc_assert (TREE_CODE (stmt) != PHI_NODE);
 
@@ -1079,7 +1079,7 @@ op_iter_init_mustdef (ssa_op_iter *ptr, tree stmt, use_operand_p *kill,
    in KILL and DEF.  */
 static inline void
 op_iter_init_must_and_may_def (ssa_op_iter *ptr, tree stmt,
-                               use_operand_p *kill, def_operand_p *def)
+			       use_operand_p *kill, def_operand_p *def)
 {
   gcc_assert (TREE_CODE (stmt) != PHI_NODE);
 
@@ -1179,7 +1179,7 @@ delink_stmt_imm_use (tree stmt)
 
    if (ssa_operands_active ())
      FOR_EACH_SSA_USE_OPERAND (use_p, stmt, iter,
-                               (SSA_OP_ALL_USES | SSA_OP_ALL_KILLS))
+			       (SSA_OP_ALL_USES | SSA_OP_ALL_KILLS))
        delink_imm_use (use_p);
 }
 
@@ -1221,7 +1221,7 @@ compare_ssa_operands_equal (tree stmt1, tree stmt2, int flags)
   while (!op_iter_done (&iter1) && !op_iter_done (&iter2))
     {
       if (op1 != op2)
-        return false;
+	return false;
       op1 = op_iter_next_tree (&iter1);
       op2 = op_iter_next_tree (&iter2);
     }
@@ -1326,7 +1326,7 @@ end_imm_use_stmt_traverse (imm_use_iterator *imm)
 
 static inline use_operand_p
 move_use_after_head (use_operand_p use_p, use_operand_p head, 
-                      use_operand_p last_p)
+		      use_operand_p last_p)
 {
   gcc_assert (USE_FROM_PTR (use_p) == USE_FROM_PTR (head));
   /* Skip head when we find it.  */
@@ -1334,14 +1334,14 @@ move_use_after_head (use_operand_p use_p, use_operand_p head,
     {
       /* If use_p is already linked in after last_p, continue.  */
       if (last_p->next == use_p)
-        last_p = use_p;
+	last_p = use_p;
       else
-        {
-          /* Delink from current location, and link in at last_p.  */
-          delink_imm_use (use_p);
-          link_imm_use_to_list (use_p, last_p);
-          last_p = use_p;
-        }
+	{
+	  /* Delink from current location, and link in at last_p.  */
+	  delink_imm_use (use_p);
+	  link_imm_use_to_list (use_p, last_p);
+	  last_p = use_p;
+	}
     }
   return last_p;
 }
@@ -1366,14 +1366,14 @@ link_use_stmts_after (use_operand_p head, imm_use_iterator *imm)
   if (TREE_CODE (head_stmt) == PHI_NODE)
     {
       FOR_EACH_PHI_ARG (use_p, head_stmt, op_iter, flag)
-        if (USE_FROM_PTR (use_p) == use)
-          last_p = move_use_after_head (use_p, head, last_p);
+	if (USE_FROM_PTR (use_p) == use)
+	  last_p = move_use_after_head (use_p, head, last_p);
     }
   else
     {
       FOR_EACH_SSA_USE_OPERAND (use_p, head_stmt, op_iter, flag)
-        if (USE_FROM_PTR (use_p) == use)
-          last_p = move_use_after_head (use_p, head, last_p);
+	if (USE_FROM_PTR (use_p) == use)
+	  last_p = move_use_after_head (use_p, head, last_p);
     }
   /* LInk iter node in after last_p.  */
   if (imm->iter_node.prev != NULL)
@@ -1416,7 +1416,7 @@ next_imm_use_stmt (imm_use_iterator *imm)
   if (end_imm_use_stmt_p (imm))
     {
       if (imm->iter_node.prev != NULL)
-        delink_imm_use (&imm->iter_node);
+	delink_imm_use (&imm->iter_node);
       return NULL_TREE;
     }
 
@@ -1580,7 +1580,7 @@ var_can_have_subvars (tree v)
 
 static inline bool
 overlap_subvar (unsigned HOST_WIDE_INT offset, unsigned HOST_WIDE_INT size,
-                tree sv,  bool *exact)
+		tree sv,  bool *exact)
 {
   /* There are three possible cases of overlap.
      1. We can have an exact overlap, like so:   
@@ -1603,16 +1603,16 @@ overlap_subvar (unsigned HOST_WIDE_INT offset, unsigned HOST_WIDE_INT size,
   if (offset == SFT_OFFSET (sv) && size == SFT_SIZE (sv))
     {
       if (exact)
-        *exact = true;
+	*exact = true;
       return true;
     }
   else if (offset >= SFT_OFFSET (sv) 
-           && offset < (SFT_OFFSET (sv) + SFT_SIZE (sv)))
+	   && offset < (SFT_OFFSET (sv) + SFT_SIZE (sv)))
     {
       return true;
     }
   else if (offset < SFT_OFFSET (sv) 
-           && (size > SFT_OFFSET (sv) - offset))
+	   && (size > SFT_OFFSET (sv) - offset))
     {
       return true;
     }

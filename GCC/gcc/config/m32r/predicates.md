@@ -56,7 +56,7 @@
     default:
 #if 0
       fprintf (stderr, "Test for cond move op of type: %s\n",
-               GET_RTX_NAME (GET_CODE (op)));
+	       GET_RTX_NAME (GET_CODE (op)));
 #endif
       return 0;
     }
@@ -104,8 +104,8 @@
   enum rtx_code code = GET_CODE (op);
 
   return (COMPARISON_P (op)
-            && (code == EQ || code == NE
-              || code == LT || code == LE || code == GT || code == GE));
+  	  && (code == EQ || code == NE
+	      || code == LT || code == LE || code == GT || code == GE));
 })
 
 ;; Return true if OP is an acceptable argument for a move destination.
@@ -119,14 +119,14 @@
       return register_operand (op, mode);
     case SUBREG :
       /* (subreg (mem ...) ...) can occur here if the inner part was once a
-         pseudo-reg and is now a stack slot.  */
+	 pseudo-reg and is now a stack slot.  */
       if (GET_CODE (SUBREG_REG (op)) == MEM)
-        return address_operand (XEXP (SUBREG_REG (op), 0), mode);
+	return address_operand (XEXP (SUBREG_REG (op), 0), mode);
       else
-        return register_operand (op, mode);
+	return register_operand (op, mode);
     case MEM :
       if (GET_CODE (XEXP (op, 0)) == POST_INC)
-        return 0;                /* stores can't do post inc */
+	return 0;		/* stores can't do post inc */
       return address_operand (XEXP (op, 0), mode);
     default :
       return 0;
@@ -147,43 +147,43 @@
       return addr24_operand (op, mode);
     case CONST_INT :
       /* ??? We allow more cse opportunities if we only allow constants
-         loadable with one insn, and split the rest into two.  The instances
-         where this would help should be rare and the current way is
-         simpler.  */
+	 loadable with one insn, and split the rest into two.  The instances
+	 where this would help should be rare and the current way is
+	 simpler.  */
       if (HOST_BITS_PER_WIDE_INT > 32)
-        {
-          HOST_WIDE_INT rest = INTVAL (op) >> 31;
-          return (rest == 0 || rest == -1);
-        }
+	{
+	  HOST_WIDE_INT rest = INTVAL (op) >> 31;
+	  return (rest == 0 || rest == -1);
+	}
       else
-        return 1;
+	return 1;
     case CONST_DOUBLE :
       if (mode == SFmode)
-        return 1;
+	return 1;
       else if (mode == SImode)
-        {
-          /* Large unsigned constants are represented as const_double's.  */
-          unsigned HOST_WIDE_INT low, high;
+	{
+	  /* Large unsigned constants are represented as const_double's.  */
+	  unsigned HOST_WIDE_INT low, high;
 
-          low = CONST_DOUBLE_LOW (op);
-          high = CONST_DOUBLE_HIGH (op);
-          return high == 0 && low <= (unsigned) 0xffffffff;
-        }
+	  low = CONST_DOUBLE_LOW (op);
+	  high = CONST_DOUBLE_HIGH (op);
+	  return high == 0 && low <= (unsigned) 0xffffffff;
+	}
       else
-        return 0;
+	return 0;
     case REG :
       return register_operand (op, mode);
     case SUBREG :
       /* (subreg (mem ...) ...) can occur here if the inner part was once a
-         pseudo-reg and is now a stack slot.  */
+	 pseudo-reg and is now a stack slot.  */
       if (GET_CODE (SUBREG_REG (op)) == MEM)
-        return address_operand (XEXP (SUBREG_REG (op), 0), mode);
+	return address_operand (XEXP (SUBREG_REG (op), 0), mode);
       else
-        return register_operand (op, mode);
+	return register_operand (op, mode);
     case MEM :
       if (GET_CODE (XEXP (op, 0)) == PRE_INC
-          || GET_CODE (XEXP (op, 0)) == PRE_DEC)
-        return 0;                /* loads can't do pre-{inc,dec} */
+	  || GET_CODE (XEXP (op, 0)) == PRE_DEC)
+	return 0;		/* loads can't do pre-{inc,dec} */
       return address_operand (XEXP (op, 0), mode);
     default :
       return 0;
@@ -205,16 +205,16 @@
       return register_operand (op, mode);
     case SUBREG :
       /* (subreg (mem ...) ...) can occur here if the inner part was once a
-         pseudo-reg and is now a stack slot.  */
+	 pseudo-reg and is now a stack slot.  */
       if (GET_CODE (SUBREG_REG (op)) == MEM)
-        return move_double_src_operand (SUBREG_REG (op), mode);
+	return move_double_src_operand (SUBREG_REG (op), mode);
       else
-        return register_operand (op, mode);
+	return register_operand (op, mode);
     case MEM :
       /* Disallow auto inc/dec for now.  */
       if (GET_CODE (XEXP (op, 0)) == PRE_DEC
-          || GET_CODE (XEXP (op, 0)) == PRE_INC)
-        return 0;
+	  || GET_CODE (XEXP (op, 0)) == PRE_INC)
+	return 0;
       return address_operand (XEXP (op, 0), mode);
     default :
       return 0;
@@ -369,7 +369,7 @@
     case MEM :
       addr = XEXP (op, 0);
       if (GET_CODE (addr) == PRE_INC || GET_CODE (addr) == PRE_DEC)
-        return 0;                /* loads can't do pre inc/pre dec */
+	return 0;		/* loads can't do pre inc/pre dec */
 
       return address_operand (addr, mode);
 

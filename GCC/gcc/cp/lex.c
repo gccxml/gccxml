@@ -107,17 +107,17 @@ init_operators (void)
   char buffer[256];
   struct operator_name_info_t *oni;
 
-#define DEF_OPERATOR(NAME, CODE, MANGLING, ARITY, ASSN_P)                    \
+#define DEF_OPERATOR(NAME, CODE, MANGLING, ARITY, ASSN_P)		    \
   sprintf (buffer, ISALPHA (NAME[0]) ? "operator %s" : "operator%s", NAME); \
-  identifier = get_identifier (buffer);                                            \
-  IDENTIFIER_OPNAME_P (identifier) = 1;                                            \
-                                                                            \
-  oni = (ASSN_P                                                                    \
-         ? &assignment_operator_name_info[(int) CODE]                            \
-         : &operator_name_info[(int) CODE]);                                    \
-  oni->identifier = identifier;                                                    \
-  oni->name = NAME;                                                            \
-  oni->mangled_name = MANGLING;                                                    \
+  identifier = get_identifier (buffer);					    \
+  IDENTIFIER_OPNAME_P (identifier) = 1;					    \
+									    \
+  oni = (ASSN_P								    \
+	 ? &assignment_operator_name_info[(int) CODE]			    \
+	 : &operator_name_info[(int) CODE]);				    \
+  oni->identifier = identifier;						    \
+  oni->name = NAME;							    \
+  oni->mangled_name = MANGLING;						    \
   oni->arity = ARITY;
 
 #include "operators.def"
@@ -173,112 +173,112 @@ struct resword
 
 /* Disable mask.  Keywords are disabled if (reswords[i].disable & mask) is
    _true_.  */
-#define D_EXT                0x01        /* GCC extension */
-#define D_ASM                0x02        /* in C99, but has a switch to turn it off */
-#define D_OBJC                0x04        /* Objective C++ only */
+#define D_EXT		0x01	/* GCC extension */
+#define D_ASM		0x02	/* in C99, but has a switch to turn it off */
+#define D_OBJC		0x04	/* Objective C++ only */
 
 CONSTRAINT(ridbits_fit, RID_LAST_MODIFIER < sizeof(unsigned long) * CHAR_BIT);
 
 static const struct resword reswords[] =
 {
-  { "_Complex",                RID_COMPLEX,        0 },
-  { "__FUNCTION__",        RID_FUNCTION_NAME, 0 },
+  { "_Complex",		RID_COMPLEX,	0 },
+  { "__FUNCTION__",	RID_FUNCTION_NAME, 0 },
   { "__PRETTY_FUNCTION__", RID_PRETTY_FUNCTION_NAME, 0 },
-  { "__alignof",        RID_ALIGNOF,        0 },
-  { "__alignof__",        RID_ALIGNOF,        0 },
-  { "__asm",                RID_ASM,        0 },
-  { "__asm__",                RID_ASM,        0 },
-  { "__attribute",        RID_ATTRIBUTE,        0 },
-  { "__attribute__",        RID_ATTRIBUTE,        0 },
+  { "__alignof",	RID_ALIGNOF,	0 },
+  { "__alignof__",	RID_ALIGNOF,	0 },
+  { "__asm",		RID_ASM,	0 },
+  { "__asm__",		RID_ASM,	0 },
+  { "__attribute",	RID_ATTRIBUTE,	0 },
+  { "__attribute__",	RID_ATTRIBUTE,	0 },
   { "__builtin_offsetof", RID_OFFSETOF, 0 },
-  { "__builtin_va_arg",        RID_VA_ARG,        0 },
-  { "__complex",        RID_COMPLEX,        0 },
-  { "__complex__",        RID_COMPLEX,        0 },
-  { "__const",                RID_CONST,        0 },
-  { "__const__",        RID_CONST,        0 },
-  { "__extension__",        RID_EXTENSION,        0 },
-  { "__func__",                RID_C99_FUNCTION_NAME,        0 },
-  { "__imag",                RID_IMAGPART,        0 },
-  { "__imag__",                RID_IMAGPART,        0 },
-  { "__inline",                RID_INLINE,        0 },
-  { "__inline__",        RID_INLINE,        0 },
-  { "__label__",        RID_LABEL,        0 },
-  { "__null",                RID_NULL,        0 },
-  { "__real",                RID_REALPART,        0 },
-  { "__real__",                RID_REALPART,        0 },
-  { "__restrict",        RID_RESTRICT,        0 },
-  { "__restrict__",        RID_RESTRICT,        0 },
-  { "__signed",                RID_SIGNED,        0 },
-  { "__signed__",        RID_SIGNED,        0 },
-  { "__thread",                RID_THREAD,        0 },
-  { "__typeof",                RID_TYPEOF,        0 },
-  { "__typeof__",        RID_TYPEOF,        0 },
-  { "__volatile",        RID_VOLATILE,        0 },
-  { "__volatile__",        RID_VOLATILE,        0 },
-  { "asm",                RID_ASM,        D_ASM },
-  { "auto",                RID_AUTO,        0 },
-  { "bool",                RID_BOOL,        0 },
-  { "break",                RID_BREAK,        0 },
-  { "case",                RID_CASE,        0 },
-  { "catch",                RID_CATCH,        0 },
-  { "char",                RID_CHAR,        0 },
-  { "class",                RID_CLASS,        0 },
-  { "const",                RID_CONST,        0 },
-  { "const_cast",        RID_CONSTCAST,        0 },
-  { "continue",                RID_CONTINUE,        0 },
-  { "default",                RID_DEFAULT,        0 },
-  { "delete",                RID_DELETE,        0 },
-  { "do",                RID_DO,                0 },
-  { "double",                RID_DOUBLE,        0 },
-  { "dynamic_cast",        RID_DYNCAST,        0 },
-  { "else",                RID_ELSE,        0 },
-  { "enum",                RID_ENUM,        0 },
-  { "explicit",                RID_EXPLICIT,        0 },
-  { "export",                RID_EXPORT,        0 },
-  { "extern",                RID_EXTERN,        0 },
-  { "false",                RID_FALSE,        0 },
-  { "float",                RID_FLOAT,        0 },
-  { "for",                RID_FOR,        0 },
-  { "friend",                RID_FRIEND,        0 },
-  { "goto",                RID_GOTO,        0 },
-  { "if",                RID_IF,                0 },
-  { "inline",                RID_INLINE,        0 },
-  { "int",                RID_INT,        0 },
-  { "long",                RID_LONG,        0 },
-  { "mutable",                RID_MUTABLE,        0 },
-  { "namespace",        RID_NAMESPACE,        0 },
-  { "new",                RID_NEW,        0 },
-  { "operator",                RID_OPERATOR,        0 },
-  { "private",                RID_PRIVATE,        0 },
-  { "protected",        RID_PROTECTED,        0 },
-  { "public",                RID_PUBLIC,        0 },
-  { "register",                RID_REGISTER,        0 },
-  { "reinterpret_cast",        RID_REINTCAST,        0 },
-  { "return",                RID_RETURN,        0 },
-  { "short",                RID_SHORT,        0 },
-  { "signed",                RID_SIGNED,        0 },
-  { "sizeof",                RID_SIZEOF,        0 },
-  { "static",                RID_STATIC,        0 },
-  { "static_cast",        RID_STATCAST,        0 },
-  { "struct",                RID_STRUCT,        0 },
-  { "switch",                RID_SWITCH,        0 },
-  { "template",                RID_TEMPLATE,        0 },
-  { "this",                RID_THIS,        0 },
-  { "throw",                RID_THROW,        0 },
-  { "true",                RID_TRUE,        0 },
-  { "try",                RID_TRY,        0 },
-  { "typedef",                RID_TYPEDEF,        0 },
-  { "typename",                RID_TYPENAME,        0 },
-  { "typeid",                RID_TYPEID,        0 },
-  { "typeof",                RID_TYPEOF,        D_ASM|D_EXT },
-  { "union",                RID_UNION,        0 },
-  { "unsigned",                RID_UNSIGNED,        0 },
-  { "using",                RID_USING,        0 },
-  { "virtual",                RID_VIRTUAL,        0 },
-  { "void",                RID_VOID,        0 },
-  { "volatile",                RID_VOLATILE,        0 },
-  { "wchar_t",                RID_WCHAR,        0 },
-  { "while",                RID_WHILE,        0 },
+  { "__builtin_va_arg",	RID_VA_ARG,	0 },
+  { "__complex",	RID_COMPLEX,	0 },
+  { "__complex__",	RID_COMPLEX,	0 },
+  { "__const",		RID_CONST,	0 },
+  { "__const__",	RID_CONST,	0 },
+  { "__extension__",	RID_EXTENSION,	0 },
+  { "__func__",		RID_C99_FUNCTION_NAME,	0 },
+  { "__imag",		RID_IMAGPART,	0 },
+  { "__imag__",		RID_IMAGPART,	0 },
+  { "__inline",		RID_INLINE,	0 },
+  { "__inline__",	RID_INLINE,	0 },
+  { "__label__",	RID_LABEL,	0 },
+  { "__null",		RID_NULL,	0 },
+  { "__real",		RID_REALPART,	0 },
+  { "__real__",		RID_REALPART,	0 },
+  { "__restrict",	RID_RESTRICT,	0 },
+  { "__restrict__",	RID_RESTRICT,	0 },
+  { "__signed",		RID_SIGNED,	0 },
+  { "__signed__",	RID_SIGNED,	0 },
+  { "__thread",		RID_THREAD,	0 },
+  { "__typeof",		RID_TYPEOF,	0 },
+  { "__typeof__",	RID_TYPEOF,	0 },
+  { "__volatile",	RID_VOLATILE,	0 },
+  { "__volatile__",	RID_VOLATILE,	0 },
+  { "asm",		RID_ASM,	D_ASM },
+  { "auto",		RID_AUTO,	0 },
+  { "bool",		RID_BOOL,	0 },
+  { "break",		RID_BREAK,	0 },
+  { "case",		RID_CASE,	0 },
+  { "catch",		RID_CATCH,	0 },
+  { "char",		RID_CHAR,	0 },
+  { "class",		RID_CLASS,	0 },
+  { "const",		RID_CONST,	0 },
+  { "const_cast",	RID_CONSTCAST,	0 },
+  { "continue",		RID_CONTINUE,	0 },
+  { "default",		RID_DEFAULT,	0 },
+  { "delete",		RID_DELETE,	0 },
+  { "do",		RID_DO,		0 },
+  { "double",		RID_DOUBLE,	0 },
+  { "dynamic_cast",	RID_DYNCAST,	0 },
+  { "else",		RID_ELSE,	0 },
+  { "enum",		RID_ENUM,	0 },
+  { "explicit",		RID_EXPLICIT,	0 },
+  { "export",		RID_EXPORT,	0 },
+  { "extern",		RID_EXTERN,	0 },
+  { "false",		RID_FALSE,	0 },
+  { "float",		RID_FLOAT,	0 },
+  { "for",		RID_FOR,	0 },
+  { "friend",		RID_FRIEND,	0 },
+  { "goto",		RID_GOTO,	0 },
+  { "if",		RID_IF,		0 },
+  { "inline",		RID_INLINE,	0 },
+  { "int",		RID_INT,	0 },
+  { "long",		RID_LONG,	0 },
+  { "mutable",		RID_MUTABLE,	0 },
+  { "namespace",	RID_NAMESPACE,	0 },
+  { "new",		RID_NEW,	0 },
+  { "operator",		RID_OPERATOR,	0 },
+  { "private",		RID_PRIVATE,	0 },
+  { "protected",	RID_PROTECTED,	0 },
+  { "public",		RID_PUBLIC,	0 },
+  { "register",		RID_REGISTER,	0 },
+  { "reinterpret_cast",	RID_REINTCAST,	0 },
+  { "return",		RID_RETURN,	0 },
+  { "short",		RID_SHORT,	0 },
+  { "signed",		RID_SIGNED,	0 },
+  { "sizeof",		RID_SIZEOF,	0 },
+  { "static",		RID_STATIC,	0 },
+  { "static_cast",	RID_STATCAST,	0 },
+  { "struct",		RID_STRUCT,	0 },
+  { "switch",		RID_SWITCH,	0 },
+  { "template",		RID_TEMPLATE,	0 },
+  { "this",		RID_THIS,	0 },
+  { "throw",		RID_THROW,	0 },
+  { "true",		RID_TRUE,	0 },
+  { "try",		RID_TRY,	0 },
+  { "typedef",		RID_TYPEDEF,	0 },
+  { "typename",		RID_TYPENAME,	0 },
+  { "typeid",		RID_TYPEID,	0 },
+  { "typeof",		RID_TYPEOF,	D_ASM|D_EXT },
+  { "union",		RID_UNION,	0 },
+  { "unsigned",		RID_UNSIGNED,	0 },
+  { "using",		RID_USING,	0 },
+  { "virtual",		RID_VIRTUAL,	0 },
+  { "void",		RID_VOID,	0 },
+  { "volatile",		RID_VOLATILE,	0 },
+  { "wchar_t",		RID_WCHAR,	0 },
+  { "while",		RID_WHILE,	0 },
 
   /* The remaining keywords are specific to Objective-C++.  NB:
      All of them will remain _disabled_, since they are context-
@@ -288,23 +288,23 @@ static const struct resword reswords[] =
      an '@'.  NB: The following C++ keywords double as
      ObjC keywords in this context: RID_CLASS, RID_PRIVATE,
      RID_PROTECTED, RID_PUBLIC, RID_THROW, RID_TRY and RID_CATCH.  */
-  { "compatibility_alias", RID_AT_ALIAS,        D_OBJC },
-  { "defs",                RID_AT_DEFS,                D_OBJC },
-  { "encode",                RID_AT_ENCODE,                D_OBJC },
-  { "end",                RID_AT_END,                D_OBJC },
-  { "implementation",        RID_AT_IMPLEMENTATION,        D_OBJC },
-  { "interface",        RID_AT_INTERFACE,        D_OBJC },
-  { "protocol",                RID_AT_PROTOCOL,        D_OBJC },
-  { "selector",                RID_AT_SELECTOR,        D_OBJC },
-  { "finally",                RID_AT_FINALLY,                D_OBJC },
-  { "synchronized",        RID_AT_SYNCHRONIZED,        D_OBJC },
+  { "compatibility_alias", RID_AT_ALIAS,	D_OBJC },
+  { "defs",		RID_AT_DEFS,		D_OBJC },
+  { "encode",		RID_AT_ENCODE,		D_OBJC },
+  { "end",		RID_AT_END,		D_OBJC },
+  { "implementation",	RID_AT_IMPLEMENTATION,	D_OBJC },
+  { "interface",	RID_AT_INTERFACE,	D_OBJC },
+  { "protocol",		RID_AT_PROTOCOL,	D_OBJC },
+  { "selector",		RID_AT_SELECTOR,	D_OBJC },
+  { "finally",		RID_AT_FINALLY,		D_OBJC },
+  { "synchronized",	RID_AT_SYNCHRONIZED,	D_OBJC },
   /* These are recognized only in protocol-qualifier context.  */
-  { "bycopy",                RID_BYCOPY,                D_OBJC },
-  { "byref",                RID_BYREF,                D_OBJC },
-  { "in",                RID_IN,                        D_OBJC },
-  { "inout",                RID_INOUT,                D_OBJC },
-  { "oneway",                RID_ONEWAY,                D_OBJC },
-  { "out",                RID_OUT,                D_OBJC },
+  { "bycopy",		RID_BYCOPY,		D_OBJC },
+  { "byref",		RID_BYREF,		D_OBJC },
+  { "in",		RID_IN,			D_OBJC },
+  { "inout",		RID_INOUT,		D_OBJC },
+  { "oneway",		RID_ONEWAY,		D_OBJC },
+  { "out",		RID_OUT,		D_OBJC },
 };
 
 void
@@ -313,8 +313,8 @@ init_reswords (void)
   unsigned int i;
   tree id;
   int mask = ((flag_no_asm ? D_ASM : 0)
-              | D_OBJC
-              | (flag_no_gnu_keywords ? D_EXT : 0));
+	      | D_OBJC
+	      | (flag_no_gnu_keywords ? D_EXT : 0));
 
   ridpointers = GGC_CNEWVEC (tree, (int) RID_MAX);
   for (i = 0; i < ARRAY_SIZE (reswords); i++)
@@ -323,7 +323,7 @@ init_reswords (void)
       C_RID_CODE (id) = reswords[i].rid;
       ridpointers [(int) reswords[i].rid] = id;
       if (! (reswords[i].disable & mask))
-        C_IS_RESERVED_WORD (id) = 1;
+	C_IS_RESERVED_WORD (id) = 1;
     }
 }
 
@@ -352,11 +352,11 @@ cxx_init (void)
 {
   unsigned int i;
   static const enum tree_code stmt_codes[] = {
-   CTOR_INITIALIZER,        TRY_BLOCK,        HANDLER,
-   EH_SPEC_BLOCK,        USING_STMT,        TAG_DEFN,
-   IF_STMT,                CLEANUP_STMT,        FOR_STMT,
-   WHILE_STMT,                DO_STMT,        BREAK_STMT,
-   CONTINUE_STMT,        SWITCH_STMT,        EXPR_STMT
+   CTOR_INITIALIZER,	TRY_BLOCK,	HANDLER,
+   EH_SPEC_BLOCK,	USING_STMT,	TAG_DEFN,
+   IF_STMT,		CLEANUP_STMT,	FOR_STMT,
+   WHILE_STMT,		DO_STMT,	BREAK_STMT,
+   CONTINUE_STMT,	SWITCH_STMT,	EXPR_STMT
   };
 
   memset (&statement_code_p, 0, sizeof (statement_code_p));
@@ -426,21 +426,21 @@ interface_strcmp (const char* s)
       s1 = s;
 
       if (*s1 != *t1 || *s1 == 0)
-        continue;
+	continue;
 
       while (*s1 == *t1 && *s1 != 0)
-        s1++, t1++;
+	s1++, t1++;
 
       /* A match.  */
       if (*s1 == *t1)
-        return 0;
+	return 0;
 
       /* Don't get faked out by xxx.yyy.cc vs xxx.zzz.cc.  */
       if (strchr (s1, '.') || strchr (t1, '.'))
-        continue;
+	continue;
 
       if (*s1 == '\0' || s1[-1] != '.' || t1[-1] != '.')
-        continue;
+	continue;
 
       /* A match.  */
       return 0;
@@ -464,7 +464,7 @@ parse_strconst_pragma (const char* name, int opt)
   if (t == CPP_STRING)
     {
       if (pragma_lex (&x) != CPP_EOF)
-        warning (0, "junk at end of #pragma %s", name);
+	warning (0, "junk at end of #pragma %s", name);
       return result;
     }
 
@@ -508,9 +508,9 @@ handle_pragma_interface (cpp_reader* dfile ATTRIBUTE_UNUSED )
   if (impl_file_chain == 0)
     {
       /* If this is zero at this point, then we are
-         auto-implementing.  */
+	 auto-implementing.  */
       if (main_input_filename == 0)
-        main_input_filename = input_filename;
+	main_input_filename = input_filename;
     }
 
   finfo->interface_only = interface_strcmp (filename);
@@ -542,9 +542,9 @@ handle_pragma_implementation (cpp_reader* dfile ATTRIBUTE_UNUSED )
   if (fname == 0)
     {
       if (main_input_filename)
-        filename = main_input_filename;
+	filename = main_input_filename;
       else
-        filename = input_filename;
+	filename = input_filename;
       filename = lbasename (filename);
     }
   else
@@ -552,21 +552,21 @@ handle_pragma_implementation (cpp_reader* dfile ATTRIBUTE_UNUSED )
       filename = ggc_strdup (TREE_STRING_POINTER (fname));
 #if 0
       /* We currently cannot give this diagnostic, as we reach this point
-         only after cpplib has scanned the entire translation unit, so
-         cpp_included always returns true.  A plausible fix is to compare
-         the current source-location cookie with the first source-location
-         cookie (if any) of the filename, but this requires completing the
-         --enable-mapped-location project first.  See PR 17577.  */
+	 only after cpplib has scanned the entire translation unit, so
+	 cpp_included always returns true.  A plausible fix is to compare
+	 the current source-location cookie with the first source-location
+	 cookie (if any) of the filename, but this requires completing the
+	 --enable-mapped-location project first.  See PR 17577.  */
       if (cpp_included (parse_in, filename))
-        warning (0, "#pragma implementation for %qs appears after "
-                 "file is included", filename);
+	warning (0, "#pragma implementation for %qs appears after "
+		 "file is included", filename);
 #endif
     }
 
   for (; ifiles; ifiles = ifiles->next)
     {
       if (! strcmp (ifiles->filename, filename))
-        break;
+	break;
     }
   if (ifiles == 0)
     {
@@ -597,23 +597,23 @@ unqualified_name_lookup_error (tree name)
   if (IDENTIFIER_OPNAME_P (name))
     {
       if (name != ansi_opname (ERROR_MARK))
-        error ("%qD not defined", name);
+	error ("%qD not defined", name);
     }
   else
     {
       error ("%qD was not declared in this scope", name);
       /* Prevent repeated error messages by creating a VAR_DECL with
-         this NAME in the innermost block scope.  */
+	 this NAME in the innermost block scope.  */
       if (current_function_decl)
-        {
-          tree decl;
-          decl = build_decl (VAR_DECL, name, error_mark_node);
-          DECL_CONTEXT (decl) = current_function_decl;
-          push_local_binding (name, decl, 0);
-          /* Mark the variable as used so that we do not get warnings
-             about it being unused later.  */
-          TREE_USED (decl) = 1;
-        }
+	{
+	  tree decl;
+	  decl = build_decl (VAR_DECL, name, error_mark_node);
+	  DECL_CONTEXT (decl) = current_function_decl;
+	  push_local_binding (name, decl, 0);
+	  /* Mark the variable as used so that we do not get warnings
+	     about it being unused later.  */
+	  TREE_USED (decl) = 1;
+	}
     }
 
   return error_mark_node;
@@ -629,30 +629,30 @@ unqualified_fn_lookup_error (tree name)
   if (processing_template_decl)
     {
       /* In a template, it is invalid to write "f()" or "f(3)" if no
-         declaration of "f" is available.  Historically, G++ and most
-         other compilers accepted that usage since they deferred all name
-         lookup until instantiation time rather than doing unqualified
-         name lookup at template definition time; explain to the user what
-         is going wrong.
+	 declaration of "f" is available.  Historically, G++ and most
+	 other compilers accepted that usage since they deferred all name
+	 lookup until instantiation time rather than doing unqualified
+	 name lookup at template definition time; explain to the user what
+	 is going wrong.
 
-         Note that we have the exact wording of the following message in
-         the manual (trouble.texi, node "Name lookup"), so they need to
-         be kept in synch.  */
+	 Note that we have the exact wording of the following message in
+	 the manual (trouble.texi, node "Name lookup"), so they need to
+	 be kept in synch.  */
       pedwarn ("there are no arguments to %qD that depend on a template "
-               "parameter, so a declaration of %qD must be available",
-               name, name);
+	       "parameter, so a declaration of %qD must be available",
+	       name, name);
 
       if (!flag_permissive)
-        {
-          static bool hint;
-          if (!hint)
-            {
-              error ("(if you use %<-fpermissive%>, G++ will accept your "
-                     "code, but allowing the use of an undeclared name is "
-                     "deprecated)");
-              hint = true;
-            }
-        }
+	{
+	  static bool hint;
+	  if (!hint)
+	    {
+	      error ("(if you use %<-fpermissive%>, G++ will accept your "
+		     "code, but allowing the use of an undeclared name is "
+		     "deprecated)");
+	      hint = true;
+	    }
+	}
       return name;
     }
 

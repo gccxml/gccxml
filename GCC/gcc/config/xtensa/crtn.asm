@@ -31,20 +31,20 @@
 
 #include "xtensa-config.h"
 
-        .section .init
+	.section .init
 #if XCHAL_HAVE_WINDOWED && !__XTENSA_CALL0_ABI__
-        retw
+	retw
 #else
-        l32i        a0, sp, 0
-        addi        sp, sp, 32
-        ret
+	l32i	a0, sp, 0
+	addi	sp, sp, 32
+	ret
 #endif
 
-        .section .fini
+	.section .fini
 #if XCHAL_HAVE_WINDOWED && !__XTENSA_CALL0_ABI__
-        retw
+	retw
 #else
-        l32i        a0, sp, 0
-        addi        sp, sp, 32
-        ret
+	l32i	a0, sp, 0
+	addi	sp, sp, 32
+	ret
 #endif

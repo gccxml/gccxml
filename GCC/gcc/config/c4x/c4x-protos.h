@@ -45,10 +45,10 @@ extern void c4x_external_ref (const char *);
 
 #ifdef TREE_CODE
 extern void c4x_function_arg_advance (CUMULATIVE_ARGS *, 
-                                      enum machine_mode, tree, int);
+				      enum machine_mode, tree, int);
 
 extern struct rtx_def *c4x_function_arg (CUMULATIVE_ARGS *,
-                                         enum machine_mode, tree, int);
+					 enum machine_mode, tree, int);
 
 #endif /* TREE_CODE */
 
@@ -189,12 +189,12 @@ extern int c4x_T_constraint (rtx);
 extern int c4x_U_constraint (rtx);
 
 extern void c4x_emit_libcall (rtx, enum rtx_code, enum machine_mode,
-                              enum machine_mode, int, rtx *);
+			      enum machine_mode, int, rtx *);
 
 extern void c4x_emit_libcall3 (rtx, enum rtx_code, enum machine_mode, rtx *);
 
 extern void c4x_emit_libcall_mulhi (rtx, enum rtx_code,
-                                    enum machine_mode, rtx *);
+				    enum machine_mode, rtx *);
 
 extern int c4x_emit_move_sequence (rtx *, enum machine_mode);
 
@@ -221,8 +221,8 @@ extern GTY(()) rtx floatunshiqf2_libfunc;
 extern GTY(()) rtx floathihf2_libfunc;
 extern GTY(()) rtx floatunshihf2_libfunc;
 
-extern GTY(()) rtx c4x_compare_op0;        /* Operand 0 for comparisons.  */
-extern GTY(()) rtx c4x_compare_op1;        /* Operand 1 for comparisons.  */
+extern GTY(()) rtx c4x_compare_op0;	/* Operand 0 for comparisons.  */
+extern GTY(()) rtx c4x_compare_op1;	/* Operand 1 for comparisons.  */
 
 #endif /* RTX_CODE */
 

@@ -95,7 +95,7 @@ enum rid
   RID_AT_CLASS,    RID_AT_ALIAS,     RID_AT_DEFS,
   RID_AT_PRIVATE,  RID_AT_PROTECTED, RID_AT_PUBLIC,
   RID_AT_PROTOCOL, RID_AT_SELECTOR,
-  RID_AT_THROW,           RID_AT_TRY,       RID_AT_CATCH,
+  RID_AT_THROW,	   RID_AT_TRY,       RID_AT_CATCH,
   RID_AT_FINALLY,  RID_AT_SYNCHRONIZED,
   RID_AT_INTERFACE,
   RID_AT_IMPLEMENTATION,
@@ -164,7 +164,7 @@ enum c_tree_index
     CTI_MAX
 };
 
-#define C_RID_CODE(id)        (((struct c_common_identifier *) (id))->node.rid_code)
+#define C_RID_CODE(id)	(((struct c_common_identifier *) (id))->node.rid_code)
 
 /* Identifier part common to the C front ends.  Inherits from
    tree_identifier, despite appearances.  */
@@ -174,33 +174,33 @@ struct c_common_identifier GTY(())
   struct cpp_hashnode node;
 };
 
-#define wchar_type_node                        c_global_trees[CTI_WCHAR_TYPE]
-#define signed_wchar_type_node                c_global_trees[CTI_SIGNED_WCHAR_TYPE]
-#define unsigned_wchar_type_node        c_global_trees[CTI_UNSIGNED_WCHAR_TYPE]
-#define wint_type_node                        c_global_trees[CTI_WINT_TYPE]
-#define signed_size_type_node                c_global_trees[CTI_SIGNED_SIZE_TYPE]
-#define unsigned_ptrdiff_type_node        c_global_trees[CTI_UNSIGNED_PTRDIFF_TYPE]
-#define intmax_type_node                c_global_trees[CTI_INTMAX_TYPE]
-#define uintmax_type_node                c_global_trees[CTI_UINTMAX_TYPE]
+#define wchar_type_node			c_global_trees[CTI_WCHAR_TYPE]
+#define signed_wchar_type_node		c_global_trees[CTI_SIGNED_WCHAR_TYPE]
+#define unsigned_wchar_type_node	c_global_trees[CTI_UNSIGNED_WCHAR_TYPE]
+#define wint_type_node			c_global_trees[CTI_WINT_TYPE]
+#define signed_size_type_node		c_global_trees[CTI_SIGNED_SIZE_TYPE]
+#define unsigned_ptrdiff_type_node	c_global_trees[CTI_UNSIGNED_PTRDIFF_TYPE]
+#define intmax_type_node		c_global_trees[CTI_INTMAX_TYPE]
+#define uintmax_type_node		c_global_trees[CTI_UINTMAX_TYPE]
 #define widest_integer_literal_type_node c_global_trees[CTI_WIDEST_INT_LIT_TYPE]
 #define widest_unsigned_literal_type_node c_global_trees[CTI_WIDEST_UINT_LIT_TYPE]
 
-#define truthvalue_type_node                c_global_trees[CTI_TRUTHVALUE_TYPE]
-#define truthvalue_true_node                c_global_trees[CTI_TRUTHVALUE_TRUE]
-#define truthvalue_false_node                c_global_trees[CTI_TRUTHVALUE_FALSE]
+#define truthvalue_type_node		c_global_trees[CTI_TRUTHVALUE_TYPE]
+#define truthvalue_true_node		c_global_trees[CTI_TRUTHVALUE_TRUE]
+#define truthvalue_false_node		c_global_trees[CTI_TRUTHVALUE_FALSE]
 
-#define char_array_type_node                c_global_trees[CTI_CHAR_ARRAY_TYPE]
-#define wchar_array_type_node                c_global_trees[CTI_WCHAR_ARRAY_TYPE]
-#define int_array_type_node                c_global_trees[CTI_INT_ARRAY_TYPE]
-#define string_type_node                c_global_trees[CTI_STRING_TYPE]
-#define const_string_type_node                c_global_trees[CTI_CONST_STRING_TYPE]
+#define char_array_type_node		c_global_trees[CTI_CHAR_ARRAY_TYPE]
+#define wchar_array_type_node		c_global_trees[CTI_WCHAR_ARRAY_TYPE]
+#define int_array_type_node		c_global_trees[CTI_INT_ARRAY_TYPE]
+#define string_type_node		c_global_trees[CTI_STRING_TYPE]
+#define const_string_type_node		c_global_trees[CTI_CONST_STRING_TYPE]
 
-#define default_function_type                c_global_trees[CTI_DEFAULT_FUNCTION_TYPE]
+#define default_function_type		c_global_trees[CTI_DEFAULT_FUNCTION_TYPE]
 
-#define function_name_decl_node                c_global_trees[CTI_FUNCTION_NAME_DECL]
-#define pretty_function_name_decl_node        c_global_trees[CTI_PRETTY_FUNCTION_NAME_DECL]
-#define c99_function_name_decl_node                c_global_trees[CTI_C99_FUNCTION_NAME_DECL]
-#define saved_function_name_decls        c_global_trees[CTI_SAVED_FUNCTION_NAME_DECLS]
+#define function_name_decl_node		c_global_trees[CTI_FUNCTION_NAME_DECL]
+#define pretty_function_name_decl_node	c_global_trees[CTI_PRETTY_FUNCTION_NAME_DECL]
+#define c99_function_name_decl_node		c_global_trees[CTI_C99_FUNCTION_NAME_DECL]
+#define saved_function_name_decls	c_global_trees[CTI_SAVED_FUNCTION_NAME_DECLS]
 
 /* A node for `((void) 0)'.  */
 #define void_zero_node                  c_global_trees[CTI_VOID_ZERO]
@@ -224,10 +224,10 @@ struct sorted_fields_type GTY(())
 
 typedef enum c_language_kind
 {
-  clk_c                = 0,                /* C90, C94 or C99 */
-  clk_objc        = 1,                /* clk_c with ObjC features.  */
-  clk_cxx        = 2,                /* ANSI/ISO C++ */
-  clk_objcxx        = 3                /* clk_cxx with ObjC features.  */
+  clk_c		= 0,		/* C90, C94 or C99 */
+  clk_objc	= 1,		/* clk_c with ObjC features.  */
+  clk_cxx	= 2,		/* ANSI/ISO C++ */
+  clk_objcxx	= 3		/* clk_cxx with ObjC features.  */
 }
 c_language_kind;
 
@@ -235,8 +235,8 @@ c_language_kind;
    front end.  For "ObjC features" or "not C++" use the macros.  */
 extern c_language_kind c_language;
 
-#define c_dialect_cxx()                (c_language & clk_cxx)
-#define c_dialect_objc()        (c_language & clk_objc)
+#define c_dialect_cxx()		(c_language & clk_cxx)
+#define c_dialect_objc()	(c_language & clk_objc)
 
 /* Information about a statement tree.  */
 
@@ -304,7 +304,7 @@ extern int c_expand_decl (tree);
 
 extern int field_decl_cmp (const void *, const void *);
 extern void resort_sorted_fields (void *, void *, gt_pointer_operator,
-                                  void *);
+				  void *);
 extern bool has_c_linkage (tree decl);
 
 /* Switches common to the C front ends.  */
@@ -636,10 +636,10 @@ extern tree fname_decl (unsigned, tree);
 
 extern void check_function_arguments (tree, tree, tree);
 extern void check_function_arguments_recurse (void (*)
-                                              (void *, tree,
-                                               unsigned HOST_WIDE_INT),
-                                              void *, tree,
-                                              unsigned HOST_WIDE_INT);
+					      (void *, tree,
+					       unsigned HOST_WIDE_INT),
+					      void *, tree,
+					      unsigned HOST_WIDE_INT);
 extern void check_function_format (tree, tree);
 extern void set_Wformat (int);
 extern tree handle_format_attribute (tree *, tree, tree, int, bool *);
@@ -711,7 +711,7 @@ extern HOST_WIDE_INT c_common_to_target_charset (HOST_WIDE_INT);
 /* This is the basic parsing function.  */
 extern void c_parse_file (void);
 /* This is misnamed, it actually performs end-of-compilation processing.  */
-extern void finish_file        (void);
+extern void finish_file	(void);
 
 
 /* These macros provide convenient access to the various _STMT nodes.  */
@@ -726,9 +726,9 @@ extern void finish_file        (void);
   TREE_LANG_FLAG_3 (STATEMENT_LIST_CHECK (NODE))
 
 /* COMPOUND_LITERAL_EXPR accessors.  */
-#define COMPOUND_LITERAL_EXPR_DECL_STMT(NODE)                \
+#define COMPOUND_LITERAL_EXPR_DECL_STMT(NODE)		\
   TREE_OPERAND (COMPOUND_LITERAL_EXPR_CHECK (NODE), 0)
-#define COMPOUND_LITERAL_EXPR_DECL(NODE)                        \
+#define COMPOUND_LITERAL_EXPR_DECL(NODE)			\
   DECL_EXPR_DECL (COMPOUND_LITERAL_EXPR_DECL_STMT (NODE))
 
 #define DEFTREECODE(SYM, NAME, TYPE, LENGTH) SYM,
@@ -817,7 +817,7 @@ extern GTY(()) int pending_lang_change;
 
 struct c_fileinfo
 {
-  int time;        /* Time spent in the file.  */
+  int time;	/* Time spent in the file.  */
 
   /* Flags used only by C++.
      INTERFACE_ONLY nonzero means that we are in an "interface" section
@@ -868,7 +868,7 @@ extern tree c_build_bind_expr (tree, tree);
 extern void pch_init (void);
 extern int c_common_valid_pch (cpp_reader *pfile, const char *name, int fd);
 extern void c_common_read_pch (cpp_reader *pfile, const char *name, int fd,
-                               const char *orig);
+			       const char *orig);
 extern void c_common_write_pch (void);
 extern void c_common_no_more_pch (void);
 extern void c_common_pch_pragma (cpp_reader *pfile, const char *);

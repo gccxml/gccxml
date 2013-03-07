@@ -33,23 +33,23 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
    are in the user's namespace, but the VxWorks headers require
    them.  */
 #undef VXWORKS_ADDITIONAL_CPP_SPEC
-#define VXWORKS_ADDITIONAL_CPP_SPEC "                                        \
- %{!nostdinc:%{isystem*}}                                                \
- %{mvthreads:-DVTHREADS=1                                                \
-         %{!nostdinc:-isystem " VXWORKSAE_TARGET_DIR "/vThreads/h}}        \
- %{!mvthreads:-DAE653_BUILD=1                                                \
-         %{!nostdinc:-isystem " VXWORKSAE_TARGET_DIR "/h}}                \
+#define VXWORKS_ADDITIONAL_CPP_SPEC "					\
+ %{!nostdinc:%{isystem*}}						\
+ %{mvthreads:-DVTHREADS=1						\
+	 %{!nostdinc:-isystem " VXWORKSAE_TARGET_DIR "/vThreads/h}}	\
+ %{!mvthreads:-DAE653_BUILD=1						\
+	 %{!nostdinc:-isystem " VXWORKSAE_TARGET_DIR "/h}}		\
  %{!nostdinc:-isystem " VXWORKSAE_TARGET_DIR "/val/h}"
 
 #undef VXWORKS_LIB_SPEC
 #define VXWORKS_LIB_SPEC ""
 
 #undef VXWORKS_LINK_SPEC
-#define VXWORKS_LINK_SPEC        \
+#define VXWORKS_LINK_SPEC	\
   "-r %{v:-V}"
  
 #undef VXWORKS_LIBGCC_SPEC
-#define VXWORKS_LIBGCC_SPEC        \
+#define VXWORKS_LIBGCC_SPEC	\
   "-lgcc"
 
 #undef VXWORKS_STARTFILE_SPEC

@@ -61,7 +61,7 @@ struct object
       unsigned long mixed_encoding : 1;
       unsigned long encoding : 8;
       /* ??? Wish there was an easy way to detect a 64-bit host here;
-         we've got 32 bits left to play with...  */
+	 we've got 32 bits left to play with...  */
       unsigned long count : 21;
     } b;
     size_t i;
@@ -97,11 +97,11 @@ struct dwarf_eh_bases
 
 
 extern void __register_frame_info_bases (const void *, struct object *,
-                                         void *, void *);
+					 void *, void *);
 extern void __register_frame_info (const void *, struct object *);
 extern void __register_frame (void *);
 extern void __register_frame_info_table_bases (void *, struct object *,
-                                               void *, void *);
+					       void *, void *);
 extern void __register_frame_info_table (void *, struct object *);
 extern void __register_frame_table (void *);
 extern void *__deregister_frame_info (const void *);

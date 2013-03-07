@@ -30,7 +30,7 @@
 #include "tree.h"
 #include "expr.h"
 #include "tm_p.h"
-#include "cp/cp-tree.h"        /* We need access to the OVL_... macros.  */
+#include "cp/cp-tree.h"	/* We need access to the OVL_... macros.  */
 #include "toplev.h"
 
 /* Select the level of debugging information to display.
@@ -90,7 +90,7 @@ sh_symbian_dllexport_p (tree decl)
       tree class = sh_symbian_associated_type (decl);
 
       if (class)
-        exp = lookup_attribute ("dllexport", TYPE_ATTRIBUTES (class));
+	exp = lookup_attribute ("dllexport", TYPE_ATTRIBUTES (class));
     }
 #if SYMBIAN_DEBUG
   if (exp)
@@ -144,9 +144,9 @@ sh_symbian_dllimport_p (tree decl)
     {
       /* Don't warn about artificial methods.  */
       if (!DECL_ARTIFICIAL (decl))
-        warning (OPT_Wattributes, "function %q+D is defined after prior "
-                 "declaration as dllimport: attribute ignored",
-                 decl);
+	warning (OPT_Wattributes, "function %q+D is defined after prior "
+		 "declaration as dllimport: attribute ignored",
+		 decl);
       return false;
     }
 
@@ -156,22 +156,22 @@ sh_symbian_dllimport_p (tree decl)
   else if (TREE_CODE (decl) == FUNCTION_DECL && DECL_INLINE (decl))
     {
       if (extra_warnings)
-        warning (OPT_Wattributes, "inline function %q+D is declared as "
-                 "dllimport: attribute ignored",
-                 decl);
+	warning (OPT_Wattributes, "inline function %q+D is declared as "
+		 "dllimport: attribute ignored",
+		 decl);
       return false;
     }
 
   /*  Don't allow definitions of static data members in dllimport
       class.  Just ignore the attribute for vtable data.  */
   else if (TREE_CODE (decl) == VAR_DECL
-           && TREE_STATIC (decl)
-           && TREE_PUBLIC (decl)
-           && !DECL_EXTERNAL (decl))
+	   && TREE_STATIC (decl)
+	   && TREE_PUBLIC (decl)
+	   && !DECL_EXTERNAL (decl))
     {
       if (!DECL_VIRTUAL_P (decl))
-        error ("definition of static data member %q+D of dllimport'd class",
-               decl);
+	error ("definition of static data member %q+D of dllimport'd class",
+	       decl);
       return false;
     }
 
@@ -181,7 +181,7 @@ sh_symbian_dllimport_p (tree decl)
      artificial methods either (in sh_symbian_associated_type, only
      COMDAT artificial method get import status from class context).  */
   else if (TREE_CODE (TREE_TYPE (decl)) == METHOD_TYPE
-           && (DECL_VIRTUAL_P (decl) || DECL_ARTIFICIAL (decl)))
+	   && (DECL_VIRTUAL_P (decl) || DECL_ARTIFICIAL (decl)))
     return false;
 
   return true;
@@ -193,7 +193,7 @@ bool
 sh_symbian_dllexport_name_p (const char *symbol)
 {
   return strncmp (DLL_EXPORT_PREFIX, symbol,
-                  strlen (DLL_EXPORT_PREFIX)) == 0;
+		  strlen (DLL_EXPORT_PREFIX)) == 0;
 }
 
 /* Return nonzero if SYMBOL is marked as being dllimport'd.  */
@@ -203,7 +203,7 @@ bool
 sh_symbian_dllimport_name_p (const char *symbol)
 {
   return strncmp (DLL_IMPORT_PREFIX, symbol,
-                  strlen (DLL_IMPORT_PREFIX)) == 0;
+		  strlen (DLL_IMPORT_PREFIX)) == 0;
 }
 
 /* Mark a DECL as being dllexport'd.
@@ -226,12 +226,12 @@ sh_symbian_mark_dllexport (tree decl)
   if (sh_symbian_dllimport_name_p (oldname))
     {
      /* Remove DLL_IMPORT_PREFIX.
-        Note - we do not issue a warning here.  In Symbian's environment it
-        is legitimate for a prototype to be marked as dllimport and the
-        corresponding definition to be marked as dllexport.  The prototypes
-        are in headers used everywhere and the definition is in a translation
-        unit which has included the header in order to ensure argument
-        correctness.  */
+	Note - we do not issue a warning here.  In Symbian's environment it
+	is legitimate for a prototype to be marked as dllimport and the
+	corresponding definition to be marked as dllexport.  The prototypes
+	are in headers used everywhere and the definition is in a translation
+	unit which has included the header in order to ensure argument
+	correctness.  */
       oldname += strlen (DLL_IMPORT_PREFIX);
       DECL_DLLIMPORT_P (decl) = 0;
     }
@@ -277,8 +277,8 @@ sh_symbian_mark_dllimport (tree decl)
     {
       /* Already done, but do a sanity check to prevent assembler errors.  */
       if (!DECL_EXTERNAL (decl) || !TREE_PUBLIC (decl))
-        error ("failure in redeclaration of %q+D: dllimport'd symbol lacks external linkage",
-               decl);
+	error ("failure in redeclaration of %q+D: dllimport'd symbol lacks external linkage",
+	       decl);
     }
   else
     {
@@ -286,9 +286,9 @@ sh_symbian_mark_dllimport (tree decl)
       sprintf (newname, "%s%s", DLL_IMPORT_PREFIX, oldname);
 
       /* We pass newname through get_identifier to ensure it has a unique
-         address.  RTL processing can sometimes peek inside the symbol ref
-         and compare the string's addresses to see if two symbols are
-         identical.  */
+	 address.  RTL processing can sometimes peek inside the symbol ref
+	 and compare the string's addresses to see if two symbols are
+	 identical.  */
       idp = get_identifier (newname);
       newrtl = gen_rtx_SYMBOL_REF (Pmode, IDENTIFIER_POINTER (idp));
       XEXP (DECL_RTL (decl), 0) = newrtl;
@@ -311,12 +311,12 @@ sh_symbian_encode_section_info (tree decl, rtx rtl, int first)
      DECL_RTL still has (DLL_IMPORT_PREFIX) prefixed. We need to remove
      that. Ditto for the DECL_DLLIMPORT_P flag.  */
   else if (  (TREE_CODE (decl) == FUNCTION_DECL
-           || TREE_CODE (decl) == VAR_DECL)
-           && DECL_RTL (decl) != NULL_RTX
-           && GET_CODE (DECL_RTL (decl)) == MEM
-           && GET_CODE (XEXP (DECL_RTL (decl), 0)) == MEM
-           && GET_CODE (XEXP (XEXP (DECL_RTL (decl), 0), 0)) == SYMBOL_REF
-           && sh_symbian_dllimport_name_p (XSTR (XEXP (XEXP (DECL_RTL (decl), 0), 0), 0)))
+	   || TREE_CODE (decl) == VAR_DECL)
+	   && DECL_RTL (decl) != NULL_RTX
+	   && GET_CODE (DECL_RTL (decl)) == MEM
+	   && GET_CODE (XEXP (DECL_RTL (decl), 0)) == MEM
+	   && GET_CODE (XEXP (XEXP (DECL_RTL (decl), 0), 0)) == SYMBOL_REF
+	   && sh_symbian_dllimport_name_p (XSTR (XEXP (XEXP (DECL_RTL (decl), 0), 0), 0)))
     {
       const char * oldname = XSTR (XEXP (XEXP (DECL_RTL (decl), 0), 0), 0);
       /* Remove DLL_IMPORT_PREFIX.  */
@@ -324,9 +324,9 @@ sh_symbian_encode_section_info (tree decl, rtx rtl, int first)
       rtx newrtl = gen_rtx_SYMBOL_REF (Pmode, IDENTIFIER_POINTER (idp));
 
       warning (0, "%s %q+D %s after being referenced with dllimport linkage",
-               TREE_CODE (decl) == VAR_DECL ? "variable" : "function",
-               decl, (DECL_INITIAL (decl) || !DECL_EXTERNAL (decl))
-               ? "defined locally" : "redeclared without dllimport attribute");
+	       TREE_CODE (decl) == VAR_DECL ? "variable" : "function",
+	       decl, (DECL_INITIAL (decl) || !DECL_EXTERNAL (decl))
+	       ? "defined locally" : "redeclared without dllimport attribute");
 
       XEXP (DECL_RTL (decl), 0) = newrtl;
 
@@ -392,7 +392,7 @@ symbian_add_attribute (tree node, const char *attr_name)
 
 tree
 sh_symbian_handle_dll_attribute (tree *pnode, tree name, tree args,
-                                 int flags, bool *no_add_attrs)
+				 int flags, bool *no_add_attrs)
 {
   tree thunk;
   tree node = *pnode;
@@ -403,19 +403,19 @@ sh_symbian_handle_dll_attribute (tree *pnode, tree name, tree args,
   if (!DECL_P (node))
     {
       if (flags & ((int) ATTR_FLAG_DECL_NEXT
-                   | (int) ATTR_FLAG_FUNCTION_NEXT
-                   | (int) ATTR_FLAG_ARRAY_NEXT))
-        {
-          warning (OPT_Wattributes, "%qs attribute ignored", attr);
-          *no_add_attrs = true;
-          return tree_cons (name, args, NULL_TREE);
-        }
+		   | (int) ATTR_FLAG_FUNCTION_NEXT
+		   | (int) ATTR_FLAG_ARRAY_NEXT))
+	{
+	  warning (OPT_Wattributes, "%qs attribute ignored", attr);
+	  *no_add_attrs = true;
+	  return tree_cons (name, args, NULL_TREE);
+	}
 
       if (TREE_CODE (node) != RECORD_TYPE && TREE_CODE (node) != UNION_TYPE)
-        {
-          warning (OPT_Wattributes, "%qs attribute ignored", attr);
-          *no_add_attrs = true;
-        }
+	{
+	  warning (OPT_Wattributes, "%qs attribute ignored", attr);
+	  *no_add_attrs = true;
+	}
 
       return NULL_TREE;
     }
@@ -425,22 +425,22 @@ sh_symbian_handle_dll_attribute (tree *pnode, tree name, tree args,
   else if (is_attribute_p ("dllimport", name))
     {
       if (TREE_CODE (node) == VAR_DECL)
-        {
-          if (DECL_INITIAL (node))
-            {
-              error ("variable %q+D definition is marked dllimport",
-                     node);
-              *no_add_attrs = true;
-            }
+	{
+	  if (DECL_INITIAL (node))
+	    {
+	      error ("variable %q+D definition is marked dllimport",
+		     node);
+	      *no_add_attrs = true;
+	    }
 
-          /* `extern' needn't be specified with dllimport.
-             Specify `extern' now and hope for the best.  Sigh.  */
-          DECL_EXTERNAL (node) = 1;
-          /* Also, implicitly give dllimport'd variables declared within
-             a function global scope, unless declared static.  */
-          if (current_function_decl != NULL_TREE && ! TREE_STATIC (node))
-              TREE_PUBLIC (node) = 1;
-        }
+	  /* `extern' needn't be specified with dllimport.
+	     Specify `extern' now and hope for the best.  Sigh.  */
+	  DECL_EXTERNAL (node) = 1;
+	  /* Also, implicitly give dllimport'd variables declared within
+	     a function global scope, unless declared static.  */
+	  if (current_function_decl != NULL_TREE && ! TREE_STATIC (node))
+  	    TREE_PUBLIC (node) = 1;
+	}
     }
 
   /* If the node is an overloaded constructor or destructor, then we must
@@ -453,58 +453,58 @@ sh_symbian_handle_dll_attribute (tree *pnode, tree name, tree args,
       tree overload;
 
       for (overload = OVL_CHAIN (node); overload; overload = OVL_CHAIN (overload))
-        {
-          tree node_args;
-          tree func_args;
-          tree function = OVL_CURRENT (overload);
+	{
+	  tree node_args;
+	  tree func_args;
+	  tree function = OVL_CURRENT (overload);
 
-          if (! function
-              || ! DECL_P (function)
-              || (DECL_CONSTRUCTOR_P (node) && ! DECL_CONSTRUCTOR_P (function))
-              || (DECL_DESTRUCTOR_P (node)  && ! DECL_DESTRUCTOR_P (function)))
-            continue;
+	  if (! function
+	      || ! DECL_P (function)
+	      || (DECL_CONSTRUCTOR_P (node) && ! DECL_CONSTRUCTOR_P (function))
+	      || (DECL_DESTRUCTOR_P (node)  && ! DECL_DESTRUCTOR_P (function)))
+	    continue;
 
-          /* The arguments must match as well.  */
-          for (node_args = DECL_ARGUMENTS (node), func_args = DECL_ARGUMENTS (function);
-               node_args && func_args;
-               node_args = TREE_CHAIN (node_args), func_args = TREE_CHAIN (func_args))
-            if (TREE_TYPE (node_args) != TREE_TYPE (func_args))
-              break;
+	  /* The arguments must match as well.  */
+	  for (node_args = DECL_ARGUMENTS (node), func_args = DECL_ARGUMENTS (function);
+	       node_args && func_args;
+	       node_args = TREE_CHAIN (node_args), func_args = TREE_CHAIN (func_args))
+	    if (TREE_TYPE (node_args) != TREE_TYPE (func_args))
+	      break;
 
-          if (node_args || func_args)
-            {
-              /* We can ignore an extraneous __in_chrg arguments in the node.
-                 GCC generated destructors, for example, will have this.  */
-              if ((node_args == NULL_TREE
-                   || func_args != NULL_TREE)
-                  && strcmp (IDENTIFIER_POINTER (DECL_NAME (node)), "__in_chrg") != 0)
-                continue;
-            }
+	  if (node_args || func_args)
+	    {
+	      /* We can ignore an extraneous __in_chrg arguments in the node.
+		 GCC generated destructors, for example, will have this.  */
+	      if ((node_args == NULL_TREE
+		   || func_args != NULL_TREE)
+		  && strcmp (IDENTIFIER_POINTER (DECL_NAME (node)), "__in_chrg") != 0)
+		continue;
+	    }
 
-          symbian_add_attribute (function, attr);
+	  symbian_add_attribute (function, attr);
 
-          /* Propagate the attribute to any function thunks as well.  */
-          for (thunk = DECL_THUNKS (function); thunk; thunk = TREE_CHAIN (thunk))
-            if (TREE_CODE (thunk) == FUNCTION_DECL)
-              symbian_add_attribute (thunk, attr);
-        }
+	  /* Propagate the attribute to any function thunks as well.  */
+	  for (thunk = DECL_THUNKS (function); thunk; thunk = TREE_CHAIN (thunk))
+	    if (TREE_CODE (thunk) == FUNCTION_DECL)
+	      symbian_add_attribute (thunk, attr);
+	}
     }
 
   if (TREE_CODE (node) == FUNCTION_DECL && DECL_VIRTUAL_P (node))
     {
       /* Propagate the attribute to any thunks of this function.  */
       for (thunk = DECL_THUNKS (node); thunk; thunk = TREE_CHAIN (thunk))
-        if (TREE_CODE (thunk) == FUNCTION_DECL)
-          symbian_add_attribute (thunk, attr);
+	if (TREE_CODE (thunk) == FUNCTION_DECL)
+	  symbian_add_attribute (thunk, attr);
     }
 
   /*  Report error if symbol is not accessible at global scope.  */
   if (!TREE_PUBLIC (node)
       && (   TREE_CODE (node) == VAR_DECL
-          || TREE_CODE (node) == FUNCTION_DECL))
+	  || TREE_CODE (node) == FUNCTION_DECL))
     {
       error ("external linkage required for symbol %q+D because of %qs attribute",
-             node, IDENTIFIER_POINTER (name));
+	     node, IDENTIFIER_POINTER (name));
       *no_add_attrs = true;
     }
 
@@ -565,30 +565,30 @@ symbian_possibly_export_base_class (tree base_class)
       tree member = VEC_index (tree, method_vec, len);
 
       if (! member)
-        continue;
+	continue;
 
       for (member = OVL_CURRENT (member); member; member = OVL_NEXT (member))
-        {
-          if (TREE_CODE (member) != FUNCTION_DECL)
-            continue;
+	{
+	  if (TREE_CODE (member) != FUNCTION_DECL)
+	    continue;
 
-          if (DECL_CONSTRUCTOR_P (member) || DECL_DESTRUCTOR_P (member))
-            continue;
+	  if (DECL_CONSTRUCTOR_P (member) || DECL_DESTRUCTOR_P (member))
+	    continue;
 
-          if (! DECL_VIRTUAL_P (member))
-            continue;
+	  if (! DECL_VIRTUAL_P (member))
+	    continue;
 
-          if (DECL_PURE_VIRTUAL_P (member))
-            continue;
+	  if (DECL_PURE_VIRTUAL_P (member))
+	    continue;
 
-          if (DECL_INLINE (member))
-            continue;
+	  if (DECL_INLINE (member))
+	    continue;
 
-          break;
-        }
+	  break;
+	}
 
       if (member)
-        break;
+	break;
     }
 
   if (len < 0)
@@ -663,39 +663,39 @@ symbian_export_vtable_and_rtti_p (tree ctype)
       tree member = VEC_index (tree, method_vec, len);
 
       if (! member)
-        continue;
+	continue;
 
       for (member = OVL_CURRENT (member); member; member = OVL_NEXT (member))
-        {
-          if (TREE_CODE (member) != FUNCTION_DECL)
-            continue;
+	{
+	  if (TREE_CODE (member) != FUNCTION_DECL)
+	    continue;
 
-          if (DECL_CONSTRUCTOR_P (member) || DECL_DESTRUCTOR_P (member))
-            {
-              if (DECL_INLINE (member)
-                  /* Ignore C++ backend created inline ctors/dtors.  */
-                  && (   DECL_MAYBE_IN_CHARGE_CONSTRUCTOR_P (member)
-                      || DECL_MAYBE_IN_CHARGE_DESTRUCTOR_P (member)))
-                inline_ctor_dtor = true;
+	  if (DECL_CONSTRUCTOR_P (member) || DECL_DESTRUCTOR_P (member))
+	    {
+	      if (DECL_INLINE (member)
+		  /* Ignore C++ backend created inline ctors/dtors.  */
+		  && (   DECL_MAYBE_IN_CHARGE_CONSTRUCTOR_P (member)
+		      || DECL_MAYBE_IN_CHARGE_DESTRUCTOR_P (member)))
+		inline_ctor_dtor = true;
 
-              if (lookup_attribute ("dllimport", DECL_ATTRIBUTES (member)))
-                dllimport_ctor_dtor = true;
-            }
-          else
-            {
-              if (DECL_PURE_VIRTUAL_P (member))
-                continue;
+	      if (lookup_attribute ("dllimport", DECL_ATTRIBUTES (member)))
+		dllimport_ctor_dtor = true;
+	    }
+	  else
+	    {
+	      if (DECL_PURE_VIRTUAL_P (member))
+		continue;
 
-              if (! DECL_VIRTUAL_P (member))
-                continue;
+	      if (! DECL_VIRTUAL_P (member))
+		continue;
 
-              if (DECL_INLINE (member))
-                continue;
+	      if (DECL_INLINE (member))
+		continue;
 
-              if (lookup_attribute ("dllimport", DECL_ATTRIBUTES (member)))
-                dllimport_member = true;
-            }
-        }
+	      if (lookup_attribute ("dllimport", DECL_ATTRIBUTES (member)))
+		dllimport_member = true;
+	    }
+	}
     }
 
   if (! dllimport_member && ! dllimport_ctor_dtor)
@@ -703,7 +703,7 @@ symbian_export_vtable_and_rtti_p (tree ctype)
 #if SYMBIAN_DEBUG
       print_node_brief (stderr, "", ctype, 0);
       fprintf (stderr,
-               " does NOT need to be EXPORTed [no non-pure virtuals or ctors/dtors with dllimport]\n");
+	       " does NOT need to be EXPORTed [no non-pure virtuals or ctors/dtors with dllimport]\n");
 #endif
       return false;
     }
@@ -713,7 +713,7 @@ symbian_export_vtable_and_rtti_p (tree ctype)
 #if SYMBIAN_DEBUG
       print_node_brief (stderr, "", ctype, 0);
       fprintf (stderr,
-               " does NOT need to be EXPORTed [no inline ctor/dtor]\n");
+	       " does NOT need to be EXPORTed [no inline ctor/dtor]\n");
 #endif
       return false;
     }
@@ -747,7 +747,7 @@ symbian_add_attribute_to_class_vtable_and_rtti (tree ctype, const char *attr_nam
   if (TYPE_MAIN_VARIANT (ctype)
       && CLASSTYPE_TYPEINFO_VAR (TYPE_MAIN_VARIANT (ctype)))
     symbian_add_attribute (CLASSTYPE_TYPEINFO_VAR (TYPE_MAIN_VARIANT (ctype)),
-                           attr_name);
+			   attr_name);
 }
 
 /* Decide if a class needs to have an attribute because
@@ -764,7 +764,7 @@ symbian_class_needs_attribute_p (tree ctype, const char *attribute_name)
   if (TYPE_POLYMORPHIC_P (ctype)
       && method_vec
       && lookup_attribute (attribute_name,
-                           DECL_ATTRIBUTES (VEC_index (tree, method_vec, 0))))
+			   DECL_ATTRIBUTES (VEC_index (tree, method_vec, 0))))
     return true;
 
   /* Check the class's member functions.  */
@@ -775,37 +775,37 @@ symbian_class_needs_attribute_p (tree ctype, const char *attribute_name)
       len = method_vec ? VEC_length (tree, method_vec) : 0;
 
       for (;len --;)
-        {
-          tree member = VEC_index (tree, method_vec, len);
+	{
+	  tree member = VEC_index (tree, method_vec, len);
 
-          if (! member)
-            continue;
+	  if (! member)
+	    continue;
 
-          for (member = OVL_CURRENT (member);
-               member;
-               member = OVL_NEXT (member))
-            {
-              if (TREE_CODE (member) != FUNCTION_DECL)
-                continue;
+	  for (member = OVL_CURRENT (member);
+	       member;
+	       member = OVL_NEXT (member))
+	    {
+	      if (TREE_CODE (member) != FUNCTION_DECL)
+		continue;
 
-              if (DECL_PURE_VIRTUAL_P (member))
-                continue;
+	      if (DECL_PURE_VIRTUAL_P (member))
+		continue;
 
-              if (! DECL_VIRTUAL_P (member))
-                continue;
+	      if (! DECL_VIRTUAL_P (member))
+		continue;
 
-              if (lookup_attribute (attribute_name, DECL_ATTRIBUTES (member)))
-                {
+	      if (lookup_attribute (attribute_name, DECL_ATTRIBUTES (member)))
+		{
 #if SYMBIAN_DEBUG
-                  print_node_brief (stderr, "", ctype, 0);
-                  fprintf (stderr, " inherits %s because", attribute_name);
-                  print_node_brief (stderr, "", member, 0);
-                  fprintf (stderr, " has it.\n");
+		  print_node_brief (stderr, "", ctype, 0);
+		  fprintf (stderr, " inherits %s because", attribute_name);
+		  print_node_brief (stderr, "", member, 0);
+		  fprintf (stderr, " has it.\n");
 #endif
-                  return true;
-                }
-            }
-        }
+		  return true;
+		}
+	    }
+	}
     }
 
 #if SYMBIAN_DEBUG
@@ -834,45 +834,45 @@ symbian_import_export_class (tree ctype, int import_export)
       && ! lookup_attribute (attr_name, TYPE_ATTRIBUTES (ctype)))
     {
       if (symbian_class_needs_attribute_p (ctype, attr_name))
-        symbian_add_attribute_to_class_vtable_and_rtti (ctype, attr_name);
+	symbian_add_attribute_to_class_vtable_and_rtti (ctype, attr_name);
 
       /* Classes can be forced to export their
-         vtable and rtti under certain conditions.  */
+	 vtable and rtti under certain conditions.  */
       if (symbian_export_vtable_and_rtti_p (ctype))
-        {
-          symbian_add_attribute_to_class_vtable_and_rtti (ctype, "dllexport");
+	{
+	  symbian_add_attribute_to_class_vtable_and_rtti (ctype, "dllexport");
 
-          /* Make sure that the class and its vtable are exported.  */
-          import_export = 1;
+	  /* Make sure that the class and its vtable are exported.  */
+	  import_export = 1;
 
-          if (CLASSTYPE_VTABLES (ctype))
-            DECL_EXTERNAL (CLASSTYPE_VTABLES (ctype)) = 1;
+	  if (CLASSTYPE_VTABLES (ctype))
+	    DECL_EXTERNAL (CLASSTYPE_VTABLES (ctype)) = 1;
 
-          /* Check to make sure that if the class has a key method that
-             it is now on the list of keyed classes.  That way its vtable
-             will be emitted.  */
-          if (CLASSTYPE_KEY_METHOD (ctype))
-            {
-              tree class;
+	  /* Check to make sure that if the class has a key method that
+	     it is now on the list of keyed classes.  That way its vtable
+	     will be emitted.  */
+	  if (CLASSTYPE_KEY_METHOD (ctype))
+	    {
+	      tree class;
 
-              for (class = keyed_classes; class; class = TREE_CHAIN (class))
-                if (class == ctype)
-                  break;
+	      for (class = keyed_classes; class; class = TREE_CHAIN (class))
+		if (class == ctype)
+		  break;
 
-              if (class == NULL_TREE)
-                {
+	      if (class == NULL_TREE)
+		{
 #if SYMBIAN_DEBUG
-                  print_node_brief (stderr, "Add node", ctype, 0);
-                  fprintf (stderr, " to the keyed classes list\n");
+		  print_node_brief (stderr, "Add node", ctype, 0);
+		  fprintf (stderr, " to the keyed classes list\n");
 #endif
-                  keyed_classes = tree_cons (NULL_TREE, ctype, keyed_classes);
-                }
-            }
+		  keyed_classes = tree_cons (NULL_TREE, ctype, keyed_classes);
+		}
+	    }
 
-          /* Make sure that the typeinfo will be emitted as well.  */
-          if (CLASS_TYPE_P (ctype))
-            TYPE_NEEDS_CONSTRUCTING (TREE_TYPE (CLASSTYPE_TYPEINFO_VAR (TYPE_MAIN_VARIANT (ctype)))) = 1;
-        }
+	  /* Make sure that the typeinfo will be emitted as well.  */
+	  if (CLASS_TYPE_P (ctype))
+	    TYPE_NEEDS_CONSTRUCTING (TREE_TYPE (CLASSTYPE_TYPEINFO_VAR (TYPE_MAIN_VARIANT (ctype)))) = 1;
+	}
     }
 
   return import_export;
@@ -890,6 +890,6 @@ void
 lang_check_failed (const char *file, int line, const char *function)
 {
   internal_error ("lang_* check: failed in %s, at %s:%d",
-                  function, trim_filename (file), line);
+		  function, trim_filename (file), line);
 }
 #endif /* ENABLE_TREE_CHECKING */

@@ -19,14 +19,14 @@ the Free Software Foundation, 51 Franklin Street, Fifth Floor,
 Boston, MA 02110-1301, USA.  */
 
 
-#define TARGET_OS_CPP_BUILTINS()                \
-  do                                                \
-    {                                                \
-      builtin_define_std ("unix");                \
-      builtin_assert ("system=bsd");                \
-                                                \
-      builtin_define_std ("vax");                \
-      if (TARGET_G_FLOAT)                        \
-        builtin_define_std ("GFLOAT");                \
-    }                                                \
+#define TARGET_OS_CPP_BUILTINS()		\
+  do						\
+    {						\
+      builtin_define_std ("unix");		\
+      builtin_assert ("system=bsd");		\
+						\
+      builtin_define_std ("vax");		\
+      if (TARGET_G_FLOAT)			\
+	builtin_define_std ("GFLOAT");		\
+    }						\
   while (0)

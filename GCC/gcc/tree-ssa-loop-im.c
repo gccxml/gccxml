@@ -45,10 +45,10 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
    while (1)
      {
        if (cond)
-         {
-           a = inv;
-           something;
-         }
+	 {
+	   a = inv;
+	   something;
+	 }
      }
 
    Where COND and INV are is invariants, but evaluating INV may trap or be
@@ -59,7 +59,7 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
    while (1)
      {
        if (cond)
-         something;
+	 something;
      }  */
 
 /* A type for the list of statements that have to be moved in order to be able
@@ -75,62 +75,62 @@ struct depend
 
 struct lim_aux_data
 {
-  struct loop *max_loop;        /* The outermost loop in that the statement
-                                   is invariant.  */
+  struct loop *max_loop;	/* The outermost loop in that the statement
+				   is invariant.  */
 
-  struct loop *tgt_loop;        /* The loop out of that we want to move the
-                                   invariant.  */
+  struct loop *tgt_loop;	/* The loop out of that we want to move the
+				   invariant.  */
 
   struct loop *always_executed_in;
-                                /* The outermost loop for that we are sure
-                                   the statement is executed if the loop
-                                   is entered.  */
+				/* The outermost loop for that we are sure
+				   the statement is executed if the loop
+				   is entered.  */
 
-  bool sm_done;                        /* True iff the store motion for a memory
-                                   reference in the statement has already
-                                   been executed.  */
+  bool sm_done;			/* True iff the store motion for a memory
+				   reference in the statement has already
+				   been executed.  */
 
-  unsigned cost;                /* Cost of the computation performed by the
-                                   statement.  */
+  unsigned cost;		/* Cost of the computation performed by the
+				   statement.  */
 
-  struct depend *depends;        /* List of statements that must be also hoisted
-                                   out of the loop when this statement is
-                                   hoisted; i.e. those that define the operands
-                                   of the statement and are inside of the
-                                   MAX_LOOP loop.  */
+  struct depend *depends;	/* List of statements that must be also hoisted
+				   out of the loop when this statement is
+				   hoisted; i.e. those that define the operands
+				   of the statement and are inside of the
+				   MAX_LOOP loop.  */
 };
 
 #define LIM_DATA(STMT) (TREE_CODE (STMT) == PHI_NODE \
-                        ? NULL \
-                        : (struct lim_aux_data *) (stmt_ann (STMT)->common.aux))
+			? NULL \
+			: (struct lim_aux_data *) (stmt_ann (STMT)->common.aux))
 
 /* Description of a memory reference location for store motion.  */
 
 struct mem_ref_loc
 {
-  tree *ref;                        /* The reference itself.  */
-  tree stmt;                        /* The statement in that it occurs.  */
-  struct mem_ref_loc *next;        /* Next use in the chain.  */
+  tree *ref;			/* The reference itself.  */
+  tree stmt;			/* The statement in that it occurs.  */
+  struct mem_ref_loc *next;	/* Next use in the chain.  */
 };
 
 /* Description of a memory reference for store motion.  */
 
 struct mem_ref
 {
-  tree mem;                        /* The memory itself.  */
-  hashval_t hash;                /* Its hash value.  */
-  bool is_stored;                /* True if there is a store to the location
-                                   in the loop.  */
-  struct mem_ref_loc *locs;        /* The locations where it is found.  */
-  bitmap vops;                        /* Vops corresponding to this memory
-                                   location.  */
-  struct mem_ref *next;                /* Next memory reference in the list.
-                                   Memory references are stored in a hash
-                                   table, but the hash function depends
-                                   on values of pointers. Thus we cannot use
-                                   htab_traverse, since then we would get
-                                   miscompares during bootstrap (although the
-                                   produced code would be correct).  */
+  tree mem;			/* The memory itself.  */
+  hashval_t hash;		/* Its hash value.  */
+  bool is_stored;		/* True if there is a store to the location
+				   in the loop.  */
+  struct mem_ref_loc *locs;	/* The locations where it is found.  */
+  bitmap vops;			/* Vops corresponding to this memory
+				   location.  */
+  struct mem_ref *next;		/* Next memory reference in the list.
+				   Memory references are stored in a hash
+				   table, but the hash function depends
+				   on values of pointers. Thus we cannot use
+				   htab_traverse, since then we would get
+				   miscompares during bootstrap (although the
+				   produced code would be correct).  */
 };
 
 /* Minimum cost of an expensive expression.  */
@@ -162,65 +162,65 @@ for_each_index (tree *addr_p, bool (*cbck) (tree, tree *, void *), void *data)
   for (; ; addr_p = nxt)
     {
       switch (TREE_CODE (*addr_p))
-        {
-        case SSA_NAME:
-          return cbck (*addr_p, addr_p, data);
+	{
+	case SSA_NAME:
+	  return cbck (*addr_p, addr_p, data);
 
-        case MISALIGNED_INDIRECT_REF:
-        case ALIGN_INDIRECT_REF:
-        case INDIRECT_REF:
-          nxt = &TREE_OPERAND (*addr_p, 0);
-          return cbck (*addr_p, nxt, data);
+	case MISALIGNED_INDIRECT_REF:
+	case ALIGN_INDIRECT_REF:
+	case INDIRECT_REF:
+	  nxt = &TREE_OPERAND (*addr_p, 0);
+	  return cbck (*addr_p, nxt, data);
 
-        case BIT_FIELD_REF:
-        case VIEW_CONVERT_EXPR:
-        case REALPART_EXPR:
-        case IMAGPART_EXPR:
-          nxt = &TREE_OPERAND (*addr_p, 0);
-          break;
+	case BIT_FIELD_REF:
+	case VIEW_CONVERT_EXPR:
+	case REALPART_EXPR:
+	case IMAGPART_EXPR:
+	  nxt = &TREE_OPERAND (*addr_p, 0);
+	  break;
 
-        case COMPONENT_REF:
-          /* If the component has varying offset, it behaves like index
-             as well.  */
-          idx = &TREE_OPERAND (*addr_p, 2);
-          if (*idx
-              && !cbck (*addr_p, idx, data))
-            return false;
+	case COMPONENT_REF:
+	  /* If the component has varying offset, it behaves like index
+	     as well.  */
+	  idx = &TREE_OPERAND (*addr_p, 2);
+	  if (*idx
+	      && !cbck (*addr_p, idx, data))
+	    return false;
 
-          nxt = &TREE_OPERAND (*addr_p, 0);
-          break;
+	  nxt = &TREE_OPERAND (*addr_p, 0);
+	  break;
 
-        case ARRAY_REF:
-        case ARRAY_RANGE_REF:
-          nxt = &TREE_OPERAND (*addr_p, 0);
-          if (!cbck (*addr_p, &TREE_OPERAND (*addr_p, 1), data))
-            return false;
-          break;
+	case ARRAY_REF:
+	case ARRAY_RANGE_REF:
+	  nxt = &TREE_OPERAND (*addr_p, 0);
+	  if (!cbck (*addr_p, &TREE_OPERAND (*addr_p, 1), data))
+	    return false;
+	  break;
 
-        case VAR_DECL:
-        case PARM_DECL:
-        case STRING_CST:
-        case RESULT_DECL:
-        case VECTOR_CST:
-        case COMPLEX_CST:
-        case INTEGER_CST:
-        case REAL_CST:
-          return true;
+	case VAR_DECL:
+	case PARM_DECL:
+	case STRING_CST:
+	case RESULT_DECL:
+	case VECTOR_CST:
+	case COMPLEX_CST:
+	case INTEGER_CST:
+	case REAL_CST:
+	  return true;
 
-        case TARGET_MEM_REF:
-          idx = &TMR_BASE (*addr_p);
-          if (*idx
-              && !cbck (*addr_p, idx, data))
-            return false;
-          idx = &TMR_INDEX (*addr_p);
-          if (*idx
-              && !cbck (*addr_p, idx, data))
-            return false;
-          return true;
+	case TARGET_MEM_REF:
+	  idx = &TMR_BASE (*addr_p);
+	  if (*idx
+	      && !cbck (*addr_p, idx, data))
+	    return false;
+	  idx = &TMR_INDEX (*addr_p);
+	  if (*idx
+	      && !cbck (*addr_p, idx, data))
+	    return false;
+	  return true;
 
-        default:
-              gcc_unreachable ();
-        }
+	default:
+    	  gcc_unreachable ();
+	}
     }
 }
 
@@ -240,7 +240,7 @@ movement_possibility (tree stmt)
       && TREE_CODE (stmt) == COND_EXPR)
     {
       /* If we perform unswitching, force the operands of the invariant
-         condition to be moved out of the loop.  */
+	 condition to be moved out of the loop.  */
       return MOVE_POSSIBLE;
     }
 
@@ -270,23 +270,23 @@ movement_possibility (tree stmt)
   if (get_call_expr_in (stmt))
     {
       /* While pure or const call is guaranteed to have no side effects, we
-         cannot move it arbitrarily.  Consider code like
+	 cannot move it arbitrarily.  Consider code like
 
-         char *s = something ();
+	 char *s = something ();
 
-         while (1)
-           {
-             if (s)
-               t = strlen (s);
-             else
-               t = 0;
-           }
+	 while (1)
+	   {
+	     if (s)
+	       t = strlen (s);
+	     else
+	       t = 0;
+	   }
 
-         Here the strlen call cannot be moved out of the loop, even though
-         s is invariant.  In addition to possibly creating a call with
-         invalid arguments, moving out a function call that is not executed
-         may cause performance regressions in case the call is costly and
-         not executed at all.  */
+	 Here the strlen call cannot be moved out of the loop, even though
+	 s is invariant.  In addition to possibly creating a call with
+	 invalid arguments, moving out a function call that is not executed
+	 may cause performance regressions in case the call is costly and
+	 not executed at all.  */
       return MOVE_PRESERVE_EXECUTION;
     }
   return MOVE_POSSIBLE;
@@ -316,7 +316,7 @@ outermost_invariant_loop (tree def, struct loop *loop)
 
   if (LIM_DATA (def_stmt) && LIM_DATA (def_stmt)->max_loop)
     max_loop = find_common_loop (max_loop,
-                                 LIM_DATA (def_stmt)->max_loop->outer);
+				 LIM_DATA (def_stmt)->max_loop->outer);
   if (max_loop == loop)
     return NULL;
   max_loop = superloop_at_depth (loop, max_loop->depth + 1);
@@ -350,10 +350,10 @@ outermost_invariant_loop_expr (tree expr, struct loop *loop)
     {
       aloop = outermost_invariant_loop_expr (TREE_OPERAND (expr, i), loop);
       if (!aloop)
-        return NULL;
+	return NULL;
 
       if (flow_loop_nested_p (max_loop, aloop))
-        max_loop = aloop;
+	max_loop = aloop;
     }
 
   return max_loop;
@@ -373,7 +373,7 @@ outermost_invariant_loop_expr (tree expr, struct loop *loop)
 
 static bool
 add_dependency (tree def, struct lim_aux_data *data, struct loop *loop,
-                bool add_cost)
+		bool add_cost)
 {
   tree def_stmt = SSA_NAME_DEF_STMT (def);
   basic_block def_bb = bb_for_stmt (def_stmt);
@@ -395,9 +395,9 @@ add_dependency (tree def, struct lim_aux_data *data, struct loop *loop,
 
   if (add_cost
       /* Only add the cost if the statement defining DEF is inside LOOP,
-         i.e. if it is likely that by moving the invariants dependent
-         on it, we will be able to avoid creating a new register for
-         it (since it will be only used in these dependent invariants).  */
+	 i.e. if it is likely that by moving the invariants dependent
+	 on it, we will be able to avoid creating a new register for
+	 it (since it will be only used in these dependent invariants).  */
       && def_bb->loop_father == loop)
     data->cost += LIM_DATA (def_stmt)->cost;
 
@@ -435,11 +435,11 @@ stmt_cost (tree stmt)
       /* We should be hoisting calls if possible.  */
 
       /* Unless the call is a builtin_constant_p; this always folds to a
-         constant, so moving it is useless.  */
+	 constant, so moving it is useless.  */
       rhs = get_callee_fndecl (rhs);
       if (DECL_BUILT_IN_CLASS (rhs) == BUILT_IN_NORMAL
-          && DECL_FUNCTION_CODE (rhs) == BUILT_IN_CONSTANT_P)
-        return 0;
+	  && DECL_FUNCTION_CODE (rhs) == BUILT_IN_CONSTANT_P)
+	return 0;
 
       cost += 20;
       break;
@@ -519,13 +519,13 @@ set_level (tree stmt, struct loop *orig_loop, struct loop *level)
   stmt_loop = find_common_loop (orig_loop, stmt_loop);
   if (LIM_DATA (stmt) && LIM_DATA (stmt)->tgt_loop)
     stmt_loop = find_common_loop (stmt_loop,
-                                  LIM_DATA (stmt)->tgt_loop->outer);
+				  LIM_DATA (stmt)->tgt_loop->outer);
   if (flow_loop_nested_p (stmt_loop, level))
     return;
 
   gcc_assert (LIM_DATA (stmt));
   gcc_assert (level == LIM_DATA (stmt)->max_loop
-              || flow_loop_nested_p (LIM_DATA (stmt)->max_loop, level));
+	      || flow_loop_nested_p (LIM_DATA (stmt)->max_loop, level));
 
   LIM_DATA (stmt)->tgt_loop = level;
   for (dep = LIM_DATA (stmt)->depends; dep; dep = dep->next)
@@ -576,7 +576,7 @@ free_lim_aux_data (struct lim_aux_data *data)
 
 static void
 determine_invariantness_stmt (struct dom_walk_data *dw_data ATTRIBUTE_UNUSED,
-                              basic_block bb)
+			      basic_block bb)
 {
   enum move_pos pos;
   block_stmt_iterator bsi;
@@ -589,7 +589,7 @@ determine_invariantness_stmt (struct dom_walk_data *dw_data ATTRIBUTE_UNUSED,
 
   if (dump_file && (dump_flags & TDF_DETAILS))
     fprintf (dump_file, "Basic block %d (loop %d -- depth %d):\n\n",
-             bb->index, bb->loop_father->num, bb->loop_father->depth);
+	     bb->index, bb->loop_father->num, bb->loop_father->depth);
 
   for (bsi = bsi_start (bb); !bsi_end_p (bsi); bsi_next (&bsi))
     {
@@ -597,78 +597,78 @@ determine_invariantness_stmt (struct dom_walk_data *dw_data ATTRIBUTE_UNUSED,
 
       pos = movement_possibility (stmt);
       if (pos == MOVE_IMPOSSIBLE)
-        {
-          if (nonpure_call_p (stmt))
-            {
-              maybe_never = true;
-              outermost = NULL;
-            }
-          continue;
-        }
+	{
+	  if (nonpure_call_p (stmt))
+	    {
+	      maybe_never = true;
+	      outermost = NULL;
+	    }
+	  continue;
+	}
 
       /* If divisor is invariant, convert a/b to a*(1/b), allowing reciprocal
-         to be hoisted out of loop, saving expensive divide.  */
+	 to be hoisted out of loop, saving expensive divide.  */
       if (pos == MOVE_POSSIBLE
-          && (rhs = TREE_OPERAND (stmt, 1)) != NULL
-          && TREE_CODE (rhs) == RDIV_EXPR
-          && flag_unsafe_math_optimizations
-          && !flag_trapping_math
-          && outermost_invariant_loop_expr (TREE_OPERAND (rhs, 1),
-                                            loop_containing_stmt (stmt)) != NULL
-          && outermost_invariant_loop_expr (rhs,
-                                            loop_containing_stmt (stmt)) == NULL)
-        {
-          tree lhs, stmt1, stmt2, var, name;
+	  && (rhs = TREE_OPERAND (stmt, 1)) != NULL
+	  && TREE_CODE (rhs) == RDIV_EXPR
+	  && flag_unsafe_math_optimizations
+	  && !flag_trapping_math
+	  && outermost_invariant_loop_expr (TREE_OPERAND (rhs, 1),
+					    loop_containing_stmt (stmt)) != NULL
+	  && outermost_invariant_loop_expr (rhs,
+					    loop_containing_stmt (stmt)) == NULL)
+	{
+	  tree lhs, stmt1, stmt2, var, name;
 
-          lhs = TREE_OPERAND (stmt, 0);
+	  lhs = TREE_OPERAND (stmt, 0);
 
-          /* stmt must be MODIFY_EXPR.  */
-          var = create_tmp_var (TREE_TYPE (rhs), "reciptmp");
-          add_referenced_var (var);
+	  /* stmt must be MODIFY_EXPR.  */
+	  var = create_tmp_var (TREE_TYPE (rhs), "reciptmp");
+	  add_referenced_var (var);
 
-          stmt1 = build2 (MODIFY_EXPR, void_type_node, var,
-                          build2 (RDIV_EXPR, TREE_TYPE (rhs),
-                                  build_real (TREE_TYPE (rhs), dconst1),
-                                  TREE_OPERAND (rhs, 1)));
-          name = make_ssa_name (var, stmt1);
-          TREE_OPERAND (stmt1, 0) = name;
-          stmt2 = build2 (MODIFY_EXPR, void_type_node, lhs,
-                          build2 (MULT_EXPR, TREE_TYPE (rhs),
-                                  name, TREE_OPERAND (rhs, 0)));
+	  stmt1 = build2 (MODIFY_EXPR, void_type_node, var,
+			  build2 (RDIV_EXPR, TREE_TYPE (rhs),
+				  build_real (TREE_TYPE (rhs), dconst1),
+				  TREE_OPERAND (rhs, 1)));
+	  name = make_ssa_name (var, stmt1);
+	  TREE_OPERAND (stmt1, 0) = name;
+	  stmt2 = build2 (MODIFY_EXPR, void_type_node, lhs,
+			  build2 (MULT_EXPR, TREE_TYPE (rhs),
+				  name, TREE_OPERAND (rhs, 0)));
 
-          /* Replace division stmt with reciprocal and multiply stmts.
-             The multiply stmt is not invariant, so update iterator
-             and avoid rescanning.  */
-          bsi_replace (&bsi, stmt1, true);
-          bsi_insert_after (&bsi, stmt2, BSI_NEW_STMT);
-          SSA_NAME_DEF_STMT (lhs) = stmt2;
+	  /* Replace division stmt with reciprocal and multiply stmts.
+	     The multiply stmt is not invariant, so update iterator
+	     and avoid rescanning.  */
+	  bsi_replace (&bsi, stmt1, true);
+	  bsi_insert_after (&bsi, stmt2, BSI_NEW_STMT);
+	  SSA_NAME_DEF_STMT (lhs) = stmt2;
 
-          /* Continue processing with invariant reciprocal statement.  */
-          stmt = stmt1;
-        }
+	  /* Continue processing with invariant reciprocal statement.  */
+	  stmt = stmt1;
+	}
 
       stmt_ann (stmt)->common.aux = xcalloc (1, sizeof (struct lim_aux_data));
       LIM_DATA (stmt)->always_executed_in = outermost;
 
       if (maybe_never && pos == MOVE_PRESERVE_EXECUTION)
-        continue;
+	continue;
 
       if (!determine_max_movement (stmt, pos == MOVE_PRESERVE_EXECUTION))
-        {
-          LIM_DATA (stmt)->max_loop = NULL;
-          continue;
-        }
+	{
+	  LIM_DATA (stmt)->max_loop = NULL;
+	  continue;
+	}
 
       if (dump_file && (dump_flags & TDF_DETAILS))
-        {
-          print_generic_stmt_indented (dump_file, stmt, 0, 2);
-          fprintf (dump_file, "  invariant up to level %d, cost %d.\n\n",
-                   LIM_DATA (stmt)->max_loop->depth,
-                   LIM_DATA (stmt)->cost);
-        }
+	{
+	  print_generic_stmt_indented (dump_file, stmt, 0, 2);
+	  fprintf (dump_file, "  invariant up to level %d, cost %d.\n\n",
+		   LIM_DATA (stmt)->max_loop->depth,
+		   LIM_DATA (stmt)->cost);
+	}
 
       if (LIM_DATA (stmt)->cost >= LIM_EXPENSIVE)
-        set_profitable_level (stmt);
+	set_profitable_level (stmt);
     }
 }
 
@@ -704,8 +704,8 @@ loop_commit_inserts (void)
     {
       bb = BASIC_BLOCK (i);
       add_bb_to_loop (bb,
-                      find_common_loop (single_pred (bb)->loop_father,
-                                        single_succ (bb)->loop_father));
+		      find_common_loop (single_pred (bb)->loop_father,
+					single_succ (bb)->loop_father));
     }
 }
 
@@ -715,7 +715,7 @@ loop_commit_inserts (void)
 
 static void
 move_computations_stmt (struct dom_walk_data *dw_data ATTRIBUTE_UNUSED,
-                        basic_block bb)
+			basic_block bb)
 {
   struct loop *level;
   block_stmt_iterator bsi;
@@ -730,10 +730,10 @@ move_computations_stmt (struct dom_walk_data *dw_data ATTRIBUTE_UNUSED,
       stmt = bsi_stmt (bsi);
 
       if (!LIM_DATA (stmt))
-        {
-          bsi_next (&bsi);
-          continue;
-        }
+	{
+	  bsi_next (&bsi);
+	  continue;
+	}
 
       cost = LIM_DATA (stmt)->cost;
       level = LIM_DATA (stmt)->tgt_loop;
@@ -741,23 +741,23 @@ move_computations_stmt (struct dom_walk_data *dw_data ATTRIBUTE_UNUSED,
       stmt_ann (stmt)->common.aux = NULL;
 
       if (!level)
-        {
-          bsi_next (&bsi);
-          continue;
-        }
+	{
+	  bsi_next (&bsi);
+	  continue;
+	}
 
       /* We do not really want to move conditionals out of the loop; we just
-         placed it here to force its operands to be moved if necessary.  */
+	 placed it here to force its operands to be moved if necessary.  */
       if (TREE_CODE (stmt) == COND_EXPR)
-        continue;
+	continue;
 
       if (dump_file && (dump_flags & TDF_DETAILS))
-        {
-          fprintf (dump_file, "Moving statement\n");
-          print_generic_stmt (dump_file, stmt, 0);
-          fprintf (dump_file, "(cost %u) out of loop %d.\n\n",
-                   cost, level->num);
-        }
+	{
+	  fprintf (dump_file, "Moving statement\n");
+	  print_generic_stmt (dump_file, stmt, 0);
+	  fprintf (dump_file, "(cost %u) out of loop %d.\n\n",
+		   cost, level->num);
+	}
       bsi_insert_on_edge (loop_preheader_edge (level), stmt);
       bsi_remove (&bsi, false);
     }
@@ -800,11 +800,11 @@ may_move_till (tree ref, tree *index, void *data)
 
       max_loop = outermost_invariant_loop_expr (step, loop);
       if (!max_loop)
-        return false;
+	return false;
 
       max_loop = outermost_invariant_loop_expr (lbound, loop);
       if (!max_loop)
-        return false;
+	return false;
     }
 
   max_loop = outermost_invariant_loop (*index, loop);
@@ -827,7 +827,7 @@ force_move_till_expr (tree expr, struct loop *orig_loop, struct loop *loop)
     {
       tree stmt = SSA_NAME_DEF_STMT (expr);
       if (IS_EMPTY_STMT (stmt))
-        return;
+	return;
 
       set_level (stmt, orig_loop, loop);
       return;
@@ -922,7 +922,7 @@ rewrite_mem_refs (tree tmp_var, struct mem_ref_loc *mem_refs)
   for (; mem_refs; mem_refs = mem_refs->next)
     {
       FOR_EACH_SSA_TREE_OPERAND (var, mem_refs->stmt, iter, SSA_OP_ALL_VIRTUALS)
-        mark_sym_for_renaming (SSA_NAME_VAR (var));
+	mark_sym_for_renaming (SSA_NAME_VAR (var));
 
       *mem_refs->ref = tmp_var;
       update_stmt (mem_refs->stmt);
@@ -986,7 +986,7 @@ gen_lsm_tmp_name (tree ref)
       lsm_tmp_name_add ("_");
       name = get_name (TREE_OPERAND (ref, 1));
       if (!name)
-        name = "F";
+	name = "F";
       lsm_tmp_name_add ("_");
       lsm_tmp_name_add (name);
 
@@ -1003,7 +1003,7 @@ gen_lsm_tmp_name (tree ref)
     case PARM_DECL:
       name = get_name (ref);
       if (!name)
-        name = "D";
+	name = "D";
       lsm_tmp_name_add (name);
       break;
 
@@ -1042,7 +1042,7 @@ get_lsm_tmp_name (tree ref)
 
 static void
 schedule_sm (struct loop *loop, edge *exits, unsigned n_exits, tree ref,
-             struct mem_ref_loc *mem_refs)
+	     struct mem_ref_loc *mem_refs)
 {
   struct mem_ref_loc *aref;
   tree tmp_var;
@@ -1058,7 +1058,7 @@ schedule_sm (struct loop *loop, edge *exits, unsigned n_exits, tree ref,
     }
 
   tmp_var = make_rename_temp (TREE_TYPE (ref),
-                              get_lsm_tmp_name (ref));
+			      get_lsm_tmp_name (ref));
 
   fmt_data.loop = loop;
   fmt_data.orig_loop = loop;
@@ -1082,7 +1082,7 @@ schedule_sm (struct loop *loop, edge *exits, unsigned n_exits, tree ref,
   for (i = 0; i < n_exits; i++)
     {
       store = build2 (MODIFY_EXPR, void_type_node,
-                      unshare_expr (ref), tmp_var);
+		      unshare_expr (ref), tmp_var);
       bsi_insert_on_edge (exits[i], store);
     }
 }
@@ -1097,7 +1097,7 @@ schedule_sm (struct loop *loop, edge *exits, unsigned n_exits, tree ref,
 
 static void
 determine_lsm_ref (struct loop *loop, edge *exits, unsigned n_exits,
-                   bitmap clobbered_vops, struct mem_ref *ref)
+		   bitmap clobbered_vops, struct mem_ref *ref)
 {
   struct mem_ref_loc *aref;
   struct loop *must_exec;
@@ -1114,32 +1114,32 @@ determine_lsm_ref (struct loop *loop, edge *exits, unsigned n_exits,
   if (tree_could_trap_p (ref->mem))
     {
       /* If the memory access is unsafe (i.e. it might trap), ensure that some
-         of the statements in that it occurs is always executed when the loop
-         is entered.  This way we know that by moving the load from the
-         reference out of the loop we will not cause the error that would not
-         occur otherwise.
+	 of the statements in that it occurs is always executed when the loop
+	 is entered.  This way we know that by moving the load from the
+	 reference out of the loop we will not cause the error that would not
+	 occur otherwise.
 
-         TODO -- in fact we would like to check for anticipability of the
-         reference, i.e. that on each path from loop entry to loop exit at
-         least one of the statements containing the memory reference is
-         executed.  */
+	 TODO -- in fact we would like to check for anticipability of the
+	 reference, i.e. that on each path from loop entry to loop exit at
+	 least one of the statements containing the memory reference is
+	 executed.  */
 
       for (aref = ref->locs; aref; aref = aref->next)
-        {
-          if (!LIM_DATA (aref->stmt))
-            continue;
+	{
+	  if (!LIM_DATA (aref->stmt))
+	    continue;
 
-          must_exec = LIM_DATA (aref->stmt)->always_executed_in;
-          if (!must_exec)
-            continue;
+	  must_exec = LIM_DATA (aref->stmt)->always_executed_in;
+	  if (!must_exec)
+	    continue;
 
-          if (must_exec == loop
-              || flow_loop_nested_p (must_exec, loop))
-            break;
-        }
+	  if (must_exec == loop
+	      || flow_loop_nested_p (must_exec, loop))
+	    break;
+	}
 
       if (!aref)
-        return;
+	return;
     }
 
   schedule_sm (loop, exits, n_exits, ref->mem, ref->locs);
@@ -1151,7 +1151,7 @@ determine_lsm_ref (struct loop *loop, edge *exits, unsigned n_exits,
 
 static void
 hoist_memory_references (struct loop *loop, struct mem_ref *mem_refs,
-                         bitmap clobbered_vops, edge *exits, unsigned n_exits)
+			 bitmap clobbered_vops, edge *exits, unsigned n_exits)
 {
   struct mem_ref *ref;
 
@@ -1165,7 +1165,7 @@ hoist_memory_references (struct loop *loop, struct mem_ref *mem_refs,
 
 static bool
 loop_suitable_for_sm (struct loop *loop ATTRIBUTE_UNUSED, edge *exits,
-                      unsigned n_exits)
+		      unsigned n_exits)
 {
   unsigned i;
 
@@ -1204,8 +1204,8 @@ memref_eq (const void *obj1, const void *obj2)
 
 static void
 gather_mem_refs_stmt (struct loop *loop, htab_t mem_refs,
-                      bitmap clobbered_vops, tree stmt,
-                      struct mem_ref **mem_ref_list)
+		      bitmap clobbered_vops, tree stmt,
+		      struct mem_ref **mem_ref_list)
 {
   tree *lhs, *rhs, *mem = NULL;
   hashval_t hash;
@@ -1228,13 +1228,13 @@ gather_mem_refs_stmt (struct loop *loop, htab_t mem_refs,
   if (TREE_CODE (*lhs) == SSA_NAME)
     {
       if (!is_gimple_addressable (*rhs))
-        goto fail;
+	goto fail;
 
       mem = rhs;
       is_stored = false;
     }
   else if (TREE_CODE (*rhs) == SSA_NAME
-           || is_gimple_min_invariant (*rhs))
+	   || is_gimple_min_invariant (*rhs))
     {
       mem = lhs;
       is_stored = true;
@@ -1271,14 +1271,14 @@ gather_mem_refs_stmt (struct loop *loop, htab_t mem_refs,
   ref->is_stored |= is_stored;
 
   FOR_EACH_SSA_TREE_OPERAND (vname, stmt, oi,
-                             SSA_OP_VIRTUAL_USES | SSA_OP_VIRTUAL_KILLS)
+			     SSA_OP_VIRTUAL_USES | SSA_OP_VIRTUAL_KILLS)
     bitmap_set_bit (ref->vops, DECL_UID (SSA_NAME_VAR (vname)));
   record_mem_ref_loc (&ref->locs, stmt, mem);
   return;
 
 fail:
   FOR_EACH_SSA_TREE_OPERAND (vname, stmt, oi,
-                             SSA_OP_VIRTUAL_USES | SSA_OP_VIRTUAL_KILLS)
+			     SSA_OP_VIRTUAL_USES | SSA_OP_VIRTUAL_KILLS)
     bitmap_set_bit (clobbered_vops, DECL_UID (SSA_NAME_VAR (vname)));
 }
 
@@ -1298,8 +1298,8 @@ gather_mem_refs (struct loop *loop, bitmap clobbered_vops)
   for (i = 0; i < loop->num_nodes; i++)
     {
       for (bsi = bsi_start (body[i]); !bsi_end_p (bsi); bsi_next (&bsi))
-        gather_mem_refs_stmt (loop, mem_refs, clobbered_vops, bsi_stmt (bsi),
-                              &mem_ref_list);
+	gather_mem_refs_stmt (loop, mem_refs, clobbered_vops, bsi_stmt (bsi),
+			      &mem_ref_list);
     }
 
   free (body);
@@ -1323,7 +1323,7 @@ find_more_ref_vops (struct mem_ref *mem_refs, bitmap clobbered_vops)
   for (ref = mem_refs; ref; ref = ref->next)
     {
       /* The vops that are already in all_vops are accessed by more than
-         one memory reference.  */
+	 one memory reference.  */
       bitmap_and (&tmp, &all_vops, ref->vops);
       bitmap_ior_into (clobbered_vops, &tmp);
       bitmap_clear (&tmp);
@@ -1410,19 +1410,19 @@ determine_lsm (struct loops *loops)
       determine_lsm_loop (loop);
 
       if (loop->inner)
-        {
-          loop = loop->inner;
-          continue;
-        }
+	{
+	  loop = loop->inner;
+	  continue;
+	}
       while (!loop->next)
-        {
-          loop = loop->outer;
-          if (loop == loops->tree_root)
-            {
-              loop_commit_inserts ();
-              return;
-            }
-        }
+	{
+	  loop = loop->outer;
+	  if (loop == loops->tree_root)
+	    {
+	      loop_commit_inserts ();
+	      return;
+	    }
+	}
       loop = loop->next;
     }
 }
@@ -1445,48 +1445,48 @@ fill_always_executed_in (struct loop *loop, sbitmap contains_call)
       bbs = get_loop_body_in_dom_order (loop);
 
       for (i = 0; i < loop->num_nodes; i++)
-        {
-          edge_iterator ei;
-          bb = bbs[i];
+	{
+	  edge_iterator ei;
+	  bb = bbs[i];
 
-          if (dominated_by_p (CDI_DOMINATORS, loop->latch, bb))
-            last = bb;
+	  if (dominated_by_p (CDI_DOMINATORS, loop->latch, bb))
+	    last = bb;
 
-          if (TEST_BIT (contains_call, bb->index))
-            break;
+	  if (TEST_BIT (contains_call, bb->index))
+	    break;
 
-          FOR_EACH_EDGE (e, ei, bb->succs)
-            if (!flow_bb_inside_loop_p (loop, e->dest))
-              break;
-          if (e)
-            break;
+	  FOR_EACH_EDGE (e, ei, bb->succs)
+	    if (!flow_bb_inside_loop_p (loop, e->dest))
+	      break;
+	  if (e)
+	    break;
 
-          /* A loop might be infinite (TODO use simple loop analysis
-             to disprove this if possible).  */
-          if (bb->flags & BB_IRREDUCIBLE_LOOP)
-            break;
+	  /* A loop might be infinite (TODO use simple loop analysis
+	     to disprove this if possible).  */
+	  if (bb->flags & BB_IRREDUCIBLE_LOOP)
+	    break;
 
-          if (!flow_bb_inside_loop_p (inn_loop, bb))
-            break;
+	  if (!flow_bb_inside_loop_p (inn_loop, bb))
+	    break;
 
-          if (bb->loop_father->header == bb)
-            {
-              if (!dominated_by_p (CDI_DOMINATORS, loop->latch, bb))
-                break;
+	  if (bb->loop_father->header == bb)
+	    {
+	      if (!dominated_by_p (CDI_DOMINATORS, loop->latch, bb))
+		break;
 
-              /* In a loop that is always entered we may proceed anyway.
-                 But record that we entered it and stop once we leave it.  */
-              inn_loop = bb->loop_father;
-            }
-        }
+	      /* In a loop that is always entered we may proceed anyway.
+		 But record that we entered it and stop once we leave it.  */
+	      inn_loop = bb->loop_father;
+	    }
+	}
 
       while (1)
-        {
-          last->aux = loop;
-          if (last == loop->header)
-            break;
-          last = get_immediate_dominator (CDI_DOMINATORS, last);
-        }
+	{
+	  last->aux = loop;
+	  if (last == loop->header)
+	    break;
+	  last = get_immediate_dominator (CDI_DOMINATORS, last);
+	}
 
       free (bbs);
     }
@@ -1510,13 +1510,13 @@ tree_ssa_lim_initialize (struct loops *loops)
   FOR_EACH_BB (bb)
     {
       for (bsi = bsi_start (bb); !bsi_end_p (bsi); bsi_next (&bsi))
-        {
-          if (nonpure_call_p (bsi_stmt (bsi)))
-            break;
-        }
+	{
+	  if (nonpure_call_p (bsi_stmt (bsi)))
+	    break;
+	}
 
       if (!bsi_end_p (bsi))
-        SET_BIT (contains_call, bb->index);
+	SET_BIT (contains_call, bb->index);
     }
 
   for (loop = loops->tree_root->inner; loop; loop = loop->next)

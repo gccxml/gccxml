@@ -41,11 +41,11 @@ static int hpux_gt_pch_use_address (void *, size_t, int, size_t);
 /* For various ports, try to guess a fixed spot in the vm space
    that's probably free.  */
 #if (defined(__hppa__) || defined(__ia64__)) && defined(__LP64__)
-# define TRY_EMPTY_VM_SPACE        0x8000000000000000
+# define TRY_EMPTY_VM_SPACE	0x8000000000000000
 #elif defined(__hppa__) || defined(__ia64__)
-# define TRY_EMPTY_VM_SPACE        0x60000000
+# define TRY_EMPTY_VM_SPACE	0x60000000
 #else
-# define TRY_EMPTY_VM_SPACE        0
+# define TRY_EMPTY_VM_SPACE	0
 #endif
 
 /* Determine a location where we might be able to reliably allocate
@@ -58,7 +58,7 @@ hpux_gt_pch_get_address (size_t size, int fd)
   void *addr;
 
   addr = mmap ((void *)TRY_EMPTY_VM_SPACE, size, PROT_READ | PROT_WRITE,
-               MAP_PRIVATE, fd, 0);
+	       MAP_PRIVATE, fd, 0);
 
   /* If we failed the map, that means there's *no* free space.  */
   if (addr == (void *) MAP_FAILED)
@@ -106,7 +106,7 @@ hpux_gt_pch_use_address (void *base, size_t size, int fd, size_t offset)
 
   /* Try to make an anonymous private mmap at the desired location.  */
   addr = mmap (base, size, PROT_READ | PROT_WRITE,
-               MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+	       MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
 
   if (addr != base)
     {

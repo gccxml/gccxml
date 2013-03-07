@@ -68,7 +68,7 @@ static bool m32c_fixed_condition_code_regs (unsigned int *, unsigned int *);
 static struct machine_function *m32c_init_machine_status (void);
 static void m32c_insert_attributes (tree, tree *);
 static bool m32c_pass_by_reference (CUMULATIVE_ARGS *, enum machine_mode,
-                                    tree, bool);
+				    tree, bool);
 static bool m32c_promote_prototypes (tree);
 static int m32c_pushm_popm (Push_Pop_Type);
 static bool m32c_strict_argument_naming (CUMULATIVE_ARGS *);
@@ -138,8 +138,8 @@ encode_pattern_1 (rtx x)
       break;
     case SUBREG:
       if (GET_MODE_SIZE (GET_MODE (x)) !=
-          GET_MODE_SIZE (GET_MODE (XEXP (x, 0))))
-        *patternp++ = 'S';
+	  GET_MODE_SIZE (GET_MODE (XEXP (x, 0))))
+	*patternp++ = 'S';
       encode_pattern_1 (XEXP (x, 0));
       break;
     case MEM:
@@ -186,7 +186,7 @@ encode_pattern_1 (rtx x)
       *patternp++ = 'u';
       *patternp++ = '0' + XCINT (x, 1, UNSPEC);
       for (i = 0; i < XVECLEN (x, 0); i++)
-        encode_pattern_1 (XVECEXP (x, 0, i));
+	encode_pattern_1 (XVECEXP (x, 0, i));
       break;
     case USE:
       *patternp++ = 'U';
@@ -194,19 +194,19 @@ encode_pattern_1 (rtx x)
     case PARALLEL:
       *patternp++ = '|';
       for (i = 0; i < XVECLEN (x, 0); i++)
-        encode_pattern_1 (XVECEXP (x, 0, i));
+	encode_pattern_1 (XVECEXP (x, 0, i));
       break;
     case EXPR_LIST:
       *patternp++ = 'E';
       encode_pattern_1 (XEXP (x, 0));
       if (XEXP (x, 1))
-        encode_pattern_1 (XEXP (x, 1));
+	encode_pattern_1 (XEXP (x, 1));
       break;
     default:
       *patternp++ = '?';
 #if DEBUG0
       fprintf (stderr, "can't encode pattern %s\n",
-               GET_RTX_NAME (GET_CODE (x)));
+	       GET_RTX_NAME (GET_CODE (x)));
       debug_rtx (x);
       gcc_unreachable ();
 #endif
@@ -271,9 +271,9 @@ reg_push_size (int regno)
     case FB_REGNO:
     case SP_REGNO:
       if (TARGET_A16)
-        return 2;
+	return 2;
       else
-        return 3;
+	return 3;
     default:
       gcc_unreachable ();
     }
@@ -299,12 +299,12 @@ reduce_class (int original_class, int limiting_class, int returned_if_empty)
       int r;
       class_sizes = (int *) xmalloc (LIM_REG_CLASSES * sizeof (int));
       for (i = 0; i < LIM_REG_CLASSES; i++)
-        {
-          class_sizes[i] = 0;
-          for (r = 0; r < FIRST_PSEUDO_REGISTER; r++)
-            if (class_contents[i][0] & (1 << r))
-              class_sizes[i]++;
-        }
+	{
+	  class_sizes[i] = 0;
+	  for (r = 0; r < FIRST_PSEUDO_REGISTER; r++)
+	    if (class_contents[i][0] & (1 << r))
+	      class_sizes[i]++;
+	}
     }
 
   cc &= class_contents[limiting_class][0];
@@ -313,11 +313,11 @@ reduce_class (int original_class, int limiting_class, int returned_if_empty)
       int ic = class_contents[i][0];
 
       if ((~cc & ic) == 0)
-        if (best_size < class_sizes[i])
-          {
-            best = i;
-            best_size = class_sizes[i];
-          }
+	if (best_size < class_sizes[i])
+	  {
+	    best = i;
+	    best_size = class_sizes[i];
+	  }
 
     }
   if (best == NO_REGS)
@@ -345,25 +345,25 @@ class_can_hold_mode (int class, enum machine_mode mode)
       int r, n, i;
       results[class][mode] = 1;
       for (r = 0; r < FIRST_PSEUDO_REGISTER; r++)
-        if (class_contents[class][0] & (1 << r)
-            && HARD_REGNO_MODE_OK (r, mode))
-          {
-            int ok = 1;
-            n = HARD_REGNO_NREGS (r, mode);
-            for (i = 1; i < n; i++)
-              if (!(class_contents[class][0] & (1 << (r + i))))
-                ok = 0;
-            if (ok)
-              {
-                results[class][mode] = 2;
-                break;
-              }
-          }
+	if (class_contents[class][0] & (1 << r)
+	    && HARD_REGNO_MODE_OK (r, mode))
+	  {
+	    int ok = 1;
+	    n = HARD_REGNO_NREGS (r, mode);
+	    for (i = 1; i < n; i++)
+	      if (!(class_contents[class][0] & (1 << (r + i))))
+		ok = 0;
+	    if (ok)
+	      {
+		results[class][mode] = 2;
+		break;
+	      }
+	  }
     }
 #if DEBUG0
   fprintf (stderr, "class %s can hold %s? %s\n",
-           class_names[class], mode_name[mode],
-           (results[class][mode] == 2) ? "yes" : "no");
+	   class_names[class], mode_name[mode],
+	   (results[class][mode] == 2) ? "yes" : "no");
 #endif
   return results[class][mode] == 2;
 }
@@ -390,8 +390,8 @@ int ok_to_change_target_memregs = TRUE;
 #define TARGET_HANDLE_OPTION m32c_handle_option
 static bool
 m32c_handle_option (size_t code,
-                    const char *arg ATTRIBUTE_UNUSED,
-                    int value ATTRIBUTE_UNUSED)
+		    const char *arg ATTRIBUTE_UNUSED,
+		    int value ATTRIBUTE_UNUSED)
 {
   if (code == OPT_memregs_)
     {
@@ -409,7 +409,7 @@ m32c_override_options (void)
   if (target_memregs_set)
     {
       if (target_memregs < 0 || target_memregs > 16)
-        error ("invalid target memregs value '%d'", target_memregs);
+	error ("invalid target memregs value '%d'", target_memregs);
     }
   else
     target_memregs = 16;
@@ -461,26 +461,26 @@ static struct
   char di_regs;
 } nregs_table[FIRST_PSEUDO_REGISTER] =
 {
-  { 1, 1, 2, 2, 4 },                /* r0 */
-  { 0, 1, 0, 0, 0 },                /* r2 */
-  { 1, 1, 2, 2, 0 },                /* r1 */
-  { 0, 1, 0, 0, 0 },                /* r3 */
-  { 0, 1, 1, 0, 0 },                /* a0 */
-  { 0, 1, 1, 0, 0 },                /* a1 */
-  { 0, 1, 1, 0, 0 },                /* sb */
-  { 0, 1, 1, 0, 0 },                /* fb */
-  { 0, 1, 1, 0, 0 },                /* sp */
-  { 1, 1, 1, 0, 0 },                /* pc */
-  { 0, 0, 0, 0, 0 },                /* fl */
-  { 1, 1, 1, 0, 0 },                /* ap */
-  { 1, 1, 2, 2, 4 },                /* mem0 */
-  { 1, 1, 2, 2, 4 },                /* mem1 */
-  { 1, 1, 2, 2, 4 },                /* mem2 */
-  { 1, 1, 2, 2, 4 },                /* mem3 */
-  { 1, 1, 2, 2, 4 },                /* mem4 */
-  { 1, 1, 2, 2, 0 },                /* mem5 */
-  { 1, 1, 2, 2, 0 },                /* mem6 */
-  { 1, 1, 0, 0, 0 },                /* mem7 */
+  { 1, 1, 2, 2, 4 },		/* r0 */
+  { 0, 1, 0, 0, 0 },		/* r2 */
+  { 1, 1, 2, 2, 0 },		/* r1 */
+  { 0, 1, 0, 0, 0 },		/* r3 */
+  { 0, 1, 1, 0, 0 },		/* a0 */
+  { 0, 1, 1, 0, 0 },		/* a1 */
+  { 0, 1, 1, 0, 0 },		/* sb */
+  { 0, 1, 1, 0, 0 },		/* fb */
+  { 0, 1, 1, 0, 0 },		/* sp */
+  { 1, 1, 1, 0, 0 },		/* pc */
+  { 0, 0, 0, 0, 0 },		/* fl */
+  { 1, 1, 1, 0, 0 },		/* ap */
+  { 1, 1, 2, 2, 4 },		/* mem0 */
+  { 1, 1, 2, 2, 4 },		/* mem1 */
+  { 1, 1, 2, 2, 4 },		/* mem2 */
+  { 1, 1, 2, 2, 4 },		/* mem3 */
+  { 1, 1, 2, 2, 4 },		/* mem4 */
+  { 1, 1, 2, 2, 0 },		/* mem5 */
+  { 1, 1, 2, 2, 0 },		/* mem6 */
+  { 1, 1, 0, 0, 0 },		/* mem7 */
 };
 
 /* Implements CONDITIONAL_REGISTER_USAGE.  We adjust the number of
@@ -495,12 +495,12 @@ m32c_conditional_register_usage (void)
   if (0 <= target_memregs && target_memregs <= 16)
     {
       /* The command line option is bytes, but our "registers" are
-         16-bit words.  */
+	 16-bit words.  */
       for (i = target_memregs/2; i < 8; i++)
-        {
-          fixed_regs[MEM0_REGNO + i] = 1;
-          CLEAR_HARD_REG_BIT (reg_class_contents[MEM_REGS], MEM0_REGNO + i);
-        }
+	{
+	  fixed_regs[MEM0_REGNO + i] = 1;
+	  CLEAR_HARD_REG_BIT (reg_class_contents[MEM_REGS], MEM0_REGNO + i);
+	}
     }
 
   /* M32CM and M32C preserve more registers across function calls.  */
@@ -600,7 +600,7 @@ m32c_regno_reg_class (int regno)
       return FLG_REGS;
     default:
       if (IS_MEM_REGNO (regno))
-        return MEM_REGS;
+	return MEM_REGS;
       return ALL_REGS;
     }
 }
@@ -665,7 +665,7 @@ m32c_reg_class_from_constraint (char c ATTRIBUTE_UNUSED, const char *s)
   if (memcmp (s, "Rmm", 3) == 0)
     {
       if (fixed_regs[MEM0_REGNO])
-        return NO_REGS;
+	return NO_REGS;
       return MEM_REGS;
     }
 
@@ -673,9 +673,9 @@ m32c_reg_class_from_constraint (char c ATTRIBUTE_UNUSED, const char *s)
   if (memcmp (s, "Rpi", 3) == 0)
     {
       if (TARGET_A16)
-        return HI_REGS;
+	return HI_REGS;
       else
-        return RA_REGS; /* r2r0 and r3r1 can hold pointers.  */
+	return RA_REGS; /* r2r0 and r3r1 can hold pointers.  */
     }
 
   /* We handle this one as an EXTRA_CONSTRAINT.  */
@@ -712,7 +712,7 @@ m32c_preferred_reload_class (rtx x, int rclass)
 
 #if DEBUG_RELOAD
   fprintf (stderr, "\npreferred_reload_class for %s is ",
-           class_names[rclass]);
+	   class_names[rclass]);
 #endif
   if (rclass == NO_REGS)
     rclass = GET_MODE (x) == QImode ? HL_REGS : R03_REGS;
@@ -720,20 +720,20 @@ m32c_preferred_reload_class (rtx x, int rclass)
   if (classes_intersect (rclass, CR_REGS))
     {
       switch (GET_MODE (x))
-        {
-        case QImode:
-          newclass = HL_REGS;
-          break;
-        default:
-          /*      newclass = HI_REGS; */
-          break;
-        }
+	{
+	case QImode:
+	  newclass = HL_REGS;
+	  break;
+	default:
+	  /*      newclass = HI_REGS; */
+	  break;
+	}
     }
 
   else if (newclass == QI_REGS && GET_MODE_SIZE (GET_MODE (x)) > 2)
     newclass = SI_REGS;
   else if (GET_MODE_SIZE (GET_MODE (x)) > 4
-           && ~class_contents[rclass][0] & 0x000f)
+	   && ~class_contents[rclass][0] & 0x000f)
     newclass = DI_REGS;
 
   rclass = reduce_class (rclass, newclass, rclass);
@@ -768,7 +768,7 @@ m32c_limit_reload_class (enum machine_mode mode, int rclass)
 {
 #if DEBUG_RELOAD
   fprintf (stderr, "limit_reload_class for %s: %s ->",
-           mode_name[mode], class_names[rclass]);
+	   mode_name[mode], class_names[rclass]);
 #endif
 
   if (mode == QImode)
@@ -797,7 +797,7 @@ m32c_secondary_reload_class (int rclass, enum machine_mode mode, rtx x)
   int cc = class_contents[rclass][0];
 #if DEBUG0
   fprintf (stderr, "\nsecondary reload class %s %s\n",
-           class_names[rclass], mode_name[mode]);
+	   class_names[rclass], mode_name[mode]);
   debug_rtx (x);
 #endif
   if (mode == QImode
@@ -831,9 +831,9 @@ m32c_class_max_nregs (int regclass, enum machine_mode mode)
   for (rn = 0; rn < FIRST_PSEUDO_REGISTER; rn++)
     if (class_contents[regclass][0] & (1 << rn))
       {
-        int n = m32c_hard_regno_nregs (rn, mode);
-        if (max < n)
-          max = n;
+	int n = m32c_hard_regno_nregs (rn, mode);
+	if (max < n)
+	  max = n;
       }
   return max;
 }
@@ -844,20 +844,20 @@ m32c_class_max_nregs (int regclass, enum machine_mode mode)
    suffers).  Otherwise, we allow changes to larger modes.  */
 int
 m32c_cannot_change_mode_class (enum machine_mode from,
-                               enum machine_mode to, int rclass)
+			       enum machine_mode to, int rclass)
 {
 #if DEBUG0
   fprintf (stderr, "cannot change from %s to %s in %s\n",
-           mode_name[from], mode_name[to], class_names[rclass]);
+	   mode_name[from], mode_name[to], class_names[rclass]);
 #endif
 
   if (to == QImode)
     return (class_contents[rclass][0] & 0x1ffa);
 
-  if (class_contents[rclass][0] & 0x0005        /* r0, r1 */
+  if (class_contents[rclass][0] & 0x0005	/* r0, r1 */
       && GET_MODE_SIZE (from) > 1)
     return 0;
-  if (GET_MODE_SIZE (from) > 2)        /* all other regs */
+  if (GET_MODE_SIZE (from) > 2)	/* all other regs */
     return 0;
 
   return 1;
@@ -866,20 +866,20 @@ m32c_cannot_change_mode_class (enum machine_mode from,
 /* Helpers for the rest of the file.  */
 /* TRUE if the rtx is a REG rtx for the given register.  */
 #define IS_REG(rtx,regno) (GET_CODE (rtx) == REG \
-                           && REGNO (rtx) == regno)
+			   && REGNO (rtx) == regno)
 /* TRUE if the rtx is a pseudo - specifically, one we can use as a
    base register in address calculations (hence the "strict"
    argument).  */
 #define IS_PSEUDO(rtx,strict) (!strict && GET_CODE (rtx) == REG \
-                               && (REGNO (rtx) == AP_REGNO \
-                                   || REGNO (rtx) >= FIRST_PSEUDO_REGISTER))
+			       && (REGNO (rtx) == AP_REGNO \
+				   || REGNO (rtx) >= FIRST_PSEUDO_REGISTER))
 
 /* Implements CONST_OK_FOR_CONSTRAINT_P.  Currently, all constant
    constraints start with 'I', with the next two characters indicating
    the type and size of the range allowed.  */
 int
 m32c_const_ok_for_constraint_p (HOST_WIDE_INT value,
-                                char c ATTRIBUTE_UNUSED, const char *str)
+				char c ATTRIBUTE_UNUSED, const char *str)
 {
   /* s=signed u=unsigned n=nonzero m=minus l=log2able,
      [sun] bits [SUN] bytes, p=pointer size
@@ -959,34 +959,34 @@ m32c_extra_constraint_p2 (rtx value, char c ATTRIBUTE_UNUSED, const char *str)
       /* This is the common "src/dest" address */
       rtx r;
       if (GET_CODE (value) == MEM && CONSTANT_P (XEXP (value, 0)))
-        return 1;
+	return 1;
       if (RTX_IS ("ms") || RTX_IS ("m+si"))
-        return 1;
+	return 1;
       if (RTX_IS ("m++rii"))
-        {
-          if (REGNO (patternr[3]) == FB_REGNO
-              && INTVAL (patternr[4]) == 0)
-            return 1;
-        }
+	{
+	  if (REGNO (patternr[3]) == FB_REGNO
+	      && INTVAL (patternr[4]) == 0)
+	    return 1;
+	}
       if (RTX_IS ("mr"))
-        r = patternr[1];
+	r = patternr[1];
       else if (RTX_IS ("m+ri") || RTX_IS ("m+rs") || RTX_IS ("m+r+si"))
-        r = patternr[2];
+	r = patternr[2];
       else
-        return 0;
+	return 0;
       if (REGNO (r) == SP_REGNO)
-        return 0;
+	return 0;
       return m32c_legitimate_address_p (GET_MODE (value), XEXP (value, 0), 1);
     }
   else if (memcmp (str, "Sa", 2) == 0)
     {
       rtx r;
       if (RTX_IS ("mr"))
-        r = patternr[1];
+	r = patternr[1];
       else if (RTX_IS ("m+ri"))
-        r = patternr[2];
+	r = patternr[2];
       else
-        return 0;
+	return 0;
       return (IS_REG (r, A0_REGNO) || IS_REG (r, A1_REGNO));
     }
   else if (memcmp (str, "Si", 2) == 0)
@@ -996,26 +996,26 @@ m32c_extra_constraint_p2 (rtx value, char c ATTRIBUTE_UNUSED, const char *str)
   else if (memcmp (str, "Ss", 2) == 0)
     {
       return ((RTX_IS ("mr")
-               && (IS_REG (patternr[1], SP_REGNO)))
-              || (RTX_IS ("m+ri") && (IS_REG (patternr[2], SP_REGNO))));
+	       && (IS_REG (patternr[1], SP_REGNO)))
+	      || (RTX_IS ("m+ri") && (IS_REG (patternr[2], SP_REGNO))));
     }
   else if (memcmp (str, "Sf", 2) == 0)
     {
       return ((RTX_IS ("mr")
-               && (IS_REG (patternr[1], FB_REGNO)))
-              || (RTX_IS ("m+ri") && (IS_REG (patternr[2], FB_REGNO))));
+	       && (IS_REG (patternr[1], FB_REGNO)))
+	      || (RTX_IS ("m+ri") && (IS_REG (patternr[2], FB_REGNO))));
     }
   else if (memcmp (str, "Sb", 2) == 0)
     {
       return ((RTX_IS ("mr")
-               && (IS_REG (patternr[1], SB_REGNO)))
-              || (RTX_IS ("m+ri") && (IS_REG (patternr[2], SB_REGNO))));
+	       && (IS_REG (patternr[1], SB_REGNO)))
+	      || (RTX_IS ("m+ri") && (IS_REG (patternr[2], SB_REGNO))));
     }
   else if (memcmp (str, "Sp", 2) == 0)
     {
       /* Absolute addresses 0..0x1fff used for bit addressing (I/O ports) */
       return (RTX_IS ("mi")
-              && !(INTVAL (patternr[1]) & ~0x1fff));
+	      && !(INTVAL (patternr[1]) & ~0x1fff));
     }
   else if (memcmp (str, "S1", 2) == 0)
     {
@@ -1037,7 +1037,7 @@ m32c_extra_constraint_p (rtx value, char c, const char *str)
   int rv = m32c_extra_constraint_p2 (value, c, str);
 #if DEBUG0
   fprintf (stderr, "\nconstraint %.*s: %d\n", CONSTRAINT_LEN (c, str), str,
-           rv);
+	   rv);
   debug_rtx (value);
 #endif
   return rv;
@@ -1178,11 +1178,11 @@ m32c_dwarf_frame_regnum (int n)
 
    ap -> +------------------------------
          | Return address (3 or 4 bytes)
-         | Saved FB (2 or 4 bytes)
+	 | Saved FB (2 or 4 bytes)
    fb -> +------------------------------
-         | local vars
+	 | local vars
          | register saves fb
-         |        through r0 as needed
+	 |        through r0 as needed
    sp -> +------------------------------
 */
 
@@ -1268,46 +1268,46 @@ m32c_pushm_popm (Push_Pop_Type ppt)
       int rv_bytes = GET_MODE_SIZE (GET_MODE (rv));
 
       if (rv_bytes > 2)
-        nosave_mask |= 0x20;        /* PSI, SI */
+	nosave_mask |= 0x20;	/* PSI, SI */
       else
-        nosave_mask |= 0xf0;        /* DF */
+	nosave_mask |= 0xf0;	/* DF */
       if (rv_bytes > 4)
-        nosave_mask |= 0x50;        /* DI */
+	nosave_mask |= 0x50;	/* DI */
     }
 
   for (i = 0; i < (int) PUSHM_N; i++)
     {
       /* Skip if neither register needs saving.  */
       if (!need_to_save (pushm_info[i].reg1))
-        continue;
+	continue;
 
       if (pushm_info[i].bit & nosave_mask)
-        continue;
+	continue;
 
       reg_mask |= pushm_info[i].bit;
       bytes = TARGET_A16 ? pushm_info[i].a16_bytes : pushm_info[i].a24_bytes;
 
       if (ppt == PP_pushm)
-        {
-          enum machine_mode mode = (bytes == 2) ? HImode : SImode;
-          rtx addr;
+	{
+	  enum machine_mode mode = (bytes == 2) ? HImode : SImode;
+	  rtx addr;
 
-          /* Always use stack_pointer_rtx instead of calling
-             rtx_gen_REG ourselves.  Code elsewhere in GCC assumes
-             that there is a single rtx representing the stack pointer,
-             namely stack_pointer_rtx, and uses == to recognize it.  */
-          addr = stack_pointer_rtx;
+	  /* Always use stack_pointer_rtx instead of calling
+	     rtx_gen_REG ourselves.  Code elsewhere in GCC assumes
+	     that there is a single rtx representing the stack pointer,
+	     namely stack_pointer_rtx, and uses == to recognize it.  */
+	  addr = stack_pointer_rtx;
 
-          if (byte_count != 0)
-            addr = gen_rtx_PLUS (GET_MODE (addr), addr, GEN_INT (byte_count));
+	  if (byte_count != 0)
+	    addr = gen_rtx_PLUS (GET_MODE (addr), addr, GEN_INT (byte_count));
 
-          dwarf_set[n_dwarfs++] =
-            gen_rtx_SET (VOIDmode,
-                         gen_rtx_MEM (mode, addr),
-                         gen_rtx_REG (mode, pushm_info[i].reg1));
-          F (dwarf_set[n_dwarfs - 1]);
+	  dwarf_set[n_dwarfs++] =
+	    gen_rtx_SET (VOIDmode,
+			 gen_rtx_MEM (mode, addr),
+			 gen_rtx_REG (mode, pushm_info[i].reg1));
+	  F (dwarf_set[n_dwarfs - 1]);
 
-        }
+	}
       byte_count += bytes;
     }
 
@@ -1321,10 +1321,10 @@ m32c_pushm_popm (Push_Pop_Type ppt)
   if (cfun->machine->is_interrupt)
     for (i = MEM0_REGNO; i <= MEM7_REGNO; i++)
       if (need_to_save (i))
-        {
-          byte_count += 2;
-          cfun->machine->intr_pushmem[i - MEM0_REGNO] = 1;
-        }
+	{
+	  byte_count += 2;
+	  cfun->machine->intr_pushmem[i - MEM0_REGNO] = 1;
+	}
 
   if (ppt == PP_pushm && byte_count)
     {
@@ -1332,48 +1332,48 @@ m32c_pushm_popm (Push_Pop_Type ppt)
       rtx pushm;
 
       if (reg_mask)
-        {
-          XVECEXP (note, 0, 0)
-            = gen_rtx_SET (VOIDmode,
-                           stack_pointer_rtx,
-                           gen_rtx_PLUS (GET_MODE (stack_pointer_rtx),
-                                         stack_pointer_rtx,
-                                         GEN_INT (-byte_count)));
-          F (XVECEXP (note, 0, 0));
+	{
+	  XVECEXP (note, 0, 0)
+	    = gen_rtx_SET (VOIDmode,
+			   stack_pointer_rtx,
+			   gen_rtx_PLUS (GET_MODE (stack_pointer_rtx),
+					 stack_pointer_rtx,
+					 GEN_INT (-byte_count)));
+	  F (XVECEXP (note, 0, 0));
 
-          for (i = 0; i < n_dwarfs; i++)
-            XVECEXP (note, 0, i + 1) = dwarf_set[i];
+	  for (i = 0; i < n_dwarfs; i++)
+	    XVECEXP (note, 0, i + 1) = dwarf_set[i];
 
-          pushm = F (emit_insn (gen_pushm (GEN_INT (reg_mask))));
+	  pushm = F (emit_insn (gen_pushm (GEN_INT (reg_mask))));
 
-          REG_NOTES (pushm) = gen_rtx_EXPR_LIST (REG_FRAME_RELATED_EXPR, note,
-                                                 REG_NOTES (pushm));
-        }
+	  REG_NOTES (pushm) = gen_rtx_EXPR_LIST (REG_FRAME_RELATED_EXPR, note,
+						 REG_NOTES (pushm));
+	}
 
       if (cfun->machine->is_interrupt)
-        for (i = MEM0_REGNO; i <= MEM7_REGNO; i++)
-          if (cfun->machine->intr_pushmem[i - MEM0_REGNO])
-            {
-              if (TARGET_A16)
-                pushm = emit_insn (gen_pushhi_16 (gen_rtx_REG (HImode, i)));
-              else
-                pushm = emit_insn (gen_pushhi_24 (gen_rtx_REG (HImode, i)));
-              F (pushm);
-            }
+	for (i = MEM0_REGNO; i <= MEM7_REGNO; i++)
+	  if (cfun->machine->intr_pushmem[i - MEM0_REGNO])
+	    {
+	      if (TARGET_A16)
+		pushm = emit_insn (gen_pushhi_16 (gen_rtx_REG (HImode, i)));
+	      else
+		pushm = emit_insn (gen_pushhi_24 (gen_rtx_REG (HImode, i)));
+	      F (pushm);
+	    }
     }
   if (ppt == PP_popm && byte_count)
     {
       if (cfun->machine->is_interrupt)
-        for (i = MEM7_REGNO; i >= MEM0_REGNO; i--)
-          if (cfun->machine->intr_pushmem[i - MEM0_REGNO])
-            {
-              if (TARGET_A16)
-                emit_insn (gen_pophi_16 (gen_rtx_REG (HImode, i)));
-              else
-                emit_insn (gen_pophi_24 (gen_rtx_REG (HImode, i)));
-            }
+	for (i = MEM7_REGNO; i >= MEM0_REGNO; i--)
+	  if (cfun->machine->intr_pushmem[i - MEM0_REGNO])
+	    {
+	      if (TARGET_A16)
+		emit_insn (gen_pophi_16 (gen_rtx_REG (HImode, i)));
+	      else
+		emit_insn (gen_pophi_24 (gen_rtx_REG (HImode, i)));
+	    }
       if (reg_mask)
-        emit_insn (gen_popm (GEN_INT (reg_mask)));
+	emit_insn (gen_popm (GEN_INT (reg_mask)));
     }
 
   return byte_count;
@@ -1389,9 +1389,9 @@ m32c_initial_elimination_offset (int from, int to)
   if (from == AP_REGNO)
     {
       if (TARGET_A16)
-        ofs += 5;
+	ofs += 5;
       else
-        ofs += 8;
+	ofs += 8;
     }
 
   if (to == SP_REGNO)
@@ -1405,7 +1405,7 @@ m32c_initial_elimination_offset (int from, int to)
     ofs = (ofs + 1) & ~1;
 #if DEBUG0
   fprintf (stderr, "initial_elimination_offset from=%d to=%d, ofs=%d\n", from,
-           to, ofs);
+	   to, ofs);
 #endif
   return ofs;
 }
@@ -1437,11 +1437,11 @@ m32c_push_rounding (int n)
    buffer for it is at the top of the stack (last thing pushed).  The
    first few real arguments may be in registers as follows:
 
-   R8C/M16C:        arg1 in r1 if it's QI or HI (else it's pushed on stack)
-                arg2 in r2 if it's HI (else pushed on stack)
-                rest on stack
+   R8C/M16C:	arg1 in r1 if it's QI or HI (else it's pushed on stack)
+		arg2 in r2 if it's HI (else pushed on stack)
+		rest on stack
    M32C:        arg1 in r0 if it's QI or HI (else it's pushed on stack)
-                rest on stack
+		rest on stack
 
    Structs are not passed in registers, even if they fit.  Only
    integer and pointer types are passed in registers.
@@ -1450,13 +1450,13 @@ m32c_push_rounding (int n)
    r2 if it fits.  */
 rtx
 m32c_function_arg (CUMULATIVE_ARGS * ca,
-                   enum machine_mode mode, tree type, int named)
+		   enum machine_mode mode, tree type, int named)
 {
   /* Can return a reg, parallel, or 0 for stack */
   rtx rv = NULL_RTX;
 #if DEBUG0
   fprintf (stderr, "func_arg %d (%s, %d)\n",
-           ca->parm_num, mode_name[mode], named);
+	   ca->parm_num, mode_name[mode], named);
   debug_tree (type);
 #endif
 
@@ -1467,7 +1467,7 @@ m32c_function_arg (CUMULATIVE_ARGS * ca,
     {
 #if DEBUG0
       fprintf (stderr, "func arg: force %d named %d, mem\n", ca->force_mem,
-               named);
+	       named);
 #endif
       return NULL_RTX;
     }
@@ -1482,12 +1482,12 @@ m32c_function_arg (CUMULATIVE_ARGS * ca,
     {
     case 1:
       if (GET_MODE_SIZE (mode) == 1 || GET_MODE_SIZE (mode) == 2)
-        rv = gen_rtx_REG (mode, TARGET_A16 ? R1_REGNO : R0_REGNO);
+	rv = gen_rtx_REG (mode, TARGET_A16 ? R1_REGNO : R0_REGNO);
       break;
 
     case 2:
       if (TARGET_A16 && GET_MODE_SIZE (mode) == 2)
-        rv = gen_rtx_REG (mode, R2_REGNO);
+	rv = gen_rtx_REG (mode, R2_REGNO);
       break;
     }
 
@@ -1501,9 +1501,9 @@ m32c_function_arg (CUMULATIVE_ARGS * ca,
 #define TARGET_PASS_BY_REFERENCE m32c_pass_by_reference
 static bool
 m32c_pass_by_reference (CUMULATIVE_ARGS * ca ATTRIBUTE_UNUSED,
-                        enum machine_mode mode ATTRIBUTE_UNUSED,
-                        tree type ATTRIBUTE_UNUSED,
-                        bool named ATTRIBUTE_UNUSED)
+			enum machine_mode mode ATTRIBUTE_UNUSED,
+			tree type ATTRIBUTE_UNUSED,
+			bool named ATTRIBUTE_UNUSED)
 {
   return 0;
 }
@@ -1511,10 +1511,10 @@ m32c_pass_by_reference (CUMULATIVE_ARGS * ca ATTRIBUTE_UNUSED,
 /* Implements INIT_CUMULATIVE_ARGS.  */
 void
 m32c_init_cumulative_args (CUMULATIVE_ARGS * ca,
-                           tree fntype,
-                           rtx libname ATTRIBUTE_UNUSED,
-                           tree fndecl,
-                           int n_named_args ATTRIBUTE_UNUSED)
+			   tree fntype,
+			   rtx libname ATTRIBUTE_UNUSED,
+			   tree fndecl,
+			   int n_named_args ATTRIBUTE_UNUSED)
 {
   if (fntype && aggregate_value_p (TREE_TYPE (fntype), fndecl))
     ca->force_mem = 1;
@@ -1529,9 +1529,9 @@ m32c_init_cumulative_args (CUMULATIVE_ARGS * ca,
    with it.  */
 void
 m32c_function_arg_advance (CUMULATIVE_ARGS * ca,
-                           enum machine_mode mode ATTRIBUTE_UNUSED,
-                           tree type ATTRIBUTE_UNUSED,
-                           int named ATTRIBUTE_UNUSED)
+			   enum machine_mode mode ATTRIBUTE_UNUSED,
+			   tree type ATTRIBUTE_UNUSED,
+			   int named ATTRIBUTE_UNUSED)
 {
   if (ca->force_mem)
     ca->force_mem = 0;
@@ -1588,21 +1588,21 @@ m32c_libcall_value (enum machine_mode mode)
 
       rv = gen_rtx_PARALLEL (mode, rtvec_alloc (4));
       XVECEXP (rv, 0, 0) = gen_rtx_EXPR_LIST (VOIDmode,
-                                              gen_rtx_REG (HImode,
-                                                           R0_REGNO),
-                                              GEN_INT (0));
+					      gen_rtx_REG (HImode,
+							   R0_REGNO),
+					      GEN_INT (0));
       XVECEXP (rv, 0, 1) = gen_rtx_EXPR_LIST (VOIDmode,
-                                              gen_rtx_REG (HImode,
-                                                           R1_REGNO),
-                                              GEN_INT (2));
+					      gen_rtx_REG (HImode,
+							   R1_REGNO),
+					      GEN_INT (2));
       XVECEXP (rv, 0, 2) = gen_rtx_EXPR_LIST (VOIDmode,
-                                              gen_rtx_REG (HImode,
-                                                           R2_REGNO),
-                                              GEN_INT (4));
+					      gen_rtx_REG (HImode,
+							   R2_REGNO),
+					      GEN_INT (4));
       XVECEXP (rv, 0, 3) = gen_rtx_EXPR_LIST (VOIDmode,
-                                              gen_rtx_REG (HImode,
-                                                           R3_REGNO),
-                                              GEN_INT (6));
+					      gen_rtx_REG (HImode,
+							   R3_REGNO),
+					      GEN_INT (6));
       return rv;
     }
 
@@ -1612,9 +1612,9 @@ m32c_libcall_value (enum machine_mode mode)
 
       rv = gen_rtx_PARALLEL (mode, rtvec_alloc (1));
       XVECEXP (rv, 0, 0) = gen_rtx_EXPR_LIST (VOIDmode,
-                                              gen_rtx_REG (mode,
-                                                           R0_REGNO),
-                                              GEN_INT (0));
+					      gen_rtx_REG (mode,
+							   R0_REGNO),
+					      GEN_INT (0));
       return rv;
     }
 #endif
@@ -1642,7 +1642,7 @@ m32c_function_value (tree valtype, tree func ATTRIBUTE_UNUSED)
 #define TARGET_STRUCT_VALUE_RTX m32c_struct_value_rtx
 static rtx
 m32c_struct_value_rtx (tree fndecl ATTRIBUTE_UNUSED,
-                       int incoming ATTRIBUTE_UNUSED)
+		       int incoming ATTRIBUTE_UNUSED)
 {
   return 0;
 }
@@ -1705,20 +1705,20 @@ m32c_initialize_trampoline (rtx tramp, rtx function, rtx chainval)
   if (TARGET_A16)
     {
       /* Note: we subtract a "word" because the moves want signed
-         constants, not unsigned constants.  */
+	 constants, not unsigned constants.  */
       emit_move_insn (A0 (HImode, 0), GEN_INT (0xc475 - 0x10000));
       emit_move_insn (A0 (HImode, 2), chainval);
       emit_move_insn (A0 (QImode, 4), GEN_INT (0xfc - 0x100));
       /* We use 16 bit addresses here, but store the zero to turn it
-         into a 24 bit offset.  */
+	 into a 24 bit offset.  */
       emit_move_insn (A0 (HImode, 5), function);
       emit_move_insn (A0 (QImode, 7), GEN_INT (0x00));
     }
   else
     {
       /* Note that the PSI moves actually write 4 bytes.  Make sure we
-         write stuff out in the right order, and leave room for the
-         extra byte at the end.  */
+	 write stuff out in the right order, and leave room for the
+	 extra byte at the end.  */
       emit_move_insn (A0 (QImode, 0), GEN_INT (0xbc - 0x100));
       emit_move_insn (A0 (PSImode, 1), chainval);
       emit_move_insn (A0 (QImode, 4), GEN_INT (0xcc - 0x100));
@@ -1737,9 +1737,9 @@ m32c_init_libfuncs (void)
   if (TARGET_A24)
     {
       /* We do this because the M32C has an HImode operand, but the
-         M16C has an 8 bit operand.  Since gcc looks at the match data
-         and not the expanded rtl, we have to reset the array so that
-         the right modes are found. */
+	 M16C has an 8 bit operand.  Since gcc looks at the match data
+	 and not the expanded rtl, we have to reset the array so that
+	 the right modes are found. */
       setcc_gen_code[EQ] = CODE_FOR_seq_24;
       setcc_gen_code[NE] = CODE_FOR_sne_24;
       setcc_gen_code[GT] = CODE_FOR_sgt_24;
@@ -1777,7 +1777,7 @@ m32c_legitimate_address_p (enum machine_mode mode, rtx x, int strict)
       || GET_CODE (x) == POST_INC || GET_CODE (x) == PRE_MODIFY)
     {
       return (GET_CODE (XEXP (x, 0)) == REG
-              && REGNO (XEXP (x, 0)) == SP_REGNO);
+	      && REGNO (XEXP (x, 0)) == SP_REGNO);
     }
 
 #if 0
@@ -1797,80 +1797,80 @@ m32c_legitimate_address_p (enum machine_mode mode, rtx x, int strict)
   if (RTX_IS ("r"))
     {
       /* Most indexable registers can be used without displacements,
-         although some of them will be emitted with an explicit zero
-         to please the assembler.  */
+	 although some of them will be emitted with an explicit zero
+	 to please the assembler.  */
       switch (REGNO (patternr[0]))
-        {
-        case A0_REGNO:
-        case A1_REGNO:
-        case SB_REGNO:
-        case FB_REGNO:
-        case SP_REGNO:
-          return 1;
+	{
+	case A0_REGNO:
+	case A1_REGNO:
+	case SB_REGNO:
+	case FB_REGNO:
+	case SP_REGNO:
+	  return 1;
 
-        default:
-          if (IS_PSEUDO (patternr[0], strict))
-            return 1;
-          return 0;
-        }
+	default:
+	  if (IS_PSEUDO (patternr[0], strict))
+	    return 1;
+	  return 0;
+	}
     }
   if (RTX_IS ("+ri"))
     {
       /* This is more interesting, because different base registers
-         allow for different displacements - both range and signedness
-         - and it differs from chip series to chip series too.  */
+	 allow for different displacements - both range and signedness
+	 - and it differs from chip series to chip series too.  */
       int rn = REGNO (patternr[1]);
       HOST_WIDE_INT offs = INTVAL (patternr[2]);
       switch (rn)
-        {
-        case A0_REGNO:
-        case A1_REGNO:
-        case SB_REGNO:
-          /* The syntax only allows positive offsets, but when the
-             offsets span the entire memory range, we can simulate
-             negative offsets by wrapping.  */
-          if (TARGET_A16)
-            return (offs >= -65536 && offs <= 65535 - mode_adjust);
-          if (rn == SB_REGNO)
-            return (offs >= 0 && offs <= 65535 - mode_adjust);
-          /* A0 or A1 */
-          return (offs >= -16777216 && offs <= 16777215);
+	{
+	case A0_REGNO:
+	case A1_REGNO:
+	case SB_REGNO:
+	  /* The syntax only allows positive offsets, but when the
+	     offsets span the entire memory range, we can simulate
+	     negative offsets by wrapping.  */
+	  if (TARGET_A16)
+	    return (offs >= -65536 && offs <= 65535 - mode_adjust);
+	  if (rn == SB_REGNO)
+	    return (offs >= 0 && offs <= 65535 - mode_adjust);
+	  /* A0 or A1 */
+	  return (offs >= -16777216 && offs <= 16777215);
 
-        case FB_REGNO:
-          if (TARGET_A16)
-            return (offs >= -128 && offs <= 127 - mode_adjust);
-          return (offs >= -65536 && offs <= 65535 - mode_adjust);
+	case FB_REGNO:
+	  if (TARGET_A16)
+	    return (offs >= -128 && offs <= 127 - mode_adjust);
+	  return (offs >= -65536 && offs <= 65535 - mode_adjust);
 
-        case SP_REGNO:
-          return (offs >= -128 && offs <= 127 - mode_adjust);
+	case SP_REGNO:
+	  return (offs >= -128 && offs <= 127 - mode_adjust);
 
-        default:
-          if (IS_PSEUDO (patternr[1], strict))
-            return 1;
-          return 0;
-        }
+	default:
+	  if (IS_PSEUDO (patternr[1], strict))
+	    return 1;
+	  return 0;
+	}
     }
   if (RTX_IS ("+rs") || RTX_IS ("+r+si"))
     {
       rtx reg = patternr[1];
 
       /* We don't know where the symbol is, so only allow base
-         registers which support displacements spanning the whole
-         address range.  */
+	 registers which support displacements spanning the whole
+	 address range.  */
       switch (REGNO (reg))
-        {
-        case A0_REGNO:
-        case A1_REGNO:
-          /* $sb needs a secondary reload, but since it's involved in
-             memory address reloads too, we don't deal with it very
-             well.  */
-          /*    case SB_REGNO: */
-          return 1;
-        default:
-          if (IS_PSEUDO (reg, strict))
-            return 1;
-          return 0;
-        }
+	{
+	case A0_REGNO:
+	case A1_REGNO:
+	  /* $sb needs a secondary reload, but since it's involved in
+	     memory address reloads too, we don't deal with it very
+	     well.  */
+	  /*    case SB_REGNO: */
+	  return 1;
+	default:
+	  if (IS_PSEUDO (reg, strict))
+	    return 1;
+	  return 0;
+	}
     }
   return 0;
 }
@@ -1891,7 +1891,7 @@ m32c_reg_ok_for_base_p (rtx x, int strict)
       return 1;
     default:
       if (IS_PSEUDO (x, strict))
-        return 1;
+	return 1;
       return 0;
     }
 }
@@ -1928,8 +1928,8 @@ m32c_reg_ok_for_base_p (rtx x, int strict)
    code.  */
 int
 m32c_legitimize_address (rtx * x ATTRIBUTE_UNUSED,
-                         rtx oldx ATTRIBUTE_UNUSED,
-                         enum machine_mode mode ATTRIBUTE_UNUSED)
+			 rtx oldx ATTRIBUTE_UNUSED,
+			 enum machine_mode mode ATTRIBUTE_UNUSED)
 {
 #if DEBUG0
   fprintf (stderr, "m32c_legitimize_address for mode %s\n", mode_name[mode]);
@@ -1942,7 +1942,7 @@ m32c_legitimize_address (rtx * x ATTRIBUTE_UNUSED,
       && REGNO (XEXP (*x, 0)) == FB_REGNO
       && GET_CODE (XEXP (*x, 1)) == CONST_INT
       && (INTVAL (XEXP (*x, 1)) < -128
-          || INTVAL (XEXP (*x, 1)) > (128 - GET_MODE_SIZE (mode))))
+	  || INTVAL (XEXP (*x, 1)) > (128 - GET_MODE_SIZE (mode))))
     {
       /* reload FB to A_REGS */
       rtx temp = gen_reg_rtx (Pmode);
@@ -1958,13 +1958,13 @@ m32c_legitimize_address (rtx * x ATTRIBUTE_UNUSED,
 /* Implements LEGITIMIZE_RELOAD_ADDRESS.  See comment above.  */
 int
 m32c_legitimize_reload_address (rtx * x,
-                                enum machine_mode mode,
-                                int opnum,
-                                int type, int ind_levels ATTRIBUTE_UNUSED)
+				enum machine_mode mode,
+				int opnum,
+				int type, int ind_levels ATTRIBUTE_UNUSED)
 {
 #if DEBUG0
   fprintf (stderr, "\nm32c_legitimize_reload_address for mode %s\n",
-           mode_name[mode]);
+	   mode_name[mode]);
   debug_rtx (*x);
 #endif
 
@@ -1982,20 +1982,20 @@ m32c_legitimize_reload_address (rtx * x,
       && REGNO (XEXP (*x, 0)) == FB_REGNO
       && GET_CODE (XEXP (*x, 1)) == CONST_INT
       && (INTVAL (XEXP (*x, 1)) < -128
-          || INTVAL (XEXP (*x, 1)) > (128 - GET_MODE_SIZE (mode))))
+	  || INTVAL (XEXP (*x, 1)) > (128 - GET_MODE_SIZE (mode))))
     {
       rtx sum;
       int offset = INTVAL (XEXP (*x, 1));
       int adjustment = -BIG_FB_ADJ;
 
       sum = gen_rtx_PLUS (Pmode, XEXP (*x, 0),
-                          GEN_INT (adjustment));
+			  GEN_INT (adjustment));
       *x = gen_rtx_PLUS (Pmode, sum, GEN_INT (offset - adjustment));
       if (type == RELOAD_OTHER)
-        type = RELOAD_FOR_OTHER_ADDRESS;
+	type = RELOAD_FOR_OTHER_ADDRESS;
       push_reload (sum, NULL_RTX, &XEXP (*x, 0), NULL,
-                   A_REGS, Pmode, VOIDmode, 0, 0, opnum,
-                   type);
+		   A_REGS, Pmode, VOIDmode, 0, 0, opnum,
+		   type);
       return 1;
     }
 
@@ -2008,10 +2008,10 @@ m32c_legitimize_reload_address (rtx * x,
       )
     {
       if (type == RELOAD_OTHER)
-        type = RELOAD_FOR_OTHER_ADDRESS;
+	type = RELOAD_FOR_OTHER_ADDRESS;
       push_reload (XEXP (*x, 0), NULL_RTX, &XEXP (*x, 0), NULL,
-                   A_REGS, Pmode, VOIDmode, 0, 0, opnum,
-                   type);
+		   A_REGS, Pmode, VOIDmode, 0, 0, opnum,
+		   type);
       return 1;
     }
 
@@ -2063,9 +2063,9 @@ m32c_register_move_cost (enum machine_mode mode, int from, int to)
   if (mode == QImode && (cc & class_contents[R23_REGS][0]))
     {
       if (!(cc & ~class_contents[R23_REGS][0]))
-        cost = COSTS_N_INSNS (1000);
+	cost = COSTS_N_INSNS (1000);
       else
-        cost = COSTS_N_INSNS (80);
+	cost = COSTS_N_INSNS (80);
     }
 
   if (!class_can_hold_mode (from, mode) || !class_can_hold_mode (to, mode))
@@ -2080,12 +2080,12 @@ m32c_register_move_cost (enum machine_mode mode, int from, int to)
   if (from == MEM_REGS || to == MEM_REGS)
     cost += COSTS_N_INSNS (50);
   else if (classes_intersect (from, MEM_REGS)
-           || classes_intersect (to, MEM_REGS))
+	   || classes_intersect (to, MEM_REGS))
     cost += COSTS_N_INSNS (10);
 
 #if DEBUG0
   fprintf (stderr, "register_move_cost %s from %s to %s = %d\n",
-           mode_name[mode], class_names[from], class_names[to], cost);
+	   mode_name[mode], class_names[from], class_names[to], cost);
 #endif
   return cost;
 }
@@ -2093,8 +2093,8 @@ m32c_register_move_cost (enum machine_mode mode, int from, int to)
 /*  Implements MEMORY_MOVE_COST.  */
 int
 m32c_memory_move_cost (enum machine_mode mode ATTRIBUTE_UNUSED,
-                       int reg_class ATTRIBUTE_UNUSED,
-                       int in ATTRIBUTE_UNUSED)
+		       int reg_class ATTRIBUTE_UNUSED,
+		       int in ATTRIBUTE_UNUSED)
 {
   /* FIXME: pick real values.  */
   return COSTS_N_INSNS (10);
@@ -2111,28 +2111,28 @@ m32c_rtx_costs (rtx x, int code, int outer_code, int *total)
     {
     case REG:
       if (REGNO (x) >= MEM0_REGNO && REGNO (x) <= MEM7_REGNO)
-        *total += COSTS_N_INSNS (500);
+	*total += COSTS_N_INSNS (500);
       else
-        *total += COSTS_N_INSNS (1);
+	*total += COSTS_N_INSNS (1);
       return true;
 
     case ASHIFT:
     case LSHIFTRT:
     case ASHIFTRT:
       if (GET_CODE (XEXP (x, 1)) != CONST_INT)
-        {
-          /* mov.b r1l, r1h */
-          *total +=  COSTS_N_INSNS (1);
-          return true;
-        }
+	{
+	  /* mov.b r1l, r1h */
+	  *total +=  COSTS_N_INSNS (1);
+	  return true;
+	}
       if (INTVAL (XEXP (x, 1)) > 8
-          || INTVAL (XEXP (x, 1)) < -8)
-        {
-          /* mov.b #N, r1l */
-          /* mov.b r1l, r1h */
-          *total +=  COSTS_N_INSNS (2);
-          return true;
-        }
+	  || INTVAL (XEXP (x, 1)) < -8)
+	{
+	  /* mov.b #N, r1l */
+	  /* mov.b r1l, r1h */
+	  *total +=  COSTS_N_INSNS (2);
+	  return true;
+	}
       return true;
 
     case LE:
@@ -2146,36 +2146,36 @@ m32c_rtx_costs (rtx x, int code, int outer_code, int *total)
     case NE:
     case EQ:
       if (outer_code == SET)
-        {
-          *total += COSTS_N_INSNS (2);
-          return true;
-        }
+	{
+	  *total += COSTS_N_INSNS (2);
+	  return true;
+	}
       break;
 
     case ZERO_EXTRACT:
       {
-        rtx dest = XEXP (x, 0);
-        rtx addr = XEXP (dest, 0);
-        switch (GET_CODE (addr))
-          {
-          case CONST_INT:
-            *total += COSTS_N_INSNS (1);
-            break;
-          case SYMBOL_REF:
-            *total += COSTS_N_INSNS (3);
-            break;
-          default:
-            *total += COSTS_N_INSNS (2);
-            break;
-          }
-        return true;
+	rtx dest = XEXP (x, 0);
+	rtx addr = XEXP (dest, 0);
+	switch (GET_CODE (addr))
+	  {
+	  case CONST_INT:
+	    *total += COSTS_N_INSNS (1);
+	    break;
+	  case SYMBOL_REF:
+	    *total += COSTS_N_INSNS (3);
+	    break;
+	  default:
+	    *total += COSTS_N_INSNS (2);
+	    break;
+	  }
+	return true;
       }
       break;
 
     default:
       /* Reasonable default.  */
       if (TARGET_A16 && GET_MODE(x) == SImode)
-        *total += COSTS_N_INSNS (2);
+	*total += COSTS_N_INSNS (2);
       break;
     }
   return false;
@@ -2226,12 +2226,12 @@ m32c_asm_integer (rtx x, unsigned int size, int aligned_p)
       return true;
     case 4:
       if (GET_CODE (x) == SYMBOL_REF)
-        {
-          fprintf (asm_out_file, "\t.long\t");
-          output_addr_const (asm_out_file, x);
-          fputc ('\n', asm_out_file);
-          return true;
-        }
+	{
+	  fprintf (asm_out_file, "\t.long\t");
+	  output_addr_const (asm_out_file, x);
+	  fputc ('\n', asm_out_file);
+	  return true;
+	}
       break;
     }
   return default_assemble_integer (x, size, aligned_p);
@@ -2322,96 +2322,96 @@ m32c_print_operand (FILE * file, rtx x, int code)
     {
       fprintf (stderr, "dj: unreviewed pattern:");
       if (current_output_insn)
-        debug_rtx (current_output_insn);
+	debug_rtx (current_output_insn);
       gcc_unreachable ();
     }
   /* PSImode operations are either .w or .l depending on the target.  */
   if (code == '&')
     {
       if (TARGET_A16)
-        fprintf (file, "w");
+	fprintf (file, "w");
       else
-        fprintf (file, "l");
+	fprintf (file, "l");
       return;
     }
   /* Inverted conditionals.  */
   if (code == 'C')
     {
       switch (GET_CODE (x))
-        {
-        case LE:
-          fputs ("gt", file);
-          break;
-        case LEU:
-          fputs ("gtu", file);
-          break;
-        case LT:
-          fputs ("ge", file);
-          break;
-        case LTU:
-          fputs ("geu", file);
-          break;
-        case GT:
-          fputs ("le", file);
-          break;
-        case GTU:
-          fputs ("leu", file);
-          break;
-        case GE:
-          fputs ("lt", file);
-          break;
-        case GEU:
-          fputs ("ltu", file);
-          break;
-        case NE:
-          fputs ("eq", file);
-          break;
-        case EQ:
-          fputs ("ne", file);
-          break;
-        default:
-          gcc_unreachable ();
-        }
+	{
+	case LE:
+	  fputs ("gt", file);
+	  break;
+	case LEU:
+	  fputs ("gtu", file);
+	  break;
+	case LT:
+	  fputs ("ge", file);
+	  break;
+	case LTU:
+	  fputs ("geu", file);
+	  break;
+	case GT:
+	  fputs ("le", file);
+	  break;
+	case GTU:
+	  fputs ("leu", file);
+	  break;
+	case GE:
+	  fputs ("lt", file);
+	  break;
+	case GEU:
+	  fputs ("ltu", file);
+	  break;
+	case NE:
+	  fputs ("eq", file);
+	  break;
+	case EQ:
+	  fputs ("ne", file);
+	  break;
+	default:
+	  gcc_unreachable ();
+	}
       return;
     }
   /* Regular conditionals.  */
   if (code == 'c')
     {
       switch (GET_CODE (x))
-        {
-        case LE:
-          fputs ("le", file);
-          break;
-        case LEU:
-          fputs ("leu", file);
-          break;
-        case LT:
-          fputs ("lt", file);
-          break;
-        case LTU:
-          fputs ("ltu", file);
-          break;
-        case GT:
-          fputs ("gt", file);
-          break;
-        case GTU:
-          fputs ("gtu", file);
-          break;
-        case GE:
-          fputs ("ge", file);
-          break;
-        case GEU:
-          fputs ("geu", file);
-          break;
-        case NE:
-          fputs ("ne", file);
-          break;
-        case EQ:
-          fputs ("eq", file);
-          break;
-        default:
-          gcc_unreachable ();
-        }
+	{
+	case LE:
+	  fputs ("le", file);
+	  break;
+	case LEU:
+	  fputs ("leu", file);
+	  break;
+	case LT:
+	  fputs ("lt", file);
+	  break;
+	case LTU:
+	  fputs ("ltu", file);
+	  break;
+	case GT:
+	  fputs ("gt", file);
+	  break;
+	case GTU:
+	  fputs ("gtu", file);
+	  break;
+	case GE:
+	  fputs ("ge", file);
+	  break;
+	case GEU:
+	  fputs ("geu", file);
+	  break;
+	case NE:
+	  fputs ("ne", file);
+	  break;
+	case EQ:
+	  fputs ("eq", file);
+	  break;
+	default:
+	  gcc_unreachable ();
+	}
       return;
     }
   /* Used in negsi2 to do HImode ops on the two parts of an SImode
@@ -2435,19 +2435,19 @@ m32c_print_operand (FILE * file, rtx x, int code)
     {
       /* We can't actually represent this as an rtx.  Do it here.  */
       if (GET_CODE (x) == REG)
-        {
-          switch (REGNO (x))
-            {
-            case R0_REGNO:
-              fputs ("r0h", file);
-              return;
-            case R1_REGNO:
-              fputs ("r1h", file);
-              return;
-            default:
-              gcc_unreachable();
-            }
-        }
+	{
+	  switch (REGNO (x))
+	    {
+	    case R0_REGNO:
+	      fputs ("r0h", file);
+	      return;
+	    case R1_REGNO:
+	      fputs ("r1h", file);
+	      return;
+	    default:
+	      gcc_unreachable();
+	    }
+	}
       /* This should be a MEM.  */
       x = m32c_subreg (QImode, x, HImode, 1);
       code = 0;
@@ -2456,7 +2456,7 @@ m32c_print_operand (FILE * file, rtx x, int code)
   if (code == 'h' && GET_MODE (x) == QImode)
     {
       if (GET_CODE (x) == REG)
-        x = gen_rtx_REG (HImode, REGNO (x));
+	x = gen_rtx_REG (HImode, REGNO (x));
       code = 0;
     }
   /* 'x' and 'X' need to be ignored for non-immediates.  */
@@ -2467,179 +2467,179 @@ m32c_print_operand (FILE * file, rtx x, int code)
   force_sign = 0;
   for (i = 0; conversions[i].pattern; i++)
     if (conversions[i].code == code
-        && streq (conversions[i].pattern, pattern))
+	&& streq (conversions[i].pattern, pattern))
       {
-        for (j = 0; conversions[i].format[j]; j++)
-          /* backslash quotes the next character in the output pattern.  */
-          if (conversions[i].format[j] == '\\')
-            {
-              fputc (conversions[i].format[j + 1], file);
-              j++;
-            }
-          /* Digits in the output pattern indicate that the
-             corresponding RTX is to be output at that point.  */
-          else if (ISDIGIT (conversions[i].format[j]))
-            {
-              rtx r = patternr[conversions[i].format[j] - '0'];
-              switch (GET_CODE (r))
-                {
-                case REG:
-                  fprintf (file, "%s",
-                           reg_name_with_mode (REGNO (r), GET_MODE (r)));
-                  break;
-                case CONST_INT:
-                  switch (code)
-                    {
-                    case 'b':
-                    case 'B':
-                      {
-                        int v = INTVAL (r);
-                        int i = (int) exact_log2 (v);
-                        if (i == -1)
-                          i = (int) exact_log2 ((v ^ 0xffff) & 0xffff);
-                        if (i == -1)
-                          i = (int) exact_log2 ((v ^ 0xff) & 0xff);
-                        /* Bit position.  */
-                        fprintf (file, "%d", i);
-                      }
-                      break;
-                    case 'x':
-                      /* Unsigned byte.  */
-                      fprintf (file, HOST_WIDE_INT_PRINT_HEX,
-                               INTVAL (r) & 0xff);
-                      break;
-                    case 'X':
-                      /* Unsigned word.  */
-                      fprintf (file, HOST_WIDE_INT_PRINT_HEX,
-                               INTVAL (r) & 0xffff);
-                      break;
-                    case 'p':
-                      /* pushm and popm encode a register set into a single byte.  */
-                      comma = "";
-                      for (b = 7; b >= 0; b--)
-                        if (INTVAL (r) & (1 << b))
-                          {
-                            fprintf (file, "%s%s", comma, pushm_regs[b]);
-                            comma = ",";
-                          }
-                      break;
-                    case 'm':
-                      /* "Minus".  Output -X  */
-                      ival = (-INTVAL (r) & 0xffff);
-                      if (ival & 0x8000)
-                        ival = ival - 0x10000;
-                      fprintf (file, HOST_WIDE_INT_PRINT_DEC, ival);
-                      break;
-                    default:
-                      ival = INTVAL (r);
-                      if (conversions[i].format[j + 1] == '[' && ival < 0)
-                        {
-                          /* We can simulate negative displacements by
-                             taking advantage of address space
-                             wrapping when the offset can span the
-                             entire address range.  */
-                          rtx base =
-                            patternr[conversions[i].format[j + 2] - '0'];
-                          if (GET_CODE (base) == REG)
-                            switch (REGNO (base))
-                              {
-                              case A0_REGNO:
-                              case A1_REGNO:
-                                if (TARGET_A24)
-                                  ival = 0x1000000 + ival;
-                                else
-                                  ival = 0x10000 + ival;
-                                break;
-                              case SB_REGNO:
-                                if (TARGET_A16)
-                                  ival = 0x10000 + ival;
-                                break;
-                              }
-                        }
-                      else if (code == 'd' && ival < 0 && j == 0)
-                        /* The "mova" opcode is used to do addition by
-                           computing displacements, but again, we need
-                           displacements to be unsigned *if* they're
-                           the only component of the displacement
-                           (i.e. no "symbol-4" type displacement).  */
-                        ival = (TARGET_A24 ? 0x1000000 : 0x10000) + ival;
+	for (j = 0; conversions[i].format[j]; j++)
+	  /* backslash quotes the next character in the output pattern.  */
+	  if (conversions[i].format[j] == '\\')
+	    {
+	      fputc (conversions[i].format[j + 1], file);
+	      j++;
+	    }
+	  /* Digits in the output pattern indicate that the
+	     corresponding RTX is to be output at that point.  */
+	  else if (ISDIGIT (conversions[i].format[j]))
+	    {
+	      rtx r = patternr[conversions[i].format[j] - '0'];
+	      switch (GET_CODE (r))
+		{
+		case REG:
+		  fprintf (file, "%s",
+			   reg_name_with_mode (REGNO (r), GET_MODE (r)));
+		  break;
+		case CONST_INT:
+		  switch (code)
+		    {
+		    case 'b':
+		    case 'B':
+		      {
+			int v = INTVAL (r);
+			int i = (int) exact_log2 (v);
+			if (i == -1)
+			  i = (int) exact_log2 ((v ^ 0xffff) & 0xffff);
+			if (i == -1)
+			  i = (int) exact_log2 ((v ^ 0xff) & 0xff);
+			/* Bit position.  */
+			fprintf (file, "%d", i);
+		      }
+		      break;
+		    case 'x':
+		      /* Unsigned byte.  */
+		      fprintf (file, HOST_WIDE_INT_PRINT_HEX,
+			       INTVAL (r) & 0xff);
+		      break;
+		    case 'X':
+		      /* Unsigned word.  */
+		      fprintf (file, HOST_WIDE_INT_PRINT_HEX,
+			       INTVAL (r) & 0xffff);
+		      break;
+		    case 'p':
+		      /* pushm and popm encode a register set into a single byte.  */
+		      comma = "";
+		      for (b = 7; b >= 0; b--)
+			if (INTVAL (r) & (1 << b))
+			  {
+			    fprintf (file, "%s%s", comma, pushm_regs[b]);
+			    comma = ",";
+			  }
+		      break;
+		    case 'm':
+		      /* "Minus".  Output -X  */
+		      ival = (-INTVAL (r) & 0xffff);
+		      if (ival & 0x8000)
+			ival = ival - 0x10000;
+		      fprintf (file, HOST_WIDE_INT_PRINT_DEC, ival);
+		      break;
+		    default:
+		      ival = INTVAL (r);
+		      if (conversions[i].format[j + 1] == '[' && ival < 0)
+			{
+			  /* We can simulate negative displacements by
+			     taking advantage of address space
+			     wrapping when the offset can span the
+			     entire address range.  */
+			  rtx base =
+			    patternr[conversions[i].format[j + 2] - '0'];
+			  if (GET_CODE (base) == REG)
+			    switch (REGNO (base))
+			      {
+			      case A0_REGNO:
+			      case A1_REGNO:
+				if (TARGET_A24)
+				  ival = 0x1000000 + ival;
+				else
+				  ival = 0x10000 + ival;
+				break;
+			      case SB_REGNO:
+				if (TARGET_A16)
+				  ival = 0x10000 + ival;
+				break;
+			      }
+			}
+		      else if (code == 'd' && ival < 0 && j == 0)
+			/* The "mova" opcode is used to do addition by
+			   computing displacements, but again, we need
+			   displacements to be unsigned *if* they're
+			   the only component of the displacement
+			   (i.e. no "symbol-4" type displacement).  */
+			ival = (TARGET_A24 ? 0x1000000 : 0x10000) + ival;
 
-                      if (conversions[i].format[j] == '0')
-                        {
-                          /* More conversions to unsigned.  */
-                          if (unsigned_const == 2)
-                            ival &= 0xffff;
-                          if (unsigned_const == 1)
-                            ival &= 0xff;
-                        }
-                      if (streq (conversions[i].pattern, "mi")
-                          || streq (conversions[i].pattern, "mmi"))
-                        {
-                          /* Integers used as addresses are unsigned.  */
-                          ival &= (TARGET_A24 ? 0xffffff : 0xffff);
-                        }
-                      if (force_sign && ival >= 0)
-                        fputc ('+', file);
-                      fprintf (file, HOST_WIDE_INT_PRINT_DEC, ival);
-                      break;
-                    }
-                  break;
-                case CONST_DOUBLE:
-                  /* We don't have const_double constants.  If it
-                     happens, make it obvious.  */
-                  fprintf (file, "[const_double 0x%lx]",
-                           (unsigned long) CONST_DOUBLE_HIGH (r));
-                  break;
-                case SYMBOL_REF:
-                  assemble_name (file, XSTR (r, 0));
-                  break;
-                case LABEL_REF:
-                  output_asm_label (r);
-                  break;
-                default:
-                  fprintf (stderr, "don't know how to print this operand:");
-                  debug_rtx (r);
-                  gcc_unreachable ();
-                }
-            }
-          else
-            {
-              if (conversions[i].format[j] == 'z')
-                {
-                  /* Some addressing modes *must* have a displacement,
-                     so insert a zero here if needed.  */
-                  int k;
-                  for (k = j + 1; conversions[i].format[k]; k++)
-                    if (ISDIGIT (conversions[i].format[k]))
-                      {
-                        rtx reg = patternr[conversions[i].format[k] - '0'];
-                        if (GET_CODE (reg) == REG
-                            && (REGNO (reg) == SB_REGNO
-                                || REGNO (reg) == FB_REGNO
-                                || REGNO (reg) == SP_REGNO))
-                          fputc ('0', file);
-                      }
-                  continue;
-                }
-              /* Signed displacements off symbols need to have signs
-                 blended cleanly.  */
-              if (conversions[i].format[j] == '+'
-                  && (!code || code == 'D' || code == 'd')
-                  && ISDIGIT (conversions[i].format[j + 1])
-                  && (GET_CODE (patternr[conversions[i].format[j + 1] - '0'])
-                      == CONST_INT))
-                {
-                  force_sign = 1;
-                  continue;
-                }
-              fputc (conversions[i].format[j], file);
-            }
-        break;
+		      if (conversions[i].format[j] == '0')
+			{
+			  /* More conversions to unsigned.  */
+			  if (unsigned_const == 2)
+			    ival &= 0xffff;
+			  if (unsigned_const == 1)
+			    ival &= 0xff;
+			}
+		      if (streq (conversions[i].pattern, "mi")
+			  || streq (conversions[i].pattern, "mmi"))
+			{
+			  /* Integers used as addresses are unsigned.  */
+			  ival &= (TARGET_A24 ? 0xffffff : 0xffff);
+			}
+		      if (force_sign && ival >= 0)
+			fputc ('+', file);
+		      fprintf (file, HOST_WIDE_INT_PRINT_DEC, ival);
+		      break;
+		    }
+		  break;
+		case CONST_DOUBLE:
+		  /* We don't have const_double constants.  If it
+		     happens, make it obvious.  */
+		  fprintf (file, "[const_double 0x%lx]",
+			   (unsigned long) CONST_DOUBLE_HIGH (r));
+		  break;
+		case SYMBOL_REF:
+		  assemble_name (file, XSTR (r, 0));
+		  break;
+		case LABEL_REF:
+		  output_asm_label (r);
+		  break;
+		default:
+		  fprintf (stderr, "don't know how to print this operand:");
+		  debug_rtx (r);
+		  gcc_unreachable ();
+		}
+	    }
+	  else
+	    {
+	      if (conversions[i].format[j] == 'z')
+		{
+		  /* Some addressing modes *must* have a displacement,
+		     so insert a zero here if needed.  */
+		  int k;
+		  for (k = j + 1; conversions[i].format[k]; k++)
+		    if (ISDIGIT (conversions[i].format[k]))
+		      {
+			rtx reg = patternr[conversions[i].format[k] - '0'];
+			if (GET_CODE (reg) == REG
+			    && (REGNO (reg) == SB_REGNO
+				|| REGNO (reg) == FB_REGNO
+				|| REGNO (reg) == SP_REGNO))
+			  fputc ('0', file);
+		      }
+		  continue;
+		}
+	      /* Signed displacements off symbols need to have signs
+		 blended cleanly.  */
+	      if (conversions[i].format[j] == '+'
+		  && (!code || code == 'D' || code == 'd')
+		  && ISDIGIT (conversions[i].format[j + 1])
+		  && (GET_CODE (patternr[conversions[i].format[j + 1] - '0'])
+		      == CONST_INT))
+		{
+		  force_sign = 1;
+		  continue;
+		}
+	      fputc (conversions[i].format[j], file);
+	    }
+	break;
       }
   if (!conversions[i].pattern)
     {
       fprintf (stderr, "unconvertible operand %c `%s'", code ? code : '-',
-               pattern);
+	       pattern);
       debug_rtx (x);
       fprintf (file, "[%c.%s]", code ? code : '-', pattern);
     }
@@ -2674,7 +2674,7 @@ m32c_output_reg_push (FILE * s, int regno)
     fprintf (s, "\tpushc\tflg\n");
   else
     fprintf (s, "\tpush.%c\t%s\n",
-             " bwll"[reg_push_size (regno)], reg_names[regno]);
+	     " bwll"[reg_push_size (regno)], reg_names[regno]);
 }
 
 /* Likewise for ASM_OUTPUT_REG_POP.  */
@@ -2685,7 +2685,7 @@ m32c_output_reg_pop (FILE * s, int regno)
     fprintf (s, "\tpopc\tflg\n");
   else
     fprintf (s, "\tpop.%c\t%s\n",
-             " bwll"[reg_push_size (regno)], reg_names[regno]);
+	     " bwll"[reg_push_size (regno)], reg_names[regno]);
 }
 
 /* Defining target-specific uses of `__attribute__' */
@@ -2696,7 +2696,7 @@ m32c_output_reg_pop (FILE * s, int regno)
   (TYPE_P (decl)) ? TYPE_ATTRIBUTES (decl) \
                 : DECL_ATTRIBUTES (decl) \
                   ? (DECL_ATTRIBUTES (decl)) \
-                  : TYPE_ATTRIBUTES (TREE_TYPE (decl))
+		  : TYPE_ATTRIBUTES (TREE_TYPE (decl))
 
 /* Returns TRUE if the given tree has the "interrupt" attribute.  */
 static int
@@ -2706,7 +2706,7 @@ interrupt_p (tree node ATTRIBUTE_UNUSED)
   while (list)
     {
       if (is_attribute_p ("interrupt", TREE_PURPOSE (list)))
-        return 1;
+	return 1;
       list = TREE_CHAIN (list);
     }
   return 0;
@@ -2714,10 +2714,10 @@ interrupt_p (tree node ATTRIBUTE_UNUSED)
 
 static tree
 interrupt_handler (tree * node ATTRIBUTE_UNUSED,
-                   tree name ATTRIBUTE_UNUSED,
-                   tree args ATTRIBUTE_UNUSED,
-                   int flags ATTRIBUTE_UNUSED,
-                   bool * no_add_attrs ATTRIBUTE_UNUSED)
+		   tree name ATTRIBUTE_UNUSED,
+		   tree args ATTRIBUTE_UNUSED,
+		   int flags ATTRIBUTE_UNUSED,
+		   bool * no_add_attrs ATTRIBUTE_UNUSED)
 {
   return NULL_TREE;
 }
@@ -2733,7 +2733,7 @@ static const struct attribute_spec m32c_attribute_table[] = {
 #define TARGET_COMP_TYPE_ATTRIBUTES m32c_comp_type_attributes
 static int
 m32c_comp_type_attributes (tree type1 ATTRIBUTE_UNUSED,
-                           tree type2 ATTRIBUTE_UNUSED)
+			   tree type2 ATTRIBUTE_UNUSED)
 {
   /* 0=incompatible 1=compatible 2=warning */
   return 1;
@@ -2743,7 +2743,7 @@ m32c_comp_type_attributes (tree type1 ATTRIBUTE_UNUSED,
 #define TARGET_INSERT_ATTRIBUTES m32c_insert_attributes
 static void
 m32c_insert_attributes (tree node ATTRIBUTE_UNUSED,
-                        tree * attr_ptr ATTRIBUTE_UNUSED)
+			tree * attr_ptr ATTRIBUTE_UNUSED)
 {
   /* Nothing to do here.  */
 }
@@ -2797,7 +2797,7 @@ m32c_mov_ok (rtx * operands, enum machine_mode mode ATTRIBUTE_UNUSED)
    location, can be combined into single SImode mov instruction.  */
 bool
 m32c_immd_dbl_mov (rtx * operands, 
-                   enum machine_mode mode ATTRIBUTE_UNUSED)
+		   enum machine_mode mode ATTRIBUTE_UNUSED)
 {
   int flag = 0, okflag = 0, offset1 = 0, offset2 = 0, offsetsign = 0;
   const char *str1;
@@ -2849,26 +2849,26 @@ m32c_immd_dbl_mov (rtx * operands,
       str1 = XSTR (XEXP (operands[0], 0), 0);
       str2 = XSTR (XEXP (XEXP (XEXP (operands[2], 0), 0), 0), 0);
       if (strcmp (str1, str2) == 0)
-        okflag = 1; 
+	okflag = 1; 
       else
-        okflag = 0; 
+	okflag = 0; 
       break;
     case 2:
       str1 = XSTR (XEXP (XEXP (XEXP (operands[0], 0), 0), 0), 0);
       str2 = XSTR (XEXP (XEXP (XEXP (operands[2], 0), 0), 0), 0);
       if (strcmp(str1,str2) == 0)
-        okflag = 1; 
+	okflag = 1; 
       else
-        okflag = 0; 
+	okflag = 0; 
       break; 
     case 3:
       offset1 = XINT (XEXP (XEXP (operands[0], 0), 1), 0);
       offset2 = XINT (XEXP (XEXP (operands[2], 0), 1), 0);
       offsetsign = offset1 >> ((sizeof (offset1) * 8) -1);
       if (((offset2-offset1) == 2) && offsetsign != 0)
-        okflag = 1;
+	okflag = 1;
       else 
-        okflag = 0; 
+	okflag = 0; 
       break; 
     default:
       okflag = 0; 
@@ -2894,7 +2894,7 @@ m32c_immd_dbl_mov (rtx * operands,
    different sizes.  */
 static rtx
 m32c_subreg (enum machine_mode outer,
-             rtx x, enum machine_mode inner, int byte)
+	     rtx x, enum machine_mode inner, int byte)
 {
   int r, nr = -1;
 
@@ -2904,7 +2904,7 @@ m32c_subreg (enum machine_mode outer,
       && SUBREG_BYTE (x) == 0
       && GET_CODE (SUBREG_REG (x)) == MEM
       && (GET_MODE_SIZE (GET_MODE (x))
-          == GET_MODE_SIZE (GET_MODE (SUBREG_REG (x)))))
+	  == GET_MODE_SIZE (GET_MODE (SUBREG_REG (x)))))
     {
       rtx oldx = x;
       x = gen_rtx_MEM (GET_MODE (x), XEXP (SUBREG_REG (x), 0));
@@ -2914,12 +2914,12 @@ m32c_subreg (enum machine_mode outer,
   /* Push/pop get done as smaller push/pops.  */
   if (GET_CODE (x) == MEM
       && (GET_CODE (XEXP (x, 0)) == PRE_DEC
-          || GET_CODE (XEXP (x, 0)) == POST_INC))
+	  || GET_CODE (XEXP (x, 0)) == POST_INC))
     return gen_rtx_MEM (outer, XEXP (x, 0));
   if (GET_CODE (x) == SUBREG
       && GET_CODE (XEXP (x, 0)) == MEM
       && (GET_CODE (XEXP (XEXP (x, 0), 0)) == PRE_DEC
-          || GET_CODE (XEXP (XEXP (x, 0), 0)) == POST_INC))
+	  || GET_CODE (XEXP (XEXP (x, 0), 0)) == POST_INC))
     return gen_rtx_MEM (outer, XEXP (XEXP (x, 0), 0));
 
   if (GET_CODE (x) != REG)
@@ -2939,27 +2939,27 @@ m32c_subreg (enum machine_mode outer,
   else if (outer == HImode)
     {
       if (r == R0_REGNO && byte == 2)
-        nr = R2_REGNO;
+	nr = R2_REGNO;
       else if (r == R0_REGNO && byte == 4)
-        nr = R1_REGNO;
+	nr = R1_REGNO;
       else if (r == R0_REGNO && byte == 6)
-        nr = R3_REGNO;
+	nr = R3_REGNO;
       else if (r == R1_REGNO && byte == 2)
-        nr = R3_REGNO;
+	nr = R3_REGNO;
       else if (r == A0_REGNO && byte == 2)
-        nr = A1_REGNO;
+	nr = A1_REGNO;
     }
   else if (outer == SImode)
     {
       if (r == R0_REGNO && byte == 0)
-        nr = R0_REGNO;
+	nr = R0_REGNO;
       else if (r == R0_REGNO && byte == 4)
-        nr = R1_REGNO;
+	nr = R1_REGNO;
     }
   if (nr == -1)
     {
       fprintf (stderr, "m32c_subreg %s %s %d\n",
-               mode_name[outer], mode_name[inner], byte);
+	       mode_name[outer], mode_name[inner], byte);
       debug_rtx (x);
       gcc_unreachable ();
     }
@@ -3080,31 +3080,31 @@ m32c_split_move (rtx * operands, enum machine_mode mode, int split_all)
       && split_all != 3
       && (mode == SImode || mode == PSImode)
       && !(GET_CODE (operands[1]) == MEM
-           && GET_CODE (XEXP (operands[1], 0)) == POST_INC))
+	   && GET_CODE (XEXP (operands[1], 0)) == POST_INC))
     return 0;
 
   /* First, enumerate the subregs we'll be dealing with.  */
   for (si = 0; si < parts; si++)
     {
       d[si] =
-        m32c_subreg (submode, operands[0], mode,
-                     si * GET_MODE_SIZE (submode));
+	m32c_subreg (submode, operands[0], mode,
+		     si * GET_MODE_SIZE (submode));
       s[si] =
-        m32c_subreg (submode, operands[1], mode,
-                     si * GET_MODE_SIZE (submode));
+	m32c_subreg (submode, operands[1], mode,
+		     si * GET_MODE_SIZE (submode));
     }
 
   /* Split pushes by emitting a sequence of smaller pushes.  */
   if (GET_CODE (d[0]) == MEM && GET_CODE (XEXP (d[0], 0)) == PRE_DEC)
     {
       for (si = parts - 1; si >= 0; si--)
-        {
-          ops[opi++] = gen_rtx_MEM (submode,
-                                    gen_rtx_PRE_DEC (Pmode,
-                                                     gen_rtx_REG (Pmode,
-                                                                  SP_REGNO)));
-          ops[opi++] = s[si];
-        }
+	{
+	  ops[opi++] = gen_rtx_MEM (submode,
+				    gen_rtx_PRE_DEC (Pmode,
+						     gen_rtx_REG (Pmode,
+								  SP_REGNO)));
+	  ops[opi++] = s[si];
+	}
 
       rv = 1;
     }
@@ -3112,35 +3112,35 @@ m32c_split_move (rtx * operands, enum machine_mode mode, int split_all)
   else if (GET_CODE (s[0]) == MEM && GET_CODE (XEXP (s[0], 0)) == POST_INC)
     {
       for (di = 0; di < parts; di++)
-        {
-          ops[opi++] = d[di];
-          ops[opi++] = gen_rtx_MEM (submode,
-                                    gen_rtx_POST_INC (Pmode,
-                                                      gen_rtx_REG (Pmode,
-                                                                   SP_REGNO)));
-        }
+	{
+	  ops[opi++] = d[di];
+	  ops[opi++] = gen_rtx_MEM (submode,
+				    gen_rtx_POST_INC (Pmode,
+						      gen_rtx_REG (Pmode,
+								   SP_REGNO)));
+	}
       rv = 1;
     }
   else if (split_all)
     {
       /* if d[di] == s[si] for any di < si, we'll early clobber. */
       for (di = 0; di < parts - 1; di++)
-        for (si = di + 1; si < parts; si++)
-          if (reg_mentioned_p (d[di], s[si]))
-            rev = 1;
+	for (si = di + 1; si < parts; si++)
+	  if (reg_mentioned_p (d[di], s[si]))
+	    rev = 1;
 
       if (rev)
-        for (si = 0; si < parts; si++)
-          {
-            ops[opi++] = d[si];
-            ops[opi++] = s[si];
-          }
+	for (si = 0; si < parts; si++)
+	  {
+	    ops[opi++] = d[si];
+	    ops[opi++] = s[si];
+	  }
       else
-        for (si = parts - 1; si >= 0; si--)
-          {
-            ops[opi++] = d[si];
-            ops[opi++] = s[si];
-          }
+	for (si = parts - 1; si >= 0; si--)
+	  {
+	    ops[opi++] = d[si];
+	    ops[opi++] = s[si];
+	  }
       rv = 1;
     }
   /* Now emit any moves we may have accumulated.  */
@@ -3148,7 +3148,7 @@ m32c_split_move (rtx * operands, enum machine_mode mode, int split_all)
     {
       int i;
       for (i = 2; i < opi; i += 2)
-        emit_move_insn (ops[i], ops[i + 1]);
+	emit_move_insn (ops[i], ops[i + 1]);
     }
   return rv;
 }
@@ -3197,9 +3197,9 @@ m32c_expand_setmemhi(rtx *operands)
       count = copy_to_mode_reg (HImode, GEN_INT (INTVAL (count) / 2));
       val = copy_to_mode_reg (HImode, GEN_INT (v));
       if (TARGET_A16)
-        emit_insn (gen_setmemhi_whi_op (desto, counto, val, desta, count));
+	emit_insn (gen_setmemhi_whi_op (desto, counto, val, desta, count));
       else
-        emit_insn (gen_setmemhi_wpsi_op (desto, counto, val, desta, count));
+	emit_insn (gen_setmemhi_wpsi_op (desto, counto, val, desta, count));
       return 1;
     }
 
@@ -3253,9 +3253,9 @@ m32c_expand_movmemhi(rtx *operands)
     {
       count = copy_to_mode_reg (HImode, GEN_INT (INTVAL (count) / 2));
       if (TARGET_A16)
-        emit_insn (gen_movmemhi_whi_op (desto, srco, counto, desta, srca, count));
+	emit_insn (gen_movmemhi_whi_op (desto, srco, counto, desta, srca, count));
       else
-        emit_insn (gen_movmemhi_wpsi_op (desto, srco, counto, desta, srca, count));
+	emit_insn (gen_movmemhi_wpsi_op (desto, srco, counto, desta, srca, count));
       return 1;
     }
 
@@ -3371,19 +3371,19 @@ m32c_prepare_shift (rtx * operands, int scale, int shift_code)
       int count = INTVAL (operands[2]) * scale;
 
       while (count > maxc)
-        {
-          temp = gen_reg_rtx (mode);
-          emit_insn (func (temp, operands[1], GEN_INT (maxc)));
-          operands[1] = temp;
-          count -= maxc;
-        }
+	{
+	  temp = gen_reg_rtx (mode);
+	  emit_insn (func (temp, operands[1], GEN_INT (maxc)));
+	  operands[1] = temp;
+	  count -= maxc;
+	}
       while (count < -maxc)
-        {
-          temp = gen_reg_rtx (mode);
-          emit_insn (func (temp, operands[1], GEN_INT (-maxc)));
-          operands[1] = temp;
-          count += maxc;
-        }
+	{
+	  temp = gen_reg_rtx (mode);
+	  emit_insn (func (temp, operands[1], GEN_INT (-maxc)));
+	  operands[1] = temp;
+	  count += maxc;
+	}
       emit_insn (func (operands[0], operands[1], GEN_INT (count)));
       return 1;
     }
@@ -3403,24 +3403,24 @@ m32c_prepare_shift (rtx * operands, int scale, int shift_code)
   if (TARGET_A16 && GET_MODE_SIZE (mode) == 4)
     {
       /* The m16c has a limit of -16..16 for SI shifts, even when the
-         shift count is in a register.  Since there are so many targets
-         of these shifts, it's better to expand the RTL here than to
-         call a helper function.
+	 shift count is in a register.  Since there are so many targets
+	 of these shifts, it's better to expand the RTL here than to
+	 call a helper function.
 
-         The resulting code looks something like this:
+	 The resulting code looks something like this:
 
-                cmp.b        r1h,-16
-                jge.b        1f
-                shl.l        -16,dest
-                add.b        r1h,16
-        1f:        cmp.b        r1h,16
-                jle.b        1f
-                shl.l        16,dest
-                sub.b        r1h,16
-        1f:        shl.l        r1h,dest
+		cmp.b	r1h,-16
+		jge.b	1f
+		shl.l	-16,dest
+		add.b	r1h,16
+	1f:	cmp.b	r1h,16
+		jle.b	1f
+		shl.l	16,dest
+		sub.b	r1h,16
+	1f:	shl.l	r1h,dest
 
-         We take advantage of the fact that "negative" shifts are
-         undefined to skip one of the comparisons.  */
+	 We take advantage of the fact that "negative" shifts are
+	 undefined to skip one of the comparisons.  */
 
       rtx count;
       rtx label, lref, insn, tempvar;
@@ -3435,25 +3435,25 @@ m32c_prepare_shift (rtx * operands, int scale, int shift_code)
       tempvar = gen_reg_rtx (mode);
 
       if (shift_code == ASHIFT)
-        {
-          /* This is a left shift.  We only need check positive counts.  */
-          emit_jump_insn (gen_cbranchqi4 (gen_rtx_LE (VOIDmode, 0, 0),
-                                          count, GEN_INT (16), label));
-          emit_insn (func (tempvar, operands[0], GEN_INT (8)));
-          emit_insn (func (operands[0], tempvar, GEN_INT (8)));
-          insn = emit_insn (gen_addqi3 (count, count, GEN_INT (-16)));
-          emit_label_after (label, insn);
-        }
+	{
+	  /* This is a left shift.  We only need check positive counts.  */
+	  emit_jump_insn (gen_cbranchqi4 (gen_rtx_LE (VOIDmode, 0, 0),
+					  count, GEN_INT (16), label));
+	  emit_insn (func (tempvar, operands[0], GEN_INT (8)));
+	  emit_insn (func (operands[0], tempvar, GEN_INT (8)));
+	  insn = emit_insn (gen_addqi3 (count, count, GEN_INT (-16)));
+	  emit_label_after (label, insn);
+	}
       else
-        {
-          /* This is a right shift.  We only need check negative counts.  */
-          emit_jump_insn (gen_cbranchqi4 (gen_rtx_GE (VOIDmode, 0, 0),
-                                          count, GEN_INT (-16), label));
-          emit_insn (func (tempvar, operands[0], GEN_INT (-8)));
-          emit_insn (func (operands[0], tempvar, GEN_INT (-8)));
-          insn = emit_insn (gen_addqi3 (count, count, GEN_INT (16)));
-          emit_label_after (label, insn);
-        }
+	{
+	  /* This is a right shift.  We only need check negative counts.  */
+	  emit_jump_insn (gen_cbranchqi4 (gen_rtx_GE (VOIDmode, 0, 0),
+					  count, GEN_INT (-16), label));
+	  emit_insn (func (tempvar, operands[0], GEN_INT (-8)));
+	  emit_insn (func (operands[0], tempvar, GEN_INT (-8)));
+	  insn = emit_insn (gen_addqi3 (count, count, GEN_INT (16)));
+	  emit_label_after (label, insn);
+	}
       operands[1] = operands[0];
       emit_insn (func (operands[0], operands[0], count));
       return 1;
@@ -3519,11 +3519,11 @@ m32c_expand_scc (int code, rtx *operands)
   enum machine_mode mode = TARGET_A16 ? QImode : HImode;
 
   emit_insn (gen_rtx_SET (mode,
-                          operands[0],
-                          gen_rtx_fmt_ee (code,
-                                          mode,
-                                          compare_op0,
-                                          compare_op1)));
+			  operands[0],
+			  gen_rtx_fmt_ee (code,
+					  mode,
+					  compare_op0,
+					  compare_op1)));
 }
 
 /* Pattern Output Functions */
@@ -3534,9 +3534,9 @@ rtx
 m32c_cmp_flg_0 (rtx cmp)
 {
   return gen_rtx_fmt_ee (GET_CODE (cmp),
-                         GET_MODE (cmp),
-                         gen_rtx_REG (CCmode, FLG_REGNO),
-                         GEN_INT (0));
+			 GET_MODE (cmp),
+			 gen_rtx_REG (CCmode, FLG_REGNO),
+			 GEN_INT (0));
 }
 
 int
@@ -3559,15 +3559,15 @@ m32c_expand_movcc (rtx *operands)
     }
 
   cmp = gen_rtx_fmt_ee (GET_CODE (rel),
-                        GET_MODE (rel),
-                        compare_op0,
-                        compare_op1);
+			GET_MODE (rel),
+			compare_op0,
+			compare_op1);
 
   emit_move_insn (operands[0],
-                  gen_rtx_IF_THEN_ELSE (GET_MODE (operands[0]),
-                                        cmp,
-                                        operands[2],
-                                        operands[3]));
+		  gen_rtx_IF_THEN_ELSE (GET_MODE (operands[0]),
+					cmp,
+					operands[2],
+					operands[3]));
   return 0;
 }
 
@@ -3597,7 +3597,7 @@ m32c_expand_insv (rtx *operands)
     {
       rtx sub = SUBREG_REG (op0);
       if (GET_MODE (sub) == HImode || GET_MODE (sub) == QImode)
-        op0 = sub;
+	op0 = sub;
     }
 
   if (no_new_pseudos
@@ -3625,26 +3625,26 @@ m32c_expand_insv (rtx *operands)
     {
       /* Storing a zero, use an AND mask */
       if (GET_MODE (op0) == HImode)
-        mask ^= 0xffff;
+	mask ^= 0xffff;
       else
-        mask ^= 0xff;
+	mask ^= 0xff;
     }
   /* Now we need to properly sign-extend the mask in case we need to
      fall back to an AND or OR opcode.  */
   if (GET_MODE (op0) == HImode)
     {
       if (mask & 0x8000)
-        mask -= 0x10000;
+	mask -= 0x10000;
     }
   else
     {
       if (mask & 0x80)
-        mask -= 0x100;
+	mask -= 0x100;
     }
 
   switch (  (INTVAL (operands[3]) ? 4 : 0)
-          + ((GET_MODE (op0) == HImode) ? 2 : 0)
-          + (TARGET_A24 ? 1 : 0))
+	  + ((GET_MODE (op0) == HImode) ? 2 : 0)
+	  + (TARGET_A24 ? 1 : 0))
     {
     case 0: p = gen_andqi3_16 (op0, src0, GEN_INT (mask)); break;
     case 1: p = gen_andqi3_24 (op0, src0, GEN_INT (mask)); break;
@@ -3668,9 +3668,9 @@ m32c_scc_pattern(rtx *operands, RTX_CODE code)
       && REGNO (operands[0]) == R0_REGNO)
     {
       if (code == EQ)
-        return "stzx\t#1,#0,r0l";
+	return "stzx\t#1,#0,r0l";
       if (code == NE)
-        return "stzx\t#0,#1,r0l";
+	return "stzx\t#0,#1,r0l";
     }
   sprintf(buf, "bm%s\t0,%%h0\n\tand.b\t#1,%%0", GET_RTX_NAME (code));
   return buf;
@@ -3724,9 +3724,9 @@ m32c_function_needs_enter (void)
   while (insn)
     {
       if (reg_mentioned_p (sp, insn))
-        return true;
+	return true;
       if (reg_mentioned_p (fb, insn))
-        return true;
+	return true;
       insn = NEXT_INSN (insn);
     }
   return false;
@@ -3786,21 +3786,21 @@ m32c_emit_prologue (void)
     }
   if (cfun->machine->use_rts == 0)
     F (emit_insn (m32c_all_frame_related
-                  (TARGET_A16
-                   ? gen_prologue_enter_16 (GEN_INT (frame_size))
-                   : gen_prologue_enter_24 (GEN_INT (frame_size)))));
+		  (TARGET_A16
+		   ? gen_prologue_enter_16 (GEN_INT (frame_size))
+		   : gen_prologue_enter_24 (GEN_INT (frame_size)))));
 
   if (extra_frame_size)
     {
       complex_prologue = 1;
       if (TARGET_A16)
-        F (emit_insn (gen_addhi3 (gen_rtx_REG (HImode, SP_REGNO),
-                                  gen_rtx_REG (HImode, SP_REGNO),
-                                  GEN_INT (-extra_frame_size))));
+	F (emit_insn (gen_addhi3 (gen_rtx_REG (HImode, SP_REGNO),
+				  gen_rtx_REG (HImode, SP_REGNO),
+				  GEN_INT (-extra_frame_size))));
       else
-        F (emit_insn (gen_addpsi3 (gen_rtx_REG (PSImode, SP_REGNO),
-                                   gen_rtx_REG (PSImode, SP_REGNO),
-                                   GEN_INT (-extra_frame_size))));
+	F (emit_insn (gen_addpsi3 (gen_rtx_REG (PSImode, SP_REGNO),
+				   gen_rtx_REG (PSImode, SP_REGNO),
+				   GEN_INT (-extra_frame_size))));
     }
 
   complex_prologue += m32c_pushm_popm (PP_pushm);
@@ -3827,13 +3827,13 @@ m32c_emit_epilogue (void)
       enum machine_mode spmode = TARGET_A16 ? HImode : PSImode;
 
       emit_move_insn (gen_rtx_REG (spmode, A0_REGNO),
-                      gen_rtx_REG (spmode, FP_REGNO));
+		      gen_rtx_REG (spmode, FP_REGNO));
       emit_move_insn (gen_rtx_REG (spmode, SP_REGNO),
-                      gen_rtx_REG (spmode, A0_REGNO));
+		      gen_rtx_REG (spmode, A0_REGNO));
       if (TARGET_A16)
-        emit_insn (gen_pophi_16 (gen_rtx_REG (HImode, FP_REGNO)));
+	emit_insn (gen_pophi_16 (gen_rtx_REG (HImode, FP_REGNO)));
       else
-        emit_insn (gen_poppsi (gen_rtx_REG (PSImode, FP_REGNO)));
+	emit_insn (gen_poppsi (gen_rtx_REG (PSImode, FP_REGNO)));
       emit_insn (gen_popm (GEN_INT (cfun->machine->intr_pushm)));
       emit_jump_insn (gen_epilogue_reit (GEN_INT (TARGET_A16 ? 4 : 6)));
     }
@@ -3928,7 +3928,7 @@ m32c_compare_redundant (rtx cmp, rtx *operands)
   else if (GET_CODE (PATTERN (next)) == SET)
     {
       /* If this is a conditional, flags_needed will be something
-         other than FLAGS_N, which we test below.  */
+	 other than FLAGS_N, which we test below.  */
       next = XEXP (PATTERN (next), 1);
     }
   else
@@ -3965,24 +3965,24 @@ m32c_compare_redundant (rtx cmp, rtx *operands)
     if (!prev)
       {
 #if DEBUG_CMP
-        fprintf(stderr, "No previous insn.\n");
+	fprintf(stderr, "No previous insn.\n");
 #endif
-        return false;
+	return false;
       }
     if (!INSN_P (prev))
       {
 #if DEBUG_CMP
-        fprintf(stderr, "Previous insn is a non-insn.\n");
+	fprintf(stderr, "Previous insn is a non-insn.\n");
 #endif
-        return false;
+	return false;
       }
     pp = PATTERN (prev);
     if (GET_CODE (pp) != SET)
       {
 #if DEBUG_CMP
-        fprintf(stderr, "Previous insn is not a SET.\n");
+	fprintf(stderr, "Previous insn is not a SET.\n");
 #endif
-        return false;
+	return false;
       }
     pflags = get_attr_flags (prev);
 
@@ -3992,13 +3992,13 @@ m32c_compare_redundant (rtx cmp, rtx *operands)
     recog (PATTERN (cmp), cmp, 0);
 
     if (pflags == FLAGS_N
-        && reg_mentioned_p (op0, pp))
+	&& reg_mentioned_p (op0, pp))
       {
 #if DEBUG_CMP
-        fprintf(stderr, "intermediate non-flags insn uses op:\n");
-        debug_rtx(prev);
+	fprintf(stderr, "intermediate non-flags insn uses op:\n");
+	debug_rtx(prev);
 #endif
-        return false;
+	return false;
       }
   } while (pflags == FLAGS_N);
 #if DEBUG_CMP
@@ -4013,7 +4013,7 @@ m32c_compare_redundant (rtx cmp, rtx *operands)
       && GET_CODE (XEXP (pp, 1)) == COMPARE)
     {
       /* Adjacent cbranches must have the same operands to be
-         redundant.  */
+	 redundant.  */
       rtx pop0 = XEXP (XEXP (pp, 1), 0);
       rtx pop1 = XEXP (XEXP (pp, 1), 1);
 #if DEBUG_CMP
@@ -4022,8 +4022,8 @@ m32c_compare_redundant (rtx cmp, rtx *operands)
       debug_rtx(pop1);
 #endif
       if (rtx_equal_p (op0, pop0)
-          && rtx_equal_p (op1, pop1))
-        return true;
+	  && rtx_equal_p (op1, pop1))
+	return true;
 #if DEBUG_CMP
       fprintf(stderr, "prev cmp not same\n");
 #endif

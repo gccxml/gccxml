@@ -55,17 +55,17 @@ Boston, MA 02110-1301, USA.  */
 /* This says how to output an assembler line
    to define a global common symbol.  */
 
-#define ASM_OUTPUT_COMMON(FILE, NAME, SIZE, ROUNDED)        \
-( fputs ("\t.comm ", (FILE)),                        \
-  assemble_name ((FILE), (NAME)),                \
+#define ASM_OUTPUT_COMMON(FILE, NAME, SIZE, ROUNDED)	\
+( fputs ("\t.comm ", (FILE)),			\
+  assemble_name ((FILE), (NAME)),		\
   fprintf ((FILE), ",%d\n", (int)(SIZE)))
 
 /* This says how to output an assembler line
    to define a local common symbol.  */
 
-#define ASM_OUTPUT_LOCAL(FILE, NAME, SIZE, ROUNDED)        \
-( fputs ("\t.lcomm ", (FILE)),                                \
-  assemble_name ((FILE), (NAME)),                        \
+#define ASM_OUTPUT_LOCAL(FILE, NAME, SIZE, ROUNDED)	\
+( fputs ("\t.lcomm ", (FILE)),				\
+  assemble_name ((FILE), (NAME)),			\
   fprintf ((FILE), ",%d\n", (int)(SIZE)))
 
 #define DWARF2_UNWIND_INFO 0

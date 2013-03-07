@@ -37,7 +37,7 @@
   (match_code "label_ref,symbol_ref,const_int,const_double,const,high")
 {
   return (GET_MODE (op) == word_mode
-          && CONSTANT_P (op) && ! TARGET_PORTABLE_RUNTIME);
+	  && CONSTANT_P (op) && ! TARGET_PORTABLE_RUNTIME);
 })
 
 ;; Return 1 iff OP is an indexed memory operand.
@@ -76,8 +76,8 @@
       op = XEXP (op, 0);
       return (((GET_CODE (XEXP (op, 0)) == SYMBOL_REF
                 && !SYMBOL_REF_TLS_MODEL (XEXP (op, 0)))
-               || GET_CODE (XEXP (op, 0)) == LABEL_REF)
-              && GET_CODE (XEXP (op, 1)) == CONST_INT);
+	       || GET_CODE (XEXP (op, 0)) == LABEL_REF)
+	      && GET_CODE (XEXP (op, 1)) == CONST_INT);
     default:
       return 0;
     }
@@ -95,8 +95,8 @@
     return 0;
   op = XEXP (op, 0);
   return ((GET_CODE (op) == SYMBOL_REF && !SYMBOL_REF_TLS_MODEL (op))
-           || GET_CODE (op) == CONST || GET_CODE (op) == HIGH 
-         || GET_CODE (op) == LABEL_REF);
+  	 || GET_CODE (op) == CONST || GET_CODE (op) == HIGH 
+	 || GET_CODE (op) == LABEL_REF);
 })
 
 ;; Return true if OP is a symbolic operand for the TLS Global Dynamic model.
@@ -174,7 +174,7 @@
     return 0;
 
   return (!symbolic_memory_operand (op, mode)
-          && memory_address_p (mode, XEXP (op, 0)));
+	  && memory_address_p (mode, XEXP (op, 0)));
 })
 
 ;; Accept anything that can be used as a destination operand for a
@@ -199,8 +199,8 @@
   op = XEXP (op, 0);
 
   return (memory_address_p (mode, op)
-          && !IS_INDEX_ADDR_P (op)
-          && !IS_LO_SUM_DLT_ADDR_P (op));
+	  && !IS_INDEX_ADDR_P (op)
+	  && !IS_LO_SUM_DLT_ADDR_P (op));
 })
 
 ;; Accept anything that can be used as a source operand for a move
@@ -325,7 +325,7 @@
     case CONST:
       op = XEXP (op, 0);
       return (GET_CODE (XEXP (op, 0)) == LABEL_REF
-              && GET_CODE (XEXP (op, 1)) == CONST_INT);
+	      && GET_CODE (XEXP (op, 1)) == CONST_INT);
     default:
       return 0;
     }
@@ -347,7 +347,7 @@
   (match_code "subreg,reg,const_int")
 {
   return (register_operand (op, mode)
-          || (GET_CODE (op) == CONST_INT && INT_14_BITS (op)));
+	  || (GET_CODE (op) == CONST_INT && INT_14_BITS (op)));
 })
 
 ;; Return truth value of whether OP can be used as an operand in a
@@ -358,7 +358,7 @@
   (match_code "subreg,reg,const_int")
 {
   return (register_operand (op, mode)
-          || (GET_CODE (op) == CONST_INT && INT_11_BITS (op)));
+	  || (GET_CODE (op) == CONST_INT && INT_11_BITS (op)));
 })
 
 ;; A constant integer suitable for use in a PRE_MODIFY memory
@@ -368,7 +368,7 @@
   (match_code "const_int")
 {
   return (GET_CODE (op) == CONST_INT
-          && INTVAL (op) >= -0x2000 && INTVAL (op) < 0x10);
+	  && INTVAL (op) >= -0x2000 && INTVAL (op) < 0x10);
 })
 
 ;; A constant integer suitable for use in a POST_MODIFY memory
@@ -378,7 +378,7 @@
   (match_code "const_int")
 {
   return (GET_CODE (op) == CONST_INT
-          && INTVAL (op) < 0x2000 && INTVAL (op) >= -0x10);
+	  && INTVAL (op) < 0x2000 && INTVAL (op) >= -0x10);
 })
 
 ;; TODO: Add a comment here.
@@ -387,11 +387,11 @@
   (match_code "subreg,reg,const_double")
 {
   return (register_operand (op, mode)
-          || (GET_CODE (op) == CONST_DOUBLE
-              && GET_MODE (op) == mode
-              && VAL_14_BITS_P (CONST_DOUBLE_LOW (op))
-              && ((CONST_DOUBLE_HIGH (op) >= 0)
-                  == ((CONST_DOUBLE_LOW (op) & 0x1000) == 0))));
+	  || (GET_CODE (op) == CONST_DOUBLE
+	      && GET_MODE (op) == mode
+	      && VAL_14_BITS_P (CONST_DOUBLE_LOW (op))
+	      && ((CONST_DOUBLE_HIGH (op) >= 0)
+		  == ((CONST_DOUBLE_LOW (op) & 0x1000) == 0))));
 })
 
 ;; Return truth value of whether OP is an integer which fits the range
@@ -402,7 +402,7 @@
   (match_code "const_int,reg")
 {
   return ((GET_CODE (op) == CONST_INT && INT_5_BITS (op))
-          || (GET_CODE (op) == REG && REGNO (op) > 0 && REGNO (op) < 32));
+	  || (GET_CODE (op) == REG && REGNO (op) > 0 && REGNO (op) < 32));
 })
 
 ;; Return truth value of whether OP is an integer which fits the range
@@ -441,11 +441,11 @@
 #if HOST_BITS_PER_WIDE_INT > 32
   /* All allowed constants will fit a CONST_INT.  */
   return (GET_CODE (op) == CONST_INT
-          && (INTVAL (op) >= 0 && INTVAL (op) < (HOST_WIDE_INT) 1 << 32));
+	  && (INTVAL (op) >= 0 && INTVAL (op) < (HOST_WIDE_INT) 1 << 32));
 #else
   return (GET_CODE (op) == CONST_INT
-          || (GET_CODE (op) == CONST_DOUBLE
-              && CONST_DOUBLE_HIGH (op) == 0));
+	  || (GET_CODE (op) == CONST_DOUBLE
+	      && CONST_DOUBLE_HIGH (op) == 0));
 #endif
 })
 
@@ -464,7 +464,7 @@
   (match_code "subreg,reg,const_int")
 {
   return (register_operand (op, mode)
-          || (GET_CODE (op) == CONST_INT && and_mask_p (INTVAL (op))));
+	  || (GET_CODE (op) == CONST_INT && and_mask_p (INTVAL (op))));
 })
 
 ;; True iff depi can be used to compute (reg | OP).
@@ -519,7 +519,7 @@
   (match_code "plus,xor,ior")
 {
   return (GET_CODE (op) == PLUS || GET_CODE (op) == XOR
-          || GET_CODE (op) == IOR);
+	  || GET_CODE (op) == IOR);
 })
 
 ;; Return 1 if OP is a CONST_INT with the value 2, 4, or 8.  These are
@@ -537,9 +537,9 @@
   (match_code "reg,const_int")
 {
   return (mode == SImode
-          && ((GET_CODE (op) == REG && REGNO (op) == 25)
-              || (GET_CODE (op) == CONST_INT && INTVAL (op) > 0
-                  && INTVAL (op) < 16 && magic_milli[INTVAL (op)])));
+	  && ((GET_CODE (op) == REG && REGNO (op) == 25)
+	      || (GET_CODE (op) == CONST_INT && INTVAL (op) > 0
+		  && INTVAL (op) < 16 && magic_milli[INTVAL (op)])));
 })
 
 ;; Return nonzero if OP is an integer register, else return zero.
@@ -558,13 +558,13 @@
 {
   return ((mode == VOIDmode || GET_MODE (op) == mode)
           && (GET_CODE (op) == EQ
-              || GET_CODE (op) == NE
-              || GET_CODE (op) == GT
-              || GET_CODE (op) == GTU
-              || GET_CODE (op) == GE
-              || GET_CODE (op) == LT
-              || GET_CODE (op) == LE
-              || GET_CODE (op) == LEU));
+	      || GET_CODE (op) == NE
+	      || GET_CODE (op) == GT
+	      || GET_CODE (op) == GTU
+	      || GET_CODE (op) == GE
+	      || GET_CODE (op) == LT
+	      || GET_CODE (op) == LE
+	      || GET_CODE (op) == LEU));
 })
 
 ;; Return 1 if OP is an operator suitable for use in a movb
@@ -574,5 +574,5 @@
   (match_code "eq,ne,lt,ge")
 {
   return (GET_CODE (op) == EQ || GET_CODE (op) == NE
-          || GET_CODE (op) == LT || GET_CODE (op) == GE);
+	  || GET_CODE (op) == LT || GET_CODE (op) == GE);
 })

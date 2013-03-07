@@ -32,59 +32,59 @@
 ;; GOT constants must go 12/HI/LO for the splitter to work
 
 (define_constants
-  [(UNSPEC_BLOCKAGE                0)
-   (UNSPEC_CC_TO_GPR                1)
-   (UNSPEC_GPR_TO_CC                2)
-   (UNSPEC_PIC_PROLOGUE                3)
-   (UNSPEC_CR_LOGIC                4)
-   (UNSPEC_STACK_ADJUST                5)
-   (UNSPEC_EH_RETURN_EPILOGUE        6)
-   (UNSPEC_GOT                        7)
-   (UNSPEC_LDD                        8)
-   (UNSPEC_OPTIONAL_MEMBAR        9)
+  [(UNSPEC_BLOCKAGE		0)
+   (UNSPEC_CC_TO_GPR		1)
+   (UNSPEC_GPR_TO_CC		2)
+   (UNSPEC_PIC_PROLOGUE		3)
+   (UNSPEC_CR_LOGIC		4)
+   (UNSPEC_STACK_ADJUST		5)
+   (UNSPEC_EH_RETURN_EPILOGUE	6)
+   (UNSPEC_GOT			7)
+   (UNSPEC_LDD			8)
+   (UNSPEC_OPTIONAL_MEMBAR	9)
 
-   (UNSPEC_GETTLSOFF                        200)
-   (UNSPEC_TLS_LOAD_GOTTLSOFF12                201)
-   (UNSPEC_TLS_INDIRECT_CALL                202)
-   (UNSPEC_TLS_TLSDESC_LDD                203)
-   (UNSPEC_TLS_TLSDESC_LDD_AUX                204)
-   (UNSPEC_TLS_TLSOFF_LD                205)
-   (UNSPEC_TLS_LDDI                        206)
-   (UNSPEC_TLSOFF_HILO                        207)
+   (UNSPEC_GETTLSOFF			200)
+   (UNSPEC_TLS_LOAD_GOTTLSOFF12		201)
+   (UNSPEC_TLS_INDIRECT_CALL		202)
+   (UNSPEC_TLS_TLSDESC_LDD		203)
+   (UNSPEC_TLS_TLSDESC_LDD_AUX		204)
+   (UNSPEC_TLS_TLSOFF_LD		205)
+   (UNSPEC_TLS_LDDI			206)
+   (UNSPEC_TLSOFF_HILO			207)
 
-   (R_FRV_GOT12                        11)
-   (R_FRV_GOTHI                        12)
-   (R_FRV_GOTLO                        13)
-   (R_FRV_FUNCDESC                14)
-   (R_FRV_FUNCDESC_GOT12        15)
-   (R_FRV_FUNCDESC_GOTHI        16)
-   (R_FRV_FUNCDESC_GOTLO        17)
-   (R_FRV_FUNCDESC_VALUE        18)
-   (R_FRV_FUNCDESC_GOTOFF12        19)
-   (R_FRV_FUNCDESC_GOTOFFHI        20)
-   (R_FRV_FUNCDESC_GOTOFFLO        21)
-   (R_FRV_GOTOFF12                22)
-   (R_FRV_GOTOFFHI                23)
-   (R_FRV_GOTOFFLO                24)
-   (R_FRV_GPREL12                25)
-   (R_FRV_GPRELHI                26)
-   (R_FRV_GPRELLO                27)
-   (R_FRV_GOTTLSOFF_HI                28)
-   (R_FRV_GOTTLSOFF_LO                29)
-   (R_FRV_TLSMOFFHI                30)
-   (R_FRV_TLSMOFFLO                   31)
-   (R_FRV_TLSMOFF12                   32)
-   (R_FRV_TLSDESCHI                   33)
-   (R_FRV_TLSDESCLO                   34)
-   (R_FRV_GOTTLSDESCHI                35)
-   (R_FRV_GOTTLSDESCLO                36)
+   (R_FRV_GOT12			11)
+   (R_FRV_GOTHI			12)
+   (R_FRV_GOTLO			13)
+   (R_FRV_FUNCDESC		14)
+   (R_FRV_FUNCDESC_GOT12	15)
+   (R_FRV_FUNCDESC_GOTHI	16)
+   (R_FRV_FUNCDESC_GOTLO	17)
+   (R_FRV_FUNCDESC_VALUE	18)
+   (R_FRV_FUNCDESC_GOTOFF12	19)
+   (R_FRV_FUNCDESC_GOTOFFHI	20)
+   (R_FRV_FUNCDESC_GOTOFFLO	21)
+   (R_FRV_GOTOFF12		22)
+   (R_FRV_GOTOFFHI		23)
+   (R_FRV_GOTOFFLO		24)
+   (R_FRV_GPREL12		25)
+   (R_FRV_GPRELHI		26)
+   (R_FRV_GPRELLO		27)
+   (R_FRV_GOTTLSOFF_HI		28)
+   (R_FRV_GOTTLSOFF_LO		29)
+   (R_FRV_TLSMOFFHI		30)
+   (R_FRV_TLSMOFFLO           	31)
+   (R_FRV_TLSMOFF12           	32)
+   (R_FRV_TLSDESCHI           	33)
+   (R_FRV_TLSDESCLO           	34)
+   (R_FRV_GOTTLSDESCHI		35)
+   (R_FRV_GOTTLSDESCLO		36)
 
-   (GR8_REG                        8)
-   (GR9_REG                        9)
-   (GR14_REG                        14)
+   (GR8_REG			8)
+   (GR9_REG			9)
+   (GR14_REG			14)
    ;; LR_REG conflicts with definition in frv.h
    (LRREG                       169)
-   (FDPIC_REG                        15)
+   (FDPIC_REG			15)
    ])
 
 (define_mode_macro IMODE [QI HI SI DI])
@@ -401,33 +401,33 @@
 ;; Three gcc passes are involved in generating VLIW packets:
 ;;
 ;;    (1) The scheduler.  This pass uses the standard scheduling code and
-;;          behaves in much the same way as it would for a superscalar RISC
-;;          architecture.
+;;	  behaves in much the same way as it would for a superscalar RISC
+;;	  architecture.
 ;;
 ;;    (2) frv_reorg.  This pass inserts nops into packets in order to meet
-;;          the processor's issue requirements.  It also has code to optimize
-;;          the type of padding used to align labels.
+;;	  the processor's issue requirements.  It also has code to optimize
+;;	  the type of padding used to align labels.
 ;;
 ;;    (3) frv_pack_insns.  The final packing phase, which puts the
-;;          instructions into assembly language order according to the
-;;          "I0 F0/M0 ..." template above.
+;;	  instructions into assembly language order according to the
+;;	  "I0 F0/M0 ..." template above.
 ;;
 ;; In the ideal case, these three passes will agree on which instructions
 ;; should be packed together, but this won't always happen.  In particular:
 ;;
 ;;    (a) (2) might not pack predicated instructions in the same way as (1).
-;;          The scheduler tries to schedule predicated instructions for the
-;;          worst case, assuming the predicate is true.  However, if we have
-;;          something like a predicated load, it isn't always possible to
-;;          fill the load delay with useful instructions.  (2) should then
-;;          pack the user of the loaded value as aggressively as possible,
-;;          in order to optimize the case when the predicate is false.
-;;          See frv_pack_insn_p for more details.
+;;	  The scheduler tries to schedule predicated instructions for the
+;;	  worst case, assuming the predicate is true.  However, if we have
+;;	  something like a predicated load, it isn't always possible to
+;;	  fill the load delay with useful instructions.  (2) should then
+;;	  pack the user of the loaded value as aggressively as possible,
+;;	  in order to optimize the case when the predicate is false.
+;;	  See frv_pack_insn_p for more details.
 ;;
 ;;    (b) The final shorten_branches pass runs between (2) and (3).
-;;          Since (2) inserts nops, it is possible that some branches
-;;          that were thought to be in range during (2) turned out to
-;;          out-of-range in (3).
+;;	  Since (2) inserts nops, it is possible that some branches
+;;	  that were thought to be in range during (2) turned out to
+;;	  out-of-range in (3).
 ;;
 ;; All three passes use DFAs to model issue restrictions.  The main
 ;; question that the DFAs are supposed to answer is simply: can these
@@ -442,8 +442,8 @@
 ;;
 ;; For example, suppose we're compiling for the fr400 and we have:
 ;;
-;;        addi        gr4,#1,gr5
-;;        ldi        @(gr6,gr0),gr4
+;;	addi	gr4,#1,gr5
+;;	ldi	@(gr6,gr0),gr4
 ;;
 ;; We can pack these instructions together by assigning the load to I0 and
 ;; the addition to I1.  However, because of the anti dependence between the
@@ -477,37 +477,37 @@
 ;;
 ;;    2. For each group of instructions:
 ;;
-;;         (a) Issue each instruction in the reset DFA state and use the
-;;             DFA cpu_unit_query interface to find out which unit it picks
-;;             first.
+;;	 (a) Issue each instruction in the reset DFA state and use the
+;;	     DFA cpu_unit_query interface to find out which unit it picks
+;;	     first.
 ;;
-;;         (b) Sort the instructions into ascending order of picked units.
-;;             Instructions that pick I1 first come after those that pick
-;;             I0 first, and so on.  Let S be the sorted sequence and S[i]
-;;             be the ith element of it (counting from zero).
+;;	 (b) Sort the instructions into ascending order of picked units.
+;;	     Instructions that pick I1 first come after those that pick
+;;	     I0 first, and so on.  Let S be the sorted sequence and S[i]
+;;	     be the ith element of it (counting from zero).
 ;;
-;;         (c) If this is the control or branch group, goto (i)
+;;	 (c) If this is the control or branch group, goto (i)
 ;;
-;;         (d) Find the largest L such that S[0]...S[L-1] can be issued
-;;             consecutively from the reset state and such that the DFA
-;;             claims unit X when S[X] is added.  Let D be the DFA state
-;;             after instructions S[0]...S[L-1] have been issued.
+;;	 (d) Find the largest L such that S[0]...S[L-1] can be issued
+;;	     consecutively from the reset state and such that the DFA
+;;	     claims unit X when S[X] is added.  Let D be the DFA state
+;;	     after instructions S[0]...S[L-1] have been issued.
 ;;
-;;         (e) If L is the length of S, goto (i)
+;;	 (e) If L is the length of S, goto (i)
 ;;
-;;         (f) Let U be the number of units belonging to this group and #S be
-;;             the length of S.  Create a new sequence S' by concatenating
-;;             S[L]...S[#S-1] and (U - #S) nops.
+;;	 (f) Let U be the number of units belonging to this group and #S be
+;;	     the length of S.  Create a new sequence S' by concatenating
+;;	     S[L]...S[#S-1] and (U - #S) nops.
 ;;
-;;         (g) For each permutation S'' of S', try issuing S'' from last to
-;;             first, starting with state D.  See if the DFA claims unit
-;;             X + L when each S''[X] is added.  If so, set S to the
-;;             concatenation of S[0]...S[L-1] and S'', then goto (i).
+;;	 (g) For each permutation S'' of S', try issuing S'' from last to
+;;	     first, starting with state D.  See if the DFA claims unit
+;;	     X + L when each S''[X] is added.  If so, set S to the
+;;	     concatenation of S[0]...S[L-1] and S'', then goto (i).
 ;;
-;;         (h) If (g) found no permutation, abort.
+;;	 (h) If (g) found no permutation, abort.
 ;;
-;;         (i) S is now the sorted sequence for this group, meaning that S[X]
-;;             issues to unit X.  Trim any unwanted nops from the end of S.
+;;	 (i) S is now the sorted sequence for this group, meaning that S[X]
+;;	     issues to unit X.  Trim any unwanted nops from the end of S.
 ;;
 ;; The sequence calculated by (b) is trivially correct for control
 ;; instructions since they can't be packed.  It is also correct for branch
@@ -636,7 +636,7 @@
 ;; instructions; media instructions incur an extra cycle.
 
 (define_bypass 4 "fr500_farith" "fr500_m1,fr500_m2,fr500_m3,
-                                 fr500_m4,fr500_m5,fr500_m6")
+			         fr500_m4,fr500_m5,fr500_m6")
 (define_insn_reservation "fr500_farith" 3
   (and (eq_attr "cpu" "generic,fr500,tomcat")
        (eq_attr "type" "fnop,fsconv,fsadd,fsmul,fsmadd,fdconv,fdadd,fdmul,fdmadd"))
@@ -648,14 +648,14 @@
   "(f1|f0)")
 
 (define_bypass 11 "fr500_fdiv" "fr500_m1,fr500_m2,fr500_m3,
-                                fr500_m4,fr500_m5,fr500_m6")
+			        fr500_m4,fr500_m5,fr500_m6")
 (define_insn_reservation "fr500_fdiv" 10
   (and (eq_attr "cpu" "generic,fr500,tomcat")
        (eq_attr "type" "fsdiv,fddiv"))
   "(f1|f0),(div1*9 | div2*9)")
 
 (define_bypass 16 "fr500_froot" "fr500_m1,fr500_m2,fr500_m3,
-                                 fr500_m4,fr500_m5,fr500_m6")
+				 fr500_m4,fr500_m5,fr500_m6")
 (define_insn_reservation "fr500_froot" 15
   (and (eq_attr "cpu" "generic,fr500,tomcat")
        (eq_attr "type" "sqrt_single,sqrt_double"))
@@ -675,12 +675,12 @@
 ;;
 ;; Target registers are as follows:
 ;;
-;;          M1 : FPRs
-;;          M2 : FPRs
-;;          M3 : ACCs
-;;          M4 : ACCs
-;;          M5 : FPRs
-;;          M6 : ACCs
+;;	  M1 : FPRs
+;;	  M2 : FPRs
+;;	  M3 : ACCs
+;;	  M4 : ACCs
+;;	  M5 : FPRs
+;;	  M6 : ACCs
 ;;
 ;; The default FPR latencies are for integer instructions.
 ;; Floating-point instructions need one cycle more and media
@@ -693,11 +693,11 @@
 (define_cpu_unit "fr500_m6" "fr500_media")
 
 (exclusion_set "fr500_m5,fr500_m6" "fr500_m2_0,fr500_m2_1,
-                                    fr500_m3_0,fr500_m3_1")
+				    fr500_m3_0,fr500_m3_1")
 (exclusion_set "fr500_m6" "fr500_m4_0,fr500_m4_1,fr500_m5")
 
 (define_bypass 2 "fr500_m1" "fr500_m1,fr500_m2,fr500_m3,
-                             fr500_m4,fr500_m5,fr500_m6")
+			     fr500_m4,fr500_m5,fr500_m6")
 (define_bypass 4 "fr500_m1" "fr500_farith,fr500_fcmp,fr500_fdiv,fr500_froot")
 (define_insn_reservation "fr500_m1" 3
   (and (eq_attr "cpu" "generic,fr500,tomcat")
@@ -705,7 +705,7 @@
   "(f1|f0)")
 
 (define_bypass 2 "fr500_m2" "fr500_m1,fr500_m2,fr500_m3,
-                             fr500_m4,fr500_m5,fr500_m6")
+			     fr500_m4,fr500_m5,fr500_m6")
 (define_bypass 4 "fr500_m2" "fr500_farith,fr500_fcmp,fr500_fdiv,fr500_froot")
 (define_insn_reservation "fr500_m2" 3
   (and (eq_attr "cpu" "generic,fr500,tomcat")
@@ -725,7 +725,7 @@
   "(f1|f0) + (fr500_m4_0|fr500_m4_1)")
 
 (define_bypass 2 "fr500_m5" "fr500_m1,fr500_m2,fr500_m3,
-                             fr500_m4,fr500_m5,fr500_m6")
+			     fr500_m4,fr500_m5,fr500_m6")
 (define_bypass 4 "fr500_m5" "fr500_farith,fr500_fcmp,fr500_fdiv,fr500_froot")
 (define_insn_reservation "fr500_m5" 3
   (and (eq_attr "cpu" "generic,fr500,tomcat")
@@ -748,20 +748,20 @@
 ;; with non-media instructions.  Use fr400_m1unit to claim the M1 unit
 ;; without claiming a slot.
 
-;; Name                Class        Units        Latency
-;; ====                =====        =====        =======
-;; int                I1        I0/I1        1
-;; sethi        I1        I0/I1        0       -- does not interfere with setlo
-;; setlo        I1        I0/I1        1
-;; mul                I1        I0        3  (*)
-;; div                I1        I0        20 (*)
-;; gload        I2        I0        4  (*)
-;; fload        I2        I0        4       -- only 3 if read by a media insn
-;; gstore        I3        I0        0       -- provides no result
-;; fstore        I3        I0        0       -- provides no result
-;; movfg        I4        I0        3  (*)
-;; movgf        I4        I0        3  (*)
-;; jumpl        I5        I0        0       -- provides no result
+;; Name		Class	Units	Latency
+;; ====	        =====	=====	=======
+;; int		I1	I0/I1	1
+;; sethi	I1	I0/I1	0       -- does not interfere with setlo
+;; setlo	I1	I0/I1	1
+;; mul		I1	I0	3  (*)
+;; div		I1	I0	20 (*)
+;; gload	I2	I0	4  (*)
+;; fload	I2	I0	4       -- only 3 if read by a media insn
+;; gstore	I3	I0	0       -- provides no result
+;; fstore	I3	I0	0       -- provides no result
+;; movfg	I4	I0	3  (*)
+;; movgf	I4	I0	3  (*)
+;; jumpl	I5	I0	0       -- provides no result
 ;;
 ;; (*) The results of these instructions can be read one cycle earlier
 ;; than indicated.  The penalty given is for instructions with write-after-
@@ -979,14 +979,14 @@
 ;; strict and not as regular.  There are 6 categories with the following
 ;; restrictions:
 ;;
-;;                          M1
-;;              M-1  M-2  M-3  M-4  M-5  M-6
-;;        M-1:         x         x         x
-;;        M-2:    x    x    x    x    x    x
-;;  M0        M-3:         x         x         x
-;;        M-4:    x    x    x    x
-;;        M-5:         x         x         x
-;;        M-6:    x    x    x    x    x    x
+;;		          M1
+;;	      M-1  M-2  M-3  M-4  M-5  M-6
+;;	M-1:         x         x         x
+;;	M-2:    x    x    x    x    x    x
+;;  M0	M-3:         x         x         x
+;;	M-4:    x    x    x    x
+;;	M-5:         x         x         x
+;;	M-6:    x    x    x    x    x    x
 ;;
 ;; where "x" indicates a conflict.
 ;;
@@ -1022,14 +1022,14 @@
 (define_insn_reservation "fr450_md138_1" 1
   (and (eq_attr "cpu" "fr450")
        (eq_attr "type" "fsconv,mnop,mlogic,maveh,msath,maddh,mabsh,mset,
-                        mrot,mshift,mexpdhw,mpackh"))
+			mrot,mshift,mexpdhw,mpackh"))
   "fr450_m13")
 
 (define_insn_reservation "fr450_md138_2" 1
   (and (eq_attr "cpu" "fr450")
        (eq_attr "type" "mqaddh,mqsath,mqlimh,
-                        mdrot,mwcut,mqshift,mexpdhd,
-                        munpackh,mdpackh,mbhconv,mcpl"))
+			mdrot,mwcut,mqshift,mexpdhd,
+			munpackh,mdpackh,mbhconv,mcpl"))
   "fr450_m2")
 
 ;; MD-2 instructions.  These take FPR or ACC inputs and produce an ACC output.
@@ -1078,7 +1078,7 @@
 ;; Integer instructions can read the FPR result of an MD-4 instruction on
 ;; the following cycle.
 (define_bypass 1 "fr450_md4_1,fr450_md4_5,fr450_md4_6"
-                 "fr400_i3,fr450_i4_movfg")
+		 "fr400_i3,fr450_i4_movfg")
 
 ;; MD-5 instructions, which belong to M-3.  They take FPR inputs and
 ;; write to ACCs.
@@ -1212,7 +1212,7 @@
 ;; Synthetic units for enforcing media issue restrictions.  Certain types
 ;; of insn in M2 conflict with certain types in M0:
 ;;
-;;                             M2
+;;			     M2
 ;;               MNOP   MALU   MSFT   MMAC   MSET
 ;;         MNOP     -      -      x      -      -
 ;;         MALU     -      x      x      -      -
@@ -1255,7 +1255,7 @@
 ;; However, it does cause problems for ccr instructions since they
 ;; can occur anywhere in the unordered packet.
 (exclusion_set "fr550_msft1,fr550_mmac1,fr550_mmac2,fr550_mmac3"
-               "fr550_ccr0,fr550_ccr1")
+	       "fr550_ccr0,fr550_ccr1")
 
 (define_reservation "fr550_malu"
   "(f3 + fr550_malu3) | (f2 + fr550_malu2)
@@ -1295,21 +1295,21 @@
 (define_insn_reservation "fr550_msft_1_either" 2
   (and (eq_attr "cpu" "fr550")
        (eq_attr "type" "mrot,mwcut,mshift,mexpdhw,mexpdhd,mpackh,
-                        munpackh,mdpackh,mbhconv,mdrot,mcpl"))
+			munpackh,mdpackh,mbhconv,mdrot,mcpl"))
   "fr550_media + fr550_msft_either")
 
 ;; These insns read from ACC0-3.
 (define_insn_reservation "fr550_msft_1_even" 2
   (and (eq_attr "cpu" "fr550")
        (and (eq_attr "type" "mcut,mrdacc,mdcut")
-            (eq_attr "acc_group" "even")))
+	    (eq_attr "acc_group" "even")))
   "fr550_media + fr550_msft_even")
 
 ;; These insns read from ACC4-7.
 (define_insn_reservation "fr550_msft_1_odd" 2
   (and (eq_attr "cpu" "fr550")
        (and (eq_attr "type" "mcut,mrdacc,mdcut")
-            (eq_attr "acc_group" "odd")))
+	    (eq_attr "acc_group" "odd")))
   "fr550_media + fr550_msft_odd")
 
 ;; MCLRACC with A=1 can issue to either M0 or M1.
@@ -1322,30 +1322,30 @@
 (define_insn_reservation "fr550_msft_2_even" 2
   (and (eq_attr "cpu" "fr550")
        (and (eq_attr "type" "mclracc,mwtacc")
-            (eq_attr "acc_group" "even")))
+	    (eq_attr "acc_group" "even")))
   "fr550_media + fr550_msft_even")
 
 ;; These insns write to ACC4-7.
 (define_insn_reservation "fr550_msft_2_odd" 2
   (and (eq_attr "cpu" "fr550")
        (and (eq_attr "type" "mclracc,mwtacc")
-            (eq_attr "acc_group" "odd")))
+	    (eq_attr "acc_group" "odd")))
   "fr550_media + fr550_msft_odd")
 
 ;; These insns read from and write to ACC0-3.
 (define_insn_reservation "fr550_mmac_even" 2
   (and (eq_attr "cpu" "fr550")
        (and (eq_attr "type" "mmulh,mmulxh,mmach,mmrdh,mqmulh,mqmulxh,mqmach,
-                             maddacc,mdaddacc,mcpx,mqcpx")
-            (eq_attr "acc_group" "even")))
+			     maddacc,mdaddacc,mcpx,mqcpx")
+	    (eq_attr "acc_group" "even")))
   "fr550_media + fr550_mmac_even")
 
 ;; These insns read from and write to ACC4-7.
 (define_insn_reservation "fr550_mmac_odd" 2
   (and (eq_attr "cpu" "fr550")
        (and (eq_attr "type" "mmulh,mmulxh,mmach,mmrdh,mqmulh,mqmulxh,mqmach,
-                             maddacc,mdaddacc,mcpx,mqcpx")
-            (eq_attr "acc_group" "odd")))
+			     maddacc,mdaddacc,mcpx,mqcpx")
+	    (eq_attr "acc_group" "odd")))
   "fr550_media + fr550_mmac_odd")
 
 (define_insn_reservation "fr550_mset" 1
@@ -1420,7 +1420,7 @@
 ;; following would be placed in the `md' file:
 
 ;; (define_delay (eq_attr "type" "branch,call")
-;;                 [(eq_attr "type" "!branch,call") (nil) (nil)])
+;;		 [(eq_attr "type" "!branch,call") (nil) (nil)])
 
 ;; Multiple `define_delay' expressions may be specified.  In this case, each
 ;; such expression specifies different delay slot requirements and there must
@@ -1592,13 +1592,13 @@
 
 (define_expand "movqi"
   [(set (match_operand:QI 0 "general_operand" "")
-        (match_operand:QI 1 "general_operand" ""))]
+	(match_operand:QI 1 "general_operand" ""))]
   ""
   "{ frv_emit_move (QImode, operands[0], operands[1]); DONE; }")
 
 (define_insn "*movqi_load"
   [(set (match_operand:QI 0 "register_operand" "=d,f")
-        (match_operand:QI 1 "frv_load_operand" "m,m"))]
+	(match_operand:QI 1 "frv_load_operand" "m,m"))]
   ""
   "* return output_move_single (operands, insn);"
   [(set_attr "length" "4")
@@ -1606,7 +1606,7 @@
 
 (define_insn "*movqi_internal"
   [(set (match_operand:QI 0 "move_destination_operand" "=d,d,m,m,?f,?f,?d,?m,f,d,f")
-        (match_operand:QI 1 "move_source_operand"       "L,d,d,O, d, f, f, f,GO,!m,!m"))]
+	(match_operand:QI 1 "move_source_operand"       "L,d,d,O, d, f, f, f,GO,!m,!m"))]
   "register_operand(operands[0], QImode) || reg_or_0_operand (operands[1], QImode)"
   "* return output_move_single (operands, insn);"
   [(set_attr "length" "4")
@@ -1614,13 +1614,13 @@
 
 (define_expand "movhi"
   [(set (match_operand:HI 0 "general_operand" "")
-        (match_operand:HI 1 "general_operand" ""))]
+	(match_operand:HI 1 "general_operand" ""))]
   ""
   "{ frv_emit_move (HImode, operands[0], operands[1]); DONE; }")
 
 (define_insn "*movhi_load"
   [(set (match_operand:HI 0 "register_operand" "=d,f")
-        (match_operand:HI 1 "frv_load_operand" "m,m"))]
+	(match_operand:HI 1 "frv_load_operand" "m,m"))]
   ""
   "* return output_move_single (operands, insn);"
   [(set_attr "length" "4")
@@ -1628,7 +1628,7 @@
 
 (define_insn "*movhi_internal"
   [(set (match_operand:HI 0 "move_destination_operand" "=d,d,d,m,m,?f,?f,?d,?m,f,d,f")
-        (match_operand:HI 1 "move_source_operand"       "L,n,d,d,O, d, f, f, f,GO,!m,!m"))]
+	(match_operand:HI 1 "move_source_operand"       "L,n,d,d,O, d, f, f, f,GO,!m,!m"))]
   "register_operand(operands[0], HImode) || reg_or_0_operand (operands[1], HImode)"
   "* return output_move_single (operands, insn);"
   [(set_attr "length" "4,8,4,4,4,4,4,4,4,4,4,4")
@@ -1637,18 +1637,18 @@
 ;; Split 2 word load of constants into sethi/setlo instructions
 (define_split
   [(set (match_operand:HI 0 "integer_register_operand" "")
-        (match_operand:HI 1 "int_2word_operand" ""))]
+	(match_operand:HI 1 "int_2word_operand" ""))]
   "reload_completed"
   [(set (match_dup 0)
-        (high:HI (match_dup 1)))
+	(high:HI (match_dup 1)))
    (set (match_dup 0)
-        (lo_sum:HI (match_dup 0)
-                (match_dup 1)))]
+	(lo_sum:HI (match_dup 0)
+		(match_dup 1)))]
   "")
 
 (define_insn "movhi_high"
   [(set (match_operand:HI 0 "integer_register_operand" "=d")
-        (high:HI (match_operand:HI 1 "int_2word_operand" "i")))]
+	(high:HI (match_operand:HI 1 "int_2word_operand" "i")))]
   ""
   "sethi #hi(%1), %0"
   [(set_attr "type" "sethi")
@@ -1656,8 +1656,8 @@
 
 (define_insn "movhi_lo_sum"
   [(set (match_operand:HI 0 "integer_register_operand" "+d")
-        (lo_sum:HI (match_dup 0)
-                   (match_operand:HI 1 "int_2word_operand" "i")))]
+	(lo_sum:HI (match_dup 0)
+		   (match_operand:HI 1 "int_2word_operand" "i")))]
   ""
   "setlo #lo(%1), %0"
   [(set_attr "type" "setlo")
@@ -1665,7 +1665,7 @@
 
 (define_expand "movsi"
   [(set (match_operand:SI 0 "move_destination_operand" "")
-        (match_operand:SI 1 "move_source_operand" ""))]
+	(match_operand:SI 1 "move_source_operand" ""))]
   ""
   "{ frv_emit_move (SImode, operands[0], operands[1]); DONE; }")
 
@@ -1692,11 +1692,11 @@
 ;; a memory constraint available, just make sure reload won't be
 ;; tempted to use it.
 ;;
-                   
-                   
+		   
+		   
 (define_insn "*movsi_load"
   [(set (match_operand:SI 0 "register_operand" "=d,f")
-        (match_operand:SI 1 "frv_load_operand" "m,m"))]
+	(match_operand:SI 1 "frv_load_operand" "m,m"))]
   ""
   "* return output_move_single (operands, insn);"
   [(set_attr "length" "4")
@@ -1704,7 +1704,7 @@
 
 (define_insn "*movsi_got"
   [(set (match_operand:SI 0 "integer_register_operand" "=d")
-        (match_operand:SI 1 "got12_operand" ""))]
+	(match_operand:SI 1 "got12_operand" ""))]
   ""
   "addi gr0, %1, %0"
   [(set_attr "type" "int")
@@ -1712,7 +1712,7 @@
 
 (define_insn "*movsi_high_got"
   [(set (match_operand:SI 0 "integer_register_operand" "=d")
-        (high:SI (match_operand:SI 1 "const_unspec_operand" "")))]
+	(high:SI (match_operand:SI 1 "const_unspec_operand" "")))]
   ""
   "sethi %1, %0"
   [(set_attr "type" "sethi")
@@ -1720,8 +1720,8 @@
 
 (define_insn "*movsi_lo_sum_got"
   [(set (match_operand:SI 0 "integer_register_operand" "=d")
-        (lo_sum:SI (match_operand:SI 1 "integer_register_operand" "0")
-                   (match_operand:SI 2 "const_unspec_operand" "")))]
+	(lo_sum:SI (match_operand:SI 1 "integer_register_operand" "0")
+		   (match_operand:SI 2 "const_unspec_operand" "")))]
   ""
   "setlo %2, %0"
   [(set_attr "type" "setlo")
@@ -1729,7 +1729,7 @@
 
 (define_insn "*movsi_internal"
   [(set (match_operand:SI 0 "move_destination_operand" "=d,d,d,m,m,z,d,d,f,f,m,?f,?z,d,f")
-        (match_operand:SI 1 "move_source_operand"      "L,n,d,d,O,d,z,f,d,f,f,GO,GO,!m,!m"))]
+	(match_operand:SI 1 "move_source_operand"      "L,n,d,d,O,d,z,f,d,f,f,GO,GO,!m,!m"))]
   "register_operand (operands[0], SImode) || reg_or_0_operand (operands[1], SImode)"
   "* return output_move_single (operands, insn);"
   [(set_attr "length" "4,8,4,4,4,4,4,4,4,4,4,4,4,4,4")
@@ -1738,22 +1738,22 @@
 ;; Split 2 word load of constants into sethi/setlo instructions
 (define_insn_and_split "*movsi_2word"
   [(set (match_operand:SI 0 "integer_register_operand" "=d")
-        (match_operand:SI 1 "int_2word_operand" "i"))]
+	(match_operand:SI 1 "int_2word_operand" "i"))]
   ""
   "#"
   "reload_completed"
   [(set (match_dup 0)
-        (high:SI (match_dup 1)))
+	(high:SI (match_dup 1)))
    (set (match_dup 0)
-        (lo_sum:SI (match_dup 0)
-                (match_dup 1)))]
+	(lo_sum:SI (match_dup 0)
+		(match_dup 1)))]
   ""
   [(set_attr "length" "8")
    (set_attr "type" "multi")])
 
 (define_insn "movsi_high"
   [(set (match_operand:SI 0 "integer_register_operand" "=d")
-        (high:SI (match_operand:SI 1 "int_2word_operand" "i")))]
+	(high:SI (match_operand:SI 1 "int_2word_operand" "i")))]
   ""
   "sethi #hi(%1), %0"
   [(set_attr "type" "sethi")
@@ -1761,8 +1761,8 @@
 
 (define_insn "movsi_lo_sum"
   [(set (match_operand:SI 0 "integer_register_operand" "+d")
-        (lo_sum:SI (match_dup 0)
-                   (match_operand:SI 1 "int_2word_operand" "i")))]
+	(lo_sum:SI (match_dup 0)
+		   (match_operand:SI 1 "int_2word_operand" "i")))]
   ""
   "setlo #lo(%1), %0"
   [(set_attr "type" "setlo")
@@ -1770,13 +1770,13 @@
 
 (define_expand "movdi"
   [(set (match_operand:DI 0 "nonimmediate_operand" "")
-        (match_operand:DI 1 "general_operand" ""))]
+	(match_operand:DI 1 "general_operand" ""))]
   ""
   "{ frv_emit_move (DImode, operands[0], operands[1]); DONE; }")
 
 (define_insn "*movdi_double"
   [(set (match_operand:DI 0 "move_destination_operand" "=e,?h,??d,??f,R,?R,??m,??m,e,?h,??d,??f,?e,??d,?h,??f,R,m,e,??d,e,??d,?h,??f")
-        (match_operand:DI 1 "move_source_operand"      " e,h,d,f,e,h,d,f,R,R,m,m,h,f,e,d,GO,GO,GO,GO,nF,nF,GO,GO"))]
+	(match_operand:DI 1 "move_source_operand"      " e,h,d,f,e,h,d,f,R,R,m,m,h,f,e,d,GO,GO,GO,GO,nF,nF,GO,GO"))]
   "TARGET_DOUBLE
    && (register_operand (operands[0], DImode)
        || reg_or_0_operand (operands[1], DImode))"
@@ -1786,7 +1786,7 @@
 
 (define_insn "*movdi_nodouble"
   [(set (match_operand:DI 0 "move_destination_operand" "=e,?h,??d,??f,R,?R,??m,??m,e,?h,??d,??f,?e,??d,?h,??f,R,m,e,??d,e,??d,?h,??f")
-        (match_operand:DI 1 "move_source_operand"      " e,h,d,f,e,h,d,f,R,R,m,m,h,f,e,d,GO,GO,GO,GO,nF,nF,GO,GO"))]
+	(match_operand:DI 1 "move_source_operand"      " e,h,d,f,e,h,d,f,R,R,m,m,h,f,e,d,GO,GO,GO,GO,nF,nF,GO,GO"))]
   "!TARGET_DOUBLE
    && (register_operand (operands[0], DImode)
        || reg_or_0_operand (operands[1], DImode))"
@@ -1796,43 +1796,43 @@
 
 (define_split
   [(set (match_operand:DI 0 "register_operand" "")
-        (match_operand:DI 1 "dbl_memory_two_insn_operand" ""))]
+	(match_operand:DI 1 "dbl_memory_two_insn_operand" ""))]
   "reload_completed"
   [(const_int 0)]
   "frv_split_double_load (operands[0], operands[1]);")
 
 (define_split
   [(set (match_operand:DI 0 "odd_reg_operand" "")
-        (match_operand:DI 1 "memory_operand" ""))]
+	(match_operand:DI 1 "memory_operand" ""))]
   "reload_completed"
   [(const_int 0)]
   "frv_split_double_load (operands[0], operands[1]);")
 
 (define_split
   [(set (match_operand:DI 0 "dbl_memory_two_insn_operand" "")
-        (match_operand:DI 1 "reg_or_0_operand" ""))]
+	(match_operand:DI 1 "reg_or_0_operand" ""))]
   "reload_completed"
   [(const_int 0)]
   "frv_split_double_store (operands[0], operands[1]);")
 
 (define_split
   [(set (match_operand:DI 0 "memory_operand" "")
-        (match_operand:DI 1 "odd_reg_operand" ""))]
+	(match_operand:DI 1 "odd_reg_operand" ""))]
   "reload_completed"
   [(const_int 0)]
   "frv_split_double_store (operands[0], operands[1]);")
 
 (define_split
   [(set (match_operand:DI 0 "register_operand" "")
-        (match_operand:DI 1 "register_operand" ""))]
+	(match_operand:DI 1 "register_operand" ""))]
   "reload_completed
    && (odd_reg_operand (operands[0], DImode)
        || odd_reg_operand (operands[1], DImode)
        || (integer_register_operand (operands[0], DImode)
-           && integer_register_operand (operands[1], DImode))
+	   && integer_register_operand (operands[1], DImode))
        || (!TARGET_DOUBLE
-           && fpr_operand (operands[0], DImode)
-           && fpr_operand (operands[1], DImode)))"
+	   && fpr_operand (operands[0], DImode)
+	   && fpr_operand (operands[1], DImode)))"
   [(set (match_dup 2) (match_dup 4))
    (set (match_dup 3) (match_dup 5))]
   "
@@ -1866,7 +1866,7 @@
 
 (define_split
   [(set (match_operand:DI 0 "register_operand" "")
-        (match_operand:DI 1 "const_int_operand" ""))]
+	(match_operand:DI 1 "const_int_operand" ""))]
   "reload_completed"
   [(set (match_dup 2) (match_dup 4))
    (set (match_dup 3) (match_dup 5))]
@@ -1885,15 +1885,15 @@
   else
     {
       operands[4] = GEN_INT ((((unsigned HOST_WIDE_INT)INTVAL (op1) >> 16)
-                              >> 16) ^ ((unsigned HOST_WIDE_INT)1 << 31)
-                             - ((unsigned HOST_WIDE_INT)1 << 31));
+			      >> 16) ^ ((unsigned HOST_WIDE_INT)1 << 31)
+			     - ((unsigned HOST_WIDE_INT)1 << 31));
       operands[5] = GEN_INT (trunc_int_for_mode (INTVAL (op1), SImode));
     }
 }")
 
 (define_split
   [(set (match_operand:DI 0 "register_operand" "")
-        (match_operand:DI 1 "const_double_operand" ""))]
+	(match_operand:DI 1 "const_double_operand" ""))]
   "reload_completed"
   [(set (match_dup 2) (match_dup 4))
    (set (match_dup 3) (match_dup 5))]
@@ -1915,24 +1915,24 @@
 
 (define_expand "movsf"
   [(set (match_operand:SF 0 "general_operand" "")
-        (match_operand:SF 1 "general_operand" ""))]
+	(match_operand:SF 1 "general_operand" ""))]
   ""
   "{ frv_emit_move (SFmode, operands[0], operands[1]); DONE; }")
 
 (define_split
   [(set (match_operand:SF 0 "integer_register_operand" "")
-        (match_operand:SF 1 "int_2word_operand" ""))]
+	(match_operand:SF 1 "int_2word_operand" ""))]
   "reload_completed"
   [(set (match_dup 0)
-        (high:SF (match_dup 1)))
+	(high:SF (match_dup 1)))
    (set (match_dup 0)
-        (lo_sum:SF (match_dup 0)
-                (match_dup 1)))]
+	(lo_sum:SF (match_dup 0)
+		(match_dup 1)))]
   "")
 
 (define_insn "*movsf_load_has_fprs"
   [(set (match_operand:SF 0 "register_operand" "=f,d")
-        (match_operand:SF 1 "frv_load_operand" "m,m"))]
+	(match_operand:SF 1 "frv_load_operand" "m,m"))]
   "TARGET_HAS_FPRS"
   "* return output_move_single (operands, insn);"
   [(set_attr "length" "4")
@@ -1940,7 +1940,7 @@
 
 (define_insn "*movsf_internal_has_fprs"
   [(set (match_operand:SF 0 "move_destination_operand" "=f,f,m,m,?f,?d,?d,m,?d")
-        (match_operand:SF 1 "move_source_operand" "f,OG,f,OG,d,f,d,d,F"))]
+	(match_operand:SF 1 "move_source_operand" "f,OG,f,OG,d,f,d,d,F"))]
   "TARGET_HAS_FPRS
    && (register_operand (operands[0], SFmode) || reg_or_0_operand (operands[1], SFmode))"
   "* return output_move_single (operands, insn);"
@@ -1951,7 +1951,7 @@
 ;; will all be emulated
 (define_insn "*movsf_internal_no_fprs"
   [(set (match_operand:SF 0 "move_destination_operand" "=d,d,m,d,d")
-        (match_operand:SF 1 "move_source_operand"      " d,OG,dOG,m,F"))]
+	(match_operand:SF 1 "move_source_operand"      " d,OG,dOG,m,F"))]
   "!TARGET_HAS_FPRS
    && (register_operand (operands[0], SFmode) || reg_or_0_operand (operands[1], SFmode))"
   "* return output_move_single (operands, insn);"
@@ -1960,7 +1960,7 @@
 
 (define_insn "movsf_high"
   [(set (match_operand:SF 0 "integer_register_operand" "=d")
-        (high:SF (match_operand:SF 1 "int_2word_operand" "i")))]
+	(high:SF (match_operand:SF 1 "int_2word_operand" "i")))]
   ""
   "sethi #hi(%1), %0"
   [(set_attr "type" "sethi")
@@ -1968,8 +1968,8 @@
 
 (define_insn "movsf_lo_sum"
   [(set (match_operand:SF 0 "integer_register_operand" "+d")
-        (lo_sum:SF (match_dup 0)
-                   (match_operand:SF 1 "int_2word_operand" "i")))]
+	(lo_sum:SF (match_dup 0)
+		   (match_operand:SF 1 "int_2word_operand" "i")))]
   ""
   "setlo #lo(%1), %0"
   [(set_attr "type" "setlo")
@@ -1977,13 +1977,13 @@
 
 (define_expand "movdf"
   [(set (match_operand:DF 0 "nonimmediate_operand" "")
-        (match_operand:DF 1 "general_operand" ""))]
+	(match_operand:DF 1 "general_operand" ""))]
   ""
   "{ frv_emit_move (DFmode, operands[0], operands[1]); DONE; }")
 
 (define_insn "*movdf_double"
   [(set (match_operand:DF 0 "move_destination_operand" "=h,?e,??f,??d,R,?R,??m,??m,h,?e,??f,??d,?h,??f,?e,??d,R,m,h,??f,e,??d,e,??d")
-        (match_operand:DF 1 "move_source_operand"      " h,e,f,d,h,e,f,d,R,R,m,m,e,d,h,f,GO,GO,GO,GO,GO,GO,F,F"))]
+	(match_operand:DF 1 "move_source_operand"      " h,e,f,d,h,e,f,d,R,R,m,m,e,d,h,f,GO,GO,GO,GO,GO,GO,F,F"))]
   "TARGET_DOUBLE
    && (register_operand (operands[0], DFmode)
        || reg_or_0_operand (operands[1], DFmode))"
@@ -1995,7 +1995,7 @@
 ;; will all be emulated
 (define_insn "*movdf_nodouble"
   [(set (match_operand:DF 0 "move_destination_operand" "=e,?h,??d,??f,R,?R,??m,??m,e,?h,??d,??f,?e,??d,?h,??f,R,m,e,??d,e,??d,?h,??f")
-        (match_operand:DF 1 "move_source_operand"      " e,h,d,f,e,h,d,f,R,R,m,m,h,f,e,d,GO,GO,GO,GO,nF,nF,GO,GO"))]
+	(match_operand:DF 1 "move_source_operand"      " e,h,d,f,e,h,d,f,R,R,m,m,h,f,e,d,GO,GO,GO,GO,nF,nF,GO,GO"))]
   "!TARGET_DOUBLE
    && (register_operand (operands[0], DFmode)
        || reg_or_0_operand (operands[1], DFmode))"
@@ -2005,43 +2005,43 @@
 
 (define_split
   [(set (match_operand:DF 0 "register_operand" "")
-        (match_operand:DF 1 "dbl_memory_two_insn_operand" ""))]
+	(match_operand:DF 1 "dbl_memory_two_insn_operand" ""))]
   "reload_completed"
   [(const_int 0)]
   "frv_split_double_load (operands[0], operands[1]);")
 
 (define_split
   [(set (match_operand:DF 0 "odd_reg_operand" "")
-        (match_operand:DF 1 "memory_operand" ""))]
+	(match_operand:DF 1 "memory_operand" ""))]
   "reload_completed"
   [(const_int 0)]
   "frv_split_double_load (operands[0], operands[1]);")
 
 (define_split
   [(set (match_operand:DF 0 "dbl_memory_two_insn_operand" "")
-        (match_operand:DF 1 "reg_or_0_operand" ""))]
+	(match_operand:DF 1 "reg_or_0_operand" ""))]
   "reload_completed"
   [(const_int 0)]
   "frv_split_double_store (operands[0], operands[1]);")
 
 (define_split
   [(set (match_operand:DF 0 "memory_operand" "")
-        (match_operand:DF 1 "odd_reg_operand" ""))]
+	(match_operand:DF 1 "odd_reg_operand" ""))]
   "reload_completed"
   [(const_int 0)]
   "frv_split_double_store (operands[0], operands[1]);")
 
 (define_split
   [(set (match_operand:DF 0 "register_operand" "")
-        (match_operand:DF 1 "register_operand" ""))]
+	(match_operand:DF 1 "register_operand" ""))]
   "reload_completed
    && (odd_reg_operand (operands[0], DFmode)
        || odd_reg_operand (operands[1], DFmode)
        || (integer_register_operand (operands[0], DFmode)
-           && integer_register_operand (operands[1], DFmode))
+	   && integer_register_operand (operands[1], DFmode))
        || (!TARGET_DOUBLE
-           && fpr_operand (operands[0], DFmode)
-           && fpr_operand (operands[1], DFmode)))"
+	   && fpr_operand (operands[0], DFmode)
+	   && fpr_operand (operands[1], DFmode)))"
   [(set (match_dup 2) (match_dup 4))
    (set (match_dup 3) (match_dup 5))]
   "
@@ -2075,7 +2075,7 @@
 
 (define_split
   [(set (match_operand:DF 0 "register_operand" "")
-        (match_operand:DF 1 "const_int_operand" ""))]
+	(match_operand:DF 1 "const_int_operand" ""))]
   "reload_completed"
   [(set (match_dup 2) (match_dup 4))
    (set (match_dup 3) (match_dup 5))]
@@ -2094,15 +2094,15 @@
   else
     {
       operands[4] = GEN_INT ((((unsigned HOST_WIDE_INT)INTVAL (op1) >> 16)
-                              >> 16) ^ ((unsigned HOST_WIDE_INT)1 << 31)
-                             - ((unsigned HOST_WIDE_INT)1 << 31));
+			      >> 16) ^ ((unsigned HOST_WIDE_INT)1 << 31)
+			     - ((unsigned HOST_WIDE_INT)1 << 31));
       operands[5] = GEN_INT (trunc_int_for_mode (INTVAL (op1), SImode));
     }
 }")
 
 (define_split
   [(set (match_operand:DF 0 "register_operand" "")
-        (match_operand:DF 1 "const_double_operand" ""))]
+	(match_operand:DF 1 "const_double_operand" ""))]
   "reload_completed"
   [(set (match_dup 2) (match_dup 4))
    (set (match_dup 3) (match_dup 5))]
@@ -2130,9 +2130,9 @@
 
 (define_expand "movmemsi"
   [(parallel [(set (match_operand:BLK 0 "" "")
-                   (match_operand:BLK 1 "" ""))
-              (use (match_operand:SI 2 "" ""))
-              (use (match_operand:SI 3 "" ""))])]
+		   (match_operand:BLK 1 "" ""))
+	      (use (match_operand:SI 2 "" ""))
+	      (use (match_operand:SI 3 "" ""))])]
   ""
   "
 {
@@ -2150,9 +2150,9 @@
 
 (define_expand "setmemsi"
   [(parallel [(set (match_operand:BLK 0 "" "")
-                   (match_operand 2 "" ""))
-              (use (match_operand:SI 1 "" ""))
-              (use (match_operand:SI 3 "" ""))])]
+		   (match_operand 2 "" ""))
+	      (use (match_operand:SI 1 "" ""))
+	      (use (match_operand:SI 3 "" ""))])]
   ""
   "
 {
@@ -2174,9 +2174,9 @@
 ;; function (either FRV_IO_READ or FRV_IO_WRITE).
 (define_insn "optional_membar_<mode>"
   [(set (match_operand:IMODE 0 "memory_operand" "=m")
-        (unspec:IMODE [(match_operand 1 "const_int_operand" "")
-                       (match_operand 2 "const_int_operand" "")]
-                      UNSPEC_OPTIONAL_MEMBAR))]
+	(unspec:IMODE [(match_operand 1 "const_int_operand" "")
+		       (match_operand 2 "const_int_operand" "")]
+		      UNSPEC_OPTIONAL_MEMBAR))]
   ""
   "membar"
   [(set_attr "length" "4")])
@@ -2192,8 +2192,8 @@
 
 (define_expand "movcc"
   [(parallel [(set (match_operand:CC 0 "move_destination_operand" "")
-                   (match_operand:CC 1 "move_source_operand" ""))
-              (clobber (match_dup 2))])]
+		   (match_operand:CC 1 "move_source_operand" ""))
+	      (clobber (match_dup 2))])]
   ""
   "
 {
@@ -2205,7 +2205,7 @@
 
 (define_insn "*internal_movcc"
   [(set (match_operand:CC 0 "move_destination_operand" "=t,d,d,m,d")
-        (match_operand:CC 1 "move_source_operand" "d,d,m,d,t"))
+	(match_operand:CC 1 "move_source_operand" "d,d,m,d,t"))
    (clobber (match_scratch:CC_CCR 2 "=X,X,X,X,&v"))]
   "reload_in_progress || reload_completed"
   "@
@@ -2223,7 +2223,7 @@
 
 (define_split
   [(set (match_operand:CC 0 "integer_register_operand" "")
-        (match_operand:CC 1 "icc_operand" ""))
+	(match_operand:CC 1 "icc_operand" ""))
    (clobber (match_operand:CC_CCR 2 "icr_operand" ""))]
   "reload_in_progress || reload_completed"
   [(match_dup 3)]
@@ -2236,21 +2236,21 @@
   start_sequence ();
 
   emit_insn (gen_rtx_SET (VOIDmode, icr,
-                          gen_rtx_LT (CC_CCRmode, icc, const0_rtx)));
+			  gen_rtx_LT (CC_CCRmode, icc, const0_rtx)));
 
   emit_insn (gen_movsi (dest, const1_rtx));
 
   emit_insn (gen_rtx_COND_EXEC (VOIDmode,
-                                gen_rtx_NE (CC_CCRmode, icr, const0_rtx),
-                                gen_rtx_SET (VOIDmode, dest,
-                                             gen_rtx_NEG (SImode, dest))));
+				gen_rtx_NE (CC_CCRmode, icr, const0_rtx),
+				gen_rtx_SET (VOIDmode, dest,
+					     gen_rtx_NEG (SImode, dest))));
 
   emit_insn (gen_rtx_SET (VOIDmode, icr,
-                          gen_rtx_EQ (CC_CCRmode, icc, const0_rtx)));
+			  gen_rtx_EQ (CC_CCRmode, icc, const0_rtx)));
 
   emit_insn (gen_rtx_COND_EXEC (VOIDmode,
-                                gen_rtx_NE (CC_CCRmode, icr, const0_rtx),
-                                gen_rtx_SET (VOIDmode, dest, const0_rtx)));
+				gen_rtx_NE (CC_CCRmode, icr, const0_rtx),
+				gen_rtx_SET (VOIDmode, dest, const0_rtx)));
 
   operands[3] = get_insns ();
   end_sequence ();
@@ -2258,21 +2258,21 @@
 
 (define_expand "reload_incc"
   [(parallel [(set (match_operand:CC 2 "integer_register_operand" "=&d")
-                   (match_operand:CC 1 "memory_operand" "m"))
-              (clobber (match_scratch:CC_CCR 3 ""))])
+		   (match_operand:CC 1 "memory_operand" "m"))
+	      (clobber (match_scratch:CC_CCR 3 ""))])
    (parallel [(set (match_operand:CC 0 "icc_operand" "=t")
-                   (match_dup 2))
-              (clobber (match_scratch:CC_CCR 4 ""))])]
+		   (match_dup 2))
+	      (clobber (match_scratch:CC_CCR 4 ""))])]
   ""
   "")
 
 (define_expand "reload_outcc"
   [(parallel [(set (match_operand:CC 2 "integer_register_operand" "=&d")
-                   (match_operand:CC 1 "icc_operand" "t"))
-              (clobber (match_dup 3))])
+		   (match_operand:CC 1 "icc_operand" "t"))
+	      (clobber (match_dup 3))])
    (parallel [(set (match_operand:CC 0 "memory_operand" "=m")
-                   (match_dup 2))
-              (clobber (match_scratch:CC_CCR 4 ""))])]
+		   (match_dup 2))
+	      (clobber (match_scratch:CC_CCR 4 ""))])]
   ""
   "operands[3] = gen_rtx_REG (CC_CCRmode, ICR_TEMP);")
 
@@ -2281,8 +2281,8 @@
 
 (define_expand "movcc_uns"
   [(parallel [(set (match_operand:CC_UNS 0 "move_destination_operand" "")
-                   (match_operand:CC_UNS 1 "move_source_operand" ""))
-              (clobber (match_dup 2))])]
+		   (match_operand:CC_UNS 1 "move_source_operand" ""))
+	      (clobber (match_dup 2))])]
   ""
   "
 {
@@ -2293,7 +2293,7 @@
 
 (define_insn "*internal_movcc_uns"
   [(set (match_operand:CC_UNS 0 "move_destination_operand" "=t,d,d,m,d")
-        (match_operand:CC_UNS 1 "move_source_operand" "d,d,m,d,t"))
+	(match_operand:CC_UNS 1 "move_source_operand" "d,d,m,d,t"))
    (clobber (match_scratch:CC_CCR 2 "=X,X,X,X,&v"))]
   "reload_in_progress || reload_completed"
   "@
@@ -2311,7 +2311,7 @@
 
 (define_split
   [(set (match_operand:CC_UNS 0 "integer_register_operand" "")
-        (match_operand:CC_UNS 1 "icc_operand" ""))
+	(match_operand:CC_UNS 1 "icc_operand" ""))
    (clobber (match_operand:CC_CCR 2 "icr_operand" ""))]
   "reload_in_progress || reload_completed"
   [(match_dup 3)]
@@ -2324,20 +2324,20 @@
   start_sequence ();
 
   emit_insn (gen_rtx_SET (VOIDmode, icr,
-                          gen_rtx_GTU (CC_CCRmode, icc, const0_rtx)));
+			  gen_rtx_GTU (CC_CCRmode, icc, const0_rtx)));
 
   emit_insn (gen_movsi (dest, const1_rtx));
 
   emit_insn (gen_rtx_COND_EXEC (VOIDmode,
-                                gen_rtx_NE (CC_CCRmode, icr, const0_rtx),
-                                gen_addsi3 (dest, dest, dest)));
+				gen_rtx_NE (CC_CCRmode, icr, const0_rtx),
+				gen_addsi3 (dest, dest, dest)));
 
   emit_insn (gen_rtx_SET (VOIDmode, icr,
-                          gen_rtx_LTU (CC_CCRmode, icc, const0_rtx)));
+			  gen_rtx_LTU (CC_CCRmode, icc, const0_rtx)));
 
   emit_insn (gen_rtx_COND_EXEC (VOIDmode,
-                                gen_rtx_NE (CC_CCRmode, icr, const0_rtx),
-                                gen_rtx_SET (VOIDmode, dest, const0_rtx)));
+				gen_rtx_NE (CC_CCRmode, icr, const0_rtx),
+				gen_rtx_SET (VOIDmode, dest, const0_rtx)));
 
   operands[3] = get_insns ();
   end_sequence ();
@@ -2345,21 +2345,21 @@
 
 (define_expand "reload_incc_uns"
   [(parallel [(set (match_operand:CC_UNS 2 "integer_register_operand" "=&d")
-                   (match_operand:CC_UNS 1 "memory_operand" "m"))
-              (clobber (match_scratch:CC_CCR 3 ""))])
+		   (match_operand:CC_UNS 1 "memory_operand" "m"))
+	      (clobber (match_scratch:CC_CCR 3 ""))])
    (parallel [(set (match_operand:CC_UNS 0 "icc_operand" "=t")
-                   (match_dup 2))
-              (clobber (match_scratch:CC_CCR 4 ""))])]
+		   (match_dup 2))
+	      (clobber (match_scratch:CC_CCR 4 ""))])]
   ""
   "")
 
 (define_expand "reload_outcc_uns"
   [(parallel [(set (match_operand:CC_UNS 2 "integer_register_operand" "=&d")
-                   (match_operand:CC_UNS 1 "icc_operand" "t"))
-              (clobber (match_dup 3))])
+		   (match_operand:CC_UNS 1 "icc_operand" "t"))
+	      (clobber (match_dup 3))])
    (parallel [(set (match_operand:CC_UNS 0 "memory_operand" "=m")
-                   (match_dup 2))
-              (clobber (match_scratch:CC_CCR 4 ""))])]
+		   (match_dup 2))
+	      (clobber (match_scratch:CC_CCR 4 ""))])]
   ""
   "operands[3] = gen_rtx_REG (CC_CCRmode, ICR_TEMP);")
 
@@ -2368,8 +2368,8 @@
 
 (define_expand "movcc_nz"
   [(parallel [(set (match_operand:CC_NZ 0 "move_destination_operand" "")
-                   (match_operand:CC_NZ 1 "move_source_operand" ""))
-              (clobber (match_dup 2))])]
+		   (match_operand:CC_NZ 1 "move_source_operand" ""))
+	      (clobber (match_dup 2))])]
   ""
   "
 {
@@ -2380,7 +2380,7 @@
 
 (define_insn "*internal_movcc_nz"
   [(set (match_operand:CC_NZ 0 "move_destination_operand" "=t,d,d,m,d")
-        (match_operand:CC_NZ 1 "move_source_operand" "d,d,m,d,t"))
+	(match_operand:CC_NZ 1 "move_source_operand" "d,d,m,d,t"))
    (clobber (match_scratch:CC_CCR 2 "=X,X,X,X,&v"))]
   "reload_in_progress || reload_completed"
   "@
@@ -2403,43 +2403,43 @@
 ;;     cmov gr0,op0,op2
 (define_split
   [(set (match_operand:CC_NZ 0 "integer_register_operand" "")
-        (match_operand:CC_NZ 1 "icc_operand" ""))
+	(match_operand:CC_NZ 1 "icc_operand" ""))
    (clobber (match_operand:CC_CCR 2 "icr_operand" ""))]
   "reload_in_progress || reload_completed"
   [(set (match_dup 3)
-        (const_int -1))
+	(const_int -1))
    (set (match_dup 2)
-        (ge:CC_CCR (match_dup 1)
-                   (const_int 0)))
+	(ge:CC_CCR (match_dup 1)
+		   (const_int 0)))
    (cond_exec (ne:CC_CCR (match_dup 2)
-                         (const_int 0))
-              (set (match_dup 3)
-                   (neg:SI (match_dup 3))))
+			 (const_int 0))
+	      (set (match_dup 3)
+		   (neg:SI (match_dup 3))))
    (set (match_dup 2)
-        (eq:CC_CCR (match_dup 1)
-                   (const_int 0)))
+	(eq:CC_CCR (match_dup 1)
+		   (const_int 0)))
    (cond_exec (ne:CC_CCR (match_dup 2)
-                         (const_int 0))
-              (set (match_dup 3) (const_int 0)))]
+			 (const_int 0))
+	      (set (match_dup 3) (const_int 0)))]
   "operands[3] = simplify_gen_subreg (SImode, operands[0], CC_NZmode, 0);")
 
 (define_expand "reload_incc_nz"
   [(parallel [(set (match_operand:CC_NZ 2 "integer_register_operand" "=&d")
-                   (match_operand:CC_NZ 1 "memory_operand" "m"))
-              (clobber (match_scratch:CC_CCR 3 ""))])
+		   (match_operand:CC_NZ 1 "memory_operand" "m"))
+	      (clobber (match_scratch:CC_CCR 3 ""))])
    (parallel [(set (match_operand:CC_NZ 0 "icc_operand" "=t")
-                   (match_dup 2))
-              (clobber (match_scratch:CC_CCR 4 ""))])]
+		   (match_dup 2))
+	      (clobber (match_scratch:CC_CCR 4 ""))])]
   ""
   "")
 
 (define_expand "reload_outcc_nz"
   [(parallel [(set (match_operand:CC_NZ 2 "integer_register_operand" "=&d")
-                   (match_operand:CC_NZ 1 "icc_operand" "t"))
-              (clobber (match_dup 3))])
+		   (match_operand:CC_NZ 1 "icc_operand" "t"))
+	      (clobber (match_dup 3))])
    (parallel [(set (match_operand:CC_NZ 0 "memory_operand" "=m")
-                   (match_dup 2))
-              (clobber (match_scratch:CC_CCR 4 ""))])]
+		   (match_dup 2))
+	      (clobber (match_scratch:CC_CCR 4 ""))])]
   ""
   "operands[3] = gen_rtx_REG (CC_CCRmode, ICR_TEMP);")
 
@@ -2450,7 +2450,7 @@
 
 (define_expand "movcc_fp"
   [(set (match_operand:CC_FP 0 "movcc_fp_destination_operand" "")
-        (match_operand:CC_FP 1 "move_source_operand" ""))]
+	(match_operand:CC_FP 1 "move_source_operand" ""))]
   "TARGET_HAS_FPRS"
   "
 {
@@ -2460,7 +2460,7 @@
 
 (define_insn "*movcc_fp_internal"
   [(set (match_operand:CC_FP 0 "movcc_fp_destination_operand" "=d,d,d,m")
-        (match_operand:CC_FP 1 "move_source_operand" "u,d,m,d"))]
+	(match_operand:CC_FP 1 "move_source_operand" "u,d,m,d"))]
   "TARGET_HAS_FPRS && (reload_in_progress || reload_completed)"
   "@
    #
@@ -2499,9 +2499,9 @@
       emit_move_insn (temp3, XEXP (addr, 1));
 
       operands[1] = replace_equiv_address (operands[1],
-                                           gen_rtx_PLUS (GET_MODE (addr),
-                                                         XEXP (addr, 0),
-                                                         temp3));
+					   gen_rtx_PLUS (GET_MODE (addr),
+							 XEXP (addr, 0),
+							 temp3));
     }
 
   emit_insn (gen_movcc_fp (cc_op2, operands[1]));
@@ -2516,17 +2516,17 @@
 
 (define_expand "reload_outcc_fp"
   [(set (match_operand:CC_FP 2 "integer_register_operand" "=&d")
-        (match_operand:CC_FP 1 "fcc_operand" "u"))
+	(match_operand:CC_FP 1 "fcc_operand" "u"))
    (set (match_operand:CC_FP 0 "memory_operand" "=m")
-        (match_dup 2))]
+	(match_dup 2))]
   "TARGET_HAS_FPRS"
  "")
 
 ;; Convert a FCC value to gpr
 (define_insn "read_fcc"
   [(set (match_operand:SI 0 "integer_register_operand" "=d")
-        (unspec:SI [(match_operand:CC_FP 1 "fcc_operand" "u")]
-                   UNSPEC_CC_TO_GPR))]
+	(unspec:SI [(match_operand:CC_FP 1 "fcc_operand" "u")]
+		   UNSPEC_CC_TO_GPR))]
   "TARGET_HAS_FPRS"
   "movsg ccr, %0"
   [(set_attr "type" "spr")
@@ -2534,7 +2534,7 @@
 
 (define_split
   [(set (match_operand:CC_FP 0 "integer_register_operand" "")
-        (match_operand:CC_FP 1 "fcc_operand" ""))]
+	(match_operand:CC_FP 1 "fcc_operand" ""))]
   "reload_completed && TARGET_HAS_FPRS"
   [(match_dup 2)]
   "
@@ -2561,9 +2561,9 @@
 ;; Operand3 = temporary to load/store ccr
 (define_insn "update_fcc"
   [(set (match_operand:CC_FP 0 "fcc_operand" "=u")
-        (unspec:CC_FP [(match_operand:SI 1 "integer_register_operand" "d")
-                       (match_operand:SI 2 "integer_register_operand" "d")]
-                      UNSPEC_GPR_TO_CC))
+	(unspec:CC_FP [(match_operand:SI 1 "integer_register_operand" "d")
+		       (match_operand:SI 2 "integer_register_operand" "d")]
+		      UNSPEC_GPR_TO_CC))
    (clobber (match_operand:SI 3 "integer_register_operand" "=&d"))]
   "TARGET_HAS_FPRS"
   "movsg ccr, %3\;and %2, %3, %3\;or %1, %3, %3\;movgs %3, ccr"
@@ -2573,7 +2573,7 @@
 ;; Reload CC_CCRmode for conditional execution registers
 (define_insn "movcc_ccr"
   [(set (match_operand:CC_CCR 0 "move_destination_operand" "=d,d,d,m,v,?w,C,d")
-        (match_operand:CC_CCR 1 "move_source_operand" "C,d,m,d,n,n,C,L"))]
+	(match_operand:CC_CCR 1 "move_source_operand" "C,d,m,d,n,n,C,L"))]
   ""
   "@
    #
@@ -2597,7 +2597,7 @@
   rtx icc = gen_rtx_REG (CCmode, ICC_TEMP);
   rtx int_op2 = simplify_gen_subreg (SImode, operands[2], CC_CCRmode, 0);
   rtx icr = (ICR_P (REGNO (operands[0]))
-             ? operands[0] : gen_rtx_REG (CC_CCRmode, ICR_TEMP));
+	     ? operands[0] : gen_rtx_REG (CC_CCRmode, ICR_TEMP));
 
   emit_insn (gen_movcc_ccr (operands[2], operands[1]));
   emit_insn (gen_cmpsi_cc (icc, int_op2, const0_rtx));
@@ -2611,15 +2611,15 @@
 
 (define_expand "reload_outcc_ccr"
   [(set (match_operand:CC_CCR 2 "integer_register_operand" "=&d")
-        (match_operand:CC_CCR 1 "cr_operand" "C"))
+	(match_operand:CC_CCR 1 "cr_operand" "C"))
    (set (match_operand:CC_CCR 0 "memory_operand" "=m")
-        (match_dup 2))]
+	(match_dup 2))]
   ""
   "")
 
 (define_split
   [(set (match_operand:CC_CCR 0 "integer_register_operand" "")
-        (match_operand:CC_CCR 1 "cr_operand" ""))]
+	(match_operand:CC_CCR 1 "cr_operand" ""))]
   "reload_completed"
   [(match_dup 2)]
   "
@@ -2629,11 +2629,11 @@
   start_sequence ();
   emit_move_insn (operands[0], const1_rtx);
   emit_insn (gen_rtx_COND_EXEC (VOIDmode,
-                                gen_rtx_EQ (CC_CCRmode,
-                                            operands[1],
-                                            const0_rtx),
-                                gen_rtx_SET (VOIDmode, int_op0,
-                                             const0_rtx)));
+				gen_rtx_EQ (CC_CCRmode,
+					    operands[1],
+					    const0_rtx),
+				gen_rtx_SET (VOIDmode, int_op0,
+					     const0_rtx)));
 
   operands[2] = get_insns ();
   end_sequence ();
@@ -2641,7 +2641,7 @@
 
 (define_split
   [(set (match_operand:CC_CCR 0 "cr_operand" "")
-        (match_operand:CC_CCR 1 "const_int_operand" ""))]
+	(match_operand:CC_CCR 1 "const_int_operand" ""))]
   "reload_completed"
   [(match_dup 2)]
   "
@@ -2649,16 +2649,16 @@
   rtx icc = gen_rtx_REG (CCmode, ICC_TEMP);
   rtx r0  = gen_rtx_REG (SImode, GPR_FIRST);
   rtx icr = (ICR_P (REGNO (operands[0]))
-             ? operands[0] : gen_rtx_REG (CC_CCRmode, ICR_TEMP));
+	     ? operands[0] : gen_rtx_REG (CC_CCRmode, ICR_TEMP));
 
   start_sequence ();
 
  emit_insn (gen_cmpsi_cc (icc, r0, const0_rtx));
 
   emit_insn (gen_movcc_ccr (icr,
-                            gen_rtx_fmt_ee (((INTVAL (operands[1]) == 0)
-                                             ? EQ : NE), CC_CCRmode,
-                                            r0, const0_rtx)));
+			    gen_rtx_fmt_ee (((INTVAL (operands[1]) == 0)
+					     ? EQ : NE), CC_CCRmode,
+					    r0, const0_rtx)));
 
   if (! ICR_P (REGNO (operands[0])))
     emit_insn (gen_movcc_ccr (operands[0], icr));
@@ -2682,7 +2682,7 @@
 ;; to allow load + sign extend to be collapsed together
 (define_insn "extendqihi2"
   [(set (match_operand:HI 0 "integer_register_operand" "=d,d")
-        (sign_extend:HI (match_operand:QI 1 "gpr_or_memory_operand" "d,m")))]
+	(sign_extend:HI (match_operand:QI 1 "gpr_or_memory_operand" "d,m")))]
   ""
   "@
    #
@@ -2692,7 +2692,7 @@
 
 (define_split
   [(set (match_operand:HI 0 "integer_register_operand" "")
-        (sign_extend:HI (match_operand:QI 1 "integer_register_operand" "")))]
+	(sign_extend:HI (match_operand:QI 1 "integer_register_operand" "")))]
   "reload_completed"
   [(match_dup 2)
    (match_dup 3)]
@@ -2708,7 +2708,7 @@
 
 (define_insn "extendqisi2"
   [(set (match_operand:SI 0 "integer_register_operand" "=d,d")
-        (sign_extend:SI (match_operand:QI 1 "gpr_or_memory_operand" "d,m")))]
+	(sign_extend:SI (match_operand:QI 1 "gpr_or_memory_operand" "d,m")))]
   ""
   "@
    #
@@ -2718,7 +2718,7 @@
 
 (define_split
   [(set (match_operand:SI 0 "integer_register_operand" "")
-        (sign_extend:SI (match_operand:QI 1 "integer_register_operand" "")))]
+	(sign_extend:SI (match_operand:QI 1 "integer_register_operand" "")))]
   "reload_completed"
   [(match_dup 2)
    (match_dup 3)]
@@ -2734,14 +2734,14 @@
 
 ;;(define_insn "extendqidi2"
 ;;  [(set (match_operand:DI 0 "register_operand" "=r")
-;;        (sign_extend:DI (match_operand:QI 1 "general_operand" "g")))]
+;;	(sign_extend:DI (match_operand:QI 1 "general_operand" "g")))]
 ;;  ""
 ;;  "extendqihi2 %0,%1"
 ;;  [(set_attr "length" "4")])
 
 (define_insn "extendhisi2"
   [(set (match_operand:SI 0 "integer_register_operand" "=d,d")
-        (sign_extend:SI (match_operand:HI 1 "gpr_or_memory_operand" "d,m")))]
+	(sign_extend:SI (match_operand:HI 1 "gpr_or_memory_operand" "d,m")))]
   ""
   "@
    #
@@ -2751,7 +2751,7 @@
 
 (define_split
   [(set (match_operand:SI 0 "integer_register_operand" "")
-        (sign_extend:SI (match_operand:HI 1 "integer_register_operand" "")))]
+	(sign_extend:SI (match_operand:HI 1 "integer_register_operand" "")))]
   "reload_completed"
   [(match_dup 2)
    (match_dup 3)]
@@ -2767,14 +2767,14 @@
 
 ;;(define_insn "extendhidi2"
 ;;  [(set (match_operand:DI 0 "register_operand" "=r")
-;;        (sign_extend:DI (match_operand:HI 1 "general_operand" "g")))]
+;;	(sign_extend:DI (match_operand:HI 1 "general_operand" "g")))]
 ;;  ""
 ;;  "extendhihi2 %0,%1"
 ;;  [(set_attr "length" "4")])
 ;;
 ;;(define_insn "extendsidi2"
 ;;  [(set (match_operand:DI 0 "register_operand" "=r")
-;;        (sign_extend:DI (match_operand:SI 1 "general_operand" "g")))]
+;;	(sign_extend:DI (match_operand:SI 1 "general_operand" "g")))]
 ;;  ""
 ;;  "extendsidi2 %0,%1"
 ;;  [(set_attr "length" "4")])
@@ -2782,8 +2782,8 @@
 ;; Unsigned conversions from a smaller integer to a larger integer
 (define_insn "zero_extendqihi2"
   [(set (match_operand:HI 0 "integer_register_operand" "=d,d,d")
-        (zero_extend:HI
-          (match_operand:QI 1 "gpr_or_memory_operand" "d,L,m")))]
+	(zero_extend:HI
+	  (match_operand:QI 1 "gpr_or_memory_operand" "d,L,m")))]
   ""
   "@
    andi %1,#0xff,%0
@@ -2794,8 +2794,8 @@
 
 (define_insn "zero_extendqisi2"
   [(set (match_operand:SI 0 "integer_register_operand" "=d,d,d")
-        (zero_extend:SI
-          (match_operand:QI 1 "gpr_or_memory_operand" "d,L,m")))]
+	(zero_extend:SI
+	  (match_operand:QI 1 "gpr_or_memory_operand" "d,L,m")))]
   ""
   "@
    andi %1,#0xff,%0
@@ -2806,7 +2806,7 @@
 
 ;;(define_insn "zero_extendqidi2"
 ;;  [(set (match_operand:DI 0 "register_operand" "=r")
-;;        (zero_extend:DI (match_operand:QI 1 "general_operand" "g")))]
+;;	(zero_extend:DI (match_operand:QI 1 "general_operand" "g")))]
 ;;  ""
 ;;  "zero_extendqihi2 %0,%1"
 ;;  [(set_attr "length" "4")])
@@ -2816,7 +2816,7 @@
 ;; VLIW instruction.
 (define_insn "zero_extendhisi2"
   [(set (match_operand:SI 0 "integer_register_operand" "=d,d")
-        (zero_extend:SI (match_operand:HI 1 "gpr_or_memory_operand" "0,m")))]
+	(zero_extend:SI (match_operand:HI 1 "gpr_or_memory_operand" "0,m")))]
   ""
   "@
     sethi #hi(#0),%0
@@ -2826,14 +2826,14 @@
 
 ;;(define_insn "zero_extendhidi2"
 ;;  [(set (match_operand:DI 0 "register_operand" "=r")
-;;        (zero_extend:DI (match_operand:HI 1 "general_operand" "g")))]
+;;	(zero_extend:DI (match_operand:HI 1 "general_operand" "g")))]
 ;;  ""
 ;;  "zero_extendhihi2 %0,%1"
 ;;  [(set_attr "length" "4")])
 ;;
 ;;(define_insn "zero_extendsidi2"
 ;;  [(set (match_operand:DI 0 "register_operand" "=r")
-;;        (zero_extend:DI (match_operand:SI 1 "general_operand" "g")))]
+;;	(zero_extend:DI (match_operand:SI 1 "general_operand" "g")))]
 ;;  ""
 ;;  "zero_extendsidi2 %0,%1"
 ;;  [(set_attr "length" "4")])
@@ -2842,14 +2842,14 @@
 ;;
 ;;(define_insn "extendsfdf2"
 ;;  [(set (match_operand:DF 0 "register_operand" "=r")
-;;        (float_extend:DF (match_operand:SF 1 "register_operand" "r")))]
+;;	(float_extend:DF (match_operand:SF 1 "register_operand" "r")))]
 ;;  ""
 ;;  "extendsfdf2 %0,%1"
 ;;  [(set_attr "length" "4")])
 ;;
 ;;(define_insn "truncdfsf2"
 ;;  [(set (match_operand:SF 0 "register_operand" "=r")
-;;        (float_truncate:SF (match_operand:DF 1 "register_operand" "r")))]
+;;	(float_truncate:SF (match_operand:DF 1 "register_operand" "r")))]
 ;;  ""
 ;;  "truncdfsf2 %0,%1"
 ;;  [(set_attr "length" "4")])
@@ -2857,7 +2857,7 @@
 ;;;; Convert between signed integer types and floating point.
 (define_insn "floatsisf2"
   [(set (match_operand:SF 0 "fpr_operand" "=f")
-        (float:SF (match_operand:SI 1 "fpr_operand" "f")))]
+	(float:SF (match_operand:SI 1 "fpr_operand" "f")))]
   "TARGET_HARD_FLOAT"
   "fitos %1,%0"
   [(set_attr "length" "4")
@@ -2865,7 +2865,7 @@
 
 (define_insn "floatsidf2"
   [(set (match_operand:DF 0 "fpr_operand" "=h")
-        (float:DF (match_operand:SI 1 "fpr_operand" "f")))]
+	(float:DF (match_operand:SI 1 "fpr_operand" "f")))]
   "TARGET_HARD_FLOAT && TARGET_DOUBLE"
   "fitod %1,%0"
   [(set_attr "length" "4")
@@ -2873,21 +2873,21 @@
 
 ;;(define_insn "floatdisf2"
 ;;  [(set (match_operand:SF 0 "register_operand" "=r")
-;;        (float:SF (match_operand:DI 1 "register_operand" "r")))]
+;;	(float:SF (match_operand:DI 1 "register_operand" "r")))]
 ;;  ""
 ;;  "floatdisf2 %0,%1"
 ;;  [(set_attr "length" "4")])
 ;;
 ;;(define_insn "floatdidf2"
 ;;  [(set (match_operand:DF 0 "register_operand" "=r")
-;;        (float:DF (match_operand:DI 1 "register_operand" "r")))]
+;;	(float:DF (match_operand:DI 1 "register_operand" "r")))]
 ;;  ""
 ;;  "floatdidf2 %0,%1"
 ;;  [(set_attr "length" "4")])
 
 (define_insn "fix_truncsfsi2"
   [(set (match_operand:SI 0 "fpr_operand" "=f")
-        (fix:SI (match_operand:SF 1 "fpr_operand" "f")))]
+	(fix:SI (match_operand:SF 1 "fpr_operand" "f")))]
   "TARGET_HARD_FLOAT"
   "fstoi %1,%0"
   [(set_attr "length" "4")
@@ -2895,7 +2895,7 @@
 
 (define_insn "fix_truncdfsi2"
   [(set (match_operand:SI 0 "fpr_operand" "=f")
-        (fix:SI (match_operand:DF 1 "fpr_operand" "h")))]
+	(fix:SI (match_operand:DF 1 "fpr_operand" "h")))]
   "TARGET_HARD_FLOAT && TARGET_DOUBLE"
   "fdtoi %1,%0"
   [(set_attr "length" "4")
@@ -2903,14 +2903,14 @@
 
 ;;(define_insn "fix_truncsfdi2"
 ;;  [(set (match_operand:DI 0 "register_operand" "=r")
-;;        (fix:DI (match_operand:SF 1 "register_operand" "r")))]
+;;	(fix:DI (match_operand:SF 1 "register_operand" "r")))]
 ;;  ""
 ;;  "fix_truncsfdi2 %0,%1"
 ;;  [(set_attr "length" "4")])
 ;;
 ;;(define_insn "fix_truncdfdi2"
 ;;  [(set (match_operand:DI 0 "register_operand" "=r")
-;;        (fix:DI (match_operand:DF 1 "register_operand" "r")))]
+;;	(fix:DI (match_operand:DF 1 "register_operand" "r")))]
 ;;  ""
 ;;  "fix_truncdfdi2 %0,%1"
 ;;  [(set_attr "length" "4")])
@@ -2919,56 +2919,56 @@
 ;;
 ;;(define_insn "floatunssisf2"
 ;;  [(set (match_operand:SF 0 "register_operand" "=r")
-;;        (unsigned_float:SF (match_operand:SI 1 "register_operand" "r")))]
+;;	(unsigned_float:SF (match_operand:SI 1 "register_operand" "r")))]
 ;;  ""
 ;;  "floatunssisf2 %0,%1"
 ;;  [(set_attr "length" "4")])
 ;;
 ;;(define_insn "floatunssidf2"
 ;;  [(set (match_operand:DF 0 "register_operand" "=r")
-;;        (unsigned_float:DF (match_operand:SI 1 "register_operand" "r")))]
+;;	(unsigned_float:DF (match_operand:SI 1 "register_operand" "r")))]
 ;;  ""
 ;;  "floatunssidf2 %0,%1"
 ;;  [(set_attr "length" "4")])
 ;;
 ;;(define_insn "floatunsdisf2"
 ;;  [(set (match_operand:SF 0 "register_operand" "=r")
-;;        (unsigned_float:SF (match_operand:DI 1 "register_operand" "r")))]
+;;	(unsigned_float:SF (match_operand:DI 1 "register_operand" "r")))]
 ;;  ""
 ;;  "floatunsdisf2 %0,%1"
 ;;  [(set_attr "length" "4")])
 ;;
 ;;(define_insn "floatunsdidf2"
 ;;  [(set (match_operand:DF 0 "register_operand" "=r")
-;;        (unsigned_float:DF (match_operand:DI 1 "register_operand" "r")))]
+;;	(unsigned_float:DF (match_operand:DI 1 "register_operand" "r")))]
 ;;  ""
 ;;  "floatunsdidf2 %0,%1"
 ;;  [(set_attr "length" "4")])
 ;;
 ;;(define_insn "fixuns_truncsfsi2"
 ;;  [(set (match_operand:SI 0 "register_operand" "=r")
-;;        (unsigned_fix:SI (match_operand:SF 1 "register_operand" "r")))]
+;;	(unsigned_fix:SI (match_operand:SF 1 "register_operand" "r")))]
 ;;  ""
 ;;  "fixuns_truncsfsi2 %0,%1"
 ;;  [(set_attr "length" "4")])
 ;;
 ;;(define_insn "fixuns_truncdfsi2"
 ;;  [(set (match_operand:SI 0 "register_operand" "=r")
-;;        (unsigned_fix:SI (match_operand:DF 1 "register_operand" "r")))]
+;;	(unsigned_fix:SI (match_operand:DF 1 "register_operand" "r")))]
 ;;  ""
 ;;  "fixuns_truncdfsi2 %0,%1"
 ;;  [(set_attr "length" "4")])
 ;;
 ;;(define_insn "fixuns_truncsfdi2"
 ;;  [(set (match_operand:DI 0 "register_operand" "=r")
-;;        (unsigned_fix:DI (match_operand:SF 1 "register_operand" "r")))]
+;;	(unsigned_fix:DI (match_operand:SF 1 "register_operand" "r")))]
 ;;  ""
 ;;  "fixuns_truncsfdi2 %0,%1"
 ;;  [(set_attr "length" "4")])
 ;;
 ;;(define_insn "fixuns_truncdfdi2"
 ;;  [(set (match_operand:DI 0 "register_operand" "=r")
-;;        (unsigned_fix:DI (match_operand:DF 1 "register_operand" "r")))]
+;;	(unsigned_fix:DI (match_operand:DF 1 "register_operand" "r")))]
 ;;  ""
 ;;  "fixuns_truncdfdi2 %0,%1"
 ;;  [(set_attr "length" "4")])
@@ -2983,8 +2983,8 @@
 ;; Addition
 (define_insn "addsi3"
   [(set (match_operand:SI 0 "integer_register_operand" "=d")
-        (plus:SI (match_operand:SI 1 "integer_register_operand" "%d")
-                 (match_operand:SI 2 "gpr_or_int12_operand" "dNOPQ")))]
+	(plus:SI (match_operand:SI 1 "integer_register_operand" "%d")
+		 (match_operand:SI 2 "gpr_or_int12_operand" "dNOPQ")))]
   ""
   "add%I2 %1,%2,%0"
   [(set_attr "length" "4")
@@ -2996,8 +2996,8 @@
 ;; SUBREG with a minus that shows up in modulus by constants.
 (define_insn "subsi3"
   [(set (match_operand:SI 0 "integer_register_operand" "=d")
-        (minus:SI (match_operand:SI 1 "gpr_no_subreg_operand" "d")
-                  (match_operand:SI 2 "gpr_no_subreg_operand" "d")))]
+	(minus:SI (match_operand:SI 1 "gpr_no_subreg_operand" "d")
+		  (match_operand:SI 2 "gpr_no_subreg_operand" "d")))]
   ""
   "sub %1,%2,%0"
   [(set_attr "length" "4")
@@ -3008,8 +3008,8 @@
 ;; will do the 32x32->64 bit multiply and use the bottom word.
 (define_expand "mulsidi3"
   [(set (match_operand:DI 0 "integer_register_operand" "")
-        (mult:DI (sign_extend:DI (match_operand:SI 1 "integer_register_operand" ""))
-                 (sign_extend:DI (match_operand:SI 2 "gpr_or_int12_operand" ""))))]
+	(mult:DI (sign_extend:DI (match_operand:SI 1 "integer_register_operand" ""))
+		 (sign_extend:DI (match_operand:SI 2 "gpr_or_int12_operand" ""))))]
   ""
   "
 {
@@ -3022,8 +3022,8 @@
 
 (define_insn "*mulsidi3_reg"
   [(set (match_operand:DI 0 "even_gpr_operand" "=e")
-        (mult:DI (sign_extend:DI (match_operand:SI 1 "integer_register_operand" "%d"))
-                 (sign_extend:DI (match_operand:SI 2 "integer_register_operand" "d"))))]
+	(mult:DI (sign_extend:DI (match_operand:SI 1 "integer_register_operand" "%d"))
+		 (sign_extend:DI (match_operand:SI 2 "integer_register_operand" "d"))))]
   ""
   "smul %1,%2,%0"
   [(set_attr "length" "4")
@@ -3031,8 +3031,8 @@
 
 (define_insn "mulsidi3_const"
   [(set (match_operand:DI 0 "even_gpr_operand" "=e")
-        (mult:DI (sign_extend:DI (match_operand:SI 1 "integer_register_operand" "d"))
-                 (match_operand:SI 2 "int12_operand" "NOP")))]
+	(mult:DI (sign_extend:DI (match_operand:SI 1 "integer_register_operand" "d"))
+		 (match_operand:SI 2 "int12_operand" "NOP")))]
   ""
   "smuli %1,%2,%0"
   [(set_attr "length" "4")
@@ -3041,8 +3041,8 @@
 ;; Unsigned multiplication producing 64 bit results from 32 bit inputs
 (define_expand "umulsidi3"
   [(set (match_operand:DI 0 "even_gpr_operand" "")
-        (mult:DI (zero_extend:DI (match_operand:SI 1 "integer_register_operand" ""))
-                 (zero_extend:DI (match_operand:SI 2 "gpr_or_int12_operand" ""))))]
+	(mult:DI (zero_extend:DI (match_operand:SI 1 "integer_register_operand" ""))
+		 (zero_extend:DI (match_operand:SI 2 "gpr_or_int12_operand" ""))))]
   ""
   "
 {
@@ -3055,8 +3055,8 @@
 
 (define_insn "*mulsidi3_reg"
   [(set (match_operand:DI 0 "even_gpr_operand" "=e")
-        (mult:DI (zero_extend:DI (match_operand:SI 1 "integer_register_operand" "%d"))
-                 (zero_extend:DI (match_operand:SI 2 "integer_register_operand" "d"))))]
+	(mult:DI (zero_extend:DI (match_operand:SI 1 "integer_register_operand" "%d"))
+		 (zero_extend:DI (match_operand:SI 2 "integer_register_operand" "d"))))]
   ""
   "umul %1,%2,%0"
   [(set_attr "length" "4")
@@ -3064,8 +3064,8 @@
 
 (define_insn "umulsidi3_const"
   [(set (match_operand:DI 0 "even_gpr_operand" "=e")
-        (mult:DI (zero_extend:DI (match_operand:SI 1 "integer_register_operand" "d"))
-                 (match_operand:SI 2 "int12_operand" "NOP")))]
+	(mult:DI (zero_extend:DI (match_operand:SI 1 "integer_register_operand" "d"))
+		 (match_operand:SI 2 "int12_operand" "NOP")))]
   ""
   "umuli %1,%2,%0"
   [(set_attr "length" "4")
@@ -3074,8 +3074,8 @@
 ;; Signed Division
 (define_insn "divsi3"
   [(set (match_operand:SI 0 "register_operand" "=d,d")
-        (div:SI (match_operand:SI 1 "register_operand" "d,d")
-                (match_operand:SI 2 "gpr_or_int12_operand" "d,NOP")))]
+	(div:SI (match_operand:SI 1 "register_operand" "d,d")
+		(match_operand:SI 2 "gpr_or_int12_operand" "d,NOP")))]
   ""
   "sdiv%I2 %1,%2,%0"
   [(set_attr "length" "4")
@@ -3084,8 +3084,8 @@
 ;; Unsigned Division
 (define_insn "udivsi3"
   [(set (match_operand:SI 0 "register_operand" "=d,d")
-        (udiv:SI (match_operand:SI 1 "register_operand" "d,d")
-                 (match_operand:SI 2 "gpr_or_int12_operand" "d,NOP")))]
+	(udiv:SI (match_operand:SI 1 "register_operand" "d,d")
+		 (match_operand:SI 2 "gpr_or_int12_operand" "d,NOP")))]
   ""
   "udiv%I2 %1,%2,%0"
   [(set_attr "length" "4")
@@ -3094,7 +3094,7 @@
 ;; Negation
 (define_insn "negsi2"
   [(set (match_operand:SI 0 "integer_register_operand" "=d")
-        (neg:SI (match_operand:SI 1 "integer_register_operand" "d")))]
+	(neg:SI (match_operand:SI 1 "integer_register_operand" "d")))]
   ""
   "sub %.,%1,%0"
   [(set_attr "length" "4")
@@ -3103,7 +3103,7 @@
 ;; Find first one bit
 ;; (define_insn "ffssi2"
 ;;   [(set (match_operand:SI 0 "register_operand" "=r")
-;;         (ffs:SI (match_operand:SI 1 "register_operand" "r")))]
+;; 	(ffs:SI (match_operand:SI 1 "register_operand" "r")))]
 ;;   ""
 ;;   "ffssi2 %0,%1"
 ;;   [(set_attr "length" "4")])
@@ -3118,8 +3118,8 @@
 ;; Addition
 (define_insn_and_split "adddi3"
   [(set (match_operand:DI 0 "integer_register_operand" "=&e,e")
-        (plus:DI (match_operand:DI 1 "integer_register_operand" "%e,0")
-                 (match_operand:DI 2 "gpr_or_int10_operand" "eJ,eJ")))
+	(plus:DI (match_operand:DI 1 "integer_register_operand" "%e,0")
+		 (match_operand:DI 2 "gpr_or_int10_operand" "eJ,eJ")))
    (clobber (match_scratch:CC 3 "=t,t"))]
   ""
   "#"
@@ -3134,12 +3134,12 @@
   for (op = 0; op < 3; op++)
     for (part = 0; part < 2; part++)
       parts[op][part] = simplify_gen_subreg (SImode, operands[op],
-                                             DImode, part * UNITS_PER_WORD);
+					     DImode, part * UNITS_PER_WORD);
 
   operands[4] = gen_adddi3_lower (parts[0][1], parts[1][1], parts[2][1],
-                                  operands[3]);
+				  operands[3]);
   operands[5] = gen_adddi3_upper (parts[0][0], parts[1][0], parts[2][0],
-                                  copy_rtx (operands[3]));
+				  copy_rtx (operands[3]));
 }"
   [(set_attr "length" "8")
    (set_attr "type" "multi")])
@@ -3148,8 +3148,8 @@
 ;; canonicalizes them into adddi3's.
 (define_insn_and_split "subdi3"
   [(set (match_operand:DI 0 "integer_register_operand" "=&e,e,e")
-        (minus:DI (match_operand:DI 1 "integer_register_operand" "e,0,e")
-                  (match_operand:DI 2 "integer_register_operand" "e,e,0")))
+	(minus:DI (match_operand:DI 1 "integer_register_operand" "e,0,e")
+		  (match_operand:DI 2 "integer_register_operand" "e,e,0")))
    (clobber (match_scratch:CC 3 "=t,t,t"))]
   ""
   "#"
@@ -3175,12 +3175,12 @@
 ;; Patterns for addsi3/subdi3 after splitting
 (define_insn "adddi3_lower"
   [(set (match_operand:SI 0 "integer_register_operand" "=d")
-        (plus:SI (match_operand:SI 1 "integer_register_operand" "d")
-                 (match_operand:SI 2 "gpr_or_int10_operand" "dJ")))
+	(plus:SI (match_operand:SI 1 "integer_register_operand" "d")
+		 (match_operand:SI 2 "gpr_or_int10_operand" "dJ")))
    (set (match_operand:CC 3 "icc_operand" "=t")
-        (compare:CC (plus:SI (match_dup 1)
-                             (match_dup 2))
-                    (const_int 0)))]
+	(compare:CC (plus:SI (match_dup 1)
+			     (match_dup 2))
+		    (const_int 0)))]
   ""
   "add%I2cc %1,%2,%0,%3"
   [(set_attr "length" "4")
@@ -3188,9 +3188,9 @@
 
 (define_insn "adddi3_upper"
   [(set (match_operand:SI 0 "integer_register_operand" "=d")
-        (plus:SI (match_operand:SI 1 "integer_register_operand" "d")
-                 (plus:SI (match_operand:SI 2 "gpr_or_int10_operand" "dJ")
-                          (match_operand:CC 3 "icc_operand" "t"))))]
+	(plus:SI (match_operand:SI 1 "integer_register_operand" "d")
+		 (plus:SI (match_operand:SI 2 "gpr_or_int10_operand" "dJ")
+			  (match_operand:CC 3 "icc_operand" "t"))))]
   ""
   "addx%I2 %1,%2,%0,%3"
   [(set_attr "length" "4")
@@ -3198,12 +3198,12 @@
 
 (define_insn "subdi3_lower"
   [(set (match_operand:SI 0 "integer_register_operand" "=d")
-        (minus:SI (match_operand:SI 1 "integer_register_operand" "d")
-                  (match_operand:SI 2 "integer_register_operand" "d")))
+	(minus:SI (match_operand:SI 1 "integer_register_operand" "d")
+		  (match_operand:SI 2 "integer_register_operand" "d")))
    (set (match_operand:CC 3 "icc_operand" "=t")
-        (compare:CC (plus:SI (match_dup 1)
-                             (match_dup 2))
-                    (const_int 0)))]
+	(compare:CC (plus:SI (match_dup 1)
+			     (match_dup 2))
+		    (const_int 0)))]
   ""
   "subcc %1,%2,%0,%3"
   [(set_attr "length" "4")
@@ -3211,9 +3211,9 @@
 
 (define_insn "subdi3_upper"
   [(set (match_operand:SI 0 "integer_register_operand" "=d")
-        (minus:SI (match_operand:SI 1 "integer_register_operand" "d")
-                  (minus:SI (match_operand:SI 2 "integer_register_operand" "d")
-                            (match_operand:CC 3 "icc_operand" "t"))))]
+	(minus:SI (match_operand:SI 1 "integer_register_operand" "d")
+		  (minus:SI (match_operand:SI 2 "integer_register_operand" "d")
+			    (match_operand:CC 3 "icc_operand" "t"))))]
   ""
   "subx %1,%2,%0,%3"
   [(set_attr "length" "4")
@@ -3221,7 +3221,7 @@
 
 (define_insn_and_split "negdi2"
   [(set (match_operand:DI 0 "integer_register_operand" "=&e,e")
-        (neg:DI (match_operand:DI 1 "integer_register_operand" "e,0")))
+	(neg:DI (match_operand:DI 1 "integer_register_operand" "e,0")))
    (clobber (match_scratch:CC 2 "=t,t"))]
   ""
   "#"
@@ -3247,8 +3247,8 @@
 ;; Multiplication (same size)
 ;; (define_insn "muldi3"
 ;;   [(set (match_operand:DI 0 "register_operand" "=r")
-;;         (mult:DI (match_operand:DI 1 "register_operand" "%r")
-;;                  (match_operand:DI 2 "nonmemory_operand" "ri")))]
+;; 	(mult:DI (match_operand:DI 1 "register_operand" "%r")
+;; 		 (match_operand:DI 2 "nonmemory_operand" "ri")))]
 ;;   ""
 ;;   "muldi3 %0,%1,%2"
 ;;   [(set_attr "length" "4")])
@@ -3256,8 +3256,8 @@
 ;; Signed Division
 ;; (define_insn "divdi3"
 ;;   [(set (match_operand:DI 0 "register_operand" "=r")
-;;         (div:DI (match_operand:DI 1 "register_operand" "r")
-;;                 (match_operand:DI 2 "nonmemory_operand" "ri")))]
+;; 	(div:DI (match_operand:DI 1 "register_operand" "r")
+;; 		(match_operand:DI 2 "nonmemory_operand" "ri")))]
 ;;   ""
 ;;   "divdi3 %0,%1,%2"
 ;;   [(set_attr "length" "4")])
@@ -3265,8 +3265,8 @@
 ;; Undsgned Division
 ;; (define_insn "udivdi3"
 ;;   [(set (match_operand:DI 0 "register_operand" "=r")
-;;         (udiv:DI (match_operand:DI 1 "register_operand" "r")
-;;                  (match_operand:DI 2 "nonmemory_operand" "ri")))]
+;; 	(udiv:DI (match_operand:DI 1 "register_operand" "r")
+;; 		 (match_operand:DI 2 "nonmemory_operand" "ri")))]
 ;;   ""
 ;;   "udivdi3 %0,%1,%2"
 ;;   [(set_attr "length" "4")])
@@ -3274,7 +3274,7 @@
 ;; Negation
 ;; (define_insn "negdi2"
 ;;   [(set (match_operand:DI 0 "register_operand" "=r")
-;;         (neg:DI (match_operand:DI 1 "register_operand" "r")))]
+;; 	(neg:DI (match_operand:DI 1 "register_operand" "r")))]
 ;;   ""
 ;;   "negdi2 %0,%1"
 ;;   [(set_attr "length" "4")])
@@ -3282,7 +3282,7 @@
 ;; Find first one bit
 ;; (define_insn "ffsdi2"
 ;;   [(set (match_operand:DI 0 "register_operand" "=r")
-;;         (ffs:DI (match_operand:DI 1 "register_operand" "r")))]
+;; 	(ffs:DI (match_operand:DI 1 "register_operand" "r")))]
 ;;   ""
 ;;   "ffsdi2 %0,%1"
 ;;   [(set_attr "length" "4")])
@@ -3297,8 +3297,8 @@
 ;; Addition
 (define_insn "addsf3"
   [(set (match_operand:SF 0 "fpr_operand" "=f")
-        (plus:SF (match_operand:SF 1 "fpr_operand" "%f")
-                 (match_operand:SF 2 "fpr_operand" "f")))]
+	(plus:SF (match_operand:SF 1 "fpr_operand" "%f")
+		 (match_operand:SF 2 "fpr_operand" "f")))]
   "TARGET_HARD_FLOAT"
   "fadds %1,%2,%0"
   [(set_attr "length" "4")
@@ -3307,8 +3307,8 @@
 ;; Subtraction
 (define_insn "subsf3"
   [(set (match_operand:SF 0 "fpr_operand" "=f")
-        (minus:SF (match_operand:SF 1 "fpr_operand" "f")
-                  (match_operand:SF 2 "fpr_operand" "f")))]
+	(minus:SF (match_operand:SF 1 "fpr_operand" "f")
+		  (match_operand:SF 2 "fpr_operand" "f")))]
   "TARGET_HARD_FLOAT"
   "fsubs %1,%2,%0"
   [(set_attr "length" "4")
@@ -3317,8 +3317,8 @@
 ;; Multiplication
 (define_insn "mulsf3"
   [(set (match_operand:SF 0 "fpr_operand" "=f")
-        (mult:SF (match_operand:SF 1 "fpr_operand" "%f")
-                 (match_operand:SF 2 "fpr_operand" "f")))]
+	(mult:SF (match_operand:SF 1 "fpr_operand" "%f")
+		 (match_operand:SF 2 "fpr_operand" "f")))]
   "TARGET_HARD_FLOAT"
   "fmuls %1,%2,%0"
   [(set_attr "length" "4")
@@ -3327,9 +3327,9 @@
 ;; Multiplication with addition/subtraction
 (define_insn "*muladdsf4"
   [(set (match_operand:SF 0 "fpr_operand" "=f")
-        (plus:SF (mult:SF (match_operand:SF 1 "fpr_operand" "%f")
-                          (match_operand:SF 2 "fpr_operand" "f"))
-                 (match_operand:SF 3 "fpr_operand" "0")))]
+	(plus:SF (mult:SF (match_operand:SF 1 "fpr_operand" "%f")
+			  (match_operand:SF 2 "fpr_operand" "f"))
+		 (match_operand:SF 3 "fpr_operand" "0")))]
   "TARGET_HARD_FLOAT && TARGET_MULADD"
   "fmadds %1,%2,%0"
   [(set_attr "length" "4")
@@ -3337,9 +3337,9 @@
 
 (define_insn "*mulsubsf4"
   [(set (match_operand:SF 0 "fpr_operand" "=f")
-        (minus:SF (mult:SF (match_operand:SF 1 "fpr_operand" "%f")
-                           (match_operand:SF 2 "fpr_operand" "f"))
-                  (match_operand:SF 3 "fpr_operand" "0")))]
+	(minus:SF (mult:SF (match_operand:SF 1 "fpr_operand" "%f")
+			   (match_operand:SF 2 "fpr_operand" "f"))
+		  (match_operand:SF 3 "fpr_operand" "0")))]
   "TARGET_HARD_FLOAT && TARGET_MULADD"
   "fmsubs %1,%2,%0"
   [(set_attr "length" "4")
@@ -3348,8 +3348,8 @@
 ;; Division
 (define_insn "divsf3"
   [(set (match_operand:SF 0 "fpr_operand" "=f")
-        (div:SF (match_operand:SF 1 "fpr_operand" "f")
-                (match_operand:SF 2 "fpr_operand" "f")))]
+	(div:SF (match_operand:SF 1 "fpr_operand" "f")
+		(match_operand:SF 2 "fpr_operand" "f")))]
   "TARGET_HARD_FLOAT"
   "fdivs %1,%2,%0"
   [(set_attr "length" "4")
@@ -3358,7 +3358,7 @@
 ;; Negation
 (define_insn "negsf2"
   [(set (match_operand:SF 0 "fpr_operand" "=f")
-        (neg:SF (match_operand:SF 1 "fpr_operand" "f")))]
+	(neg:SF (match_operand:SF 1 "fpr_operand" "f")))]
   "TARGET_HARD_FLOAT"
   "fnegs %1,%0"
   [(set_attr "length" "4")
@@ -3367,7 +3367,7 @@
 ;; Absolute value
 (define_insn "abssf2"
   [(set (match_operand:SF 0 "fpr_operand" "=f")
-        (abs:SF (match_operand:SF 1 "fpr_operand" "f")))]
+	(abs:SF (match_operand:SF 1 "fpr_operand" "f")))]
   "TARGET_HARD_FLOAT"
   "fabss %1,%0"
   [(set_attr "length" "4")
@@ -3376,7 +3376,7 @@
 ;; Square root
 (define_insn "sqrtsf2"
   [(set (match_operand:SF 0 "fpr_operand" "=f")
-        (sqrt:SF (match_operand:SF 1 "fpr_operand" "f")))]
+	(sqrt:SF (match_operand:SF 1 "fpr_operand" "f")))]
   "TARGET_HARD_FLOAT"
   "fsqrts %1,%0"
   [(set_attr "length" "4")
@@ -3392,8 +3392,8 @@
 ;; Addition
 (define_insn "adddf3"
   [(set (match_operand:DF 0 "even_fpr_operand" "=h")
-        (plus:DF (match_operand:DF 1 "fpr_operand" "%h")
-                 (match_operand:DF 2 "fpr_operand" "h")))]
+	(plus:DF (match_operand:DF 1 "fpr_operand" "%h")
+		 (match_operand:DF 2 "fpr_operand" "h")))]
   "TARGET_HARD_FLOAT && TARGET_DOUBLE"
   "faddd %1,%2,%0"
   [(set_attr "length" "4")
@@ -3402,8 +3402,8 @@
 ;; Subtraction
 (define_insn "subdf3"
   [(set (match_operand:DF 0 "even_fpr_operand" "=h")
-        (minus:DF (match_operand:DF 1 "fpr_operand" "h")
-                  (match_operand:DF 2 "fpr_operand" "h")))]
+	(minus:DF (match_operand:DF 1 "fpr_operand" "h")
+		  (match_operand:DF 2 "fpr_operand" "h")))]
   "TARGET_HARD_FLOAT && TARGET_DOUBLE"
   "fsubd %1,%2,%0"
   [(set_attr "length" "4")
@@ -3412,8 +3412,8 @@
 ;; Multiplication
 (define_insn "muldf3"
   [(set (match_operand:DF 0 "even_fpr_operand" "=h")
-        (mult:DF (match_operand:DF 1 "fpr_operand" "%h")
-                 (match_operand:DF 2 "fpr_operand" "h")))]
+	(mult:DF (match_operand:DF 1 "fpr_operand" "%h")
+		 (match_operand:DF 2 "fpr_operand" "h")))]
   "TARGET_HARD_FLOAT && TARGET_DOUBLE"
   "fmuld %1,%2,%0"
   [(set_attr "length" "4")
@@ -3422,9 +3422,9 @@
 ;; Multiplication with addition/subtraction
 (define_insn "*muladddf4"
   [(set (match_operand:DF 0 "fpr_operand" "=f")
-        (plus:DF (mult:DF (match_operand:DF 1 "fpr_operand" "%f")
-                          (match_operand:DF 2 "fpr_operand" "f"))
-                 (match_operand:DF 3 "fpr_operand" "0")))]
+	(plus:DF (mult:DF (match_operand:DF 1 "fpr_operand" "%f")
+			  (match_operand:DF 2 "fpr_operand" "f"))
+		 (match_operand:DF 3 "fpr_operand" "0")))]
   "TARGET_HARD_FLOAT && TARGET_DOUBLE && TARGET_MULADD"
   "fmaddd %1,%2,%0"
   [(set_attr "length" "4")
@@ -3432,9 +3432,9 @@
 
 (define_insn "*mulsubdf4"
   [(set (match_operand:DF 0 "fpr_operand" "=f")
-        (minus:DF (mult:DF (match_operand:DF 1 "fpr_operand" "%f")
-                           (match_operand:DF 2 "fpr_operand" "f"))
-                  (match_operand:DF 3 "fpr_operand" "0")))]
+	(minus:DF (mult:DF (match_operand:DF 1 "fpr_operand" "%f")
+			   (match_operand:DF 2 "fpr_operand" "f"))
+		  (match_operand:DF 3 "fpr_operand" "0")))]
   "TARGET_HARD_FLOAT && TARGET_DOUBLE && TARGET_MULADD"
   "fmsubd %1,%2,%0"
   [(set_attr "length" "4")
@@ -3443,8 +3443,8 @@
 ;; Division
 (define_insn "divdf3"
   [(set (match_operand:DF 0 "even_fpr_operand" "=h")
-        (div:DF (match_operand:DF 1 "fpr_operand" "h")
-                (match_operand:DF 2 "fpr_operand" "h")))]
+	(div:DF (match_operand:DF 1 "fpr_operand" "h")
+		(match_operand:DF 2 "fpr_operand" "h")))]
   "TARGET_HARD_FLOAT && TARGET_DOUBLE"
   "fdivd %1,%2,%0"
   [(set_attr "length" "4")
@@ -3453,7 +3453,7 @@
 ;; Negation
 (define_insn "negdf2"
   [(set (match_operand:DF 0 "even_fpr_operand" "=h")
-        (neg:DF (match_operand:DF 1 "fpr_operand" "h")))]
+	(neg:DF (match_operand:DF 1 "fpr_operand" "h")))]
   "TARGET_HARD_FLOAT && TARGET_DOUBLE"
   "fnegd %1,%0"
   [(set_attr "length" "4")
@@ -3462,7 +3462,7 @@
 ;; Absolute value
 (define_insn "absdf2"
   [(set (match_operand:DF 0 "even_fpr_operand" "=h")
-        (abs:DF (match_operand:DF 1 "fpr_operand" "h")))]
+	(abs:DF (match_operand:DF 1 "fpr_operand" "h")))]
   "TARGET_HARD_FLOAT && TARGET_DOUBLE"
   "fabsd %1,%0"
   [(set_attr "length" "4")
@@ -3471,7 +3471,7 @@
 ;; Square root
 (define_insn "sqrtdf2"
   [(set (match_operand:DF 0 "even_fpr_operand" "=h")
-        (sqrt:DF (match_operand:DF 1 "fpr_operand" "h")))]
+	(sqrt:DF (match_operand:DF 1 "fpr_operand" "h")))]
   "TARGET_HARD_FLOAT && TARGET_DOUBLE"
   "fsqrtd %1,%0"
   [(set_attr "length" "4")
@@ -3487,8 +3487,8 @@
 ;; Arithmetic Shift Left
 (define_insn "ashlsi3"
   [(set (match_operand:SI 0 "integer_register_operand" "=d,d")
-        (ashift:SI (match_operand:SI 1 "integer_register_operand" "d,d")
-                   (match_operand:SI 2 "gpr_or_int12_operand" "d,NOP")))]
+	(ashift:SI (match_operand:SI 1 "integer_register_operand" "d,d")
+		   (match_operand:SI 2 "gpr_or_int12_operand" "d,NOP")))]
   ""
   "sll%I2 %1,%2,%0"
   [(set_attr "length" "4")
@@ -3497,8 +3497,8 @@
 ;; Arithmetic Shift Right
 (define_insn "ashrsi3"
   [(set (match_operand:SI 0 "integer_register_operand" "=d,d")
-        (ashiftrt:SI (match_operand:SI 1 "integer_register_operand" "d,d")
-                     (match_operand:SI 2 "gpr_or_int12_operand" "d,NOP")))]
+	(ashiftrt:SI (match_operand:SI 1 "integer_register_operand" "d,d")
+		     (match_operand:SI 2 "gpr_or_int12_operand" "d,NOP")))]
   ""
   "sra%I2 %1, %2, %0"
   [(set_attr "length" "4")
@@ -3507,8 +3507,8 @@
 ;; Logical Shift Right
 (define_insn "lshrsi3"
   [(set (match_operand:SI 0 "integer_register_operand" "=d,d")
-        (lshiftrt:SI (match_operand:SI 1 "integer_register_operand" "d,d")
-                     (match_operand:SI 2 "gpr_or_int12_operand" "d,NOP")))]
+	(lshiftrt:SI (match_operand:SI 1 "integer_register_operand" "d,d")
+		     (match_operand:SI 2 "gpr_or_int12_operand" "d,NOP")))]
   ""
   "srl%I2 %1, %2, %0"
   [(set_attr "length" "4")
@@ -3517,8 +3517,8 @@
 ;; Rotate Left
 ;; (define_insn "rotlsi3"
 ;;   [(set (match_operand:SI 0 "register_operand" "=r")
-;;         (rotate:SI (match_operand:SI 1 "register_operand" "r")
-;;                    (match_operand:SI 2 "nonmemory_operand" "ri")))]
+;; 	(rotate:SI (match_operand:SI 1 "register_operand" "r")
+;; 		   (match_operand:SI 2 "nonmemory_operand" "ri")))]
 ;;   ""
 ;;   "rotlsi3 %0,%1,%2"
 ;;   [(set_attr "length" "4")])
@@ -3526,8 +3526,8 @@
 ;; Rotate Right
 ;; (define_insn "rotrsi3"
 ;;   [(set (match_operand:SI 0 "register_operand" "=r")
-;;         (rotatert:SI (match_operand:SI 1 "register_operand" "r")
-;;                      (match_operand:SI 2 "nonmemory_operand" "ri")))]
+;; 	(rotatert:SI (match_operand:SI 1 "register_operand" "r")
+;; 		     (match_operand:SI 2 "nonmemory_operand" "ri")))]
 ;;   ""
 ;;   "rotrsi3 %0,%1,%2"
 ;;   [(set_attr "length" "4")])
@@ -3542,8 +3542,8 @@
 ;; Arithmetic Shift Left
 ;; (define_insn "ashldi3"
 ;;   [(set (match_operand:DI 0 "register_operand" "=r")
-;;         (ashift:DI (match_operand:DI 1 "register_operand" "r")
-;;                    (match_operand:SI 2 "nonmemory_operand" "ri")))]
+;; 	(ashift:DI (match_operand:DI 1 "register_operand" "r")
+;; 		   (match_operand:SI 2 "nonmemory_operand" "ri")))]
 ;;   ""
 ;;   "ashldi3 %0,%1,%2"
 ;;   [(set_attr "length" "4")])
@@ -3551,8 +3551,8 @@
 ;; Arithmetic Shift Right
 ;; (define_insn "ashrdi3"
 ;;   [(set (match_operand:DI 0 "register_operand" "=r")
-;;         (ashiftrt:DI (match_operand:DI 1 "register_operand" "r")
-;;                      (match_operand:SI 2 "nonmemory_operand" "ri")))]
+;; 	(ashiftrt:DI (match_operand:DI 1 "register_operand" "r")
+;; 		     (match_operand:SI 2 "nonmemory_operand" "ri")))]
 ;;   ""
 ;;   "ashrdi3 %0,%1,%2"
 ;;   [(set_attr "length" "4")])
@@ -3560,8 +3560,8 @@
 ;; Logical Shift Right
 ;; (define_insn "lshrdi3"
 ;;   [(set (match_operand:DI 0 "register_operand" "=r")
-;;         (lshiftrt:DI (match_operand:DI 1 "register_operand" "r")
-;;                      (match_operand:SI 2 "nonmemory_operand" "ri")))]
+;; 	(lshiftrt:DI (match_operand:DI 1 "register_operand" "r")
+;; 		     (match_operand:SI 2 "nonmemory_operand" "ri")))]
 ;;   ""
 ;;   "lshrdi3 %0,%1,%2"
 ;;   [(set_attr "length" "4")])
@@ -3569,8 +3569,8 @@
 ;; Rotate Left
 ;; (define_insn "rotldi3"
 ;;   [(set (match_operand:DI 0 "register_operand" "=r")
-;;         (rotate:DI (match_operand:DI 1 "register_operand" "r")
-;;                    (match_operand:SI 2 "nonmemory_operand" "ri")))]
+;; 	(rotate:DI (match_operand:DI 1 "register_operand" "r")
+;; 		   (match_operand:SI 2 "nonmemory_operand" "ri")))]
 ;;   ""
 ;;   "rotldi3 %0,%1,%2"
 ;;   [(set_attr "length" "4")])
@@ -3578,8 +3578,8 @@
 ;; Rotate Right
 ;; (define_insn "rotrdi3"
 ;;   [(set (match_operand:DI 0 "register_operand" "=r")
-;;         (rotatert:DI (match_operand:DI 1 "register_operand" "r")
-;;                      (match_operand:SI 2 "nonmemory_operand" "ri")))]
+;; 	(rotatert:DI (match_operand:DI 1 "register_operand" "r")
+;; 		     (match_operand:SI 2 "nonmemory_operand" "ri")))]
 ;;   ""
 ;;   "rotrdi3 %0,%1,%2"
 ;;   [(set_attr "length" "4")])
@@ -3594,8 +3594,8 @@
 ;; Logical AND, 32 bit integers
 (define_insn "andsi3_media"
   [(set (match_operand:SI 0 "gpr_or_fpr_operand" "=d,f")
-        (and:SI (match_operand:SI 1 "gpr_or_fpr_operand" "%d,f")
-                (match_operand:SI 2 "gpr_fpr_or_int12_operand" "dNOP,f")))]
+	(and:SI (match_operand:SI 1 "gpr_or_fpr_operand" "%d,f")
+		(match_operand:SI 2 "gpr_fpr_or_int12_operand" "dNOP,f")))]
   "TARGET_MEDIA"
   "@
    and%I2 %1, %2, %0
@@ -3605,8 +3605,8 @@
 
 (define_insn "andsi3_nomedia"
   [(set (match_operand:SI 0 "integer_register_operand" "=d")
-        (and:SI (match_operand:SI 1 "integer_register_operand" "%d")
-                (match_operand:SI 2 "gpr_or_int12_operand" "dNOP")))]
+	(and:SI (match_operand:SI 1 "integer_register_operand" "%d")
+		(match_operand:SI 2 "gpr_or_int12_operand" "dNOP")))]
   "!TARGET_MEDIA"
   "and%I2 %1, %2, %0"
   [(set_attr "length" "4")
@@ -3614,16 +3614,16 @@
 
 (define_expand "andsi3"
   [(set (match_operand:SI 0 "gpr_or_fpr_operand" "")
-        (and:SI (match_operand:SI 1 "gpr_or_fpr_operand" "")
-                (match_operand:SI 2 "gpr_fpr_or_int12_operand" "")))]
+	(and:SI (match_operand:SI 1 "gpr_or_fpr_operand" "")
+		(match_operand:SI 2 "gpr_fpr_or_int12_operand" "")))]
   ""
   "")
 
 ;; Inclusive OR, 32 bit integers
 (define_insn "iorsi3_media"
   [(set (match_operand:SI 0 "gpr_or_fpr_operand" "=d,f")
-        (ior:SI (match_operand:SI 1 "gpr_or_fpr_operand" "%d,f")
-                (match_operand:SI 2 "gpr_fpr_or_int12_operand" "dNOP,f")))]
+	(ior:SI (match_operand:SI 1 "gpr_or_fpr_operand" "%d,f")
+		(match_operand:SI 2 "gpr_fpr_or_int12_operand" "dNOP,f")))]
   "TARGET_MEDIA"
   "@
    or%I2 %1, %2, %0
@@ -3633,8 +3633,8 @@
 
 (define_insn "iorsi3_nomedia"
   [(set (match_operand:SI 0 "integer_register_operand" "=d")
-        (ior:SI (match_operand:SI 1 "integer_register_operand" "%d")
-                (match_operand:SI 2 "gpr_or_int12_operand" "dNOP")))]
+	(ior:SI (match_operand:SI 1 "integer_register_operand" "%d")
+		(match_operand:SI 2 "gpr_or_int12_operand" "dNOP")))]
   "!TARGET_MEDIA"
   "or%I2 %1, %2, %0"
   [(set_attr "length" "4")
@@ -3642,16 +3642,16 @@
 
 (define_expand "iorsi3"
   [(set (match_operand:SI 0 "gpr_or_fpr_operand" "")
-        (ior:SI (match_operand:SI 1 "gpr_or_fpr_operand" "")
-                (match_operand:SI 2 "gpr_fpr_or_int12_operand" "")))]
+	(ior:SI (match_operand:SI 1 "gpr_or_fpr_operand" "")
+		(match_operand:SI 2 "gpr_fpr_or_int12_operand" "")))]
   ""
   "")
 
 ;; Exclusive OR, 32 bit integers
 (define_insn "xorsi3_media"
   [(set (match_operand:SI 0 "gpr_or_fpr_operand" "=d,f")
-        (xor:SI (match_operand:SI 1 "gpr_or_fpr_operand" "%d,f")
-                (match_operand:SI 2 "gpr_fpr_or_int12_operand" "dNOP,f")))]
+	(xor:SI (match_operand:SI 1 "gpr_or_fpr_operand" "%d,f")
+		(match_operand:SI 2 "gpr_fpr_or_int12_operand" "dNOP,f")))]
   "TARGET_MEDIA"
   "@
    xor%I2 %1, %2, %0
@@ -3661,8 +3661,8 @@
 
 (define_insn "xorsi3_nomedia"
   [(set (match_operand:SI 0 "integer_register_operand" "=d")
-        (xor:SI (match_operand:SI 1 "integer_register_operand" "%d")
-                (match_operand:SI 2 "gpr_or_int12_operand" "dNOP")))]
+	(xor:SI (match_operand:SI 1 "integer_register_operand" "%d")
+		(match_operand:SI 2 "gpr_or_int12_operand" "dNOP")))]
   "!TARGET_MEDIA"
   "xor%I2 %1, %2, %0"
   [(set_attr "length" "4")
@@ -3670,15 +3670,15 @@
 
 (define_expand "xorsi3"
   [(set (match_operand:SI 0 "gpr_or_fpr_operand" "")
-        (xor:SI (match_operand:SI 1 "gpr_or_fpr_operand" "")
-                (match_operand:SI 2 "gpr_fpr_or_int12_operand" "")))]
+	(xor:SI (match_operand:SI 1 "gpr_or_fpr_operand" "")
+		(match_operand:SI 2 "gpr_fpr_or_int12_operand" "")))]
   ""
   "")
 
 ;; One's complement, 32 bit integers
 (define_insn "one_cmplsi2_media"
   [(set (match_operand:SI 0 "gpr_or_fpr_operand" "=d,f")
-        (not:SI (match_operand:SI 1 "gpr_or_fpr_operand" "d,f")))]
+	(not:SI (match_operand:SI 1 "gpr_or_fpr_operand" "d,f")))]
   "TARGET_MEDIA"
   "@
    not %1, %0
@@ -3688,7 +3688,7 @@
 
 (define_insn "one_cmplsi2_nomedia"
   [(set (match_operand:SI 0 "integer_register_operand" "=d")
-        (not:SI (match_operand:SI 1 "integer_register_operand" "d")))]
+	(not:SI (match_operand:SI 1 "integer_register_operand" "d")))]
   "!TARGET_MEDIA"
   "not %1,%0"
   [(set_attr "length" "4")
@@ -3696,7 +3696,7 @@
 
 (define_expand "one_cmplsi2"
   [(set (match_operand:SI 0 "gpr_or_fpr_operand" "")
-        (not:SI (match_operand:SI 1 "gpr_or_fpr_operand" "")))]
+	(not:SI (match_operand:SI 1 "gpr_or_fpr_operand" "")))]
   ""
   "")
 
@@ -3710,8 +3710,8 @@
 ;; Logical AND, 64 bit integers
 ;; (define_insn "anddi3"
 ;;   [(set (match_operand:DI 0 "register_operand" "=r")
-;;         (and:DI (match_operand:DI 1 "register_operand" "%r")
-;;                 (match_operand:DI 2 "nonmemory_operand" "ri")))]
+;; 	(and:DI (match_operand:DI 1 "register_operand" "%r")
+;; 		(match_operand:DI 2 "nonmemory_operand" "ri")))]
 ;;   ""
 ;;   "anddi3 %0,%1,%2"
 ;;   [(set_attr "length" "4")])
@@ -3719,8 +3719,8 @@
 ;; Inclusive OR, 64 bit integers
 ;; (define_insn "iordi3"
 ;;   [(set (match_operand:DI 0 "register_operand" "=r")
-;;         (ior:DI (match_operand:DI 1 "register_operand" "%r")
-;;                 (match_operand:DI 2 "nonmemory_operand" "ri")))]
+;; 	(ior:DI (match_operand:DI 1 "register_operand" "%r")
+;; 		(match_operand:DI 2 "nonmemory_operand" "ri")))]
 ;;   ""
 ;;   "iordi3 %0,%1,%2"
 ;;   [(set_attr "length" "4")])
@@ -3728,8 +3728,8 @@
 ;; Exclusive OR, 64 bit integers
 ;; (define_insn "xordi3"
 ;;   [(set (match_operand:DI 0 "register_operand" "=r")
-;;         (xor:DI (match_operand:DI 1 "register_operand" "%r")
-;;                 (match_operand:DI 2 "nonmemory_operand" "ri")))]
+;; 	(xor:DI (match_operand:DI 1 "register_operand" "%r")
+;; 		(match_operand:DI 2 "nonmemory_operand" "ri")))]
 ;;   ""
 ;;   "xordi3 %0,%1,%2"
 ;;   [(set_attr "length" "4")])
@@ -3737,7 +3737,7 @@
 ;; One's complement, 64 bit integers
 ;; (define_insn "one_cmpldi2"
 ;;   [(set (match_operand:DI 0 "register_operand" "=r")
-;;         (not:DI (match_operand:DI 1 "register_operand" "r")))]
+;; 	(not:DI (match_operand:DI 1 "register_operand" "r")))]
 ;;   ""
 ;;   "notdi3 %0,%1"
 ;;   [(set_attr "length" "4")])
@@ -3751,11 +3751,11 @@
 
 (define_insn "*combo_intop_compare1"
   [(set (match_operand:CC_NZ 0 "icc_operand" "=t")
-        (compare:CC_NZ
-         (match_operator:SI 1 "intop_compare_operator"
-                       [(match_operand:SI 2 "integer_register_operand" "d")
-                        (match_operand:SI 3 "gpr_or_int10_operand" "dJ")])
-         (const_int 0)))]
+	(compare:CC_NZ
+	 (match_operator:SI 1 "intop_compare_operator"
+		       [(match_operand:SI 2 "integer_register_operand" "d")
+			(match_operand:SI 3 "gpr_or_int10_operand" "dJ")])
+	 (const_int 0)))]
   ""
   "%O1%I3cc %2, %3, %., %0"
   [(set_attr "type" "int")
@@ -3763,15 +3763,15 @@
 
 (define_insn "*combo_intop_compare2"
   [(set (match_operand:CC_NZ 0 "icc_operand" "=t")
-        (compare:CC_NZ
-         (match_operator:SI 1 "intop_compare_operator"
-                        [(match_operand:SI 2 "integer_register_operand" "d")
-                         (match_operand:SI 3 "gpr_or_int10_operand" "dJ")])
-         (const_int 0)))
+	(compare:CC_NZ
+	 (match_operator:SI 1 "intop_compare_operator"
+			[(match_operand:SI 2 "integer_register_operand" "d")
+			 (match_operand:SI 3 "gpr_or_int10_operand" "dJ")])
+	 (const_int 0)))
    (set (match_operand:SI 4 "integer_register_operand" "=d")
-        (match_operator:SI 5 "intop_compare_operator"
-                           [(match_dup 2)
-                            (match_dup 3)]))]
+	(match_operator:SI 5 "intop_compare_operator"
+			   [(match_dup 2)
+			    (match_dup 3)]))]
   "GET_CODE (operands[1]) == GET_CODE (operands[5])"
   "%O1%I3cc %2, %3, %4, %0"
   [(set_attr "type" "int")
@@ -3790,7 +3790,7 @@
 (define_expand "cmpsi"
   [(set (cc0)
         (compare (match_operand:SI 0 "integer_register_operand" "")
-                   (match_operand:SI 1 "gpr_or_int10_operand" "")))]
+  		 (match_operand:SI 1 "gpr_or_int10_operand" "")))]
   ""
   "
 {
@@ -3802,7 +3802,7 @@
 ;(define_expand "cmpdi"
 ;  [(set (cc0)
 ;        (compare (match_operand:DI 0 "register_operand" "")
-;                   (match_operand:DI 1 "nonmemory_operand" "")))]
+;  		 (match_operand:DI 1 "nonmemory_operand" "")))]
 ;  ""
 ;  "
 ;{
@@ -3814,7 +3814,7 @@
 (define_expand "cmpsf"
  [(set (cc0)
        (compare (match_operand:SF 0 "fpr_operand" "")
-                  (match_operand:SF 1 "fpr_operand" "")))]
+ 		 (match_operand:SF 1 "fpr_operand" "")))]
  "TARGET_HARD_FLOAT"
  "
 {
@@ -3826,7 +3826,7 @@
 (define_expand "cmpdf"
   [(set (cc0)
         (compare (match_operand:DF 0 "fpr_operand" "")
-                   (match_operand:DF 1 "fpr_operand" "")))]
+  		 (match_operand:DF 1 "fpr_operand" "")))]
   "TARGET_HARD_FLOAT && TARGET_DOUBLE"
   "
 {
@@ -3839,8 +3839,8 @@
 
 (define_insn "cmpsi_cc"
   [(set (match_operand:CC 0 "icc_operand" "=t,t")
-        (compare:CC (match_operand:SI 1 "integer_register_operand" "d,d")
-                    (match_operand:SI 2 "gpr_or_int10_operand" "d,J")))]
+	(compare:CC (match_operand:SI 1 "integer_register_operand" "d,d")
+		    (match_operand:SI 2 "gpr_or_int10_operand" "d,J")))]
   ""
   "cmp%I2 %1,%2,%0"
   [(set_attr "length" "4")
@@ -3848,8 +3848,8 @@
 
 (define_insn "*cmpsi_cc_uns"
   [(set (match_operand:CC_UNS 0 "icc_operand" "=t,t")
-        (compare:CC_UNS (match_operand:SI 1 "integer_register_operand" "d,d")
-                        (match_operand:SI 2 "gpr_or_int10_operand" "d,J")))]
+	(compare:CC_UNS (match_operand:SI 1 "integer_register_operand" "d,d")
+			(match_operand:SI 2 "gpr_or_int10_operand" "d,J")))]
   ""
   "cmp%I2 %1,%2,%0"
   [(set_attr "length" "4")
@@ -3860,8 +3860,8 @@
 ;; The source operand is therefore a valid CC_NZmode value.
 (define_insn "*cmpsi_cc_nz"
   [(set (match_operand:CC_NZ 0 "nonimmediate_operand" "=t,d,m")
-        (compare:CC_NZ (match_operand:SI 1 "integer_register_operand" "d,d,d")
-                       (const_int 0)))]
+	(compare:CC_NZ (match_operand:SI 1 "integer_register_operand" "d,d,d")
+		       (const_int 0)))]
   ""
   "@
    cmpi %1, #0, %0
@@ -3872,8 +3872,8 @@
 
 (define_insn "*cmpsf_cc_fp"
   [(set (match_operand:CC_FP 0 "fcc_operand" "=u")
-        (compare:CC_FP (match_operand:SF 1 "fpr_operand" "f")
-                       (match_operand:SF 2 "fpr_operand" "f")))]
+	(compare:CC_FP (match_operand:SF 1 "fpr_operand" "f")
+		       (match_operand:SF 2 "fpr_operand" "f")))]
   "TARGET_HARD_FLOAT"
   "fcmps %1,%2,%0"
   [(set_attr "length" "4")
@@ -3881,8 +3881,8 @@
 
 (define_insn "*cmpdf_cc_fp"
   [(set (match_operand:CC_FP 0 "fcc_operand" "=u")
-        (compare:CC_FP (match_operand:DF 1 "even_fpr_operand" "h")
-                       (match_operand:DF 2 "even_fpr_operand" "h")))]
+	(compare:CC_FP (match_operand:DF 1 "even_fpr_operand" "h")
+		       (match_operand:DF 2 "even_fpr_operand" "h")))]
   "TARGET_HARD_FLOAT && TARGET_DOUBLE"
   "fcmpd %1,%2,%0"
   [(set_attr "length" "4")
@@ -3904,13 +3904,13 @@
 ;;
 ;; (define_expand "<name_of_test>"
 ;;   [(set (reg:CC <number_of_CC_register>)
-;;         (compare:CC (match_dup 1)
-;;                     (match_dup 2)))
+;; 	(compare:CC (match_dup 1)
+;; 		    (match_dup 2)))
 ;;    (set (pc)
-;;         (if_then_else (eq:CC (reg:CC <number_of_CC_register>)
-;;                              (const_int 0))
-;;                       (label_ref (match_operand 0 "" ""))
-;;                       (pc)))]
+;; 	(if_then_else (eq:CC (reg:CC <number_of_CC_register>)
+;; 			     (const_int 0))
+;; 		      (label_ref (match_operand 0 "" ""))
+;; 		      (pc)))]
 ;;   ""
 ;;   "{
 ;;     operands[1] = frv_compare_op0;
@@ -4040,11 +4040,11 @@
 ;;
 ;; (define_insn "*branch_true"
 ;;   [(set (pc)
-;;         (if_then_else (match_operator:CC 0 "comparison_operator"
-;;                                          [(reg:CC <number_of_CC_register>)
-;;                                           (const_int 0)])
-;;                       (label_ref (match_operand 1 "" ""))
-;;                       (pc)))]
+;; 	(if_then_else (match_operator:CC 0 "comparison_operator"
+;; 					 [(reg:CC <number_of_CC_register>)
+;; 					  (const_int 0)])
+;; 		      (label_ref (match_operand 1 "" ""))
+;; 		      (pc)))]
 ;;   ""
 ;;   "b%B0 %1"
 ;;   [(set_attr "length" "4")]
@@ -4055,11 +4055,11 @@
 
 (define_insn "*branch_int_true"
   [(set (pc)
-        (if_then_else (match_operator 0 "integer_relational_operator"
-                                      [(match_operand 1 "icc_operand" "t")
-                                       (const_int 0)])
-                      (label_ref (match_operand 2 "" ""))
-                      (pc)))]
+	(if_then_else (match_operator 0 "integer_relational_operator"
+				      [(match_operand 1 "icc_operand" "t")
+				       (const_int 0)])
+		      (label_ref (match_operand 2 "" ""))
+		      (pc)))]
   ""
   "*
 {
@@ -4069,29 +4069,29 @@
     return \"b%C0 %1,%#,1f\;call %l2\\n1:\";
 }"
   [(set (attr "length")
-        (if_then_else
-            (and (ge (minus (match_dup 2) (pc)) (const_int -32768))
-                 (le (minus (match_dup 2) (pc)) (const_int 32764)))
-            (const_int 4)
-            (const_int 8)))
+	(if_then_else
+	    (and (ge (minus (match_dup 2) (pc)) (const_int -32768))
+		 (le (minus (match_dup 2) (pc)) (const_int 32764)))
+	    (const_int 4)
+	    (const_int 8)))
    (set (attr "far_jump")
         (if_then_else
-            (eq_attr "length" "4")
-            (const_string "no")
-            (const_string "yes")))
+	    (eq_attr "length" "4")
+	    (const_string "no")
+	    (const_string "yes")))
    (set (attr "type")
-        (if_then_else
-            (eq_attr "length" "4")
-            (const_string "branch")
-            (const_string "multi")))])
+	(if_then_else
+	    (eq_attr "length" "4")
+	    (const_string "branch")
+	    (const_string "multi")))])
 
 (define_insn "*branch_int_false"
   [(set (pc)
-        (if_then_else (match_operator 0 "integer_relational_operator"
-                                      [(match_operand 1 "icc_operand" "t")
-                                       (const_int 0)])
-                      (pc)
-                      (label_ref (match_operand 2 "" ""))))]
+	(if_then_else (match_operator 0 "integer_relational_operator"
+				      [(match_operand 1 "icc_operand" "t")
+				       (const_int 0)])
+		      (pc)
+		      (label_ref (match_operand 2 "" ""))))]
   ""
   "*
 {
@@ -4101,29 +4101,29 @@
     return \"b%c0 %1,%#,1f\;call %l2\\n1:\";
 }"
   [(set (attr "length")
-        (if_then_else
-            (and (ge (minus (match_dup 2) (pc)) (const_int -32768))
-                 (le (minus (match_dup 2) (pc)) (const_int 32764)))
-            (const_int 4)
-            (const_int 8)))
+	(if_then_else
+	    (and (ge (minus (match_dup 2) (pc)) (const_int -32768))
+		 (le (minus (match_dup 2) (pc)) (const_int 32764)))
+	    (const_int 4)
+	    (const_int 8)))
    (set (attr "far_jump")
         (if_then_else
-            (eq_attr "length" "4")
-            (const_string "no")
-            (const_string "yes")))
+	    (eq_attr "length" "4")
+	    (const_string "no")
+	    (const_string "yes")))
    (set (attr "type")
-        (if_then_else
-            (eq_attr "length" "4")
-            (const_string "branch")
-            (const_string "multi")))])
+	(if_then_else
+	    (eq_attr "length" "4")
+	    (const_string "branch")
+	    (const_string "multi")))])
 
 (define_insn "*branch_fp_true"
   [(set (pc)
-        (if_then_else (match_operator:CC_FP 0 "float_relational_operator"
-                                            [(match_operand 1 "fcc_operand" "u")
-                                             (const_int 0)])
-                      (label_ref (match_operand 2 "" ""))
-                      (pc)))]
+	(if_then_else (match_operator:CC_FP 0 "float_relational_operator"
+					    [(match_operand 1 "fcc_operand" "u")
+					     (const_int 0)])
+		      (label_ref (match_operand 2 "" ""))
+		      (pc)))]
   ""
   "*
 {
@@ -4133,29 +4133,29 @@
     return \"fb%F0 %1,%#,1f\;call %l2\\n1:\";
 }"
   [(set (attr "length")
-        (if_then_else
-            (and (ge (minus (match_dup 2) (pc)) (const_int -32768))
-                 (le (minus (match_dup 2) (pc)) (const_int 32764)))
-            (const_int 4)
-            (const_int 8)))
+	(if_then_else
+	    (and (ge (minus (match_dup 2) (pc)) (const_int -32768))
+		 (le (minus (match_dup 2) (pc)) (const_int 32764)))
+	    (const_int 4)
+	    (const_int 8)))
    (set (attr "far_jump")
         (if_then_else
-            (eq_attr "length" "4")
-            (const_string "no")
-            (const_string "yes")))
+	    (eq_attr "length" "4")
+	    (const_string "no")
+	    (const_string "yes")))
    (set (attr "type")
-        (if_then_else
-            (eq_attr "length" "4")
-            (const_string "branch")
-            (const_string "multi")))])
+	(if_then_else
+	    (eq_attr "length" "4")
+	    (const_string "branch")
+	    (const_string "multi")))])
 
 (define_insn "*branch_fp_false"
   [(set (pc)
-        (if_then_else (match_operator:CC_FP 0 "float_relational_operator"
-                                            [(match_operand 1 "fcc_operand" "u")
-                                             (const_int 0)])
-                      (pc)
-                      (label_ref (match_operand 2 "" ""))))]
+	(if_then_else (match_operator:CC_FP 0 "float_relational_operator"
+					    [(match_operand 1 "fcc_operand" "u")
+					     (const_int 0)])
+		      (pc)
+		      (label_ref (match_operand 2 "" ""))))]
   ""
   "*
 {
@@ -4165,21 +4165,21 @@
     return \"fb%f0 %1,%#,1f\;call %l2\\n1:\";
 }"
   [(set (attr "length")
-        (if_then_else
-            (and (ge (minus (match_dup 2) (pc)) (const_int -32768))
-                 (le (minus (match_dup 2) (pc)) (const_int 32764)))
-            (const_int 4)
-            (const_int 8)))
+	(if_then_else
+	    (and (ge (minus (match_dup 2) (pc)) (const_int -32768))
+		 (le (minus (match_dup 2) (pc)) (const_int 32764)))
+	    (const_int 4)
+	    (const_int 8)))
    (set (attr "far_jump")
         (if_then_else
-            (eq_attr "length" "4")
-            (const_string "no")
-            (const_string "yes")))
+	    (eq_attr "length" "4")
+	    (const_string "no")
+	    (const_string "yes")))
    (set (attr "type")
-        (if_then_else
-            (eq_attr "length" "4")
-            (const_string "branch")
-            (const_string "multi")))])
+	(if_then_else
+	    (eq_attr "length" "4")
+	    (const_string "branch")
+	    (const_string "multi")))])
 
 
 ;; ::::::::::::::::::::
@@ -4303,9 +4303,9 @@
 
 (define_insn "*scc_int"
   [(set (match_operand:SI 0 "integer_register_operand" "=d")
-        (match_operator:SI 1 "integer_relational_operator"
-                           [(match_operand 2 "icc_operand" "t")
-                            (const_int 0)]))
+	(match_operator:SI 1 "integer_relational_operator"
+			   [(match_operand 2 "icc_operand" "t")
+			    (const_int 0)]))
    (clobber (match_operand:CC_CCR 3 "icr_operand" "=v"))]
   ""
   "#"
@@ -4314,9 +4314,9 @@
 
 (define_insn "*scc_float"
   [(set (match_operand:SI 0 "integer_register_operand" "=d")
-        (match_operator:SI 1 "float_relational_operator"
-                           [(match_operand:CC_FP 2 "fcc_operand" "u")
-                            (const_int 0)]))
+	(match_operator:SI 1 "float_relational_operator"
+			   [(match_operand:CC_FP 2 "fcc_operand" "u")
+			    (const_int 0)]))
    (clobber (match_operand:CC_CCR 3 "fcr_operand" "=w"))]
   ""
   "#"
@@ -4327,20 +4327,20 @@
 ;; currently isn't ready to see cond_exec packets.
 (define_split
   [(set (match_operand:SI 0 "integer_register_operand" "")
-        (match_operator:SI 1 "relational_operator"
-                           [(match_operand 2 "cc_operand" "")
-                            (const_int 0)]))
+	(match_operator:SI 1 "relational_operator"
+			   [(match_operand 2 "cc_operand" "")
+			    (const_int 0)]))
    (clobber (match_operand 3 "cr_operand" ""))]
   "reload_completed"
   [(match_dup 4)]
   "operands[4] = frv_split_scc (operands[0], operands[1], operands[2],
-                                operands[3], (HOST_WIDE_INT) 1);")
+				operands[3], (HOST_WIDE_INT) 1);")
 
 (define_insn "*scc_neg1_int"
   [(set (match_operand:SI 0 "integer_register_operand" "=d")
-        (neg:SI (match_operator:SI 1 "integer_relational_operator"
-                                   [(match_operand 2 "icc_operand" "t")
-                                    (const_int 0)])))
+	(neg:SI (match_operator:SI 1 "integer_relational_operator"
+				   [(match_operand 2 "icc_operand" "t")
+				    (const_int 0)])))
    (clobber (match_operand:CC_CCR 3 "icr_operand" "=v"))]
   ""
   "#"
@@ -4349,9 +4349,9 @@
 
 (define_insn "*scc_neg1_float"
   [(set (match_operand:SI 0 "integer_register_operand" "=d")
-        (neg:SI (match_operator:SI 1 "float_relational_operator"
-                                   [(match_operand:CC_FP 2 "fcc_operand" "u")
-                                    (const_int 0)])))
+	(neg:SI (match_operator:SI 1 "float_relational_operator"
+				   [(match_operand:CC_FP 2 "fcc_operand" "u")
+				    (const_int 0)])))
    (clobber (match_operand:CC_CCR 3 "fcr_operand" "=w"))]
   ""
   "#"
@@ -4360,14 +4360,14 @@
 
 (define_split
   [(set (match_operand:SI 0 "integer_register_operand" "")
-        (neg:SI (match_operator:SI 1 "relational_operator"
-                                   [(match_operand 2 "cc_operand" "")
-                                    (const_int 0)])))
+	(neg:SI (match_operator:SI 1 "relational_operator"
+				   [(match_operand 2 "cc_operand" "")
+				    (const_int 0)])))
    (clobber (match_operand 3 "cr_operand" ""))]
   "reload_completed"
   [(match_dup 4)]
   "operands[4] = frv_split_scc (operands[0], operands[1], operands[2],
-                                operands[3], (HOST_WIDE_INT) -1);")
+				operands[3], (HOST_WIDE_INT) -1);")
 
 
 ;; ::::::::::::::::::::
@@ -4379,9 +4379,9 @@
 ;; Convert ICC/FCC comparison into CCR bits so we can do conditional execution
 (define_insn "*ck_signed"
   [(set (match_operand:CC_CCR 0 "icr_operand" "=v")
-        (match_operator:CC_CCR 1 "integer_relational_operator"
-                               [(match_operand 2 "icc_operand" "t")
-                                (const_int 0)]))]
+	(match_operator:CC_CCR 1 "integer_relational_operator"
+			       [(match_operand 2 "icc_operand" "t")
+				(const_int 0)]))]
   ""
   "ck%c1 %2, %0"
   [(set_attr "length" "4")
@@ -4389,9 +4389,9 @@
 
 (define_insn "*fck_float"
   [(set (match_operand:CC_CCR 0 "fcr_operand" "=w")
-        (match_operator:CC_CCR 1 "float_relational_operator"
-                               [(match_operand:CC_FP 2 "fcc_operand" "u")
-                                (const_int 0)]))]
+	(match_operator:CC_CCR 1 "float_relational_operator"
+			       [(match_operand:CC_FP 2 "fcc_operand" "u")
+				(const_int 0)]))]
   "TARGET_HAS_FPRS"
   "fck%c1 %2, %0"
   [(set_attr "length" "4")
@@ -4401,13 +4401,13 @@
 ;; tests in conditional execution
 (define_insn "cond_exec_ck"
   [(set (match_operand:CC_CCR 0 "cr_operand" "=v,w")
-        (if_then_else:CC_CCR (match_operator 1 "ccr_eqne_operator"
-                                             [(match_operand 2 "cr_operand" "C,C")
-                                              (const_int 0)])
-                             (match_operator 3 "relational_operator"
-                                             [(match_operand 4 "cc_operand" "t,u")
-                                              (const_int 0)])
-                             (const_int 0)))]
+	(if_then_else:CC_CCR (match_operator 1 "ccr_eqne_operator"
+					     [(match_operand 2 "cr_operand" "C,C")
+					      (const_int 0)])
+			     (match_operator 3 "relational_operator"
+					     [(match_operand 4 "cc_operand" "t,u")
+					      (const_int 0)])
+			     (const_int 0)))]
   ""
   "@
    cck%c3 %4, %0, %2, %e1
@@ -4419,10 +4419,10 @@
 (define_insn "*cond_exec_movqi"
   [(cond_exec
     (match_operator 0 "ccr_eqne_operator"
-                    [(match_operand 1 "cr_operand" "C,C,C,C,C,C")
-                     (const_int 0)])
+		    [(match_operand 1 "cr_operand" "C,C,C,C,C,C")
+		     (const_int 0)])
     (set (match_operand:QI 2 "condexec_dest_operand" "=d,d,U,?f,?f,?d")
-         (match_operand:QI 3 "condexec_source_operand" "dO,U,dO,f,d,f")))]
+	 (match_operand:QI 3 "condexec_source_operand" "dO,U,dO,f,d,f")))]
   "register_operand(operands[2], QImode) || reg_or_0_operand (operands[3], QImode)"
   "* return output_condmove_single (operands, insn);"
   [(set_attr "length" "4")
@@ -4431,10 +4431,10 @@
 (define_insn "*cond_exec_movhi"
   [(cond_exec
     (match_operator 0 "ccr_eqne_operator"
-                    [(match_operand 1 "cr_operand" "C,C,C,C,C,C")
-                     (const_int 0)])
+		    [(match_operand 1 "cr_operand" "C,C,C,C,C,C")
+		     (const_int 0)])
     (set (match_operand:HI 2 "condexec_dest_operand" "=d,d,U,?f,?f,?d")
-         (match_operand:HI 3 "condexec_source_operand" "dO,U,dO,f,d,f")))]
+	 (match_operand:HI 3 "condexec_source_operand" "dO,U,dO,f,d,f")))]
   "register_operand(operands[2], HImode) || reg_or_0_operand (operands[3], HImode)"
   "* return output_condmove_single (operands, insn);"
   [(set_attr "length" "4")
@@ -4443,10 +4443,10 @@
 (define_insn "*cond_exec_movsi"
   [(cond_exec
     (match_operator 0 "ccr_eqne_operator"
-                    [(match_operand 1 "cr_operand" "C,C,C,C,C,C,C,C")
-                     (const_int 0)])
+		    [(match_operand 1 "cr_operand" "C,C,C,C,C,C,C,C")
+		     (const_int 0)])
     (set (match_operand:SI 2 "condexec_dest_operand" "=d,d,U,?f,?f,?d,?f,?m")
-         (match_operand:SI 3 "condexec_source_operand" "dO,U,dO,f,d,f,m,f")))]
+	 (match_operand:SI 3 "condexec_source_operand" "dO,U,dO,f,d,f,m,f")))]
   "register_operand(operands[2], SImode) || reg_or_0_operand (operands[3], SImode)"
   "* return output_condmove_single (operands, insn);"
   [(set_attr "length" "4")
@@ -4456,10 +4456,10 @@
 (define_insn "*cond_exec_movsf_has_fprs"
   [(cond_exec
     (match_operator 0 "ccr_eqne_operator"
-                    [(match_operand 1 "cr_operand" "C,C,C,C,C,C,C,C,C,C")
-                     (const_int 0)])
+		    [(match_operand 1 "cr_operand" "C,C,C,C,C,C,C,C,C,C")
+		     (const_int 0)])
     (set (match_operand:SF 2 "condexec_dest_operand" "=f,?d,?d,?f,f,f,?d,U,?U,U")
-         (match_operand:SF 3 "condexec_source_operand" "f,d,f,d,G,U,U,f,d,G")))]
+	 (match_operand:SF 3 "condexec_source_operand" "f,d,f,d,G,U,U,f,d,G")))]
   "TARGET_HAS_FPRS"
   "* return output_condmove_single (operands, insn);"
   [(set_attr "length" "4")
@@ -4468,10 +4468,10 @@
 (define_insn "*cond_exec_movsf_no_fprs"
   [(cond_exec
     (match_operator 0 "ccr_eqne_operator"
-                    [(match_operand 1 "cr_operand" "C,C,C")
-                     (const_int 0)])
+		    [(match_operand 1 "cr_operand" "C,C,C")
+		     (const_int 0)])
     (set (match_operand:SF 2 "condexec_dest_operand" "=d,d,U")
-         (match_operand:SF 3 "condexec_source_operand" "d,U,dG")))]
+	 (match_operand:SF 3 "condexec_source_operand" "d,U,dG")))]
   "! TARGET_HAS_FPRS"
   "* return output_condmove_single (operands, insn);"
   [(set_attr "length" "4")
@@ -4480,12 +4480,12 @@
 (define_insn "*cond_exec_si_binary1"
   [(cond_exec
     (match_operator 0 "ccr_eqne_operator"
-                    [(match_operand 1 "cr_operand" "C")
-                     (const_int 0)])
+		    [(match_operand 1 "cr_operand" "C")
+		     (const_int 0)])
     (set (match_operand:SI 2 "integer_register_operand" "=d")
-         (match_operator:SI 3 "condexec_si_binary_operator"
-                            [(match_operand:SI 4 "integer_register_operand" "d")
-                             (match_operand:SI 5 "integer_register_operand" "d")])))]
+	 (match_operator:SI 3 "condexec_si_binary_operator"
+			    [(match_operand:SI 4 "integer_register_operand" "d")
+			     (match_operand:SI 5 "integer_register_operand" "d")])))]
   ""
   "*
 {
@@ -4508,12 +4508,12 @@
 (define_insn "*cond_exec_si_binary2"
   [(cond_exec
     (match_operator 0 "ccr_eqne_operator"
-                    [(match_operand 1 "cr_operand" "C")
-                     (const_int 0)])
+		    [(match_operand 1 "cr_operand" "C")
+		     (const_int 0)])
     (set (match_operand:SI 2 "fpr_operand" "=f")
-         (match_operator:SI 3 "condexec_si_media_operator"
-                            [(match_operand:SI 4 "fpr_operand" "f")
-                             (match_operand:SI 5 "fpr_operand" "f")])))]
+	 (match_operator:SI 3 "condexec_si_media_operator"
+			    [(match_operand:SI 4 "fpr_operand" "f")
+			     (match_operand:SI 5 "fpr_operand" "f")])))]
   "TARGET_MEDIA"
   "*
 {
@@ -4537,11 +4537,11 @@
 (define_insn "*cond_exec_si_smul"
   [(cond_exec
     (match_operator 0 "ccr_eqne_operator"
-                    [(match_operand 1 "cr_operand" "C")
-                     (const_int 0)])
+		    [(match_operand 1 "cr_operand" "C")
+		     (const_int 0)])
     (set (match_operand:DI 2 "even_gpr_operand" "=e")
-         (mult:DI (sign_extend:DI (match_operand:SI 3 "integer_register_operand" "%d"))
-                  (sign_extend:DI (match_operand:SI 4 "integer_register_operand" "d")))))]
+	 (mult:DI (sign_extend:DI (match_operand:SI 3 "integer_register_operand" "%d"))
+		  (sign_extend:DI (match_operand:SI 4 "integer_register_operand" "d")))))]
   ""
   "csmul %3, %4, %2, %1, %e0"
   [(set_attr "length" "4")
@@ -4550,12 +4550,12 @@
 (define_insn "*cond_exec_si_divide"
   [(cond_exec
     (match_operator 0 "ccr_eqne_operator"
-                    [(match_operand 1 "cr_operand" "C")
-                     (const_int 0)])
+		    [(match_operand 1 "cr_operand" "C")
+		     (const_int 0)])
     (set (match_operand:SI 2 "integer_register_operand" "=d")
-         (match_operator:SI 3 "condexec_si_divide_operator"
-                            [(match_operand:SI 4 "integer_register_operand" "d")
-                             (match_operand:SI 5 "integer_register_operand" "d")])))]
+	 (match_operator:SI 3 "condexec_si_divide_operator"
+			    [(match_operand:SI 4 "integer_register_operand" "d")
+			     (match_operand:SI 5 "integer_register_operand" "d")])))]
   ""
   "*
 {
@@ -4572,11 +4572,11 @@
 (define_insn "*cond_exec_si_unary1"
   [(cond_exec
     (match_operator 0 "ccr_eqne_operator"
-                    [(match_operand 1 "cr_operand" "C")
-                     (const_int 0)])
+		    [(match_operand 1 "cr_operand" "C")
+		     (const_int 0)])
     (set (match_operand:SI 2 "integer_register_operand" "=d")
-         (match_operator:SI 3 "condexec_si_unary_operator"
-                            [(match_operand:SI 4 "integer_register_operand" "d")])))]
+	 (match_operator:SI 3 "condexec_si_unary_operator"
+			    [(match_operand:SI 4 "integer_register_operand" "d")])))]
   ""
   "*
 {
@@ -4593,10 +4593,10 @@
 (define_insn "*cond_exec_si_unary2"
   [(cond_exec
     (match_operator 0 "ccr_eqne_operator"
-                    [(match_operand 1 "cr_operand" "C")
-                     (const_int 0)])
+		    [(match_operand 1 "cr_operand" "C")
+		     (const_int 0)])
     (set (match_operand:SI 2 "fpr_operand" "=f")
-         (not:SI (match_operand:SI 3 "fpr_operand" "f"))))]
+	 (not:SI (match_operand:SI 3 "fpr_operand" "f"))))]
   "TARGET_MEDIA"
   "cmnot %3, %2, %1, %e0"
   [(set_attr "length" "4")
@@ -4605,11 +4605,11 @@
 (define_insn "*cond_exec_cmpsi_cc"
   [(cond_exec
     (match_operator 0 "ccr_eqne_operator"
-                    [(match_operand 1 "cr_operand" "C")
-                     (const_int 0)])
+		    [(match_operand 1 "cr_operand" "C")
+		     (const_int 0)])
     (set (match_operand:CC 2 "icc_operand" "=t")
-         (compare:CC (match_operand:SI 3 "integer_register_operand" "d")
-                     (match_operand:SI 4 "reg_or_0_operand" "dO"))))]
+	 (compare:CC (match_operand:SI 3 "integer_register_operand" "d")
+		     (match_operand:SI 4 "reg_or_0_operand" "dO"))))]
   "reload_completed
    && REGNO (operands[1]) == REGNO (operands[2]) - ICC_FIRST + ICR_FIRST"
   "ccmp %3, %z4, %1, %e0"
@@ -4619,11 +4619,11 @@
 (define_insn "*cond_exec_cmpsi_cc_uns"
   [(cond_exec
     (match_operator 0 "ccr_eqne_operator"
-                    [(match_operand 1 "cr_operand" "C")
-                     (const_int 0)])
+		    [(match_operand 1 "cr_operand" "C")
+		     (const_int 0)])
     (set (match_operand:CC_UNS 2 "icc_operand" "=t")
-         (compare:CC_UNS (match_operand:SI 3 "integer_register_operand" "d")
-                         (match_operand:SI 4 "reg_or_0_operand" "dO"))))]
+	 (compare:CC_UNS (match_operand:SI 3 "integer_register_operand" "d")
+			 (match_operand:SI 4 "reg_or_0_operand" "dO"))))]
   "reload_completed
    && REGNO (operands[1]) == REGNO (operands[2]) - ICC_FIRST + ICR_FIRST"
   "ccmp %3, %z4, %1, %e0"
@@ -4633,11 +4633,11 @@
 (define_insn "*cond_exec_cmpsi_cc_nz"
   [(cond_exec
     (match_operator 0 "ccr_eqne_operator"
-                    [(match_operand 1 "cr_operand" "C")
-                     (const_int 0)])
+		    [(match_operand 1 "cr_operand" "C")
+		     (const_int 0)])
     (set (match_operand:CC_NZ 2 "icc_operand" "=t")
-         (compare:CC_NZ (match_operand:SI 3 "integer_register_operand" "d")
-                        (const_int 0))))]
+	 (compare:CC_NZ (match_operand:SI 3 "integer_register_operand" "d")
+			(const_int 0))))]
   "reload_completed
    && REGNO (operands[1]) == REGNO (operands[2]) - ICC_FIRST + ICR_FIRST"
   "ccmp %3, %., %1, %e0"
@@ -4647,11 +4647,11 @@
 (define_insn "*cond_exec_sf_conv"
   [(cond_exec
     (match_operator 0 "ccr_eqne_operator"
-                    [(match_operand 1 "cr_operand" "C")
-                     (const_int 0)])
+		    [(match_operand 1 "cr_operand" "C")
+		     (const_int 0)])
     (set (match_operand:SF 2 "fpr_operand" "=f")
-         (match_operator:SF 3 "condexec_sf_conv_operator"
-                            [(match_operand:SF 4 "fpr_operand" "f")])))]
+	 (match_operator:SF 3 "condexec_sf_conv_operator"
+			    [(match_operand:SF 4 "fpr_operand" "f")])))]
   "TARGET_HARD_FLOAT"
   "*
 {
@@ -4668,12 +4668,12 @@
 (define_insn "*cond_exec_sf_add"
   [(cond_exec
     (match_operator 0 "ccr_eqne_operator"
-                    [(match_operand 1 "cr_operand" "C")
-                     (const_int 0)])
+		    [(match_operand 1 "cr_operand" "C")
+		     (const_int 0)])
     (set (match_operand:SF 2 "fpr_operand" "=f")
-         (match_operator:SF 3 "condexec_sf_add_operator"
-                            [(match_operand:SF 4 "fpr_operand" "f")
-                             (match_operand:SF 5 "fpr_operand" "f")])))]
+	 (match_operator:SF 3 "condexec_sf_add_operator"
+			    [(match_operand:SF 4 "fpr_operand" "f")
+			     (match_operand:SF 5 "fpr_operand" "f")])))]
   "TARGET_HARD_FLOAT"
   "*
 {
@@ -4690,11 +4690,11 @@
 (define_insn "*cond_exec_sf_mul"
   [(cond_exec
     (match_operator 0 "ccr_eqne_operator"
-                    [(match_operand 1 "cr_operand" "C")
-                     (const_int 0)])
+		    [(match_operand 1 "cr_operand" "C")
+		     (const_int 0)])
     (set (match_operand:SF 2 "fpr_operand" "=f")
-         (mult:SF (match_operand:SF 3 "fpr_operand" "f")
-                  (match_operand:SF 4 "fpr_operand" "f"))))]
+	 (mult:SF (match_operand:SF 3 "fpr_operand" "f")
+		  (match_operand:SF 4 "fpr_operand" "f"))))]
   "TARGET_HARD_FLOAT"
   "cfmuls %3, %4, %2, %1, %e0"
   [(set_attr "length" "4")
@@ -4703,11 +4703,11 @@
 (define_insn "*cond_exec_sf_div"
   [(cond_exec
     (match_operator 0 "ccr_eqne_operator"
-                    [(match_operand 1 "cr_operand" "C")
-                     (const_int 0)])
+		    [(match_operand 1 "cr_operand" "C")
+		     (const_int 0)])
     (set (match_operand:SF 2 "fpr_operand" "=f")
-         (div:SF (match_operand:SF 3 "fpr_operand" "f")
-                 (match_operand:SF 4 "fpr_operand" "f"))))]
+	 (div:SF (match_operand:SF 3 "fpr_operand" "f")
+		 (match_operand:SF 4 "fpr_operand" "f"))))]
   "TARGET_HARD_FLOAT"
   "cfdivs %3, %4, %2, %1, %e0"
   [(set_attr "length" "4")
@@ -4716,10 +4716,10 @@
 (define_insn "*cond_exec_sf_sqrt"
   [(cond_exec
     (match_operator 0 "ccr_eqne_operator"
-                    [(match_operand 1 "cr_operand" "C")
-                     (const_int 0)])
+		    [(match_operand 1 "cr_operand" "C")
+		     (const_int 0)])
     (set (match_operand:SF 2 "fpr_operand" "=f")
-         (sqrt:SF (match_operand:SF 3 "fpr_operand" "f"))))]
+	 (sqrt:SF (match_operand:SF 3 "fpr_operand" "f"))))]
   "TARGET_HARD_FLOAT"
   "cfsqrts %3, %2, %1, %e0"
   [(set_attr "length" "4")
@@ -4728,11 +4728,11 @@
 (define_insn "*cond_exec_cmpsi_cc_fp"
   [(cond_exec
     (match_operator 0 "ccr_eqne_operator"
-                    [(match_operand 1 "cr_operand" "C")
-                     (const_int 0)])
+		    [(match_operand 1 "cr_operand" "C")
+		     (const_int 0)])
     (set (match_operand:CC_FP 2 "fcc_operand" "=u")
-         (compare:CC_FP (match_operand:SF 3 "fpr_operand" "f")
-                        (match_operand:SF 4 "fpr_operand" "f"))))]
+	 (compare:CC_FP (match_operand:SF 3 "fpr_operand" "f")
+			(match_operand:SF 4 "fpr_operand" "f"))))]
   "reload_completed && TARGET_HARD_FLOAT
    && REGNO (operands[1]) == REGNO (operands[2]) - FCC_FIRST + FCR_FIRST"
   "cfcmps %3, %4, %2, %1, %e0"
@@ -4752,90 +4752,90 @@
 
 (define_expand "andcr"
   [(set (match_operand:CC_CCR 0 "cr_operand" "")
-        (unspec:CC_CCR [(match_operand:CC_CCR 1 "cr_operand" "")
-                        (match_operand:CC_CCR 2 "cr_operand" "")
-                        (const_int 0)] UNSPEC_CR_LOGIC))]
+	(unspec:CC_CCR [(match_operand:CC_CCR 1 "cr_operand" "")
+			(match_operand:CC_CCR 2 "cr_operand" "")
+			(const_int 0)] UNSPEC_CR_LOGIC))]
   ""
   "")
 
 (define_expand "orcr"
   [(set (match_operand:CC_CCR 0 "cr_operand" "")
-        (unspec:CC_CCR [(match_operand:CC_CCR 1 "cr_operand" "")
-                        (match_operand:CC_CCR 2 "cr_operand" "")
-                        (const_int 1)] UNSPEC_CR_LOGIC))]
+	(unspec:CC_CCR [(match_operand:CC_CCR 1 "cr_operand" "")
+			(match_operand:CC_CCR 2 "cr_operand" "")
+			(const_int 1)] UNSPEC_CR_LOGIC))]
   ""
   "")
 
 (define_expand "xorcr"
   [(set (match_operand:CC_CCR 0 "cr_operand" "")
-        (unspec:CC_CCR [(match_operand:CC_CCR 1 "cr_operand" "")
-                        (match_operand:CC_CCR 2 "cr_operand" "")
-                        (const_int 2)] UNSPEC_CR_LOGIC))]
+	(unspec:CC_CCR [(match_operand:CC_CCR 1 "cr_operand" "")
+			(match_operand:CC_CCR 2 "cr_operand" "")
+			(const_int 2)] UNSPEC_CR_LOGIC))]
   ""
   "")
 
 (define_expand "nandcr"
   [(set (match_operand:CC_CCR 0 "cr_operand" "")
-        (unspec:CC_CCR [(match_operand:CC_CCR 1 "cr_operand" "")
-                        (match_operand:CC_CCR 2 "cr_operand" "")
-                        (const_int 3)] UNSPEC_CR_LOGIC))]
+	(unspec:CC_CCR [(match_operand:CC_CCR 1 "cr_operand" "")
+			(match_operand:CC_CCR 2 "cr_operand" "")
+			(const_int 3)] UNSPEC_CR_LOGIC))]
   ""
   "")
 
 (define_expand "norcr"
   [(set (match_operand:CC_CCR 0 "cr_operand" "")
-        (unspec:CC_CCR [(match_operand:CC_CCR 1 "cr_operand" "")
-                        (match_operand:CC_CCR 2 "cr_operand" "")
-                        (const_int 4)] UNSPEC_CR_LOGIC))]
+	(unspec:CC_CCR [(match_operand:CC_CCR 1 "cr_operand" "")
+			(match_operand:CC_CCR 2 "cr_operand" "")
+			(const_int 4)] UNSPEC_CR_LOGIC))]
   ""
   "")
 
 (define_expand "andncr"
   [(set (match_operand:CC_CCR 0 "cr_operand" "")
-        (unspec:CC_CCR [(match_operand:CC_CCR 1 "cr_operand" "")
-                        (match_operand:CC_CCR 2 "cr_operand" "")
-                        (const_int 5)] UNSPEC_CR_LOGIC))]
+	(unspec:CC_CCR [(match_operand:CC_CCR 1 "cr_operand" "")
+			(match_operand:CC_CCR 2 "cr_operand" "")
+			(const_int 5)] UNSPEC_CR_LOGIC))]
   ""
   "")
 
 (define_expand "orncr"
   [(set (match_operand:CC_CCR 0 "cr_operand" "")
-        (unspec:CC_CCR [(match_operand:CC_CCR 1 "cr_operand" "")
-                        (match_operand:CC_CCR 2 "cr_operand" "")
-                        (const_int 6)] UNSPEC_CR_LOGIC))]
+	(unspec:CC_CCR [(match_operand:CC_CCR 1 "cr_operand" "")
+			(match_operand:CC_CCR 2 "cr_operand" "")
+			(const_int 6)] UNSPEC_CR_LOGIC))]
   ""
   "")
 
 (define_expand "nandncr"
   [(set (match_operand:CC_CCR 0 "cr_operand" "")
-        (unspec:CC_CCR [(match_operand:CC_CCR 1 "cr_operand" "")
-                        (match_operand:CC_CCR 2 "cr_operand" "")
-                        (const_int 7)] UNSPEC_CR_LOGIC))]
+	(unspec:CC_CCR [(match_operand:CC_CCR 1 "cr_operand" "")
+			(match_operand:CC_CCR 2 "cr_operand" "")
+			(const_int 7)] UNSPEC_CR_LOGIC))]
   ""
   "")
 
 (define_expand "norncr"
   [(set (match_operand:CC_CCR 0 "cr_operand" "")
-        (unspec:CC_CCR [(match_operand:CC_CCR 1 "cr_operand" "")
-                        (match_operand:CC_CCR 2 "cr_operand" "")
-                        (const_int 8)] UNSPEC_CR_LOGIC))]
+	(unspec:CC_CCR [(match_operand:CC_CCR 1 "cr_operand" "")
+			(match_operand:CC_CCR 2 "cr_operand" "")
+			(const_int 8)] UNSPEC_CR_LOGIC))]
   ""
   "")
 
 (define_expand "notcr"
   [(set (match_operand:CC_CCR 0 "cr_operand" "")
-        (unspec:CC_CCR [(match_operand:CC_CCR 1 "cr_operand" "")
-                        (match_dup 1)
-                        (const_int 9)] UNSPEC_CR_LOGIC))]
+	(unspec:CC_CCR [(match_operand:CC_CCR 1 "cr_operand" "")
+			(match_dup 1)
+			(const_int 9)] UNSPEC_CR_LOGIC))]
   ""
   "")
 
 (define_insn "*logical_cr"
   [(set (match_operand:CC_CCR 0 "cr_operand" "=C")
-        (unspec:CC_CCR [(match_operand:CC_CCR 1 "cr_operand" "C")
-                        (match_operand:CC_CCR 2 "cr_operand" "C")
-                        (match_operand:SI 3 "const_int_operand" "n")]
-                       UNSPEC_CR_LOGIC))]
+	(unspec:CC_CCR [(match_operand:CC_CCR 1 "cr_operand" "C")
+			(match_operand:CC_CCR 2 "cr_operand" "C")
+			(match_operand:SI 3 "const_int_operand" "n")]
+		       UNSPEC_CR_LOGIC))]
   ""
   "*
 {
@@ -4875,9 +4875,9 @@
 
 (define_expand "movqicc"
   [(set (match_operand:QI 0 "integer_register_operand" "")
-        (if_then_else:QI (match_operand 1 "" "")
-                         (match_operand:QI 2 "gpr_or_int_operand" "")
-                         (match_operand:QI 3 "gpr_or_int_operand" "")))]
+	(if_then_else:QI (match_operand 1 "" "")
+			 (match_operand:QI 2 "gpr_or_int_operand" "")
+			 (match_operand:QI 3 "gpr_or_int_operand" "")))]
   "TARGET_COND_MOVE"
   "
 {
@@ -4889,11 +4889,11 @@
 
 (define_insn "*movqicc_internal1_int"
   [(set (match_operand:QI 0 "integer_register_operand" "=d,d,d")
-        (if_then_else:QI (match_operator 1 "integer_relational_operator"
-                             [(match_operand 2 "icc_operand" "t,t,t")
-                              (const_int 0)])
-                         (match_operand:QI 3 "reg_or_0_operand" "0,dO,dO")
-                         (match_operand:QI 4 "reg_or_0_operand" "dO,0,dO")))
+	(if_then_else:QI (match_operator 1 "integer_relational_operator"
+			     [(match_operand 2 "icc_operand" "t,t,t")
+			      (const_int 0)])
+			 (match_operand:QI 3 "reg_or_0_operand" "0,dO,dO")
+			 (match_operand:QI 4 "reg_or_0_operand" "dO,0,dO")))
    (clobber (match_operand:CC_CCR 5 "icr_operand" "=v,v,v"))]
   ""
   "#"
@@ -4902,11 +4902,11 @@
 
 (define_insn "*movqicc_internal1_float"
   [(set (match_operand:QI 0 "integer_register_operand" "=d,d,d")
-        (if_then_else:QI (match_operator:CC_FP 1 "float_relational_operator"
-                             [(match_operand:CC_FP 2 "fcc_operand" "u,u,u")
-                              (const_int 0)])
-                         (match_operand:QI 3 "reg_or_0_operand" "0,dO,dO")
-                         (match_operand:QI 4 "reg_or_0_operand" "dO,0,dO")))
+	(if_then_else:QI (match_operator:CC_FP 1 "float_relational_operator"
+			     [(match_operand:CC_FP 2 "fcc_operand" "u,u,u")
+			      (const_int 0)])
+			 (match_operand:QI 3 "reg_or_0_operand" "0,dO,dO")
+			 (match_operand:QI 4 "reg_or_0_operand" "dO,0,dO")))
    (clobber (match_operand:CC_CCR 5 "fcr_operand" "=w,w,w"))]
   "TARGET_HARD_FLOAT"
   "#"
@@ -4915,11 +4915,11 @@
 
 (define_insn "*movqicc_internal2_int"
   [(set (match_operand:QI 0 "integer_register_operand" "=d,d,d,d,d")
-        (if_then_else:QI (match_operator 1 "integer_relational_operator"
-                             [(match_operand 2 "icc_operand" "t,t,t,t,t")
-                              (const_int 0)])
-                         (match_operand:QI 3 "const_int_operand" "O,O,L,n,n")
-                         (match_operand:QI 4 "const_int_operand" "L,n,O,O,n")))
+	(if_then_else:QI (match_operator 1 "integer_relational_operator"
+			     [(match_operand 2 "icc_operand" "t,t,t,t,t")
+			      (const_int 0)])
+			 (match_operand:QI 3 "const_int_operand" "O,O,L,n,n")
+			 (match_operand:QI 4 "const_int_operand" "L,n,O,O,n")))
    (clobber (match_operand:CC_CCR 5 "icr_operand" "=v,v,v,v,v"))]
   "(INTVAL (operands[3]) == 0
     || INTVAL (operands[4]) == 0
@@ -4931,28 +4931,28 @@
 
 (define_insn "*movqicc_internal2_float"
   [(set (match_operand:QI 0 "integer_register_operand" "=d,d,d,d,d")
-        (if_then_else:QI (match_operator:CC_FP 1 "float_relational_operator"
-                             [(match_operand:CC_FP 2 "fcc_operand" "u,u,u,u,u")
-                              (const_int 0)])
-                         (match_operand:QI 3 "const_int_operand" "O,O,L,n,n")
-                         (match_operand:QI 4 "const_int_operand" "L,n,O,O,n")))
+	(if_then_else:QI (match_operator:CC_FP 1 "float_relational_operator"
+			     [(match_operand:CC_FP 2 "fcc_operand" "u,u,u,u,u")
+			      (const_int 0)])
+			 (match_operand:QI 3 "const_int_operand" "O,O,L,n,n")
+			 (match_operand:QI 4 "const_int_operand" "L,n,O,O,n")))
    (clobber (match_operand:CC_CCR 5 "fcr_operand" "=w,w,w,w,w"))]
   "TARGET_HARD_FLOAT
    && (INTVAL (operands[3]) == 0
        || INTVAL (operands[4]) == 0
        || (IN_RANGE_P (INTVAL (operands[3]), -2048, 2047)
-           && IN_RANGE_P (INTVAL (operands[4]) - INTVAL (operands[3]), -2048, 2047)))"
+	   && IN_RANGE_P (INTVAL (operands[4]) - INTVAL (operands[3]), -2048, 2047)))"
   "#"
   [(set_attr "length" "8,12,8,12,12")
    (set_attr "type" "multi")])
 
 (define_split
   [(set (match_operand:QI 0 "integer_register_operand" "")
-        (if_then_else:QI (match_operator 1 "relational_operator"
-                             [(match_operand 2 "cc_operand" "")
-                              (const_int 0)])
-                         (match_operand:QI 3 "gpr_or_int_operand" "")
-                         (match_operand:QI 4 "gpr_or_int_operand" "")))
+	(if_then_else:QI (match_operator 1 "relational_operator"
+			     [(match_operand 2 "cc_operand" "")
+			      (const_int 0)])
+			 (match_operand:QI 3 "gpr_or_int_operand" "")
+			 (match_operand:QI 4 "gpr_or_int_operand" "")))
    (clobber (match_operand:CC_CCR 5 "cr_operand" ""))]
   "reload_completed"
   [(match_dup 6)]
@@ -4960,9 +4960,9 @@
 
 (define_expand "movhicc"
   [(set (match_operand:HI 0 "integer_register_operand" "")
-        (if_then_else:HI (match_operand 1 "" "")
-                         (match_operand:HI 2 "gpr_or_int_operand" "")
-                         (match_operand:HI 3 "gpr_or_int_operand" "")))]
+	(if_then_else:HI (match_operand 1 "" "")
+			 (match_operand:HI 2 "gpr_or_int_operand" "")
+			 (match_operand:HI 3 "gpr_or_int_operand" "")))]
   "TARGET_COND_MOVE"
   "
 {
@@ -4974,11 +4974,11 @@
 
 (define_insn "*movhicc_internal1_int"
   [(set (match_operand:HI 0 "integer_register_operand" "=d,d,d")
-        (if_then_else:HI (match_operator 1 "integer_relational_operator"
-                             [(match_operand 2 "icc_operand" "t,t,t")
-                              (const_int 0)])
-                         (match_operand:HI 3 "reg_or_0_operand" "0,dO,dO")
-                         (match_operand:HI 4 "reg_or_0_operand" "dO,0,dO")))
+	(if_then_else:HI (match_operator 1 "integer_relational_operator"
+			     [(match_operand 2 "icc_operand" "t,t,t")
+			      (const_int 0)])
+			 (match_operand:HI 3 "reg_or_0_operand" "0,dO,dO")
+			 (match_operand:HI 4 "reg_or_0_operand" "dO,0,dO")))
    (clobber (match_operand:CC_CCR 5 "icr_operand" "=v,v,v"))]
   ""
   "#"
@@ -4987,11 +4987,11 @@
 
 (define_insn "*movhicc_internal1_float"
   [(set (match_operand:HI 0 "integer_register_operand" "=d,d,d")
-        (if_then_else:HI (match_operator:CC_FP 1 "float_relational_operator"
-                             [(match_operand:CC_FP 2 "fcc_operand" "u,u,u")
-                              (const_int 0)])
-                         (match_operand:HI 3 "reg_or_0_operand" "0,dO,dO")
-                         (match_operand:HI 4 "reg_or_0_operand" "dO,0,dO")))
+	(if_then_else:HI (match_operator:CC_FP 1 "float_relational_operator"
+			     [(match_operand:CC_FP 2 "fcc_operand" "u,u,u")
+			      (const_int 0)])
+			 (match_operand:HI 3 "reg_or_0_operand" "0,dO,dO")
+			 (match_operand:HI 4 "reg_or_0_operand" "dO,0,dO")))
    (clobber (match_operand:CC_CCR 5 "fcr_operand" "=w,w,w"))]
   "TARGET_HARD_FLOAT"
   "#"
@@ -5000,11 +5000,11 @@
 
 (define_insn "*movhicc_internal2_int"
   [(set (match_operand:HI 0 "integer_register_operand" "=d,d,d,d,d")
-        (if_then_else:HI (match_operator 1 "integer_relational_operator"
-                             [(match_operand 2 "icc_operand" "t,t,t,t,t")
-                              (const_int 0)])
-                         (match_operand:HI 3 "const_int_operand" "O,O,L,n,n")
-                         (match_operand:HI 4 "const_int_operand" "L,n,O,O,n")))
+	(if_then_else:HI (match_operator 1 "integer_relational_operator"
+			     [(match_operand 2 "icc_operand" "t,t,t,t,t")
+			      (const_int 0)])
+			 (match_operand:HI 3 "const_int_operand" "O,O,L,n,n")
+			 (match_operand:HI 4 "const_int_operand" "L,n,O,O,n")))
    (clobber (match_operand:CC_CCR 5 "icr_operand" "=v,v,v,v,v"))]
   "(INTVAL (operands[3]) == 0
     || INTVAL (operands[4]) == 0
@@ -5016,28 +5016,28 @@
 
 (define_insn "*movhicc_internal2_float"
   [(set (match_operand:HI 0 "integer_register_operand" "=d,d,d,d,d")
-        (if_then_else:HI (match_operator:CC_FP 1 "float_relational_operator"
-                             [(match_operand:CC_FP 2 "fcc_operand" "u,u,u,u,u")
-                              (const_int 0)])
-                         (match_operand:HI 3 "const_int_operand" "O,O,L,n,n")
-                         (match_operand:HI 4 "const_int_operand" "L,n,O,O,n")))
+	(if_then_else:HI (match_operator:CC_FP 1 "float_relational_operator"
+			     [(match_operand:CC_FP 2 "fcc_operand" "u,u,u,u,u")
+			      (const_int 0)])
+			 (match_operand:HI 3 "const_int_operand" "O,O,L,n,n")
+			 (match_operand:HI 4 "const_int_operand" "L,n,O,O,n")))
    (clobber (match_operand:CC_CCR 5 "fcr_operand" "=w,w,w,w,w"))]
   "TARGET_HARD_FLOAT
    && (INTVAL (operands[3]) == 0
        || INTVAL (operands[4]) == 0
        || (IN_RANGE_P (INTVAL (operands[3]), -2048, 2047)
-           && IN_RANGE_P (INTVAL (operands[4]) - INTVAL (operands[3]), -2048, 2047)))"
+	   && IN_RANGE_P (INTVAL (operands[4]) - INTVAL (operands[3]), -2048, 2047)))"
   "#"
   [(set_attr "length" "8,12,8,12,12")
    (set_attr "type" "multi")])
 
 (define_split
   [(set (match_operand:HI 0 "integer_register_operand" "")
-        (if_then_else:HI (match_operator 1 "relational_operator"
-                             [(match_operand 2 "cc_operand" "")
-                              (const_int 0)])
-                         (match_operand:HI 3 "gpr_or_int_operand" "")
-                         (match_operand:HI 4 "gpr_or_int_operand" "")))
+	(if_then_else:HI (match_operator 1 "relational_operator"
+			     [(match_operand 2 "cc_operand" "")
+			      (const_int 0)])
+			 (match_operand:HI 3 "gpr_or_int_operand" "")
+			 (match_operand:HI 4 "gpr_or_int_operand" "")))
    (clobber (match_operand:CC_CCR 5 "cr_operand" ""))]
   "reload_completed"
   [(match_dup 6)]
@@ -5045,9 +5045,9 @@
 
 (define_expand "movsicc"
   [(set (match_operand:SI 0 "integer_register_operand" "")
-        (if_then_else:SI (match_operand 1 "" "")
-                         (match_operand:SI 2 "gpr_or_int_operand" "")
-                         (match_operand:SI 3 "gpr_or_int_operand" "")))]
+	(if_then_else:SI (match_operand 1 "" "")
+			 (match_operand:SI 2 "gpr_or_int_operand" "")
+			 (match_operand:SI 3 "gpr_or_int_operand" "")))]
   "TARGET_COND_MOVE"
   "
 {
@@ -5059,11 +5059,11 @@
 
 (define_insn "*movsicc_internal1_int"
   [(set (match_operand:SI 0 "integer_register_operand" "=d,d,d")
-        (if_then_else:SI (match_operator 1 "integer_relational_operator"
-                             [(match_operand 2 "icc_operand" "t,t,t")
-                              (const_int 0)])
-                         (match_operand:SI 3 "reg_or_0_operand" "0,dO,dO")
-                         (match_operand:SI 4 "reg_or_0_operand" "dO,0,dO")))
+	(if_then_else:SI (match_operator 1 "integer_relational_operator"
+			     [(match_operand 2 "icc_operand" "t,t,t")
+			      (const_int 0)])
+			 (match_operand:SI 3 "reg_or_0_operand" "0,dO,dO")
+			 (match_operand:SI 4 "reg_or_0_operand" "dO,0,dO")))
    (clobber (match_operand:CC_CCR 5 "icr_operand" "=v,v,v"))]
   ""
   "#"
@@ -5072,11 +5072,11 @@
 
 (define_insn "*movsicc_internal1_float"
   [(set (match_operand:SI 0 "integer_register_operand" "=d,d,d")
-        (if_then_else:SI (match_operator:CC_FP 1 "float_relational_operator"
-                             [(match_operand:CC_FP 2 "fcc_operand" "u,u,u")
-                              (const_int 0)])
-                         (match_operand:SI 3 "reg_or_0_operand" "0,dO,dO")
-                         (match_operand:SI 4 "reg_or_0_operand" "dO,0,dO")))
+	(if_then_else:SI (match_operator:CC_FP 1 "float_relational_operator"
+			     [(match_operand:CC_FP 2 "fcc_operand" "u,u,u")
+			      (const_int 0)])
+			 (match_operand:SI 3 "reg_or_0_operand" "0,dO,dO")
+			 (match_operand:SI 4 "reg_or_0_operand" "dO,0,dO")))
    (clobber (match_operand:CC_CCR 5 "fcr_operand" "=w,w,w"))]
   "TARGET_HARD_FLOAT"
   "#"
@@ -5085,11 +5085,11 @@
 
 (define_insn "*movsicc_internal2_int"
   [(set (match_operand:SI 0 "integer_register_operand" "=d,d,d,d,d")
-        (if_then_else:SI (match_operator 1 "integer_relational_operator"
-                             [(match_operand 2 "icc_operand" "t,t,t,t,t")
-                              (const_int 0)])
-                         (match_operand:SI 3 "const_int_operand" "O,O,L,n,n")
-                         (match_operand:SI 4 "const_int_operand" "L,n,O,O,n")))
+	(if_then_else:SI (match_operator 1 "integer_relational_operator"
+			     [(match_operand 2 "icc_operand" "t,t,t,t,t")
+			      (const_int 0)])
+			 (match_operand:SI 3 "const_int_operand" "O,O,L,n,n")
+			 (match_operand:SI 4 "const_int_operand" "L,n,O,O,n")))
    (clobber (match_operand:CC_CCR 5 "icr_operand" "=v,v,v,v,v"))]
   "(INTVAL (operands[3]) == 0
     || INTVAL (operands[4]) == 0
@@ -5101,28 +5101,28 @@
 
 (define_insn "*movsicc_internal2_float"
   [(set (match_operand:SI 0 "integer_register_operand" "=d,d,d,d,d")
-        (if_then_else:SI (match_operator:CC_FP 1 "float_relational_operator"
-                             [(match_operand:CC_FP 2 "fcc_operand" "u,u,u,u,u")
-                              (const_int 0)])
-                         (match_operand:SI 3 "const_int_operand" "O,O,L,n,n")
-                         (match_operand:SI 4 "const_int_operand" "L,n,O,O,n")))
+	(if_then_else:SI (match_operator:CC_FP 1 "float_relational_operator"
+			     [(match_operand:CC_FP 2 "fcc_operand" "u,u,u,u,u")
+			      (const_int 0)])
+			 (match_operand:SI 3 "const_int_operand" "O,O,L,n,n")
+			 (match_operand:SI 4 "const_int_operand" "L,n,O,O,n")))
    (clobber (match_operand:CC_CCR 5 "fcr_operand" "=w,w,w,w,w"))]
   "TARGET_HARD_FLOAT
    && (INTVAL (operands[3]) == 0
        || INTVAL (operands[4]) == 0
        || (IN_RANGE_P (INTVAL (operands[3]), -2048, 2047)
-           && IN_RANGE_P (INTVAL (operands[4]) - INTVAL (operands[3]), -2048, 2047)))"
+	   && IN_RANGE_P (INTVAL (operands[4]) - INTVAL (operands[3]), -2048, 2047)))"
   "#"
   [(set_attr "length" "8,12,8,12,12")
    (set_attr "type" "multi")])
 
 (define_split
   [(set (match_operand:SI 0 "integer_register_operand" "")
-        (if_then_else:SI (match_operator 1 "relational_operator"
-                             [(match_operand 2 "cc_operand" "")
-                              (const_int 0)])
-                         (match_operand:SI 3 "gpr_or_int_operand" "")
-                         (match_operand:SI 4 "gpr_or_int_operand" "")))
+	(if_then_else:SI (match_operator 1 "relational_operator"
+			     [(match_operand 2 "cc_operand" "")
+			      (const_int 0)])
+			 (match_operand:SI 3 "gpr_or_int_operand" "")
+			 (match_operand:SI 4 "gpr_or_int_operand" "")))
    (clobber (match_operand:CC_CCR 5 "cr_operand" ""))]
   "reload_completed"
   [(match_dup 6)]
@@ -5130,9 +5130,9 @@
 
 (define_expand "movsfcc"
   [(set (match_operand:SF 0 "register_operand" "")
-        (if_then_else:SF (match_operand 1 "" "")
-                         (match_operand:SF 2 "register_operand" "")
-                         (match_operand:SF 3 "register_operand" "")))]
+	(if_then_else:SF (match_operand 1 "" "")
+			 (match_operand:SF 2 "register_operand" "")
+			 (match_operand:SF 3 "register_operand" "")))]
   "TARGET_COND_MOVE"
   "
 {
@@ -5144,11 +5144,11 @@
 
 (define_insn "*movsfcc_has_fprs_int"
   [(set (match_operand:SF 0 "register_operand" "=f,f,f,?f,?f,?d")
-        (if_then_else:SF (match_operator 1 "integer_relational_operator"
-                             [(match_operand 2 "icc_operand" "t,t,t,t,t,t")
-                              (const_int 0)])
-                         (match_operand:SF 3 "register_operand" "0,f,f,f,d,fd")
-                         (match_operand:SF 4 "register_operand" "f,0,f,d,fd,fd")))
+	(if_then_else:SF (match_operator 1 "integer_relational_operator"
+			     [(match_operand 2 "icc_operand" "t,t,t,t,t,t")
+			      (const_int 0)])
+			 (match_operand:SF 3 "register_operand" "0,f,f,f,d,fd")
+			 (match_operand:SF 4 "register_operand" "f,0,f,d,fd,fd")))
    (clobber (match_operand:CC_CCR 5 "icr_operand" "=v,v,v,v,v,v"))]
   "TARGET_HAS_FPRS"
   "#"
@@ -5157,11 +5157,11 @@
 
 (define_insn "*movsfcc_hardfloat_float"
   [(set (match_operand:SF 0 "register_operand" "=f,f,f,?f,?f,?d")
-        (if_then_else:SF (match_operator:CC_FP 1 "float_relational_operator"
-                             [(match_operand:CC_FP 2 "fcc_operand" "u,u,u,u,u,u")
-                              (const_int 0)])
-                         (match_operand:SF 3 "register_operand" "0,f,f,f,d,fd")
-                         (match_operand:SF 4 "register_operand" "f,0,f,d,fd,fd")))
+	(if_then_else:SF (match_operator:CC_FP 1 "float_relational_operator"
+			     [(match_operand:CC_FP 2 "fcc_operand" "u,u,u,u,u,u")
+			      (const_int 0)])
+			 (match_operand:SF 3 "register_operand" "0,f,f,f,d,fd")
+			 (match_operand:SF 4 "register_operand" "f,0,f,d,fd,fd")))
    (clobber (match_operand:CC_CCR 5 "fcr_operand" "=w,w,w,w,w,w"))]
   "TARGET_HARD_FLOAT"
   "#"
@@ -5170,11 +5170,11 @@
 
 (define_insn "*movsfcc_no_fprs_int"
   [(set (match_operand:SF 0 "integer_register_operand" "=d,d,d")
-        (if_then_else:SF (match_operator 1 "integer_relational_operator"
-                             [(match_operand 2 "icc_operand" "t,t,t")
-                              (const_int 0)])
-                         (match_operand:SF 3 "integer_register_operand" "0,d,d")
-                         (match_operand:SF 4 "integer_register_operand" "d,0,d")))
+	(if_then_else:SF (match_operator 1 "integer_relational_operator"
+			     [(match_operand 2 "icc_operand" "t,t,t")
+			      (const_int 0)])
+			 (match_operand:SF 3 "integer_register_operand" "0,d,d")
+			 (match_operand:SF 4 "integer_register_operand" "d,0,d")))
    (clobber (match_operand:CC_CCR 5 "icr_operand" "=v,v,v"))]
   "! TARGET_HAS_FPRS"
   "#"
@@ -5183,11 +5183,11 @@
 
 (define_split
   [(set (match_operand:SF 0 "register_operand" "")
-        (if_then_else:SF (match_operator 1 "relational_operator"
-                             [(match_operand 2 "cc_operand" "")
-                              (const_int 0)])
-                         (match_operand:SF 3 "register_operand" "")
-                         (match_operand:SF 4 "register_operand" "")))
+	(if_then_else:SF (match_operator 1 "relational_operator"
+			     [(match_operand 2 "cc_operand" "")
+			      (const_int 0)])
+			 (match_operand:SF 3 "register_operand" "")
+			 (match_operand:SF 4 "register_operand" "")))
    (clobber (match_operand:CC_CCR 5 "cr_operand" ""))]
   "reload_completed"
   [(match_dup 6)]
@@ -5209,9 +5209,9 @@
 
 (define_expand "abssi2"
   [(parallel [(set (match_operand:SI 0 "integer_register_operand" "")
-                   (abs:SI (match_operand:SI 1 "integer_register_operand" "")))
-              (clobber (match_dup 2))
-              (clobber (match_dup 3))])]
+		   (abs:SI (match_operand:SI 1 "integer_register_operand" "")))
+	      (clobber (match_dup 2))
+	      (clobber (match_dup 3))])]
   "TARGET_COND_MOVE"
   "
 {
@@ -5221,7 +5221,7 @@
 
 (define_insn_and_split "*abssi2_internal"
   [(set (match_operand:SI 0 "integer_register_operand" "=d,d")
-        (abs:SI (match_operand:SI 1 "integer_register_operand" "0,d")))
+	(abs:SI (match_operand:SI 1 "integer_register_operand" "0,d")))
    (clobber (match_operand:CC 2 "icc_operand" "=t,t"))
    (clobber (match_operand:CC_CCR 3 "icr_operand" "=v,v"))]
   "TARGET_COND_MOVE"
@@ -5234,10 +5234,10 @@
 
 (define_expand "sminsi3"
   [(parallel [(set (match_operand:SI 0 "integer_register_operand" "")
-                   (smin:SI (match_operand:SI 1 "integer_register_operand" "")
-                            (match_operand:SI 2 "gpr_or_int10_operand" "")))
-              (clobber (match_dup 3))
-              (clobber (match_dup 4))])]
+		   (smin:SI (match_operand:SI 1 "integer_register_operand" "")
+			    (match_operand:SI 2 "gpr_or_int10_operand" "")))
+	      (clobber (match_dup 3))
+	      (clobber (match_dup 4))])]
   "TARGET_COND_MOVE"
   "
 {
@@ -5247,10 +5247,10 @@
 
 (define_expand "smaxsi3"
   [(parallel [(set (match_operand:SI 0 "integer_register_operand" "")
-                   (smax:SI (match_operand:SI 1 "integer_register_operand" "")
-                            (match_operand:SI 2 "gpr_or_int10_operand" "")))
-              (clobber (match_dup 3))
-              (clobber (match_dup 4))])]
+		   (smax:SI (match_operand:SI 1 "integer_register_operand" "")
+			    (match_operand:SI 2 "gpr_or_int10_operand" "")))
+	      (clobber (match_dup 3))
+	      (clobber (match_dup 4))])]
   "TARGET_COND_MOVE"
   "
 {
@@ -5260,9 +5260,9 @@
 
 (define_insn_and_split "*minmax_si_signed"
   [(set (match_operand:SI 0 "integer_register_operand" "=d,d,&d")
-        (match_operator:SI 1 "minmax_operator"
-                           [(match_operand:SI 2 "integer_register_operand" "%0,dO,d")
-                            (match_operand:SI 3 "gpr_or_int10_operand" "dO,0,dJ")]))
+	(match_operator:SI 1 "minmax_operator"
+			   [(match_operand:SI 2 "integer_register_operand" "%0,dO,d")
+			    (match_operand:SI 3 "gpr_or_int10_operand" "dO,0,dJ")]))
    (clobber (match_operand:CC 4 "icc_operand" "=t,t,t"))
    (clobber (match_operand:CC_CCR 5 "icr_operand" "=v,v,v"))]
   "TARGET_COND_MOVE"
@@ -5275,10 +5275,10 @@
 
 (define_expand "uminsi3"
   [(parallel [(set (match_operand:SI 0 "integer_register_operand" "")
-                   (umin:SI (match_operand:SI 1 "integer_register_operand" "")
-                            (match_operand:SI 2 "gpr_or_int10_operand" "")))
-              (clobber (match_dup 3))
-              (clobber (match_dup 4))])]
+		   (umin:SI (match_operand:SI 1 "integer_register_operand" "")
+			    (match_operand:SI 2 "gpr_or_int10_operand" "")))
+	      (clobber (match_dup 3))
+	      (clobber (match_dup 4))])]
   "TARGET_COND_MOVE"
   "
 {
@@ -5288,10 +5288,10 @@
 
 (define_expand "umaxsi3"
   [(parallel [(set (match_operand:SI 0 "integer_register_operand" "")
-                   (umax:SI (match_operand:SI 1 "integer_register_operand" "")
-                            (match_operand:SI 2 "gpr_or_int10_operand" "")))
-              (clobber (match_dup 3))
-              (clobber (match_dup 4))])]
+		   (umax:SI (match_operand:SI 1 "integer_register_operand" "")
+			    (match_operand:SI 2 "gpr_or_int10_operand" "")))
+	      (clobber (match_dup 3))
+	      (clobber (match_dup 4))])]
   "TARGET_COND_MOVE"
   "
 {
@@ -5301,9 +5301,9 @@
 
 (define_insn_and_split "*minmax_si_unsigned"
   [(set (match_operand:SI 0 "integer_register_operand" "=d,d,&d")
-        (match_operator:SI 1 "minmax_operator"
-                           [(match_operand:SI 2 "integer_register_operand" "%0,dO,d")
-                            (match_operand:SI 3 "gpr_or_int10_operand" "dO,0,dJ")]))
+	(match_operator:SI 1 "minmax_operator"
+			   [(match_operand:SI 2 "integer_register_operand" "%0,dO,d")
+			    (match_operand:SI 3 "gpr_or_int10_operand" "dO,0,dJ")]))
    (clobber (match_operand:CC_UNS 4 "icc_operand" "=t,t,t"))
    (clobber (match_operand:CC_CCR 5 "icr_operand" "=v,v,v"))]
   "TARGET_COND_MOVE"
@@ -5316,10 +5316,10 @@
 
 (define_expand "sminsf3"
   [(parallel [(set (match_operand:SF 0 "fpr_operand" "")
-                   (smin:SF (match_operand:SF 1 "fpr_operand" "")
-                            (match_operand:SF 2 "fpr_operand" "")))
-              (clobber (match_dup 3))
-              (clobber (match_dup 4))])]
+		   (smin:SF (match_operand:SF 1 "fpr_operand" "")
+			    (match_operand:SF 2 "fpr_operand" "")))
+	      (clobber (match_dup 3))
+	      (clobber (match_dup 4))])]
   "TARGET_COND_MOVE && TARGET_HARD_FLOAT"
   "
 {
@@ -5329,10 +5329,10 @@
 
 (define_expand "smaxsf3"
   [(parallel [(set (match_operand:SF 0 "fpr_operand" "")
-                   (smax:SF (match_operand:SF 1 "fpr_operand" "")
-                            (match_operand:SF 2 "fpr_operand" "")))
-              (clobber (match_dup 3))
-              (clobber (match_dup 4))])]
+		   (smax:SF (match_operand:SF 1 "fpr_operand" "")
+			    (match_operand:SF 2 "fpr_operand" "")))
+	      (clobber (match_dup 3))
+	      (clobber (match_dup 4))])]
   "TARGET_COND_MOVE && TARGET_HARD_FLOAT"
   "
 {
@@ -5342,9 +5342,9 @@
 
 (define_insn_and_split "*minmax_sf"
   [(set (match_operand:SF 0 "fpr_operand" "=f,f,f")
-        (match_operator:SF 1 "minmax_operator"
-                           [(match_operand:SF 2 "fpr_operand" "%0,f,f")
-                            (match_operand:SF 3 "fpr_operand" "f,0,f")]))
+	(match_operator:SF 1 "minmax_operator"
+			   [(match_operand:SF 2 "fpr_operand" "%0,f,f")
+			    (match_operand:SF 3 "fpr_operand" "f,0,f")]))
    (clobber (match_operand:CC_FP 4 "fcc_operand" "=u,u,u"))
    (clobber (match_operand:CC_CCR 5 "fcr_operand" "=w,w,w"))]
   "TARGET_COND_MOVE && TARGET_HARD_FLOAT"
@@ -5357,10 +5357,10 @@
 
 (define_expand "smindf3"
   [(parallel [(set (match_operand:DF 0 "fpr_operand" "")
-                   (smin:DF (match_operand:DF 1 "fpr_operand" "")
-                            (match_operand:DF 2 "fpr_operand" "")))
-              (clobber (match_dup 3))
-              (clobber (match_dup 4))])]
+		   (smin:DF (match_operand:DF 1 "fpr_operand" "")
+			    (match_operand:DF 2 "fpr_operand" "")))
+	      (clobber (match_dup 3))
+	      (clobber (match_dup 4))])]
   "TARGET_COND_MOVE && TARGET_HARD_FLOAT && TARGET_DOUBLE"
   "
 {
@@ -5370,10 +5370,10 @@
 
 (define_expand "smaxdf3"
   [(parallel [(set (match_operand:DF 0 "fpr_operand" "")
-                   (smax:DF (match_operand:DF 1 "fpr_operand" "")
-                            (match_operand:DF 2 "fpr_operand" "")))
-              (clobber (match_dup 3))
-              (clobber (match_dup 4))])]
+		   (smax:DF (match_operand:DF 1 "fpr_operand" "")
+			    (match_operand:DF 2 "fpr_operand" "")))
+	      (clobber (match_dup 3))
+	      (clobber (match_dup 4))])]
   "TARGET_COND_MOVE && TARGET_HARD_FLOAT && TARGET_DOUBLE"
   "
 {
@@ -5383,9 +5383,9 @@
 
 (define_insn_and_split "*minmax_df"
   [(set (match_operand:DF 0 "fpr_operand" "=f,f,f")
-        (match_operator:DF 1 "minmax_operator"
-                           [(match_operand:DF 2 "fpr_operand" "%0,f,f")
-                            (match_operand:DF 3 "fpr_operand" "f,0,f")]))
+	(match_operator:DF 1 "minmax_operator"
+			   [(match_operand:DF 2 "fpr_operand" "%0,f,f")
+			    (match_operand:DF 3 "fpr_operand" "f,0,f")]))
    (clobber (match_operand:CC_FP 4 "fcc_operand" "=u,u,u"))
    (clobber (match_operand:CC_CCR 5 "fcr_operand" "=w,w,w"))]
   "TARGET_COND_MOVE && TARGET_HARD_FLOAT && TARGET_DOUBLE"
@@ -5443,7 +5443,7 @@
 
 (define_insn "call_internal"
   [(call (mem:QI (match_operand:SI 0 "call_operand" "S,dNOP"))
-         (match_operand 1 "" ""))
+	 (match_operand 1 "" ""))
    (use (match_operand 2 "" ""))
    (clobber (match_operand:SI 3 "lr_operand" "=l,l"))]
   "! TARGET_FDPIC"
@@ -5470,8 +5470,8 @@
 
 (define_insn "movdi_ldd"
   [(set (match_operand:DI 0 "fdpic_fptr_operand" "=e")
-        (unspec:DI [(mem:DI (match_operand:SI 1 "ldd_address_operand" "p"))
-                    (reg:SI 0)] UNSPEC_LDD))]
+	(unspec:DI [(mem:DI (match_operand:SI 1 "ldd_address_operand" "p"))
+		    (reg:SI 0)] UNSPEC_LDD))]
   ""
   "ldd%I1 %M1, %0"
   [(set_attr "length" "4")
@@ -5479,7 +5479,7 @@
 
 (define_insn "call_fdpicdi"
   [(call (mem:QI (match_operand:DI 0 "fdpic_fptr_operand" "W"))
-         (match_operand 1 "" ""))
+	 (match_operand 1 "" ""))
    (clobber (match_operand:SI 2 "lr_operand" "=l"))]
   "TARGET_FDPIC"
   "call%i0l %M0"
@@ -5488,7 +5488,7 @@
 
 (define_insn "call_fdpicsi"
   [(call (mem:QI (match_operand:SI 0 "call_operand" "S,dNOP"))
-         (match_operand 1 "" ""))
+	 (match_operand 1 "" ""))
    (use (match_operand 2 "" ""))
    (use (match_operand:SI 3 "fdpic_operand" "Z,Z"))
    (clobber (match_operand:SI 4 "lr_operand" "=l,l"))]
@@ -5539,7 +5539,7 @@
 ;; argument-passing, this will do.
 (define_insn "sibcall_internal"
   [(call (mem:QI (match_operand:SI 0 "sibcall_operand" "WNOP"))
-         (match_operand 1 "" ""))
+	 (match_operand 1 "" ""))
    (use (match_operand 2 "" ""))
    (return)]
   "! TARGET_FDPIC"
@@ -5549,7 +5549,7 @@
 
 (define_insn "sibcall_fdpicdi"
   [(call (mem:QI (match_operand:DI 0 "fdpic_fptr_operand" "W"))
-         (match_operand 1 "" ""))
+	 (match_operand 1 "" ""))
    (return)]
   "TARGET_FDPIC"
   "jmp%i0l %M0"
@@ -5589,15 +5589,15 @@
     frv_expand_fdpic_call (operands, true, false);
   else
     emit_call_insn (gen_call_value_internal (operands[0], addr, operands[2],
-                                             operands[3], lr));
+					     operands[3], lr));
 
   DONE;
 }")
 
 (define_insn "call_value_internal"
   [(set (match_operand 0 "register_operand" "=d,d")
-        (call (mem:QI (match_operand:SI 1 "call_operand" "S,dNOP"))
-                      (match_operand 2 "" "")))
+	(call (mem:QI (match_operand:SI 1 "call_operand" "S,dNOP"))
+		      (match_operand 2 "" "")))
    (use (match_operand 3 "" ""))
    (clobber (match_operand:SI 4 "lr_operand" "=l,l"))]
   "! TARGET_FDPIC"
@@ -5609,8 +5609,8 @@
 
 (define_insn "call_value_fdpicdi"
   [(set (match_operand 0 "register_operand" "=d")
-        (call (mem:QI (match_operand:DI 1 "fdpic_fptr_operand" "W"))
-              (match_operand 2 "" "")))
+	(call (mem:QI (match_operand:DI 1 "fdpic_fptr_operand" "W"))
+	      (match_operand 2 "" "")))
    (clobber (match_operand:SI 3 "lr_operand" "=l"))]
   "TARGET_FDPIC"
   "call%i1l %M1"
@@ -5619,8 +5619,8 @@
 
 (define_insn "call_value_fdpicsi"
   [(set (match_operand 0 "register_operand" "=d,d")
-        (call (mem:QI (match_operand:SI 1 "call_operand" "S,dNOP"))
-                      (match_operand 2 "" "")))
+	(call (mem:QI (match_operand:SI 1 "call_operand" "S,dNOP"))
+		      (match_operand 2 "" "")))
    (use (match_operand 3 "" ""))
    (use (match_operand:SI 4 "fdpic_operand" "Z,Z"))
    (clobber (match_operand:SI 5 "lr_operand" "=l,l"))]
@@ -5655,14 +5655,14 @@
     frv_expand_fdpic_call (operands, true, true);
   else
     emit_call_insn (gen_sibcall_value_internal (operands[0], addr, operands[2],
-                                                operands[3]));
+						operands[3]));
   DONE;
 }")
 
 (define_insn "sibcall_value_internal"
   [(set (match_operand 0 "register_operand" "=d")
-        (call (mem:QI (match_operand:SI 1 "sibcall_operand" "WNOP"))
-                      (match_operand 2 "" "")))
+	(call (mem:QI (match_operand:SI 1 "sibcall_operand" "WNOP"))
+		      (match_operand 2 "" "")))
    (use (match_operand 3 "" ""))
    (return)]
   "! TARGET_FDPIC"
@@ -5672,8 +5672,8 @@
 
 (define_insn "sibcall_value_fdpicdi"
   [(set (match_operand 0 "register_operand" "=d")
-        (call (mem:QI (match_operand:DI 1 "fdpic_fptr_operand" "W"))
-              (match_operand 2 "" "")))
+	(call (mem:QI (match_operand:DI 1 "fdpic_fptr_operand" "W"))
+	      (match_operand 2 "" "")))
    (return)]
   "TARGET_FDPIC"
   "jmp%i1l %M1"
@@ -5683,8 +5683,8 @@
 ;; return instruction generated instead of jmp to epilog
 (define_expand "return"
   [(parallel [(return)
-              (use (match_dup 0))
-              (use (const_int 1))])]
+	      (use (match_dup 0))
+	      (use (const_int 1))])]
   "direct_return_p ()"
   "
 {
@@ -5694,8 +5694,8 @@
 ;; return instruction generated by the epilogue
 (define_expand "epilogue_return"
   [(parallel [(return)
-              (use (match_operand:SI 0 "register_operand" ""))
-              (use (const_int 0))])]
+	      (use (match_operand:SI 0 "register_operand" ""))
+	      (use (const_int 0))])]
   ""
   "")
 
@@ -5712,11 +5712,11 @@
 
 (define_insn "*return_true"
   [(set (pc)
-        (if_then_else (match_operator 0 "integer_relational_operator"
-                                      [(match_operand 1 "icc_operand" "t")
-                                       (const_int 0)])
-                      (return)
-                      (pc)))]
+	(if_then_else (match_operator 0 "integer_relational_operator"
+				      [(match_operand 1 "icc_operand" "t")
+				       (const_int 0)])
+		      (return)
+		      (pc)))]
   "direct_return_p ()"
   "b%c0lr %1,%#"
   [(set_attr "length" "4")
@@ -5724,11 +5724,11 @@
 
 (define_insn "*return_false"
   [(set (pc)
-        (if_then_else (match_operator 0 "integer_relational_operator"
-                                      [(match_operand 1 "icc_operand" "t")
-                                       (const_int 0)])
-                      (pc)
-                      (return)))]
+	(if_then_else (match_operator 0 "integer_relational_operator"
+				      [(match_operand 1 "icc_operand" "t")
+				       (const_int 0)])
+		      (pc)
+		      (return)))]
   "direct_return_p ()"
   "b%C0lr %1,%#"
   [(set_attr "length" "4")
@@ -5740,7 +5740,7 @@
 (define_insn "stack_adjust"
   [(set (match_operand:SI 0 "register_operand" "=d")
         (plus:SI (match_operand:SI 1 "register_operand" "d")
-                 (match_operand:SI 2 "general_operand" "dNOP")))
+		 (match_operand:SI 2 "general_operand" "dNOP")))
    (unspec_volatile [(const_int 0)] UNSPEC_STACK_ADJUST)]
   ""
   "add%I2 %1,%2,%0"
@@ -5769,20 +5769,20 @@
 }"
   [(set (attr "length")
         (if_then_else
-            (and (ge (minus (match_dup 0) (pc)) (const_int -32768))
-                 (le (minus (match_dup 0) (pc)) (const_int 32764)))
-            (const_int 4)
-            (const_int 8)))
+	    (and (ge (minus (match_dup 0) (pc)) (const_int -32768))
+		 (le (minus (match_dup 0) (pc)) (const_int 32764)))
+	    (const_int 4)
+	    (const_int 8)))
    (set (attr "far_jump")
         (if_then_else
-            (eq_attr "length" "4")
-            (const_string "no")
-            (const_string "yes")))
+	    (eq_attr "length" "4")
+	    (const_string "no")
+	    (const_string "yes")))
    (set (attr "type")
-        (if_then_else
-            (eq_attr "length" "4")
-            (const_string "jump")
-            (const_string "call")))])
+	(if_then_else
+	    (eq_attr "length" "4")
+	    (const_string "jump")
+	    (const_string "call")))])
 
 ;; Indirect jump through a register
 (define_insn "indirect_jump"
@@ -5812,7 +5812,7 @@
 
 (define_expand "tablejump"
   [(parallel [(set (pc) (match_operand:SI 0 "address_operand" "p"))
-              (use (label_ref (match_operand 1 "" "")))])]
+	      (use (label_ref (match_operand 1 "" "")))])]
   "!flag_pic"
   "")
 
@@ -5869,9 +5869,9 @@
     {
       indx = gen_reg_rtx (SImode);
       if (IN_RANGE_P (INTVAL (low), -2047, 2048))
-        emit_insn (gen_addsi3 (indx, operands[0], GEN_INT (- INTVAL (low))));
+	emit_insn (gen_addsi3 (indx, operands[0], GEN_INT (- INTVAL (low))));
       else
-        emit_insn (gen_subsi3 (indx, operands[0], force_reg (SImode, low)));
+	emit_insn (gen_subsi3 (indx, operands[0], force_reg (SImode, low)));
     }
 
   /* Do an unsigned comparison (in the proper mode) between the index
@@ -6021,68 +6021,68 @@
 ;;   - MCMPSH, MCMPUH
 
 (define_constants
-  [(UNSPEC_MLOGIC                100)
-   (UNSPEC_MNOT                        101)
-   (UNSPEC_MAVEH                102)
-   (UNSPEC_MSATH                103)
-   (UNSPEC_MADDH                104)
-   (UNSPEC_MQADDH                105)
-   (UNSPEC_MPACKH                106)
-   (UNSPEC_MUNPACKH                107)
-   (UNSPEC_MDPACKH                108)
-   (UNSPEC_MBTOH                109)
-   (UNSPEC_MHTOB                110)
-   (UNSPEC_MROT                        111)
-   (UNSPEC_MSHIFT                112)
-   (UNSPEC_MEXPDHW                113)
-   (UNSPEC_MEXPDHD                114)
-   (UNSPEC_MWCUT                115)
-   (UNSPEC_MMULH                116)
-   (UNSPEC_MMULXH                117)
-   (UNSPEC_MMACH                118)
-   (UNSPEC_MMRDH                119)
-   (UNSPEC_MQMULH                120)
-   (UNSPEC_MQMULXH                121)
-   (UNSPEC_MQMACH                122)
-   (UNSPEC_MCPX                        123)
-   (UNSPEC_MQCPX                124)
-   (UNSPEC_MCUT                        125)
-   (UNSPEC_MRDACC                126)
-   (UNSPEC_MRDACCG                127)
-   (UNSPEC_MWTACC                128)
-   (UNSPEC_MWTACCG                129)
-   (UNSPEC_MTRAP                130)
-   (UNSPEC_MCLRACC                131)
-   (UNSPEC_MCLRACCA                132)
-   (UNSPEC_MCOP1                133)
-   (UNSPEC_MCOP2                134)
-   (UNSPEC_MDUNPACKH                135)
-   (UNSPEC_MDUNPACKH_INTERNAL        136)
-   (UNSPEC_MBTOHE                137)
-   (UNSPEC_MBTOHE_INTERNAL        138)
-   (UNSPEC_MBTOHE                137)
-   (UNSPEC_MBTOHE_INTERNAL        138)
-   (UNSPEC_MQMACH2                139)
-   (UNSPEC_MADDACC                140)
-   (UNSPEC_MDADDACC                141)
-   (UNSPEC_MABSHS                142)
-   (UNSPEC_MDROTLI                143)
-   (UNSPEC_MCPLHI                144)
-   (UNSPEC_MCPLI                145)
-   (UNSPEC_MDCUTSSI                146)
-   (UNSPEC_MQSATHS                147)
-   (UNSPEC_MHSETLOS                148)
-   (UNSPEC_MHSETLOH                149)
-   (UNSPEC_MHSETHIS                150)
-   (UNSPEC_MHSETHIH                151)
-   (UNSPEC_MHDSETS                152)
-   (UNSPEC_MHDSETH                153)
-   (UNSPEC_MQLCLRHS                154)
-   (UNSPEC_MQLMTHS                155)
-   (UNSPEC_MQSLLHI                156)
-   (UNSPEC_MQSRAHI                157)
-   (UNSPEC_MASACCS                158)
-   (UNSPEC_MDASACCS                159)
+  [(UNSPEC_MLOGIC		100)
+   (UNSPEC_MNOT			101)
+   (UNSPEC_MAVEH		102)
+   (UNSPEC_MSATH		103)
+   (UNSPEC_MADDH		104)
+   (UNSPEC_MQADDH		105)
+   (UNSPEC_MPACKH		106)
+   (UNSPEC_MUNPACKH		107)
+   (UNSPEC_MDPACKH		108)
+   (UNSPEC_MBTOH		109)
+   (UNSPEC_MHTOB		110)
+   (UNSPEC_MROT			111)
+   (UNSPEC_MSHIFT		112)
+   (UNSPEC_MEXPDHW		113)
+   (UNSPEC_MEXPDHD		114)
+   (UNSPEC_MWCUT		115)
+   (UNSPEC_MMULH		116)
+   (UNSPEC_MMULXH		117)
+   (UNSPEC_MMACH		118)
+   (UNSPEC_MMRDH		119)
+   (UNSPEC_MQMULH		120)
+   (UNSPEC_MQMULXH		121)
+   (UNSPEC_MQMACH		122)
+   (UNSPEC_MCPX			123)
+   (UNSPEC_MQCPX		124)
+   (UNSPEC_MCUT			125)
+   (UNSPEC_MRDACC		126)
+   (UNSPEC_MRDACCG		127)
+   (UNSPEC_MWTACC		128)
+   (UNSPEC_MWTACCG		129)
+   (UNSPEC_MTRAP		130)
+   (UNSPEC_MCLRACC		131)
+   (UNSPEC_MCLRACCA		132)
+   (UNSPEC_MCOP1		133)
+   (UNSPEC_MCOP2		134)
+   (UNSPEC_MDUNPACKH		135)
+   (UNSPEC_MDUNPACKH_INTERNAL	136)
+   (UNSPEC_MBTOHE		137)
+   (UNSPEC_MBTOHE_INTERNAL	138)
+   (UNSPEC_MBTOHE		137)
+   (UNSPEC_MBTOHE_INTERNAL	138)
+   (UNSPEC_MQMACH2		139)
+   (UNSPEC_MADDACC		140)
+   (UNSPEC_MDADDACC		141)
+   (UNSPEC_MABSHS		142)
+   (UNSPEC_MDROTLI		143)
+   (UNSPEC_MCPLHI		144)
+   (UNSPEC_MCPLI		145)
+   (UNSPEC_MDCUTSSI		146)
+   (UNSPEC_MQSATHS		147)
+   (UNSPEC_MHSETLOS		148)
+   (UNSPEC_MHSETLOH		149)
+   (UNSPEC_MHSETHIS		150)
+   (UNSPEC_MHSETHIH		151)
+   (UNSPEC_MHDSETS		152)
+   (UNSPEC_MHDSETH		153)
+   (UNSPEC_MQLCLRHS		154)
+   (UNSPEC_MQLMTHS		155)
+   (UNSPEC_MQSLLHI		156)
+   (UNSPEC_MQSRAHI		157)
+   (UNSPEC_MASACCS		158)
+   (UNSPEC_MDASACCS		159)
 ])
 
 ;; Logic operations: type "mlogic"
@@ -6090,42 +6090,42 @@
 (define_expand "mand"
   [(set (match_operand:SI 0 "fpr_operand" "")
         (unspec:SI [(match_operand:SI 1 "fpr_operand" "")
-                    (match_operand:SI 2 "fpr_operand" "")
-                    (match_dup 3)]
-                   UNSPEC_MLOGIC))]
+		    (match_operand:SI 2 "fpr_operand" "")
+		    (match_dup 3)]
+		   UNSPEC_MLOGIC))]
   "TARGET_MEDIA"
   "operands[3] = GEN_INT (FRV_BUILTIN_MAND);")
 
 (define_expand "mor"
   [(set (match_operand:SI 0 "fpr_operand" "")
         (unspec:SI [(match_operand:SI 1 "fpr_operand" "")
-                    (match_operand:SI 2 "fpr_operand" "")
-                    (match_dup 3)]
-                   UNSPEC_MLOGIC))]
+		    (match_operand:SI 2 "fpr_operand" "")
+		    (match_dup 3)]
+		   UNSPEC_MLOGIC))]
   "TARGET_MEDIA"
   "operands[3] = GEN_INT (FRV_BUILTIN_MOR);")
 
 (define_expand "mxor"
   [(set (match_operand:SI 0 "fpr_operand" "")
         (unspec:SI [(match_operand:SI 1 "fpr_operand" "")
-                    (match_operand:SI 2 "fpr_operand" "")
-                    (match_dup 3)]
-                   UNSPEC_MLOGIC))]
+		    (match_operand:SI 2 "fpr_operand" "")
+		    (match_dup 3)]
+		   UNSPEC_MLOGIC))]
   "TARGET_MEDIA"
   "operands[3] = GEN_INT (FRV_BUILTIN_MXOR);")
 
 (define_insn "*mlogic"
   [(set (match_operand:SI 0 "fpr_operand" "=f")
         (unspec:SI [(match_operand:SI 1 "fpr_operand" "f")
-                    (match_operand:SI 2 "fpr_operand" "f")
-                    (match_operand:SI 3 "const_int_operand" "n")]
-                   UNSPEC_MLOGIC))]
+		    (match_operand:SI 2 "fpr_operand" "f")
+		    (match_operand:SI 3 "const_int_operand" "n")]
+		   UNSPEC_MLOGIC))]
   "TARGET_MEDIA"
   "*
 {
   switch (INTVAL (operands[3]))
   {
-  default:                 break;
+  default:		 break;
   case FRV_BUILTIN_MAND: return \"mand %1, %2, %0\";
   case FRV_BUILTIN_MOR:  return \"mor %1, %2, %0\";
   case FRV_BUILTIN_MXOR: return \"mxor %1, %2, %0\";
@@ -6139,19 +6139,19 @@
 (define_insn "*cond_exec_mlogic"
   [(cond_exec
     (match_operator 0 "ccr_eqne_operator"
-                    [(match_operand 1 "cr_operand" "C")
-                     (const_int 0)])
+		    [(match_operand 1 "cr_operand" "C")
+		     (const_int 0)])
     (set (match_operand:SI 2 "fpr_operand" "=f")
          (unspec:SI [(match_operand:SI 3 "fpr_operand" "f")
-                     (match_operand:SI 4 "fpr_operand" "f")
-                     (match_operand:SI 5 "const_int_operand" "n")]
-                    UNSPEC_MLOGIC)))]
+		     (match_operand:SI 4 "fpr_operand" "f")
+		     (match_operand:SI 5 "const_int_operand" "n")]
+		    UNSPEC_MLOGIC)))]
   "TARGET_MEDIA"
   "*
 {
   switch (INTVAL (operands[5]))
   {
-  default:                    break;
+  default:		    break;
   case FRV_BUILTIN_MAND: return \"cmand %3, %4, %2, %1, %e0\";
   case FRV_BUILTIN_MOR:  return \"cmor %3, %4, %2, %1, %e0\";
   case FRV_BUILTIN_MXOR: return \"cmxor %3, %4, %2, %1, %e0\";
@@ -6175,8 +6175,8 @@
 (define_insn "*cond_exec_mnot"
   [(cond_exec
     (match_operator 0 "ccr_eqne_operator"
-                    [(match_operand 1 "cr_operand" "C")
-                     (const_int 0)])
+		    [(match_operand 1 "cr_operand" "C")
+		     (const_int 0)])
     (set (match_operand:SI 2 "fpr_operand" "=f")
          (unspec:SI [(match_operand:SI 3 "fpr_operand" "f")] UNSPEC_MNOT)))]
   "TARGET_MEDIA"
@@ -6190,7 +6190,7 @@
   [(set (match_operand:SI 0 "fpr_operand" "=f")
         (unspec:SI [(match_operand:SI 1 "fpr_operand" "f")
                     (match_operand:SI 2 "fpr_operand" "f")]
-                   UNSPEC_MAVEH))]
+		   UNSPEC_MAVEH))]
   "TARGET_MEDIA"
   "maveh %1, %2, %0"
   [(set_attr "length" "4")
@@ -6202,7 +6202,7 @@
   [(set (match_operand:SI 0 "fpr_operand" "=f")
         (unspec:SI [(match_operand:SI 1 "fpr_operand" "f")
                     (match_operand:SI 2 "fpr_operand" "f")
-                    (match_dup 3)]
+		    (match_dup 3)]
                    UNSPEC_MSATH))]
   "TARGET_MEDIA"
   "operands[3] = GEN_INT (FRV_BUILTIN_MSATHS);")
@@ -6211,7 +6211,7 @@
   [(set (match_operand:SI 0 "fpr_operand" "=f")
         (unspec:SI [(match_operand:SI 1 "fpr_operand" "f")
                     (match_operand:SI 2 "fpr_operand" "f")
-                    (match_dup 3)]
+		    (match_dup 3)]
                    UNSPEC_MSATH))]
   "TARGET_MEDIA"
   "operands[3] = GEN_INT (FRV_BUILTIN_MSATHU);")
@@ -6220,14 +6220,14 @@
   [(set (match_operand:SI 0 "fpr_operand" "=f")
         (unspec:SI [(match_operand:SI 1 "fpr_operand" "f")
                     (match_operand:SI 2 "fpr_operand" "f")
-                    (match_operand:SI 3 "const_int_operand" "n")]
-                   UNSPEC_MSATH))]
+		    (match_operand:SI 3 "const_int_operand" "n")]
+		   UNSPEC_MSATH))]
   "TARGET_MEDIA"
   "*
 {
   switch (INTVAL (operands[3]))
   {
-  default:                    break;
+  default:		    break;
   case FRV_BUILTIN_MSATHS:  return \"msaths %1, %2, %0\";
   case FRV_BUILTIN_MSATHU:  return \"msathu %1, %2, %0\";
   }
@@ -6243,8 +6243,8 @@
   [(set (match_operand:SI 0 "fpr_operand" "=f")
         (unspec:SI [(match_operand:SI 1 "fpr_operand" "f")
                     (match_operand:SI 2 "fpr_operand" "f")
-                    (match_dup 3)]
-                   UNSPEC_MADDH))]
+		    (match_dup 3)]
+		   UNSPEC_MADDH))]
   "TARGET_MEDIA"
   "operands[3] = GEN_INT (FRV_BUILTIN_MADDHSS);")
 
@@ -6252,7 +6252,7 @@
   [(set (match_operand:SI 0 "fpr_operand" "=f")
         (unspec:SI [(match_operand:SI 1 "fpr_operand" "f")
                     (match_operand:SI 2 "fpr_operand" "f")
-                    (match_dup 3)]
+		    (match_dup 3)]
                    UNSPEC_MADDH))]
   "TARGET_MEDIA"
   "operands[3] = GEN_INT (FRV_BUILTIN_MADDHUS);")
@@ -6261,7 +6261,7 @@
   [(set (match_operand:SI 0 "fpr_operand" "=f")
         (unspec:SI [(match_operand:SI 1 "fpr_operand" "f")
                     (match_operand:SI 2 "fpr_operand" "f")
-                    (match_dup 3)]
+		    (match_dup 3)]
                    UNSPEC_MADDH))]
   "TARGET_MEDIA"
   "operands[3] = GEN_INT (FRV_BUILTIN_MSUBHSS);")
@@ -6270,7 +6270,7 @@
   [(set (match_operand:SI 0 "fpr_operand" "=f")
         (unspec:SI [(match_operand:SI 1 "fpr_operand" "f")
                     (match_operand:SI 2 "fpr_operand" "f")
-                    (match_dup 3)]
+		    (match_dup 3)]
                    UNSPEC_MADDH))]
   "TARGET_MEDIA"
   "operands[3] = GEN_INT (FRV_BUILTIN_MSUBHUS);")
@@ -6279,14 +6279,14 @@
   [(set (match_operand:SI 0 "fpr_operand" "=f")
         (unspec:SI [(match_operand:SI 1 "fpr_operand" "f")
                     (match_operand:SI 2 "fpr_operand" "f")
-                    (match_operand:SI 3 "const_int_operand" "n")]
-                   UNSPEC_MADDH))]
+		    (match_operand:SI 3 "const_int_operand" "n")]
+		   UNSPEC_MADDH))]
   "TARGET_MEDIA"
   "*
 {
   switch (INTVAL (operands[3]))
   {
-  default:                    break;
+  default:		    break;
   case FRV_BUILTIN_MADDHSS: return \"maddhss %1, %2, %0\";
   case FRV_BUILTIN_MADDHUS: return \"maddhus %1, %2, %0\";
   case FRV_BUILTIN_MSUBHSS: return \"msubhss %1, %2, %0\";
@@ -6301,19 +6301,19 @@
 (define_insn "*cond_exec_maddh"
   [(cond_exec
     (match_operator 0 "ccr_eqne_operator"
-                    [(match_operand 1 "cr_operand" "C")
-                     (const_int 0)])
+		    [(match_operand 1 "cr_operand" "C")
+		     (const_int 0)])
     (set (match_operand:SI 2 "fpr_operand" "=f")
-         (unspec:SI [(match_operand:SI 3 "fpr_operand" "f")
-                     (match_operand:SI 4 "fpr_operand" "f")
-                     (match_operand:SI 5 "const_int_operand" "n")]
-                    UNSPEC_MADDH)))]
+	 (unspec:SI [(match_operand:SI 3 "fpr_operand" "f")
+		     (match_operand:SI 4 "fpr_operand" "f")
+		     (match_operand:SI 5 "const_int_operand" "n")]
+		    UNSPEC_MADDH)))]
   "TARGET_MEDIA"
   "*
 {
   switch (INTVAL (operands[5]))
   {
-  default:                    break;
+  default:		    break;
   case FRV_BUILTIN_MADDHSS: return \"cmaddhss %3, %4, %2, %1, %e0\";
   case FRV_BUILTIN_MADDHUS: return \"cmaddhus %3, %4, %2, %1, %e0\";
   case FRV_BUILTIN_MSUBHSS: return \"cmsubhss %3, %4, %2, %1, %e0\";
@@ -6331,8 +6331,8 @@
   [(set (match_operand:DI 0 "even_fpr_operand" "=h")
         (unspec:DI [(match_operand:DI 1 "even_fpr_operand" "h")
                     (match_operand:DI 2 "even_fpr_operand" "h")
-                    (match_dup 3)]
-                   UNSPEC_MQADDH))]
+		    (match_dup 3)]
+		   UNSPEC_MQADDH))]
   "TARGET_MEDIA"
   "operands[3] = GEN_INT (FRV_BUILTIN_MQADDHSS);")
 
@@ -6340,8 +6340,8 @@
   [(set (match_operand:DI 0 "even_fpr_operand" "=h")
         (unspec:DI [(match_operand:DI 1 "even_fpr_operand" "h")
                     (match_operand:DI 2 "even_fpr_operand" "h")
-                    (match_dup 3)]
-                   UNSPEC_MQADDH))]
+		    (match_dup 3)]
+		   UNSPEC_MQADDH))]
   "TARGET_MEDIA"
   "operands[3] = GEN_INT (FRV_BUILTIN_MQADDHUS);")
 
@@ -6349,8 +6349,8 @@
   [(set (match_operand:DI 0 "even_fpr_operand" "=h")
         (unspec:DI [(match_operand:DI 1 "even_fpr_operand" "h")
                     (match_operand:DI 2 "even_fpr_operand" "h")
-                    (match_dup 3)]
-                   UNSPEC_MQADDH))]
+		    (match_dup 3)]
+		   UNSPEC_MQADDH))]
   "TARGET_MEDIA"
   "operands[3] = GEN_INT (FRV_BUILTIN_MQSUBHSS);")
 
@@ -6358,8 +6358,8 @@
   [(set (match_operand:DI 0 "even_fpr_operand" "=h")
         (unspec:DI [(match_operand:DI 1 "even_fpr_operand" "h")
                     (match_operand:DI 2 "even_fpr_operand" "h")
-                    (match_dup 3)]
-                   UNSPEC_MQADDH))]
+		    (match_dup 3)]
+		   UNSPEC_MQADDH))]
   "TARGET_MEDIA"
   "operands[3] = GEN_INT (FRV_BUILTIN_MQSUBHUS);")
 
@@ -6367,14 +6367,14 @@
   [(set (match_operand:DI 0 "even_fpr_operand" "=h")
         (unspec:DI [(match_operand:DI 1 "even_fpr_operand" "h")
                     (match_operand:DI 2 "even_fpr_operand" "h")
-                    (match_operand:SI 3 "const_int_operand" "n")]
-                   UNSPEC_MQADDH))]
+		    (match_operand:SI 3 "const_int_operand" "n")]
+		   UNSPEC_MQADDH))]
   "TARGET_MEDIA"
   "*
 {
   switch (INTVAL (operands[3]))
   {
-  default:                     break;
+  default:		     break;
   case FRV_BUILTIN_MQADDHSS: return \"mqaddhss %1, %2, %0\";
   case FRV_BUILTIN_MQADDHUS: return \"mqaddhus %1, %2, %0\";
   case FRV_BUILTIN_MQSUBHSS: return \"mqsubhss %1, %2, %0\";
@@ -6389,19 +6389,19 @@
 (define_insn "*cond_exec_mqaddh"
   [(cond_exec
     (match_operator 0 "ccr_eqne_operator"
-                    [(match_operand 1 "cr_operand" "C")
-                     (const_int 0)])
+		    [(match_operand 1 "cr_operand" "C")
+		     (const_int 0)])
     (set (match_operand:DI 2 "even_fpr_operand" "=h")
          (unspec:DI [(match_operand:DI 3 "even_fpr_operand" "h")
                      (match_operand:DI 4 "even_fpr_operand" "h")
-                     (match_operand:SI 5 "const_int_operand" "n")]
-                    UNSPEC_MQADDH)))]
+		     (match_operand:SI 5 "const_int_operand" "n")]
+		    UNSPEC_MQADDH)))]
   "TARGET_MEDIA"
   "*
 {
   switch (INTVAL (operands[5]))
   {
-  default:                     break;
+  default:		     break;
   case FRV_BUILTIN_MQADDHSS: return \"cmqaddhss %3, %4, %2, %1, %e0\";
   case FRV_BUILTIN_MQADDHUS: return \"cmqaddhus %3, %4, %2, %1, %e0\";
   case FRV_BUILTIN_MQSUBHSS: return \"cmqsubhss %3, %4, %2, %1, %e0\";
@@ -6419,7 +6419,7 @@
   [(set (match_operand:SI 0 "fpr_operand" "=f")
         (unspec:SI [(match_operand:HI 1 "fpr_operand" "f")
                     (match_operand:HI 2 "fpr_operand" "f")]
-                   UNSPEC_MPACKH))]
+		   UNSPEC_MPACKH))]
   "TARGET_MEDIA"
   "mpackh %1, %2, %0"
   [(set_attr "length" "4")
@@ -6430,7 +6430,7 @@
 (define_insn "munpackh"
   [(set (match_operand:DI 0 "even_fpr_operand" "=h")
         (unspec:DI [(match_operand:SI 1 "fpr_operand" "f")]
-                   UNSPEC_MUNPACKH))]
+		   UNSPEC_MUNPACKH))]
   "TARGET_MEDIA"
   "munpackh %1, %0"
   [(set_attr "length" "4")
@@ -6440,9 +6440,9 @@
 
 (define_insn "mdpackh"
     [(set (match_operand:DI 0 "even_fpr_operand" "=h")
-          (unspec:DI [(match_operand:DI 1 "even_fpr_operand" "h")
-                      (match_operand:DI 2 "even_fpr_operand" "h")]
-                     UNSPEC_MDPACKH))]
+	  (unspec:DI [(match_operand:DI 1 "even_fpr_operand" "h")
+		      (match_operand:DI 2 "even_fpr_operand" "h")]
+		     UNSPEC_MDPACKH))]
   "TARGET_MEDIA"
   "mdpackh %1, %2, %0"
   [(set_attr "length" "4")
@@ -6453,7 +6453,7 @@
 (define_insn "mbtoh"
   [(set (match_operand:DI 0 "even_fpr_operand" "=h")
         (unspec:DI [(match_operand:SI 1 "fpr_operand" "f")]
-                   UNSPEC_MBTOH))]
+		   UNSPEC_MBTOH))]
   "TARGET_MEDIA"
   "mbtoh %1, %0"
   [(set_attr "length" "4")
@@ -6462,11 +6462,11 @@
 (define_insn "*cond_exec_mbtoh"
   [(cond_exec
     (match_operator 0 "ccr_eqne_operator"
-                    [(match_operand 1 "cr_operand" "C")
-                     (const_int 0)])
+		    [(match_operand 1 "cr_operand" "C")
+		     (const_int 0)])
     (set (match_operand:DI 2 "even_fpr_operand" "=h")
-         (unspec:DI [(match_operand:SI 3 "fpr_operand" "f")]
-                    UNSPEC_MBTOH)))]
+	 (unspec:DI [(match_operand:SI 3 "fpr_operand" "f")]
+		    UNSPEC_MBTOH)))]
   "TARGET_MEDIA"
   "cmbtoh %3, %2, %1, %e0"
   [(set_attr "length" "4")
@@ -6475,7 +6475,7 @@
 (define_insn "mhtob"
   [(set (match_operand:SI 0 "fpr_operand" "=f")
         (unspec:SI [(match_operand:DI 1 "even_fpr_operand" "h")]
-                   UNSPEC_MHTOB))]
+		   UNSPEC_MHTOB))]
   "TARGET_MEDIA"
   "mhtob %1, %0"
   [(set_attr "length" "4")
@@ -6484,11 +6484,11 @@
 (define_insn "*cond_exec_mhtob"
   [(cond_exec
     (match_operator 0 "ccr_eqne_operator"
-                    [(match_operand 1 "cr_operand" "C")
-                     (const_int 0)])
+		    [(match_operand 1 "cr_operand" "C")
+		     (const_int 0)])
     (set (match_operand:SI 2 "fpr_operand" "=f")
-         (unspec:SI [(match_operand:DI 3 "even_fpr_operand" "h")]
-                    UNSPEC_MHTOB)))]
+	 (unspec:SI [(match_operand:DI 3 "even_fpr_operand" "h")]
+		    UNSPEC_MHTOB)))]
   "TARGET_MEDIA"
   "cmhtob %3, %2, %1, %e0"
   [(set_attr "length" "4")
@@ -6500,8 +6500,8 @@
   [(set (match_operand:SI 0 "fpr_operand" "")
         (unspec:SI [(match_operand:SI 1 "fpr_operand" "")
                     (match_operand:SI 2 "uint5_operand" "")
-                    (match_dup 3)]
-                   UNSPEC_MROT))]
+		    (match_dup 3)]
+		   UNSPEC_MROT))]
   "TARGET_MEDIA"
   "operands[3] = GEN_INT (FRV_BUILTIN_MROTLI);")
 
@@ -6509,8 +6509,8 @@
   [(set (match_operand:SI 0 "fpr_operand" "")
         (unspec:SI [(match_operand:SI 1 "fpr_operand" "")
                     (match_operand:SI 2 "uint5_operand" "")
-                    (match_dup 3)]
-                   UNSPEC_MROT))]
+		    (match_dup 3)]
+		   UNSPEC_MROT))]
   "TARGET_MEDIA"
   "operands[3] = GEN_INT (FRV_BUILTIN_MROTRI);")
 
@@ -6518,14 +6518,14 @@
   [(set (match_operand:SI 0 "fpr_operand" "=f")
         (unspec:SI [(match_operand:SI 1 "fpr_operand" "f")
                     (match_operand:SI 2 "uint5_operand" "I")
-                    (match_operand:SI 3 "const_int_operand" "n")]
-                   UNSPEC_MROT))]
+		    (match_operand:SI 3 "const_int_operand" "n")]
+		   UNSPEC_MROT))]
   "TARGET_MEDIA"
   "*
 {
   switch (INTVAL (operands[3]))
   {
-  default:                   break;
+  default:		   break;
   case FRV_BUILTIN_MROTLI: return \"mrotli %1, %2, %0\";
   case FRV_BUILTIN_MROTRI: return \"mrotri %1, %2, %0\";
   }
@@ -6541,8 +6541,8 @@
   [(set (match_operand:SI 0 "fpr_operand" "")
         (unspec:SI [(match_operand:SI 1 "fpr_operand" "")
                     (match_operand:SI 2 "uint4_operand" "")
-                    (match_dup 3)]
-                   UNSPEC_MSHIFT))]
+		    (match_dup 3)]
+		   UNSPEC_MSHIFT))]
   "TARGET_MEDIA"
   "operands[3] = GEN_INT (FRV_BUILTIN_MSLLHI);")
 
@@ -6550,8 +6550,8 @@
   [(set (match_operand:SI 0 "fpr_operand" "")
         (unspec:SI [(match_operand:SI 1 "fpr_operand" "")
                     (match_operand:SI 2 "uint4_operand" "")
-                    (match_dup 3)]
-                   UNSPEC_MSHIFT))]
+		    (match_dup 3)]
+		   UNSPEC_MSHIFT))]
   "TARGET_MEDIA"
   "operands[3] = GEN_INT (FRV_BUILTIN_MSRLHI);")
 
@@ -6559,8 +6559,8 @@
   [(set (match_operand:SI 0 "fpr_operand" "")
         (unspec:SI [(match_operand:SI 1 "fpr_operand" "")
                     (match_operand:SI 2 "uint4_operand" "")
-                    (match_dup 3)]
-                   UNSPEC_MSHIFT))]
+		    (match_dup 3)]
+		   UNSPEC_MSHIFT))]
   "TARGET_MEDIA"
   "operands[3] = GEN_INT (FRV_BUILTIN_MSRAHI);")
 
@@ -6568,14 +6568,14 @@
   [(set (match_operand:SI 0 "fpr_operand" "=f")
         (unspec:SI [(match_operand:SI 1 "fpr_operand" "f")
                     (match_operand:SI 2 "uint4_operand" "I")
-                    (match_operand:SI 3 "const_int_operand" "n")]
-                   UNSPEC_MSHIFT))]
+		    (match_operand:SI 3 "const_int_operand" "n")]
+		   UNSPEC_MSHIFT))]
   "TARGET_MEDIA"
   "*
 {
   switch (INTVAL (operands[3]))
   {
-  default:                   break;
+  default:		   break;
   case FRV_BUILTIN_MSLLHI: return \"msllhi %1, %2, %0\";
   case FRV_BUILTIN_MSRLHI: return \"msrlhi %1, %2, %0\";
   case FRV_BUILTIN_MSRAHI: return \"msrahi %1, %2, %0\";
@@ -6592,7 +6592,7 @@
   [(set (match_operand:SI 0 "fpr_operand" "=f")
         (unspec:SI [(match_operand:SI 1 "fpr_operand" "f")
                     (match_operand:SI 2 "uint1_operand" "I")]
-                   UNSPEC_MEXPDHW))]
+		   UNSPEC_MEXPDHW))]
   "TARGET_MEDIA"
   "mexpdhw %1, %2, %0"
   [(set_attr "length" "4")
@@ -6601,12 +6601,12 @@
 (define_insn "*cond_exec_mexpdhw"
   [(cond_exec
     (match_operator 0 "ccr_eqne_operator"
-                    [(match_operand 1 "cr_operand" "C")
-                     (const_int 0)])
+		    [(match_operand 1 "cr_operand" "C")
+		     (const_int 0)])
     (set (match_operand:SI 2 "fpr_operand" "=f")
-         (unspec:SI [(match_operand:SI 3 "fpr_operand" "f")
-                     (match_operand:SI 4 "uint1_operand" "I")]
-                    UNSPEC_MEXPDHW)))]
+	 (unspec:SI [(match_operand:SI 3 "fpr_operand" "f")
+		     (match_operand:SI 4 "uint1_operand" "I")]
+		    UNSPEC_MEXPDHW)))]
   "TARGET_MEDIA"
   "cmexpdhw %3, %4, %2, %1, %e0"
   [(set_attr "length" "4")
@@ -6618,7 +6618,7 @@
   [(set (match_operand:DI 0 "even_fpr_operand" "=h")
         (unspec:DI [(match_operand:SI 1 "fpr_operand" "f")
                     (match_operand:SI 2 "uint1_operand" "I")]
-                   UNSPEC_MEXPDHD))]
+		   UNSPEC_MEXPDHD))]
   "TARGET_MEDIA"
   "mexpdhd %1, %2, %0"
   [(set_attr "length" "4")
@@ -6627,12 +6627,12 @@
 (define_insn "*cond_exec_mexpdhd"
   [(cond_exec
     (match_operator 0 "ccr_eqne_operator"
-                    [(match_operand 1 "cr_operand" "C")
-                     (const_int 0)])
+		    [(match_operand 1 "cr_operand" "C")
+		     (const_int 0)])
     (set (match_operand:DI 2 "even_fpr_operand" "=h")
-         (unspec:DI [(match_operand:SI 3 "fpr_operand" "f")
-                     (match_operand:SI 4 "uint1_operand" "I")]
-                    UNSPEC_MEXPDHD)))]
+	 (unspec:DI [(match_operand:SI 3 "fpr_operand" "f")
+		     (match_operand:SI 4 "uint1_operand" "I")]
+		    UNSPEC_MEXPDHD)))]
   "TARGET_MEDIA"
   "cmexpdhd %3, %4, %2, %1, %e0"
   [(set_attr "length" "4")
@@ -6644,7 +6644,7 @@
   [(set (match_operand:SI 0 "fpr_operand" "=f")
         (unspec:SI [(match_operand:DI 1 "fpr_operand" "f")
                     (match_operand:SI 2 "fpr_or_int6_operand" "fI")]
-                   UNSPEC_MWCUT))]
+		   UNSPEC_MWCUT))]
   "TARGET_MEDIA"
   "mwcut%i2 %1, %2, %0"
   [(set_attr "length" "4")
@@ -6654,23 +6654,23 @@
 
 (define_expand "mmulhs"
   [(parallel [(set (match_operand:DI 0 "even_acc_operand" "=b")
-                   (unspec:DI [(match_operand:SI 1 "fpr_operand" "f")
-                               (match_operand:SI 2 "fpr_operand" "f")
-                               (match_dup 4)]
-                              UNSPEC_MMULH))
-              (set (match_operand:HI 3 "accg_operand" "=B")
-                   (unspec:HI [(const_int 0)] UNSPEC_MMULH))])]
+		   (unspec:DI [(match_operand:SI 1 "fpr_operand" "f")
+			       (match_operand:SI 2 "fpr_operand" "f")
+			       (match_dup 4)]
+			      UNSPEC_MMULH))
+	      (set (match_operand:HI 3 "accg_operand" "=B")
+		   (unspec:HI [(const_int 0)] UNSPEC_MMULH))])]
   "TARGET_MEDIA"
   "operands[4] = GEN_INT (FRV_BUILTIN_MMULHS);")
 
 (define_expand "mmulhu"
   [(parallel [(set (match_operand:DI 0 "even_acc_operand" "=b")
-                   (unspec:DI [(match_operand:SI 1 "fpr_operand" "f")
-                               (match_operand:SI 2 "fpr_operand" "f")
-                               (match_dup 4)]
-                              UNSPEC_MMULH))
-              (set (match_operand:HI 3 "accg_operand" "=B")
-                   (unspec:HI [(const_int 0)] UNSPEC_MMULH))])]
+		   (unspec:DI [(match_operand:SI 1 "fpr_operand" "f")
+			       (match_operand:SI 2 "fpr_operand" "f")
+			       (match_dup 4)]
+			      UNSPEC_MMULH))
+	      (set (match_operand:HI 3 "accg_operand" "=B")
+		   (unspec:HI [(const_int 0)] UNSPEC_MMULH))])]
   "TARGET_MEDIA"
   "operands[4] = GEN_INT (FRV_BUILTIN_MMULHU);")
 
@@ -6678,16 +6678,16 @@
   [(set (match_operand:DI 0 "even_acc_operand" "=b")
         (unspec:DI [(match_operand:SI 1 "fpr_operand" "f")
                     (match_operand:SI 2 "fpr_operand" "f")
-                    (match_operand:SI 3 "const_int_operand" "n")]
-                   UNSPEC_MMULH))
+		    (match_operand:SI 3 "const_int_operand" "n")]
+		   UNSPEC_MMULH))
    (set (match_operand:HI 4 "accg_operand" "=B")
-        (unspec:HI [(const_int 0)] UNSPEC_MMULH))]
+	(unspec:HI [(const_int 0)] UNSPEC_MMULH))]
   "TARGET_MEDIA"
   "*
 {
   switch (INTVAL (operands[3]))
   {
-  default:                    break;
+  default:		    break;
   case FRV_BUILTIN_MMULHS:  return \"mmulhs %1, %2, %0\";
   case FRV_BUILTIN_MMULHU:  return \"mmulhu %1, %2, %0\";
   }
@@ -6700,21 +6700,21 @@
 (define_insn "*cond_exec_mmulh"
   [(cond_exec
     (match_operator 0 "ccr_eqne_operator"
-                    [(match_operand 1 "cr_operand" "C")
-                     (const_int 0)])
+		    [(match_operand 1 "cr_operand" "C")
+		     (const_int 0)])
     (parallel [(set (match_operand:DI 2 "even_acc_operand" "=b")
-                    (unspec:DI [(match_operand:SI 3 "fpr_operand" "f")
-                                (match_operand:SI 4 "fpr_operand" "f")
-                                (match_operand:SI 5 "const_int_operand" "n")]
-                               UNSPEC_MMULH))
-               (set (match_operand:HI 6 "accg_operand" "=B")
-                    (unspec:HI [(const_int 0)] UNSPEC_MMULH))]))]
+		    (unspec:DI [(match_operand:SI 3 "fpr_operand" "f")
+				(match_operand:SI 4 "fpr_operand" "f")
+				(match_operand:SI 5 "const_int_operand" "n")]
+			       UNSPEC_MMULH))
+	       (set (match_operand:HI 6 "accg_operand" "=B")
+		    (unspec:HI [(const_int 0)] UNSPEC_MMULH))]))]
   "TARGET_MEDIA"
   "*
 {
   switch (INTVAL (operands[5]))
   {
-  default:                    break;
+  default:		    break;
   case FRV_BUILTIN_MMULHS:  return \"cmmulhs %3, %4, %2, %1, %e0\";
   case FRV_BUILTIN_MMULHU:  return \"cmmulhu %3, %4, %2, %1, %e0\";
   }
@@ -6728,23 +6728,23 @@
 
 (define_expand "mmulxhs"
   [(parallel [(set (match_operand:DI 0 "even_acc_operand" "=b")
-                   (unspec:DI [(match_operand:SI 1 "fpr_operand" "f")
-                               (match_operand:SI 2 "fpr_operand" "f")
-                               (match_dup 4)]
-                              UNSPEC_MMULXH))
-              (set (match_operand:HI 3 "accg_operand" "=B")
-                   (unspec:HI [(const_int 0)] UNSPEC_MMULXH))])]
+		   (unspec:DI [(match_operand:SI 1 "fpr_operand" "f")
+			       (match_operand:SI 2 "fpr_operand" "f")
+			       (match_dup 4)]
+			      UNSPEC_MMULXH))
+	      (set (match_operand:HI 3 "accg_operand" "=B")
+		   (unspec:HI [(const_int 0)] UNSPEC_MMULXH))])]
   "TARGET_MEDIA"
   "operands[4] = GEN_INT (FRV_BUILTIN_MMULXHS);")
 
 (define_expand "mmulxhu"
   [(parallel [(set (match_operand:DI 0 "even_acc_operand" "=b")
-                   (unspec:DI [(match_operand:SI 1 "fpr_operand" "f")
-                               (match_operand:SI 2 "fpr_operand" "f")
-                               (match_dup 4)]
-                              UNSPEC_MMULXH))
-              (set (match_operand:HI 3 "accg_operand" "=B")
-                   (unspec:HI [(const_int 0)] UNSPEC_MMULXH))])]
+		   (unspec:DI [(match_operand:SI 1 "fpr_operand" "f")
+			       (match_operand:SI 2 "fpr_operand" "f")
+			       (match_dup 4)]
+			      UNSPEC_MMULXH))
+	      (set (match_operand:HI 3 "accg_operand" "=B")
+		   (unspec:HI [(const_int 0)] UNSPEC_MMULXH))])]
   "TARGET_MEDIA"
   "operands[4] = GEN_INT (FRV_BUILTIN_MMULXHU);")
 
@@ -6752,16 +6752,16 @@
   [(set (match_operand:DI 0 "even_acc_operand" "=b")
         (unspec:DI [(match_operand:SI 1 "fpr_operand" "f")
                     (match_operand:SI 2 "fpr_operand" "f")
-                    (match_operand:SI 3 "const_int_operand" "n")]
-                   UNSPEC_MMULXH))
+		    (match_operand:SI 3 "const_int_operand" "n")]
+		   UNSPEC_MMULXH))
    (set (match_operand:HI 4 "accg_operand" "=B")
-        (unspec:HI [(const_int 0)] UNSPEC_MMULXH))]
+	(unspec:HI [(const_int 0)] UNSPEC_MMULXH))]
   "TARGET_MEDIA"
   "*
 {
   switch (INTVAL (operands[3]))
   {
-  default:                    break;
+  default:		    break;
   case FRV_BUILTIN_MMULXHS: return \"mmulxhs %1, %2, %0\";
   case FRV_BUILTIN_MMULXHU: return \"mmulxhu %1, %2, %0\";
   }
@@ -6775,45 +6775,45 @@
 
 (define_expand "mmachs"
   [(parallel [(set (match_operand:DI 0 "even_acc_operand" "+b")
-                   (unspec:DI [(match_dup 0)
-                               (match_operand:SI 1 "fpr_operand" "f")
-                               (match_operand:SI 2 "fpr_operand" "f")
-                               (match_operand:HI 3 "accg_operand" "+B")
-                               (match_dup 4)]
-                              UNSPEC_MMACH))
-              (set (match_dup 3)
-                   (unspec:HI [(const_int 0)] UNSPEC_MMACH))])]
+		   (unspec:DI [(match_dup 0)
+			       (match_operand:SI 1 "fpr_operand" "f")
+			       (match_operand:SI 2 "fpr_operand" "f")
+			       (match_operand:HI 3 "accg_operand" "+B")
+			       (match_dup 4)]
+			      UNSPEC_MMACH))
+	      (set (match_dup 3)
+		   (unspec:HI [(const_int 0)] UNSPEC_MMACH))])]
   "TARGET_MEDIA"
   "operands[4] = GEN_INT (FRV_BUILTIN_MMACHS);")
 
 (define_expand "mmachu"
   [(parallel [(set (match_operand:DI 0 "even_acc_operand" "+b")
-                   (unspec:DI [(match_dup 0)
-                               (match_operand:SI 1 "fpr_operand" "f")
-                               (match_operand:SI 2 "fpr_operand" "f")
-                               (match_operand:HI 3 "accg_operand" "+B")
-                               (match_dup 4)]
-                              UNSPEC_MMACH))
-              (set (match_dup 3)
-                   (unspec:HI [(const_int 0)] UNSPEC_MMACH))])]
+		   (unspec:DI [(match_dup 0)
+			       (match_operand:SI 1 "fpr_operand" "f")
+			       (match_operand:SI 2 "fpr_operand" "f")
+			       (match_operand:HI 3 "accg_operand" "+B")
+			       (match_dup 4)]
+			      UNSPEC_MMACH))
+	      (set (match_dup 3)
+		   (unspec:HI [(const_int 0)] UNSPEC_MMACH))])]
   "TARGET_MEDIA"
   "operands[4] = GEN_INT (FRV_BUILTIN_MMACHU);")
 
 (define_insn "*mmach"
   [(set (match_operand:DI 0 "even_acc_operand" "+b")
         (unspec:DI [(match_dup 0)
-                    (match_operand:SI 1 "fpr_operand" "f")
+		    (match_operand:SI 1 "fpr_operand" "f")
                     (match_operand:SI 2 "fpr_operand" "f")
-                    (match_operand:HI 3 "accg_operand" "+B")
-                    (match_operand:SI 4 "const_int_operand" "n")]
-                   UNSPEC_MMACH))
+		    (match_operand:HI 3 "accg_operand" "+B")
+		    (match_operand:SI 4 "const_int_operand" "n")]
+		   UNSPEC_MMACH))
    (set (match_dup 3) (unspec:HI [(const_int 0)] UNSPEC_MMACH))]
   "TARGET_MEDIA"
   "*
 {
   switch (INTVAL (operands[4]))
   {
-  default:                   break;
+  default:		   break;
   case FRV_BUILTIN_MMACHS: return \"mmachs %1, %2, %0\";
   case FRV_BUILTIN_MMACHU: return \"mmachu %1, %2, %0\";
   }
@@ -6826,23 +6826,23 @@
 (define_insn "*cond_exec_mmach"
   [(cond_exec
     (match_operator 0 "ccr_eqne_operator"
-                    [(match_operand 1 "cr_operand" "C")
-                     (const_int 0)])
+		    [(match_operand 1 "cr_operand" "C")
+		     (const_int 0)])
     (parallel [(set (match_operand:DI 2 "even_acc_operand" "+b")
-                    (unspec:DI [(match_dup 2)
-                                (match_operand:SI 3 "fpr_operand" "f")
-                                (match_operand:SI 4 "fpr_operand" "f")
-                                (match_operand:HI 5 "accg_operand" "+B")
-                                (match_operand:SI 6 "const_int_operand" "n")]
-                               UNSPEC_MMACH))
-               (set (match_dup 5)
-                    (unspec:HI [(const_int 0)] UNSPEC_MMACH))]))]
+		    (unspec:DI [(match_dup 2)
+				(match_operand:SI 3 "fpr_operand" "f")
+				(match_operand:SI 4 "fpr_operand" "f")
+				(match_operand:HI 5 "accg_operand" "+B")
+				(match_operand:SI 6 "const_int_operand" "n")]
+			       UNSPEC_MMACH))
+	       (set (match_dup 5)
+		    (unspec:HI [(const_int 0)] UNSPEC_MMACH))]))]
   "TARGET_MEDIA"
   "*
 {
   switch (INTVAL (operands[6]))
   {
-  default:                   break;
+  default:		   break;
   case FRV_BUILTIN_MMACHS: return \"cmmachs %3, %4, %2, %1, %e0\";
   case FRV_BUILTIN_MMACHU: return \"cmmachu %3, %4, %2, %1, %e0\";
   }
@@ -6856,46 +6856,46 @@
 
 (define_expand "mmrdhs"
   [(parallel [(set (match_operand:DI 0 "even_acc_operand" "+b")
-                   (unspec:DI [(match_dup 0)
-                               (match_operand:SI 1 "fpr_operand" "f")
-                               (match_operand:SI 2 "fpr_operand" "f")
-                               (match_operand:HI 3 "accg_operand" "+B")
-                               (match_dup 4)]
-                              UNSPEC_MMRDH))
-              (set (match_dup 3)
-                   (unspec:HI [(const_int 0)] UNSPEC_MMRDH))])]
+		   (unspec:DI [(match_dup 0)
+			       (match_operand:SI 1 "fpr_operand" "f")
+			       (match_operand:SI 2 "fpr_operand" "f")
+			       (match_operand:HI 3 "accg_operand" "+B")
+			       (match_dup 4)]
+			      UNSPEC_MMRDH))
+	      (set (match_dup 3)
+		   (unspec:HI [(const_int 0)] UNSPEC_MMRDH))])]
   "TARGET_MEDIA"
   "operands[4] = GEN_INT (FRV_BUILTIN_MMRDHS);")
 
 (define_expand "mmrdhu"
   [(parallel [(set (match_operand:DI 0 "even_acc_operand" "+b")
-                   (unspec:DI [(match_dup 0)
-                               (match_operand:SI 1 "fpr_operand" "f")
-                               (match_operand:SI 2 "fpr_operand" "f")
-                               (match_operand:HI 3 "accg_operand" "+B")
-                               (match_dup 4)]
-                              UNSPEC_MMRDH))
-              (set (match_dup 3)
-                   (unspec:HI [(const_int 0)] UNSPEC_MMRDH))])]
+		   (unspec:DI [(match_dup 0)
+			       (match_operand:SI 1 "fpr_operand" "f")
+			       (match_operand:SI 2 "fpr_operand" "f")
+			       (match_operand:HI 3 "accg_operand" "+B")
+			       (match_dup 4)]
+			      UNSPEC_MMRDH))
+	      (set (match_dup 3)
+		   (unspec:HI [(const_int 0)] UNSPEC_MMRDH))])]
   "TARGET_MEDIA"
   "operands[4] = GEN_INT (FRV_BUILTIN_MMRDHU);")
 
 (define_insn "*mmrdh"
   [(set (match_operand:DI 0 "even_acc_operand" "+b")
         (unspec:DI [(match_dup 0)
-                    (match_operand:SI 1 "fpr_operand" "f")
+		    (match_operand:SI 1 "fpr_operand" "f")
                     (match_operand:SI 2 "fpr_operand" "f")
-                    (match_operand:HI 3 "accg_operand" "+B")
-                    (match_operand:SI 4 "const_int_operand" "n")]
-                   UNSPEC_MMRDH))
+		    (match_operand:HI 3 "accg_operand" "+B")
+		    (match_operand:SI 4 "const_int_operand" "n")]
+		   UNSPEC_MMRDH))
    (set (match_dup 3)
-        (unspec:HI [(const_int 0)] UNSPEC_MMRDH))]
+	(unspec:HI [(const_int 0)] UNSPEC_MMRDH))]
   "TARGET_MEDIA"
   "*
 {
   switch (INTVAL (operands[4]))
   {
-  default:                   break;
+  default:		   break;
   case FRV_BUILTIN_MMRDHS: return \"mmrdhs %1, %2, %0\";
   case FRV_BUILTIN_MMRDHU: return \"mmrdhu %1, %2, %0\";
   }
@@ -6909,40 +6909,40 @@
 
 (define_expand "mqmulhs"
   [(parallel [(set (match_operand:V4SI 0 "quad_acc_operand" "=A")
-                   (unspec:V4SI [(match_operand:DI 1 "even_fpr_operand" "h")
-                                 (match_operand:DI 2 "even_fpr_operand" "h")
-                                 (match_dup 4)]
-                                UNSPEC_MQMULH))
-              (set (match_operand:V4QI 3 "accg_operand" "=B")
-                   (unspec:V4QI [(const_int 0)] UNSPEC_MQMULH))])]
+		   (unspec:V4SI [(match_operand:DI 1 "even_fpr_operand" "h")
+				 (match_operand:DI 2 "even_fpr_operand" "h")
+				 (match_dup 4)]
+				UNSPEC_MQMULH))
+	      (set (match_operand:V4QI 3 "accg_operand" "=B")
+		   (unspec:V4QI [(const_int 0)] UNSPEC_MQMULH))])]
   "TARGET_MEDIA"
   "operands[4] = GEN_INT (FRV_BUILTIN_MQMULHS);")
 
 (define_expand "mqmulhu"
   [(parallel [(set (match_operand:V4SI 0 "quad_acc_operand" "=A")
-                   (unspec:V4SI [(match_operand:DI 1 "even_fpr_operand" "h")
-                                 (match_operand:DI 2 "even_fpr_operand" "h")
-                                 (match_dup 4)]
-                                UNSPEC_MQMULH))
-              (set (match_operand:V4QI 3 "accg_operand" "=B")
-                   (unspec:V4QI [(const_int 0)] UNSPEC_MQMULH))])]
+		   (unspec:V4SI [(match_operand:DI 1 "even_fpr_operand" "h")
+				 (match_operand:DI 2 "even_fpr_operand" "h")
+				 (match_dup 4)]
+				UNSPEC_MQMULH))
+	      (set (match_operand:V4QI 3 "accg_operand" "=B")
+		   (unspec:V4QI [(const_int 0)] UNSPEC_MQMULH))])]
   "TARGET_MEDIA"
   "operands[4] = GEN_INT (FRV_BUILTIN_MQMULHU);")
 
 (define_insn "*mqmulh"
   [(set (match_operand:V4SI 0 "quad_acc_operand" "=A")
         (unspec:V4SI [(match_operand:DI 1 "even_fpr_operand" "h")
-                      (match_operand:DI 2 "even_fpr_operand" "h")
-                      (match_operand:SI 3 "const_int_operand" "n")]
-                     UNSPEC_MQMULH))
+		      (match_operand:DI 2 "even_fpr_operand" "h")
+		      (match_operand:SI 3 "const_int_operand" "n")]
+		     UNSPEC_MQMULH))
    (set (match_operand:V4QI 4 "accg_operand" "=B")
-        (unspec:V4QI [(const_int 0)] UNSPEC_MQMULH))]
+	(unspec:V4QI [(const_int 0)] UNSPEC_MQMULH))]
   "TARGET_MEDIA"
   "*
 {
   switch (INTVAL (operands[3]))
   {
-  default:                     break;
+  default:		     break;
   case FRV_BUILTIN_MQMULHS:  return \"mqmulhs %1, %2, %0\";
   case FRV_BUILTIN_MQMULHU:  return \"mqmulhu %1, %2, %0\";
   }
@@ -6955,21 +6955,21 @@
 (define_insn "*cond_exec_mqmulh"
   [(cond_exec
     (match_operator 0 "ccr_eqne_operator"
-                    [(match_operand 1 "cr_operand" "C")
-                     (const_int 0)])
+		    [(match_operand 1 "cr_operand" "C")
+		     (const_int 0)])
     (parallel [(set (match_operand:V4SI 2 "quad_acc_operand" "=A")
-                    (unspec:V4SI [(match_operand:DI 3 "even_fpr_operand" "h")
-                                  (match_operand:DI 4 "even_fpr_operand" "h")
-                                  (match_operand:SI 5 "const_int_operand" "n")]
-                                 UNSPEC_MQMULH))
-               (set (match_operand:V4QI 6 "accg_operand" "=B")
-                    (unspec:V4QI [(const_int 0)] UNSPEC_MQMULH))]))]
+		    (unspec:V4SI [(match_operand:DI 3 "even_fpr_operand" "h")
+				  (match_operand:DI 4 "even_fpr_operand" "h")
+				  (match_operand:SI 5 "const_int_operand" "n")]
+				 UNSPEC_MQMULH))
+	       (set (match_operand:V4QI 6 "accg_operand" "=B")
+		    (unspec:V4QI [(const_int 0)] UNSPEC_MQMULH))]))]
   "TARGET_MEDIA"
   "*
 {
   switch (INTVAL (operands[5]))
   {
-  default:                     break;
+  default:		     break;
   case FRV_BUILTIN_MQMULHS:  return \"cmqmulhs %3, %4, %2, %1, %e0\";
   case FRV_BUILTIN_MQMULHU:  return \"cmqmulhu %3, %4, %2, %1, %e0\";
   }
@@ -6983,40 +6983,40 @@
 
 (define_expand "mqmulxhs"
   [(parallel [(set (match_operand:V4SI 0 "quad_acc_operand" "=A")
-                   (unspec:V4SI [(match_operand:DI 1 "even_fpr_operand" "h")
-                                 (match_operand:DI 2 "even_fpr_operand" "h")
-                                 (match_dup 4)]
-                                UNSPEC_MQMULXH))
-              (set (match_operand:V4QI 3 "accg_operand" "=B")
-                   (unspec:V4QI [(const_int 0)] UNSPEC_MQMULXH))])]
+		   (unspec:V4SI [(match_operand:DI 1 "even_fpr_operand" "h")
+				 (match_operand:DI 2 "even_fpr_operand" "h")
+				 (match_dup 4)]
+				UNSPEC_MQMULXH))
+	      (set (match_operand:V4QI 3 "accg_operand" "=B")
+		   (unspec:V4QI [(const_int 0)] UNSPEC_MQMULXH))])]
   "TARGET_MEDIA"
   "operands[4] = GEN_INT (FRV_BUILTIN_MQMULXHS);")
 
 (define_expand "mqmulxhu"
   [(parallel [(set (match_operand:V4SI 0 "quad_acc_operand" "=A")
-                   (unspec:V4SI [(match_operand:DI 1 "even_fpr_operand" "h")
-                                 (match_operand:DI 2 "even_fpr_operand" "h")
-                                 (match_dup 4)]
-                                UNSPEC_MQMULXH))
-              (set (match_operand:V4QI 3 "accg_operand" "=B")
-                   (unspec:V4QI [(const_int 0)] UNSPEC_MQMULXH))])]
+		   (unspec:V4SI [(match_operand:DI 1 "even_fpr_operand" "h")
+				 (match_operand:DI 2 "even_fpr_operand" "h")
+				 (match_dup 4)]
+				UNSPEC_MQMULXH))
+	      (set (match_operand:V4QI 3 "accg_operand" "=B")
+		   (unspec:V4QI [(const_int 0)] UNSPEC_MQMULXH))])]
   "TARGET_MEDIA"
   "operands[4] = GEN_INT (FRV_BUILTIN_MQMULXHU);")
 
 (define_insn "*mqmulxh"
   [(set (match_operand:V4SI 0 "quad_acc_operand" "=A")
         (unspec:V4SI [(match_operand:DI 1 "even_fpr_operand" "h")
-                      (match_operand:DI 2 "even_fpr_operand" "h")
-                      (match_operand:SI 3 "const_int_operand" "n")]
-                     UNSPEC_MQMULXH))
+		      (match_operand:DI 2 "even_fpr_operand" "h")
+		      (match_operand:SI 3 "const_int_operand" "n")]
+		     UNSPEC_MQMULXH))
    (set (match_operand:V4QI 4 "accg_operand" "=B")
-        (unspec:V4QI [(const_int 0)] UNSPEC_MQMULXH))]
+	(unspec:V4QI [(const_int 0)] UNSPEC_MQMULXH))]
   "TARGET_MEDIA"
   "*
 {
   switch (INTVAL (operands[3]))
   {
-  default:                     break;
+  default:		     break;
   case FRV_BUILTIN_MQMULXHS: return \"mqmulxhs %1, %2, %0\";
   case FRV_BUILTIN_MQMULXHU: return \"mqmulxhu %1, %2, %0\";
   }
@@ -7030,46 +7030,46 @@
 
 (define_expand "mqmachs"
   [(parallel [(set (match_operand:V4SI 0 "even_acc_operand" "+A")
-                   (unspec:V4SI [(match_dup 0)
-                                 (match_operand:DI 1 "even_fpr_operand" "h")
-                                 (match_operand:DI 2 "even_fpr_operand" "h")
-                                 (match_operand:V4QI 3 "accg_operand" "+B")
-                                 (match_dup 4)]
-                                UNSPEC_MQMACH))
-              (set (match_dup 3)
-                   (unspec:V4QI [(const_int 0)] UNSPEC_MQMACH))])]
+		   (unspec:V4SI [(match_dup 0)
+				 (match_operand:DI 1 "even_fpr_operand" "h")
+				 (match_operand:DI 2 "even_fpr_operand" "h")
+				 (match_operand:V4QI 3 "accg_operand" "+B")
+				 (match_dup 4)]
+				UNSPEC_MQMACH))
+	      (set (match_dup 3)
+		   (unspec:V4QI [(const_int 0)] UNSPEC_MQMACH))])]
   "TARGET_MEDIA"
   "operands[4] = GEN_INT (FRV_BUILTIN_MQMACHS);")
 
 (define_expand "mqmachu"
   [(parallel [(set (match_operand:V4SI 0 "even_acc_operand" "+A")
-                   (unspec:V4SI [(match_dup 0)
-                                 (match_operand:DI 1 "even_fpr_operand" "h")
-                                 (match_operand:DI 2 "even_fpr_operand" "h")
-                                 (match_operand:V4QI 3 "accg_operand" "+B")
-                                 (match_dup 4)]
-                                UNSPEC_MQMACH))
-              (set (match_dup 3)
-                   (unspec:V4QI [(const_int 0)] UNSPEC_MQMACH))])]
+		   (unspec:V4SI [(match_dup 0)
+				 (match_operand:DI 1 "even_fpr_operand" "h")
+				 (match_operand:DI 2 "even_fpr_operand" "h")
+				 (match_operand:V4QI 3 "accg_operand" "+B")
+				 (match_dup 4)]
+				UNSPEC_MQMACH))
+	      (set (match_dup 3)
+		   (unspec:V4QI [(const_int 0)] UNSPEC_MQMACH))])]
   "TARGET_MEDIA"
   "operands[4] = GEN_INT (FRV_BUILTIN_MQMACHU);")
 
 (define_insn "*mqmach"
   [(set (match_operand:V4SI 0 "even_acc_operand" "+A")
         (unspec:V4SI [(match_dup 0)
-                      (match_operand:DI 1 "even_fpr_operand" "h")
-                      (match_operand:DI 2 "even_fpr_operand" "h")
-                      (match_operand:V4QI 3 "accg_operand" "+B")
-                      (match_operand:SI 4 "const_int_operand" "n")]
-                     UNSPEC_MQMACH))
+		      (match_operand:DI 1 "even_fpr_operand" "h")
+		      (match_operand:DI 2 "even_fpr_operand" "h")
+		      (match_operand:V4QI 3 "accg_operand" "+B")
+		      (match_operand:SI 4 "const_int_operand" "n")]
+		     UNSPEC_MQMACH))
    (set (match_dup 3)
-        (unspec:V4QI [(const_int 0)] UNSPEC_MQMACH))]
+	(unspec:V4QI [(const_int 0)] UNSPEC_MQMACH))]
   "TARGET_MEDIA"
   "*
 {
   switch (INTVAL (operands[4]))
   {
-  default:                    break;
+  default:		    break;
   case FRV_BUILTIN_MQMACHS: return \"mqmachs %1, %2, %0\";
   case FRV_BUILTIN_MQMACHU: return \"mqmachu %1, %2, %0\";
   }
@@ -7082,23 +7082,23 @@
 (define_insn "*cond_exec_mqmach"
   [(cond_exec
     (match_operator 0 "ccr_eqne_operator"
-                    [(match_operand 1 "cr_operand" "C")
-                     (const_int 0)])
+		    [(match_operand 1 "cr_operand" "C")
+		     (const_int 0)])
     (parallel [(set (match_operand:V4SI 2 "even_acc_operand" "+A")
-                    (unspec:V4SI [(match_dup 2)
-                                  (match_operand:DI 3 "even_fpr_operand" "h")
-                                  (match_operand:DI 4 "even_fpr_operand" "h")
-                                  (match_operand:V4QI 5 "accg_operand" "+B")
-                                  (match_operand:SI 6 "const_int_operand" "n")]
-                                 UNSPEC_MQMACH))
-               (set (match_dup 5)
-                    (unspec:V4QI [(const_int 0)] UNSPEC_MQMACH))]))]
+		    (unspec:V4SI [(match_dup 2)
+				  (match_operand:DI 3 "even_fpr_operand" "h")
+				  (match_operand:DI 4 "even_fpr_operand" "h")
+				  (match_operand:V4QI 5 "accg_operand" "+B")
+				  (match_operand:SI 6 "const_int_operand" "n")]
+				 UNSPEC_MQMACH))
+	       (set (match_dup 5)
+		    (unspec:V4QI [(const_int 0)] UNSPEC_MQMACH))]))]
   "TARGET_MEDIA"
   "*
 {
   switch (INTVAL (operands[6]))
   {
-  default:                    break;
+  default:		    break;
   case FRV_BUILTIN_MQMACHS: return \"cmqmachs %3, %4, %2, %1, %e0\";
   case FRV_BUILTIN_MQMACHU: return \"cmqmachu %3, %4, %2, %1, %e0\";
   }
@@ -7112,62 +7112,62 @@
 
 (define_expand "mcpxrs"
   [(parallel [(set (match_operand:SI 0 "acc_operand" "=a")
-                   (unspec:SI [(match_operand:SI 1 "fpr_operand" "f")
-                               (match_operand:SI 2 "fpr_operand" "f")
-                               (match_dup 4)]
-                              UNSPEC_MCPX))
-              (set (match_operand:QI 3 "accg_operand" "=B")
-                   (unspec:QI [(const_int 0)] UNSPEC_MCPX))])]
+		   (unspec:SI [(match_operand:SI 1 "fpr_operand" "f")
+			       (match_operand:SI 2 "fpr_operand" "f")
+			       (match_dup 4)]
+			      UNSPEC_MCPX))
+	      (set (match_operand:QI 3 "accg_operand" "=B")
+		   (unspec:QI [(const_int 0)] UNSPEC_MCPX))])]
   "TARGET_MEDIA"
   "operands[4] = GEN_INT (FRV_BUILTIN_MCPXRS);")
 
 (define_expand "mcpxru"
   [(parallel [(set (match_operand:SI 0 "acc_operand" "=a")
-                   (unspec:SI [(match_operand:SI 1 "fpr_operand" "f")
-                               (match_operand:SI 2 "fpr_operand" "f")
-                               (match_dup 4)]
-                              UNSPEC_MCPX))
-              (set (match_operand:QI 3 "accg_operand" "=B")
-                   (unspec:QI [(const_int 0)] UNSPEC_MCPX))])]
+		   (unspec:SI [(match_operand:SI 1 "fpr_operand" "f")
+			       (match_operand:SI 2 "fpr_operand" "f")
+			       (match_dup 4)]
+			      UNSPEC_MCPX))
+	      (set (match_operand:QI 3 "accg_operand" "=B")
+		   (unspec:QI [(const_int 0)] UNSPEC_MCPX))])]
   "TARGET_MEDIA"
   "operands[4] = GEN_INT (FRV_BUILTIN_MCPXRU);")
 
 (define_expand "mcpxis"
   [(parallel [(set (match_operand:SI 0 "acc_operand" "=a")
-                   (unspec:SI [(match_operand:SI 1 "fpr_operand" "f")
-                               (match_operand:SI 2 "fpr_operand" "f")
-                               (match_dup 4)]
-                              UNSPEC_MCPX))
-              (set (match_operand:QI 3 "accg_operand" "=B")
-                   (unspec:QI [(const_int 0)] UNSPEC_MCPX))])]
+		   (unspec:SI [(match_operand:SI 1 "fpr_operand" "f")
+			       (match_operand:SI 2 "fpr_operand" "f")
+			       (match_dup 4)]
+			      UNSPEC_MCPX))
+	      (set (match_operand:QI 3 "accg_operand" "=B")
+		   (unspec:QI [(const_int 0)] UNSPEC_MCPX))])]
   "TARGET_MEDIA"
   "operands[4] = GEN_INT (FRV_BUILTIN_MCPXIS);")
 
 (define_expand "mcpxiu"
   [(parallel [(set (match_operand:SI 0 "acc_operand" "=a")
-                   (unspec:SI [(match_operand:SI 1 "fpr_operand" "f")
-                               (match_operand:SI 2 "fpr_operand" "f")
-                               (match_dup 4)]
-                              UNSPEC_MCPX))
-              (set (match_operand:QI 3 "accg_operand" "=B")
-                   (unspec:QI [(const_int 0)] UNSPEC_MCPX))])]
+		   (unspec:SI [(match_operand:SI 1 "fpr_operand" "f")
+			       (match_operand:SI 2 "fpr_operand" "f")
+			       (match_dup 4)]
+			      UNSPEC_MCPX))
+	      (set (match_operand:QI 3 "accg_operand" "=B")
+		   (unspec:QI [(const_int 0)] UNSPEC_MCPX))])]
   "TARGET_MEDIA"
   "operands[4] = GEN_INT (FRV_BUILTIN_MCPXIU);")
 
 (define_insn "*mcpx"
   [(parallel [(set (match_operand:SI 0 "acc_operand" "=a")
-                   (unspec:SI [(match_operand:SI 1 "fpr_operand" "f")
-                               (match_operand:SI 2 "fpr_operand" "f")
-                               (match_operand:SI 3 "const_int_operand" "n")]
-                              UNSPEC_MCPX))
-              (set (match_operand:QI 4 "accg_operand" "=B")
-                   (unspec:QI [(const_int 0)] UNSPEC_MCPX))])]
+		   (unspec:SI [(match_operand:SI 1 "fpr_operand" "f")
+			       (match_operand:SI 2 "fpr_operand" "f")
+			       (match_operand:SI 3 "const_int_operand" "n")]
+			      UNSPEC_MCPX))
+	      (set (match_operand:QI 4 "accg_operand" "=B")
+		   (unspec:QI [(const_int 0)] UNSPEC_MCPX))])]
   "TARGET_MEDIA"
   "*
 {
   switch (INTVAL (operands[3]))
   {
-  default:                   break;
+  default:		   break;
   case FRV_BUILTIN_MCPXRS: return \"mcpxrs %1, %2, %0\";
   case FRV_BUILTIN_MCPXRU: return \"mcpxru %1, %2, %0\";
   case FRV_BUILTIN_MCPXIS: return \"mcpxis %1, %2, %0\";
@@ -7182,21 +7182,21 @@
 (define_insn "*cond_exec_mcpx"
   [(cond_exec
     (match_operator 0 "ccr_eqne_operator"
-                    [(match_operand 1 "cr_operand" "C")
-                     (const_int 0)])
+		    [(match_operand 1 "cr_operand" "C")
+		     (const_int 0)])
     (parallel [(set (match_operand:SI 2 "acc_operand" "=a")
-                    (unspec:SI [(match_operand:SI 3 "fpr_operand" "f")
-                                (match_operand:SI 4 "fpr_operand" "f")
-                                (match_operand:SI 5 "const_int_operand" "n")]
-                               UNSPEC_MCPX))
-               (set (match_operand:QI 6 "accg_operand" "=B")
-                    (unspec:QI [(const_int 0)] UNSPEC_MCPX))]))]
+		    (unspec:SI [(match_operand:SI 3 "fpr_operand" "f")
+				(match_operand:SI 4 "fpr_operand" "f")
+				(match_operand:SI 5 "const_int_operand" "n")]
+			       UNSPEC_MCPX))
+	       (set (match_operand:QI 6 "accg_operand" "=B")
+		    (unspec:QI [(const_int 0)] UNSPEC_MCPX))]))]
   "TARGET_MEDIA"
   "*
 {
   switch (INTVAL (operands[5]))
   {
-  default:                   break;
+  default:		   break;
   case FRV_BUILTIN_MCPXRS: return \"cmcpxrs %3, %4, %2, %1, %e0\";
   case FRV_BUILTIN_MCPXRU: return \"cmcpxru %3, %4, %2, %1, %e0\";
   case FRV_BUILTIN_MCPXIS: return \"cmcpxis %3, %4, %2, %1, %e0\";
@@ -7212,45 +7212,45 @@
 
 (define_expand "mqcpxrs"
   [(parallel [(set (match_operand:DI 0 "even_acc_operand" "=b")
-                   (unspec:DI [(match_operand:DI 1 "fpr_operand" "f")
-                               (match_operand:DI 2 "fpr_operand" "f")
-                               (match_dup 4)]
-                              UNSPEC_MQCPX))
-              (set (match_operand:HI 3 "accg_operand" "=B")
-                   (unspec:HI [(const_int 0)] UNSPEC_MQCPX))])]
+		   (unspec:DI [(match_operand:DI 1 "fpr_operand" "f")
+			       (match_operand:DI 2 "fpr_operand" "f")
+			       (match_dup 4)]
+			      UNSPEC_MQCPX))
+	      (set (match_operand:HI 3 "accg_operand" "=B")
+		   (unspec:HI [(const_int 0)] UNSPEC_MQCPX))])]
   "TARGET_MEDIA"
   "operands[4] = GEN_INT (FRV_BUILTIN_MQCPXRS);")
 
 (define_expand "mqcpxru"
   [(parallel [(set (match_operand:DI 0 "even_acc_operand" "=b")
-                   (unspec:DI [(match_operand:DI 1 "fpr_operand" "f")
-                               (match_operand:DI 2 "fpr_operand" "f")
-                               (match_dup 4)]
-                              UNSPEC_MQCPX))
-              (set (match_operand:HI 3 "accg_operand" "=B")
-                   (unspec:HI [(const_int 0)] UNSPEC_MQCPX))])]
+		   (unspec:DI [(match_operand:DI 1 "fpr_operand" "f")
+			       (match_operand:DI 2 "fpr_operand" "f")
+			       (match_dup 4)]
+			      UNSPEC_MQCPX))
+	      (set (match_operand:HI 3 "accg_operand" "=B")
+		   (unspec:HI [(const_int 0)] UNSPEC_MQCPX))])]
   "TARGET_MEDIA"
   "operands[4] = GEN_INT (FRV_BUILTIN_MQCPXRU);")
 
 (define_expand "mqcpxis"
   [(parallel [(set (match_operand:DI 0 "even_acc_operand" "=b")
-                   (unspec:DI [(match_operand:DI 1 "fpr_operand" "f")
-                               (match_operand:DI 2 "fpr_operand" "f")
-                               (match_dup 4)]
-                              UNSPEC_MQCPX))
-              (set (match_operand:HI 3 "accg_operand" "=B")
-                   (unspec:HI [(const_int 0)] UNSPEC_MQCPX))])]
+		   (unspec:DI [(match_operand:DI 1 "fpr_operand" "f")
+			       (match_operand:DI 2 "fpr_operand" "f")
+			       (match_dup 4)]
+			      UNSPEC_MQCPX))
+	      (set (match_operand:HI 3 "accg_operand" "=B")
+		   (unspec:HI [(const_int 0)] UNSPEC_MQCPX))])]
   "TARGET_MEDIA"
   "operands[4] = GEN_INT (FRV_BUILTIN_MQCPXIS);")
 
 (define_expand "mqcpxiu"
   [(parallel [(set (match_operand:DI 0 "even_acc_operand" "=b")
-                   (unspec:DI [(match_operand:DI 1 "fpr_operand" "f")
-                               (match_operand:DI 2 "fpr_operand" "f")
-                               (match_dup 4)]
-                              UNSPEC_MQCPX))
-              (set (match_operand:HI 3 "accg_operand" "=B")
-                   (unspec:HI [(const_int 0)] UNSPEC_MQCPX))])]
+		   (unspec:DI [(match_operand:DI 1 "fpr_operand" "f")
+			       (match_operand:DI 2 "fpr_operand" "f")
+			       (match_dup 4)]
+			      UNSPEC_MQCPX))
+	      (set (match_operand:HI 3 "accg_operand" "=B")
+		   (unspec:HI [(const_int 0)] UNSPEC_MQCPX))])]
   "TARGET_MEDIA"
   "operands[4] = GEN_INT (FRV_BUILTIN_MQCPXIU);")
 
@@ -7258,16 +7258,16 @@
   [(set (match_operand:DI 0 "even_acc_operand" "=b")
         (unspec:DI [(match_operand:DI 1 "fpr_operand" "f")
                     (match_operand:DI 2 "fpr_operand" "f")
-                    (match_operand:SI 3 "const_int_operand" "n")]
-                   UNSPEC_MQCPX))
+		    (match_operand:SI 3 "const_int_operand" "n")]
+		   UNSPEC_MQCPX))
    (set (match_operand:HI 4 "accg_operand" "=B")
-        (unspec:HI [(const_int 0)] UNSPEC_MQCPX))]
+	(unspec:HI [(const_int 0)] UNSPEC_MQCPX))]
   "TARGET_MEDIA"
   "*
 {
   switch (INTVAL (operands[3]))
   {
-  default:                    break;
+  default:		    break;
   case FRV_BUILTIN_MQCPXRS: return \"mqcpxrs %1, %2, %0\";
   case FRV_BUILTIN_MQCPXRU: return \"mqcpxru %1, %2, %0\";
   case FRV_BUILTIN_MQCPXIS: return \"mqcpxis %1, %2, %0\";
@@ -7285,9 +7285,9 @@
   [(set (match_operand:SI 0 "fpr_operand" "=f")
         (unspec:SI [(match_operand:SI 1 "acc_operand" "a")
                     (match_operand:SI 2 "fpr_or_int6_operand" "fI")
-                    (match_operand:QI 3 "accg_operand" "B")
-                    (match_dup 4)]
-                   UNSPEC_MCUT))]
+		    (match_operand:QI 3 "accg_operand" "B")
+		    (match_dup 4)]
+		   UNSPEC_MCUT))]
   "TARGET_MEDIA"
   "operands[4] = GEN_INT (FRV_BUILTIN_MCUT);")
 
@@ -7295,9 +7295,9 @@
   [(set (match_operand:SI 0 "fpr_operand" "=f")
         (unspec:SI [(match_operand:SI 1 "acc_operand" "a")
                     (match_operand:SI 2 "fpr_or_int6_operand" "fI")
-                    (match_operand:QI 3 "accg_operand" "B")
-                    (match_dup 4)]
-                   UNSPEC_MCUT))]
+		    (match_operand:QI 3 "accg_operand" "B")
+		    (match_dup 4)]
+		   UNSPEC_MCUT))]
   "TARGET_MEDIA"
   "operands[4] = GEN_INT (FRV_BUILTIN_MCUTSS);")
 
@@ -7305,15 +7305,15 @@
   [(set (match_operand:SI 0 "fpr_operand" "=f")
         (unspec:SI [(match_operand:SI 1 "acc_operand" "a")
                     (match_operand:SI 2 "fpr_or_int6_operand" "fI")
-                    (match_operand:QI 3 "accg_operand" "B")
-                    (match_operand:SI 4 "const_int_operand" "n")]
-                   UNSPEC_MCUT))]
+		    (match_operand:QI 3 "accg_operand" "B")
+		    (match_operand:SI 4 "const_int_operand" "n")]
+		   UNSPEC_MCUT))]
   "TARGET_MEDIA"
   "*
 {
   switch (INTVAL (operands[4]))
   {
-  default:                   break;
+  default:		   break;
   case FRV_BUILTIN_MCUT:   return \"mcut%i2 %1, %2, %0\";
   case FRV_BUILTIN_MCUTSS: return \"mcutss%i2 %1, %2, %0\";
   }
@@ -7327,7 +7327,7 @@
 
 (define_insn "mrdacc"
   [(set (match_operand:SI 0 "fpr_operand" "=f")
-        (unspec:SI [(match_operand:SI 1 "acc_operand" "a")] UNSPEC_MRDACC))]
+	(unspec:SI [(match_operand:SI 1 "acc_operand" "a")] UNSPEC_MRDACC))]
   "TARGET_MEDIA"
   "mrdacc %1, %0"
   [(set_attr "length" "4")
@@ -7335,7 +7335,7 @@
 
 (define_insn "mrdaccg"
   [(set (match_operand:SI 0 "fpr_operand" "=f")
-        (unspec:SI [(match_operand:QI 1 "accg_operand" "B")] UNSPEC_MRDACCG))]
+	(unspec:SI [(match_operand:QI 1 "accg_operand" "B")] UNSPEC_MRDACCG))]
   "TARGET_MEDIA"
   "mrdaccg %1, %0"
   [(set_attr "length" "4")
@@ -7345,7 +7345,7 @@
 
 (define_insn "mwtacc"
   [(set (match_operand:SI 0 "acc_operand" "=a")
-        (unspec:SI [(match_operand:SI 1 "fpr_operand" "f")] UNSPEC_MWTACC))]
+	(unspec:SI [(match_operand:SI 1 "fpr_operand" "f")] UNSPEC_MWTACC))]
   "TARGET_MEDIA"
   "mwtacc %1, %0"
   [(set_attr "length" "4")
@@ -7353,7 +7353,7 @@
 
 (define_insn "mwtaccg"
   [(set (match_operand:QI 0 "accg_operand" "=B")
-        (unspec:QI [(match_operand:SI 1 "fpr_operand" "f")] UNSPEC_MWTACCG))]
+	(unspec:QI [(match_operand:SI 1 "fpr_operand" "f")] UNSPEC_MWTACCG))]
   "TARGET_MEDIA"
   "mwtaccg %1, %0"
   [(set_attr "length" "4")
@@ -7372,9 +7372,9 @@
 
 (define_insn "mclracc_internal"
   [(set (match_operand:SI 0 "acc_operand" "=a")
-        (unspec:SI [(const_int 0)] UNSPEC_MCLRACC))
+	(unspec:SI [(const_int 0)] UNSPEC_MCLRACC))
    (set (match_operand:QI 1 "accg_operand" "=B")
-        (unspec:QI [(const_int 0)] UNSPEC_MCLRACC))]
+	(unspec:QI [(const_int 0)] UNSPEC_MCLRACC))]
   "TARGET_MEDIA"
   "mclracc %0,#0"
   [(set_attr "length" "4")
@@ -7382,9 +7382,9 @@
 
 (define_expand "mclracc"
   [(parallel [(set (match_operand:SI 0 "acc_operand" "=a")
-                   (unspec:SI [(const_int 0)] UNSPEC_MCLRACC))
-              (set (match_dup 1)
-                   (unspec:QI [(const_int 0)] UNSPEC_MCLRACC))])]
+		   (unspec:SI [(const_int 0)] UNSPEC_MCLRACC))
+	      (set (match_dup 1)
+		   (unspec:QI [(const_int 0)] UNSPEC_MCLRACC))])]
   "TARGET_MEDIA"
   "
 {
@@ -7398,13 +7398,13 @@
 
 (define_insn "mclracca8_internal"
   [(set (match_operand:V4SI 0 "quad_acc_operand" "=b")
-        (unspec:V4SI [(const_int 0)] UNSPEC_MCLRACCA))
+	(unspec:V4SI [(const_int 0)] UNSPEC_MCLRACCA))
    (set (match_operand:V4SI 1 "quad_acc_operand" "=b")
-        (unspec:V4SI [(const_int 0)] UNSPEC_MCLRACCA))
+	(unspec:V4SI [(const_int 0)] UNSPEC_MCLRACCA))
    (set (match_operand:V4QI 2 "accg_operand" "=B")
-        (unspec:V4QI [(const_int 0)] UNSPEC_MCLRACCA))
+	(unspec:V4QI [(const_int 0)] UNSPEC_MCLRACCA))
    (set (match_operand:V4QI 3 "accg_operand" "=B")
-        (unspec:V4QI [(const_int 0)] UNSPEC_MCLRACCA))]
+	(unspec:V4QI [(const_int 0)] UNSPEC_MCLRACCA))]
   "TARGET_MEDIA && TARGET_ACC_8"
   "mclracc acc0,#1"
   [(set_attr "length" "4")
@@ -7412,9 +7412,9 @@
 
 (define_insn "mclracca4_internal"
   [(set (match_operand:V4SI 0 "quad_acc_operand" "=b")
-        (unspec:V4SI [(const_int 0)] UNSPEC_MCLRACCA))
+	(unspec:V4SI [(const_int 0)] UNSPEC_MCLRACCA))
    (set (match_operand:V4QI 1 "accg_operand" "=B")
-        (unspec:V4QI [(const_int 0)] UNSPEC_MCLRACCA))]
+	(unspec:V4QI [(const_int 0)] UNSPEC_MCLRACCA))]
   "TARGET_MEDIA && TARGET_ACC_4"
   "mclracc acc0,#1"
   [(set_attr "length" "4")
@@ -7422,9 +7422,9 @@
 
 (define_expand "mclracca8"
   [(parallel [(set (match_dup 0) (unspec:V4SI [(const_int 0)] UNSPEC_MCLRACCA))
-              (set (match_dup 1) (unspec:V4SI [(const_int 0)] UNSPEC_MCLRACCA))
-              (set (match_dup 2) (unspec:V4QI [(const_int 0)] UNSPEC_MCLRACCA))
-              (set (match_dup 3) (unspec:V4QI [(const_int 0)] UNSPEC_MCLRACCA))])]
+	      (set (match_dup 1) (unspec:V4SI [(const_int 0)] UNSPEC_MCLRACCA))
+	      (set (match_dup 2) (unspec:V4QI [(const_int 0)] UNSPEC_MCLRACCA))
+	      (set (match_dup 3) (unspec:V4QI [(const_int 0)] UNSPEC_MCLRACCA))])]
   "TARGET_MEDIA && TARGET_ACC_8"
   "
 {
@@ -7436,7 +7436,7 @@
 
 (define_expand "mclracca4"
   [(parallel [(set (match_dup 0) (unspec:V4SI [(const_int 0)] UNSPEC_MCLRACCA))
-              (set (match_dup 1) (unspec:V4QI [(const_int 0)] UNSPEC_MCLRACCA))])]
+	      (set (match_dup 1) (unspec:V4QI [(const_int 0)] UNSPEC_MCLRACCA))])]
   "TARGET_MEDIA && TARGET_ACC_4"
   "
 {
@@ -7467,7 +7467,7 @@
 (define_insn "*mdunpackh_internal"
   [(set (match_operand:V4SI 0 "quad_fpr_operand" "=x")
         (unspec:V4SI [(match_operand:DI 1 "even_fpr_operand" "h")]
-                     UNSPEC_MDUNPACKH_INTERNAL))]
+		     UNSPEC_MDUNPACKH_INTERNAL))]
   "TARGET_MEDIA_REV1"
   "mdunpackh %1, %0"
   [(set_attr "length" "4")
@@ -7476,17 +7476,17 @@
 (define_insn_and_split "mdunpackh"
   [(set (match_operand:V4SI 0 "memory_operand" "=o")
         (unspec:V4SI [(match_operand:DI 1 "even_fpr_operand" "h")]
-                     UNSPEC_MDUNPACKH))
+		     UNSPEC_MDUNPACKH))
    (clobber (match_scratch:V4SI 2 "=x"))]
   "TARGET_MEDIA_REV1"
   "#"
   "reload_completed"
   [(set (match_dup 2)
-        (unspec:V4SI [(match_dup 1)] UNSPEC_MDUNPACKH_INTERNAL))
+	(unspec:V4SI [(match_dup 1)] UNSPEC_MDUNPACKH_INTERNAL))
    (set (match_dup 3)
-        (match_dup 4))
+	(match_dup 4))
    (set (match_dup 5)
-        (match_dup 6))]
+	(match_dup 6))]
   "
 {
   operands[3] = change_address (operands[0], DImode, NULL_RTX);
@@ -7500,7 +7500,7 @@
 (define_insn "*mbtohe_internal"
   [(set (match_operand:V4SI 0 "quad_fpr_operand" "=x")
         (unspec:V4SI [(match_operand:SI 1 "fpr_operand" "f")]
-                     UNSPEC_MBTOHE_INTERNAL))]
+		     UNSPEC_MBTOHE_INTERNAL))]
   "TARGET_MEDIA_REV1"
   "mbtohe %1, %0"
   [(set_attr "length" "4")
@@ -7509,17 +7509,17 @@
 (define_insn_and_split "mbtohe"
   [(set (match_operand:V4SI 0 "memory_operand" "=o")
         (unspec:V4SI [(match_operand:SI 1 "fpr_operand" "f")]
-                     UNSPEC_MBTOHE))
+		     UNSPEC_MBTOHE))
    (clobber (match_scratch:V4SI 2 "=x"))]
   "TARGET_MEDIA_REV1"
   "#"
   "reload_completed"
   [(set (match_dup 2)
-        (unspec:V4SI [(match_dup 1)] UNSPEC_MBTOHE_INTERNAL))
+	(unspec:V4SI [(match_dup 1)] UNSPEC_MBTOHE_INTERNAL))
    (set (match_dup 3)
-        (match_dup 4))
+	(match_dup 4))
    (set (match_dup 5)
-        (match_dup 6))]
+	(match_dup 6))]
   "
 {
   operands[3] = change_address (operands[0], DImode, NULL_RTX);
@@ -7535,59 +7535,59 @@
 
 (define_expand "mqxmachs"
   [(parallel [(set (match_operand:V4SI 0 "quad_acc_operand" "")
-                   (unspec:V4SI [(match_dup 0)
-                                    (match_operand:DI 1 "even_fpr_operand" "")
-                                 (match_operand:DI 2 "even_fpr_operand" "")
-                                 (match_operand:V4QI 3 "accg_operand" "")
-                                 (match_dup 4)]
-                                UNSPEC_MQMACH2))
-                (set (match_dup 3)
-                     (unspec:V4QI [(const_int 0)] UNSPEC_MQMACH2))])]
+	           (unspec:V4SI [(match_dup 0)
+		   	         (match_operand:DI 1 "even_fpr_operand" "")
+			         (match_operand:DI 2 "even_fpr_operand" "")
+				 (match_operand:V4QI 3 "accg_operand" "")
+				 (match_dup 4)]
+				UNSPEC_MQMACH2))
+		(set (match_dup 3)
+		     (unspec:V4QI [(const_int 0)] UNSPEC_MQMACH2))])]
   "TARGET_MEDIA_REV2"
   "operands[4] = GEN_INT (FRV_BUILTIN_MQXMACHS);")
 
 (define_expand "mqxmacxhs"
   [(parallel [(set (match_operand:V4SI 0 "quad_acc_operand" "")
-                   (unspec:V4SI [(match_dup 0)
-                                 (match_operand:DI 1 "even_fpr_operand" "")
-                                 (match_operand:DI 2 "even_fpr_operand" "")
-                                 (match_operand:V4QI 3 "accg_operand" "")
-                                 (match_dup 4)]
-                                UNSPEC_MQMACH2))
-              (set (match_dup 3)
-                   (unspec:V4QI [(const_int 0)] UNSPEC_MQMACH2))])]
+		   (unspec:V4SI [(match_dup 0)
+				 (match_operand:DI 1 "even_fpr_operand" "")
+				 (match_operand:DI 2 "even_fpr_operand" "")
+				 (match_operand:V4QI 3 "accg_operand" "")
+				 (match_dup 4)]
+				UNSPEC_MQMACH2))
+	      (set (match_dup 3)
+		   (unspec:V4QI [(const_int 0)] UNSPEC_MQMACH2))])]
   "TARGET_MEDIA_REV2"
   "operands[4] = GEN_INT (FRV_BUILTIN_MQXMACXHS);")
 
 (define_expand "mqmacxhs"
   [(parallel [(set (match_operand:V4SI 0 "quad_acc_operand" "")
-                   (unspec:V4SI [(match_dup 0)
-                                 (match_operand:DI 1 "even_fpr_operand" "")
-                                 (match_operand:DI 2 "even_fpr_operand" "")
-                                 (match_operand:V4QI 3 "accg_operand" "")
-                                 (match_dup 4)]
-                                UNSPEC_MQMACH2))
-              (set (match_dup 3)
-                   (unspec:V4QI [(const_int 0)] UNSPEC_MQMACH2))])]
+		   (unspec:V4SI [(match_dup 0)
+				 (match_operand:DI 1 "even_fpr_operand" "")
+				 (match_operand:DI 2 "even_fpr_operand" "")
+				 (match_operand:V4QI 3 "accg_operand" "")
+				 (match_dup 4)]
+				UNSPEC_MQMACH2))
+	      (set (match_dup 3)
+		   (unspec:V4QI [(const_int 0)] UNSPEC_MQMACH2))])]
   "TARGET_MEDIA_REV2"
   "operands[4] = GEN_INT (FRV_BUILTIN_MQMACXHS);")
 
 (define_insn "*mqmach2"
   [(set (match_operand:V4SI 0 "quad_acc_operand" "+A")
         (unspec:V4SI [(match_dup 0)
-                      (match_operand:DI 1 "even_fpr_operand" "h")
-                      (match_operand:DI 2 "even_fpr_operand" "h")
-                      (match_operand:V4QI 3 "accg_operand" "+B")
-                      (match_operand:SI 4 "const_int_operand" "n")]
-                     UNSPEC_MQMACH2))
+		      (match_operand:DI 1 "even_fpr_operand" "h")
+		      (match_operand:DI 2 "even_fpr_operand" "h")
+		      (match_operand:V4QI 3 "accg_operand" "+B")
+		      (match_operand:SI 4 "const_int_operand" "n")]
+		     UNSPEC_MQMACH2))
    (set (match_dup 3)
-        (unspec:V4QI [(const_int 0)] UNSPEC_MQMACH2))]
+	(unspec:V4QI [(const_int 0)] UNSPEC_MQMACH2))]
   "TARGET_MEDIA_REV2"
   "*
 {
   switch (INTVAL (operands[4]))
   {
-  default:                      break;
+  default:		      break;
   case FRV_BUILTIN_MQXMACHS:  return \"mqxmachs %1, %2, %0\";
   case FRV_BUILTIN_MQXMACXHS: return \"mqxmacxhs %1, %2, %0\";
   case FRV_BUILTIN_MQMACXHS:  return \"mqmacxhs %1, %2, %0\";
@@ -7602,33 +7602,33 @@
 
 (define_expand "maddaccs"
   [(parallel [(set (match_operand:SI 0 "acc_operand" "")
-                   (unspec:SI [(match_operand:DI 1 "even_acc_operand" "")]
-                              UNSPEC_MADDACC))
-              (set (match_operand:QI 2 "accg_operand" "")
-                   (unspec:QI [(match_operand:HI 3 "accg_operand" "")
-                               (match_dup 4)]
-                              UNSPEC_MADDACC))])]
+		   (unspec:SI [(match_operand:DI 1 "even_acc_operand" "")]
+			      UNSPEC_MADDACC))
+	      (set (match_operand:QI 2 "accg_operand" "")
+		   (unspec:QI [(match_operand:HI 3 "accg_operand" "")
+			       (match_dup 4)]
+			      UNSPEC_MADDACC))])]
   "TARGET_MEDIA_REV2"
   "operands[4] = GEN_INT (FRV_BUILTIN_MADDACCS);")
 
 (define_expand "msubaccs"
   [(parallel [(set (match_operand:SI 0 "acc_operand" "")
-                   (unspec:SI [(match_operand:DI 1 "even_acc_operand" "")]
-                              UNSPEC_MADDACC))
-              (set (match_operand:QI 2 "accg_operand" "")
-                   (unspec:QI [(match_operand:HI 3 "accg_operand" "")
-                               (match_dup 4)]
-                              UNSPEC_MADDACC))])]
+		   (unspec:SI [(match_operand:DI 1 "even_acc_operand" "")]
+			      UNSPEC_MADDACC))
+	      (set (match_operand:QI 2 "accg_operand" "")
+		   (unspec:QI [(match_operand:HI 3 "accg_operand" "")
+			       (match_dup 4)]
+			      UNSPEC_MADDACC))])]
   "TARGET_MEDIA_REV2"
   "operands[4] = GEN_INT (FRV_BUILTIN_MSUBACCS);")
 
 (define_insn "masaccs"
   [(set (match_operand:DI 0 "even_acc_operand" "=b")
-        (unspec:DI [(match_operand:DI 1 "even_acc_operand" "b")]
-                   UNSPEC_MASACCS))
+	(unspec:DI [(match_operand:DI 1 "even_acc_operand" "b")]
+		   UNSPEC_MASACCS))
    (set (match_operand:HI 2 "accg_operand" "=B")
-        (unspec:HI [(match_operand:HI 3 "accg_operand" "B")]
-                   UNSPEC_MASACCS))]
+	(unspec:HI [(match_operand:HI 3 "accg_operand" "B")]
+		   UNSPEC_MASACCS))]
   "TARGET_MEDIA_REV2"
   "masaccs %1, %0"
   [(set_attr "length" "4")
@@ -7636,18 +7636,18 @@
 
 (define_insn "*maddacc"
   [(set (match_operand:SI 0 "acc_operand" "=a")
-        (unspec:SI [(match_operand:DI 1 "even_acc_operand" "b")]
-                   UNSPEC_MADDACC))
+	(unspec:SI [(match_operand:DI 1 "even_acc_operand" "b")]
+		   UNSPEC_MADDACC))
    (set (match_operand:QI 2 "accg_operand" "=B")
-        (unspec:QI [(match_operand:HI 3 "accg_operand" "B")
-                    (match_operand:SI 4 "const_int_operand" "n")]
-                   UNSPEC_MADDACC))]
+	(unspec:QI [(match_operand:HI 3 "accg_operand" "B")
+		    (match_operand:SI 4 "const_int_operand" "n")]
+		   UNSPEC_MADDACC))]
   "TARGET_MEDIA_REV2"
   "*
 {
   switch (INTVAL (operands[4]))
   {
-  default:                     break;
+  default:		     break;
   case FRV_BUILTIN_MADDACCS: return \"maddaccs %1, %0\";
   case FRV_BUILTIN_MSUBACCS: return \"msubaccs %1, %0\";
   }
@@ -7661,33 +7661,33 @@
 
 (define_expand "mdaddaccs"
   [(parallel [(set (match_operand:DI 0 "even_acc_operand" "")
-                   (unspec:DI [(match_operand:V4SI 1 "quad_acc_operand" "")]
-                              UNSPEC_MDADDACC))
-              (set (match_operand:HI 2 "accg_operand" "")
-                   (unspec:HI [(match_operand:V4QI 3 "accg_operand" "")
-                               (match_dup 4)]
-                              UNSPEC_MDADDACC))])]
+		   (unspec:DI [(match_operand:V4SI 1 "quad_acc_operand" "")]
+			      UNSPEC_MDADDACC))
+	      (set (match_operand:HI 2 "accg_operand" "")
+		   (unspec:HI [(match_operand:V4QI 3 "accg_operand" "")
+			       (match_dup 4)]
+			      UNSPEC_MDADDACC))])]
   "TARGET_MEDIA_REV2"
   "operands[4] = GEN_INT (FRV_BUILTIN_MDADDACCS);")
 
 (define_expand "mdsubaccs"
   [(parallel [(set (match_operand:DI 0 "even_acc_operand" "")
-                   (unspec:DI [(match_operand:V4SI 1 "quad_acc_operand" "")]
-                              UNSPEC_MDADDACC))
-              (set (match_operand:HI 2 "accg_operand" "")
-                         (unspec:HI [(match_operand:V4QI 3 "accg_operand" "")
-                               (match_dup 4)]
-                              UNSPEC_MDADDACC))])]
+		   (unspec:DI [(match_operand:V4SI 1 "quad_acc_operand" "")]
+			      UNSPEC_MDADDACC))
+	      (set (match_operand:HI 2 "accg_operand" "")
+	      	   (unspec:HI [(match_operand:V4QI 3 "accg_operand" "")
+			       (match_dup 4)]
+			      UNSPEC_MDADDACC))])]
   "TARGET_MEDIA_REV2"
   "operands[4] = GEN_INT (FRV_BUILTIN_MDSUBACCS);")
 
 (define_insn "mdasaccs"
   [(set (match_operand:V4SI 0 "quad_acc_operand" "=A")
-        (unspec:V4SI [(match_operand:V4SI 1 "quad_acc_operand" "A")]
-                     UNSPEC_MDASACCS))
+	(unspec:V4SI [(match_operand:V4SI 1 "quad_acc_operand" "A")]
+		     UNSPEC_MDASACCS))
    (set (match_operand:V4QI 2 "accg_operand" "=B")
-        (unspec:V4QI [(match_operand:V4QI 3 "accg_operand" "B")]
-                     UNSPEC_MDASACCS))]
+	(unspec:V4QI [(match_operand:V4QI 3 "accg_operand" "B")]
+		     UNSPEC_MDASACCS))]
   "TARGET_MEDIA_REV2"
   "mdasaccs %1, %0"
   [(set_attr "length" "4")
@@ -7695,18 +7695,18 @@
 
 (define_insn "*mdaddacc"
   [(set (match_operand:DI 0 "even_acc_operand" "=b")
-        (unspec:DI [(match_operand:V4SI 1 "quad_acc_operand" "A")]
-                   UNSPEC_MDADDACC))
+	(unspec:DI [(match_operand:V4SI 1 "quad_acc_operand" "A")]
+		   UNSPEC_MDADDACC))
    (set (match_operand:HI 2 "accg_operand" "=B")
-        (unspec:HI [(match_operand:V4QI 3 "accg_operand" "B")
-                    (match_operand:SI 4 "const_int_operand" "n")]
-                   UNSPEC_MDADDACC))]
+	(unspec:HI [(match_operand:V4QI 3 "accg_operand" "B")
+		    (match_operand:SI 4 "const_int_operand" "n")]
+		   UNSPEC_MDADDACC))]
   "TARGET_MEDIA_REV2"
   "*
 {
   switch (INTVAL (operands[4]))
   {
-  default:                      break;
+  default:		      break;
   case FRV_BUILTIN_MDADDACCS: return \"mdaddaccs %1, %0\";
   case FRV_BUILTIN_MDSUBACCS: return \"mdsubaccs %1, %0\";
   }
@@ -7731,8 +7731,8 @@
 (define_insn "mdrotli"
   [(set (match_operand:DI 0 "even_fpr_operand" "=h")
         (unspec:DI [(match_operand:DI 1 "even_fpr_operand" "h")
-                    (match_operand:SI 2 "uint5_operand" "I")]
-                   UNSPEC_MDROTLI))]
+		    (match_operand:SI 2 "uint5_operand" "I")]
+		   UNSPEC_MDROTLI))]
   "TARGET_MEDIA_REV2"
   "mdrotli %1, %2, %0"
   [(set_attr "length" "4")
@@ -7743,8 +7743,8 @@
 (define_insn "mcplhi"
   [(set (match_operand:SI 0 "fpr_operand" "=f")
         (unspec:SI [(match_operand:DI 1 "fpr_operand" "h")
-                    (match_operand:SI 2 "uint4_operand" "I")]
-                   UNSPEC_MCPLHI))]
+		    (match_operand:SI 2 "uint4_operand" "I")]
+		   UNSPEC_MCPLHI))]
   "TARGET_MEDIA_REV2"
   "mcplhi %1, %2, %0"
   [(set_attr "length" "4")
@@ -7753,8 +7753,8 @@
 (define_insn "mcpli"
   [(set (match_operand:SI 0 "fpr_operand" "=f")
         (unspec:SI [(match_operand:DI 1 "fpr_operand" "h")
-                    (match_operand:SI 2 "uint5_operand" "I")]
-                   UNSPEC_MCPLI))]
+		    (match_operand:SI 2 "uint5_operand" "I")]
+		   UNSPEC_MCPLI))]
   "TARGET_MEDIA_REV2"
   "mcpli %1, %2, %0"
   [(set_attr "length" "4")
@@ -7765,9 +7765,9 @@
 (define_insn "mdcutssi"
   [(set (match_operand:DI 0 "even_fpr_operand" "=h")
         (unspec:DI [(match_operand:DI 1 "even_acc_operand" "b")
-                    (match_operand:SI 2 "int6_operand" "I")
-                    (match_operand:HI 3 "accg_operand" "B")]
-                   UNSPEC_MDCUTSSI))]
+		    (match_operand:SI 2 "int6_operand" "I")
+		    (match_operand:HI 3 "accg_operand" "B")]
+		   UNSPEC_MDCUTSSI))]
   "TARGET_MEDIA_REV2"
   "mdcutssi %1, %2, %0"
   [(set_attr "length" "4")
@@ -7778,8 +7778,8 @@
 (define_insn "mqsaths"
   [(set (match_operand:DI 0 "even_fpr_operand" "=h")
         (unspec:DI [(match_operand:DI 1 "even_fpr_operand" "h")
-                    (match_operand:DI 2 "even_fpr_operand" "h")]
-                   UNSPEC_MQSATHS))]
+		    (match_operand:DI 2 "even_fpr_operand" "h")]
+		   UNSPEC_MQSATHS))]
   "TARGET_MEDIA_REV2"
   "mqsaths %1, %2, %0"
   [(set_attr "length" "4")
@@ -7790,8 +7790,8 @@
 (define_insn "mqlclrhs"
   [(set (match_operand:DI 0 "even_fpr_operand" "=h")
         (unspec:DI [(match_operand:DI 1 "even_fpr_operand" "h")
-                    (match_operand:DI 2 "even_fpr_operand" "h")]
-                   UNSPEC_MQLCLRHS))]
+		    (match_operand:DI 2 "even_fpr_operand" "h")]
+		   UNSPEC_MQLCLRHS))]
   "TARGET_MEDIA_FR450"
   "mqlclrhs %1, %2, %0"
   [(set_attr "length" "4")
@@ -7800,8 +7800,8 @@
 (define_insn "mqlmths"
   [(set (match_operand:DI 0 "even_fpr_operand" "=h")
         (unspec:DI [(match_operand:DI 1 "even_fpr_operand" "h")
-                    (match_operand:DI 2 "even_fpr_operand" "h")]
-                   UNSPEC_MQLMTHS))]
+		    (match_operand:DI 2 "even_fpr_operand" "h")]
+		   UNSPEC_MQLMTHS))]
   "TARGET_MEDIA_FR450"
   "mqlmths %1, %2, %0"
   [(set_attr "length" "4")
@@ -7810,8 +7810,8 @@
 (define_insn "mqsllhi"
   [(set (match_operand:DI 0 "even_fpr_operand" "=h")
         (unspec:DI [(match_operand:DI 1 "even_fpr_operand" "h")
-                    (match_operand:SI 2 "int6_operand" "I")]
-                   UNSPEC_MQSLLHI))]
+		    (match_operand:SI 2 "int6_operand" "I")]
+		   UNSPEC_MQSLLHI))]
   "TARGET_MEDIA_FR450"
   "mqsllhi %1, %2, %0"
   [(set_attr "length" "4")
@@ -7820,8 +7820,8 @@
 (define_insn "mqsrahi"
   [(set (match_operand:DI 0 "even_fpr_operand" "=h")
         (unspec:DI [(match_operand:DI 1 "even_fpr_operand" "h")
-                    (match_operand:SI 2 "int6_operand" "I")]
-                   UNSPEC_MQSRAHI))]
+		    (match_operand:SI 2 "int6_operand" "I")]
+		   UNSPEC_MQSRAHI))]
   "TARGET_MEDIA_FR450"
   "mqsrahi %1, %2, %0"
   [(set_attr "length" "4")
@@ -7831,9 +7831,9 @@
 
 (define_insn "mhsetlos"
   [(set (match_operand:SI 0 "fpr_operand" "=f")
-        (unspec:SI [(match_operand:SI 1 "fpr_operand" "0")
-                    (match_operand:SI 2 "int12_operand" "NOP")]
-                   UNSPEC_MHSETLOS))]
+	(unspec:SI [(match_operand:SI 1 "fpr_operand" "0")
+		    (match_operand:SI 2 "int12_operand" "NOP")]
+		   UNSPEC_MHSETLOS))]
   "TARGET_MEDIA_REV2"
   "mhsetlos %2, %0"
   [(set_attr "length" "4")
@@ -7841,9 +7841,9 @@
 
 (define_insn "mhsetloh"
   [(set (match_operand:SI 0 "fpr_operand" "=f")
-        (unspec:SI [(match_operand:SI 1 "fpr_operand" "0")
-                    (match_operand:SI 2 "int5_operand" "I")]
-                   UNSPEC_MHSETLOH))]
+	(unspec:SI [(match_operand:SI 1 "fpr_operand" "0")
+		    (match_operand:SI 2 "int5_operand" "I")]
+		   UNSPEC_MHSETLOH))]
   "TARGET_MEDIA_REV2"
   "mhsetloh %2, %0"
   [(set_attr "length" "4")
@@ -7851,9 +7851,9 @@
 
 (define_insn "mhsethis"
   [(set (match_operand:SI 0 "fpr_operand" "=f")
-        (unspec:SI [(match_operand:SI 1 "fpr_operand" "0")
-                    (match_operand:SI 2 "int12_operand" "NOP")]
-                   UNSPEC_MHSETHIS))]
+	(unspec:SI [(match_operand:SI 1 "fpr_operand" "0")
+		    (match_operand:SI 2 "int12_operand" "NOP")]
+		   UNSPEC_MHSETHIS))]
   "TARGET_MEDIA_REV2"
   "mhsethis %2, %0"
   [(set_attr "length" "4")
@@ -7861,9 +7861,9 @@
 
 (define_insn "mhsethih"
   [(set (match_operand:SI 0 "fpr_operand" "=f")
-        (unspec:SI [(match_operand:SI 1 "fpr_operand" "0")
-                    (match_operand:SI 2 "int5_operand" "I")]
-                   UNSPEC_MHSETHIH))]
+	(unspec:SI [(match_operand:SI 1 "fpr_operand" "0")
+		    (match_operand:SI 2 "int5_operand" "I")]
+		   UNSPEC_MHSETHIH))]
   "TARGET_MEDIA_REV2"
   "mhsethih %2, %0"
   [(set_attr "length" "4")
@@ -7871,8 +7871,8 @@
 
 (define_insn "mhdsets"
   [(set (match_operand:SI 0 "fpr_operand" "=f")
-        (unspec:SI [(match_operand:SI 1 "int12_operand" "NOP")]
-                   UNSPEC_MHDSETS))]
+	(unspec:SI [(match_operand:SI 1 "int12_operand" "NOP")]
+		   UNSPEC_MHDSETS))]
   "TARGET_MEDIA_REV2"
   "mhdsets %1, %0"
   [(set_attr "length" "4")
@@ -7880,9 +7880,9 @@
 
 (define_insn "mhdseth"
   [(set (match_operand:SI 0 "fpr_operand" "=f")
-        (unspec:SI [(match_operand:SI 1 "fpr_operand" "0")
-                    (match_operand:SI 2 "int5_operand" "I")]
-                   UNSPEC_MHDSETH))]
+	(unspec:SI [(match_operand:SI 1 "fpr_operand" "0")
+		    (match_operand:SI 2 "int5_operand" "I")]
+		   UNSPEC_MHDSETH))]
   "TARGET_MEDIA_REV2"
   "mhdseth %2, %0"
   [(set_attr "length" "4")
@@ -7905,32 +7905,32 @@
   MEM_READONLY_P (SET_SRC (PATTERN (insn))) = 1;
 
   REG_NOTES (insn) = gen_rtx_EXPR_LIST (REG_EQUAL, operands[1],
-                                        REG_NOTES (insn));
+					REG_NOTES (insn));
 
   DONE;
 }")
 
 (define_expand "symGOT2reg_i"
   [(set (match_operand:SI 0 "" "")
-        (mem:SI (plus:SI (match_operand:SI 2 "" "")
-                         (const:SI (unspec:SI [(match_operand:SI 1 "" "")
-                                               (match_operand:SI 3 "" "")]
-                                              UNSPEC_GOT)))))]
+	(mem:SI (plus:SI (match_operand:SI 2 "" "")
+			 (const:SI (unspec:SI [(match_operand:SI 1 "" "")
+					       (match_operand:SI 3 "" "")]
+					      UNSPEC_GOT)))))]
   ""
   "")
 
 (define_expand "symGOT2reg_hilo"
   [(set (match_dup 6)
-        (high:SI (const:SI (unspec:SI [(match_operand:SI 1 "" "")
-                                       (match_dup 4)] UNSPEC_GOT))))
+	(high:SI (const:SI (unspec:SI [(match_operand:SI 1 "" "")
+				       (match_dup 4)] UNSPEC_GOT))))
    (set (match_dup 5)
-        (lo_sum:SI (match_dup 6)
-                   (const:SI (unspec:SI [(match_dup 1)
-                                         (match_operand:SI 3 "" "")]
-                                        UNSPEC_GOT))))
+	(lo_sum:SI (match_dup 6)
+		   (const:SI (unspec:SI [(match_dup 1)
+					 (match_operand:SI 3 "" "")]
+					UNSPEC_GOT))))
    (set (match_operand:SI 0 "" "")
-        (mem:SI (plus:SI (match_dup 5)
-                         (match_operand:SI 2 "" ""))))
+	(mem:SI (plus:SI (match_dup 5)
+			 (match_operand:SI 2 "" ""))))
    ]
   ""
   "
@@ -7949,16 +7949,16 @@
 
 (define_expand "symGOTOFF2reg_hilo"
   [(set (match_dup 6)
-        (high:SI (const:SI (unspec:SI [(match_operand:SI 1 "" "")
-                                       (match_dup 4)] UNSPEC_GOT))))
+	(high:SI (const:SI (unspec:SI [(match_operand:SI 1 "" "")
+				       (match_dup 4)] UNSPEC_GOT))))
    (set (match_dup 5)
-        (lo_sum:SI (match_dup 6)
-                   (const:SI (unspec:SI [(match_dup 1)
-                                         (match_operand:SI 3 "" "")]
-                                        UNSPEC_GOT))))
+	(lo_sum:SI (match_dup 6)
+		   (const:SI (unspec:SI [(match_dup 1)
+					 (match_operand:SI 3 "" "")]
+					UNSPEC_GOT))))
    (set (match_operand:SI 0 "" "")
-        (plus:SI (match_dup 5)
-                 (match_operand:SI 2 "" "")))
+	(plus:SI (match_dup 5)
+		 (match_operand:SI 2 "" "")))
    ]
   ""
   "
@@ -7986,18 +7986,18 @@
   rtx insn = emit_insn (gen_symGOTOFF2reg_i (operands[0], operands[1], operands[2], operands[3]));
 
   REG_NOTES (insn) = gen_rtx_EXPR_LIST (REG_EQUAL, operands[1],
-                                        REG_NOTES (insn));
+					REG_NOTES (insn));
 
   DONE;
 }")
 
 (define_expand "symGOTOFF2reg_i"
   [(set (match_operand:SI 0 "" "")
-        (plus:SI (match_operand:SI 2 "" "")
-                 (const:SI
-                  (unspec:SI [(match_operand:SI 1 "" "")
-                             (match_operand:SI 3 "" "")]
-                             UNSPEC_GOT))))]
+	(plus:SI (match_operand:SI 2 "" "")
+		 (const:SI
+		  (unspec:SI [(match_operand:SI 1 "" "")
+			     (match_operand:SI 3 "" "")]
+			     UNSPEC_GOT))))]
   ""
   "")
 
@@ -8020,10 +8020,10 @@
   emit_insn (frv_gen_GPsym2reg (operands[4], operands[2]));
 
   insn = emit_insn (gen_symGOTOFF2reg_i (operands[0], operands[1],
-                                         operands[4], operands[3]));
+					 operands[4], operands[3]));
 
   REG_NOTES (insn) = gen_rtx_EXPR_LIST (REG_EQUAL, operands[1],
-                                        REG_NOTES (insn));
+					REG_NOTES (insn));
 
   DONE;
 }")
@@ -8042,7 +8042,7 @@
   if (no_new_pseudos)
     {
       emit_insn (gen_symGOT2reg (operands[0], operands[1], operands[2],
-                                 GEN_INT (R_FRV_GOT12)));
+				 GEN_INT (R_FRV_GOT12)));
       DONE;
     }
 
@@ -8051,43 +8051,43 @@
   emit_insn (frv_gen_GPsym2reg (operands[4], operands[2]));
 
   insn = emit_insn (gen_symGOTOFF2reg_hilo (operands[0], operands[1],
-                                            operands[4], operands[3]));
+					    operands[4], operands[3]));
 
   REG_NOTES (insn) = gen_rtx_EXPR_LIST (REG_EQUAL, operands[1],
-                                        REG_NOTES (insn));
+					REG_NOTES (insn));
 
   DONE;
 }")
 
 (define_constants
   [
-   (UNSPEC_SMUL                        154)
-   (UNSPEC_UMUL                        155)
-   (UNSPEC_SMU                        156)
-   (UNSPEC_ADDSS                157)
-   (UNSPEC_SUBSS                158)
-   (UNSPEC_SLASS                159)
-   (UNSPEC_SCAN                        160)
+   (UNSPEC_SMUL			154)
+   (UNSPEC_UMUL			155)
+   (UNSPEC_SMU			156)
+   (UNSPEC_ADDSS		157)
+   (UNSPEC_SUBSS		158)
+   (UNSPEC_SLASS		159)
+   (UNSPEC_SCAN			160)
    (UNSPEC_INTSS                161)
-   (UNSPEC_SCUTSS                162)
-   (UNSPEC_PREFETCH0                163)
-   (UNSPEC_PREFETCH                164)
-   (UNSPEC_IACCreadll                165)
-   (UNSPEC_IACCreadl                166)
-   (UNSPEC_IACCsetll                167)
-   (UNSPEC_IACCsetl                168)
-   (UNSPEC_SMASS                169)
-   (UNSPEC_SMSSS                170)
-   (UNSPEC_IMUL                        171)
+   (UNSPEC_SCUTSS		162)
+   (UNSPEC_PREFETCH0		163)
+   (UNSPEC_PREFETCH		164)
+   (UNSPEC_IACCreadll		165)
+   (UNSPEC_IACCreadl		166)
+   (UNSPEC_IACCsetll		167)
+   (UNSPEC_IACCsetl		168)
+   (UNSPEC_SMASS		169)
+   (UNSPEC_SMSSS		170)
+   (UNSPEC_IMUL			171)
 
-   (IACC0_REG                        171)
+   (IACC0_REG			171)
 ])
 
 (define_insn "smul"
   [(set (match_operand:DI 0 "integer_register_operand" "=d")
         (unspec:DI [(match_operand:SI 1 "integer_register_operand" "d")
-                    (match_operand:SI 2 "integer_register_operand" "d")]
-                   UNSPEC_SMUL))]
+		    (match_operand:SI 2 "integer_register_operand" "d")]
+		   UNSPEC_SMUL))]
   ""
   "smul %1, %2, %0"
   [(set_attr "length" "4")
@@ -8096,8 +8096,8 @@
 (define_insn "umul"
   [(set (match_operand:DI 0 "integer_register_operand" "=d")
         (unspec:DI [(match_operand:SI 1 "integer_register_operand" "d")
-                    (match_operand:SI 2 "integer_register_operand" "d")]
-                   UNSPEC_UMUL))]
+		    (match_operand:SI 2 "integer_register_operand" "d")]
+		   UNSPEC_UMUL))]
   ""
   "umul %1, %2, %0"
   [(set_attr "length" "4")
@@ -8105,10 +8105,10 @@
 
 (define_insn "smass"
   [(set (reg:DI IACC0_REG)
-        (unspec:DI [(match_operand:SI 0 "integer_register_operand" "d")
-                    (match_operand:SI 1 "integer_register_operand" "d")
-                    (reg:DI IACC0_REG)]
-                   UNSPEC_SMASS))]
+	(unspec:DI [(match_operand:SI 0 "integer_register_operand" "d")
+		    (match_operand:SI 1 "integer_register_operand" "d")
+		    (reg:DI IACC0_REG)]
+		   UNSPEC_SMASS))]
   "TARGET_FR405_BUILTINS"
   "smass %1, %0"
   [(set_attr "length" "4")
@@ -8116,10 +8116,10 @@
 
 (define_insn "smsss"
   [(set (reg:DI IACC0_REG)
-        (unspec:DI [(match_operand:SI 0 "integer_register_operand" "d")
-                    (match_operand:SI 1 "integer_register_operand" "d")
-                    (reg:DI IACC0_REG)]
-                   UNSPEC_SMSSS))]
+	(unspec:DI [(match_operand:SI 0 "integer_register_operand" "d")
+		    (match_operand:SI 1 "integer_register_operand" "d")
+		    (reg:DI IACC0_REG)]
+		   UNSPEC_SMSSS))]
   "TARGET_FR405_BUILTINS"
   "smsss %1, %0"
   [(set_attr "length" "4")
@@ -8127,9 +8127,9 @@
 
 (define_insn "smu"
   [(set (reg:DI IACC0_REG)
-        (unspec:DI [(match_operand:SI 0 "integer_register_operand" "d")
-                    (match_operand:SI 1 "integer_register_operand" "d")]
-                   UNSPEC_SMU))]
+	(unspec:DI [(match_operand:SI 0 "integer_register_operand" "d")
+		    (match_operand:SI 1 "integer_register_operand" "d")]
+		   UNSPEC_SMU))]
   "TARGET_FR405_BUILTINS"
   "smu %1, %0"
   [(set_attr "length" "4")
@@ -8138,8 +8138,8 @@
 (define_insn "addss"
   [(set (match_operand:SI 0 "integer_register_operand" "=d")
         (unspec:SI [(match_operand:SI 1 "integer_register_operand" "d")
-                    (match_operand:SI 2 "integer_register_operand" "d")]
-                   UNSPEC_ADDSS))]
+		    (match_operand:SI 2 "integer_register_operand" "d")]
+		   UNSPEC_ADDSS))]
   "TARGET_FR405_BUILTINS"
   "addss %1, %2, %0"
   [(set_attr "length" "4")
@@ -8148,8 +8148,8 @@
 (define_insn "subss"
   [(set (match_operand:SI 0 "integer_register_operand" "=d")
         (unspec:SI [(match_operand:SI 1 "integer_register_operand" "d")
-                    (match_operand:SI 2 "integer_register_operand" "d")]
-                   UNSPEC_SUBSS))]
+		    (match_operand:SI 2 "integer_register_operand" "d")]
+		   UNSPEC_SUBSS))]
   "TARGET_FR405_BUILTINS"
   "subss %1, %2, %0"
   [(set_attr "length" "4")
@@ -8158,8 +8158,8 @@
 (define_insn "slass"
   [(set (match_operand:SI 0 "integer_register_operand" "=d")
         (unspec:SI [(match_operand:SI 1 "integer_register_operand" "d")
-                    (match_operand:SI 2 "integer_register_operand" "d")]
-                   UNSPEC_SLASS))]
+		    (match_operand:SI 2 "integer_register_operand" "d")]
+		   UNSPEC_SLASS))]
   "TARGET_FR405_BUILTINS"
   "slass %1, %2, %0"
   [(set_attr "length" "4")
@@ -8168,8 +8168,8 @@
 (define_insn "scan"
   [(set (match_operand:SI 0 "integer_register_operand" "=d")
         (unspec:SI [(match_operand:SI 1 "integer_register_operand" "d")
-                    (match_operand:SI 2 "integer_register_operand" "d")]
-                   UNSPEC_SCAN))]
+		    (match_operand:SI 2 "integer_register_operand" "d")]
+		   UNSPEC_SCAN))]
   ""
   "scan %1, %2, %0"
   [(set_attr "length" "4")
@@ -8177,9 +8177,9 @@
 
 (define_insn "scutss"
   [(set (match_operand:SI 0 "integer_register_operand" "=d")
-        (unspec:SI [(match_operand:SI 1 "integer_register_operand" "d")
-                    (reg:DI IACC0_REG)]
-                   UNSPEC_SCUTSS))]
+	(unspec:SI [(match_operand:SI 1 "integer_register_operand" "d")
+		    (reg:DI IACC0_REG)]
+		   UNSPEC_SCUTSS))]
   "TARGET_FR405_BUILTINS"
   "scutss %1,%0"
   [(set_attr "length" "4")
@@ -8187,18 +8187,18 @@
 
 (define_insn "frv_prefetch0"
   [(prefetch (unspec:SI [(match_operand:SI 0 "register_operand" "r")]
-                        UNSPEC_PREFETCH0)
-             (const_int 0)
-             (const_int 0))]
+			UNSPEC_PREFETCH0)
+	     (const_int 0)
+	     (const_int 0))]
   ""
   "dcpl %0, gr0, #0"
   [(set_attr "length" "4")])
 
 (define_insn "frv_prefetch"
   [(prefetch (unspec:SI [(match_operand:SI 0 "register_operand" "r")]
-                        UNSPEC_PREFETCH)
-             (const_int 0)
-             (const_int 0))]
+			UNSPEC_PREFETCH)
+	     (const_int 0)
+	     (const_int 0))]
   "TARGET_FR500_FR550_BUILTINS"
   "nop.p\\n\\tnldub @(%0, gr0), gr0"
   [(set_attr "length" "8")])
@@ -8207,9 +8207,9 @@
 
 (define_insn "call_gettlsoff"
   [(set (match_operand:SI 0 "register_operand" "=D09")
-        (unspec:SI
-         [(match_operand:SI 1 "symbolic_operand" "")]
-         UNSPEC_GETTLSOFF))
+	(unspec:SI
+	 [(match_operand:SI 1 "symbolic_operand" "")]
+	 UNSPEC_GETTLSOFF))
    (clobber (reg:SI GR8_REG))
    (clobber (reg:SI LRREG))
    (use (match_operand:SI 2 "register_operand" "D15"))]
@@ -8224,26 +8224,26 @@
 ;; then reload won't be able to fix things up.
 (define_expand "tls_indirect_call"
   [(set (reg:DI GR8_REG)
-        (match_operand:DI 2 "register_operand" ""))
+	(match_operand:DI 2 "register_operand" ""))
    (parallel
     [(set (reg:SI GR9_REG)
-          (unspec:SI
-           [(match_operand:SI 1 "symbolic_operand" "")
-           (reg:DI GR8_REG)]
-           UNSPEC_TLS_INDIRECT_CALL))
+	  (unspec:SI
+	   [(match_operand:SI 1 "symbolic_operand" "")
+	   (reg:DI GR8_REG)]
+	   UNSPEC_TLS_INDIRECT_CALL))
     (clobber (reg:SI GR8_REG))
     (clobber (reg:SI LRREG))
     (use (match_operand:SI 3 "register_operand" ""))])
    (set (match_operand:SI 0 "register_operand" "")
-        (reg:SI GR9_REG))]
+	(reg:SI GR9_REG))]
   "HAVE_AS_TLS")
 
 (define_insn "*tls_indirect_call"
   [(set (reg:SI GR9_REG)
-        (unspec:SI
-         [(match_operand:SI 0 "symbolic_operand" "")
-          (reg:DI GR8_REG)]
-         UNSPEC_TLS_INDIRECT_CALL))
+	(unspec:SI
+	 [(match_operand:SI 0 "symbolic_operand" "")
+	  (reg:DI GR8_REG)]
+	 UNSPEC_TLS_INDIRECT_CALL))
    (clobber (reg:SI GR8_REG))
    (clobber (reg:SI LRREG))
    ;; If there was a way to represent the fact that we don't need GR9
@@ -8259,24 +8259,24 @@
 
 (define_insn "tls_load_gottlsoff12"
   [(set (match_operand:SI 0 "register_operand" "=r")
-        (unspec:SI
-         [(match_operand:SI 1 "symbolic_operand" "")
-          (match_operand:SI 2 "register_operand" "r")]
-         UNSPEC_TLS_LOAD_GOTTLSOFF12))]
+	(unspec:SI
+	 [(match_operand:SI 1 "symbolic_operand" "")
+	  (match_operand:SI 2 "register_operand" "r")]
+	 UNSPEC_TLS_LOAD_GOTTLSOFF12))]
   "HAVE_AS_TLS"
   "ldi @(%2, #gottlsoff12(%1)), %0"
   [(set_attr "length" "4")])
 
 (define_expand "tlsoff_hilo"
   [(set (match_operand:SI 0 "register_operand" "=r")
-        (high:SI (const:SI (unspec:SI
-                            [(match_operand:SI 1 "symbolic_operand" "")
-                             (match_operand:SI 2 "immediate_operand" "n")]
-                            UNSPEC_GOT))))
+	(high:SI (const:SI (unspec:SI
+			    [(match_operand:SI 1 "symbolic_operand" "")
+			     (match_operand:SI 2 "immediate_operand" "n")]
+			    UNSPEC_GOT))))
    (set (match_dup 0)
-        (lo_sum:SI (match_dup 0)
-                   (const:SI (unspec:SI [(match_dup 1)
-                                         (match_dup 3)] UNSPEC_GOT))))]
+	(lo_sum:SI (match_dup 0)
+		   (const:SI (unspec:SI [(match_dup 1)
+					 (match_dup 3)] UNSPEC_GOT))))]
   ""
   "
 {
@@ -8286,12 +8286,12 @@
 ;; Just like movdi_ldd, but with relaxation annotations.
 (define_insn "tls_tlsdesc_ldd"
   [(set (match_operand:DI 0 "register_operand" "=r")
-        (unspec:DI [(mem:DI (unspec:SI
-                             [(match_operand:SI 1 "register_operand" "r")
-                              (match_operand:SI 2 "register_operand" "r")
-                              (match_operand:SI 3 "symbolic_operand" "")]
-                             UNSPEC_TLS_TLSDESC_LDD_AUX))]
-                   UNSPEC_TLS_TLSDESC_LDD))]
+	(unspec:DI [(mem:DI (unspec:SI
+			     [(match_operand:SI 1 "register_operand" "r")
+			      (match_operand:SI 2 "register_operand" "r")
+			      (match_operand:SI 3 "symbolic_operand" "")]
+			     UNSPEC_TLS_TLSDESC_LDD_AUX))]
+		   UNSPEC_TLS_TLSDESC_LDD))]
   ""
   "ldd #tlsdesc(%a3)@(%1,%2), %0"
   [(set_attr "length" "4")
@@ -8299,11 +8299,11 @@
 
 (define_insn "tls_tlsoff_ld"
   [(set (match_operand:SI 0 "register_operand" "=r")
-        (mem:SI (unspec:SI
-                 [(match_operand:SI 1 "register_operand" "r")
-                  (match_operand:SI 2 "register_operand" "r")
-                  (match_operand:SI 3 "symbolic_operand" "")]
-                 UNSPEC_TLS_TLSOFF_LD)))]
+	(mem:SI (unspec:SI
+		 [(match_operand:SI 1 "register_operand" "r")
+		  (match_operand:SI 2 "register_operand" "r")
+		  (match_operand:SI 3 "symbolic_operand" "")]
+		 UNSPEC_TLS_TLSOFF_LD)))]
   ""
   "ld #tlsoff(%a3)@(%1,%2), %0"
   [(set_attr "length" "4")
@@ -8311,9 +8311,9 @@
 
 (define_insn "tls_lddi"
   [(set (match_operand:DI 0 "register_operand" "=r")
-        (unspec:DI [(match_operand:SI 1 "symbolic_operand" "")
-                    (match_operand:SI 2 "register_operand" "d")]
-                   UNSPEC_TLS_LDDI))]
+	(unspec:DI [(match_operand:SI 1 "symbolic_operand" "")
+		    (match_operand:SI 2 "register_operand" "d")]
+		   UNSPEC_TLS_LDDI))]
   ""
   "lddi @(%2, #gottlsdesc12(%a1)), %0"
   [(set_attr "length" "4")

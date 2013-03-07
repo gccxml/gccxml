@@ -58,7 +58,7 @@ extern enum arc_function_type arc_compute_function_type (tree);
 extern void arc_init (void);
 extern unsigned int arc_compute_frame_size (int);
 extern void arc_save_restore (FILE *, const char *, unsigned int,
-                              unsigned int, const char *);
+			      unsigned int, const char *);
 extern int arc_delay_slots_for_epilogue (void);
 extern void arc_ccfsm_at_label (const char *, int);
 extern int arc_ccfsm_branch_deleted_p (void);

@@ -55,12 +55,12 @@ static int pex_msdos_open (struct pex_obj *, const char *, int);
 static int pex_msdos_open (struct pex_obj *, const char *, int);
 static int pex_msdos_fdindex (struct pex_msdos *, int);
 static long pex_msdos_exec_child (struct pex_obj *, int, const char *,
-                                  char * const *, char * const *,
-                                  int, int, int, int,
-                                  int, const char **, int *);
+				  char * const *, char * const *,
+				  int, int, int, int,
+				  int, const char **, int *);
 static int pex_msdos_close (struct pex_obj *, int);
 static int pex_msdos_wait (struct pex_obj *, long, int *, struct pex_time *,
-                           int, const char **, int *);
+			   int, const char **, int *);
 static void pex_msdos_cleanup (struct pex_obj *);
 
 /* The list of functions we pass to the common routines.  */
@@ -104,7 +104,7 @@ pex_init (int flags, const char *pname, const char *tempbase)
 
 static int
 pex_msdos_open (struct pex_obj *obj, const char *name,
-                int binary ATTRIBUTE_UNUSED)
+		int binary ATTRIBUTE_UNUSED)
 {
   struct pex_msdos *ms;
   int i;
@@ -114,10 +114,10 @@ pex_msdos_open (struct pex_obj *obj, const char *name,
   for (i = 0; i < PEX_MSDOS_FILE_COUNT; ++i)
     {
       if (ms->files[i] == NULL)
-        {
-          ms->files[i] = xstrdup (name);
-          return i + PEX_MSDOS_FD_OFFSET;
-        }
+	{
+	  ms->files[i] = xstrdup (name);
+	  return i + PEX_MSDOS_FD_OFFSET;
+	}
     }
 
   abort ();
@@ -154,10 +154,10 @@ pex_msdos_close (struct pex_obj *obj, int fd)
 
 static long
 pex_msdos_exec_child (struct pex_obj *obj, int flags, const char *executable,
-                      char * const * argv, char * const * env, int in, int out,
-                      int toclose ATTRIBUTE_UNUSED,
-                      int errdes ATTRIBUTE_UNUSED, const char **errmsg,
-                      int *err)
+		      char * const * argv, char * const * env, int in, int out,
+		      int toclose ATTRIBUTE_UNUSED,
+		      int errdes ATTRIBUTE_UNUSED, const char **errmsg,
+		      int *err)
 {
   struct pex_msdos *ms;
   char *temp_base;
@@ -214,19 +214,19 @@ pex_msdos_exec_child (struct pex_obj *obj, int flags, const char *executable,
     }
 
   scmd = XNEWVEC (char, strlen (program)
-                  + ((flags & PEXECUTE_SEARCH) != 0 ? 4 : 0)
-                  + strlen (rf)
-                  + strlen (infile)
-                  + strlen (outfile)
-                  + 10);
+		  + ((flags & PEXECUTE_SEARCH) != 0 ? 4 : 0)
+		  + strlen (rf)
+		  + strlen (infile)
+		  + strlen (outfile)
+		  + 10);
   sprintf (scmd, "%s%s @%s%s%s%s%s",
-           program,
-           (flags & PEXECUTE_SEARCH) != 0 ? ".exe" : "",
-           rf,
-           inindex != -1 ? " <" : "",
-           infile,
-           outindex != -1 ? " >" : "",
-           outfile);
+	   program,
+	   (flags & PEXECUTE_SEARCH) != 0 ? ".exe" : "",
+	   rf,
+	   inindex != -1 ? " <" : "",
+	   infile,
+	   outindex != -1 ? " >" : "",
+	   outfile);
 
   argfile = fopen (rf, "w");
   if (argfile == NULL)
@@ -243,11 +243,11 @@ pex_msdos_exec_child (struct pex_obj *obj, int flags, const char *executable,
       char *p;
 
       for (p = argv[i]; *p != '\0'; ++p)
-        {
-          if (*p == '"' || *p == '\'' || *p == '\\' || ISSPACE (*p))
-            putc ('\\', argfile);
-          putc (*p, argfile);
-        }
+	{
+	  if (*p == '"' || *p == '\'' || *p == '\\' || ISSPACE (*p))
+	    putc ('\\', argfile);
+	  putc (*p, argfile);
+	}
       putc ('\n', argfile);
     }
 
@@ -284,9 +284,9 @@ pex_msdos_exec_child (struct pex_obj *obj, int flags, const char *executable,
 
 static int
 pex_msdos_wait (struct pex_obj *obj, long pid, int *status,
-                struct pex_time *time, int done ATTRIBUTE_UNUSED,
-                const char **errmsg ATTRIBUTE_UNUSED,
-                int *err ATTRIBUTE_UNUSED)
+		struct pex_time *time, int done ATTRIBUTE_UNUSED,
+		const char **errmsg ATTRIBUTE_UNUSED,
+		int *err ATTRIBUTE_UNUSED)
 {
   struct pex_msdos *ms;
 

@@ -50,33 +50,33 @@
 */
 
 /* the following deal with IEEE single-precision numbers */
-#define EXCESS                126L
-#define SIGNBIT                0x80000000L
-#define HIDDEN                (1L << 23L)
-#define SIGN(fp)        ((fp) & SIGNBIT)
-#define EXP(fp)                (((fp) >> 23L) & 0xFF)
-#define MANT(fp)        (((fp) & 0x7FFFFFL) | HIDDEN)
-#define PACK(s,e,m)        ((s) | ((e) << 23L) | (m))
+#define EXCESS		126L
+#define SIGNBIT		0x80000000L
+#define HIDDEN		(1L << 23L)
+#define SIGN(fp)	((fp) & SIGNBIT)
+#define EXP(fp)		(((fp) >> 23L) & 0xFF)
+#define MANT(fp)	(((fp) & 0x7FFFFFL) | HIDDEN)
+#define PACK(s,e,m)	((s) | ((e) << 23L) | (m))
 
 /* the following deal with IEEE double-precision numbers */
-#define EXCESSD                1022L
-#define HIDDEND                (1L << 20L)
-#define EXPDBITS        11
-#define EXPDMASK        0x7FFL
-#define EXPD(fp)        (((fp.l.upper) >> 20L) & 0x7FFL)
-#define SIGND(fp)        ((fp.l.upper) & SIGNBIT)
-#define MANTD(fp)        (((((fp.l.upper) & 0xFFFFF) | HIDDEND) << 10) | \
-                                (fp.l.lower >> 22))
-#define MANTDMASK        0xFFFFFL /* mask of upper part */
+#define EXCESSD		1022L
+#define HIDDEND		(1L << 20L)
+#define EXPDBITS	11
+#define EXPDMASK	0x7FFL
+#define EXPD(fp)	(((fp.l.upper) >> 20L) & 0x7FFL)
+#define SIGND(fp)	((fp.l.upper) & SIGNBIT)
+#define MANTD(fp)	(((((fp.l.upper) & 0xFFFFF) | HIDDEND) << 10) | \
+				(fp.l.lower >> 22))
+#define MANTDMASK	0xFFFFFL /* mask of upper part */
 
 /* the following deal with IEEE extended-precision numbers */
-#define EXCESSX                16382L
-#define HIDDENX                (1L << 31L)
-#define EXPXBITS        15
-#define EXPXMASK        0x7FFF
-#define EXPX(fp)        (((fp.l.upper) >> 16) & EXPXMASK)
-#define SIGNX(fp)        ((fp.l.upper) & SIGNBIT)
-#define MANTXMASK        0x7FFFFFFFL /* mask of upper part */
+#define EXCESSX		16382L
+#define HIDDENX		(1L << 31L)
+#define EXPXBITS	15
+#define EXPXMASK	0x7FFF
+#define EXPX(fp)	(((fp.l.upper) >> 16) & EXPXMASK)
+#define SIGNX(fp)	((fp.l.upper) & SIGNBIT)
+#define MANTXMASK	0x7FFFFFFFL /* mask of upper part */
 
 union double_long 
 {
@@ -186,10 +186,10 @@ __floatsidf (long a1)
       sign = SIGNBIT;
       a1 = (long)-(unsigned long)a1;
       if (a1 < 0)
-        {
-          dl.l.upper = SIGNBIT | ((32 + EXCESSD) << 20L);
-          dl.l.lower = 0;
-          return dl.d;
+	{
+	  dl.l.upper = SIGNBIT | ((32 + EXCESSD) << 20L);
+	  dl.l.lower = 0;
+	  return dl.d;
         }
     }
 
@@ -255,17 +255,17 @@ __extendsfdf2 (float a1)
       /* Denormal.  */
       exp = 1;
       while (!(mant & HIDDEN))
-        {
-          mant <<= 1;
-          exp--;
-        }
+	{
+	  mant <<= 1;
+	  exp--;
+	}
       mant &= ~HIDDEN;
     }
   exp = exp - EXCESS + EXCESSD;
   dl.l.upper |= exp << 20;
   dl.l.upper |= mant >> 3;
   dl.l.lower = mant << 29;
-        
+	
   return dl.d;
 }
 
@@ -295,9 +295,9 @@ __truncdfsf2 (double a1)
   if (exp <= 0)
     {
       if (exp < -24)
-        mant = 0;
+	mant = 0;
       else
-        mant >>= 1 - exp;
+	mant >>= 1 - exp;
       exp = 0;
     }
   

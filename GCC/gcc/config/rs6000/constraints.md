@@ -21,7 +21,7 @@
 ;; Register constraints
 
 (define_register_constraint "f" "TARGET_HARD_FLOAT && TARGET_FPRS
-                                  ? FLOAT_REGS : NO_REGS"
+			 	 ? FLOAT_REGS : NO_REGS"
   "@internal")
 
 (define_register_constraint "b" "BASE_REGS"
@@ -72,7 +72,7 @@
   "signed 16-bit constant shifted left 16 bits"
   (and (match_code "const_int")
        (match_test "((ival & 0xffff) == 0
-                      && (ival >> 31 == -1 || ival >> 31 == 0))")))
+		      && (ival >> 31 == -1 || ival >> 31 == 0))")))
 
 (define_constraint "M"
   "constant greater than 31"
@@ -101,7 +101,7 @@
    and one for SF."
   (and (match_code "const_double")
        (match_test "num_insns_constant (op, mode)
-                    == (mode == SFmode ? 1 : 2)")))
+		    == (mode == SFmode ? 1 : 2)")))
 
 (define_constraint "H"
   "DF/DI constant that takes three insns."
@@ -152,9 +152,9 @@
   "AND masks that can be performed by two rldic{l,r} insns
    (but excluding those that could match other constraints of anddi3)"
   (and (and (and (match_operand 0 "mask64_2_operand")
-                 (match_test "(fixed_regs[CR0_REGNO]
-                              || !logical_operand (op, DImode))"))
-            (not (match_operand 0 "mask_operand")))
+		 (match_test "(fixed_regs[CR0_REGNO]
+			      || !logical_operand (op, DImode))"))
+	    (not (match_operand 0 "mask_operand")))
        (not (match_operand 0 "mask64_operand"))))
 
 (define_constraint "W"

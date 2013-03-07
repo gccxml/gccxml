@@ -30,23 +30,23 @@ Boston, MA 02110-1301, USA.  */
 
 ;# Alpha OpenVMS trampoline
 ;#
-        .set noreorder
-        .set volatile
-        .set noat
-        .file 1 "vms_tramp.asm"
+	.set noreorder
+	.set volatile
+	.set noat
+	.file 1 "vms_tramp.asm"
 .text
-        .align 3
-        .globl __tramp
-        .ent __tramp
+	.align 3
+	.globl __tramp
+	.ent __tramp
 __tramp..en:
 
 .link
-        .align 3
+	.align 3
 __tramp:
-        .pdesc __tramp..en,null
+	.pdesc __tramp..en,null
 .text
-        ldq $1,24($27)
-        ldq $27,16($27)
-        ldq $28,8($27)
-        jmp $31,($28),0
-        .end __tramp
+	ldq $1,24($27)
+	ldq $27,16($27)
+	ldq $28,8($27)
+	jmp $31,($28),0
+	.end __tramp

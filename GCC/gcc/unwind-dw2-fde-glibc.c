@@ -50,7 +50,7 @@
 
 #if !defined(inhibit_libc) && defined(HAVE_LD_EH_FRAME_HDR) \
     && (__GLIBC__ > 2 || (__GLIBC__ == 2 && __GLIBC_MINOR__ > 2) \
-        || (__GLIBC__ == 2 && __GLIBC_MINOR__ == 2 && defined(DT_CONFIG)))
+	|| (__GLIBC__ == 2 && __GLIBC_MINOR__ == 2 && defined(DT_CONFIG)))
 
 #ifndef __RELOC_POINTER
 # define __RELOC_POINTER(ptr, base) ((ptr) + (base))
@@ -164,69 +164,69 @@ _Unwind_IteratePhdrCallback (struct dl_phdr_info *info, size_t size, void *ptr)
       struct ext_dl_phdr_info *einfo = (struct ext_dl_phdr_info *) info;
 
       /* We use a least recently used cache replacement policy.  Also,
-         the most recently used cache entries are placed at the head
-         of the search chain.  */
+	 the most recently used cache entries are placed at the head
+	 of the search chain.  */
 
       if (einfo->dlpi_adds == adds && einfo->dlpi_subs == subs)
-        {
-          /* Find data->pc in shared library cache.
-             Set load_base, p_eh_frame_hdr and p_dynamic
-             plus match from the cache and goto
-             "Read .eh_frame_hdr header." below.  */
+	{
+	  /* Find data->pc in shared library cache.
+	     Set load_base, p_eh_frame_hdr and p_dynamic
+	     plus match from the cache and goto
+	     "Read .eh_frame_hdr header." below.  */
 
-          struct frame_hdr_cache_element *cache_entry;
+	  struct frame_hdr_cache_element *cache_entry;
 
-          for (cache_entry = frame_hdr_cache_head;
-               cache_entry;
-               cache_entry = cache_entry->link)
-            {
-              if (data->pc >= cache_entry->pc_low
-                  && data->pc < cache_entry->pc_high)
-                {
-                  load_base = cache_entry->load_base;
-                  p_eh_frame_hdr = cache_entry->p_eh_frame_hdr;
-                  p_dynamic = cache_entry->p_dynamic;
+	  for (cache_entry = frame_hdr_cache_head;
+	       cache_entry;
+	       cache_entry = cache_entry->link)
+	    {
+	      if (data->pc >= cache_entry->pc_low
+		  && data->pc < cache_entry->pc_high)
+		{
+		  load_base = cache_entry->load_base;
+		  p_eh_frame_hdr = cache_entry->p_eh_frame_hdr;
+		  p_dynamic = cache_entry->p_dynamic;
 
-                  /* And move the entry we're using to the head.  */
-                  if (cache_entry != frame_hdr_cache_head)
-                    {
-                      prev_cache_entry->link = cache_entry->link;
-                      cache_entry->link = frame_hdr_cache_head;
-                      frame_hdr_cache_head = cache_entry;
-                    }
-                  goto found;
-                }
-                  
-              last_cache_entry = cache_entry;
-              /* Exit early if we found an unused entry.  */
-              if ((cache_entry->pc_low | cache_entry->pc_high) == 0)
-                break;
-              if (cache_entry->link != NULL)
-                prev_cache_entry = cache_entry;                  
-            }
-        }
+		  /* And move the entry we're using to the head.  */
+		  if (cache_entry != frame_hdr_cache_head)
+		    {
+		      prev_cache_entry->link = cache_entry->link;
+		      cache_entry->link = frame_hdr_cache_head;
+		      frame_hdr_cache_head = cache_entry;
+		    }
+		  goto found;
+		}
+		  
+	      last_cache_entry = cache_entry;
+	      /* Exit early if we found an unused entry.  */
+	      if ((cache_entry->pc_low | cache_entry->pc_high) == 0)
+		break;
+	      if (cache_entry->link != NULL)
+		prev_cache_entry = cache_entry;		  
+	    }
+	}
       else
-        {
-          adds = einfo->dlpi_adds;
-          subs = einfo->dlpi_subs;
-          /* Initialize the cache.  Create a chain of cache entries,
-             with the final one terminated by a NULL link.  */
-          int i;
-          for (i = 0; i < FRAME_HDR_CACHE_SIZE; i++)
-            {
-              frame_hdr_cache[i].pc_low = 0;
-              frame_hdr_cache[i].pc_high = 0;
-              frame_hdr_cache[i].link = &frame_hdr_cache[i+1];
-            }
-          frame_hdr_cache[i-1].link = NULL;
-          frame_hdr_cache_head = &frame_hdr_cache[0];
-          data->check_cache = 0;
-        }
+	{
+	  adds = einfo->dlpi_adds;
+	  subs = einfo->dlpi_subs;
+	  /* Initialize the cache.  Create a chain of cache entries,
+	     with the final one terminated by a NULL link.  */
+	  int i;
+	  for (i = 0; i < FRAME_HDR_CACHE_SIZE; i++)
+	    {
+	      frame_hdr_cache[i].pc_low = 0;
+	      frame_hdr_cache[i].pc_high = 0;
+	      frame_hdr_cache[i].link = &frame_hdr_cache[i+1];
+	    }
+	  frame_hdr_cache[i-1].link = NULL;
+	  frame_hdr_cache_head = &frame_hdr_cache[0];
+	  data->check_cache = 0;
+	}
     }
 
   /* Make sure struct dl_phdr_info is at least as big as we need.  */
   if (size < offsetof (struct dl_phdr_info, dlpi_phnum)
-             + sizeof (info->dlpi_phnum))
+	     + sizeof (info->dlpi_phnum))
     return -1;
  
   _Unwind_Ptr pc_low = 0, pc_high = 0;
@@ -236,20 +236,20 @@ _Unwind_IteratePhdrCallback (struct dl_phdr_info *info, size_t size, void *ptr)
   for (n = info->dlpi_phnum; --n >= 0; phdr++)
     {
       if (phdr->p_type == PT_LOAD)
-        {
-          _Unwind_Ptr vaddr = (_Unwind_Ptr)
-            __RELOC_POINTER (phdr->p_vaddr, load_base);
-          if (data->pc >= vaddr && data->pc < vaddr + phdr->p_memsz)
-            {
-              match = 1;
-              pc_low = vaddr;
-              pc_high =  vaddr + phdr->p_memsz;
-            }
-        }
+	{
+	  _Unwind_Ptr vaddr = (_Unwind_Ptr)
+	    __RELOC_POINTER (phdr->p_vaddr, load_base);
+	  if (data->pc >= vaddr && data->pc < vaddr + phdr->p_memsz)
+	    {
+	      match = 1;
+	      pc_low = vaddr;
+	      pc_high =  vaddr + phdr->p_memsz;
+	    }
+	}
       else if (phdr->p_type == PT_GNU_EH_FRAME)
-        p_eh_frame_hdr = phdr;
+	p_eh_frame_hdr = phdr;
       else if (phdr->p_type == PT_DYNAMIC)
-        p_dynamic = phdr;
+	p_dynamic = phdr;
     }
   
   if (!match)
@@ -258,14 +258,14 @@ _Unwind_IteratePhdrCallback (struct dl_phdr_info *info, size_t size, void *ptr)
   if (size >= sizeof (struct ext_dl_phdr_info))
     {
       /* Move the cache entry we're about to overwrite to the head of
-         the list.  If either last_cache_entry or prev_cache_entry are
-         NULL, that cache entry is already at the head.  */
+	 the list.  If either last_cache_entry or prev_cache_entry are
+	 NULL, that cache entry is already at the head.  */
       if (last_cache_entry != NULL && prev_cache_entry != NULL)
-        {
-          prev_cache_entry->link = last_cache_entry->link;
-          last_cache_entry->link = frame_hdr_cache_head;
-          frame_hdr_cache_head = last_cache_entry;
-        }
+	{
+	  prev_cache_entry->link = last_cache_entry->link;
+	  last_cache_entry->link = frame_hdr_cache_head;
+	  frame_hdr_cache_head = last_cache_entry;
+	}
 
       frame_hdr_cache_head->load_base = load_base;
       frame_hdr_cache_head->p_eh_frame_hdr = p_eh_frame_hdr;
@@ -291,16 +291,16 @@ _Unwind_IteratePhdrCallback (struct dl_phdr_info *info, size_t size, void *ptr)
   if (p_dynamic)
     {
       /* For dynamically linked executables and shared libraries,
-         DT_PLTGOT is the gp value for that object.  */
+	 DT_PLTGOT is the gp value for that object.  */
       ElfW(Dyn) *dyn = (ElfW(Dyn) *)
-        __RELOC_POINTER (p_dynamic->p_vaddr, load_base);
+	__RELOC_POINTER (p_dynamic->p_vaddr, load_base);
       for (; dyn->d_tag != DT_NULL ; dyn++)
-        if (dyn->d_tag == DT_PLTGOT)
-          {
-            /* On IA-32, _DYNAMIC is writable and GLIBC has relocated it.  */
-            data->dbase = (void *) dyn->d_un.d_ptr;
-            break;
-          }
+	if (dyn->d_tag == DT_PLTGOT)
+	  {
+	    /* On IA-32, _DYNAMIC is writable and GLIBC has relocated it.  */
+	    data->dbase = (void *) dyn->d_un.d_ptr;
+	    break;
+	  }
     }
 # elif defined __FRV_FDPIC__ && defined __linux__
   data->dbase = load_base.got_value;
@@ -310,10 +310,10 @@ _Unwind_IteratePhdrCallback (struct dl_phdr_info *info, size_t size, void *ptr)
 #endif
 
   p = read_encoded_value_with_base (hdr->eh_frame_ptr_enc,
-                                    base_from_cb_data (hdr->eh_frame_ptr_enc,
-                                                       data),
-                                    (const unsigned char *) (hdr + 1),
-                                    &eh_frame);
+				    base_from_cb_data (hdr->eh_frame_ptr_enc,
+						       data),
+				    (const unsigned char *) (hdr + 1),
+				    &eh_frame);
 
   /* We require here specific table encoding to speed things up.
      Also, DW_EH_PE_datarel here means using PT_GNU_EH_FRAME start
@@ -324,57 +324,57 @@ _Unwind_IteratePhdrCallback (struct dl_phdr_info *info, size_t size, void *ptr)
       _Unwind_Ptr fde_count;
 
       p = read_encoded_value_with_base (hdr->fde_count_enc,
-                                        base_from_cb_data (hdr->fde_count_enc,
-                                                           data),
-                                        p, &fde_count);
+					base_from_cb_data (hdr->fde_count_enc,
+							   data),
+					p, &fde_count);
       /* Shouldn't happen.  */
       if (fde_count == 0)
-        return 1;
+	return 1;
       if ((((_Unwind_Ptr) p) & 3) == 0)
-        {
-          struct fde_table {
-            signed initial_loc __attribute__ ((mode (SI)));
-            signed fde __attribute__ ((mode (SI)));
-          };
-          const struct fde_table *table = (const struct fde_table *) p;
-          size_t lo, hi, mid;
-          _Unwind_Ptr data_base = (_Unwind_Ptr) hdr;
-          fde *f;
-          unsigned int f_enc, f_enc_size;
-          _Unwind_Ptr range;
+	{
+	  struct fde_table {
+	    signed initial_loc __attribute__ ((mode (SI)));
+	    signed fde __attribute__ ((mode (SI)));
+	  };
+	  const struct fde_table *table = (const struct fde_table *) p;
+	  size_t lo, hi, mid;
+	  _Unwind_Ptr data_base = (_Unwind_Ptr) hdr;
+	  fde *f;
+	  unsigned int f_enc, f_enc_size;
+	  _Unwind_Ptr range;
 
-          mid = fde_count - 1;
-          if (data->pc < table[0].initial_loc + data_base)
-            return 1;
-          else if (data->pc < table[mid].initial_loc + data_base)
-            {
-              lo = 0;
-              hi = mid;
+	  mid = fde_count - 1;
+	  if (data->pc < table[0].initial_loc + data_base)
+	    return 1;
+	  else if (data->pc < table[mid].initial_loc + data_base)
+	    {
+	      lo = 0;
+	      hi = mid;
 
-              while (lo < hi)
-                {
-                  mid = (lo + hi) / 2;
-                  if (data->pc < table[mid].initial_loc + data_base)
-                    hi = mid;
-                  else if (data->pc >= table[mid + 1].initial_loc + data_base)
-                    lo = mid + 1;
-                  else
-                    break;
-                }
+	      while (lo < hi)
+		{
+		  mid = (lo + hi) / 2;
+		  if (data->pc < table[mid].initial_loc + data_base)
+		    hi = mid;
+		  else if (data->pc >= table[mid + 1].initial_loc + data_base)
+		    lo = mid + 1;
+		  else
+		    break;
+		}
 
-              gcc_assert (lo < hi);
-            }
+	      gcc_assert (lo < hi);
+	    }
 
-          f = (fde *) (table[mid].fde + data_base);
-          f_enc = get_fde_encoding (f);
-          f_enc_size = size_of_encoded_value (f_enc);
-          read_encoded_value_with_base (f_enc & 0x0f, 0,
-                                        &f->pc_begin[f_enc_size], &range);
-          if (data->pc < table[mid].initial_loc + data_base + range)
-            data->ret = f;
-          data->func = (void *) (table[mid].initial_loc + data_base);
-          return 1;
-        }
+	  f = (fde *) (table[mid].fde + data_base);
+	  f_enc = get_fde_encoding (f);
+	  f_enc_size = size_of_encoded_value (f_enc);
+	  read_encoded_value_with_base (f_enc & 0x0f, 0,
+					&f->pc_begin[f_enc_size], &range);
+	  if (data->pc < table[mid].initial_loc + data_base + range)
+	    data->ret = f;
+	  data->func = (void *) (table[mid].initial_loc + data_base);
+	  return 1;
+	}
     }
 
   /* We have no sorted search table, so need to go the slow way.
@@ -393,8 +393,8 @@ _Unwind_IteratePhdrCallback (struct dl_phdr_info *info, size_t size, void *ptr)
       unsigned int encoding = get_fde_encoding (data->ret);
       
       read_encoded_value_with_base (encoding,
-                                    base_from_cb_data (encoding, data),
-                                    data->ret->pc_begin, &func);
+				    base_from_cb_data (encoding, data),
+				    data->ret->pc_begin, &func);
       data->func = (void *) func;
     }
   return 1;

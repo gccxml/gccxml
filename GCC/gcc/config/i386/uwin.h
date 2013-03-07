@@ -31,17 +31,17 @@ Boston, MA 02110-1301, USA.  */
 #define MD_STARTFILE_PREFIX "/usr/gnu/lib/"
 
 #undef MAYBE_UWIN_CPP_BUILTINS
-#define MAYBE_UWIN_CPP_BUILTINS()                        \
-  do                                                        \
-    {                                                        \
-        builtin_define_std ("WINNT");                        \
-        builtin_define ("_WIN32");                        \
-        builtin_define ("__WIN32__");                        \
-        builtin_define ("_UWIN");                        \
-        builtin_define ("__UWIN__");                        \
-        builtin_define ("__MSVCRT__");                        \
-        builtin_define ("_STD_INCLUDE_DIR=mingw32");        \
-    }                                                        \
+#define MAYBE_UWIN_CPP_BUILTINS()			\
+  do							\
+    {							\
+	builtin_define_std ("WINNT");			\
+	builtin_define ("_WIN32");			\
+	builtin_define ("__WIN32__");			\
+	builtin_define ("_UWIN");			\
+	builtin_define ("__UWIN__");			\
+	builtin_define ("__MSVCRT__");			\
+	builtin_define ("_STD_INCLUDE_DIR=mingw32");	\
+    }							\
   while (0)
 
 #undef CPP_SPEC
@@ -74,16 +74,16 @@ Boston, MA 02110-1301, USA.  */
    properly.  If we are generating SDB debugging information, this
    will happen automatically, so we only need to handle other cases.  */
 #undef ASM_DECLARE_FUNCTION_NAME
-#define ASM_DECLARE_FUNCTION_NAME(FILE, NAME, DECL)                        \
-  do                                                                        \
-    {                                                                        \
-      if (i386_pe_dllexport_name_p (NAME))                                \
-        i386_pe_record_exported_symbol (NAME, 0);                        \
-      /* UWIN binutils bug workaround.  */                                \
-      if (0 && write_symbols != SDB_DEBUG)                                \
-        i386_pe_declare_function_type (FILE, NAME, TREE_PUBLIC (DECL));        \
-      ASM_OUTPUT_LABEL (FILE, NAME);                                        \
-    }                                                                        \
+#define ASM_DECLARE_FUNCTION_NAME(FILE, NAME, DECL)			\
+  do									\
+    {									\
+      if (i386_pe_dllexport_name_p (NAME))				\
+	i386_pe_record_exported_symbol (NAME, 0);			\
+      /* UWIN binutils bug workaround.  */				\
+      if (0 && write_symbols != SDB_DEBUG)				\
+	i386_pe_declare_function_type (FILE, NAME, TREE_PUBLIC (DECL));	\
+      ASM_OUTPUT_LABEL (FILE, NAME);					\
+    }									\
   while (0)
 
 #undef ASM_OUTPUT_EXTERNAL

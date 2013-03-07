@@ -105,40 +105,40 @@ get_regs (struct _Unwind_Context *context)
   if (*(unsigned int *) (pc + 4) == 0x38000077)
     {
       struct sigframe {
-        char gap[SIGNAL_FRAMESIZE];
-        unsigned long pad[7];
-        struct gcc_regs *regs;
+	char gap[SIGNAL_FRAMESIZE];
+	unsigned long pad[7];
+	struct gcc_regs *regs;
       } *frame = (struct sigframe *) context->cfa;
       return frame->regs;
     }
   else if (*(unsigned int *) (pc + 4) == 0x380000AC)
     {
       /* This works for 2.4 kernels, but not for 2.6 kernels with vdso
-         because pc isn't pointing into the stack.  Can be removed when
-         no one is running 2.4.19 or 2.4.20, the first two ppc64
-         kernels released.  */
+	 because pc isn't pointing into the stack.  Can be removed when
+	 no one is running 2.4.19 or 2.4.20, the first two ppc64
+	 kernels released.  */
       struct rt_sigframe_24 {
-        int tramp[6];
-        void *pinfo;
-        struct gcc_ucontext *puc;
+	int tramp[6];
+	void *pinfo;
+	struct gcc_ucontext *puc;
       } *frame24 = (struct rt_sigframe_24 *) pc;
 
       /* Test for magic value in *puc of vdso.  */
       if ((long) frame24->puc != -21 * 8)
-        return frame24->puc->regs;
+	return frame24->puc->regs;
       else
-        {
-          /* This works for 2.4.21 and later kernels.  */
-          struct rt_sigframe {
-            char gap[SIGNAL_FRAMESIZE];
-            struct gcc_ucontext uc;
-            unsigned long pad[2];
-            int tramp[6];
-            void *pinfo;
-            struct gcc_ucontext *puc;
-          } *frame = (struct rt_sigframe *) context->cfa;
-          return frame->uc.regs;
-        }
+	{
+	  /* This works for 2.4.21 and later kernels.  */
+	  struct rt_sigframe {
+	    char gap[SIGNAL_FRAMESIZE];
+	    struct gcc_ucontext uc;
+	    unsigned long pad[2];
+	    int tramp[6];
+	    void *pinfo;
+	    struct gcc_ucontext *puc;
+	  } *frame = (struct rt_sigframe *) context->cfa;
+	  return frame->uc.regs;
+	}
     }
   return NULL;
 }
@@ -162,19 +162,19 @@ get_regs (struct _Unwind_Context *context)
       || *(unsigned int *) (pc + 0) == 0x38000077)
     {
       struct sigframe {
-        char gap[SIGNAL_FRAMESIZE];
-        unsigned long pad[7];
-        struct gcc_regs *regs;
+	char gap[SIGNAL_FRAMESIZE];
+	unsigned long pad[7];
+	struct gcc_regs *regs;
       } *frame = (struct sigframe *) context->cfa;
       return frame->regs;
     }
   else if (*(unsigned int *) (pc + 0) == 0x38006666
-           || *(unsigned int *) (pc + 0) == 0x380000AC)
+	   || *(unsigned int *) (pc + 0) == 0x380000AC)
     {
       struct rt_sigframe {
-        char gap[SIGNAL_FRAMESIZE + 16];
-        char siginfo[128];
-        struct gcc_ucontext uc;
+	char gap[SIGNAL_FRAMESIZE + 16];
+	char siginfo[128];
+	struct gcc_ucontext uc;
       } *frame = (struct rt_sigframe *) context->cfa;
       return frame->uc.regs;
     }
@@ -221,7 +221,7 @@ ppc_linux_aux_vector (long which)
 
 static _Unwind_Reason_Code
 ppc_fallback_frame_state (struct _Unwind_Context *context,
-                          _Unwind_FrameState *fs)
+			  _Unwind_FrameState *fs)
 {
   static long hwcap = 0;
   struct gcc_regs *regs = get_regs (context);
@@ -239,8 +239,8 @@ ppc_fallback_frame_state (struct _Unwind_Context *context,
   for (i = 0; i < 32; i++)
     if (i != STACK_POINTER_REGNUM)
       {
-        fs->regs.reg[i].how = REG_SAVED_OFFSET;
-        fs->regs.reg[i].loc.offset = (long) &regs->gpr[i] - new_cfa;
+	fs->regs.reg[i].how = REG_SAVED_OFFSET;
+	fs->regs.reg[i].loc.offset = (long) &regs->gpr[i] - new_cfa;
       }
 
   fs->regs.reg[CR2_REGNO].how = REG_SAVED_OFFSET;
@@ -258,8 +258,8 @@ ppc_fallback_frame_state (struct _Unwind_Context *context,
     {
       hwcap = ppc_linux_aux_vector (16);
       /* These will already be set if we found AT_HWCAP.  A nonzero
-         value stops us looking again if for some reason we couldn't
-         find AT_HWCAP.  */
+	 value stops us looking again if for some reason we couldn't
+	 find AT_HWCAP.  */
 #ifdef __powerpc64__
       hwcap |= 0xc0000000;
 #else
@@ -271,8 +271,8 @@ ppc_fallback_frame_state (struct _Unwind_Context *context,
   if (hwcap & 0x08000000)
     for (i = 0; i < 32; i++)
       {
-        fs->regs.reg[i + 32].how = REG_SAVED_OFFSET;
-        fs->regs.reg[i + 32].loc.offset = (long) &regs->fpr[i] - new_cfa;
+	fs->regs.reg[i + 32].how = REG_SAVED_OFFSET;
+	fs->regs.reg[i + 32].loc.offset = (long) &regs->fpr[i] - new_cfa;
       }
 
   /* If we have a VMX unit...  */
@@ -285,17 +285,17 @@ ppc_fallback_frame_state (struct _Unwind_Context *context,
       vregs = &regs->vregs;
 #endif
       if (regs->msr & (1 << 25))
-        {
-          for (i = 0; i < 32; i++)
-            {
-              fs->regs.reg[i + FIRST_ALTIVEC_REGNO].how = REG_SAVED_OFFSET;
-              fs->regs.reg[i + FIRST_ALTIVEC_REGNO].loc.offset
-                = (long) &vregs[i] - new_cfa;
-            }
+	{
+	  for (i = 0; i < 32; i++)
+	    {
+	      fs->regs.reg[i + FIRST_ALTIVEC_REGNO].how = REG_SAVED_OFFSET;
+	      fs->regs.reg[i + FIRST_ALTIVEC_REGNO].loc.offset
+		= (long) &vregs[i] - new_cfa;
+	    }
 
-          fs->regs.reg[VSCR_REGNO].how = REG_SAVED_OFFSET;
-          fs->regs.reg[VSCR_REGNO].loc.offset = (long) &vregs->vscr - new_cfa;
-        }
+	  fs->regs.reg[VSCR_REGNO].how = REG_SAVED_OFFSET;
+	  fs->regs.reg[VSCR_REGNO].loc.offset = (long) &vregs->vscr - new_cfa;
+	}
 
       fs->regs.reg[VRSAVE_REGNO].how = REG_SAVED_OFFSET;
       fs->regs.reg[VRSAVE_REGNO].loc.offset = (long) &vregs->vsave - new_cfa;
@@ -335,14 +335,14 @@ frob_update_context (struct _Unwind_Context *context, _Unwind_FrameState *fs ATT
   if (fs->regs.reg[2].how == REG_UNSAVED)
     {
       /* If the current unwind info (FS) does not contain explicit info
-         saving R2, then we have to do a minor amount of code reading to
-         figure out if it was saved.  The big problem here is that the
-         code that does the save/restore is generated by the linker, so
-         we have no good way to determine at compile time what to do.  */
+	 saving R2, then we have to do a minor amount of code reading to
+	 figure out if it was saved.  The big problem here is that the
+	 code that does the save/restore is generated by the linker, so
+	 we have no good way to determine at compile time what to do.  */
       unsigned int *insn
-        = (unsigned int *) _Unwind_GetGR (context, LINK_REGISTER_REGNUM);
+	= (unsigned int *) _Unwind_GetGR (context, LINK_REGISTER_REGNUM);
       if (*insn == 0xE8410028)
-        _Unwind_SetGRPtr (context, 2, context->cfa + 40);
+	_Unwind_SetGRPtr (context, 2, context->cfa + 40);
     }
 #endif
 }

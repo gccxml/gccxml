@@ -27,15 +27,15 @@ Boston, MA 02110-1301, USA.  */
    No definition is equivalent to always zero.  */
 
 #undef EXIT_IGNORE_STACK
-#define EXIT_IGNORE_STACK        1
+#define EXIT_IGNORE_STACK	1
 
 #undef INITIAL_FRAME_POINTER_OFFSET  
-#define INITIAL_FRAME_POINTER_OFFSET(DEPTH_VAR)        \
-{                                                                \
-  int offset;                                                      \
-  offset = get_frame_size();                                        \
-  offset = (offset <= 2)? 0: (offset -2);                        \
-  (DEPTH_VAR) = offset+10;                                                \
+#define INITIAL_FRAME_POINTER_OFFSET(DEPTH_VAR)	\
+{								\
+  int offset;		      				\
+  offset = get_frame_size();					\
+  offset = (offset <= 2)? 0: (offset -2);			\
+  (DEPTH_VAR) = offset+10;						\
 }   
 
 /* Value should be nonzero if functions must have frame pointers.
@@ -56,10 +56,10 @@ Boston, MA 02110-1301, USA.  */
 
 
 #undef ASM_DECLARE_FUNCTION_NAME
-#define ASM_DECLARE_FUNCTION_NAME(STREAM, NAME, DECL)        \
-do {                                                        \
-ASM_OUTPUT_LABEL (STREAM, NAME);                        \
-fprintf (STREAM, "~~%s:\n", NAME);                         \
+#define ASM_DECLARE_FUNCTION_NAME(STREAM, NAME, DECL)	\
+do {							\
+ASM_OUTPUT_LABEL (STREAM, NAME);			\
+fprintf (STREAM, "~~%s:\n", NAME); 			\
 } while (0)
 
 #undef TARGET_UNIX_ASM_DEFAULT

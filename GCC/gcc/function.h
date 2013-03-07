@@ -467,8 +467,8 @@ struct function GTY(())
 
 /* If va_list_[gf]pr_size is set to this, it means we don't know how
    many units need to be saved.  */
-#define VA_LIST_MAX_GPR_SIZE        255
-#define VA_LIST_MAX_FPR_SIZE        255
+#define VA_LIST_MAX_GPR_SIZE	255
+#define VA_LIST_MAX_FPR_SIZE	255
 
 /* The function currently being compiled.  */
 extern GTY(()) struct function *cfun;
@@ -573,9 +573,9 @@ extern const char *current_function_name (void);
 extern void do_warn_unused_parameter (tree);
 
 extern bool pass_by_reference (CUMULATIVE_ARGS *, enum machine_mode,
-                               tree, bool);
+			       tree, bool);
 extern bool reference_callee_copied (CUMULATIVE_ARGS *, enum machine_mode,
-                                     tree, bool);
+				     tree, bool);
 
 extern void used_types_insert (tree);
 

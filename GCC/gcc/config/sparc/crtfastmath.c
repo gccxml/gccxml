@@ -32,7 +32,7 @@
  *    the executable file might be covered by the GNU General Public License.
  */
 
-#define FPRS_NS                (1 << 22)        /* Non-Standard fpu results */
+#define FPRS_NS		(1 << 22)	/* Non-Standard fpu results */
 
 static void __attribute__((constructor))
 set_fast_math (void)
@@ -45,10 +45,10 @@ set_fast_math (void)
      that this runs.  */
 
   __asm__("st %%fsr, %0"
-          : "=m" (fsr));
+	  : "=m" (fsr));
 
   fsr |= FPRS_NS;
 
   __asm__("ld %0, %%fsr"
-          : : "m" (fsr));
+	  : : "m" (fsr));
 }

@@ -1,4 +1,4 @@
-# configure.ac for libdecnumber                        -*- Autoconf -*-
+# configure.ac for libdecnumber			-*- Autoconf -*-
 # Process this file with autoconf to generate a configuration script.
 
 # Copyright 2005, 2006 Free Software Foundation, Inc.
@@ -39,8 +39,8 @@ AC_CHECK_PROGS([AUTOHEADER], [autoheader], [$MISSING autoheader])
 # See config/warnings.m4 for details.
 
 ACX_PROG_CC_WARNING_OPTS([-W -Wall -Wwrite-strings -Wstrict-prototypes \
-                          -Wmissing-prototypes -Wold-style-definition \
-                          -Wmissing-format-attribute -Wcast-qual])
+			  -Wmissing-prototypes -Wold-style-definition \
+			  -Wmissing-format-attribute -Wcast-qual])
 ACX_PROG_CC_WARNING_ALMOST_PEDANTIC([-Wno-long-long])
 
 # Only enable with --enable-werror-always until existing warnings are

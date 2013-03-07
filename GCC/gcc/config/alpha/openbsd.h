@@ -29,12 +29,12 @@ Boston, MA 02110-1301, USA.  */
   "%{!nostdlib:%{!r*:%{!e*:-e __start}}} -dc -dp %{assert*}"
 
 /* run-time target specifications */
-#define TARGET_OS_CPP_BUILTINS()                \
-    do {                                        \
-        builtin_define ("__OpenBSD__");                \
-        builtin_define ("__ANSI_COMPAT");        \
-        builtin_define ("__unix__");                \
-        builtin_assert ("system=unix");                \
+#define TARGET_OS_CPP_BUILTINS()		\
+    do {					\
+	builtin_define ("__OpenBSD__");		\
+	builtin_define ("__ANSI_COMPAT");	\
+	builtin_define ("__unix__");		\
+	builtin_assert ("system=unix");		\
     } while (0)
 
 /* Layout of source language data types.  */
@@ -56,7 +56,7 @@ Boston, MA 02110-1301, USA.  */
 #undef PREFERRED_DEBUGGING_TYPE
 #define PREFERRED_DEBUGGING_TYPE DBX_DEBUG
 
-#define LOCAL_LABEL_PREFIX        "."
+#define LOCAL_LABEL_PREFIX	"."
 
 /* We don't have an init section yet.  */
 #undef HAS_INIT_SECTION
@@ -84,16 +84,16 @@ Boston, MA 02110-1301, USA.  */
 #undef ASM_WEAKEN_LABEL
 #define ASM_WEAKEN_LABEL(FILE,NAME) ASM_OUTPUT_WEAK_ALIAS (FILE,NAME,0)
 
-#define ASM_OUTPUT_WEAK_ALIAS(FILE,NAME,VALUE)        \
- do {                                                \
-  fputs ("\t.weakext\t", FILE);                        \
-  assemble_name (FILE, NAME);                        \
-  if (VALUE)                                        \
-    {                                                \
-      fputs (" , ", FILE);                        \
-      assemble_name (FILE, VALUE);                \
-    }                                                \
-  fputc ('\n', FILE);                                \
+#define ASM_OUTPUT_WEAK_ALIAS(FILE,NAME,VALUE)	\
+ do {						\
+  fputs ("\t.weakext\t", FILE);			\
+  assemble_name (FILE, NAME);			\
+  if (VALUE)					\
+    {						\
+      fputs (" , ", FILE);			\
+      assemble_name (FILE, VALUE);		\
+    }						\
+  fputc ('\n', FILE);				\
  } while (0)
 
 

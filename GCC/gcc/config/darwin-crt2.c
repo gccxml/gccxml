@@ -43,7 +43,7 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
    compilation works.  */
 struct mach_header;
 extern char *getsectdatafromheader (struct mach_header *, const char *,
-                                    const char *, unsigned long *);
+				    const char *, unsigned long *);
 extern void _dyld_register_func_for_add_image
   (void (*) (struct mach_header *, unsigned long));
 extern void _dyld_register_func_for_remove_image
@@ -66,8 +66,8 @@ typedef struct _Sinfo_Node {
 /* KeyMgr 3.x is the first one supporting GCC3 stuff natively.  */
 #define KEYMGR_API_MAJOR_GCC3           3       
 /* ... with these keys.  */
-#define KEYMGR_GCC3_LIVE_IMAGE_LIST        301     /* loaded images  */
-#define KEYMGR_GCC3_DW2_OBJ_LIST        302     /* Dwarf2 object list  */   
+#define KEYMGR_GCC3_LIVE_IMAGE_LIST	301     /* loaded images  */
+#define KEYMGR_GCC3_DW2_OBJ_LIST	302     /* Dwarf2 object list  */   
 
 /* Node of KEYMGR_GCC3_LIVE_IMAGE_LIST.  Info about each resident image.  */
 struct live_images {
@@ -101,7 +101,7 @@ darwin_unwind_dyld_add_image_hook (struct mach_header *mh, unsigned long slide)
   l->vm_slide = slide;
   l->this_size = sizeof (*l);
   l->next = (struct live_images *)
-        _keymgr_get_and_lock_processwide_ptr (KEYMGR_GCC3_LIVE_IMAGE_LIST);
+	_keymgr_get_and_lock_processwide_ptr (KEYMGR_GCC3_LIVE_IMAGE_LIST);
   _keymgr_set_and_unlock_processwide_ptr (KEYMGR_GCC3_LIVE_IMAGE_LIST, l);
 }
 
@@ -113,15 +113,15 @@ darwin_unwind_dyld_remove_image_hook (struct mach_header *m, unsigned long s)
   /* Look for it in the list of live images and delete it.  */
 
   top = (struct live_images *)
-           _keymgr_get_and_lock_processwide_ptr (KEYMGR_GCC3_LIVE_IMAGE_LIST);
+	   _keymgr_get_and_lock_processwide_ptr (KEYMGR_GCC3_LIVE_IMAGE_LIST);
   for (lip = &top; *lip != NULL; lip = &(*lip)->next)
     {
       if ((*lip)->mh == m && (*lip)->vm_slide == s)
         {
           destroy = *lip;
-          *lip = destroy->next;                        /* unlink DESTROY  */
+          *lip = destroy->next;			/* unlink DESTROY  */
 
-          if (destroy->this_size != sizeof (*destroy))        /* sanity check  */
+          if (destroy->this_size != sizeof (*destroy))	/* sanity check  */
             abort ();
 
           break;
@@ -133,7 +133,7 @@ darwin_unwind_dyld_remove_image_hook (struct mach_header *m, unsigned long s)
   if (destroy != NULL)
     {
       if (destroy->destructor != NULL)
-        (*destroy->destructor) (destroy);
+	(*destroy->destructor) (destroy);
       free (destroy);
     }
 }
@@ -147,7 +147,7 @@ __darwin_gcc3_preregister_frame_info (void)
   if (info != NULL)
     {
       if (info->major_version >= KEYMGR_API_MAJOR_GCC3)
-        return;
+	return;
       /* Otherwise, use our own add_image_hooks.  */
     }
 

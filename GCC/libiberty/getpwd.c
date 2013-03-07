@@ -77,35 +77,35 @@ getpwd (void)
   if (!p && !(errno = failure_errno))
     {
       if (! ((p = getenv ("PWD")) != 0
-             && *p == '/'
-             && stat (p, &pwdstat) == 0
-             && stat (".", &dotstat) == 0
-             && dotstat.st_ino == pwdstat.st_ino
-             && dotstat.st_dev == pwdstat.st_dev))
+	     && *p == '/'
+	     && stat (p, &pwdstat) == 0
+	     && stat (".", &dotstat) == 0
+	     && dotstat.st_ino == pwdstat.st_ino
+	     && dotstat.st_dev == pwdstat.st_dev))
 
-        /* The shortcut didn't work.  Try the slow, ``sure'' way.  */
-        for (s = GUESSPATHLEN;  !getcwd (p = XNEWVEC (char, s), s);  s *= 2)
-          {
-            int e = errno;
-            free (p);
+	/* The shortcut didn't work.  Try the slow, ``sure'' way.  */
+	for (s = GUESSPATHLEN;  !getcwd (p = XNEWVEC (char, s), s);  s *= 2)
+	  {
+	    int e = errno;
+	    free (p);
 #ifdef ERANGE
-            if (e != ERANGE)
+	    if (e != ERANGE)
 #endif
-              {
-                errno = failure_errno = e;
-                p = 0;
-                break;
-              }
-          }
+	      {
+		errno = failure_errno = e;
+		p = 0;
+		break;
+	      }
+	  }
 
       /* Cache the result.  This assumes that the program does
-         not invoke chdir between calls to getpwd.  */
+	 not invoke chdir between calls to getpwd.  */
       pwd = p;
     }
   return p;
 }
 
-#else        /* VMS || _WIN32 && !__CYGWIN__ */
+#else	/* VMS || _WIN32 && !__CYGWIN__ */
 
 #ifndef MAXPATHLEN
 #define MAXPATHLEN 255
@@ -119,10 +119,10 @@ getpwd (void)
   if (!pwd)
     pwd = getcwd (XNEWVEC (char, MAXPATHLEN + 1), MAXPATHLEN + 1
 #ifdef VMS
-                  , 0
+		  , 0
 #endif
-                  );
+		  );
   return pwd;
 }
 
-#endif        /* VMS || _WIN32 && !__CYGWIN__ */
+#endif	/* VMS || _WIN32 && !__CYGWIN__ */

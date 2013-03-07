@@ -24,8 +24,8 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
 
 static inline enum reg_class
 base_reg_class (enum machine_mode mode ATTRIBUTE_UNUSED,
-                enum rtx_code outer_code ATTRIBUTE_UNUSED,
-                enum rtx_code index_code ATTRIBUTE_UNUSED)
+		enum rtx_code outer_code ATTRIBUTE_UNUSED,
+		enum rtx_code index_code ATTRIBUTE_UNUSED)
 {
 #ifdef MODE_CODE_BASE_REG_CLASS
   return MODE_CODE_BASE_REG_CLASS (mode, outer_code, index_code);
@@ -49,8 +49,8 @@ base_reg_class (enum machine_mode mode ATTRIBUTE_UNUSED,
 
 static inline bool
 ok_for_base_p_1 (unsigned regno, enum machine_mode mode ATTRIBUTE_UNUSED,
-                 enum rtx_code outer_code ATTRIBUTE_UNUSED,
-                 enum rtx_code index_code ATTRIBUTE_UNUSED)
+		 enum rtx_code outer_code ATTRIBUTE_UNUSED,
+		 enum rtx_code index_code ATTRIBUTE_UNUSED)
 {
 #ifdef REGNO_MODE_CODE_OK_FOR_BASE_P
   return REGNO_MODE_CODE_OK_FOR_BASE_P (regno, mode, outer_code, index_code);
@@ -72,7 +72,7 @@ ok_for_base_p_1 (unsigned regno, enum machine_mode mode ATTRIBUTE_UNUSED,
 
 static inline bool
 regno_ok_for_base_p (unsigned regno, enum machine_mode mode,
-                     enum rtx_code outer_code, enum rtx_code index_code)
+		     enum rtx_code outer_code, enum rtx_code index_code)
 {
   if (regno >= FIRST_PSEUDO_REGISTER && reg_renumber[regno] >= 0)
     regno = reg_renumber[regno];

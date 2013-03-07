@@ -74,37 +74,37 @@ struct constant;
 
 struct iq2000_frame_info
 {
-  long total_size;                /* # bytes that the entire frame takes up.  */
-  long var_size;                /* # bytes that variables take up.  */
-  long args_size;                /* # bytes that outgoing arguments take up.  */
-  long extra_size;                /* # bytes of extra gunk.  */
-  int  gp_reg_size;                /* # bytes needed to store gp regs.  */
-  int  fp_reg_size;                /* # bytes needed to store fp regs.  */
-  long mask;                        /* Mask of saved gp registers.  */
-  long gp_save_offset;                /* Offset from vfp to store gp registers.  */
-  long fp_save_offset;                /* Offset from vfp to store fp registers.  */
-  long gp_sp_offset;                /* Offset from new sp to store gp registers.  */
-  long fp_sp_offset;                /* Offset from new sp to store fp registers.  */
-  int  initialized;                /* != 0 if frame size already calculated.  */
-  int  num_gp;                        /* Number of gp registers saved.  */
+  long total_size;		/* # bytes that the entire frame takes up.  */
+  long var_size;		/* # bytes that variables take up.  */
+  long args_size;		/* # bytes that outgoing arguments take up.  */
+  long extra_size;		/* # bytes of extra gunk.  */
+  int  gp_reg_size;		/* # bytes needed to store gp regs.  */
+  int  fp_reg_size;		/* # bytes needed to store fp regs.  */
+  long mask;			/* Mask of saved gp registers.  */
+  long gp_save_offset;		/* Offset from vfp to store gp registers.  */
+  long fp_save_offset;		/* Offset from vfp to store fp registers.  */
+  long gp_sp_offset;		/* Offset from new sp to store gp registers.  */
+  long fp_sp_offset;		/* Offset from new sp to store fp registers.  */
+  int  initialized;		/* != 0 if frame size already calculated.  */
+  int  num_gp;			/* Number of gp registers saved.  */
 } iq2000_frame_info;
 
 struct machine_function GTY(())
 {
   /* Current frame information, calculated by compute_frame_size.  */
-  long total_size;                /* # bytes that the entire frame takes up.  */
-  long var_size;                /* # bytes that variables take up.  */
-  long args_size;                /* # bytes that outgoing arguments take up.  */
-  long extra_size;                /* # bytes of extra gunk.  */
-  int  gp_reg_size;                /* # bytes needed to store gp regs.  */
-  int  fp_reg_size;                /* # bytes needed to store fp regs.  */
-  long mask;                        /* Mask of saved gp registers.  */
-  long gp_save_offset;                /* Offset from vfp to store gp registers.  */
-  long fp_save_offset;                /* Offset from vfp to store fp registers.  */
-  long gp_sp_offset;                /* Offset from new sp to store gp registers.  */
-  long fp_sp_offset;                /* Offset from new sp to store fp registers.  */
-  int  initialized;                /* != 0 if frame size already calculated.  */
-  int  num_gp;                        /* Number of gp registers saved.  */
+  long total_size;		/* # bytes that the entire frame takes up.  */
+  long var_size;		/* # bytes that variables take up.  */
+  long args_size;		/* # bytes that outgoing arguments take up.  */
+  long extra_size;		/* # bytes of extra gunk.  */
+  int  gp_reg_size;		/* # bytes needed to store gp regs.  */
+  int  fp_reg_size;		/* # bytes needed to store fp regs.  */
+  long mask;			/* Mask of saved gp registers.  */
+  long gp_save_offset;		/* Offset from vfp to store gp registers.  */
+  long fp_save_offset;		/* Offset from vfp to store fp registers.  */
+  long gp_sp_offset;		/* Offset from new sp to store gp registers.  */
+  long fp_sp_offset;		/* Offset from new sp to store fp registers.  */
+  int  initialized;		/* != 0 if frame size already calculated.  */
+  int  num_gp;			/* Number of gp registers saved.  */
 };
 
 /* Global variables for machine-dependent things.  */
@@ -155,36 +155,36 @@ static enum machine_mode gpr_mode;
 static struct machine_function* iq2000_init_machine_status (void);
 static bool iq2000_handle_option      (size_t, const char *, int);
 static section *iq2000_select_rtx_section (enum machine_mode, rtx,
-                                           unsigned HOST_WIDE_INT);
+					   unsigned HOST_WIDE_INT);
 static void iq2000_init_builtins      (void);
 static rtx  iq2000_expand_builtin     (tree, rtx, rtx, enum machine_mode, int);
 static bool iq2000_return_in_memory   (tree, tree);
 static void iq2000_setup_incoming_varargs (CUMULATIVE_ARGS *,
-                                           enum machine_mode, tree, int *,
-                                           int);
+					   enum machine_mode, tree, int *,
+					   int);
 static bool iq2000_rtx_costs          (rtx, int, int, int *);
 static int  iq2000_address_cost       (rtx);
 static section *iq2000_select_section (tree, int, unsigned HOST_WIDE_INT);
 static bool iq2000_return_in_memory   (tree, tree);
 static bool iq2000_pass_by_reference  (CUMULATIVE_ARGS *, enum machine_mode,
-                                       tree, bool);
+				       tree, bool);
 static int  iq2000_arg_partial_bytes  (CUMULATIVE_ARGS *, enum machine_mode,
-                                       tree, bool);
+				       tree, bool);
 
 #undef  TARGET_INIT_BUILTINS
-#define TARGET_INIT_BUILTINS                 iq2000_init_builtins
+#define TARGET_INIT_BUILTINS 		iq2000_init_builtins
 #undef  TARGET_EXPAND_BUILTIN
-#define TARGET_EXPAND_BUILTIN                 iq2000_expand_builtin
+#define TARGET_EXPAND_BUILTIN 		iq2000_expand_builtin
 #undef  TARGET_ASM_SELECT_RTX_SECTION
-#define TARGET_ASM_SELECT_RTX_SECTION        iq2000_select_rtx_section
+#define TARGET_ASM_SELECT_RTX_SECTION	iq2000_select_rtx_section
 #undef  TARGET_HANDLE_OPTION
-#define TARGET_HANDLE_OPTION                iq2000_handle_option
+#define TARGET_HANDLE_OPTION		iq2000_handle_option
 #undef  TARGET_RTX_COSTS
-#define TARGET_RTX_COSTS                iq2000_rtx_costs
+#define TARGET_RTX_COSTS		iq2000_rtx_costs
 #undef  TARGET_ADDRESS_COST
-#define TARGET_ADDRESS_COST                iq2000_address_cost
+#define TARGET_ADDRESS_COST		iq2000_address_cost
 #undef  TARGET_ASM_SELECT_SECTION
-#define TARGET_ASM_SELECT_SECTION        iq2000_select_section
+#define TARGET_ASM_SELECT_SECTION	iq2000_select_section
 
 /* The assembler supports switchable .bss sections, but
    iq2000_select_section doesn't yet make use of them.  */
@@ -192,25 +192,25 @@ static int  iq2000_arg_partial_bytes  (CUMULATIVE_ARGS *, enum machine_mode,
 #define TARGET_HAVE_SWITCHABLE_BSS_SECTIONS false
 
 #undef  TARGET_PROMOTE_FUNCTION_ARGS
-#define TARGET_PROMOTE_FUNCTION_ARGS        hook_bool_tree_true
+#define TARGET_PROMOTE_FUNCTION_ARGS	hook_bool_tree_true
 #undef  TARGET_PROMOTE_FUNCTION_RETURN
-#define TARGET_PROMOTE_FUNCTION_RETURN        hook_bool_tree_true
+#define TARGET_PROMOTE_FUNCTION_RETURN	hook_bool_tree_true
 #undef  TARGET_PROMOTE_PROTOTYPES
-#define TARGET_PROMOTE_PROTOTYPES        hook_bool_tree_true
+#define TARGET_PROMOTE_PROTOTYPES	hook_bool_tree_true
 
 #undef  TARGET_RETURN_IN_MEMORY
-#define TARGET_RETURN_IN_MEMORY                iq2000_return_in_memory
+#define TARGET_RETURN_IN_MEMORY		iq2000_return_in_memory
 #undef  TARGET_PASS_BY_REFERENCE
-#define TARGET_PASS_BY_REFERENCE        iq2000_pass_by_reference
+#define TARGET_PASS_BY_REFERENCE	iq2000_pass_by_reference
 #undef  TARGET_CALLEE_COPIES
-#define TARGET_CALLEE_COPIES                hook_callee_copies_named
+#define TARGET_CALLEE_COPIES		hook_callee_copies_named
 #undef  TARGET_ARG_PARTIAL_BYTES
-#define TARGET_ARG_PARTIAL_BYTES        iq2000_arg_partial_bytes
+#define TARGET_ARG_PARTIAL_BYTES	iq2000_arg_partial_bytes
 
 #undef  TARGET_SETUP_INCOMING_VARARGS
-#define TARGET_SETUP_INCOMING_VARARGS        iq2000_setup_incoming_varargs
+#define TARGET_SETUP_INCOMING_VARARGS	iq2000_setup_incoming_varargs
 #undef  TARGET_STRICT_ARGUMENT_NAMING
-#define TARGET_STRICT_ARGUMENT_NAMING        hook_bool_CUMULATIVE_ARGS_true
+#define TARGET_STRICT_ARGUMENT_NAMING	hook_bool_CUMULATIVE_ARGS_true
 
 struct gcc_target targetm = TARGET_INITIALIZER;
 
@@ -226,7 +226,7 @@ iq2000_check_split (rtx address, enum machine_mode mode)
 
   if ((GET_CODE (address) == SYMBOL_REF)
       || (GET_CODE (address) == CONST
-          && GET_CODE (XEXP (XEXP (address, 0), 0)) == SYMBOL_REF)
+	  && GET_CODE (XEXP (XEXP (address, 0), 0)) == SYMBOL_REF)
       || GET_CODE (address) == LABEL_REF)
     return 1;
 
@@ -237,12 +237,12 @@ iq2000_check_split (rtx address, enum machine_mode mode)
 
 int
 iq2000_reg_mode_ok_for_base_p (rtx reg,
-                               enum machine_mode mode ATTRIBUTE_UNUSED,
-                               int strict)
+			       enum machine_mode mode ATTRIBUTE_UNUSED,
+			       int strict)
 {
   return (strict
-          ? REGNO_MODE_OK_FOR_BASE_P (REGNO (reg), mode)
-          : GP_REG_OR_PSEUDO_NONSTRICT_P (REGNO (reg), mode));
+	  ? REGNO_MODE_OK_FOR_BASE_P (REGNO (reg), mode)
+	  : GP_REG_OR_PSEUDO_NONSTRICT_P (REGNO (reg), mode));
 }
 
 /* Return a nonzero value if XINSN is a legitimate address for a
@@ -255,7 +255,7 @@ iq2000_legitimate_address_p (enum machine_mode mode, rtx xinsn, int strict)
   if (TARGET_DEBUG_A_MODE)
     {
       GO_PRINTF2 ("\n========== GO_IF_LEGITIMATE_ADDRESS, %sstrict\n",
-                  strict ? "" : "not ");
+		  strict ? "" : "not ");
       GO_DEBUG_RTX (xinsn);
     }
 
@@ -279,11 +279,11 @@ iq2000_legitimate_address_p (enum machine_mode mode, rtx xinsn, int strict)
       rtx xlow1 = XEXP (xinsn, 1);
 
       while (GET_CODE (xlow0) == SUBREG)
-        xlow0 = SUBREG_REG (xlow0);
+	xlow0 = SUBREG_REG (xlow0);
       if (GET_CODE (xlow0) == REG
-          && iq2000_reg_mode_ok_for_base_p (xlow0, mode, strict)
-          && iq2000_check_split (xlow1, mode))
-        return 1;
+	  && iq2000_reg_mode_ok_for_base_p (xlow0, mode, strict)
+	  && iq2000_check_split (xlow1, mode))
+	return 1;
     }
 
   if (GET_CODE (xinsn) == PLUS)
@@ -294,20 +294,20 @@ iq2000_legitimate_address_p (enum machine_mode mode, rtx xinsn, int strict)
       enum rtx_code code1;
 
       while (GET_CODE (xplus0) == SUBREG)
-        xplus0 = SUBREG_REG (xplus0);
+	xplus0 = SUBREG_REG (xplus0);
       code0 = GET_CODE (xplus0);
 
       while (GET_CODE (xplus1) == SUBREG)
-        xplus1 = SUBREG_REG (xplus1);
+	xplus1 = SUBREG_REG (xplus1);
       code1 = GET_CODE (xplus1);
 
       if (code0 == REG
-          && iq2000_reg_mode_ok_for_base_p (xplus0, mode, strict))
-        {
-          if (code1 == CONST_INT && SMALL_INT (xplus1)
-              && SMALL_INT_UNSIGNED (xplus1) /* No negative offsets */)
-            return 1;
-        }
+	  && iq2000_reg_mode_ok_for_base_p (xplus0, mode, strict))
+	{
+	  if (code1 == CONST_INT && SMALL_INT (xplus1)
+	      && SMALL_INT_UNSIGNED (xplus1) /* No negative offsets */)
+	    return 1;
+	}
     }
 
   if (TARGET_DEBUG_A_MODE)
@@ -328,7 +328,7 @@ iq2000_legitimate_address_p (enum machine_mode mode, rtx xinsn, int strict)
 
 const char *
 iq2000_fill_delay_slot (const char *ret, enum delay_type type, rtx operands[],
-                        rtx cur_insn)
+			rtx cur_insn)
 {
   rtx set_reg;
   enum machine_mode mode;
@@ -344,8 +344,8 @@ iq2000_fill_delay_slot (const char *ret, enum delay_type type, rtx operands[],
   /* Make sure that we don't put nop's after labels.  */
   next_insn = NEXT_INSN (cur_insn);
   while (next_insn != 0
-         && (GET_CODE (next_insn) == NOTE
-             || GET_CODE (next_insn) == CODE_LABEL))
+	 && (GET_CODE (next_insn) == NOTE
+	     || GET_CODE (next_insn) == CODE_LABEL))
     next_insn = NEXT_INSN (next_insn);
 
   dslots_load_total += num_nops;
@@ -412,80 +412,80 @@ iq2000_count_memory_refs (rtx op, int num)
     {
       looping = FALSE;
       switch (GET_CODE (addr))
-        {
-        case REG:
-        case CONST_INT:
-        case LO_SUM:
-          break;
+	{
+	case REG:
+	case CONST_INT:
+	case LO_SUM:
+	  break;
 
-        case PLUS:
-          plus0 = XEXP (addr, 0);
-          plus1 = XEXP (addr, 1);
-          code0 = GET_CODE (plus0);
-          code1 = GET_CODE (plus1);
+	case PLUS:
+	  plus0 = XEXP (addr, 0);
+	  plus1 = XEXP (addr, 1);
+	  code0 = GET_CODE (plus0);
+	  code1 = GET_CODE (plus1);
 
-          if (code0 == REG)
-            {
-              additional++;
-              addr = plus1;
-              looping = 1;
-              continue;
-            }
+	  if (code0 == REG)
+	    {
+	      additional++;
+	      addr = plus1;
+	      looping = 1;
+	      continue;
+	    }
 
-          if (code0 == CONST_INT)
-            {
-              addr = plus1;
-              looping = 1;
-              continue;
-            }
+	  if (code0 == CONST_INT)
+	    {
+	      addr = plus1;
+	      looping = 1;
+	      continue;
+	    }
 
-          if (code1 == REG)
-            {
-              additional++;
-              addr = plus0;
-              looping = 1;
-              continue;
-            }
+	  if (code1 == REG)
+	    {
+	      additional++;
+	      addr = plus0;
+	      looping = 1;
+	      continue;
+	    }
 
-          if (code1 == CONST_INT)
-            {
-              addr = plus0;
-              looping = 1;
-              continue;
-            }
+	  if (code1 == CONST_INT)
+	    {
+	      addr = plus0;
+	      looping = 1;
+	      continue;
+	    }
 
-          if (code0 == SYMBOL_REF || code0 == LABEL_REF || code0 == CONST)
-            {
-              addr = plus0;
-              looping = 1;
-              continue;
-            }
+	  if (code0 == SYMBOL_REF || code0 == LABEL_REF || code0 == CONST)
+	    {
+	      addr = plus0;
+	      looping = 1;
+	      continue;
+	    }
 
-          if (code1 == SYMBOL_REF || code1 == LABEL_REF || code1 == CONST)
-            {
-              addr = plus1;
-              looping = 1;
-              continue;
-            }
+	  if (code1 == SYMBOL_REF || code1 == LABEL_REF || code1 == CONST)
+	    {
+	      addr = plus1;
+	      looping = 1;
+	      continue;
+	    }
 
-          break;
+	  break;
 
-        case LABEL_REF:
-          n_words = 2;                /* Always 2 words.  */
-          break;
+	case LABEL_REF:
+	  n_words = 2;		/* Always 2 words.  */
+	  break;
 
-        case CONST:
-          addr = XEXP (addr, 0);
-          looping = 1;
-          continue;
+	case CONST:
+	  addr = XEXP (addr, 0);
+	  looping = 1;
+	  continue;
 
-        case SYMBOL_REF:
-          n_words = SYMBOL_REF_FLAG (addr) ? 1 : 2;
-          break;
+	case SYMBOL_REF:
+	  n_words = SYMBOL_REF_FLAG (addr) ? 1 : 2;
+	  break;
 
-        default:
-          break;
-        }
+	default:
+	  break;
+	}
     }
   while (looping);
 
@@ -527,9 +527,9 @@ iq2000_move_1word (rtx operands[], rtx insn, int unsignedp)
   while (code0 == SUBREG)
     {
       subreg_offset0 += subreg_regno_offset (REGNO (SUBREG_REG (op0)),
-                                             GET_MODE (SUBREG_REG (op0)),
-                                             SUBREG_BYTE (op0),
-                                             GET_MODE (op0));
+					     GET_MODE (SUBREG_REG (op0)),
+					     SUBREG_BYTE (op0),
+					     GET_MODE (op0));
       op0 = SUBREG_REG (op0);
       code0 = GET_CODE (op0);
     }
@@ -537,9 +537,9 @@ iq2000_move_1word (rtx operands[], rtx insn, int unsignedp)
   while (code1 == SUBREG)
     {
       subreg_offset1 += subreg_regno_offset (REGNO (SUBREG_REG (op1)),
-                                             GET_MODE (SUBREG_REG (op1)),
-                                             SUBREG_BYTE (op1),
-                                             GET_MODE (op1));
+					     GET_MODE (SUBREG_REG (op1)),
+					     SUBREG_BYTE (op1),
+					     GET_MODE (op1));
       op1 = SUBREG_REG (op1);
       code1 = GET_CODE (op1);
     }
@@ -553,178 +553,178 @@ iq2000_move_1word (rtx operands[], rtx insn, int unsignedp)
       int regno0 = REGNO (op0) + subreg_offset0;
 
       if (code1 == REG)
-        {
-          int regno1 = REGNO (op1) + subreg_offset1;
+	{
+	  int regno1 = REGNO (op1) + subreg_offset1;
 
-          /* Do not do anything for assigning a register to itself */
-          if (regno0 == regno1)
-            ret = "";
+	  /* Do not do anything for assigning a register to itself */
+	  if (regno0 == regno1)
+	    ret = "";
 
-          else if (GP_REG_P (regno0))
-            {
-              if (GP_REG_P (regno1))
-                ret = "or\t%0,%%0,%1";
-            }
+	  else if (GP_REG_P (regno0))
+	    {
+	      if (GP_REG_P (regno1))
+		ret = "or\t%0,%%0,%1";
+	    }
 
-        }
+	}
 
       else if (code1 == MEM)
-        {
-          delay = DELAY_LOAD;
+	{
+	  delay = DELAY_LOAD;
 
-          if (TARGET_STATS)
-            iq2000_count_memory_refs (op1, 1);
+	  if (TARGET_STATS)
+	    iq2000_count_memory_refs (op1, 1);
 
-          if (GP_REG_P (regno0))
-            {
-              /* For loads, use the mode of the memory item, instead of the
-                 target, so zero/sign extend can use this code as well.  */
-              switch (GET_MODE (op1))
-                {
-                default:
-                  break;
-                case SFmode:
-                  ret = "lw\t%0,%1";
-                  break;
-                case SImode:
-                case CCmode:
-                  ret = "lw\t%0,%1";
-                  break;
-                case HImode:
-                  ret = (unsignedp) ? "lhu\t%0,%1" : "lh\t%0,%1";
-                  break;
-                case QImode:
-                  ret = (unsignedp) ? "lbu\t%0,%1" : "lb\t%0,%1";
-                  break;
-                }
-            }
-        }
+	  if (GP_REG_P (regno0))
+	    {
+	      /* For loads, use the mode of the memory item, instead of the
+		 target, so zero/sign extend can use this code as well.  */
+	      switch (GET_MODE (op1))
+		{
+		default:
+		  break;
+		case SFmode:
+		  ret = "lw\t%0,%1";
+		  break;
+		case SImode:
+		case CCmode:
+		  ret = "lw\t%0,%1";
+		  break;
+		case HImode:
+		  ret = (unsignedp) ? "lhu\t%0,%1" : "lh\t%0,%1";
+		  break;
+		case QImode:
+		  ret = (unsignedp) ? "lbu\t%0,%1" : "lb\t%0,%1";
+		  break;
+		}
+	    }
+	}
 
       else if (code1 == CONST_INT
-               || (code1 == CONST_DOUBLE
-                   && GET_MODE (op1) == VOIDmode))
-        {
-          if (code1 == CONST_DOUBLE)
-            {
-              /* This can happen when storing constants into long long
+	       || (code1 == CONST_DOUBLE
+		   && GET_MODE (op1) == VOIDmode))
+	{
+	  if (code1 == CONST_DOUBLE)
+	    {
+	      /* This can happen when storing constants into long long
                  bitfields.  Just store the least significant word of
                  the value.  */
-              operands[1] = op1 = GEN_INT (CONST_DOUBLE_LOW (op1));
-            }
+	      operands[1] = op1 = GEN_INT (CONST_DOUBLE_LOW (op1));
+	    }
 
-          if (INTVAL (op1) == 0)
-            {
-              if (GP_REG_P (regno0))
-                ret = "or\t%0,%%0,%z1";
-            }
-         else if (GP_REG_P (regno0))
-            {
-              if (SMALL_INT_UNSIGNED (op1))
-                ret = "ori\t%0,%%0,%x1\t\t\t# %1";
-              else if (SMALL_INT (op1))
-                ret = "addiu\t%0,%%0,%1\t\t\t# %1";
-              else
-                ret = "lui\t%0,%X1\t\t\t# %1\n\tori\t%0,%0,%x1";
-            }
-        }
+	  if (INTVAL (op1) == 0)
+	    {
+	      if (GP_REG_P (regno0))
+		ret = "or\t%0,%%0,%z1";
+	    }
+	 else if (GP_REG_P (regno0))
+	    {
+	      if (SMALL_INT_UNSIGNED (op1))
+		ret = "ori\t%0,%%0,%x1\t\t\t# %1";
+	      else if (SMALL_INT (op1))
+		ret = "addiu\t%0,%%0,%1\t\t\t# %1";
+	      else
+		ret = "lui\t%0,%X1\t\t\t# %1\n\tori\t%0,%0,%x1";
+	    }
+	}
 
       else if (code1 == CONST_DOUBLE && mode == SFmode)
-        {
-          if (op1 == CONST0_RTX (SFmode))
-            {
-              if (GP_REG_P (regno0))
-                ret = "or\t%0,%%0,%.";
-            }
+	{
+	  if (op1 == CONST0_RTX (SFmode))
+	    {
+	      if (GP_REG_P (regno0))
+		ret = "or\t%0,%%0,%.";
+	    }
 
-          else
-            {
-              delay = DELAY_LOAD;
-              ret = "li.s\t%0,%1";
-            }
-        }
+	  else
+	    {
+	      delay = DELAY_LOAD;
+	      ret = "li.s\t%0,%1";
+	    }
+	}
 
       else if (code1 == LABEL_REF)
-        {
-          if (TARGET_STATS)
-            iq2000_count_memory_refs (op1, 1);
+	{
+	  if (TARGET_STATS)
+	    iq2000_count_memory_refs (op1, 1);
 
-          ret = "la\t%0,%a1";
-        }
+	  ret = "la\t%0,%a1";
+	}
 
       else if (code1 == SYMBOL_REF || code1 == CONST)
-        {
-          if (TARGET_STATS)
-            iq2000_count_memory_refs (op1, 1);
+	{
+	  if (TARGET_STATS)
+	    iq2000_count_memory_refs (op1, 1);
 
-          ret = "la\t%0,%a1";
-        }
+	  ret = "la\t%0,%a1";
+	}
 
       else if (code1 == PLUS)
-        {
-          rtx add_op0 = XEXP (op1, 0);
-          rtx add_op1 = XEXP (op1, 1);
+	{
+	  rtx add_op0 = XEXP (op1, 0);
+	  rtx add_op1 = XEXP (op1, 1);
 
-          if (GET_CODE (XEXP (op1, 1)) == REG
-              && GET_CODE (XEXP (op1, 0)) == CONST_INT)
-            add_op0 = XEXP (op1, 1), add_op1 = XEXP (op1, 0);
+	  if (GET_CODE (XEXP (op1, 1)) == REG
+	      && GET_CODE (XEXP (op1, 0)) == CONST_INT)
+	    add_op0 = XEXP (op1, 1), add_op1 = XEXP (op1, 0);
 
-          operands[2] = add_op0;
-          operands[3] = add_op1;
-          ret = "add%:\t%0,%2,%3";
-        }
+	  operands[2] = add_op0;
+	  operands[3] = add_op1;
+	  ret = "add%:\t%0,%2,%3";
+	}
 
       else if (code1 == HIGH)
-        {
-          operands[1] = XEXP (op1, 0);
-          ret = "lui\t%0,%%hi(%1)";
-        }
+	{
+	  operands[1] = XEXP (op1, 0);
+	  ret = "lui\t%0,%%hi(%1)";
+	}
     }
 
   else if (code0 == MEM)
     {
       if (TARGET_STATS)
-        iq2000_count_memory_refs (op0, 1);
+	iq2000_count_memory_refs (op0, 1);
 
       if (code1 == REG)
-        {
-          int regno1 = REGNO (op1) + subreg_offset1;
+	{
+	  int regno1 = REGNO (op1) + subreg_offset1;
 
-          if (GP_REG_P (regno1))
-            {
-              switch (mode)
-                {
-                case SFmode: ret = "sw\t%1,%0"; break;
-                case SImode: ret = "sw\t%1,%0"; break;
-                case HImode: ret = "sh\t%1,%0"; break;
-                case QImode: ret = "sb\t%1,%0"; break;
-                default: break;
-                }
-            }
-        }
+	  if (GP_REG_P (regno1))
+	    {
+	      switch (mode)
+		{
+		case SFmode: ret = "sw\t%1,%0"; break;
+		case SImode: ret = "sw\t%1,%0"; break;
+		case HImode: ret = "sh\t%1,%0"; break;
+		case QImode: ret = "sb\t%1,%0"; break;
+		default: break;
+		}
+	    }
+	}
 
       else if (code1 == CONST_INT && INTVAL (op1) == 0)
-        {
-          switch (mode)
-            {
-            case SFmode: ret = "sw\t%z1,%0"; break;
-            case SImode: ret = "sw\t%z1,%0"; break;
-            case HImode: ret = "sh\t%z1,%0"; break;
-            case QImode: ret = "sb\t%z1,%0"; break;
-            default: break;
-            }
-        }
+	{
+	  switch (mode)
+	    {
+	    case SFmode: ret = "sw\t%z1,%0"; break;
+	    case SImode: ret = "sw\t%z1,%0"; break;
+	    case HImode: ret = "sh\t%z1,%0"; break;
+	    case QImode: ret = "sb\t%z1,%0"; break;
+	    default: break;
+	    }
+	}
 
       else if (code1 == CONST_DOUBLE && op1 == CONST0_RTX (mode))
-        {
-          switch (mode)
-            {
-            case SFmode: ret = "sw\t%.,%0"; break;
-            case SImode: ret = "sw\t%.,%0"; break;
-            case HImode: ret = "sh\t%.,%0"; break;
-            case QImode: ret = "sb\t%.,%0"; break;
-            default: break;
-            }
-        }
+	{
+	  switch (mode)
+	    {
+	    case SFmode: ret = "sw\t%.,%0"; break;
+	    case SImode: ret = "sw\t%.,%0"; break;
+	    case HImode: ret = "sh\t%.,%0"; break;
+	    case QImode: ret = "sb\t%.,%0"; break;
+	    default: break;
+	    }
+	}
     }
 
   if (ret == 0)
@@ -754,17 +754,17 @@ iq2000_address_cost (rtx addr)
 
     case CONST:
       {
-        rtx offset = const0_rtx;
+	rtx offset = const0_rtx;
 
-        addr = eliminate_constant_term (XEXP (addr, 0), & offset);
-        if (GET_CODE (addr) == LABEL_REF)
-          return 2;
+	addr = eliminate_constant_term (XEXP (addr, 0), & offset);
+	if (GET_CODE (addr) == LABEL_REF)
+	  return 2;
 
-        if (GET_CODE (addr) != SYMBOL_REF)
-          return 4;
+	if (GET_CODE (addr) != SYMBOL_REF)
+	  return 4;
 
-        if (! SMALL_INT (offset))
-          return 2;
+	if (! SMALL_INT (offset))
+	  return 2;
       }
 
       /* Fall through.  */
@@ -774,30 +774,30 @@ iq2000_address_cost (rtx addr)
 
     case PLUS:
       {
-        rtx plus0 = XEXP (addr, 0);
-        rtx plus1 = XEXP (addr, 1);
+	rtx plus0 = XEXP (addr, 0);
+	rtx plus1 = XEXP (addr, 1);
 
-        if (GET_CODE (plus0) != REG && GET_CODE (plus1) == REG)
-          plus0 = XEXP (addr, 1), plus1 = XEXP (addr, 0);
+	if (GET_CODE (plus0) != REG && GET_CODE (plus1) == REG)
+	  plus0 = XEXP (addr, 1), plus1 = XEXP (addr, 0);
 
-        if (GET_CODE (plus0) != REG)
-          break;
+	if (GET_CODE (plus0) != REG)
+	  break;
 
-        switch (GET_CODE (plus1))
-          {
-          case CONST_INT:
-            return SMALL_INT (plus1) ? 1 : 2;
+	switch (GET_CODE (plus1))
+	  {
+	  case CONST_INT:
+	    return SMALL_INT (plus1) ? 1 : 2;
 
-          case CONST:
-          case SYMBOL_REF:
-          case LABEL_REF:
-          case HIGH:
-          case LO_SUM:
-            return iq2000_address_cost (plus1) + 1;
+	  case CONST:
+	  case SYMBOL_REF:
+	  case LABEL_REF:
+	  case HIGH:
+	  case LO_SUM:
+	    return iq2000_address_cost (plus1) + 1;
 
-          default:
-            break;
-          }
+	  default:
+	    break;
+	  }
       }
 
     default:
@@ -826,7 +826,7 @@ map_test_to_internal_test (enum rtx_code test_code)
     case GEU: test = ITEST_GEU; break;
     case LTU: test = ITEST_LTU; break;
     case LEU: test = ITEST_LEU; break;
-    default:                        break;
+    default:			break;
     }
 
   return test;
@@ -835,37 +835,37 @@ map_test_to_internal_test (enum rtx_code test_code)
 /* Generate the code to do a TEST_CODE comparison on two integer values CMP0
    and CMP1.  P_INVERT is NULL or ptr if branch needs to reverse its test.
    The return value RESULT is:
-   (reg:SI xx)                The pseudo register the comparison is in
-   0                               No register, generate a simple branch.  */
+   (reg:SI xx)		The pseudo register the comparison is in
+   0		       	No register, generate a simple branch.  */
 
 rtx
 gen_int_relational (enum rtx_code test_code, rtx result, rtx cmp0, rtx cmp1,
-                    int *p_invert)
+		    int *p_invert)
 {
   struct cmp_info
   {
-    enum rtx_code test_code;        /* Code to use in instruction (LT vs. LTU).  */
-    int const_low;                /* Low bound of constant we can accept.  */
-    int const_high;                /* High bound of constant we can accept.  */
-    int const_add;                /* Constant to add (convert LE -> LT).  */
-    int reverse_regs;                /* Reverse registers in test.  */
-    int invert_const;                /* != 0 if invert value if cmp1 is constant.  */
-    int invert_reg;                /* != 0 if invert value if cmp1 is register.  */
-    int unsignedp;                /* != 0 for unsigned comparisons.  */
+    enum rtx_code test_code;	/* Code to use in instruction (LT vs. LTU).  */
+    int const_low;		/* Low bound of constant we can accept.  */
+    int const_high;		/* High bound of constant we can accept.  */
+    int const_add;		/* Constant to add (convert LE -> LT).  */
+    int reverse_regs;		/* Reverse registers in test.  */
+    int invert_const;		/* != 0 if invert value if cmp1 is constant.  */
+    int invert_reg;		/* != 0 if invert value if cmp1 is register.  */
+    int unsignedp;		/* != 0 for unsigned comparisons.  */
   };
 
   static struct cmp_info info[ (int)ITEST_MAX ] =
   {
-    { XOR,         0,  65535,  0,         0,  0,         0, 0 },        /* EQ  */
-    { XOR,         0,  65535,  0,         0,  1,         1, 0 },        /* NE  */
-    { LT,   -32769,  32766,  1,         1,  1,         0, 0 },        /* GT  */
-    { LT,   -32768,  32767,  0,         0,  1,         1, 0 },        /* GE  */
-    { LT,   -32768,  32767,  0,         0,  0,         0, 0 },        /* LT  */
-    { LT,   -32769,  32766,  1,         1,  0,         1, 0 },        /* LE  */
-    { LTU,  -32769,  32766,  1,         1,  1,         0, 1 },        /* GTU */
-    { LTU,  -32768,  32767,  0,         0,  1,         1, 1 },        /* GEU */
-    { LTU,  -32768,  32767,  0,         0,  0,         0, 1 },        /* LTU */
-    { LTU,  -32769,  32766,  1,         1,  0,         1, 1 },        /* LEU */
+    { XOR,	 0,  65535,  0,	 0,  0,	 0, 0 },	/* EQ  */
+    { XOR,	 0,  65535,  0,	 0,  1,	 1, 0 },	/* NE  */
+    { LT,   -32769,  32766,  1,	 1,  1,	 0, 0 },	/* GT  */
+    { LT,   -32768,  32767,  0,	 0,  1,	 1, 0 },	/* GE  */
+    { LT,   -32768,  32767,  0,	 0,  0,	 0, 0 },	/* LT  */
+    { LT,   -32769,  32766,  1,	 1,  0,	 1, 0 },	/* LE  */
+    { LTU,  -32769,  32766,  1,	 1,  1,	 0, 1 },	/* GTU */
+    { LTU,  -32768,  32767,  0,	 0,  1,	 1, 1 },	/* GEU */
+    { LTU,  -32768,  32767,  0,	 0,  0,	 0, 1 },	/* LTU */
+    { LTU,  -32769,  32766,  1,	 1,  0,	 1, 1 },	/* LEU */
   };
 
   enum internal_test test;
@@ -892,15 +892,15 @@ gen_int_relational (enum rtx_code test_code, rtx result, rtx cmp0, rtx cmp1,
   if (branch_p)
     {
       if (GET_CODE (cmp0) == REG || GET_CODE (cmp0) == SUBREG)
-        {
-          /* Comparisons against zero are simple branches.  */
-          if (GET_CODE (cmp1) == CONST_INT && INTVAL (cmp1) == 0)
-            return 0;
+	{
+	  /* Comparisons against zero are simple branches.  */
+	  if (GET_CODE (cmp1) == CONST_INT && INTVAL (cmp1) == 0)
+	    return 0;
 
-          /* Test for beq/bne.  */
-          if (eqne_p)
-            return 0;
-        }
+	  /* Test for beq/bne.  */
+	  if (eqne_p)
+	    return 0;
+	}
 
       /* Allocate a pseudo to calculate the value in.  */
       result = gen_reg_rtx (mode);
@@ -915,13 +915,13 @@ gen_int_relational (enum rtx_code test_code, rtx result, rtx cmp0, rtx cmp1,
       HOST_WIDE_INT value = INTVAL (cmp1);
 
       if (value < p_info->const_low
-          || value > p_info->const_high)
-        cmp1 = force_reg (mode, cmp1);
+	  || value > p_info->const_high)
+	cmp1 = force_reg (mode, cmp1);
     }
 
   /* See if we need to invert the result.  */
   invert = (GET_CODE (cmp1) == CONST_INT
-            ? p_info->invert_const : p_info->invert_reg);
+	    ? p_info->invert_const : p_info->invert_reg);
 
   if (p_invert != (int *)0)
     {
@@ -934,27 +934,27 @@ gen_int_relational (enum rtx_code test_code, rtx result, rtx cmp0, rtx cmp1,
   if (GET_CODE (cmp1) == CONST_INT)
     {
       if (p_info->const_add != 0)
-        {
-          HOST_WIDE_INT new = INTVAL (cmp1) + p_info->const_add;
+	{
+	  HOST_WIDE_INT new = INTVAL (cmp1) + p_info->const_add;
 
-          /* If modification of cmp1 caused overflow,
-             we would get the wrong answer if we follow the usual path;
-             thus, x > 0xffffffffU would turn into x > 0U.  */
-          if ((p_info->unsignedp
-               ? (unsigned HOST_WIDE_INT) new >
-               (unsigned HOST_WIDE_INT) INTVAL (cmp1)
-               : new > INTVAL (cmp1))
-              != (p_info->const_add > 0))
-            {
-              /* This test is always true, but if INVERT is true then
-                 the result of the test needs to be inverted so 0 should
-                 be returned instead.  */
-              emit_move_insn (result, invert ? const0_rtx : const_true_rtx);
-              return result;
-            }
-          else
-            cmp1 = GEN_INT (new);
-        }
+	  /* If modification of cmp1 caused overflow,
+	     we would get the wrong answer if we follow the usual path;
+	     thus, x > 0xffffffffU would turn into x > 0U.  */
+	  if ((p_info->unsignedp
+	       ? (unsigned HOST_WIDE_INT) new >
+	       (unsigned HOST_WIDE_INT) INTVAL (cmp1)
+	       : new > INTVAL (cmp1))
+	      != (p_info->const_add > 0))
+	    {
+	      /* This test is always true, but if INVERT is true then
+		 the result of the test needs to be inverted so 0 should
+		 be returned instead.  */
+	      emit_move_insn (result, invert ? const0_rtx : const_true_rtx);
+	      return result;
+	    }
+	  else
+	    cmp1 = GEN_INT (new);
+	}
     }
 
   else if (p_info->reverse_regs)
@@ -976,7 +976,7 @@ gen_int_relational (enum rtx_code test_code, rtx result, rtx cmp0, rtx cmp1,
     {
       convert_move (result, gen_rtx_GTU (mode, reg, const0_rtx), 0);
       if (p_invert != NULL)
-        *p_invert = 0;
+	*p_invert = 0;
       invert = 0;
     }
 
@@ -1022,15 +1022,15 @@ gen_conditional_branch (rtx operands[], enum rtx_code test_code)
       reg = gen_int_relational (test_code, NULL_RTX, cmp0, cmp1, &invert);
 
       if (reg)
-        {
-          cmp0 = reg;
-          cmp1 = const0_rtx;
-          test_code = NE;
-        }
+	{
+	  cmp0 = reg;
+	  cmp1 = const0_rtx;
+	  test_code = NE;
+	}
       else if (GET_CODE (cmp1) == CONST_INT && INTVAL (cmp1) != 0)
-        /* We don't want to build a comparison against a nonzero
-           constant.  */
-        cmp1 = force_reg (mode, cmp1);
+	/* We don't want to build a comparison against a nonzero
+	   constant.  */
+	cmp1 = force_reg (mode, cmp1);
 
       break;
 
@@ -1040,8 +1040,8 @@ gen_conditional_branch (rtx operands[], enum rtx_code test_code)
 
       /* For cmp0 != cmp1, build cmp0 == cmp1, and test for result == 0.  */
       emit_insn (gen_rtx_SET (VOIDmode, reg,
-                              gen_rtx_fmt_ee (test_code == NE ? EQ : test_code,
-                                              CCmode, cmp0, cmp1)));
+			      gen_rtx_fmt_ee (test_code == NE ? EQ : test_code,
+					      CCmode, cmp0, cmp1)));
 
       test_code = test_code == NE ? EQ : NE;
       mode = CCmode;
@@ -1052,7 +1052,7 @@ gen_conditional_branch (rtx operands[], enum rtx_code test_code)
 
     default:
       abort_with_insn (gen_rtx_fmt_ee (test_code, VOIDmode, cmp0, cmp1),
-                       "bad test");
+		       "bad test");
     }
 
   /* Generate the branch.  */
@@ -1066,18 +1066,18 @@ gen_conditional_branch (rtx operands[], enum rtx_code test_code)
     }
 
   emit_jump_insn (gen_rtx_SET (VOIDmode, pc_rtx,
-                               gen_rtx_IF_THEN_ELSE (VOIDmode,
-                                                     gen_rtx_fmt_ee (test_code,
-                                                                     mode,
-                                                                     cmp0, cmp1),
-                                                     label1, label2)));
+			       gen_rtx_IF_THEN_ELSE (VOIDmode,
+						     gen_rtx_fmt_ee (test_code,
+								     mode,
+								     cmp0, cmp1),
+						     label1, label2)));
 }
 
 /* Initialize CUM for a function FNTYPE.  */
 
 void
 init_cumulative_args (CUMULATIVE_ARGS *cum, tree fntype,
-                      rtx libname ATTRIBUTE_UNUSED)
+		      rtx libname ATTRIBUTE_UNUSED)
 {
   static CUMULATIVE_ARGS zero_cum;
   tree param;
@@ -1086,19 +1086,19 @@ init_cumulative_args (CUMULATIVE_ARGS *cum, tree fntype,
   if (TARGET_DEBUG_D_MODE)
     {
       fprintf (stderr,
-               "\ninit_cumulative_args, fntype = 0x%.8lx", (long) fntype);
+	       "\ninit_cumulative_args, fntype = 0x%.8lx", (long) fntype);
 
       if (!fntype)
-        fputc ('\n', stderr);
+	fputc ('\n', stderr);
 
       else
-        {
-          tree ret_type = TREE_TYPE (fntype);
+	{
+	  tree ret_type = TREE_TYPE (fntype);
 
-          fprintf (stderr, ", fntype code = %s, ret code = %s\n",
-                   tree_code_name[(int)TREE_CODE (fntype)],
-                   tree_code_name[(int)TREE_CODE (ret_type)]);
-        }
+	  fprintf (stderr, ", fntype code = %s, ret code = %s\n",
+		   tree_code_name[(int)TREE_CODE (fntype)],
+		   tree_code_name[(int)TREE_CODE (ret_type)]);
+	}
     }
 
   *cum = zero_cum;
@@ -1113,7 +1113,7 @@ init_cumulative_args (CUMULATIVE_ARGS *cum, tree fntype,
     {
       next_param = TREE_CHAIN (param);
       if (next_param == 0 && TREE_VALUE (param) != void_type_node)
-        cum->gp_reg_found = 1;
+	cum->gp_reg_found = 1;
     }
 }
 
@@ -1122,14 +1122,14 @@ init_cumulative_args (CUMULATIVE_ARGS *cum, tree fntype,
 
 void
 function_arg_advance (CUMULATIVE_ARGS *cum, enum machine_mode mode, tree type,
-                      int named)
+		      int named)
 {
   if (TARGET_DEBUG_D_MODE)
     {
       fprintf (stderr,
-               "function_adv({gp reg found = %d, arg # = %2d, words = %2d}, %4s, ",
-               cum->gp_reg_found, cum->arg_number, cum->arg_words,
-               GET_MODE_NAME (mode));
+	       "function_adv({gp reg found = %d, arg # = %2d, words = %2d}, %4s, ",
+	       cum->gp_reg_found, cum->arg_number, cum->arg_words,
+	       GET_MODE_NAME (mode));
       fprintf (stderr, "%p", (void *) type);
       fprintf (stderr, ", %d )\n\n", named);
     }
@@ -1142,29 +1142,29 @@ function_arg_advance (CUMULATIVE_ARGS *cum, enum machine_mode mode, tree type,
 
     default:
       gcc_assert (GET_MODE_CLASS (mode) == MODE_COMPLEX_INT
-                  || GET_MODE_CLASS (mode) == MODE_COMPLEX_FLOAT);
+		  || GET_MODE_CLASS (mode) == MODE_COMPLEX_FLOAT);
 
       cum->gp_reg_found = 1;
       cum->arg_words += ((GET_MODE_SIZE (mode) + UNITS_PER_WORD - 1)
-                         / UNITS_PER_WORD);
+			 / UNITS_PER_WORD);
       break;
 
     case BLKmode:
       cum->gp_reg_found = 1;
       cum->arg_words += ((int_size_in_bytes (type) + UNITS_PER_WORD - 1)
-                         / UNITS_PER_WORD);
+			 / UNITS_PER_WORD);
       break;
 
     case SFmode:
       cum->arg_words ++;
       if (! cum->gp_reg_found && cum->arg_number <= 2)
-        cum->fp_code += 1 << ((cum->arg_number - 1) * 2);
+	cum->fp_code += 1 << ((cum->arg_number - 1) * 2);
       break;
 
     case DFmode:
       cum->arg_words += 2;
       if (! cum->gp_reg_found && cum->arg_number <= 2)
-        cum->fp_code += 2 << ((cum->arg_number - 1) * 2);
+	cum->fp_code += 2 << ((cum->arg_number - 1) * 2);
       break;
 
     case DImode:
@@ -1186,23 +1186,23 @@ function_arg_advance (CUMULATIVE_ARGS *cum, enum machine_mode mode, tree type,
 
 struct rtx_def *
 function_arg (CUMULATIVE_ARGS *cum, enum machine_mode mode, tree type,
-              int named)
+	      int named)
 {
   rtx ret;
   int regbase = -1;
   int bias = 0;
   unsigned int *arg_words = &cum->arg_words;
   int struct_p = (type != 0
-                  && (TREE_CODE (type) == RECORD_TYPE
-                      || TREE_CODE (type) == UNION_TYPE
-                      || TREE_CODE (type) == QUAL_UNION_TYPE));
+		  && (TREE_CODE (type) == RECORD_TYPE
+		      || TREE_CODE (type) == UNION_TYPE
+		      || TREE_CODE (type) == QUAL_UNION_TYPE));
 
   if (TARGET_DEBUG_D_MODE)
     {
       fprintf (stderr,
-               "function_arg( {gp reg found = %d, arg # = %2d, words = %2d}, %4s, ",
-               cum->gp_reg_found, cum->arg_number, cum->arg_words,
-               GET_MODE_NAME (mode));
+	       "function_arg( {gp reg found = %d, arg # = %2d, words = %2d}, %4s, ",
+	       cum->gp_reg_found, cum->arg_number, cum->arg_words,
+	       GET_MODE_NAME (mode));
       fprintf (stderr, "%p", (void *) type);
       fprintf (stderr, ", %d ) = ", named);
     }
@@ -1223,12 +1223,12 @@ function_arg (CUMULATIVE_ARGS *cum, enum machine_mode mode, tree type,
 
     default:
       gcc_assert (GET_MODE_CLASS (mode) == MODE_COMPLEX_INT
-                  || GET_MODE_CLASS (mode) == MODE_COMPLEX_FLOAT);
+		  || GET_MODE_CLASS (mode) == MODE_COMPLEX_FLOAT);
 
       /* Drops through.  */
     case BLKmode:
       if (type != NULL_TREE && TYPE_ALIGN (type) > (unsigned) BITS_PER_WORD)
-        cum->arg_words += (cum->arg_words & 1);
+	cum->arg_words += (cum->arg_words & 1);
       regbase = GP_ARG_FIRST;
       break;
 
@@ -1247,7 +1247,7 @@ function_arg (CUMULATIVE_ARGS *cum, enum machine_mode mode, tree type,
   if (*arg_words >= (unsigned) MAX_ARGS_IN_REGISTERS)
     {
       if (TARGET_DEBUG_D_MODE)
-        fprintf (stderr, "<stack>%s\n", struct_p ? ", [struct]" : "");
+	fprintf (stderr, "<stack>%s\n", struct_p ? ", [struct]" : "");
 
       ret = 0;
     }
@@ -1256,76 +1256,76 @@ function_arg (CUMULATIVE_ARGS *cum, enum machine_mode mode, tree type,
       gcc_assert (regbase != -1);
 
       if (! type || TREE_CODE (type) != RECORD_TYPE
-          || ! named  || ! TYPE_SIZE_UNIT (type)
-          || ! host_integerp (TYPE_SIZE_UNIT (type), 1))
-        ret = gen_rtx_REG (mode, regbase + *arg_words + bias);
+	  || ! named  || ! TYPE_SIZE_UNIT (type)
+	  || ! host_integerp (TYPE_SIZE_UNIT (type), 1))
+	ret = gen_rtx_REG (mode, regbase + *arg_words + bias);
       else
-        {
-          tree field;
+	{
+	  tree field;
 
-          for (field = TYPE_FIELDS (type); field; field = TREE_CHAIN (field))
-            if (TREE_CODE (field) == FIELD_DECL
-                && TREE_CODE (TREE_TYPE (field)) == REAL_TYPE
-                && TYPE_PRECISION (TREE_TYPE (field)) == BITS_PER_WORD
-                && host_integerp (bit_position (field), 0)
-                && int_bit_position (field) % BITS_PER_WORD == 0)
-              break;
+	  for (field = TYPE_FIELDS (type); field; field = TREE_CHAIN (field))
+	    if (TREE_CODE (field) == FIELD_DECL
+		&& TREE_CODE (TREE_TYPE (field)) == REAL_TYPE
+		&& TYPE_PRECISION (TREE_TYPE (field)) == BITS_PER_WORD
+		&& host_integerp (bit_position (field), 0)
+		&& int_bit_position (field) % BITS_PER_WORD == 0)
+	      break;
 
-          /* If the whole struct fits a DFmode register,
-             we don't need the PARALLEL.  */
-          if (! field || mode == DFmode)
-            ret = gen_rtx_REG (mode, regbase + *arg_words + bias);
-          else
-            {
-              unsigned int chunks;
-              HOST_WIDE_INT bitpos;
-              unsigned int regno;
-              unsigned int i;
+	  /* If the whole struct fits a DFmode register,
+	     we don't need the PARALLEL.  */
+	  if (! field || mode == DFmode)
+	    ret = gen_rtx_REG (mode, regbase + *arg_words + bias);
+	  else
+	    {
+	      unsigned int chunks;
+	      HOST_WIDE_INT bitpos;
+	      unsigned int regno;
+	      unsigned int i;
 
-              /* ??? If this is a packed structure, then the last hunk won't
-                 be 64 bits.  */
-              chunks
-                = tree_low_cst (TYPE_SIZE_UNIT (type), 1) / UNITS_PER_WORD;
-              if (chunks + *arg_words + bias > (unsigned) MAX_ARGS_IN_REGISTERS)
-                chunks = MAX_ARGS_IN_REGISTERS - *arg_words - bias;
+	      /* ??? If this is a packed structure, then the last hunk won't
+		 be 64 bits.  */
+	      chunks
+		= tree_low_cst (TYPE_SIZE_UNIT (type), 1) / UNITS_PER_WORD;
+	      if (chunks + *arg_words + bias > (unsigned) MAX_ARGS_IN_REGISTERS)
+		chunks = MAX_ARGS_IN_REGISTERS - *arg_words - bias;
 
-              /* Assign_parms checks the mode of ENTRY_PARM, so we must
-                 use the actual mode here.  */
-              ret = gen_rtx_PARALLEL (mode, rtvec_alloc (chunks));
+	      /* Assign_parms checks the mode of ENTRY_PARM, so we must
+		 use the actual mode here.  */
+	      ret = gen_rtx_PARALLEL (mode, rtvec_alloc (chunks));
 
-              bitpos = 0;
-              regno = regbase + *arg_words + bias;
-              field = TYPE_FIELDS (type);
-              for (i = 0; i < chunks; i++)
-                {
-                  rtx reg;
+	      bitpos = 0;
+	      regno = regbase + *arg_words + bias;
+	      field = TYPE_FIELDS (type);
+	      for (i = 0; i < chunks; i++)
+		{
+		  rtx reg;
 
-                  for (; field; field = TREE_CHAIN (field))
-                    if (TREE_CODE (field) == FIELD_DECL
-                        && int_bit_position (field) >= bitpos)
-                      break;
+		  for (; field; field = TREE_CHAIN (field))
+		    if (TREE_CODE (field) == FIELD_DECL
+			&& int_bit_position (field) >= bitpos)
+		      break;
 
-                  if (field
-                      && int_bit_position (field) == bitpos
-                      && TREE_CODE (TREE_TYPE (field)) == REAL_TYPE
-                      && TYPE_PRECISION (TREE_TYPE (field)) == BITS_PER_WORD)
-                    reg = gen_rtx_REG (DFmode, regno++);
-                  else
-                    reg = gen_rtx_REG (word_mode, regno);
+		  if (field
+		      && int_bit_position (field) == bitpos
+		      && TREE_CODE (TREE_TYPE (field)) == REAL_TYPE
+		      && TYPE_PRECISION (TREE_TYPE (field)) == BITS_PER_WORD)
+		    reg = gen_rtx_REG (DFmode, regno++);
+		  else
+		    reg = gen_rtx_REG (word_mode, regno);
 
-                  XVECEXP (ret, 0, i)
-                    = gen_rtx_EXPR_LIST (VOIDmode, reg,
-                                         GEN_INT (bitpos / BITS_PER_UNIT));
+		  XVECEXP (ret, 0, i)
+		    = gen_rtx_EXPR_LIST (VOIDmode, reg,
+					 GEN_INT (bitpos / BITS_PER_UNIT));
 
-                  bitpos += 64;
-                  regno++;
-                }
-            }
-        }
+		  bitpos += 64;
+		  regno++;
+		}
+	    }
+	}
 
       if (TARGET_DEBUG_D_MODE)
-        fprintf (stderr, "%s%s\n", reg_names[regbase + *arg_words + bias],
-                 struct_p ? ", [struct]" : "");
+	fprintf (stderr, "%s%s\n", reg_names[regbase + *arg_words + bias],
+		 struct_p ? ", [struct]" : "");
     }
 
   /* We will be called with a mode of VOIDmode after the last argument
@@ -1335,8 +1335,8 @@ function_arg (CUMULATIVE_ARGS *cum, enum machine_mode mode, tree type,
   if (mode == VOIDmode)
     {
       if (cum->num_adjusts > 0)
-        ret = gen_rtx_PARALLEL ((enum machine_mode) cum->fp_code,
-                       gen_rtvec_v (cum->num_adjusts, cum->adjust));
+	ret = gen_rtx_PARALLEL ((enum machine_mode) cum->fp_code,
+		       gen_rtvec_v (cum->num_adjusts, cum->adjust));
     }
 
   return ret;
@@ -1344,13 +1344,13 @@ function_arg (CUMULATIVE_ARGS *cum, enum machine_mode mode, tree type,
 
 static int
 iq2000_arg_partial_bytes (CUMULATIVE_ARGS *cum, enum machine_mode mode,
-                          tree type ATTRIBUTE_UNUSED,
-                          bool named ATTRIBUTE_UNUSED)
+			  tree type ATTRIBUTE_UNUSED,
+			  bool named ATTRIBUTE_UNUSED)
 {
   if (mode == DImode && cum->arg_words == MAX_ARGS_IN_REGISTERS - 1)
     {
       if (TARGET_DEBUG_D_MODE)
-        fprintf (stderr, "iq2000_arg_partial_bytes=%d\n", UNITS_PER_WORD);
+	fprintf (stderr, "iq2000_arg_partial_bytes=%d\n", UNITS_PER_WORD);
       return UNITS_PER_WORD;
     }
 
@@ -1401,18 +1401,18 @@ iq2000_handle_option (size_t code, const char *arg, int value ATTRIBUTE_UNUSED)
     {
     case OPT_mcpu_:
       if (strcmp (arg, "iq10") == 0)
-        iq2000_tune = PROCESSOR_IQ10;
+	iq2000_tune = PROCESSOR_IQ10;
       else if (strcmp (arg, "iq2000") == 0)
-        iq2000_tune = PROCESSOR_IQ2000;
+	iq2000_tune = PROCESSOR_IQ2000;
       else
-        return false;
+	return false;
       return true;
 
     case OPT_march_:
       /* This option has no effect at the moment.  */
       return (strcmp (arg, "default") == 0
-              || strcmp (arg, "DEFAULT") == 0
-              || strcmp (arg, "iq2000") == 0);
+	      || strcmp (arg, "DEFAULT") == 0
+	      || strcmp (arg, "iq2000") == 0);
 
     default:
       return true;
@@ -1475,8 +1475,8 @@ iq2000_debugger_offset (rtx addr, HOST_WIDE_INT offset)
       || reg == hard_frame_pointer_rtx)
     {
       HOST_WIDE_INT frame_size = (!cfun->machine->initialized)
-                                  ? compute_frame_size (get_frame_size ())
-                                  : cfun->machine->total_size;
+				  ? compute_frame_size (get_frame_size ())
+				  : cfun->machine->total_size;
 
       offset = offset - frame_size;
     }
@@ -1499,7 +1499,7 @@ iq2000_debugger_offset (rtx addr, HOST_WIDE_INT offset)
 
 void
 final_prescan_insn (rtx insn, rtx opvec[] ATTRIBUTE_UNUSED,
-                    int noperands ATTRIBUTE_UNUSED)
+		    int noperands ATTRIBUTE_UNUSED)
 {
   if (dslots_number_nops > 0)
     {
@@ -1508,18 +1508,18 @@ final_prescan_insn (rtx insn, rtx opvec[] ATTRIBUTE_UNUSED,
 
       /* Do we need to emit a NOP?  */
       if (length == 0
-          || (iq2000_load_reg != 0 && reg_mentioned_p (iq2000_load_reg,  pattern))
-          || (iq2000_load_reg2 != 0 && reg_mentioned_p (iq2000_load_reg2, pattern))
-          || (iq2000_load_reg3 != 0 && reg_mentioned_p (iq2000_load_reg3, pattern))
-          || (iq2000_load_reg4 != 0
-              && reg_mentioned_p (iq2000_load_reg4, pattern)))
-        fputs ("\tnop\n", asm_out_file);
+	  || (iq2000_load_reg != 0 && reg_mentioned_p (iq2000_load_reg,  pattern))
+	  || (iq2000_load_reg2 != 0 && reg_mentioned_p (iq2000_load_reg2, pattern))
+	  || (iq2000_load_reg3 != 0 && reg_mentioned_p (iq2000_load_reg3, pattern))
+	  || (iq2000_load_reg4 != 0
+	      && reg_mentioned_p (iq2000_load_reg4, pattern)))
+	fputs ("\tnop\n", asm_out_file);
 
       else
-        dslots_load_filled ++;
+	dslots_load_filled ++;
 
       while (--dslots_number_nops > 0)
-        fputs ("\tnop\n", asm_out_file);
+	fputs ("\tnop\n", asm_out_file);
 
       iq2000_load_reg = 0;
       iq2000_load_reg2 = 0;
@@ -1530,7 +1530,7 @@ final_prescan_insn (rtx insn, rtx opvec[] ATTRIBUTE_UNUSED,
   if (   (GET_CODE (insn) == JUMP_INSN
        || GET_CODE (insn) == CALL_INSN
        || (GET_CODE (PATTERN (insn)) == RETURN))
-           && NEXT_INSN (PREV_INSN (insn)) == insn)
+	   && NEXT_INSN (PREV_INSN (insn)) == insn)
     {
       rtx nop_insn = emit_insn_after (gen_nop (), insn);
 
@@ -1547,66 +1547,66 @@ final_prescan_insn (rtx insn, rtx opvec[] ATTRIBUTE_UNUSED,
 
    IQ2000 stack frames look like:
 
-             Before call                        After call
-        +-----------------------+        +-----------------------+
-   high |                        |       |                              |
-   mem. |                        |        |                        |
-        |  caller's temps.            |       |  caller's temps.            |
-        |                       |       |                       |
-        +-----------------------+        +-----------------------+
-         |                       |        |                        |
-        |  arguments on stack.  |        |  arguments on stack.  |
-        |                       |        |                        |
-        +-----------------------+        +-----------------------+
-         |  4 words to save             |        |  4 words to save        |
-        |  arguments passed        |        |  arguments passed        |
-        |  in registers, even        |        |  in registers, even        |
-    SP->|  if not passed.       |  VFP->|  if not passed.        |
-        +-----------------------+       +-----------------------+
-                                        |                        |
+             Before call		        After call
+        +-----------------------+	+-----------------------+
+   high |			|       |      			|
+   mem. |		        |	|			|
+        |  caller's temps.    	|       |  caller's temps.    	|
+	|       		|       |       	        |
+        +-----------------------+	+-----------------------+
+ 	|       		|	|		        |
+        |  arguments on stack.  |	|  arguments on stack.  |
+	|       		|	|			|
+        +-----------------------+	+-----------------------+
+ 	|  4 words to save     	|	|  4 words to save	|
+	|  arguments passed	|	|  arguments passed	|
+	|  in registers, even	|	|  in registers, even	|
+    SP->|  if not passed.       |  VFP->|  if not passed.	|
+	+-----------------------+       +-----------------------+
+					|		        |
                                         |  fp register save     |
-                                        |                        |
-                                        +-----------------------+
-                                        |                        |
+					|			|
+					+-----------------------+
+					|		        |
                                         |  gp register save     |
-                                        |                       |
-                                        +-----------------------+
-                                        |                        |
-                                        |  local variables        |
-                                        |                        |
-                                        +-----------------------+
-                                        |                        |
+                                        |       		|
+					+-----------------------+
+					|			|
+					|  local variables	|
+					|			|
+					+-----------------------+
+					|			|
                                         |  alloca allocations   |
-                                        |                        |
-                                        +-----------------------+
-                                        |                        |
-                                        |  GP save for V.4 abi        |
-                                        |                        |
-                                        +-----------------------+
-                                        |                        |
+        				|			|
+					+-----------------------+
+					|			|
+					|  GP save for V.4 abi	|
+					|			|
+					+-----------------------+
+					|			|
                                         |  arguments on stack   |
-                                        |                        |
-                                        +-----------------------+
+        				|		        |
+					+-----------------------+
                                         |  4 words to save      |
-                                        |  arguments passed     |
+					|  arguments passed     |
                                         |  in registers, even   |
    low                              SP->|  if not passed.       |
-   memory                                +-----------------------+  */
+   memory        			+-----------------------+  */
 
 HOST_WIDE_INT
 compute_frame_size (HOST_WIDE_INT size)
 {
   int regno;
-  HOST_WIDE_INT total_size;        /* # bytes that the entire frame takes up.  */
-  HOST_WIDE_INT var_size;        /* # bytes that variables take up.  */
-  HOST_WIDE_INT args_size;        /* # bytes that outgoing arguments take up.  */
-  HOST_WIDE_INT extra_size;        /* # extra bytes.  */
-  HOST_WIDE_INT gp_reg_rounded;        /* # bytes needed to store gp after rounding.  */
-  HOST_WIDE_INT gp_reg_size;        /* # bytes needed to store gp regs.  */
-  HOST_WIDE_INT fp_reg_size;        /* # bytes needed to store fp regs.  */
-  long mask;                        /* mask of saved gp registers.  */
-  int  fp_inc;                        /* 1 or 2 depending on the size of fp regs.  */
-  long fp_bits;                        /* bitmask to use for each fp register.  */
+  HOST_WIDE_INT total_size;	/* # bytes that the entire frame takes up.  */
+  HOST_WIDE_INT var_size;	/* # bytes that variables take up.  */
+  HOST_WIDE_INT args_size;	/* # bytes that outgoing arguments take up.  */
+  HOST_WIDE_INT extra_size;	/* # extra bytes.  */
+  HOST_WIDE_INT gp_reg_rounded;	/* # bytes needed to store gp after rounding.  */
+  HOST_WIDE_INT gp_reg_size;	/* # bytes needed to store gp regs.  */
+  HOST_WIDE_INT fp_reg_size;	/* # bytes needed to store fp regs.  */
+  long mask;			/* mask of saved gp registers.  */
+  int  fp_inc;			/* 1 or 2 depending on the size of fp regs.  */
+  long fp_bits;			/* bitmask to use for each fp register.  */
 
   gp_reg_size = 0;
   fp_reg_size = 0;
@@ -1626,10 +1626,10 @@ compute_frame_size (HOST_WIDE_INT size)
   for (regno = GP_REG_FIRST; regno <= GP_REG_LAST; regno++)
     {
       if (MUST_SAVE_REGISTER (regno))
-        {
-          gp_reg_size += GET_MODE_SIZE (gpr_mode);
-          mask |= 1L << (regno - GP_REG_FIRST);
-        }
+	{
+	  gp_reg_size += GET_MODE_SIZE (gpr_mode);
+	  mask |= 1L << (regno - GP_REG_FIRST);
+	}
     }
 
   /* We need to restore these for the handler.  */
@@ -1638,13 +1638,13 @@ compute_frame_size (HOST_WIDE_INT size)
       unsigned int i;
 
       for (i = 0; ; ++i)
-        {
-          regno = EH_RETURN_DATA_REGNO (i);
-          if (regno == (int) INVALID_REGNUM)
-            break;
-          gp_reg_size += GET_MODE_SIZE (gpr_mode);
-          mask |= 1L << (regno - GP_REG_FIRST);
-        }
+	{
+	  regno = EH_RETURN_DATA_REGNO (i);
+	  if (regno == (int) INVALID_REGNUM)
+	    break;
+	  gp_reg_size += GET_MODE_SIZE (gpr_mode);
+	  mask |= 1L << (regno - GP_REG_FIRST);
+	}
     }
 
   fp_inc = 2;
@@ -1676,7 +1676,7 @@ compute_frame_size (HOST_WIDE_INT size)
       unsigned long offset;
 
       offset = (args_size + extra_size + var_size
-                + gp_reg_size - GET_MODE_SIZE (gpr_mode));
+		+ gp_reg_size - GET_MODE_SIZE (gpr_mode));
 
       cfun->machine->gp_sp_offset = offset;
       cfun->machine->gp_save_offset = offset - total_size;
@@ -1703,7 +1703,7 @@ iq2000_initial_elimination_offset (int from, int to ATTRIBUTE_UNUSED)
 {
   int offset;
 
-  compute_frame_size (get_frame_size ());                                 
+  compute_frame_size (get_frame_size ());				 
   if ((from) == FRAME_POINTER_REGNUM) 
     (offset) = 0; 
   else if ((from) == ARG_POINTER_REGNUM) 
@@ -1711,10 +1711,10 @@ iq2000_initial_elimination_offset (int from, int to ATTRIBUTE_UNUSED)
   else if ((from) == RETURN_ADDRESS_POINTER_REGNUM) 
     {
       if (leaf_function_p ()) 
-        (offset) = 0; 
+	(offset) = 0; 
       else (offset) = cfun->machine->gp_sp_offset 
-             + ((UNITS_PER_WORD - (POINTER_SIZE / BITS_PER_UNIT)) 
-                * (BYTES_BIG_ENDIAN != 0)); 
+	     + ((UNITS_PER_WORD - (POINTER_SIZE / BITS_PER_UNIT)) 
+		* (BYTES_BIG_ENDIAN != 0)); 
     }
 
   return offset;
@@ -1754,8 +1754,8 @@ iq2000_annotate_frame_insn (rtx insn, rtx dwarf_pattern)
 {
   RTX_FRAME_RELATED_P (insn) = 1;
   REG_NOTES (insn) = alloc_EXPR_LIST (REG_FRAME_RELATED_EXPR,
-                                      dwarf_pattern,
-                                      REG_NOTES (insn));
+				      dwarf_pattern,
+				      REG_NOTES (insn));
 }
 
 /* Emit a move instruction that stores REG in MEM.  Make the instruction
@@ -1768,7 +1768,7 @@ iq2000_emit_frame_related_store (rtx mem, rtx reg, HOST_WIDE_INT offset)
   rtx dwarf_mem = gen_rtx_MEM (GET_MODE (reg), dwarf_address);
 
   iq2000_annotate_frame_insn (emit_move_insn (mem, reg),
-                            gen_rtx_SET (GET_MODE (reg), dwarf_mem, reg));
+			    gen_rtx_SET (GET_MODE (reg), dwarf_mem, reg));
 }
 
 /* Emit instructions to save/restore registers, as determined by STORE_P.  */
@@ -1784,7 +1784,7 @@ save_restore_insns (int store_p)
   HOST_WIDE_INT end_offset;
 
   gcc_assert (!frame_pointer_needed
-              || BITSET_P (mask, HARD_FRAME_POINTER_REGNUM - GP_REG_FIRST));
+	      || BITSET_P (mask, HARD_FRAME_POINTER_REGNUM - GP_REG_FIRST));
 
   if (mask == 0)
     {
@@ -1807,7 +1807,7 @@ save_restore_insns (int store_p)
   gp_offset = cfun->machine->gp_sp_offset;
   end_offset
     = gp_offset - (cfun->machine->gp_reg_size
-                   - GET_MODE_SIZE (gpr_mode));
+		   - GET_MODE_SIZE (gpr_mode));
 
   if (gp_offset < 0 || end_offset < 0)
     internal_error
@@ -1822,7 +1822,7 @@ save_restore_insns (int store_p)
       int reg_save_count = 0;
 
       for (regno = GP_REG_LAST; regno >= GP_REG_FIRST; regno--)
-        if (BITSET_P (mask, regno - GP_REG_FIRST)) reg_save_count += 1;
+	if (BITSET_P (mask, regno - GP_REG_FIRST)) reg_save_count += 1;
       base_offset = gp_offset - ((reg_save_count - 1) * 4);
       base_reg_rtx = iq2000_add_large_offset_to_sp (base_offset);
     }
@@ -1830,23 +1830,23 @@ save_restore_insns (int store_p)
   for (regno = GP_REG_LAST; regno >= GP_REG_FIRST; regno--)
     {
       if (BITSET_P (mask, regno - GP_REG_FIRST))
-        {
-          rtx reg_rtx;
-          rtx mem_rtx
-            = gen_rtx_MEM (gpr_mode,
-                       gen_rtx_PLUS (Pmode, base_reg_rtx,
-                                GEN_INT (gp_offset - base_offset)));
+	{
+	  rtx reg_rtx;
+	  rtx mem_rtx
+	    = gen_rtx_MEM (gpr_mode,
+		       gen_rtx_PLUS (Pmode, base_reg_rtx,
+				GEN_INT (gp_offset - base_offset)));
 
-          reg_rtx = gen_rtx_REG (gpr_mode, regno);
+	  reg_rtx = gen_rtx_REG (gpr_mode, regno);
 
-          if (store_p)
-            iq2000_emit_frame_related_store (mem_rtx, reg_rtx, gp_offset);
-          else 
-            {
-              emit_move_insn (reg_rtx, mem_rtx);
-            }
-          gp_offset -= GET_MODE_SIZE (gpr_mode);
-        }
+	  if (store_p)
+	    iq2000_emit_frame_related_store (mem_rtx, reg_rtx, gp_offset);
+	  else 
+	    {
+	      emit_move_insn (reg_rtx, mem_rtx);
+	    }
+	  gp_offset -= GET_MODE_SIZE (gpr_mode);
+	}
     }
 }
 
@@ -1898,10 +1898,10 @@ iq2000_expand_prologue (void)
       rtx entry_parm;
 
       if (TREE_ADDRESSABLE (passed_type))
-        {
-          passed_type = build_pointer_type (passed_type);
-          passed_mode = Pmode;
-        }
+	{
+	  passed_type = build_pointer_type (passed_type);
+	  passed_mode = Pmode;
+	}
 
       entry_parm = FUNCTION_ARG (args_so_far, passed_mode, passed_type, 1);
 
@@ -1909,37 +1909,37 @@ iq2000_expand_prologue (void)
       next_arg = TREE_CHAIN (cur_arg);
 
       if (entry_parm && store_args_on_stack)
-        {
-          if (next_arg == 0
-              && DECL_NAME (cur_arg)
-              && ((0 == strcmp (IDENTIFIER_POINTER (DECL_NAME (cur_arg)),
-                                "__builtin_va_alist"))
-                  || (0 == strcmp (IDENTIFIER_POINTER (DECL_NAME (cur_arg)),
-                                   "va_alist"))))
-            {
-              last_arg_is_vararg_marker = 1;
-              break;
-            }
-          else
-            {
-              int words;
+	{
+	  if (next_arg == 0
+	      && DECL_NAME (cur_arg)
+	      && ((0 == strcmp (IDENTIFIER_POINTER (DECL_NAME (cur_arg)),
+				"__builtin_va_alist"))
+		  || (0 == strcmp (IDENTIFIER_POINTER (DECL_NAME (cur_arg)),
+				   "va_alist"))))
+	    {
+	      last_arg_is_vararg_marker = 1;
+	      break;
+	    }
+	  else
+	    {
+	      int words;
 
-              gcc_assert (GET_CODE (entry_parm) == REG);
+	      gcc_assert (GET_CODE (entry_parm) == REG);
 
-              /* Passed in a register, so will get homed automatically.  */
-              if (GET_MODE (entry_parm) == BLKmode)
-                words = (int_size_in_bytes (passed_type) + 3) / 4;
-              else
-                words = (GET_MODE_SIZE (GET_MODE (entry_parm)) + 3) / 4;
+	      /* Passed in a register, so will get homed automatically.  */
+	      if (GET_MODE (entry_parm) == BLKmode)
+		words = (int_size_in_bytes (passed_type) + 3) / 4;
+	      else
+		words = (GET_MODE_SIZE (GET_MODE (entry_parm)) + 3) / 4;
 
-              regno = REGNO (entry_parm) + words - 1;
-            }
-        }
+	      regno = REGNO (entry_parm) + words - 1;
+	    }
+	}
       else
-        {
-          regno = GP_ARG_LAST+1;
-          break;
-        }
+	{
+	  regno = GP_ARG_LAST+1;
+	  break;
+	}
     }
 
   /* In order to pass small structures by value in registers we need to
@@ -1954,24 +1954,24 @@ iq2000_expand_prologue (void)
       int num = GET_NUM_ELEM (adjust);
 
       for (i = 0; i < num; i++)
-        {
-          rtx insn, pattern;
+	{
+	  rtx insn, pattern;
 
-          pattern = RTVEC_ELT (adjust, i);
-          if (GET_CODE (pattern) != SET
-              || GET_CODE (SET_SRC (pattern)) != ASHIFT)
-            abort_with_insn (pattern, "Insn is not a shift");
-          PUT_CODE (SET_SRC (pattern), ASHIFTRT);
+	  pattern = RTVEC_ELT (adjust, i);
+	  if (GET_CODE (pattern) != SET
+	      || GET_CODE (SET_SRC (pattern)) != ASHIFT)
+	    abort_with_insn (pattern, "Insn is not a shift");
+	  PUT_CODE (SET_SRC (pattern), ASHIFTRT);
 
-          insn = emit_insn (pattern);
+	  insn = emit_insn (pattern);
 
-          /* Global life information isn't valid at this point, so we
-             can't check whether these shifts are actually used.  Mark
-             them MAYBE_DEAD so that flow2 will remove them, and not
-             complain about dead code in the prologue.  */
-          REG_NOTES(insn) = gen_rtx_EXPR_LIST (REG_MAYBE_DEAD, NULL_RTX,
-                                               REG_NOTES (insn));
-        }
+	  /* Global life information isn't valid at this point, so we
+	     can't check whether these shifts are actually used.  Mark
+	     them MAYBE_DEAD so that flow2 will remove them, and not
+	     complain about dead code in the prologue.  */
+	  REG_NOTES(insn) = gen_rtx_EXPR_LIST (REG_MAYBE_DEAD, NULL_RTX,
+					       REG_NOTES (insn));
+	}
     }
 
   tsize = compute_frame_size (get_frame_size ());
@@ -1980,22 +1980,22 @@ iq2000_expand_prologue (void)
      would normally hold arguments ($4 - $7) on the stack.  */
   if (store_args_on_stack
       && ((TYPE_ARG_TYPES (fntype) != 0
-           && (TREE_VALUE (tree_last (TYPE_ARG_TYPES (fntype)))
-               != void_type_node))
-          || last_arg_is_vararg_marker))
+	   && (TREE_VALUE (tree_last (TYPE_ARG_TYPES (fntype)))
+	       != void_type_node))
+	  || last_arg_is_vararg_marker))
     {
       int offset = (regno - GP_ARG_FIRST) * UNITS_PER_WORD;
       rtx ptr = stack_pointer_rtx;
 
       for (; regno <= GP_ARG_LAST; regno++)
-        {
-          if (offset != 0)
-            ptr = gen_rtx_PLUS (Pmode, stack_pointer_rtx, GEN_INT (offset));
-          emit_move_insn (gen_rtx_MEM (gpr_mode, ptr),
-                          gen_rtx_REG (gpr_mode, regno));
+	{
+	  if (offset != 0)
+	    ptr = gen_rtx_PLUS (Pmode, stack_pointer_rtx, GEN_INT (offset));
+	  emit_move_insn (gen_rtx_MEM (gpr_mode, ptr),
+			  gen_rtx_REG (gpr_mode, regno));
 
-          offset += GET_MODE_SIZE (gpr_mode);
-        }
+	  offset += GET_MODE_SIZE (gpr_mode);
+	}
     }
 
   if (tsize > 0)
@@ -2004,33 +2004,33 @@ iq2000_expand_prologue (void)
       rtx adjustment_rtx, insn, dwarf_pattern;
 
       if (tsize > 32767)
-        {
-          adjustment_rtx = gen_rtx_REG (Pmode, IQ2000_TEMP1_REGNUM);
-          emit_move_insn (adjustment_rtx, tsize_rtx);
-        }
+	{
+	  adjustment_rtx = gen_rtx_REG (Pmode, IQ2000_TEMP1_REGNUM);
+	  emit_move_insn (adjustment_rtx, tsize_rtx);
+	}
       else
-        adjustment_rtx = tsize_rtx;
+	adjustment_rtx = tsize_rtx;
 
       insn = emit_insn (gen_subsi3 (stack_pointer_rtx, stack_pointer_rtx,
-                                    adjustment_rtx));
+				    adjustment_rtx));
 
       dwarf_pattern = gen_rtx_SET (Pmode, stack_pointer_rtx,
-                                   plus_constant (stack_pointer_rtx, -tsize));
+				   plus_constant (stack_pointer_rtx, -tsize));
 
       iq2000_annotate_frame_insn (insn, dwarf_pattern);
 
       save_restore_insns (1);
 
       if (frame_pointer_needed)
-        {
-          rtx insn = 0;
+	{
+	  rtx insn = 0;
 
-          insn = emit_insn (gen_movsi (hard_frame_pointer_rtx,
-                                       stack_pointer_rtx));
+	  insn = emit_insn (gen_movsi (hard_frame_pointer_rtx,
+				       stack_pointer_rtx));
 
-          if (insn)
-            RTX_FRAME_RELATED_P (insn) = 1;
-        }
+	  if (insn)
+	    RTX_FRAME_RELATED_P (insn) = 1;
+	}
     }
 
   emit_insn (gen_blockage ());
@@ -2061,42 +2061,42 @@ iq2000_expand_epilogue (void)
   if (tsize > 0)
     {
       if (frame_pointer_needed)
-        {
-          emit_insn (gen_blockage ());
+	{
+	  emit_insn (gen_blockage ());
 
-          emit_insn (gen_movsi (stack_pointer_rtx, hard_frame_pointer_rtx));
-        }
+	  emit_insn (gen_movsi (stack_pointer_rtx, hard_frame_pointer_rtx));
+	}
 
       save_restore_insns (0);
 
       if (current_function_calls_eh_return)
-        {
-          rtx eh_ofs = EH_RETURN_STACKADJ_RTX;
-          emit_insn (gen_addsi3 (eh_ofs, eh_ofs, tsize_rtx));
-          tsize_rtx = eh_ofs;
-        }
+	{
+	  rtx eh_ofs = EH_RETURN_STACKADJ_RTX;
+	  emit_insn (gen_addsi3 (eh_ofs, eh_ofs, tsize_rtx));
+	  tsize_rtx = eh_ofs;
+	}
 
       emit_insn (gen_blockage ());
 
       if (tsize != 0 || current_function_calls_eh_return)
-        {
-          emit_insn (gen_addsi3 (stack_pointer_rtx, stack_pointer_rtx,
-                                 tsize_rtx));
-        }
+	{
+	  emit_insn (gen_addsi3 (stack_pointer_rtx, stack_pointer_rtx,
+				 tsize_rtx));
+	}
     }
 
   if (current_function_calls_eh_return)
     {
       /* Perform the additional bump for __throw.  */
       emit_move_insn (gen_rtx_REG (Pmode, HARD_FRAME_POINTER_REGNUM),
-                      stack_pointer_rtx);
+		      stack_pointer_rtx);
       emit_insn (gen_rtx_USE (VOIDmode, gen_rtx_REG (Pmode,
-                                                  HARD_FRAME_POINTER_REGNUM)));
+						  HARD_FRAME_POINTER_REGNUM)));
       emit_jump_insn (gen_eh_return_internal ());
     }
   else
       emit_jump_insn (gen_return_internal (gen_rtx_REG (Pmode,
-                                                  GP_REG_FIRST + 31)));
+						  GP_REG_FIRST + 31)));
 }
 
 void
@@ -2144,7 +2144,7 @@ symbolic_expression_p (rtx x)
 
   if (ARITHMETIC_P (x))
     return (symbolic_expression_p (XEXP (x, 0))
-            || symbolic_expression_p (XEXP (x, 1)));
+	    || symbolic_expression_p (XEXP (x, 1)));
 
   return 0;
 }
@@ -2154,7 +2154,7 @@ symbolic_expression_p (rtx x)
 
 static section *
 iq2000_select_rtx_section (enum machine_mode mode, rtx x ATTRIBUTE_UNUSED,
-                           unsigned HOST_WIDE_INT align)
+			   unsigned HOST_WIDE_INT align)
 {
   /* For embedded applications, always put constants in read-only data,
      in order to reduce RAM usage.  */
@@ -2170,37 +2170,37 @@ iq2000_select_rtx_section (enum machine_mode mode, rtx x ATTRIBUTE_UNUSED,
 
 static section *
 iq2000_select_section (tree decl, int reloc ATTRIBUTE_UNUSED,
-                       unsigned HOST_WIDE_INT align ATTRIBUTE_UNUSED)
+		       unsigned HOST_WIDE_INT align ATTRIBUTE_UNUSED)
 {
   if (TARGET_EMBEDDED_DATA)
     {
       /* For embedded applications, always put an object in read-only data
-         if possible, in order to reduce RAM usage.  */
+	 if possible, in order to reduce RAM usage.  */
       if ((TREE_CODE (decl) == VAR_DECL
-           && TREE_READONLY (decl) && !TREE_SIDE_EFFECTS (decl)
-           && DECL_INITIAL (decl)
-           && (DECL_INITIAL (decl) == error_mark_node
-               || TREE_CONSTANT (DECL_INITIAL (decl))))
-          /* Deal with calls from output_constant_def_contents.  */
-          || TREE_CODE (decl) != VAR_DECL)
-        return readonly_data_section;
+	   && TREE_READONLY (decl) && !TREE_SIDE_EFFECTS (decl)
+	   && DECL_INITIAL (decl)
+	   && (DECL_INITIAL (decl) == error_mark_node
+	       || TREE_CONSTANT (DECL_INITIAL (decl))))
+	  /* Deal with calls from output_constant_def_contents.  */
+	  || TREE_CODE (decl) != VAR_DECL)
+	return readonly_data_section;
       else
-        return data_section;
+	return data_section;
     }
   else
     {
       /* For hosted applications, always put an object in small data if
-         possible, as this gives the best performance.  */
+	 possible, as this gives the best performance.  */
       if ((TREE_CODE (decl) == VAR_DECL
-           && TREE_READONLY (decl) && !TREE_SIDE_EFFECTS (decl)
-           && DECL_INITIAL (decl)
-           && (DECL_INITIAL (decl) == error_mark_node
-               || TREE_CONSTANT (DECL_INITIAL (decl))))
-          /* Deal with calls from output_constant_def_contents.  */
-          || TREE_CODE (decl) != VAR_DECL)
-        return readonly_data_section;
+	   && TREE_READONLY (decl) && !TREE_SIDE_EFFECTS (decl)
+	   && DECL_INITIAL (decl)
+	   && (DECL_INITIAL (decl) == error_mark_node
+	       || TREE_CONSTANT (DECL_INITIAL (decl))))
+	  /* Deal with calls from output_constant_def_contents.  */
+	  || TREE_CODE (decl) != VAR_DECL)
+	return readonly_data_section;
       else
-        return data_section;
+	return data_section;
     }
 }
 /* Return register to use for a function return value with VALTYPE for function
@@ -2224,7 +2224,7 @@ iq2000_function_value (tree valtype, tree func ATTRIBUTE_UNUSED)
 
 static bool
 iq2000_pass_by_reference (CUMULATIVE_ARGS *cum, enum machine_mode mode,
-                          tree type, bool named ATTRIBUTE_UNUSED)
+			  tree type, bool named ATTRIBUTE_UNUSED)
 {
   int size;
 
@@ -2234,13 +2234,13 @@ iq2000_pass_by_reference (CUMULATIVE_ARGS *cum, enum machine_mode mode,
   if (cum && targetm.calls.must_pass_in_stack (mode, type))
      {
        /* Don't pass the actual CUM to FUNCTION_ARG, because we would
-          get double copies of any offsets generated for small structs
-          passed in registers.  */
+	  get double copies of any offsets generated for small structs
+	  passed in registers.  */
        CUMULATIVE_ARGS temp;
 
        temp = *cum;
        if (FUNCTION_ARG (temp, mode, type, named) != 0)
-         return 1;
+	 return 1;
      }
 
   if (type == NULL_TREE || mode == DImode || mode == DFmode)
@@ -2260,7 +2260,7 @@ iq2000_adjust_insn_length (rtx insn, int length)
      of a sequence.  A conditional jump normally has a delay slot.  */
   if (simplejump_p (insn)
       || (   (GET_CODE (insn) == JUMP_INSN
-           || GET_CODE (insn) == CALL_INSN)))
+	   || GET_CODE (insn) == CALL_INSN)))
     length += 4;
 
   return length;
@@ -2283,7 +2283,7 @@ iq2000_adjust_insn_length (rtx insn, int length)
 
 char *
 iq2000_output_conditional_branch (rtx insn, rtx * operands, int two_operands_p,
-                                  int float_p, int inverted_p, int length)
+				  int float_p, int inverted_p, int length)
 {
   static char buffer[200];
   /* The kind of comparison we are doing.  */
@@ -2310,37 +2310,37 @@ iq2000_output_conditional_branch (rtx insn, rtx * operands, int two_operands_p,
   if (!two_operands_p)
     {
       /* To compute whether than A > B, for example, we normally
-         subtract B from A and then look at the sign bit.  But, if we
-         are doing an unsigned comparison, and B is zero, we don't
-         have to do the subtraction.  Instead, we can just check to
-         see if A is nonzero.  Thus, we change the CODE here to
-         reflect the simpler comparison operation.  */
+	 subtract B from A and then look at the sign bit.  But, if we
+	 are doing an unsigned comparison, and B is zero, we don't
+	 have to do the subtraction.  Instead, we can just check to
+	 see if A is nonzero.  Thus, we change the CODE here to
+	 reflect the simpler comparison operation.  */
       switch (code)
-        {
-        case GTU:
-          code = NE;
-          break;
+	{
+	case GTU:
+	  code = NE;
+	  break;
 
-        case LEU:
-          code = EQ;
-          break;
+	case LEU:
+	  code = EQ;
+	  break;
 
-        case GEU:
-          /* A condition which will always be true.  */
-          code = EQ;
-          op1 = "%.";
-          break;
+	case GEU:
+	  /* A condition which will always be true.  */
+	  code = EQ;
+	  op1 = "%.";
+	  break;
 
-        case LTU:
-          /* A condition which will always be false.  */
-          code = NE;
-          op1 = "%.";
-          break;
+	case LTU:
+	  /* A condition which will always be false.  */
+	  code = NE;
+	  op1 = "%.";
+	  break;
 
-        default:
-          /* Not a special case.  */
-          break;
-        }
+	default:
+	  /* Not a special case.  */
+	  break;
+	}
     }
 
   /* Relative comparisons are always done against zero.  But
@@ -2362,69 +2362,69 @@ iq2000_output_conditional_branch (rtx insn, rtx * operands, int two_operands_p,
     case 8:
       /* Just a simple conditional branch.  */
       if (float_p)
-        sprintf (buffer, "b%s%%?\t%%Z2%%1",
-                 inverted_p ? inverted_comp : comp);
+	sprintf (buffer, "b%s%%?\t%%Z2%%1",
+		 inverted_p ? inverted_comp : comp);
       else
-        sprintf (buffer, "b%s%s%%?\t%s%s,%%1",
-                 inverted_p ? inverted_comp : comp,
-                 need_z_p ? "z" : "",
-                 op1,
-                 op2);
+	sprintf (buffer, "b%s%s%%?\t%s%s,%%1",
+		 inverted_p ? inverted_comp : comp,
+		 need_z_p ? "z" : "",
+		 op1,
+		 op2);
       return buffer;
 
     case 12:
     case 16:
       {
-        /* Generate a reversed conditional branch around ` j'
-           instruction:
+	/* Generate a reversed conditional branch around ` j'
+	   instruction:
 
-                .set noreorder
-                .set nomacro
-                bc    l
-                nop
-                j     target
-                .set macro
-                .set reorder
-             l:
+		.set noreorder
+		.set nomacro
+		bc    l
+		nop
+		j     target
+		.set macro
+		.set reorder
+	     l:
 
-           Because we have to jump four bytes *past* the following
-           instruction if this branch was annulled, we can't just use
-           a label, as in the picture above; there's no way to put the
-           label after the next instruction, as the assembler does not
-           accept `.L+4' as the target of a branch.  (We can't just
-           wait until the next instruction is output; it might be a
-           macro and take up more than four bytes.  Once again, we see
-           why we want to eliminate macros.)
+	   Because we have to jump four bytes *past* the following
+	   instruction if this branch was annulled, we can't just use
+	   a label, as in the picture above; there's no way to put the
+	   label after the next instruction, as the assembler does not
+	   accept `.L+4' as the target of a branch.  (We can't just
+	   wait until the next instruction is output; it might be a
+	   macro and take up more than four bytes.  Once again, we see
+	   why we want to eliminate macros.)
 
-           If the branch is annulled, we jump four more bytes that we
-           would otherwise; that way we skip the annulled instruction
-           in the delay slot.  */
+	   If the branch is annulled, we jump four more bytes that we
+	   would otherwise; that way we skip the annulled instruction
+	   in the delay slot.  */
 
-        const char *target
-          = ((iq2000_branch_likely || length == 16) ? ".+16" : ".+12");
-        char *c;
+	const char *target
+	  = ((iq2000_branch_likely || length == 16) ? ".+16" : ".+12");
+	char *c;
 
-        c = strchr (buffer, '\0');
-        /* Generate the reversed comparison.  This takes four
-           bytes.  */
-        if (float_p)
-          sprintf (c, "b%s\t%%Z2%s",
-                   inverted_p ? comp : inverted_comp,
-                   target);
-        else
-          sprintf (c, "b%s%s\t%s%s,%s",
-                   inverted_p ? comp : inverted_comp,
-                   need_z_p ? "z" : "",
-                   op1,
-                   op2,
-                   target);
-        strcat (c, "\n\tnop\n\tj\t%1");
-        if (length == 16)
-          /* The delay slot was unfilled.  Since we're inside
-             .noreorder, the assembler will not fill in the NOP for
-             us, so we must do it ourselves.  */
-          strcat (buffer, "\n\tnop");
-        return buffer;
+	c = strchr (buffer, '\0');
+	/* Generate the reversed comparison.  This takes four
+	   bytes.  */
+	if (float_p)
+	  sprintf (c, "b%s\t%%Z2%s",
+		   inverted_p ? comp : inverted_comp,
+		   target);
+	else
+	  sprintf (c, "b%s%s\t%s%s,%s",
+		   inverted_p ? comp : inverted_comp,
+		   need_z_p ? "z" : "",
+		   op1,
+		   op2,
+		   target);
+	strcat (c, "\n\tnop\n\tj\t%1");
+	if (length == 16)
+	  /* The delay slot was unfilled.  Since we're inside
+	     .noreorder, the assembler will not fill in the NOP for
+	     us, so we must do it ourselves.  */
+	  strcat (buffer, "\n\tnop");
+	return buffer;
       }
 
     default:
@@ -2435,9 +2435,9 @@ iq2000_output_conditional_branch (rtx insn, rtx * operands, int two_operands_p,
   return 0;
 }
 
-#define def_builtin(NAME, TYPE, CODE)                                        \
-  lang_hooks.builtin_function ((NAME), (TYPE), (CODE), BUILT_IN_MD,        \
-                               NULL, NULL_TREE)
+#define def_builtin(NAME, TYPE, CODE)					\
+  lang_hooks.builtin_function ((NAME), (TYPE), (CODE), BUILT_IN_MD,	\
+			       NULL, NULL_TREE)
 
 static void
 iq2000_init_builtins (void)
@@ -2451,12 +2451,12 @@ iq2000_init_builtins (void)
   /* func () */
   void_ftype
     = build_function_type (void_type_node,
-                           tree_cons (NULL_TREE, void_type_node, endlink));
+			   tree_cons (NULL_TREE, void_type_node, endlink));
 
   /* func (int) */
   void_ftype_int
     = build_function_type (void_type_node,
-                           tree_cons (NULL_TREE, integer_type_node, endlink));
+			   tree_cons (NULL_TREE, integer_type_node, endlink));
 
   /* void func (int, int) */
   void_ftype_int_int
@@ -2482,44 +2482,44 @@ void_ftype_int_int_int
     = build_function_type
     (void_type_node,
      tree_cons (NULL_TREE, integer_type_node,
-                tree_cons (NULL_TREE, integer_type_node,
-                           tree_cons (NULL_TREE,
-                                      integer_type_node,
-                                      endlink))));
+		tree_cons (NULL_TREE, integer_type_node,
+			   tree_cons (NULL_TREE,
+				      integer_type_node,
+				      endlink))));
 
   /* int func (int, int, int, int) */
   int_ftype_int_int_int_int
     = build_function_type
     (integer_type_node,
      tree_cons (NULL_TREE, integer_type_node,
-                tree_cons (NULL_TREE, integer_type_node,
-                           tree_cons (NULL_TREE,
-                                      integer_type_node,
-                                      tree_cons (NULL_TREE,
-                                                 integer_type_node,
-                                                 endlink)))));
+		tree_cons (NULL_TREE, integer_type_node,
+			   tree_cons (NULL_TREE,
+				      integer_type_node,
+				      tree_cons (NULL_TREE,
+						 integer_type_node,
+						 endlink)))));
 
   /* int func (int, int, int) */
   int_ftype_int_int_int
     = build_function_type
     (integer_type_node,
      tree_cons (NULL_TREE, integer_type_node,
-                tree_cons (NULL_TREE, integer_type_node,
-                           tree_cons (NULL_TREE,
-                                      integer_type_node,
-                                      endlink))));
+		tree_cons (NULL_TREE, integer_type_node,
+			   tree_cons (NULL_TREE,
+				      integer_type_node,
+				      endlink))));
 
   /* int func (int, int, int, int) */
   int_ftype_int_int_int_int
     = build_function_type
     (integer_type_node,
      tree_cons (NULL_TREE, integer_type_node,
-                tree_cons (NULL_TREE, integer_type_node,
-                           tree_cons (NULL_TREE,
-                                      integer_type_node,
-                                      tree_cons (NULL_TREE,
-                                                 integer_type_node,
-                                                 endlink)))));
+		tree_cons (NULL_TREE, integer_type_node,
+			   tree_cons (NULL_TREE,
+				      integer_type_node,
+				      tree_cons (NULL_TREE,
+						 integer_type_node,
+						 endlink)))));
 
   def_builtin ("__builtin_ado16", int_ftype_int_int, IQ2000_BUILTIN_ADO16);
   def_builtin ("__builtin_ram", int_ftype_int_int_int_int, IQ2000_BUILTIN_RAM);
@@ -2574,7 +2574,7 @@ void_ftype_int_int_int
 
 static rtx
 expand_one_builtin (enum insn_code icode, rtx target, tree arglist,
-                    enum rtx_code *code, int argcount)
+		    enum rtx_code *code, int argcount)
 {
   rtx pat;
   tree arg [5];
@@ -2590,18 +2590,18 @@ expand_one_builtin (enum insn_code icode, rtx target, tree arglist,
       op[i] = expand_expr (arg[i], NULL_RTX, VOIDmode, 0);
       mode[i] = insn_data[icode].operand[i].mode;
       if (code[i] == CONST_INT && GET_CODE (op[i]) != CONST_INT)
-        error ("argument %qd is not a constant", i + 1);
+	error ("argument %qd is not a constant", i + 1);
       if (code[i] == REG
-          && ! (*insn_data[icode].operand[i].predicate) (op[i], mode[i]))
-        op[i] = copy_to_mode_reg (mode[i], op[i]);
+	  && ! (*insn_data[icode].operand[i].predicate) (op[i], mode[i]))
+	op[i] = copy_to_mode_reg (mode[i], op[i]);
     }
 
   if (insn_data[icode].operand[0].constraint[0] == '=')
     {
       if (target == 0
-          || GET_MODE (target) != mode[0]
-          || ! (*insn_data[icode].operand[0].predicate) (target, mode[0]))
-        target = gen_reg_rtx (mode[0]);
+	  || GET_MODE (target) != mode[0]
+	  || ! (*insn_data[icode].operand[0].predicate) (target, mode[0]))
+	target = gen_reg_rtx (mode[0]);
     }
   else
     target = 0;
@@ -2609,30 +2609,30 @@ expand_one_builtin (enum insn_code icode, rtx target, tree arglist,
   switch (argcount)
     {
     case 0:
-        pat = GEN_FCN (icode) (target);
+	pat = GEN_FCN (icode) (target);
     case 1:
       if (target)
-        pat = GEN_FCN (icode) (target, op[0]);
+	pat = GEN_FCN (icode) (target, op[0]);
       else
-        pat = GEN_FCN (icode) (op[0]);
+	pat = GEN_FCN (icode) (op[0]);
       break;
     case 2:
       if (target)
-        pat = GEN_FCN (icode) (target, op[0], op[1]);
+	pat = GEN_FCN (icode) (target, op[0], op[1]);
       else
-        pat = GEN_FCN (icode) (op[0], op[1]);
+	pat = GEN_FCN (icode) (op[0], op[1]);
       break;
     case 3:
       if (target)
-        pat = GEN_FCN (icode) (target, op[0], op[1], op[2]);
+	pat = GEN_FCN (icode) (target, op[0], op[1], op[2]);
       else
-        pat = GEN_FCN (icode) (op[0], op[1], op[2]);
+	pat = GEN_FCN (icode) (op[0], op[1], op[2]);
       break;
     case 4:
       if (target)
-        pat = GEN_FCN (icode) (target, op[0], op[1], op[2], op[3]);
+	pat = GEN_FCN (icode) (target, op[0], op[1], op[2], op[3]);
       else
-        pat = GEN_FCN (icode) (op[0], op[1], op[2], op[3]);
+	pat = GEN_FCN (icode) (op[0], op[1], op[2], op[3]);
       break;
     default:
       gcc_unreachable ();
@@ -2652,8 +2652,8 @@ expand_one_builtin (enum insn_code icode, rtx target, tree arglist,
 
 static rtx
 iq2000_expand_builtin (tree exp, rtx target, rtx subtarget ATTRIBUTE_UNUSED,
-                       enum machine_mode mode ATTRIBUTE_UNUSED,
-                       int ignore ATTRIBUTE_UNUSED)
+		       enum machine_mode mode ATTRIBUTE_UNUSED,
+		       int ignore ATTRIBUTE_UNUSED)
 {
   tree fndecl = TREE_OPERAND (TREE_OPERAND (exp, 0), 0);
   tree arglist = TREE_OPERAND (exp, 1);
@@ -2838,16 +2838,16 @@ static bool
 iq2000_return_in_memory (tree type, tree fntype ATTRIBUTE_UNUSED)
 {
   return ((int_size_in_bytes (type) > (2 * UNITS_PER_WORD))
-          || (int_size_in_bytes (type) == -1));
+	  || (int_size_in_bytes (type) == -1));
 }
 
 /* Worker function for TARGET_SETUP_INCOMING_VARARGS.  */
 
 static void
 iq2000_setup_incoming_varargs (CUMULATIVE_ARGS *cum,
-                               enum machine_mode mode ATTRIBUTE_UNUSED,
-                               tree type ATTRIBUTE_UNUSED, int * pretend_size,
-                               int no_rtl)
+			       enum machine_mode mode ATTRIBUTE_UNUSED,
+			       tree type ATTRIBUTE_UNUSED, int * pretend_size,
+			       int no_rtl)
 {
   unsigned int iq2000_off = ! cum->last_arg_fp; 
   unsigned int iq2000_fp_off = cum->last_arg_fp; 
@@ -2855,33 +2855,33 @@ iq2000_setup_incoming_varargs (CUMULATIVE_ARGS *cum,
   if ((cum->arg_words < MAX_ARGS_IN_REGISTERS - iq2000_off))
     {
       int iq2000_save_gp_regs 
-        = MAX_ARGS_IN_REGISTERS - cum->arg_words - iq2000_off; 
+	= MAX_ARGS_IN_REGISTERS - cum->arg_words - iq2000_off; 
       int iq2000_save_fp_regs 
         = (MAX_ARGS_IN_REGISTERS - cum->fp_arg_words - iq2000_fp_off); 
 
       if (iq2000_save_gp_regs < 0) 
-        iq2000_save_gp_regs = 0; 
+	iq2000_save_gp_regs = 0; 
       if (iq2000_save_fp_regs < 0) 
-        iq2000_save_fp_regs = 0; 
+	iq2000_save_fp_regs = 0; 
 
       *pretend_size = ((iq2000_save_gp_regs * UNITS_PER_WORD) 
                       + (iq2000_save_fp_regs * UNITS_PER_FPREG)); 
 
       if (! (no_rtl)) 
-        {
-          if (cum->arg_words < MAX_ARGS_IN_REGISTERS - iq2000_off) 
-            {
-              rtx ptr, mem; 
-              ptr = plus_constant (virtual_incoming_args_rtx, 
-                                   - (iq2000_save_gp_regs 
-                                      * UNITS_PER_WORD)); 
-              mem = gen_rtx_MEM (BLKmode, ptr); 
-              move_block_from_reg 
-                (cum->arg_words + GP_ARG_FIRST + iq2000_off, 
-                 mem, 
-                 iq2000_save_gp_regs);
-            } 
-        } 
+	{
+	  if (cum->arg_words < MAX_ARGS_IN_REGISTERS - iq2000_off) 
+	    {
+	      rtx ptr, mem; 
+	      ptr = plus_constant (virtual_incoming_args_rtx, 
+				   - (iq2000_save_gp_regs 
+				      * UNITS_PER_WORD)); 
+	      mem = gen_rtx_MEM (BLKmode, ptr); 
+	      move_block_from_reg 
+		(cum->arg_words + GP_ARG_FIRST + iq2000_off, 
+		 mem, 
+		 iq2000_save_gp_regs);
+	    } 
+	} 
     }
 }
 
@@ -2899,75 +2899,75 @@ print_operand_address (FILE * file, rtx addr)
     switch (GET_CODE (addr))
       {
       case REG:
-        if (REGNO (addr) == ARG_POINTER_REGNUM)
-          abort_with_insn (addr, "Arg pointer not eliminated.");
+	if (REGNO (addr) == ARG_POINTER_REGNUM)
+	  abort_with_insn (addr, "Arg pointer not eliminated.");
 
-        fprintf (file, "0(%s)", reg_names [REGNO (addr)]);
-        break;
+	fprintf (file, "0(%s)", reg_names [REGNO (addr)]);
+	break;
 
       case LO_SUM:
-        {
-          rtx arg0 = XEXP (addr, 0);
-          rtx arg1 = XEXP (addr, 1);
+	{
+	  rtx arg0 = XEXP (addr, 0);
+	  rtx arg1 = XEXP (addr, 1);
 
-          if (GET_CODE (arg0) != REG)
-            abort_with_insn (addr,
-                             "PRINT_OPERAND_ADDRESS, LO_SUM with #1 not REG.");
+	  if (GET_CODE (arg0) != REG)
+	    abort_with_insn (addr,
+			     "PRINT_OPERAND_ADDRESS, LO_SUM with #1 not REG.");
 
-          fprintf (file, "%%lo(");
-          print_operand_address (file, arg1);
-          fprintf (file, ")(%s)", reg_names [REGNO (arg0)]);
-        }
-        break;
+	  fprintf (file, "%%lo(");
+	  print_operand_address (file, arg1);
+	  fprintf (file, ")(%s)", reg_names [REGNO (arg0)]);
+	}
+	break;
 
       case PLUS:
-        {
-          rtx reg = 0;
-          rtx offset = 0;
-          rtx arg0 = XEXP (addr, 0);
-          rtx arg1 = XEXP (addr, 1);
+	{
+	  rtx reg = 0;
+	  rtx offset = 0;
+	  rtx arg0 = XEXP (addr, 0);
+	  rtx arg1 = XEXP (addr, 1);
 
-          if (GET_CODE (arg0) == REG)
-            {
-              reg = arg0;
-              offset = arg1;
-              if (GET_CODE (offset) == REG)
-                abort_with_insn (addr, "PRINT_OPERAND_ADDRESS, 2 regs");
-            }
+	  if (GET_CODE (arg0) == REG)
+	    {
+	      reg = arg0;
+	      offset = arg1;
+	      if (GET_CODE (offset) == REG)
+		abort_with_insn (addr, "PRINT_OPERAND_ADDRESS, 2 regs");
+	    }
 
-          else if (GET_CODE (arg1) == REG)
-              reg = arg1, offset = arg0;
-          else if (CONSTANT_P (arg0) && CONSTANT_P (arg1))
-            {
-              output_addr_const (file, addr);
-              break;
-            }
-          else
-            abort_with_insn (addr, "PRINT_OPERAND_ADDRESS, no regs");
+	  else if (GET_CODE (arg1) == REG)
+	      reg = arg1, offset = arg0;
+	  else if (CONSTANT_P (arg0) && CONSTANT_P (arg1))
+	    {
+	      output_addr_const (file, addr);
+	      break;
+	    }
+	  else
+	    abort_with_insn (addr, "PRINT_OPERAND_ADDRESS, no regs");
 
-          if (! CONSTANT_P (offset))
-            abort_with_insn (addr, "PRINT_OPERAND_ADDRESS, invalid insn #2");
+	  if (! CONSTANT_P (offset))
+	    abort_with_insn (addr, "PRINT_OPERAND_ADDRESS, invalid insn #2");
 
-          if (REGNO (reg) == ARG_POINTER_REGNUM)
-            abort_with_insn (addr, "Arg pointer not eliminated.");
+	  if (REGNO (reg) == ARG_POINTER_REGNUM)
+	    abort_with_insn (addr, "Arg pointer not eliminated.");
 
-          output_addr_const (file, offset);
-          fprintf (file, "(%s)", reg_names [REGNO (reg)]);
-        }
-        break;
+	  output_addr_const (file, offset);
+	  fprintf (file, "(%s)", reg_names [REGNO (reg)]);
+	}
+	break;
 
       case LABEL_REF:
       case SYMBOL_REF:
       case CONST_INT:
       case CONST:
-        output_addr_const (file, addr);
-        if (GET_CODE (addr) == CONST_INT)
-          fprintf (file, "(%s)", reg_names [0]);
-        break;
+	output_addr_const (file, addr);
+	if (GET_CODE (addr) == CONST_INT)
+	  fprintf (file, "(%s)", reg_names [0]);
+	break;
 
       default:
-        abort_with_insn (addr, "PRINT_OPERAND_ADDRESS, invalid insn #1");
-        break;
+	abort_with_insn (addr, "PRINT_OPERAND_ADDRESS, invalid insn #1");
+	break;
     }
 }
 
@@ -2995,7 +2995,7 @@ print_operand_address (FILE * file, rtx addr)
    'X'  X is CONST_INT, prints upper 16 bits in hexadecimal format = "0x%04x",
    'x'  X is CONST_INT, prints lower 16 bits in hexadecimal format = "0x%04x",
    'd'  output integer constant in decimal,
-   'z'        if the operand is 0, use $0 instead of normal operand.
+   'z'	if the operand is 0, use $0 instead of normal operand.
    'D'  print second part of double-word register or memory operand.
    'L'  print low-order register of double-word register operand.
    'M'  print high-order register of double-word register operand.
@@ -3003,7 +3003,7 @@ print_operand_address (FILE * file, rtx addr)
    'F'  print part of opcode for a floating-point branch condition.
    'N'  print part of opcode for a branch condition, inverted.
    'W'  print part of opcode for a floating-point branch condition, inverted.
-   'A'        Print part of opcode for a bit test condition.
+   'A'	Print part of opcode for a bit test condition.
    'P'  Print label for a bit test.
    'p'  Print log for a bit test.
    'B'  print 'z' for EQ, 'n' for NE
@@ -3011,11 +3011,11 @@ print_operand_address (FILE * file, rtx addr)
    'T'  print 'f' for EQ, 't' for NE
    't'  print 't' for EQ, 'f' for NE
    'Z'  print register and a comma, but print nothing for $fcc0
-   '?'        Print 'l' if we are to use a branch likely instead of normal branch.
-   '@'        Print the name of the assembler temporary register (at or $1).
-   '.'        Print the name of the register with a hard-wired zero (zero or $0).
-   '$'        Print the name of the stack pointer register (sp or $29).
-   '+'        Print the name of the gp register (gp or $28).  */
+   '?'	Print 'l' if we are to use a branch likely instead of normal branch.
+   '@'	Print the name of the assembler temporary register (at or $1).
+   '.'	Print the name of the register with a hard-wired zero (zero or $0).
+   '$'	Print the name of the stack pointer register (sp or $29).
+   '+'	Print the name of the gp register (gp or $28).  */
 
 void
 print_operand (FILE *file, rtx op, int letter)
@@ -3025,32 +3025,32 @@ print_operand (FILE *file, rtx op, int letter)
   if (PRINT_OPERAND_PUNCT_VALID_P (letter))
     {
       switch (letter)
-        {
-        case '?':
-          if (iq2000_branch_likely)
-            putc ('l', file);
-          break;
+	{
+	case '?':
+	  if (iq2000_branch_likely)
+	    putc ('l', file);
+	  break;
 
-        case '@':
-          fputs (reg_names [GP_REG_FIRST + 1], file);
-          break;
+	case '@':
+	  fputs (reg_names [GP_REG_FIRST + 1], file);
+	  break;
 
-        case '.':
-          fputs (reg_names [GP_REG_FIRST + 0], file);
-          break;
+	case '.':
+	  fputs (reg_names [GP_REG_FIRST + 0], file);
+	  break;
 
-        case '$':
-          fputs (reg_names[STACK_POINTER_REGNUM], file);
-          break;
+	case '$':
+	  fputs (reg_names[STACK_POINTER_REGNUM], file);
+	  break;
 
-        case '+':
-          fputs (reg_names[GP_REG_FIRST + 28], file);
-          break;
+	case '+':
+	  fputs (reg_names[GP_REG_FIRST + 28], file);
+	  break;
 
-        default:
-          error ("PRINT_OPERAND: Unknown punctuation '%c'", letter);
-          break;
-        }
+	default:
+	  error ("PRINT_OPERAND: Unknown punctuation '%c'", letter);
+	  break;
+	}
 
       return;
     }
@@ -3069,35 +3069,35 @@ print_operand (FILE *file, rtx op, int letter)
   if (letter == 'C')
     switch (code)
       {
-      case EQ:        fputs ("eq",  file); break;
-      case NE:        fputs ("ne",  file); break;
-      case GT:        fputs ("gt",  file); break;
-      case GE:        fputs ("ge",  file); break;
-      case LT:        fputs ("lt",  file); break;
-      case LE:        fputs ("le",  file); break;
+      case EQ:	fputs ("eq",  file); break;
+      case NE:	fputs ("ne",  file); break;
+      case GT:	fputs ("gt",  file); break;
+      case GE:	fputs ("ge",  file); break;
+      case LT:	fputs ("lt",  file); break;
+      case LE:	fputs ("le",  file); break;
       case GTU: fputs ("ne", file); break;
       case GEU: fputs ("geu", file); break;
       case LTU: fputs ("ltu", file); break;
       case LEU: fputs ("eq", file); break;
       default:
-        abort_with_insn (op, "PRINT_OPERAND, invalid insn for %%C");
+	abort_with_insn (op, "PRINT_OPERAND, invalid insn for %%C");
       }
 
   else if (letter == 'N')
     switch (code)
       {
-      case EQ:        fputs ("ne",  file); break;
-      case NE:        fputs ("eq",  file); break;
-      case GT:        fputs ("le",  file); break;
-      case GE:        fputs ("lt",  file); break;
-      case LT:        fputs ("ge",  file); break;
-      case LE:        fputs ("gt",  file); break;
+      case EQ:	fputs ("ne",  file); break;
+      case NE:	fputs ("eq",  file); break;
+      case GT:	fputs ("le",  file); break;
+      case GE:	fputs ("lt",  file); break;
+      case LT:	fputs ("ge",  file); break;
+      case LE:	fputs ("gt",  file); break;
       case GTU: fputs ("leu", file); break;
       case GEU: fputs ("ltu", file); break;
       case LTU: fputs ("geu", file); break;
       case LEU: fputs ("gtu", file); break;
       default:
-        abort_with_insn (op, "PRINT_OPERAND, invalid insn for %%N");
+	abort_with_insn (op, "PRINT_OPERAND, invalid insn for %%N");
       }
 
   else if (letter == 'F')
@@ -3106,7 +3106,7 @@ print_operand (FILE *file, rtx op, int letter)
       case EQ: fputs ("c1f", file); break;
       case NE: fputs ("c1t", file); break;
       default:
-        abort_with_insn (op, "PRINT_OPERAND, invalid insn for %%F");
+	abort_with_insn (op, "PRINT_OPERAND, invalid insn for %%F");
       }
 
   else if (letter == 'W')
@@ -3115,7 +3115,7 @@ print_operand (FILE *file, rtx op, int letter)
       case EQ: fputs ("c1t", file); break;
       case NE: fputs ("c1f", file); break;
       default:
-        abort_with_insn (op, "PRINT_OPERAND, invalid insn for %%W");
+	abort_with_insn (op, "PRINT_OPERAND, invalid insn for %%W");
       }
 
   else if (letter == 'A')
@@ -3124,17 +3124,17 @@ print_operand (FILE *file, rtx op, int letter)
   else if (letter == 'P')
     {
       if (code == LABEL_REF)
-        output_addr_const (file, op);
+	output_addr_const (file, op);
       else if (code != PC)
-        output_operand_lossage ("invalid %%P operand");
+	output_operand_lossage ("invalid %%P operand");
     }
 
   else if (letter == 'p')
     {
       int value;
       if (code != CONST_INT
-          || (value = exact_log2 (INTVAL (op))) < 0)
-        output_operand_lossage ("invalid %%p value");
+	  || (value = exact_log2 (INTVAL (op))) < 0)
+	output_operand_lossage ("invalid %%p value");
       fprintf (file, "%d", value);
     }
 
@@ -3148,14 +3148,14 @@ print_operand (FILE *file, rtx op, int letter)
       int regnum;
 
       if (code == REG)
-        regnum = REGNO (op);
+	regnum = REGNO (op);
       else
-        regnum = true_regnum (op);
+	regnum = true_regnum (op);
 
       if ((letter == 'M' && ! WORDS_BIG_ENDIAN)
-          || (letter == 'L' && WORDS_BIG_ENDIAN)
-          || letter == 'D')
-        regnum++;
+	  || (letter == 'L' && WORDS_BIG_ENDIAN)
+	  || letter == 'D')
+	regnum++;
 
       fprintf (file, "%s", reg_names[regnum]);
     }
@@ -3163,13 +3163,13 @@ print_operand (FILE *file, rtx op, int letter)
   else if (code == MEM)
     {
       if (letter == 'D')
-        output_address (plus_constant (XEXP (op, 0), 4));
+	output_address (plus_constant (XEXP (op, 0), 4));
       else
-        output_address (XEXP (op, 0));
+	output_address (XEXP (op, 0));
     }
 
   else if (code == CONST_DOUBLE
-           && GET_MODE_CLASS (GET_MODE (op)) == MODE_FLOAT)
+	   && GET_MODE_CLASS (GET_MODE (op)) == MODE_FLOAT)
     {
       char s[60];
 
@@ -3219,13 +3219,13 @@ iq2000_rtx_costs (rtx x, int code, int outer_code ATTRIBUTE_UNUSED, int * total)
     {
     case MEM:
       {
-        int num_words = (GET_MODE_SIZE (mode) > UNITS_PER_WORD) ? 2 : 1;
+	int num_words = (GET_MODE_SIZE (mode) > UNITS_PER_WORD) ? 2 : 1;
 
-        if (simple_memory_operand (x, mode))
-          return COSTS_N_INSNS (num_words);
+	if (simple_memory_operand (x, mode))
+	  return COSTS_N_INSNS (num_words);
 
-        * total = COSTS_N_INSNS (2 * num_words);
-        break;
+	* total = COSTS_N_INSNS (2 * num_words);
+	break;
       }
       
     case FFS:
@@ -3243,26 +3243,26 @@ iq2000_rtx_costs (rtx x, int code, int outer_code ATTRIBUTE_UNUSED, int * total)
     case ASHIFTRT:
     case LSHIFTRT:
       if (mode == DImode)
-        * total = COSTS_N_INSNS ((GET_CODE (XEXP (x, 1)) == CONST_INT) ? 4 : 12);
+	* total = COSTS_N_INSNS ((GET_CODE (XEXP (x, 1)) == CONST_INT) ? 4 : 12);
       else
-        * total = COSTS_N_INSNS (1);
-    break;                                                                
+	* total = COSTS_N_INSNS (1);
+    break;								
 
     case ABS:
       if (mode == SFmode || mode == DFmode)
-        * total = COSTS_N_INSNS (1);
+	* total = COSTS_N_INSNS (1);
       else
-        * total = COSTS_N_INSNS (4);
+	* total = COSTS_N_INSNS (4);
       break;
     
     case PLUS:
     case MINUS:
       if (mode == SFmode || mode == DFmode)
-        * total = COSTS_N_INSNS (6);
+	* total = COSTS_N_INSNS (6);
       else if (mode == DImode)
-        * total = COSTS_N_INSNS (4);
+	* total = COSTS_N_INSNS (4);
       else
-        * total = COSTS_N_INSNS (1);
+	* total = COSTS_N_INSNS (1);
       break;
     
     case NEG:
@@ -3271,21 +3271,21 @@ iq2000_rtx_costs (rtx x, int code, int outer_code ATTRIBUTE_UNUSED, int * total)
 
     case MULT:
       if (mode == SFmode)
-        * total = COSTS_N_INSNS (7);
+	* total = COSTS_N_INSNS (7);
       else if (mode == DFmode)
-        * total = COSTS_N_INSNS (8);
+	* total = COSTS_N_INSNS (8);
       else
-        * total = COSTS_N_INSNS (10);
+	* total = COSTS_N_INSNS (10);
       break;
 
     case DIV:
     case MOD:
       if (mode == SFmode)
-        * total = COSTS_N_INSNS (23);
+	* total = COSTS_N_INSNS (23);
       else if (mode == DFmode)
-        * total = COSTS_N_INSNS (36);
+	* total = COSTS_N_INSNS (36);
       else
-        * total = COSTS_N_INSNS (69);
+	* total = COSTS_N_INSNS (69);
       break;
       
     case UDIV:
@@ -3311,19 +3311,19 @@ iq2000_rtx_costs (rtx x, int code, int outer_code ATTRIBUTE_UNUSED, int * total)
 
     case CONST:
       {
-        rtx offset = const0_rtx;
-        rtx symref = eliminate_constant_term (XEXP (x, 0), & offset);
+	rtx offset = const0_rtx;
+	rtx symref = eliminate_constant_term (XEXP (x, 0), & offset);
 
-        if (GET_CODE (symref) == LABEL_REF)
-          * total = COSTS_N_INSNS (2);
-        else if (GET_CODE (symref) != SYMBOL_REF)
-          * total = COSTS_N_INSNS (4);
-        /* Let's be paranoid....  */
-        else if (INTVAL (offset) < -32768 || INTVAL (offset) > 32767)
-          * total = COSTS_N_INSNS (2);
-        else
-          * total = COSTS_N_INSNS (SYMBOL_REF_FLAG (symref) ? 1 : 2);
-        break;
+	if (GET_CODE (symref) == LABEL_REF)
+	  * total = COSTS_N_INSNS (2);
+	else if (GET_CODE (symref) != SYMBOL_REF)
+	  * total = COSTS_N_INSNS (4);
+	/* Let's be paranoid....  */
+	else if (INTVAL (offset) < -32768 || INTVAL (offset) > 32767)
+	  * total = COSTS_N_INSNS (2);
+	else
+	  * total = COSTS_N_INSNS (SYMBOL_REF_FLAG (symref) ? 1 : 2);
+	break;
       }
 
     case SYMBOL_REF:
@@ -3332,14 +3332,14 @@ iq2000_rtx_costs (rtx x, int code, int outer_code ATTRIBUTE_UNUSED, int * total)
     
     case CONST_DOUBLE:
       {
-        rtx high, low;
+	rtx high, low;
       
-        split_double (x, & high, & low);
+	split_double (x, & high, & low);
       
-        * total = COSTS_N_INSNS (  (high == CONST0_RTX (GET_MODE (high))
-                                  || low == CONST0_RTX (GET_MODE (low)))
-                                   ? 2 : 4);
-        break;
+	* total = COSTS_N_INSNS (  (high == CONST0_RTX (GET_MODE (high))
+				  || low == CONST0_RTX (GET_MODE (low)))
+				   ? 2 : 4);
+	break;
       }
     
     default:

@@ -7,10 +7,10 @@ LIB1ASMFUNCS = _mulsi3 _udivsi3 _divsi3 _umodsi3 _modsi3 \
 LIB2FUNCS_EXTRA = fpgnulib.c xfgnulib.c
 
 fpgnulib.c: $(srcdir)/config/m68k/fpgnulib.c
-        cp $(srcdir)/config/m68k/fpgnulib.c fpgnulib.c
+	cp $(srcdir)/config/m68k/fpgnulib.c fpgnulib.c
 xfgnulib.c: $(srcdir)/config/m68k/fpgnulib.c
-        echo '#define EXTFLOAT' > xfgnulib.c
-        cat $(srcdir)/config/m68k/fpgnulib.c >> xfgnulib.c
+	echo '#define EXTFLOAT' > xfgnulib.c
+	cat $(srcdir)/config/m68k/fpgnulib.c >> xfgnulib.c
 
 MULTILIB_OPTIONS = m68000/m5200/m5206e/m528x/m5307/m5407/mcpu32 msep-data/mid-shared-library
 MULTILIB_DIRNAMES =

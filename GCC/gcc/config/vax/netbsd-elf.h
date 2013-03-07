@@ -21,11 +21,11 @@ Boston, MA 02110-1301, USA.  */
 
 /* Names to predefine in the preprocessor for this target OS.  */
 #undef TARGET_OS_CPP_BUILTINS
-#define TARGET_OS_CPP_BUILTINS()                \
-  do                                                \
-    {                                                \
-      NETBSD_OS_CPP_BUILTINS_ELF();                \
-    }                                                \
+#define TARGET_OS_CPP_BUILTINS()		\
+  do						\
+    {						\
+      NETBSD_OS_CPP_BUILTINS_ELF();		\
+    }						\
   while (0)
 
 #undef CPP_SPEC
@@ -44,14 +44,14 @@ Boston, MA 02110-1301, USA.  */
      -dc -dp \
      %{!nostdlib: \
        %{!r*: \
-         %{!e*:-e %(netbsd_entry_point)}}} \
+	 %{!e*:-e %(netbsd_entry_point)}}} \
      %{!static:-static} \
      %{static:-static}}"
 #else
 #define LINK_SPEC NETBSD_LINK_SPEC_ELF
 #endif
 
-#define EXTRA_SPECS                                \
+#define EXTRA_SPECS				\
   { "netbsd_entry_point", NETBSD_ENTRY_POINT },
 
 /* We use gas, not the UNIX assembler.  */

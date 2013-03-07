@@ -3,7 +3,7 @@
 
    Copyright (C) 2005 Free Software Foundation, Inc.
    Contributed by Richard Henderson <rth@redhat.com>,
-                  Diego Novillo <dnovillo@redhat.com>.
+		  Diego Novillo <dnovillo@redhat.com>.
 
 This file is part of GCC.
 
@@ -118,10 +118,10 @@ c_finish_omp_atomic (enum tree_code code, tree lhs, tree rhs)
   addr = save_expr (addr);
   if (TREE_CODE (addr) != SAVE_EXPR
       && (TREE_CODE (addr) != ADDR_EXPR
-          || TREE_CODE (TREE_OPERAND (addr, 0)) != VAR_DECL))
+	  || TREE_CODE (TREE_OPERAND (addr, 0)) != VAR_DECL))
     {
       /* Make sure LHS is simple enough so that goa_lhs_expr_p can recognize
-         it even after unsharing function body.  */
+	 it even after unsharing function body.  */
       tree var = create_tmp_var_raw (TREE_TYPE (addr), NULL);
       addr = build4 (TARGET_EXPR, TREE_TYPE (addr), var, addr, NULL, NULL);
     }
@@ -205,7 +205,7 @@ check_omp_for_incr_expr (tree exp, tree decl)
 
 tree
 c_finish_omp_for (location_t locus, tree decl, tree init, tree cond,
-                  tree incr, tree body, tree pre_body)
+		  tree incr, tree body, tree pre_body)
 {
   location_t elocus = locus;
   bool fail = false;
@@ -230,11 +230,11 @@ c_finish_omp_for (location_t locus, tree decl, tree init, tree cond,
 
       init = DECL_INITIAL (decl);
       if (init == NULL)
-        {
-          error ("%H%qE is not initialized", &elocus, decl);
-          init = integer_zero_node;
-          fail = true;
-        }
+	{
+	  error ("%H%qE is not initialized", &elocus, decl);
+	  init = integer_zero_node;
+	  fail = true;
+	}
 
       init = build_modify_expr (decl, NOP_EXPR, init);
       SET_EXPR_LOCATION (init, elocus);
@@ -252,59 +252,59 @@ c_finish_omp_for (location_t locus, tree decl, tree init, tree cond,
       bool cond_ok = false;
 
       if (EXPR_HAS_LOCATION (cond))
-        elocus = EXPR_LOCATION (cond);
+	elocus = EXPR_LOCATION (cond);
 
       if (TREE_CODE (cond) == LT_EXPR
-          || TREE_CODE (cond) == LE_EXPR
-          || TREE_CODE (cond) == GT_EXPR
-          || TREE_CODE (cond) == GE_EXPR)
-        {
-          tree op0 = TREE_OPERAND (cond, 0);
-          tree op1 = TREE_OPERAND (cond, 1);
+	  || TREE_CODE (cond) == LE_EXPR
+	  || TREE_CODE (cond) == GT_EXPR
+	  || TREE_CODE (cond) == GE_EXPR)
+	{
+	  tree op0 = TREE_OPERAND (cond, 0);
+	  tree op1 = TREE_OPERAND (cond, 1);
 
-          /* 2.5.1.  The comparison in the condition is computed in the type
-             of DECL, otherwise the behavior is undefined.
+	  /* 2.5.1.  The comparison in the condition is computed in the type
+	     of DECL, otherwise the behavior is undefined.
 
-             For example:
-             long n; int i;
-             i < n;
+	     For example:
+	     long n; int i;
+	     i < n;
 
-             according to ISO will be evaluated as:
-             (long)i < n;
+	     according to ISO will be evaluated as:
+	     (long)i < n;
 
-             We want to force:
-             i < (int)n;  */
-          if (TREE_CODE (op0) == NOP_EXPR
-              && decl == TREE_OPERAND (op0, 0))
-            {
-              TREE_OPERAND (cond, 0) = TREE_OPERAND (op0, 0);
-              TREE_OPERAND (cond, 1) = fold_build1 (NOP_EXPR, TREE_TYPE (decl),
-                                                    TREE_OPERAND (cond, 1));
-            }
-          else if (TREE_CODE (op1) == NOP_EXPR
-                   && decl == TREE_OPERAND (op1, 0))
-            {
-              TREE_OPERAND (cond, 1) = TREE_OPERAND (op1, 0);
-              TREE_OPERAND (cond, 0) = fold_build1 (NOP_EXPR, TREE_TYPE (decl),
-                                                    TREE_OPERAND (cond, 0));
-            }
+	     We want to force:
+	     i < (int)n;  */
+	  if (TREE_CODE (op0) == NOP_EXPR
+	      && decl == TREE_OPERAND (op0, 0))
+	    {
+	      TREE_OPERAND (cond, 0) = TREE_OPERAND (op0, 0);
+	      TREE_OPERAND (cond, 1) = fold_build1 (NOP_EXPR, TREE_TYPE (decl),
+						    TREE_OPERAND (cond, 1));
+	    }
+	  else if (TREE_CODE (op1) == NOP_EXPR
+		   && decl == TREE_OPERAND (op1, 0))
+	    {
+	      TREE_OPERAND (cond, 1) = TREE_OPERAND (op1, 0);
+	      TREE_OPERAND (cond, 0) = fold_build1 (NOP_EXPR, TREE_TYPE (decl),
+						    TREE_OPERAND (cond, 0));
+	    }
 
-          if (decl == TREE_OPERAND (cond, 0))
-            cond_ok = true;
-          else if (decl == TREE_OPERAND (cond, 1))
-            {
-              TREE_SET_CODE (cond, swap_tree_comparison (TREE_CODE (cond)));
-              TREE_OPERAND (cond, 1) = TREE_OPERAND (cond, 0);
-              TREE_OPERAND (cond, 0) = decl;
-              cond_ok = true;
-            }
-        }
+	  if (decl == TREE_OPERAND (cond, 0))
+	    cond_ok = true;
+	  else if (decl == TREE_OPERAND (cond, 1))
+	    {
+	      TREE_SET_CODE (cond, swap_tree_comparison (TREE_CODE (cond)));
+	      TREE_OPERAND (cond, 1) = TREE_OPERAND (cond, 0);
+	      TREE_OPERAND (cond, 0) = decl;
+	      cond_ok = true;
+	    }
+	}
 
       if (!cond_ok)
-        {
-          error ("%Hinvalid controlling predicate", &elocus);
-          fail = true;
-        }
+	{
+	  error ("%Hinvalid controlling predicate", &elocus);
+	  fail = true;
+	}
     }
 
   if (incr == NULL_TREE)
@@ -317,51 +317,51 @@ c_finish_omp_for (location_t locus, tree decl, tree init, tree cond,
       bool incr_ok = false;
 
       if (EXPR_HAS_LOCATION (incr))
-        elocus = EXPR_LOCATION (incr);
+	elocus = EXPR_LOCATION (incr);
 
       /* Check all the valid increment expressions: v++, v--, ++v, --v,
-         v = v + incr, v = incr + v and v = v - incr.  */
+	 v = v + incr, v = incr + v and v = v - incr.  */
       switch (TREE_CODE (incr))
-        {
-        case POSTINCREMENT_EXPR:
-        case PREINCREMENT_EXPR:
-        case POSTDECREMENT_EXPR:
-        case PREDECREMENT_EXPR:
-          incr_ok = (TREE_OPERAND (incr, 0) == decl);
-          break;
+	{
+	case POSTINCREMENT_EXPR:
+	case PREINCREMENT_EXPR:
+	case POSTDECREMENT_EXPR:
+	case PREDECREMENT_EXPR:
+	  incr_ok = (TREE_OPERAND (incr, 0) == decl);
+	  break;
 
-        case MODIFY_EXPR:
-          if (TREE_OPERAND (incr, 0) != decl)
-            break;
-          if (TREE_OPERAND (incr, 1) == decl)
-            break;
-          if (TREE_CODE (TREE_OPERAND (incr, 1)) == PLUS_EXPR
-              && (TREE_OPERAND (TREE_OPERAND (incr, 1), 0) == decl
-                  || TREE_OPERAND (TREE_OPERAND (incr, 1), 1) == decl))
-            incr_ok = true;
-          else if (TREE_CODE (TREE_OPERAND (incr, 1)) == MINUS_EXPR
-                   && TREE_OPERAND (TREE_OPERAND (incr, 1), 0) == decl)
-            incr_ok = true;
-          else
-            {
-              tree t = check_omp_for_incr_expr (TREE_OPERAND (incr, 1), decl);
-              if (t != error_mark_node)
-                {
-                  incr_ok = true;
-                  t = build2 (PLUS_EXPR, TREE_TYPE (decl), decl, t);
-                  incr = build2 (MODIFY_EXPR, void_type_node, decl, t);
-                }
-            }
-          break;
+	case MODIFY_EXPR:
+	  if (TREE_OPERAND (incr, 0) != decl)
+	    break;
+	  if (TREE_OPERAND (incr, 1) == decl)
+	    break;
+	  if (TREE_CODE (TREE_OPERAND (incr, 1)) == PLUS_EXPR
+	      && (TREE_OPERAND (TREE_OPERAND (incr, 1), 0) == decl
+		  || TREE_OPERAND (TREE_OPERAND (incr, 1), 1) == decl))
+	    incr_ok = true;
+	  else if (TREE_CODE (TREE_OPERAND (incr, 1)) == MINUS_EXPR
+		   && TREE_OPERAND (TREE_OPERAND (incr, 1), 0) == decl)
+	    incr_ok = true;
+	  else
+	    {
+	      tree t = check_omp_for_incr_expr (TREE_OPERAND (incr, 1), decl);
+	      if (t != error_mark_node)
+		{
+		  incr_ok = true;
+		  t = build2 (PLUS_EXPR, TREE_TYPE (decl), decl, t);
+		  incr = build2 (MODIFY_EXPR, void_type_node, decl, t);
+		}
+	    }
+	  break;
 
-        default:
-          break;
-        }
+	default:
+	  break;
+	}
       if (!incr_ok)
-        {
-          error ("%Hinvalid increment expression", &elocus);
-          fail = true;
-        }
+	{
+	  error ("%Hinvalid increment expression", &elocus);
+	  fail = true;
+	}
     }
 
   if (fail)
@@ -401,29 +401,29 @@ c_split_parallel_clauses (tree clauses, tree *par_clauses, tree *ws_clauses)
       next = OMP_CLAUSE_CHAIN (clauses);
 
       switch (OMP_CLAUSE_CODE (clauses))
-        {
-        case OMP_CLAUSE_PRIVATE:
-        case OMP_CLAUSE_SHARED:
-        case OMP_CLAUSE_FIRSTPRIVATE:
-        case OMP_CLAUSE_LASTPRIVATE:
-        case OMP_CLAUSE_REDUCTION:
-        case OMP_CLAUSE_COPYIN:
-        case OMP_CLAUSE_IF:
-        case OMP_CLAUSE_NUM_THREADS:
-        case OMP_CLAUSE_DEFAULT:
-          OMP_CLAUSE_CHAIN (clauses) = *par_clauses;
-          *par_clauses = clauses;
-          break;
+	{
+	case OMP_CLAUSE_PRIVATE:
+	case OMP_CLAUSE_SHARED:
+	case OMP_CLAUSE_FIRSTPRIVATE:
+	case OMP_CLAUSE_LASTPRIVATE:
+	case OMP_CLAUSE_REDUCTION:
+	case OMP_CLAUSE_COPYIN:
+	case OMP_CLAUSE_IF:
+	case OMP_CLAUSE_NUM_THREADS:
+	case OMP_CLAUSE_DEFAULT:
+	  OMP_CLAUSE_CHAIN (clauses) = *par_clauses;
+	  *par_clauses = clauses;
+	  break;
 
-        case OMP_CLAUSE_SCHEDULE:
-        case OMP_CLAUSE_ORDERED:
-          OMP_CLAUSE_CHAIN (clauses) = *ws_clauses;
-          *ws_clauses = clauses;
-          break;
+	case OMP_CLAUSE_SCHEDULE:
+	case OMP_CLAUSE_ORDERED:
+	  OMP_CLAUSE_CHAIN (clauses) = *ws_clauses;
+	  *ws_clauses = clauses;
+	  break;
 
-        default:
-          gcc_unreachable ();
-        }
+	default:
+	  gcc_unreachable ();
+	}
     }
 }
 

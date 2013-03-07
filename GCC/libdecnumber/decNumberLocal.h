@@ -37,7 +37,7 @@
 
 #if !defined(DECNUMBERLOC)
 #define DECNUMBERLOC
-#define DECNLAUTHOR   "Mike Cowlishaw"        /* Who to blame */
+#define DECNLAUTHOR   "Mike Cowlishaw"	/* Who to blame */
 
   /* Local names for common types -- decNumber modules do not use int or
      long directly */
@@ -52,28 +52,28 @@
 
 
   /* Tuning parameter */
-#define DECBUFFER 36                /* Maximum size basis for local buffers. */
-                              /* Should be a common maximum precision */
-                              /* rounded up to a multiple of 4; must */
-                              /* be non-negative. */
+#define DECBUFFER 36		/* Maximum size basis for local buffers. */
+			      /* Should be a common maximum precision */
+			      /* rounded up to a multiple of 4; must */
+			      /* be non-negative. */
 
   /* Conditional code flags -- set these to 0 for best performance */
-#define DECCHECK  0                /* 1 to enable robust checking */
-#define DECALLOC  0                /* 1 to enable memory allocation accounting */
-#define DECTRACE  0                /* 1 to trace critical intermediates, etc. */
+#define DECCHECK  0		/* 1 to enable robust checking */
+#define DECALLOC  0		/* 1 to enable memory allocation accounting */
+#define DECTRACE  0		/* 1 to trace critical intermediates, etc. */
 
 
   /* Development use defines */
 #if DECALLOC
      /* if these interfere with your C includes, just comment them out */
-#define  int ?                        /* enable to ensure we do not use plain C */
-#define  long ??                /* .. 'int' or 'long' types from here on */
+#define  int ?			/* enable to ensure we do not use plain C */
+#define  long ??		/* .. 'int' or 'long' types from here on */
 #endif
 
   /* Limits and constants */
-#define DECNUMMAXP 999999999        /* maximum precision we can handle (9 digits) */
-#define DECNUMMAXE 999999999        /* maximum adjusted exponent ditto (9 digits) */
-#define DECNUMMINE -999999999        /* minimum adjusted exponent ditto (9 digits) */
+#define DECNUMMAXP 999999999	/* maximum precision we can handle (9 digits) */
+#define DECNUMMAXE 999999999	/* maximum adjusted exponent ditto (9 digits) */
+#define DECNUMMINE -999999999	/* minimum adjusted exponent ditto (9 digits) */
 #if (DECNUMMAXP != DEC_MAX_DIGITS)
 #error Maximum digits mismatch
 #endif
@@ -115,7 +115,7 @@ extern const uInt powers[];
   /* ----- Macros ----- */
   /* ISZERO -- return true if decNumber dn is a zero */
   /* [performance-critical in some situations] */
-#define ISZERO(dn) decNumberIsZero(dn)        /* now just a local name */
+#define ISZERO(dn) decNumberIsZero(dn)	/* now just a local name */
 
   /* X10 and X100 -- multiply integer i by 10 or 100 */
   /* [shifts are usually faster than multiply; could be conditional] */

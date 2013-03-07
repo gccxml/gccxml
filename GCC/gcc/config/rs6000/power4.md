@@ -33,42 +33,42 @@
 (define_cpu_unit "bpu_power4,cru_power4" "power4misc")
 (define_cpu_unit "vec_power4,vecperm_power4" "power4vec")
 (define_cpu_unit "du1_power4,du2_power4,du3_power4,du4_power4,du5_power4"
-                 "power4misc")
+		 "power4misc")
 
 (define_reservation "lsq_power4"
-                    "(du1_power4,lsu1_power4)\
-                    |(du2_power4,lsu2_power4)\
-                    |(du3_power4,lsu2_power4)\
-                    |(du4_power4,lsu1_power4)")
+		    "(du1_power4,lsu1_power4)\
+		    |(du2_power4,lsu2_power4)\
+		    |(du3_power4,lsu2_power4)\
+		    |(du4_power4,lsu1_power4)")
 
 (define_reservation "lsuq_power4"
-                    "(du1_power4+du2_power4,lsu1_power4+iu2_power4)\
-                    |(du2_power4+du3_power4,lsu2_power4+iu2_power4)\
-                    |(du3_power4+du4_power4,lsu2_power4+iu1_power4)")
+		    "(du1_power4+du2_power4,lsu1_power4+iu2_power4)\
+		    |(du2_power4+du3_power4,lsu2_power4+iu2_power4)\
+		    |(du3_power4+du4_power4,lsu2_power4+iu1_power4)")
 
 (define_reservation "iq_power4"
-                    "(du1_power4,iu1_power4)\
-                    |(du2_power4,iu2_power4)\
-                    |(du3_power4,iu2_power4)\
-                    |(du4_power4,iu1_power4)")
+		    "(du1_power4,iu1_power4)\
+		    |(du2_power4,iu2_power4)\
+		    |(du3_power4,iu2_power4)\
+		    |(du4_power4,iu1_power4)")
 
 (define_reservation "fpq_power4"
-                    "(du1_power4,fpu1_power4)\
-                    |(du2_power4,fpu2_power4)\
-                    |(du3_power4,fpu2_power4)\
-                    |(du4_power4,fpu1_power4)")
+		    "(du1_power4,fpu1_power4)\
+		    |(du2_power4,fpu2_power4)\
+		    |(du3_power4,fpu2_power4)\
+		    |(du4_power4,fpu1_power4)")
 
 (define_reservation "vq_power4"
-                    "(du1_power4,vec_power4)\
-                    |(du2_power4,vec_power4)\
-                    |(du3_power4,vec_power4)\
-                    |(du4_power4,vec_power4)")
+		    "(du1_power4,vec_power4)\
+		    |(du2_power4,vec_power4)\
+		    |(du3_power4,vec_power4)\
+		    |(du4_power4,vec_power4)")
 
 (define_reservation "vpq_power4"
-                    "(du1_power4,vecperm_power4)\
-                    |(du2_power4,vecperm_power4)\
-                    |(du3_power4,vecperm_power4)\
-                    |(du4_power4,vecperm_power4)")
+		    "(du1_power4,vecperm_power4)\
+		    |(du2_power4,vecperm_power4)\
+		    |(du3_power4,vecperm_power4)\
+		    |(du4_power4,vecperm_power4)")
 
 
 ; Dispatch slots are allocated in order conforming to program order.
@@ -399,11 +399,11 @@
 (define_bypass 3 "power4-vecsimple" "power4-vecperm")
 (define_bypass 6 "power4-veccomplex" "power4-vecperm")
 (define_bypass 3 "power4-vecperm"
-                 "power4-vecsimple,power4-veccomplex,power4-vecfloat")
+		 "power4-vecsimple,power4-veccomplex,power4-vecfloat")
 (define_bypass 9 "power4-vecfloat" "power4-vecperm")
 
 (define_bypass 5 "power4-vecsimple,power4-veccomplex"
-                 "power4-branch,power4-crlogical,power4-delayedcr,power4-mfcr,power4-mfcrf")
+		 "power4-branch,power4-crlogical,power4-delayedcr,power4-mfcr,power4-mfcrf")
 
 (define_bypass 4 "power4-vecsimple,power4-vecperm" "power4-vecstore")
 (define_bypass 7 "power4-veccomplex" "power4-vecstore")

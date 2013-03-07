@@ -142,19 +142,19 @@ instrument_edges (struct edge_list *el)
       edge_iterator ei;
 
       FOR_EACH_EDGE (e, ei, bb->succs)
-        {
-          struct edge_info *inf = EDGE_INFO (e);
+	{
+	  struct edge_info *inf = EDGE_INFO (e);
 
-          if (!inf->ignore && !inf->on_tree)
-            {
-              gcc_assert (!(e->flags & EDGE_ABNORMAL));
-              if (dump_file)
-                fprintf (dump_file, "Edge %d to %d instrumented%s\n",
-                         e->src->index, e->dest->index,
-                         EDGE_CRITICAL_P (e) ? " (and split)" : "");
-              (profile_hooks->gen_edge_profiler) (num_instr_edges++, e);
-            }
-        }
+	  if (!inf->ignore && !inf->on_tree)
+	    {
+	      gcc_assert (!(e->flags & EDGE_ABNORMAL));
+	      if (dump_file)
+		fprintf (dump_file, "Edge %d to %d instrumented%s\n",
+			 e->src->index, e->dest->index,
+			 EDGE_CRITICAL_P (e) ? " (and split)" : "");
+	      (profile_hooks->gen_edge_profiler) (num_instr_edges++, e);
+	    }
+	}
     }
 
   total_num_blocks_created += num_edges;
@@ -175,50 +175,50 @@ instrument_values (histogram_values values)
     {
       histogram_value hist = VEC_index (histogram_value, values, i);
       switch (hist->type)
-        {
-        case HIST_TYPE_INTERVAL:
-          t = GCOV_COUNTER_V_INTERVAL;
-          break;
+	{
+	case HIST_TYPE_INTERVAL:
+	  t = GCOV_COUNTER_V_INTERVAL;
+	  break;
 
-        case HIST_TYPE_POW2:
-          t = GCOV_COUNTER_V_POW2;
-          break;
+	case HIST_TYPE_POW2:
+	  t = GCOV_COUNTER_V_POW2;
+	  break;
 
-        case HIST_TYPE_SINGLE_VALUE:
-          t = GCOV_COUNTER_V_SINGLE;
-          break;
+	case HIST_TYPE_SINGLE_VALUE:
+	  t = GCOV_COUNTER_V_SINGLE;
+	  break;
 
-        case HIST_TYPE_CONST_DELTA:
-          t = GCOV_COUNTER_V_DELTA;
-          break;
+	case HIST_TYPE_CONST_DELTA:
+	  t = GCOV_COUNTER_V_DELTA;
+	  break;
 
-        default:
-          gcc_unreachable ();
-        }
+	default:
+	  gcc_unreachable ();
+	}
       if (!coverage_counter_alloc (t, hist->n_counters))
-        continue;
+	continue;
 
       switch (hist->type)
-        {
-        case HIST_TYPE_INTERVAL:
-          (profile_hooks->gen_interval_profiler) (hist, t, 0);
-          break;
+	{
+	case HIST_TYPE_INTERVAL:
+	  (profile_hooks->gen_interval_profiler) (hist, t, 0);
+	  break;
 
-        case HIST_TYPE_POW2:
-          (profile_hooks->gen_pow2_profiler) (hist, t, 0);
-          break;
+	case HIST_TYPE_POW2:
+	  (profile_hooks->gen_pow2_profiler) (hist, t, 0);
+	  break;
 
-        case HIST_TYPE_SINGLE_VALUE:
-          (profile_hooks->gen_one_value_profiler) (hist, t, 0);
-          break;
+	case HIST_TYPE_SINGLE_VALUE:
+	  (profile_hooks->gen_one_value_profiler) (hist, t, 0);
+	  break;
 
-        case HIST_TYPE_CONST_DELTA:
-          (profile_hooks->gen_const_delta_profiler) (hist, t, 0);
-          break;
+	case HIST_TYPE_CONST_DELTA:
+	  (profile_hooks->gen_const_delta_profiler) (hist, t, 0);
+	  break;
 
-        default:
-          gcc_unreachable ();
-        }
+	default:
+	  gcc_unreachable ();
+	}
     }
 }
 
@@ -239,8 +239,8 @@ get_exec_counts (void)
       edge_iterator ei;
 
       FOR_EACH_EDGE (e, ei, bb->succs)
-        if (!EDGE_INFO (e)->ignore && !EDGE_INFO (e)->on_tree)
-          num_edges++;
+	if (!EDGE_INFO (e)->ignore && !EDGE_INFO (e)->on_tree)
+	  num_edges++;
     }
 
   counts = get_coverage_counts (GCOV_COUNTER_ARCS, num_edges, &profile_info);
@@ -249,7 +249,7 @@ get_exec_counts (void)
 
   if (dump_file && profile_info)
     fprintf(dump_file, "Merged %u profiles with maximal count %u.\n",
-            profile_info->runs, (unsigned) profile_info->sum_max);
+	    profile_info->runs, (unsigned) profile_info->sum_max);
 
   return counts;
 }
@@ -276,16 +276,16 @@ compute_branch_probabilities (void)
   if (profile_info)
     {
       if (profile_info->run_max * profile_info->runs < profile_info->sum_max)
-        {
-          error ("corrupted profile info: run_max * runs < sum_max");
-          exec_counts = NULL;
-        }
+	{
+	  error ("corrupted profile info: run_max * runs < sum_max");
+	  exec_counts = NULL;
+	}
 
       if (profile_info->sum_all < profile_info->sum_max)
-        {
-          error ("corrupted profile info: sum_all is smaller than sum_max");
-          exec_counts = NULL;
-        }
+	{
+	  error ("corrupted profile info: sum_all is smaller than sum_max");
+	  exec_counts = NULL;
+	}
     }
 
   /* Attach extra info block to each bb.  */
@@ -297,11 +297,11 @@ compute_branch_probabilities (void)
       edge_iterator ei;
 
       FOR_EACH_EDGE (e, ei, bb->succs)
-        if (!EDGE_INFO (e)->ignore)
-          BB_INFO (bb)->succ_count++;
+	if (!EDGE_INFO (e)->ignore)
+	  BB_INFO (bb)->succ_count++;
       FOR_EACH_EDGE (e, ei, bb->preds)
-        if (!EDGE_INFO (e)->ignore)
-          BB_INFO (bb)->pred_count++;
+	if (!EDGE_INFO (e)->ignore)
+	  BB_INFO (bb)->pred_count++;
     }
 
   /* Avoid predicting entry on exit nodes.  */
@@ -320,32 +320,32 @@ compute_branch_probabilities (void)
       edge_iterator ei;
 
       FOR_EACH_EDGE (e, ei, bb->succs)
-        if (!EDGE_INFO (e)->ignore && !EDGE_INFO (e)->on_tree)
-          {
-            num_edges++;
-            if (exec_counts)
-              {
-                e->count = exec_counts[exec_counts_pos++];
-                if (e->count > profile_info->sum_max)
-                  {
-                    error ("corrupted profile info: edge from %i to %i exceeds maximal count",
-                           bb->index, e->dest->index);
-                  }
-              }
-            else
-              e->count = 0;
+	if (!EDGE_INFO (e)->ignore && !EDGE_INFO (e)->on_tree)
+	  {
+	    num_edges++;
+	    if (exec_counts)
+	      {
+		e->count = exec_counts[exec_counts_pos++];
+		if (e->count > profile_info->sum_max)
+		  {
+		    error ("corrupted profile info: edge from %i to %i exceeds maximal count",
+			   bb->index, e->dest->index);
+		  }
+	      }
+	    else
+	      e->count = 0;
 
-            EDGE_INFO (e)->count_valid = 1;
-            BB_INFO (bb)->succ_count--;
-            BB_INFO (e->dest)->pred_count--;
-            if (dump_file)
-              {
-                fprintf (dump_file, "\nRead edge from %i to %i, count:",
-                         bb->index, e->dest->index);
-                fprintf (dump_file, HOST_WIDEST_INT_PRINT_DEC,
-                         (HOST_WIDEST_INT) e->count);
-              }
-          }
+	    EDGE_INFO (e)->count_valid = 1;
+	    BB_INFO (bb)->succ_count--;
+	    BB_INFO (e->dest)->pred_count--;
+	    if (dump_file)
+	      {
+		fprintf (dump_file, "\nRead edge from %i to %i, count:",
+			 bb->index, e->dest->index);
+		fprintf (dump_file, HOST_WIDEST_INT_PRINT_DEC,
+			 (HOST_WIDEST_INT) e->count);
+	      }
+	  }
     }
 
   if (dump_file)
@@ -375,93 +375,93 @@ compute_branch_probabilities (void)
       passes++;
       changes = 0;
       FOR_BB_BETWEEN (bb, EXIT_BLOCK_PTR, NULL, prev_bb)
-        {
-          struct bb_info *bi = BB_INFO (bb);
-          if (! bi->count_valid)
-            {
-              if (bi->succ_count == 0)
-                {
-                  edge e;
-                  edge_iterator ei;
-                  gcov_type total = 0;
+	{
+	  struct bb_info *bi = BB_INFO (bb);
+	  if (! bi->count_valid)
+	    {
+	      if (bi->succ_count == 0)
+		{
+		  edge e;
+		  edge_iterator ei;
+		  gcov_type total = 0;
 
-                  FOR_EACH_EDGE (e, ei, bb->succs)
-                    total += e->count;
-                  bb->count = total;
-                  bi->count_valid = 1;
-                  changes = 1;
-                }
-              else if (bi->pred_count == 0)
-                {
-                  edge e;
-                  edge_iterator ei;
-                  gcov_type total = 0;
+		  FOR_EACH_EDGE (e, ei, bb->succs)
+		    total += e->count;
+		  bb->count = total;
+		  bi->count_valid = 1;
+		  changes = 1;
+		}
+	      else if (bi->pred_count == 0)
+		{
+		  edge e;
+		  edge_iterator ei;
+		  gcov_type total = 0;
 
-                  FOR_EACH_EDGE (e, ei, bb->preds)
-                    total += e->count;
-                  bb->count = total;
-                  bi->count_valid = 1;
-                  changes = 1;
-                }
-            }
-          if (bi->count_valid)
-            {
-              if (bi->succ_count == 1)
-                {
-                  edge e;
-                  edge_iterator ei;
-                  gcov_type total = 0;
+		  FOR_EACH_EDGE (e, ei, bb->preds)
+		    total += e->count;
+		  bb->count = total;
+		  bi->count_valid = 1;
+		  changes = 1;
+		}
+	    }
+	  if (bi->count_valid)
+	    {
+	      if (bi->succ_count == 1)
+		{
+		  edge e;
+		  edge_iterator ei;
+		  gcov_type total = 0;
 
-                  /* One of the counts will be invalid, but it is zero,
-                     so adding it in also doesn't hurt.  */
-                  FOR_EACH_EDGE (e, ei, bb->succs)
-                    total += e->count;
+		  /* One of the counts will be invalid, but it is zero,
+		     so adding it in also doesn't hurt.  */
+		  FOR_EACH_EDGE (e, ei, bb->succs)
+		    total += e->count;
 
-                  /* Seedgeh for the invalid edge, and set its count.  */
-                  FOR_EACH_EDGE (e, ei, bb->succs)
-                    if (! EDGE_INFO (e)->count_valid && ! EDGE_INFO (e)->ignore)
-                      break;
+		  /* Seedgeh for the invalid edge, and set its count.  */
+		  FOR_EACH_EDGE (e, ei, bb->succs)
+		    if (! EDGE_INFO (e)->count_valid && ! EDGE_INFO (e)->ignore)
+		      break;
 
-                  /* Calculate count for remaining edge by conservation.  */
-                  total = bb->count - total;
+		  /* Calculate count for remaining edge by conservation.  */
+		  total = bb->count - total;
 
-                  gcc_assert (e);
-                  EDGE_INFO (e)->count_valid = 1;
-                  e->count = total;
-                  bi->succ_count--;
+		  gcc_assert (e);
+		  EDGE_INFO (e)->count_valid = 1;
+		  e->count = total;
+		  bi->succ_count--;
 
-                  BB_INFO (e->dest)->pred_count--;
-                  changes = 1;
-                }
-              if (bi->pred_count == 1)
-                {
-                  edge e;
-                  edge_iterator ei;
-                  gcov_type total = 0;
+		  BB_INFO (e->dest)->pred_count--;
+		  changes = 1;
+		}
+	      if (bi->pred_count == 1)
+		{
+		  edge e;
+		  edge_iterator ei;
+		  gcov_type total = 0;
 
-                  /* One of the counts will be invalid, but it is zero,
-                     so adding it in also doesn't hurt.  */
-                  FOR_EACH_EDGE (e, ei, bb->preds)
-                    total += e->count;
+		  /* One of the counts will be invalid, but it is zero,
+		     so adding it in also doesn't hurt.  */
+		  FOR_EACH_EDGE (e, ei, bb->preds)
+		    total += e->count;
 
-                  /* Search for the invalid edge, and set its count.  */
-                  FOR_EACH_EDGE (e, ei, bb->preds)
-                    if (!EDGE_INFO (e)->count_valid && !EDGE_INFO (e)->ignore)
-                      break;
+		  /* Search for the invalid edge, and set its count.  */
+		  FOR_EACH_EDGE (e, ei, bb->preds)
+		    if (!EDGE_INFO (e)->count_valid && !EDGE_INFO (e)->ignore)
+		      break;
 
-                  /* Calculate count for remaining edge by conservation.  */
-                  total = bb->count - total + e->count;
+		  /* Calculate count for remaining edge by conservation.  */
+		  total = bb->count - total + e->count;
 
-                  gcc_assert (e);
-                  EDGE_INFO (e)->count_valid = 1;
-                  e->count = total;
-                  bi->pred_count--;
+		  gcc_assert (e);
+		  EDGE_INFO (e)->count_valid = 1;
+		  e->count = total;
+		  bi->pred_count--;
 
-                  BB_INFO (e->src)->succ_count--;
-                  changes = 1;
-                }
-            }
-        }
+		  BB_INFO (e->src)->succ_count--;
+		  changes = 1;
+		}
+	    }
+	}
     }
   if (dump_file)
     dump_flow_info (dump_file, dump_flags);
@@ -491,93 +491,93 @@ compute_branch_probabilities (void)
       edge_iterator ei;
 
       if (bb->count < 0)
-        {
-          error ("corrupted profile info: number of iterations for basic block %d thought to be %i",
-                 bb->index, (int)bb->count);
-          bb->count = 0;
-        }
+	{
+	  error ("corrupted profile info: number of iterations for basic block %d thought to be %i",
+		 bb->index, (int)bb->count);
+	  bb->count = 0;
+	}
       FOR_EACH_EDGE (e, ei, bb->succs)
-        {
-          /* Function may return twice in the cased the called function is
-             setjmp or calls fork, but we can't represent this by extra
-             edge from the entry, since extra edge from the exit is
-             already present.  We get negative frequency from the entry
-             point.  */
-          if ((e->count < 0
-               && e->dest == EXIT_BLOCK_PTR)
-              || (e->count > bb->count
-                  && e->dest != EXIT_BLOCK_PTR))
-            {
-              if (block_ends_with_call_p (bb))
-                e->count = e->count < 0 ? 0 : bb->count;
-            }
-          if (e->count < 0 || e->count > bb->count)
-            {
-              error ("corrupted profile info: number of executions for edge %d-%d thought to be %i",
-                     e->src->index, e->dest->index,
-                     (int)e->count);
-              e->count = bb->count / 2;
-            }
-        }
+	{
+	  /* Function may return twice in the cased the called function is
+	     setjmp or calls fork, but we can't represent this by extra
+	     edge from the entry, since extra edge from the exit is
+	     already present.  We get negative frequency from the entry
+	     point.  */
+	  if ((e->count < 0
+	       && e->dest == EXIT_BLOCK_PTR)
+	      || (e->count > bb->count
+		  && e->dest != EXIT_BLOCK_PTR))
+	    {
+	      if (block_ends_with_call_p (bb))
+		e->count = e->count < 0 ? 0 : bb->count;
+	    }
+	  if (e->count < 0 || e->count > bb->count)
+	    {
+	      error ("corrupted profile info: number of executions for edge %d-%d thought to be %i",
+		     e->src->index, e->dest->index,
+		     (int)e->count);
+	      e->count = bb->count / 2;
+	    }
+	}
       if (bb->count)
-        {
-          FOR_EACH_EDGE (e, ei, bb->succs)
-            e->probability = (e->count * REG_BR_PROB_BASE + bb->count / 2) / bb->count;
-          if (bb->index >= NUM_FIXED_BLOCKS
-              && block_ends_with_condjump_p (bb)
-              && EDGE_COUNT (bb->succs) >= 2)
-            {
-              int prob;
-              edge e;
-              int index;
+	{
+	  FOR_EACH_EDGE (e, ei, bb->succs)
+	    e->probability = (e->count * REG_BR_PROB_BASE + bb->count / 2) / bb->count;
+	  if (bb->index >= NUM_FIXED_BLOCKS
+	      && block_ends_with_condjump_p (bb)
+	      && EDGE_COUNT (bb->succs) >= 2)
+	    {
+	      int prob;
+	      edge e;
+	      int index;
 
-              /* Find the branch edge.  It is possible that we do have fake
-                 edges here.  */
-              FOR_EACH_EDGE (e, ei, bb->succs)
-                if (!(e->flags & (EDGE_FAKE | EDGE_FALLTHRU)))
-                  break;
+	      /* Find the branch edge.  It is possible that we do have fake
+		 edges here.  */
+	      FOR_EACH_EDGE (e, ei, bb->succs)
+		if (!(e->flags & (EDGE_FAKE | EDGE_FALLTHRU)))
+		  break;
 
-              prob = e->probability;
-              index = prob * 20 / REG_BR_PROB_BASE;
+	      prob = e->probability;
+	      index = prob * 20 / REG_BR_PROB_BASE;
 
-              if (index == 20)
-                index = 19;
-              hist_br_prob[index]++;
+	      if (index == 20)
+		index = 19;
+	      hist_br_prob[index]++;
 
-              num_branches++;
-            }
-        }
+	      num_branches++;
+	    }
+	}
       /* As a last resort, distribute the probabilities evenly.
-         Use simple heuristics that if there are normal edges,
-         give all abnormals frequency of 0, otherwise distribute the
-         frequency over abnormals (this is the case of noreturn
-         calls).  */
+	 Use simple heuristics that if there are normal edges,
+	 give all abnormals frequency of 0, otherwise distribute the
+	 frequency over abnormals (this is the case of noreturn
+	 calls).  */
       else if (profile_status == PROFILE_ABSENT)
-        {
-          int total = 0;
+	{
+	  int total = 0;
 
-          FOR_EACH_EDGE (e, ei, bb->succs)
-            if (!(e->flags & (EDGE_COMPLEX | EDGE_FAKE)))
-              total ++;
-          if (total)
-            {
-              FOR_EACH_EDGE (e, ei, bb->succs)
-                if (!(e->flags & (EDGE_COMPLEX | EDGE_FAKE)))
-                  e->probability = REG_BR_PROB_BASE / total;
-                else
-                  e->probability = 0;
-            }
-          else
-            {
-              total += EDGE_COUNT (bb->succs);
-              FOR_EACH_EDGE (e, ei, bb->succs)
-                e->probability = REG_BR_PROB_BASE / total;
-            }
-          if (bb->index >= NUM_FIXED_BLOCKS
-              && block_ends_with_condjump_p (bb)
-              && EDGE_COUNT (bb->succs) >= 2)
-            num_branches++, num_never_executed;
-        }
+	  FOR_EACH_EDGE (e, ei, bb->succs)
+	    if (!(e->flags & (EDGE_COMPLEX | EDGE_FAKE)))
+	      total ++;
+	  if (total)
+	    {
+	      FOR_EACH_EDGE (e, ei, bb->succs)
+		if (!(e->flags & (EDGE_COMPLEX | EDGE_FAKE)))
+		  e->probability = REG_BR_PROB_BASE / total;
+		else
+		  e->probability = 0;
+	    }
+	  else
+	    {
+	      total += EDGE_COUNT (bb->succs);
+	      FOR_EACH_EDGE (e, ei, bb->succs)
+		e->probability = REG_BR_PROB_BASE / total;
+	    }
+	  if (bb->index >= NUM_FIXED_BLOCKS
+	      && block_ends_with_condjump_p (bb)
+	      && EDGE_COUNT (bb->succs) >= 2)
+	    num_branches++, num_never_executed;
+	}
     }
   counts_to_freqs ();
 
@@ -585,17 +585,17 @@ compute_branch_probabilities (void)
     {
       fprintf (dump_file, "%d branches\n", num_branches);
       fprintf (dump_file, "%d branches never executed\n",
-               num_never_executed);
+	       num_never_executed);
       if (num_branches)
-        for (i = 0; i < 10; i++)
-          fprintf (dump_file, "%d%% branches in range %d-%d%%\n",
-                   (hist_br_prob[i] + hist_br_prob[19-i]) * 100 / num_branches,
-                   5 * i, 5 * i + 5);
+	for (i = 0; i < 10; i++)
+	  fprintf (dump_file, "%d%% branches in range %d-%d%%\n",
+		   (hist_br_prob[i] + hist_br_prob[19-i]) * 100 / num_branches,
+		   5 * i, 5 * i + 5);
 
       total_num_branches += num_branches;
       total_num_never_executed += num_never_executed;
       for (i = 0; i < 20; i++)
-        total_hist_br_prob[i] += hist_br_prob[i];
+	total_hist_br_prob[i] += hist_br_prob[i];
 
       fputc ('\n', dump_file);
       fputc ('\n', dump_file);
@@ -629,16 +629,16 @@ compute_value_histograms (histogram_values values)
   for (t = 0; t < GCOV_N_VALUE_COUNTERS; t++)
     {
       if (!n_histogram_counters[t])
-        {
-          histogram_counts[t] = NULL;
-          continue;
-        }
+	{
+	  histogram_counts[t] = NULL;
+	  continue;
+	}
 
       histogram_counts[t] =
-        get_coverage_counts (COUNTER_FOR_HIST_TYPE (t),
-                             n_histogram_counters[t], NULL);
+	get_coverage_counts (COUNTER_FOR_HIST_TYPE (t),
+			     n_histogram_counters[t], NULL);
       if (histogram_counts[t])
-        any = 1;
+	any = 1;
       act_count[t] = histogram_counts[t];
     }
   if (!any)
@@ -659,7 +659,7 @@ compute_value_histograms (histogram_values values)
       ann->histograms = hist;
       hist->hvalue.counters =  XNEWVEC (gcov_type, hist->n_counters);
       for (j = 0; j < hist->n_counters; j++)
-        hist->hvalue.counters[j] = aact_count[j];
+	hist->hvalue.counters[j] = aact_count[j];
     }
 
   for (t = 0; t < GCOV_N_VALUE_COUNTERS; t++)
@@ -675,7 +675,7 @@ compute_value_histograms (histogram_values values)
    line to LINE and offset to FILE_NAME.  */
 static void
 output_location (char const *file_name, int line,
-                 gcov_position_t *offset, basic_block bb)
+		 gcov_position_t *offset, basic_block bb)
 {
   static char const *prev_file_name;
   static int prev_line;
@@ -694,25 +694,25 @@ output_location (char const *file_name, int line,
   if (name_differs || line_differs)
     {
       if (!*offset)
-        {
-          *offset = gcov_write_tag (GCOV_TAG_LINES);
-          gcov_write_unsigned (BB_TO_GCOV_INDEX (bb));
-          name_differs = line_differs=true;
-        }
+	{
+	  *offset = gcov_write_tag (GCOV_TAG_LINES);
+	  gcov_write_unsigned (BB_TO_GCOV_INDEX (bb));
+	  name_differs = line_differs=true;
+	}
 
       /* If this is a new source file, then output the
-         file's name to the .bb file.  */
+	 file's name to the .bb file.  */
       if (name_differs)
-        {
-          prev_file_name = file_name;
-          gcov_write_unsigned (0);
-          gcov_write_string (prev_file_name);
-        }
+	{
+	  prev_file_name = file_name;
+	  gcov_write_unsigned (0);
+	  gcov_write_string (prev_file_name);
+	}
       if (line_differs)
-        {
-          gcov_write_unsigned (line);
-          prev_line = line;
-        }
+	{
+	  gcov_write_unsigned (line);
+	  prev_line = line;
+	}
      }
 }
 
@@ -767,73 +767,73 @@ branch_prob (void)
          Instead we simply allow negative counts on edges from exit to the
          block past call and corresponding probabilities.  We can't go
          with the extra edges because that would result in flowgraph that
-         needs to have fake edges outside the spanning tree.  */
+	 needs to have fake edges outside the spanning tree.  */
 
       FOR_EACH_EDGE (e, ei, bb->succs)
-        {
-          block_stmt_iterator bsi;
-          tree last = NULL;
+	{
+	  block_stmt_iterator bsi;
+	  tree last = NULL;
 
-          /* It may happen that there are compiler generated statements
-             without a locus at all.  Go through the basic block from the
-             last to the first statement looking for a locus.  */
-          for (bsi = bsi_last (bb); !bsi_end_p (bsi); bsi_prev (&bsi))
-            {
-              last = bsi_stmt (bsi);
-              if (EXPR_LOCUS (last))
-                break;
-            }
+	  /* It may happen that there are compiler generated statements
+	     without a locus at all.  Go through the basic block from the
+	     last to the first statement looking for a locus.  */
+	  for (bsi = bsi_last (bb); !bsi_end_p (bsi); bsi_prev (&bsi))
+	    {
+	      last = bsi_stmt (bsi);
+	      if (EXPR_LOCUS (last))
+		break;
+	    }
 
-          /* Edge with goto locus might get wrong coverage info unless
-             it is the only edge out of BB.   
-             Don't do that when the locuses match, so 
-             if (blah) goto something;
-             is not computed twice.  */
-          if (last && EXPR_LOCUS (last)
-              && e->goto_locus
-              && !single_succ_p (bb)
+	  /* Edge with goto locus might get wrong coverage info unless
+	     it is the only edge out of BB.   
+	     Don't do that when the locuses match, so 
+	     if (blah) goto something;
+	     is not computed twice.  */
+	  if (last && EXPR_LOCUS (last)
+	      && e->goto_locus
+	      && !single_succ_p (bb)
 #ifdef USE_MAPPED_LOCATION
-              && (LOCATION_FILE (e->goto_locus)
-                  != LOCATION_FILE (EXPR_LOCATION  (last))
-                  || (LOCATION_LINE (e->goto_locus)
-                      != LOCATION_LINE (EXPR_LOCATION  (last)))))
+	      && (LOCATION_FILE (e->goto_locus)
+	          != LOCATION_FILE (EXPR_LOCATION  (last))
+		  || (LOCATION_LINE (e->goto_locus)
+		      != LOCATION_LINE (EXPR_LOCATION  (last)))))
 #else
-              && (e->goto_locus->file != EXPR_LOCUS (last)->file
-                  || (e->goto_locus->line != EXPR_LOCUS (last)->line)))
+	      && (e->goto_locus->file != EXPR_LOCUS (last)->file
+		  || (e->goto_locus->line != EXPR_LOCUS (last)->line)))
 #endif
-            {
-              basic_block new = split_edge (e);
-              single_succ_edge (new)->goto_locus = e->goto_locus;
-            }
-          if ((e->flags & (EDGE_ABNORMAL | EDGE_ABNORMAL_CALL))
-               && e->dest != EXIT_BLOCK_PTR)
-            need_exit_edge = 1;
-          if (e->dest == EXIT_BLOCK_PTR)
-            have_exit_edge = 1;
-        }
+	    {
+	      basic_block new = split_edge (e);
+	      single_succ_edge (new)->goto_locus = e->goto_locus;
+	    }
+	  if ((e->flags & (EDGE_ABNORMAL | EDGE_ABNORMAL_CALL))
+	       && e->dest != EXIT_BLOCK_PTR)
+	    need_exit_edge = 1;
+	  if (e->dest == EXIT_BLOCK_PTR)
+	    have_exit_edge = 1;
+	}
       FOR_EACH_EDGE (e, ei, bb->preds)
-        {
-          if ((e->flags & (EDGE_ABNORMAL | EDGE_ABNORMAL_CALL))
-               && e->src != ENTRY_BLOCK_PTR)
-            need_entry_edge = 1;
-          if (e->src == ENTRY_BLOCK_PTR)
-            have_entry_edge = 1;
-        }
+	{
+	  if ((e->flags & (EDGE_ABNORMAL | EDGE_ABNORMAL_CALL))
+	       && e->src != ENTRY_BLOCK_PTR)
+	    need_entry_edge = 1;
+	  if (e->src == ENTRY_BLOCK_PTR)
+	    have_entry_edge = 1;
+	}
 
       if (need_exit_edge && !have_exit_edge)
-        {
-          if (dump_file)
-            fprintf (dump_file, "Adding fake exit edge to bb %i\n",
-                     bb->index);
-          make_edge (bb, EXIT_BLOCK_PTR, EDGE_FAKE);
-        }
+	{
+	  if (dump_file)
+	    fprintf (dump_file, "Adding fake exit edge to bb %i\n",
+		     bb->index);
+	  make_edge (bb, EXIT_BLOCK_PTR, EDGE_FAKE);
+	}
       if (need_entry_edge && !have_entry_edge)
-        {
-          if (dump_file)
-            fprintf (dump_file, "Adding fake entry edge to bb %i\n",
-                     bb->index);
-          make_edge (ENTRY_BLOCK_PTR, bb, EDGE_FAKE);
-        }
+	{
+	  if (dump_file)
+	    fprintf (dump_file, "Adding fake entry edge to bb %i\n",
+		     bb->index);
+	  make_edge (ENTRY_BLOCK_PTR, bb, EDGE_FAKE);
+	}
     }
 
   el = create_edge_list ();
@@ -851,11 +851,11 @@ branch_prob (void)
 
       /* Mark edges we've replaced by fake edges above as ignored.  */
       if ((e->flags & (EDGE_ABNORMAL | EDGE_ABNORMAL_CALL))
-          && e->src != ENTRY_BLOCK_PTR && e->dest != EXIT_BLOCK_PTR)
-        {
-          EDGE_INFO (e)->ignore = 1;
-          ignored_edges++;
-        }
+	  && e->src != ENTRY_BLOCK_PTR && e->dest != EXIT_BLOCK_PTR)
+	{
+	  EDGE_INFO (e)->ignore = 1;
+	  ignored_edges++;
+	}
     }
 
   /* Create spanning tree from basic block graph, mark each edge that is
@@ -872,14 +872,14 @@ branch_prob (void)
       struct edge_info *inf = EDGE_INFO (e);
 
       if (inf->ignore || inf->on_tree)
-        /*NOP*/;
+	/*NOP*/;
       else if (e->flags & EDGE_FAKE)
-        {
-          inf->ignore = 1;
-          ignored_edges++;
-        }
+	{
+	  inf->ignore = 1;
+	  ignored_edges++;
+	}
       else
-        num_instrumented++;
+	num_instrumented++;
     }
 
   total_num_blocks += n_basic_blocks;
@@ -904,7 +904,7 @@ branch_prob (void)
 
       offset = gcov_write_tag (GCOV_TAG_BLOCKS);
       for (i = 0; i != (unsigned) (n_basic_blocks); i++)
-        gcov_write_unsigned (0);
+	gcov_write_unsigned (0);
       gcov_write_length (offset);
     }
 
@@ -920,39 +920,39 @@ branch_prob (void)
       gcov_position_t offset;
 
       FOR_BB_BETWEEN (bb, ENTRY_BLOCK_PTR, EXIT_BLOCK_PTR, next_bb)
-        {
-          edge e;
-          edge_iterator ei;
+	{
+	  edge e;
+	  edge_iterator ei;
 
-          offset = gcov_write_tag (GCOV_TAG_ARCS);
-          gcov_write_unsigned (BB_TO_GCOV_INDEX (bb));
+	  offset = gcov_write_tag (GCOV_TAG_ARCS);
+	  gcov_write_unsigned (BB_TO_GCOV_INDEX (bb));
 
-          FOR_EACH_EDGE (e, ei, bb->succs)
-            {
-              struct edge_info *i = EDGE_INFO (e);
-              if (!i->ignore)
-                {
-                  unsigned flag_bits = 0;
+	  FOR_EACH_EDGE (e, ei, bb->succs)
+	    {
+	      struct edge_info *i = EDGE_INFO (e);
+	      if (!i->ignore)
+		{
+		  unsigned flag_bits = 0;
 
-                  if (i->on_tree)
-                    flag_bits |= GCOV_ARC_ON_TREE;
-                  if (e->flags & EDGE_FAKE)
-                    flag_bits |= GCOV_ARC_FAKE;
-                  if (e->flags & EDGE_FALLTHRU)
-                    flag_bits |= GCOV_ARC_FALLTHROUGH;
-                  /* On trees we don't have fallthru flags, but we can
-                     recompute them from CFG shape.  */
-                  if (e->flags & (EDGE_TRUE_VALUE | EDGE_FALSE_VALUE)
-                      && e->src->next_bb == e->dest)
-                    flag_bits |= GCOV_ARC_FALLTHROUGH;
+		  if (i->on_tree)
+		    flag_bits |= GCOV_ARC_ON_TREE;
+		  if (e->flags & EDGE_FAKE)
+		    flag_bits |= GCOV_ARC_FAKE;
+		  if (e->flags & EDGE_FALLTHRU)
+		    flag_bits |= GCOV_ARC_FALLTHROUGH;
+		  /* On trees we don't have fallthru flags, but we can
+		     recompute them from CFG shape.  */
+		  if (e->flags & (EDGE_TRUE_VALUE | EDGE_FALSE_VALUE)
+		      && e->src->next_bb == e->dest)
+		    flag_bits |= GCOV_ARC_FALLTHROUGH;
 
-                  gcov_write_unsigned (BB_TO_GCOV_INDEX (e->dest));
-                  gcov_write_unsigned (flag_bits);
-                }
-            }
+		  gcov_write_unsigned (BB_TO_GCOV_INDEX (e->dest));
+		  gcov_write_unsigned (flag_bits);
+	        }
+	    }
 
-          gcov_write_length (offset);
-        }
+	  gcov_write_length (offset);
+	}
     }
 
   /* Line numbers.  */
@@ -964,51 +964,51 @@ branch_prob (void)
       output_location (NULL, 0, NULL, NULL);
 
       FOR_EACH_BB (bb)
-        {
-          block_stmt_iterator bsi;
+	{
+	  block_stmt_iterator bsi;
 
-          offset = 0;
+	  offset = 0;
 
-          if (bb == ENTRY_BLOCK_PTR->next_bb)
-            {
-              expanded_location curr_location = 
-                expand_location (DECL_SOURCE_LOCATION (current_function_decl));
-              output_location (curr_location.file, curr_location.line,
-                               &offset, bb);
-            }
+	  if (bb == ENTRY_BLOCK_PTR->next_bb)
+	    {
+	      expanded_location curr_location = 
+		expand_location (DECL_SOURCE_LOCATION (current_function_decl));
+	      output_location (curr_location.file, curr_location.line,
+			       &offset, bb);
+	    }
 
-          for (bsi = bsi_start (bb); !bsi_end_p (bsi); bsi_next (&bsi))
-            {
-              tree stmt = bsi_stmt (bsi);
-              if (EXPR_HAS_LOCATION (stmt))
-                output_location (EXPR_FILENAME (stmt), EXPR_LINENO (stmt),
-                                 &offset, bb);
-            }
+	  for (bsi = bsi_start (bb); !bsi_end_p (bsi); bsi_next (&bsi))
+	    {
+	      tree stmt = bsi_stmt (bsi);
+	      if (EXPR_HAS_LOCATION (stmt))
+		output_location (EXPR_FILENAME (stmt), EXPR_LINENO (stmt),
+				 &offset, bb);
+	    }
 
-          /* Notice GOTO expressions we eliminated while constructing the
-             CFG.  */
-          if (single_succ_p (bb) && single_succ_edge (bb)->goto_locus)
-            {
-              /* ??? source_locus type is marked deprecated in input.h.  */
-              source_locus curr_location = single_succ_edge (bb)->goto_locus;
-              /* ??? The FILE/LINE API is inconsistent for these cases.  */
+	  /* Notice GOTO expressions we eliminated while constructing the
+	     CFG.  */
+	  if (single_succ_p (bb) && single_succ_edge (bb)->goto_locus)
+	    {
+	      /* ??? source_locus type is marked deprecated in input.h.  */
+	      source_locus curr_location = single_succ_edge (bb)->goto_locus;
+	      /* ??? The FILE/LINE API is inconsistent for these cases.  */
 #ifdef USE_MAPPED_LOCATION 
-              output_location (LOCATION_FILE (curr_location),
-                               LOCATION_LINE (curr_location), &offset, bb);
+	      output_location (LOCATION_FILE (curr_location),
+			       LOCATION_LINE (curr_location), &offset, bb);
 #else
-              output_location (curr_location->file, curr_location->line,
-                               &offset, bb);
+	      output_location (curr_location->file, curr_location->line,
+			       &offset, bb);
 #endif
-            }
+	    }
 
-          if (offset)
-            {
-              /* A file of NULL indicates the end of run.  */
-              gcov_write_unsigned (0);
-              gcov_write_string (NULL);
-              gcov_write_length (offset);
-            }
-        }
+	  if (offset)
+	    {
+	      /* A file of NULL indicates the end of run.  */
+	      gcov_write_unsigned (0);
+	      gcov_write_string (NULL);
+	      gcov_write_length (offset);
+	    }
+	}
     }
 
   ENTRY_BLOCK_PTR->index = ENTRY_BLOCK;
@@ -1022,7 +1022,7 @@ branch_prob (void)
     {
       compute_branch_probabilities ();
       if (flag_profile_values)
-        compute_value_histograms (values);
+	compute_value_histograms (values);
     }
 
   remove_fake_edges ();
@@ -1040,7 +1040,7 @@ branch_prob (void)
       gcc_assert (n_instrumented == num_instrumented);
 
       if (flag_profile_values)
-        instrument_values (values);
+	instrument_values (values);
 
       /* Commit changes done by instrumentation.  */
       bsi_commit_edge_inserts ();
@@ -1117,16 +1117,16 @@ find_spanning_tree (struct edge_list *el)
     {
       edge e = INDEX_EDGE (el, i);
       if (((e->flags & (EDGE_ABNORMAL | EDGE_ABNORMAL_CALL | EDGE_FAKE))
-           || e->dest == EXIT_BLOCK_PTR)
-          && !EDGE_INFO (e)->ignore
-          && (find_group (e->src) != find_group (e->dest)))
-        {
-          if (dump_file)
-            fprintf (dump_file, "Abnormal edge %d to %d put to tree\n",
-                     e->src->index, e->dest->index);
-          EDGE_INFO (e)->on_tree = 1;
-          union_groups (e->src, e->dest);
-        }
+	   || e->dest == EXIT_BLOCK_PTR)
+	  && !EDGE_INFO (e)->ignore
+	  && (find_group (e->src) != find_group (e->dest)))
+	{
+	  if (dump_file)
+	    fprintf (dump_file, "Abnormal edge %d to %d put to tree\n",
+		     e->src->index, e->dest->index);
+	  EDGE_INFO (e)->on_tree = 1;
+	  union_groups (e->src, e->dest);
+	}
     }
 
   /* Now insert all critical edges to the tree unless they form a cycle.  */
@@ -1134,14 +1134,14 @@ find_spanning_tree (struct edge_list *el)
     {
       edge e = INDEX_EDGE (el, i);
       if (EDGE_CRITICAL_P (e) && !EDGE_INFO (e)->ignore
-          && find_group (e->src) != find_group (e->dest))
-        {
-          if (dump_file)
-            fprintf (dump_file, "Critical edge %d to %d put to tree\n",
-                     e->src->index, e->dest->index);
-          EDGE_INFO (e)->on_tree = 1;
-          union_groups (e->src, e->dest);
-        }
+	  && find_group (e->src) != find_group (e->dest))
+	{
+	  if (dump_file)
+	    fprintf (dump_file, "Critical edge %d to %d put to tree\n",
+		     e->src->index, e->dest->index);
+	  EDGE_INFO (e)->on_tree = 1;
+	  union_groups (e->src, e->dest);
+	}
     }
 
   /* And now the rest.  */
@@ -1149,14 +1149,14 @@ find_spanning_tree (struct edge_list *el)
     {
       edge e = INDEX_EDGE (el, i);
       if (!EDGE_INFO (e)->ignore
-          && find_group (e->src) != find_group (e->dest))
-        {
-          if (dump_file)
-            fprintf (dump_file, "Normal edge %d to %d put to tree\n",
-                     e->src->index, e->dest->index);
-          EDGE_INFO (e)->on_tree = 1;
-          union_groups (e->src, e->dest);
-        }
+	  && find_group (e->src) != find_group (e->dest))
+	{
+	  if (dump_file)
+	    fprintf (dump_file, "Normal edge %d to %d put to tree\n",
+		     e->src->index, e->dest->index);
+	  EDGE_INFO (e)->on_tree = 1;
+	  union_groups (e->src, e->dest);
+	}
     }
 
   FOR_BB_BETWEEN (bb, ENTRY_BLOCK_PTR, NULL, next_bb)
@@ -1193,33 +1193,33 @@ end_branch_prob (void)
     {
       fprintf (dump_file, "\n");
       fprintf (dump_file, "Total number of blocks: %d\n",
-               total_num_blocks);
+	       total_num_blocks);
       fprintf (dump_file, "Total number of edges: %d\n", total_num_edges);
       fprintf (dump_file, "Total number of ignored edges: %d\n",
-               total_num_edges_ignored);
+	       total_num_edges_ignored);
       fprintf (dump_file, "Total number of instrumented edges: %d\n",
-               total_num_edges_instrumented);
+	       total_num_edges_instrumented);
       fprintf (dump_file, "Total number of blocks created: %d\n",
-               total_num_blocks_created);
+	       total_num_blocks_created);
       fprintf (dump_file, "Total number of graph solution passes: %d\n",
-               total_num_passes);
+	       total_num_passes);
       if (total_num_times_called != 0)
-        fprintf (dump_file, "Average number of graph solution passes: %d\n",
-                 (total_num_passes + (total_num_times_called  >> 1))
-                 / total_num_times_called);
+	fprintf (dump_file, "Average number of graph solution passes: %d\n",
+		 (total_num_passes + (total_num_times_called  >> 1))
+		 / total_num_times_called);
       fprintf (dump_file, "Total number of branches: %d\n",
-               total_num_branches);
+	       total_num_branches);
       fprintf (dump_file, "Total number of branches never executed: %d\n",
-               total_num_never_executed);
+	       total_num_never_executed);
       if (total_num_branches)
-        {
-          int i;
+	{
+	  int i;
 
-          for (i = 0; i < 10; i++)
-            fprintf (dump_file, "%d%% branches in range %d-%d%%\n",
-                     (total_hist_br_prob[i] + total_hist_br_prob[19-i]) * 100
-                     / total_num_branches, 5*i, 5*i+5);
-        }
+	  for (i = 0; i < 10; i++)
+	    fprintf (dump_file, "%d%% branches in range %d-%d%%\n",
+		     (total_hist_br_prob[i] + total_hist_br_prob[19-i]) * 100
+		     / total_num_branches, 5*i, 5*i+5);
+	}
     }
 }
 

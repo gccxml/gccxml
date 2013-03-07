@@ -44,11 +44,11 @@ add_params (const param_info params[], size_t n)
 {
   /* Allocate enough space for the new parameters.  */
   compiler_params = xrealloc (compiler_params,
-                              (num_compiler_params + n) * sizeof (param_info));
+			      (num_compiler_params + n) * sizeof (param_info));
   /* Copy them into the table.  */
   memcpy (compiler_params + num_compiler_params,
-          params,
-          n * sizeof (param_info));
+	  params,
+	  n * sizeof (param_info));
   /* Keep track of how many parameters we have.  */
   num_compiler_params += n;
 }
@@ -67,18 +67,18 @@ set_param_value (const char *name, int value)
   for (i = 0; i < num_compiler_params; ++i)
     if (strcmp (compiler_params[i].option, name) == 0)
       {
-        if (value < compiler_params[i].min_value)
-          error ("minimum value of parameter %qs is %u",
-                 compiler_params[i].option,
-                 compiler_params[i].min_value);
-        else if (compiler_params[i].max_value > compiler_params[i].min_value
-                 && value > compiler_params[i].max_value)
-          error ("maximum value of parameter %qs is %u",
-                 compiler_params[i].option,
-                 compiler_params[i].max_value);
-        else
-          compiler_params[i].value = value;
-        return;
+	if (value < compiler_params[i].min_value)
+	  error ("minimum value of parameter %qs is %u",
+		 compiler_params[i].option,
+		 compiler_params[i].min_value);
+	else if (compiler_params[i].max_value > compiler_params[i].min_value
+		 && value > compiler_params[i].max_value)
+	  error ("maximum value of parameter %qs is %u",
+		 compiler_params[i].option,
+		 compiler_params[i].max_value);
+	else
+	  compiler_params[i].value = value;
+	return;
       }
 
   /* If we didn't find this parameter, issue an error message.  */

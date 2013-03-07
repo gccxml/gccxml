@@ -86,7 +86,7 @@ vn_compute (tree expr, hashval_t val)
      numbering expressions on the RHS of assignments.  */
   gcc_assert (expr);
   gcc_assert (!expr->common.ann
-              || expr->common.ann->common.type != STMT_ANN);
+	      || expr->common.ann->common.type != STMT_ANN);
 
   val = iterative_hash_expr (expr, val);
   return val;
@@ -111,20 +111,20 @@ expressions_equal_p (tree e1, tree e2)
       tree lop1 = e1;
       tree lop2 = e2;
       for (lop1 = e1, lop2 = e2;
-           lop1 || lop2;
-           lop1 = TREE_CHAIN (lop1), lop2 = TREE_CHAIN (lop2))
-        {
-          if (!lop1 || !lop2)
-            return false;
-          if (!expressions_equal_p (TREE_VALUE (lop1), TREE_VALUE (lop2)))
-            return false;
-        }
+	   lop1 || lop2;
+	   lop1 = TREE_CHAIN (lop1), lop2 = TREE_CHAIN (lop2))
+	{
+	  if (!lop1 || !lop2)
+	    return false;
+	  if (!expressions_equal_p (TREE_VALUE (lop1), TREE_VALUE (lop2)))
+	    return false;
+	}
       return true;
 
     }
   else if (TREE_CODE (e1) == TREE_CODE (e2) 
-           && (te1 == te2 || lang_hooks.types_compatible_p (te1, te2))
-           && operand_equal_p (e1, e2, OEP_PURE_SAME))
+	   && (te1 == te2 || lang_hooks.types_compatible_p (te1, te2))
+	   && operand_equal_p (e1, e2, OEP_PURE_SAME))
     return true;
 
   return false;
@@ -167,7 +167,7 @@ val_expr_pair_expr_eq (const void *p1, const void *p2)
   for (i = 0; VEC_iterate (tree, ve1->vuses, i, vuse1); i++)
     {
       if (VEC_index (tree, ve2->vuses, i) != vuse1)
-        return false;
+	return false;
     }
   return true;
 }
@@ -181,7 +181,7 @@ set_value_handle (tree e, tree v)
   if (TREE_CODE (e) == SSA_NAME)
     SSA_NAME_VALUE (e) = v;
   else if (EXPR_P (e) || DECL_P (e) || TREE_CODE (e) == TREE_LIST
-           || TREE_CODE (e) == CONSTRUCTOR)
+	   || TREE_CODE (e) == CONSTRUCTOR)
     get_tree_common_ann (e)->value_handle = v;
   else
     /* Do nothing.  Constants are their own value handles.  */
@@ -260,7 +260,7 @@ vn_add_with_vuses (tree expr, tree val, VEC (tree, gc) *vuses)
   new_pair->vuses = vuses;
   new_pair->hashcode = vn_compute (expr, 0);
   slot = htab_find_slot_with_hash (value_table, new_pair, new_pair->hashcode,
-                                   INSERT);
+				   INSERT);
   if (*slot)
     free (*slot);
   *slot = (void *) new_pair;
@@ -341,13 +341,13 @@ print_creation_to_file (tree v, tree expr, VEC (tree, gc) *vuses)
       
       fprintf (dump_file, " vuses: (");
       for (i = 0; VEC_iterate (tree, vuses, i, vuse); i++)
-        {
-          print_generic_expr (dump_file, vuse, dump_flags);
-          if (VEC_length (tree, vuses) - 1 != i)
-            fprintf (dump_file, ",");
-        }
+	{
+	  print_generic_expr (dump_file, vuse, dump_flags);
+	  if (VEC_length (tree, vuses) - 1 != i)
+	    fprintf (dump_file, ",");
+	}
       fprintf (dump_file, ")");
-    }                   
+    }		   
   fprintf (dump_file, "\n");
 }
 
@@ -369,7 +369,7 @@ vn_lookup_or_add (tree expr, tree stmt)
       sort_vuses (vuses);
 
       if (dump_file && (dump_flags & TDF_DETAILS))
-        print_creation_to_file (v, expr, vuses);
+	print_creation_to_file (v, expr, vuses);
 
       VALUE_HANDLE_VUSES (v) = vuses;
       vn_add_with_vuses (expr, v, vuses);
@@ -388,9 +388,9 @@ sort_vuses (VEC (tree,gc) *vuses)
 {
   if (VEC_length (tree, vuses) > 1)
     qsort (VEC_address (tree, vuses),
-           VEC_length (tree, vuses),
-           sizeof (tree),
-           vuses_compare);
+	   VEC_length (tree, vuses),
+	   sizeof (tree),
+	   vuses_compare);
 }
 
 /* Like vn_lookup, but creates a new value for expression EXPR, if
@@ -408,7 +408,7 @@ vn_lookup_or_add_with_vuses (tree expr, VEC (tree, gc) *vuses)
       sort_vuses (vuses);
 
       if (dump_file && (dump_flags & TDF_DETAILS))
-        print_creation_to_file (v, expr, vuses);
+	print_creation_to_file (v, expr, vuses);
 
       VALUE_HANDLE_VUSES (v) = vuses;
       vn_add_with_vuses (expr, v, vuses);
@@ -436,7 +436,7 @@ get_value_handle (tree expr)
   if (TREE_CODE (expr) == SSA_NAME)
     return SSA_NAME_VALUE (expr);
   else if (EXPR_P (expr) || DECL_P (expr) || TREE_CODE (expr) == TREE_LIST
-           || TREE_CODE (expr) == CONSTRUCTOR)
+	   || TREE_CODE (expr) == CONSTRUCTOR)
     {
       tree_ann_common_t ann = tree_common_ann (expr);
       return ((ann) ? ann->value_handle : NULL_TREE);
@@ -452,7 +452,7 @@ void
 vn_init (void)
 {
   value_table = htab_create (511, val_expr_pair_hash,
-                             val_expr_pair_expr_eq, free);
+			     val_expr_pair_expr_eq, free);
   shared_lookup_vuses = NULL;
 }
 

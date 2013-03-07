@@ -80,19 +80,19 @@ __gthr_win32_once (__gthread_once_t *once, void (*func) (void))
     {
       if (InterlockedIncrement (&(once->started)) == 0)
         {
-          (*func) ();
-          once->done = TRUE;
-        }
+	  (*func) ();
+	  once->done = TRUE;
+	}
       else
-        {
-          /* Another thread is currently executing the code, so wait for it 
-             to finish; yield the CPU in the meantime.  If performance 
-             does become an issue, the solution is to use an Event that 
-             we wait on here (and set above), but that implies a place to 
-             create the event before this routine is called.  */ 
-          while (! once->done)
-            Sleep (0);
-        }
+	{
+	  /* Another thread is currently executing the code, so wait for it 
+	     to finish; yield the CPU in the meantime.  If performance 
+	     does become an issue, the solution is to use an Event that 
+	     we wait on here (and set above), but that implies a place to 
+	     create the event before this routine is called.  */ 
+	  while (! once->done)
+	    Sleep (0);
+	}
     }
   return 0;
 }
@@ -247,7 +247,7 @@ __gthr_win32_recursive_mutex_unlock (__gthread_recursive_mutex_t *mutex)
       mutex->owner = 0;
 
       if (InterlockedDecrement (&mutex->counter) >= 0)
-        return ReleaseSemaphore (mutex->sema, 1, NULL) ? 0 : 1;
+	return ReleaseSemaphore (mutex->sema, 1, NULL) ? 0 : 1;
     }
 
   return 0;

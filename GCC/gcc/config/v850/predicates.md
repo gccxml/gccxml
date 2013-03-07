@@ -111,7 +111,7 @@
 
   if (GET_CODE (op) == SYMBOL_REF)
     return (SYMBOL_REF_FLAGS (op)
-            & (SYMBOL_FLAG_ZDA | SYMBOL_FLAG_TDA | SYMBOL_FLAG_SDA)) != 0;
+	    & (SYMBOL_FLAG_ZDA | SYMBOL_FLAG_TDA | SYMBOL_FLAG_SDA)) != 0;
 
   return FALSE;
 })
@@ -167,35 +167,35 @@
       vector_element = XVECEXP (op, 0, i);
 
       if (GET_CODE (vector_element) != SET)
-        return 0;
+	return 0;
 
       dest = SET_DEST (vector_element);
       src = SET_SRC (vector_element);
 
       if (GET_CODE (dest) != MEM
-          || GET_MODE (dest) != SImode
-          || GET_CODE (src) != REG
-          || GET_MODE (src) != SImode
-          || ! register_is_ok_for_epilogue (src, SImode))
-        return 0;
+	  || GET_MODE (dest) != SImode
+	  || GET_CODE (src) != REG
+	  || GET_MODE (src) != SImode
+	  || ! register_is_ok_for_epilogue (src, SImode))
+	return 0;
 
       plus = XEXP (dest, 0);
 
       if ( GET_CODE (plus) != PLUS
-          || GET_CODE (XEXP (plus, 0)) != REG
-          || GET_MODE (XEXP (plus, 0)) != SImode
-          || REGNO (XEXP (plus, 0)) != STACK_POINTER_REGNUM
-          || GET_CODE (XEXP (plus, 1)) != CONST_INT)
-        return 0;
+	  || GET_CODE (XEXP (plus, 0)) != REG
+	  || GET_MODE (XEXP (plus, 0)) != SImode
+	  || REGNO (XEXP (plus, 0)) != STACK_POINTER_REGNUM
+	  || GET_CODE (XEXP (plus, 1)) != CONST_INT)
+	return 0;
 
       /* If the register is being pushed somewhere other than the stack
-         space just acquired by the first operand then abandon this quest.
-         Note: the test is <= because both values are negative.         */
+	 space just acquired by the first operand then abandon this quest.
+	 Note: the test is <= because both values are negative.	 */
       if (INTVAL (XEXP (plus, 1))
-          <= INTVAL (XEXP (SET_SRC (XVECEXP (op, 0, 0)), 1)))
-        {
-          return 0;
-        }
+	  <= INTVAL (XEXP (SET_SRC (XVECEXP (op, 0, 0)), 1)))
+	{
+	  return 0;
+	}
     }
 
   /* Make sure that the last entries in the vector are clobbers.  */
@@ -204,10 +204,10 @@
       vector_element = XVECEXP (op, 0, i);
 
       if (GET_CODE (vector_element) != CLOBBER
-          || GET_CODE (XEXP (vector_element, 0)) != REG
-          || !(REGNO (XEXP (vector_element, 0)) == 10
-               || (TARGET_LONG_CALLS ? (REGNO (XEXP (vector_element, 0)) == 11) : 0 )))
-        return 0;
+	  || GET_CODE (XEXP (vector_element, 0)) != REG
+	  || !(REGNO (XEXP (vector_element, 0)) == 10
+	       || (TARGET_LONG_CALLS ? (REGNO (XEXP (vector_element, 0)) == 11) : 0 )))
+	return 0;
     }
 
   return 1;
@@ -237,7 +237,7 @@
      pattern match:
 
         (set (match_operand:SI n "register_is_ok_for_epilogue" "r")
-          (mem:SI (plus:SI (reg:SI 3) (match_operand:SI n "immediate_operand" "i"))))
+	  (mem:SI (plus:SI (reg:SI 3) (match_operand:SI n "immediate_operand" "i"))))
      */
 
   for (i = 3; i < count; i++)
@@ -248,26 +248,26 @@
       rtx plus;
 
       if (GET_CODE (vector_element) != SET)
-        return 0;
+	return 0;
 
       dest = SET_DEST (vector_element);
       src = SET_SRC (vector_element);
 
       if (GET_CODE (dest) != REG
-          || GET_MODE (dest) != SImode
-          || ! register_is_ok_for_epilogue (dest, SImode)
-          || GET_CODE (src) != MEM
-          || GET_MODE (src) != SImode)
-        return 0;
+	  || GET_MODE (dest) != SImode
+	  || ! register_is_ok_for_epilogue (dest, SImode)
+	  || GET_CODE (src) != MEM
+	  || GET_MODE (src) != SImode)
+	return 0;
 
       plus = XEXP (src, 0);
 
       if (GET_CODE (plus) != PLUS
-          || GET_CODE (XEXP (plus, 0)) != REG
-          || GET_MODE (XEXP (plus, 0)) != SImode
-          || REGNO (XEXP (plus, 0)) != STACK_POINTER_REGNUM
-          || GET_CODE (XEXP (plus, 1)) != CONST_INT)
-        return 0;
+	  || GET_CODE (XEXP (plus, 0)) != REG
+	  || GET_MODE (XEXP (plus, 0)) != SImode
+	  || REGNO (XEXP (plus, 0)) != STACK_POINTER_REGNUM
+	  || GET_CODE (XEXP (plus, 1)) != CONST_INT)
+	return 0;
     }
 
   return 1;
@@ -308,8 +308,8 @@
      pattern match:
 
         (set (match_operand:SI n "register_is_ok_for_epilogue" "r")
-          (mem:SI (plus:SI (reg:SI 3)
-            (match_operand:SI n "immediate_operand" "i"))))
+	  (mem:SI (plus:SI (reg:SI 3)
+	    (match_operand:SI n "immediate_operand" "i"))))
      */
 
   for (i = 3; i < count; i++)
@@ -320,26 +320,26 @@
       rtx plus;
 
       if (GET_CODE (vector_element) != SET)
-        return 0;
+	return 0;
 
       dest = SET_DEST (vector_element);
       src  = SET_SRC (vector_element);
 
       if (   GET_CODE (dest) != REG
-          || GET_MODE (dest) != SImode
-          || ! register_is_ok_for_epilogue (dest, SImode)
-          || GET_CODE (src) != MEM
-          || GET_MODE (src) != SImode)
-        return 0;
+	  || GET_MODE (dest) != SImode
+	  || ! register_is_ok_for_epilogue (dest, SImode)
+	  || GET_CODE (src) != MEM
+	  || GET_MODE (src) != SImode)
+	return 0;
 
       plus = XEXP (src, 0);
 
       if (   GET_CODE (plus) != PLUS
-          || GET_CODE (XEXP (plus, 0)) != REG
-          || GET_MODE (XEXP (plus, 0)) != SImode
-          || REGNO    (XEXP (plus, 0)) != STACK_POINTER_REGNUM
-          || GET_CODE (XEXP (plus, 1)) != CONST_INT)
-        return 0;
+	  || GET_CODE (XEXP (plus, 0)) != REG
+	  || GET_MODE (XEXP (plus, 0)) != SImode
+	  || REGNO    (XEXP (plus, 0)) != STACK_POINTER_REGNUM
+	  || GET_CODE (XEXP (plus, 1)) != CONST_INT)
+	return 0;
     }
 
   return 1;
@@ -381,34 +381,34 @@
       rtx plus;
 
       if (GET_CODE (vector_element) != SET)
-        return 0;
+	return 0;
 
       dest = SET_DEST (vector_element);
       src  = SET_SRC (vector_element);
 
       if (   GET_CODE (dest) != MEM
-          || GET_MODE (dest) != SImode
-          || GET_CODE (src) != REG
-          || GET_MODE (src) != SImode
-          || ! register_is_ok_for_epilogue (src, SImode)
-             )
-        return 0;
+	  || GET_MODE (dest) != SImode
+	  || GET_CODE (src) != REG
+	  || GET_MODE (src) != SImode
+	  || ! register_is_ok_for_epilogue (src, SImode)
+	     )
+	return 0;
 
       plus = XEXP (dest, 0);
 
       if (   GET_CODE (plus) != PLUS
-          || GET_CODE (XEXP (plus, 0)) != REG
-          || GET_MODE (XEXP (plus, 0)) != SImode
-          || REGNO    (XEXP (plus, 0)) != STACK_POINTER_REGNUM
-          || GET_CODE (XEXP (plus, 1)) != CONST_INT)
-        return 0;
+	  || GET_CODE (XEXP (plus, 0)) != REG
+	  || GET_MODE (XEXP (plus, 0)) != SImode
+	  || REGNO    (XEXP (plus, 0)) != STACK_POINTER_REGNUM
+	  || GET_CODE (XEXP (plus, 1)) != CONST_INT)
+	return 0;
 
       /* If the register is being pushed somewhere other than the stack
-         space just acquired by the first operand then abandon this quest.
-         Note: the test is <= because both values are negative.         */
+	 space just acquired by the first operand then abandon this quest.
+	 Note: the test is <= because both values are negative.	 */
       if (INTVAL (XEXP (plus, 1))
-          <= INTVAL (XEXP (SET_SRC (XVECEXP (op, 0, 0)), 1)))
-        return 0;
+	  <= INTVAL (XEXP (SET_SRC (XVECEXP (op, 0, 0)), 1)))
+	return 0;
     }
 
   return 1;

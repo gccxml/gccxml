@@ -56,7 +56,7 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
       %{static:-static}}}"
 
 #undef LOCAL_LABEL_PREFIX
-#define LOCAL_LABEL_PREFIX        "."
+#define LOCAL_LABEL_PREFIX	"."
 
 /* Always enable "-fpic" for Xtensa Linux.  */
 #define XTENSA_ALWAYS_PIC 1

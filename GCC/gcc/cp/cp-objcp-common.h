@@ -25,7 +25,7 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
 /* In cp/cp-lang.c and objcp/objcp-lang.c.  */
 
 extern tree objcp_tsubst_copy_and_build (tree, tree, tsubst_flags_t,
-                                         tree, bool);
+					 tree, bool);
 
 /* Lang hooks that are shared between C++ and ObjC++ are defined here.  Hooks
    specific to C++ or ObjC++ go in cp/cp-lang.c and objcp/objcp-lang.c,
@@ -80,7 +80,7 @@ extern tree objcp_tsubst_copy_and_build (tree, tree, tsubst_flags_t,
 #undef LANG_HOOKS_TYPES_COMPATIBLE_P
 #define LANG_HOOKS_TYPES_COMPATIBLE_P cxx_types_compatible_p
 #undef LANG_HOOKS_PRINT_ERROR_FUNCTION
-#define LANG_HOOKS_PRINT_ERROR_FUNCTION        cxx_print_error_function
+#define LANG_HOOKS_PRINT_ERROR_FUNCTION	cxx_print_error_function
 #undef LANG_HOOKS_WARN_UNUSED_GLOBAL_DECL
 #define LANG_HOOKS_WARN_UNUSED_GLOBAL_DECL cxx_warn_unused_global_decl
 #undef LANG_HOOKS_WRITE_GLOBALS

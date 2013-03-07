@@ -75,8 +75,8 @@ You should never use a 'l' suffix on integer constants ('L' is fine),
 since it can easily be confused with the number '1'.
 
 
-                        Common Coding Pitfalls
-                        ======================
+			Common Coding Pitfalls
+			======================
 
 errno
 -----

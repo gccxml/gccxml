@@ -100,30 +100,30 @@ __canonicalize_funcptr_for_compare (fptr_t fptr)
       unsigned int *iptr;
 
       /* Find the first "bl" branch in the offset search list.  This is a
-         call to fixup or a magic branch to fixup at the beginning of the
-         trampoline template.  The fixup function does the actual runtime
-         resolution of function descriptors.  We only look for "bl" branches
-         with a 17-bit pc-relative displacement.  */
+	 call to fixup or a magic branch to fixup at the beginning of the
+	 trampoline template.  The fixup function does the actual runtime
+	 resolution of function descriptors.  We only look for "bl" branches
+	 with a 17-bit pc-relative displacement.  */
       for (i = 0; i < NOFFSETS; i++)
-        {
-          iptr = (unsigned int *) (got[-2] + fixup_branch_offset[i]);
-          if ((*iptr & 0xfc00e000) == 0xe8000000)
-            break;
-        }
+	{
+	  iptr = (unsigned int *) (got[-2] + fixup_branch_offset[i]);
+	  if ((*iptr & 0xfc00e000) == 0xe8000000)
+	    break;
+	}
 
       /* This should not happen... */
       if (i == NOFFSETS)
-        return ~0;
+	return ~0;
 
       /* Extract the 17-bit displacement from the instruction.  */
       iptr += SIGN_EXTEND (GET_FIELD (*iptr, 19, 28) |
-                           GET_FIELD (*iptr, 29, 29) << 10 |
-                           GET_FIELD (*iptr, 11, 15) << 11 |
-                           GET_FIELD (*iptr, 31, 31) << 16, 17);
+			   GET_FIELD (*iptr, 29, 29) << 10 |
+			   GET_FIELD (*iptr, 11, 15) << 11 |
+			   GET_FIELD (*iptr, 31, 31) << 16, 17);
 
       /* Build a plabel for an indirect call to fixup.  */
       fixup_plabel[0] = (unsigned int) iptr + 8;  /* address of fixup */
-      fixup_plabel[1] = got[-1];                  /* ltp for fixup */
+      fixup_plabel[1] = got[-1];		  /* ltp for fixup */
       fixup = (fixup_t) ((int) fixup_plabel | 3);
     }
 

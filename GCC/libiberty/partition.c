@@ -46,7 +46,7 @@ partition_new (int num_elements)
   
   partition part = (partition) 
     xmalloc (sizeof (struct partition_def) + 
-             (num_elements - 1) * sizeof (struct partition_elem));
+	     (num_elements - 1) * sizeof (struct partition_elem));
   part->num_elements = num_elements;
   for (e = 0; e < num_elements; ++e) 
     {
@@ -157,23 +157,23 @@ partition_print (partition part, FILE *fp)
     /* If we haven't printed this element, print its entire class.  */
     if (! done[e]) 
       {
-        int c = e;
-        int count = elements[elements[e].class_element].class_count;
-        int i;
+	int c = e;
+	int count = elements[elements[e].class_element].class_count;
+	int i;
 
       /* Collect the elements in this class.  */
-        for (i = 0; i < count; ++i) {
-          class_elements[i] = c;
-          done[c] = 1;
-          c = elements[c].next - elements;
-        }
-        /* Sort them.  */
-        qsort ((void *) class_elements, count, sizeof (int), elem_compare);
-        /* Print them.  */
-        fputc ('(', fp);
-        for (i = 0; i < count; ++i) 
-          fprintf (fp, i == 0 ? "%d" : " %d", class_elements[i]);
-        fputc (')', fp);
+	for (i = 0; i < count; ++i) {
+	  class_elements[i] = c;
+	  done[c] = 1;
+	  c = elements[c].next - elements;
+	}
+	/* Sort them.  */
+	qsort ((void *) class_elements, count, sizeof (int), elem_compare);
+	/* Print them.  */
+	fputc ('(', fp);
+	for (i = 0; i < count; ++i) 
+	  fprintf (fp, i == 0 ? "%d" : " %d", class_elements[i]);
+	fputc (')', fp);
       }
   fputc (']', fp);
 

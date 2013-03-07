@@ -53,35 +53,35 @@
 extern int mn10300_protect_label;
 
 #undef  PRINT_OPERAND
-#define PRINT_OPERAND(FILE, X, CODE)                \
-  do                                                \
-    {                                                \
-      mn10300_protect_label = 1;                \
-      print_operand ((FILE), (X), (CODE));        \
-      mn10300_protect_label = 0;                \
-    }                                                \
+#define PRINT_OPERAND(FILE, X, CODE)		\
+  do						\
+    {						\
+      mn10300_protect_label = 1;		\
+      print_operand ((FILE), (X), (CODE));	\
+      mn10300_protect_label = 0;		\
+    }						\
   while (0)
 
 #undef  PRINT_OPERAND_ADDRESS
-#define PRINT_OPERAND_ADDRESS(FILE, X)                \
-  do                                                \
-    {                                                \
-      mn10300_protect_label = 1;                \
-      print_operand_address ((FILE), (X));        \
-      mn10300_protect_label = 0;                \
-    }                                                \
+#define PRINT_OPERAND_ADDRESS(FILE, X)		\
+  do						\
+    {						\
+      mn10300_protect_label = 1;		\
+      print_operand_address ((FILE), (X));	\
+      mn10300_protect_label = 0;		\
+    }						\
    while (0)
 
 #undef  ASM_OUTPUT_LABELREF
-#define ASM_OUTPUT_LABELREF(FILE, NAME)                \
-  do                                                \
-    {                                                \
-      const char * real_name;                        \
-                                                \
-      real_name = (*targetm.strip_name_encoding) (NAME);        \
-      if (mn10300_protect_label)                \
-        asm_fprintf (FILE, "+");                \
-      asm_fprintf (FILE, "%U%s", real_name);        \
-    }                                                \
+#define ASM_OUTPUT_LABELREF(FILE, NAME)		\
+  do						\
+    {						\
+      const char * real_name;			\
+						\
+      real_name = (*targetm.strip_name_encoding) (NAME);	\
+      if (mn10300_protect_label)		\
+        asm_fprintf (FILE, "+");		\
+      asm_fprintf (FILE, "%U%s", real_name);	\
+    }						\
   while (0)           
 

@@ -20,17 +20,17 @@ Boston, MA 02110-1301, USA.  */
 
 /* In grokdeclarator, distinguish syntactic contexts of declarators.  */
 enum decl_context
-{ NORMAL,                        /* Ordinary declaration */
-  FUNCDEF,                        /* Function definition */
-  PARM,                                /* Declaration of parm before function body */
-  CATCHPARM,                        /* Declaration of catch parm */
-  FIELD,                        /* Declaration inside struct or union */
-  BITFIELD,                        /* Likewise but with specified width */
-  TYPENAME,                        /* Typename (inside cast or sizeof)  */
-  MEMFUNCDEF                        /* Member function definition */
+{ NORMAL,			/* Ordinary declaration */
+  FUNCDEF,			/* Function definition */
+  PARM,				/* Declaration of parm before function body */
+  CATCHPARM,			/* Declaration of catch parm */
+  FIELD,			/* Declaration inside struct or union */
+  BITFIELD,			/* Likewise but with specified width */
+  TYPENAME,			/* Typename (inside cast or sizeof)  */
+  MEMFUNCDEF			/* Member function definition */
 };
 
 /* We need this in here to get the decl_context definition.  */
 extern tree grokdeclarator (const cp_declarator *,
-                            const cp_decl_specifier_seq *,
-                            enum decl_context, int, tree*);
+			    const cp_decl_specifier_seq *,
+			    enum decl_context, int, tree*);

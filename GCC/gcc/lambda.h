@@ -100,7 +100,7 @@ typedef struct lambda_linear_expression_s
 
 lambda_linear_expression lambda_linear_expression_new (int, int);
 void print_lambda_linear_expression (FILE *, lambda_linear_expression, int,
-                                     int, char);
+				     int, char);
 
 /* Loop structure.  Our loop structure consists of a constant representing the
    STEP of the loop, a set of linear expressions representing the LOWER_BOUND
@@ -157,11 +157,11 @@ void lambda_matrix_copy (lambda_matrix, lambda_matrix, int, int);
 void lambda_matrix_negate (lambda_matrix, lambda_matrix, int, int);
 void lambda_matrix_transpose (lambda_matrix, lambda_matrix, int, int);
 void lambda_matrix_add (lambda_matrix, lambda_matrix, lambda_matrix, int,
-                        int);
+			int);
 void lambda_matrix_add_mc (lambda_matrix, int, lambda_matrix, int,
-                           lambda_matrix, int, int);
+			   lambda_matrix, int, int);
 void lambda_matrix_mult (lambda_matrix, lambda_matrix, lambda_matrix,
-                         int, int, int);
+			 int, int, int);
 void lambda_matrix_delete_rows (lambda_matrix, int, int, int);
 void lambda_matrix_row_exchange (lambda_matrix, int, int);
 void lambda_matrix_row_add (lambda_matrix, int, int, int, int);
@@ -177,7 +177,7 @@ void lambda_matrix_left_hermite (lambda_matrix, int, int, lambda_matrix, lambda_
 void lambda_matrix_right_hermite (lambda_matrix, int, int, lambda_matrix, lambda_matrix);
 int lambda_matrix_first_nz_vec (lambda_matrix, int, int, int);
 void lambda_matrix_project_to_null (lambda_matrix, int, int, int, 
-                                    lambda_vector);
+				    lambda_vector);
 void print_lambda_matrix (FILE *, lambda_matrix, int, int);
 
 lambda_trans_matrix lambda_trans_matrix_new (int, int);
@@ -189,28 +189,28 @@ lambda_trans_matrix lambda_trans_matrix_padding (lambda_trans_matrix);
 lambda_trans_matrix lambda_trans_matrix_inverse (lambda_trans_matrix);
 void print_lambda_trans_matrix (FILE *, lambda_trans_matrix);
 void lambda_matrix_vector_mult (lambda_matrix, int, int, lambda_vector, 
-                                lambda_vector);
+				lambda_vector);
 bool lambda_trans_matrix_id_p (lambda_trans_matrix);
 
 lambda_body_vector lambda_body_vector_new (int);
 lambda_body_vector lambda_body_vector_compute_new (lambda_trans_matrix, 
-                                                   lambda_body_vector);
+						   lambda_body_vector);
 void print_lambda_body_vector (FILE *, lambda_body_vector);
 lambda_loopnest gcc_loopnest_to_lambda_loopnest (struct loops *,
-                                                 struct loop *,
-                                                 VEC(tree,heap) **,
-                                                 VEC(tree,heap) **);
+						 struct loop *,
+						 VEC(tree,heap) **,
+						 VEC(tree,heap) **);
 void lambda_loopnest_to_gcc_loopnest (struct loop *,
-                                      VEC(tree,heap) *, VEC(tree,heap) *,
-                                      lambda_loopnest, lambda_trans_matrix);
+				      VEC(tree,heap) *, VEC(tree,heap) *,
+				      lambda_loopnest, lambda_trans_matrix);
 
 
 static inline void lambda_vector_negate (lambda_vector, lambda_vector, int);
 static inline void lambda_vector_mult_const (lambda_vector, lambda_vector, int, int);
 static inline void lambda_vector_add (lambda_vector, lambda_vector,
-                                      lambda_vector, int);
+				      lambda_vector, int);
 static inline void lambda_vector_add_mc (lambda_vector, int, lambda_vector, int,
-                                         lambda_vector, int);
+					 lambda_vector, int);
 static inline void lambda_vector_copy (lambda_vector, lambda_vector, int);
 static inline bool lambda_vector_zerop (lambda_vector, int);
 static inline void lambda_vector_clear (lambda_vector, int);
@@ -234,7 +234,7 @@ lambda_vector_new (int size)
 
 static inline void
 lambda_vector_mult_const (lambda_vector vec1, lambda_vector vec2,
-                          int size, int const1)
+			  int size, int const1)
 {
   int i;
 
@@ -249,7 +249,7 @@ lambda_vector_mult_const (lambda_vector vec1, lambda_vector vec2,
 
 static inline void 
 lambda_vector_negate (lambda_vector vec1, lambda_vector vec2,
-                      int size)
+		      int size)
 {
   lambda_vector_mult_const (vec1, vec2, size, -1);
 }
@@ -258,7 +258,7 @@ lambda_vector_negate (lambda_vector vec1, lambda_vector vec2,
 
 static inline void
 lambda_vector_add (lambda_vector vec1, lambda_vector vec2,
-                   lambda_vector vec3, int size)
+		   lambda_vector vec3, int size)
 {
   int i;
   for (i = 0; i < size; i++)
@@ -269,8 +269,8 @@ lambda_vector_add (lambda_vector vec1, lambda_vector vec2,
 
 static inline void
 lambda_vector_add_mc (lambda_vector vec1, int const1,
-                      lambda_vector vec2, int const2,
-                      lambda_vector vec3, int size)
+		      lambda_vector vec2, int const2,
+		      lambda_vector vec3, int size)
 {
   int i;
   for (i = 0; i < size; i++)
@@ -281,7 +281,7 @@ lambda_vector_add_mc (lambda_vector vec1, int const1,
 
 static inline void
 lambda_vector_copy (lambda_vector vec1, lambda_vector vec2,
-                    int size)
+		    int size)
 {
   memcpy (vec2, vec1, size * sizeof (*vec1));
 }
@@ -331,8 +331,8 @@ lambda_vector_min_nz (lambda_vector vec1, int n, int start)
   for (j = start; j < n; j++)
     {
       if (vec1[j])
-        if (min < 0 || vec1[j] < vec1[min])
-          min = j;
+	if (min < 0 || vec1[j] < vec1[min])
+	  min = j;
     }
   gcc_assert (min >= 0);
 
@@ -356,7 +356,7 @@ lambda_vector_first_nz (lambda_vector vec1, int n, int start)
 
 static inline void
 lambda_vector_matrix_mult (lambda_vector vect, int m, lambda_matrix mat, 
-                           int n, lambda_vector dest)
+			   int n, lambda_vector dest)
 {
   int i, j;
   lambda_vector_clear (dest, n);
@@ -411,7 +411,7 @@ lambda_vector_gcd (lambda_vector vector, int size)
     {
       gcd1 = vector[0];
       for (i = 1; i < size; i++)
-        gcd1 = gcd (gcd1, vector[i]);
+	gcd1 = gcd (gcd1, vector[i]);
     }
   return gcd1;
 }
@@ -421,17 +421,17 @@ lambda_vector_gcd (lambda_vector vector, int size)
 
 static inline bool
 lambda_vector_lexico_pos (lambda_vector v, 
-                          unsigned n)
+			  unsigned n)
 {
   unsigned i;
   for (i = 0; i < n; i++)
     {
       if (v[i] == 0)
-        continue;
+	continue;
       if (v[i] < 0)
-        return false;
+	return false;
       if (v[i] > 0)
-        return true;
+	return true;
     }
   return true;
 }

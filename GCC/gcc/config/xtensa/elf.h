@@ -71,7 +71,7 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
     %{static:-static}}}"
 
 #undef LOCAL_LABEL_PREFIX
-#define LOCAL_LABEL_PREFIX        "."
+#define LOCAL_LABEL_PREFIX	"."
 
 /* Avoid dots for compatibility with VxWorks.  */
 #undef NO_DOLLAR_IN_LABEL
@@ -87,16 +87,16 @@ do \
 { \
   char *tooldir, *archdir; \
   tooldir = concat (tooldir_base_prefix, spec_machine, \
-                    dir_separator_str, NULL); \
+		    dir_separator_str, NULL); \
   if (!IS_ABSOLUTE_PATH (tooldir)) \
     tooldir = concat (standard_exec_prefix, spec_machine, dir_separator_str, \
-                      spec_version, dir_separator_str, tooldir, NULL); \
+		      spec_version, dir_separator_str, tooldir, NULL); \
   archdir = concat (tooldir, "arch", dir_separator_str, NULL); \
   add_prefix (&startfile_prefixes, \
-              concat (archdir, "lib", dir_separator_str, NULL), \
-              "GCC", PREFIX_PRIORITY_LAST, 0, 1); \
+	      concat (archdir, "lib", dir_separator_str, NULL), \
+	      "GCC", PREFIX_PRIORITY_LAST, 0, 1); \
   add_prefix (&include_prefixes, archdir, \
-              "GCC", PREFIX_PRIORITY_LAST, 0, 0); \
+	      "GCC", PREFIX_PRIORITY_LAST, 0, 0); \
   } \
 while (0)
 

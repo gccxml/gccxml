@@ -23,11 +23,11 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
    It is written to be simple and fast.
 
    Value of sreal is
-        x = sig * 2 ^ exp
+	x = sig * 2 ^ exp
    where
-        sig = significant
-          (for < 64-bit machines sig = sig_lo + sig_hi * 2 ^ SREAL_PART_BITS)
-        exp = exponent
+	sig = significant
+	  (for < 64-bit machines sig = sig_lo + sig_hi * 2 ^ SREAL_PART_BITS)
+	exp = exponent
 
    One HOST_WIDE_INT is used for the significant on 64-bit (and more than
    64-bit) machines,
@@ -40,14 +40,14 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
 
    Normalized sreals:
    All numbers (except zero) meet following conditions:
-         SREAL_MIN_SIG <= sig && sig <= SREAL_MAX_SIG
-        -SREAL_MAX_EXP <= exp && exp <= SREAL_MAX_EXP
+	 SREAL_MIN_SIG <= sig && sig <= SREAL_MAX_SIG
+	-SREAL_MAX_EXP <= exp && exp <= SREAL_MAX_EXP
 
    If the number would be too large, it is set to upper bounds of these
    conditions.
 
    If the number is zero or would be too small it meets following conditions:
-        sig == 0 && exp == -SREAL_MAX_EXP
+	sig == 0 && exp == -SREAL_MAX_EXP
 */
 
 #include "config.h"
@@ -67,8 +67,8 @@ dump_sreal (FILE *file, sreal *x)
 {
 #if SREAL_PART_BITS < 32
   fprintf (file, "((" HOST_WIDE_INT_PRINT_UNSIGNED " * 2^16 + "
-           HOST_WIDE_INT_PRINT_UNSIGNED ") * 2^%d)",
-           x->sig_hi, x->sig_lo, x->exp);
+	   HOST_WIDE_INT_PRINT_UNSIGNED ") * 2^%d)",
+	   x->sig_hi, x->sig_lo, x->exp);
 #else
   fprintf (file, "(" HOST_WIDE_INT_PRINT_UNSIGNED " * 2^%d)", x->sig, x->exp);
 #endif
@@ -115,10 +115,10 @@ shift_right (sreal *x, int s)
     {
       x->sig_lo += (uhwi) 1 << (s - 1);
       if (x->sig_lo & ((uhwi) 1 << SREAL_PART_BITS))
-        {
-          x->sig_hi++;
-          x->sig_lo -= (uhwi) 1 << SREAL_PART_BITS;
-        }
+	{
+	  x->sig_hi++;
+	  x->sig_lo -= (uhwi) 1 << SREAL_PART_BITS;
+	}
       x->sig_lo >>= s;
       x->sig_lo |= (x->sig_hi & (((uhwi) 1 << s) - 1)) << (SREAL_PART_BITS - s);
       x->sig_hi >>= s;
@@ -145,32 +145,32 @@ normalize (sreal *x)
   else if (x->sig_hi < SREAL_MIN_SIG)
     {
       if (x->sig_hi == 0)
-        {
-          /* Move lower part of significant to higher part.  */
-          x->sig_hi = x->sig_lo;
-          x->sig_lo = 0;
-          x->exp -= SREAL_PART_BITS;
-        }
+	{
+	  /* Move lower part of significant to higher part.  */
+	  x->sig_hi = x->sig_lo;
+	  x->sig_lo = 0;
+	  x->exp -= SREAL_PART_BITS;
+	}
       shift = 0;
       while (x->sig_hi < SREAL_MIN_SIG)
-        {
-          x->sig_hi <<= 1;
-          x->exp--;
-          shift++;
-        }
+	{
+	  x->sig_hi <<= 1;
+	  x->exp--;
+	  shift++;
+	}
       /* Check underflow.  */
       if (x->exp < -SREAL_MAX_EXP)
-        {
-          x->exp = -SREAL_MAX_EXP;
-          x->sig_hi = 0;
-          x->sig_lo = 0;
-        }
+	{
+	  x->exp = -SREAL_MAX_EXP;
+	  x->sig_hi = 0;
+	  x->sig_lo = 0;
+	}
       else if (shift)
-        {
-          mask = (1 << SREAL_PART_BITS) - (1 << (SREAL_PART_BITS - shift));
-          x->sig_hi |= (x->sig_lo & mask) >> (SREAL_PART_BITS - shift);
-          x->sig_lo = (x->sig_lo << shift) & (((uhwi) 1 << SREAL_PART_BITS) - 1);
-        }
+	{
+	  mask = (1 << SREAL_PART_BITS) - (1 << (SREAL_PART_BITS - shift));
+	  x->sig_hi |= (x->sig_lo & mask) >> (SREAL_PART_BITS - shift);
+	  x->sig_lo = (x->sig_lo << shift) & (((uhwi) 1 << SREAL_PART_BITS) - 1);
+	}
     }
   else if (x->sig_hi > SREAL_MAX_SIG)
     {
@@ -179,10 +179,10 @@ normalize (sreal *x)
       /* Find out how many bits will be shifted.  */
       shift = 0;
       do
-        {
-          tmp >>= 1;
-          shift++;
-        }
+	{
+	  tmp >>= 1;
+	  shift++;
+	}
       while (tmp > SREAL_MAX_SIG);
 
       /* Round the number.  */
@@ -190,30 +190,30 @@ normalize (sreal *x)
 
       x->sig_lo >>= shift;
       x->sig_lo += ((x->sig_hi & (((uhwi) 1 << shift) - 1))
-                    << (SREAL_PART_BITS - shift));
+		    << (SREAL_PART_BITS - shift));
       x->sig_hi >>= shift;
       x->exp += shift;
       if (x->sig_lo & ((uhwi) 1 << SREAL_PART_BITS))
-        {
-          x->sig_lo -= (uhwi) 1 << SREAL_PART_BITS;
-          x->sig_hi++;
-          if (x->sig_hi > SREAL_MAX_SIG)
-            {
-              /* x->sig_hi was SREAL_MAX_SIG before increment
-                 so now last bit is zero.  */
-              x->sig_hi >>= 1;
-              x->sig_lo >>= 1;
-              x->exp++;
-            }
-        }
+	{
+	  x->sig_lo -= (uhwi) 1 << SREAL_PART_BITS;
+	  x->sig_hi++;
+	  if (x->sig_hi > SREAL_MAX_SIG)
+	    {
+	      /* x->sig_hi was SREAL_MAX_SIG before increment
+		 so now last bit is zero.  */
+	      x->sig_hi >>= 1;
+	      x->sig_lo >>= 1;
+	      x->exp++;
+	    }
+	}
 
       /* Check overflow.  */
       if (x->exp > SREAL_MAX_EXP)
-        {
-          x->exp = SREAL_MAX_EXP;
-          x->sig_hi = SREAL_MAX_SIG;
-          x->sig_lo = SREAL_MAX_SIG;
-        }
+	{
+	  x->exp = SREAL_MAX_EXP;
+	  x->sig_hi = SREAL_MAX_SIG;
+	  x->sig_lo = SREAL_MAX_SIG;
+	}
     }
 #else
   if (x->sig == 0)
@@ -223,44 +223,44 @@ normalize (sreal *x)
   else if (x->sig < SREAL_MIN_SIG)
     {
       do
-        {
-          x->sig <<= 1;
-          x->exp--;
-        }
+	{
+	  x->sig <<= 1;
+	  x->exp--;
+	}
       while (x->sig < SREAL_MIN_SIG);
 
       /* Check underflow.  */
       if (x->exp < -SREAL_MAX_EXP)
-        {
-          x->exp = -SREAL_MAX_EXP;
-          x->sig = 0;
-        }
+	{
+	  x->exp = -SREAL_MAX_EXP;
+	  x->sig = 0;
+	}
     }
   else if (x->sig > SREAL_MAX_SIG)
     {
       int last_bit;
       do
-        {
-          last_bit = x->sig & 1;
-          x->sig >>= 1;
-          x->exp++;
-        }
+	{
+	  last_bit = x->sig & 1;
+	  x->sig >>= 1;
+	  x->exp++;
+	}
       while (x->sig > SREAL_MAX_SIG);
 
       /* Round the number.  */
       x->sig += last_bit;
       if (x->sig > SREAL_MAX_SIG)
-        {
-          x->sig >>= 1;
-          x->exp++;
-        }
+	{
+	  x->sig >>= 1;
+	  x->exp++;
+	}
 
       /* Check overflow.  */
       if (x->exp > SREAL_MAX_EXP)
-        {
-          x->exp = SREAL_MAX_EXP;
-          x->sig = SREAL_MAX_SIG;
-        }
+	{
+	  x->exp = SREAL_MAX_EXP;
+	  x->sig = SREAL_MAX_SIG;
+	}
     }
 #endif
 }
@@ -453,12 +453,12 @@ sreal_mul (sreal *r, sreal *a, sreal *b)
     {
       unsigned HOST_WIDE_INT tmp1, tmp2, tmp3;
       if (sreal_compare (a, b) < 0)
-        {
-          sreal *swap;
-          swap = a;
-          a = b;
-          b = swap;
-        }
+	{
+	  sreal *swap;
+	  swap = a;
+	  a = b;
+	  b = swap;
+	}
 
       r->exp = a->exp + b->exp + SREAL_PART_BITS;
 
@@ -511,13 +511,13 @@ sreal_div (sreal *r, sreal *a, sreal *b)
   else
     {
       /* Since division by the whole number is pretty ugly to write
-         we are dividing by first 3/4 of bits of number.  */
+	 we are dividing by first 3/4 of bits of number.  */
 
       tmp1 = (a->sig_hi << SREAL_PART_BITS) + a->sig_lo;
       tmp2 = ((b->sig_hi << (SREAL_PART_BITS / 2))
-              + (b->sig_lo >> (SREAL_PART_BITS / 2)));
+	      + (b->sig_lo >> (SREAL_PART_BITS / 2)));
       if (b->sig_lo & ((uhwi) 1 << ((SREAL_PART_BITS / 2) - 1)))
-        tmp2++;
+	tmp2++;
 
       r->sig_lo = 0;
       tmp = tmp1 / tmp2;

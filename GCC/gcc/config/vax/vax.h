@@ -21,18 +21,18 @@ Boston, MA 02110-1301, USA.  */
 
 
 /* Target CPU builtins.  */
-#define TARGET_CPU_CPP_BUILTINS()                \
-  do                                                \
-    {                                                \
-      builtin_define ("__vax__");                \
-      builtin_assert ("cpu=vax");                \
-      builtin_assert ("machine=vax");                \
-      if (TARGET_G_FLOAT)                        \
-        {                                        \
-          builtin_define ("__GFLOAT");                \
-          builtin_define ("__GFLOAT__");        \
-        }                                        \
-    }                                                \
+#define TARGET_CPU_CPP_BUILTINS()		\
+  do						\
+    {						\
+      builtin_define ("__vax__");		\
+      builtin_assert ("cpu=vax");		\
+      builtin_assert ("machine=vax");		\
+      if (TARGET_G_FLOAT)			\
+	{					\
+	  builtin_define ("__GFLOAT");		\
+	  builtin_define ("__GFLOAT__");	\
+	}					\
+    }						\
   while (0)
 
 #define VMS_TARGET 0
@@ -53,7 +53,7 @@ Boston, MA 02110-1301, USA.  */
 
 /* Print subsidiary information on the compiler version in use.  */
 
-#ifndef TARGET_NAME        /* A more specific value might be supplied via -D.  */
+#ifndef TARGET_NAME	/* A more specific value might be supplied via -D.  */
 #define TARGET_NAME "vax"
 #endif
 #define TARGET_VERSION fprintf (stderr, " (%s)", TARGET_NAME)
@@ -150,7 +150,7 @@ Boston, MA 02110-1301, USA.  */
    This is ordinarily the length in words of a value of mode MODE
    but can be less for certain modes in special long registers.
    On the VAX, all registers are one word long.  */
-#define HARD_REGNO_NREGS(REGNO, MODE)        \
+#define HARD_REGNO_NREGS(REGNO, MODE)	\
   ((GET_MODE_SIZE (MODE) + UNITS_PER_WORD - 1) / UNITS_PER_WORD)
 
 /* Value is 1 if hard register REGNO can hold a value of machine-mode MODE.
@@ -225,7 +225,7 @@ enum reg_class { NO_REGS, ALL_REGS, LIM_REG_CLASSES };
 
 /* Give names of register classes as strings for dump file.  */
 
-#define REG_CLASS_NAMES        \
+#define REG_CLASS_NAMES	\
   { "NO_REGS", "ALL_REGS" }
 
 /* Define which registers fit in which classes.
@@ -264,14 +264,14 @@ enum reg_class { NO_REGS, ALL_REGS, LIM_REG_CLASSES };
    'N' is a value between 0 and 65535 (inclusive)
    `O' is a value between -63 and -1 (inclusive)  */
 
-#define CONST_OK_FOR_LETTER_P(VALUE, C)                                \
-  (  (C) == 'I' ?        (VALUE) == 0                                \
-   : (C) == 'J' ?        0 <= (VALUE) && (VALUE) < 64                \
-   : (C) == 'O' ?        -63 <= (VALUE) && (VALUE) < 0                \
-   : (C) == 'K' ?        -128 <= (VALUE) && (VALUE) < 128        \
-   : (C) == 'M' ?        0 <= (VALUE) && (VALUE) < 256                \
-   : (C) == 'L' ?        -32768 <= (VALUE) && (VALUE) < 32768        \
-   : (C) == 'N' ?        0 <= (VALUE) && (VALUE) < 65536                \
+#define CONST_OK_FOR_LETTER_P(VALUE, C)				\
+  (  (C) == 'I' ?	(VALUE) == 0				\
+   : (C) == 'J' ?	0 <= (VALUE) && (VALUE) < 64		\
+   : (C) == 'O' ?	-63 <= (VALUE) && (VALUE) < 0		\
+   : (C) == 'K' ?	-128 <= (VALUE) && (VALUE) < 128	\
+   : (C) == 'M' ?	0 <= (VALUE) && (VALUE) < 256		\
+   : (C) == 'L' ?	-32768 <= (VALUE) && (VALUE) < 32768	\
+   : (C) == 'N' ?	0 <= (VALUE) && (VALUE) < 65536		\
    : 0)
 
 /* Similar, but for floating constants, and defining letters G and H.
@@ -279,9 +279,9 @@ enum reg_class { NO_REGS, ALL_REGS, LIM_REG_CLASSES };
 
    `G' is a floating-point zero.  */
 
-#define CONST_DOUBLE_OK_FOR_LETTER_P(VALUE, C)                \
-  ((C) == 'G' ? ((VALUE) == CONST0_RTX (DFmode)                \
-                 || (VALUE) == CONST0_RTX (SFmode))        \
+#define CONST_DOUBLE_OK_FOR_LETTER_P(VALUE, C)		\
+  ((C) == 'G' ? ((VALUE) == CONST0_RTX (DFmode)		\
+		 || (VALUE) == CONST0_RTX (SFmode))	\
    : 0)
 
 /* Optional extra constraints for this machine.
@@ -289,9 +289,9 @@ enum reg_class { NO_REGS, ALL_REGS, LIM_REG_CLASSES };
    For the VAX, `Q' means that OP is a MEM that does not have a mode-dependent
    address.  */
 
-#define EXTRA_CONSTRAINT(OP, C)                                        \
-  ((C) == 'Q'                                                        \
-   ? MEM_P (OP) && !mode_dependent_address_p (XEXP (OP, 0))        \
+#define EXTRA_CONSTRAINT(OP, C)					\
+  ((C) == 'Q'							\
+   ? MEM_P (OP) && !mode_dependent_address_p (XEXP (OP, 0))	\
    : 0)
 
 /* Given an rtx X being reloaded into a reg required to be
@@ -305,7 +305,7 @@ enum reg_class { NO_REGS, ALL_REGS, LIM_REG_CLASSES };
    needed to represent mode MODE in a register of class CLASS.  */
 /* On the VAX, this is always the size of MODE in words,
    since all registers are the same size.  */
-#define CLASS_MAX_NREGS(CLASS, MODE)        \
+#define CLASS_MAX_NREGS(CLASS, MODE)	\
  ((GET_MODE_SIZE (MODE) + UNITS_PER_WORD - 1) / UNITS_PER_WORD)
 
 /* Stack layout; function entry, exit and calling.  */
@@ -348,7 +348,7 @@ enum reg_class { NO_REGS, ALL_REGS, LIM_REG_CLASSES };
 
    On the VAX, the RET insn pops a maximum of 255 args for any function.  */
 
-#define RETURN_POPS_ARGS(FUNDECL,FUNTYPE,SIZE)        \
+#define RETURN_POPS_ARGS(FUNDECL,FUNTYPE,SIZE)	\
   ((SIZE) > 255 * 4 ? 0 : (SIZE))
 
 /* Define how to find the value returned by a function.
@@ -358,7 +358,7 @@ enum reg_class { NO_REGS, ALL_REGS, LIM_REG_CLASSES };
 
 /* On the VAX the return value is in R0 regardless.  */
 
-#define FUNCTION_VALUE(VALTYPE, FUNC)        \
+#define FUNCTION_VALUE(VALTYPE, FUNC)	\
   gen_rtx_REG (TYPE_MODE (VALTYPE), 0)
 
 /* Define how to find the value returned by a library function
@@ -407,10 +407,10 @@ enum reg_class { NO_REGS, ALL_REGS, LIM_REG_CLASSES };
    of mode MODE and data type TYPE.
    (TYPE is null for libcalls where that information may not be available.)  */
 
-#define FUNCTION_ARG_ADVANCE(CUM, MODE, TYPE, NAMED)        \
-  ((CUM) += ((MODE) != BLKmode                                \
-             ? (GET_MODE_SIZE (MODE) + 3) & ~3                \
-             : (int_size_in_bytes (TYPE) + 3) & ~3))
+#define FUNCTION_ARG_ADVANCE(CUM, MODE, TYPE, NAMED)	\
+  ((CUM) += ((MODE) != BLKmode				\
+	     ? (GET_MODE_SIZE (MODE) + 3) & ~3		\
+	     : (int_size_in_bytes (TYPE) + 3) & ~3))
 
 /* Define where to put the arguments to a function.
    Value is zero to push the argument on the stack,
@@ -433,16 +433,16 @@ enum reg_class { NO_REGS, ALL_REGS, LIM_REG_CLASSES };
    for profiling a function entry.  */
 
 #define VAX_FUNCTION_PROFILER_NAME "mcount"
-#define FUNCTION_PROFILER(FILE, LABELNO)                        \
-  do                                                                \
-    {                                                                \
-      char label[256];                                                \
-      ASM_GENERATE_INTERNAL_LABEL (label, "LP", (LABELNO));        \
-      fprintf (FILE, "\tmovab ");                                \
-      assemble_name (FILE, label);                                \
-      asm_fprintf (FILE, ",%Rr0\n\tjsb %s\n",                        \
-                   VAX_FUNCTION_PROFILER_NAME);                        \
-    }                                                                \
+#define FUNCTION_PROFILER(FILE, LABELNO)			\
+  do								\
+    {								\
+      char label[256];						\
+      ASM_GENERATE_INTERNAL_LABEL (label, "LP", (LABELNO));	\
+      fprintf (FILE, "\tmovab ");				\
+      assemble_name (FILE, label);				\
+      asm_fprintf (FILE, ",%Rr0\n\tjsb %s\n",			\
+		   VAX_FUNCTION_PROFILER_NAME);			\
+    }								\
   while (0)
 
 /* EXIT_IGNORE_STACK should be nonzero if, when returning from a function,
@@ -470,14 +470,14 @@ enum reg_class { NO_REGS, ALL_REGS, LIM_REG_CLASSES };
      movl $STATIC,r0   (store the functions static chain)
      jmp  *$FUNCTION   (jump to function code at address FUNCTION)  */
 
-#define TRAMPOLINE_TEMPLATE(FILE)                                        \
-{                                                                        \
-  assemble_aligned_integer (2, const0_rtx);                                \
-  assemble_aligned_integer (2, GEN_INT (0x8fd0));                        \
-  assemble_aligned_integer (4, const0_rtx);                                \
-  assemble_aligned_integer (1, GEN_INT (0x50 + STATIC_CHAIN_REGNUM));        \
-  assemble_aligned_integer (2, GEN_INT (0x9f17));                        \
-  assemble_aligned_integer (4, const0_rtx);                                \
+#define TRAMPOLINE_TEMPLATE(FILE)					\
+{									\
+  assemble_aligned_integer (2, const0_rtx);				\
+  assemble_aligned_integer (2, GEN_INT (0x8fd0));			\
+  assemble_aligned_integer (4, const0_rtx);				\
+  assemble_aligned_integer (1, GEN_INT (0x50 + STATIC_CHAIN_REGNUM));	\
+  assemble_aligned_integer (2, GEN_INT (0x9f17));			\
+  assemble_aligned_integer (4, const0_rtx);				\
 }
 
 /* Length in units of the trampoline for entering a nested function.  */
@@ -490,29 +490,29 @@ enum reg_class { NO_REGS, ALL_REGS, LIM_REG_CLASSES };
 
 /* We copy the register-mask from the function's pure code
    to the start of the trampoline.  */
-#define INITIALIZE_TRAMPOLINE(TRAMP, FNADDR, CXT)                        \
-{                                                                        \
-  emit_move_insn (gen_rtx_MEM (HImode, TRAMP),                                \
-                  gen_rtx_MEM (HImode, FNADDR));                        \
-  emit_move_insn (gen_rtx_MEM (SImode, plus_constant (TRAMP, 4)), CXT);        \
-  emit_move_insn (gen_rtx_MEM (SImode, plus_constant (TRAMP, 11)),        \
-                  plus_constant (FNADDR, 2));                                \
-  emit_insn (gen_sync_istream ());                                        \
+#define INITIALIZE_TRAMPOLINE(TRAMP, FNADDR, CXT)			\
+{									\
+  emit_move_insn (gen_rtx_MEM (HImode, TRAMP),				\
+		  gen_rtx_MEM (HImode, FNADDR));			\
+  emit_move_insn (gen_rtx_MEM (SImode, plus_constant (TRAMP, 4)), CXT);	\
+  emit_move_insn (gen_rtx_MEM (SImode, plus_constant (TRAMP, 11)),	\
+		  plus_constant (FNADDR, 2));				\
+  emit_insn (gen_sync_istream ());					\
 }
 
 /* Byte offset of return address in a stack frame.  The "saved PC" field
    is in element [4] when treating the frame as an array of longwords.  */
 
-#define RETURN_ADDRESS_OFFSET        (4 * UNITS_PER_WORD)        /* 16 */
+#define RETURN_ADDRESS_OFFSET	(4 * UNITS_PER_WORD)	/* 16 */
 
 /* A C expression whose value is RTL representing the value of the return
    address for the frame COUNT steps up from the current frame.
    FRAMEADDR is already the frame pointer of the COUNT frame, so we
    can ignore COUNT.  */
 
-#define RETURN_ADDR_RTX(COUNT, FRAME)                                        \
-  ((COUNT == 0)                                                                \
-   ? gen_rtx_MEM (Pmode, plus_constant (FRAME, RETURN_ADDRESS_OFFSET))        \
+#define RETURN_ADDR_RTX(COUNT, FRAME)					\
+  ((COUNT == 0)								\
+   ? gen_rtx_MEM (Pmode, plus_constant (FRAME, RETURN_ADDRESS_OFFSET))	\
    : (rtx) 0)
 
 
@@ -530,9 +530,9 @@ enum reg_class { NO_REGS, ALL_REGS, LIM_REG_CLASSES };
    Since they use reg_renumber, they are safe only once reg_renumber
    has been allocated, which happens in local-alloc.c.  */
 
-#define REGNO_OK_FOR_INDEX_P(regno)        \
+#define REGNO_OK_FOR_INDEX_P(regno)	\
   ((regno) < FIRST_PSEUDO_REGISTER || reg_renumber[regno] >= 0)
-#define REGNO_OK_FOR_BASE_P(regno)        \
+#define REGNO_OK_FOR_BASE_P(regno)	\
   ((regno) < FIRST_PSEUDO_REGISTER || reg_renumber[regno] >= 0)
 
 /* Maximum number of registers that can appear in a valid memory address.  */
@@ -665,13 +665,13 @@ enum reg_class { NO_REGS, ALL_REGS, LIM_REG_CLASSES };
    after execution of an instruction whose pattern is EXP.
    Do not alter them if the instruction would not alter the cc's.  */
 
-#define NOTICE_UPDATE_CC(EXP, INSN)        \
+#define NOTICE_UPDATE_CC(EXP, INSN)	\
   vax_notice_update_cc ((EXP), (INSN))
 
-#define OUTPUT_JUMP(NORMAL, FLOAT, NO_OV)        \
-  { if (cc_status.flags & CC_NO_OVERFLOW)        \
-      return NO_OV;                                \
-    return NORMAL;                                \
+#define OUTPUT_JUMP(NORMAL, FLOAT, NO_OV)	\
+  { if (cc_status.flags & CC_NO_OVERFLOW)	\
+      return NO_OV;				\
+    return NORMAL;				\
   }
 
 /* Control the assembler format that we output.  */
@@ -705,8 +705,8 @@ enum reg_class { NO_REGS, ALL_REGS, LIM_REG_CLASSES };
    The register names will be prefixed by REGISTER_PREFIX, if any.  */
 
 #define REGISTER_PREFIX ""
-#define REGISTER_NAMES                                        \
-  { "r0", "r1",  "r2",  "r3", "r4", "r5", "r6", "r7",        \
+#define REGISTER_NAMES					\
+  { "r0", "r1",  "r2",  "r3", "r4", "r5", "r6", "r7",	\
     "r8", "r9", "r10", "r11", "ap", "fp", "sp", "pc", }
 
 /* This is BSD, so it wants DBX format.  */
@@ -749,7 +749,7 @@ enum reg_class { NO_REGS, ALL_REGS, LIM_REG_CLASSES };
    PREFIX is the class of label and NUM is the number within the class.
    This is suitable for output with `assemble_name'.  */
 
-#define ASM_GENERATE_INTERNAL_LABEL(LABEL,PREFIX,NUM)        \
+#define ASM_GENERATE_INTERNAL_LABEL(LABEL,PREFIX,NUM)	\
   sprintf (LABEL, "*%s%ld", PREFIX, (long)(NUM))
 
 /* This is how to output an insn to push a register on the stack.
@@ -761,39 +761,39 @@ enum reg_class { NO_REGS, ALL_REGS, LIM_REG_CLASSES };
 /* This is how to output an insn to pop a register from the stack.
    It need not be very fast code.  */
 
-#define ASM_OUTPUT_REG_POP(FILE,REGNO)                                        \
-  fprintf (FILE, "\tmovl (%s)+,%s\n", reg_names[STACK_POINTER_REGNUM],        \
-           reg_names[REGNO])
+#define ASM_OUTPUT_REG_POP(FILE,REGNO)					\
+  fprintf (FILE, "\tmovl (%s)+,%s\n", reg_names[STACK_POINTER_REGNUM],	\
+	   reg_names[REGNO])
 
 /* This is how to output an element of a case-vector that is absolute.
    (The VAX does not use such vectors,
    but we must define this macro anyway.)  */
 
-#define ASM_OUTPUT_ADDR_VEC_ELT(FILE, VALUE)                \
-  do                                                        \
-    {                                                        \
-      char label[256];                                        \
+#define ASM_OUTPUT_ADDR_VEC_ELT(FILE, VALUE)		\
+  do							\
+    {							\
+      char label[256];					\
       ASM_GENERATE_INTERNAL_LABEL (label, "L", (VALUE));\
-      fprintf (FILE, "\t.long ");                        \
-      assemble_name (FILE, label);                        \
-      fprintf (FILE, "\n");                                \
-    }                                                        \
+      fprintf (FILE, "\t.long ");			\
+      assemble_name (FILE, label);			\
+      fprintf (FILE, "\n");				\
+    }							\
   while (0)
 
 /* This is how to output an element of a case-vector that is relative.  */
 
-#define ASM_OUTPUT_ADDR_DIFF_ELT(FILE, BODY, VALUE, REL)        \
-  do                                                                \
-    {                                                                \
-      char label[256];                                                \
-      ASM_GENERATE_INTERNAL_LABEL (label, "L", (VALUE));        \
-      fprintf (FILE, "\t.word ");                                \
-      assemble_name (FILE, label);                                \
-      ASM_GENERATE_INTERNAL_LABEL (label, "L", (REL));                \
-      fprintf (FILE, "-");                                        \
-      assemble_name (FILE, label);                                \
-      fprintf (FILE, "\n");                                        \
-    }                                                                \
+#define ASM_OUTPUT_ADDR_DIFF_ELT(FILE, BODY, VALUE, REL)	\
+  do								\
+    {								\
+      char label[256];						\
+      ASM_GENERATE_INTERNAL_LABEL (label, "L", (VALUE));	\
+      fprintf (FILE, "\t.word ");				\
+      assemble_name (FILE, label);				\
+      ASM_GENERATE_INTERNAL_LABEL (label, "L", (REL));		\
+      fprintf (FILE, "-");					\
+      assemble_name (FILE, label);				\
+      fprintf (FILE, "\n");					\
+    }								\
   while (0)
 
 /* This is how to output an assembler line
@@ -812,25 +812,25 @@ enum reg_class { NO_REGS, ALL_REGS, LIM_REG_CLASSES };
 /* This says how to output an assembler line
    to define a global common symbol.  */
 
-#define ASM_OUTPUT_COMMON(FILE, NAME, SIZE, ROUNDED)        \
-  ( fputs (".comm ", (FILE)),                                \
-    assemble_name ((FILE), (NAME)),                        \
+#define ASM_OUTPUT_COMMON(FILE, NAME, SIZE, ROUNDED)	\
+  ( fputs (".comm ", (FILE)),				\
+    assemble_name ((FILE), (NAME)),			\
     fprintf ((FILE), ",%u\n", (int)(ROUNDED)))
 
 /* This says how to output an assembler line
    to define a local common symbol.  */
 
-#define ASM_OUTPUT_LOCAL(FILE, NAME, SIZE, ROUNDED)        \
-  ( fputs (".lcomm ", (FILE)),                                \
-    assemble_name ((FILE), (NAME)),                        \
+#define ASM_OUTPUT_LOCAL(FILE, NAME, SIZE, ROUNDED)	\
+  ( fputs (".lcomm ", (FILE)),				\
+    assemble_name ((FILE), (NAME)),			\
     fprintf ((FILE), ",%u\n", (int)(ROUNDED)))
 
 /* Store in OUTPUT a string (made with alloca) containing
    an assembler-name for a local static variable named NAME.
    LABELNO is an integer which is different for each call.  */
 
-#define ASM_FORMAT_PRIVATE_NAME(OUTPUT, NAME, LABELNO)        \
-  ( (OUTPUT) = (char *) alloca (strlen ((NAME)) + 10),        \
+#define ASM_FORMAT_PRIVATE_NAME(OUTPUT, NAME, LABELNO)	\
+  ( (OUTPUT) = (char *) alloca (strlen ((NAME)) + 10),	\
     sprintf ((OUTPUT), "%s.%d", (NAME), (LABELNO)))
 
 /* Print an instruction operand X on file FILE.
@@ -839,19 +839,19 @@ enum reg_class { NO_REGS, ALL_REGS, LIM_REG_CLASSES };
 
 VAX operand formatting codes:
 
- letter           print
-   C        reverse branch condition
-   D        64-bit immediate operand
-   B        the low 8 bits of the complement of a constant operand
-   H        the low 16 bits of the complement of a constant operand
-   M        a mask for the N highest bits of a word
-   N        the complement of a constant integer operand
-   P        constant operand plus 1
-   R        32 - constant operand
-   b        the low 8 bits of a negated constant operand
-   h        the low 16 bits of a negated constant operand
-   #        'd' or 'g' depending on whether dfloat or gfloat is used
-   |        register prefix  */
+ letter	   print
+   C	reverse branch condition
+   D	64-bit immediate operand
+   B	the low 8 bits of the complement of a constant operand
+   H	the low 16 bits of the complement of a constant operand
+   M	a mask for the N highest bits of a word
+   N	the complement of a constant integer operand
+   P	constant operand plus 1
+   R	32 - constant operand
+   b	the low 8 bits of a negated constant operand
+   h	the low 16 bits of a negated constant operand
+   #	'd' or 'g' depending on whether dfloat or gfloat is used
+   |	register prefix  */
 
 /* The purpose of D is to get around a quirk or bug in VAX assembler
    whereby -1 in a 64-bit immediate operand means 0x00000000ffffffff,
@@ -863,48 +863,48 @@ VAX operand formatting codes:
 #  define NEG_HWI_PRINT_HEX16 "0xffffffff%08lx"
 #endif
 
-#define PRINT_OPERAND_PUNCT_VALID_P(CODE)                                \
+#define PRINT_OPERAND_PUNCT_VALID_P(CODE)				\
   ((CODE) == '#' || (CODE) == '|')
 
-#define PRINT_OPERAND(FILE, X, CODE)                                        \
-{ if (CODE == '#') fputc (ASM_DOUBLE_CHAR, FILE);                        \
-  else if (CODE == '|')                                                        \
-    fputs (REGISTER_PREFIX, FILE);                                        \
-  else if (CODE == 'C')                                                        \
-    fputs (rev_cond_name (X), FILE);                                        \
-  else if (CODE == 'D' && CONST_INT_P (X) && INTVAL (X) < 0)                \
-    fprintf (FILE, "$" NEG_HWI_PRINT_HEX16, INTVAL (X));                \
-  else if (CODE == 'P' && CONST_INT_P (X))                                \
-    fprintf (FILE, "$" HOST_WIDE_INT_PRINT_DEC, INTVAL (X) + 1);        \
-  else if (CODE == 'N' && CONST_INT_P (X))                                \
-    fprintf (FILE, "$" HOST_WIDE_INT_PRINT_DEC, ~ INTVAL (X));                \
-  /* rotl instruction cannot deal with negative arguments.  */                \
-  else if (CODE == 'R' && CONST_INT_P (X))                                \
-    fprintf (FILE, "$" HOST_WIDE_INT_PRINT_DEC, 32 - INTVAL (X));        \
-  else if (CODE == 'H' && CONST_INT_P (X))                                \
-    fprintf (FILE, "$%d", (int) (0xffff & ~ INTVAL (X)));                \
-  else if (CODE == 'h' && CONST_INT_P (X))                                \
-    fprintf (FILE, "$%d", (short) - INTVAL (x));                        \
-  else if (CODE == 'B' && CONST_INT_P (X))                                \
-    fprintf (FILE, "$%d", (int) (0xff & ~ INTVAL (X)));                        \
-  else if (CODE == 'b' && CONST_INT_P (X))                                \
-    fprintf (FILE, "$%d", (int) (0xff & - INTVAL (X)));                        \
-  else if (CODE == 'M' && CONST_INT_P (X))                                \
-    fprintf (FILE, "$%d", ~((1 << INTVAL (x)) - 1));                        \
-  else if (REG_P (X))                                                        \
-    fprintf (FILE, "%s", reg_names[REGNO (X)]);                                \
-  else if (MEM_P (X))                                                        \
-    output_address (XEXP (X, 0));                                        \
-  else if (GET_CODE (X) == CONST_DOUBLE && GET_MODE (X) == SFmode)        \
-    { char dstr[30];                                                        \
-      real_to_decimal (dstr, CONST_DOUBLE_REAL_VALUE (X),                \
-                       sizeof (dstr), 0, 1);                                \
-      fprintf (FILE, "$0f%s", dstr); }                                        \
-  else if (GET_CODE (X) == CONST_DOUBLE && GET_MODE (X) == DFmode)        \
-    { char dstr[30];                                                        \
-      real_to_decimal (dstr, CONST_DOUBLE_REAL_VALUE (X),                \
-                       sizeof (dstr), 0, 1);                                \
-      fprintf (FILE, "$0%c%s", ASM_DOUBLE_CHAR, dstr); }                \
+#define PRINT_OPERAND(FILE, X, CODE)					\
+{ if (CODE == '#') fputc (ASM_DOUBLE_CHAR, FILE);			\
+  else if (CODE == '|')							\
+    fputs (REGISTER_PREFIX, FILE);					\
+  else if (CODE == 'C')							\
+    fputs (rev_cond_name (X), FILE);					\
+  else if (CODE == 'D' && CONST_INT_P (X) && INTVAL (X) < 0)		\
+    fprintf (FILE, "$" NEG_HWI_PRINT_HEX16, INTVAL (X));		\
+  else if (CODE == 'P' && CONST_INT_P (X))				\
+    fprintf (FILE, "$" HOST_WIDE_INT_PRINT_DEC, INTVAL (X) + 1);	\
+  else if (CODE == 'N' && CONST_INT_P (X))				\
+    fprintf (FILE, "$" HOST_WIDE_INT_PRINT_DEC, ~ INTVAL (X));		\
+  /* rotl instruction cannot deal with negative arguments.  */		\
+  else if (CODE == 'R' && CONST_INT_P (X))				\
+    fprintf (FILE, "$" HOST_WIDE_INT_PRINT_DEC, 32 - INTVAL (X));	\
+  else if (CODE == 'H' && CONST_INT_P (X))				\
+    fprintf (FILE, "$%d", (int) (0xffff & ~ INTVAL (X)));		\
+  else if (CODE == 'h' && CONST_INT_P (X))				\
+    fprintf (FILE, "$%d", (short) - INTVAL (x));			\
+  else if (CODE == 'B' && CONST_INT_P (X))				\
+    fprintf (FILE, "$%d", (int) (0xff & ~ INTVAL (X)));			\
+  else if (CODE == 'b' && CONST_INT_P (X))				\
+    fprintf (FILE, "$%d", (int) (0xff & - INTVAL (X)));			\
+  else if (CODE == 'M' && CONST_INT_P (X))				\
+    fprintf (FILE, "$%d", ~((1 << INTVAL (x)) - 1));			\
+  else if (REG_P (X))							\
+    fprintf (FILE, "%s", reg_names[REGNO (X)]);				\
+  else if (MEM_P (X))							\
+    output_address (XEXP (X, 0));					\
+  else if (GET_CODE (X) == CONST_DOUBLE && GET_MODE (X) == SFmode)	\
+    { char dstr[30];							\
+      real_to_decimal (dstr, CONST_DOUBLE_REAL_VALUE (X),		\
+		       sizeof (dstr), 0, 1);				\
+      fprintf (FILE, "$0f%s", dstr); }					\
+  else if (GET_CODE (X) == CONST_DOUBLE && GET_MODE (X) == DFmode)	\
+    { char dstr[30];							\
+      real_to_decimal (dstr, CONST_DOUBLE_REAL_VALUE (X),		\
+		       sizeof (dstr), 0, 1);				\
+      fprintf (FILE, "$0%c%s", ASM_DOUBLE_CHAR, dstr); }		\
   else { putc ('$', FILE); output_addr_const (FILE, X); }}
 
 /* Print a memory operand whose address is X, on file FILE.

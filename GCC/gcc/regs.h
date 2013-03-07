@@ -35,7 +35,7 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
    override this.  */
 
 #ifndef REGMODE_NATURAL_SIZE
-#define REGMODE_NATURAL_SIZE(MODE)        UNITS_PER_WORD
+#define REGMODE_NATURAL_SIZE(MODE)	UNITS_PER_WORD
 #endif
 
 #ifndef SMALL_REGISTER_CLASSES
@@ -48,21 +48,21 @@ extern int max_regno;
 
 /* Register information indexed by register number */
 typedef struct reg_info_def
-{                                /* fields set by reg_scan */
-  int first_uid;                /* UID of first insn to use (REG n) */
-  int last_uid;                        /* UID of last insn to use (REG n) */
+{				/* fields set by reg_scan */
+  int first_uid;		/* UID of first insn to use (REG n) */
+  int last_uid;			/* UID of last insn to use (REG n) */
 
-                                /* fields set by reg_scan & flow_analysis */
-  int sets;                        /* # of times (REG n) is set */
+				/* fields set by reg_scan & flow_analysis */
+  int sets;			/* # of times (REG n) is set */
 
-                                /* fields set by flow_analysis */
-  int refs;                        /* # of times (REG n) is used or set */
-  int freq;                        /* # estimated frequency (REG n) is used or set */
-  int deaths;                        /* # of times (REG n) dies */
-  int live_length;                /* # of instructions (REG n) is live */
-  int calls_crossed;                /* # of calls (REG n) is live across */
-  int throw_calls_crossed;        /* # of calls that may throw (REG n) is live across */
-  int basic_block;                /* # of basic blocks (REG n) is used in */
+				/* fields set by flow_analysis */
+  int refs;			/* # of times (REG n) is used or set */
+  int freq;			/* # estimated frequency (REG n) is used or set */
+  int deaths;			/* # of times (REG n) dies */
+  int live_length;		/* # of instructions (REG n) is live */
+  int calls_crossed;		/* # of calls (REG n) is live across */
+  int throw_calls_crossed;	/* # of calls that may throw (REG n) is live across */
+  int basic_block;		/* # of basic blocks (REG n) is used in */
 } reg_info;
 
 typedef reg_info *reg_info_p;
@@ -90,13 +90,13 @@ extern VEC(reg_info_p,heap) *reg_n_info;
    or profile driven feedback is available and the function is never executed,
    frequency is always equivalent.  Otherwise rescale the basic block
    frequency.  */
-#define REG_FREQ_FROM_BB(bb) (optimize_size                                      \
-                              || (flag_branch_probabilities                      \
-                                  && !ENTRY_BLOCK_PTR->count)                      \
-                              ? REG_FREQ_MAX                                      \
-                              : ((bb)->frequency * REG_FREQ_MAX / BB_FREQ_MAX)\
-                              ? ((bb)->frequency * REG_FREQ_MAX / BB_FREQ_MAX)\
-                              : 1)
+#define REG_FREQ_FROM_BB(bb) (optimize_size				      \
+			      || (flag_branch_probabilities		      \
+				  && !ENTRY_BLOCK_PTR->count)		      \
+			      ? REG_FREQ_MAX				      \
+			      : ((bb)->frequency * REG_FREQ_MAX / BB_FREQ_MAX)\
+			      ? ((bb)->frequency * REG_FREQ_MAX / BB_FREQ_MAX)\
+			      : 1)
 
 /* Indexed by n, gives number of times (REG n) is set.
    ??? both regscan and flow allocate space for this.  We should settle
@@ -115,7 +115,7 @@ extern VEC(reg_info_p,heap) *reg_n_info;
 /* Get the number of consecutive words required to hold pseudo-reg N.  */
 
 #define PSEUDO_REGNO_SIZE(N) \
-  ((GET_MODE_SIZE (PSEUDO_REGNO_MODE (N)) + UNITS_PER_WORD - 1)                \
+  ((GET_MODE_SIZE (PSEUDO_REGNO_MODE (N)) + UNITS_PER_WORD - 1)		\
    / UNITS_PER_WORD)
 
 /* Get the number of bytes required to hold pseudo-reg N.  */
@@ -129,7 +129,7 @@ extern VEC(reg_info_p,heap) *reg_n_info;
 
 /* Indexed by N, gives number of CALL_INSNS across which (REG n) is live.  */
 
-#define REG_N_CALLS_CROSSED(N)                                        \
+#define REG_N_CALLS_CROSSED(N)					\
   (VEC_index (reg_info_p, reg_n_info, N)->calls_crossed)
 
 /* Indexed by N, gives number of CALL_INSNS that may throw, across which
@@ -153,7 +153,7 @@ extern VEC(reg_info_p,heap) *reg_n_info;
    is not required.  global.c makes an allocno for this but does
    not try to assign a hard register to it.  */
 
-#define REG_LIVE_LENGTH(N)                                \
+#define REG_LIVE_LENGTH(N)				\
   (VEC_index (reg_info_p, reg_n_info, N)->live_length)
 
 /* Vector of substitutions of register numbers,

@@ -92,17 +92,17 @@ build_word_mode_vector_type (int nunits)
      because it still saves some memory.  */
   vector_last_nunits = nunits;
   vector_last_type = type_hash_canon (nunits,
-                                      build_vector_type (vector_inner_type,
-                                                         nunits));
+				      build_vector_type (vector_inner_type,
+							 nunits));
   return vector_last_type;
 }
 
 typedef tree (*elem_op_func) (block_stmt_iterator *,
-                              tree, tree, tree, tree, tree, enum tree_code);
+			      tree, tree, tree, tree, tree, enum tree_code);
 
 static inline tree
 tree_vec_extract (block_stmt_iterator *bsi, tree type,
-                  tree t, tree bitsize, tree bitpos)
+		  tree t, tree bitsize, tree bitpos)
 {
   if (bitpos)
     return gimplify_build3 (bsi, BIT_FIELD_REF, type, t, bitsize, bitpos);
@@ -112,8 +112,8 @@ tree_vec_extract (block_stmt_iterator *bsi, tree type,
 
 static tree
 do_unop (block_stmt_iterator *bsi, tree inner_type, tree a,
-         tree b ATTRIBUTE_UNUSED, tree bitpos, tree bitsize,
-         enum tree_code code)
+	 tree b ATTRIBUTE_UNUSED, tree bitpos, tree bitsize,
+	 enum tree_code code)
 {
   a = tree_vec_extract (bsi, inner_type, a, bitsize, bitpos);
   return gimplify_build1 (bsi, code, inner_type, a);
@@ -121,7 +121,7 @@ do_unop (block_stmt_iterator *bsi, tree inner_type, tree a,
 
 static tree
 do_binop (block_stmt_iterator *bsi, tree inner_type, tree a, tree b,
-          tree bitpos, tree bitsize, enum tree_code code)
+	  tree bitpos, tree bitsize, enum tree_code code)
 {
   a = tree_vec_extract (bsi, inner_type, a, bitsize, bitpos);
   b = tree_vec_extract (bsi, inner_type, b, bitsize, bitpos);
@@ -143,8 +143,8 @@ do_binop (block_stmt_iterator *bsi, tree inner_type, tree a, tree b,
    fit into a word.  */
 static tree
 do_plus_minus (block_stmt_iterator *bsi, tree word_type, tree a, tree b,
-               tree bitpos ATTRIBUTE_UNUSED, tree bitsize ATTRIBUTE_UNUSED,
-               enum tree_code code)
+	       tree bitpos ATTRIBUTE_UNUSED, tree bitsize ATTRIBUTE_UNUSED,
+	       enum tree_code code)
 {
   tree inner_type = TREE_TYPE (TREE_TYPE (a));
   unsigned HOST_WIDE_INT max;
@@ -174,9 +174,9 @@ do_plus_minus (block_stmt_iterator *bsi, tree word_type, tree a, tree b,
 
 static tree
 do_negate (block_stmt_iterator *bsi, tree word_type, tree b,
-           tree unused ATTRIBUTE_UNUSED, tree bitpos ATTRIBUTE_UNUSED,
-           tree bitsize ATTRIBUTE_UNUSED,
-           enum tree_code code ATTRIBUTE_UNUSED)
+	   tree unused ATTRIBUTE_UNUSED, tree bitpos ATTRIBUTE_UNUSED,
+	   tree bitsize ATTRIBUTE_UNUSED,
+	   enum tree_code code ATTRIBUTE_UNUSED)
 {
   tree inner_type = TREE_TYPE (TREE_TYPE (b));
   HOST_WIDE_INT max;
@@ -199,15 +199,15 @@ do_negate (block_stmt_iterator *bsi, tree word_type, tree b,
    whose type is the vector type's inner type.  */
 static tree
 expand_vector_piecewise (block_stmt_iterator *bsi, elem_op_func f,
-                         tree type, tree inner_type,
-                         tree a, tree b, enum tree_code code)
+			 tree type, tree inner_type,
+			 tree a, tree b, enum tree_code code)
 {
   VEC(constructor_elt,gc) *v;
   tree part_width = TYPE_SIZE (inner_type);
   tree index = bitsize_int (0);
   int nunits = TYPE_VECTOR_SUBPARTS (type);
   int delta = tree_low_cst (part_width, 1)
-              / tree_low_cst (TYPE_SIZE (TREE_TYPE (type)), 1);
+	      / tree_low_cst (TYPE_SIZE (TREE_TYPE (type)), 1);
   int i;
 
   v = VEC_alloc(constructor_elt, gc, (nunits + delta - 1) / delta);
@@ -228,8 +228,8 @@ expand_vector_piecewise (block_stmt_iterator *bsi, elem_op_func f,
    in the vector type.  */
 static tree
 expand_vector_parallel (block_stmt_iterator *bsi, elem_op_func f, tree type,
-                        tree a, tree b,
-                        enum tree_code code)
+			tree a, tree b,
+			enum tree_code code)
 {
   tree result, compute_type;
   enum machine_mode mode;
@@ -241,14 +241,14 @@ expand_vector_parallel (block_stmt_iterator *bsi, elem_op_func f, tree type,
      than one word, do it as a scalar.  */
   if (TYPE_MODE (TREE_TYPE (type)) == word_mode)
      return expand_vector_piecewise (bsi, f,
-                                     type, TREE_TYPE (type),
-                                     a, b, code);
+				     type, TREE_TYPE (type),
+				     a, b, code);
   else if (n_words > 1)
     {
       tree word_type = build_word_mode_vector_type (n_words);
       result = expand_vector_piecewise (bsi, f,
-                                        word_type, TREE_TYPE (word_type),
-                                        a, b, code);
+				        word_type, TREE_TYPE (word_type),
+					a, b, code);
       result = gimplify_val (bsi, word_type, result);
     }
   else
@@ -269,26 +269,26 @@ expand_vector_parallel (block_stmt_iterator *bsi, elem_op_func f, tree type,
    holds at least four items and if a word can hold four items.  */
 static tree
 expand_vector_addition (block_stmt_iterator *bsi,
-                        elem_op_func f, elem_op_func f_parallel,
-                        tree type, tree a, tree b, enum tree_code code)
+			elem_op_func f, elem_op_func f_parallel,
+			tree type, tree a, tree b, enum tree_code code)
 {
   int parts_per_word = UNITS_PER_WORD
-                         / tree_low_cst (TYPE_SIZE_UNIT (TREE_TYPE (type)), 1);
+	  	       / tree_low_cst (TYPE_SIZE_UNIT (TREE_TYPE (type)), 1);
 
   if (INTEGRAL_TYPE_P (TREE_TYPE (type))
       && parts_per_word >= 4
       && TYPE_VECTOR_SUBPARTS (type) >= 4)
     return expand_vector_parallel (bsi, f_parallel,
-                                   type, a, b, code);
+				   type, a, b, code);
   else
     return expand_vector_piecewise (bsi, f,
-                                    type, TREE_TYPE (type),
-                                    a, b, code);
+				    type, TREE_TYPE (type),
+				    a, b, code);
 }
 
 static tree
 expand_vector_operation (block_stmt_iterator *bsi, tree type, tree compute_type,
-                         tree rhs, enum tree_code code)
+			 tree rhs, enum tree_code code)
 {
   enum machine_mode compute_mode = TYPE_MODE (compute_type);
 
@@ -303,41 +303,41 @@ expand_vector_operation (block_stmt_iterator *bsi, tree type, tree compute_type,
       case MINUS_EXPR:
         if (!TYPE_OVERFLOW_TRAPS (type))
           return expand_vector_addition (bsi, do_binop, do_plus_minus, type,
-                                               TREE_OPERAND (rhs, 0),
-                                         TREE_OPERAND (rhs, 1), code);
-        break;
+		      		         TREE_OPERAND (rhs, 0),
+					 TREE_OPERAND (rhs, 1), code);
+	break;
 
       case NEGATE_EXPR:
         if (!TYPE_OVERFLOW_TRAPS (type))
           return expand_vector_addition (bsi, do_unop, do_negate, type,
-                                               TREE_OPERAND (rhs, 0),
-                                         NULL_TREE, code);
-        break;
+		      		         TREE_OPERAND (rhs, 0),
+					 NULL_TREE, code);
+	break;
 
       case BIT_AND_EXPR:
       case BIT_IOR_EXPR:
       case BIT_XOR_EXPR:
         return expand_vector_parallel (bsi, do_binop, type,
-                                             TREE_OPERAND (rhs, 0),
-                                       TREE_OPERAND (rhs, 1), code);
+		      		       TREE_OPERAND (rhs, 0),
+				       TREE_OPERAND (rhs, 1), code);
 
       case BIT_NOT_EXPR:
         return expand_vector_parallel (bsi, do_unop, type,
-                                             TREE_OPERAND (rhs, 0),
-                                       NULL_TREE, code);
+		      		       TREE_OPERAND (rhs, 0),
+				       NULL_TREE, code);
 
       default:
-        break;
+	break;
       }
 
   if (TREE_CODE_CLASS (code) == tcc_unary)
     return expand_vector_piecewise (bsi, do_unop, type, compute_type,
-                                    TREE_OPERAND (rhs, 0),
-                                    NULL_TREE, code);
+				    TREE_OPERAND (rhs, 0),
+				    NULL_TREE, code);
   else
     return expand_vector_piecewise (bsi, do_binop, type, compute_type,
-                                    TREE_OPERAND (rhs, 0),
-                                    TREE_OPERAND (rhs, 1), code);
+				    TREE_OPERAND (rhs, 0),
+				    TREE_OPERAND (rhs, 1), code);
 }
 
 /* Return a type for the widest vector mode whose components are of mode
@@ -356,7 +356,7 @@ type_for_widest_vector_mode (enum machine_mode inner_mode, optab op)
   for (; mode != VOIDmode; mode = GET_MODE_WIDER_MODE (mode))
     if (GET_MODE_INNER (mode) == inner_mode
         && GET_MODE_NUNITS (mode) > best_nunits
-        && op->handlers[mode].insn_code != CODE_FOR_nothing)
+	&& op->handlers[mode].insn_code != CODE_FOR_nothing)
       best_mode = mode, best_nunits = GET_MODE_NUNITS (mode);
 
   if (best_mode == VOIDmode)
@@ -381,7 +381,7 @@ expand_vector_operations_1 (block_stmt_iterator *bsi)
     case RETURN_EXPR:
       stmt = TREE_OPERAND (stmt, 0);
       if (!stmt || TREE_CODE (stmt) != MODIFY_EXPR)
-        return;
+	return;
 
       /* FALLTHRU */
 
@@ -441,13 +441,13 @@ expand_vector_operations_1 (block_stmt_iterator *bsi)
     {
       compute_mode = TYPE_MODE (compute_type);
       if ((GET_MODE_CLASS (compute_mode) == MODE_VECTOR_INT
-           || GET_MODE_CLASS (compute_mode) == MODE_VECTOR_FLOAT)
+	   || GET_MODE_CLASS (compute_mode) == MODE_VECTOR_FLOAT)
           && op != NULL
-          && op->handlers[compute_mode].insn_code != CODE_FOR_nothing)
-        return;
+	  && op->handlers[compute_mode].insn_code != CODE_FOR_nothing)
+	return;
       else
-        /* There is no operation in hardware, so fall back to scalars.  */
-        compute_type = TREE_TYPE (type);
+	/* There is no operation in hardware, so fall back to scalars.  */
+	compute_type = TREE_TYPE (type);
     }
 
   gcc_assert (code != VEC_LSHIFT_EXPR && code != VEC_RSHIFT_EXPR);
@@ -478,49 +478,49 @@ expand_vector_operations (void)
   FOR_EACH_BB (bb)
     {
       for (bsi = bsi_start (bb); !bsi_end_p (bsi); bsi_next (&bsi))
-        {
-          expand_vector_operations_1 (&bsi);
-          update_stmt_if_modified (bsi_stmt (bsi));
-        }
+	{
+	  expand_vector_operations_1 (&bsi);
+	  update_stmt_if_modified (bsi_stmt (bsi));
+	}
     }
   return 0;
 }
 
 struct tree_opt_pass pass_lower_vector = 
 {
-  "veclower",                                /* name */
-  0,                                        /* gate */
-  expand_vector_operations,                /* execute */
-  NULL,                                        /* sub */
-  NULL,                                        /* next */
-  0,                                        /* static_pass_number */
-  0,                                        /* tv_id */
-  PROP_cfg,                                /* properties_required */
-  0,                                        /* properties_provided */
-  0,                                        /* properties_destroyed */
-  0,                                        /* todo_flags_start */
+  "veclower",				/* name */
+  0,					/* gate */
+  expand_vector_operations,		/* execute */
+  NULL,					/* sub */
+  NULL,					/* next */
+  0,					/* static_pass_number */
+  0,					/* tv_id */
+  PROP_cfg,				/* properties_required */
+  0,					/* properties_provided */
+  0,					/* properties_destroyed */
+  0,					/* todo_flags_start */
   TODO_dump_func | TODO_ggc_collect
-    | TODO_verify_stmts,                /* todo_flags_finish */
-  0                                        /* letter */
+    | TODO_verify_stmts,		/* todo_flags_finish */
+  0					/* letter */
 };
 
 struct tree_opt_pass pass_lower_vector_ssa = 
 {
-  "veclower2",                                /* name */
-  gate_expand_vector_operations,        /* gate */
-  expand_vector_operations,                /* execute */
-  NULL,                                        /* sub */
-  NULL,                                        /* next */
-  0,                                        /* static_pass_number */
-  0,                                        /* tv_id */
-  PROP_cfg,                                /* properties_required */
-  0,                                        /* properties_provided */
-  0,                                        /* properties_destroyed */
-  0,                                        /* todo_flags_start */
-  TODO_dump_func | TODO_update_ssa        /* todo_flags_finish */
+  "veclower2",				/* name */
+  gate_expand_vector_operations,	/* gate */
+  expand_vector_operations,		/* execute */
+  NULL,					/* sub */
+  NULL,					/* next */
+  0,					/* static_pass_number */
+  0,					/* tv_id */
+  PROP_cfg,				/* properties_required */
+  0,					/* properties_provided */
+  0,					/* properties_destroyed */
+  0,					/* todo_flags_start */
+  TODO_dump_func | TODO_update_ssa	/* todo_flags_finish */
     | TODO_verify_ssa
     | TODO_verify_stmts | TODO_verify_flow,
-  0                                        /* letter */
+  0					/* letter */
 };
 
 #include "gt-tree-vect-generic.h"

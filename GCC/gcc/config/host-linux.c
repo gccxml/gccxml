@@ -45,18 +45,18 @@
    We're going to try several things:
 
       * Select an architecture specific address as "likely" and see
-        if that's free.  For our 64-bit hosts, we can easily choose
-        an address in Never Never Land.
+	if that's free.  For our 64-bit hosts, we can easily choose
+	an address in Never Never Land.
 
       * If exec-shield-randomize is disabled, then just use the
-        address chosen by mmap in step one.
+	address chosen by mmap in step one.
 
       * If exec-shield-randomize is enabled, then temporarily allocate
-        32M of memory as a buffer, then allocate PCH memory, then
-        free the buffer.  The theory here is that the perturbation is
-        no more than 16M, and so by allocating our buffer larger than
-        that we make it considerably more likely that the address will
-        be free when we want to load the data back.
+	32M of memory as a buffer, then allocate PCH memory, then
+	free the buffer.  The theory here is that the perturbation is
+	no more than 16M, and so by allocating our buffer larger than
+	that we make it considerably more likely that the address will
+	be free when we want to load the data back.
 */
 
 #undef HOST_HOOKS_GT_PCH_GET_ADDRESS
@@ -68,25 +68,25 @@
 /* For various ports, try to guess a fixed spot in the vm space
    that's probably free.  */
 #if defined(__alpha)
-# define TRY_EMPTY_VM_SPACE        0x10000000000
+# define TRY_EMPTY_VM_SPACE	0x10000000000
 #elif defined(__ia64)
-# define TRY_EMPTY_VM_SPACE        0x2000000100000000
+# define TRY_EMPTY_VM_SPACE	0x2000000100000000
 #elif defined(__x86_64)
-# define TRY_EMPTY_VM_SPACE        0x1000000000
+# define TRY_EMPTY_VM_SPACE	0x1000000000
 #elif defined(__i386)
-# define TRY_EMPTY_VM_SPACE        0x60000000
+# define TRY_EMPTY_VM_SPACE	0x60000000
 #elif defined(__powerpc__)
-# define TRY_EMPTY_VM_SPACE        0x60000000
+# define TRY_EMPTY_VM_SPACE	0x60000000
 #elif defined(__s390x__)
-# define TRY_EMPTY_VM_SPACE        0x8000000000
+# define TRY_EMPTY_VM_SPACE	0x8000000000
 #elif defined(__s390__)
-# define TRY_EMPTY_VM_SPACE        0x60000000
+# define TRY_EMPTY_VM_SPACE	0x60000000
 #elif defined(__sparc__) && defined(__LP64__)
-# define TRY_EMPTY_VM_SPACE        0x8000000000
+# define TRY_EMPTY_VM_SPACE	0x8000000000
 #elif defined(__sparc__)
-# define TRY_EMPTY_VM_SPACE        0x60000000
+# define TRY_EMPTY_VM_SPACE	0x60000000
 #else
-# define TRY_EMPTY_VM_SPACE        0
+# define TRY_EMPTY_VM_SPACE	0
 #endif
 
 /* Determine a location where we might be able to reliably allocate SIZE
@@ -102,7 +102,7 @@ linux_gt_pch_get_address (size_t size, int fd)
   bool randomize_on;
 
   addr = mmap ((void *)TRY_EMPTY_VM_SPACE, size, PROT_READ | PROT_WRITE,
-               MAP_PRIVATE, fd, 0);
+	       MAP_PRIVATE, fd, 0);
 
   /* If we failed the map, that means there's *no* free space.  */
   if (addr == (void *) MAP_FAILED)
@@ -129,10 +129,10 @@ linux_gt_pch_get_address (size_t size, int fd)
 
       c = fread (buf, 1, sizeof buf - 1, f);
       if (c > 0)
-        {
-          buf[c] = '\0';
-          randomize_on = (atoi (buf) > 0);
-        }
+	{
+	  buf[c] = '\0';
+	  randomize_on = (atoi (buf) > 0);
+	}
       fclose (f);
     }
 
@@ -189,7 +189,7 @@ linux_gt_pch_use_address (void *base, size_t size, int fd, size_t offset)
 
   /* Try to make an anonymous private mmap at the desired location.  */
   addr = mmap (base, size, PROT_READ | PROT_WRITE,
-               MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+	       MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
 
   if (addr != base)
     {

@@ -65,7 +65,7 @@ Boston, MA 02110-1301, USA.  */
    This is suitable for output with `assemble_name'.  */
 
 #undef  ASM_GENERATE_INTERNAL_LABEL
-#define ASM_GENERATE_INTERNAL_LABEL(LABEL,PREFIX,NUM)        \
+#define ASM_GENERATE_INTERNAL_LABEL(LABEL,PREFIX,NUM)	\
   sprintf ((LABEL), "*.L%s%ld", (PREFIX), (long)(NUM))
 
 /* ??? Inherited from sol2.h.  Probably wrong.  */

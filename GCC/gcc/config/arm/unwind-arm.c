@@ -40,17 +40,17 @@ typedef struct _ZSt9type_info type_info; /* This names C++ type_info type */
 void __attribute__((weak)) __cxa_call_unexpected(_Unwind_Control_Block *ucbp);
 bool __attribute__((weak)) __cxa_begin_cleanup(_Unwind_Control_Block *ucbp);
 bool __attribute__((weak)) __cxa_type_match(_Unwind_Control_Block *ucbp,
-                                            const type_info *rttip,
-                                            void **matched_object);
+					    const type_info *rttip,
+					    void **matched_object);
 
 _Unwind_Ptr __attribute__((weak))
 __gnu_Unwind_Find_exidx (_Unwind_Ptr, int *);
 
 /* Misc constants.  */
-#define R_IP        12
-#define R_SP        13
-#define R_LR        14
-#define R_PC        15
+#define R_IP	12
+#define R_SP	13
+#define R_LR	14
+#define R_PC	15
 
 #define EXIDX_CANTUNWIND 1
 #define uint32_highbit (((_uw) 1) << 31)
@@ -174,10 +174,10 @@ extern _Unwind_Reason_Code __aeabi_unwind_cpp_pr2 (_Unwind_State,
 /* ABI defined routine to store a virtual register to memory.  */
 
 _Unwind_VRS_Result _Unwind_VRS_Get (_Unwind_Context *context,
-                                    _Unwind_VRS_RegClass regclass,
-                                    _uw regno,
-                                    _Unwind_VRS_DataRepresentation representation,
-                                    void *valuep)
+				    _Unwind_VRS_RegClass regclass,
+				    _uw regno,
+				    _Unwind_VRS_DataRepresentation representation,
+				    void *valuep)
 {
   phase1_vrs *vrs = (phase1_vrs *) context;
 
@@ -185,8 +185,8 @@ _Unwind_VRS_Result _Unwind_VRS_Get (_Unwind_Context *context,
     {
     case _UVRSC_CORE:
       if (representation != _UVRSD_UINT32
-          || regno > 15)
-        return _UVRSR_FAILED;
+	  || regno > 15)
+	return _UVRSR_FAILED;
       *(_uw *) valuep = vrs->core.r[regno];
       return _UVRSR_OK;
 
@@ -205,10 +205,10 @@ _Unwind_VRS_Result _Unwind_VRS_Get (_Unwind_Context *context,
 /* ABI defined function to load a virtual register from memory.  */
 
 _Unwind_VRS_Result _Unwind_VRS_Set (_Unwind_Context *context,
-                                    _Unwind_VRS_RegClass regclass,
-                                    _uw regno,
-                                    _Unwind_VRS_DataRepresentation representation,
-                                    void *valuep)
+				    _Unwind_VRS_RegClass regclass,
+				    _uw regno,
+				    _Unwind_VRS_DataRepresentation representation,
+				    void *valuep)
 {
   phase1_vrs *vrs = (phase1_vrs *) context;
 
@@ -216,8 +216,8 @@ _Unwind_VRS_Result _Unwind_VRS_Set (_Unwind_Context *context,
     {
     case _UVRSC_CORE:
       if (representation != _UVRSD_UINT32
-          || regno > 15)
-        return _UVRSR_FAILED;
+	  || regno > 15)
+	return _UVRSR_FAILED;
 
       vrs->core.r[regno] = *(_uw *) valuep;
       return _UVRSR_OK;
@@ -237,9 +237,9 @@ _Unwind_VRS_Result _Unwind_VRS_Set (_Unwind_Context *context,
 /* ABI defined function to pop registers off the stack.  */
 
 _Unwind_VRS_Result _Unwind_VRS_Pop (_Unwind_Context *context,
-                                    _Unwind_VRS_RegClass regclass,
-                                    _uw discriminator,
-                                    _Unwind_VRS_DataRepresentation representation)
+				    _Unwind_VRS_RegClass regclass,
+				    _uw discriminator,
+				    _Unwind_VRS_DataRepresentation representation)
 {
   phase1_vrs *vrs = (phase1_vrs *) context;
 
@@ -247,69 +247,69 @@ _Unwind_VRS_Result _Unwind_VRS_Pop (_Unwind_Context *context,
     {
     case _UVRSC_CORE:
       {
-        _uw *ptr;
-        _uw mask;
-        int i;
+	_uw *ptr;
+	_uw mask;
+	int i;
 
-        if (representation != _UVRSD_UINT32)
-          return _UVRSR_FAILED;
+	if (representation != _UVRSD_UINT32)
+	  return _UVRSR_FAILED;
 
-        mask = discriminator & 0xffff;
-        ptr = (_uw *) vrs->core.r[R_SP];
-        /* Pop the requested registers.  */
-        for (i = 0; i < 16; i++)
-          {
-            if (mask & (1 << i))
-              vrs->core.r[i] = *(ptr++);
-          }
-        /* Writeback the stack pointer value if it wasn't restored.  */
-        if ((mask & (1 << R_SP)) == 0)
-          vrs->core.r[R_SP] = (_uw) ptr;
+	mask = discriminator & 0xffff;
+	ptr = (_uw *) vrs->core.r[R_SP];
+	/* Pop the requested registers.  */
+	for (i = 0; i < 16; i++)
+	  {
+	    if (mask & (1 << i))
+	      vrs->core.r[i] = *(ptr++);
+	  }
+	/* Writeback the stack pointer value if it wasn't restored.  */
+	if ((mask & (1 << R_SP)) == 0)
+	  vrs->core.r[R_SP] = (_uw) ptr;
       }
       return _UVRSR_OK;
 
     case _UVRSC_VFP:
       {
-        _uw start = discriminator >> 16;
-        _uw count = discriminator & 0xffff;
-        struct vfp_regs tmp;
-        _uw *sp;
-        _uw *dest;
+	_uw start = discriminator >> 16;
+	_uw count = discriminator & 0xffff;
+	struct vfp_regs tmp;
+	_uw *sp;
+	_uw *dest;
 
-        if ((representation != _UVRSD_VFPX && representation != _UVRSD_DOUBLE)
-            || start + count > 16)
-          return _UVRSR_FAILED;
+	if ((representation != _UVRSD_VFPX && representation != _UVRSD_DOUBLE)
+	    || start + count > 16)
+	  return _UVRSR_FAILED;
 
-        if (vrs->demand_save_flags & DEMAND_SAVE_VFP)
-          {
-            /* Demand-save resisters for stage1.  */
-            vrs->demand_save_flags &= ~DEMAND_SAVE_VFP;
-            __gnu_Unwind_Save_VFP (&vrs->vfp);
-          }
+	if (vrs->demand_save_flags & DEMAND_SAVE_VFP)
+	  {
+	    /* Demand-save resisters for stage1.  */
+	    vrs->demand_save_flags &= ~DEMAND_SAVE_VFP;
+	    __gnu_Unwind_Save_VFP (&vrs->vfp);
+	  }
 
-        /* Restore the registers from the stack.  Do this by saving the
-           current VFP registers to a memory area, moving the in-memory
-           values into that area, and restoring from the whole area.
-           For _UVRSD_VFPX we assume FSTMX standard format 1.  */
-        __gnu_Unwind_Save_VFP (&tmp);
+	/* Restore the registers from the stack.  Do this by saving the
+	   current VFP registers to a memory area, moving the in-memory
+	   values into that area, and restoring from the whole area.
+	   For _UVRSD_VFPX we assume FSTMX standard format 1.  */
+	__gnu_Unwind_Save_VFP (&tmp);
 
-        /* The stack address is only guaranteed to be word aligned, so
-           we can't use doubleword copies.  */
-        sp = (_uw *) vrs->core.r[R_SP];
-        dest = (_uw *) &tmp.d[start];
-        count *= 2;
-        while (count--)
-          *(dest++) = *(sp++);
+	/* The stack address is only guaranteed to be word aligned, so
+	   we can't use doubleword copies.  */
+	sp = (_uw *) vrs->core.r[R_SP];
+	dest = (_uw *) &tmp.d[start];
+	count *= 2;
+	while (count--)
+	  *(dest++) = *(sp++);
 
-        /* Skip the pad word */
-        if (representation == _UVRSD_VFPX)
-          sp++;
+	/* Skip the pad word */
+	if (representation == _UVRSD_VFPX)
+	  sp++;
 
-        /* Set the new stack pointer.  */
-        vrs->core.r[R_SP] = (_uw) sp;
+	/* Set the new stack pointer.  */
+	vrs->core.r[R_SP] = (_uw) sp;
 
-        /* Reload the registers.  */
-        __gnu_Unwind_Restore_VFP (&tmp);
+	/* Reload the registers.  */
+	__gnu_Unwind_Restore_VFP (&tmp);
       }
       return _UVRSR_OK;
 
@@ -365,20 +365,20 @@ search_EIT_table (const __EIT_entry * table, int nrec, _uw return_address)
       n = (left + right) / 2;
       this_fn = selfrel_offset31 (&table[n].fnoffset);
       if (n != nrec - 1)
-        next_fn = selfrel_offset31 (&table[n + 1].fnoffset) - 1;
+	next_fn = selfrel_offset31 (&table[n + 1].fnoffset) - 1;
       else
-        next_fn = (_uw)0 - 1;
+	next_fn = (_uw)0 - 1;
 
       if (return_address < this_fn)
-        {
-          if (n == left)
-            return (__EIT_entry *) 0;
-          right = n - 1;
-        }
+	{
+	  if (n == left)
+	    return (__EIT_entry *) 0;
+	  right = n - 1;
+	}
       else if (return_address <= next_fn)
-        return &table[n];
+	return &table[n];
       else
-        left = n + 1;
+	left = n + 1;
     }
 }
 
@@ -402,12 +402,12 @@ get_eit_entry (_Unwind_Control_Block *ucbp, _uw return_address)
   if (__gnu_Unwind_Find_exidx)
     {
       eitp = (const __EIT_entry *) __gnu_Unwind_Find_exidx (return_address,
-                                                            &nrec);
+							    &nrec);
       if (!eitp)
-        {
-          UCB_PR_ADDR (ucbp) = 0;
-          return _URC_FAILURE;
-        }
+	{
+	  UCB_PR_ADDR (ucbp) = 0;
+	  return _URC_FAILURE;
+	}
     }
   else
     {
@@ -442,9 +442,9 @@ get_eit_entry (_Unwind_Control_Block *ucbp, _uw return_address)
   else
     {
       /* The low 31 bits of the content field are a self-relative
-         offset to an _Unwind_EHT_Entry structure.  */
+	 offset to an _Unwind_EHT_Entry structure.  */
       ucbp->pr_cache.ehtp =
-        (_Unwind_EHT_Header *) selfrel_offset31 (&eitp->content);
+	(_Unwind_EHT_Header *) selfrel_offset31 (&eitp->content);
       ucbp->pr_cache.additional = 0;
     }
 
@@ -454,16 +454,16 @@ get_eit_entry (_Unwind_Control_Block *ucbp, _uw return_address)
       /* One of the predefined standard routines.  */
       _uw idx = (*(_uw *) ucbp->pr_cache.ehtp >> 24) & 0xf;
       if (idx == 0)
-        UCB_PR_ADDR (ucbp) = (_uw) &__aeabi_unwind_cpp_pr0;
+	UCB_PR_ADDR (ucbp) = (_uw) &__aeabi_unwind_cpp_pr0;
       else if (idx == 1)
-        UCB_PR_ADDR (ucbp) = (_uw) &__aeabi_unwind_cpp_pr1;
+	UCB_PR_ADDR (ucbp) = (_uw) &__aeabi_unwind_cpp_pr1;
       else if (idx == 2)
-        UCB_PR_ADDR (ucbp) = (_uw) &__aeabi_unwind_cpp_pr2;
+	UCB_PR_ADDR (ucbp) = (_uw) &__aeabi_unwind_cpp_pr2;
       else
-        { /* Failed */
-          UCB_PR_ADDR (ucbp) = 0;
-          return _URC_FAILURE;
-        }
+	{ /* Failed */
+	  UCB_PR_ADDR (ucbp) = 0;
+	  return _URC_FAILURE;
+	}
     } 
   else
     {
@@ -485,13 +485,13 @@ unwind_phase2 (_Unwind_Control_Block * ucbp, phase2_vrs * vrs)
     {
       /* Find the entry for this routine.  */
       if (get_eit_entry (ucbp, vrs->core.r[R_PC]) != _URC_OK)
-        abort ();
+	abort ();
 
       UCB_SAVED_CALLSITE_ADDR (ucbp) = vrs->core.r[R_PC];
 
       /* Call the pr to decide what to do.  */
       pr_result = ((personality_routine) UCB_PR_ADDR (ucbp))
-        (_US_UNWIND_FRAME_STARTING, ucbp, (_Unwind_Context *) vrs);
+	(_US_UNWIND_FRAME_STARTING, ucbp, (_Unwind_Context *) vrs);
     }
   while (pr_result == _URC_CONTINUE_UNWIND);
   
@@ -505,7 +505,7 @@ unwind_phase2 (_Unwind_Control_Block * ucbp, phase2_vrs * vrs)
 
 static _Unwind_Reason_Code
 unwind_phase2_forced (_Unwind_Control_Block *ucbp, phase2_vrs *entry_vrs,
-                      int resuming)
+		      int resuming)
 {
   _Unwind_Stop_Fn stop_fn = (_Unwind_Stop_Fn) UCB_FORCED_STOP_FN (ucbp);
   void *stop_arg = (void *)UCB_FORCED_STOP_ARG (ucbp);
@@ -531,46 +531,46 @@ unwind_phase2_forced (_Unwind_Control_Block *ucbp, phase2_vrs *entry_vrs,
       entry_code = get_eit_entry (ucbp, saved_vrs.core.r[R_PC]);
 
       if (resuming)
-        {
-          action = _US_UNWIND_FRAME_RESUME | _US_FORCE_UNWIND;
-          resuming = 0;
-        }
+	{
+	  action = _US_UNWIND_FRAME_RESUME | _US_FORCE_UNWIND;
+	  resuming = 0;
+	}
       else
-        action = _US_UNWIND_FRAME_STARTING | _US_FORCE_UNWIND;
+	action = _US_UNWIND_FRAME_STARTING | _US_FORCE_UNWIND;
 
       if (entry_code == _URC_OK)
-        {
-          UCB_SAVED_CALLSITE_ADDR (ucbp) = saved_vrs.core.r[R_PC];
+	{
+	  UCB_SAVED_CALLSITE_ADDR (ucbp) = saved_vrs.core.r[R_PC];
 
-          next_vrs = saved_vrs;
+	  next_vrs = saved_vrs;
 
-          /* Call the pr to decide what to do.  */
-          pr_result = ((personality_routine) UCB_PR_ADDR (ucbp))
-            (action, ucbp, (void *) &next_vrs);
+	  /* Call the pr to decide what to do.  */
+	  pr_result = ((personality_routine) UCB_PR_ADDR (ucbp))
+	    (action, ucbp, (void *) &next_vrs);
 
-          saved_vrs.prev_sp = next_vrs.core.r[R_SP];
-        }
+	  saved_vrs.prev_sp = next_vrs.core.r[R_SP];
+	}
       else
-        {
-          /* Treat any failure as the end of unwinding, to cope more
-             gracefully with missing EH information.  Mixed EH and
-             non-EH within one object will usually result in failure,
-             because the .ARM.exidx tables do not indicate the end
-             of the code to which they apply; but mixed EH and non-EH
-             shared objects should return an unwind failure at the
-             entry of a non-EH shared object.  */
-          action |= _US_END_OF_STACK;
+	{
+	  /* Treat any failure as the end of unwinding, to cope more
+	     gracefully with missing EH information.  Mixed EH and
+	     non-EH within one object will usually result in failure,
+	     because the .ARM.exidx tables do not indicate the end
+	     of the code to which they apply; but mixed EH and non-EH
+	     shared objects should return an unwind failure at the
+	     entry of a non-EH shared object.  */
+	  action |= _US_END_OF_STACK;
 
-          saved_vrs.prev_sp = saved_vrs.core.r[R_SP];
-        }
+	  saved_vrs.prev_sp = saved_vrs.core.r[R_SP];
+	}
 
       stop_code = stop_fn (1, action, ucbp->exception_class, ucbp,
-                           (void *)&saved_vrs, stop_arg);
+			   (void *)&saved_vrs, stop_arg);
       if (stop_code != _URC_NO_REASON)
-        return _URC_FAILURE;
+	return _URC_FAILURE;
 
       if (entry_code != _URC_OK)
-        return entry_code;
+	return entry_code;
 
       saved_vrs = next_vrs;
     }
@@ -579,7 +579,7 @@ unwind_phase2_forced (_Unwind_Control_Block *ucbp, phase2_vrs *entry_vrs,
   if (pr_result != _URC_INSTALL_CONTEXT)
     {
       /* Some sort of failure has occurred in the pr and probably the
-         pr returned _URC_FAILURE.  */
+	 pr returned _URC_FAILURE.  */
       return _URC_FAILURE;
     }
 
@@ -607,7 +607,7 @@ __gnu_Unwind_RaiseException (_Unwind_Control_Block *, phase2_vrs *);
 
 _Unwind_Reason_Code
 __gnu_Unwind_RaiseException (_Unwind_Control_Block * ucbp,
-                             phase2_vrs * entry_vrs)
+			     phase2_vrs * entry_vrs)
 {
   phase1_vrs saved_vrs;
   _Unwind_Reason_Code pr_result;
@@ -625,11 +625,11 @@ __gnu_Unwind_RaiseException (_Unwind_Control_Block * ucbp,
     {
       /* Find the entry for this routine.  */
       if (get_eit_entry (ucbp, saved_vrs.core.r[R_PC]) != _URC_OK)
-        return _URC_FAILURE;
+	return _URC_FAILURE;
 
       /* Call the pr to decide what to do.  */
       pr_result = ((personality_routine) UCB_PR_ADDR (ucbp))
-        (_US_VIRTUAL_UNWIND_FRAME, ucbp, (void *) &saved_vrs);
+	(_US_VIRTUAL_UNWIND_FRAME, ucbp, (void *) &saved_vrs);
     }
   while (pr_result == _URC_CONTINUE_UNWIND);
 
@@ -639,7 +639,7 @@ __gnu_Unwind_RaiseException (_Unwind_Control_Block * ucbp,
   if (pr_result != _URC_HANDLER_FOUND)
     {
       /* Some sort of failure has occurred in the pr and probably the
-         pr returned _URC_FAILURE.  */
+	 pr returned _URC_FAILURE.  */
       return _URC_FAILURE;
     }
   
@@ -651,12 +651,12 @@ __gnu_Unwind_RaiseException (_Unwind_Control_Block * ucbp,
    _Unwind_Resume.  */
 _Unwind_Reason_Code
 __gnu_Unwind_ForcedUnwind (_Unwind_Control_Block *,
-                           _Unwind_Stop_Fn, void *, phase2_vrs *);
+			   _Unwind_Stop_Fn, void *, phase2_vrs *);
 
 _Unwind_Reason_Code
 __gnu_Unwind_ForcedUnwind (_Unwind_Control_Block *ucbp,
-                           _Unwind_Stop_Fn stop_fn, void *stop_arg,
-                           phase2_vrs *entry_vrs)
+			   _Unwind_Stop_Fn stop_fn, void *stop_arg,
+			   phase2_vrs *entry_vrs)
 {
   UCB_FORCED_STOP_FN (ucbp) = (_uw) stop_fn;
   UCB_FORCED_STOP_ARG (ucbp) = (_uw) stop_arg;
@@ -688,7 +688,7 @@ __gnu_Unwind_Resume (_Unwind_Control_Block * ucbp, phase2_vrs * entry_vrs)
 
   /* Call the cached PR.  */
   pr_result = ((personality_routine) UCB_PR_ADDR (ucbp))
-        (_US_UNWIND_FRAME_RESUME, ucbp, (_Unwind_Context *) entry_vrs);
+	(_US_UNWIND_FRAME_RESUME, ucbp, (_Unwind_Context *) entry_vrs);
 
   switch (pr_result)
     {
@@ -710,7 +710,7 @@ __gnu_Unwind_Resume_or_Rethrow (_Unwind_Control_Block *, phase2_vrs *);
 
 _Unwind_Reason_Code
 __gnu_Unwind_Resume_or_Rethrow (_Unwind_Control_Block * ucbp,
-                                phase2_vrs * entry_vrs)
+				phase2_vrs * entry_vrs)
 {
   if (!UCB_FORCED_STOP_FN (ucbp))
     return __gnu_Unwind_RaiseException (ucbp, entry_vrs);
@@ -753,9 +753,9 @@ _Unwind_DeleteException (_Unwind_Exception * exc)
 
 static _Unwind_Reason_Code
 __gnu_unwind_pr_common (_Unwind_State state,
-                        _Unwind_Control_Block *ucbp,
-                        _Unwind_Context *context,
-                        int id)
+			_Unwind_Control_Block *ucbp,
+			_Unwind_Context *context,
+			int id)
 {
   __gnu_unwind_state uws;
   _uw *data;
@@ -793,172 +793,172 @@ __gnu_unwind_pr_common (_Unwind_State state,
     {
       /* Process descriptors.  */
       while (*data)
-        {
-          _uw addr;
-          _uw fnstart;
+	{
+	  _uw addr;
+	  _uw fnstart;
 
-          if (id == 2)
-            {
-              len = ((EHT32 *) data)->length;
-              offset = ((EHT32 *) data)->offset;
-              data += 2;
-            }
-          else
-            {
-              len = ((EHT16 *) data)->length;
-              offset = ((EHT16 *) data)->offset;
-              data++;
-            }
+	  if (id == 2)
+	    {
+	      len = ((EHT32 *) data)->length;
+	      offset = ((EHT32 *) data)->offset;
+	      data += 2;
+	    }
+	  else
+	    {
+	      len = ((EHT16 *) data)->length;
+	      offset = ((EHT16 *) data)->offset;
+	      data++;
+	    }
 
-          fnstart = ucbp->pr_cache.fnstart + (offset & ~1);
-          addr = _Unwind_GetGR (context, R_PC);
-          in_range = (fnstart <= addr && addr < fnstart + (len & ~1));
+	  fnstart = ucbp->pr_cache.fnstart + (offset & ~1);
+	  addr = _Unwind_GetGR (context, R_PC);
+	  in_range = (fnstart <= addr && addr < fnstart + (len & ~1));
 
-          switch (((offset & 1) << 1) | (len & 1))
-            {
-            case 0:
-              /* Cleanup.  */
-              if (state != _US_VIRTUAL_UNWIND_FRAME
-                  && in_range)
-                {
-                  /* Cleanup in range, and we are running cleanups.  */
-                  _uw lp;
+	  switch (((offset & 1) << 1) | (len & 1))
+	    {
+	    case 0:
+	      /* Cleanup.  */
+	      if (state != _US_VIRTUAL_UNWIND_FRAME
+		  && in_range)
+		{
+		  /* Cleanup in range, and we are running cleanups.  */
+		  _uw lp;
 
-                  /* Landing pad address is 31-bit pc-relative offset.  */
-                  lp = selfrel_offset31 (data);
-                  data++;
-                  /* Save the exception data pointer.  */
-                  ucbp->cleanup_cache.bitpattern[0] = (_uw) data;
-                  if (!__cxa_begin_cleanup (ucbp))
-                    return _URC_FAILURE;
-                  /* Setup the VRS to enter the landing pad.  */
-                  _Unwind_SetGR (context, R_PC, lp);
-                  return _URC_INSTALL_CONTEXT;
-                }
-              /* Cleanup not in range, or we are in stage 1.  */
-              data++;
-              break;
+		  /* Landing pad address is 31-bit pc-relative offset.  */
+		  lp = selfrel_offset31 (data);
+		  data++;
+		  /* Save the exception data pointer.  */
+		  ucbp->cleanup_cache.bitpattern[0] = (_uw) data;
+		  if (!__cxa_begin_cleanup (ucbp))
+		    return _URC_FAILURE;
+		  /* Setup the VRS to enter the landing pad.  */
+		  _Unwind_SetGR (context, R_PC, lp);
+		  return _URC_INSTALL_CONTEXT;
+		}
+	      /* Cleanup not in range, or we are in stage 1.  */
+	      data++;
+	      break;
 
-            case 1:
-              /* Catch handler.  */
-              if (state == _US_VIRTUAL_UNWIND_FRAME)
-                {
-                  if (in_range)
-                    {
-                      /* Check for a barrier.  */
-                      _uw rtti;
-                      void *matched;
+	    case 1:
+	      /* Catch handler.  */
+	      if (state == _US_VIRTUAL_UNWIND_FRAME)
+		{
+		  if (in_range)
+		    {
+		      /* Check for a barrier.  */
+		      _uw rtti;
+		      void *matched;
 
-                      /* Check for no-throw areas.  */
-                      if (data[1] == (_uw) -2)
-                        return _URC_FAILURE;
+		      /* Check for no-throw areas.  */
+		      if (data[1] == (_uw) -2)
+			return _URC_FAILURE;
 
-                      /* The thrown object immediately follows the ECB.  */
-                      matched = (void *)(ucbp + 1);
-                      if (data[1] != (_uw) -1)
-                        {
-                          /* Match a catch specification.  */
-                          rtti = _Unwind_decode_target2 ((_uw) &data[1]);
-                          if (!__cxa_type_match (ucbp, (type_info *) rtti,
-                                                 &matched))
-                            matched = (void *)0;
-                        }
+		      /* The thrown object immediately follows the ECB.  */
+		      matched = (void *)(ucbp + 1);
+		      if (data[1] != (_uw) -1)
+			{
+			  /* Match a catch specification.  */
+			  rtti = _Unwind_decode_target2 ((_uw) &data[1]);
+			  if (!__cxa_type_match (ucbp, (type_info *) rtti,
+						 &matched))
+			    matched = (void *)0;
+			}
 
-                      if (matched)
-                        {
-                          ucbp->barrier_cache.sp =
-                            _Unwind_GetGR (context, R_SP);
-                          ucbp->barrier_cache.bitpattern[0] = (_uw) matched;
-                          ucbp->barrier_cache.bitpattern[1] = (_uw) data;
-                          return _URC_HANDLER_FOUND;
-                        }
-                    }
-                  /* Handler out of range, or not matched.  */
-                }
-              else if (ucbp->barrier_cache.sp == _Unwind_GetGR (context, R_SP)
-                       && ucbp->barrier_cache.bitpattern[1] == (_uw) data)
-                {
-                  /* Matched a previous propagation barrier.  */
-                  _uw lp;
+		      if (matched)
+			{
+			  ucbp->barrier_cache.sp =
+			    _Unwind_GetGR (context, R_SP);
+			  ucbp->barrier_cache.bitpattern[0] = (_uw) matched;
+			  ucbp->barrier_cache.bitpattern[1] = (_uw) data;
+			  return _URC_HANDLER_FOUND;
+			}
+		    }
+		  /* Handler out of range, or not matched.  */
+		}
+	      else if (ucbp->barrier_cache.sp == _Unwind_GetGR (context, R_SP)
+		       && ucbp->barrier_cache.bitpattern[1] == (_uw) data)
+		{
+		  /* Matched a previous propagation barrier.  */
+		  _uw lp;
 
-                  /* Setup for entry to the handler.  */
-                  lp = selfrel_offset31 (data);
-                  _Unwind_SetGR (context, R_PC, lp);
-                  _Unwind_SetGR (context, 0, (_uw) ucbp);
-                  return _URC_INSTALL_CONTEXT;
-                }
-              /* Catch handler not matched.  Advance to the next descriptor.  */
-              data += 2;
-              break;
+		  /* Setup for entry to the handler.  */
+		  lp = selfrel_offset31 (data);
+		  _Unwind_SetGR (context, R_PC, lp);
+		  _Unwind_SetGR (context, 0, (_uw) ucbp);
+		  return _URC_INSTALL_CONTEXT;
+		}
+	      /* Catch handler not matched.  Advance to the next descriptor.  */
+	      data += 2;
+	      break;
 
-            case 2:
-              rtti_count = data[0] & 0x7fffffff;
-              /* Exception specification.  */
-              if (state == _US_VIRTUAL_UNWIND_FRAME)
-                {
-                  if (in_range && (!forced_unwind || !rtti_count))
-                    {
-                      /* Match against the exception specification.  */
-                      _uw i;
-                      _uw rtti;
-                      void *matched;
+	    case 2:
+	      rtti_count = data[0] & 0x7fffffff;
+	      /* Exception specification.  */
+	      if (state == _US_VIRTUAL_UNWIND_FRAME)
+		{
+		  if (in_range && (!forced_unwind || !rtti_count))
+		    {
+		      /* Match against the exception specification.  */
+		      _uw i;
+		      _uw rtti;
+		      void *matched;
 
-                      for (i = 0; i < rtti_count; i++)
-                        {
-                          matched = (void *)(ucbp + 1);
-                          rtti = _Unwind_decode_target2 ((_uw) &data[i + 1]);
-                          if (__cxa_type_match (ucbp, (type_info *) rtti,
-                                                &matched))
-                            break;
-                        }
+		      for (i = 0; i < rtti_count; i++)
+			{
+			  matched = (void *)(ucbp + 1);
+			  rtti = _Unwind_decode_target2 ((_uw) &data[i + 1]);
+			  if (__cxa_type_match (ucbp, (type_info *) rtti,
+						&matched))
+			    break;
+			}
 
-                      if (i == rtti_count)
-                        {
-                          /* Exception does not match the spec.  */
-                          ucbp->barrier_cache.sp =
-                            _Unwind_GetGR (context, R_SP);
-                          ucbp->barrier_cache.bitpattern[0] = (_uw) matched;
-                          ucbp->barrier_cache.bitpattern[1] = (_uw) data;
-                          return _URC_HANDLER_FOUND;
-                        }
-                    }
-                  /* Handler out of range, or exception is permitted.  */
-                }
-              else if (ucbp->barrier_cache.sp == _Unwind_GetGR (context, R_SP)
-                       && ucbp->barrier_cache.bitpattern[1] == (_uw) data)
-                {
-                  /* Matched a previous propagation barrier.  */
-                  _uw lp;
-                  /* Record the RTTI list for __cxa_call_unexpected.  */
-                  ucbp->barrier_cache.bitpattern[1] = rtti_count;
-                  ucbp->barrier_cache.bitpattern[2] = 0;
-                  ucbp->barrier_cache.bitpattern[3] = 4;
-                  ucbp->barrier_cache.bitpattern[4] = (_uw) &data[1];
+		      if (i == rtti_count)
+			{
+			  /* Exception does not match the spec.  */
+			  ucbp->barrier_cache.sp =
+			    _Unwind_GetGR (context, R_SP);
+			  ucbp->barrier_cache.bitpattern[0] = (_uw) matched;
+			  ucbp->barrier_cache.bitpattern[1] = (_uw) data;
+			  return _URC_HANDLER_FOUND;
+			}
+		    }
+		  /* Handler out of range, or exception is permitted.  */
+		}
+	      else if (ucbp->barrier_cache.sp == _Unwind_GetGR (context, R_SP)
+		       && ucbp->barrier_cache.bitpattern[1] == (_uw) data)
+		{
+		  /* Matched a previous propagation barrier.  */
+		  _uw lp;
+		  /* Record the RTTI list for __cxa_call_unexpected.  */
+		  ucbp->barrier_cache.bitpattern[1] = rtti_count;
+		  ucbp->barrier_cache.bitpattern[2] = 0;
+		  ucbp->barrier_cache.bitpattern[3] = 4;
+		  ucbp->barrier_cache.bitpattern[4] = (_uw) &data[1];
 
-                  if (data[0] & uint32_highbit)
-                    phase2_call_unexpected_after_unwind = 1;
-                  else
-                    {
-                      data += rtti_count + 1;
-                      /* Setup for entry to the handler.  */
-                      lp = selfrel_offset31 (data);
-                      data++;
-                      _Unwind_SetGR (context, R_PC, lp);
-                      _Unwind_SetGR (context, 0, (_uw) ucbp);
-                      return _URC_INSTALL_CONTEXT;
-                    }
-                }
-              if (data[0] & uint32_highbit)
-                data++;
-              data += rtti_count + 1;
-              break;
+		  if (data[0] & uint32_highbit)
+		    phase2_call_unexpected_after_unwind = 1;
+		  else
+		    {
+		      data += rtti_count + 1;
+		      /* Setup for entry to the handler.  */
+		      lp = selfrel_offset31 (data);
+		      data++;
+		      _Unwind_SetGR (context, R_PC, lp);
+		      _Unwind_SetGR (context, 0, (_uw) ucbp);
+		      return _URC_INSTALL_CONTEXT;
+		    }
+		}
+	      if (data[0] & uint32_highbit)
+		data++;
+	      data += rtti_count + 1;
+	      break;
 
-            default:
-              /* Should never happen.  */
-              return _URC_FAILURE;
-            }
-          /* Finished processing this descriptor.  */
-        }
+	    default:
+	      /* Should never happen.  */
+	      return _URC_FAILURE;
+	    }
+	  /* Finished processing this descriptor.  */
+	}
     }
 
   if (__gnu_unwind_execute (context, &uws) != _URC_OK)
@@ -980,24 +980,24 @@ __gnu_unwind_pr_common (_Unwind_State state,
 
 _Unwind_Reason_Code
 __aeabi_unwind_cpp_pr0 (_Unwind_State state,
-                        _Unwind_Control_Block *ucbp,
-                        _Unwind_Context *context)
+			_Unwind_Control_Block *ucbp,
+			_Unwind_Context *context)
 {
   return __gnu_unwind_pr_common (state, ucbp, context, 0);
 }
 
 _Unwind_Reason_Code
 __aeabi_unwind_cpp_pr1 (_Unwind_State state,
-                        _Unwind_Control_Block *ucbp,
-                        _Unwind_Context *context)
+			_Unwind_Control_Block *ucbp,
+			_Unwind_Context *context)
 {
   return __gnu_unwind_pr_common (state, ucbp, context, 1);
 }
 
 _Unwind_Reason_Code
 __aeabi_unwind_cpp_pr2 (_Unwind_State state,
-                        _Unwind_Control_Block *ucbp,
-                        _Unwind_Context *context)
+			_Unwind_Control_Block *ucbp,
+			_Unwind_Context *context)
 {
   return __gnu_unwind_pr_common (state, ucbp, context, 2);
 }

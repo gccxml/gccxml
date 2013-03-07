@@ -10,6 +10,6 @@ __floatunsitf (USItype u)
   TFtype r = (TFtype) s;
   if (s < 0)
     r += (TFtype)2.0 * (TFtype) ((USItype) 1
-                                 << (sizeof (USItype) * __CHAR_BIT__ - 1));
+				 << (sizeof (USItype) * __CHAR_BIT__ - 1));
   return r;
 }

@@ -27,8 +27,8 @@ Boston, MA 02110-1301, USA.  */
 /* System dependent initialization for collect2
    to tell system() to act like Unix.  */
 #define COLLECT2_HOST_INITIALIZATION \
-  do { __system_flags |= (__system_allow_multiple_cmds                        \
-                          | __system_emulate_chdir); } while (0)
+  do { __system_flags |= (__system_allow_multiple_cmds			\
+		          | __system_emulate_chdir); } while (0)
 
 /* Define a version appropriate for DOS.  */
 #undef XREF_FILE_NAME
@@ -76,10 +76,10 @@ Boston, MA 02110-1301, USA.  */
 /* We cannot free PATH below as it can point to string constant  */
 #define UPDATE_PATH_HOST_CANONICALIZE(PATH) \
   if (memcmp ((PATH), "/dev/env/", sizeof("/dev/env/") - 1) == 0) \
-    {                                                \
-      static char fixed_path[FILENAME_MAX + 1];        \
-                                                \
-      _fixpath ((PATH), fixed_path);                \
-      strcat (fixed_path, "/");                        \
-      (PATH) = xstrdup (fixed_path);                \
+    {						\
+      static char fixed_path[FILENAME_MAX + 1];	\
+						\
+      _fixpath ((PATH), fixed_path);		\
+      strcat (fixed_path, "/");			\
+      (PATH) = xstrdup (fixed_path);		\
     } 

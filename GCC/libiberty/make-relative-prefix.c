@@ -90,13 +90,13 @@ relative prefix can be found, return @code{NULL}.
 #  define IS_DIR_SEPARATOR(ch) ((ch) == DIR_SEPARATOR)
 #else
 #  define IS_DIR_SEPARATOR(ch) \
-        (((ch) == DIR_SEPARATOR) || ((ch) == DIR_SEPARATOR_2))
+	(((ch) == DIR_SEPARATOR) || ((ch) == DIR_SEPARATOR_2))
 #endif
 
 #define DIR_UP ".."
 
 static char *save_string (const char *, int);
-static char **split_directories        (const char *, int *);
+static char **split_directories	(const char *, int *);
 static void free_split_directories (char **);
 
 static char *
@@ -133,11 +133,11 @@ split_directories (const char *name, int *ptr_num_dirs)
   while ((ch = *p++) != '\0')
     {
       if (IS_DIR_SEPARATOR (ch))
-        {
-          num_dirs++;
-          while (IS_DIR_SEPARATOR (*p))
-            p++;
-        }
+	{
+	  num_dirs++;
+	  while (IS_DIR_SEPARATOR (*p))
+	    p++;
+	}
     }
 
   dirs = (char **) malloc (sizeof (char *) * (num_dirs + 2));
@@ -152,10 +152,10 @@ split_directories (const char *name, int *ptr_num_dirs)
     {
       dirs[num_dirs++] = save_string (p, 3);
       if (dirs[num_dirs - 1] == NULL)
-        {
-          free (dirs);
-          return NULL;
-        }
+	{
+	  free (dirs);
+	  return NULL;
+	}
       p += 3;
     }
 #endif /* HAVE_DOS_BASED_FILE_SYSTEM */
@@ -164,19 +164,19 @@ split_directories (const char *name, int *ptr_num_dirs)
   while ((ch = *p++) != '\0')
     {
       if (IS_DIR_SEPARATOR (ch))
-        {
-          while (IS_DIR_SEPARATOR (*p))
-            p++;
+	{
+	  while (IS_DIR_SEPARATOR (*p))
+	    p++;
 
-          dirs[num_dirs++] = save_string (q, p - q);
-          if (dirs[num_dirs - 1] == NULL)
-            {
-              dirs[num_dirs] = NULL;
-              free_split_directories (dirs);
-              return NULL;
-            }
-          q = p;
-        }
+	  dirs[num_dirs++] = save_string (q, p - q);
+	  if (dirs[num_dirs - 1] == NULL)
+	    {
+	      dirs[num_dirs] = NULL;
+	      free_split_directories (dirs);
+	      return NULL;
+	    }
+	  q = p;
+	}
     }
 
   if (p - 1 - q > 0)
@@ -238,55 +238,55 @@ make_relative_prefix (const char *progname,
 
       temp = getenv ("PATH");
       if (temp)
-        {
-          char *startp, *endp, *nstore;
-          size_t prefixlen = strlen (temp) + 1;
-          if (prefixlen < 2)
-            prefixlen = 2;
+	{
+	  char *startp, *endp, *nstore;
+	  size_t prefixlen = strlen (temp) + 1;
+	  if (prefixlen < 2)
+	    prefixlen = 2;
 
-          nstore = (char *) alloca (prefixlen + strlen (progname) + 1);
+	  nstore = (char *) alloca (prefixlen + strlen (progname) + 1);
 
-          startp = endp = temp;
-          while (1)
-            {
-              if (*endp == PATH_SEPARATOR || *endp == 0)
-                {
-                  if (endp == startp)
-                    {
-                      nstore[0] = '.';
-                      nstore[1] = DIR_SEPARATOR;
-                      nstore[2] = '\0';
-                    }
-                  else
-                    {
-                      strncpy (nstore, startp, endp - startp);
-                      if (! IS_DIR_SEPARATOR (endp[-1]))
-                        {
-                          nstore[endp - startp] = DIR_SEPARATOR;
-                          nstore[endp - startp + 1] = 0;
-                        }
-                      else
-                        nstore[endp - startp] = 0;
-                    }
-                  strcat (nstore, progname);
-                  if (! access (nstore, X_OK)
+	  startp = endp = temp;
+	  while (1)
+	    {
+	      if (*endp == PATH_SEPARATOR || *endp == 0)
+		{
+		  if (endp == startp)
+		    {
+		      nstore[0] = '.';
+		      nstore[1] = DIR_SEPARATOR;
+		      nstore[2] = '\0';
+		    }
+		  else
+		    {
+		      strncpy (nstore, startp, endp - startp);
+		      if (! IS_DIR_SEPARATOR (endp[-1]))
+			{
+			  nstore[endp - startp] = DIR_SEPARATOR;
+			  nstore[endp - startp + 1] = 0;
+			}
+		      else
+			nstore[endp - startp] = 0;
+		    }
+		  strcat (nstore, progname);
+		  if (! access (nstore, X_OK)
 #ifdef HAVE_HOST_EXECUTABLE_SUFFIX
                       || ! access (strcat (nstore, HOST_EXECUTABLE_SUFFIX), X_OK)
 #endif
-                      )
-                    {
-                      progname = nstore;
-                      break;
-                    }
+		      )
+		    {
+		      progname = nstore;
+		      break;
+		    }
 
-                  if (*endp == 0)
-                    break;
-                  endp = startp = endp + 1;
-                }
-              else
-                endp++;
-            }
-        }
+		  if (*endp == 0)
+		    break;
+		  endp = startp = endp + 1;
+		}
+	      else
+		endp++;
+	    }
+	}
     }
 
   full_progname = lrealpath (progname);
@@ -309,18 +309,18 @@ make_relative_prefix (const char *progname,
   if (prog_num == bin_num)
     {
       for (i = 0; i < bin_num; i++)
-        {
-          if (strcmp (prog_dirs[i], bin_dirs[i]) != 0)
-            break;
-        }
+	{
+	  if (strcmp (prog_dirs[i], bin_dirs[i]) != 0)
+	    break;
+	}
 
       if (prog_num <= 0 || i == bin_num)
-        {
-          free_split_directories (prog_dirs);
-          free_split_directories (bin_dirs);
-          prog_dirs = bin_dirs = (char **) 0;
-          return NULL;
-        }
+	{
+	  free_split_directories (prog_dirs);
+	  free_split_directories (bin_dirs);
+	  prog_dirs = bin_dirs = (char **) 0;
+	  return NULL;
+	}
     }
 
   prefix_dirs = split_directories (prefix, &prefix_num);
@@ -336,7 +336,7 @@ make_relative_prefix (const char *progname,
   for (common = 0; common < n; common++)
     {
       if (strcmp (bin_dirs[common], prefix_dirs[common]) != 0)
-        break;
+	break;
     }
 
   /* If there are no common directories, there can be no relative prefix.  */

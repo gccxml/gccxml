@@ -49,18 +49,18 @@ print_location (cpp_reader *pfile, source_location line, unsigned int col)
 
       lin = SOURCE_LINE (map, line);
       if (col == 0)
-        {
-          col = SOURCE_COLUMN (map, line);
-          if (col == 0)
-            col = 1;
-        }
+	{
+	  col = SOURCE_COLUMN (map, line);
+	  if (col == 0)
+	    col = 1;
+	}
 
       if (lin == 0)
-        fprintf (stderr, "%s:", map->to_file);
+	fprintf (stderr, "%s:", map->to_file);
       else if (CPP_OPTION (pfile, show_column) == 0)
-        fprintf (stderr, "%s:%u:", map->to_file, lin);
+	fprintf (stderr, "%s:%u:", map->to_file, lin);
       else
-        fprintf (stderr, "%s:%u:%u:", map->to_file, lin, col);
+	fprintf (stderr, "%s:%u:%u:", map->to_file, lin, col);
 
       fputc (' ', stderr);
     }
@@ -78,7 +78,7 @@ print_location (cpp_reader *pfile, source_location line, unsigned int col)
    Returns 0 if the error has been suppressed.  */
 int
 _cpp_begin_message (cpp_reader *pfile, int code,
-                    source_location src_loc, unsigned int column)
+		    source_location src_loc, unsigned int column)
 {
   int level = CPP_DL_EXTRACT (code);
 
@@ -87,26 +87,26 @@ _cpp_begin_message (cpp_reader *pfile, int code,
     case CPP_DL_WARNING:
     case CPP_DL_PEDWARN:
       if (cpp_in_system_header (pfile)
-          && ! CPP_OPTION (pfile, warn_system_headers))
-        return 0;
+	  && ! CPP_OPTION (pfile, warn_system_headers))
+	return 0;
       /* Fall through.  */
 
     case CPP_DL_WARNING_SYSHDR:
       if (CPP_OPTION (pfile, warnings_are_errors)
-          || (level == CPP_DL_PEDWARN && CPP_OPTION (pfile, pedantic_errors)))
-        {
-          if (CPP_OPTION (pfile, inhibit_errors))
-            return 0;
-          level = CPP_DL_ERROR;
-          pfile->errors++;
-        }
+	  || (level == CPP_DL_PEDWARN && CPP_OPTION (pfile, pedantic_errors)))
+	{
+	  if (CPP_OPTION (pfile, inhibit_errors))
+	    return 0;
+	  level = CPP_DL_ERROR;
+	  pfile->errors++;
+	}
       else if (CPP_OPTION (pfile, inhibit_warnings))
-        return 0;
+	return 0;
       break;
 
     case CPP_DL_ERROR:
       if (CPP_OPTION (pfile, inhibit_errors))
-        return 0;
+	return 0;
       /* ICEs cannot be inhibited.  */
     case CPP_DL_ICE:
       pfile->errors++;
@@ -145,19 +145,19 @@ cpp_error (cpp_reader * pfile, int level, const char *msgid, ...)
   else
     {
       if (CPP_OPTION (pfile, traditional))
-        {
-          if (pfile->state.in_directive)
-            src_loc = pfile->directive_line;
-          else
-            src_loc = pfile->line_table->highest_line;
-        }
+	{
+	  if (pfile->state.in_directive)
+	    src_loc = pfile->directive_line;
+	  else
+	    src_loc = pfile->line_table->highest_line;
+	}
       else
-        {
-          src_loc = pfile->cur_token[-1].src_loc;
-        }
+	{
+	  src_loc = pfile->cur_token[-1].src_loc;
+	}
 
       if (_cpp_begin_message (pfile, level, src_loc, 0))
-        v_message (msgid, ap);
+	v_message (msgid, ap);
     }
 
   va_end (ap);
@@ -166,8 +166,8 @@ cpp_error (cpp_reader * pfile, int level, const char *msgid, ...)
 /* Print an error at a specific location.  */
 void
 cpp_error_with_line (cpp_reader *pfile, int level,
-                     source_location src_loc, unsigned int column,
-                     const char *msgid, ...)
+		     source_location src_loc, unsigned int column,
+		     const char *msgid, ...)
 {
   va_list ap;
   

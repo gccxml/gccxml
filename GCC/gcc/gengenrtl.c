@@ -37,24 +37,24 @@ struct rtx_definition
 
 static const struct rtx_definition defs[] =
 {
-#include "rtl.def"                /* rtl expressions are documented here */
+#include "rtl.def"		/* rtl expressions are documented here */
 };
 #define NUM_RTX_CODE ARRAY_SIZE(defs)
 
 static const char *formats[NUM_RTX_CODE];
 
-static const char *type_from_format        (int);
-static const char *accessor_from_format        (int);
-static int special_format                (const char *);
-static int special_rtx                        (int);
-static int excluded_rtx                        (int);
-static void find_formats                (void);
-static void gendecl                        (const char *);
-static void genmacro                        (int);
-static void gendef                        (const char *);
-static void genlegend                        (void);
-static void genheader                        (void);
-static void gencode                        (void);
+static const char *type_from_format	(int);
+static const char *accessor_from_format	(int);
+static int special_format		(const char *);
+static int special_rtx			(int);
+static int excluded_rtx			(int);
+static void find_formats		(void);
+static void gendecl			(const char *);
+static void genmacro			(int);
+static void gendef			(const char *);
+static void genlegend			(void);
+static void genheader			(void);
+static void gencode			(void);
 
 /* Decode a format letter into a C type string.  */
 
@@ -131,9 +131,9 @@ static int
 special_format (const char *fmt)
 {
   return (strchr (fmt, '*') != 0
-          || strchr (fmt, 'V') != 0
-          || strchr (fmt, 'S') != 0
-          || strchr (fmt, 'n') != 0);
+	  || strchr (fmt, 'V') != 0
+	  || strchr (fmt, 'S') != 0
+	  || strchr (fmt, 'n') != 0);
 }
 
 /* Return nonzero if the RTL code given by index IDX is one that we should
@@ -144,10 +144,10 @@ static int
 special_rtx (int idx)
 {
   return (strcmp (defs[idx].enumname, "CONST_INT") == 0
-          || strcmp (defs[idx].enumname, "REG") == 0
-          || strcmp (defs[idx].enumname, "SUBREG") == 0
-          || strcmp (defs[idx].enumname, "MEM") == 0
-          || strcmp (defs[idx].enumname, "CONST_VECTOR") == 0);
+	  || strcmp (defs[idx].enumname, "REG") == 0
+	  || strcmp (defs[idx].enumname, "SUBREG") == 0
+	  || strcmp (defs[idx].enumname, "MEM") == 0
+	  || strcmp (defs[idx].enumname, "CONST_VECTOR") == 0);
 }
 
 /* Return nonzero if the RTL code given by index IDX is one that we should
@@ -172,14 +172,14 @@ find_formats (void)
       const char **f;
 
       if (special_format (defs[i].format))
-        continue;
+	continue;
 
       for (f = formats; *f; f++)
-        if (! strcmp (*f, defs[i].format))
-          break;
+	if (! strcmp (*f, defs[i].format))
+	  break;
 
       if (*f == 0)
-        *f = defs[i].format;
+	*f = defs[i].format;
     }
 }
 
@@ -199,14 +199,14 @@ gendecl (const char *format)
   for (p = format, i = 0, pos = 75; *p != 0; p++)
     if (*p != '0')
       {
-        int ourlen = strlen (type_from_format (*p)) + 6 + (i > 9);
+	int ourlen = strlen (type_from_format (*p)) + 6 + (i > 9);
 
-        printf (",");
-        if (pos + ourlen > 76)
-          printf ("\n\t\t\t\t      "), pos = 39;
+	printf (",");
+	if (pos + ourlen > 76)
+	  printf ("\n\t\t\t\t      "), pos = 39;
 
-        printf (" %sarg%d", type_from_format (*p), i++);
-        pos += ourlen;
+	printf (" %sarg%d", type_from_format (*p), i++);
+	pos += ourlen;
       }
 
   printf (");\n");
@@ -229,14 +229,14 @@ genmacro (int idx)
     return;
 
   printf ("#define gen_rtx_%s%s(MODE",
-           special_rtx (idx) ? "raw_" : "", defs[idx].enumname);
+	   special_rtx (idx) ? "raw_" : "", defs[idx].enumname);
 
   for (p = defs[idx].format, i = 0; *p != 0; p++)
     if (*p != '0')
       printf (", ARG%d", i++);
 
   printf (") \\\n  gen_rtx_fmt_%s (%s, (MODE)",
-          defs[idx].format, defs[idx].enumname);
+	  defs[idx].format, defs[idx].enumname);
 
   for (p = defs[idx].format, i = 0; *p != 0; p++)
     if (*p != '0')

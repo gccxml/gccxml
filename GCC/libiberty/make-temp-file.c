@@ -21,7 +21,7 @@ Boston, MA 02110-1301, USA.  */
 #include "config.h"
 #endif
 
-#include <stdio.h>        /* May get P_tmpdir.  */
+#include <stdio.h>	/* May get P_tmpdir.  */
 #include <sys/types.h>
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
@@ -159,8 +159,8 @@ make_temp_file (const char *suffix)
   suffix_len = strlen (suffix);
 
   temp_filename = XNEWVEC (char, base_len
-                           + TEMP_FILE_LEN
-                           + suffix_len + 1);
+			   + TEMP_FILE_LEN
+			   + suffix_len + 1);
   strcpy (temp_filename, base);
   strcpy (temp_filename + base_len, TEMP_FILE);
   strcpy (temp_filename + base_len + TEMP_FILE_LEN, suffix);

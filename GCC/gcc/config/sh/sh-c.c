@@ -40,13 +40,13 @@ sh_add_function_attribute (const char *attr)
 
   if (current_function_decl)
     decl_attributes (&current_function_decl,
-                     tree_cons (id, NULL_TREE, NULL_TREE), 0);
+		     tree_cons (id, NULL_TREE, NULL_TREE), 0);
   else
     {
       *sh_deferred_function_attributes_tail
-        = tree_cons (id, NULL_TREE, *sh_deferred_function_attributes_tail);
+	= tree_cons (id, NULL_TREE, *sh_deferred_function_attributes_tail);
       sh_deferred_function_attributes_tail
-        = &TREE_CHAIN (*sh_deferred_function_attributes_tail);
+	= &TREE_CHAIN (*sh_deferred_function_attributes_tail);
     }
 }
 

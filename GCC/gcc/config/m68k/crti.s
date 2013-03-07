@@ -31,17 +31,17 @@ Boston, MA 02110-1301, USA.  */
  * sections.  It is linked in before crtbegin.o.
  */
 
-        .file   "crti.o"
-        .ident  "GNU C crti.o"
+	.file   "crti.o"
+	.ident  "GNU C crti.o"
 
-        .section .init
-        .globl  _init
-        .type   _init,@function
+	.section .init
+	.globl  _init
+	.type   _init,@function
 _init:
-        linkw %fp,#0
+	linkw %fp,#0
 
-        .section .fini
-        .globl  _fini
-        .type   _fini,@function
+	.section .fini
+	.globl  _fini
+	.type   _fini,@function
 _fini:
-        linkw %fp,#0
+	linkw %fp,#0

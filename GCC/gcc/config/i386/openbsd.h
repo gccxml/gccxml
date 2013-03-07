@@ -26,15 +26,15 @@ Boston, MA 02110-1301, USA.  */
 #define TARGET_SUBTARGET_DEFAULT \
   (MASK_80387 | MASK_IEEE_FP | MASK_FLOAT_RETURNS | MASK_NO_FANCY_MATH_387)
 
-#define TARGET_OS_CPP_BUILTINS()                \
-  do                                                \
-    {                                                \
-        builtin_define ("__unix__");                \
-        builtin_define ("__OpenBSD__");                \
-        builtin_assert ("system=unix");                \
-        builtin_assert ("system=bsd");                \
-        builtin_assert ("system=OpenBSD");        \
-    }                                                \
+#define TARGET_OS_CPP_BUILTINS()		\
+  do						\
+    {						\
+	builtin_define ("__unix__");		\
+	builtin_define ("__OpenBSD__");		\
+	builtin_assert ("system=unix");		\
+	builtin_assert ("system=bsd");		\
+	builtin_assert ("system=OpenBSD");	\
+    }						\
   while (0)
 
 /* Layout of source language data types.  */
