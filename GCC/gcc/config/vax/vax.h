@@ -1,12 +1,13 @@
 /* Definitions of target machine for GNU compiler.  VAX version.
    Copyright (C) 1987, 1988, 1991, 1993, 1994, 1995, 1996, 1997, 1998,
-   1999, 2000, 2001, 2002, 2003, 2004, 2005 Free Software Foundation, Inc.
+   1999, 2000, 2001, 2002, 2003, 2004, 2005, 2007, 2008, 2009, 2010, 2011
+   Free Software Foundation, Inc.
 
 This file is part of GCC.
 
 GCC is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2, or (at your option)
+the Free Software Foundation; either version 3, or (at your option)
 any later version.
 
 GCC is distributed in the hope that it will be useful,
@@ -15,9 +16,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with GCC; see the file COPYING.  If not, write to
-the Free Software Foundation, 51 Franklin Street, Fifth Floor,
-Boston, MA 02110-1301, USA.  */
+along with GCC; see the file COPYING3.  If not see
+<http://www.gnu.org/licenses/>.  */
 
 
 /* Target CPU builtins.  */
@@ -51,25 +51,19 @@ Boston, MA 02110-1301, USA.  */
   %{pg:%eprofiling not supported with -mg\n}}\
  %{!mg:%{!p:%{!pg:-lc}}%{p:-lc_p}%{pg:-lc_p}}"
 
-/* Print subsidiary information on the compiler version in use.  */
-
-#ifndef TARGET_NAME	/* A more specific value might be supplied via -D.  */
-#define TARGET_NAME "vax"
-#endif
-#define TARGET_VERSION fprintf (stderr, " (%s)", TARGET_NAME)
-
 /* Run-time compilation parameters selecting different hardware subsets.  */
 
 /* Nonzero if ELF.  Redefined by vax/elf.h.  */
 #define TARGET_ELF 0
+
+/* Use BSD names for udiv and umod libgcc calls.  */
+#define TARGET_BSD_DIVMOD 1
 
 /* Default target_flags if no switches specified.  */
 
 #ifndef TARGET_DEFAULT
 #define TARGET_DEFAULT (MASK_UNIX_ASM)
 #endif
-
-#define OVERRIDE_OPTIONS override_options ()
 
 
 /* Target machine storage layout */
@@ -104,7 +98,7 @@ Boston, MA 02110-1301, USA.  */
 #define STRUCTURE_SIZE_BOUNDARY 8
 
 /* A bit-field declared as `int' forces `int' alignment for the struct.  */
-#define PCC_BITFIELD_TYPE_MATTERS (!TARGET_VAXC_ALIGNMENT)
+#define PCC_BITFIELD_TYPE_MATTERS (! TARGET_VAXC_ALIGNMENT)
 
 /* No data type wants to be aligned rounder than this.  */
 #define BIGGEST_ALIGNMENT 32
@@ -175,11 +169,8 @@ Boston, MA 02110-1301, USA.  */
 /* Base register for access to local variables of the function.  */
 #define FRAME_POINTER_REGNUM VAX_FP_REGNUM
 
-/* Value should be nonzero if functions must have frame pointers.
-   Zero means the frame pointer need not be set up (and parms
-   may be accessed via the stack pointer) in functions that seem suitable.
-   This is computed in `reload', in reload1.c.  */
-#define FRAME_POINTER_REQUIRED 1
+/* Offset from the frame pointer register value to the top of stack.  */
+#define FRAME_POINTER_CFA_OFFSET(FNDECL) 0
 
 /* Base register for access to arguments of the function.  */
 #define ARG_POINTER_REGNUM VAX_AP_REGNUM
@@ -246,67 +237,6 @@ enum reg_class { NO_REGS, ALL_REGS, LIM_REG_CLASSES };
 #define INDEX_REG_CLASS ALL_REGS
 #define BASE_REG_CLASS ALL_REGS
 
-/* Get reg_class from a letter such as appears in the machine description.  */
-
-#define REG_CLASS_FROM_LETTER(C) NO_REGS
-
-/* The letters I, J, K, L, M, N, and O in a register constraint string
-   can be used to stand for particular ranges of immediate operands.
-   This macro defines what the ranges are.
-   C is the letter, and VALUE is a constant value.
-   Return 1 if VALUE is in the range specified by C.
-
-   `I' is the constant zero.
-   `J' is a value between 0 .. 63 (inclusive)
-   `K' is a value between -128 and 127 (inclusive)
-   'L' is a value between -32768 and 32767 (inclusive)
-   `M' is a value between 0 and 255 (inclusive)
-   'N' is a value between 0 and 65535 (inclusive)
-   `O' is a value between -63 and -1 (inclusive)  */
-
-#define CONST_OK_FOR_LETTER_P(VALUE, C)				\
-  (  (C) == 'I' ?	(VALUE) == 0				\
-   : (C) == 'J' ?	0 <= (VALUE) && (VALUE) < 64		\
-   : (C) == 'O' ?	-63 <= (VALUE) && (VALUE) < 0		\
-   : (C) == 'K' ?	-128 <= (VALUE) && (VALUE) < 128	\
-   : (C) == 'M' ?	0 <= (VALUE) && (VALUE) < 256		\
-   : (C) == 'L' ?	-32768 <= (VALUE) && (VALUE) < 32768	\
-   : (C) == 'N' ?	0 <= (VALUE) && (VALUE) < 65536		\
-   : 0)
-
-/* Similar, but for floating constants, and defining letters G and H.
-   Here VALUE is the CONST_DOUBLE rtx itself.
-
-   `G' is a floating-point zero.  */
-
-#define CONST_DOUBLE_OK_FOR_LETTER_P(VALUE, C)		\
-  ((C) == 'G' ? ((VALUE) == CONST0_RTX (DFmode)		\
-		 || (VALUE) == CONST0_RTX (SFmode))	\
-   : 0)
-
-/* Optional extra constraints for this machine.
-
-   For the VAX, `Q' means that OP is a MEM that does not have a mode-dependent
-   address.  */
-
-#define EXTRA_CONSTRAINT(OP, C)					\
-  ((C) == 'Q'							\
-   ? MEM_P (OP) && !mode_dependent_address_p (XEXP (OP, 0))	\
-   : 0)
-
-/* Given an rtx X being reloaded into a reg required to be
-   in class CLASS, return the class of reg to actually use.
-   In general this is just CLASS; but on some machines
-   in some cases it is preferable to use a more restrictive class.  */
-
-#define PREFERRED_RELOAD_CLASS(X,CLASS)  (CLASS)
-
-/* Return the maximum number of consecutive registers
-   needed to represent mode MODE in a register of class CLASS.  */
-/* On the VAX, this is always the size of MODE in words,
-   since all registers are the same size.  */
-#define CLASS_MAX_NREGS(CLASS, MODE)	\
- ((GET_MODE_SIZE (MODE) + UNITS_PER_WORD - 1) / UNITS_PER_WORD)
 
 /* Stack layout; function entry, exit and calling.  */
 
@@ -338,18 +268,6 @@ enum reg_class { NO_REGS, ALL_REGS, LIM_REG_CLASSES };
 
 /* Offset of first parameter from the argument pointer register value.  */
 #define FIRST_PARM_OFFSET(FNDECL) 4
-
-/* Value is the number of bytes of arguments automatically
-   popped when returning from a subroutine call.
-   FUNDECL is the declaration node of the function (as a tree),
-   FUNTYPE is the data type of the function (as a tree),
-   or for a library call it is an identifier node for the subroutine name.
-   SIZE is the number of bytes of arguments passed on the stack.
-
-   On the VAX, the RET insn pops a maximum of 255 args for any function.  */
-
-#define RETURN_POPS_ARGS(FUNDECL,FUNTYPE,SIZE)	\
-  ((SIZE) > 255 * 4 ? 0 : (SIZE))
 
 /* Define how to find the value returned by a function.
    VALTYPE is the data type of the value (as a tree).
@@ -403,32 +321,6 @@ enum reg_class { NO_REGS, ALL_REGS, LIM_REG_CLASSES };
 #define INIT_CUMULATIVE_ARGS(CUM, FNTYPE, LIBNAME, INDIRECT, N_NAMED_ARGS) \
  ((CUM) = 0)
 
-/* Update the data in CUM to advance over an argument
-   of mode MODE and data type TYPE.
-   (TYPE is null for libcalls where that information may not be available.)  */
-
-#define FUNCTION_ARG_ADVANCE(CUM, MODE, TYPE, NAMED)	\
-  ((CUM) += ((MODE) != BLKmode				\
-	     ? (GET_MODE_SIZE (MODE) + 3) & ~3		\
-	     : (int_size_in_bytes (TYPE) + 3) & ~3))
-
-/* Define where to put the arguments to a function.
-   Value is zero to push the argument on the stack,
-   or a hard register in which to store the argument.
-
-   MODE is the argument's machine mode.
-   TYPE is the data type of the argument (as a tree).
-    This is null for libcalls where that information may
-    not be available.
-   CUM is a variable of type CUMULATIVE_ARGS which gives info about
-    the preceding args and about the function being called.
-   NAMED is nonzero if this argument is a named parameter
-    (otherwise it is an extra parameter matching an ellipsis).  */
-
-/* On the VAX all args are pushed.  */
-
-#define FUNCTION_ARG(CUM, MODE, TYPE, NAMED) 0
-
 /* Output assembler code to FILE to increment profiler label # LABELNO
    for profiling a function entry.  */
 
@@ -462,43 +354,9 @@ enum reg_class { NO_REGS, ALL_REGS, LIM_REG_CLASSES };
 
 #define INITIAL_FRAME_POINTER_OFFSET(DEPTH) (DEPTH) = 0;
 
-/* Output assembler code for a block containing the constant parts
-   of a trampoline, leaving space for the variable parts.  */
-
-/* On the VAX, the trampoline contains an entry mask and two instructions:
-     .word NN
-     movl $STATIC,r0   (store the functions static chain)
-     jmp  *$FUNCTION   (jump to function code at address FUNCTION)  */
-
-#define TRAMPOLINE_TEMPLATE(FILE)					\
-{									\
-  assemble_aligned_integer (2, const0_rtx);				\
-  assemble_aligned_integer (2, GEN_INT (0x8fd0));			\
-  assemble_aligned_integer (4, const0_rtx);				\
-  assemble_aligned_integer (1, GEN_INT (0x50 + STATIC_CHAIN_REGNUM));	\
-  assemble_aligned_integer (2, GEN_INT (0x9f17));			\
-  assemble_aligned_integer (4, const0_rtx);				\
-}
-
 /* Length in units of the trampoline for entering a nested function.  */
 
 #define TRAMPOLINE_SIZE 15
-
-/* Emit RTL insns to initialize the variable parts of a trampoline.
-   FNADDR is an RTX for the address of the function's pure code.
-   CXT is an RTX for the static chain value for the function.  */
-
-/* We copy the register-mask from the function's pure code
-   to the start of the trampoline.  */
-#define INITIALIZE_TRAMPOLINE(TRAMP, FNADDR, CXT)			\
-{									\
-  emit_move_insn (gen_rtx_MEM (HImode, TRAMP),				\
-		  gen_rtx_MEM (HImode, FNADDR));			\
-  emit_move_insn (gen_rtx_MEM (SImode, plus_constant (TRAMP, 4)), CXT);	\
-  emit_move_insn (gen_rtx_MEM (SImode, plus_constant (TRAMP, 11)),	\
-		  plus_constant (FNADDR, 2));				\
-  emit_insn (gen_sync_istream ());					\
-}
 
 /* Byte offset of return address in a stack frame.  The "saved PC" field
    is in element [4] when treating the frame as an array of longwords.  */
@@ -543,11 +401,6 @@ enum reg_class { NO_REGS, ALL_REGS, LIM_REG_CLASSES };
 
 #define CONSTANT_ADDRESS_P(X) legitimate_constant_address_p (X)
 
-/* Nonzero if the constant value X is a legitimate general operand.
-   It is given that X satisfies CONSTANT_P or is a CONST_DOUBLE.  */
-
-#define LEGITIMATE_CONSTANT_P(X) legitimate_constant_p (X)
-
 /* The macros REG_OK_FOR..._P assume that the arg is a REG rtx
    and check its validity for a certain class.
    We have two alternate definitions for each of them.
@@ -571,11 +424,6 @@ enum reg_class { NO_REGS, ALL_REGS, LIM_REG_CLASSES };
    or if it is a pseudo reg.  */
 #define REG_OK_FOR_BASE_P(X) 1
 
-/* GO_IF_LEGITIMATE_ADDRESS recognizes an RTL expression
-   that is a valid memory address for an instruction.  */
-#define GO_IF_LEGITIMATE_ADDRESS(MODE, X, ADDR) \
-  { if (legitimate_address_p ((MODE), (X), 0)) goto ADDR; }
-
 #else
 
 /* Nonzero if X is a hard reg that can be used as an index.  */
@@ -583,11 +431,6 @@ enum reg_class { NO_REGS, ALL_REGS, LIM_REG_CLASSES };
 
 /* Nonzero if X is a hard reg that can be used as a base reg.  */
 #define REG_OK_FOR_BASE_P(X) REGNO_OK_FOR_BASE_P (REGNO (X))
-
-/* GO_IF_LEGITIMATE_ADDRESS recognizes an RTL expression
-   that is a valid memory address for an instruction.  */
-#define GO_IF_LEGITIMATE_ADDRESS(MODE, X, ADDR) \
-  { if (legitimate_address_p ((MODE), (X), 1)) goto ADDR; }
 
 #endif
 
@@ -621,6 +464,11 @@ enum reg_class { NO_REGS, ALL_REGS, LIM_REG_CLASSES };
    in one reasonably fast instruction.  */
 #define MOVE_MAX 8
 
+/* If a memory-to-memory move would take MOVE_RATIO or more simple
+   move-instruction pairs, we will do a movmem or libcall instead.  */
+#define MOVE_RATIO(speed) ((speed) ? 6 : 3)
+#define CLEAR_RATIO(speed) ((speed) ? 6 : 2)
+
 /* Nonzero if access to memory by bytes is slow and undesirable.  */
 #define SLOW_BYTE_ACCESS 0
 
@@ -643,17 +491,13 @@ enum reg_class { NO_REGS, ALL_REGS, LIM_REG_CLASSES };
    so give the MEM rtx a byte's mode.  */
 #define FUNCTION_MODE QImode
 
-/* This machine doesn't use IEEE floats.  */
-
-#define TARGET_FLOAT_FORMAT VAX_FLOAT_FORMAT
-
 /* Specify the cost of a branch insn; roughly the number of extra insns that
    should be added to avoid a branch.
 
    Branches are extremely cheap on the VAX while the shift insns often
    used to replace branches can be expensive.  */
 
-#define BRANCH_COST 0
+#define BRANCH_COST(speed_p, predictable_p) 0
 
 /* Tell final.c how to eliminate redundant test instructions.  */
 
@@ -825,14 +669,6 @@ enum reg_class { NO_REGS, ALL_REGS, LIM_REG_CLASSES };
     assemble_name ((FILE), (NAME)),			\
     fprintf ((FILE), ",%u\n", (int)(ROUNDED)))
 
-/* Store in OUTPUT a string (made with alloca) containing
-   an assembler-name for a local static variable named NAME.
-   LABELNO is an integer which is different for each call.  */
-
-#define ASM_FORMAT_PRIVATE_NAME(OUTPUT, NAME, LABELNO)	\
-  ( (OUTPUT) = (char *) alloca (strlen ((NAME)) + 10),	\
-    sprintf ((OUTPUT), "%s.%d", (NAME), (LABELNO)))
-
 /* Print an instruction operand X on file FILE.
    CODE is the code from the %-spec that requested printing this operand;
    if `%z3' was used to print operand 3, then CODE is 'z'.
@@ -840,6 +676,7 @@ enum reg_class { NO_REGS, ALL_REGS, LIM_REG_CLASSES };
 VAX operand formatting codes:
 
  letter	   print
+   c	direct branch condition
    C	reverse branch condition
    D	64-bit immediate operand
    B	the low 8 bits of the complement of a constant operand
@@ -863,49 +700,11 @@ VAX operand formatting codes:
 #  define NEG_HWI_PRINT_HEX16 "0xffffffff%08lx"
 #endif
 
-#define PRINT_OPERAND_PUNCT_VALID_P(CODE)				\
+#define PRINT_OPERAND_PUNCT_VALID_P(CODE)  \
   ((CODE) == '#' || (CODE) == '|')
 
-#define PRINT_OPERAND(FILE, X, CODE)					\
-{ if (CODE == '#') fputc (ASM_DOUBLE_CHAR, FILE);			\
-  else if (CODE == '|')							\
-    fputs (REGISTER_PREFIX, FILE);					\
-  else if (CODE == 'C')							\
-    fputs (rev_cond_name (X), FILE);					\
-  else if (CODE == 'D' && CONST_INT_P (X) && INTVAL (X) < 0)		\
-    fprintf (FILE, "$" NEG_HWI_PRINT_HEX16, INTVAL (X));		\
-  else if (CODE == 'P' && CONST_INT_P (X))				\
-    fprintf (FILE, "$" HOST_WIDE_INT_PRINT_DEC, INTVAL (X) + 1);	\
-  else if (CODE == 'N' && CONST_INT_P (X))				\
-    fprintf (FILE, "$" HOST_WIDE_INT_PRINT_DEC, ~ INTVAL (X));		\
-  /* rotl instruction cannot deal with negative arguments.  */		\
-  else if (CODE == 'R' && CONST_INT_P (X))				\
-    fprintf (FILE, "$" HOST_WIDE_INT_PRINT_DEC, 32 - INTVAL (X));	\
-  else if (CODE == 'H' && CONST_INT_P (X))				\
-    fprintf (FILE, "$%d", (int) (0xffff & ~ INTVAL (X)));		\
-  else if (CODE == 'h' && CONST_INT_P (X))				\
-    fprintf (FILE, "$%d", (short) - INTVAL (x));			\
-  else if (CODE == 'B' && CONST_INT_P (X))				\
-    fprintf (FILE, "$%d", (int) (0xff & ~ INTVAL (X)));			\
-  else if (CODE == 'b' && CONST_INT_P (X))				\
-    fprintf (FILE, "$%d", (int) (0xff & - INTVAL (X)));			\
-  else if (CODE == 'M' && CONST_INT_P (X))				\
-    fprintf (FILE, "$%d", ~((1 << INTVAL (x)) - 1));			\
-  else if (REG_P (X))							\
-    fprintf (FILE, "%s", reg_names[REGNO (X)]);				\
-  else if (MEM_P (X))							\
-    output_address (XEXP (X, 0));					\
-  else if (GET_CODE (X) == CONST_DOUBLE && GET_MODE (X) == SFmode)	\
-    { char dstr[30];							\
-      real_to_decimal (dstr, CONST_DOUBLE_REAL_VALUE (X),		\
-		       sizeof (dstr), 0, 1);				\
-      fprintf (FILE, "$0f%s", dstr); }					\
-  else if (GET_CODE (X) == CONST_DOUBLE && GET_MODE (X) == DFmode)	\
-    { char dstr[30];							\
-      real_to_decimal (dstr, CONST_DOUBLE_REAL_VALUE (X),		\
-		       sizeof (dstr), 0, 1);				\
-      fprintf (FILE, "$0%c%s", ASM_DOUBLE_CHAR, dstr); }		\
-  else { putc ('$', FILE); output_addr_const (FILE, X); }}
+#define PRINT_OPERAND(FILE, X, CODE)  \
+  print_operand (FILE, X, CODE)
 
 /* Print a memory operand whose address is X, on file FILE.
    This uses a function in output-vax.c.  */

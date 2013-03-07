@@ -150,7 +150,7 @@ physmem_total (void)
   }
 #endif
 
-#ifdef HAVE__SYSTEM_CONFIGURATION
+#if HAVE__SYSTEM_CONFIGURATION
   /* This works on AIX 4.3.3+.  */
   return _system_configuration.physmem;
 #endif

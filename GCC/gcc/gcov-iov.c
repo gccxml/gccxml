@@ -1,13 +1,13 @@
 /* Generate gcov version string from version.c. See gcov-io.h for
    description of how the version string is generated.
-   Copyright (C) 2002, 2003, 2005 Free Software Foundation, Inc.
+   Copyright (C) 2002, 2003, 2005, 2007, 2010 Free Software Foundation, Inc.
    Contributed by Nathan Sidwell <nathan@codesourcery.com>
 
 This file is part of GCC.
 
 GCC is free software; you can redistribute it and/or modify it under
 the terms of the GNU General Public License as published by the Free
-Software Foundation; either version 2, or (at your option) any later
+Software Foundation; either version 3, or (at your option) any later
 version.
 
 GCC is distributed in the hope that it will be useful, but WITHOUT ANY
@@ -16,12 +16,11 @@ FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 for more details.
 
 You should have received a copy of the GNU General Public License
-along with GCC; see the file COPYING.  If not, write to the Free
-Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
-02110-1301, USA.  */
+along with GCC; see the file COPYING3.  If not see
+<http://www.gnu.org/licenses/>.  */
 
-#include <stdio.h>
-#include <stdlib.h>
+#include "bconfig.h"
+#include "system.h"
 
 /* Command line arguments are the base GCC version and the development
    phase (the latter may be an empty string).  */
@@ -49,8 +48,14 @@ main (int argc, char **argv)
   if (*ptr == '.')
     minor = strtoul (ptr + 1, 0, 10);
 
+  /* For releases the development phase is an empty string, for
+     prerelease versions on a release branch it is "prerelease".
+     Consider both equal as patch-level releases do not change
+     the GCOV version either.
+     On the trunk the development phase is "experimental".  */
   phase = argv[2][0];
-  if (phase == '\0')
+  if (phase == '\0'
+      || strcmp (argv[2], "prerelease") == 0)
     phase = '*';
 
   v[0] = (major < 10 ? '0' : 'A' - 10) + major;
@@ -65,7 +70,7 @@ main (int argc, char **argv)
   printf ("   from `%s (%lu %lu) and %s (%c)'.  */\n",
 	  argv[1], major, minor, argv[2], phase);
   printf ("\n");
-  printf ("#define GCOV_VERSION ((gcov_unsigned_t)%#08x)  /* %.4s */\n",
+  printf ("#define GCOV_VERSION ((gcov_unsigned_t)0x%08x)  /* %.4s */\n",
 	  version, v);
 
   return 0;

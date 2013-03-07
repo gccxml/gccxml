@@ -1,11 +1,11 @@
 ;; Predicate definitions for SPARC.
-;; Copyright (C) 2005 Free Software Foundation, Inc.
+;; Copyright (C) 2005, 2007, 2008, 2010, 2012 Free Software Foundation, Inc.
 ;;
 ;; This file is part of GCC.
 ;;
 ;; GCC is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
-;; the Free Software Foundation; either version 2, or (at your option)
+;; the Free Software Foundation; either version 3, or (at your option)
 ;; any later version.
 ;;
 ;; GCC is distributed in the hope that it will be useful,
@@ -14,9 +14,8 @@
 ;; GNU General Public License for more details.
 ;;
 ;; You should have received a copy of the GNU General Public License
-;; along with GCC; see the file COPYING.  If not, write to
-;; the Free Software Foundation, 51 Franklin Street, Fifth Floor,
-;; Boston, MA 02110-1301, USA.
+;; along with GCC; see the file COPYING3.  If not see
+;; <http://www.gnu.org/licenses/>.
 
 ;; Predicates for numerical constants.
 
@@ -25,10 +24,34 @@
   (and (match_code "const_int,const_double,const_vector")
        (match_test "op == CONST0_RTX (mode)")))
 
-;; Return true if OP is the one constant for MODE.
-(define_predicate "const_one_operand"
-  (and (match_code "const_int,const_double,const_vector")
-       (match_test "op == CONST1_RTX (mode)")))
+;; Return true if the integer representation of OP is
+;; all-ones.
+(define_predicate "const_all_ones_operand"
+  (match_code "const_int,const_double,const_vector")
+{
+  if (GET_CODE (op) == CONST_INT && INTVAL (op) == -1)
+    return true;
+#if HOST_BITS_PER_WIDE_INT == 32
+  if (GET_CODE (op) == CONST_DOUBLE
+      && GET_MODE (op) == VOIDmode
+      && CONST_DOUBLE_HIGH (op) == ~(HOST_WIDE_INT)0
+      && CONST_DOUBLE_LOW (op) == ~(HOST_WIDE_INT)0)
+    return true;
+#endif
+  if (GET_CODE (op) == CONST_VECTOR)
+    {
+      int i, num_elem = CONST_VECTOR_NUNITS (op);
+
+      for (i = 0; i < num_elem; i++)
+        {
+          rtx n = CONST_VECTOR_ELT (op, i);
+          if (! const_all_ones_operand (n, mode))
+            return false;
+        }
+      return true;
+    }
+  return false;
+})
 
 ;; Return true if OP is the integer constant 4096.
 (define_predicate "const_4096_operand"
@@ -84,6 +107,15 @@
   return fp_high_losum_p (op);
 })
 
+;; Return true if OP is a const_double or const_vector.
+(define_predicate "const_double_or_vector_operand"
+  (match_code "const_double,const_vector"))
+
+;; Return true if OP is Zero, or if the target is V7.
+(define_predicate "zero_or_v7_operand"
+  (and (match_code "const_int")
+       (ior (match_test "INTVAL (op) == 0")
+	    (match_test "!TARGET_V8 && !TARGET_V9"))))
 
 ;; Predicates for symbolic constants.
 
@@ -207,6 +239,17 @@
 (define_predicate "register_or_zero_operand"
   (ior (match_operand 0 "register_operand")
        (match_operand 0 "const_zero_operand")))
+
+(define_predicate "register_or_v9_zero_operand"
+  (ior (match_operand 0 "register_operand")
+       (and (match_test "TARGET_V9")
+	    (match_operand 0 "const_zero_operand"))))
+
+;; Return true if OP is either the zero constant, the all-ones
+;; constant, or a register.
+(define_predicate "register_or_zero_or_all_ones_operand"
+  (ior (match_operand 0 "register_or_zero_operand")
+       (match_operand 0 "const_all_ones_operand")))
 
 ;; Return true if OP is a register operand in a floating point register.
 (define_predicate "fp_register_operand"
@@ -394,8 +437,12 @@
       && (GET_CODE (op) == CONST_DOUBLE || GET_CODE (op) == CONST_INT))
     return true;
 
-  if ((mclass == MODE_FLOAT && GET_CODE (op) == CONST_DOUBLE)
-      || (mclass == MODE_VECTOR_INT && GET_CODE (op) == CONST_VECTOR))
+  if (mclass == MODE_FLOAT && GET_CODE (op) == CONST_DOUBLE)
+    return true;
+
+  if (mclass == MODE_VECTOR_INT && GET_CODE (op) == CONST_VECTOR
+      && (const_zero_operand (op, mode)
+          || const_all_ones_operand (op, mode)))
     return true;
 
   if (register_operand (op, mode))
@@ -424,6 +471,10 @@
   (and (match_code "mem")
        (match_test "call_address_operand (XEXP (op, 0), mode)")))
 
+
+(define_predicate "mem_noofs_operand"
+  (and (match_code "mem")
+       (match_code "reg" "0")))
 
 ;; Predicates for operators.
 
@@ -470,9 +521,3 @@
 ;; and (xor ... (not ...)) to (not (xor ...)).  */
 (define_predicate "cc_arith_not_operator"
   (match_code "and,ior"))
-
-;; Return true if OP is memory operand with just [%reg] addressing mode.
-(define_predicate "memory_reg_operand"
-  (and (match_code "mem")
-       (and (match_operand 0 "memory_operand")
-	    (match_test "REG_P (XEXP (op, 0))"))))

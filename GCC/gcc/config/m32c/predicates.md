@@ -1,5 +1,5 @@
 ;; Machine Descriptions for R8C/M16C/M32C
-;; Copyright (C) 2005
+;; Copyright (C) 2005, 2007, 2008, 2010
 ;; Free Software Foundation, Inc.
 ;; Contributed by Red Hat.
 ;;
@@ -7,7 +7,7 @@
 ;;
 ;; GCC is free software; you can redistribute it and/or modify it
 ;; under the terms of the GNU General Public License as published
-;; by the Free Software Foundation; either version 2, or (at your
+;; by the Free Software Foundation; either version 3, or (at your
 ;; option) any later version.
 ;;
 ;; GCC is distributed in the hope that it will be useful, but WITHOUT
@@ -16,9 +16,8 @@
 ;; License for more details.
 ;;
 ;; You should have received a copy of the GNU General Public License
-;; along with GCC; see the file COPYING.  If not, write to the Free
-;; Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
-;; 02110-1301, USA.
+;; along with GCC; see the file COPYING3.  If not see
+;; <http://www.gnu.org/licenses/>.
 
 ;; Predicates
 
@@ -27,13 +26,21 @@
 
 (define_predicate "m32c_any_operand"
   (ior (match_operand 0 "general_operand")
-       (match_operand 1 "memory_operand")))
+       (match_code "mem,const_int,const_double"))
+  {
+    return ! m32c_illegal_subreg_p (op);
+  }
+)
 
 ; Likewise for nonimmediate_operand.
 
 (define_predicate "m32c_nonimmediate_operand"
   (ior (match_operand 0 "nonimmediate_operand")
-       (match_operand 1 "memory_operand")))
+       (match_code "mem"))
+  {
+    return ! m32c_illegal_subreg_p (op);
+  }
+)
 
 ; TRUE if the operand is a pseudo-register.
 (define_predicate "m32c_pseudo"
@@ -132,7 +139,7 @@
 
 ; Likewise, plus TRUE for memory references.
 (define_predicate "mra_operand"
-  (and (and (match_operand 0 "nonimmediate_operand" "")
+  (and (and (match_operand 0 "m32c_nonimmediate_operand" "")
 	    (not (match_operand 1 "cr_operand" "")))
        (not (match_operand 2 "m32c_wide_subreg" ""))))
 
@@ -281,7 +288,7 @@
 
 (define_predicate "m32c_1mask8_operand"
   (and (match_operand 0 "const_int_operand")
-       (match_test "m32c_const_ok_for_constraint_p(INTVAL(op), 'I', \"Imb\")")))
+       (match_test "m32c_const_ok_for_constraint_p(INTVAL(op), 'I', \"ImB\")")))
 
 (define_predicate "m32c_1mask16_operand"
   (and (match_operand 0 "const_int_operand")

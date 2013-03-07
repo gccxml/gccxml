@@ -1,6 +1,6 @@
 /* obstack.h - object stack macros
    Copyright 1988, 1989, 1990, 1991, 1992, 1993, 1994, 1996, 1997, 1998,
-   1999, 2000, 2001, 2002, 2003, 2004, 2005
+   1999, 2000, 2001, 2002, 2003, 2004, 2005, 2008
    Free Software Foundation, Inc.
 
 
@@ -527,14 +527,14 @@ __extension__								\
     > (h)->chunk_limit - (char *) (h)->chunk)				\
    ? ((h)->next_free = (h)->chunk_limit) : 0),				\
   (h)->object_base = (h)->next_free,					\
-  __INT_TO_PTR ((h)->temp))
+  (void *) __INT_TO_PTR ((h)->temp))
 
 # define obstack_free(h,obj)						\
 ( (h)->temp = (char *) (obj) - (char *) (h)->chunk,			\
   (((h)->temp > 0 && (h)->temp < (h)->chunk_limit - (char *) (h)->chunk)\
-   ? (int) ((h)->next_free = (h)->object_base				\
-	    = (h)->temp + (char *) (h)->chunk)				\
-   : (((obstack_free) ((h), (h)->temp + (char *) (h)->chunk), 0), 0)))
+   ? (((h)->next_free = (h)->object_base				\
+	    = (h)->temp + (char *) (h)->chunk), 0)			\
+   : ((obstack_free) ((h), (h)->temp + (char *) (h)->chunk), 0)))
 
 #endif /* not __GNUC__ or not __STDC__ */
 

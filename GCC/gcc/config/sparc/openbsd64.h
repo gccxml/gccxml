@@ -1,11 +1,11 @@
 /* Configuration file for sparc64 OpenBSD target.
-   Copyright (C) 1999, 2005 Free Software Foundation, Inc.
+   Copyright (C) 1999, 2005, 2007, 2010, 2011 Free Software Foundation, Inc.
 
 This file is part of GCC.
 
 GCC is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2, or (at your option)
+the Free Software Foundation; either version 3, or (at your option)
 any later version.
 
 GCC is distributed in the hope that it will be useful,
@@ -14,12 +14,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with GCC; see the file COPYING.  If not, write to
-the Free Software Foundation, 51 Franklin Street, Fifth Floor,
-Boston, MA 02110-1301, USA.  */
-
-#undef TARGET_VERSION
-#define TARGET_VERSION fprintf (stderr, " (sparc64 OpenBSD ELF)")
+along with GCC; see the file COPYING3.  If not see
+<http://www.gnu.org/licenses/>.  */
 
 /* XXX - do we really want HARD_QUAD? */
 #undef TARGET_DEFAULT
@@ -48,16 +44,12 @@ Boston, MA 02110-1301, USA.  */
 #undef CPP_SUBTARGET_SPEC
 #define CPP_SUBTARGET_SPEC ""
 
-#undef MD_EXEC_PREFIX
-#undef MD_STARTFILE_PREFIX
-
 /* Inherited from sp64-elf.  */
 #undef NO_IMPLICIT_EXTERN_C
 
 #undef ASM_SPEC
 #define ASM_SPEC "\
-%{v:-V} -s %{fpic|fPIC|fpie|fPIE:-K PIC} \
-%{mlittle-endian:-EL} \
+-s %{fpic|fPIC|fpie|fPIE:-K PIC} \
 %(asm_cpu) %(asm_arch) \
 "
 
@@ -73,12 +65,12 @@ Boston, MA 02110-1301, USA.  */
 
 #undef LINK_SPEC
 #define LINK_SPEC \
-  "%{!shared:%{!nostdlib:%{!r*:%{!e*:-e __start}}}} \
+  "%{!shared:%{!nostdlib:%{!r:%{!e*:-e __start}}}} \
    %{shared:-shared} %{R*} \
    %{static:-Bstatic} \
    %{!static:-Bdynamic} \
    %{assert*} \
-   %{!dynamic-linker:-dynamic-linker /usr/libexec/ld.so}"
+   -dynamic-linker /usr/libexec/ld.so"
 
 /* As an elf system, we need crtbegin/crtend stuff.  */
 #undef STARTFILE_SPEC

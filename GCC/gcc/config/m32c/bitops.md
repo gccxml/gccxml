@@ -1,5 +1,5 @@
 ;; Machine Descriptions for R8C/M16C/M32C
-;; Copyright (C) 2005
+;; Copyright (C) 2005, 2007, 2008, 2010
 ;; Free Software Foundation, Inc.
 ;; Contributed by Red Hat.
 ;;
@@ -7,7 +7,7 @@
 ;;
 ;; GCC is free software; you can redistribute it and/or modify it
 ;; under the terms of the GNU General Public License as published
-;; by the Free Software Foundation; either version 2, or (at your
+;; by the Free Software Foundation; either version 3, or (at your
 ;; option) any later version.
 ;;
 ;; GCC is distributed in the hope that it will be useful, but WITHOUT
@@ -16,9 +16,8 @@
 ;; License for more details.
 ;;
 ;; You should have received a copy of the GNU General Public License
-;; along with GCC; see the file COPYING.  If not, write to the Free
-;; Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
-;; 02110-1301, USA.
+;; along with GCC; see the file COPYING3.  If not see
+;; <http://www.gnu.org/licenses/>.
 
 ;; Bit-wise operations (and, ior, xor, shift)
 
@@ -31,7 +30,7 @@
 ; On the M32C, "address" for bit instructions is a regular address,
 ; and the bit number is stored in a separate field.  Thus, we can let
 ; gcc do more interesting things.  However, the M32C cannot set all
-; the bits in a 16 bit register, which the R8C/M16C can do.
+; the bits in a 16-bit register, which the R8C/M16C can do.
 
 ; However, it all means that we end up with two sets of patterns, one
 ; for each chip.
@@ -44,7 +43,7 @@
   [(set (match_operand:QI 0 "memsym_operand" "+Si")
 	(ior:QI (subreg:QI (ashift:HI (const_int 1)
 				      (subreg:QI (match_operand:HI 1 "a_qi_operand" "Raa") 0)) 0)
-		(match_operand:QI 2 "" "0")))]
+		(match_operand:QI 2 "memsym_operand" "0")))]
   "TARGET_A16"
   "bset\t%0[%1]"
   [(set_attr "flags" "n")]
@@ -99,7 +98,7 @@
 (define_insn "andhi3_16"
   [(set (match_operand:HI 0 "mra_operand" "=Sp,Sp,Rhi,RhiSd,??Rmm,RhiSd,??Rmm")
 	(and:HI (match_operand:HI 1 "mra_operand" "%0,0,0,0,0,0,0")
-		(match_operand:HI 2 "mrai_operand" "Imb,Imw,Imw,iRhiSd,?Rmm,?Rmm,iRhiSd")))]
+		(match_operand:HI 2 "mrai_operand" "ImB,Imw,Imw,iRhiSd,?Rmm,?Rmm,iRhiSd")))]
   "TARGET_A16"
   "@
    
@@ -137,6 +136,8 @@
       return \"and.w %h2,%h0\;and.w %H2,%H0\";
     case 5:
       return \"and.w %h2,%h0\;and.w %H2,%H0\";
+    default:
+      gcc_unreachable ();
     }"
   [(set_attr "flags" "x,x,x,x,x,x")]
 )
@@ -160,7 +161,7 @@
 (define_insn "iorhi3_16"
   [(set (match_operand:HI 0 "mra_operand" "=Sp,Sp,Rhi,RhiSd,RhiSd,??Rmm,??Rmm")
 	(ior:HI (match_operand:HI 1 "mra_operand" "%0,0,0,0,0,0,0")
-		(match_operand:HI 2 "mrai_operand" "Imb,Imw,Ilw,iRhiSd,?Rmm,iRhiSd,?Rmm")))]
+		(match_operand:HI 2 "mrai_operand" "Ilb,Ilw,Ilw,iRhiSd,?Rmm,iRhiSd,?Rmm")))]
   "TARGET_A16"
   "@
    bset %B2,%0
@@ -191,9 +192,9 @@
   )
 
 (define_insn "andhi3_24"
-  [(set (match_operand:HI 0 "mra_operand" "=Sd,Sd,Rqi,Rqi,RhiSd,??Rmm,RhiSd,??Rmm")
+  [(set (match_operand:HI 0 "mra_operand" "=Sd,Sd,?Rhl,?Rhl,RhiSd,??Rmm,RhiSd,??Rmm")
 	(and:HI (match_operand:HI 1 "mra_operand" "%0,0,0,0,0,0,0,0")
-		(match_operand:HI 2 "mrai_operand" "Imb,Imw,Imb,Imw,iRhiSd,?Rmm,?Rmm,iRhiSd")))]
+		(match_operand:HI 2 "mrai_operand" "ImB,Imw,ImB,Imw,iRhiSd,?Rmm,?Rmm,iRhiSd")))]
   "TARGET_A24"
   "@
    bclr\t%B2,%0
@@ -224,7 +225,7 @@
   )
 
 (define_insn "iorhi3_24"
-  [(set (match_operand:HI 0 "mra_operand" "=Sd,Sd,Rqi,Rqi,RhiSd,RhiSd,??Rmm,??Rmm")
+  [(set (match_operand:HI 0 "mra_operand" "=Sd,Sd,?Rhl,?Rhl,RhiSd,RhiSd,??Rmm,??Rmm")
 	(ior:HI (match_operand:HI 1 "mra_operand" "%0,0,0,0,0,0,0,0")
 		(match_operand:HI 2 "mrai_operand" "Ilb,Ilw,Ilb,Ilw,iRhiSd,?Rmm,iRhiSd,?Rmm")))]
   "TARGET_A24"
@@ -315,6 +316,8 @@
       return \"or.w %h2,%h0\;or.w %H2,%H0\";
     case 5:
       return \"or.w %h2,%h0\;or.w %H2,%H0\";
+    default:
+      gcc_unreachable ();
     }"
   [(set_attr "flags" "x,x,x,x,x,x")]
 )
@@ -361,6 +364,8 @@
       return \"xor.w %h2,%h0\;xor.w %H2,%H0\";
     case 5:
       return \"xor.w %h2,%h0\;xor.w %H2,%H0\";
+    default:
+      gcc_unreachable ();
     }"
   [(set_attr "flags" "x,x,x,x,x,x")]
 )

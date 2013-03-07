@@ -1,13 +1,14 @@
 /* Definitions for BSD assembler syntax for Intel 386
    (actually AT&T syntax for insns and operands,
    adapted to BSD conventions for symbol names and debugging.)
-   Copyright (C) 1988, 1996, 2000, 2002 Free Software Foundation, Inc.
+   Copyright (C) 1988, 1996, 2000, 2002, 2007, 2008
+   Free Software Foundation, Inc.
 
 This file is part of GCC.
 
 GCC is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2, or (at your option)
+the Free Software Foundation; either version 3, or (at your option)
 any later version.
 
 GCC is distributed in the hope that it will be useful,
@@ -16,9 +17,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with GCC; see the file COPYING.  If not, write to
-the Free Software Foundation, 51 Franklin Street, Fifth Floor,
-Boston, MA 02110-1301, USA.  */
+along with GCC; see the file COPYING3.  If not see
+<http://www.gnu.org/licenses/>.  */
 
 /* Use the Sequent Symmetry assembler syntax.  */
 
@@ -32,6 +32,7 @@ Boston, MA 02110-1301, USA.  */
 
 /* Assembler pseudos to introduce constants of various size.  */
 
+#define ASM_BYTE "\t.byte\t"
 #define ASM_SHORT "\t.word\t"
 #define ASM_LONG "\t.long\t"
 #define ASM_QUAD "\t.quad\t"  /* Should not be used for 32bit compilation.  */
@@ -65,6 +66,13 @@ Boston, MA 02110-1301, USA.  */
 ( fputs (".lcomm ", (FILE)),			\
   assemble_name ((FILE), (NAME)),		\
   fprintf ((FILE), ",%u\n", (int)(ROUNDED)))
+
+#ifdef HAVE_GAS_LCOMM_WITH_ALIGNMENT
+#define ASM_OUTPUT_ALIGNED_LOCAL(FILE, NAME, SIZE, ALIGNMENT)  \
+( fputs (".lcomm ", (FILE)),			\
+  assemble_name ((FILE), (NAME)),		\
+  fprintf ((FILE), ",%u,%u\n", (int)(SIZE), (int)(ALIGNMENT) / BITS_PER_UNIT))
+#endif
 
 /* This is how to output an assembler line
    that says to advance the location counter

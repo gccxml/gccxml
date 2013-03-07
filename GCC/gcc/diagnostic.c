@@ -1,13 +1,13 @@
 /* Language-independent diagnostic subroutines for the GNU Compiler Collection
-   Copyright (C) 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2006
-   Free Software Foundation, Inc.
+   Copyright (C) 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008,
+   2009, 2010, 2011, 2012 Free Software Foundation, Inc.
    Contributed by Gabriel Dos Reis <gdr@codesourcery.com>
 
 This file is part of GCC.
 
 GCC is free software; you can redistribute it and/or modify it under
 the terms of the GNU General Public License as published by the Free
-Software Foundation; either version 2, or (at your option) any later
+Software Foundation; either version 3, or (at your option) any later
 version.
 
 GCC is distributed in the hope that it will be useful, but WITHOUT ANY
@@ -16,47 +16,38 @@ FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 for more details.
 
 You should have received a copy of the GNU General Public License
-along with GCC; see the file COPYING.  If not, write to the Free
-Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
-02110-1301, USA.  */
+along with GCC; see the file COPYING3.  If not see
+<http://www.gnu.org/licenses/>.  */
 
 
 /* This file implements the language independent aspect of diagnostic
    message module.  */
 
 #include "config.h"
-#undef FLOAT /* This is for hpux. They should change hpux.  */
-#undef FFS  /* Some systems define this in param.h.  */
 #include "system.h"
 #include "coretypes.h"
-#include "tm.h"
-#include "tree.h"
 #include "version.h"
-#include "tm_p.h"
-#include "flags.h"
 #include "input.h"
-#include "toplev.h"
 #include "intl.h"
 #include "diagnostic.h"
-#include "langhooks.h"
-#include "langhooks-def.h"
-#include "opts.h"
 
+#define pedantic_warning_kind(DC)			\
+  ((DC)->pedantic_errors ? DK_ERROR : DK_WARNING)
+#define permissive_error_kind(DC) ((DC)->permissive ? DK_WARNING : DK_ERROR)
+#define permissive_error_option(DC) ((DC)->opt_permissive)
 
 /* Prototypes.  */
 static char *build_message_string (const char *, ...) ATTRIBUTE_PRINTF_1;
 
-static void default_diagnostic_starter (diagnostic_context *,
-					diagnostic_info *);
-static void default_diagnostic_finalizer (diagnostic_context *,
-					  diagnostic_info *);
-
 static void error_recursion (diagnostic_context *) ATTRIBUTE_NORETURN;
-static bool diagnostic_count_diagnostic (diagnostic_context *,
-					 diagnostic_info *);
+
 static void diagnostic_action_after_output (diagnostic_context *,
 					    diagnostic_info *);
 static void real_abort (void) ATTRIBUTE_NORETURN;
+
+/* Name of program invoked, sans directories.  */
+
+const char *progname;
 
 /* A diagnostic_context surrogate for stderr.  */
 static diagnostic_context global_diagnostic_context;
@@ -89,8 +80,10 @@ file_name_as_prefix (const char *f)
 
 /* Initialize the diagnostic message outputting machinery.  */
 void
-diagnostic_initialize (diagnostic_context *context)
+diagnostic_initialize (diagnostic_context *context, int n_opts)
 {
+  int i;
+
   /* Allocate a basic pretty-printer.  Clients will replace this a
      much more elaborated pretty-printer if they wish.  */
   context->printer = XNEW (pretty_printer);
@@ -101,18 +94,54 @@ diagnostic_initialize (diagnostic_context *context)
   context->printer->wrapping.rule = DIAGNOSTICS_SHOW_PREFIX_ONCE;
 
   memset (context->diagnostic_count, 0, sizeof context->diagnostic_count);
-  context->issue_warnings_are_errors_message = true;
+  context->some_warnings_are_errors = false;
   context->warning_as_error_requested = false;
-  memset (context->classify_diagnostic, DK_UNSPECIFIED,
-	  sizeof context->classify_diagnostic);
+  context->n_opts = n_opts;
+  context->classify_diagnostic = XNEWVEC (diagnostic_t, n_opts);
+  for (i = 0; i < n_opts; i++)
+    context->classify_diagnostic[i] = DK_UNSPECIFIED;
   context->show_option_requested = false;
   context->abort_on_error = false;
+  context->show_column = false;
+  context->pedantic_errors = false;
+  context->permissive = false;
+  context->opt_permissive = 0;
+  context->fatal_errors = false;
+  context->dc_inhibit_warnings = false;
+  context->dc_warn_system_headers = false;
+  context->max_errors = 0;
   context->internal_error = NULL;
   diagnostic_starter (context) = default_diagnostic_starter;
   diagnostic_finalizer (context) = default_diagnostic_finalizer;
+  context->option_enabled = NULL;
+  context->option_state = NULL;
+  context->option_name = NULL;
   context->last_module = 0;
-  context->last_function = NULL;
+  context->x_data = NULL;
   context->lock = 0;
+  context->inhibit_notes_p = false;
+}
+
+/* Do any cleaning up required after the last diagnostic is emitted.  */
+
+void
+diagnostic_finish (diagnostic_context *context)
+{
+  /* Some of the errors may actually have been warnings.  */
+  if (context->some_warnings_are_errors)
+    {
+      /* -Werror was given.  */
+      if (context->warning_as_error_requested)
+	pp_verbatim (context->printer,
+		     _("%s: all warnings being treated as errors"),
+		     progname);
+      /* At least one -Werror= was given.  */
+      else
+	pp_verbatim (context->printer,
+		     _("%s: some warnings being treated as errors"),
+		     progname);
+      pp_flush (context->printer);
+    }
 }
 
 /* Initialize DIAGNOSTIC, where the message MSG has already been
@@ -126,6 +155,7 @@ diagnostic_set_info_translated (diagnostic_info *diagnostic, const char *msg,
   diagnostic->message.args_ptr = args;
   diagnostic->message.format_spec = msg;
   diagnostic->location = location;
+  diagnostic->override_column = 0;
   diagnostic->kind = kind;
   diagnostic->option_index = 0;
 }
@@ -143,7 +173,8 @@ diagnostic_set_info (diagnostic_info *diagnostic, const char *gmsgid,
 /* Return a malloc'd string describing a location.  The caller is
    responsible for freeing the memory.  */
 char *
-diagnostic_build_prefix (diagnostic_info *diagnostic)
+diagnostic_build_prefix (diagnostic_context *context,
+			 diagnostic_info *diagnostic)
 {
   static const char *const diagnostic_kind_text[] = {
 #define DEFINE_DIAGNOSTIC_KIND(K, T) (T),
@@ -153,15 +184,15 @@ diagnostic_build_prefix (diagnostic_info *diagnostic)
   };
   const char *text = _(diagnostic_kind_text[diagnostic->kind]);
   expanded_location s = expand_location (diagnostic->location);
+  if (diagnostic->override_column)
+    s.column = diagnostic->override_column;
   gcc_assert (diagnostic->kind < DK_LAST_DIAGNOSTIC_KIND);
 
   return
     (s.file == NULL
      ? build_message_string ("%s: %s", progname, text)
-#ifdef USE_MAPPED_LOCATION
-     : flag_show_column && s.column != 0
+     : context->show_column
      ? build_message_string ("%s:%d:%d: %s", s.file, s.line, s.column, text)
-#endif
      : build_message_string ("%s:%d: %s", s.file, s.line, text));
 }
 
@@ -184,75 +215,6 @@ bool diagnostic_get_xml_synthesize_test()
 }
 /* END GCC-XML MODIFICATIONS 2008-10-01 */
 
-/* Count a diagnostic.  Return true if the message should be printed.  */
-static bool
-diagnostic_count_diagnostic (diagnostic_context *context,
-			     diagnostic_info *diagnostic)
-{
-  diagnostic_t kind = diagnostic->kind;
-  switch (kind)
-    {
-    default:
-      gcc_unreachable ();
-
-    case DK_ICE:
-#ifndef ENABLE_CHECKING
-      /* When not checking, ICEs are converted to fatal errors when an
-	 error has already occurred.  This is counteracted by
-	 abort_on_error.  */
-      if ((diagnostic_kind_count (context, DK_ERROR) > 0
-	   || diagnostic_kind_count (context, DK_SORRY) > 0)
-	  && !context->abort_on_error)
-	{
-	  expanded_location s = expand_location (diagnostic->location);
-	  fnotice (stderr, "%s:%d: confused by earlier errors, bailing out\n",
-		   s.file, s.line);
-	  exit (ICE_EXIT_CODE);
-	}
-#endif
-      if (context->internal_error)
-	(*context->internal_error) (diagnostic->message.format_spec,
-				    diagnostic->message.args_ptr);
-      /* Fall through.  */
-
-    case DK_FATAL: case DK_SORRY:
-    case DK_ANACHRONISM: case DK_NOTE:
-      ++diagnostic_kind_count (context, kind);
-      break;
-
-    case DK_WARNING:
-      if (!diagnostic_report_warnings_p ())
-        return false;
-
-      /* -Werror can reclassify warnings as errors, but
-	 classify_diagnostic can reclassify it back to a warning.  The
-	 second part of this test detects that case.  */
-      if (!context->warning_as_error_requested
-	  || (context->classify_diagnostic[diagnostic->option_index]
-	      == DK_WARNING))
-        {
-          ++diagnostic_kind_count (context, DK_WARNING);
-          break;
-        }
-      else if (context->issue_warnings_are_errors_message)
-        {
-	  pp_verbatim (context->printer,
-                       "%s: warnings being treated as errors\n", progname);
-          context->issue_warnings_are_errors_message = false;
-        }
-
-      /* And fall through.  */
-    case DK_ERROR:
-/* BEGIN GCC-XML MODIFICATIONS 2008-10-01 */
-      if(diagnostic_in_xml_synthesize_test()) { return false; }
-/* END GCC-XML MODIFICATIONS 2008-10-01 */
-      ++diagnostic_kind_count (context, DK_ERROR);
-      break;
-    }
-
-  return true;
-}
-
 /* Take any action which is expected to happen after the diagnostic
    is written out.  This function does not always return.  */
 static void
@@ -271,9 +233,21 @@ diagnostic_action_after_output (diagnostic_context *context,
     case DK_SORRY:
       if (context->abort_on_error)
 	real_abort ();
-      if (flag_fatal_errors)
+      if (context->fatal_errors)
 	{
 	  fnotice (stderr, "compilation terminated due to -Wfatal-errors.\n");
+	  diagnostic_finish (context);
+	  exit (FATAL_EXIT_CODE);
+	}
+      if (context->max_errors != 0
+	  && ((unsigned) (diagnostic_kind_count (context, DK_ERROR)
+			  + diagnostic_kind_count (context, DK_SORRY))
+	      >= context->max_errors))
+	{
+	  fnotice (stderr,
+		   "compilation terminated due to -fmax-errors=%u.\n",
+		   context->max_errors);
+	  diagnostic_finish (context);
 	  exit (FATAL_EXIT_CODE);
 	}
       break;
@@ -290,7 +264,7 @@ diagnostic_action_after_output (diagnostic_context *context,
     case DK_FATAL:
       if (context->abort_on_error)
 	real_abort ();
-
+      diagnostic_finish (context);
       fnotice (stderr, "compilation terminated.\n");
       exit (FATAL_EXIT_CODE);
 
@@ -299,19 +273,10 @@ diagnostic_action_after_output (diagnostic_context *context,
     }
 }
 
-/* Prints out, if necessary, the name of the current function
-   that caused an error.  Called from all error and warning functions.  */
 void
-diagnostic_report_current_function (diagnostic_context *context)
+diagnostic_report_current_module (diagnostic_context *context, location_t where)
 {
-  diagnostic_report_current_module (context);
-  lang_hooks.print_error_function (context, input_filename);
-}
-
-void
-diagnostic_report_current_module (diagnostic_context *context)
-{
-  struct file_stack *p;
+  const struct line_map *map = NULL;
 
   if (pp_needs_newline (context->printer))
     {
@@ -319,35 +284,51 @@ diagnostic_report_current_module (diagnostic_context *context)
       pp_needs_newline (context->printer) = false;
     }
 
-  p = input_file_stack;
-  if (p && diagnostic_last_module_changed (context))
+  if (where <= BUILTINS_LOCATION)
+    return;
+
+  linemap_resolve_location (line_table, where,
+			    LRK_MACRO_DEFINITION_LOCATION,
+			    &map);
+
+  if (map && diagnostic_last_module_changed (context, map))
     {
-      expanded_location xloc = expand_location (p->location);
-      pp_verbatim (context->printer,
-                   "In file included from %s:%d",
-		   xloc.file, xloc.line);
-      while ((p = p->next) != NULL)
+      diagnostic_set_last_module (context, map);
+      if (! MAIN_FILE_P (map))
 	{
-	  xloc = expand_location (p->location);
-	  pp_verbatim (context->printer,
-		       ",\n                 from %s:%d",
-		       xloc.file, xloc.line);
+	  map = INCLUDED_FROM (line_table, map);
+	  if (context->show_column)
+	    pp_verbatim (context->printer,
+			 "In file included from %s:%d:%d",
+			 LINEMAP_FILE (map),
+			 LAST_SOURCE_LINE (map), LAST_SOURCE_COLUMN (map));
+	  else
+	    pp_verbatim (context->printer,
+			 "In file included from %s:%d",
+			 LINEMAP_FILE (map), LAST_SOURCE_LINE (map));
+	  while (! MAIN_FILE_P (map))
+	    {
+	      map = INCLUDED_FROM (line_table, map);
+	      pp_verbatim (context->printer,
+			   ",\n                 from %s:%d",
+			   LINEMAP_FILE (map), LAST_SOURCE_LINE (map));
+	    }
+	  pp_verbatim (context->printer, ":");
+	  pp_newline (context->printer);
 	}
-      pp_verbatim (context->printer, ":");
-      diagnostic_set_last_module (context);
-      pp_newline (context->printer);
     }
 }
 
-static void
+void
 default_diagnostic_starter (diagnostic_context *context,
 			    diagnostic_info *diagnostic)
 {
-  diagnostic_report_current_function (context);
-  pp_set_prefix (context->printer, diagnostic_build_prefix (diagnostic));
+  diagnostic_report_current_module (context, diagnostic->location);
+  pp_set_prefix (context->printer, diagnostic_build_prefix (context,
+							    diagnostic));
 }
 
-static void
+void
 default_diagnostic_finalizer (diagnostic_context *context,
 			      diagnostic_info *diagnostic ATTRIBUTE_UNUSED)
 {
@@ -360,30 +341,108 @@ default_diagnostic_finalizer (diagnostic_context *context,
 diagnostic_t
 diagnostic_classify_diagnostic (diagnostic_context *context,
 				int option_index,
-				diagnostic_t new_kind)
+				diagnostic_t new_kind,
+				location_t where)
 {
   diagnostic_t old_kind;
 
   if (option_index <= 0
-      || option_index >= N_OPTS
+      || option_index >= context->n_opts
       || new_kind >= DK_LAST_DIAGNOSTIC_KIND)
     return DK_UNSPECIFIED;
 
   old_kind = context->classify_diagnostic[option_index];
-  context->classify_diagnostic[option_index] = new_kind;
+
+  /* Handle pragmas separately, since we need to keep track of *where*
+     the pragmas were.  */
+  if (where != UNKNOWN_LOCATION)
+    {
+      int i;
+
+      for (i = context->n_classification_history - 1; i >= 0; i --)
+	if (context->classification_history[i].option == option_index)
+	  {
+	    old_kind = context->classification_history[i].kind;
+	    break;
+	  }
+
+      i = context->n_classification_history;
+      context->classification_history =
+	(diagnostic_classification_change_t *) xrealloc (context->classification_history, (i + 1)
+							 * sizeof (diagnostic_classification_change_t));
+      context->classification_history[i].location = where;
+      context->classification_history[i].option = option_index;
+      context->classification_history[i].kind = new_kind;
+      context->n_classification_history ++;
+    }
+  else
+    context->classify_diagnostic[option_index] = new_kind;
+
   return old_kind;
+}
+
+/* Save all diagnostic classifications in a stack.  */
+void
+diagnostic_push_diagnostics (diagnostic_context *context, location_t where ATTRIBUTE_UNUSED)
+{
+  context->push_list = (int *) xrealloc (context->push_list, (context->n_push + 1) * sizeof (int));
+  context->push_list[context->n_push ++] = context->n_classification_history;
+}
+
+/* Restore the topmost classification set off the stack.  If the stack
+   is empty, revert to the state based on command line parameters.  */
+void
+diagnostic_pop_diagnostics (diagnostic_context *context, location_t where)
+{
+  int jump_to;
+  int i;
+
+  if (context->n_push)
+    jump_to = context->push_list [-- context->n_push];
+  else
+    jump_to = 0;
+
+  i = context->n_classification_history;
+  context->classification_history =
+    (diagnostic_classification_change_t *) xrealloc (context->classification_history, (i + 1)
+						     * sizeof (diagnostic_classification_change_t));
+  context->classification_history[i].location = where;
+  context->classification_history[i].option = jump_to;
+  context->classification_history[i].kind = DK_POP;
+  context->n_classification_history ++;
 }
 
 /* Report a diagnostic message (an error or a warning) as specified by
    DC.  This function is *the* subroutine in terms of which front-ends
    should implement their specific diagnostic handling modules.  The
    front-end independent format specifiers are exactly those described
-   in the documentation of output_format.  */
+   in the documentation of output_format.
+   Return true if a diagnostic was printed, false otherwise.  */
 
-void
+bool
 diagnostic_report_diagnostic (diagnostic_context *context,
 			      diagnostic_info *diagnostic)
 {
+  location_t location = diagnostic->location;
+  diagnostic_t orig_diag_kind = diagnostic->kind;
+  const char *saved_format_spec;
+
+  /* Give preference to being able to inhibit warnings, before they
+     get reclassified to something else.  */
+  if ((diagnostic->kind == DK_WARNING || diagnostic->kind == DK_PEDWARN)
+      && !diagnostic_report_warnings_p (context, location))
+    return false;
+
+  if (diagnostic->kind == DK_PEDWARN)
+    {
+      diagnostic->kind = pedantic_warning_kind (context);
+      /* We do this to avoid giving the message for -pedantic-errors.  */
+      orig_diag_kind = diagnostic->kind;
+    }
+ 
+  if (diagnostic->kind == DK_NOTE && context->inhibit_notes_p)
+    return false;
+
   if (context->lock > 0)
     {
       /* If we're reporting an ICE in the middle of some other error,
@@ -395,44 +454,133 @@ diagnostic_report_diagnostic (diagnostic_context *context,
 	error_recursion (context);
     }
 
+  /* If the user requested that warnings be treated as errors, so be
+     it.  Note that we do this before the next block so that
+     individual warnings can be overridden back to warnings with
+     -Wno-error=*.  */
+  if (context->warning_as_error_requested
+      && diagnostic->kind == DK_WARNING)
+    {
+      diagnostic->kind = DK_ERROR;
+    }
+
   if (diagnostic->option_index)
     {
+      diagnostic_t diag_class = DK_UNSPECIFIED;
+
       /* This tests if the user provided the appropriate -Wfoo or
 	 -Wno-foo option.  */
-      if (! option_enabled (diagnostic->option_index))
-	return;
+      if (! context->option_enabled (diagnostic->option_index,
+				     context->option_state))
+	return false;
+
+      /* This tests for #pragma diagnostic changes.  */
+      if (context->n_classification_history > 0)
+	{
+	  int i;
+	  /* FIXME: Stupid search.  Optimize later. */
+	  for (i = context->n_classification_history - 1; i >= 0; i --)
+	    {
+	      if (linemap_location_before_p
+		  (line_table,
+		   context->classification_history[i].location,
+		   location))
+		{
+		  if (context->classification_history[i].kind == (int) DK_POP)
+		    {
+		      i = context->classification_history[i].option;
+		      continue;
+		    }
+		  if (context->classification_history[i].option == diagnostic->option_index)
+		    {
+		      diag_class = context->classification_history[i].kind;
+		      if (diag_class != DK_UNSPECIFIED)
+			diagnostic->kind = diag_class;
+		      break;
+		    }
+		}
+	    }
+	}
       /* This tests if the user provided the appropriate -Werror=foo
 	 option.  */
-      if (context->classify_diagnostic[diagnostic->option_index] != DK_UNSPECIFIED)
-	diagnostic->kind = context->classify_diagnostic[diagnostic->option_index];
+      if (diag_class == DK_UNSPECIFIED
+	  && context->classify_diagnostic[diagnostic->option_index] != DK_UNSPECIFIED)
+	{
+	  diagnostic->kind = context->classify_diagnostic[diagnostic->option_index];
+	}
       /* This allows for future extensions, like temporarily disabling
 	 warnings for ranges of source code.  */
       if (diagnostic->kind == DK_IGNORED)
-	return;
+	return false;
     }
+
+  if (orig_diag_kind == DK_WARNING && diagnostic->kind == DK_ERROR)
+    context->some_warnings_are_errors = true;
+
+/* BEGIN GCC-XML MODIFICATIONS 2008-10-01 */
+  if (diagnostic->kind == DK_ERROR &&
+      diagnostic_in_xml_synthesize_test())
+    return false;
+/* END GCC-XML MODIFICATIONS 2008-10-01 */
 
   context->lock++;
 
-  if (diagnostic_count_diagnostic (context, diagnostic))
+  if (diagnostic->kind == DK_ICE)
     {
-      const char *saved_format_spec = diagnostic->message.format_spec;
-
-      if (context->show_option_requested && diagnostic->option_index)
-	diagnostic->message.format_spec
-	  = ACONCAT ((diagnostic->message.format_spec,
-		      " [", cl_options[diagnostic->option_index].opt_text, "]", NULL));
-
-      diagnostic->message.locus = &diagnostic->location;
-      pp_format (context->printer, &diagnostic->message);
-      (*diagnostic_starter (context)) (context, diagnostic);
-      pp_output_formatted_text (context->printer);
-      (*diagnostic_finalizer (context)) (context, diagnostic);
-      pp_flush (context->printer);
-      diagnostic_action_after_output (context, diagnostic);
-      diagnostic->message.format_spec = saved_format_spec;
+#ifndef ENABLE_CHECKING
+      /* When not checking, ICEs are converted to fatal errors when an
+	 error has already occurred.  This is counteracted by
+	 abort_on_error.  */
+      if ((diagnostic_kind_count (context, DK_ERROR) > 0
+	   || diagnostic_kind_count (context, DK_SORRY) > 0)
+	  && !context->abort_on_error)
+	{
+	  expanded_location s = expand_location (diagnostic->location);
+	  fnotice (stderr, "%s:%d: confused by earlier errors, bailing out\n",
+		   s.file, s.line);
+	  exit (ICE_EXIT_CODE);
+	}
+#endif
+      if (context->internal_error)
+	(*context->internal_error) (context,
+				    diagnostic->message.format_spec,
+				    diagnostic->message.args_ptr);
     }
+  ++diagnostic_kind_count (context, diagnostic->kind);
+
+  saved_format_spec = diagnostic->message.format_spec;
+  if (context->show_option_requested)
+    {
+      char *option_text;
+
+      option_text = context->option_name (context, diagnostic->option_index,
+					  orig_diag_kind, diagnostic->kind);
+
+      if (option_text)
+	{
+	  diagnostic->message.format_spec
+	    = ACONCAT ((diagnostic->message.format_spec,
+			" ", 
+			"[", option_text, "]",
+			NULL));
+	  free (option_text);
+	}
+    }
+  diagnostic->message.locus = &diagnostic->location;
+  diagnostic->message.x_data = &diagnostic->x_data;
+  diagnostic->x_data = NULL;
+  pp_format (context->printer, &diagnostic->message);
+  (*diagnostic_starter (context)) (context, diagnostic);
+  pp_output_formatted_text (context->printer);
+  (*diagnostic_finalizer (context)) (context, diagnostic);
+  pp_flush (context->printer);
+  diagnostic_action_after_output (context, diagnostic);
+  diagnostic->message.format_spec = saved_format_spec;
+  diagnostic->x_data = NULL;
 
   context->lock--;
+
+  return true;
 }
 
 /* Given a partial pathname as input, return another pathname that
@@ -481,28 +629,71 @@ verbatim (const char *gmsgid, ...)
   text.args_ptr = &ap;
   text.format_spec = _(gmsgid);
   text.locus = NULL;
+  text.x_data = NULL;
   pp_format_verbatim (global_dc->printer, &text);
   pp_flush (global_dc->printer);
   va_end (ap);
 }
 
-/* An informative note.  Use this for additional details on an error
-   message.  */
-void
-inform (const char *gmsgid, ...)
+bool
+emit_diagnostic (diagnostic_t kind, location_t location, int opt,
+		 const char *gmsgid, ...)
 {
   diagnostic_info diagnostic;
   va_list ap;
 
   va_start (ap, gmsgid);
-  diagnostic_set_info (&diagnostic, gmsgid, &ap, input_location, DK_NOTE);
+  if (kind == DK_PERMERROR)
+    {
+      diagnostic_set_info (&diagnostic, gmsgid, &ap, location,
+			   permissive_error_kind (global_dc));
+      diagnostic.option_index = permissive_error_option (global_dc);
+    }
+  else {
+      diagnostic_set_info (&diagnostic, gmsgid, &ap, location, kind);
+      if (kind == DK_WARNING || kind == DK_PEDWARN)
+	diagnostic.option_index = opt;
+  }
+  va_end (ap);
+
+  return report_diagnostic (&diagnostic);
+}
+
+/* An informative note at LOCATION.  Use this for additional details on an error
+   message.  */
+void
+inform (location_t location, const char *gmsgid, ...)
+{
+  diagnostic_info diagnostic;
+  va_list ap;
+
+  va_start (ap, gmsgid);
+  diagnostic_set_info (&diagnostic, gmsgid, &ap, location, DK_NOTE);
   report_diagnostic (&diagnostic);
   va_end (ap);
 }
 
-/* A warning.  Use this for code which is correct according to the
-   relevant language specification but is likely to be buggy anyway.  */
+/* An informative note at LOCATION.  Use this for additional details on an
+   error message.  */
 void
+inform_n (location_t location, int n, const char *singular_gmsgid,
+          const char *plural_gmsgid, ...)
+{
+  diagnostic_info diagnostic;
+  va_list ap;
+
+  va_start (ap, plural_gmsgid);
+  diagnostic_set_info_translated (&diagnostic,
+                                  ngettext (singular_gmsgid, plural_gmsgid, n),
+                                  &ap, location, DK_NOTE);
+  report_diagnostic (&diagnostic);
+  va_end (ap);
+}
+
+/* A warning at INPUT_LOCATION.  Use this for code which is correct according
+   to the relevant language specification but is likely to be buggy anyway.
+   Returns true if the warning was printed, false if it was inhibited.  */
+bool
 warning (int opt, const char *gmsgid, ...)
 {
   diagnostic_info diagnostic;
@@ -512,41 +703,72 @@ warning (int opt, const char *gmsgid, ...)
   diagnostic_set_info (&diagnostic, gmsgid, &ap, input_location, DK_WARNING);
   diagnostic.option_index = opt;
 
-  report_diagnostic (&diagnostic);
   va_end (ap);
+  return report_diagnostic (&diagnostic);
 }
 
-void
-warning0 (const char *gmsgid, ...)
+/* A warning at LOCATION.  Use this for code which is correct according to the
+   relevant language specification but is likely to be buggy anyway.
+   Returns true if the warning was printed, false if it was inhibited.  */
+
+bool
+warning_at (location_t location, int opt, const char *gmsgid, ...)
 {
   diagnostic_info diagnostic;
   va_list ap;
 
   va_start (ap, gmsgid);
-  diagnostic_set_info (&diagnostic, gmsgid, &ap, input_location, DK_WARNING);
-  report_diagnostic (&diagnostic);
+  diagnostic_set_info (&diagnostic, gmsgid, &ap, location, DK_WARNING);
+  diagnostic.option_index = opt;
   va_end (ap);
+  return report_diagnostic (&diagnostic);
 }
 
-/* A "pedantic" warning: issues a warning unless -pedantic-errors was
-   given on the command line, in which case it issues an error.  Use
-   this for diagnostics required by the relevant language standard,
-   if you have chosen not to make them errors.
+/* A "pedantic" warning at LOCATION: issues a warning unless
+   -pedantic-errors was given on the command line, in which case it
+   issues an error.  Use this for diagnostics required by the relevant
+   language standard, if you have chosen not to make them errors.
 
    Note that these diagnostics are issued independent of the setting
    of the -pedantic command-line switch.  To get a warning enabled
-   only with that switch, write "if (pedantic) pedwarn (...);"  */
-void
-pedwarn (const char *gmsgid, ...)
+   only with that switch, use either "if (pedantic) pedwarn
+   (OPT_pedantic,...)" or just "pedwarn (OPT_pedantic,..)".  To get a
+   pedwarn independently of the -pedantic switch use "pedwarn (0,...)".
+
+   Returns true if the warning was printed, false if it was inhibited.  */
+
+bool
+pedwarn (location_t location, int opt, const char *gmsgid, ...)
 {
   diagnostic_info diagnostic;
   va_list ap;
 
   va_start (ap, gmsgid);
-  diagnostic_set_info (&diagnostic, gmsgid, &ap, input_location,
-		       pedantic_error_kind ());
-  report_diagnostic (&diagnostic);
+  diagnostic_set_info (&diagnostic, gmsgid, &ap, location,  DK_PEDWARN);
+  diagnostic.option_index = opt;
   va_end (ap);
+  return report_diagnostic (&diagnostic);
+}
+
+/* A "permissive" error at LOCATION: issues an error unless
+   -fpermissive was given on the command line, in which case it issues
+   a warning.  Use this for things that really should be errors but we
+   want to support legacy code.
+
+   Returns true if the warning was printed, false if it was inhibited.  */
+
+bool
+permerror (location_t location, const char *gmsgid, ...)
+{
+  diagnostic_info diagnostic;
+  va_list ap;
+
+  va_start (ap, gmsgid);
+  diagnostic_set_info (&diagnostic, gmsgid, &ap, location,
+                       permissive_error_kind (global_dc));
+  diagnostic.option_index = permissive_error_option (global_dc);
+  va_end (ap);
+  return report_diagnostic (&diagnostic);
 }
 
 /* A hard error: the code is definitely ill-formed, and an object file
@@ -559,6 +781,36 @@ error (const char *gmsgid, ...)
 
   va_start (ap, gmsgid);
   diagnostic_set_info (&diagnostic, gmsgid, &ap, input_location, DK_ERROR);
+  report_diagnostic (&diagnostic);
+  va_end (ap);
+}
+
+/* A hard error: the code is definitely ill-formed, and an object file
+   will not be produced.  */
+void
+error_n (location_t location, int n, const char *singular_gmsgid,
+         const char *plural_gmsgid, ...)
+{
+  diagnostic_info diagnostic;
+  va_list ap;
+
+  va_start (ap, plural_gmsgid);
+  diagnostic_set_info_translated (&diagnostic,
+                                  ngettext (singular_gmsgid, plural_gmsgid, n),
+                                  &ap, location, DK_ERROR);
+  report_diagnostic (&diagnostic);
+  va_end (ap);
+}
+
+/* Same as ebove, but use location LOC instead of input_location.  */
+void
+error_at (location_t loc, const char *gmsgid, ...)
+{
+  diagnostic_info diagnostic;
+  va_list ap;
+
+  va_start (ap, gmsgid);
+  diagnostic_set_info (&diagnostic, gmsgid, &ap, loc, DK_ERROR);
   report_diagnostic (&diagnostic);
   va_end (ap);
 }
@@ -576,6 +828,14 @@ sorry (const char *gmsgid, ...)
   diagnostic_set_info (&diagnostic, gmsgid, &ap, input_location, DK_SORRY);
   report_diagnostic (&diagnostic);
   va_end (ap);
+}
+
+/* Return true if an error or a "sorry" has been seen.  Various
+   processing is disabled after errors.  */
+bool
+seen_error (void)
+{
+  return errorcount || sorrycount;
 }
 
 /* An error which is severe enough that we make no attempt to

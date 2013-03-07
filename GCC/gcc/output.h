@@ -1,13 +1,14 @@
 /* Declarations for insn-output.c.  These functions are defined in recog.c,
    final.c, and varasm.c.
-   Copyright (C) 1987, 1991, 1994, 1997, 1998,
-   1999, 2000, 2001, 2002, 2003, 2004, 2005 Free Software Foundation, Inc.
+   Copyright (C) 1987, 1991, 1994, 1997, 1998, 1999, 2000, 2001, 2002,
+   2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011
+   Free Software Foundation, Inc.
 
 This file is part of GCC.
 
 GCC is free software; you can redistribute it and/or modify it under
 the terms of the GNU General Public License as published by the Free
-Software Foundation; either version 2, or (at your option) any later
+Software Foundation; either version 3, or (at your option) any later
 version.
 
 GCC is distributed in the hope that it will be useful, but WITHOUT ANY
@@ -16,9 +17,8 @@ FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 for more details.
 
 You should have received a copy of the GNU General Public License
-along with GCC; see the file COPYING.  If not, write to the Free
-Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
-02110-1301, USA.  */
+along with GCC; see the file COPYING3.  If not see
+<http://www.gnu.org/licenses/>.  */
 
 #ifndef GCC_OUTPUT_H
 #define GCC_OUTPUT_H
@@ -78,6 +78,9 @@ extern rtx final_scan_insn (rtx, FILE *, int, int, int *);
    subreg of.  */
 extern rtx alter_subreg (rtx *);
 
+/* Print an operand using machine-dependent assembler syntax.  */
+extern void output_operand (rtx, int);
+
 /* Report inconsistency between the assembler template and the operands.
    In an `asm', it's the user's fault; otherwise, the compiler's fault.  */
 extern void output_operand_lossage (const char *, ...) ATTRIBUTE_PRINTF_1;
@@ -95,8 +98,15 @@ extern int insn_current_reference_address (rtx);
    Defined in final.c.  */
 extern int label_to_alignment (rtx);
 
+/* Find the alignment maximum skip associated with a CODE_LABEL.
+   Defined in final.c.  */
+extern int label_to_max_skip (rtx);
+
 /* Output a LABEL_REF, or a bare CODE_LABEL, as an assembler symbol.  */
 extern void output_asm_label (rtx);
+
+/* Marks SYMBOL_REFs in x as referenced through use of assemble_external.  */
+extern void mark_symbol_refs_as_used (rtx);
 
 /* Print a memory reference operand for address X
    using machine-dependent assembler syntax.  */
@@ -118,6 +128,10 @@ typedef HOST_WIDE_INT __gcc_host_wide_int__;
 #else
 #define ATTRIBUTE_ASM_FPRINTF(m, n) ATTRIBUTE_NONNULL(m)
 #endif
+
+extern void fprint_whex (FILE *, unsigned HOST_WIDE_INT);
+extern void fprint_ul (FILE *, unsigned long);
+extern int sprint_ul (char *, unsigned long);
 
 extern void asm_fprintf (FILE *file, const char *p, ...)
      ATTRIBUTE_ASM_FPRINTF(2, 3);
@@ -145,9 +159,6 @@ extern void leaf_renumber_regs_insn (rtx);
 /* Locate the proper template for the given insn-code.  */
 extern const char *get_insn_template (int, rtx);
 
-/* Functions in flow.c */
-extern int regno_clobbered_at_setjmp (int);
-
 /* Functions in varasm.c.  */
 
 /* Declare DECL to be a weak symbol.  */
@@ -158,6 +169,9 @@ extern void merge_weak (tree, tree);
 /* Emit any pending weak declarations.  */
 extern void weak_finish (void);
 
+/* Return the default TLS model for a given variable.  */
+extern enum tls_model decl_default_tls_model (const_tree);
+
 /* Decode an `asm' spec for a declaration as a register name.
    Return the register number, or -1 if nothing specified,
    or -2 if the ASMSPEC is not `cc' or `memory' and is not recognized,
@@ -166,6 +180,11 @@ extern void weak_finish (void);
    Accept an exact spelling or a decimal number.
    Prefixes such as % are optional.  */
 extern int decode_reg_name (const char *);
+
+/* Similar to decode_reg_name, but takes an extra parameter that is a
+   pointer to the number of (internal) registers described by the
+   external name.  */
+extern int decode_reg_name_and_count (const char *, int *);
 
 extern void assemble_alias (tree, tree);
 
@@ -200,9 +219,9 @@ extern void assemble_variable (tree, int, int, int);
    DONT_OUTPUT_DATA is from assemble_variable.  */
 extern void align_variable (tree decl, bool dont_output_data);
 
-/* Output something to declare an external symbol to the assembler.
-   (Most assemblers don't need this, so we normally output nothing.)
-   Do nothing if DECL is not external.  */
+/* Queue for outputting something to declare an external symbol to the
+   assembler.  (Most assemblers don't need this, so we normally output
+   nothing.)  Do nothing if DECL is not external.  */
 extern void assemble_external (tree);
 
 /* Assemble code to leave SIZE bytes of zeros.  */
@@ -218,7 +237,7 @@ extern void assemble_string (const char *, int);
 extern void assemble_external_libcall (rtx);
 
 /* Assemble a label named NAME.  */
-extern void assemble_label (const char *);
+extern void assemble_label (FILE *, const char *);
 
 /* Output to FILE (an assembly file) a reference to NAME.  If NAME
    starts with a *, the rest of NAME is output verbatim.  Otherwise
@@ -254,6 +273,10 @@ extern bool default_assemble_integer (rtx, unsigned int, int);
    be outputable. */
 extern bool assemble_integer (rtx, unsigned, unsigned, int);
 
+/* Return section for TEXT_SECITON_NAME if DECL or DECL_SECTION_NAME (DECL)
+   is NULL.  */
+extern section *get_named_text_section (tree, const char *, const char *);
+
 /* An interface to assemble_integer for the common case in which a value is
    fully aligned and must be printed.  VALUE is the value of the integer
    object and SIZE is the number of bytes it contains.  */
@@ -264,6 +287,9 @@ extern bool assemble_integer (rtx, unsigned, unsigned, int);
 /* Assemble the floating-point constant D into an object of size MODE.  */
 extern void assemble_real (REAL_VALUE_TYPE, enum machine_mode, unsigned);
 #endif
+
+/* Write the address of the entity given by SYMBOL to SEC.  */
+extern void assemble_addr_to_section (rtx, section *);
 
 /* Return the size of the constant pool.  */
 extern int get_pool_size (void);
@@ -276,12 +302,14 @@ extern void output_shared_constant_pool (void);
 
 extern void output_object_blocks (void);
 
+extern void output_quoted_string (FILE *, const char *);
+
 /* Whether a constructor CTOR is a valid static constant initializer if all
    its elements are.  This used to be internal to initializer_constant_valid_p
    and has been exposed to let other functions like categorize_ctor_elements
    evaluate the property while walking a constructor for other purposes.  */
 
-extern bool constructor_static_from_elts_p (tree);
+extern bool constructor_static_from_elts_p (const_tree);
 
 /* Return nonzero if VALUE is a valid constant-valued expression
    for use in initializing a static variable; one that can be an
@@ -293,6 +321,11 @@ extern bool constructor_static_from_elts_p (tree);
    therefore, we do not need to check for such things as
    arithmetic-combinations of integers.  */
 extern tree initializer_constant_valid_p (tree, tree);
+
+/* Return true if VALUE is a valid constant-valued expression
+   for use in initializing a static bit-field; one that can be
+   an element of a "constant" initializer.  */
+extern bool initializer_constant_valid_for_bitfield_p (tree);
 
 /* Output assembler code for constant EXP to FILE, with no label.
    This includes the pseudo-op such as ".int" or ".byte", and a newline.
@@ -340,7 +373,7 @@ extern int current_function_is_leaf;
 
 /* Nonzero if function being compiled doesn't modify the stack pointer
    (ignoring the prologue and epilogue).  This is only valid after
-   life_analysis has run.  */
+   pass_stack_ptr_mod has run.  */
 
 extern int current_function_sp_is_unchanging;
 
@@ -376,7 +409,7 @@ extern bool first_function_block_is_cold;
 
 /* Decide whether DECL needs to be in a writable section.
    RELOC is the same as for SELECT_SECTION.  */
-extern bool decl_readonly_section (tree, int);
+extern bool decl_readonly_section (const_tree, int);
 
 /* This can be used to compute RELOC for the function above, when
    given a constant expression.  */
@@ -387,6 +420,9 @@ extern const char *user_label_prefix;
 
 /* Default target function prologue and epilogue assembler output.  */
 extern void default_function_pro_epilogue (FILE *, HOST_WIDE_INT);
+
+/* Default target function switched text sections.  */
+extern void default_function_switched_text_sections (FILE *, tree, bool);
 
 /* Default target hook that outputs nothing to a stream.  */
 extern void no_asm_to_stream (FILE *);
@@ -409,7 +445,9 @@ extern void no_asm_to_stream (FILE *);
 #define SECTION_DECLARED 0x100000	/* section has been used */
 #define SECTION_STYLE_MASK 0x600000	/* bits used for SECTION_STYLE */
 #define SECTION_COMMON   0x800000	/* contains common data */
-#define SECTION_MACH_DEP 0x1000000	/* subsequent bits reserved for target */
+#define SECTION_RELRO	 0x1000000	/* data is readonly after relocation processing */
+#define SECTION_EXCLUDE  0x2000000	/* discarded by the linker */
+#define SECTION_MACH_DEP 0x4000000	/* subsequent bits reserved for target */
 
 /* This SECTION_STYLE is used for unnamed sections that we can switch
    to using a special assembler directive.  */
@@ -462,13 +500,13 @@ enum section_category
 };
 
 /* Information that is provided by all instances of the section type.  */
-struct section_common GTY(()) {
+struct GTY(()) section_common {
   /* The set of SECTION_* flags that apply to this section.  */
   unsigned int flags;
 };
 
 /* Information about a SECTION_NAMED section.  */
-struct named_section GTY(()) {
+struct GTY(()) named_section {
   struct section_common common;
 
   /* The name of the section.  */
@@ -484,7 +522,7 @@ struct named_section GTY(()) {
 typedef void (*unnamed_section_callback) (const void *);
 
 /* Information about a SECTION_UNNAMED section.  */
-struct unnamed_section GTY(()) {
+struct GTY(()) unnamed_section {
   struct section_common common;
 
   /* The callback used to switch to the section, and the data that
@@ -510,7 +548,7 @@ typedef bool (*noswitch_section_callback) (tree decl, const char *name,
 					   unsigned HOST_WIDE_INT rounded);
 
 /* Information about a SECTION_NOSWITCH section.  */
-struct noswitch_section GTY(()) {
+struct GTY(()) noswitch_section {
   struct section_common common;
 
   /* The callback used to assemble decls in this section.  */
@@ -518,8 +556,7 @@ struct noswitch_section GTY(()) {
 };
 
 /* Information about a section, which may be named or unnamed.  */
-union section GTY ((desc ("SECTION_STYLE (&(%h))")))
-{
+union GTY ((desc ("SECTION_STYLE (&(%h))"))) section {
   struct section_common GTY ((skip)) common;
   struct named_section GTY ((tag ("SECTION_NAMED"))) named;
   struct unnamed_section GTY ((tag ("SECTION_UNNAMED"))) unnamed;
@@ -554,6 +591,7 @@ extern section *get_unnamed_section (unsigned int, void (*) (const void *),
 				     const void *);
 extern section *get_section (const char *, unsigned int, tree);
 extern section *get_named_section (tree, const char *, int);
+extern section *get_variable_section (tree, bool);
 extern void place_block_symbol (rtx);
 extern rtx get_section_anchor (struct object_block *, HOST_WIDE_INT,
 			       enum tls_model);
@@ -564,16 +602,27 @@ extern section *function_section (tree);
 extern section *unlikely_text_section (void);
 extern section *current_function_section (void);
 
+/* Return the numbered .ctors.N (if CONSTRUCTOR_P) or .dtors.N (if
+   not) section for PRIORITY.  */
+extern section *get_cdtor_priority_section (int, bool);
+
 extern bool unlikely_text_section_p (section *);
 extern void switch_to_section (section *);
 extern void output_section_asm_op (const void *);
+
+extern void record_tm_clone_pair (tree, tree);
+extern void finish_tm_clone_pairs (void);
+extern tree get_tm_clone_pair (tree);
+
+extern void default_asm_output_source_filename (FILE *, const char *);
+extern void output_file_directive (FILE *, const char *);
 
 extern unsigned int default_section_type_flags (tree, const char *, int);
 
 extern bool have_global_bss_p (void);
 extern void default_no_named_section (const char *, unsigned int, tree);
 extern void default_elf_asm_named_section (const char *, unsigned int, tree);
-extern enum section_category categorize_decl_for_section (tree, int);
+extern enum section_category categorize_decl_for_section (const_tree, int);
 extern void default_coff_asm_named_section (const char *, unsigned int, tree);
 extern void default_pe_asm_named_section (const char *, unsigned int, tree);
 
@@ -589,6 +638,7 @@ extern section *default_elf_select_section (tree, int, unsigned HOST_WIDE_INT);
 extern void default_unique_section (tree, int);
 extern section *default_function_rodata_section (tree);
 extern section *default_no_function_rodata_section (tree);
+extern section *default_clone_table_section (void);
 extern section *default_select_rtx_section (enum machine_mode, rtx,
 					    unsigned HOST_WIDE_INT);
 extern section *default_elf_select_rtx_section (enum machine_mode, rtx,
@@ -596,18 +646,36 @@ extern section *default_elf_select_rtx_section (enum machine_mode, rtx,
 extern void default_encode_section_info (tree, rtx, int);
 extern const char *default_strip_name_encoding (const char *);
 extern void default_asm_output_anchor (rtx);
-extern bool default_use_anchors_for_symbol_p (rtx);
-extern bool default_binds_local_p (tree);
-extern bool default_binds_local_p_1 (tree, int);
+extern bool default_use_anchors_for_symbol_p (const_rtx);
+extern bool default_binds_local_p (const_tree);
+extern bool default_binds_local_p_1 (const_tree, int);
 extern void default_globalize_label (FILE *, const char *);
+extern void default_globalize_decl_name (FILE *, tree);
 extern void default_emit_unwind_label (FILE *, tree, int, int);
 extern void default_emit_except_table_label (FILE *);
+extern void default_generate_internal_label (char *, const char *,
+					     unsigned long);
 extern void default_internal_label (FILE *, const char *, unsigned long);
+extern void default_asm_declare_constant_name (FILE *, const char *,
+					       const_tree, HOST_WIDE_INT);
 extern void default_file_start (void);
 extern void file_end_indicate_exec_stack (void);
-extern bool default_valid_pointer_mode (enum machine_mode);
+extern void file_end_indicate_split_stack (void);
 
-extern int default_address_cost (rtx);
+extern void default_elf_asm_output_external (FILE *file, tree,
+					     const char *);
+extern void default_elf_asm_output_limited_string (FILE *, const char *);
+extern void default_elf_asm_output_ascii (FILE *, const char *, unsigned int);
+extern void default_elf_internal_label (FILE *, const char *, unsigned long);
+
+extern void default_elf_init_array_asm_out_constructor (rtx, int);
+extern void default_elf_fini_array_asm_out_destructor (rtx, int);
+extern int maybe_assemble_visibility (tree);
+
+extern int default_address_cost (rtx, bool);
+
+/* Output stack usage information.  */
+extern void output_stack_usage (void);
 
 /* dbxout helper functions */
 #if defined DBX_DEBUGGING_INFO || defined XCOFF_DEBUGGING_INFO

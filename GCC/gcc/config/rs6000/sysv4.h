@@ -1,13 +1,14 @@
 /* Target definitions for GNU compiler for PowerPC running System V.4
    Copyright (C) 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003,
-   2004, 2005, 2006, 2007 Free Software Foundation, Inc.
+   2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011
+   Free Software Foundation, Inc.
    Contributed by Cygnus Support.
 
    This file is part of GCC.
 
    GCC is free software; you can redistribute it and/or modify it
    under the terms of the GNU General Public License as published
-   by the Free Software Foundation; either version 2, or (at your
+   by the Free Software Foundation; either version 3, or (at your
    option) any later version.
 
    GCC is distributed in the hope that it will be useful, but WITHOUT
@@ -15,10 +16,14 @@
    or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public
    License for more details.
 
-   You should have received a copy of the GNU General Public License
-   along with GCC; see the file COPYING.  If not, write to the
-   Free Software Foundation, 51 Franklin Street, Fifth Floor, Boston,
-   MA 02110-1301, USA.  */
+   Under Section 7 of GPL version 3, you are granted additional
+   permissions described in the GCC Runtime Library Exception, version
+   3.1, as published by the Free Software Foundation.
+
+   You should have received a copy of the GNU General Public License and
+   a copy of the GCC Runtime Library Exception along with this program;
+   see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
+   <http://www.gnu.org/licenses/>.  */
 
 /* Header files should be C++ aware in general.  */
 #undef  NO_IMPLICIT_EXTERN_C
@@ -37,16 +42,6 @@
 #undef	ASM_DEFAULT_SPEC
 #define	ASM_DEFAULT_SPEC "-mppc"
 
-/* Small data support types.  */
-enum rs6000_sdata_type {
-  SDATA_NONE,			/* No small data support.  */
-  SDATA_DATA,			/* Just put data in .sbss/.sdata, don't use relocs.  */
-  SDATA_SYSV,			/* Use r13 to point to .sdata/.sbss.  */
-  SDATA_EABI			/* Use r13 like above, r2 points to .sdata2/.sbss2.  */
-};
-
-extern enum rs6000_sdata_type rs6000_sdata;
-
 #define	TARGET_TOC		((target_flags & MASK_64BIT)		\
 				 || ((target_flags & (MASK_RELOCATABLE	\
 						      | MASK_MINIMAL_TOC)) \
@@ -55,33 +50,25 @@ extern enum rs6000_sdata_type rs6000_sdata;
 
 #define	TARGET_BITFIELD_TYPE	(! TARGET_NO_BITFIELD_TYPE)
 #define	TARGET_BIG_ENDIAN	(! TARGET_LITTLE_ENDIAN)
+#define	TARGET_PROTOTYPE	target_prototype
 #define	TARGET_NO_PROTOTYPE	(! TARGET_PROTOTYPE)
 #define	TARGET_NO_TOC		(! TARGET_TOC)
 #define	TARGET_NO_EABI		(! TARGET_EABI)
+#define	TARGET_REGNAMES		rs6000_regnames
 
 #ifdef HAVE_AS_REL16
 #undef TARGET_SECURE_PLT
 #define TARGET_SECURE_PLT	secure_plt
 #endif
 
-extern const char *rs6000_abi_name;
-extern const char *rs6000_sdata_name;
-extern const char *rs6000_tls_size_string; /* For -mtls-size= */
-
 #define SDATA_DEFAULT_SIZE 8
 
-/* Sometimes certain combinations of command options do not make sense
-   on a particular target machine.  You can define a macro
-   `OVERRIDE_OPTIONS' to take account of this.  This macro, if
-   defined, is executed once just after all the command options have
-   been parsed.
-
-   The macro SUBTARGET_OVERRIDE_OPTIONS is provided for subtargets, to
-   get control.  */
+/* The macro SUBTARGET_OVERRIDE_OPTIONS is provided for subtargets, to
+   get control in TARGET_OPTION_OVERRIDE.  */
 
 #define SUBTARGET_OVERRIDE_OPTIONS					\
 do {									\
-  if (!g_switch_set)							\
+  if (!global_options_set.x_g_switch_value)				\
     g_switch_value = SDATA_DEFAULT_SIZE;				\
 									\
   if (rs6000_abi_name == NULL)						\
@@ -102,17 +89,14 @@ do {									\
     }									\
   else if (!strcmp (rs6000_abi_name, "aixdesc"))			\
     rs6000_current_abi = ABI_AIX;					\
-  else if (!strcmp (rs6000_abi_name, "freebsd"))			\
-    rs6000_current_abi = ABI_V4;					\
-  else if (!strcmp (rs6000_abi_name, "linux"))				\
+  else if (!strcmp (rs6000_abi_name, "freebsd")				\
+	   || !strcmp (rs6000_abi_name, "linux"))			\
     {									\
       if (TARGET_64BIT)							\
 	rs6000_current_abi = ABI_AIX;					\
       else								\
 	rs6000_current_abi = ABI_V4;					\
     }									\
-  else if (!strcmp (rs6000_abi_name, "gnu"))				\
-    rs6000_current_abi = ABI_V4;					\
   else if (!strcmp (rs6000_abi_name, "netbsd"))				\
     rs6000_current_abi = ABI_V4;					\
   else if (!strcmp (rs6000_abi_name, "openbsd"))			\
@@ -120,9 +104,9 @@ do {									\
   else if (!strcmp (rs6000_abi_name, "i960-old"))			\
     {									\
       rs6000_current_abi = ABI_V4;					\
-      target_flags |= (MASK_LITTLE_ENDIAN | MASK_EABI			\
-		       | MASK_NO_BITFIELD_WORD);			\
+      target_flags |= (MASK_LITTLE_ENDIAN | MASK_EABI);			\
       target_flags &= ~MASK_STRICT_ALIGN;				\
+      TARGET_NO_BITFIELD_WORD = 1;					\
     }									\
   else									\
     {									\
@@ -223,7 +207,8 @@ do {									\
     }									\
 									\
   else if (TARGET_RELOCATABLE)						\
-    flag_pic = 2;							\
+    if (!flag_pic)							\
+      flag_pic = 2;							\
 } while (0)
 
 #ifndef RS6000_BI_ARCH
@@ -258,39 +243,37 @@ do {									\
 #define	BYTES_BIG_ENDIAN (TARGET_BIG_ENDIAN)
 #define	WORDS_BIG_ENDIAN (TARGET_BIG_ENDIAN)
 
-/* Define this to set the endianness to use in libgcc2.c, which can
-   not depend on target_flags.  */
-#if !defined(__LITTLE_ENDIAN__) && !defined(__sun__)
-#define LIBGCC2_WORDS_BIG_ENDIAN 1
-#else
-#define LIBGCC2_WORDS_BIG_ENDIAN 0
-#endif
-
 /* Define cutoff for using external functions to save floating point.
-   Currently on V.4, always use inline stores.  */
-#define FP_SAVE_INLINE(FIRST_REG) ((FIRST_REG) < 64)
+   When optimizing for size, use external functions when profitable.  */
+#define FP_SAVE_INLINE(FIRST_REG) (optimize_size			\
+				   ? ((FIRST_REG) == 62			\
+				      || (FIRST_REG) == 63)		\
+				   : (FIRST_REG) < 64)
+/* And similarly for general purpose registers.  */
+#define GP_SAVE_INLINE(FIRST_REG) ((FIRST_REG) < 32	\
+				   && !optimize_size)
 
 /* Put jump tables in read-only memory, rather than in .text.  */
 #define JUMP_TABLES_IN_TEXT_SECTION 0
 
 /* Prefix and suffix to use to saving floating point.  */
 #define	SAVE_FP_PREFIX "_savefpr_"
-#define SAVE_FP_SUFFIX "_l"
+#define SAVE_FP_SUFFIX ""
 
 /* Prefix and suffix to use to restoring floating point.  */
 #define	RESTORE_FP_PREFIX "_restfpr_"
-#define RESTORE_FP_SUFFIX "_l"
+#define RESTORE_FP_SUFFIX ""
+
+/* Type used for size_t, as a string used in a declaration.  */
+#undef  SIZE_TYPE
+#define SIZE_TYPE "unsigned int"
 
 /* Type used for ptrdiff_t, as a string used in a declaration.  */
 #define PTRDIFF_TYPE "int"
 
-/* Type used for wchar_t, as a string used in a declaration.  */
-/* Override svr4.h definition.  */
 #undef	WCHAR_TYPE
 #define WCHAR_TYPE "long int"
 
-/* Width of wchar_t in bits.  */
-/* Override svr4.h definition.  */
 #undef	WCHAR_TYPE_SIZE
 #define WCHAR_TYPE_SIZE 32
 
@@ -374,8 +357,8 @@ do {									\
    containing one of them.  If -mfp-in-toc (the default), we also do
    this for floating-point constants.  We actually can only do this
    if the FP formats of the target and host machines are the same, but
-   we can't check that since not every file that uses
-   GO_IF_LEGITIMATE_ADDRESS_P includes real.h.
+   we can't check that since not every file that uses these target macros
+   includes real.h.
 
    Unlike AIX, we don't key off of -mminimal-toc, but instead do not
    allow floating point constants in the TOC if -mrelocatable.  */
@@ -404,8 +387,6 @@ do {									\
    Some svr4 assemblers need to also have something extra said about the
    function's return value.  We allow for that here.  */
 
-extern int rs6000_pic_labelno;
-
 /* Override elfos.h definition.  */
 #undef	ASM_DECLARE_FUNCTION_NAME
 #define ASM_DECLARE_FUNCTION_NAME(FILE, NAME, DECL)			\
@@ -416,8 +397,6 @@ extern int rs6000_pic_labelno;
 
 #define	LOCAL_LABEL_PREFIX "."
 #define	USER_LABEL_PREFIX ""
-
-/* svr4.h overrides (*targetm.asm_out.internal_label).  */
 
 #define	ASM_OUTPUT_INTERNAL_LABEL_PREFIX(FILE,PREFIX)	\
   asm_fprintf (FILE, "%L%s", PREFIX)
@@ -504,17 +483,6 @@ do {									\
 		 reg_names[1]);						\
 } while (0)
 
-/* Switch  Recognition by gcc.c.  Add -G xx support.  */
-
-/* Override svr4.h definition.  */
-#undef	SWITCH_TAKES_ARG
-#define	SWITCH_TAKES_ARG(CHAR)						\
-  ((CHAR) == 'D' || (CHAR) == 'U' || (CHAR) == 'o'			\
-   || (CHAR) == 'e' || (CHAR) == 'T' || (CHAR) == 'u'			\
-   || (CHAR) == 'I' || (CHAR) == 'm' || (CHAR) == 'x'			\
-   || (CHAR) == 'L' || (CHAR) == 'A' || (CHAR) == 'V'			\
-   || (CHAR) == 'B' || (CHAR) == 'b' || (CHAR) == 'G')
-
 extern int fixuplabelno;
 
 /* Handle constructors specially for -mrelocatable.  */
@@ -544,10 +512,6 @@ extern int fixuplabelno;
 #define	DBX_FUNCTION_FIRST
 
 /* This is the end of what might become sysv4dbx.h.  */
-
-#ifndef	TARGET_VERSION
-#define	TARGET_VERSION fprintf (stderr, " (PowerPC System V.4)");
-#endif
 
 #define TARGET_OS_SYSV_CPP_BUILTINS()		\
   do						\
@@ -574,22 +538,18 @@ extern int fixuplabelno;
   while (0)
 #endif
 
-/* Pass various options to the assembler.  */
-/* Override svr4.h definition.  */
 #undef	ASM_SPEC
 #define	ASM_SPEC "%(asm_cpu) \
-%{.s: %{mregnames} %{mno-regnames}} %{.S: %{mregnames} %{mno-regnames}} \
-%{v:-V} %{Qy:} %{!Qn:-Qy} %{n} %{T} %{Ym,*} %{Yd,*} %{Wa,*:%*} \
+%{,assembler|,assembler-with-cpp: %{mregnames} %{mno-regnames}} \
 %{mrelocatable} %{mrelocatable-lib} %{fpic|fpie|fPIC|fPIE:-K PIC} \
-%{memb|msdata|msdata=eabi: -memb} \
+%{memb|msdata=eabi: -memb} \
 %{mlittle|mlittle-endian:-mlittle; \
   mbig|mbig-endian      :-mbig;    \
   mcall-aixdesc |		   \
   mcall-freebsd |		   \
   mcall-netbsd  |		   \
   mcall-openbsd |		   \
-  mcall-linux   |		   \
-  mcall-gnu             :-mbig;    \
+  mcall-linux           :-mbig;    \
   mcall-i960-old        :-mlittle}"
 
 #define	CC1_ENDIAN_BIG_SPEC ""
@@ -608,15 +568,14 @@ extern int fixuplabelno;
 #endif
 
 /* Pass -G xxx to the compiler and set correct endian mode.  */
-#define	CC1_SPEC "%{G*} \
+#define	CC1_SPEC "%{G*} %(cc1_cpu) \
 %{mlittle|mlittle-endian: %(cc1_endian_little);           \
   mbig   |mbig-endian   : %(cc1_endian_big);              \
   mcall-aixdesc |					  \
   mcall-freebsd |					  \
   mcall-netbsd  |					  \
   mcall-openbsd |					  \
-  mcall-linux   |					  \
-  mcall-gnu             : -mbig %(cc1_endian_big);        \
+  mcall-linux           : -mbig %(cc1_endian_big);        \
   mcall-i960-old        : -mlittle %(cc1_endian_little);  \
                         : %(cc1_endian_default)}          \
 %{meabi: %{!mcall-*: -mcall-sysv }} \
@@ -625,7 +584,6 @@ extern int fixuplabelno;
     %{mcall-freebsd: -mno-eabi } \
     %{mcall-i960-old: -meabi } \
     %{mcall-linux: -mno-eabi } \
-    %{mcall-gnu: -mno-eabi } \
     %{mcall-netbsd: -mno-eabi } \
     %{mcall-openbsd: -mno-eabi }}} \
 %{msdata: -msdata=default} \
@@ -633,73 +591,35 @@ extern int fixuplabelno;
 %{!mbss-plt: %{!msecure-plt: %(cc1_secure_plt_default)}} \
 %{profile: -p}"
 
-/* Don't put -Y P,<path> for cross compilers.  */
-#ifndef CROSS_COMPILE
-#define LINK_PATH_SPEC "\
-%{!R*:%{L*:-R %*}} \
-%{!nostdlib: %{!YP,*: \
-    %{compat-bsd: \
-	%{p:-Y P,/usr/ucblib:/usr/ccs/lib/libp:/usr/lib/libp:/usr/ccs/lib:/usr/lib} \
-	%{!p:-Y P,/usr/ucblib:/usr/ccs/lib:/usr/lib}} \
-	%{!R*: %{!L*: -R /usr/ucblib}} \
-    %{!compat-bsd: \
-	%{p:-Y P,/usr/ccs/lib/libp:/usr/lib/libp:/usr/ccs/lib:/usr/lib} \
-	%{!p:-Y P,/usr/ccs/lib:/usr/lib}}}}"
-
-#else
-#define LINK_PATH_SPEC ""
-#endif
-
 /* Default starting address if specified.  */
 #define LINK_START_SPEC "\
 %{mads         : %(link_start_ads)         ; \
   myellowknife : %(link_start_yellowknife) ; \
   mmvme        : %(link_start_mvme)        ; \
   msim         : %(link_start_sim)         ; \
-  mwindiss     : %(link_start_windiss)     ; \
   mcall-freebsd: %(link_start_freebsd)     ; \
   mcall-linux  : %(link_start_linux)       ; \
-  mcall-gnu    : %(link_start_gnu)         ; \
   mcall-netbsd : %(link_start_netbsd)      ; \
   mcall-openbsd: %(link_start_openbsd)     ; \
                : %(link_start_default)     }"
 
 #define LINK_START_DEFAULT_SPEC ""
 
-/* Override svr4.h definition.  */
 #undef	LINK_SPEC
 #define	LINK_SPEC "\
 %{h*} %{v:-V} %{!msdata=none:%{G*}} %{msdata=none:-G0} \
-%{YP,*} %{R*} \
-%{Qy:} %{!Qn:-Qy} \
+%{R*} \
 %(link_shlib) \
-%{!Wl,-T*: %{!T*: %(link_start) }} \
+%{!T*: %(link_start) } \
 %(link_target) \
 %(link_os)"
 
-/* For now, turn off shared libraries by default.  */
-#ifndef SHARED_LIB_SUPPORT
-#define NO_SHARED_LIB_SUPPORT
-#endif
-
-#ifndef NO_SHARED_LIB_SUPPORT
-/* Shared libraries are default.  */
-#define LINK_SHLIB_SPEC "\
-%{!static: %(link_path) %{!R*:%{L*:-R %*}}} \
-%{mshlib: } \
-%{static:-dn -Bstatic} \
-%{shared:-G -dy -z text} \
-%{symbolic:-Bsymbolic -G -dy -z text}"
-
-#else
 /* Shared libraries are not default.  */
 #define LINK_SHLIB_SPEC "\
-%{mshlib: %(link_path) } \
 %{!mshlib: %{!shared: %{!symbolic: -dn -Bstatic}}} \
 %{static: } \
-%{shared:-G -dy -z text %(link_path) } \
-%{symbolic:-Bsymbolic -G -dy -z text %(link_path) }"
-#endif
+%{shared:-G -dy -z text } \
+%{symbolic:-Bsymbolic -G -dy -z text }"
 
 /* Override the default target of the linker.  */
 #define	LINK_TARGET_SPEC "\
@@ -714,15 +634,16 @@ extern int fixuplabelno;
   myellowknife : %(link_os_yellowknife) ; \
   mmvme        : %(link_os_mvme)        ; \
   msim         : %(link_os_sim)         ; \
-  mwindiss     : %(link_os_windiss)     ; \
   mcall-freebsd: %(link_os_freebsd)     ; \
   mcall-linux  : %(link_os_linux)       ; \
-  mcall-gnu    : %(link_os_gnu)         ; \
   mcall-netbsd : %(link_os_netbsd)      ; \
   mcall-openbsd: %(link_os_openbsd)     ; \
                : %(link_os_default)     }"
 
 #define LINK_OS_DEFAULT_SPEC ""
+
+#define DRIVER_SELF_SPECS "%{mfpu=none: %<mfpu=* \
+ 	%<msingle-float %<mdouble-float}"
 
 /* Override rs6000.h definition.  */
 #undef	CPP_SPEC
@@ -731,68 +652,57 @@ extern int fixuplabelno;
   myellowknife : %(cpp_os_yellowknife) ; \
   mmvme        : %(cpp_os_mvme)        ; \
   msim         : %(cpp_os_sim)         ; \
-  mwindiss     : %(cpp_os_windiss)     ; \
   mcall-freebsd: %(cpp_os_freebsd)     ; \
   mcall-linux  : %(cpp_os_linux)       ; \
-  mcall-gnu    : %(cpp_os_gnu)         ; \
   mcall-netbsd : %(cpp_os_netbsd)      ; \
   mcall-openbsd: %(cpp_os_openbsd)     ; \
                : %(cpp_os_default)     }"
 
 #define	CPP_OS_DEFAULT_SPEC ""
 
-/* Override svr4.h definition.  */
 #undef	STARTFILE_SPEC
 #define	STARTFILE_SPEC "\
 %{mads         : %(startfile_ads)         ; \
   myellowknife : %(startfile_yellowknife) ; \
   mmvme        : %(startfile_mvme)        ; \
   msim         : %(startfile_sim)         ; \
-  mwindiss     : %(startfile_windiss)     ; \
   mcall-freebsd: %(startfile_freebsd)     ; \
   mcall-linux  : %(startfile_linux)       ; \
-  mcall-gnu    : %(startfile_gnu)         ; \
   mcall-netbsd : %(startfile_netbsd)      ; \
   mcall-openbsd: %(startfile_openbsd)     ; \
                : %(startfile_default)     }"
 
-#define	STARTFILE_DEFAULT_SPEC ""
+#define	STARTFILE_DEFAULT_SPEC "ecrti.o%s crtbegin.o%s"
 
-/* Override svr4.h definition.  */
 #undef	LIB_SPEC
 #define	LIB_SPEC "\
 %{mads         : %(lib_ads)         ; \
   myellowknife : %(lib_yellowknife) ; \
   mmvme        : %(lib_mvme)        ; \
   msim         : %(lib_sim)         ; \
-  mwindiss     : %(lib_windiss)     ; \
   mcall-freebsd: %(lib_freebsd)     ; \
   mcall-linux  : %(lib_linux)       ; \
-  mcall-gnu    : %(lib_gnu)         ; \
   mcall-netbsd : %(lib_netbsd)      ; \
   mcall-openbsd: %(lib_openbsd)     ; \
                : %(lib_default)     }"
 
-#define LIB_DEFAULT_SPEC ""
+#define LIB_DEFAULT_SPEC "-lc"
 
-/* Override svr4.h definition.  */
 #undef	ENDFILE_SPEC
 #define	ENDFILE_SPEC "\
-%{mads         : crtsavres.o%s        %(endfile_ads)         ; \
-  myellowknife : crtsavres.o%s        %(endfile_yellowknife) ; \
-  mmvme        : crtsavres.o%s        %(endfile_mvme)        ; \
-  msim         : crtsavres.o%s        %(endfile_sim)         ; \
-  mwindiss     :                      %(endfile_windiss)     ; \
-  mcall-freebsd: crtsavres.o%s        %(endfile_freebsd)     ; \
-  mcall-linux  : crtsavres.o%s        %(endfile_linux)       ; \
-  mcall-gnu    : crtsavres.o%s        %(endfile_gnu)         ; \
-  mcall-netbsd : crtsavres.o%s        %(endfile_netbsd)      ; \
-  mcall-openbsd: crtsavres.o%s        %(endfile_openbsd)     ; \
+%{mads         : %(endfile_ads)         ; \
+  myellowknife : %(endfile_yellowknife) ; \
+  mmvme        : %(endfile_mvme)        ; \
+  msim         : %(endfile_sim)         ; \
+  mcall-freebsd: %(endfile_freebsd)     ; \
+  mcall-linux  : %(endfile_linux)       ; \
+  mcall-netbsd : %(endfile_netbsd)      ; \
+  mcall-openbsd: %(endfile_openbsd)     ; \
                : %(crtsavres_default) %(endfile_default)     }"
 
-#define CRTSAVRES_DEFAULT_SPEC "crtsavres.o%s"
+#define CRTSAVRES_DEFAULT_SPEC ""
 
-#define	ENDFILE_DEFAULT_SPEC ""
+#define	ENDFILE_DEFAULT_SPEC "crtend.o%s ecrtn.o%s"
 
 /* Motorola ADS support.  */
 #define LIB_ADS_SPEC "--start-group -lads -lc --end-group"
@@ -858,14 +768,14 @@ extern int fixuplabelno;
 #define LINK_START_FREEBSD_SPEC	""
 
 #define LINK_OS_FREEBSD_SPEC "\
-  %{p:%nconsider using `-pg' instead of `-p' with gprof(1)} \
+  %{p:%nconsider using '-pg' instead of '-p' with gprof(1)} \
   %{v:-V} \
   %{assert*} %{R*} %{rpath*} %{defsym*} \
   %{shared:-Bshareable %{h*} %{soname*}} \
   %{!shared: \
     %{!static: \
       %{rdynamic: -export-dynamic} \
-      %{!dynamic-linker:-dynamic-linker %(fbsd_dynamic_linker) }} \
+      -dynamic-linker %(fbsd_dynamic_linker) } \
     %{static:-Bstatic}} \
   %{symbolic:-Bsymbolic}"
 
@@ -894,17 +804,19 @@ extern int fixuplabelno;
 
 #define GLIBC_DYNAMIC_LINKER "/lib/ld.so.1"
 #define UCLIBC_DYNAMIC_LINKER "/lib/ld-uClibc.so.0"
-#if UCLIBC_DEFAULT
-#define CHOOSE_DYNAMIC_LINKER(G, U) "%{mglibc:%{muclibc:%e-mglibc and -muclibc used together}" G ";:" U "}"
+#if DEFAULT_LIBC == LIBC_UCLIBC
+#define CHOOSE_DYNAMIC_LINKER(G, U) "%{mglibc:" G ";:" U "}"
+#elif !defined (DEFAULT_LIBC) || DEFAULT_LIBC == LIBC_GLIBC
+#define CHOOSE_DYNAMIC_LINKER(G, U) "%{muclibc:" U ";:" G "}"
 #else
-#define CHOOSE_DYNAMIC_LINKER(G, U) "%{muclibc:%{mglibc:%e-mglibc and -muclibc used together}" U ";:" G "}"
+#error "Unsupported DEFAULT_LIBC"
 #endif
-#define LINUX_DYNAMIC_LINKER \
+#define GNU_USER_DYNAMIC_LINKER \
   CHOOSE_DYNAMIC_LINKER (GLIBC_DYNAMIC_LINKER, UCLIBC_DYNAMIC_LINKER)
 
 #define LINK_OS_LINUX_SPEC "-m elf32ppclinux %{!shared: %{!static: \
   %{rdynamic:-export-dynamic} \
-  %{!dynamic-linker:-dynamic-linker " LINUX_DYNAMIC_LINKER "}}}"
+  -dynamic-linker " GNU_USER_DYNAMIC_LINKER "}}"
 
 #if defined(HAVE_LD_EH_FRAME_HDR)
 # define LINK_EH_SPEC "%{!static:--eh-frame-hdr} "
@@ -917,34 +829,9 @@ extern int fixuplabelno;
     %{std=gnu*:-Dunix -D__unix -Dlinux -D__linux}}}		  \
 -Asystem=linux -Asystem=unix -Asystem=posix %{pthread:-D_REENTRANT}"
 
-/* GNU/Hurd support.  */
-#define LIB_GNU_SPEC "%{mnewlib: --start-group -lgnu -lc --end-group } \
-%{!mnewlib: %{shared:-lc} %{!shared: %{pthread:-lpthread } \
-%{profile:-lc_p} %{!profile:-lc}}}"
-
-#define	STARTFILE_GNU_SPEC "\
-%{!shared: %{!static: %{pg:gcrt1.o%s} %{!pg:%{p:gcrt1.o%s} %{!p:crt1.o%s}}}} \
-%{static: %{pg:gcrt0.o%s} %{!pg:%{p:gcrt0.o%s} %{!p:crt0.o%s}}} \
-%{mnewlib: ecrti.o%s} %{!mnewlib: crti.o%s} \
-%{!shared:crtbegin.o%s} %{shared:crtbeginS.o%s}"
-
-#define	ENDFILE_GNU_SPEC "%{!shared:crtend.o%s} %{shared:crtendS.o%s} \
-%{mnewlib: ecrtn.o%s} %{!mnewlib: crtn.o%s}"
-
-#define LINK_START_GNU_SPEC ""
-
-#define LINK_OS_GNU_SPEC "-m elf32ppclinux %{!shared: %{!static: \
-  %{rdynamic:-export-dynamic} \
-  %{!dynamic-linker:-dynamic-linker /lib/ld.so.1}}}"
-
-#define CPP_OS_GNU_SPEC "-D__unix__ -D__gnu_hurd__ -D__GNU__	\
-%{!undef:					                \
-  %{!ansi: -Dunix -D__unix}}			                \
--Asystem=gnu -Asystem=unix -Asystem=posix %{pthread:-D_REENTRANT}"
-
 /* NetBSD support.  */
 #define LIB_NETBSD_SPEC "\
-%{profile:-lgmon -lc_p} %{!profile:-lc}"
+-lc"
 
 #define	STARTFILE_NETBSD_SPEC "\
 ncrti.o%s crt0.o%s \
@@ -960,7 +847,7 @@ ncrtn.o%s"
 #define LINK_OS_NETBSD_SPEC "\
 %{!shared: %{!static: \
   %{rdynamic:-export-dynamic} \
-  %{!dynamic-linker:-dynamic-linker /usr/libexec/ld.elf_so}}}"
+  -dynamic-linker /usr/libexec/ld.elf_so}}"
 
 #define CPP_OS_NETBSD_SPEC "\
 -D__powerpc__ -D__NetBSD__ -D__KPRINTF_ATTRIBUTE__"
@@ -993,25 +880,6 @@ ncrtn.o%s"
 #define CPP_OS_OPENBSD_SPEC "%{posix:-D_POSIX_SOURCE} %{pthread:-D_POSIX_THREADS}"
 #endif
 
-/* WindISS support.  */
-
-#define LIB_WINDISS_SPEC "--start-group -li -lcfp -lwindiss -lram -limpl -limpfp --end-group"
-
-#define CPP_OS_WINDISS_SPEC "\
--D__rtasim \
--D__EABI__ \
--D__ppc \
-%{!msoft-float: -D__hardfp} \
-"
-
-#define STARTFILE_WINDISS_SPEC "crt0.o%s crtbegin.o%s"
-
-#define ENDFILE_WINDISS_SPEC "crtend.o%s"
-
-#define LINK_START_WINDISS_SPEC ""
-
-#define LINK_OS_WINDISS_SPEC ""
-
 /* Define any extra SPECS that the compiler needs to generate.  */
 /* Override rs6000.h definition.  */
 #undef	SUBTARGET_EXTRA_SPECS
@@ -1022,35 +890,28 @@ ncrtn.o%s"
   { "lib_mvme",			LIB_MVME_SPEC },			\
   { "lib_sim",			LIB_SIM_SPEC },				\
   { "lib_freebsd",		LIB_FREEBSD_SPEC },			\
-  { "lib_gnu",			LIB_GNU_SPEC },				\
   { "lib_linux",		LIB_LINUX_SPEC },			\
   { "lib_netbsd",		LIB_NETBSD_SPEC },			\
   { "lib_openbsd",		LIB_OPENBSD_SPEC },			\
-  { "lib_windiss",		LIB_WINDISS_SPEC },			\
   { "lib_default",		LIB_DEFAULT_SPEC },			\
   { "startfile_ads",		STARTFILE_ADS_SPEC },			\
   { "startfile_yellowknife",	STARTFILE_YELLOWKNIFE_SPEC },		\
   { "startfile_mvme",		STARTFILE_MVME_SPEC },			\
   { "startfile_sim",		STARTFILE_SIM_SPEC },			\
   { "startfile_freebsd",	STARTFILE_FREEBSD_SPEC },		\
-  { "startfile_gnu",		STARTFILE_GNU_SPEC },			\
   { "startfile_linux",		STARTFILE_LINUX_SPEC },			\
   { "startfile_netbsd",		STARTFILE_NETBSD_SPEC },		\
   { "startfile_openbsd",	STARTFILE_OPENBSD_SPEC },		\
-  { "startfile_windiss",	STARTFILE_WINDISS_SPEC },		\
   { "startfile_default",	STARTFILE_DEFAULT_SPEC },		\
   { "endfile_ads",		ENDFILE_ADS_SPEC },			\
   { "endfile_yellowknife",	ENDFILE_YELLOWKNIFE_SPEC },		\
   { "endfile_mvme",		ENDFILE_MVME_SPEC },			\
   { "endfile_sim",		ENDFILE_SIM_SPEC },			\
   { "endfile_freebsd",		ENDFILE_FREEBSD_SPEC },			\
-  { "endfile_gnu",		ENDFILE_GNU_SPEC },			\
   { "endfile_linux",		ENDFILE_LINUX_SPEC },			\
   { "endfile_netbsd",		ENDFILE_NETBSD_SPEC },			\
   { "endfile_openbsd",		ENDFILE_OPENBSD_SPEC },			\
-  { "endfile_windiss",		ENDFILE_WINDISS_SPEC },			\
   { "endfile_default",		ENDFILE_DEFAULT_SPEC },			\
-  { "link_path",		LINK_PATH_SPEC },			\
   { "link_shlib",		LINK_SHLIB_SPEC },			\
   { "link_target",		LINK_TARGET_SPEC },			\
   { "link_start",		LINK_START_SPEC },			\
@@ -1059,11 +920,9 @@ ncrtn.o%s"
   { "link_start_mvme",		LINK_START_MVME_SPEC },			\
   { "link_start_sim",		LINK_START_SIM_SPEC },			\
   { "link_start_freebsd",	LINK_START_FREEBSD_SPEC },		\
-  { "link_start_gnu",		LINK_START_GNU_SPEC },			\
   { "link_start_linux",		LINK_START_LINUX_SPEC },		\
   { "link_start_netbsd",	LINK_START_NETBSD_SPEC },		\
   { "link_start_openbsd",	LINK_START_OPENBSD_SPEC },		\
-  { "link_start_windiss",	LINK_START_WINDISS_SPEC },		\
   { "link_start_default",	LINK_START_DEFAULT_SPEC },		\
   { "link_os",			LINK_OS_SPEC },				\
   { "link_os_ads",		LINK_OS_ADS_SPEC },			\
@@ -1072,10 +931,8 @@ ncrtn.o%s"
   { "link_os_sim",		LINK_OS_SIM_SPEC },			\
   { "link_os_freebsd",		LINK_OS_FREEBSD_SPEC },			\
   { "link_os_linux",		LINK_OS_LINUX_SPEC },			\
-  { "link_os_gnu",		LINK_OS_GNU_SPEC },			\
   { "link_os_netbsd",		LINK_OS_NETBSD_SPEC },			\
   { "link_os_openbsd",		LINK_OS_OPENBSD_SPEC },			\
-  { "link_os_windiss",		LINK_OS_WINDISS_SPEC },			\
   { "link_os_default",		LINK_OS_DEFAULT_SPEC },			\
   { "cc1_endian_big",		CC1_ENDIAN_BIG_SPEC },			\
   { "cc1_endian_little",	CC1_ENDIAN_LITTLE_SPEC },		\
@@ -1086,11 +943,9 @@ ncrtn.o%s"
   { "cpp_os_mvme",		CPP_OS_MVME_SPEC },			\
   { "cpp_os_sim",		CPP_OS_SIM_SPEC },			\
   { "cpp_os_freebsd",		CPP_OS_FREEBSD_SPEC },			\
-  { "cpp_os_gnu",		CPP_OS_GNU_SPEC },			\
   { "cpp_os_linux",		CPP_OS_LINUX_SPEC },			\
   { "cpp_os_netbsd",		CPP_OS_NETBSD_SPEC },			\
   { "cpp_os_openbsd",		CPP_OS_OPENBSD_SPEC },			\
-  { "cpp_os_windiss",		CPP_OS_WINDISS_SPEC },			\
   { "cpp_os_default",		CPP_OS_DEFAULT_SPEC },			\
   { "fbsd_dynamic_linker",	FBSD_DYNAMIC_LINKER },			\
   SUBSUBTARGET_EXTRA_SPECS
@@ -1116,18 +971,6 @@ ncrtn.o%s"
 /* Function name to call to do profiling.  */
 #define RS6000_MCOUNT "_mcount"
 
-/* Define this macro (to a value of 1) if you want to support the
-   Win32 style pragmas #pragma pack(push,<n>)' and #pragma
-   pack(pop)'.  The pack(push,<n>) pragma specifies the maximum
-   alignment (in bytes) of fields within a structure, in much the
-   same way as the __aligned__' and __packed__' __attribute__'s
-   do.  A pack value of zero resets the behavior to the default.
-   Successive invocations of this pragma cause the previous values to
-   be stacked, so that invocations of #pragma pack(pop)' will return
-   to the previous value.  */
-
-#define HANDLE_PRAGMA_PACK_PUSH_POP 1
-
 /* Select a format to encode pointers in exception handling data.  CODE
    is 0 for data, 1 for code labels, 2 for function pointers.  GLOBAL is
    true if the symbol may be affected by dynamic relocations.  */
@@ -1141,5 +984,9 @@ ncrtn.o%s"
 /* Generate entries in .fixup for relocatable addresses.  */
 #define RELOCATABLE_NEEDS_FIXUP 1
 
+#define TARGET_ASM_FILE_END rs6000_elf_file_end
+
 /* This target uses the sysv4.opt file.  */
 #define TARGET_USES_SYSV4_OPT 1
+
+#undef DBX_REGISTER_NUMBER

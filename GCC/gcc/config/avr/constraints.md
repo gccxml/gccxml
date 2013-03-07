@@ -1,11 +1,11 @@
 ;; Constraint definitions for ATMEL AVR micro controllers.
-;; Copyright (C) 2006 Free Software Foundation, Inc.
+;; Copyright (C) 2006, 2007 Free Software Foundation, Inc.
 ;;
 ;; This file is part of GCC.
 ;;
 ;; GCC is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
-;; the Free Software Foundation; either version 2, or (at your option)
+;; the Free Software Foundation; either version 3, or (at your option)
 ;; any later version.
 ;;
 ;; GCC is distributed in the hope that it will be useful,
@@ -14,9 +14,8 @@
 ;; GNU General Public License for more details.
 ;;
 ;; You should have received a copy of the GNU General Public License
-;; along with GCC; see the file COPYING.  If not, write to
-;; the Free Software Foundation, 51 Franklin Street, Fifth Floor,
-;; Boston, MA 02110-1301, USA.
+;; along with GCC; see the file COPYING3.  If not see
+;; <http://www.gnu.org/licenses/>.
 
 ;; Register constraints
 
@@ -100,6 +99,96 @@
        (match_test "op == CONST0_RTX (SFmode)")))
 
 (define_memory_constraint "Q"
-  "A memory address based on X or Y pointer with displacement."
+  "A memory address based on Y or Z pointer with displacement."
   (and (match_code "mem")
        (match_test "extra_constraint_Q (op)")))
+
+(define_constraint "Cm2"
+  "Constant integer @minus{}2."
+  (and (match_code "const_int")
+       (match_test "ival == -2")))
+
+(define_constraint "C03"
+  "Constant integer 3."
+  (and (match_code "const_int")
+       (match_test "ival == 3")))
+
+(define_constraint "C04"
+  "Constant integer 4."
+  (and (match_code "const_int")
+       (match_test "ival == 4")))
+
+(define_constraint "C05"
+  "Constant integer 5."
+  (and (match_code "const_int")
+       (match_test "ival == 5")))
+
+(define_constraint "C06"
+  "Constant integer 6."
+  (and (match_code "const_int")
+       (match_test "ival == 6")))
+
+(define_constraint "C07"
+  "Constant integer 7."
+  (and (match_code "const_int")
+       (match_test "ival == 7")))
+
+(define_constraint "Ca2"
+  "Constant 2-byte integer that allows AND without clobber register."
+  (and (match_code "const_int")
+       (match_test "avr_popcount_each_byte (op, 2, (1<<0) | (1<<7) | (1<<8))")))
+
+(define_constraint "Ca3"
+  "Constant 3-byte integer that allows AND without clobber register."
+  (and (match_code "const_int")
+       (match_test "avr_popcount_each_byte (op, 3, (1<<0) | (1<<7) | (1<<8))")))
+
+(define_constraint "Ca4"
+  "Constant 4-byte integer that allows AND without clobber register."
+  (and (match_code "const_int")
+       (match_test "avr_popcount_each_byte (op, 4, (1<<0) | (1<<7) | (1<<8))")))
+
+(define_constraint "Co2"
+  "Constant 2-byte integer that allows OR without clobber register."
+  (and (match_code "const_int")
+       (match_test "avr_popcount_each_byte (op, 2, (1<<0) | (1<<1) | (1<<8))")))
+
+(define_constraint "Co3"
+  "Constant 3-byte integer that allows OR without clobber register."
+  (and (match_code "const_int")
+       (match_test "avr_popcount_each_byte (op, 3, (1<<0) | (1<<1) | (1<<8))")))
+
+(define_constraint "Co4"
+  "Constant 4-byte integer that allows OR without clobber register."
+  (and (match_code "const_int")
+       (match_test "avr_popcount_each_byte (op, 4, (1<<0) | (1<<1) | (1<<8))")))
+
+(define_constraint "Cx2"
+  "Constant 2-byte integer that allows XOR without clobber register."
+  (and (match_code "const_int")
+       (match_test "avr_popcount_each_byte (op, 2, (1<<0) | (1<<8))")))
+
+(define_constraint "Cx3"
+  "Constant 3-byte integer that allows XOR without clobber register."
+  (and (match_code "const_int")
+       (match_test "avr_popcount_each_byte (op, 3, (1<<0) | (1<<8))")))
+
+(define_constraint "Cx4"
+  "Constant 4-byte integer that allows XOR without clobber register."
+  (and (match_code "const_int")
+       (match_test "avr_popcount_each_byte (op, 4, (1<<0) | (1<<8))")))
+
+(define_constraint "Csp"
+  "Integer constant in the range -6 @dots{} 6."
+  (and (match_code "const_int")
+       (match_test "IN_RANGE (ival, -6, 6)")))
+
+(define_constraint "Cxf"
+  "32-bit integer constant where at least one nibble is 0xf."
+  (and (match_code "const_int")
+       (match_test "avr_has_nibble_0xf (op)")))
+
+(define_constraint "C0f"
+  "32-bit integer constant where no nibble equals 0xf."
+  (and (match_code "const_int")
+       (match_test "!avr_has_nibble_0xf (op)")))

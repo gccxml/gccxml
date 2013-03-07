@@ -1,12 +1,13 @@
 /* Generic dominator tree walker
-   Copyright (C) 2003, 2004, 2005 Free Software Foundation, Inc.
+   Copyright (C) 2003, 2004, 2005, 2007, 2008, 2010 Free Software Foundation,
+   Inc.
    Contributed by Diego Novillo <dnovillo@redhat.com>
 
 This file is part of GCC.
 
 GCC is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2, or (at your option)
+the Free Software Foundation; either version 3, or (at your option)
 any later version.
 
 GCC is distributed in the hope that it will be useful,
@@ -15,21 +16,18 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with GCC; see the file COPYING.  If not, write to
-the Free Software Foundation, 51 Franklin Street, Fifth Floor,
-Boston, MA 02110-1301, USA.  */
+along with GCC; see the file COPYING3.  If not see
+<http://www.gnu.org/licenses/>.  */
 
 #include "config.h"
 #include "system.h"
 #include "coretypes.h"
 #include "tm.h"
-#include "tree.h"
 #include "basic-block.h"
-#include "tree-flow.h"
 #include "domwalk.h"
-#include "ggc.h"
+#include "sbitmap.h"
 
-/* This file implements a generic walker for dominator trees. 
+/* This file implements a generic walker for dominator trees.
 
   To understand the dominator walker one must first have a grasp of dominators,
   immediate dominators and the dominator tree.
@@ -71,8 +69,8 @@ Boston, MA 02110-1301, USA.  */
        |    +--9    11
        |      /      |
        +--- 10 ---> 12
-	  
-  
+
+
   We have a dominator tree which looks like
 
                    1
@@ -90,39 +88,39 @@ Boston, MA 02110-1301, USA.  */
                    9
                    |
                   10
-  
-  
-  
+
+
+
   The dominator tree is the basis for a number of analysis, transformation
   and optimization algorithms that operate on a semi-global basis.
-  
+
   The dominator walker is a generic routine which visits blocks in the CFG
   via a depth first search of the dominator tree.  In the example above
   the dominator walker might visit blocks in the following order
   1, 2, 3, 4, 5, 8, 9, 10, 6, 7, 11, 12.
-  
+
   The dominator walker has a number of callbacks to perform actions
   during the walk of the dominator tree.  There are two callbacks
   which walk statements, one before visiting the dominator children,
-  one after visiting the dominator children.  There is a callback 
+  one after visiting the dominator children.  There is a callback
   before and after each statement walk callback.  In addition, the
   dominator walker manages allocation/deallocation of data structures
   which are local to each block visited.
-  
+
   The dominator walker is meant to provide a generic means to build a pass
   which can analyze or transform/optimize a function based on walking
   the dominator tree.  One simply fills in the dominator walker data
   structure with the appropriate callbacks and calls the walker.
-  
+
   We currently use the dominator walker to prune the set of variables
   which might need PHI nodes (which can greatly improve compile-time
   performance in some cases).
-  
+
   We also use the dominator walker to rewrite the function into SSA form
   which reduces code duplication since the rewriting phase is inherently
   a walk of the dominator tree.
 
-  And (of course), we use the dominator walker to drive a our dominator
+  And (of course), we use the dominator walker to drive our dominator
   optimizer, which is a semi-global optimizer.
 
   TODO:
@@ -144,30 +142,26 @@ walk_dominator_tree (struct dom_walk_data *walk_data, basic_block bb)
 {
   void *bd = NULL;
   basic_block dest;
-  block_stmt_iterator bsi;
-  bool is_interesting;
   basic_block *worklist = XNEWVEC (basic_block, n_basic_blocks * 2);
   int sp = 0;
+  sbitmap visited = sbitmap_alloc (last_basic_block + 1);
+  sbitmap_zero (visited);
+  SET_BIT (visited, ENTRY_BLOCK_PTR->index);
 
   while (true)
     {
       /* Don't worry about unreachable blocks.  */
-      if (EDGE_COUNT (bb->preds) > 0 || bb == ENTRY_BLOCK_PTR)
+      if (EDGE_COUNT (bb->preds) > 0
+	  || bb == ENTRY_BLOCK_PTR
+	  || bb == EXIT_BLOCK_PTR)
 	{
-	  /* If block BB is not interesting to the caller, then none of the
-	     callbacks that walk the statements in BB are going to be
-	     executed.  */
-	  is_interesting = walk_data->interesting_blocks == NULL
-	                   || TEST_BIT (walk_data->interesting_blocks,
-					bb->index);
-
 	  /* Callback to initialize the local data structure.  */
 	  if (walk_data->initialize_block_local_data)
 	    {
 	      bool recycled;
 
-	      /* First get some local data, reusing any local data pointer we may
-	         have saved.  */
+	      /* First get some local data, reusing any local data
+		 pointer we may have saved.  */
 	      if (VEC_length (void_p, walk_data->free_block_data) > 0)
 		{
 		  bd = VEC_pop (void_p, walk_data->free_block_data);
@@ -190,29 +184,13 @@ walk_dominator_tree (struct dom_walk_data *walk_data, basic_block bb)
 
 	  /* Callback for operations to execute before we have walked the
 	     dominator children, but before we walk statements.  */
-	  if (walk_data->before_dom_children_before_stmts)
-	    (*walk_data->before_dom_children_before_stmts) (walk_data, bb);
+	  if (walk_data->before_dom_children)
+	    (*walk_data->before_dom_children) (walk_data, bb);
 
-	  /* Statement walk before walking dominator children.  */
-	  if (is_interesting && walk_data->before_dom_children_walk_stmts)
-	    {
-	      if (walk_data->walk_stmts_backward)
-		for (bsi = bsi_last (bb); !bsi_end_p (bsi); bsi_prev (&bsi))
-		  (*walk_data->before_dom_children_walk_stmts) (walk_data, bb,
-								bsi);
-	      else
-		for (bsi = bsi_start (bb); !bsi_end_p (bsi); bsi_next (&bsi))
-		  (*walk_data->before_dom_children_walk_stmts) (walk_data, bb,
-								bsi);
-	    }
-
-	  /* Callback for operations to execute before we have walked the
-	     dominator children, and after we walk statements.  */
-	  if (walk_data->before_dom_children_after_stmts)
-	    (*walk_data->before_dom_children_after_stmts) (walk_data, bb);
+	  SET_BIT (visited, bb->index);
 
 	  /* Mark the current BB to be popped out of the recursion stack
-	     once childs are processed.  */
+	     once children are processed.  */
 	  worklist[sp++] = bb;
 	  worklist[sp++] = NULL;
 
@@ -220,36 +198,16 @@ walk_dominator_tree (struct dom_walk_data *walk_data, basic_block bb)
 	       dest; dest = next_dom_son (walk_data->dom_direction, dest))
 	    worklist[sp++] = dest;
 	}
-      /* NULL is used to signalize pop operation in recursion stack.  */
+      /* NULL is used to mark pop operations in the recursion stack.  */
       while (sp > 0 && !worklist[sp - 1])
 	{
 	  --sp;
 	  bb = worklist[--sp];
-	  is_interesting = walk_data->interesting_blocks == NULL
-	                   || TEST_BIT (walk_data->interesting_blocks,
-				        bb->index);
+
 	  /* Callback for operations to execute after we have walked the
 	     dominator children, but before we walk statements.  */
-	  if (walk_data->after_dom_children_before_stmts)
-	    (*walk_data->after_dom_children_before_stmts) (walk_data, bb);
-
-	  /* Statement walk after walking dominator children.  */
-	  if (is_interesting && walk_data->after_dom_children_walk_stmts)
-	    {
-	      if (walk_data->walk_stmts_backward)
-		for (bsi = bsi_last (bb); !bsi_end_p (bsi); bsi_prev (&bsi))
-		  (*walk_data->after_dom_children_walk_stmts) (walk_data, bb,
-							       bsi);
-	      else
-		for (bsi = bsi_start (bb); !bsi_end_p (bsi); bsi_next (&bsi))
-		  (*walk_data->after_dom_children_walk_stmts) (walk_data, bb,
-							       bsi);
-	    }
-
-	  /* Callback for operations to execute after we have walked the
-	     dominator children and after we have walked statements.  */
-	  if (walk_data->after_dom_children_after_stmts)
-	    (*walk_data->after_dom_children_after_stmts) (walk_data, bb);
+	  if (walk_data->after_dom_children)
+	    (*walk_data->after_dom_children) (walk_data, bb);
 
 	  if (walk_data->initialize_block_local_data)
 	    {
@@ -260,11 +218,44 @@ walk_dominator_tree (struct dom_walk_data *walk_data, basic_block bb)
 	    }
 	}
       if (sp)
-	bb = worklist[--sp];
+	{
+	  int spp;
+	  spp = sp - 1;
+	  if (walk_data->dom_direction == CDI_DOMINATORS)
+	    /* Find the dominator son that has all its predecessors
+	       visited and continue with that.  */
+	    while (1)
+	      {
+		edge_iterator ei;
+		edge e;
+		bool found = true;
+		bb = worklist[spp];
+		FOR_EACH_EDGE (e, ei, bb->preds)
+		  {
+		    if (!dominated_by_p (CDI_DOMINATORS, e->src, e->dest)
+			&& !TEST_BIT (visited, e->src->index))
+		      {
+			found = false;
+			break;
+		      }
+		  }
+		if (found)
+		  break;
+		/* If we didn't find a dom child with all visited
+		   predecessors just use the candidate we were checking.
+		   This happens for candidates in irreducible loops.  */
+		if (!worklist[spp - 1])
+		  break;
+		--spp;
+	      }
+	  bb = worklist[spp];
+	  worklist[spp] = worklist[--sp];
+	}
       else
 	break;
     }
   free (worklist);
+  sbitmap_free (visited);
 }
 
 void

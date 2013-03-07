@@ -1,11 +1,12 @@
 /* Declarations for rtx-reader support for gen* routines.
-   Copyright (C) 2000, 2002, 2003, 2004 Free Software Foundation, Inc.
+   Copyright (C) 2000, 2002, 2003, 2004, 2007, 2008, 2010
+   Free Software Foundation, Inc.
 
 This file is part of GCC.
 
 GCC is free software; you can redistribute it and/or modify it under
 the terms of the GNU General Public License as published by the Free
-Software Foundation; either version 2, or (at your option) any later
+Software Foundation; either version 3, or (at your option) any later
 version.
 
 GCC is distributed in the hope that it will be useful, but WITHOUT ANY
@@ -14,23 +15,18 @@ FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 for more details.
 
 You should have received a copy of the GNU General Public License
-along with GCC; see the file COPYING.  If not, write to the Free
-Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
-02110-1301, USA.  */
+along with GCC; see the file COPYING3.  If not see
+<http://www.gnu.org/licenses/>.  */
 
 #ifndef GCC_GENSUPPORT_H
 #define GCC_GENSUPPORT_H
 
 struct obstack;
 extern struct obstack *rtl_obstack;
-extern const char *in_fname;
 
-extern int init_md_reader_args_cb (int, char **, bool (*)(const char *));
-extern int init_md_reader_args (int, char **);
+extern bool init_rtx_reader_args_cb (int, char **, bool (*)(const char *));
+extern bool init_rtx_reader_args (int, char **);
 extern rtx read_md_rtx (int *, int *);
-
-extern void message_with_line (int, const char *, ...)
-     ATTRIBUTE_PRINTF_2;
 
 /* Set this to 0 to disable automatic elision of insn patterns which
    can never be used in this configuration.  See genconditions.c.
@@ -60,9 +56,6 @@ extern int cmp_c_test (const void *, const void *);
 extern void traverse_c_tests (htab_trav, void *);
 #endif
 
-extern int n_comma_elts	(const char *);
-extern const char *scan_comma_elt (const char **);
-
 /* Predicate handling: helper functions and data structures.  */
 
 struct pred_data
@@ -77,6 +70,7 @@ struct pred_data
 
   /* data used primarily by genrecog.c */
   enum rtx_code singleton;	/* if pred takes only one code, that code */
+  int num_codes;		/* number of codes accepted */
   bool allows_non_lvalue;	/* if pred allows non-lvalue expressions */
   bool allows_non_const;	/* if pred allows non-const expressions */
   bool codes[NUM_RTX_CODE];	/* set of codes accepted */
@@ -84,12 +78,37 @@ struct pred_data
 
 extern struct pred_data *first_predicate;
 extern struct pred_data *lookup_predicate (const char *);
+extern void add_predicate_code (struct pred_data *, enum rtx_code);
 extern void add_predicate (struct pred_data *);
 
 #define FOR_ALL_PREDICATES(p) for (p = first_predicate; p; p = p->next)
 
-/* This callback will be invoked whenever an rtl include directive is
-   processed.  To be used for creation of the dependency file.  */
-extern void (*include_callback) (const char *);
+struct pattern_stats
+{
+  /* The largest match_operand, match_operator or match_parallel
+     number found.  */
+  int max_opno;
+
+  /* The largest match_dup, match_op_dup or match_par_dup number found.  */
+  int max_dup_opno;
+
+  /* The largest match_scratch number found.  */
+  int max_scratch_opno;
+
+  /* The number of times match_dup, match_op_dup or match_par_dup appears
+     in the pattern.  */
+  int num_dups;
+
+  /* The number of rtx arguments to the generator function.  */
+  int num_generator_args;
+
+  /* The number of rtx operands in an insn.  */
+  int num_insn_operands;
+
+  /* The number of operand variables that are needed.  */
+  int num_operand_vars;
+};
+
+extern void get_pattern_stats (struct pattern_stats *ranges, rtvec vec);
 
 #endif /* GCC_GENSUPPORT_H */

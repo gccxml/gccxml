@@ -1,41 +1,37 @@
 /* Loop unswitching.
-   Copyright (C) 2004, 2005 Free Software Foundation, Inc.
-   
+   Copyright (C) 2004, 2005, 2007, 2008, 2010 Free Software Foundation, Inc.
+
 This file is part of GCC.
-   
+
 GCC is free software; you can redistribute it and/or modify it
 under the terms of the GNU General Public License as published by the
-Free Software Foundation; either version 2, or (at your option) any
+Free Software Foundation; either version 3, or (at your option) any
 later version.
-   
+
 GCC is distributed in the hope that it will be useful, but WITHOUT
 ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
 FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 for more details.
-   
+
 You should have received a copy of the GNU General Public License
-along with GCC; see the file COPYING.  If not, write to the Free
-Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
-02110-1301, USA.  */
+along with GCC; see the file COPYING3.  If not see
+<http://www.gnu.org/licenses/>.  */
 
 #include "config.h"
 #include "system.h"
 #include "coretypes.h"
 #include "tm.h"
 #include "tree.h"
-#include "rtl.h"
 #include "tm_p.h"
-#include "hard-reg-set.h"
 #include "basic-block.h"
 #include "output.h"
-#include "diagnostic.h"
 #include "tree-flow.h"
 #include "tree-dump.h"
 #include "timevar.h"
 #include "cfgloop.h"
-#include "domwalk.h"
 #include "params.h"
 #include "tree-pass.h"
+#include "tree-inline.h"
 
 /* This file implements the loop unswitching, i.e. transformation of loops like
 
@@ -73,34 +69,43 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
    tree-ssa-loop-im.c ensures that all the suitable conditions are in this
    shape.  */
 
-static struct loop *tree_unswitch_loop (struct loops *, struct loop *, basic_block,
-				   tree);
-static bool tree_unswitch_single_loop (struct loops *, struct loop *, int);
+static struct loop *tree_unswitch_loop (struct loop *, basic_block, tree);
+static bool tree_unswitch_single_loop (struct loop *, int);
 static tree tree_may_unswitch_on (basic_block, struct loop *);
 
-/* Main entry point.  Perform loop unswitching on all suitable LOOPS.  */
+/* Main entry point.  Perform loop unswitching on all suitable loops.  */
 
 unsigned int
-tree_ssa_unswitch_loops (struct loops *loops)
+tree_ssa_unswitch_loops (void)
 {
-  int i, num;
+  loop_iterator li;
   struct loop *loop;
   bool changed = false;
 
   /* Go through inner loops (only original ones).  */
-  num = loops->num;
-
-  for (i = 1; i < num; i++)
+  FOR_EACH_LOOP (li, loop, LI_ONLY_INNERMOST)
     {
-      /* Removed loop?  */
-      loop = loops->parray[i];
-      if (!loop)
-	continue;
+      if (dump_file && (dump_flags & TDF_DETAILS))
+        fprintf (dump_file, ";; Considering loop %d\n", loop->num);
 
-      if (loop->inner)
-	continue;
+      /* Do not unswitch in cold regions. */
+      if (optimize_loop_for_size_p (loop))
+        {
+          if (dump_file && (dump_flags & TDF_DETAILS))
+            fprintf (dump_file, ";; Not unswitching cold loops\n");
+          continue;
+        }
 
-      changed |= tree_unswitch_single_loop (loops, loop, 0);
+      /* The loop should not be too large, to limit code growth. */
+      if (tree_num_loop_insns (loop, &eni_size_weights)
+          > (unsigned) PARAM_VALUE (PARAM_MAX_UNSWITCH_INSNS))
+        {
+          if (dump_file && (dump_flags & TDF_DETAILS))
+            fprintf (dump_file, ";; Not unswitching, loop too big\n");
+          continue;
+        }
+
+      changed |= tree_unswitch_single_loop (loop, 0);
     }
 
   if (changed)
@@ -114,31 +119,34 @@ tree_ssa_unswitch_loops (struct loops *loops)
 static tree
 tree_may_unswitch_on (basic_block bb, struct loop *loop)
 {
-  tree stmt, def, cond, use;
+  gimple stmt, def;
+  tree cond, use;
   basic_block def_bb;
   ssa_op_iter iter;
 
   /* BB must end in a simple conditional jump.  */
   stmt = last_stmt (bb);
-  if (!stmt || TREE_CODE (stmt) != COND_EXPR)
+  if (!stmt || gimple_code (stmt) != GIMPLE_COND)
+    return NULL_TREE;
+
+  /* To keep the things simple, we do not directly remove the conditions,
+     but just replace tests with 0 != 0 resp. 1 != 0.  Prevent the infinite
+     loop where we would unswitch again on such a condition.  */
+  if (gimple_cond_true_p (stmt) || gimple_cond_false_p (stmt))
     return NULL_TREE;
 
   /* Condition must be invariant.  */
   FOR_EACH_SSA_TREE_OPERAND (use, stmt, iter, SSA_OP_USE)
     {
       def = SSA_NAME_DEF_STMT (use);
-      def_bb = bb_for_stmt (def);
+      def_bb = gimple_bb (def);
       if (def_bb
 	  && flow_bb_inside_loop_p (loop, def_bb))
 	return NULL_TREE;
     }
 
-  cond = COND_EXPR_COND (stmt);
-  /* To keep the things simple, we do not directly remove the conditions,
-     but just replace tests with 0/1.  Prevent the infinite loop where we
-     would unswitch again on such a condition.  */
-  if (integer_zerop (cond) || integer_nonzerop (cond))
-    return NULL_TREE;
+  cond = build2 (gimple_cond_code (stmt), boolean_type_node,
+		 gimple_cond_lhs (stmt), gimple_cond_rhs (stmt));
 
   return cond;
 }
@@ -151,14 +159,18 @@ static tree
 simplify_using_entry_checks (struct loop *loop, tree cond)
 {
   edge e = loop_preheader_edge (loop);
-  tree stmt;
+  gimple stmt;
 
   while (1)
     {
       stmt = last_stmt (e->src);
       if (stmt
-	  && TREE_CODE (stmt) == COND_EXPR
-	  && operand_equal_p (COND_EXPR_COND (stmt), cond, 0))
+	  && gimple_code (stmt) == GIMPLE_COND
+	  && gimple_cond_code (stmt) == TREE_CODE (cond)
+	  && operand_equal_p (gimple_cond_lhs (stmt),
+			      TREE_OPERAND (cond, 0), 0)
+	  && operand_equal_p (gimple_cond_rhs (stmt),
+			      TREE_OPERAND (cond, 1), 0))
 	return (e->flags & EDGE_TRUE_VALUE
 		? boolean_true_node
 		: boolean_false_node);
@@ -177,42 +189,19 @@ simplify_using_entry_checks (struct loop *loop, tree cond)
    grow exponentially.  */
 
 static bool
-tree_unswitch_single_loop (struct loops *loops, struct loop *loop, int num)
+tree_unswitch_single_loop (struct loop *loop, int num)
 {
   basic_block *bbs;
   struct loop *nloop;
-  unsigned i;
-  tree cond = NULL_TREE, stmt;
+  unsigned i, found;
+  tree cond = NULL_TREE;
+  gimple stmt;
   bool changed = false;
-
-  /* Do not unswitch too much.  */
-  if (num > PARAM_VALUE (PARAM_MAX_UNSWITCH_LEVEL))
-    {
-      if (dump_file && (dump_flags & TDF_DETAILS))
-	fprintf (dump_file, ";; Not unswitching anymore, hit max level\n");
-      return false;
-    }
-
-  /* Only unswitch innermost loops.  */
-  if (loop->inner)
-    {
-      if (dump_file && (dump_flags & TDF_DETAILS))
-	fprintf (dump_file, ";; Not unswitching, not innermost loop\n");
-      return false;
-    }
-
-  /* The loop should not be too large, to limit code growth.  */
-  if (tree_num_loop_insns (loop)
-      > (unsigned) PARAM_VALUE (PARAM_MAX_UNSWITCH_INSNS))
-    {
-      if (dump_file && (dump_flags & TDF_DETAILS))
-	fprintf (dump_file, ";; Not unswitching, loop too big\n");
-      return false;
-    }
 
   i = 0;
   bbs = get_loop_body (loop);
-  
+  found = loop->num_nodes;
+
   while (1)
     {
       /* Find a bb to unswitch on.  */
@@ -222,8 +211,17 @@ tree_unswitch_single_loop (struct loops *loops, struct loop *loop, int num)
 
       if (i == loop->num_nodes)
 	{
-	  free (bbs);
-	  return changed;
+	  if (dump_file
+	      && num > PARAM_VALUE (PARAM_MAX_UNSWITCH_LEVEL)
+	      && (dump_flags & TDF_DETAILS))
+	    fprintf (dump_file, ";; Not unswitching anymore, hit max level\n");
+
+	  if (found == loop->num_nodes)
+	    {
+	      free (bbs);
+	      return changed;
+	    }
+	  break;
 	}
 
       cond = simplify_using_entry_checks (loop, cond);
@@ -231,20 +229,108 @@ tree_unswitch_single_loop (struct loops *loops, struct loop *loop, int num)
       if (integer_nonzerop (cond))
 	{
 	  /* Remove false path.  */
-	  COND_EXPR_COND (stmt) = boolean_true_node;
+	  gimple_cond_set_condition_from_tree (stmt, boolean_true_node);
 	  changed = true;
 	}
       else if (integer_zerop (cond))
 	{
 	  /* Remove true path.  */
-	  COND_EXPR_COND (stmt) = boolean_false_node;
+	  gimple_cond_set_condition_from_tree (stmt, boolean_false_node);
 	  changed = true;
 	}
+      /* Do not unswitch too much.  */
+      else if (num > PARAM_VALUE (PARAM_MAX_UNSWITCH_LEVEL))
+	{
+	  i++;
+	  continue;
+	}
+      /* In nested tree_unswitch_single_loop first optimize all conditions
+	 using entry checks, then discover still reachable blocks in the
+	 loop and find the condition only among those still reachable bbs.  */
+      else if (num != 0)
+	{
+	  if (found == loop->num_nodes)
+	    found = i;
+	  i++;
+	  continue;
+	}
       else
-	break;
+	{
+	  found = i;
+	  break;
+	}
 
       update_stmt (stmt);
       i++;
+    }
+
+  if (num != 0)
+    {
+      basic_block *tos, *worklist;
+
+      /* When called recursively, first do a quick discovery
+	 of reachable bbs after the above changes and only
+	 consider conditions in still reachable bbs.  */
+      tos = worklist = XNEWVEC (basic_block, loop->num_nodes);
+
+      for (i = 0; i < loop->num_nodes; i++)
+	bbs[i]->flags &= ~BB_REACHABLE;
+
+      /* Start with marking header.  */
+      *tos++ = bbs[0];
+      bbs[0]->flags |= BB_REACHABLE;
+
+      /* Iterate: find everything reachable from what we've already seen
+	 within the same innermost loop.  Don't look through false edges
+	 if condition is always true or true edges if condition is
+	 always false.  */
+      while (tos != worklist)
+	{
+	  basic_block b = *--tos;
+	  edge e;
+	  edge_iterator ei;
+	  int flags = 0;
+
+	  if (EDGE_COUNT (b->succs) == 2)
+	    {
+	      gimple stmt = last_stmt (b);
+	      if (stmt
+		  && gimple_code (stmt) == GIMPLE_COND)
+		{
+		  if (gimple_cond_true_p (stmt))
+		    flags = EDGE_FALSE_VALUE;
+		  else if (gimple_cond_false_p (stmt))
+		    flags = EDGE_TRUE_VALUE;
+		}
+	    }
+
+	  FOR_EACH_EDGE (e, ei, b->succs)
+	    {
+	      basic_block dest = e->dest;
+
+	      if (dest->loop_father == loop
+		  && !(dest->flags & BB_REACHABLE)
+		  && !(e->flags & flags))
+		{
+		  *tos++ = dest;
+		  dest->flags |= BB_REACHABLE;
+		}
+	    }
+	}
+
+      free (worklist);
+
+      /* Find a bb to unswitch on.  */
+      for (; found < loop->num_nodes; found++)
+	if ((bbs[found]->flags & BB_REACHABLE)
+	    && (cond = tree_may_unswitch_on (bbs[found], loop)))
+	  break;
+
+      if (found == loop->num_nodes)
+	{
+	  free (bbs);
+	  return changed;
+	}
     }
 
   if (dump_file && (dump_flags & TDF_DETAILS))
@@ -252,7 +338,7 @@ tree_unswitch_single_loop (struct loops *loops, struct loop *loop, int num)
 
   initialize_original_copy_tables ();
   /* Unswitch the loop on this condition.  */
-  nloop = tree_unswitch_loop (loops, loop, bbs[i], cond);
+  nloop = tree_unswitch_loop (loop, bbs[found], cond);
   if (!nloop)
     {
       free_original_copy_tables ();
@@ -265,8 +351,8 @@ tree_unswitch_single_loop (struct loops *loops, struct loop *loop, int num)
   free_original_copy_tables ();
 
   /* Invoke itself on modified loops.  */
-  tree_unswitch_single_loop (loops, nloop, num + 1);
-  tree_unswitch_single_loop (loops, loop, num + 1);
+  tree_unswitch_single_loop (nloop, num + 1);
+  tree_unswitch_single_loop (loop, num + 1);
   free (bbs);
   return true;
 }
@@ -277,16 +363,20 @@ tree_unswitch_single_loop (struct loops *loops, struct loop *loop, int num)
    if impossible, new loop otherwise.  */
 
 static struct loop *
-tree_unswitch_loop (struct loops *loops, struct loop *loop,
+tree_unswitch_loop (struct loop *loop,
 		    basic_block unswitch_on, tree cond)
 {
-  basic_block condition_bb;
+  unsigned prob_true;
+  edge edge_true, edge_false;
 
   /* Some sanity checking.  */
   gcc_assert (flow_bb_inside_loop_p (loop, unswitch_on));
   gcc_assert (EDGE_COUNT (unswitch_on->succs) == 2);
   gcc_assert (loop->inner == NULL);
 
-  return loop_version (loops, loop, unshare_expr (cond), 
-		       &condition_bb, false);
+  extract_true_false_edges_from_block (unswitch_on, &edge_true, &edge_false);
+  prob_true = edge_true->probability;
+  return loop_version (loop, unshare_expr (cond),
+		       NULL, prob_true, prob_true,
+		       REG_BR_PROB_BASE - prob_true, false);
 }

@@ -1,13 +1,13 @@
 /* Various declarations for language-independent diagnostics subroutines.
-   Copyright (C) 2000, 2001, 2002, 2003, 2004, 2005, 2006
-   Free Software Foundation, Inc.
+   Copyright (C) 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009
+   2010, Free Software Foundation, Inc.
    Contributed by Gabriel Dos Reis <gdr@codesourcery.com>
 
 This file is part of GCC.
 
 GCC is free software; you can redistribute it and/or modify it under
 the terms of the GNU General Public License as published by the Free
-Software Foundation; either version 2, or (at your option) any later
+Software Foundation; either version 3, or (at your option) any later
 version.
 
 GCC is distributed in the hope that it will be useful, but WITHOUT ANY
@@ -16,43 +16,42 @@ FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 for more details.
 
 You should have received a copy of the GNU General Public License
-along with GCC; see the file COPYING.  If not, write to the Free
-Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
-02110-1301, USA.  */
+along with GCC; see the file COPYING3.  If not see
+<http://www.gnu.org/licenses/>.  */
 
 #ifndef GCC_DIAGNOSTIC_H
 #define GCC_DIAGNOSTIC_H
 
 #include "pretty-print.h"
-#include "options.h"
-
-/* Constants used to discriminate diagnostics.  */
-typedef enum
-{
-#define DEFINE_DIAGNOSTIC_KIND(K, msgid) K,  
-#include "diagnostic.def"
-#undef DEFINE_DIAGNOSTIC_KIND
-  DK_LAST_DIAGNOSTIC_KIND
-} diagnostic_t;
+#include "diagnostic-core.h"
 
 /* A diagnostic is described by the MESSAGE to send, the FILE and LINE of
    its context and its KIND (ice, error, warning, note, ...)  See complete
    list in diagnostic.def.  */
-typedef struct
+typedef struct diagnostic_info
 {
   text_info message;
   location_t location;
+  unsigned int override_column;
+  /* Auxiliary data for client.  */
+  void *x_data;
   /* The kind of diagnostic it is about.  */
   diagnostic_t kind;
   /* Which OPT_* directly controls this diagnostic.  */
   int option_index;
 } diagnostic_info;
 
-#define pedantic_error_kind() (flag_pedantic_errors ? DK_ERROR : DK_WARNING)
-
+/* Each time a diagnostic's classification is changed with a pragma,
+   we record the change and the location of the change in an array of
+   these structs.  */
+typedef struct diagnostic_classification_change_t
+{
+  location_t location;
+  int option;
+  diagnostic_t kind;
+} diagnostic_classification_change_t;
 
 /*  Forward declarations.  */
-typedef struct diagnostic_context diagnostic_context;
 typedef void (*diagnostic_starter_fn) (diagnostic_context *,
 				       diagnostic_info *);
 typedef diagnostic_starter_fn diagnostic_finalizer_fn;
@@ -69,17 +68,36 @@ struct diagnostic_context
 
   /* True if we should display the "warnings are being tread as error"
      message, usually displayed once per compiler run.  */
-  bool issue_warnings_are_errors_message;
-  
+  bool some_warnings_are_errors;
+
   /* True if it has been requested that warnings be treated as errors.  */
   bool warning_as_error_requested;
 
-  /* For each option index that can be passed to warning() et all
-     (OPT_* from options.h), this array may contain a new kind that
-     the diagnostic should be changed to before reporting, or
-     DK_UNSPECIFIED to leave it as the reported kind, or DK_IGNORED to
-     not report it at all.  N_OPTS is from <options.h>.  */
-  char classify_diagnostic[N_OPTS];
+  /* The number of option indexes that can be passed to warning() et
+     al.  */
+  int n_opts;
+
+  /* For each option index that can be passed to warning() et al
+     (OPT_* from options.h when using this code with the core GCC
+     options), this array may contain a new kind that the diagnostic
+     should be changed to before reporting, or DK_UNSPECIFIED to leave
+     it as the reported kind, or DK_IGNORED to not report it at
+     all.  */
+  diagnostic_t *classify_diagnostic;
+
+  /* History of all changes to the classifications above.  This list
+     is stored in location-order, so we can search it, either
+     binary-wise or end-to-front, to find the most recent
+     classification for a given diagnostic, given the location of the
+     diagnostic.  */
+  diagnostic_classification_change_t *classification_history;
+
+  /* The size of the above array.  */
+  int n_classification_history;
+
+  /* For pragma push/pop.  */
+  int *push_list;
+  int n_push;
 
   /* True if we should print the command line option which controls
      each diagnostic, if known.  */
@@ -87,6 +105,31 @@ struct diagnostic_context
 
   /* True if we should raise a SIGABRT on errors.  */
   bool abort_on_error;
+
+  /* True if we should show the column number on diagnostics.  */
+  bool show_column;
+
+  /* True if pedwarns are errors.  */
+  bool pedantic_errors;
+
+  /* True if permerrors are warnings.  */
+  bool permissive;
+
+  /* The index of the option to associate with turning permerrors into
+     warnings.  */
+  int opt_permissive;
+
+  /* True if errors are fatal.  */
+  bool fatal_errors;
+
+  /* True if all warnings should be disabled.  */
+  bool dc_inhibit_warnings;
+
+  /* True if warnings should be given in system headers.  */
+  bool dc_warn_system_headers;
+
+  /* Maximum number of errors to report.  */
+  unsigned int max_errors;
 
   /* This function is called before any message is printed out.  It is
      responsible for preparing message prefix and such.  For example, it
@@ -101,18 +144,42 @@ struct diagnostic_context
   diagnostic_finalizer_fn end_diagnostic;
 
   /* Client hook to report an internal error.  */
-  void (*internal_error) (const char *, va_list *);
+  void (*internal_error) (diagnostic_context *, const char *, va_list *);
 
-  /* Function of last diagnostic message; more generally, function such that
-     if next diagnostic message is in it then we don't have to mention the
-     function name.  */
-  tree last_function;
+  /* Client hook to say whether the option controlling a diagnostic is
+     enabled.  Returns nonzero if enabled, zero if disabled.  */
+  int (*option_enabled) (int, void *);
 
-  /* Used to detect when input_file_stack has changed since last described.  */
-  int last_module;
+  /* Client information to pass as second argument to
+     option_enabled.  */
+  void *option_state;
+
+  /* Client hook to return the name of an option that controls a
+     diagnostic.  Returns malloced memory.  The first diagnostic_t
+     argument is the kind of diagnostic before any reclassification
+     (of warnings as errors, etc.); the second is the kind after any
+     reclassification.  May return NULL if no name is to be printed.
+     May be passed 0 as well as the index of a particular option.  */
+  char *(*option_name) (diagnostic_context *, int, diagnostic_t, diagnostic_t);
+
+  /* Auxiliary data for client.  */
+  void *x_data;
+
+  /* Used to detect when the input file stack has changed since last
+     described.  */
+  const struct line_map *last_module;
 
   int lock;
+
+  bool inhibit_notes_p;
 };
+
+static inline void
+diagnostic_inhibit_notes (diagnostic_context * context)
+{
+  context->inhibit_notes_p = true;
+}
+
 
 /* Client supplied function to announce a diagnostic.  */
 #define diagnostic_starter(DC) (DC)->begin_diagnostic
@@ -121,8 +188,9 @@ struct diagnostic_context
    displayed.  */
 #define diagnostic_finalizer(DC) (DC)->end_diagnostic
 
-/* Extension hook for client.  */
-#define diagnostic_auxiliary_data(DC) (DC)->x_data
+/* Extension hooks for client.  */
+#define diagnostic_context_auxiliary_data(DC) (DC)->x_data
+#define diagnostic_info_auxiliary_data(DI) (DI)->x_data
 
 /* Same as pp_format_decoder.  Works on 'diagnostic_context *'.  */
 #define diagnostic_format_decoder(DC) ((DC)->printer->format_decoder)
@@ -136,25 +204,15 @@ struct diagnostic_context
 
 #define diagnostic_flush_buffer(DC) pp_base_flush ((DC)->printer)
 
-/* True if the last function in which a diagnostic was reported is
-   different from the current one.  */
-#define diagnostic_last_function_changed(DC) \
-  ((DC)->last_function != current_function_decl)
-
-/* Remember the current function as being the last one in which we report
-   a diagnostic.  */
-#define diagnostic_set_last_function(DC) \
-  (DC)->last_function = current_function_decl
-
 /* True if the last module or file in which a diagnostic was reported is
    different from the current one.  */
-#define diagnostic_last_module_changed(DC) \
-  ((DC)->last_module != input_file_stack_tick)
+#define diagnostic_last_module_changed(DC, MAP)	\
+  ((DC)->last_module != MAP)
 
 /* Remember the current module or file as being the last one in which we
    report a diagnostic.  */
-#define diagnostic_set_last_module(DC) \
-  (DC)->last_module = input_file_stack_tick
+#define diagnostic_set_last_module(DC, MAP)	\
+  (DC)->last_module = MAP
 
 /* Raise SIGABRT on any diagnostic of severity DK_ERROR or higher.  */
 #define diagnostic_abort_on_error(DC) \
@@ -177,22 +235,34 @@ extern diagnostic_context *global_dc;
 #define sorrycount diagnostic_kind_count (global_dc, DK_SORRY)
 
 /* Returns nonzero if warnings should be emitted.  */
-#define diagnostic_report_warnings_p()			\
-  (!inhibit_warnings					\
-   && !(in_system_header && !warn_system_headers))
+#define diagnostic_report_warnings_p(DC, LOC)				\
+  (!(DC)->dc_inhibit_warnings						\
+   && !(in_system_header_at (LOC) && !(DC)->dc_warn_system_headers))
 
 #define report_diagnostic(D) diagnostic_report_diagnostic (global_dc, D)
 
+/* Override the column number to be used for reporting a
+   diagnostic.  */
+#define diagnostic_override_column(DI, COL) (DI)->override_column = (COL)
+
+/* Override the option index to be used for reporting a
+   diagnostic.  */
+#define diagnostic_override_option_index(DI, OPTIDX) \
+    ((DI)->option_index = (OPTIDX))
+
 /* Diagnostic related functions.  */
-extern void diagnostic_initialize (diagnostic_context *);
-extern void diagnostic_report_current_module (diagnostic_context *);
-extern void diagnostic_report_current_function (diagnostic_context *);
+extern void diagnostic_initialize (diagnostic_context *, int);
+extern void diagnostic_finish (diagnostic_context *);
+extern void diagnostic_report_current_module (diagnostic_context *, location_t);
 
 /* Force diagnostics controlled by OPTIDX to be kind KIND.  */
 extern diagnostic_t diagnostic_classify_diagnostic (diagnostic_context *,
 						    int /* optidx */,
-						    diagnostic_t /* kind */);
-extern void diagnostic_report_diagnostic (diagnostic_context *,
+						    diagnostic_t /* kind */,
+						    location_t);
+extern void diagnostic_push_diagnostics (diagnostic_context *, location_t);
+extern void diagnostic_pop_diagnostics (diagnostic_context *, location_t);
+extern bool diagnostic_report_diagnostic (diagnostic_context *,
 					  diagnostic_info *);
 #ifdef ATTRIBUTE_GCC_DIAG
 extern void diagnostic_set_info (diagnostic_info *, const char *, va_list *,
@@ -202,20 +272,11 @@ extern void diagnostic_set_info_translated (diagnostic_info *, const char *,
 					    diagnostic_t)
      ATTRIBUTE_GCC_DIAG(2,0);
 #endif
-extern char *diagnostic_build_prefix (diagnostic_info *);
+extern char *diagnostic_build_prefix (diagnostic_context *, diagnostic_info *);
+void default_diagnostic_starter (diagnostic_context *, diagnostic_info *);
+void default_diagnostic_finalizer (diagnostic_context *, diagnostic_info *);
 
 /* Pure text formatting support functions.  */
 extern char *file_name_as_prefix (const char *);
 
-/* In tree-pretty-print.c  */
-extern int dump_generic_node (pretty_printer *, tree, int, int, bool);
-extern void print_generic_stmt (FILE *, tree, int);
-extern void print_generic_stmt_indented (FILE *, tree, int, int);
-extern void print_generic_expr (FILE *, tree, int);
-extern void print_generic_decl (FILE *, tree, int);
-
-extern void debug_generic_expr (tree);
-extern void debug_generic_stmt (tree);
-extern void debug_tree_chain (tree);
-extern void debug_c_tree (tree);
 #endif /* ! GCC_DIAGNOSTIC_H */

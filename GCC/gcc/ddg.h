@@ -1,5 +1,5 @@
 /* DDG - Data Dependence Graph - interface.
-   Copyright (C) 2004
+   Copyright (C) 2004, 2005, 2006, 2007, 2008
    Free Software Foundation, Inc.
    Contributed by Ayal Zaks and Mustafa Hagog <zaks,mustafa@il.ibm.com>
 
@@ -7,7 +7,7 @@ This file is part of GCC.
 
 GCC is free software; you can redistribute it and/or modify it under
 the terms of the GNU General Public License as published by the Free
-Software Foundation; either version 2, or (at your option) any later
+Software Foundation; either version 3, or (at your option) any later
 version.
 
 GCC is distributed in the hope that it will be useful, but WITHOUT ANY
@@ -16,9 +16,8 @@ FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 for more details.
 
 You should have received a copy of the GNU General Public License
-along with GCC; see the file COPYING.  If not, write to the Free
-Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
-02110-1301, USA.  */
+along with GCC; see the file COPYING3.  If not see
+<http://www.gnu.org/licenses/>.  */
 
 #ifndef GCC_DDG_H
 #define GCC_DDG_H
@@ -27,9 +26,8 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
 #include "sbitmap.h"
 /* For basic_block.  */
 #include "basic-block.h"
-/* For struct df.  */
 #include "df.h"
- 
+
 typedef struct ddg_node *ddg_node_ptr;
 typedef struct ddg_edge *ddg_edge_ptr;
 typedef struct ddg *ddg_ptr;
@@ -123,6 +121,9 @@ struct ddg
   int num_loads;
   int num_stores;
 
+  /* Number of debug instructions in the BB.  */
+  int num_debug;
+
   /* This array holds the nodes in the graph; it is indexed by the node
      cuid, which follows the order of the instructions in the BB.  */
   ddg_node_ptr nodes;
@@ -136,8 +137,8 @@ struct ddg
   int closing_branch_deps;
 
   /* Array and number of backarcs (edges with distance > 0) in the DDG.  */
-  ddg_edge_ptr *backarcs;
   int num_backarcs;
+  ddg_edge_ptr *backarcs;
 };
 
 
@@ -166,12 +167,13 @@ struct ddg_all_sccs
 };
 
 
-ddg_ptr create_ddg (basic_block, struct df *, int closing_branch_deps);
+ddg_ptr create_ddg (basic_block, int closing_branch_deps);
 void free_ddg (ddg_ptr);
 
 void print_ddg (FILE *, ddg_ptr);
 void vcg_print_ddg (FILE *, ddg_ptr);
 void print_ddg_edge (FILE *, ddg_edge_ptr);
+void print_sccs (FILE *, ddg_all_sccs_ptr, ddg_ptr);
 
 ddg_node_ptr get_node_of_insn (ddg_ptr, rtx);
 
@@ -183,5 +185,7 @@ void free_ddg_all_sccs (ddg_all_sccs_ptr);
 
 int find_nodes_on_paths (sbitmap result, ddg_ptr, sbitmap from, sbitmap to);
 int longest_simple_path (ddg_ptr, int from, int to, sbitmap via);
+
+bool autoinc_var_is_used_p (rtx, rtx);
 
 #endif /* GCC_DDG_H */

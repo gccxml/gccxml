@@ -1,11 +1,11 @@
 /* Parse C expressions for cpplib.
    Copyright (C) 1987, 1992, 1994, 1995, 1997, 1998, 1999, 2000, 2001,
-   2002, 2004 Free Software Foundation.
+   2002, 2004, 2008, 2009, 2010, 2011 Free Software Foundation.
    Contributed by Per Bothner, 1994.
 
 This program is free software; you can redistribute it and/or modify it
 under the terms of the GNU General Public License as published by the
-Free Software Foundation; either version 2, or (at your option) any
+Free Software Foundation; either version 3, or (at your option) any
 later version.
 
 This program is distributed in the hope that it will be useful,
@@ -14,9 +14,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, 51 Franklin Street, Fifth Floor,
-Boston, MA 02110-1301, USA.  */
+along with this program; see the file COPYING3.  If not see
+<http://www.gnu.org/licenses/>.  */
 
 #include "config.h"
 #include "system.h"
@@ -32,6 +31,7 @@ struct op
 {
   const cpp_token *token;	/* The token forming op (for diagnostics).  */
   cpp_num value;		/* The value logically "right" of op.  */
+  source_location loc;          /* The location of this value.         */
   enum cpp_ttype op;
 };
 
@@ -52,7 +52,8 @@ static cpp_num num_inequality_op (cpp_reader *, cpp_num, cpp_num,
 static cpp_num num_equality_op (cpp_reader *, cpp_num, cpp_num,
 				enum cpp_ttype);
 static cpp_num num_mul (cpp_reader *, cpp_num, cpp_num);
-static cpp_num num_div_op (cpp_reader *, cpp_num, cpp_num, enum cpp_ttype);
+static cpp_num num_div_op (cpp_reader *, cpp_num, cpp_num, enum cpp_ttype,
+			   source_location);
 static cpp_num num_lshift (cpp_num, size_t, size_t);
 static cpp_num num_rshift (cpp_num, size_t, size_t);
 
@@ -82,36 +83,113 @@ static void check_promotion (cpp_reader *, const struct op *);
 static unsigned int
 interpret_float_suffix (const uchar *s, size_t len)
 {
-  size_t f = 0, l = 0, i = 0, d = 0;
+  size_t flags;
+  size_t f, d, l, w, q, i;
 
+  flags = 0;
+  f = d = l = w = q = i = 0;
+
+  /* Process decimal float suffixes, which are two letters starting
+     with d or D.  Order and case are significant.  */
+  if (len == 2 && (*s == 'd' || *s == 'D'))
+    {
+      bool uppercase = (*s == 'D');
+      switch (s[1])
+      {
+      case 'f': return (!uppercase ? (CPP_N_DFLOAT | CPP_N_SMALL): 0); break;
+      case 'F': return (uppercase ? (CPP_N_DFLOAT | CPP_N_SMALL) : 0); break;
+      case 'd': return (!uppercase ? (CPP_N_DFLOAT | CPP_N_MEDIUM): 0); break;
+      case 'D': return (uppercase ? (CPP_N_DFLOAT | CPP_N_MEDIUM) : 0); break;
+      case 'l': return (!uppercase ? (CPP_N_DFLOAT | CPP_N_LARGE) : 0); break;
+      case 'L': return (uppercase ? (CPP_N_DFLOAT | CPP_N_LARGE) : 0); break;
+      default:
+	/* Additional two-character suffixes beginning with D are not
+	   for decimal float constants.  */
+	break;
+      }
+    }
+
+  /* Recognize a fixed-point suffix.  */
+  switch (s[len-1])
+    {
+    case 'k': case 'K': flags = CPP_N_ACCUM; break;
+    case 'r': case 'R': flags = CPP_N_FRACT; break;
+    default: break;
+    }
+
+  /* Continue processing a fixed-point suffix.  The suffix is case
+     insensitive except for ll or LL.  Order is significant.  */
+  if (flags)
+    {
+      if (len == 1)
+	return flags;
+      len--;
+
+      if (*s == 'u' || *s == 'U')
+	{
+	  flags |= CPP_N_UNSIGNED;
+	  if (len == 1)
+	    return flags;
+	  len--;
+	  s++;
+        }
+
+      switch (*s)
+      {
+      case 'h': case 'H':
+	if (len == 1)
+	  return flags |= CPP_N_SMALL;
+	break;
+      case 'l':
+	if (len == 1)
+	  return flags |= CPP_N_MEDIUM;
+	if (len == 2 && s[1] == 'l')
+	  return flags |= CPP_N_LARGE;
+	break;
+      case 'L':
+	if (len == 1)
+	  return flags |= CPP_N_MEDIUM;
+	if (len == 2 && s[1] == 'L')
+	  return flags |= CPP_N_LARGE;
+	break;
+      default:
+	break;
+      }
+      /* Anything left at this point is invalid.  */
+      return 0;
+    }
+
+  /* In any remaining valid suffix, the case and order don't matter.  */
   while (len--)
     switch (s[len])
       {
       case 'f': case 'F': f++; break;
+      case 'd': case 'D': d++; break;
       case 'l': case 'L': l++; break;
+      case 'w': case 'W': w++; break;
+      case 'q': case 'Q': q++; break;
       case 'i': case 'I':
       case 'j': case 'J': i++; break;
-      case 'd': case 'D': 
-	/* Disallow fd, ld suffixes.  */
-	if (d && (f || l))
-	  return 0;
-	d++;
-	break;
       default:
 	return 0;
       }
 
-  if (f + l > 1 || i > 1)
-    return 0;
-
-  /* Allow dd, df, dl suffixes for decimal float constants.  */
-  if (d && ((d + f + l != 2) || i))
+  if (f + d + l + w + q > 1 || i > 1)
     return 0;
 
   return ((i ? CPP_N_IMAGINARY : 0)
 	  | (f ? CPP_N_SMALL :
-	     l ? CPP_N_LARGE : CPP_N_MEDIUM)
-	  | (d ? CPP_N_DFLOAT : 0));
+	     d ? CPP_N_MEDIUM :
+	     l ? CPP_N_LARGE :
+	     w ? CPP_N_MD_W :
+	     q ? CPP_N_MD_Q : CPP_N_DEFAULT));
+}
+
+/* Return the classification flags for a float suffix.  */
+unsigned int
+cpp_interpret_float_suffix (const char *s, size_t len)
+{
+  return interpret_float_suffix ((const unsigned char *)s, len);
 }
 
 /* Subroutine of cpp_classify_number.  S points to an integer suffix
@@ -186,16 +264,152 @@ interpret_int_suffix (const uchar *s, size_t len)
 	     : (l == 1) ? CPP_N_MEDIUM : CPP_N_LARGE));
 }
 
+/* Return the classification flags for an int suffix.  */
+unsigned int
+cpp_interpret_int_suffix (const char *s, size_t len)
+{
+  return interpret_int_suffix ((const unsigned char *)s, len);
+}
+
+/* Return the string type corresponding to the the input user-defined string
+   literal type.  If the input type is not a user-defined string literal
+   type return the input type.  */
+enum cpp_ttype
+cpp_userdef_string_remove_type (enum cpp_ttype type)
+{
+  if (type == CPP_STRING_USERDEF)
+    return CPP_STRING;
+  else if (type == CPP_WSTRING_USERDEF)
+    return CPP_WSTRING;
+  else if (type == CPP_STRING16_USERDEF)
+    return CPP_STRING16;
+  else if (type == CPP_STRING32_USERDEF)
+    return CPP_STRING32;
+  else if (type == CPP_UTF8STRING_USERDEF)
+    return CPP_UTF8STRING;
+  else
+    return type;
+}
+
+/* Return the user-defined string literal type corresponding to the input
+   string type.  If the input type is not a string type return the input
+   type.  */
+enum cpp_ttype
+cpp_userdef_string_add_type (enum cpp_ttype type)
+{
+  if (type == CPP_STRING)
+    return CPP_STRING_USERDEF;
+  else if (type == CPP_WSTRING)
+    return CPP_WSTRING_USERDEF;
+  else if (type == CPP_STRING16)
+    return CPP_STRING16_USERDEF;
+  else if (type == CPP_STRING32)
+    return CPP_STRING32_USERDEF;
+  else if (type == CPP_UTF8STRING)
+    return CPP_UTF8STRING_USERDEF;
+  else
+    return type;
+}
+
+/* Return the char type corresponding to the the input user-defined char
+   literal type.  If the input type is not a user-defined char literal
+   type return the input type.  */
+enum cpp_ttype
+cpp_userdef_char_remove_type (enum cpp_ttype type)
+{
+  if (type == CPP_CHAR_USERDEF)
+    return CPP_CHAR;
+  else if (type == CPP_WCHAR_USERDEF)
+    return CPP_WCHAR;
+  else if (type == CPP_CHAR16_USERDEF)
+    return CPP_CHAR16;
+  else if (type == CPP_CHAR32_USERDEF)
+    return CPP_CHAR32;
+  else
+    return type;
+}
+
+/* Return the user-defined char literal type corresponding to the input
+   char type.  If the input type is not a char type return the input
+   type.  */
+enum cpp_ttype
+cpp_userdef_char_add_type (enum cpp_ttype type)
+{
+  if (type == CPP_CHAR)
+    return CPP_CHAR_USERDEF;
+  else if (type == CPP_WCHAR)
+    return CPP_WCHAR_USERDEF;
+  else if (type == CPP_CHAR16)
+    return CPP_CHAR16_USERDEF;
+  else if (type == CPP_CHAR32)
+    return CPP_CHAR32_USERDEF;
+  else
+    return type;
+}
+
+/* Return true if the token type is a user-defined string literal.  */
+bool
+cpp_userdef_string_p (enum cpp_ttype type)
+{
+  if (type == CPP_STRING_USERDEF
+   || type == CPP_WSTRING_USERDEF
+   || type == CPP_STRING16_USERDEF
+   || type == CPP_STRING32_USERDEF
+   || type == CPP_UTF8STRING_USERDEF)
+    return true;
+  else
+    return false;
+}
+
+/* Return true if the token type is a user-defined char literal.  */
+bool
+cpp_userdef_char_p (enum cpp_ttype type)
+{
+  if (type == CPP_CHAR_USERDEF
+   || type == CPP_WCHAR_USERDEF
+   || type == CPP_CHAR16_USERDEF
+   || type == CPP_CHAR32_USERDEF)
+    return true;
+  else
+    return false;
+}
+
+/* Extract the suffix from a user-defined literal string or char.  */
+const char *
+cpp_get_userdef_suffix (const cpp_token *tok)
+{
+  unsigned int len = tok->val.str.len;
+  const char *text = (const char *)tok->val.str.text;
+  char delim;
+  unsigned int i;
+  for (i = 0; i < len; ++i)
+    if (text[i] == '\'' || text[i] == '"')
+      break;
+  if (i == len)
+    return text + len;
+  delim = text[i];
+  for (i = len; i > 0; --i)
+    if (text[i - 1] == delim)
+      break;
+  return text + i;
+}
+
 /* Categorize numeric constants according to their field (integer,
    floating point, or invalid), radix (decimal, octal, hexadecimal),
-   and type suffixes.  */
+   and type suffixes.  In C++0X if UD_SUFFIX is non null it will be
+   assigned any unrecognized suffix for a user-defined literal.  */
 unsigned int
-cpp_classify_number (cpp_reader *pfile, const cpp_token *token)
+cpp_classify_number (cpp_reader *pfile, const cpp_token *token,
+		     const char **ud_suffix)
 {
   const uchar *str = token->val.str.text;
   const uchar *limit;
   unsigned int max_digit, result, radix;
   enum {NOT_FLOAT = 0, AFTER_POINT, AFTER_EXPON} float_flag;
+  bool seen_digit;
+
+  if (ud_suffix)
+    *ud_suffix = NULL;
 
   /* If the lexer has done its job, length one can only be a single
      digit.  Fast-path this very common case.  */
@@ -206,6 +420,7 @@ cpp_classify_number (cpp_reader *pfile, const cpp_token *token)
   float_flag = NOT_FLOAT;
   max_digit = 0;
   radix = 10;
+  seen_digit = false;
 
   /* First, interpret the radix.  */
   if (*str == '0')
@@ -220,6 +435,11 @@ cpp_classify_number (cpp_reader *pfile, const cpp_token *token)
 	  radix = 16;
 	  str++;
 	}
+      else if ((*str == 'b' || *str == 'B') && (str[1] == '0' || str[1] == '1'))
+	{
+	  radix = 2;
+	  str++;
+	}
     }
 
   /* Now scan for a well-formed integer or float.  */
@@ -229,6 +449,7 @@ cpp_classify_number (cpp_reader *pfile, const cpp_token *token)
 
       if (ISDIGIT (c) || (ISXDIGIT (c) && radix == 16))
 	{
+	  seen_digit = true;
 	  c = hex_value (c);
 	  if (c > max_digit)
 	    max_digit = c;
@@ -254,14 +475,49 @@ cpp_classify_number (cpp_reader *pfile, const cpp_token *token)
 	}
     }
 
+  /* The suffix may be for decimal fixed-point constants without exponent.  */
+  if (radix != 16 && float_flag == NOT_FLOAT)
+    {
+      result = interpret_float_suffix (str, limit - str);
+      if ((result & CPP_N_FRACT) || (result & CPP_N_ACCUM))
+	{
+	  result |= CPP_N_FLOATING;
+	  /* We need to restore the radix to 10, if the radix is 8.  */
+	  if (radix == 8)
+	    radix = 10;
+
+	  if (CPP_PEDANTIC (pfile))
+	    cpp_error (pfile, CPP_DL_PEDWARN,
+		       "fixed-point constants are a GCC extension");
+	  goto syntax_ok;
+	}
+      else
+	result = 0;
+    }
+
   if (float_flag != NOT_FLOAT && radix == 8)
     radix = 10;
 
   if (max_digit >= radix)
-    SYNTAX_ERROR2 ("invalid digit \"%c\" in octal constant", '0' + max_digit);
+    {
+      if (radix == 2)
+	SYNTAX_ERROR2 ("invalid digit \"%c\" in binary constant", '0' + max_digit);
+      else
+	SYNTAX_ERROR2 ("invalid digit \"%c\" in octal constant", '0' + max_digit);
+    }
 
   if (float_flag != NOT_FLOAT)
     {
+      if (radix == 2)
+	{
+	  cpp_error (pfile, CPP_DL_ERROR,
+		     "invalid prefix \"0b\" for floating constant");
+	  return CPP_N_INVALID;
+	}
+
+      if (radix == 16 && !seen_digit)
+	SYNTAX_ERROR ("no digits in hexadecimal floating constant");
+
       if (radix == 16 && CPP_PEDANTIC (pfile) && !CPP_OPTION (pfile, c99))
 	cpp_error (pfile, CPP_DL_PEDWARN,
 		   "use of C99 hexadecimal floating constant");
@@ -285,19 +541,35 @@ cpp_classify_number (cpp_reader *pfile, const cpp_token *token)
       result = interpret_float_suffix (str, limit - str);
       if (result == 0)
 	{
-	  cpp_error (pfile, CPP_DL_ERROR,
-		     "invalid suffix \"%.*s\" on floating constant",
-		     (int) (limit - str), str);
-	  return CPP_N_INVALID;
+	  if (CPP_OPTION (pfile, user_literals))
+	    {
+	      if (ud_suffix)
+		*ud_suffix = (const char *) str;
+	      result = CPP_N_LARGE | CPP_N_USERDEF;
+	    }
+	  else
+	    {
+	      cpp_error (pfile, CPP_DL_ERROR,
+			 "invalid suffix \"%.*s\" on floating constant",
+			 (int) (limit - str), str);
+	      return CPP_N_INVALID;
+	    }
 	}
 
       /* Traditional C didn't accept any floating suffixes.  */
       if (limit != str
 	  && CPP_WTRADITIONAL (pfile)
 	  && ! cpp_sys_macro_p (pfile))
-	cpp_error (pfile, CPP_DL_WARNING,
-		   "traditional C rejects the \"%.*s\" suffix",
-		   (int) (limit - str), str);
+	cpp_warning (pfile, CPP_W_TRADITIONAL,
+		     "traditional C rejects the \"%.*s\" suffix",
+		     (int) (limit - str), str);
+
+      /* A suffix for double is a GCC extension via decimal float support.
+	 If the suffix also specifies an imaginary value we'll catch that
+	 later.  */
+      if ((result == CPP_N_MEDIUM) && CPP_PEDANTIC (pfile))
+	cpp_error (pfile, CPP_DL_PEDWARN,
+		   "suffix for double constant is a GCC extension");
 
       /* Radix must be 10 for decimal floats.  */
       if ((result & CPP_N_DFLOAT) && radix != 10)
@@ -308,6 +580,14 @@ cpp_classify_number (cpp_reader *pfile, const cpp_token *token)
           return CPP_N_INVALID;
         }
 
+      if ((result & (CPP_N_FRACT | CPP_N_ACCUM)) && CPP_PEDANTIC (pfile))
+	cpp_error (pfile, CPP_DL_PEDWARN,
+		   "fixed-point constants are a GCC extension");
+
+      if ((result & CPP_N_DFLOAT) && CPP_PEDANTIC (pfile))
+	cpp_error (pfile, CPP_DL_PEDWARN,
+		   "decimal float constants are a GCC extension");
+
       result |= CPP_N_FLOATING;
     }
   else
@@ -315,10 +595,19 @@ cpp_classify_number (cpp_reader *pfile, const cpp_token *token)
       result = interpret_int_suffix (str, limit - str);
       if (result == 0)
 	{
-	  cpp_error (pfile, CPP_DL_ERROR,
-		     "invalid suffix \"%.*s\" on integer constant",
-		     (int) (limit - str), str);
-	  return CPP_N_INVALID;
+	  if (CPP_OPTION (pfile, user_literals))
+	    {
+	      if (ud_suffix)
+		*ud_suffix = (const char *) str;
+	      result = CPP_N_UNSIGNED | CPP_N_LARGE | CPP_N_USERDEF;
+	    }
+	  else
+	    {
+	      cpp_error (pfile, CPP_DL_ERROR,
+			 "invalid suffix \"%.*s\" on integer constant",
+			 (int) (limit - str), str);
+	      return CPP_N_INVALID;
+	    }
 	}
 
       /* Traditional C only accepted the 'L' suffix.
@@ -326,31 +615,45 @@ cpp_classify_number (cpp_reader *pfile, const cpp_token *token)
       if (CPP_WTRADITIONAL (pfile) && ! cpp_sys_macro_p (pfile))
 	{
 	  int u_or_i = (result & (CPP_N_UNSIGNED|CPP_N_IMAGINARY));
-	  int large = (result & CPP_N_WIDTH) == CPP_N_LARGE;
+	  int large = (result & CPP_N_WIDTH) == CPP_N_LARGE
+		       && CPP_OPTION (pfile, cpp_warn_long_long);
 
-	  if (u_or_i || (large && CPP_OPTION (pfile, warn_long_long)))
-	    cpp_error (pfile, CPP_DL_WARNING,
-		       "traditional C rejects the \"%.*s\" suffix",
-		       (int) (limit - str), str);
+	  if (u_or_i || large)
+	    cpp_warning (pfile, large ? CPP_W_LONG_LONG : CPP_W_TRADITIONAL,
+		         "traditional C rejects the \"%.*s\" suffix",
+		         (int) (limit - str), str);
 	}
 
       if ((result & CPP_N_WIDTH) == CPP_N_LARGE
-	  && ! CPP_OPTION (pfile, c99)
-	  && CPP_OPTION (pfile, warn_long_long))
-	cpp_error (pfile, CPP_DL_PEDWARN,
-		   "use of C99 long long integer constant");
+	  && CPP_OPTION (pfile, cpp_warn_long_long))
+        {
+          const char *message = CPP_OPTION (pfile, cplusplus) 
+		                ? N_("use of C++0x long long integer constant")
+		                : N_("use of C99 long long integer constant");
+
+	  if (CPP_OPTION (pfile, c99))
+            cpp_warning (pfile, CPP_W_LONG_LONG, message);
+          else
+            cpp_pedwarning (pfile, CPP_W_LONG_LONG, message);
+        }
 
       result |= CPP_N_INTEGER;
     }
 
+ syntax_ok:
   if ((result & CPP_N_IMAGINARY) && CPP_PEDANTIC (pfile))
     cpp_error (pfile, CPP_DL_PEDWARN,
 	       "imaginary constants are a GCC extension");
+  if (radix == 2 && CPP_PEDANTIC (pfile))
+    cpp_error (pfile, CPP_DL_PEDWARN,
+	       "binary constants are a GCC extension");
 
   if (radix == 10)
     result |= CPP_N_DECIMAL;
   else if (radix == 16)
     result |= CPP_N_HEX;
+  else if (radix == 2)
+    result |= CPP_N_BINARY;
   else
     result |= CPP_N_OCTAL;
 
@@ -401,6 +704,11 @@ cpp_interpret_integer (cpp_reader *pfile, const cpp_token *token,
 	  base = 16;
 	  p += 2;
 	}
+      else if ((type & CPP_N_RADIX) == CPP_N_BINARY)
+	{
+	  base = 2;
+	  p += 2;
+	}
 
       /* We can add a digit to numbers strictly less than this without
 	 needing the precision and slowness of double integers.  */
@@ -429,7 +737,7 @@ cpp_interpret_integer (cpp_reader *pfile, const cpp_token *token,
 	    }
 	}
 
-      if (overflow)
+      if (overflow && !(type & CPP_N_USERDEF))
 	cpp_error (pfile, CPP_DL_PEDWARN,
 		   "integer constant is too large for its type");
       /* If too big to be signed, consider it unsigned.  Only warn for
@@ -441,8 +749,27 @@ cpp_interpret_integer (cpp_reader *pfile, const cpp_token *token,
 		    && pfile->state.in_directive)
 	       && !num_positive (result, precision))
 	{
+	  /* This is for constants within the range of uintmax_t but
+	     not that of intmax_t.  For such decimal constants, a
+	     diagnostic is required for C99 as the selected type must
+	     be signed and not having a type is a constraint violation
+	     (DR#298, TC3), so this must be a pedwarn.  For C90,
+	     unsigned long is specified to be used for a constant that
+	     does not fit in signed long; if uintmax_t has the same
+	     range as unsigned long this means only a warning is
+	     appropriate here.  C90 permits the preprocessor to use a
+	     wider range than unsigned long in the compiler, so if
+	     uintmax_t is wider than unsigned long no diagnostic is
+	     required for such constants in preprocessor #if
+	     expressions and the compiler will pedwarn for such
+	     constants outside the range of unsigned long that reach
+	     the compiler so a diagnostic is not required there
+	     either; thus, pedwarn for C99 but use a plain warning for
+	     C90.  */
 	  if (base == 10)
-	    cpp_error (pfile, CPP_DL_WARNING,
+	    cpp_error (pfile, (CPP_OPTION (pfile, c99)
+			       ? CPP_DL_PEDWARN
+			       : CPP_DL_WARNING),
 		       "integer constant is so large that it is unsigned");
 	  result.unsignedp = true;
 	}
@@ -456,12 +783,25 @@ static cpp_num
 append_digit (cpp_num num, int digit, int base, size_t precision)
 {
   cpp_num result;
-  unsigned int shift = 3 + (base == 16);
+  unsigned int shift;
   bool overflow;
   cpp_num_part add_high, add_low;
 
-  /* Multiply by 8 or 16.  Catching this overflow here means we don't
+  /* Multiply by 2, 8 or 16.  Catching this overflow here means we don't
      need to worry about add_high overflowing.  */
+  switch (base)
+    {
+    case 2:
+      shift = 1;
+      break;
+
+    case 16:
+      shift = 4;
+      break;
+
+    default:
+      shift = 3;
+    }
   overflow = !!(num.high >> (PART_PRECISION - shift));
   result.high = num.high << shift;
   result.low = num.low << shift;
@@ -479,7 +819,7 @@ append_digit (cpp_num num, int digit, int base, size_t precision)
   if (add_low + digit < add_low)
     add_high++;
   add_low += digit;
-    
+
   if (result.low + add_low < result.low)
     add_high++;
   if (result.high + add_high < result.high)
@@ -522,7 +862,7 @@ parse_defined (cpp_reader *pfile)
 
   if (token->type == CPP_NAME)
     {
-      node = token->val.node;
+      node = token->val.node.node;
       if (paren && cpp_get_token (pfile)->type != CPP_CLOSE_PAREN)
 	{
 	  cpp_error (pfile, CPP_DL_ERROR, "missing ')' after \"defined\"");
@@ -553,6 +893,23 @@ parse_defined (cpp_reader *pfile)
 		   "this use of \"defined\" may not be portable");
 
       _cpp_mark_macro_used (node);
+      if (!(node->flags & NODE_USED))
+	{
+	  node->flags |= NODE_USED;
+	  if (node->type == NT_MACRO)
+	    {
+	      if ((node->flags & NODE_BUILTIN)
+		  && pfile->cb.user_builtin_macro)
+		pfile->cb.user_builtin_macro (pfile, node);
+	      if (pfile->cb.used_define)
+		pfile->cb.used_define (pfile, pfile->directive_line, node);
+	    }
+	  else
+	    {
+	      if (pfile->cb.used_undef)
+		pfile->cb.used_undef (pfile, pfile->directive_line, node);
+	    }
+	}
 
       /* A possible controlling macro of the form #if !defined ().
 	 _cpp_parse_expr checks there was no other junk on the line.  */
@@ -561,10 +918,15 @@ parse_defined (cpp_reader *pfile)
 
   pfile->state.prevent_expansion--;
 
+  /* Do not treat conditional macros as being defined.  This is due to the
+     powerpc and spu ports using conditional macros for 'vector', 'bool', and
+     'pixel' to act as conditional keywords.  This messes up tests like #ifndef
+     bool.  */
   result.unsignedp = false;
   result.high = 0;
   result.overflow = false;
-  result.low = node && node->type == NT_MACRO;
+  result.low = (node && node->type == NT_MACRO
+		&& (node->flags & NODE_CONDITIONAL) == 0);
   return result;
 }
 
@@ -584,7 +946,10 @@ eval_token (cpp_reader *pfile, const cpp_token *token)
   switch (token->type)
     {
     case CPP_NUMBER:
-      temp = cpp_classify_number (pfile, token);
+      temp = cpp_classify_number (pfile, token, NULL);
+      if (temp & CPP_N_USERDEF)
+	cpp_error (pfile, CPP_DL_ERROR,
+		   "user-defined literal in preprocessor expression");
       switch (temp & CPP_N_CATEGORY)
 	{
 	case CPP_N_FLOATING:
@@ -607,6 +972,8 @@ eval_token (cpp_reader *pfile, const cpp_token *token)
 
     case CPP_WCHAR:
     case CPP_CHAR:
+    case CPP_CHAR16:
+    case CPP_CHAR32:
       {
 	cppchar_t cc = cpp_interpret_charconst (pfile, token,
 						&temp, &unsignedp);
@@ -626,29 +993,44 @@ eval_token (cpp_reader *pfile, const cpp_token *token)
       break;
 
     case CPP_NAME:
-      if (token->val.node == pfile->spec_nodes.n_defined)
+      if (token->val.node.node == pfile->spec_nodes.n_defined)
 	return parse_defined (pfile);
       else if (CPP_OPTION (pfile, cplusplus)
-	       && (token->val.node == pfile->spec_nodes.n_true
-		   || token->val.node == pfile->spec_nodes.n_false))
+	       && (token->val.node.node == pfile->spec_nodes.n_true
+		   || token->val.node.node == pfile->spec_nodes.n_false))
 	{
 	  result.high = 0;
-	  result.low = (token->val.node == pfile->spec_nodes.n_true);
+	  result.low = (token->val.node.node == pfile->spec_nodes.n_true);
 	}
       else
 	{
 	  result.high = 0;
 	  result.low = 0;
 	  if (CPP_OPTION (pfile, warn_undef) && !pfile->state.skip_eval)
-	    cpp_error (pfile, CPP_DL_WARNING, "\"%s\" is not defined",
-		       NODE_NAME (token->val.node));
+	    cpp_warning (pfile, CPP_W_UNDEF, "\"%s\" is not defined",
+		         NODE_NAME (token->val.node.node));
 	}
       break;
 
-    default: /* CPP_HASH */
+    case CPP_HASH:
+      if (!pfile->state.skipping)
+	{
+	  /* A pedantic warning takes precedence over a deprecated
+	     warning here.  */
+	  if (CPP_PEDANTIC (pfile))
+	    cpp_error (pfile, CPP_DL_PEDWARN,
+		       "assertions are a GCC extension");
+	  else if (CPP_OPTION (pfile, cpp_warn_deprecated))
+	    cpp_warning (pfile, CPP_W_DEPRECATED,
+		         "assertions are a deprecated extension");
+	}
       _cpp_test_assertion (pfile, &temp);
       result.high = 0;
       result.low = temp;
+      break;
+
+    default:
+      abort ();
     }
 
   result.unsignedp = !!unsignedp;
@@ -709,9 +1091,11 @@ static const struct cpp_operator
   /* COMPL */		{16, NO_L_OPERAND},
   /* AND_AND */		{6, LEFT_ASSOC},
   /* OR_OR */		{5, LEFT_ASSOC},
-  /* QUERY */		{3, 0},
+  /* Note that QUERY, COLON, and COMMA must have the same precedence.
+     However, there are some special cases for these in reduce().  */
+  /* QUERY */		{4, 0},
   /* COLON */		{4, LEFT_ASSOC | CHECK_PROMOTION},
-  /* COMMA */		{2, LEFT_ASSOC},
+  /* COMMA */		{4, LEFT_ASSOC},
   /* OPEN_PAREN */	{1, NO_L_OPERAND},
   /* CLOSE_PAREN */	{0, 0},
   /* EOF */		{0, 0},
@@ -735,7 +1119,7 @@ static const struct cpp_operator
    stored in the 'value' field of the stack element of the operator
    that precedes it.  */
 bool
-_cpp_parse_expr (cpp_reader *pfile)
+_cpp_parse_expr (cpp_reader *pfile, bool is_if)
 {
   struct op *top = pfile->op_stack;
   unsigned int lex_count;
@@ -758,6 +1142,7 @@ _cpp_parse_expr (cpp_reader *pfile)
       lex_count++;
       op.token = cpp_get_token (pfile);
       op.op = op.token->type;
+      op.loc = op.token->src_loc;
 
       switch (op.op)
 	{
@@ -765,6 +1150,8 @@ _cpp_parse_expr (cpp_reader *pfile)
 	case CPP_NUMBER:
 	case CPP_CHAR:
 	case CPP_WCHAR:
+	case CPP_CHAR16:
+	case CPP_CHAR32:
 	case CPP_NAME:
 	case CPP_HASH:
 	  if (!want_value)
@@ -808,7 +1195,7 @@ _cpp_parse_expr (cpp_reader *pfile)
 	    SYNTAX_ERROR ("missing expression between '(' and ')'");
 
 	  if (op.op == CPP_EOF && top->op == CPP_EOF)
- 	    SYNTAX_ERROR ("#if with no expression");
+ 	    SYNTAX_ERROR2 ("%s with no expression", is_if ? "#if" : "#elif");
 
  	  if (top->op != CPP_EOF && top->op != CPP_OPEN_PAREN)
  	    SYNTAX_ERROR2 ("operator '%s' has no right operand",
@@ -859,6 +1246,7 @@ _cpp_parse_expr (cpp_reader *pfile)
 
       top->op = op.op;
       top->token = op.token;
+      top->loc = op.token->src_loc;
     }
 
   /* The controlling macro expression is only valid if we called lex 3
@@ -869,7 +1257,8 @@ _cpp_parse_expr (cpp_reader *pfile)
 
   if (top != pfile->op_stack)
     {
-      cpp_error (pfile, CPP_DL_ICE, "unbalanced stack in #if");
+      cpp_error (pfile, CPP_DL_ICE, "unbalanced stack in %s",
+		 is_if ? "#if" : "#elif");
     syntax_error:
       return false;  /* Return false on syntax error.  */
     }
@@ -911,6 +1300,7 @@ reduce (cpp_reader *pfile, struct op *top, enum cpp_ttype op)
 	case CPP_NOT:
 	case CPP_COMPL:
 	  top[-1].value = num_unary_op (pfile, top->value, top->op);
+	  top[-1].loc = top->loc;
 	  break;
 
 	case CPP_PLUS:
@@ -920,6 +1310,7 @@ reduce (cpp_reader *pfile, struct op *top, enum cpp_ttype op)
 	case CPP_COMMA:
 	  top[-1].value = num_binary_op (pfile, top[-1].value,
 					 top->value, top->op);
+	  top[-1].loc = top->loc;
 	  break;
 
 	case CPP_GREATER:
@@ -928,12 +1319,14 @@ reduce (cpp_reader *pfile, struct op *top, enum cpp_ttype op)
 	case CPP_LESS_EQ:
 	  top[-1].value
 	    = num_inequality_op (pfile, top[-1].value, top->value, top->op);
+	  top[-1].loc = top->loc;
 	  break;
 
 	case CPP_EQ_EQ:
 	case CPP_NOT_EQ:
 	  top[-1].value
 	    = num_equality_op (pfile, top[-1].value, top->value, top->op);
+	  top[-1].loc = top->loc;
 	  break;
 
 	case CPP_AND:
@@ -941,16 +1334,19 @@ reduce (cpp_reader *pfile, struct op *top, enum cpp_ttype op)
 	case CPP_XOR:
 	  top[-1].value
 	    = num_bitwise_op (pfile, top[-1].value, top->value, top->op);
+	  top[-1].loc = top->loc;
 	  break;
 
 	case CPP_MULT:
 	  top[-1].value = num_mul (pfile, top[-1].value, top->value);
+	  top[-1].loc = top->loc;
 	  break;
 
 	case CPP_DIV:
 	case CPP_MOD:
 	  top[-1].value = num_div_op (pfile, top[-1].value,
-				      top->value, top->op);
+				      top->value, top->op, top->loc);
+	  top[-1].loc = top->loc;
 	  break;
 
 	case CPP_OR_OR:
@@ -962,6 +1358,7 @@ reduce (cpp_reader *pfile, struct op *top, enum cpp_ttype op)
 	  top->value.high = 0;
 	  top->value.unsignedp = false;
 	  top->value.overflow = false;
+	  top->loc = top[1].loc;
 	  continue;
 
 	case CPP_AND_AND:
@@ -973,16 +1370,20 @@ reduce (cpp_reader *pfile, struct op *top, enum cpp_ttype op)
 	  top->value.high = 0;
 	  top->value.unsignedp = false;
 	  top->value.overflow = false;
+	  top->loc = top[1].loc;
 	  continue;
 
 	case CPP_OPEN_PAREN:
 	  if (op != CPP_CLOSE_PAREN)
 	    {
-	      cpp_error (pfile, CPP_DL_ERROR, "missing ')' in expression");
+	      cpp_error_with_line (pfile, CPP_DL_ERROR, 
+				   top->token->src_loc,
+				   0, "missing ')' in expression");
 	      return 0;
 	    }
 	  top--;
 	  top->value = top[1].value;
+	  top->loc = top[1].loc;
 	  return top;
 
 	case CPP_COLON:
@@ -991,14 +1392,21 @@ reduce (cpp_reader *pfile, struct op *top, enum cpp_ttype op)
 	    {
 	      pfile->state.skip_eval--;
 	      top->value = top[1].value;
+	      top->loc = top[1].loc;
 	    }
 	  else
-	    top->value = top[2].value;
+	    {
+	      top->value = top[2].value;
+	      top->loc = top[2].loc;
+	    }
 	  top->value.unsignedp = (top[1].value.unsignedp
 				  || top[2].value.unsignedp);
 	  continue;
 
 	case CPP_QUERY:
+	  /* COMMA and COLON should not reduce a QUERY operator.  */
+	  if (op == CPP_COMMA || op == CPP_COLON)
+	    return top;
 	  cpp_error (pfile, CPP_DL_ERROR, "'?' without following ':'");
 	  return 0;
 
@@ -1045,12 +1453,12 @@ check_promotion (cpp_reader *pfile, const struct op *op)
   if (op->value.unsignedp)
     {
       if (!num_positive (op[-1].value, CPP_OPTION (pfile, precision)))
-	cpp_error (pfile, CPP_DL_WARNING,
-		   "the left operand of \"%s\" changes sign when promoted",
-		   cpp_token_as_text (pfile, op->token));
+	cpp_error_with_line (pfile, CPP_DL_WARNING, op[-1].loc, 0,
+			     "the left operand of \"%s\" changes sign when promoted",
+			     cpp_token_as_text (pfile, op->token));
     }
   else if (!num_positive (op->value, CPP_OPTION (pfile, precision)))
-    cpp_error (pfile, CPP_DL_WARNING,
+    cpp_error_with_line (pfile, CPP_DL_WARNING, op->loc, 0,
 	       "the right operand of \"%s\" changes sign when promoted",
 	       cpp_token_as_text (pfile, op->token));
 }
@@ -1309,8 +1717,8 @@ num_unary_op (cpp_reader *pfile, cpp_num num, enum cpp_ttype op)
     {
     case CPP_UPLUS:
       if (CPP_WTRADITIONAL (pfile) && !pfile->state.skip_eval)
-	cpp_error (pfile, CPP_DL_WARNING,
-		   "traditional C rejects the unary plus operator");
+	cpp_warning (pfile, CPP_W_TRADITIONAL,
+		     "traditional C rejects the unary plus operator");
       num.overflow = false;
       break;
 
@@ -1482,10 +1890,13 @@ num_mul (cpp_reader *pfile, cpp_num lhs, cpp_num rhs)
   return result;
 }
 
-/* Divide two preprocessing numbers, returning the answer or the
-   remainder depending upon OP.  */
+/* Divide two preprocessing numbers, LHS and RHS, returning the answer
+   or the remainder depending upon OP. LOCATION is the source location
+   of this operator (for diagnostics).  */
+
 static cpp_num
-num_div_op (cpp_reader *pfile, cpp_num lhs, cpp_num rhs, enum cpp_ttype op)
+num_div_op (cpp_reader *pfile, cpp_num lhs, cpp_num rhs, enum cpp_ttype op,
+	    source_location location)
 {
   cpp_num result, sub;
   cpp_num_part mask;
@@ -1525,7 +1936,8 @@ num_div_op (cpp_reader *pfile, cpp_num lhs, cpp_num rhs, enum cpp_ttype op)
   else
     {
       if (!pfile->state.skip_eval)
-	cpp_error (pfile, CPP_DL_ERROR, "division by zero in #if");
+	cpp_error_with_line (pfile, CPP_DL_ERROR, location, 0,
+			     "division by zero in #if");
       return lhs;
     }
 
@@ -1565,7 +1977,8 @@ num_div_op (cpp_reader *pfile, cpp_num lhs, cpp_num rhs, enum cpp_ttype op)
 	{
 	  if (negate)
 	    result = num_negate (result, precision);
-	  result.overflow = num_positive (result, precision) ^ !negate;
+	  result.overflow = (num_positive (result, precision) ^ !negate
+			     && !num_zerop (result));
 	}
 
       return result;

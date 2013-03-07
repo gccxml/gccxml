@@ -1,9 +1,10 @@
 /* Hash tables.
-   Copyright (C) 2000, 2001, 2003, 2004 Free Software Foundation, Inc.
+   Copyright (C) 2000, 2001, 2003, 2004, 2008, 2009
+   Free Software Foundation, Inc.
 
 This program is free software; you can redistribute it and/or modify it
 under the terms of the GNU General Public License as published by the
-Free Software Foundation; either version 2, or (at your option) any
+Free Software Foundation; either version 3, or (at your option) any
 later version.
 
 This program is distributed in the hope that it will be useful,
@@ -12,8 +13,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+along with this program; see the file COPYING3.  If not see
+<http://www.gnu.org/licenses/>.
 
  In other words, you are welcome to use, share and improve this program.
  You are forbidden to forbid anyone else to use, share and improve
@@ -27,12 +28,14 @@ Foundation, 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
    hash tables (see libiberty/hashtab.c).  The abstraction penalty was
    too high to continue using the generic form.  This code knows
    intrinsically how to calculate a hash value, and how to compare an
-   existing entry with a potential new one.  Also, the ability to
-   delete members from the table has been removed.  */
+   existing entry with a potential new one.  */
 
 static unsigned int calc_hash (const unsigned char *, size_t);
 static void ht_expand (hash_table *);
 static double approx_sqrt (double);
+
+/* A deleted entry.  */
+#define DELETED ((hashnode) -1)
 
 /* Calculate the hash of the string STR of length LEN.  */
 
@@ -83,13 +86,10 @@ ht_destroy (hash_table *table)
 }
 
 /* Returns the hash entry for the a STR of length LEN.  If that string
-   already exists in the table, returns the existing entry, and, if
-   INSERT is CPP_ALLOCED, frees the last obstack object.  If the
+   already exists in the table, returns the existing entry.  If the
    identifier hasn't been seen before, and INSERT is CPP_NO_INSERT,
    returns NULL.  Otherwise insert and returns a new entry.  A new
-   string is alloced if INSERT is CPP_ALLOC, otherwise INSERT is
-   CPP_ALLOCED and the item is assumed to be at the top of the
-   obstack.  */
+   string is allocated.  */
 hashnode
 ht_lookup (hash_table *table, const unsigned char *str, size_t len,
 	   enum ht_lookup_option insert)
@@ -105,6 +105,7 @@ ht_lookup_with_hash (hash_table *table, const unsigned char *str,
 {
   unsigned int hash2;
   unsigned int index;
+  unsigned int deleted_index = table->nslots;
   size_t sizemask;
   hashnode node;
 
@@ -113,19 +114,15 @@ ht_lookup_with_hash (hash_table *table, const unsigned char *str,
   table->searches++;
 
   node = table->entries[index];
- 
+
   if (node != NULL)
     {
-      if (node->hash_value == hash
-	  && HT_LEN (node) == (unsigned int) len
-	  && !memcmp (HT_STR (node), str, len))
-	{
-	  if (insert == HT_ALLOCED)
-	    /* The string we search for was placed at the end of the
-	       obstack.  Release it.  */
-	    obstack_free (&table->stack, (void *) str);
-	  return node;
-	}
+      if (node == DELETED)
+	deleted_index = index;
+      else if (node->hash_value == hash
+	       && HT_LEN (node) == (unsigned int) len
+	       && !memcmp (HT_STR (node), str, len))
+	return node;
 
       /* hash2 must be odd, so we're guaranteed to visit every possible
 	 location in the table during rehashing.  */
@@ -139,32 +136,41 @@ ht_lookup_with_hash (hash_table *table, const unsigned char *str,
 	  if (node == NULL)
 	    break;
 
-	  if (node->hash_value == hash
-	      && HT_LEN (node) == (unsigned int) len
-	      && !memcmp (HT_STR (node), str, len))
+	  if (node == DELETED)
 	    {
-	      if (insert == HT_ALLOCED)
-	      /* The string we search for was placed at the end of the
-		 obstack.  Release it.  */
-		obstack_free (&table->stack, (void *) str);
-	      return node;
+	      if (deleted_index != table->nslots)
+		deleted_index = index;
 	    }
+	  else if (node->hash_value == hash
+		   && HT_LEN (node) == (unsigned int) len
+		   && !memcmp (HT_STR (node), str, len))
+	    return node;
 	}
     }
 
   if (insert == HT_NO_INSERT)
     return NULL;
 
+  /* We prefer to overwrite the first deleted slot we saw.  */
+  if (deleted_index != table->nslots)
+    index = deleted_index;
+
   node = (*table->alloc_node) (table);
   table->entries[index] = node;
 
   HT_LEN (node) = (unsigned int) len;
   node->hash_value = hash;
-  if (insert == HT_ALLOC)
-    HT_STR (node) = (const unsigned char *) obstack_copy0 (&table->stack,
-                                                           str, len);
+
+  if (table->alloc_subobject)
+    {
+      char *chars = (char *) table->alloc_subobject (len + 1);
+      memcpy (chars, str, len);
+      chars[len] = '\0';
+      HT_STR (node) = (const unsigned char *) chars;
+    }
   else
-    HT_STR (node) = str;
+    HT_STR (node) = (const unsigned char *) obstack_copy0 (&table->stack,
+							   str, len);
 
   if (++table->nelements * 4 >= table->nslots * 3)
     /* Must expand the string table.  */
@@ -188,7 +194,7 @@ ht_expand (hash_table *table)
   p = table->entries;
   limit = p + table->nslots;
   do
-    if (*p)
+    if (*p && *p != DELETED)
       {
 	unsigned int index, hash, hash2;
 
@@ -225,10 +231,28 @@ ht_forall (hash_table *table, ht_cb cb, const void *v)
   p = table->entries;
   limit = p + table->nslots;
   do
-    if (*p)
+    if (*p && *p != DELETED)
       {
 	if ((*cb) (table->pfile, *p, v) == 0)
 	  break;
+      }
+  while (++p < limit);
+}
+
+/* Like ht_forall, but a nonzero return from the callback means that
+   the entry should be removed from the table.  */
+void
+ht_purge (hash_table *table, ht_cb cb, const void *v)
+{
+  hashnode *p, *limit;
+
+  p = table->entries;
+  limit = p + table->nslots;
+  do
+    if (*p && *p != DELETED)
+      {
+	if ((*cb) (table->pfile, *p, v))
+	  *p = DELETED;
       }
   while (++p < limit);
 }
@@ -253,7 +277,7 @@ void
 ht_dump_statistics (hash_table *table)
 {
   size_t nelts, nids, overhead, headers;
-  size_t total_bytes, longest;
+  size_t total_bytes, longest, deleted = 0;
   double sum_of_squares, exp_len, exp_len2, exp2_len;
   hashnode *p, *limit;
 
@@ -268,7 +292,9 @@ ht_dump_statistics (hash_table *table)
   p = table->entries;
   limit = p + table->nslots;
   do
-    if (*p)
+    if (*p == DELETED)
+      ++deleted;
+    else if (*p)
       {
 	size_t n = HT_LEN (*p);
 
@@ -290,6 +316,8 @@ ht_dump_statistics (hash_table *table)
 	   (unsigned long) nids, nids * 100.0 / nelts);
   fprintf (stderr, "slots\t\t%lu\n",
 	   (unsigned long) table->nslots);
+  fprintf (stderr, "deleted\t\t%lu\n",
+	   (unsigned long) deleted);
   fprintf (stderr, "bytes\t\t%lu%c (%lu%c overhead)\n",
 	   SCALE (total_bytes), LABEL (total_bytes),
 	   SCALE (overhead), LABEL (overhead));

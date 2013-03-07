@@ -1,6 +1,6 @@
 /* md5.c - Functions to compute MD5 message digest of files or memory blocks
    according to the definition of MD5 in RFC 1321 from April 1992.
-   Copyright (C) 1995, 1996 Free Software Foundation, Inc.
+   Copyright (C) 1995, 1996, 2011 Free Software Foundation, Inc.
 
    NOTE: This source is derived from an old version taken from the GNU C
    Library (glibc).
@@ -76,15 +76,19 @@ md5_init_ctx (struct md5_ctx *ctx)
 /* Put result from CTX in first 16 bytes following RESBUF.  The result
    must be in little endian byte order.
 
-   IMPORTANT: On some systems it is required that RESBUF is correctly
-   aligned for a 32 bits value.  */
+   IMPORTANT: RESBUF may not be aligned as strongly as MD5_UNIT32 so we
+   put things in a local (aligned) buffer first, then memcpy into RESBUF.  */
 void *
 md5_read_ctx (const struct md5_ctx *ctx, void *resbuf)
 {
-  ((md5_uint32 *) resbuf)[0] = SWAP (ctx->A);
-  ((md5_uint32 *) resbuf)[1] = SWAP (ctx->B);
-  ((md5_uint32 *) resbuf)[2] = SWAP (ctx->C);
-  ((md5_uint32 *) resbuf)[3] = SWAP (ctx->D);
+  md5_uint32 buffer[4];
+
+  buffer[0] = SWAP (ctx->A);
+  buffer[1] = SWAP (ctx->B);
+  buffer[2] = SWAP (ctx->C);
+  buffer[3] = SWAP (ctx->D);
+
+  memcpy (resbuf, buffer, 16);
 
   return resbuf;
 }
@@ -234,15 +238,18 @@ md5_process_bytes (const void *buffer, size_t len, struct md5_ctx *ctx)
       if (UNALIGNED_P (buffer))
         while (len > 64)
           {
-            md5_process_block (memcpy (ctx->buffer, buffer, 64), 64, ctx);
+	    memcpy (ctx->buffer, buffer, 64);
+            md5_process_block (ctx->buffer, 64, ctx);
             buffer = (const char *) buffer + 64;
             len -= 64;
           }
       else
 #endif
-      md5_process_block (buffer, len & ~63, ctx);
-      buffer = (const void *) ((const char *) buffer + (len & ~63));
-      len &= 63;
+	{
+	  md5_process_block (buffer, len & ~63, ctx);
+	  buffer = (const void *) ((const char *) buffer + (len & ~63));
+	  len &= 63;
+	}
     }
 
   /* Move remaining bytes in internal buffer.  */

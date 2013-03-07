@@ -1,12 +1,13 @@
 /* Definitions for PA_RISC with ELF format
-   Copyright 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2006
+   Copyright 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2009, 2010,
+   2011
    Free Software Foundation, Inc.
 
 This file is part of GCC.
 
 GCC is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2, or (at your option)
+the Free Software Foundation; either version 3, or (at your option)
 any later version.
 
 GCC is distributed in the hope that it will be useful,
@@ -15,16 +16,15 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with GCC; see the file COPYING.  If not, write to
-the Free Software Foundation, 51 Franklin Street, Fifth Floor,
-Boston, MA 02110-1301, USA.  */
+along with GCC; see the file COPYING3.  If not see
+<http://www.gnu.org/licenses/>.  */
 
 
 #undef TARGET_OS_CPP_BUILTINS
 #define TARGET_OS_CPP_BUILTINS()		\
   do						\
     {						\
-	LINUX_TARGET_OS_CPP_BUILTINS();		\
+	GNU_USER_TARGET_OS_CPP_BUILTINS();	\
 	builtin_assert ("machine=bigendian");	\
     }						\
   while (0)
@@ -32,15 +32,9 @@ Boston, MA 02110-1301, USA.  */
 #undef CPP_SPEC
 #define CPP_SPEC "%{posix:-D_POSIX_SOURCE}"
 
-#undef	LIB_SPEC
-#define LIB_SPEC \
-  "%{pthread:-lpthread} \
-   %{shared:-lgcc -lc} \
-   %{!shared:%{mieee-fp:-lieee} %{shared-libgcc:-lgcc} %{profile:-lc_p}%{!profile:-lc}}"
-
 #undef ASM_SPEC
 #define ASM_SPEC \
-  "%{v:-V} %{n} %{T} %{Ym,*} %{Yd,*} %{Wa,*:%*}"
+  ""
 
 /* Define this for shared library support because it isn't in the main
    linux.h file.  */
@@ -53,7 +47,7 @@ Boston, MA 02110-1301, USA.  */
   %{!shared: \
     %{!static: \
       %{rdynamic:-export-dynamic} \
-      %{!dynamic-linker:-dynamic-linker " LINUX_DYNAMIC_LINKER "}} \
+      -dynamic-linker " GNU_USER_DYNAMIC_LINKER "} \
       %{static:-static}}"
 
 /* glibc's profiling functions don't need gcc to allocate counters.  */
@@ -134,11 +128,13 @@ Boston, MA 02110-1301, USA.  */
   do								\
     {								\
       if (!FUNCTION_NAME_P (XSTR (FUN, 0)))			\
-	hppa_encode_label (FUN);				\
+	pa_encode_label (FUN);					\
       (*targetm.asm_out.globalize_label) (FILE, XSTR (FUN, 0));	\
     }								\
   while (0)
 
-/* Linux always uses gas.  */
 #undef TARGET_GAS
 #define TARGET_GAS 1
+
+#undef TARGET_SYNC_LIBCALL
+#define TARGET_SYNC_LIBCALL 1

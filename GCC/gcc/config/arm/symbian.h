@@ -1,5 +1,5 @@
 /* Configuration file for Symbian OS on ARM processors.
-   Copyright (C) 2004, 2005
+   Copyright (C) 2004, 2005, 2007, 2008, 2011
    Free Software Foundation, Inc.
    Contributed by CodeSourcery, LLC   
 
@@ -7,7 +7,7 @@
 
    GCC is free software; you can redistribute it and/or modify it
    under the terms of the GNU General Public License as published
-   by the Free Software Foundation; either version 2, or (at your
+   by the Free Software Foundation; either version 3, or (at your
    option) any later version.
 
    GCC is distributed in the hope that it will be useful, but WITHOUT
@@ -16,9 +16,8 @@
    License for more details.
 
    You should have received a copy of the GNU General Public License
-   along with GCC; see the file COPYING.  If not, write to
-   the Free Software Foundation, 51 Franklin Street, Fifth Floor,
-   Boston, MA 02110-1301, USA.  */
+   along with GCC; see the file COPYING3.  If not see
+   <http://www.gnu.org/licenses/>.  */
 
 /* Do not expand builtin functions (unless explicitly prefixed with
    "__builtin").  Symbian OS code relies on properties of the standard
@@ -72,20 +71,18 @@
 #define SUBTARGET_ASM_FLOAT_SPEC \
   "%{!mfpu=*:-mfpu=vfp} %{!mcpu=*:%{!march=*:-march=armv5t}}"
   
-/* SymbianOS provides the BPABI routines in a separate library.
-   Therefore, we do not need to define any of them in libgcc.  */
-#undef RENAME_LIBRARY
-#define RENAME_LIBRARY(GCC_NAME, AEABI_NAME) /* empty */
-
 /* Define the __symbian__ macro.  */
 #undef TARGET_OS_CPP_BUILTINS
-#define TARGET_OS_CPP_BUILTINS()		\
-  do						\
-    {						\
-      /* Include the default BPABI stuff.  */	\
-      TARGET_BPABI_CPP_BUILTINS ();		\
-      builtin_define ("__symbian__");		\
-    }						\
+#define TARGET_OS_CPP_BUILTINS()				\
+  do								\
+    {								\
+      /* Include the default BPABI stuff.  */			\
+      TARGET_BPABI_CPP_BUILTINS ();				\
+      /* Symbian OS does not support merging symbols across DLL	\
+	 boundaries.  */					\
+      builtin_define ("__GXX_MERGED_TYPEINFO_NAMES=0");		\
+      builtin_define ("__symbian__");				\
+    }								\
   while (false)
 
 /* On SymbianOS, these sections are not writable, so we use "a",
@@ -99,3 +96,7 @@
 
 /* SymbianOS cannot merge entities with vague linkage at runtime.  */
 #define TARGET_ARM_DYNAMIC_VAGUE_LINKAGE_P false
+
+#define TARGET_DEFAULT_WORD_RELOCATIONS 1
+
+#define ARM_TARGET2_DWARF_FORMAT DW_EH_PE_absptr

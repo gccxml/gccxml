@@ -1,12 +1,12 @@
 /* Generate code to allocate RTL structures.
-   Copyright (C) 1997, 1998, 1999, 2000, 2002, 2003, 2004
+   Copyright (C) 1997, 1998, 1999, 2000, 2002, 2003, 2004, 2007, 2010
    Free Software Foundation, Inc.
 
 This file is part of GCC.
 
 GCC is free software; you can redistribute it and/or modify it under
 the terms of the GNU General Public License as published by the Free
-Software Foundation; either version 2, or (at your option) any later
+Software Foundation; either version 3, or (at your option) any later
 version.
 
 GCC is distributed in the hope that it will be useful, but WITHOUT ANY
@@ -15,9 +15,8 @@ FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 for more details.
 
 You should have received a copy of the GNU General Public License
-along with GCC; see the file COPYING.  If not, write to the Free
-Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
-02110-1301, USA.  */
+along with GCC; see the file COPYING3.  If not see
+<http://www.gnu.org/licenses/>.  */
 
 
 #include "bconfig.h"
@@ -42,19 +41,6 @@ static const struct rtx_definition defs[] =
 #define NUM_RTX_CODE ARRAY_SIZE(defs)
 
 static const char *formats[NUM_RTX_CODE];
-
-static const char *type_from_format	(int);
-static const char *accessor_from_format	(int);
-static int special_format		(const char *);
-static int special_rtx			(int);
-static int excluded_rtx			(int);
-static void find_formats		(void);
-static void gendecl			(const char *);
-static void genmacro			(int);
-static void gendef			(const char *);
-static void genlegend			(void);
-static void genheader			(void);
-static void gencode			(void);
 
 /* Decode a format letter into a C type string.  */
 
@@ -77,8 +63,6 @@ type_from_format (int c)
 
     case 'E':
       return "rtvec ";
-    case 'b':
-      return "struct bitmap_head_def *";  /* bitmap - typedef not available */
     case 't':
       return "union tree_node *";  /* tree - typedef not available */
     case 'B':
@@ -109,9 +93,6 @@ accessor_from_format (int c)
 
     case 'E':
       return "XVEC";
-
-    case 'b':
-      return "XBITMAP";
 
     case 't':
       return "XTREE";
@@ -147,6 +128,10 @@ special_rtx (int idx)
 	  || strcmp (defs[idx].enumname, "REG") == 0
 	  || strcmp (defs[idx].enumname, "SUBREG") == 0
 	  || strcmp (defs[idx].enumname, "MEM") == 0
+	  || strcmp (defs[idx].enumname, "PC") == 0
+	  || strcmp (defs[idx].enumname, "CC0") == 0
+	  || strcmp (defs[idx].enumname, "RETURN") == 0
+	  || strcmp (defs[idx].enumname, "SIMPLE_RETURN") == 0
 	  || strcmp (defs[idx].enumname, "CONST_VECTOR") == 0);
 }
 
@@ -157,7 +142,8 @@ special_rtx (int idx)
 static int
 excluded_rtx (int idx)
 {
-  return (strcmp (defs[idx].enumname, "CONST_DOUBLE") == 0);
+  return ((strcmp (defs[idx].enumname, "CONST_DOUBLE") == 0)
+	  || (strcmp (defs[idx].enumname, "CONST_FIXED") == 0));
 }
 
 /* Place a list of all format specifiers we use into the array FORMAT.  */
@@ -183,34 +169,6 @@ find_formats (void)
     }
 }
 
-/* Write the declarations for the routine to allocate RTL with FORMAT.  */
-
-static void
-gendecl (const char *format)
-{
-  const char *p;
-  int i, pos;
-
-  printf ("extern rtx gen_rtx_fmt_%s\t (RTX_CODE, ", format);
-  printf ("enum machine_mode mode");
-
-  /* Write each parameter that is needed and start a new line when the line
-     would overflow.  */
-  for (p = format, i = 0, pos = 75; *p != 0; p++)
-    if (*p != '0')
-      {
-	int ourlen = strlen (type_from_format (*p)) + 6 + (i > 9);
-
-	printf (",");
-	if (pos + ourlen > 76)
-	  printf ("\n\t\t\t\t      "), pos = 39;
-
-	printf (" %sarg%d", type_from_format (*p), i++);
-	pos += ourlen;
-      }
-
-  printf (");\n");
-}
 
 /* Generate macros to generate RTL of code IDX using the functions we
    write.  */
@@ -257,18 +215,18 @@ gendef (const char *format)
   /* Start by writing the definition of the function name and the types
      of the arguments.  */
 
-  printf ("rtx\ngen_rtx_fmt_%s (RTX_CODE code, enum machine_mode mode", format);
+  printf ("static inline rtx\ngen_rtx_fmt_%s_stat (RTX_CODE code, enum machine_mode mode", format);
   for (p = format, i = 0; *p != 0; p++)
     if (*p != '0')
       printf (",\n\t%sarg%d", type_from_format (*p), i++);
 
-  puts (")");
+  puts (" MEM_STAT_DECL)");
 
   /* Now write out the body of the function itself, which allocates
      the memory and initializes it.  */
   puts ("{");
   puts ("  rtx rt;");
-  puts ("  rt = rtx_alloc (code);\n");
+  puts ("  rt = rtx_alloc_stat (code PASS_MEM_STAT);\n");
 
   puts ("  PUT_MODE (rt, mode);");
 
@@ -279,6 +237,15 @@ gendef (const char *format)
       printf ("  X0EXP (rt, %d) = NULL_RTX;\n", i);
 
   puts ("\n  return rt;\n}\n");
+  printf ("#define gen_rtx_fmt_%s(c, m", format);
+  for (p = format, i = 0; *p != 0; p++)
+    if (*p != '0')
+      printf (", p%i",i++);
+  printf (")\\\n        gen_rtx_fmt_%s_stat (c, m", format);
+  for (p = format, i = 0; *p != 0; p++)
+    if (*p != '0')
+      printf (", p%i",i++);
+  printf (" MEM_STAT_INFO)\n\n");
 }
 
 /* Generate the documentation header for files we write.  */
@@ -299,9 +266,10 @@ genheader (void)
 
   puts ("#ifndef GCC_GENRTL_H");
   puts ("#define GCC_GENRTL_H\n");
+  puts ("#include \"statistics.h\"\n");
 
   for (fmt = formats; *fmt; ++fmt)
-    gendecl (*fmt);
+    gendef (*fmt);
 
   putchar ('\n');
 
@@ -312,31 +280,10 @@ genheader (void)
   puts ("\n#endif /* GCC_GENRTL_H */");
 }
 
-/* Generate the text of the code file we write, genrtl.c.  */
-
-static void
-gencode (void)
-{
-  const char **fmt;
-
-  puts ("#include \"config.h\"");
-  puts ("#include \"system.h\"");
-  puts ("#include \"coretypes.h\"");
-  puts ("#include \"tm.h\"");
-  puts ("#include \"obstack.h\"");
-  puts ("#include \"rtl.h\"");
-  puts ("#include \"ggc.h\"\n");
-
-  for (fmt = formats; *fmt != 0; fmt++)
-    gendef (*fmt);
-}
-
-/* This is the main program.  We accept only one argument, "-h", which
-   says we are writing the genrtl.h file.  Otherwise we are writing the
-   genrtl.c file.  */
+/* This is the main program.  */
 
 int
-main (int argc, char **argv)
+main (void)
 {
 /* BEGIN GCC-XML MODIFICATIONS (2007/10/31 15:07:06) */
   gccxml_fix_printf();
@@ -345,10 +292,7 @@ main (int argc, char **argv)
   find_formats ();
   genlegend ();
 
-  if (argc == 2 && argv[1][0] == '-' && argv[1][1] == 'h')
-    genheader ();
-  else
-    gencode ();
+  genheader ();
 
   if (ferror (stdout) || fflush (stdout) || fclose (stdout))
     return FATAL_EXIT_CODE;

@@ -1,5 +1,5 @@
 /* Definitions of target machine for GNU compiler.  Vxworks PowerPC version.
-   Copyright (C) 1996, 2000, 2002, 2003, 2004, 2005
+   Copyright (C) 1996, 2000, 2002, 2003, 2004, 2005, 2007, 2009, 2010, 2011
    Free Software Foundation, Inc.
    Contributed by CodeSourcery, LLC.
 
@@ -7,7 +7,7 @@ This file is part of GCC.
 
 GCC is free software; you can redistribute it and/or modify it under
 the terms of the GNU General Public License as published by the Free
-Software Foundation; either version 2, or (at your option) any later
+Software Foundation; either version 3, or (at your option) any later
 version.
 
 GCC is distributed in the hope that it will be useful, but WITHOUT ANY
@@ -16,17 +16,13 @@ FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 for more details.
 
 You should have received a copy of the GNU General Public License
-along with GCC; see the file COPYING.  If not, write to the Free
-Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
-02110-1301, USA.  */
+along with GCC; see the file COPYING3.  If not see
+<http://www.gnu.org/licenses/>.  */
 
 /* Note to future editors: VxWorks is mostly an EABI target.  We do
    not use rs6000/eabi.h because we would have to override most of
    it anyway.  However, if you change that file, consider making
    analogous changes here too.  */
-
-#undef TARGET_VERSION
-#define TARGET_VERSION fprintf (stderr, " (PowerPC VxWorks)");
 
 /* CPP predefined macros.  */
 
@@ -35,21 +31,24 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
   do						\
     {						\
       builtin_define ("__ppc");			\
+      builtin_define ("__PPC__");		\
       builtin_define ("__EABI__");		\
       builtin_define ("__ELF__");		\
-      builtin_define ("__vxworks");		\
-      builtin_define ("__VXWORKS__");		\
       if (!TARGET_SOFT_FLOAT)			\
 	builtin_define ("__hardfp");		\
 						\
       /* C89 namespace violation! */		\
       builtin_define ("CPU_FAMILY=PPC");	\
-    }						\
+        					\
+      VXWORKS_OS_CPP_BUILTINS ();		\
+    }		\
   while (0)
 
 /* Only big endian PPC is supported by VxWorks.  */
 #undef BYTES_BIG_ENDIAN
 #define BYTES_BIG_ENDIAN 1
+#undef WORDS_BIG_ENDIAN
+#define WORDS_BIG_ENDIAN 1
 
 /* We have to kill off the entire specs set created by rs6000/sysv4.h
    and substitute our own set.  The top level vxworks.h has done some
@@ -69,6 +68,8 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
    %{mcpu=403 : -DCPU=PPC403  ; \
      mcpu=405 : -DCPU=PPC405  ; \
      mcpu=440 : -DCPU=PPC440  ; \
+     mcpu=464 : -DCPU=PPC464  ; \
+     mcpu=476 : -DCPU=PPC476  ; \
      mcpu=603 : -DCPU=PPC603  ; \
      mcpu=604 : -DCPU=PPC604  ; \
      mcpu=860 : -DCPU=PPC860  ; \
@@ -78,14 +79,11 @@ VXWORKS_ADDITIONAL_CPP_SPEC
 
 #define CC1_SPEC						\
 "%{G*} %{mno-sdata:-msdata=none} %{msdata:-msdata=default}	\
- %{mlittle|mlittle-endian:-mstrict-align}			\
- %{profile: -p}		\
- %{fvec:-maltivec} %{fvec-eabi:-maltivec -mabi=altivec}"
+ %{mlittle|mlittle-endian:-mstrict-align}"
 
 #define ASM_SPEC \
 "%(asm_cpu) \
- %{.s: %{mregnames} %{mno-regnames}} %{.S: %{mregnames} %{mno-regnames}} \
- %{v:-v} %{Qy:} %{!Qn:-Qy} %{n} %{T} %{Ym,*} %{Yd,*} %{Wa,*:%*} \
+ %{,assembler|,assembler-with-cpp: %{mregnames} %{mno-regnames}} \
  %{mrelocatable} %{mrelocatable-lib} %{fpic:-K PIC} %{fPIC:-K PIC} -mbig"
 
 #undef  LIB_SPEC
@@ -112,23 +110,17 @@ VXWORKS_ADDITIONAL_CPP_SPEC
 #undef SDATA_DEFAULT_SIZE
 #define SDATA_DEFAULT_SIZE (TARGET_VXWORKS_RTP ? 8 : 0)
 
+/* Enforce 16bytes alignment for the stack pointer, to permit general
+   compliance with e.g. Altivec instructions requirements.  Make sure
+   this isn't overruled by the EABI constraints.  */
+
 #undef  STACK_BOUNDARY
 #define STACK_BOUNDARY (16*BITS_PER_UNIT)
-/* Override sysv4.h, reset to the default.  */
+
 #undef  PREFERRED_STACK_BOUNDARY
+#define PREFERRED_STACK_BOUNDARY STACK_BOUNDARY
 
-/* Enable SPE */
-#undef TARGET_SPE_ABI
-#undef TARGET_SPE
-#undef TARGET_E500
-#undef TARGET_ISEL
-#undef TARGET_FPRS
-
-#define TARGET_SPE_ABI rs6000_spe_abi
-#define TARGET_SPE rs6000_spe
-#define TARGET_E500 (rs6000_cpu == PROCESSOR_PPC8540)
-#define TARGET_ISEL rs6000_isel
-#define TARGET_FPRS (!rs6000_float_gprs)
+#undef  ABI_STACK_BOUNDARY
 
 /* Make -mcpu=8540 imply SPE.  ISEL is automatically enabled, the
    others must be done by hand.  Handle -mrtp.  Disable -fPIC
@@ -143,7 +135,7 @@ VXWORKS_ADDITIONAL_CPP_SPEC
 	rs6000_float_gprs = 1;			\
       }						\
 						\
-  if (!g_switch_set)				\
+  if (!global_options_set.x_g_switch_value)	\
     g_switch_value = SDATA_DEFAULT_SIZE;	\
   VXWORKS_OVERRIDE_OPTIONS;			\
   } while (0)

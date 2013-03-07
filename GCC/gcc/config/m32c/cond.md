@@ -1,5 +1,5 @@
 ;; Machine Descriptions for R8C/M16C/M32C
-;; Copyright (C) 2005
+;; Copyright (C) 2005, 2007, 2008
 ;; Free Software Foundation, Inc.
 ;; Contributed by Red Hat.
 ;;
@@ -7,7 +7,7 @@
 ;;
 ;; GCC is free software; you can redistribute it and/or modify it
 ;; under the terms of the GNU General Public License as published
-;; by the Free Software Foundation; either version 2, or (at your
+;; by the Free Software Foundation; either version 3, or (at your
 ;; option) any later version.
 ;;
 ;; GCC is distributed in the hope that it will be useful, but WITHOUT
@@ -16,9 +16,8 @@
 ;; License for more details.
 ;;
 ;; You should have received a copy of the GNU General Public License
-;; along with GCC; see the file COPYING.  If not, write to the Free
-;; Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
-;; 02110-1301, USA.
+;; along with GCC; see the file COPYING3.  If not see
+;; <http://www.gnu.org/licenses/>.
 
 ; conditionals - cmp, jcc, setcc, etc.
 
@@ -59,11 +58,22 @@
   [(set (reg:CC FLG_REGNO)
 	(compare (match_dup 1)
 		 (match_dup 2)))
-   (set (pc) (if_then_else (match_dup 4)
+   (set (pc) (if_then_else (match_op_dup 0 [(reg:CC FLG_REGNO) (const_int 0)])
 			   (label_ref (match_dup 3))
 			   (pc)))]
-  "operands[4] = m32c_cmp_flg_0 (operands[0]);"
+  ""
   )
+
+(define_insn "bcc_op"
+  [(set (pc)
+        (if_then_else (match_operator 0 "ordered_comparison_operator"
+		       [(reg:CC FLG_REGNO) (const_int 0)])
+                      (label_ref (match_operand 1 ""))
+                      (pc)))]
+  ""
+  "j%c0\t%l1"
+  [(set_attr "flags" "n")]
+)
 
 (define_insn "stzx_16"
   [(set (match_operand:QI 0 "mrai_operand" "=R0w,R0w,R0w")
@@ -91,7 +101,7 @@
   [(set_attr "flags" "n,n,n")])
 
 (define_insn_and_split "stzx_reversed_<mode>"
-  [(set (match_operand:QHI 0 "m32c_r0_operand" "")
+  [(set (match_operand:QHI 0 "m32c_r0_operand" "=R0w")
 	(if_then_else:QHI (ne (reg:CC FLG_REGNO) (const_int 0))
 			 (match_operand:QHI 1 "const_int_operand" "")
 			 (match_operand:QHI 2 "const_int_operand" "")))]
@@ -114,34 +124,6 @@
   "* return m32c_output_compare(insn, operands); "
   [(set_attr "flags" "oszc")])
 
-(define_expand "cmp<mode>"
-  [(set (reg:CC FLG_REGNO)
-	(compare (match_operand:QHPSI 0 "mra_operand" "RraSd")
-		 (match_operand:QHPSI 1 "mrai_operand" "RraSdi")))]
-  ""
-  "m32c_pend_compare (operands); DONE;")
-
-(define_insn "b<code>_op"
-  [(set (pc)
-        (if_then_else (any_cond (reg:CC FLG_REGNO)
-				(const_int 0))
-                      (label_ref (match_operand 0 ""))
-                      (pc)))]
-  ""
-  "j<code>\t%l0"
-  [(set_attr "flags" "n")]
-)
-
-(define_expand "b<code>"
-  [(set (pc)
-        (if_then_else (any_cond (reg:CC FLG_REGNO)
-				(const_int 0))
-                      (label_ref (match_operand 0 ""))
-                      (pc)))]
-  ""
-  "m32c_unpend_compare ();"
-)
-
 ;; m32c_conditional_register_usage changes the setcc_gen_code array to
 ;; point to the _24 variants if needed.
 
@@ -152,57 +134,60 @@
 
 ;; These are the post-split patterns for the conditional sets.
 
-(define_insn "s<code>_op"
+(define_insn "scc_op"
   [(set (match_operand:QI 0 "register_operand" "=Rqi")
-	(any_cond:QI (reg:CC FLG_REGNO) (const_int 0)))]
+	(match_operator:QI 1 "ordered_comparison_operator"
+	 [(reg:CC FLG_REGNO) (const_int 0)]))]
   "TARGET_A16 && reload_completed"
-  "* return m32c_scc_pattern(operands, <CODE>);")
+  "* return m32c_scc_pattern(operands, GET_CODE (operands[1]));")
 
-(define_insn "s<code>_24_op"
+(define_insn "scc_24_op"
   [(set (match_operand:HI 0 "mra_operand" "=RhiSd")
-	(any_cond:HI (reg:CC FLG_REGNO) (const_int 0)))]
+	(match_operator:HI 1 "ordered_comparison_operator"
+	 [(reg:CC FLG_REGNO) (const_int 0)]))]
   "TARGET_A24 && reload_completed"
-  "sc<code>\t%0"
+  "sc%c1\t%0"
   [(set_attr "flags" "n")]
 )
 
-;; These are the pre-split patterns for the conditional sets.  Yes,
-;; there are a lot of permutations.
+;; These are the pre-split patterns for the conditional sets.
 
-(define_insn_and_split "s<code>_<mode>"
+(define_insn_and_split "cstore<mode>4"
   [(set (match_operand:QI 0 "register_operand" "=Rqi")
-	(any_cond:QI (match_operand:QHPSI 1 "mra_operand" "RraSd")
-		     (match_operand:QHPSI 2 "mrai_operand" "RraSdi")))]
+	(match_operator:QI 1 "ordered_comparison_operator"
+	 [(match_operand:QHPSI 2 "mra_operand" "RraSd")
+	  (match_operand:QHPSI 3 "mrai_operand" "RraSdi")]))]
   "TARGET_A16"
   "#"
   "reload_completed"
   [(set (reg:CC FLG_REGNO)
-	(compare (match_dup 1)
-		 (match_dup 2)))
+	(compare (match_dup 2)
+		 (match_dup 3)))
    (set (match_dup 0)
-	(any_cond:QI (reg:CC FLG_REGNO) (const_int 0)))]
+	(match_op_dup 1 [(reg:CC FLG_REGNO) (const_int 0)]))]
   ""
   [(set_attr "flags" "x")]
 )
 
-(define_insn_and_split "s<code>_<mode>_24"
+(define_insn_and_split "cstore<mode>4_24"
   [(set (match_operand:HI 0 "mra_nopp_operand" "=RhiSd")
-	(any_cond:HI (match_operand:QHPSI 1 "mra_operand" "RraSd")
-		     (match_operand:QHPSI 2 "mrai_operand" "RraSdi")))]
+	(match_operator:HI 1 "ordered_comparison_operator"
+	 [(match_operand:QHPSI 2 "mra_operand" "RraSd")
+	  (match_operand:QHPSI 3 "mrai_operand" "RraSdi")]))]
   "TARGET_A24"
   "#"
   "reload_completed"
   [(set (reg:CC FLG_REGNO)
-	(compare (match_dup 1)
-		 (match_dup 2)))
+	(compare (match_dup 2)
+		 (match_dup 3)))
    (set (match_dup 0)
-	(any_cond:HI (reg:CC FLG_REGNO) (const_int 0)))]
+	(match_op_dup 1 [(reg:CC FLG_REGNO) (const_int 0)]))]
   ""
   [(set_attr "flags" "x")]
 )
 
 (define_insn_and_split "movqicc_<code>_<mode>"
-  [(set (match_operand:QI 0 "register_operand" "")
+  [(set (match_operand:QI 0 "register_operand" "=R0w")
         (if_then_else:QI (eqne_cond:QI (match_operand:QHPSI 1 "mra_operand" "RraSd")
 				       (match_operand:QHPSI 2 "mrai_operand" "RraSdi"))
 			  (match_operand:QI 3 "const_int_operand" "")
@@ -222,7 +207,7 @@
   )
 
 (define_insn_and_split "movhicc_<code>_<mode>"
-  [(set (match_operand:HI 0 "register_operand" "")
+  [(set (match_operand:HI 0 "register_operand" "=R0w")
         (if_then_else:HI (eqne_cond:HI (match_operand:QHPSI 1 "mra_operand" "RraSd")
 				       (match_operand:QHPSI 2 "mrai_operand" "RraSdi"))
 			  (match_operand:QI 3 "const_int_operand" "")
@@ -241,21 +226,7 @@
   [(set_attr "flags" "x")]
   )
 
-;; And these are the expanders, which read the pending compare
-;; operands to build a combined insn.
-
-(define_expand "s<code>"
-  [(set (match_operand:QI 0 "register_operand" "=Rqi")
-	(any_cond:QI (reg:CC FLG_REGNO) (const_int 0)))]
-  "TARGET_A16"
-  "m32c_expand_scc (<CODE>, operands); DONE;")
-
-(define_expand "s<code>_24"
-  [(set (match_operand:HI 0 "mra_nopp_operand" "=RhiSd")
-	(any_cond:HI (reg:CC FLG_REGNO) (const_int 0)))]
-  "TARGET_A24"
-  "m32c_expand_scc (<CODE>, operands); DONE;")
-
+;; And these are the expanders.
 
 (define_expand "movqicc"
   [(set (match_operand:QI 0 "register_operand" "")
@@ -301,7 +272,9 @@
   [(set_attr "flags" "x")]
   )  
 
-;; A cond_to_int followed by a compare against zero is essentially a no-op.
+;; A cond_to_int followed by a compare against zero is essentially a
+;; no-op.  However, the result of the cond_to_int may be used by later
+;; insns, so make sure it's dead before deleting its set.
 
 (define_peephole2
   [(set (match_operand:HI 0 "mra_qi_operand" "")
@@ -314,6 +287,7 @@
 	(compare (match_operand:HI 1 "mra_qi_operand" "")
 		 (const_int 0)))
    ]
-  "rtx_equal_p(operands[0], operands[1])"
+  "rtx_equal_p (operands[0], operands[1])
+     && dead_or_set_p (peep2_next_insn (1), operands[0])"
   [(const_int 1)]
   "")

@@ -1,11 +1,12 @@
 /* Process machine description and calculate constant conditions.
-   Copyright (C) 2001, 2002, 2003, 2004, 2005 Free Software Foundation, Inc.
+   Copyright (C) 2001, 2002, 2003, 2004, 2005, 2007, 2010
+   Free Software Foundation, Inc.
 
    This file is part of GCC.
 
    GCC is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 2, or (at your option)
+   the Free Software Foundation; either version 3, or (at your option)
    any later version.
 
    GCC is distributed in the hope that it will be useful,
@@ -14,9 +15,8 @@
    GNU General Public License for more details.
 
    You should have received a copy of the GNU General Public License
-   along with GCC; see the file COPYING.  If not, write to
-   the Free Software Foundation, 51 Franklin Street, Fifth Floor,
-   Boston, MA 02110-1301, USA.  */
+   along with GCC; see the file COPYING3.  If not see
+   <http://www.gnu.org/licenses/>.  */
 
 /* In a machine description, all of the insn patterns - define_insn,
    define_expand, define_split, define_peephole, define_peephole2 -
@@ -33,6 +33,7 @@
 #include "rtl.h"
 #include "errors.h"
 #include "hashtab.h"
+#include "read-md.h"
 #include "gensupport.h"
 
 /* so we can include except.h in the generated file.  */
@@ -81,12 +82,11 @@ write_header (void)
 \n\
 #include \"regs.h\"\n\
 #include \"recog.h\"\n\
-#include \"real.h\"\n\
 #include \"output.h\"\n\
 #include \"flags.h\"\n\
 #include \"hard-reg-set.h\"\n\
 #include \"resource.h\"\n\
-#include \"toplev.h\"\n\
+#include \"diagnostic-core.h\"\n\
 #include \"reload.h\"\n\
 #include \"tm-constrs.h\"\n");
 
@@ -117,7 +117,7 @@ write_one_condition (void **slot, void * ARG_UNUSED (dummy))
   const struct c_test *test = * (const struct c_test **) slot;
   const char *p;
 
-  print_rtx_ptr_loc (test->expr);
+  print_md_ptr_loc (test->expr);
   fputs ("  { \"", stdout);
   for (p = test->expr; *p; p++)
     {
@@ -218,7 +218,7 @@ main (int argc, char **argv)
 
   progname = "genconditions";
 
-  if (init_md_reader_args (argc, argv) != SUCCESS_EXIT_CODE)
+  if (!init_rtx_reader_args (argc, argv))
     return (FATAL_EXIT_CODE);
 
   /* Read the machine description.  */

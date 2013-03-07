@@ -1,11 +1,11 @@
 /* Cygwin host-specific hook definitions.
- Copyright (C) 2004 Free Software Foundation, Inc.
+ Copyright (C) 2004, 2007, 2010 Free Software Foundation, Inc.
 
  This file is part of GCC.
 
  GCC is free software; you can redistribute it and/or modify it
  under the terms of the GNU General Public License as published
- by the Free Software Foundation; either version 2, or (at your
+ by the Free Software Foundation; either version 3, or (at your
  option) any later version.
 
  GCC is distributed in the hope that it will be useful, but WITHOUT
@@ -14,17 +14,14 @@
  License for more details.
 
  You should have received a copy of the GNU General Public License
- along with GCC; see the file COPYING. If not, write to the
- Free Software Foundation, 51 Franklin Street, Fifth Floor, Boston,
- MA 02110-1301, USA. */
+ along with GCC; see the file COPYING3.  If not see
+ <http://www.gnu.org/licenses/>. */
 
 #include "config.h"
 #include "system.h"
 #include "coretypes.h"
-#include <sys/mman.h>
 #include "hosthooks.h"
 #include "hosthooks-def.h"
-#include "toplev.h"
 #include "diagnostic.h"
 
 static void * cygwin_gt_pch_get_address (size_t, int fd);
@@ -55,14 +52,14 @@ cygwin_gt_pch_get_address (size_t sz, int fd)
   off_t p = lseek(fd, 0, SEEK_CUR);
 
   if (p == (off_t) -1)
-    fatal_error ("can't get position in PCH file: %m");
+    fatal_error ("can%'t get position in PCH file: %m");
 
    /* Cygwin requires that the underlying file be at least
       as large as the requested mapping.  */
   if ((size_t) p < sz)
   { 
     if ( ftruncate (fd, sz) == -1 )
-      fatal_error ("can't extend PCH file: %m");
+      fatal_error ("can%'t extend PCH file: %m");
   }
 
   base = mmap (NULL, sz, PROT_READ | PROT_WRITE, MAP_PRIVATE, fd, 0);
@@ -73,7 +70,7 @@ cygwin_gt_pch_get_address (size_t sz, int fd)
     munmap (base, sz);
 
   if (lseek (fd, p, SEEK_SET) == (off_t) -1 )
-    fatal_error ("can't set position in PCH file: %m");
+    fatal_error ("can%'t set position in PCH file: %m");
 
   return base;
 }

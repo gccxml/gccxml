@@ -1,9 +1,27 @@
-/* Definitions for embedded ia64-elf target.  */
+/* Definitions for embedded ia64-elf target.
 
-/* This macro is a C statement to print on `stderr' a string describing the
-   particular machine description choice.  */
+Copyright (C) 2000, 2001, 2002, 2003, 2010, 2011 Free Software Foundation, Inc.
 
-#define TARGET_VERSION fprintf (stderr, " (IA-64) ELF");
+This file is part of GCC.
+
+GCC is free software; you can redistribute it and/or modify it under
+the terms of the GNU General Public License as published by the Free
+Software Foundation; either version 3, or (at your option) any later
+version.
+
+GCC is distributed in the hope that it will be useful, but WITHOUT ANY
+WARRANTY; without even the implied warranty of MERCHANTABILITY or
+FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+for more details.
+
+Under Section 7 of GPL version 3, you are granted additional
+permissions described in the GCC Runtime Library Exception, version
+3.1, as published by the Free Software Foundation.
+
+You should have received a copy of the GNU General Public License and
+a copy of the GCC Runtime Library Exception along with this program;
+see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
+<http://www.gnu.org/licenses/>.  */
 
 /* A C string constant that tells the GCC driver program options to pass to
    the assembler.  It can also specify how to translate options you give to GNU
@@ -36,8 +54,8 @@
 #define LINK_SPEC "%{!mgnu-ld:-dn -N so}"
 #endif
 
-/* svr4.h links with crti.o/crtn.o, but elfos.h does not.  We override elfos.h
-   so that we can use the standard ELF Unix method.  */
+/* elfos.h does not link with crti.o/crtn.o.  We override elfos.h so
+   that we can use the standard ELF Unix method.  */
 #undef  ENDFILE_SPEC
 #define ENDFILE_SPEC "crtend.o%s crtn.o%s"
 

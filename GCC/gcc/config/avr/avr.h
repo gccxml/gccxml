@@ -1,14 +1,15 @@
 /* Definitions of target machine for GNU compiler,
    for ATMEL AVR at90s8515, ATmega103/103L, ATmega603/603L microcontrollers.
-   Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007
+   Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 
+   2008, 2009, 2010, 2011
    Free Software Foundation, Inc.
-   Contributed by Denis Chertykov (denisc@overta.ru)
+   Contributed by Denis Chertykov (chertykov@gmail.com)
 
 This file is part of GCC.
 
 GCC is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2, or (at your option)
+the Free Software Foundation; either version 3, or (at your option)
 any later version.
 
 GCC is distributed in the hope that it will be useful,
@@ -17,56 +18,201 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with GCC; see the file COPYING.  If not, write to
-the Free Software Foundation, 51 Franklin Street, Fifth Floor,
-Boston, MA 02110-1301, USA.  */
+along with GCC; see the file COPYING3.  If not see
+<http://www.gnu.org/licenses/>.  */
 
 /* Names to predefine in the preprocessor for this target machine.  */
 
-#define TARGET_CPU_CPP_BUILTINS()		\
-  do						\
-    {						\
-      builtin_define_std ("AVR");		\
-      if (avr_base_arch_macro)			\
-	builtin_define (avr_base_arch_macro);	\
-      if (avr_extra_arch_macro)			\
-	builtin_define (avr_extra_arch_macro);	\
-      if (avr_have_movw_lpmx_p)			\
-	builtin_define ("__AVR_HAVE_MOVW__");	\
-      if (avr_have_movw_lpmx_p)			\
-	builtin_define ("__AVR_HAVE_LPMX__");	\
-      if (avr_asm_only_p)			\
-	builtin_define ("__AVR_ASM_ONLY__");	\
-      if (avr_enhanced_p)			\
-	builtin_define ("__AVR_ENHANCED__");	\
-      if (avr_enhanced_p)			\
-	builtin_define ("__AVR_HAVE_MUL__");	\
-      if (avr_mega_p)				\
-	builtin_define ("__AVR_MEGA__");	\
-      if (TARGET_NO_INTERRUPTS)			\
-	builtin_define ("__NO_INTERRUPTS__");	\
-    }						\
-  while (0)
+struct base_arch_s
+{
+  /* Assembler only.  */
+  int asm_only;
 
-extern const char *avr_base_arch_macro;
+  /* Core have 'MUL*' instructions.  */
+  int have_mul;
+
+  /* Core have 'CALL' and 'JMP' instructions.  */
+  int have_jmp_call;
+
+  /* Core have 'MOVW' and 'LPM Rx,Z' instructions.  */
+  int have_movw_lpmx;
+
+  /* Core have 'ELPM' instructions.  */
+  int have_elpm;
+
+  /* Core have 'ELPM Rx,Z' instructions.  */
+  int have_elpmx;
+
+  /* Core have 'EICALL' and 'EIJMP' instructions.  */
+  int have_eijmp_eicall;
+
+  /* This is an XMEGA core.  */
+  int xmega_p;
+
+  /* This core has the RAMPD special function register
+     and thus also the RAMPX, RAMPY and RAMPZ registers.  */
+  int have_rampd;
+  
+  /* Default start of data section address for architecture.  */
+  int default_data_section_start;
+
+  /* Offset between SFR address and RAM address:
+     SFR-address = RAM-address - sfr_offset  */
+  int sfr_offset;
+
+  /* Architecture id to built-in define __AVR_ARCH__ (NULL -> no macro) */
+  const char *const macro;
+  
+  /* Architecture name.  */
+  const char *const arch_name;  
+};
+
+/* These names are used as the index into the avr_arch_types[] table 
+   above.  */
+
+enum avr_arch
+{
+  ARCH_UNKNOWN,
+  ARCH_AVR1,
+  ARCH_AVR2,
+  ARCH_AVR25,
+  ARCH_AVR3,
+  ARCH_AVR31,
+  ARCH_AVR35,
+  ARCH_AVR4,
+  ARCH_AVR5,
+  ARCH_AVR51,
+  ARCH_AVR6,
+  ARCH_AVRXMEGA2,
+  ARCH_AVRXMEGA4,
+  ARCH_AVRXMEGA5,
+  ARCH_AVRXMEGA6,
+  ARCH_AVRXMEGA7
+};
+
+struct mcu_type_s {
+  /* Device name.  */
+  const char *const name;
+  
+  /* Index in avr_arch_types[].  */
+  int arch; 
+  
+  /* Must lie outside user's namespace.  NULL == no macro.  */
+  const char *const macro;
+  
+  /* Stack pointer have 8 bits width.  */
+  int short_sp;
+  
+  /* Some AVR devices have a core erratum when skipping a 2-word instruction.
+     Skip instructions are:  SBRC, SBRS, SBIC, SBIS, CPSE.
+     Problems will occur with return address is IRQ executes during the
+     skip sequence.
+
+     A support ticket from Atmel returned the following information:
+
+         Subject: (ATTicket:644469) On AVR skip-bug core Erratum
+         From: avr@atmel.com                    Date: 2011-07-27
+         (Please keep the subject when replying to this mail)
+
+         This errata exists only in AT90S8515 and ATmega103 devices.
+
+         For information please refer the following respective errata links
+            http://www.atmel.com/dyn/resources/prod_documents/doc2494.pdf
+            http://www.atmel.com/dyn/resources/prod_documents/doc1436.pdf  */
+
+  /* Core Erratum:  Must not skip 2-word instruction.  */
+  int errata_skip;
+  
+  /* Start of data section.  */
+  int data_section_start;
+  
+  /* Number of 64k segments in the flash.  */
+  int n_flash;
+
+  /* Name of device library.  */
+  const char *const library_name; 
+};
+
+/* Preprocessor macros to define depending on MCU type.  */
 extern const char *avr_extra_arch_macro;
-extern int avr_mega_p;
-extern int avr_enhanced_p;
-extern int avr_asm_only_p;
-extern int avr_have_movw_lpmx_p;
-#ifndef IN_LIBGCC2
-extern GTY(()) section *progmem_section;
-#endif
+extern const struct base_arch_s *avr_current_arch;
+extern const struct mcu_type_s *avr_current_device;
+extern const struct mcu_type_s avr_mcu_types[];
+extern const struct base_arch_s avr_arch_types[];
 
-#define AVR_MEGA (avr_mega_p && !TARGET_SHORT_CALLS)
-#define AVR_ENHANCED (avr_enhanced_p)
-#define AVR_HAVE_MOVW (avr_have_movw_lpmx_p)
+typedef struct
+{
+  /* Id of the address space as used in c_register_addr_space */
+  unsigned char id;
 
-#define TARGET_VERSION fprintf (stderr, " (GNU assembler syntax)");
+  /* Flavour of memory: 0 = RAM, 1 = Flash */
+  int memory_class;
 
-#define OVERRIDE_OPTIONS avr_override_options ()
+  /* Width of pointer (in bytes) */
+  int pointer_size;
 
-#define CAN_DEBUG_WITHOUT_FP
+  /* Name of the address space as visible to the user */
+  const char *name;
+
+  /* Segment (i.e. 64k memory chunk) number.  */
+  int segment;
+} avr_addrspace_t;
+
+extern const avr_addrspace_t avr_addrspace[];
+
+/* Known address spaces */
+
+enum
+  {
+    ADDR_SPACE_RAM,
+    ADDR_SPACE_FLASH,
+    ADDR_SPACE_FLASH1,
+    ADDR_SPACE_FLASH2,
+    ADDR_SPACE_FLASH3,
+    ADDR_SPACE_FLASH4,
+    ADDR_SPACE_FLASH5,
+    ADDR_SPACE_MEMX
+  };
+
+#define TARGET_CPU_CPP_BUILTINS()	avr_cpu_cpp_builtins (pfile)
+
+#define AVR_HAVE_JMP_CALL (avr_current_arch->have_jmp_call && !TARGET_SHORT_CALLS)
+#define AVR_HAVE_MUL (avr_current_arch->have_mul)
+#define AVR_HAVE_MOVW (avr_current_arch->have_movw_lpmx)
+#define AVR_HAVE_LPMX (avr_current_arch->have_movw_lpmx)
+#define AVR_HAVE_ELPM (avr_current_arch->have_elpm)
+#define AVR_HAVE_ELPMX (avr_current_arch->have_elpmx)
+#define AVR_HAVE_RAMPD (avr_current_arch->have_rampd)
+#define AVR_HAVE_RAMPX (avr_current_arch->have_rampd)
+#define AVR_HAVE_RAMPY (avr_current_arch->have_rampd)
+#define AVR_HAVE_RAMPZ (avr_current_arch->have_elpm             \
+                        || avr_current_arch->have_rampd)
+#define AVR_HAVE_EIJMP_EICALL (avr_current_arch->have_eijmp_eicall)
+
+/* Handling of 8-bit SP versus 16-bit SP is as follows:
+
+   -msp8 is used internally to select the right multilib for targets with
+   8-bit SP.  -msp8 is set automatically by DRIVER_SELF_SPECS for devices
+   with 8-bit SP or by multilib generation machinery.  If a frame pointer is
+   needed and SP is only 8 bits wide, SP is zero-extended to get FP.
+
+   TARGET_TINY_STACK is triggered by -mtiny-stack which is a user option.
+   This option has no effect on multilib selection.  It serves to save some
+   bytes on 16-bit SP devices by only changing SP_L and leaving SP_H alone.
+
+   These two properties are reflected by built-in macros __AVR_SP8__ resp.
+   __AVR_HAVE_8BIT_SP__ and __AVR_HAVE_16BIT_SP__.  During multilib generation
+   there is always __AVR_SP8__ == __AVR_HAVE_8BIT_SP__.  */
+
+#define AVR_HAVE_8BIT_SP                                                \
+  (avr_current_device->short_sp || TARGET_TINY_STACK || avr_sp8)
+
+#define AVR_HAVE_SPH (!avr_sp8)
+
+#define AVR_2_BYTE_PC (!AVR_HAVE_EIJMP_EICALL)
+#define AVR_3_BYTE_PC (AVR_HAVE_EIJMP_EICALL)
+
+#define AVR_XMEGA (avr_current_arch->xmega_p)
 
 #define BITS_BIG_ENDIAN 0
 #define BYTES_BIG_ENDIAN 0
@@ -96,6 +242,7 @@ extern GTY(()) section *progmem_section;
 /* No data type wants to be aligned rounder than this.  */
 #define BIGGEST_ALIGNMENT 8
 
+#define TARGET_VTABLE_ENTRY_ALIGN 8
 
 #define STRICT_ALIGNMENT 0
 
@@ -169,7 +316,7 @@ extern GTY(()) section *progmem_section;
     32,33,34,35					\
     }
 
-#define ORDER_REGS_FOR_LOCAL_ALLOC order_regs_for_local_alloc ()
+#define ADJUST_REG_ALLOC_ORDER order_regs_for_local_alloc ()
 
 
 #define HARD_REGNO_NREGS(REGNO, MODE) ((GET_MODE_SIZE (MODE) + UNITS_PER_WORD - 1) / UNITS_PER_WORD)
@@ -237,37 +384,26 @@ enum reg_class {
 
 #define REGNO_REG_CLASS(R) avr_regno_reg_class(R)
 
-#define BASE_REG_CLASS (reload_completed ? BASE_POINTER_REGS : POINTER_REGS)
+#define MODE_CODE_BASE_REG_CLASS(mode, as, outer_code, index_code)   \
+  avr_mode_code_base_reg_class (mode, as, outer_code, index_code)
 
 #define INDEX_REG_CLASS NO_REGS
 
-#define REGNO_OK_FOR_BASE_P(r) (((r) < FIRST_PSEUDO_REGISTER		\
-				 && ((r) == REG_X			\
-				     || (r) == REG_Y			\
-				     || (r) == REG_Z			\
-				     || (r) == ARG_POINTER_REGNUM))	\
-				|| (reg_renumber			\
-				    && (reg_renumber[r] == REG_X	\
-					|| reg_renumber[r] == REG_Y	\
-					|| reg_renumber[r] == REG_Z	\
-					|| (reg_renumber[r]		\
-					    == ARG_POINTER_REGNUM))))
+#define REGNO_MODE_CODE_OK_FOR_BASE_P(num, mode, as, outer_code, index_code) \
+  avr_regno_mode_code_ok_for_base_p (num, mode, as, outer_code, index_code)
 
 #define REGNO_OK_FOR_INDEX_P(NUM) 0
 
-#define PREFERRED_RELOAD_CLASS(X, CLASS) preferred_reload_class(X,CLASS)
+#define HARD_REGNO_CALL_PART_CLOBBERED(REGNO, MODE)     \
+  avr_hard_regno_call_part_clobbered (REGNO, MODE)
 
-#define SMALL_REGISTER_CLASSES 1
-
-#define CLASS_LIKELY_SPILLED_P(c) class_likely_spilled_p(c)
-
-#define CLASS_MAX_NREGS(CLASS, MODE)   class_max_nregs (CLASS, MODE)
+#define TARGET_SMALL_REGISTER_CLASSES_FOR_MODE_P hook_bool_mode_true
 
 #define STACK_PUSH_CODE POST_DEC
 
 #define STACK_GROWS_DOWNWARD
 
-#define STARTING_FRAME_OFFSET 1
+#define STARTING_FRAME_OFFSET avr_starting_frame_offset()
 
 #define STACK_POINTER_OFFSET 1
 
@@ -283,34 +419,19 @@ enum reg_class {
 
 #define STATIC_CHAIN_REGNUM 2
 
-#define FRAME_POINTER_REQUIRED frame_pointer_required_p()
-
-/* Offset from the frame pointer register value to the top of the stack.  */
-#define FRAME_POINTER_CFA_OFFSET(FNDECL) 0
-
 #define ELIMINABLE_REGS {					\
       {ARG_POINTER_REGNUM, FRAME_POINTER_REGNUM},		\
 	{FRAME_POINTER_REGNUM, STACK_POINTER_REGNUM}		\
        ,{FRAME_POINTER_REGNUM+1,STACK_POINTER_REGNUM+1}}
 
-#define CAN_ELIMINATE(FROM, TO) (((FROM) == ARG_POINTER_REGNUM		   \
-				  && (TO) == FRAME_POINTER_REGNUM)	   \
-				 || (((FROM) == FRAME_POINTER_REGNUM	   \
-				      || (FROM) == FRAME_POINTER_REGNUM+1) \
-				     && ! FRAME_POINTER_REQUIRED	   \
-				     ))
-
 #define INITIAL_ELIMINATION_OFFSET(FROM, TO, OFFSET)			\
-     OFFSET = initial_elimination_offset (FROM, TO)
+  OFFSET = avr_initial_elimination_offset (FROM, TO)
 
-#define RETURN_ADDR_RTX(count, x) \
-  gen_rtx_MEM (Pmode, memory_address (Pmode, plus_constant (tem, 1)))
+#define RETURN_ADDR_RTX(count, tem) avr_return_addr_rtx (count, tem)
 
-#define PUSH_ROUNDING(NPUSHED) (NPUSHED)
-
-#define RETURN_POPS_ARGS(FUNDECL, FUNTYPE, STACK_SIZE) 0
-
-#define FUNCTION_ARG(CUM, MODE, TYPE, NAMED) (function_arg (&(CUM), MODE, TYPE, NAMED))
+/* Don't use Push rounding. expr.c: emit_single_push_insn is broken 
+   for POST_DEC targets (PR27386).  */
+/*#define PUSH_ROUNDING(NPUSHED) (NPUSHED)*/
 
 typedef struct avr_args {
   int nregs;			/* # registers available for passing */
@@ -320,131 +441,39 @@ typedef struct avr_args {
 #define INIT_CUMULATIVE_ARGS(CUM, FNTYPE, LIBNAME, FNDECL, N_NAMED_ARGS) \
   init_cumulative_args (&(CUM), FNTYPE, LIBNAME, FNDECL)
 
-#define FUNCTION_ARG_ADVANCE(CUM, MODE, TYPE, NAMED)	\
-  (function_arg_advance (&CUM, MODE, TYPE, NAMED))
-
 #define FUNCTION_ARG_REGNO_P(r) function_arg_regno_p(r)
-
-extern int avr_reg_order[];
-
-#define RET_REGISTER avr_ret_register ()
-
-#define FUNCTION_VALUE(VALTYPE, FUNC) avr_function_value (VALTYPE, FUNC)
-
-#define LIBCALL_VALUE(MODE)  avr_libcall_value (MODE)
-
-#define FUNCTION_VALUE_REGNO_P(N) ((int) (N) == RET_REGISTER)
 
 #define DEFAULT_PCC_STRUCT_RETURN 0
 
-#define EPILOGUE_USES(REGNO) 0
+#define EPILOGUE_USES(REGNO) avr_epilogue_uses(REGNO)
 
 #define HAVE_POST_INCREMENT 1
 #define HAVE_PRE_DECREMENT 1
 
-#define CONSTANT_ADDRESS_P(X) CONSTANT_P (X)
-
 #define MAX_REGS_PER_ADDRESS 1
 
-#ifdef REG_OK_STRICT
-#  define GO_IF_LEGITIMATE_ADDRESS(mode, operand, ADDR)	\
-{							\
-  if (legitimate_address_p (mode, operand, 1))		\
-    goto ADDR;						\
-}
-#  else
-#  define GO_IF_LEGITIMATE_ADDRESS(mode, operand, ADDR)	\
-{							\
-  if (legitimate_address_p (mode, operand, 0))		\
-    goto ADDR;						\
-}
-#endif
+#define LEGITIMIZE_RELOAD_ADDRESS(X,MODE,OPNUM,TYPE,IND_L,WIN)          \
+  do {                                                                  \
+    rtx new_x = avr_legitimize_reload_address (&(X), MODE, OPNUM, TYPE, \
+                                               ADDR_TYPE (TYPE),        \
+                                               IND_L, make_memloc);     \
+    if (new_x)                                                          \
+      {                                                                 \
+        X = new_x;                                                      \
+        goto WIN;                                                       \
+      }                                                                 \
+  } while (0)
 
-#define REG_OK_FOR_BASE_NOSTRICT_P(X) \
-  (REGNO (X) >= FIRST_PSEUDO_REGISTER || REG_OK_FOR_BASE_STRICT_P(X))
-
-#define REG_OK_FOR_BASE_STRICT_P(X) REGNO_OK_FOR_BASE_P (REGNO (X))
-
-#ifdef REG_OK_STRICT
-#  define REG_OK_FOR_BASE_P(X) REG_OK_FOR_BASE_STRICT_P (X)
-#else
-#  define REG_OK_FOR_BASE_P(X) REG_OK_FOR_BASE_NOSTRICT_P (X)
-#endif
-
-#define REG_OK_FOR_INDEX_P(X) 0
-
-#define LEGITIMIZE_ADDRESS(X, OLDX, MODE, WIN)				\
-{									\
-  (X) = legitimize_address (X, OLDX, MODE);				\
-  if (memory_address_p (MODE, X))					\
-    goto WIN;								\
-}
-
-#define XEXP_(X,Y) (X)
-#define LEGITIMIZE_RELOAD_ADDRESS(X, MODE, OPNUM, TYPE, IND_LEVELS, WIN)    \
-do {									    \
-  if (1&&(GET_CODE (X) == POST_INC || GET_CODE (X) == PRE_DEC))	    \
-    {									    \
-      push_reload (XEXP (X,0), XEXP (X,0), &XEXP (X,0), &XEXP (X,0),	    \
-	           POINTER_REGS, GET_MODE (X),GET_MODE (X) , 0, 0,	    \
-		   OPNUM, RELOAD_OTHER);				    \
-      goto WIN;								    \
-    }									    \
-  if (GET_CODE (X) == PLUS						    \
-      && REG_P (XEXP (X, 0))						    \
-      && GET_CODE (XEXP (X, 1)) == CONST_INT				    \
-      && INTVAL (XEXP (X, 1)) >= 1)					    \
-    {									    \
-      int fit = INTVAL (XEXP (X, 1)) <= (64 - GET_MODE_SIZE (MODE));	    \
-      if (fit)								    \
-	{								    \
-          if (reg_equiv_address[REGNO (XEXP (X, 0))] != 0)		    \
-	    {								    \
-	      int regno = REGNO (XEXP (X, 0));				    \
-	      rtx mem = make_memloc (X, regno);				    \
-	      push_reload (XEXP (mem,0), NULL, &XEXP (mem,0), NULL,         \
-		           POINTER_REGS, Pmode, VOIDmode, 0, 0,		    \
-		           1, ADDR_TYPE (TYPE));			    \
-	      push_reload (mem, NULL_RTX, &XEXP (X, 0), NULL,		    \
-		           BASE_POINTER_REGS, GET_MODE (X), VOIDmode, 0, 0, \
-		           OPNUM, TYPE);				    \
-	      goto WIN;							    \
-	    }								    \
-	  push_reload (XEXP (X, 0), NULL_RTX, &XEXP (X, 0), NULL,	    \
-		       BASE_POINTER_REGS, GET_MODE (X), VOIDmode, 0, 0,	    \
-		       OPNUM, TYPE);					    \
-          goto WIN;							    \
-	}								    \
-      else if (! (frame_pointer_needed && XEXP (X,0) == frame_pointer_rtx)) \
-	{								    \
-	  push_reload (X, NULL_RTX, &X, NULL,				    \
-		       POINTER_REGS, GET_MODE (X), VOIDmode, 0, 0,	    \
-		       OPNUM, TYPE);					    \
-          goto WIN;							    \
-	}								    \
-    }									    \
-} while(0)
-
-#define GO_IF_MODE_DEPENDENT_ADDRESS(ADDR,LABEL)			\
-      if (GET_CODE (ADDR) == POST_INC || GET_CODE (ADDR) == PRE_DEC)	\
-        goto LABEL
-
-#define LEGITIMATE_CONSTANT_P(X) 1
-
-#define REGISTER_MOVE_COST(MODE, FROM, TO) ((FROM) == STACK_REG ? 6 \
-					    : (TO) == STACK_REG ? 12 \
-					    : 2)
-
-#define MEMORY_MOVE_COST(MODE,CLASS,IN) ((MODE)==QImode ? 2 :	\
-					 (MODE)==HImode ? 4 :	\
-					 (MODE)==SImode ? 8 :	\
-					 (MODE)==SFmode ? 8 : 16)
-
-#define BRANCH_COST 0
+#define BRANCH_COST(speed_p, predictable_p) avr_branch_cost
 
 #define SLOW_BYTE_ACCESS 0
 
 #define NO_FUNCTION_CSE
+
+#define REGISTER_TARGET_PRAGMAS()                                       \
+  do {                                                                  \
+    avr_register_target_pragmas();                                      \
+  } while (0)
 
 #define TEXT_SECTION_ASM_OP "\t.text"
 
@@ -466,6 +495,8 @@ do {									    \
 
 #define TARGET_ASM_DESTRUCTOR avr_asm_out_dtor
 
+#define SUPPORTS_INIT_PRIORITY 0
+
 #define JUMP_TABLES_IN_TEXT_SECTION 0
 
 #define ASM_COMMENT_START " ; "
@@ -474,149 +505,21 @@ do {									    \
 
 #define ASM_APP_OFF "/* #NOAPP */\n"
 
-/* Switch into a generic section.  */
-#define TARGET_ASM_NAMED_SECTION default_elf_asm_named_section
-#define TARGET_ASM_INIT_SECTIONS avr_asm_init_sections
+#define IS_ASM_LOGICAL_LINE_SEPARATOR(C, STR) ((C) == '\n' || ((C) == '$'))
 
-#define ASM_OUTPUT_ASCII(FILE, P, SIZE)	 gas_output_ascii (FILE,P,SIZE)
+#define ASM_OUTPUT_ALIGNED_DECL_COMMON(STREAM, DECL, NAME, SIZE, ALIGN) \
+  avr_asm_output_aligned_decl_common (STREAM, DECL, NAME, SIZE, ALIGN, false)
 
-#define IS_ASM_LOGICAL_LINE_SEPARATOR(C) ((C) == '\n'			 \
-					  || ((C) == '$'))
+#define ASM_OUTPUT_ALIGNED_BSS(FILE, DECL, NAME, SIZE, ALIGN) \
+  asm_output_aligned_bss (FILE, DECL, NAME, SIZE, ALIGN)
 
-#define ASM_OUTPUT_COMMON(STREAM, NAME, SIZE, ROUNDED)			   \
-do {									   \
-     fputs ("\t.comm ", (STREAM));					   \
-     assemble_name ((STREAM), (NAME));					   \
-     fprintf ((STREAM), ",%lu,1\n", (unsigned long)(SIZE));		   \
-} while (0)
-
-#define ASM_OUTPUT_BSS(FILE, DECL, NAME, SIZE, ROUNDED)			\
-  asm_output_bss ((FILE), (DECL), (NAME), (SIZE), (ROUNDED))
-
-#define ASM_OUTPUT_LOCAL(STREAM, NAME, SIZE, ROUNDED)			\
-do {									\
-     fputs ("\t.lcomm ", (STREAM));					\
-     assemble_name ((STREAM), (NAME));					\
-     fprintf ((STREAM), ",%d\n", (int)(SIZE));				\
-} while (0)
-
-#undef TYPE_ASM_OP
-#undef SIZE_ASM_OP
-#undef WEAK_ASM_OP
-#define TYPE_ASM_OP	"\t.type\t"
-#define SIZE_ASM_OP	"\t.size\t"
-#define WEAK_ASM_OP	"\t.weak\t"
-/* Define the strings used for the special svr4 .type and .size directives.
-   These strings generally do not vary from one system running svr4 to
-   another, but if a given system (e.g. m88k running svr) needs to use
-   different pseudo-op names for these, they may be overridden in the
-   file which includes this one.  */
-
-
-#undef TYPE_OPERAND_FMT
-#define TYPE_OPERAND_FMT	"@%s"
-/* The following macro defines the format used to output the second
-   operand of the .type assembler directive.  Different svr4 assemblers
-   expect various different forms for this operand.  The one given here
-   is just a default.  You may need to override it in your machine-
-   specific tm.h file (depending upon the particulars of your assembler).  */
-
-#define ASM_DECLARE_FUNCTION_NAME(FILE, NAME, DECL)		\
-do {								\
-     ASM_OUTPUT_TYPE_DIRECTIVE (FILE, NAME, "function");	\
-     ASM_OUTPUT_LABEL (FILE, NAME);				\
-} while (0)
-
-#define ASM_DECLARE_FUNCTION_SIZE(FILE, FNAME, DECL)			\
-  do {									\
-    if (!flag_inhibit_size_directive)					\
-      ASM_OUTPUT_MEASURED_SIZE (FILE, FNAME);				\
-  } while (0)
-
-#define ASM_DECLARE_OBJECT_NAME(FILE, NAME, DECL)			\
-do {									\
-  ASM_OUTPUT_TYPE_DIRECTIVE (FILE, NAME, "object");			\
-  size_directive_output = 0;						\
-  if (!flag_inhibit_size_directive && DECL_SIZE (DECL))			\
-    {									\
-      size_directive_output = 1;					\
-      ASM_OUTPUT_SIZE_DIRECTIVE (FILE, NAME,				\
-				 int_size_in_bytes (TREE_TYPE (DECL)));	\
-    }									\
-  ASM_OUTPUT_LABEL(FILE, NAME);						\
-} while (0)
-
-#undef ASM_FINISH_DECLARE_OBJECT
-#define ASM_FINISH_DECLARE_OBJECT(FILE, DECL, TOP_LEVEL, AT_END)	 \
-do {									 \
-     const char *name = XSTR (XEXP (DECL_RTL (DECL), 0), 0);		 \
-     HOST_WIDE_INT size;						 \
-     if (!flag_inhibit_size_directive && DECL_SIZE (DECL)		 \
-         && ! AT_END && TOP_LEVEL					 \
-	 && DECL_INITIAL (DECL) == error_mark_node			 \
-	 && !size_directive_output)					 \
-       {								 \
-	 size_directive_output = 1;					 \
-	 size = int_size_in_bytes (TREE_TYPE (DECL));			 \
-	 ASM_OUTPUT_SIZE_DIRECTIVE (FILE, name, size);			 \
-       }								 \
-   } while (0)
-
-
-#define ESCAPES \
-"\1\1\1\1\1\1\1\1btn\1fr\1\1\1\1\1\1\1\1\1\1\1\1\1\1\1\1\1\1\
-\0\0\"\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\
-\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\\\0\0\0\
-\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\1\
-\1\1\1\1\1\1\1\1\1\1\1\1\1\1\1\1\1\1\1\1\1\1\1\1\1\1\1\1\1\1\1\1\
-\1\1\1\1\1\1\1\1\1\1\1\1\1\1\1\1\1\1\1\1\1\1\1\1\1\1\1\1\1\1\1\1\
-\1\1\1\1\1\1\1\1\1\1\1\1\1\1\1\1\1\1\1\1\1\1\1\1\1\1\1\1\1\1\1\1\
-\1\1\1\1\1\1\1\1\1\1\1\1\1\1\1\1\1\1\1\1\1\1\1\1\1\1\1\1\1\1\1\1"
-/* A table of bytes codes used by the ASM_OUTPUT_ASCII and
-   ASM_OUTPUT_LIMITED_STRING macros.  Each byte in the table
-   corresponds to a particular byte value [0..255].  For any
-   given byte value, if the value in the corresponding table
-   position is zero, the given character can be output directly.
-   If the table value is 1, the byte must be output as a \ooo
-   octal escape.  If the tables value is anything else, then the
-   byte value should be output as a \ followed by the value
-   in the table.  Note that we can use standard UN*X escape
-   sequences for many control characters, but we don't use
-   \a to represent BEL because some svr4 assemblers (e.g. on
-   the i386) don't know about that.  Also, we don't use \v
-   since some versions of gas, such as 2.2 did not accept it.  */
-
-#define STRING_LIMIT	((unsigned) 64)
-#define STRING_ASM_OP	"\t.string\t"
-/* Some svr4 assemblers have a limit on the number of characters which
-   can appear in the operand of a .string directive.  If your assembler
-   has such a limitation, you should define STRING_LIMIT to reflect that
-   limit.  Note that at least some svr4 assemblers have a limit on the
-   actual number of bytes in the double-quoted string, and that they
-   count each character in an escape sequence as one byte.  Thus, an
-   escape sequence like \377 would count as four bytes.
-
-   If your target assembler doesn't support the .string directive, you
-   should define this to zero.  */
+#define ASM_OUTPUT_ALIGNED_DECL_LOCAL(STREAM, DECL, NAME, SIZE, ALIGN)  \
+  avr_asm_output_aligned_decl_common (STREAM, DECL, NAME, SIZE, ALIGN, true)
 
 /* Globalizing directive for a label.  */
 #define GLOBAL_ASM_OP ".global\t"
 
-#define SET_ASM_OP	"\t.set\t"
-
-#define ASM_WEAKEN_LABEL(FILE, NAME)	\
-  do					\
-    {					\
-      fputs ("\t.weak\t", (FILE));	\
-      assemble_name ((FILE), (NAME));	\
-      fputc ('\n', (FILE));		\
-    }					\
-  while (0)
-
 #define SUPPORTS_WEAK 1
-
-#define ASM_GENERATE_INTERNAL_LABEL(STRING, PREFIX, NUM)	\
-sprintf (STRING, "*.%s%lu", PREFIX, (unsigned long)(NUM))
 
 #define HAS_INIT_SECTION 1
 
@@ -625,19 +528,9 @@ sprintf (STRING, "*.%s%lu", PREFIX, (unsigned long)(NUM))
     "r8","r9","r10","r11","r12","r13","r14","r15",	\
     "r16","r17","r18","r19","r20","r21","r22","r23",	\
     "r24","r25","r26","r27","r28","r29","r30","r31",	\
-    "__SPL__","__SPH__","argL","argH"}
+    "__SP_L__","__SP_H__","argL","argH"}
 
 #define FINAL_PRESCAN_INSN(insn, operand, nop) final_prescan_insn (insn, operand,nop)
-
-#define PRINT_OPERAND(STREAM, X, CODE) print_operand (STREAM, X, CODE)
-
-#define PRINT_OPERAND_PUNCT_VALID_P(CODE) ((CODE) == '~')
-
-#define PRINT_OPERAND_ADDRESS(STREAM, X) print_operand_address(STREAM, X)
-
-#define USER_LABEL_PREFIX ""
-
-#define ASSEMBLER_DIALECT AVR_HAVE_MOVW
 
 #define ASM_OUTPUT_REG_PUSH(STREAM, REGNO)	\
 {						\
@@ -654,24 +547,13 @@ sprintf (STRING, "*.%s%lu", PREFIX, (unsigned long)(NUM))
 #define ASM_OUTPUT_ADDR_VEC_ELT(STREAM, VALUE)		\
   avr_output_addr_vec_elt(STREAM, VALUE)
 
-#define ASM_OUTPUT_CASE_LABEL(STREAM, PREFIX, NUM, TABLE) \
-  (switch_to_section (progmem_section), \
-   (*targetm.asm_out.internal_label) (STREAM, PREFIX, NUM))
-
-#define ASM_OUTPUT_SKIP(STREAM, N)		\
-fprintf (STREAM, "\t.skip %lu,0\n", (unsigned long)(N))
-
-#define ASM_OUTPUT_ALIGN(STREAM, POWER)			\
-  do {							\
-      if ((POWER) > 1)					\
-          fprintf (STREAM, "\t.p2align\t%d\n", POWER);	\
+#define ASM_OUTPUT_ALIGN(STREAM, POWER)                 \
+  do {                                                  \
+    if ((POWER) > 0)                                    \
+      fprintf (STREAM, "\t.p2align\t%d\n", POWER);      \
   } while (0)
 
 #define CASE_VECTOR_MODE HImode
-
-extern int avr_case_values_threshold;
-
-#define CASE_VALUES_THRESHOLD avr_case_values_threshold
 
 #undef WORD_REGISTER_OPERATIONS
 
@@ -685,18 +567,8 @@ extern int avr_case_values_threshold;
 
 #define DOLLARS_IN_IDENTIFIERS 0
 
-#define NO_DOLLAR_IN_LABEL 1
-
-#define TRAMPOLINE_TEMPLATE(FILE) \
-  internal_error ("trampolines not supported")
-
 #define TRAMPOLINE_SIZE 4
 
-#define INITIALIZE_TRAMPOLINE(TRAMP, FNADDR, CXT)			      \
-{									      \
-  emit_move_insn (gen_rtx_MEM (HImode, plus_constant ((TRAMP), 2)), CXT);    \
-  emit_move_insn (gen_rtx_MEM (HImode, plus_constant ((TRAMP), 6)), FNADDR); \
-}
 /* Store in cc_status the expressions
    that the condition codes will describe
    after execution of an instruction whose pattern is EXP.
@@ -723,214 +595,122 @@ extern int avr_case_values_threshold;
 #define ADJUST_INSN_LENGTH(INSN, LENGTH) (LENGTH =\
 					  adjust_insn_length (INSN, LENGTH))
 
-#define CPP_SPEC "%{posix:-D_POSIX_SOURCE}"
+extern const char *avr_device_to_arch (int argc, const char **argv);
+extern const char *avr_device_to_data_start (int argc, const char **argv);
+extern const char *avr_device_to_startfiles (int argc, const char **argv);
+extern const char *avr_device_to_devicelib (int argc, const char **argv);
+extern const char *avr_device_to_sp8 (int argc, const char **argv);
 
-#define CC1_SPEC "%{profile:-p}"
+#define EXTRA_SPEC_FUNCTIONS                            \
+  { "device_to_arch", avr_device_to_arch },             \
+  { "device_to_data_start", avr_device_to_data_start }, \
+  { "device_to_startfile", avr_device_to_startfiles },  \
+  { "device_to_devicelib", avr_device_to_devicelib },   \
+  { "device_to_sp8", avr_device_to_sp8 },
+
+#define DRIVER_SELF_SPECS " %:device_to_sp8(%{mmcu=*:%*}) "
+#define CPP_SPEC ""
+
+#define CC1_SPEC ""
 
 #define CC1PLUS_SPEC "%{!frtti:-fno-rtti} \
     %{!fenforce-eh-specs:-fno-enforce-eh-specs} \
     %{!fexceptions:-fno-exceptions}"
-/* A C string constant that tells the GCC drvier program options to
+/* A C string constant that tells the GCC driver program options to
    pass to `cc1plus'.  */
 
-#define ASM_SPEC "%{mmcu=avr25:-mmcu=avr2;\
-mmcu=*:-mmcu=%*}"
+#define ASM_SPEC "%{mmcu=avr25:-mmcu=avr2;mmcu=avr35:-mmcu=avr3;mmcu=avr31:-mmcu=avr3;mmcu=avr51:-mmcu=avr5;\
+mmcu=*:-mmcu=%*} \
+%{mmcu=*:%{!mmcu=avr2:%{!mmcu=at90s8515:%{!mmcu=avr31:%{!mmcu=atmega103:\
+-mno-skip-bug}}}}}"
 
-#define LINK_SPEC " %{!mmcu*:-m avr2}\
-%{mmcu=at90s1200|\
-  mmcu=attiny11|\
-  mmcu=attiny12|\
-  mmcu=attiny15|\
-  mmcu=attiny28:-m avr1}\
-%{mmcu=attiny22|\
-  mmcu=attiny26|\
-  mmcu=at90s2*|\
-  mmcu=at90s4*|\
-  mmcu=at90s8*|\
-  mmcu=at90c8*|\
-  mmcu=at86rf401|\
-  mmcu=attiny13|\
-  mmcu=attiny2313|\
-  mmcu=attiny24|\
-  mmcu=attiny25|\
-  mmcu=attiny261|\
-  mmcu=attiny4*|\
-  mmcu=attiny8*:-m avr2}\
-%{mmcu=atmega103|\
-  mmcu=atmega603|\
-  mmcu=at43*|\
-  mmcu=at76*:-m avr3}\
-%{mmcu=atmega8*|\
-  mmcu=atmega48|\
-  mmcu=at90pwm*:-m avr4}\
-%{mmcu=atmega16*|\
-  mmcu=atmega32*|\
-  mmcu=atmega406|\
-  mmcu=atmega64*|\
-  mmcu=atmega128*|\
-  mmcu=at90can*|\
-  mmcu=at90usb*|\
-  mmcu=at94k:-m avr5}\
-%{mmcu=atmega324*|\
-  mmcu=atmega325*|\
-  mmcu=atmega329*|\
-  mmcu=atmega406|\
-  mmcu=atmega48|\
-  mmcu=atmega88|\
-  mmcu=atmega64|\
-  mmcu=atmega644*|\
-  mmcu=atmega645*|\
-  mmcu=atmega649*|\
-  mmcu=atmega128|\
-  mmcu=atmega162|\
-  mmcu=atmega164*|\
-  mmcu=atmega165*|\
-  mmcu=atmega168|\
-  mmcu=atmega169*|\
-  mmcu=atmega8hva|\
-  mmcu=atmega16hva|\
-  mmcu=at90can*|\
-  mmcu=at90pwm*|\
-  mmcu=at90usb*: -Tdata 0x800100}\
-%{mmcu=atmega640|\
-  mmcu=atmega1280|\
-  mmcu=atmega1281: -Tdata 0x800200} "
+#define LINK_SPEC "\
+%{mrelax:--relax\
+         %{mpmem-wrap-around:%{mmcu=at90usb8*:--pmem-wrap-around=8k}\
+                             %{mmcu=atmega16*:--pmem-wrap-around=16k}\
+                             %{mmcu=atmega32*|\
+                               mmcu=at90can32*:--pmem-wrap-around=32k}\
+                             %{mmcu=atmega64*|\
+                               mmcu=at90can64*|\
+                               mmcu=at90usb64*:--pmem-wrap-around=64k}}}\
+%:device_to_arch(%{mmcu=*:%*})\
+%:device_to_data_start(%{mmcu=*:%*})"
 
 #define LIB_SPEC \
   "%{!mmcu=at90s1*:%{!mmcu=attiny11:%{!mmcu=attiny12:%{!mmcu=attiny15:%{!mmcu=attiny28: -lc }}}}}"
 
-#define LIBSTDCXX "-lgcc"
+#define LIBSTDCXX "gcc"
 /* No libstdc++ for now.  Empty string doesn't work.  */
 
 #define LIBGCC_SPEC \
   "%{!mmcu=at90s1*:%{!mmcu=attiny11:%{!mmcu=attiny12:%{!mmcu=attiny15:%{!mmcu=attiny28: -lgcc }}}}}"
 
-#define STARTFILE_SPEC "%(crt_binutils)"
+#define STARTFILE_SPEC "%:device_to_startfile(%{mmcu=*:%*})"
 
 #define ENDFILE_SPEC ""
-
-#define CRT_BINUTILS_SPECS "\
-%{mmcu=at90s1200|mmcu=avr1:crts1200.o%s} \
-%{mmcu=attiny11:crttn11.o%s} \
-%{mmcu=attiny12:crttn12.o%s} \
-%{mmcu=attiny15:crttn15.o%s} \
-%{mmcu=attiny28:crttn28.o%s} \
-%{!mmcu*|mmcu=at90s8515|mmcu=avr2:crts8515.o%s} \
-%{mmcu=at90s2313:crts2313.o%s} \
-%{mmcu=at90s2323:crts2323.o%s} \
-%{mmcu=at90s2333:crts2333.o%s} \
-%{mmcu=at90s2343:crts2343.o%s} \
-%{mmcu=attiny22:crttn22.o%s} \
-%{mmcu=attiny26:crttn26.o%s} \
-%{mmcu=at90s4433:crts4433.o%s} \
-%{mmcu=at90s4414:crts4414.o%s} \
-%{mmcu=at90s4434:crts4434.o%s} \
-%{mmcu=at90c8534:crtc8534.o%s} \
-%{mmcu=at90s8535:crts8535.o%s} \
-%{mmcu=at86rf401:crt86401.o%s} \
-%{mmcu=attiny13:crttn13.o%s} \
-%{mmcu=attiny2313|mmcu=avr25:crttn2313.o%s} \
-%{mmcu=attiny24:crttn24.o%s} \
-%{mmcu=attiny44:crttn44.o%s} \
-%{mmcu=attiny84:crttn84.o%s} \
-%{mmcu=attiny25:crttn25.o%s} \
-%{mmcu=attiny45:crttn45.o%s} \
-%{mmcu=attiny85:crttn85.o%s} \
-%{mmcu=attiny261:crttn261.o%s} \
-%{mmcu=attiny461:crttn461.o%s} \
-%{mmcu=attiny861:crttn861.o%s} \
-%{mmcu=atmega103|mmcu=avr3:crtm103.o%s} \
-%{mmcu=atmega603:crtm603.o%s} \
-%{mmcu=at43usb320:crt43320.o%s} \
-%{mmcu=at43usb355:crt43355.o%s} \
-%{mmcu=at76c711:crt76711.o%s} \
-%{mmcu=atmega8|mmcu=avr4:crtm8.o%s} \
-%{mmcu=atmega48:crtm48.o%s} \
-%{mmcu=atmega88:crtm88.o%s} \
-%{mmcu=atmega8515:crtm8515.o%s} \
-%{mmcu=atmega8535:crtm8535.o%s} \
-%{mmcu=at90pwm1:crt90pwm1.o%s} \
-%{mmcu=at90pwm2:crt90pwm2.o%s} \
-%{mmcu=at90pwm3:crt90pwm3.o%s} \
-%{mmcu=atmega16:crtm16.o%s} \
-%{mmcu=atmega161|mmcu=avr5:crtm161.o%s} \
-%{mmcu=atmega162:crtm162.o%s} \
-%{mmcu=atmega163:crtm163.o%s} \
-%{mmcu=atmega164p:crtm164p.o%s} \
-%{mmcu=atmega165:crtm165.o%s} \
-%{mmcu=atmega165p:crtm165p.o%s} \
-%{mmcu=atmega168:crtm168.o%s} \
-%{mmcu=atmega169:crtm169.o%s} \
-%{mmcu=atmega169p:crtm169p.o%s} \
-%{mmcu=atmega32:crtm32.o%s} \
-%{mmcu=atmega323:crtm323.o%s} \
-%{mmcu=atmega324p:crtm324p.o%s} \
-%{mmcu=atmega325:crtm325.o%s} \
-%{mmcu=atmega325p:crtm325p.o%s} \
-%{mmcu=atmega3250:crtm3250.o%s} \
-%{mmcu=atmega3250p:crtm3250p.o%s} \
-%{mmcu=atmega329:crtm329.o%s} \
-%{mmcu=atmega329p:crtm329p.o%s} \
-%{mmcu=atmega3290:crtm3290.o%s} \
-%{mmcu=atmega3290p:crtm3290p.o%s} \
-%{mmcu=atmega406:crtm406.o%s} \
-%{mmcu=atmega64:crtm64.o%s} \
-%{mmcu=atmega640:crtm640.o%s} \
-%{mmcu=atmega644:crtm644.o%s} \
-%{mmcu=atmega644p:crtm644p.o%s} \
-%{mmcu=atmega645:crtm645.o%s} \
-%{mmcu=atmega6450:crtm6450.o%s} \
-%{mmcu=atmega649:crtm649.o%s} \
-%{mmcu=atmega6490:crtm6490.o%s} \
-%{mmcu=atmega128:crtm128.o%s} \
-%{mmcu=atmega1280:crtm1280.o%s} \
-%{mmcu=atmega1281:crtm1281.o%s} \
-%{mmcu=atmega8hva:crtm8hva.o%s} \
-%{mmcu=atmega16hva:crtm16hva.o%s} \
-%{mmcu=at90can32:crtcan32.o%s} \
-%{mmcu=at90can64:crtcan64.o%s} \
-%{mmcu=at90can128:crtcan128.o%s} \
-%{mmcu=at90usb82:crtusb82.o%s} \
-%{mmcu=at90usb162:crtusb162.o%s} \
-%{mmcu=at90usb646:crtusb646.o%s} \
-%{mmcu=at90usb647:crtusb647.o%s} \
-%{mmcu=at90usb1286:crtusb1286.o%s} \
-%{mmcu=at90usb1287:crtusb1287.o%s} \
-%{mmcu=at94k:crtat94k.o%s}"
-
-#define EXTRA_SPECS {"crt_binutils", CRT_BINUTILS_SPECS},
 
 /* This is the default without any -mmcu=* option (AT90S*).  */
 #define MULTILIB_DEFAULTS { "mmcu=avr2" }
 
-/* This is undefined macro for collect2 disabling */
-#define LINKER_NAME "ld"
-
 #define TEST_HARD_REG_CLASS(CLASS, REGNO) \
   TEST_HARD_REG_BIT (reg_class_contents[ (int) (CLASS)], REGNO)
 
-/* Note that the other files fail to use these
-   in some of the places where they should.  */
-
-#if defined(__STDC__) || defined(ALMOST_STDC)
-#define AS2(a,b,c) #a " " #b "," #c
-#define AS2C(b,c) " " #b "," #c
-#define AS3(a,b,c,d) #a " " #b "," #c "," #d
-#define AS1(a,b) #a " " #b
-#else
-#define AS1(a,b) "a	b"
-#define AS2(a,b,c) "a	b,c"
-#define AS2C(b,c) " b,c"
-#define AS3(a,b,c,d) "a	b,c,d"
-#endif
-#define OUT_AS1(a,b) output_asm_insn (AS1(a,b), operands)
-#define OUT_AS2(a,b,c) output_asm_insn (AS2(a,b,c), operands)
 #define CR_TAB "\n\t"
-
-#define PREFERRED_DEBUGGING_TYPE DBX_DEBUG
-
-#define DWARF2_DEBUGGING_INFO 1
 
 #define DWARF2_ADDR_SIZE 4
 
-#define OBJECT_FORMAT_ELF
+#define INCOMING_RETURN_ADDR_RTX   avr_incoming_return_addr_rtx ()
+#define INCOMING_FRAME_SP_OFFSET   (AVR_3_BYTE_PC ? 3 : 2)
+
+/* The caller's stack pointer value immediately before the call
+   is one byte below the first argument.  */
+#define ARG_POINTER_CFA_OFFSET(FNDECL)  -1
+
+#define HARD_REGNO_RENAME_OK(OLD_REG, NEW_REG) \
+  avr_hard_regno_rename_ok (OLD_REG, NEW_REG)
+
+/* A C structure for machine-specific, per-function data.
+   This is added to the cfun structure.  */
+struct GTY(()) machine_function
+{
+  /* 'true' - if current function is a naked function.  */
+  int is_naked;
+
+  /* 'true' - if current function is an interrupt function 
+     as specified by the "interrupt" attribute.  */
+  int is_interrupt;
+
+  /* 'true' - if current function is a signal function 
+     as specified by the "signal" attribute.  */
+  int is_signal;
+  
+  /* 'true' - if current function is a 'task' function 
+     as specified by the "OS_task" attribute.  */
+  int is_OS_task;
+
+  /* 'true' - if current function is a 'main' function 
+     as specified by the "OS_main" attribute.  */
+  int is_OS_main;
+  
+  /* Current function stack size.  */
+  int stack_usage;
+
+  /* 'true' if a callee might be tail called */
+  int sibcall_fails;
+
+  /* 'true' if the above is_foo predicates are sanity-checked to avoid
+     multiple diagnose for the same function.  */
+  int attributes_checked_p;
+};
+
+/* AVR does not round pushes, but the existance of this macro is
+   required in order for pushes to be generated.  */
+#define PUSH_ROUNDING(X)	(X)
+
+/* Define prototype here to avoid build warning.  Some files using
+   ACCUMULATE_OUTGOING_ARGS (directly or indirectly) include
+   tm.h but not tm_p.h.  */
+extern int avr_accumulate_outgoing_args (void);
+#define ACCUMULATE_OUTGOING_ARGS avr_accumulate_outgoing_args()
+
+#define INIT_EXPANDERS avr_init_expanders()

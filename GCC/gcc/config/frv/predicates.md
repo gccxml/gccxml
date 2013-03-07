@@ -1,11 +1,11 @@
 ;; Predicate definitions for Frv.
-;; Copyright (C) 2005 Free Software Foundation, Inc.
+;; Copyright (C) 2005, 2007, 2010 Free Software Foundation, Inc.
 ;;
 ;; This file is part of GCC.
 ;;
 ;; GCC is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
-;; the Free Software Foundation; either version 2, or (at your option)
+;; the Free Software Foundation; either version 3, or (at your option)
 ;; any later version.
 ;;
 ;; GCC is distributed in the hope that it will be useful,
@@ -14,9 +14,8 @@
 ;; GNU General Public License for more details.
 ;;
 ;; You should have received a copy of the GNU General Public License
-;; along with GCC; see the file COPYING.  If not, write to
-;; the Free Software Foundation, 51 Franklin Street, Fifth Floor,
-;; Boston, MA 02110-1301, USA.
+;; along with GCC; see the file COPYING3.  If not see
+;; <http://www.gnu.org/licenses/>.
 
 ;; Return true if operand is a GPR register.
 
@@ -56,7 +55,7 @@
 	tmp = SUBREG_REG (tmp);
       if (GET_CODE (tmp) == REG
 	  && REGNO (tmp) >= FIRST_PSEUDO_REGISTER)
-	op = reg_equiv_memory_loc[REGNO (tmp)];
+	op = reg_equiv_memory_loc (REGNO (tmp));
     }
 
   return op && memory_operand (op, mode);
@@ -105,13 +104,13 @@
   return FALSE;
 })
 
-;; Return 1 if operand is a GPR register or 12 bit signed immediate.
+;; Return 1 if operand is a GPR register or 12-bit signed immediate.
 
 (define_predicate "gpr_or_int12_operand"
   (match_code "reg,subreg,const_int,const")
 {
   if (GET_CODE (op) == CONST_INT)
-    return IN_RANGE_P (INTVAL (op), -2048, 2047);
+    return IN_RANGE (INTVAL (op), -2048, 2047);
 
   if (got12_operand (op, mode))
     return true;
@@ -142,7 +141,7 @@
   int regno;
 
   if (GET_CODE (op) == CONST_INT)
-    return IN_RANGE_P (INTVAL (op), -2048, 2047);
+    return IN_RANGE (INTVAL (op), -2048, 2047);
 
   if (GET_MODE (op) != mode && mode != VOIDmode)
     return FALSE;
@@ -165,13 +164,13 @@
   return FALSE;
 })
 
-;; Return 1 if operand is a register or 10 bit signed immediate.
+;; Return 1 if operand is a register or 10-bit signed immediate.
 
 (define_predicate "gpr_or_int10_operand"
   (match_code "reg,subreg,const_int")
 {
   if (GET_CODE (op) == CONST_INT)
-    return IN_RANGE_P (INTVAL (op), -512, 511);
+    return IN_RANGE (INTVAL (op), -512, 511);
 
   if (GET_MODE (op) != mode && mode != VOIDmode)
     return FALSE;
@@ -240,8 +239,8 @@
       subreg = SUBREG_REG (op);
       code = GET_CODE (subreg);
       if (code == MEM)
-	return frv_legitimate_address_p (mode, XEXP (subreg, 0),
-					 reload_completed, FALSE, FALSE);
+	return frv_legitimate_address_p_1 (mode, XEXP (subreg, 0),
+					   reload_completed, FALSE, FALSE);
 
       return (code == REG);
 
@@ -279,8 +278,8 @@
       subreg = SUBREG_REG (op);
       code = GET_CODE (subreg);
       if (code == MEM)
-	return frv_legitimate_address_p (mode, XEXP (subreg, 0),
-					 reload_completed, FALSE, FALSE);
+	return frv_legitimate_address_p_1 (mode, XEXP (subreg, 0),
+					   reload_completed, FALSE, FALSE);
 
       return (code == REG);
 
@@ -335,8 +334,8 @@
       subreg = SUBREG_REG (op);
       code = GET_CODE (subreg);
       if (code == MEM)
-	return frv_legitimate_address_p (mode, XEXP (subreg, 0),
-					 reload_completed, TRUE, FALSE);
+	return frv_legitimate_address_p_1 (mode, XEXP (subreg, 0),
+					   reload_completed, TRUE, FALSE);
 
       return (code == REG);
 
@@ -374,8 +373,8 @@
       subreg = SUBREG_REG (op);
       code = GET_CODE (subreg);
       if (code == MEM)
-	return frv_legitimate_address_p (mode, XEXP (subreg, 0),
-					 reload_completed, TRUE, FALSE);
+	return frv_legitimate_address_p_1 (mode, XEXP (subreg, 0),
+					   reload_completed, TRUE, FALSE);
 
       return (code == REG);
 
@@ -486,7 +485,7 @@
 	  || frv_legitimate_memory_operand (op, mode, FALSE));
 })
 
-;; Return 1 if operand is a 12 bit signed immediate.
+;; Return 1 if operand is a 12-bit signed immediate.
 
 (define_predicate "int12_operand"
   (match_code "const_int")
@@ -494,7 +493,7 @@
   if (GET_CODE (op) != CONST_INT)
     return FALSE;
 
-  return IN_RANGE_P (INTVAL (op), -2048, 2047);
+  return IN_RANGE (INTVAL (op), -2048, 2047);
 })
 
 ;; Return 1 if operand is an integer constant that takes 2
@@ -536,7 +535,7 @@
       return (flag_pic == 0) && (! SYMBOL_REF_SMALL_P (op));
 
     case CONST_INT:
-      return ! IN_RANGE_P (INTVAL (op), -32768, 32767);
+      return ! IN_RANGE (INTVAL (op), -32768, 32767);
 
     case CONST_DOUBLE:
       if (GET_MODE (op) == SFmode)
@@ -544,12 +543,12 @@
 	  REAL_VALUE_FROM_CONST_DOUBLE (rv, op);
 	  REAL_VALUE_TO_TARGET_SINGLE (rv, l);
 	  value = l;
-	  return ! IN_RANGE_P (value, -32768, 32767);
+	  return ! IN_RANGE (value, -32768, 32767);
 	}
       else if (GET_MODE (op) == VOIDmode)
 	{
 	  value = CONST_DOUBLE_LOW (op);
-	  return ! IN_RANGE_P (value, -32768, 32767);
+	  return ! IN_RANGE (value, -32768, 32767);
 	}
       break;
     }
@@ -600,7 +599,7 @@
   if (GET_MODE (op) != mode && GET_MODE (op) != VOIDmode)
     return FALSE;
 
-  return frv_legitimate_address_p (DImode, op, reload_completed, FALSE, TRUE);
+  return frv_legitimate_address_p_1 (DImode, op, reload_completed, FALSE, TRUE);
 })
 
 ;; TODO: Add a comment here.
@@ -1110,7 +1109,7 @@
   return ((INTVAL (op) & 0xffff) == 0);
 })
 
-;; Return 1 if operand is a 16 bit unsigned immediate.
+;; Return 1 if operand is a 16-bit unsigned immediate.
 
 (define_predicate "uint16_operand"
   (match_code "const_int")
@@ -1118,13 +1117,13 @@
   if (GET_CODE (op) != CONST_INT)
     return FALSE;
 
-  return IN_RANGE_P (INTVAL (op), 0, 0xffff);
+  return IN_RANGE (INTVAL (op), 0, 0xffff);
 })
 
 ;; Returns 1 if OP is either a SYMBOL_REF or a constant.
 
 (define_predicate "symbolic_operand"
-  (match_code "symbol_ref,const_int")
+  (match_code "symbol_ref,const,const_int")
 {
   enum rtx_code c = GET_CODE (op);
 
@@ -1270,12 +1269,6 @@
     case UMAX:
       break;
     }
-
-  if (! integer_register_operand (XEXP (op, 0), mode))
-    return FALSE;
-
-  if (! gpr_or_int10_operand (XEXP (op, 1), mode))
-    return FALSE;
 
   return TRUE;
 })
@@ -1445,13 +1438,13 @@
     }
 })
 
-;; Return 1 if operand is a register or 6 bit signed immediate.
+;; Return 1 if operand is a register or 6-bit signed immediate.
 
 (define_predicate "fpr_or_int6_operand"
   (match_code "reg,subreg,const_int")
 {
   if (GET_CODE (op) == CONST_INT)
-    return IN_RANGE_P (INTVAL (op), -32, 31);
+    return IN_RANGE (INTVAL (op), -32, 31);
 
   if (GET_MODE (op) != mode && mode != VOIDmode)
     return FALSE;
@@ -1470,7 +1463,7 @@
   return FPR_OR_PSEUDO_P (REGNO (op));
 })
 
-;; Return 1 if operand is a 6 bit signed immediate.
+;; Return 1 if operand is a 6-bit signed immediate.
 
 (define_predicate "int6_operand"
   (match_code "const_int")
@@ -1478,39 +1471,39 @@
   if (GET_CODE (op) != CONST_INT)
     return FALSE;
 
-  return IN_RANGE_P (INTVAL (op), -32, 31);
+  return IN_RANGE (INTVAL (op), -32, 31);
 })
 
-;; Return 1 if operand is a 5 bit signed immediate.
+;; Return 1 if operand is a 5-bit signed immediate.
 
 (define_predicate "int5_operand"
   (match_code "const_int")
 {
-  return GET_CODE (op) == CONST_INT && IN_RANGE_P (INTVAL (op), -16, 15);
+  return GET_CODE (op) == CONST_INT && IN_RANGE (INTVAL (op), -16, 15);
 })
 
-;; Return 1 if operand is a 5 bit unsigned immediate.
+;; Return 1 if operand is a 5-bit unsigned immediate.
 
 (define_predicate "uint5_operand"
   (match_code "const_int")
 {
-  return GET_CODE (op) == CONST_INT && IN_RANGE_P (INTVAL (op), 0, 31);
+  return GET_CODE (op) == CONST_INT && IN_RANGE (INTVAL (op), 0, 31);
 })
 
-;; Return 1 if operand is a 4 bit unsigned immediate.
+;; Return 1 if operand is a 4-bit unsigned immediate.
 
 (define_predicate "uint4_operand"
   (match_code "const_int")
 {
-  return GET_CODE (op) == CONST_INT && IN_RANGE_P (INTVAL (op), 0, 15);
+  return GET_CODE (op) == CONST_INT && IN_RANGE (INTVAL (op), 0, 15);
 })
 
-;; Return 1 if operand is a 1 bit unsigned immediate (0 or 1).
+;; Return 1 if operand is a 1-bit unsigned immediate (0 or 1).
 
 (define_predicate "uint1_operand"
   (match_code "const_int")
 {
-  return GET_CODE (op) == CONST_INT && IN_RANGE_P (INTVAL (op), 0, 1);
+  return GET_CODE (op) == CONST_INT && IN_RANGE (INTVAL (op), 0, 1);
 })
 
 ;; Return 1 if operand is a valid ACC register number.

@@ -1,11 +1,11 @@
 ;; Predicate definitions for IA-64.
-;; Copyright (C) 2004, 2005 Free Software Foundation, Inc.
+;; Copyright (C) 2004, 2005, 2007, 2010 Free Software Foundation, Inc.
 ;;
 ;; This file is part of GCC.
 ;;
 ;; GCC is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
-;; the Free Software Foundation; either version 2, or (at your option)
+;; the Free Software Foundation; either version 3, or (at your option)
 ;; any later version.
 ;;
 ;; GCC is distributed in the hope that it will be useful,
@@ -14,9 +14,8 @@
 ;; GNU General Public License for more details.
 ;;
 ;; You should have received a copy of the GNU General Public License
-;; along with GCC; see the file COPYING.  If not, write to
-;; the Free Software Foundation, 51 Franklin Street, Fifth Floor,
-;; Boston, MA 02110-1301, USA.
+;; along with GCC; see the file COPYING3.  If not see
+;; <http://www.gnu.org/licenses/>.
 
 ;; True if OP is a valid operand for the MEM of a CALL insn.
 (define_predicate "call_operand"
@@ -282,6 +281,12 @@
 		    || GET_CODE (XEXP (op, 0)) != POST_MODIFY
 		    || GET_CODE (XEXP (XEXP (XEXP (op, 0), 1), 1)) != REG")))
 
+;; Like destination_operand, but don't allow any post-increments.
+(define_predicate "not_postinc_destination_operand"
+  (and (match_operand 0 "nonimmediate_operand")
+       (match_test "GET_CODE (op) != MEM
+        || GET_RTX_CLASS (GET_CODE (XEXP (op, 0))) != RTX_AUTOINC")))
+
 ;; Like memory_operand, but don't allow post-increments.
 (define_predicate "not_postinc_memory_operand"
   (and (match_operand 0 "memory_operand")
@@ -332,6 +337,12 @@
       return true;
     }
 })
+
+;; Like move_operand but don't allow post-increments.
+(define_predicate "not_postinc_move_operand"
+  (and (match_operand 0 "move_operand")
+       (match_test "GET_CODE (op) != MEM
+        || GET_RTX_CLASS (GET_CODE (XEXP (op, 0))) != RTX_AUTOINC")))
 
 ;; True if OP is a register operand that is (or could be) a GR reg.
 (define_predicate "gr_register_operand"
@@ -424,74 +435,74 @@
        (and (match_code "const_int,const_double,const_vector")
 	    (match_test "op == CONST0_RTX (GET_MODE (op))"))))
 
-;; True if OP is a GR register operand, or a 5 bit immediate operand.
+;; True if OP is a GR register operand, or a 5-bit immediate operand.
 (define_predicate "gr_reg_or_5bit_operand"
   (ior (match_operand 0 "gr_register_operand")
        (and (match_code "const_int")
 	    (match_test "INTVAL (op) >= 0 && INTVAL (op) < 32"))))
 
-;; True if OP is a GR register operand, or a 6 bit immediate operand.
+;; True if OP is a GR register operand, or a 6-bit immediate operand.
 (define_predicate "gr_reg_or_6bit_operand"
   (ior (match_operand 0 "gr_register_operand")
        (and (match_code "const_int")
-	    (match_test "CONST_OK_FOR_M (INTVAL (op))"))))
+	    (match_test "satisfies_constraint_M (op)"))))
 
-;; True if OP is a GR register operand, or an 8 bit immediate operand.
+;; True if OP is a GR register operand, or an 8-bit immediate operand.
 (define_predicate "gr_reg_or_8bit_operand"
   (ior (match_operand 0 "gr_register_operand")
        (and (match_code "const_int")
-	    (match_test "CONST_OK_FOR_K (INTVAL (op))"))))
+	    (match_test "satisfies_constraint_K (op)"))))
 
-;; True if OP is a GR/FR register operand, or an 8 bit immediate operand.
+;; True if OP is a GR/FR register operand, or an 8-bit immediate operand.
 (define_predicate "grfr_reg_or_8bit_operand"
   (ior (match_operand 0 "grfr_register_operand")
        (and (match_code "const_int")
-	    (match_test "CONST_OK_FOR_K (INTVAL (op))"))))
+	    (match_test "satisfies_constraint_K (op)"))))
 
-;; True if OP is a register operand, or an 8 bit adjusted immediate operand.
+;; True if OP is a register operand, or an 8-bit adjusted immediate operand.
 (define_predicate "gr_reg_or_8bit_adjusted_operand"
   (ior (match_operand 0 "gr_register_operand")
        (and (match_code "const_int")
-	    (match_test "CONST_OK_FOR_L (INTVAL (op))"))))
+	    (match_test "satisfies_constraint_L (op)"))))
 
-;; True if OP is a register operand, or is valid for both an 8 bit
-;; immediate and an 8 bit adjusted immediate operand.  This is necessary
+;; True if OP is a register operand, or is valid for both an 8-bit
+;; immediate and an 8-bit adjusted immediate operand.  This is necessary
 ;; because when we emit a compare, we don't know what the condition will be,
 ;; so we need the union of the immediates accepted by GT and LT.
 (define_predicate "gr_reg_or_8bit_and_adjusted_operand"
   (ior (match_operand 0 "gr_register_operand")
        (and (match_code "const_int")
-	    (match_test "CONST_OK_FOR_K (INTVAL (op))
-                         && CONST_OK_FOR_L (INTVAL (op))"))))
+	    (match_test "satisfies_constraint_K (op)
+                         && satisfies_constraint_L (op)"))))
 
-;; True if OP is a register operand, or a 14 bit immediate operand.
+;; True if OP is a register operand, or a 14-bit immediate operand.
 (define_predicate "gr_reg_or_14bit_operand"
   (ior (match_operand 0 "gr_register_operand")
        (and (match_code "const_int")
-	    (match_test "CONST_OK_FOR_I (INTVAL (op))"))))
+	    (match_test "satisfies_constraint_I (op)"))))
 
-;;  True if OP is a register operand, or a 22 bit immediate operand.
+;;  True if OP is a register operand, or a 22-bit immediate operand.
 (define_predicate "gr_reg_or_22bit_operand"
   (ior (match_operand 0 "gr_register_operand")
        (and (match_code "const_int")
-	    (match_test "CONST_OK_FOR_J (INTVAL (op))"))))
+	    (match_test "satisfies_constraint_J (op)"))))
 
-;; True if OP is a 7 bit immediate operand.
+;; True if OP is a 7-bit immediate operand.
 (define_predicate "dshift_count_operand"
   (and (match_code "const_int")
        (match_test "INTVAL (op) >= 0 && INTVAL (op) < 128")))
 
-;; True if OP is a 6 bit immediate operand.
+;; True if OP is a 6-bit immediate operand.
 (define_predicate "shift_count_operand"
   (and (match_code "const_int")
-       (match_test "CONST_OK_FOR_M (INTVAL (op))")))
+       (match_test "satisfies_constraint_M (op)")))
 
-;; True if OP-1 is a 6 bit immediate operand, used in extr instruction.
+;; True if OP-1 is a 6-bit immediate operand, used in extr instruction.
 (define_predicate "extr_len_operand"
   (and (match_code "const_int")
-       (match_test "CONST_OK_FOR_M (INTVAL (op) - 1)")))
+       (match_test "satisfies_constraint_M (GEN_INT (INTVAL (op) - 1))")))
 
-;; True if OP is a 5 bit immediate operand.
+;; True if OP is a 5-bit immediate operand.
 (define_predicate "shift_32bit_count_operand"
    (and (match_code "const_int")
         (match_test "INTVAL (op) >= 0 && INTVAL (op) < 32")))
@@ -515,6 +526,12 @@
                     INTVAL (op) == 1   || INTVAL (op) == 4  ||
                     INTVAL (op) == 8   || INTVAL (op) == 16")))
 
+;; True if OP is one of the immediate values 0, 7, 15, 16
+(define_predicate "pmpyshr_operand"
+  (and (match_code "const_int")
+       (match_test "INTVAL (op) == 0 || INTVAL (op) == 7
+		    || INTVAL (op) == 15 || INTVAL (op) == 16")))
+
 ;; True if OP is 0..3.
 (define_predicate "const_int_2bit_operand"
   (and (match_code "const_int")
@@ -524,11 +541,24 @@
 (define_predicate "fr_reg_or_fp01_operand"
   (ior (match_operand 0 "fr_register_operand")
        (and (match_code "const_double")
-	    (match_test "CONST_DOUBLE_OK_FOR_G (op)"))))
+	    (match_test "satisfies_constraint_G (op)"))))
 
 ;; Like fr_reg_or_fp01_operand, but don't allow any SUBREGs.
 (define_predicate "xfreg_or_fp01_operand"
   (and (match_operand 0 "fr_reg_or_fp01_operand")
+       (not (match_code "subreg"))))
+
+;; Like fr_reg_or_fp01_operand, but don't allow 0 if flag_signed_zero is set.
+;; Using f0 as the second arg to fadd or fsub, or as the third arg to fma or
+;; fms can cause a zero result to have the wrong sign.
+(define_predicate "fr_reg_or_signed_fp01_operand"
+  (ior (match_operand 0 "fr_register_operand")
+       (and (match_code "const_double")
+	    (match_test "satisfies_constraint_Z (op)"))))
+
+;; Like fr_reg_or_signed_fp01_operand, but don't allow any SUBREGs.
+(define_predicate "xfreg_or_signed_fp01_operand"
+  (and (match_operand 0 "fr_reg_or_signed_fp01_operand")
        (not (match_code "subreg"))))
 
 ;; True if OP is a constant zero, or a register.
@@ -536,6 +566,11 @@
   (ior (match_operand 0 "fr_register_operand")
        (and (match_code "const_double,const_vector")
 	    (match_test "op == CONST0_RTX (GET_MODE (op))"))))
+
+;; Return 1 if OP is a valid comparison operator for "cbranch" instructions.
+(define_predicate "ia64_cbranch_operator"
+  (ior (match_operand 0 "ordered_comparison_operator")
+       (match_code "ordered,unordered")))
 
 ;; True if this is a comparison operator, which accepts a normal 8-bit
 ;; signed immediate operand.
@@ -589,3 +624,7 @@
   return REG_P (op) && REG_POINTER (op);
 })
 
+;; True if this is the right-most vector element; for mux1 @brcst.
+(define_predicate "mux1_brcst_element"
+  (and (match_code "const_int")
+       (match_test "INTVAL (op) == (TARGET_BIG_ENDIAN ? 7 : 0)")))

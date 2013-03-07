@@ -1,3 +1,21 @@
+;; Copyright (C) 2002, 2003, 2004, 2005, 2007 Free Software Foundation, Inc.
+;;
+;; This file is part of GCC.
+;;
+;; GCC is free software; you can redistribute it and/or modify
+;; it under the terms of the GNU General Public License as published by
+;; the Free Software Foundation; either version 3, or (at your option)
+;; any later version.
+;;
+;; GCC is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;; GNU General Public License for more details.
+;;
+;; You should have received a copy of the GNU General Public License
+;; along with GCC; see the file COPYING3.  If not see
+;; <http://www.gnu.org/licenses/>.
+;;
 ;; .........................
 ;;
 ;; DFA-based pipeline description for Sandcraft SR3 (MIPS64 based)
@@ -173,14 +191,12 @@
 ;; resources simultaneously
 (define_insn_reservation "ir_sr70_xfer_from" 6
   (and (eq_attr "cpu" "sr71000")
-       (and (eq_attr "type" "xfer")
-	    (eq_attr "mode" "!SF,DF,FPSW")))
+       (eq_attr "type" "mfc"))
   "(cpu_iss+cp1_iss),(fpu_mov+ri_mem)")
 
 (define_insn_reservation "ir_sr70_xfer_to" 9
   (and (eq_attr "cpu" "sr71000")
-       (and (eq_attr "type" "xfer")
-	    (eq_attr "mode" "SF,DF")))
+       (eq_attr "type" "mtc"))
   "(cpu_iss+cp1_iss),(ri_mem+rf_ldmem)")
 
 (define_insn_reservation "ir_sr70_hilo" 1
@@ -190,7 +206,7 @@
 
 (define_insn_reservation "ir_sr70_arith" 1
   (and (eq_attr "cpu" "sr71000")
-       (eq_attr "type" "arith,shift,slt,clz,const,trap"))
+       (eq_attr "type" "arith,shift,signext,slt,clz,const,logical,move,trap"))
   "ri_insns")
 
 ;; emulate repeat (dispatch stall) by spending extra cycle(s) in

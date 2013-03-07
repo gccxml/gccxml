@@ -1,12 +1,13 @@
 /* Control flow graph analysis code for GNU compiler.
    Copyright (C) 1987, 1988, 1992, 1993, 1994, 1995, 1996, 1997, 1998,
-   1999, 2000, 2001, 2003, 2004, 2005 Free Software Foundation, Inc.
+   1999, 2000, 2001, 2003, 2004, 2005, 2006, 2007, 2008, 2010
+   Free Software Foundation, Inc.
 
 This file is part of GCC.
 
 GCC is free software; you can redistribute it and/or modify it under
 the terms of the GNU General Public License as published by the Free
-Software Foundation; either version 2, or (at your option) any later
+Software Foundation; either version 3, or (at your option) any later
 version.
 
 GCC is distributed in the hope that it will be useful, but WITHOUT ANY
@@ -15,9 +16,8 @@ FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 for more details.
 
 You should have received a copy of the GNU General Public License
-along with GCC; see the file COPYING.  If not, write to the Free
-Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
-02110-1301, USA.  */
+along with GCC; see the file COPYING3.  If not see
+<http://www.gnu.org/licenses/>.  */
 
 /* This file contains various simple utilities to analyze the CFG.  */
 #include "config.h"
@@ -30,8 +30,12 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
 #include "basic-block.h"
 #include "insn-config.h"
 #include "recog.h"
-#include "toplev.h"
+#include "diagnostic-core.h"
 #include "tm_p.h"
+#include "vec.h"
+#include "vecprim.h"
+#include "bitmap.h"
+#include "sbitmap.h"
 #include "timevar.h"
 
 /* Store the data structures necessary for depth-first search.  */
@@ -54,13 +58,13 @@ static void flow_dfs_compute_reverse_add_bb (depth_first_search_ds,
 static basic_block flow_dfs_compute_reverse_execute (depth_first_search_ds,
 						     basic_block);
 static void flow_dfs_compute_reverse_finish (depth_first_search_ds);
-static bool flow_active_insn_p (rtx);
+static bool flow_active_insn_p (const_rtx);
 
 /* Like active_insn_p, except keep the return value clobber around
    even after reload.  */
 
 static bool
-flow_active_insn_p (rtx insn)
+flow_active_insn_p (const_rtx insn)
 {
   if (active_insn_p (insn))
     return true;
@@ -82,7 +86,7 @@ flow_active_insn_p (rtx insn)
    its single destination.  */
 
 bool
-forwarder_block_p (basic_block bb)
+forwarder_block_p (const_basic_block bb)
 {
   rtx insn;
 
@@ -385,7 +389,7 @@ free_edge_list (struct edge_list *elist)
 
 /* This function provides debug output showing an edge list.  */
 
-void
+DEBUG_FUNCTION void
 print_edge_list (FILE *f, struct edge_list *elist)
 {
   int x;
@@ -412,7 +416,7 @@ print_edge_list (FILE *f, struct edge_list *elist)
    verifying that all edges are present, and that there are no
    extra edges.  */
 
-void
+DEBUG_FUNCTION void
 verify_edge_list (FILE *f, struct edge_list *elist)
 {
   int pred, succ, index;
@@ -519,7 +523,7 @@ find_edge_index (struct edge_list *edge_list, basic_block pred, basic_block succ
 /* Dump the list of basic blocks in the bitmap NODES.  */
 
 void
-flow_nodes_print (const char *str, const sbitmap nodes, FILE *file)
+flow_nodes_print (const char *str, const_sbitmap nodes, FILE *file)
 {
   unsigned int node = 0;
   sbitmap_iterator sbi;
@@ -645,16 +649,20 @@ connect_infinite_loops_to_exit (void)
   return;
 }
 
-/* Compute reverse top sort order.  
-   This is computing a post order numbering of the graph.  */
+/* Compute reverse top sort order.  This is computing a post order
+   numbering of the graph.  If INCLUDE_ENTRY_EXIT is true, then
+   ENTRY_BLOCK and EXIT_BLOCK are included.  If DELETE_UNREACHABLE is
+   true, unreachable blocks are deleted.  */
 
 int
-post_order_compute (int *post_order, bool include_entry_exit)
+post_order_compute (int *post_order, bool include_entry_exit,
+		    bool delete_unreachable)
 {
   edge_iterator *stack;
   int sp;
   int post_order_num = 0;
   sbitmap visited;
+  int count;
 
   if (include_entry_exit)
     post_order[post_order_num++] = EXIT_BLOCK;
@@ -699,7 +707,7 @@ post_order_compute (int *post_order, bool include_entry_exit)
       else
 	{
 	  if (ei_one_before_end_p (ei) && src != ENTRY_BLOCK_PTR)
-	   post_order[post_order_num++] = src->index;
+	    post_order[post_order_num++] = src->index;
 
 	  if (!ei_one_before_end_p (ei))
 	    ei_next (&stack[sp - 1]);
@@ -709,7 +717,220 @@ post_order_compute (int *post_order, bool include_entry_exit)
     }
 
   if (include_entry_exit)
-    post_order[post_order_num++] = ENTRY_BLOCK;
+    {
+      post_order[post_order_num++] = ENTRY_BLOCK;
+      count = post_order_num;
+    }
+  else
+    count = post_order_num + 2;
+
+  /* Delete the unreachable blocks if some were found and we are
+     supposed to do it.  */
+  if (delete_unreachable && (count != n_basic_blocks))
+    {
+      basic_block b;
+      basic_block next_bb;
+      for (b = ENTRY_BLOCK_PTR->next_bb; b != EXIT_BLOCK_PTR; b = next_bb)
+	{
+	  next_bb = b->next_bb;
+
+	  if (!(TEST_BIT (visited, b->index)))
+	    delete_basic_block (b);
+	}
+
+      tidy_fallthru_edges ();
+    }
+
+  free (stack);
+  sbitmap_free (visited);
+  return post_order_num;
+}
+
+
+/* Helper routine for inverted_post_order_compute.
+   BB has to belong to a region of CFG
+   unreachable by inverted traversal from the exit.
+   i.e. there's no control flow path from ENTRY to EXIT
+   that contains this BB.
+   This can happen in two cases - if there's an infinite loop
+   or if there's a block that has no successor
+   (call to a function with no return).
+   Some RTL passes deal with this condition by
+   calling connect_infinite_loops_to_exit () and/or
+   add_noreturn_fake_exit_edges ().
+   However, those methods involve modifying the CFG itself
+   which may not be desirable.
+   Hence, we deal with the infinite loop/no return cases
+   by identifying a unique basic block that can reach all blocks
+   in such a region by inverted traversal.
+   This function returns a basic block that guarantees
+   that all blocks in the region are reachable
+   by starting an inverted traversal from the returned block.  */
+
+static basic_block
+dfs_find_deadend (basic_block bb)
+{
+  sbitmap visited = sbitmap_alloc (last_basic_block);
+  sbitmap_zero (visited);
+
+  for (;;)
+    {
+      SET_BIT (visited, bb->index);
+      if (EDGE_COUNT (bb->succs) == 0
+          || TEST_BIT (visited, EDGE_SUCC (bb, 0)->dest->index))
+        {
+          sbitmap_free (visited);
+          return bb;
+        }
+
+      bb = EDGE_SUCC (bb, 0)->dest;
+    }
+
+  gcc_unreachable ();
+}
+
+
+/* Compute the reverse top sort order of the inverted CFG
+   i.e. starting from the exit block and following the edges backward
+   (from successors to predecessors).
+   This ordering can be used for forward dataflow problems among others.
+
+   This function assumes that all blocks in the CFG are reachable
+   from the ENTRY (but not necessarily from EXIT).
+
+   If there's an infinite loop,
+   a simple inverted traversal starting from the blocks
+   with no successors can't visit all blocks.
+   To solve this problem, we first do inverted traversal
+   starting from the blocks with no successor.
+   And if there's any block left that's not visited by the regular
+   inverted traversal from EXIT,
+   those blocks are in such problematic region.
+   Among those, we find one block that has
+   any visited predecessor (which is an entry into such a region),
+   and start looking for a "dead end" from that block
+   and do another inverted traversal from that block.  */
+
+int
+inverted_post_order_compute (int *post_order)
+{
+  basic_block bb;
+  edge_iterator *stack;
+  int sp;
+  int post_order_num = 0;
+  sbitmap visited;
+
+  /* Allocate stack for back-tracking up CFG.  */
+  stack = XNEWVEC (edge_iterator, n_basic_blocks + 1);
+  sp = 0;
+
+  /* Allocate bitmap to track nodes that have been visited.  */
+  visited = sbitmap_alloc (last_basic_block);
+
+  /* None of the nodes in the CFG have been visited yet.  */
+  sbitmap_zero (visited);
+
+  /* Put all blocks that have no successor into the initial work list.  */
+  FOR_BB_BETWEEN (bb, ENTRY_BLOCK_PTR, NULL, next_bb)
+    if (EDGE_COUNT (bb->succs) == 0)
+      {
+        /* Push the initial edge on to the stack.  */
+        if (EDGE_COUNT (bb->preds) > 0)
+          {
+            stack[sp++] = ei_start (bb->preds);
+            SET_BIT (visited, bb->index);
+          }
+      }
+
+  do
+    {
+      bool has_unvisited_bb = false;
+
+      /* The inverted traversal loop. */
+      while (sp)
+        {
+          edge_iterator ei;
+          basic_block pred;
+
+          /* Look at the edge on the top of the stack.  */
+          ei = stack[sp - 1];
+          bb = ei_edge (ei)->dest;
+          pred = ei_edge (ei)->src;
+
+          /* Check if the predecessor has been visited yet.  */
+          if (! TEST_BIT (visited, pred->index))
+            {
+              /* Mark that we have visited the destination.  */
+              SET_BIT (visited, pred->index);
+
+              if (EDGE_COUNT (pred->preds) > 0)
+                /* Since the predecessor node has been visited for the first
+                   time, check its predecessors.  */
+                stack[sp++] = ei_start (pred->preds);
+              else
+                post_order[post_order_num++] = pred->index;
+            }
+          else
+            {
+              if (bb != EXIT_BLOCK_PTR && ei_one_before_end_p (ei))
+                post_order[post_order_num++] = bb->index;
+
+              if (!ei_one_before_end_p (ei))
+                ei_next (&stack[sp - 1]);
+              else
+                sp--;
+            }
+        }
+
+      /* Detect any infinite loop and activate the kludge.
+         Note that this doesn't check EXIT_BLOCK itself
+         since EXIT_BLOCK is always added after the outer do-while loop.  */
+      FOR_BB_BETWEEN (bb, ENTRY_BLOCK_PTR, EXIT_BLOCK_PTR, next_bb)
+        if (!TEST_BIT (visited, bb->index))
+          {
+            has_unvisited_bb = true;
+
+            if (EDGE_COUNT (bb->preds) > 0)
+              {
+                edge_iterator ei;
+                edge e;
+                basic_block visited_pred = NULL;
+
+                /* Find an already visited predecessor.  */
+                FOR_EACH_EDGE (e, ei, bb->preds)
+                  {
+                    if (TEST_BIT (visited, e->src->index))
+                      visited_pred = e->src;
+                  }
+
+                if (visited_pred)
+                  {
+                    basic_block be = dfs_find_deadend (bb);
+                    gcc_assert (be != NULL);
+                    SET_BIT (visited, be->index);
+                    stack[sp++] = ei_start (be->preds);
+                    break;
+                  }
+              }
+          }
+
+      if (has_unvisited_bb && sp == 0)
+        {
+          /* No blocks are reachable from EXIT at all.
+             Find a dead-end from the ENTRY, and restart the iteration. */
+          basic_block be = dfs_find_deadend (ENTRY_BLOCK_PTR);
+          gcc_assert (be != NULL);
+          SET_BIT (visited, be->index);
+          stack[sp++] = ei_start (be->preds);
+        }
+
+      /* The only case the below while fires is
+         when there's an infinite loop.  */
+    }
+  while (sp);
+
+  /* EXIT_BLOCK is always included.  */
+  post_order[post_order_num++] = EXIT_BLOCK;
 
   free (stack);
   sbitmap_free (visited);
@@ -721,14 +942,14 @@ post_order_compute (int *post_order, bool include_entry_exit)
   REV_POST_ORDER is nonzero, return the reverse completion number for each
   node.  Returns the number of nodes visited.  A depth first search
   tries to get as far away from the starting point as quickly as
-  possible. 
+  possible.
 
   pre_order is a really a preorder numbering of the graph.
   rev_post_order is really a reverse postorder numbering of the graph.
  */
 
 int
-pre_and_rev_post_order_compute (int *pre_order, int *rev_post_order, 
+pre_and_rev_post_order_compute (int *pre_order, int *rev_post_order,
 				bool include_entry_exit)
 {
   edge_iterator *stack;
@@ -749,7 +970,7 @@ pre_and_rev_post_order_compute (int *pre_order, int *rev_post_order,
       if (rev_post_order)
 	rev_post_order[rev_post_order_num--] = ENTRY_BLOCK;
     }
-  else 
+  else
     rev_post_order_num -= NUM_FIXED_BLOCKS;
 
   /* Allocate bitmap to track nodes that have been visited.  */
@@ -931,8 +1152,8 @@ flow_dfs_compute_reverse_finish (depth_first_search_ds data)
    found and their list in RSLT.  RSLT can contain at most RSLT_MAX items.  */
 int
 dfs_enumerate_from (basic_block bb, int reverse,
-		    bool (*predicate) (basic_block, void *),
-		    basic_block *rslt, int rslt_max, void *data)
+		    bool (*predicate) (const_basic_block, const void *),
+		    basic_block *rslt, int rslt_max, const void *data)
 {
   basic_block *st, lbb;
   int sp = 0, tv = 0;
@@ -946,12 +1167,12 @@ dfs_enumerate_from (basic_block bb, int reverse,
   static sbitmap visited;
   static unsigned v_size;
 
-#define MARK_VISITED(BB) (SET_BIT (visited, (BB)->index)) 
-#define UNMARK_VISITED(BB) (RESET_BIT (visited, (BB)->index)) 
-#define VISITED_P(BB) (TEST_BIT (visited, (BB)->index)) 
+#define MARK_VISITED(BB) (SET_BIT (visited, (BB)->index))
+#define UNMARK_VISITED(BB) (RESET_BIT (visited, (BB)->index))
+#define VISITED_P(BB) (TEST_BIT (visited, (BB)->index))
 
   /* Resize the VISITED sbitmap if necessary.  */
-  size = last_basic_block; 
+  size = last_basic_block;
   if (size < 10)
     size = 10;
 
@@ -1035,7 +1256,7 @@ dfs_enumerate_from (basic_block bb, int reverse,
 
 
 static void
-compute_dominance_frontiers_1 (bitmap *frontiers)
+compute_dominance_frontiers_1 (bitmap_head *frontiers)
 {
   edge p;
   edge_iterator ei;
@@ -1054,10 +1275,9 @@ compute_dominance_frontiers_1 (bitmap *frontiers)
 	      domsb = get_immediate_dominator (CDI_DOMINATORS, b);
 	      while (runner != domsb)
 		{
-		  if (bitmap_bit_p (frontiers[runner->index], b->index))
+		  if (!bitmap_set_bit (&frontiers[runner->index],
+				       b->index))
 		    break;
-		  bitmap_set_bit (frontiers[runner->index],
-				  b->index);
 		  runner = get_immediate_dominator (CDI_DOMINATORS,
 						    runner);
 		}
@@ -1068,7 +1288,7 @@ compute_dominance_frontiers_1 (bitmap *frontiers)
 
 
 void
-compute_dominance_frontiers (bitmap *frontiers)
+compute_dominance_frontiers (bitmap_head *frontiers)
 {
   timevar_push (TV_DOM_FRONTIERS);
 
@@ -1076,4 +1296,64 @@ compute_dominance_frontiers (bitmap *frontiers)
 
   timevar_pop (TV_DOM_FRONTIERS);
 }
+
+/* Given a set of blocks with variable definitions (DEF_BLOCKS),
+   return a bitmap with all the blocks in the iterated dominance
+   frontier of the blocks in DEF_BLOCKS.  DFS contains dominance
+   frontier information as returned by compute_dominance_frontiers.
+
+   The resulting set of blocks are the potential sites where PHI nodes
+   are needed.  The caller is responsible for freeing the memory
+   allocated for the return value.  */
+
+bitmap
+compute_idf (bitmap def_blocks, bitmap_head *dfs)
+{
+  bitmap_iterator bi;
+  unsigned bb_index, i;
+  VEC(int,heap) *work_stack;
+  bitmap phi_insertion_points;
+
+  work_stack = VEC_alloc (int, heap, n_basic_blocks);
+  phi_insertion_points = BITMAP_ALLOC (NULL);
+
+  /* Seed the work list with all the blocks in DEF_BLOCKS.  We use
+     VEC_quick_push here for speed.  This is safe because we know that
+     the number of definition blocks is no greater than the number of
+     basic blocks, which is the initial capacity of WORK_STACK.  */
+  EXECUTE_IF_SET_IN_BITMAP (def_blocks, 0, bb_index, bi)
+    VEC_quick_push (int, work_stack, bb_index);
+
+  /* Pop a block off the worklist, add every block that appears in
+     the original block's DF that we have not already processed to
+     the worklist.  Iterate until the worklist is empty.   Blocks
+     which are added to the worklist are potential sites for
+     PHI nodes.  */
+  while (VEC_length (int, work_stack) > 0)
+    {
+      bb_index = VEC_pop (int, work_stack);
+
+      /* Since the registration of NEW -> OLD name mappings is done
+	 separately from the call to update_ssa, when updating the SSA
+	 form, the basic blocks where new and/or old names are defined
+	 may have disappeared by CFG cleanup calls.  In this case,
+	 we may pull a non-existing block from the work stack.  */
+      gcc_assert (bb_index < (unsigned) last_basic_block);
+
+      EXECUTE_IF_AND_COMPL_IN_BITMAP (&dfs[bb_index], phi_insertion_points,
+	                              0, i, bi)
+	{
+	  /* Use a safe push because if there is a definition of VAR
+	     in every basic block, then WORK_STACK may eventually have
+	     more than N_BASIC_BLOCK entries.  */
+	  VEC_safe_push (int, heap, work_stack, i);
+	  bitmap_set_bit (phi_insertion_points, i);
+	}
+    }
+
+  VEC_free (int, heap, work_stack);
+
+  return phi_insertion_points;
+}
+
 

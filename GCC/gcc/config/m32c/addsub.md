@@ -1,5 +1,5 @@
 ;; Machine Descriptions for R8C/M16C/M32C
-;; Copyright (C) 2005
+;; Copyright (C) 2005, 2007, 2010
 ;; Free Software Foundation, Inc.
 ;; Contributed by Red Hat.
 ;;
@@ -7,7 +7,7 @@
 ;;
 ;; GCC is free software; you can redistribute it and/or modify it
 ;; under the terms of the GNU General Public License as published
-;; by the Free Software Foundation; either version 2, or (at your
+;; by the Free Software Foundation; either version 3, or (at your
 ;; option) any later version.
 ;;
 ;; GCC is distributed in the hope that it will be useful, but WITHOUT
@@ -16,9 +16,8 @@
 ;; License for more details.
 ;;
 ;; You should have received a copy of the GNU General Public License
-;; along with GCC; see the file COPYING.  If not, write to the Free
-;; Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
-;; 02110-1301, USA.
+;; along with GCC; see the file COPYING3.  If not see
+;; <http://www.gnu.org/licenses/>.
 
 ;; add, sub
 
@@ -94,9 +93,17 @@
     case 1:
       return \"add.w %X2,%h0\;adcf.w %H0\";
     case 2:
-      output_asm_insn (\"add.w %X2,%h0\",operands);
-      operands[2]= GEN_INT (INTVAL (operands[2]) >> 16);
-      return \"adc.w %X2,%H0\";
+      if (GET_CODE (operands[2]) == SYMBOL_REF)
+        {
+          output_asm_insn (\"add.w #%%lo(%d2),%h0\",operands);
+          return \"adc.w #%%hi(%d2),%H0\";
+        }
+      else
+        {
+          output_asm_insn (\"add.w %X2,%h0\",operands);
+          operands[2]= GEN_INT (INTVAL (operands[2]) >> 16);
+          return \"adc.w %X2,%H0\";
+        }
     case 3:
       return \"add.w %h2,%h0\;adc.w %H2,%H0\";
     case 4:
@@ -109,6 +116,8 @@
       return \"add.w %h2,%h0\;adc.w %H2,%H0\";
     case 7:
       return \"add.w %h2,%h0\;adc.w %H2,%H0\";
+    default:
+      gcc_unreachable ();
     }"
   [(set_attr "flags" "x,x,x,x,x,x,x,x")]
 )
@@ -193,6 +202,8 @@
       return \"sub.w %h2,%h0\;sbb.w %H2,%H0\";
     case 5:
       return \"sub.w %h2,%h0\;sbb.w %H2,%H0\";
+    default:
+      gcc_unreachable ();
     }"
   [(set_attr "flags" "x,x,x,x,x,x")]
 )

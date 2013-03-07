@@ -1,12 +1,13 @@
 /* v850 specific, C compiler specific functions.
-   Copyright (C) 2000 Free Software Foundation, Inc.
+   Copyright (C) 2000, 2001, 2002, 2003, 2005, 2007, 2009, 2010
+   Free Software Foundation, Inc.
    Contributed by Jeff Law (law@cygnus.com).
 
 This file is part of GCC.
 
 GCC is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2, or (at your option)
+the Free Software Foundation; either version 3, or (at your option)
 any later version.
 
 GCC is distributed in the hope that it will be useful,
@@ -15,9 +16,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with GCC; see the file COPYING.  If not, write to
-the Free Software Foundation, 51 Franklin Street, Fifth Floor,
-Boston, MA 02110-1301, USA.  */
+along with GCC; see the file COPYING3.  If not see
+<http://www.gnu.org/licenses/>.  */
 
 #include "config.h"
 #include "system.h"
@@ -25,8 +25,8 @@ Boston, MA 02110-1301, USA.  */
 #include "tm.h"
 #include "cpplib.h"
 #include "tree.h"
-#include "c-pragma.h"
-#include "toplev.h"
+#include "c-family/c-pragma.h"
+#include "diagnostic-core.h"
 #include "ggc.h"
 #include "tm_p.h"
 
@@ -115,13 +115,14 @@ mark_current_function_as_interrupt (void)
 void
 ghs_pragma_section (cpp_reader * pfile ATTRIBUTE_UNUSED)
 {
-  int repeat;
+  int repeat = 0;
 
   /* #pragma ghs section [name = alias [, name = alias [, ...]]] */
   do
     {
       tree x;
       enum cpp_ttype type;
+      tree sect_ident;
       const char *sect, *alias;
       enum GHS_section_kind kind;
       
@@ -130,7 +131,10 @@ ghs_pragma_section (cpp_reader * pfile ATTRIBUTE_UNUSED)
       if (type == CPP_EOF && !repeat)
 	goto reset;
       else if (type == CPP_NAME)
-	sect = IDENTIFIER_POINTER (x);
+	{
+	  sect_ident = x;
+	  sect = IDENTIFIER_POINTER (sect_ident);
+	}
       else
 	goto bad;
       repeat = 0;
@@ -163,7 +167,7 @@ ghs_pragma_section (cpp_reader * pfile ATTRIBUTE_UNUSED)
       else if (streq (sect, "zbss"))    kind = GHS_SECTION_KIND_ZDATA;
       else
 	{
-	  warning (0, "unrecognized section name \"%s\"", sect);
+	  warning (0, "unrecognized section name %qE", sect_ident);
 	  return;
 	}
       

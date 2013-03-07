@@ -1,7 +1,7 @@
 /* Definitions of target machine for GNU compiler.
    For ARM with ELF obj format.
-   Copyright (C) 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2004, 2005
-   Free Software Foundation, Inc.
+   Copyright (C) 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2004, 2005, 2007,
+   2008, 2009, 2011 Free Software Foundation, Inc.
    Contributed by Philip Blundell <philb@gnu.org> and
    Catherine Moore <clm@cygnus.com>
    
@@ -9,7 +9,7 @@
 
    GCC is free software; you can redistribute it and/or modify it
    under the terms of the GNU General Public License as published
-   by the Free Software Foundation; either version 2, or (at your
+   by the Free Software Foundation; either version 3, or (at your
    option) any later version.
 
    GCC is distributed in the hope that it will be useful, but WITHOUT
@@ -18,9 +18,8 @@
    License for more details.
 
    You should have received a copy of the GNU General Public License
-   along with GCC; see the file COPYING.  If not, write to
-   the Free Software Foundation, 51 Franklin Street, Fifth Floor,
-   Boston, MA 02110-1301, USA.  */
+   along with GCC; see the file COPYING3.  If not see
+   <http://www.gnu.org/licenses/>.  */
 
 #ifndef OBJECT_FORMAT_ELF
  #error elf.h included before elfos.h
@@ -37,7 +36,8 @@
 #ifndef SUBTARGET_EXTRA_SPECS
 #define SUBTARGET_EXTRA_SPECS \
   { "subtarget_extra_asm_spec",	SUBTARGET_EXTRA_ASM_SPEC }, \
-  { "subtarget_asm_float_spec", SUBTARGET_ASM_FLOAT_SPEC },
+  { "subtarget_asm_float_spec", SUBTARGET_ASM_FLOAT_SPEC }, \
+  SUBSUBTARGET_EXTRA_SPECS
 #endif
 
 #ifndef SUBTARGET_EXTRA_ASM_SPEC
@@ -49,16 +49,17 @@
 %{mapcs-float:-mfloat}"
 #endif
 
+#undef SUBSUBTARGET_EXTRA_SPECS
+#define SUBSUBTARGET_EXTRA_SPECS
+
 #ifndef ASM_SPEC
 #define ASM_SPEC "\
 %{mbig-endian:-EB} \
 %{mlittle-endian:-EL} \
-%{mcpu=*:-mcpu=%*} \
-%{march=*:-march=%*} \
+%(asm_cpu_spec) \
 %{mapcs-*:-mapcs-%*} \
 %(subtarget_asm_float_spec) \
 %{mthumb-interwork:-mthumb-interwork} \
-%{msoft-float:-mfloat-abi=soft} %{mhard-float:-mfloat-abi=hard} \
 %{mfloat-abi=*} %{mfpu=*} \
 %(subtarget_extra_asm_spec)"
 #endif
@@ -87,7 +88,6 @@
   do								\
     {								\
       ARM_OUTPUT_FN_UNWIND (FILE, FALSE);			\
-      ARM_DECLARE_FUNCTION_SIZE (FILE, FNAME, DECL);		\
       if (!flag_inhibit_size_directive)				\
 	ASM_OUTPUT_MEASURED_SIZE (FILE, FNAME);			\
     }								\
@@ -96,26 +96,24 @@
 /* Define this macro if jump tables (for `tablejump' insns) should be
    output in the text section, along with the assembler instructions.
    Otherwise, the readonly data section is used.  */
-/* We put ARM jump tables in the text section, because it makes the code
-   more efficient, but for Thumb it's better to put them out of band.  */
-#define JUMP_TABLES_IN_TEXT_SECTION (TARGET_ARM)
+/* We put ARM and Thumb-2 jump tables in the text section, because it makes
+   the code more efficient, but for Thumb-1 it's better to put them out of
+   band unless we are generating compressed tables.  */
+#define JUMP_TABLES_IN_TEXT_SECTION					\
+   (TARGET_32BIT || (TARGET_THUMB && (optimize_size || flag_pic)))
 
 #ifndef LINK_SPEC
 #define LINK_SPEC "%{mbig-endian:-EB} %{mlittle-endian:-EL} -X"
 #endif
   
 /* Run-time Target Specification.  */
-#ifndef TARGET_VERSION
-#define TARGET_VERSION fputs (" (ARM/elf)", stderr)
-#endif
-
 #ifndef TARGET_DEFAULT
 #define TARGET_DEFAULT (MASK_APCS_FRAME)
 #endif
 
 #ifndef MULTILIB_DEFAULTS
 #define MULTILIB_DEFAULTS \
-  { "marm", "mlittle-endian", "msoft-float", "mno-thumb-interwork", "fno-leading-underscore" }
+  { "marm", "mlittle-endian", "mfloat-abi=soft", "mno-thumb-interwork", "fno-leading-underscore" }
 #endif
 
 #define TARGET_ASM_FILE_START_APP_OFF true
@@ -126,18 +124,15 @@
 #undef TARGET_ASM_CONSTRUCTOR
 #define TARGET_ASM_CONSTRUCTOR arm_elf_asm_constructor
 
+#undef TARGET_ASM_DESTRUCTOR
+#define TARGET_ASM_DESTRUCTOR arm_elf_asm_destructor
+
 /* For PIC code we need to explicitly specify (PLT) and (GOT) relocs.  */
 #define NEED_PLT_RELOC	flag_pic
 #define NEED_GOT_RELOC	flag_pic
 
 /* The ELF assembler handles GOT addressing differently to NetBSD.  */
 #define GOT_PCREL	0
-
-/* Biggest alignment supported by the object file format of this
-   machine.  Use this macro to limit the alignment which can be
-   specified using the `__attribute__ ((aligned (N)))' construct.  If
-   not defined, the default value is `BIGGEST_ALIGNMENT'.  */
-#define MAX_OFILE_ALIGNMENT (32768 * 8)
 
 /* Align output to a power of two.  Note ".align 0" is redundant,
    and also GAS will treat it as ".align 2" which we do not want.  */
@@ -149,5 +144,17 @@
     }							\
   while (0)
 
-/* The EABI doesn't provide a way of implementing init_priority.  */
-#define SUPPORTS_INIT_PRIORITY (!TARGET_AAPCS_BASED)
+/* Horrible hack: We want to prevent some libgcc routines being included
+   for some multilibs.  */
+#ifndef __ARM_ARCH_6M__
+#undef L_fixdfsi
+#undef L_fixunsdfsi
+#undef L_truncdfsf2
+#undef L_fixsfsi
+#undef L_fixunssfsi
+#undef L_floatdidf
+#undef L_floatdisf
+#undef L_floatundidf
+#undef L_floatundisf
+#endif
+

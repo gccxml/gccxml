@@ -1,5 +1,5 @@
 /* Output routines for graphical representation.
-   Copyright (C) 1998, 1999, 2000, 2001, 2003, 2004
+   Copyright (C) 1998, 1999, 2000, 2001, 2003, 2004, 2007, 2008, 2010
    Free Software Foundation, Inc.
    Contributed by Ulrich Drepper <drepper@cygnus.com>, 1998.
 
@@ -7,7 +7,7 @@ This file is part of GCC.
 
 GCC is free software; you can redistribute it and/or modify it under
 the terms of the GNU General Public License as published by the Free
-Software Foundation; either version 2, or (at your option) any later
+Software Foundation; either version 3, or (at your option) any later
 version.
 
 GCC is distributed in the hope that it will be useful, but WITHOUT ANY
@@ -16,11 +16,10 @@ FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 for more details.
 
 You should have received a copy of the GNU General Public License
-along with GCC; see the file COPYING.  If not, write to the Free
-Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
-02110-1301, USA.  */
+along with GCC; see the file COPYING3.  If not see
+<http://www.gnu.org/licenses/>.  */
 
-#include <config.h>
+#include "config.h"
 #include "system.h"
 #include "coretypes.h"
 #include "tm.h"
@@ -31,14 +30,18 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
 #include "hard-reg-set.h"
 #include "obstack.h"
 #include "basic-block.h"
-#include "toplev.h"
+#include "diagnostic-core.h"
 #include "graph.h"
+#include "emit-rtl.h"
 
 static const char *const graph_ext[] =
 {
   /* no_graph */ "",
   /* vcg */      ".vcg",
 };
+
+/* The flag to indicate if output is inside of a building block.  */
+static int inbb = 0;
 
 static void start_fct (FILE *);
 static void start_bb (FILE *, int);
@@ -77,6 +80,7 @@ start_bb (FILE *fp, int bb)
 graph: {\ntitle: \"%s.BB%d\"\nfolding: 1\ncolor: lightblue\n\
 label: \"basic block %d",
 	       current_function_name (), bb, bb);
+      inbb = 1; /* Now We are inside of a building block.  */
       break;
     case no_graph:
       break;
@@ -146,9 +150,8 @@ darkgrey\n  shape: ellipse" : "white",
   /* Print the RTL.  */
   if (NOTE_P (tmp_rtx))
     {
-      const char *name = "";
-      if (NOTE_LINE_NUMBER (tmp_rtx) < 0)
-	name =  GET_NOTE_INSN_NAME (NOTE_LINE_NUMBER (tmp_rtx));
+      const char *name;
+      name =  GET_NOTE_INSN_NAME (NOTE_KIND (tmp_rtx));
       fprintf (fp, " %s", name);
     }
   else if (INSN_P (tmp_rtx))
@@ -167,25 +170,25 @@ darkgrey\n  shape: ellipse" : "white",
 }
 
 static void
-draw_edge (FILE *fp, int from, int to, int bb_edge, int class)
+draw_edge (FILE *fp, int from, int to, int bb_edge, int color_class)
 {
   const char * color;
   switch (graph_dump_format)
     {
     case vcg:
       color = "";
-      if (class == 2)
+      if (color_class == 2)
 	color = "color: red ";
       else if (bb_edge)
 	color = "color: blue ";
-      else if (class == 3)
+      else if (color_class == 3)
 	color = "color: green ";
       fprintf (fp,
 	       "edge: { sourcename: \"%s.%d\" targetname: \"%s.%d\" %s",
 	       current_function_name (), from,
 	       current_function_name (), to, color);
-      if (class)
-	fprintf (fp, "class: %d ", class);
+      if (color_class)
+	fprintf (fp, "class: %d ", color_class);
       fputs ("}\n", fp);
       break;
     case no_graph:
@@ -199,7 +202,12 @@ end_bb (FILE *fp)
   switch (graph_dump_format)
     {
     case vcg:
-      fputs ("}\n", fp);
+      /* Check if we are inside of a building block.  */
+      if (inbb != 0)
+        {
+          fputs ("}\n", fp);
+          inbb = 0; /* Now we are outside of a building block.  */
+        }
       break;
     case no_graph:
       break;
@@ -228,7 +236,7 @@ print_rtl_graph_with_bb (const char *base, rtx rtx_first)
   rtx tmp_rtx;
   size_t namelen = strlen (base);
   size_t extlen = strlen (graph_ext[graph_dump_format]) + 1;
-  char *buf = alloca (namelen + extlen);
+  char *buf = XALLOCAVEC (char, namelen + extlen);
   FILE *fp;
 
   if (basic_block_info == NULL)
@@ -391,7 +399,7 @@ clean_graph_dump_file (const char *base)
 {
   size_t namelen = strlen (base);
   size_t extlen = strlen (graph_ext[graph_dump_format]) + 1;
-  char *buf = alloca (namelen + extlen);
+  char *buf = XALLOCAVEC (char, namelen + extlen);
   FILE *fp;
 
   memcpy (buf, base, namelen);
@@ -400,7 +408,7 @@ clean_graph_dump_file (const char *base)
   fp = fopen (buf, "w");
 
   if (fp == NULL)
-    fatal_error ("can't open %s: %m", buf);
+    fatal_error ("can%'t open %s: %m", buf);
 
   gcc_assert (graph_dump_format == vcg);
   fputs ("graph: {\nport_sharing: no\n", fp);
@@ -415,7 +423,7 @@ finish_graph_dump_file (const char *base)
 {
   size_t namelen = strlen (base);
   size_t extlen = strlen (graph_ext[graph_dump_format]) + 1;
-  char *buf = alloca (namelen + extlen);
+  char *buf = XALLOCAVEC (char, namelen + extlen);
   FILE *fp;
 
   memcpy (buf, base, namelen);

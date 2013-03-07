@@ -1,9 +1,10 @@
 /* Hash tables.
-   Copyright (C) 2000, 2001, 2003, 2004 Free Software Foundation, Inc.
+   Copyright (C) 2000, 2001, 2003, 2004, 2007, 2008, 2009, 2010
+   Free Software Foundation, Inc.
 
 This program is free software; you can redistribute it and/or modify it
 under the terms of the GNU General Public License as published by the
-Free Software Foundation; either version 2, or (at your option) any
+Free Software Foundation; either version 3, or (at your option) any
 later version.
 
 This program is distributed in the hope that it will be useful,
@@ -12,20 +13,23 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.  */
+along with this program; see the file COPYING3.  If not see
+<http://www.gnu.org/licenses/>.  */
 
 #ifndef LIBCPP_SYMTAB_H
 #define LIBCPP_SYMTAB_H
 
 #include "obstack.h"
+
+#ifndef GTY
 #define GTY(x) /* nothing */
+#endif
 
 /* This is what each hash table entry points to.  It may be embedded
    deeply within another object.  */
 typedef struct ht_identifier ht_identifier;
-struct ht_identifier GTY(())
-{
+typedef struct ht_identifier *ht_identifier_ptr;
+struct GTY(()) ht_identifier {
   const unsigned char *str;
   unsigned int len;
   unsigned int hash_value;
@@ -37,7 +41,7 @@ struct ht_identifier GTY(())
 typedef struct ht hash_table;
 typedef struct ht_identifier *hashnode;
 
-enum ht_lookup_option {HT_NO_INSERT = 0, HT_ALLOC, HT_ALLOCED};
+enum ht_lookup_option {HT_NO_INSERT = 0, HT_ALLOC};
 
 /* An identifier hash table for cpplib and the front ends.  */
 struct ht
@@ -85,6 +89,10 @@ extern hashnode ht_lookup_with_hash (hash_table *, const unsigned char *,
    if the callback returns zero.  */
 typedef int (*ht_cb) (struct cpp_reader *, hashnode, const void *);
 extern void ht_forall (hash_table *, ht_cb, const void *);
+
+/* For all nodes in TABLE, call the callback.  If the callback returns
+   a nonzero value, the node is removed from the table.  */
+extern void ht_purge (hash_table *, ht_cb, const void *);
 
 /* Restore the hash table.  */
 extern void ht_load (hash_table *ht, hashnode *entries,

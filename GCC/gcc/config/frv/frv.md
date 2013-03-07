@@ -1,13 +1,13 @@
 ;; Frv Machine Description
-;; Copyright (C) 1999, 2000, 2001, 2003, 2004, 2005 Free Software Foundation,
-;; Inc.
+;; Copyright (C) 1999, 2000, 2001, 2003, 2004, 2005, 2007, 2008, 2010
+;; Free Software Foundation, Inc.
 ;; Contributed by Red Hat, Inc.
 
 ;; This file is part of GCC.
 
 ;; GCC is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
-;; the Free Software Foundation; either version 2, or (at your option)
+;; the Free Software Foundation; either version 3, or (at your option)
 ;; any later version.
 
 ;; GCC is distributed in the hope that it will be useful,
@@ -16,9 +16,8 @@
 ;; GNU General Public License for more details.
 
 ;; You should have received a copy of the GNU General Public License
-;; along with GCC; see the file COPYING.  If not, write to
-;; the Free Software Foundation, 51 Franklin Street, Fifth Floor,
-;; Boston, MA 02110-1301, USA.
+;; along with GCC; see the file COPYING3.  If not see
+;; <http://www.gnu.org/licenses/>.
 
 ;;- See file "rtl.def" for documentation on define_insn, match_*, et. al.
 
@@ -87,7 +86,7 @@
    (FDPIC_REG			15)
    ])
 
-(define_mode_macro IMODE [QI HI SI DI])
+(define_mode_iterator IMODE [QI HI SI DI])
 (define_mode_attr IMODEsuffix [(QI "b") (HI "h") (SI "") (DI "d")])
 (define_mode_attr BREADsuffix [(QI "ub") (HI "uh") (SI "") (DI "d")])
 
@@ -133,11 +132,11 @@
 ;;     than a word wide.  Constraints for these operands should use `n' rather
 ;;     than `i'.
 ;;
-;; 'I' First machine-dependent integer constant (6 bit signed ints).
-;; 'J' Second machine-dependent integer constant (10 bit signed ints).
+;; 'I' First machine-dependent integer constant (6-bit signed ints).
+;; 'J' Second machine-dependent integer constant (10-bit signed ints).
 ;; 'K' Third machine-dependent integer constant (-2048).
-;; 'L' Fourth machine-dependent integer constant (16 bit signed ints).
-;; 'M' Fifth machine-dependent integer constant (16 bit unsigned ints).
+;; 'L' Fourth machine-dependent integer constant (16-bit signed ints).
+;; 'M' Fifth machine-dependent integer constant (16-bit unsigned ints).
 ;; 'N' Sixth machine-dependent integer constant (-2047..-1).
 ;; 'O' Seventh machine-dependent integer constant (zero).
 ;; 'P' Eighth machine-dependent integer constant (1..2047).
@@ -346,7 +345,7 @@
 ;; enumeration in frv-protos.h.
 
 (define_attr "cpu" "generic,fr550,fr500,fr450,fr405,fr400,fr300,simple,tomcat"
-  (const (symbol_ref "frv_cpu_type")))
+  (const (symbol_ref "(enum attr_cpu) frv_cpu_type")))
 
 ;; Attribute is "yes" for branches and jumps that span too great a distance
 ;; to be implemented in the most natural way.  Such instructions will use
@@ -361,7 +360,7 @@
   (const_string "unknown"))
 
 (define_attr "acc_group" "none,even,odd"
-  (symbol_ref "frv_acc_group (insn)"))
+  (symbol_ref "(enum attr_acc_group) frv_acc_group (insn)"))
 
 ;; Scheduling and Packing Overview
 ;; -------------------------------
@@ -1180,6 +1179,18 @@
 (define_cpu_unit "fr550_f0,fr550_f1,fr550_f2,fr550_f3" "fr550_float_media")
 (define_cpu_unit "fr550_m0,fr550_m1,fr550_m2,fr550_m3" "fr550_float_media")
 (exclusion_set "fr550_f1,fr550_f2,fr550_f3" "fr550_m1,fr550_m2,fr550_m3")
+(exclusion_set "fr550_m0" "fr550_f1,fr550_f2,fr550_f3")
+;; FIXME: This next exclusion set should be defined as well, so that we do
+;; not get a packet containing multiple media instructions plus a single
+;; floating point instruction.  At the moment we can get away with not
+;; defining it because gcc does not seem to generate such packets.
+;;
+;; If we do enable the exclusion however the insertion of fnop insns into
+;; a packet containing media instructions will stop working, because the
+;; fnop insn counts as a floating point instruction.  The correct solution
+;; is to fix the reservation for the fnop insn so that it does not have the
+;; same restrictions as ordinary floating point insns.
+;;(exclusion_set "fr550_f0" "fr550_m1,fr550_m2,fr550_m3")
 
 (define_reservation "fr550_float" "fr550_f0|fr550_f1|fr550_f2|fr550_f3")
 (define_reservation "fr550_media" "fr550_m0|fr550_m1|fr550_m2|fr550_m3")
@@ -1508,6 +1519,7 @@
 ;;
 
 (include "predicates.md")
+(include "constraints.md")
 
 ;; ::::::::::::::::::::
 ;; ::
@@ -1884,10 +1896,8 @@
     }
   else
     {
-      operands[4] = GEN_INT ((((unsigned HOST_WIDE_INT)INTVAL (op1) >> 16)
-			      >> 16) ^ ((unsigned HOST_WIDE_INT)1 << 31)
-			     - ((unsigned HOST_WIDE_INT)1 << 31));
-      operands[5] = GEN_INT (trunc_int_for_mode (INTVAL (op1), SImode));
+      operands[4] = gen_int_mode ((INTVAL (op1) >> 16) >> 16, SImode);
+      operands[5] = gen_int_mode (INTVAL (op1), SImode);
     }
 }")
 
@@ -2093,8 +2103,8 @@
     }
   else
     {
-      operands[4] = GEN_INT ((((unsigned HOST_WIDE_INT)INTVAL (op1) >> 16)
-			      >> 16) ^ ((unsigned HOST_WIDE_INT)1 << 31)
+      operands[4] = GEN_INT (((((unsigned HOST_WIDE_INT)INTVAL (op1) >> 16)
+			      >> 16) ^ ((unsigned HOST_WIDE_INT)1 << 31))
 			     - ((unsigned HOST_WIDE_INT)1 << 31));
       operands[5] = GEN_INT (trunc_int_for_mode (INTVAL (op1), SImode));
     }
@@ -2256,26 +2266,6 @@
   end_sequence ();
 }")
 
-(define_expand "reload_incc"
-  [(parallel [(set (match_operand:CC 2 "integer_register_operand" "=&d")
-		   (match_operand:CC 1 "memory_operand" "m"))
-	      (clobber (match_scratch:CC_CCR 3 ""))])
-   (parallel [(set (match_operand:CC 0 "icc_operand" "=t")
-		   (match_dup 2))
-	      (clobber (match_scratch:CC_CCR 4 ""))])]
-  ""
-  "")
-
-(define_expand "reload_outcc"
-  [(parallel [(set (match_operand:CC 2 "integer_register_operand" "=&d")
-		   (match_operand:CC 1 "icc_operand" "t"))
-	      (clobber (match_dup 3))])
-   (parallel [(set (match_operand:CC 0 "memory_operand" "=m")
-		   (match_dup 2))
-	      (clobber (match_scratch:CC_CCR 4 ""))])]
-  ""
-  "operands[3] = gen_rtx_REG (CC_CCRmode, ICR_TEMP);")
-
 ;; Reload CC_UNSmode for unsigned integer comparisons
 ;; Use define_expand so that cse/gcse/combine can't create movcc_uns insns
 
@@ -2343,26 +2333,6 @@
   end_sequence ();
 }")
 
-(define_expand "reload_incc_uns"
-  [(parallel [(set (match_operand:CC_UNS 2 "integer_register_operand" "=&d")
-		   (match_operand:CC_UNS 1 "memory_operand" "m"))
-	      (clobber (match_scratch:CC_CCR 3 ""))])
-   (parallel [(set (match_operand:CC_UNS 0 "icc_operand" "=t")
-		   (match_dup 2))
-	      (clobber (match_scratch:CC_CCR 4 ""))])]
-  ""
-  "")
-
-(define_expand "reload_outcc_uns"
-  [(parallel [(set (match_operand:CC_UNS 2 "integer_register_operand" "=&d")
-		   (match_operand:CC_UNS 1 "icc_operand" "t"))
-	      (clobber (match_dup 3))])
-   (parallel [(set (match_operand:CC_UNS 0 "memory_operand" "=m")
-		   (match_dup 2))
-	      (clobber (match_scratch:CC_CCR 4 ""))])]
-  ""
-  "operands[3] = gen_rtx_REG (CC_CCRmode, ICR_TEMP);")
-
 ;; Reload CC_NZmode.  This is mostly the same as the CCmode and CC_UNSmode
 ;; handling, but it uses different sequences for moving between GPRs and ICCs.
 
@@ -2422,26 +2392,6 @@
 			 (const_int 0))
 	      (set (match_dup 3) (const_int 0)))]
   "operands[3] = simplify_gen_subreg (SImode, operands[0], CC_NZmode, 0);")
-
-(define_expand "reload_incc_nz"
-  [(parallel [(set (match_operand:CC_NZ 2 "integer_register_operand" "=&d")
-		   (match_operand:CC_NZ 1 "memory_operand" "m"))
-	      (clobber (match_scratch:CC_CCR 3 ""))])
-   (parallel [(set (match_operand:CC_NZ 0 "icc_operand" "=t")
-		   (match_dup 2))
-	      (clobber (match_scratch:CC_CCR 4 ""))])]
-  ""
-  "")
-
-(define_expand "reload_outcc_nz"
-  [(parallel [(set (match_operand:CC_NZ 2 "integer_register_operand" "=&d")
-		   (match_operand:CC_NZ 1 "icc_operand" "t"))
-	      (clobber (match_dup 3))])
-   (parallel [(set (match_operand:CC_NZ 0 "memory_operand" "=m")
-		   (match_dup 2))
-	      (clobber (match_scratch:CC_CCR 4 ""))])]
-  ""
-  "operands[3] = gen_rtx_REG (CC_CCRmode, ICR_TEMP);")
 
 ;; Reload CC_FPmode for floating point comparisons
 ;; We use a define_expand here so that cse/gcse/combine can't accidentally
@@ -2976,7 +2926,7 @@
 
 ;; ::::::::::::::::::::
 ;; ::
-;; :: 32 bit Integer arithmetic
+;; :: 32-bit Integer arithmetic
 ;; ::
 ;; ::::::::::::::::::::
 
@@ -3003,7 +2953,7 @@
   [(set_attr "length" "4")
    (set_attr "type" "int")])
 
-;; Signed multiplication producing 64 bit results from 32 bit inputs
+;; Signed multiplication producing 64-bit results from 32-bit inputs
 ;; Note, frv doesn't have a 32x32->32 bit multiply, but the compiler
 ;; will do the 32x32->64 bit multiply and use the bottom word.
 (define_expand "mulsidi3"
@@ -3038,7 +2988,7 @@
   [(set_attr "length" "4")
    (set_attr "type" "mul")])
 
-;; Unsigned multiplication producing 64 bit results from 32 bit inputs
+;; Unsigned multiplication producing 64-bit results from 32-bit inputs
 (define_expand "umulsidi3"
   [(set (match_operand:DI 0 "even_gpr_operand" "")
 	(mult:DI (zero_extend:DI (match_operand:SI 1 "integer_register_operand" ""))
@@ -3111,7 +3061,7 @@
 
 ;; ::::::::::::::::::::
 ;; ::
-;; :: 64 bit Integer arithmetic
+;; :: 64-bit Integer arithmetic
 ;; ::
 ;; ::::::::::::::::::::
 
@@ -3290,7 +3240,7 @@
 
 ;; ::::::::::::::::::::
 ;; ::
-;; :: 32 bit floating point arithmetic
+;; :: 32-bit floating point arithmetic
 ;; ::
 ;; ::::::::::::::::::::
 
@@ -3325,21 +3275,21 @@
    (set_attr "type" "fsmul")])
 
 ;; Multiplication with addition/subtraction
-(define_insn "*muladdsf4"
+(define_insn "fmasf4"
   [(set (match_operand:SF 0 "fpr_operand" "=f")
-	(plus:SF (mult:SF (match_operand:SF 1 "fpr_operand" "%f")
-			  (match_operand:SF 2 "fpr_operand" "f"))
-		 (match_operand:SF 3 "fpr_operand" "0")))]
+	(fma:SF (match_operand:SF 1 "fpr_operand" "f")
+		(match_operand:SF 2 "fpr_operand" "f")
+		(match_operand:SF 3 "fpr_operand" "0")))]
   "TARGET_HARD_FLOAT && TARGET_MULADD"
   "fmadds %1,%2,%0"
   [(set_attr "length" "4")
    (set_attr "type" "fsmadd")])
 
-(define_insn "*mulsubsf4"
+(define_insn "fmssf4"
   [(set (match_operand:SF 0 "fpr_operand" "=f")
-	(minus:SF (mult:SF (match_operand:SF 1 "fpr_operand" "%f")
-			   (match_operand:SF 2 "fpr_operand" "f"))
-		  (match_operand:SF 3 "fpr_operand" "0")))]
+	(fma:SF (match_operand:SF 1 "fpr_operand" "f")
+		(match_operand:SF 2 "fpr_operand" "f")
+		(neg:SF (match_operand:SF 3 "fpr_operand" "0"))))]
   "TARGET_HARD_FLOAT && TARGET_MULADD"
   "fmsubs %1,%2,%0"
   [(set_attr "length" "4")
@@ -3385,7 +3335,7 @@
 
 ;; ::::::::::::::::::::
 ;; ::
-;; :: 64 bit floating point arithmetic
+;; :: 64-bit floating point arithmetic
 ;; ::
 ;; ::::::::::::::::::::
 
@@ -3480,7 +3430,7 @@
 
 ;; ::::::::::::::::::::
 ;; ::
-;; :: 32 bit Integer Shifts and Rotates
+;; :: 32-bit Integer Shifts and Rotates
 ;; ::
 ;; ::::::::::::::::::::
 
@@ -3535,7 +3485,7 @@
 
 ;; ::::::::::::::::::::
 ;; ::
-;; :: 64 bit Integer Shifts and Rotates
+;; :: 64-bit Integer Shifts and Rotates
 ;; ::
 ;; ::::::::::::::::::::
 
@@ -3587,11 +3537,11 @@
 
 ;; ::::::::::::::::::::
 ;; ::
-;; :: 32 Bit Integer Logical operations
+;; :: 32-Bit Integer Logical operations
 ;; ::
 ;; ::::::::::::::::::::
 
-;; Logical AND, 32 bit integers
+;; Logical AND, 32-bit integers
 (define_insn "andsi3_media"
   [(set (match_operand:SI 0 "gpr_or_fpr_operand" "=d,f")
 	(and:SI (match_operand:SI 1 "gpr_or_fpr_operand" "%d,f")
@@ -3619,7 +3569,7 @@
   ""
   "")
 
-;; Inclusive OR, 32 bit integers
+;; Inclusive OR, 32-bit integers
 (define_insn "iorsi3_media"
   [(set (match_operand:SI 0 "gpr_or_fpr_operand" "=d,f")
 	(ior:SI (match_operand:SI 1 "gpr_or_fpr_operand" "%d,f")
@@ -3647,7 +3597,7 @@
   ""
   "")
 
-;; Exclusive OR, 32 bit integers
+;; Exclusive OR, 32-bit integers
 (define_insn "xorsi3_media"
   [(set (match_operand:SI 0 "gpr_or_fpr_operand" "=d,f")
 	(xor:SI (match_operand:SI 1 "gpr_or_fpr_operand" "%d,f")
@@ -3675,7 +3625,7 @@
   ""
   "")
 
-;; One's complement, 32 bit integers
+;; One's complement, 32-bit integers
 (define_insn "one_cmplsi2_media"
   [(set (match_operand:SI 0 "gpr_or_fpr_operand" "=d,f")
 	(not:SI (match_operand:SI 1 "gpr_or_fpr_operand" "d,f")))]
@@ -3703,11 +3653,11 @@
 
 ;; ::::::::::::::::::::
 ;; ::
-;; :: 64 Bit Integer Logical operations
+;; :: 64-Bit Integer Logical operations
 ;; ::
 ;; ::::::::::::::::::::
 
-;; Logical AND, 64 bit integers
+;; Logical AND, 64-bit integers
 ;; (define_insn "anddi3"
 ;;   [(set (match_operand:DI 0 "register_operand" "=r")
 ;; 	(and:DI (match_operand:DI 1 "register_operand" "%r")
@@ -3716,7 +3666,7 @@
 ;;   "anddi3 %0,%1,%2"
 ;;   [(set_attr "length" "4")])
 
-;; Inclusive OR, 64 bit integers
+;; Inclusive OR, 64-bit integers
 ;; (define_insn "iordi3"
 ;;   [(set (match_operand:DI 0 "register_operand" "=r")
 ;; 	(ior:DI (match_operand:DI 1 "register_operand" "%r")
@@ -3725,7 +3675,7 @@
 ;;   "iordi3 %0,%1,%2"
 ;;   [(set_attr "length" "4")])
 
-;; Exclusive OR, 64 bit integers
+;; Exclusive OR, 64-bit integers
 ;; (define_insn "xordi3"
 ;;   [(set (match_operand:DI 0 "register_operand" "=r")
 ;; 	(xor:DI (match_operand:DI 1 "register_operand" "%r")
@@ -3734,7 +3684,7 @@
 ;;   "xordi3 %0,%1,%2"
 ;;   [(set_attr "length" "4")])
 
-;; One's complement, 64 bit integers
+;; One's complement, 64-bit integers
 ;; (define_insn "one_cmpldi2"
 ;;   [(set (match_operand:DI 0 "register_operand" "=r")
 ;; 	(not:DI (match_operand:DI 1 "register_operand" "r")))]
@@ -3783,59 +3733,7 @@
 ;; ::
 ;; ::::::::::::::::::::
 
-;; Note, we store the operands in the comparison insns, and use them later
-;; when generating the branch or scc operation.
-
-;; First the routines called by the machine independent part of the compiler
-(define_expand "cmpsi"
-  [(set (cc0)
-        (compare (match_operand:SI 0 "integer_register_operand" "")
-  		 (match_operand:SI 1 "gpr_or_int10_operand" "")))]
-  ""
-  "
-{
-  frv_compare_op0 = operands[0];
-  frv_compare_op1 = operands[1];
-  DONE;
-}")
-
-;(define_expand "cmpdi"
-;  [(set (cc0)
-;        (compare (match_operand:DI 0 "register_operand" "")
-;  		 (match_operand:DI 1 "nonmemory_operand" "")))]
-;  ""
-;  "
-;{
-;  frv_compare_op0 = operands[0];
-;  frv_compare_op1 = operands[1];
-;  DONE;
-;}")
-
-(define_expand "cmpsf"
- [(set (cc0)
-       (compare (match_operand:SF 0 "fpr_operand" "")
- 		 (match_operand:SF 1 "fpr_operand" "")))]
- "TARGET_HARD_FLOAT"
- "
-{
-  frv_compare_op0 = operands[0];
-  frv_compare_op1 = operands[1];
-  DONE;
-}")
-
-(define_expand "cmpdf"
-  [(set (cc0)
-        (compare (match_operand:DF 0 "fpr_operand" "")
-  		 (match_operand:DF 1 "fpr_operand" "")))]
-  "TARGET_HARD_FLOAT && TARGET_DOUBLE"
-  "
-{
-  frv_compare_op0 = operands[0];
-  frv_compare_op1 = operands[1];
-  DONE;
-}")
-
-;; Now, the actual comparisons, generated by the branch and/or scc operations
+;; The comparisons are generated by the branch and/or scc operations
 
 (define_insn "cmpsi_cc"
   [(set (match_operand:CC 0 "icc_operand" "=t,t")
@@ -3896,137 +3794,31 @@
 ;; ::::::::::::::::::::
 
 ;; Define_expands called by the machine independent part of the compiler
-;; to allocate a new comparison register.  Each of these named patterns
-;; must be present, and they cannot be amalgamated into one pattern.
-;;
-;; If a fixed condition code register is being used, (as opposed to, say,
-;; using cc0), then the expands should look like this:
-;;
-;; (define_expand "<name_of_test>"
-;;   [(set (reg:CC <number_of_CC_register>)
-;; 	(compare:CC (match_dup 1)
-;; 		    (match_dup 2)))
-;;    (set (pc)
-;; 	(if_then_else (eq:CC (reg:CC <number_of_CC_register>)
-;; 			     (const_int 0))
-;; 		      (label_ref (match_operand 0 "" ""))
-;; 		      (pc)))]
-;;   ""
-;;   "{
-;;     operands[1] = frv_compare_op0;
-;;     operands[2] = frv_compare_op1;
-;;   }"
-;; )
+;; to allocate a new comparison register.
 
-(define_expand "beq"
-  [(use (match_operand 0 "" ""))]
+(define_expand "cbranchdf4"
+  [(use (match_operator 0 "ordered_comparison_operator"
+         [(match_operand:DF 1 "fpr_operand" "")
+          (match_operand:DF 2 "fpr_operand" "")]))
+   (use (match_operand 3 ""))]
+  "TARGET_HARD_FLOAT && TARGET_DOUBLE"
+  { if (frv_emit_cond_branch (operands)) DONE; gcc_unreachable (); })
+
+(define_expand "cbranchsf4"
+  [(use (match_operator 0 "ordered_comparison_operator"
+         [(match_operand:SF 1 "fpr_operand" "")
+          (match_operand:SF 2 "fpr_operand" "")]))
+   (use (match_operand 3 ""))]
+  "TARGET_HARD_FLOAT"
+  { if (frv_emit_cond_branch (operands)) DONE; gcc_unreachable (); })
+
+(define_expand "cbranchsi4"
+  [(use (match_operator 0 "ordered_comparison_operator"
+         [(match_operand:SI 1 "integer_register_operand" "")
+          (match_operand:SI 2 "gpr_or_int10_operand" "")]))
+   (use (match_operand 3 ""))]
   ""
-  "
-{
-  if (! frv_emit_cond_branch (EQ, operands[0]))
-    FAIL;
-
-  DONE;
-}")
-
-(define_expand "bne"
-  [(use (match_operand 0 "" ""))]
-  ""
-  "
-{
-  if (! frv_emit_cond_branch (NE, operands[0]))
-    FAIL;
-
-  DONE;
-}")
-
-(define_expand "blt"
-  [(use (match_operand 0 "" ""))]
-  ""
-  "
-{
-  if (! frv_emit_cond_branch (LT, operands[0]))
-    FAIL;
-
-  DONE;
-}")
-
-(define_expand "ble"
-  [(use (match_operand 0 "" ""))]
-  ""
-  "
-{
-  if (! frv_emit_cond_branch (LE, operands[0]))
-    FAIL;
-
-  DONE;
-}")
-
-(define_expand "bgt"
-  [(use (match_operand 0 "" ""))]
-  ""
-  "
-{
-  if (! frv_emit_cond_branch (GT, operands[0]))
-    FAIL;
-
-  DONE;
-}")
-
-(define_expand "bge"
-  [(use (match_operand 0 "" ""))]
-  ""
-  "
-{
-  if (! frv_emit_cond_branch (GE, operands[0]))
-    FAIL;
-
-  DONE;
-}")
-
-(define_expand "bltu"
-  [(use (match_operand 0 "" ""))]
-  ""
-  "
-{
-  if (! frv_emit_cond_branch (LTU, operands[0]))
-    FAIL;
-
-  DONE;
-}")
-
-(define_expand "bleu"
-  [(use (match_operand 0 "" ""))]
-  ""
-  "
-{
-  if (! frv_emit_cond_branch (LEU, operands[0]))
-    FAIL;
-
-  DONE;
-}")
-
-(define_expand "bgtu"
-  [(use (match_operand 0 "" ""))]
-  ""
-  "
-{
-  if (! frv_emit_cond_branch (GTU, operands[0]))
-    FAIL;
-
-  DONE;
-}")
-
-(define_expand "bgeu"
-  [(use (match_operand 0 "" ""))]
-  ""
-  "
-{
-  if (! frv_emit_cond_branch (GEU, operands[0]))
-    FAIL;
-
-  DONE;
-}")
+  { if (frv_emit_cond_branch (operands)) DONE; gcc_unreachable (); })
 
 ;; Actual branches.  We must allow for the (label_ref) and the (pc) to be
 ;; swapped.  If they are swapped, it reverses the sense of the branch.
@@ -4191,115 +3983,29 @@
 ;; Define_expands called by the machine independent part of the compiler
 ;; to allocate a new comparison register
 
-(define_expand "seq"
-  [(match_operand:SI 0 "integer_register_operand" "")]
-  "TARGET_SCC"
-  "
-{
-  if (! frv_emit_scc (EQ, operands[0]))
-    FAIL;
+(define_expand "cstoredf4"
+  [(use (match_operator:SI 1 "ordered_comparison_operator"
+         [(match_operand:DF 2 "fpr_operand")
+          (match_operand:DF 3 "fpr_operand")]))
+   (clobber (match_operand:SI 0 "register_operand"))]
+  "TARGET_HARD_FLOAT && TARGET_DOUBLE"
+  { if (frv_emit_scc (operands)) DONE; else FAIL; })
 
-  DONE;
-}")
+(define_expand "cstoresf4"
+  [(use (match_operator:SI 1 "ordered_comparison_operator"
+         [(match_operand:SF 2 "fpr_operand")
+          (match_operand:SF 3 "fpr_operand")]))
+   (clobber (match_operand:SI 0 "register_operand"))]
+  "TARGET_HARD_FLOAT"
+  { if (frv_emit_scc (operands)) DONE; else FAIL; })
 
-(define_expand "sne"
-  [(match_operand:SI 0 "integer_register_operand" "")]
-  "TARGET_SCC"
-  "
-{
-  if (! frv_emit_scc (NE, operands[0]))
-    FAIL;
-
-  DONE;
-}")
-
-(define_expand "slt"
-  [(match_operand:SI 0 "integer_register_operand" "")]
-  "TARGET_SCC"
-  "
-{
-  if (! frv_emit_scc (LT, operands[0]))
-    FAIL;
-
-  DONE;
-}")
-
-(define_expand "sle"
-  [(match_operand:SI 0 "integer_register_operand" "")]
-  "TARGET_SCC"
-  "
-{
-  if (! frv_emit_scc (LE, operands[0]))
-    FAIL;
-
-  DONE;
-}")
-
-(define_expand "sgt"
-  [(match_operand:SI 0 "integer_register_operand" "")]
-  "TARGET_SCC"
-  "
-{
-  if (! frv_emit_scc (GT, operands[0]))
-    FAIL;
-
-  DONE;
-}")
-
-(define_expand "sge"
-  [(match_operand:SI 0 "integer_register_operand" "")]
-  "TARGET_SCC"
-  "
-{
-  if (! frv_emit_scc (GE, operands[0]))
-    FAIL;
-
-  DONE;
-}")
-
-(define_expand "sltu"
-  [(match_operand:SI 0 "integer_register_operand" "")]
-  "TARGET_SCC"
-  "
-{
-  if (! frv_emit_scc (LTU, operands[0]))
-    FAIL;
-
-  DONE;
-}")
-
-(define_expand "sleu"
-  [(match_operand:SI 0 "integer_register_operand" "")]
-  "TARGET_SCC"
-  "
-{
-  if (! frv_emit_scc (LEU, operands[0]))
-    FAIL;
-
-  DONE;
-}")
-
-(define_expand "sgtu"
-  [(match_operand:SI 0 "integer_register_operand" "")]
-  "TARGET_SCC"
-  "
-{
-  if (! frv_emit_scc (GTU, operands[0]))
-    FAIL;
-
-  DONE;
-}")
-
-(define_expand "sgeu"
-  [(match_operand:SI 0 "integer_register_operand" "")]
-  "TARGET_SCC"
-  "
-{
-  if (! frv_emit_scc (GEU, operands[0]))
-    FAIL;
-
-  DONE;
-}")
+(define_expand "cstoresi4"
+  [(use (match_operator:SI 1 "ordered_comparison_operator"
+         [(match_operand:SI 2 "integer_register_operand")
+          (match_operand:SI 3 "gpr_or_int10_operand")]))
+   (clobber (match_operand:SI 0 "register_operand"))]
+  ""
+  { if (frv_emit_scc (operands)) DONE; else FAIL; })
 
 (define_insn "*scc_int"
   [(set (match_operand:SI 0 "integer_register_operand" "=d")
@@ -4923,8 +4629,8 @@
    (clobber (match_operand:CC_CCR 5 "icr_operand" "=v,v,v,v,v"))]
   "(INTVAL (operands[3]) == 0
     || INTVAL (operands[4]) == 0
-    || (IN_RANGE_P (INTVAL (operands[3]), -2048, 2047)
-        && IN_RANGE_P (INTVAL (operands[4]) - INTVAL (operands[3]), -2048, 2047)))"
+    || (IN_RANGE (INTVAL (operands[3]), -2048, 2047)
+        && IN_RANGE (INTVAL (operands[4]) - INTVAL (operands[3]), -2048, 2047)))"
   "#"
   [(set_attr "length" "8,12,8,12,12")
    (set_attr "type" "multi")])
@@ -4940,8 +4646,8 @@
   "TARGET_HARD_FLOAT
    && (INTVAL (operands[3]) == 0
        || INTVAL (operands[4]) == 0
-       || (IN_RANGE_P (INTVAL (operands[3]), -2048, 2047)
-	   && IN_RANGE_P (INTVAL (operands[4]) - INTVAL (operands[3]), -2048, 2047)))"
+       || (IN_RANGE (INTVAL (operands[3]), -2048, 2047)
+	   && IN_RANGE (INTVAL (operands[4]) - INTVAL (operands[3]), -2048, 2047)))"
   "#"
   [(set_attr "length" "8,12,8,12,12")
    (set_attr "type" "multi")])
@@ -5008,8 +4714,8 @@
    (clobber (match_operand:CC_CCR 5 "icr_operand" "=v,v,v,v,v"))]
   "(INTVAL (operands[3]) == 0
     || INTVAL (operands[4]) == 0
-    || (IN_RANGE_P (INTVAL (operands[3]), -2048, 2047)
-        && IN_RANGE_P (INTVAL (operands[4]) - INTVAL (operands[3]), -2048, 2047)))"
+    || (IN_RANGE (INTVAL (operands[3]), -2048, 2047)
+        && IN_RANGE (INTVAL (operands[4]) - INTVAL (operands[3]), -2048, 2047)))"
   "#"
   [(set_attr "length" "8,12,8,12,12")
    (set_attr "type" "multi")])
@@ -5025,8 +4731,8 @@
   "TARGET_HARD_FLOAT
    && (INTVAL (operands[3]) == 0
        || INTVAL (operands[4]) == 0
-       || (IN_RANGE_P (INTVAL (operands[3]), -2048, 2047)
-	   && IN_RANGE_P (INTVAL (operands[4]) - INTVAL (operands[3]), -2048, 2047)))"
+       || (IN_RANGE (INTVAL (operands[3]), -2048, 2047)
+	   && IN_RANGE (INTVAL (operands[4]) - INTVAL (operands[3]), -2048, 2047)))"
   "#"
   [(set_attr "length" "8,12,8,12,12")
    (set_attr "type" "multi")])
@@ -5093,8 +4799,8 @@
    (clobber (match_operand:CC_CCR 5 "icr_operand" "=v,v,v,v,v"))]
   "(INTVAL (operands[3]) == 0
     || INTVAL (operands[4]) == 0
-    || (IN_RANGE_P (INTVAL (operands[3]), -2048, 2047)
-        && IN_RANGE_P (INTVAL (operands[4]) - INTVAL (operands[3]), -2048, 2047)))"
+    || (IN_RANGE (INTVAL (operands[3]), -2048, 2047)
+        && IN_RANGE (INTVAL (operands[4]) - INTVAL (operands[3]), -2048, 2047)))"
   "#"
   [(set_attr "length" "8,12,8,12,12")
    (set_attr "type" "multi")])
@@ -5110,8 +4816,8 @@
   "TARGET_HARD_FLOAT
    && (INTVAL (operands[3]) == 0
        || INTVAL (operands[4]) == 0
-       || (IN_RANGE_P (INTVAL (operands[3]), -2048, 2047)
-	   && IN_RANGE_P (INTVAL (operands[4]) - INTVAL (operands[3]), -2048, 2047)))"
+       || (IN_RANGE (INTVAL (operands[3]), -2048, 2047)
+	   && IN_RANGE (INTVAL (operands[4]) - INTVAL (operands[3]), -2048, 2047)))"
   "#"
   [(set_attr "length" "8,12,8,12,12")
    (set_attr "type" "multi")])
@@ -5859,7 +5565,7 @@
   gcc_assert (GET_CODE (operands[2]) == CONST_INT);
 
   /* If we can't generate an immediate instruction, promote to register.  */
-  if (! IN_RANGE_P (INTVAL (range), -2048, 2047))
+  if (! IN_RANGE (INTVAL (range), -2048, 2047))
     range = force_reg (SImode, range);
 
   /* If low bound is 0, we don't have to subtract it.  */
@@ -5868,7 +5574,7 @@
   else
     {
       indx = gen_reg_rtx (SImode);
-      if (IN_RANGE_P (INTVAL (low), -2047, 2048))
+      if (IN_RANGE (INTVAL (low), -2047, 2048))
 	emit_insn (gen_addsi3 (indx, operands[0], GEN_INT (- INTVAL (low))));
       else
 	emit_insn (gen_subsi3 (indx, operands[0], force_reg (SImode, low)));
@@ -7904,8 +7610,7 @@
 
   MEM_READONLY_P (SET_SRC (PATTERN (insn))) = 1;
 
-  REG_NOTES (insn) = gen_rtx_EXPR_LIST (REG_EQUAL, operands[1],
-					REG_NOTES (insn));
+  set_unique_reg_note (insn, REG_EQUAL, operands[1]);
 
   DONE;
 }")
@@ -7935,7 +7640,7 @@
   ""
   "
 {
-  if (no_new_pseudos)
+  if (!can_create_pseudo_p ())
     operands[6] = operands[5] = operands[0];
   else
     {
@@ -7963,7 +7668,7 @@
   ""
   "
 {
-  if (no_new_pseudos)
+  if (!can_create_pseudo_p ())
     operands[6] = operands[5] = operands[0];
   else
     {
@@ -7985,8 +7690,7 @@
 {
   rtx insn = emit_insn (gen_symGOTOFF2reg_i (operands[0], operands[1], operands[2], operands[3]));
 
-  REG_NOTES (insn) = gen_rtx_EXPR_LIST (REG_EQUAL, operands[1],
-					REG_NOTES (insn));
+  set_unique_reg_note (insn, REG_EQUAL, operands[1]);
 
   DONE;
 }")
@@ -8012,7 +7716,7 @@
 {
   rtx insn;
 
-  if (no_new_pseudos)
+  if (!can_create_pseudo_p ())
     operands[4] = operands[0];
   else
     operands[4] = gen_reg_rtx (SImode);
@@ -8022,8 +7726,7 @@
   insn = emit_insn (gen_symGOTOFF2reg_i (operands[0], operands[1],
 					 operands[4], operands[3]));
 
-  REG_NOTES (insn) = gen_rtx_EXPR_LIST (REG_EQUAL, operands[1],
-					REG_NOTES (insn));
+  set_unique_reg_note (insn, REG_EQUAL, operands[1]);
 
   DONE;
 }")
@@ -8039,7 +7742,7 @@
 {
   rtx insn;
 
-  if (no_new_pseudos)
+  if (!can_create_pseudo_p ())
     {
       emit_insn (gen_symGOT2reg (operands[0], operands[1], operands[2],
 				 GEN_INT (R_FRV_GOT12)));
@@ -8053,8 +7756,7 @@
   insn = emit_insn (gen_symGOTOFF2reg_hilo (operands[0], operands[1],
 					    operands[4], operands[3]));
 
-  REG_NOTES (insn) = gen_rtx_EXPR_LIST (REG_EQUAL, operands[1],
-					REG_NOTES (insn));
+  set_unique_reg_note (insn, REG_EQUAL, operands[1]);
 
   DONE;
 }")

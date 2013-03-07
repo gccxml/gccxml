@@ -1,25 +1,25 @@
 /* Induction variable canonicalization.
-   Copyright (C) 2004, 2005 Free Software Foundation, Inc.
-   
+   Copyright (C) 2004, 2005, 2007, 2008, 2010
+   Free Software Foundation, Inc.
+
 This file is part of GCC.
-   
+
 GCC is free software; you can redistribute it and/or modify it
 under the terms of the GNU General Public License as published by the
-Free Software Foundation; either version 2, or (at your option) any
+Free Software Foundation; either version 3, or (at your option) any
 later version.
-   
+
 GCC is distributed in the hope that it will be useful, but WITHOUT
 ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
 FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 for more details.
-   
+
 You should have received a copy of the GNU General Public License
-along with GCC; see the file COPYING.  If not, write to the Free
-Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
-02110-1301, USA.  */
+along with GCC; see the file COPYING3.  If not see
+<http://www.gnu.org/licenses/>.  */
 
 /* This pass detects the loops that iterate a constant number of times,
-   adds a canonical induction variable (step -1, tested against 0) 
+   adds a canonical induction variable (step -1, tested against 0)
    and replaces the exit test.  This enables the less powerful rtl
    level analysis to use this information.
 
@@ -38,22 +38,20 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
 #include "coretypes.h"
 #include "tm.h"
 #include "tree.h"
-#include "rtl.h"
 #include "tm_p.h"
-#include "hard-reg-set.h"
 #include "basic-block.h"
-#include "output.h"
-#include "diagnostic.h"
+#include "tree-pretty-print.h"
+#include "gimple-pretty-print.h"
 #include "tree-flow.h"
 #include "tree-dump.h"
 #include "cfgloop.h"
 #include "tree-pass.h"
-#include "ggc.h"
 #include "tree-chrec.h"
 #include "tree-scalar-evolution.h"
 #include "params.h"
 #include "flags.h"
 #include "tree-inline.h"
+#include "target.h"
 
 /* Specifies types of loops that may be unrolled.  */
 
@@ -73,8 +71,9 @@ static void
 create_canonical_iv (struct loop *loop, edge exit, tree niter)
 {
   edge in;
-  tree cond, type, var;
-  block_stmt_iterator incr_at;
+  tree type, var;
+  gimple cond;
+  gimple_stmt_iterator incr_at;
   enum tree_code cmp;
 
   if (dump_file && (dump_flags & TDF_DETAILS))
@@ -98,74 +97,237 @@ create_canonical_iv (struct loop *loop, edge exit, tree niter)
   niter = fold_build2 (PLUS_EXPR, type,
 		       niter,
 		       build_int_cst (type, 1));
-  incr_at = bsi_last (in->src);
+  incr_at = gsi_last_bb (in->src);
   create_iv (niter,
 	     build_int_cst (type, -1),
 	     NULL_TREE, loop,
 	     &incr_at, false, NULL, &var);
 
   cmp = (exit->flags & EDGE_TRUE_VALUE) ? EQ_EXPR : NE_EXPR;
-  COND_EXPR_COND (cond) = build2 (cmp, boolean_type_node,
-				  var,
-				  build_int_cst (type, 0));
+  gimple_cond_set_code (cond, cmp);
+  gimple_cond_set_lhs (cond, var);
+  gimple_cond_set_rhs (cond, build_int_cst (type, 0));
   update_stmt (cond);
 }
 
-/* Computes an estimated number of insns in LOOP.  */
+/* Computes an estimated number of insns in LOOP, weighted by WEIGHTS.  */
 
 unsigned
-tree_num_loop_insns (struct loop *loop)
+tree_num_loop_insns (struct loop *loop, eni_weights *weights)
 {
   basic_block *body = get_loop_body (loop);
-  block_stmt_iterator bsi;
-  unsigned size = 1, i;
+  gimple_stmt_iterator gsi;
+  unsigned size = 0, i;
 
   for (i = 0; i < loop->num_nodes; i++)
-    for (bsi = bsi_start (body[i]); !bsi_end_p (bsi); bsi_next (&bsi))
-      size += estimate_num_insns (bsi_stmt (bsi));
+    for (gsi = gsi_start_bb (body[i]); !gsi_end_p (gsi); gsi_next (&gsi))
+      size += estimate_num_insns (gsi_stmt (gsi), weights);
   free (body);
 
   return size;
 }
 
-/* Estimate number of insns of completely unrolled loop.  We assume
-   that the size of the unrolled loop is decreased in the
-   following way (the numbers of insns are based on what
-   estimate_num_insns returns for appropriate statements):
+/* Describe size of loop as detected by tree_estimate_loop_size.  */
+struct loop_size
+{
+  /* Number of instructions in the loop.  */
+  int overall;
 
-   1) exit condition gets removed (2 insns)
-   2) increment of the control variable gets removed (2 insns)
-   3) All remaining statements are likely to get simplified
-      due to constant propagation.  Hard to estimate; just
-      as a heuristics we decrease the rest by 1/3.
+  /* Number of instructions that will be likely optimized out in
+     peeled iterations of loop  (i.e. computation based on induction
+     variable where induction variable starts at known constant.)  */
+  int eliminated_by_peeling;
 
-   NINSNS is the number of insns in the loop before unrolling.
-   NUNROLL is the number of times the loop is unrolled.  */
+  /* Same statistics for last iteration of loop: it is smaller because
+     instructions after exit are not executed.  */
+  int last_iteration;
+  int last_iteration_eliminated_by_peeling;
+};
+
+/* Return true if OP in STMT will be constant after peeling LOOP.  */
+
+static bool
+constant_after_peeling (tree op, gimple stmt, struct loop *loop)
+{
+  affine_iv iv;
+
+  if (is_gimple_min_invariant (op))
+    return true;
+
+  /* We can still fold accesses to constant arrays when index is known.  */
+  if (TREE_CODE (op) != SSA_NAME)
+    {
+      tree base = op;
+
+      /* First make fast look if we see constant array inside.  */
+      while (handled_component_p (base))
+	base = TREE_OPERAND (base, 0);
+      if ((DECL_P (base) == VAR_DECL
+	   && const_value_known_p (base))
+	  || CONSTANT_CLASS_P (base))
+	{
+	  /* If so, see if we understand all the indices.  */
+	  base = op;
+	  while (handled_component_p (base))
+	    {
+	      if (TREE_CODE (base) == ARRAY_REF
+		  && !constant_after_peeling (TREE_OPERAND (base, 1), stmt, loop))
+		return false;
+	      base = TREE_OPERAND (base, 0);
+	    }
+	  return true;
+	}
+      return false;
+    }
+
+  /* Induction variables are constants.  */
+  if (!simple_iv (loop, loop_containing_stmt (stmt), op, &iv, false))
+    return false;
+  if (!is_gimple_min_invariant (iv.base))
+    return false;
+  if (!is_gimple_min_invariant (iv.step))
+    return false;
+  return true;
+}
+
+/* Computes an estimated number of insns in LOOP, weighted by WEIGHTS.
+   Return results in SIZE, estimate benefits for complete unrolling exiting by EXIT.  */
+
+static void
+tree_estimate_loop_size (struct loop *loop, edge exit, struct loop_size *size)
+{
+  basic_block *body = get_loop_body (loop);
+  gimple_stmt_iterator gsi;
+  unsigned int i;
+  bool after_exit;
+
+  size->overall = 0;
+  size->eliminated_by_peeling = 0;
+  size->last_iteration = 0;
+  size->last_iteration_eliminated_by_peeling = 0;
+
+  if (dump_file && (dump_flags & TDF_DETAILS))
+    fprintf (dump_file, "Estimating sizes for loop %i\n", loop->num);
+  for (i = 0; i < loop->num_nodes; i++)
+    {
+      if (exit && body[i] != exit->src
+	  && dominated_by_p (CDI_DOMINATORS, body[i], exit->src))
+	after_exit = true;
+      else
+	after_exit = false;
+      if (dump_file && (dump_flags & TDF_DETAILS))
+	fprintf (dump_file, " BB: %i, after_exit: %i\n", body[i]->index, after_exit);
+
+      for (gsi = gsi_start_bb (body[i]); !gsi_end_p (gsi); gsi_next (&gsi))
+	{
+	  gimple stmt = gsi_stmt (gsi);
+	  int num = estimate_num_insns (stmt, &eni_size_weights);
+	  bool likely_eliminated = false;
+
+	  if (dump_file && (dump_flags & TDF_DETAILS))
+	    {
+	      fprintf (dump_file, "  size: %3i ", num);
+	      print_gimple_stmt (dump_file, gsi_stmt (gsi), 0, 0);
+	    }
+
+	  /* Look for reasons why we might optimize this stmt away. */
+
+	  /* Exit conditional.  */
+	  if (body[i] == exit->src && stmt == last_stmt (exit->src))
+	    {
+	      if (dump_file && (dump_flags & TDF_DETAILS))
+	        fprintf (dump_file, "   Exit condition will be eliminated.\n");
+	      likely_eliminated = true;
+	    }
+	  /* Sets of IV variables  */
+	  else if (gimple_code (stmt) == GIMPLE_ASSIGN
+	      && constant_after_peeling (gimple_assign_lhs (stmt), stmt, loop))
+	    {
+	      if (dump_file && (dump_flags & TDF_DETAILS))
+	        fprintf (dump_file, "   Induction variable computation will"
+			 " be folded away.\n");
+	      likely_eliminated = true;
+	    }
+	  /* Assignments of IV variables.  */
+	  else if (gimple_code (stmt) == GIMPLE_ASSIGN
+		   && TREE_CODE (gimple_assign_lhs (stmt)) == SSA_NAME
+		   && constant_after_peeling (gimple_assign_rhs1 (stmt), stmt,loop)
+		   && (gimple_assign_rhs_class (stmt) != GIMPLE_BINARY_RHS
+		       || constant_after_peeling (gimple_assign_rhs2 (stmt),
+		       				  stmt, loop)))
+	    {
+	      if (dump_file && (dump_flags & TDF_DETAILS))
+	        fprintf (dump_file, "   Constant expression will be folded away.\n");
+	      likely_eliminated = true;
+	    }
+	  /* Conditionals.  */
+	  else if (gimple_code (stmt) == GIMPLE_COND
+		   && constant_after_peeling (gimple_cond_lhs (stmt), stmt, loop)
+		   && constant_after_peeling (gimple_cond_rhs (stmt), stmt, loop))
+	    {
+	      if (dump_file && (dump_flags & TDF_DETAILS))
+	        fprintf (dump_file, "   Constant conditional.\n");
+	      likely_eliminated = true;
+	    }
+
+	  size->overall += num;
+	  if (likely_eliminated)
+	    size->eliminated_by_peeling += num;
+	  if (!after_exit)
+	    {
+	      size->last_iteration += num;
+	      if (likely_eliminated)
+		size->last_iteration_eliminated_by_peeling += num;
+	    }
+	}
+    }
+  if (dump_file && (dump_flags & TDF_DETAILS))
+    fprintf (dump_file, "size: %i-%i, last_iteration: %i-%i\n", size->overall,
+    	     size->eliminated_by_peeling, size->last_iteration,
+	     size->last_iteration_eliminated_by_peeling);
+
+  free (body);
+}
+
+/* Estimate number of insns of completely unrolled loop.
+   It is (NUNROLL + 1) * size of loop body with taking into account
+   the fact that in last copy everything after exit conditional
+   is dead and that some instructions will be eliminated after
+   peeling.
+
+   Loop body is likely going to simplify futher, this is difficult
+   to guess, we just decrease the result by 1/3.  */
 
 static unsigned HOST_WIDE_INT
-estimated_unrolled_size (unsigned HOST_WIDE_INT ninsns,
+estimated_unrolled_size (struct loop_size *size,
 			 unsigned HOST_WIDE_INT nunroll)
 {
-  HOST_WIDE_INT unr_insns = 2 * ((HOST_WIDE_INT) ninsns - 4) / 3;
+  HOST_WIDE_INT unr_insns = ((nunroll)
+  			     * (HOST_WIDE_INT) (size->overall
+			     			- size->eliminated_by_peeling));
+  if (!nunroll)
+    unr_insns = 0;
+  unr_insns += size->last_iteration - size->last_iteration_eliminated_by_peeling;
+
+  unr_insns = unr_insns * 2 / 3;
   if (unr_insns <= 0)
     unr_insns = 1;
-  unr_insns *= (nunroll + 1);
 
   return unr_insns;
 }
 
-/* Tries to unroll LOOP completely, i.e. NITER times.  LOOPS is the
-   loop tree.  UL determines which loops we are allowed to unroll. 
+/* Tries to unroll LOOP completely, i.e. NITER times.
+   UL determines which loops we are allowed to unroll.
    EXIT is the exit of the loop that should be eliminated.  */
 
 static bool
-try_unroll_loop_completely (struct loops *loops ATTRIBUTE_UNUSED,
-			    struct loop *loop,
+try_unroll_loop_completely (struct loop *loop,
 			    edge exit, tree niter,
 			    enum unroll_level ul)
 {
   unsigned HOST_WIDE_INT n_unroll, ninsns, max_unroll, unr_insns;
-  tree old_cond, cond, dont_exit, do_exit;
+  gimple cond;
+  struct loop_size size;
 
   if (loop->inner)
     return false;
@@ -183,81 +345,77 @@ try_unroll_loop_completely (struct loops *loops ATTRIBUTE_UNUSED,
       if (ul == UL_SINGLE_ITER)
 	return false;
 
-      ninsns = tree_num_loop_insns (loop);
+      tree_estimate_loop_size (loop, exit, &size);
+      ninsns = size.overall;
 
-      if (n_unroll * ninsns
-	  > (unsigned) PARAM_VALUE (PARAM_MAX_COMPLETELY_PEELED_INSNS))
-	return false;
-
-      if (ul == UL_NO_GROWTH)
+      unr_insns = estimated_unrolled_size (&size, n_unroll);
+      if (dump_file && (dump_flags & TDF_DETAILS))
 	{
-	  unr_insns = estimated_unrolled_size (ninsns, n_unroll);
-	  
+	  fprintf (dump_file, "  Loop size: %d\n", (int) ninsns);
+	  fprintf (dump_file, "  Estimated size after unrolling: %d\n",
+		   (int) unr_insns);
+	}
+
+      if (unr_insns > ninsns
+	  && (unr_insns
+	      > (unsigned) PARAM_VALUE (PARAM_MAX_COMPLETELY_PEELED_INSNS)))
+	{
 	  if (dump_file && (dump_flags & TDF_DETAILS))
-	    {
-	      fprintf (dump_file, "  Loop size: %d\n", (int) ninsns);
-	      fprintf (dump_file, "  Estimated size after unrolling: %d\n",
-		       (int) unr_insns);
-	    }
-	  
-	  if (unr_insns > ninsns)
-	    {
-	      if (dump_file && (dump_flags & TDF_DETAILS))
-		fprintf (dump_file, "Not unrolling loop %d:\n", loop->num);
-	      return false;
-	    }
+	    fprintf (dump_file, "Not unrolling loop %d "
+		     "(--param max-completely-peeled-insns limit reached).\n",
+		     loop->num);
+	  return false;
+	}
+
+      if (ul == UL_NO_GROWTH
+	  && unr_insns > ninsns)
+	{
+	  if (dump_file && (dump_flags & TDF_DETAILS))
+	    fprintf (dump_file, "Not unrolling loop %d.\n", loop->num);
+	  return false;
 	}
     }
 
-  if (exit->flags & EDGE_TRUE_VALUE)
-    {
-      dont_exit = boolean_false_node;
-      do_exit = boolean_true_node;
-    }
-  else
-    {
-      dont_exit = boolean_true_node;
-      do_exit = boolean_false_node;
-    }
-  cond = last_stmt (exit->src);
-    
   if (n_unroll)
     {
       sbitmap wont_exit;
-      edge *edges_to_remove = XNEWVEC (edge, n_unroll);
-      unsigned int n_to_remove = 0;
+      edge e;
+      unsigned i;
+      VEC (edge, heap) *to_remove = NULL;
 
-      old_cond = COND_EXPR_COND (cond);
-      COND_EXPR_COND (cond) = dont_exit;
-      update_stmt (cond);
       initialize_original_copy_tables ();
-
       wont_exit = sbitmap_alloc (n_unroll + 1);
       sbitmap_ones (wont_exit);
       RESET_BIT (wont_exit, 0);
 
-      if (!tree_duplicate_loop_to_header_edge (loop, loop_preheader_edge (loop),
-					       loops, n_unroll, wont_exit,
-					       exit, edges_to_remove,
-					       &n_to_remove,
-					       DLTHE_FLAG_UPDATE_FREQ
-					       | DLTHE_FLAG_COMPLETTE_PEEL))
+      if (!gimple_duplicate_loop_to_header_edge (loop, loop_preheader_edge (loop),
+						 n_unroll, wont_exit,
+						 exit, &to_remove,
+						 DLTHE_FLAG_UPDATE_FREQ
+						 | DLTHE_FLAG_COMPLETTE_PEEL))
 	{
-	  COND_EXPR_COND (cond) = old_cond;
-	  update_stmt (cond);
           free_original_copy_tables ();
 	  free (wont_exit);
-	  free (edges_to_remove);
 	  return false;
 	}
+
+      FOR_EACH_VEC_ELT (edge, to_remove, i, e)
+	{
+	  bool ok = remove_path (e);
+	  gcc_assert (ok);
+	}
+
+      VEC_free (edge, heap, to_remove);
       free (wont_exit);
-      free (edges_to_remove);
       free_original_copy_tables ();
     }
-  
-  COND_EXPR_COND (cond) = do_exit;
-  update_stmt (cond);
 
+  cond = last_stmt (exit->src);
+  if (exit->flags & EDGE_TRUE_VALUE)
+    gimple_cond_make_true (cond);
+  else
+    gimple_cond_make_false (cond);
+  update_stmt (cond);
   update_ssa (TODO_update_ssa);
 
   if (dump_file && (dump_flags & TDF_DETAILS))
@@ -266,38 +424,32 @@ try_unroll_loop_completely (struct loops *loops ATTRIBUTE_UNUSED,
   return true;
 }
 
-/* Adds a canonical induction variable to LOOP if suitable.  LOOPS is the loops
-   tree.  CREATE_IV is true if we may create a new iv.  UL determines 
+/* Adds a canonical induction variable to LOOP if suitable.
+   CREATE_IV is true if we may create a new iv.  UL determines
    which loops we are allowed to completely unroll.  If TRY_EVAL is true, we try
-   to determine the number of iterations of a loop by direct evaluation. 
+   to determine the number of iterations of a loop by direct evaluation.
    Returns true if cfg is changed.  */
 
 static bool
-canonicalize_loop_induction_variables (struct loops *loops, struct loop *loop,
+canonicalize_loop_induction_variables (struct loop *loop,
 				       bool create_iv, enum unroll_level ul,
 				       bool try_eval)
 {
   edge exit = NULL;
   tree niter;
 
-  niter = number_of_iterations_in_loop (loop);
+  niter = number_of_latch_executions (loop);
   if (TREE_CODE (niter) == INTEGER_CST)
     {
-      exit = loop->single_exit;
+      exit = single_exit (loop);
       if (!just_once_each_iteration_p (loop, exit->src))
 	return false;
-
-      /* The result of number_of_iterations_in_loop is by one higher than
-	 we expect (i.e. it returns number of executions of the exit
-	 condition, not of the loop latch edge).  */
-      niter = fold_build2 (MINUS_EXPR, TREE_TYPE (niter), niter,
-			   build_int_cst (TREE_TYPE (niter), 1));
     }
   else
     {
       /* If the loop has more than one exit, try checking all of them
 	 for # of iterations determinable through scev.  */
-      if (!loop->single_exit)
+      if (!single_exit (loop))
 	niter = find_loop_niter (loop, &exit);
 
       /* Finally if everything else fails, try brute force evaluation.  */
@@ -318,7 +470,7 @@ canonicalize_loop_induction_variables (struct loops *loops, struct loop *loop,
       fprintf (dump_file, " times.\n");
     }
 
-  if (try_unroll_loop_completely (loops, loop, exit, niter, ul))
+  if (try_unroll_loop_completely (loop, exit, niter, ul))
     return true;
 
   if (create_iv)
@@ -328,23 +480,20 @@ canonicalize_loop_induction_variables (struct loops *loops, struct loop *loop,
 }
 
 /* The main entry point of the pass.  Adds canonical induction variables
-   to the suitable LOOPS.  */
+   to the suitable loops.  */
 
 unsigned int
-canonicalize_induction_variables (struct loops *loops)
+canonicalize_induction_variables (void)
 {
-  unsigned i;
+  loop_iterator li;
   struct loop *loop;
   bool changed = false;
-  
-  for (i = 1; i < loops->num; i++)
-    {
-      loop = loops->parray[i];
 
-      if (loop)
-	changed |= canonicalize_loop_induction_variables (loops, loop,
-							  true, UL_SINGLE_ITER,
-							  true);
+  FOR_EACH_LOOP (li, loop, 0)
+    {
+      changed |= canonicalize_loop_induction_variables (loop,
+							true, UL_SINGLE_ITER,
+							true);
     }
 
   /* Clean up the information about numbers of iterations, since brute force
@@ -361,222 +510,47 @@ canonicalize_induction_variables (struct loops *loops)
    size of the code does not increase.  */
 
 unsigned int
-tree_unroll_loops_completely (struct loops *loops, bool may_increase_size)
+tree_unroll_loops_completely (bool may_increase_size, bool unroll_outer)
 {
-  unsigned i;
+  loop_iterator li;
   struct loop *loop;
-  bool changed = false;
+  bool changed;
   enum unroll_level ul;
+  int iteration = 0;
 
-  for (i = 1; i < loops->num; i++)
+  do
     {
-      loop = loops->parray[i];
+      changed = false;
 
-      if (!loop)
-	continue;
-
-      if (may_increase_size && maybe_hot_bb_p (loop->header))
-	ul = UL_ALL;
-      else
-	ul = UL_NO_GROWTH;
-      changed |= canonicalize_loop_induction_variables (loops, loop,
-							false, ul,
-							!flag_tree_loop_ivcanon);
-    }
-
-  /* Clean up the information about numbers of iterations, since complete
-     unrolling might have invalidated it.  */
-  scev_reset ();
-
-  if (changed)
-    return TODO_cleanup_cfg;
-  return 0;
-}
-
-/* Checks whether LOOP is empty.  */
-
-static bool
-empty_loop_p (struct loop *loop)
-{
-  edge exit;
-  struct tree_niter_desc niter;
-  tree phi, def;
-  basic_block *body;
-  block_stmt_iterator bsi;
-  unsigned i;
-  tree stmt;
-
-  /* If the loop has multiple exits, it is too hard for us to handle.
-     Similarly, if the exit is not dominating, we cannot determine
-     whether the loop is not infinite.  */
-  exit = single_dom_exit (loop);
-  if (!exit)
-    return false;
-
-  /* The loop must be finite.  */
-  if (!number_of_iterations_exit (loop, exit, &niter, false))
-    return false;
-
-  /* Values of all loop exit phi nodes must be invariants.  */
-  for (phi = phi_nodes (exit->dest); phi; phi = PHI_CHAIN (phi))
-    {
-      if (!is_gimple_reg (PHI_RESULT (phi)))
-	continue;
-
-      def = PHI_ARG_DEF_FROM_EDGE (phi, exit);
-
-      if (!expr_invariant_in_loop_p (loop, def))
-	return false;
-    }
-
-  /* And there should be no memory modifying or from other reasons
-     unremovable statements.  */
-  body = get_loop_body (loop);
-  for (i = 0; i < loop->num_nodes; i++)
-    {
-      /* Irreducible region might be infinite.  */
-      if (body[i]->flags & BB_IRREDUCIBLE_LOOP)
+      FOR_EACH_LOOP (li, loop, LI_ONLY_INNERMOST)
 	{
-	  free (body);
-	  return false;
+	  if (may_increase_size && optimize_loop_for_speed_p (loop)
+	      /* Unroll outermost loops only if asked to do so or they do
+		 not cause code growth.  */
+	      && (unroll_outer
+		  || loop_outer (loop_outer (loop))))
+	    ul = UL_ALL;
+	  else
+	    ul = UL_NO_GROWTH;
+	  changed |= canonicalize_loop_induction_variables
+		       (loop, false, ul, !flag_tree_loop_ivcanon);
 	}
-	
-      for (bsi = bsi_start (body[i]); !bsi_end_p (bsi); bsi_next (&bsi))
+
+      if (changed)
 	{
-	  stmt = bsi_stmt (bsi);
-	  if (!ZERO_SSA_OPERANDS (stmt, SSA_OP_VIRTUAL_DEFS)
-	      || stmt_ann (stmt)->has_volatile_ops)
-	    {
-	      free (body);
-	      return false;
-	    }
+	  /* This will take care of removing completely unrolled loops
+	     from the loop structures so we can continue unrolling now
+	     innermost loops.  */
+	  if (cleanup_tree_cfg ())
+	    update_ssa (TODO_update_ssa_only_virtuals);
 
-	  /* Also, asm statements and calls may have side effects and we
-	     cannot change the number of times they are executed.  */
-	  switch (TREE_CODE (stmt))
-	    {
-	    case RETURN_EXPR:
-	    case MODIFY_EXPR:
-	      stmt = get_call_expr_in (stmt);
-	      if (!stmt)
-		break;
-
-	    case CALL_EXPR:
-	      if (TREE_SIDE_EFFECTS (stmt))
-		{
-		  free (body);
-		  return false;
-		}
-	      break;
-
-	    case ASM_EXPR:
-	      /* We cannot remove volatile assembler.  */
-	      if (ASM_VOLATILE_P (stmt))
-		{
-		  free (body);
-		  return false;
-		}
-	      break;
-
-	    default:
-	      break;
-	    }
+	  /* Clean up the information about numbers of iterations, since
+	     complete unrolling might have invalidated it.  */
+	  scev_reset ();
 	}
-      }
-  free (body);
-
-  return true;
-}
-
-/* Remove LOOP by making it exit in the first iteration.  */
-
-static void
-remove_empty_loop (struct loop *loop)
-{
-  edge exit = single_dom_exit (loop), non_exit;
-  tree cond_stmt = last_stmt (exit->src);
-  tree do_exit;
-  basic_block *body;
-  unsigned n_before, freq_in, freq_h;
-  gcov_type exit_count = exit->count;
-
-  non_exit = EDGE_SUCC (exit->src, 0);
-  if (non_exit == exit)
-    non_exit = EDGE_SUCC (exit->src, 1);
-
-  if (exit->flags & EDGE_TRUE_VALUE)
-    do_exit = boolean_true_node;
-  else
-    do_exit = boolean_false_node;
-
-  COND_EXPR_COND (cond_stmt) = do_exit;
-  update_stmt (cond_stmt);
-
-  /* Let us set the probabilities of the edges coming from the exit block.  */
-  exit->probability = REG_BR_PROB_BASE;
-  non_exit->probability = 0;
-  non_exit->count = 0;
-
-  /* Update frequencies and counts.  Everything before
-     the exit needs to be scaled FREQ_IN/FREQ_H times,
-     where FREQ_IN is the frequency of the entry edge
-     and FREQ_H is the frequency of the loop header.
-     Everything after the exit has zero frequency.  */
-  freq_h = loop->header->frequency;
-  freq_in = EDGE_FREQUENCY (loop_preheader_edge (loop));
-  if (freq_h != 0)
-    {
-      body = get_loop_body_in_dom_order (loop);
-      for (n_before = 1; n_before <= loop->num_nodes; n_before++)
-	if (body[n_before - 1] == exit->src)
-	  break;
-      scale_bbs_frequencies_int (body, n_before, freq_in, freq_h);
-      scale_bbs_frequencies_int (body + n_before, loop->num_nodes - n_before,
-				 0, 1);
-      free (body);
     }
+  while (changed
+	 && ++iteration <= PARAM_VALUE (PARAM_MAX_UNROLL_ITERATIONS));
 
-  /* Number of executions of exit is not changed, thus we need to restore
-     the original value.  */
-  exit->count = exit_count;
-}
-
-/* Removes LOOP if it is empty.  Returns true if LOOP is removed.  CHANGED
-   is set to true if LOOP or any of its subloops is removed.  */
-
-static bool
-try_remove_empty_loop (struct loop *loop, bool *changed)
-{
-  bool nonempty_subloop = false;
-  struct loop *sub;
-
-  /* First, all subloops must be removed.  */
-  for (sub = loop->inner; sub; sub = sub->next)
-    nonempty_subloop |= !try_remove_empty_loop (sub, changed);
-
-  if (nonempty_subloop || !empty_loop_p (loop))
-    return false;
-
-  remove_empty_loop (loop);
-  *changed = true;
-  return true;
-}
-
-/* Remove the empty LOOPS.  */
-
-unsigned int
-remove_empty_loops (struct loops *loops)
-{
-  bool changed = false;
-  struct loop *loop;
-
-  for (loop = loops->tree_root->inner; loop; loop = loop->next)
-    try_remove_empty_loop (loop, &changed);
-
-  if (changed)
-    {
-      scev_reset ();
-      return TODO_cleanup_cfg;
-    }
   return 0;
 }

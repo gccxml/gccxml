@@ -1,13 +1,14 @@
 /* Definitions of target machine for GNU compiler,
    for IBM RS/6000 POWER running AIX V5.2.
-   Copyright (C) 2002, 2003, 2004, 2005, 2006 Free Software Foundation, Inc.
+   Copyright (C) 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011
+   Free Software Foundation, Inc.
    Contributed by David Edelsohn (edelsohn@gnu.org).
 
    This file is part of GCC.
 
    GCC is free software; you can redistribute it and/or modify it
    under the terms of the GNU General Public License as published
-   by the Free Software Foundation; either version 2, or (at your
+   by the Free Software Foundation; either version 3, or (at your
    option) any later version.
 
    GCC is distributed in the hope that it will be useful, but WITHOUT
@@ -16,18 +17,11 @@
    License for more details.
 
    You should have received a copy of the GNU General Public License
-   along with GCC; see the file COPYING.  If not, write to the
-   Free Software Foundation, 51 Franklin Street, Fifth Floor, Boston,
-   MA 02110-1301, USA.  */
+   along with GCC; see the file COPYING3.  If not see
+   <http://www.gnu.org/licenses/>.  */
 
-/* Sometimes certain combinations of command options do not make sense
-   on a particular target machine.  You can define a macro
-   `OVERRIDE_OPTIONS' to take account of this.  This macro, if
-   defined, is executed once just after all the command options have
-   been parsed.
-
-   The macro SUBTARGET_OVERRIDE_OPTIONS is provided for subtargets, to
-   get control.  */
+/* The macro SUBTARGET_OVERRIDE_OPTIONS is provided for subtargets, to
+   get control in TARGET_OPTION_OVERRIDE.  */
 
 #define NON_POWERPC_MASKS (MASK_POWER | MASK_POWER2)
 #define SUBTARGET_OVERRIDE_OPTIONS					\
@@ -45,7 +39,7 @@ do {									\
   if (TARGET_SOFT_FLOAT && TARGET_LONG_DOUBLE_128)			\
     {									\
       rs6000_long_double_type_size = 64;				\
-      if (rs6000_explicit_options.long_double)				\
+      if (global_options_set.x_rs6000_long_double_type_size)		\
 	warning (0, "soft-float and long-double-128 are incompatible");	\
     }									\
   if (TARGET_POWERPC64 && ! TARGET_64BIT)				\
@@ -69,6 +63,7 @@ do {									\
 %{mcpu=power5: -m620} \
 %{mcpu=power5+: -m620} \
 %{mcpu=power6: -m620} \
+%{mcpu=power6x: -m620} \
 %{mcpu=powerpc: -mppc} \
 %{mcpu=rs64a: -mppc} \
 %{mcpu=603: -m603} \
@@ -98,7 +93,7 @@ do {									\
 #define CPP_SPEC "%{posix: -D_POSIX_SOURCE}	\
   %{ansi: -D_ANSI_C_SOURCE}			\
   %{maix64: -D__64BIT__}			\
-  %{mpe: -I/usr/lpp/ppe.poe/include}		\
+  %{mpe: -I%R/usr/lpp/ppe.poe/include}		\
   %{pthread: -D_THREAD_SAFE}"
 
 /* The GNU C++ standard library requires that these macros be 
@@ -107,7 +102,7 @@ do {									\
 #define CPLUSPLUS_CPP_SPEC			\
   "-D_ALL_SOURCE				\
    %{maix64: -D__64BIT__}			\
-   %{mpe: -I/usr/lpp/ppe.poe/include}		\
+   %{mpe: -I%R/usr/lpp/ppe.poe/include}		\
    %{pthread: -D_THREAD_SAFE}"
 
 #undef  TARGET_DEFAULT
@@ -121,6 +116,12 @@ do {									\
 #undef  TARGET_POWER
 #define TARGET_POWER 0
 
+/* AIX does not support Altivec.  */
+#undef  TARGET_ALTIVEC
+#define TARGET_ALTIVEC 0
+#undef  TARGET_ALTIVEC_ABI
+#define TARGET_ALTIVEC_ABI 0
+
 /* Define this macro as a C expression for the initializer of an
    array of string to tell the driver program which options are
    defaults for this target and thus do not need to be handled
@@ -133,10 +134,10 @@ do {									\
 #undef	MULTILIB_DEFAULTS
 
 #undef LIB_SPEC
-#define LIB_SPEC "%{pg:-L/lib/profiled -L/usr/lib/profiled}\
-   %{p:-L/lib/profiled -L/usr/lib/profiled}\
+#define LIB_SPEC "%{pg:-L%R/lib/profiled -L%R/usr/lib/profiled}\
+   %{p:-L%R/lib/profiled -L%R/usr/lib/profiled}\
    %{!maix64:%{!shared:%{g*:-lg}}}\
-   %{mpe:-L/usr/lpp/ppe.poe/lib -lmpi -lvtd}\
+   %{mpe:-L%R/usr/lpp/ppe.poe/lib -lmpi -lvtd}\
    %{pthread:-lpthreads} -lc"
 
 #undef LINK_SPEC
@@ -189,3 +190,10 @@ extern long long int    atoll(const char *);
 
 /* This target uses the aix64.opt file.  */
 #define TARGET_USES_AIX64_OPT 1
+
+/* This target defines SUPPORTS_WEAK and TARGET_ASM_NAMED_SECTION,
+   but does not have crtbegin/end.  */
+
+#define TARGET_USE_JCR_SECTION 0
+
+#define TARGET_AIX_VERSION 52

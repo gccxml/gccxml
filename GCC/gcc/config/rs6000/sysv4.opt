@@ -1,13 +1,14 @@
 ; SYSV4 options for PPC port.
 ;
-; Copyright (C) 2005 Free Software Foundation, Inc.
+; Copyright (C) 2005, 2007, 2008, 2009, 2010, 2011
+; Free Software Foundation, Inc.
 ; Contributed by Aldy Hernandez <aldy@quesejoda.com>.
 ;
 ; This file is part of GCC.
 ;
 ; GCC is free software; you can redistribute it and/or modify it under
 ; the terms of the GNU General Public License as published by the Free
-; Software Foundation; either version 2, or (at your option) any later
+; Software Foundation; either version 3, or (at your option) any later
 ; version.
 ;
 ; GCC is distributed in the hope that it will be useful, but WITHOUT
@@ -16,24 +17,35 @@
 ; License for more details.
 ;
 ; You should have received a copy of the GNU General Public License
-; along with GCC; see the file COPYING.  If not, write to the Free
-; Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
-; 02110-1301, USA.
+; along with GCC; see the file COPYING3.  If not see
+; <http://www.gnu.org/licenses/>.
 
 mcall-
-Target RejectNegative Joined
+Target RejectNegative Joined Var(rs6000_abi_name)
 Select ABI calling convention
 
 msdata=
-Target RejectNegative Joined
+Target RejectNegative Joined Var(rs6000_sdata_name)
 Select method for sdata handling
 
 mtls-size=
-Target RejectNegative Joined
+Target RejectNegative Joined Var(rs6000_tls_size) Enum(rs6000_tls_size)
 Specify bit size of immediate TLS offsets
 
+Enum
+Name(rs6000_tls_size) Type(int)
+
+EnumValue
+Enum(rs6000_tls_size) String(16) Value(16)
+
+EnumValue
+Enum(rs6000_tls_size) String(32) Value(32)
+
+EnumValue
+Enum(rs6000_tls_size) String(64) Value(64)
+
 mbit-align
-Target Report Mask(NO_BITFIELD_TYPE)
+Target Report Var(TARGET_NO_BITFIELD_TYPE) Save
 Align to the base type of the bit-field
 
 mstrict-align
@@ -75,7 +87,7 @@ Target RejectNegative
 no description yet
 
 mprototype
-Target Mask(PROTOTYPE)
+Target Var(target_prototype) Save
 Assume all variable arg functions are prototyped
 
 ;; FIXME: Does nothing.
@@ -88,17 +100,18 @@ Target Report Mask(EABI)
 Use EABI
 
 mbit-word
-Target Report Mask(NO_BITFIELD_WORD)
+Target Report Var(TARGET_NO_BITFIELD_WORD) Save
 Allow bit-fields to cross word boundaries
 
 mregnames
-Target Mask(REGNAMES)
+Target Var(rs6000_regnames) Save
 Use alternate register names
 
-;; FIXME: Does nothing.
+;; This option does nothing and only exists because the compiler
+;; driver passes all -m* options through.
 msdata
 Target
-no description yet
+Use default method for sdata handling
 
 msim
 Target RejectNegative
@@ -120,20 +133,16 @@ memb
 Target RejectNegative
 Set the PPC_EMB bit in the ELF flags header
 
-mwindiss
-Target RejectNegative
-Use the WindISS simulator
-
 mshlib
 Target RejectNegative
 no description yet
 
 m64
-Target Report RejectNegative Mask(64BIT)
+Target Report RejectNegative Negative(m32) Mask(64BIT)
 Generate 64-bit code
 
 m32
-Target Report RejectNegative InverseMask(64BIT)
+Target Report RejectNegative Negative(m64) InverseMask(64BIT)
 Generate 32-bit code
 
 mnewlib
@@ -141,9 +150,9 @@ Target RejectNegative
 no description yet
 
 msecure-plt
-Target Report RejectNegative Var(secure_plt, 1)
+Target Report RejectNegative Var(secure_plt, 1) Save
 Generate code to use a non-exec PLT and GOT
 
 mbss-plt
-Target Report RejectNegative Var(secure_plt, 0)
+Target Report RejectNegative Var(secure_plt, 0) Save
 Generate code for old exec BSS PLT

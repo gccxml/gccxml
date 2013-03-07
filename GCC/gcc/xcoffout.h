@@ -1,13 +1,13 @@
 /* XCOFF definitions.  These are needed in dbxout.c, final.c,
    and xcoffout.h.
-   Copyright (C) 1998, 2000, 2002, 2003, 2004
+   Copyright (C) 1998, 2000, 2002, 2003, 2004, 2007, 2008
    Free Software Foundation, Inc.
 
 This file is part of GCC.
 
 GCC is free software; you can redistribute it and/or modify it under
 the terms of the GNU General Public License as published by the Free
-Software Foundation; either version 2, or (at your option) any later
+Software Foundation; either version 3, or (at your option) any later
 version.
 
 GCC is distributed in the hope that it will be useful, but WITHOUT ANY
@@ -16,9 +16,8 @@ FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 for more details.
 
 You should have received a copy of the GNU General Public License
-along with GCC; see the file COPYING.  If not, write to the Free
-Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
-02110-1301, USA.  */
+along with GCC; see the file COPYING3.  If not see
+<http://www.gnu.org/licenses/>.  */
 
 
 /* Tags and typedefs are C_DECL in XCOFF, not C_LSYM.  */
@@ -85,7 +84,7 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
 	    fputs (_p+1, asm_out_file);					\
 	  else								\
 	    for (; *_p != '[' && *_p; _p++)				\
-	      putc (*_p, asm_out_file);					\
+	      putc (*_p != '$' ? *_p : '_', asm_out_file);		\
 	}								\
       else								\
 	output_addr_const (asm_out_file, ADDR);				\
@@ -183,4 +182,4 @@ extern void xcoffout_end_function (unsigned int);
 extern void xcoffout_end_block (unsigned, unsigned);
 extern int xcoff_assign_fundamental_type_number (tree);
 extern void xcoffout_declare_function (FILE *, tree, const char *);
-extern void xcoffout_source_line (unsigned int, const char *);
+extern void xcoffout_source_line (unsigned int, const char *, int, bool);

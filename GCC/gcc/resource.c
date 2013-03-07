@@ -1,12 +1,12 @@
 /* Definitions for computing resource usage of specific insns.
-   Copyright (C) 1999, 2000, 2001, 2002, 2003, 2004, 2005
-   Free Software Foundation, Inc.
+   Copyright (C) 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008,
+   2009, 2010 Free Software Foundation, Inc.
 
 This file is part of GCC.
 
 GCC is free software; you can redistribute it and/or modify it under
 the terms of the GNU General Public License as published by the Free
-Software Foundation; either version 2, or (at your option) any later
+Software Foundation; either version 3, or (at your option) any later
 version.
 
 GCC is distributed in the hope that it will be useful, but WITHOUT ANY
@@ -15,15 +15,14 @@ FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 for more details.
 
 You should have received a copy of the GNU General Public License
-along with GCC; see the file COPYING.  If not, write to the Free
-Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
-02110-1301, USA.  */
+along with GCC; see the file COPYING3.  If not see
+<http://www.gnu.org/licenses/>.  */
 
 #include "config.h"
 #include "system.h"
 #include "coretypes.h"
 #include "tm.h"
-#include "toplev.h"
+#include "diagnostic-core.h"
 #include "rtl.h"
 #include "tm_p.h"
 #include "hard-reg-set.h"
@@ -35,6 +34,7 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
 #include "except.h"
 #include "insn-attr.h"
 #include "params.h"
+#include "df.h"
 
 /* This structure is used to record liveness information at the targets or
    fallthrough insns of branches.  We will most likely need the information
@@ -78,7 +78,7 @@ static HARD_REG_SET current_live_regs;
 
 static HARD_REG_SET pending_dead_regs;
 
-static void update_live_status (rtx, rtx, void *);
+static void update_live_status (rtx, const_rtx, void *);
 static int find_basic_block (rtx, int);
 static rtx next_insn_no_annul (rtx);
 static rtx find_dead_or_set_registers (rtx, struct resources*,
@@ -89,7 +89,7 @@ static rtx find_dead_or_set_registers (rtx, struct resources*,
    It deadens any CLOBBERed registers and livens any SET registers.  */
 
 static void
-update_live_status (rtx dest, rtx x, void *data ATTRIBUTE_UNUSED)
+update_live_status (rtx dest, const_rtx x, void *data ATTRIBUTE_UNUSED)
 {
   int first_regno, last_regno;
   int i;
@@ -99,11 +99,16 @@ update_live_status (rtx dest, rtx x, void *data ATTRIBUTE_UNUSED)
     return;
 
   if (GET_CODE (dest) == SUBREG)
-    first_regno = subreg_regno (dest);
-  else
-    first_regno = REGNO (dest);
+    {
+      first_regno = subreg_regno (dest);
+      last_regno = first_regno + subreg_nregs (dest);
 
-  last_regno = first_regno + hard_regno_nregs[first_regno][GET_MODE (dest)];
+    }
+  else
+    {
+      first_regno = REGNO (dest);
+      last_regno = END_HARD_REGNO (dest);
+    }
 
   if (GET_CODE (x) == CLOBBER)
     for (i = first_regno; i < last_regno; i++)
@@ -130,8 +135,6 @@ update_live_status (rtx dest, rtx x, void *data ATTRIBUTE_UNUSED)
 static int
 find_basic_block (rtx insn, int search_limit)
 {
-  basic_block bb;
-
   /* Scan backwards to the previous BARRIER.  Then see if we can find a
      label that starts a basic block.  Return the basic block number.  */
   for (insn = prev_nonnote_insn (insn);
@@ -152,11 +155,8 @@ find_basic_block (rtx insn, int search_limit)
   for (insn = next_nonnote_insn (insn);
        insn && LABEL_P (insn);
        insn = next_nonnote_insn (insn))
-    {
-      FOR_EACH_BB (bb)
-	if (insn == BB_HEAD (bb))
-	  return bb->index;
-    }
+    if (BLOCK_FOR_INSN (insn))
+      return BLOCK_FOR_INSN (insn)->index;
 
   return -1;
 }
@@ -171,7 +171,7 @@ next_insn_no_annul (rtx insn)
     {
       /* If INSN is an annulled branch, skip any insns from the target
 	 of the branch.  */
-      if (INSN_P (insn)
+      if (JUMP_P (insn)
 	  && INSN_ANNULLED_BRANCH_P (insn)
 	  && NEXT_INSN (PREV_INSN (insn)) != insn)
 	{
@@ -203,7 +203,7 @@ next_insn_no_annul (rtx insn)
 
 void
 mark_referenced_resources (rtx x, struct resources *res,
-			   int include_delayed_effects)
+			   bool include_delayed_effects)
 {
   enum rtx_code code = GET_CODE (x);
   int i, j;
@@ -217,6 +217,7 @@ mark_referenced_resources (rtx x, struct resources *res,
     case CONST:
     case CONST_INT:
     case CONST_DOUBLE:
+    case CONST_FIXED:
     case CONST_VECTOR:
     case PC:
     case SYMBOL_REF:
@@ -225,12 +226,11 @@ mark_referenced_resources (rtx x, struct resources *res,
 
     case SUBREG:
       if (!REG_P (SUBREG_REG (x)))
-	mark_referenced_resources (SUBREG_REG (x), res, 0);
+	mark_referenced_resources (SUBREG_REG (x), res, false);
       else
 	{
 	  unsigned int regno = subreg_regno (x);
-	  unsigned int last_regno
-	    = regno + hard_regno_nregs[regno][GET_MODE (x)];
+	  unsigned int last_regno = regno + subreg_nregs (x);
 
 	  gcc_assert (last_regno <= FIRST_PSEUDO_REGISTER);
 	  for (r = regno; r < last_regno; r++)
@@ -239,15 +239,8 @@ mark_referenced_resources (rtx x, struct resources *res,
       return;
 
     case REG:
-	{
-	  unsigned int regno = REGNO (x);
-	  unsigned int last_regno
-	    = regno + hard_regno_nregs[regno][GET_MODE (x)];
-
-	  gcc_assert (last_regno <= FIRST_PSEUDO_REGISTER);
-	  for (r = regno; r < last_regno; r++)
-	    SET_HARD_REG_BIT (res->regs, r);
-	}
+      gcc_assert (HARD_REGISTER_P (x));
+      add_to_hard_reg_set (&res->regs, GET_MODE (x), REGNO (x));
       return;
 
     case MEM:
@@ -260,7 +253,7 @@ mark_referenced_resources (rtx x, struct resources *res,
       res->volatil |= MEM_VOLATILE_P (x);
 
       /* Mark registers used to access memory.  */
-      mark_referenced_resources (XEXP (x, 0), res, 0);
+      mark_referenced_resources (XEXP (x, 0), res, false);
       return;
 
     case CC0:
@@ -268,12 +261,9 @@ mark_referenced_resources (rtx x, struct resources *res,
       return;
 
     case UNSPEC_VOLATILE:
+    case TRAP_IF:
     case ASM_INPUT:
       /* Traditional asm's are always volatile.  */
-      res->volatil = 1;
-      return;
-
-    case TRAP_IF:
       res->volatil = 1;
       break;
 
@@ -286,14 +276,14 @@ mark_referenced_resources (rtx x, struct resources *res,
 	 traditional asms unlike their normal usage.  */
 
       for (i = 0; i < ASM_OPERANDS_INPUT_LENGTH (x); i++)
-	mark_referenced_resources (ASM_OPERANDS_INPUT (x, i), res, 0);
+	mark_referenced_resources (ASM_OPERANDS_INPUT (x, i), res, false);
       return;
 
     case CALL:
       /* The first operand will be a (MEM (xxx)) but doesn't really reference
 	 memory.  The second operand may be referenced, though.  */
-      mark_referenced_resources (XEXP (XEXP (x, 0), 0), res, 0);
-      mark_referenced_resources (XEXP (x, 1), res, 0);
+      mark_referenced_resources (XEXP (XEXP (x, 0), 0), res, false);
+      mark_referenced_resources (XEXP (x, 1), res, false);
       return;
 
     case SET:
@@ -301,16 +291,16 @@ mark_referenced_resources (rtx x, struct resources *res,
 	 registers used to access memory are referenced.  SET_DEST is
 	 also referenced if it is a ZERO_EXTRACT.  */
 
-      mark_referenced_resources (SET_SRC (x), res, 0);
+      mark_referenced_resources (SET_SRC (x), res, false);
 
       x = SET_DEST (x);
       if (GET_CODE (x) == ZERO_EXTRACT
 	  || GET_CODE (x) == STRICT_LOW_PART)
-	mark_referenced_resources (x, res, 0);
+	mark_referenced_resources (x, res, false);
       else if (GET_CODE (x) == SUBREG)
 	x = SUBREG_REG (x);
       if (MEM_P (x))
-	mark_referenced_resources (XEXP (x, 0), res, 0);
+	mark_referenced_resources (XEXP (x, 0), res, false);
       return;
 
     case CLOBBER:
@@ -344,7 +334,7 @@ mark_referenced_resources (rtx x, struct resources *res,
 	  if (frame_pointer_needed)
 	    {
 	      SET_HARD_REG_BIT (res->regs, FRAME_POINTER_REGNUM);
-#if FRAME_POINTER_REGNUM != HARD_FRAME_POINTER_REGNUM
+#if !HARD_FRAME_POINTER_IS_FRAME_POINTER
 	      SET_HARD_REG_BIT (res->regs, HARD_FRAME_POINTER_REGNUM);
 #endif
 	    }
@@ -382,7 +372,7 @@ mark_referenced_resources (rtx x, struct resources *res,
 		    }
 		  if (i >= seq_size)
 		    mark_referenced_resources (XEXP (XEXP (link, 0), 0),
-					       res, 0);
+					       res, false);
 		}
 	  }
 	}
@@ -502,9 +492,11 @@ find_dead_or_set_registers (rtx target, struct resources *res,
 	  if (jump_count++ < 10)
 	    {
 	      if (any_uncondjump_p (this_jump_insn)
-		  || GET_CODE (PATTERN (this_jump_insn)) == RETURN)
+		  || ANY_RETURN_P (PATTERN (this_jump_insn)))
 		{
 		  next = JUMP_LABEL (this_jump_insn);
+		  if (ANY_RETURN_P (next))
+		    next = NULL_RTX;
 		  if (jump_insn == 0)
 		    {
 		      jump_insn = insn;
@@ -529,7 +521,7 @@ find_dead_or_set_registers (rtx target, struct resources *res,
 		  if (jump_count >= 10)
 		    break;
 
-		  mark_referenced_resources (insn, &needed, 1);
+		  mark_referenced_resources (insn, &needed, true);
 
 		  /* For an annulled branch, mark_set_resources ignores slots
 		     filled by instructions from the target.  This is correct
@@ -572,9 +564,10 @@ find_dead_or_set_registers (rtx target, struct resources *res,
 		  AND_COMPL_HARD_REG_SET (scratch, needed.regs);
 		  AND_COMPL_HARD_REG_SET (fallthrough_res.regs, scratch);
 
-		  find_dead_or_set_registers (JUMP_LABEL (this_jump_insn),
-					      &target_res, 0, jump_count,
-					      target_set, needed);
+		  if (!ANY_RETURN_P (JUMP_LABEL (this_jump_insn)))
+		    find_dead_or_set_registers (JUMP_LABEL (this_jump_insn),
+						&target_res, 0, jump_count,
+						target_set, needed);
 		  find_dead_or_set_registers (next,
 					      &fallthrough_res, 0, jump_count,
 					      set, needed);
@@ -595,7 +588,7 @@ find_dead_or_set_registers (rtx target, struct resources *res,
 	    }
 	}
 
-      mark_referenced_resources (insn, &needed, 1);
+      mark_referenced_resources (insn, &needed, true);
       mark_set_resources (insn, &set, 0, MARK_SRC_DEST_CALL);
 
       COPY_HARD_REG_SET (scratch, set.regs);
@@ -641,6 +634,7 @@ mark_set_resources (rtx x, struct resources *res, int in_dest,
     case USE:
     case CONST_INT:
     case CONST_DOUBLE:
+    case CONST_FIXED:
     case CONST_VECTOR:
     case LABEL_REF:
     case SYMBOL_REF:
@@ -664,9 +658,8 @@ mark_set_resources (rtx x, struct resources *res, int in_dest,
 	  rtx link;
 
 	  res->cc = res->memory = 1;
-	  for (r = 0; r < FIRST_PSEUDO_REGISTER; r++)
-	    if (call_used_regs[r] || global_regs[r])
-	      SET_HARD_REG_BIT (res->regs, r);
+
+	  IOR_HARD_REG_SET (res->regs, regs_invalidated_by_call);
 
 	  for (link = CALL_INSN_FUNCTION_USAGE (x);
 	       link; link = XEXP (link, 1))
@@ -717,10 +710,18 @@ mark_set_resources (rtx x, struct resources *res, int in_dest,
       return;
 
     case SEQUENCE:
-      for (i = 0; i < XVECLEN (x, 0); i++)
-	if (! (INSN_ANNULLED_BRANCH_P (XVECEXP (x, 0, 0))
-	       && INSN_FROM_TARGET_P (XVECEXP (x, 0, i))))
-	  mark_set_resources (XVECEXP (x, 0, i), res, 0, mark_type);
+      {
+        rtx control = XVECEXP (x, 0, 0);
+        bool annul_p = JUMP_P (control) && INSN_ANNULLED_BRANCH_P (control);
+
+        mark_set_resources (control, res, 0, mark_type);
+        for (i = XVECLEN (x, 0) - 1; i >= 0; --i)
+	  {
+	    rtx elt = XVECEXP (x, 0, i);
+	    if (!annul_p && INSN_FROM_TARGET_P (elt))
+	      mark_set_resources (elt, res, 0, mark_type);
+	  }
+      }
       return;
 
     case POST_INC:
@@ -763,8 +764,7 @@ mark_set_resources (rtx x, struct resources *res, int in_dest,
 	  else
 	    {
 	      unsigned int regno = subreg_regno (x);
-	      unsigned int last_regno
-		= regno + hard_regno_nregs[regno][GET_MODE (x)];
+	      unsigned int last_regno = regno + subreg_nregs (x);
 
 	      gcc_assert (last_regno <= FIRST_PSEUDO_REGISTER);
 	      for (r = regno; r < last_regno; r++)
@@ -776,13 +776,8 @@ mark_set_resources (rtx x, struct resources *res, int in_dest,
     case REG:
       if (in_dest)
 	{
-	  unsigned int regno = REGNO (x);
-	  unsigned int last_regno
-	    = regno + hard_regno_nregs[regno][GET_MODE (x)];
-
-	  gcc_assert (last_regno <= FIRST_PSEUDO_REGISTER);
-	  for (r = regno; r < last_regno; r++)
-	    SET_HARD_REG_BIT (res->regs, r);
+	  gcc_assert (HARD_REGISTER_P (x));
+	  add_to_hard_reg_set (&res->regs, GET_MODE (x), REGNO (x));
 	}
       return;
 
@@ -832,9 +827,9 @@ mark_set_resources (rtx x, struct resources *res, int in_dest,
 /* Return TRUE if INSN is a return, possibly with a filled delay slot.  */
 
 static bool
-return_insn_p (rtx insn)
+return_insn_p (const_rtx insn)
 {
-  if (JUMP_P (insn) && GET_CODE (PATTERN (insn)) == RETURN)
+  if (JUMP_P (insn) && ANY_RETURN_P (PATTERN (insn)))
     return true;
 
   if (NONJUMP_INSN_P (insn) && GET_CODE (PATTERN (insn)) == SEQUENCE)
@@ -859,13 +854,12 @@ return_insn_p (rtx insn)
    (with no intervening active insns) to see if any of them start a basic
    block.  If we hit the start of the function first, we use block 0.
 
-   Once we have found a basic block and a corresponding first insns, we can
-   accurately compute the live status from basic_block_live_regs and
-   reg_renumber.  (By starting at a label following a BARRIER, we are immune
-   to actions taken by reload and jump.)  Then we scan all insns between
-   that point and our target.  For each CLOBBER (or for call-clobbered regs
-   when we pass a CALL_INSN), mark the appropriate registers are dead.  For
-   a SET, mark them as live.
+   Once we have found a basic block and a corresponding first insn, we can
+   accurately compute the live status (by starting at a label following a
+   BARRIER, we are immune to actions taken by reload and jump.)  Then we
+   scan all insns between that point and our target.  For each CLOBBER (or
+   for call-clobbered regs when we pass a CALL_INSN), mark the appropriate
+   registers are dead.  For a SET, mark them as live.
 
    We have to be careful when using REG_DEAD notes because they are not
    updated by such things as find_equiv_reg.  So keep track of registers
@@ -895,7 +889,7 @@ mark_target_live_regs (rtx insns, rtx target, struct resources *res)
   struct resources set, needed;
 
   /* Handle end of function.  */
-  if (target == 0)
+  if (target == 0 || ANY_RETURN_P (target))
     {
       *res = end_of_function_needs;
       return;
@@ -905,7 +899,7 @@ mark_target_live_regs (rtx insns, rtx target, struct resources *res)
   else if (return_insn_p (target))
     {
       *res = end_of_function_needs;
-      mark_referenced_resources (target, res, 0);
+      mark_referenced_resources (target, res, false);
       return;
     }
 
@@ -962,36 +956,20 @@ mark_target_live_regs (rtx insns, rtx target, struct resources *res)
 
   /* If we found a basic block, get the live registers from it and update
      them with anything set or killed between its start and the insn before
-     TARGET.  Otherwise, we must assume everything is live.  */
+     TARGET; this custom life analysis is really about registers so we need
+     to use the LR problem.  Otherwise, we must assume everything is live.  */
   if (b != -1)
     {
-      regset regs_live = BASIC_BLOCK (b)->il.rtl->global_live_at_start;
-      unsigned int j;
-      unsigned int regno;
+      regset regs_live = DF_LR_IN (BASIC_BLOCK (b));
       rtx start_insn, stop_insn;
-      reg_set_iterator rsi;
 
-      /* Compute hard regs live at start of block -- this is the real hard regs
-	 marked live, plus live pseudo regs that have been renumbered to
-	 hard regs.  */
-
+      /* Compute hard regs live at start of block.  */
       REG_SET_TO_HARD_REG_SET (current_live_regs, regs_live);
-
-      EXECUTE_IF_SET_IN_REG_SET (regs_live, FIRST_PSEUDO_REGISTER, i, rsi)
-	{
-	  if (reg_renumber[i] >= 0)
-	    {
-	      regno = reg_renumber[i];
-	      for (j = regno;
-		   j < regno + hard_regno_nregs[regno][PSEUDO_REGNO_MODE (i)];
-		   j++)
-		SET_HARD_REG_BIT (current_live_regs, j);
-	    }
-	}
 
       /* Get starting and ending insn, handling the case where each might
 	 be a SEQUENCE.  */
-      start_insn = (b == 0 ? insns : BB_HEAD (BASIC_BLOCK (b)));
+      start_insn = (b == ENTRY_BLOCK_PTR->next_bb->index ?
+		    insns : BB_HEAD (BASIC_BLOCK (b)));
       stop_insn = target;
 
       if (NONJUMP_INSN_P (start_insn)
@@ -1008,6 +986,9 @@ mark_target_live_regs (rtx insns, rtx target, struct resources *res)
 	  rtx link;
 	  rtx real_insn = insn;
 	  enum rtx_code code = GET_CODE (insn);
+
+	  if (DEBUG_INSN_P (insn))
+	    continue;
 
 	  /* If this insn is from the target of a branch, it isn't going to
 	     be used in the sequel.  If it is used in both cases, this
@@ -1052,16 +1033,9 @@ mark_target_live_regs (rtx insns, rtx target, struct resources *res)
 		if (REG_NOTE_KIND (link) == REG_DEAD
 		    && REG_P (XEXP (link, 0))
 		    && REGNO (XEXP (link, 0)) < FIRST_PSEUDO_REGISTER)
-		  {
-		    unsigned int first_regno = REGNO (XEXP (link, 0));
-		    unsigned int last_regno
-		      = (first_regno
-			 + hard_regno_nregs[first_regno]
-					   [GET_MODE (XEXP (link, 0))]);
-
-		    for (i = first_regno; i < last_regno; i++)
-		      SET_HARD_REG_BIT (pending_dead_regs, i);
-		  }
+		  add_to_hard_reg_set (&pending_dead_regs,
+				      GET_MODE (XEXP (link, 0)),
+				      REGNO (XEXP (link, 0)));
 
 	      note_stores (PATTERN (real_insn), update_live_status, NULL);
 
@@ -1071,31 +1045,38 @@ mark_target_live_regs (rtx insns, rtx target, struct resources *res)
 		if (REG_NOTE_KIND (link) == REG_UNUSED
 		    && REG_P (XEXP (link, 0))
 		    && REGNO (XEXP (link, 0)) < FIRST_PSEUDO_REGISTER)
-		  {
-		    unsigned int first_regno = REGNO (XEXP (link, 0));
-		    unsigned int last_regno
-		      = (first_regno
-			 + hard_regno_nregs[first_regno]
-					   [GET_MODE (XEXP (link, 0))]);
-
-		    for (i = first_regno; i < last_regno; i++)
-		      CLEAR_HARD_REG_BIT (current_live_regs, i);
-		  }
+		  remove_from_hard_reg_set (&current_live_regs,
+					   GET_MODE (XEXP (link, 0)),
+					   REGNO (XEXP (link, 0)));
 	    }
 
 	  else if (LABEL_P (real_insn))
 	    {
+	      basic_block bb;
+
 	      /* A label clobbers the pending dead registers since neither
 		 reload nor jump will propagate a value across a label.  */
 	      AND_COMPL_HARD_REG_SET (current_live_regs, pending_dead_regs);
 	      CLEAR_HARD_REG_SET (pending_dead_regs);
+
+	      /* We must conservatively assume that all registers that used
+		 to be live here still are.  The fallthrough edge may have
+		 left a live register uninitialized.  */
+	      bb = BLOCK_FOR_INSN (real_insn);
+	      if (bb)
+		{
+		  HARD_REG_SET extra_live;
+
+		  REG_SET_TO_HARD_REG_SET (extra_live, DF_LR_IN (bb));
+		  IOR_HARD_REG_SET (current_live_regs, extra_live);
+		}
 	    }
 
 	  /* The beginning of the epilogue corresponds to the end of the
 	     RTL chain when there are no epilogue insns.  Certain resources
 	     are implicitly required at that point.  */
 	  else if (NOTE_P (real_insn)
-		   && NOTE_LINE_NUMBER (real_insn) == NOTE_INSN_EPILOGUE_BEG)
+		   && NOTE_KIND (real_insn) == NOTE_INSN_EPILOGUE_BEG)
 	    IOR_HARD_REG_SET (current_live_regs, start_of_epilogue_needs.regs);
 	}
 
@@ -1127,15 +1108,16 @@ mark_target_live_regs (rtx insns, rtx target, struct resources *res)
       struct resources new_resources;
       rtx stop_insn = next_active_insn (jump_insn);
 
-      mark_target_live_regs (insns, next_active_insn (jump_target),
-			     &new_resources);
+      if (!ANY_RETURN_P (jump_target))
+	jump_target = next_active_insn (jump_target);
+      mark_target_live_regs (insns, jump_target, &new_resources);
       CLEAR_RESOURCE (&set);
       CLEAR_RESOURCE (&needed);
 
       /* Include JUMP_INSN in the needed registers.  */
       for (insn = target; insn != stop_insn; insn = next_active_insn (insn))
 	{
-	  mark_referenced_resources (insn, &needed, 1);
+	  mark_referenced_resources (insn, &needed, true);
 
 	  COPY_HARD_REG_SET (scratch, needed.regs);
 	  AND_COMPL_HARD_REG_SET (scratch, set.regs);
@@ -1160,13 +1142,14 @@ void
 init_resource_info (rtx epilogue_insn)
 {
   int i;
+  basic_block bb;
 
   /* Indicate what resources are required to be valid at the end of the current
-     function.  The condition code never is and memory always is.  If the
-     frame pointer is needed, it is and so is the stack pointer unless
-     EXIT_IGNORE_STACK is nonzero.  If the frame pointer is not needed, the
-     stack pointer is.  Registers used to return the function value are
-     needed.  Registers holding global variables are needed.  */
+     function.  The condition code never is and memory always is.
+     The stack pointer is needed unless EXIT_IGNORE_STACK is true
+     and there is an epilogue that restores the original stack pointer
+     from the frame pointer.  Registers used to return the function value
+     are needed.  Registers holding global variables are needed.  */
 
   end_of_function_needs.cc = 0;
   end_of_function_needs.memory = 1;
@@ -1176,19 +1159,19 @@ init_resource_info (rtx epilogue_insn)
   if (frame_pointer_needed)
     {
       SET_HARD_REG_BIT (end_of_function_needs.regs, FRAME_POINTER_REGNUM);
-#if HARD_FRAME_POINTER_REGNUM != FRAME_POINTER_REGNUM
+#if !HARD_FRAME_POINTER_IS_FRAME_POINTER
       SET_HARD_REG_BIT (end_of_function_needs.regs, HARD_FRAME_POINTER_REGNUM);
 #endif
-      if (! EXIT_IGNORE_STACK
-	  || current_function_sp_is_unchanging)
-	SET_HARD_REG_BIT (end_of_function_needs.regs, STACK_POINTER_REGNUM);
     }
-  else
+  if (!(frame_pointer_needed
+	&& EXIT_IGNORE_STACK
+	&& epilogue_insn
+	&& !current_function_sp_is_unchanging))
     SET_HARD_REG_BIT (end_of_function_needs.regs, STACK_POINTER_REGNUM);
 
-  if (current_function_return_rtx != 0)
-    mark_referenced_resources (current_function_return_rtx,
-			       &end_of_function_needs, 1);
+  if (crtl->return_rtx != 0)
+    mark_referenced_resources (crtl->return_rtx,
+			       &end_of_function_needs, true);
 
   for (i = 0; i < FIRST_PSEUDO_REGISTER; i++)
     if (global_regs[i]
@@ -1228,6 +1211,11 @@ init_resource_info (rtx epilogue_insn)
   /* Allocate and initialize the tables used by mark_target_live_regs.  */
   target_hash_table = XCNEWVEC (struct target_info *, TARGET_HASH_PRIME);
   bb_ticks = XCNEWVEC (int, last_basic_block);
+
+  /* Set the BLOCK_FOR_INSN of each label that starts a basic block.  */
+  FOR_EACH_BB (bb)
+    if (LABEL_P (BB_HEAD (bb)))
+      BLOCK_FOR_INSN (BB_HEAD (bb)) = bb;
 }
 
 /* Free up the resources allocated to mark_target_live_regs ().  This
@@ -1236,6 +1224,8 @@ init_resource_info (rtx epilogue_insn)
 void
 free_resource_info (void)
 {
+  basic_block bb;
+
   if (target_hash_table != NULL)
     {
       int i;
@@ -1261,6 +1251,10 @@ free_resource_info (void)
       free (bb_ticks);
       bb_ticks = NULL;
     }
+
+  FOR_EACH_BB (bb)
+    if (LABEL_P (BB_HEAD (bb)))
+      BLOCK_FOR_INSN (BB_HEAD (bb)) = NULL;
 }
 
 /* Clear any hashed information that we have stored for INSN.  */
@@ -1296,7 +1290,7 @@ incr_ticks_for_insn (rtx insn)
 /* Add TRIAL to the set of resources used at the end of the current
    function.  */
 void
-mark_end_of_function_resources (rtx trial, int include_delayed_effects)
+mark_end_of_function_resources (rtx trial, bool include_delayed_effects)
 {
   mark_referenced_resources (trial, &end_of_function_needs,
 			     include_delayed_effects);

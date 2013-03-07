@@ -1,7 +1,7 @@
 #                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 
-AC_PREREQ(2.59)
+AC_PREREQ(2.64)
 AC_INIT(cpplib, [ ], gcc-bugs@gcc.gnu.org, cpplib)
 AC_CONFIG_SRCDIR(ucnid.h)
 AC_CONFIG_MACRO_DIR(../config)
@@ -11,7 +11,19 @@ AC_CANONICAL_SYSTEM
 AC_PROG_MAKE_SET
 AC_PROG_INSTALL
 AC_PROG_CC
+AC_PROG_CXX
 AC_PROG_RANLIB
+
+AC_USE_SYSTEM_EXTENSIONS
+AC_SYS_LARGEFILE
+
+# See if we are building gcc with C++.
+# Do this early so setting lang to C++ affects following tests
+AC_ARG_ENABLE(build-with-cxx,
+[  --enable-build-with-cxx build with C++ compiler instead of C compiler],
+ENABLE_BUILD_WITH_CXX=$enableval,
+ENABLE_BUILD_WITH_CXX=no)
+AC_SUBST(ENABLE_BUILD_WITH_CXX)
 
 MISSING=`cd $ac_aux_dir && ${PWDCMD-pwd}`/missing
 AC_CHECK_PROGS([ACLOCAL], [aclocal], [$MISSING aclocal])
@@ -21,10 +33,15 @@ AC_CHECK_PROGS([AUTOHEADER], [autoheader], [$MISSING autoheader])
 # Figure out what compiler warnings we can enable.
 # See config/warnings.m4 for details.
 
-ACX_PROG_CC_WARNING_OPTS([-W -Wall -Wwrite-strings -Wstrict-prototypes \
-			  -Wmissing-prototypes -Wold-style-definition \
-			  -Wmissing-format-attribute])
+ACX_PROG_CC_WARNING_OPTS([-W -Wall -Wno-narrowing -Wwrite-strings \
+			  -Wmissing-format-attribute], [warn])
+ACX_PROG_CC_WARNING_OPTS([-Wstrict-prototypes -Wmissing-prototypes \
+			  -Wold-style-definition -Wc++-compat], [c_warn])
 ACX_PROG_CC_WARNING_ALMOST_PEDANTIC([-Wno-long-long])
+
+# Disable exceptions and RTTI if building with g++
+ACX_PROG_CC_WARNING_OPTS(
+       m4_quote(m4_do([-fno-exceptions -fno-rtti])), [noexception_flags])
 
 # Only enable with --enable-werror-always until existing warnings are
 # corrected.
@@ -32,20 +49,33 @@ ACX_PROG_CC_WARNINGS_ARE_ERRORS([manual])
 
 # Dependency checking.
 ZW_CREATE_DEPDIR
+if test "$ENABLE_BUILD_WITH_CXX" = "no"; then
 ZW_PROG_COMPILER_DEPENDENCIES([CC])
+else
+AC_LANG_PUSH([C++])
+AC_COMPILE_IFELSE([[int i;]], [],
+		  [AC_MSG_ERROR([C++ compiler missing or inoperational])])
+AC_LANG_POP([C++])
+ZW_PROG_COMPILER_DEPENDENCIES([CXX])
+fi
 
 # Checks for header files.
 AC_HEADER_TIME
 ACX_HEADER_STRING
-AC_CHECK_HEADERS(iconv.h locale.h fcntl.h limits.h stddef.h \
+
+AC_CHECK_HEADERS(locale.h fcntl.h limits.h stddef.h \
 	stdlib.h strings.h string.h sys/file.h unistd.h)
 
 # Checks for typedefs, structures, and compiler characteristics.
+AC_C_BIGENDIAN
 AC_C_CONST
 AC_C_INLINE
 AC_FUNC_OBSTACK
 AC_TYPE_OFF_T
 AC_TYPE_SIZE_T
+AC_TYPE_SSIZE_T
+AC_TYPE_UINTPTR_T
+AC_CHECK_TYPE(ptrdiff_t, int)
 AC_STRUCT_TM
 AC_CHECK_SIZEOF(int)
 AC_CHECK_SIZEOF(long)
@@ -55,8 +85,8 @@ define(libcpp_UNLOCKED_FUNCS, clearerr_unlocked feof_unlocked dnl
   fread_unlocked fwrite_unlocked getchar_unlocked getc_unlocked dnl
   putchar_unlocked putc_unlocked)
 AC_CHECK_FUNCS(libcpp_UNLOCKED_FUNCS)
-AC_CHECK_DECLS(m4_split(m4_normalize(abort asprintf basename errno getopt \
-  libcpp_UNLOCKED_FUNCS vasprintf)))
+AC_CHECK_DECLS([abort, asprintf, basename(char *), errno, getopt, vasprintf])
+AC_CHECK_DECLS(m4_split(m4_normalize(libcpp_UNLOCKED_FUNCS)))
 
 # Checks for library functions.
 AC_FUNC_ALLOCA
@@ -76,7 +106,13 @@ if test $ac_cv_type_uchar = yes; then
   [Define if <sys/types.h> defines \`uchar'.])
 fi
 
-AM_ICONV
+# g++ on Solaris 10+ defines _XOPEN_SOURCE=600, which exposes a different
+# iconv() prototype.
+AS_IF([test "$ENABLE_BUILD_WITH_CXX" = "yes"],
+  [AC_LANG_PUSH([C++])
+   AM_ICONV
+   AC_LANG_POP([C++])],
+  [AM_ICONV])
 
 # More defines and substitutions.
 PACKAGE="$PACKAGE_TARNAME"
@@ -117,18 +153,17 @@ case $target in
 	arm*-*-symbianelf* | \
 	x86_64-*-* | \
 	ia64-*-* | \
-	hppa*64*-*-* | parisc*64*-*-* | \
-	i[34567]86-*-darwin* | \
-	i[34567]86-*-solaris2.1[0-9]* | \
+	hppa*64*-*-* | \
+	i[34567]86-*-* | x86_64-*-solaris2.1[0-9]* | \
 	mips*-*-* | \
 	mmix-*-* | \
 	powerpc*-*-* | \
 	rs6000*-*-* | \
 	s390*-*-* | \
-	sparc64*-*-* | ultrasparc-*-freebsd* | \
-	sparcv9-*-solaris2* | \
-	sparc-*-solaris2.[789] | sparc-*-solaris2.1[0-9]* | \
-	sh[123456789l]*-*-*)
+	sparc*-*-* | \
+	spu-*-* | \
+	sh[123456789lbe]*-*-* | sh-*-* | \
+	tilegx-*-* | tilepro-*-* )
 		need_64bit_hwint=yes ;;
 	*)
 		need_64bit_hwint=no ;;
@@ -143,6 +178,13 @@ m4_changequote([,])
 AC_DEFINE_UNQUOTED(HOST_WIDE_INT, $host_wide_int,
 [Define to the widest efficient host integer type at least
    as wide as the target's size_t type.])
+
+case $target in
+  i?86-* | x86_64-*)
+    AC_TRY_COMPILE([], [asm ("pcmpestri %0, %%xmm0, %%xmm1" : : "i"(0))],
+      [AC_DEFINE([HAVE_SSE4], [1],
+		 [Define to 1 if you can assemble SSE4 insns.])])
+esac
 
 # Output.
 

@@ -1,12 +1,12 @@
 /* Definitions for AT&T assembler syntax for the Intel 80386.
-   Copyright (C) 1988, 1996, 2000, 2001, 2002
+   Copyright (C) 1988, 1996, 2000, 2001, 2002, 2007, 2009, 2010
    Free Software Foundation, Inc.
 
 This file is part of GCC.
 
 GCC is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2, or (at your option)
+the Free Software Foundation; either version 3, or (at your option)
 any later version.
 
 GCC is distributed in the hope that it will be useful,
@@ -14,10 +14,14 @@ but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with GCC; see the file COPYING.  If not, write to
-the Free Software Foundation, 51 Franklin Street, Fifth Floor,
-Boston, MA 02110-1301, USA.  */
+Under Section 7 of GPL version 3, you are granted additional
+permissions described in the GCC Runtime Library Exception, version
+3.1, as published by the Free Software Foundation.
+
+You should have received a copy of the GNU General Public License and
+a copy of the GCC Runtime Library Exception along with this program;
+see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
+<http://www.gnu.org/licenses/>.  */
 
 
 /* Define the syntax of instructions and addresses.  */
@@ -27,21 +31,23 @@ Boston, MA 02110-1301, USA.  */
 
 /* Assembler pseudos to introduce constants of various size.  */
 
+#define ASM_BYTE "\t.byte\t"
 #define ASM_SHORT "\t.value\t"
 #define ASM_LONG "\t.long\t"
 #define ASM_QUAD "\t.quad\t"  /* Should not be used for 32bit compilation.  */
 
 /* How to output an ASCII string constant.  */
 
+#undef ASM_OUTPUT_ASCII
 #define ASM_OUTPUT_ASCII(FILE, PTR, SIZE)			\
 do								\
 { size_t i = 0, limit = (SIZE); 				\
   while (i < limit)						\
-    { if (i%10 == 0) { if (i!=0) fprintf ((FILE), "\n");	\
-		       fputs ("\t.byte\t", (FILE)); }		\
-      else fprintf ((FILE), ",");				\
-	fprintf ((FILE), "0x%x", ((PTR)[i++] & 0377)) ;}	\
-      fprintf ((FILE), "\n");					\
+    { if (i%10 == 0) { if (i!=0) putc ('\n', (FILE));		\
+		       fputs (ASM_BYTE, (FILE)); }		\
+      else putc (',', (FILE));					\
+      fprintf ((FILE), "0x%x", ((PTR)[i++] & 0377)) ;}		\
+      putc ('\n', (FILE));					\
 } while (0)
 
 /* Output at beginning of assembler file.  */
@@ -57,6 +63,7 @@ do								\
 /* This is how to output an assembler line
    that says to advance the location counter by SIZE bytes.  */
 
+#undef ASM_OUTPUT_SKIP
 #define ASM_OUTPUT_SKIP(FILE,SIZE)  \
   fprintf ((FILE), "\t.set .,.+%u\n", (int)(SIZE))
 
@@ -77,7 +84,7 @@ do								\
 
 #undef ASM_GENERATE_INTERNAL_LABEL
 #define ASM_GENERATE_INTERNAL_LABEL(BUF,PREFIX,NUMBER)	\
-  sprintf ((BUF), "%s%s%ld", LOCAL_LABEL_PREFIX, (PREFIX), (long)(NUMBER))
+  sprintf ((BUF), LOCAL_LABEL_PREFIX "%s%ld", (PREFIX), (long)(NUMBER))
 
 /* The prefix to add to user-visible assembler symbols.  */
 

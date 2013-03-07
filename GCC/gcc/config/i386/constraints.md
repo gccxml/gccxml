@@ -1,11 +1,11 @@
 ;; Constraint definitions for IA-32 and x86-64.
-;; Copyright (C) 2006 Free Software Foundation, Inc.
+;; Copyright (C) 2006, 2007 Free Software Foundation, Inc.
 ;;
 ;; This file is part of GCC.
 ;;
 ;; GCC is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
-;; the Free Software Foundation; either version 2, or (at your option)
+;; the Free Software Foundation; either version 3, or (at your option)
 ;; any later version.
 ;;
 ;; GCC is distributed in the hope that it will be useful,
@@ -14,13 +14,12 @@
 ;; GNU General Public License for more details.
 ;;
 ;; You should have received a copy of the GNU General Public License
-;; along with GCC; see the file COPYING.  If not, write to
-;; the Free Software Foundation, 51 Franklin Street, Fifth Floor,
-;; Boston, MA 02110-1301, USA.
+;; along with GCC; see the file COPYING3.  If not see
+;; <http://www.gnu.org/licenses/>.
 
 ;;; Unused letters:
-;;;     B     H           TU W   
-;;;           h jk          vw  z
+;;;     B     H           T  W
+;;;           h jk          v
 
 ;; Integer register constraints.
 ;; It is not necessary to define 'r' here.
@@ -63,6 +62,9 @@
  "The @code{a} and @code{d} registers, as a pair (for instructions
   that return half the result in one and half in the other).")
 
+(define_register_constraint "U" "CLOBBERED_REGS"
+ "The call-clobbered integer registers.")
+
 ;; Floating-point register constraints.
 (define_register_constraint "f"
  "TARGET_80387 || TARGET_FLOAT_RETURNS_IN_80387 ? FLOAT_REGS : NO_REGS"
@@ -83,45 +85,86 @@
 (define_register_constraint "x" "TARGET_SSE ? SSE_REGS : NO_REGS"
  "Any SSE register.")
 
-(define_register_constraint "Y" "TARGET_SSE2? SSE_REGS : NO_REGS"
- "@internal Any SSE2 register.")
+;; We use the Y prefix to denote any number of conditional register sets:
+;;  z	First SSE register.
+;;  i	SSE2 inter-unit moves enabled
+;;  m	MMX inter-unit moves enabled
+;;  p	Integer register when TARGET_PARTIAL_REG_STALL is disabled
+;;  d	Integer register when integer DFmode moves are enabled
+;;  x	Integer register when integer XFmode moves are enabled
+
+(define_register_constraint "Yz" "TARGET_SSE ? SSE_FIRST_REG : NO_REGS"
+ "First SSE register (@code{%xmm0}).")
+
+(define_register_constraint "Yi"
+ "TARGET_SSE2 && TARGET_INTER_UNIT_MOVES ? SSE_REGS : NO_REGS"
+ "@internal Any SSE register, when SSE2 and inter-unit moves are enabled.")
+
+(define_register_constraint "Ym"
+ "TARGET_MMX && TARGET_INTER_UNIT_MOVES ? MMX_REGS : NO_REGS"
+ "@internal Any MMX register, when inter-unit moves are enabled.")
+
+(define_register_constraint "Yp"
+ "TARGET_PARTIAL_REG_STALL ? NO_REGS : GENERAL_REGS"
+ "@internal Any integer register when TARGET_PARTIAL_REG_STALL is disabled.")
+
+(define_register_constraint "Yd"
+ "(TARGET_64BIT
+   || (TARGET_INTEGER_DFMODE_MOVES && optimize_function_for_speed_p (cfun)))
+  ? GENERAL_REGS : NO_REGS"
+ "@internal Any integer register when integer DFmode moves are enabled.")
+
+(define_register_constraint "Yx"
+ "optimize_function_for_speed_p (cfun) ? GENERAL_REGS : NO_REGS"
+ "@internal Any integer register when integer XFmode moves are enabled.")
+
+(define_constraint "z"
+  "@internal Constant call address operand."
+  (match_operand 0 "constant_call_address_operand"))
+
+(define_constraint "w"
+  "@internal Call memory operand."
+  (and (not (match_test "TARGET_X32"))
+       (match_operand 0 "memory_operand")))
 
 ;; Integer constant constraints.
 (define_constraint "I"
   "Integer constant in the range 0 @dots{} 31, for 32-bit shifts."
   (and (match_code "const_int")
-       (match_test "ival >= 0 && ival <= 31")))
+       (match_test "IN_RANGE (ival, 0, 31)")))
 
 (define_constraint "J"
   "Integer constant in the range 0 @dots{} 63, for 64-bit shifts."
   (and (match_code "const_int")
-       (match_test "ival >= 0 && ival <= 63")))
+       (match_test "IN_RANGE (ival, 0, 63)")))
 
 (define_constraint "K"
   "Signed 8-bit integer constant."
   (and (match_code "const_int")
-       (match_test "ival >= -128 && ival <= 127")))
+       (match_test "IN_RANGE (ival, -128, 127)")))
 
 (define_constraint "L"
-  "@code{0xFF} or @code{0xFFFF}, for andsi as a zero-extending move."
+  "@code{0xFF}, @code{0xFFFF} or @code{0xFFFFFFFF}
+   for AND as a zero-extending move."
   (and (match_code "const_int")
-       (match_test "ival == 0xFF || ival == 0xFFFF")))
+       (match_test "ival == 0xff || ival == 0xffff
+		    || ival == (HOST_WIDE_INT) 0xffffffff")))
 
 (define_constraint "M"
   "0, 1, 2, or 3 (shifts for the @code{lea} instruction)."
   (and (match_code "const_int")
-       (match_test "ival >= 0 && ival <= 3")))
+       (match_test "IN_RANGE (ival, 0, 3)")))
 
 (define_constraint "N"
-  "Unsigned 8-bit integer constant (for @code{in} and @code{out} 
+  "Unsigned 8-bit integer constant (for @code{in} and @code{out}
    instructions)."
   (and (match_code "const_int")
-       (match_test "ival >= 0 && ival <= 255")))
+       (match_test "IN_RANGE (ival, 0, 255)")))
 
 (define_constraint "O"
   "@internal Integer constant in the range 0 @dots{} 127, for 128-bit shifts."
   (and (match_code "const_int")
-       (match_test "ival >= 0 && ival <= 127")))
+       (match_test "IN_RANGE (ival, 0, 127)")))
 
 ;; Floating-point constant constraints.
 ;; We allow constants even if TARGET_80387 isn't set, because the
@@ -130,7 +173,7 @@
 (define_constraint "G"
   "Standard 80387 floating point constant."
   (and (match_code "const_double")
-       (match_test "standard_80387_constant_p (op)")))
+       (match_test "standard_80387_constant_p (op) > 0")))
 
 ;; This can theoretically be any mode's CONST0_RTX.
 (define_constraint "C"

@@ -1,31 +1,32 @@
 /* Rtl-level induction variable analysis.
-   Copyright (C) 2004, 2005 Free Software Foundation, Inc.
-   
+   Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010
+   Free Software Foundation, Inc.
+
 This file is part of GCC.
-   
+
 GCC is free software; you can redistribute it and/or modify it
 under the terms of the GNU General Public License as published by the
-Free Software Foundation; either version 2, or (at your option) any
+Free Software Foundation; either version 3, or (at your option) any
 later version.
-   
+
 GCC is distributed in the hope that it will be useful, but WITHOUT
 ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
 FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 for more details.
-   
+
 You should have received a copy of the GNU General Public License
-along with GCC; see the file COPYING.  If not, write to the Free
-Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
-02110-1301, USA.  */
+along with GCC; see the file COPYING3.  If not see
+<http://www.gnu.org/licenses/>.  */
 
 /* This is a simple analysis of induction variables of the loop.  The major use
    is for determining the number of iterations of a loop for loop unrolling,
    doloop optimization and branch prediction.  The iv information is computed
    on demand.
 
-   Induction variable is analyzed by walking the use-def chains.  When a biv
-   is found, it is cached in the bivs hash table.  When register is proved
-   to be a giv, its description is stored to DF_REF_DATA of the def reference.
+   Induction variables are analyzed by walking the use-def chains.  When
+   a basic induction variable (biv) is found, it is cached in the bivs
+   hash table.  When register is proved to be a biv, its description
+   is stored to DF_REF_DATA of the def reference.
 
    The analysis works always with one loop -- you must call
    iv_analysis_loop_init (loop) for it.  All the other functions then work with
@@ -34,7 +35,7 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
    iv_analysis_done () to clean up the memory.
 
    The available functions are:
- 
+
    iv_analyze (insn, reg, iv): Stores the description of the induction variable
      corresponding to the use of register REG in INSN to IV.  Returns true if
      REG is an induction variable in INSN. false otherwise.
@@ -45,8 +46,7 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
    iv_analyze_expr (insn, rhs, mode, iv):  Stores to IV the description of iv
      corresponding to expression EXPR evaluated at INSN.  All registers used bu
      EXPR must also be used in INSN.
-   iv_current_loop_df (): Returns the dataflow object for the current loop used
-     by iv analysis.  */
+*/
 
 #include "config.h"
 #include "system.h"
@@ -60,7 +60,7 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
 #include "expr.h"
 #include "intl.h"
 #include "output.h"
-#include "toplev.h"
+#include "diagnostic-core.h"
 #include "df.h"
 #include "hashtab.h"
 
@@ -92,28 +92,24 @@ struct biv_entry
   struct rtx_iv iv;	/* Value of the biv.  */
 };
 
+static bool clean_slate = true;
+
+static unsigned int iv_ref_table_size = 0;
+
+/* Table of rtx_ivs indexed by the df_ref uid field.  */
+static struct rtx_iv ** iv_ref_table;
+
 /* Induction variable stored at the reference.  */
-#define DF_REF_IV(REF) ((struct rtx_iv *) DF_REF_DATA (REF))
-#define DF_REF_IV_SET(REF, IV) DF_REF_DATA (REF) = (IV)
+#define DF_REF_IV(REF) iv_ref_table[DF_REF_ID(REF)]
+#define DF_REF_IV_SET(REF, IV) iv_ref_table[DF_REF_ID(REF)] = (IV)
 
 /* The current loop.  */
 
 static struct loop *current_loop;
 
-/* Dataflow information for the current loop.  */
-
-static struct df *df = NULL;
-
 /* Bivs of the current loop.  */
 
 static htab_t bivs;
-
-/* Return the dataflow object for the current loop.  */
-struct df *
-iv_current_loop_df (void)
-{
-  return df;
-}
 
 static bool iv_analyze_op (rtx, rtx, struct rtx_iv *);
 
@@ -172,6 +168,20 @@ lowpart_subreg (enum machine_mode outer_mode, rtx expr,
 			      subreg_lowpart_offset (outer_mode, inner_mode));
 }
 
+static void
+check_iv_ref_table_size (void)
+{
+  if (iv_ref_table_size < DF_DEFS_TABLE_SIZE())
+    {
+      unsigned int new_size = DF_DEFS_TABLE_SIZE () + (DF_DEFS_TABLE_SIZE () / 4);
+      iv_ref_table = XRESIZEVEC (struct rtx_iv *, iv_ref_table, new_size);
+      memset (&iv_ref_table[iv_ref_table_size], 0,
+	      (new_size - iv_ref_table_size) * sizeof (struct rtx_iv *));
+      iv_ref_table_size = new_size;
+    }
+}
+
+
 /* Checks whether REG is a well-behaved register.  */
 
 static bool
@@ -204,18 +214,18 @@ simple_reg_p (rtx reg)
 static void
 clear_iv_info (void)
 {
-  unsigned i, n_defs = DF_DEFS_SIZE (df);
+  unsigned i, n_defs = DF_DEFS_TABLE_SIZE ();
   struct rtx_iv *iv;
-  struct df_ref *def;
 
+  check_iv_ref_table_size ();
   for (i = 0; i < n_defs; i++)
     {
-      def = DF_DEFS_GET (df, i);
-      iv = DF_REF_IV (def);
-      if (!iv)
-	continue;
-      free (iv);
-      DF_REF_IV_SET (def, NULL);
+      iv = iv_ref_table[i];
+      if (iv)
+	{
+	  free (iv);
+	  iv_ref_table[i] = NULL;
+	}
     }
 
   htab_empty (bivs);
@@ -234,7 +244,7 @@ biv_hash (const void *b)
 static int
 biv_eq (const void *b, const void *r)
 {
-  return ((const struct biv_entry *) b)->regno == REGNO ((rtx) r);
+  return ((const struct biv_entry *) b)->regno == REGNO ((const_rtx) r);
 }
 
 /* Prepare the data for an induction variable analysis of a LOOP.  */
@@ -245,16 +255,15 @@ iv_analysis_loop_init (struct loop *loop)
   basic_block *body = get_loop_body_in_dom_order (loop), bb;
   bitmap blocks = BITMAP_ALLOC (NULL);
   unsigned i;
-  bool first_time = (df == NULL);
 
   current_loop = loop;
 
   /* Clear the information from the analysis of the previous loop.  */
-  if (first_time)
+  if (clean_slate)
     {
-      df = df_init (DF_HARD_REGS | DF_EQUIV_NOTES);
-      df_chain_add_problem (df, DF_UD_CHAIN);
+      df_set_flags (DF_EQ_NOTES + DF_DEFER_INSN_RESCAN);
       bivs = htab_create (10, biv_hash, biv_eq, free);
+      clean_slate = false;
     }
   else
     clear_iv_info ();
@@ -264,8 +273,18 @@ iv_analysis_loop_init (struct loop *loop)
       bb = body[i];
       bitmap_set_bit (blocks, bb->index);
     }
-  df_set_blocks (df, blocks);
-  df_analyze (df); 
+  /* Get rid of the ud chains before processing the rescans.  Then add
+     the problem back.  */
+  df_remove_problem (df_chain);
+  df_process_deferred_rescans ();
+  df_chain_add_problem (DF_UD_CHAIN);
+  df_note_add_problem ();
+  df_set_blocks (blocks);
+  df_analyze ();
+  if (dump_file)
+    df_dump_region (dump_file);
+
+  check_iv_ref_table_size ();
   BITMAP_FREE (blocks);
   free (body);
 }
@@ -276,16 +295,16 @@ iv_analysis_loop_init (struct loop *loop)
    is set to NULL and true is returned.  */
 
 static bool
-latch_dominating_def (rtx reg, struct df_ref **def)
+latch_dominating_def (rtx reg, df_ref *def)
 {
-  struct df_ref *single_rd = NULL, *adef;
+  df_ref single_rd = NULL, adef;
   unsigned regno = REGNO (reg);
-  struct df_reg_info *reg_info = DF_REG_DEF_GET (df, regno);
-  struct df_rd_bb_info *bb_info = DF_RD_BB_INFO (df, current_loop->latch);
+  struct df_rd_bb_info *bb_info = DF_RD_BB_INFO (current_loop->latch);
 
-  for (adef = reg_info->reg_chain; adef; adef = adef->next_reg)
+  for (adef = DF_REG_DEF_CHAIN (regno); adef; adef = DF_REF_NEXT_REG (adef))
     {
-      if (!bitmap_bit_p (bb_info->out, DF_REF_ID (adef)))
+      if (!bitmap_bit_p (df->blocks_to_analyze, DF_REF_BBNO (adef))
+	  || !bitmap_bit_p (&bb_info->out, DF_REF_ID (adef)))
 	continue;
 
       /* More than one reaching definition.  */
@@ -305,13 +324,13 @@ latch_dominating_def (rtx reg, struct df_ref **def)
 /* Gets definition of REG reaching its use in INSN and stores it to DEF.  */
 
 static enum iv_grd_result
-iv_get_reaching_def (rtx insn, rtx reg, struct df_ref **def)
+iv_get_reaching_def (rtx insn, rtx reg, df_ref *def)
 {
-  struct df_ref *use, *adef;
+  df_ref use, adef;
   basic_block def_bb, use_bb;
   rtx def_insn;
   bool dom_p;
-  
+
   *def = NULL;
   if (!simple_reg_p (reg))
     return GRD_INVALID;
@@ -319,7 +338,7 @@ iv_get_reaching_def (rtx insn, rtx reg, struct df_ref **def)
     reg = SUBREG_REG (reg);
   gcc_assert (REG_P (reg));
 
-  use = df_find_use (df, insn, reg);
+  use = df_find_use (insn, reg);
   gcc_assert (use != NULL);
 
   if (!DF_REF_CHAIN (use))
@@ -330,12 +349,17 @@ iv_get_reaching_def (rtx insn, rtx reg, struct df_ref **def)
     return GRD_INVALID;
 
   adef = DF_REF_CHAIN (use)->ref;
+
+  /* We do not handle setting only part of the register.  */
+  if (DF_REF_FLAGS (adef) & DF_REF_READ_WRITE)
+    return GRD_INVALID;
+
   def_insn = DF_REF_INSN (adef);
   def_bb = DF_REF_BB (adef);
   use_bb = BLOCK_FOR_INSN (insn);
 
   if (use_bb == def_bb)
-    dom_p = (DF_INSN_LUID (df, def_insn) < DF_INSN_LUID (df, insn));
+    dom_p = (DF_INSN_LUID (def_insn) < DF_INSN_LUID (insn));
   else
     dom_p = dominated_by_p (CDI_DOMINATORS, use_bb, def_bb);
 
@@ -594,7 +618,7 @@ iv_shift (struct rtx_iv *iv, rtx mby)
    at get_biv_step.  */
 
 static bool
-get_biv_step_1 (struct df_ref *def, rtx reg,
+get_biv_step_1 (df_ref def, rtx reg,
 		rtx *inner_step, enum machine_mode *inner_mode,
 		enum rtx_code *extend, enum machine_mode outer_mode,
 		rtx *outer_step)
@@ -603,7 +627,7 @@ get_biv_step_1 (struct df_ref *def, rtx reg,
   rtx next, nextr, tmp;
   enum rtx_code code;
   rtx insn = DF_REF_INSN (def);
-  struct df_ref *next_def;
+  df_ref next_def;
   enum iv_grd_result res;
 
   set = single_set (insn);
@@ -761,7 +785,7 @@ get_biv_step_1 (struct df_ref *def, rtx reg,
    LAST_DEF is the definition of REG that dominates loop latch.  */
 
 static bool
-get_biv_step (struct df_ref *last_def, rtx reg, rtx *inner_step,
+get_biv_step (df_ref last_def, rtx reg, rtx *inner_step,
 	      enum machine_mode *inner_mode, enum rtx_code *extend,
 	      enum machine_mode *outer_mode, rtx *outer_step)
 {
@@ -781,11 +805,12 @@ get_biv_step (struct df_ref *last_def, rtx reg, rtx *inner_step,
 /* Records information that DEF is induction variable IV.  */
 
 static void
-record_iv (struct df_ref *def, struct rtx_iv *iv)
+record_iv (df_ref def, struct rtx_iv *iv)
 {
   struct rtx_iv *recorded_iv = XNEW (struct rtx_iv);
 
   *recorded_iv = *iv;
+  check_iv_ref_table_size ();
   DF_REF_IV_SET (def, recorded_iv);
 }
 
@@ -795,7 +820,8 @@ record_iv (struct df_ref *def, struct rtx_iv *iv)
 static bool
 analyzed_for_bivness_p (rtx def, struct rtx_iv *iv)
 {
-  struct biv_entry *biv = htab_find_with_hash (bivs, def, REGNO (def));
+  struct biv_entry *biv =
+    (struct biv_entry *) htab_find_with_hash (bivs, def, REGNO (def));
 
   if (!biv)
     return false;
@@ -825,7 +851,7 @@ iv_analyze_biv (rtx def, struct rtx_iv *iv)
   rtx inner_step, outer_step;
   enum machine_mode inner_mode, outer_mode;
   enum rtx_code extend;
-  struct df_ref *last_def;
+  df_ref last_def;
 
   if (dump_file)
     {
@@ -833,7 +859,7 @@ iv_analyze_biv (rtx def, struct rtx_iv *iv)
       print_rtl (dump_file, def);
       fprintf (dump_file, " for bivness.\n");
     }
-    
+
   if (!REG_P (def))
     {
       if (!CONSTANT_P (def))
@@ -893,7 +919,7 @@ iv_analyze_biv (rtx def, struct rtx_iv *iv)
   return iv->base != NULL_RTX;
 }
 
-/* Analyzes expression RHS used at INSN and stores the result to *IV. 
+/* Analyzes expression RHS used at INSN and stores the result to *IV.
    The mode of the induction variable is MODE.  */
 
 bool
@@ -917,7 +943,7 @@ iv_analyze_expr (rtx insn, rtx rhs, enum machine_mode mode, struct rtx_iv *iv)
     {
       if (!iv_analyze_op (insn, rhs, iv))
 	return false;
-	
+
       if (iv->mode == VOIDmode)
 	{
 	  iv->mode = mode;
@@ -1018,7 +1044,7 @@ iv_analyze_expr (rtx insn, rtx rhs, enum machine_mode mode, struct rtx_iv *iv)
 /* Analyzes iv DEF and stores the result to *IV.  */
 
 static bool
-iv_analyze_def (struct df_ref *def, struct rtx_iv *iv)
+iv_analyze_def (df_ref def, struct rtx_iv *iv)
 {
   rtx insn = DF_REF_INSN (def);
   rtx reg = DF_REF_REG (def);
@@ -1026,12 +1052,13 @@ iv_analyze_def (struct df_ref *def, struct rtx_iv *iv)
 
   if (dump_file)
     {
-      fprintf (dump_file, "Analysing def of ");
+      fprintf (dump_file, "Analyzing def of ");
       print_rtl (dump_file, reg);
       fprintf (dump_file, " in insn ");
       print_rtl_single (dump_file, insn);
     }
 
+  check_iv_ref_table_size ();
   if (DF_REF_IV (def))
     {
       if (dump_file)
@@ -1044,10 +1071,17 @@ iv_analyze_def (struct df_ref *def, struct rtx_iv *iv)
   iv->base = NULL_RTX;
   iv->step = NULL_RTX;
 
-  set = single_set (insn);
-  if (!set || SET_DEST (set) != reg)
+  if (!REG_P (reg))
     return false;
 
+  set = single_set (insn);
+  if (!set)
+    return false;
+
+  if (!REG_P (SET_DEST (set)))
+    return false;
+
+  gcc_assert (SET_DEST (set) == reg);
   rhs = find_reg_equal_equiv_note (insn);
   if (rhs)
     rhs = XEXP (rhs, 0);
@@ -1075,18 +1109,18 @@ iv_analyze_def (struct df_ref *def, struct rtx_iv *iv)
 static bool
 iv_analyze_op (rtx insn, rtx op, struct rtx_iv *iv)
 {
-  struct df_ref *def = NULL;
+  df_ref def = NULL;
   enum iv_grd_result res;
 
   if (dump_file)
     {
-      fprintf (dump_file, "Analysing operand ");
+      fprintf (dump_file, "Analyzing operand ");
       print_rtl (dump_file, op);
       fprintf (dump_file, " of insn ");
       print_rtl_single (dump_file, insn);
     }
 
-  if (CONSTANT_P (op))
+  if (function_invariant_p (op))
     res = GRD_INVARIANT;
   else if (GET_CODE (op) == SUBREG)
     {
@@ -1146,7 +1180,7 @@ iv_analyze (rtx insn, rtx val, struct rtx_iv *iv)
       else
 	reg = val;
 
-      while (!df_find_use (df, insn, reg))
+      while (!df_find_use (insn, reg))
 	insn = NEXT_INSN (insn);
     }
 
@@ -1158,9 +1192,9 @@ iv_analyze (rtx insn, rtx val, struct rtx_iv *iv)
 bool
 iv_analyze_result (rtx insn, rtx def, struct rtx_iv *iv)
 {
-  struct df_ref *adef;
+  df_ref adef;
 
-  adef = df_find_def (df, insn, def);
+  adef = df_find_def (insn, def);
   if (!adef)
     return false;
 
@@ -1175,12 +1209,12 @@ bool
 biv_p (rtx insn, rtx reg)
 {
   struct rtx_iv iv;
-  struct df_ref *def, *last_def;
+  df_ref def, last_def;
 
   if (!simple_reg_p (reg))
     return false;
 
-  def = df_find_def (df, insn, reg);
+  def = df_find_def (insn, reg);
   gcc_assert (def != NULL);
   if (!latch_dominating_def (reg, &last_def))
     return false;
@@ -1232,12 +1266,15 @@ get_iv_value (struct rtx_iv *iv, rtx iteration)
 void
 iv_analysis_done (void)
 {
-  if (df)
+  if (!clean_slate)
     {
       clear_iv_info ();
-      df_finish (df);
-      df = NULL;
+      clean_slate = true;
+      df_finish_pass (true);
       htab_delete (bivs);
+      free (iv_ref_table);
+      iv_ref_table = NULL;
+      iv_ref_table_size = 0;
       bivs = NULL;
     }
 }
@@ -1261,71 +1298,6 @@ inverse (unsigned HOST_WIDEST_INT x, int mod)
   return rslt;
 }
 
-/* Tries to estimate the maximum number of iterations.  */
-
-static unsigned HOST_WIDEST_INT
-determine_max_iter (struct niter_desc *desc)
-{
-  rtx niter = desc->niter_expr;
-  rtx mmin, mmax, left, right;
-  unsigned HOST_WIDEST_INT nmax, inc;
-
-  if (GET_CODE (niter) == AND
-      && GET_CODE (XEXP (niter, 0)) == CONST_INT)
-    {
-      nmax = INTVAL (XEXP (niter, 0));
-      if (!(nmax & (nmax + 1)))
-	{
-	  desc->niter_max = nmax;
-	  return nmax;
-	}
-    }
-
-  get_mode_bounds (desc->mode, desc->signed_p, desc->mode, &mmin, &mmax);
-  nmax = INTVAL (mmax) - INTVAL (mmin);
-
-  if (GET_CODE (niter) == UDIV)
-    {
-      if (GET_CODE (XEXP (niter, 1)) != CONST_INT)
-	{
-	  desc->niter_max = nmax;
-	  return nmax;
-	}
-      inc = INTVAL (XEXP (niter, 1));
-      niter = XEXP (niter, 0);
-    }
-  else
-    inc = 1;
-
-  if (GET_CODE (niter) == PLUS)
-    {
-      left = XEXP (niter, 0);
-      right = XEXP (niter, 0);
-
-      if (GET_CODE (right) == CONST_INT)
-	right = GEN_INT (-INTVAL (right));
-    }
-  else if (GET_CODE (niter) == MINUS)
-    {
-      left = XEXP (niter, 0);
-      right = XEXP (niter, 0);
-    }
-  else
-    {
-      left = niter;
-      right = mmin;
-    }
-
-  if (GET_CODE (left) == CONST_INT)
-    mmax = left;
-  if (GET_CODE (right) == CONST_INT)
-    mmin = right;
-  nmax = INTVAL (mmax) - INTVAL (mmin);
-
-  desc->niter_max = nmax / inc;
-  return nmax / inc;
-}
-
 /* Checks whether register *REG is in set ALT.  Callback for for_each_rtx.  */
 
 static int
@@ -1334,20 +1306,20 @@ altered_reg_used (rtx *reg, void *alt)
   if (!REG_P (*reg))
     return 0;
 
-  return REGNO_REG_SET_P (alt, REGNO (*reg));
+  return REGNO_REG_SET_P ((bitmap) alt, REGNO (*reg));
 }
 
 /* Marks registers altered by EXPR in set ALT.  */
 
 static void
-mark_altered (rtx expr, rtx by ATTRIBUTE_UNUSED, void *alt)
+mark_altered (rtx expr, const_rtx by ATTRIBUTE_UNUSED, void *alt)
 {
   if (GET_CODE (expr) == SUBREG)
     expr = SUBREG_REG (expr);
   if (!REG_P (expr))
     return;
 
-  SET_REGNO_REG_SET (alt, REGNO (expr));
+  SET_REGNO_REG_SET ((bitmap) alt, REGNO (expr));
 }
 
 /* Checks whether RHS is simple enough to process.  */
@@ -1357,62 +1329,114 @@ simple_rhs_p (rtx rhs)
 {
   rtx op0, op1;
 
-  if (CONSTANT_P (rhs)
-      || REG_P (rhs))
+  if (function_invariant_p (rhs)
+      || (REG_P (rhs) && !HARD_REGISTER_P (rhs)))
     return true;
 
   switch (GET_CODE (rhs))
     {
     case PLUS:
     case MINUS:
+    case AND:
       op0 = XEXP (rhs, 0);
       op1 = XEXP (rhs, 1);
-      /* Allow reg + const sets only.  */
-      if (REG_P (op0) && CONSTANT_P (op1))
-	return true;
-      if (REG_P (op1) && CONSTANT_P (op0))
-	return true;
+      /* Allow reg OP const and reg OP reg.  */
+      if (!(REG_P (op0) && !HARD_REGISTER_P (op0))
+	  && !function_invariant_p (op0))
+	return false;
+      if (!(REG_P (op1) && !HARD_REGISTER_P (op1))
+	  && !function_invariant_p (op1))
+	return false;
 
-      return false;
+      return true;
+
+    case ASHIFT:
+    case ASHIFTRT:
+    case LSHIFTRT:
+    case MULT:
+      op0 = XEXP (rhs, 0);
+      op1 = XEXP (rhs, 1);
+      /* Allow reg OP const.  */
+      if (!(REG_P (op0) && !HARD_REGISTER_P (op0)))
+	return false;
+      if (!function_invariant_p (op1))
+	return false;
+
+      return true;
 
     default:
       return false;
     }
 }
 
-/* Simplifies *EXPR using assignment in INSN.  ALTERED is the set of registers
-   altered so far.  */
+/* If REG has a single definition, replace it with its known value in EXPR.
+   Callback for for_each_rtx.  */
 
-static void
-simplify_using_assignment (rtx insn, rtx *expr, regset altered)
+static int
+replace_single_def_regs (rtx *reg, void *expr1)
+{
+  unsigned regno;
+  df_ref adef;
+  rtx set, src;
+  rtx *expr = (rtx *)expr1;
+
+  if (!REG_P (*reg))
+    return 0;
+
+  regno = REGNO (*reg);
+  for (;;)
+    {
+      rtx note;
+      adef = DF_REG_DEF_CHAIN (regno);
+      if (adef == NULL || DF_REF_NEXT_REG (adef) != NULL
+	    || DF_REF_IS_ARTIFICIAL (adef))
+	return -1;
+
+      set = single_set (DF_REF_INSN (adef));
+      if (set == NULL || !REG_P (SET_DEST (set))
+	  || REGNO (SET_DEST (set)) != regno)
+	return -1;
+
+      note = find_reg_equal_equiv_note (DF_REF_INSN (adef));
+
+      if (note && function_invariant_p (XEXP (note, 0)))
+	{
+	  src = XEXP (note, 0);
+	  break;
+	}
+      src = SET_SRC (set);
+
+      if (REG_P (src))
+	{
+	  regno = REGNO (src);
+	  continue;
+	}
+      break;
+    }
+  if (!function_invariant_p (src))
+    return -1;
+
+  *expr = simplify_replace_rtx (*expr, *reg, src);
+  return 1;
+}
+
+/* A subroutine of simplify_using_initial_values, this function examines INSN
+   to see if it contains a suitable set that we can use to make a replacement.
+   If it is suitable, return true and set DEST and SRC to the lhs and rhs of
+   the set; return false otherwise.  */
+
+static bool
+suitable_set_for_replacement (rtx insn, rtx *dest, rtx *src)
 {
   rtx set = single_set (insn);
   rtx lhs = NULL_RTX, rhs;
-  bool ret = false;
 
-  if (set)
-    {
-      lhs = SET_DEST (set);
-      if (!REG_P (lhs)
-	  || altered_reg_used (&lhs, altered))
-	ret = true;
-    }
-  else
-    ret = true;
+  if (!set)
+    return false;
 
-  note_stores (PATTERN (insn), mark_altered, altered);
-  if (CALL_P (insn))
-    {
-      int i;
-
-      /* Kill all call clobbered registers.  */
-      for (i = 0; i < FIRST_PSEUDO_REGISTER; i++)
-	if (TEST_HARD_REG_BIT (regs_invalidated_by_call, i))
-	  SET_REGNO_REG_SET (altered, i);
-    }
-
-  if (ret)
-    return;
+  lhs = SET_DEST (set);
+  if (!REG_P (lhs))
+    return false;
 
   rhs = find_reg_equal_equiv_note (insn);
   if (rhs)
@@ -1421,12 +1445,25 @@ simplify_using_assignment (rtx insn, rtx *expr, regset altered)
     rhs = SET_SRC (set);
 
   if (!simple_rhs_p (rhs))
-    return;
+    return false;
 
-  if (for_each_rtx (&rhs, altered_reg_used, altered))
-    return;
+  *dest = lhs;
+  *src = rhs;
+  return true;
+}
 
-  *expr = simplify_replace_rtx (*expr, lhs, rhs);
+/* Using the data returned by suitable_set_for_replacement, replace DEST
+   with SRC in *EXPR and return the new expression.  Also call
+   replace_single_def_regs if the replacement changed something.  */
+static void
+replace_in_expr (rtx *expr, rtx dest, rtx src)
+{
+  rtx old = *expr;
+  *expr = simplify_replace_rtx (*expr, dest, src);
+  if (old == *expr)
+    return;
+  while (for_each_rtx (expr, replace_single_def_regs, expr) != 0)
+    continue;
 }
 
 /* Checks whether A implies B.  */
@@ -1457,14 +1494,34 @@ implies_p (rtx a, rtx b)
 	}
     }
 
+  if (b == const_true_rtx)
+    return true;
+
+  if ((GET_RTX_CLASS (GET_CODE (a)) != RTX_COMM_COMPARE
+       && GET_RTX_CLASS (GET_CODE (a)) != RTX_COMPARE)
+      || (GET_RTX_CLASS (GET_CODE (b)) != RTX_COMM_COMPARE
+	  && GET_RTX_CLASS (GET_CODE (b)) != RTX_COMPARE))
+    return false;
+
+  op0 = XEXP (a, 0);
+  op1 = XEXP (a, 1);
+  opb0 = XEXP (b, 0);
+  opb1 = XEXP (b, 1);
+
+  mode = GET_MODE (op0);
+  if (mode != GET_MODE (opb0))
+    mode = VOIDmode;
+  else if (mode == VOIDmode)
+    {
+      mode = GET_MODE (op1);
+      if (mode != GET_MODE (opb1))
+	mode = VOIDmode;
+    }
+
   /* A < B implies A + 1 <= B.  */
   if ((GET_CODE (a) == GT || GET_CODE (a) == LT)
       && (GET_CODE (b) == GE || GET_CODE (b) == LE))
     {
-      op0 = XEXP (a, 0);
-      op1 = XEXP (a, 1);
-      opb0 = XEXP (b, 0);
-      opb1 = XEXP (b, 1);
 
       if (GET_CODE (a) == GT)
 	{
@@ -1480,21 +1537,82 @@ implies_p (rtx a, rtx b)
 	  opb1 = r;
 	}
 
-      mode = GET_MODE (op0);
-      if (mode != GET_MODE (opb0))
-	mode = VOIDmode;
-      else if (mode == VOIDmode)
-	{
-	  mode = GET_MODE (op1);
-	  if (mode != GET_MODE (opb1))
-	    mode = VOIDmode;
-	}
-
       if (SCALAR_INT_MODE_P (mode)
 	  && rtx_equal_p (op1, opb1)
 	  && simplify_gen_binary (MINUS, mode, opb0, op0) == const1_rtx)
 	return true;
+      return false;
     }
+
+  /* A < B or A > B imply A != B.  TODO: Likewise
+     A + n < B implies A != B + n if neither wraps.  */
+  if (GET_CODE (b) == NE
+      && (GET_CODE (a) == GT || GET_CODE (a) == GTU
+	  || GET_CODE (a) == LT || GET_CODE (a) == LTU))
+    {
+      if (rtx_equal_p (op0, opb0)
+	  && rtx_equal_p (op1, opb1))
+	return true;
+    }
+
+  /* For unsigned comparisons, A != 0 implies A > 0 and A >= 1.  */
+  if (GET_CODE (a) == NE
+      && op1 == const0_rtx)
+    {
+      if ((GET_CODE (b) == GTU
+	   && opb1 == const0_rtx)
+	  || (GET_CODE (b) == GEU
+	      && opb1 == const1_rtx))
+	return rtx_equal_p (op0, opb0);
+    }
+
+  /* A != N is equivalent to A - (N + 1) <u -1.  */
+  if (GET_CODE (a) == NE
+      && CONST_INT_P (op1)
+      && GET_CODE (b) == LTU
+      && opb1 == constm1_rtx
+      && GET_CODE (opb0) == PLUS
+      && CONST_INT_P (XEXP (opb0, 1))
+      /* Avoid overflows.  */
+      && ((unsigned HOST_WIDE_INT) INTVAL (XEXP (opb0, 1))
+	  != ((unsigned HOST_WIDE_INT)1
+	      << (HOST_BITS_PER_WIDE_INT - 1)) - 1)
+      && INTVAL (XEXP (opb0, 1)) + 1 == -INTVAL (op1))
+    return rtx_equal_p (op0, XEXP (opb0, 0));
+
+  /* Likewise, A != N implies A - N > 0.  */
+  if (GET_CODE (a) == NE
+      && CONST_INT_P (op1))
+    {
+      if (GET_CODE (b) == GTU
+	  && GET_CODE (opb0) == PLUS
+	  && opb1 == const0_rtx
+	  && CONST_INT_P (XEXP (opb0, 1))
+	  /* Avoid overflows.  */
+	  && ((unsigned HOST_WIDE_INT) INTVAL (XEXP (opb0, 1))
+	      != ((unsigned HOST_WIDE_INT) 1 << (HOST_BITS_PER_WIDE_INT - 1)))
+	  && rtx_equal_p (XEXP (opb0, 0), op0))
+	return INTVAL (op1) == -INTVAL (XEXP (opb0, 1));
+      if (GET_CODE (b) == GEU
+	  && GET_CODE (opb0) == PLUS
+	  && opb1 == const1_rtx
+	  && CONST_INT_P (XEXP (opb0, 1))
+	  /* Avoid overflows.  */
+	  && ((unsigned HOST_WIDE_INT) INTVAL (XEXP (opb0, 1))
+	      != ((unsigned HOST_WIDE_INT) 1 << (HOST_BITS_PER_WIDE_INT - 1)))
+	  && rtx_equal_p (XEXP (opb0, 0), op0))
+	return INTVAL (op1) == -INTVAL (XEXP (opb0, 1));
+    }
+
+  /* A >s X, where X is positive, implies A <u Y, if Y is negative.  */
+  if ((GET_CODE (a) == GT || GET_CODE (a) == GE)
+      && CONST_INT_P (op1)
+      && ((GET_CODE (a) == GT && op1 == constm1_rtx)
+	  || INTVAL (op1) >= 0)
+      && GET_CODE (b) == LTU
+      && CONST_INT_P (opb1)
+      && rtx_equal_p (op0, opb0))
+    return INTVAL (opb1) < 0;
 
   return false;
 }
@@ -1531,7 +1649,7 @@ canon_condition (rtx cond)
     mode = GET_MODE (op1);
   gcc_assert (mode != VOIDmode);
 
-  if (GET_CODE (op1) == CONST_INT
+  if (CONST_INT_P (op1)
       && GET_MODE_CLASS (mode) != MODE_CC
       && GET_MODE_BITSIZE (mode) <= HOST_BITS_PER_WIDE_INT)
     {
@@ -1588,13 +1706,20 @@ simplify_using_condition (rtx cond, rtx *expr, regset altered)
 {
   rtx rev, reve, exp = *expr;
 
-  if (!COMPARISON_P (exp))
-    return;
-
   /* If some register gets altered later, we do not really speak about its
      value at the time of comparison.  */
   if (altered
       && for_each_rtx (&cond, altered_reg_used, altered))
+    return;
+
+  if (GET_CODE (cond) == EQ
+      && REG_P (XEXP (cond, 0)) && CONSTANT_P (XEXP (cond, 1)))
+    {
+      *expr = simplify_replace_rtx (*expr, XEXP (cond, 0), XEXP (cond, 1));
+      return;
+    }
+
+  if (!COMPARISON_P (exp))
     return;
 
   rev = reversed_condition (cond);
@@ -1613,7 +1738,6 @@ simplify_using_condition (rtx cond, rtx *expr, regset altered)
       return;
     }
 
-
   if (rev && rtx_equal_p (exp, rev))
     {
       *expr = const0_rtx;
@@ -1625,7 +1749,7 @@ simplify_using_condition (rtx cond, rtx *expr, regset altered)
       *expr = const_true_rtx;
       return;
     }
-  
+
   if (reve && implies_p (cond, reve))
     {
       *expr = const0_rtx;
@@ -1697,9 +1821,10 @@ eliminate_implied_conditions (enum rtx_code op, rtx *head, rtx tail)
 static void
 simplify_using_initial_values (struct loop *loop, enum rtx_code op, rtx *expr)
 {
-  rtx head, tail, insn;
+  bool expression_valid;
+  rtx head, tail, insn, cond_list, last_valid_expr;
   rtx neutral, aggr;
-  regset altered;
+  regset altered, this_altered;
   edge e;
 
   if (!*expr)
@@ -1730,7 +1855,7 @@ simplify_using_initial_values (struct loop *loop, enum rtx_code op, rtx *expr)
 	default:
 	  gcc_unreachable ();
 	}
-      
+
       simplify_using_initial_values (loop, UNKNOWN, &head);
       if (head == aggr)
 	{
@@ -1751,7 +1876,7 @@ simplify_using_initial_values (struct loop *loop, enum rtx_code op, rtx *expr)
 	  *expr = tail;
 	  return;
 	}
-  
+
       XEXP (*expr, 0) = head;
       XEXP (*expr, 1) = tail;
       return;
@@ -1759,43 +1884,122 @@ simplify_using_initial_values (struct loop *loop, enum rtx_code op, rtx *expr)
 
   gcc_assert (op == UNKNOWN);
 
+  for (;;)
+    if (for_each_rtx (expr, replace_single_def_regs, expr) == 0)
+      break;
+  if (CONSTANT_P (*expr))
+    return;
+
   e = loop_preheader_edge (loop);
   if (e->src == ENTRY_BLOCK_PTR)
     return;
 
   altered = ALLOC_REG_SET (&reg_obstack);
+  this_altered = ALLOC_REG_SET (&reg_obstack);
 
+  expression_valid = true;
+  last_valid_expr = *expr;
+  cond_list = NULL_RTX;
   while (1)
     {
       insn = BB_END (e->src);
       if (any_condjump_p (insn))
 	{
 	  rtx cond = get_condition (BB_END (e->src), NULL, false, true);
-      
+
 	  if (cond && (e->flags & EDGE_FALLTHRU))
 	    cond = reversed_condition (cond);
 	  if (cond)
 	    {
+	      rtx old = *expr;
 	      simplify_using_condition (cond, expr, altered);
-	      if (CONSTANT_P (*expr))
+	      if (old != *expr)
 		{
-		  FREE_REG_SET (altered);
-		  return;
+		  rtx note;
+		  if (CONSTANT_P (*expr))
+		    goto out;
+		  for (note = cond_list; note; note = XEXP (note, 1))
+		    {
+		      simplify_using_condition (XEXP (note, 0), expr, altered);
+		      if (CONSTANT_P (*expr))
+			goto out;
+		    }
 		}
+	      cond_list = alloc_EXPR_LIST (0, cond, cond_list);
 	    }
 	}
 
       FOR_BB_INSNS_REVERSE (e->src, insn)
 	{
+	  rtx src, dest;
+	  rtx old = *expr;
+
 	  if (!INSN_P (insn))
 	    continue;
-	    
-	  simplify_using_assignment (insn, expr, altered);
-	  if (CONSTANT_P (*expr))
+
+	  CLEAR_REG_SET (this_altered);
+	  note_stores (PATTERN (insn), mark_altered, this_altered);
+	  if (CALL_P (insn))
 	    {
-	      FREE_REG_SET (altered);
-	      return;
+	      int i;
+
+	      /* Kill all call clobbered registers.  */
+	      for (i = 0; i < FIRST_PSEUDO_REGISTER; i++)
+		if (TEST_HARD_REG_BIT (regs_invalidated_by_call, i))
+		  SET_REGNO_REG_SET (this_altered, i);
 	    }
+
+	  if (suitable_set_for_replacement (insn, &dest, &src))
+	    {
+	      rtx *pnote, *pnote_next;
+
+	      replace_in_expr (expr, dest, src);
+	      if (CONSTANT_P (*expr))
+		goto out;
+
+	      for (pnote = &cond_list; *pnote; pnote = pnote_next)
+		{
+		  rtx note = *pnote;
+		  rtx old_cond = XEXP (note, 0);
+
+		  pnote_next = &XEXP (note, 1);
+		  replace_in_expr (&XEXP (note, 0), dest, src);
+
+		  /* We can no longer use a condition that has been simplified
+		     to a constant, and simplify_using_condition will abort if
+		     we try.  */
+		  if (CONSTANT_P (XEXP (note, 0)))
+		    {
+		      *pnote = *pnote_next;
+		      pnote_next = pnote;
+		      free_EXPR_LIST_node (note);
+		    }
+		  /* Retry simplifications with this condition if either the
+		     expression or the condition changed.  */
+		  else if (old_cond != XEXP (note, 0) || old != *expr)
+		    simplify_using_condition (XEXP (note, 0), expr, altered);
+		}
+	    }
+	  else
+	    /* If we did not use this insn to make a replacement, any overlap
+	       between stores in this insn and our expression will cause the
+	       expression to become invalid.  */
+	    if (for_each_rtx (expr, altered_reg_used, this_altered))
+	      goto out;
+
+	  if (CONSTANT_P (*expr))
+	    goto out;
+
+	  IOR_REG_SET (altered, this_altered);
+
+	  /* If the expression now contains regs that have been altered, we
+	     can't return it to the caller.  However, it is still valid for
+	     further simplification, so keep searching to see if we can
+	     eventually turn it into a constant.  */
+	  if (for_each_rtx (expr, altered_reg_used, altered))
+	    expression_valid = false;
+	  if (expression_valid)
+	    last_valid_expr = *expr;
 	}
 
       if (!single_pred_p (e->src)
@@ -1804,7 +2008,12 @@ simplify_using_initial_values (struct loop *loop, enum rtx_code op, rtx *expr)
       e = single_pred_edge (e->src);
     }
 
+ out:
+  free_EXPR_LIST_list (&cond_list);
+  if (!CONSTANT_P (*expr))
+    *expr = last_valid_expr;
   FREE_REG_SET (altered);
+  FREE_REG_SET (this_altered);
 }
 
 /* Transforms invariant IV into MODE.  Adds assumptions based on the fact
@@ -1928,7 +2137,7 @@ canonicalize_iv_subregs (struct rtx_iv *iv0, struct rtx_iv *iv1,
      and iv0 and iv1 are both ivs iterating in SI mode, but calculated
      in different modes.  This does not seem impossible to handle, but
      it hardly ever occurs in practice.
-     
+
      The only exception is the case when one of operands is invariant.
      For example pentium 3 generates comparisons like
      (lt (subreg:HI (reg:SI)) 100).  Here we assign HImode to 100, but we
@@ -1979,6 +2188,61 @@ canonicalize_iv_subregs (struct rtx_iv *iv0, struct rtx_iv *iv1,
   desc->signed_p = signed_p;
 
   return true;
+}
+
+/* Tries to estimate the maximum number of iterations in LOOP, and store the
+   result in DESC.  This function is called from iv_number_of_iterations with
+   a number of fields in DESC already filled in.  OLD_NITER is the original
+   expression for the number of iterations, before we tried to simplify it.  */
+
+static unsigned HOST_WIDEST_INT
+determine_max_iter (struct loop *loop, struct niter_desc *desc, rtx old_niter)
+{
+  rtx niter = desc->niter_expr;
+  rtx mmin, mmax, cmp;
+  unsigned HOST_WIDEST_INT nmax, inc;
+
+  if (GET_CODE (niter) == AND
+      && CONST_INT_P (XEXP (niter, 0)))
+    {
+      nmax = INTVAL (XEXP (niter, 0));
+      if (!(nmax & (nmax + 1)))
+	{
+	  desc->niter_max = nmax;
+	  return nmax;
+	}
+    }
+
+  get_mode_bounds (desc->mode, desc->signed_p, desc->mode, &mmin, &mmax);
+  nmax = INTVAL (mmax) - INTVAL (mmin);
+
+  if (GET_CODE (niter) == UDIV)
+    {
+      if (!CONST_INT_P (XEXP (niter, 1)))
+	{
+	  desc->niter_max = nmax;
+	  return nmax;
+	}
+      inc = INTVAL (XEXP (niter, 1));
+      niter = XEXP (niter, 0);
+    }
+  else
+    inc = 1;
+
+  /* We could use a binary search here, but for now improving the upper
+     bound by just one eliminates one important corner case.  */
+  cmp = simplify_gen_relational (desc->signed_p ? LT : LTU, VOIDmode,
+				 desc->mode, old_niter, mmax);
+  simplify_using_initial_values (loop, UNKNOWN, &cmp);
+  if (cmp == const_true_rtx)
+    {
+      nmax--;
+
+      if (dump_file)
+	fprintf (dump_file, ";; improved upper bound by one.\n");
+    }
+  desc->niter_max = nmax / inc;
+  return nmax / inc;
 }
 
 /* Computes number of iterations of the CONDITION in INSN in LOOP and stores
@@ -2035,7 +2299,7 @@ iv_number_of_iterations (struct loop *loop, rtx insn, rtx condition,
     goto fail;
   if (iv0.extend_mode == VOIDmode)
     iv0.mode = iv0.extend_mode = mode;
-  
+
   op1 = XEXP (condition, 1);
   if (!iv_analyze (insn, op1, &iv1))
     goto fail;
@@ -2082,7 +2346,7 @@ iv_number_of_iterations (struct loop *loop, rtx insn, rtx condition,
   mode_mmin = lowpart_subreg (mode, mmin, comp_mode);
   mode_mmax = lowpart_subreg (mode, mmax, comp_mode);
 
-  if (GET_CODE (iv0.step) != CONST_INT || GET_CODE (iv1.step) != CONST_INT)
+  if (!CONST_INT_P (iv0.step) || !CONST_INT_P (iv1.step))
     goto fail;
 
   /* We can take care of the case of two induction variables chasing each other
@@ -2213,7 +2477,7 @@ iv_number_of_iterations (struct loop *loop, rtx insn, rtx condition,
       may_xform = const0_rtx;
       may_not_xform = const_true_rtx;
 
-      if (GET_CODE (delta) == CONST_INT)
+      if (CONST_INT_P (delta))
 	{
 	  if (was_sharp && INTVAL (delta) == INTVAL (step) - 1)
 	    {
@@ -2276,11 +2540,11 @@ iv_number_of_iterations (struct loop *loop, rtx insn, rtx condition,
 	     number of iterations in this step, so record the information
 	     here.  */
 	  inc = INTVAL (iv0.step) - INTVAL (iv1.step);
-	  if (GET_CODE (iv1.base) == CONST_INT)
+	  if (CONST_INT_P (iv1.base))
 	    up = INTVAL (iv1.base);
 	  else
 	    up = INTVAL (mode_mmax) - inc;
-	  down = INTVAL (GET_CODE (iv0.base) == CONST_INT
+	  down = INTVAL (CONST_INT_P (iv0.base)
 			 ? iv0.base
 			 : mode_mmin);
 	  desc->niter_max = (up - down) / inc + 1;
@@ -2489,7 +2753,7 @@ iv_number_of_iterations (struct loop *loop, rtx insn, rtx condition,
       && XEXP (desc->noloop_assumptions, 0) == const_true_rtx)
     goto zero_iter;
 
-  if (GET_CODE (desc->niter_expr) == CONST_INT)
+  if (CONST_INT_P (desc->niter_expr))
     {
       unsigned HOST_WIDEST_INT val = INTVAL (desc->niter_expr);
 
@@ -2499,7 +2763,7 @@ iv_number_of_iterations (struct loop *loop, rtx insn, rtx condition,
   else
     {
       if (!desc->niter_max)
-	desc->niter_max = determine_max_iter (desc);
+	desc->niter_max = determine_max_iter (loop, desc, old_niter);
 
       /* simplify_using_initial_values does a copy propagation on the registers
 	 in the expression for the number of iterations.  This prolongs life
@@ -2603,7 +2867,7 @@ find_simple_exit (struct loop *loop, struct niter_desc *desc)
 	{
 	  if (flow_bb_inside_loop_p (loop, e->dest))
 	    continue;
-	  
+
 	  check_simple_exit (loop, e, &act);
 	  if (!act.simple_p)
 	    continue;
@@ -2622,7 +2886,7 @@ find_simple_exit (struct loop *loop, struct niter_desc *desc)
 	      if (act.infinite && !desc->infinite)
 		continue;
 	    }
-	  
+
 	  *desc = act;
 	}
     }
@@ -2680,22 +2944,24 @@ get_simple_loop_desc (struct loop *loop)
   if (desc)
     return desc;
 
-  desc = XNEW (struct niter_desc);
+  /* At least desc->infinite is not always initialized by
+     find_simple_loop_exit.  */
+  desc = XCNEW (struct niter_desc);
   iv_analysis_loop_init (loop);
   find_simple_exit (loop, desc);
   loop->aux = desc;
 
   if (desc->simple_p && (desc->assumptions || desc->infinite))
     {
-      const char *wording; 
+      const char *wording;
 
-      /* Assume that no overflow happens and that the loop is finite.  
+      /* Assume that no overflow happens and that the loop is finite.
 	 We already warned at the tree level if we ran optimizations there.  */
       if (!flag_tree_loop_optimize && warn_unsafe_loop_optimizations)
 	{
 	  if (desc->infinite)
 	    {
-	      wording = 
+	      wording =
 		flag_unsafe_loop_optimizations
 		? N_("assuming that the loop is not infinite")
 		: N_("cannot optimize possibly infinite loops");
@@ -2704,7 +2970,7 @@ get_simple_loop_desc (struct loop *loop)
 	    }
 	  if (desc->assumptions)
 	    {
-	      wording = 
+	      wording =
 		flag_unsafe_loop_optimizations
 		? N_("assuming that the loop counter does not overflow")
 		: N_("cannot optimize loop, the loop counter may overflow");

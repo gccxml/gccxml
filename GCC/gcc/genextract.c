@@ -1,13 +1,13 @@
 /* Generate code from machine description to extract operands from insn as rtl.
    Copyright (C) 1987, 1991, 1992, 1993, 1997, 1998, 1999, 2000, 2003,
-   2004, 2005
+   2004, 2005, 2007, 2008, 2009, 2010
    Free Software Foundation, Inc.
 
 This file is part of GCC.
 
 GCC is free software; you can redistribute it and/or modify it under
 the terms of the GNU General Public License as published by the Free
-Software Foundation; either version 2, or (at your option) any later
+Software Foundation; either version 3, or (at your option) any later
 version.
 
 GCC is distributed in the hope that it will be useful, but WITHOUT ANY
@@ -16,9 +16,8 @@ FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 for more details.
 
 You should have received a copy of the GNU General Public License
-along with GCC; see the file COPYING.  If not, write to the Free
-Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
-02110-1301, USA.  */
+along with GCC; see the file COPYING3.  If not see
+<http://www.gnu.org/licenses/>.  */
 
 
 #include "bconfig.h"
@@ -27,6 +26,7 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
 #include "tm.h"
 #include "rtl.h"
 #include "errors.h"
+#include "read-md.h"
 #include "gensupport.h"
 #include "vec.h"
 #include "vecprim.h"
@@ -80,6 +80,8 @@ struct accum_extract
   VEC(int,heap)    *dupnums;
   VEC(char,heap)   *pathstr;
 };
+
+int line_no;
 
 /* Forward declarations.  */
 static void walk_rtx (rtx, struct accum_extract *);
@@ -153,7 +155,7 @@ gen_insn (rtx insn, int insn_code_number)
   /* Otherwise, make a new extraction method.  We stash the arrays
      after the extraction structure in memory.  */
 
-  p = xmalloc (sizeof (struct extraction)
+  p = XNEWVAR (struct extraction, sizeof (struct extraction)
 	       + op_count*sizeof (char *)
 	       + dup_count*sizeof (char *)
 	       + dup_count*sizeof (int));
@@ -188,8 +190,13 @@ VEC_safe_set_locstr (VEC(locstr,heap) **vp, unsigned int ix, char *str)
 {
   if (ix < VEC_length (locstr, *vp))
     {
-      gcc_assert (VEC_index (locstr, *vp, ix) == 0);
-      VEC_replace (locstr, *vp, ix, str);
+      if (VEC_index (locstr, *vp, ix))
+	{
+	  message_with_line (line_no, "repeated operand number %d", ix);
+	  have_error = 1;
+	}
+      else
+        VEC_replace (locstr, *vp, ix, str);
     }
   else
     {
@@ -358,7 +365,7 @@ print_header (void)
 #include \"rtl.h\"\n\
 #include \"insn-config.h\"\n\
 #include \"recog.h\"\n\
-#include \"toplev.h\"\n\
+#include \"diagnostic-core.h\"\n\
 \n\
 /* This variable is used as the \"location\" of any missing operand\n\
    whose numbers are skipped by a given pattern.  */\n\
@@ -400,7 +407,6 @@ main (int argc, char **argv)
   struct code_ptr *link;
   const char *name;
   int insn_code_number;
-  int line_no;
 
 /* BEGIN GCC-XML MODIFICATIONS (2007/10/31 15:07:06) */
   gccxml_fix_printf();
@@ -408,7 +414,7 @@ main (int argc, char **argv)
 
   progname = "genextract";
 
-  if (init_md_reader_args (argc, argv) != SUCCESS_EXIT_CODE)
+  if (!init_rtx_reader_args (argc, argv))
     return (FATAL_EXIT_CODE);
 
   /* Read the machine description.  */
@@ -427,6 +433,9 @@ main (int argc, char **argv)
 	  peepholes = link;
 	}
     }
+
+  if (have_error)
+    return FATAL_EXIT_CODE;
 
   print_header ();
 

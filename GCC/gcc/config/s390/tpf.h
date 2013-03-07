@@ -1,5 +1,6 @@
 /* Definitions for target OS TPF for GNU compiler, for IBM S/390 hardware
-   Copyright (C) 2003, 2004, 2005 Free Software Foundation, Inc.
+   Copyright (C) 2003, 2004, 2005, 2007, 2009,
+   2010, 2011 Free Software Foundation, Inc.
    Contributed by P.J. Darcy (darcypj@us.ibm.com),
                   Hartmut Penner (hpenner@de.ibm.com), and
                   Ulrich Weigand (uweigand@de.ibm.com).
@@ -8,7 +9,7 @@ This file is part of GCC.
 
 GCC is free software; you can redistribute it and/or modify it under
 the terms of the GNU General Public License as published by the Free
-Software Foundation; either version 2, or (at your option) any later
+Software Foundation; either version 3, or (at your option) any later
 version.
 
 GCC is distributed in the hope that it will be useful, but WITHOUT ANY
@@ -17,9 +18,8 @@ FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 for more details.
 
 You should have received a copy of the GNU General Public License
-along with GCC; see the file COPYING.  If not, write to the Free
-Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
-02110-1301, USA.  */
+along with GCC; see the file COPYING3.  If not see
+<http://www.gnu.org/licenses/>.  */
 
 #ifndef _TPF_H
 #define _TPF_H
@@ -44,10 +44,6 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
 #define WCHAR_TYPE_SIZE 32
 
 
-/* Basic record keeping for the TPF OS name.  */
-#undef  TARGET_VERSION
-#define TARGET_VERSION fprintf (stderr, " (TPF: zSeries)");
-
 /* TPF OS specific stack-pointer offset.  */
 #undef STACK_POINTER_OFFSET
 #define STACK_POINTER_OFFSET 		448
@@ -56,7 +52,7 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
    enable TPF profiling support and the standard backchain by default.  */
 #undef TARGET_DEFAULT
 #define TARGET_DEFAULT (MASK_TPF_PROFILING | MASK_64BIT | MASK_ZARCH \
-			| MASK_HARD_FLOAT | MASK_BACKCHAIN)
+			| MASK_HARD_DFP | MASK_BACKCHAIN)
 
 /* Exception handling.  */
 
@@ -122,9 +118,7 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
    %{!shared:-shared} \
    %(entry_spec)"
 
-#define MD_UNWIND_SUPPORT "config/s390/tpf-unwind.h"
-
 /* IBM copies these libraries over with these names.  */
-#define MATH_LIBRARY "-lCLBM"
-#define LIBSTDCXX "-lCPP1"
+#define MATH_LIBRARY "CLBM"
+#define LIBSTDCXX "CPP1"
 #endif /* ! _TPF_H */
