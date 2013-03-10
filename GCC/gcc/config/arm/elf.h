@@ -36,7 +36,7 @@
 
 #ifndef SUBTARGET_EXTRA_SPECS
 #define SUBTARGET_EXTRA_SPECS \
-  { "subtarget_extra_asm_spec",        SUBTARGET_EXTRA_ASM_SPEC }, \
+  { "subtarget_extra_asm_spec",	SUBTARGET_EXTRA_ASM_SPEC }, \
   { "subtarget_asm_float_spec", SUBTARGET_ASM_FLOAT_SPEC },
 #endif
 
@@ -66,31 +66,31 @@
 /* The ARM uses @ are a comment character so we need to redefine
    TYPE_OPERAND_FMT.  */
 #undef  TYPE_OPERAND_FMT
-#define TYPE_OPERAND_FMT        "%%%s"
+#define TYPE_OPERAND_FMT	"%%%s"
 
 /* We might need a ARM specific header to function declarations.  */
 #undef  ASM_DECLARE_FUNCTION_NAME
-#define ASM_DECLARE_FUNCTION_NAME(FILE, NAME, DECL)                \
-  do                                                                \
-    {                                                                \
-      ARM_DECLARE_FUNCTION_NAME (FILE, NAME, DECL);                \
-      ASM_OUTPUT_TYPE_DIRECTIVE (FILE, NAME, "function");        \
-      ASM_DECLARE_RESULT (FILE, DECL_RESULT (DECL));                \
-      ASM_OUTPUT_LABEL(FILE, NAME);                                \
-      ARM_OUTPUT_FN_UNWIND (FILE, TRUE);                        \
-    }                                                                \
+#define ASM_DECLARE_FUNCTION_NAME(FILE, NAME, DECL)		\
+  do								\
+    {								\
+      ARM_DECLARE_FUNCTION_NAME (FILE, NAME, DECL);		\
+      ASM_OUTPUT_TYPE_DIRECTIVE (FILE, NAME, "function");	\
+      ASM_DECLARE_RESULT (FILE, DECL_RESULT (DECL));		\
+      ASM_OUTPUT_LABEL(FILE, NAME);				\
+      ARM_OUTPUT_FN_UNWIND (FILE, TRUE);			\
+    }								\
   while (0)
 
 /* We might need an ARM specific trailer for function declarations.  */
 #undef  ASM_DECLARE_FUNCTION_SIZE
-#define ASM_DECLARE_FUNCTION_SIZE(FILE, FNAME, DECL)                \
-  do                                                                \
-    {                                                                \
-      ARM_OUTPUT_FN_UNWIND (FILE, FALSE);                        \
-      ARM_DECLARE_FUNCTION_SIZE (FILE, FNAME, DECL);                \
-      if (!flag_inhibit_size_directive)                                \
-        ASM_OUTPUT_MEASURED_SIZE (FILE, FNAME);                        \
-    }                                                                \
+#define ASM_DECLARE_FUNCTION_SIZE(FILE, FNAME, DECL)		\
+  do								\
+    {								\
+      ARM_OUTPUT_FN_UNWIND (FILE, FALSE);			\
+      ARM_DECLARE_FUNCTION_SIZE (FILE, FNAME, DECL);		\
+      if (!flag_inhibit_size_directive)				\
+	ASM_OUTPUT_MEASURED_SIZE (FILE, FNAME);			\
+    }								\
   while (0)
 
 /* Define this macro if jump tables (for `tablejump' insns) should be
@@ -127,11 +127,11 @@
 #define TARGET_ASM_CONSTRUCTOR arm_elf_asm_constructor
 
 /* For PIC code we need to explicitly specify (PLT) and (GOT) relocs.  */
-#define NEED_PLT_RELOC        flag_pic
-#define NEED_GOT_RELOC        flag_pic
+#define NEED_PLT_RELOC	flag_pic
+#define NEED_GOT_RELOC	flag_pic
 
 /* The ELF assembler handles GOT addressing differently to NetBSD.  */
-#define GOT_PCREL        0
+#define GOT_PCREL	0
 
 /* Biggest alignment supported by the object file format of this
    machine.  Use this macro to limit the alignment which can be
@@ -141,12 +141,12 @@
 
 /* Align output to a power of two.  Note ".align 0" is redundant,
    and also GAS will treat it as ".align 2" which we do not want.  */
-#define ASM_OUTPUT_ALIGN(STREAM, POWER)                        \
-  do                                                        \
-    {                                                        \
-      if ((POWER) > 0)                                        \
-        fprintf (STREAM, "\t.align\t%d\n", POWER);        \
-    }                                                        \
+#define ASM_OUTPUT_ALIGN(STREAM, POWER)			\
+  do							\
+    {							\
+      if ((POWER) > 0)					\
+	fprintf (STREAM, "\t.align\t%d\n", POWER);	\
+    }							\
   while (0)
 
 /* The EABI doesn't provide a way of implementing init_priority.  */

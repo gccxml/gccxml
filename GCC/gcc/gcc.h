@@ -42,9 +42,9 @@ struct spec_function
 
 /* This defines which multi-letter switches take arguments.  */
 
-#define DEFAULT_WORD_SWITCH_TAKES_ARG(STR)                \
- (!strcmp (STR, "Tdata") || !strcmp (STR, "Ttext")        \
-  || !strcmp (STR, "Tbss") || !strcmp (STR, "include")        \
+#define DEFAULT_WORD_SWITCH_TAKES_ARG(STR)		\
+ (!strcmp (STR, "Tdata") || !strcmp (STR, "Ttext")	\
+  || !strcmp (STR, "Tbss") || !strcmp (STR, "include")	\
   || !strcmp (STR, "imacros") || !strcmp (STR, "aux-info") \
   || !strcmp (STR, "idirafter") || !strcmp (STR, "iprefix") \
   || !strcmp (STR, "iwithprefix") || !strcmp (STR, "iwithprefixbefore") \

@@ -36,11 +36,11 @@
 ! This file just supplies returns for the .init and .fini sections.  It is
 ! linked in after all other files.
 
-        .file        "crtn.o"
-        .ident        "GNU C crtn.o"
+	.file	"crtn.o"
+	.ident	"GNU C crtn.o"
 
-        .section .init
-        ret    $0x0
+	.section .init
+	ret    $0x0
 
-        .section .fini
-        ret    $0x0
+	.section .fini
+	ret    $0x0

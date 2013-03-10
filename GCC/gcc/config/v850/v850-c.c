@@ -65,10 +65,10 @@ pop_data_area (v850_data_area data_area)
 {
   if (data_area_stack == NULL)
     warning (OPT_Wpragmas, "#pragma GHS endXXXX found without "
-             "previous startXXX");
+	     "previous startXXX");
   else if (data_area != data_area_stack->data_area)
     warning (OPT_Wpragmas, "#pragma GHS endXXX does not match "
-             "previous startXXX");
+	     "previous startXXX");
   else
     {
       data_area_stack_element * elem;
@@ -106,7 +106,7 @@ mark_current_function_as_interrupt (void)
     }
   
   decl_attributes (&current_function_decl,
-                   tree_cons (name, NULL_TREE, NULL_TREE), 0);
+		   tree_cons (name, NULL_TREE, NULL_TREE), 0);
 }
 
 
@@ -128,25 +128,25 @@ ghs_pragma_section (cpp_reader * pfile ATTRIBUTE_UNUSED)
       type = pragma_lex (&x);
       
       if (type == CPP_EOF && !repeat)
-        goto reset;
+	goto reset;
       else if (type == CPP_NAME)
-        sect = IDENTIFIER_POINTER (x);
+	sect = IDENTIFIER_POINTER (x);
       else
-        goto bad;
+	goto bad;
       repeat = 0;
       
       if (pragma_lex (&x) != CPP_EQ)
-        goto bad;
+	goto bad;
       if (pragma_lex (&x) != CPP_NAME)
-        goto bad;
+	goto bad;
       
       alias = IDENTIFIER_POINTER (x);
       
       type = pragma_lex (&x);
       if (type == CPP_COMMA)
-        repeat = 1;
+	repeat = 1;
       else if (type != CPP_EOF)
-        warning (OPT_Wpragmas, "junk at end of #pragma ghs section");
+	warning (OPT_Wpragmas, "junk at end of #pragma ghs section");
       
       if      (streq (sect, "data"))    kind = GHS_SECTION_KIND_DATA;
       else if (streq (sect, "text"))    kind = GHS_SECTION_KIND_TEXT;
@@ -158,20 +158,20 @@ ghs_pragma_section (cpp_reader * pfile ATTRIBUTE_UNUSED)
       else if (streq (sect, "tdata"))   kind = GHS_SECTION_KIND_TDATA;
       else if (streq (sect, "zdata"))   kind = GHS_SECTION_KIND_ZDATA;
       /* According to GHS beta documentation, the following should not be
-         allowed!  */
+	 allowed!  */
       else if (streq (sect, "bss"))     kind = GHS_SECTION_KIND_BSS;
       else if (streq (sect, "zbss"))    kind = GHS_SECTION_KIND_ZDATA;
       else
-        {
-          warning (0, "unrecognized section name \"%s\"", sect);
-          return;
-        }
+	{
+	  warning (0, "unrecognized section name \"%s\"", sect);
+	  return;
+	}
       
       if (streq (alias, "default"))
-        GHS_current_section_names [kind] = NULL;
+	GHS_current_section_names [kind] = NULL;
       else
-        GHS_current_section_names [kind] =
-          build_string (strlen (alias) + 1, alias);
+	GHS_current_section_names [kind] =
+	  build_string (strlen (alias) + 1, alias);
     }
   while (repeat);
 

@@ -145,26 +145,26 @@ check_line (int line, FILE *e, const char *str)
       c = getc (e);
 
       if (*p == '\0')
-        {
-          if (c != '\n')
-            {
-              snprintf (buf, sizeof buf, "got '%c' when expecting newline", c);
-              fatal_error (line, buf, 0);
-            }
-          c = getc (e);
-          if (c != EOF)
-            {
-              snprintf (buf, sizeof buf, "got '%c' when expecting EOF", c);
-              fatal_error (line, buf, 0);
-            }
-          return;
-        }
+	{
+	  if (c != '\n')
+	    {
+	      snprintf (buf, sizeof buf, "got '%c' when expecting newline", c);
+	      fatal_error (line, buf, 0);
+	    }
+	  c = getc (e);
+	  if (c != EOF)
+	    {
+	      snprintf (buf, sizeof buf, "got '%c' when expecting EOF", c);
+	      fatal_error (line, buf, 0);
+	    }
+	  return;
+	}
 
       if (c != *p)
-        {
-          snprintf (buf, sizeof buf, "expected '%c', got '%c'", *p, c);
-          fatal_error (line, buf, 0);
-        }
+	{
+	  snprintf (buf, sizeof buf, "expected '%c', got '%c'", *p, c);
+	  fatal_error (line, buf, 0);
+	}
 
       ++p;
     }
@@ -198,43 +198,43 @@ main (int argc, char **argv)
   if (argc > 1)
     do_cmd (argc, argv);
 
-#define TEST_PEX_INIT(FLAGS, TEMPBASE)                                        \
-  (((test_pex_tmp = pex_init (FLAGS, "test-pexecute", TEMPBASE))        \
-    != NULL)                                                                \
-   ? test_pex_tmp                                                        \
+#define TEST_PEX_INIT(FLAGS, TEMPBASE)					\
+  (((test_pex_tmp = pex_init (FLAGS, "test-pexecute", TEMPBASE))	\
+    != NULL)								\
+   ? test_pex_tmp							\
    : (FATAL_ERROR ("pex_init failed", 0), NULL))
 
-#define TEST_PEX_RUN(PEXOBJ, FLAGS, EXECUTABLE, ARGV, OUTNAME, ERRNAME)        \
-  do                                                                        \
-    {                                                                        \
-      int err;                                                                \
-      const char *pex_run_err;                                                \
-      if (trace)                                                        \
-        fprintf (stderr, "Line %d: running %s %s\n",                        \
-                 __LINE__, EXECUTABLE, ARGV[0]);                        \
-      pex_run_err = pex_run (PEXOBJ, FLAGS, EXECUTABLE, ARGV, OUTNAME,        \
-                             ERRNAME, &err);                                \
-      if (pex_run_err != NULL)                                                \
-        FATAL_ERROR (pex_run_err, err);                                        \
-    }                                                                        \
+#define TEST_PEX_RUN(PEXOBJ, FLAGS, EXECUTABLE, ARGV, OUTNAME, ERRNAME)	\
+  do									\
+    {									\
+      int err;								\
+      const char *pex_run_err;						\
+      if (trace)							\
+	fprintf (stderr, "Line %d: running %s %s\n",			\
+		 __LINE__, EXECUTABLE, ARGV[0]);			\
+      pex_run_err = pex_run (PEXOBJ, FLAGS, EXECUTABLE, ARGV, OUTNAME,	\
+			     ERRNAME, &err);				\
+      if (pex_run_err != NULL)						\
+	FATAL_ERROR (pex_run_err, err);					\
+    }									\
   while (0)
 
-#define TEST_PEX_GET_STATUS_1(PEXOBJ)                                        \
-  (pex_get_status (PEXOBJ, 1, &test_pex_status)                                \
-   ? test_pex_status                                                        \
+#define TEST_PEX_GET_STATUS_1(PEXOBJ)					\
+  (pex_get_status (PEXOBJ, 1, &test_pex_status)				\
+   ? test_pex_status							\
    : (FATAL_ERROR ("pex_get_status failed", errno), 1))
 
-#define TEST_PEX_GET_STATUS(PEXOBJ, COUNT, VECTOR)                        \
-  do                                                                        \
-    {                                                                        \
-      if (!pex_get_status (PEXOBJ, COUNT, VECTOR))                        \
-        FATAL_ERROR ("pex_get_status failed", errno);                        \
-    }                                                                        \
+#define TEST_PEX_GET_STATUS(PEXOBJ, COUNT, VECTOR)			\
+  do									\
+    {									\
+      if (!pex_get_status (PEXOBJ, COUNT, VECTOR))			\
+	FATAL_ERROR ("pex_get_status failed", errno);			\
+    }									\
   while (0)
 
-#define TEST_PEX_READ_OUTPUT(PEXOBJ)                                        \
-  ((test_pex_file = pex_read_output (PEXOBJ, 0)) != NULL                \
-   ? test_pex_file                                                        \
+#define TEST_PEX_READ_OUTPUT(PEXOBJ)					\
+  ((test_pex_file = pex_read_output (PEXOBJ, 0)) != NULL		\
+   ? test_pex_file							\
    : (FATAL_ERROR ("pex_read_output failed", errno), NULL))
 
   remove ("temp.x");
@@ -391,24 +391,24 @@ main (int argc, char **argv)
     subargv[2] = "oldpexecute";
     subargv[3] = NULL;
     pid1 = pexecute ("./test-pexecute", subargv, "test-pexecute", "temp",
-                     &errmsg_fmt, &errmsg_arg, PEXECUTE_FIRST);
+		     &errmsg_fmt, &errmsg_arg, PEXECUTE_FIRST);
     if (pid1 < 0)
       {
-        snprintf (errbuf1, sizeof errbuf1, errmsg_fmt, errmsg_arg);
-        snprintf (errbuf2, sizeof errbuf2, "pexecute 1 failed: %s", errbuf1);
-        FATAL_ERROR (errbuf2, 0);
+	snprintf (errbuf1, sizeof errbuf1, errmsg_fmt, errmsg_arg);
+	snprintf (errbuf2, sizeof errbuf2, "pexecute 1 failed: %s", errbuf1);
+	FATAL_ERROR (errbuf2, 0);
       }
 
     subargv[1] = "write";
     subargv[2] = "temp.y";
     subargv[3] = NULL;
     pid2 = pexecute ("./test-pexecute", subargv, "test-pexecute", "temp",
-                     &errmsg_fmt, &errmsg_arg, PEXECUTE_LAST);
+		     &errmsg_fmt, &errmsg_arg, PEXECUTE_LAST);
     if (pid2 < 0)
       {
-        snprintf (errbuf1, sizeof errbuf1, errmsg_fmt, errmsg_arg);
-        snprintf (errbuf2, sizeof errbuf2, "pexecute 2 failed: %s", errbuf1);
-        FATAL_ERROR (errbuf2, 0);
+	snprintf (errbuf1, sizeof errbuf1, errmsg_fmt, errmsg_arg);
+	snprintf (errbuf2, sizeof errbuf2, "pexecute 2 failed: %s", errbuf1);
+	FATAL_ERROR (errbuf2, 0);
       }
 
     if (pwait (pid1, &status, 0) < 0)
@@ -462,11 +462,11 @@ do_cmd (int argc, char **argv)
       int i;
 
       for (i = 2; i < argc; ++i)
-        {
-          if (i > 2)
-            putchar (' ');
-          fputs (argv[i], stdout);
-        }
+	{
+	  if (i > 2)
+	    putchar (' ');
+	  fputs (argv[i], stdout);
+	}
       putchar ('\n');
       exit (EXIT_SUCCESS);
     }
@@ -475,11 +475,11 @@ do_cmd (int argc, char **argv)
       int i;
 
       for (i = 2; i < argc; ++i)
-        {
-          if (i > 3)
-            putc (' ', (i & 1) == 0 ? stdout : stderr);
-          fputs (argv[i], (i & 1) == 0 ? stdout : stderr);
-        }
+	{
+	  if (i > 3)
+	    putc (' ', (i & 1) == 0 ? stdout : stderr);
+	  fputs (argv[i], (i & 1) == 0 ? stdout : stderr);
+	}
       putc ('\n', stdout);
       putc ('\n', stderr);
       exit (EXIT_SUCCESS);
@@ -493,7 +493,7 @@ do_cmd (int argc, char **argv)
       int c;
 
       while ((c = getchar ()) != EOF)
-        putchar (c);
+	putchar (c);
       exit (EXIT_SUCCESS);
     }
   else if (strcmp (s, "write") == 0)
@@ -503,11 +503,11 @@ do_cmd (int argc, char **argv)
 
       e = fopen (argv[2], "w");
       if (e == NULL)
-        FATAL_ERROR ("fopen for write failed", errno);
+	FATAL_ERROR ("fopen for write failed", errno);
       while ((c = getchar ()) != EOF)
-        putc (c, e);
+	putc (c, e);
       if (fclose (e) != 0)
-        FATAL_ERROR ("fclose for write failed", errno);
+	FATAL_ERROR ("fclose for write failed", errno);
       exit (EXIT_SUCCESS);
     }
   else

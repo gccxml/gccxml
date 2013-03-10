@@ -42,18 +42,18 @@ add_mingw (void)
     {
       int sawcygwin = 0;
       while ((p = strstr (*av, "-cygwin")))
-        {
-          char *over = p + sizeof ("-cygwin") - 1;
-          memmove (over + 1, over, strlen (over));
-          memcpy (p, "-mingw32", sizeof("-mingw32") - 1);
-          p = ++over;
-          while (ISALNUM (*p))
-            p++;
-          strcpy (over, p);
-          sawcygwin = 1;
-        }
+	{
+	  char *over = p + sizeof ("-cygwin") - 1;
+	  memmove (over + 1, over, strlen (over));
+	  memcpy (p, "-mingw32", sizeof("-mingw32") - 1);
+	  p = ++over;
+	  while (ISALNUM (*p))
+	    p++;
+	  strcpy (over, p);
+	  sawcygwin = 1;
+	}
       if (!sawcygwin && !strstr (*av, "mingw"))
-        strcat (*av, CYGWIN_MINGW_SUBDIR);
+	strcat (*av, CYGWIN_MINGW_SUBDIR);
     }
 }
 

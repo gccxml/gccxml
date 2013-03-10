@@ -76,70 +76,70 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
 
      INT_MODE (MODE, BYTESIZE);
         declares MODE to be of class INT and BYTESIZE bytes wide.
-        All of the bits of its representation are significant.
+	All of the bits of its representation are significant.
 
      FRACTIONAL_INT_MODE (MODE, PRECISION, BYTESIZE);
         declares MODE to be of class INT, BYTESIZE bytes wide in
-        storage, but with only PRECISION significant bits.
+	storage, but with only PRECISION significant bits.
 
      FLOAT_MODE (MODE, BYTESIZE, FORMAT);
         declares MODE to be of class FLOAT and BYTESIZE bytes wide,
-        using floating point format FORMAT.
-        All of the bits of its representation are significant.
+	using floating point format FORMAT.
+	All of the bits of its representation are significant.
 
      DECIMAL FLOAT_MODE (MODE, BYTESIZE);
-        declares MODE to be of class DECIMAL_FLOAT and BYTESIZE bytes
-        wide.  All of the bits of its representation are significant.
+	declares MODE to be of class DECIMAL_FLOAT and BYTESIZE bytes
+	wide.  All of the bits of its representation are significant.
 
      FRACTIONAL_FLOAT_MODE (MODE, PRECISION, BYTESIZE, FORMAT);
         declares MODE to be of class FLOAT, BYTESIZE bytes wide in
-        storage, but with only PRECISION significant bits, using
-        floating point format FORMAT.
+	storage, but with only PRECISION significant bits, using
+	floating point format FORMAT.
 
      RESET_FLOAT_FORMAT (MODE, FORMAT);
-        changes the format of MODE, which must be class FLOAT,
-        to FORMAT.  Use in an ARCH-modes.def to reset the format
-        of one of the float modes defined in this file.
+	changes the format of MODE, which must be class FLOAT,
+	to FORMAT.  Use in an ARCH-modes.def to reset the format
+	of one of the float modes defined in this file.
 
      PARTIAL_INT_MODE (MODE);
         declares a mode of class PARTIAL_INT with the same size as
-        MODE (which must be an INT mode).  The name of the new mode
-        is made by prefixing a P to the name MODE.  This statement
-        may grow a PRECISION argument in the future.
+	MODE (which must be an INT mode).  The name of the new mode
+	is made by prefixing a P to the name MODE.  This statement
+	may grow a PRECISION argument in the future.
 
      VECTOR_MODE (CLASS, MODE, COUNT);
         Declare a vector mode whose component mode is MODE (of class
-        CLASS) with COUNT components.  CLASS must be INT or FLOAT.
-        The name of the vector mode takes the form VnX where n is
-        COUNT in decimal and X is MODE.
+	CLASS) with COUNT components.  CLASS must be INT or FLOAT.
+	The name of the vector mode takes the form VnX where n is
+	COUNT in decimal and X is MODE.
 
      VECTOR_MODES (CLASS, WIDTH);
         For all modes presently declared in class CLASS, construct
-        corresponding vector modes having width WIDTH.  Modes whose
-        byte sizes do not evenly divide WIDTH are ignored, as are
-        modes that would produce vector modes with only one component,
-        and modes smaller than one byte (if CLASS is INT) or smaller
-        than two bytes (if CLASS is FLOAT).  CLASS must be INT or
-        FLOAT.  The names follow the same rule as VECTOR_MODE uses.
+	corresponding vector modes having width WIDTH.  Modes whose
+	byte sizes do not evenly divide WIDTH are ignored, as are
+	modes that would produce vector modes with only one component,
+	and modes smaller than one byte (if CLASS is INT) or smaller
+	than two bytes (if CLASS is FLOAT).  CLASS must be INT or
+	FLOAT.  The names follow the same rule as VECTOR_MODE uses.
 
      COMPLEX_MODES (CLASS);
         For all modes presently declared in class CLASS, construct
-        corresponding complex modes.  Modes smaller than one byte
-        are ignored.  For FLOAT modes, the names are derived by
-        replacing the 'F' in the mode name with a 'C'.  (It is an
-        error if there is no 'F'.  For INT modes, the names are
-        derived by prefixing a C to the name.
+	corresponding complex modes.  Modes smaller than one byte
+	are ignored.  For FLOAT modes, the names are derived by
+	replacing the 'F' in the mode name with a 'C'.  (It is an
+	error if there is no 'F'.  For INT modes, the names are
+	derived by prefixing a C to the name.
 
      ADJUST_BYTESIZE (MODE, EXPR);
      ADJUST_ALIGNMENT (MODE, EXPR);
      ADJUST_FLOAT_FORMAT (MODE, EXPR);
         Arrange for the byte size, alignment, or floating point format
-        of MODE to be adjustable at run time.  EXPR will be executed
-        once after processing all command line options, and should
-        evaluate to the desired byte size, alignment, or format.
+	of MODE to be adjustable at run time.  EXPR will be executed
+	once after processing all command line options, and should
+	evaluate to the desired byte size, alignment, or format.
 
-        Unlike a FORMAT argument, if you are adjusting a float format
-        you must put an & in front of the name of each format structure.
+	Unlike a FORMAT argument, if you are adjusting a float format
+	you must put an & in front of the name of each format structure.
 
    Note: If a mode is ever made which is more than 255 bytes wide,
    machmode.h and genmodes.c will have to be changed to allocate

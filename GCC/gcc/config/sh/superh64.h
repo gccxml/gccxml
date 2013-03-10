@@ -35,16 +35,16 @@ Boston, MA 02110-1301, USA.  */
 
 /* We override TARGET_PROCESSOR_SWITCHES in order to remove all the unrequired cpu options */
 #undef TARGET_PROCESSOR_SWITCHES
-#define TARGET_PROCESSOR_SWITCHES                          \
-  {"5-64media",        TARGET_NONE, "" },                \
+#define TARGET_PROCESSOR_SWITCHES  			\
+  {"5-64media",	TARGET_NONE, "" },		\
   {"5-64media", SELECT_SH5_64, "SH5 64-bit SHmedia code" }, \
-  {"5-64media-nofpu", TARGET_NONE, "" },        \
+  {"5-64media-nofpu", TARGET_NONE, "" },	\
   {"5-64media-nofpu", SELECT_SH5_64_NOFPU, "SH5 64-bit FPU-less SHmedia code" }, \
-  {"5-32media",        TARGET_NONE, "" },                \
+  {"5-32media",	TARGET_NONE, "" },		\
   {"5-32media", SELECT_SH5_32, "SH5 32-bit SHmedia code" }, \
-  {"5-32media-nofpu", TARGET_NONE, "" },        \
+  {"5-32media-nofpu", TARGET_NONE, "" },	\
   {"5-32media-nofpu", SELECT_SH5_32_NOFPU, "SH5 32-bit FPU-less SHmedia code" }, \
-  {"5-compact",        TARGET_NONE, "" },                \
-  {"5-compact",        SELECT_SH5_COMPACT, "SH5 SHcompact code" }, \
-  {"5-compact-nofpu", TARGET_NONE, "" },        \
+  {"5-compact",	TARGET_NONE, "" },		\
+  {"5-compact",	SELECT_SH5_COMPACT, "SH5 SHcompact code" }, \
+  {"5-compact-nofpu", TARGET_NONE, "" },	\
   {"5-compact-nofpu", SELECT_SH5_COMPACT_NOFPU, "SH5 FPU-less SHcompact code" }

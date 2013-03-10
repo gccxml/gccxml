@@ -61,26 +61,26 @@
 
 #define GLIBC_DYNAMIC_LINKER "/lib/ld-linux.so.2"
 
-#undef        LINK_SPEC
+#undef	LINK_SPEC
 #if TARGET_LITTLE_ENDIAN
 #define LINK_SPEC "%(link_cpu) -m m32rlelf_linux %{shared:-shared} \
   %{!shared: \
     %{!ibcs: \
       %{!static: \
-        %{rdynamic:-export-dynamic} \
-        %{!dynamic-linker:-dynamic-linker " LINUX_DYNAMIC_LINKER "}} \
-        %{static:-static}}}"
+	%{rdynamic:-export-dynamic} \
+	%{!dynamic-linker:-dynamic-linker " LINUX_DYNAMIC_LINKER "}} \
+	%{static:-static}}}"
 #else
 #define LINK_SPEC "%(link_cpu) -m m32relf_linux %{shared:-shared} \
   %{!shared: \
     %{!ibcs: \
       %{!static: \
-        %{rdynamic:-export-dynamic} \
-        %{!dynamic-linker:-dynamic-linker " LINUX_DYNAMIC_LINKER "}} \
-        %{static:-static}}}"
+	%{rdynamic:-export-dynamic} \
+	%{!dynamic-linker:-dynamic-linker " LINUX_DYNAMIC_LINKER "}} \
+	%{static:-static}}}"
 #endif
 
-#undef        LIB_SPEC
+#undef	LIB_SPEC
 #define LIB_SPEC \
   "%{shared: -lc} \
     %{!shared: %{mieee-fp:-lieee} %{pthread:-lpthread} \

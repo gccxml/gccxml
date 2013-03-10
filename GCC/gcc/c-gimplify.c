@@ -86,17 +86,17 @@ c_genericize (tree fndecl)
   if (dump_orig)
     {
       fprintf (dump_orig, "\n;; Function %s",
-               lang_hooks.decl_printable_name (fndecl, 2));
+	       lang_hooks.decl_printable_name (fndecl, 2));
       fprintf (dump_orig, " (%s)\n",
-               IDENTIFIER_POINTER (DECL_ASSEMBLER_NAME (fndecl)));
+	       IDENTIFIER_POINTER (DECL_ASSEMBLER_NAME (fndecl)));
       fprintf (dump_orig, ";; enabled by -%s\n", dump_flag_name (TDI_original));
       fprintf (dump_orig, "\n");
 
       if (local_dump_flags & TDF_RAW)
-        dump_node (DECL_SAVED_TREE (fndecl),
-                   TDF_SLIM | local_dump_flags, dump_orig);
+	dump_node (DECL_SAVED_TREE (fndecl),
+		   TDF_SLIM | local_dump_flags, dump_orig);
       else
-        print_c_tree (dump_orig, DECL_SAVED_TREE (fndecl));
+	print_c_tree (dump_orig, DECL_SAVED_TREE (fndecl));
       fprintf (dump_orig, "\n");
 
       dump_end (TDI_original, dump_orig);
@@ -150,13 +150,13 @@ c_build_bind_expr (tree block, tree body)
     {
       decls = block;
       if (DECL_ARTIFICIAL (decls))
-        block = NULL_TREE;
+	block = NULL_TREE;
       else
-        {
-          block = make_node (BLOCK);
-          BLOCK_VARS (block) = decls;
-          add_block_to_enclosing (block);
-        }
+	{
+	  block = make_node (BLOCK);
+	  BLOCK_VARS (block) = decls;
+	  add_block_to_enclosing (block);
+	}
     }
 
   if (!body)
@@ -206,15 +206,15 @@ c_gimplify_expr (tree *expr_p, tree *pre_p, tree *post_p ATTRIBUTE_UNUSED)
     {
     case DECL_EXPR:
       /* This is handled mostly by gimplify.c, but we have to deal with
-         not warning about int x = x; as it is a GCC extension to turn off
-         this warning but only if warn_init_self is zero.  */
+	 not warning about int x = x; as it is a GCC extension to turn off
+	 this warning but only if warn_init_self is zero.  */
       if (TREE_CODE (DECL_EXPR_DECL (*expr_p)) == VAR_DECL
-          && !DECL_EXTERNAL (DECL_EXPR_DECL (*expr_p))
-          && !TREE_STATIC (DECL_EXPR_DECL (*expr_p))
-          && (DECL_INITIAL (DECL_EXPR_DECL (*expr_p))
-              == DECL_EXPR_DECL (*expr_p))
-          && !warn_init_self)
-        TREE_NO_WARNING (DECL_EXPR_DECL (*expr_p)) = 1;
+	  && !DECL_EXTERNAL (DECL_EXPR_DECL (*expr_p))
+	  && !TREE_STATIC (DECL_EXPR_DECL (*expr_p))
+	  && (DECL_INITIAL (DECL_EXPR_DECL (*expr_p))
+	      == DECL_EXPR_DECL (*expr_p))
+	  && !warn_init_self)
+	TREE_NO_WARNING (DECL_EXPR_DECL (*expr_p)) = 1;
       return GS_UNHANDLED;
 
     case COMPOUND_LITERAL_EXPR:

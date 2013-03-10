@@ -50,11 +50,11 @@
 #undef  LIB_SPEC
 #define LIB_SPEC "-( -lc %{msim*:-lsim}%{!msim*:-lnosys} -) \
 %{msim*:%{!T*: %{mcpu=m32cm:-Tsim24.ld}%{mcpu=m32c:-Tsim24.ld} \
-        %{!mcpu=m32cm:%{!mcpu=m32c:-Tsim16.ld}}}} \
+	%{!mcpu=m32cm:%{!mcpu=m32c:-Tsim16.ld}}}} \
 %{!T*:%{!msim*: %{mcpu=m16c:-Tm16c.ld} \
-                %{mcpu=m32cm:-Tm32cm.ld} \
-                %{mcpu=m32c:-Tm32c.ld} \
-                %{!mcpu=m16c:%{!mcpu=m32cm:%{!mcpu=m32c:-Tr8c.ld}}}}} \
+		%{mcpu=m32cm:-Tm32cm.ld} \
+		%{mcpu=m32c:-Tm32c.ld} \
+		%{!mcpu=m16c:%{!mcpu=m32cm:%{!mcpu=m32c:-Tr8c.ld}}}}} \
 "
 
 /* Run-time Target Specification */
@@ -85,15 +85,15 @@ extern int target_memregs;
 /* TARGET_CPU is a multi-way option set in m32c.opt.  While we could
    use enums or defines for this, this and m32c.opt are the only
    places that know (or care) what values are being used.  */
-#define TARGET_R8C        (target_cpu == 'r')
-#define TARGET_M16C        (target_cpu == '6')
-#define TARGET_M32CM        (target_cpu == 'm')
-#define TARGET_M32C        (target_cpu == '3')
+#define TARGET_R8C	(target_cpu == 'r')
+#define TARGET_M16C	(target_cpu == '6')
+#define TARGET_M32CM	(target_cpu == 'm')
+#define TARGET_M32C	(target_cpu == '3')
 
 /* Address register sizes.  Warning: these are used all over the place
    to select between the two CPU families in general.  */
-#define TARGET_A16        (TARGET_R8C || TARGET_M16C)
-#define TARGET_A24        (TARGET_M32CM || TARGET_M32C)
+#define TARGET_A16	(TARGET_R8C || TARGET_M16C)
+#define TARGET_A24	(TARGET_M32CM || TARGET_M32C)
 
 #define TARGET_VERSION fprintf (stderr, " (m32c)");
 
@@ -204,13 +204,13 @@ machine_function;
 
 /* r0 r2 r1 r3 - a0 a1 sb fb - sp pc flg argp - mem0..mem14 */
 #define FIXED_REGISTERS     { 0, 0, 0, 0, \
-                              0, 0, 1, 0, \
-                              1, 1, 0, 1, \
-                              0, 0, 0, 0, 0, 0, 0, 0 }
+			      0, 0, 1, 0, \
+			      1, 1, 0, 1, \
+			      0, 0, 0, 0, 0, 0, 0, 0 }
 #define CALL_USED_REGISTERS { 1, 1, 1, 1, \
-                              1, 1, 1, 0, \
-                              1, 1, 1, 1, \
-                              1, 1, 1, 1, 1, 1, 1, 1 }
+			      1, 1, 1, 0, \
+			      1, 1, 1, 1, \
+			      1, 1, 1, 1, 1, 1, 1, 1 }
 
 #define CONDITIONAL_REGISTER_USAGE m32c_conditional_register_usage ();
 
@@ -224,9 +224,9 @@ machine_function;
 /* Order of Allocation of Registers */
 
 #define REG_ALLOC_ORDER { \
-        0, 1, 2, 3, 4, 5, /* r0..r3, a0, a1 */ \
-        12, 13, 14, 15, 16, 17, 18, /* mem0..mem7 */  \
-        6, 7, 8, 9, 10, 11 /* sb, fb, sp, pc, flg, ap */ }
+	0, 1, 2, 3, 4, 5, /* r0..r3, a0, a1 */ \
+	12, 13, 14, 15, 16, 17, 18, /* mem0..mem7 */  \
+	6, 7, 8, 9, 10, 11 /* sb, fb, sp, pc, flg, ap */ }
 
 /* How Values Fit in Registers */
 
@@ -380,13 +380,13 @@ enum reg_class
 */
 
 #define CONSTRAINT_LEN(CHAR,STR) \
-        ((CHAR) == 'I' ? 3 \
-         : (CHAR) == 'R' ? 3 \
-         : (CHAR) == 'S' ? 2 \
-         : (CHAR) == 'A' ? 2 \
-         : DEFAULT_CONSTRAINT_LEN(CHAR,STR))
+	((CHAR) == 'I' ? 3 \
+	 : (CHAR) == 'R' ? 3 \
+	 : (CHAR) == 'S' ? 2 \
+	 : (CHAR) == 'A' ? 2 \
+	 : DEFAULT_CONSTRAINT_LEN(CHAR,STR))
 #define REG_CLASS_FROM_CONSTRAINT(CHAR,STR) \
-        m32c_reg_class_from_constraint (CHAR, STR)
+	m32c_reg_class_from_constraint (CHAR, STR)
 
 #define REGNO_OK_FOR_BASE_P(NUM) m32c_regno_ok_for_base_p (NUM)
 #define REGNO_OK_FOR_INDEX_P(NUM) 0
@@ -406,14 +406,14 @@ enum reg_class
 #define CANNOT_CHANGE_MODE_CLASS(F,T,C) m32c_cannot_change_mode_class(F,T,C)
 
 #define CONST_OK_FOR_CONSTRAINT_P(VALUE,C,STR) \
-        m32c_const_ok_for_constraint_p (VALUE, C, STR)
+	m32c_const_ok_for_constraint_p (VALUE, C, STR)
 #define CONST_DOUBLE_OK_FOR_CONSTRAINT_P(VALUE,C,STR) 0
 #define EXTRA_CONSTRAINT_STR(VALUE,C,STR) \
-        m32c_extra_constraint_p (VALUE, C, STR)
+	m32c_extra_constraint_p (VALUE, C, STR)
 #define EXTRA_MEMORY_CONSTRAINT(C,STR) \
-        m32c_extra_memory_constraint (C, STR)
+	m32c_extra_memory_constraint (C, STR)
 #define EXTRA_ADDRESS_CONSTRAINT(C,STR) \
-        m32c_extra_address_constraint (C, STR)
+	m32c_extra_address_constraint (C, STR)
 
 /* STACK AND CALLING */
 
@@ -448,9 +448,9 @@ enum reg_class
 #endif
 #define AP_REGNO 11
 
-#define STACK_POINTER_REGNUM        SP_REGNO
-#define FRAME_POINTER_REGNUM        FP_REGNO
-#define ARG_POINTER_REGNUM        AP_REGNO
+#define STACK_POINTER_REGNUM	SP_REGNO
+#define FRAME_POINTER_REGNUM	FP_REGNO
+#define ARG_POINTER_REGNUM	AP_REGNO
 
 /* The static chain must be pointer-capable.  */
 #define STATIC_CHAIN_REGNUM A0_REGNO
@@ -473,7 +473,7 @@ enum reg_class
 
 #define CAN_ELIMINATE(FROM,TO) 1
 #define INITIAL_ELIMINATION_OFFSET(FROM,TO,VAR) \
-        (VAR) = m32c_initial_elimination_offset(FROM,TO)
+	(VAR) = m32c_initial_elimination_offset(FROM,TO)
 
 /* Passing Function Arguments on the Stack */
 
@@ -485,7 +485,7 @@ enum reg_class
 /* Passing Arguments in Registers */
 
 #define FUNCTION_ARG(CA,MODE,TYPE,NAMED) \
-        m32c_function_arg (&(CA),MODE,TYPE,NAMED)
+	m32c_function_arg (&(CA),MODE,TYPE,NAMED)
 
 typedef struct m32c_cumulative_args
 {
@@ -501,9 +501,9 @@ typedef struct m32c_cumulative_args
 
 #define CUMULATIVE_ARGS m32c_cumulative_args
 #define INIT_CUMULATIVE_ARGS(CA,FNTYPE,LIBNAME,FNDECL,N_NAMED_ARGS) \
-        m32c_init_cumulative_args (&(CA),FNTYPE,LIBNAME,FNDECL,N_NAMED_ARGS)
+	m32c_init_cumulative_args (&(CA),FNTYPE,LIBNAME,FNDECL,N_NAMED_ARGS)
 #define FUNCTION_ARG_ADVANCE(CA,MODE,TYPE,NAMED) \
-        m32c_function_arg_advance (&(CA),MODE,TYPE,NAMED)
+	m32c_function_arg_advance (&(CA),MODE,TYPE,NAMED)
 #define FUNCTION_ARG_BOUNDARY(MODE,TYPE) (TARGET_A16 ? 8 : 16)
 #define FUNCTION_ARG_REGNO_P(r) m32c_function_arg_regno_p (r)
 
@@ -522,7 +522,7 @@ typedef struct m32c_cumulative_args
 
 #define EXIT_IGNORE_STACK 0
 #define EPILOGUE_USES(REGNO) m32c_epilogue_uses(REGNO)
-#define EH_USES(REGNO) 0        /* FIXME */
+#define EH_USES(REGNO) 0	/* FIXME */
 
 /* Generating Code for Profiling */
 
@@ -552,8 +552,8 @@ typedef struct m32c_cumulative_args
 #endif
 
 #define GO_IF_LEGITIMATE_ADDRESS(MODE,X,LABEL) \
-        if (m32c_legitimate_address_p (MODE, X, REG_OK_STRICT_V)) \
-          goto LABEL;
+	if (m32c_legitimate_address_p (MODE, X, REG_OK_STRICT_V)) \
+	  goto LABEL;
 
 #define REG_OK_FOR_BASE_P(X) m32c_reg_ok_for_base_p (X, REG_OK_STRICT_V)
 #define REG_OK_FOR_INDEX_P(X) 0
@@ -561,16 +561,16 @@ typedef struct m32c_cumulative_args
 /* #define FIND_BASE_TERM(X) when we do unspecs for symrefs */
 
 #define LEGITIMIZE_ADDRESS(X,OLDX,MODE,WIN) \
-        if (m32c_legitimize_address(&(X),OLDX,MODE)) \
-          goto win;
+	if (m32c_legitimize_address(&(X),OLDX,MODE)) \
+	  goto win;
 
 #define LEGITIMIZE_RELOAD_ADDRESS(X,MODE,OPNUM,TYPE,IND_LEVELS,WIN) \
-        if (m32c_legitimize_reload_address(&(X),MODE,OPNUM,TYPE,IND_LEVELS)) \
-          goto win;
+	if (m32c_legitimize_reload_address(&(X),MODE,OPNUM,TYPE,IND_LEVELS)) \
+	  goto win;
 
 #define GO_IF_MODE_DEPENDENT_ADDRESS(ADDR,LABEL) \
-        if (m32c_mode_dependent_address (ADDR)) \
-          goto LABEL;
+	if (m32c_mode_dependent_address (ADDR)) \
+	  goto LABEL;
 
 #define LEGITIMATE_CONSTANT_P(X) m32c_legitimate_constant_p (X)
 
@@ -581,9 +581,9 @@ typedef struct m32c_cumulative_args
 /* Describing Relative Costs of Operations */
 
 #define REGISTER_MOVE_COST(MODE,FROM,TO) \
-        m32c_register_move_cost (MODE, FROM, TO)
+	m32c_register_move_cost (MODE, FROM, TO)
 #define MEMORY_MOVE_COST(MODE,CLASS,IN) \
-        m32c_memory_move_cost (MODE, CLASS, IN)
+	m32c_memory_move_cost (MODE, CLASS, IN)
 
 /* Dividing the Output into Sections (Texts, Data, ...) */
 
@@ -612,7 +612,7 @@ typedef struct m32c_cumulative_args
 
 /* Output of Assembler Instructions */
 
-#define REGISTER_NAMES {        \
+#define REGISTER_NAMES {	\
   "r0", "r2", "r1", "r3", \
   "a0", "a1", "sb", "fb", "sp", \
   "pc", "flg", "argp", \
@@ -640,7 +640,7 @@ typedef struct m32c_cumulative_args
 /* Output of Dispatch Tables */
 
 #define ASM_OUTPUT_ADDR_VEC_ELT(S,V) \
-        fprintf (S, "\t.word L%d\n", V)
+	fprintf (S, "\t.word L%d\n", V)
 
 /* Assembler Commands for Exception Regions */
 
@@ -649,11 +649,11 @@ typedef struct m32c_cumulative_args
 /* Assembler Commands for Alignment */
 
 #define ASM_OUTPUT_ALIGN(STREAM,POWER) \
-        fprintf (STREAM, "\t.p2align\t%d\n", POWER);
+	fprintf (STREAM, "\t.p2align\t%d\n", POWER);
 
 /* Controlling Debugging Information Format */
 
-#define DWARF2_ADDR_SIZE        4
+#define DWARF2_ADDR_SIZE	4
 
 /* Miscellaneous Parameters */
 

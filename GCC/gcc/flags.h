@@ -27,11 +27,11 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
 
 enum debug_info_type
 {
-  NO_DEBUG,            /* Write no debug info.  */
-  DBX_DEBUG,            /* Write BSD .stabs for DBX (using dbxout.c).  */
-  SDB_DEBUG,            /* Write COFF for (old) SDB (using sdbout.c).  */
-  DWARF2_DEBUG,            /* Write Dwarf v2 debug info (using dwarf2out.c).  */
-  XCOFF_DEBUG,            /* Write IBM/Xcoff debug info (using dbxout.c).  */
+  NO_DEBUG,	    /* Write no debug info.  */
+  DBX_DEBUG,	    /* Write BSD .stabs for DBX (using dbxout.c).  */
+  SDB_DEBUG,	    /* Write COFF for (old) SDB (using sdbout.c).  */
+  DWARF2_DEBUG,	    /* Write Dwarf v2 debug info (using dwarf2out.c).  */
+  XCOFF_DEBUG,	    /* Write IBM/Xcoff debug info (using dbxout.c).  */
   VMS_DEBUG,        /* Write VMS debug info (using vmsdbgout.c).  */
   VMS_AND_DWARF2_DEBUG /* Write VMS debug info (using vmsdbgout.c).
                           and DWARF v2 debug info (using dwarf2out.c).  */
@@ -45,10 +45,10 @@ extern const char *const debug_type_names[];
 
 enum debug_info_level
 {
-  DINFO_LEVEL_NONE,        /* Write no debugging info.  */
-  DINFO_LEVEL_TERSE,        /* Write minimal info to support tracebacks only.  */
-  DINFO_LEVEL_NORMAL,        /* Write info for all declarations (and line table).  */
-  DINFO_LEVEL_VERBOSE        /* Write normal info plus #define/#undef info.  */
+  DINFO_LEVEL_NONE,	/* Write no debugging info.  */
+  DINFO_LEVEL_TERSE,	/* Write minimal info to support tracebacks only.  */
+  DINFO_LEVEL_NORMAL,	/* Write info for all declarations (and line table).  */
+  DINFO_LEVEL_VERBOSE	/* Write normal info plus #define/#undef info.  */
 };
 
 /* Specify how much debugging info to generate.  */
@@ -76,8 +76,8 @@ extern enum symbol_visibility default_visibility;
 
 struct visibility_flags
 {
-  unsigned inpragma : 1;        /* True when in #pragma GCC visibility.  */
-  unsigned inlines_hidden : 1;        /* True when -finlineshidden in effect.  */
+  unsigned inpragma : 1;	/* True when in #pragma GCC visibility.  */
+  unsigned inlines_hidden : 1;	/* True when -finlineshidden in effect.  */
 };
 
 /* Global visibility options.  */

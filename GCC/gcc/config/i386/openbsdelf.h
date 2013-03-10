@@ -37,18 +37,18 @@ Boston, MA 02110-1301, USA.  */
 
 /* Run-time target specifications */
 
-#define TARGET_OS_CPP_BUILTINS()                \
-  do                                                \
-    {                                                \
-            OPENBSD_OS_CPP_BUILTINS();                \
-    }                                                \
+#define TARGET_OS_CPP_BUILTINS()		\
+  do						\
+    {						\
+    	OPENBSD_OS_CPP_BUILTINS();		\
+    }						\
   while (0)
 
 /* As an elf system, we need crtbegin/crtend stuff.  */
 #undef STARTFILE_SPEC
 #define STARTFILE_SPEC "\
-        %{!shared: %{pg:gcrt0%O%s} %{!pg:%{p:gcrt0%O%s} %{!p:crt0%O%s}} \
-        crtbegin%O%s} %{shared:crtbeginS%O%s}"
+	%{!shared: %{pg:gcrt0%O%s} %{!pg:%{p:gcrt0%O%s} %{!p:crt0%O%s}} \
+	crtbegin%O%s} %{shared:crtbeginS%O%s}"
 #undef ENDFILE_SPEC
 #define ENDFILE_SPEC "%{!shared:crtend%O%s} %{shared:crtendS%O%s}"
 
@@ -76,7 +76,7 @@ Boston, MA 02110-1301, USA.  */
 #define ASM_APP_OFF "#NO_APP\n"
 
 #undef SET_ASM_OP
-#define SET_ASM_OP        "\t.set\t"
+#define SET_ASM_OP	"\t.set\t"
 
 /* The following macros were originally stolen from i386v4.h.
    These have to be defined to get PIC code correct.  */

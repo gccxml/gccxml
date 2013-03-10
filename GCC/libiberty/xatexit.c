@@ -45,12 +45,12 @@ static void xatexit_cleanup (void);
 /* Pointer to function run by xexit.  */
 extern void (*_xexit_cleanup) (void);
 
-#define        XATEXIT_SIZE 32
+#define	XATEXIT_SIZE 32
 
 struct xatexit {
-        struct        xatexit *next;                /* next in list */
-        int        ind;                        /* next index in this table */
-        void        (*fns[XATEXIT_SIZE]) (void);        /* the table itself */
+	struct	xatexit *next;		/* next in list */
+	int	ind;			/* next index in this table */
+	void	(*fns[XATEXIT_SIZE]) (void);	/* the table itself */
 };
 
 /* Allocate one struct statically to guarantee that we can register
@@ -76,7 +76,7 @@ xatexit (void (*fn) (void))
   if (p->ind >= XATEXIT_SIZE)
     {
       if ((p = (struct xatexit *) malloc (sizeof *p)) == NULL)
-        return -1;
+	return -1;
       p->ind = 0;
       p->next = xatexit_head;
       xatexit_head = p;

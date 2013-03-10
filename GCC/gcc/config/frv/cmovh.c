@@ -37,14 +37,14 @@ __cmovh (short *dest, const short *src, unsigned len)
   if (dest_byte < src_byte || dest_byte > src_byte+len)
     {
       for (i = 0; i < num; i++)
-        dest[i] = src[i];
+	dest[i] = src[i];
 
       if ((len & 1) != 0)
-        dest_byte[len-1] = src_byte[len-1];
+	dest_byte[len-1] = src_byte[len-1];
     }
   else
     {
       while (len-- > 0)
-        dest_byte[len] = src_byte[len];
+	dest_byte[len] = src_byte[len];
     }
 }

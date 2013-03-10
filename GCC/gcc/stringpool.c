@@ -108,8 +108,8 @@ tree
 get_identifier (const char *text)
 {
   hashnode ht_node = ht_lookup (ident_hash,
-                                (const unsigned char *) text,
-                                strlen (text), HT_ALLOC);
+				(const unsigned char *) text,
+				strlen (text), HT_ALLOC);
 
   /* ht_node can't be NULL here.  */
   return HT_IDENT_TO_GCC_IDENT (ht_node);
@@ -122,8 +122,8 @@ tree
 get_identifier_with_length (const char *text, size_t length)
 {
   hashnode ht_node = ht_lookup (ident_hash,
-                                (const unsigned char *) text,
-                                length, HT_ALLOC);
+				(const unsigned char *) text,
+				length, HT_ALLOC);
 
   /* ht_node can't be NULL here.  */
   return HT_IDENT_TO_GCC_IDENT (ht_node);
@@ -139,7 +139,7 @@ maybe_get_identifier (const char *text)
   hashnode ht_node;
 
   ht_node = ht_lookup (ident_hash, (const unsigned char *) text,
-                       strlen (text), HT_NO_INSERT);
+		       strlen (text), HT_NO_INSERT);
   if (ht_node)
     return HT_IDENT_TO_GCC_IDENT (ht_node);
 
@@ -158,7 +158,7 @@ stringpool_statistics (void)
 
 static int
 mark_ident (struct cpp_reader *pfile ATTRIBUTE_UNUSED, hashnode h,
-            const void *v ATTRIBUTE_UNUSED)
+	    const void *v ATTRIBUTE_UNUSED)
 {
   gt_ggc_m_9tree_node (HT_IDENT_TO_GCC_IDENT (h));
   return 1;
@@ -188,8 +188,8 @@ gt_ggc_m_S (void *x ATTRIBUTE_UNUSED)
 
 void
 gt_pch_p_S (void *obj ATTRIBUTE_UNUSED, void *x ATTRIBUTE_UNUSED,
-            gt_pointer_operator op ATTRIBUTE_UNUSED,
-            void *cookie ATTRIBUTE_UNUSED)
+	    gt_pointer_operator op ATTRIBUTE_UNUSED,
+	    void *cookie ATTRIBUTE_UNUSED)
 {
 }
 
@@ -199,7 +199,7 @@ void
 gt_pch_n_S (const void *x)
 {
   gt_pch_note_object ((void *)x, (void *)x, &gt_pch_p_S,
-                      gt_types_enum_last);
+		      gt_types_enum_last);
 }
 
 /* Handle saving and restoring the string pool for PCH.  */
@@ -211,8 +211,8 @@ struct string_pool_data GTY(())
 {
   struct ht_identifier * * 
     GTY((length ("%h.nslots"),
-         nested_ptr (union tree_node, "%h ? GCC_IDENT_TO_HT_IDENT (%h) : NULL",
-                     "%h ? HT_IDENT_TO_GCC_IDENT (%h) : NULL")))
+	 nested_ptr (union tree_node, "%h ? GCC_IDENT_TO_HT_IDENT (%h) : NULL",
+		     "%h ? HT_IDENT_TO_GCC_IDENT (%h) : NULL")))
     entries;
   unsigned int nslots;
   unsigned int nelements;
@@ -230,7 +230,7 @@ gt_pch_save_stringpool (void)
   spd->nelements = ident_hash->nelements;
   spd->entries = ggc_alloc (sizeof (spd->entries[0]) * spd->nslots);
   memcpy (spd->entries, ident_hash->entries,
-          spd->nslots * sizeof (spd->entries[0]));
+	  spd->nslots * sizeof (spd->entries[0]));
 }
 
 /* Return the stringpool to its state before gt_pch_save_stringpool

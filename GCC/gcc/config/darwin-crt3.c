@@ -85,7 +85,7 @@ typedef struct _Sinfo_Node {
 #endif
 
 /* Our globals are stored under this keymgr index.  */
-#define KEYMGR_ATEXIT_LIST        14
+#define KEYMGR_ATEXIT_LIST	14
 
 /* The different kinds of callback routines.  */
 typedef void (*atexit_callback)(void);
@@ -180,7 +180,7 @@ check_cxa_atexit (cxa_atexit_p cxa_atexit, cxa_finalize_p cxa_finalize)
   if (aed.result == 0)
     {
       /* Call __cxa_finalize again to make sure that cxa_atexit_check_2
-         is removed from the list before AED goes out of scope.  */
+	 is removed from the list before AED goes out of scope.  */
       cxa_finalize (&aed);
       aed.result = 0;
     }
@@ -204,8 +204,8 @@ find_atexit_10_3 (void)
   const char *(*dyld_get_image_name_fn)(unsigned int image_index);
   const void *(*dyld_get_image_header_fn)(unsigned int image_index);
   const void *(*NSLookupSymbolInImage_fn)(const void *image, 
-                                          const char *symbolName,
-                                          unsigned int options);
+					  const char *symbolName,
+					  unsigned int options);
   void *(*NSAddressOfSymbol_fn)(const void *symbol);
   unsigned i, count;
   
@@ -230,14 +230,14 @@ find_atexit_10_3 (void)
       const void * symbol;
       
       if (strcmp (path, "/usr/lib/libSystem.B.dylib") != 0)
-        continue;
+	continue;
       image = dyld_get_image_header_fn (i);
       if (! image)
-        return NULL;
+	return NULL;
       /* '4' is NSLOOKUPSYMBOLINIMAGE_OPTION_RETURN_ON_ERROR.  */
       symbol = NSLookupSymbolInImage_fn (image, "_atexit", 4);
       if (! symbol)
-        return NULL;
+	return NULL;
       return NSAddressOfSymbol_fn (symbol);
     }
   return NULL;
@@ -270,7 +270,7 @@ get_globals (void)
     {
       r = calloc (sizeof (struct keymgr_atexit_list), 1);
       if (! r)
-        return NULL;
+	return NULL;
     }
 
   if (r->atexit_status == atexit_status_unknown)
@@ -279,40 +279,40 @@ get_globals (void)
 
       handle = dlopen ("/usr/lib/libSystem.B.dylib", RTLD_NOLOAD);
       if (!handle)
-        {
+	{
 #ifdef __ppc__
-          r->atexit_status = atexit_status_missing;
-          r->atexit_f = find_atexit_10_3 ();
-          if (! r->atexit_f)
-            goto error;
-          if (r->atexit_f (our_atexit))
-            goto error;
+	  r->atexit_status = atexit_status_missing;
+	  r->atexit_f = find_atexit_10_3 ();
+	  if (! r->atexit_f)
+	    goto error;
+	  if (r->atexit_f (our_atexit))
+	    goto error;
 #else
-          goto error;
+	  goto error;
 #endif
-        }
+	}
       else
-        {
-          int chk_result;
+	{
+	  int chk_result;
 
-          r->cxa_atexit_f = (cxa_atexit_p)dlsym (handle, "__cxa_atexit");
-          r->cxa_finalize_f = (cxa_finalize_p)dlsym (handle, "__cxa_finalize");
-          if (! r->cxa_atexit_f || ! r->cxa_finalize_f)
-            goto error;
+	  r->cxa_atexit_f = (cxa_atexit_p)dlsym (handle, "__cxa_atexit");
+	  r->cxa_finalize_f = (cxa_finalize_p)dlsym (handle, "__cxa_finalize");
+	  if (! r->cxa_atexit_f || ! r->cxa_finalize_f)
+	    goto error;
 
-          chk_result = check_cxa_atexit (r->cxa_atexit_f, r->cxa_finalize_f);
-          if (chk_result == -1)
-            goto error;
-          else if (chk_result == 0)
-            r->atexit_status = atexit_status_broken;
-          else
-            {
-              r->atexit_f = (atexit_p)dlsym (handle, "atexit");
-              if (! r->atexit_f)
-                goto error;
-              r->atexit_status = atexit_status_working;
-            }
-        }
+	  chk_result = check_cxa_atexit (r->cxa_atexit_f, r->cxa_finalize_f);
+	  if (chk_result == -1)
+	    goto error;
+	  else if (chk_result == 0)
+	    r->atexit_status = atexit_status_broken;
+	  else
+	    {
+	      r->atexit_f = (atexit_p)dlsym (handle, "atexit");
+	      if (! r->atexit_f)
+		goto error;
+	      r->atexit_status = atexit_status_working;
+	    }
+	}
     }
 
   return r;
@@ -329,7 +329,7 @@ get_globals (void)
 
 static int
 add_routine (struct keymgr_atexit_list * g,
-             const struct one_atexit_routine * to_add)
+	     const struct one_atexit_routine * to_add)
 {
   struct atexit_routine_list * s
     = malloc (sizeof (struct atexit_routine_list));
@@ -350,32 +350,32 @@ add_routine (struct keymgr_atexit_list * g,
 /* This runs the routines in G->L up to STOP.  */
 static struct keymgr_atexit_list *
 run_routines (struct keymgr_atexit_list *g,
-              struct atexit_routine_list *stop)
+	      struct atexit_routine_list *stop)
 {
   for (;;)
     {
       struct atexit_routine_list * cur = g->l;
       if (! cur || cur == stop)
-        break;
+	break;
       g->l = cur->next;
       _keymgr_set_and_unlock_processwide_ptr (KEYMGR_ATEXIT_LIST, g);
 
       switch (cur->r.has_arg) {
       case 0: case 2: case 4:
-        cur->r.callback.ac ();
-        break;
+	cur->r.callback.ac ();
+	break;
       case 1: case 3: case 5:
-        cur->r.callback.cac (cur->r.arg);
-        break;
+	cur->r.callback.cac (cur->r.arg);
+	break;
       default:
-        /* Don't understand, so don't call it.  */
-        break;
+	/* Don't understand, so don't call it.  */
+	break;
       }
       free (cur);
 
       g = _keymgr_get_and_lock_processwide_ptr (KEYMGR_ATEXIT_LIST);
       if (! g)
-        break;
+	break;
     }
   return g;
 }
@@ -467,23 +467,23 @@ atexit_common (const struct one_atexit_routine *r, const void *dso)
     {
       int result;
       if (r->has_arg)
-        {
-          cxa_atexit_p cxa_atexit = g->cxa_atexit_f;
-          result = _keymgr_set_and_unlock_processwide_ptr (KEYMGR_ATEXIT_LIST,
-                                                           g);
-          if (CHECK_KEYMGR_ERROR (result))
-            return -1;
-          return cxa_atexit (r->callback.cac, r->arg, dso);
-        }
+	{
+	  cxa_atexit_p cxa_atexit = g->cxa_atexit_f;
+	  result = _keymgr_set_and_unlock_processwide_ptr (KEYMGR_ATEXIT_LIST,
+							   g);
+	  if (CHECK_KEYMGR_ERROR (result))
+	    return -1;
+	  return cxa_atexit (r->callback.cac, r->arg, dso);
+	}
       else
-        {
-          atexit_p atexit_f = g->atexit_f;
-          result = _keymgr_set_and_unlock_processwide_ptr (KEYMGR_ATEXIT_LIST,
-                                                           g);
-          if (CHECK_KEYMGR_ERROR (result))
-            return -1;
-          return atexit_f (r->callback.ac);
-        }
+	{
+	  atexit_p atexit_f = g->atexit_f;
+	  result = _keymgr_set_and_unlock_processwide_ptr (KEYMGR_ATEXIT_LIST,
+							   g);
+	  if (CHECK_KEYMGR_ERROR (result))
+	    return -1;
+	  return atexit_f (r->callback.ac);
+	}
     }
   else
     {
@@ -493,11 +493,11 @@ atexit_common (const struct one_atexit_routine *r, const void *dso)
 
       result = _keymgr_set_and_unlock_processwide_ptr (KEYMGR_ATEXIT_LIST, g);
       if (CHECK_KEYMGR_ERROR (result))
-        return -1;
+	return -1;
 
       alloced = malloc (sizeof (struct one_atexit_routine));
       if (! alloced)
-        return -1;
+	return -1;
       *alloced = *r;
       return cxa_atexit (cxa_atexit_wrapper, alloced, dso);
     }
@@ -507,7 +507,7 @@ atexit_common (const struct one_atexit_routine *r, const void *dso)
    atexit_common.  */
 
 int __cxa_atexit (cxa_atexit_callback func, void* arg, 
-                  const void* dso) __attribute__((visibility("hidden")));
+		  const void* dso) __attribute__((visibility("hidden")));
 
 int
 __cxa_atexit (cxa_atexit_callback func, void* arg, const void* dso)

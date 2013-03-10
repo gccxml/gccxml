@@ -47,7 +47,7 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
        X;
 
        if (!inv)
-         C;
+	 C;
      }
 
    where inv is the loop invariant, into
@@ -55,18 +55,18 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
    if (inv)
      {
        while (A)
-         {
+	 {
            B;
-           X;
-         }
+	   X;
+	 }
      }
    else
      {
        while (A)
-         {
-           X;
-           C;
-         }
+	 {
+	   X;
+	   C;
+	 }
      }
 
    Inv is considered invariant iff the values it compares are both invariant;
@@ -74,7 +74,7 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
    shape.  */
 
 static struct loop *tree_unswitch_loop (struct loops *, struct loop *, basic_block,
-                                   tree);
+				   tree);
 static bool tree_unswitch_single_loop (struct loops *, struct loop *, int);
 static tree tree_may_unswitch_on (basic_block, struct loop *);
 
@@ -95,10 +95,10 @@ tree_ssa_unswitch_loops (struct loops *loops)
       /* Removed loop?  */
       loop = loops->parray[i];
       if (!loop)
-        continue;
+	continue;
 
       if (loop->inner)
-        continue;
+	continue;
 
       changed |= tree_unswitch_single_loop (loops, loop, 0);
     }
@@ -129,8 +129,8 @@ tree_may_unswitch_on (basic_block bb, struct loop *loop)
       def = SSA_NAME_DEF_STMT (use);
       def_bb = bb_for_stmt (def);
       if (def_bb
-          && flow_bb_inside_loop_p (loop, def_bb))
-        return NULL_TREE;
+	  && flow_bb_inside_loop_p (loop, def_bb))
+	return NULL_TREE;
     }
 
   cond = COND_EXPR_COND (stmt);
@@ -157,18 +157,18 @@ simplify_using_entry_checks (struct loop *loop, tree cond)
     {
       stmt = last_stmt (e->src);
       if (stmt
-          && TREE_CODE (stmt) == COND_EXPR
-          && operand_equal_p (COND_EXPR_COND (stmt), cond, 0))
-        return (e->flags & EDGE_TRUE_VALUE
-                ? boolean_true_node
-                : boolean_false_node);
+	  && TREE_CODE (stmt) == COND_EXPR
+	  && operand_equal_p (COND_EXPR_COND (stmt), cond, 0))
+	return (e->flags & EDGE_TRUE_VALUE
+		? boolean_true_node
+		: boolean_false_node);
 
       if (!single_pred_p (e->src))
-        return cond;
+	return cond;
 
       e = single_pred_edge (e->src);
       if (e->src == ENTRY_BLOCK_PTR)
-        return cond;
+	return cond;
     }
 }
 
@@ -189,7 +189,7 @@ tree_unswitch_single_loop (struct loops *loops, struct loop *loop, int num)
   if (num > PARAM_VALUE (PARAM_MAX_UNSWITCH_LEVEL))
     {
       if (dump_file && (dump_flags & TDF_DETAILS))
-        fprintf (dump_file, ";; Not unswitching anymore, hit max level\n");
+	fprintf (dump_file, ";; Not unswitching anymore, hit max level\n");
       return false;
     }
 
@@ -197,7 +197,7 @@ tree_unswitch_single_loop (struct loops *loops, struct loop *loop, int num)
   if (loop->inner)
     {
       if (dump_file && (dump_flags & TDF_DETAILS))
-        fprintf (dump_file, ";; Not unswitching, not innermost loop\n");
+	fprintf (dump_file, ";; Not unswitching, not innermost loop\n");
       return false;
     }
 
@@ -206,7 +206,7 @@ tree_unswitch_single_loop (struct loops *loops, struct loop *loop, int num)
       > (unsigned) PARAM_VALUE (PARAM_MAX_UNSWITCH_INSNS))
     {
       if (dump_file && (dump_flags & TDF_DETAILS))
-        fprintf (dump_file, ";; Not unswitching, loop too big\n");
+	fprintf (dump_file, ";; Not unswitching, loop too big\n");
       return false;
     }
 
@@ -217,31 +217,31 @@ tree_unswitch_single_loop (struct loops *loops, struct loop *loop, int num)
     {
       /* Find a bb to unswitch on.  */
       for (; i < loop->num_nodes; i++)
-        if ((cond = tree_may_unswitch_on (bbs[i], loop)))
-          break;
+	if ((cond = tree_may_unswitch_on (bbs[i], loop)))
+	  break;
 
       if (i == loop->num_nodes)
-        {
-          free (bbs);
-          return changed;
-        }
+	{
+	  free (bbs);
+	  return changed;
+	}
 
       cond = simplify_using_entry_checks (loop, cond);
       stmt = last_stmt (bbs[i]);
       if (integer_nonzerop (cond))
-        {
-          /* Remove false path.  */
-          COND_EXPR_COND (stmt) = boolean_true_node;
-          changed = true;
-        }
+	{
+	  /* Remove false path.  */
+	  COND_EXPR_COND (stmt) = boolean_true_node;
+	  changed = true;
+	}
       else if (integer_zerop (cond))
-        {
-          /* Remove true path.  */
-          COND_EXPR_COND (stmt) = boolean_false_node;
-          changed = true;
-        }
+	{
+	  /* Remove true path.  */
+	  COND_EXPR_COND (stmt) = boolean_false_node;
+	  changed = true;
+	}
       else
-        break;
+	break;
 
       update_stmt (stmt);
       i++;
@@ -278,7 +278,7 @@ tree_unswitch_single_loop (struct loops *loops, struct loop *loop, int num)
 
 static struct loop *
 tree_unswitch_loop (struct loops *loops, struct loop *loop,
-                    basic_block unswitch_on, tree cond)
+		    basic_block unswitch_on, tree cond)
 {
   basic_block condition_bb;
 
@@ -288,5 +288,5 @@ tree_unswitch_loop (struct loops *loops, struct loop *loop,
   gcc_assert (loop->inner == NULL);
 
   return loop_version (loops, loop, unshare_expr (cond), 
-                       &condition_bb, false);
+		       &condition_bb, false);
 }

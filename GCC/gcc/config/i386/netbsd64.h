@@ -20,20 +20,20 @@ along with GCC; see the file COPYING.  If not, write to
 the Free Software Foundation, 51 Franklin Street, Fifth Floor,
 Boston, MA 02110-1301, USA.  */
 
-#define TARGET_OS_CPP_BUILTINS()                \
-  do                                                \
-    {                                                \
-      NETBSD_OS_CPP_BUILTINS_ELF();                \
-    }                                                \
+#define TARGET_OS_CPP_BUILTINS()		\
+  do						\
+    {						\
+      NETBSD_OS_CPP_BUILTINS_ELF();		\
+    }						\
   while (0)
 
 
 /* Extra specs needed for NetBSD/x86-64 ELF.  */
 
 #undef SUBTARGET_EXTRA_SPECS
-#define SUBTARGET_EXTRA_SPECS                        \
-  { "netbsd_cpp_spec", NETBSD_CPP_SPEC },        \
-  { "netbsd_link_spec", NETBSD_LINK_SPEC_ELF },        \
+#define SUBTARGET_EXTRA_SPECS			\
+  { "netbsd_cpp_spec", NETBSD_CPP_SPEC },	\
+  { "netbsd_link_spec", NETBSD_LINK_SPEC_ELF },	\
   { "netbsd_entry_point", NETBSD_ENTRY_POINT },
 
 
@@ -57,14 +57,14 @@ Boston, MA 02110-1301, USA.  */
 /* Output assembler code to FILE to call the profiler.  */
 
 #undef FUNCTION_PROFILER
-#define FUNCTION_PROFILER(FILE, LABELNO)                                \
-{                                                                        \
-  if (TARGET_64BIT && flag_pic)                                                \
-    fprintf (FILE, "\tcall *__mcount@PLT\n");                                \
-  else if (flag_pic)                                                        \
-    fprintf (FILE, "\tcall *__mcount@PLT\n");                                \
-  else                                                                        \
-    fprintf (FILE, "\tcall __mcount\n");                                \
+#define FUNCTION_PROFILER(FILE, LABELNO)				\
+{									\
+  if (TARGET_64BIT && flag_pic)						\
+    fprintf (FILE, "\tcall *__mcount@PLT\n");				\
+  else if (flag_pic)							\
+    fprintf (FILE, "\tcall *__mcount@PLT\n");				\
+  else									\
+    fprintf (FILE, "\tcall __mcount\n");				\
 }
 
 /* Attempt to enable execute permissions on the stack.  */

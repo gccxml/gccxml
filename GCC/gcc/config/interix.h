@@ -43,26 +43,26 @@ for windows/multi thread */
 
 #undef LINK_SPEC
 #define LINK_SPEC "%{!shared:-stack 0x400000,0x10000} \
-                    -subsystem posix \
-                   %{g} \
-                   %{dynamic:-Bdynamic} \
-                   %{static:-Bstatic} \
-                   %{shared:--shared -Bdynamic} \
-                   %{G:--shared -Bdynamic} \
-                   %{symbolic:--shared -Bsymbolic -Bdynamic} \
-                   %{soname*:--soname %*} \
-                      %{rpath*:--rpath %*} \
-                   "
+ 		   -subsystem posix \
+		   %{g} \
+		   %{dynamic:-Bdynamic} \
+		   %{static:-Bstatic} \
+		   %{shared:--shared -Bdynamic} \
+		   %{G:--shared -Bdynamic} \
+		   %{symbolic:--shared -Bsymbolic -Bdynamic} \
+		   %{soname*:--soname %*} \
+   		   %{rpath*:--rpath %*} \
+		   "
 
 #undef STARTFILE_SPEC
 #define STARTFILE_SPEC  \
   "%{!shared:%{pg:gcrt0%O%s}%{!pg:%{p:mcrt0%O%s}%{!p:crt0%O%s}}} %{shared:crti%O%s}"
 
 #undef WORD_SWITCH_TAKES_ARG
-#define WORD_SWITCH_TAKES_ARG(STR)                                        \
- ((DEFAULT_WORD_SWITCH_TAKES_ARG (STR)                                        \
- || !strcmp(STR, "rpath"))                                                \
-  && strcmp (STR, "Tdata") && strcmp (STR, "Ttext")                        \
+#define WORD_SWITCH_TAKES_ARG(STR)					\
+ ((DEFAULT_WORD_SWITCH_TAKES_ARG (STR)					\
+ || !strcmp(STR, "rpath"))						\
+  && strcmp (STR, "Tdata") && strcmp (STR, "Ttext")			\
   && strcmp (STR, "Tbss"))
 
 
@@ -88,34 +88,34 @@ for windows/multi thread */
 
 /* Our strategy for finding global constructors is a bit different, although
    not a lot.  */
-#define DO_GLOBAL_CTORS_BODY                                                \
-do {                                                                        \
-  int i;                                                                \
-  unsigned long nptrs;                                                        \
-  func_ptr *p;                                                                \
-  asm(                                                                        \
-       "     .section .ctor_head, \"rw\"\n"                                \
-       "1:\n"                                                                \
-       "     .text \n"                                                        \
-       ASM_LOAD_ADDR(1b,%0)                                                \
-       : "=r" (p) : : "cc");                                                \
-  for (nptrs = 0; p[nptrs] != 0; nptrs++);                                \
-  for (i = nptrs-1; i >= 0; i--)                                        \
-    p[i] ();                                                                \
+#define DO_GLOBAL_CTORS_BODY						\
+do {									\
+  int i;								\
+  unsigned long nptrs;							\
+  func_ptr *p;								\
+  asm(									\
+       "     .section .ctor_head, \"rw\"\n"				\
+       "1:\n"								\
+       "     .text \n"							\
+       ASM_LOAD_ADDR(1b,%0)						\
+       : "=r" (p) : : "cc");						\
+  for (nptrs = 0; p[nptrs] != 0; nptrs++);				\
+  for (i = nptrs-1; i >= 0; i--)					\
+    p[i] ();								\
 } while (0) 
 
-#define DO_GLOBAL_DTORS_BODY                                                \
-do {                                                                        \
-  func_ptr *p;                                                                \
-  asm(                                                                        \
-       "     .section .dtor_head, \"rw\"\n"                                \
-       "1:\n"                                                                \
-       "     .text \n"                                                        \
-       ASM_LOAD_ADDR(1b,%0)                                                \
-       : "=r" (p) : : "cc");                                                \
-  while (*p)                                                                \
-    {                                                                        \
-      p++;                                                                \
-      (*(p-1)) ();                                                        \
-    }                                                                        \
+#define DO_GLOBAL_DTORS_BODY						\
+do {									\
+  func_ptr *p;								\
+  asm(									\
+       "     .section .dtor_head, \"rw\"\n"				\
+       "1:\n"								\
+       "     .text \n"							\
+       ASM_LOAD_ADDR(1b,%0)						\
+       : "=r" (p) : : "cc");						\
+  while (*p)								\
+    {									\
+      p++;								\
+      (*(p-1)) ();							\
+    }									\
 } while (0) 

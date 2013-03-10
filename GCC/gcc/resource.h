@@ -24,18 +24,18 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
 #include "hard-reg-set.h"
 
 /* Macro to clear all resources.  */
-#define CLEAR_RESOURCE(RES)        \
+#define CLEAR_RESOURCE(RES)	\
  do { (RES)->memory = (RES)->unch_memory = (RES)->volatil = (RES)->cc = 0; \
       CLEAR_HARD_REG_SET ((RES)->regs); } while (0)
 
 /* The resources used by a given insn.  */
 struct resources
 {
-  char memory;                /* Insn sets or needs a memory location.  */
-  char unch_memory;        /* Insn sets of needs a "unchanging" MEM.  */
-  char volatil;                /* Insn sets or needs a volatile memory loc.  */
-  char cc;                /* Insn sets or needs the condition codes.  */
-  HARD_REG_SET regs;        /* Which registers are set or needed.  */
+  char memory;		/* Insn sets or needs a memory location.  */
+  char unch_memory;	/* Insn sets of needs a "unchanging" MEM.  */
+  char volatil;		/* Insn sets or needs a volatile memory loc.  */
+  char cc;		/* Insn sets or needs the condition codes.  */
+  HARD_REG_SET regs;	/* Which registers are set or needed.  */
 };
 
 /* The kinds of rtl mark_*_resources will consider */
@@ -47,7 +47,7 @@ enum mark_resource_type
 
 extern void mark_target_live_regs (rtx, rtx, struct resources *);
 extern void mark_set_resources (rtx, struct resources *, int,
-                                enum mark_resource_type);
+				enum mark_resource_type);
 extern void mark_referenced_resources (rtx, struct resources *, int);
 extern void clear_hashed_info_for_insn (rtx);
 extern void incr_ticks_for_insn (rtx);

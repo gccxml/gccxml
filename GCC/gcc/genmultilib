@@ -91,9 +91,9 @@
 
 # Here is an example (this is from the actual sparc64 case):
 #   genmultilib 'm64/m32 mno-app-regs|mcmodel=medany' '64 32 alt'
-#                'mcmodel?medany=mcmodel?medmid' 'm32/mno-app-regs* m32/mcmodel=*'
-#                '' 'm32/!m64/mno-app-regs m32/!m64/mcmodel=medany'
-#                '../lib64 ../lib32 alt' yes
+#		'mcmodel?medany=mcmodel?medmid' 'm32/mno-app-regs* m32/mcmodel=*'
+#		'' 'm32/!m64/mno-app-regs m32/!m64/mcmodel=medany'
+#		'../lib64 ../lib32 alt' yes
 # This produces:
 #   ". !m64 !m32 !mno-app-regs !mcmodel=medany;",
 #   "64:../lib64 m64 !m32 !mno-app-regs !mcmodel=medany;",
@@ -207,9 +207,9 @@ if [ -n "${dirnames}" ]; then
       for opt in `echo ${opts} | sed -e 's_|_ _'g`; do
         if [ "$1" != "${opt}" ]; then
           todirnames="${todirnames} -e s|/${opt}/|/${1}/|g"
-          patt="${patt}${1}/"
-          if [ "${patt}" != "/${1}/" ]; then
-            todirnames="${todirnames} -e s|${patt}|/${1}/|g"
+	  patt="${patt}${1}/"
+	  if [ "${patt}" != "/${1}/" ]; then
+	    todirnames="${todirnames} -e s|${patt}|/${1}/|g"
           fi
         fi
       done
@@ -229,16 +229,16 @@ if [ -n "${osdirnames}" ]; then
     case "$1" in
       .=*)
         defaultosdirname=`echo $1 | sed 's|^.=|:|'`
-        shift
-        ;;
+	shift
+	;;
       *=*)
-        patt=`echo $1 | sed -e 's|=|/$=/|'`
+	patt=`echo $1 | sed -e 's|=|/$=/|'`
         toosdirnames="${toosdirnames} -e s=^/${patt}/="
-        shift
+	shift
         ;;
       *)
         break
-        ;;
+	;;
     esac
   done
   
@@ -249,9 +249,9 @@ if [ -n "${osdirnames}" ]; then
         for opt in `echo ${opts} | sed -e 's_|_ _'g`; do
           if [ "$1" != "${opt}" ]; then
             toosdirnames="${toosdirnames} -e s|/${opt}/|/${1}/|g"
-            patt="${patt}${1}/"
-            if [ "${patt}" != "/${1}/" ]; then
-              toosdirnames="${toosdirnames} -e s|${patt}|/${1}/|g"
+	    patt="${patt}${1}/"
+	    if [ "${patt}" != "/${1}/" ]; then
+	      toosdirnames="${toosdirnames} -e s|${patt}|/${1}/|g"
             fi
           fi
         done
@@ -327,11 +327,11 @@ for combo in ${combinations}; do
     else
       case "${osdirout}" in
         !*)
-          dirout=`echo ${osdirout} | sed 's/^!//'`
-          ;;
-        *)
-          dirout="${dirout}:${osdirout}"
-          ;;
+	  dirout=`echo ${osdirout} | sed 's/^!//'`
+	  ;;
+	*)
+	  dirout="${dirout}:${osdirout}"
+	  ;;
       esac
     fi
   else
@@ -350,9 +350,9 @@ for combo in ${combinations}; do
     setopts=`echo ${set} | sed -e 's_[/|]_ _g'`
     for opt in ${setopts}; do
       if expr "${combo} " : ".*/${opt}/.*" > /dev/null; then
-        optout="${optout} ${opt}"
+	optout="${optout} ${opt}"
       else
-        optout="${optout} !${opt}"
+	optout="${optout} !${opt}"
       fi
     done
   done
@@ -400,7 +400,7 @@ echo "NULL"
 echo "};"
 
 # Output the options now
-moptions=`echo ${options} | sed -e 's,[         ][         ]*, ,g'`
+moptions=`echo ${options} | sed -e 's,[ 	][ 	]*, ,g'`
 echo ""
 echo "static const char *multilib_options = \"${moptions}\";"
 

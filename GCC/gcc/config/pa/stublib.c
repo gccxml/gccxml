@@ -30,7 +30,7 @@ Boston, MA 02110-1301, USA.  */
 #ifdef L_register_frame_info
 struct object;
 void  __register_frame_info (const void * __attribute__((unused)),
-                             struct object * __attribute__((unused)));
+			     struct object * __attribute__((unused)));
 void
 __register_frame_info (const void *p, struct object *ob)
 {

@@ -20,18 +20,18 @@ along with GCC; see the file COPYING.  If not, write to
 the Free Software Foundation, 51 Franklin Street, Fifth Floor,
 Boston, MA 02110-1301, USA.  */
 
-#define TARGET_OS_CPP_BUILTINS()                \
-  do                                                \
-    {                                                \
-      builtin_define_std ("unix");                \
-      builtin_define_std ("linux");                \
-      builtin_define ("__gnu_linux__");                \
-      builtin_assert ("system=linux");                \
-      builtin_assert ("system=unix");                \
-      builtin_assert ("system=posix");                \
-      if (TARGET_LONG_DOUBLE_128)               \
-        builtin_define ("__LONG_DOUBLE_128__");        \
-    }                                                \
+#define TARGET_OS_CPP_BUILTINS()		\
+  do						\
+    {						\
+      builtin_define_std ("unix");		\
+      builtin_define_std ("linux");		\
+      builtin_define ("__gnu_linux__");		\
+      builtin_assert ("system=linux");		\
+      builtin_assert ("system=unix");		\
+      builtin_assert ("system=posix");		\
+      if (TARGET_LONG_DOUBLE_128)       	\
+	builtin_define ("__LONG_DOUBLE_128__");	\
+    }						\
   while (0)
 
 /* Don't assume anything about the header files.  */
@@ -68,8 +68,8 @@ Boston, MA 02110-1301, USA.  */
    %{shared|pie:crtendS.o%s;:crtend.o%s} crtn.o%s"
 
 /* This is for -profile to use -lc_p instead of -lc.  */
-#undef        CC1_SPEC
-#define        CC1_SPEC "%{profile:-p} \
+#undef	CC1_SPEC
+#define	CC1_SPEC "%{profile:-p} \
 %{sun4:} %{target:} \
 %{mcypress:-mcpu=cypress} \
 %{msparclite:-mcpu=sparclite} %{mf930:-mcpu=f930} %{mf934:-mcpu=f934} \
@@ -154,12 +154,12 @@ Boston, MA 02110-1301, USA.  */
 #define DBX_REGISTER_NUMBER(REGNO) (REGNO)
 
 #undef ASM_OUTPUT_ALIGNED_LOCAL
-#define ASM_OUTPUT_ALIGNED_LOCAL(FILE, NAME, SIZE, ALIGN)                \
-do {                                                                        \
-  fputs ("\t.local\t", (FILE));                \
-  assemble_name ((FILE), (NAME));                                        \
-  putc ('\n', (FILE));                                                        \
-  ASM_OUTPUT_ALIGNED_COMMON (FILE, NAME, SIZE, ALIGN);                        \
+#define ASM_OUTPUT_ALIGNED_LOCAL(FILE, NAME, SIZE, ALIGN)		\
+do {									\
+  fputs ("\t.local\t", (FILE));		\
+  assemble_name ((FILE), (NAME));					\
+  putc ('\n', (FILE));							\
+  ASM_OUTPUT_ALIGNED_COMMON (FILE, NAME, SIZE, ALIGN);			\
 } while (0)
 
 #undef COMMON_ASM_OP
@@ -174,7 +174,7 @@ do {                                                                        \
    This is suitable for output with `assemble_name'.  */
 
 #undef  ASM_GENERATE_INTERNAL_LABEL
-#define ASM_GENERATE_INTERNAL_LABEL(LABEL,PREFIX,NUM)        \
+#define ASM_GENERATE_INTERNAL_LABEL(LABEL,PREFIX,NUM)	\
   sprintf (LABEL, "*.L%s%ld", PREFIX, (long)(NUM))
 
 
@@ -239,7 +239,7 @@ do {                                                                        \
 
 #ifdef TARGET_LIBC_PROVIDES_SSP
 /* sparc glibc provides __stack_chk_guard in [%g7 + 0x14].  */
-#define TARGET_THREAD_SSP_OFFSET        0x14
+#define TARGET_THREAD_SSP_OFFSET	0x14
 #endif
 
 /* Define if long doubles should be mangled as 'g'.  */

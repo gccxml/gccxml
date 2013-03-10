@@ -23,28 +23,28 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
    passes which can be modeled as lazy code motion problems.
    Including, but not limited to:
 
-        * Traditional partial redundancy elimination.
+	* Traditional partial redundancy elimination.
 
-        * Placement of caller/caller register save/restores.
+	* Placement of caller/caller register save/restores.
 
-        * Load/store motion.
+	* Load/store motion.
 
-        * Copy motion.
+	* Copy motion.
 
-        * Conversion of flat register files to a stacked register
-        model.
+	* Conversion of flat register files to a stacked register
+	model.
 
-        * Dead load/store elimination.
+	* Dead load/store elimination.
 
   These routines accept as input:
 
-        * Basic block information (number of blocks, lists of
-        predecessors and successors).  Note the granularity
-        does not need to be basic block, they could be statements
-        or functions.
+	* Basic block information (number of blocks, lists of
+	predecessors and successors).  Note the granularity
+	does not need to be basic block, they could be statements
+	or functions.
 
-        * Bitmaps of local properties (computed, transparent and
-        anticipatable expressions).
+	* Bitmaps of local properties (computed, transparent and
+	anticipatable expressions).
 
   The output of these routines is bitmap of redundant computations
   and a bitmap of optimal placement points.  */
@@ -73,20 +73,20 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
 /* Edge based LCM routines.  */
 static void compute_antinout_edge (sbitmap *, sbitmap *, sbitmap *, sbitmap *);
 static void compute_earliest (struct edge_list *, int, sbitmap *, sbitmap *,
-                              sbitmap *, sbitmap *, sbitmap *);
+			      sbitmap *, sbitmap *, sbitmap *);
 static void compute_laterin (struct edge_list *, sbitmap *, sbitmap *,
-                             sbitmap *, sbitmap *);
+			     sbitmap *, sbitmap *);
 static void compute_insert_delete (struct edge_list *edge_list, sbitmap *,
-                                   sbitmap *, sbitmap *, sbitmap *, sbitmap *);
+				   sbitmap *, sbitmap *, sbitmap *, sbitmap *);
 
 /* Edge based LCM routines on a reverse flowgraph.  */
 static void compute_farthest (struct edge_list *, int, sbitmap *, sbitmap *,
-                              sbitmap*, sbitmap *, sbitmap *);
+			      sbitmap*, sbitmap *, sbitmap *);
 static void compute_nearerout (struct edge_list *, sbitmap *, sbitmap *,
-                               sbitmap *, sbitmap *);
+			       sbitmap *, sbitmap *);
 static void compute_rev_insert_delete (struct edge_list *edge_list, sbitmap *,
-                                       sbitmap *, sbitmap *, sbitmap *,
-                                       sbitmap *);
+				       sbitmap *, sbitmap *, sbitmap *,
+				       sbitmap *);
 
 /* Edge based lcm routines.  */
 
@@ -96,7 +96,7 @@ static void compute_rev_insert_delete (struct edge_list *edge_list, sbitmap *,
 
 static void
 compute_antinout_edge (sbitmap *antloc, sbitmap *transp, sbitmap *antin,
-                       sbitmap *antout)
+		       sbitmap *antout)
 {
   basic_block bb;
   edge e;
@@ -138,35 +138,35 @@ compute_antinout_edge (sbitmap *antloc, sbitmap *transp, sbitmap *antin,
       qlen--;
 
       if (qout >= qend)
-        qout = worklist;
+	qout = worklist;
 
       if (bb->aux == EXIT_BLOCK_PTR)
-        /* Do not clear the aux field for blocks which are predecessors of
-           the EXIT block.  That way we never add then to the worklist
-           again.  */
-        sbitmap_zero (antout[bb->index]);
+	/* Do not clear the aux field for blocks which are predecessors of
+	   the EXIT block.  That way we never add then to the worklist
+	   again.  */
+	sbitmap_zero (antout[bb->index]);
       else
-        {
-          /* Clear the aux field of this block so that it can be added to
-             the worklist again if necessary.  */
-          bb->aux = NULL;
-          sbitmap_intersection_of_succs (antout[bb->index], antin, bb->index);
-        }
+	{
+	  /* Clear the aux field of this block so that it can be added to
+	     the worklist again if necessary.  */
+	  bb->aux = NULL;
+	  sbitmap_intersection_of_succs (antout[bb->index], antin, bb->index);
+	}
 
       if (sbitmap_a_or_b_and_c_cg (antin[bb->index], antloc[bb->index],
-                                   transp[bb->index], antout[bb->index]))
-        /* If the in state of this block changed, then we need
-           to add the predecessors of this block to the worklist
-           if they are not already on the worklist.  */
-        FOR_EACH_EDGE (e, ei, bb->preds)
-          if (!e->src->aux && e->src != ENTRY_BLOCK_PTR)
-            {
-              *qin++ = e->src;
-              e->src->aux = e;
-              qlen++;
-              if (qin >= qend)
-                qin = worklist;
-            }
+				   transp[bb->index], antout[bb->index]))
+	/* If the in state of this block changed, then we need
+	   to add the predecessors of this block to the worklist
+	   if they are not already on the worklist.  */
+	FOR_EACH_EDGE (e, ei, bb->preds)
+	  if (!e->src->aux && e->src != ENTRY_BLOCK_PTR)
+	    {
+	      *qin++ = e->src;
+	      e->src->aux = e;
+	      qlen++;
+	      if (qin >= qend)
+		qin = worklist;
+	    }
     }
 
   clear_aux_for_edges ();
@@ -178,8 +178,8 @@ compute_antinout_edge (sbitmap *antloc, sbitmap *transp, sbitmap *antin,
 
 static void
 compute_earliest (struct edge_list *edge_list, int n_exprs, sbitmap *antin,
-                  sbitmap *antout, sbitmap *avout, sbitmap *kill,
-                  sbitmap *earliest)
+		  sbitmap *antout, sbitmap *avout, sbitmap *kill,
+		  sbitmap *earliest)
 {
   sbitmap difference, temp_bitmap;
   int x, num_edges;
@@ -195,20 +195,20 @@ compute_earliest (struct edge_list *edge_list, int n_exprs, sbitmap *antin,
       pred = INDEX_EDGE_PRED_BB (edge_list, x);
       succ = INDEX_EDGE_SUCC_BB (edge_list, x);
       if (pred == ENTRY_BLOCK_PTR)
-        sbitmap_copy (earliest[x], antin[succ->index]);
+	sbitmap_copy (earliest[x], antin[succ->index]);
       else
-        {
-          if (succ == EXIT_BLOCK_PTR)
-            sbitmap_zero (earliest[x]);
-          else
-            {
-              sbitmap_difference (difference, antin[succ->index],
-                                  avout[pred->index]);
-              sbitmap_not (temp_bitmap, antout[pred->index]);
-              sbitmap_a_and_b_or_c (earliest[x], difference,
-                                    kill[pred->index], temp_bitmap);
-            }
-        }
+	{
+	  if (succ == EXIT_BLOCK_PTR)
+	    sbitmap_zero (earliest[x]);
+	  else
+	    {
+	      sbitmap_difference (difference, antin[succ->index],
+				  avout[pred->index]);
+	      sbitmap_not (temp_bitmap, antout[pred->index]);
+	      sbitmap_a_and_b_or_c (earliest[x], difference,
+				    kill[pred->index], temp_bitmap);
+	    }
+	}
     }
 
   sbitmap_free (temp_bitmap);
@@ -246,7 +246,7 @@ compute_earliest (struct edge_list *edge_list, int n_exprs, sbitmap *antin,
 
 static void
 compute_laterin (struct edge_list *edge_list, sbitmap *earliest,
-                 sbitmap *antloc, sbitmap *later, sbitmap *laterin)
+		 sbitmap *antloc, sbitmap *later, sbitmap *laterin)
 {
   int num_edges, i;
   edge e;
@@ -307,30 +307,30 @@ compute_laterin (struct edge_list *edge_list, sbitmap *earliest,
       bb->aux = NULL;
       qlen--;
       if (qout >= qend)
-        qout = worklist;
+	qout = worklist;
 
       /* Compute the intersection of LATERIN for each incoming edge to B.  */
       sbitmap_ones (laterin[bb->index]);
       FOR_EACH_EDGE (e, ei, bb->preds)
-        sbitmap_a_and_b (laterin[bb->index], laterin[bb->index],
-                         later[(size_t)e->aux]);
+	sbitmap_a_and_b (laterin[bb->index], laterin[bb->index],
+			 later[(size_t)e->aux]);
 
       /* Calculate LATER for all outgoing edges.  */
       FOR_EACH_EDGE (e, ei, bb->succs)
-        if (sbitmap_union_of_diff_cg (later[(size_t) e->aux],
-                                      earliest[(size_t) e->aux],
-                                      laterin[e->src->index],
-                                      antloc[e->src->index])
-            /* If LATER for an outgoing edge was changed, then we need
-               to add the target of the outgoing edge to the worklist.  */
-            && e->dest != EXIT_BLOCK_PTR && e->dest->aux == 0)
-          {
-            *qin++ = e->dest;
-            e->dest->aux = e;
-            qlen++;
-            if (qin >= qend)
-              qin = worklist;
-          }
+	if (sbitmap_union_of_diff_cg (later[(size_t) e->aux],
+				      earliest[(size_t) e->aux],
+				      laterin[e->src->index],
+				      antloc[e->src->index])
+	    /* If LATER for an outgoing edge was changed, then we need
+	       to add the target of the outgoing edge to the worklist.  */
+	    && e->dest != EXIT_BLOCK_PTR && e->dest->aux == 0)
+	  {
+	    *qin++ = e->dest;
+	    e->dest->aux = e;
+	    qlen++;
+	    if (qin >= qend)
+	      qin = worklist;
+	  }
     }
 
   /* Computation of insertion and deletion points requires computing LATERIN
@@ -339,8 +339,8 @@ compute_laterin (struct edge_list *edge_list, sbitmap *earliest,
   sbitmap_ones (laterin[last_basic_block]);
   FOR_EACH_EDGE (e, ei, EXIT_BLOCK_PTR->preds)
     sbitmap_a_and_b (laterin[last_basic_block],
-                     laterin[last_basic_block],
-                     later[(size_t) e->aux]);
+		     laterin[last_basic_block],
+		     later[(size_t) e->aux]);
 
   clear_aux_for_edges ();
   free (worklist);
@@ -350,24 +350,24 @@ compute_laterin (struct edge_list *edge_list, sbitmap *earliest,
 
 static void
 compute_insert_delete (struct edge_list *edge_list, sbitmap *antloc,
-                       sbitmap *later, sbitmap *laterin, sbitmap *insert,
-                       sbitmap *delete)
+		       sbitmap *later, sbitmap *laterin, sbitmap *insert,
+		       sbitmap *delete)
 {
   int x;
   basic_block bb;
 
   FOR_EACH_BB (bb)
     sbitmap_difference (delete[bb->index], antloc[bb->index],
-                        laterin[bb->index]);
+			laterin[bb->index]);
 
   for (x = 0; x < NUM_EDGES (edge_list); x++)
     {
       basic_block b = INDEX_EDGE_SUCC_BB (edge_list, x);
 
       if (b == EXIT_BLOCK_PTR)
-        sbitmap_difference (insert[x], later[x], laterin[last_basic_block]);
+	sbitmap_difference (insert[x], later[x], laterin[last_basic_block]);
       else
-        sbitmap_difference (insert[x], later[x], laterin[b->index]);
+	sbitmap_difference (insert[x], later[x], laterin[b->index]);
     }
 }
 
@@ -377,8 +377,8 @@ compute_insert_delete (struct edge_list *edge_list, sbitmap *antloc,
 
 struct edge_list *
 pre_edge_lcm (int n_exprs, sbitmap *transp,
-              sbitmap *avloc, sbitmap *antloc, sbitmap *kill,
-              sbitmap **insert, sbitmap **delete)
+	      sbitmap *avloc, sbitmap *antloc, sbitmap *kill,
+	      sbitmap **insert, sbitmap **delete)
 {
   sbitmap *antin, *antout, *earliest;
   sbitmap *avin, *avout;
@@ -462,7 +462,7 @@ pre_edge_lcm (int n_exprs, sbitmap *transp,
     {
       dump_sbitmap_vector (dump_file, "pre_insert_map", "", *insert, num_edges);
       dump_sbitmap_vector (dump_file, "pre_delete_map", "", *delete,
-                           last_basic_block);
+			   last_basic_block);
     }
 #endif
 
@@ -474,7 +474,7 @@ pre_edge_lcm (int n_exprs, sbitmap *transp,
 
 void
 compute_available (sbitmap *avloc, sbitmap *kill, sbitmap *avout,
-                   sbitmap *avin)
+		   sbitmap *avin)
 {
   edge e;
   basic_block *worklist, *qin, *qout, *qend, bb;
@@ -515,38 +515,38 @@ compute_available (sbitmap *avloc, sbitmap *kill, sbitmap *avout,
       qlen--;
 
       if (qout >= qend)
-        qout = worklist;
+	qout = worklist;
 
       /* If one of the predecessor blocks is the ENTRY block, then the
-         intersection of avouts is the null set.  We can identify such blocks
-         by the special value in the AUX field in the block structure.  */
+	 intersection of avouts is the null set.  We can identify such blocks
+	 by the special value in the AUX field in the block structure.  */
       if (bb->aux == ENTRY_BLOCK_PTR)
-        /* Do not clear the aux field for blocks which are successors of the
-           ENTRY block.  That way we never add then to the worklist again.  */
-        sbitmap_zero (avin[bb->index]);
+	/* Do not clear the aux field for blocks which are successors of the
+	   ENTRY block.  That way we never add then to the worklist again.  */
+	sbitmap_zero (avin[bb->index]);
       else
-        {
-          /* Clear the aux field of this block so that it can be added to
-             the worklist again if necessary.  */
-          bb->aux = NULL;
-          sbitmap_intersection_of_preds (avin[bb->index], avout, bb->index);
-        }
+	{
+	  /* Clear the aux field of this block so that it can be added to
+	     the worklist again if necessary.  */
+	  bb->aux = NULL;
+	  sbitmap_intersection_of_preds (avin[bb->index], avout, bb->index);
+	}
 
       if (sbitmap_union_of_diff_cg (avout[bb->index], avloc[bb->index],
-                                    avin[bb->index], kill[bb->index]))
-        /* If the out state of this block changed, then we need
-           to add the successors of this block to the worklist
-           if they are not already on the worklist.  */
-        FOR_EACH_EDGE (e, ei, bb->succs)
-          if (!e->dest->aux && e->dest != EXIT_BLOCK_PTR)
-            {
-              *qin++ = e->dest;
-              e->dest->aux = e;
-              qlen++;
+				    avin[bb->index], kill[bb->index]))
+	/* If the out state of this block changed, then we need
+	   to add the successors of this block to the worklist
+	   if they are not already on the worklist.  */
+	FOR_EACH_EDGE (e, ei, bb->succs)
+	  if (!e->dest->aux && e->dest != EXIT_BLOCK_PTR)
+	    {
+	      *qin++ = e->dest;
+	      e->dest->aux = e;
+	      qlen++;
 
-              if (qin >= qend)
-                qin = worklist;
-            }
+	      if (qin >= qend)
+		qin = worklist;
+	    }
     }
 
   clear_aux_for_edges ();
@@ -558,8 +558,8 @@ compute_available (sbitmap *avloc, sbitmap *kill, sbitmap *avout,
 
 static void
 compute_farthest (struct edge_list *edge_list, int n_exprs,
-                  sbitmap *st_avout, sbitmap *st_avin, sbitmap *st_antin,
-                  sbitmap *kill, sbitmap *farthest)
+		  sbitmap *st_avout, sbitmap *st_avin, sbitmap *st_antin,
+		  sbitmap *kill, sbitmap *farthest)
 {
   sbitmap difference, temp_bitmap;
   int x, num_edges;
@@ -575,20 +575,20 @@ compute_farthest (struct edge_list *edge_list, int n_exprs,
       pred = INDEX_EDGE_PRED_BB (edge_list, x);
       succ = INDEX_EDGE_SUCC_BB (edge_list, x);
       if (succ == EXIT_BLOCK_PTR)
-        sbitmap_copy (farthest[x], st_avout[pred->index]);
+	sbitmap_copy (farthest[x], st_avout[pred->index]);
       else
-        {
-          if (pred == ENTRY_BLOCK_PTR)
-            sbitmap_zero (farthest[x]);
-          else
-            {
-              sbitmap_difference (difference, st_avout[pred->index],
-                                  st_antin[succ->index]);
-              sbitmap_not (temp_bitmap, st_avin[succ->index]);
-              sbitmap_a_and_b_or_c (farthest[x], difference,
-                                    kill[succ->index], temp_bitmap);
-            }
-        }
+	{
+	  if (pred == ENTRY_BLOCK_PTR)
+	    sbitmap_zero (farthest[x]);
+	  else
+	    {
+	      sbitmap_difference (difference, st_avout[pred->index],
+				  st_antin[succ->index]);
+	      sbitmap_not (temp_bitmap, st_avin[succ->index]);
+	      sbitmap_a_and_b_or_c (farthest[x], difference,
+				    kill[succ->index], temp_bitmap);
+	    }
+	}
     }
 
   sbitmap_free (temp_bitmap);
@@ -602,7 +602,7 @@ compute_farthest (struct edge_list *edge_list, int n_exprs,
 
 static void
 compute_nearerout (struct edge_list *edge_list, sbitmap *farthest,
-                   sbitmap *st_avloc, sbitmap *nearer, sbitmap *nearerout)
+		   sbitmap *st_avloc, sbitmap *nearer, sbitmap *nearerout)
 {
   int num_edges, i;
   edge e;
@@ -649,22 +649,22 @@ compute_nearerout (struct edge_list *edge_list, sbitmap *farthest,
       /* Compute the intersection of NEARER for each outgoing edge from B.  */
       sbitmap_ones (nearerout[bb->index]);
       FOR_EACH_EDGE (e, ei, bb->succs)
-        sbitmap_a_and_b (nearerout[bb->index], nearerout[bb->index],
-                         nearer[(size_t) e->aux]);
+	sbitmap_a_and_b (nearerout[bb->index], nearerout[bb->index],
+			 nearer[(size_t) e->aux]);
 
       /* Calculate NEARER for all incoming edges.  */
       FOR_EACH_EDGE (e, ei, bb->preds)
-        if (sbitmap_union_of_diff_cg (nearer[(size_t) e->aux],
-                                      farthest[(size_t) e->aux],
-                                      nearerout[e->dest->index],
-                                      st_avloc[e->dest->index])
-            /* If NEARER for an incoming edge was changed, then we need
-               to add the source of the incoming edge to the worklist.  */
-            && e->src != ENTRY_BLOCK_PTR && e->src->aux == 0)
-          {
-            *tos++ = e->src;
-            e->src->aux = e;
-          }
+	if (sbitmap_union_of_diff_cg (nearer[(size_t) e->aux],
+				      farthest[(size_t) e->aux],
+				      nearerout[e->dest->index],
+				      st_avloc[e->dest->index])
+	    /* If NEARER for an incoming edge was changed, then we need
+	       to add the source of the incoming edge to the worklist.  */
+	    && e->src != ENTRY_BLOCK_PTR && e->src->aux == 0)
+	  {
+	    *tos++ = e->src;
+	    e->src->aux = e;
+	  }
     }
 
   /* Computation of insertion and deletion points requires computing NEAREROUT
@@ -673,8 +673,8 @@ compute_nearerout (struct edge_list *edge_list, sbitmap *farthest,
   sbitmap_ones (nearerout[last_basic_block]);
   FOR_EACH_EDGE (e, ei, ENTRY_BLOCK_PTR->succs)
     sbitmap_a_and_b (nearerout[last_basic_block],
-                     nearerout[last_basic_block],
-                     nearer[(size_t) e->aux]);
+		     nearerout[last_basic_block],
+		     nearer[(size_t) e->aux]);
 
   clear_aux_for_edges ();
   free (tos);
@@ -684,23 +684,23 @@ compute_nearerout (struct edge_list *edge_list, sbitmap *farthest,
 
 static void
 compute_rev_insert_delete (struct edge_list *edge_list, sbitmap *st_avloc,
-                           sbitmap *nearer, sbitmap *nearerout,
-                           sbitmap *insert, sbitmap *delete)
+			   sbitmap *nearer, sbitmap *nearerout,
+			   sbitmap *insert, sbitmap *delete)
 {
   int x;
   basic_block bb;
 
   FOR_EACH_BB (bb)
     sbitmap_difference (delete[bb->index], st_avloc[bb->index],
-                        nearerout[bb->index]);
+			nearerout[bb->index]);
 
   for (x = 0; x < NUM_EDGES (edge_list); x++)
     {
       basic_block b = INDEX_EDGE_PRED_BB (edge_list, x);
       if (b == ENTRY_BLOCK_PTR)
-        sbitmap_difference (insert[x], nearer[x], nearerout[last_basic_block]);
+	sbitmap_difference (insert[x], nearer[x], nearerout[last_basic_block]);
       else
-        sbitmap_difference (insert[x], nearer[x], nearerout[b->index]);
+	sbitmap_difference (insert[x], nearer[x], nearerout[b->index]);
     }
 }
 
@@ -711,8 +711,8 @@ compute_rev_insert_delete (struct edge_list *edge_list, sbitmap *st_avloc,
 
 struct edge_list *
 pre_edge_rev_lcm (int n_exprs, sbitmap *transp,
-                  sbitmap *st_avloc, sbitmap *st_antloc, sbitmap *kill,
-                  sbitmap **insert, sbitmap **delete)
+		  sbitmap *st_avloc, sbitmap *st_antloc, sbitmap *kill,
+		  sbitmap **insert, sbitmap **delete)
 {
   sbitmap *st_antin, *st_antout;
   sbitmap *st_avout, *st_avin, *farthest;
@@ -760,7 +760,7 @@ pre_edge_rev_lcm (int n_exprs, sbitmap *transp,
   /* Compute farthestness.  */
   farthest = sbitmap_vector_alloc (num_edges, n_exprs);
   compute_farthest (edge_list, n_exprs, st_avout, st_avin, st_antin,
-                    kill, farthest);
+		    kill, farthest);
 
 #ifdef LCM_DEBUG_INFO
   if (dump_file)
@@ -783,7 +783,7 @@ pre_edge_rev_lcm (int n_exprs, sbitmap *transp,
   if (dump_file)
     {
       dump_sbitmap_vector (dump_file, "nearerout", "", nearerout,
-                           last_basic_block + 1);
+			   last_basic_block + 1);
       dump_sbitmap_vector (dump_file, "nearer", "", nearer, num_edges);
     }
 #endif
@@ -793,7 +793,7 @@ pre_edge_rev_lcm (int n_exprs, sbitmap *transp,
   *insert = sbitmap_vector_alloc (num_edges, n_exprs);
   *delete = sbitmap_vector_alloc (last_basic_block, n_exprs);
   compute_rev_insert_delete (edge_list, st_avloc, nearer, nearerout,
-                             *insert, *delete);
+			     *insert, *delete);
 
   sbitmap_vector_free (nearerout);
   sbitmap_vector_free (nearer);
@@ -803,7 +803,7 @@ pre_edge_rev_lcm (int n_exprs, sbitmap *transp,
     {
       dump_sbitmap_vector (dump_file, "pre_insert_map", "", *insert, num_edges);
       dump_sbitmap_vector (dump_file, "pre_delete_map", "", *delete,
-                           last_basic_block);
+			   last_basic_block);
     }
 #endif
   return edge_list;

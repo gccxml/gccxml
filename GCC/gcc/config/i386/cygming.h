@@ -37,13 +37,13 @@ Boston, MA 02110-1301, USA.  */
 /* Use section relative relocations for debugging offsets.  Unlike
    other targets that fake this by putting the section VMA at 0, PE
    won't allow it.  */
-#define ASM_OUTPUT_DWARF_OFFSET(FILE, SIZE, LABEL, SECTION)        \
-  do {                                                                \
-    if (SIZE != 4)                                                \
-      abort ();                                                        \
-                                                                \
-    fputs ("\t.secrel32\t", FILE);                                \
-    assemble_name (FILE, LABEL);                                \
+#define ASM_OUTPUT_DWARF_OFFSET(FILE, SIZE, LABEL, SECTION)	\
+  do {								\
+    if (SIZE != 4)						\
+      abort ();							\
+								\
+    fputs ("\t.secrel32\t", FILE);				\
+    assemble_name (FILE, LABEL);				\
   } while (0)
 #endif
 
@@ -53,26 +53,26 @@ Boston, MA 02110-1301, USA.  */
 
 #define MAYBE_UWIN_CPP_BUILTINS() /* Nothing.  */
 
-#define TARGET_OS_CPP_BUILTINS()                                        \
-  do                                                                        \
-    {                                                                        \
-        builtin_define ("_X86_=1");                                        \
-        builtin_assert ("system=winnt");                                \
-        builtin_define ("__stdcall=__attribute__((__stdcall__))");        \
-        builtin_define ("__fastcall=__attribute__((__fastcall__))");        \
-        builtin_define ("__cdecl=__attribute__((__cdecl__))");                \
-        if (!flag_iso)                                                        \
-          {                                                                \
-            builtin_define ("_stdcall=__attribute__((__stdcall__))");        \
-            builtin_define ("_fastcall=__attribute__((__fastcall__))");        \
-            builtin_define ("_cdecl=__attribute__((__cdecl__))");        \
-          }                                                                \
-        /* Even though linkonce works with static libs, this is needed         \
-            to compare typeinfo symbols across dll boundaries.  */        \
-        builtin_define ("__GXX_MERGED_TYPEINFO_NAMES=0");                \
-        MAYBE_UWIN_CPP_BUILTINS ();                                        \
-        EXTRA_OS_CPP_BUILTINS ();                                        \
-  }                                                                        \
+#define TARGET_OS_CPP_BUILTINS()					\
+  do									\
+    {									\
+	builtin_define ("_X86_=1");					\
+	builtin_assert ("system=winnt");				\
+	builtin_define ("__stdcall=__attribute__((__stdcall__))");	\
+	builtin_define ("__fastcall=__attribute__((__fastcall__))");	\
+	builtin_define ("__cdecl=__attribute__((__cdecl__))");		\
+	if (!flag_iso)							\
+	  {								\
+	    builtin_define ("_stdcall=__attribute__((__stdcall__))");	\
+	    builtin_define ("_fastcall=__attribute__((__fastcall__))");	\
+	    builtin_define ("_cdecl=__attribute__((__cdecl__))");	\
+	  }								\
+	/* Even though linkonce works with static libs, this is needed 	\
+	    to compare typeinfo symbols across dll boundaries.  */	\
+	builtin_define ("__GXX_MERGED_TYPEINFO_NAMES=0");		\
+	MAYBE_UWIN_CPP_BUILTINS ();					\
+	EXTRA_OS_CPP_BUILTINS ();					\
+  }									\
   while (0)
 
 /* Get tree.c to declare a target-specific specialization of
@@ -90,7 +90,7 @@ Boston, MA 02110-1301, USA.  */
    Do not define this macro if it does not need to do anything.  */
 
 #undef  SUBTARGET_EXTRA_SPECS
-#define SUBTARGET_EXTRA_SPECS                                                \
+#define SUBTARGET_EXTRA_SPECS						\
   { "mingw_include_path", DEFAULT_TARGET_MACHINE }
 
 #undef MATH_LIBRARY
@@ -120,15 +120,15 @@ union tree_node;
    otherwise.  */
 
 #undef  SUBTARGET_OVERRIDE_OPTIONS
-#define SUBTARGET_OVERRIDE_OPTIONS                                        \
-do {                                                                        \
-  if (flag_pic)                                                                \
-    {                                                                        \
+#define SUBTARGET_OVERRIDE_OPTIONS					\
+do {									\
+  if (flag_pic)								\
+    {									\
       warning (0, "-f%s ignored for target (all code is position independent)",\
-               (flag_pic > 1) ? "PIC" : "pic");                                \
-      flag_pic = 0;                                                        \
-    }                                                                        \
-} while (0)                                                                \
+	       (flag_pic > 1) ? "PIC" : "pic");				\
+      flag_pic = 0;							\
+    }									\
+} while (0)								\
 
 /* Define this macro if references to a symbol must be treated
    differently depending on something about the variable or
@@ -157,30 +157,30 @@ do {                                                                        \
 #define ASM_OUTPUT_LABELREF  i386_pe_output_labelref
 
 #undef  COMMON_ASM_OP
-#define COMMON_ASM_OP        "\t.comm\t"
+#define COMMON_ASM_OP	"\t.comm\t"
 
 /* Output a common block.  */
 #undef ASM_OUTPUT_COMMON
-#define ASM_OUTPUT_COMMON(STREAM, NAME, SIZE, ROUNDED)        \
-do {                                                        \
-  if (i386_pe_dllexport_name_p (NAME))                        \
-    i386_pe_record_exported_symbol (NAME, 1);                \
-  if (! i386_pe_dllimport_name_p (NAME))                \
-    {                                                        \
-      fprintf ((STREAM), "\t.comm\t");                        \
-      assemble_name ((STREAM), (NAME));                        \
-      fprintf ((STREAM), ", %d\t%s %d\n",                \
-               (int)(ROUNDED), ASM_COMMENT_START, (int)(SIZE));        \
-    }                                                        \
+#define ASM_OUTPUT_COMMON(STREAM, NAME, SIZE, ROUNDED)	\
+do {							\
+  if (i386_pe_dllexport_name_p (NAME))			\
+    i386_pe_record_exported_symbol (NAME, 1);		\
+  if (! i386_pe_dllimport_name_p (NAME))		\
+    {							\
+      fprintf ((STREAM), "\t.comm\t");			\
+      assemble_name ((STREAM), (NAME));			\
+      fprintf ((STREAM), ", %d\t%s %d\n",		\
+	       (int)(ROUNDED), ASM_COMMENT_START, (int)(SIZE));	\
+    }							\
 } while (0)
 
 /* Output the label for an initialized variable.  */
 #undef ASM_DECLARE_OBJECT_NAME
-#define ASM_DECLARE_OBJECT_NAME(STREAM, NAME, DECL)        \
-do {                                                        \
-  if (i386_pe_dllexport_name_p (NAME))                        \
-    i386_pe_record_exported_symbol (NAME, 1);                \
-  ASM_OUTPUT_LABEL ((STREAM), (NAME));                        \
+#define ASM_DECLARE_OBJECT_NAME(STREAM, NAME, DECL)	\
+do {							\
+  if (i386_pe_dllexport_name_p (NAME))			\
+    i386_pe_record_exported_symbol (NAME, 1);		\
+  ASM_OUTPUT_LABEL ((STREAM), (NAME));			\
 } while (0)
 
 
@@ -203,7 +203,7 @@ do {                                                        \
    to a multiple of 2**LOG bytes.  */
 
 #undef ASM_OUTPUT_ALIGN
-#define ASM_OUTPUT_ALIGN(FILE,LOG)        \
+#define ASM_OUTPUT_ALIGN(FILE,LOG)	\
     if ((LOG)!=0) fprintf ((FILE), "\t.align %d\n", 1<<(LOG))
 
 /* Windows uses explicit import from shared libraries.  */
@@ -225,25 +225,25 @@ extern void i386_pe_unique_section (TREE, int);
    properly.  If we are generating SDB debugging information, this
    will happen automatically, so we only need to handle other cases.  */
 #undef ASM_DECLARE_FUNCTION_NAME
-#define ASM_DECLARE_FUNCTION_NAME(FILE, NAME, DECL)                        \
-  do                                                                        \
-    {                                                                        \
-      if (i386_pe_dllexport_name_p (NAME))                                \
-        i386_pe_record_exported_symbol (NAME, 0);                        \
-      if (write_symbols != SDB_DEBUG)                                        \
-        i386_pe_declare_function_type (FILE, NAME, TREE_PUBLIC (DECL));        \
-      ASM_OUTPUT_LABEL (FILE, NAME);                                        \
-    }                                                                        \
+#define ASM_DECLARE_FUNCTION_NAME(FILE, NAME, DECL)			\
+  do									\
+    {									\
+      if (i386_pe_dllexport_name_p (NAME))				\
+	i386_pe_record_exported_symbol (NAME, 0);			\
+      if (write_symbols != SDB_DEBUG)					\
+	i386_pe_declare_function_type (FILE, NAME, TREE_PUBLIC (DECL));	\
+      ASM_OUTPUT_LABEL (FILE, NAME);					\
+    }									\
   while (0)
 
 /* Add an external function to the list of functions to be declared at
    the end of the file.  */
-#define ASM_OUTPUT_EXTERNAL(FILE, DECL, NAME)                                \
-  do                                                                        \
-    {                                                                        \
-      if (TREE_CODE (DECL) == FUNCTION_DECL)                                \
-        i386_pe_record_external_function ((DECL), (NAME));                \
-    }                                                                        \
+#define ASM_OUTPUT_EXTERNAL(FILE, DECL, NAME)				\
+  do									\
+    {									\
+      if (TREE_CODE (DECL) == FUNCTION_DECL)				\
+	i386_pe_record_external_function ((DECL), (NAME));		\
+    }									\
   while (0)
 
 /* Declare the type properly for any external libcall.  */
@@ -271,22 +271,22 @@ extern void i386_pe_unique_section (TREE, int);
 #define NO_IMPLICIT_EXTERN_C
 
 #undef PROFILE_HOOK
-#define PROFILE_HOOK(LABEL)                                                \
-  if (MAIN_NAME_P (DECL_NAME (current_function_decl)))                        \
-    {                                                                        \
-      emit_call_insn (gen_rtx_CALL (VOIDmode,                                \
-        gen_rtx_MEM (FUNCTION_MODE,                                        \
-                     gen_rtx_SYMBOL_REF (Pmode, "_monstartup")),        \
-        const0_rtx));                                                        \
+#define PROFILE_HOOK(LABEL)						\
+  if (MAIN_NAME_P (DECL_NAME (current_function_decl)))			\
+    {									\
+      emit_call_insn (gen_rtx_CALL (VOIDmode,				\
+	gen_rtx_MEM (FUNCTION_MODE,					\
+		     gen_rtx_SYMBOL_REF (Pmode, "_monstartup")),	\
+	const0_rtx));							\
     }
 
 /* Java Native Interface (JNI) methods on Win32 are invoked using the
    stdcall calling convention.  */
 #undef MODIFY_JNI_METHOD_CALL
-#define MODIFY_JNI_METHOD_CALL(MDECL)                                              \
-  build_type_attribute_variant ((MDECL),                                      \
-                               build_tree_list (get_identifier ("stdcall"),   \
-                                                NULL))
+#define MODIFY_JNI_METHOD_CALL(MDECL)					      \
+  build_type_attribute_variant ((MDECL),				      \
+			       build_tree_list (get_identifier ("stdcall"),   \
+						NULL))
 
 /* External function declarations.  */
 
@@ -307,7 +307,7 @@ extern int i386_pe_dllimport_name_p (const char *);
 #define MS_AGGREGATE_RETURN 1
 
 /* No data type wants to be aligned rounder than this.  */
-#undef        BIGGEST_ALIGNMENT
+#undef	BIGGEST_ALIGNMENT
 #define BIGGEST_ALIGNMENT 128
 
 /* Biggest alignment supported by the object file format of this
@@ -321,7 +321,7 @@ extern int i386_pe_dllimport_name_p (const char *);
 #define MAX_OFILE_ALIGNMENT (8192 * 8)
 
 /* Native complier aligns internal doubles in structures on dword boundaries.  */
-#undef        BIGGEST_FIELD_ALIGNMENT
+#undef	BIGGEST_FIELD_ALIGNMENT
 #define BIGGEST_FIELD_ALIGNMENT 64
 
 /* A bit-field declared as `int' forces `int' alignment for the struct.  */
@@ -335,20 +335,20 @@ extern int i386_pe_dllimport_name_p (const char *);
 #endif
 /* This implements the `alias' attribute, keeping any stdcall or
    fastcall decoration.  */
-#undef        ASM_OUTPUT_DEF_FROM_DECLS
-#define        ASM_OUTPUT_DEF_FROM_DECLS(STREAM, DECL, TARGET)                 \
-  do                                                                        \
-    {                                                                        \
-      const char *alias;                                                \
-      rtx rtlname = XEXP (DECL_RTL (DECL), 0);                                \
-      if (GET_CODE (rtlname) == SYMBOL_REF)                                \
-        alias = XSTR (rtlname, 0);                                        \
-      else                                                                \
-        abort ();                                                        \
-      if (TREE_CODE (DECL) == FUNCTION_DECL)                                \
-        i386_pe_declare_function_type (STREAM, alias,                        \
-                                       TREE_PUBLIC (DECL));                \
-      ASM_OUTPUT_DEF (STREAM, alias, IDENTIFIER_POINTER (TARGET));        \
+#undef	ASM_OUTPUT_DEF_FROM_DECLS
+#define	ASM_OUTPUT_DEF_FROM_DECLS(STREAM, DECL, TARGET) 		\
+  do									\
+    {									\
+      const char *alias;						\
+      rtx rtlname = XEXP (DECL_RTL (DECL), 0);				\
+      if (GET_CODE (rtlname) == SYMBOL_REF)				\
+	alias = XSTR (rtlname, 0);					\
+      else								\
+	abort ();							\
+      if (TREE_CODE (DECL) == FUNCTION_DECL)				\
+	i386_pe_declare_function_type (STREAM, alias,			\
+				       TREE_PUBLIC (DECL));		\
+      ASM_OUTPUT_DEF (STREAM, alias, IDENTIFIER_POINTER (TARGET));	\
     } while (0)
 
 /* GNU as supports weak symbols on PECOFF. */

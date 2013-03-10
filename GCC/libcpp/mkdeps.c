@@ -29,8 +29,8 @@ Foundation, 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 struct deps
 {
   const char **targetv;
-  unsigned int ntargets;        /* number of slots actually occupied */
-  unsigned int targets_size;        /* amt of allocated space - in words */
+  unsigned int ntargets;	/* number of slots actually occupied */
+  unsigned int targets_size;	/* amt of allocated space - in words */
 
   const char **depv;
   unsigned int ndeps;
@@ -61,25 +61,25 @@ munge (const char *filename)
   for (p = filename, len = 0; *p; p++, len++)
     {
       switch (*p)
-        {
-        case ' ':
-        case '\t':
-          /* GNU make uses a weird quoting scheme for white space.
-             A space or tab preceded by 2N+1 backslashes represents
-             N backslashes followed by space; a space or tab
-             preceded by 2N backslashes represents N backslashes at
-             the end of a file name; and backslashes in other
-             contexts should not be doubled.  */
-          for (q = p - 1; filename <= q && *q == '\\';  q--)
-            len++;
-          len++;
-          break;
+	{
+	case ' ':
+	case '\t':
+	  /* GNU make uses a weird quoting scheme for white space.
+	     A space or tab preceded by 2N+1 backslashes represents
+	     N backslashes followed by space; a space or tab
+	     preceded by 2N backslashes represents N backslashes at
+	     the end of a file name; and backslashes in other
+	     contexts should not be doubled.  */
+	  for (q = p - 1; filename <= q && *q == '\\';  q--)
+	    len++;
+	  len++;
+	  break;
 
-        case '$':
-          /* '$' is quoted by doubling it.  */
-          len++;
-          break;
-        }
+	case '$':
+	  /* '$' is quoted by doubling it.  */
+	  len++;
+	  break;
+	}
     }
 
   /* Now we know how big to make the buffer.  */
@@ -88,21 +88,21 @@ munge (const char *filename)
   for (p = filename, dst = buffer; *p; p++, dst++)
     {
       switch (*p)
-        {
-        case ' ':
-        case '\t':
-          for (q = p - 1; filename <= q && *q == '\\';  q--)
-            *dst++ = '\\';
-          *dst++ = '\\';
-          break;
+	{
+	case ' ':
+	case '\t':
+	  for (q = p - 1; filename <= q && *q == '\\';  q--)
+	    *dst++ = '\\';
+	  *dst++ = '\\';
+	  break;
 
-        case '$':
-          *dst++ = '$';
-          break;
+	case '$':
+	  *dst++ = '$';
+	  break;
 
-        default:
-          /* nothing */;
-        }
+	default:
+	  /* nothing */;
+	}
       *dst = *p;
     }
 
@@ -119,24 +119,24 @@ apply_vpath (struct deps *d, const char *t)
     {
       unsigned int i;
       for (i = 0; i < d->nvpaths; i++)
-        {
-          if (!strncmp (d->vpathv[i], t, d->vpathlv[i]))
-            {
-              const char *p = t + d->vpathlv[i];
-              if (!IS_DIR_SEPARATOR (*p))
-                goto not_this_one;
+	{
+	  if (!strncmp (d->vpathv[i], t, d->vpathlv[i]))
+	    {
+	      const char *p = t + d->vpathlv[i];
+	      if (!IS_DIR_SEPARATOR (*p))
+		goto not_this_one;
 
-              /* Do not simplify $(vpath)/../whatever.  ??? Might not
-                 be necessary. */
-              if (p[1] == '.' && p[2] == '.' && IS_DIR_SEPARATOR (p[3]))
-                goto not_this_one;
+	      /* Do not simplify $(vpath)/../whatever.  ??? Might not
+		 be necessary. */
+	      if (p[1] == '.' && p[2] == '.' && IS_DIR_SEPARATOR (p[3]))
+		goto not_this_one;
 
-              /* found a match */
-              t = t + d->vpathlv[i] + 1;
-              break;
-            }
-        not_this_one:;
-        }
+	      /* found a match */
+	      t = t + d->vpathlv[i] + 1;
+	      break;
+	    }
+	not_this_one:;
+	}
     }
 
   /* Remove leading ./ in any case.  */
@@ -144,9 +144,9 @@ apply_vpath (struct deps *d, const char *t)
     {
       t += 2;
       /* If we removed a leading ./, then also remove any /s after the
-         first.  */
+	 first.  */
       while (IS_DIR_SEPARATOR (t[0]))
-        ++t;
+	++t;
     }
 
   return t;
@@ -168,21 +168,21 @@ deps_free (struct deps *d)
   if (d->targetv)
     {
       for (i = 0; i < d->ntargets; i++)
-        free ((void *) d->targetv[i]);
+	free ((void *) d->targetv[i]);
       free (d->targetv);
     }
 
   if (d->depv)
     {
       for (i = 0; i < d->ndeps; i++)
-        free ((void *) d->depv[i]);
+	free ((void *) d->depv[i]);
       free (d->depv);
     }
 
   if (d->vpathv)
     {
       for (i = 0; i < d->nvpaths; i++)
-        free ((void *) d->vpathv[i]);
+	free ((void *) d->vpathv[i]);
       free (d->vpathv);
       free (d->vpathlv);
     }
@@ -271,14 +271,14 @@ deps_add_vpath (struct deps *d, const char *vpath)
       memcpy (copy, elem, len);
       copy[len] = '\0';
       if (*p == ':')
-        p++;
+	p++;
 
       if (d->nvpaths == d->vpaths_size)
-        {
-          d->vpaths_size = d->vpaths_size * 2 + 8;
-          d->vpathv = XRESIZEVEC (const char *, d->vpathv, d->vpaths_size);
-          d->vpathlv = XRESIZEVEC (size_t, d->vpathlv, d->vpaths_size);
-        }
+	{
+	  d->vpaths_size = d->vpaths_size * 2 + 8;
+	  d->vpathv = XRESIZEVEC (const char *, d->vpathv, d->vpaths_size);
+	  d->vpathlv = XRESIZEVEC (size_t, d->vpathlv, d->vpaths_size);
+	}
       d->vpathv[d->nvpaths] = copy;
       d->vpathlv[d->nvpaths] = len;
       d->nvpaths++;
@@ -299,15 +299,15 @@ deps_write (const struct deps *d, FILE *fp, unsigned int colmax)
       size = strlen (d->targetv[i]);
       column += size;
       if (colmax && column > colmax)
-        {
-          fputs (" \\\n ", fp);
-          column = 1 + size;
-        }
+	{
+	  fputs (" \\\n ", fp);
+	  column = 1 + size;
+	}
       if (i)
-        {
-          putc (' ', fp);
-          column++;
-        }
+	{
+	  putc (' ', fp);
+	  column++;
+	}
       fputs (d->targetv[i], fp);
     }
 
@@ -320,15 +320,15 @@ deps_write (const struct deps *d, FILE *fp, unsigned int colmax)
       size = strlen (d->depv[i]);
       column += size;
       if (colmax && column > colmax)
-        {
-          fputs (" \\\n ", fp);
-          column = 1 + size;
-        }
+	{
+	  fputs (" \\\n ", fp);
+	  column = 1 + size;
+	}
       if (i)
-        {
-          putc (' ', fp);
-          column++;
-        }
+	{
+	  putc (' ', fp);
+	  column++;
+	}
       fputs (d->depv[i], fp);
     }
   putc ('\n', fp);
@@ -398,14 +398,14 @@ deps_restore (struct deps *deps, FILE *fd, const char *self)
     {
       /* Read in # bytes in string.  */
       if (fread (&num_to_read, 1, sizeof (size_t), fd) != sizeof (size_t))
-        return -1;
+	return -1;
       if (buf_size < num_to_read + 1)
-        {
-          buf_size = num_to_read + 1 + 127;
-          buf = XRESIZEVEC (char, buf, buf_size);
-        }
+	{
+	  buf_size = num_to_read + 1 + 127;
+	  buf = XRESIZEVEC (char, buf, buf_size);
+	}
       if (fread (buf, 1, num_to_read, fd) != num_to_read)
-        return -1;
+	return -1;
       buf[num_to_read] = '\0';
 
       /* Generate makefile dependencies from .pch if -nopch-deps.  */

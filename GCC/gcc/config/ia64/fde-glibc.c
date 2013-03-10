@@ -62,7 +62,7 @@ _Unwind_IteratePhdrCallback (struct dl_phdr_info *info, size_t size, void *ptr)
 
   /* Make sure struct dl_phdr_info is at least as big as we need.  */
   if (size < offsetof (struct dl_phdr_info, dlpi_phnum)
-             + sizeof (info->dlpi_phnum))
+	     + sizeof (info->dlpi_phnum))
     return -1;
 
   match = 0;
@@ -77,17 +77,17 @@ _Unwind_IteratePhdrCallback (struct dl_phdr_info *info, size_t size, void *ptr)
   for (n = info->dlpi_phnum; --n >= 0; phdr++)
     {
       if (phdr->p_type == PT_LOAD)
-        {
-          Elf64_Addr vaddr = phdr->p_vaddr + load_base;
-          if (data->pc >= vaddr && data->pc < vaddr + phdr->p_memsz)
-            match = 1;
-          if (vaddr < seg_base)
-            seg_base = vaddr;
-        }
+	{
+	  Elf64_Addr vaddr = phdr->p_vaddr + load_base;
+	  if (data->pc >= vaddr && data->pc < vaddr + phdr->p_memsz)
+	    match = 1;
+	  if (vaddr < seg_base)
+	    seg_base = vaddr;
+	}
       else if (phdr->p_type == PT_IA_64_UNWIND)
-        p_unwind = phdr;
+	p_unwind = phdr;
       else if (phdr->p_type == PT_DYNAMIC)
-        p_dynamic = phdr;
+	p_dynamic = phdr;
     }
   if (!match || !p_unwind)
     return 0;
@@ -104,9 +104,9 @@ _Unwind_IteratePhdrCallback (struct dl_phdr_info *info, size_t size, void *ptr)
 
       f = f_base + mid;
       if (data->pc < f->start_offset + seg_base)
-        hi = mid;
+	hi = mid;
       else if (data->pc >= f->end_offset + seg_base)
-        lo = mid + 1;
+	lo = mid + 1;
       else
         goto found;
     }
@@ -122,20 +122,20 @@ _Unwind_IteratePhdrCallback (struct dl_phdr_info *info, size_t size, void *ptr)
   if (p_dynamic)
     {
       /* For dynamically linked executables and shared libraries,
-         DT_PLTGOT is the gp value for that object.  */
+	 DT_PLTGOT is the gp value for that object.  */
       Elf64_Dyn *dyn = (Elf64_Dyn *)(p_dynamic->p_vaddr + load_base);
       for (; dyn->d_tag != DT_NULL ; dyn++)
-        if (dyn->d_tag == DT_PLTGOT)
-          {
-            /* On IA-64, _DYNAMIC is writable and GLIBC has relocated it.  */
-            *data->gp = dyn->d_un.d_ptr;
-            break;
-          }
+	if (dyn->d_tag == DT_PLTGOT)
+	  {
+	    /* On IA-64, _DYNAMIC is writable and GLIBC has relocated it.  */
+	    *data->gp = dyn->d_un.d_ptr;
+	    break;
+	  }
     }
   else
     {
       /* Otherwise this is a static executable with no _DYNAMIC.
-         The gp is constant program-wide.  */
+	 The gp is constant program-wide.  */
       register unsigned long gp __asm__("gp");
       *data->gp = gp;
     }

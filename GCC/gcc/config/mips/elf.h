@@ -22,15 +22,15 @@ Boston, MA 02110-1301, USA.  */
 /* MIPS assemblers don't have the usual .set foo,bar construct;
    .set is used for assembler options instead.  */
 #undef SET_ASM_OP
-#define ASM_OUTPUT_DEF(FILE, LABEL1, LABEL2)                        \
-  do                                                                \
-    {                                                                \
-      fputc ('\t', FILE);                                        \
-      assemble_name (FILE, LABEL1);                                \
-      fputs (" = ", FILE);                                        \
-      assemble_name (FILE, LABEL2);                                \
-      fputc ('\n', FILE);                                        \
-    }                                                                \
+#define ASM_OUTPUT_DEF(FILE, LABEL1, LABEL2)			\
+  do								\
+    {								\
+      fputc ('\t', FILE);					\
+      assemble_name (FILE, LABEL1);				\
+      fputs (" = ", FILE);					\
+      assemble_name (FILE, LABEL2);				\
+      fputc ('\n', FILE);					\
+    }								\
   while (0)
 
 #undef ASM_DECLARE_OBJECT_NAME

@@ -33,14 +33,14 @@ Boston, MA 02110-1301, USA.  */
   (TYPE_MODE (TYPE) == BLKmode \
    || (VECTOR_MODE_P (TYPE_MODE (TYPE)) && int_size_in_bytes (TYPE) == 8))
 
-#define TARGET_OS_CPP_BUILTINS()                \
-  do                                                \
-    {                                                \
-        builtin_define_std ("unix");                \
-        builtin_define ("_SEQUENT_");                \
-        builtin_assert ("system=unix");                \
-        builtin_assert ("system=ptx4");                \
-    }                                                \
+#define TARGET_OS_CPP_BUILTINS()		\
+  do						\
+    {						\
+	builtin_define_std ("unix");		\
+	builtin_define ("_SEQUENT_");		\
+	builtin_assert ("system=unix");		\
+	builtin_assert ("system=ptx4");		\
+    }						\
   while (0)
 
 #undef DBX_REGISTER_NUMBER
@@ -54,44 +54,44 @@ Boston, MA 02110-1301, USA.  */
    STRING_LIMIT) we output those using ASM_OUTPUT_LIMITED_STRING.  */
 
 #undef ASM_OUTPUT_ASCII
-#define ASM_OUTPUT_ASCII(FILE, STR, LENGTH)                                \
-  do                                                                        \
-    {                                                                        \
-      const unsigned char *_ascii_bytes =                                \
-        (const unsigned char *) (STR);                                        \
-      const unsigned char *limit = _ascii_bytes + (LENGTH);                \
-      unsigned bytes_in_chunk = 0;                                        \
-      for (; _ascii_bytes < limit; _ascii_bytes++)                        \
-        {                                                                \
-          const unsigned char *p;                                        \
-          if (bytes_in_chunk >= 64)                                        \
-            {                                                                \
-              fputc ('\n', (FILE));                                        \
-              bytes_in_chunk = 0;                                        \
-            }                                                                \
-          for (p = _ascii_bytes; p < limit && *p != '\0'; p++)                \
-            continue;                                                        \
-          if (p < limit && (p - _ascii_bytes) <= (long) STRING_LIMIT)        \
-            {                                                                \
-              if (bytes_in_chunk > 0)                                        \
-                {                                                        \
-                  fputc ('\n', (FILE));                                        \
-                  bytes_in_chunk = 0;                                        \
-                }                                                        \
-              ASM_OUTPUT_LIMITED_STRING ((FILE), _ascii_bytes);                \
-              _ascii_bytes = p;                                                \
-            }                                                                \
-          else                                                                \
-            {                                                                \
-              if (bytes_in_chunk == 0)                                        \
-                fprintf ((FILE), "\t.byte\t");                                \
-              else                                                        \
-                fputc (',', (FILE));                                        \
-              fprintf ((FILE), "0x%02x", *_ascii_bytes);                \
-              bytes_in_chunk += 5;                                        \
-            }                                                                \
-        }                                                                \
-      if (bytes_in_chunk > 0)                                                \
-        fprintf ((FILE), "\n");                                                \
-    }                                                                        \
+#define ASM_OUTPUT_ASCII(FILE, STR, LENGTH)				\
+  do									\
+    {									\
+      const unsigned char *_ascii_bytes =				\
+        (const unsigned char *) (STR);					\
+      const unsigned char *limit = _ascii_bytes + (LENGTH);		\
+      unsigned bytes_in_chunk = 0;					\
+      for (; _ascii_bytes < limit; _ascii_bytes++)			\
+        {								\
+	  const unsigned char *p;					\
+	  if (bytes_in_chunk >= 64)					\
+	    {								\
+	      fputc ('\n', (FILE));					\
+	      bytes_in_chunk = 0;					\
+	    }								\
+	  for (p = _ascii_bytes; p < limit && *p != '\0'; p++)		\
+	    continue;							\
+	  if (p < limit && (p - _ascii_bytes) <= (long) STRING_LIMIT)	\
+	    {								\
+	      if (bytes_in_chunk > 0)					\
+		{							\
+		  fputc ('\n', (FILE));					\
+		  bytes_in_chunk = 0;					\
+		}							\
+	      ASM_OUTPUT_LIMITED_STRING ((FILE), _ascii_bytes);		\
+	      _ascii_bytes = p;						\
+	    }								\
+	  else								\
+	    {								\
+	      if (bytes_in_chunk == 0)					\
+		fprintf ((FILE), "\t.byte\t");				\
+	      else							\
+		fputc (',', (FILE));					\
+	      fprintf ((FILE), "0x%02x", *_ascii_bytes);		\
+	      bytes_in_chunk += 5;					\
+	    }								\
+	}								\
+      if (bytes_in_chunk > 0)						\
+        fprintf ((FILE), "\n");						\
+    }									\
   while (0)

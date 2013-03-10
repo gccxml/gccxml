@@ -4,11 +4,11 @@
 #define TARGET_VERSION fprintf (stderr, " (i386 GNU)");
 
 #undef TARGET_OS_CPP_BUILTINS /* config.gcc includes i386/linux.h.  */
-#define TARGET_OS_CPP_BUILTINS()                \
-  do                                                \
-    {                                                \
-        HURD_TARGET_OS_CPP_BUILTINS();                \
-    }                                                \
+#define TARGET_OS_CPP_BUILTINS()		\
+  do						\
+    {						\
+	HURD_TARGET_OS_CPP_BUILTINS();		\
+    }						\
   while (0)
 
 #undef CPP_SPEC
@@ -17,7 +17,7 @@
 #undef CC1_SPEC
 #define CC1_SPEC "%(cc1_cpu)"
 
-#undef        LINK_SPEC
+#undef	LINK_SPEC
 #define LINK_SPEC "-m elf_i386 %{shared:-shared} \
   %{!shared: \
     %{!static: \
@@ -25,7 +25,7 @@
       %{!dynamic-linker:-dynamic-linker /lib/ld.so}} \
     %{static:-static}}"
 
-#undef        STARTFILE_SPEC
+#undef	STARTFILE_SPEC
 #define STARTFILE_SPEC \
   "%{!shared: \
      %{!static: \

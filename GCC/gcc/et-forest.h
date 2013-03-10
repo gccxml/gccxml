@@ -58,17 +58,17 @@ extern "C" {
 /* The node representing the node in an et tree.  */
 struct et_node
 {
-  void *data;                        /* The data represented by the node.  */
+  void *data;			/* The data represented by the node.  */
 
-  int dfs_num_in, dfs_num_out;        /* Number of the node in the dfs ordering.  */
+  int dfs_num_in, dfs_num_out;	/* Number of the node in the dfs ordering.  */
 
-  struct et_node *father;        /* Father of the node.  */
-  struct et_node *son;                /* The first of the sons of the node.  */
+  struct et_node *father;	/* Father of the node.  */
+  struct et_node *son;		/* The first of the sons of the node.  */
   struct et_node *left;
-  struct et_node *right;        /* The brothers of the node.  */
+  struct et_node *right;	/* The brothers of the node.  */
 
-  struct et_occ *rightmost_occ;        /* The rightmost occurrence.  */
-  struct et_occ *parent_occ;        /* The occurrence of the parent node.  */
+  struct et_occ *rightmost_occ;	/* The rightmost occurrence.  */
+  struct et_occ *parent_occ;	/* The occurrence of the parent node.  */
 };
 
 struct et_node *et_new_tree (void *data);

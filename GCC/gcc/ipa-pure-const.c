@@ -89,7 +89,7 @@ get_function_state (struct cgraph_node *node)
 
 static inline void 
 check_decl (funct_state local, 
-            tree t, bool checking_write)
+	    tree t, bool checking_write)
 {
   /* If the variable has the "used" attribute, treat it as if it had a
      been touched by the devil.  */
@@ -120,20 +120,20 @@ check_decl (funct_state local,
   if (DECL_EXTERNAL (t) || TREE_PUBLIC (t))
     {
       /* If the front end set the variable to be READONLY and
-         constant, we can allow this variable in pure or const
-         functions but the scope is too large for our analysis to set
-         these bits ourselves.  */
+	 constant, we can allow this variable in pure or const
+	 functions but the scope is too large for our analysis to set
+	 these bits ourselves.  */
       
       if (TREE_READONLY (t)
-          && DECL_INITIAL (t)
-          && is_gimple_min_invariant (DECL_INITIAL (t)))
-        ; /* Read of a constant, do not change the function state.  */
+	  && DECL_INITIAL (t)
+	  && is_gimple_min_invariant (DECL_INITIAL (t)))
+	; /* Read of a constant, do not change the function state.  */
       else 
-        {
-          /* Just a regular read.  */
-          if (local->pure_const_state == IPA_CONST)
-            local->pure_const_state = IPA_PURE;
-        }
+	{
+	  /* Just a regular read.  */
+	  if (local->pure_const_state == IPA_CONST)
+	    local->pure_const_state = IPA_PURE;
+	}
     }
   
   /* Compilation level statics can be read if they are readonly
@@ -150,7 +150,7 @@ check_decl (funct_state local,
 
 static void
 check_operand (funct_state local, 
-               tree t, bool checking_write)
+	       tree t, bool checking_write)
 {
   if (!t) return;
 
@@ -175,11 +175,11 @@ check_tree (funct_state local, tree t, bool checking_write)
     }
 
   while (TREE_CODE (t) == REALPART_EXPR 
-         || TREE_CODE (t) == IMAGPART_EXPR
-         || handled_component_p (t))
+	 || TREE_CODE (t) == IMAGPART_EXPR
+	 || handled_component_p (t))
     {
       if (TREE_CODE (t) == ARRAY_REF)
-        check_operand (local, TREE_OPERAND (t, 1), false);
+	check_operand (local, TREE_OPERAND (t, 1), false);
       t = TREE_OPERAND (t, 0);
     }
 
@@ -190,16 +190,16 @@ check_tree (funct_state local, tree t, bool checking_write)
       check_tree (local, TREE_OPERAND (t, 0), false);
       
       /* Any indirect reference that occurs on the lhs
-         disqualifies the function from being pure or const. Any
-         indirect reference that occurs on the rhs disqualifies the
-         function from being const.  */
+	 disqualifies the function from being pure or const. Any
+	 indirect reference that occurs on the rhs disqualifies the
+	 function from being const.  */
       if (checking_write) 
-        {
-          local->pure_const_state = IPA_NEITHER;
-          return;
-        }
+	{
+	  local->pure_const_state = IPA_NEITHER;
+	  return;
+	}
       else if (local->pure_const_state == IPA_CONST)
-        local->pure_const_state = IPA_PURE;
+	local->pure_const_state = IPA_PURE;
     }
 
   if (SSA_VAR_P (t))
@@ -215,14 +215,14 @@ look_for_address_of (funct_state local, tree t)
     {
       tree x = get_base_var (t);
       if (TREE_CODE (x) == VAR_DECL) 
-        {
-          check_decl (local, x, false);
-          
-          /* Taking the address of something appears to be reasonable
-             in PURE code.  Not allowed in const.  */
-          if (local->pure_const_state == IPA_CONST)
-            local->pure_const_state = IPA_PURE;
-        }
+	{
+	  check_decl (local, x, false);
+	  
+	  /* Taking the address of something appears to be reasonable
+	     in PURE code.  Not allowed in const.  */
+	  if (local->pure_const_state == IPA_CONST)
+	    local->pure_const_state = IPA_PURE;
+	}
     }
 }
 
@@ -279,9 +279,9 @@ get_asm_expr_operands (funct_state local, tree stmt)
   for (i=0, link = ASM_OUTPUTS (stmt); link; ++i, link = TREE_CHAIN (link))
     {
       oconstraints[i] = constraint
-        = TREE_STRING_POINTER (TREE_VALUE (TREE_PURPOSE (link)));
+	= TREE_STRING_POINTER (TREE_VALUE (TREE_PURPOSE (link)));
       parse_output_constraint (&constraint, i, 0, 0,
-                               &allows_mem, &allows_reg, &is_inout);
+			       &allows_mem, &allows_reg, &is_inout);
       
       check_lhs_var (local, TREE_VALUE (link));
     }
@@ -289,9 +289,9 @@ get_asm_expr_operands (funct_state local, tree stmt)
   for (link = ASM_INPUTS (stmt); link; link = TREE_CHAIN (link))
     {
       constraint
-        = TREE_STRING_POINTER (TREE_VALUE (TREE_PURPOSE (link)));
+	= TREE_STRING_POINTER (TREE_VALUE (TREE_PURPOSE (link)));
       parse_input_constraint (&constraint, 0, 0, noutputs, 0,
-                              oconstraints, &allows_mem, &allows_reg);
+			      oconstraints, &allows_mem, &allows_reg);
       
       check_rhs_var (local, TREE_VALUE (link));
     }
@@ -346,20 +346,20 @@ check_call (funct_state local, tree call_expr)
       avail = cgraph_function_body_availability (callee);
 
       /* When bad things happen to bad functions, they cannot be const
-         or pure.  */
+	 or pure.  */
       if (setjmp_call_p (callee_t))
-        local->pure_const_state = IPA_NEITHER;
+	local->pure_const_state = IPA_NEITHER;
 
       if (DECL_BUILT_IN_CLASS (callee_t) == BUILT_IN_NORMAL)
-        switch (DECL_FUNCTION_CODE (callee_t))
-          {
-          case BUILT_IN_LONGJMP:
-          case BUILT_IN_NONLOCAL_GOTO:
-            local->pure_const_state = IPA_NEITHER;
-            break;
-          default:
-            break;
-          }
+	switch (DECL_FUNCTION_CODE (callee_t))
+	  {
+	  case BUILT_IN_LONGJMP:
+	  case BUILT_IN_NONLOCAL_GOTO:
+	    local->pure_const_state = IPA_NEITHER;
+	    break;
+	  default:
+	    break;
+	  }
     }
 
   /* The callee is either unknown (indirect call) or there is just no
@@ -370,21 +370,21 @@ check_call (funct_state local, tree call_expr)
   if (avail == AVAIL_NOT_AVAILABLE || avail == AVAIL_OVERWRITABLE)
     {
       if (flags & ECF_PURE) 
-        {
-          if (local->pure_const_state == IPA_CONST)
-            local->pure_const_state = IPA_PURE;
-        }
+	{
+	  if (local->pure_const_state == IPA_CONST)
+	    local->pure_const_state = IPA_PURE;
+	}
       else 
-        local->pure_const_state = IPA_NEITHER;
+	local->pure_const_state = IPA_NEITHER;
     }
   else
     {
       /* We have the code and we will scan it for the effects. */
       if (flags & ECF_PURE) 
-        {
-          if (local->pure_const_state == IPA_CONST)
-            local->pure_const_state = IPA_PURE;
-        }
+	{
+	  if (local->pure_const_state == IPA_CONST)
+	    local->pure_const_state = IPA_PURE;
+	}
     }
 }
 
@@ -397,8 +397,8 @@ check_call (funct_state local, tree call_expr)
 
 static tree
 scan_function (tree *tp, 
-                      int *walk_subtrees, 
-                      void *data)
+		      int *walk_subtrees, 
+		      void *data)
 {
   struct cgraph_node *fn = data;
   tree t = *tp;
@@ -408,74 +408,74 @@ scan_function (tree *tp,
     {
     case VAR_DECL:
       if (DECL_INITIAL (t))
-        walk_tree (&DECL_INITIAL (t), scan_function, fn, visited_nodes);
+	walk_tree (&DECL_INITIAL (t), scan_function, fn, visited_nodes);
       *walk_subtrees = 0;
       break;
 
     case MODIFY_EXPR:
       {
-        /* First look on the lhs and see what variable is stored to */
-        tree lhs = TREE_OPERAND (t, 0);
-        tree rhs = TREE_OPERAND (t, 1);
-        check_lhs_var (local, lhs);
+	/* First look on the lhs and see what variable is stored to */
+	tree lhs = TREE_OPERAND (t, 0);
+	tree rhs = TREE_OPERAND (t, 1);
+	check_lhs_var (local, lhs);
 
-        /* For the purposes of figuring out what the cast affects */
+	/* For the purposes of figuring out what the cast affects */
 
-        /* Next check the operands on the rhs to see if they are ok. */
-        switch (TREE_CODE_CLASS (TREE_CODE (rhs))) 
-          {
-          case tcc_binary:            
-             {
-               tree op0 = TREE_OPERAND (rhs, 0);
-               tree op1 = TREE_OPERAND (rhs, 1);
-               check_rhs_var (local, op0);
-               check_rhs_var (local, op1);
-            }
-            break;
-          case tcc_unary:
-             {
-               tree op0 = TREE_OPERAND (rhs, 0);
-               check_rhs_var (local, op0);
-             }
+	/* Next check the operands on the rhs to see if they are ok. */
+	switch (TREE_CODE_CLASS (TREE_CODE (rhs))) 
+	  {
+	  case tcc_binary:	    
+ 	    {
+ 	      tree op0 = TREE_OPERAND (rhs, 0);
+ 	      tree op1 = TREE_OPERAND (rhs, 1);
+ 	      check_rhs_var (local, op0);
+ 	      check_rhs_var (local, op1);
+	    }
+	    break;
+	  case tcc_unary:
+ 	    {
+ 	      tree op0 = TREE_OPERAND (rhs, 0);
+ 	      check_rhs_var (local, op0);
+ 	    }
 
-            break;
-          case tcc_reference:
-            check_rhs_var (local, rhs);
-            break;
-          case tcc_declaration:
-            check_rhs_var (local, rhs);
-            break;
-          case tcc_expression:
-            switch (TREE_CODE (rhs)) 
-              {
-              case ADDR_EXPR:
-                check_rhs_var (local, rhs);
-                break;
-              case CALL_EXPR: 
-                check_call (local, rhs);
-                break;
-              default:
-                break;
-              }
-            break;
-          default:
-            break;
-          }
-        *walk_subtrees = 0;
+	    break;
+	  case tcc_reference:
+	    check_rhs_var (local, rhs);
+	    break;
+	  case tcc_declaration:
+	    check_rhs_var (local, rhs);
+	    break;
+	  case tcc_expression:
+	    switch (TREE_CODE (rhs)) 
+	      {
+	      case ADDR_EXPR:
+		check_rhs_var (local, rhs);
+		break;
+	      case CALL_EXPR: 
+		check_call (local, rhs);
+		break;
+	      default:
+		break;
+	      }
+	    break;
+	  default:
+	    break;
+	  }
+	*walk_subtrees = 0;
       }
       break;
 
     case ADDR_EXPR:
       /* This case is here to find addresses on rhs of constructors in
-         decl_initial of static variables. */
+	 decl_initial of static variables. */
       check_rhs_var (local, t);
       *walk_subtrees = 0;
       break;
 
     case LABEL_EXPR:
       if (DECL_NONLOCAL (TREE_OPERAND (t, 0)))
-        /* Target of long jump. */
-        local->pure_const_state = IPA_NEITHER;
+	/* Target of long jump. */
+	local->pure_const_state = IPA_NEITHER;
       break;
 
     case CALL_EXPR: 
@@ -533,8 +533,8 @@ analyze_function (struct cgraph_node *fn)
   if (dump_file)
     {
       fprintf (dump_file, "\n local analysis of %s with initial value = %d\n ", 
-               cgraph_node_name (fn),
-               l->pure_const_state);
+	       cgraph_node_name (fn),
+	       l->pure_const_state);
     }
   
   if (!l->state_set_in_source)
@@ -543,47 +543,47 @@ analyze_function (struct cgraph_node *fn)
       basic_block this_block;
       
       FOR_EACH_BB_FN (this_block, this_cfun)
-        {
-          block_stmt_iterator bsi;
-          for (bsi = bsi_start (this_block); !bsi_end_p (bsi); bsi_next (&bsi))
-            {
-              walk_tree (bsi_stmt_ptr (bsi), scan_function, 
-                         fn, visited_nodes);
-              if (l->pure_const_state == IPA_NEITHER) 
-                goto end;
-            }
-        }
+	{
+	  block_stmt_iterator bsi;
+	  for (bsi = bsi_start (this_block); !bsi_end_p (bsi); bsi_next (&bsi))
+	    {
+	      walk_tree (bsi_stmt_ptr (bsi), scan_function, 
+			 fn, visited_nodes);
+	      if (l->pure_const_state == IPA_NEITHER) 
+		goto end;
+	    }
+	}
 
       if (l->pure_const_state != IPA_NEITHER)
-        {
-          tree old_decl = current_function_decl;
-          /* Const functions cannot have back edges (an
-             indication of possible infinite loop side
-             effect.  */
-            
-          current_function_decl = fn->decl;
+	{
+	  tree old_decl = current_function_decl;
+	  /* Const functions cannot have back edges (an
+	     indication of possible infinite loop side
+	     effect.  */
+	    
+	  current_function_decl = fn->decl;
 
-          /* The C++ front end, has a tendency to some times jerk away
-             a function after it has created it.  This should have
-             been fixed.  */
-          gcc_assert (DECL_STRUCT_FUNCTION (fn->decl));
-          
-          push_cfun (DECL_STRUCT_FUNCTION (fn->decl));
-          
-          if (mark_dfs_back_edges ())
-            l->pure_const_state = IPA_NEITHER;
-          
-          current_function_decl = old_decl;
-          pop_cfun ();
-        }
+	  /* The C++ front end, has a tendency to some times jerk away
+	     a function after it has created it.  This should have
+	     been fixed.  */
+	  gcc_assert (DECL_STRUCT_FUNCTION (fn->decl));
+	  
+	  push_cfun (DECL_STRUCT_FUNCTION (fn->decl));
+	  
+	  if (mark_dfs_back_edges ())
+	    l->pure_const_state = IPA_NEITHER;
+	  
+	  current_function_decl = old_decl;
+	  pop_cfun ();
+	}
     }
 
 end:
   if (dump_file)
     {
       fprintf (dump_file, "after local analysis of %s with initial value = %d\n ", 
-               cgraph_node_name (fn),
-               l->pure_const_state);
+	       cgraph_node_name (fn),
+	       l->pure_const_state);
     }
 }
 
@@ -644,70 +644,70 @@ static_execute (void)
       /* Find the worst state for any node in the cycle.  */
       w = node;
       while (w)
-        {
-          funct_state w_l = get_function_state (w);
-          if (pure_const_state < w_l->pure_const_state)
-            pure_const_state = w_l->pure_const_state;
+	{
+	  funct_state w_l = get_function_state (w);
+	  if (pure_const_state < w_l->pure_const_state)
+	    pure_const_state = w_l->pure_const_state;
 
-          if (pure_const_state == IPA_NEITHER) 
-            break;
+	  if (pure_const_state == IPA_NEITHER) 
+	    break;
 
-          if (!w_l->state_set_in_source)
-            {
-              struct cgraph_edge *e;
-              for (e = w->callees; e; e = e->next_callee) 
-                {
-                  struct cgraph_node *y = e->callee;
-                  /* Only look at the master nodes and skip external nodes.  */
-                  y = cgraph_master_clone (y);
-                  if (y)
-                    {
-                      funct_state y_l = get_function_state (y);
-                      if (pure_const_state < y_l->pure_const_state)
-                        pure_const_state = y_l->pure_const_state;
-                      if (pure_const_state == IPA_NEITHER) 
-                        break;
-                    }
-                }
-            }
-          w_info = w->aux;
-          w = w_info->next_cycle;
-        }
+	  if (!w_l->state_set_in_source)
+	    {
+	      struct cgraph_edge *e;
+	      for (e = w->callees; e; e = e->next_callee) 
+		{
+		  struct cgraph_node *y = e->callee;
+		  /* Only look at the master nodes and skip external nodes.  */
+		  y = cgraph_master_clone (y);
+		  if (y)
+		    {
+		      funct_state y_l = get_function_state (y);
+		      if (pure_const_state < y_l->pure_const_state)
+			pure_const_state = y_l->pure_const_state;
+		      if (pure_const_state == IPA_NEITHER) 
+			break;
+		    }
+		}
+	    }
+	  w_info = w->aux;
+	  w = w_info->next_cycle;
+	}
 
       /* Copy back the region's pure_const_state which is shared by
-         all nodes in the region.  */
+	 all nodes in the region.  */
       w = node;
       while (w)
-        {
-          funct_state w_l = get_function_state (w);
+	{
+	  funct_state w_l = get_function_state (w);
 
-          /* All nodes within a cycle share the same info.  */
-          if (!w_l->state_set_in_source)
-            {
-              w_l->pure_const_state = pure_const_state;
-              switch (pure_const_state)
-                {
-                case IPA_CONST:
-                  TREE_READONLY (w->decl) = 1;
-                  if (dump_file)
-                    fprintf (dump_file, "Function found to be const: %s\n",  
-                             lang_hooks.decl_printable_name(w->decl, 2)); 
-                  break;
-                  
-                case IPA_PURE:
-                  DECL_IS_PURE (w->decl) = 1;
-                  if (dump_file)
-                    fprintf (dump_file, "Function found to be pure: %s\n",  
-                             lang_hooks.decl_printable_name(w->decl, 2)); 
-                  break;
-                  
-                default:
-                  break;
-                }
-            }
-          w_info = w->aux;
-          w = w_info->next_cycle;
-        }
+	  /* All nodes within a cycle share the same info.  */
+	  if (!w_l->state_set_in_source)
+	    {
+	      w_l->pure_const_state = pure_const_state;
+	      switch (pure_const_state)
+		{
+		case IPA_CONST:
+		  TREE_READONLY (w->decl) = 1;
+		  if (dump_file)
+		    fprintf (dump_file, "Function found to be const: %s\n",  
+			     lang_hooks.decl_printable_name(w->decl, 2)); 
+		  break;
+		  
+		case IPA_PURE:
+		  DECL_IS_PURE (w->decl) = 1;
+		  if (dump_file)
+		    fprintf (dump_file, "Function found to be pure: %s\n",  
+			     lang_hooks.decl_printable_name(w->decl, 2)); 
+		  break;
+		  
+		default:
+		  break;
+		}
+	    }
+	  w_info = w->aux;
+	  w = w_info->next_cycle;
+	}
     }
 
   /* Cleanup. */
@@ -715,11 +715,11 @@ static_execute (void)
     /* Get rid of the aux information.  */
     if (node->aux)
       {
-        w_info = node->aux;
-        if (w_info->aux)
-          free (w_info->aux);
-        free (node->aux);
-        node->aux = NULL;
+	w_info = node->aux;
+	if (w_info->aux)
+	  free (w_info->aux);
+	free (node->aux);
+	node->aux = NULL;
       }
 
   free (order);
@@ -730,25 +730,25 @@ static bool
 gate_pure_const (void)
 {
   return (flag_unit_at_a_time != 0 && flag_ipa_pure_const 
-          /* Don't bother doing anything if the program has errors.  */
-          && !(errorcount || sorrycount));
+	  /* Don't bother doing anything if the program has errors.  */
+	  && !(errorcount || sorrycount));
 }
 
 struct tree_opt_pass pass_ipa_pure_const =
 {
-  "pure-const",                                /* name */
-  gate_pure_const,                        /* gate */
-  static_execute,                        /* execute */
-  NULL,                                        /* sub */
-  NULL,                                        /* next */
-  0,                                        /* static_pass_number */
-  TV_IPA_PURE_CONST,                        /* tv_id */
-  0,                                        /* properties_required */
-  0,                                        /* properties_provided */
-  0,                                        /* properties_destroyed */
-  0,                                        /* todo_flags_start */
+  "pure-const",		                /* name */
+  gate_pure_const,			/* gate */
+  static_execute,			/* execute */
+  NULL,					/* sub */
+  NULL,					/* next */
+  0,					/* static_pass_number */
+  TV_IPA_PURE_CONST,		        /* tv_id */
+  0,	                                /* properties_required */
+  0,					/* properties_provided */
+  0,					/* properties_destroyed */
+  0,					/* todo_flags_start */
   0,                                    /* todo_flags_finish */
-  0                                        /* letter */
+  0					/* letter */
 };
 
 

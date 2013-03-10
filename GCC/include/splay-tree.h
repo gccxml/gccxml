@@ -123,7 +123,7 @@ extern splay_tree splay_tree_new        (splay_tree_compare_fn,
                                          splay_tree_delete_value_fn);
 extern splay_tree splay_tree_new_with_allocator (splay_tree_compare_fn,
                                                  splay_tree_delete_key_fn,
-                                                splay_tree_delete_value_fn,
+					        splay_tree_delete_value_fn,
                                                  splay_tree_allocate_fn,
                                                  splay_tree_deallocate_fn,
                                                  void *);
@@ -131,7 +131,7 @@ extern void splay_tree_delete           (splay_tree);
 extern splay_tree_node splay_tree_insert (splay_tree,
                                           splay_tree_key,
                                           splay_tree_value);
-extern void splay_tree_remove        (splay_tree, splay_tree_key);
+extern void splay_tree_remove	(splay_tree, splay_tree_key);
 extern splay_tree_node splay_tree_lookup (splay_tree, splay_tree_key);
 extern splay_tree_node splay_tree_predecessor (splay_tree, splay_tree_key);
 extern splay_tree_node splay_tree_successor (splay_tree, splay_tree_key);
@@ -139,8 +139,8 @@ extern splay_tree_node splay_tree_max (splay_tree);
 extern splay_tree_node splay_tree_min (splay_tree);
 extern int splay_tree_foreach (splay_tree, splay_tree_foreach_fn, void*);
 extern int splay_tree_compare_ints (splay_tree_key, splay_tree_key);
-extern int splay_tree_compare_pointers (splay_tree_key,        splay_tree_key);
-                                               
+extern int splay_tree_compare_pointers (splay_tree_key,	splay_tree_key);
+					       
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

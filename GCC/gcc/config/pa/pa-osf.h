@@ -20,32 +20,32 @@ the Free Software Foundation, 51 Franklin Street, Fifth Floor,
 Boston, MA 02110-1301, USA.  */
 
 #undef TARGET_OS_CPP_BUILTINS
-#define TARGET_OS_CPP_BUILTINS()                \
-  do                                                \
-    {                                                \
-        if (TARGET_PA_11)                        \
-          {                                        \
-            builtin_define_std ("hp700");        \
-            builtin_define_std ("HP700");        \
-          }                                        \
-        else                                        \
-          {                                        \
-            builtin_define_std ("hp800");        \
-            builtin_define_std ("hp9k8");        \
-            builtin_define_std ("hp9000s800");        \
-          }                                        \
-        builtin_define_std ("BIT_MSF");                \
-        builtin_define_std ("BYTE_MSF");        \
-        builtin_define_std ("PARISC");                \
-        builtin_define_std ("REVARGV");                \
-        builtin_define_std ("hp9000");                \
-        builtin_define ("__pa_risc");                \
-        builtin_define_std ("parisc");                \
-        builtin_define_std ("spectrum");        \
-        builtin_define_std ("unix");                \
-        builtin_assert ("system=mach");                \
-        builtin_assert ("system=unix");                \
-    }                                                \
+#define TARGET_OS_CPP_BUILTINS()		\
+  do						\
+    {						\
+	if (TARGET_PA_11)			\
+	  {					\
+	    builtin_define_std ("hp700");	\
+	    builtin_define_std ("HP700");	\
+	  }					\
+	else					\
+	  {					\
+	    builtin_define_std ("hp800");	\
+	    builtin_define_std ("hp9k8");	\
+	    builtin_define_std ("hp9000s800");	\
+	  }					\
+	builtin_define_std ("BIT_MSF");		\
+	builtin_define_std ("BYTE_MSF");	\
+	builtin_define_std ("PARISC");		\
+	builtin_define_std ("REVARGV");		\
+	builtin_define_std ("hp9000");		\
+	builtin_define ("__pa_risc");		\
+	builtin_define_std ("parisc");		\
+	builtin_define_std ("spectrum");	\
+	builtin_define_std ("unix");		\
+	builtin_assert ("system=mach");		\
+	builtin_assert ("system=unix");		\
+    }						\
   while (0)
 
 /* Don't default to pcc-struct-return, because gcc is the only compiler, and

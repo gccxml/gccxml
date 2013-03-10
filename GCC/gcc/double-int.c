@@ -208,12 +208,12 @@ double_int_neg (double_int a)
 
 double_int
 double_int_divmod (double_int a, double_int b, bool uns, unsigned code,
-                   double_int *mod)
+		   double_int *mod)
 {
   double_int ret;
 
   div_and_round_double (code, uns, a.low, a.high, b.low, b.high,
-                        &ret.low, &ret.high, &mod->low, &mod->high);
+			&ret.low, &ret.high, &mod->low, &mod->high);
   return ret;
 }
 
@@ -366,7 +366,7 @@ double_int_split_digit (double_int *cst, unsigned base)
   HOST_WIDE_INT resh, remh;
 
   div_and_round_double (FLOOR_DIV_EXPR, true, cst->low, cst->high, base, 0,
-                        &resl, &resh, &reml, &remh);
+			&resl, &resh, &reml, &remh);
   cst->high = resh;
   cst->low = resl;
 

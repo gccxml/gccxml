@@ -692,7 +692,7 @@ recompute_gain_for_pattern_seq (pattern_seq pseq)
 #else
         || (!ok_for_base_p_1 (i, Pmode, MEM, SCRATCH))
         || (!reg_class_subset_p (REGNO_REG_CLASS (i),
-                                 base_reg_class (VOIDmode, MEM, SCRATCH)))
+				 base_reg_class (VOIDmode, MEM, SCRATCH)))
 #endif
         || (hascall && call_used_regs[i])
         || (!call_used_regs[i] && !regs_ever_live[i]))
@@ -1397,7 +1397,7 @@ rtl_seqabstr (void)
       count_or_remove_death_notes (NULL, 1);
 
       life_analysis (PROP_DEATH_NOTES | PROP_SCAN_DEAD_CODE
-                     | PROP_KILL_DEAD_CODE);
+		     | PROP_KILL_DEAD_CODE);
 
       /* Extra cleanup.  */
       cleanup_cfg (CLEANUP_EXPENSIVE |

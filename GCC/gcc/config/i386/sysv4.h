@@ -49,46 +49,46 @@ Boston, MA 02110-1301, USA.  */
    STRING_LIMIT) we output those using ASM_OUTPUT_LIMITED_STRING.  */
 
 #undef ASM_OUTPUT_ASCII
-#define ASM_OUTPUT_ASCII(FILE, STR, LENGTH)                                \
-  do                                                                        \
-    {                                                                        \
-      const unsigned char *_ascii_bytes =                                \
-        (const unsigned char *) (STR);                                        \
-      const unsigned char *limit = _ascii_bytes + (LENGTH);                \
-      unsigned bytes_in_chunk = 0;                                        \
-      for (; _ascii_bytes < limit; _ascii_bytes++)                        \
-        {                                                                \
-          const unsigned char *p;                                        \
-          if (bytes_in_chunk >= 64)                                        \
-            {                                                                \
-              fputc ('\n', (FILE));                                        \
-              bytes_in_chunk = 0;                                        \
-            }                                                                \
-          for (p = _ascii_bytes; p < limit && *p != '\0'; p++)                \
-            continue;                                                        \
-          if (p < limit && (p - _ascii_bytes) <= (long) STRING_LIMIT)        \
-            {                                                                \
-              if (bytes_in_chunk > 0)                                        \
-                {                                                        \
-                  fputc ('\n', (FILE));                                        \
-                  bytes_in_chunk = 0;                                        \
-                }                                                        \
-              ASM_OUTPUT_LIMITED_STRING ((FILE), _ascii_bytes);                \
-              _ascii_bytes = p;                                                \
-            }                                                                \
-          else                                                                \
-            {                                                                \
-              if (bytes_in_chunk == 0)                                        \
-                fprintf ((FILE), "\t.byte\t");                                \
-              else                                                        \
-                fputc (',', (FILE));                                        \
-              fprintf ((FILE), "0x%02x", *_ascii_bytes);                \
-              bytes_in_chunk += 5;                                        \
-            }                                                                \
-        }                                                                \
-      if (bytes_in_chunk > 0)                                                \
-        fprintf ((FILE), "\n");                                                \
-    }                                                                        \
+#define ASM_OUTPUT_ASCII(FILE, STR, LENGTH)				\
+  do									\
+    {									\
+      const unsigned char *_ascii_bytes =				\
+        (const unsigned char *) (STR);					\
+      const unsigned char *limit = _ascii_bytes + (LENGTH);		\
+      unsigned bytes_in_chunk = 0;					\
+      for (; _ascii_bytes < limit; _ascii_bytes++)			\
+        {								\
+	  const unsigned char *p;					\
+	  if (bytes_in_chunk >= 64)					\
+	    {								\
+	      fputc ('\n', (FILE));					\
+	      bytes_in_chunk = 0;					\
+	    }								\
+	  for (p = _ascii_bytes; p < limit && *p != '\0'; p++)		\
+	    continue;							\
+	  if (p < limit && (p - _ascii_bytes) <= (long) STRING_LIMIT)	\
+	    {								\
+	      if (bytes_in_chunk > 0)					\
+		{							\
+		  fputc ('\n', (FILE));					\
+		  bytes_in_chunk = 0;					\
+		}							\
+	      ASM_OUTPUT_LIMITED_STRING ((FILE), _ascii_bytes);		\
+	      _ascii_bytes = p;						\
+	    }								\
+	  else								\
+	    {								\
+	      if (bytes_in_chunk == 0)					\
+		fprintf ((FILE), "\t.byte\t");				\
+	      else							\
+		fputc (',', (FILE));					\
+	      fprintf ((FILE), "0x%02x", *_ascii_bytes);		\
+	      bytes_in_chunk += 5;					\
+	    }								\
+	}								\
+      if (bytes_in_chunk > 0)						\
+        fprintf ((FILE), "\n");						\
+    }									\
   while (0)
 
 /* A C statement (sans semicolon) to output to the stdio stream
@@ -102,32 +102,32 @@ Boston, MA 02110-1301, USA.  */
 /* Handle special EH pointer encodings.  Absolute, pc-relative, and
    indirect are handled automatically.  */
 #define ASM_MAYBE_OUTPUT_ENCODED_ADDR_RTX(FILE, ENCODING, SIZE, ADDR, DONE) \
-  do {                                                                        \
-    if ((SIZE) == 4 && ((ENCODING) & 0x70) == DW_EH_PE_datarel)                \
-      {                                                                        \
-        fputs (ASM_LONG, FILE);                                                \
-        assemble_name (FILE, XSTR (ADDR, 0));                                \
-        fputs (((ENCODING) & DW_EH_PE_indirect ? "@GOT" : "@GOTOFF"), FILE); \
-        goto DONE;                                                        \
-      }                                                                        \
+  do {									\
+    if ((SIZE) == 4 && ((ENCODING) & 0x70) == DW_EH_PE_datarel)		\
+      {									\
+        fputs (ASM_LONG, FILE);						\
+        assemble_name (FILE, XSTR (ADDR, 0));				\
+	fputs (((ENCODING) & DW_EH_PE_indirect ? "@GOT" : "@GOTOFF"), FILE); \
+        goto DONE;							\
+      }									\
   } while (0)
 
 /* Used by crtstuff.c to initialize the base of data-relative relocations.
    These are GOT relative on x86, so return the pic register.  */
 #ifdef __PIC__
-#define CRT_GET_RFIB_DATA(BASE)                        \
-  {                                                \
-    register void *ebx_ __asm__("ebx");                \
-    BASE = ebx_;                                \
+#define CRT_GET_RFIB_DATA(BASE)			\
+  {						\
+    register void *ebx_ __asm__("ebx");		\
+    BASE = ebx_;				\
   }
 #else
-#define CRT_GET_RFIB_DATA(BASE)                                                \
-  __asm__ ("call\t.LPR%=\n"                                                \
-           ".LPR%=:\n\t"                                                \
-           "popl\t%0\n\t"                                                \
-           /* Due to a GAS bug, this cannot use EAX.  That encodes        \
-              smaller than the traditional EBX, which results in the        \
-              offset being off by one.  */                                \
-           "addl\t$_GLOBAL_OFFSET_TABLE_+[.-.LPR%=],%0"                        \
-           : "=d"(BASE))
+#define CRT_GET_RFIB_DATA(BASE)						\
+  __asm__ ("call\t.LPR%=\n"						\
+	   ".LPR%=:\n\t"						\
+	   "popl\t%0\n\t"						\
+	   /* Due to a GAS bug, this cannot use EAX.  That encodes	\
+	      smaller than the traditional EBX, which results in the	\
+	      offset being off by one.  */				\
+	   "addl\t$_GLOBAL_OFFSET_TABLE_+[.-.LPR%=],%0"			\
+	   : "=d"(BASE))
 #endif

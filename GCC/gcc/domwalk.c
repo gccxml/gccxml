@@ -71,7 +71,7 @@ Boston, MA 02110-1301, USA.  */
        |    +--9    11
        |      /      |
        +--- 10 ---> 12
-          
+	  
   
   We have a dominator tree which looks like
 
@@ -153,116 +153,116 @@ walk_dominator_tree (struct dom_walk_data *walk_data, basic_block bb)
     {
       /* Don't worry about unreachable blocks.  */
       if (EDGE_COUNT (bb->preds) > 0 || bb == ENTRY_BLOCK_PTR)
-        {
-          /* If block BB is not interesting to the caller, then none of the
-             callbacks that walk the statements in BB are going to be
-             executed.  */
-          is_interesting = walk_data->interesting_blocks == NULL
-                           || TEST_BIT (walk_data->interesting_blocks,
-                                        bb->index);
+	{
+	  /* If block BB is not interesting to the caller, then none of the
+	     callbacks that walk the statements in BB are going to be
+	     executed.  */
+	  is_interesting = walk_data->interesting_blocks == NULL
+	                   || TEST_BIT (walk_data->interesting_blocks,
+					bb->index);
 
-          /* Callback to initialize the local data structure.  */
-          if (walk_data->initialize_block_local_data)
-            {
-              bool recycled;
+	  /* Callback to initialize the local data structure.  */
+	  if (walk_data->initialize_block_local_data)
+	    {
+	      bool recycled;
 
-              /* First get some local data, reusing any local data pointer we may
-                 have saved.  */
-              if (VEC_length (void_p, walk_data->free_block_data) > 0)
-                {
-                  bd = VEC_pop (void_p, walk_data->free_block_data);
-                  recycled = 1;
-                }
-              else
-                {
-                  bd = xcalloc (1, walk_data->block_local_data_size);
-                  recycled = 0;
-                }
+	      /* First get some local data, reusing any local data pointer we may
+	         have saved.  */
+	      if (VEC_length (void_p, walk_data->free_block_data) > 0)
+		{
+		  bd = VEC_pop (void_p, walk_data->free_block_data);
+		  recycled = 1;
+		}
+	      else
+		{
+		  bd = xcalloc (1, walk_data->block_local_data_size);
+		  recycled = 0;
+		}
 
-              /* Push the local data into the local data stack.  */
-              VEC_safe_push (void_p, heap, walk_data->block_data_stack, bd);
+	      /* Push the local data into the local data stack.  */
+	      VEC_safe_push (void_p, heap, walk_data->block_data_stack, bd);
 
-              /* Call the initializer.  */
-              walk_data->initialize_block_local_data (walk_data, bb,
-                                                      recycled);
+	      /* Call the initializer.  */
+	      walk_data->initialize_block_local_data (walk_data, bb,
+						      recycled);
 
-            }
+	    }
 
-          /* Callback for operations to execute before we have walked the
-             dominator children, but before we walk statements.  */
-          if (walk_data->before_dom_children_before_stmts)
-            (*walk_data->before_dom_children_before_stmts) (walk_data, bb);
+	  /* Callback for operations to execute before we have walked the
+	     dominator children, but before we walk statements.  */
+	  if (walk_data->before_dom_children_before_stmts)
+	    (*walk_data->before_dom_children_before_stmts) (walk_data, bb);
 
-          /* Statement walk before walking dominator children.  */
-          if (is_interesting && walk_data->before_dom_children_walk_stmts)
-            {
-              if (walk_data->walk_stmts_backward)
-                for (bsi = bsi_last (bb); !bsi_end_p (bsi); bsi_prev (&bsi))
-                  (*walk_data->before_dom_children_walk_stmts) (walk_data, bb,
-                                                                bsi);
-              else
-                for (bsi = bsi_start (bb); !bsi_end_p (bsi); bsi_next (&bsi))
-                  (*walk_data->before_dom_children_walk_stmts) (walk_data, bb,
-                                                                bsi);
-            }
+	  /* Statement walk before walking dominator children.  */
+	  if (is_interesting && walk_data->before_dom_children_walk_stmts)
+	    {
+	      if (walk_data->walk_stmts_backward)
+		for (bsi = bsi_last (bb); !bsi_end_p (bsi); bsi_prev (&bsi))
+		  (*walk_data->before_dom_children_walk_stmts) (walk_data, bb,
+								bsi);
+	      else
+		for (bsi = bsi_start (bb); !bsi_end_p (bsi); bsi_next (&bsi))
+		  (*walk_data->before_dom_children_walk_stmts) (walk_data, bb,
+								bsi);
+	    }
 
-          /* Callback for operations to execute before we have walked the
-             dominator children, and after we walk statements.  */
-          if (walk_data->before_dom_children_after_stmts)
-            (*walk_data->before_dom_children_after_stmts) (walk_data, bb);
+	  /* Callback for operations to execute before we have walked the
+	     dominator children, and after we walk statements.  */
+	  if (walk_data->before_dom_children_after_stmts)
+	    (*walk_data->before_dom_children_after_stmts) (walk_data, bb);
 
-          /* Mark the current BB to be popped out of the recursion stack
-             once childs are processed.  */
-          worklist[sp++] = bb;
-          worklist[sp++] = NULL;
+	  /* Mark the current BB to be popped out of the recursion stack
+	     once childs are processed.  */
+	  worklist[sp++] = bb;
+	  worklist[sp++] = NULL;
 
-          for (dest = first_dom_son (walk_data->dom_direction, bb);
-               dest; dest = next_dom_son (walk_data->dom_direction, dest))
-            worklist[sp++] = dest;
-        }
+	  for (dest = first_dom_son (walk_data->dom_direction, bb);
+	       dest; dest = next_dom_son (walk_data->dom_direction, dest))
+	    worklist[sp++] = dest;
+	}
       /* NULL is used to signalize pop operation in recursion stack.  */
       while (sp > 0 && !worklist[sp - 1])
-        {
-          --sp;
-          bb = worklist[--sp];
-          is_interesting = walk_data->interesting_blocks == NULL
-                           || TEST_BIT (walk_data->interesting_blocks,
-                                        bb->index);
-          /* Callback for operations to execute after we have walked the
-             dominator children, but before we walk statements.  */
-          if (walk_data->after_dom_children_before_stmts)
-            (*walk_data->after_dom_children_before_stmts) (walk_data, bb);
+	{
+	  --sp;
+	  bb = worklist[--sp];
+	  is_interesting = walk_data->interesting_blocks == NULL
+	                   || TEST_BIT (walk_data->interesting_blocks,
+				        bb->index);
+	  /* Callback for operations to execute after we have walked the
+	     dominator children, but before we walk statements.  */
+	  if (walk_data->after_dom_children_before_stmts)
+	    (*walk_data->after_dom_children_before_stmts) (walk_data, bb);
 
-          /* Statement walk after walking dominator children.  */
-          if (is_interesting && walk_data->after_dom_children_walk_stmts)
-            {
-              if (walk_data->walk_stmts_backward)
-                for (bsi = bsi_last (bb); !bsi_end_p (bsi); bsi_prev (&bsi))
-                  (*walk_data->after_dom_children_walk_stmts) (walk_data, bb,
-                                                               bsi);
-              else
-                for (bsi = bsi_start (bb); !bsi_end_p (bsi); bsi_next (&bsi))
-                  (*walk_data->after_dom_children_walk_stmts) (walk_data, bb,
-                                                               bsi);
-            }
+	  /* Statement walk after walking dominator children.  */
+	  if (is_interesting && walk_data->after_dom_children_walk_stmts)
+	    {
+	      if (walk_data->walk_stmts_backward)
+		for (bsi = bsi_last (bb); !bsi_end_p (bsi); bsi_prev (&bsi))
+		  (*walk_data->after_dom_children_walk_stmts) (walk_data, bb,
+							       bsi);
+	      else
+		for (bsi = bsi_start (bb); !bsi_end_p (bsi); bsi_next (&bsi))
+		  (*walk_data->after_dom_children_walk_stmts) (walk_data, bb,
+							       bsi);
+	    }
 
-          /* Callback for operations to execute after we have walked the
-             dominator children and after we have walked statements.  */
-          if (walk_data->after_dom_children_after_stmts)
-            (*walk_data->after_dom_children_after_stmts) (walk_data, bb);
+	  /* Callback for operations to execute after we have walked the
+	     dominator children and after we have walked statements.  */
+	  if (walk_data->after_dom_children_after_stmts)
+	    (*walk_data->after_dom_children_after_stmts) (walk_data, bb);
 
-          if (walk_data->initialize_block_local_data)
-            {
-              /* And finally pop the record off the block local data stack.  */
-              bd = VEC_pop (void_p, walk_data->block_data_stack);
-              /* And save the block data so that we can re-use it.  */
-              VEC_safe_push (void_p, heap, walk_data->free_block_data, bd);
-            }
-        }
+	  if (walk_data->initialize_block_local_data)
+	    {
+	      /* And finally pop the record off the block local data stack.  */
+	      bd = VEC_pop (void_p, walk_data->block_data_stack);
+	      /* And save the block data so that we can re-use it.  */
+	      VEC_safe_push (void_p, heap, walk_data->free_block_data, bd);
+	    }
+	}
       if (sp)
-        bb = worklist[--sp];
+	bb = worklist[--sp];
       else
-        break;
+	break;
     }
   free (worklist);
 }
@@ -280,7 +280,7 @@ fini_walk_dominator_tree (struct dom_walk_data *walk_data)
   if (walk_data->initialize_block_local_data)
     {
       while (VEC_length (void_p, walk_data->free_block_data) > 0)
-        free (VEC_pop (void_p, walk_data->free_block_data));
+	free (VEC_pop (void_p, walk_data->free_block_data));
     }
 
   VEC_free (void_p, heap, walk_data->free_block_data);

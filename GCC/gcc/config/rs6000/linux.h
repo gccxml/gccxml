@@ -36,18 +36,18 @@
 #define TARGET_C99_FUNCTIONS (OPTION_GLIBC)
 
 #undef  TARGET_OS_CPP_BUILTINS
-#define TARGET_OS_CPP_BUILTINS()                \
-  do                                                \
-    {                                                \
-      builtin_define_std ("PPC");                \
-      builtin_define_std ("powerpc");                \
-      builtin_assert ("cpu=powerpc");                \
-      builtin_assert ("machine=powerpc");        \
-      TARGET_OS_SYSV_CPP_BUILTINS ();                \
-    }                                                \
+#define TARGET_OS_CPP_BUILTINS()		\
+  do						\
+    {						\
+      builtin_define_std ("PPC");		\
+      builtin_define_std ("powerpc");		\
+      builtin_assert ("cpu=powerpc");		\
+      builtin_assert ("machine=powerpc");	\
+      TARGET_OS_SYSV_CPP_BUILTINS ();		\
+    }						\
   while (0)
 
-#undef        CPP_OS_DEFAULT_SPEC
+#undef	CPP_OS_DEFAULT_SPEC
 #define CPP_OS_DEFAULT_SPEC "%(cpp_os_linux)"
 
 /* The GNU C++ standard library currently requires _GNU_SOURCE being
@@ -59,19 +59,19 @@
 #undef  LINK_SHLIB_SPEC
 #define LINK_SHLIB_SPEC "%{shared:-shared} %{!shared: %{static:-static}}"
 
-#undef        LIB_DEFAULT_SPEC
+#undef	LIB_DEFAULT_SPEC
 #define LIB_DEFAULT_SPEC "%(lib_linux)"
 
-#undef        STARTFILE_DEFAULT_SPEC
+#undef	STARTFILE_DEFAULT_SPEC
 #define STARTFILE_DEFAULT_SPEC "%(startfile_linux)"
 
-#undef        ENDFILE_DEFAULT_SPEC
+#undef	ENDFILE_DEFAULT_SPEC
 #define ENDFILE_DEFAULT_SPEC "%(endfile_linux)"
 
-#undef        LINK_START_DEFAULT_SPEC
+#undef	LINK_START_DEFAULT_SPEC
 #define LINK_START_DEFAULT_SPEC "%(link_start_linux)"
 
-#undef        LINK_OS_DEFAULT_SPEC
+#undef	LINK_OS_DEFAULT_SPEC
 #define LINK_OS_DEFAULT_SPEC "%(link_os_linux)"
 
 #define LINK_GCC_C_SEQUENCE_SPEC \
@@ -116,7 +116,7 @@
 
 #ifdef TARGET_LIBC_PROVIDES_SSP
 /* ppc32 glibc provides __stack_chk_guard in -0x7008(2).  */
-#define TARGET_THREAD_SSP_OFFSET        -0x7008
+#define TARGET_THREAD_SSP_OFFSET	-0x7008
 #endif
 
 #define POWERPC_LINUX

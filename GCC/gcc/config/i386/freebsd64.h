@@ -30,7 +30,7 @@ Boston, MA 02110-1301, USA.  */
    This is a copy of LINK_SPEC from <i386/freebsd.h> tweaked for
    the x86-64 target.  */
 
-#undef        LINK_SPEC
+#undef	LINK_SPEC
 #define LINK_SPEC "\
   %{m32:-m elf_i386_fbsd} \
   %{v:-V} \
@@ -39,6 +39,6 @@ Boston, MA 02110-1301, USA.  */
     %{!shared: \
       %{!static: \
         %{rdynamic:-export-dynamic} \
-        %{!dynamic-linker:-dynamic-linker %(fbsd_dynamic_linker) }} \
+	%{!dynamic-linker:-dynamic-linker %(fbsd_dynamic_linker) }} \
     %{static:-Bstatic}} \
   %{symbolic:-Bsymbolic}"

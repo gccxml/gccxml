@@ -83,7 +83,7 @@ cvc_insert (unsigned int uid, tree to)
   h->uid = uid;
   h->to = to;
   loc = htab_find_slot_with_hash (complex_variable_components, h,
-                                  uid, INSERT);
+				  uid, INSERT);
   *(struct int_tree_map **) loc = h;
 }
 
@@ -117,7 +117,7 @@ find_lattice_value (tree t)
     {
     case SSA_NAME:
       return VEC_index (complex_lattice_t, complex_lattice_values,
-                        SSA_NAME_VERSION (t));
+			SSA_NAME_VERSION (t));
 
     case COMPLEX_CST:
       real = TREE_REALPART (t);
@@ -165,9 +165,9 @@ init_parameter_lattice_values (void)
   for (parm = DECL_ARGUMENTS (cfun->decl); parm ; parm = TREE_CHAIN (parm))
     if (is_complex_reg (parm) && var_ann (parm) != NULL)
       {
-        tree ssa_name = default_def (parm);
-        VEC_replace (complex_lattice_t, complex_lattice_values,
-                     SSA_NAME_VERSION (ssa_name), VARYING);
+	tree ssa_name = default_def (parm);
+	VEC_replace (complex_lattice_t, complex_lattice_values,
+		     SSA_NAME_VERSION (ssa_name), VARYING);
       }
 }
 
@@ -186,71 +186,71 @@ init_dont_simulate_again (void)
   FOR_EACH_BB (bb)
     {
       for (phi = phi_nodes (bb); phi; phi = PHI_CHAIN (phi))
-        DONT_SIMULATE_AGAIN (phi) = !is_complex_reg (PHI_RESULT (phi));
+	DONT_SIMULATE_AGAIN (phi) = !is_complex_reg (PHI_RESULT (phi));
 
       for (bsi = bsi_start (bb); !bsi_end_p (bsi); bsi_next (&bsi))
-        {
-          tree orig_stmt, stmt, rhs = NULL;
-          bool dsa;
+	{
+	  tree orig_stmt, stmt, rhs = NULL;
+	  bool dsa;
 
-          orig_stmt = stmt = bsi_stmt (bsi);
+	  orig_stmt = stmt = bsi_stmt (bsi);
 
-          /* Most control-altering statements must be initially 
-             simulated, else we won't cover the entire cfg.  */
-          dsa = !stmt_ends_bb_p (stmt);
+	  /* Most control-altering statements must be initially 
+	     simulated, else we won't cover the entire cfg.  */
+	  dsa = !stmt_ends_bb_p (stmt);
 
-          switch (TREE_CODE (stmt))
-            {
-            case RETURN_EXPR:
-              /* We don't care what the lattice value of <retval> is,
-                 since it's never used as an input to another computation.  */
-              dsa = true;
-              stmt = TREE_OPERAND (stmt, 0);
-              if (!stmt || TREE_CODE (stmt) != MODIFY_EXPR)
-                break;
-              /* FALLTHRU */
+	  switch (TREE_CODE (stmt))
+	    {
+	    case RETURN_EXPR:
+	      /* We don't care what the lattice value of <retval> is,
+		 since it's never used as an input to another computation.  */
+	      dsa = true;
+	      stmt = TREE_OPERAND (stmt, 0);
+	      if (!stmt || TREE_CODE (stmt) != MODIFY_EXPR)
+		break;
+	      /* FALLTHRU */
 
-            case MODIFY_EXPR:
-              dsa = !is_complex_reg (TREE_OPERAND (stmt, 0));
-              rhs = TREE_OPERAND (stmt, 1);
-              break;
+	    case MODIFY_EXPR:
+	      dsa = !is_complex_reg (TREE_OPERAND (stmt, 0));
+	      rhs = TREE_OPERAND (stmt, 1);
+	      break;
 
-            case COND_EXPR:
-              rhs = TREE_OPERAND (stmt, 0);
-              break;
+	    case COND_EXPR:
+	      rhs = TREE_OPERAND (stmt, 0);
+	      break;
 
-            default:
-              break;
-            }
+	    default:
+	      break;
+	    }
 
-          if (rhs)
-            switch (TREE_CODE (rhs))
-              {
-              case EQ_EXPR:
-              case NE_EXPR:
-                rhs = TREE_OPERAND (rhs, 0);
-                /* FALLTHRU */
+	  if (rhs)
+	    switch (TREE_CODE (rhs))
+	      {
+	      case EQ_EXPR:
+	      case NE_EXPR:
+		rhs = TREE_OPERAND (rhs, 0);
+		/* FALLTHRU */
 
-              case PLUS_EXPR:
-              case MINUS_EXPR:
-              case MULT_EXPR:
-              case TRUNC_DIV_EXPR:
-              case CEIL_DIV_EXPR:
-              case FLOOR_DIV_EXPR:
-              case ROUND_DIV_EXPR:
-              case RDIV_EXPR:
-              case NEGATE_EXPR:
-              case CONJ_EXPR:
-                if (TREE_CODE (TREE_TYPE (rhs)) == COMPLEX_TYPE)
-                  saw_a_complex_op = true;
-                break;
+	      case PLUS_EXPR:
+	      case MINUS_EXPR:
+	      case MULT_EXPR:
+	      case TRUNC_DIV_EXPR:
+	      case CEIL_DIV_EXPR:
+	      case FLOOR_DIV_EXPR:
+	      case ROUND_DIV_EXPR:
+	      case RDIV_EXPR:
+	      case NEGATE_EXPR:
+	      case CONJ_EXPR:
+		if (TREE_CODE (TREE_TYPE (rhs)) == COMPLEX_TYPE)
+		  saw_a_complex_op = true;
+		break;
 
-              default:
-                break;
-              }
+	      default:
+		break;
+	      }
 
-          DONT_SIMULATE_AGAIN (orig_stmt) = dsa;
-        }
+	  DONT_SIMULATE_AGAIN (orig_stmt) = dsa;
+	}
     }
 
   return saw_a_complex_op;
@@ -261,7 +261,7 @@ init_dont_simulate_again (void)
 
 static enum ssa_prop_result
 complex_visit_stmt (tree stmt, edge *taken_edge_p ATTRIBUTE_UNUSED,
-                    tree *result_p)
+		    tree *result_p)
 {
   complex_lattice_t new_l, old_l, op1_l, op2_l;
   unsigned int ver;
@@ -296,7 +296,7 @@ complex_visit_stmt (tree stmt, edge *taken_edge_p ATTRIBUTE_UNUSED,
       op2_l = find_lattice_value (TREE_OPERAND (rhs, 1));
 
       /* We've set up the lattice values such that IOR neatly
-         models addition.  */
+	 models addition.  */
       new_l = op1_l | op2_l;
       break;
 
@@ -311,24 +311,24 @@ complex_visit_stmt (tree stmt, edge *taken_edge_p ATTRIBUTE_UNUSED,
 
       /* Obviously, if either varies, so does the result.  */
       if (op1_l == VARYING || op2_l == VARYING)
-        new_l = VARYING;
+	new_l = VARYING;
       /* Don't prematurely promote variables if we've not yet seen
-         their inputs.  */
+	 their inputs.  */
       else if (op1_l == UNINITIALIZED)
-        new_l = op2_l;
+	new_l = op2_l;
       else if (op2_l == UNINITIALIZED)
-        new_l = op1_l;
+	new_l = op1_l;
       else
-        {
-          /* At this point both numbers have only one component. If the
-             numbers are of opposite kind, the result is imaginary,
-             otherwise the result is real. The add/subtract translates
-             the real/imag from/to 0/1; the ^ performs the comparison.  */
-          new_l = ((op1_l - ONLY_REAL) ^ (op2_l - ONLY_REAL)) + ONLY_REAL;
+	{
+	  /* At this point both numbers have only one component. If the
+	     numbers are of opposite kind, the result is imaginary,
+	     otherwise the result is real. The add/subtract translates
+	     the real/imag from/to 0/1; the ^ performs the comparison.  */
+	  new_l = ((op1_l - ONLY_REAL) ^ (op2_l - ONLY_REAL)) + ONLY_REAL;
 
-          /* Don't allow the lattice value to flip-flop indefinitely.  */
-          new_l |= old_l;
-        }
+	  /* Don't allow the lattice value to flip-flop indefinitely.  */
+	  new_l |= old_l;
+	}
       break;
 
     case NEGATE_EXPR:
@@ -384,7 +384,7 @@ complex_visit_phi (tree phi)
 
 static tree
 create_one_component_var (tree type, tree orig, const char *prefix,
-                          const char *suffix, enum tree_code code)
+			  const char *suffix, enum tree_code code)
 {
   tree r = create_tmp_var (type, prefix);
   add_referenced_var (r);
@@ -425,9 +425,9 @@ get_component_var (tree var, bool imag_p)
   if (ret == NULL)
     {
       ret = create_one_component_var (TREE_TYPE (TREE_TYPE (var)), var,
-                                      imag_p ? "CI" : "CR",
-                                      imag_p ? "$imag" : "$real",
-                                      imag_p ? IMAGPART_EXPR : REALPART_EXPR);
+				      imag_p ? "CI" : "CR",
+				      imag_p ? "$imag" : "$real",
+				      imag_p ? IMAGPART_EXPR : REALPART_EXPR);
       cvc_insert (decl_index, ret);
     }
 
@@ -447,9 +447,9 @@ get_component_ssa_name (tree ssa_name, bool imag_p)
     {
       tree inner_type = TREE_TYPE (TREE_TYPE (ssa_name));
       if (SCALAR_FLOAT_TYPE_P (inner_type))
-        return build_real (inner_type, dconst0);
+	return build_real (inner_type, dconst0);
       else
-        return build_int_cst (inner_type, 0);
+	return build_int_cst (inner_type, 0);
     }
 
   ssa_name_index = SSA_NAME_VERSION (ssa_name) * 2 + imag_p;
@@ -460,15 +460,15 @@ get_component_ssa_name (tree ssa_name, bool imag_p)
       ret = make_ssa_name (ret, NULL);
 
       /* Copy some properties from the original.  In particular, whether it
-         is used in an abnormal phi, and whether it's uninitialized.  */
+	 is used in an abnormal phi, and whether it's uninitialized.  */
       SSA_NAME_OCCURS_IN_ABNORMAL_PHI (ret)
-        = SSA_NAME_OCCURS_IN_ABNORMAL_PHI (ssa_name);
+	= SSA_NAME_OCCURS_IN_ABNORMAL_PHI (ssa_name);
       if (TREE_CODE (SSA_NAME_VAR (ssa_name)) == VAR_DECL
-          && IS_EMPTY_STMT (SSA_NAME_DEF_STMT (ssa_name)))
-        {
-          SSA_NAME_DEF_STMT (ret) = SSA_NAME_DEF_STMT (ssa_name);
-          set_default_def (SSA_NAME_VAR (ret), ret);
-        }
+	  && IS_EMPTY_STMT (SSA_NAME_DEF_STMT (ssa_name)))
+	{
+	  SSA_NAME_DEF_STMT (ret) = SSA_NAME_DEF_STMT (ssa_name);
+	  set_default_def (SSA_NAME_VAR (ret), ret);
+	}
 
       VEC_replace (tree, complex_ssa_name_components, ssa_name_index, ret);
     }
@@ -510,16 +510,16 @@ set_component_ssa_name (tree ssa_name, bool imag_p, tree value)
       return NULL;
     }
   else if (TREE_CODE (value) == SSA_NAME
-           && !SSA_NAME_OCCURS_IN_ABNORMAL_PHI (ssa_name))
+	   && !SSA_NAME_OCCURS_IN_ABNORMAL_PHI (ssa_name))
     {
       /* Replace an anonymous base value with the variable from cvc_lookup.
-         This should result in better debug info.  */
+	 This should result in better debug info.  */
       if (DECL_IGNORED_P (SSA_NAME_VAR (value))
-          && !DECL_IGNORED_P (SSA_NAME_VAR (ssa_name)))
-        {
-          comp = get_component_var (SSA_NAME_VAR (ssa_name), imag_p);
-          replace_ssa_name_symbol (value, comp);
-        }
+	  && !DECL_IGNORED_P (SSA_NAME_VAR (ssa_name)))
+	{
+	  comp = get_component_var (SSA_NAME_VAR (ssa_name), imag_p);
+	  replace_ssa_name_symbol (value, comp);
+	}
 
       VEC_replace (tree, complex_ssa_name_components, ssa_name_index, value);
       return NULL;
@@ -547,7 +547,7 @@ set_component_ssa_name (tree ssa_name, bool imag_p, tree value)
 
 static tree
 extract_component (block_stmt_iterator *bsi, tree t, bool imagpart_p,
-                   bool gimple_p)
+		   bool gimple_p)
 {
   switch (TREE_CODE (t))
     {
@@ -564,15 +564,15 @@ extract_component (block_stmt_iterator *bsi, tree t, bool imagpart_p,
     case COMPONENT_REF:
     case ARRAY_REF:
       {
-        tree inner_type = TREE_TYPE (TREE_TYPE (t));
+	tree inner_type = TREE_TYPE (TREE_TYPE (t));
 
-        t = build1 ((imagpart_p ? IMAGPART_EXPR : REALPART_EXPR),
-                    inner_type, unshare_expr (t));
+	t = build1 ((imagpart_p ? IMAGPART_EXPR : REALPART_EXPR),
+		    inner_type, unshare_expr (t));
 
-        if (gimple_p)
-          t = gimplify_val (bsi, inner_type, t);
+	if (gimple_p)
+	  t = gimplify_val (bsi, inner_type, t);
 
-        return t;
+	return t;
       }
 
     case SSA_NAME:
@@ -648,12 +648,12 @@ update_parameter_components (void)
       tree ssa_name, r, i;
 
       if (TREE_CODE (type) != COMPLEX_TYPE || !is_gimple_reg (parm))
-        continue;
+	continue;
 
       type = TREE_TYPE (type);
       ssa_name = default_def (parm);
       if (!ssa_name)
-        continue;
+	continue;
 
       r = build1 (REALPART_EXPR, type, ssa_name);
       i = build1 (IMAGPART_EXPR, type, ssa_name);
@@ -672,37 +672,37 @@ update_phi_components (basic_block bb)
   for (phi = phi_nodes (bb); phi; phi = PHI_CHAIN (phi))
     if (is_complex_reg (PHI_RESULT (phi)))
       {
-        tree lr, li, pr = NULL, pi = NULL;
-        unsigned int i, n;
+	tree lr, li, pr = NULL, pi = NULL;
+	unsigned int i, n;
 
-        lr = get_component_ssa_name (PHI_RESULT (phi), false);
-        if (TREE_CODE (lr) == SSA_NAME)
-          {
-            pr = create_phi_node (lr, bb);
-            SSA_NAME_DEF_STMT (lr) = pr;
-          }
+	lr = get_component_ssa_name (PHI_RESULT (phi), false);
+	if (TREE_CODE (lr) == SSA_NAME)
+	  {
+	    pr = create_phi_node (lr, bb);
+	    SSA_NAME_DEF_STMT (lr) = pr;
+	  }
 
-        li = get_component_ssa_name (PHI_RESULT (phi), true);
-        if (TREE_CODE (li) == SSA_NAME)
-          {
-            pi = create_phi_node (li, bb);
-            SSA_NAME_DEF_STMT (li) = pi;
-          }
-        
-        for (i = 0, n = PHI_NUM_ARGS (phi); i < n; ++i)
-          {
-            tree comp, arg = PHI_ARG_DEF (phi, i);
-            if (pr)
-              {
-                comp = extract_component (NULL, arg, false, false);
-                SET_PHI_ARG_DEF (pr, i, comp);
-              }
-            if (pi)
-              {
-                comp = extract_component (NULL, arg, true, false);
-                SET_PHI_ARG_DEF (pi, i, comp);
-              }
-          }
+	li = get_component_ssa_name (PHI_RESULT (phi), true);
+	if (TREE_CODE (li) == SSA_NAME)
+	  {
+	    pi = create_phi_node (li, bb);
+	    SSA_NAME_DEF_STMT (li) = pi;
+	  }
+	
+	for (i = 0, n = PHI_NUM_ARGS (phi); i < n; ++i)
+	  {
+	    tree comp, arg = PHI_ARG_DEF (phi, i);
+	    if (pr)
+	      {
+		comp = extract_component (NULL, arg, false, false);
+		SET_PHI_ARG_DEF (pr, i, comp);
+	      }
+	    if (pi)
+	      {
+		comp = extract_component (NULL, arg, true, false);
+		SET_PHI_ARG_DEF (pi, i, comp);
+	      }
+	  }
       }
 }
 
@@ -717,7 +717,7 @@ update_all_vops (tree stmt)
   FOR_EACH_SSA_TREE_OPERAND (sym, stmt, iter, SSA_OP_ALL_VIRTUALS)
     {
       if (TREE_CODE (sym) == SSA_NAME)
-        sym = SSA_NAME_VAR (sym);
+	sym = SSA_NAME_VAR (sym);
       mark_sym_for_renaming (sym);
     }
 }
@@ -726,7 +726,7 @@ update_all_vops (tree stmt)
 
 static void
 expand_complex_move (block_stmt_iterator *bsi, tree stmt, tree type,
-                     tree lhs, tree rhs)
+		     tree lhs, tree rhs)
 {
   tree inner_type = TREE_TYPE (type);
   tree r, i;
@@ -734,36 +734,36 @@ expand_complex_move (block_stmt_iterator *bsi, tree stmt, tree type,
   if (TREE_CODE (lhs) == SSA_NAME)
     {
       if (is_ctrl_altering_stmt (bsi_stmt (*bsi)))
-        {
-          edge_iterator ei;
-          edge e;
+	{
+	  edge_iterator ei;
+	  edge e;
 
-          /* The value is not assigned on the exception edges, so we need not
-             concern ourselves there.  We do need to update on the fallthru
-             edge.  Find it.  */
-          FOR_EACH_EDGE (e, ei, bsi->bb->succs)
-            if (e->flags & EDGE_FALLTHRU)
-              goto found_fallthru;
-          gcc_unreachable ();
-        found_fallthru:
+	  /* The value is not assigned on the exception edges, so we need not
+	     concern ourselves there.  We do need to update on the fallthru
+	     edge.  Find it.  */
+	  FOR_EACH_EDGE (e, ei, bsi->bb->succs)
+	    if (e->flags & EDGE_FALLTHRU)
+	      goto found_fallthru;
+	  gcc_unreachable ();
+	found_fallthru:
 
-          r = build1 (REALPART_EXPR, inner_type, lhs);
-          i = build1 (IMAGPART_EXPR, inner_type, lhs);
-          update_complex_components_on_edge (e, lhs, r, i);
-        }
+	  r = build1 (REALPART_EXPR, inner_type, lhs);
+	  i = build1 (IMAGPART_EXPR, inner_type, lhs);
+	  update_complex_components_on_edge (e, lhs, r, i);
+	}
       else if (TREE_CODE (rhs) == CALL_EXPR || TREE_SIDE_EFFECTS (rhs))
-        {
-          r = build1 (REALPART_EXPR, inner_type, lhs);
-          i = build1 (IMAGPART_EXPR, inner_type, lhs);
-          update_complex_components (bsi, stmt, r, i);
-        }
+	{
+	  r = build1 (REALPART_EXPR, inner_type, lhs);
+	  i = build1 (IMAGPART_EXPR, inner_type, lhs);
+	  update_complex_components (bsi, stmt, r, i);
+	}
       else
-        {
-          update_all_vops (bsi_stmt (*bsi));
-          r = extract_component (bsi, rhs, 0, true);
-          i = extract_component (bsi, rhs, 1, true);
-          update_complex_assignment (bsi, r, i);
-        }
+	{
+	  update_all_vops (bsi_stmt (*bsi));
+	  r = extract_component (bsi, rhs, 0, true);
+	  i = extract_component (bsi, rhs, 1, true);
+	  update_complex_assignment (bsi, r, i);
+	}
     }
   else if (TREE_CODE (rhs) == SSA_NAME && !TREE_SIDE_EFFECTS (lhs))
     {
@@ -777,22 +777,22 @@ expand_complex_move (block_stmt_iterator *bsi, tree stmt, tree type,
       bsi_insert_before (bsi, x, BSI_SAME_STMT);
 
       if (stmt == bsi_stmt (*bsi))
-        {
-          x = build1 (IMAGPART_EXPR, inner_type, unshare_expr (lhs));
-          TREE_OPERAND (stmt, 0) = x;
-          TREE_OPERAND (stmt, 1) = i;
-          TREE_TYPE (stmt) = inner_type;
-        }
+	{
+	  x = build1 (IMAGPART_EXPR, inner_type, unshare_expr (lhs));
+	  TREE_OPERAND (stmt, 0) = x;
+	  TREE_OPERAND (stmt, 1) = i;
+	  TREE_TYPE (stmt) = inner_type;
+	}
       else
-        {
-          x = build1 (IMAGPART_EXPR, inner_type, unshare_expr (lhs));
-          x = build2 (MODIFY_EXPR, inner_type, x, i);
-          bsi_insert_before (bsi, x, BSI_SAME_STMT);
+	{
+	  x = build1 (IMAGPART_EXPR, inner_type, unshare_expr (lhs));
+	  x = build2 (MODIFY_EXPR, inner_type, x, i);
+	  bsi_insert_before (bsi, x, BSI_SAME_STMT);
 
-          stmt = bsi_stmt (*bsi);
-          gcc_assert (TREE_CODE (stmt) == RETURN_EXPR);
-          TREE_OPERAND (stmt, 0) = lhs;
-        }
+	  stmt = bsi_stmt (*bsi);
+	  gcc_assert (TREE_CODE (stmt) == RETURN_EXPR);
+	  TREE_OPERAND (stmt, 0) = lhs;
+	}
 
       update_all_vops (stmt);
       update_stmt (stmt);
@@ -800,15 +800,15 @@ expand_complex_move (block_stmt_iterator *bsi, tree stmt, tree type,
 }
 
 /* Expand complex addition to scalars:
-        a + b = (ar + br) + i(ai + bi)
-        a - b = (ar - br) + i(ai + bi)
+	a + b = (ar + br) + i(ai + bi)
+	a - b = (ar - br) + i(ai + bi)
 */
 
 static void
 expand_complex_addition (block_stmt_iterator *bsi, tree inner_type,
-                         tree ar, tree ai, tree br, tree bi,
-                         enum tree_code code,
-                         complex_lattice_t al, complex_lattice_t bl)
+			 tree ar, tree ai, tree br, tree bi,
+			 enum tree_code code,
+			 complex_lattice_t al, complex_lattice_t bl)
 {
   tree rr, ri;
 
@@ -822,16 +822,16 @@ expand_complex_addition (block_stmt_iterator *bsi, tree inner_type,
     case PAIR (ONLY_REAL, ONLY_IMAG):
       rr = ar;
       if (code == MINUS_EXPR)
-        ri = gimplify_build2 (bsi, MINUS_EXPR, inner_type, ai, bi);
+	ri = gimplify_build2 (bsi, MINUS_EXPR, inner_type, ai, bi);
       else
-        ri = bi;
+	ri = bi;
       break;
 
     case PAIR (ONLY_IMAG, ONLY_REAL):
       if (code == MINUS_EXPR)
-        rr = gimplify_build2 (bsi, MINUS_EXPR, inner_type, ar, br);
+	rr = gimplify_build2 (bsi, MINUS_EXPR, inner_type, ar, br);
       else
-        rr = br;
+	rr = br;
       ri = ai;
       break;
 
@@ -852,14 +852,14 @@ expand_complex_addition (block_stmt_iterator *bsi, tree inner_type,
 
     case PAIR (ONLY_REAL, VARYING):
       if (code == MINUS_EXPR)
-        goto general;
+	goto general;
       rr = gimplify_build2 (bsi, code, inner_type, ar, br);
       ri = bi;
       break;
 
     case PAIR (ONLY_IMAG, VARYING):
       if (code == MINUS_EXPR)
-        goto general;
+	goto general;
       rr = br;
       ri = gimplify_build2 (bsi, code, inner_type, ai, bi);
       break;
@@ -882,7 +882,7 @@ expand_complex_addition (block_stmt_iterator *bsi, tree inner_type,
 
 static void
 expand_complex_libcall (block_stmt_iterator *bsi, tree ar, tree ai,
-                        tree br, tree bi, enum tree_code code)
+			tree br, tree bi, enum tree_code code)
 {
   enum machine_mode mode;
   enum built_in_function bcode;
@@ -915,19 +915,19 @@ expand_complex_libcall (block_stmt_iterator *bsi, tree ar, tree ai,
       tree lhs = TREE_OPERAND (stmt, 0);
       type = TREE_TYPE (type);
       update_complex_components (bsi, stmt,
-                                 build1 (REALPART_EXPR, type, lhs),
-                                 build1 (IMAGPART_EXPR, type, lhs));
+				 build1 (REALPART_EXPR, type, lhs),
+				 build1 (IMAGPART_EXPR, type, lhs));
     }
 }
 
 /* Expand complex multiplication to scalars:
-        a * b = (ar*br - ai*bi) + i(ar*bi + br*ai)
+	a * b = (ar*br - ai*bi) + i(ar*bi + br*ai)
 */
 
 static void
 expand_complex_multiplication (block_stmt_iterator *bsi, tree inner_type,
-                               tree ar, tree ai, tree br, tree bi,
-                               complex_lattice_t al, complex_lattice_t bl)
+			       tree ar, tree ai, tree br, tree bi,
+			       complex_lattice_t al, complex_lattice_t bl)
 {
   tree rr, ri;
 
@@ -949,10 +949,10 @@ expand_complex_multiplication (block_stmt_iterator *bsi, tree inner_type,
     case PAIR (ONLY_IMAG, ONLY_REAL):
       rr = ar;
       if (TREE_CODE (ai) == REAL_CST
-          && REAL_VALUES_IDENTICAL (TREE_REAL_CST (ai), dconst1))
-        ri = br;
+	  && REAL_VALUES_IDENTICAL (TREE_REAL_CST (ai), dconst1))
+	ri = br;
       else
-        ri = gimplify_build2 (bsi, MULT_EXPR, inner_type, ai, br);
+	ri = gimplify_build2 (bsi, MULT_EXPR, inner_type, ai, br);
       break;
 
     case PAIR (ONLY_IMAG, ONLY_IMAG):
@@ -974,28 +974,28 @@ expand_complex_multiplication (block_stmt_iterator *bsi, tree inner_type,
 
     case PAIR (VARYING, VARYING):
       if (flag_complex_method == 2 && SCALAR_FLOAT_TYPE_P (inner_type))
-        {
-          expand_complex_libcall (bsi, ar, ai, br, bi, MULT_EXPR);
-          return;
-        }
+	{
+	  expand_complex_libcall (bsi, ar, ai, br, bi, MULT_EXPR);
+	  return;
+	}
       else
-        {
-          tree t1, t2, t3, t4;
+	{
+	  tree t1, t2, t3, t4;
 
-          t1 = gimplify_build2 (bsi, MULT_EXPR, inner_type, ar, br);
-          t2 = gimplify_build2 (bsi, MULT_EXPR, inner_type, ai, bi);
-          t3 = gimplify_build2 (bsi, MULT_EXPR, inner_type, ar, bi);
+	  t1 = gimplify_build2 (bsi, MULT_EXPR, inner_type, ar, br);
+	  t2 = gimplify_build2 (bsi, MULT_EXPR, inner_type, ai, bi);
+	  t3 = gimplify_build2 (bsi, MULT_EXPR, inner_type, ar, bi);
 
-          /* Avoid expanding redundant multiplication for the common
-             case of squaring a complex number.  */
-          if (ar == br && ai == bi)
-            t4 = t3;
-          else
-            t4 = gimplify_build2 (bsi, MULT_EXPR, inner_type, ai, br);
+	  /* Avoid expanding redundant multiplication for the common
+	     case of squaring a complex number.  */
+	  if (ar == br && ai == bi)
+	    t4 = t3;
+	  else
+	    t4 = gimplify_build2 (bsi, MULT_EXPR, inner_type, ai, br);
 
-          rr = gimplify_build2 (bsi, MINUS_EXPR, inner_type, t1, t2);
-          ri = gimplify_build2 (bsi, PLUS_EXPR, inner_type, t3, t4);
-        }
+	  rr = gimplify_build2 (bsi, MINUS_EXPR, inner_type, t1, t2);
+	  ri = gimplify_build2 (bsi, PLUS_EXPR, inner_type, t3, t4);
+	}
       break;
 
     default:
@@ -1006,14 +1006,14 @@ expand_complex_multiplication (block_stmt_iterator *bsi, tree inner_type,
 }
 
 /* Expand complex division to scalars, straightforward algorithm.
-        a / b = ((ar*br + ai*bi)/t) + i((ai*br - ar*bi)/t)
-            t = br*br + bi*bi
+	a / b = ((ar*br + ai*bi)/t) + i((ai*br - ar*bi)/t)
+	    t = br*br + bi*bi
 */
 
 static void
 expand_complex_div_straight (block_stmt_iterator *bsi, tree inner_type,
-                             tree ar, tree ai, tree br, tree bi,
-                             enum tree_code code)
+			     tree ar, tree ai, tree br, tree bi,
+			     enum tree_code code)
 {
   tree rr, ri, div, t1, t2, t3;
 
@@ -1039,8 +1039,8 @@ expand_complex_div_straight (block_stmt_iterator *bsi, tree inner_type,
 
 static void
 expand_complex_div_wide (block_stmt_iterator *bsi, tree inner_type,
-                         tree ar, tree ai, tree br, tree bi,
-                         enum tree_code code)
+			 tree ar, tree ai, tree br, tree bi,
+			 enum tree_code code)
 {
   tree rr, ri, ratio, div, t1, t2, tr, ti, cond;
   basic_block bb_cond, bb_true, bb_false, bb_join;
@@ -1101,10 +1101,10 @@ expand_complex_div_wide (block_stmt_iterator *bsi, tree inner_type,
   if (bb_true || integer_nonzerop (cond))
     {
       if (bb_true)
-        {
-          *bsi = bsi_last (bb_true);
-          bsi_insert_after (bsi, build_empty_stmt (), BSI_NEW_STMT);
-        }
+	{
+	  *bsi = bsi_last (bb_true);
+	  bsi_insert_after (bsi, build_empty_stmt (), BSI_NEW_STMT);
+	}
 
       ratio = gimplify_build2 (bsi, code, inner_type, br, bi);
 
@@ -1122,11 +1122,11 @@ expand_complex_div_wide (block_stmt_iterator *bsi, tree inner_type,
 
      if (bb_true)
        {
-         t1 = build2 (MODIFY_EXPR, inner_type, rr, tr);
-         bsi_insert_before (bsi, t1, BSI_SAME_STMT);
-         t1 = build2 (MODIFY_EXPR, inner_type, ri, ti);
-         bsi_insert_before (bsi, t1, BSI_SAME_STMT);
-         bsi_remove (bsi, true);
+	 t1 = build2 (MODIFY_EXPR, inner_type, rr, tr);
+	 bsi_insert_before (bsi, t1, BSI_SAME_STMT);
+	 t1 = build2 (MODIFY_EXPR, inner_type, ri, ti);
+	 bsi_insert_before (bsi, t1, BSI_SAME_STMT);
+	 bsi_remove (bsi, true);
        }
     }
 
@@ -1140,10 +1140,10 @@ expand_complex_div_wide (block_stmt_iterator *bsi, tree inner_type,
   if (bb_false || integer_zerop (cond))
     {
       if (bb_false)
-        {
-          *bsi = bsi_last (bb_false);
-          bsi_insert_after (bsi, build_empty_stmt (), BSI_NEW_STMT);
-        }
+	{
+	  *bsi = bsi_last (bb_false);
+	  bsi_insert_after (bsi, build_empty_stmt (), BSI_NEW_STMT);
+	}
 
       ratio = gimplify_build2 (bsi, code, inner_type, bi, br);
 
@@ -1161,11 +1161,11 @@ expand_complex_div_wide (block_stmt_iterator *bsi, tree inner_type,
 
      if (bb_false)
        {
-         t1 = build2 (MODIFY_EXPR, inner_type, rr, tr);
-         bsi_insert_before (bsi, t1, BSI_SAME_STMT);
-         t1 = build2 (MODIFY_EXPR, inner_type, ri, ti);
-         bsi_insert_before (bsi, t1, BSI_SAME_STMT);
-         bsi_remove (bsi, true);
+	 t1 = build2 (MODIFY_EXPR, inner_type, rr, tr);
+	 bsi_insert_before (bsi, t1, BSI_SAME_STMT);
+	 t1 = build2 (MODIFY_EXPR, inner_type, ri, ti);
+	 bsi_insert_before (bsi, t1, BSI_SAME_STMT);
+	 bsi_remove (bsi, true);
        }
     }
 
@@ -1181,9 +1181,9 @@ expand_complex_div_wide (block_stmt_iterator *bsi, tree inner_type,
 
 static void
 expand_complex_division (block_stmt_iterator *bsi, tree inner_type,
-                         tree ar, tree ai, tree br, tree bi,
-                         enum tree_code code,
-                         complex_lattice_t al, complex_lattice_t bl)
+			 tree ar, tree ai, tree br, tree bi,
+			 enum tree_code code,
+			 complex_lattice_t al, complex_lattice_t bl)
 {
   tree rr, ri;
 
@@ -1224,28 +1224,28 @@ expand_complex_division (block_stmt_iterator *bsi, tree inner_type,
     case PAIR (ONLY_IMAG, VARYING):
     case PAIR (VARYING, VARYING):
       switch (flag_complex_method)
-        {
-        case 0:
-          /* straightforward implementation of complex divide acceptable.  */
-          expand_complex_div_straight (bsi, inner_type, ar, ai, br, bi, code);
-          break;
+	{
+	case 0:
+	  /* straightforward implementation of complex divide acceptable.  */
+	  expand_complex_div_straight (bsi, inner_type, ar, ai, br, bi, code);
+	  break;
 
-        case 2:
-          if (SCALAR_FLOAT_TYPE_P (inner_type))
-            {
-              expand_complex_libcall (bsi, ar, ai, br, bi, code);
-              break;
-            }
-          /* FALLTHRU */
+	case 2:
+	  if (SCALAR_FLOAT_TYPE_P (inner_type))
+	    {
+	      expand_complex_libcall (bsi, ar, ai, br, bi, code);
+	      break;
+	    }
+	  /* FALLTHRU */
 
-        case 1:
-          /* wide ranges of inputs must work for complex divide.  */
-          expand_complex_div_wide (bsi, inner_type, ar, ai, br, bi, code);
-          break;
+	case 1:
+	  /* wide ranges of inputs must work for complex divide.  */
+	  expand_complex_div_wide (bsi, inner_type, ar, ai, br, bi, code);
+	  break;
 
-        default:
-          gcc_unreachable ();
-        }
+	default:
+	  gcc_unreachable ();
+	}
       return;
 
     default:
@@ -1256,12 +1256,12 @@ expand_complex_division (block_stmt_iterator *bsi, tree inner_type,
 }
 
 /* Expand complex negation to scalars:
-        -a = (-ar) + i(-ai)
+	-a = (-ar) + i(-ai)
 */
 
 static void
 expand_complex_negation (block_stmt_iterator *bsi, tree inner_type,
-                         tree ar, tree ai)
+			 tree ar, tree ai)
 {
   tree rr, ri;
 
@@ -1272,12 +1272,12 @@ expand_complex_negation (block_stmt_iterator *bsi, tree inner_type,
 }
 
 /* Expand complex conjugate to scalars:
-        ~a = (ar) + i(-ai)
+	~a = (ar) + i(-ai)
 */
 
 static void
 expand_complex_conjugate (block_stmt_iterator *bsi, tree inner_type,
-                          tree ar, tree ai)
+			  tree ar, tree ai)
 {
   tree ri;
 
@@ -1290,15 +1290,15 @@ expand_complex_conjugate (block_stmt_iterator *bsi, tree inner_type,
 
 static void
 expand_complex_comparison (block_stmt_iterator *bsi, tree ar, tree ai,
-                           tree br, tree bi, enum tree_code code)
+			   tree br, tree bi, enum tree_code code)
 {
   tree cr, ci, cc, stmt, expr, type;
 
   cr = gimplify_build2 (bsi, code, boolean_type_node, ar, br);
   ci = gimplify_build2 (bsi, code, boolean_type_node, ai, bi);
   cc = gimplify_build2 (bsi,
-                        (code == EQ_EXPR ? TRUTH_AND_EXPR : TRUTH_OR_EXPR),
-                        boolean_type_node, cr, ci);
+			(code == EQ_EXPR ? TRUTH_AND_EXPR : TRUTH_OR_EXPR),
+			boolean_type_node, cr, ci);
 
   stmt = expr = bsi_stmt (*bsi);
 
@@ -1337,9 +1337,9 @@ expand_complex_operations_1 (block_stmt_iterator *bsi)
     case RETURN_EXPR:
       stmt = TREE_OPERAND (stmt, 0);
       if (!stmt)
-        return;
+	return;
       if (TREE_CODE (stmt) != MODIFY_EXPR)
-        return;
+	return;
       /* FALLTHRU */
 
     case MODIFY_EXPR:
@@ -1371,7 +1371,7 @@ expand_complex_operations_1 (block_stmt_iterator *bsi)
     case NEGATE_EXPR:
     case CONJ_EXPR:
       if (TREE_CODE (type) != COMPLEX_TYPE)
-        return;
+	return;
       inner_type = TREE_TYPE (type);
       break;
 
@@ -1379,25 +1379,25 @@ expand_complex_operations_1 (block_stmt_iterator *bsi)
     case NE_EXPR:
       inner_type = TREE_TYPE (TREE_OPERAND (rhs, 1));
       if (TREE_CODE (inner_type) != COMPLEX_TYPE)
-        return;
+	return;
       break;
 
     default:
       {
-        tree lhs = TREE_OPERAND (stmt, 0);
-        tree rhs = TREE_OPERAND (stmt, 1);
+	tree lhs = TREE_OPERAND (stmt, 0);
+	tree rhs = TREE_OPERAND (stmt, 1);
 
-        if (TREE_CODE (type) == COMPLEX_TYPE)
-          expand_complex_move (bsi, stmt, type, lhs, rhs);
-        else if ((TREE_CODE (rhs) == REALPART_EXPR
-                  || TREE_CODE (rhs) == IMAGPART_EXPR)
-                 && TREE_CODE (TREE_OPERAND (rhs, 0)) == SSA_NAME)
-          {
-            TREE_OPERAND (stmt, 1)
-              = extract_component (bsi, TREE_OPERAND (rhs, 0),
-                                   TREE_CODE (rhs) == IMAGPART_EXPR, false);
-            update_stmt (stmt);
-          }
+	if (TREE_CODE (type) == COMPLEX_TYPE)
+	  expand_complex_move (bsi, stmt, type, lhs, rhs);
+	else if ((TREE_CODE (rhs) == REALPART_EXPR
+		  || TREE_CODE (rhs) == IMAGPART_EXPR)
+		 && TREE_CODE (TREE_OPERAND (rhs, 0)) == SSA_NAME)
+	  {
+	    TREE_OPERAND (stmt, 1)
+	      = extract_component (bsi, TREE_OPERAND (rhs, 0),
+				   TREE_CODE (rhs) == IMAGPART_EXPR, false);
+	    update_stmt (stmt);
+	  }
       }
       return;
     }
@@ -1414,30 +1414,30 @@ expand_complex_operations_1 (block_stmt_iterator *bsi)
     {
       bc = TREE_OPERAND (rhs, 1);
       if (ac == bc)
-        br = ar, bi = ai;
+	br = ar, bi = ai;
       else
-        {
-          br = extract_component (bsi, bc, 0, true);
-          bi = extract_component (bsi, bc, 1, true);
-        }
+	{
+	  br = extract_component (bsi, bc, 0, true);
+	  bi = extract_component (bsi, bc, 1, true);
+	}
     }
 
   if (in_ssa_p)
     {
       al = find_lattice_value (ac);
       if (al == UNINITIALIZED)
-        al = VARYING;
+	al = VARYING;
 
       if (TREE_CODE_CLASS (code) == tcc_unary)
-        bl = UNINITIALIZED;
+	bl = UNINITIALIZED;
       else if (ac == bc)
-        bl = al;
+	bl = al;
       else
-        {
-          bl = find_lattice_value (bc);
-          if (bl == UNINITIALIZED)
-            bl = VARYING;
-        }
+	{
+	  bl = find_lattice_value (bc);
+	  if (bl == UNINITIALIZED)
+	    bl = VARYING;
+	}
     }
   else
     al = bl = VARYING;
@@ -1494,20 +1494,20 @@ tree_lower_complex (void)
 
   complex_lattice_values = VEC_alloc (complex_lattice_t, heap, num_ssa_names);
   VEC_safe_grow (complex_lattice_t, heap,
-                 complex_lattice_values, num_ssa_names);
+		 complex_lattice_values, num_ssa_names);
   memset (VEC_address (complex_lattice_t, complex_lattice_values), 0,
-          num_ssa_names * sizeof(complex_lattice_t));
+	  num_ssa_names * sizeof(complex_lattice_t));
 
   init_parameter_lattice_values ();
   ssa_propagate (complex_visit_stmt, complex_visit_phi);
 
   complex_variable_components = htab_create (10,  int_tree_map_hash,
-                                             int_tree_map_eq, free);
+					     int_tree_map_eq, free);
 
   complex_ssa_name_components = VEC_alloc (tree, heap, 2*num_ssa_names);
   VEC_safe_grow (tree, heap, complex_ssa_name_components, 2*num_ssa_names);
   memset (VEC_address (tree, complex_ssa_name_components), 0,
-          2 * num_ssa_names * sizeof(tree));
+	  2 * num_ssa_names * sizeof(tree));
 
   update_parameter_components ();
 
@@ -1516,10 +1516,10 @@ tree_lower_complex (void)
   FOR_EACH_BB (bb)
     {
       if (bb->index >= old_last_basic_block)
-        continue;
+	continue;
       update_phi_components (bb);
       for (bsi = bsi_start (bb); !bsi_end_p (bsi); bsi_next (&bsi))
-        expand_complex_operations_1 (&bsi);
+	expand_complex_operations_1 (&bsi);
     }
 
   bsi_commit_edge_inserts ();
@@ -1532,22 +1532,22 @@ tree_lower_complex (void)
 
 struct tree_opt_pass pass_lower_complex = 
 {
-  "cplxlower",                                /* name */
-  0,                                        /* gate */
-  tree_lower_complex,                        /* execute */
-  NULL,                                        /* sub */
-  NULL,                                        /* next */
-  0,                                        /* static_pass_number */
-  0,                                        /* tv_id */
-  PROP_ssa,                                /* properties_required */
-  0,                                        /* properties_provided */
+  "cplxlower",				/* name */
+  0,					/* gate */
+  tree_lower_complex,			/* execute */
+  NULL,					/* sub */
+  NULL,					/* next */
+  0,					/* static_pass_number */
+  0,					/* tv_id */
+  PROP_ssa,				/* properties_required */
+  0,					/* properties_provided */
   PROP_smt_usage,                       /* properties_destroyed */
-  0,                                        /* todo_flags_start */
+  0,					/* todo_flags_start */
   TODO_dump_func | TODO_ggc_collect
   | TODO_update_smt_usage
   | TODO_update_ssa
-  | TODO_verify_stmts,                        /* todo_flags_finish */
-  0                                        /* letter */
+  | TODO_verify_stmts,		        /* todo_flags_finish */
+  0					/* letter */
 };
 
 
@@ -1563,9 +1563,9 @@ tree_lower_complex_O0 (void)
   FOR_EACH_BB (bb)
     {
       if (bb->index >= old_last_basic_block)
-        continue;
+	continue;
       for (bsi = bsi_start (bb); !bsi_end_p (bsi); bsi_next (&bsi))
-        expand_complex_operations_1 (&bsi);
+	expand_complex_operations_1 (&bsi);
     }
   return 0;
 }
@@ -1580,18 +1580,18 @@ gate_no_optimization (void)
 
 struct tree_opt_pass pass_lower_complex_O0 = 
 {
-  "cplxlower0",                                /* name */
-  gate_no_optimization,                        /* gate */
-  tree_lower_complex_O0,                /* execute */
-  NULL,                                        /* sub */
-  NULL,                                        /* next */
-  0,                                        /* static_pass_number */
-  0,                                        /* tv_id */
-  PROP_cfg,                                /* properties_required */
-  0,                                        /* properties_provided */
-  0,                                        /* properties_destroyed */
-  0,                                        /* todo_flags_start */
+  "cplxlower0",				/* name */
+  gate_no_optimization,			/* gate */
+  tree_lower_complex_O0,		/* execute */
+  NULL,					/* sub */
+  NULL,					/* next */
+  0,					/* static_pass_number */
+  0,					/* tv_id */
+  PROP_cfg,				/* properties_required */
+  0,					/* properties_provided */
+  0,					/* properties_destroyed */
+  0,					/* todo_flags_start */
   TODO_dump_func | TODO_ggc_collect
-    | TODO_verify_stmts,                /* todo_flags_finish */
-  0                                        /* letter */
+    | TODO_verify_stmts,		/* todo_flags_finish */
+  0					/* letter */
 };

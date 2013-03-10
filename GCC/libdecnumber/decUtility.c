@@ -38,13 +38,13 @@
 /* ================================================================== */
 
 /* define and include the conversion tables to use */
-#define DEC_BIN2DPD 1                /* used for all sizes */
+#define DEC_BIN2DPD 1		/* used for all sizes */
 #if DECDPUN==3
 #define DEC_DPD2BIN 1
 #else
 #define DEC_DPD2BCD 1
 #endif
-#include "decDPD.h"                /* lookup tables */
+#include "decDPD.h"		/* lookup tables */
 
 /* The maximum number of decNumberUnits we need for a working copy of */
 /* the units array is the ceiling of digits/DECDPUN, where digits is */
@@ -75,100 +75,100 @@
 void
 decDensePackCoeff (const decNumber * dn, uByte * bytes, Int len, Int shift)
 {
-  Int cut;                        /* work */
-  Int n;                        /* output bunch counter */
-  Int digits = dn->digits;        /* digit countdown */
-  uInt dpd;                        /* densely packed decimal value */
-  uInt bin;                        /* binary value 0-999 */
-  uByte *bout;                        /* -> current output byte */
-  const Unit *inu = dn->lsu;        /* -> current input unit */
-  Unit uar[DECMAXUNITS];        /* working copy of units, iff shifted */
-#if DECDPUN!=3                        /* not fast path */
-  Unit in;                        /* current input unit */
+  Int cut;			/* work */
+  Int n;			/* output bunch counter */
+  Int digits = dn->digits;	/* digit countdown */
+  uInt dpd;			/* densely packed decimal value */
+  uInt bin;			/* binary value 0-999 */
+  uByte *bout;			/* -> current output byte */
+  const Unit *inu = dn->lsu;	/* -> current input unit */
+  Unit uar[DECMAXUNITS];	/* working copy of units, iff shifted */
+#if DECDPUN!=3			/* not fast path */
+  Unit in;			/* current input unit */
 #endif
 
   if (shift != 0)
-    {                                /* shift towards most significant required */
+    {				/* shift towards most significant required */
       /* shift the units array to the left by pad digits and copy */
       /* [this code is a special case of decShiftToMost, which could */
       /* be used instead if exposed and the array were copied first] */
-      Unit *target, *first;        /* work */
-      const Unit *source;        /* work */
-      uInt next = 0;                /* work */
+      Unit *target, *first;	/* work */
+      const Unit *source;	/* work */
+      uInt next = 0;		/* work */
 
-      source = dn->lsu + D2U (digits) - 1;        /* where msu comes from */
-      first = uar + D2U (digits + shift) - 1;        /* where msu will end up */
-      target = uar + D2U (digits) - 1 + D2U (shift);        /* where upper part of first cut goes */
+      source = dn->lsu + D2U (digits) - 1;	/* where msu comes from */
+      first = uar + D2U (digits + shift) - 1;	/* where msu will end up */
+      target = uar + D2U (digits) - 1 + D2U (shift);	/* where upper part of first cut goes */
 
       cut = (DECDPUN - shift % DECDPUN) % DECDPUN;
       for (; source >= dn->lsu; source--, target--)
-        {
-          /* split the source Unit and accumulate remainder for next */
-          uInt rem = *source % powers[cut];
-          next += *source / powers[cut];
-          if (target <= first)
-            *target = (Unit) next;        /* write to target iff valid */
-          next = rem * powers[DECDPUN - cut];        /* save remainder for next Unit */
-        }
+	{
+	  /* split the source Unit and accumulate remainder for next */
+	  uInt rem = *source % powers[cut];
+	  next += *source / powers[cut];
+	  if (target <= first)
+	    *target = (Unit) next;	/* write to target iff valid */
+	  next = rem * powers[DECDPUN - cut];	/* save remainder for next Unit */
+	}
       /* propagate remainder to one below and clear the rest */
       for (; target >= uar; target--)
-        {
-          *target = (Unit) next;
-          next = 0;
-        }
-      digits += shift;                /* add count (shift) of zeros added */
-      inu = uar;                /* use units in working array */
+	{
+	  *target = (Unit) next;
+	  next = 0;
+	}
+      digits += shift;		/* add count (shift) of zeros added */
+      inu = uar;		/* use units in working array */
     }
 
   /* densely pack the coefficient into the byte array, starting from
      the right (optionally padded) */
-  bout = &bytes[len - 1];        /* rightmost result byte for phase */
+  bout = &bytes[len - 1];	/* rightmost result byte for phase */
 
-#if DECDPUN!=3                        /* not fast path */
-  in = *inu;                        /* prime */
-  cut = 0;                        /* at lowest digit */
-  bin = 0;                        /* [keep compiler quiet] */
+#if DECDPUN!=3			/* not fast path */
+  in = *inu;			/* prime */
+  cut = 0;			/* at lowest digit */
+  bin = 0;			/* [keep compiler quiet] */
 #endif
 
   for (n = 0; digits > 0; n++)
-    {                                /* each output bunch */
-#if DECDPUN==3                        /* fast path, 3-at-a-time */
-      bin = *inu;                /* 3 ready for convert */
-      digits -= 3;                /* [may go negative] */
-      inu++;                        /* may need another */
+    {				/* each output bunch */
+#if DECDPUN==3			/* fast path, 3-at-a-time */
+      bin = *inu;		/* 3 ready for convert */
+      digits -= 3;		/* [may go negative] */
+      inu++;			/* may need another */
 
 #else /* must collect digit-by-digit */
-      Unit dig;                        /* current digit */
-      Int j;                        /* digit-in-bunch count */
+      Unit dig;			/* current digit */
+      Int j;			/* digit-in-bunch count */
       for (j = 0; j < 3; j++)
-        {
+	{
 #if DECDPUN<=4
-          Unit temp = (Unit) ((uInt) (in * 6554) >> 16);
-          dig = (Unit) (in - X10 (temp));
-          in = temp;
+	  Unit temp = (Unit) ((uInt) (in * 6554) >> 16);
+	  dig = (Unit) (in - X10 (temp));
+	  in = temp;
 #else
-          dig = in % 10;
-          in = in / 10;
+	  dig = in % 10;
+	  in = in / 10;
 #endif
 
-          if (j == 0)
-            bin = dig;
-          else if (j == 1)
-            bin += X10 (dig);
-          else                        /* j==2 */
-            bin += X100 (dig);
+	  if (j == 0)
+	    bin = dig;
+	  else if (j == 1)
+	    bin += X10 (dig);
+	  else			/* j==2 */
+	    bin += X100 (dig);
 
-          digits--;
-          if (digits == 0)
-            break;                /* [also protects *inu below] */
-          cut++;
-          if (cut == DECDPUN)
-            {
-              inu++;
-              in = *inu;
-              cut = 0;
-            }
-        }
+	  digits--;
+	  if (digits == 0)
+	    break;		/* [also protects *inu below] */
+	  cut++;
+	  if (cut == DECDPUN)
+	    {
+	      inu++;
+	      in = *inu;
+	      cut = 0;
+	    }
+	}
 #endif
       /* here we have 3 digits in bin, or have used all input digits */
 
@@ -176,30 +176,30 @@ decDensePackCoeff (const decNumber * dn, uByte * bytes, Int len, Int shift)
 
       /* write bunch (bcd) to byte array */
       switch (n & 0x03)
-        {                        /* phase 0-3 */
-        case 0:
-          *bout = (uByte) dpd;        /* [top 2 bits truncated] */
-          bout--;
-          *bout = (uByte) (dpd >> 8);
-          break;
-        case 1:
-          *bout |= (uByte) (dpd << 2);
-          bout--;
-          *bout = (uByte) (dpd >> 6);
-          break;
-        case 2:
-          *bout |= (uByte) (dpd << 4);
-          bout--;
-          *bout = (uByte) (dpd >> 4);
-          break;
-        case 3:
-          *bout |= (uByte) (dpd << 6);
-          bout--;
-          *bout = (uByte) (dpd >> 2);
-          bout--;
-          break;
-        }                        /* switch */
-    }                                /* n bunches */
+	{			/* phase 0-3 */
+	case 0:
+	  *bout = (uByte) dpd;	/* [top 2 bits truncated] */
+	  bout--;
+	  *bout = (uByte) (dpd >> 8);
+	  break;
+	case 1:
+	  *bout |= (uByte) (dpd << 2);
+	  bout--;
+	  *bout = (uByte) (dpd >> 6);
+	  break;
+	case 2:
+	  *bout |= (uByte) (dpd << 4);
+	  bout--;
+	  *bout = (uByte) (dpd >> 4);
+	  break;
+	case 3:
+	  *bout |= (uByte) (dpd << 6);
+	  bout--;
+	  *bout = (uByte) (dpd >> 2);
+	  bout--;
+	  break;
+	}			/* switch */
+    }				/* n bunches */
   return;
 }
 
@@ -222,139 +222,139 @@ decDensePackCoeff (const decNumber * dn, uByte * bytes, Int len, Int shift)
 /* ------------------------------------------------------------------ */
 void
 decDenseUnpackCoeff (const uByte * bytes, Int len, decNumber * dn,
-                     Int bunches, Int odd)
+		     Int bunches, Int odd)
 {
-  uInt dpd = 0;                        /* collector for 10 bits */
-  Int n;                        /* counter */
-  const uByte *bin;                /* -> current input byte */
-  Unit *uout = dn->lsu;                /* -> current output unit */
-  Unit out = 0;                        /* accumulator */
-  Int cut = 0;                        /* power of ten in current unit */
-  Unit *last = uout;                /* will be unit containing msd */
+  uInt dpd = 0;			/* collector for 10 bits */
+  Int n;			/* counter */
+  const uByte *bin;		/* -> current input byte */
+  Unit *uout = dn->lsu;		/* -> current output unit */
+  Unit out = 0;			/* accumulator */
+  Int cut = 0;			/* power of ten in current unit */
+  Unit *last = uout;		/* will be unit containing msd */
 #if DECDPUN!=3
-  uInt bcd;                        /* BCD result */
-  uInt nibble;                        /* work */
+  uInt bcd;			/* BCD result */
+  uInt nibble;			/* work */
 #endif
 
   /* Expand the densely-packed integer, right to left */
-  bin = &bytes[len - 1];        /* next input byte to use */
+  bin = &bytes[len - 1];	/* next input byte to use */
   for (n = 0; n < bunches + odd; n++)
-    {                                /* N bunches of 10 bits */
+    {				/* N bunches of 10 bits */
       /* assemble the 10 bits */
       switch (n & 0x03)
-        {                        /* phase 0-3 */
-        case 0:
-          dpd = *bin;
-          bin--;
-          dpd |= (*bin & 0x03) << 8;
-          break;
-        case 1:
-          dpd = (unsigned) *bin >> 2;
-          bin--;
-          dpd |= (*bin & 0x0F) << 6;
-          break;
-        case 2:
-          dpd = (unsigned) *bin >> 4;
-          bin--;
-          dpd |= (*bin & 0x3F) << 4;
-          break;
-        case 3:
-          dpd = (unsigned) *bin >> 6;
-          bin--;
-          dpd |= (*bin) << 2;
-          bin--;
-          break;
-        }                        /*switch */
+	{			/* phase 0-3 */
+	case 0:
+	  dpd = *bin;
+	  bin--;
+	  dpd |= (*bin & 0x03) << 8;
+	  break;
+	case 1:
+	  dpd = (unsigned) *bin >> 2;
+	  bin--;
+	  dpd |= (*bin & 0x0F) << 6;
+	  break;
+	case 2:
+	  dpd = (unsigned) *bin >> 4;
+	  bin--;
+	  dpd |= (*bin & 0x3F) << 4;
+	  break;
+	case 3:
+	  dpd = (unsigned) *bin >> 6;
+	  bin--;
+	  dpd |= (*bin) << 2;
+	  bin--;
+	  break;
+	}			/*switch */
 
 #if DECDPUN==3
       if (dpd == 0)
-        *uout = 0;
+	*uout = 0;
       else
-        {
-          *uout = DPD2BIN[dpd];        /* convert 10 bits to binary 0-999 */
-          last = uout;                /* record most significant unit */
-        }
+	{
+	  *uout = DPD2BIN[dpd];	/* convert 10 bits to binary 0-999 */
+	  last = uout;		/* record most significant unit */
+	}
       uout++;
 
 #else /* DECDPUN!=3 */
       if (dpd == 0)
-        {                        /* fastpath [e.g., leading zeros] */
-          cut += 3;
-          for (; cut >= DECDPUN;)
-            {
-              cut -= DECDPUN;
-              *uout = out;
-              uout++;
-              out = 0;
-            }
-          continue;
-        }
-      bcd = DPD2BCD[dpd];        /* convert 10 bits to 12 bits BCD */
+	{			/* fastpath [e.g., leading zeros] */
+	  cut += 3;
+	  for (; cut >= DECDPUN;)
+	    {
+	      cut -= DECDPUN;
+	      *uout = out;
+	      uout++;
+	      out = 0;
+	    }
+	  continue;
+	}
+      bcd = DPD2BCD[dpd];	/* convert 10 bits to 12 bits BCD */
       /* now split the 3 BCD nibbles into bytes, and accumulate into units */
       /* If this is the last bunch and it is an odd one, we only have one */
       /* nibble to handle [extras could overflow a Unit] */
       nibble = bcd & 0x000f;
       if (nibble)
-        {
-          last = uout;
-          out = (Unit) (out + nibble * powers[cut]);
-        }
+	{
+	  last = uout;
+	  out = (Unit) (out + nibble * powers[cut]);
+	}
       cut++;
       if (cut == DECDPUN)
-        {
-          *uout = out;
-          uout++;
-          cut = 0;
-          out = 0;
-        }
+	{
+	  *uout = out;
+	  uout++;
+	  cut = 0;
+	  out = 0;
+	}
       if (n < bunches)
-        {
-          nibble = bcd & 0x00f0;
-          if (nibble)
-            {
-              nibble >>= 4;
-              last = uout;
-              out = (Unit) (out + nibble * powers[cut]);
-            }
-          cut++;
-          if (cut == DECDPUN)
-            {
-              *uout = out;
-              uout++;
-              cut = 0;
-              out = 0;
-            }
-          nibble = bcd & 0x0f00;
-          if (nibble)
-            {
-              nibble >>= 8;
-              last = uout;
-              out = (Unit) (out + nibble * powers[cut]);
-            }
-          cut++;
-          if (cut == DECDPUN)
-            {
-              *uout = out;
-              uout++;
-              cut = 0;
-              out = 0;
-            }
-        }
+	{
+	  nibble = bcd & 0x00f0;
+	  if (nibble)
+	    {
+	      nibble >>= 4;
+	      last = uout;
+	      out = (Unit) (out + nibble * powers[cut]);
+	    }
+	  cut++;
+	  if (cut == DECDPUN)
+	    {
+	      *uout = out;
+	      uout++;
+	      cut = 0;
+	      out = 0;
+	    }
+	  nibble = bcd & 0x0f00;
+	  if (nibble)
+	    {
+	      nibble >>= 8;
+	      last = uout;
+	      out = (Unit) (out + nibble * powers[cut]);
+	    }
+	  cut++;
+	  if (cut == DECDPUN)
+	    {
+	      *uout = out;
+	      uout++;
+	      cut = 0;
+	      out = 0;
+	    }
+	}
 #endif
-    }                                /* n */
+    }				/* n */
   if (cut != 0)
-    *uout = out;                /* write out final unit */
+    *uout = out;		/* write out final unit */
 
   /* here, last points to the most significant unit with digits */
   /* we need to inspect it to get final digits count */
-  dn->digits = (last - dn->lsu) * DECDPUN;        /* floor of digits */
+  dn->digits = (last - dn->lsu) * DECDPUN;	/* floor of digits */
   for (cut = 0; cut < DECDPUN; cut++)
     {
       if (*last < powers[cut])
-        break;
+	break;
       dn->digits++;
     }
   if (dn->digits == 0)
-    dn->digits++;                /* zero has one digit */
+    dn->digits++;		/* zero has one digit */
   return;
 }

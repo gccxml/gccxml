@@ -31,17 +31,17 @@
 # This file sets the following shell variables for use by the
 # autoconf-generated configure script:
 #
-#  build_xm_defines        List of macros to define when compiling for the
-#                        build machine.
+#  build_xm_defines	List of macros to define when compiling for the
+#			build machine.
 #
-#  build_xm_file        List of files to include when compiling for the
-#                        build machine.
+#  build_xm_file	List of files to include when compiling for the
+#			build machine.
 #
 #  build_install_headers_dir
-#                        Target to use when installing header files.
+#			Target to use when installing header files.
 #
-#  build_exeext                Set to the suffix, if the build machine requires
-#                        executables to have a file name suffix.
+#  build_exeext		Set to the suffix, if the build machine requires
+#			executables to have a file name suffix.
 
 # Default settings.
 build_xm_file=

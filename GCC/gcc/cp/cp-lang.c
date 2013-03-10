@@ -45,7 +45,7 @@ static void cp_init_ts (void);
 #undef LANG_HOOKS_INIT
 #define LANG_HOOKS_INIT cxx_init
 #undef LANG_HOOKS_DECL_PRINTABLE_NAME
-#define LANG_HOOKS_DECL_PRINTABLE_NAME        cxx_printable_name
+#define LANG_HOOKS_DECL_PRINTABLE_NAME	cxx_printable_name
 #undef LANG_HOOKS_FOLD_OBJ_TYPE_REF
 #define LANG_HOOKS_FOLD_OBJ_TYPE_REF cp_fold_obj_type_ref
 #undef LANG_HOOKS_INIT_TS
@@ -102,10 +102,10 @@ const char *const tree_code_name[] = {
 
 tree
 objcp_tsubst_copy_and_build (tree t ATTRIBUTE_UNUSED,
-                             tree args ATTRIBUTE_UNUSED,
-                             tsubst_flags_t complain ATTRIBUTE_UNUSED,
-                             tree in_decl ATTRIBUTE_UNUSED,
-                             bool function_p ATTRIBUTE_UNUSED)
+			     tree args ATTRIBUTE_UNUSED,
+			     tsubst_flags_t complain ATTRIBUTE_UNUSED,
+			     tree in_decl ATTRIBUTE_UNUSED,
+			     bool function_p ATTRIBUTE_UNUSED)
 {
   return NULL_TREE;
 }

@@ -112,20 +112,20 @@ struct cfg_hooks
   /* A hook for duplicating loop in CFG, currently this is used
      in loop versioning.  */
   bool (*cfg_hook_duplicate_loop_to_header_edge) (struct loop *loop, edge e,
-                                                  struct loops *loops,
-                                                  unsigned int ndupl,
-                                                  sbitmap wont_exit,
-                                                  edge orig, edge *to_remove,
-                                                  unsigned int *n_to_remove,
-                                                  int flags);
+						  struct loops *loops,
+						  unsigned int ndupl,
+						  sbitmap wont_exit,
+						  edge orig, edge *to_remove,
+						  unsigned int *n_to_remove,
+						  int flags);
 
   /* Add condition to new basic block and update CFG used in loop
      versioning.  */
   void (*lv_add_condition_to_bb) (basic_block, basic_block, basic_block,
-                                  void *);
+				  void *);
   /* Update the PHI nodes in case of loop versioning.  */
   void (*lv_adjust_loop_header_phi) (basic_block, basic_block,
-                                     basic_block, edge);
+				     basic_block, edge);
 
   /* Given a condition BB extract the true/false taken/not taken edges
      (depending if we are on tree's or RTL). */
@@ -151,7 +151,7 @@ extern basic_block create_empty_bb (basic_block);
 extern bool can_merge_blocks_p (basic_block, basic_block);
 extern void merge_blocks (basic_block, basic_block);
 extern edge make_forwarder_block (basic_block, bool (*)(edge),
-                                  void (*) (basic_block));
+				  void (*) (basic_block));
 extern void tidy_fallthru_edge (edge);
 extern void tidy_fallthru_edges (void);
 extern void predict_edge (edge e, enum br_predictor predictor, int probability);
@@ -164,19 +164,19 @@ extern int flow_call_edges_add (sbitmap);
 extern void execute_on_growing_pred (edge);
 extern void execute_on_shrinking_pred (edge);
 extern bool cfg_hook_duplicate_loop_to_header_edge (struct loop *loop, edge,
-                                                    struct loops *loops,
-                                                    unsigned int ndupl,
-                                                    sbitmap wont_exit,
-                                                    edge orig, edge *to_remove,
-                                                    unsigned int *n_to_remove,
-                                                    int flags);
+						    struct loops *loops,
+						    unsigned int ndupl,
+						    sbitmap wont_exit,
+						    edge orig, edge *to_remove,
+						    unsigned int *n_to_remove,
+						    int flags);
 
 extern void lv_flush_pending_stmts (edge);
 extern void extract_cond_bb_edges (basic_block, edge *, edge*);
 extern void lv_adjust_loop_header_phi (basic_block, basic_block, basic_block,
-                                       edge);
+				       edge);
 extern void lv_add_condition_to_bb (basic_block, basic_block, basic_block,
-                                    void *);
+				    void *);
 
 /* Hooks containers.  */
 extern struct cfg_hooks tree_cfg_hooks;

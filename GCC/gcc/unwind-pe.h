@@ -61,7 +61,7 @@
 #define DW_EH_PE_funcrel        0x40
 #define DW_EH_PE_aligned        0x50
 
-#define DW_EH_PE_indirect        0x80
+#define DW_EH_PE_indirect	0x80
 
 
 #ifndef NO_SIZE_OF_ENCODED_VALUE
@@ -181,7 +181,7 @@ read_sleb128 (const unsigned char *p, _Unwind_Sword *val)
 
 static const unsigned char *
 read_encoded_value_with_base (unsigned char encoding, _Unwind_Ptr base,
-                              const unsigned char *p, _Unwind_Ptr *val)
+			      const unsigned char *p, _Unwind_Ptr *val)
 {
   union unaligned
     {
@@ -207,65 +207,65 @@ read_encoded_value_with_base (unsigned char encoding, _Unwind_Ptr base,
   else
     {
       switch (encoding & 0x0f)
-        {
-        case DW_EH_PE_absptr:
-          result = (_Unwind_Internal_Ptr) u->ptr;
-          p += sizeof (void *);
-          break;
+	{
+	case DW_EH_PE_absptr:
+	  result = (_Unwind_Internal_Ptr) u->ptr;
+	  p += sizeof (void *);
+	  break;
 
-        case DW_EH_PE_uleb128:
-          {
-            _Unwind_Word tmp;
-            p = read_uleb128 (p, &tmp);
-            result = (_Unwind_Internal_Ptr) tmp;
-          }
-          break;
+	case DW_EH_PE_uleb128:
+	  {
+	    _Unwind_Word tmp;
+	    p = read_uleb128 (p, &tmp);
+	    result = (_Unwind_Internal_Ptr) tmp;
+	  }
+	  break;
 
-        case DW_EH_PE_sleb128:
-          {
-            _Unwind_Sword tmp;
-            p = read_sleb128 (p, &tmp);
-            result = (_Unwind_Internal_Ptr) tmp;
-          }
-          break;
+	case DW_EH_PE_sleb128:
+	  {
+	    _Unwind_Sword tmp;
+	    p = read_sleb128 (p, &tmp);
+	    result = (_Unwind_Internal_Ptr) tmp;
+	  }
+	  break;
 
-        case DW_EH_PE_udata2:
-          result = u->u2;
-          p += 2;
-          break;
-        case DW_EH_PE_udata4:
-          result = u->u4;
-          p += 4;
-          break;
-        case DW_EH_PE_udata8:
-          result = u->u8;
-          p += 8;
-          break;
+	case DW_EH_PE_udata2:
+	  result = u->u2;
+	  p += 2;
+	  break;
+	case DW_EH_PE_udata4:
+	  result = u->u4;
+	  p += 4;
+	  break;
+	case DW_EH_PE_udata8:
+	  result = u->u8;
+	  p += 8;
+	  break;
 
-        case DW_EH_PE_sdata2:
-          result = u->s2;
-          p += 2;
-          break;
-        case DW_EH_PE_sdata4:
-          result = u->s4;
-          p += 4;
-          break;
-        case DW_EH_PE_sdata8:
-          result = u->s8;
-          p += 8;
-          break;
+	case DW_EH_PE_sdata2:
+	  result = u->s2;
+	  p += 2;
+	  break;
+	case DW_EH_PE_sdata4:
+	  result = u->s4;
+	  p += 4;
+	  break;
+	case DW_EH_PE_sdata8:
+	  result = u->s8;
+	  p += 8;
+	  break;
 
-        default:
-          __gxx_abort ();
-        }
+	default:
+	  __gxx_abort ();
+	}
 
       if (result != 0)
-        {
-          result += ((encoding & 0x70) == DW_EH_PE_pcrel
-                     ? (_Unwind_Internal_Ptr) u : base);
-          if (encoding & DW_EH_PE_indirect)
-            result = *(_Unwind_Internal_Ptr *) result;
-        }
+	{
+	  result += ((encoding & 0x70) == DW_EH_PE_pcrel
+		     ? (_Unwind_Internal_Ptr) u : base);
+	  if (encoding & DW_EH_PE_indirect)
+	    result = *(_Unwind_Internal_Ptr *) result;
+	}
     }
 
   *val = result;
@@ -279,11 +279,11 @@ read_encoded_value_with_base (unsigned char encoding, _Unwind_Ptr base,
 
 static inline const unsigned char *
 read_encoded_value (struct _Unwind_Context *context, unsigned char encoding,
-                    const unsigned char *p, _Unwind_Ptr *val)
+		    const unsigned char *p, _Unwind_Ptr *val)
 {
   return read_encoded_value_with_base (encoding,
-                base_of_encoded_value (encoding, context),
-                p, val);
+		base_of_encoded_value (encoding, context),
+		p, val);
 }
 
 #endif

@@ -50,10 +50,10 @@ location_for_asm (rtx insn)
   else if (GET_CODE (body) == ASM_OPERANDS)
     asmop = body;
   else if (GET_CODE (body) == PARALLEL
-           && GET_CODE (XVECEXP (body, 0, 0)) == SET)
+	   && GET_CODE (XVECEXP (body, 0, 0)) == SET)
     asmop = SET_SRC (XVECEXP (body, 0, 0));
   else if (GET_CODE (body) == PARALLEL
-           && GET_CODE (XVECEXP (body, 0, 0)) == ASM_OPERANDS)
+	   && GET_CODE (XVECEXP (body, 0, 0)) == ASM_OPERANDS)
     asmop = XVECEXP (body, 0, 0);
   else
     asmop = NULL;
@@ -77,12 +77,12 @@ location_for_asm (rtx insn)
    and each ASM_OPERANDS records its own source file and line.  */
 static void
 diagnostic_for_asm (rtx insn, const char *msg, va_list *args_ptr,
-                    diagnostic_t kind)
+		    diagnostic_t kind)
 {
   diagnostic_info diagnostic;
 
   diagnostic_set_info (&diagnostic, msg, args_ptr,
-                       location_for_asm (insn), kind);
+		       location_for_asm (insn), kind);
   report_diagnostic (&diagnostic);
 }
 
@@ -108,7 +108,7 @@ warning_for_asm (rtx insn, const char *gmsgid, ...)
 
 void
 _fatal_insn (const char *msgid, rtx insn, const char *file, int line,
-             const char *function)
+	     const char *function)
 {
   error ("%s", _(msgid));
 
@@ -122,11 +122,11 @@ _fatal_insn (const char *msgid, rtx insn, const char *file, int line,
 
 void
 _fatal_insn_not_found (rtx insn, const char *file, int line,
-                       const char *function)
+		       const char *function)
 {
   if (INSN_CODE (insn) < 0)
     _fatal_insn ("unrecognizable insn:", insn, file, line, function);
   else
     _fatal_insn ("insn does not satisfy its constraints:",
-                insn, file, line, function);
+		insn, file, line, function);
 }

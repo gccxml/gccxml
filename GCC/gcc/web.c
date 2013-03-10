@@ -103,8 +103,8 @@ unionfind_union (struct web_entry *first, struct web_entry *second)
 
 void
 union_defs (struct df *df, struct df_ref *use, struct web_entry *def_entry,
-             struct web_entry *use_entry,
-             bool (*fun) (struct web_entry *, struct web_entry *))
+ 	    struct web_entry *use_entry,
+ 	    bool (*fun) (struct web_entry *, struct web_entry *))
 {
   rtx insn = DF_REF_INSN (use);
   struct df_link *link = DF_REF_CHAIN (use);
@@ -133,9 +133,9 @@ union_defs (struct df *df, struct df_ref *use, struct web_entry *def_entry,
   while (use_link)
     {
       if (use != use_link
-          && DF_REF_REAL_REG (use) == DF_REF_REAL_REG (use_link))
-         (*fun) (use_entry + DF_REF_ID (use),
-                 use_entry + DF_REF_ID (use_link));
+	  && DF_REF_REAL_REG (use) == DF_REF_REAL_REG (use_link))
+ 	(*fun) (use_entry + DF_REF_ID (use),
+ 		use_entry + DF_REF_ID (use_link));
       use_link = use_link->next_ref;
     }
 
@@ -148,17 +148,17 @@ union_defs (struct df *df, struct df_ref *use, struct web_entry *def_entry,
       && SET_SRC (set) == SET_DEST (set))
     {
       while (def_link)
-        {
-          if (DF_REF_REAL_REG (use) == DF_REF_REAL_REG (def_link))
-             (*fun) (use_entry + DF_REF_ID (use),
-                     def_entry + DF_REF_ID (def_link));
-          def_link = def_link->next_ref;
-        }
+	{
+	  if (DF_REF_REAL_REG (use) == DF_REF_REAL_REG (def_link))
+ 	    (*fun) (use_entry + DF_REF_ID (use),
+ 		    def_entry + DF_REF_ID (def_link));
+	  def_link = def_link->next_ref;
+	}
     }
   while (link)
     {
       (*fun) (use_entry + DF_REF_ID (use),
-              def_entry + DF_REF_ID (link->ref));
+	      def_entry + DF_REF_ID (link->ref));
       link = link->next;
     }
 
@@ -169,17 +169,17 @@ union_defs (struct df *df, struct df_ref *use, struct web_entry *def_entry,
       struct df_ref *link;
 
       if (DF_REF_INSN (use))
-        link = DF_INSN_DEFS (df, DF_REF_INSN (use));
+	link = DF_INSN_DEFS (df, DF_REF_INSN (use));
       else
-        link = NULL;
+	link = NULL;
 
       while (link)
-        {
-          if (DF_REF_REAL_REG (link) == DF_REF_REAL_REG (use))
-             (*fun) (use_entry + DF_REF_ID (use),
-                     def_entry + DF_REF_ID (link));
-          link = link->next_ref;
-        }
+	{
+	  if (DF_REF_REAL_REG (link) == DF_REF_REAL_REG (use))
+ 	    (*fun) (use_entry + DF_REF_ID (use),
+ 		    def_entry + DF_REF_ID (link));
+	  link = link->next_ref;
+	}
     }
 }
 
@@ -206,9 +206,9 @@ entry_register (struct web_entry *entry, struct df_ref *ref, char *used)
     {
       newreg = reg;
       if (dump_file)
-        fprintf (dump_file,
-                 "New web forced to keep reg=%i (user variable)\n",
-                 REGNO (reg));
+	fprintf (dump_file,
+		 "New web forced to keep reg=%i (user variable)\n",
+		 REGNO (reg));
     }
   else
     {
@@ -217,8 +217,8 @@ entry_register (struct web_entry *entry, struct df_ref *ref, char *used)
       REG_POINTER (newreg) = REG_POINTER (reg);
       REG_ATTRS (newreg) = REG_ATTRS (reg);
       if (dump_file)
-        fprintf (dump_file, "Web oldreg=%i newreg=%i\n", REGNO (reg),
-                 REGNO (newreg));
+	fprintf (dump_file, "Web oldreg=%i newreg=%i\n", REGNO (reg),
+		 REGNO (newreg));
     }
 
   root->reg = newreg;
@@ -237,7 +237,7 @@ replace_ref (struct df_ref *ref, rtx reg)
     return;
   if (dump_file)
     fprintf (dump_file, "Updating insn %i (%i->%i)\n",
-             INSN_UID (DF_REF_INSN (ref)), REGNO (oldreg), REGNO (reg)); 
+	     INSN_UID (DF_REF_INSN (ref)), REGNO (oldreg), REGNO (reg)); 
   *loc = reg;
 }
 
@@ -274,10 +274,10 @@ web_main (void)
      in progress.  */
   for (i = 0; i < DF_USES_SIZE (df); i++)
     replace_ref (DF_USES_GET (df, i), 
-                 entry_register (use_entry + i, DF_USES_GET (df, i), used));
+		 entry_register (use_entry + i, DF_USES_GET (df, i), used));
   for (i = 0; i < DF_DEFS_SIZE (df); i++)
     replace_ref (DF_DEFS_GET (df, i), 
-                 entry_register (def_entry + i, DF_DEFS_GET (df, i), used));
+		 entry_register (def_entry + i, DF_DEFS_GET (df, i), used));
 
   /* Dataflow information is corrupt here, but it can be easily updated
      by creating new entries for new registers and updates or calling

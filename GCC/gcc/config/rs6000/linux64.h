@@ -22,19 +22,19 @@
 
 #ifndef RS6000_BI_ARCH
 
-#undef        DEFAULT_ABI
-#define        DEFAULT_ABI ABI_AIX
+#undef	DEFAULT_ABI
+#define	DEFAULT_ABI ABI_AIX
 
-#undef        TARGET_64BIT
-#define        TARGET_64BIT 1
+#undef	TARGET_64BIT
+#define	TARGET_64BIT 1
 
-#define        DEFAULT_ARCH64_P 1
-#define        RS6000_BI_ARCH_P 0
+#define	DEFAULT_ARCH64_P 1
+#define	RS6000_BI_ARCH_P 0
 
 #else
 
-#define        DEFAULT_ARCH64_P (TARGET_DEFAULT & MASK_64BIT)
-#define        RS6000_BI_ARCH_P 1
+#define	DEFAULT_ARCH64_P (TARGET_DEFAULT & MASK_64BIT)
+#define	RS6000_BI_ARCH_P 1
 
 #endif
 
@@ -47,8 +47,8 @@
 #endif
 #endif
 
-#undef        TARGET_AIX
-#define        TARGET_AIX TARGET_64BIT
+#undef	TARGET_AIX
+#define	TARGET_AIX TARGET_64BIT
 
 #ifdef HAVE_LD_NO_DOT_SYMS
 /* New ABI uses a local sym for the function entry point.  */
@@ -68,86 +68,86 @@ extern int dot_symbols;
 #define RELOCATABLE_NEEDS_FIXUP \
   (target_flags & target_flags_explicit & MASK_RELOCATABLE)
 
-#undef        RS6000_ABI_NAME
-#define        RS6000_ABI_NAME "linux"
+#undef	RS6000_ABI_NAME
+#define	RS6000_ABI_NAME "linux"
 
 #define INVALID_64BIT "-m%s not supported in this configuration"
 #define INVALID_32BIT INVALID_64BIT
 
-#undef        SUBSUBTARGET_OVERRIDE_OPTIONS
-#define        SUBSUBTARGET_OVERRIDE_OPTIONS                                \
-  do                                                                \
-    {                                                                \
-      if (!rs6000_explicit_options.alignment)                        \
-        rs6000_alignment_flags = MASK_ALIGN_NATURAL;                \
-      if (TARGET_64BIT)                                                \
-        {                                                        \
-          if (DEFAULT_ABI != ABI_AIX)                                \
-            {                                                        \
-              rs6000_current_abi = ABI_AIX;                        \
-              error (INVALID_64BIT, "call");                        \
-            }                                                        \
-          dot_symbols = !strcmp (rs6000_abi_name, "aixdesc");        \
-          if (target_flags & MASK_RELOCATABLE)                        \
-            {                                                        \
-              target_flags &= ~MASK_RELOCATABLE;                \
-              error (INVALID_64BIT, "relocatable");                \
-            }                                                        \
-          if (target_flags & MASK_EABI)                                \
-            {                                                        \
-              target_flags &= ~MASK_EABI;                        \
-              error (INVALID_64BIT, "eabi");                        \
-            }                                                        \
-          if (target_flags & MASK_PROTOTYPE)                        \
-            {                                                        \
-              target_flags &= ~MASK_PROTOTYPE;                        \
-              error (INVALID_64BIT, "prototype");                \
-            }                                                        \
-          if ((target_flags & MASK_POWERPC64) == 0)                \
-            {                                                        \
-              target_flags |= MASK_POWERPC64;                        \
-              error ("-m64 requires a PowerPC64 cpu");                \
-            }                                                        \
-        }                                                        \
-      else                                                        \
-        {                                                        \
-          if (!RS6000_BI_ARCH_P)                                \
-            error (INVALID_32BIT, "32");                        \
-          if (TARGET_PROFILE_KERNEL)                                \
-            {                                                        \
-              target_flags &= ~MASK_PROFILE_KERNEL;                \
-              error (INVALID_32BIT, "profile-kernel");                \
-            }                                                        \
-        }                                                        \
-    }                                                                \
+#undef	SUBSUBTARGET_OVERRIDE_OPTIONS
+#define	SUBSUBTARGET_OVERRIDE_OPTIONS				\
+  do								\
+    {								\
+      if (!rs6000_explicit_options.alignment)			\
+	rs6000_alignment_flags = MASK_ALIGN_NATURAL;		\
+      if (TARGET_64BIT)						\
+	{							\
+	  if (DEFAULT_ABI != ABI_AIX)				\
+	    {							\
+	      rs6000_current_abi = ABI_AIX;			\
+	      error (INVALID_64BIT, "call");			\
+	    }							\
+	  dot_symbols = !strcmp (rs6000_abi_name, "aixdesc");	\
+	  if (target_flags & MASK_RELOCATABLE)			\
+	    {							\
+	      target_flags &= ~MASK_RELOCATABLE;		\
+	      error (INVALID_64BIT, "relocatable");		\
+	    }							\
+	  if (target_flags & MASK_EABI)				\
+	    {							\
+	      target_flags &= ~MASK_EABI;			\
+	      error (INVALID_64BIT, "eabi");			\
+	    }							\
+	  if (target_flags & MASK_PROTOTYPE)			\
+	    {							\
+	      target_flags &= ~MASK_PROTOTYPE;			\
+	      error (INVALID_64BIT, "prototype");		\
+	    }							\
+	  if ((target_flags & MASK_POWERPC64) == 0)		\
+	    {							\
+	      target_flags |= MASK_POWERPC64;			\
+	      error ("-m64 requires a PowerPC64 cpu");		\
+	    }							\
+	}							\
+      else							\
+	{							\
+	  if (!RS6000_BI_ARCH_P)				\
+	    error (INVALID_32BIT, "32");			\
+	  if (TARGET_PROFILE_KERNEL)				\
+	    {							\
+	      target_flags &= ~MASK_PROFILE_KERNEL;		\
+	      error (INVALID_32BIT, "profile-kernel");		\
+	    }							\
+	}							\
+    }								\
   while (0)
 
-#ifdef        RS6000_BI_ARCH
+#ifdef	RS6000_BI_ARCH
 
-#undef        OVERRIDE_OPTIONS
-#define        OVERRIDE_OPTIONS \
+#undef	OVERRIDE_OPTIONS
+#define	OVERRIDE_OPTIONS \
   rs6000_override_options (((TARGET_DEFAULT ^ target_flags) & MASK_64BIT) \
-                           ? (char *) 0 : TARGET_CPU_DEFAULT)
+			   ? (char *) 0 : TARGET_CPU_DEFAULT)
 
 #endif
 
-#undef        ASM_DEFAULT_SPEC
-#undef        ASM_SPEC
-#undef        LINK_OS_LINUX_SPEC
+#undef	ASM_DEFAULT_SPEC
+#undef	ASM_SPEC
+#undef	LINK_OS_LINUX_SPEC
 
-#ifndef        RS6000_BI_ARCH
-#define        ASM_DEFAULT_SPEC "-mppc64"
-#define        ASM_SPEC         "%(asm_spec64) %(asm_spec_common)"
-#define        LINK_OS_LINUX_SPEC "%(link_os_linux_spec64)"
+#ifndef	RS6000_BI_ARCH
+#define	ASM_DEFAULT_SPEC "-mppc64"
+#define	ASM_SPEC	 "%(asm_spec64) %(asm_spec_common)"
+#define	LINK_OS_LINUX_SPEC "%(link_os_linux_spec64)"
 #else
 #if DEFAULT_ARCH64_P
-#define        ASM_DEFAULT_SPEC "-mppc%{!m32:64}"
-#define        ASM_SPEC         "%{m32:%(asm_spec32)}%{!m32:%(asm_spec64)} %(asm_spec_common)"
-#define        LINK_OS_LINUX_SPEC "%{m32:%(link_os_linux_spec32)}%{!m32:%(link_os_linux_spec64)}"
+#define	ASM_DEFAULT_SPEC "-mppc%{!m32:64}"
+#define	ASM_SPEC	 "%{m32:%(asm_spec32)}%{!m32:%(asm_spec64)} %(asm_spec_common)"
+#define	LINK_OS_LINUX_SPEC "%{m32:%(link_os_linux_spec32)}%{!m32:%(link_os_linux_spec64)}"
 #else
-#define        ASM_DEFAULT_SPEC "-mppc%{m64:64}"
-#define        ASM_SPEC         "%{!m64:%(asm_spec32)}%{m64:%(asm_spec64)} %(asm_spec_common)"
-#define        LINK_OS_LINUX_SPEC "%{!m64:%(link_os_linux_spec32)}%{m64:%(link_os_linux_spec64)}"
+#define	ASM_DEFAULT_SPEC "-mppc%{m64:64}"
+#define	ASM_SPEC	 "%{!m64:%(asm_spec32)}%{m64:%(asm_spec64)} %(asm_spec_common)"
+#define	LINK_OS_LINUX_SPEC "%{!m64:%(link_os_linux_spec32)}%{m64:%(link_os_linux_spec64)}"
 #endif
 #endif
 
@@ -169,15 +169,15 @@ extern int dot_symbols;
 %{v:-V} %{Qy:} %{!Qn:-Qy} %{Wa,*:%*} \
 %{mlittle} %{mlittle-endian} %{mbig} %{mbig-endian}"
 
-#undef        SUBSUBTARGET_EXTRA_SPECS
+#undef	SUBSUBTARGET_EXTRA_SPECS
 #define SUBSUBTARGET_EXTRA_SPECS \
-  { "asm_spec_common",                ASM_SPEC_COMMON },                        \
-  { "asm_spec32",                ASM_SPEC32 },                                \
-  { "asm_spec64",                ASM_SPEC64 },                                \
-  { "link_os_linux_spec32",        LINK_OS_LINUX_SPEC32 },                        \
-  { "link_os_linux_spec64",        LINK_OS_LINUX_SPEC64 },
+  { "asm_spec_common",		ASM_SPEC_COMMON },			\
+  { "asm_spec32",		ASM_SPEC32 },				\
+  { "asm_spec64",		ASM_SPEC64 },				\
+  { "link_os_linux_spec32",	LINK_OS_LINUX_SPEC32 },			\
+  { "link_os_linux_spec64",	LINK_OS_LINUX_SPEC64 },
 
-#undef        MULTILIB_DEFAULTS
+#undef	MULTILIB_DEFAULTS
 #if DEFAULT_ARCH64_P
 #define MULTILIB_DEFAULTS { "m64" }
 #else
@@ -187,20 +187,20 @@ extern int dot_symbols;
 #ifndef RS6000_BI_ARCH
 
 /* 64-bit PowerPC Linux is always big-endian.  */
-#undef        TARGET_LITTLE_ENDIAN
-#define TARGET_LITTLE_ENDIAN        0
+#undef	TARGET_LITTLE_ENDIAN
+#define TARGET_LITTLE_ENDIAN	0
 
 /* 64-bit PowerPC Linux always has a TOC.  */
 #undef  TARGET_TOC
-#define        TARGET_TOC                1
+#define	TARGET_TOC		1
 
 /* Some things from sysv4.h we don't do when 64 bit.  */
-#undef        TARGET_RELOCATABLE
-#define        TARGET_RELOCATABLE        0
-#undef        TARGET_EABI
-#define        TARGET_EABI                0
-#undef        TARGET_PROTOTYPE
-#define        TARGET_PROTOTYPE        0
+#undef	TARGET_RELOCATABLE
+#define	TARGET_RELOCATABLE	0
+#undef	TARGET_EABI
+#define	TARGET_EABI		0
+#undef	TARGET_PROTOTYPE
+#define	TARGET_PROTOTYPE	0
 #undef RELOCATABLE_NEEDS_FIXUP
 #define RELOCATABLE_NEEDS_FIXUP 0
 
@@ -214,26 +214,26 @@ extern int dot_symbols;
 /* PowerPC64 Linux word-aligns FP doubles when -malign-power is given.  */
 #undef  ADJUST_FIELD_ALIGN
 #define ADJUST_FIELD_ALIGN(FIELD, COMPUTED) \
-  ((TARGET_ALTIVEC && TREE_CODE (TREE_TYPE (FIELD)) == VECTOR_TYPE)        \
-   ? 128                                                                \
-   : (TARGET_64BIT                                                        \
-      && TARGET_ALIGN_NATURAL == 0                                        \
-      && TYPE_MODE (TREE_CODE (TREE_TYPE (FIELD)) == ARRAY_TYPE                \
-                    ? get_inner_array_type (FIELD)                        \
-                    : TREE_TYPE (FIELD)) == DFmode)                        \
-   ? MIN ((COMPUTED), 32)                                                \
+  ((TARGET_ALTIVEC && TREE_CODE (TREE_TYPE (FIELD)) == VECTOR_TYPE)	\
+   ? 128								\
+   : (TARGET_64BIT							\
+      && TARGET_ALIGN_NATURAL == 0					\
+      && TYPE_MODE (TREE_CODE (TREE_TYPE (FIELD)) == ARRAY_TYPE		\
+		    ? get_inner_array_type (FIELD)			\
+		    : TREE_TYPE (FIELD)) == DFmode)			\
+   ? MIN ((COMPUTED), 32)						\
    : (COMPUTED))
 
 /* PowerPC64 Linux increases natural record alignment to doubleword if
    the first field is an FP double, only if in power alignment mode.  */
 #undef  ROUND_TYPE_ALIGN
-#define ROUND_TYPE_ALIGN(STRUCT, COMPUTED, SPECIFIED)                        \
-  ((TARGET_64BIT                                                        \
-    && (TREE_CODE (STRUCT) == RECORD_TYPE                                \
-        || TREE_CODE (STRUCT) == UNION_TYPE                                \
-        || TREE_CODE (STRUCT) == QUAL_UNION_TYPE)                        \
-    && TARGET_ALIGN_NATURAL == 0)                                        \
-   ? rs6000_special_round_type_align (STRUCT, COMPUTED, SPECIFIED)        \
+#define ROUND_TYPE_ALIGN(STRUCT, COMPUTED, SPECIFIED)			\
+  ((TARGET_64BIT							\
+    && (TREE_CODE (STRUCT) == RECORD_TYPE				\
+	|| TREE_CODE (STRUCT) == UNION_TYPE				\
+	|| TREE_CODE (STRUCT) == QUAL_UNION_TYPE)			\
+    && TARGET_ALIGN_NATURAL == 0)					\
+   ? rs6000_special_round_type_align (STRUCT, COMPUTED, SPECIFIED)	\
    : MAX ((COMPUTED), (SPECIFIED)))
 
 /* Use the default for compiling target libs.  */
@@ -286,27 +286,27 @@ extern int dot_symbols;
 #define TARGET_C99_FUNCTIONS (OPTION_GLIBC)
 
 #undef  TARGET_OS_CPP_BUILTINS
-#define TARGET_OS_CPP_BUILTINS()                        \
-  do                                                        \
-    {                                                        \
-      if (TARGET_64BIT)                                        \
-        {                                                \
-          builtin_define ("__PPC__");                        \
-          builtin_define ("__PPC64__");                        \
-          builtin_define ("__powerpc__");                \
-          builtin_define ("__powerpc64__");                \
-          builtin_assert ("cpu=powerpc64");                \
-          builtin_assert ("machine=powerpc64");                \
-        }                                                \
-      else                                                \
-        {                                                \
-          builtin_define_std ("PPC");                        \
-          builtin_define_std ("powerpc");                \
-          builtin_assert ("cpu=powerpc");                \
-          builtin_assert ("machine=powerpc");                \
-          TARGET_OS_SYSV_CPP_BUILTINS ();                \
-        }                                                \
-    }                                                        \
+#define TARGET_OS_CPP_BUILTINS()			\
+  do							\
+    {							\
+      if (TARGET_64BIT)					\
+	{						\
+	  builtin_define ("__PPC__");			\
+	  builtin_define ("__PPC64__");			\
+	  builtin_define ("__powerpc__");		\
+	  builtin_define ("__powerpc64__");		\
+	  builtin_assert ("cpu=powerpc64");		\
+	  builtin_assert ("machine=powerpc64");		\
+	}						\
+      else						\
+	{						\
+	  builtin_define_std ("PPC");			\
+	  builtin_define_std ("powerpc");		\
+	  builtin_assert ("cpu=powerpc");		\
+	  builtin_assert ("machine=powerpc");		\
+	  TARGET_OS_SYSV_CPP_BUILTINS ();		\
+	}						\
+    }							\
   while (0)
 
 #undef  CPP_OS_DEFAULT_SPEC
@@ -327,13 +327,13 @@ extern int dot_symbols;
 #undef  STARTFILE_DEFAULT_SPEC
 #define STARTFILE_DEFAULT_SPEC "%(startfile_linux)"
 
-#undef        ENDFILE_DEFAULT_SPEC
+#undef	ENDFILE_DEFAULT_SPEC
 #define ENDFILE_DEFAULT_SPEC "%(endfile_linux)"
 
-#undef        LINK_START_DEFAULT_SPEC
+#undef	LINK_START_DEFAULT_SPEC
 #define LINK_START_DEFAULT_SPEC "%(link_start_linux)"
 
-#undef        LINK_OS_DEFAULT_SPEC
+#undef	LINK_OS_DEFAULT_SPEC
 #define LINK_OS_DEFAULT_SPEC "%(link_os_linux)"
 
 #define GLIBC_DYNAMIC_LINKER32 "/lib/ld.so.1"
@@ -361,30 +361,30 @@ extern int dot_symbols;
 
 #undef  TOC_SECTION_ASM_OP
 #define TOC_SECTION_ASM_OP \
-  (TARGET_64BIT                                                \
-   ? "\t.section\t\".toc\",\"aw\""                        \
+  (TARGET_64BIT						\
+   ? "\t.section\t\".toc\",\"aw\""			\
    : "\t.section\t\".got\",\"aw\"")
 
 #undef  MINIMAL_TOC_SECTION_ASM_OP
 #define MINIMAL_TOC_SECTION_ASM_OP \
-  (TARGET_64BIT                                                \
-   ? "\t.section\t\".toc1\",\"aw\""                        \
-   : ((TARGET_RELOCATABLE || flag_pic)                        \
-      ? "\t.section\t\".got2\",\"aw\""                        \
+  (TARGET_64BIT						\
+   ? "\t.section\t\".toc1\",\"aw\""			\
+   : ((TARGET_RELOCATABLE || flag_pic)			\
+      ? "\t.section\t\".got2\",\"aw\""			\
       : "\t.section\t\".got1\",\"aw\""))
 
 #undef  TARGET_VERSION
 #define TARGET_VERSION fprintf (stderr, " (PowerPC64 GNU/Linux)");
 
 /* Must be at least as big as our pointer type.  */
-#undef        SIZE_TYPE
-#define        SIZE_TYPE (TARGET_64BIT ? "long unsigned int" : "unsigned int")
+#undef	SIZE_TYPE
+#define	SIZE_TYPE (TARGET_64BIT ? "long unsigned int" : "unsigned int")
 
-#undef        PTRDIFF_TYPE
-#define        PTRDIFF_TYPE (TARGET_64BIT ? "long int" : "int")
+#undef	PTRDIFF_TYPE
+#define	PTRDIFF_TYPE (TARGET_64BIT ? "long int" : "int")
 
-#undef        WCHAR_TYPE
-#define        WCHAR_TYPE (TARGET_64BIT ? "int" : "long int")
+#undef	WCHAR_TYPE
+#define	WCHAR_TYPE (TARGET_64BIT ? "int" : "long int")
 #undef  WCHAR_TYPE_SIZE
 #define WCHAR_TYPE_SIZE 32
 
@@ -409,17 +409,17 @@ extern int dot_symbols;
    that reason, place a nop after the call so that the linker can
    restore the TOC pointer if a TOC adjusting call stub is needed.  */
 #if DOT_SYMBOLS
-#define CRT_CALL_STATIC_FUNCTION(SECTION_OP, FUNC)        \
-  asm (SECTION_OP "\n"                                        \
-"        bl ." #FUNC "\n"                                \
-"        nop\n"                                                \
-"        .previous");
+#define CRT_CALL_STATIC_FUNCTION(SECTION_OP, FUNC)	\
+  asm (SECTION_OP "\n"					\
+"	bl ." #FUNC "\n"				\
+"	nop\n"						\
+"	.previous");
 #else
-#define CRT_CALL_STATIC_FUNCTION(SECTION_OP, FUNC)        \
-  asm (SECTION_OP "\n"                                        \
-"        bl " #FUNC "\n"                                        \
-"        nop\n"                                                \
-"        .previous");
+#define CRT_CALL_STATIC_FUNCTION(SECTION_OP, FUNC)	\
+  asm (SECTION_OP "\n"					\
+"	bl " #FUNC "\n"					\
+"	nop\n"						\
+"	.previous");
 #endif
 #endif
 
@@ -438,21 +438,21 @@ extern int dot_symbols;
 #define PREFERRED_DEBUGGING_TYPE DWARF2_DEBUG
 
 /* This is how to declare the size of a function.  */
-#undef        ASM_DECLARE_FUNCTION_SIZE
-#define        ASM_DECLARE_FUNCTION_SIZE(FILE, FNAME, DECL)                        \
-  do                                                                        \
-    {                                                                        \
-      if (!flag_inhibit_size_directive)                                        \
-        {                                                                \
-          fputs ("\t.size\t", (FILE));                                        \
-          if (TARGET_64BIT && DOT_SYMBOLS)                                \
-            putc ('.', (FILE));                                                \
-          assemble_name ((FILE), (FNAME));                                \
-          fputs (",.-", (FILE));                                        \
-          rs6000_output_function_entry (FILE, FNAME);                        \
-          putc ('\n', (FILE));                                                \
-        }                                                                \
-    }                                                                        \
+#undef	ASM_DECLARE_FUNCTION_SIZE
+#define	ASM_DECLARE_FUNCTION_SIZE(FILE, FNAME, DECL)			\
+  do									\
+    {									\
+      if (!flag_inhibit_size_directive)					\
+	{								\
+	  fputs ("\t.size\t", (FILE));					\
+	  if (TARGET_64BIT && DOT_SYMBOLS)				\
+	    putc ('.', (FILE));						\
+	  assemble_name ((FILE), (FNAME));				\
+	  fputs (",.-", (FILE));					\
+	  rs6000_output_function_entry (FILE, FNAME);			\
+	  putc ('\n', (FILE));						\
+	}								\
+    }									\
   while (0)
 
 /* Return nonzero if this entry is to be written into the constant
@@ -466,34 +466,34 @@ extern int dot_symbols;
    than a TOC entry.  */
 
 #undef  ASM_OUTPUT_SPECIAL_POOL_ENTRY_P
-#define ASM_OUTPUT_SPECIAL_POOL_ENTRY_P(X, MODE)                        \
-  (TARGET_TOC                                                                \
-   && (GET_CODE (X) == SYMBOL_REF                                        \
-       || (GET_CODE (X) == CONST && GET_CODE (XEXP (X, 0)) == PLUS        \
-           && GET_CODE (XEXP (XEXP (X, 0), 0)) == SYMBOL_REF)                \
-       || GET_CODE (X) == LABEL_REF                                        \
-       || (GET_CODE (X) == CONST_INT                                         \
-           && GET_MODE_BITSIZE (MODE) <= GET_MODE_BITSIZE (Pmode))        \
-       || (GET_CODE (X) == CONST_DOUBLE                                        \
-           && ((TARGET_64BIT                                                \
-                && (TARGET_POWERPC64                                        \
-                    || TARGET_MINIMAL_TOC                                \
-                    || (SCALAR_FLOAT_MODE_P (GET_MODE (X))                \
-                        && ! TARGET_NO_FP_IN_TOC)))                        \
-               || (!TARGET_64BIT                                        \
-                   && !TARGET_NO_FP_IN_TOC                                \
-                   && !TARGET_RELOCATABLE                                \
-                   && SCALAR_FLOAT_MODE_P (GET_MODE (X))                \
-                   && BITS_PER_WORD == HOST_BITS_PER_INT)))))
+#define ASM_OUTPUT_SPECIAL_POOL_ENTRY_P(X, MODE)			\
+  (TARGET_TOC								\
+   && (GET_CODE (X) == SYMBOL_REF					\
+       || (GET_CODE (X) == CONST && GET_CODE (XEXP (X, 0)) == PLUS	\
+	   && GET_CODE (XEXP (XEXP (X, 0), 0)) == SYMBOL_REF)		\
+       || GET_CODE (X) == LABEL_REF					\
+       || (GET_CODE (X) == CONST_INT 					\
+	   && GET_MODE_BITSIZE (MODE) <= GET_MODE_BITSIZE (Pmode))	\
+       || (GET_CODE (X) == CONST_DOUBLE					\
+	   && ((TARGET_64BIT						\
+		&& (TARGET_POWERPC64					\
+		    || TARGET_MINIMAL_TOC				\
+		    || (SCALAR_FLOAT_MODE_P (GET_MODE (X))		\
+			&& ! TARGET_NO_FP_IN_TOC)))			\
+	       || (!TARGET_64BIT					\
+		   && !TARGET_NO_FP_IN_TOC				\
+		   && !TARGET_RELOCATABLE				\
+		   && SCALAR_FLOAT_MODE_P (GET_MODE (X))		\
+		   && BITS_PER_WORD == HOST_BITS_PER_INT)))))
 
 /* Select a format to encode pointers in exception handling data.  CODE
    is 0 for data, 1 for code labels, 2 for function pointers.  GLOBAL is
    true if the symbol may be affected by dynamic relocations.  */
-#undef        ASM_PREFERRED_EH_DATA_FORMAT
-#define        ASM_PREFERRED_EH_DATA_FORMAT(CODE, GLOBAL) \
-  ((TARGET_64BIT || flag_pic || TARGET_RELOCATABLE)                        \
-   ? (((GLOBAL) ? DW_EH_PE_indirect : 0) | DW_EH_PE_pcrel                \
-      | (TARGET_64BIT ? DW_EH_PE_udata8 : DW_EH_PE_sdata4))                \
+#undef	ASM_PREFERRED_EH_DATA_FORMAT
+#define	ASM_PREFERRED_EH_DATA_FORMAT(CODE, GLOBAL) \
+  ((TARGET_64BIT || flag_pic || TARGET_RELOCATABLE)			\
+   ? (((GLOBAL) ? DW_EH_PE_indirect : 0) | DW_EH_PE_pcrel		\
+      | (TARGET_64BIT ? DW_EH_PE_udata8 : DW_EH_PE_sdata4))		\
    : DW_EH_PE_absptr)
 
 /* For backward compatibility, we must continue to use the AIX
@@ -518,7 +518,7 @@ extern int dot_symbols;
 #ifdef TARGET_LIBC_PROVIDES_SSP
 /* ppc32 glibc provides __stack_chk_guard in -0x7008(2),
    ppc64 glibc provides it at -0x7010(13).  */
-#define TARGET_THREAD_SSP_OFFSET        (TARGET_64BIT ? -0x7010 : -0x7008)
+#define TARGET_THREAD_SSP_OFFSET	(TARGET_64BIT ? -0x7010 : -0x7008)
 #endif
 
 #define POWERPC_LINUX

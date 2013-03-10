@@ -73,7 +73,7 @@ usage (int errcode)
 {
   fprintf (stderr,
 "usage: %s [-vh] [-V vpath] [-Dname[=def]...] [-Uname] [-Idir...] [-o file] sources...\n",
-           progname);
+	   progname);
   exit (errcode);
 }
 
@@ -94,34 +94,34 @@ parse_options (int argc, char **argv)
       case 'I': add_dir (optarg, false); break;
       case 'J': add_dir (optarg, true);  break;
       case 'o':
-        if (output_file)
-          {
-            fprintf (stderr, "%s: too many output files\n", progname);
-            usage (2);
-          }
-        output_file = optarg;
-        break;
+	if (output_file)
+	  {
+	    fprintf (stderr, "%s: too many output files\n", progname);
+	    usage (2);
+	  }
+	output_file = optarg;
+	break;
       case 'V':
-        if (vpath)
-          {
-            fprintf (stderr, "%s: too many vpaths\n", progname);
-            usage (2);
-          }
-        vpath = optarg;
-        break;
+	if (vpath)
+	  {
+	    fprintf (stderr, "%s: too many vpaths\n", progname);
+	    usage (2);
+	  }
+	vpath = optarg;
+	break;
       case '?':
-        usage (2);  /* getopt has issued the error message.  */
+	usage (2);  /* getopt has issued the error message.  */
 
       case -1: /* end of options */
-        if (optind == argc)
-          {
-            fprintf (stderr, "%s: no input files\n", progname);
-            usage (2);
-          }
-        return optind;
+	if (optind == argc)
+	  {
+	    fprintf (stderr, "%s: no input files\n", progname);
+	    usage (2);
+	  }
+	return optind;
 
       default:
-        abort ();
+	abort ();
       }
 }
 
@@ -146,7 +146,7 @@ reader_init (struct line_maps *line_table)
   cpp_post_options (reader);
   cpp_init_iconv (reader);
   cpp_set_include_chains (reader, cmd_line_searchpath, cmd_line_searchpath,
-                          false);
+			  false);
   if (vpath)
     {
       struct deps *deps = cpp_get_deps (reader);
@@ -171,11 +171,11 @@ process_file (const char *file)
 
       cpp_init_builtins (reader, true);
       for (clm = cmd_line_macros; clm; clm = clm->next)
-        (clm->is_undef ? cpp_undef : cpp_define) (reader, clm->macro);
+	(clm->is_undef ? cpp_undef : cpp_define) (reader, clm->macro);
 
       cpp_scan_nooutput (reader);
       if (cpp_finish (reader, stdout))
-        had_errors = true;
+	had_errors = true;
     }
   cpp_destroy (reader);
   linemap_free (&line_table);
@@ -195,8 +195,8 @@ main(int argc, char **argv)
   if (output_file)
     if (!freopen (output_file, "w", stdout))
       {
-        perror (output_file);
-        return 1;
+	perror (output_file);
+	return 1;
       }
 
   for (i = first_input; i < argc; i++)

@@ -88,20 +88,20 @@
  %{static:%(link_gcc_c_sequence) -lmudflapth}} "
 
 /* Names to predefine in the preprocessor for this target machine.  */
-#define TARGET_OS_AIX_CPP_BUILTINS()                \
-  do                                                \
-    {                                                \
-      builtin_define ("_IBMR2");                \
-      builtin_define ("_POWER");                \
-      builtin_define ("_AIX");                        \
-      builtin_define ("_AIX32");                \
-      builtin_define ("_AIX41");                \
-      builtin_define ("_LONG_LONG");                \
-      if (TARGET_LONG_DOUBLE_128)                \
-        builtin_define ("__LONGDOUBLE128");        \
-      builtin_assert ("system=unix");                \
-      builtin_assert ("system=aix");                \
-    }                                                \
+#define TARGET_OS_AIX_CPP_BUILTINS()		\
+  do						\
+    {						\
+      builtin_define ("_IBMR2");		\
+      builtin_define ("_POWER");		\
+      builtin_define ("_AIX");			\
+      builtin_define ("_AIX32");		\
+      builtin_define ("_AIX41");		\
+      builtin_define ("_LONG_LONG");		\
+      if (TARGET_LONG_DOUBLE_128)		\
+        builtin_define ("__LONGDOUBLE128");	\
+      builtin_assert ("system=unix");		\
+      builtin_assert ("system=aix");		\
+    }						\
   while (0)
 
 /* Define appropriate architecture macros for preprocessor depending on
@@ -164,18 +164,18 @@
 #define ADJUST_FIELD_ALIGN(FIELD, COMPUTED) \
   (TARGET_ALIGN_NATURAL ? (COMPUTED) : \
   (TYPE_MODE (TREE_CODE (TREE_TYPE (FIELD)) == ARRAY_TYPE \
-              ? get_inner_array_type (FIELD) \
-              : TREE_TYPE (FIELD)) == DFmode \
+	      ? get_inner_array_type (FIELD) \
+	      : TREE_TYPE (FIELD)) == DFmode \
    ? MIN ((COMPUTED), 32) : (COMPUTED)))
 
 /* AIX increases natural record alignment to doubleword if the first
    field is an FP double while the FP fields remain word aligned.  */
-#define ROUND_TYPE_ALIGN(STRUCT, COMPUTED, SPECIFIED)                        \
-  ((TREE_CODE (STRUCT) == RECORD_TYPE                                        \
-    || TREE_CODE (STRUCT) == UNION_TYPE                                        \
-    || TREE_CODE (STRUCT) == QUAL_UNION_TYPE)                                \
-   && TARGET_ALIGN_NATURAL == 0                                                \
-   ? rs6000_special_round_type_align (STRUCT, COMPUTED, SPECIFIED)        \
+#define ROUND_TYPE_ALIGN(STRUCT, COMPUTED, SPECIFIED)			\
+  ((TREE_CODE (STRUCT) == RECORD_TYPE					\
+    || TREE_CODE (STRUCT) == UNION_TYPE					\
+    || TREE_CODE (STRUCT) == QUAL_UNION_TYPE)				\
+   && TARGET_ALIGN_NATURAL == 0						\
+   ? rs6000_special_round_type_align (STRUCT, COMPUTED, SPECIFIED)	\
    : MAX ((COMPUTED), (SPECIFIED)))
 
 /* The AIX ABI isn't explicit on whether aggregates smaller than a
@@ -200,8 +200,8 @@
 
 /* Define any extra SPECS that the compiler needs to generate.  */
 #undef  SUBTARGET_EXTRA_SPECS
-#define SUBTARGET_EXTRA_SPECS                                                \
-  { "link_syscalls",            LINK_SYSCALLS_SPEC },                        \
+#define SUBTARGET_EXTRA_SPECS						\
+  { "link_syscalls",            LINK_SYSCALLS_SPEC },			\
   { "link_libg",                LINK_LIBG_SPEC }
 
 /* Define cutoff for using external functions to save floating point.  */
@@ -221,28 +221,28 @@
    we have no good way to determine at compile time what to do.  */
 
 #ifdef __64BIT__
-#define MD_FROB_UPDATE_CONTEXT(CTX, FS)                                        \
-  do {                                                                        \
-    if ((FS)->regs.reg[2].how == REG_UNSAVED)                                \
-      {                                                                        \
-        unsigned int *insn                                                \
-          = (unsigned int *)                                                \
-            _Unwind_GetGR ((CTX), LINK_REGISTER_REGNUM);                \
-        if (*insn == 0xE8410028)                                        \
-          _Unwind_SetGRPtr ((CTX), 2, (CTX)->cfa + 40);                        \
-      }                                                                        \
+#define MD_FROB_UPDATE_CONTEXT(CTX, FS)					\
+  do {									\
+    if ((FS)->regs.reg[2].how == REG_UNSAVED)				\
+      {									\
+	unsigned int *insn						\
+	  = (unsigned int *)						\
+	    _Unwind_GetGR ((CTX), LINK_REGISTER_REGNUM);		\
+	if (*insn == 0xE8410028)					\
+	  _Unwind_SetGRPtr ((CTX), 2, (CTX)->cfa + 40);			\
+      }									\
   } while (0)
 #else
-#define MD_FROB_UPDATE_CONTEXT(CTX, FS)                                        \
-  do {                                                                        \
-    if ((FS)->regs.reg[2].how == REG_UNSAVED)                                \
-      {                                                                        \
-        unsigned int *insn                                                \
-          = (unsigned int *)                                                \
-            _Unwind_GetGR ((CTX), LINK_REGISTER_REGNUM);                \
-        if (*insn == 0x80410014)                                        \
-          _Unwind_SetGRPtr ((CTX), 2, (CTX)->cfa + 20);                        \
-      }                                                                        \
+#define MD_FROB_UPDATE_CONTEXT(CTX, FS)					\
+  do {									\
+    if ((FS)->regs.reg[2].how == REG_UNSAVED)				\
+      {									\
+	unsigned int *insn						\
+	  = (unsigned int *)						\
+	    _Unwind_GetGR ((CTX), LINK_REGISTER_REGNUM);		\
+	if (*insn == 0x80410014)					\
+	  _Unwind_SetGRPtr ((CTX), 2, (CTX)->cfa + 20);			\
+      }									\
   } while (0)
 #endif
 

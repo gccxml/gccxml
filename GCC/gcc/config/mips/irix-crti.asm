@@ -1,6 +1,6 @@
-        .abicalls
-        .set        noreorder
-        .set        nomacro
+	.abicalls
+	.set	noreorder
+	.set	nomacro
 
 /* The GNU and SGI linkers differ in their implementation of -init and -fini.
    With the GNU linker, there can only be a single -init option, and the
@@ -21,31 +21,31 @@
    seems to confuse the linker and triggers an internal error:
 
       ld32: FATAL   2  : Internal: at ../../ld/mips_code.c mips_code_fixup()
-         text section overflow!
+	 text section overflow!
 
    (seen with MIPSpro 7.30).  We therefore put everything in a special
    .gcc_init section instead.  */
 
-        .section .gcc_init,"ax",@progbits
-        .globl        __gcc_init
+	.section .gcc_init,"ax",@progbits
+	.globl	__gcc_init
 __gcc_init:
 #if _MIPS_SIM == _ABIO32
-        addiu        $sp,$sp,-16
-        sw        $31,0($sp)
+	addiu	$sp,$sp,-16
+	sw	$31,0($sp)
 #else
-        daddiu        $sp,$sp,-16
-        sd        $31,0($sp)
-        sd        $28,8($sp)
+	daddiu	$sp,$sp,-16
+	sd	$31,0($sp)
+	sd	$28,8($sp)
 #endif
 
-        .section .gcc_fini,"ax",@progbits
-        .globl        __gcc_fini
+	.section .gcc_fini,"ax",@progbits
+	.globl	__gcc_fini
 __gcc_fini:
 #if _MIPS_SIM == _ABIO32
-        addiu        $sp,$sp,-16
-        sw        $31,0($sp)
+	addiu	$sp,$sp,-16
+	sw	$31,0($sp)
 #else
-        daddiu        $sp,$sp,-16
-        sd        $31,0($sp)
-        sd        $28,8($sp)
+	daddiu	$sp,$sp,-16
+	sd	$31,0($sp)
+	sd	$28,8($sp)
 #endif

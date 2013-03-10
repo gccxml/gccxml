@@ -53,8 +53,8 @@ static void add_standard_paths (const char *, const char *, const char *, int);
 static void free_path (struct cpp_dir *, int);
 static void merge_include_chains (cpp_reader *, int);
 static struct cpp_dir *remove_duplicates (cpp_reader *, struct cpp_dir *,
-                                           struct cpp_dir *,
-                                           struct cpp_dir *, int);
+					   struct cpp_dir *,
+					   struct cpp_dir *, int);
 
 /* Include chains heads and tails.  */
 /* BEGIN GCC-XML MODIFICATIONS (2007/10/31 15:07:01) */
@@ -74,13 +74,13 @@ free_path (struct cpp_dir *path, int reason)
     case REASON_DUP_SYS:
       fprintf (stderr, _("ignoring duplicate directory \"%s\"\n"), path->name);
       if (reason == REASON_DUP_SYS)
-        fprintf (stderr,
+	fprintf (stderr,
  _("  as it is a non-system directory that duplicates a system directory\n"));
       break;
 
     case REASON_NOENT:
       fprintf (stderr, _("ignoring nonexistent directory \"%s\"\n"),
-               path->name);
+	       path->name);
       break;
 
     case REASON_QUIET:
@@ -108,16 +108,16 @@ add_env_var_paths (const char *env_var, int chain)
     {
       q = p;
       while (*q != 0 && *q != PATH_SEPARATOR)
-        q++;
+	q++;
 
       if (p == q)
-        path = xstrdup (".");
+	path = xstrdup (".");
       else
-        {
-          path = XNEWVEC (char, q - p + 1);
-          memcpy (path, p, q - p);
-          path[q - p] = '\0';
-        }
+	{
+	  path = XNEWVEC (char, q - p + 1);
+	  memcpy (path, p, q - p);
+	  path[q - p] = '\0';
+	}
 
       add_path (path, chain, chain == SYSTEM, false);
     }
@@ -126,7 +126,7 @@ add_env_var_paths (const char *env_var, int chain)
 /* Append the standard include chain defined in cppdefault.c.  */
 static void
 add_standard_paths (const char *sysroot, const char *iprefix,
-                    const char *imultilib, int cxx_stdinc)
+		    const char *imultilib, int cxx_stdinc)
 {
   const struct default_include *p;
   size_t len;
@@ -134,45 +134,45 @@ add_standard_paths (const char *sysroot, const char *iprefix,
   if (iprefix && (len = cpp_GCC_INCLUDE_DIR_len) != 0)
     {
       /* Look for directories that start with the standard prefix.
-         "Translate" them, i.e. replace /usr/local/lib/gcc... with
-         IPREFIX and search them first.  */
+	 "Translate" them, i.e. replace /usr/local/lib/gcc... with
+	 IPREFIX and search them first.  */
       for (p = cpp_include_defaults; p->fname; p++)
-        {
-          if (!p->cplusplus || cxx_stdinc)
-            {
-              /* Should we be translating sysrooted dirs too?  Assume
-                 that iprefix and sysroot are mutually exclusive, for
-                 now.  */
-              if (sysroot && p->add_sysroot)
-                continue;
-              if (!strncmp (p->fname, cpp_GCC_INCLUDE_DIR, len))
-                {
-                  char *str = concat (iprefix, p->fname + len, NULL);
-                  if (p->multilib && imultilib)
-                    str = concat (str, dir_separator_str, imultilib, NULL);
-                  add_path (str, SYSTEM, p->cxx_aware, false);
-                }
-            }
-        }
+	{
+	  if (!p->cplusplus || cxx_stdinc)
+	    {
+	      /* Should we be translating sysrooted dirs too?  Assume
+		 that iprefix and sysroot are mutually exclusive, for
+		 now.  */
+	      if (sysroot && p->add_sysroot)
+		continue;
+	      if (!strncmp (p->fname, cpp_GCC_INCLUDE_DIR, len))
+		{
+		  char *str = concat (iprefix, p->fname + len, NULL);
+		  if (p->multilib && imultilib)
+		    str = concat (str, dir_separator_str, imultilib, NULL);
+		  add_path (str, SYSTEM, p->cxx_aware, false);
+		}
+	    }
+	}
     }
 
   for (p = cpp_include_defaults; p->fname; p++)
     {
       if (!p->cplusplus || cxx_stdinc)
-        {
-          char *str;
+	{
+	  char *str;
 
-          /* Should this directory start with the sysroot?  */
-          if (sysroot && p->add_sysroot)
-            str = concat (sysroot, p->fname, NULL);
-          else
-            str = update_path (p->fname, p->component);
+	  /* Should this directory start with the sysroot?  */
+	  if (sysroot && p->add_sysroot)
+	    str = concat (sysroot, p->fname, NULL);
+	  else
+	    str = update_path (p->fname, p->component);
 
-          if (p->multilib && imultilib)
-            str = concat (str, dir_separator_str, imultilib, NULL);
+	  if (p->multilib && imultilib)
+	    str = concat (str, dir_separator_str, imultilib, NULL);
 
-          add_path (str, SYSTEM, p->cxx_aware, false);
-        }
+	  add_path (str, SYSTEM, p->cxx_aware, false);
+	}
     }
 }
 
@@ -185,8 +185,8 @@ add_standard_paths (const char *sysroot, const char *iprefix,
 
 static struct cpp_dir *
 remove_duplicates (cpp_reader *pfile, struct cpp_dir *head,
-                   struct cpp_dir *system, struct cpp_dir *join,
-                   int verbose)
+		   struct cpp_dir *system, struct cpp_dir *join,
+		   int verbose)
 {
   struct cpp_dir **pcur, *tmp, *cur;
   struct stat st;
@@ -198,56 +198,56 @@ remove_duplicates (cpp_reader *pfile, struct cpp_dir *head,
       cur = *pcur;
 
       if (stat (cur->name, &st))
-        {
-          /* Dirs that don't exist are silently ignored, unless verbose.  */
-          if (errno != ENOENT)
-            cpp_errno (pfile, CPP_DL_ERROR, cur->name);
-          else
-            {
-              /* If -Wmissing-include-dirs is given, warn.  */
-              cpp_options *opts = cpp_get_options (pfile);
-              if (opts->warn_missing_include_dirs && cur->user_supplied_p)
-                cpp_errno (pfile, CPP_DL_WARNING, cur->name);
-              reason = REASON_NOENT;
-            }
-        }
+	{
+	  /* Dirs that don't exist are silently ignored, unless verbose.  */
+	  if (errno != ENOENT)
+	    cpp_errno (pfile, CPP_DL_ERROR, cur->name);
+	  else
+	    {
+	      /* If -Wmissing-include-dirs is given, warn.  */
+	      cpp_options *opts = cpp_get_options (pfile);
+	      if (opts->warn_missing_include_dirs && cur->user_supplied_p)
+		cpp_errno (pfile, CPP_DL_WARNING, cur->name);
+	      reason = REASON_NOENT;
+	    }
+	}
       else if (!S_ISDIR (st.st_mode))
-        cpp_error_with_line (pfile, CPP_DL_ERROR, 0, 0,
-                             "%s: not a directory", cur->name);
+	cpp_error_with_line (pfile, CPP_DL_ERROR, 0, 0,
+			     "%s: not a directory", cur->name);
       else
-        {
-          INO_T_COPY (cur->ino, st.st_ino);
-          cur->dev  = st.st_dev;
+	{
+	  INO_T_COPY (cur->ino, st.st_ino);
+	  cur->dev  = st.st_dev;
 
-          /* Remove this one if it is in the system chain.  */
-          reason = REASON_DUP_SYS;
-          for (tmp = system; tmp; tmp = tmp->next)
-           if (INO_T_EQ (tmp->ino, cur->ino) && tmp->dev == cur->dev
-               && cur->construct == tmp->construct)
-              break;
+	  /* Remove this one if it is in the system chain.  */
+	  reason = REASON_DUP_SYS;
+	  for (tmp = system; tmp; tmp = tmp->next)
+	   if (INO_T_EQ (tmp->ino, cur->ino) && tmp->dev == cur->dev
+	       && cur->construct == tmp->construct)
+	      break;
 
-          if (!tmp)
-            {
-              /* Duplicate of something earlier in the same chain?  */
-              reason = REASON_DUP;
-              for (tmp = head; tmp != cur; tmp = tmp->next)
-               if (INO_T_EQ (cur->ino, tmp->ino) && cur->dev == tmp->dev
-                   && cur->construct == tmp->construct)
-                  break;
+	  if (!tmp)
+	    {
+	      /* Duplicate of something earlier in the same chain?  */
+	      reason = REASON_DUP;
+	      for (tmp = head; tmp != cur; tmp = tmp->next)
+	       if (INO_T_EQ (cur->ino, tmp->ino) && cur->dev == tmp->dev
+		   && cur->construct == tmp->construct)
+		  break;
 
-              if (tmp == cur
-                  /* Last in the chain and duplicate of JOIN?  */
-                  && !(cur->next == NULL && join
-                       && INO_T_EQ (cur->ino, join->ino)
-                      && cur->dev == join->dev
-                      && cur->construct == join->construct))
-                {
-                  /* Unique, so keep this directory.  */
-                  pcur = &cur->next;
-                  continue;
-                }
-            }
-        }
+	      if (tmp == cur
+		  /* Last in the chain and duplicate of JOIN?  */
+		  && !(cur->next == NULL && join
+		       && INO_T_EQ (cur->ino, join->ino)
+		      && cur->dev == join->dev
+		      && cur->construct == join->construct))
+		{
+		  /* Unique, so keep this directory.  */
+		  pcur = &cur->next;
+		  continue;
+		}
+	    }
+	}
 
       /* Remove this entry from the chain.  */
       *pcur = cur->next;
@@ -282,12 +282,12 @@ merge_include_chains (cpp_reader *pfile, int verbose)
   /* Remove duplicates from BRACKET that are in itself or SYSTEM, and
      join it to SYSTEM.  */
   heads[BRACKET] = remove_duplicates (pfile, heads[BRACKET], heads[SYSTEM],
-                                      heads[SYSTEM], verbose);
+				      heads[SYSTEM], verbose);
 
   /* Remove duplicates from QUOTE that are in itself or SYSTEM, and
      join it to BRACKET.  */
   heads[QUOTE] = remove_duplicates (pfile, heads[QUOTE], heads[SYSTEM],
-                                    heads[BRACKET], verbose);
+				    heads[BRACKET], verbose);
 
 /* BEGIN GCC-XML MODIFICATIONS (2007/10/31 15:07:01) */
   /* Remove duplicates from WRAPPER that are in itself or SYSTEM.
@@ -310,13 +310,13 @@ merge_include_chains (cpp_reader *pfile, int verbose)
 /* END GCC-XML MODIFICATIONS (2007/10/31 15:07:01) */
       fprintf (stderr, _("#include \"...\" search starts here:\n"));
       for (p = heads[QUOTE];; p = p->next)
-        {
-          if (p == heads[BRACKET])
-            fprintf (stderr, _("#include <...> search starts here:\n"));
-          if (!p)
-            break;
-          fprintf (stderr, " %s\n", p->name);
-        }
+	{
+	  if (p == heads[BRACKET])
+	    fprintf (stderr, _("#include <...> search starts here:\n"));
+	  if (!p)
+	    break;
+	  fprintf (stderr, " %s\n", p->name);
+	}
       fprintf (stderr, _("End of search list.\n"));
     }
 }
@@ -382,8 +382,8 @@ add_path (char *path, int chain, int cxx_aware, bool user_supplied_p)
    removal, and registration with cpplib.  */
 void
 register_include_chains (cpp_reader *pfile, const char *sysroot,
-                         const char *iprefix, const char *imultilib,
-                         int stdinc, int cxx_stdinc, int verbose)
+			 const char *iprefix, const char *imultilib,
+			 int stdinc, int cxx_stdinc, int verbose)
 {
   static const char *const lang_env_vars[] =
     { "C_INCLUDE_PATH", "CPLUS_INCLUDE_PATH",
@@ -413,14 +413,14 @@ register_include_chains (cpp_reader *pfile, const char *sysroot,
 
   cpp_set_include_chains (pfile, heads[QUOTE], heads[BRACKET],
 /* BEGIN GCC-XML MODIFICATIONS (2007/10/31 15:07:01) */
-                          heads[WRAPPER],
+			  heads[WRAPPER],
 /* END GCC-XML MODIFICATIONS (2007/10/31 15:07:01) */
-                          quote_ignores_source_dir);
+			  quote_ignores_source_dir);
 }
 #if !(defined TARGET_EXTRA_INCLUDES) || !(defined TARGET_EXTRA_PRE_INCLUDES)
 static void hook_void_charptr_charptr_int (const char *sysroot ATTRIBUTE_UNUSED,
-                                           const char *iprefix ATTRIBUTE_UNUSED,
-                                           int stdinc ATTRIBUTE_UNUSED)
+					   const char *iprefix ATTRIBUTE_UNUSED,
+					   int stdinc ATTRIBUTE_UNUSED)
 {
 }
 #endif

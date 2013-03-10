@@ -5,12 +5,12 @@ LIB1ASMFUNCS = _bb_init_func _call_via_rX _interwork_call_via_rX
 # used -- and we make sure that definitions are not available in lib1funcs.asm,
 # either, so they end up undefined.
 LIB1ASMFUNCS += \
-        _ashldi3 _ashrdi3 _divdi3 _floatdidf _udivmoddi4 _umoddi3 \
-        _udivdi3 _lshrdi3 _moddi3 _muldi3 _negdi2 _cmpdi2 \
-        _fixdfdi _fixsfdi _fixunsdfdi _fixunssfdi _floatdisf \
-        _negdf2 _addsubdf3 _muldivdf3 _cmpdf2 _unorddf2 _fixdfsi _fixunsdfsi \
-        _truncdfsf2 _negsf2 _addsubsf3 _muldivsf3 _cmpsf2 _unordsf2 \
-        _fixsfsi _fixunssfsi
+	_ashldi3 _ashrdi3 _divdi3 _floatdidf _udivmoddi4 _umoddi3 \
+	_udivdi3 _lshrdi3 _moddi3 _muldi3 _negdi2 _cmpdi2 \
+	_fixdfdi _fixsfdi _fixunsdfdi _fixunssfdi _floatdisf \
+	_negdf2 _addsubdf3 _muldivdf3 _cmpdf2 _unorddf2 _fixdfsi _fixunsdfsi \
+	_truncdfsf2 _negsf2 _addsubsf3 _muldivsf3 _cmpsf2 _unordsf2 \
+	_fixsfsi _fixunssfsi
 
 # Include the gcc personality routine
 UNWIND_H = $(srcdir)/config/arm/unwind-arm.h

@@ -94,9 +94,9 @@ build_bc_goto (enum bc_t bc)
   if (label == NULL_TREE)
     {
       if (bc == bc_break)
-        error ("break statement not within loop or switch");
+	error ("break statement not within loop or switch");
       else
-        error ("continue statement not within loop or switch");
+	error ("continue statement not within loop or switch");
 
       return NULL_TREE;
     }
@@ -147,8 +147,8 @@ genericize_eh_spec_block (tree *stmt_p)
   tree body = EH_SPEC_STMTS (*stmt_p);
   tree allowed = EH_SPEC_RAISES (*stmt_p);
   tree failure = build_call (call_unexpected_node,
-                             tree_cons (NULL_TREE, build_exc_ptr (),
-                                        NULL_TREE));
+			     tree_cons (NULL_TREE, build_exc_ptr (),
+					NULL_TREE));
   gimplify_stmt (&body);
 
   *stmt_p = gimple_build_eh_filter (body, allowed, failure);
@@ -206,41 +206,41 @@ gimplify_cp_loop (tree cond, tree body, tree incr, bool cond_is_first)
       top = NULL_TREE;
       exit = NULL_TREE;
       if (cond_is_first)
-        {
-          t = build_bc_goto (bc_break);
-          append_to_statement_list (t, &stmt_list);
-        }
+	{
+	  t = build_bc_goto (bc_break);
+	  append_to_statement_list (t, &stmt_list);
+	}
     }
   else
     {
       /* If we use a LOOP_EXPR here, we have to feed the whole thing
-         back through the main gimplifier to lower it.  Given that we
-         have to gimplify the loop body NOW so that we can resolve
-         break/continue stmts, seems easier to just expand to gotos.  */
+	 back through the main gimplifier to lower it.  Given that we
+	 have to gimplify the loop body NOW so that we can resolve
+	 break/continue stmts, seems easier to just expand to gotos.  */
       top = build1 (LABEL_EXPR, void_type_node, NULL_TREE);
 
       /* If we have an exit condition, then we build an IF with gotos either
-         out of the loop, or to the top of it.  If there's no exit condition,
-         then we just build a jump back to the top.  */
+	 out of the loop, or to the top of it.  If there's no exit condition,
+	 then we just build a jump back to the top.  */
       exit = build_and_jump (&LABEL_EXPR_LABEL (top));
       if (cond && !integer_nonzerop (cond))
-        {
-          t = build_bc_goto (bc_break);
-          exit = fold_build3 (COND_EXPR, void_type_node, cond, exit, t);
-          gimplify_stmt (&exit);
+	{
+	  t = build_bc_goto (bc_break);
+	  exit = fold_build3 (COND_EXPR, void_type_node, cond, exit, t);
+	  gimplify_stmt (&exit);
 
-          if (cond_is_first)
-            {
-              if (incr)
-                {
-                  entry = build1 (LABEL_EXPR, void_type_node, NULL_TREE);
-                  t = build_and_jump (&LABEL_EXPR_LABEL (entry));
-                }
-              else
-                t = build_bc_goto (bc_continue);
-              append_to_statement_list (t, &stmt_list);
-            }
-        }
+	  if (cond_is_first)
+	    {
+	      if (incr)
+		{
+		  entry = build1 (LABEL_EXPR, void_type_node, NULL_TREE);
+		  t = build_and_jump (&LABEL_EXPR_LABEL (entry));
+		}
+	      else
+		t = build_bc_goto (bc_continue);
+	      append_to_statement_list (t, &stmt_list);
+	    }
+	}
     }
 
   gimplify_stmt (&body);
@@ -271,7 +271,7 @@ gimplify_for_stmt (tree *stmt_p, tree *pre_p)
     gimplify_and_add (FOR_INIT_STMT (stmt), pre_p);
 
   *stmt_p = gimplify_cp_loop (FOR_COND (stmt), FOR_BODY (stmt),
-                              FOR_EXPR (stmt), 1);
+			      FOR_EXPR (stmt), 1);
 }
 
 /* Gimplify a WHILE_STMT node.  */
@@ -281,7 +281,7 @@ gimplify_while_stmt (tree *stmt_p)
 {
   tree stmt = *stmt_p;
   *stmt_p = gimplify_cp_loop (WHILE_COND (stmt), WHILE_BODY (stmt),
-                              NULL_TREE, 1);
+			      NULL_TREE, 1);
 }
 
 /* Gimplify a DO_STMT node.  */
@@ -291,7 +291,7 @@ gimplify_do_stmt (tree *stmt_p)
 {
   tree stmt = *stmt_p;
   *stmt_p = gimplify_cp_loop (DO_COND (stmt), DO_BODY (stmt),
-                              NULL_TREE, 0);
+			      NULL_TREE, 0);
 }
 
 /* Genericize a SWITCH_STMT by turning it into a SWITCH_EXPR.  */
@@ -310,7 +310,7 @@ gimplify_switch_stmt (tree *stmt_p)
     body = build_empty_stmt ();
 
   *stmt_p = build3 (SWITCH_EXPR, SWITCH_STMT_TYPE (stmt),
-                    SWITCH_STMT_COND (stmt), body, NULL_TREE);
+		    SWITCH_STMT_COND (stmt), body, NULL_TREE);
   SET_EXPR_LOCATION (*stmt_p, stmt_locus);
   gimplify_stmt (stmt_p);
 
@@ -366,14 +366,14 @@ gimplify_expr_stmt (tree *stmt_p)
   if (stmt && (extra_warnings || warn_unused_value))
     {
       if (!TREE_SIDE_EFFECTS (stmt))
-        {
-          if (!IS_EMPTY_STMT (stmt)
-              && !VOID_TYPE_P (TREE_TYPE (stmt))
-              && !TREE_NO_WARNING (stmt))
-            warning (OPT_Wextra, "statement with no effect");
-        }
+	{
+	  if (!IS_EMPTY_STMT (stmt)
+	      && !VOID_TYPE_P (TREE_TYPE (stmt))
+	      && !TREE_NO_WARNING (stmt))
+	    warning (OPT_Wextra, "statement with no effect");
+	}
       else if (warn_unused_value)
-        warn_if_unused_value (stmt, input_location);
+	warn_if_unused_value (stmt, input_location);
     }
 
   if (stmt == NULL_TREE)
@@ -414,9 +414,9 @@ cp_gimplify_init_expr (tree *expr_p, tree *pre_p, tree *post_p)
       *expr_p = from;
 
       /* The initialization is now a side-effect, so the container can
-         become void.  */
+	 become void.  */
       if (from != sub)
-        TREE_TYPE (from) = void_type_node;
+	TREE_TYPE (from) = void_type_node;
     }
 }
 
@@ -432,7 +432,7 @@ gimplify_must_not_throw_expr (tree *expr_p, tree *pre_p)
   gimplify_stmt (&body);
 
   stmt = gimple_build_eh_filter (body, NULL_TREE,
-                                 build_call (terminate_node, NULL_TREE));
+				 build_call (terminate_node, NULL_TREE));
 
   if (temp)
     {
@@ -456,7 +456,7 @@ cp_gimplify_expr (tree *expr_p, tree *pre_p, tree *post_p)
     {
       saved_stmts_are_full_exprs_p = stmts_are_full_exprs_p ();
       current_stmt_tree ()->stmts_are_full_exprs_p
-        = STMT_IS_FULL_EXPR_P (*expr_p);
+	= STMT_IS_FULL_EXPR_P (*expr_p);
     }
 
   switch (code)
@@ -473,7 +473,7 @@ cp_gimplify_expr (tree *expr_p, tree *pre_p, tree *post_p)
 
     case THROW_EXPR:
       /* FIXME communicate throw type to backend, probably by moving
-         THROW_EXPR into ../tree.def.  */
+	 THROW_EXPR into ../tree.def.  */
       *expr_p = TREE_OPERAND (*expr_p, 0);
       ret = GS_OK;
       break;
@@ -484,8 +484,8 @@ cp_gimplify_expr (tree *expr_p, tree *pre_p, tree *post_p)
       break;
 
       /* We used to do this for MODIFY_EXPR as well, but that's unsafe; the
-         LHS of an assignment might also be involved in the RHS, as in bug
-         25979.  */
+	 LHS of an assignment might also be involved in the RHS, as in bug
+	 25979.  */
     case INIT_EXPR:
       cp_gimplify_init_expr (expr_p, pre_p, post_p);
       ret = GS_OK;
@@ -519,7 +519,7 @@ cp_gimplify_expr (tree *expr_p, tree *pre_p, tree *post_p)
 
     case USING_STMT:
       /* Just ignore for now.  Eventually we will want to pass this on to
-         the debugger.  */
+	 the debugger.  */
       *expr_p = build_empty_stmt ();
       ret = GS_ALL_DONE;
       break;
@@ -570,11 +570,11 @@ cp_gimplify_expr (tree *expr_p, tree *pre_p, tree *post_p)
 
     case UNARY_PLUS_EXPR:
       {
-        tree arg = TREE_OPERAND (*expr_p, 0);
-        tree type = TREE_TYPE (*expr_p);
-        *expr_p = (TREE_TYPE (arg) != type) ? fold_convert (type, arg)
-                                            : arg;
-        ret = GS_OK;
+	tree arg = TREE_OPERAND (*expr_p, 0);
+	tree type = TREE_TYPE (*expr_p);
+	*expr_p = (TREE_TYPE (arg) != type) ? fold_convert (type, arg)
+					    : arg;
+	ret = GS_OK;
       }
       break;
 
@@ -595,7 +595,7 @@ static inline bool
 is_invisiref_parm (tree t)
 {
   return ((TREE_CODE (t) == PARM_DECL || TREE_CODE (t) == RESULT_DECL)
-          && DECL_BY_REFERENCE (t));
+	  && DECL_BY_REFERENCE (t));
 }
 
 /* Return true if the uid in both int tree maps are equal.  */
@@ -628,7 +628,7 @@ cp_genericize_r (tree *stmt_p, int *walk_subtrees, void *data)
   if (is_invisiref_parm (stmt)
       /* Don't dereference parms in a thunk, pass the references through. */
       && !(DECL_THUNK_P (current_function_decl)
-           && TREE_CODE (stmt) == PARM_DECL))
+	   && TREE_CODE (stmt) == PARM_DECL))
     {
       *stmt_p = convert_from_reference (stmt);
       *walk_subtrees = 0;
@@ -644,14 +644,14 @@ cp_genericize_r (tree *stmt_p, int *walk_subtrees, void *data)
       struct cxx_int_tree_map *h, in;
       in.uid = DECL_UID (stmt);
       h = (struct cxx_int_tree_map *)
-          htab_find_with_hash (cp_function_chain->extern_decl_map,
-                               &in, in.uid);
+	  htab_find_with_hash (cp_function_chain->extern_decl_map,
+			       &in, in.uid);
       if (h)
-        {
-          *stmt_p = h->to;
-          *walk_subtrees = 0;
-          return NULL;
-        }
+	{
+	  *stmt_p = h->to;
+	  *walk_subtrees = 0;
+	  return NULL;
+	}
     }
 
   /* Other than invisiref parms, don't walk the same tree twice.  */
@@ -668,8 +668,8 @@ cp_genericize_r (tree *stmt_p, int *walk_subtrees, void *data)
       *walk_subtrees = 0;
     }
   else if (TREE_CODE (stmt) == RETURN_EXPR
-           && TREE_OPERAND (stmt, 0)
-           && is_invisiref_parm (TREE_OPERAND (stmt, 0)))
+	   && TREE_OPERAND (stmt, 0)
+	   && is_invisiref_parm (TREE_OPERAND (stmt, 0)))
     /* Don't dereference an invisiref RESULT_DECL inside a RETURN_EXPR.  */
     *walk_subtrees = 0;
   else if (TREE_CODE (stmt) == OMP_CLAUSE)
@@ -681,15 +681,15 @@ cp_genericize_r (tree *stmt_p, int *walk_subtrees, void *data)
       case OMP_CLAUSE_LASTPRIVATE:
       case OMP_CLAUSE_COPYIN:
       case OMP_CLAUSE_COPYPRIVATE:
-        /* Don't dereference an invisiref in OpenMP clauses.  */
-        if (is_invisiref_parm (OMP_CLAUSE_DECL (stmt)))
-          *walk_subtrees = 0;
-        break;
+	/* Don't dereference an invisiref in OpenMP clauses.  */
+	if (is_invisiref_parm (OMP_CLAUSE_DECL (stmt)))
+	  *walk_subtrees = 0;
+	break;
       case OMP_CLAUSE_REDUCTION:
-        gcc_assert (!is_invisiref_parm (OMP_CLAUSE_DECL (stmt)));
-        break;
+	gcc_assert (!is_invisiref_parm (OMP_CLAUSE_DECL (stmt)));
+	break;
       default:
-        break;
+	break;
       }
   else if (IS_TYPE_OR_DECL_P (stmt))
     *walk_subtrees = 0;
@@ -699,10 +699,10 @@ cp_genericize_r (tree *stmt_p, int *walk_subtrees, void *data)
      before doing anything else.  */
   else if (TREE_CODE (stmt) == CLEANUP_STMT)
     *stmt_p = build2 (CLEANUP_EH_ONLY (stmt) ? TRY_CATCH_EXPR
-                                             : TRY_FINALLY_EXPR,
-                      void_type_node,
-                      CLEANUP_BODY (stmt),
-                      CLEANUP_EXPR (stmt));
+					     : TRY_FINALLY_EXPR,
+		      void_type_node,
+		      CLEANUP_BODY (stmt),
+		      CLEANUP_EXPR (stmt));
 
   pointer_set_insert (p_set, *stmt_p);
 
@@ -719,16 +719,16 @@ cp_genericize (tree fndecl)
   for (t = DECL_ARGUMENTS (fndecl); t; t = TREE_CHAIN (t))
     if (TREE_ADDRESSABLE (TREE_TYPE (t)))
       {
-        /* If a function's arguments are copied to create a thunk,
-           then DECL_BY_REFERENCE will be set -- but the type of the
-           argument will be a pointer type, so we will never get
-           here.  */
-        gcc_assert (!DECL_BY_REFERENCE (t));
-        gcc_assert (DECL_ARG_TYPE (t) != TREE_TYPE (t));
-        TREE_TYPE (t) = DECL_ARG_TYPE (t);
-        DECL_BY_REFERENCE (t) = 1;
-        TREE_ADDRESSABLE (t) = 0;
-        relayout_decl (t);
+	/* If a function's arguments are copied to create a thunk,
+	   then DECL_BY_REFERENCE will be set -- but the type of the
+	   argument will be a pointer type, so we will never get
+	   here.  */
+	gcc_assert (!DECL_BY_REFERENCE (t));
+	gcc_assert (DECL_ARG_TYPE (t) != TREE_TYPE (t));
+	TREE_TYPE (t) = DECL_ARG_TYPE (t);
+	DECL_BY_REFERENCE (t) = 1;
+	TREE_ADDRESSABLE (t) = 0;
+	relayout_decl (t);
       }
 
   /* Do the same for the return value.  */
@@ -785,18 +785,18 @@ cxx_omp_clause_apply_fn (tree fn, tree arg1, tree arg2)
       start1 = arg1;
       start2 = arg2;
       do
-        {
-          inner_type = TREE_TYPE (inner_type);
-          start1 = build4 (ARRAY_REF, inner_type, start1,
-                           size_zero_node, NULL, NULL);
-          if (arg2)
-            start2 = build4 (ARRAY_REF, inner_type, start2,
-                             size_zero_node, NULL, NULL);
-        }
+	{
+	  inner_type = TREE_TYPE (inner_type);
+	  start1 = build4 (ARRAY_REF, inner_type, start1,
+			   size_zero_node, NULL, NULL);
+	  if (arg2)
+	    start2 = build4 (ARRAY_REF, inner_type, start2,
+			     size_zero_node, NULL, NULL);
+	}
       while (TREE_CODE (inner_type) == ARRAY_TYPE);
       start1 = build_fold_addr_expr (start1);
       if (arg2)
-        start2 = build_fold_addr_expr (start2);
+	start2 = build_fold_addr_expr (start2);
 
       end1 = TYPE_SIZE_UNIT (TREE_TYPE (arg1));
       end1 = fold_convert (TREE_TYPE (start1), end1);
@@ -807,11 +807,11 @@ cxx_omp_clause_apply_fn (tree fn, tree arg1, tree arg2)
       append_to_statement_list (t, &ret);
 
       if (arg2)
-        {
-          p2 = create_tmp_var (TREE_TYPE (start2), NULL);
-          t = build2 (MODIFY_EXPR, void_type_node, p2, start2);
-          append_to_statement_list (t, &ret);
-        }
+	{
+	  p2 = create_tmp_var (TREE_TYPE (start2), NULL);
+	  t = build2 (MODIFY_EXPR, void_type_node, p2, start2);
+	  append_to_statement_list (t, &ret);
+	}
 
       lab = create_artificial_label ();
       t = build1 (LABEL_EXPR, void_type_node, lab);
@@ -819,13 +819,13 @@ cxx_omp_clause_apply_fn (tree fn, tree arg1, tree arg2)
 
       t = tree_cons (NULL, p1, NULL);
       if (arg2)
-        t = tree_cons (NULL, p2, t);
+	t = tree_cons (NULL, p2, t);
       /* Handle default arguments.  */
       i = 1 + (arg2 != NULL);
       for (parm = defparm; parm != void_list_node; parm = TREE_CHAIN (parm))
-        t = tree_cons (NULL, convert_default_arg (TREE_VALUE (parm),
-                                                  TREE_PURPOSE (parm),
-                                                  fn, i++), t);
+	t = tree_cons (NULL, convert_default_arg (TREE_VALUE (parm),
+						  TREE_PURPOSE (parm),
+						  fn, i++), t);
       t = build_call (fn, nreverse (t));
       append_to_statement_list (t, &ret);
 
@@ -835,12 +835,12 @@ cxx_omp_clause_apply_fn (tree fn, tree arg1, tree arg2)
       append_to_statement_list (t, &ret);
 
       if (arg2)
-        {
-          t = fold_convert (TREE_TYPE (p2), TYPE_SIZE_UNIT (inner_type));
-          t = build2 (PLUS_EXPR, TREE_TYPE (p2), p2, t);
-          t = build2 (MODIFY_EXPR, void_type_node, p2, t);
-          append_to_statement_list (t, &ret);
-        }
+	{
+	  t = fold_convert (TREE_TYPE (p2), TYPE_SIZE_UNIT (inner_type));
+	  t = build2 (PLUS_EXPR, TREE_TYPE (p2), p2, t);
+	  t = build2 (MODIFY_EXPR, void_type_node, p2, t);
+	  append_to_statement_list (t, &ret);
+	}
 
       t = build2 (NE_EXPR, boolean_type_node, p1, end1);
       t = build3 (COND_EXPR, void_type_node, t, build_and_jump (&lab), NULL);
@@ -852,13 +852,13 @@ cxx_omp_clause_apply_fn (tree fn, tree arg1, tree arg2)
     {
       tree t = tree_cons (NULL, build_fold_addr_expr (arg1), NULL);
       if (arg2)
-        t = tree_cons (NULL, build_fold_addr_expr (arg2), t);
+	t = tree_cons (NULL, build_fold_addr_expr (arg2), t);
       /* Handle default arguments.  */
       i = 1 + (arg2 != NULL);
       for (parm = defparm; parm != void_list_node; parm = TREE_CHAIN (parm))
-        t = tree_cons (NULL, convert_default_arg (TREE_VALUE (parm),
-                                                  TREE_PURPOSE (parm),
-                                                  fn, i++), t);
+	t = tree_cons (NULL, convert_default_arg (TREE_VALUE (parm),
+						  TREE_PURPOSE (parm),
+						  fn, i++), t);
       return build_call (fn, nreverse (t));
     }
 }

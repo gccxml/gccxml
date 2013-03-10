@@ -83,13 +83,13 @@ extern rtx get_exception_pointer (struct function *);
 extern rtx get_exception_filter (struct function *);
 typedef tree (*duplicate_eh_regions_map) (tree, void *);
 extern int duplicate_eh_regions (struct function *, duplicate_eh_regions_map,
-                                 void *, int, int);
+				 void *, int, int);
 
 extern void sjlj_emit_function_exit_after (rtx);
 extern void default_init_unwind_resume_libfunc (void);
 
 extern struct eh_region *gen_eh_region_cleanup (struct eh_region *,
-                                                struct eh_region *);
+						struct eh_region *);
 extern struct eh_region *gen_eh_region_try (struct eh_region *);
 extern struct eh_region *gen_eh_region_catch (struct eh_region *, tree);
 extern struct eh_region *gen_eh_region_allowed (struct eh_region *, tree);
@@ -100,8 +100,8 @@ extern tree get_eh_region_tree_label (struct eh_region *);
 extern void set_eh_region_tree_label (struct eh_region *, tree);
 
 extern void foreach_reachable_handler (int, bool,
-                                       void (*) (struct eh_region *, void *),
-                                       void *);
+				       void (*) (struct eh_region *, void *),
+				       void *);
 
 extern void collect_eh_region_array (void);
 extern void expand_resx_expr (tree);
@@ -137,23 +137,23 @@ extern tree (*lang_eh_runtime_type) (tree);
    has appropriate support.  */
 
 #ifndef MUST_USE_SJLJ_EXCEPTIONS
-# if !(defined (EH_RETURN_DATA_REGNO)                        \
-       && (defined (TARGET_UNWIND_INFO)                        \
-           || (DWARF2_UNWIND_INFO                        \
-               && (defined (EH_RETURN_HANDLER_RTX)        \
-                   || defined (HAVE_eh_return)))))
-#  define MUST_USE_SJLJ_EXCEPTIONS        1
+# if !(defined (EH_RETURN_DATA_REGNO)			\
+       && (defined (TARGET_UNWIND_INFO)			\
+	   || (DWARF2_UNWIND_INFO			\
+	       && (defined (EH_RETURN_HANDLER_RTX)	\
+		   || defined (HAVE_eh_return)))))
+#  define MUST_USE_SJLJ_EXCEPTIONS	1
 # else
-#  define MUST_USE_SJLJ_EXCEPTIONS        0
+#  define MUST_USE_SJLJ_EXCEPTIONS	0
 # endif
 #endif
 
 #ifdef CONFIG_SJLJ_EXCEPTIONS
 # if CONFIG_SJLJ_EXCEPTIONS == 1
-#  define USING_SJLJ_EXCEPTIONS                1
+#  define USING_SJLJ_EXCEPTIONS		1
 # endif
 # if CONFIG_SJLJ_EXCEPTIONS == 0
-#  define USING_SJLJ_EXCEPTIONS                0
+#  define USING_SJLJ_EXCEPTIONS		0
 #  ifndef EH_RETURN_DATA_REGNO
     #error "EH_RETURN_DATA_REGNO required"
 #  endif
@@ -165,7 +165,7 @@ extern tree (*lang_eh_runtime_type) (tree);
 #  endif
 # endif
 #else
-# define USING_SJLJ_EXCEPTIONS                MUST_USE_SJLJ_EXCEPTIONS
+# define USING_SJLJ_EXCEPTIONS		MUST_USE_SJLJ_EXCEPTIONS
 #endif
 
 struct throw_stmt_node GTY(())

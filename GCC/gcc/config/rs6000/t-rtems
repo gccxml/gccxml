@@ -1,35 +1,35 @@
 # Multilibs for powerpc RTEMS targets.
 
-MULTILIB_OPTIONS        = \
+MULTILIB_OPTIONS	= \
 mcpu=403/mcpu=505/mcpu=601/mcpu=603e/mcpu=604/mcpu=860/mcpu=7400 \
 Dmpc8260 \
 msoft-float
 
-MULTILIB_DIRNAMES        = \
+MULTILIB_DIRNAMES	= \
 m403 m505 m601 m603e m604 m860 m7400 \
 mpc8260 \
 nof
 
-MULTILIB_EXTRA_OPTS        = mrelocatable-lib mno-eabi mstrict-align
+MULTILIB_EXTRA_OPTS	= mrelocatable-lib mno-eabi mstrict-align
 
-# MULTILIB_MATCHES        = ${MULTILIB_MATCHES_FLOAT}
-MULTILIB_MATCHES        =
-MULTILIB_MATCHES          += ${MULTILIB_MATCHES_ENDIAN}
-MULTILIB_MATCHES        += ${MULTILIB_MATCHES_SYSV}
+# MULTILIB_MATCHES	= ${MULTILIB_MATCHES_FLOAT}
+MULTILIB_MATCHES	=
+MULTILIB_MATCHES  	+= ${MULTILIB_MATCHES_ENDIAN}
+MULTILIB_MATCHES	+= ${MULTILIB_MATCHES_SYSV}
 # Map 405 to 403
-MULTILIB_MATCHES        += mcpu?403=mcpu?405
+MULTILIB_MATCHES	+= mcpu?403=mcpu?405
 # Map 602, 603e, 603 to 603e
-MULTILIB_MATCHES        += mcpu?603e=mcpu?602
-MULTILIB_MATCHES        += mcpu?603e=mcpu?603
+MULTILIB_MATCHES	+= mcpu?603e=mcpu?602
+MULTILIB_MATCHES	+= mcpu?603e=mcpu?603
 # Map 801, 821, 823 to 860
-MULTILIB_MATCHES         += mcpu?860=mcpu?801
-MULTILIB_MATCHES         += mcpu?860=mcpu?821
-MULTILIB_MATCHES         += mcpu?860=mcpu?823
+MULTILIB_MATCHES 	+= mcpu?860=mcpu?801
+MULTILIB_MATCHES 	+= mcpu?860=mcpu?821
+MULTILIB_MATCHES 	+= mcpu?860=mcpu?823
 # Map 7450 to 7400
-MULTILIB_MATCHES        += mcpu?7400=mcpu?7450
+MULTILIB_MATCHES	+= mcpu?7400=mcpu?7450
 
 # Map 750 to .
-MULTILIB_MATCHES        += mcpu?750=
+MULTILIB_MATCHES	+= mcpu?750=
 
 # Soft-float only, default implies msoft-float
 # NOTE: Must match with MULTILIB_MATCHES_FLOAT and MULTILIB_MATCHES
@@ -49,9 +49,9 @@ MULTILIB_HARDFLOAT_ONLY = \
 MULTILIB_EXCEPTIONS =
 
 # Disallow -Dppc and -Dmpc without other options
-MULTILIB_EXCEPTIONS         += Dppc* Dmpc*
+MULTILIB_EXCEPTIONS 	+= Dppc* Dmpc*
 
-MULTILIB_EXCEPTIONS        += \
+MULTILIB_EXCEPTIONS	+= \
 ${MULTILIB_SOFTFLOAT_ONLY} \
 ${MULTILIB_HARDFLOAT_ONLY}
 

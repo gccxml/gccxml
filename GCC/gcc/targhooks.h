@@ -21,7 +21,7 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
 extern void default_external_libcall (rtx);
 
 extern enum machine_mode default_cc_modes_compatible (enum machine_mode,
-                                                      enum machine_mode);
+						      enum machine_mode);
 
 extern bool default_return_in_memory (tree, tree);
 
@@ -75,8 +75,8 @@ extern bool hook_bool_rtx_commutative_p (rtx, int);
 extern rtx default_function_value (tree, tree, bool);
 extern rtx default_internal_arg_pointer (void);
 extern enum reg_class default_secondary_reload (bool, rtx, enum reg_class,
-                                                enum machine_mode,
-                                                secondary_reload_info *);
+						enum machine_mode,
+						secondary_reload_info *);
 extern void hook_void_bitmap (bitmap);
 
 extern int default_reloc_rw_mask (void);

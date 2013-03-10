@@ -138,7 +138,7 @@ extern int sh_attr_renesas_p (tree);
 extern int sh_cfun_attr_renesas_p (void);
 extern void sh_initialize_trampoline (rtx, rtx, rtx);
 extern bool sh_cannot_change_mode_class
-              (enum machine_mode, enum machine_mode, enum reg_class);
+	      (enum machine_mode, enum machine_mode, enum reg_class);
 extern void sh_mark_label (rtx, int);
 extern int sh_register_move_cost
   (enum machine_mode mode, enum reg_class, enum reg_class);
@@ -167,8 +167,8 @@ extern int sh_contains_memref_p (rtx);
 extern rtx shmedia_prepare_call_address (rtx fnaddr, int is_sibcall);
 struct secondary_reload_info;
 extern enum reg_class sh_secondary_reload (bool, rtx, enum reg_class,
-                                           enum machine_mode,
-                                           struct secondary_reload_info *);
+					   enum machine_mode,
+					   struct secondary_reload_info *);
 
 #endif /* ! GCC_SH_PROTOS_H */
 

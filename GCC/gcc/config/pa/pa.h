@@ -22,12 +22,12 @@ along with GCC; see the file COPYING.  If not, write to
 the Free Software Foundation, 51 Franklin Street, Fifth Floor,
 Boston, MA 02110-1301, USA.  */
 
-enum cmp_type                                /* comparison type */
+enum cmp_type				/* comparison type */
 {
-  CMP_SI,                                /* compare integers */
-  CMP_SF,                                /* compare single precision floats */
-  CMP_DF,                                /* compare double precision floats */
-  CMP_MAX                                /* max comparison type */
+  CMP_SI,				/* compare integers */
+  CMP_SF,				/* compare single precision floats */
+  CMP_DF,				/* compare double precision floats */
+  CMP_MAX				/* max comparison type */
 };
 
 /* For long call handling.  */
@@ -184,35 +184,35 @@ extern int flag_pa_unix;
   ((GET_CODE (X) == PLUS ? OFFSET : 0) \
     + (frame_pointer_needed ? 0 : compute_frame_size (get_frame_size (), 0)))
 
-#define TARGET_CPU_CPP_BUILTINS()                                \
-do {                                                                \
-     builtin_assert("cpu=hppa");                                \
-     builtin_assert("machine=hppa");                                \
-     builtin_define("__hppa");                                        \
-     builtin_define("__hppa__");                                \
-     if (TARGET_PA_20)                                                \
-       builtin_define("_PA_RISC2_0");                                \
-     else if (TARGET_PA_11)                                        \
-       builtin_define("_PA_RISC1_1");                                \
-     else                                                        \
-       builtin_define("_PA_RISC1_0");                                \
+#define TARGET_CPU_CPP_BUILTINS()				\
+do {								\
+     builtin_assert("cpu=hppa");				\
+     builtin_assert("machine=hppa");				\
+     builtin_define("__hppa");					\
+     builtin_define("__hppa__");				\
+     if (TARGET_PA_20)						\
+       builtin_define("_PA_RISC2_0");				\
+     else if (TARGET_PA_11)					\
+       builtin_define("_PA_RISC1_1");				\
+     else							\
+       builtin_define("_PA_RISC1_0");				\
 } while (0)
 
 /* An old set of OS defines for various BSD-like systems.  */
-#define TARGET_OS_CPP_BUILTINS()                                \
-  do                                                                \
-    {                                                                \
-        builtin_define_std ("REVARGV");                                \
-        builtin_define_std ("hp800");                                \
-        builtin_define_std ("hp9000");                                \
-        builtin_define_std ("hp9k8");                                \
-        if (!c_dialect_cxx () && !flag_iso)                        \
-          builtin_define ("hppa");                                \
-        builtin_define_std ("spectrum");                        \
-        builtin_define_std ("unix");                                \
-        builtin_assert ("system=bsd");                                \
-        builtin_assert ("system=unix");                                \
-    }                                                                \
+#define TARGET_OS_CPP_BUILTINS()				\
+  do								\
+    {								\
+	builtin_define_std ("REVARGV");				\
+	builtin_define_std ("hp800");				\
+	builtin_define_std ("hp9000");				\
+	builtin_define_std ("hp9k8");				\
+	if (!c_dialect_cxx () && !flag_iso)			\
+	  builtin_define ("hppa");				\
+	builtin_define_std ("spectrum");			\
+	builtin_define_std ("unix");				\
+	builtin_assert ("system=bsd");				\
+	builtin_assert ("system=unix");				\
+    }								\
   while (0)
 
 #define CC1_SPEC "%{pg:} %{p:}"
@@ -258,8 +258,8 @@ typedef struct machine_function GTY(())
    extension may differ from that of the type.  */
 
 #define PROMOTE_MODE(MODE,UNSIGNEDP,TYPE)  \
-  if (GET_MODE_CLASS (MODE) == MODE_INT        \
-      && GET_MODE_SIZE (MODE) < UNITS_PER_WORD)          \
+  if (GET_MODE_CLASS (MODE) == MODE_INT	\
+      && GET_MODE_SIZE (MODE) < UNITS_PER_WORD)  	\
     (MODE) = word_mode;
 
 /* Define this if most significant bit is lowest numbered
@@ -331,9 +331,9 @@ typedef struct machine_function GTY(())
   ((TYPEALIGN) < 32 ? 32 : (TYPEALIGN))
 
 /* Make arrays of chars word-aligned for the same reasons.  */
-#define DATA_ALIGNMENT(TYPE, ALIGN)                \
-  (TREE_CODE (TYPE) == ARRAY_TYPE                \
-   && TYPE_MODE (TREE_TYPE (TYPE)) == QImode        \
+#define DATA_ALIGNMENT(TYPE, ALIGN)		\
+  (TREE_CODE (TYPE) == ARRAY_TYPE		\
+   && TYPE_MODE (TREE_TYPE (TYPE)) == QImode	\
    && (ALIGN) < BITS_PER_WORD ? BITS_PER_WORD : (ALIGN))
 
 /* Set this nonzero if move instructions will actually fail to work
@@ -402,13 +402,13 @@ extern struct rtx_def *hppa_pic_save_rtx (void);
 #define PA_STRUCT_VALUE_REGNUM 28
 
 /* Describe how we implement __builtin_eh_return.  */
-#define EH_RETURN_DATA_REGNO(N)        \
+#define EH_RETURN_DATA_REGNO(N)	\
   ((N) < 3 ? (N) + 20 : (N) == 3 ? 31 : INVALID_REGNUM)
-#define EH_RETURN_STACKADJ_RTX        gen_rtx_REG (Pmode, 29)
+#define EH_RETURN_STACKADJ_RTX	gen_rtx_REG (Pmode, 29)
 #define EH_RETURN_HANDLER_RTX \
-  gen_rtx_MEM (word_mode,                                                \
-               gen_rtx_PLUS (word_mode, frame_pointer_rtx,                \
-                             TARGET_64BIT ? GEN_INT (-16) : GEN_INT (-20)))
+  gen_rtx_MEM (word_mode,						\
+	       gen_rtx_PLUS (word_mode, frame_pointer_rtx,		\
+			     TARGET_64BIT ? GEN_INT (-16) : GEN_INT (-20)))
 
 /* Offset from the frame pointer register value to the top of stack.  */
 #define FRAME_POINTER_CFA_OFFSET(FNDECL) 0
@@ -449,12 +449,12 @@ extern struct rtx_def *hppa_pic_save_rtx (void);
    have a mechanism to generate these encodings.  For other targets, we
    use pc-relative encoding for pointers.  If the pointer might require
    dynamic relocation, we make it indirect.  */
-#define ASM_PREFERRED_EH_DATA_FORMAT(CODE,GLOBAL)                        \
-  (TARGET_GAS && !TARGET_HPUX                                                \
-   ? (DW_EH_PE_pcrel                                                        \
-      | ((GLOBAL) || (CODE) == 2 ? DW_EH_PE_indirect : 0)                \
-      | (TARGET_64BIT ? DW_EH_PE_sdata8 : DW_EH_PE_sdata4))                \
-   : (!TARGET_GAS || (GLOBAL) || (CODE) == 2                                \
+#define ASM_PREFERRED_EH_DATA_FORMAT(CODE,GLOBAL)			\
+  (TARGET_GAS && !TARGET_HPUX						\
+   ? (DW_EH_PE_pcrel							\
+      | ((GLOBAL) || (CODE) == 2 ? DW_EH_PE_indirect : 0)		\
+      | (TARGET_64BIT ? DW_EH_PE_sdata8 : DW_EH_PE_sdata4))		\
+   : (!TARGET_GAS || (GLOBAL) || (CODE) == 2				\
       ? DW_EH_PE_aligned : DW_EH_PE_absptr))
 
 /* Handle special EH pointer encodings.  Absolute, pc-relative, and
@@ -463,17 +463,17 @@ extern struct rtx_def *hppa_pic_save_rtx (void);
    generate pc-relative relocations, and to handle indirect function
    pointers.  */
 #define ASM_MAYBE_OUTPUT_ENCODED_ADDR_RTX(FILE, ENCODING, SIZE, ADDR, DONE) \
-  do {                                                                        \
-    if (((ENCODING) & 0x70) == DW_EH_PE_pcrel)                                \
-      {                                                                        \
-        fputs (integer_asm_op (SIZE, FALSE), FILE);                        \
-        if ((ENCODING) & DW_EH_PE_indirect)                                \
-          output_addr_const (FILE, get_deferred_plabel (ADDR));                \
-        else                                                                \
-          assemble_name (FILE, XSTR ((ADDR), 0));                        \
-        fputs ("+8-$PIC_pcrel$0", FILE);                                \
-        goto DONE;                                                        \
-      }                                                                        \
+  do {									\
+    if (((ENCODING) & 0x70) == DW_EH_PE_pcrel)				\
+      {									\
+	fputs (integer_asm_op (SIZE, FALSE), FILE);			\
+	if ((ENCODING) & DW_EH_PE_indirect)				\
+	  output_addr_const (FILE, get_deferred_plabel (ADDR));		\
+	else								\
+	  assemble_name (FILE, XSTR ((ADDR), 0));			\
+	fputs ("+8-$PIC_pcrel$0", FILE);				\
+	goto DONE;							\
+      }									\
     } while (0)
 
 /* The letters I, J, K, L and M in a register constraint string
@@ -488,22 +488,22 @@ extern struct rtx_def *hppa_pic_save_rtx (void);
    `L' is used for the 5 bit constants.
    `M' is used for 0.
    `N' is used for values with the least significant 11 bits equal to zero
-                          and when sign extended from 32 to 64 bits the
-                          value does not change.
+	                  and when sign extended from 32 to 64 bits the
+			  value does not change.
    `O' is used for numbers n such that n+1 is a power of 2.
    */
 
 #define CONST_OK_FOR_LETTER_P(VALUE, C)  \
-  ((C) == 'I' ? VAL_11_BITS_P (VALUE)                                        \
-   : (C) == 'J' ? VAL_14_BITS_P (VALUE)                                        \
-   : (C) == 'K' ? zdepi_cint_p (VALUE)                                        \
-   : (C) == 'L' ? VAL_5_BITS_P (VALUE)                                        \
-   : (C) == 'M' ? (VALUE) == 0                                                \
+  ((C) == 'I' ? VAL_11_BITS_P (VALUE)					\
+   : (C) == 'J' ? VAL_14_BITS_P (VALUE)					\
+   : (C) == 'K' ? zdepi_cint_p (VALUE)					\
+   : (C) == 'L' ? VAL_5_BITS_P (VALUE)					\
+   : (C) == 'M' ? (VALUE) == 0						\
    : (C) == 'N' ? (((VALUE) & (((HOST_WIDE_INT) -1 << 31) | 0x7ff)) == 0 \
-                   || (((VALUE) & (((HOST_WIDE_INT) -1 << 31) | 0x7ff))        \
-                       == (HOST_WIDE_INT) -1 << 31))                        \
-   : (C) == 'O' ? (((VALUE) & ((VALUE) + 1)) == 0)                        \
-   : (C) == 'P' ? and_mask_p (VALUE)                                        \
+		   || (((VALUE) & (((HOST_WIDE_INT) -1 << 31) | 0x7ff))	\
+		       == (HOST_WIDE_INT) -1 << 31))			\
+   : (C) == 'O' ? (((VALUE) & ((VALUE) + 1)) == 0)			\
+   : (C) == 'P' ? and_mask_p (VALUE)					\
    : 0)
 
 /* Similar, but for floating or large integer constants, and defining letters
@@ -511,9 +511,9 @@ extern struct rtx_def *hppa_pic_save_rtx (void);
 
    For PA, `G' is the floating-point constant zero.  `H' is undefined.  */
 
-#define CONST_DOUBLE_OK_FOR_LETTER_P(VALUE, C)                          \
-  ((C) == 'G' ? (GET_MODE_CLASS (GET_MODE (VALUE)) == MODE_FLOAT        \
-                 && (VALUE) == CONST0_RTX (GET_MODE (VALUE)))                \
+#define CONST_DOUBLE_OK_FOR_LETTER_P(VALUE, C)  			\
+  ((C) == 'G' ? (GET_MODE_CLASS (GET_MODE (VALUE)) == MODE_FLOAT	\
+		 && (VALUE) == CONST0_RTX (GET_MODE (VALUE)))		\
    : 0)
 
 /* The class value for index registers, and the one for base regs.  */
@@ -541,9 +541,9 @@ extern struct rtx_def *hppa_pic_save_rtx (void);
    avoid scheduling related problems.  For example, the store and
    load could be separated by a call to a pure or const function
    which has no frame and uses SP-16.  */
-#define SECONDARY_MEMORY_NEEDED(CLASS1, CLASS2, MODE)                        \
-  (TARGET_64BIT                                                                \
-   && (MAYBE_FP_REG_CLASS_P (CLASS1) != FP_REG_CLASS_P (CLASS2)                \
+#define SECONDARY_MEMORY_NEEDED(CLASS1, CLASS2, MODE)			\
+  (TARGET_64BIT								\
+   && (MAYBE_FP_REG_CLASS_P (CLASS1) != FP_REG_CLASS_P (CLASS2)		\
        || MAYBE_FP_REG_CLASS_P (CLASS2) != FP_REG_CLASS_P (CLASS1)))
 
 
@@ -616,9 +616,9 @@ extern struct rtx_def *hppa_pic_save_rtx (void);
 #define STACK_POINTER_OFFSET \
   (TARGET_64BIT ? -(current_function_outgoing_args_size + 48): -32)
 
-#define STACK_DYNAMIC_OFFSET(FNDECL)        \
-  (TARGET_64BIT                                \
-   ? (STACK_POINTER_OFFSET)                \
+#define STACK_DYNAMIC_OFFSET(FNDECL)	\
+  (TARGET_64BIT				\
+   ? (STACK_POINTER_OFFSET)		\
    : ((STACK_POINTER_OFFSET) - current_function_outgoing_args_size))
 
 /* Value is 1 if returning from a function call automatically
@@ -639,10 +639,10 @@ extern struct rtx_def *hppa_pic_save_rtx (void);
 /* Define how to find the value returned by a library function
    assuming the value has mode MODE.  */
 
-#define LIBCALL_VALUE(MODE)        \
-  gen_rtx_REG (MODE,                                                        \
-               (! TARGET_SOFT_FLOAT                                        \
-                && ((MODE) == SFmode || (MODE) == DFmode) ? 32 : 28))
+#define LIBCALL_VALUE(MODE)	\
+  gen_rtx_REG (MODE,							\
+	       (! TARGET_SOFT_FLOAT					\
+		&& ((MODE) == SFmode || (MODE) == DFmode) ? 32 : 28))
 
 /* 1 if N is a possible register number for a function value
    as seen by the caller.  */
@@ -680,14 +680,14 @@ struct hppa_args {int words, nargs_prototype, incoming, indirect; };
    For a library call, FNTYPE is 0.  */
 
 #define INIT_CUMULATIVE_ARGS(CUM, FNTYPE, LIBNAME, FNDECL, N_NAMED_ARGS) \
-  (CUM).words = 0,                                                         \
-  (CUM).incoming = 0,                                                        \
-  (CUM).indirect = (FNTYPE) && !(FNDECL),                                \
-  (CUM).nargs_prototype = (FNTYPE && TYPE_ARG_TYPES (FNTYPE)                \
-                           ? (list_length (TYPE_ARG_TYPES (FNTYPE)) - 1        \
-                              + (TYPE_MODE (TREE_TYPE (FNTYPE)) == BLKmode \
-                                 || pa_return_in_memory (TREE_TYPE (FNTYPE), 0))) \
-                           : 0)
+  (CUM).words = 0, 							\
+  (CUM).incoming = 0,							\
+  (CUM).indirect = (FNTYPE) && !(FNDECL),				\
+  (CUM).nargs_prototype = (FNTYPE && TYPE_ARG_TYPES (FNTYPE)		\
+			   ? (list_length (TYPE_ARG_TYPES (FNTYPE)) - 1	\
+			      + (TYPE_MODE (TREE_TYPE (FNTYPE)) == BLKmode \
+				 || pa_return_in_memory (TREE_TYPE (FNTYPE), 0))) \
+			   : 0)
 
 
 
@@ -695,16 +695,16 @@ struct hppa_args {int words, nargs_prototype, incoming, indirect; };
    set NARGS_PROTOTYPE large so we never return a PARALLEL.  */
 
 #define INIT_CUMULATIVE_INCOMING_ARGS(CUM,FNTYPE,IGNORE) \
-  (CUM).words = 0,                                \
-  (CUM).incoming = 1,                                \
-  (CUM).indirect = 0,                                \
+  (CUM).words = 0,				\
+  (CUM).incoming = 1,				\
+  (CUM).indirect = 0,				\
   (CUM).nargs_prototype = 1000
 
 /* Figure out the size in words of the function argument.  The size
    returned by this macro should always be greater than zero because
    we pass variable and zero sized objects by reference.  */
 
-#define FUNCTION_ARG_SIZE(MODE, TYPE)        \
+#define FUNCTION_ARG_SIZE(MODE, TYPE)	\
   ((((MODE) != BLKmode \
      ? (HOST_WIDE_INT) GET_MODE_SIZE (MODE) \
      : int_size_in_bytes (TYPE)) + UNITS_PER_WORD - 1) / UNITS_PER_WORD)
@@ -713,11 +713,11 @@ struct hppa_args {int words, nargs_prototype, incoming, indirect; };
    of mode MODE and data type TYPE.
    (TYPE is null for libcalls where that information may not be available.)  */
 
-#define FUNCTION_ARG_ADVANCE(CUM, MODE, TYPE, NAMED)                        \
-{ (CUM).nargs_prototype--;                                                \
-  (CUM).words += FUNCTION_ARG_SIZE(MODE, TYPE)                                 \
-    + (((CUM).words & 01) && (TYPE) != 0                                \
-        && FUNCTION_ARG_SIZE(MODE, TYPE) > 1);                                \
+#define FUNCTION_ARG_ADVANCE(CUM, MODE, TYPE, NAMED)			\
+{ (CUM).nargs_prototype--;						\
+  (CUM).words += FUNCTION_ARG_SIZE(MODE, TYPE)	 			\
+    + (((CUM).words & 01) && (TYPE) != 0				\
+	&& FUNCTION_ARG_SIZE(MODE, TYPE) > 1);				\
 }
 
 /* Determine where to put an argument to a function.
@@ -794,12 +794,12 @@ struct hppa_args {int words, nargs_prototype, incoming, indirect; };
 
 /* Arguments larger than one word are double word aligned.  */
 
-#define FUNCTION_ARG_BOUNDARY(MODE, TYPE)                                \
-  (((TYPE)                                                                \
-    ? (integer_zerop (TYPE_SIZE (TYPE))                                        \
-       || !TREE_CONSTANT (TYPE_SIZE (TYPE))                                \
-       || int_size_in_bytes (TYPE) <= UNITS_PER_WORD)                        \
-    : GET_MODE_SIZE(MODE) <= UNITS_PER_WORD)                                \
+#define FUNCTION_ARG_BOUNDARY(MODE, TYPE)				\
+  (((TYPE)								\
+    ? (integer_zerop (TYPE_SIZE (TYPE))					\
+       || !TREE_CONSTANT (TYPE_SIZE (TYPE))				\
+       || int_size_in_bytes (TYPE) <= UNITS_PER_WORD)			\
+    : GET_MODE_SIZE(MODE) <= UNITS_PER_WORD)				\
    ? PARM_BOUNDARY : MAX_PARM_BOUNDARY)
 
 
@@ -837,8 +837,8 @@ void hppa_profile_hook (int label_no);
 
 extern int may_call_alloca;
 
-#define EXIT_IGNORE_STACK        \
- (get_frame_size () != 0        \
+#define EXIT_IGNORE_STACK	\
+ (get_frame_size () != 0	\
   || current_function_calls_alloca || current_function_outgoing_args_size)
 
 /* Output assembler code for a block containing the constant parts
@@ -854,52 +854,52 @@ extern int may_call_alloca;
    It is best to keep this as small as possible to avoid having to
    flush multiple lines in the cache.  */
 
-#define TRAMPOLINE_TEMPLATE(FILE)                                         \
-  {                                                                        \
-    if (!TARGET_64BIT)                                                        \
-      {                                                                        \
-        fputs ("\tldw        36(%r22),%r21\n", FILE);                        \
-        fputs ("\tbb,>=,n        %r21,30,.+16\n", FILE);                        \
-        if (ASSEMBLER_DIALECT == 0)                                        \
-          fputs ("\tdepi        0,31,2,%r21\n", FILE);                        \
-        else                                                                \
-          fputs ("\tdepwi        0,31,2,%r21\n", FILE);                        \
-        fputs ("\tldw        4(%r21),%r19\n", FILE);                                \
-        fputs ("\tldw        0(%r21),%r21\n", FILE);                                \
-        if (TARGET_PA_20)                                                \
-          {                                                                \
-            fputs ("\tbve        (%r21)\n", FILE);                        \
-            fputs ("\tldw        40(%r22),%r29\n", FILE);                \
-            fputs ("\t.word        0\n", FILE);                                \
-            fputs ("\t.word        0\n", FILE);                                \
-          }                                                                \
-        else                                                                \
-          {                                                                \
-            fputs ("\tldsid        (%r21),%r1\n", FILE);                        \
-            fputs ("\tmtsp        %r1,%sr0\n", FILE);                        \
-            fputs ("\tbe        0(%sr0,%r21)\n", FILE);                        \
-            fputs ("\tldw        40(%r22),%r29\n", FILE);                \
-          }                                                                \
-        fputs ("\t.word        0\n", FILE);                                        \
-        fputs ("\t.word        0\n", FILE);                                        \
-        fputs ("\t.word        0\n", FILE);                                        \
-        fputs ("\t.word        0\n", FILE);                                        \
-      }                                                                        \
-    else                                                                \
-      {                                                                        \
-        fputs ("\t.dword 0\n", FILE);                                        \
-        fputs ("\t.dword 0\n", FILE);                                        \
-        fputs ("\t.dword 0\n", FILE);                                        \
-        fputs ("\t.dword 0\n", FILE);                                        \
-        fputs ("\tmfia        %r31\n", FILE);                                        \
-        fputs ("\tldd        24(%r31),%r1\n", FILE);                                \
-        fputs ("\tldd        24(%r1),%r27\n", FILE);                                \
-        fputs ("\tldd        16(%r1),%r1\n", FILE);                                \
-        fputs ("\tbve        (%r1)\n", FILE);                                \
-        fputs ("\tldd        32(%r31),%r31\n", FILE);                        \
-        fputs ("\t.dword 0  ; fptr\n", FILE);                                \
-        fputs ("\t.dword 0  ; static link\n", FILE);                        \
-      }                                                                        \
+#define TRAMPOLINE_TEMPLATE(FILE) 					\
+  {									\
+    if (!TARGET_64BIT)							\
+      {									\
+	fputs ("\tldw	36(%r22),%r21\n", FILE);			\
+	fputs ("\tbb,>=,n	%r21,30,.+16\n", FILE);			\
+	if (ASSEMBLER_DIALECT == 0)					\
+	  fputs ("\tdepi	0,31,2,%r21\n", FILE);			\
+	else								\
+	  fputs ("\tdepwi	0,31,2,%r21\n", FILE);			\
+	fputs ("\tldw	4(%r21),%r19\n", FILE);				\
+	fputs ("\tldw	0(%r21),%r21\n", FILE);				\
+	if (TARGET_PA_20)						\
+	  {								\
+	    fputs ("\tbve	(%r21)\n", FILE);			\
+	    fputs ("\tldw	40(%r22),%r29\n", FILE);		\
+	    fputs ("\t.word	0\n", FILE);				\
+	    fputs ("\t.word	0\n", FILE);				\
+	  }								\
+	else								\
+	  {								\
+	    fputs ("\tldsid	(%r21),%r1\n", FILE);			\
+	    fputs ("\tmtsp	%r1,%sr0\n", FILE);			\
+	    fputs ("\tbe	0(%sr0,%r21)\n", FILE);			\
+	    fputs ("\tldw	40(%r22),%r29\n", FILE);		\
+	  }								\
+	fputs ("\t.word	0\n", FILE);					\
+	fputs ("\t.word	0\n", FILE);					\
+	fputs ("\t.word	0\n", FILE);					\
+	fputs ("\t.word	0\n", FILE);					\
+      }									\
+    else								\
+      {									\
+	fputs ("\t.dword 0\n", FILE);					\
+	fputs ("\t.dword 0\n", FILE);					\
+	fputs ("\t.dword 0\n", FILE);					\
+	fputs ("\t.dword 0\n", FILE);					\
+	fputs ("\tmfia	%r31\n", FILE);					\
+	fputs ("\tldd	24(%r31),%r1\n", FILE);				\
+	fputs ("\tldd	24(%r1),%r27\n", FILE);				\
+	fputs ("\tldd	16(%r1),%r1\n", FILE);				\
+	fputs ("\tbve	(%r1)\n", FILE);				\
+	fputs ("\tldd	32(%r31),%r31\n", FILE);			\
+	fputs ("\t.dword 0  ; fptr\n", FILE);				\
+	fputs ("\t.dword 0  ; static link\n", FILE);			\
+      }									\
   }
 
 /* Length in units of the trampoline for entering a nested function.  */
@@ -936,76 +936,76 @@ extern int may_call_alloca;
    is written to memory prior to any attempts at prefetching the code
    sequence.  */
 
-#define INITIALIZE_TRAMPOLINE(TRAMP, FNADDR, CXT)                         \
-{                                                                        \
-  rtx start_addr = gen_reg_rtx (Pmode);                                        \
-  rtx end_addr = gen_reg_rtx (Pmode);                                        \
-  rtx line_length = gen_reg_rtx (Pmode);                                \
-  rtx tmp;                                                                \
-                                                                        \
-  if (!TARGET_64BIT)                                                        \
-    {                                                                        \
-      tmp = memory_address (Pmode, plus_constant ((TRAMP), 36));        \
-      emit_move_insn (gen_rtx_MEM (Pmode, tmp), (FNADDR));                \
-      tmp = memory_address (Pmode, plus_constant ((TRAMP), 40));        \
-      emit_move_insn (gen_rtx_MEM (Pmode, tmp), (CXT));                        \
-                                                                        \
-      /* Create a fat pointer for the trampoline.  */                        \
-      tmp = memory_address (Pmode, plus_constant ((TRAMP), 44));        \
-      emit_move_insn (gen_rtx_MEM (Pmode, tmp), (TRAMP));                \
-      tmp = memory_address (Pmode, plus_constant ((TRAMP), 48));        \
-      emit_move_insn (gen_rtx_MEM (Pmode, tmp),                                \
-                      gen_rtx_REG (Pmode, 19));                                \
-                                                                        \
-      /* fdc and fic only use registers for the address to flush,        \
-         they do not accept integer displacements.  We align the        \
-         start and end addresses to the beginning of their respective        \
-         cache lines to minimize the number of lines flushed.  */        \
-      tmp = force_reg (Pmode, (TRAMP));                                        \
-      emit_insn (gen_andsi3 (start_addr, tmp,                                \
-                             GEN_INT (-MIN_CACHELINE_SIZE)));                \
-      tmp = force_reg (Pmode,                                                \
-                       plus_constant (tmp, TRAMPOLINE_CODE_SIZE - 1));        \
-      emit_insn (gen_andsi3 (end_addr, tmp,                                \
-                             GEN_INT (-MIN_CACHELINE_SIZE)));                \
-      emit_move_insn (line_length, GEN_INT (MIN_CACHELINE_SIZE));        \
-      emit_insn (gen_dcacheflush (start_addr, end_addr, line_length));        \
-      emit_insn (gen_icacheflush (start_addr, end_addr, line_length,        \
-                                  gen_reg_rtx (Pmode),                        \
-                                  gen_reg_rtx (Pmode)));                \
-    }                                                                        \
-  else                                                                        \
-    {                                                                        \
-      tmp = memory_address (Pmode, plus_constant ((TRAMP), 56));        \
-      emit_move_insn (gen_rtx_MEM (Pmode, tmp), (FNADDR));                \
-      tmp = memory_address (Pmode, plus_constant ((TRAMP), 64));        \
-      emit_move_insn (gen_rtx_MEM (Pmode, tmp), (CXT));                        \
-                                                                        \
-      /* Create a fat pointer for the trampoline.  */                        \
-      tmp = memory_address (Pmode, plus_constant ((TRAMP), 16));        \
-      emit_move_insn (gen_rtx_MEM (Pmode, tmp),                                \
-                      force_reg (Pmode, plus_constant ((TRAMP), 32)));        \
-      tmp = memory_address (Pmode, plus_constant ((TRAMP), 24));        \
-      emit_move_insn (gen_rtx_MEM (Pmode, tmp),                                \
-                      gen_rtx_REG (Pmode, 27));                                \
-                                                                        \
-      /* fdc and fic only use registers for the address to flush,        \
-         they do not accept integer displacements.  We align the        \
-         start and end addresses to the beginning of their respective        \
-         cache lines to minimize the number of lines flushed.  */        \
-      tmp = force_reg (Pmode, plus_constant ((TRAMP), 32));                \
-      emit_insn (gen_anddi3 (start_addr, tmp,                                \
-                             GEN_INT (-MIN_CACHELINE_SIZE)));                \
-      tmp = force_reg (Pmode,                                                \
-                       plus_constant (tmp, TRAMPOLINE_CODE_SIZE - 1));        \
-      emit_insn (gen_anddi3 (end_addr, tmp,                                \
-                             GEN_INT (-MIN_CACHELINE_SIZE)));                \
-      emit_move_insn (line_length, GEN_INT (MIN_CACHELINE_SIZE));        \
-      emit_insn (gen_dcacheflush (start_addr, end_addr, line_length));        \
-      emit_insn (gen_icacheflush (start_addr, end_addr, line_length,        \
-                                  gen_reg_rtx (Pmode),                        \
-                                  gen_reg_rtx (Pmode)));                \
-    }                                                                        \
+#define INITIALIZE_TRAMPOLINE(TRAMP, FNADDR, CXT) 			\
+{									\
+  rtx start_addr = gen_reg_rtx (Pmode);					\
+  rtx end_addr = gen_reg_rtx (Pmode);					\
+  rtx line_length = gen_reg_rtx (Pmode);				\
+  rtx tmp;								\
+									\
+  if (!TARGET_64BIT)							\
+    {									\
+      tmp = memory_address (Pmode, plus_constant ((TRAMP), 36));	\
+      emit_move_insn (gen_rtx_MEM (Pmode, tmp), (FNADDR));		\
+      tmp = memory_address (Pmode, plus_constant ((TRAMP), 40));	\
+      emit_move_insn (gen_rtx_MEM (Pmode, tmp), (CXT));			\
+									\
+      /* Create a fat pointer for the trampoline.  */			\
+      tmp = memory_address (Pmode, plus_constant ((TRAMP), 44));	\
+      emit_move_insn (gen_rtx_MEM (Pmode, tmp), (TRAMP));		\
+      tmp = memory_address (Pmode, plus_constant ((TRAMP), 48));	\
+      emit_move_insn (gen_rtx_MEM (Pmode, tmp),				\
+		      gen_rtx_REG (Pmode, 19));				\
+									\
+      /* fdc and fic only use registers for the address to flush,	\
+	 they do not accept integer displacements.  We align the	\
+	 start and end addresses to the beginning of their respective	\
+	 cache lines to minimize the number of lines flushed.  */	\
+      tmp = force_reg (Pmode, (TRAMP));					\
+      emit_insn (gen_andsi3 (start_addr, tmp,				\
+			     GEN_INT (-MIN_CACHELINE_SIZE)));		\
+      tmp = force_reg (Pmode,						\
+		       plus_constant (tmp, TRAMPOLINE_CODE_SIZE - 1));	\
+      emit_insn (gen_andsi3 (end_addr, tmp,				\
+			     GEN_INT (-MIN_CACHELINE_SIZE)));		\
+      emit_move_insn (line_length, GEN_INT (MIN_CACHELINE_SIZE));	\
+      emit_insn (gen_dcacheflush (start_addr, end_addr, line_length));	\
+      emit_insn (gen_icacheflush (start_addr, end_addr, line_length,	\
+				  gen_reg_rtx (Pmode),			\
+				  gen_reg_rtx (Pmode)));		\
+    }									\
+  else									\
+    {									\
+      tmp = memory_address (Pmode, plus_constant ((TRAMP), 56));	\
+      emit_move_insn (gen_rtx_MEM (Pmode, tmp), (FNADDR));		\
+      tmp = memory_address (Pmode, plus_constant ((TRAMP), 64));	\
+      emit_move_insn (gen_rtx_MEM (Pmode, tmp), (CXT));			\
+									\
+      /* Create a fat pointer for the trampoline.  */			\
+      tmp = memory_address (Pmode, plus_constant ((TRAMP), 16));	\
+      emit_move_insn (gen_rtx_MEM (Pmode, tmp),				\
+		      force_reg (Pmode, plus_constant ((TRAMP), 32)));	\
+      tmp = memory_address (Pmode, plus_constant ((TRAMP), 24));	\
+      emit_move_insn (gen_rtx_MEM (Pmode, tmp),				\
+		      gen_rtx_REG (Pmode, 27));				\
+									\
+      /* fdc and fic only use registers for the address to flush,	\
+	 they do not accept integer displacements.  We align the	\
+	 start and end addresses to the beginning of their respective	\
+	 cache lines to minimize the number of lines flushed.  */	\
+      tmp = force_reg (Pmode, plus_constant ((TRAMP), 32));		\
+      emit_insn (gen_anddi3 (start_addr, tmp,				\
+			     GEN_INT (-MIN_CACHELINE_SIZE)));		\
+      tmp = force_reg (Pmode,						\
+		       plus_constant (tmp, TRAMPOLINE_CODE_SIZE - 1));	\
+      emit_insn (gen_anddi3 (end_addr, tmp,				\
+			     GEN_INT (-MIN_CACHELINE_SIZE)));		\
+      emit_move_insn (line_length, GEN_INT (MIN_CACHELINE_SIZE));	\
+      emit_insn (gen_dcacheflush (start_addr, end_addr, line_length));	\
+      emit_insn (gen_icacheflush (start_addr, end_addr, line_length,	\
+				  gen_reg_rtx (Pmode),			\
+				  gen_reg_rtx (Pmode)));		\
+    }									\
 }
 
 /* Perform any machine-specific adjustment in the address of the trampoline.
@@ -1040,19 +1040,19 @@ extern int may_call_alloca;
    has been allocated, which happens in local-alloc.c.  */
 
 #define REGNO_OK_FOR_INDEX_P(X) \
-  ((X) && ((X) < 32                                                        \
-   || (X >= FIRST_PSEUDO_REGISTER                                        \
-       && reg_renumber                                                        \
+  ((X) && ((X) < 32							\
+   || (X >= FIRST_PSEUDO_REGISTER					\
+       && reg_renumber							\
        && (unsigned) reg_renumber[X] < 32)))
 #define REGNO_OK_FOR_BASE_P(X) \
-  ((X) && ((X) < 32                                                        \
-   || (X >= FIRST_PSEUDO_REGISTER                                        \
-       && reg_renumber                                                        \
+  ((X) && ((X) < 32							\
+   || (X >= FIRST_PSEUDO_REGISTER					\
+       && reg_renumber							\
        && (unsigned) reg_renumber[X] < 32)))
 #define REGNO_OK_FOR_FP_P(X) \
-  (FP_REGNO_P (X)                                                        \
-   || (X >= FIRST_PSEUDO_REGISTER                                        \
-       && reg_renumber                                                        \
+  (FP_REGNO_P (X)							\
+   || (X >= FIRST_PSEUDO_REGISTER					\
+       && reg_renumber							\
        && FP_REGNO_P (reg_renumber[X])))
 
 /* Now macros that check whether X is a register and also,
@@ -1080,10 +1080,10 @@ extern int may_call_alloca;
    use most of the constants accepted by CONSTANT_P, except CONST_DOUBLE.  */
 
 #define CONSTANT_ADDRESS_P(X) \
-  ((GET_CODE (X) == LABEL_REF                                                 \
-   || (GET_CODE (X) == SYMBOL_REF && !SYMBOL_REF_TLS_MODEL (X))                \
-   || GET_CODE (X) == CONST_INT || GET_CODE (X) == CONST                \
-   || GET_CODE (X) == HIGH)                                                 \
+  ((GET_CODE (X) == LABEL_REF 						\
+   || (GET_CODE (X) == SYMBOL_REF && !SYMBOL_REF_TLS_MODEL (X))		\
+   || GET_CODE (X) == CONST_INT || GET_CODE (X) == CONST		\
+   || GET_CODE (X) == HIGH) 						\
    && (reload_in_progress || reload_completed || ! symbolic_expression_p (X)))
 
 /* A C expression that is nonzero if we are using the new HP assembler.  */
@@ -1116,16 +1116,16 @@ extern int may_call_alloca;
    to increase the allowed range for CONST_INTS.  We may also be able
    to handle CONST_DOUBLES.  */
 
-#define LEGITIMATE_CONSTANT_P(X)                                \
-  ((GET_MODE_CLASS (GET_MODE (X)) != MODE_FLOAT                        \
-    || (X) == CONST0_RTX (GET_MODE (X)))                        \
-   && (NEW_HP_ASSEMBLER || TARGET_GAS || GET_CODE (X) != LABEL_REF)        \
-   && !(TARGET_64BIT && GET_CODE (X) == CONST_DOUBLE)                \
-   && !(TARGET_64BIT && GET_CODE (X) == CONST_INT                \
-        && !(HOST_BITS_PER_WIDE_INT <= 32                        \
-             || (reload_in_progress || reload_completed)        \
-             || LEGITIMATE_64BIT_CONST_INT_P (INTVAL (X))        \
-             || cint_ok_for_move (INTVAL (X))))                        \
+#define LEGITIMATE_CONSTANT_P(X)				\
+  ((GET_MODE_CLASS (GET_MODE (X)) != MODE_FLOAT			\
+    || (X) == CONST0_RTX (GET_MODE (X)))			\
+   && (NEW_HP_ASSEMBLER || TARGET_GAS || GET_CODE (X) != LABEL_REF)	\
+   && !(TARGET_64BIT && GET_CODE (X) == CONST_DOUBLE)		\
+   && !(TARGET_64BIT && GET_CODE (X) == CONST_INT		\
+	&& !(HOST_BITS_PER_WIDE_INT <= 32			\
+	     || (reload_in_progress || reload_completed)	\
+	     || LEGITIMATE_64BIT_CONST_INT_P (INTVAL (X))	\
+	     || cint_ok_for_move (INTVAL (X))))			\
    && !function_label_operand (X, VOIDmode))
 
 /* Target flags set on a symbol_ref.  */
@@ -1140,26 +1140,26 @@ extern int may_call_alloca;
    Return 1 iff OP is a pseudo which did not get a hard register and
    we are running the reload pass.  */
 #define IS_RELOADING_PSEUDO_P(OP) \
-  ((reload_in_progress                                        \
-    && GET_CODE (OP) == REG                                \
-    && REGNO (OP) >= FIRST_PSEUDO_REGISTER                \
+  ((reload_in_progress					\
+    && GET_CODE (OP) == REG				\
+    && REGNO (OP) >= FIRST_PSEUDO_REGISTER		\
     && reg_renumber [REGNO (OP)] < 0))
 
 /* Return 1 iff OP is a scaled or unscaled index address.  */
 #define IS_INDEX_ADDR_P(OP) \
-  (GET_CODE (OP) == PLUS                                \
-   && GET_MODE (OP) == Pmode                                \
-   && (GET_CODE (XEXP (OP, 0)) == MULT                        \
-       || GET_CODE (XEXP (OP, 1)) == MULT                \
-       || (REG_P (XEXP (OP, 0))                                \
-           && REG_P (XEXP (OP, 1)))))
+  (GET_CODE (OP) == PLUS				\
+   && GET_MODE (OP) == Pmode				\
+   && (GET_CODE (XEXP (OP, 0)) == MULT			\
+       || GET_CODE (XEXP (OP, 1)) == MULT		\
+       || (REG_P (XEXP (OP, 0))				\
+	   && REG_P (XEXP (OP, 1)))))
 
 /* Return 1 iff OP is a LO_SUM DLT address.  */
 #define IS_LO_SUM_DLT_ADDR_P(OP) \
-  (GET_CODE (OP) == LO_SUM                                \
-   && GET_MODE (OP) == Pmode                                \
-   && REG_P (XEXP (OP, 0))                                \
-   && REG_OK_FOR_BASE_P (XEXP (OP, 0))                        \
+  (GET_CODE (OP) == LO_SUM				\
+   && GET_MODE (OP) == Pmode				\
+   && REG_P (XEXP (OP, 0))				\
+   && REG_OK_FOR_BASE_P (XEXP (OP, 0))			\
    && GET_CODE (XEXP (OP, 1)) == UNSPEC)
 
 /* Optional extra constraints for this machine. Borrowed from sparc.h.
@@ -1186,49 +1186,49 @@ extern int may_call_alloca;
        instructions with the `sl' completer.  */
 
 #define EXTRA_CONSTRAINT(OP, C) \
-  ((C) == 'Q' ?                                                                \
-   (IS_RELOADING_PSEUDO_P (OP)                                                \
-    || (GET_CODE (OP) == MEM                                                \
-        && (reload_in_progress                                                \
-            || memory_address_p (GET_MODE (OP), XEXP (OP, 0)))                \
-        && !symbolic_memory_operand (OP, VOIDmode)                        \
-        && !IS_LO_SUM_DLT_ADDR_P (XEXP (OP, 0))                                \
-        && !IS_INDEX_ADDR_P (XEXP (OP, 0))))                                \
-   : ((C) == 'W' ?                                                        \
-      (GET_CODE (OP) == MEM                                                \
-       && REG_P (XEXP (OP, 0))                                                \
-       && REG_OK_FOR_BASE_P (XEXP (OP, 0)))                                \
-   : ((C) == 'A' ?                                                        \
-      (GET_CODE (OP) == MEM                                                \
-       && IS_LO_SUM_DLT_ADDR_P (XEXP (OP, 0)))                                \
-   : ((C) == 'R' ?                                                        \
-      (GET_CODE (OP) == MEM                                                \
-       && IS_INDEX_ADDR_P (XEXP (OP, 0)))                                \
-   : ((C) == 'T' ?                                                         \
-      (GET_CODE (OP) == MEM                                                \
-       && !IS_LO_SUM_DLT_ADDR_P (XEXP (OP, 0))                                \
-       && !IS_INDEX_ADDR_P (XEXP (OP, 0))                                \
-       /* Floating-point loads and stores are used to load                \
-          integer values as well as floating-point values.                \
-          They don't have the same set of REG+D address modes                \
-          as integer loads and stores.  PA 1.x supports only                \
-          short displacements.  PA 2.0 supports long displacements        \
-          but the base register needs to be aligned.                        \
-                                                                        \
-          The checks in GO_IF_LEGITIMATE_ADDRESS for SFmode and                \
-          DFmode test the validity of an address for use in a                \
-          floating point load or store.  So, we use SFmode/DFmode        \
-          to see if the address is valid for a floating-point                \
-          load/store operation.  */                                        \
-       && memory_address_p ((GET_MODE_SIZE (GET_MODE (OP)) == 4                \
-                             ? SFmode                                        \
-                             : DFmode),                                        \
-                            XEXP (OP, 0)))                                \
-   : ((C) == 'S' ?                                                        \
-      (GET_CODE (OP) == CONST_INT && INTVAL (OP) == 31)                        \
-   : ((C) == 'U' ?                                                        \
+  ((C) == 'Q' ?								\
+   (IS_RELOADING_PSEUDO_P (OP)						\
+    || (GET_CODE (OP) == MEM						\
+	&& (reload_in_progress						\
+	    || memory_address_p (GET_MODE (OP), XEXP (OP, 0)))		\
+	&& !symbolic_memory_operand (OP, VOIDmode)			\
+	&& !IS_LO_SUM_DLT_ADDR_P (XEXP (OP, 0))				\
+	&& !IS_INDEX_ADDR_P (XEXP (OP, 0))))				\
+   : ((C) == 'W' ?							\
+      (GET_CODE (OP) == MEM						\
+       && REG_P (XEXP (OP, 0))						\
+       && REG_OK_FOR_BASE_P (XEXP (OP, 0)))				\
+   : ((C) == 'A' ?							\
+      (GET_CODE (OP) == MEM						\
+       && IS_LO_SUM_DLT_ADDR_P (XEXP (OP, 0)))				\
+   : ((C) == 'R' ?							\
+      (GET_CODE (OP) == MEM						\
+       && IS_INDEX_ADDR_P (XEXP (OP, 0)))				\
+   : ((C) == 'T' ? 							\
+      (GET_CODE (OP) == MEM						\
+       && !IS_LO_SUM_DLT_ADDR_P (XEXP (OP, 0))				\
+       && !IS_INDEX_ADDR_P (XEXP (OP, 0))				\
+       /* Floating-point loads and stores are used to load		\
+	  integer values as well as floating-point values.		\
+	  They don't have the same set of REG+D address modes		\
+	  as integer loads and stores.  PA 1.x supports only		\
+	  short displacements.  PA 2.0 supports long displacements	\
+	  but the base register needs to be aligned.			\
+									\
+	  The checks in GO_IF_LEGITIMATE_ADDRESS for SFmode and		\
+	  DFmode test the validity of an address for use in a		\
+	  floating point load or store.  So, we use SFmode/DFmode	\
+	  to see if the address is valid for a floating-point		\
+	  load/store operation.  */					\
+       && memory_address_p ((GET_MODE_SIZE (GET_MODE (OP)) == 4		\
+			     ? SFmode					\
+			     : DFmode),					\
+			    XEXP (OP, 0)))				\
+   : ((C) == 'S' ?							\
+      (GET_CODE (OP) == CONST_INT && INTVAL (OP) == 31)			\
+   : ((C) == 'U' ?							\
       (GET_CODE (OP) == CONST_INT && INTVAL (OP) == 63) : 0)))))))
-        
+	
 
 /* The macros REG_OK_FOR..._P assume that the arg is a REG rtx
    and check its validity for a certain class.
@@ -1338,136 +1338,136 @@ extern int may_call_alloca;
 
 /* These are the modes that we allow for scaled indexing.  */
 #define MODE_OK_FOR_SCALED_INDEXING_P(MODE) \
-  ((TARGET_64BIT && (MODE) == DImode)                                        \
-   || (MODE) == SImode                                                        \
-   || (MODE) == HImode                                                        \
+  ((TARGET_64BIT && (MODE) == DImode)					\
+   || (MODE) == SImode							\
+   || (MODE) == HImode							\
    || (!TARGET_SOFT_FLOAT && ((MODE) == DFmode || (MODE) == SFmode)))
 
 /* These are the modes that we allow for unscaled indexing.  */
 #define MODE_OK_FOR_UNSCALED_INDEXING_P(MODE) \
-  ((TARGET_64BIT && (MODE) == DImode)                                        \
-   || (MODE) == SImode                                                        \
-   || (MODE) == HImode                                                        \
-   || (MODE) == QImode                                                        \
+  ((TARGET_64BIT && (MODE) == DImode)					\
+   || (MODE) == SImode							\
+   || (MODE) == HImode							\
+   || (MODE) == QImode							\
    || (!TARGET_SOFT_FLOAT && ((MODE) == DFmode || (MODE) == SFmode)))
 
 #define GO_IF_LEGITIMATE_ADDRESS(MODE, X, ADDR) \
-{                                                                        \
-  if ((REG_P (X) && REG_OK_FOR_BASE_P (X))                                \
-      || ((GET_CODE (X) == PRE_DEC || GET_CODE (X) == POST_DEC                \
-           || GET_CODE (X) == PRE_INC || GET_CODE (X) == POST_INC)        \
-          && REG_P (XEXP (X, 0))                                        \
-          && REG_OK_FOR_BASE_P (XEXP (X, 0))))                                \
-    goto ADDR;                                                                \
-  else if (GET_CODE (X) == PLUS)                                        \
-    {                                                                        \
-      rtx base = 0, index = 0;                                                \
-      if (REG_P (XEXP (X, 1))                                                \
-          && REG_OK_FOR_BASE_P (XEXP (X, 1)))                                \
-        base = XEXP (X, 1), index = XEXP (X, 0);                        \
-      else if (REG_P (XEXP (X, 0))                                        \
-               && REG_OK_FOR_BASE_P (XEXP (X, 0)))                        \
-        base = XEXP (X, 0), index = XEXP (X, 1);                        \
-      if (base                                                                \
-          && GET_CODE (index) == CONST_INT                                \
-          && ((INT_14_BITS (index)                                        \
-               && (((MODE) != DImode                                        \
-                    && (MODE) != SFmode                                        \
-                    && (MODE) != DFmode)                                \
-                   /* The base register for DImode loads and stores        \
-                      with long displacements must be aligned because        \
-                      the lower three bits in the displacement are        \
-                      assumed to be zero.  */                                \
-                   || ((MODE) == DImode                                        \
-                       && (!TARGET_64BIT                                \
-                           || (INTVAL (index) % 8) == 0))                \
-                   /* Similarly, the base register for SFmode/DFmode        \
-                      loads and stores with long displacements must        \
-                      be aligned.                                        \
-                                                                        \
-                      FIXME: the ELF32 linker clobbers the LSB of        \
-                      the FP register number in PA 2.0 floating-point        \
-                      insns with long displacements.  This is because        \
-                      R_PARISC_DPREL14WR and other relocations like        \
-                      it are not supported.  For now, we reject long        \
-                      displacements on this target.  */                        \
-                   || (((MODE) == SFmode || (MODE) == DFmode)                \
-                       && (TARGET_SOFT_FLOAT                                \
-                           || (TARGET_PA_20                                \
-                               && !TARGET_ELF32                                \
-                               && (INTVAL (index)                        \
-                                   % GET_MODE_SIZE (MODE)) == 0)))))        \
-               || INT_5_BITS (index)))                                        \
-        goto ADDR;                                                        \
-      if (!TARGET_DISABLE_INDEXING                                        \
-          /* Only accept the "canonical" INDEX+BASE operand order        \
-             on targets with non-equivalent space registers.  */        \
-          && (TARGET_NO_SPACE_REGS                                        \
-              ? (base && REG_P (index))                                        \
-              : (base == XEXP (X, 1) && REG_P (index)                        \
-                 && (reload_completed                                        \
-                     || (reload_in_progress && HARD_REGISTER_P (base))        \
-                     || REG_POINTER (base))                                \
-                 && (reload_completed                                        \
-                     || (reload_in_progress && HARD_REGISTER_P (index))        \
-                     || !REG_POINTER (index))))                                \
-          && MODE_OK_FOR_UNSCALED_INDEXING_P (MODE)                        \
-          && REG_OK_FOR_INDEX_P (index)                                        \
-          && borx_reg_operand (base, Pmode)                                \
-          && borx_reg_operand (index, Pmode))                                \
-        goto ADDR;                                                        \
-      if (!TARGET_DISABLE_INDEXING                                        \
-          && base                                                        \
-          && GET_CODE (index) == MULT                                        \
-          && MODE_OK_FOR_SCALED_INDEXING_P (MODE)                        \
-          && REG_P (XEXP (index, 0))                                        \
-          && GET_MODE (XEXP (index, 0)) == Pmode                        \
-          && REG_OK_FOR_INDEX_P (XEXP (index, 0))                        \
-          && GET_CODE (XEXP (index, 1)) == CONST_INT                        \
-          && INTVAL (XEXP (index, 1))                                        \
-             == (HOST_WIDE_INT) GET_MODE_SIZE (MODE)                        \
-          && borx_reg_operand (base, Pmode))                                \
-        goto ADDR;                                                        \
-    }                                                                        \
-  else if (GET_CODE (X) == LO_SUM                                        \
-           && GET_CODE (XEXP (X, 0)) == REG                                \
-           && REG_OK_FOR_BASE_P (XEXP (X, 0))                                \
-           && CONSTANT_P (XEXP (X, 1))                                        \
-           && (TARGET_SOFT_FLOAT                                        \
-               /* We can allow symbolic LO_SUM addresses for PA2.0.  */        \
-               || (TARGET_PA_20                                                \
-                   && !TARGET_ELF32                                        \
-                   && GET_CODE (XEXP (X, 1)) != CONST_INT)                \
-               || ((MODE) != SFmode                                        \
-                   && (MODE) != DFmode)))                                \
-    goto ADDR;                                                                \
-  else if (GET_CODE (X) == LO_SUM                                        \
-           && GET_CODE (XEXP (X, 0)) == SUBREG                                \
-           && GET_CODE (SUBREG_REG (XEXP (X, 0))) == REG                \
-           && REG_OK_FOR_BASE_P (SUBREG_REG (XEXP (X, 0)))                \
-           && CONSTANT_P (XEXP (X, 1))                                        \
-           && (TARGET_SOFT_FLOAT                                        \
-               /* We can allow symbolic LO_SUM addresses for PA2.0.  */        \
-               || (TARGET_PA_20                                                \
-                   && !TARGET_ELF32                                        \
-                   && GET_CODE (XEXP (X, 1)) != CONST_INT)                \
-               || ((MODE) != SFmode                                        \
-                   && (MODE) != DFmode)))                                \
-    goto ADDR;                                                                \
-  else if (GET_CODE (X) == LABEL_REF                                        \
-           || (GET_CODE (X) == CONST_INT                                \
-               && INT_5_BITS (X)))                                        \
-    goto ADDR;                                                                \
-  /* Needed for -fPIC */                                                \
-  else if (GET_CODE (X) == LO_SUM                                        \
-           && GET_CODE (XEXP (X, 0)) == REG                             \
-           && REG_OK_FOR_BASE_P (XEXP (X, 0))                                \
-           && GET_CODE (XEXP (X, 1)) == UNSPEC                                \
-           && (TARGET_SOFT_FLOAT                                        \
-               || (TARGET_PA_20        && !TARGET_ELF32)                        \
-               || ((MODE) != SFmode                                        \
-                   && (MODE) != DFmode)))                                \
-    goto ADDR;                                                                \
+{									\
+  if ((REG_P (X) && REG_OK_FOR_BASE_P (X))				\
+      || ((GET_CODE (X) == PRE_DEC || GET_CODE (X) == POST_DEC		\
+	   || GET_CODE (X) == PRE_INC || GET_CODE (X) == POST_INC)	\
+	  && REG_P (XEXP (X, 0))					\
+	  && REG_OK_FOR_BASE_P (XEXP (X, 0))))				\
+    goto ADDR;								\
+  else if (GET_CODE (X) == PLUS)					\
+    {									\
+      rtx base = 0, index = 0;						\
+      if (REG_P (XEXP (X, 1))						\
+	  && REG_OK_FOR_BASE_P (XEXP (X, 1)))				\
+	base = XEXP (X, 1), index = XEXP (X, 0);			\
+      else if (REG_P (XEXP (X, 0))					\
+	       && REG_OK_FOR_BASE_P (XEXP (X, 0)))			\
+	base = XEXP (X, 0), index = XEXP (X, 1);			\
+      if (base								\
+	  && GET_CODE (index) == CONST_INT				\
+	  && ((INT_14_BITS (index)					\
+	       && (((MODE) != DImode					\
+		    && (MODE) != SFmode					\
+		    && (MODE) != DFmode)				\
+		   /* The base register for DImode loads and stores	\
+		      with long displacements must be aligned because	\
+		      the lower three bits in the displacement are	\
+		      assumed to be zero.  */				\
+		   || ((MODE) == DImode					\
+		       && (!TARGET_64BIT				\
+			   || (INTVAL (index) % 8) == 0))		\
+		   /* Similarly, the base register for SFmode/DFmode	\
+		      loads and stores with long displacements must	\
+		      be aligned.					\
+									\
+		      FIXME: the ELF32 linker clobbers the LSB of	\
+		      the FP register number in PA 2.0 floating-point	\
+		      insns with long displacements.  This is because	\
+		      R_PARISC_DPREL14WR and other relocations like	\
+		      it are not supported.  For now, we reject long	\
+		      displacements on this target.  */			\
+		   || (((MODE) == SFmode || (MODE) == DFmode)		\
+		       && (TARGET_SOFT_FLOAT				\
+			   || (TARGET_PA_20				\
+			       && !TARGET_ELF32				\
+			       && (INTVAL (index)			\
+				   % GET_MODE_SIZE (MODE)) == 0)))))	\
+	       || INT_5_BITS (index)))					\
+	goto ADDR;							\
+      if (!TARGET_DISABLE_INDEXING					\
+	  /* Only accept the "canonical" INDEX+BASE operand order	\
+	     on targets with non-equivalent space registers.  */	\
+	  && (TARGET_NO_SPACE_REGS					\
+	      ? (base && REG_P (index))					\
+	      : (base == XEXP (X, 1) && REG_P (index)			\
+		 && (reload_completed					\
+		     || (reload_in_progress && HARD_REGISTER_P (base))	\
+		     || REG_POINTER (base))				\
+		 && (reload_completed					\
+		     || (reload_in_progress && HARD_REGISTER_P (index))	\
+		     || !REG_POINTER (index))))				\
+	  && MODE_OK_FOR_UNSCALED_INDEXING_P (MODE)			\
+	  && REG_OK_FOR_INDEX_P (index)					\
+	  && borx_reg_operand (base, Pmode)				\
+	  && borx_reg_operand (index, Pmode))				\
+	goto ADDR;							\
+      if (!TARGET_DISABLE_INDEXING					\
+	  && base							\
+	  && GET_CODE (index) == MULT					\
+	  && MODE_OK_FOR_SCALED_INDEXING_P (MODE)			\
+	  && REG_P (XEXP (index, 0))					\
+	  && GET_MODE (XEXP (index, 0)) == Pmode			\
+	  && REG_OK_FOR_INDEX_P (XEXP (index, 0))			\
+	  && GET_CODE (XEXP (index, 1)) == CONST_INT			\
+	  && INTVAL (XEXP (index, 1))					\
+	     == (HOST_WIDE_INT) GET_MODE_SIZE (MODE)			\
+	  && borx_reg_operand (base, Pmode))				\
+	goto ADDR;							\
+    }									\
+  else if (GET_CODE (X) == LO_SUM					\
+	   && GET_CODE (XEXP (X, 0)) == REG				\
+	   && REG_OK_FOR_BASE_P (XEXP (X, 0))				\
+	   && CONSTANT_P (XEXP (X, 1))					\
+	   && (TARGET_SOFT_FLOAT					\
+	       /* We can allow symbolic LO_SUM addresses for PA2.0.  */	\
+	       || (TARGET_PA_20						\
+		   && !TARGET_ELF32					\
+	           && GET_CODE (XEXP (X, 1)) != CONST_INT)		\
+	       || ((MODE) != SFmode					\
+		   && (MODE) != DFmode)))				\
+    goto ADDR;								\
+  else if (GET_CODE (X) == LO_SUM					\
+	   && GET_CODE (XEXP (X, 0)) == SUBREG				\
+	   && GET_CODE (SUBREG_REG (XEXP (X, 0))) == REG		\
+	   && REG_OK_FOR_BASE_P (SUBREG_REG (XEXP (X, 0)))		\
+	   && CONSTANT_P (XEXP (X, 1))					\
+	   && (TARGET_SOFT_FLOAT					\
+	       /* We can allow symbolic LO_SUM addresses for PA2.0.  */	\
+	       || (TARGET_PA_20						\
+		   && !TARGET_ELF32					\
+	           && GET_CODE (XEXP (X, 1)) != CONST_INT)		\
+	       || ((MODE) != SFmode					\
+		   && (MODE) != DFmode)))				\
+    goto ADDR;								\
+  else if (GET_CODE (X) == LABEL_REF					\
+	   || (GET_CODE (X) == CONST_INT				\
+	       && INT_5_BITS (X)))					\
+    goto ADDR;								\
+  /* Needed for -fPIC */						\
+  else if (GET_CODE (X) == LO_SUM					\
+	   && GET_CODE (XEXP (X, 0)) == REG             		\
+	   && REG_OK_FOR_BASE_P (XEXP (X, 0))				\
+	   && GET_CODE (XEXP (X, 1)) == UNSPEC				\
+	   && (TARGET_SOFT_FLOAT					\
+	       || (TARGET_PA_20	&& !TARGET_ELF32)			\
+	       || ((MODE) != SFmode					\
+		   && (MODE) != DFmode)))				\
+    goto ADDR;								\
 }
 
 /* Look for machine dependent ways to make the invalid address AD a
@@ -1490,49 +1490,49 @@ extern int may_call_alloca;
    can be reused.
 
    There may be more opportunities to improve code with this hook.  */
-#define LEGITIMIZE_RELOAD_ADDRESS(AD, MODE, OPNUM, TYPE, IND, WIN)         \
-do {                                                                         \
-  long offset, newoffset, mask;                                                \
-  rtx new, temp = NULL_RTX;                                                \
-                                                                        \
-  mask = (GET_MODE_CLASS (MODE) == MODE_FLOAT                                \
-          ? (TARGET_PA_20 && !TARGET_ELF32 ? 0x3fff : 0x1f) : 0x3fff);        \
-                                                                        \
-  if (optimize && GET_CODE (AD) == PLUS)                                \
-    temp = simplify_binary_operation (PLUS, Pmode,                        \
-                                      XEXP (AD, 0), XEXP (AD, 1));        \
-                                                                        \
-  new = temp ? temp : AD;                                                \
-                                                                        \
-  if (optimize                                                                \
-      && GET_CODE (new) == PLUS                                                \
-      && GET_CODE (XEXP (new, 0)) == REG                                \
-      && GET_CODE (XEXP (new, 1)) == CONST_INT)                                \
-    {                                                                        \
-      offset = INTVAL (XEXP ((new), 1));                                \
-                                                                        \
-      /* Choose rounding direction.  Round up if we are >= halfway.  */        \
-      if ((offset & mask) >= ((mask + 1) / 2))                                \
-        newoffset = (offset & ~mask) + mask + 1;                        \
-      else                                                                \
-        newoffset = offset & ~mask;                                        \
-                                                                        \
-      /* Ensure that long displacements are aligned.  */                \
-      if (!VAL_5_BITS_P (newoffset)                                        \
-          && GET_MODE_CLASS (MODE) == MODE_FLOAT)                        \
-        newoffset &= ~(GET_MODE_SIZE (MODE) -1);                        \
-                                                                        \
-      if (newoffset != 0 && VAL_14_BITS_P (newoffset))                        \
-        {                                                                \
-          temp = gen_rtx_PLUS (Pmode, XEXP (new, 0),                        \
-                               GEN_INT (newoffset));                        \
-          AD = gen_rtx_PLUS (Pmode, temp, GEN_INT (offset - newoffset));\
-          push_reload (XEXP (AD, 0), 0, &XEXP (AD, 0), 0,                \
-                       BASE_REG_CLASS, Pmode, VOIDmode, 0, 0,                \
-                       (OPNUM), (TYPE));                                \
-          goto WIN;                                                        \
-        }                                                                \
-    }                                                                        \
+#define LEGITIMIZE_RELOAD_ADDRESS(AD, MODE, OPNUM, TYPE, IND, WIN) 	\
+do { 									\
+  long offset, newoffset, mask;						\
+  rtx new, temp = NULL_RTX;						\
+									\
+  mask = (GET_MODE_CLASS (MODE) == MODE_FLOAT				\
+	  ? (TARGET_PA_20 && !TARGET_ELF32 ? 0x3fff : 0x1f) : 0x3fff);	\
+									\
+  if (optimize && GET_CODE (AD) == PLUS)				\
+    temp = simplify_binary_operation (PLUS, Pmode,			\
+				      XEXP (AD, 0), XEXP (AD, 1));	\
+									\
+  new = temp ? temp : AD;						\
+									\
+  if (optimize								\
+      && GET_CODE (new) == PLUS						\
+      && GET_CODE (XEXP (new, 0)) == REG				\
+      && GET_CODE (XEXP (new, 1)) == CONST_INT)				\
+    {									\
+      offset = INTVAL (XEXP ((new), 1));				\
+									\
+      /* Choose rounding direction.  Round up if we are >= halfway.  */	\
+      if ((offset & mask) >= ((mask + 1) / 2))				\
+	newoffset = (offset & ~mask) + mask + 1;			\
+      else								\
+	newoffset = offset & ~mask;					\
+									\
+      /* Ensure that long displacements are aligned.  */		\
+      if (!VAL_5_BITS_P (newoffset)					\
+	  && GET_MODE_CLASS (MODE) == MODE_FLOAT)			\
+	newoffset &= ~(GET_MODE_SIZE (MODE) -1);			\
+									\
+      if (newoffset != 0 && VAL_14_BITS_P (newoffset))			\
+	{								\
+	  temp = gen_rtx_PLUS (Pmode, XEXP (new, 0),			\
+			       GEN_INT (newoffset));			\
+	  AD = gen_rtx_PLUS (Pmode, temp, GEN_INT (offset - newoffset));\
+	  push_reload (XEXP (AD, 0), 0, &XEXP (AD, 0), 0,		\
+		       BASE_REG_CLASS, Pmode, VOIDmode, 0, 0,		\
+		       (OPNUM), (TYPE));				\
+	  goto WIN;							\
+	}								\
+    }									\
 } while (0)
 
 
@@ -1551,20 +1551,20 @@ do {                                                                         \
    It is always safe for this macro to do nothing.  It exists to recognize
    opportunities to optimize the output.  */
 
-#define LEGITIMIZE_ADDRESS(X, OLDX, MODE, WIN)        \
-{ rtx orig_x = (X);                                \
-  (X) = hppa_legitimize_address (X, OLDX, MODE);        \
+#define LEGITIMIZE_ADDRESS(X, OLDX, MODE, WIN)	\
+{ rtx orig_x = (X);				\
+  (X) = hppa_legitimize_address (X, OLDX, MODE);	\
   if ((X) != orig_x && memory_address_p (MODE, X)) \
     goto WIN; }
 
 /* Go to LABEL if ADDR (a legitimate address expression)
    has an effect that depends on the machine mode it is used for.  */
 
-#define GO_IF_MODE_DEPENDENT_ADDRESS(ADDR,LABEL)        \
-  if (GET_CODE (ADDR) == PRE_DEC        \
-      || GET_CODE (ADDR) == POST_DEC        \
-      || GET_CODE (ADDR) == PRE_INC        \
-      || GET_CODE (ADDR) == POST_INC)        \
+#define GO_IF_MODE_DEPENDENT_ADDRESS(ADDR,LABEL)	\
+  if (GET_CODE (ADDR) == PRE_DEC	\
+      || GET_CODE (ADDR) == POST_DEC	\
+      || GET_CODE (ADDR) == PRE_INC	\
+      || GET_CODE (ADDR) == POST_INC)	\
     goto LABEL
 
 #define TARGET_ASM_SELECT_SECTION  pa_select_section
@@ -1592,11 +1592,11 @@ do {                                                                         \
    data space.  Also, function labels need special treatment.  */
 
 #define TEXT_SPACE_P(DECL)\
-  (TREE_CODE (DECL) == FUNCTION_DECL                                        \
-   || (TREE_CODE (DECL) == VAR_DECL                                        \
-       && TREE_READONLY (DECL) && ! TREE_SIDE_EFFECTS (DECL)                \
+  (TREE_CODE (DECL) == FUNCTION_DECL					\
+   || (TREE_CODE (DECL) == VAR_DECL					\
+       && TREE_READONLY (DECL) && ! TREE_SIDE_EFFECTS (DECL)		\
        && (! DECL_INITIAL (DECL) || ! reloc_needed (DECL_INITIAL (DECL))) \
-       && !flag_pic)                                                        \
+       && !flag_pic)							\
    || CONSTANT_CLASS_P (DECL))
 
 #define FUNCTION_NAME_P(NAME)  (*(NAME) == '@')
@@ -1684,9 +1684,9 @@ do {                                                                         \
 
    Other copies are reasonably cheap.  */
 #define REGISTER_MOVE_COST(MODE, CLASS1, CLASS2) \
- (CLASS1 == SHIFT_REGS ? 0x100                                        \
-  : FP_REG_CLASS_P (CLASS1) && ! FP_REG_CLASS_P (CLASS2) ? 16        \
-  : FP_REG_CLASS_P (CLASS2) && ! FP_REG_CLASS_P (CLASS1) ? 16        \
+ (CLASS1 == SHIFT_REGS ? 0x100					\
+  : FP_REG_CLASS_P (CLASS1) && ! FP_REG_CLASS_P (CLASS2) ? 16	\
+  : FP_REG_CLASS_P (CLASS2) && ! FP_REG_CLASS_P (CLASS1) ? 16	\
   : 2)
 
 /* Adjust the cost of branches.  */
@@ -1694,7 +1694,7 @@ do {                                                                         \
 
 /* Handling the special cases is going to get too complicated for a macro,
    just call `pa_adjust_insn_length' to do the real work.  */
-#define ADJUST_INSN_LENGTH(INSN, LENGTH)        \
+#define ADJUST_INSN_LENGTH(INSN, LENGTH)	\
   LENGTH += pa_adjust_insn_length (INSN, LENGTH);
 
 /* Millicode insns are actually function calls with some special
@@ -1743,27 +1743,27 @@ do {                                                                         \
    such as the label on a static function or variable NAME.  */
 
 #define ASM_OUTPUT_LABEL(FILE,NAME) \
-  do {                                                        \
-    assemble_name ((FILE), (NAME));                        \
-    if (TARGET_GAS)                                        \
-      fputs (":\n", (FILE));                                \
-    else                                                \
-      fputc ('\n', (FILE));                                \
+  do {							\
+    assemble_name ((FILE), (NAME));			\
+    if (TARGET_GAS)					\
+      fputs (":\n", (FILE));				\
+    else						\
+      fputc ('\n', (FILE));				\
   } while (0)
 
 /* This is how to output a reference to a user-level label named NAME.
    `assemble_name' uses this.  */
 
-#define ASM_OUTPUT_LABELREF(FILE,NAME)        \
-  do {                                        \
-    const char *xname = (NAME);                \
-    if (FUNCTION_NAME_P (NAME))                \
-      xname += 1;                        \
-    if (xname[0] == '*')                \
-      xname += 1;                        \
-    else                                \
-      fputs (user_label_prefix, FILE);        \
-    fputs (xname, FILE);                \
+#define ASM_OUTPUT_LABELREF(FILE,NAME)	\
+  do {					\
+    const char *xname = (NAME);		\
+    if (FUNCTION_NAME_P (NAME))		\
+      xname += 1;			\
+    if (xname[0] == '*')		\
+      xname += 1;			\
+    else				\
+      fputs (user_label_prefix, FILE);	\
+    fputs (xname, FILE);		\
   } while (0)
 
 /* This how we output the symbol_ref X.  */
@@ -1779,18 +1779,18 @@ do {                                                                         \
    PREFIX is the class of label and NUM is the number within the class.
    This is suitable for output with `assemble_name'.  */
 
-#define ASM_GENERATE_INTERNAL_LABEL(LABEL,PREFIX,NUM)        \
+#define ASM_GENERATE_INTERNAL_LABEL(LABEL,PREFIX,NUM)	\
   sprintf (LABEL, "*%c$%s%04ld", (PREFIX)[0], (PREFIX) + 1, (long)(NUM))
 
 /* Output the definition of a compiler-generated label named NAME.  */
 
 #define ASM_OUTPUT_INTERNAL_LABEL(FILE,NAME) \
-  do {                                                        \
-    assemble_name_raw ((FILE), (NAME));                        \
-    if (TARGET_GAS)                                        \
-      fputs (":\n", (FILE));                                \
-    else                                                \
-      fputc ('\n', (FILE));                                \
+  do {							\
+    assemble_name_raw ((FILE), (NAME));			\
+    if (TARGET_GAS)					\
+      fputs (":\n", (FILE));				\
+    else						\
+      fputc ('\n', (FILE));				\
   } while (0)
 
 #define TARGET_ASM_GLOBALIZE_LABEL pa_globalize_label
@@ -1816,9 +1816,9 @@ do {                                                                         \
 /* This is how to output an element of a case-vector that is absolute.  */
 
 #define ASM_OUTPUT_ADDR_VEC_ELT(FILE, VALUE)  \
-  if (TARGET_BIG_SWITCH)                                                \
-    fprintf (FILE, "\t.word L$%04d\n", VALUE);                                \
-  else                                                                        \
+  if (TARGET_BIG_SWITCH)						\
+    fprintf (FILE, "\t.word L$%04d\n", VALUE);				\
+  else									\
     fprintf (FILE, "\tb L$%04d\n\tnop\n", VALUE)
 
 /* This is how to output an element of a case-vector that is relative. 
@@ -1826,33 +1826,33 @@ do {                                                                         \
    is absolute and requires no relocation.  */
 
 #define ASM_OUTPUT_ADDR_DIFF_ELT(FILE, BODY, VALUE, REL)  \
-  if (TARGET_BIG_SWITCH)                                                \
-    fprintf (FILE, "\t.word L$%04d-L$%04d\n", VALUE, REL);                \
-  else                                                                        \
+  if (TARGET_BIG_SWITCH)						\
+    fprintf (FILE, "\t.word L$%04d-L$%04d\n", VALUE, REL);		\
+  else									\
     fprintf (FILE, "\tb L$%04d\n\tnop\n", VALUE)
 
 /* This is how to output an assembler line that says to advance the
    location counter to a multiple of 2**LOG bytes.  */
 
-#define ASM_OUTPUT_ALIGN(FILE,LOG)        \
+#define ASM_OUTPUT_ALIGN(FILE,LOG)	\
     fprintf (FILE, "\t.align %d\n", (1<<(LOG)))
 
 #define ASM_OUTPUT_SKIP(FILE,SIZE)  \
-  fprintf (FILE, "\t.blockz "HOST_WIDE_INT_PRINT_UNSIGNED"\n",                \
-           (unsigned HOST_WIDE_INT)(SIZE))
+  fprintf (FILE, "\t.blockz "HOST_WIDE_INT_PRINT_UNSIGNED"\n",		\
+	   (unsigned HOST_WIDE_INT)(SIZE))
 
 /* This says how to output an assembler line to define an uninitialized
    global variable with size SIZE (in bytes) and alignment ALIGN (in bits).
    This macro exists to properly support languages like C++ which do not
    have common data.  */
 
-#define ASM_OUTPUT_ALIGNED_BSS(FILE, DECL, NAME, SIZE, ALIGN)                \
+#define ASM_OUTPUT_ALIGNED_BSS(FILE, DECL, NAME, SIZE, ALIGN)		\
   pa_asm_output_aligned_bss (FILE, NAME, SIZE, ALIGN)
   
 /* This says how to output an assembler line to define a global common symbol
    with size SIZE (in bytes) and alignment ALIGN (in bits).  */
 
-#define ASM_OUTPUT_ALIGNED_COMMON(FILE, NAME, SIZE, ALIGN)                  \
+#define ASM_OUTPUT_ALIGNED_COMMON(FILE, NAME, SIZE, ALIGN)  		\
   pa_asm_output_aligned_common (FILE, NAME, SIZE, ALIGN)
 
 /* This says how to output an assembler line to define a local common symbol
@@ -1860,7 +1860,7 @@ do {                                                                         \
    controls how the assembler definitions of uninitialized static variables
    are output.  */
 
-#define ASM_OUTPUT_ALIGNED_LOCAL(FILE, NAME, SIZE, ALIGN)                \
+#define ASM_OUTPUT_ALIGNED_LOCAL(FILE, NAME, SIZE, ALIGN)		\
   pa_asm_output_aligned_local (FILE, NAME, SIZE, ALIGN)
   
   
@@ -1892,47 +1892,47 @@ do {                                                                         \
 /* Print a memory address as an operand to reference that memory location.  */
 
 #define PRINT_OPERAND_ADDRESS(FILE, ADDR)  \
-{ rtx addr = ADDR;                                                        \
-  switch (GET_CODE (addr))                                                \
-    {                                                                        \
-    case REG:                                                                \
-      fprintf (FILE, "0(%s)", reg_names [REGNO (addr)]);                \
-      break;                                                                \
-    case PLUS:                                                                \
-      gcc_assert (GET_CODE (XEXP (addr, 1)) == CONST_INT);                \
-      fprintf (FILE, "%d(%s)", (int)INTVAL (XEXP (addr, 1)),                \
-               reg_names [REGNO (XEXP (addr, 0))]);                        \
-      break;                                                                \
-    case LO_SUM:                                                        \
-      if (!symbolic_operand (XEXP (addr, 1), VOIDmode))                        \
-        fputs ("R'", FILE);                                                \
-      else if (flag_pic == 0)                                                \
-        fputs ("RR'", FILE);                                                \
-      else                                                                \
-        fputs ("RT'", FILE);                                                \
-      output_global_address (FILE, XEXP (addr, 1), 0);                        \
-      fputs ("(", FILE);                                                \
-      output_operand (XEXP (addr, 0), 0);                                \
-      fputs (")", FILE);                                                \
-      break;                                                                \
-    case CONST_INT:                                                        \
-      fprintf (FILE, HOST_WIDE_INT_PRINT_DEC "(%%r0)", INTVAL (addr));        \
-      break;                                                                \
-    default:                                                                \
-      output_addr_const (FILE, addr);                                        \
+{ rtx addr = ADDR;							\
+  switch (GET_CODE (addr))						\
+    {									\
+    case REG:								\
+      fprintf (FILE, "0(%s)", reg_names [REGNO (addr)]);		\
+      break;								\
+    case PLUS:								\
+      gcc_assert (GET_CODE (XEXP (addr, 1)) == CONST_INT);		\
+      fprintf (FILE, "%d(%s)", (int)INTVAL (XEXP (addr, 1)),		\
+	       reg_names [REGNO (XEXP (addr, 0))]);			\
+      break;								\
+    case LO_SUM:							\
+      if (!symbolic_operand (XEXP (addr, 1), VOIDmode))			\
+	fputs ("R'", FILE);						\
+      else if (flag_pic == 0)						\
+	fputs ("RR'", FILE);						\
+      else								\
+	fputs ("RT'", FILE);						\
+      output_global_address (FILE, XEXP (addr, 1), 0);			\
+      fputs ("(", FILE);						\
+      output_operand (XEXP (addr, 0), 0);				\
+      fputs (")", FILE);						\
+      break;								\
+    case CONST_INT:							\
+      fprintf (FILE, HOST_WIDE_INT_PRINT_DEC "(%%r0)", INTVAL (addr));	\
+      break;								\
+    default:								\
+      output_addr_const (FILE, addr);					\
     }}
 
 
 /* Find the return address associated with the frame given by
    FRAMEADDR.  */
-#define RETURN_ADDR_RTX(COUNT, FRAMEADDR)                                 \
+#define RETURN_ADDR_RTX(COUNT, FRAMEADDR)				 \
   (return_addr_rtx (COUNT, FRAMEADDR))
 
 /* Used to mask out junk bits from the return address, such as
    processor state, interrupt status, condition codes and the like.  */
-#define MASK_RETURN_ADDR                                                \
-  /* The privilege level is in the two low order bits, mask em out        \
-     of the return address.  */                                                \
+#define MASK_RETURN_ADDR						\
+  /* The privilege level is in the two low order bits, mask em out	\
+     of the return address.  */						\
   (GEN_INT (-4))
 
 /* The number of Pmode words for the setjmp buffer.  */

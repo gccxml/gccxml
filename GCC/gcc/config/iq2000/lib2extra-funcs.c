@@ -1,4 +1,4 @@
-typedef unsigned int USItype                __attribute__ ((mode (SI)));
+typedef unsigned int USItype		__attribute__ ((mode (SI)));
 
 USItype
 __mulsi3 (USItype a, USItype b)
@@ -8,7 +8,7 @@ __mulsi3 (USItype a, USItype b)
   while (a != 0)
     {
       if (a & 1)
-        c += b;
+	c += b;
       a >>= 1;
       b <<= 1;
     }

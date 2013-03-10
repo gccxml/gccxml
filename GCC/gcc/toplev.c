@@ -96,8 +96,8 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
 #endif
 
 #ifdef XCOFF_DEBUGGING_INFO
-#include "xcoffout.h"                /* Needed for external data
-                                   declarations for e.g. AIX 4.x.  */
+#include "xcoffout.h"		/* Needed for external data
+				   declarations for e.g. AIX 4.x.  */
 #endif
 
 static void general_init (const char *);
@@ -113,10 +113,10 @@ static void setup_core_dumping (void);
 static void compile_file (void);
 
 static int print_single_switch (FILE *, int, int, const char *,
-                                const char *, const char *,
-                                const char *, const char *);
+				const char *, const char *,
+				const char *, const char *);
 static void print_switch_values (FILE *, int, int, const char *,
-                                 const char *, const char *);
+				 const char *, const char *);
 
 /* Nonzero to dump debug info whilst parsing (-dy option).  */
 static int set_yydebug;
@@ -419,9 +419,9 @@ set_src_pwd (const char *pwd)
   if (src_pwd)
     {
       if (strcmp (src_pwd, pwd) == 0)
-        return true;
+	return true;
       else
-        return false;
+	return false;
     }
 
   src_pwd = xstrdup (pwd);
@@ -439,7 +439,7 @@ get_src_pwd (void)
     {
       src_pwd = getpwd ();
       if (!src_pwd)
-        src_pwd = ".";
+	src_pwd = ".";
     }
 
    return src_pwd;
@@ -453,9 +453,9 @@ announce_function (tree decl)
   if (!quiet_flag)
     {
       if (rtl_dump_and_exit)
-        fprintf (stderr, "%s ", IDENTIFIER_POINTER (DECL_NAME (decl)));
+	fprintf (stderr, "%s ", IDENTIFIER_POINTER (DECL_NAME (decl)));
       else
-        fprintf (stderr, " %s", lang_hooks.decl_printable_name (decl, 2));
+	fprintf (stderr, " %s", lang_hooks.decl_printable_name (decl, 2));
       fflush (stderr);
       pp_needs_newline (global_dc->printer) = true;
       diagnostic_set_last_function (global_dc);
@@ -482,17 +482,17 @@ randomize (void)
       /* Get some more or less random data.  */
 #ifdef HAVE_GETTIMEOFDAY
       {
-         struct timeval tv;
+ 	struct timeval tv;
 
-         gettimeofday (&tv, NULL);
-        local_tick = tv.tv_sec * 1000 + tv.tv_usec / 1000;
+ 	gettimeofday (&tv, NULL);
+	local_tick = tv.tv_sec * 1000 + tv.tv_usec / 1000;
       }
 #else
       {
-        time_t now = time (NULL);
+	time_t now = time (NULL);
 
-        if (now != (time_t)-1)
-          local_tick = (unsigned) now;
+	if (now != (time_t)-1)
+	  local_tick = (unsigned) now;
       }
 #endif
       value = local_tick ^ getpid ();
@@ -518,15 +518,15 @@ read_integral_parameter (const char *p, const char *pname, const int  defval)
   while (*endp)
     {
       if (ISDIGIT (*endp))
-        endp++;
+	endp++;
       else
-        break;
+	break;
     }
 
   if (*endp != 0)
     {
       if (pname != 0)
-        error ("invalid option argument %qs", pname);
+	error ("invalid option argument %qs", pname);
       return defval;
     }
 
@@ -646,10 +646,10 @@ strip_off_ending (char *name, int len)
   for (i = 2; i < 6 && len > i; i++)
     {
       if (name[len - i] == '.')
-        {
-          name[len - i] = '\0';
-          break;
-        }
+	{
+	  name[len - i] = '\0';
+	  break;
+	}
     }
 }
 
@@ -667,13 +667,13 @@ output_quoted_string (FILE *asm_file, const char *string)
   while ((c = *string++) != 0)
     {
       if (ISPRINT (c))
-        {
-          if (c == '\"' || c == '\\')
-            putc ('\\', asm_file);
-          putc (c, asm_file);
-        }
+	{
+	  if (c == '\"' || c == '\\')
+	    putc ('\\', asm_file);
+	  putc (c, asm_file);
+	}
       else
-        fprintf (asm_file, "\\%03o", (unsigned char) c);
+	fprintf (asm_file, "\\%03o", (unsigned char) c);
     }
   putc ('\"', asm_file);
 #endif
@@ -697,7 +697,7 @@ output_file_directive (FILE *asm_file, const char *input_name)
   while (na > input_name)
     {
       if (IS_DIR_SEPARATOR (na[-1]))
-        break;
+	break;
       na--;
     }
 
@@ -768,27 +768,27 @@ wrapup_global_declaration_2 (tree decl)
       node = cgraph_varpool_node (decl);
 
       if (node->finalized)
-        needed = false;
+	needed = false;
       else if (node->alias)
-        needed = false;
+	needed = false;
       else if (!cgraph_global_info_ready
-               && (TREE_USED (decl)
-                   || TREE_USED (DECL_ASSEMBLER_NAME (decl))))
-        /* needed */;
+	       && (TREE_USED (decl)
+		   || TREE_USED (DECL_ASSEMBLER_NAME (decl))))
+	/* needed */;
       else if (node->needed)
-        /* needed */;
+	/* needed */;
       else if (DECL_COMDAT (decl))
-        needed = false;
+	needed = false;
       else if (TREE_READONLY (decl) && !TREE_PUBLIC (decl)
-               && (optimize || !flag_keep_static_consts
-                   || DECL_ARTIFICIAL (decl)))
-        needed = false;
+	       && (optimize || !flag_keep_static_consts
+		   || DECL_ARTIFICIAL (decl)))
+	needed = false;
 
       if (needed)
-        {
-          rest_of_decl_compilation (decl, 1, 1);
-          return true;
-        }
+	{
+	  rest_of_decl_compilation (decl, 1, 1);
+	  return true;
+	}
     }
 
   return false;
@@ -815,9 +815,9 @@ wrapup_global_declarations (tree *vec, int len)
     {
       reconsider = false;
       for (i = 0; i < len; i++)
-        reconsider |= wrapup_global_declaration_2 (vec[i]);
+	reconsider |= wrapup_global_declaration_2 (vec[i]);
       if (reconsider)
-        output_something = true;
+	output_something = true;
     }
   while (reconsider);
 
@@ -840,12 +840,12 @@ check_global_declaration_1 (tree decl)
       && ! TREE_NO_WARNING (decl)
       && ! TREE_PUBLIC (decl)
       && (warn_unused_function
-          || TREE_SYMBOL_REFERENCED (DECL_ASSEMBLER_NAME (decl))))
+	  || TREE_SYMBOL_REFERENCED (DECL_ASSEMBLER_NAME (decl))))
     {
       if (TREE_SYMBOL_REFERENCED (DECL_ASSEMBLER_NAME (decl)))
-        pedwarn ("%q+F used but never defined", decl);
+	pedwarn ("%q+F used but never defined", decl);
       else
-        warning (0, "%q+F declared %<static%> but never defined", decl);
+	warning (0, "%q+F declared %<static%> but never defined", decl);
       /* This symbol is effectively an "extern" declaration now.  */
       TREE_PUBLIC (decl) = 1;
       assemble_external (decl);
@@ -854,13 +854,13 @@ check_global_declaration_1 (tree decl)
   /* Warn about static fns or vars defined but not used.  */
   if (((warn_unused_function && TREE_CODE (decl) == FUNCTION_DECL)
        /* We don't warn about "static const" variables because the
-          "rcs_id" idiom uses that construction.  */
+	  "rcs_id" idiom uses that construction.  */
        || (warn_unused_variable
-           && TREE_CODE (decl) == VAR_DECL && ! TREE_READONLY (decl)))
+	   && TREE_CODE (decl) == VAR_DECL && ! TREE_READONLY (decl)))
       && ! DECL_IN_SYSTEM_HEADER (decl)
       && ! TREE_USED (decl)
       /* The TREE_USED bit for file-scope decls is kept in the identifier,
-         to handle multiple external decls in different scopes.  */
+	 to handle multiple external decls in different scopes.  */
       && ! (DECL_NAME (decl) && TREE_USED (DECL_NAME (decl)))
       && ! DECL_EXTERNAL (decl)
       && ! TREE_PUBLIC (decl)
@@ -913,9 +913,9 @@ warn_deprecated_use (tree node)
     {
       expanded_location xloc = expand_location (DECL_SOURCE_LOCATION (node));
       warning (OPT_Wdeprecated_declarations,
-               "%qs is deprecated (declared at %s:%d)",
-               IDENTIFIER_POINTER (DECL_NAME (node)),
-               xloc.file, xloc.line);
+	       "%qs is deprecated (declared at %s:%d)",
+	       IDENTIFIER_POINTER (DECL_NAME (node)),
+	       xloc.file, xloc.line);
     }
   else if (TYPE_P (node))
     {
@@ -923,34 +923,34 @@ warn_deprecated_use (tree node)
       tree decl = TYPE_STUB_DECL (node);
 
       if (TYPE_NAME (node))
-        {
-          if (TREE_CODE (TYPE_NAME (node)) == IDENTIFIER_NODE)
-            what = IDENTIFIER_POINTER (TYPE_NAME (node));
-          else if (TREE_CODE (TYPE_NAME (node)) == TYPE_DECL
-                   && DECL_NAME (TYPE_NAME (node)))
-            what = IDENTIFIER_POINTER (DECL_NAME (TYPE_NAME (node)));
-        }
+	{
+	  if (TREE_CODE (TYPE_NAME (node)) == IDENTIFIER_NODE)
+	    what = IDENTIFIER_POINTER (TYPE_NAME (node));
+	  else if (TREE_CODE (TYPE_NAME (node)) == TYPE_DECL
+		   && DECL_NAME (TYPE_NAME (node)))
+	    what = IDENTIFIER_POINTER (DECL_NAME (TYPE_NAME (node)));
+	}
 
       if (decl)
-        {
-          expanded_location xloc
-            = expand_location (DECL_SOURCE_LOCATION (decl));
-          if (what)
-            warning (OPT_Wdeprecated_declarations,
-                     "%qs is deprecated (declared at %s:%d)", what,
-                     xloc.file, xloc.line);
-          else
-            warning (OPT_Wdeprecated_declarations,
-                     "type is deprecated (declared at %s:%d)",
-                     xloc.file, xloc.line);
-        }
+	{
+	  expanded_location xloc
+	    = expand_location (DECL_SOURCE_LOCATION (decl));
+	  if (what)
+	    warning (OPT_Wdeprecated_declarations,
+		     "%qs is deprecated (declared at %s:%d)", what,
+		     xloc.file, xloc.line);
+	  else
+	    warning (OPT_Wdeprecated_declarations,
+		     "type is deprecated (declared at %s:%d)",
+		     xloc.file, xloc.line);
+	}
       else
-        {
-          if (what)
-            warning (OPT_Wdeprecated_declarations, "%qs is deprecated", what);
-          else
-            warning (OPT_Wdeprecated_declarations, "type is deprecated");
-        }
+	{
+	  if (what)
+	    warning (OPT_Wdeprecated_declarations, "%qs is deprecated", what);
+	  else
+	    warning (OPT_Wdeprecated_declarations, "type is deprecated");
+	}
     }
 }
 
@@ -1095,7 +1095,7 @@ compile_file (void)
 #ifdef IDENT_ASM_OP
   if (!flag_no_ident)
     fprintf (asm_out_file, "%s\"GCC: (GNU) %s\"\n",
-             IDENT_ASM_OP, version_string);
+	     IDENT_ASM_OP, version_string);
 #endif
 
   /* This must be at the end.  Some target ports emit end of file directives
@@ -1115,36 +1115,36 @@ decode_d_option (const char *arg)
     switch (c = *arg++)
       {
       case 'A':
-        flag_debug_asm = 1;
-        break;
+	flag_debug_asm = 1;
+	break;
       case 'p':
-        flag_print_asm_name = 1;
-        break;
+	flag_print_asm_name = 1;
+	break;
       case 'P':
-        flag_dump_rtl_in_asm = 1;
-        flag_print_asm_name = 1;
-        break;
+	flag_dump_rtl_in_asm = 1;
+	flag_print_asm_name = 1;
+	break;
       case 'v':
-        graph_dump_format = vcg;
-        break;
+	graph_dump_format = vcg;
+	break;
       case 'x':
-        rtl_dump_and_exit = 1;
-        break;
+	rtl_dump_and_exit = 1;
+	break;
       case 'y':
-        set_yydebug = 1;
-        break;
-      case 'D':        /* These are handled by the preprocessor.  */
+	set_yydebug = 1;
+	break;
+      case 'D':	/* These are handled by the preprocessor.  */
       case 'I':
-        break;
+	break;
       case 'H':
-        setup_core_dumping();
-        break;
+	setup_core_dumping();
+	break;
 
       case 'a':
       default:
-        if (!enable_rtl_dump_file (c))
-          warning (0, "unrecognized gcc debugging option: %c", c);
-        break;
+	if (!enable_rtl_dump_file (c))
+	  warning (0, "unrecognized gcc debugging option: %c", c);
+	break;
       }
 }
 
@@ -1174,16 +1174,16 @@ print_version (FILE *file, const char *indent)
 #define __VERSION__ "[?]"
 #endif
   fprintf (file,
-           file == stderr ? _(fmt1) : fmt1,
-           indent, *indent != 0 ? " " : "",
+	   file == stderr ? _(fmt1) : fmt1,
+	   indent, *indent != 0 ? " " : "",
 /* BEGIN GCC-XML MODIFICATIONS (2007/10/31 15:07:11) */
-           lang_hooks.name, version_string, GCC_TO_STRING(TARGET_NAME),
+	   lang_hooks.name, version_string, GCC_TO_STRING(TARGET_NAME),
 /* END GCC-XML MODIFICATIONS (2007/10/31 15:07:11) */
-           indent, __VERSION__);
+	   indent, __VERSION__);
   fprintf (file,
-           file == stderr ? _(fmt2) : fmt2,
-           indent, *indent != 0 ? " " : "",
-           PARAM_VALUE (GGC_MIN_EXPAND), PARAM_VALUE (GGC_MIN_HEAPSIZE));
+	   file == stderr ? _(fmt2) : fmt2,
+	   indent, *indent != 0 ? " " : "",
+	   PARAM_VALUE (GGC_MIN_EXPAND), PARAM_VALUE (GGC_MIN_HEAPSIZE));
 }
 
 /* Print an option value and return the adjusted position in the line.
@@ -1192,8 +1192,8 @@ print_version (FILE *file, const char *indent)
 
 static int
 print_single_switch (FILE *file, int pos, int max,
-                     const char *indent, const char *sep, const char *term,
-                     const char *type, const char *name)
+		     const char *indent, const char *sep, const char *term,
+		     const char *type, const char *name)
 {
   /* The ultrix fprintf returns 0 on success, so compute the result we want
      here since we need it for the following test.  */
@@ -1222,7 +1222,7 @@ print_single_switch (FILE *file, int pos, int max,
 
 static void
 print_switch_values (FILE *file, int pos, int max,
-                     const char *indent, const char *sep, const char *term)
+		     const char *indent, const char *sep, const char *term)
 {
   size_t j;
   const char **p;
@@ -1233,26 +1233,26 @@ print_switch_values (FILE *file, int pos, int max,
 
   /* Print the options as passed.  */
   pos = print_single_switch (file, pos, max, indent, *indent ? " " : "", term,
-                             _("options passed: "), "");
+			     _("options passed: "), "");
 
   for (p = &save_argv[1]; *p != NULL; p++)
     if (**p == '-')
       {
-        /* Ignore these.  */
-        if (strcmp (*p, "-o") == 0)
-          {
-            if (p[1] != NULL)
-              p++;
-            continue;
-          }
-        if (strcmp (*p, "-quiet") == 0)
-          continue;
-        if (strcmp (*p, "-version") == 0)
-          continue;
-        if ((*p)[1] == 'd')
-          continue;
+	/* Ignore these.  */
+	if (strcmp (*p, "-o") == 0)
+	  {
+	    if (p[1] != NULL)
+	      p++;
+	    continue;
+	  }
+	if (strcmp (*p, "-quiet") == 0)
+	  continue;
+	if (strcmp (*p, "-version") == 0)
+	  continue;
+	if ((*p)[1] == 'd')
+	  continue;
 
-        pos = print_single_switch (file, pos, max, indent, sep, term, *p, "");
+	pos = print_single_switch (file, pos, max, indent, sep, term, *p, "");
       }
   if (pos > 0)
     fprintf (file, "%s", term);
@@ -1262,13 +1262,13 @@ print_switch_values (FILE *file, int pos, int max,
      should suffice.  */
 
   pos = print_single_switch (file, 0, max, indent, *indent ? " " : "", term,
-                             _("options enabled: "), "");
+			     _("options enabled: "), "");
 
   for (j = 0; j < cl_options_count; j++)
     if ((cl_options[j].flags & CL_REPORT)
-        && option_enabled (j) > 0)
+	&& option_enabled (j) > 0)
       pos = print_single_switch (file, pos, max, indent, sep, term,
-                                 "", cl_options[j].opt_text);
+				 "", cl_options[j].opt_text);
 
   fprintf (file, "%s", term);
 }
@@ -1285,20 +1285,20 @@ init_asm_output (const char *name)
   else
     {
       if (asm_file_name == 0)
-        {
-          int len = strlen (dump_base_name);
-          char *dumpname = XNEWVEC (char, len + 6);
-          memcpy (dumpname, dump_base_name, len + 1);
-          strip_off_ending (dumpname, len);
-          strcat (dumpname, ".s");
-          asm_file_name = dumpname;
-        }
+	{
+	  int len = strlen (dump_base_name);
+	  char *dumpname = XNEWVEC (char, len + 6);
+	  memcpy (dumpname, dump_base_name, len + 1);
+	  strip_off_ending (dumpname, len);
+	  strcat (dumpname, ".s");
+	  asm_file_name = dumpname;
+	}
       if (!strcmp (asm_file_name, "-"))
-        asm_out_file = stdout;
+	asm_out_file = stdout;
       else
-        asm_out_file = fopen (asm_file_name, "w+b");
+	asm_out_file = fopen (asm_file_name, "w+b");
       if (asm_out_file == 0)
-        fatal_error ("can%'t open %s for writing: %m", asm_file_name);
+	fatal_error ("can%'t open %s for writing: %m", asm_file_name);
     }
 
   if (!flag_syntax_only)
@@ -1307,15 +1307,15 @@ init_asm_output (const char *name)
 
 #ifdef ASM_COMMENT_START
       if (flag_verbose_asm)
-        {
-          /* Print the list of options in effect.  */
-          print_version (asm_out_file, ASM_COMMENT_START);
-          print_switch_values (asm_out_file, 0, MAX_LINE,
-                               ASM_COMMENT_START, " ", "\n");
-          /* Add a blank line here so it appears in assembler output but not
-             screen output.  */
-          fprintf (asm_out_file, "\n");
-        }
+	{
+	  /* Print the list of options in effect.  */
+	  print_version (asm_out_file, ASM_COMMENT_START);
+	  print_switch_values (asm_out_file, 0, MAX_LINE,
+			       ASM_COMMENT_START, " ", "\n");
+	  /* Add a blank line here so it appears in assembler output but not
+	     screen output.  */
+	  fprintf (asm_out_file, "\n");
+	}
 #endif
     }
 }
@@ -1366,8 +1366,8 @@ default_get_pch_validity (size_t *len)
   for (i = 0; i < cl_options_count; i++)
     if (option_affects_pch_p (i, &state))
       {
-        memcpy (r, state.data, state.size);
-        r += state.size;
+	memcpy (r, state.data, state.size);
+	r += state.size;
       }
 
   return result;
@@ -1414,16 +1414,16 @@ default_pch_valid_p (const void *data_p, size_t len)
       len -= sizeof (target_flags);
       r = targetm.check_pch_target_flags (tf);
       if (r != NULL)
-        return r;
+	return r;
     }
 
   for (i = 0; i < cl_options_count; i++)
     if (option_affects_pch_p (i, &state))
       {
-        if (memcmp (data, state.data, state.size) != 0)
-          return pch_option_mismatch (cl_options[i].opt_text);
-        data += state.size;
-        len -= state.size;
+	if (memcmp (data, state.data, state.size) != 0)
+	  return pch_option_mismatch (cl_options[i].opt_text);
+	data += state.size;
+	len -= state.size;
       }
 
   return NULL;
@@ -1432,7 +1432,7 @@ default_pch_valid_p (const void *data_p, size_t len)
 /* Default tree printer.   Handles declarations only.  */
 static bool
 default_tree_printer (pretty_printer * pp, text_info *text, const char *spec,
-                      int precision, bool wide, bool set_locus, bool hash)
+		      int precision, bool wide, bool set_locus, bool hash)
 {
   tree t;
 
@@ -1445,7 +1445,7 @@ default_tree_printer (pretty_printer * pp, text_info *text, const char *spec,
     case 'D':
       t = va_arg (*text->args_ptr, tree);
       if (DECL_DEBUG_EXPR_IS_FROM (t) && DECL_DEBUG_EXPR (t))
-        t = DECL_DEBUG_EXPR (t);
+	t = DECL_DEBUG_EXPR (t);
       break;
 
     case 'F':
@@ -1582,7 +1582,7 @@ process_options (void)
   if (flag_section_anchors && !target_supports_section_anchors_p ())
     {
       warning (OPT_fsection_anchors,
-               "this target does not support %qs", "-fsection-anchors");
+	       "this target does not support %qs", "-fsection-anchors");
       flag_section_anchors = 0;
     }
 
@@ -1664,15 +1664,15 @@ process_options (void)
   if (flag_leading_underscore != -1)
     {
       /* If the default prefix is more complicated than "" or "_",
-         issue a warning and ignore this option.  */
+	 issue a warning and ignore this option.  */
       if (user_label_prefix[0] == 0 ||
-          (user_label_prefix[0] == '_' && user_label_prefix[1] == 0))
-        {
-          user_label_prefix = flag_leading_underscore ? "_" : "";
-        }
+	  (user_label_prefix[0] == '_' && user_label_prefix[1] == 0))
+	{
+	  user_label_prefix = flag_leading_underscore ? "_" : "";
+	}
       else
-        warning (0, "-f%sleading-underscore not supported on this target machine",
-                 flag_leading_underscore ? "" : "no-");
+	warning (0, "-f%sleading-underscore not supported on this target machine",
+		 flag_leading_underscore ? "" : "no-");
     }
 
   /* If we are in verbose mode, write out the version and maybe all the
@@ -1681,7 +1681,7 @@ process_options (void)
     {
       print_version (stderr, "");
       if (! quiet_flag)
-        print_switch_values (stderr, 0, MAX_LINE, "", " ", "\n");
+	print_switch_values (stderr, 0, MAX_LINE, "", " ", "\n");
     }
 
   if (flag_syntax_only)
@@ -1717,7 +1717,7 @@ process_options (void)
 #endif
 #ifdef VMS_DEBUGGING_INFO
   else if (PREFERRED_DEBUGGING_TYPE == VMS_DEBUG
-           || PREFERRED_DEBUGGING_TYPE == VMS_AND_DWARF2_DEBUG)
+	   || PREFERRED_DEBUGGING_TYPE == VMS_AND_DWARF2_DEBUG)
     default_debug_hooks = &vmsdbg_debug_hooks;
 #endif
 
@@ -1745,7 +1745,7 @@ process_options (void)
 #endif
   else
     error ("target system does not support the \"%s\" debug format",
-           debug_type_names[write_symbols]);
+	   debug_type_names[write_symbols]);
 
   /* Now we know which debug output will be used so we can set
      flag_var_tracking, flag_rename_registers if the user has
@@ -1755,19 +1755,19 @@ process_options (void)
     {
       if (flag_var_tracking == 1)
         {
-          if (debug_info_level < DINFO_LEVEL_NORMAL)
-            warning (0, "variable tracking requested, but useless unless "
-                     "producing debug info");
-          else
-            warning (0, "variable tracking requested, but not supported "
-                     "by this debug format");
-        }
+	  if (debug_info_level < DINFO_LEVEL_NORMAL)
+	    warning (0, "variable tracking requested, but useless unless "
+		     "producing debug info");
+	  else
+	    warning (0, "variable tracking requested, but not supported "
+		     "by this debug format");
+	}
       flag_var_tracking = 0;
     }
 
   if (flag_rename_registers == AUTODETECT_VALUE)
     flag_rename_registers = default_debug_hooks->var_location
-                                != do_nothing_debug_hooks.var_location;
+	    		    != do_nothing_debug_hooks.var_location;
 
   if (flag_var_tracking == AUTODETECT_VALUE)
     flag_var_tracking = optimize >= 1;
@@ -1779,21 +1779,21 @@ process_options (void)
     {
       aux_info_file = fopen (aux_info_file_name, "w");
       if (aux_info_file == 0)
-        fatal_error ("can%'t open %s: %m", aux_info_file_name);
+	fatal_error ("can%'t open %s: %m", aux_info_file_name);
     }
 
   if (! targetm.have_named_sections)
     {
       if (flag_function_sections)
-        {
-          warning (0, "-ffunction-sections not supported for this target");
-          flag_function_sections = 0;
-        }
+	{
+	  warning (0, "-ffunction-sections not supported for this target");
+	  flag_function_sections = 0;
+	}
       if (flag_data_sections)
-        {
-          warning (0, "-fdata-sections not supported for this target");
-          flag_data_sections = 0;
-        }
+	{
+	  warning (0, "-fdata-sections not supported for this target");
+	  flag_data_sections = 0;
+	}
     }
 
   if (flag_function_sections && profile_flag)
@@ -1857,7 +1857,7 @@ process_options (void)
       && flag_omit_frame_pointer)
     {
       warning (0, "unwind tables currently requires a frame pointer "
-               "for correctness");
+	       "for correctness");
       flag_omit_frame_pointer = 0;
     }
 }
@@ -1867,12 +1867,12 @@ static void
 backend_init (void)
 {
   init_emit_once (debug_info_level == DINFO_LEVEL_NORMAL
-                  || debug_info_level == DINFO_LEVEL_VERBOSE
+		  || debug_info_level == DINFO_LEVEL_VERBOSE
 #ifdef VMS_DEBUGGING_INFO
-                    /* Enable line number info for traceback.  */
-                    || debug_info_level > DINFO_LEVEL_NONE
+		    /* Enable line number info for traceback.  */
+		    || debug_info_level > DINFO_LEVEL_NONE
 #endif
-                    || flag_test_coverage);
+		    || flag_test_coverage);
 
   init_rtlanal ();
   init_regs ();
@@ -1950,7 +1950,7 @@ finalize (void)
     {
       fclose (aux_info_file);
       if (errorcount)
-        unlink (aux_info_file_name);
+	unlink (aux_info_file_name);
     }
 
   /* Close non-debugging input and output files.  Take special care to note
@@ -1960,9 +1960,9 @@ finalize (void)
   if (asm_out_file)
     {
       if (ferror (asm_out_file) != 0)
-        fatal_error ("error writing to %s: %m", asm_file_name);
+	fatal_error ("error writing to %s: %m", asm_file_name);
       if (fclose (asm_out_file) != 0)
-        fatal_error ("error closing %s: %m", asm_file_name);
+	fatal_error ("error closing %s: %m", asm_file_name);
     }
 
   finish_optimization_passes ();
@@ -2001,17 +2001,17 @@ do_compile (void)
   if (!errorcount)
     {
       /* This must be run always, because it is needed to compute the FP
-         predefined macros, such as __LDBL_MAX__, for targets using non
-         default FP formats.  */
+	 predefined macros, such as __LDBL_MAX__, for targets using non
+	 default FP formats.  */
       init_adjust_machine_modes ();
 
       /* Set up the back-end if requested.  */
       if (!no_backend)
-        backend_init ();
+	backend_init ();
 
       /* Language-dependent initialization.  Returns true on success.  */
       if (lang_dependent_init (main_input_filename))
-        compile_file ();
+	compile_file ();
 
       finalize ();
     }

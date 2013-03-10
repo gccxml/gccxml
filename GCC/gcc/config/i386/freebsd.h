@@ -40,7 +40,7 @@ Boston, MA 02110-1301, USA.  */
   (TARGET_64BIT ? dbx64_register_map[n] : svr4_dbx_register_map[n])
 
 #undef  NO_PROFILE_COUNTERS
-#define NO_PROFILE_COUNTERS        1
+#define NO_PROFILE_COUNTERS	1
 
 /* Tell final.c that we don't need a label passed to mcount.  */
 
@@ -50,38 +50,38 @@ Boston, MA 02110-1301, USA.  */
 /* Make gcc agree with <machine/ansi.h>.  */
 
 #undef  SIZE_TYPE
-#define SIZE_TYPE        (TARGET_64BIT ? "long unsigned int" : "unsigned int")
+#define SIZE_TYPE	(TARGET_64BIT ? "long unsigned int" : "unsigned int")
  
 #undef  PTRDIFF_TYPE
-#define PTRDIFF_TYPE        (TARGET_64BIT ? "long int" : "int")
+#define PTRDIFF_TYPE	(TARGET_64BIT ? "long int" : "int")
   
 #undef  WCHAR_TYPE_SIZE
-#define WCHAR_TYPE_SIZE        (TARGET_64BIT ? 32 : BITS_PER_WORD)
+#define WCHAR_TYPE_SIZE	(TARGET_64BIT ? 32 : BITS_PER_WORD)
 
-#undef  SUBTARGET_EXTRA_SPECS        /* i386.h bogusly defines it.  */
+#undef  SUBTARGET_EXTRA_SPECS	/* i386.h bogusly defines it.  */
 #define SUBTARGET_EXTRA_SPECS \
   { "fbsd_dynamic_linker", FBSD_DYNAMIC_LINKER }
     
 /* Provide a STARTFILE_SPEC appropriate for FreeBSD.  Here we add
    the magical crtbegin.o file (see crtstuff.c) which provides part 
-        of the support for getting C++ file-scope static object constructed 
-        before entering `main'.  */
+	of the support for getting C++ file-scope static object constructed 
+	before entering `main'.  */
    
-#undef        STARTFILE_SPEC
+#undef	STARTFILE_SPEC
 #define STARTFILE_SPEC \
   "%{!shared: \
      %{pg:gcrt1.o%s} %{!pg:%{p:gcrt1.o%s} \
-                       %{!p:%{profile:gcrt1.o%s} \
-                         %{!profile:crt1.o%s}}}} \
+		       %{!p:%{profile:gcrt1.o%s} \
+			 %{!profile:crt1.o%s}}}} \
    crti.o%s %{!shared:crtbegin.o%s} %{shared:crtbeginS.o%s}"
 
 /* Provide a ENDFILE_SPEC appropriate for FreeBSD.  Here we tack on
    the magical crtend.o file (see crtstuff.c) which provides part of 
-        the support for getting C++ file-scope static object constructed 
-        before entering `main', followed by a normal "finalizer" file, 
-        `crtn.o'.  */
+	the support for getting C++ file-scope static object constructed 
+	before entering `main', followed by a normal "finalizer" file, 
+	`crtn.o'.  */
 
-#undef        ENDFILE_SPEC
+#undef	ENDFILE_SPEC
 #define ENDFILE_SPEC \
   "%{!shared:crtend.o%s} %{shared:crtendS.o%s} crtn.o%s"
 
@@ -99,7 +99,7 @@ Boston, MA 02110-1301, USA.  */
    When the -shared link option is used a final link is not being
    done.  */
 
-#undef        LINK_SPEC
+#undef	LINK_SPEC
 #define LINK_SPEC "\
   %{p:%nconsider using `-pg' instead of `-p' with gprof(1)} \
   %{v:-V} \
@@ -120,10 +120,10 @@ Boston, MA 02110-1301, USA.  */
 
 #ifdef HAVE_GAS_MAX_SKIP_P2ALIGN
 #undef  ASM_OUTPUT_MAX_SKIP_ALIGN
-#define ASM_OUTPUT_MAX_SKIP_ALIGN(FILE, LOG, MAX_SKIP)                                        \
-  if ((LOG) != 0) {                                                                                                                \
-    if ((MAX_SKIP) == 0) fprintf ((FILE), "\t.p2align %d\n", (LOG));        \
-    else fprintf ((FILE), "\t.p2align %d,,%d\n", (LOG), (MAX_SKIP));        \
+#define ASM_OUTPUT_MAX_SKIP_ALIGN(FILE, LOG, MAX_SKIP)					\
+  if ((LOG) != 0) {														\
+    if ((MAX_SKIP) == 0) fprintf ((FILE), "\t.p2align %d\n", (LOG));	\
+    else fprintf ((FILE), "\t.p2align %d,,%d\n", (LOG), (MAX_SKIP));	\
   }
 #endif
 

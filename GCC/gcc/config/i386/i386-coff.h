@@ -57,7 +57,7 @@ Boston, MA 02110-1301, USA.  */
    This is suitable for output with `assemble_name'.  */
 
 #undef  ASM_GENERATE_INTERNAL_LABEL
-#define ASM_GENERATE_INTERNAL_LABEL(BUF,PREFIX,NUMBER)        \
+#define ASM_GENERATE_INTERNAL_LABEL(BUF,PREFIX,NUMBER)	\
   sprintf ((BUF), ".%s%ld", (PREFIX), (long)(NUMBER))
 
 /* GNU as expects alignment to be the number of bytes instead of the log for

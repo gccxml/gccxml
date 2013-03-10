@@ -52,24 +52,24 @@ extern GTY(()) rtx libfunc_table[LTI_MAX];
 
 /* Accessor macros for libfunc_table.  */
 
-#define abort_libfunc        (libfunc_table[LTI_abort])
-#define memcpy_libfunc        (libfunc_table[LTI_memcpy])
-#define memmove_libfunc        (libfunc_table[LTI_memmove])
-#define memcmp_libfunc        (libfunc_table[LTI_memcmp])
-#define memset_libfunc        (libfunc_table[LTI_memset])
-#define setbits_libfunc        (libfunc_table[LTI_setbits])
+#define abort_libfunc	(libfunc_table[LTI_abort])
+#define memcpy_libfunc	(libfunc_table[LTI_memcpy])
+#define memmove_libfunc	(libfunc_table[LTI_memmove])
+#define memcmp_libfunc	(libfunc_table[LTI_memcmp])
+#define memset_libfunc	(libfunc_table[LTI_memset])
+#define setbits_libfunc	(libfunc_table[LTI_setbits])
 
-#define unwind_resume_libfunc        (libfunc_table[LTI_unwind_resume])
-#define eh_personality_libfunc        (libfunc_table[LTI_eh_personality])
-#define setjmp_libfunc        (libfunc_table[LTI_setjmp])
-#define longjmp_libfunc        (libfunc_table[LTI_longjmp])
+#define unwind_resume_libfunc	(libfunc_table[LTI_unwind_resume])
+#define eh_personality_libfunc	(libfunc_table[LTI_eh_personality])
+#define setjmp_libfunc	(libfunc_table[LTI_setjmp])
+#define longjmp_libfunc	(libfunc_table[LTI_longjmp])
 #define unwind_sjlj_register_libfunc (libfunc_table[LTI_unwind_sjlj_register])
 #define unwind_sjlj_unregister_libfunc \
   (libfunc_table[LTI_unwind_sjlj_unregister])
 
-#define profile_function_entry_libfunc        (libfunc_table[LTI_profile_function_entry])
-#define profile_function_exit_libfunc        (libfunc_table[LTI_profile_function_exit])
+#define profile_function_entry_libfunc	(libfunc_table[LTI_profile_function_entry])
+#define profile_function_exit_libfunc	(libfunc_table[LTI_profile_function_exit])
 
-#define gcov_flush_libfunc        (libfunc_table[LTI_gcov_flush])
+#define gcov_flush_libfunc	(libfunc_table[LTI_gcov_flush])
 
 #endif /* GCC_LIBFUNCS_H */

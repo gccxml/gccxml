@@ -29,61 +29,61 @@
 #define LINK_EMUL_PREFIX "shlsymbian"
 
 
-#define SYMBIAN_EXPORT_NAME(NAME,FILE,DECL)                        \
-  do                                                                \
-    {                                                                \
-      if ((DECL && sh_symbian_dllexport_p (DECL))                \
-         || sh_symbian_dllexport_name_p (NAME))                        \
-        {                                                        \
-          fprintf ((FILE), "\t.pushsection .directive\n");        \
-          fprintf ((FILE), "\t.asciz \"EXPORT %s\\n\"\n",        \
-                   sh_symbian_strip_name_encoding (NAME));        \
-          fprintf ((FILE), "\t.popsection\n");                        \
-       }                                                        \
-    }                                                                \
+#define SYMBIAN_EXPORT_NAME(NAME,FILE,DECL)			\
+  do								\
+    {								\
+      if ((DECL && sh_symbian_dllexport_p (DECL))		\
+         || sh_symbian_dllexport_name_p (NAME))			\
+        {							\
+          fprintf ((FILE), "\t.pushsection .directive\n");	\
+          fprintf ((FILE), "\t.asciz \"EXPORT %s\\n\"\n",	\
+	           sh_symbian_strip_name_encoding (NAME));	\
+          fprintf ((FILE), "\t.popsection\n");			\
+       }							\
+    }								\
   while (0)
 
 /* Output a function definition label.  */
 #undef  ASM_DECLARE_FUNCTION_NAME
-#define ASM_DECLARE_FUNCTION_NAME(FILE, NAME, DECL)                \
-  do                                                                \
-    {                                                                \
-      SYMBIAN_EXPORT_NAME ((NAME), (FILE), (DECL));                \
-      ASM_OUTPUT_TYPE_DIRECTIVE ((FILE), (NAME), "function");        \
-      ASM_DECLARE_RESULT ((FILE), DECL_RESULT (DECL));                \
-      ASM_OUTPUT_LABEL ((FILE), (NAME));                        \
-    }                                                                \
+#define ASM_DECLARE_FUNCTION_NAME(FILE, NAME, DECL)		\
+  do								\
+    {								\
+      SYMBIAN_EXPORT_NAME ((NAME), (FILE), (DECL));		\
+      ASM_OUTPUT_TYPE_DIRECTIVE ((FILE), (NAME), "function");	\
+      ASM_DECLARE_RESULT ((FILE), DECL_RESULT (DECL));		\
+      ASM_OUTPUT_LABEL ((FILE), (NAME));			\
+    }								\
   while (0)
 
 /* Output the label for an initialized variable.  */
 #undef  ASM_DECLARE_OBJECT_NAME
-#define ASM_DECLARE_OBJECT_NAME(FILE, NAME, DECL)                \
-  do                                                                \
-    {                                                                \
-      HOST_WIDE_INT size;                                        \
-                                                                \
-      SYMBIAN_EXPORT_NAME ((NAME), (FILE), (DECL));                \
-      ASM_OUTPUT_TYPE_DIRECTIVE ((FILE), (NAME), "object");        \
-                                                                \
-      size_directive_output = 0;                                \
-      if (!flag_inhibit_size_directive                                \
-          && (DECL)                                                \
-          && DECL_SIZE (DECL))                                        \
-        {                                                        \
-          size_directive_output = 1;                                \
-          size = int_size_in_bytes (TREE_TYPE (DECL));                \
-          ASM_OUTPUT_SIZE_DIRECTIVE ((FILE), (NAME), size);        \
-        }                                                        \
-                                                                \
-      ASM_OUTPUT_LABEL ((FILE), (NAME));                        \
-    }                                                                \
+#define ASM_DECLARE_OBJECT_NAME(FILE, NAME, DECL)		\
+  do								\
+    {								\
+      HOST_WIDE_INT size;					\
+								\
+      SYMBIAN_EXPORT_NAME ((NAME), (FILE), (DECL));		\
+      ASM_OUTPUT_TYPE_DIRECTIVE ((FILE), (NAME), "object");	\
+								\
+      size_directive_output = 0;				\
+      if (!flag_inhibit_size_directive				\
+	  && (DECL)						\
+          && DECL_SIZE (DECL))					\
+	{							\
+	  size_directive_output = 1;				\
+	  size = int_size_in_bytes (TREE_TYPE (DECL));		\
+	  ASM_OUTPUT_SIZE_DIRECTIVE ((FILE), (NAME), size);	\
+	}							\
+								\
+      ASM_OUTPUT_LABEL ((FILE), (NAME));			\
+    }								\
   while (0)
 
 #undef  ASM_OUTPUT_LABELREF
-#define ASM_OUTPUT_LABELREF(FILE, NAME)                                \
-  do                                                                \
-    {                                                                \
-      asm_fprintf ((FILE), "%U%s",                                \
-                   sh_symbian_strip_name_encoding (NAME));        \
-    }                                                                \
+#define ASM_OUTPUT_LABELREF(FILE, NAME)				\
+  do								\
+    {								\
+      asm_fprintf ((FILE), "%U%s",				\
+		   sh_symbian_strip_name_encoding (NAME));	\
+    }								\
   while (0)

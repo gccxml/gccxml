@@ -63,10 +63,10 @@ main (int argc, char **argv)
 
   printf ("/* Generated automatically by the program `%s'\n", argv[0]);
   printf ("   from `%s (%lu %lu) and %s (%c)'.  */\n",
-          argv[1], major, minor, argv[2], phase);
+	  argv[1], major, minor, argv[2], phase);
   printf ("\n");
   printf ("#define GCOV_VERSION ((gcov_unsigned_t)%#08x)  /* %.4s */\n",
-          version, v);
+	  version, v);
 
   return 0;
 }

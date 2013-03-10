@@ -20,11 +20,11 @@ Boston, MA 02110-1301, USA.  */
 
 /* On the FRV, the CC modes used are:
 
-   CCmode        set ICCs from comparing signed integers
-   CC_UNSmode        set ICCs from comparing unsigned integers
-   CC_NZmode        set ICCs for comparisons that just need the Z and N flags
-   CC_FPmode        set FCCs from comparing floating point
-   CC_CCRmode        set CCRs to do conditional execution */
+   CCmode	set ICCs from comparing signed integers
+   CC_UNSmode	set ICCs from comparing unsigned integers
+   CC_NZmode	set ICCs for comparisons that just need the Z and N flags
+   CC_FPmode	set FCCs from comparing floating point
+   CC_CCRmode	set CCRs to do conditional execution */
 
 CC_MODE (CC_UNS);
 CC_MODE (CC_NZ);

@@ -56,17 +56,17 @@ void __gcov_flush (void) {}
 
 #ifdef L_gcov_merge_add
 void __gcov_merge_add (gcov_type *counters  __attribute__ ((unused)),
-                       unsigned n_counters __attribute__ ((unused))) {}
+		       unsigned n_counters __attribute__ ((unused))) {}
 #endif
 
 #ifdef L_gcov_merge_single
 void __gcov_merge_single (gcov_type *counters  __attribute__ ((unused)),
-                          unsigned n_counters __attribute__ ((unused))) {}
+			  unsigned n_counters __attribute__ ((unused))) {}
 #endif
 
 #ifdef L_gcov_merge_delta
 void __gcov_merge_delta (gcov_type *counters  __attribute__ ((unused)),
-                         unsigned n_counters __attribute__ ((unused))) {}
+			 unsigned n_counters __attribute__ ((unused))) {}
 #endif
 
 #else
@@ -105,21 +105,21 @@ create_file_directory (char *filename)
     if (IS_DIR_SEPARATOR(*s))
       {
         char sep = *s;
-        *s  = '\0';
+	*s  = '\0';
 
         /* Try to make directory if it doesn't already exist.  */
         if (access (filename, F_OK) == -1
             && mkdir (filename, 0755) == -1
             /* The directory might have been made by another process.  */
-            && errno != EEXIST)
-          {
+	    && errno != EEXIST)
+	  {
             fprintf (stderr, "profiling:%s:Cannot create directory\n",
-                     filename);
+		     filename);
             *s = sep;
-            return -1;
-          };
+	    return -1;
+	  };
         
-        *s = sep;
+	*s = sep;
       };
   return 0;
 }
@@ -132,7 +132,7 @@ create_file_directory (char *filename)
    
 static int
 gcov_version (struct gcov_info *ptr, gcov_unsigned_t version,
-              const char *filename)
+	      const char *filename)
 {
   if (version != GCOV_VERSION)
     {
@@ -142,8 +142,8 @@ gcov_version (struct gcov_info *ptr, gcov_unsigned_t version,
       GCOV_UNSIGNED2STRING (e, GCOV_VERSION);
       
       fprintf (stderr,
-               "profiling:%s:Version mismatch - expected %.4s got %.4s\n",
-               filename? filename : ptr->filename, e, v);
+	       "profiling:%s:Version mismatch - expected %.4s got %.4s\n",
+	       filename? filename : ptr->filename, e, v);
       return 0;
     }
   return 1;
@@ -178,20 +178,20 @@ gcov_exit (void)
     {
       ci_ptr = gi_ptr->counts;
       for (t_ix = 0; t_ix < GCOV_COUNTERS_SUMMABLE; t_ix++)
-        {
-          if (!((1 << t_ix) & gi_ptr->ctr_mask))
-            continue;
+	{
+	  if (!((1 << t_ix) & gi_ptr->ctr_mask))
+	    continue;
 
-          cs_ptr = &this_program.ctrs[t_ix];
-          cs_ptr->num += ci_ptr->num;
-          for (c_num = 0; c_num < ci_ptr->num; c_num++)
-            {
-                    cs_ptr->sum_all += ci_ptr->values[c_num];
-              if (cs_ptr->run_max < ci_ptr->values[c_num])
-                cs_ptr->run_max = ci_ptr->values[c_num];
-            }
-          ci_ptr++;
-        }
+	  cs_ptr = &this_program.ctrs[t_ix];
+	  cs_ptr->num += ci_ptr->num;
+	  for (c_num = 0; c_num < ci_ptr->num; c_num++)
+	    {
+      	      cs_ptr->sum_all += ci_ptr->values[c_num];
+	      if (cs_ptr->run_max < ci_ptr->values[c_num])
+		cs_ptr->run_max = ci_ptr->values[c_num];
+	    }
+	  ci_ptr++;
+	}
     }
 
   /* Get file name relocation prefix.  Non-absolute values are ignored. */
@@ -212,7 +212,7 @@ gcov_exit (void)
 
       /* Remove an unnecessary trailing '/' */
       if (IS_DIR_SEPARATOR (gcov_prefix[prefix_length - 1]))
-        prefix_length--;
+	prefix_length--;
     }
   else
     prefix_length = 0;
@@ -250,12 +250,12 @@ gcov_exit (void)
           const char *s;
 
           /* Skip selected directory levels. */
-          for (s = fname + 1; (*s != '\0') && (level < gcov_prefix_strip); s++)
-            if (IS_DIR_SEPARATOR(*s))
-              {
-                fname = s;
-                level++;
-              };
+	  for (s = fname + 1; (*s != '\0') && (level < gcov_prefix_strip); s++)
+	    if (IS_DIR_SEPARATOR(*s))
+	      {
+		fname = s;
+		level++;
+	      };
 
           /* Update complete filename with stripped original. */
           strcpy (gi_filename_up, fname);
@@ -266,153 +266,153 @@ gcov_exit (void)
       /* Totals for this object file.  */
       ci_ptr = gi_ptr->counts;
       for (t_ix = 0; t_ix < GCOV_COUNTERS_SUMMABLE; t_ix++)
-        {
-          if (!((1 << t_ix) & gi_ptr->ctr_mask))
-            continue;
+	{
+	  if (!((1 << t_ix) & gi_ptr->ctr_mask))
+	    continue;
 
-          cs_ptr = &this_object.ctrs[t_ix];
-          cs_ptr->num += ci_ptr->num;
-          for (c_num = 0; c_num < ci_ptr->num; c_num++)
-            {
-              cs_ptr->sum_all += ci_ptr->values[c_num];
-              if (cs_ptr->run_max < ci_ptr->values[c_num])
-                cs_ptr->run_max = ci_ptr->values[c_num];
-            }
+	  cs_ptr = &this_object.ctrs[t_ix];
+	  cs_ptr->num += ci_ptr->num;
+	  for (c_num = 0; c_num < ci_ptr->num; c_num++)
+	    {
+	      cs_ptr->sum_all += ci_ptr->values[c_num];
+	      if (cs_ptr->run_max < ci_ptr->values[c_num])
+		cs_ptr->run_max = ci_ptr->values[c_num];
+	    }
 
-          ci_ptr++;
-        }
+	  ci_ptr++;
+	}
 
       c_ix = 0;
       for (t_ix = 0; t_ix < GCOV_COUNTERS; t_ix++)
-        if ((1 << t_ix) & gi_ptr->ctr_mask)
-          {
-            values[c_ix] = gi_ptr->counts[c_ix].values;
-            c_ix++;
-          }
+	if ((1 << t_ix) & gi_ptr->ctr_mask)
+	  {
+	    values[c_ix] = gi_ptr->counts[c_ix].values;
+	    c_ix++;
+	  }
 
       /* Calculate the function_info stride. This depends on the
-         number of counter types being measured.  */
+	 number of counter types being measured.  */
       fi_stride = sizeof (struct gcov_fn_info) + c_ix * sizeof (unsigned);
       if (__alignof__ (struct gcov_fn_info) > sizeof (unsigned))
-        {
-          fi_stride += __alignof__ (struct gcov_fn_info) - 1;
-          fi_stride &= ~(__alignof__ (struct gcov_fn_info) - 1);
-        }
+	{
+	  fi_stride += __alignof__ (struct gcov_fn_info) - 1;
+	  fi_stride &= ~(__alignof__ (struct gcov_fn_info) - 1);
+	}
       
       if (!gcov_open (gi_filename))
-        {
+	{
 #ifdef TARGET_POSIX_IO
-          /* Open failed likely due to missed directory.
-             Create directory and retry to open file. */
+	  /* Open failed likely due to missed directory.
+	     Create directory and retry to open file. */
           if (create_file_directory (gi_filename))
-            {
-              fprintf (stderr, "profiling:%s:Skip\n", gi_filename);
-              continue;
-            }
+	    {
+	      fprintf (stderr, "profiling:%s:Skip\n", gi_filename);
+	      continue;
+	    }
 #endif
-          if (!gcov_open (gi_filename))
-            {
+	  if (!gcov_open (gi_filename))
+	    {
               fprintf (stderr, "profiling:%s:Cannot open\n", gi_filename);
-              continue;
-            }
-        }
+	      continue;
+	    }
+	}
 
       tag = gcov_read_unsigned ();
       if (tag)
-        {
-          /* Merge data from file.  */
-          if (tag != GCOV_DATA_MAGIC)
-            {
-              fprintf (stderr, "profiling:%s:Not a gcov data file\n",
-                       gi_filename);
-              goto read_fatal;
-            }
-          length = gcov_read_unsigned ();
-          if (!gcov_version (gi_ptr, length, gi_filename))
-            goto read_fatal;
+	{
+	  /* Merge data from file.  */
+	  if (tag != GCOV_DATA_MAGIC)
+	    {
+	      fprintf (stderr, "profiling:%s:Not a gcov data file\n",
+		       gi_filename);
+	      goto read_fatal;
+	    }
+	  length = gcov_read_unsigned ();
+	  if (!gcov_version (gi_ptr, length, gi_filename))
+	    goto read_fatal;
 
-          length = gcov_read_unsigned ();
-          if (length != gi_ptr->stamp)
-            /* Read from a different compilation. Overwrite the file.  */
-            goto rewrite;
-          
-          /* Merge execution counts for each function.  */
-          for (f_ix = 0; f_ix < gi_ptr->n_functions; f_ix++)
-            {
-              fi_ptr = (const struct gcov_fn_info *)
-                      ((const char *) gi_ptr->functions + f_ix * fi_stride);
-              tag = gcov_read_unsigned ();
-              length = gcov_read_unsigned ();
+	  length = gcov_read_unsigned ();
+	  if (length != gi_ptr->stamp)
+	    /* Read from a different compilation. Overwrite the file.  */
+	    goto rewrite;
+	  
+	  /* Merge execution counts for each function.  */
+	  for (f_ix = 0; f_ix < gi_ptr->n_functions; f_ix++)
+	    {
+	      fi_ptr = (const struct gcov_fn_info *)
+		      ((const char *) gi_ptr->functions + f_ix * fi_stride);
+	      tag = gcov_read_unsigned ();
+	      length = gcov_read_unsigned ();
 
-              /* Check function.  */
-              if (tag != GCOV_TAG_FUNCTION
-                  || length != GCOV_TAG_FUNCTION_LENGTH
-                  || gcov_read_unsigned () != fi_ptr->ident
-                  || gcov_read_unsigned () != fi_ptr->checksum)
-                {
-                read_mismatch:;
-                  fprintf (stderr, "profiling:%s:Merge mismatch for %s\n",
-                           gi_filename,
-                           f_ix + 1 ? "function" : "summaries");
-                  goto read_fatal;
-                }
+	      /* Check function.  */
+	      if (tag != GCOV_TAG_FUNCTION
+		  || length != GCOV_TAG_FUNCTION_LENGTH
+		  || gcov_read_unsigned () != fi_ptr->ident
+		  || gcov_read_unsigned () != fi_ptr->checksum)
+		{
+		read_mismatch:;
+		  fprintf (stderr, "profiling:%s:Merge mismatch for %s\n",
+			   gi_filename,
+			   f_ix + 1 ? "function" : "summaries");
+		  goto read_fatal;
+		}
 
-              c_ix = 0;
-              for (t_ix = 0; t_ix < GCOV_COUNTERS; t_ix++)
-                {
-                  gcov_merge_fn merge;
+	      c_ix = 0;
+	      for (t_ix = 0; t_ix < GCOV_COUNTERS; t_ix++)
+		{
+		  gcov_merge_fn merge;
 
-                  if (!((1 << t_ix) & gi_ptr->ctr_mask))
-                    continue;
-                  
-                  n_counts = fi_ptr->n_ctrs[c_ix];
-                  merge = gi_ptr->counts[c_ix].merge;
-                    
-                  tag = gcov_read_unsigned ();
-                  length = gcov_read_unsigned ();
-                  if (tag != GCOV_TAG_FOR_COUNTER (t_ix)
-                      || length != GCOV_TAG_COUNTER_LENGTH (n_counts))
-                    goto read_mismatch;
-                  (*merge) (values[c_ix], n_counts);
-                  values[c_ix] += n_counts;
-                  c_ix++;
-                }
-              if ((error = gcov_is_error ()))
-                goto read_error;
-            }
+		  if (!((1 << t_ix) & gi_ptr->ctr_mask))
+		    continue;
+		  
+		  n_counts = fi_ptr->n_ctrs[c_ix];
+		  merge = gi_ptr->counts[c_ix].merge;
+		    
+		  tag = gcov_read_unsigned ();
+		  length = gcov_read_unsigned ();
+		  if (tag != GCOV_TAG_FOR_COUNTER (t_ix)
+		      || length != GCOV_TAG_COUNTER_LENGTH (n_counts))
+		    goto read_mismatch;
+		  (*merge) (values[c_ix], n_counts);
+		  values[c_ix] += n_counts;
+		  c_ix++;
+		}
+	      if ((error = gcov_is_error ()))
+		goto read_error;
+	    }
 
-          f_ix = ~0u;
-          /* Check program & object summary */
-          while (1)
-            {
-              int is_program;
-              
-              eof_pos = gcov_position ();
-              tag = gcov_read_unsigned ();
-              if (!tag)
-                break;
+	  f_ix = ~0u;
+	  /* Check program & object summary */
+	  while (1)
+	    {
+	      int is_program;
+	      
+	      eof_pos = gcov_position ();
+	      tag = gcov_read_unsigned ();
+	      if (!tag)
+		break;
 
-              length = gcov_read_unsigned ();
-              is_program = tag == GCOV_TAG_PROGRAM_SUMMARY;
-              if (length != GCOV_TAG_SUMMARY_LENGTH
-                  || (!is_program && tag != GCOV_TAG_OBJECT_SUMMARY))
-                goto read_mismatch;
-              gcov_read_summary (is_program ? &program : &object);
-              if ((error = gcov_is_error ()))
-                goto read_error;
-              if (is_program && program.checksum == gcov_crc32)
-                {
-                  summary_pos = eof_pos;
-                  goto rewrite;
-                }
-            }
-        }
+	      length = gcov_read_unsigned ();
+	      is_program = tag == GCOV_TAG_PROGRAM_SUMMARY;
+	      if (length != GCOV_TAG_SUMMARY_LENGTH
+		  || (!is_program && tag != GCOV_TAG_OBJECT_SUMMARY))
+		goto read_mismatch;
+	      gcov_read_summary (is_program ? &program : &object);
+	      if ((error = gcov_is_error ()))
+		goto read_error;
+	      if (is_program && program.checksum == gcov_crc32)
+		{
+		  summary_pos = eof_pos;
+		  goto rewrite;
+		}
+	    }
+	}
       goto rewrite;
       
     read_error:;
       fprintf (stderr, error < 0 ? "profiling:%s:Overflow merging\n"
-               : "profiling:%s:Error merging\n", gi_filename);
-              
+	       : "profiling:%s:Error merging\n", gi_filename);
+	      
     read_fatal:;
       gcov_close ();
       continue;
@@ -420,61 +420,61 @@ gcov_exit (void)
     rewrite:;
       gcov_rewrite ();
       if (!summary_pos)
-        memset (&program, 0, sizeof (program));
+	memset (&program, 0, sizeof (program));
 
       /* Merge the summaries.  */
       f_ix = ~0u;
       for (t_ix = 0; t_ix < GCOV_COUNTERS_SUMMABLE; t_ix++)
-        {
-          cs_obj = &object.ctrs[t_ix];
-          cs_tobj = &this_object.ctrs[t_ix];
-          cs_prg = &program.ctrs[t_ix];
-          cs_tprg = &this_program.ctrs[t_ix];
-          cs_all = &all.ctrs[t_ix];
+	{
+	  cs_obj = &object.ctrs[t_ix];
+	  cs_tobj = &this_object.ctrs[t_ix];
+	  cs_prg = &program.ctrs[t_ix];
+	  cs_tprg = &this_program.ctrs[t_ix];
+	  cs_all = &all.ctrs[t_ix];
 
-          if ((1 << t_ix) & gi_ptr->ctr_mask)
-            {
-              if (!cs_obj->runs++)
-                cs_obj->num = cs_tobj->num;
-              else if (cs_obj->num != cs_tobj->num)
-                goto read_mismatch;
-              cs_obj->sum_all += cs_tobj->sum_all;
-              if (cs_obj->run_max < cs_tobj->run_max)
-                cs_obj->run_max = cs_tobj->run_max;
-              cs_obj->sum_max += cs_tobj->run_max;
-              
-              if (!cs_prg->runs++)
-                cs_prg->num = cs_tprg->num;
-              else if (cs_prg->num != cs_tprg->num)
-                goto read_mismatch;
-              cs_prg->sum_all += cs_tprg->sum_all;
-              if (cs_prg->run_max < cs_tprg->run_max)
-                cs_prg->run_max = cs_tprg->run_max;
-              cs_prg->sum_max += cs_tprg->run_max;
-            }
-          else if (cs_obj->num || cs_prg->num)
-            goto read_mismatch;
-          
-          if (!cs_all->runs && cs_prg->runs)
-            memcpy (cs_all, cs_prg, sizeof (*cs_all));
-          else if (!all.checksum
-                   && (!GCOV_LOCKED || cs_all->runs == cs_prg->runs)
-                   && memcmp (cs_all, cs_prg, sizeof (*cs_all)))
-            {
-              fprintf (stderr, "profiling:%s:Invocation mismatch - some data files may have been removed%s",
-                       gi_filename, GCOV_LOCKED
-                       ? "" : " or concurrent update without locking support");
-              all.checksum = ~0u;
-            }
-        }
+	  if ((1 << t_ix) & gi_ptr->ctr_mask)
+	    {
+	      if (!cs_obj->runs++)
+		cs_obj->num = cs_tobj->num;
+	      else if (cs_obj->num != cs_tobj->num)
+		goto read_mismatch;
+	      cs_obj->sum_all += cs_tobj->sum_all;
+	      if (cs_obj->run_max < cs_tobj->run_max)
+		cs_obj->run_max = cs_tobj->run_max;
+	      cs_obj->sum_max += cs_tobj->run_max;
+	      
+	      if (!cs_prg->runs++)
+		cs_prg->num = cs_tprg->num;
+	      else if (cs_prg->num != cs_tprg->num)
+		goto read_mismatch;
+	      cs_prg->sum_all += cs_tprg->sum_all;
+	      if (cs_prg->run_max < cs_tprg->run_max)
+		cs_prg->run_max = cs_tprg->run_max;
+	      cs_prg->sum_max += cs_tprg->run_max;
+	    }
+	  else if (cs_obj->num || cs_prg->num)
+	    goto read_mismatch;
+	  
+	  if (!cs_all->runs && cs_prg->runs)
+	    memcpy (cs_all, cs_prg, sizeof (*cs_all));
+	  else if (!all.checksum
+		   && (!GCOV_LOCKED || cs_all->runs == cs_prg->runs)
+		   && memcmp (cs_all, cs_prg, sizeof (*cs_all)))
+	    {
+	      fprintf (stderr, "profiling:%s:Invocation mismatch - some data files may have been removed%s",
+		       gi_filename, GCOV_LOCKED
+		       ? "" : " or concurrent update without locking support");
+	      all.checksum = ~0u;
+	    }
+	}
       
       c_ix = 0;
       for (t_ix = 0; t_ix < GCOV_COUNTERS; t_ix++)
-        if ((1 << t_ix) & gi_ptr->ctr_mask)
-          {
-            values[c_ix] = gi_ptr->counts[c_ix].values;
-            c_ix++;
-          }
+	if ((1 << t_ix) & gi_ptr->ctr_mask)
+	  {
+	    values[c_ix] = gi_ptr->counts[c_ix].values;
+	    c_ix++;
+	  }
 
       program.checksum = gcov_crc32;
       
@@ -484,50 +484,50 @@ gcov_exit (void)
       
       /* Write execution counts for each function.  */
       for (f_ix = 0; f_ix < gi_ptr->n_functions; f_ix++)
-        {
-          fi_ptr = (const struct gcov_fn_info *)
-                  ((const char *) gi_ptr->functions + f_ix * fi_stride);
+	{
+	  fi_ptr = (const struct gcov_fn_info *)
+		  ((const char *) gi_ptr->functions + f_ix * fi_stride);
 
-          /* Announce function.  */
-          gcov_write_tag_length (GCOV_TAG_FUNCTION, GCOV_TAG_FUNCTION_LENGTH);
-          gcov_write_unsigned (fi_ptr->ident);
-          gcov_write_unsigned (fi_ptr->checksum);
+	  /* Announce function.  */
+	  gcov_write_tag_length (GCOV_TAG_FUNCTION, GCOV_TAG_FUNCTION_LENGTH);
+	  gcov_write_unsigned (fi_ptr->ident);
+	  gcov_write_unsigned (fi_ptr->checksum);
 
-          c_ix = 0;
-          for (t_ix = 0; t_ix < GCOV_COUNTERS; t_ix++)
-            {
-              gcov_type *c_ptr;
+	  c_ix = 0;
+	  for (t_ix = 0; t_ix < GCOV_COUNTERS; t_ix++)
+	    {
+	      gcov_type *c_ptr;
 
-              if (!((1 << t_ix) & gi_ptr->ctr_mask))
-                continue;
+	      if (!((1 << t_ix) & gi_ptr->ctr_mask))
+		continue;
 
-              n_counts = fi_ptr->n_ctrs[c_ix];
-                    
-              gcov_write_tag_length (GCOV_TAG_FOR_COUNTER (t_ix),
-                                     GCOV_TAG_COUNTER_LENGTH (n_counts));
-              c_ptr = values[c_ix];
-              while (n_counts--)
-                gcov_write_counter (*c_ptr++);
+	      n_counts = fi_ptr->n_ctrs[c_ix];
+		    
+	      gcov_write_tag_length (GCOV_TAG_FOR_COUNTER (t_ix),
+				     GCOV_TAG_COUNTER_LENGTH (n_counts));
+	      c_ptr = values[c_ix];
+	      while (n_counts--)
+		gcov_write_counter (*c_ptr++);
 
-              values[c_ix] = c_ptr;
-              c_ix++;
-            }
-        }
+	      values[c_ix] = c_ptr;
+	      c_ix++;
+	    }
+	}
 
       /* Object file summary.  */
       gcov_write_summary (GCOV_TAG_OBJECT_SUMMARY, &object);
 
       /* Generate whole program statistics.  */
       if (eof_pos)
-        gcov_seek (eof_pos);
+	gcov_seek (eof_pos);
       gcov_write_summary (GCOV_TAG_PROGRAM_SUMMARY, &program);
       if (!summary_pos)
-        gcov_write_unsigned (0);
+	gcov_write_unsigned (0);
       if ((error = gcov_close ()))
-          fprintf (stderr, error  < 0 ?
-                   "profiling:%s:Overflow writing\n" :
-                   "profiling:%s:Error writing\n",
-                   gi_filename);
+	  fprintf (stderr, error  < 0 ?
+		   "profiling:%s:Overflow writing\n" :
+		   "profiling:%s:Error writing\n",
+		   gi_filename);
     }
 }
 
@@ -550,25 +550,25 @@ __gcov_init (struct gcov_info *info)
         gcov_max_filename = filename_length;
       
       do
-        {
-          unsigned ix;
-          gcov_unsigned_t value = *ptr << 24;
+	{
+	  unsigned ix;
+	  gcov_unsigned_t value = *ptr << 24;
 
-          for (ix = 8; ix--; value <<= 1)
-            {
-              gcov_unsigned_t feedback;
+	  for (ix = 8; ix--; value <<= 1)
+	    {
+	      gcov_unsigned_t feedback;
 
-              feedback = (value ^ crc32) & 0x80000000 ? 0x04c11db7 : 0;
-              crc32 <<= 1;
-              crc32 ^= feedback;
-            }
-        }
+	      feedback = (value ^ crc32) & 0x80000000 ? 0x04c11db7 : 0;
+	      crc32 <<= 1;
+	      crc32 ^= feedback;
+	    }
+	}
       while (*ptr++);
       
       gcov_crc32 = crc32;
       
       if (!gcov_list)
-        atexit (gcov_exit);
+	atexit (gcov_exit);
       
       info->next = gcov_list;
       gcov_list = info;
@@ -592,11 +592,11 @@ __gcov_flush (void)
       const struct gcov_ctr_info *ci_ptr;
       
       for (t_ix = 0, ci_ptr = gi_ptr->counts; t_ix != GCOV_COUNTERS; t_ix++)
-        if ((1 << t_ix) & gi_ptr->ctr_mask)
-          {
-            memset (ci_ptr->values, 0, sizeof (gcov_type) * ci_ptr->num);
-            ci_ptr++;
-          }
+	if ((1 << t_ix) & gi_ptr->ctr_mask)
+	  {
+	    memset (ci_ptr->values, 0, sizeof (gcov_type) * ci_ptr->num);
+	    ci_ptr++;
+	  }
     }
 }
 
@@ -639,14 +639,14 @@ __gcov_merge_single (gcov_type *counters, unsigned n_counters)
       all = gcov_read_counter ();
 
       if (counters[0] == value)
-        counters[1] += counter;
+	counters[1] += counter;
       else if (counter > counters[1])
-        {
-          counters[0] = value;
-          counters[1] = counter - counters[1];
-        }
+	{
+	  counters[0] = value;
+	  counters[1] = counter - counters[1];
+	}
       else
-        counters[1] -= counter;
+	counters[1] -= counter;
       counters[2] += all;
     }
 }
@@ -679,14 +679,14 @@ __gcov_merge_delta (gcov_type *counters, unsigned n_counters)
       all = gcov_read_counter ();
 
       if (counters[1] == value)
-        counters[2] += counter;
+	counters[2] += counter;
       else if (counter > counters[2])
-        {
-          counters[1] = value;
-          counters[2] = counter - counters[2];
-        }
+	{
+	  counters[1] = value;
+	  counters[2] = counter - counters[2];
+	}
       else
-        counters[2] -= counter;
+	counters[2] -= counter;
       counters[3] += all;
     }
 }
@@ -700,7 +700,7 @@ __gcov_merge_delta (gcov_type *counters, unsigned n_counters)
 
 void
 __gcov_interval_profiler (gcov_type *counters, gcov_type value,
-                          int start, unsigned steps)
+			  int start, unsigned steps)
 {
   gcov_type delta = value - start;
   if (delta < 0)

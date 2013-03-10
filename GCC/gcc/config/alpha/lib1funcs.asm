@@ -37,16 +37,16 @@ Boston, MA 02110-1301, USA.  */
 
    The following macros need to be defined: 
 
-        SIZE, the number of bits, 32 or 64.
+	SIZE, the number of bits, 32 or 64.
 
-        TYPE, either UNSIGNED or SIGNED
+	TYPE, either UNSIGNED or SIGNED
 
-        OPERATION, either DIVISION or REMAINDER
+	OPERATION, either DIVISION or REMAINDER
    
-        SPECIAL_CALLING_CONVENTION, 0 or 1.  It is useful for debugging to
-        define this to 0.  That removes the `__' prefix to make the function
-        name not collide with the existing libc.a names, and uses the
-        standard Alpha procedure calling convention.
+	SPECIAL_CALLING_CONVENTION, 0 or 1.  It is useful for debugging to
+	define this to 0.  That removes the `__' prefix to make the function
+	name not collide with the existing libc.a names, and uses the
+	standard Alpha procedure calling convention.
 */
 
 #ifndef SPECIAL_CALLING_CONVENTION
@@ -168,34 +168,34 @@ Boston, MA 02110-1301, USA.  */
 #define DIVISION 0
 #define REMAINDER 1
 
-        .set noreorder
-        .set noat
+	.set noreorder
+	.set noat
 .text
-        .align 3
-        .globl FUNCTION_NAME
-        .ent FUNCTION_NAME
+	.align 3
+	.globl FUNCTION_NAME
+	.ent FUNCTION_NAME
 FUNCTION_NAME:
 
-        .frame        $30,0,$26,0
-        .prologue 0
+	.frame	$30,0,$26,0
+	.prologue 0
 
 /* Under the special calling convention, we have to preserve all register
    values but $23 and $28.  */
 #if SPECIAL_CALLING_CONVENTION
-        lda        sp,-64(sp)
+	lda	sp,-64(sp)
 #if OPERATION == DIVISION
-        stq        N,0(sp)
+	stq	N,0(sp)
 #endif
-        stq        D,8(sp)
-        stq        cnt,16(sp)
-        stq        result_sign,24(sp)
-        stq        tmp0,32(sp)
+	stq	D,8(sp)
+	stq	cnt,16(sp)
+	stq	result_sign,24(sp)
+	stq	tmp0,32(sp)
 #endif
 
 /* If we are computing the remainder, move N to the register that is used
    for the return value, and redefine what register is used for N.  */
 #if OPERATION == REMAINDER
-        bis        N,N,RETREG
+	bis	N,N,RETREG
 #undef N
 #define N RETREG
 #endif
@@ -203,34 +203,34 @@ FUNCTION_NAME:
 /* Perform conversion from 32 bit types to 64 bit types.  */
 #if SIZE == 32
 #if TYPE == SIGNED
-        /* If there are problems with the signed case, add these instructions.
-           The caller should already have done this.
-        addl        N,0,N                # sign extend N
-        addl        D,0,D                # sign extend D
-        */
+	/* If there are problems with the signed case, add these instructions.
+	   The caller should already have done this.
+	addl	N,0,N		# sign extend N
+	addl	D,0,D		# sign extend D
+	*/
 #else /* UNSIGNED */
-        zap        N,0xf0,N        # zero extend N (caller required to sign extend)
-        zap        D,0xf0,D        # zero extend D
+	zap	N,0xf0,N	# zero extend N (caller required to sign extend)
+	zap	D,0xf0,D	# zero extend D
 #endif
 #endif
 
 /* Check for divide by zero.  */
-        bne        D,$34
-        lda        $16,-2(zero)
-        call_pal 0xaa
+	bne	D,$34
+	lda	$16,-2(zero)
+	call_pal 0xaa
 $34:
 
 #if TYPE == SIGNED
 #if OPERATION == DIVISION
-        xor        N,D,result_sign
+	xor	N,D,result_sign
 #else
-        bis        N,N,result_sign
+	bis	N,N,result_sign
 #endif
 /* Get the absolute values of N and D.  */
-        subq        zero,N,tmp0
-        cmovlt        N,tmp0,N
-        subq        zero,D,tmp0
-        cmovlt        D,tmp0,D
+	subq	zero,N,tmp0
+	cmovlt	N,tmp0,N
+	subq	zero,D,tmp0
+	cmovlt	D,tmp0,D
 #endif
 
 /* Compute CNT = ceil(log2(N)) - ceil(log2(D)).  This is the number of
@@ -238,43 +238,43 @@ $34:
    this, check a few bits at a time, preferably using zap/zapnot.  Be
    careful though, this code runs fast fro the most common cases, when the
    quotient is small.  */
-        bge        N,$35
-        bis        zero,1,cnt
-        blt        D,$40
-        .align        3
-$39:        addq        D,D,D
-        addl        cnt,1,cnt
-        bge        D,$39
-        br        zero,$40
-$35:        cmpult        N,D,tmp0
-        bis        zero,zero,cnt
-        bne        tmp0,$42
-        .align        3
-$44:        addq        D,D,D
-        cmpult        N,D,tmp0
-        addl        cnt,1,cnt
-        beq        tmp0,$44
-$42:        srl        D,1,D
+	bge	N,$35
+	bis	zero,1,cnt
+	blt	D,$40
+	.align	3
+$39:	addq	D,D,D
+	addl	cnt,1,cnt
+	bge	D,$39
+	br	zero,$40
+$35:	cmpult	N,D,tmp0
+	bis	zero,zero,cnt
+	bne	tmp0,$42
+	.align	3
+$44:	addq	D,D,D
+	cmpult	N,D,tmp0
+	addl	cnt,1,cnt
+	beq	tmp0,$44
+$42:	srl	D,1,D
 $40:
-        subl        cnt,1,cnt
+	subl	cnt,1,cnt
 
 
 /* Actual divide.  Could be optimized with unrolling.  */
 #if OPERATION == DIVISION
-        bis        zero,zero,Q
+	bis	zero,zero,Q
 #endif
-        blt        cnt,$46
-        .align        3
-$49:        cmpule        D,N,tmp1
-        subq        N,D,tmp0
-        srl        D,1,D
-        subl        cnt,1,cnt
-        cmovne        tmp1,tmp0,N
+	blt	cnt,$46
+	.align	3
+$49:	cmpule	D,N,tmp1
+	subq	N,D,tmp0
+	srl	D,1,D
+	subl	cnt,1,cnt
+	cmovne	tmp1,tmp0,N
 #if OPERATION == DIVISION
-        addq        Q,Q,Q
-        bis        Q,tmp1,Q
+	addq	Q,Q,Q
+	bis	Q,tmp1,Q
 #endif
-        bge        cnt,$49
+	bge	cnt,$49
 $46:
 
 
@@ -284,37 +284,37 @@ $46:
 
 /* Change the sign of the result as needed.  */
 #if TYPE == SIGNED
-        subq        zero,RETREG,tmp0
-        cmovlt        result_sign,tmp0,RETREG
+	subq	zero,RETREG,tmp0
+	cmovlt	result_sign,tmp0,RETREG
 #endif
 
 
 /* Restore clobbered registers.  */
 #if SPECIAL_CALLING_CONVENTION
 #if OPERATION == DIVISION
-        ldq        N,0(sp)
+	ldq	N,0(sp)
 #endif
-        ldq        D,8(sp)
-        ldq        cnt,16(sp)
-        ldq        result_sign,24(sp)
-        ldq        tmp0,32(sp)
+	ldq	D,8(sp)
+	ldq	cnt,16(sp)
+	ldq	result_sign,24(sp)
+	ldq	tmp0,32(sp)
 
-        lda        sp,64(sp)
+	lda	sp,64(sp)
 #endif
 
 
 /* Sign extend an *unsigned* 32 bit result, as required by the Alpha
    conventions.  */
 #if TYPE == UNSIGNED && SIZE == 32
-        /* This could be avoided by adding some CPP hair to the divide loop.
-           It is probably not worth the added complexity.  */
-        addl        RETREG,0,RETREG
+	/* This could be avoided by adding some CPP hair to the divide loop.
+	   It is probably not worth the added complexity.  */
+	addl	RETREG,0,RETREG
 #endif
 
 
 #if SPECIAL_CALLING_CONVENTION
-        ret        zero,($23),1
+	ret	zero,($23),1
 #else
-        ret        zero,($26),1
+	ret	zero,($26),1
 #endif
-        .end        FUNCTION_NAME
+	.end	FUNCTION_NAME

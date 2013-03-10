@@ -21,18 +21,18 @@ Boston, MA 02110-1301, USA.  */
 
 
 #undef TARGET_OS_CPP_BUILTINS
-#define TARGET_OS_CPP_BUILTINS()                \
-  do                                                \
-    {                                                \
-        LINUX_TARGET_OS_CPP_BUILTINS();                \
-        builtin_assert ("machine=bigendian");        \
-    }                                                \
+#define TARGET_OS_CPP_BUILTINS()		\
+  do						\
+    {						\
+	LINUX_TARGET_OS_CPP_BUILTINS();		\
+	builtin_assert ("machine=bigendian");	\
+    }						\
   while (0)
 
 #undef CPP_SPEC
 #define CPP_SPEC "%{posix:-D_POSIX_SOURCE}"
 
-#undef        LIB_SPEC
+#undef	LIB_SPEC
 #define LIB_SPEC \
   "%{pthread:-lpthread} \
    %{shared:-lgcc -lc} \
@@ -86,16 +86,16 @@ Boston, MA 02110-1301, USA.  */
 
 #undef ASM_OUTPUT_ADDR_VEC_ELT
 #define ASM_OUTPUT_ADDR_VEC_ELT(FILE, VALUE) \
-  if (TARGET_BIG_SWITCH)                                        \
-    fprintf (FILE, "\t.word .L%d\n", VALUE);                        \
-  else                                                                \
+  if (TARGET_BIG_SWITCH)					\
+    fprintf (FILE, "\t.word .L%d\n", VALUE);			\
+  else								\
     fprintf (FILE, "\tb .L%d\n\tnop\n", VALUE)
 
 #undef ASM_OUTPUT_ADDR_DIFF_ELT
 #define ASM_OUTPUT_ADDR_DIFF_ELT(FILE, BODY, VALUE, REL) \
-  if (TARGET_BIG_SWITCH)                                        \
-    fprintf (FILE, "\t.word .L%d-.L%d\n", VALUE, REL);                \
-  else                                                                \
+  if (TARGET_BIG_SWITCH)					\
+    fprintf (FILE, "\t.word .L%d-.L%d\n", VALUE, REL);		\
+  else								\
     fprintf (FILE, "\tb .L%d\n\tnop\n", VALUE)
 
 /* Use the default.  */
@@ -118,25 +118,25 @@ Boston, MA 02110-1301, USA.  */
    it differently)  */
 
 #undef ASM_DECLARE_FUNCTION_NAME
-#define ASM_DECLARE_FUNCTION_NAME(FILE, NAME, DECL)                \
-  do                                                                \
-    {                                                                \
-      ASM_OUTPUT_TYPE_DIRECTIVE (FILE, NAME, "function");        \
-      ASM_DECLARE_RESULT (FILE, DECL_RESULT (DECL));                \
-    }                                                                \
+#define ASM_DECLARE_FUNCTION_NAME(FILE, NAME, DECL)		\
+  do								\
+    {								\
+      ASM_OUTPUT_TYPE_DIRECTIVE (FILE, NAME, "function");	\
+      ASM_DECLARE_RESULT (FILE, DECL_RESULT (DECL));		\
+    }								\
   while (0)
 
 /* As well as globalizing the label, we need to encode the label
    to ensure a plabel is generated in an indirect call.  */
 
 #undef ASM_OUTPUT_EXTERNAL_LIBCALL
-#define ASM_OUTPUT_EXTERNAL_LIBCALL(FILE, FUN)                  \
-  do                                                                \
-    {                                                                \
-      if (!FUNCTION_NAME_P (XSTR (FUN, 0)))                        \
-        hppa_encode_label (FUN);                                \
-      (*targetm.asm_out.globalize_label) (FILE, XSTR (FUN, 0));        \
-    }                                                                \
+#define ASM_OUTPUT_EXTERNAL_LIBCALL(FILE, FUN)  		\
+  do								\
+    {								\
+      if (!FUNCTION_NAME_P (XSTR (FUN, 0)))			\
+	hppa_encode_label (FUN);				\
+      (*targetm.asm_out.globalize_label) (FILE, XSTR (FUN, 0));	\
+    }								\
   while (0)
 
 /* Linux always uses gas.  */

@@ -31,23 +31,23 @@ Boston, MA 02110-1301, USA.  */
  * It is linked in after all other files.
  */
 
-        .file   "crtn.o"
-        .ident  "GNU C crtn.o"
+	.file   "crtn.o"
+	.ident  "GNU C crtn.o"
 
-        .section .init
-        unlink; 
+	.section .init
+	unlink; 
 #if defined __ID_SHARED_LIB__
-        P5 = [SP++];
+	P5 = [SP++];
 #elif defined __BFIN_FDPIC__
-        P3 = [SP++];
+	P3 = [SP++];
 #endif
-        rts;
+	rts;
 
-        .section .fini
-        unlink;
+	.section .fini
+	unlink;
 #if defined __ID_SHARED_LIB__
-        P5 = [SP++];
+	P5 = [SP++];
 #elif defined __BFIN_FDPIC__
-        P3 = [SP++];
+	P3 = [SP++];
 #endif
-        rts;
+	rts;

@@ -21,11 +21,11 @@ along with GCC; see the file COPYING.  If not, write to
 the Free Software Foundation, 51 Franklin Street, Fifth Floor,
 Boston, MA 02110-1301, USA.  */
 
-#define TARGET_OBJFMT_CPP_BUILTINS()                \
-  do                                                \
-    {                                                \
-        builtin_define ("__ELF__");                \
-    }                                                \
+#define TARGET_OBJFMT_CPP_BUILTINS()		\
+  do						\
+    {						\
+	builtin_define ("__ELF__");		\
+    }						\
   while (0)
 
 /* Define a symbol indicating that we are using elfos.h.
@@ -86,7 +86,7 @@ Boston, MA 02110-1301, USA.  */
 #define IDENT_ASM_OP "\t.ident\t"
 
 #undef  SET_ASM_OP
-#define SET_ASM_OP        "\t.set\t"
+#define SET_ASM_OP	"\t.set\t"
 
 /* Most svr4 assemblers want a .file directive at the beginning of
    their input file.  */
@@ -95,12 +95,12 @@ Boston, MA 02110-1301, USA.  */
 /* This is how to allocate empty space in some section.  The .zero
    pseudo-op is used for this on most svr4 assemblers.  */
 
-#define SKIP_ASM_OP        "\t.zero\t"
+#define SKIP_ASM_OP	"\t.zero\t"
 
 #undef  ASM_OUTPUT_SKIP
 #define ASM_OUTPUT_SKIP(FILE, SIZE) \
    fprintf ((FILE), "%s"HOST_WIDE_INT_PRINT_UNSIGNED"\n",\
-            SKIP_ASM_OP, (SIZE))
+	    SKIP_ASM_OP, (SIZE))
 
 /* This is how to store into the string LABEL
    the symbol_ref name of an internal numbered label where
@@ -111,11 +111,11 @@ Boston, MA 02110-1301, USA.  */
    with a period is not put into the linker symbol table by the assembler.  */
 
 #undef  ASM_GENERATE_INTERNAL_LABEL
-#define ASM_GENERATE_INTERNAL_LABEL(LABEL, PREFIX, NUM)                \
-  do                                                                \
-    {                                                                \
-      sprintf (LABEL, "*.%s%u", PREFIX, (unsigned) (NUM));        \
-    }                                                                \
+#define ASM_GENERATE_INTERNAL_LABEL(LABEL, PREFIX, NUM)		\
+  do								\
+    {								\
+      sprintf (LABEL, "*.%s%u", PREFIX, (unsigned) (NUM));	\
+    }								\
   while (0)
 
 /* Output the label which precedes a jumptable.  Note that for all svr4
@@ -135,19 +135,19 @@ Boston, MA 02110-1301, USA.  */
 #endif
 
 #undef  ASM_OUTPUT_CASE_LABEL
-#define ASM_OUTPUT_CASE_LABEL(FILE, PREFIX, NUM, JUMPTABLE)                \
-  do                                                                        \
-    {                                                                        \
-      ASM_OUTPUT_BEFORE_CASE_LABEL (FILE, PREFIX, NUM, JUMPTABLE)        \
-        (*targetm.asm_out.internal_label) (FILE, PREFIX, NUM);                        \
-    }                                                                        \
+#define ASM_OUTPUT_CASE_LABEL(FILE, PREFIX, NUM, JUMPTABLE)		\
+  do									\
+    {									\
+      ASM_OUTPUT_BEFORE_CASE_LABEL (FILE, PREFIX, NUM, JUMPTABLE)	\
+	(*targetm.asm_out.internal_label) (FILE, PREFIX, NUM);			\
+    }									\
   while (0)
 
 /* The standard SVR4 assembler seems to require that certain builtin
    library routines (e.g. .udiv) be explicitly declared as .globl
    in each assembly file where they are referenced.  */
 
-#define ASM_OUTPUT_EXTERNAL_LIBCALL(FILE, FUN)        \
+#define ASM_OUTPUT_EXTERNAL_LIBCALL(FILE, FUN)	\
   (*targetm.asm_out.globalize_label) (FILE, XSTR (FUN, 0))
 
 /* This says how to output assembler code to declare an
@@ -155,17 +155,17 @@ Boston, MA 02110-1301, USA.  */
    the linker seems to want the alignment of data objects
    to depend on their types.  We do exactly that here.  */
 
-#define COMMON_ASM_OP        "\t.comm\t"
+#define COMMON_ASM_OP	"\t.comm\t"
 
 #undef  ASM_OUTPUT_ALIGNED_COMMON
-#define ASM_OUTPUT_ALIGNED_COMMON(FILE, NAME, SIZE, ALIGN)                \
-  do                                                                        \
-    {                                                                        \
-      fprintf ((FILE), "%s", COMMON_ASM_OP);                                \
-      assemble_name ((FILE), (NAME));                                        \
-      fprintf ((FILE), ","HOST_WIDE_INT_PRINT_UNSIGNED",%u\n",                \
-               (SIZE), (ALIGN) / BITS_PER_UNIT);                        \
-    }                                                                        \
+#define ASM_OUTPUT_ALIGNED_COMMON(FILE, NAME, SIZE, ALIGN)		\
+  do									\
+    {									\
+      fprintf ((FILE), "%s", COMMON_ASM_OP);				\
+      assemble_name ((FILE), (NAME));					\
+      fprintf ((FILE), ","HOST_WIDE_INT_PRINT_UNSIGNED",%u\n",		\
+	       (SIZE), (ALIGN) / BITS_PER_UNIT);			\
+    }									\
   while (0)
 
 /* This says how to output assembler code to declare an
@@ -173,17 +173,17 @@ Boston, MA 02110-1301, USA.  */
    the linker seems to want the alignment of data objects
    to depend on their types.  We do exactly that here.  */
 
-#define LOCAL_ASM_OP        "\t.local\t"
+#define LOCAL_ASM_OP	"\t.local\t"
 
 #undef  ASM_OUTPUT_ALIGNED_LOCAL
-#define ASM_OUTPUT_ALIGNED_LOCAL(FILE, NAME, SIZE, ALIGN)        \
-  do                                                                \
-    {                                                                \
-      fprintf ((FILE), "%s", LOCAL_ASM_OP);                        \
-      assemble_name ((FILE), (NAME));                                \
-      fprintf ((FILE), "\n");                                        \
-      ASM_OUTPUT_ALIGNED_COMMON (FILE, NAME, SIZE, ALIGN);        \
-    }                                                                \
+#define ASM_OUTPUT_ALIGNED_LOCAL(FILE, NAME, SIZE, ALIGN)	\
+  do								\
+    {								\
+      fprintf ((FILE), "%s", LOCAL_ASM_OP);			\
+      assemble_name ((FILE), (NAME));				\
+      fprintf ((FILE), "\n");					\
+      ASM_OUTPUT_ALIGNED_COMMON (FILE, NAME, SIZE, ALIGN);	\
+    }								\
   while (0)
 
 /* This is the pseudo-op used to generate a contiguous sequence of byte
@@ -191,10 +191,10 @@ Boston, MA 02110-1301, USA.  */
    AUTOMATICALLY APPENDED.  This is the same for most svr4 assemblers.  */
 
 #undef  ASCII_DATA_ASM_OP
-#define ASCII_DATA_ASM_OP        "\t.ascii\t"
+#define ASCII_DATA_ASM_OP	"\t.ascii\t"
 
 /* Support a read-only data section.  */
-#define READONLY_DATA_SECTION_ASM_OP        "\t.section\t.rodata"
+#define READONLY_DATA_SECTION_ASM_OP	"\t.section\t.rodata"
 
 /* On svr4, we *do* have support for the .init and .fini sections, and we
    can put stuff in there to be executed before and after `main'.  We let
@@ -202,13 +202,13 @@ Boston, MA 02110-1301, USA.  */
    The definitions say how to change sections to the .init and .fini
    sections.  This is the same for all known svr4 assemblers.  */
 
-#define INIT_SECTION_ASM_OP        "\t.section\t.init"
-#define FINI_SECTION_ASM_OP        "\t.section\t.fini"
+#define INIT_SECTION_ASM_OP	"\t.section\t.init"
+#define FINI_SECTION_ASM_OP	"\t.section\t.fini"
 
 /* Output assembly directive to move to the beginning of current section.  */
 #ifdef HAVE_GAS_SUBSECTION_ORDERING
-# define ASM_SECTION_START_OP        "\t.subsection\t-1"
-# define ASM_OUTPUT_SECTION_START(FILE)        \
+# define ASM_SECTION_START_OP	"\t.subsection\t-1"
+# define ASM_OUTPUT_SECTION_START(FILE)	\
   fprintf ((FILE), "%s\n", ASM_SECTION_START_OP)
 #endif
 
@@ -219,7 +219,7 @@ Boston, MA 02110-1301, USA.  */
 
 #undef  TARGET_ASM_SELECT_RTX_SECTION
 #define TARGET_ASM_SELECT_RTX_SECTION default_elf_select_rtx_section
-#undef        TARGET_ASM_SELECT_SECTION
+#undef	TARGET_ASM_SELECT_SECTION
 #define TARGET_ASM_SELECT_SECTION default_elf_select_section
 #undef  TARGET_HAVE_SWITCHABLE_BSS_SECTIONS
 #define TARGET_HAVE_SWITCHABLE_BSS_SECTIONS true
@@ -230,18 +230,18 @@ Boston, MA 02110-1301, USA.  */
    different pseudo-op names for these, they may be overridden in the
    file which includes this one.  */
 
-#define TYPE_ASM_OP        "\t.type\t"
-#define SIZE_ASM_OP        "\t.size\t"
+#define TYPE_ASM_OP	"\t.type\t"
+#define SIZE_ASM_OP	"\t.size\t"
 
 /* This is how we tell the assembler that a symbol is weak.  */
 
-#define ASM_WEAKEN_LABEL(FILE, NAME)        \
-  do                                        \
-    {                                        \
-      fputs ("\t.weak\t", (FILE));        \
-      assemble_name ((FILE), (NAME));        \
-      fputc ('\n', (FILE));                \
-    }                                        \
+#define ASM_WEAKEN_LABEL(FILE, NAME)	\
+  do					\
+    {					\
+      fputs ("\t.weak\t", (FILE));	\
+      assemble_name ((FILE), (NAME));	\
+      fputc ('\n', (FILE));		\
+    }					\
   while (0)
 
 /* The following macro defines the format used to output the second
@@ -250,7 +250,7 @@ Boston, MA 02110-1301, USA.  */
    is just a default.  You may need to override it in your machine-
    specific tm.h file (depending upon the particulars of your assembler).  */
 
-#define TYPE_OPERAND_FMT        "@%s"
+#define TYPE_OPERAND_FMT	"@%s"
 
 /* Write the extra assembler code needed to declare a function's result.
    Most svr4 assemblers don't require any special declaration of the
@@ -270,36 +270,36 @@ Boston, MA 02110-1301, USA.  */
    function's return value.  We allow for that here.  */
 
 #ifndef ASM_DECLARE_FUNCTION_NAME
-#define ASM_DECLARE_FUNCTION_NAME(FILE, NAME, DECL)                \
-  do                                                                \
-    {                                                                \
-      ASM_OUTPUT_TYPE_DIRECTIVE (FILE, NAME, "function");        \
-      ASM_DECLARE_RESULT (FILE, DECL_RESULT (DECL));                \
-      ASM_OUTPUT_LABEL (FILE, NAME);                                \
-    }                                                                \
+#define ASM_DECLARE_FUNCTION_NAME(FILE, NAME, DECL)		\
+  do								\
+    {								\
+      ASM_OUTPUT_TYPE_DIRECTIVE (FILE, NAME, "function");	\
+      ASM_DECLARE_RESULT (FILE, DECL_RESULT (DECL));		\
+      ASM_OUTPUT_LABEL (FILE, NAME);				\
+    }								\
   while (0)
 #endif
 
 /* Write the extra assembler code needed to declare an object properly.  */
 
-#define ASM_DECLARE_OBJECT_NAME(FILE, NAME, DECL)                \
-  do                                                                \
-    {                                                                \
-      HOST_WIDE_INT size;                                        \
-                                                                \
-      ASM_OUTPUT_TYPE_DIRECTIVE (FILE, NAME, "object");                \
-                                                                \
-      size_directive_output = 0;                                \
-      if (!flag_inhibit_size_directive                                \
-          && (DECL) && DECL_SIZE (DECL))                        \
-        {                                                        \
-          size_directive_output = 1;                                \
-          size = int_size_in_bytes (TREE_TYPE (DECL));                \
-          ASM_OUTPUT_SIZE_DIRECTIVE (FILE, NAME, size);                \
-        }                                                        \
-                                                                \
-      ASM_OUTPUT_LABEL (FILE, NAME);                                \
-    }                                                                \
+#define ASM_DECLARE_OBJECT_NAME(FILE, NAME, DECL)		\
+  do								\
+    {								\
+      HOST_WIDE_INT size;					\
+								\
+      ASM_OUTPUT_TYPE_DIRECTIVE (FILE, NAME, "object");		\
+								\
+      size_directive_output = 0;				\
+      if (!flag_inhibit_size_directive				\
+	  && (DECL) && DECL_SIZE (DECL))			\
+	{							\
+	  size_directive_output = 1;				\
+	  size = int_size_in_bytes (TREE_TYPE (DECL));		\
+	  ASM_OUTPUT_SIZE_DIRECTIVE (FILE, NAME, size);		\
+	}							\
+								\
+      ASM_OUTPUT_LABEL (FILE, NAME);				\
+    }								\
   while (0)
 
 /* Output the size directive for a decl in rest_of_decl_compilation
@@ -310,32 +310,32 @@ Boston, MA 02110-1301, USA.  */
 
 #undef ASM_FINISH_DECLARE_OBJECT
 #define ASM_FINISH_DECLARE_OBJECT(FILE, DECL, TOP_LEVEL, AT_END)\
-  do                                                                \
-    {                                                                \
-      const char *name = XSTR (XEXP (DECL_RTL (DECL), 0), 0);        \
-      HOST_WIDE_INT size;                                        \
-                                                                \
-      if (!flag_inhibit_size_directive                                \
-          && DECL_SIZE (DECL)                                        \
-          && ! AT_END && TOP_LEVEL                                \
-          && DECL_INITIAL (DECL) == error_mark_node                \
-          && !size_directive_output)                                \
-        {                                                        \
-          size_directive_output = 1;                                \
-          size = int_size_in_bytes (TREE_TYPE (DECL));                \
-          ASM_OUTPUT_SIZE_DIRECTIVE (FILE, name, size);                \
-        }                                                        \
-    }                                                                \
+  do								\
+    {								\
+      const char *name = XSTR (XEXP (DECL_RTL (DECL), 0), 0);	\
+      HOST_WIDE_INT size;					\
+								\
+      if (!flag_inhibit_size_directive				\
+	  && DECL_SIZE (DECL)					\
+	  && ! AT_END && TOP_LEVEL				\
+	  && DECL_INITIAL (DECL) == error_mark_node		\
+	  && !size_directive_output)				\
+	{							\
+	  size_directive_output = 1;				\
+	  size = int_size_in_bytes (TREE_TYPE (DECL));		\
+	  ASM_OUTPUT_SIZE_DIRECTIVE (FILE, name, size);		\
+	}							\
+    }								\
   while (0)
 
 /* This is how to declare the size of a function.  */
 #ifndef ASM_DECLARE_FUNCTION_SIZE
-#define ASM_DECLARE_FUNCTION_SIZE(FILE, FNAME, DECL)                \
-  do                                                                \
-    {                                                                \
-      if (!flag_inhibit_size_directive)                                \
-        ASM_OUTPUT_MEASURED_SIZE (FILE, FNAME);                        \
-    }                                                                \
+#define ASM_DECLARE_FUNCTION_SIZE(FILE, FNAME, DECL)		\
+  do								\
+    {								\
+      if (!flag_inhibit_size_directive)				\
+	ASM_OUTPUT_MEASURED_SIZE (FILE, FNAME);			\
+    }								\
   while (0)
 #endif
 
@@ -375,9 +375,9 @@ Boston, MA 02110-1301, USA.  */
    should define this to zero.
 */
 
-#define STRING_LIMIT        ((unsigned) 256)
+#define STRING_LIMIT	((unsigned) 256)
 
-#define STRING_ASM_OP        "\t.string\t"
+#define STRING_ASM_OP	"\t.string\t"
 
 /* The routine used to output NUL terminated strings.  We use a special
    version of this for most svr4 targets because doing so makes the
@@ -386,36 +386,36 @@ Boston, MA 02110-1301, USA.  */
    (where the only alternative is to output character sequences as
    comma separated lists of numbers).  */
 
-#define ASM_OUTPUT_LIMITED_STRING(FILE, STR)                \
-  do                                                        \
-    {                                                        \
-      register const unsigned char *_limited_str =        \
-        (const unsigned char *) (STR);                        \
-      register unsigned ch;                                \
-                                                        \
-      fprintf ((FILE), "%s\"", STRING_ASM_OP);                \
-                                                        \
-      for (; (ch = *_limited_str); _limited_str++)        \
-        {                                                \
-          register int escape;                                \
-                                                        \
-          switch (escape = ESCAPES[ch])                        \
-            {                                                \
-            case 0:                                        \
-              putc (ch, (FILE));                        \
-              break;                                        \
-            case 1:                                        \
-              fprintf ((FILE), "\\%03o", ch);                \
-              break;                                        \
-            default:                                        \
-              putc ('\\', (FILE));                        \
-              putc (escape, (FILE));                        \
-              break;                                        \
-            }                                                \
-        }                                                \
-                                                        \
-      fprintf ((FILE), "\"\n");                                \
-    }                                                        \
+#define ASM_OUTPUT_LIMITED_STRING(FILE, STR)		\
+  do							\
+    {							\
+      register const unsigned char *_limited_str =	\
+	(const unsigned char *) (STR);			\
+      register unsigned ch;				\
+							\
+      fprintf ((FILE), "%s\"", STRING_ASM_OP);		\
+							\
+      for (; (ch = *_limited_str); _limited_str++)	\
+        {						\
+	  register int escape;				\
+							\
+	  switch (escape = ESCAPES[ch])			\
+	    {						\
+	    case 0:					\
+	      putc (ch, (FILE));			\
+	      break;					\
+	    case 1:					\
+	      fprintf ((FILE), "\\%03o", ch);		\
+	      break;					\
+	    default:					\
+	      putc ('\\', (FILE));			\
+	      putc (escape, (FILE));			\
+	      break;					\
+	    }						\
+        }						\
+							\
+      fprintf ((FILE), "\"\n");				\
+    }							\
   while (0)
 
 /* The routine used to output sequences of byte values.  We use a special
@@ -426,73 +426,73 @@ Boston, MA 02110-1301, USA.  */
    STRING_LIMIT) we output those using ASM_OUTPUT_LIMITED_STRING.  */
 
 #undef  ASM_OUTPUT_ASCII
-#define ASM_OUTPUT_ASCII(FILE, STR, LENGTH)                                \
-  do                                                                        \
-    {                                                                        \
-      const unsigned char *_ascii_bytes =                                \
-        (const unsigned char *) (STR);                                        \
-      const unsigned char *limit = _ascii_bytes + (LENGTH);                \
-      const unsigned char *last_null = NULL;                                \
-      unsigned bytes_in_chunk = 0;                                        \
-                                                                        \
-      for (; _ascii_bytes < limit; _ascii_bytes++)                        \
-        {                                                                \
-          const unsigned char *p;                                        \
-                                                                        \
-          if (bytes_in_chunk >= 60)                                        \
-            {                                                                \
-              fprintf ((FILE), "\"\n");                                        \
-              bytes_in_chunk = 0;                                        \
-            }                                                                \
-                                                                        \
-          if (_ascii_bytes > last_null)                                        \
-            {                                                                \
-              for (p = _ascii_bytes; p < limit && *p != '\0'; p++)        \
-                continue;                                                \
-              last_null = p;                                                \
-            }                                                                \
-          else                                                                \
-            p = last_null;                                                \
-                                                                        \
-          if (p < limit && (p - _ascii_bytes) <= (long)STRING_LIMIT)        \
-            {                                                                \
-              if (bytes_in_chunk > 0)                                        \
-                {                                                        \
-                  fprintf ((FILE), "\"\n");                                \
-                  bytes_in_chunk = 0;                                        \
-                }                                                        \
-                                                                        \
-              ASM_OUTPUT_LIMITED_STRING ((FILE), _ascii_bytes);                \
-              _ascii_bytes = p;                                                \
-            }                                                                \
-          else                                                                \
-            {                                                                \
-              register int escape;                                        \
-              register unsigned ch;                                        \
-                                                                        \
-              if (bytes_in_chunk == 0)                                        \
-                fprintf ((FILE), "%s\"", ASCII_DATA_ASM_OP);                \
-                                                                        \
-              switch (escape = ESCAPES[ch = *_ascii_bytes])                \
-                {                                                        \
-                case 0:                                                        \
-                  putc (ch, (FILE));                                        \
-                  bytes_in_chunk++;                                        \
-                  break;                                                \
-                case 1:                                                        \
-                  fprintf ((FILE), "\\%03o", ch);                        \
-                  bytes_in_chunk += 4;                                        \
-                  break;                                                \
-                default:                                                \
-                  putc ('\\', (FILE));                                        \
-                  putc (escape, (FILE));                                \
-                  bytes_in_chunk += 2;                                        \
-                  break;                                                \
-                }                                                        \
-            }                                                                \
-        }                                                                \
-                                                                        \
-      if (bytes_in_chunk > 0)                                                \
-        fprintf ((FILE), "\"\n");                                        \
-    }                                                                        \
+#define ASM_OUTPUT_ASCII(FILE, STR, LENGTH)				\
+  do									\
+    {									\
+      const unsigned char *_ascii_bytes =				\
+	(const unsigned char *) (STR);					\
+      const unsigned char *limit = _ascii_bytes + (LENGTH);		\
+      const unsigned char *last_null = NULL;				\
+      unsigned bytes_in_chunk = 0;					\
+									\
+      for (; _ascii_bytes < limit; _ascii_bytes++)			\
+        {								\
+	  const unsigned char *p;					\
+									\
+	  if (bytes_in_chunk >= 60)					\
+	    {								\
+	      fprintf ((FILE), "\"\n");					\
+	      bytes_in_chunk = 0;					\
+	    }								\
+									\
+	  if (_ascii_bytes > last_null)					\
+	    {								\
+	      for (p = _ascii_bytes; p < limit && *p != '\0'; p++)	\
+		continue;						\
+	      last_null = p;						\
+	    }								\
+	  else								\
+	    p = last_null;						\
+									\
+	  if (p < limit && (p - _ascii_bytes) <= (long)STRING_LIMIT)	\
+	    {								\
+	      if (bytes_in_chunk > 0)					\
+		{							\
+		  fprintf ((FILE), "\"\n");				\
+		  bytes_in_chunk = 0;					\
+		}							\
+									\
+	      ASM_OUTPUT_LIMITED_STRING ((FILE), _ascii_bytes);		\
+	      _ascii_bytes = p;						\
+	    }								\
+	  else								\
+	    {								\
+	      register int escape;					\
+	      register unsigned ch;					\
+									\
+	      if (bytes_in_chunk == 0)					\
+		fprintf ((FILE), "%s\"", ASCII_DATA_ASM_OP);		\
+									\
+	      switch (escape = ESCAPES[ch = *_ascii_bytes])		\
+		{							\
+		case 0:							\
+		  putc (ch, (FILE));					\
+		  bytes_in_chunk++;					\
+		  break;						\
+		case 1:							\
+		  fprintf ((FILE), "\\%03o", ch);			\
+		  bytes_in_chunk += 4;					\
+		  break;						\
+		default:						\
+		  putc ('\\', (FILE));					\
+		  putc (escape, (FILE));				\
+		  bytes_in_chunk += 2;					\
+		  break;						\
+		}							\
+	    }								\
+	}								\
+									\
+      if (bytes_in_chunk > 0)						\
+        fprintf ((FILE), "\"\n");					\
+    }									\
   while (0)

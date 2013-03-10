@@ -213,7 +213,7 @@ cgraph_node (tree decl)
     {
       node = *slot;
       if (!node->master_clone)
-        node->master_clone = node;
+	node->master_clone = node;
       return node;
     }
 
@@ -265,11 +265,11 @@ decl_assembler_name_equal (tree decl, tree asmname)
       size_t ulp_len = strlen (user_label_prefix);
 
       if (ulp_len == 0)
-        ;
+	;
       else if (strncmp (decl_str, user_label_prefix, ulp_len) == 0)
-        decl_str += ulp_len;
+	decl_str += ulp_len;
       else
-        return false;
+	return false;
 
       return strcmp (decl_str, IDENTIFIER_POINTER (asmname)) == 0;
     }
@@ -318,7 +318,7 @@ cgraph_edge (struct cgraph_node *node, tree call_stmt)
 
   if (node->call_site_hash)
     return htab_find_with_hash (node->call_site_hash, call_stmt,
-                                      htab_hash_pointer (call_stmt));
+      				htab_hash_pointer (call_stmt));
 
   /* This loop may turn out to be performance problem.  In such case adding
      hashtables into call nodes with very many edges is probably best
@@ -328,22 +328,22 @@ cgraph_edge (struct cgraph_node *node, tree call_stmt)
   for (e = node->callees; e; e= e->next_callee)
     {
       if (e->call_stmt == call_stmt)
-        break;
+	break;
       n++;
     }
   if (n > 100)
     {
       node->call_site_hash = htab_create_ggc (120, edge_hash, edge_eq, NULL);
       for (e2 = node->callees; e2; e2 = e2->next_callee)
-        {
+	{
           void **slot;
-          slot = htab_find_slot_with_hash (node->call_site_hash,
-                                           e2->call_stmt,
-                                           htab_hash_pointer (e2->call_stmt),
-                                           INSERT);
-          gcc_assert (!*slot);
-          *slot = e2;
-        }
+	  slot = htab_find_slot_with_hash (node->call_site_hash,
+					   e2->call_stmt,
+					   htab_hash_pointer (e2->call_stmt),
+					   INSERT);
+	  gcc_assert (!*slot);
+	  *slot = e2;
+	}
     }
   return e;
 }
@@ -355,17 +355,17 @@ cgraph_set_call_stmt (struct cgraph_edge *e, tree new_stmt)
   if (e->caller->call_site_hash)
     {
       htab_remove_elt_with_hash (e->caller->call_site_hash,
-                                 e->call_stmt,
-                                 htab_hash_pointer (e->call_stmt));
+				 e->call_stmt,
+				 htab_hash_pointer (e->call_stmt));
     }
   e->call_stmt = new_stmt;
   if (e->caller->call_site_hash)
     {
       void **slot;
       slot = htab_find_slot_with_hash (e->caller->call_site_hash,
-                                       e->call_stmt,
-                                       htab_hash_pointer
-                                       (e->call_stmt), INSERT);
+				       e->call_stmt,
+				       htab_hash_pointer
+				       (e->call_stmt), INSERT);
       gcc_assert (!*slot);
       *slot = e;
     }
@@ -375,7 +375,7 @@ cgraph_set_call_stmt (struct cgraph_edge *e, tree new_stmt)
 
 struct cgraph_edge *
 cgraph_create_edge (struct cgraph_node *caller, struct cgraph_node *callee,
-                    tree call_stmt, gcov_type count, int nest)
+		    tree call_stmt, gcov_type count, int nest)
 {
   struct cgraph_edge *edge = GGC_NEW (struct cgraph_edge);
 #ifdef ENABLE_CHECKING
@@ -391,7 +391,7 @@ cgraph_create_edge (struct cgraph_node *caller, struct cgraph_node *callee,
     edge->inline_failed = N_("function body not available");
   else if (callee->local.redefined_extern_inline)
     edge->inline_failed = N_("redefined extern inline functions are not "
-                             "considered for inlining");
+			     "considered for inlining");
   else if (callee->local.inlinable)
     edge->inline_failed = N_("function not considered for inlining");
   else
@@ -418,10 +418,10 @@ cgraph_create_edge (struct cgraph_node *caller, struct cgraph_node *callee,
     {
       void **slot;
       slot = htab_find_slot_with_hash (caller->call_site_hash,
-                                       edge->call_stmt,
-                                       htab_hash_pointer
-                                         (edge->call_stmt),
-                                       INSERT);
+				       edge->call_stmt,
+				       htab_hash_pointer
+					 (edge->call_stmt),
+				       INSERT);
       gcc_assert (!*slot);
       *slot = edge;
     }
@@ -454,8 +454,8 @@ cgraph_edge_remove_caller (struct cgraph_edge *e)
     e->caller->callees = e->next_callee;
   if (e->caller->call_site_hash)
     htab_remove_elt_with_hash (e->caller->call_site_hash,
-                               e->call_stmt,
-                                 htab_hash_pointer (e->call_stmt));
+			       e->call_stmt,
+	  		       htab_hash_pointer (e->call_stmt));
 }
 
 /* Remove the edge E in the cgraph.  */
@@ -543,7 +543,7 @@ cgraph_remove_node (struct cgraph_node *node)
       struct cgraph_node **node2 = &node->origin->nested;
 
       while (*node2 != node)
-        node2 = &(*node2)->next_nested;
+	node2 = &(*node2)->next_nested;
       *node2 = node->next_nested;
     }
   if (node->previous)
@@ -559,27 +559,27 @@ cgraph_remove_node (struct cgraph_node *node)
     {
       if (node->next_clone)
       {
-        struct cgraph_node *new_node = node->next_clone;
-        struct cgraph_node *n;
+	struct cgraph_node *new_node = node->next_clone;
+	struct cgraph_node *n;
 
-        /* Make the next clone be the master clone */
-        for (n = new_node; n; n = n->next_clone)
-          n->master_clone = new_node;
+	/* Make the next clone be the master clone */
+	for (n = new_node; n; n = n->next_clone)
+	  n->master_clone = new_node;
 
-        *slot = new_node;
-        node->next_clone->prev_clone = NULL;
+	*slot = new_node;
+	node->next_clone->prev_clone = NULL;
       }
       else
-        {
-          htab_clear_slot (cgraph_hash, slot);
-          kill_body = true;
-        }
+	{
+	  htab_clear_slot (cgraph_hash, slot);
+	  kill_body = true;
+	}
     }
   else
     {
       node->prev_clone->next_clone = node->next_clone;
       if (node->next_clone)
-        node->next_clone->prev_clone = node->prev_clone;
+	node->next_clone->prev_clone = node->prev_clone;
     }
 
   /* While all the clones are removed after being proceeded, the function
@@ -590,9 +590,9 @@ cgraph_remove_node (struct cgraph_node *node)
     {
       struct cgraph_node *n = (struct cgraph_node *) *slot;
       if (!n->next_clone && !n->global.inlined_to
-          && (cgraph_global_info_ready
-              && (TREE_ASM_WRITTEN (n->decl) || DECL_EXTERNAL (n->decl))))
-        kill_body = true;
+	  && (cgraph_global_info_ready
+	      && (TREE_ASM_WRITTEN (n->decl) || DECL_EXTERNAL (n->decl))))
+	kill_body = true;
     }
 
   if (kill_body && flag_unit_at_a_time)
@@ -702,16 +702,16 @@ dump_cgraph_node (FILE *f, struct cgraph_node *node)
   fprintf (f, "%s/%i:", cgraph_node_name (node), node->uid);
   if (node->global.inlined_to)
     fprintf (f, " (inline copy in %s/%i)",
-             cgraph_node_name (node->global.inlined_to),
-             node->global.inlined_to->uid);
+	     cgraph_node_name (node->global.inlined_to),
+	     node->global.inlined_to->uid);
   if (cgraph_function_flags_ready)
     fprintf (f, " availability:%s",
-             availability_names [cgraph_function_body_availability (node)]);
+	     availability_names [cgraph_function_body_availability (node)]);
   if (node->master_clone && node->master_clone->uid != node->uid)
     fprintf (f, "(%i)", node->master_clone->uid);
   if (node->count)
     fprintf (f, " executed "HOST_WIDEST_INT_PRINT_DEC"x",
-             (HOST_WIDEST_INT)node->count);
+	     (HOST_WIDEST_INT)node->count);
   if (node->local.self_insns)
     fprintf (f, " %i insns", node->local.self_insns);
   if (node->global.insns && node->global.insns != node->local.self_insns)
@@ -745,26 +745,26 @@ dump_cgraph_node (FILE *f, struct cgraph_node *node)
   for (edge = node->callers; edge; edge = edge->next_caller)
     {
       fprintf (f, "%s/%i ", cgraph_node_name (edge->caller),
-               edge->caller->uid);
+	       edge->caller->uid);
       if (edge->count)
-        fprintf (f, "("HOST_WIDEST_INT_PRINT_DEC"x) ",
-                 (HOST_WIDEST_INT)edge->count);
+	fprintf (f, "("HOST_WIDEST_INT_PRINT_DEC"x) ",
+		 (HOST_WIDEST_INT)edge->count);
       if (!edge->inline_failed)
-        fprintf(f, "(inlined) ");
+	fprintf(f, "(inlined) ");
     }
 
   fprintf (f, "\n  calls: ");
   for (edge = node->callees; edge; edge = edge->next_callee)
     {
       fprintf (f, "%s/%i ", cgraph_node_name (edge->callee),
-               edge->callee->uid);
+	       edge->callee->uid);
       if (!edge->inline_failed)
-        fprintf(f, "(inlined) ");
+	fprintf(f, "(inlined) ");
       if (edge->count)
-        fprintf (f, "("HOST_WIDEST_INT_PRINT_DEC"x) ",
-                 (HOST_WIDEST_INT)edge->count);
+	fprintf (f, "("HOST_WIDEST_INT_PRINT_DEC"x) ",
+		 (HOST_WIDEST_INT)edge->count);
       if (edge->loop_nest)
-        fprintf (f, "(nested in %i loops) ", edge->loop_nest);
+	fprintf (f, "(nested in %i loops) ", edge->loop_nest);
     }
   fprintf (f, "\n");
 }
@@ -787,9 +787,9 @@ dump_cgraph_varpool_node (FILE *f, struct cgraph_varpool_node *node)
 {
   fprintf (f, "%s:", cgraph_varpool_node_name (node));
   fprintf (f, " availability:%s",
-           cgraph_function_flags_ready
-           ? availability_names[cgraph_variable_initializer_availability (node)]
-           : "not-ready");
+	   cgraph_function_flags_ready
+	   ? availability_names[cgraph_variable_initializer_availability (node)]
+	   : "not-ready");
   if (DECL_INITIAL (node->decl))
     fprintf (f, " initialized");
   if (node->needed)
@@ -848,7 +848,7 @@ cgraph_varpool_node (tree decl)
 
   if (!cgraph_varpool_hash)
     cgraph_varpool_hash = htab_create_ggc (10, hash_varpool_node,
-                                           eq_varpool_node, NULL);
+					   eq_varpool_node, NULL);
   key.decl = decl;
   slot = (struct cgraph_varpool_node **)
     htab_find_slot (cgraph_varpool_hash, &key, INSERT);
@@ -986,7 +986,7 @@ cgraph_varpool_finalize_decl (tree decl)
   if (node->finalized)
     {
       if (cgraph_global_info_ready || (!flag_unit_at_a_time && !flag_openmp))
-        cgraph_varpool_assemble_pending_decls ();
+	cgraph_varpool_assemble_pending_decls ();
       return;
     }
   if (node->needed)
@@ -1035,21 +1035,21 @@ cgraph_function_possibly_inlined_p (tree decl)
 /* Create clone of E in the node N represented by CALL_EXPR the callgraph.  */
 struct cgraph_edge *
 cgraph_clone_edge (struct cgraph_edge *e, struct cgraph_node *n,
-                   tree call_stmt, gcov_type count_scale, int loop_nest,
-                   bool update_original)
+		   tree call_stmt, gcov_type count_scale, int loop_nest,
+		   bool update_original)
 {
   struct cgraph_edge *new;
 
   new = cgraph_create_edge (n, e->callee, call_stmt,
-                            e->count * count_scale / REG_BR_PROB_BASE,
-                            e->loop_nest + loop_nest);
+			    e->count * count_scale / REG_BR_PROB_BASE,
+			    e->loop_nest + loop_nest);
 
   new->inline_failed = e->inline_failed;
   if (update_original)
     {
       e->count -= new->count;
       if (e->count < 0)
-        e->count = 0;
+	e->count = 0;
     }
   return new;
 }
@@ -1062,7 +1062,7 @@ cgraph_clone_edge (struct cgraph_edge *e, struct cgraph_node *n,
    by node.  */
 struct cgraph_node *
 cgraph_clone_node (struct cgraph_node *n, gcov_type count, int loop_nest,
-                   bool update_original)
+		   bool update_original)
 {
   struct cgraph_node *new = cgraph_create_node ();
   struct cgraph_edge *e;
@@ -1089,12 +1089,12 @@ cgraph_clone_node (struct cgraph_node *n, gcov_type count, int loop_nest,
     {
       n->count -= count;
       if (n->count < 0)
-        n->count = 0;
+	n->count = 0;
     }
 
   for (e = n->callees;e; e=e->next_callee)
     cgraph_clone_edge (e, new, e->call_stmt, count_scale, loop_nest,
-                       update_original);
+		       update_original);
 
   new->next_clone = n->next_clone;
   new->prev_clone = n;
@@ -1170,7 +1170,7 @@ cgraph_function_body_availability (struct cgraph_node *node)
      good optimization is what this optimization is about.  */
 
   else if (!(*targetm.binds_local_p) (node->decl)
-           && !DECL_COMDAT (node->decl) && !DECL_EXTERNAL (node->decl))
+	   && !DECL_COMDAT (node->decl) && !DECL_EXTERNAL (node->decl))
     avail = AVAIL_OVERWRITABLE;
   else avail = AVAIL_AVAILABLE;
 

@@ -40,7 +40,7 @@
    program understand `configure --with-gnu-libc' and omit the object
    files, it is simpler to just do this in the source for each such file.  */
 
-#include <stdio.h>                /* Random thing to get __GNU_LIBRARY__.  */
+#include <stdio.h>		/* Random thing to get __GNU_LIBRARY__.  */
 #if !defined (_LIBC) && defined (__GNU_LIBRARY__) && __GNU_LIBRARY__ > 1
 #include <gnu-versions.h>
 #if _GNU_OBSTACK_INTERFACE_VERSION == OBSTACK_INTERFACE_VERSION
@@ -150,16 +150,16 @@ _obstack_begin (struct obstack *h, int size, int alignment,
     /* Default size is what GNU malloc can fit in a 4096-byte block.  */
     {
       /* 12 is sizeof (mhead) and 4 is EXTRA from GNU malloc.
-         Use the values for range checking, because if range checking is off,
-         the extra bytes won't be missed terribly, but if range checking is on
-         and we used a larger request, a whole extra 4096 bytes would be
-         allocated.
+	 Use the values for range checking, because if range checking is off,
+	 the extra bytes won't be missed terribly, but if range checking is on
+	 and we used a larger request, a whole extra 4096 bytes would be
+	 allocated.
 
-         These number are irrelevant to the new GNU malloc.  I suspect it is
-         less sensitive to the size of the request.  */
+	 These number are irrelevant to the new GNU malloc.  I suspect it is
+	 less sensitive to the size of the request.  */
       int extra = ((((12 + DEFAULT_ROUNDING - 1) & ~(DEFAULT_ROUNDING - 1))
-                    + 4 + DEFAULT_ROUNDING - 1)
-                   & ~(DEFAULT_ROUNDING - 1));
+		    + 4 + DEFAULT_ROUNDING - 1)
+		   & ~(DEFAULT_ROUNDING - 1));
       size = 4096 - extra;
     }
 
@@ -195,16 +195,16 @@ _obstack_begin_1 (struct obstack *h, int size, int alignment,
     /* Default size is what GNU malloc can fit in a 4096-byte block.  */
     {
       /* 12 is sizeof (mhead) and 4 is EXTRA from GNU malloc.
-         Use the values for range checking, because if range checking is off,
-         the extra bytes won't be missed terribly, but if range checking is on
-         and we used a larger request, a whole extra 4096 bytes would be
-         allocated.
+	 Use the values for range checking, because if range checking is off,
+	 the extra bytes won't be missed terribly, but if range checking is on
+	 and we used a larger request, a whole extra 4096 bytes would be
+	 allocated.
 
-         These number are irrelevant to the new GNU malloc.  I suspect it is
-         less sensitive to the size of the request.  */
+	 These number are irrelevant to the new GNU malloc.  I suspect it is
+	 less sensitive to the size of the request.  */
       int extra = ((((12 + DEFAULT_ROUNDING - 1) & ~(DEFAULT_ROUNDING - 1))
-                    + 4 + DEFAULT_ROUNDING - 1)
-                   & ~(DEFAULT_ROUNDING - 1));
+		    + 4 + DEFAULT_ROUNDING - 1)
+		   & ~(DEFAULT_ROUNDING - 1));
       size = 4096 - extra;
     }
 
@@ -239,7 +239,7 @@ _obstack_newchunk (struct obstack *h, int length)
 {
   register struct _obstack_chunk *old_chunk = h->chunk;
   register struct _obstack_chunk *new_chunk;
-  register long        new_size;
+  register long	new_size;
   register long obj_size = h->next_free - h->object_base;
   register long i;
   long already;
@@ -263,12 +263,12 @@ _obstack_newchunk (struct obstack *h, int length)
   if (h->alignment_mask + 1 >= DEFAULT_ALIGNMENT)
     {
       for (i = obj_size / sizeof (COPYING_UNIT) - 1;
-           i >= 0; i--)
-        ((COPYING_UNIT *)new_chunk->contents)[i]
-          = ((COPYING_UNIT *)h->object_base)[i];
+	   i >= 0; i--)
+	((COPYING_UNIT *)new_chunk->contents)[i]
+	  = ((COPYING_UNIT *)h->object_base)[i];
       /* We used to copy the odd few remaining bytes as one extra COPYING_UNIT,
-         but that can cross a page boundary on a machine
-         which does not do strict alignment for COPYING_UNITS.  */
+	 but that can cross a page boundary on a machine
+	 which does not do strict alignment for COPYING_UNITS.  */
       already = obj_size / sizeof (COPYING_UNIT) * sizeof (COPYING_UNIT);
     }
   else
@@ -303,8 +303,8 @@ int _obstack_allocated_p (struct obstack *h, POINTER obj);
 int
 _obstack_allocated_p (struct obstack *h, POINTER obj)
 {
-  register struct _obstack_chunk *lp;        /* below addr of any objects in this chunk */
-  register struct _obstack_chunk *plp;        /* point to previous chunk if any */
+  register struct _obstack_chunk *lp;	/* below addr of any objects in this chunk */
+  register struct _obstack_chunk *plp;	/* point to previous chunk if any */
 
   lp = (h)->chunk;
   /* We use >= rather than > since the object cannot be exactly at
@@ -329,8 +329,8 @@ _obstack_allocated_p (struct obstack *h, POINTER obj)
 void
 _obstack_free (struct obstack *h, POINTER obj)
 {
-  register struct _obstack_chunk *lp;        /* below addr of any objects in this chunk */
-  register struct _obstack_chunk *plp;        /* point to previous chunk if any */
+  register struct _obstack_chunk *lp;	/* below addr of any objects in this chunk */
+  register struct _obstack_chunk *plp;	/* point to previous chunk if any */
 
   lp = h->chunk;
   /* We use >= because there cannot be an object at the beginning of a chunk.
@@ -342,7 +342,7 @@ _obstack_free (struct obstack *h, POINTER obj)
       CALL_FREEFUN (h, lp);
       lp = plp;
       /* If we switch chunks, we can't tell whether the new current
-         chunk contains an empty object, so assume that it may.  */
+	 chunk contains an empty object, so assume that it may.  */
       h->maybe_empty_object = 1;
     }
   if (lp)
@@ -361,8 +361,8 @@ _obstack_free (struct obstack *h, POINTER obj)
 void
 obstack_free (struct obstack *h, POINTER obj)
 {
-  register struct _obstack_chunk *lp;        /* below addr of any objects in this chunk */
-  register struct _obstack_chunk *plp;        /* point to previous chunk if any */
+  register struct _obstack_chunk *lp;	/* below addr of any objects in this chunk */
+  register struct _obstack_chunk *plp;	/* point to previous chunk if any */
 
   lp = h->chunk;
   /* We use >= because there cannot be an object at the beginning of a chunk.
@@ -374,7 +374,7 @@ obstack_free (struct obstack *h, POINTER obj)
       CALL_FREEFUN (h, lp);
       lp = plp;
       /* If we switch chunks, we can't tell whether the new current
-         chunk contains an empty object, so assume that it may.  */
+	 chunk contains an empty object, so assume that it may.  */
       h->maybe_empty_object = 1;
     }
   if (lp)
@@ -507,4 +507,4 @@ POINTER (obstack_copy0) (struct obstack *obstack, POINTER pointer, int length)
 
 #endif /* 0 */
 
-#endif        /* !ELIDE_CODE */
+#endif	/* !ELIDE_CODE */

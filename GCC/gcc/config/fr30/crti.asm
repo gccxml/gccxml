@@ -37,38 +37,38 @@
 # .init sections.  Users may put any desired instructions in those
 # sections.
 
-        .file                "crti.asm"
+	.file		"crti.asm"
 
-        .section        ".init"
-        .global        _init
-        .type        _init,#function
-        .align        4
+	.section	".init"
+	.global	_init
+	.type	_init,#function
+	.align	4
 _init:
-        st        rp, @-r15
-        enter        #4
+	st	rp, @-r15
+	enter	#4
 
-        # These nops are here to align the end of this code with a 16 byte
-        # boundary.  The linker will start inserting code into the .init
-        # section at such a boundary.
-        
-        nop
-        nop
-        nop
-        nop
-        nop
-        nop
+	# These nops are here to align the end of this code with a 16 byte
+	# boundary.  The linker will start inserting code into the .init
+	# section at such a boundary.
+	
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
 
-        
-        .section        ".fini"
-        .global        _fini
-        .type        _fini,#function
-        .align        4
+	
+	.section	".fini"
+	.global	_fini
+	.type	_fini,#function
+	.align	4
 _fini:
-        st        rp, @-r15
-        enter        #4
-        nop
-        nop
-        nop
-        nop
-        nop
-        nop
+	st	rp, @-r15
+	enter	#4
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop

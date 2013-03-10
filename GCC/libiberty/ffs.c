@@ -19,7 +19,7 @@ ffs (register int valu)
     return 0;
 
   for (bit = 1; !(valu & 1); bit++)
-          valu >>= 1;
+  	valu >>= 1;
 
   return bit;
 }

@@ -30,16 +30,16 @@ Boston, MA 02110-1301, USA.  */
 #define CPP_CPU64_DEFAULT_SPEC \
   "-D__sparc64__ -D__sparc_v9__ -D__sparcv9 -D__arch64__"
 
-#define LINK_SPEC "%(link_arch)                                                \
-  %{!mno-relax:%{!r:-relax}}                                                \
-  %{p:%nconsider using `-pg' instead of `-p' with gprof(1)}                \
-  %{assert*} %{R*} %{rpath*} %{defsym*}                                        \
-  %{shared:-Bshareable %{h*} %{soname*}}                                \
-  %{symbolic:-Bsymbolic}                                                \
-  %{!shared:                                                                \
-    %{!static:                                                                \
-      %{rdynamic:-export-dynamic}                                        \
-      %{!dynamic-linker:-dynamic-linker %(fbsd_dynamic_linker) }}        \
+#define LINK_SPEC "%(link_arch)						\
+  %{!mno-relax:%{!r:-relax}}						\
+  %{p:%nconsider using `-pg' instead of `-p' with gprof(1)}		\
+  %{assert*} %{R*} %{rpath*} %{defsym*}					\
+  %{shared:-Bshareable %{h*} %{soname*}}				\
+  %{symbolic:-Bsymbolic}						\
+  %{!shared:								\
+    %{!static:								\
+      %{rdynamic:-export-dynamic}					\
+      %{!dynamic-linker:-dynamic-linker %(fbsd_dynamic_linker) }}	\
     %{static:-Bstatic}}"
 
 
@@ -74,7 +74,7 @@ Boston, MA 02110-1301, USA.  */
 #undef  TARGET_VERSION
 #define TARGET_VERSION fprintf (stderr, " (FreeBSD/sparc64 ELF)");
 
-#define TARGET_ELF                1
+#define TARGET_ELF		1
 
 /* XXX */
 /* A 64 bit v9 compiler with stack-bias,
@@ -88,37 +88,37 @@ Boston, MA 02110-1301, USA.  */
 
 /* The default code model.  */
 #undef  SPARC_DEFAULT_CMODEL
-#define SPARC_DEFAULT_CMODEL        CM_MEDLOW
+#define SPARC_DEFAULT_CMODEL	CM_MEDLOW
 
-#define ENABLE_EXECUTE_STACK                                                \
-  static int need_enable_exec_stack;                                        \
-  static void check_enabling(void) __attribute__ ((constructor));        \
-  static void check_enabling(void)                                        \
-  {                                                                        \
+#define ENABLE_EXECUTE_STACK						\
+  static int need_enable_exec_stack;					\
+  static void check_enabling(void) __attribute__ ((constructor));	\
+  static void check_enabling(void)					\
+  {									\
     extern int sysctlbyname(const char *, void *, size_t *, void *, size_t);\
-    int prot = 0;                                                        \
-    size_t len = sizeof(prot);                                                \
-                                                                        \
-    sysctlbyname ("kern.stackprot", &prot, &len, NULL, 0);                \
-    if (prot != 7)                                                        \
-      need_enable_exec_stack = 1;                                        \
-  }                                                                        \
-  extern void __enable_execute_stack (void *);                                \
-  void __enable_execute_stack (void *addr)                                \
-  {                                                                        \
-    if (!need_enable_exec_stack)                                        \
-      return;                                                                \
-    else {                                                                \
-      /* 7 is PROT_READ | PROT_WRITE | PROT_EXEC */                         \
-      if (mprotect (addr, TRAMPOLINE_SIZE, 7) < 0)                        \
-        perror ("mprotect of trampoline code");                                \
-    }                                                                        \
+    int prot = 0;							\
+    size_t len = sizeof(prot);						\
+									\
+    sysctlbyname ("kern.stackprot", &prot, &len, NULL, 0);		\
+    if (prot != 7)							\
+      need_enable_exec_stack = 1;					\
+  }									\
+  extern void __enable_execute_stack (void *);				\
+  void __enable_execute_stack (void *addr)				\
+  {									\
+    if (!need_enable_exec_stack)					\
+      return;								\
+    else {								\
+      /* 7 is PROT_READ | PROT_WRITE | PROT_EXEC */ 			\
+      if (mprotect (addr, TRAMPOLINE_SIZE, 7) < 0)			\
+        perror ("mprotect of trampoline code");				\
+    }									\
   }
 
 
 /************************[  Assembler stuff  ]********************************/
 
-#undef        LOCAL_LABEL_PREFIX
+#undef	LOCAL_LABEL_PREFIX
 #define LOCAL_LABEL_PREFIX  "."
 
 /* XXX2 */
@@ -128,7 +128,7 @@ Boston, MA 02110-1301, USA.  */
    This is suitable for output with `assemble_name'.  */
 
 #undef  ASM_GENERATE_INTERNAL_LABEL
-#define ASM_GENERATE_INTERNAL_LABEL(LABEL,PREFIX,NUM)                        \
+#define ASM_GENERATE_INTERNAL_LABEL(LABEL,PREFIX,NUM)			\
   sprintf (LABEL, "*.L%s%lu", PREFIX, (unsigned long)(NUM))
 
 
@@ -138,7 +138,7 @@ Boston, MA 02110-1301, USA.  */
    continuation back on).  */
 
 #undef  DBX_CONTIN_CHAR
-#define DBX_CONTIN_CHAR        '?'
+#define DBX_CONTIN_CHAR	'?'
 
 /* DWARF bits.  */
 
@@ -150,8 +150,8 @@ Boston, MA 02110-1301, USA.  */
 /* #define DWARF_OFFSET_SIZE PTR_SIZE */
 
 #undef ENDFILE_SPEC
-#define ENDFILE_SPEC                                                \
-  "%{ffast-math|funsafe-math-optimizations:crtfastmath.o%s} "        \
+#define ENDFILE_SPEC						\
+  "%{ffast-math|funsafe-math-optimizations:crtfastmath.o%s} "	\
   FBSD_ENDFILE_SPEC
 
 /* We use GNU ld so undefine this so that attribute((init_priority)) works.  */

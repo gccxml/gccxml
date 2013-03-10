@@ -56,7 +56,7 @@ start_fct (FILE *fp)
     case vcg:
       fprintf (fp, "\
 graph: { title: \"%s\"\nfolding: 1\nhidden: 2\nnode: { title: \"%s.0\" }\n",
-               current_function_name (), current_function_name ());
+	       current_function_name (), current_function_name ());
       break;
     case no_graph:
       break;
@@ -76,7 +76,7 @@ start_bb (FILE *fp, int bb)
       fprintf (fp, "\
 graph: {\ntitle: \"%s.BB%d\"\nfolding: 1\ncolor: lightblue\n\
 label: \"basic block %d",
-               current_function_name (), bb, bb);
+	       current_function_name (), bb, bb);
       break;
     case no_graph:
       break;
@@ -91,7 +91,7 @@ label: \"basic block %d",
     {
       fprintf (fp, " %d", i);
       if (i < FIRST_PSEUDO_REGISTER)
-        fprintf (fp, " [%s]", reg_names[i]);
+	fprintf (fp, " [%s]", reg_names[i]);
     }
 #endif
 
@@ -111,18 +111,18 @@ node_data (FILE *fp, rtx tmp_rtx)
   if (PREV_INSN (tmp_rtx) == 0)
     {
       /* This is the first instruction.  Add an edge from the starting
-         block.  */
+	 block.  */
       switch (graph_dump_format)
-        {
-        case vcg:
-          fprintf (fp, "\
+	{
+	case vcg:
+	  fprintf (fp, "\
 edge: { sourcename: \"%s.0\" targetname: \"%s.%d\" }\n",
-                   current_function_name (),
-                   current_function_name (), XINT (tmp_rtx, 0));
-          break;
-        case no_graph:
-          break;
-        }
+		   current_function_name (),
+		   current_function_name (), XINT (tmp_rtx, 0));
+	  break;
+	case no_graph:
+	  break;
+	}
     }
 
   switch (graph_dump_format)
@@ -130,14 +130,14 @@ edge: { sourcename: \"%s.0\" targetname: \"%s.%d\" }\n",
     case vcg:
       fprintf (fp, "node: {\n  title: \"%s.%d\"\n  color: %s\n  \
 label: \"%s %d\n",
-               current_function_name (), XINT (tmp_rtx, 0),
-               NOTE_P (tmp_rtx) ? "lightgrey"
-               : NONJUMP_INSN_P (tmp_rtx) ? "green"
-               : JUMP_P (tmp_rtx) ? "darkgreen"
-               : CALL_P (tmp_rtx) ? "darkgreen"
-               : LABEL_P (tmp_rtx) ?  "\
+	       current_function_name (), XINT (tmp_rtx, 0),
+	       NOTE_P (tmp_rtx) ? "lightgrey"
+	       : NONJUMP_INSN_P (tmp_rtx) ? "green"
+	       : JUMP_P (tmp_rtx) ? "darkgreen"
+	       : CALL_P (tmp_rtx) ? "darkgreen"
+	       : LABEL_P (tmp_rtx) ?  "\
 darkgrey\n  shape: ellipse" : "white",
-               GET_RTX_NAME (GET_CODE (tmp_rtx)), XINT (tmp_rtx, 0));
+	       GET_RTX_NAME (GET_CODE (tmp_rtx)), XINT (tmp_rtx, 0));
       break;
     case no_graph:
       break;
@@ -148,7 +148,7 @@ darkgrey\n  shape: ellipse" : "white",
     {
       const char *name = "";
       if (NOTE_LINE_NUMBER (tmp_rtx) < 0)
-        name =  GET_NOTE_INSN_NAME (NOTE_LINE_NUMBER (tmp_rtx));
+	name =  GET_NOTE_INSN_NAME (NOTE_LINE_NUMBER (tmp_rtx));
       fprintf (fp, " %s", name);
     }
   else if (INSN_P (tmp_rtx))
@@ -175,17 +175,17 @@ draw_edge (FILE *fp, int from, int to, int bb_edge, int class)
     case vcg:
       color = "";
       if (class == 2)
-        color = "color: red ";
+	color = "color: red ";
       else if (bb_edge)
-        color = "color: blue ";
+	color = "color: blue ";
       else if (class == 3)
-        color = "color: green ";
+	color = "color: green ";
       fprintf (fp,
-               "edge: { sourcename: \"%s.%d\" targetname: \"%s.%d\" %s",
-               current_function_name (), from,
-               current_function_name (), to, color);
+	       "edge: { sourcename: \"%s.%d\" targetname: \"%s.%d\" %s",
+	       current_function_name (), from,
+	       current_function_name (), to, color);
       if (class)
-        fprintf (fp, "class: %d ", class);
+	fprintf (fp, "class: %d ", class);
       fputs ("}\n", fp);
       break;
     case no_graph:
@@ -213,7 +213,7 @@ end_fct (FILE *fp)
     {
     case vcg:
       fprintf (fp, "node: { title: \"%s.999999\" label: \"END\" }\n}\n",
-               current_function_name ());
+	       current_function_name ());
       break;
     case no_graph:
       break;
@@ -254,25 +254,25 @@ print_rtl_graph_with_bb (const char *base, rtx rtx_first)
       int i;
 
       for (i = 0; i < max_uid; ++i)
-        {
-          start[i] = end[i] = -1;
-          in_bb_p[i] = NOT_IN_BB;
-        }
+	{
+	  start[i] = end[i] = -1;
+	  in_bb_p[i] = NOT_IN_BB;
+	}
 
       FOR_EACH_BB_REVERSE (bb)
-        {
-          rtx x;
-          start[INSN_UID (BB_HEAD (bb))] = bb->index;
-          end[INSN_UID (BB_END (bb))] = bb->index;
-          for (x = BB_HEAD (bb); x != NULL_RTX; x = NEXT_INSN (x))
-            {
-              in_bb_p[INSN_UID (x)]
-                = (in_bb_p[INSN_UID (x)] == NOT_IN_BB)
-                 ? IN_ONE_BB : IN_MULTIPLE_BB;
-              if (x == BB_END (bb))
-                break;
-            }
-        }
+	{
+	  rtx x;
+	  start[INSN_UID (BB_HEAD (bb))] = bb->index;
+	  end[INSN_UID (BB_END (bb))] = bb->index;
+	  for (x = BB_HEAD (bb); x != NULL_RTX; x = NEXT_INSN (x))
+	    {
+	      in_bb_p[INSN_UID (x)]
+		= (in_bb_p[INSN_UID (x)] == NOT_IN_BB)
+		 ? IN_ONE_BB : IN_MULTIPLE_BB;
+	      if (x == BB_END (bb))
+		break;
+	    }
+	}
 
       /* Tell print-rtl that we want graph output.  */
       dump_for_graph = 1;
@@ -281,94 +281,94 @@ print_rtl_graph_with_bb (const char *base, rtx rtx_first)
       start_fct (fp);
 
       for (tmp_rtx = NEXT_INSN (rtx_first); NULL != tmp_rtx;
-           tmp_rtx = NEXT_INSN (tmp_rtx))
-        {
-          int edge_printed = 0;
-          rtx next_insn;
+	   tmp_rtx = NEXT_INSN (tmp_rtx))
+	{
+	  int edge_printed = 0;
+	  rtx next_insn;
 
-          if (start[INSN_UID (tmp_rtx)] < 0 && end[INSN_UID (tmp_rtx)] < 0)
-            {
-              if (BARRIER_P (tmp_rtx))
-                continue;
-              if (NOTE_P (tmp_rtx)
-                  && (1 || in_bb_p[INSN_UID (tmp_rtx)] == NOT_IN_BB))
-                continue;
-            }
+	  if (start[INSN_UID (tmp_rtx)] < 0 && end[INSN_UID (tmp_rtx)] < 0)
+	    {
+	      if (BARRIER_P (tmp_rtx))
+		continue;
+	      if (NOTE_P (tmp_rtx)
+		  && (1 || in_bb_p[INSN_UID (tmp_rtx)] == NOT_IN_BB))
+		continue;
+	    }
 
-          if ((i = start[INSN_UID (tmp_rtx)]) >= 0)
-            {
-              /* We start a subgraph for each basic block.  */
-              start_bb (fp, i);
+	  if ((i = start[INSN_UID (tmp_rtx)]) >= 0)
+	    {
+	      /* We start a subgraph for each basic block.  */
+	      start_bb (fp, i);
 
-              if (i == 0)
-                draw_edge (fp, 0, INSN_UID (tmp_rtx), 1, 0);
-            }
+	      if (i == 0)
+		draw_edge (fp, 0, INSN_UID (tmp_rtx), 1, 0);
+	    }
 
-          /* Print the data for this node.  */
-          node_data (fp, tmp_rtx);
-          next_insn = next_nonnote_insn (tmp_rtx);
+	  /* Print the data for this node.  */
+	  node_data (fp, tmp_rtx);
+	  next_insn = next_nonnote_insn (tmp_rtx);
 
-          if ((i = end[INSN_UID (tmp_rtx)]) >= 0)
-            {
-              edge e;
-              edge_iterator ei;
+	  if ((i = end[INSN_UID (tmp_rtx)]) >= 0)
+	    {
+	      edge e;
+	      edge_iterator ei;
 
-              bb = BASIC_BLOCK (i);
+	      bb = BASIC_BLOCK (i);
 
-              /* End of the basic block.  */
-              end_bb (fp);
+	      /* End of the basic block.  */
+	      end_bb (fp);
 
-              /* Now specify the edges to all the successors of this
-                 basic block.  */
-              FOR_EACH_EDGE (e, ei, bb->succs)
-                {
-                  if (e->dest != EXIT_BLOCK_PTR)
-                    {
-                      rtx block_head = BB_HEAD (e->dest);
+	      /* Now specify the edges to all the successors of this
+		 basic block.  */
+	      FOR_EACH_EDGE (e, ei, bb->succs)
+		{
+		  if (e->dest != EXIT_BLOCK_PTR)
+		    {
+		      rtx block_head = BB_HEAD (e->dest);
 
-                      draw_edge (fp, INSN_UID (tmp_rtx),
-                                 INSN_UID (block_head),
-                                 next_insn != block_head,
-                                 (e->flags & EDGE_ABNORMAL ? 2 : 0));
+		      draw_edge (fp, INSN_UID (tmp_rtx),
+				 INSN_UID (block_head),
+				 next_insn != block_head,
+				 (e->flags & EDGE_ABNORMAL ? 2 : 0));
 
-                      if (block_head == next_insn)
-                        edge_printed = 1;
-                    }
-                  else
-                    {
-                      draw_edge (fp, INSN_UID (tmp_rtx), 999999,
-                                 next_insn != 0,
-                                 (e->flags & EDGE_ABNORMAL ? 2 : 0));
+		      if (block_head == next_insn)
+			edge_printed = 1;
+		    }
+		  else
+		    {
+		      draw_edge (fp, INSN_UID (tmp_rtx), 999999,
+				 next_insn != 0,
+				 (e->flags & EDGE_ABNORMAL ? 2 : 0));
 
-                      if (next_insn == 0)
-                        edge_printed = 1;
-                    }
-                }
-            }
+		      if (next_insn == 0)
+			edge_printed = 1;
+		    }
+		}
+	    }
 
-          if (!edge_printed)
-            {
-              /* Don't print edges to barriers.  */
-              if (next_insn == 0
-                  || !BARRIER_P (next_insn))
-                draw_edge (fp, XINT (tmp_rtx, 0),
-                           next_insn ? INSN_UID (next_insn) : 999999, 0, 0);
-              else
-                {
-                  /* We draw the remaining edges in class 3.  We have
-                     to skip over the barrier since these nodes are
-                     not printed at all.  */
-                  do
-                    next_insn = NEXT_INSN (next_insn);
-                  while (next_insn
-                         && (NOTE_P (next_insn)
-                             || BARRIER_P (next_insn)));
+	  if (!edge_printed)
+	    {
+	      /* Don't print edges to barriers.  */
+	      if (next_insn == 0
+		  || !BARRIER_P (next_insn))
+		draw_edge (fp, XINT (tmp_rtx, 0),
+			   next_insn ? INSN_UID (next_insn) : 999999, 0, 0);
+	      else
+		{
+		  /* We draw the remaining edges in class 3.  We have
+		     to skip over the barrier since these nodes are
+		     not printed at all.  */
+		  do
+		    next_insn = NEXT_INSN (next_insn);
+		  while (next_insn
+			 && (NOTE_P (next_insn)
+			     || BARRIER_P (next_insn)));
 
-                  draw_edge (fp, XINT (tmp_rtx, 0),
-                             next_insn ? INSN_UID (next_insn) : 999999, 0, 3);
-                }
-            }
-        }
+		  draw_edge (fp, XINT (tmp_rtx, 0),
+			     next_insn ? INSN_UID (next_insn) : 999999, 0, 3);
+		}
+	    }
+	}
 
       dump_for_graph = 0;
 

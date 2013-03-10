@@ -108,19 +108,19 @@
 (define_insn_reservation "ev5_imull" 8
   (and (eq_attr "tune" "ev5")
        (and (eq_attr "type" "imul")
-            (eq_attr "opsize" "si")))
+	    (eq_attr "opsize" "si")))
   "ev5_e0+ev5_imul,ev5_imul*3,nothing,ev5_e0")
 
 (define_insn_reservation "ev5_imulq" 12
   (and (eq_attr "tune" "ev5")
        (and (eq_attr "type" "imul")
-            (eq_attr "opsize" "di")))
+	    (eq_attr "opsize" "di")))
   "ev5_e0+ev5_imul,ev5_imul*7,nothing,ev5_e0")
 
 (define_insn_reservation "ev5_imulh" 14
   (and (eq_attr "tune" "ev5")
        (and (eq_attr "type" "imul")
-            (eq_attr "opsize" "udi")))
+	    (eq_attr "opsize" "udi")))
   "ev5_e0+ev5_imul,ev5_imul*7,nothing*3,ev5_e0")
 
 ; The multiplier is unable to receive data from Ebox bypass paths.  The
@@ -177,14 +177,14 @@
 (define_insn_reservation "ev5_fdivsf" 15
   (and (eq_attr "tune" "ev5")
        (and (eq_attr "type" "fdiv")
-            (eq_attr "opsize" "si")))
+	    (eq_attr "opsize" "si")))
   ; "ev5_fa+ev5_fdiv,ev5_fdiv*9,ev5_fa+ev5_fdiv,ev5_fdiv*4"
   "ev5_fa+ev5_fdiv,ev5_fdiv*14")
 
 (define_insn_reservation "ev5_fdivdf" 22
   (and (eq_attr "tune" "ev5")
        (and (eq_attr "type" "fdiv")
-            (eq_attr "opsize" "di")))
+	    (eq_attr "opsize" "di")))
   ; "ev5_fa+ev5_fdiv,ev5_fdiv*17,ev5_fa+ev5_fdiv,ev5_fdiv*4"
   "ev5_fa+ev5_fdiv,ev5_fdiv*21")
 

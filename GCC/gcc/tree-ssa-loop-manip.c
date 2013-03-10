@@ -49,8 +49,8 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
 
 void
 create_iv (tree base, tree step, tree var, struct loop *loop,
-           block_stmt_iterator *incr_pos, bool after,
-           tree *var_before, tree *var_after)
+	   block_stmt_iterator *incr_pos, bool after,
+	   tree *var_before, tree *var_after)
 {
   tree stmt, initial, step1, stmts;
   tree vb, va;
@@ -75,25 +75,25 @@ create_iv (tree base, tree step, tree var, struct loop *loop,
   if (TREE_CODE (step) == INTEGER_CST)
     {
       if (TYPE_UNSIGNED (TREE_TYPE (step)))
-        {
-          step1 = fold_build1 (NEGATE_EXPR, TREE_TYPE (step), step);
-          if (tree_int_cst_lt (step1, step))
-            {
-              incr_op = MINUS_EXPR;
-              step = step1;
-            }
-        }
+	{
+	  step1 = fold_build1 (NEGATE_EXPR, TREE_TYPE (step), step);
+	  if (tree_int_cst_lt (step1, step))
+	    {
+	      incr_op = MINUS_EXPR;
+	      step = step1;
+	    }
+	}
       else
-        {
-          bool ovf;
+	{
+	  bool ovf;
 
-          if (!tree_expr_nonnegative_warnv_p (step, &ovf)
-              && may_negate_without_overflow_p (step))
-            {
-              incr_op = MINUS_EXPR;
-              step = fold_build1 (NEGATE_EXPR, TREE_TYPE (step), step);
-            }
-        }
+	  if (!tree_expr_nonnegative_warnv_p (step, &ovf)
+	      && may_negate_without_overflow_p (step))
+	    {
+	      incr_op = MINUS_EXPR;
+	      step = fold_build1 (NEGATE_EXPR, TREE_TYPE (step), step);
+	    }
+	}
     }
 
   /* Gimplify the step if necessary.  We put the computations in front of the
@@ -103,8 +103,8 @@ create_iv (tree base, tree step, tree var, struct loop *loop,
     bsi_insert_on_edge_immediate_loop (pe, stmts);
 
   stmt = build2 (MODIFY_EXPR, void_type_node, va,
-                 build2 (incr_op, TREE_TYPE (base),
-                         vb, step));
+		 build2 (incr_op, TREE_TYPE (base),
+			 vb, step));
   SSA_NAME_DEF_STMT (va) = stmt;
   if (after)
     bsi_insert_after (incr_pos, stmt, BSI_NEW_STMT);
@@ -138,7 +138,7 @@ add_exit_phis_edge (basic_block exit, tree use)
     {
       def_loop = find_common_loop (def_bb->loop_father, e->src->loop_father);
       if (!flow_bb_inside_loop_p (def_loop, e->dest))
-        break;
+	break;
     }
 
   if (!e)
@@ -206,12 +206,12 @@ get_loops_exits (void)
   FOR_EACH_BB (bb)
     {
       FOR_EACH_EDGE (e, ei, bb->preds)
-        if (e->src != ENTRY_BLOCK_PTR
-            && !flow_bb_inside_loop_p (e->src->loop_father, bb))
-          {
-            bitmap_set_bit (exits, bb->index);
-            break;
-          }
+	if (e->src != ENTRY_BLOCK_PTR
+	    && !flow_bb_inside_loop_p (e->src->loop_father, bb))
+	  {
+	    bitmap_set_bit (exits, bb->index);
+	    break;
+	  }
     }
 
   return exits;
@@ -223,7 +223,7 @@ get_loops_exits (void)
 
 static void
 find_uses_to_rename_use (basic_block bb, tree use, bitmap *use_blocks,
-                         bitmap need_phis)
+			 bitmap need_phis)
 {
   unsigned ver;
   basic_block def_bb;
@@ -285,7 +285,7 @@ find_uses_to_rename_bb (basic_block bb, bitmap *use_blocks, bitmap need_phis)
   FOR_EACH_EDGE (e, ei, bb->succs)
     for (phi = phi_nodes (e->dest); phi; phi = PHI_CHAIN (phi))
       find_uses_to_rename_use (bb, PHI_ARG_DEF_FROM_EDGE (phi, e),
-                               use_blocks, need_phis);
+			       use_blocks, need_phis);
  
   for (bsi = bsi_start (bb); !bsi_end_p (bsi); bsi_next (&bsi))
     find_uses_to_rename_stmt (bsi_stmt (bsi), use_blocks, need_phis);
@@ -306,16 +306,16 @@ find_uses_to_rename (bitmap changed_bbs, bitmap *use_blocks, bitmap need_phis)
   if (changed_bbs && !bitmap_empty_p (changed_bbs))
     {
       EXECUTE_IF_SET_IN_BITMAP (changed_bbs, 0, index, bi)
-        {
-          find_uses_to_rename_bb (BASIC_BLOCK (index), use_blocks, need_phis);
-        }
+	{
+	  find_uses_to_rename_bb (BASIC_BLOCK (index), use_blocks, need_phis);
+	}
     }
   else
     {
       FOR_EACH_BB (bb)
-        {
-          find_uses_to_rename_bb (bb, use_blocks, need_phis);
-        }
+	{
+	  find_uses_to_rename_bb (bb, use_blocks, need_phis);
+	}
     }
 }
 
@@ -332,14 +332,14 @@ find_uses_to_rename (bitmap changed_bbs, bitmap *use_blocks, bitmap need_phis)
       is used outside of the loop it is defined in, for example
 
       for (i = 0; i < 100; i++)
-        {
-          for (j = 0; j < 100; j++)
-            {
-              k = i + j;
-              use1 (k);
-            }
-          use2 (k);
-        }
+	{
+	  for (j = 0; j < 100; j++)
+	    {
+	      k = i + j;
+	      use1 (k);
+	    }
+	  use2 (k);
+	}
 
       Looking from the outer loop with the normal SSA form, the first use of k
       is not well-behaved, while the second one is an induction variable with
@@ -398,7 +398,7 @@ check_loop_closed_ssa_use (basic_block bb, tree use)
   def = SSA_NAME_DEF_STMT (use);
   def_bb = bb_for_stmt (def);
   gcc_assert (!def_bb
-              || flow_bb_inside_loop_p (def_bb->loop_father, bb));
+	      || flow_bb_inside_loop_p (def_bb->loop_father, bb));
 }
 
 /* Checks invariants of loop closed ssa form in statement STMT in BB.  */
@@ -431,12 +431,12 @@ verify_loop_closed_ssa (void)
   FOR_EACH_BB (bb)
     {
       for (phi = phi_nodes (bb); phi; phi = PHI_CHAIN (phi))
-        for (i = 0; i < (unsigned) PHI_NUM_ARGS (phi); i++)
-          check_loop_closed_ssa_use (PHI_ARG_EDGE (phi, i)->src,
-                                     PHI_ARG_DEF (phi, i));
+	for (i = 0; i < (unsigned) PHI_NUM_ARGS (phi); i++)
+	  check_loop_closed_ssa_use (PHI_ARG_EDGE (phi, i)->src,
+				     PHI_ARG_DEF (phi, i));
 
       for (bsi = bsi_start (bb); !bsi_end_p (bsi); bsi_next (&bsi))
-        check_loop_closed_ssa_stmt (bb, bsi_stmt (bsi));
+	check_loop_closed_ssa_stmt (bb, bsi_stmt (bsi));
     }
 }
 
@@ -458,12 +458,12 @@ split_loop_exit_edge (edge exit)
       name = USE_FROM_PTR (op_p);
 
       /* If the argument of the phi node is a constant, we do not need
-         to keep it inside loop.  */
+	 to keep it inside loop.  */
       if (TREE_CODE (name) != SSA_NAME)
-        continue;
+	continue;
 
       /* Otherwise create an auxiliary phi node that will copy the value
-         of the ssa name out of the loop.  */
+	 of the ssa name out of the loop.  */
       new_name = duplicate_ssa_name (name, NULL);
       new_phi = create_phi_node (new_name, bb);
       SSA_NAME_DEF_STMT (new_name) = new_phi;
@@ -542,7 +542,7 @@ ip_normal_pos (struct loop *loop)
 
 void
 standard_iv_increment_position (struct loop *loop, block_stmt_iterator *bsi,
-                                bool *insert_after)
+				bool *insert_after)
 {
   basic_block bb = ip_normal_pos (loop), latch = ip_end_pos (loop);
   tree last = last_stmt (latch);
@@ -590,10 +590,10 @@ copy_phi_node_args (unsigned first_new_block)
 
 bool
 tree_duplicate_loop_to_header_edge (struct loop *loop, edge e,
-                                    struct loops *loops,
-                                    unsigned int ndupl, sbitmap wont_exit,
-                                    edge orig, edge *to_remove,
-                                    unsigned int *n_to_remove, int flags)
+				    struct loops *loops,
+				    unsigned int ndupl, sbitmap wont_exit,
+				    edge orig, edge *to_remove,
+				    unsigned int *n_to_remove, int flags)
 {
   unsigned first_new_block;
 
@@ -608,7 +608,7 @@ tree_duplicate_loop_to_header_edge (struct loop *loop, edge e,
 
   first_new_block = last_basic_block;
   if (!duplicate_loop_to_header_edge (loop, e, loops, ndupl, wont_exit,
-                                      orig, to_remove, n_to_remove, flags))
+				      orig, to_remove, n_to_remove, flags))
     return false;
 
   /* Readd the removed phi args for e.  */
@@ -628,9 +628,9 @@ static tree
 build_if_stmt (tree cond, tree then_label, tree else_label)
 {
   return build3 (COND_EXPR, void_type_node,
-                 cond,
-                 build1 (GOTO_EXPR, void_type_node, then_label),
-                 build1 (GOTO_EXPR, void_type_node, else_label));
+		 cond,
+		 build1 (GOTO_EXPR, void_type_node, then_label),
+		 build1 (GOTO_EXPR, void_type_node, else_label));
 }
 
 /* Returns true if we can unroll LOOP FACTOR times.  Number
@@ -638,7 +638,7 @@ build_if_stmt (tree cond, tree then_label, tree else_label)
 
 bool
 can_unroll_loop_p (struct loop *loop, unsigned factor,
-                   struct tree_niter_desc *niter)
+		   struct tree_niter_desc *niter)
 {
   edge exit;
 
@@ -655,10 +655,10 @@ can_unroll_loop_p (struct loop *loop, unsigned factor,
   if (!number_of_iterations_exit (loop, exit, niter, false)
       || niter->cmp == ERROR_MARK
       /* Scalar evolutions analysis might have copy propagated
-         the abnormal ssa names into these expressions, hence
-         emiting the computations based on them during loop
-         unrolling might create overlapping life ranges for
-         them, and failures in out-of-ssa.  */
+	 the abnormal ssa names into these expressions, hence
+	 emiting the computations based on them during loop
+	 unrolling might create overlapping life ranges for
+	 them, and failures in out-of-ssa.  */
       || contains_abnormal_ssa_name_p (niter->may_be_zero)
       || contains_abnormal_ssa_name_p (niter->control.base)
       || contains_abnormal_ssa_name_p (niter->control.step)
@@ -685,9 +685,9 @@ can_unroll_loop_p (struct loop *loop, unsigned factor,
 
 static void
 determine_exit_conditions (struct loop *loop, struct tree_niter_desc *desc,
-                           unsigned factor, tree *enter_cond,
-                           tree *exit_base, tree *exit_step,
-                           enum tree_code *exit_cmp, tree *exit_bound)
+			   unsigned factor, tree *enter_cond,
+			   tree *exit_base, tree *exit_step,
+			   enum tree_code *exit_cmp, tree *exit_bound)
 {
   tree stmts;
   tree base = desc->control.base;
@@ -714,9 +714,9 @@ determine_exit_conditions (struct loop *loop, struct tree_niter_desc *desc,
   if (cmp == NE_EXPR)
     {
       if (tree_int_cst_sign_bit (step))
-        cmp = GT_EXPR;
+	cmp = GT_EXPR;
       else
-        cmp = LT_EXPR;
+	cmp = LT_EXPR;
     }
   else if (cmp == LT_EXPR)
     {
@@ -733,25 +733,25 @@ determine_exit_conditions (struct loop *loop, struct tree_niter_desc *desc,
 
      1) desc->may_be_zero is false.
      2) it is possible to check that there are at least FACTOR iterations
-        of the loop, i.e., BOUND - step * FACTOR does not overflow.
+	of the loop, i.e., BOUND - step * FACTOR does not overflow.
      3) # of iterations is at least FACTOR  */
 
   if (!zero_p (desc->may_be_zero))
     cond = fold_build2 (TRUTH_AND_EXPR, boolean_type_node,
-                        invert_truthvalue (desc->may_be_zero),
-                        cond);
+			invert_truthvalue (desc->may_be_zero),
+			cond);
 
   bigstep = fold_build2 (MULT_EXPR, type, step,
-                         build_int_cst_type (type, factor));
+			 build_int_cst_type (type, factor));
   delta = fold_build2 (MINUS_EXPR, type, bigstep, step);
   if (cmp == LT_EXPR)
     assum = fold_build2 (GE_EXPR, boolean_type_node,
-                         bound,
-                         fold_build2 (PLUS_EXPR, type, min, delta));
+			 bound,
+			 fold_build2 (PLUS_EXPR, type, min, delta));
   else
     assum = fold_build2 (LE_EXPR, boolean_type_node,
-                         bound,
-                         fold_build2 (PLUS_EXPR, type, max, delta));
+			 bound,
+			 fold_build2 (PLUS_EXPR, type, max, delta));
   cond = fold_build2 (TRUTH_AND_EXPR, boolean_type_node, assum, cond);
 
   bound = fold_build2 (MINUS_EXPR, type, bound, delta);
@@ -768,7 +768,7 @@ determine_exit_conditions (struct loop *loop, struct tree_niter_desc *desc,
     {
       cond = force_gimple_operand (cond, &stmts, true, NULL_TREE);
       if (stmts)
-        bsi_insert_on_edge_immediate_loop (loop_preheader_edge (loop), stmts);
+	bsi_insert_on_edge_immediate_loop (loop_preheader_edge (loop), stmts);
     }
   *enter_cond = cond;
 
@@ -838,7 +838,7 @@ determine_exit_conditions (struct loop *loop, struct tree_niter_desc *desc,
 
 void
 tree_unroll_loop (struct loops *loops, struct loop *loop, unsigned factor,
-                  edge exit, struct tree_niter_desc *desc)
+		  edge exit, struct tree_niter_desc *desc)
 {
   tree dont_exit, exit_if, ctr_before, ctr_after;
   tree enter_main_cond, exit_base, exit_step, exit_bound;
@@ -857,8 +857,8 @@ tree_unroll_loop (struct loops *loops, struct loop *loop, unsigned factor,
 
   est_niter = expected_loop_iterations (loop);
   determine_exit_conditions (loop, desc, factor,
-                             &enter_main_cond, &exit_base, &exit_step,
-                             &exit_cmp, &exit_bound);
+			     &enter_main_cond, &exit_base, &exit_step,
+			     &exit_cmp, &exit_bound);
 
   new_loop = loop_version (loops, loop, enter_main_cond, NULL, true);
   gcc_assert (new_loop != NULL);
@@ -866,8 +866,8 @@ tree_unroll_loop (struct loops *loops, struct loop *loop, unsigned factor,
 
   /* Unroll the loop and remove the old exits.  */
   dont_exit = ((exit->flags & EDGE_TRUE_VALUE)
-               ? boolean_false_node
-               : boolean_true_node);
+	       ? boolean_false_node
+	       : boolean_true_node);
   if (exit == EDGE_SUCC (exit->src, 0))
     nonexit = EDGE_SUCC (exit->src, 1);
   else
@@ -883,8 +883,8 @@ tree_unroll_loop (struct loops *loops, struct loop *loop, unsigned factor,
   wont_exit = sbitmap_alloc (factor);
   sbitmap_ones (wont_exit);
   ok = tree_duplicate_loop_to_header_edge
-          (loop, loop_latch_edge (loop), loops, factor - 1,
-           wont_exit, NULL, NULL, NULL, DLTHE_FLAG_UPDATE_FREQ);
+	  (loop, loop_latch_edge (loop), loops, factor - 1,
+	   wont_exit, NULL, NULL, NULL, DLTHE_FLAG_UPDATE_FREQ);
   free (wont_exit);
   gcc_assert (ok);
   update_ssa (TODO_update_ssa);
@@ -919,17 +919,17 @@ tree_unroll_loop (struct loops *loops, struct loop *loop, unsigned factor,
       next = PHI_ARG_DEF_FROM_EDGE (phi_old_loop, old_latch);
 
       /* Prefer using original variable as a base for the new ssa name.
-         This is necessary for virtual ops, and useful in order to avoid
-         losing debug info for real ops.  */
+	 This is necessary for virtual ops, and useful in order to avoid
+	 losing debug info for real ops.  */
       if (TREE_CODE (next) == SSA_NAME)
-        var = SSA_NAME_VAR (next);
+	var = SSA_NAME_VAR (next);
       else if (TREE_CODE (init) == SSA_NAME)
-        var = SSA_NAME_VAR (init);
+	var = SSA_NAME_VAR (init);
       else
-        {
-          var = create_tmp_var (TREE_TYPE (init), "unrinittmp");
-          add_referenced_var (var);
-        }
+	{
+	  var = create_tmp_var (TREE_TYPE (init), "unrinittmp");
+	  add_referenced_var (var);
+	}
 
       new_init = make_ssa_name (var, NULL_TREE);
       phi_rest = create_phi_node (new_init, rest);
@@ -944,11 +944,11 @@ tree_unroll_loop (struct loops *loops, struct loop *loop, unsigned factor,
      exit instruction.  */
   bsi = bsi_last (exit_bb);
   create_iv (exit_base, exit_step, NULL_TREE, loop,
-             &bsi, true, &ctr_before, &ctr_after);
+	     &bsi, true, &ctr_before, &ctr_after);
   exit_if = build_if_stmt (build2 (exit_cmp, boolean_type_node, ctr_after,
-                                   exit_bound),
-                           tree_block_label (loop->latch),
-                           tree_block_label (rest));
+				   exit_bound),
+			   tree_block_label (loop->latch),
+			   tree_block_label (rest));
   bsi_insert_after (&bsi, exit_if, BSI_NEW_STMT);
 
   verify_flow_info ();

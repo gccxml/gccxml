@@ -26,57 +26,57 @@
 
 #define C4x   1
 
-#define TARGET_CPU_CPP_BUILTINS()                \
-  do                                                \
-    {                                                \
-      extern int flag_inline_trees;                \
-      if (!TARGET_SMALL)                        \
-        builtin_define ("_BIGMODEL");                \
-      if (!TARGET_MEMPARM)                        \
-        builtin_define ("_REGPARM");                \
-      if (flag_inline_functions)                \
-        builtin_define ("_INLINE");                \
-      if (TARGET_C3X)                                \
-        {                                        \
-          builtin_define ("_TMS320C3x");        \
-          builtin_define ("_C3x");                \
-          if (TARGET_C30)                        \
-            {                                        \
-              builtin_define ("_TMS320C30");        \
-              builtin_define ("_C30");                \
-            }                                        \
-          else if (TARGET_C31)                        \
-            {                                        \
-              builtin_define ("_TMS320C31");        \
-              builtin_define ("_C31");                \
-            }                                        \
-          else if (TARGET_C32)                        \
-            {                                        \
-              builtin_define ("_TMS320C32");        \
-              builtin_define ("_C32");                \
-            }                                        \
-          else if (TARGET_C33)                        \
-            {                                        \
-              builtin_define ("_TMS320C33");        \
-              builtin_define ("_C33");                \
-            }                                        \
-        }                                        \
-      else                                        \
-        {                                        \
-          builtin_define ("_TMS320C4x");        \
-          builtin_define ("_C4x");                \
-          if (TARGET_C40)                        \
-            {                                        \
-              builtin_define ("_TMS320C40");        \
-              builtin_define ("_C40");                \
-            }                                        \
-          else if (TARGET_C44)                        \
-            {                                        \
-              builtin_define ("_TMS320C44");        \
-              builtin_define ("_C44");                \
-            }                                        \
-        }                                        \
-    }                                                \
+#define TARGET_CPU_CPP_BUILTINS()		\
+  do						\
+    {						\
+      extern int flag_inline_trees;		\
+      if (!TARGET_SMALL)			\
+	builtin_define ("_BIGMODEL");		\
+      if (!TARGET_MEMPARM)			\
+	builtin_define ("_REGPARM");		\
+      if (flag_inline_functions)		\
+	builtin_define ("_INLINE");		\
+      if (TARGET_C3X)				\
+	{					\
+	  builtin_define ("_TMS320C3x");	\
+	  builtin_define ("_C3x");		\
+	  if (TARGET_C30)			\
+	    {					\
+	      builtin_define ("_TMS320C30");	\
+	      builtin_define ("_C30");		\
+	    }					\
+	  else if (TARGET_C31)			\
+	    {					\
+	      builtin_define ("_TMS320C31");	\
+	      builtin_define ("_C31");		\
+	    }					\
+	  else if (TARGET_C32)			\
+	    {					\
+	      builtin_define ("_TMS320C32");	\
+	      builtin_define ("_C32");		\
+	    }					\
+	  else if (TARGET_C33)			\
+	    {					\
+	      builtin_define ("_TMS320C33");	\
+	      builtin_define ("_C33");		\
+	    }					\
+	}					\
+      else					\
+	{					\
+	  builtin_define ("_TMS320C4x");	\
+	  builtin_define ("_C4x");		\
+	  if (TARGET_C40)			\
+	    {					\
+	      builtin_define ("_TMS320C40");	\
+	      builtin_define ("_C40");		\
+	    }					\
+	  else if (TARGET_C44)			\
+	    {					\
+	      builtin_define ("_TMS320C44");	\
+	      builtin_define ("_C44");		\
+	    }					\
+	}					\
+    }						\
   while (0)
 
 /* Define assembler options.  */
@@ -121,31 +121,31 @@
    RPTS blocks interrupts.  */
 
 
-extern int c4x_cpu_version;                /* Cpu version C30/31/32/33/40/44.  */
+extern int c4x_cpu_version;		/* Cpu version C30/31/32/33/40/44.  */
 
-#define TARGET_INLINE                (! optimize_size) /* Inline MPYI.  */
-#define TARGET_SMALL_REG_CLASS        0
+#define TARGET_INLINE		(! optimize_size) /* Inline MPYI.  */
+#define TARGET_SMALL_REG_CLASS	0
 
-#define TARGET_C3X                (c4x_cpu_version >= 30 \
-                                 && c4x_cpu_version <= 39)
+#define TARGET_C3X		(c4x_cpu_version >= 30 \
+				 && c4x_cpu_version <= 39)
 
-#define TARGET_C30                (c4x_cpu_version == 30)
-#define TARGET_C31                (c4x_cpu_version == 31)
-#define TARGET_C32                (c4x_cpu_version == 32)
-#define TARGET_C33                (c4x_cpu_version == 33)
-#define TARGET_C40                (c4x_cpu_version == 40)
-#define TARGET_C44                (c4x_cpu_version == 44)
+#define TARGET_C30		(c4x_cpu_version == 30)
+#define TARGET_C31		(c4x_cpu_version == 31)
+#define TARGET_C32		(c4x_cpu_version == 32)
+#define TARGET_C33		(c4x_cpu_version == 33)
+#define TARGET_C40		(c4x_cpu_version == 40)
+#define TARGET_C44		(c4x_cpu_version == 44)
 
 /* Nonzero to use load_immed_addr pattern rather than forcing memory
    addresses into memory.  */
-#define TARGET_LOAD_ADDRESS        (1 || (! TARGET_C3X && ! TARGET_SMALL))
+#define TARGET_LOAD_ADDRESS	(1 || (! TARGET_C3X && ! TARGET_SMALL))
 
 /* Nonzero to convert direct memory references into HIGH/LO_SUM pairs
    during RTL generation.  */
-#define TARGET_EXPOSE_LDP        0
+#define TARGET_EXPOSE_LDP	0
 
 /* Nonzero to force loading of direct memory references into a register.  */
-#define TARGET_LOAD_DIRECT_MEMS        0
+#define TARGET_LOAD_DIRECT_MEMS	0
 
 /* -mrpts            allows the use of the RPTS instruction irregardless.
    -mrpts=max-cycles will use RPTS if the number of cycles is constant
@@ -171,14 +171,14 @@ extern int c4x_cpu_version;                /* Cpu version C30/31/32/33/40/44.  *
 
 /* Storage Layout.  */
 
-#define BITS_BIG_ENDIAN                0
-#define BYTES_BIG_ENDIAN        0
-#define WORDS_BIG_ENDIAN        0
+#define BITS_BIG_ENDIAN		0
+#define BYTES_BIG_ENDIAN	0
+#define WORDS_BIG_ENDIAN	0
 
 /* Technically, we are little endian, but we put the floats out as
    whole longs and this makes GCC put them out in the right order.  */
 
-#define FLOAT_WORDS_BIG_ENDIAN        1
+#define FLOAT_WORDS_BIG_ENDIAN	1
 
 /* Note the ANSI C standard requires sizeof(char) = 1.  On the C[34]x
    all integral and floating point data types are stored in memory as
@@ -186,16 +186,16 @@ extern int c4x_cpu_version;                /* Cpu version C30/31/32/33/40/44.  *
    extended precision registers), so sizeof(char) = sizeof(short) =
    sizeof(int) = sizeof(long) = sizeof(float) = sizeof(double) = 1.  */
 
-#define BITS_PER_UNIT                32
-#define UNITS_PER_WORD                1
-#define PARM_BOUNDARY                32
-#define STACK_BOUNDARY                32
-#define FUNCTION_BOUNDARY        32
-#define BIGGEST_ALIGNMENT        32
-#define EMPTY_FIELD_BOUNDARY        32
-#define STRICT_ALIGNMENT        0
-#define TARGET_FLOAT_FORMAT        C4X_FLOAT_FORMAT
-#define MAX_FIXED_MODE_SIZE        64 /* HImode.  */
+#define BITS_PER_UNIT		32
+#define UNITS_PER_WORD		1
+#define PARM_BOUNDARY	        32
+#define STACK_BOUNDARY		32
+#define FUNCTION_BOUNDARY	32
+#define BIGGEST_ALIGNMENT	32
+#define EMPTY_FIELD_BOUNDARY	32
+#define STRICT_ALIGNMENT	0
+#define TARGET_FLOAT_FORMAT	C4X_FLOAT_FORMAT
+#define MAX_FIXED_MODE_SIZE	64 /* HImode.  */
 
 /* If a structure has a floating point field then force structure
    to have BLKMODE, unless it is the only field.  */
@@ -254,12 +254,12 @@ extern int c4x_cpu_version;                /* Cpu version C30/31/32/33/40/44.  *
 
 /* Misc. interrupt registers.  */
 
-#define DIE_REGNO 22                /* C4x only.  */
-#define IE_REGNO  22                /* C3x only.  */
-#define IIE_REGNO 23                /* C4x only.  */
-#define IF_REGNO  23                /* C3x only.  */
-#define IIF_REGNO 24                /* C4x only.  */
-#define IOF_REGNO 24                /* C3x only.  */
+#define DIE_REGNO 22		/* C4x only.  */
+#define IE_REGNO  22		/* C3x only.  */
+#define IIE_REGNO 23		/* C4x only.  */
+#define IF_REGNO  23		/* C3x only.  */
+#define IIF_REGNO 24		/* C4x only.  */
+#define IOF_REGNO 24		/* C3x only.  */
 
 /* Repeat block registers.  */
 
@@ -269,12 +269,12 @@ extern int c4x_cpu_version;                /* Cpu version C30/31/32/33/40/44.  *
 
 /* Additional extended-precision registers.  */
 
-#define R8_REGNO  28                /* C4x only.  */
-#define R9_REGNO  29                /* C4x only.  */
-#define R10_REGNO 30                /* C4x only.  */
-#define R11_REGNO 31                /* C4x only.  */
+#define R8_REGNO  28		/* C4x only.  */
+#define R9_REGNO  29		/* C4x only.  */
+#define R10_REGNO 30		/* C4x only.  */
+#define R11_REGNO 31		/* C4x only.  */
 
-#define FIRST_PSEUDO_REGISTER        32
+#define FIRST_PSEUDO_REGISTER	32
 
 /* Extended precision registers (low set).  */
 
@@ -312,9 +312,9 @@ extern int c4x_cpu_version;                /* Cpu version C30/31/32/33/40/44.  *
 #define IS_ADDR_OR_INDEX_REGNO(r) (IS_ADDR_REGNO(r) || IS_INDEX_REGNO(r))
 #define IS_EXT_REGNO(r)           (IS_EXT_LOW_REGNO(r) || IS_EXT_HIGH_REGNO(r))
 #define IS_STD_REGNO(r)           (IS_ADDR_OR_INDEX_REGNO(r) \
-                                   || IS_REPEAT_REGNO(r) \
+				   || IS_REPEAT_REGNO(r) \
                                    || IS_SP_REGNO(r) \
-                                          || IS_BK_REGNO(r))
+		       		   || IS_BK_REGNO(r))
 #define IS_INT_REGNO(r)           (IS_EXT_REGNO(r) || IS_STD_REGNO(r))
 #define IS_GROUP1_REGNO(r)        (IS_ADDR_OR_INDEX_REGNO(r) || IS_BK_REGNO(r))
 #define IS_INT_CALL_SAVED_REGNO(r) (((r) == R4_REGNO) || ((r) == R5_REGNO) \
@@ -330,7 +330,7 @@ extern int c4x_cpu_version;                /* Cpu version C30/31/32/33/40/44.  *
 #define IS_ADDR_OR_PSEUDO_REGNO(r)    (IS_ADDR_REGNO(r) || IS_PSEUDO_REGNO(r))
 #define IS_INDEX_OR_PSEUDO_REGNO(r)   (IS_INDEX_REGNO(r) || IS_PSEUDO_REGNO(r))
 #define IS_EXT_LOW_OR_PSEUDO_REGNO(r) (IS_EXT_LOW_REGNO(r) \
-                                       || IS_PSEUDO_REGNO(r))
+				       || IS_PSEUDO_REGNO(r))
 #define IS_DP_OR_PSEUDO_REGNO(r)      (IS_DP_REGNO(r) || IS_PSEUDO_REGNO(r))
 #define IS_SP_OR_PSEUDO_REGNO(r)      (IS_SP_REGNO(r) || IS_PSEUDO_REGNO(r))
 #define IS_ST_OR_PSEUDO_REGNO(r)      (IS_ST_REGNO(r) || IS_PSEUDO_REGNO(r))
@@ -362,11 +362,11 @@ extern int c4x_cpu_version;                /* Cpu version C30/31/32/33/40/44.  *
    and are not available for the register allocator.  */
 
 #define FIXED_REGISTERS \
-{                                                                        \
-/* R0  R1  R2  R3  R4  R5  R6  R7 AR0 AR1 AR2 AR3 AR4 AR5 AR6 AR7.  */        \
-    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,        \
-/* DP IR0 IR1  BK  SP  ST DIE IIE IIF  RS  RE  RC  R8  R9 R10 R11.  */        \
-    1,  0,  0,  0,  1,  1,  1,  1,  1,  0,  0,  0,  0,  0,  0,  0        \
+{									\
+/* R0  R1  R2  R3  R4  R5  R6  R7 AR0 AR1 AR2 AR3 AR4 AR5 AR6 AR7.  */	\
+    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,	\
+/* DP IR0 IR1  BK  SP  ST DIE IIE IIF  RS  RE  RC  R8  R9 R10 R11.  */	\
+    1,  0,  0,  0,  1,  1,  1,  1,  1,  0,  0,  0,  0,  0,  0,  0	\
 }
 
 /* 1 for registers not available across function calls.
@@ -381,42 +381,42 @@ extern int c4x_cpu_version;                /* Cpu version C30/31/32/33/40/44.  *
    get clobbered for a given regno.  */
 
 #define CALL_USED_REGISTERS \
-{                                                                        \
-/* R0  R1  R2  R3  R4  R5  R6  R7 AR0 AR1 AR2 AR3 AR4 AR5 AR6 AR7.  */        \
-    1,  1,  1,  1,  0,  0,  0,  0,  1,  1,  1,  0,  0,  0,  0,  0,        \
-/* DP IR0 IR1  BK  SP  ST DIE IIE IIF  RS  RE  RC  R8  R9 R10 R11.  */        \
-    1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  0,  1,  1,  1        \
+{									\
+/* R0  R1  R2  R3  R4  R5  R6  R7 AR0 AR1 AR2 AR3 AR4 AR5 AR6 AR7.  */	\
+    1,  1,  1,  1,  0,  0,  0,  0,  1,  1,  1,  0,  0,  0,  0,  0,	\
+/* DP IR0 IR1  BK  SP  ST DIE IIE IIF  RS  RE  RC  R8  R9 R10 R11.  */	\
+    1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  0,  1,  1,  1	\
 }
 
 /* Macro to conditionally modify fixed_regs/call_used_regs.  */
 
-#define CONDITIONAL_REGISTER_USAGE                        \
-  {                                                        \
-    if (! TARGET_BK)                                        \
-      {                                                        \
-        fixed_regs[BK_REGNO] = 1;                        \
-        call_used_regs[BK_REGNO] = 1;                        \
-        c4x_regclass_map[BK_REGNO] = NO_REGS;                \
-      }                                                        \
-    if (TARGET_C3X)                                        \
-      {                                                        \
-         int i;                                          \
-                                                         \
-         reg_names[DIE_REGNO] = "ie";  /* Clobber die.  */ \
-         reg_names[IF_REGNO] = "if";   /* Clobber iie.  */ \
-         reg_names[IOF_REGNO] = "iof"; /* Clobber iif.  */ \
-                                                         \
-         for (i = R8_REGNO; i <= R11_REGNO; i++)        \
-         {                                                \
-             fixed_regs[i] = call_used_regs[i] = 1;        \
-             c4x_regclass_map[i] = NO_REGS;                \
-         }                                                \
-      }                                                        \
-    if (TARGET_PRESERVE_FLOAT)                                \
-      {                                                        \
-        c4x_caller_save_map[R6_REGNO] = HFmode;                \
-        c4x_caller_save_map[R7_REGNO] = HFmode;                \
-      }                                                        \
+#define CONDITIONAL_REGISTER_USAGE			\
+  {							\
+    if (! TARGET_BK)					\
+      {							\
+	fixed_regs[BK_REGNO] = 1;			\
+        call_used_regs[BK_REGNO] = 1;			\
+        c4x_regclass_map[BK_REGNO] = NO_REGS;		\
+      }							\
+    if (TARGET_C3X)					\
+      {							\
+	 int i;                                          \
+							 \
+	 reg_names[DIE_REGNO] = "ie";  /* Clobber die.  */ \
+	 reg_names[IF_REGNO] = "if";   /* Clobber iie.  */ \
+	 reg_names[IOF_REGNO] = "iof"; /* Clobber iif.  */ \
+	 						\
+	 for (i = R8_REGNO; i <= R11_REGNO; i++)	\
+	 {						\
+	     fixed_regs[i] = call_used_regs[i] = 1;	\
+	     c4x_regclass_map[i] = NO_REGS;		\
+	 }						\
+      }							\
+    if (TARGET_PRESERVE_FLOAT)				\
+      {							\
+	c4x_caller_save_map[R6_REGNO] = HFmode;		\
+	c4x_caller_save_map[R7_REGNO] = HFmode;		\
+      }							\
    }
 
 /* Order of Allocation of Registers.  */
@@ -432,14 +432,14 @@ extern int c4x_cpu_version;                /* Cpu version C30/31/32/33/40/44.  *
    registers for arithmetic can cause pipeline stalls.  Finally
    allocated the fixed registers which won't be allocated anyhow.  */
 
-#define REG_ALLOC_ORDER                                        \
-{R0_REGNO, R1_REGNO, R2_REGNO, R3_REGNO,                 \
- R9_REGNO, R10_REGNO, R11_REGNO,                        \
- RS_REGNO, RE_REGNO, RC_REGNO, BK_REGNO,                \
- R4_REGNO, R5_REGNO, R6_REGNO, R7_REGNO, R8_REGNO,        \
- AR0_REGNO, AR1_REGNO, AR2_REGNO, AR3_REGNO,                \
- AR4_REGNO, AR5_REGNO, AR6_REGNO, AR7_REGNO,                \
- IR0_REGNO, IR1_REGNO,                                        \
+#define REG_ALLOC_ORDER					\
+{R0_REGNO, R1_REGNO, R2_REGNO, R3_REGNO, 		\
+ R9_REGNO, R10_REGNO, R11_REGNO,			\
+ RS_REGNO, RE_REGNO, RC_REGNO, BK_REGNO,		\
+ R4_REGNO, R5_REGNO, R6_REGNO, R7_REGNO, R8_REGNO,	\
+ AR0_REGNO, AR1_REGNO, AR2_REGNO, AR3_REGNO,		\
+ AR4_REGNO, AR5_REGNO, AR6_REGNO, AR7_REGNO,		\
+ IR0_REGNO, IR1_REGNO,					\
  SP_REGNO, DP_REGNO, ST_REGNO, IE_REGNO, IF_REGNO, IOF_REGNO}
 
 /* A C expression that is nonzero if hard register number REGNO2 can be
@@ -459,7 +459,7 @@ extern int c4x_cpu_version;                /* Cpu version C30/31/32/33/40/44.  *
    extended precision register.  Similarly, HCmode fits within two
    extended precision registers.  */
 
-#define HARD_REGNO_NREGS(REGNO, MODE)                                \
+#define HARD_REGNO_NREGS(REGNO, MODE)				\
 (((MODE) == CCmode || (MODE) == CC_NOOVmode) ? 1 : \
  ((MODE) == HFmode) ? 1 : \
  ((MODE) == HCmode) ? 2 : \
@@ -470,10 +470,10 @@ extern int c4x_cpu_version;                /* Cpu version C30/31/32/33/40/44.  *
    across a call in mode MODE.  This does not have to include the call used
    registers.  */
 
-#define HARD_REGNO_CALL_PART_CLOBBERED(REGNO, MODE)                              \
-     ((IS_FLOAT_CALL_SAVED_REGNO (REGNO) && ! ((MODE) == QFmode))                \
-      || (IS_INT_CALL_SAVED_REGNO (REGNO)                                      \
-          && ! ((MODE) == QImode || (MODE) == HImode || (MODE) == Pmode)))
+#define HARD_REGNO_CALL_PART_CLOBBERED(REGNO, MODE)		              \
+     ((IS_FLOAT_CALL_SAVED_REGNO (REGNO) && ! ((MODE) == QFmode))  	      \
+      || (IS_INT_CALL_SAVED_REGNO (REGNO)				      \
+	  && ! ((MODE) == QImode || (MODE) == HImode || (MODE) == Pmode)))
 
 /* Specify the modes required to caller save a given hard regno.  */
 
@@ -516,20 +516,20 @@ extern int c4x_cpu_version;                /* Cpu version C30/31/32/33/40/44.  *
 enum reg_class
   {
     NO_REGS,
-    R0R1_REGS,                        /* 't'.  */
-    R2R3_REGS,                        /* 'u'.  */
-    EXT_LOW_REGS,                /* 'q'.  */
-    EXT_REGS,                        /* 'f'.  */
-    ADDR_REGS,                        /* 'a'.  */
-    INDEX_REGS,                        /* 'x'.  */
-    BK_REG,                        /* 'k'.  */
-    SP_REG,                        /* 'b'.  */
-    RC_REG,                        /* 'v'.  */
-    COUNTER_REGS,                /*  */
-    INT_REGS,                        /* 'c'.  */
-    GENERAL_REGS,                /* 'r'.  */
-    DP_REG,                        /* 'z'.  */
-    ST_REG,                        /* 'y'.  */
+    R0R1_REGS,			/* 't'.  */
+    R2R3_REGS,			/* 'u'.  */
+    EXT_LOW_REGS,		/* 'q'.  */
+    EXT_REGS,			/* 'f'.  */
+    ADDR_REGS,			/* 'a'.  */
+    INDEX_REGS,			/* 'x'.  */
+    BK_REG,			/* 'k'.  */
+    SP_REG,			/* 'b'.  */
+    RC_REG,			/* 'v'.  */
+    COUNTER_REGS,		/*  */
+    INT_REGS,			/* 'c'.  */
+    GENERAL_REGS,		/* 'r'.  */
+    DP_REG,			/* 'z'.  */
+    ST_REG,			/* 'y'.  */
     ALL_REGS,
     LIM_REG_CLASSES
   };
@@ -537,23 +537,23 @@ enum reg_class
 #define N_REG_CLASSES (int) LIM_REG_CLASSES
 
 #define REG_CLASS_NAMES \
-{                        \
-   "NO_REGS",                \
-   "R0R1_REGS",                \
-   "R2R3_REGS",                \
-   "EXT_LOW_REGS",        \
-   "EXT_REGS",                \
-   "ADDR_REGS",                \
-   "INDEX_REGS",        \
-   "BK_REG",                \
-   "SP_REG",                \
-   "RC_REG",                \
-   "COUNTER_REGS",        \
-   "INT_REGS",                \
-   "GENERAL_REGS",        \
-   "DP_REG",                \
-   "ST_REG",                \
-   "ALL_REGS"                \
+{			\
+   "NO_REGS",		\
+   "R0R1_REGS",		\
+   "R2R3_REGS",		\
+   "EXT_LOW_REGS",	\
+   "EXT_REGS",		\
+   "ADDR_REGS",		\
+   "INDEX_REGS",	\
+   "BK_REG",		\
+   "SP_REG",		\
+   "RC_REG",		\
+   "COUNTER_REGS",	\
+   "INT_REGS",		\
+   "GENERAL_REGS",	\
+   "DP_REG",		\
+   "ST_REG",		\
+   "ALL_REGS"		\
 }
 
 /* Define which registers fit in which classes.
@@ -563,23 +563,23 @@ enum reg_class
    in preference to RC for the decrement_and_branch_on_count pattern.  */
 
 #define REG_CLASS_CONTENTS \
-{                                                \
- {0x00000000}, /*     No registers.  */                \
- {0x00000003}, /* 't' R0-R1        .  */                \
- {0x0000000c}, /* 'u' R2-R3        .  */                \
- {0x000000ff}, /* 'q' R0-R7        .  */                \
- {0xf00000ff}, /* 'f' R0-R11       */                \
- {0x0000ff00}, /* 'a' AR0-AR7.  */                \
- {0x00060000}, /* 'x' IR0-IR1.  */                \
- {0x00080000}, /* 'k' BK.  */                        \
- {0x00100000}, /* 'b' SP.  */                        \
- {0x08000000}, /* 'v' RC.  */                        \
- {0x0800ff00}, /*     RC,AR0-AR7.  */                \
- {0x0e1eff00}, /* 'c' AR0-AR7, IR0-IR1, BK, SP, RS, RE, RC.  */        \
+{						\
+ {0x00000000}, /*     No registers.  */		\
+ {0x00000003}, /* 't' R0-R1	.  */		\
+ {0x0000000c}, /* 'u' R2-R3	.  */		\
+ {0x000000ff}, /* 'q' R0-R7	.  */		\
+ {0xf00000ff}, /* 'f' R0-R11       */		\
+ {0x0000ff00}, /* 'a' AR0-AR7.  */		\
+ {0x00060000}, /* 'x' IR0-IR1.  */		\
+ {0x00080000}, /* 'k' BK.  */			\
+ {0x00100000}, /* 'b' SP.  */			\
+ {0x08000000}, /* 'v' RC.  */			\
+ {0x0800ff00}, /*     RC,AR0-AR7.  */		\
+ {0x0e1eff00}, /* 'c' AR0-AR7, IR0-IR1, BK, SP, RS, RE, RC.  */	\
  {0xfe1effff}, /* 'r' R0-R11, AR0-AR7, IR0-IR1, BK, SP, RS, RE, RC.  */\
- {0x00010000}, /* 'z' DP.  */                        \
- {0x00200000}, /* 'y' ST.  */                        \
- {0xffffffff}, /*     All registers.  */                \
+ {0x00010000}, /* 'z' DP.  */			\
+ {0x00200000}, /* 'y' ST.  */			\
+ {0xffffffff}, /*     All registers.  */		\
 }
 
 /* The same information, inverted:
@@ -604,7 +604,7 @@ enum reg_class
 
 #define SMALL_REGISTER_CLASSES (TARGET_SMALL_REG_CLASS && TARGET_PARALLEL_MPY)
 
-#define BASE_REG_CLASS        ADDR_REGS
+#define BASE_REG_CLASS	ADDR_REGS
 #define INDEX_REG_CLASS INDEX_REGS
 
 /*
@@ -645,21 +645,21 @@ enum reg_class
   { - indirect with pre-modify
   */
 
-#define REG_CLASS_FROM_LETTER(CC)                                \
-     ( ((CC) == 'a') ? ADDR_REGS                                \
-     : ((CC) == 'b') ? SP_REG                                        \
-     : ((CC) == 'c') ? INT_REGS                                        \
-     : ((CC) == 'd') ? EXT_REGS                                        \
-     : ((CC) == 'f') ? EXT_REGS                                        \
-     : ((CC) == 'h') ? EXT_REGS                                        \
-     : ((CC) == 'k') ? BK_REG                                        \
-     : ((CC) == 'q') ? EXT_LOW_REGS                                \
-     : ((CC) == 't') ? R0R1_REGS                                \
-     : ((CC) == 'u') ? R2R3_REGS                                \
-     : ((CC) == 'v') ? RC_REG                                        \
-     : ((CC) == 'x') ? INDEX_REGS                                \
-     : ((CC) == 'y') ? ST_REG                                        \
-     : ((CC) == 'z') ? DP_REG                                        \
+#define REG_CLASS_FROM_LETTER(CC)				\
+     ( ((CC) == 'a') ? ADDR_REGS				\
+     : ((CC) == 'b') ? SP_REG					\
+     : ((CC) == 'c') ? INT_REGS					\
+     : ((CC) == 'd') ? EXT_REGS					\
+     : ((CC) == 'f') ? EXT_REGS					\
+     : ((CC) == 'h') ? EXT_REGS					\
+     : ((CC) == 'k') ? BK_REG					\
+     : ((CC) == 'q') ? EXT_LOW_REGS				\
+     : ((CC) == 't') ? R0R1_REGS				\
+     : ((CC) == 'u') ? R2R3_REGS				\
+     : ((CC) == 'v') ? RC_REG					\
+     : ((CC) == 'x') ? INDEX_REGS				\
+     : ((CC) == 'y') ? ST_REG					\
+     : ((CC) == 'z') ? DP_REG					\
      : NO_REGS )
 
 /* These assume that REGNO is a hard or pseudo reg number.
@@ -677,36 +677,36 @@ enum reg_class
 /* If we have to generate framepointer + constant prefer an ADDR_REGS
    register.  This avoids using EXT_REGS in addqi3_noclobber_reload.  */
 
-#define PREFERRED_RELOAD_CLASS(X, CLASS)                        \
-     (GET_CODE (X) == PLUS                                        \
-      && GET_MODE (X) == Pmode                                        \
-      && GET_CODE (XEXP ((X), 0)) == REG                        \
-      && GET_MODE (XEXP ((X), 0)) == Pmode                        \
-      && REGNO (XEXP ((X), 0)) == FRAME_POINTER_REGNUM                \
-      && GET_CODE (XEXP ((X), 1)) == CONST_INT                        \
-        ? ADDR_REGS : (CLASS))
+#define PREFERRED_RELOAD_CLASS(X, CLASS)			\
+     (GET_CODE (X) == PLUS					\
+      && GET_MODE (X) == Pmode					\
+      && GET_CODE (XEXP ((X), 0)) == REG			\
+      && GET_MODE (XEXP ((X), 0)) == Pmode			\
+      && REGNO (XEXP ((X), 0)) == FRAME_POINTER_REGNUM		\
+      && GET_CODE (XEXP ((X), 1)) == CONST_INT			\
+	? ADDR_REGS : (CLASS))
 
 #define LIMIT_RELOAD_CLASS(X, CLASS) (CLASS)
 
 #define SECONDARY_MEMORY_NEEDED(CLASS1, CLASS2, MODE) 0
 
-#define CLASS_MAX_NREGS(CLASS, MODE)                        \
+#define CLASS_MAX_NREGS(CLASS, MODE)			\
 (((MODE) == CCmode || (MODE) == CC_NOOVmode) ? 1 : ((MODE) == HFmode) ? 1 : \
 ((GET_MODE_SIZE(MODE) + UNITS_PER_WORD - 1) / UNITS_PER_WORD))
 
-#define IS_INT5_CONST(VAL) (((VAL) <= 15) && ((VAL) >= -16))        /* 'K'.  */
+#define IS_INT5_CONST(VAL) (((VAL) <= 15) && ((VAL) >= -16))	/* 'K'.  */
 
-#define IS_UINT5_CONST(VAL) (((VAL) <= 31) && ((VAL) >= 0))        /* 'R'.  */
+#define IS_UINT5_CONST(VAL) (((VAL) <= 31) && ((VAL) >= 0))	/* 'R'.  */
 
-#define IS_INT8_CONST(VAL) (((VAL) <= 127) && ((VAL) >= -128))        /* 'J'.  */
+#define IS_INT8_CONST(VAL) (((VAL) <= 127) && ((VAL) >= -128))	/* 'J'.  */
 
-#define IS_UINT8_CONST(VAL) (((VAL) <= 255) && ((VAL) >= 0))        /* 'M'.  */
+#define IS_UINT8_CONST(VAL) (((VAL) <= 255) && ((VAL) >= 0))	/* 'M'.  */
 
 #define IS_INT16_CONST(VAL) (((VAL) <= 32767) && ((VAL) >= -32768)) /* 'I'.  */
 
-#define IS_UINT16_CONST(VAL) (((VAL) <= 65535) && ((VAL) >= 0))        /* 'L'.  */
+#define IS_UINT16_CONST(VAL) (((VAL) <= 65535) && ((VAL) >= 0))	/* 'L'.  */
 
-#define IS_NOT_UINT16_CONST(VAL) IS_UINT16_CONST(~(VAL))        /* 'N'.  */
+#define IS_NOT_UINT16_CONST(VAL) IS_UINT16_CONST(~(VAL))	/* 'N'.  */
 
 #define IS_HIGH_CONST(VAL) \
 (! TARGET_C3X && (((VAL) & 0xffff) == 0)) /* 'O'.  */
@@ -714,48 +714,48 @@ enum reg_class
 
 #define IS_DISP1_CONST(VAL) (((VAL) <= 1) && ((VAL) >= -1)) /* 'S'.  */
 
-#define IS_DISP8_CONST(VAL) (((VAL) <= 255) && ((VAL) >= -255))        /* 'Q'.  */
+#define IS_DISP8_CONST(VAL) (((VAL) <= 255) && ((VAL) >= -255))	/* 'Q'.  */
 
 #define IS_DISP1_OFF_CONST(VAL) (IS_DISP1_CONST (VAL) \
-                                 && IS_DISP1_CONST (VAL + 1))
+				 && IS_DISP1_CONST (VAL + 1))
 
 #define IS_DISP8_OFF_CONST(VAL) (IS_DISP8_CONST (VAL) \
-                                 && IS_DISP8_CONST (VAL + 1))
+				 && IS_DISP8_CONST (VAL + 1))
 
-#define CONST_OK_FOR_LETTER_P(VAL, C)                                        \
-        ( ((C) == 'I') ? (IS_INT16_CONST (VAL))                                \
-        : ((C) == 'J') ? (! TARGET_C3X && IS_INT8_CONST (VAL))                \
-        : ((C) == 'K') ? (! TARGET_C3X && IS_INT5_CONST (VAL))                \
-        : ((C) == 'L') ? (IS_UINT16_CONST (VAL))                        \
-        : ((C) == 'M') ? (! TARGET_C3X && IS_UINT8_CONST (VAL))                \
-        : ((C) == 'N') ? (IS_NOT_UINT16_CONST (VAL))                        \
-        : ((C) == 'O') ? (IS_HIGH_CONST (VAL))                                \
-        : 0 )        
+#define CONST_OK_FOR_LETTER_P(VAL, C)					\
+        ( ((C) == 'I') ? (IS_INT16_CONST (VAL))				\
+	: ((C) == 'J') ? (! TARGET_C3X && IS_INT8_CONST (VAL))		\
+	: ((C) == 'K') ? (! TARGET_C3X && IS_INT5_CONST (VAL))		\
+        : ((C) == 'L') ? (IS_UINT16_CONST (VAL))			\
+	: ((C) == 'M') ? (! TARGET_C3X && IS_UINT8_CONST (VAL))		\
+	: ((C) == 'N') ? (IS_NOT_UINT16_CONST (VAL))		        \
+	: ((C) == 'O') ? (IS_HIGH_CONST (VAL))			        \
+        : 0 )	
 
-#define CONST_DOUBLE_OK_FOR_LETTER_P(OP, C)                                 \
-        ( ((C) == 'G') ? (fp_zero_operand (OP, QFmode))                        \
-        : ((C) == 'H') ? (c4x_H_constant (OP))                                 \
-        : 0 )
+#define CONST_DOUBLE_OK_FOR_LETTER_P(OP, C) 				\
+        ( ((C) == 'G') ? (fp_zero_operand (OP, QFmode))			\
+	: ((C) == 'H') ? (c4x_H_constant (OP)) 				\
+	: 0 )
 
 #define EXTRA_CONSTRAINT(OP, C) \
-        ( ((C) == 'Q') ? (c4x_Q_constraint (OP))                        \
-        : ((C) == 'R') ? (c4x_R_constraint (OP))                        \
-        : ((C) == 'S') ? (c4x_S_constraint (OP))                        \
-        : ((C) == 'T') ? (c4x_T_constraint (OP))                        \
-        : ((C) == 'U') ? (c4x_U_constraint (OP))                        \
-        : 0 )
+        ( ((C) == 'Q') ? (c4x_Q_constraint (OP))			\
+	: ((C) == 'R') ? (c4x_R_constraint (OP))			\
+	: ((C) == 'S') ? (c4x_S_constraint (OP))			\
+	: ((C) == 'T') ? (c4x_T_constraint (OP))			\
+	: ((C) == 'U') ? (c4x_U_constraint (OP))			\
+	: 0 )
 
-#define SMALL_CONST(VAL, insn)                                                \
-     (  ((insn == NULL_RTX) || (get_attr_data (insn) == DATA_INT16))        \
-        ? IS_INT16_CONST (VAL)                                                \
-        : ( (get_attr_data (insn) == DATA_NOT_UINT16)                        \
-            ? IS_NOT_UINT16_CONST (VAL)                                        \
-            :  ( (get_attr_data (insn) == DATA_HIGH_16)                        \
-               ? IS_HIGH_CONST (VAL)                                        \
-               : IS_UINT16_CONST (VAL)                                        \
-            )                                                                \
-          )                                                                \
-        )
+#define SMALL_CONST(VAL, insn)						\
+     (  ((insn == NULL_RTX) || (get_attr_data (insn) == DATA_INT16))	\
+	? IS_INT16_CONST (VAL)						\
+	: ( (get_attr_data (insn) == DATA_NOT_UINT16)			\
+	    ? IS_NOT_UINT16_CONST (VAL)					\
+	    :  ( (get_attr_data (insn) == DATA_HIGH_16)			\
+	       ? IS_HIGH_CONST (VAL)					\
+	       : IS_UINT16_CONST (VAL)					\
+	    )								\
+	  )								\
+	)
 
 /*
    I. Routine calling with arguments in registers
@@ -852,7 +852,7 @@ enum reg_class
 /* The stack grows upward, stack frame grows upward, and args grow
    downward.  */
 
-#define STARTING_FRAME_OFFSET                C4X_LOC0
+#define STARTING_FRAME_OFFSET		C4X_LOC0
 #define FIRST_PARM_OFFSET(FNDECL)      (C4X_ARG0 + 1)
 #define ARGS_GROW_DOWNWARD
 #define STACK_POINTER_OFFSET 1
@@ -873,49 +873,49 @@ enum reg_class
 
 /* Registers That Address the Stack Frame.  */
 
-#define STACK_POINTER_REGNUM        SP_REGNO        /* SP.  */
-#define FRAME_POINTER_REGNUM        AR3_REGNO        /* AR3.  */
-#define ARG_POINTER_REGNUM        AR3_REGNO        /* AR3.  */
-#define STATIC_CHAIN_REGNUM        AR0_REGNO        /* AR0.  */
+#define STACK_POINTER_REGNUM	SP_REGNO	/* SP.  */
+#define FRAME_POINTER_REGNUM	AR3_REGNO	/* AR3.  */
+#define ARG_POINTER_REGNUM	AR3_REGNO	/* AR3.  */
+#define STATIC_CHAIN_REGNUM	AR0_REGNO	/* AR0.  */
 
 /* Eliminating Frame Pointer and Arg Pointer.  */
 
-#define FRAME_POINTER_REQUIRED        0
+#define FRAME_POINTER_REQUIRED	0
 
-#define INITIAL_FRAME_POINTER_OFFSET(DEPTH)                        \
-{                                                                \
- int regno;                                                        \
- int offset = 0;                                                \
-  for (regno = 0; regno < FIRST_PSEUDO_REGISTER; regno++)        \
-    if (regs_ever_live[regno] && ! call_used_regs[regno])        \
-      offset += TARGET_PRESERVE_FLOAT                                \
-                && IS_FLOAT_CALL_SAVED_REGNO (regno) ? 2 : 1;        \
-  (DEPTH) = -(offset + get_frame_size ());                        \
+#define INITIAL_FRAME_POINTER_OFFSET(DEPTH)			\
+{								\
+ int regno;							\
+ int offset = 0;						\
+  for (regno = 0; regno < FIRST_PSEUDO_REGISTER; regno++)	\
+    if (regs_ever_live[regno] && ! call_used_regs[regno])	\
+      offset += TARGET_PRESERVE_FLOAT				\
+		&& IS_FLOAT_CALL_SAVED_REGNO (regno) ? 2 : 1;	\
+  (DEPTH) = -(offset + get_frame_size ());			\
 }
 
 /* This is a hack...  We need to specify a register.  */
-#define        ELIMINABLE_REGS                                         \
+#define	ELIMINABLE_REGS 					\
   {{ FRAME_POINTER_REGNUM, FRAME_POINTER_REGNUM }}
 
-#define        CAN_ELIMINATE(FROM, TO)                                        \
+#define	CAN_ELIMINATE(FROM, TO)					\
   (! (((FROM) == FRAME_POINTER_REGNUM && (TO) == STACK_POINTER_REGNUM) \
   || ((FROM) == FRAME_POINTER_REGNUM && (TO) == FRAME_POINTER_REGNUM)))
 
-#define INITIAL_ELIMINATION_OFFSET(FROM, TO, OFFSET)                 \
-{                                                                \
- int regno;                                                        \
- int offset = 0;                                                \
-  for (regno = 0; regno < FIRST_PSEUDO_REGISTER; regno++)        \
-    if (regs_ever_live[regno] && ! call_used_regs[regno])        \
-      offset += TARGET_PRESERVE_FLOAT                                \
-                && IS_FLOAT_CALL_SAVED_REGNO (regno) ? 2 : 1;        \
-  (OFFSET) = -(offset + get_frame_size ());                        \
+#define INITIAL_ELIMINATION_OFFSET(FROM, TO, OFFSET)	 	\
+{								\
+ int regno;							\
+ int offset = 0;						\
+  for (regno = 0; regno < FIRST_PSEUDO_REGISTER; regno++)	\
+    if (regs_ever_live[regno] && ! call_used_regs[regno])	\
+      offset += TARGET_PRESERVE_FLOAT				\
+		&& IS_FLOAT_CALL_SAVED_REGNO (regno) ? 2 : 1;	\
+  (OFFSET) = -(offset + get_frame_size ());			\
 }
 
 
 /* Passing Function Arguments on the Stack.  */
 
-#define        PUSH_ARGS 1
+#define	PUSH_ARGS 1
 #define PUSH_ROUNDING(BYTES) (BYTES)
 #define RETURN_POPS_ARGS(FUNDECL, FUNTYPE, STACK_SIZE) 0
 
@@ -937,7 +937,7 @@ CUMULATIVE_ARGS;
 #define INIT_CUMULATIVE_ARGS(CUM, FNTYPE, LIBNAME, INDIRECT, N_NAMED_ARGS) \
   (c4x_init_cumulative_args (&CUM, FNTYPE, LIBNAME))
 
-#define FUNCTION_ARG_ADVANCE(CUM, MODE, TYPE, NAMED)        \
+#define FUNCTION_ARG_ADVANCE(CUM, MODE, TYPE, NAMED)	\
   (c4x_function_arg_advance (&CUM, MODE, TYPE, NAMED))
 
 #define FUNCTION_ARG(CUM, MODE, TYPE, NAMED) \
@@ -953,28 +953,28 @@ CUMULATIVE_ARGS;
 /* 1 if N is a possible register number for function argument passing.  */
 
 #define FUNCTION_ARG_REGNO_P(REGNO) \
-        (  (   ((REGNO) == AR2_REGNO)        /* AR2.  */        \
-            || ((REGNO) == R2_REGNO)        /* R2.  */        \
-            || ((REGNO) == R3_REGNO)        /* R3.  */        \
-            || ((REGNO) == RC_REGNO)        /* RC.  */        \
-            || ((REGNO) == RS_REGNO)        /* RS.  */        \
-            || ((REGNO) == RE_REGNO))        /* RE.  */        \
-         ? 1                                                \
-         : 0)
+	(  (   ((REGNO) == AR2_REGNO)	/* AR2.  */	\
+	    || ((REGNO) == R2_REGNO)	/* R2.  */	\
+	    || ((REGNO) == R3_REGNO)	/* R3.  */	\
+	    || ((REGNO) == RC_REGNO)	/* RC.  */	\
+	    || ((REGNO) == RS_REGNO)	/* RS.  */	\
+	    || ((REGNO) == RE_REGNO))	/* RE.  */	\
+	 ? 1						\
+	 : 0)
 
 /* How Scalar Function Values Are Returned.  */
 
 #define FUNCTION_VALUE(VALTYPE, FUNC) \
-        gen_rtx_REG (TYPE_MODE(VALTYPE), R0_REGNO)        /* Return in R0.  */
+	gen_rtx_REG (TYPE_MODE(VALTYPE), R0_REGNO)	/* Return in R0.  */
 
 #define LIBCALL_VALUE(MODE) \
-        gen_rtx_REG (MODE, R0_REGNO)        /* Return in R0.  */
+	gen_rtx_REG (MODE, R0_REGNO)	/* Return in R0.  */
 
 #define FUNCTION_VALUE_REGNO_P(REGNO) ((REGNO) == R0_REGNO)
 
 /* How Large Values Are Returned.  */
 
-#define DEFAULT_PCC_STRUCT_RETURN        0
+#define DEFAULT_PCC_STRUCT_RETURN	0
 
 /* Generating Code for Profiling.  */
 
@@ -983,35 +983,35 @@ CUMULATIVE_ARGS;
    The FUNCTION profiler needs a function mcount which gets passed
    a pointer to the LABELNO.  */
 
-#define FUNCTION_PROFILER(FILE, LABELNO)                         \
-     if (! TARGET_C3X)                                                \
-     {                                                                \
-        fprintf (FILE, "\tpush\tar2\n");                        \
-        fprintf (FILE, "\tldhi\t^LP%d,ar2\n", (LABELNO));        \
-        fprintf (FILE, "\tor\t#LP%d,ar2\n", (LABELNO));                \
-        fprintf (FILE, "\tcall\tmcount\n");                        \
-        fprintf (FILE, "\tpop\tar2\n");                                \
-     }                                                                \
-     else                                                        \
-     {                                                                \
-        fprintf (FILE, "\tpush\tar2\n");                        \
-        fprintf (FILE, "\tldiu\t^LP%d,ar2\n", (LABELNO));        \
-        fprintf (FILE, "\tlsh\t16,ar2\n");                        \
-        fprintf (FILE, "\tor\t#LP%d,ar2\n", (LABELNO));                \
-        fprintf (FILE, "\tcall\tmcount\n");                        \
-        fprintf (FILE, "\tpop\tar2\n");                                \
+#define FUNCTION_PROFILER(FILE, LABELNO) 			\
+     if (! TARGET_C3X)						\
+     {								\
+	fprintf (FILE, "\tpush\tar2\n");			\
+	fprintf (FILE, "\tldhi\t^LP%d,ar2\n", (LABELNO));	\
+	fprintf (FILE, "\tor\t#LP%d,ar2\n", (LABELNO));		\
+	fprintf (FILE, "\tcall\tmcount\n");			\
+	fprintf (FILE, "\tpop\tar2\n");				\
+     }								\
+     else							\
+     {								\
+	fprintf (FILE, "\tpush\tar2\n");			\
+	fprintf (FILE, "\tldiu\t^LP%d,ar2\n", (LABELNO));	\
+	fprintf (FILE, "\tlsh\t16,ar2\n");			\
+	fprintf (FILE, "\tor\t#LP%d,ar2\n", (LABELNO));		\
+	fprintf (FILE, "\tcall\tmcount\n");			\
+	fprintf (FILE, "\tpop\tar2\n");				\
      }
 
 /* CC_NOOVmode should be used when the first operand is a PLUS, MINUS, NEG
    or MULT.
    CCmode should be used when no special processing is needed.  */
 #define SELECT_CC_MODE(OP,X,Y) \
-  ((GET_CODE (X) == PLUS || GET_CODE (X) == MINUS                \
-    || GET_CODE (X) == NEG || GET_CODE (X) == MULT                \
-    || GET_MODE (X) == ABS                                        \
-    || GET_CODE (Y) == PLUS || GET_CODE (Y) == MINUS                \
-    || GET_CODE (Y) == NEG || GET_CODE (Y) == MULT                \
-    || GET_MODE (Y) == ABS)                                        \
+  ((GET_CODE (X) == PLUS || GET_CODE (X) == MINUS		\
+    || GET_CODE (X) == NEG || GET_CODE (X) == MULT		\
+    || GET_MODE (X) == ABS					\
+    || GET_CODE (Y) == PLUS || GET_CODE (Y) == MINUS		\
+    || GET_CODE (Y) == NEG || GET_CODE (Y) == MULT		\
+    || GET_MODE (Y) == ABS)					\
     ? CC_NOOVmode : CCmode)
 
 /* Addressing Modes.  */
@@ -1037,7 +1037,7 @@ CUMULATIVE_ARGS;
 
 /* Maximum number of registers that can appear in a valid memory
    address.  */
-#define MAX_REGS_PER_ADDRESS        2
+#define MAX_REGS_PER_ADDRESS	2
 
 /* The macros REG_OK_FOR..._P assume that the arg is a REG rtx
    and check its validity for a certain class.
@@ -1062,10 +1062,10 @@ CUMULATIVE_ARGS;
 
 #define REG_OK_FOR_INDEX_P(X) IS_INDEX_OR_PSEUDO_REG(X)
 
-#define GO_IF_LEGITIMATE_ADDRESS(MODE, X, ADDR)                                \
-{                                                                        \
-  if (c4x_legitimate_address_p (MODE, X, 0))                                \
-    goto ADDR;                                                                \
+#define GO_IF_LEGITIMATE_ADDRESS(MODE, X, ADDR)				\
+{									\
+  if (c4x_legitimate_address_p (MODE, X, 0))				\
+    goto ADDR;								\
 }
 
 #else
@@ -1078,92 +1078,92 @@ CUMULATIVE_ARGS;
 
 #define REG_OK_FOR_BASE_P(X) REGNO_OK_FOR_BASE_P (REGNO (X))
 
-#define GO_IF_LEGITIMATE_ADDRESS(MODE, X, ADDR)                                \
-{                                                                        \
-  if (c4x_legitimate_address_p (MODE, X, 1))                                \
-    goto ADDR;                                                                \
+#define GO_IF_LEGITIMATE_ADDRESS(MODE, X, ADDR)				\
+{									\
+  if (c4x_legitimate_address_p (MODE, X, 1))				\
+    goto ADDR;								\
 }
 
 #endif
 
 #define LEGITIMIZE_ADDRESS(X, OLDX, MODE, WIN) \
-{                                                                        \
-  rtx new;                                                                \
-                                                                        \
-  new = c4x_legitimize_address (X, MODE);                                \
-  if (new != NULL_RTX)                                                        \
-  {                                                                        \
-    (X) = new;                                                                \
-    goto WIN;                                                                \
-  }                                                                        \
+{									\
+  rtx new;								\
+									\
+  new = c4x_legitimize_address (X, MODE);				\
+  if (new != NULL_RTX)							\
+  {									\
+    (X) = new;								\
+    goto WIN;								\
+  }									\
 }
 
 #define LEGITIMIZE_RELOAD_ADDRESS(X,MODE,OPNUM,TYPE,IND_LEVELS,WIN)     \
-{                                                                        \
-  if (MODE != HImode                                                        \
-      && MODE != HFmode                                                        \
-      && GET_MODE (X) != HImode                                                \
-      && GET_MODE (X) != HFmode                                                \
-      && (GET_CODE (X) == CONST                                                \
-          || GET_CODE (X) == SYMBOL_REF                                        \
-          || GET_CODE (X) == LABEL_REF))                                \
-    {                                                                        \
-      if (! TARGET_SMALL)                                                \
-        {                                                                \
-          int i;                                                        \
-                (X) = gen_rtx_LO_SUM (GET_MODE (X),                                \
-                              gen_rtx_HIGH (GET_MODE (X), X), X);        \
-          i = push_reload (XEXP (X, 0), NULL_RTX,                        \
-                           &XEXP (X, 0), NULL,                                \
-                           DP_REG, GET_MODE (X), VOIDmode, 0, 0,        \
-                           OPNUM, TYPE);                                \
-          /* The only valid reg is DP. This is a fixed reg and will        \
-             normally not be used so force it.  */                        \
-          rld[i].reg_rtx = gen_rtx_REG (Pmode, DP_REGNO);                 \
-          rld[i].nocombine = 1;                                         \
-        }                                                                \
-      else                                                                \
-        {                                                                \
+{									\
+  if (MODE != HImode							\
+      && MODE != HFmode							\
+      && GET_MODE (X) != HImode						\
+      && GET_MODE (X) != HFmode						\
+      && (GET_CODE (X) == CONST						\
+          || GET_CODE (X) == SYMBOL_REF					\
+          || GET_CODE (X) == LABEL_REF))				\
+    {									\
+      if (! TARGET_SMALL)						\
+	{								\
+          int i;							\
+      	  (X) = gen_rtx_LO_SUM (GET_MODE (X),				\
+			      gen_rtx_HIGH (GET_MODE (X), X), X);	\
+          i = push_reload (XEXP (X, 0), NULL_RTX,			\
+			   &XEXP (X, 0), NULL,				\
+		           DP_REG, GET_MODE (X), VOIDmode, 0, 0,	\
+		           OPNUM, TYPE);				\
+          /* The only valid reg is DP. This is a fixed reg and will	\
+	     normally not be used so force it.  */			\
+          rld[i].reg_rtx = gen_rtx_REG (Pmode, DP_REGNO); 		\
+          rld[i].nocombine = 1; 					\
+        }								\
+      else								\
+        {								\
           /* make_memloc in reload will substitute invalid memory       \
              references.  We need to fix them up.  */                   \
           (X) = gen_rtx_LO_SUM (Pmode, gen_rtx_REG (Pmode, DP_REGNO), (X)); \
-        }                                                                \
-      goto WIN;                                                                \
-   }                                                                        \
-  else if (MODE != HImode                                                \
-           && MODE != HFmode                                                \
-           && GET_MODE (X) != HImode                                        \
-           && GET_MODE (X) != HFmode                                        \
-           && GET_CODE (X) == LO_SUM                                        \
-           && GET_CODE (XEXP (X,0)) == HIGH                                \
-           && (GET_CODE (XEXP (XEXP (X,0),0)) == CONST                        \
-               || GET_CODE (XEXP (XEXP (X,0),0)) == SYMBOL_REF                \
-               || GET_CODE (XEXP (XEXP (X,0),0)) == LABEL_REF))                \
-    {                                                                        \
-      if (! TARGET_SMALL)                                                \
-        {                                                                \
-          int i = push_reload (XEXP (X, 0), NULL_RTX,                        \
-                               &XEXP (X, 0), NULL,                        \
-                               DP_REG, GET_MODE (X), VOIDmode, 0, 0,        \
-                               OPNUM, TYPE);                                \
-          /* The only valid reg is DP. This is a fixed reg and will        \
-             normally not be used so force it.  */                        \
-          rld[i].reg_rtx = gen_rtx_REG (Pmode, DP_REGNO);                 \
-          rld[i].nocombine = 1;                                         \
-        }                                                                \
-      goto WIN;                                                                \
-   }                                                                        \
+        }								\
+      goto WIN;								\
+   }									\
+  else if (MODE != HImode						\
+           && MODE != HFmode						\
+           && GET_MODE (X) != HImode					\
+           && GET_MODE (X) != HFmode					\
+           && GET_CODE (X) == LO_SUM					\
+           && GET_CODE (XEXP (X,0)) == HIGH				\
+           && (GET_CODE (XEXP (XEXP (X,0),0)) == CONST			\
+               || GET_CODE (XEXP (XEXP (X,0),0)) == SYMBOL_REF		\
+               || GET_CODE (XEXP (XEXP (X,0),0)) == LABEL_REF))		\
+    {									\
+      if (! TARGET_SMALL)						\
+	{								\
+          int i = push_reload (XEXP (X, 0), NULL_RTX,			\
+			       &XEXP (X, 0), NULL,			\
+		               DP_REG, GET_MODE (X), VOIDmode, 0, 0,	\
+		               OPNUM, TYPE);				\
+          /* The only valid reg is DP. This is a fixed reg and will	\
+	     normally not be used so force it.  */			\
+          rld[i].reg_rtx = gen_rtx_REG (Pmode, DP_REGNO); 		\
+          rld[i].nocombine = 1; 					\
+        }								\
+      goto WIN;								\
+   }									\
 }
 
 /* No mode-dependent addresses on the C4x are autoincrements.  */
 
-#define GO_IF_MODE_DEPENDENT_ADDRESS(ADDR, LABEL)        \
-  if (GET_CODE (ADDR) == PRE_DEC        \
-      || GET_CODE (ADDR) == POST_DEC        \
-      || GET_CODE (ADDR) == PRE_INC        \
-      || GET_CODE (ADDR) == POST_INC        \
-      || GET_CODE (ADDR) == POST_MODIFY        \
-      || GET_CODE (ADDR) == PRE_MODIFY)        \
+#define GO_IF_MODE_DEPENDENT_ADDRESS(ADDR, LABEL)	\
+  if (GET_CODE (ADDR) == PRE_DEC	\
+      || GET_CODE (ADDR) == POST_DEC	\
+      || GET_CODE (ADDR) == PRE_INC	\
+      || GET_CODE (ADDR) == POST_INC	\
+      || GET_CODE (ADDR) == POST_MODIFY	\
+      || GET_CODE (ADDR) == PRE_MODIFY)	\
     goto LABEL
 
 
@@ -1179,24 +1179,24 @@ CUMULATIVE_ARGS;
    into memory.
 */
 
-#define LEGITIMATE_CONSTANT_P(X)                                \
-  ((GET_CODE (X) == CONST_DOUBLE && c4x_H_constant (X))                \
-  || (GET_CODE (X) == CONST_INT)                                \
-  || (GET_CODE (X) == SYMBOL_REF)                                \
-  || (GET_CODE (X) == LABEL_REF)                                \
-  || (GET_CODE (X) == CONST)                                        \
-  || (GET_CODE (X) == HIGH && ! TARGET_C3X)                        \
+#define LEGITIMATE_CONSTANT_P(X)				\
+  ((GET_CODE (X) == CONST_DOUBLE && c4x_H_constant (X))		\
+  || (GET_CODE (X) == CONST_INT)				\
+  || (GET_CODE (X) == SYMBOL_REF)				\
+  || (GET_CODE (X) == LABEL_REF)				\
+  || (GET_CODE (X) == CONST)					\
+  || (GET_CODE (X) == HIGH && ! TARGET_C3X)			\
   || (GET_CODE (X) == LO_SUM && ! TARGET_C3X))
 
 #define LEGITIMATE_DISPLACEMENT_P(X) IS_DISP8_CONST (INTVAL (X))
 
 /* Describing Relative Cost of Operations.  */
 
-#define        CANONICALIZE_COMPARISON(CODE, OP0, OP1)                \
-if (REG_P (OP1) && ! REG_P (OP0))                        \
-{                                                        \
-  rtx tmp = OP0; OP0 = OP1 ; OP1 = tmp;                        \
-  CODE = swap_condition (CODE);                                \
+#define	CANONICALIZE_COMPARISON(CODE, OP0, OP1)		\
+if (REG_P (OP1) && ! REG_P (OP0))			\
+{							\
+  rtx tmp = OP0; OP0 = OP1 ; OP1 = tmp;			\
+  CODE = swap_condition (CODE);				\
 }
 
 #define EXT_CLASS_P(CLASS) (reg_class_subset_p (CLASS, EXT_REGS))
@@ -1208,19 +1208,19 @@ if (REG_P (OP1) && ! REG_P (OP0))                        \
 /* Compute extra cost of moving data between one register class
    and another.  */
 
-#define REGISTER_MOVE_COST(MODE, FROM, TO)        2
+#define REGISTER_MOVE_COST(MODE, FROM, TO)	2
 
 /* Memory move cost is same as fast register move.  Maybe this should
    be bumped up?.  */
 
-#define MEMORY_MOVE_COST(M,C,I)                4
+#define MEMORY_MOVE_COST(M,C,I)		4
 
 /* Branches are kind of expensive (even with delayed branching) so
    make their cost higher.  */
 
-#define BRANCH_COST                        8
+#define BRANCH_COST			8
 
-#define        WORD_REGISTER_OPERATIONS
+#define	WORD_REGISTER_OPERATIONS
 
 /* Dividing the Output into Sections.  */
 
@@ -1254,7 +1254,7 @@ if (REG_P (OP1) && ! REG_P (OP0))                        \
 
 /* Output and Generation of Labels.  */
 
-#define NO_DOT_IN_LABEL                /* Only required for TI format.  */
+#define NO_DOT_IN_LABEL		/* Only required for TI format.  */
 
 /* Globalizing directive for a label.  */
 #define GLOBAL_ASM_OP "\t.global\t"
@@ -1277,10 +1277,10 @@ c4x_external_ref (NAME)
 /* A C statement to output to the stdio stream STREAM assembler code which
    defines (equates) the symbol NAME to have the value VALUE.  */
 
-#define ASM_OUTPUT_DEF(STREAM, NAME, VALUE)         \
-do {                                                \
-  assemble_name (STREAM, NAME);                        \
-  fprintf (STREAM, "\t.set\t%s\n", VALUE);        \
+#define ASM_OUTPUT_DEF(STREAM, NAME, VALUE) 	\
+do {						\
+  assemble_name (STREAM, NAME);			\
+  fprintf (STREAM, "\t.set\t%s\n", VALUE);	\
 } while (0)
 
 /* Output of Dispatch Tables.  */
@@ -1307,11 +1307,11 @@ do {                                                \
 #undef WCHAR_TYPE_SIZE
 #define WCHAR_TYPE_SIZE 32
 
-#define INT_TYPE_SIZE                32
-#define LONG_LONG_TYPE_SIZE        64
-#define FLOAT_TYPE_SIZE                32
-#define DOUBLE_TYPE_SIZE        32
-#define LONG_DOUBLE_TYPE_SIZE        64 /* Actually only 40.  */
+#define INT_TYPE_SIZE		32
+#define LONG_LONG_TYPE_SIZE	64
+#define FLOAT_TYPE_SIZE		32
+#define DOUBLE_TYPE_SIZE	32
+#define LONG_DOUBLE_TYPE_SIZE	64 /* Actually only 40.  */
 
 /* Output #ident as a .ident.  */
 
@@ -1325,8 +1325,8 @@ do {                                                \
 
 #undef ASM_OUTPUT_LOCAL
 #define ASM_OUTPUT_LOCAL(FILE, NAME, SIZE, ROUNDED)  \
-( fputs ("\t.bss\t", FILE),                        \
-  assemble_name (FILE, (NAME)),                \
+( fputs ("\t.bss\t", FILE),			\
+  assemble_name (FILE, (NAME)),		\
   fprintf (FILE, ",%u\n", (int)(ROUNDED)))
 
 /* This says how to output an assembler line to define a global
@@ -1334,18 +1334,18 @@ do {                                                \
 
 #undef ASM_OUTPUT_COMMON
 #define ASM_OUTPUT_COMMON(FILE, NAME, SIZE, ROUNDED)  \
-(  fputs ("\t.globl\t", FILE),        \
-   assemble_name (FILE, (NAME)),        \
-   fputs ("\n\t.bss\t", FILE),        \
-   assemble_name (FILE, (NAME)),        \
+(  fputs ("\t.globl\t", FILE),	\
+   assemble_name (FILE, (NAME)),	\
+   fputs ("\n\t.bss\t", FILE),	\
+   assemble_name (FILE, (NAME)),	\
    fprintf (FILE, ",%u\n", (int)(ROUNDED)))
 
 #undef ASM_OUTPUT_BSS
 #define ASM_OUTPUT_BSS(FILE, DECL, NAME, SIZE, ALIGN)   \
-(  fputs ("\t.globl\t", FILE),        \
-   assemble_name (FILE, (NAME)),        \
-   fputs ("\n\t.bss\t", FILE),        \
-   assemble_name (FILE, (NAME)),        \
+(  fputs ("\t.globl\t", FILE),	\
+   assemble_name (FILE, (NAME)),	\
+   fputs ("\n\t.bss\t", FILE),	\
+   assemble_name (FILE, (NAME)),	\
    fprintf (FILE, ",%u\n", (int)(SIZE)))
 
 /* Macros Controlling Initialization Routines.  */
@@ -1358,21 +1358,21 @@ do {                                                \
 /* Register names when used for integer modes.  */
 
 #define REGISTER_NAMES \
-{                                                                \
- "r0",   "r1", "r2",   "r3",  "r4",  "r5",  "r6",  "r7",        \
- "ar0", "ar1", "ar2", "ar3", "ar4", "ar5", "ar6", "ar7",        \
- "dp",  "ir0", "ir1",  "bk",  "sp",  "st", "die", "iie",        \
- "iif",         "rs",  "re",  "rc",  "r8",  "r9", "r10", "r11"                \
+{								\
+ "r0",   "r1", "r2",   "r3",  "r4",  "r5",  "r6",  "r7",	\
+ "ar0", "ar1", "ar2", "ar3", "ar4", "ar5", "ar6", "ar7",	\
+ "dp",  "ir0", "ir1",  "bk",  "sp",  "st", "die", "iie",	\
+ "iif",	 "rs",  "re",  "rc",  "r8",  "r9", "r10", "r11"		\
 }
 
 /* Alternate register names when used for floating point modes.  */
 
 #define FLOAT_REGISTER_NAMES \
-{                                                                \
- "f0",   "f1", "f2",   "f3",  "f4",  "f5",  "f6",  "f7",        \
- "ar0", "ar1", "ar2", "ar3", "ar4", "ar5", "ar6", "ar7",        \
- "dp",  "ir0", "ir1",  "bk",  "sp",  "st", "die", "iie",        \
- "iif",         "rs",  "re",  "rc",  "f8",  "f9", "f10", "f11"                \
+{								\
+ "f0",   "f1", "f2",   "f3",  "f4",  "f5",  "f6",  "f7",	\
+ "ar0", "ar1", "ar2", "ar3", "ar4", "ar5", "ar6", "ar7",	\
+ "dp",  "ir0", "ir1",  "bk",  "sp",  "st", "die", "iie",	\
+ "iif",	 "rs",  "re",  "rc",  "f8",  "f9", "f10", "f11"		\
 }
 
 #define PRINT_OPERAND(FILE, X, CODE) c4x_print_operand(FILE, X, CODE)
@@ -1385,17 +1385,17 @@ do {                                                \
 #define PRINT_OPERAND_ADDRESS(FILE, X) c4x_print_operand_address(FILE, X)
 
 /* C4x specific pragmas.  */
-#define REGISTER_TARGET_PRAGMAS() do {                                          \
-  c_register_pragma (0, "CODE_SECTION", c4x_pr_CODE_SECTION);                  \
-  c_register_pragma (0, "DATA_SECTION", c4x_pr_DATA_SECTION);                  \
-  c_register_pragma (0, "FUNC_CANNOT_INLINE", c4x_pr_ignored);                  \
-  c_register_pragma (0, "FUNC_EXT_CALLED", c4x_pr_ignored);                  \
-  c_register_pragma (0, "FUNC_IS_PURE", c4x_pr_FUNC_IS_PURE);                  \
-  c_register_pragma (0, "FUNC_IS_SYSTEM", c4x_pr_ignored);                  \
+#define REGISTER_TARGET_PRAGMAS() do {					  \
+  c_register_pragma (0, "CODE_SECTION", c4x_pr_CODE_SECTION);		  \
+  c_register_pragma (0, "DATA_SECTION", c4x_pr_DATA_SECTION);		  \
+  c_register_pragma (0, "FUNC_CANNOT_INLINE", c4x_pr_ignored);		  \
+  c_register_pragma (0, "FUNC_EXT_CALLED", c4x_pr_ignored);		  \
+  c_register_pragma (0, "FUNC_IS_PURE", c4x_pr_FUNC_IS_PURE);		  \
+  c_register_pragma (0, "FUNC_IS_SYSTEM", c4x_pr_ignored);		  \
   c_register_pragma (0, "FUNC_NEVER_RETURNS", c4x_pr_FUNC_NEVER_RETURNS); \
-  c_register_pragma (0, "FUNC_NO_GLOBAL_ASG", c4x_pr_ignored);                  \
-  c_register_pragma (0, "FUNC_NO_IND_ASG", c4x_pr_ignored);                  \
-  c_register_pragma (0, "INTERRUPT", c4x_pr_INTERRUPT);                          \
+  c_register_pragma (0, "FUNC_NO_GLOBAL_ASG", c4x_pr_ignored);		  \
+  c_register_pragma (0, "FUNC_NO_IND_ASG", c4x_pr_ignored);		  \
+  c_register_pragma (0, "INTERRUPT", c4x_pr_INTERRUPT);			  \
 } while (0)
 
 /* Assembler Commands for Alignment.  */
@@ -1410,8 +1410,8 @@ do {                                                \
 
 /* I'm not sure about this one.  FIXME.  */
 
-#define ASM_OUTPUT_ALIGN(FILE, LOG)        \
-  if ((LOG) != 0)                        \
+#define ASM_OUTPUT_ALIGN(FILE, LOG)	\
+  if ((LOG) != 0)			\
     fprintf (FILE, "\t.align\t%d\n", (1 << (LOG)))
 
 
@@ -1424,44 +1424,44 @@ do {                                                \
 /* Don't use octal since this can confuse gas for the c4x.  */
 #define PUT_SDB_TYPE(a) fprintf(asm_out_file, "\t.type\t0x%x%s", a, SDB_DELIM)
 
-#define PUT_SDB_DEF(A)                                \
-do { fprintf (asm_out_file, "\t.sdef\t");        \
-     ASM_OUTPUT_LABELREF (asm_out_file, A);         \
+#define PUT_SDB_DEF(A)				\
+do { fprintf (asm_out_file, "\t.sdef\t");	\
+     ASM_OUTPUT_LABELREF (asm_out_file, A); 	\
      fprintf (asm_out_file, SDB_DELIM); } while (0)
 
-#define PUT_SDB_PLAIN_DEF(A)                        \
+#define PUT_SDB_PLAIN_DEF(A)			\
   fprintf (asm_out_file,"\t.sdef\t.%s%s", A, SDB_DELIM)
 
-#define PUT_SDB_BLOCK_START(LINE)                \
-  fprintf (asm_out_file,                        \
-           "\t.sdef\t.bb%s\t.val\t.%s\t.scl\t100%s\t.line\t%d%s\t.endef\n", \
-           SDB_DELIM, SDB_DELIM, SDB_DELIM, (LINE), SDB_DELIM)
+#define PUT_SDB_BLOCK_START(LINE)		\
+  fprintf (asm_out_file,			\
+	   "\t.sdef\t.bb%s\t.val\t.%s\t.scl\t100%s\t.line\t%d%s\t.endef\n", \
+	   SDB_DELIM, SDB_DELIM, SDB_DELIM, (LINE), SDB_DELIM)
 
-#define PUT_SDB_BLOCK_END(LINE)                        \
-  fprintf (asm_out_file,                        \
-           "\t.sdef\t.eb%s\t.val\t.%s\t.scl\t100%s\t.line\t%d%s\t.endef\n", \
-           SDB_DELIM, SDB_DELIM, SDB_DELIM, (LINE), SDB_DELIM)
+#define PUT_SDB_BLOCK_END(LINE)			\
+  fprintf (asm_out_file,			\
+	   "\t.sdef\t.eb%s\t.val\t.%s\t.scl\t100%s\t.line\t%d%s\t.endef\n", \
+	   SDB_DELIM, SDB_DELIM, SDB_DELIM, (LINE), SDB_DELIM)
 
-#define PUT_SDB_FUNCTION_START(LINE)                \
-  fprintf (asm_out_file,                        \
-           "\t.sdef\t.bf%s\t.val\t.%s\t.scl\t101%s\t.line\t%d%s\t.endef\n", \
-           SDB_DELIM, SDB_DELIM, SDB_DELIM, (LINE), SDB_DELIM)
+#define PUT_SDB_FUNCTION_START(LINE)		\
+  fprintf (asm_out_file,			\
+	   "\t.sdef\t.bf%s\t.val\t.%s\t.scl\t101%s\t.line\t%d%s\t.endef\n", \
+	   SDB_DELIM, SDB_DELIM, SDB_DELIM, (LINE), SDB_DELIM)
 
 /* Note we output relative line numbers for .ef which gas converts
    to absolute line numbers.  The TI compiler outputs absolute line numbers
    in the .sym directive which gas does not support.  */
-#define PUT_SDB_FUNCTION_END(LINE)                \
-  fprintf (asm_out_file,                        \
-           "\t.sdef\t.ef%s\t.val\t.%s\t.scl\t101%s\t.line\t%d%s\t.endef\n", \
-           SDB_DELIM, SDB_DELIM, SDB_DELIM, \
+#define PUT_SDB_FUNCTION_END(LINE)		\
+  fprintf (asm_out_file,			\
+	   "\t.sdef\t.ef%s\t.val\t.%s\t.scl\t101%s\t.line\t%d%s\t.endef\n", \
+	   SDB_DELIM, SDB_DELIM, SDB_DELIM, \
            (LINE), SDB_DELIM)
 
-#define PUT_SDB_EPILOGUE_END(NAME)                        \
-do { fprintf (asm_out_file, "\t.sdef\t");                \
-     ASM_OUTPUT_LABELREF (asm_out_file, NAME);                \
-     fprintf (asm_out_file,                                \
-              "%s\t.val\t.%s\t.scl\t-1%s\t.endef\n",        \
-              SDB_DELIM, SDB_DELIM, SDB_DELIM); } while (0)
+#define PUT_SDB_EPILOGUE_END(NAME)			\
+do { fprintf (asm_out_file, "\t.sdef\t");		\
+     ASM_OUTPUT_LABELREF (asm_out_file, NAME);		\
+     fprintf (asm_out_file,				\
+	      "%s\t.val\t.%s\t.scl\t-1%s\t.endef\n",	\
+	      SDB_DELIM, SDB_DELIM, SDB_DELIM); } while (0)
 
 /* Define this as 1 if `char' should by default be signed; else as 0.  */
 
@@ -1511,73 +1511,73 @@ do { fprintf (asm_out_file, "\t.sdef\t");                \
 
 #define TRAMPOLINE_SIZE (TARGET_C3X ? 8 : 10)
 
-#define TRAMPOLINE_TEMPLATE(FILE)                                \
-{                                                                \
-  if (TARGET_C3X)                                                \
-    {                                                                \
-      fprintf (FILE, "\tldiu\t0,ar1\n");                        \
-      fprintf (FILE, "\tlsh\t16,ar1\n");                        \
-      fprintf (FILE, "\tor\t0,ar1\n");                                \
-      fprintf (FILE, "\tldiu\t0,ar0\n");                        \
-      fprintf (FILE, "\tbud\tar1\n");                                \
-      fprintf (FILE, "\tlsh\t16,ar0\n");                        \
-      fprintf (FILE, "\tor\t0,ar0\n");                                \
-      fprintf (FILE, "\tor\t1000h,st\n");                        \
-    }                                                                \
-  else                                                                \
-    {                                                                \
-      fprintf (FILE, "\tlaj\t$+4\n");                                \
-      fprintf (FILE, "\taddi3\t4,r11,ar0\n");                        \
-      fprintf (FILE, "\tlda\t*ar0,ar1\n");                        \
-      fprintf (FILE, "\tlda\t*+ar0(1),ar0\n");                        \
-      fprintf (FILE, "\tbud\tar1\n");                                \
-      fprintf (FILE, "\tnop\n");                                \
-      fprintf (FILE, "\tnop\n");                                \
-      fprintf (FILE, "\tor\t1000h,st\n");                        \
-      fprintf (FILE, "\t.word\t0\n");                                \
-      fprintf (FILE, "\t.word\t0\n");                                \
-    }                                                                \
+#define TRAMPOLINE_TEMPLATE(FILE)				\
+{								\
+  if (TARGET_C3X)						\
+    {								\
+      fprintf (FILE, "\tldiu\t0,ar1\n");			\
+      fprintf (FILE, "\tlsh\t16,ar1\n");			\
+      fprintf (FILE, "\tor\t0,ar1\n");				\
+      fprintf (FILE, "\tldiu\t0,ar0\n");			\
+      fprintf (FILE, "\tbud\tar1\n");				\
+      fprintf (FILE, "\tlsh\t16,ar0\n");			\
+      fprintf (FILE, "\tor\t0,ar0\n");				\
+      fprintf (FILE, "\tor\t1000h,st\n");			\
+    }								\
+  else								\
+    {								\
+      fprintf (FILE, "\tlaj\t$+4\n");				\
+      fprintf (FILE, "\taddi3\t4,r11,ar0\n");			\
+      fprintf (FILE, "\tlda\t*ar0,ar1\n");			\
+      fprintf (FILE, "\tlda\t*+ar0(1),ar0\n");			\
+      fprintf (FILE, "\tbud\tar1\n");				\
+      fprintf (FILE, "\tnop\n");				\
+      fprintf (FILE, "\tnop\n");				\
+      fprintf (FILE, "\tor\t1000h,st\n");			\
+      fprintf (FILE, "\t.word\t0\n");				\
+      fprintf (FILE, "\t.word\t0\n");				\
+    }								\
 }
 
-#define INITIALIZE_TRAMPOLINE(TRAMP, FNADDR, CXT)                        \
-{                                                                        \
-  if (TARGET_C3X)                                                        \
-    {                                                                        \
-      rtx tmp1, tmp2;                                                        \
-      tmp1 = expand_shift (RSHIFT_EXPR, QImode, FNADDR,                        \
-                           size_int (16), 0, 1);                        \
-      tmp2 = expand_shift (LSHIFT_EXPR, QImode,                                \
-                           GEN_INT (0x5069), size_int (16), 0, 1);        \
-      emit_insn (gen_iorqi3 (tmp1, tmp1, tmp2));                        \
-      emit_move_insn (gen_rtx_MEM (QImode,                                \
-                               plus_constant (TRAMP, 0)), tmp1);        \
-      tmp1 = expand_and (QImode, FNADDR, GEN_INT (0xffff), 0);                \
-      tmp2 = expand_shift (LSHIFT_EXPR, QImode,                                \
-                           GEN_INT (0x1069), size_int (16), 0, 1);        \
-      emit_insn (gen_iorqi3 (tmp1, tmp1, tmp2));                        \
-      emit_move_insn (gen_rtx_MEM (QImode,                                \
-                               plus_constant (TRAMP, 2)), tmp1);        \
-      tmp1 = expand_shift (RSHIFT_EXPR, QImode, CXT,                        \
-                           size_int (16), 0, 1);                        \
-      tmp2 = expand_shift (LSHIFT_EXPR, QImode,                                \
-                           GEN_INT (0x5068), size_int (16), 0, 1);        \
-      emit_insn (gen_iorqi3 (tmp1, tmp1, tmp2));                        \
-      emit_move_insn (gen_rtx_MEM (QImode,                                \
-                               plus_constant (TRAMP, 3)), tmp1);        \
-      tmp1 = expand_and (QImode, CXT, GEN_INT (0xffff), 0);                \
-      tmp2 = expand_shift (LSHIFT_EXPR, QImode,                                \
-                           GEN_INT (0x1068), size_int (16), 0, 1);        \
-      emit_insn (gen_iorqi3 (tmp1, tmp1, tmp2));                        \
-      emit_move_insn (gen_rtx_MEM (QImode,                                \
-                               plus_constant (TRAMP, 6)), tmp1);        \
-    }                                                                        \
-  else                                                                        \
-    {                                                                        \
-      emit_move_insn (gen_rtx_MEM (QImode,                                \
-                               plus_constant (TRAMP, 8)), FNADDR);         \
-      emit_move_insn (gen_rtx_MEM (QImode,                                \
-                               plus_constant (TRAMP, 9)), CXT);         \
-    }                                                                        \
+#define INITIALIZE_TRAMPOLINE(TRAMP, FNADDR, CXT)			\
+{									\
+  if (TARGET_C3X)							\
+    {									\
+      rtx tmp1, tmp2;							\
+      tmp1 = expand_shift (RSHIFT_EXPR, QImode, FNADDR,			\
+			   size_int (16), 0, 1);			\
+      tmp2 = expand_shift (LSHIFT_EXPR, QImode,				\
+			   GEN_INT (0x5069), size_int (16), 0, 1);	\
+      emit_insn (gen_iorqi3 (tmp1, tmp1, tmp2));			\
+      emit_move_insn (gen_rtx_MEM (QImode,				\
+			       plus_constant (TRAMP, 0)), tmp1);	\
+      tmp1 = expand_and (QImode, FNADDR, GEN_INT (0xffff), 0);		\
+      tmp2 = expand_shift (LSHIFT_EXPR, QImode,				\
+			   GEN_INT (0x1069), size_int (16), 0, 1);	\
+      emit_insn (gen_iorqi3 (tmp1, tmp1, tmp2));			\
+      emit_move_insn (gen_rtx_MEM (QImode,				\
+			       plus_constant (TRAMP, 2)), tmp1);	\
+      tmp1 = expand_shift (RSHIFT_EXPR, QImode, CXT,			\
+			   size_int (16), 0, 1);			\
+      tmp2 = expand_shift (LSHIFT_EXPR, QImode,				\
+			   GEN_INT (0x5068), size_int (16), 0, 1);	\
+      emit_insn (gen_iorqi3 (tmp1, tmp1, tmp2));			\
+      emit_move_insn (gen_rtx_MEM (QImode,				\
+			       plus_constant (TRAMP, 3)), tmp1);	\
+      tmp1 = expand_and (QImode, CXT, GEN_INT (0xffff), 0);		\
+      tmp2 = expand_shift (LSHIFT_EXPR, QImode,				\
+			   GEN_INT (0x1068), size_int (16), 0, 1);	\
+      emit_insn (gen_iorqi3 (tmp1, tmp1, tmp2));			\
+      emit_move_insn (gen_rtx_MEM (QImode,				\
+			       plus_constant (TRAMP, 6)), tmp1);	\
+    }									\
+  else									\
+    {									\
+      emit_move_insn (gen_rtx_MEM (QImode,				\
+			       plus_constant (TRAMP, 8)), FNADDR); 	\
+      emit_move_insn (gen_rtx_MEM (QImode,				\
+			       plus_constant (TRAMP, 9)), CXT); 	\
+    }									\
 }
 
 /* Specify the machine mode that this machine uses for the index in
@@ -1611,23 +1611,23 @@ do { fprintf (asm_out_file, "\t.sdef\t");                \
 
 #define TRULY_NOOP_TRUNCATION(OUTPREC, INPREC) 1
 
-#define DBR_OUTPUT_SEQEND(FILE)                                \
-if (final_sequence != NULL_RTX)                                \
-{                                                        \
- int count;                                                \
- rtx insn = XVECEXP (final_sequence, 0, 0);                 \
- int laj = GET_CODE (insn) == CALL_INSN                 \
-           || (GET_CODE (insn) == INSN                        \
-               && GET_CODE (PATTERN (insn)) == TRAP_IF);\
-                                                        \
- count = dbr_sequence_length();                                \
- while (count < (laj ? 2 : 3))                                \
- {                                                        \
-    fputs("\tnop\n", FILE);                                \
-    count++;                                                \
- }                                                        \
- if (laj)                                                \
-    fputs("\tpush\tr11\n", FILE);                        \
+#define DBR_OUTPUT_SEQEND(FILE)				\
+if (final_sequence != NULL_RTX)				\
+{							\
+ int count;						\
+ rtx insn = XVECEXP (final_sequence, 0, 0); 		\
+ int laj = GET_CODE (insn) == CALL_INSN 		\
+	   || (GET_CODE (insn) == INSN			\
+	       && GET_CODE (PATTERN (insn)) == TRAP_IF);\
+							\
+ count = dbr_sequence_length();				\
+ while (count < (laj ? 2 : 3))				\
+ {							\
+    fputs("\tnop\n", FILE);				\
+    count++;						\
+ }							\
+ if (laj)						\
+    fputs("\tpush\tr11\n", FILE);			\
 }
 
 #define NO_FUNCTION_CSE
@@ -1640,13 +1640,13 @@ if (final_sequence != NULL_RTX)                                \
 
 enum c4x_builtins
 {
-                        /*        intrinsic name                */
-  C4X_BUILTIN_FIX,        /*        fast_ftoi                */
-  C4X_BUILTIN_FIX_ANSI,        /*        ansi_ftoi                */
-  C4X_BUILTIN_MPYI,        /*        fast_imult (only C3x)        */
-  C4X_BUILTIN_TOIEEE,        /*        toieee           (only C4x)        */
-  C4X_BUILTIN_FRIEEE,        /*        frieee           (only C4x)        */
-  C4X_BUILTIN_RCPF        /*        fast_invf  (only C4x)        */
+			/*	intrinsic name		*/
+  C4X_BUILTIN_FIX,	/*	fast_ftoi		*/
+  C4X_BUILTIN_FIX_ANSI,	/*	ansi_ftoi		*/
+  C4X_BUILTIN_MPYI,	/*	fast_imult (only C3x)	*/
+  C4X_BUILTIN_TOIEEE,	/*	toieee	   (only C4x)	*/
+  C4X_BUILTIN_FRIEEE,	/*	frieee	   (only C4x)	*/
+  C4X_BUILTIN_RCPF	/*	fast_invf  (only C4x)	*/
 };
 
 

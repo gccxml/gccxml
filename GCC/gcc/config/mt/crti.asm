@@ -36,36 +36,36 @@
 # .init sections.  Users may put any desired instructions in those
 # sections.
 
-        .file                "crti.asm"
+	.file		"crti.asm"
 
-        .section        ".init"
-        .global        _init
-        .type        _init,#function
-        .align        4
+	.section	".init"
+	.global	_init
+	.type	_init,#function
+	.align	4
 _init:
-        subi        sp, sp, #4
-        stw        r14, sp, #0
-        or        r0, r0, r0
-        or        r0, r0, r0
-        or        r0, r0, r0
-        or        r0, r0, r0
-        or        r0, r0, r0
-        or        r0, r0, r0
-        or        r0, r0, r0
-        or        r0, r0, r0
+	subi	sp, sp, #4
+	stw	r14, sp, #0
+	or	r0, r0, r0
+	or	r0, r0, r0
+	or	r0, r0, r0
+	or	r0, r0, r0
+	or	r0, r0, r0
+	or	r0, r0, r0
+	or	r0, r0, r0
+	or	r0, r0, r0
 
-        .section        ".fini"
-        .global        _fini
-        .type        _fini,#function
-        .align        4
+	.section	".fini"
+	.global	_fini
+	.type	_fini,#function
+	.align	4
 _fini:
-        subi        sp, sp, #4
-        stw        r14, sp, #0
-        or        r0, r0, r0
-        or        r0, r0, r0
-        or        r0, r0, r0
-        or        r0, r0, r0
-        or        r0, r0, r0
-        or        r0, r0, r0
-        or        r0, r0, r0
-        or        r0, r0, r0
+	subi	sp, sp, #4
+	stw	r14, sp, #0
+	or	r0, r0, r0
+	or	r0, r0, r0
+	or	r0, r0, r0
+	or	r0, r0, r0
+	or	r0, r0, r0
+	or	r0, r0, r0
+	or	r0, r0, r0
+	or	r0, r0, r0

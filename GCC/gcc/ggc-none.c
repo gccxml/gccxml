@@ -35,7 +35,7 @@
 
 void *
 ggc_alloc_typed_stat (enum gt_types_enum ARG_UNUSED (gte), size_t size
-                      MEM_STAT_DECL)
+		      MEM_STAT_DECL)
 {
   return xmalloc (size);
 }

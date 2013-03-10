@@ -35,8 +35,8 @@
     mode = GET_MODE (XEXP (op, 0));
 
   return ((mode == CCmode || mode == DImode)
-          && (code == NE || code == EQ || code == GE || code == GT
-              || code == LE || code == LT))
+	  && (code == NE || code == EQ || code == GE || code == GT
+	      || code == LE || code == LT))
     /* FIXME: This may be a stupid trick.  What happens when GCC wants to
        reverse the condition?  Can it do that by itself?  Maybe it can
        even reverse the condition to fit a foldable one in the first
@@ -68,19 +68,19 @@
   return
     mode == VOIDmode
     || (mode == CC_FUNmode
-        && (code == ORDERED || code == UNORDERED))
+	&& (code == ORDERED || code == UNORDERED))
     || (mode == CC_FPmode
-        && (code == GT || code == LT))
+	&& (code == GT || code == LT))
     || (mode == CC_FPEQmode
-        && (code == NE || code == EQ))
+	&& (code == NE || code == EQ))
     || (mode == CC_UNSmode
-        && (code == GEU || code == GTU || code == LEU || code == LTU))
+	&& (code == GEU || code == GTU || code == LEU || code == LTU))
     || (mode == CCmode
-        && (code == NE || code == EQ || code == GE || code == GT
-            || code == LE || code == LT))
+	&& (code == NE || code == EQ || code == GE || code == GT
+	    || code == LE || code == LT))
     || (mode == DImode
-        && (code == NE || code == EQ || code == GE || code == GT
-            || code == LE || code == LT || code == LEU || code == GTU));
+	&& (code == NE || code == EQ || code == GE || code == GT
+	    || code == LE || code == LT || code == LEU || code == GTU));
 })
 
 ;; True if this is a register with a condition-code mode.
@@ -88,10 +88,10 @@
 (define_predicate "mmix_reg_cc_operand"
   (and (match_operand 0 "register_operand")
        (ior (match_test "GET_MODE (op) == CCmode")
-            (ior (match_test "GET_MODE (op) == CC_UNSmode")
-                 (ior (match_test "GET_MODE (op) == CC_FPmode")
-                      (ior (match_test "GET_MODE (op) == CC_FPEQmode")
-                           (match_test "GET_MODE (op) == CC_FUNmode")))))))
+	    (ior (match_test "GET_MODE (op) == CC_UNSmode")
+		 (ior (match_test "GET_MODE (op) == CC_FPmode")
+		      (ior (match_test "GET_MODE (op) == CC_FPEQmode")
+			   (match_test "GET_MODE (op) == CC_FUNmode")))))))
 
 ;; True if this is an address_operand or a symbolic operand.
 
@@ -107,11 +107,11 @@
       /* The reason why this body still is C.  */
       op = XEXP (op, 0);
       if ((GET_CODE (XEXP (op, 0)) == SYMBOL_REF
-           || GET_CODE (XEXP (op, 0)) == LABEL_REF)
-          && (GET_CODE (XEXP (op, 1)) == CONST_INT
-              || (GET_CODE (XEXP (op, 1)) == CONST_DOUBLE
-                  && GET_MODE (XEXP (op, 1)) == VOIDmode)))
-        return 1;
+	   || GET_CODE (XEXP (op, 0)) == LABEL_REF)
+	  && (GET_CODE (XEXP (op, 1)) == CONST_INT
+	      || (GET_CODE (XEXP (op, 1)) == CONST_DOUBLE
+		  && GET_MODE (XEXP (op, 1)) == VOIDmode)))
+	return 1;
       /* Fall through.  */
     default:
       return address_operand (op, mode);
@@ -125,8 +125,8 @@
 (define_predicate "mmix_reg_or_constant_operand"
   (ior (match_operand 0 "register_operand")
        (ior (match_code "const_int")
-            (and (match_code "const_double")
-                 (match_test "GET_MODE (op) == VOIDmode")))))
+	    (and (match_code "const_double")
+		 (match_test "GET_MODE (op) == VOIDmode")))))
 
 ;; True if this is a register or 0 (int or float).
 
@@ -135,7 +135,7 @@
    (match_operand 0 "register_operand")
    (ior
     (and (match_code "const_int")
-         (match_test "op == const0_rtx"))
+	 (match_test "op == const0_rtx"))
     (and
      (match_code "const_double")
      ;; FIXME: Is mode calculation necessary and correct?
@@ -148,4 +148,4 @@
   (ior
    (match_operand 0 "register_operand")
    (and (match_code "const_int")
-        (match_test "CONST_OK_FOR_LETTER_P (INTVAL (op), 'I')"))))
+	(match_test "CONST_OK_FOR_LETTER_P (INTVAL (op), 'I')"))))

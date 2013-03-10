@@ -44,36 +44,36 @@ cplus_expand_constant (tree cst)
     {
     case PTRMEM_CST:
       {
-        tree type = TREE_TYPE (cst);
-        tree member;
+	tree type = TREE_TYPE (cst);
+	tree member;
 
-        /* Find the member.  */
-        member = PTRMEM_CST_MEMBER (cst);
+	/* Find the member.  */
+	member = PTRMEM_CST_MEMBER (cst);
 
-        if (TREE_CODE (member) == FIELD_DECL)
-          {
-            /* Find the offset for the field.  */
-            cst = byte_position (member);
-            while (!same_type_p (DECL_CONTEXT (member),
-                                 TYPE_PTRMEM_CLASS_TYPE (type)))
-              {
-                /* The MEMBER must have been nestled within an
-                   anonymous aggregate contained in TYPE.  Find the
-                   anonymous aggregate.  */
-                member = lookup_anon_field (TYPE_PTRMEM_CLASS_TYPE (type),
-                                            DECL_CONTEXT (member));
-                cst = size_binop (PLUS_EXPR, cst, byte_position (member));
-              }
-            cst = fold (build_nop (type, cst));
-          }
-        else
-          {
-            tree delta;
-            tree pfn;
+	if (TREE_CODE (member) == FIELD_DECL)
+	  {
+	    /* Find the offset for the field.  */
+	    cst = byte_position (member);
+	    while (!same_type_p (DECL_CONTEXT (member),
+				 TYPE_PTRMEM_CLASS_TYPE (type)))
+	      {
+		/* The MEMBER must have been nestled within an
+		   anonymous aggregate contained in TYPE.  Find the
+		   anonymous aggregate.  */
+		member = lookup_anon_field (TYPE_PTRMEM_CLASS_TYPE (type),
+					    DECL_CONTEXT (member));
+		cst = size_binop (PLUS_EXPR, cst, byte_position (member));
+	      }
+	    cst = fold (build_nop (type, cst));
+	  }
+	else
+	  {
+	    tree delta;
+	    tree pfn;
 
-            expand_ptrmemfunc_cst (cst, &delta, &pfn);
-            cst = build_ptrmemfunc1 (type, delta, pfn);
-          }
+	    expand_ptrmemfunc_cst (cst, &delta, &pfn);
+	    cst = build_ptrmemfunc1 (type, delta, pfn);
+	  }
       }
       break;
 
@@ -92,7 +92,7 @@ cplus_expand_constant (tree cst)
 
 rtx
 cxx_expand_expr (tree exp, rtx target, enum machine_mode tmode, int modifier,
-                 rtx *alt_rtl)
+		 rtx *alt_rtl)
 {
   tree type = TREE_TYPE (exp);
   enum machine_mode mode = TYPE_MODE (type);
@@ -109,7 +109,7 @@ cxx_expand_expr (tree exp, rtx target, enum machine_mode tmode, int modifier,
     {
     case PTRMEM_CST:
       return expand_expr (cplus_expand_constant (exp),
-                          target, tmode, modifier);
+			  target, tmode, modifier);
 
     case OFFSET_REF:
       /* Offset refs should not make it through to here.  */
@@ -121,7 +121,7 @@ cxx_expand_expr (tree exp, rtx target, enum machine_mode tmode, int modifier,
 
     case BASELINK:
       return expand_expr (BASELINK_FUNCTIONS (exp), target, tmode,
-                          modifier);
+			  modifier);
 
     default:
       return c_expand_expr (exp, target, tmode, modifier, alt_rtl);

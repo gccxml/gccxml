@@ -156,23 +156,23 @@
 (define_insn_reservation "ev6_fdivsf" 12
   (and (eq_attr "tune" "ev6")
        (and (eq_attr "type" "fdiv")
-            (eq_attr "opsize" "si")))
+	    (eq_attr "opsize" "si")))
   "ev6_fa*9")
 
 (define_insn_reservation "ev6_fdivdf" 15
   (and (eq_attr "tune" "ev6")
        (and (eq_attr "type" "fdiv")
-            (eq_attr "opsize" "di")))
+	    (eq_attr "opsize" "di")))
   "ev6_fa*12")
 
 (define_insn_reservation "ev6_sqrtsf" 18
   (and (eq_attr "tune" "ev6")
        (and (eq_attr "type" "fsqrt")
-            (eq_attr "opsize" "si")))
+	    (eq_attr "opsize" "si")))
   "ev6_fa*15")
 
 (define_insn_reservation "ev6_sqrtdf" 33
   (and (eq_attr "tune" "ev6")
        (and (eq_attr "type" "fsqrt")
-            (eq_attr "opsize" "di")))
+	    (eq_attr "opsize" "di")))
   "ev6_fa*30")

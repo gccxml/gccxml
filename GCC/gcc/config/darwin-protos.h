@@ -55,7 +55,7 @@ extern void machopic_finish (FILE *);
 extern int machopic_reloc_rw_mask (void);
 extern section *machopic_select_section (tree, int, unsigned HOST_WIDE_INT);
 extern section *machopic_select_rtx_section (enum machine_mode, rtx,
-                                             unsigned HOST_WIDE_INT);
+					     unsigned HOST_WIDE_INT);
 
 extern void darwin_unique_section (tree decl, int reloc);
 extern void darwin_asm_named_section (const char *, unsigned int, tree);
@@ -76,15 +76,15 @@ extern void darwin_mark_decl_preserved (const char *);
 
 extern tree darwin_handle_kext_attribute (tree *, tree, tree, int, bool *);
 extern tree darwin_handle_weak_import_attribute (tree *node, tree name,
-                                                 tree args, int flags,
-                                                 bool * no_add_attrs);
+						 tree args, int flags,
+						 bool * no_add_attrs);
 extern void machopic_output_stub (FILE *, const char *, const char *);
 extern void darwin_globalize_label (FILE *, const char *);
 extern void darwin_assemble_visibility (tree, int);
 extern void darwin_asm_output_dwarf_delta (FILE *, int, const char *,
-                                           const char *);
+					   const char *);
 extern void darwin_asm_output_dwarf_offset (FILE *, int, const char *,
-                                            section *);
+					    section *);
 extern bool darwin_binds_local_p (tree);
 extern void darwin_cpp_builtins (struct cpp_reader *);
 extern void darwin_asm_output_anchor (rtx symbol);

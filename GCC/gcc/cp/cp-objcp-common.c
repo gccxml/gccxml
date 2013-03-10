@@ -80,31 +80,31 @@ cp_expr_size (tree exp)
   if (CLASS_TYPE_P (type))
     {
       /* The backend should not be interested in the size of an expression
-         of a type with both of these set; all copies of such types must go
-         through a constructor or assignment op.  */
+	 of a type with both of these set; all copies of such types must go
+	 through a constructor or assignment op.  */
       gcc_assert (!TYPE_HAS_COMPLEX_INIT_REF (type)
-                  || !TYPE_HAS_COMPLEX_ASSIGN_REF (type)
-                  /* But storing a CONSTRUCTOR isn't a copy.  */
-                  || TREE_CODE (exp) == CONSTRUCTOR
-                  /* And, the gimplifier will sometimes make a copy of
-                     an aggregate.  In particular, for a case like:
+		  || !TYPE_HAS_COMPLEX_ASSIGN_REF (type)
+		  /* But storing a CONSTRUCTOR isn't a copy.  */
+		  || TREE_CODE (exp) == CONSTRUCTOR
+		  /* And, the gimplifier will sometimes make a copy of
+		     an aggregate.  In particular, for a case like:
 
-                        struct S { S(); };
-                        struct X { int a; S s; };
-                        X x = { 0 };
+			struct S { S(); };
+			struct X { int a; S s; };
+			X x = { 0 };
 
-                     the gimplifier will create a temporary with
-                     static storage duration, perform static
-                     initialization of the temporary, and then copy
-                     the result.  Since the "s" subobject is never
-                     constructed, this is a valid transformation.  */
-                  || CP_AGGREGATE_TYPE_P (type));
+		     the gimplifier will create a temporary with
+		     static storage duration, perform static
+		     initialization of the temporary, and then copy
+		     the result.  Since the "s" subobject is never
+		     constructed, this is a valid transformation.  */
+		  || CP_AGGREGATE_TYPE_P (type));
 
       /* This would be wrong for a type with virtual bases, but they are
-         caught by the assert above.  */
+	 caught by the assert above.  */
       return (is_empty_class (type)
-              ? size_zero_node
-              : CLASSTYPE_SIZE_UNIT (type));
+	      ? size_zero_node
+	      : CLASSTYPE_SIZE_UNIT (type));
     }
   else
     /* Use the default code.  */
@@ -117,12 +117,12 @@ cp_tree_size (enum tree_code code)
 {
   switch (code)
     {
-    case TINST_LEVEL:                return sizeof (struct tinst_level_s);
-    case PTRMEM_CST:                return sizeof (struct ptrmem_cst);
-    case BASELINK:                return sizeof (struct tree_baselink);
-    case TEMPLATE_PARM_INDEX:        return sizeof (template_parm_index);
-    case DEFAULT_ARG:                return sizeof (struct tree_default_arg);
-    case OVERLOAD:                return sizeof (struct tree_overload);
+    case TINST_LEVEL:		return sizeof (struct tinst_level_s);
+    case PTRMEM_CST:		return sizeof (struct ptrmem_cst);
+    case BASELINK:		return sizeof (struct tree_baselink);
+    case TEMPLATE_PARM_INDEX:	return sizeof (template_parm_index);
+    case DEFAULT_ARG:		return sizeof (struct tree_default_arg);
+    case OVERLOAD:		return sizeof (struct tree_overload);
     default:
       gcc_unreachable ();
     }
@@ -141,8 +141,8 @@ cp_var_mod_type_p (tree type, tree fn)
      the class or the member are variably modified.  */
   if (TYPE_PTR_TO_MEMBER_P (type))
     return (variably_modified_type_p (TYPE_PTRMEM_CLASS_TYPE (type), fn)
-            || variably_modified_type_p (TYPE_PTRMEM_POINTED_TO_TYPE (type),
-                                         fn));
+	    || variably_modified_type_p (TYPE_PTRMEM_POINTED_TO_TYPE (type),
+					 fn));
 
   /* All other types are not variably modified.  */
   return false;
@@ -230,7 +230,7 @@ decl_shadowed_for_var_lookup (tree from)
   in.from = from;
 
   h = (struct tree_map *) htab_find_with_hash (shadowed_var_for_decl, &in,
-                                               htab_hash_pointer (from));
+					       htab_hash_pointer (from));
   if (h)
     return h->to;
   return NULL_TREE;
@@ -256,7 +256,7 @@ void
 init_shadowed_var_for_decl (void)
 {
   shadowed_var_for_decl = htab_create_ggc (512, tree_map_hash,
-                                           tree_map_eq, 0);
+					   tree_map_eq, 0);
 }
 
 

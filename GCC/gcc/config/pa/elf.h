@@ -24,9 +24,9 @@ Boston, MA 02110-1301, USA.  */
 #define ENDFILE_SPEC "crtend.o%s"
 
 #define STARTFILE_SPEC "%{!shared: \
-                         %{!symbolic: \
-                          %{pg:gcrt0.o%s}%{!pg:%{p:mcrt0.o%s}%{!p:crt0.o%s}}}}\
-                        crtbegin.o%s"
+			 %{!symbolic: \
+			  %{pg:gcrt0.o%s}%{!pg:%{p:mcrt0.o%s}%{!p:crt0.o%s}}}}\
+			crtbegin.o%s"
 
 #define TEXT_SECTION_ASM_OP "\t.text"
 #define DATA_SECTION_ASM_OP "\t.data"
@@ -61,12 +61,12 @@ do {  \
 #define ASM_OUTPUT_EXTERNAL(FILE, DECL, NAME) \
   pa_hpux_asm_output_external ((FILE), (DECL), (NAME))
 #define ASM_OUTPUT_EXTERNAL_REAL(FILE, DECL, NAME) \
-  do { fputs ("\t.IMPORT ", FILE);                                        \
-       assemble_name_raw (FILE, NAME);                                        \
-       if (FUNCTION_NAME_P (NAME))                                             \
-         fputs (",ENTRY\n", FILE);                                        \
-       else                                                                \
-         fputs (",DATA\n", FILE);                                        \
+  do { fputs ("\t.IMPORT ", FILE);					\
+       assemble_name_raw (FILE, NAME);					\
+       if (FUNCTION_NAME_P (NAME))     					\
+	 fputs (",ENTRY\n", FILE);					\
+       else								\
+	 fputs (",DATA\n", FILE);					\
      } while (0)
 
 /* The bogus HP assembler requires ALL external references to be
@@ -79,11 +79,11 @@ do {  \
 
 #undef ASM_OUTPUT_EXTERNAL_LIBCALL
 #define ASM_OUTPUT_EXTERNAL_LIBCALL(FILE, RTL) \
-  do { fputs ("\t.IMPORT ", FILE);                                        \
-       if (!function_label_operand (RTL, VOIDmode))                        \
-         hppa_encode_label (RTL);                                        \
-       assemble_name (FILE, XSTR ((RTL), 0));                                       \
-       fputs (",ENTRY\n", FILE);                                        \
+  do { fputs ("\t.IMPORT ", FILE);					\
+       if (!function_label_operand (RTL, VOIDmode))			\
+	 hppa_encode_label (RTL);					\
+       assemble_name (FILE, XSTR ((RTL), 0));		       		\
+       fputs (",ENTRY\n", FILE);					\
      } while (0)
 
 /* Biggest alignment supported by the object file format of this

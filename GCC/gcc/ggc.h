@@ -27,8 +27,8 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
    an external gc library that might be linked in.  */
 
 /* Constants for general use.  */
-extern const char empty_string[];        /* empty string */
-extern const char digit_vector[];        /* "0" .. "9" */
+extern const char empty_string[];	/* empty string */
+extern const char digit_vector[];	/* "0" .. "9" */
 #define digit_string(d) (digit_vector + ((d) * 2))
 
 /* Internal functions and data structures used by the GTY
@@ -43,7 +43,7 @@ typedef void (*gt_pointer_operator) (void *, void *);
    parameter) to each pointer in the object pointed to by the first
    parameter, using the second parameter.  */
 typedef void (*gt_note_pointers) (void *, void *, gt_pointer_operator,
-                                  void *);
+				  void *);
 
 /* One of these is called before objects are re-ordered in memory.
    The first parameter is the original object, the second is the
@@ -51,11 +51,11 @@ typedef void (*gt_note_pointers) (void *, void *, gt_pointer_operator,
    can compute the new values of a pointer when given the cookie in
    the fourth parameter.  */
 typedef void (*gt_handle_reorder) (void *, void *, gt_pointer_operator,
-                                   void *);
+				   void *);
 
 /* Used by the gt_pch_n_* routines.  Register an object in the hash table.  */
 extern int gt_pch_note_object (void *, void *, gt_note_pointers,
-                               enum gt_types_enum);
+			       enum gt_types_enum);
 
 /* Used by the gt_pch_n_* routines.  Register that an object has a reorder
    function.  */
@@ -99,11 +99,11 @@ extern const struct ggc_cache_tab * const gt_ggc_cache_rtab[];
 #define ggc_test_and_set_mark(EXPR) \
   ((EXPR) != NULL && ((void *) (EXPR)) != (void *) 1 && ! ggc_set_mark (EXPR))
 
-#define ggc_mark(EXPR)                                \
-  do {                                                \
-    const void *const a__ = (EXPR);                \
-    if (a__ != NULL && a__ != (void *) 1)        \
-      ggc_set_mark (a__);                        \
+#define ggc_mark(EXPR)				\
+  do {						\
+    const void *const a__ = (EXPR);		\
+    if (a__ != NULL && a__ != (void *) 1)	\
+      ggc_set_mark (a__);			\
   } while (0)
 
 /* Actually set the mark on a particular region of memory, but don't
@@ -111,15 +111,15 @@ extern const struct ggc_cache_tab * const gt_ggc_cache_rtab[];
    returns zero if the object was not previously marked; nonzero if
    the object was already marked, or if, for any other reason,
    pointers in this data structure should not be traversed.  */
-extern int ggc_set_mark        (const void *);
+extern int ggc_set_mark	(const void *);
 
 /* Return 1 if P has been marked, zero otherwise.
    P must have been allocated by the GC allocator; it mustn't point to
    static objects, stack variables, or memory allocated with malloc.  */
-extern int ggc_marked_p        (const void *);
+extern int ggc_marked_p	(const void *);
 
 /* Mark the entries in the string pool.  */
-extern void ggc_mark_stringpool        (void);
+extern void ggc_mark_stringpool	(void);
 
 /* Call ggc_set_mark on all the roots.  */
 
@@ -165,7 +165,7 @@ extern struct ggc_pch_data *init_ggc_pch (void);
    that information as is necessary. The bool argument should be true
    if the object is a string.  */
 extern void ggc_pch_count_object (struct ggc_pch_data *, void *, size_t, bool,
-                                  enum gt_types_enum);
+				  enum gt_types_enum);
 
 /* Return the total size of the data to be written to hold all
    the objects previously passed to ggc_pch_count_object.  */
@@ -179,14 +179,14 @@ extern void ggc_pch_this_base (struct ggc_pch_data *, void *);
    passed to ggc_pch_this_base, return the address of this object.
    The bool argument should be true if the object is a string.  */
 extern char *ggc_pch_alloc_object (struct ggc_pch_data *, void *, size_t, bool,
-                                   enum gt_types_enum);
+				   enum gt_types_enum);
 
 /* Write out any initial information required.  */
 extern void ggc_pch_prepare_write (struct ggc_pch_data *, FILE *);
 /* Write out this object, including any padding.  The last argument should be
    true if the object is a string.  */
 extern void ggc_pch_write_object (struct ggc_pch_data *, FILE *, void *,
-                                  void *, size_t, bool);
+				  void *, size_t, bool);
 /* All objects have been written, write out any final information
    required.  */
 extern void ggc_pch_finish (struct ggc_pch_data *, FILE *);
@@ -225,27 +225,27 @@ extern void ggc_prune_overhead_list (void);
 extern void dump_ggc_loc_statistics (void);
 
 /* Type-safe, C++-friendly versions of ggc_alloc() and gcc_calloc().  */
-#define GGC_NEW(T)                ((T *) ggc_alloc (sizeof (T)))
-#define GGC_CNEW(T)                ((T *) ggc_alloc_cleared (sizeof (T)))
-#define GGC_NEWVEC(T, N)        ((T *) ggc_alloc ((N) * sizeof(T)))
-#define GGC_CNEWVEC(T, N)        ((T *) ggc_alloc_cleared ((N) * sizeof(T)))
-#define GGC_NEWVAR(T, S)        ((T *) ggc_alloc ((S)))
-#define GGC_CNEWVAR(T, S)        ((T *) ggc_alloc_cleared ((S)))
+#define GGC_NEW(T)		((T *) ggc_alloc (sizeof (T)))
+#define GGC_CNEW(T)		((T *) ggc_alloc_cleared (sizeof (T)))
+#define GGC_NEWVEC(T, N)	((T *) ggc_alloc ((N) * sizeof(T)))
+#define GGC_CNEWVEC(T, N)	((T *) ggc_alloc_cleared ((N) * sizeof(T)))
+#define GGC_NEWVAR(T, S)	((T *) ggc_alloc ((S)))
+#define GGC_CNEWVAR(T, S)	((T *) ggc_alloc_cleared ((S)))
 #define GGC_RESIZEVEC(T, P, N)  ((T *) ggc_realloc ((P), (N) * sizeof (T)))
 
-#define ggc_alloc_rtvec(NELT)                                                 \
-  ((rtvec) ggc_alloc_zone (sizeof (struct rtvec_def) + ((NELT) - 1)         \
-                           * sizeof (rtx), &rtl_zone))
+#define ggc_alloc_rtvec(NELT)						 \
+  ((rtvec) ggc_alloc_zone (sizeof (struct rtvec_def) + ((NELT) - 1)	 \
+			   * sizeof (rtx), &rtl_zone))
 
 #define ggc_alloc_tree(LENGTH) ((tree) ggc_alloc_zone (LENGTH, &tree_zone))
 
 #define htab_create_ggc(SIZE, HASH, EQ, DEL) \
   htab_create_alloc (SIZE, HASH, EQ, DEL, ggc_calloc, NULL)
 
-#define splay_tree_new_ggc(COMPARE)                                         \
-  splay_tree_new_with_allocator (COMPARE, NULL, NULL,                         \
+#define splay_tree_new_ggc(COMPARE)					 \
+  splay_tree_new_with_allocator (COMPARE, NULL, NULL,			 \
                                  &ggc_splay_alloc, &ggc_splay_dont_free, \
-                                 NULL)
+				 NULL)
 extern void *ggc_splay_alloc (int, void *);
 extern void ggc_splay_dont_free (void *, void *);
 
@@ -259,7 +259,7 @@ extern const char *ggc_alloc_string (const char *contents, int length);
 
 /* Invoke the collector.  Garbage collection occurs only when this
    function is called, not during allocations.  */
-extern void ggc_collect        (void);
+extern void ggc_collect	(void);
 
 /* Return the number of bytes allocated at the indicated address.  */
 extern size_t ggc_get_size (const void *);

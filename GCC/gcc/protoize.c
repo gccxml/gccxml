@@ -179,7 +179,7 @@ static const unexpansion unexpansions[] = {
    function names.  This can be as big or as small as you like, except that
    it must be a power of two.  */
 
-#define HASH_TABLE_SIZE                (1 << 9)
+#define HASH_TABLE_SIZE		(1 << 9)
 
 /* Bit mask to use when computing hash values.  */
 
@@ -194,7 +194,7 @@ struct string_list
 };
 
 static struct string_list *string_list_cons (const char *,
-                                             struct string_list *);
+					     struct string_list *);
 
 /* List of directories in which files should be converted.  */
 
@@ -242,7 +242,7 @@ typedef struct f_list_chain_item_struct f_list_chain_item;
 static int is_syscalls_file (const file_info *);
 static void rename_c_file (const hash_table_entry *);
 static const def_dec_info *find_extern_def (const def_dec_info *,
-                                            const def_dec_info *);
+					    const def_dec_info *);
 static const def_dec_info *find_static_definition (const def_dec_info *);
 static void connect_defs_and_decs (const hash_table_entry *);
 static void add_local_decl (const def_dec_info *, const char *);
@@ -250,7 +250,7 @@ static void add_global_decls (const file_info *, const char *);
 #endif /* ! UNPROTOIZE */
 static int needs_to_be_converted (const file_info *);
 static void visit_each_hash_node (const hash_table_entry *,
-                                  void (*)(const hash_table_entry *));
+				  void (*)(const hash_table_entry *));
 static hash_table_entry *add_symbol (hash_table_entry *, const char *);
 static hash_table_entry *lookup (hash_table_entry *, const char *);
 static void free_def_dec (def_dec_info *);
@@ -258,7 +258,7 @@ static file_info *find_file (const char *, int);
 static void reverse_def_dec_list (const hash_table_entry *);
 static void edit_fn_declaration (const def_dec_info *, const char *);
 static int edit_formals_lists (const char *, unsigned int,
-                               const def_dec_info *);
+			       const def_dec_info *);
 static void edit_fn_definition (const def_dec_info *, const char *);
 static void scan_for_missed_items (const file_info *);
 static void edit_file (const hash_table_entry *);
@@ -276,11 +276,11 @@ static void edit_file (const hash_table_entry *);
    about a given (named) function.  */
 
 struct hash_table_entry_struct {
-  hash_table_entry *                hash_next;        /* -> to secondary entries */
-  const char *                        symbol;                /* -> to the hashed string */
+  hash_table_entry *		hash_next;	/* -> to secondary entries */
+  const char *			symbol;		/* -> to the hashed string */
   union {
-    const def_dec_info *        _ddip;
-    file_info *                        _fip;
+    const def_dec_info *	_ddip;
+    file_info *			_fip;
   } _info;
 };
 #define ddip _info._ddip
@@ -294,9 +294,9 @@ typedef hash_table_entry hash_table[HASH_TABLE_SIZE];
    single filename (e.g. file) which we need to know about.  */
 
 struct file_info_struct {
-  const hash_table_entry *        hash_entry; /* -> to associated hash entry */
-  const def_dec_info *                defs_decs;  /* -> to chain of defs/decs */
-  time_t                        mtime;      /* Time of last modification.  */
+  const hash_table_entry *	hash_entry; /* -> to associated hash entry */
+  const def_dec_info *		defs_decs;  /* -> to chain of defs/decs */
+  time_t			mtime;      /* Time of last modification.  */
 };
 
 /* Due to the possibility that functions may return pointers to functions,
@@ -317,8 +317,8 @@ struct file_info_struct {
    order from the head of the chain.  */
 
 struct f_list_chain_item_struct {
-  const f_list_chain_item *        chain_next;        /* -> to next item on chain */
-  const char *                        formals_list;        /* -> to formals list string */
+  const f_list_chain_item *	chain_next;	/* -> to next item on chain */
+  const char *			formals_list;	/* -> to formals list string */
 };
 
 /* The following struct holds all of the important information about any
@@ -329,24 +329,24 @@ struct f_list_chain_item_struct {
    and "implicit" function declarations).  */
 
 struct def_dec_info_struct {
-  const def_dec_info *        next_in_file;        /* -> to rest of chain for file */
-  file_info *                file;                /* -> file_info for containing file */
-  int                        line;                /* source line number of def/dec */
-  const char *                ansi_decl;        /* -> left end of ansi decl */
-  hash_table_entry *        hash_entry;        /* -> hash entry for function name */
-  unsigned int                is_func_def;        /* = 0 means this is a declaration */
-  const def_dec_info *        next_for_func;        /* -> to rest of chain for func name */
-  unsigned int                f_list_count;        /* count of formals lists we expect */
-  char                        prototyped;        /* = 0 means already prototyped */
+  const def_dec_info *	next_in_file;	/* -> to rest of chain for file */
+  file_info *        	file;		/* -> file_info for containing file */
+  int        		line;		/* source line number of def/dec */
+  const char *		ansi_decl;	/* -> left end of ansi decl */
+  hash_table_entry *	hash_entry;	/* -> hash entry for function name */
+  unsigned int        	is_func_def;	/* = 0 means this is a declaration */
+  const def_dec_info *	next_for_func;	/* -> to rest of chain for func name */
+  unsigned int		f_list_count;	/* count of formals lists we expect */
+  char			prototyped;	/* = 0 means already prototyped */
 #ifndef UNPROTOIZE
-  const f_list_chain_item * f_list_chain;        /* -> chain of formals lists */
-  const def_dec_info *        definition;        /* -> def/dec containing related def */
-  char                        is_static;        /* = 0 means visibility is "extern"  */
-  char                        is_implicit;        /* != 0 for implicit func decl's */
-  char                        written;        /* != 0 means written for implicit */
+  const f_list_chain_item * f_list_chain;	/* -> chain of formals lists */
+  const def_dec_info *	definition;	/* -> def/dec containing related def */
+  char	        	is_static;	/* = 0 means visibility is "extern"  */
+  char			is_implicit;	/* != 0 for implicit func decl's */
+  char			written;	/* != 0 means written for implicit */
 #else /* !defined (UNPROTOIZE) */
-  const char *                formal_names;        /* -> to list of names of formals */
-  const char *                formal_decls;        /* -> to string of formal declarations */
+  const char *		formal_names;	/* -> to list of names of formals */
+  const char *		formal_decls;	/* -> to string of formal declarations */
 #endif /* !defined (UNPROTOIZE) */
 };
 
@@ -370,22 +370,22 @@ static int errors = 0;
    something other than gcc.  */
 static const char *compiler_file_name = "gcc";
 
-int version_flag = 0;                /* Print our version number.  */
-int quiet_flag = 0;                /* Don't print messages normally.  */
-int nochange_flag = 0;                /* Don't convert, just say what files
-                                   we would have converted.  */
-int nosave_flag = 0;                /* Don't save the old version.  */
-int keep_flag = 0;                /* Don't delete the .X files.  */
-static const char ** compile_params = 0;        /* Option string for gcc.  */
+int version_flag = 0;		/* Print our version number.  */
+int quiet_flag = 0;		/* Don't print messages normally.  */
+int nochange_flag = 0;		/* Don't convert, just say what files
+				   we would have converted.  */
+int nosave_flag = 0;		/* Don't save the old version.  */
+int keep_flag = 0;		/* Don't delete the .X files.  */
+static const char ** compile_params = 0;	/* Option string for gcc.  */
 #ifdef UNPROTOIZE
-static const char *indent_string = "     ";        /* Indentation for newly
-                                                   inserted parm decls.  */
+static const char *indent_string = "     ";	/* Indentation for newly
+						   inserted parm decls.  */
 #else /* !defined (UNPROTOIZE) */
-int local_flag = 0;                /* Insert new local decls (when?).  */
-int global_flag = 0;                /* set by -g option */
-int cplusplus_flag = 0;                /* Rename converted files to *.C.  */
+int local_flag = 0;		/* Insert new local decls (when?).  */
+int global_flag = 0;		/* set by -g option */
+int cplusplus_flag = 0;		/* Rename converted files to *.C.  */
 static const char *nondefault_syscalls_dir = 0; /* Dir to look for
-                                                   SYSCALLS.c.X in.  */
+						   SYSCALLS.c.X in.  */
 #endif /* !defined (UNPROTOIZE) */
 
 /* An index into the compile_params array where we should insert the source
@@ -551,10 +551,10 @@ safe_read (int desc, void *ptr, int len)
     if (nchars < 0)
       {
 #ifdef EINTR
-        if (errno == EINTR)
-          continue;
+	if (errno == EINTR)
+	  continue;
 #endif
-        return nchars;
+	return nchars;
       }
     if (nchars == 0)
       break;
@@ -575,14 +575,14 @@ safe_write (int desc, void *ptr, int len, const char *out_fname)
     int written = write (desc, ptr, len);
     if (written < 0)
       {
-        int errno_val = errno;
+	int errno_val = errno;
 #ifdef EINTR
-        if (errno_val == EINTR)
-          continue;
+	if (errno_val == EINTR)
+	  continue;
 #endif
-        notice ("%s: error writing file '%s': %s\n",
-                pname, shortpath (NULL, out_fname), xstrerror (errno_val));
-        return;
+	notice ("%s: error writing file '%s': %s\n",
+		pname, shortpath (NULL, out_fname), xstrerror (errno_val));
+	return;
       }
     /* Arithmetic on void pointers is a gcc extension.  */
     ptr = (char *) ptr + written;
@@ -625,10 +625,10 @@ usage (void)
 {
 #ifdef UNPROTOIZE
   notice ("%s: usage '%s [ -VqfnkN ] [ -i <istring> ] [ filename ... ]'\n",
-          pname, pname);
+	  pname, pname);
 #else /* !defined (UNPROTOIZE) */
   notice ("%s: usage '%s [ -VqfnkNlgC ] [ -B <dirname> ] [ filename ... ]'\n",
-          pname, pname);
+	  pname, pname);
 #endif /* !defined (UNPROTOIZE) */
   exit (FATAL_EXIT_CODE);
 }
@@ -646,7 +646,7 @@ in_system_include_dir (const char *path)
 
   for (p = cpp_include_defaults; p->fname; p++)
     if (!strncmp (path, p->fname, strlen (p->fname))
-        && IS_DIR_SEPARATOR (path[strlen (p->fname)]))
+	&& IS_DIR_SEPARATOR (path[strlen (p->fname)]))
       return 1;
   return 0;
 }
@@ -674,9 +674,9 @@ file_could_be_converted (const char *path)
       char *slash;
 
       slash = strrchr (dir_last_slash ? dir_last_slash : dir_name,
-                       DIR_SEPARATOR_2);
+		       DIR_SEPARATOR_2);
       if (slash)
-        dir_last_slash = slash;
+	dir_last_slash = slash;
     }
 #endif
     gcc_assert (dir_last_slash);
@@ -716,9 +716,9 @@ file_normally_convertible (const char *path)
       char *slash;
 
       slash = strrchr (dir_last_slash ? dir_last_slash : dir_name,
-                       DIR_SEPARATOR_2);
+		       DIR_SEPARATOR_2);
       if (slash)
-        dir_last_slash = slash;
+	dir_last_slash = slash;
     }
 #endif
     gcc_assert (dir_last_slash);
@@ -728,24 +728,24 @@ file_normally_convertible (const char *path)
   if (access (path, R_OK))
     {
       if (!quiet_flag)
-        notice ("%s: warning: no read access for file '%s'\n",
-                pname, shortpath (NULL, path));
+	notice ("%s: warning: no read access for file '%s'\n",
+		pname, shortpath (NULL, path));
       return 0;
     }
 
   if (access (path, W_OK))
     {
       if (!quiet_flag)
-        notice ("%s: warning: no write access for file '%s'\n",
-                pname, shortpath (NULL, path));
+	notice ("%s: warning: no write access for file '%s'\n",
+		pname, shortpath (NULL, path));
       return 0;
     }
 
   if (access (dir_name, W_OK))
     {
       if (!quiet_flag)
-        notice ("%s: warning: no write access for dir containing '%s'\n",
-                pname, shortpath (NULL, path));
+	notice ("%s: warning: no write access for dir containing '%s'\n",
+		pname, shortpath (NULL, path));
       return 0;
     }
 
@@ -807,8 +807,8 @@ needs_to_be_converted (const file_info *file_p)
 
 #endif /* defined (UNPROTOIZE) */
       )
-          /* ... then the containing file needs converting.  */
-          return -1;
+	  /* ... then the containing file needs converting.  */
+	  return -1;
   return 0;
 }
 
@@ -822,16 +822,16 @@ directory_specified_p (const char *name)
 
   for (p = directory_list; p; p = p->next)
     if (!strncmp (name, p->name, strlen (p->name))
-        && IS_DIR_SEPARATOR (name[strlen (p->name)]))
+	&& IS_DIR_SEPARATOR (name[strlen (p->name)]))
       {
-        const char *q = name + strlen (p->name) + 1;
+	const char *q = name + strlen (p->name) + 1;
 
-        /* If there are more slashes, it's in a subdir, so
-           this match doesn't count.  */
-        while (*q++)
-          if (IS_DIR_SEPARATOR (*(q-1)))
-            goto lose;
-        return 1;
+	/* If there are more slashes, it's in a subdir, so
+	   this match doesn't count.  */
+	while (*q++)
+	  if (IS_DIR_SEPARATOR (*(q-1)))
+	    goto lose;
+	return 1;
 
       lose: ;
       }
@@ -849,7 +849,7 @@ file_excluded_p (const char *name)
 
   for (p = exclude_list; p; p = p->next)
     if (!strcmp (name + len - strlen (p->name), p->name)
-        && IS_DIR_SEPARATOR (name[len - strlen (p->name) - 1]))
+	&& IS_DIR_SEPARATOR (name[len - strlen (p->name) - 1]))
       return 1;
 
   return 0;
@@ -879,18 +879,18 @@ string_list_cons (const char *string, struct string_list *rest)
 
 static void
 visit_each_hash_node (const hash_table_entry *hash_tab_p,
-                      void (*func) (const hash_table_entry *))
+		      void (*func) (const hash_table_entry *))
 {
   const hash_table_entry *primary;
 
   for (primary = hash_tab_p; primary < &hash_tab_p[HASH_TABLE_SIZE]; primary++)
     if (primary->symbol)
       {
-        hash_table_entry *second;
+	hash_table_entry *second;
 
-        (*func)(primary);
-        for (second = primary->hash_next; second; second = second->hash_next)
-          (*func) (second);
+	(*func)(primary);
+	for (second = primary->hash_next; second; second = second->hash_next)
+	  (*func) (second);
       }
 }
 
@@ -933,7 +933,7 @@ lookup (hash_table_entry *hash_tab_p, const char *search_symbol)
     {
       p = p->hash_next;
       if (!strcmp (p->symbol, search_symbol))
-        return p;
+	return p;
     }
   p->hash_next = xmalloc (sizeof (hash_table_entry));
   p = p->hash_next;
@@ -957,8 +957,8 @@ free_def_dec (def_dec_info *p)
 
     for (curr = p->f_list_chain; curr; curr = next)
       {
-        next = curr->chain_next;
-        free ((NONCONST void *) curr);
+	next = curr->chain_next;
+	free ((NONCONST void *) curr);
       }
   }
 #endif /* !defined (UNPROTOIZE) */
@@ -994,39 +994,39 @@ unexpand_if_needed (const char *aux_info_line)
   for (s = aux_info_line; *s != '\n'; )
     {
       for (unexp_p = unexpansions; unexp_p->expanded; unexp_p++)
-        {
-          const char *in_p = unexp_p->expanded;
-          size_t len = strlen (in_p);
+	{
+	  const char *in_p = unexp_p->expanded;
+	  size_t len = strlen (in_p);
 
-          if (*s == *in_p && !strncmp (s, in_p, len) && !is_id_char (s[len]))
-            {
-              int size = strlen (unexp_p->contracted);
-              got_unexpanded = 1;
-              if (copy_p + size - line_buf >= line_buf_size)
-                {
-                  int offset = copy_p - line_buf;
-                  line_buf_size *= 2;
-                  line_buf_size += size;
-                  line_buf = xrealloc (line_buf, line_buf_size);
-                  copy_p = line_buf + offset;
-                }
-              strcpy (copy_p, unexp_p->contracted);
-              copy_p += size;
+	  if (*s == *in_p && !strncmp (s, in_p, len) && !is_id_char (s[len]))
+	    {
+	      int size = strlen (unexp_p->contracted);
+	      got_unexpanded = 1;
+	      if (copy_p + size - line_buf >= line_buf_size)
+		{
+		  int offset = copy_p - line_buf;
+		  line_buf_size *= 2;
+		  line_buf_size += size;
+		  line_buf = xrealloc (line_buf, line_buf_size);
+		  copy_p = line_buf + offset;
+		}
+	      strcpy (copy_p, unexp_p->contracted);
+	      copy_p += size;
 
-              /* Assume that there will not be another replacement required
-                 within the text just replaced.  */
+	      /* Assume that there will not be another replacement required
+	         within the text just replaced.  */
 
-              s += len;
-              goto continue_outer;
-            }
-        }
+	      s += len;
+	      goto continue_outer;
+	    }
+	}
       if (copy_p - line_buf == line_buf_size)
-        {
-          int offset = copy_p - line_buf;
-          line_buf_size *= 2;
-          line_buf = xrealloc (line_buf, line_buf_size);
-          copy_p = line_buf + offset;
-        }
+	{
+	  int offset = copy_p - line_buf;
+	  line_buf_size *= 2;
+	  line_buf = xrealloc (line_buf, line_buf_size);
+	  copy_p = line_buf + offset;
+	}
       *copy_p++ = *s++;
 continue_outer: ;
     }
@@ -1070,20 +1070,20 @@ abspath (const char *cwd, const char *rel_filename)
 
     if (! IS_ABSOLUTE_PATH (rel_filename))
       {
-        src_p = cwd2;
-        while ((*endp++ = *src_p++))
-          continue;
-        *(endp-1) = DIR_SEPARATOR;                     /* overwrite null */
+	src_p = cwd2;
+	while ((*endp++ = *src_p++))
+	  continue;
+	*(endp-1) = DIR_SEPARATOR;     		/* overwrite null */
       }
 #ifdef HAVE_DOS_BASED_FILE_SYSTEM
     else if (IS_DIR_SEPARATOR (rel_filename[0]))
       {
-        /* A path starting with a directory separator is considered absolute
-           for dos based filesystems, but it's really not -- it's just the
-           convention used throughout GCC and it works. However, in this
-           case, we still need to prepend the drive spec from cwd_buffer.  */
-        *endp++ = cwd2[0];
-        *endp++ = cwd2[1];
+	/* A path starting with a directory separator is considered absolute
+	   for dos based filesystems, but it's really not -- it's just the
+	   convention used throughout GCC and it works. However, in this
+	   case, we still need to prepend the drive spec from cwd_buffer.  */
+	*endp++ = cwd2[0];
+	*endp++ = cwd2[1];
       }
 #endif
     src_p = rel_filename;
@@ -1095,50 +1095,50 @@ abspath (const char *cwd, const char *rel_filename)
      filename (by taking out slashes and dots) as we go.  */
 
   outp = inp = abs_buffer;
-  *outp++ = *inp++;                /* copy first slash */
+  *outp++ = *inp++;        	/* copy first slash */
 #if defined (apollo) || defined (_WIN32) || defined (__INTERIX)
   if (IS_DIR_SEPARATOR (inp[0]))
-    *outp++ = *inp++;                /* copy second slash */
+    *outp++ = *inp++;        	/* copy second slash */
 #endif
   for (;;)
     {
       if (!inp[0])
-        break;
+	break;
       else if (IS_DIR_SEPARATOR (inp[0]) && IS_DIR_SEPARATOR (outp[-1]))
-        {
-          inp++;
-          continue;
-        }
+	{
+	  inp++;
+	  continue;
+	}
       else if (inp[0] == '.' && IS_DIR_SEPARATOR (outp[-1]))
-        {
-          if (!inp[1])
-            break;
-          else if (IS_DIR_SEPARATOR (inp[1]))
-            {
-              inp += 2;
-              continue;
-            }
-          else if ((inp[1] == '.') && (inp[2] == 0
-                                       || IS_DIR_SEPARATOR (inp[2])))
-            {
-              inp += (IS_DIR_SEPARATOR (inp[2])) ? 3 : 2;
-              outp -= 2;
-              while (outp >= abs_buffer && ! IS_DIR_SEPARATOR (*outp))
-                      outp--;
-              if (outp < abs_buffer)
-                {
-                  /* Catch cases like /.. where we try to backup to a
-                     point above the absolute root of the logical file
-                     system.  */
+	{
+	  if (!inp[1])
+	    break;
+	  else if (IS_DIR_SEPARATOR (inp[1]))
+	    {
+	      inp += 2;
+	      continue;
+	    }
+	  else if ((inp[1] == '.') && (inp[2] == 0
+	                               || IS_DIR_SEPARATOR (inp[2])))
+	    {
+	      inp += (IS_DIR_SEPARATOR (inp[2])) ? 3 : 2;
+	      outp -= 2;
+	      while (outp >= abs_buffer && ! IS_DIR_SEPARATOR (*outp))
+	      	outp--;
+	      if (outp < abs_buffer)
+		{
+		  /* Catch cases like /.. where we try to backup to a
+		     point above the absolute root of the logical file
+		     system.  */
 
-                  notice ("%s: invalid file name: %s\n",
-                          pname, rel_filename);
-                  exit (FATAL_EXIT_CODE);
-                }
-              *++outp = '\0';
-              continue;
-            }
-        }
+		  notice ("%s: invalid file name: %s\n",
+			  pname, rel_filename);
+		  exit (FATAL_EXIT_CODE);
+		}
+	      *++outp = '\0';
+	      continue;
+	    }
+	}
       *outp++ = *inp++;
     }
 
@@ -1190,60 +1190,60 @@ shortpath (const char *cwd, const char *filename)
   if (!*cwd_p && (!*path_p || IS_DIR_SEPARATOR (*path_p)))
     {
       /* whole pwd matched */
-      if (!*path_p)                /* input *is* the current path! */
-        return ".";
+      if (!*path_p)        	/* input *is* the current path! */
+	return ".";
       else
-        return ++path_p;
+	return ++path_p;
     }
   else
     {
       if (*path_p)
-        {
-          --cwd_p;
-          --path_p;
-          while (! IS_DIR_SEPARATOR (*cwd_p))     /* backup to last slash */
-            {
-              --cwd_p;
-              --path_p;
-            }
-          cwd_p++;
-          path_p++;
-          unmatched_slash_count++;
-        }
+	{
+	  --cwd_p;
+	  --path_p;
+	  while (! IS_DIR_SEPARATOR (*cwd_p))     /* backup to last slash */
+	    {
+	      --cwd_p;
+	      --path_p;
+	    }
+	  cwd_p++;
+	  path_p++;
+	  unmatched_slash_count++;
+	}
 
       /* Find out how many directory levels in cwd were *not* matched.  */
       while (*cwd_p++)
-        if (IS_DIR_SEPARATOR (*(cwd_p-1)))
-          unmatched_slash_count++;
+	if (IS_DIR_SEPARATOR (*(cwd_p-1)))
+	  unmatched_slash_count++;
 
       /* Now we know how long the "short name" will be.
-         Reject it if longer than the input.  */
+	 Reject it if longer than the input.  */
       if (unmatched_slash_count * 3 + strlen (path_p) >= filename_len)
-        return filename;
+	return filename;
 
       /* For each of them, put a `../' at the beginning of the short name.  */
       while (unmatched_slash_count--)
-        {
-          /* Give up if the result gets to be longer
-             than the absolute path name.  */
-          if (rel_buffer + filename_len <= rel_buf_p + 3)
-            return filename;
-          *rel_buf_p++ = '.';
-          *rel_buf_p++ = '.';
-          *rel_buf_p++ = DIR_SEPARATOR;
-        }
+	{
+	  /* Give up if the result gets to be longer
+	     than the absolute path name.  */
+	  if (rel_buffer + filename_len <= rel_buf_p + 3)
+	    return filename;
+	  *rel_buf_p++ = '.';
+	  *rel_buf_p++ = '.';
+	  *rel_buf_p++ = DIR_SEPARATOR;
+	}
 
       /* Then tack on the unmatched part of the desired file's name.  */
       do
-        {
-          if (rel_buffer + filename_len <= rel_buf_p)
-            return filename;
-        }
+	{
+	  if (rel_buffer + filename_len <= rel_buf_p)
+	    return filename;
+	}
       while ((*rel_buf_p++ = *path_p++));
 
       --rel_buf_p;
       if (IS_DIR_SEPARATOR (*(rel_buf_p-1)))
-        *--rel_buf_p = '\0';
+	*--rel_buf_p = '\0';
       return rel_buffer;
     }
 }
@@ -1270,21 +1270,21 @@ find_file (const char *filename, int do_not_stat)
       file_info *file_p = xmalloc (sizeof (file_info));
 
       /* If we cannot get status on any given source file, give a warning
-         and then just set its time of last modification to infinity.  */
+	 and then just set its time of last modification to infinity.  */
 
       if (do_not_stat)
-        stat_buf.st_mtime = (time_t) 0;
+	stat_buf.st_mtime = (time_t) 0;
       else
-        {
-          if (stat (filename, &stat_buf) == -1)
-            {
-              int errno_val = errno;
-              notice ("%s: %s: can't get status: %s\n",
-                      pname, shortpath (NULL, filename),
-                      xstrerror (errno_val));
-              stat_buf.st_mtime = (time_t) -1;
-            }
-        }
+	{
+	  if (stat (filename, &stat_buf) == -1)
+	    {
+	      int errno_val = errno;
+	      notice ("%s: %s: can't get status: %s\n",
+		      pname, shortpath (NULL, filename),
+		      xstrerror (errno_val));
+	      stat_buf.st_mtime = (time_t) -1;
+	    }
+	}
 
       hash_entry_p->fip = file_p;
       file_p->hash_entry = hash_entry_p;
@@ -1301,7 +1301,7 @@ static void
 aux_info_corrupted (void)
 {
   notice ("\n%s: fatal error: aux info file corrupted at line %d\n",
-          pname, current_aux_info_lineno);
+	  pname, current_aux_info_lineno);
   exit (FATAL_EXIT_CODE);
 }
 
@@ -1328,14 +1328,14 @@ find_corresponding_lparen (const char *p)
   for (paren_depth = 1, q = p-1; paren_depth; q--)
     {
       switch (*q)
-        {
-        case ')':
-          paren_depth++;
-          break;
-        case '(':
-          paren_depth--;
-          break;
-        }
+	{
+	case ')':
+	  paren_depth++;
+	  break;
+	case '(':
+	  paren_depth--;
+	  break;
+	}
     }
   return ++q;
 }
@@ -1361,9 +1361,9 @@ referenced_file_is_newer (const char *l, time_t aux_info_mtime)
 
     while (*p != ':'
 #ifdef HAVE_DOS_BASED_FILE_SYSTEM
-           || (*p == ':' && *p && *(p+1) && IS_DIR_SEPARATOR (*(p+1)))
+	   || (*p == ':' && *p && *(p+1) && IS_DIR_SEPARATOR (*(p+1)))
 #endif
-           )
+	   )
       p++;
     filename = alloca ((size_t) (p - filename_start) + 1);
     strncpy (filename, filename_start, (size_t) (p - filename_start));
@@ -1421,9 +1421,9 @@ save_def_or_dec (const char *l, int is_syscalls)
 
     while (*p != ':'
 #ifdef HAVE_DOS_BASED_FILE_SYSTEM
-           || (*p == ':' && *p && *(p+1) && IS_DIR_SEPARATOR (*(p+1)))
+	   || (*p == ':' && *p && *(p+1) && IS_DIR_SEPARATOR (*(p+1)))
 #endif
-           )
+	   )
       p++;
     filename = alloca ((size_t) (p - filename_start) + 1);
     strncpy (filename, filename_start, (size_t) (p - filename_start));
@@ -1452,9 +1452,9 @@ save_def_or_dec (const char *l, int is_syscalls)
 
     while (*p != ':'
 #ifdef HAVE_DOS_BASED_FILE_SYSTEM
-           || (*p == ':' && *p && *(p+1) && IS_DIR_SEPARATOR (*(p+1)))
+	   || (*p == ':' && *p && *(p+1) && IS_DIR_SEPARATOR (*(p+1)))
 #endif
-           )
+	   )
       p++;
     strncpy (line_number, line_number_start, (size_t) (p - line_number_start));
     line_number[p-line_number_start] = '\0';
@@ -1464,7 +1464,7 @@ save_def_or_dec (const char *l, int is_syscalls)
   /* Check that this record describes a new-style, old-style, or implicit
      definition or declaration.  */
 
-  p++;        /* Skip over the `:'.  */
+  p++;	/* Skip over the `:'.  */
   check_aux_info ((*p == 'N') || (*p == 'O') || (*p == 'I'));
 
   /* Is this a new style (ANSI prototyped) definition or declaration? */
@@ -1490,7 +1490,7 @@ save_def_or_dec (const char *l, int is_syscalls)
   def_dec_p->is_func_def = ((*p++ == 'F') || is_syscalls);
 
 #ifndef UNPROTOIZE
-  def_dec_p->definition = 0;        /* Fill this in later if protoizing.  */
+  def_dec_p->definition = 0;	/* Fill this in later if protoizing.  */
 #endif /* !defined (UNPROTOIZE) */
 
   check_aux_info (*p++ == ' ');
@@ -1506,13 +1506,13 @@ save_def_or_dec (const char *l, int is_syscalls)
   else if (!strncmp (p, "extern", 6))
     def_dec_p->is_static = 0;
   else
-    check_aux_info (0);        /* Didn't find either `extern' or `static'.  */
+    check_aux_info (0);	/* Didn't find either `extern' or `static'.  */
 #endif /* !defined (UNPROTOIZE) */
 
   {
     const char *ansi_start = p;
 
-    p += 6;        /* Pass over the "static" or "extern".  */
+    p += 6;	/* Pass over the "static" or "extern".  */
 
     /* We are now past the initial stuff.  Search forward from here to find
        the terminating semicolon that should immediately follow the entire
@@ -1540,8 +1540,8 @@ save_def_or_dec (const char *l, int is_syscalls)
     while (p != ansi_start && (p[-1] == ' ' || p[-1] == '\t')) p--;
     if (*p != ')')
       {
-        free_def_dec (def_dec_p);
-        return;
+	free_def_dec (def_dec_p);
+	return;
       }
   }
 
@@ -1555,15 +1555,15 @@ save_def_or_dec (const char *l, int is_syscalls)
       const char *left_paren_p = find_corresponding_lparen (p);
 #ifndef UNPROTOIZE
       {
-        f_list_chain_item *cip = xmalloc (sizeof (f_list_chain_item));
+	f_list_chain_item *cip = xmalloc (sizeof (f_list_chain_item));
 
-        cip->formals_list
-          = dupnstr (left_paren_p + 1, (size_t) (p - (left_paren_p+1)));
+	cip->formals_list
+	  = dupnstr (left_paren_p + 1, (size_t) (p - (left_paren_p+1)));
 
-        /* Add the new chain item at the head of the current list.  */
+	/* Add the new chain item at the head of the current list.  */
 
-        cip->chain_next = def_dec_p->f_list_chain;
-        def_dec_p->f_list_chain = cip;
+	cip->chain_next = def_dec_p->f_list_chain;
+	def_dec_p->f_list_chain = cip;
       }
 #endif /* !defined (UNPROTOIZE) */
       def_dec_p->f_list_count++;
@@ -1571,15 +1571,15 @@ save_def_or_dec (const char *l, int is_syscalls)
       p = left_paren_p - 2;
 
       /* p must now point either to another right paren, or to the last
-         character of the name of the function that was declared/defined.
-         If p points to another right paren, then this indicates that we
-         are dealing with multiple formals lists.  In that case, there
-         really should be another right paren preceding this right paren.  */
+	 character of the name of the function that was declared/defined.
+	 If p points to another right paren, then this indicates that we
+	 are dealing with multiple formals lists.  In that case, there
+	 really should be another right paren preceding this right paren.  */
 
       if (*p != ')')
-        break;
+	break;
       else
-        check_aux_info (*--p == ')');
+	check_aux_info (*--p == ')');
     }
 
 
@@ -1625,19 +1625,19 @@ save_def_or_dec (const char *l, int is_syscalls)
 
     for (other = def_dec_p->hash_entry->ddip; other; other = other->next_for_func)
       {
-        if (def_dec_p->line == other->line && def_dec_p->file == other->file)
-          {
-            if (strcmp (def_dec_p->ansi_decl, other->ansi_decl))
-              {
-                notice ("%s:%d: declaration of function '%s' takes different forms\n",
-                        def_dec_p->file->hash_entry->symbol,
-                        def_dec_p->line,
-                        def_dec_p->hash_entry->symbol);
-                exit (FATAL_EXIT_CODE);
-              }
-            free_def_dec (def_dec_p);
-            return;
-          }
+	if (def_dec_p->line == other->line && def_dec_p->file == other->file)
+	  {
+	    if (strcmp (def_dec_p->ansi_decl, other->ansi_decl))
+	      {
+	        notice ("%s:%d: declaration of function '%s' takes different forms\n",
+			def_dec_p->file->hash_entry->symbol,
+			def_dec_p->line,
+			def_dec_p->hash_entry->symbol);
+	        exit (FATAL_EXIT_CODE);
+	      }
+	    free_def_dec (def_dec_p);
+	    return;
+	  }
       }
   }
 
@@ -1669,58 +1669,58 @@ save_def_or_dec (const char *l, int is_syscalls)
       check_aux_info (*++p == '(');
 
       {
-        const char *kr_names_start = ++p;   /* Point just inside '('.  */
+	const char *kr_names_start = ++p;   /* Point just inside '('.  */
 
-        while (*p++ != ')')
-          continue;
-        p--;                /* point to closing right paren */
+	while (*p++ != ')')
+	  continue;
+	p--;		/* point to closing right paren */
 
-        /* Make a copy of the K&R parameter names list.  */
+	/* Make a copy of the K&R parameter names list.  */
 
-        def_dec_p->formal_names
-          = dupnstr (kr_names_start, (size_t) (p - kr_names_start));
+	def_dec_p->formal_names
+	  = dupnstr (kr_names_start, (size_t) (p - kr_names_start));
       }
 
       check_aux_info (*++p == ' ');
       p++;
 
       /* p now points to the first character of the K&R style declarations
-         list (if there is one) or to the star-slash combination that ends
-         the comment in which such lists get embedded.  */
+	 list (if there is one) or to the star-slash combination that ends
+	 the comment in which such lists get embedded.  */
 
       /* Make a copy of the K&R formal decls list and set the def_dec record
-         to point to it.  */
+	 to point to it.  */
 
-      if (*p == '*')                /* Are there no K&R declarations? */
-        {
-          check_aux_info (*++p == '/');
-          def_dec_p->formal_decls = "";
-        }
+      if (*p == '*')		/* Are there no K&R declarations? */
+	{
+	  check_aux_info (*++p == '/');
+	  def_dec_p->formal_decls = "";
+	}
       else
-        {
-          const char *kr_decls_start = p;
+	{
+	  const char *kr_decls_start = p;
 
-          while (p[0] != '*' || p[1] != '/')
-            p++;
-          p--;
+	  while (p[0] != '*' || p[1] != '/')
+	    p++;
+	  p--;
 
-          check_aux_info (*p == ' ');
+	  check_aux_info (*p == ' ');
 
-          def_dec_p->formal_decls
-            = dupnstr (kr_decls_start, (size_t) (p - kr_decls_start));
-        }
+	  def_dec_p->formal_decls
+	    = dupnstr (kr_decls_start, (size_t) (p - kr_decls_start));
+	}
 
       /* Handle a special case.  If we have a function definition marked as
-         being in "old" style, and if its formal names list is empty, then
-         it may actually have the string "void" in its real formals list
-         in the original source code.  Just to make sure, we will get setup
-         to convert such things anyway.
+	 being in "old" style, and if its formal names list is empty, then
+	 it may actually have the string "void" in its real formals list
+	 in the original source code.  Just to make sure, we will get setup
+	 to convert such things anyway.
 
-         This kludge only needs to be here because of an insurmountable
-         problem with generating .X files.  */
+	 This kludge only needs to be here because of an insurmountable
+	 problem with generating .X files.  */
 
       if (!def_dec_p->prototyped && !*def_dec_p->formal_names)
-        def_dec_p->prototyped = 1;
+	def_dec_p->prototyped = 1;
     }
 
   /* Since we are unprotoizing, if this item is already in old (K&R) style,
@@ -1758,25 +1758,25 @@ save_def_or_dec (const char *l, int is_syscalls)
       const def_dec_info *next = curr->next_in_file;
 
       while (next && (line < curr->line))
-        {
-          prev = curr;
-          curr = next;
-          next = next->next_in_file;
-        }
+	{
+	  prev = curr;
+	  curr = next;
+	  next = next->next_in_file;
+	}
       if (line >= curr->line)
-        {
-          def_dec_p->next_in_file = curr;
-          if (prev)
-            ((NONCONST def_dec_info *) prev)->next_in_file = def_dec_p;
-          else
-            def_dec_p->file->defs_decs = def_dec_p;
-        }
-      else        /* assert (next == NULL); */
-        {
-          ((NONCONST def_dec_info *) curr)->next_in_file = def_dec_p;
-          /* assert (next == NULL); */
-          def_dec_p->next_in_file = next;
-        }
+	{
+	  def_dec_p->next_in_file = curr;
+	  if (prev)
+	    ((NONCONST def_dec_info *) prev)->next_in_file = def_dec_p;
+	  else
+	    def_dec_p->file->defs_decs = def_dec_p;
+	}
+      else	/* assert (next == NULL); */
+	{
+	  ((NONCONST def_dec_info *) curr)->next_in_file = def_dec_p;
+	  /* assert (next == NULL); */
+	  def_dec_p->next_in_file = next;
+	}
     }
 }
 
@@ -1802,38 +1802,38 @@ munge_compile_params (const char *params_list)
   for (;;)
     {
       while (ISSPACE ((const unsigned char)*params_list))
-        params_list++;
+	params_list++;
       if (!*params_list)
-        break;
+	break;
       param = params_list;
       while (*params_list && !ISSPACE ((const unsigned char)*params_list))
-        params_list++;
+	params_list++;
       if (param[0] != '-')
-        temp_params[param_count++]
-          = dupnstr (param, (size_t) (params_list - param));
+	temp_params[param_count++]
+	  = dupnstr (param, (size_t) (params_list - param));
       else
-        {
-          switch (param[1])
-            {
-            case 'g':
-            case 'O':
-            case 'S':
-            case 'c':
-              break;                /* Don't copy these.  */
-            case 'o':
-              while (ISSPACE ((const unsigned char)*params_list))
-                params_list++;
-              while (*params_list
-                     && !ISSPACE ((const unsigned char)*params_list))
-                params_list++;
-              break;
-            default:
-              temp_params[param_count++]
-                = dupnstr (param, (size_t) (params_list - param));
-            }
-        }
+	{
+	  switch (param[1])
+	    {
+	    case 'g':
+	    case 'O':
+	    case 'S':
+	    case 'c':
+	      break;		/* Don't copy these.  */
+	    case 'o':
+	      while (ISSPACE ((const unsigned char)*params_list))
+		params_list++;
+	      while (*params_list
+		     && !ISSPACE ((const unsigned char)*params_list))
+		params_list++;
+	      break;
+	    default:
+	      temp_params[param_count++]
+		= dupnstr (param, (size_t) (params_list - param));
+	    }
+	}
       if (!*params_list)
-        break;
+	break;
     }
   temp_params[param_count++] = "-aux-info";
 
@@ -1885,46 +1885,46 @@ gen_aux_info_file (const char *base_filename)
 
   if (!quiet_flag)
     notice ("%s: compiling '%s'\n",
-            pname, compile_params[input_file_name_index]);
+	    pname, compile_params[input_file_name_index]);
 
   {
     char *errmsg_fmt, *errmsg_arg;
     int wait_status, pid;
 
     pid = pexecute (compile_params[0], (char * const *) compile_params,
-                    pname, NULL, &errmsg_fmt, &errmsg_arg,
-                    PEXECUTE_FIRST | PEXECUTE_LAST | PEXECUTE_SEARCH);
+		    pname, NULL, &errmsg_fmt, &errmsg_arg,
+		    PEXECUTE_FIRST | PEXECUTE_LAST | PEXECUTE_SEARCH);
 
     if (pid == -1)
       {
-        int errno_val = errno;
-        fprintf (stderr, "%s: ", pname);
-        fprintf (stderr, errmsg_fmt, errmsg_arg);
-        fprintf (stderr, ": %s\n", xstrerror (errno_val));
-        return 0;
+	int errno_val = errno;
+	fprintf (stderr, "%s: ", pname);
+	fprintf (stderr, errmsg_fmt, errmsg_arg);
+	fprintf (stderr, ": %s\n", xstrerror (errno_val));
+	return 0;
       }
 
     pid = pwait (pid, &wait_status, 0);
     if (pid == -1)
       {
-        notice ("%s: wait: %s\n", pname, xstrerror (errno));
-        return 0;
+	notice ("%s: wait: %s\n", pname, xstrerror (errno));
+	return 0;
       }
     if (WIFSIGNALED (wait_status))
       {
-        notice ("%s: subprocess got fatal signal %d\n",
-                pname, WTERMSIG (wait_status));
-        return 0;
+	notice ("%s: subprocess got fatal signal %d\n",
+		pname, WTERMSIG (wait_status));
+	return 0;
       }
     if (WIFEXITED (wait_status))
       {
-        if (WEXITSTATUS (wait_status) != 0)
-          {
-            notice ("%s: %s exited with status %d\n",
-                    pname, compile_params[0], WEXITSTATUS (wait_status));
-            return 0;
-          }
-        return 1;
+	if (WEXITSTATUS (wait_status) != 0)
+	  {
+	    notice ("%s: %s exited with status %d\n",
+		    pname, compile_params[0], WEXITSTATUS (wait_status));
+	    return 0;
+	  }
+	return 1;
       }
     gcc_unreachable ();
   }
@@ -1935,7 +1935,7 @@ gen_aux_info_file (const char *base_filename)
 
 static void
 process_aux_info_file (const char *base_source_filename, int keep_it,
-                       int is_syscalls)
+		       int is_syscalls)
 {
   size_t base_len = strlen (base_source_filename);
   char * aux_info_filename = alloca (base_len + strlen (aux_info_suffix) + 1);
@@ -1966,24 +1966,24 @@ start_over: ;
   if (access (aux_info_filename, R_OK) == -1)
     {
       if (errno == ENOENT)
-        {
-          if (is_syscalls)
-            {
-              notice ("%s: warning: missing SYSCALLS file '%s'\n",
-                      pname, aux_info_filename);
-              return;
-            }
-          must_create = 1;
-        }
+	{
+	  if (is_syscalls)
+	    {
+	      notice ("%s: warning: missing SYSCALLS file '%s'\n",
+		      pname, aux_info_filename);
+	      return;
+	    }
+	  must_create = 1;
+	}
       else
-        {
-          int errno_val = errno;
-          notice ("%s: can't read aux info file '%s': %s\n",
-                  pname, shortpath (NULL, aux_info_filename),
-                  xstrerror (errno_val));
-          errors++;
-          return;
-        }
+	{
+	  int errno_val = errno;
+	  notice ("%s: can't read aux info file '%s': %s\n",
+		  pname, shortpath (NULL, aux_info_filename),
+		  xstrerror (errno_val));
+	  errors++;
+	  return;
+	}
     }
 #if 0 /* There is code farther down to take care of this.  */
   else
@@ -1992,7 +1992,7 @@ start_over: ;
       stat (aux_info_file_name, &s1);
       stat (base_source_file_name, &s2);
       if (s2.st_mtime > s1.st_mtime)
-        must_create = 1;
+	must_create = 1;
     }
 #endif /* 0 */
 
@@ -2000,19 +2000,19 @@ start_over: ;
   if (must_create)
     {
       if (!gen_aux_info_file (base_source_filename))
-        {
-          errors++;
-          return;
-        }
+	{
+	  errors++;
+	  return;
+	}
       if (access (aux_info_filename, R_OK) == -1)
-        {
-          int errno_val = errno;
-          notice ("%s: can't read aux info file '%s': %s\n",
-                  pname, shortpath (NULL, aux_info_filename),
-                  xstrerror (errno_val));
-          errors++;
-          return;
-        }
+	{
+	  int errno_val = errno;
+	  notice ("%s: can't read aux info file '%s': %s\n",
+		  pname, shortpath (NULL, aux_info_filename),
+		  xstrerror (errno_val));
+	  errors++;
+	  return;
+	}
     }
 
   {
@@ -2022,12 +2022,12 @@ start_over: ;
 
     if (stat (aux_info_filename, &stat_buf) == -1)
       {
-        int errno_val = errno;
-        notice ("%s: can't get status of aux info file '%s': %s\n",
-                pname, shortpath (NULL, aux_info_filename),
-                xstrerror (errno_val));
-        errors++;
-        return;
+	int errno_val = errno;
+	notice ("%s: can't get status of aux info file '%s': %s\n",
+		pname, shortpath (NULL, aux_info_filename),
+		xstrerror (errno_val));
+	errors++;
+	return;
       }
 
     /* Check on whether or not this aux_info file is zero length.  If it is,
@@ -2044,24 +2044,24 @@ start_over: ;
 
     if (!is_syscalls)
       {
-        /* Compare mod time with the .c file; update .X file if obsolete.
-           The code later on can fail to check the .c file
-           if it did not directly define any functions.  */
+	/* Compare mod time with the .c file; update .X file if obsolete.
+	   The code later on can fail to check the .c file
+	   if it did not directly define any functions.  */
 
-        if (stat (base_source_filename, &stat_buf) == -1)
-          {
-            int errno_val = errno;
-            notice ("%s: can't get status of aux info file '%s': %s\n",
-                    pname, shortpath (NULL, base_source_filename),
-                    xstrerror (errno_val));
-            errors++;
-            return;
-          }
-        if (stat_buf.st_mtime > aux_info_mtime)
-          {
-            must_create = 1;
-            goto start_over;
-          }
+	if (stat (base_source_filename, &stat_buf) == -1)
+	  {
+	    int errno_val = errno;
+	    notice ("%s: can't get status of aux info file '%s': %s\n",
+		    pname, shortpath (NULL, base_source_filename),
+		    xstrerror (errno_val));
+	    errors++;
+	    return;
+	  }
+	if (stat_buf.st_mtime > aux_info_mtime)
+	  {
+	    must_create = 1;
+	    goto start_over;
+	  }
       }
   }
 
@@ -2078,11 +2078,11 @@ start_over: ;
 #endif
     if ((aux_info_file = open (aux_info_filename, fd_flags, 0444 )) == -1)
       {
-        int errno_val = errno;
-        notice ("%s: can't open aux info file '%s' for reading: %s\n",
-                pname, shortpath (NULL, aux_info_filename),
-                xstrerror (errno_val));
-        return;
+	int errno_val = errno;
+	notice ("%s: can't open aux info file '%s' for reading: %s\n",
+		pname, shortpath (NULL, aux_info_filename),
+		xstrerror (errno_val));
+	return;
       }
 
     /* Allocate space to hold the aux_info file in memory.  */
@@ -2094,28 +2094,28 @@ start_over: ;
     /* Read the aux_info file into memory.  */
 
     if (safe_read (aux_info_file, aux_info_base, aux_info_size) !=
-        (int) aux_info_size)
+	(int) aux_info_size)
       {
-        int errno_val = errno;
-        notice ("%s: error reading aux info file '%s': %s\n",
-                pname, shortpath (NULL, aux_info_filename),
-                xstrerror (errno_val));
-        free (aux_info_base);
-        close (aux_info_file);
-        return;
+	int errno_val = errno;
+	notice ("%s: error reading aux info file '%s': %s\n",
+		pname, shortpath (NULL, aux_info_filename),
+		xstrerror (errno_val));
+	free (aux_info_base);
+	close (aux_info_file);
+	return;
       }
 
     /* Close the aux info file.  */
 
     if (close (aux_info_file))
       {
-        int errno_val = errno;
-        notice ("%s: error closing aux info file '%s': %s\n",
-                pname, shortpath (NULL, aux_info_filename),
-                xstrerror (errno_val));
-        free (aux_info_base);
-        close (aux_info_file);
-        return;
+	int errno_val = errno;
+	notice ("%s: error closing aux info file '%s': %s\n",
+		pname, shortpath (NULL, aux_info_filename),
+		xstrerror (errno_val));
+	free (aux_info_base);
+	close (aux_info_file);
+	return;
       }
   }
 
@@ -2125,10 +2125,10 @@ start_over: ;
   if (must_create && !keep_it)
     if (unlink (aux_info_filename) == -1)
       {
-        int errno_val = errno;
-        notice ("%s: can't delete aux info file '%s': %s\n",
-                pname, shortpath (NULL, aux_info_filename),
-                xstrerror (errno_val));
+	int errno_val = errno;
+	notice ("%s: can't delete aux info file '%s': %s\n",
+		pname, shortpath (NULL, aux_info_filename),
+		xstrerror (errno_val));
       }
 
   /* Save a pointer into the first line of the aux_info file which
@@ -2143,14 +2143,14 @@ start_over: ;
 
     while (*p != ':'
 #ifdef HAVE_DOS_BASED_FILE_SYSTEM
-           || (*p == ':' && *p && *(p+1) && IS_DIR_SEPARATOR (*(p+1)))
+	   || (*p == ':' && *p && *(p+1) && IS_DIR_SEPARATOR (*(p+1)))
 #endif
-           )
+	   )
       p++;
     p++;
     while (*p == ' ')
       p++;
-    invocation_filename = p;        /* Save a pointer to first byte of path.  */
+    invocation_filename = p;	/* Save a pointer to first byte of path.  */
     while (*p != ' ')
       p++;
     *p++ = DIR_SEPARATOR;
@@ -2161,28 +2161,28 @@ start_over: ;
     aux_info_relocated_name = 0;
     if (! IS_ABSOLUTE_PATH (invocation_filename))
       {
-        /* INVOCATION_FILENAME is relative;
-           append it to BASE_SOURCE_FILENAME's dir.  */
-        char *dir_end;
-        aux_info_relocated_name = xmalloc (base_len + (p-invocation_filename));
-        strcpy (aux_info_relocated_name, base_source_filename);
-        dir_end = strrchr (aux_info_relocated_name, DIR_SEPARATOR);
+	/* INVOCATION_FILENAME is relative;
+	   append it to BASE_SOURCE_FILENAME's dir.  */
+	char *dir_end;
+	aux_info_relocated_name = xmalloc (base_len + (p-invocation_filename));
+	strcpy (aux_info_relocated_name, base_source_filename);
+	dir_end = strrchr (aux_info_relocated_name, DIR_SEPARATOR);
 #ifdef DIR_SEPARATOR_2
-        {
-          char *slash;
+	{
+	  char *slash;
 
-          slash = strrchr (dir_end ? dir_end : aux_info_relocated_name,
-                           DIR_SEPARATOR_2);
-          if (slash)
-            dir_end = slash;
-        }
+	  slash = strrchr (dir_end ? dir_end : aux_info_relocated_name,
+			   DIR_SEPARATOR_2);
+	  if (slash)
+	    dir_end = slash;
+	}
 #endif
-        if (dir_end)
-          dir_end++;
-        else
-          dir_end = aux_info_relocated_name;
-        strcpy (dir_end, invocation_filename);
-        invocation_filename = aux_info_relocated_name;
+	if (dir_end)
+	  dir_end++;
+	else
+	  dir_end = aux_info_relocated_name;
+	strcpy (dir_end, invocation_filename);
+	invocation_filename = aux_info_relocated_name;
       }
   }
 
@@ -2197,33 +2197,33 @@ start_over: ;
 
     if (!is_syscalls)
       {
-        current_aux_info_lineno = 2;
+	current_aux_info_lineno = 2;
 
-        for (aux_info_p = aux_info_second_line; *aux_info_p; )
-          {
-            if (referenced_file_is_newer (aux_info_p, aux_info_mtime))
-              {
-                free (aux_info_base);
-                free (aux_info_relocated_name);
-                if (keep_it && unlink (aux_info_filename) == -1)
-                  {
-                    int errno_val = errno;
-                    notice ("%s: can't delete file '%s': %s\n",
-                            pname, shortpath (NULL, aux_info_filename),
-                            xstrerror (errno_val));
-                    return;
-                  }
-                must_create = 1;
-                goto start_over;
-              }
+	for (aux_info_p = aux_info_second_line; *aux_info_p; )
+	  {
+	    if (referenced_file_is_newer (aux_info_p, aux_info_mtime))
+	      {
+		free (aux_info_base);
+		free (aux_info_relocated_name);
+		if (keep_it && unlink (aux_info_filename) == -1)
+		  {
+		    int errno_val = errno;
+	            notice ("%s: can't delete file '%s': %s\n",
+			    pname, shortpath (NULL, aux_info_filename),
+			    xstrerror (errno_val));
+	            return;
+	          }
+		must_create = 1;
+	        goto start_over;
+	      }
 
-            /* Skip over the rest of this line to start of next line.  */
+	    /* Skip over the rest of this line to start of next line.  */
 
-            while (*aux_info_p != '\n')
-              aux_info_p++;
-            aux_info_p++;
-            current_aux_info_lineno++;
-          }
+	    while (*aux_info_p != '\n')
+	      aux_info_p++;
+	    aux_info_p++;
+	    current_aux_info_lineno++;
+	  }
       }
 
     /* Now do the real pass on the aux_info lines.  Save their information in
@@ -2233,22 +2233,22 @@ start_over: ;
 
     for (aux_info_p = aux_info_second_line; *aux_info_p;)
       {
-        char *unexpanded_line = unexpand_if_needed (aux_info_p);
+	char *unexpanded_line = unexpand_if_needed (aux_info_p);
 
-        if (unexpanded_line)
-          {
-            save_def_or_dec (unexpanded_line, is_syscalls);
-            free (unexpanded_line);
-          }
-        else
-          save_def_or_dec (aux_info_p, is_syscalls);
+	if (unexpanded_line)
+	  {
+	    save_def_or_dec (unexpanded_line, is_syscalls);
+	    free (unexpanded_line);
+	  }
+	else
+	  save_def_or_dec (aux_info_p, is_syscalls);
 
-        /* Skip over the rest of this line and get to start of next line.  */
+	/* Skip over the rest of this line and get to start of next line.  */
 
-        while (*aux_info_p != '\n')
-          aux_info_p++;
-        aux_info_p++;
-        current_aux_info_lineno++;
+	while (*aux_info_p != '\n')
+	  aux_info_p++;
+	aux_info_p++;
+	current_aux_info_lineno++;
       }
   }
 
@@ -2268,7 +2268,7 @@ rename_c_file (const hash_table_entry *hp)
   const char *filename = hp->symbol;
   int last_char_index = strlen (filename) - 1;
   char *const new_filename = alloca (strlen (filename)
-                                     + strlen (cplus_suffix) + 1);
+				     + strlen (cplus_suffix) + 1);
 
   /* Note that we don't care here if the given file was converted or not.  It
      is possible that the given file was *not* converted, simply because there
@@ -2287,8 +2287,8 @@ rename_c_file (const hash_table_entry *hp)
     {
       int errno_val = errno;
       notice ("%s: warning: can't rename file '%s' to '%s': %s\n",
-              pname, shortpath (NULL, filename),
-              shortpath (NULL, new_filename), xstrerror (errno_val));
+	      pname, shortpath (NULL, filename),
+	      shortpath (NULL, new_filename), xstrerror (errno_val));
       errors++;
       return;
     }
@@ -2312,11 +2312,11 @@ reverse_def_dec_list (const hash_table_entry *hp)
   def_dec_info *current = (def_dec_info *) file_p->defs_decs;
 
   if (!current)
-    return;                        /* no list to reverse */
+    return;        		/* no list to reverse */
 
   prev = current;
   if (! (current = (def_dec_info *) current->next_in_file))
-    return;                        /* can't reverse a single list element */
+    return;        		/* can't reverse a single list element */
 
   prev->next_in_file = NULL;
 
@@ -2383,51 +2383,51 @@ find_extern_def (const def_dec_info *head, const def_dec_info *user)
   for (dd_p = head; dd_p; dd_p = dd_p->next_for_func)
     if (dd_p->is_func_def && !dd_p->is_static)
       {
-        if (!extern_def_p)        /* Previous definition? */
-          extern_def_p = dd_p;        /* Remember the first definition found.  */
-        else
-          {
-            /* Ignore definition just found if it came from SYSCALLS.c.X.  */
+	if (!extern_def_p)	/* Previous definition? */
+	  extern_def_p = dd_p;	/* Remember the first definition found.  */
+	else
+	  {
+	    /* Ignore definition just found if it came from SYSCALLS.c.X.  */
 
-            if (is_syscalls_file (dd_p->file))
-              continue;
+	    if (is_syscalls_file (dd_p->file))
+	      continue;
 
-            /* Quietly replace the definition previously found with the one
-               just found if the previous one was from SYSCALLS.c.X.  */
+	    /* Quietly replace the definition previously found with the one
+	       just found if the previous one was from SYSCALLS.c.X.  */
 
-            if (is_syscalls_file (extern_def_p->file))
-              {
-                extern_def_p = dd_p;
-                continue;
-              }
+	    if (is_syscalls_file (extern_def_p->file))
+	      {
+	        extern_def_p = dd_p;
+	        continue;
+	      }
 
-            /* If we get here, then there is a conflict between two function
-               declarations for the same function, both of which came from the
-               user's own code.  */
+	    /* If we get here, then there is a conflict between two function
+	       declarations for the same function, both of which came from the
+	       user's own code.  */
 
-            if (!conflict_noted)        /* first time we noticed? */
-              {
-                conflict_noted = 1;
-                notice ("%s: conflicting extern definitions of '%s'\n",
-                        pname, head->hash_entry->symbol);
-                if (!quiet_flag)
-                  {
-                    notice ("%s: declarations of '%s' will not be converted\n",
-                            pname, head->hash_entry->symbol);
-                    notice ("%s: conflict list for '%s' follows:\n",
-                            pname, head->hash_entry->symbol);
-                    fprintf (stderr, "%s:     %s(%d): %s\n",
-                             pname,
-                             shortpath (NULL, extern_def_p->file->hash_entry->symbol),
-                             extern_def_p->line, extern_def_p->ansi_decl);
-                  }
-              }
-            if (!quiet_flag)
-              fprintf (stderr, "%s:     %s(%d): %s\n",
-                       pname,
-                       shortpath (NULL, dd_p->file->hash_entry->symbol),
-                       dd_p->line, dd_p->ansi_decl);
-          }
+	    if (!conflict_noted)	/* first time we noticed? */
+	      {
+		conflict_noted = 1;
+		notice ("%s: conflicting extern definitions of '%s'\n",
+			pname, head->hash_entry->symbol);
+		if (!quiet_flag)
+		  {
+		    notice ("%s: declarations of '%s' will not be converted\n",
+			    pname, head->hash_entry->symbol);
+		    notice ("%s: conflict list for '%s' follows:\n",
+			    pname, head->hash_entry->symbol);
+		    fprintf (stderr, "%s:     %s(%d): %s\n",
+			     pname,
+			     shortpath (NULL, extern_def_p->file->hash_entry->symbol),
+			     extern_def_p->line, extern_def_p->ansi_decl);
+		  }
+	      }
+	    if (!quiet_flag)
+	      fprintf (stderr, "%s:     %s(%d): %s\n",
+		       pname,
+		       shortpath (NULL, dd_p->file->hash_entry->symbol),
+		       dd_p->line, dd_p->ansi_decl);
+	  }
       }
 
   /* We want to err on the side of caution, so if we found multiple conflicting
@@ -2440,64 +2440,64 @@ find_extern_def (const def_dec_info *head, const def_dec_info *user)
   if (!extern_def_p)
     {
       /* We have no definitions for this function so do the next best thing.
-         Search for an extern declaration already in prototype form.  */
+	 Search for an extern declaration already in prototype form.  */
 
       for (dd_p = head; dd_p; dd_p = dd_p->next_for_func)
-        if (!dd_p->is_func_def && !dd_p->is_static && dd_p->prototyped)
-          {
-            extern_def_p = dd_p;        /* save a pointer to the definition */
-            if (!quiet_flag)
-              notice ("%s: warning: using formals list from %s(%d) for function '%s'\n",
-                      pname,
-                      shortpath (NULL, dd_p->file->hash_entry->symbol),
-                      dd_p->line, dd_p->hash_entry->symbol);
-            break;
-          }
+	if (!dd_p->is_func_def && !dd_p->is_static && dd_p->prototyped)
+	  {
+	    extern_def_p = dd_p;	/* save a pointer to the definition */
+	    if (!quiet_flag)
+	      notice ("%s: warning: using formals list from %s(%d) for function '%s'\n",
+		      pname,
+		      shortpath (NULL, dd_p->file->hash_entry->symbol),
+		      dd_p->line, dd_p->hash_entry->symbol);
+	    break;
+	  }
 
       /* Gripe about unprototyped function declarations that we found no
-         corresponding definition (or other source of prototype information)
-         for.
+	 corresponding definition (or other source of prototype information)
+	 for.
 
-         Gripe even if the unprototyped declaration we are worried about
-         exists in a file in one of the "system" include directories.  We
-         can gripe about these because we should have at least found a
-         corresponding (pseudo) definition in the SYSCALLS.c.X file.  If we
-         didn't, then that means that the SYSCALLS.c.X file is missing some
-         needed prototypes for this particular system.  That is worth telling
-         the user about!  */
+	 Gripe even if the unprototyped declaration we are worried about
+	 exists in a file in one of the "system" include directories.  We
+	 can gripe about these because we should have at least found a
+	 corresponding (pseudo) definition in the SYSCALLS.c.X file.  If we
+	 didn't, then that means that the SYSCALLS.c.X file is missing some
+	 needed prototypes for this particular system.  That is worth telling
+	 the user about!  */
 
       if (!extern_def_p)
-        {
-          const char *file = user->file->hash_entry->symbol;
+	{
+	  const char *file = user->file->hash_entry->symbol;
 
-          if (!quiet_flag)
-            if (in_system_include_dir (file))
-              {
-                /* Why copy this string into `needed' at all?
-                   Why not just use user->ansi_decl without copying?  */
-                char *needed = alloca (strlen (user->ansi_decl) + 1);
-                char *p;
+	  if (!quiet_flag)
+	    if (in_system_include_dir (file))
+	      {
+		/* Why copy this string into `needed' at all?
+		   Why not just use user->ansi_decl without copying?  */
+		char *needed = alloca (strlen (user->ansi_decl) + 1);
+	        char *p;
 
-                strcpy (needed, user->ansi_decl);
-                p = strstr (needed, user->hash_entry->symbol)
-                    + strlen (user->hash_entry->symbol) + 2;
-                /* Avoid having ??? in the string.  */
-                *p++ = '?';
-                *p++ = '?';
-                *p++ = '?';
-                strcpy (p, ");");
+	        strcpy (needed, user->ansi_decl);
+	        p = strstr (needed, user->hash_entry->symbol)
+	            + strlen (user->hash_entry->symbol) + 2;
+		/* Avoid having ??? in the string.  */
+		*p++ = '?';
+		*p++ = '?';
+		*p++ = '?';
+	        strcpy (p, ");");
 
-                notice ("%s: %d: '%s' used but missing from SYSCALLS\n",
-                        shortpath (NULL, file), user->line,
-                        needed+7);        /* Don't print "extern " */
-              }
+	        notice ("%s: %d: '%s' used but missing from SYSCALLS\n",
+			shortpath (NULL, file), user->line,
+			needed+7);	/* Don't print "extern " */
+	      }
 #if 0
-            else
-              notice ("%s: %d: warning: no extern definition for '%s'\n",
-                      shortpath (NULL, file), user->line,
-                      user->hash_entry->symbol);
+	    else
+	      notice ("%s: %d: warning: no extern definition for '%s'\n",
+		      shortpath (NULL, file), user->line,
+		      user->hash_entry->symbol);
 #endif
-        }
+	}
     }
   return extern_def_p;
 }
@@ -2517,21 +2517,21 @@ find_static_definition (const def_dec_info *user)
   for (dd_p = head; dd_p; dd_p = dd_p->next_for_func)
     if (dd_p->is_func_def && dd_p->is_static && (dd_p->file == user->file))
       {
-        static_def_p = dd_p;        /* save a pointer to the definition */
-        num_static_defs++;
+	static_def_p = dd_p;	/* save a pointer to the definition */
+	num_static_defs++;
       }
   if (num_static_defs == 0)
     {
       if (!quiet_flag)
-        notice ("%s: warning: no static definition for '%s' in file '%s'\n",
-                pname, head->hash_entry->symbol,
-                shortpath (NULL, user->file->hash_entry->symbol));
+	notice ("%s: warning: no static definition for '%s' in file '%s'\n",
+		pname, head->hash_entry->symbol,
+		shortpath (NULL, user->file->hash_entry->symbol));
     }
   else if (num_static_defs > 1)
     {
       notice ("%s: multiple static defs of '%s' in file '%s'\n",
-              pname, head->hash_entry->symbol,
-              shortpath (NULL, user->file->hash_entry->symbol));
+	      pname, head->hash_entry->symbol,
+	      shortpath (NULL, user->file->hash_entry->symbol));
       return NULL;
     }
   return static_def_p;
@@ -2602,12 +2602,12 @@ connect_defs_and_decs (const hash_table_entry *hp)
   for (dd_p = hp->ddip; dd_p; dd_p = dd_p->next_for_func)
     if (!dd_p->is_func_def && !dd_p->is_static && !dd_p->definition)
       {
-        if (first_extern_reference)
-          {
-            extern_def_p = find_extern_def (hp->ddip, dd_p);
-            first_extern_reference = 0;
-          }
-        ((NONCONST def_dec_info *) dd_p)->definition = extern_def_p;
+	if (first_extern_reference)
+	  {
+	    extern_def_p = find_extern_def (hp->ddip, dd_p);
+	    first_extern_reference = 0;
+	  }
+	((NONCONST def_dec_info *) dd_p)->definition = extern_def_p;
       }
 
   /* Traverse the list of definitions and declarations for this particular
@@ -2633,37 +2633,37 @@ connect_defs_and_decs (const hash_table_entry *hp)
   for (dd_p = hp->ddip; dd_p; dd_p = dd_p->next_for_func)
     if (!dd_p->is_func_def && dd_p->is_static && !dd_p->definition)
       {
-        const def_dec_info *dd_p2;
-        const def_dec_info *static_def;
+	const def_dec_info *dd_p2;
+	const def_dec_info *static_def;
 
-        /* We have now found a single static declaration for which we need to
-           find a matching definition.  We want to minimize the work (and the
-           number of warnings), so we will find an appropriate (matching)
-           static definition for this declaration, and then distribute it
-           (as the definition for) any and all other static declarations
-           for this function name which occur within the same file, and which
-           do not already have definitions.
+	/* We have now found a single static declaration for which we need to
+	   find a matching definition.  We want to minimize the work (and the
+	   number of warnings), so we will find an appropriate (matching)
+	   static definition for this declaration, and then distribute it
+	   (as the definition for) any and all other static declarations
+	   for this function name which occur within the same file, and which
+	   do not already have definitions.
 
-           Note that a trick is used here to prevent subsequent attempts to
-           call find_static_definition for a given function-name & file
-           if the first such call returns NULL.  Essentially, we convert
-           these NULL return values to -1, and put the -1 into the definition
-           field for each other static declaration from the same file which
-           does not already have an associated definition.
-           This makes these other static declarations look like they are
-           actually defined already when the outer loop here revisits them
-           later on.  Thus, the outer loop will skip over them.  Later, we
-           turn the -1's back to NULL's.  */
+	   Note that a trick is used here to prevent subsequent attempts to
+	   call find_static_definition for a given function-name & file
+	   if the first such call returns NULL.  Essentially, we convert
+	   these NULL return values to -1, and put the -1 into the definition
+	   field for each other static declaration from the same file which
+	   does not already have an associated definition.
+	   This makes these other static declarations look like they are
+	   actually defined already when the outer loop here revisits them
+	   later on.  Thus, the outer loop will skip over them.  Later, we
+	   turn the -1's back to NULL's.  */
 
-        ((NONCONST def_dec_info *) dd_p)->definition =
-          (static_def = find_static_definition (dd_p))
-          ? static_def
-          : (const def_dec_info *) -1;
+	((NONCONST def_dec_info *) dd_p)->definition =
+	  (static_def = find_static_definition (dd_p))
+	  ? static_def
+	  : (const def_dec_info *) -1;
 
-        for (dd_p2 = dd_p->next_for_func; dd_p2; dd_p2 = dd_p2->next_for_func)
-          if (!dd_p2->is_func_def && dd_p2->is_static
-              && !dd_p2->definition && (dd_p2->file == dd_p->file))
-            ((NONCONST def_dec_info *) dd_p2)->definition = dd_p->definition;
+	for (dd_p2 = dd_p->next_for_func; dd_p2; dd_p2 = dd_p2->next_for_func)
+	  if (!dd_p2->is_func_def && dd_p2->is_static
+	      && !dd_p2->definition && (dd_p2->file == dd_p->file))
+	    ((NONCONST def_dec_info *) dd_p2)->definition = dd_p->definition;
       }
 
   /* Convert any dummy (-1) definitions we created in the step above back to
@@ -2699,12 +2699,12 @@ declare_source_confusing (const char *clean_p)
   if (!quiet_flag)
     {
       if (clean_p == 0)
-        notice ("%s: %d: warning: source too confusing\n",
-                shortpath (NULL, convert_filename), last_known_line_number);
+	notice ("%s: %d: warning: source too confusing\n",
+		shortpath (NULL, convert_filename), last_known_line_number);
       else
-        notice ("%s: %d: warning: source too confusing\n",
-                shortpath (NULL, convert_filename),
-                identify_lineno (clean_p));
+	notice ("%s: %d: warning: source too confusing\n",
+		shortpath (NULL, convert_filename),
+		identify_lineno (clean_p));
     }
   longjmp (source_confusion_recovery, 1);
 }
@@ -2743,7 +2743,7 @@ seek_to_line (int n)
   while (n > last_known_line_number)
     {
       while (*last_known_line_start != '\n')
-        check_source (++last_known_line_start < clean_text_limit, 0);
+	check_source (++last_known_line_start < clean_text_limit, 0);
       last_known_line_start++;
       last_known_line_number++;
     }
@@ -2852,12 +2852,12 @@ other_variable_style_function (const char *ansi_header)
       const char *candidate;
 
       if ((candidate = strstr (p, varargs_style_indicator)) == 0)
-        return 0;
+	return 0;
       else
-        if (!is_id_char (candidate[-1]) && !is_id_char (candidate[len]))
-          return 1;
-        else
-          p = candidate + 1;
+	if (!is_id_char (candidate[-1]) && !is_id_char (candidate[len]))
+	  return 1;
+	else
+	  p = candidate + 1;
     }
   return 0;
 #endif /* !defined (UNPROTOIZE) */
@@ -2869,7 +2869,7 @@ other_variable_style_function (const char *ansi_header)
 
 static void
 edit_fn_declaration (const def_dec_info *def_dec_p,
-                     const char *volatile clean_text_p)
+		     const char *volatile clean_text_p)
 {
   const char *start_formals;
   const char *end_formals;
@@ -2897,9 +2897,9 @@ edit_fn_declaration (const def_dec_info *def_dec_p,
   if (other_variable_style_function (definition->ansi_decl))
     {
       if (!quiet_flag)
-        notice ("%s: %d: warning: varargs function declaration not converted\n",
-                shortpath (NULL, def_dec_p->file->hash_entry->symbol),
-                def_dec_p->line);
+	notice ("%s: %d: warning: varargs function declaration not converted\n",
+		shortpath (NULL, def_dec_p->file->hash_entry->symbol),
+		def_dec_p->line);
       return;
     }
 
@@ -2913,7 +2913,7 @@ edit_fn_declaration (const def_dec_info *def_dec_p,
     {
       restore_pointers ();
       notice ("%s: declaration of function '%s' not converted\n",
-              pname, function_to_edit);
+	      pname, function_to_edit);
       return;
     }
 
@@ -2937,46 +2937,46 @@ edit_fn_declaration (const def_dec_info *def_dec_p,
   do
     {
       for (;;)
-        {
-          /* Scan leftwards until we find some character which can be
-             part of an identifier.  */
+	{
+	  /* Scan leftwards until we find some character which can be
+	     part of an identifier.  */
 
-          while (!is_id_char (*clean_text_p))
-            check_source (--clean_text_p > clean_read_ptr, 0);
+	  while (!is_id_char (*clean_text_p))
+	    check_source (--clean_text_p > clean_read_ptr, 0);
 
-          /* Scan backwards until we find a char that cannot be part of an
-             identifier.  */
+	  /* Scan backwards until we find a char that cannot be part of an
+	     identifier.  */
 
-          while (is_id_char (*clean_text_p))
-            check_source (--clean_text_p > clean_read_ptr, 0);
+	  while (is_id_char (*clean_text_p))
+	    check_source (--clean_text_p > clean_read_ptr, 0);
 
-          /* Having found an "id break", see if the following id is the one
-             that we are looking for.  If so, then exit from this loop.  */
+	  /* Having found an "id break", see if the following id is the one
+	     that we are looking for.  If so, then exit from this loop.  */
 
-          if (!strncmp (clean_text_p+1, function_to_edit, func_name_len))
-            {
-              char ch = *(clean_text_p + 1 + func_name_len);
+	  if (!strncmp (clean_text_p+1, function_to_edit, func_name_len))
+	    {
+	      char ch = *(clean_text_p + 1 + func_name_len);
 
-              /* Must also check to see that the name in the source text
-                 ends where it should (in order to prevent bogus matches
-                 on similar but longer identifiers.  */
+	      /* Must also check to see that the name in the source text
+	         ends where it should (in order to prevent bogus matches
+	         on similar but longer identifiers.  */
 
-              if (! is_id_char (ch))
-                break;                        /* exit from loop */
-            }
-        }
+	      if (! is_id_char (ch))
+	        break;			/* exit from loop */
+	    }
+	}
 
       /* We have now found the first perfect match for the function name in
-         our backward search.  This may or may not be the actual function
-         name at the start of the actual function declaration (i.e. we could
-         have easily been mislead).  We will try to avoid getting fooled too
-         often by looking forward for the open paren which should follow the
-         identifier we just found.  We ignore whitespace while hunting.  If
-         the next non-whitespace byte we see is *not* an open left paren,
-         then we must assume that we have been fooled and we start over
-         again accordingly.  Note that there is no guarantee, that even if
-         we do see the open paren, that we are in the right place.
-         Programmers do the strangest things sometimes!  */
+	 our backward search.  This may or may not be the actual function
+	 name at the start of the actual function declaration (i.e. we could
+	 have easily been mislead).  We will try to avoid getting fooled too
+	 often by looking forward for the open paren which should follow the
+	 identifier we just found.  We ignore whitespace while hunting.  If
+	 the next non-whitespace byte we see is *not* an open left paren,
+	 then we must assume that we have been fooled and we start over
+	 again accordingly.  Note that there is no guarantee, that even if
+	 we do see the open paren, that we are in the right place.
+	 Programmers do the strangest things sometimes!  */
 
       end_of_fn_name = clean_text_p + strlen (def_dec_p->hash_entry->symbol);
       start_formals = forward_to_next_token_char (end_of_fn_name);
@@ -2998,76 +2998,76 @@ edit_fn_declaration (const def_dec_info *def_dec_p,
   for (;;)
     {
       {
-        int depth;
+	int depth;
 
-        end_formals = start_formals + 1;
-        depth = 1;
-        for (; depth; check_source (++end_formals < clean_text_limit, 0))
-          {
-            switch (*end_formals)
-              {
-              case '(':
-                depth++;
-                break;
-              case ')':
-                depth--;
-                break;
-              }
-          }
-        end_formals--;
+	end_formals = start_formals + 1;
+	depth = 1;
+	for (; depth; check_source (++end_formals < clean_text_limit, 0))
+	  {
+	    switch (*end_formals)
+	      {
+	      case '(':
+		depth++;
+		break;
+	      case ')':
+		depth--;
+		break;
+	      }
+	  }
+	end_formals--;
       }
 
       /* end_formals now points to the closing right paren of the formals
-         list whose left paren is pointed to by start_formals.  */
+	 list whose left paren is pointed to by start_formals.  */
 
       /* Now, if we are protoizing, we insert the new ANSI-style formals list
-         attached to the associated definition of this function.  If however
-         we are unprotoizing, then we simply delete any formals list which
-         may be present.  */
+	 attached to the associated definition of this function.  If however
+	 we are unprotoizing, then we simply delete any formals list which
+	 may be present.  */
 
       output_up_to (start_formals);
 #ifndef UNPROTOIZE
       if (this_f_list_chain_item)
-        {
-          output_string (this_f_list_chain_item->formals_list);
-          this_f_list_chain_item = this_f_list_chain_item->chain_next;
-        }
+	{
+	  output_string (this_f_list_chain_item->formals_list);
+	  this_f_list_chain_item = this_f_list_chain_item->chain_next;
+	}
       else
-        {
-          if (!quiet_flag)
-            notice ("%s: warning: too many parameter lists in declaration of '%s'\n",
-                    pname, def_dec_p->hash_entry->symbol);
-          check_source (0, end_formals);  /* leave the declaration intact */
-        }
+	{
+	  if (!quiet_flag)
+	    notice ("%s: warning: too many parameter lists in declaration of '%s'\n",
+		    pname, def_dec_p->hash_entry->symbol);
+	  check_source (0, end_formals);  /* leave the declaration intact */
+	}
 #endif /* !defined (UNPROTOIZE) */
       clean_read_ptr = end_formals - 1;
 
       /* Now see if it looks like there may be another formals list associated
-         with the function declaration that we are converting (following the
-         formals list that we just converted.  */
+	 with the function declaration that we are converting (following the
+	 formals list that we just converted.  */
 
       {
-        const char *another_r_paren = forward_to_next_token_char (end_formals);
+	const char *another_r_paren = forward_to_next_token_char (end_formals);
 
-        if ((*another_r_paren != ')')
-            || (*(start_formals = forward_to_next_token_char (another_r_paren)) != '('))
-          {
+	if ((*another_r_paren != ')')
+	    || (*(start_formals = forward_to_next_token_char (another_r_paren)) != '('))
+	  {
 #ifndef UNPROTOIZE
-            if (this_f_list_chain_item)
-              {
-                if (!quiet_flag)
-                  notice ("\n%s: warning: too few parameter lists in declaration of '%s'\n",
-                          pname, def_dec_p->hash_entry->symbol);
-                check_source (0, start_formals); /* leave the decl intact */
-              }
+	    if (this_f_list_chain_item)
+	      {
+		if (!quiet_flag)
+		  notice ("\n%s: warning: too few parameter lists in declaration of '%s'\n",
+			  pname, def_dec_p->hash_entry->symbol);
+		check_source (0, start_formals); /* leave the decl intact */
+	      }
 #endif /* !defined (UNPROTOIZE) */
-            break;
+	    break;
 
-          }
+	  }
       }
 
       /* There does appear to be yet another formals list, so loop around
-         again, and convert it also.  */
+	 again, and convert it also.  */
     }
 }
 
@@ -3084,7 +3084,7 @@ edit_fn_declaration (const def_dec_info *def_dec_p,
 
 static int
 edit_formals_lists (const char *end_formals, unsigned int f_list_count,
-                    const def_dec_info *def_dec_p)
+		    const def_dec_info *def_dec_p)
 {
   const char *start_formals;
   int depth;
@@ -3094,14 +3094,14 @@ edit_formals_lists (const char *end_formals, unsigned int f_list_count,
   for (; depth; check_source (--start_formals > clean_read_ptr, 0))
     {
       switch (*start_formals)
-        {
-        case '(':
-          depth--;
-          break;
-        case ')':
-          depth++;
-          break;
-        }
+	{
+	case '(':
+	  depth--;
+	  break;
+	case ')':
+	  depth++;
+	  break;
+	}
     }
   start_formals++;
 
@@ -3118,12 +3118,12 @@ edit_formals_lists (const char *end_formals, unsigned int f_list_count,
       next_end = start_formals - 1;
       check_source (next_end > clean_read_ptr, 0);
       while (ISSPACE ((const unsigned char)*next_end))
-        check_source (--next_end > clean_read_ptr, 0);
+	check_source (--next_end > clean_read_ptr, 0);
       check_source (*next_end == ')', next_end);
       check_source (--next_end > clean_read_ptr, 0);
       check_source (*next_end == ')', next_end);
       if (edit_formals_lists (next_end, f_list_count, def_dec_p))
-        return 1;
+	return 1;
     }
 
   /* Check that the function name in the header we are working on is the same
@@ -3138,27 +3138,27 @@ edit_formals_lists (const char *end_formals, unsigned int f_list_count,
       size_t func_name_len;
 
       for (func_name_limit = start_formals-1;
-           ISSPACE ((const unsigned char)*func_name_limit); )
-        check_source (--func_name_limit > clean_read_ptr, 0);
+	   ISSPACE ((const unsigned char)*func_name_limit); )
+	check_source (--func_name_limit > clean_read_ptr, 0);
 
       for (func_name_start = func_name_limit++;
-           is_id_char (*func_name_start);
-           func_name_start--)
-        check_source (func_name_start > clean_read_ptr, 0);
+	   is_id_char (*func_name_start);
+	   func_name_start--)
+	check_source (func_name_start > clean_read_ptr, 0);
       func_name_start++;
       func_name_len = func_name_limit - func_name_start;
       if (func_name_len == 0)
-        check_source (0, func_name_start);
+	check_source (0, func_name_start);
       if (func_name_len != strlen (expected)
-          || strncmp (func_name_start, expected, func_name_len))
-        {
-          notice ("%s: %d: warning: found '%s' but expected '%s'\n",
-                  shortpath (NULL, def_dec_p->file->hash_entry->symbol),
-                  identify_lineno (func_name_start),
-                  dupnstr (func_name_start, func_name_len),
-                  expected);
-          return 1;
-        }
+	  || strncmp (func_name_start, expected, func_name_len))
+	{
+	  notice ("%s: %d: warning: found '%s' but expected '%s'\n",
+		  shortpath (NULL, def_dec_p->file->hash_entry->symbol),
+		  identify_lineno (func_name_start),
+		  dupnstr (func_name_start, func_name_len),
+		  expected);
+	  return 1;
+	}
     }
 
   output_up_to (start_formals);
@@ -3233,11 +3233,11 @@ find_rightmost_formals_list (const char *clean_text_p)
 
     while (*end_formals != ')')
       {
-        if (ISSPACE ((unsigned char)*end_formals))
-          while (ISSPACE ((unsigned char)*end_formals))
-            check_source (--end_formals > clean_read_ptr, 0);
-        else
-          check_source (--end_formals > clean_read_ptr, 0);
+	if (ISSPACE ((unsigned char)*end_formals))
+	  while (ISSPACE ((unsigned char)*end_formals))
+	    check_source (--end_formals > clean_read_ptr, 0);
+	else
+	  check_source (--end_formals > clean_read_ptr, 0);
       }
 
     ch = *(l_brace_p = forward_to_next_token_char (end_formals));
@@ -3262,32 +3262,32 @@ find_rightmost_formals_list (const char *clean_text_p)
       /* Look leftward and try to find a right-paren.  */
 
       while (*end_formals != ')')
-        {
-          if (ISSPACE ((const unsigned char)*end_formals))
-            while (ISSPACE ((const unsigned char)*end_formals))
-              check_source (--end_formals > clean_read_ptr, 0);
-          else
-            check_source (--end_formals > clean_read_ptr, 0);
-        }
+	{
+	  if (ISSPACE ((const unsigned char)*end_formals))
+	    while (ISSPACE ((const unsigned char)*end_formals))
+	      check_source (--end_formals > clean_read_ptr, 0);
+	  else
+	    check_source (--end_formals > clean_read_ptr, 0);
+	}
 
       ch = *(l_brace_p = forward_to_next_token_char (end_formals));
 
       /* Since it is possible that we found a right paren before the starting
-         '{' of the body which IS NOT the one at the end of the real K&R
-         formals list (say for instance, we found one embedded inside one of
-         the old K&R formal parameter declarations) we have to check to be
-         sure that this is in fact the right paren that we were looking for.
+	 '{' of the body which IS NOT the one at the end of the real K&R
+	 formals list (say for instance, we found one embedded inside one of
+	 the old K&R formal parameter declarations) we have to check to be
+	 sure that this is in fact the right paren that we were looking for.
 
-         The one we were looking for *must* be followed by either a '{' or
-         by an alphabetic character, while others *cannot* validly be followed
-         by such characters.  */
+	 The one we were looking for *must* be followed by either a '{' or
+	 by an alphabetic character, while others *cannot* validly be followed
+	 by such characters.  */
 
       if ((ch == '{') || ISALPHA ((unsigned char) ch))
-        break;
+	break;
 
       /* At this point, we have found a right paren, but we know that it is
-         not the one we were looking for, so backup one character and keep
-         looking.  */
+	 not the one we were looking for, so backup one character and keep
+	 looking.  */
 
       check_source (--end_formals > clean_read_ptr, 0);
     }
@@ -3328,7 +3328,7 @@ add_local_decl (const def_dec_info *def_dec_p, const char *clean_text_p)
     {
       restore_pointers ();
       notice ("%s: local declaration for function '%s' not inserted\n",
-              pname, function_to_edit);
+	      pname, function_to_edit);
       return;
     }
 
@@ -3354,9 +3354,9 @@ add_local_decl (const def_dec_info *def_dec_p, const char *clean_text_p)
   if (*start_of_block != '{')
     {
       if (!quiet_flag)
-        notice ("\n%s: %d: warning: can't add declaration of '%s' into macro call\n",
-          def_dec_p->file->hash_entry->symbol, def_dec_p->line,
-          def_dec_p->hash_entry->symbol);
+	notice ("\n%s: %d: warning: can't add declaration of '%s' into macro call\n",
+	  def_dec_p->file->hash_entry->symbol, def_dec_p->line,
+	  def_dec_p->hash_entry->symbol);
       return;
     }
 
@@ -3394,7 +3394,7 @@ add_local_decl (const def_dec_info *def_dec_p, const char *clean_text_p)
       const char *decl = def_dec_p->definition->ansi_decl;
 
       if ((*decl == 'e') && (def_dec_p->file == def_dec_p->definition->file))
-        decl += 7;
+	decl += 7;
       output_string (decl);
     }
 
@@ -3427,7 +3427,7 @@ add_global_decls (const file_info *file_p, const char *clean_text_p)
     {
       restore_pointers ();
       notice ("%s: global declarations for file '%s' not inserted\n",
-              pname, shortpath (NULL, file_p->hash_entry->symbol));
+	      pname, shortpath (NULL, file_p->hash_entry->symbol));
       return;
     }
 
@@ -3440,10 +3440,10 @@ add_global_decls (const file_info *file_p, const char *clean_text_p)
   for (;; --scan_p)
     {
       if (scan_p < clean_text_base)
-        break;
+	break;
       check_source (scan_p > clean_read_ptr, 0);
       if (*scan_p == ';')
-        break;
+	break;
     }
 
   /* scan_p now points either to a semicolon, or to just before the start
@@ -3470,21 +3470,21 @@ add_global_decls (const file_info *file_p, const char *clean_text_p)
 
     for (dd_p = file_p->defs_decs; dd_p; dd_p = dd_p->next_in_file)
       if (dd_p->is_implicit && dd_p->definition && !dd_p->definition->written)
-        {
-          const char *decl = dd_p->definition->ansi_decl;
+	{
+	  const char *decl = dd_p->definition->ansi_decl;
 
-          /* If the function for which we are inserting a declaration is
-             actually defined later in the same file, then suppress the
-             leading `extern' keyword (if there is one).  */
+	  /* If the function for which we are inserting a declaration is
+	     actually defined later in the same file, then suppress the
+	     leading `extern' keyword (if there is one).  */
 
-          if (*decl == 'e' && (dd_p->file == dd_p->definition->file))
-            decl += 7;
+	  if (*decl == 'e' && (dd_p->file == dd_p->definition->file))
+	    decl += 7;
 
-          output_string ("\n");
-          output_string (decl);
-          some_decls_added = 1;
-          ((NONCONST def_dec_info *) dd_p->definition)->written = 1;
-        }
+	  output_string ("\n");
+	  output_string (decl);
+	  some_decls_added = 1;
+	  ((NONCONST def_dec_info *) dd_p->definition)->written = 1;
+	}
     if (some_decls_added)
       output_string ("\n\n");
   }
@@ -3504,7 +3504,7 @@ add_global_decls (const file_info *file_p, const char *clean_text_p)
 
 static void
 edit_fn_definition (const def_dec_info *def_dec_p,
-                    const char *volatile clean_text_p)
+		    const char *volatile clean_text_p)
 {
   const char *end_formals;
   const char *function_to_edit = def_dec_p->hash_entry->symbol;
@@ -3517,7 +3517,7 @@ edit_fn_definition (const def_dec_info *def_dec_p,
     {
       restore_pointers ();
       notice ("%s: definition of function '%s' not converted\n",
-              pname, function_to_edit);
+	      pname, function_to_edit);
       return;
     }
 
@@ -3535,10 +3535,10 @@ edit_fn_definition (const def_dec_info *def_dec_p,
   if (other_variable_style_function (def_dec_p->ansi_decl))
     {
       if (!quiet_flag)
-        notice ("%s: %d: warning: definition of %s not converted\n",
-                shortpath (NULL, def_dec_p->file->hash_entry->symbol),
-                identify_lineno (end_formals),
-                other_var_style);
+	notice ("%s: %d: warning: definition of %s not converted\n",
+		shortpath (NULL, def_dec_p->file->hash_entry->symbol),
+		identify_lineno (end_formals),
+		other_var_style);
       output_up_to (end_formals);
       return;
     }
@@ -3547,7 +3547,7 @@ edit_fn_definition (const def_dec_info *def_dec_p,
     {
       restore_pointers ();
       notice ("%s: definition of function '%s' not converted\n",
-              pname, function_to_edit);
+	      pname, function_to_edit);
       return;
     }
 
@@ -3570,11 +3570,11 @@ edit_fn_definition (const def_dec_info *def_dec_p,
     limit_p = decl_p + strlen (decl_p);
     for (;decl_p < limit_p; decl_p = semicolon_p + 2)
       {
-        for (semicolon_p = decl_p; *semicolon_p != ';'; semicolon_p++)
-          continue;
-        output_string ("\n");
-        output_string (indent_string);
-        output_bytes (decl_p, (size_t) ((semicolon_p + 1) - decl_p));
+	for (semicolon_p = decl_p; *semicolon_p != ';'; semicolon_p++)
+	  continue;
+	output_string ("\n");
+	output_string (indent_string);
+	output_bytes (decl_p, (size_t) ((semicolon_p + 1) - decl_p));
       }
 
     /* If there are no newlines between the end of the formals list and the
@@ -3582,12 +3582,12 @@ edit_fn_definition (const def_dec_info *def_dec_p,
 
     for (scan_p = end_formals+1; *scan_p != '{'; )
       {
-        if (*scan_p == '\n')
-          {
-            had_newlines = 1;
-            break;
-          }
-        check_source (++scan_p < clean_text_limit, 0);
+	if (*scan_p == '\n')
+	  {
+	    had_newlines = 1;
+	    break;
+	  }
+	check_source (++scan_p < clean_text_limit, 0);
       }
     if (!had_newlines)
       output_string ("\n");
@@ -3618,24 +3618,24 @@ edit_fn_definition (const def_dec_info *def_dec_p,
     scan_orig = end_formals_orig + 1;
     for (; scan < start_body; scan++, scan_orig++)
       {
-        if (*scan == *scan_orig)
-          {
-            have_newlines |= (*scan_orig == '\n');
-            /* Leave identical whitespace alone.  */
-            if (!ISSPACE ((const unsigned char)*scan_orig))
-              *((NONCONST char *) scan_orig) = ' '; /* identical - so whiteout */
-          }
-        else
-          have_flotsam = 1;
+	if (*scan == *scan_orig)
+	  {
+	    have_newlines |= (*scan_orig == '\n');
+	    /* Leave identical whitespace alone.  */
+	    if (!ISSPACE ((const unsigned char)*scan_orig))
+	      *((NONCONST char *) scan_orig) = ' '; /* identical - so whiteout */
+	  }
+	else
+	  have_flotsam = 1;
       }
     if (have_flotsam)
       output_bytes (end_formals_orig + 1,
-                    (size_t) (start_body_orig - end_formals_orig) - 1);
+		    (size_t) (start_body_orig - end_formals_orig) - 1);
     else
       if (have_newlines)
-        output_string ("\n");
+	output_string ("\n");
       else
-        output_string (" ");
+	output_string (" ");
     clean_read_ptr = start_body - 1;
   }
 #endif /* !defined (UNPROTOIZE) */
@@ -3654,94 +3654,94 @@ do_cleaning (char *new_clean_text_base, const char *new_clean_text_limit)
   for (scan_p = new_clean_text_base; scan_p < new_clean_text_limit; scan_p++)
     {
       switch (*scan_p)
-        {
-        case '/':                        /* Handle comments.  */
-          if (scan_p[1] != '*')
-            goto regular;
-          non_whitespace_since_newline = 1;
-          scan_p[0] = ' ';
-          scan_p[1] = ' ';
-          scan_p += 2;
-          while (scan_p[1] != '/' || scan_p[0] != '*')
-            {
-              if (!ISSPACE ((const unsigned char)*scan_p))
-                *scan_p = ' ';
-              ++scan_p;
-              gcc_assert (scan_p < new_clean_text_limit);
-            }
-          *scan_p++ = ' ';
-          *scan_p = ' ';
-          break;
+	{
+	case '/':			/* Handle comments.  */
+	  if (scan_p[1] != '*')
+	    goto regular;
+	  non_whitespace_since_newline = 1;
+	  scan_p[0] = ' ';
+	  scan_p[1] = ' ';
+	  scan_p += 2;
+	  while (scan_p[1] != '/' || scan_p[0] != '*')
+	    {
+	      if (!ISSPACE ((const unsigned char)*scan_p))
+		*scan_p = ' ';
+	      ++scan_p;
+	      gcc_assert (scan_p < new_clean_text_limit);
+	    }
+	  *scan_p++ = ' ';
+	  *scan_p = ' ';
+	  break;
 
-        case '#':                        /* Handle pp directives.  */
-          if (non_whitespace_since_newline)
-            goto regular;
-          *scan_p = ' ';
-          while (scan_p[1] != '\n' || scan_p[0] == '\\')
-            {
-              if (!ISSPACE ((const unsigned char)*scan_p))
-                *scan_p = ' ';
-              ++scan_p;
-              gcc_assert (scan_p < new_clean_text_limit);
-            }
-          *scan_p++ = ' ';
-          break;
+	case '#':			/* Handle pp directives.  */
+	  if (non_whitespace_since_newline)
+	    goto regular;
+	  *scan_p = ' ';
+	  while (scan_p[1] != '\n' || scan_p[0] == '\\')
+	    {
+	      if (!ISSPACE ((const unsigned char)*scan_p))
+		*scan_p = ' ';
+	      ++scan_p;
+	      gcc_assert (scan_p < new_clean_text_limit);
+	    }
+	  *scan_p++ = ' ';
+	  break;
 
-        case '\'':                        /* Handle character literals.  */
-          non_whitespace_since_newline = 1;
-          while (scan_p[1] != '\'' || scan_p[0] == '\\')
-            {
-              if (scan_p[0] == '\\'
-                  && !ISSPACE ((const unsigned char) scan_p[1]))
-                scan_p[1] = ' ';
-              if (!ISSPACE ((const unsigned char)*scan_p))
-                *scan_p = ' ';
-              ++scan_p;
-              gcc_assert (scan_p < new_clean_text_limit);
-            }
-          *scan_p++ = ' ';
-          break;
+	case '\'':			/* Handle character literals.  */
+	  non_whitespace_since_newline = 1;
+	  while (scan_p[1] != '\'' || scan_p[0] == '\\')
+	    {
+	      if (scan_p[0] == '\\'
+		  && !ISSPACE ((const unsigned char) scan_p[1]))
+		scan_p[1] = ' ';
+	      if (!ISSPACE ((const unsigned char)*scan_p))
+		*scan_p = ' ';
+	      ++scan_p;
+	      gcc_assert (scan_p < new_clean_text_limit);
+	    }
+	  *scan_p++ = ' ';
+	  break;
 
-        case '"':                        /* Handle string literals.  */
-          non_whitespace_since_newline = 1;
-          while (scan_p[1] != '"' || scan_p[0] == '\\')
-            {
-              if (scan_p[0] == '\\'
-                  && !ISSPACE ((const unsigned char) scan_p[1]))
-                scan_p[1] = ' ';
-              if (!ISSPACE ((const unsigned char)*scan_p))
-                *scan_p = ' ';
-              ++scan_p;
-              gcc_assert (scan_p < new_clean_text_limit);
-            }
-          if (!ISSPACE ((const unsigned char)*scan_p))
-            *scan_p = ' ';
-          scan_p++;
-          break;
+	case '"':			/* Handle string literals.  */
+	  non_whitespace_since_newline = 1;
+	  while (scan_p[1] != '"' || scan_p[0] == '\\')
+	    {
+	      if (scan_p[0] == '\\'
+		  && !ISSPACE ((const unsigned char) scan_p[1]))
+		scan_p[1] = ' ';
+	      if (!ISSPACE ((const unsigned char)*scan_p))
+		*scan_p = ' ';
+	      ++scan_p;
+	      gcc_assert (scan_p < new_clean_text_limit);
+	    }
+	  if (!ISSPACE ((const unsigned char)*scan_p))
+	    *scan_p = ' ';
+	  scan_p++;
+	  break;
 
-        case '\\':                        /* Handle line continuations.  */
-          if (scan_p[1] != '\n')
-            goto regular;
-          *scan_p = ' ';
-          break;
+	case '\\':			/* Handle line continuations.  */
+	  if (scan_p[1] != '\n')
+	    goto regular;
+	  *scan_p = ' ';
+	  break;
 
-        case '\n':
-          non_whitespace_since_newline = 0;        /* Reset.  */
-          break;
+	case '\n':
+	  non_whitespace_since_newline = 0;	/* Reset.  */
+	  break;
 
-        case ' ':
-        case '\v':
-        case '\t':
-        case '\r':
-        case '\f':
-        case '\b':
-          break;                /* Whitespace characters.  */
+	case ' ':
+	case '\v':
+	case '\t':
+	case '\r':
+	case '\f':
+	case '\b':
+	  break;		/* Whitespace characters.  */
 
-        default:
+	default:
 regular:
-          non_whitespace_since_newline = 1;
-          break;
-        }
+	  non_whitespace_since_newline = 1;
+	  break;
+	}
     }
 }
 
@@ -3758,14 +3758,14 @@ careful_find_l_paren (const char *p)
   for (paren_depth = 1, q = p-1; paren_depth; check_source (--q >= clean_text_base, 0))
     {
       switch (*q)
-        {
-        case ')':
-          paren_depth++;
-          break;
-        case '(':
-          paren_depth--;
-          break;
-        }
+	{
+	case ')':
+	  paren_depth++;
+	  break;
+	case '(':
+	  paren_depth--;
+	  break;
+	}
     }
   return ++q;
 }
@@ -3799,94 +3799,94 @@ scan_for_missed_items (const file_info *file_p)
   for (scan_p = clean_text_base; scan_p < limit; scan_p++)
     {
       if (*scan_p == ')')
-        {
-          static const char *last_r_paren;
-          const char *ahead_p;
+	{
+	  static const char *last_r_paren;
+	  const char *ahead_p;
 
-          last_r_paren = scan_p;
+	  last_r_paren = scan_p;
 
-          for (ahead_p = scan_p + 1; ISSPACE ((const unsigned char)*ahead_p); )
-            check_source (++ahead_p < limit, limit);
+	  for (ahead_p = scan_p + 1; ISSPACE ((const unsigned char)*ahead_p); )
+	    check_source (++ahead_p < limit, limit);
 
-          scan_p = ahead_p - 1;
+	  scan_p = ahead_p - 1;
 
-          if (ISALPHA ((const unsigned char)*ahead_p) || *ahead_p == '{')
-            {
-              const char *last_l_paren;
-              const int lineno = identify_lineno (ahead_p);
+	  if (ISALPHA ((const unsigned char)*ahead_p) || *ahead_p == '{')
+	    {
+	      const char *last_l_paren;
+	      const int lineno = identify_lineno (ahead_p);
 
-              if (setjmp (source_confusion_recovery))
-                continue;
+	      if (setjmp (source_confusion_recovery))
+		continue;
 
-              /* We know we have a function definition header.  Now skip
-                 leftwards over all of its associated formals lists.  */
+	      /* We know we have a function definition header.  Now skip
+	         leftwards over all of its associated formals lists.  */
 
-              do
-                {
-                  last_l_paren = careful_find_l_paren (last_r_paren);
-                  for (last_r_paren = last_l_paren-1;
-                       ISSPACE ((const unsigned char)*last_r_paren); )
-                    check_source (--last_r_paren >= backup_limit, backup_limit);
-                }
-              while (*last_r_paren == ')');
+	      do
+		{
+		  last_l_paren = careful_find_l_paren (last_r_paren);
+		  for (last_r_paren = last_l_paren-1;
+		       ISSPACE ((const unsigned char)*last_r_paren); )
+		    check_source (--last_r_paren >= backup_limit, backup_limit);
+		}
+	      while (*last_r_paren == ')');
 
-              if (is_id_char (*last_r_paren))
-                {
-                  const char *id_limit = last_r_paren + 1;
-                  const char *id_start;
-                  size_t id_length;
-                  const def_dec_info *dd_p;
+	      if (is_id_char (*last_r_paren))
+		{
+		  const char *id_limit = last_r_paren + 1;
+		  const char *id_start;
+		  size_t id_length;
+		  const def_dec_info *dd_p;
 
-                  for (id_start = id_limit-1; is_id_char (*id_start); )
-                    check_source (--id_start >= backup_limit, backup_limit);
-                  id_start++;
-                  backup_limit = id_start;
-                  if ((id_length = (size_t) (id_limit - id_start)) == 0)
-                    goto not_missed;
+		  for (id_start = id_limit-1; is_id_char (*id_start); )
+		    check_source (--id_start >= backup_limit, backup_limit);
+		  id_start++;
+		  backup_limit = id_start;
+		  if ((id_length = (size_t) (id_limit - id_start)) == 0)
+		    goto not_missed;
 
-                  {
-                    char *func_name = alloca (id_length + 1);
-                    static const char * const stmt_keywords[]
-                      = { "if", "else", "do", "while", "for", "switch", "case", "return", 0 };
-                    const char * const *stmt_keyword;
+		  {
+		    char *func_name = alloca (id_length + 1);
+		    static const char * const stmt_keywords[]
+		      = { "if", "else", "do", "while", "for", "switch", "case", "return", 0 };
+		    const char * const *stmt_keyword;
 
-                    strncpy (func_name, id_start, id_length);
-                    func_name[id_length] = '\0';
+		    strncpy (func_name, id_start, id_length);
+		    func_name[id_length] = '\0';
 
-                    /* We must check here to see if we are actually looking at
-                       a statement rather than an actual function call.  */
+		    /* We must check here to see if we are actually looking at
+		       a statement rather than an actual function call.  */
 
-                    for (stmt_keyword = stmt_keywords; *stmt_keyword; stmt_keyword++)
-                      if (!strcmp (func_name, *stmt_keyword))
-                        goto not_missed;
+		    for (stmt_keyword = stmt_keywords; *stmt_keyword; stmt_keyword++)
+		      if (!strcmp (func_name, *stmt_keyword))
+			goto not_missed;
 
 #if 0
-                    notice ("%s: found definition of '%s' at %s(%d)\n",
-                            pname,
-                            func_name,
-                            shortpath (NULL, file_p->hash_entry->symbol),
-                            identify_lineno (id_start));
-#endif                                /* 0 */
-                    /* We really should check for a match of the function name
-                       here also, but why bother.  */
+		    notice ("%s: found definition of '%s' at %s(%d)\n",
+			    pname,
+			    func_name,
+			    shortpath (NULL, file_p->hash_entry->symbol),
+			    identify_lineno (id_start));
+#endif				/* 0 */
+		    /* We really should check for a match of the function name
+		       here also, but why bother.  */
 
-                    for (dd_p = file_p->defs_decs; dd_p; dd_p = dd_p->next_in_file)
-                      if (dd_p->is_func_def && dd_p->line == lineno)
-                        goto not_missed;
+		    for (dd_p = file_p->defs_decs; dd_p; dd_p = dd_p->next_in_file)
+		      if (dd_p->is_func_def && dd_p->line == lineno)
+			goto not_missed;
 
-                    /* If we make it here, then we did not know about this
-                       function definition.  */
+		    /* If we make it here, then we did not know about this
+		       function definition.  */
 
-                    notice ("%s: %d: warning: '%s' excluded by preprocessing\n",
-                            shortpath (NULL, file_p->hash_entry->symbol),
-                            identify_lineno (id_start), func_name);
-                    notice ("%s: function definition not converted\n",
-                            pname);
-                  }
-                not_missed: ;
-                }
-            }
-        }
+		    notice ("%s: %d: warning: '%s' excluded by preprocessing\n",
+			    shortpath (NULL, file_p->hash_entry->symbol),
+			    identify_lineno (id_start), func_name);
+		    notice ("%s: function definition not converted\n",
+			    pname);
+		  }
+		not_missed: ;
+	        }
+	    }
+	}
     }
 }
 
@@ -3931,15 +3931,15 @@ edit_file (const hash_table_entry *hp)
     {
       if (!quiet_flag
 #ifdef UNPROTOIZE
-          /* Don't even mention "system" include files unless we are
-             protoizing.  If we are protoizing, we mention these as a
-             gentle way of prodding the user to convert his "system"
-             include files to prototype format.  */
-          && !in_system_include_dir (convert_filename)
+	  /* Don't even mention "system" include files unless we are
+	     protoizing.  If we are protoizing, we mention these as a
+	     gentle way of prodding the user to convert his "system"
+	     include files to prototype format.  */
+	  && !in_system_include_dir (convert_filename)
 #endif /* defined (UNPROTOIZE) */
-          )
-        notice ("%s: '%s' not converted\n",
-                pname, shortpath (NULL, convert_filename));
+	  )
+	notice ("%s: '%s' not converted\n",
+		pname, shortpath (NULL, convert_filename));
       return;
     }
 
@@ -3947,10 +3947,10 @@ edit_file (const hash_table_entry *hp)
 
   if (nochange_flag)
     notice ("%s: would convert file '%s'\n",
-            pname, shortpath (NULL, convert_filename));
+	    pname, shortpath (NULL, convert_filename));
   else
     notice ("%s: converting file '%s'\n",
-            pname, shortpath (NULL, convert_filename));
+	    pname, shortpath (NULL, convert_filename));
   fflush (stderr);
 
   /* Find out the size (in bytes) of the original file.  */
@@ -3960,8 +3960,8 @@ edit_file (const hash_table_entry *hp)
     {
       int errno_val = errno;
       notice ("%s: can't get status for file '%s': %s\n",
-              pname, shortpath (NULL, convert_filename),
-              xstrerror (errno_val));
+	      pname, shortpath (NULL, convert_filename),
+	      xstrerror (errno_val));
       return;
     }
   orig_size = stat_buf.st_size;
@@ -4000,11 +4000,11 @@ edit_file (const hash_table_entry *hp)
 #endif
     if ((input_file = open (convert_filename, fd_flags, 0444)) == -1)
       {
-        int errno_val = errno;
-        notice ("%s: can't open file '%s' for reading: %s\n",
-                pname, shortpath (NULL, convert_filename),
-                xstrerror (errno_val));
-        return;
+	int errno_val = errno;
+	notice ("%s: can't open file '%s' for reading: %s\n",
+		pname, shortpath (NULL, convert_filename),
+		xstrerror (errno_val));
+	return;
       }
 
     /* Read the entire original source text file into the original text buffer
@@ -4012,14 +4012,14 @@ edit_file (const hash_table_entry *hp)
        make sure that it ends with a newline followed by a null.  */
 
     if (safe_read (input_file, new_orig_text_base, orig_size) !=
-        (int) orig_size)
+	(int) orig_size)
       {
-        int errno_val = errno;
-        close (input_file);
-        notice ("\n%s: error reading input file '%s': %s\n",
-                pname, shortpath (NULL, convert_filename),
-                xstrerror (errno_val));
-        return;
+	int errno_val = errno;
+	close (input_file);
+	notice ("\n%s: error reading input file '%s': %s\n",
+		pname, shortpath (NULL, convert_filename),
+		xstrerror (errno_val));
+	return;
       }
 
     close (input_file);
@@ -4034,7 +4034,7 @@ edit_file (const hash_table_entry *hp)
   /* Create the cleaned up copy of the original text.  */
 
   memcpy (new_clean_text_base, orig_text_base,
-          (size_t) (orig_text_limit - orig_text_base));
+	  (size_t) (orig_text_limit - orig_text_base));
   do_cleaning (new_clean_text_base, new_clean_text_limit);
 
 #if 0
@@ -4049,11 +4049,11 @@ edit_file (const hash_table_entry *hp)
     strcat (clean_filename, ".clean");
     if ((clean_file = creat (clean_filename, 0666)) == -1)
       {
-        int errno_val = errno;
-        notice ("%s: can't create/open clean file '%s': %s\n",
-                pname, shortpath (NULL, clean_filename),
-                xstrerror (errno_val));
-        return;
+	int errno_val = errno;
+	notice ("%s: can't create/open clean file '%s': %s\n",
+		pname, shortpath (NULL, clean_filename),
+		xstrerror (errno_val));
+	return;
       }
 
     /* Write the clean file.  */
@@ -4085,39 +4085,39 @@ edit_file (const hash_table_entry *hp)
     def_dec_p = file_p->defs_decs;
     for (; def_dec_p; def_dec_p = def_dec_p->next_in_file)
       {
-        const char *clean_text_p = seek_to_line (def_dec_p->line);
+	const char *clean_text_p = seek_to_line (def_dec_p->line);
 
-        /* clean_text_p now points to the first character of the line which
-           contains the `terminator' for the declaration or definition that
-           we are about to process.  */
+	/* clean_text_p now points to the first character of the line which
+	   contains the `terminator' for the declaration or definition that
+	   we are about to process.  */
 
 #ifndef UNPROTOIZE
 
-        if (global_flag && def_dec_p->is_func_def && first_definition_in_file)
-          {
-            add_global_decls (def_dec_p->file, clean_text_p);
-            first_definition_in_file = 0;
-          }
+	if (global_flag && def_dec_p->is_func_def && first_definition_in_file)
+	  {
+	    add_global_decls (def_dec_p->file, clean_text_p);
+	    first_definition_in_file = 0;
+	  }
 
-        /* Don't edit this item if it is already in prototype format or if it
-           is a function declaration and we have found no corresponding
-           definition.  */
+	/* Don't edit this item if it is already in prototype format or if it
+	   is a function declaration and we have found no corresponding
+	   definition.  */
 
-        if (def_dec_p->prototyped
-            || (!def_dec_p->is_func_def && !def_dec_p->definition))
-          continue;
+	if (def_dec_p->prototyped
+	    || (!def_dec_p->is_func_def && !def_dec_p->definition))
+	  continue;
 
 #endif /* !defined (UNPROTOIZE) */
 
-        if (def_dec_p->is_func_def)
-          edit_fn_definition (def_dec_p, clean_text_p);
-        else
+	if (def_dec_p->is_func_def)
+	  edit_fn_definition (def_dec_p, clean_text_p);
+	else
 #ifndef UNPROTOIZE
-        if (def_dec_p->is_implicit)
-          add_local_decl (def_dec_p, clean_text_p);
-        else
+	if (def_dec_p->is_implicit)
+	  add_local_decl (def_dec_p, clean_text_p);
+	else
 #endif /* !defined (UNPROTOIZE) */
-          edit_fn_declaration (def_dec_p, clean_text_p);
+	  edit_fn_declaration (def_dec_p, clean_text_p);
       }
   }
 
@@ -4141,35 +4141,35 @@ edit_file (const hash_table_entry *hp)
   if (!nosave_flag)
     {
       char *new_filename
-        = xmalloc (strlen (convert_filename) + strlen (save_suffix) + 2);
+	= xmalloc (strlen (convert_filename) + strlen (save_suffix) + 2);
 
       strcpy (new_filename, convert_filename);
 #ifdef __MSDOS__
       /* MSDOS filenames are restricted to 8.3 format, so we save `foo.c'
-         as `foo.<save_suffix>'.  */
+	 as `foo.<save_suffix>'.  */
       new_filename[(strlen (convert_filename) - 1] = '\0';
 #endif
       strcat (new_filename, save_suffix);
 
       /* Don't overwrite existing file.  */
       if (access (new_filename, F_OK) == 0)
-        {
-          if (!quiet_flag)
-            notice ("%s: warning: file '%s' already saved in '%s'\n",
-                    pname,
-                    shortpath (NULL, convert_filename),
-                    shortpath (NULL, new_filename));
-        }
+	{
+	  if (!quiet_flag)
+	    notice ("%s: warning: file '%s' already saved in '%s'\n",
+		    pname,
+		    shortpath (NULL, convert_filename),
+		    shortpath (NULL, new_filename));
+	}
       else if (rename (convert_filename, new_filename) == -1)
-        {
-          int errno_val = errno;
-          notice ("%s: can't link file '%s' to '%s': %s\n",
-                  pname,
-                  shortpath (NULL, convert_filename),
-                  shortpath (NULL, new_filename),
-                  xstrerror (errno_val));
-          return;
-        }
+	{
+	  int errno_val = errno;
+	  notice ("%s: can't link file '%s' to '%s': %s\n",
+		  pname,
+		  shortpath (NULL, convert_filename),
+		  shortpath (NULL, new_filename),
+		  xstrerror (errno_val));
+	  return;
+	}
     }
 
   if (unlink (convert_filename) == -1)
@@ -4177,12 +4177,12 @@ edit_file (const hash_table_entry *hp)
       int errno_val = errno;
       /* The file may have already been renamed.  */
       if (errno_val != ENOENT)
-        {
-          notice ("%s: can't delete file '%s': %s\n",
-                  pname, shortpath (NULL, convert_filename),
-                  xstrerror (errno_val));
-          return;
-        }
+	{
+	  notice ("%s: can't delete file '%s': %s\n",
+		  pname, shortpath (NULL, convert_filename),
+		  xstrerror (errno_val));
+	  return;
+	}
     }
 
   {
@@ -4192,11 +4192,11 @@ edit_file (const hash_table_entry *hp)
 
     if ((output_file = creat (convert_filename, 0666)) == -1)
       {
-        int errno_val = errno;
-        notice ("%s: can't create/open output file '%s': %s\n",
-                pname, shortpath (NULL, convert_filename),
-                xstrerror (errno_val));
-        return;
+	int errno_val = errno;
+	notice ("%s: can't create/open output file '%s': %s\n",
+		pname, shortpath (NULL, convert_filename),
+		xstrerror (errno_val));
+	return;
       }
 #ifdef O_BINARY
     /* Use binary mode to avoid changing the existing EOL character.  */
@@ -4227,8 +4227,8 @@ edit_file (const hash_table_entry *hp)
     {
       int errno_val = errno;
       notice ("%s: can't change mode of file '%s': %s\n",
-              pname, shortpath (NULL, convert_filename),
-              xstrerror (errno_val));
+	      pname, shortpath (NULL, convert_filename),
+	      xstrerror (errno_val));
     }
 
   /* Note:  We would try to change the owner and group of the output file
@@ -4268,22 +4268,22 @@ do_processing (void)
   if (nondefault_syscalls_dir)
     {
       syscalls_absolute_filename
-        = xmalloc (strlen (nondefault_syscalls_dir) + 1
-                   + sizeof (syscalls_filename));
+	= xmalloc (strlen (nondefault_syscalls_dir) + 1
+		   + sizeof (syscalls_filename));
       strcpy (syscalls_absolute_filename, nondefault_syscalls_dir);
     }
   else
     {
       GET_ENVIRONMENT (default_syscalls_dir, "GCC_EXEC_PREFIX");
       if (!default_syscalls_dir)
-        {
-          default_syscalls_dir = standard_exec_prefix;
-        }
+	{
+	  default_syscalls_dir = standard_exec_prefix;
+	}
       syscalls_absolute_filename
-        = xmalloc (strlen (default_syscalls_dir) + 0
-                   + strlen (target_machine) + 1
-                   + strlen (target_version) + 1
-                   + sizeof (syscalls_filename));
+	= xmalloc (strlen (default_syscalls_dir) + 0
+		   + strlen (target_machine) + 1
+		   + strlen (target_version) + 1
+		   + sizeof (syscalls_filename));
       strcpy (syscalls_absolute_filename, default_syscalls_dir);
       strcat (syscalls_absolute_filename, target_machine);
       strcat (syscalls_absolute_filename, "/");
@@ -4403,7 +4403,7 @@ main (int argc, char **const argv)
   if (!cwd_buffer)
     {
       notice ("%s: cannot get working directory: %s\n",
-              pname, xstrerror(errno));
+	      pname, xstrerror(errno));
       return (FATAL_EXIT_CODE);
     }
 
@@ -4412,73 +4412,73 @@ main (int argc, char **const argv)
 
   while ((c = getopt_long (argc, argv,
 #ifdef UNPROTOIZE
-                           "c:d:i:knNp:qvVx:",
+			   "c:d:i:knNp:qvVx:",
 #else
-                           "B:c:Cd:gklnNp:qvVx:",
+			   "B:c:Cd:gklnNp:qvVx:",
 #endif
-                           longopts, &longind)) != EOF)
+			   longopts, &longind)) != EOF)
     {
-      if (c == 0)                /* Long option.  */
-        c = longopts[longind].val;
+      if (c == 0)		/* Long option.  */
+	c = longopts[longind].val;
       switch (c)
-        {
-        case 'p':
-          compiler_file_name = optarg;
-          break;
-        case 'd':
-          directory_list
-            = string_list_cons (abspath (NULL, optarg), directory_list);
-          break;
-        case 'x':
-          exclude_list = string_list_cons (optarg, exclude_list);
-          break;
+	{
+	case 'p':
+	  compiler_file_name = optarg;
+	  break;
+	case 'd':
+	  directory_list
+	    = string_list_cons (abspath (NULL, optarg), directory_list);
+	  break;
+	case 'x':
+	  exclude_list = string_list_cons (optarg, exclude_list);
+	  break;
 
-        case 'v':
-        case 'V':
-          version_flag = 1;
-          break;
-        case 'q':
-          quiet_flag = 1;
-          break;
+	case 'v':
+	case 'V':
+	  version_flag = 1;
+	  break;
+	case 'q':
+	  quiet_flag = 1;
+	  break;
 #if 0
-        case 'f':
-          force_flag = 1;
-          break;
+	case 'f':
+	  force_flag = 1;
+	  break;
 #endif
-        case 'n':
-          nochange_flag = 1;
-          keep_flag = 1;
-          break;
-        case 'N':
-          nosave_flag = 1;
-          break;
-        case 'k':
-          keep_flag = 1;
-          break;
-        case 'c':
-          params = optarg;
-          break;
+	case 'n':
+	  nochange_flag = 1;
+	  keep_flag = 1;
+	  break;
+	case 'N':
+	  nosave_flag = 1;
+	  break;
+	case 'k':
+	  keep_flag = 1;
+	  break;
+	case 'c':
+	  params = optarg;
+	  break;
 #ifdef UNPROTOIZE
-        case 'i':
-          indent_string = optarg;
-          break;
-#else                                /* !defined (UNPROTOIZE) */
-        case 'l':
-          local_flag = 1;
-          break;
-        case 'g':
-          global_flag = 1;
-          break;
-        case 'C':
-          cplusplus_flag = 1;
-          break;
-        case 'B':
-          nondefault_syscalls_dir = optarg;
-          break;
-#endif                                /* !defined (UNPROTOIZE) */
-        default:
-          usage ();
-        }
+	case 'i':
+	  indent_string = optarg;
+	  break;
+#else				/* !defined (UNPROTOIZE) */
+	case 'l':
+	  local_flag = 1;
+	  break;
+	case 'g':
+	  global_flag = 1;
+	  break;
+	case 'C':
+	  cplusplus_flag = 1;
+	  break;
+	case 'B':
+	  nondefault_syscalls_dir = optarg;
+	  break;
+#endif				/* !defined (UNPROTOIZE) */
+	default:
+	  usage ();
+	}
     }
 
   /* Set up compile_params based on -p and -c options.  */
@@ -4497,13 +4497,13 @@ main (int argc, char **const argv)
       int len = strlen (path);
 
       if (path[len-1] == 'c' && path[len-2] == '.')
-        base_source_filenames[n_base_source_files++] = path;
+	base_source_filenames[n_base_source_files++] = path;
       else
-        {
-          notice ("%s: input file names must have .c suffixes: %s\n",
-                  pname, shortpath (NULL, path));
-          errors++;
-        }
+	{
+	  notice ("%s: input file names must have .c suffixes: %s\n",
+		  pname, shortpath (NULL, path));
+	  errors++;
+	}
     }
 
 #ifndef UNPROTOIZE
@@ -4517,7 +4517,7 @@ main (int argc, char **const argv)
       continue;
     if (*cp != 0)
       varargs_style_indicator = savestring (varargs_style_indicator,
-                                            cp - varargs_style_indicator);
+					    cp - varargs_style_indicator);
   }
 #endif /* !defined (UNPROTOIZE) */
 
@@ -4526,7 +4526,7 @@ main (int argc, char **const argv)
   else
     {
       if (version_flag)
-        fprintf (stderr, "%s: %s\n", pname, version_string);
+	fprintf (stderr, "%s: %s\n", pname, version_string);
       do_processing ();
     }
 

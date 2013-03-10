@@ -528,24 +528,24 @@
 
 (define_insn_reservation "1_fld"     9
   (and (and (and (eq_attr "cpu" "itanium")
-                 (eq_attr "itanium_class" "fld"))
-            (eq_attr "check_load" "no"))
+		 (eq_attr "itanium_class" "fld"))
+	    (eq_attr "check_load" "no"))
        (eq (symbol_ref "bundling_p") (const_int 0))) "1_M")
 (define_insn_reservation "1_fldc"    0
   (and (and (and (eq_attr "cpu" "itanium")
-                 (eq_attr "itanium_class" "fld"))
-            (eq_attr "check_load" "yes"))
+		 (eq_attr "itanium_class" "fld"))
+	    (eq_attr "check_load" "yes"))
        (eq (symbol_ref "bundling_p") (const_int 0))) "1_M")
 
 (define_insn_reservation "1_fldp"    9
   (and (and (and (eq_attr "cpu" "itanium")
-                 (eq_attr "itanium_class" "fldp"))
-            (eq_attr "check_load" "no"))
+		 (eq_attr "itanium_class" "fldp"))
+	    (eq_attr "check_load" "no"))
        (eq (symbol_ref "bundling_p") (const_int 0))) "1_M")
 (define_insn_reservation "1_fldpc"   0
   (and (and (and (eq_attr "cpu" "itanium")
-                 (eq_attr "itanium_class" "fldp"))
-            (eq_attr "check_load" "yes"))
+		 (eq_attr "itanium_class" "fldp"))
+	    (eq_attr "check_load" "yes"))
        (eq (symbol_ref "bundling_p") (const_int 0))) "1_M")
 
 (define_insn_reservation "1_fmac"    5
@@ -620,13 +620,13 @@
     "1_I+1_not_ui1")
 (define_insn_reservation "1_ld"      2
   (and (and (and (eq_attr "cpu" "itanium")
-                 (eq_attr "itanium_class" "ld"))
-            (eq_attr "check_load" "no"))
+		 (eq_attr "itanium_class" "ld"))
+	    (eq_attr "check_load" "no"))
        (eq (symbol_ref "bundling_p") (const_int 0))) "1_M")
 (define_insn_reservation "1_ldc"     0
   (and (and (and (eq_attr "cpu" "itanium")
-                 (eq_attr "itanium_class" "ld"))
-            (eq_attr "check_load" "yes"))
+		 (eq_attr "itanium_class" "ld"))
+	    (eq_attr "check_load" "yes"))
        (eq (symbol_ref "bundling_p") (const_int 0))) "1_M")
 (define_insn_reservation "1_long_i"  1
   (and (and (eq_attr "cpu" "itanium")
@@ -787,7 +787,7 @@
    "one")
 
 (define_cpu_unit "1_m_cont, 1_mi_cont, 1_mm_cont, 1_mf_cont, 1_mb_cont,\
-                  1_b_cont, 1_bb_cont" "one")
+	          1_b_cont, 1_bb_cont" "one")
 
 ;; For stop in the middle of the bundles.
 (define_cpu_unit "1_m_stop, 1_m0_stop, 1_m1_stop, 1_0mmi_cont" "one")
@@ -997,7 +997,7 @@
 ;; We don't use here fcmp because scall may be predicated.
 (define_bypass  0 "1_fcvtfx,1_fld,1_fldc,1_fmac,1_fmisc,1_frar_i,1_frar_m,\
                    1_frbr,1_frfr,1_frpr,1_ialu,1_ialu_addr,1_ilog,1_ishf,\
-                   1_ld,1_ldc,1_long_i,1_mmalua,1_mmmul,1_mmshf,1_mmshfi,\
+	           1_ld,1_ldc,1_long_i,1_mmalua,1_mmmul,1_mmshf,1_mmshfi,\
                    1_toar_m,1_tofr,1_xmpy,1_xtd" "1_scall")
 
 (define_bypass  0 "1_unknown,1_ignore,1_stop_bit,1_br,1_fcmp,1_fcvtfx,\
@@ -1308,7 +1308,7 @@
    "oneb")
 
 (define_cpu_unit "1b_m_cont, 1b_mi_cont, 1b_mm_cont, 1b_mf_cont, 1b_mb_cont,\
-                  1b_b_cont, 1b_bb_cont" "oneb")
+	          1b_b_cont, 1b_bb_cont" "oneb")
 
 ;; For stop in the middle of the bundles.
 (define_cpu_unit "1b_m_stop, 1b_m0_stop, 1b_m1_stop, 1b_0mmi_cont" "oneb")
@@ -1440,24 +1440,24 @@
 
 (define_insn_reservation "1b_fld"     9
   (and (and (and (eq_attr "cpu" "itanium")
-                 (eq_attr "itanium_class" "fld"))
-            (eq_attr "check_load" "no"))
+		 (eq_attr "itanium_class" "fld"))
+	    (eq_attr "check_load" "no"))
        (ne (symbol_ref "bundling_p") (const_int 0))) "1b_M")
 (define_insn_reservation "1b_fldc"    0
   (and (and (and (eq_attr "cpu" "itanium")
-                 (eq_attr "itanium_class" "fld"))
-            (eq_attr "check_load" "yes"))
+		 (eq_attr "itanium_class" "fld"))
+	    (eq_attr "check_load" "yes"))
        (ne (symbol_ref "bundling_p") (const_int 0))) "1b_M")
 
 (define_insn_reservation "1b_fldp"    9
   (and (and (and (eq_attr "cpu" "itanium")
-                 (eq_attr "itanium_class" "fldp"))
-            (eq_attr "check_load" "no"))
+		 (eq_attr "itanium_class" "fldp"))
+	    (eq_attr "check_load" "no"))
        (ne (symbol_ref "bundling_p") (const_int 0))) "1b_M")
 (define_insn_reservation "1b_fldpc"   0
   (and (and (and (eq_attr "cpu" "itanium")
-                 (eq_attr "itanium_class" "fldp"))
-            (eq_attr "check_load" "yes"))
+		 (eq_attr "itanium_class" "fldp"))
+	    (eq_attr "check_load" "yes"))
        (ne (symbol_ref "bundling_p") (const_int 0))) "1b_M")
 
 (define_insn_reservation "1b_fmac"    5
@@ -1498,7 +1498,7 @@
     (and (and (eq_attr "cpu" "itanium")
               (eq_attr "itanium_class" "ialu"))
          (ne (symbol_ref
-              "bundling_p && !ia64_produce_address_p (insn)")
+	      "bundling_p && !ia64_produce_address_p (insn)")
              (const_int 0)))
     "1b_A")
 (define_insn_reservation "1b_ialu_addr" 1
@@ -1528,13 +1528,13 @@
 
 (define_insn_reservation "1b_ld"      2
   (and (and (and (eq_attr "cpu" "itanium")
-                 (eq_attr "itanium_class" "ld"))
-            (eq_attr "check_load" "no"))
+		 (eq_attr "itanium_class" "ld"))
+	    (eq_attr "check_load" "no"))
        (ne (symbol_ref "bundling_p") (const_int 0))) "1b_M")
 (define_insn_reservation "1b_ldc"     0
   (and (and (and (eq_attr "cpu" "itanium")
-                 (eq_attr "itanium_class" "ld"))
-            (eq_attr "check_load" "yes"))
+		 (eq_attr "itanium_class" "ld"))
+	    (eq_attr "check_load" "yes"))
        (ne (symbol_ref "bundling_p") (const_int 0))) "1b_M")
 
 (define_insn_reservation "1b_long_i"  1

@@ -22,22 +22,22 @@ Boston, MA 02110-1301, USA.  */
 #define DEFAULT_PCC_STRUCT_RETURN 1
 
 #undef TARGET_VERSION
-#define TARGET_VERSION        fprintf (stderr, " (QNX/Neutrino/i386 ELF)");
+#define TARGET_VERSION	fprintf (stderr, " (QNX/Neutrino/i386 ELF)");
 
 #undef TARGET_OS_CPP_BUILTINS
-#define TARGET_OS_CPP_BUILTINS()                \
-  do                                                \
-    {                                                \
-        builtin_define_std ("__X86__");                \
-        builtin_define_std ("__QNXNTO__");        \
-        builtin_define_std ("__QNX__");                \
-        builtin_define_std ("__ELF__");                \
+#define TARGET_OS_CPP_BUILTINS()		\
+  do						\
+    {						\
+        builtin_define_std ("__X86__");		\
+        builtin_define_std ("__QNXNTO__");	\
+        builtin_define_std ("__QNX__");		\
+        builtin_define_std ("__ELF__");		\
         builtin_define_std ("__LITTLEENDIAN__");\
-        builtin_assert ("system=qnx");                \
-        builtin_assert ("system=qnxnto");        \
-        builtin_assert ("system=nto");                \
-        builtin_assert ("system=unix");                \
-    }                                                \
+        builtin_assert ("system=qnx");		\
+        builtin_assert ("system=qnxnto");	\
+        builtin_assert ("system=nto");		\
+        builtin_assert ("system=unix");		\
+    }						\
   while (0)
 
 #undef THREAD_MODEL_SPEC

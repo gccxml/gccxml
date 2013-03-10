@@ -139,7 +139,7 @@ doloop_condition_get (rtx pattern)
 
   if ((XEXP (condition, 0) == reg)
       || (GET_CODE (XEXP (condition, 0)) == PLUS
-                   && XEXP (XEXP (condition, 0), 0) == reg))
+		   && XEXP (XEXP (condition, 0), 0) == reg))
     return condition;
 
   /* ??? If a machine uses a funny comparison, we could return a
@@ -166,29 +166,29 @@ doloop_valid_p (struct loop *loop, struct niter_desc *desc)
       || desc->infinite)
     {
       /* There are some cases that would require a special attention.
-         For example if the comparison is LEU and the comparison value
-         is UINT_MAX then the loop will not terminate.  Similarly, if the
-         comparison code is GEU and the comparison value is 0, the
-         loop will not terminate.
+	 For example if the comparison is LEU and the comparison value
+	 is UINT_MAX then the loop will not terminate.  Similarly, if the
+	 comparison code is GEU and the comparison value is 0, the
+	 loop will not terminate.
 
-         If the absolute increment is not 1, the loop can be infinite
-         even with LTU/GTU, e.g. for (i = 3; i > 0; i -= 2)
+	 If the absolute increment is not 1, the loop can be infinite
+	 even with LTU/GTU, e.g. for (i = 3; i > 0; i -= 2)
 
-         ??? We could compute these conditions at run-time and have a
-         additional jump around the loop to ensure an infinite loop.
-         However, it is very unlikely that this is the intended
-         behavior of the loop and checking for these rare boundary
-         conditions would pessimize all other code.
+	 ??? We could compute these conditions at run-time and have a
+	 additional jump around the loop to ensure an infinite loop.
+	 However, it is very unlikely that this is the intended
+	 behavior of the loop and checking for these rare boundary
+	 conditions would pessimize all other code.
 
-         If the loop is executed only a few times an extra check to
-         restart the loop could use up most of the benefits of using a
-         count register loop.  Note however, that normally, this
-         restart branch would never execute, so it could be predicted
-         well by the CPU.  We should generate the pessimistic code by
-         default, and have an option, e.g. -funsafe-loops that would
-         enable count-register loops in this case.  */
+	 If the loop is executed only a few times an extra check to
+	 restart the loop could use up most of the benefits of using a
+	 count register loop.  Note however, that normally, this
+	 restart branch would never execute, so it could be predicted
+	 well by the CPU.  We should generate the pessimistic code by
+	 default, and have an option, e.g. -funsafe-loops that would
+	 enable count-register loops in this case.  */
       if (dump_file)
-        fprintf (dump_file, "Doloop: Possible infinite iteration case.\n");
+	fprintf (dump_file, "Doloop: Possible infinite iteration case.\n");
       result = false;
       goto cleanup;
     }
@@ -198,22 +198,22 @@ doloop_valid_p (struct loop *loop, struct niter_desc *desc)
       bb = body[i];
 
       for (insn = BB_HEAD (bb);
-           insn != NEXT_INSN (BB_END (bb));
-           insn = NEXT_INSN (insn))
-        {
-          /* Different targets have different necessities for low-overhead
-             looping.  Call the back end for each instruction within the loop
-             to let it decide whether the insn prohibits a low-overhead loop.
-             It will then return the cause for it to emit to the dump file.  */
-          const char * invalid = targetm.invalid_within_doloop (insn);
-          if (invalid)
-            {
-              if (dump_file)
-                fprintf (dump_file, "Doloop: %s\n", invalid);
-              result = false;
-              goto cleanup;
-            }
-        }
+	   insn != NEXT_INSN (BB_END (bb));
+	   insn = NEXT_INSN (insn))
+	{
+	  /* Different targets have different necessities for low-overhead
+	     looping.  Call the back end for each instruction within the loop
+	     to let it decide whether the insn prohibits a low-overhead loop.
+	     It will then return the cause for it to emit to the dump file.  */
+	  const char * invalid = targetm.invalid_within_doloop (insn);
+	  if (invalid)
+	    {
+	      if (dump_file)
+		fprintf (dump_file, "Doloop: %s\n", invalid);
+	      result = false;
+	      goto cleanup;
+	    }
+	}
     }
   result = true;
 
@@ -272,8 +272,8 @@ add_test (rtx cond, edge *e, basic_block dest)
 
   /* The jump is supposed to handle an unlikely special case.  */
   REG_NOTES (jump)
-          = gen_rtx_EXPR_LIST (REG_BR_PROB,
-                               const0_rtx, REG_NOTES (jump));
+	  = gen_rtx_EXPR_LIST (REG_BR_PROB,
+			       const0_rtx, REG_NOTES (jump));
   LABEL_NUSES (label)++;
 
   make_edge (bb, dest, (*e)->flags & ~EDGE_FALLTHRU);
@@ -288,7 +288,7 @@ add_test (rtx cond, edge *e, basic_block dest)
 
 static void
 doloop_modify (struct loop *loop, struct niter_desc *desc,
-               rtx doloop_seq, rtx condition, rtx count)
+	       rtx doloop_seq, rtx condition, rtx count)
 {
   rtx counter_reg;
   rtx tmp, noloop = NULL_RTX;
@@ -306,9 +306,9 @@ doloop_modify (struct loop *loop, struct niter_desc *desc,
     {
       fprintf (dump_file, "Doloop: Inserting doloop pattern (");
       if (desc->const_iter)
-        fprintf (dump_file, HOST_WIDEST_INT_PRINT_DEC, desc->niter);
+	fprintf (dump_file, HOST_WIDEST_INT_PRINT_DEC, desc->niter);
       else
-        fputs ("runtime", dump_file);
+	fputs ("runtime", dump_file);
       fputs (" iterations).\n", dump_file);
     }
 
@@ -328,10 +328,10 @@ doloop_modify (struct loop *loop, struct niter_desc *desc,
       /* Currently only NE tests against zero and one are supported.  */
       noloop = XEXP (condition, 1);
       if (noloop != const0_rtx)
-        {
-          gcc_assert (noloop == const1_rtx);
-          increment_count = true;
-        }
+	{
+	  gcc_assert (noloop == const1_rtx);
+	  increment_count = true;
+	}
       break;
 
     case GE:
@@ -344,11 +344,11 @@ doloop_modify (struct loop *loop, struct niter_desc *desc,
       increment_count = false;
 
       /* Determine if the iteration counter will be non-negative.
-         Note that the maximum value loaded is iterations_max - 1.  */
+	 Note that the maximum value loaded is iterations_max - 1.  */
       if (desc->niter_max
-          <= ((unsigned HOST_WIDEST_INT) 1
-              << (GET_MODE_BITSIZE (mode) - 1)))
-        nonneg = 1;
+	  <= ((unsigned HOST_WIDEST_INT) 1
+	      << (GET_MODE_BITSIZE (mode) - 1)))
+	nonneg = 1;
       break;
 
       /* Abort if an invalid doloop pattern has been generated.  */
@@ -372,13 +372,13 @@ doloop_modify (struct loop *loop, struct niter_desc *desc,
       rtx ass = copy_rtx (desc->noloop_assumptions);
       basic_block preheader = loop_preheader_edge (loop)->src;
       basic_block set_zero
-              = loop_split_edge_with (loop_preheader_edge (loop), NULL_RTX);
+	      = loop_split_edge_with (loop_preheader_edge (loop), NULL_RTX);
       basic_block new_preheader
-              = loop_split_edge_with (loop_preheader_edge (loop), NULL_RTX);
+	      = loop_split_edge_with (loop_preheader_edge (loop), NULL_RTX);
       edge te;
 
       /* Expand the condition testing the assumptions and if it does not pass,
-         reset the count register to 0.  */
+	 reset the count register to 0.  */
       redirect_edge_and_branch_force (single_succ_edge (preheader), new_preheader);
       set_immediate_dominator (CDI_DOMINATORS, new_preheader, preheader);
 
@@ -387,45 +387,45 @@ doloop_modify (struct loop *loop, struct niter_desc *desc,
 
       te = single_succ_edge (preheader);
       for (; ass; ass = XEXP (ass, 1))
-        if (!add_test (XEXP (ass, 0), &te, set_zero))
-          break;
+	if (!add_test (XEXP (ass, 0), &te, set_zero))
+	  break;
 
       if (ass)
-        {
-          /* We reached a condition that is always true.  This is very hard to
-             reproduce (such a loop does not roll, and thus it would most
-             likely get optimized out by some of the preceding optimizations).
-             In fact, I do not have any testcase for it.  However, it would
-             also be very hard to show that it is impossible, so we must
-             handle this case.  */
-          set_zero->count = preheader->count;
-          set_zero->frequency = preheader->frequency;
-        }
+	{
+	  /* We reached a condition that is always true.  This is very hard to
+	     reproduce (such a loop does not roll, and thus it would most
+	     likely get optimized out by some of the preceding optimizations).
+	     In fact, I do not have any testcase for it.  However, it would
+	     also be very hard to show that it is impossible, so we must
+	     handle this case.  */
+	  set_zero->count = preheader->count;
+	  set_zero->frequency = preheader->frequency;
+	}
  
       if (EDGE_COUNT (set_zero->preds) == 0)
-        {
-          /* All the conditions were simplified to false, remove the
-             unreachable set_zero block.  */
-          remove_bb_from_loops (set_zero);
-          delete_basic_block (set_zero);
-        }
+	{
+	  /* All the conditions were simplified to false, remove the
+	     unreachable set_zero block.  */
+	  remove_bb_from_loops (set_zero);
+	  delete_basic_block (set_zero);
+	}
       else
-        {
-          /* Reset the counter to zero in the set_zero block.  */
-          start_sequence ();
-          convert_move (counter_reg, noloop, 0);
-          sequence = get_insns ();
-          end_sequence ();
-          emit_insn_after (sequence, BB_END (set_zero));
+	{
+	  /* Reset the counter to zero in the set_zero block.  */
+	  start_sequence ();
+	  convert_move (counter_reg, noloop, 0);
+	  sequence = get_insns ();
+	  end_sequence ();
+	  emit_insn_after (sequence, BB_END (set_zero));
       
-          set_immediate_dominator (CDI_DOMINATORS, set_zero,
-                                   recount_dominator (CDI_DOMINATORS,
-                                                      set_zero));
-        }
+	  set_immediate_dominator (CDI_DOMINATORS, set_zero,
+				   recount_dominator (CDI_DOMINATORS,
+						      set_zero));
+	}
 
       set_immediate_dominator (CDI_DOMINATORS, new_preheader,
-                               recount_dominator (CDI_DOMINATORS,
-                                                  new_preheader));
+			       recount_dominator (CDI_DOMINATORS,
+						  new_preheader));
     }
 
   /* Some targets (eg, C4x) need to initialize special looping
@@ -435,16 +435,16 @@ doloop_modify (struct loop *loop, struct niter_desc *desc,
     rtx init;
     unsigned level = get_loop_level (loop) + 1;
     init = gen_doloop_begin (counter_reg,
-                             desc->const_iter ? desc->niter_expr : const0_rtx,
-                             GEN_INT (desc->niter_max),
-                             GEN_INT (level));
+			     desc->const_iter ? desc->niter_expr : const0_rtx,
+			     GEN_INT (desc->niter_max),
+			     GEN_INT (level));
     if (init)
       {
-        start_sequence ();
-        emit_insn (init);
-        sequence = get_insns ();
-        end_sequence ();
-        emit_insn_after (sequence, BB_END (loop_preheader_edge (loop)->src));
+	start_sequence ();
+	emit_insn (init);
+	sequence = get_insns ();
+	end_sequence ();
+	emit_insn_after (sequence, BB_END (loop_preheader_edge (loop)->src));
       }
   }
 #endif
@@ -466,7 +466,7 @@ doloop_modify (struct loop *loop, struct niter_desc *desc,
   if (nonneg)
     {
       REG_NOTES (jump_insn)
-        = gen_rtx_EXPR_LIST (REG_NONNEG, NULL_RTX, REG_NOTES (jump_insn));
+	= gen_rtx_EXPR_LIST (REG_NONNEG, NULL_RTX, REG_NOTES (jump_insn));
     }
 }
 
@@ -502,8 +502,8 @@ doloop_optimize (struct loop *loop)
   if (!doloop_valid_p (loop, desc))
     {
       if (dump_file)
-        fprintf (dump_file,
-                 "Doloop: The loop is not suitable.\n");
+	fprintf (dump_file,
+		 "Doloop: The loop is not suitable.\n");
       return false;
     }
   mode = desc->mode;
@@ -520,9 +520,9 @@ doloop_optimize (struct loop *loop)
   if (est_niter < 3)
     {
       if (dump_file)
-        fprintf (dump_file,
-                 "Doloop: Too few iterations (%u) to be profitable.\n",
-                 est_niter);
+	fprintf (dump_file,
+		 "Doloop: Too few iterations (%u) to be profitable.\n",
+		 est_niter);
       return false;
     }
 
@@ -531,8 +531,8 @@ doloop_optimize (struct loop *loop)
   if (rtx_cost (desc->niter_expr, SET) > max_cost)
     {
       if (dump_file)
-        fprintf (dump_file,
-                 "Doloop: number of iterations too costly to compute.\n");
+	fprintf (dump_file,
+		 "Doloop: number of iterations too costly to compute.\n");
       return false;
     }
 
@@ -547,43 +547,43 @@ doloop_optimize (struct loop *loop)
   start_label = block_label (desc->in_edge->dest);
   doloop_reg = gen_reg_rtx (mode);
   doloop_seq = gen_doloop_end (doloop_reg, iterations, iterations_max,
-                               GEN_INT (level), start_label);
+			       GEN_INT (level), start_label);
 
   word_mode_size = GET_MODE_BITSIZE (word_mode);
   word_mode_max
-          = ((unsigned HOST_WIDE_INT) 1 << (word_mode_size - 1) << 1) - 1;
+	  = ((unsigned HOST_WIDE_INT) 1 << (word_mode_size - 1) << 1) - 1;
   if (! doloop_seq
       && mode != word_mode
       /* Before trying mode different from the one in that # of iterations is
-         computed, we must be sure that the number of iterations fits into
-         the new mode.  */
+	 computed, we must be sure that the number of iterations fits into
+	 the new mode.  */
       && (word_mode_size >= GET_MODE_BITSIZE (mode)
-          || desc->niter_max <= word_mode_max))
+	  || desc->niter_max <= word_mode_max))
     {
       if (word_mode_size > GET_MODE_BITSIZE (mode))
-        {
-          count = simplify_gen_unary (ZERO_EXTEND, word_mode,
-                                      count, mode);
-          iterations = simplify_gen_unary (ZERO_EXTEND, word_mode,
-                                           iterations, mode);
-          iterations_max = simplify_gen_unary (ZERO_EXTEND, word_mode,
-                                               iterations_max, mode);
-        }
+	{
+	  count = simplify_gen_unary (ZERO_EXTEND, word_mode,
+				      count, mode);
+	  iterations = simplify_gen_unary (ZERO_EXTEND, word_mode,
+					   iterations, mode);
+	  iterations_max = simplify_gen_unary (ZERO_EXTEND, word_mode,
+					       iterations_max, mode);
+	}
       else
-        {
-          count = lowpart_subreg (word_mode, count, mode);
-          iterations = lowpart_subreg (word_mode, iterations, mode);
-          iterations_max = lowpart_subreg (word_mode, iterations_max, mode);
-        }
+	{
+	  count = lowpart_subreg (word_mode, count, mode);
+	  iterations = lowpart_subreg (word_mode, iterations, mode);
+	  iterations_max = lowpart_subreg (word_mode, iterations_max, mode);
+	}
       PUT_MODE (doloop_reg, word_mode);
       doloop_seq = gen_doloop_end (doloop_reg, iterations, iterations_max,
-                                   GEN_INT (level), start_label);
+				   GEN_INT (level), start_label);
     }
   if (! doloop_seq)
     {
       if (dump_file)
-        fprintf (dump_file,
-                 "Doloop: Target unwilling to use doloop pattern!\n");
+	fprintf (dump_file,
+		 "Doloop: Target unwilling to use doloop pattern!\n");
       return false;
     }
 
@@ -594,18 +594,18 @@ doloop_optimize (struct loop *loop)
   if (INSN_P (doloop_pat))
     {
       while (NEXT_INSN (doloop_pat) != NULL_RTX)
-        doloop_pat = NEXT_INSN (doloop_pat);
+	doloop_pat = NEXT_INSN (doloop_pat);
       if (JUMP_P (doloop_pat))
-        doloop_pat = PATTERN (doloop_pat);
+	doloop_pat = PATTERN (doloop_pat);
       else
-        doloop_pat = NULL_RTX;
+	doloop_pat = NULL_RTX;
     }
 
   if (! doloop_pat
       || ! (condition = doloop_condition_get (doloop_pat)))
     {
       if (dump_file)
-        fprintf (dump_file, "Doloop: Unrecognizable doloop pattern!\n");
+	fprintf (dump_file, "Doloop: Unrecognizable doloop pattern!\n");
       return false;
     }
 
@@ -625,7 +625,7 @@ doloop_optimize_loops (struct loops *loops)
     {
       loop = loops->parray[i];
       if (!loop)
-        continue;
+	continue;
 
       doloop_optimize (loop);
     }

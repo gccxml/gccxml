@@ -74,14 +74,14 @@
   Processing instruction.  In Thumb state a constant in the range 0-255."
  (and (match_code "const_int")
       (match_test "TARGET_ARM ? const_ok_for_arm (ival)
-                   : ival >= 0 && ival <= 255")))
+		   : ival >= 0 && ival <= 255")))
 
 (define_constraint "J"
  "In ARM state a constant in the range @minus{}4095-4095.  In Thumb state
   a constant in the range @minus{}255-@minus{}1."
  (and (match_code "const_int")
       (match_test "TARGET_ARM ? (ival >= -4095 && ival <= 4095)
-                   : (ival >= -255 && ival <= -1)")))
+		   : (ival >= -255 && ival <= -1)")))
 
 (define_constraint "K"
  "In ARM state a constant that satisfies the @code{I} constraint if inverted.
@@ -89,14 +89,14 @@
   by any power of 2."
  (and (match_code "const_int")
       (match_test "TARGET_ARM ? const_ok_for_arm (~ival)
-                   : thumb_shiftable_const (ival)")))
+		   : thumb_shiftable_const (ival)")))
 
 (define_constraint "L"
  "In ARM state a constant that satisfies the @code{I} constraint if negated.
   In Thumb state a constant in the range @minus{}7-7."
  (and (match_code "const_int")
       (match_test "TARGET_ARM ? const_ok_for_arm (-ival)
-                   : (ival >= -7 && ival <= 7)")))
+		   : (ival >= -7 && ival <= 7)")))
 
 ;; The ARM state version is internal...
 ;; @internal In ARM state a constant in the range 0-32 or any power of 2.
@@ -104,8 +104,8 @@
  "In Thumb state a constant that is a multiple of 4 in the range 0-1020."
  (and (match_code "const_int")
       (match_test "TARGET_ARM ? ((ival >= 0 && ival <= 32)
-                                 || ((ival & (ival - 1)) == 0))
-                   : ((ival >= 0 && ival <= 1020) && ((ival & 3) == 0))")))
+				 || ((ival & (ival - 1)) == 0))
+		   : ((ival >= 0 && ival <= 1020) && ((ival & 3) == 0))")))
 
 (define_constraint "N"
  "In Thumb state a constant in the range 0-31."
@@ -117,7 +117,7 @@
   @minus{}508-508."
  (and (match_code "const_int")
       (match_test "TARGET_THUMB && ival >= -508 && ival <= 508
-                   && ((ival & 3) == 0)")))
+		   && ((ival & 3) == 0)")))
 
 (define_constraint "G"
  "In ARM state a valid FPA immediate constant."
@@ -150,7 +150,7 @@
   if optimizing for space or when we have load-delay slots to fill."
  (and (match_code "const_double,const_int,const_vector")
       (match_test "TARGET_ARM && arm_const_double_inline_cost (op) == 4
-                   && !(optimize_size || arm_ld_sched)")))
+		   && !(optimize_size || arm_ld_sched)")))
 
 (define_memory_constraint "Uv"
  "@internal
@@ -169,8 +169,8 @@
   In ARM state an address valid in ldrsb instructions."
  (and (match_code "mem")
       (match_test "TARGET_ARM
-                   && arm_legitimate_address_p (GET_MODE (op), XEXP (op, 0),
-                                                SIGN_EXTEND, 0)")))
+		   && arm_legitimate_address_p (GET_MODE (op), XEXP (op, 0),
+						SIGN_EXTEND, 0)")))
 
 (define_memory_constraint "Q"
  "@internal

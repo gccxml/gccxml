@@ -30,54 +30,54 @@
 extern char arm_arch_name[];
 
 /* Target CPU builtins.  */
-#define TARGET_CPU_CPP_BUILTINS()                        \
-  do                                                        \
-    {                                                        \
-        /* Define __arm__ even when in thumb mode, for        \
-           consistency with armcc.  */                        \
-        builtin_define ("__arm__");                        \
-        builtin_define ("__APCS_32__");                        \
-        if (TARGET_THUMB)                                \
-          builtin_define ("__thumb__");                        \
-                                                        \
-        if (TARGET_BIG_END)                                \
-          {                                                \
-            builtin_define ("__ARMEB__");                \
-            if (TARGET_THUMB)                                \
-              builtin_define ("__THUMBEB__");                \
-            if (TARGET_LITTLE_WORDS)                        \
-              builtin_define ("__ARMWEL__");                \
-          }                                                \
-        else                                                \
-          {                                                \
-            builtin_define ("__ARMEL__");                \
-            if (TARGET_THUMB)                                \
-              builtin_define ("__THUMBEL__");                \
-          }                                                \
-                                                        \
-        if (TARGET_SOFT_FLOAT)                                \
-          builtin_define ("__SOFTFP__");                \
-                                                        \
-        if (TARGET_VFP)                                        \
-          builtin_define ("__VFP_FP__");                \
-                                                        \
-        /* Add a define for interworking.                \
-           Needed when building libgcc.a.  */                \
-        if (arm_cpp_interwork)                                \
-          builtin_define ("__THUMB_INTERWORK__");        \
-                                                        \
-        builtin_assert ("cpu=arm");                        \
-        builtin_assert ("machine=arm");                        \
-                                                        \
-        builtin_define (arm_arch_name);                        \
-        if (arm_arch_cirrus)                                \
-          builtin_define ("__MAVERICK__");                \
-        if (arm_arch_xscale)                                \
-          builtin_define ("__XSCALE__");                \
-        if (arm_arch_iwmmxt)                                \
-          builtin_define ("__IWMMXT__");                \
-        if (TARGET_AAPCS_BASED)                                \
-          builtin_define ("__ARM_EABI__");                \
+#define TARGET_CPU_CPP_BUILTINS()			\
+  do							\
+    {							\
+	/* Define __arm__ even when in thumb mode, for	\
+	   consistency with armcc.  */			\
+	builtin_define ("__arm__");			\
+	builtin_define ("__APCS_32__");			\
+	if (TARGET_THUMB)				\
+	  builtin_define ("__thumb__");			\
+							\
+	if (TARGET_BIG_END)				\
+	  {						\
+	    builtin_define ("__ARMEB__");		\
+	    if (TARGET_THUMB)				\
+	      builtin_define ("__THUMBEB__");		\
+	    if (TARGET_LITTLE_WORDS)			\
+	      builtin_define ("__ARMWEL__");		\
+	  }						\
+        else						\
+	  {						\
+	    builtin_define ("__ARMEL__");		\
+	    if (TARGET_THUMB)				\
+	      builtin_define ("__THUMBEL__");		\
+	  }						\
+							\
+	if (TARGET_SOFT_FLOAT)				\
+	  builtin_define ("__SOFTFP__");		\
+							\
+	if (TARGET_VFP)					\
+	  builtin_define ("__VFP_FP__");		\
+							\
+	/* Add a define for interworking.		\
+	   Needed when building libgcc.a.  */		\
+	if (arm_cpp_interwork)				\
+	  builtin_define ("__THUMB_INTERWORK__");	\
+							\
+	builtin_assert ("cpu=arm");			\
+	builtin_assert ("machine=arm");			\
+							\
+	builtin_define (arm_arch_name);			\
+	if (arm_arch_cirrus)				\
+	  builtin_define ("__MAVERICK__");		\
+	if (arm_arch_xscale)				\
+	  builtin_define ("__XSCALE__");		\
+	if (arm_arch_iwmmxt)				\
+	  builtin_define ("__IWMMXT__");		\
+	if (TARGET_AAPCS_BASED)				\
+	  builtin_define ("__ARM_EABI__");		\
     } while (0)
 
 /* The various ARM cores.  */
@@ -136,11 +136,11 @@ extern GTY(()) rtx aof_pic_label;
 
 
 #undef  CPP_SPEC
-#define CPP_SPEC "%(subtarget_cpp_spec)                                        \
-%{msoft-float:%{mhard-float:                                                \
-        %e-msoft-float and -mhard_float may not be used together}}        \
-%{mbig-endian:%{mlittle-endian:                                                \
-        %e-mbig-endian and -mlittle-endian may not be used together}}"
+#define CPP_SPEC "%(subtarget_cpp_spec)					\
+%{msoft-float:%{mhard-float:						\
+	%e-msoft-float and -mhard_float may not be used together}}	\
+%{mbig-endian:%{mlittle-endian:						\
+	%e-mbig-endian and -mlittle-endian may not be used together}}"
 
 #ifndef CC1_SPEC
 #define CC1_SPEC ""
@@ -155,8 +155,8 @@ extern GTY(()) rtx aof_pic_label;
    program.
 
    Do not define this macro if it does not need to do anything.  */
-#define EXTRA_SPECS                                                \
-  { "subtarget_cpp_spec",        SUBTARGET_CPP_SPEC },           \
+#define EXTRA_SPECS						\
+  { "subtarget_cpp_spec",	SUBTARGET_CPP_SPEC },           \
   SUBTARGET_EXTRA_SPECS
 
 #ifndef SUBTARGET_EXTRA_SPECS
@@ -172,28 +172,28 @@ extern GTY(()) rtx aof_pic_label;
 #define TARGET_VERSION fputs (" (ARM/generic)", stderr);
 #endif
 
-#define TARGET_SOFT_FLOAT                (arm_float_abi == ARM_FLOAT_ABI_SOFT)
+#define TARGET_SOFT_FLOAT		(arm_float_abi == ARM_FLOAT_ABI_SOFT)
 /* Use hardware floating point instructions. */
-#define TARGET_HARD_FLOAT                (arm_float_abi != ARM_FLOAT_ABI_SOFT)
+#define TARGET_HARD_FLOAT		(arm_float_abi != ARM_FLOAT_ABI_SOFT)
 /* Use hardware floating point calling convention.  */
-#define TARGET_HARD_FLOAT_ABI                (arm_float_abi == ARM_FLOAT_ABI_HARD)
-#define TARGET_FPA                        (arm_fp_model == ARM_FP_MODEL_FPA)
-#define TARGET_MAVERICK                        (arm_fp_model == ARM_FP_MODEL_MAVERICK)
-#define TARGET_VFP                        (arm_fp_model == ARM_FP_MODEL_VFP)
-#define TARGET_IWMMXT                        (arm_arch_iwmmxt)
-#define TARGET_REALLY_IWMMXT                (TARGET_IWMMXT && TARGET_ARM)
+#define TARGET_HARD_FLOAT_ABI		(arm_float_abi == ARM_FLOAT_ABI_HARD)
+#define TARGET_FPA			(arm_fp_model == ARM_FP_MODEL_FPA)
+#define TARGET_MAVERICK			(arm_fp_model == ARM_FP_MODEL_MAVERICK)
+#define TARGET_VFP			(arm_fp_model == ARM_FP_MODEL_VFP)
+#define TARGET_IWMMXT			(arm_arch_iwmmxt)
+#define TARGET_REALLY_IWMMXT		(TARGET_IWMMXT && TARGET_ARM)
 #define TARGET_IWMMXT_ABI (TARGET_ARM && arm_abi == ARM_ABI_IWMMXT)
 #define TARGET_ARM                      (! TARGET_THUMB)
-#define TARGET_EITHER                        1 /* (TARGET_ARM | TARGET_THUMB) */
-#define TARGET_BACKTRACE                (leaf_function_p () \
-                                         ? TARGET_TPCS_LEAF_FRAME \
-                                         : TARGET_TPCS_FRAME)
-#define TARGET_LDRD                        (arm_arch5e && ARM_DOUBLEWORD_ALIGN)
+#define TARGET_EITHER			1 /* (TARGET_ARM | TARGET_THUMB) */
+#define TARGET_BACKTRACE	        (leaf_function_p () \
+				         ? TARGET_TPCS_LEAF_FRAME \
+				         : TARGET_TPCS_FRAME)
+#define TARGET_LDRD			(arm_arch5e && ARM_DOUBLEWORD_ALIGN)
 #define TARGET_AAPCS_BASED \
     (arm_abi != ARM_ABI_APCS && arm_abi != ARM_ABI_ATPCS)
 
-#define TARGET_HARD_TP                        (target_thread_pointer == TP_CP15)
-#define TARGET_SOFT_TP                        (target_thread_pointer == TP_SOFT)
+#define TARGET_HARD_TP			(target_thread_pointer == TP_CP15)
+#define TARGET_SOFT_TP			(target_thread_pointer == TP_SOFT)
 
 /* True iff the full BPABI is being used.  If TARGET_BPABI is true,
    then TARGET_AAPCS_BASED must be true -- but the converse does not
@@ -365,20 +365,20 @@ extern int arm_cpp_interwork;
    PLT and GOT relocs rather than the assembler doing so implicitly.
    Subtargets can override these if required.  */
 #ifndef NEED_GOT_RELOC
-#define NEED_GOT_RELOC        0
+#define NEED_GOT_RELOC	0
 #endif
 #ifndef NEED_PLT_RELOC
-#define NEED_PLT_RELOC        0
+#define NEED_PLT_RELOC	0
 #endif
 
 /* Nonzero if we need to refer to the GOT with a PC-relative
    offset.  In other words, generate
 
-   .word        _GLOBAL_OFFSET_TABLE_ - [. - (.Lxx + 8)]
+   .word	_GLOBAL_OFFSET_TABLE_ - [. - (.Lxx + 8)]
 
    rather than
 
-   .word        _GLOBAL_OFFSET_TABLE_ - (.Lxx + 8)
+   .word	_GLOBAL_OFFSET_TABLE_ - (.Lxx + 8)
 
    The default is true, which matches NetBSD.  Subtargets can
    override this if required.  */
@@ -397,22 +397,22 @@ extern int arm_cpp_interwork;
 
 /* It is far faster to zero extend chars than to sign extend them */
 
-#define PROMOTE_MODE(MODE, UNSIGNEDP, TYPE)        \
-  if (GET_MODE_CLASS (MODE) == MODE_INT                \
-      && GET_MODE_SIZE (MODE) < 4)              \
-    {                                                \
-      if (MODE == QImode)                        \
-        UNSIGNEDP = 1;                                \
-      else if (MODE == HImode)                        \
-        UNSIGNEDP = 1;                                \
-      (MODE) = SImode;                                \
+#define PROMOTE_MODE(MODE, UNSIGNEDP, TYPE)	\
+  if (GET_MODE_CLASS (MODE) == MODE_INT		\
+      && GET_MODE_SIZE (MODE) < 4)      	\
+    {						\
+      if (MODE == QImode)			\
+	UNSIGNEDP = 1;				\
+      else if (MODE == HImode)			\
+	UNSIGNEDP = 1;				\
+      (MODE) = SImode;				\
     }
 
-#define PROMOTE_FUNCTION_MODE(MODE, UNSIGNEDP, TYPE)        \
-  if ((GET_MODE_CLASS (MODE) == MODE_INT                \
+#define PROMOTE_FUNCTION_MODE(MODE, UNSIGNEDP, TYPE)	\
+  if ((GET_MODE_CLASS (MODE) == MODE_INT		\
        || GET_MODE_CLASS (MODE) == MODE_COMPLEX_INT)    \
       && GET_MODE_SIZE (MODE) < 4)                      \
-    (MODE) = SImode;                                        \
+    (MODE) = SImode;				        \
 
 /* Define this if most significant bit is lowest numbered
    in instructions that operate on numbered bit-fields.  */
@@ -442,14 +442,14 @@ extern int arm_cpp_interwork;
    VFP-format or some other floating point co-processor's format doubles.  */
 #define FLOAT_WORDS_BIG_ENDIAN (arm_float_words_big_endian ())
 
-#define UNITS_PER_WORD        4
+#define UNITS_PER_WORD	4
 
 /* True if natural alignment is used for doubleword types.  */
-#define ARM_DOUBLEWORD_ALIGN        TARGET_AAPCS_BASED
+#define ARM_DOUBLEWORD_ALIGN	TARGET_AAPCS_BASED
 
 #define DOUBLEWORD_ALIGNMENT 64
 
-#define PARM_BOUNDARY          32
+#define PARM_BOUNDARY  	32
 
 #define STACK_BOUNDARY  (ARM_DOUBLEWORD_ALIGN ? DOUBLEWORD_ALIGNMENT : 32)
 
@@ -477,9 +477,9 @@ extern int arm_cpp_interwork;
 /* Make strings word-aligned so strcpy from constants will be faster.  */
 #define CONSTANT_ALIGNMENT_FACTOR (TARGET_THUMB || ! arm_tune_xscale ? 1 : 2)
 
-#define CONSTANT_ALIGNMENT(EXP, ALIGN)                                \
-   ((TREE_CODE (EXP) == STRING_CST                                \
-     && (ALIGN) < BITS_PER_WORD * CONSTANT_ALIGNMENT_FACTOR)        \
+#define CONSTANT_ALIGNMENT(EXP, ALIGN)				\
+   ((TREE_CODE (EXP) == STRING_CST				\
+     && (ALIGN) < BITS_PER_WORD * CONSTANT_ALIGNMENT_FACTOR)	\
     ? BITS_PER_WORD * CONSTANT_ALIGNMENT_FACTOR : (ALIGN))
 
 /* Setting STRUCTURE_SIZE_BOUNDARY to 32 produces more efficient code, but the
@@ -530,46 +530,46 @@ extern int arm_structure_size_boundary;
 /* Register allocation in ARM Procedure Call Standard (as used on RISCiX):
    (S - saved over call).
 
-        r0           *        argument word/integer result
-        r1-r3                argument word
+	r0	   *	argument word/integer result
+	r1-r3		argument word
 
-        r4-r8             S        register variable
-        r9             S        (rfp) register variable (real frame pointer)
+	r4-r8	     S	register variable
+	r9	     S	(rfp) register variable (real frame pointer)
 
-        r10             F S        (sl) stack limit (used by -mapcs-stack-check)
-        r11            F S        (fp) argument pointer
-        r12                (ip) temp workspace
-        r13             F S        (sp) lower end of current stack frame
-        r14                (lr) link address/workspace
-        r15           F        (pc) program counter
+	r10  	   F S	(sl) stack limit (used by -mapcs-stack-check)
+	r11 	   F S	(fp) argument pointer
+	r12		(ip) temp workspace
+	r13  	   F S	(sp) lower end of current stack frame
+	r14		(lr) link address/workspace
+	r15	   F	(pc) program counter
 
-        f0                floating point result
-        f1-f3                floating point scratch
+	f0		floating point result
+	f1-f3		floating point scratch
 
-        f4-f7             S        floating point variable
+	f4-f7	     S	floating point variable
 
-        cc                This is NOT a real register, but is used internally
-                        to represent things that use or set the condition
-                        codes.
-        sfp             This isn't either.  It is used during rtl generation
-                        since the offset between the frame pointer and the
-                        auto's isn't known until after register allocation.
-        afp                Nor this, we only need this because of non-local
-                        goto.  Without it fp appears to be used and the
-                        elimination code won't get rid of sfp.  It tracks
-                        fp exactly at all times.
+	cc		This is NOT a real register, but is used internally
+	                to represent things that use or set the condition
+			codes.
+	sfp             This isn't either.  It is used during rtl generation
+	                since the offset between the frame pointer and the
+			auto's isn't known until after register allocation.
+	afp		Nor this, we only need this because of non-local
+	                goto.  Without it fp appears to be used and the
+			elimination code won't get rid of sfp.  It tracks
+			fp exactly at all times.
 
    *: See CONDITIONAL_REGISTER_USAGE  */
 
 /*
-          mvf0                Cirrus floating point result
-        mvf1-mvf3        Cirrus floating point scratch
-        mvf4-mvf15   S        Cirrus floating point variable.  */
+  	mvf0		Cirrus floating point result
+	mvf1-mvf3	Cirrus floating point scratch
+	mvf4-mvf15   S	Cirrus floating point variable.  */
 
-/*        s0-s15                VFP scratch (aka d0-d7).
-        s16-s31              S        VFP variable (aka d8-d15).
-        vfpcc                Not a real register.  Represents the VFP condition
-                        code flags.  */
+/*	s0-s15		VFP scratch (aka d0-d7).
+	s16-s31	      S	VFP variable (aka d8-d15).
+	vfpcc		Not a real register.  Represents the VFP condition
+			code flags.  */
 
 /* The stack backtrace structure is as follows:
   fp points to here:  |  save code pointer  |      [fp]
@@ -597,20 +597,20 @@ extern int arm_structure_size_boundary;
    and are not available for the register allocator.  */
 #define FIXED_REGISTERS \
 {                       \
-  0,0,0,0,0,0,0,0,        \
-  0,0,0,0,0,1,0,1,        \
-  0,0,0,0,0,0,0,0,        \
-  1,1,1,                \
-  1,1,1,1,1,1,1,1,        \
-  1,1,1,1,1,1,1,1,        \
-  1,1,1,1,1,1,1,1,        \
-  1,1,1,1,1,1,1,1,        \
-  1,1,1,1,                \
-  1,1,1,1,1,1,1,1,        \
-  1,1,1,1,1,1,1,1,        \
-  1,1,1,1,1,1,1,1,        \
-  1,1,1,1,1,1,1,1,        \
-  1                        \
+  0,0,0,0,0,0,0,0,	\
+  0,0,0,0,0,1,0,1,	\
+  0,0,0,0,0,0,0,0,	\
+  1,1,1,		\
+  1,1,1,1,1,1,1,1,	\
+  1,1,1,1,1,1,1,1,	\
+  1,1,1,1,1,1,1,1,	\
+  1,1,1,1,1,1,1,1,	\
+  1,1,1,1,		\
+  1,1,1,1,1,1,1,1,	\
+  1,1,1,1,1,1,1,1,	\
+  1,1,1,1,1,1,1,1,	\
+  1,1,1,1,1,1,1,1,	\
+  1			\
 }
 
 /* 1 for registers not available across function calls.
@@ -623,135 +623,135 @@ extern int arm_structure_size_boundary;
    easier to assume this for all.  SFP is preserved, since FP is.  */
 #define CALL_USED_REGISTERS  \
 {                            \
-  1,1,1,1,0,0,0,0,             \
-  0,0,0,0,1,1,1,1,             \
-  1,1,1,1,0,0,0,0,             \
-  1,1,1,                     \
-  1,1,1,1,1,1,1,1,             \
-  1,1,1,1,1,1,1,1,             \
-  1,1,1,1,1,1,1,1,             \
-  1,1,1,1,1,1,1,1,             \
-  1,1,1,1,                     \
-  1,1,1,1,1,1,1,1,             \
-  1,1,1,1,1,1,1,1,             \
-  1,1,1,1,1,1,1,1,             \
-  1,1,1,1,1,1,1,1,             \
-  1                             \
+  1,1,1,1,0,0,0,0,	     \
+  0,0,0,0,1,1,1,1,	     \
+  1,1,1,1,0,0,0,0,	     \
+  1,1,1,		     \
+  1,1,1,1,1,1,1,1,	     \
+  1,1,1,1,1,1,1,1,	     \
+  1,1,1,1,1,1,1,1,	     \
+  1,1,1,1,1,1,1,1,	     \
+  1,1,1,1,		     \
+  1,1,1,1,1,1,1,1,	     \
+  1,1,1,1,1,1,1,1,	     \
+  1,1,1,1,1,1,1,1,	     \
+  1,1,1,1,1,1,1,1,	     \
+  1			     \
 }
 
 #ifndef SUBTARGET_CONDITIONAL_REGISTER_USAGE
 #define SUBTARGET_CONDITIONAL_REGISTER_USAGE
 #endif
 
-#define CONDITIONAL_REGISTER_USAGE                                \
-{                                                                \
-  int regno;                                                        \
-                                                                \
-  if (TARGET_SOFT_FLOAT || TARGET_THUMB || !TARGET_FPA)                \
-    {                                                                \
-      for (regno = FIRST_FPA_REGNUM;                                \
-           regno <= LAST_FPA_REGNUM; ++regno)                        \
-        fixed_regs[regno] = call_used_regs[regno] = 1;                \
-    }                                                                \
-                                                                \
-  if (TARGET_THUMB && optimize_size)                                \
-    {                                                                \
-      /* When optimizing for size, it's better not to use        \
-         the HI regs, because of the overhead of stacking         \
-         them.  */                                                \
-      for (regno = FIRST_HI_REGNUM;                                \
-           regno <= LAST_HI_REGNUM; ++regno)                        \
-        fixed_regs[regno] = call_used_regs[regno] = 1;                \
-    }                                                                \
-                                                                \
-  /* The link register can be clobbered by any branch insn,        \
-     but we have no way to track that at present, so mark        \
-     it as unavailable.  */                                        \
-  if (TARGET_THUMB)                                                \
-    fixed_regs[LR_REGNUM] = call_used_regs[LR_REGNUM] = 1;        \
-                                                                \
-  if (TARGET_ARM && TARGET_HARD_FLOAT)                                \
-    {                                                                \
-      if (TARGET_MAVERICK)                                        \
-        {                                                        \
-          for (regno = FIRST_FPA_REGNUM;                        \
-               regno <= LAST_FPA_REGNUM; ++ regno)                \
-            fixed_regs[regno] = call_used_regs[regno] = 1;        \
-          for (regno = FIRST_CIRRUS_FP_REGNUM;                        \
-               regno <= LAST_CIRRUS_FP_REGNUM; ++ regno)        \
-            {                                                        \
-              fixed_regs[regno] = 0;                                \
-              call_used_regs[regno] = regno < FIRST_CIRRUS_FP_REGNUM + 4; \
-            }                                                        \
-        }                                                        \
-      if (TARGET_VFP)                                                \
-        {                                                        \
-          for (regno = FIRST_VFP_REGNUM;                        \
-               regno <= LAST_VFP_REGNUM; ++ regno)                \
-            {                                                        \
-              fixed_regs[regno] = 0;                                \
-              call_used_regs[regno] = regno < FIRST_VFP_REGNUM + 16; \
-            }                                                        \
-        }                                                        \
-    }                                                                \
-                                                                \
-  if (TARGET_REALLY_IWMMXT)                                        \
-    {                                                                \
-      regno = FIRST_IWMMXT_GR_REGNUM;                                \
+#define CONDITIONAL_REGISTER_USAGE				\
+{								\
+  int regno;							\
+								\
+  if (TARGET_SOFT_FLOAT || TARGET_THUMB || !TARGET_FPA)		\
+    {								\
+      for (regno = FIRST_FPA_REGNUM;				\
+	   regno <= LAST_FPA_REGNUM; ++regno)			\
+	fixed_regs[regno] = call_used_regs[regno] = 1;		\
+    }								\
+								\
+  if (TARGET_THUMB && optimize_size)				\
+    {								\
+      /* When optimizing for size, it's better not to use	\
+	 the HI regs, because of the overhead of stacking 	\
+	 them.  */						\
+      for (regno = FIRST_HI_REGNUM;				\
+	   regno <= LAST_HI_REGNUM; ++regno)			\
+	fixed_regs[regno] = call_used_regs[regno] = 1;		\
+    }								\
+								\
+  /* The link register can be clobbered by any branch insn,	\
+     but we have no way to track that at present, so mark	\
+     it as unavailable.  */					\
+  if (TARGET_THUMB)						\
+    fixed_regs[LR_REGNUM] = call_used_regs[LR_REGNUM] = 1;	\
+								\
+  if (TARGET_ARM && TARGET_HARD_FLOAT)				\
+    {								\
+      if (TARGET_MAVERICK)					\
+	{							\
+	  for (regno = FIRST_FPA_REGNUM;			\
+	       regno <= LAST_FPA_REGNUM; ++ regno)		\
+	    fixed_regs[regno] = call_used_regs[regno] = 1;	\
+	  for (regno = FIRST_CIRRUS_FP_REGNUM;			\
+	       regno <= LAST_CIRRUS_FP_REGNUM; ++ regno)	\
+	    {							\
+	      fixed_regs[regno] = 0;				\
+	      call_used_regs[regno] = regno < FIRST_CIRRUS_FP_REGNUM + 4; \
+	    }							\
+	}							\
+      if (TARGET_VFP)						\
+	{							\
+	  for (regno = FIRST_VFP_REGNUM;			\
+	       regno <= LAST_VFP_REGNUM; ++ regno)		\
+	    {							\
+	      fixed_regs[regno] = 0;				\
+	      call_used_regs[regno] = regno < FIRST_VFP_REGNUM + 16; \
+	    }							\
+	}							\
+    }								\
+								\
+  if (TARGET_REALLY_IWMMXT)					\
+    {								\
+      regno = FIRST_IWMMXT_GR_REGNUM;				\
       /* The 2002/10/09 revision of the XScale ABI has wCG0     \
          and wCG1 as call-preserved registers.  The 2002/11/21  \
          revision changed this so that all wCG registers are    \
-         scratch registers.  */                                        \
-      for (regno = FIRST_IWMMXT_GR_REGNUM;                        \
-           regno <= LAST_IWMMXT_GR_REGNUM; ++ regno)                \
-        fixed_regs[regno] = 0;                                        \
+         scratch registers.  */					\
+      for (regno = FIRST_IWMMXT_GR_REGNUM;			\
+	   regno <= LAST_IWMMXT_GR_REGNUM; ++ regno)		\
+	fixed_regs[regno] = 0;					\
       /* The XScale ABI has wR0 - wR9 as scratch registers,     \
-         the rest as call-preserved registers.  */                \
-      for (regno = FIRST_IWMMXT_REGNUM;                                \
-           regno <= LAST_IWMMXT_REGNUM; ++ regno)                \
-        {                                                        \
-          fixed_regs[regno] = 0;                                \
-          call_used_regs[regno] = regno < FIRST_IWMMXT_REGNUM + 10; \
-        }                                                        \
-    }                                                                \
-                                                                \
-  if ((unsigned) PIC_OFFSET_TABLE_REGNUM != INVALID_REGNUM)        \
-    {                                                                \
-      fixed_regs[PIC_OFFSET_TABLE_REGNUM] = 1;                        \
-      call_used_regs[PIC_OFFSET_TABLE_REGNUM] = 1;                \
-    }                                                                \
-  else if (TARGET_APCS_STACK)                                        \
-    {                                                                \
-      fixed_regs[10]     = 1;                                        \
-      call_used_regs[10] = 1;                                        \
-    }                                                                \
-  /* -mcaller-super-interworking reserves r11 for calls to        \
-     _interwork_r11_call_via_rN().  Making the register global        \
-     is an easy way of ensuring that it remains valid for all        \
-     calls.  */                                                        \
-  if (TARGET_APCS_FRAME || TARGET_CALLER_INTERWORKING                \
-      || TARGET_TPCS_FRAME || TARGET_TPCS_LEAF_FRAME)                \
-    {                                                                \
-      fixed_regs[ARM_HARD_FRAME_POINTER_REGNUM] = 1;                \
-      call_used_regs[ARM_HARD_FRAME_POINTER_REGNUM] = 1;        \
-      if (TARGET_CALLER_INTERWORKING)                                \
-        global_regs[ARM_HARD_FRAME_POINTER_REGNUM] = 1;                \
-    }                                                                \
-  SUBTARGET_CONDITIONAL_REGISTER_USAGE                                \
+	 the rest as call-preserved registers.  */		\
+      for (regno = FIRST_IWMMXT_REGNUM;				\
+	   regno <= LAST_IWMMXT_REGNUM; ++ regno)		\
+	{							\
+	  fixed_regs[regno] = 0;				\
+	  call_used_regs[regno] = regno < FIRST_IWMMXT_REGNUM + 10; \
+	}							\
+    }								\
+								\
+  if ((unsigned) PIC_OFFSET_TABLE_REGNUM != INVALID_REGNUM)	\
+    {								\
+      fixed_regs[PIC_OFFSET_TABLE_REGNUM] = 1;			\
+      call_used_regs[PIC_OFFSET_TABLE_REGNUM] = 1;		\
+    }								\
+  else if (TARGET_APCS_STACK)					\
+    {								\
+      fixed_regs[10]     = 1;					\
+      call_used_regs[10] = 1;					\
+    }								\
+  /* -mcaller-super-interworking reserves r11 for calls to	\
+     _interwork_r11_call_via_rN().  Making the register global	\
+     is an easy way of ensuring that it remains valid for all	\
+     calls.  */							\
+  if (TARGET_APCS_FRAME || TARGET_CALLER_INTERWORKING		\
+      || TARGET_TPCS_FRAME || TARGET_TPCS_LEAF_FRAME)		\
+    {								\
+      fixed_regs[ARM_HARD_FRAME_POINTER_REGNUM] = 1;		\
+      call_used_regs[ARM_HARD_FRAME_POINTER_REGNUM] = 1;	\
+      if (TARGET_CALLER_INTERWORKING)				\
+	global_regs[ARM_HARD_FRAME_POINTER_REGNUM] = 1;		\
+    }								\
+  SUBTARGET_CONDITIONAL_REGISTER_USAGE				\
 }
 
 /* These are a couple of extensions to the formats accepted
    by asm_fprintf:
      %@ prints out ASM_COMMENT_START
      %r prints out REGISTER_PREFIX reg_names[arg]  */
-#define ASM_FPRINTF_EXTENSIONS(FILE, ARGS, P)                \
-  case '@':                                                \
-    fputs (ASM_COMMENT_START, FILE);                        \
-    break;                                                \
-                                                        \
-  case 'r':                                                \
-    fputs (REGISTER_PREFIX, FILE);                        \
-    fputs (reg_names [va_arg (ARGS, int)], FILE);        \
+#define ASM_FPRINTF_EXTENSIONS(FILE, ARGS, P)		\
+  case '@':						\
+    fputs (ASM_COMMENT_START, FILE);			\
+    break;						\
+							\
+  case 'r':						\
+    fputs (REGISTER_PREFIX, FILE);			\
+    fputs (reg_names [va_arg (ARGS, int)], FILE);	\
     break;
 
 /* Round X up to the nearest word.  */
@@ -762,31 +762,31 @@ extern int arm_structure_size_boundary;
 
 /* The number of (integer) registers required to hold a quantity of type MODE.
    Also used for VFP registers.  */
-#define ARM_NUM_REGS(MODE)                                \
+#define ARM_NUM_REGS(MODE)				\
   ARM_NUM_INTS (GET_MODE_SIZE (MODE))
 
 /* The number of (integer) registers required to hold a quantity of TYPE MODE.  */
 #define ARM_NUM_REGS2(MODE, TYPE)                   \
-  ARM_NUM_INTS ((MODE) == BLKmode ?                 \
+  ARM_NUM_INTS ((MODE) == BLKmode ? 		\
   int_size_in_bytes (TYPE) : GET_MODE_SIZE (MODE))
 
 /* The number of (integer) argument register available.  */
-#define NUM_ARG_REGS                4
+#define NUM_ARG_REGS		4
 
 /* Return the register number of the N'th (integer) argument.  */
-#define ARG_REGISTER(N)         (N - 1)
+#define ARG_REGISTER(N) 	(N - 1)
 
 /* Specify the registers used for certain standard purposes.
    The values of these macros are register numbers.  */
 
 /* The number of the last argument register.  */
-#define LAST_ARG_REGNUM         ARG_REGISTER (NUM_ARG_REGS)
+#define LAST_ARG_REGNUM 	ARG_REGISTER (NUM_ARG_REGS)
 
 /* The numbers of the Thumb register ranges.  */
-#define FIRST_LO_REGNUM          0
-#define LAST_LO_REGNUM          7
-#define FIRST_HI_REGNUM                8
-#define LAST_HI_REGNUM                11
+#define FIRST_LO_REGNUM  	0
+#define LAST_LO_REGNUM  	7
+#define FIRST_HI_REGNUM		8
+#define LAST_HI_REGNUM		11
 
 #ifndef TARGET_UNWIND_INFO
 /* We use sjlj exceptions for backwards compatibility.  */
@@ -800,13 +800,13 @@ extern int arm_structure_size_boundary;
 #define EH_RETURN_DATA_REGNO(N) (((N) < 2) ? N : INVALID_REGNUM)
 
 /* The register that holds the return address in exception handlers.  */
-#define ARM_EH_STACKADJ_REGNUM        2
-#define EH_RETURN_STACKADJ_RTX        gen_rtx_REG (SImode, ARM_EH_STACKADJ_REGNUM)
+#define ARM_EH_STACKADJ_REGNUM	2
+#define EH_RETURN_STACKADJ_RTX	gen_rtx_REG (SImode, ARM_EH_STACKADJ_REGNUM)
 
 /* The native (Norcroft) Pascal compiler for the ARM passes the static chain
    as an invisible last argument (possible since varargs don't exist in
    Pascal), so the following is not true.  */
-#define STATIC_CHAIN_REGNUM        (TARGET_ARM ? 12 : 9)
+#define STATIC_CHAIN_REGNUM	(TARGET_ARM ? 12 : 9)
 
 /* Define this to be where the real frame pointer is if it is not possible to
    work out the offset between the frame pointer and the automatic variables
@@ -824,47 +824,47 @@ extern int arm_structure_size_boundary;
    backtrace structures on the stack (if required to do so via a command line
    option) using r11.  This is the only 'user visible' use of r11 as a frame
    pointer.  */
-#define ARM_HARD_FRAME_POINTER_REGNUM        11
-#define THUMB_HARD_FRAME_POINTER_REGNUM         7
+#define ARM_HARD_FRAME_POINTER_REGNUM	11
+#define THUMB_HARD_FRAME_POINTER_REGNUM	 7
 
-#define HARD_FRAME_POINTER_REGNUM                \
-  (TARGET_ARM                                        \
-   ? ARM_HARD_FRAME_POINTER_REGNUM                \
+#define HARD_FRAME_POINTER_REGNUM		\
+  (TARGET_ARM					\
+   ? ARM_HARD_FRAME_POINTER_REGNUM		\
    : THUMB_HARD_FRAME_POINTER_REGNUM)
 
-#define FP_REGNUM                        HARD_FRAME_POINTER_REGNUM
+#define FP_REGNUM	                HARD_FRAME_POINTER_REGNUM
 
 /* Register to use for pushing function arguments.  */
-#define STACK_POINTER_REGNUM        SP_REGNUM
+#define STACK_POINTER_REGNUM	SP_REGNUM
 
 /* ARM floating pointer registers.  */
-#define FIRST_FPA_REGNUM         16
-#define LAST_FPA_REGNUM          23
+#define FIRST_FPA_REGNUM 	16
+#define LAST_FPA_REGNUM  	23
 #define IS_FPA_REGNUM(REGNUM) \
   (((REGNUM) >= FIRST_FPA_REGNUM) && ((REGNUM) <= LAST_FPA_REGNUM))
 
-#define FIRST_IWMMXT_GR_REGNUM        43
-#define LAST_IWMMXT_GR_REGNUM        46
-#define FIRST_IWMMXT_REGNUM        47
-#define LAST_IWMMXT_REGNUM        62
+#define FIRST_IWMMXT_GR_REGNUM	43
+#define LAST_IWMMXT_GR_REGNUM	46
+#define FIRST_IWMMXT_REGNUM	47
+#define LAST_IWMMXT_REGNUM	62
 #define IS_IWMMXT_REGNUM(REGNUM) \
   (((REGNUM) >= FIRST_IWMMXT_REGNUM) && ((REGNUM) <= LAST_IWMMXT_REGNUM))
 #define IS_IWMMXT_GR_REGNUM(REGNUM) \
   (((REGNUM) >= FIRST_IWMMXT_GR_REGNUM) && ((REGNUM) <= LAST_IWMMXT_GR_REGNUM))
 
 /* Base register for access to local variables of the function.  */
-#define FRAME_POINTER_REGNUM        25
+#define FRAME_POINTER_REGNUM	25
 
 /* Base register for access to arguments of the function.  */
-#define ARG_POINTER_REGNUM        26
+#define ARG_POINTER_REGNUM	26
 
-#define FIRST_CIRRUS_FP_REGNUM        27
-#define LAST_CIRRUS_FP_REGNUM        42
+#define FIRST_CIRRUS_FP_REGNUM	27
+#define LAST_CIRRUS_FP_REGNUM	42
 #define IS_CIRRUS_REGNUM(REGNUM) \
   (((REGNUM) >= FIRST_CIRRUS_FP_REGNUM) && ((REGNUM) <= LAST_CIRRUS_FP_REGNUM))
 
-#define FIRST_VFP_REGNUM        63
-#define LAST_VFP_REGNUM                94
+#define FIRST_VFP_REGNUM	63
+#define LAST_VFP_REGNUM		94
 #define IS_VFP_REGNUM(REGNUM) \
   (((REGNUM) >= FIRST_VFP_REGNUM) && ((REGNUM) <= LAST_VFP_REGNUM))
 
@@ -887,9 +887,9 @@ extern int arm_structure_size_boundary;
 #define SUBTARGET_FRAME_POINTER_REQUIRED 0
 #endif
 
-#define FRAME_POINTER_REQUIRED                                        \
-  (current_function_has_nonlocal_label                                \
-   || SUBTARGET_FRAME_POINTER_REQUIRED                                \
+#define FRAME_POINTER_REQUIRED					\
+  (current_function_has_nonlocal_label				\
+   || SUBTARGET_FRAME_POINTER_REQUIRED				\
    || (TARGET_ARM && TARGET_APCS_FRAME && ! leaf_function_p ()))
 
 /* Return number of consecutive hard regs needed starting at reg REGNO
@@ -899,16 +899,16 @@ extern int arm_structure_size_boundary;
 
    On the ARM regs are UNITS_PER_WORD bits wide; FPA regs can hold any FP
    mode.  */
-#define HARD_REGNO_NREGS(REGNO, MODE)          \
-  ((TARGET_ARM                                 \
-    && REGNO >= FIRST_FPA_REGNUM        \
-    && REGNO != FRAME_POINTER_REGNUM        \
-    && REGNO != ARG_POINTER_REGNUM)        \
-    && !IS_VFP_REGNUM (REGNO)                \
+#define HARD_REGNO_NREGS(REGNO, MODE)  	\
+  ((TARGET_ARM 				\
+    && REGNO >= FIRST_FPA_REGNUM	\
+    && REGNO != FRAME_POINTER_REGNUM	\
+    && REGNO != ARG_POINTER_REGNUM)	\
+    && !IS_VFP_REGNUM (REGNO)		\
    ? 1 : ARM_NUM_REGS (MODE))
 
 /* Return true if REGNO is suitable for holding a quantity of type MODE.  */
-#define HARD_REGNO_MODE_OK(REGNO, MODE)                                        \
+#define HARD_REGNO_MODE_OK(REGNO, MODE)					\
   arm_hard_regno_mode_ok ((REGNO), (MODE))
 
 /* Value is 1 if it is a good idea to tie two pseudo registers
@@ -928,7 +928,7 @@ extern int arm_structure_size_boundary;
    least likely to contain a function parameter; in addition results are
    returned in r0.  */
 
-#define REG_ALLOC_ORDER              \
+#define REG_ALLOC_ORDER  	    \
 {                                   \
      3,  2,  1,  0, 12, 14,  4,  5, \
      6,  7,  8, 10,  9, 11, 13, 15, \
@@ -937,21 +937,21 @@ extern int arm_structure_size_boundary;
     35, 36, 37, 38, 39, 40, 41, 42, \
     43, 44, 45, 46, 47, 48, 49, 50, \
     51, 52, 53, 54, 55, 56, 57, 58, \
-    59, 60, 61, 62,                    \
-    24, 25, 26,                            \
+    59, 60, 61, 62,		    \
+    24, 25, 26,			    \
     78, 77, 76, 75, 74, 73, 72, 71, \
     70, 69, 68, 67, 66, 65, 64, 63, \
     79, 80, 81, 82, 83, 84, 85, 86, \
     87, 88, 89, 90, 91, 92, 93, 94, \
-    95                                    \
+    95				    \
 }
 
 /* Interrupt functions can only use registers that have already been
    saved by the prologue, even if they would normally be
    call-clobbered.  */
-#define HARD_REGNO_RENAME_OK(SRC, DST)                                        \
-        (! IS_INTERRUPT (cfun->machine->func_type) ||                        \
-                regs_ever_live[DST])
+#define HARD_REGNO_RENAME_OK(SRC, DST)					\
+	(! IS_INTERRUPT (cfun->machine->func_type) ||			\
+		regs_ever_live[DST])
 
 /* Register and constant classes.  */
 
@@ -980,42 +980,42 @@ enum reg_class
 
 /* Give names of register classes as strings for dump file.  */
 #define REG_CLASS_NAMES  \
-{                        \
-  "NO_REGS",                \
-  "FPA_REGS",                \
-  "CIRRUS_REGS",        \
-  "VFP_REGS",                \
-  "IWMMXT_GR_REGS",        \
-  "IWMMXT_REGS",        \
-  "LO_REGS",                \
-  "STACK_REG",                \
-  "BASE_REGS",                \
-  "HI_REGS",                \
-  "CC_REG",                \
-  "VFPCC_REG",                \
-  "GENERAL_REGS",        \
-  "ALL_REGS",                \
+{			\
+  "NO_REGS",		\
+  "FPA_REGS",		\
+  "CIRRUS_REGS",	\
+  "VFP_REGS",		\
+  "IWMMXT_GR_REGS",	\
+  "IWMMXT_REGS",	\
+  "LO_REGS",		\
+  "STACK_REG",		\
+  "BASE_REGS",		\
+  "HI_REGS",		\
+  "CC_REG",		\
+  "VFPCC_REG",		\
+  "GENERAL_REGS",	\
+  "ALL_REGS",		\
 }
 
 /* Define which registers fit in which classes.
    This is an initializer for a vector of HARD_REG_SET
    of length N_REG_CLASSES.  */
-#define REG_CLASS_CONTENTS                                        \
-{                                                                \
-  { 0x00000000, 0x00000000, 0x00000000 }, /* NO_REGS  */        \
-  { 0x00FF0000, 0x00000000, 0x00000000 }, /* FPA_REGS */        \
-  { 0xF8000000, 0x000007FF, 0x00000000 }, /* CIRRUS_REGS */        \
-  { 0x00000000, 0x80000000, 0x7FFFFFFF }, /* VFP_REGS  */        \
-  { 0x00000000, 0x00007800, 0x00000000 }, /* IWMMXT_GR_REGS */        \
-  { 0x00000000, 0x7FFF8000, 0x00000000 }, /* IWMMXT_REGS */        \
-  { 0x000000FF, 0x00000000, 0x00000000 }, /* LO_REGS */                \
-  { 0x00002000, 0x00000000, 0x00000000 }, /* STACK_REG */        \
-  { 0x000020FF, 0x00000000, 0x00000000 }, /* BASE_REGS */        \
-  { 0x0000FF00, 0x00000000, 0x00000000 }, /* HI_REGS */                \
-  { 0x01000000, 0x00000000, 0x00000000 }, /* CC_REG */                \
-  { 0x00000000, 0x00000000, 0x80000000 }, /* VFPCC_REG */        \
-  { 0x0200FFFF, 0x00000000, 0x00000000 }, /* GENERAL_REGS */        \
-  { 0xFAFFFFFF, 0xFFFFFFFF, 0x7FFFFFFF }  /* ALL_REGS */        \
+#define REG_CLASS_CONTENTS					\
+{								\
+  { 0x00000000, 0x00000000, 0x00000000 }, /* NO_REGS  */	\
+  { 0x00FF0000, 0x00000000, 0x00000000 }, /* FPA_REGS */	\
+  { 0xF8000000, 0x000007FF, 0x00000000 }, /* CIRRUS_REGS */	\
+  { 0x00000000, 0x80000000, 0x7FFFFFFF }, /* VFP_REGS  */	\
+  { 0x00000000, 0x00007800, 0x00000000 }, /* IWMMXT_GR_REGS */	\
+  { 0x00000000, 0x7FFF8000, 0x00000000 }, /* IWMMXT_REGS */	\
+  { 0x000000FF, 0x00000000, 0x00000000 }, /* LO_REGS */		\
+  { 0x00002000, 0x00000000, 0x00000000 }, /* STACK_REG */	\
+  { 0x000020FF, 0x00000000, 0x00000000 }, /* BASE_REGS */	\
+  { 0x0000FF00, 0x00000000, 0x00000000 }, /* HI_REGS */		\
+  { 0x01000000, 0x00000000, 0x00000000 }, /* CC_REG */		\
+  { 0x00000000, 0x00000000, 0x80000000 }, /* VFPCC_REG */	\
+  { 0x0200FFFF, 0x00000000, 0x00000000 }, /* GENERAL_REGS */	\
+  { 0xFAFFFFFF, 0xFFFFFFFF, 0x7FFFFFFF }  /* ALL_REGS */	\
 }
 
 /* The same information, inverted:
@@ -1027,17 +1027,17 @@ enum reg_class
 /* FPA registers can't do subreg as all values are reformatted to internal
    precision.  VFP registers may only be accessed in the mode they
    were set.  */
-#define CANNOT_CHANGE_MODE_CLASS(FROM, TO, CLASS)        \
-  (GET_MODE_SIZE (FROM) != GET_MODE_SIZE (TO)                \
-   ? reg_classes_intersect_p (FPA_REGS, (CLASS))        \
-     || reg_classes_intersect_p (VFP_REGS, (CLASS))        \
+#define CANNOT_CHANGE_MODE_CLASS(FROM, TO, CLASS)	\
+  (GET_MODE_SIZE (FROM) != GET_MODE_SIZE (TO)		\
+   ? reg_classes_intersect_p (FPA_REGS, (CLASS))	\
+     || reg_classes_intersect_p (VFP_REGS, (CLASS))	\
    : 0)
 
 /* We need to define this for LO_REGS on thumb.  Otherwise we can end up
    using r0-r4 for function arguments, r7 for the stack frame and don't
    have enough left over to do doubleword arithmetic.  */
-#define CLASS_LIKELY_SPILLED_P(CLASS)        \
-    ((TARGET_THUMB && (CLASS) == LO_REGS)        \
+#define CLASS_LIKELY_SPILLED_P(CLASS)	\
+    ((TARGET_THUMB && (CLASS) == LO_REGS)	\
      || (CLASS) == CC_REG)
 
 /* The class value for index registers, and the one for base regs.  */
@@ -1047,8 +1047,8 @@ enum reg_class
 /* For the Thumb the high registers cannot be used as base registers
    when addressing quantities in QI or HI mode; if we don't know the
    mode, then we must be conservative.  */
-#define MODE_BASE_REG_CLASS(MODE)                                        \
-    (TARGET_ARM ? GENERAL_REGS :                                        \
+#define MODE_BASE_REG_CLASS(MODE)					\
+    (TARGET_ARM ? GENERAL_REGS :					\
      (((MODE) == SImode) ? BASE_REGS : LO_REGS))
 
 /* For Thumb we can not support SP+reg addressing, so we return LO_REGS
@@ -1065,62 +1065,62 @@ enum reg_class
    in class CLASS, return the class of reg to actually use.
    In general this is just CLASS, but for the Thumb we prefer
    a LO_REGS class or a subset.  */
-#define PREFERRED_RELOAD_CLASS(X, CLASS)        \
-  (TARGET_ARM ? (CLASS) :                        \
+#define PREFERRED_RELOAD_CLASS(X, CLASS)	\
+  (TARGET_ARM ? (CLASS) :			\
    ((CLASS) == BASE_REGS ? (CLASS) : LO_REGS))
 
 /* Must leave BASE_REGS reloads alone */
-#define THUMB_SECONDARY_INPUT_RELOAD_CLASS(CLASS, MODE, X)                \
-  ((CLASS) != LO_REGS && (CLASS) != BASE_REGS                                \
-   ? ((true_regnum (X) == -1 ? LO_REGS                                        \
-       : (true_regnum (X) + HARD_REGNO_NREGS (0, MODE) > 8) ? LO_REGS        \
-       : NO_REGS))                                                         \
+#define THUMB_SECONDARY_INPUT_RELOAD_CLASS(CLASS, MODE, X)		\
+  ((CLASS) != LO_REGS && (CLASS) != BASE_REGS				\
+   ? ((true_regnum (X) == -1 ? LO_REGS					\
+       : (true_regnum (X) + HARD_REGNO_NREGS (0, MODE) > 8) ? LO_REGS	\
+       : NO_REGS)) 							\
    : NO_REGS)
 
-#define THUMB_SECONDARY_OUTPUT_RELOAD_CLASS(CLASS, MODE, X)                \
-  ((CLASS) != LO_REGS && (CLASS) != BASE_REGS                                \
-   ? ((true_regnum (X) == -1 ? LO_REGS                                        \
-       : (true_regnum (X) + HARD_REGNO_NREGS (0, MODE) > 8) ? LO_REGS        \
-       : NO_REGS))                                                         \
+#define THUMB_SECONDARY_OUTPUT_RELOAD_CLASS(CLASS, MODE, X)		\
+  ((CLASS) != LO_REGS && (CLASS) != BASE_REGS				\
+   ? ((true_regnum (X) == -1 ? LO_REGS					\
+       : (true_regnum (X) + HARD_REGNO_NREGS (0, MODE) > 8) ? LO_REGS	\
+       : NO_REGS)) 							\
    : NO_REGS)
 
 /* Return the register class of a scratch register needed to copy IN into
    or out of a register in CLASS in MODE.  If it can be done directly,
    NO_REGS is returned.  */
-#define SECONDARY_OUTPUT_RELOAD_CLASS(CLASS, MODE, X)                \
+#define SECONDARY_OUTPUT_RELOAD_CLASS(CLASS, MODE, X)		\
   /* Restrict which direct reloads are allowed for VFP/iWMMXt regs.  */ \
-  ((TARGET_VFP && TARGET_HARD_FLOAT                                \
-    && (CLASS) == VFP_REGS)                                        \
-   ? coproc_secondary_reload_class (MODE, X, FALSE)                \
-   : (TARGET_IWMMXT && (CLASS) == IWMMXT_REGS)                        \
-   ? coproc_secondary_reload_class (MODE, X, TRUE)                \
-   : TARGET_ARM                                                        \
+  ((TARGET_VFP && TARGET_HARD_FLOAT				\
+    && (CLASS) == VFP_REGS)					\
+   ? coproc_secondary_reload_class (MODE, X, FALSE)		\
+   : (TARGET_IWMMXT && (CLASS) == IWMMXT_REGS)			\
+   ? coproc_secondary_reload_class (MODE, X, TRUE)		\
+   : TARGET_ARM							\
    ? (((MODE) == HImode && ! arm_arch4 && true_regnum (X) == -1) \
-    ? GENERAL_REGS : NO_REGS)                                        \
+    ? GENERAL_REGS : NO_REGS)					\
    : THUMB_SECONDARY_OUTPUT_RELOAD_CLASS (CLASS, MODE, X))
 
 /* If we need to load shorts byte-at-a-time, then we need a scratch.  */
-#define SECONDARY_INPUT_RELOAD_CLASS(CLASS, MODE, X)                \
+#define SECONDARY_INPUT_RELOAD_CLASS(CLASS, MODE, X)		\
   /* Restrict which direct reloads are allowed for VFP/iWMMXt regs.  */ \
-  ((TARGET_VFP && TARGET_HARD_FLOAT                                \
-    && (CLASS) == VFP_REGS)                                        \
-    ? coproc_secondary_reload_class (MODE, X, FALSE) :                \
-    (TARGET_IWMMXT && (CLASS) == IWMMXT_REGS) ?                        \
-    coproc_secondary_reload_class (MODE, X, TRUE) :                \
-  /* Cannot load constants into Cirrus registers.  */                \
-   (TARGET_MAVERICK && TARGET_HARD_FLOAT                        \
-     && (CLASS) == CIRRUS_REGS                                        \
-     && (CONSTANT_P (X) || GET_CODE (X) == SYMBOL_REF))                \
-    ? GENERAL_REGS :                                                \
-  (TARGET_ARM ?                                                        \
-   (((CLASS) == IWMMXT_REGS || (CLASS) == IWMMXT_GR_REGS)        \
-      && CONSTANT_P (X))                                        \
-   ? GENERAL_REGS :                                                \
-   (((MODE) == HImode && ! arm_arch4                                \
-     && (GET_CODE (X) == MEM                                        \
-         || ((GET_CODE (X) == REG || GET_CODE (X) == SUBREG)        \
-             && true_regnum (X) == -1)))                        \
-    ? GENERAL_REGS : NO_REGS)                                        \
+  ((TARGET_VFP && TARGET_HARD_FLOAT				\
+    && (CLASS) == VFP_REGS)					\
+    ? coproc_secondary_reload_class (MODE, X, FALSE) :		\
+    (TARGET_IWMMXT && (CLASS) == IWMMXT_REGS) ?			\
+    coproc_secondary_reload_class (MODE, X, TRUE) :		\
+  /* Cannot load constants into Cirrus registers.  */		\
+   (TARGET_MAVERICK && TARGET_HARD_FLOAT			\
+     && (CLASS) == CIRRUS_REGS					\
+     && (CONSTANT_P (X) || GET_CODE (X) == SYMBOL_REF))		\
+    ? GENERAL_REGS :						\
+  (TARGET_ARM ?							\
+   (((CLASS) == IWMMXT_REGS || (CLASS) == IWMMXT_GR_REGS)	\
+      && CONSTANT_P (X))					\
+   ? GENERAL_REGS :						\
+   (((MODE) == HImode && ! arm_arch4				\
+     && (GET_CODE (X) == MEM					\
+	 || ((GET_CODE (X) == REG || GET_CODE (X) == SUBREG)	\
+	     && true_regnum (X) == -1)))			\
+    ? GENERAL_REGS : NO_REGS)					\
    : THUMB_SECONDARY_INPUT_RELOAD_CLASS (CLASS, MODE, X)))
 
 /* Try a machine-dependent way of reloading an illegitimate address
@@ -1130,57 +1130,57 @@ enum reg_class
    For the ARM, we wish to handle large displacements off a base
    register by splitting the addend across a MOV and the mem insn.
    This can cut the number of reloads needed.  */
-#define ARM_LEGITIMIZE_RELOAD_ADDRESS(X, MODE, OPNUM, TYPE, IND, WIN)           \
-  do                                                                           \
-    {                                                                           \
-      if (GET_CODE (X) == PLUS                                                   \
-          && GET_CODE (XEXP (X, 0)) == REG                                   \
-          && REGNO (XEXP (X, 0)) < FIRST_PSEUDO_REGISTER                   \
-          && REG_MODE_OK_FOR_BASE_P (XEXP (X, 0), MODE)                           \
-          && GET_CODE (XEXP (X, 1)) == CONST_INT)                           \
-        {                                                                   \
-          HOST_WIDE_INT val = INTVAL (XEXP (X, 1));                           \
-          HOST_WIDE_INT low, high;                                           \
-                                                                           \
-          if (MODE == DImode || (MODE == DFmode && TARGET_SOFT_FLOAT))           \
-            low = ((val & 0xf) ^ 0x8) - 0x8;                                   \
-          else if (TARGET_MAVERICK && TARGET_HARD_FLOAT)                   \
-            /* Need to be careful, -256 is not a valid offset.  */           \
-            low = val >= 0 ? (val & 0xff) : -((-val) & 0xff);                   \
-          else if (MODE == SImode                                           \
-                   || (MODE == SFmode && TARGET_SOFT_FLOAT)                   \
-                   || ((MODE == HImode || MODE == QImode) && ! arm_arch4)) \
-            /* Need to be careful, -4096 is not a valid offset.  */           \
-            low = val >= 0 ? (val & 0xfff) : -((-val) & 0xfff);                   \
-          else if ((MODE == HImode || MODE == QImode) && arm_arch4)           \
-            /* Need to be careful, -256 is not a valid offset.  */           \
-            low = val >= 0 ? (val & 0xff) : -((-val) & 0xff);                   \
-          else if (GET_MODE_CLASS (MODE) == MODE_FLOAT                           \
-                   && TARGET_HARD_FLOAT && TARGET_FPA)                           \
-            /* Need to be careful, -1024 is not a valid offset.  */           \
-            low = val >= 0 ? (val & 0x3ff) : -((-val) & 0x3ff);                   \
-          else                                                                   \
-            break;                                                           \
-                                                                           \
-          high = ((((val - low) & (unsigned HOST_WIDE_INT) 0xffffffff)           \
-                   ^ (unsigned HOST_WIDE_INT) 0x80000000)                   \
-                  - (unsigned HOST_WIDE_INT) 0x80000000);                   \
-          /* Check for overflow or zero */                                   \
-          if (low == 0 || high == 0 || (high + low != val))                   \
-            break;                                                           \
-                                                                           \
-          /* Reload the high part into a base reg; leave the low part           \
-             in the mem.  */                                                   \
-          X = gen_rtx_PLUS (GET_MODE (X),                                   \
-                            gen_rtx_PLUS (GET_MODE (X), XEXP (X, 0),           \
-                                          GEN_INT (high)),                   \
-                            GEN_INT (low));                                   \
-          push_reload (XEXP (X, 0), NULL_RTX, &XEXP (X, 0), NULL,           \
-                       MODE_BASE_REG_CLASS (MODE), GET_MODE (X),            \
-                       VOIDmode, 0, 0, OPNUM, TYPE);                           \
-          goto WIN;                                                           \
-        }                                                                   \
-    }                                                                           \
+#define ARM_LEGITIMIZE_RELOAD_ADDRESS(X, MODE, OPNUM, TYPE, IND, WIN)	   \
+  do									   \
+    {									   \
+      if (GET_CODE (X) == PLUS						   \
+	  && GET_CODE (XEXP (X, 0)) == REG				   \
+	  && REGNO (XEXP (X, 0)) < FIRST_PSEUDO_REGISTER		   \
+	  && REG_MODE_OK_FOR_BASE_P (XEXP (X, 0), MODE)			   \
+	  && GET_CODE (XEXP (X, 1)) == CONST_INT)			   \
+	{								   \
+	  HOST_WIDE_INT val = INTVAL (XEXP (X, 1));			   \
+	  HOST_WIDE_INT low, high;					   \
+									   \
+	  if (MODE == DImode || (MODE == DFmode && TARGET_SOFT_FLOAT))	   \
+	    low = ((val & 0xf) ^ 0x8) - 0x8;				   \
+	  else if (TARGET_MAVERICK && TARGET_HARD_FLOAT)		   \
+	    /* Need to be careful, -256 is not a valid offset.  */	   \
+	    low = val >= 0 ? (val & 0xff) : -((-val) & 0xff);		   \
+	  else if (MODE == SImode					   \
+		   || (MODE == SFmode && TARGET_SOFT_FLOAT)		   \
+		   || ((MODE == HImode || MODE == QImode) && ! arm_arch4)) \
+	    /* Need to be careful, -4096 is not a valid offset.  */	   \
+	    low = val >= 0 ? (val & 0xfff) : -((-val) & 0xfff);		   \
+	  else if ((MODE == HImode || MODE == QImode) && arm_arch4)	   \
+	    /* Need to be careful, -256 is not a valid offset.  */	   \
+	    low = val >= 0 ? (val & 0xff) : -((-val) & 0xff);		   \
+	  else if (GET_MODE_CLASS (MODE) == MODE_FLOAT			   \
+		   && TARGET_HARD_FLOAT && TARGET_FPA)			   \
+	    /* Need to be careful, -1024 is not a valid offset.  */	   \
+	    low = val >= 0 ? (val & 0x3ff) : -((-val) & 0x3ff);		   \
+	  else								   \
+	    break;							   \
+									   \
+	  high = ((((val - low) & (unsigned HOST_WIDE_INT) 0xffffffff)	   \
+		   ^ (unsigned HOST_WIDE_INT) 0x80000000)		   \
+		  - (unsigned HOST_WIDE_INT) 0x80000000);		   \
+	  /* Check for overflow or zero */				   \
+	  if (low == 0 || high == 0 || (high + low != val))		   \
+	    break;							   \
+									   \
+	  /* Reload the high part into a base reg; leave the low part	   \
+	     in the mem.  */						   \
+	  X = gen_rtx_PLUS (GET_MODE (X),				   \
+			    gen_rtx_PLUS (GET_MODE (X), XEXP (X, 0),	   \
+					  GEN_INT (high)),		   \
+			    GEN_INT (low));				   \
+	  push_reload (XEXP (X, 0), NULL_RTX, &XEXP (X, 0), NULL,	   \
+		       MODE_BASE_REG_CLASS (MODE), GET_MODE (X), 	   \
+		       VOIDmode, 0, 0, OPNUM, TYPE);			   \
+	  goto WIN;							   \
+	}								   \
+    }									   \
   while (0)
 
 /* XXX If an HImode FP+large_offset address is converted to an HImode
@@ -1192,19 +1192,19 @@ enum reg_class
    cope with the variances between the Thumb's signed and unsigned byte and
    halfword load instructions.  */
 #define THUMB_LEGITIMIZE_RELOAD_ADDRESS(X, MODE, OPNUM, TYPE, IND_L, WIN)     \
-do {                                                                              \
+do {									      \
   rtx new_x = thumb_legitimize_reload_address (&X, MODE, OPNUM, TYPE, IND_L); \
-  if (new_x)                                                                      \
-    {                                                                              \
-      X = new_x;                                                              \
-      goto WIN;                                                                      \
-    }                                                                              \
+  if (new_x)								      \
+    {									      \
+      X = new_x;							      \
+      goto WIN;								      \
+    }									      \
 } while (0)
 
 #define LEGITIMIZE_RELOAD_ADDRESS(X, MODE, OPNUM, TYPE, IND_LEVELS, WIN)   \
-  if (TARGET_ARM)                                                           \
+  if (TARGET_ARM)							   \
     ARM_LEGITIMIZE_RELOAD_ADDRESS (X, MODE, OPNUM, TYPE, IND_LEVELS, WIN); \
-  else                                                                           \
+  else									   \
     THUMB_LEGITIMIZE_RELOAD_ADDRESS (X, MODE, OPNUM, TYPE, IND_LEVELS, WIN)
 
 /* Return the maximum number of consecutive registers
@@ -1217,19 +1217,19 @@ do {                                                                            
    operand of a SUBREG that changes the mode of the object illegally.  */
 
 /* Moves between FPA_REGS and GENERAL_REGS are two memory insns.  */
-#define REGISTER_MOVE_COST(MODE, FROM, TO)                \
-  (TARGET_ARM ?                                                \
-   ((FROM) == FPA_REGS && (TO) != FPA_REGS ? 20 :        \
-    (FROM) != FPA_REGS && (TO) == FPA_REGS ? 20 :        \
+#define REGISTER_MOVE_COST(MODE, FROM, TO)		\
+  (TARGET_ARM ?						\
+   ((FROM) == FPA_REGS && (TO) != FPA_REGS ? 20 :	\
+    (FROM) != FPA_REGS && (TO) == FPA_REGS ? 20 :	\
     (FROM) == VFP_REGS && (TO) != VFP_REGS ? 10 :  \
     (FROM) != VFP_REGS && (TO) == VFP_REGS ? 10 :  \
     (FROM) == IWMMXT_REGS && (TO) != IWMMXT_REGS ? 4 :  \
     (FROM) != IWMMXT_REGS && (TO) == IWMMXT_REGS ? 4 :  \
     (FROM) == IWMMXT_GR_REGS || (TO) == IWMMXT_GR_REGS ? 20 :  \
-    (FROM) == CIRRUS_REGS && (TO) != CIRRUS_REGS ? 20 :        \
-    (FROM) != CIRRUS_REGS && (TO) == CIRRUS_REGS ? 20 :        \
-   2)                                                        \
-   :                                                        \
+    (FROM) == CIRRUS_REGS && (TO) != CIRRUS_REGS ? 20 :	\
+    (FROM) != CIRRUS_REGS && (TO) == CIRRUS_REGS ? 20 :	\
+   2)							\
+   :							\
    ((FROM) == HI_REGS || (TO) == HI_REGS) ? 4 : 2)
 
 /* Stack layout; function entry, exit and calling.  */
@@ -1253,9 +1253,9 @@ do {                                                                            
    be tempting to also check whether the stack arguments are passed by indirect
    calls, but there seems to be no reason in principle why a post-reload pass
    couldn't convert a direct call into an indirect one.  */
-#define CALLER_INTERWORKING_SLOT_SIZE                        \
-  (TARGET_CALLER_INTERWORKING                                \
-   && current_function_outgoing_args_size != 0                \
+#define CALLER_INTERWORKING_SLOT_SIZE			\
+  (TARGET_CALLER_INTERWORKING				\
+   && current_function_outgoing_args_size != 0		\
    ? UNITS_PER_WORD : 0)
 
 /* Offset within stack frame to start allocating local variables at.
@@ -1292,14 +1292,14 @@ do {                                                                            
 /* Define how to find the value returned by a library function
    assuming the value has mode MODE.  */
 #define LIBCALL_VALUE(MODE)  \
-  (TARGET_ARM && TARGET_HARD_FLOAT_ABI && TARGET_FPA                        \
-   && GET_MODE_CLASS (MODE) == MODE_FLOAT                                \
-   ? gen_rtx_REG (MODE, FIRST_FPA_REGNUM)                                \
-   : TARGET_ARM && TARGET_HARD_FLOAT_ABI && TARGET_MAVERICK                \
-     && GET_MODE_CLASS (MODE) == MODE_FLOAT                                \
-   ? gen_rtx_REG (MODE, FIRST_CIRRUS_FP_REGNUM)                         \
-   : TARGET_IWMMXT_ABI && arm_vector_mode_supported_p (MODE)            \
-   ? gen_rtx_REG (MODE, FIRST_IWMMXT_REGNUM)                                 \
+  (TARGET_ARM && TARGET_HARD_FLOAT_ABI && TARGET_FPA			\
+   && GET_MODE_CLASS (MODE) == MODE_FLOAT				\
+   ? gen_rtx_REG (MODE, FIRST_FPA_REGNUM)				\
+   : TARGET_ARM && TARGET_HARD_FLOAT_ABI && TARGET_MAVERICK		\
+     && GET_MODE_CLASS (MODE) == MODE_FLOAT				\
+   ? gen_rtx_REG (MODE, FIRST_CIRRUS_FP_REGNUM) 			\
+   : TARGET_IWMMXT_ABI && arm_vector_mode_supported_p (MODE)    	\
+   ? gen_rtx_REG (MODE, FIRST_IWMMXT_REGNUM) 				\
    : gen_rtx_REG (MODE, ARG_REGISTER (1)))
 
 /* Define how to find the value returned by a function.
@@ -1314,10 +1314,10 @@ do {                                                                            
 /* On a Cirrus chip, mvf0 can return results.  */
 #define FUNCTION_VALUE_REGNO_P(REGNO)  \
   ((REGNO) == ARG_REGISTER (1) \
-   || (TARGET_ARM && ((REGNO) == FIRST_CIRRUS_FP_REGNUM)                \
-       && TARGET_HARD_FLOAT_ABI && TARGET_MAVERICK)                        \
+   || (TARGET_ARM && ((REGNO) == FIRST_CIRRUS_FP_REGNUM)		\
+       && TARGET_HARD_FLOAT_ABI && TARGET_MAVERICK)			\
    || ((REGNO) == FIRST_IWMMXT_REGNUM && TARGET_IWMMXT_ABI) \
-   || (TARGET_ARM && ((REGNO) == FIRST_FPA_REGNUM)                        \
+   || (TARGET_ARM && ((REGNO) == FIRST_FPA_REGNUM)			\
        && TARGET_HARD_FLOAT_ABI && TARGET_FPA))
 
 /* Amount of memory needed for an untyped call to save all possible return
@@ -1335,9 +1335,9 @@ do {                                                                            
 #define DEFAULT_PCC_STRUCT_RETURN 0
 
 /* Flags for the call/call_value rtl operations set up by function_arg.  */
-#define CALL_NORMAL                0x00000000        /* No special processing.  */
-#define CALL_LONG                0x00000001        /* Always call indirect.  */
-#define CALL_SHORT                0x00000002        /* Never call indirect.  */
+#define CALL_NORMAL		0x00000000	/* No special processing.  */
+#define CALL_LONG		0x00000001	/* Always call indirect.  */
+#define CALL_SHORT		0x00000002	/* Never call indirect.  */
 
 /* These bits describe the different types of function supported
    by the ARM backend.  They are exclusive.  i.e. a function cannot be both a
@@ -1350,28 +1350,28 @@ do {                                                                            
    machine_function structure is initialized (to zero) func_type will
    default to unknown.  This will force the first use of arm_current_func_type
    to call arm_compute_func_type.  */
-#define ARM_FT_UNKNOWN                 0 /* Type has not yet been determined.  */
-#define ARM_FT_NORMAL                 1 /* Your normal, straightforward function.  */
-#define ARM_FT_INTERWORKED         2 /* A function that supports interworking.  */
-#define ARM_FT_ISR                 4 /* An interrupt service routine.  */
-#define ARM_FT_FIQ                 5 /* A fast interrupt service routine.  */
-#define ARM_FT_EXCEPTION         6 /* An ARM exception handler (subcase of ISR).  */
+#define ARM_FT_UNKNOWN		 0 /* Type has not yet been determined.  */
+#define ARM_FT_NORMAL		 1 /* Your normal, straightforward function.  */
+#define ARM_FT_INTERWORKED	 2 /* A function that supports interworking.  */
+#define ARM_FT_ISR		 4 /* An interrupt service routine.  */
+#define ARM_FT_FIQ		 5 /* A fast interrupt service routine.  */
+#define ARM_FT_EXCEPTION	 6 /* An ARM exception handler (subcase of ISR).  */
 
-#define ARM_FT_TYPE_MASK        ((1 << 3) - 1)
+#define ARM_FT_TYPE_MASK	((1 << 3) - 1)
 
 /* In addition functions can have several type modifiers,
    outlined by these bit masks:  */
-#define ARM_FT_INTERRUPT        (1 << 2) /* Note overlap with FT_ISR and above.  */
-#define ARM_FT_NAKED                (1 << 3) /* No prologue or epilogue.  */
-#define ARM_FT_VOLATILE                (1 << 4) /* Does not return.  */
-#define ARM_FT_NESTED                (1 << 5) /* Embedded inside another func.  */
+#define ARM_FT_INTERRUPT	(1 << 2) /* Note overlap with FT_ISR and above.  */
+#define ARM_FT_NAKED		(1 << 3) /* No prologue or epilogue.  */
+#define ARM_FT_VOLATILE		(1 << 4) /* Does not return.  */
+#define ARM_FT_NESTED		(1 << 5) /* Embedded inside another func.  */
 
 /* Some macros to test these flags.  */
-#define ARM_FUNC_TYPE(t)        (t & ARM_FT_TYPE_MASK)
-#define IS_INTERRUPT(t)                (t & ARM_FT_INTERRUPT)
-#define IS_VOLATILE(t)             (t & ARM_FT_VOLATILE)
-#define IS_NAKED(t)                (t & ARM_FT_NAKED)
-#define IS_NESTED(t)               (t & ARM_FT_NESTED)
+#define ARM_FUNC_TYPE(t)	(t & ARM_FT_TYPE_MASK)
+#define IS_INTERRUPT(t)		(t & ARM_FT_INTERRUPT)
+#define IS_VOLATILE(t)     	(t & ARM_FT_VOLATILE)
+#define IS_NAKED(t)        	(t & ARM_FT_NAKED)
+#define IS_NESTED(t)       	(t & ARM_FT_NESTED)
 
 
 /* Structure used to hold the function stack frame layout.  Offsets are
@@ -1381,12 +1381,12 @@ do {                                                                            
 
 typedef struct arm_stack_offsets GTY(())
 {
-  int saved_args;        /* ARG_POINTER_REGNUM.  */
-  int frame;                /* ARM_HARD_FRAME_POINTER_REGNUM.  */
+  int saved_args;	/* ARG_POINTER_REGNUM.  */
+  int frame;		/* ARM_HARD_FRAME_POINTER_REGNUM.  */
   int saved_regs;
-  int soft_frame;        /* FRAME_POINTER_REGNUM.  */
-  int locals_base;        /* THUMB_HARD_FRAME_POINTER_REGNUM.  */
-  int outgoing_args;        /* STACK_POINTER_REGNUM.  */
+  int soft_frame;	/* FRAME_POINTER_REGNUM.  */
+  int locals_base;	/* THUMB_HARD_FRAME_POINTER_REGNUM.  */
+  int outgoing_args;	/* STACK_POINTER_REGNUM.  */
 }
 arm_stack_offsets;
 
@@ -1482,12 +1482,12 @@ typedef struct
 /* Update the data in CUM to advance over an argument
    of mode MODE and data type TYPE.
    (TYPE is null for libcalls where that information may not be available.)  */
-#define FUNCTION_ARG_ADVANCE(CUM, MODE, TYPE, NAMED)        \
-  (CUM).nargs += 1;                                        \
-  if (arm_vector_mode_supported_p (MODE)                       \
-      && (CUM).named_count > (CUM).nargs)                \
-    (CUM).iwmmxt_nregs += 1;                                \
-  else                                                        \
+#define FUNCTION_ARG_ADVANCE(CUM, MODE, TYPE, NAMED)	\
+  (CUM).nargs += 1;					\
+  if (arm_vector_mode_supported_p (MODE)	       	\
+      && (CUM).named_count > (CUM).nargs)		\
+    (CUM).iwmmxt_nregs += 1;				\
+  else							\
     (CUM).nregs += ARM_NUM_REGS2 (MODE, TYPE)
 
 /* If defined, a C expression that gives the alignment boundary, in bits, of an
@@ -1500,10 +1500,10 @@ typedef struct
 
 /* 1 if N is a possible register number for function argument passing.
    On the ARM, r0-r3 are used to pass args.  */
-#define FUNCTION_ARG_REGNO_P(REGNO)        \
-   (IN_RANGE ((REGNO), 0, 3)                \
-    || (TARGET_IWMMXT_ABI                \
-        && IN_RANGE ((REGNO), FIRST_IWMMXT_REGNUM, FIRST_IWMMXT_REGNUM + 9)))
+#define FUNCTION_ARG_REGNO_P(REGNO)	\
+   (IN_RANGE ((REGNO), 0, 3)		\
+    || (TARGET_IWMMXT_ABI		\
+	&& IN_RANGE ((REGNO), FIRST_IWMMXT_REGNUM, FIRST_IWMMXT_REGNUM + 9)))
 
 
 /* If your target environment doesn't prefix user functions with an
@@ -1516,13 +1516,13 @@ typedef struct
 /* Call the function profiler with a given profile label.  The Acorn
    compiler puts this BEFORE the prolog but gcc puts it afterwards.
    On the ARM the full profile code will look like:
-        .data
-        LP1
-                .word        0
-        .text
-                mov        ip, lr
-                bl        mcount
-                .word        LP1
+	.data
+	LP1
+		.word	0
+	.text
+		mov	ip, lr
+		bl	mcount
+		.word	LP1
 
    profile_function() in final.c outputs the .data section, FUNCTION_PROFILER
    will output the .text section.
@@ -1533,29 +1533,29 @@ typedef struct
    Note - this version of the code is designed to work in both ARM and
    Thumb modes.  */
 #ifndef ARM_FUNCTION_PROFILER
-#define ARM_FUNCTION_PROFILER(STREAM, LABELNO)          \
-{                                                        \
-  char temp[20];                                        \
-  rtx sym;                                                \
-                                                        \
-  asm_fprintf (STREAM, "\tmov\t%r, %r\n\tbl\t",                \
-           IP_REGNUM, LR_REGNUM);                        \
-  assemble_name (STREAM, ARM_MCOUNT_NAME);                \
-  fputc ('\n', STREAM);                                        \
-  ASM_GENERATE_INTERNAL_LABEL (temp, "LP", LABELNO);        \
-  sym = gen_rtx_SYMBOL_REF (Pmode, temp);                \
-  assemble_aligned_integer (UNITS_PER_WORD, sym);        \
+#define ARM_FUNCTION_PROFILER(STREAM, LABELNO)  	\
+{							\
+  char temp[20];					\
+  rtx sym;						\
+							\
+  asm_fprintf (STREAM, "\tmov\t%r, %r\n\tbl\t",		\
+	   IP_REGNUM, LR_REGNUM);			\
+  assemble_name (STREAM, ARM_MCOUNT_NAME);		\
+  fputc ('\n', STREAM);					\
+  ASM_GENERATE_INTERNAL_LABEL (temp, "LP", LABELNO);	\
+  sym = gen_rtx_SYMBOL_REF (Pmode, temp);		\
+  assemble_aligned_integer (UNITS_PER_WORD, sym);	\
 }
 #endif
 
 #ifdef THUMB_FUNCTION_PROFILER
-#define FUNCTION_PROFILER(STREAM, LABELNO)                \
-  if (TARGET_ARM)                                        \
-    ARM_FUNCTION_PROFILER (STREAM, LABELNO)                \
-  else                                                        \
+#define FUNCTION_PROFILER(STREAM, LABELNO)		\
+  if (TARGET_ARM)					\
+    ARM_FUNCTION_PROFILER (STREAM, LABELNO)		\
+  else							\
     THUMB_FUNCTION_PROFILER (STREAM, LABELNO)
 #else
-#define FUNCTION_PROFILER(STREAM, LABELNO)                \
+#define FUNCTION_PROFILER(STREAM, LABELNO)		\
     ARM_FUNCTION_PROFILER (STREAM, LABELNO)
 #endif
 
@@ -1572,7 +1572,7 @@ typedef struct
 
 /* Determine if the epilogue should be output as RTL.
    You should override this if you define FUNCTION_EXTRA_EPILOGUE.  */
-#define USE_RETURN_INSN(ISCOND)                                \
+#define USE_RETURN_INSN(ISCOND)				\
   (TARGET_ARM ? use_return_insn (ISCOND, NULL) : 0)
 
 /* Definitions for register eliminations.
@@ -1589,7 +1589,7 @@ typedef struct
    pointer.  Note we have to use {ARM|THUMB}_HARD_FRAME_POINTER_REGNUM
    because the definition of HARD_FRAME_POINTER_REGNUM is not a constant.  */
 
-#define ELIMINABLE_REGS                                                \
+#define ELIMINABLE_REGS						\
 {{ ARG_POINTER_REGNUM,        STACK_POINTER_REGNUM            },\
  { ARG_POINTER_REGNUM,        FRAME_POINTER_REGNUM            },\
  { ARG_POINTER_REGNUM,        ARM_HARD_FRAME_POINTER_REGNUM   },\
@@ -1606,19 +1606,19 @@ typedef struct
    pointer, we must eliminate FRAME_POINTER_REGNUM into
    HARD_FRAME_POINTER_REGNUM and not into STACK_POINTER_REGNUM or
    ARG_POINTER_REGNUM.  */
-#define CAN_ELIMINATE(FROM, TO)                                                \
-  (((TO) == FRAME_POINTER_REGNUM && (FROM) == ARG_POINTER_REGNUM) ? 0 :        \
-   ((TO) == STACK_POINTER_REGNUM && frame_pointer_needed) ? 0 :                \
-   ((TO) == ARM_HARD_FRAME_POINTER_REGNUM && TARGET_THUMB) ? 0 :        \
-   ((TO) == THUMB_HARD_FRAME_POINTER_REGNUM && TARGET_ARM) ? 0 :        \
+#define CAN_ELIMINATE(FROM, TO)						\
+  (((TO) == FRAME_POINTER_REGNUM && (FROM) == ARG_POINTER_REGNUM) ? 0 :	\
+   ((TO) == STACK_POINTER_REGNUM && frame_pointer_needed) ? 0 :		\
+   ((TO) == ARM_HARD_FRAME_POINTER_REGNUM && TARGET_THUMB) ? 0 :	\
+   ((TO) == THUMB_HARD_FRAME_POINTER_REGNUM && TARGET_ARM) ? 0 :	\
    1)
 
 /* Define the offset between two registers, one to be eliminated, and the
    other its replacement, at the start of a routine.  */
-#define INITIAL_ELIMINATION_OFFSET(FROM, TO, OFFSET)                        \
-  if (TARGET_ARM)                                                        \
-    (OFFSET) = arm_compute_initial_elimination_offset (FROM, TO);        \
-  else                                                                        \
+#define INITIAL_ELIMINATION_OFFSET(FROM, TO, OFFSET)			\
+  if (TARGET_ARM)							\
+    (OFFSET) = arm_compute_initial_elimination_offset (FROM, TO);	\
+  else									\
     (OFFSET) = thumb_compute_initial_elimination_offset (FROM, TO)
 
 /* Special case handling of the location of arguments passed on the stack.  */
@@ -1633,19 +1633,19 @@ typedef struct
 
    On the ARM, (if r8 is the static chain regnum, and remembering that
    referencing pc adds an offset of 8) the trampoline looks like:
-           ldr                 r8, [pc, #0]
-           ldr                pc, [pc]
-           .word        static chain value
-           .word        function's address
+	   ldr 		r8, [pc, #0]
+	   ldr		pc, [pc]
+	   .word	static chain value
+	   .word	function's address
    XXX FIXME: When the trampoline returns, r8 will be clobbered.  */
-#define ARM_TRAMPOLINE_TEMPLATE(FILE)                                \
-{                                                                \
-  asm_fprintf (FILE, "\tldr\t%r, [%r, #0]\n",                        \
-               STATIC_CHAIN_REGNUM, PC_REGNUM);                        \
-  asm_fprintf (FILE, "\tldr\t%r, [%r, #0]\n",                        \
-               PC_REGNUM, PC_REGNUM);                                \
-  assemble_aligned_integer (UNITS_PER_WORD, const0_rtx);        \
-  assemble_aligned_integer (UNITS_PER_WORD, const0_rtx);        \
+#define ARM_TRAMPOLINE_TEMPLATE(FILE)				\
+{								\
+  asm_fprintf (FILE, "\tldr\t%r, [%r, #0]\n",			\
+	       STATIC_CHAIN_REGNUM, PC_REGNUM);			\
+  asm_fprintf (FILE, "\tldr\t%r, [%r, #0]\n",			\
+	       PC_REGNUM, PC_REGNUM);				\
+  assemble_aligned_integer (UNITS_PER_WORD, const0_rtx);	\
+  assemble_aligned_integer (UNITS_PER_WORD, const0_rtx);	\
 }
 
 /* On the Thumb we always switch into ARM mode to execute the trampoline.
@@ -1655,26 +1655,26 @@ typedef struct
    bottom bit is set.  Thus the processor will be in ARM mode when it
    reaches this code.  So we duplicate the ARM trampoline code and add
    a switch into Thumb mode as well.  */
-#define THUMB_TRAMPOLINE_TEMPLATE(FILE)                \
-{                                                \
-  fprintf (FILE, "\t.code 32\n");                \
-  fprintf (FILE, ".Ltrampoline_start:\n");        \
-  asm_fprintf (FILE, "\tldr\t%r, [%r, #8]\n",        \
-               STATIC_CHAIN_REGNUM, PC_REGNUM);        \
-  asm_fprintf (FILE, "\tldr\t%r, [%r, #8]\n",        \
-               IP_REGNUM, PC_REGNUM);                \
+#define THUMB_TRAMPOLINE_TEMPLATE(FILE)		\
+{						\
+  fprintf (FILE, "\t.code 32\n");		\
+  fprintf (FILE, ".Ltrampoline_start:\n");	\
+  asm_fprintf (FILE, "\tldr\t%r, [%r, #8]\n",	\
+	       STATIC_CHAIN_REGNUM, PC_REGNUM);	\
+  asm_fprintf (FILE, "\tldr\t%r, [%r, #8]\n",	\
+	       IP_REGNUM, PC_REGNUM);		\
   asm_fprintf (FILE, "\torr\t%r, %r, #1\n",     \
-               IP_REGNUM, IP_REGNUM);             \
-  asm_fprintf (FILE, "\tbx\t%r\n", IP_REGNUM);        \
-  fprintf (FILE, "\t.word\t0\n");                \
-  fprintf (FILE, "\t.word\t0\n");                \
-  fprintf (FILE, "\t.code 16\n");                \
+	       IP_REGNUM, IP_REGNUM);     	\
+  asm_fprintf (FILE, "\tbx\t%r\n", IP_REGNUM);	\
+  fprintf (FILE, "\t.word\t0\n");		\
+  fprintf (FILE, "\t.word\t0\n");		\
+  fprintf (FILE, "\t.code 16\n");		\
 }
 
-#define TRAMPOLINE_TEMPLATE(FILE)                \
-  if (TARGET_ARM)                                \
-    ARM_TRAMPOLINE_TEMPLATE (FILE)                \
-  else                                                \
+#define TRAMPOLINE_TEMPLATE(FILE)		\
+  if (TARGET_ARM)				\
+    ARM_TRAMPOLINE_TEMPLATE (FILE)		\
+  else						\
     THUMB_TRAMPOLINE_TEMPLATE (FILE)
 
 /* Length in units of the trampoline for entering a nested function.  */
@@ -1688,19 +1688,19 @@ typedef struct
    FNADDR is an RTX for the address of the function's pure code.
    CXT is an RTX for the static chain value for the function.  */
 #ifndef INITIALIZE_TRAMPOLINE
-#define INITIALIZE_TRAMPOLINE(TRAMP, FNADDR, CXT)                        \
-{                                                                        \
-  emit_move_insn (gen_rtx_MEM (SImode,                                        \
-                               plus_constant (TRAMP,                        \
-                                              TARGET_ARM ? 8 : 16)),        \
-                  CXT);                                                        \
-  emit_move_insn (gen_rtx_MEM (SImode,                                        \
-                               plus_constant (TRAMP,                        \
-                                              TARGET_ARM ? 12 : 20)),        \
-                  FNADDR);                                                \
-  emit_library_call (gen_rtx_SYMBOL_REF (Pmode, "__clear_cache"),        \
-                     0, VOIDmode, 2, TRAMP, Pmode,                        \
-                     plus_constant (TRAMP, TRAMPOLINE_SIZE), Pmode);        \
+#define INITIALIZE_TRAMPOLINE(TRAMP, FNADDR, CXT)			\
+{									\
+  emit_move_insn (gen_rtx_MEM (SImode,					\
+			       plus_constant (TRAMP,			\
+					      TARGET_ARM ? 8 : 16)),	\
+		  CXT);							\
+  emit_move_insn (gen_rtx_MEM (SImode,					\
+			       plus_constant (TRAMP,			\
+					      TARGET_ARM ? 12 : 20)),	\
+		  FNADDR);						\
+  emit_library_call (gen_rtx_SYMBOL_REF (Pmode, "__clear_cache"),	\
+		     0, VOIDmode, 2, TRAMP, Pmode,			\
+		     plus_constant (TRAMP, TRAMPOLINE_SIZE), Pmode);	\
 }
 #endif
 
@@ -1726,29 +1726,29 @@ typedef struct
   ((R TEST VALUE) || ((unsigned) reg_renumber[R] TEST VALUE))
 
 /*   On the ARM, don't allow the pc to be used.  */
-#define ARM_REGNO_OK_FOR_BASE_P(REGNO)                        \
-  (TEST_REGNO (REGNO, <, PC_REGNUM)                        \
-   || TEST_REGNO (REGNO, ==, FRAME_POINTER_REGNUM)        \
+#define ARM_REGNO_OK_FOR_BASE_P(REGNO)			\
+  (TEST_REGNO (REGNO, <, PC_REGNUM)			\
+   || TEST_REGNO (REGNO, ==, FRAME_POINTER_REGNUM)	\
    || TEST_REGNO (REGNO, ==, ARG_POINTER_REGNUM))
 
-#define THUMB_REGNO_MODE_OK_FOR_BASE_P(REGNO, MODE)                \
-  (TEST_REGNO (REGNO, <=, LAST_LO_REGNUM)                        \
-   || (GET_MODE_SIZE (MODE) >= 4                                \
+#define THUMB_REGNO_MODE_OK_FOR_BASE_P(REGNO, MODE)		\
+  (TEST_REGNO (REGNO, <=, LAST_LO_REGNUM)			\
+   || (GET_MODE_SIZE (MODE) >= 4				\
        && TEST_REGNO (REGNO, ==, STACK_POINTER_REGNUM)))
 
-#define REGNO_MODE_OK_FOR_BASE_P(REGNO, MODE)                \
-  (TARGET_THUMB                                                \
-   ? THUMB_REGNO_MODE_OK_FOR_BASE_P (REGNO, MODE)        \
+#define REGNO_MODE_OK_FOR_BASE_P(REGNO, MODE)		\
+  (TARGET_THUMB						\
+   ? THUMB_REGNO_MODE_OK_FOR_BASE_P (REGNO, MODE)	\
    : ARM_REGNO_OK_FOR_BASE_P (REGNO))
 
 /* Nonzero if X can be the base register in a reg+reg addressing mode.
    For Thumb, we can not use SP + reg, so reject SP.  */
-#define REGNO_MODE_OK_FOR_REG_BASE_P(X, MODE)        \
+#define REGNO_MODE_OK_FOR_REG_BASE_P(X, MODE)	\
   REGNO_OK_FOR_INDEX_P (X)
 
 /* For ARM code, we don't care about the mode, but for Thumb, the index
    must be suitable for use in a QImode load.  */
-#define REGNO_OK_FOR_INDEX_P(REGNO)        \
+#define REGNO_OK_FOR_INDEX_P(REGNO)	\
   REGNO_MODE_OK_FOR_BASE_P (REGNO, QImode)
 
 /* Maximum number of registers that can appear in a valid memory address.
@@ -1760,14 +1760,14 @@ typedef struct
 
 #ifdef AOF_ASSEMBLER
 
-#define CONSTANT_ADDRESS_P(X)                \
+#define CONSTANT_ADDRESS_P(X)		\
   (GET_CODE (X) == SYMBOL_REF && CONSTANT_POOL_ADDRESS_P (X))
 
 #else
 
-#define CONSTANT_ADDRESS_P(X)                          \
-  (GET_CODE (X) == SYMBOL_REF                         \
-   && (CONSTANT_POOL_ADDRESS_P (X)                \
+#define CONSTANT_ADDRESS_P(X)  			\
+  (GET_CODE (X) == SYMBOL_REF 			\
+   && (CONSTANT_POOL_ADDRESS_P (X)		\
        || (TARGET_ARM && optimize > 0 && SYMBOL_REF_FLAG (X))))
 
 #endif /* AOF_ASSEMBLER */
@@ -1780,29 +1780,29 @@ typedef struct
    constant pool XXX.
 
    When generating pic allow anything.  */
-#define ARM_LEGITIMATE_CONSTANT_P(X)        (flag_pic || ! label_mentioned_p (X))
+#define ARM_LEGITIMATE_CONSTANT_P(X)	(flag_pic || ! label_mentioned_p (X))
 
-#define THUMB_LEGITIMATE_CONSTANT_P(X)        \
- (   GET_CODE (X) == CONST_INT                \
-  || GET_CODE (X) == CONST_DOUBLE        \
-  || CONSTANT_ADDRESS_P (X)                \
+#define THUMB_LEGITIMATE_CONSTANT_P(X)	\
+ (   GET_CODE (X) == CONST_INT		\
+  || GET_CODE (X) == CONST_DOUBLE	\
+  || CONSTANT_ADDRESS_P (X)		\
   || flag_pic)
 
-#define LEGITIMATE_CONSTANT_P(X)                        \
-  (!arm_tls_referenced_p (X)                                \
-   && (TARGET_ARM ? ARM_LEGITIMATE_CONSTANT_P (X)        \
-                  : THUMB_LEGITIMATE_CONSTANT_P (X)))
+#define LEGITIMATE_CONSTANT_P(X)			\
+  (!arm_tls_referenced_p (X)				\
+   && (TARGET_ARM ? ARM_LEGITIMATE_CONSTANT_P (X)	\
+		  : THUMB_LEGITIMATE_CONSTANT_P (X)))
 
 /* Special characters prefixed to function names
    in order to encode attribute like information.
    Note, '@' and '*' have already been taken.  */
-#define SHORT_CALL_FLAG_CHAR        '^'
-#define LONG_CALL_FLAG_CHAR        '#'
+#define SHORT_CALL_FLAG_CHAR	'^'
+#define LONG_CALL_FLAG_CHAR	'#'
 
-#define ENCODED_SHORT_CALL_ATTR_P(SYMBOL_NAME)        \
+#define ENCODED_SHORT_CALL_ATTR_P(SYMBOL_NAME)	\
   (*(SYMBOL_NAME) == SHORT_CALL_FLAG_CHAR)
 
-#define ENCODED_LONG_CALL_ATTR_P(SYMBOL_NAME)        \
+#define ENCODED_LONG_CALL_ATTR_P(SYMBOL_NAME)	\
   (*(SYMBOL_NAME) == LONG_CALL_FLAG_CHAR)
 
 #ifndef SUBTARGET_NAME_ENCODING_LENGTHS
@@ -1813,16 +1813,16 @@ typedef struct
    Each case label should return the number of characters to
    be stripped from the start of a function's name, if that
    name starts with the indicated character.  */
-#define ARM_NAME_ENCODING_LENGTHS                \
-  case SHORT_CALL_FLAG_CHAR: return 1;                \
-  case LONG_CALL_FLAG_CHAR:  return 1;                \
-  case '*':  return 1;                                \
+#define ARM_NAME_ENCODING_LENGTHS		\
+  case SHORT_CALL_FLAG_CHAR: return 1;		\
+  case LONG_CALL_FLAG_CHAR:  return 1;		\
+  case '*':  return 1;				\
   SUBTARGET_NAME_ENCODING_LENGTHS
 
 /* This is how to output a reference to a user-level label named NAME.
    `assemble_name' uses this.  */
 #undef  ASM_OUTPUT_LABELREF
-#define ASM_OUTPUT_LABELREF(FILE, NAME)                \
+#define ASM_OUTPUT_LABELREF(FILE, NAME)		\
    arm_asm_output_labelref (FILE, NAME)
 
 /* The EABI specifies that constructors should go in .init_array.
@@ -1882,7 +1882,7 @@ typedef struct
    attribute when long-calls are in effect as this tells the compiler
    that the section might be placed a long way from the caller.
    See arm_is_longcall_p() for more information.  */
-#define ARM_DECLARE_FUNCTION_SIZE(STREAM, NAME, DECL)        \
+#define ARM_DECLARE_FUNCTION_SIZE(STREAM, NAME, DECL)	\
   if (!TARGET_LONG_CALLS || ! DECL_SECTION_NAME (DECL)) \
     arm_encode_call_attribute (DECL, SHORT_CALL_FLAG_CHAR)
 
@@ -1903,28 +1903,28 @@ typedef struct
    The symbol REG_OK_STRICT causes the latter definition to be used.  */
 #ifndef REG_OK_STRICT
 
-#define ARM_REG_OK_FOR_BASE_P(X)                \
-  (REGNO (X) <= LAST_ARM_REGNUM                        \
-   || REGNO (X) >= FIRST_PSEUDO_REGISTER        \
-   || REGNO (X) == FRAME_POINTER_REGNUM                \
+#define ARM_REG_OK_FOR_BASE_P(X)		\
+  (REGNO (X) <= LAST_ARM_REGNUM			\
+   || REGNO (X) >= FIRST_PSEUDO_REGISTER	\
+   || REGNO (X) == FRAME_POINTER_REGNUM		\
    || REGNO (X) == ARG_POINTER_REGNUM)
 
-#define THUMB_REG_MODE_OK_FOR_BASE_P(X, MODE)        \
-  (REGNO (X) <= LAST_LO_REGNUM                        \
-   || REGNO (X) >= FIRST_PSEUDO_REGISTER        \
-   || (GET_MODE_SIZE (MODE) >= 4                \
-       && (REGNO (X) == STACK_POINTER_REGNUM        \
-           || (X) == hard_frame_pointer_rtx        \
-           || (X) == arg_pointer_rtx)))
+#define THUMB_REG_MODE_OK_FOR_BASE_P(X, MODE)	\
+  (REGNO (X) <= LAST_LO_REGNUM			\
+   || REGNO (X) >= FIRST_PSEUDO_REGISTER	\
+   || (GET_MODE_SIZE (MODE) >= 4		\
+       && (REGNO (X) == STACK_POINTER_REGNUM	\
+	   || (X) == hard_frame_pointer_rtx	\
+	   || (X) == arg_pointer_rtx)))
 
 #define REG_STRICT_P 0
 
 #else /* REG_OK_STRICT */
 
-#define ARM_REG_OK_FOR_BASE_P(X)                 \
+#define ARM_REG_OK_FOR_BASE_P(X) 		\
   ARM_REGNO_OK_FOR_BASE_P (REGNO (X))
 
-#define THUMB_REG_MODE_OK_FOR_BASE_P(X, MODE)        \
+#define THUMB_REG_MODE_OK_FOR_BASE_P(X, MODE)	\
   THUMB_REGNO_MODE_OK_FOR_BASE_P (REGNO (X), MODE)
 
 #define REG_STRICT_P 1
@@ -1933,9 +1933,9 @@ typedef struct
 
 /* Now define some helpers in terms of the above.  */
 
-#define REG_MODE_OK_FOR_BASE_P(X, MODE)                \
-  (TARGET_THUMB                                        \
-   ? THUMB_REG_MODE_OK_FOR_BASE_P (X, MODE)        \
+#define REG_MODE_OK_FOR_BASE_P(X, MODE)		\
+  (TARGET_THUMB					\
+   ? THUMB_REG_MODE_OK_FOR_BASE_P (X, MODE)	\
    : ARM_REG_OK_FOR_BASE_P (X))
 
 #define ARM_REG_OK_FOR_INDEX_P(X) ARM_REG_OK_FOR_BASE_P (X)
@@ -1947,14 +1947,14 @@ typedef struct
 /* Nonzero if X is a hard reg that can be used as an index
    or if it is a pseudo reg.  On the Thumb, the stack pointer
    is not suitable.  */
-#define REG_OK_FOR_INDEX_P(X)                        \
-  (TARGET_THUMB                                        \
-   ? THUMB_REG_OK_FOR_INDEX_P (X)                \
+#define REG_OK_FOR_INDEX_P(X)			\
+  (TARGET_THUMB					\
+   ? THUMB_REG_OK_FOR_INDEX_P (X)		\
    : ARM_REG_OK_FOR_INDEX_P (X))
 
 /* Nonzero if X can be the base register in a reg+reg addressing mode.
    For Thumb, we can not use SP + reg, so reject SP.  */
-#define REG_MODE_OK_FOR_REG_BASE_P(X, MODE)        \
+#define REG_MODE_OK_FOR_REG_BASE_P(X, MODE)	\
   REG_OK_FOR_INDEX_P (X)
 
 /* GO_IF_LEGITIMATE_ADDRESS recognizes an RTL expression
@@ -1968,60 +1968,60 @@ typedef struct
 #define ARM_INDEX_REGISTER_RTX_P(X)  \
   (GET_CODE (X) == REG && ARM_REG_OK_FOR_INDEX_P (X))
 
-#define ARM_GO_IF_LEGITIMATE_ADDRESS(MODE,X,WIN)                \
-  {                                                                \
-    if (arm_legitimate_address_p (MODE, X, SET, REG_STRICT_P))        \
-      goto WIN;                                                        \
+#define ARM_GO_IF_LEGITIMATE_ADDRESS(MODE,X,WIN)		\
+  {								\
+    if (arm_legitimate_address_p (MODE, X, SET, REG_STRICT_P))	\
+      goto WIN;							\
   }
 
-#define THUMB_GO_IF_LEGITIMATE_ADDRESS(MODE,X,WIN)                \
-  {                                                                \
-    if (thumb_legitimate_address_p (MODE, X, REG_STRICT_P))        \
-      goto WIN;                                                        \
+#define THUMB_GO_IF_LEGITIMATE_ADDRESS(MODE,X,WIN)		\
+  {								\
+    if (thumb_legitimate_address_p (MODE, X, REG_STRICT_P))	\
+      goto WIN;							\
   }
 
-#define GO_IF_LEGITIMATE_ADDRESS(MODE, X, WIN)                                \
-  if (TARGET_ARM)                                                        \
-    ARM_GO_IF_LEGITIMATE_ADDRESS (MODE, X, WIN)                          \
-  else /* if (TARGET_THUMB) */                                                \
+#define GO_IF_LEGITIMATE_ADDRESS(MODE, X, WIN)				\
+  if (TARGET_ARM)							\
+    ARM_GO_IF_LEGITIMATE_ADDRESS (MODE, X, WIN)  			\
+  else /* if (TARGET_THUMB) */						\
     THUMB_GO_IF_LEGITIMATE_ADDRESS (MODE, X, WIN)
 
 
 /* Try machine-dependent ways of modifying an illegitimate address
    to be legitimate.  If we find one, return the new, valid address.  */
-#define ARM_LEGITIMIZE_ADDRESS(X, OLDX, MODE, WIN)        \
-do {                                                        \
-  X = arm_legitimize_address (X, OLDX, MODE);                \
+#define ARM_LEGITIMIZE_ADDRESS(X, OLDX, MODE, WIN)	\
+do {							\
+  X = arm_legitimize_address (X, OLDX, MODE);		\
 } while (0)
 
-#define THUMB_LEGITIMIZE_ADDRESS(X, OLDX, MODE, WIN)        \
-do {                                                        \
-  X = thumb_legitimize_address (X, OLDX, MODE);                \
+#define THUMB_LEGITIMIZE_ADDRESS(X, OLDX, MODE, WIN)	\
+do {							\
+  X = thumb_legitimize_address (X, OLDX, MODE);		\
 } while (0)
 
-#define LEGITIMIZE_ADDRESS(X, OLDX, MODE, WIN)                \
-do {                                                        \
-  if (TARGET_ARM)                                        \
-    ARM_LEGITIMIZE_ADDRESS (X, OLDX, MODE, WIN);        \
-  else                                                        \
-    THUMB_LEGITIMIZE_ADDRESS (X, OLDX, MODE, WIN);        \
-                                                        \
-  if (memory_address_p (MODE, X))                        \
-    goto WIN;                                                \
+#define LEGITIMIZE_ADDRESS(X, OLDX, MODE, WIN)		\
+do {							\
+  if (TARGET_ARM)					\
+    ARM_LEGITIMIZE_ADDRESS (X, OLDX, MODE, WIN);	\
+  else							\
+    THUMB_LEGITIMIZE_ADDRESS (X, OLDX, MODE, WIN);	\
+							\
+  if (memory_address_p (MODE, X))			\
+    goto WIN;						\
 } while (0)
 
 /* Go to LABEL if ADDR (a legitimate address expression)
    has an effect that depends on the machine mode it is used for.  */
-#define ARM_GO_IF_MODE_DEPENDENT_ADDRESS(ADDR, LABEL)                          \
-{                                                                        \
-  if (   GET_CODE (ADDR) == PRE_DEC || GET_CODE (ADDR) == POST_DEC        \
-      || GET_CODE (ADDR) == PRE_INC || GET_CODE (ADDR) == POST_INC)        \
-    goto LABEL;                                                                \
+#define ARM_GO_IF_MODE_DEPENDENT_ADDRESS(ADDR, LABEL)  			\
+{									\
+  if (   GET_CODE (ADDR) == PRE_DEC || GET_CODE (ADDR) == POST_DEC	\
+      || GET_CODE (ADDR) == PRE_INC || GET_CODE (ADDR) == POST_INC)	\
+    goto LABEL;								\
 }
 
 /* Nothing helpful to do for the Thumb */
-#define GO_IF_MODE_DEPENDENT_ADDRESS(ADDR, LABEL)        \
-  if (TARGET_ARM)                                        \
+#define GO_IF_MODE_DEPENDENT_ADDRESS(ADDR, LABEL)	\
+  if (TARGET_ARM)					\
     ARM_GO_IF_MODE_DEPENDENT_ADDRESS (ADDR, LABEL)
 
 
@@ -2050,9 +2050,9 @@ do {                                                        \
    will either zero-extend or sign-extend.  The value of this macro should
    be the code that says which one of the two operations is implicitly
    done, UNKNOWN if none.  */
-#define LOAD_EXTEND_OP(MODE)                                                \
-  (TARGET_THUMB ? ZERO_EXTEND :                                                \
-   ((arm_arch4 || (MODE) == QImode) ? ZERO_EXTEND                        \
+#define LOAD_EXTEND_OP(MODE)						\
+  (TARGET_THUMB ? ZERO_EXTEND :						\
+   ((arm_arch4 || (MODE) == QImode) ? ZERO_EXTEND			\
     : ((BYTES_BIG_ENDIAN && (MODE) == HImode) ? SIGN_EXTEND : UNKNOWN)))
 
 /* Nonzero if access to memory by bytes is slow and undesirable.  */
@@ -2081,14 +2081,14 @@ do {                                                        \
 #define Pmode  SImode
 #define FUNCTION_MODE  Pmode
 
-#define ARM_FRAME_RTX(X)                                        \
-  (   (X) == frame_pointer_rtx || (X) == stack_pointer_rtx        \
+#define ARM_FRAME_RTX(X)					\
+  (   (X) == frame_pointer_rtx || (X) == stack_pointer_rtx	\
    || (X) == arg_pointer_rtx)
 
 /* Moves to and from memory are quite expensive */
-#define MEMORY_MOVE_COST(M, CLASS, IN)                        \
-  (TARGET_ARM ? 10 :                                        \
-   ((GET_MODE_SIZE (M) < 4 ? 8 : 2 * GET_MODE_SIZE (M))        \
+#define MEMORY_MOVE_COST(M, CLASS, IN)			\
+  (TARGET_ARM ? 10 :					\
+   ((GET_MODE_SIZE (M) < 4 ? 8 : 2 * GET_MODE_SIZE (M))	\
     * (CLASS == LO_REGS ? 1 : 2)))
 
 /* Try to generate sequences that don't involve branches, we can then use
@@ -2109,14 +2109,14 @@ extern unsigned arm_pic_register;
 /* We can't directly access anything that contains a symbol,
    nor can we indirect via the constant pool.  One exception is
    UNSPEC_TLS, which is always PIC.  */
-#define LEGITIMATE_PIC_OPERAND_P(X)                                        \
-        (!(symbol_mentioned_p (X)                                        \
-           || label_mentioned_p (X)                                        \
-           || (GET_CODE (X) == SYMBOL_REF                                \
-               && CONSTANT_POOL_ADDRESS_P (X)                                \
-               && (symbol_mentioned_p (get_pool_constant (X))                \
-                   || label_mentioned_p (get_pool_constant (X)))))        \
-         || tls_mentioned_p (X))
+#define LEGITIMATE_PIC_OPERAND_P(X)					\
+	(!(symbol_mentioned_p (X)					\
+	   || label_mentioned_p (X)					\
+	   || (GET_CODE (X) == SYMBOL_REF				\
+	       && CONSTANT_POOL_ADDRESS_P (X)				\
+	       && (symbol_mentioned_p (get_pool_constant (X))		\
+		   || label_mentioned_p (get_pool_constant (X)))))	\
+	 || tls_mentioned_p (X))
 
 /* We need to know when we are making a constant pool; this determines
    whether data needs to be in the GOT or can be referenced via a GOT
@@ -2124,10 +2124,10 @@ extern unsigned arm_pic_register;
 extern int making_const_table;
 
 /* Handle pragmas for compatibility with Intel's compilers.  */
-#define REGISTER_TARGET_PRAGMAS() do {                                        \
-  c_register_pragma (0, "long_calls", arm_pr_long_calls);                \
-  c_register_pragma (0, "no_long_calls", arm_pr_no_long_calls);                \
-  c_register_pragma (0, "long_calls_off", arm_pr_long_calls_off);        \
+#define REGISTER_TARGET_PRAGMAS() do {					\
+  c_register_pragma (0, "long_calls", arm_pr_long_calls);		\
+  c_register_pragma (0, "no_long_calls", arm_pr_no_long_calls);		\
+  c_register_pragma (0, "long_calls_off", arm_pr_long_calls_off);	\
 } while (0)
 
 /* Condition code information.  */
@@ -2143,19 +2143,19 @@ extern int making_const_table;
    ? reverse_condition_maybe_unordered (code) \
    : reverse_condition (code))
 
-#define CANONICALIZE_COMPARISON(CODE, OP0, OP1)                                \
-  do                                                                        \
-    {                                                                        \
-      if (GET_CODE (OP1) == CONST_INT                                        \
-          && ! (const_ok_for_arm (INTVAL (OP1))                                \
-                || (const_ok_for_arm (- INTVAL (OP1)))))                \
-        {                                                                \
-          rtx const_op = OP1;                                                \
-          CODE = arm_canonicalize_comparison ((CODE), GET_MODE (OP0),        \
-                                              &const_op);                \
-          OP1 = const_op;                                                \
-        }                                                                \
-    }                                                                        \
+#define CANONICALIZE_COMPARISON(CODE, OP0, OP1)				\
+  do									\
+    {									\
+      if (GET_CODE (OP1) == CONST_INT					\
+          && ! (const_ok_for_arm (INTVAL (OP1))				\
+	        || (const_ok_for_arm (- INTVAL (OP1)))))		\
+        {								\
+          rtx const_op = OP1;						\
+          CODE = arm_canonicalize_comparison ((CODE), GET_MODE (OP0),	\
+					      &const_op);		\
+          OP1 = const_op;						\
+        }								\
+    }									\
   while (0)
 
 /* The arm5 clz instruction returns 32.  */
@@ -2165,240 +2165,240 @@ extern int making_const_table;
 #define ASM_APP_OFF (TARGET_THUMB ? "\t.code\t16\n" : "")
 
 /* Output a push or a pop instruction (only used when profiling).  */
-#define ASM_OUTPUT_REG_PUSH(STREAM, REGNO)                \
-  do                                                        \
-    {                                                        \
-      if (TARGET_ARM)                                        \
-        asm_fprintf (STREAM,"\tstmfd\t%r!,{%r}\n",        \
-                     STACK_POINTER_REGNUM, REGNO);        \
-      else                                                \
-        asm_fprintf (STREAM, "\tpush {%r}\n", REGNO);        \
+#define ASM_OUTPUT_REG_PUSH(STREAM, REGNO)		\
+  do							\
+    {							\
+      if (TARGET_ARM)					\
+	asm_fprintf (STREAM,"\tstmfd\t%r!,{%r}\n",	\
+		     STACK_POINTER_REGNUM, REGNO);	\
+      else						\
+	asm_fprintf (STREAM, "\tpush {%r}\n", REGNO);	\
     } while (0)
 
 
-#define ASM_OUTPUT_REG_POP(STREAM, REGNO)                \
-  do                                                        \
-    {                                                        \
-      if (TARGET_ARM)                                        \
-        asm_fprintf (STREAM, "\tldmfd\t%r!,{%r}\n",        \
-                     STACK_POINTER_REGNUM, REGNO);        \
-      else                                                \
-        asm_fprintf (STREAM, "\tpop {%r}\n", REGNO);        \
+#define ASM_OUTPUT_REG_POP(STREAM, REGNO)		\
+  do							\
+    {							\
+      if (TARGET_ARM)					\
+	asm_fprintf (STREAM, "\tldmfd\t%r!,{%r}\n",	\
+		     STACK_POINTER_REGNUM, REGNO);	\
+      else						\
+	asm_fprintf (STREAM, "\tpop {%r}\n", REGNO);	\
     } while (0)
 
 /* This is how to output a label which precedes a jumptable.  Since
    Thumb instructions are 2 bytes, we may need explicit alignment here.  */
 #undef  ASM_OUTPUT_CASE_LABEL
-#define ASM_OUTPUT_CASE_LABEL(FILE, PREFIX, NUM, JUMPTABLE)        \
-  do                                                                \
-    {                                                                \
-      if (TARGET_THUMB)                                                \
-        ASM_OUTPUT_ALIGN (FILE, 2);                                \
-      (*targetm.asm_out.internal_label) (FILE, PREFIX, NUM);        \
-    }                                                                \
+#define ASM_OUTPUT_CASE_LABEL(FILE, PREFIX, NUM, JUMPTABLE)	\
+  do								\
+    {								\
+      if (TARGET_THUMB)						\
+        ASM_OUTPUT_ALIGN (FILE, 2);				\
+      (*targetm.asm_out.internal_label) (FILE, PREFIX, NUM);	\
+    }								\
   while (0)
 
-#define ARM_DECLARE_FUNCTION_NAME(STREAM, NAME, DECL)         \
-  do                                                        \
-    {                                                        \
-      if (TARGET_THUMB)                                 \
-        {                                                \
+#define ARM_DECLARE_FUNCTION_NAME(STREAM, NAME, DECL) 	\
+  do							\
+    {							\
+      if (TARGET_THUMB) 				\
+        {						\
           if (is_called_in_ARM_mode (DECL)      \
-                          || current_function_is_thunk)                \
-            fprintf (STREAM, "\t.code 32\n") ;                \
-          else                                                \
-           fprintf (STREAM, "\t.code 16\n\t.thumb_func\n") ;        \
-        }                                                \
-      if (TARGET_POKE_FUNCTION_NAME)                        \
-        arm_poke_function_name (STREAM, (char *) NAME);        \
-    }                                                        \
+			  || current_function_is_thunk)		\
+            fprintf (STREAM, "\t.code 32\n") ;		\
+          else						\
+           fprintf (STREAM, "\t.code 16\n\t.thumb_func\n") ;	\
+        }						\
+      if (TARGET_POKE_FUNCTION_NAME)			\
+        arm_poke_function_name (STREAM, (char *) NAME);	\
+    }							\
   while (0)
 
 /* For aliases of functions we use .thumb_set instead.  */
-#define ASM_OUTPUT_DEF_FROM_DECLS(FILE, DECL1, DECL2)                \
-  do                                                                   \
-    {                                                                \
+#define ASM_OUTPUT_DEF_FROM_DECLS(FILE, DECL1, DECL2)		\
+  do						   		\
+    {								\
       const char *const LABEL1 = XSTR (XEXP (DECL_RTL (decl), 0), 0); \
-      const char *const LABEL2 = IDENTIFIER_POINTER (DECL2);        \
-                                                                \
-      if (TARGET_THUMB && TREE_CODE (DECL1) == FUNCTION_DECL)        \
-        {                                                        \
-          fprintf (FILE, "\t.thumb_set ");                        \
-          assemble_name (FILE, LABEL1);                                   \
-          fprintf (FILE, ",");                                           \
-          assemble_name (FILE, LABEL2);                                   \
-          fprintf (FILE, "\n");                                        \
-        }                                                        \
-      else                                                        \
-        ASM_OUTPUT_DEF (FILE, LABEL1, LABEL2);                        \
-    }                                                                \
+      const char *const LABEL2 = IDENTIFIER_POINTER (DECL2);	\
+								\
+      if (TARGET_THUMB && TREE_CODE (DECL1) == FUNCTION_DECL)	\
+	{							\
+	  fprintf (FILE, "\t.thumb_set ");			\
+	  assemble_name (FILE, LABEL1);			   	\
+	  fprintf (FILE, ",");			   		\
+	  assemble_name (FILE, LABEL2);		   		\
+	  fprintf (FILE, "\n");					\
+	}							\
+      else							\
+	ASM_OUTPUT_DEF (FILE, LABEL1, LABEL2);			\
+    }								\
   while (0)
 
 #ifdef HAVE_GAS_MAX_SKIP_P2ALIGN
 /* To support -falign-* switches we need to use .p2align so
    that alignment directives in code sections will be padded
    with no-op instructions, rather than zeroes.  */
-#define ASM_OUTPUT_MAX_SKIP_ALIGN(FILE, LOG, MAX_SKIP)                \
-  if ((LOG) != 0)                                                \
-    {                                                                \
-      if ((MAX_SKIP) == 0)                                        \
-        fprintf ((FILE), "\t.p2align %d\n", (int) (LOG));        \
-      else                                                        \
-        fprintf ((FILE), "\t.p2align %d,,%d\n",                        \
-                 (int) (LOG), (int) (MAX_SKIP));                \
+#define ASM_OUTPUT_MAX_SKIP_ALIGN(FILE, LOG, MAX_SKIP)		\
+  if ((LOG) != 0)						\
+    {								\
+      if ((MAX_SKIP) == 0)					\
+        fprintf ((FILE), "\t.p2align %d\n", (int) (LOG));	\
+      else							\
+        fprintf ((FILE), "\t.p2align %d,,%d\n",			\
+                 (int) (LOG), (int) (MAX_SKIP));		\
     }
 #endif
 
 /* Only perform branch elimination (by making instructions conditional) if
    we're optimizing.  Otherwise it's of no use anyway.  */
-#define FINAL_PRESCAN_INSN(INSN, OPVEC, NOPERANDS)        \
-  if (TARGET_ARM && optimize)                                \
-    arm_final_prescan_insn (INSN);                        \
-  else if (TARGET_THUMB)                                \
+#define FINAL_PRESCAN_INSN(INSN, OPVEC, NOPERANDS)	\
+  if (TARGET_ARM && optimize)				\
+    arm_final_prescan_insn (INSN);			\
+  else if (TARGET_THUMB)				\
     thumb_final_prescan_insn (INSN)
 
-#define PRINT_OPERAND_PUNCT_VALID_P(CODE)        \
-  (CODE == '@' || CODE == '|'                        \
-   || (TARGET_ARM   && (CODE == '?'))                \
+#define PRINT_OPERAND_PUNCT_VALID_P(CODE)	\
+  (CODE == '@' || CODE == '|'			\
+   || (TARGET_ARM   && (CODE == '?'))		\
    || (TARGET_THUMB && (CODE == '_')))
 
 /* Output an operand of an instruction.  */
 #define PRINT_OPERAND(STREAM, X, CODE)  \
   arm_print_operand (STREAM, X, CODE)
 
-#define ARM_SIGN_EXTEND(x)  ((HOST_WIDE_INT)                        \
-  (HOST_BITS_PER_WIDE_INT <= 32 ? (unsigned HOST_WIDE_INT) (x)        \
+#define ARM_SIGN_EXTEND(x)  ((HOST_WIDE_INT)			\
+  (HOST_BITS_PER_WIDE_INT <= 32 ? (unsigned HOST_WIDE_INT) (x)	\
    : ((((unsigned HOST_WIDE_INT)(x)) & (unsigned HOST_WIDE_INT) 0xffffffff) |\
       ((((unsigned HOST_WIDE_INT)(x)) & (unsigned HOST_WIDE_INT) 0x80000000) \
-       ? ((~ (unsigned HOST_WIDE_INT) 0)                        \
-          & ~ (unsigned HOST_WIDE_INT) 0xffffffff)                \
+       ? ((~ (unsigned HOST_WIDE_INT) 0)			\
+	  & ~ (unsigned HOST_WIDE_INT) 0xffffffff)		\
        : 0))))
 
 /* Output the address of an operand.  */
-#define ARM_PRINT_OPERAND_ADDRESS(STREAM, X)                                \
-{                                                                        \
-    int is_minus = GET_CODE (X) == MINUS;                                \
-                                                                        \
-    if (GET_CODE (X) == REG)                                                \
-      asm_fprintf (STREAM, "[%r, #0]", REGNO (X));                        \
-    else if (GET_CODE (X) == PLUS || is_minus)                                \
-      {                                                                        \
-        rtx base = XEXP (X, 0);                                                \
-        rtx index = XEXP (X, 1);                                        \
-        HOST_WIDE_INT offset = 0;                                        \
-        if (GET_CODE (base) != REG)                                        \
-          {                                                                \
-            /* Ensure that BASE is a register.  */                        \
-            /* (one of them must be).  */                                \
-            rtx temp = base;                                                \
-            base = index;                                                \
-            index = temp;                                                \
-          }                                                                \
-        switch (GET_CODE (index))                                        \
-          {                                                                \
-          case CONST_INT:                                                \
-            offset = INTVAL (index);                                        \
-            if (is_minus)                                                \
-              offset = -offset;                                                \
-            asm_fprintf (STREAM, "[%r, #%wd]",                                \
-                         REGNO (base), offset);                                \
-            break;                                                        \
-                                                                        \
-          case REG:                                                        \
-            asm_fprintf (STREAM, "[%r, %s%r]",                                \
-                     REGNO (base), is_minus ? "-" : "",                        \
-                     REGNO (index));                                        \
-            break;                                                        \
-                                                                        \
-          case MULT:                                                        \
-          case ASHIFTRT:                                                \
-          case LSHIFTRT:                                                \
-          case ASHIFT:                                                        \
-          case ROTATERT:                                                \
-          {                                                                \
-            asm_fprintf (STREAM, "[%r, %s%r",                                \
-                         REGNO (base), is_minus ? "-" : "",                \
-                         REGNO (XEXP (index, 0)));                        \
-            arm_print_operand (STREAM, index, 'S');                        \
-            fputs ("]", STREAM);                                        \
-            break;                                                        \
-          }                                                                \
-                                                                        \
-          default:                                                        \
-            gcc_unreachable ();                                                \
-        }                                                                \
-    }                                                                        \
-  else if (GET_CODE (X) == PRE_INC || GET_CODE (X) == POST_INC                \
-           || GET_CODE (X) == PRE_DEC || GET_CODE (X) == POST_DEC)        \
-    {                                                                        \
-      extern enum machine_mode output_memory_reference_mode;                \
-                                                                        \
-      gcc_assert (GET_CODE (XEXP (X, 0)) == REG);                        \
-                                                                        \
-      if (GET_CODE (X) == PRE_DEC || GET_CODE (X) == PRE_INC)                \
-        asm_fprintf (STREAM, "[%r, #%s%d]!",                                \
-                     REGNO (XEXP (X, 0)),                                \
-                     GET_CODE (X) == PRE_DEC ? "-" : "",                \
-                     GET_MODE_SIZE (output_memory_reference_mode));        \
-      else                                                                \
-        asm_fprintf (STREAM, "[%r], #%s%d",                                \
-                     REGNO (XEXP (X, 0)),                                \
-                     GET_CODE (X) == POST_DEC ? "-" : "",                \
-                     GET_MODE_SIZE (output_memory_reference_mode));        \
-    }                                                                        \
-  else if (GET_CODE (X) == PRE_MODIFY)                                        \
-    {                                                                        \
-      asm_fprintf (STREAM, "[%r, ", REGNO (XEXP (X, 0)));                \
-      if (GET_CODE (XEXP (XEXP (X, 1), 1)) == CONST_INT)                \
-        asm_fprintf (STREAM, "#%wd]!",                                         \
-                     INTVAL (XEXP (XEXP (X, 1), 1)));                        \
-      else                                                                \
-        asm_fprintf (STREAM, "%r]!",                                         \
-                     REGNO (XEXP (XEXP (X, 1), 1)));                        \
-    }                                                                        \
-  else if (GET_CODE (X) == POST_MODIFY)                                        \
-    {                                                                        \
-      asm_fprintf (STREAM, "[%r], ", REGNO (XEXP (X, 0)));                \
-      if (GET_CODE (XEXP (XEXP (X, 1), 1)) == CONST_INT)                \
-        asm_fprintf (STREAM, "#%wd",                                         \
-                     INTVAL (XEXP (XEXP (X, 1), 1)));                        \
-      else                                                                \
-        asm_fprintf (STREAM, "%r",                                         \
-                     REGNO (XEXP (XEXP (X, 1), 1)));                        \
-    }                                                                        \
-  else output_addr_const (STREAM, X);                                        \
+#define ARM_PRINT_OPERAND_ADDRESS(STREAM, X)				\
+{									\
+    int is_minus = GET_CODE (X) == MINUS;				\
+									\
+    if (GET_CODE (X) == REG)						\
+      asm_fprintf (STREAM, "[%r, #0]", REGNO (X));			\
+    else if (GET_CODE (X) == PLUS || is_minus)				\
+      {									\
+	rtx base = XEXP (X, 0);						\
+	rtx index = XEXP (X, 1);					\
+	HOST_WIDE_INT offset = 0;					\
+	if (GET_CODE (base) != REG)					\
+	  {								\
+	    /* Ensure that BASE is a register.  */			\
+            /* (one of them must be).  */				\
+	    rtx temp = base;						\
+	    base = index;						\
+	    index = temp;						\
+	  }								\
+	switch (GET_CODE (index))					\
+	  {								\
+	  case CONST_INT:						\
+	    offset = INTVAL (index);					\
+	    if (is_minus)						\
+	      offset = -offset;						\
+	    asm_fprintf (STREAM, "[%r, #%wd]",				\
+		         REGNO (base), offset);				\
+	    break;							\
+									\
+	  case REG:							\
+	    asm_fprintf (STREAM, "[%r, %s%r]",				\
+		     REGNO (base), is_minus ? "-" : "",			\
+		     REGNO (index));					\
+	    break;							\
+									\
+	  case MULT:							\
+	  case ASHIFTRT:						\
+	  case LSHIFTRT:						\
+	  case ASHIFT:							\
+	  case ROTATERT:						\
+	  {								\
+	    asm_fprintf (STREAM, "[%r, %s%r",				\
+		         REGNO (base), is_minus ? "-" : "",		\
+                         REGNO (XEXP (index, 0)));			\
+	    arm_print_operand (STREAM, index, 'S');			\
+	    fputs ("]", STREAM);					\
+	    break;							\
+	  }								\
+									\
+	  default:							\
+	    gcc_unreachable ();						\
+	}								\
+    }									\
+  else if (GET_CODE (X) == PRE_INC || GET_CODE (X) == POST_INC		\
+	   || GET_CODE (X) == PRE_DEC || GET_CODE (X) == POST_DEC)	\
+    {									\
+      extern enum machine_mode output_memory_reference_mode;		\
+									\
+      gcc_assert (GET_CODE (XEXP (X, 0)) == REG);			\
+									\
+      if (GET_CODE (X) == PRE_DEC || GET_CODE (X) == PRE_INC)		\
+	asm_fprintf (STREAM, "[%r, #%s%d]!",				\
+		     REGNO (XEXP (X, 0)),				\
+		     GET_CODE (X) == PRE_DEC ? "-" : "",		\
+		     GET_MODE_SIZE (output_memory_reference_mode));	\
+      else								\
+	asm_fprintf (STREAM, "[%r], #%s%d",				\
+		     REGNO (XEXP (X, 0)),				\
+		     GET_CODE (X) == POST_DEC ? "-" : "",		\
+		     GET_MODE_SIZE (output_memory_reference_mode));	\
+    }									\
+  else if (GET_CODE (X) == PRE_MODIFY)					\
+    {									\
+      asm_fprintf (STREAM, "[%r, ", REGNO (XEXP (X, 0)));		\
+      if (GET_CODE (XEXP (XEXP (X, 1), 1)) == CONST_INT)		\
+	asm_fprintf (STREAM, "#%wd]!", 					\
+		     INTVAL (XEXP (XEXP (X, 1), 1)));			\
+      else								\
+	asm_fprintf (STREAM, "%r]!", 					\
+		     REGNO (XEXP (XEXP (X, 1), 1)));			\
+    }									\
+  else if (GET_CODE (X) == POST_MODIFY)					\
+    {									\
+      asm_fprintf (STREAM, "[%r], ", REGNO (XEXP (X, 0)));		\
+      if (GET_CODE (XEXP (XEXP (X, 1), 1)) == CONST_INT)		\
+	asm_fprintf (STREAM, "#%wd", 					\
+		     INTVAL (XEXP (XEXP (X, 1), 1)));			\
+      else								\
+	asm_fprintf (STREAM, "%r", 					\
+		     REGNO (XEXP (XEXP (X, 1), 1)));			\
+    }									\
+  else output_addr_const (STREAM, X);					\
 }
 
-#define THUMB_PRINT_OPERAND_ADDRESS(STREAM, X)                \
-{                                                        \
-  if (GET_CODE (X) == REG)                                \
-    asm_fprintf (STREAM, "[%r]", REGNO (X));                \
-  else if (GET_CODE (X) == POST_INC)                        \
-    asm_fprintf (STREAM, "%r!", REGNO (XEXP (X, 0)));        \
-  else if (GET_CODE (X) == PLUS)                        \
-    {                                                        \
-      gcc_assert (GET_CODE (XEXP (X, 0)) == REG);        \
-      if (GET_CODE (XEXP (X, 1)) == CONST_INT)                \
-        asm_fprintf (STREAM, "[%r, #%wd]",                 \
-                     REGNO (XEXP (X, 0)),                \
-                     INTVAL (XEXP (X, 1)));                \
-      else                                                \
-        asm_fprintf (STREAM, "[%r, %r]",                \
-                     REGNO (XEXP (X, 0)),                \
-                     REGNO (XEXP (X, 1)));                \
-    }                                                        \
-  else                                                        \
-    output_addr_const (STREAM, X);                        \
+#define THUMB_PRINT_OPERAND_ADDRESS(STREAM, X)		\
+{							\
+  if (GET_CODE (X) == REG)				\
+    asm_fprintf (STREAM, "[%r]", REGNO (X));		\
+  else if (GET_CODE (X) == POST_INC)			\
+    asm_fprintf (STREAM, "%r!", REGNO (XEXP (X, 0)));	\
+  else if (GET_CODE (X) == PLUS)			\
+    {							\
+      gcc_assert (GET_CODE (XEXP (X, 0)) == REG);	\
+      if (GET_CODE (XEXP (X, 1)) == CONST_INT)		\
+	asm_fprintf (STREAM, "[%r, #%wd]", 		\
+		     REGNO (XEXP (X, 0)),		\
+		     INTVAL (XEXP (X, 1)));		\
+      else						\
+	asm_fprintf (STREAM, "[%r, %r]",		\
+		     REGNO (XEXP (X, 0)),		\
+		     REGNO (XEXP (X, 1)));		\
+    }							\
+  else							\
+    output_addr_const (STREAM, X);			\
 }
 
-#define PRINT_OPERAND_ADDRESS(STREAM, X)        \
-  if (TARGET_ARM)                                \
-    ARM_PRINT_OPERAND_ADDRESS (STREAM, X)        \
-  else                                                \
+#define PRINT_OPERAND_ADDRESS(STREAM, X)	\
+  if (TARGET_ARM)				\
+    ARM_PRINT_OPERAND_ADDRESS (STREAM, X)	\
+  else						\
     THUMB_PRINT_OPERAND_ADDRESS (STREAM, X)
 
-#define OUTPUT_ADDR_CONST_EXTRA(file, x, fail)                \
-  if (arm_output_addr_const_extra (file, x) == FALSE)        \
+#define OUTPUT_ADDR_CONST_EXTRA(file, x, fail)		\
+  if (arm_output_addr_const_extra (file, x) == FALSE)	\
     goto fail
 
 /* A C expression whose value is RTL representing the value of the return
@@ -2414,18 +2414,18 @@ extern int making_const_table;
 /* Pick up the return address upon entry to a procedure. Used for
    dwarf2 unwind information.  This also enables the table driven
    mechanism.  */
-#define INCOMING_RETURN_ADDR_RTX        gen_rtx_REG (Pmode, LR_REGNUM)
-#define DWARF_FRAME_RETURN_COLUMN        DWARF_FRAME_REGNUM (LR_REGNUM)
+#define INCOMING_RETURN_ADDR_RTX	gen_rtx_REG (Pmode, LR_REGNUM)
+#define DWARF_FRAME_RETURN_COLUMN	DWARF_FRAME_REGNUM (LR_REGNUM)
 
 /* Used to mask out junk bits from the return address, such as
    processor state, interrupt status, condition codes and the like.  */
 #define MASK_RETURN_ADDR \
-  /* If we are generating code for an ARM2/ARM3 machine or for an ARM6        \
-     in 26 bit mode, the condition codes must be masked out of the        \
-     return address.  This does not apply to ARM6 and later processors        \
-     when running in 32 bit mode.  */                                        \
-  ((arm_arch4 || TARGET_THUMB)                                                \
-   ? (gen_int_mode ((unsigned long)0xffffffff, Pmode))                        \
+  /* If we are generating code for an ARM2/ARM3 machine or for an ARM6	\
+     in 26 bit mode, the condition codes must be masked out of the	\
+     return address.  This does not apply to ARM6 and later processors	\
+     when running in 32 bit mode.  */					\
+  ((arm_arch4 || TARGET_THUMB)						\
+   ? (gen_int_mode ((unsigned long)0xffffffff, Pmode))			\
    : arm_gen_return_addr_mask ())
 
 

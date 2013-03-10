@@ -47,12 +47,12 @@ struct lpt_decision
 
 struct nb_iter_bound
 {
-  tree bound;                /* The constant expression whose value is an upper
-                           bound on the number of executions of ...  */
-  tree at_stmt;                /* ... this statement during one execution of
-                           a loop.  */
+  tree bound;		/* The constant expression whose value is an upper
+			   bound on the number of executions of ...  */
+  tree at_stmt;		/* ... this statement during one execution of
+			   a loop.  */
   struct nb_iter_bound *next;
-                        /* The next bound in a list.  */
+			/* The next bound in a list.  */
 };
 
 /* Structure to hold information for each natural loop.  */
@@ -139,7 +139,7 @@ enum
 };
 
 #define LOOPS_NORMAL (LOOPS_HAVE_PREHEADERS | LOOPS_HAVE_SIMPLE_LATCHES \
-                      | LOOPS_HAVE_MARKED_IRREDUCIBLE_REGIONS)
+		      | LOOPS_HAVE_MARKED_IRREDUCIBLE_REGIONS)
 
 /* Structure to hold CFG information about natural loops within a function.  */
 struct loops
@@ -182,9 +182,9 @@ extern struct loops *current_loops;
 extern int flow_loops_find (struct loops *);
 extern void flow_loops_free (struct loops *);
 extern void flow_loops_dump (const struct loops *, FILE *,
-                             void (*)(const struct loop *, FILE *, int), int);
+			     void (*)(const struct loop *, FILE *, int), int);
 extern void flow_loop_dump (const struct loop *, FILE *,
-                            void (*)(const struct loop *, FILE *, int), int);
+			    void (*)(const struct loop *, FILE *, int), int);
 extern void flow_loop_free (struct loop *);
 int flow_loop_nodes_find (basic_block, struct loop *);
 void fix_loop_structure (struct loops *, bitmap changed_bbs);
@@ -194,7 +194,7 @@ void mark_single_exit_loops (struct loops *);
 /* Loop data structure manipulation/querying.  */
 extern void flow_loop_tree_node_add (struct loop *, struct loop *);
 extern void flow_loop_tree_node_remove (struct loop *);
-extern bool flow_loop_nested_p        (const struct loop *, const struct loop *);
+extern bool flow_loop_nested_p	(const struct loop *, const struct loop *);
 extern bool flow_bb_inside_loop_p (const struct loop *, const basic_block);
 extern struct loop * find_common_loop (struct loop *, struct loop *);
 struct loop *superloop_at_depth (struct loop *, unsigned);
@@ -241,22 +241,22 @@ extern rtx doloop_condition_get (rtx);
 /* Loop manipulation.  */
 extern bool can_duplicate_loop_p (struct loop *loop);
 
-#define DLTHE_FLAG_UPDATE_FREQ        1        /* Update frequencies in
-                                           duplicate_loop_to_header_edge.  */
-#define DLTHE_RECORD_COPY_NUMBER 2        /* Record copy number in the aux
-                                           field of newly create BB.  */
-#define DLTHE_FLAG_COMPLETTE_PEEL 4        /* Update frequencies expecting
-                                           a complete peeling.  */
+#define DLTHE_FLAG_UPDATE_FREQ	1	/* Update frequencies in
+					   duplicate_loop_to_header_edge.  */
+#define DLTHE_RECORD_COPY_NUMBER 2	/* Record copy number in the aux
+					   field of newly create BB.  */
+#define DLTHE_FLAG_COMPLETTE_PEEL 4	/* Update frequencies expecting
+					   a complete peeling.  */
 
 extern struct loop * duplicate_loop (struct loops *, struct loop *,
-                                     struct loop *);
+				     struct loop *);
 extern bool duplicate_loop_to_header_edge (struct loop *, edge, struct loops *,
-                                           unsigned, sbitmap, edge, edge *,
-                                           unsigned *, int);
+					   unsigned, sbitmap, edge, edge *,
+					   unsigned *, int);
 extern struct loop *loopify (struct loops *, edge, edge,
-                             basic_block, edge, edge, bool);
+			     basic_block, edge, edge, bool);
 struct loop * loop_version (struct loops *, struct loop *, void *,
-                            basic_block *, bool);
+			    basic_block *, bool);
 extern bool remove_path (struct loops *, edge);
 
 /* Induction variable analysis.  */
@@ -367,14 +367,14 @@ simple_loop_desc (struct loop *loop)
 
 /* The properties of the target.  */
 
-extern unsigned target_avail_regs;        /* Number of available registers.  */
-extern unsigned target_res_regs;        /* Number of reserved registers.  */
-extern unsigned target_small_cost;        /* The cost for register when there
-                                           is a free one.  */
-extern unsigned target_pres_cost;        /* The cost for register when there are
-                                           not too many free ones.  */
-extern unsigned target_spill_cost;        /* The cost for register when we need
-                                           to spill.  */
+extern unsigned target_avail_regs;	/* Number of available registers.  */
+extern unsigned target_res_regs;	/* Number of reserved registers.  */
+extern unsigned target_small_cost;	/* The cost for register when there
+					   is a free one.  */
+extern unsigned target_pres_cost;	/* The cost for register when there are
+					   not too many free ones.  */
+extern unsigned target_spill_cost;	/* The cost for register when we need
+					   to spill.  */
 
 /* Register pressure estimation for induction variable optimizations & loop
    invariant motion.  */
@@ -390,9 +390,9 @@ extern void unswitch_loops (struct loops *);
 
 enum
 {
-  UAP_PEEL = 1,                /* Enables loop peeling.  */
-  UAP_UNROLL = 2,        /* Enables peeling of loops if it seems profitable.  */
-  UAP_UNROLL_ALL = 4        /* Enables peeling of all loops.  */
+  UAP_PEEL = 1,		/* Enables loop peeling.  */
+  UAP_UNROLL = 2,	/* Enables peeling of loops if it seems profitable.  */
+  UAP_UNROLL_ALL = 4	/* Enables peeling of all loops.  */
 };
 
 extern void unroll_and_peel_loops (struct loops *, int);

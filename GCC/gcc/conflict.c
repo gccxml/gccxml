@@ -157,7 +157,7 @@ conflict_graph_new (int num_regs)
 
   /* Create an obstack for allocating arcs.  */
   obstack_init (&graph->arc_obstack);
-             
+	     
   /* Create and zero the lookup table by register number.  */
   graph->neighbor_heads = XCNEWVEC (conflict_graph_arc, num_regs);
 
@@ -202,7 +202,7 @@ conflict_graph_add (conflict_graph graph, int reg1, int reg2)
   /* Allocate an arc.  */
   arc
     = obstack_alloc (&graph->arc_obstack,
-                     sizeof (struct conflict_graph_arc_def));
+		     sizeof (struct conflict_graph_arc_def));
   
   /* Record the reg numbers.  */
   arc->smaller = smaller;
@@ -239,22 +239,22 @@ conflict_graph_conflict_p (conflict_graph graph, int reg1, int reg2)
 
 void
 conflict_graph_enum (conflict_graph graph, int reg,
-                     conflict_graph_enum_fn enum_fn, void *extra)
+		     conflict_graph_enum_fn enum_fn, void *extra)
 {
   conflict_graph_arc arc = graph->neighbor_heads[reg];
   while (arc != NULL)
     {
       /* Invoke the callback.  */
       if ((*enum_fn) (arc->smaller, arc->larger, extra))
-        /* Stop if requested.  */
-        break;
+	/* Stop if requested.  */
+	break;
       
       /* Which next pointer to follow depends on whether REG is the
-         smaller or larger reg in this conflict.  */
+	 smaller or larger reg in this conflict.  */
       if (reg < arc->larger)
-        arc = arc->smaller_next;
+	arc = arc->smaller_next;
       else
-        arc = arc->larger_next;
+	arc = arc->larger_next;
     }
 }
 
@@ -274,16 +274,16 @@ conflict_graph_merge_regs (conflict_graph graph, int target, int src)
       int other = arc->smaller;
 
       if (other == src)
-        other = arc->larger;
+	other = arc->larger;
 
       conflict_graph_add (graph, target, other);
 
       /* Which next pointer to follow depends on whether REG is the
-         smaller or larger reg in this conflict.  */
+	 smaller or larger reg in this conflict.  */
       if (src < arc->larger)
-        arc = arc->smaller_next;
+	arc = arc->smaller_next;
       else
-        arc = arc->larger_next;
+	arc = arc->larger_next;
     }
 }
 
@@ -353,13 +353,13 @@ conflict_graph_print (conflict_graph graph, FILE *fp)
       context.started = 0;
 
       /* Scan the conflicts for reg, printing as we go.  A label for
-         this line will be printed the first time a conflict is
-         printed for the reg; we won't start a new line if this reg
-         has no conflicts.  */
+	 this line will be printed the first time a conflict is
+	 printed for the reg; we won't start a new line if this reg
+	 has no conflicts.  */
       conflict_graph_enum (graph, reg, &print_conflict, &context);
 
       /* If this reg does have conflicts, end the line.  */
       if (context.started)
-        fputc ('\n', fp);
+	fputc ('\n', fp);
     }
 }

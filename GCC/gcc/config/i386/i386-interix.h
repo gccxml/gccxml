@@ -57,28 +57,28 @@ Boston, MA 02110-1301, USA.  */
 #define TARGET_DECLSPEC 1
 
 /* cpp handles __STDC__ */
-#define TARGET_OS_CPP_BUILTINS()                                        \
-  do                                                                        \
-    {                                                                        \
-        builtin_define ("__INTERIX");                                        \
-        builtin_define ("__OPENNT");                                        \
-        builtin_define ("_M_IX86=300");                                        \
-        builtin_define ("_X86_=1");                                        \
-        builtin_define ("__stdcall=__attribute__((__stdcall__))");        \
-        builtin_define ("__cdecl=__attribute__((__cdecl__))");                \
-        builtin_assert ("system=unix");                                        \
-        builtin_assert ("system=interix");                                \
-        if (preprocessing_asm_p ())                                        \
-          builtin_define_std ("LANGUAGE_ASSEMBLY");                        \
-        else                                                                \
-          {                                                                \
-             builtin_define_std ("LANGUAGE_C");                                \
-             if (c_dialect_cxx ())                                        \
-               builtin_define_std ("LANGUAGE_C_PLUS_PLUS");                \
-             if (c_dialect_objc ())                                        \
-               builtin_define_std ("LANGUAGE_OBJECTIVE_C");                \
-          }                                                                 \
-    }                                                                        \
+#define TARGET_OS_CPP_BUILTINS()					\
+  do									\
+    {									\
+	builtin_define ("__INTERIX");					\
+	builtin_define ("__OPENNT");					\
+	builtin_define ("_M_IX86=300");					\
+	builtin_define ("_X86_=1");					\
+	builtin_define ("__stdcall=__attribute__((__stdcall__))");	\
+	builtin_define ("__cdecl=__attribute__((__cdecl__))");		\
+	builtin_assert ("system=unix");					\
+	builtin_assert ("system=interix");				\
+	if (preprocessing_asm_p ())					\
+	  builtin_define_std ("LANGUAGE_ASSEMBLY");			\
+	else								\
+	  {								\
+	     builtin_define_std ("LANGUAGE_C");				\
+	     if (c_dialect_cxx ())					\
+	       builtin_define_std ("LANGUAGE_C_PLUS_PLUS");		\
+	     if (c_dialect_objc ())					\
+	       builtin_define_std ("LANGUAGE_OBJECTIVE_C");		\
+	  } 								\
+    }									\
   while (0)
 
 #undef CPP_SPEC
@@ -133,9 +133,9 @@ Boston, MA 02110-1301, USA.  */
    should define this to zero.
 */
 
-#define STRING_LIMIT        ((unsigned) 256)
+#define STRING_LIMIT	((unsigned) 256)
 
-#define STRING_ASM_OP        "\t.string\t"
+#define STRING_ASM_OP	"\t.string\t"
 
 /* The routine used to output NUL terminated strings.  We use a special
    version of this for most svr4 targets because doing so makes the
@@ -144,32 +144,32 @@ Boston, MA 02110-1301, USA.  */
    (where the only alternative is to output character sequences as
    comma separated lists of numbers).  */
 
-#define ASM_OUTPUT_LIMITED_STRING(FILE, STR)                                \
-  do                                                                        \
-    {                                                                        \
-      const unsigned char *_limited_str =                                \
-        (const unsigned char *) (STR);                                        \
-      unsigned ch;                                                        \
-      fprintf ((FILE), "%s\"", STRING_ASM_OP);                                \
-      for (; (ch = *_limited_str); _limited_str++)                        \
-        {                                                                \
-          int escape = ESCAPES[ch];                                        \
-          switch (escape)                                                \
-            {                                                                \
-            case 0:                                                        \
-              putc (ch, (FILE));                                        \
-              break;                                                        \
-            case 1:                                                        \
-              fprintf ((FILE), "\\%03o", ch);                                \
-              break;                                                        \
-            default:                                                        \
-              putc ('\\', (FILE));                                        \
-              putc (escape, (FILE));                                        \
-              break;                                                        \
-            }                                                                \
-        }                                                                \
-      fprintf ((FILE), "\"\n");                                                \
-    }                                                                        \
+#define ASM_OUTPUT_LIMITED_STRING(FILE, STR)				\
+  do									\
+    {									\
+      const unsigned char *_limited_str =				\
+        (const unsigned char *) (STR);					\
+      unsigned ch;							\
+      fprintf ((FILE), "%s\"", STRING_ASM_OP);				\
+      for (; (ch = *_limited_str); _limited_str++)			\
+        {								\
+	  int escape = ESCAPES[ch];					\
+	  switch (escape)						\
+	    {								\
+	    case 0:							\
+	      putc (ch, (FILE));					\
+	      break;							\
+	    case 1:							\
+	      fprintf ((FILE), "\\%03o", ch);				\
+	      break;							\
+	    default:							\
+	      putc ('\\', (FILE));					\
+	      putc (escape, (FILE));					\
+	      break;							\
+	    }								\
+        }								\
+      fprintf ((FILE), "\"\n");						\
+    }									\
   while (0)
 
 /* The routine used to output sequences of byte values.  We use a special
@@ -180,46 +180,46 @@ Boston, MA 02110-1301, USA.  */
    STRING_LIMIT) we output those using ASM_OUTPUT_LIMITED_STRING.  */
 
 #undef ASM_OUTPUT_ASCII
-#define ASM_OUTPUT_ASCII(FILE, STR, LENGTH)                                \
-  do                                                                        \
-    {                                                                        \
-      const unsigned char *_ascii_bytes =                                \
-        (const unsigned char *) (STR);                                        \
-      const unsigned char *limit = _ascii_bytes + (LENGTH);                \
-      unsigned bytes_in_chunk = 0;                                        \
-      for (; _ascii_bytes < limit; _ascii_bytes++)                        \
-        {                                                                \
-          const unsigned char *p;                                        \
-          if (bytes_in_chunk >= 64)                                        \
-            {                                                                \
-              fputc ('\n', (FILE));                                        \
-              bytes_in_chunk = 0;                                        \
-            }                                                                \
-          for (p = _ascii_bytes; p < limit && *p != '\0'; p++)                \
-            continue;                                                        \
-          if (p < limit && (p - _ascii_bytes) <= (long) STRING_LIMIT)        \
-            {                                                                \
-              if (bytes_in_chunk > 0)                                        \
-                {                                                        \
-                  fputc ('\n', (FILE));                                        \
-                  bytes_in_chunk = 0;                                        \
-                }                                                        \
-              ASM_OUTPUT_LIMITED_STRING ((FILE), _ascii_bytes);                \
-              _ascii_bytes = p;                                                \
-            }                                                                \
-          else                                                                \
-            {                                                                \
-              if (bytes_in_chunk == 0)                                        \
-                fprintf ((FILE), "\t.byte\t");                                \
-              else                                                        \
-                fputc (',', (FILE));                                        \
-              fprintf ((FILE), "0x%02x", *_ascii_bytes);                \
-              bytes_in_chunk += 5;                                        \
-            }                                                                \
-        }                                                                \
-      if (bytes_in_chunk > 0)                                                \
-        fprintf ((FILE), "\n");                                                \
-    }                                                                        \
+#define ASM_OUTPUT_ASCII(FILE, STR, LENGTH)				\
+  do									\
+    {									\
+      const unsigned char *_ascii_bytes =				\
+        (const unsigned char *) (STR);					\
+      const unsigned char *limit = _ascii_bytes + (LENGTH);		\
+      unsigned bytes_in_chunk = 0;					\
+      for (; _ascii_bytes < limit; _ascii_bytes++)			\
+        {								\
+	  const unsigned char *p;					\
+	  if (bytes_in_chunk >= 64)					\
+	    {								\
+	      fputc ('\n', (FILE));					\
+	      bytes_in_chunk = 0;					\
+	    }								\
+	  for (p = _ascii_bytes; p < limit && *p != '\0'; p++)		\
+	    continue;							\
+	  if (p < limit && (p - _ascii_bytes) <= (long) STRING_LIMIT)	\
+	    {								\
+	      if (bytes_in_chunk > 0)					\
+		{							\
+		  fputc ('\n', (FILE));					\
+		  bytes_in_chunk = 0;					\
+		}							\
+	      ASM_OUTPUT_LIMITED_STRING ((FILE), _ascii_bytes);		\
+	      _ascii_bytes = p;						\
+	    }								\
+	  else								\
+	    {								\
+	      if (bytes_in_chunk == 0)					\
+		fprintf ((FILE), "\t.byte\t");				\
+	      else							\
+		fputc (',', (FILE));					\
+	      fprintf ((FILE), "0x%02x", *_ascii_bytes);		\
+	      bytes_in_chunk += 5;					\
+	    }								\
+	}								\
+      if (bytes_in_chunk > 0)						\
+        fprintf ((FILE), "\n");						\
+    }									\
   while (0)
 
 /* Emit code to check the stack when allocating more that 4000
@@ -239,7 +239,7 @@ Boston, MA 02110-1301, USA.  */
 #define drectve_section()  /* nothing */
 
 /* Objective-C has its own packing rules...
-   Objc tries to parallel the code in stor-layout.c at runtime        
+   Objc tries to parallel the code in stor-layout.c at runtime	
    (see libobjc/encoding.c).  This (compile-time) packing info isn't 
    available at runtime, so it's hopeless to try.
 
@@ -247,22 +247,22 @@ Boston, MA 02110-1301, USA.  */
    so he has some clue.  */
 
 #undef  SUBTARGET_OVERRIDE_OPTIONS
-#define SUBTARGET_OVERRIDE_OPTIONS                                        \
-do {                                                                        \
-  if (strcmp (lang_hooks.name, "GNU Objective-C") == 0)                        \
-    {                                                                        \
-      if ((target_flags & MASK_MS_BITFIELD_LAYOUT) != 0                        \
-          && (target_flags_explicit & MASK_MS_BITFIELD_LAYOUT) != 0)        \
-        {                                                                \
-           error ("ms-bitfields not supported for objc");                \
-        }                                                                \
-      target_flags &= ~MASK_MS_BITFIELD_LAYOUT;                                \
-    }                                                                        \
+#define SUBTARGET_OVERRIDE_OPTIONS					\
+do {									\
+  if (strcmp (lang_hooks.name, "GNU Objective-C") == 0)			\
+    {									\
+      if ((target_flags & MASK_MS_BITFIELD_LAYOUT) != 0			\
+	  && (target_flags_explicit & MASK_MS_BITFIELD_LAYOUT) != 0)	\
+	{								\
+	   error ("ms-bitfields not supported for objc");		\
+	}								\
+      target_flags &= ~MASK_MS_BITFIELD_LAYOUT;				\
+    }									\
 } while (0)
 
 #define EH_FRAME_IN_DATA_SECTION
 
-#define READONLY_DATA_SECTION_ASM_OP        "\t.section\t.rdata,\"r\""
+#define READONLY_DATA_SECTION_ASM_OP	"\t.section\t.rdata,\"r\""
 
 /* The MS compilers take alignment as a number of bytes, so we do as well */
 #undef ASM_OUTPUT_ALIGN
@@ -273,17 +273,17 @@ do {                                                                        \
    ld -r (specifically -rU).  */
 #define CTOR_LISTS_DEFINED_EXTERNALLY 1
 
-#define SET_ASM_OP        "\t.set\t"
+#define SET_ASM_OP	"\t.set\t"
 /* Output a definition (implements alias) */
-#define ASM_OUTPUT_DEF(FILE,LABEL1,LABEL2)                                \
-do                                                                        \
-{                                                                        \
-    fprintf ((FILE), "%s", SET_ASM_OP);                                        \
-    assemble_name (FILE, LABEL1);                                        \
-    fprintf (FILE, ",");                                                \
-    assemble_name (FILE, LABEL2);                                        \
-    fprintf (FILE, "\n");                                                \
-    }                                                                        \
+#define ASM_OUTPUT_DEF(FILE,LABEL1,LABEL2)				\
+do									\
+{									\
+    fprintf ((FILE), "%s", SET_ASM_OP);					\
+    assemble_name (FILE, LABEL1);					\
+    fprintf (FILE, ",");						\
+    assemble_name (FILE, LABEL2);					\
+    fprintf (FILE, "\n");						\
+    }									\
 while (0)
 
 #define HOST_PTR_AS_INT unsigned long
@@ -331,7 +331,7 @@ while (0)
 #undef  TARGET_STRIP_NAME_ENCODING
 #define TARGET_STRIP_NAME_ENCODING  i386_pe_strip_name_encoding_full
 
-#if 0        
+#if 0	
 /* Turn this back on when the linker is updated to handle grouped
    .data$ sections correctly. See corresponding note in i386/interix.c. 
    MK.  */

@@ -22,16 +22,16 @@ Calling Sequence
 
 The registers are allocated as follows:
 
-Register        Purpose
+Register	Purpose
 -------------------------------------------------------------------
 r0, r1          Call-volatile.  May be changed during the execution
                 of a call instruction.
 r2 through r7   Argument passing;  call-clobbered.
-r8, r9                Call-volatile.  May be changed during the execution
-                of a call instruction.
-r10 through r13        Call-saved.
-r14                Program status word.
-r15                Stack pointer.
+r8, r9		Call-volatile.  May be changed during the execution
+		of a call instruction.
+r10 through r13	Call-saved.
+r14		Program status word.
+r15		Stack pointer.
 
 
 Scalar values are returned in register r2-r7 if the value fits.
@@ -92,18 +92,18 @@ sets 'base' to the address of the first word pushed,
 producing a stack that appears like:
 
 SP ->
-        [other data]
-        r7
-        r6
-        r5
-        r4
-        r3
-count->        r2
-        Return address (two words)
-        7th procedure parameter word
-        8th procedure parameter word
-        ...
-        last procedure parameter word
+	[other data]
+	r7
+	r6
+	r5
+	r4
+	r3
+count->	r2
+	Return address (two words)
+	7th procedure parameter word
+	8th procedure parameter word
+	...
+	last procedure parameter word
 
 and initializes 'count' to be the number of bytes of non-variable
 arguments to the function.
@@ -117,7 +117,7 @@ ELF file header
 xStormy16 ELF files are distinguished by the value EM_XSTORMY16 in
 the e_machine field of the ELF file header:
 
-#define EM_XSTORMY16                0xad45
+#define EM_XSTORMY16	        0xad45
 
 DWARF Register Number Mapping
 -----------------------------
@@ -129,7 +129,7 @@ Relocations
 
 RELA relocs are used exclusively.  The relocation types defined are:
 
-Name                        Value        Field        Calculation        Overflow
+Name			Value	Field	Calculation	Overflow
 ----------------------------------------------------------------
 R_XSTORMY16_NONE           0     none      none           none
 R_XSTORMY16_32             1      32       S + A          none

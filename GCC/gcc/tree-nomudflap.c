@@ -87,36 +87,36 @@ mf_mark (tree t ATTRIBUTE_UNUSED)
 
 struct tree_opt_pass pass_mudflap_1 = 
 {
-  "mudflap1",                                /* name */
-  NULL,                                        /* gate */
-  NULL,                                        /* execute */
-  NULL,                                        /* sub */
-  NULL,                                        /* next */
-  0,                                        /* static_pass_number */
-  0,                                        /* tv_id */
-  0,                                        /* properties_required */
-  0,                                        /* properties_provided */
-  0,                                        /* properties_destroyed */
-  0,                                        /* todo_flags_start */
+  "mudflap1",				/* name */
+  NULL,					/* gate */
+  NULL,					/* execute */
+  NULL,					/* sub */
+  NULL,					/* next */
+  0,					/* static_pass_number */
+  0,					/* tv_id */
+  0,					/* properties_required */
+  0,					/* properties_provided */
+  0,					/* properties_destroyed */
+  0,					/* todo_flags_start */
   0,                                    /* todo_flags_finish */
-  0                                        /* letter */
+  0				        /* letter */
 };
 
 struct tree_opt_pass pass_mudflap_2 = 
 {
-  "mudflap2",                                /* name */
-  NULL,                                        /* gate */
-  NULL,                                        /* execute */
-  NULL,                                        /* sub */
-  NULL,                                        /* next */
-  0,                                        /* static_pass_number */
-  0,                                        /* tv_id */
-  0,                                        /* properties_required */
-  0,                                        /* properties_provided */
-  0,                                        /* properties_destroyed */
-  0,                                        /* todo_flags_start */
+  "mudflap2",				/* name */
+  NULL,					/* gate */
+  NULL,					/* execute */
+  NULL,					/* sub */
+  NULL,					/* next */
+  0,					/* static_pass_number */
+  0,					/* tv_id */
+  0,					/* properties_required */
+  0,					/* properties_provided */
+  0,					/* properties_destroyed */
+  0,					/* todo_flags_start */
   0,                                    /* todo_flags_finish */
-  0                                        /* letter */
+  0				        /* letter */
 };
 
 /* Instead of:

@@ -42,9 +42,9 @@ gen_insn (rtx insn, int code)
   if (name[0] != 0 && name[0] != '*')
     {
       if (truth == 0)
-        printf ("#define CODE_FOR_%s CODE_FOR_nothing\n", name);
+	printf ("#define CODE_FOR_%s CODE_FOR_nothing\n", name);
       else
-        printf ("  CODE_FOR_%s = %d,\n", name, code);
+	printf ("  CODE_FOR_%s = %d,\n", name, code);
     }
 }
 
@@ -84,10 +84,10 @@ enum insn_code {");
 
       desc = read_md_rtx (&line_no, &insn_code_number);
       if (desc == NULL)
-        break;
+	break;
 
       if (GET_CODE (desc) == DEFINE_INSN || GET_CODE (desc) == DEFINE_EXPAND)
-        gen_insn (desc, insn_code_number);
+	gen_insn (desc, insn_code_number);
     }
 
   puts ("  CODE_FOR_nothing\n\

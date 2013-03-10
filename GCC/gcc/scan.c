@@ -61,12 +61,12 @@ scan_ident (FILE *fp, sstring *s, int c)
   if (ISIDST (c))
     {
       for (;;)
-        {
-          SSTRING_PUT (s, c);
-          c = getc (fp);
-          if (c == EOF || ! ISIDNUM (c))
-            break;
-        }
+	{
+	  SSTRING_PUT (s, c);
+	  c = getc (fp);
+	  if (c == EOF || ! ISIDNUM (c))
+	    break;
+	}
     }
   MAKE_SSTRING_SPACE (s, 1);
   *s->ptr = 0;
@@ -82,20 +82,20 @@ scan_string (FILE *fp, sstring *s, int init)
     {
       c = getc (fp);
       if (c == EOF || c == '\n')
-        break;
+	break;
       if (c == init)
-        {
-          c = getc (fp);
-          break;
-        }
+	{
+	  c = getc (fp);
+	  break;
+	}
       if (c == '\\')
-        {
-          c = getc (fp);
-          if (c == EOF)
-            break;
-          if (c == '\n')
-            continue;
-        }
+	{
+	  c = getc (fp);
+	  if (c == EOF)
+	    break;
+	  if (c == '\n')
+	    continue;
+	}
       SSTRING_PUT (s, c);
     }
   MAKE_SSTRING_SPACE (s, 1);
@@ -111,32 +111,32 @@ skip_spaces (FILE *fp, int c)
   for (;;)
     {
       if (c == ' ' || c == '\t')
-        c = getc (fp);
+	c = getc (fp);
       else if (c == '/')
-        {
-          c = getc (fp);
-          if (c != '*')
-            {
-              ungetc (c, fp);
-              return '/';
-            }
-          c = getc (fp);
-          for (;;)
-            {
-              if (c == EOF)
-                return EOF;
-              else if (c != '*')
-                {
-                  if (c == '\n')
-                    source_lineno++, lineno++;
-                  c = getc (fp);
-                }
-              else if ((c = getc (fp)) == '/')
-                return getc (fp);
-            }
-        }
+	{
+	  c = getc (fp);
+	  if (c != '*')
+	    {
+	      ungetc (c, fp);
+	      return '/';
+	    }
+	  c = getc (fp);
+	  for (;;)
+	    {
+	      if (c == EOF)
+		return EOF;
+	      else if (c != '*')
+		{
+		  if (c == '\n')
+		    source_lineno++, lineno++;
+		  c = getc (fp);
+		}
+	      else if ((c = getc (fp)) == '/')
+		return getc (fp);
+	    }
+	}
       else
-        break;
+	break;
     }
   return c;
 }
@@ -150,7 +150,7 @@ read_upto (FILE *fp, sstring *str, int delim)
     {
       ch = getc (fp);
       if (ch == EOF || ch == delim)
-        break;
+	break;
       SSTRING_PUT (str, ch);
     }
   MAKE_SSTRING_SPACE (str, 1);
@@ -177,32 +177,32 @@ get_token (FILE *fp, sstring *s)
     {
       c = get_token (fp, s);
       if (c == INT_TOKEN)
-        {
-          source_lineno = atoi (s->base) - 1; /* '\n' will add 1 */
-          get_token (fp, &source_filename);
-        }
+	{
+	  source_lineno = atoi (s->base) - 1; /* '\n' will add 1 */
+	  get_token (fp, &source_filename);
+	}
       for (;;)
-        {
-          c = getc (fp);
-          if (c == EOF)
-            return EOF;
-          if (c == '\n')
-            {
-            source_lineno++;
-            lineno++;
-            goto retry;
-            }
-        }
+	{
+	  c = getc (fp);
+	  if (c == EOF)
+	    return EOF;
+	  if (c == '\n')
+	    {
+	    source_lineno++;
+	    lineno++;
+	    goto retry;
+	    }
+	}
     }
   if (c == EOF)
     return EOF;
   if (ISDIGIT (c))
     {
       do
-        {
-          SSTRING_PUT (s, c);
-          c = getc (fp);
-        } while (c != EOF && ISDIGIT (c));
+	{
+	  SSTRING_PUT (s, c);
+	  c = getc (fp);
+	} while (c != EOF && ISDIGIT (c));
       ungetc (c, fp);
       c = INT_TOKEN;
       goto done;

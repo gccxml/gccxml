@@ -174,12 +174,12 @@ extract_omp_for_data (tree for_stmt, struct omp_for_data *fd)
       break;
     case LE_EXPR:
       fd->n2 = fold_build2 (PLUS_EXPR, TREE_TYPE (fd->n2), fd->n2,
-                           build_int_cst (TREE_TYPE (fd->n2), 1));
+			   build_int_cst (TREE_TYPE (fd->n2), 1));
       fd->cond_code = LT_EXPR;
       break;
     case GE_EXPR:
       fd->n2 = fold_build2 (MINUS_EXPR, TREE_TYPE (fd->n2), fd->n2,
-                           build_int_cst (TREE_TYPE (fd->n2), 1));
+			   build_int_cst (TREE_TYPE (fd->n2), 1));
       fd->cond_code = GT_EXPR;
       break;
     default:
@@ -212,17 +212,17 @@ extract_omp_for_data (tree for_stmt, struct omp_for_data *fd)
     switch (OMP_CLAUSE_CODE (t))
       {
       case OMP_CLAUSE_NOWAIT:
-        fd->have_nowait = true;
-        break;
+	fd->have_nowait = true;
+	break;
       case OMP_CLAUSE_ORDERED:
-        fd->have_ordered = true;
-        break;
+	fd->have_ordered = true;
+	break;
       case OMP_CLAUSE_SCHEDULE:
-        fd->sched_kind = OMP_CLAUSE_SCHEDULE_KIND (t);
-        fd->chunk_size = OMP_CLAUSE_SCHEDULE_CHUNK_EXPR (t);
-        break;
+	fd->sched_kind = OMP_CLAUSE_SCHEDULE_KIND (t);
+	fd->chunk_size = OMP_CLAUSE_SCHEDULE_CHUNK_EXPR (t);
+	break;
       default:
-        break;
+	break;
       }
 
   if (fd->sched_kind == OMP_CLAUSE_SCHEDULE_RUNTIME)
@@ -230,10 +230,10 @@ extract_omp_for_data (tree for_stmt, struct omp_for_data *fd)
   else if (fd->chunk_size == NULL)
     {
       /* We only need to compute a default chunk size for ordered
-         static loops and dynamic loops.  */
+	 static loops and dynamic loops.  */
       if (fd->sched_kind != OMP_CLAUSE_SCHEDULE_STATIC || fd->have_ordered)
-        fd->chunk_size = (fd->sched_kind == OMP_CLAUSE_SCHEDULE_STATIC)
-                         ? integer_zero_node : integer_one_node;
+	fd->chunk_size = (fd->sched_kind == OMP_CLAUSE_SCHEDULE_STATIC)
+			 ? integer_zero_node : integer_one_node;
     }
 }
 
@@ -249,20 +249,20 @@ extract_omp_for_data (tree for_stmt, struct omp_for_data *fd)
    of variables passed in from the parent to the child via 'struct
    .omp_data_s'.  For instance:
 
-        #pragma omp parallel for schedule (guided, i * 4)
-        for (j ...)
+	#pragma omp parallel for schedule (guided, i * 4)
+	for (j ...)
 
    Is lowered into:
 
-           # BLOCK 2 (PAR_ENTRY_BB)
-        .omp_data_o.i = i;
-        #pragma omp parallel [child fn: bar.omp_fn.0 ( ..., D.1598)
-        
-        # BLOCK 3 (WS_ENTRY_BB)
-        .omp_data_i = &.omp_data_o;
-        D.1667 = .omp_data_i->i;
-        D.1598 = D.1667 * 4;
-        #pragma omp for schedule (guided, D.1598)
+   	# BLOCK 2 (PAR_ENTRY_BB)
+	.omp_data_o.i = i;
+	#pragma omp parallel [child fn: bar.omp_fn.0 ( ..., D.1598)
+	
+	# BLOCK 3 (WS_ENTRY_BB)
+	.omp_data_i = &.omp_data_o;
+	D.1667 = .omp_data_i->i;
+	D.1598 = D.1667 * 4;
+	#pragma omp for schedule (guided, D.1598)
 
    When we outline the parallel region, the call to the child function
    'bar.omp_fn.0' will need the value D.1598 in its argument list, but
@@ -329,10 +329,10 @@ get_ws_args_for (tree ws_stmt)
 
       ws_args = NULL_TREE;
       if (fd.chunk_size)
-        {
-          t = fold_convert (long_integer_type_node, fd.chunk_size);
-          ws_args = tree_cons (NULL, t, ws_args);
-        }
+	{
+	  t = fold_convert (long_integer_type_node, fd.chunk_size);
+	  ws_args = tree_cons (NULL, t, ws_args);
+	}
 
       t = fold_convert (long_integer_type_node, fd.step);
       ws_args = tree_cons (NULL, t, ws_args);
@@ -372,7 +372,7 @@ determine_parallel_type (struct omp_region *region)
   /* We only support parallel+for and parallel+sections.  */
   if (region->type != OMP_PARALLEL
       || (region->inner->type != OMP_FOR
-          && region->inner->type != OMP_SECTIONS))
+	  && region->inner->type != OMP_SECTIONS))
     return;
 
   /* Check for perfect nesting PAR_ENTRY_BB -> WS_ENTRY_BB and
@@ -386,33 +386,33 @@ determine_parallel_type (struct omp_region *region)
       && single_succ (ws_exit_bb) == par_exit_bb
       && workshare_safe_to_combine_p (par_entry_bb, ws_entry_bb)
       && (OMP_PARALLEL_COMBINED (last_stmt (par_entry_bb))
-          || (last_and_only_stmt (ws_entry_bb)
-              && last_and_only_stmt (par_exit_bb))))
+	  || (last_and_only_stmt (ws_entry_bb)
+	      && last_and_only_stmt (par_exit_bb))))
     {
       tree ws_stmt = last_stmt (ws_entry_bb);
 
       if (region->inner->type == OMP_FOR)
-        {
-          /* If this is a combined parallel loop, we need to determine
-             whether or not to use the combined library calls.  There
-             are two cases where we do not apply the transformation:
-             static loops and any kind of ordered loop.  In the first
-             case, we already open code the loop so there is no need
-             to do anything else.  In the latter case, the combined
-             parallel loop call would still need extra synchronization
-             to implement ordered semantics, so there would not be any
-             gain in using the combined call.  */
-          tree clauses = OMP_FOR_CLAUSES (ws_stmt);
-          tree c = find_omp_clause (clauses, OMP_CLAUSE_SCHEDULE);
-          if (c == NULL
-              || OMP_CLAUSE_SCHEDULE_KIND (c) == OMP_CLAUSE_SCHEDULE_STATIC
-              || find_omp_clause (clauses, OMP_CLAUSE_ORDERED))
-            {
-              region->is_combined_parallel = false;
-              region->inner->is_combined_parallel = false;
-              return;
-            }
-        }
+	{
+	  /* If this is a combined parallel loop, we need to determine
+	     whether or not to use the combined library calls.  There
+	     are two cases where we do not apply the transformation:
+	     static loops and any kind of ordered loop.  In the first
+	     case, we already open code the loop so there is no need
+	     to do anything else.  In the latter case, the combined
+	     parallel loop call would still need extra synchronization
+	     to implement ordered semantics, so there would not be any
+	     gain in using the combined call.  */
+	  tree clauses = OMP_FOR_CLAUSES (ws_stmt);
+	  tree c = find_omp_clause (clauses, OMP_CLAUSE_SCHEDULE);
+	  if (c == NULL
+	      || OMP_CLAUSE_SCHEDULE_KIND (c) == OMP_CLAUSE_SCHEDULE_STATIC
+	      || find_omp_clause (clauses, OMP_CLAUSE_ORDERED))
+	    {
+	      region->is_combined_parallel = false;
+	      region->inner->is_combined_parallel = false;
+	      return;
+	    }
+	}
 
       region->is_combined_parallel = true;
       region->inner->is_combined_parallel = true;
@@ -487,23 +487,23 @@ use_pointer_for_field (tree decl, bool shared_p)
   if (shared_p)
     {
       /* ??? Trivially accessible from anywhere.  But why would we even
-         be passing an address in this case?  Should we simply assert
-         this to be false, or should we have a cleanup pass that removes
-         these from the list of mappings?  */
+	 be passing an address in this case?  Should we simply assert
+	 this to be false, or should we have a cleanup pass that removes
+	 these from the list of mappings?  */
       if (TREE_STATIC (decl) || DECL_EXTERNAL (decl))
-        return true;
+	return true;
 
       /* For variables with DECL_HAS_VALUE_EXPR_P set, we cannot tell
-         without analyzing the expression whether or not its location
-         is accessible to anyone else.  In the case of nested parallel
-         regions it certainly may be.  */
+	 without analyzing the expression whether or not its location
+	 is accessible to anyone else.  In the case of nested parallel
+	 regions it certainly may be.  */
       if (TREE_CODE (decl) != RESULT_DECL && DECL_HAS_VALUE_EXPR_P (decl))
-        return true;
+	return true;
 
       /* Do not use copy-in/copy-out for variables that have their
-         address taken.  */
+	 address taken.  */
       if (TREE_ADDRESSABLE (decl))
-        return true;
+	return true;
     }
 
   return false;
@@ -601,7 +601,7 @@ build_sender_ref (tree var, omp_context *ctx)
 {
   tree field = lookup_field (var, ctx);
   return build3 (COMPONENT_REF, TREE_TYPE (field),
-                 ctx->sender_decl, field, NULL);
+		 ctx->sender_decl, field, NULL);
 }
 
 /* Add a new field for VAR inside the structure CTX->SENDER_DECL.  */
@@ -627,7 +627,7 @@ install_var_field (tree var, bool by_ref, omp_context *ctx)
   insert_field_into_struct (ctx->record_type, field);
 
   splay_tree_insert (ctx->field_map, (splay_tree_key) var,
-                     (splay_tree_value) field);
+		     (splay_tree_value) field);
 }
 
 static tree
@@ -663,12 +663,12 @@ fixup_remapped_decl (tree decl, omp_context *ctx, bool private_debug)
     {
       size = remap_decl (DECL_SIZE (decl), &ctx->cb);
       if (size == error_mark_node)
-        size = TYPE_SIZE (TREE_TYPE (new_decl));
+	size = TYPE_SIZE (TREE_TYPE (new_decl));
       DECL_SIZE (new_decl) = size;
 
       size = remap_decl (DECL_SIZE_UNIT (decl), &ctx->cb);
       if (size == error_mark_node)
-        size = TYPE_SIZE_UNIT (TREE_TYPE (new_decl));
+	size = TYPE_SIZE_UNIT (TREE_TYPE (new_decl));
       DECL_SIZE_UNIT (new_decl) = size;
     }
 }
@@ -696,10 +696,10 @@ omp_copy_decl (tree var, copy_body_data *cb)
     {
       ctx = ctx->outer;
       if (ctx == NULL)
-        return var;
+	return var;
       new_var = maybe_lookup_decl (var, ctx);
       if (new_var)
-        return new_var;
+	return new_var;
     }
 
   if (is_global_var (var) || decl_function_context (var) != ctx->cb.src_fn)
@@ -722,7 +722,7 @@ void
 dump_omp_region (FILE *file, struct omp_region *region, int indent)
 {
   fprintf (file, "%*sbb %d: %s\n", indent, "", region->entry->index,
-           tree_code_name[region->type]);
+	   tree_code_name[region->type]);
 
   if (region->inner)
     dump_omp_region (file, region->inner, indent + 4);
@@ -730,12 +730,12 @@ dump_omp_region (FILE *file, struct omp_region *region, int indent)
   if (region->cont)
     {
       fprintf (file, "%*sbb %d: OMP_CONTINUE\n", indent, "",
-               region->cont->index);
+	       region->cont->index);
     }
     
   if (region->exit)
     fprintf (file, "%*sbb %d: OMP_RETURN\n", indent, "",
-             region->exit->index);
+	     region->exit->index);
   else
     fprintf (file, "%*s[no exit marker]\n", indent, "");
 
@@ -770,14 +770,14 @@ new_omp_region (basic_block bb, enum tree_code type, struct omp_region *parent)
   if (parent)
     {
       /* This is a nested region.  Add it to the list of inner
-         regions in PARENT.  */
+	 regions in PARENT.  */
       region->next = parent->inner;
       parent->inner = region;
     }
   else
     {
       /* This is a toplevel region.  Add it to the list of toplevel
-         regions in ROOT_OMP_REGION.  */
+	 regions in ROOT_OMP_REGION.  */
       region->next = root_omp_region;
       root_omp_region = region;
     }
@@ -824,7 +824,7 @@ new_omp_context (tree stmt, omp_context *outer_ctx)
   omp_context *ctx = XCNEW (omp_context);
 
   splay_tree_insert (all_contexts, (splay_tree_key) stmt,
-                     (splay_tree_value) ctx);
+		     (splay_tree_value) ctx);
   ctx->stmt = stmt;
 
   if (outer_ctx)
@@ -871,7 +871,7 @@ delete_omp_context (splay_tree_value value)
     {
       tree t;
       for (t = TYPE_FIELDS (ctx->record_type); t ; t = TREE_CHAIN (t))
-        DECL_ABSTRACT_ORIGIN (t) = NULL;
+	DECL_ABSTRACT_ORIGIN (t) = NULL;
     }
 
   XDELETE (ctx);
@@ -902,18 +902,18 @@ fixup_child_record_type (omp_context *ctx)
       TYPE_NAME (type) = name;
 
       for (f = TYPE_FIELDS (ctx->record_type); f ; f = TREE_CHAIN (f))
-        {
-          tree new_f = copy_node (f);
-          DECL_CONTEXT (new_f) = type;
-          TREE_TYPE (new_f) = remap_type (TREE_TYPE (f), &ctx->cb);
-          TREE_CHAIN (new_f) = new_fields;
-          new_fields = new_f;
+	{
+	  tree new_f = copy_node (f);
+	  DECL_CONTEXT (new_f) = type;
+	  TREE_TYPE (new_f) = remap_type (TREE_TYPE (f), &ctx->cb);
+	  TREE_CHAIN (new_f) = new_fields;
+	  new_fields = new_f;
 
-          /* Arrange to be able to look up the receiver field
-             given the sender field.  */
-          splay_tree_insert (ctx->field_map, (splay_tree_key) f,
-                             (splay_tree_value) new_f);
-        }
+	  /* Arrange to be able to look up the receiver field
+	     given the sender field.  */
+	  splay_tree_insert (ctx->field_map, (splay_tree_key) f,
+			     (splay_tree_value) new_f);
+	}
       TYPE_FIELDS (type) = nreverse (new_fields);
       layout_type (type);
     }
@@ -935,143 +935,143 @@ scan_sharing_clauses (tree clauses, omp_context *ctx)
       bool by_ref;
 
       switch (OMP_CLAUSE_CODE (c))
-        {
-        case OMP_CLAUSE_PRIVATE:
-          decl = OMP_CLAUSE_DECL (c);
-          if (!is_variable_sized (decl))
-            install_var_local (decl, ctx);
-          break;
+	{
+	case OMP_CLAUSE_PRIVATE:
+	  decl = OMP_CLAUSE_DECL (c);
+	  if (!is_variable_sized (decl))
+	    install_var_local (decl, ctx);
+	  break;
 
-        case OMP_CLAUSE_SHARED:
-          gcc_assert (is_parallel_ctx (ctx));
-          decl = OMP_CLAUSE_DECL (c);
-          gcc_assert (!is_variable_sized (decl));
-          by_ref = use_pointer_for_field (decl, true);
-          /* Global variables don't need to be copied,
-             the receiver side will use them directly.  */
-          if (is_global_var (maybe_lookup_decl_in_outer_ctx (decl, ctx)))
-            break;
-          if (! TREE_READONLY (decl)
-              || TREE_ADDRESSABLE (decl)
-              || by_ref
-              || is_reference (decl))
-            {
-              install_var_field (decl, by_ref, ctx);
-              install_var_local (decl, ctx);
-              break;
-            }
-          /* We don't need to copy const scalar vars back.  */
-          OMP_CLAUSE_SET_CODE (c, OMP_CLAUSE_FIRSTPRIVATE);
-          goto do_private;
+	case OMP_CLAUSE_SHARED:
+	  gcc_assert (is_parallel_ctx (ctx));
+	  decl = OMP_CLAUSE_DECL (c);
+	  gcc_assert (!is_variable_sized (decl));
+	  by_ref = use_pointer_for_field (decl, true);
+	  /* Global variables don't need to be copied,
+	     the receiver side will use them directly.  */
+	  if (is_global_var (maybe_lookup_decl_in_outer_ctx (decl, ctx)))
+	    break;
+	  if (! TREE_READONLY (decl)
+	      || TREE_ADDRESSABLE (decl)
+	      || by_ref
+	      || is_reference (decl))
+	    {
+	      install_var_field (decl, by_ref, ctx);
+	      install_var_local (decl, ctx);
+	      break;
+	    }
+	  /* We don't need to copy const scalar vars back.  */
+	  OMP_CLAUSE_SET_CODE (c, OMP_CLAUSE_FIRSTPRIVATE);
+	  goto do_private;
 
-        case OMP_CLAUSE_LASTPRIVATE:
-          /* Let the corresponding firstprivate clause create
-             the variable.  */
-          if (OMP_CLAUSE_LASTPRIVATE_FIRSTPRIVATE (c))
-            break;
-          /* FALLTHRU */
+	case OMP_CLAUSE_LASTPRIVATE:
+	  /* Let the corresponding firstprivate clause create
+	     the variable.  */
+	  if (OMP_CLAUSE_LASTPRIVATE_FIRSTPRIVATE (c))
+	    break;
+	  /* FALLTHRU */
 
-        case OMP_CLAUSE_FIRSTPRIVATE:
-        case OMP_CLAUSE_REDUCTION:
-          decl = OMP_CLAUSE_DECL (c);
-        do_private:
-          if (is_variable_sized (decl))
-            break;
-          else if (is_parallel_ctx (ctx)
-                   && ! is_global_var (maybe_lookup_decl_in_outer_ctx (decl,
-                                                                       ctx)))
-            {
-              by_ref = use_pointer_for_field (decl, false);
-              install_var_field (decl, by_ref, ctx);
-            }
-          install_var_local (decl, ctx);
-          break;
+	case OMP_CLAUSE_FIRSTPRIVATE:
+	case OMP_CLAUSE_REDUCTION:
+	  decl = OMP_CLAUSE_DECL (c);
+	do_private:
+	  if (is_variable_sized (decl))
+	    break;
+	  else if (is_parallel_ctx (ctx)
+		   && ! is_global_var (maybe_lookup_decl_in_outer_ctx (decl,
+								       ctx)))
+	    {
+	      by_ref = use_pointer_for_field (decl, false);
+	      install_var_field (decl, by_ref, ctx);
+	    }
+	  install_var_local (decl, ctx);
+	  break;
 
-        case OMP_CLAUSE_COPYPRIVATE:
-          if (ctx->outer)
-            scan_omp (&OMP_CLAUSE_DECL (c), ctx->outer);
-          /* FALLTHRU */
+	case OMP_CLAUSE_COPYPRIVATE:
+	  if (ctx->outer)
+	    scan_omp (&OMP_CLAUSE_DECL (c), ctx->outer);
+	  /* FALLTHRU */
 
-        case OMP_CLAUSE_COPYIN:
-          decl = OMP_CLAUSE_DECL (c);
-          by_ref = use_pointer_for_field (decl, false);
-          install_var_field (decl, by_ref, ctx);
-          break;
+	case OMP_CLAUSE_COPYIN:
+	  decl = OMP_CLAUSE_DECL (c);
+	  by_ref = use_pointer_for_field (decl, false);
+	  install_var_field (decl, by_ref, ctx);
+	  break;
 
-        case OMP_CLAUSE_DEFAULT:
-          ctx->default_kind = OMP_CLAUSE_DEFAULT_KIND (c);
-          break;
+	case OMP_CLAUSE_DEFAULT:
+	  ctx->default_kind = OMP_CLAUSE_DEFAULT_KIND (c);
+	  break;
 
-        case OMP_CLAUSE_IF:
-        case OMP_CLAUSE_NUM_THREADS:
-        case OMP_CLAUSE_SCHEDULE:
-          if (ctx->outer)
-            scan_omp (&OMP_CLAUSE_OPERAND (c, 0), ctx->outer);
-          break;
+	case OMP_CLAUSE_IF:
+	case OMP_CLAUSE_NUM_THREADS:
+	case OMP_CLAUSE_SCHEDULE:
+	  if (ctx->outer)
+	    scan_omp (&OMP_CLAUSE_OPERAND (c, 0), ctx->outer);
+	  break;
 
-        case OMP_CLAUSE_NOWAIT:
-        case OMP_CLAUSE_ORDERED:
-          break;
+	case OMP_CLAUSE_NOWAIT:
+	case OMP_CLAUSE_ORDERED:
+	  break;
 
-        default:
-          gcc_unreachable ();
-        }
+	default:
+	  gcc_unreachable ();
+	}
     }
 
   for (c = clauses; c; c = OMP_CLAUSE_CHAIN (c))
     {
       switch (OMP_CLAUSE_CODE (c))
-        {
-        case OMP_CLAUSE_LASTPRIVATE:
-          /* Let the corresponding firstprivate clause create
-             the variable.  */
-          if (OMP_CLAUSE_LASTPRIVATE_FIRSTPRIVATE (c))
-            break;
-          /* FALLTHRU */
+	{
+	case OMP_CLAUSE_LASTPRIVATE:
+	  /* Let the corresponding firstprivate clause create
+	     the variable.  */
+	  if (OMP_CLAUSE_LASTPRIVATE_FIRSTPRIVATE (c))
+	    break;
+	  /* FALLTHRU */
 
-        case OMP_CLAUSE_PRIVATE:
-        case OMP_CLAUSE_FIRSTPRIVATE:
-        case OMP_CLAUSE_REDUCTION:
-          decl = OMP_CLAUSE_DECL (c);
-          if (is_variable_sized (decl))
-            install_var_local (decl, ctx);
-          fixup_remapped_decl (decl, ctx,
-                               OMP_CLAUSE_CODE (c) == OMP_CLAUSE_PRIVATE
-                               && OMP_CLAUSE_PRIVATE_DEBUG (c));
-          if (OMP_CLAUSE_CODE (c) == OMP_CLAUSE_REDUCTION
-              && OMP_CLAUSE_REDUCTION_PLACEHOLDER (c))
-            scan_array_reductions = true;
-          break;
+	case OMP_CLAUSE_PRIVATE:
+	case OMP_CLAUSE_FIRSTPRIVATE:
+	case OMP_CLAUSE_REDUCTION:
+	  decl = OMP_CLAUSE_DECL (c);
+	  if (is_variable_sized (decl))
+	    install_var_local (decl, ctx);
+	  fixup_remapped_decl (decl, ctx,
+			       OMP_CLAUSE_CODE (c) == OMP_CLAUSE_PRIVATE
+			       && OMP_CLAUSE_PRIVATE_DEBUG (c));
+	  if (OMP_CLAUSE_CODE (c) == OMP_CLAUSE_REDUCTION
+	      && OMP_CLAUSE_REDUCTION_PLACEHOLDER (c))
+	    scan_array_reductions = true;
+	  break;
 
-        case OMP_CLAUSE_SHARED:
-          decl = OMP_CLAUSE_DECL (c);
-          if (! is_global_var (maybe_lookup_decl_in_outer_ctx (decl, ctx)))
-            fixup_remapped_decl (decl, ctx, false);
-          break;
+	case OMP_CLAUSE_SHARED:
+	  decl = OMP_CLAUSE_DECL (c);
+	  if (! is_global_var (maybe_lookup_decl_in_outer_ctx (decl, ctx)))
+	    fixup_remapped_decl (decl, ctx, false);
+	  break;
 
-        case OMP_CLAUSE_COPYPRIVATE:
-        case OMP_CLAUSE_COPYIN:
-        case OMP_CLAUSE_DEFAULT:
-        case OMP_CLAUSE_IF:
-        case OMP_CLAUSE_NUM_THREADS:
-        case OMP_CLAUSE_SCHEDULE:
-        case OMP_CLAUSE_NOWAIT:
-        case OMP_CLAUSE_ORDERED:
-          break;
+	case OMP_CLAUSE_COPYPRIVATE:
+	case OMP_CLAUSE_COPYIN:
+	case OMP_CLAUSE_DEFAULT:
+	case OMP_CLAUSE_IF:
+	case OMP_CLAUSE_NUM_THREADS:
+	case OMP_CLAUSE_SCHEDULE:
+	case OMP_CLAUSE_NOWAIT:
+	case OMP_CLAUSE_ORDERED:
+	  break;
 
-        default:
-          gcc_unreachable ();
-        }
+	default:
+	  gcc_unreachable ();
+	}
     }
 
   if (scan_array_reductions)
     for (c = clauses; c; c = OMP_CLAUSE_CHAIN (c))
       if (OMP_CLAUSE_CODE (c) == OMP_CLAUSE_REDUCTION
-          && OMP_CLAUSE_REDUCTION_PLACEHOLDER (c))
-        {
-          scan_omp (&OMP_CLAUSE_REDUCTION_INIT (c), ctx);
-          scan_omp (&OMP_CLAUSE_REDUCTION_MERGE (c), ctx);
-        }
+	  && OMP_CLAUSE_REDUCTION_PLACEHOLDER (c))
+	{
+	  scan_omp (&OMP_CLAUSE_REDUCTION_INIT (c), ctx);
+	  scan_omp (&OMP_CLAUSE_REDUCTION_MERGE (c), ctx);
+	}
 }
 
 /* Create a new name for omp child function.  Returns an identifier.  */
@@ -1259,67 +1259,67 @@ check_omp_nesting_restrictions (tree t, omp_context *ctx)
     case OMP_SECTIONS:
     case OMP_SINGLE:
       for (; ctx != NULL; ctx = ctx->outer)
-        switch (TREE_CODE (ctx->stmt))
-          {
-          case OMP_FOR:
-          case OMP_SECTIONS:
-          case OMP_SINGLE:
-          case OMP_ORDERED:
-          case OMP_MASTER:
-            warning (0, "work-sharing region may not be closely nested inside "
-                        "of work-sharing, critical, ordered or master region");
-            return;
-          case OMP_PARALLEL:
-            return;
-          default:
-            break;
-          }
+	switch (TREE_CODE (ctx->stmt))
+	  {
+	  case OMP_FOR:
+	  case OMP_SECTIONS:
+	  case OMP_SINGLE:
+	  case OMP_ORDERED:
+	  case OMP_MASTER:
+	    warning (0, "work-sharing region may not be closely nested inside "
+			"of work-sharing, critical, ordered or master region");
+	    return;
+	  case OMP_PARALLEL:
+	    return;
+	  default:
+	    break;
+	  }
       break;
     case OMP_MASTER:
       for (; ctx != NULL; ctx = ctx->outer)
-        switch (TREE_CODE (ctx->stmt))
-          {
-          case OMP_FOR:
-          case OMP_SECTIONS:
-          case OMP_SINGLE:
-            warning (0, "master region may not be closely nested inside "
-                        "of work-sharing region");
-            return;
-          case OMP_PARALLEL:
-            return;
-          default:
-            break;
-          }
+	switch (TREE_CODE (ctx->stmt))
+	  {
+	  case OMP_FOR:
+	  case OMP_SECTIONS:
+	  case OMP_SINGLE:
+	    warning (0, "master region may not be closely nested inside "
+			"of work-sharing region");
+	    return;
+	  case OMP_PARALLEL:
+	    return;
+	  default:
+	    break;
+	  }
       break;
     case OMP_ORDERED:
       for (; ctx != NULL; ctx = ctx->outer)
-        switch (TREE_CODE (ctx->stmt))
-          {
-          case OMP_CRITICAL:
-            warning (0, "ordered region may not be closely nested inside "
-                        "of critical region");
-            return;
-          case OMP_FOR:
-            if (find_omp_clause (OMP_CLAUSES (ctx->stmt),
-                                 OMP_CLAUSE_ORDERED) == NULL)
-              warning (0, "ordered region must be closely nested inside "
-                          "a loop region with an ordered clause");
-            return;
-          case OMP_PARALLEL:
-            return;
-          default:
-            break;
-          }
+	switch (TREE_CODE (ctx->stmt))
+	  {
+	  case OMP_CRITICAL:
+	    warning (0, "ordered region may not be closely nested inside "
+			"of critical region");
+	    return;
+	  case OMP_FOR:
+	    if (find_omp_clause (OMP_CLAUSES (ctx->stmt),
+				 OMP_CLAUSE_ORDERED) == NULL)
+	      warning (0, "ordered region must be closely nested inside "
+			  "a loop region with an ordered clause");
+	    return;
+	  case OMP_PARALLEL:
+	    return;
+	  default:
+	    break;
+	  }
       break;
     case OMP_CRITICAL:
       for (; ctx != NULL; ctx = ctx->outer)
-        if (TREE_CODE (ctx->stmt) == OMP_CRITICAL
-            && OMP_CRITICAL_NAME (t) == OMP_CRITICAL_NAME (ctx->stmt))
-          {
-            warning (0, "critical region may not be nested inside a critical "
-                        "region with the same name");
-            return;
-          }
+	if (TREE_CODE (ctx->stmt) == OMP_CRITICAL
+	    && OMP_CRITICAL_NAME (t) == OMP_CRITICAL_NAME (ctx->stmt))
+	  {
+	    warning (0, "critical region may not be nested inside a critical "
+			"region with the same name");
+	    return;
+	  }
       break;
     default:
       break;
@@ -1374,11 +1374,11 @@ scan_omp_1 (tree *tp, int *walk_subtrees, void *data)
 
     case BIND_EXPR:
       {
-        tree var;
-        *walk_subtrees = 1;
+	tree var;
+	*walk_subtrees = 1;
 
-        for (var = BIND_EXPR_VARS (t); var ; var = TREE_CHAIN (var))
-          insert_decl_map (&ctx->cb, var, var);
+	for (var = BIND_EXPR_VARS (t); var ; var = TREE_CHAIN (var))
+	  insert_decl_map (&ctx->cb, var, var);
       }
       break;
 
@@ -1387,14 +1387,14 @@ scan_omp_1 (tree *tp, int *walk_subtrees, void *data)
     case LABEL_DECL:
     case RESULT_DECL:
       if (ctx)
-        *tp = remap_decl (t, &ctx->cb);
+	*tp = remap_decl (t, &ctx->cb);
       break;
 
     default:
       if (ctx && TYPE_P (t))
-        *tp = remap_type (t, &ctx->cb);
+	*tp = remap_type (t, &ctx->cb);
       else if (!DECL_P (t))
-        *walk_subtrees = 1;
+	*walk_subtrees = 1;
       break;
     }
 
@@ -1455,33 +1455,33 @@ maybe_lookup_ctx (tree stmt)
    mappings created in CTX's parent context.  Suppose that we have the
    following parallel nesting (variable UIDs showed for clarity):
 
-        iD.1562 = 0;
-             #omp parallel shared(iD.1562)                -> outer parallel
-          iD.1562 = iD.1562 + 1;
+	iD.1562 = 0;
+     	#omp parallel shared(iD.1562)		-> outer parallel
+	  iD.1562 = iD.1562 + 1;
 
-          #omp parallel shared (iD.1562)        -> inner parallel
-             iD.1562 = iD.1562 - 1;
+	  #omp parallel shared (iD.1562)	-> inner parallel
+	     iD.1562 = iD.1562 - 1;
 
    Each parallel structure will create a distinct .omp_data_s structure
    for copying iD.1562 in/out of the directive:
 
-          outer parallel                .omp_data_s.1.i -> iD.1562
-        inner parallel                .omp_data_s.2.i -> iD.1562
+  	outer parallel		.omp_data_s.1.i -> iD.1562
+	inner parallel		.omp_data_s.2.i -> iD.1562
 
    A shared variable mapping will produce a copy-out operation before
    the parallel directive and a copy-in operation after it.  So, in
    this case we would have:
 
-          iD.1562 = 0;
-        .omp_data_o.1.i = iD.1562;
-        #omp parallel shared(iD.1562)                -> outer parallel
-          .omp_data_i.1 = &.omp_data_o.1
-          .omp_data_i.1->i = .omp_data_i.1->i + 1;
+  	iD.1562 = 0;
+	.omp_data_o.1.i = iD.1562;
+	#omp parallel shared(iD.1562)		-> outer parallel
+	  .omp_data_i.1 = &.omp_data_o.1
+	  .omp_data_i.1->i = .omp_data_i.1->i + 1;
 
-          .omp_data_o.2.i = iD.1562;                -> **
-          #omp parallel shared(iD.1562)                -> inner parallel
-            .omp_data_i.2 = &.omp_data_o.2
-            .omp_data_i.2->i = .omp_data_i.2->i - 1;
+	  .omp_data_o.2.i = iD.1562;		-> **
+	  #omp parallel shared(iD.1562)		-> inner parallel
+	    .omp_data_i.2 = &.omp_data_o.2
+	    .omp_data_i.2->i = .omp_data_i.2->i - 1;
 
 
     ** This is a problem.  The symbol iD.1562 cannot be referenced
@@ -1490,7 +1490,7 @@ maybe_lookup_ctx (tree stmt)
        directive, we need to access the CTX structure of the outer
        parallel directive to get the correct mapping:
 
-          .omp_data_o.2.i = .omp_data_i.1->i
+	  .omp_data_o.2.i = .omp_data_i.1->i
 
     Since there may be other workshare or parallel directives enclosing
     the parallel directive, it may be necessary to walk up the context
@@ -1559,38 +1559,38 @@ omp_reduction_init (tree clause, tree type)
 
     case MAX_EXPR:
       if (SCALAR_FLOAT_TYPE_P (type))
-        {
-          REAL_VALUE_TYPE max, min;
-          if (HONOR_INFINITIES (TYPE_MODE (type)))
-            {
-              real_inf (&max);
-              real_arithmetic (&min, NEGATE_EXPR, &max, NULL);
-            }
-          else
-            real_maxval (&min, 1, TYPE_MODE (type));
-          return build_real (type, min);
-        }
+	{
+	  REAL_VALUE_TYPE max, min;
+	  if (HONOR_INFINITIES (TYPE_MODE (type)))
+	    {
+	      real_inf (&max);
+	      real_arithmetic (&min, NEGATE_EXPR, &max, NULL);
+	    }
+	  else
+	    real_maxval (&min, 1, TYPE_MODE (type));
+	  return build_real (type, min);
+	}
       else
-        {
-          gcc_assert (INTEGRAL_TYPE_P (type));
-          return TYPE_MIN_VALUE (type);
-        }
+	{
+	  gcc_assert (INTEGRAL_TYPE_P (type));
+	  return TYPE_MIN_VALUE (type);
+	}
 
     case MIN_EXPR:
       if (SCALAR_FLOAT_TYPE_P (type))
-        {
-          REAL_VALUE_TYPE max;
-          if (HONOR_INFINITIES (TYPE_MODE (type)))
-            real_inf (&max);
-          else
-            real_maxval (&max, 0, TYPE_MODE (type));
-          return build_real (type, max);
-        }
+	{
+	  REAL_VALUE_TYPE max;
+	  if (HONOR_INFINITIES (TYPE_MODE (type)))
+	    real_inf (&max);
+	  else
+	    real_maxval (&max, 0, TYPE_MODE (type));
+	  return build_real (type, max);
+	}
       else
-        {
-          gcc_assert (INTEGRAL_TYPE_P (type));
-          return TYPE_MAX_VALUE (type);
-        }
+	{
+	  gcc_assert (INTEGRAL_TYPE_P (type));
+	  return TYPE_MAX_VALUE (type);
+	}
 
     default:
       gcc_unreachable ();
@@ -1604,7 +1604,7 @@ omp_reduction_init (tree clause, tree type)
 
 static void
 lower_rec_input_clauses (tree clauses, tree *ilist, tree *dlist,
-                         omp_context *ctx)
+			 omp_context *ctx)
 {
   tree_stmt_iterator diter;
   tree c, dtor, copyin_seq, x, args, ptr;
@@ -1623,194 +1623,194 @@ lower_rec_input_clauses (tree clauses, tree *ilist, tree *dlist,
   for (pass = 0; pass < 2; ++pass)
     {
       for (c = clauses; c ; c = OMP_CLAUSE_CHAIN (c))
-        {
-          enum omp_clause_code c_kind = OMP_CLAUSE_CODE (c);
-          tree var, new_var;
-          bool by_ref;
+	{
+	  enum omp_clause_code c_kind = OMP_CLAUSE_CODE (c);
+	  tree var, new_var;
+	  bool by_ref;
 
-          switch (c_kind)
-            {
-            case OMP_CLAUSE_PRIVATE:
-              if (OMP_CLAUSE_PRIVATE_DEBUG (c))
-                continue;
-              break;
-            case OMP_CLAUSE_SHARED:
-              if (maybe_lookup_decl (OMP_CLAUSE_DECL (c), ctx) == NULL)
-                {
-                  gcc_assert (is_global_var (OMP_CLAUSE_DECL (c)));
-                  continue;
-                }
-            case OMP_CLAUSE_FIRSTPRIVATE:
-            case OMP_CLAUSE_COPYIN:
-            case OMP_CLAUSE_REDUCTION:
-              break;
-            case OMP_CLAUSE_LASTPRIVATE:
-              if (OMP_CLAUSE_LASTPRIVATE_FIRSTPRIVATE (c))
-                {
-                  lastprivate_firstprivate = true;
-                  if (pass != 0)
-                    continue;
-                }
-              break;
-            default:
-              continue;
-            }
+	  switch (c_kind)
+	    {
+	    case OMP_CLAUSE_PRIVATE:
+	      if (OMP_CLAUSE_PRIVATE_DEBUG (c))
+		continue;
+	      break;
+	    case OMP_CLAUSE_SHARED:
+	      if (maybe_lookup_decl (OMP_CLAUSE_DECL (c), ctx) == NULL)
+		{
+		  gcc_assert (is_global_var (OMP_CLAUSE_DECL (c)));
+		  continue;
+		}
+	    case OMP_CLAUSE_FIRSTPRIVATE:
+	    case OMP_CLAUSE_COPYIN:
+	    case OMP_CLAUSE_REDUCTION:
+	      break;
+	    case OMP_CLAUSE_LASTPRIVATE:
+	      if (OMP_CLAUSE_LASTPRIVATE_FIRSTPRIVATE (c))
+		{
+		  lastprivate_firstprivate = true;
+		  if (pass != 0)
+		    continue;
+		}
+	      break;
+	    default:
+	      continue;
+	    }
 
-          new_var = var = OMP_CLAUSE_DECL (c);
-          if (c_kind != OMP_CLAUSE_COPYIN)
-            new_var = lookup_decl (var, ctx);
+	  new_var = var = OMP_CLAUSE_DECL (c);
+	  if (c_kind != OMP_CLAUSE_COPYIN)
+	    new_var = lookup_decl (var, ctx);
 
-          if (c_kind == OMP_CLAUSE_SHARED || c_kind == OMP_CLAUSE_COPYIN)
-            {
-              if (pass != 0)
-                continue;
-            }
-          else if (is_variable_sized (var))
-            {
-              /* For variable sized types, we need to allocate the
-                 actual storage here.  Call alloca and store the
-                 result in the pointer decl that we created elsewhere.  */
-              if (pass == 0)
-                continue;
+	  if (c_kind == OMP_CLAUSE_SHARED || c_kind == OMP_CLAUSE_COPYIN)
+	    {
+	      if (pass != 0)
+		continue;
+	    }
+	  else if (is_variable_sized (var))
+	    {
+	      /* For variable sized types, we need to allocate the
+		 actual storage here.  Call alloca and store the
+		 result in the pointer decl that we created elsewhere.  */
+	      if (pass == 0)
+		continue;
 
-              ptr = DECL_VALUE_EXPR (new_var);
-              gcc_assert (TREE_CODE (ptr) == INDIRECT_REF);
-              ptr = TREE_OPERAND (ptr, 0);
-              gcc_assert (DECL_P (ptr));
+	      ptr = DECL_VALUE_EXPR (new_var);
+	      gcc_assert (TREE_CODE (ptr) == INDIRECT_REF);
+	      ptr = TREE_OPERAND (ptr, 0);
+	      gcc_assert (DECL_P (ptr));
 
-              x = TYPE_SIZE_UNIT (TREE_TYPE (new_var));
-              args = tree_cons (NULL, x, NULL);
-              x = built_in_decls[BUILT_IN_ALLOCA];
-              x = build_function_call_expr (x, args);
-              x = fold_convert (TREE_TYPE (ptr), x);
-              x = build2 (MODIFY_EXPR, void_type_node, ptr, x);
-              gimplify_and_add (x, ilist);
-            }
-          else if (is_reference (var))
-            {
-              /* For references that are being privatized for Fortran,
-                 allocate new backing storage for the new pointer
-                 variable.  This allows us to avoid changing all the
-                 code that expects a pointer to something that expects
-                 a direct variable.  Note that this doesn't apply to
-                 C++, since reference types are disallowed in data
-                 sharing clauses there, except for NRV optimized
-                 return values.  */
-              if (pass == 0)
-                continue;
+	      x = TYPE_SIZE_UNIT (TREE_TYPE (new_var));
+	      args = tree_cons (NULL, x, NULL);
+	      x = built_in_decls[BUILT_IN_ALLOCA];
+	      x = build_function_call_expr (x, args);
+	      x = fold_convert (TREE_TYPE (ptr), x);
+	      x = build2 (MODIFY_EXPR, void_type_node, ptr, x);
+	      gimplify_and_add (x, ilist);
+	    }
+	  else if (is_reference (var))
+	    {
+	      /* For references that are being privatized for Fortran,
+		 allocate new backing storage for the new pointer
+		 variable.  This allows us to avoid changing all the
+		 code that expects a pointer to something that expects
+		 a direct variable.  Note that this doesn't apply to
+		 C++, since reference types are disallowed in data
+		 sharing clauses there, except for NRV optimized
+		 return values.  */
+	      if (pass == 0)
+		continue;
 
-              x = TYPE_SIZE_UNIT (TREE_TYPE (TREE_TYPE (new_var)));
-              if (TREE_CONSTANT (x))
-                {
-                  const char *name = NULL;
-                  if (DECL_NAME (var))
-                    name = IDENTIFIER_POINTER (DECL_NAME (new_var));
+	      x = TYPE_SIZE_UNIT (TREE_TYPE (TREE_TYPE (new_var)));
+	      if (TREE_CONSTANT (x))
+		{
+		  const char *name = NULL;
+		  if (DECL_NAME (var))
+		    name = IDENTIFIER_POINTER (DECL_NAME (new_var));
 
-                  x = create_tmp_var_raw (TREE_TYPE (TREE_TYPE (new_var)),
-                                          name);
-                  gimple_add_tmp_var (x);
-                  x = build_fold_addr_expr_with_type (x, TREE_TYPE (new_var));
-                }
-              else
-                {
-                  args = tree_cons (NULL, x, NULL);
-                  x = built_in_decls[BUILT_IN_ALLOCA];
-                  x = build_function_call_expr (x, args);
-                  x = fold_convert (TREE_TYPE (new_var), x);
-                }
+		  x = create_tmp_var_raw (TREE_TYPE (TREE_TYPE (new_var)),
+					  name);
+		  gimple_add_tmp_var (x);
+		  x = build_fold_addr_expr_with_type (x, TREE_TYPE (new_var));
+		}
+	      else
+		{
+		  args = tree_cons (NULL, x, NULL);
+		  x = built_in_decls[BUILT_IN_ALLOCA];
+		  x = build_function_call_expr (x, args);
+		  x = fold_convert (TREE_TYPE (new_var), x);
+		}
 
-              x = build2 (MODIFY_EXPR, void_type_node, new_var, x);
-              gimplify_and_add (x, ilist);
+	      x = build2 (MODIFY_EXPR, void_type_node, new_var, x);
+	      gimplify_and_add (x, ilist);
 
-              new_var = build_fold_indirect_ref (new_var);
-            }
-          else if (c_kind == OMP_CLAUSE_REDUCTION
-                   && OMP_CLAUSE_REDUCTION_PLACEHOLDER (c))
-            {
-              if (pass == 0)
-                continue;
-            }
-          else if (pass != 0)
-            continue;
+	      new_var = build_fold_indirect_ref (new_var);
+	    }
+	  else if (c_kind == OMP_CLAUSE_REDUCTION
+		   && OMP_CLAUSE_REDUCTION_PLACEHOLDER (c))
+	    {
+	      if (pass == 0)
+		continue;
+	    }
+	  else if (pass != 0)
+	    continue;
 
-          switch (OMP_CLAUSE_CODE (c))
-            {
-            case OMP_CLAUSE_SHARED:
-              /* Shared global vars are just accessed directly.  */
-              if (is_global_var (new_var))
-                break;
-              /* Set up the DECL_VALUE_EXPR for shared variables now.  This
-                 needs to be delayed until after fixup_child_record_type so
-                 that we get the correct type during the dereference.  */
-              by_ref = use_pointer_for_field (var, true);
-              x = build_receiver_ref (var, by_ref, ctx);
-              SET_DECL_VALUE_EXPR (new_var, x);
-              DECL_HAS_VALUE_EXPR_P (new_var) = 1;
+	  switch (OMP_CLAUSE_CODE (c))
+	    {
+	    case OMP_CLAUSE_SHARED:
+	      /* Shared global vars are just accessed directly.  */
+	      if (is_global_var (new_var))
+		break;
+	      /* Set up the DECL_VALUE_EXPR for shared variables now.  This
+		 needs to be delayed until after fixup_child_record_type so
+		 that we get the correct type during the dereference.  */
+	      by_ref = use_pointer_for_field (var, true);
+	      x = build_receiver_ref (var, by_ref, ctx);
+	      SET_DECL_VALUE_EXPR (new_var, x);
+	      DECL_HAS_VALUE_EXPR_P (new_var) = 1;
 
-              /* ??? If VAR is not passed by reference, and the variable
-                 hasn't been initialized yet, then we'll get a warning for
-                 the store into the omp_data_s structure.  Ideally, we'd be
-                 able to notice this and not store anything at all, but 
-                 we're generating code too early.  Suppress the warning.  */
-              if (!by_ref)
-                TREE_NO_WARNING (var) = 1;
-              break;
+	      /* ??? If VAR is not passed by reference, and the variable
+		 hasn't been initialized yet, then we'll get a warning for
+		 the store into the omp_data_s structure.  Ideally, we'd be
+		 able to notice this and not store anything at all, but 
+		 we're generating code too early.  Suppress the warning.  */
+	      if (!by_ref)
+		TREE_NO_WARNING (var) = 1;
+	      break;
 
-            case OMP_CLAUSE_LASTPRIVATE:
-              if (OMP_CLAUSE_LASTPRIVATE_FIRSTPRIVATE (c))
-                break;
-              /* FALLTHRU */
+	    case OMP_CLAUSE_LASTPRIVATE:
+	      if (OMP_CLAUSE_LASTPRIVATE_FIRSTPRIVATE (c))
+		break;
+	      /* FALLTHRU */
 
-            case OMP_CLAUSE_PRIVATE:
-              x = lang_hooks.decls.omp_clause_default_ctor (c, new_var);
-              if (x)
-                gimplify_and_add (x, ilist);
-              /* FALLTHRU */
+	    case OMP_CLAUSE_PRIVATE:
+	      x = lang_hooks.decls.omp_clause_default_ctor (c, new_var);
+	      if (x)
+		gimplify_and_add (x, ilist);
+	      /* FALLTHRU */
 
-            do_dtor:
-              x = lang_hooks.decls.omp_clause_dtor (c, new_var);
-              if (x)
-                {
-                  dtor = x;
-                  gimplify_stmt (&dtor);
-                  tsi_link_before (&diter, dtor, TSI_SAME_STMT);
-                }
-              break;
+	    do_dtor:
+	      x = lang_hooks.decls.omp_clause_dtor (c, new_var);
+	      if (x)
+		{
+		  dtor = x;
+		  gimplify_stmt (&dtor);
+		  tsi_link_before (&diter, dtor, TSI_SAME_STMT);
+		}
+	      break;
 
-            case OMP_CLAUSE_FIRSTPRIVATE:
-              x = build_outer_var_ref (var, ctx);
-              x = lang_hooks.decls.omp_clause_copy_ctor (c, new_var, x);
-              gimplify_and_add (x, ilist);
-              goto do_dtor;
-              break;
+	    case OMP_CLAUSE_FIRSTPRIVATE:
+	      x = build_outer_var_ref (var, ctx);
+	      x = lang_hooks.decls.omp_clause_copy_ctor (c, new_var, x);
+	      gimplify_and_add (x, ilist);
+	      goto do_dtor;
+	      break;
 
-            case OMP_CLAUSE_COPYIN:
-              by_ref = use_pointer_for_field (var, false);
-              x = build_receiver_ref (var, by_ref, ctx);
-              x = lang_hooks.decls.omp_clause_assign_op (c, new_var, x);
-              append_to_statement_list (x, &copyin_seq);
-              copyin_by_ref |= by_ref;
-              break;
+	    case OMP_CLAUSE_COPYIN:
+	      by_ref = use_pointer_for_field (var, false);
+	      x = build_receiver_ref (var, by_ref, ctx);
+	      x = lang_hooks.decls.omp_clause_assign_op (c, new_var, x);
+	      append_to_statement_list (x, &copyin_seq);
+	      copyin_by_ref |= by_ref;
+	      break;
 
-            case OMP_CLAUSE_REDUCTION:
-              if (OMP_CLAUSE_REDUCTION_PLACEHOLDER (c))
-                {
-                  gimplify_and_add (OMP_CLAUSE_REDUCTION_INIT (c), ilist);
-                  OMP_CLAUSE_REDUCTION_INIT (c) = NULL;
-                }
-              else
-                {
-                  x = omp_reduction_init (c, TREE_TYPE (new_var));
-                  gcc_assert (TREE_CODE (TREE_TYPE (new_var)) != ARRAY_TYPE);
-                  x = build2 (MODIFY_EXPR, void_type_node, new_var, x);
-                  gimplify_and_add (x, ilist);
-                }
-              break;
+	    case OMP_CLAUSE_REDUCTION:
+	      if (OMP_CLAUSE_REDUCTION_PLACEHOLDER (c))
+		{
+		  gimplify_and_add (OMP_CLAUSE_REDUCTION_INIT (c), ilist);
+		  OMP_CLAUSE_REDUCTION_INIT (c) = NULL;
+		}
+	      else
+		{
+		  x = omp_reduction_init (c, TREE_TYPE (new_var));
+		  gcc_assert (TREE_CODE (TREE_TYPE (new_var)) != ARRAY_TYPE);
+		  x = build2 (MODIFY_EXPR, void_type_node, new_var, x);
+		  gimplify_and_add (x, ilist);
+		}
+	      break;
 
-            default:
-              gcc_unreachable ();
-            }
-        }
+	    default:
+	      gcc_unreachable ();
+	    }
+	}
     }
 
   /* The copyin sequence is not to be executed by the main thread, since
@@ -1821,7 +1821,7 @@ lower_rec_input_clauses (tree clauses, tree *ilist, tree *dlist,
       x = built_in_decls[BUILT_IN_OMP_GET_THREAD_NUM];
       x = build_function_call_expr (x, NULL);
       x = build2 (NE_EXPR, boolean_type_node, x,
-                  build_int_cst (TREE_TYPE (x), 0));
+		  build_int_cst (TREE_TYPE (x), 0));
       x = build3 (COND_EXPR, void_type_node, x, copyin_seq, NULL);
       gimplify_and_add (x, ilist);
     }
@@ -1842,7 +1842,7 @@ lower_rec_input_clauses (tree clauses, tree *ilist, tree *dlist,
 
 static void
 lower_lastprivate_clauses (tree clauses, tree predicate, tree *stmt_list,
-                            omp_context *ctx)
+			    omp_context *ctx)
 {
   tree sub_list, x, c;
 
@@ -1851,19 +1851,19 @@ lower_lastprivate_clauses (tree clauses, tree predicate, tree *stmt_list,
   if (clauses == NULL)
     {
       /* If this was a workshare clause, see if it had been combined
-         with its parallel.  In that case, look for the clauses on the
-         parallel statement itself.  */
+	 with its parallel.  In that case, look for the clauses on the
+	 parallel statement itself.  */
       if (is_parallel_ctx (ctx))
-        return;
+	return;
 
       ctx = ctx->outer;
       if (ctx == NULL || !is_parallel_ctx (ctx))
-        return;
+	return;
 
       clauses = find_omp_clause (OMP_PARALLEL_CLAUSES (ctx->stmt),
-                                 OMP_CLAUSE_LASTPRIVATE);
+				 OMP_CLAUSE_LASTPRIVATE);
       if (clauses == NULL)
-        return;
+	return;
     }
 
   sub_list = alloc_stmt_list ();
@@ -1873,14 +1873,14 @@ lower_lastprivate_clauses (tree clauses, tree predicate, tree *stmt_list,
       tree var, new_var;
 
       if (OMP_CLAUSE_CODE (c) != OMP_CLAUSE_LASTPRIVATE)
-        continue;
+	continue;
 
       var = OMP_CLAUSE_DECL (c);
       new_var = lookup_decl (var, ctx);
 
       x = build_outer_var_ref (var, ctx);
       if (is_reference (var))
-        new_var = build_fold_indirect_ref (new_var);
+	new_var = build_fold_indirect_ref (new_var);
       x = lang_hooks.decls.omp_clause_assign_op (c, x, new_var);
       append_to_statement_list (x, &sub_list);
     }
@@ -1907,13 +1907,13 @@ lower_reduction_clauses (tree clauses, tree *stmt_list, omp_context *ctx)
   for (c = clauses; c && count < 2; c = OMP_CLAUSE_CHAIN (c))
     if (OMP_CLAUSE_CODE (c) == OMP_CLAUSE_REDUCTION)
       {
-        if (OMP_CLAUSE_REDUCTION_PLACEHOLDER (c))
-          {
-            /* Never use OMP_ATOMIC for array reductions.  */
-            count = -1;
-            break;
-          }
-        count++;
+	if (OMP_CLAUSE_REDUCTION_PLACEHOLDER (c))
+	  {
+	    /* Never use OMP_ATOMIC for array reductions.  */
+	    count = -1;
+	    break;
+	  }
+	count++;
       }
 
   if (count == 0)
@@ -1925,51 +1925,51 @@ lower_reduction_clauses (tree clauses, tree *stmt_list, omp_context *ctx)
       enum tree_code code;
 
       if (OMP_CLAUSE_CODE (c) != OMP_CLAUSE_REDUCTION)
-        continue;
+	continue;
 
       var = OMP_CLAUSE_DECL (c);
       new_var = lookup_decl (var, ctx);
       if (is_reference (var))
-        new_var = build_fold_indirect_ref (new_var);
+	new_var = build_fold_indirect_ref (new_var);
       ref = build_outer_var_ref (var, ctx);
       code = OMP_CLAUSE_REDUCTION_CODE (c);
 
       /* reduction(-:var) sums up the partial results, so it acts
-         identically to reduction(+:var).  */
+	 identically to reduction(+:var).  */
       if (code == MINUS_EXPR)
         code = PLUS_EXPR;
 
       if (count == 1)
-        {
-          tree addr = build_fold_addr_expr (ref);
+	{
+	  tree addr = build_fold_addr_expr (ref);
 
-          addr = save_expr (addr);
-          ref = build1 (INDIRECT_REF, TREE_TYPE (TREE_TYPE (addr)), addr);
-          x = fold_build2 (code, TREE_TYPE (ref), ref, new_var);
-          x = build2 (OMP_ATOMIC, void_type_node, addr, x);
-          gimplify_and_add (x, stmt_list);
-          return;
-        }
+	  addr = save_expr (addr);
+	  ref = build1 (INDIRECT_REF, TREE_TYPE (TREE_TYPE (addr)), addr);
+	  x = fold_build2 (code, TREE_TYPE (ref), ref, new_var);
+	  x = build2 (OMP_ATOMIC, void_type_node, addr, x);
+	  gimplify_and_add (x, stmt_list);
+	  return;
+	}
 
       if (OMP_CLAUSE_REDUCTION_PLACEHOLDER (c))
-        {
-          tree placeholder = OMP_CLAUSE_REDUCTION_PLACEHOLDER (c);
+	{
+	  tree placeholder = OMP_CLAUSE_REDUCTION_PLACEHOLDER (c);
 
-          if (is_reference (var))
-            ref = build_fold_addr_expr (ref);
-          SET_DECL_VALUE_EXPR (placeholder, ref);
-          DECL_HAS_VALUE_EXPR_P (placeholder) = 1;
-          gimplify_and_add (OMP_CLAUSE_REDUCTION_MERGE (c), &sub_list);
-          OMP_CLAUSE_REDUCTION_MERGE (c) = NULL;
-          OMP_CLAUSE_REDUCTION_PLACEHOLDER (c) = NULL;
-        }
+	  if (is_reference (var))
+	    ref = build_fold_addr_expr (ref);
+	  SET_DECL_VALUE_EXPR (placeholder, ref);
+	  DECL_HAS_VALUE_EXPR_P (placeholder) = 1;
+	  gimplify_and_add (OMP_CLAUSE_REDUCTION_MERGE (c), &sub_list);
+	  OMP_CLAUSE_REDUCTION_MERGE (c) = NULL;
+	  OMP_CLAUSE_REDUCTION_PLACEHOLDER (c) = NULL;
+	}
       else
-        {
-          x = build2 (code, TREE_TYPE (ref), ref, new_var);
-          ref = build_outer_var_ref (var, ctx);
-          x = build2 (MODIFY_EXPR, void_type_node, ref, x);
-          append_to_statement_list (x, &sub_list);
-        }
+	{
+	  x = build2 (code, TREE_TYPE (ref), ref, new_var);
+	  ref = build_outer_var_ref (var, ctx);
+	  x = build2 (MODIFY_EXPR, void_type_node, ref, x);
+	  append_to_statement_list (x, &sub_list);
+	}
     }
 
   x = built_in_decls[BUILT_IN_GOMP_ATOMIC_START];
@@ -1988,7 +1988,7 @@ lower_reduction_clauses (tree clauses, tree *stmt_list, omp_context *ctx)
 
 static void
 lower_copyprivate_clauses (tree clauses, tree *slist, tree *rlist,
-                            omp_context *ctx)
+			    omp_context *ctx)
 {
   tree c;
 
@@ -1998,7 +1998,7 @@ lower_copyprivate_clauses (tree clauses, tree *slist, tree *rlist,
       bool by_ref;
 
       if (OMP_CLAUSE_CODE (c) != OMP_CLAUSE_COPYPRIVATE)
-        continue;
+	continue;
 
       var = OMP_CLAUSE_DECL (c);
       by_ref = use_pointer_for_field (var, false);
@@ -2011,10 +2011,10 @@ lower_copyprivate_clauses (tree clauses, tree *slist, tree *rlist,
 
       ref = build_receiver_ref (var, by_ref, ctx);
       if (is_reference (var))
-        {
-          ref = build_fold_indirect_ref (ref);
-          var = build_fold_indirect_ref (var);
-        }
+	{
+	  ref = build_fold_indirect_ref (ref);
+	  var = build_fold_indirect_ref (var);
+	}
       x = lang_hooks.decls.omp_clause_assign_op (c, var, ref);
       gimplify_and_add (x, rlist);
     }
@@ -2035,68 +2035,68 @@ lower_send_clauses (tree clauses, tree *ilist, tree *olist, omp_context *ctx)
       bool by_ref, do_in = false, do_out = false;
 
       switch (OMP_CLAUSE_CODE (c))
-        {
-        case OMP_CLAUSE_FIRSTPRIVATE:
-        case OMP_CLAUSE_COPYIN:
-        case OMP_CLAUSE_LASTPRIVATE:
-        case OMP_CLAUSE_REDUCTION:
-          break;
-        default:
-          continue;
-        }
+	{
+	case OMP_CLAUSE_FIRSTPRIVATE:
+	case OMP_CLAUSE_COPYIN:
+	case OMP_CLAUSE_LASTPRIVATE:
+	case OMP_CLAUSE_REDUCTION:
+	  break;
+	default:
+	  continue;
+	}
 
       var = val = OMP_CLAUSE_DECL (c);
       if (ctx->is_nested)
-        var = lookup_decl_in_outer_ctx (val, ctx);
+	var = lookup_decl_in_outer_ctx (val, ctx);
 
       if (OMP_CLAUSE_CODE (c) != OMP_CLAUSE_COPYIN
-          && is_global_var (var))
-        continue;
+	  && is_global_var (var))
+	continue;
       if (is_variable_sized (val))
-        continue;
+	continue;
       by_ref = use_pointer_for_field (val, false);
 
       switch (OMP_CLAUSE_CODE (c))
-        {
-        case OMP_CLAUSE_FIRSTPRIVATE:
-        case OMP_CLAUSE_COPYIN:
-          do_in = true;
-          break;
+	{
+	case OMP_CLAUSE_FIRSTPRIVATE:
+	case OMP_CLAUSE_COPYIN:
+	  do_in = true;
+	  break;
 
-        case OMP_CLAUSE_LASTPRIVATE:
-          if (by_ref || is_reference (val))
-            {
-              if (OMP_CLAUSE_LASTPRIVATE_FIRSTPRIVATE (c))
-                continue;
-              do_in = true;
-            }
-          else
-            do_out = true;
-          break;
+	case OMP_CLAUSE_LASTPRIVATE:
+	  if (by_ref || is_reference (val))
+	    {
+	      if (OMP_CLAUSE_LASTPRIVATE_FIRSTPRIVATE (c))
+		continue;
+	      do_in = true;
+	    }
+	  else
+	    do_out = true;
+	  break;
 
-        case OMP_CLAUSE_REDUCTION:
-          do_in = true;
-          do_out = !(by_ref || is_reference (val));
-          break;
+	case OMP_CLAUSE_REDUCTION:
+	  do_in = true;
+	  do_out = !(by_ref || is_reference (val));
+	  break;
 
-        default:
-          gcc_unreachable ();
-        }
+	default:
+	  gcc_unreachable ();
+	}
 
       if (do_in)
-        {
-          ref = build_sender_ref (val, ctx);
-          x = by_ref ? build_fold_addr_expr (var) : var;
-          x = build2 (MODIFY_EXPR, void_type_node, ref, x);
-          gimplify_and_add (x, ilist);
-        }
+	{
+	  ref = build_sender_ref (val, ctx);
+	  x = by_ref ? build_fold_addr_expr (var) : var;
+	  x = build2 (MODIFY_EXPR, void_type_node, ref, x);
+	  gimplify_and_add (x, ilist);
+	}
 
       if (do_out)
-        {
-          ref = build_sender_ref (val, ctx);
-          x = build2 (MODIFY_EXPR, void_type_node, var, ref);
-          gimplify_and_add (x, olist);
-        }
+	{
+	  ref = build_sender_ref (val, ctx);
+	  x = build2 (MODIFY_EXPR, void_type_node, var, ref);
+	  gimplify_and_add (x, olist);
+	}
     }
 }
 
@@ -2117,33 +2117,33 @@ lower_send_shared_vars (tree *ilist, tree *olist, omp_context *ctx)
       ovar = DECL_ABSTRACT_ORIGIN (f);
       nvar = maybe_lookup_decl (ovar, ctx);
       if (!nvar || !DECL_HAS_VALUE_EXPR_P (nvar))
-        continue;
+	continue;
 
       var = ovar;
 
       /* If CTX is a nested parallel directive.  Find the immediately
-         enclosing parallel or workshare construct that contains a
-         mapping for OVAR.  */
+	 enclosing parallel or workshare construct that contains a
+	 mapping for OVAR.  */
       if (ctx->is_nested)
-        var = lookup_decl_in_outer_ctx (ovar, ctx);
+	var = lookup_decl_in_outer_ctx (ovar, ctx);
 
       if (use_pointer_for_field (ovar, true))
-        {
-          x = build_sender_ref (ovar, ctx);
-          var = build_fold_addr_expr (var);
-          x = build2 (MODIFY_EXPR, void_type_node, x, var);
-          gimplify_and_add (x, ilist);
-        }
+	{
+	  x = build_sender_ref (ovar, ctx);
+	  var = build_fold_addr_expr (var);
+	  x = build2 (MODIFY_EXPR, void_type_node, x, var);
+	  gimplify_and_add (x, ilist);
+	}
       else
-        {
-          x = build_sender_ref (ovar, ctx);
-          x = build2 (MODIFY_EXPR, void_type_node, x, var);
-          gimplify_and_add (x, ilist);
+	{
+	  x = build_sender_ref (ovar, ctx);
+	  x = build2 (MODIFY_EXPR, void_type_node, x, var);
+	  gimplify_and_add (x, ilist);
 
-          x = build_sender_ref (ovar, ctx);
-          x = build2 (MODIFY_EXPR, void_type_node, var, x);
-          gimplify_and_add (x, olist);
-        }
+	  x = build_sender_ref (ovar, ctx);
+	  x = build2 (MODIFY_EXPR, void_type_node, var, x);
+	  gimplify_and_add (x, olist);
+	}
     }
 }
 
@@ -2156,7 +2156,7 @@ lower_send_shared_vars (tree *ilist, tree *olist, omp_context *ctx)
 
 static void
 expand_parallel_call (struct omp_region *region, basic_block bb,
-                      tree entry_stmt, tree ws_args)
+		      tree entry_stmt, tree ws_args)
 {
   tree t, args, val, cond, c, list, clauses;
   block_stmt_iterator si;
@@ -2171,17 +2171,17 @@ expand_parallel_call (struct omp_region *region, basic_block bb,
   if (is_combined_parallel (region))
     {
       switch (region->inner->type)
-        {
-        case OMP_FOR:
-          start_ix = BUILT_IN_GOMP_PARALLEL_LOOP_STATIC_START
-                     + region->inner->sched_kind;
-          break;
-        case OMP_SECTIONS:
-          start_ix = BUILT_IN_GOMP_PARALLEL_SECTIONS_START;
-          break;
-        default:
-          gcc_unreachable ();
-        }
+	{
+	case OMP_FOR:
+	  start_ix = BUILT_IN_GOMP_PARALLEL_LOOP_STATIC_START
+		     + region->inner->sched_kind;
+	  break;
+	case OMP_SECTIONS:
+	  start_ix = BUILT_IN_GOMP_PARALLEL_SECTIONS_START;
+	  break;
+	default:
+	  gcc_unreachable ();
+	}
     }
 
   /* By default, the value of NUM_THREADS is zero (selected at run time)
@@ -2209,53 +2209,53 @@ expand_parallel_call (struct omp_region *region, basic_block bb,
       cond = gimple_boolify (cond);
 
       if (integer_zerop (val))
-        val = build2 (EQ_EXPR, unsigned_type_node, cond,
-                      build_int_cst (TREE_TYPE (cond), 0));
+	val = build2 (EQ_EXPR, unsigned_type_node, cond,
+		      build_int_cst (TREE_TYPE (cond), 0));
       else
-        {
-          basic_block cond_bb, then_bb, else_bb;
-          edge e;
-          tree t, then_lab, else_lab, tmp;
+	{
+	  basic_block cond_bb, then_bb, else_bb;
+	  edge e;
+	  tree t, then_lab, else_lab, tmp;
 
-          tmp = create_tmp_var (TREE_TYPE (val), NULL);
-          e = split_block (bb, NULL);
-          cond_bb = e->src;
-          bb = e->dest;
-          remove_edge (e);
+	  tmp = create_tmp_var (TREE_TYPE (val), NULL);
+	  e = split_block (bb, NULL);
+	  cond_bb = e->src;
+	  bb = e->dest;
+	  remove_edge (e);
 
-          then_bb = create_empty_bb (cond_bb);
-          else_bb = create_empty_bb (then_bb);
-          then_lab = create_artificial_label ();
-          else_lab = create_artificial_label ();
+	  then_bb = create_empty_bb (cond_bb);
+	  else_bb = create_empty_bb (then_bb);
+	  then_lab = create_artificial_label ();
+	  else_lab = create_artificial_label ();
 
-          t = build3 (COND_EXPR, void_type_node,
-                      cond,
-                      build_and_jump (&then_lab),
-                      build_and_jump (&else_lab));
+	  t = build3 (COND_EXPR, void_type_node,
+		      cond,
+		      build_and_jump (&then_lab),
+		      build_and_jump (&else_lab));
 
-          si = bsi_start (cond_bb);
-          bsi_insert_after (&si, t, BSI_CONTINUE_LINKING);
+	  si = bsi_start (cond_bb);
+	  bsi_insert_after (&si, t, BSI_CONTINUE_LINKING);
 
-          si = bsi_start (then_bb);
-          t = build1 (LABEL_EXPR, void_type_node, then_lab);
-          bsi_insert_after (&si, t, BSI_CONTINUE_LINKING);
-          t = build2 (MODIFY_EXPR, void_type_node, tmp, val);
-          bsi_insert_after (&si, t, BSI_CONTINUE_LINKING);
+	  si = bsi_start (then_bb);
+	  t = build1 (LABEL_EXPR, void_type_node, then_lab);
+	  bsi_insert_after (&si, t, BSI_CONTINUE_LINKING);
+	  t = build2 (MODIFY_EXPR, void_type_node, tmp, val);
+	  bsi_insert_after (&si, t, BSI_CONTINUE_LINKING);
 
-          si = bsi_start (else_bb);
-          t = build1 (LABEL_EXPR, void_type_node, else_lab);
-          bsi_insert_after (&si, t, BSI_CONTINUE_LINKING);
-          t = build2 (MODIFY_EXPR, void_type_node, tmp, 
-                      build_int_cst (unsigned_type_node, 1));
-          bsi_insert_after (&si, t, BSI_CONTINUE_LINKING);
+	  si = bsi_start (else_bb);
+	  t = build1 (LABEL_EXPR, void_type_node, else_lab);
+	  bsi_insert_after (&si, t, BSI_CONTINUE_LINKING);
+	  t = build2 (MODIFY_EXPR, void_type_node, tmp, 
+	              build_int_cst (unsigned_type_node, 1));
+	  bsi_insert_after (&si, t, BSI_CONTINUE_LINKING);
 
-          make_edge (cond_bb, then_bb, EDGE_TRUE_VALUE);
-          make_edge (cond_bb, else_bb, EDGE_FALSE_VALUE);
-          make_edge (then_bb, bb, EDGE_FALLTHRU);
-          make_edge (else_bb, bb, EDGE_FALLTHRU);
+	  make_edge (cond_bb, then_bb, EDGE_TRUE_VALUE);
+	  make_edge (cond_bb, else_bb, EDGE_FALSE_VALUE);
+	  make_edge (then_bb, bb, EDGE_FALLTHRU);
+	  make_edge (else_bb, bb, EDGE_FALLTHRU);
 
-          val = tmp;
-        }
+	  val = tmp;
+	}
 
       list = NULL_TREE;
       val = get_formal_tmp_var (val, &list);
@@ -2342,9 +2342,9 @@ list2chain (tree list)
     {
       tree var = TREE_VALUE (t);
       if (TREE_CHAIN (t))
-        TREE_CHAIN (var) = TREE_VALUE (TREE_CHAIN (t));
+	TREE_CHAIN (var) = TREE_VALUE (TREE_CHAIN (t));
       else
-        TREE_CHAIN (var) = NULL_TREE;
+	TREE_CHAIN (var) = NULL_TREE;
     }
 
   return list ? TREE_VALUE (list) : NULL_TREE;
@@ -2388,10 +2388,10 @@ remove_exit_barrier (struct omp_region *region)
     {
       si = bsi_last (e->src);
       if (bsi_end_p (si))
-        continue;
+	continue;
       t = bsi_stmt (si);
       if (TREE_CODE (t) == OMP_RETURN)
-        OMP_RETURN_NOWAIT (t) = 1;
+	OMP_RETURN_NOWAIT (t) = 1;
     }
 }
 
@@ -2406,10 +2406,10 @@ remove_exit_barriers (struct omp_region *region)
       region = region->inner;
       remove_exit_barriers (region);
       while (region->next)
-        {
-          region = region->next;
-          remove_exit_barriers (region);
-        }
+	{
+	  region = region->next;
+	  remove_exit_barriers (region);
+	}
     }
 }
 
@@ -2442,8 +2442,8 @@ expand_omp_parallel (struct omp_region *region)
   if (child_cfun->cfg)
     {
       /* Due to inlining, it may happen that we have already outlined
-         the region, in which case all we need to do is make the
-         sub-graph unreachable and emit the parallel call.  */
+	 the region, in which case all we need to do is make the
+	 sub-graph unreachable and emit the parallel call.  */
       edge entry_succ_e, exit_succ_e;
       block_stmt_iterator si;
 
@@ -2456,55 +2456,55 @@ expand_omp_parallel (struct omp_region *region)
       new_bb = entry_bb;
       remove_edge (entry_succ_e);
       if (exit_bb)
-        {
-          exit_succ_e = single_succ_edge (exit_bb);
-          make_edge (new_bb, exit_succ_e->dest, EDGE_FALLTHRU);
-        }
+	{
+	  exit_succ_e = single_succ_edge (exit_bb);
+	  make_edge (new_bb, exit_succ_e->dest, EDGE_FALLTHRU);
+	}
       do_cleanup_cfg = true;
     }
   else
     {
       /* If the parallel region needs data sent from the parent
-         function, then the very first statement (except possible
-         tree profile counter updates) of the parallel body
-         is a copy assignment .OMP_DATA_I = &.OMP_DATA_O.  Since
-         &.OMP_DATA_O is passed as an argument to the child function,
-         we need to replace it with the argument as seen by the child
-         function.
+	 function, then the very first statement (except possible
+	 tree profile counter updates) of the parallel body
+	 is a copy assignment .OMP_DATA_I = &.OMP_DATA_O.  Since
+	 &.OMP_DATA_O is passed as an argument to the child function,
+	 we need to replace it with the argument as seen by the child
+	 function.
 
-         In most cases, this will end up being the identity assignment
-         .OMP_DATA_I = .OMP_DATA_I.  However, if the parallel body had
-         a function call that has been inlined, the original PARM_DECL
-         .OMP_DATA_I may have been converted into a different local
-         variable.  In which case, we need to keep the assignment.  */
+	 In most cases, this will end up being the identity assignment
+	 .OMP_DATA_I = .OMP_DATA_I.  However, if the parallel body had
+	 a function call that has been inlined, the original PARM_DECL
+	 .OMP_DATA_I may have been converted into a different local
+	 variable.  In which case, we need to keep the assignment.  */
       if (OMP_PARALLEL_DATA_ARG (entry_stmt))
-        {
-          basic_block entry_succ_bb = single_succ (entry_bb);
-          block_stmt_iterator si;
+	{
+	  basic_block entry_succ_bb = single_succ (entry_bb);
+	  block_stmt_iterator si;
 
-          for (si = bsi_start (entry_succ_bb); ; bsi_next (&si))
-            {
-              tree stmt, arg;
+	  for (si = bsi_start (entry_succ_bb); ; bsi_next (&si))
+	    {
+	      tree stmt, arg;
 
-              gcc_assert (!bsi_end_p (si));
-              stmt = bsi_stmt (si);
-              if (TREE_CODE (stmt) != MODIFY_EXPR)
-                continue;
+	      gcc_assert (!bsi_end_p (si));
+	      stmt = bsi_stmt (si);
+	      if (TREE_CODE (stmt) != MODIFY_EXPR)
+		continue;
 
-              arg = TREE_OPERAND (stmt, 1);
-              STRIP_NOPS (arg);
-              if (TREE_CODE (arg) == ADDR_EXPR
-                  && TREE_OPERAND (arg, 0)
-                     == OMP_PARALLEL_DATA_ARG (entry_stmt))
-                {
-                  if (TREE_OPERAND (stmt, 0) == DECL_ARGUMENTS (child_fn))
-                    bsi_remove (&si, true);
-                  else
-                    TREE_OPERAND (stmt, 1) = DECL_ARGUMENTS (child_fn);
-                  break;
-                }
-            }
-        }
+	      arg = TREE_OPERAND (stmt, 1);
+	      STRIP_NOPS (arg);
+	      if (TREE_CODE (arg) == ADDR_EXPR
+		  && TREE_OPERAND (arg, 0)
+		     == OMP_PARALLEL_DATA_ARG (entry_stmt))
+		{
+		  if (TREE_OPERAND (stmt, 0) == DECL_ARGUMENTS (child_fn))
+		    bsi_remove (&si, true);
+		  else
+		    TREE_OPERAND (stmt, 1) = DECL_ARGUMENTS (child_fn);
+		  break;
+		}
+	    }
+	}
 
       /* Declare local variables needed in CHILD_CFUN.  */
       block = DECL_INITIAL (child_fn);
@@ -2513,13 +2513,13 @@ expand_omp_parallel (struct omp_region *region)
 
       /* Reset DECL_CONTEXT on locals and function arguments.  */
       for (t = BLOCK_VARS (block); t; t = TREE_CHAIN (t))
-        DECL_CONTEXT (t) = child_fn;
+	DECL_CONTEXT (t) = child_fn;
 
       for (t = DECL_ARGUMENTS (child_fn); t; t = TREE_CHAIN (t))
-        DECL_CONTEXT (t) = child_fn;
+	DECL_CONTEXT (t) = child_fn;
 
       /* Split ENTRY_BB at OMP_PARALLEL so that it can be moved to the
-         child function.  */
+	 child function.  */
       si = bsi_last (entry_bb);
       t = bsi_stmt (si);
       gcc_assert (t && TREE_CODE (t) == OMP_PARALLEL);
@@ -2529,24 +2529,24 @@ expand_omp_parallel (struct omp_region *region)
       single_succ_edge (entry_bb)->flags = EDGE_FALLTHRU;
 
       /* Move the parallel region into CHILD_CFUN.  We need to reset
-         dominance information because the expansion of the inner
-         regions has invalidated it.  */
+	 dominance information because the expansion of the inner
+	 regions has invalidated it.  */
       free_dominance_info (CDI_DOMINATORS);
       new_bb = move_sese_region_to_fn (child_cfun, entry_bb, exit_bb);
       if (exit_bb)
-        single_succ_edge (new_bb)->flags = EDGE_FALLTHRU;
+	single_succ_edge (new_bb)->flags = EDGE_FALLTHRU;
       cgraph_add_new_function (child_fn);
 
       /* Convert OMP_RETURN into a RETURN_EXPR.  */
       if (exit_bb)
-        {
-          si = bsi_last (exit_bb);
-          gcc_assert (!bsi_end_p (si)
-                      && TREE_CODE (bsi_stmt (si)) == OMP_RETURN);
-          t = build1 (RETURN_EXPR, void_type_node, NULL);
-          bsi_insert_after (&si, t, BSI_SAME_STMT);
-          bsi_remove (&si, true);
-        }
+	{
+	  si = bsi_last (exit_bb);
+	  gcc_assert (!bsi_end_p (si)
+		      && TREE_CODE (bsi_stmt (si)) == OMP_RETURN);
+	  t = build1 (RETURN_EXPR, void_type_node, NULL);
+	  bsi_insert_after (&si, t, BSI_SAME_STMT);
+	  bsi_remove (&si, true);
+	}
     }
 
   /* Emit a library call to launch the children threads.  */
@@ -2565,21 +2565,21 @@ expand_omp_parallel (struct omp_region *region)
 /* A subroutine of expand_omp_for.  Generate code for a parallel
    loop with any schedule.  Given parameters:
 
-        for (V = N1; V cond N2; V += STEP) BODY;
+	for (V = N1; V cond N2; V += STEP) BODY;
 
    where COND is "<" or ">", we generate pseudocode
 
-        more = GOMP_loop_foo_start (N1, N2, STEP, CHUNK, &istart0, &iend0);
-        if (more) goto L0; else goto L3;
+	more = GOMP_loop_foo_start (N1, N2, STEP, CHUNK, &istart0, &iend0);
+	if (more) goto L0; else goto L3;
     L0:
-        V = istart0;
-        iend = iend0;
+	V = istart0;
+	iend = iend0;
     L1:
-        BODY;
-        V += STEP;
-        if (V cond iend) goto L1; else goto L2;
+	BODY;
+	V += STEP;
+	if (V cond iend) goto L1; else goto L2;
     L2:
-        if (GOMP_loop_foo_next (&istart0, &iend0)) goto L0; else goto L3;
+	if (GOMP_loop_foo_next (&istart0, &iend0)) goto L0; else goto L3;
     L3:
 
     If this is a combined omp parallel loop, instead of the call to
@@ -2587,9 +2587,9 @@ expand_omp_parallel (struct omp_region *region)
 
 static void
 expand_omp_for_generic (struct omp_region *region,
-                        struct omp_for_data *fd,
-                        enum built_in_function start_fn,
-                        enum built_in_function next_fn)
+			struct omp_for_data *fd,
+			enum built_in_function start_fn,
+			enum built_in_function next_fn)
 {
   tree l0, l1, l2 = NULL, l3 = NULL;
   tree type, istart0, iend0, iend;
@@ -2632,17 +2632,17 @@ expand_omp_for_generic (struct omp_region *region,
   if (!in_combined_parallel)
     {
       /* If this is not a combined parallel loop, emit a call to
-         GOMP_loop_foo_start in ENTRY_BB.  */
+	 GOMP_loop_foo_start in ENTRY_BB.  */
       list = alloc_stmt_list ();
       t = build_fold_addr_expr (iend0);
       args = tree_cons (NULL, t, NULL);
       t = build_fold_addr_expr (istart0);
       args = tree_cons (NULL, t, args);
       if (fd->chunk_size)
-        {
-          t = fold_convert (long_integer_type_node, fd->chunk_size);
-          args = tree_cons (NULL, t, args);
-        }
+	{
+	  t = fold_convert (long_integer_type_node, fd->chunk_size);
+	  args = tree_cons (NULL, t, args);
+	}
       t = fold_convert (long_integer_type_node, fd->step);
       args = tree_cons (NULL, t, args);
       t = fold_convert (long_integer_type_node, fd->n2);
@@ -2652,11 +2652,11 @@ expand_omp_for_generic (struct omp_region *region,
       t = build_function_call_expr (built_in_decls[start_fn], args);
       t = get_formal_tmp_var (t, &list);
       if (cont_bb)
-        {
-          t = build3 (COND_EXPR, void_type_node, t, build_and_jump (&l0),
-                      build_and_jump (&l3));
-          append_to_statement_list (t, &list);
-        }
+	{
+	  t = build3 (COND_EXPR, void_type_node, t, build_and_jump (&l0),
+		      build_and_jump (&l3));
+	  append_to_statement_list (t, &list);
+	}
       bsi_insert_after (&si, list, BSI_SAME_STMT);
     }
   bsi_remove (&si, true);
@@ -2696,7 +2696,7 @@ expand_omp_for_generic (struct omp_region *region,
   t = build2 (fd->cond_code, boolean_type_node, fd->v, iend);
   t = get_formal_tmp_var (t, &list);
   t = build3 (COND_EXPR, void_type_node, t, build_and_jump (&l1),
-              build_and_jump (&l2));
+	      build_and_jump (&l2));
   append_to_statement_list (t, &list);
 
   si = bsi_last (cont_bb);
@@ -2714,7 +2714,7 @@ expand_omp_for_generic (struct omp_region *region,
   t = build_function_call_expr (built_in_decls[next_fn], args);
   t = get_formal_tmp_var (t, &list);
   t = build3 (COND_EXPR, void_type_node, t, build_and_jump (&l0),
-              build_and_jump (&l3));
+	      build_and_jump (&l3));
   append_to_statement_list (t, &list);
   
   si = bsi_start (l2_bb);
@@ -2755,33 +2755,33 @@ expand_omp_for_generic (struct omp_region *region,
    loop with static schedule and no specified chunk size.  Given
    parameters:
 
-        for (V = N1; V cond N2; V += STEP) BODY;
+	for (V = N1; V cond N2; V += STEP) BODY;
 
    where COND is "<" or ">", we generate pseudocode
 
-        if (cond is <)
-          adj = STEP - 1;
-        else
-          adj = STEP + 1;
-        n = (adj + N2 - N1) / STEP;
-        q = n / nthreads;
-        q += (q * nthreads != n);
-        s0 = q * threadid;
-        e0 = min(s0 + q, n);
-        if (s0 >= e0) goto L2; else goto L0;
+	if (cond is <)
+	  adj = STEP - 1;
+	else
+	  adj = STEP + 1;
+	n = (adj + N2 - N1) / STEP;
+	q = n / nthreads;
+	q += (q * nthreads != n);
+	s0 = q * threadid;
+	e0 = min(s0 + q, n);
+	if (s0 >= e0) goto L2; else goto L0;
     L0:
-        V = s0 * STEP + N1;
-        e = e0 * STEP + N1;
+	V = s0 * STEP + N1;
+	e = e0 * STEP + N1;
     L1:
-        BODY;
-        V += STEP;
-        if (V cond e) goto L1;
+	BODY;
+	V += STEP;
+	if (V cond e) goto L1;
     L2:
 */
 
 static void
 expand_omp_for_static_nochunk (struct omp_region *region,
-                               struct omp_for_data *fd)
+			       struct omp_for_data *fd)
 {
   tree l0, l1, l2, n, q, s0, e0, e, t, nthreads, threadid;
   tree type, list;
@@ -2855,7 +2855,7 @@ expand_omp_for_static_nochunk (struct omp_region *region,
 
   t = build2 (GE_EXPR, boolean_type_node, s0, e0);
   t = build3 (COND_EXPR, void_type_node, t, build_and_jump (&l2),
-              build_and_jump (&l0));
+	      build_and_jump (&l0));
   append_to_statement_list (t, &list);
 
   si = bsi_last (entry_bb);
@@ -2890,7 +2890,7 @@ expand_omp_for_static_nochunk (struct omp_region *region,
   t = build2 (fd->cond_code, boolean_type_node, fd->v, e);
   t = get_formal_tmp_var (t, &list);
   t = build3 (COND_EXPR, void_type_node, t, build_and_jump (&l1),
-              build_and_jump (&l2));
+	      build_and_jump (&l2));
   append_to_statement_list (t, &list);
 
   si = bsi_last (cont_bb);
@@ -2924,30 +2924,30 @@ expand_omp_for_static_nochunk (struct omp_region *region,
    loop with static schedule and a specified chunk size.  Given
    parameters:
 
-        for (V = N1; V cond N2; V += STEP) BODY;
+	for (V = N1; V cond N2; V += STEP) BODY;
 
    where COND is "<" or ">", we generate pseudocode
 
-        if (cond is <)
-          adj = STEP - 1;
-        else
-          adj = STEP + 1;
-        n = (adj + N2 - N1) / STEP;
-        trip = 0;
+	if (cond is <)
+	  adj = STEP - 1;
+	else
+	  adj = STEP + 1;
+	n = (adj + N2 - N1) / STEP;
+	trip = 0;
     L0:
-        s0 = (trip * nthreads + threadid) * CHUNK;
-        e0 = min(s0 + CHUNK, n);
-        if (s0 < n) goto L1; else goto L4;
+	s0 = (trip * nthreads + threadid) * CHUNK;
+	e0 = min(s0 + CHUNK, n);
+	if (s0 < n) goto L1; else goto L4;
     L1:
-        V = s0 * STEP + N1;
-        e = e0 * STEP + N1;
+	V = s0 * STEP + N1;
+	e = e0 * STEP + N1;
     L2:
-        BODY;
-        V += STEP;
-        if (V cond e) goto L2; else goto L3;
+	BODY;
+	V += STEP;
+	if (V cond e) goto L2; else goto L3;
     L3:
-        trip += 1;
-        goto L0;
+	trip += 1;
+	goto L0;
     L4:
 */
 
@@ -3041,7 +3041,7 @@ expand_omp_for_static_chunk (struct omp_region *region, struct omp_for_data *fd)
 
   t = build2 (LT_EXPR, boolean_type_node, s0, n);
   t = build3 (COND_EXPR, void_type_node, t,
-              build_and_jump (&l1), build_and_jump (&l4));
+	      build_and_jump (&l1), build_and_jump (&l4));
   append_to_statement_list (t, &list);
 
   si = bsi_start (iter_part_bb);
@@ -3075,7 +3075,7 @@ expand_omp_for_static_chunk (struct omp_region *region, struct omp_for_data *fd)
   t = build2 (fd->cond_code, boolean_type_node, fd->v, e);
   t = get_formal_tmp_var (t, &list);
   t = build3 (COND_EXPR, void_type_node, t,
-              build_and_jump (&l2), build_and_jump (&l3));
+	      build_and_jump (&l2), build_and_jump (&l3));
   append_to_statement_list (t, &list);
   
   si = bsi_last (cont_bb);
@@ -3139,9 +3139,9 @@ expand_omp_for (struct omp_region *region)
       && region->exit)
     {
       if (fd.chunk_size == NULL)
-        expand_omp_for_static_nochunk (region, &fd);
+	expand_omp_for_static_nochunk (region, &fd);
       else
-        expand_omp_for_static_chunk (region, &fd);
+	expand_omp_for_static_chunk (region, &fd);
     }
   else
     {
@@ -3157,27 +3157,27 @@ expand_omp_for (struct omp_region *region)
 
 /* Expand code for an OpenMP sections directive.  In pseudo code, we generate
 
-        v = GOMP_sections_start (n);
+	v = GOMP_sections_start (n);
     L0:
-        switch (v)
-          {
-          case 0:
-            goto L2;
-          case 1:
-            section 1;
-            goto L1;
-          case 2:
-            ...
-          case n:
-            ...
-          default:
-            abort ();
-          }
+	switch (v)
+	  {
+	  case 0:
+	    goto L2;
+	  case 1:
+	    section 1;
+	    goto L1;
+	  case 2:
+	    ...
+	  case n:
+	    ...
+	  default:
+	    abort ();
+	  }
     L1:
-        v = GOMP_sections_next ();
-        goto L0;
+	v = GOMP_sections_next ();
+	goto L0;
     L2:
-        reduction;
+	reduction;
 
     If this is a combined parallel sections, replace the call to
     GOMP_sections_start with 'goto L1'.  */
@@ -3232,7 +3232,7 @@ expand_omp_sections (struct omp_region *region)
   if (!is_combined_parallel (region))
     {
       /* If we are not inside a combined parallel+sections region,
-         call GOMP_sections_start.  */
+	 call GOMP_sections_start.  */
       t = build_int_cst (unsigned_type_node, len);
       t = tree_cons (NULL, t, NULL);
       u = built_in_decls[BUILT_IN_GOMP_SECTIONS_START];
@@ -3249,7 +3249,7 @@ expand_omp_sections (struct omp_region *region)
   bsi_insert_after (&si, t, BSI_CONTINUE_LINKING);
 
   t = build3 (CASE_LABEL_EXPR, void_type_node,
-              build_int_cst (unsigned_type_node, 0), NULL, l2);
+	      build_int_cst (unsigned_type_node, 0), NULL, l2);
   TREE_VEC_ELT (label_vec, 0) = t;
   make_edge (l0_bb, l2_bb, 0);
 
@@ -3278,7 +3278,7 @@ expand_omp_sections (struct omp_region *region)
       single_succ_edge (s_entry_bb)->flags = EDGE_FALLTHRU;
 
       if (s_exit_bb == NULL)
-        continue;
+	continue;
 
       si = bsi_last (s_exit_bb);
       gcc_assert (TREE_CODE (bsi_stmt (si)) == OMP_RETURN);
@@ -3316,9 +3316,9 @@ expand_omp_sections (struct omp_region *region)
     {
       si = bsi_last (exit_bb);
       if (OMP_RETURN_NOWAIT (bsi_stmt (si)))
-        t = built_in_decls[BUILT_IN_GOMP_SECTIONS_END_NOWAIT];
+	t = built_in_decls[BUILT_IN_GOMP_SECTIONS_END_NOWAIT];
       else
-        t = built_in_decls[BUILT_IN_GOMP_SECTIONS_END];
+	t = built_in_decls[BUILT_IN_GOMP_SECTIONS_END];
       t = build_function_call_expr (t, NULL);
       bsi_insert_after (&si, t, BSI_SAME_STMT);
       bsi_remove (&si, true);
@@ -3328,8 +3328,8 @@ expand_omp_sections (struct omp_region *region)
   if (is_combined_parallel (region))
     {
       /* If this was a combined parallel+sections region, we did not
-         emit a GOMP_sections_start in the entry block, so we just
-         need to jump to L1_BB to get the next section.  */
+	 emit a GOMP_sections_start in the entry block, so we just
+	 need to jump to L1_BB to get the next section.  */
       make_edge (entry_bb, l1_bb, EDGE_FALLTHRU);
     }
   else
@@ -3362,7 +3362,7 @@ expand_omp_single (struct omp_region *region)
      be removed.  We need to ensure that the thread that entered the single
      does not exit before the data is copied out by the other threads.  */
   if (find_omp_clause (OMP_SINGLE_CLAUSES (bsi_stmt (si)),
-                       OMP_CLAUSE_COPYPRIVATE))
+		       OMP_CLAUSE_COPYPRIVATE))
     need_barrier = true;
   gcc_assert (TREE_CODE (bsi_stmt (si)) == OMP_SINGLE);
   bsi_remove (&si, true);
@@ -3395,9 +3395,9 @@ expand_omp_synch (struct omp_region *region)
 
   si = bsi_last (entry_bb);
   gcc_assert (TREE_CODE (bsi_stmt (si)) == OMP_SINGLE
-              || TREE_CODE (bsi_stmt (si)) == OMP_MASTER
-              || TREE_CODE (bsi_stmt (si)) == OMP_ORDERED
-              || TREE_CODE (bsi_stmt (si)) == OMP_CRITICAL);
+	      || TREE_CODE (bsi_stmt (si)) == OMP_MASTER
+	      || TREE_CODE (bsi_stmt (si)) == OMP_ORDERED
+	      || TREE_CODE (bsi_stmt (si)) == OMP_CRITICAL);
   bsi_remove (&si, true);
   single_succ_edge (entry_bb)->flags = EDGE_FALLTHRU;
 
@@ -3423,40 +3423,40 @@ expand_omp (struct omp_region *region)
   while (region)
     {
       if (region->inner)
-        expand_omp (region->inner);
+	expand_omp (region->inner);
 
       switch (region->type)
-        {
-        case OMP_PARALLEL:
-          expand_omp_parallel (region);
-          break;
+	{
+	case OMP_PARALLEL:
+	  expand_omp_parallel (region);
+	  break;
 
-        case OMP_FOR:
-          expand_omp_for (region);
-          break;
+	case OMP_FOR:
+	  expand_omp_for (region);
+	  break;
 
-        case OMP_SECTIONS:
-          expand_omp_sections (region);
-          break;
+	case OMP_SECTIONS:
+	  expand_omp_sections (region);
+	  break;
 
-        case OMP_SECTION:
-          /* Individual omp sections are handled together with their
-             parent OMP_SECTIONS region.  */
-          break;
+	case OMP_SECTION:
+	  /* Individual omp sections are handled together with their
+	     parent OMP_SECTIONS region.  */
+	  break;
 
-        case OMP_SINGLE:
-          expand_omp_single (region);
-          break;
+	case OMP_SINGLE:
+	  expand_omp_single (region);
+	  break;
 
-        case OMP_MASTER:
-        case OMP_ORDERED:
-        case OMP_CRITICAL:
-          expand_omp_synch (region);
-          break;
+	case OMP_MASTER:
+	case OMP_ORDERED:
+	case OMP_CRITICAL:
+	  expand_omp_synch (region);
+	  break;
 
-        default:
-          gcc_unreachable ();
-        }
+	default:
+	  gcc_unreachable ();
+	}
 
       region = region->next;
     }
@@ -3483,32 +3483,32 @@ build_omp_regions_1 (basic_block bb, struct omp_region *parent)
       code = TREE_CODE (stmt);
 
       if (code == OMP_RETURN)
-        {
-          /* STMT is the return point out of region PARENT.  Mark it
-             as the exit point and make PARENT the immediately
-             enclosing region.  */
-          gcc_assert (parent);
-          region = parent;
-          region->exit = bb;
-          parent = parent->outer;
+	{
+	  /* STMT is the return point out of region PARENT.  Mark it
+	     as the exit point and make PARENT the immediately
+	     enclosing region.  */
+	  gcc_assert (parent);
+	  region = parent;
+	  region->exit = bb;
+	  parent = parent->outer;
 
-          /* If REGION is a parallel region, determine whether it is
-             a combined parallel+workshare region.  */
-          if (region->type == OMP_PARALLEL)
-            determine_parallel_type (region);
-        }
+	  /* If REGION is a parallel region, determine whether it is
+	     a combined parallel+workshare region.  */
+	  if (region->type == OMP_PARALLEL)
+	    determine_parallel_type (region);
+	}
       else if (code == OMP_CONTINUE)
-        {
-          gcc_assert (parent);
-          parent->cont = bb;
-        }
+	{
+	  gcc_assert (parent);
+	  parent->cont = bb;
+	}
       else
-        {
-          /* Otherwise, this directive becomes the parent for a new
-             region.  */
-          region = new_omp_region (bb, code, parent);
-          parent = region;
-        }
+	{
+	  /* Otherwise, this directive becomes the parent for a new
+	     region.  */
+	  region = new_omp_region (bb, code, parent);
+	  parent = region;
+	}
     }
 
   for (son = first_dom_son (CDI_DOMINATORS, bb);
@@ -3568,19 +3568,19 @@ gate_expand_omp (void)
 
 struct tree_opt_pass pass_expand_omp = 
 {
-  "ompexp",                                /* name */
-  gate_expand_omp,                        /* gate */
-  execute_expand_omp,                        /* execute */
-  NULL,                                        /* sub */
-  NULL,                                        /* next */
-  0,                                        /* static_pass_number */
-  0,                                        /* tv_id */
-  PROP_gimple_any,                        /* properties_required */
-  PROP_gimple_lomp,                        /* properties_provided */
-  0,                                        /* properties_destroyed */
-  0,                                        /* todo_flags_start */
-  TODO_dump_func,                        /* todo_flags_finish */
-  0                                        /* letter */
+  "ompexp",				/* name */
+  gate_expand_omp,			/* gate */
+  execute_expand_omp,			/* execute */
+  NULL,					/* sub */
+  NULL,					/* next */
+  0,					/* static_pass_number */
+  0,					/* tv_id */
+  PROP_gimple_any,			/* properties_required */
+  PROP_gimple_lomp,			/* properties_provided */
+  0,					/* properties_destroyed */
+  0,					/* todo_flags_start */
+  TODO_dump_func,			/* todo_flags_finish */
+  0					/* letter */
 };
 
 /* Routines to lower OpenMP directives into OMP-GIMPLE.  */
@@ -3625,13 +3625,13 @@ lower_omp_sections (tree *stmt_p, omp_context *ctx)
       OMP_SECTION_BODY (sec_start) = NULL;
 
       if (i == len - 1)
-        {
-          tree l = alloc_stmt_list ();
-          lower_lastprivate_clauses (OMP_SECTIONS_CLAUSES (stmt), NULL,
-                                     &l, ctx);
-          append_to_statement_list (l, &body);
-          OMP_SECTION_LAST (sec_start) = 1;
-        }
+	{
+	  tree l = alloc_stmt_list ();
+	  lower_lastprivate_clauses (OMP_SECTIONS_CLAUSES (stmt), NULL,
+				     &l, ctx);
+	  append_to_statement_list (l, &body);
+	  OMP_SECTION_LAST (sec_start) = 1;
+	}
       
       sec_end = make_node (OMP_RETURN);
       append_to_statement_list (sec_end, &body);
@@ -3664,7 +3664,7 @@ lower_omp_sections (tree *stmt_p, omp_context *ctx)
 
   t = make_node (OMP_RETURN);
   OMP_RETURN_NOWAIT (t) = !!find_omp_clause (OMP_SECTIONS_CLAUSES (stmt),
-                                             OMP_CLAUSE_NOWAIT);
+					     OMP_CLAUSE_NOWAIT);
   append_to_statement_list (t, &new_body);
 
   BIND_EXPR_BODY (new_stmt) = new_body;
@@ -3677,9 +3677,9 @@ lower_omp_sections (tree *stmt_p, omp_context *ctx)
 /* A subroutine of lower_omp_single.  Expand the simple form of
    an OMP_SINGLE, without a copyprivate clause:
 
-             if (GOMP_single_start ())
-          BODY;
-        [ GOMP_barrier (); ]        -> unless 'nowait' is present.
+     	if (GOMP_single_start ())
+	  BODY;
+	[ GOMP_barrier (); ]	-> unless 'nowait' is present.
 
   FIXME.  It may be better to delay expanding the logic of this until
   pass_expand_omp.  The expanded logic may make the job more difficult
@@ -3693,7 +3693,7 @@ lower_omp_single_simple (tree single_stmt, tree *pre_p)
   t = built_in_decls[BUILT_IN_GOMP_SINGLE_START];
   t = build_function_call_expr (t, NULL);
   t = build3 (COND_EXPR, void_type_node, t,
-              OMP_SINGLE_BODY (single_stmt), NULL);
+	      OMP_SINGLE_BODY (single_stmt), NULL);
   gimplify_and_add (t, pre_p);
 }
 
@@ -3701,26 +3701,26 @@ lower_omp_single_simple (tree single_stmt, tree *pre_p)
 /* A subroutine of lower_omp_single.  Expand the simple form of
    an OMP_SINGLE, with a copyprivate clause:
 
-        #pragma omp single copyprivate (a, b, c)
+	#pragma omp single copyprivate (a, b, c)
 
    Create a new structure to hold copies of 'a', 'b' and 'c' and emit:
 
       {
-        if ((copyout_p = GOMP_single_copy_start ()) == NULL)
-          {
-            BODY;
-            copyout.a = a;
-            copyout.b = b;
-            copyout.c = c;
-            GOMP_single_copy_end (&copyout);
-          }
-        else
-          {
-            a = copyout_p->a;
-            b = copyout_p->b;
-            c = copyout_p->c;
-          }
-        GOMP_barrier ();
+	if ((copyout_p = GOMP_single_copy_start ()) == NULL)
+	  {
+	    BODY;
+	    copyout.a = a;
+	    copyout.b = b;
+	    copyout.c = c;
+	    GOMP_single_copy_end (&copyout);
+	  }
+	else
+	  {
+	    a = copyout_p->a;
+	    b = copyout_p->b;
+	    c = copyout_p->c;
+	  }
+	GOMP_barrier ();
       }
 
   FIXME.  It may be better to delay expanding the logic of this until
@@ -3748,9 +3748,9 @@ lower_omp_single_copy (tree single_stmt, tree *pre_p, omp_context *ctx)
   gimplify_and_add (t, pre_p);
 
   t = build2 (EQ_EXPR, boolean_type_node, ctx->receiver_decl,
-              build_int_cst (ptr_type, 0));
+	      build_int_cst (ptr_type, 0));
   t = build3 (COND_EXPR, void_type_node, t,
-              build_and_jump (&l0), build_and_jump (&l1));
+	      build_and_jump (&l0), build_and_jump (&l1));
   gimplify_and_add (t, pre_p);
 
   t = build1 (LABEL_EXPR, void_type_node, l0);
@@ -3760,7 +3760,7 @@ lower_omp_single_copy (tree single_stmt, tree *pre_p, omp_context *ctx)
 
   copyin_seq = NULL;
   lower_copyprivate_clauses (OMP_SINGLE_CLAUSES (single_stmt), pre_p,
-                              &copyin_seq, ctx);
+			      &copyin_seq, ctx);
 
   t = build_fold_addr_expr (ctx->sender_decl);
   args = tree_cons (NULL, t, NULL);
@@ -3795,7 +3795,7 @@ lower_omp_single (tree *stmt_p, omp_context *ctx)
   TREE_SIDE_EFFECTS (bind) = 1;
 
   lower_rec_input_clauses (OMP_SINGLE_CLAUSES (single_stmt),
-                           &BIND_EXPR_BODY (bind), &dlist, ctx);
+			   &BIND_EXPR_BODY (bind), &dlist, ctx);
   lower_omp (&OMP_SINGLE_BODY (single_stmt), ctx);
 
   append_to_statement_list (single_stmt, &BIND_EXPR_BODY (bind));
@@ -3813,7 +3813,7 @@ lower_omp_single (tree *stmt_p, omp_context *ctx)
 
   t = make_node (OMP_RETURN);
   OMP_RETURN_NOWAIT (t) = !!find_omp_clause (OMP_SINGLE_CLAUSES (single_stmt),
-                                             OMP_CLAUSE_NOWAIT);
+					     OMP_CLAUSE_NOWAIT);
   append_to_statement_list (t, &BIND_EXPR_BODY (bind));
 
   pop_gimplify_context (bind);
@@ -3923,31 +3923,31 @@ lower_omp_critical (tree *stmt_p, omp_context *ctx)
       splay_tree_node n;
 
       if (!critical_name_mutexes)
-        critical_name_mutexes
-          = splay_tree_new_ggc (splay_tree_compare_pointers);
+	critical_name_mutexes
+	  = splay_tree_new_ggc (splay_tree_compare_pointers);
 
       n = splay_tree_lookup (critical_name_mutexes, (splay_tree_key) name);
       if (n == NULL)
-        {
-          char *new_str;
+	{
+	  char *new_str;
 
-          decl = create_tmp_var_raw (ptr_type_node, NULL);
+	  decl = create_tmp_var_raw (ptr_type_node, NULL);
 
-          new_str = ACONCAT ((".gomp_critical_user_",
-                              IDENTIFIER_POINTER (name), NULL));
-          DECL_NAME (decl) = get_identifier (new_str);
-          TREE_PUBLIC (decl) = 1;
-          TREE_STATIC (decl) = 1;
-          DECL_COMMON (decl) = 1;
-          DECL_ARTIFICIAL (decl) = 1;
-          DECL_IGNORED_P (decl) = 1;
-          cgraph_varpool_finalize_decl (decl);
+	  new_str = ACONCAT ((".gomp_critical_user_",
+			      IDENTIFIER_POINTER (name), NULL));
+	  DECL_NAME (decl) = get_identifier (new_str);
+	  TREE_PUBLIC (decl) = 1;
+	  TREE_STATIC (decl) = 1;
+	  DECL_COMMON (decl) = 1;
+	  DECL_ARTIFICIAL (decl) = 1;
+	  DECL_IGNORED_P (decl) = 1;
+	  cgraph_varpool_finalize_decl (decl);
 
-          splay_tree_insert (critical_name_mutexes, (splay_tree_key) name,
-                             (splay_tree_value) decl);
-        }
+	  splay_tree_insert (critical_name_mutexes, (splay_tree_key) name,
+			     (splay_tree_value) decl);
+	}
       else
-        decl = (tree) n->value;
+	decl = (tree) n->value;
 
       args = tree_cons (NULL, build_fold_addr_expr (decl), NULL);
       lock = built_in_decls[BUILT_IN_GOMP_CRITICAL_NAME_START];
@@ -4001,7 +4001,7 @@ lower_omp_critical (tree *stmt_p, omp_context *ctx)
 
 static void
 lower_omp_for_lastprivate (struct omp_for_data *fd, tree *body_p,
-                           tree *dlist, struct omp_context *ctx)
+			   tree *dlist, struct omp_context *ctx)
 {
   tree clauses, cond, stmts, vinit, t;
   enum tree_code cond_code;
@@ -4015,7 +4015,7 @@ lower_omp_for_lastprivate (struct omp_for_data *fd, tree *body_p,
     {
       HOST_WIDE_INT step = TREE_INT_CST_LOW (fd->step);
       if (step == 1 || step == -1)
-        cond_code = EQ_EXPR;
+	cond_code = EQ_EXPR;
     }
 
   cond = build2 (cond_code, boolean_type_node, fd->v, fd->n2);
@@ -4030,12 +4030,12 @@ lower_omp_for_lastprivate (struct omp_for_data *fd, tree *body_p,
       /* Optimize: v = 0; is usually cheaper than v = some_other_constant.  */
       vinit = fd->n1;
       if (cond_code == EQ_EXPR
-          && host_integerp (fd->n2, 0)
-          && ! integer_zerop (fd->n2))
-        vinit = build_int_cst (TREE_TYPE (fd->v), 0);
+	  && host_integerp (fd->n2, 0)
+	  && ! integer_zerop (fd->n2))
+	vinit = build_int_cst (TREE_TYPE (fd->v), 0);
 
       /* Initialize the iterator variable, so that threads that don't execute
-         any iterations don't execute the lastprivate clauses by accident.  */
+	 any iterations don't execute the lastprivate clauses by accident.  */
       t = build2 (MODIFY_EXPR, void_type_node, fd->v, vinit);
       gimplify_and_add (t, body_p);
     }
@@ -4075,7 +4075,7 @@ lower_omp_for (tree *stmt_p, omp_context *ctx)
   /* Lower the header expressions.  At this point, we can assume that
      the header is of the form:
 
-             #pragma omp for (V = VAL1; V {<|>|<=|>=} VAL2; V = V [+-] VAL3)
+     	#pragma omp for (V = VAL1; V {<|>|<=|>=} VAL2; V = V [+-] VAL3)
 
      We just need to make sure that VAL1, VAL2 and VAL3 are lowered
      using the .omp_data_s mapping, if needed.  */
@@ -4172,7 +4172,7 @@ lower_omp_parallel (tree *stmt_p, omp_context *ctx)
       wi.val_only = true;
       walk_stmts (&wi, &par_bind);
       if (ws_num == 1)
-        OMP_PARALLEL_COMBINED (stmt) = 1;
+	OMP_PARALLEL_COMBINED (stmt) = 1;
     }
 
   push_gimplify_context ();
@@ -4353,22 +4353,22 @@ lower_omp_1 (tree *tp, int *walk_subtrees, void *data)
 
     case VAR_DECL:
       if (ctx && DECL_HAS_VALUE_EXPR_P (t))
-        {
-          lower_regimplify (&t, wi);
-          if (wi->val_only)
-            {
-              if (wi->is_lhs)
-                t = save_tmp_var (t, &wi->tsi);
-              else
-                t = init_tmp_var (t, &wi->tsi);
-            }
-          *tp = t;
-        }
+	{
+	  lower_regimplify (&t, wi);
+	  if (wi->val_only)
+	    {
+	      if (wi->is_lhs)
+		t = save_tmp_var (t, &wi->tsi);
+	      else
+		t = init_tmp_var (t, &wi->tsi);
+	    }
+	  *tp = t;
+	}
       break;
 
     case ADDR_EXPR:
       if (ctx)
-        lower_regimplify (tp, wi);
+	lower_regimplify (tp, wi);
       break;
 
     case ARRAY_REF:
@@ -4378,21 +4378,21 @@ lower_omp_1 (tree *tp, int *walk_subtrees, void *data)
     case COMPONENT_REF:
     case VIEW_CONVERT_EXPR:
       if (ctx)
-        lower_regimplify (tp, wi);
+	lower_regimplify (tp, wi);
       break;
 
     case INDIRECT_REF:
       if (ctx)
-        {
-          wi->is_lhs = false;
-          wi->val_only = true;
-          lower_regimplify (&TREE_OPERAND (t, 0), wi);
-        }
+	{
+	  wi->is_lhs = false;
+	  wi->val_only = true;
+	  lower_regimplify (&TREE_OPERAND (t, 0), wi);
+	}
       break;
 
     default:
       if (!TYPE_P (t) && !DECL_P (t))
-        *walk_subtrees = 1;
+	*walk_subtrees = 1;
       break;
     }
 
@@ -4419,7 +4419,7 @@ static unsigned int
 execute_lower_omp (void)
 {
   all_contexts = splay_tree_new (splay_tree_compare_pointers, 0,
-                                 delete_omp_context);
+				 delete_omp_context);
 
   scan_omp (&DECL_SAVED_TREE (current_function_decl), NULL);
   gcc_assert (parallel_nesting_level == 0);
@@ -4443,19 +4443,19 @@ gate_lower_omp (void)
 
 struct tree_opt_pass pass_lower_omp = 
 {
-  "omplower",                                /* name */
-  gate_lower_omp,                        /* gate */
-  execute_lower_omp,                        /* execute */
-  NULL,                                        /* sub */
-  NULL,                                        /* next */
-  0,                                        /* static_pass_number */
-  0,                                        /* tv_id */
-  PROP_gimple_any,                        /* properties_required */
-  PROP_gimple_lomp,                        /* properties_provided */
-  0,                                        /* properties_destroyed */
-  0,                                        /* todo_flags_start */
-  TODO_dump_func,                        /* todo_flags_finish */
-  0                                        /* letter */
+  "omplower",				/* name */
+  gate_lower_omp,			/* gate */
+  execute_lower_omp,			/* execute */
+  NULL,					/* sub */
+  NULL,					/* next */
+  0,					/* static_pass_number */
+  0,					/* tv_id */
+  PROP_gimple_any,			/* properties_required */
+  PROP_gimple_lomp,			/* properties_provided */
+  0,					/* properties_destroyed */
+  0,					/* todo_flags_start */
+  TODO_dump_func,			/* todo_flags_finish */
+  0					/* letter */
 };
 
 /* The following is a utility to diagnose OpenMP structured block violations.
@@ -4483,14 +4483,14 @@ diagnose_sb_0 (tree *stmt_p, tree branch_ctx, tree label_ctx)
   else
     {
       while (label_ctx)
-        {
-          if (TREE_VALUE (label_ctx) == branch_ctx)
-            {
-              exit_p = false;
-              break;
-            }
-          label_ctx = TREE_CHAIN (label_ctx);
-        }
+	{
+	  if (TREE_VALUE (label_ctx) == branch_ctx)
+	    {
+	      exit_p = false;
+	      break;
+	    }
+	  label_ctx = TREE_CHAIN (label_ctx);
+	}
     }
 
   if (exit_p)
@@ -4546,7 +4546,7 @@ diagnose_sb_1 (tree *tp, int *walk_subtrees, void *data)
 
     case LABEL_EXPR:
       splay_tree_insert (all_labels, (splay_tree_key) LABEL_EXPR_LABEL (t),
-                         (splay_tree_value) context);
+			 (splay_tree_value) context);
       break;
 
     default:
@@ -4597,26 +4597,26 @@ diagnose_sb_2 (tree *tp, int *walk_subtrees, void *data)
 
     case GOTO_EXPR:
       {
-        tree lab = GOTO_DESTINATION (t);
-        if (TREE_CODE (lab) != LABEL_DECL)
-          break;
+	tree lab = GOTO_DESTINATION (t);
+	if (TREE_CODE (lab) != LABEL_DECL)
+	  break;
 
-        n = splay_tree_lookup (all_labels, (splay_tree_key) lab);
-        diagnose_sb_0 (tp, context, n ? (tree) n->value : NULL_TREE);
+	n = splay_tree_lookup (all_labels, (splay_tree_key) lab);
+	diagnose_sb_0 (tp, context, n ? (tree) n->value : NULL_TREE);
       }
       break;
 
     case SWITCH_EXPR:
       {
-        tree vec = SWITCH_LABELS (t);
-        int i, len = TREE_VEC_LENGTH (vec);
-        for (i = 0; i < len; ++i)
-          {
-            tree lab = CASE_LABEL (TREE_VEC_ELT (vec, i));
-            n = splay_tree_lookup (all_labels, (splay_tree_key) lab);
-            if (diagnose_sb_0 (tp, context, (tree) n->value))
-              break;
-          }
+	tree vec = SWITCH_LABELS (t);
+	int i, len = TREE_VEC_LENGTH (vec);
+	for (i = 0; i < len; ++i)
+	  {
+	    tree lab = CASE_LABEL (TREE_VEC_ELT (vec, i));
+	    n = splay_tree_lookup (all_labels, (splay_tree_key) lab);
+	    if (diagnose_sb_0 (tp, context, (tree) n->value))
+	      break;
+	  }
       }
       break;
 

@@ -31,18 +31,18 @@ Boston, MA 02110-1301, USA.  */
 #define SPARC_DEFAULT_CMODEL CM_MEDMID
 
 /* Target OS builtins.  */
-#define TARGET_OS_CPP_BUILTINS()                \
-  do                                                \
-    {                                                \
-        builtin_define ("__unix__");                \
-        builtin_define ("__OpenBSD__");                \
-        builtin_assert ("system=unix");                \
-        builtin_assert ("system=OpenBSD");        \
-        builtin_define ("__sparc64__");                \
-        builtin_define ("__sparcv9__");                \
-        builtin_define ("__sparc_v9__");        \
-        builtin_define ("__arch64__");                \
-    }                                                \
+#define TARGET_OS_CPP_BUILTINS()		\
+  do						\
+    {						\
+	builtin_define ("__unix__");		\
+	builtin_define ("__OpenBSD__");		\
+	builtin_assert ("system=unix");		\
+	builtin_assert ("system=OpenBSD");	\
+	builtin_define ("__sparc64__");		\
+	builtin_define ("__sparcv9__");		\
+	builtin_define ("__sparc_v9__");	\
+	builtin_define ("__arch64__");		\
+    }						\
   while (0)
 
 #undef CPP_SUBTARGET_SPEC

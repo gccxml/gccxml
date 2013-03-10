@@ -45,54 +45,54 @@ Boston, MA 02110-1301, USA.  */
 
    We also try to bound our search for libraries with marker
    lines.  What a pain.  */
-#define PARSE_LDD_OUTPUT(PTR)                                        \
-do {                                                                \
-  static int in_shlib_list = 0;                                        \
-  while (*PTR == ' ') PTR++;                                        \
-  if (strncmp (PTR, "shared library list:",                        \
-               sizeof ("shared library list:") - 1) == 0)        \
-    {                                                                \
-      PTR = 0;                                                        \
-      in_shlib_list = 1;                                        \
-    }                                                                \
-  else if (strncmp (PTR, "shared library binding:",                \
-                    sizeof ("shared library binding:") - 1) == 0)\
-    {                                                                \
-      PTR = 0;                                                        \
-      in_shlib_list = 0;                                        \
-    }                                                                \
-  else if (strncmp (PTR, "static branch prediction disabled",        \
-                    sizeof ("static branch prediction disabled") - 1) == 0)\
-    {                                                                \
-      PTR = 0;                                                        \
-      in_shlib_list = 0;                                        \
-    }                                                                \
-  else if (in_shlib_list                                        \
-           &&  strncmp (PTR, "dynamic", sizeof ("dynamic") - 1) == 0) \
-    {                                                                \
-      PTR += sizeof ("dynamic") - 1;                                \
-      while (*p == ' ') PTR++;                                        \
-    }                                                                \
-  else if (in_shlib_list                                        \
-           && strncmp (PTR, "static", sizeof ("static") - 1) == 0) \
-    {                                                                \
-      PTR += sizeof ("static") - 1;                                \
-      while (*p == ' ') PTR++;                                        \
-    }                                                                \
-  else                                                                \
-    PTR = 0;                                                        \
+#define PARSE_LDD_OUTPUT(PTR)					\
+do {								\
+  static int in_shlib_list = 0;					\
+  while (*PTR == ' ') PTR++;					\
+  if (strncmp (PTR, "shared library list:",			\
+	       sizeof ("shared library list:") - 1) == 0)	\
+    {								\
+      PTR = 0;							\
+      in_shlib_list = 1;					\
+    }								\
+  else if (strncmp (PTR, "shared library binding:",		\
+		    sizeof ("shared library binding:") - 1) == 0)\
+    {								\
+      PTR = 0;							\
+      in_shlib_list = 0;					\
+    }								\
+  else if (strncmp (PTR, "static branch prediction disabled",	\
+		    sizeof ("static branch prediction disabled") - 1) == 0)\
+    {								\
+      PTR = 0;							\
+      in_shlib_list = 0;					\
+    }								\
+  else if (in_shlib_list					\
+	   &&  strncmp (PTR, "dynamic", sizeof ("dynamic") - 1) == 0) \
+    {								\
+      PTR += sizeof ("dynamic") - 1;				\
+      while (*p == ' ') PTR++;					\
+    }								\
+  else if (in_shlib_list					\
+	   && strncmp (PTR, "static", sizeof ("static") - 1) == 0) \
+    {								\
+      PTR += sizeof ("static") - 1;				\
+      while (*p == ' ') PTR++;					\
+    }								\
+  else								\
+    PTR = 0;							\
 } while (0)
 
 /* Output the label for a function definition.  */
 #ifndef HP_FP_ARG_DESCRIPTOR_REVERSED
-#define ASM_DOUBLE_ARG_DESCRIPTORS(FILE, ARG0, ARG1)        \
-  do { fprintf (FILE, ",ARGW%d=FR", (ARG0));                \
+#define ASM_DOUBLE_ARG_DESCRIPTORS(FILE, ARG0, ARG1)	\
+  do { fprintf (FILE, ",ARGW%d=FR", (ARG0));		\
        fprintf (FILE, ",ARGW%d=FU", (ARG1));} while (0)
 #define DFMODE_RETURN_STRING ",RTNVAL=FU"
 #define SFMODE_RETURN_STRING ",RTNVAL=FR"
 #else
-#define ASM_DOUBLE_ARG_DESCRIPTORS(FILE, ARG0, ARG1)        \
-  do { fprintf (FILE, ",ARGW%d=FU", (ARG0));                \
+#define ASM_DOUBLE_ARG_DESCRIPTORS(FILE, ARG0, ARG1)	\
+  do { fprintf (FILE, ",ARGW%d=FU", (ARG0));		\
        fprintf (FILE, ",ARGW%d=FR", (ARG1));} while (0)
 #define DFMODE_RETURN_STRING ",RTNVAL=FR"
 #define SFMODE_RETURN_STRING ",RTNVAL=FU"
@@ -100,79 +100,79 @@ do {                                                                \
 
 
 #define ASM_DECLARE_FUNCTION_NAME(FILE, NAME, DECL) \
-    do { tree fntype = TREE_TYPE (TREE_TYPE (DECL));                        \
-         tree tree_type = TREE_TYPE (DECL);                                \
-         tree parm;                                                        \
-         int i;                                                                \
-         if (TREE_PUBLIC (DECL) || TARGET_GAS)                                \
-           {                                                                 \
-             if (TREE_PUBLIC (DECL))                                        \
-               {                                                        \
-                 fputs ("\t.EXPORT ", FILE);                                \
-                 assemble_name (FILE, NAME);                                \
-                 fputs (",ENTRY,PRIV_LEV=3", FILE);                        \
-               }                                                        \
-             else                                                        \
-               {                                                        \
-                 fputs ("\t.PARAM ", FILE);                                \
-                 assemble_name (FILE, NAME);                                \
-                 fputs (",PRIV_LEV=3", FILE);                                \
-               }                                                        \
-             for (parm = DECL_ARGUMENTS (DECL), i = 0; parm && i < 4;        \
-                  parm = TREE_CHAIN (parm))                                \
-               {                                                        \
-                 if (TYPE_MODE (DECL_ARG_TYPE (parm)) == SFmode                \
-                     && ! TARGET_SOFT_FLOAT)                                \
-                   fprintf (FILE, ",ARGW%d=FR", i++);                        \
-                 else if (TYPE_MODE (DECL_ARG_TYPE (parm)) == DFmode        \
-                          && ! TARGET_SOFT_FLOAT)                        \
-                   {                                                        \
-                     if (i <= 2)                                        \
-                       {                                                \
-                         if (i == 1) i++;                                \
-                         ASM_DOUBLE_ARG_DESCRIPTORS (FILE, i++, i++);        \
-                       }                                                \
-                     else                                                \
-                       break;                                                \
-                   }                                                        \
-                 else                                                        \
-                   {                                                        \
-                     int arg_size =                                        \
-                       FUNCTION_ARG_SIZE (TYPE_MODE (DECL_ARG_TYPE (parm)),\
-                                          DECL_ARG_TYPE (parm));        \
-                     /* Passing structs by invisible reference uses        \
-                        one general register.  */                        \
-                     if (arg_size > 2                                        \
-                         || TREE_ADDRESSABLE (DECL_ARG_TYPE (parm)))        \
-                       arg_size = 1;                                        \
-                     if (arg_size == 2 && i <= 2)                        \
-                       {                                                \
-                         if (i == 1) i++;                                \
-                         fprintf (FILE, ",ARGW%d=GR", i++);                \
-                         fprintf (FILE, ",ARGW%d=GR", i++);                \
-                       }                                                \
-                     else if (arg_size == 1)                                \
-                       fprintf (FILE, ",ARGW%d=GR", i++);                \
-                     else                                                \
-                       i += arg_size;                                        \
-                   }                                                        \
-               }                                                        \
-             /* anonymous args */                                        \
-             if (TYPE_ARG_TYPES (tree_type) != 0                        \
-                 && (TREE_VALUE (tree_last (TYPE_ARG_TYPES (tree_type)))\
-                     != void_type_node))                                \
-               {                                                        \
-                 for (; i < 4; i++)                                        \
-                   fprintf (FILE, ",ARGW%d=GR", i);                        \
-               }                                                        \
-             if (TYPE_MODE (fntype) == DFmode && ! TARGET_SOFT_FLOAT)        \
-               fputs (DFMODE_RETURN_STRING, FILE);                        \
-             else if (TYPE_MODE (fntype) == SFmode && ! TARGET_SOFT_FLOAT) \
-               fputs (SFMODE_RETURN_STRING, FILE);                        \
-             else if (fntype != void_type_node)                                \
-               fputs (",RTNVAL=GR", FILE);                                \
-             fputs ("\n", FILE);                                        \
-           }} while (0)
+    do { tree fntype = TREE_TYPE (TREE_TYPE (DECL));			\
+	 tree tree_type = TREE_TYPE (DECL);				\
+	 tree parm;							\
+	 int i;								\
+	 if (TREE_PUBLIC (DECL) || TARGET_GAS)				\
+	   { 								\
+	     if (TREE_PUBLIC (DECL))					\
+	       {							\
+		 fputs ("\t.EXPORT ", FILE);				\
+		 assemble_name (FILE, NAME);				\
+		 fputs (",ENTRY,PRIV_LEV=3", FILE);			\
+	       }							\
+	     else							\
+	       {							\
+		 fputs ("\t.PARAM ", FILE);				\
+		 assemble_name (FILE, NAME);				\
+		 fputs (",PRIV_LEV=3", FILE);				\
+	       }							\
+	     for (parm = DECL_ARGUMENTS (DECL), i = 0; parm && i < 4;	\
+		  parm = TREE_CHAIN (parm))				\
+	       {							\
+		 if (TYPE_MODE (DECL_ARG_TYPE (parm)) == SFmode		\
+		     && ! TARGET_SOFT_FLOAT)				\
+		   fprintf (FILE, ",ARGW%d=FR", i++);			\
+		 else if (TYPE_MODE (DECL_ARG_TYPE (parm)) == DFmode	\
+			  && ! TARGET_SOFT_FLOAT)			\
+		   {							\
+		     if (i <= 2)					\
+		       {						\
+			 if (i == 1) i++;				\
+			 ASM_DOUBLE_ARG_DESCRIPTORS (FILE, i++, i++);	\
+		       }						\
+		     else						\
+		       break;						\
+		   }							\
+		 else							\
+		   {							\
+		     int arg_size =					\
+		       FUNCTION_ARG_SIZE (TYPE_MODE (DECL_ARG_TYPE (parm)),\
+					  DECL_ARG_TYPE (parm));	\
+		     /* Passing structs by invisible reference uses	\
+			one general register.  */			\
+		     if (arg_size > 2					\
+			 || TREE_ADDRESSABLE (DECL_ARG_TYPE (parm)))	\
+		       arg_size = 1;					\
+		     if (arg_size == 2 && i <= 2)			\
+		       {						\
+			 if (i == 1) i++;				\
+			 fprintf (FILE, ",ARGW%d=GR", i++);		\
+			 fprintf (FILE, ",ARGW%d=GR", i++);		\
+		       }						\
+		     else if (arg_size == 1)				\
+		       fprintf (FILE, ",ARGW%d=GR", i++);		\
+		     else						\
+		       i += arg_size;					\
+		   }							\
+	       }							\
+	     /* anonymous args */					\
+	     if (TYPE_ARG_TYPES (tree_type) != 0			\
+		 && (TREE_VALUE (tree_last (TYPE_ARG_TYPES (tree_type)))\
+		     != void_type_node))				\
+	       {							\
+		 for (; i < 4; i++)					\
+		   fprintf (FILE, ",ARGW%d=GR", i);			\
+	       }							\
+	     if (TYPE_MODE (fntype) == DFmode && ! TARGET_SOFT_FLOAT)	\
+	       fputs (DFMODE_RETURN_STRING, FILE);			\
+	     else if (TYPE_MODE (fntype) == SFmode && ! TARGET_SOFT_FLOAT) \
+	       fputs (SFMODE_RETURN_STRING, FILE);			\
+	     else if (fntype != void_type_node)				\
+	       fputs (",RTNVAL=GR", FILE);				\
+	     fputs ("\n", FILE);					\
+	   }} while (0)
 
 #define TARGET_ASM_FILE_START pa_som_file_start
 #define TARGET_ASM_INIT_SECTIONS pa_som_asm_init_sections
@@ -199,12 +199,12 @@ do {                                                                \
 #define ASM_OUTPUT_EXTERNAL(FILE, DECL, NAME) \
   pa_hpux_asm_output_external ((FILE), (DECL), (NAME))
 #define ASM_OUTPUT_EXTERNAL_REAL(FILE, DECL, NAME) \
-  do { fputs ("\t.IMPORT ", FILE);                                        \
-       assemble_name_raw (FILE, NAME);                                        \
-       if (FUNCTION_NAME_P (NAME))                                        \
-         fputs (",CODE\n", FILE);                                        \
-       else                                                                \
-         fputs (",DATA\n", FILE);                                        \
+  do { fputs ("\t.IMPORT ", FILE);					\
+       assemble_name_raw (FILE, NAME);					\
+       if (FUNCTION_NAME_P (NAME))					\
+	 fputs (",CODE\n", FILE);					\
+       else								\
+	 fputs (",DATA\n", FILE);					\
      } while (0)
 
 /* The bogus HP assembler requires ALL external references to be
@@ -226,20 +226,20 @@ do {                                                                \
    assemble_external_libcall is called before the symbol is used.  */
 
 #define ASM_OUTPUT_EXTERNAL_LIBCALL(FILE, RTL) \
-  do { const char *name;                                                \
-       tree id;                                                                \
-                                                                        \
-       if (!function_label_operand (RTL, VOIDmode))                        \
-         hppa_encode_label (RTL);                                        \
-                                                                        \
-       name = targetm.strip_name_encoding (XSTR ((RTL), 0));                \
-       id = maybe_get_identifier (name);                                \
-       if (!id || !TREE_SYMBOL_REFERENCED (id))                                \
-         {                                                                \
-           fputs ("\t.IMPORT ", FILE);                                        \
-           assemble_name_raw (FILE, XSTR ((RTL), 0));                               \
-           fputs (",CODE\n", FILE);                                        \
-         }                                                                \
+  do { const char *name;						\
+       tree id;								\
+									\
+       if (!function_label_operand (RTL, VOIDmode))			\
+	 hppa_encode_label (RTL);					\
+									\
+       name = targetm.strip_name_encoding (XSTR ((RTL), 0));		\
+       id = maybe_get_identifier (name);				\
+       if (!id || !TREE_SYMBOL_REFERENCED (id))				\
+	 {								\
+	   fputs ("\t.IMPORT ", FILE);					\
+	   assemble_name_raw (FILE, XSTR ((RTL), 0));		       	\
+	   fputs (",CODE\n", FILE);					\
+	 }								\
      } while (0)
 
 /* We want __gcc_plt_call to appear in every program built by
@@ -248,14 +248,14 @@ do {                                                                \
    removing the dead (but important) initialization of
    REFERENCE.  */
 
-#define DO_GLOBAL_DTORS_BODY                        \
-do {                                                \
-  extern void __gcc_plt_call (void);                \
-  void (*reference)(void) = &__gcc_plt_call;        \
-  func_ptr *p;                                        \
-  __asm__ ("" : : "r" (reference));                \
-  for (p = __DTOR_LIST__ + 1; *p; )                \
-    (*p++) ();                                        \
+#define DO_GLOBAL_DTORS_BODY			\
+do {						\
+  extern void __gcc_plt_call (void);		\
+  void (*reference)(void) = &__gcc_plt_call;	\
+  func_ptr *p;					\
+  __asm__ ("" : : "r" (reference));		\
+  for (p = __DTOR_LIST__ + 1; *p; )		\
+    (*p++) ();					\
 } while (0)
 
 /* This macro specifies the biggest alignment supported by the object
@@ -298,13 +298,13 @@ do {                                                \
    have linkonce .bss.  We use SOM secondary definitions or comdat for
    initialized variables and functions.  */
 #define MAKE_DECL_ONE_ONLY(DECL) \
-  do {                                                                        \
-    if (TREE_CODE (DECL) == VAR_DECL                                        \
-        && (DECL_INITIAL (DECL) == 0                                        \
-            || DECL_INITIAL (DECL) == error_mark_node))                        \
-      DECL_COMMON (DECL) = 1;                                                \
-    else if (SUPPORTS_WEAK)                                                \
-      DECL_WEAK (DECL) = 1;                                                \
+  do {									\
+    if (TREE_CODE (DECL) == VAR_DECL					\
+        && (DECL_INITIAL (DECL) == 0					\
+            || DECL_INITIAL (DECL) == error_mark_node))			\
+      DECL_COMMON (DECL) = 1;						\
+    else if (SUPPORTS_WEAK)						\
+      DECL_WEAK (DECL) = 1;						\
   } while (0)
 
 /* This is how we tell the assembler that a symbol is weak.  The SOM
@@ -315,10 +315,10 @@ do {                                                \
    However, they differ in the following ways:
      1) Undefined sdef symbols are not allowed.
      2) The linker searches for undefined sdef symbols and will load an
-        archive library member to resolve an undefined sdef symbol.
+	archive library member to resolve an undefined sdef symbol.
      3) The exported symbol from a shared library is a primary symbol
         rather than a sdef symbol.  Thus, more care is needed in the
-        ordering of libraries.
+	ordering of libraries.
 
    It appears that the linker discards extra copies of "weak" functions
    when linking shared libraries, independent of whether or not they
@@ -327,10 +327,10 @@ do {                                                \
    is not needed and in previous testing caused problems with various
    HP tools.  */
 #define ASM_WEAKEN_LABEL(FILE,NAME) \
-  do { fputs ("\t.weak\t", FILE);                                \
-       assemble_name (FILE, NAME);                                \
-       fputc ('\n', FILE);                                        \
-       targetm.asm_out.globalize_label (FILE, NAME);                \
+  do { fputs ("\t.weak\t", FILE);				\
+       assemble_name (FILE, NAME);				\
+       fputc ('\n', FILE);					\
+       targetm.asm_out.globalize_label (FILE, NAME);		\
   } while (0)
 
 /* We can't handle weak aliases, and therefore can't support pragma weak.

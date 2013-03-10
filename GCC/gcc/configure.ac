@@ -108,14 +108,14 @@ local_prefix=
 AC_ARG_WITH(local-prefix,
 [  --with-local-prefix=DIR specifies directory to put local include],
 [case "${withval}" in
-yes)        AC_MSG_ERROR(bad value ${withval} given for local include directory prefix) ;;
-no)        ;;
-*)        local_prefix=$with_local_prefix ;;
+yes)	AC_MSG_ERROR(bad value ${withval} given for local include directory prefix) ;;
+no)	;;
+*)	local_prefix=$with_local_prefix ;;
 esac])
 
 # Default local prefix if it is empty
 if test x$local_prefix = x; then
-        local_prefix=/usr/local
+	local_prefix=/usr/local
 fi
 
 # Don't set gcc_gxx_include_dir to gxx_include_dir since that's only
@@ -127,9 +127,9 @@ AC_ARG_WITH(gxx-include-dir,
 [  --with-gxx-include-dir=DIR
                           specifies directory to put g++ header files],
 [case "${withval}" in
-yes)        AC_MSG_ERROR(bad value ${withval} given for g++ include directory) ;;
-no)        ;;
-*)        gcc_gxx_include_dir=$with_gxx_include_dir ;;
+yes)	AC_MSG_ERROR(bad value ${withval} given for g++ include directory) ;;
+no)	;;
+*)	gcc_gxx_include_dir=$with_gxx_include_dir ;;
 esac])
 
 # This logic must match libstdc++-v3/acinclude.m4:GLIBCXX_EXPORT_INSTALL_INFO.
@@ -203,7 +203,7 @@ if test x"${DEFAULT_LINKER+set}" = x"set"; then
     gnu_ld_flag=yes
   fi
   AC_DEFINE_UNQUOTED(DEFAULT_LINKER,"$DEFAULT_LINKER",
-        [Define to enable the use of a default linker.])
+	[Define to enable the use of a default linker.])
 fi
 
 AC_MSG_CHECKING([whether a default linker was specified])
@@ -243,7 +243,7 @@ if test x"${DEFAULT_ASSEMBLER+set}" = x"set"; then
     gas_flag=yes
   fi
   AC_DEFINE_UNQUOTED(DEFAULT_ASSEMBLER,"$DEFAULT_ASSEMBLER",
-        [Define to enable the use of a default assembler.])
+	[Define to enable the use of a default assembler.])
 fi
 
 AC_MSG_CHECKING([whether a default assembler was specified])
@@ -445,11 +445,11 @@ AC_SUBST(WERROR)
 # Enable expensive internal checks
 AC_ARG_ENABLE(checking,
 [  --enable-checking[=LIST]
-                          enable expensive run-time checks.  With LIST,
-                          enable only specific categories of checks.
-                          Categories are: yes,no,all,none,release.
-                          Flags are: assert,fold,gc,gcac,misc,
-                          rtlflag,rtl,runtime,tree,valgrind.],
+			  enable expensive run-time checks.  With LIST,
+			  enable only specific categories of checks.
+			  Categories are: yes,no,all,none,release.
+			  Flags are: assert,fold,gc,gcac,misc,
+			  rtlflag,rtl,runtime,tree,valgrind.],
 [ac_checking_flags="${enableval}"],[
 # Determine the default checks.
 if test x$is_release = x ; then
@@ -467,44 +467,44 @@ ac_rtlflag_checking=
 ac_runtime_checking=1
 ac_tree_checking=
 ac_valgrind_checking=
-IFS="${IFS=         }"; ac_save_IFS="$IFS"; IFS="$IFS,"
+IFS="${IFS= 	}"; ac_save_IFS="$IFS"; IFS="$IFS,"
 for check in $ac_checking_flags
 do
-        case $check in
-        # these set all the flags to specific states
-        yes)                ac_assert_checking=1 ; ac_checking=1 ;
-                        ac_fold_checking= ; ac_gc_checking=1 ;
-                        ac_gc_always_collect= ; ac_rtl_checking= ;
-                        ac_rtlflag_checking=1 ; ac_runtime_checking=1 ;
-                        ac_tree_checking=1 ; ac_valgrind_checking= ;;
-        no|none)        ac_assert_checking= ; ac_checking= ;
-                        ac_fold_checking= ; ac_gc_checking= ;
-                        ac_gc_always_collect= ; ac_rtl_checking= ;
-                        ac_rtlflag_checking= ; ac_runtime_checking= ;
-                        ac_tree_checking= ; ac_valgrind_checking= ;;
-        all)                ac_assert_checking=1 ; ac_checking=1 ;
-                        ac_fold_checking=1 ; ac_gc_checking=1 ;
-                        ac_gc_always_collect=1 ; ac_rtl_checking=1 ;
-                        ac_rtlflag_checking=1 ; ac_runtime_checking=1 ;
-                        ac_tree_checking=1 ; ac_valgrind_checking= ;;
-        release)        ac_assert_checking=1 ; ac_checking= ;
-                        ac_fold_checking= ; ac_gc_checking= ;
-                        ac_gc_always_collect= ; ac_rtl_checking= ;
-                        ac_rtlflag_checking= ; ac_runtime_checking=1 ;
-                        ac_tree_checking= ; ac_valgrind_checking= ;;
-        # these enable particular checks
-        assert)         ac_assert_checking=1 ;;
-        fold)                ac_fold_checking=1 ;;
-        gc)                ac_gc_checking=1 ;;
-        gcac)                ac_gc_always_collect=1 ;;
-        misc)                ac_checking=1 ;;
-        rtl)                ac_rtl_checking=1 ;;
-        rtlflag)        ac_rtlflag_checking=1 ;;
-        runtime)        ac_runtime_checking=1 ;;
-        tree)                ac_tree_checking=1 ;;
-        valgrind)        ac_valgrind_checking=1 ;;
-        *)        AC_MSG_ERROR(unknown check category $check) ;;
-        esac
+	case $check in
+	# these set all the flags to specific states
+	yes)		ac_assert_checking=1 ; ac_checking=1 ;
+			ac_fold_checking= ; ac_gc_checking=1 ;
+			ac_gc_always_collect= ; ac_rtl_checking= ;
+			ac_rtlflag_checking=1 ; ac_runtime_checking=1 ;
+			ac_tree_checking=1 ; ac_valgrind_checking= ;;
+	no|none)	ac_assert_checking= ; ac_checking= ;
+			ac_fold_checking= ; ac_gc_checking= ;
+			ac_gc_always_collect= ; ac_rtl_checking= ;
+			ac_rtlflag_checking= ; ac_runtime_checking= ;
+			ac_tree_checking= ; ac_valgrind_checking= ;;
+	all)		ac_assert_checking=1 ; ac_checking=1 ;
+			ac_fold_checking=1 ; ac_gc_checking=1 ;
+			ac_gc_always_collect=1 ; ac_rtl_checking=1 ;
+			ac_rtlflag_checking=1 ; ac_runtime_checking=1 ;
+			ac_tree_checking=1 ; ac_valgrind_checking= ;;
+	release)	ac_assert_checking=1 ; ac_checking= ;
+			ac_fold_checking= ; ac_gc_checking= ;
+			ac_gc_always_collect= ; ac_rtl_checking= ;
+			ac_rtlflag_checking= ; ac_runtime_checking=1 ;
+			ac_tree_checking= ; ac_valgrind_checking= ;;
+	# these enable particular checks
+	assert) 	ac_assert_checking=1 ;;
+	fold)		ac_fold_checking=1 ;;
+	gc)		ac_gc_checking=1 ;;
+	gcac)		ac_gc_always_collect=1 ;;
+	misc)		ac_checking=1 ;;
+	rtl)		ac_rtl_checking=1 ;;
+	rtlflag)	ac_rtlflag_checking=1 ;;
+	runtime)	ac_runtime_checking=1 ;;
+	tree)		ac_tree_checking=1 ;;
+	valgrind)	ac_valgrind_checking=1 ;;
+	*)	AC_MSG_ERROR(unknown check category $check) ;;
+	esac
 done
 IFS="$ac_save_IFS"
 
@@ -593,12 +593,12 @@ if test x$ac_valgrind_checking != x ; then
   [gcc_cv_header_memcheck_h=no])
   AC_MSG_RESULT($gcc_cv_header_memcheck_h)
   AM_PATH_PROG_WITH_TEST(valgrind_path, valgrind,
-        [$ac_dir/$ac_word --version | grep valgrind- >/dev/null 2>&1])
+	[$ac_dir/$ac_word --version | grep valgrind- >/dev/null 2>&1])
   if test "x$valgrind_path" = "x" \
     || (test $have_valgrind_h = no \
-        && test $gcc_cv_header_memcheck_h = no \
-        && test $gcc_cv_header_valgrind_memcheck_h = no); then
-        AC_MSG_ERROR([*** Can't find both valgrind and valgrind/memcheck.h, memcheck.h or valgrind.h])
+	&& test $gcc_cv_header_memcheck_h = no \
+	&& test $gcc_cv_header_valgrind_memcheck_h = no); then
+	AC_MSG_ERROR([*** Can't find both valgrind and valgrind/memcheck.h, memcheck.h or valgrind.h])
   fi
   valgrind_path_defines=-DVALGRIND_PATH='\"'$valgrind_path'\"'
   valgrind_command="$valgrind_path -q"
@@ -607,11 +607,11 @@ if test x$ac_valgrind_checking != x ; then
    through valgrind (a memory checker).  This is extremely expensive.])
   if test $gcc_cv_header_valgrind_memcheck_h = yes; then
     AC_DEFINE(HAVE_VALGRIND_MEMCHECK_H, 1,
-        [Define if valgrind's valgrind/memcheck.h header is installed.])
+	[Define if valgrind's valgrind/memcheck.h header is installed.])
   fi
   if test $gcc_cv_header_memcheck_h = yes; then
     AC_DEFINE(HAVE_MEMCHECK_H, 1,
-        [Define if valgrind's memcheck.h header is installed.])
+	[Define if valgrind's memcheck.h header is installed.])
   fi
 fi
 AC_SUBST(valgrind_path_defines)
@@ -629,11 +629,11 @@ fi
 # Enable code coverage collection
 AC_ARG_ENABLE(coverage,
 [  --enable-coverage[=LEVEL]
-                          enable compiler's code coverage collection.
-                          Use to measure compiler performance and locate
-                          unused parts of the compiler. With LEVEL, specify
-                          optimization. Values are opt, noopt,
-                          default is noopt],
+			  enable compiler's code coverage collection.
+			  Use to measure compiler performance and locate
+			  unused parts of the compiler. With LEVEL, specify
+			  optimization. Values are opt, noopt,
+			  default is noopt],
 [case "${enableval}" in
   yes|noopt)
     coverage_flags="-fprofile-arcs -ftest-coverage -frandom-seed=\$@ -O0"
@@ -724,12 +724,12 @@ Valid choices are 'yes' and 'no'.]) ;;
 ], [enable_tls=''])
 
 AC_ARG_ENABLE(objc-gc,
-[  --enable-objc-gc          enable the use of Boehm's garbage collector with
-                          the GNU Objective-C runtime],
+[  --enable-objc-gc	  enable the use of Boehm's garbage collector with
+			  the GNU Objective-C runtime],
 if test x$enable_objc_gc = xno; then
-        objc_boehm_gc=''
+	objc_boehm_gc=''
 else
-        objc_boehm_gc=1
+	objc_boehm_gc=1
 fi,
 objc_boehm_gc='')
 
@@ -745,7 +745,7 @@ AC_ARG_ENABLE(shared,
   yes | no) ;;
   *)
     enable_shared=no
-    IFS="${IFS=         }"; ac_save_ifs="$IFS"; IFS="${IFS}:,"
+    IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS="${IFS}:,"
     for pkg in $enableval; do
       if test "X$pkg" = "Xgcc" || test "X$pkg" = "Xlibgcc"; then
         enable_shared=yes
@@ -771,7 +771,7 @@ AC_ARG_WITH(sysroot,
    
  TARGET_SYSTEM_ROOT_DEFINE='-DTARGET_SYSTEM_ROOT=\"$(TARGET_SYSTEM_ROOT)\"'
  CROSS_SYSTEM_HEADER_DIR='$(TARGET_SYSTEM_ROOT)$(NATIVE_SYSTEM_HEADER_DIR)'
-        
+	
  if test "x$exec_prefix" = xNONE; then
   if test "x$prefix" = xNONE; then
    test_prefix=/usr/local
@@ -813,19 +813,19 @@ AC_ARG_ENABLE(languages,
 [  --enable-languages=LIST specify which front-ends to build],
 [case ,${enable_languages}, in
        ,,|,yes,)
-                # go safe -- we cannot be much sure without the toplevel
-                # configure's
-                # analysis of which target libs are present and usable
-                enable_languages=c
-                ;;
-         *,all,*)
-                AC_MSG_ERROR([only the toplevel supports --enable-languages=all])
-                ;;
-        *,c,*)
-                ;;
+		# go safe -- we cannot be much sure without the toplevel
+		# configure's
+		# analysis of which target libs are present and usable
+		enable_languages=c
+		;;
+	 *,all,*)
+		AC_MSG_ERROR([only the toplevel supports --enable-languages=all])
+		;;
+	*,c,*)
+		;;
         *)
-                enable_languages=c,${enable_languages}
-                ;;
+		enable_languages=c,${enable_languages}
+		;;
 esac],
 [enable_languages=c])
 
@@ -956,9 +956,9 @@ AC_HEADER_TIME
 ACX_HEADER_STRING
 AC_HEADER_SYS_WAIT
 AC_CHECK_HEADERS(limits.h stddef.h string.h strings.h stdlib.h time.h iconv.h \
-                 fcntl.h unistd.h sys/file.h sys/time.h sys/mman.h \
-                 sys/resource.h sys/param.h sys/times.h sys/stat.h \
-                 direct.h malloc.h langinfo.h ldfcn.h locale.h wchar.h)
+		 fcntl.h unistd.h sys/file.h sys/time.h sys/mman.h \
+		 sys/resource.h sys/param.h sys/times.h sys/stat.h \
+		 direct.h malloc.h langinfo.h ldfcn.h locale.h wchar.h)
 
 # Check for thread headers.
 AC_CHECK_HEADER(thread.h, [have_thread_h=yes], [have_thread_h=])
@@ -991,18 +991,18 @@ AC_SUBST(stage1_cflags)
 AC_CACHE_CHECK(for collect2 libraries, gcc_cv_collect2_libs,
 [save_LIBS="$LIBS"
 for libs in '' -lld -lmld \
-                '-L/usr/lib/cmplrs/cc2.11 -lmld' \
-                '-L/usr/lib/cmplrs/cc3.11 -lmld'
+		'-L/usr/lib/cmplrs/cc2.11 -lmld' \
+		'-L/usr/lib/cmplrs/cc3.11 -lmld'
 do
-        LIBS="$libs"
-        AC_TRY_LINK_FUNC(ldopen,
-                [gcc_cv_collect2_libs="$libs"; break])
+	LIBS="$libs"
+	AC_TRY_LINK_FUNC(ldopen,
+		[gcc_cv_collect2_libs="$libs"; break])
 done
 LIBS="$save_LIBS"
 test -z "$gcc_cv_collect2_libs" && gcc_cv_collect2_libs='none required'])
 case $gcc_cv_collect2_libs in
-        "none required")        ;;
-        *)        COLLECT2_LIBS=$gcc_cv_collect2_libs ;;
+	"none required")	;;
+	*)	COLLECT2_LIBS=$gcc_cv_collect2_libs ;;
 esac
 AC_SUBST(COLLECT2_LIBS)
 
@@ -1037,7 +1037,7 @@ AC_CACHE_VAL(gcc_cv_header_inttypes_h,
 AC_MSG_RESULT($gcc_cv_header_inttypes_h)
 if test $gcc_cv_header_inttypes_h = yes; then
   AC_DEFINE(HAVE_INTTYPES_H, 1,
-        [Define if you have a working <inttypes.h> header file.])
+	[Define if you have a working <inttypes.h> header file.])
 fi
 
 dnl Disabled until we have a complete test for buggy enum bitfields.
@@ -1049,9 +1049,9 @@ define(gcc_UNLOCKED_FUNCS, clearerr_unlocked feof_unlocked dnl
   fread_unlocked fwrite_unlocked getchar_unlocked getc_unlocked dnl
   putchar_unlocked putc_unlocked)
 AC_CHECK_FUNCS(times clock kill getrlimit setrlimit atoll atoq \
-        sysconf strsignal getrusage nl_langinfo scandir alphasort \
-        gettimeofday mbstowcs wcswidth mmap mincore setlocale \
-        gcc_UNLOCKED_FUNCS)
+	sysconf strsignal getrusage nl_langinfo scandir alphasort \
+	gettimeofday mbstowcs wcswidth mmap mincore setlocale \
+	gcc_UNLOCKED_FUNCS)
 
 if test x$ac_cv_func_mbstowcs = xyes; then
   AC_CACHE_CHECK(whether mbstowcs works, gcc_cv_func_mbstowcs_works,
@@ -1080,15 +1080,15 @@ if test "${target}" = "${build}"; then
   TARGET_GETGROUPS_T=$ac_cv_type_getgroups
 else
   case "${target}" in
-        # This condition may need some tweaking.  It should include all
-        # targets where the array type of the second argument of getgroups
-        # is int and the type of gid_t is not equivalent to int.
-        *-*-sunos* | *-*-ultrix*)
-                TARGET_GETGROUPS_T=int
-                ;;
-        *)
-                TARGET_GETGROUPS_T=gid_t
-                ;;
+	# This condition may need some tweaking.  It should include all
+	# targets where the array type of the second argument of getgroups
+	# is int and the type of gid_t is not equivalent to int.
+	*-*-sunos* | *-*-ultrix*)
+		TARGET_GETGROUPS_T=int
+		;;
+	*)
+		TARGET_GETGROUPS_T=gid_t
+		;;
   esac
 fi
 AC_SUBST(TARGET_GETGROUPS_T)
@@ -1118,9 +1118,9 @@ AM_LANGINFO_CODESET
 saved_CFLAGS="$CFLAGS"
 CFLAGS="$CFLAGS -I${srcdir} -I${srcdir}/../include"
 gcc_AC_CHECK_DECLS(getenv atol asprintf sbrk abort atof getcwd getwd \
-        strsignal strstr strverscmp \
-        errno snprintf vsnprintf vasprintf malloc realloc calloc \
-        free basename getopt clock getpagesize gcc_UNLOCKED_FUNCS, , ,[
+	strsignal strstr strverscmp \
+	errno snprintf vsnprintf vasprintf malloc realloc calloc \
+	free basename getopt clock getpagesize gcc_UNLOCKED_FUNCS, , ,[
 #include "ansidecl.h"
 #include "system.h"])
 
@@ -1303,59 +1303,59 @@ xm_file="$tx"
 
 count=a
 for f in $tm_file; do
-        count=${count}x
+	count=${count}x
 done
 if test $count = ax; then
-        echo "Using \`$srcdir/config/$tm_file' as target machine macro file."
+	echo "Using \`$srcdir/config/$tm_file' as target machine macro file."
 else
-        echo "Using the following target machine macro files:"
-        for f in $tm_file; do
-                echo "        $srcdir/config/$f"
-        done
+	echo "Using the following target machine macro files:"
+	for f in $tm_file; do
+		echo "	$srcdir/config/$f"
+	done
 fi
 
 if test x$need_64bit_hwint = xyes; then
-        AC_DEFINE(NEED_64BIT_HOST_WIDE_INT, 1,
+	AC_DEFINE(NEED_64BIT_HOST_WIDE_INT, 1,
 [Define to 1 if HOST_WIDE_INT must be 64 bits wide (see hwint.h).])
 fi
 
 if test x$use_long_long_for_widest_fast_int = xyes; then
-        AC_DEFINE(USE_LONG_LONG_FOR_WIDEST_FAST_INT, 1,
+	AC_DEFINE(USE_LONG_LONG_FOR_WIDEST_FAST_INT, 1,
 [Define to 1 if the 'long long' (or '__int64') is wider than 'long' but still
 efficiently supported by the host hardware.])
 fi
 
 count=a
 for f in $host_xm_file; do
-        count=${count}x
+	count=${count}x
 done
 if test $count = a; then
-        :
+	:
 elif test $count = ax; then
-        echo "Using \`$srcdir/config/$host_xm_file' as host machine macro file."
+	echo "Using \`$srcdir/config/$host_xm_file' as host machine macro file."
 else
-        echo "Using the following host machine macro files:"
-        for f in $host_xm_file; do
-                echo "        $srcdir/config/$f"
-        done
+	echo "Using the following host machine macro files:"
+	for f in $host_xm_file; do
+		echo "	$srcdir/config/$f"
+	done
 fi
 echo "Using ${out_host_hook_obj} for host machine hooks."
 
 if test "$host_xm_file" != "$build_xm_file"; then
-        count=a
-        for f in $build_xm_file; do
-                count=${count}x
-        done
-        if test $count = a; then
-                :
-        elif test $count = ax; then
-                echo "Using \`$srcdir/config/$build_xm_file' as build machine macro file."
-        else
-                echo "Using the following build machine macro files:"
-                for f in $build_xm_file; do
-                        echo "        $srcdir/config/$f"
-                done
-        fi
+	count=a
+	for f in $build_xm_file; do
+		count=${count}x
+	done
+	if test $count = a; then
+		:
+	elif test $count = ax; then
+		echo "Using \`$srcdir/config/$build_xm_file' as build machine macro file."
+	else
+		echo "Using the following build machine macro files:"
+		for f in $build_xm_file; do
+			echo "	$srcdir/config/$f"
+		done
+	fi
 fi
 
 case ${host} in
@@ -1367,7 +1367,7 @@ case ${host} in
 #include <ucontext.h>
 int main() { mcontext_t m; if (m->ss.srr0) return 0; return 0; }
 ],
-        gcc_cv_mcontext_underscores=no, gcc_cv_mcontext_underscores=yes))
+	gcc_cv_mcontext_underscores=no, gcc_cv_mcontext_underscores=yes))
       if test $gcc_cv_mcontext_underscores = yes; then
         AC_DEFINE(HAS_MCONTEXT_T_UNDERSCORES,,dnl
           [mcontext_t fields start with __])
@@ -1423,7 +1423,7 @@ if test x$enable___cxa_atexit = xyes || \
    test x$enable___cxa_atexit = x -a x$default_use_cxa_atexit = xyes; then
   if test x$host = x$target; then
     AC_CHECK_FUNC(__cxa_atexit,[use_cxa_atexit=yes],
-        [echo "__cxa_atexit can't be enabled on this target"])
+	[echo "__cxa_atexit can't be enabled on this target"])
   else
     # We can't check for __cxa_atexit when building a cross, so assume
     # it is available 
@@ -1447,7 +1447,7 @@ fi
 GCC_TARGET_TEMPLATE(HAVE_GETIPINFO)
 if test x$use_getipinfo = xyes; then
    AC_DEFINE(HAVE_GETIPINFO, 1,
-        [Define to 1 if system unwind library has _Unwind_GetIPInfo.])
+	[Define to 1 if system unwind library has _Unwind_GetIPInfo.])
 else
    echo "The system unwind library does not support _Unwind_GetIPInfo."
 fi
@@ -1475,33 +1475,33 @@ AC_SUBST(extra_opt_files)
 # work to find out the build config parameters.
 if test x$host = x$build
 then
-        build_auto=auto-host.h
+	build_auto=auto-host.h
 else
-        # We create a subdir, then run autoconf in the subdir.
-        # To prevent recursion we set host and build for the new
-        # invocation of configure to the build for this invocation
-        # of configure. 
-        tempdir=build.$$
-        rm -rf $tempdir
-        mkdir $tempdir
-        cd $tempdir
-        case ${srcdir} in
-        /* | [A-Za-z]:[\\/]* ) realsrcdir=${srcdir};;
-        *) realsrcdir=../${srcdir};;
-        esac
-        saved_CFLAGS="${CFLAGS}"
-        CC="${CC_FOR_BUILD}" CFLAGS="${CFLAGS_FOR_BUILD}" \
-        ${realsrcdir}/configure \
-                --enable-languages=${enable_languages-all} \
-                --target=$target_alias --host=$build_alias --build=$build_alias
-        CFLAGS="${saved_CFLAGS}"
+	# We create a subdir, then run autoconf in the subdir.
+	# To prevent recursion we set host and build for the new
+	# invocation of configure to the build for this invocation
+	# of configure. 
+	tempdir=build.$$
+	rm -rf $tempdir
+	mkdir $tempdir
+	cd $tempdir
+	case ${srcdir} in
+	/* | [A-Za-z]:[\\/]* ) realsrcdir=${srcdir};;
+	*) realsrcdir=../${srcdir};;
+	esac
+	saved_CFLAGS="${CFLAGS}"
+	CC="${CC_FOR_BUILD}" CFLAGS="${CFLAGS_FOR_BUILD}" \
+	${realsrcdir}/configure \
+		--enable-languages=${enable_languages-all} \
+		--target=$target_alias --host=$build_alias --build=$build_alias
+	CFLAGS="${saved_CFLAGS}"
 
-        # We just finished tests for the build machine, so rename
-        # the file auto-build.h in the gcc directory.
-        mv auto-host.h ../auto-build.h
-        cd ..
-        rm -rf $tempdir
-        build_auto=auto-build.h
+	# We just finished tests for the build machine, so rename
+	# the file auto-build.h in the gcc directory.
+	mv auto-host.h ../auto-build.h
+	cd ..
+	rm -rf $tempdir
+	build_auto=auto-build.h
 fi
 AC_SUBST(build_subdir)
 
@@ -1520,11 +1520,11 @@ xm_file="auto-host.h ansidecl.h ${xm_file}"
 changequote(,)dnl
 # Compile in configure arguments.
 if test -f configargs.h ; then
-        # Being re-configured.
-        gcc_config_arguments=`grep configuration_arguments configargs.h | sed -e 's/.*"\([^"]*\)".*/\1/'`
-        gcc_config_arguments="$gcc_config_arguments : (reconfigured) $TOPLEVEL_CONFIGURE_ARGUMENTS"
+	# Being re-configured.
+	gcc_config_arguments=`grep configuration_arguments configargs.h | sed -e 's/.*"\([^"]*\)".*/\1/'`
+	gcc_config_arguments="$gcc_config_arguments : (reconfigured) $TOPLEVEL_CONFIGURE_ARGUMENTS"
 else
-        gcc_config_arguments="$TOPLEVEL_CONFIGURE_ARGUMENTS"
+	gcc_config_arguments="$TOPLEVEL_CONFIGURE_ARGUMENTS"
 fi
 
 # Double all backslashes and backslash all quotes to turn
@@ -1552,7 +1552,7 @@ ZW_GNU_GETTEXT_SISTER_DIR
 # If LIBINTL contains LIBICONV, then clear LIBICONV so we don't get
 # -liconv on the link line twice.
 case "$LIBINTL" in *$LIBICONV*)
-        LIBICONV= ;;
+	LIBICONV= ;;
 esac
 
 AC_ARG_ENABLE(secureplt,
@@ -1582,7 +1582,7 @@ case $host_os in
 
       if test "x$enable_win32_registry" != xyes \
          && test "x$enable_win32_registry" != x; then
-        AC_DEFINE_UNQUOTED(WIN32_REGISTRY_KEY, "$enable_win32_registry",
+	AC_DEFINE_UNQUOTED(WIN32_REGISTRY_KEY, "$enable_win32_registry",
   [Define to be the last component of the Windows registry key under which
    to look for installation paths.  The full key used will be 
    HKEY_LOCAL_MACHINE/SOFTWARE/Free Software Foundation/{WIN32_REGISTRY_KEY}.
@@ -1602,20 +1602,20 @@ cd $holddir
 xmake_file=
 for f in ${host_xmake_file}
 do
-        if test -f ${srcdir}/config/$f
-        then
-                xmake_file="${xmake_file} \$(srcdir)/config/$f"
-        fi
+	if test -f ${srcdir}/config/$f
+	then
+		xmake_file="${xmake_file} \$(srcdir)/config/$f"
+	fi
 done
 
 # Conditionalize the makefile for this target machine.
 tmake_file_=
 for f in ${tmake_file}
 do
-        if test -f ${srcdir}/config/$f
-        then
-                tmake_file_="${tmake_file_} \$(srcdir)/config/$f"
-        fi
+	if test -f ${srcdir}/config/$f
+	then
+		tmake_file_="${tmake_file_} \$(srcdir)/config/$f"
+	fi
 done
 tmake_file="${tmake_file_}"
 
@@ -1624,18 +1624,18 @@ tmake_file="${tmake_file_}"
 # Otherwise, we can use "CC=$(CC)".
 rm -f symtest.tem
 case "$LN_S" in
-        *-s*)
-                cc_set_by_configure="\$(CC)"
-                quoted_cc_set_by_configure="\$(CC)"
-                stage_prefix_set_by_configure="\$(STAGE_PREFIX)"
-                quoted_stage_prefix_set_by_configure="\$(STAGE_PREFIX)"
-                ;;
-        *)
-                cc_set_by_configure="\`case '\$(CC)' in stage*) echo '\$(CC)' | sed -e 's|stage|../stage|g';; *) echo '\$(CC)';; esac\`"
-                quoted_cc_set_by_configure="\\\`case '\\\$(CC)' in stage*) echo '\\\$(CC)' | sed -e 's|stage|../stage|g';; *) echo '\\\$(CC)';; esac\\\`"
-                stage_prefix_set_by_configure="\`case '\$(STAGE_PREFIX)' in stage*) echo '\$(STAGE_PREFIX)' | sed -e 's|stage|../stage|g';; *) echo '\$(STAGE_PREFIX)';; esac\`"
-                quoted_stage_prefix_set_by_configure="\\\`case '\\\$(STAGE_PREFIX)' in stage*) echo '\\\$(STAGE_PREFIX)' | sed -e 's|stage|../stage|g';; *) echo '\\\$(STAGE_PREFIX)';; esac\\\`"
-                ;;
+	*-s*)
+		cc_set_by_configure="\$(CC)"
+		quoted_cc_set_by_configure="\$(CC)"
+		stage_prefix_set_by_configure="\$(STAGE_PREFIX)"
+		quoted_stage_prefix_set_by_configure="\$(STAGE_PREFIX)"
+		;;
+	*)
+		cc_set_by_configure="\`case '\$(CC)' in stage*) echo '\$(CC)' | sed -e 's|stage|../stage|g';; *) echo '\$(CC)';; esac\`"
+		quoted_cc_set_by_configure="\\\`case '\\\$(CC)' in stage*) echo '\\\$(CC)' | sed -e 's|stage|../stage|g';; *) echo '\\\$(CC)';; esac\\\`"
+		stage_prefix_set_by_configure="\`case '\$(STAGE_PREFIX)' in stage*) echo '\$(STAGE_PREFIX)' | sed -e 's|stage|../stage|g';; *) echo '\$(STAGE_PREFIX)';; esac\`"
+		quoted_stage_prefix_set_by_configure="\\\`case '\\\$(STAGE_PREFIX)' in stage*) echo '\\\$(STAGE_PREFIX)' | sed -e 's|stage|../stage|g';; *) echo '\\\$(STAGE_PREFIX)';; esac\\\`"
+		;;
 esac
 
 # This is a terrible hack which will go away some day.
@@ -1731,9 +1731,9 @@ done
 
 # Define macro CROSS_COMPILE in compilation if this is a cross-compiler.
 # Also use all.cross instead of all.internal and adjust SYSTEM_HEADER_DIR.
-CROSS=                                                AC_SUBST(CROSS)
-ALL=all.internal                                AC_SUBST(ALL)
-SYSTEM_HEADER_DIR='$(NATIVE_SYSTEM_HEADER_DIR)'        AC_SUBST(SYSTEM_HEADER_DIR)
+CROSS=						AC_SUBST(CROSS)
+ALL=all.internal				AC_SUBST(ALL)
+SYSTEM_HEADER_DIR='$(NATIVE_SYSTEM_HEADER_DIR)'	AC_SUBST(SYSTEM_HEADER_DIR)
 
 if test "x$with_build_sysroot" != x; then
   build_system_header_dir=$with_build_sysroot'$(NATIVE_SYSTEM_HEADER_DIR)'
@@ -1746,29 +1746,29 @@ fi
 
 if test x$host != x$target
 then
-        CROSS="-DCROSS_COMPILE"
-        ALL=all.cross
-        SYSTEM_HEADER_DIR=$build_system_header_dir
-        case "$host","$target" in
-        # Darwin crosses can use the host system's libraries and headers,
-        # because of the fat library support.  Of course, it must be the
-        # same version of Darwin on both sides.  Allow the user to
-        # just say --target=foo-darwin without a version number to mean
-        # "the version on this system".
-            *-*-darwin*,*-*-darwin*)
-                hostos=`echo $host | sed 's/.*-darwin/darwin/'`
-                targetos=`echo $target | sed 's/.*-darwin/darwin/'`
-                if test $hostos = $targetos -o $targetos = darwin ; then
-                    CROSS=
-                    SYSTEM_HEADER_DIR='$(NATIVE_SYSTEM_HEADER_DIR)'
-                    with_headers=yes
-                fi
-                ;;
+	CROSS="-DCROSS_COMPILE"
+	ALL=all.cross
+	SYSTEM_HEADER_DIR=$build_system_header_dir
+	case "$host","$target" in
+	# Darwin crosses can use the host system's libraries and headers,
+	# because of the fat library support.  Of course, it must be the
+	# same version of Darwin on both sides.  Allow the user to
+	# just say --target=foo-darwin without a version number to mean
+	# "the version on this system".
+	    *-*-darwin*,*-*-darwin*)
+		hostos=`echo $host | sed 's/.*-darwin/darwin/'`
+		targetos=`echo $target | sed 's/.*-darwin/darwin/'`
+		if test $hostos = $targetos -o $targetos = darwin ; then
+		    CROSS=
+		    SYSTEM_HEADER_DIR='$(NATIVE_SYSTEM_HEADER_DIR)'
+		    with_headers=yes
+		fi
+		;;
 
-            i?86-*-*,x86_64-*-* \
-            | powerpc*-*-*,powerpc64*-*-*)
-                CROSS="$CROSS -DNATIVE_CROSS" ;;
-        esac
+	    i?86-*-*,x86_64-*-* \
+	    | powerpc*-*-*,powerpc64*-*-*)
+		CROSS="$CROSS -DNATIVE_CROSS" ;;
+	esac
 elif test "x$TARGET_SYSTEM_ROOT" != x; then
         SYSTEM_HEADER_DIR=$build_system_header_dir 
 fi
@@ -1794,9 +1794,9 @@ AC_SUBST(inhibit_libc)
 # Also, we cannot run fixincludes or fix-header.
 
 # These are the normal (build=host) settings:
-CC_FOR_BUILD='$(CC)'                AC_SUBST(CC_FOR_BUILD)
-BUILD_CFLAGS='$(ALL_CFLAGS)'        AC_SUBST(BUILD_CFLAGS)
-STMP_FIXINC=stmp-fixinc                AC_SUBST(STMP_FIXINC)
+CC_FOR_BUILD='$(CC)'		AC_SUBST(CC_FOR_BUILD)
+BUILD_CFLAGS='$(ALL_CFLAGS)'	AC_SUBST(BUILD_CFLAGS)
+STMP_FIXINC=stmp-fixinc		AC_SUBST(STMP_FIXINC)
 
 # Possibly disable fixproto, on a per-target basis.
 case ${use_fixproto} in
@@ -1815,9 +1815,9 @@ then
     BUILD_CFLAGS='$(INTERNAL_CFLAGS) $(T_CFLAGS) $(CFLAGS_FOR_BUILD)'
 
     if test "x$TARGET_SYSTEM_ROOT" = x; then
-        if test "x$STMP_FIXPROTO" != x; then
-          STMP_FIXPROTO=stmp-install-fixproto
-        fi
+	if test "x$STMP_FIXPROTO" != x; then
+	  STMP_FIXPROTO=stmp-install-fixproto
+	fi
     fi
 fi
 
@@ -1869,14 +1869,14 @@ gcc_cv_as_gas_srcdir=`echo $srcdir | sed -e 's,/gcc$,,'`/gas
 m4_pattern_allow([AS_FOR_TARGET])dnl
 AS_VAR_SET_IF(gcc_cv_as,, [
 if test -x "$DEFAULT_ASSEMBLER"; then
-        gcc_cv_as="$DEFAULT_ASSEMBLER"
+	gcc_cv_as="$DEFAULT_ASSEMBLER"
 elif test -f $gcc_cv_as_gas_srcdir/configure.in \
      && test -f ../gas/Makefile \
      && test x$build = x$host; then
-        gcc_cv_as=../gas/as-new$build_exeext
+	gcc_cv_as=../gas/as-new$build_exeext
 elif test -x as$build_exeext; then
-        # Build using assembler in the current directory.
-        gcc_cv_as=./as$build_exeext
+	# Build using assembler in the current directory.
+	gcc_cv_as=./as$build_exeext
 elif test -x $AS_FOR_TARGET; then
         gcc_cv_as="$AS_FOR_TARGET"
 else
@@ -1920,14 +1920,14 @@ gcc_cv_ld_bfd_srcdir=`echo $srcdir | sed -e 's,/gcc$,,'`/bfd
 
 AS_VAR_SET_IF(gcc_cv_ld,, [
 if test -x "$DEFAULT_LINKER"; then
-        gcc_cv_ld="$DEFAULT_LINKER"
+	gcc_cv_ld="$DEFAULT_LINKER"
 elif test -f $gcc_cv_ld_gld_srcdir/configure.in \
      && test -f ../ld/Makefile \
      && test x$build = x$host; then
-        gcc_cv_ld=../ld/ld-new$build_exeext
+	gcc_cv_ld=../ld/ld-new$build_exeext
 elif test -x collect-ld$build_exeext; then
-        # Build using linker in the current directory.
-        gcc_cv_ld=./collect-ld$build_exeext
+	# Build using linker in the current directory.
+	gcc_cv_ld=./collect-ld$build_exeext
 elif test -x $LD_FOR_TARGET; then
         gcc_cv_ld="$LD_FOR_TARGET"
 else
@@ -1939,31 +1939,31 @@ AC_SUBST(ORIGINAL_LD_FOR_TARGET)
 
 AC_MSG_CHECKING(what linker to use)
 if test "$gcc_cv_ld" = ../ld/ld-new$build_exeext; then
-        # Single tree build which includes ld.  We want to prefer it
-        # over whatever linker top-level may have detected, since
-        # we'll use what we're building after installation anyway.
-        AC_MSG_RESULT(newly built ld)
-        in_tree_ld=yes
-        in_tree_ld_is_elf=no
-        if (grep 'EMUL = .*elf' ../ld/Makefile \
-            || grep 'EMUL = .*linux' ../ld/Makefile \
-            || grep 'EMUL = .*lynx' ../ld/Makefile) > /dev/null; then
-          in_tree_ld_is_elf=yes
-        fi
-        for f in $gcc_cv_ld_bfd_srcdir/configure $gcc_cv_ld_gld_srcdir/configure $gcc_cv_ld_gld_srcdir/configure.in $gcc_cv_ld_gld_srcdir/Makefile.in
-        do
+	# Single tree build which includes ld.  We want to prefer it
+	# over whatever linker top-level may have detected, since
+	# we'll use what we're building after installation anyway.
+	AC_MSG_RESULT(newly built ld)
+	in_tree_ld=yes
+	in_tree_ld_is_elf=no
+	if (grep 'EMUL = .*elf' ../ld/Makefile \
+	    || grep 'EMUL = .*linux' ../ld/Makefile \
+	    || grep 'EMUL = .*lynx' ../ld/Makefile) > /dev/null; then
+	  in_tree_ld_is_elf=yes
+	fi
+	for f in $gcc_cv_ld_bfd_srcdir/configure $gcc_cv_ld_gld_srcdir/configure $gcc_cv_ld_gld_srcdir/configure.in $gcc_cv_ld_gld_srcdir/Makefile.in
+	do
 changequote(,)dnl
-                gcc_cv_gld_version=`sed -n -e 's/^[         ]*\(VERSION=[0-9]*\.[0-9]*.*\)/\1/p' < $f`
-                if test x$gcc_cv_gld_version != x; then
-                        break
-                fi
-        done
-        gcc_cv_gld_major_version=`expr "$gcc_cv_gld_version" : "VERSION=\([0-9]*\)"`
-        gcc_cv_gld_minor_version=`expr "$gcc_cv_gld_version" : "VERSION=[0-9]*\.\([0-9]*\)"`
+		gcc_cv_gld_version=`sed -n -e 's/^[ 	]*\(VERSION=[0-9]*\.[0-9]*.*\)/\1/p' < $f`
+		if test x$gcc_cv_gld_version != x; then
+			break
+		fi
+	done
+	gcc_cv_gld_major_version=`expr "$gcc_cv_gld_version" : "VERSION=\([0-9]*\)"`
+	gcc_cv_gld_minor_version=`expr "$gcc_cv_gld_version" : "VERSION=[0-9]*\.\([0-9]*\)"`
 changequote([,])dnl
 else
-        AC_MSG_RESULT($gcc_cv_ld)
-        in_tree_ld=no
+	AC_MSG_RESULT($gcc_cv_ld)
+	in_tree_ld=no
 fi
 
 # Figure out what nm we will be using.
@@ -1972,9 +1972,9 @@ AS_VAR_SET_IF(gcc_cv_nm,, [
 if test -f $gcc_cv_binutils_srcdir/configure.in \
      && test -f ../binutils/Makefile \
      && test x$build = x$host; then
-        gcc_cv_nm=../binutils/nm-new$build_exeext
+	gcc_cv_nm=../binutils/nm-new$build_exeext
 elif test -x nm$build_exeext; then
-        gcc_cv_nm=./nm$build_exeext
+	gcc_cv_nm=./nm$build_exeext
 elif test -x $NM_FOR_TARGET; then
         gcc_cv_nm="$NM_FOR_TARGET"
 else
@@ -1983,12 +1983,12 @@ fi])
 
 AC_MSG_CHECKING(what nm to use)
 if test "$gcc_cv_nm" = ../binutils/nm-new$build_exeext; then
-        # Single tree build which includes binutils.
-        AC_MSG_RESULT(newly built nm)
-        in_tree_nm=yes
+	# Single tree build which includes binutils.
+	AC_MSG_RESULT(newly built nm)
+	in_tree_nm=yes
 else
-        AC_MSG_RESULT($gcc_cv_nm)
-        in_tree_nm=no
+	AC_MSG_RESULT($gcc_cv_nm)
+	in_tree_nm=no
 fi
 
 ORIGINAL_NM_FOR_TARGET=$gcc_cv_nm
@@ -1999,10 +1999,10 @@ AS_VAR_SET_IF(gcc_cv_objdump,, [
 if test -f $gcc_cv_binutils_srcdir/configure.in \
      && test -f ../binutils/Makefile \
      && test x$build = x$host; then
-        # Single tree build which includes binutils.
-        gcc_cv_objdump=../binutils/objdump$build_exeext
+	# Single tree build which includes binutils.
+	gcc_cv_objdump=../binutils/objdump$build_exeext
 elif test -x objdump$build_exeext; then
-        gcc_cv_objdump=./objdump$build_exeext
+	gcc_cv_objdump=./objdump$build_exeext
 elif test -x $OBJDUMP_FOR_TARGET; then
         gcc_cv_objdump="$OBJDUMP_FOR_TARGET"
 else
@@ -2011,12 +2011,12 @@ fi])
 
 AC_MSG_CHECKING(what objdump to use)
 if test "$gcc_cv_objdump" = ../binutils/objdump$build_exeext; then
-        # Single tree build which includes binutils.
-        AC_MSG_RESULT(newly built objdump)
+	# Single tree build which includes binutils.
+	AC_MSG_RESULT(newly built objdump)
 elif test x$gcc_cv_objdump = x; then
-        AC_MSG_RESULT(not found)
+	AC_MSG_RESULT(not found)
 else
-        AC_MSG_RESULT($gcc_cv_objdump)
+	AC_MSG_RESULT($gcc_cv_objdump)
 fi
 
 # Figure out what assembler alignment features are present.
@@ -2055,18 +2055,18 @@ conftest_label2: .word 0
 
 gcc_GAS_CHECK_FEATURE([.weak], gcc_cv_as_weak,
  [2,2,0],,
- [        .weak foobar],,
+ [	.weak foobar],,
 [AC_DEFINE(HAVE_GAS_WEAK, 1, [Define if your assembler supports .weak.])])
 
 gcc_GAS_CHECK_FEATURE([.weakref], gcc_cv_as_weakref,
  [2,17,0],,
- [        .weakref foobar, barfnot],,
+ [	.weakref foobar, barfnot],,
 [AC_DEFINE(HAVE_GAS_WEAKREF, 1, [Define if your assembler supports .weakref.])])
 
 gcc_GAS_CHECK_FEATURE([.nsubspa comdat], gcc_cv_as_nsubspa_comdat,
  [2,15,91],,
- [        .SPACE $TEXT$
-        .NSUBSPA $CODE$,COMDAT],,
+ [	.SPACE $TEXT$
+	.NSUBSPA $CODE$,COMDAT],,
 [AC_DEFINE(HAVE_GAS_NSUBSPA_COMDAT, 1, [Define if your assembler supports .nsubspa comdat option.])])
 
 # .hidden needs to be supported in both the assembler and the linker,
@@ -2078,7 +2078,7 @@ gcc_GAS_CHECK_FEATURE([.nsubspa comdat], gcc_cv_as_nsubspa_comdat,
 # The gcc_GAS_CHECK_FEATURE call just sets a cache variable.
 gcc_GAS_CHECK_FEATURE([.hidden], gcc_cv_as_hidden,
  [elf,2,13,0],,
-[        .hidden foobar
+[	.hidden foobar
 foobar:])
 
 AC_CACHE_CHECK(linker for .hidden support, gcc_cv_ld_hidden,
@@ -2094,44 +2094,44 @@ else
   if echo "$ld_ver" | grep GNU > /dev/null; then
 changequote(,)dnl
     ld_vers=`echo $ld_ver | sed -n \
-        -e 's,^.*[         ]\([0-9][0-9]*\.[0-9][0-9]*\)$,\1,p' \
-        -e 's,^.*[         ]\([0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*\)$,\1,p' \
-        -e 's,^.*[         ]\([0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*\)$,\1,p' \
-        -e 's,^.*[         ]\([0-9][0-9]*\.[0-9][0-9]*\)[         ].*$,\1,p' \
-        -e 's,^.*[         ]\([0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*\)[         ].*$,\1,p' \
-        -e 's,^.*[          ]\([0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*\)[         ].*$,\1,p' \
-        -e 's,^.*[         ]\([0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*\)[         -].*$,\1,p'`
+	-e 's,^.*[	 ]\([0-9][0-9]*\.[0-9][0-9]*\)$,\1,p' \
+	-e 's,^.*[	 ]\([0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*\)$,\1,p' \
+	-e 's,^.*[	 ]\([0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*\)$,\1,p' \
+	-e 's,^.*[	 ]\([0-9][0-9]*\.[0-9][0-9]*\)[	 ].*$,\1,p' \
+	-e 's,^.*[	 ]\([0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*\)[	 ].*$,\1,p' \
+	-e 's,^.*[ 	 ]\([0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*\)[ 	].*$,\1,p' \
+	-e 's,^.*[	 ]\([0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*\)[	 -].*$,\1,p'`
     ld_date=`echo $ld_ver | sed -n 's,^.*\([2-9][0-9][0-9][0-9]\)[-]*\([01][0-9]\)[-]*\([0-3][0-9]\).*$,\1\2\3,p'`
     ld_vers_major=`expr "$ld_vers" : '\([0-9]*\)'`
     ld_vers_minor=`expr "$ld_vers" : '[0-9]*\.\([0-9]*\)'`
     ld_vers_patch=`expr "$ld_vers" : '[0-9]*\.[0-9]*\.\([0-9]*\)'`
     if test 0"$ld_date" -lt 20020404; then
       if test -n "$ld_date"; then
-        # If there was date string, but was earlier than 2002-04-04, fail
-        gcc_cv_ld_hidden=no
+	# If there was date string, but was earlier than 2002-04-04, fail
+	gcc_cv_ld_hidden=no
       elif test -z "$ld_vers"; then
-        # If there was no date string nor ld version number, something is wrong
-        gcc_cv_ld_hidden=no
+	# If there was no date string nor ld version number, something is wrong
+	gcc_cv_ld_hidden=no
       else
-        test -z "$ld_vers_patch" && ld_vers_patch=0
-        if test "$ld_vers_major" -lt 2; then
-          gcc_cv_ld_hidden=no
-        elif test "$ld_vers_major" -eq 2 -a "$ld_vers_minor" -lt 12; then
-          gcc_cv_ld_hidden="no"
-        elif test "$ld_vers_major" -eq 2 -a "$ld_vers_minor" -eq 12 -a "$ld_vers_patch" -eq 0; then
-          gcc_cv_ld_hidden=no
-        fi
+	test -z "$ld_vers_patch" && ld_vers_patch=0
+	if test "$ld_vers_major" -lt 2; then
+	  gcc_cv_ld_hidden=no
+	elif test "$ld_vers_major" -eq 2 -a "$ld_vers_minor" -lt 12; then
+	  gcc_cv_ld_hidden="no"
+	elif test "$ld_vers_major" -eq 2 -a "$ld_vers_minor" -eq 12 -a "$ld_vers_patch" -eq 0; then
+	  gcc_cv_ld_hidden=no
+	fi
       fi
 changequote([,])dnl
     fi
   else
     case "${target}" in
       hppa64*-*-hpux* | ia64*-*-hpux*)
-        gcc_cv_ld_hidden=yes
-        ;;
+	gcc_cv_ld_hidden=yes
+	;;
       *)
-        gcc_cv_ld_hidden=no
-        ;;
+	gcc_cv_ld_hidden=no
+	;;
     esac
   fi
 fi])
@@ -2147,11 +2147,11 @@ fi
 # Check if we have .[us]leb128, and support symbol arithmetic with it.
 gcc_GAS_CHECK_FEATURE([.sleb128 and .uleb128], gcc_cv_as_leb128,
   [elf,2,11,0],,
-[        .data
-        .uleb128 L2 - L1
+[	.data
+	.uleb128 L2 - L1
 L1:
-        .uleb128 1280
-        .sleb128 -1010
+	.uleb128 1280
+	.sleb128 -1010
 L2:],
  [# GAS versions before 2.11 do not support uleb128,
   # despite appearing to.
@@ -2177,37 +2177,37 @@ changequote([,])dnl
 # .eh_frame data.
 gcc_GAS_CHECK_FEATURE(eh_frame optimization, gcc_cv_as_eh_frame,
   [elf,2,12,0],,
-[        .text
+[	.text
 .LFB1:
-        .4byte        0
+	.4byte	0
 .L1:
-        .4byte        0
+	.4byte	0
 .LFE1:
-        .section        .eh_frame,"aw",@progbits
+	.section	.eh_frame,"aw",@progbits
 __FRAME_BEGIN__:
-        .4byte        .LECIE1-.LSCIE1
+	.4byte	.LECIE1-.LSCIE1
 .LSCIE1:
-        .4byte        0x0
-        .byte        0x1
-        .ascii "z\0"
-        .byte        0x1
-        .byte        0x78
-        .byte        0x1a
-        .byte        0x0
-        .byte        0x4
-        .4byte        1
-        .p2align 1
+	.4byte	0x0
+	.byte	0x1
+	.ascii "z\0"
+	.byte	0x1
+	.byte	0x78
+	.byte	0x1a
+	.byte	0x0
+	.byte	0x4
+	.4byte	1
+	.p2align 1
 .LECIE1:
 .LSFDE1:
-        .4byte        .LEFDE1-.LASFDE1
+	.4byte	.LEFDE1-.LASFDE1
 .LASFDE1:
-        .4byte        .LASFDE1-__FRAME_BEGIN__
-        .4byte        .LFB1
-        .4byte        .LFE1-.LFB1
-        .byte        0x4
-        .4byte        .LFE1-.LFB1
-        .byte        0x4
-        .4byte        .L1-.LFB1
+	.4byte	.LASFDE1-__FRAME_BEGIN__
+	.4byte	.LFB1
+	.4byte	.LFE1-.LFB1
+	.byte	0x4
+	.4byte	.LFE1-.LFB1
+	.byte	0x4
+	.4byte	.L1-.LFB1
 .LEFDE1:],
 [  dnl # For autoconf 2.5x, must protect trailing spaces with @&t@.
 cat > conftest.lit <<EOF
@@ -2299,330 +2299,330 @@ case "$target" in
 changequote(,)dnl
   alpha*-*-*)
     conftest_s='
-        .section ".tdata","awT",@progbits
-foo:        .long        25
-        .text
-        ldq        $27,__tls_get_addr($29)                !literal!1
-        lda        $16,foo($29)                        !tlsgd!1
-        jsr        $26,($27),__tls_get_addr        !lituse_tlsgd!1
-        ldq        $27,__tls_get_addr($29)                !literal!2
-        lda        $16,foo($29)                        !tlsldm!2
-        jsr        $26,($27),__tls_get_addr        !lituse_tlsldm!2
-        ldq        $1,foo($29)                        !gotdtprel
-        ldah        $2,foo($29)                        !dtprelhi
-        lda        $3,foo($2)                        !dtprello
-        lda        $4,foo($29)                        !dtprel
-        ldq        $1,foo($29)                        !gottprel
-        ldah        $2,foo($29)                        !tprelhi
-        lda        $3,foo($2)                        !tprello
-        lda        $4,foo($29)                        !tprel'
-        tls_first_major=2
-        tls_first_minor=13
-        tls_as_opt=--fatal-warnings
-        ;;
+	.section ".tdata","awT",@progbits
+foo:	.long	25
+	.text
+	ldq	$27,__tls_get_addr($29)		!literal!1
+	lda	$16,foo($29)			!tlsgd!1
+	jsr	$26,($27),__tls_get_addr	!lituse_tlsgd!1
+	ldq	$27,__tls_get_addr($29)		!literal!2
+	lda	$16,foo($29)			!tlsldm!2
+	jsr	$26,($27),__tls_get_addr	!lituse_tlsldm!2
+	ldq	$1,foo($29)			!gotdtprel
+	ldah	$2,foo($29)			!dtprelhi
+	lda	$3,foo($2)			!dtprello
+	lda	$4,foo($29)			!dtprel
+	ldq	$1,foo($29)			!gottprel
+	ldah	$2,foo($29)			!tprelhi
+	lda	$3,foo($2)			!tprello
+	lda	$4,foo($29)			!tprel'
+	tls_first_major=2
+	tls_first_minor=13
+	tls_as_opt=--fatal-warnings
+	;;
   frv*-*-*)
     conftest_s='
-        .section ".tdata","awT",@progbits
+	.section ".tdata","awT",@progbits
 x:      .long   25
         .text
         call    #gettlsoff(x)'
-        tls_first_major=2
-        tls_first_minor=14
-        ;;
+	tls_first_major=2
+	tls_first_minor=14
+	;;
   hppa*-*-linux*)
     conftest_s='
-t1:        .reg        %r20
-t2:        .reg        %r21
-gp:        .reg        %r19
-        .section ".tdata","awT",@progbits
-foo:        .long        25
-        .text
-        .align        4
-        addil LT%foo-$tls_gdidx$,gp
-        ldo RT%foo-$tls_gdidx$(%r1),%arg0
-        b __tls_get_addr
-        nop                 
-        addil LT%foo-$tls_ldidx$,gp
-        b __tls_get_addr
-        ldo RT%foo-$tls_ldidx$(%r1),%arg0
-        addil LR%foo-$tls_dtpoff$,%ret0
-        ldo RR%foo-$tls_dtpoff$(%r1),%t1
-        mfctl %cr27,%t1                 
-        addil LT%foo-$tls_ieoff$,gp
-        ldw RT%foo-$tls_ieoff$(%r1),%t2
-        add %t1,%t2,%t3                 
-        mfctl %cr27,%t1                 
-        addil LR%foo-$tls_leoff$,%t1
-        ldo RR%foo-$tls_leoff$(%r1),%t2'
-        tls_first_major=2
-        tls_first_minor=15
-        tls_as_opt=--fatal-warnings
-        ;;
+t1:	.reg	%r20
+t2:	.reg	%r21
+gp:	.reg	%r19
+	.section ".tdata","awT",@progbits
+foo:	.long	25
+	.text
+	.align	4
+	addil LT%foo-$tls_gdidx$,gp
+	ldo RT%foo-$tls_gdidx$(%r1),%arg0
+	b __tls_get_addr
+	nop 		
+	addil LT%foo-$tls_ldidx$,gp
+	b __tls_get_addr
+	ldo RT%foo-$tls_ldidx$(%r1),%arg0
+	addil LR%foo-$tls_dtpoff$,%ret0
+	ldo RR%foo-$tls_dtpoff$(%r1),%t1
+	mfctl %cr27,%t1 		
+	addil LT%foo-$tls_ieoff$,gp
+	ldw RT%foo-$tls_ieoff$(%r1),%t2
+	add %t1,%t2,%t3 		
+	mfctl %cr27,%t1 		
+	addil LR%foo-$tls_leoff$,%t1
+	ldo RR%foo-$tls_leoff$(%r1),%t2'
+	tls_first_major=2
+	tls_first_minor=15
+	tls_as_opt=--fatal-warnings
+	;;
   arm*-*-*)
     conftest_s='
-        .section ".tdata","awT",%progbits
-foo:        .long        25
-        .text
+	.section ".tdata","awT",%progbits
+foo:	.long	25
+	.text
 .word foo(gottpoff)
 .word foo(tpoff)
 .word foo(tlsgd)
 .word foo(tlsldm)
 .word foo(tlsldo)'
-        tls_first_major=2
-        tls_first_minor=17
-        ;;
+	tls_first_major=2
+	tls_first_minor=17
+	;;
   i[34567]86-*-*)
     conftest_s='
-        .section ".tdata","awT",@progbits
-foo:        .long        25
-        .text
-        movl        %gs:0, %eax
-        leal        foo@TLSGD(,%ebx,1), %eax
-        leal        foo@TLSLDM(%ebx), %eax
-        leal        foo@DTPOFF(%eax), %edx
-        movl        foo@GOTTPOFF(%ebx), %eax
-        subl        foo@GOTTPOFF(%ebx), %eax
-        addl        foo@GOTNTPOFF(%ebx), %eax
-        movl        foo@INDNTPOFF, %eax
-        movl        $foo@TPOFF, %eax
-        subl        $foo@TPOFF, %eax
-        leal        foo@NTPOFF(%ecx), %eax'
-        tls_first_major=2
-        tls_first_minor=14
-        tls_as_opt=--fatal-warnings
-        ;;
+	.section ".tdata","awT",@progbits
+foo:	.long	25
+	.text
+	movl	%gs:0, %eax
+	leal	foo@TLSGD(,%ebx,1), %eax
+	leal	foo@TLSLDM(%ebx), %eax
+	leal	foo@DTPOFF(%eax), %edx
+	movl	foo@GOTTPOFF(%ebx), %eax
+	subl	foo@GOTTPOFF(%ebx), %eax
+	addl	foo@GOTNTPOFF(%ebx), %eax
+	movl	foo@INDNTPOFF, %eax
+	movl	$foo@TPOFF, %eax
+	subl	$foo@TPOFF, %eax
+	leal	foo@NTPOFF(%ecx), %eax'
+	tls_first_major=2
+	tls_first_minor=14
+	tls_as_opt=--fatal-warnings
+	;;
   x86_64-*-*)
     conftest_s='
-        .section ".tdata","awT",@progbits
-foo:        .long        25
-        .text
-        movq        %fs:0, %rax
-        leaq        foo@TLSGD(%rip), %rdi
-        leaq        foo@TLSLD(%rip), %rdi
-        leaq        foo@DTPOFF(%rax), %rdx
-        movq        foo@GOTTPOFF(%rip), %rax
-        movq        $foo@TPOFF, %rax'
-        tls_first_major=2
-        tls_first_minor=14
-        tls_as_opt=--fatal-warnings
-        ;;
+	.section ".tdata","awT",@progbits
+foo:	.long	25
+	.text
+	movq	%fs:0, %rax
+	leaq	foo@TLSGD(%rip), %rdi
+	leaq	foo@TLSLD(%rip), %rdi
+	leaq	foo@DTPOFF(%rax), %rdx
+	movq	foo@GOTTPOFF(%rip), %rax
+	movq	$foo@TPOFF, %rax'
+	tls_first_major=2
+	tls_first_minor=14
+	tls_as_opt=--fatal-warnings
+	;;
   ia64-*-*)
     conftest_s='
-        .section ".tdata","awT",@progbits
-foo:        data8        25
-        .text
-        addl        r16 = @ltoff(@dtpmod(foo#)), gp
-        addl        r17 = @ltoff(@dtprel(foo#)), gp
-        addl        r18 = @ltoff(@tprel(foo#)), gp
-        addl        r19 = @dtprel(foo#), gp
-        adds        r21 = @dtprel(foo#), r13
-        movl        r23 = @dtprel(foo#)
-        addl        r20 = @tprel(foo#), gp
-        adds        r22 = @tprel(foo#), r13
-        movl        r24 = @tprel(foo#)'
-        tls_first_major=2
-        tls_first_minor=13
-        tls_as_opt=--fatal-warnings
-        ;;
+	.section ".tdata","awT",@progbits
+foo:	data8	25
+	.text
+	addl	r16 = @ltoff(@dtpmod(foo#)), gp
+	addl	r17 = @ltoff(@dtprel(foo#)), gp
+	addl	r18 = @ltoff(@tprel(foo#)), gp
+	addl	r19 = @dtprel(foo#), gp
+	adds	r21 = @dtprel(foo#), r13
+	movl	r23 = @dtprel(foo#)
+	addl	r20 = @tprel(foo#), gp
+	adds	r22 = @tprel(foo#), r13
+	movl	r24 = @tprel(foo#)'
+	tls_first_major=2
+	tls_first_minor=13
+	tls_as_opt=--fatal-warnings
+	;;
   mips*-*-*)
     conftest_s='
-        .section .tdata,"awT",@progbits
+	.section .tdata,"awT",@progbits
 x:
-        .word 2
-        .text
-        addiu $4, $28, %tlsgd(x)
-        addiu $4, $28, %tlsldm(x)
-        lui $4, %dtprel_hi(x)
-        addiu $4, $4, %dtprel_lo(x)
-        lw $4, %gottprel(x)($28)
-        lui $4, %tprel_hi(x)
-        addiu $4, $4, %tprel_lo(x)'
-        tls_first_major=2
-        tls_first_minor=16
-        tls_as_opt='-32 --fatal-warnings'
-        ;;
+	.word 2
+	.text
+	addiu $4, $28, %tlsgd(x)
+	addiu $4, $28, %tlsldm(x)
+	lui $4, %dtprel_hi(x)
+	addiu $4, $4, %dtprel_lo(x)
+	lw $4, %gottprel(x)($28)
+	lui $4, %tprel_hi(x)
+	addiu $4, $4, %tprel_lo(x)'
+	tls_first_major=2
+	tls_first_minor=16
+	tls_as_opt='-32 --fatal-warnings'
+	;;
   powerpc-*-*)
     conftest_s='
-        .section ".tdata","awT",@progbits
-        .align 2
-ld0:        .space 4
-ld1:        .space 4
-x1:        .space 4
-x2:        .space 4
-x3:        .space 4
-        .text
-        addi 3,31,ld0@got@tlsgd
-        bl __tls_get_addr
-        addi 3,31,x1@got@tlsld
-        bl __tls_get_addr
-        addi 9,3,x1@dtprel
-        addis 9,3,x2@dtprel@ha
-        addi 9,9,x2@dtprel@l
-        lwz 9,x3@got@tprel(31)
-        add 9,9,x@tls
-        addi 9,2,x1@tprel
-        addis 9,2,x2@tprel@ha
-        addi 9,9,x2@tprel@l'
-        tls_first_major=2
-        tls_first_minor=14
-        tls_as_opt="-a32 --fatal-warnings"
-        ;;
+	.section ".tdata","awT",@progbits
+	.align 2
+ld0:	.space 4
+ld1:	.space 4
+x1:	.space 4
+x2:	.space 4
+x3:	.space 4
+	.text
+	addi 3,31,ld0@got@tlsgd
+	bl __tls_get_addr
+	addi 3,31,x1@got@tlsld
+	bl __tls_get_addr
+	addi 9,3,x1@dtprel
+	addis 9,3,x2@dtprel@ha
+	addi 9,9,x2@dtprel@l
+	lwz 9,x3@got@tprel(31)
+	add 9,9,x@tls
+	addi 9,2,x1@tprel
+	addis 9,2,x2@tprel@ha
+	addi 9,9,x2@tprel@l'
+	tls_first_major=2
+	tls_first_minor=14
+	tls_as_opt="-a32 --fatal-warnings"
+	;;
   powerpc64-*-*)
     conftest_s='
-        .section ".tdata","awT",@progbits
-        .align 3
-ld0:        .space 8
-ld1:        .space 8
-x1:        .space 8
-x2:        .space 8
-x3:        .space 8
-        .text
-        addi 3,2,ld0@got@tlsgd
-        bl .__tls_get_addr
-        nop
-        addi 3,2,ld1@toc
-        bl .__tls_get_addr
-        nop
-        addi 3,2,x1@got@tlsld
-        bl .__tls_get_addr
-        nop
-        addi 9,3,x1@dtprel
-        bl .__tls_get_addr
-        nop
-        addis 9,3,x2@dtprel@ha
-        addi 9,9,x2@dtprel@l
-        bl .__tls_get_addr
-        nop
-        ld 9,x3@got@dtprel(2)
-        add 9,9,3
-        bl .__tls_get_addr
-        nop'
-        tls_first_major=2
-        tls_first_minor=14
-        tls_as_opt="-a64 --fatal-warnings"
-        ;;
+	.section ".tdata","awT",@progbits
+	.align 3
+ld0:	.space 8
+ld1:	.space 8
+x1:	.space 8
+x2:	.space 8
+x3:	.space 8
+	.text
+	addi 3,2,ld0@got@tlsgd
+	bl .__tls_get_addr
+	nop
+	addi 3,2,ld1@toc
+	bl .__tls_get_addr
+	nop
+	addi 3,2,x1@got@tlsld
+	bl .__tls_get_addr
+	nop
+	addi 9,3,x1@dtprel
+	bl .__tls_get_addr
+	nop
+	addis 9,3,x2@dtprel@ha
+	addi 9,9,x2@dtprel@l
+	bl .__tls_get_addr
+	nop
+	ld 9,x3@got@dtprel(2)
+	add 9,9,3
+	bl .__tls_get_addr
+	nop'
+	tls_first_major=2
+	tls_first_minor=14
+	tls_as_opt="-a64 --fatal-warnings"
+	;;
   s390-*-*)
     conftest_s='
-        .section ".tdata","awT",@progbits
-foo:        .long        25
-        .text
-        .long        foo@TLSGD
-        .long        foo@TLSLDM
-        .long        foo@DTPOFF
-        .long        foo@NTPOFF
-        .long        foo@GOTNTPOFF
-        .long        foo@INDNTPOFF
-        l        %r1,foo@GOTNTPOFF(%r12)
-        l        %r1,0(%r1):tls_load:foo
-        bas        %r14,0(%r1,%r13):tls_gdcall:foo
-        bas        %r14,0(%r1,%r13):tls_ldcall:foo'
-        tls_first_major=2
-        tls_first_minor=14
-        tls_as_opt="-m31 --fatal-warnings"
-        ;;
+	.section ".tdata","awT",@progbits
+foo:	.long	25
+	.text
+	.long	foo@TLSGD
+	.long	foo@TLSLDM
+	.long	foo@DTPOFF
+	.long	foo@NTPOFF
+	.long	foo@GOTNTPOFF
+	.long	foo@INDNTPOFF
+	l	%r1,foo@GOTNTPOFF(%r12)
+	l	%r1,0(%r1):tls_load:foo
+	bas	%r14,0(%r1,%r13):tls_gdcall:foo
+	bas	%r14,0(%r1,%r13):tls_ldcall:foo'
+	tls_first_major=2
+	tls_first_minor=14
+	tls_as_opt="-m31 --fatal-warnings"
+	;;
   s390x-*-*)
     conftest_s='
-        .section ".tdata","awT",@progbits
-foo:        .long        25
-        .text
-        .quad        foo@TLSGD
-        .quad        foo@TLSLDM
-        .quad        foo@DTPOFF
-        .quad        foo@NTPOFF
-        .quad        foo@GOTNTPOFF
-        lg        %r1,foo@GOTNTPOFF(%r12)
-        larl        %r1,foo@INDNTPOFF
-        brasl        %r14,__tls_get_offset@PLT:tls_gdcall:foo
-        brasl        %r14,__tls_get_offset@PLT:tls_ldcall:foo'
-        tls_first_major=2
-        tls_first_minor=14
-        tls_as_opt="-m64 -Aesame --fatal-warnings"
-        ;;
+	.section ".tdata","awT",@progbits
+foo:	.long	25
+	.text
+	.quad	foo@TLSGD
+	.quad	foo@TLSLDM
+	.quad	foo@DTPOFF
+	.quad	foo@NTPOFF
+	.quad	foo@GOTNTPOFF
+	lg	%r1,foo@GOTNTPOFF(%r12)
+	larl	%r1,foo@INDNTPOFF
+	brasl	%r14,__tls_get_offset@PLT:tls_gdcall:foo
+	brasl	%r14,__tls_get_offset@PLT:tls_ldcall:foo'
+	tls_first_major=2
+	tls_first_minor=14
+	tls_as_opt="-m64 -Aesame --fatal-warnings"
+	;;
   sh-*-* | sh[34]-*-*)
     conftest_s='
-        .section ".tdata","awT",@progbits
-foo:        .long        25
-        .text
-        .long        foo@TLSGD
-        .long        foo@TLSLDM
-        .long        foo@DTPOFF
-        .long        foo@GOTTPOFF
-        .long        foo@TPOFF'
-        tls_first_major=2
-        tls_first_minor=13
-        tls_as_opt=--fatal-warnings
-        ;;
+	.section ".tdata","awT",@progbits
+foo:	.long	25
+	.text
+	.long	foo@TLSGD
+	.long	foo@TLSLDM
+	.long	foo@DTPOFF
+	.long	foo@GOTTPOFF
+	.long	foo@TPOFF'
+	tls_first_major=2
+	tls_first_minor=13
+	tls_as_opt=--fatal-warnings
+	;;
   sparc*-*-*)
     case "$target" in
       sparc*-sun-solaris2.[56789]*)
-        # TLS was introduced in the Solaris 9 4/04 release but
-        # we do not enable it by default on Solaris 9 either.
-        if test "x$enable_tls" = xyes ; then
-          on_solaris=yes
-        else
-          enable_tls=no;
-        fi
-        ;;
+	# TLS was introduced in the Solaris 9 4/04 release but
+	# we do not enable it by default on Solaris 9 either.
+	if test "x$enable_tls" = xyes ; then
+	  on_solaris=yes
+	else
+	  enable_tls=no;
+	fi
+	;;
       sparc*-sun-solaris2.*)
-        on_solaris=yes
-        ;;
+	on_solaris=yes
+	;;
       *)
-        on_solaris=no
-        ;;
+	on_solaris=no
+	;;
     esac
     if test x$on_solaris = xyes && test x$gas_flag = xno; then
       conftest_s='
-        .section ".tdata",#alloc,#write,#tls
-foo:        .long        25
-        .text
-        sethi        %tgd_hi22(foo), %o0
-        add        %o0, %tgd_lo10(foo), %o1
-        add        %l7, %o1, %o0, %tgd_add(foo)
-        call        __tls_get_addr, %tgd_call(foo)
-        sethi        %tldm_hi22(foo), %l1
-        add        %l1, %tldm_lo10(foo), %l2
-        add        %l7, %l2, %o0, %tldm_add(foo)
-        call        __tls_get_addr, %tldm_call(foo)
-        sethi        %tldo_hix22(foo), %l3
-        xor        %l3, %tldo_lox10(foo), %l4
-        add        %o0, %l4, %l5, %tldo_add(foo)
-        sethi        %tie_hi22(foo), %o3
-        add        %o3, %tie_lo10(foo), %o3
-        ld        [%l7 + %o3], %o2, %tie_ld(foo)
-        add        %g7, %o2, %o4, %tie_add(foo)
-        sethi        %tle_hix22(foo), %l1
-        xor        %l1, %tle_lox10(foo), %o5
-        ld        [%g7 + %o5], %o1'
-        tls_first_major=0
-        tls_first_minor=0
+	.section ".tdata",#alloc,#write,#tls
+foo:	.long	25
+	.text
+	sethi	%tgd_hi22(foo), %o0
+	add	%o0, %tgd_lo10(foo), %o1
+	add	%l7, %o1, %o0, %tgd_add(foo)
+	call	__tls_get_addr, %tgd_call(foo)
+	sethi	%tldm_hi22(foo), %l1
+	add	%l1, %tldm_lo10(foo), %l2
+	add	%l7, %l2, %o0, %tldm_add(foo)
+	call	__tls_get_addr, %tldm_call(foo)
+	sethi	%tldo_hix22(foo), %l3
+	xor	%l3, %tldo_lox10(foo), %l4
+	add	%o0, %l4, %l5, %tldo_add(foo)
+	sethi	%tie_hi22(foo), %o3
+	add	%o3, %tie_lo10(foo), %o3
+	ld	[%l7 + %o3], %o2, %tie_ld(foo)
+	add	%g7, %o2, %o4, %tie_add(foo)
+	sethi	%tle_hix22(foo), %l1
+	xor	%l1, %tle_lox10(foo), %o5
+	ld	[%g7 + %o5], %o1'
+	tls_first_major=0
+	tls_first_minor=0
     else
       conftest_s='
-        .section ".tdata","awT",@progbits
-foo:        .long        25
-        .text
-        sethi        %tgd_hi22(foo), %o0
-        add        %o0, %tgd_lo10(foo), %o1
-        add        %l7, %o1, %o0, %tgd_add(foo)
-        call        __tls_get_addr, %tgd_call(foo)
-        sethi        %tldm_hi22(foo), %l1
-        add        %l1, %tldm_lo10(foo), %l2
-        add        %l7, %l2, %o0, %tldm_add(foo)
-        call        __tls_get_addr, %tldm_call(foo)
-        sethi        %tldo_hix22(foo), %l3
-        xor        %l3, %tldo_lox10(foo), %l4
-        add        %o0, %l4, %l5, %tldo_add(foo)
-        sethi        %tie_hi22(foo), %o3
-        add        %o3, %tie_lo10(foo), %o3
-        ld        [%l7 + %o3], %o2, %tie_ld(foo)
-        add        %g7, %o2, %o4, %tie_add(foo)
-        sethi        %tle_hix22(foo), %l1
-        xor        %l1, %tle_lox10(foo), %o5
-        ld        [%g7 + %o5], %o1'
-        tls_first_major=2
-        tls_first_minor=14
-        tls_as_opt="-32 --fatal-warnings"
+	.section ".tdata","awT",@progbits
+foo:	.long	25
+	.text
+	sethi	%tgd_hi22(foo), %o0
+	add	%o0, %tgd_lo10(foo), %o1
+	add	%l7, %o1, %o0, %tgd_add(foo)
+	call	__tls_get_addr, %tgd_call(foo)
+	sethi	%tldm_hi22(foo), %l1
+	add	%l1, %tldm_lo10(foo), %l2
+	add	%l7, %l2, %o0, %tldm_add(foo)
+	call	__tls_get_addr, %tldm_call(foo)
+	sethi	%tldo_hix22(foo), %l3
+	xor	%l3, %tldo_lox10(foo), %l4
+	add	%o0, %l4, %l5, %tldo_add(foo)
+	sethi	%tie_hi22(foo), %o3
+	add	%o3, %tie_lo10(foo), %o3
+	ld	[%l7 + %o3], %o2, %tie_ld(foo)
+	add	%g7, %o2, %o4, %tie_add(foo)
+	sethi	%tle_hix22(foo), %l1
+	xor	%l1, %tle_lox10(foo), %o5
+	ld	[%g7 + %o5], %o1'
+	tls_first_major=2
+	tls_first_minor=14
+	tls_as_opt="-32 --fatal-warnings"
       fi
-        ;;
+	;;
 changequote([,])dnl
 esac
 set_have_as_tls=no
@@ -2639,7 +2639,7 @@ else
 fi
 if test $set_have_as_tls = yes ; then
   AC_DEFINE(HAVE_AS_TLS, 1,
-            [Define if your assembler supports thread-local storage.])
+	    [Define if your assembler supports thread-local storage.])
 fi
 
 # Target-specific assembler checks.
@@ -2651,14 +2651,14 @@ if test $in_tree_ld = yes ; then
     gcc_cv_ld_static_dynamic=yes
   fi
 elif test x$gcc_cv_ld != x; then
-        # Check if linker supports -Bstatic/-Bdynamic option
-        if $gcc_cv_ld --help 2>/dev/null | grep -- -Bstatic > /dev/null \
-          && $gcc_cv_ld --help 2>/dev/null | grep -- -Bdynamic > /dev/null; then
-                gcc_cv_ld_static_dynamic=yes
-        fi
+	# Check if linker supports -Bstatic/-Bdynamic option
+	if $gcc_cv_ld --help 2>/dev/null | grep -- -Bstatic > /dev/null \
+	  && $gcc_cv_ld --help 2>/dev/null | grep -- -Bdynamic > /dev/null; then
+		gcc_cv_ld_static_dynamic=yes
+	fi
 fi
 if test x"$gcc_cv_ld_static_dynamic" = xyes; then
-        AC_DEFINE(HAVE_LD_STATIC_DYNAMIC, 1,
+	AC_DEFINE(HAVE_LD_STATIC_DYNAMIC, 1,
 [Define if your linker supports -Bstatic/-Bdynamic option.])
 fi
 AC_MSG_RESULT($gcc_cv_ld_static_dynamic)
@@ -2687,28 +2687,28 @@ case "$target" in
   # All TARGET_ABI_OSF targets.
   alpha*-*-osf* | alpha*-*-linux* | alpha*-*-*bsd*)
     gcc_GAS_CHECK_FEATURE([explicit relocation support],
-        gcc_cv_as_alpha_explicit_relocs, [2,12,0],,
-[        .set nomacro
-        .text
-        extbl        $3, $2, $3        !lituse_bytoff!1
-        ldq        $2, a($29)        !literal!1
-        ldq        $4, b($29)        !literal!2
-        ldq_u        $3, 0($2)        !lituse_base!1
-        ldq        $27, f($29)        !literal!5
-        jsr        $26, ($27), f        !lituse_jsr!5
-        ldah        $29, 0($26)        !gpdisp!3
-        lda        $0, c($29)        !gprel
-        ldah        $1, d($29)        !gprelhigh
-        lda        $1, d($1)        !gprellow
-        lda        $29, 0($29)        !gpdisp!3],,
+	gcc_cv_as_alpha_explicit_relocs, [2,12,0],,
+[	.set nomacro
+	.text
+	extbl	$3, $2, $3	!lituse_bytoff!1
+	ldq	$2, a($29)	!literal!1
+	ldq	$4, b($29)	!literal!2
+	ldq_u	$3, 0($2)	!lituse_base!1
+	ldq	$27, f($29)	!literal!5
+	jsr	$26, ($27), f	!lituse_jsr!5
+	ldah	$29, 0($26)	!gpdisp!3
+	lda	$0, c($29)	!gprel
+	ldah	$1, d($29)	!gprelhigh
+	lda	$1, d($1)	!gprellow
+	lda	$29, 0($29)	!gpdisp!3],,
     [AC_DEFINE(HAVE_AS_EXPLICIT_RELOCS, 1,
   [Define if your assembler supports explicit relocations.])])
     gcc_GAS_CHECK_FEATURE([jsrdirect relocation support],
-        gcc_cv_as_alpha_jsrdirect_relocs, [2,16,90],,
-[        .set nomacro
-        .text
-        ldq        $27, a($29)        !literal!1
-        jsr        $26, ($27), a        !lituse_jsrdirect!1],,
+	gcc_cv_as_alpha_jsrdirect_relocs, [2,16,90],,
+[	.set nomacro
+	.text
+	ldq	$27, a($29)	!literal!1
+	jsr	$26, ($27), a	!lituse_jsrdirect!1],,
     [AC_DEFINE(HAVE_AS_JSRDIRECT_RELOCS, 1,
   [Define if your assembler supports the lituse_jsrdirect relocation.])])
     ;;
@@ -2718,41 +2718,41 @@ case "$target" in
       gcc_cv_as_cris_no_mul_bug,[2,15,91],
       [-no-mul-bug-abort], [.text],,
       [AC_DEFINE(HAVE_AS_NO_MUL_BUG_ABORT_OPTION, 1,
-                [Define if your assembler supports the -no-mul-bug-abort option.])])
+		[Define if your assembler supports the -no-mul-bug-abort option.])])
     ;;
 
   sparc*-*-*)
     gcc_GAS_CHECK_FEATURE([.register], gcc_cv_as_sparc_register_op,,,
       [.register %g2, #scratch],,
       [AC_DEFINE(HAVE_AS_REGISTER_PSEUDO_OP, 1,
-                [Define if your assembler supports .register.])])
+		[Define if your assembler supports .register.])])
 
     gcc_GAS_CHECK_FEATURE([-relax option], gcc_cv_as_sparc_relax,,
       [-relax], [.text],,
       [AC_DEFINE(HAVE_AS_RELAX_OPTION, 1,
-                [Define if your assembler supports -relax option.])])
+		[Define if your assembler supports -relax option.])])
 
     gcc_GAS_CHECK_FEATURE([unaligned pcrel relocs],
       gcc_cv_as_sparc_ua_pcrel,,
       [-K PIC],
 [.text
 foo:
-        nop
+	nop
 .data
 .align 4
 .byte 0
 .uaword %r_disp32(foo)],
       [if test x$gcc_cv_ld != x \
        && $gcc_cv_ld -o conftest conftest.o -G > /dev/null 2>&1; then
-         gcc_cv_as_sparc_ua_pcrel=yes
+	 gcc_cv_as_sparc_ua_pcrel=yes
        fi
        rm -f conftest],
       [AC_DEFINE(HAVE_AS_SPARC_UA_PCREL, 1,
-                [Define if your assembler and linker support unaligned PC relative relocs.])
+		[Define if your assembler and linker support unaligned PC relative relocs.])
 
       gcc_GAS_CHECK_FEATURE([unaligned pcrel relocs against hidden symbols],
-        gcc_cv_as_sparc_ua_pcrel_hidden,,
-        [-K PIC],
+	gcc_cv_as_sparc_ua_pcrel_hidden,,
+	[-K PIC],
 [.data
 .align 4
 .byte 0x31
@@ -2762,35 +2762,35 @@ foo:
 .hidden foo
 foo:
 .skip 4],
-        [if test x$gcc_cv_ld != x && test x$gcc_cv_objdump != x \
-         && $gcc_cv_ld -o conftest conftest.o -G > /dev/null 2>&1 \
-         && $gcc_cv_objdump -s -j .data conftest 2> /dev/null \
-            | grep ' 31000000 07323334' > /dev/null 2>&1; then
-            if $gcc_cv_objdump -R conftest 2> /dev/null \
-               | grep 'DISP32' > /dev/null 2>&1; then
-                :
-            else
-                gcc_cv_as_sparc_ua_pcrel_hidden=yes
-            fi
-         fi
-         rm -f conftest],
-         [AC_DEFINE(HAVE_AS_SPARC_UA_PCREL_HIDDEN, 1,
-                   [Define if your assembler and linker support unaligned PC relative relocs against hidden symbols.])])
+	[if test x$gcc_cv_ld != x && test x$gcc_cv_objdump != x \
+	 && $gcc_cv_ld -o conftest conftest.o -G > /dev/null 2>&1 \
+	 && $gcc_cv_objdump -s -j .data conftest 2> /dev/null \
+	    | grep ' 31000000 07323334' > /dev/null 2>&1; then
+	    if $gcc_cv_objdump -R conftest 2> /dev/null \
+	       | grep 'DISP32' > /dev/null 2>&1; then
+		:
+	    else
+		gcc_cv_as_sparc_ua_pcrel_hidden=yes
+	    fi
+	 fi
+	 rm -f conftest],
+	 [AC_DEFINE(HAVE_AS_SPARC_UA_PCREL_HIDDEN, 1,
+		   [Define if your assembler and linker support unaligned PC relative relocs against hidden symbols.])])
     ]) # unaligned pcrel relocs
 
     gcc_GAS_CHECK_FEATURE([offsetable %lo()],
       gcc_cv_as_sparc_offsetable_lo10,,
       [-xarch=v9],
 [.text
-        or %g1, %lo(ab) + 12, %g1
-        or %g1, %lo(ab + 12), %g1],
+	or %g1, %lo(ab) + 12, %g1
+	or %g1, %lo(ab + 12), %g1],
       [if test x$gcc_cv_objdump != x \
        && $gcc_cv_objdump -s -j .text conftest.o 2> /dev/null \
           | grep ' 82106000 82106000' > /dev/null 2>&1; then
-         gcc_cv_as_sparc_offsetable_lo10=yes
+	 gcc_cv_as_sparc_offsetable_lo10=yes
        fi],
        [AC_DEFINE(HAVE_AS_OFFSETABLE_LO10, 1,
-                 [Define if your assembler supports offsetable %lo().])])
+	         [Define if your assembler supports offsetable %lo().])])
     ;;
 
 changequote(,)dnl
@@ -2798,22 +2798,22 @@ changequote(,)dnl
 changequote([,])dnl
     case $target_os in
       cygwin* | pe | mingw32*)
-        # Used for DWARF 2 in PE
-        gcc_GAS_CHECK_FEATURE([.secrel32 relocs],
-          gcc_cv_as_ix86_pe_secrel32,
-          [2,15,91],,
+	# Used for DWARF 2 in PE
+	gcc_GAS_CHECK_FEATURE([.secrel32 relocs],
+	  gcc_cv_as_ix86_pe_secrel32,
+	  [2,15,91],,
 [.text
-foo:        nop
+foo:	nop
 .data
-        .secrel32 foo],
-          [if test x$gcc_cv_ld != x \
-           && $gcc_cv_ld -o conftest conftest.o > /dev/null 2>&1; then
-             gcc_cv_as_ix86_pe_secrel32=yes
-           fi
-           rm -f conftest],
-          [AC_DEFINE(HAVE_GAS_PE_SECREL32_RELOC, 1,
-            [Define if your assembler and linker support 32-bit section relative relocs via '.secrel32 label'.])])
-        ;;
+	.secrel32 foo],
+	  [if test x$gcc_cv_ld != x \
+	   && $gcc_cv_ld -o conftest conftest.o > /dev/null 2>&1; then
+	     gcc_cv_as_ix86_pe_secrel32=yes
+	   fi
+	   rm -f conftest],
+	  [AC_DEFINE(HAVE_GAS_PE_SECREL32_RELOC, 1,
+	    [Define if your assembler and linker support 32-bit section relative relocs via '.secrel32 label'.])])
+	;;
     esac
 
     gcc_GAS_CHECK_FEATURE([filds and fists mnemonics],
@@ -2838,11 +2838,11 @@ foo:        nop
     # to 1 if the feature is present, 0 otherwise.
     gcc_GAS_CHECK_FEATURE([GOTOFF in data],
         gcc_cv_as_ix86_gotoff_in_data, [2,11,0],,
-[        .text
+[	.text
 .L0:
-        nop
-        .data
-        .long .L0@GOTOFF])
+	nop
+	.data
+	.long .L0@GOTOFF])
     AC_DEFINE_UNQUOTED(HAVE_AS_GOTOFF_IN_DATA,
       [`if test $gcc_cv_as_ix86_gotoff_in_data = yes; then echo 1; else echo 0; fi`],
       [Define true if the assembler supports '.long foo@GOTOFF'.])
@@ -2850,97 +2850,97 @@ foo:        nop
 
   ia64*-*-*)
     gcc_GAS_CHECK_FEATURE([ltoffx and ldxmov relocs],
-        gcc_cv_as_ia64_ltoffx_ldxmov_relocs, [2,14,0],,
-[        .text
-        addl r15 = @ltoffx(x#), gp
-        ;;
-        ld8.mov r16 = [[r15]], x#],,
+	gcc_cv_as_ia64_ltoffx_ldxmov_relocs, [2,14,0],,
+[	.text
+	addl r15 = @ltoffx(x#), gp
+	;;
+	ld8.mov r16 = [[r15]], x#],,
     [AC_DEFINE(HAVE_AS_LTOFFX_LDXMOV_RELOCS, 1,
-          [Define if your assembler supports ltoffx and ldxmov relocations.])])
+	  [Define if your assembler supports ltoffx and ldxmov relocations.])])
 
     ;;
 
   powerpc*-*-*)
     case $target in
-      *-*-aix*) conftest_s='        .machine "pwr5"
-        .csect .text[[PR]]
-        mfcr 3,128';;
+      *-*-aix*) conftest_s='	.machine "pwr5"
+	.csect .text[[PR]]
+	mfcr 3,128';;
       *-*-darwin*)
-        gcc_GAS_CHECK_FEATURE([.machine directive support],
-          gcc_cv_as_machine_directive,,,
-          [        .machine ppc7400])
-        if test x$gcc_cv_as_machine_directive != xyes; then
-          echo "*** This target requires an assembler supporting \".machine\"" >&2
-          echo you can get it from: ftp://gcc.gnu.org/pub/gcc/infrastructure/cctools-528.5.dmg >&2
-          test x$build = x$target && exit 1
-        fi
-        conftest_s='        .text
-        mfcr r3,128';;
-      *) conftest_s='        .machine power4
-        .text
-        mfcr 3,128';;
+	gcc_GAS_CHECK_FEATURE([.machine directive support],
+	  gcc_cv_as_machine_directive,,,
+	  [	.machine ppc7400])
+	if test x$gcc_cv_as_machine_directive != xyes; then
+	  echo "*** This target requires an assembler supporting \".machine\"" >&2
+	  echo you can get it from: ftp://gcc.gnu.org/pub/gcc/infrastructure/cctools-528.5.dmg >&2
+	  test x$build = x$target && exit 1
+	fi
+	conftest_s='	.text
+	mfcr r3,128';;
+      *) conftest_s='	.machine power4
+	.text
+	mfcr 3,128';;
     esac
 
     gcc_GAS_CHECK_FEATURE([mfcr field support],
       gcc_cv_as_powerpc_mfcrf, [2,14,0],,
       [$conftest_s],,
       [AC_DEFINE(HAVE_AS_MFCRF, 1,
-          [Define if your assembler supports mfcr field.])])
+	  [Define if your assembler supports mfcr field.])])
 
     case $target in
-      *-*-aix*) conftest_s='        .machine "pwr5"
-        .csect .text[[PR]]
-        popcntb 3,3';;
-      *) conftest_s='        .machine power5
-        .text
-        popcntb 3,3';;
+      *-*-aix*) conftest_s='	.machine "pwr5"
+	.csect .text[[PR]]
+	popcntb 3,3';;
+      *) conftest_s='	.machine power5
+	.text
+	popcntb 3,3';;
     esac
 
     gcc_GAS_CHECK_FEATURE([popcntb support],
       gcc_cv_as_powerpc_popcntb, [2,17,0],,
       [$conftest_s],,
       [AC_DEFINE(HAVE_AS_POPCNTB, 1,
-          [Define if your assembler supports popcntb field.])])
+	  [Define if your assembler supports popcntb field.])])
 
     case $target in
-      *-*-aix*) conftest_s='        .machine "pwr5x"
-        .csect .text[[PR]]
-        frin 1,1';;
-      *) conftest_s='        .machine power5
-        .text
-        frin 1,1';;
+      *-*-aix*) conftest_s='	.machine "pwr5x"
+	.csect .text[[PR]]
+	frin 1,1';;
+      *) conftest_s='	.machine power5
+	.text
+	frin 1,1';;
     esac
 
     gcc_GAS_CHECK_FEATURE([fp round support],
       gcc_cv_as_powerpc_fprnd, [2,17,0],,
       [$conftest_s],,
       [AC_DEFINE(HAVE_AS_FPRND, 1,
-          [Define if your assembler supports fprnd.])])
+	  [Define if your assembler supports fprnd.])])
 
     case $target in
-      *-*-aix*) conftest_s='        .csect .text[[PR]]
+      *-*-aix*) conftest_s='	.csect .text[[PR]]
 LCF..0:
-        addis 11,30,_GLOBAL_OFFSET_TABLE_-LCF..0@ha';;
+	addis 11,30,_GLOBAL_OFFSET_TABLE_-LCF..0@ha';;
       *-*-darwin*)
-        conftest_s='        .text
+	conftest_s='	.text
 LCF0:
-        addis r11,r30,_GLOBAL_OFFSET_TABLE_-LCF0@ha';;
-      *) conftest_s='        .text
+	addis r11,r30,_GLOBAL_OFFSET_TABLE_-LCF0@ha';;
+      *) conftest_s='	.text
 .LCF0:
-        addis 11,30,_GLOBAL_OFFSET_TABLE_-.LCF0@ha';;
+	addis 11,30,_GLOBAL_OFFSET_TABLE_-.LCF0@ha';;
     esac
 
     gcc_GAS_CHECK_FEATURE([rel16 relocs],
       gcc_cv_as_powerpc_rel16, [2,17,0], -a32,
       [$conftest_s],,
       [AC_DEFINE(HAVE_AS_REL16, 1,
-          [Define if your assembler supports R_PPC_REL16 relocs.])])
+	  [Define if your assembler supports R_PPC_REL16 relocs.])])
     ;;
 
   mips*-*-*)
     gcc_GAS_CHECK_FEATURE([explicit relocation support],
       gcc_cv_as_mips_explicit_relocs, [2,14,0],,
-[        lw $4,%gp_rel(foo)($4)],,
+[	lw $4,%gp_rel(foo)($4)],,
       [if test x$target_cpu_default = x
        then target_cpu_default=MASK_EXPLICIT_RELOCS
        else target_cpu_default="($target_cpu_default)|MASK_EXPLICIT_RELOCS"
@@ -2986,9 +2986,9 @@ case "$target" in
 esac
 if test x"$insn" != x; then
  conftest_s="\
-        .file 1 \"conftest.s\"
-        .loc 1 3 0
-        $insn"
+	.file 1 \"conftest.s\"
+	.loc 1 3 0
+	$insn"
  gcc_GAS_CHECK_FEATURE([dwarf2 debug_line support],
   gcc_cv_as_dwarf2_debug_line,
   [elf,2,11,0],, [$conftest_s],
@@ -3004,12 +3004,12 @@ if test x"$insn" != x; then
 # the assembler bitches if the same index is assigned twice.
  gcc_GAS_CHECK_FEATURE([buggy dwarf2 .file directive],
   gcc_cv_as_dwarf2_file_buggy,,,
-[        .file 1 "foo.s"
-        .file 1 "bar.s"])
+[	.file 1 "foo.s"
+	.file 1 "bar.s"])
 
  if test $gcc_cv_as_dwarf2_debug_line = yes \
  && test $gcc_cv_as_dwarf2_file_buggy = no; then
-        AC_DEFINE(HAVE_AS_DWARF2_DEBUG_LINE, 1,
+	AC_DEFINE(HAVE_AS_DWARF2_DEBUG_LINE, 1,
   [Define if your assembler supports dwarf2 .file/.loc directives,
    and preserves file table indices exactly as given.])
  fi
@@ -3051,14 +3051,14 @@ elif test x$gcc_cv_as != x -a x$gcc_cv_ld != x -a x$gcc_cv_objdump != x ; then
      && $gcc_cv_as -o conftest2.o conftest2.s > /dev/null 2>&1 \
      && $gcc_cv_as -o conftest3.o conftest3.s > /dev/null 2>&1 \
      && $gcc_cv_ld -shared -o conftest1.so conftest1.o \
-        conftest2.o conftest3.o > /dev/null 2>&1; then
+	conftest2.o conftest3.o > /dev/null 2>&1; then
     gcc_cv_ld_ro_rw_mix=`$gcc_cv_objdump -h conftest1.so \
-                         | sed -e '/myfoosect/!d' -e N`
+			 | sed -e '/myfoosect/!d' -e N`
     if echo "$gcc_cv_ld_ro_rw_mix" | grep CONTENTS > /dev/null; then
       if echo "$gcc_cv_ld_ro_rw_mix" | grep READONLY > /dev/null; then
-        gcc_cv_ld_ro_rw_mix=read-only
+	gcc_cv_ld_ro_rw_mix=read-only
       else
-        gcc_cv_ld_ro_rw_mix=read-write
+	gcc_cv_ld_ro_rw_mix=read-write
       fi
     fi
   fi
@@ -3067,7 +3067,7 @@ changequote(,)dnl
 changequote([,])dnl
 fi
 if test x$gcc_cv_ld_ro_rw_mix = xread-write; then
-        AC_DEFINE(HAVE_LD_RO_RW_SECTION_MIXING, 1,
+	AC_DEFINE(HAVE_LD_RO_RW_SECTION_MIXING, 1,
   [Define if your linker links a mix of read-only
    and read-write sections into a read-write section.])
 fi
@@ -3081,14 +3081,14 @@ if test $in_tree_ld = yes ; then
     gcc_cv_ld_eh_frame_hdr=yes
   fi
 elif test x$gcc_cv_ld != x; then
-        # Check if linker supports --eh-frame-hdr option
-        if $gcc_cv_ld --help 2>/dev/null | grep eh-frame-hdr > /dev/null; then
-                gcc_cv_ld_eh_frame_hdr=yes
-        fi
+	# Check if linker supports --eh-frame-hdr option
+	if $gcc_cv_ld --help 2>/dev/null | grep eh-frame-hdr > /dev/null; then
+		gcc_cv_ld_eh_frame_hdr=yes
+	fi
 fi
 GCC_TARGET_TEMPLATE([HAVE_LD_EH_FRAME_HDR])
 if test x"$gcc_cv_ld_eh_frame_hdr" = xyes; then
-        AC_DEFINE(HAVE_LD_EH_FRAME_HDR, 1,
+	AC_DEFINE(HAVE_LD_EH_FRAME_HDR, 1,
 [Define if your linker supports --eh-frame-hdr option.])
 fi
 AC_MSG_RESULT($gcc_cv_ld_eh_frame_hdr)
@@ -3101,13 +3101,13 @@ if test $in_tree_ld = yes ; then
     gcc_cv_ld_pie=yes
   fi
 elif test x$gcc_cv_ld != x; then
-        # Check if linker supports -pie option
-        if $gcc_cv_ld --help 2>/dev/null | grep -- -pie > /dev/null; then
-                gcc_cv_ld_pie=yes
-        fi
+	# Check if linker supports -pie option
+	if $gcc_cv_ld --help 2>/dev/null | grep -- -pie > /dev/null; then
+		gcc_cv_ld_pie=yes
+	fi
 fi
 if test x"$gcc_cv_ld_pie" = xyes; then
-        AC_DEFINE(HAVE_LD_PIE, 1,
+	AC_DEFINE(HAVE_LD_PIE, 1,
 [Define if your linker supports -pie option.])
 fi
 AC_MSG_RESULT($gcc_cv_ld_pie)
@@ -3125,14 +3125,14 @@ if test $in_tree_ld = yes ; then
     gcc_cv_ld_as_needed=yes
   fi
 elif test x$gcc_cv_ld != x; then
-        # Check if linker supports --as-needed and --no-as-needed options
-        if $gcc_cv_ld --help 2>/dev/null | grep as-needed > /dev/null; then
-                gcc_cv_ld_as_needed=yes
-        fi
+	# Check if linker supports --as-needed and --no-as-needed options
+	if $gcc_cv_ld --help 2>/dev/null | grep as-needed > /dev/null; then
+		gcc_cv_ld_as_needed=yes
+	fi
 fi
 ])
 if test x"$gcc_cv_ld_as_needed" = xyes; then
-        AC_DEFINE(HAVE_LD_AS_NEEDED, 1,
+	AC_DEFINE(HAVE_LD_AS_NEEDED, 1,
 [Define if your linker supports --as-needed and --no-as-needed options.])
 fi
 
@@ -3147,20 +3147,20 @@ case "$target:$tm_file" in
       fi
     elif test x$gcc_cv_as != x -a x$gcc_cv_ld != x ; then
       cat > conftest1.s <<EOF
-        .text
-        bl .foo
+	.text
+	bl .foo
 EOF
       cat > conftest2.s <<EOF
-        .section ".opd","aw"
-        .align 3
-        .globl foo
-        .type foo,@function
+	.section ".opd","aw"
+	.align 3
+	.globl foo
+	.type foo,@function
 foo:
-        .quad .LEfoo,.TOC.@tocbase,0
-        .text
+	.quad .LEfoo,.TOC.@tocbase,0
+	.text
 .LEfoo:
-        blr
-        .size foo,.-.LEfoo
+	blr
+	.size foo,.-.LEfoo
 EOF
       if $gcc_cv_as -a64 -o conftest1.o conftest1.s > /dev/null 2>&1 \
          && $gcc_cv_as -a64 -o conftest2.o conftest2.s > /dev/null 2>&1 \
@@ -3192,7 +3192,7 @@ AC_CACHE_CHECK(linker --sysroot support,
 if test x"$gcc_cv_ld_sysroot" = xyes; then
   AC_DEFINE(HAVE_LD_SYSROOT, 1,
   [Define if your linker supports --sysroot.])
-fi          
+fi	  
 
 if test x$with_sysroot = x && test x$host = x$target \
    && test "$prefix" != "/usr" && test "x$prefix" != "x$local_prefix" ; then
@@ -3207,36 +3207,36 @@ case "$target" in
       gcc_cv_libc_provides_ssp,
       [gcc_cv_libc_provides_ssp=no
       if test x$host != x$target || test "x$TARGET_SYSTEM_ROOT" != x; then
-        if test "x$with_sysroot" = x; then
-          glibc_header_dir="${exec_prefix}/${target_noncanonical}/sys-include"
-        elif test "x$with_sysroot" = xyes; then
-          glibc_header_dir="${exec_prefix}/${target_noncanonical}/sys-root/usr/include"
-        else
-          glibc_header_dir="${with_sysroot}/usr/include"
-        fi
+	if test "x$with_sysroot" = x; then
+	  glibc_header_dir="${exec_prefix}/${target_noncanonical}/sys-include"
+	elif test "x$with_sysroot" = xyes; then
+	  glibc_header_dir="${exec_prefix}/${target_noncanonical}/sys-root/usr/include"
+	else
+	  glibc_header_dir="${with_sysroot}/usr/include"
+	fi
       else
-        glibc_header_dir=/usr/include
+	glibc_header_dir=/usr/include
       fi
       # glibc 2.4 and later provides __stack_chk_fail and
       # either __stack_chk_guard, or TLS access to stack guard canary.
       if test -f $glibc_header_dir/features.h \
-         && $EGREP '^@<:@         @:>@*#[         ]*define[         ]+__GNU_LIBRARY__[         ]+([1-9][0-9]|[6-9])' \
-            $glibc_header_dir/features.h > /dev/null; then
-        if $EGREP '^@<:@         @:>@*#[         ]*define[         ]+__GLIBC__[         ]+([1-9][0-9]|[3-9])' \
-           $glibc_header_dir/features.h > /dev/null; then
-          gcc_cv_libc_provides_ssp=yes
-        elif $EGREP '^@<:@         @:>@*#[         ]*define[         ]+__GLIBC__[         ]+2' \
-             $glibc_header_dir/features.h > /dev/null \
-             && $EGREP '^@<:@         @:>@*#[         ]*define[         ]+__GLIBC_MINOR__[         ]+([1-9][0-9]|[4-9])' \
-             $glibc_header_dir/features.h > /dev/null; then
-          gcc_cv_libc_provides_ssp=yes
-        fi
+	 && $EGREP '^@<:@ 	@:>@*#[ 	]*define[ 	]+__GNU_LIBRARY__[ 	]+([1-9][0-9]|[6-9])' \
+	    $glibc_header_dir/features.h > /dev/null; then
+	if $EGREP '^@<:@ 	@:>@*#[ 	]*define[ 	]+__GLIBC__[ 	]+([1-9][0-9]|[3-9])' \
+	   $glibc_header_dir/features.h > /dev/null; then
+	  gcc_cv_libc_provides_ssp=yes
+	elif $EGREP '^@<:@ 	@:>@*#[ 	]*define[ 	]+__GLIBC__[ 	]+2' \
+	     $glibc_header_dir/features.h > /dev/null \
+	     && $EGREP '^@<:@ 	@:>@*#[ 	]*define[ 	]+__GLIBC_MINOR__[ 	]+([1-9][0-9]|[4-9])' \
+	     $glibc_header_dir/features.h > /dev/null; then
+	  gcc_cv_libc_provides_ssp=yes
+	fi
       fi]) ;;
   *) gcc_cv_libc_provides_ssp=no ;;
 esac
 if test x$gcc_cv_libc_provides_ssp = xyes; then
   AC_DEFINE(TARGET_LIBC_PROVIDES_SSP, 1,
-            [Define if your target C library provides stack protector support])
+	    [Define if your target C library provides stack protector support])
 fi
 
 # Check if TFmode long double should be used by default or not.
@@ -3252,18 +3252,18 @@ case "$target" in
       gcc_cv_target_ldbl128="$with_long_double_128",
       [gcc_cv_target_ldbl128=no
       if test x$host != x$target || test "x$TARGET_SYSTEM_ROOT" != x; then
-        if test "x$with_sysroot" = x; then
-          glibc_header_dir="${exec_prefix}/${target_noncanonical}/sys-include"
-        elif test "x$with_sysroot" = xyes; then
-          glibc_header_dir="${exec_prefix}/${target_noncanonical}/sys-root/usr/include"
-        else
-          glibc_header_dir="${with_sysroot}/usr/include"
-        fi
+	if test "x$with_sysroot" = x; then
+	  glibc_header_dir="${exec_prefix}/${target_noncanonical}/sys-include"
+	elif test "x$with_sysroot" = xyes; then
+	  glibc_header_dir="${exec_prefix}/${target_noncanonical}/sys-root/usr/include"
+	else
+	  glibc_header_dir="${with_sysroot}/usr/include"
+	fi
       else
-        glibc_header_dir=/usr/include
+	glibc_header_dir=/usr/include
       fi
 changequote(,)dnl
-      grep '^[         ]*#[         ]*define[         ][         ]*__LONG_DOUBLE_MATH_OPTIONAL' \
+      grep '^[ 	]*#[ 	]*define[ 	][ 	]*__LONG_DOUBLE_MATH_OPTIONAL' \
         $glibc_header_dir/bits/wordsize.h > /dev/null 2>&1 \
       && gcc_cv_target_ldbl128=yes
 changequote([,])dnl
@@ -3272,7 +3272,7 @@ changequote([,])dnl
 esac
 if test x$gcc_cv_target_ldbl128 = xyes; then
   AC_DEFINE(TARGET_DEFAULT_LONG_DOUBLE_128, 1,
-            [Define if TFmode long double should be the default])
+	    [Define if TFmode long double should be the default])
 fi
 
 # Find out what GC implementation we want, or may, use.
@@ -3370,7 +3370,7 @@ language_hooks="Make-hooks"
 for lang in ${srcdir}/*/config-lang.in
 do
 changequote(,)dnl
-        test "$lang" = "${srcdir}/*/config-lang.in" && continue
+	test "$lang" = "${srcdir}/*/config-lang.in" && continue
 
         lang_alias=`sed -n -e 's,^language=['"'"'"'"]\(.*\)["'"'"'"'].*$,\1,p' -e 's,^language=\([^   ]*\).*$,\1,p' $lang`
         if test "x$lang_alias" = x
@@ -3383,64 +3383,64 @@ changequote(,)dnl
         case ",$enable_languages," in
         *,$lang_alias,*)
             all_selected_languages="$all_selected_languages $lang_alias"
-            if test -f $srcdir/$subdir/lang-specs.h; then
-                lang_specs_files="$lang_specs_files $srcdir/$subdir/lang-specs.h"
-            fi
-            ;;
+	    if test -f $srcdir/$subdir/lang-specs.h; then
+	        lang_specs_files="$lang_specs_files $srcdir/$subdir/lang-specs.h"
+	    fi
+	    ;;
         esac
 changequote([,])dnl
 
-        language=
-        boot_language=
-        compilers=
-        stagestuff=
-        outputs=
-        gtfiles=
-        subdir_requires=
-        . ${srcdir}/$subdir/config-lang.in
-        if test "x$language" = x
-        then
-                echo "${srcdir}/$subdir/config-lang.in doesn't set \$language." 1>&2
-                exit 1
-        fi
+	language=
+	boot_language=
+	compilers=
+	stagestuff=
+	outputs=
+	gtfiles=
+	subdir_requires=
+	. ${srcdir}/$subdir/config-lang.in
+	if test "x$language" = x
+	then
+		echo "${srcdir}/$subdir/config-lang.in doesn't set \$language." 1>&2
+		exit 1
+	fi
 
-        ok=:
+	ok=:
         case ",$enable_languages," in
-                *,$lang_alias,*) ;;
-                *)
-                        for i in $subdir_requires; do
-                                test -f "${srcdir}/$i/config-lang.in" && continue
-                                ok=false
-                                break
-                        done
-                ;;
-        esac
-        $ok || continue
+        	*,$lang_alias,*) ;;
+		*)
+			for i in $subdir_requires; do
+				test -f "${srcdir}/$i/config-lang.in" && continue
+				ok=false
+				break
+			done
+		;;
+	esac
+	$ok || continue
 
-        all_lang_makefrags="$all_lang_makefrags \$(srcdir)/$subdir/Make-lang.in"
-        if test -f $srcdir/$subdir/lang.opt; then
-            lang_opt_files="$lang_opt_files $srcdir/$subdir/lang.opt"
-        fi
-        if test -f $srcdir/$subdir/$subdir-tree.def; then
-            lang_tree_files="$lang_tree_files $srcdir/$subdir/$subdir-tree.def"
-        fi
-        if test -f ${srcdir}/$subdir/Makefile.in
-                then all_lang_makefiles="$subdir/Makefile"
-        fi
-        all_languages="$all_languages $language"
-        if test "x$boot_language" = xyes
-        then
-                all_boot_languages="$all_boot_languages $language"
-        fi
-        all_compilers="$all_compilers $compilers"
-        all_stagestuff="$all_stagestuff $stagestuff"
-        all_outputs="$all_outputs $outputs"
-        all_gtfiles="$all_gtfiles $gtfiles"
-        for f in $gtfiles
-        do
-                all_gtfiles_files_langs="$all_gtfiles_files_langs ${subdir} "
-                all_gtfiles_files_files="$all_gtfiles_files_files ${f} "
-        done
+	all_lang_makefrags="$all_lang_makefrags \$(srcdir)/$subdir/Make-lang.in"
+	if test -f $srcdir/$subdir/lang.opt; then
+	    lang_opt_files="$lang_opt_files $srcdir/$subdir/lang.opt"
+	fi
+	if test -f $srcdir/$subdir/$subdir-tree.def; then
+	    lang_tree_files="$lang_tree_files $srcdir/$subdir/$subdir-tree.def"
+	fi
+	if test -f ${srcdir}/$subdir/Makefile.in
+		then all_lang_makefiles="$subdir/Makefile"
+	fi
+	all_languages="$all_languages $language"
+	if test "x$boot_language" = xyes
+	then
+		all_boot_languages="$all_boot_languages $language"
+	fi
+	all_compilers="$all_compilers $compilers"
+	all_stagestuff="$all_stagestuff $stagestuff"
+	all_outputs="$all_outputs $outputs"
+	all_gtfiles="$all_gtfiles $gtfiles"
+	for f in $gtfiles
+	do
+		all_gtfiles_files_langs="$all_gtfiles_files_langs ${subdir} "
+		all_gtfiles_files_files="$all_gtfiles_files_files ${f} "
+	done
 done
 
 # Pick up gtfiles for c
@@ -3457,7 +3457,7 @@ done
 check_languages=
 for language in $all_selected_languages
 do
-        check_languages="$check_languages check-$language"
+	check_languages="$check_languages check-$language"
 done
 
 # We link each language in with a set of hooks, reached indirectly via
@@ -3466,19 +3466,19 @@ done
 rm -f Make-hooks
 touch Make-hooks
 target_list="all.cross start.encap rest.encap tags \
-        install-common install-man install-info dvi pdf html \
-        uninstall info man srcextra srcman srcinfo \
-        mostlyclean clean distclean maintainer-clean \
-        stage1 stage2 stage3 stage4 stageprofile stagefeedback"
+	install-common install-man install-info dvi pdf html \
+	uninstall info man srcextra srcman srcinfo \
+	mostlyclean clean distclean maintainer-clean \
+	stage1 stage2 stage3 stage4 stageprofile stagefeedback"
 
 for t in $target_list
 do
-        x=
-        for lang in $all_selected_languages
-        do
-                x="$x $lang.$t"
-        done
-        echo "lang.$t: $x" >> Make-hooks
+	x=
+	for lang in $all_selected_languages
+	do
+		x="$x $lang.$t"
+	done
+	echo "lang.$t: $x" >> Make-hooks
 done
 
 # --------
@@ -3491,13 +3491,13 @@ echo "dir ." > .gdbinit
 echo "dir ${srcdir}" >> .gdbinit
 if test x$gdb_needs_out_file_path = xyes
 then
-        echo "dir ${srcdir}/config/"`dirname ${out_file}` >> .gdbinit
+	echo "dir ${srcdir}/config/"`dirname ${out_file}` >> .gdbinit
 fi
 if test "x$subdirs" != x; then
-        for s in $subdirs
-        do
-                echo "dir ${srcdir}/$s" >> .gdbinit
-        done
+	for s in $subdirs
+	do
+		echo "dir ${srcdir}/$s" >> .gdbinit
+	done
 fi
 echo "source ${srcdir}/gdbinit.in" >> .gdbinit
 
@@ -3692,14 +3692,14 @@ done
 case "$LN_S" in
   *-s*)
     for d in ${subdirs} ; do
-        STARTDIR=`${PWDCMD-pwd}`
-        cd $d
-        for t in stage1 stage2 stage3 stage4 stageprofile stagefeedback include
-        do
-                rm -f $t
-                $LN_S ../$t $t 2>/dev/null
-        done
-        cd $STARTDIR
+	STARTDIR=`${PWDCMD-pwd}`
+	cd $d
+	for t in stage1 stage2 stage3 stage4 stageprofile stagefeedback include
+	do
+		rm -f $t
+		$LN_S ../$t $t 2>/dev/null
+	done
+	cd $STARTDIR
     done
   ;;
 esac

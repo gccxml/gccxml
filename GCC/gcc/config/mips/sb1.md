@@ -60,9 +60,9 @@
 
 (define_attr "sb1_fp_pipes" "one,two"
   (cond [(and (ne (symbol_ref "TARGET_FLOAT64") (const_int 0))
-              (eq (symbol_ref "TARGET_FP_EXCEPTIONS") (const_int 0)))
-         (const_string "two")]
-        (const_string "one")))
+	      (eq (symbol_ref "TARGET_FP_EXCEPTIONS") (const_int 0)))
+	 (const_string "two")]
+	(const_string "one")))
 
 ;; Define reservations for common combinations.
 
@@ -132,15 +132,15 @@
 (define_insn_reservation "ir_sb1_fpload" 0
   (and (eq_attr "cpu" "sb1,sb1a")
        (and (eq_attr "type" "fpload")
-            (ne (symbol_ref "TARGET_FLOAT64")
-                (const_int 0))))
+	    (ne (symbol_ref "TARGET_FLOAT64")
+		(const_int 0))))
   "sb1_ls0 | sb1_ls1")
 
 (define_insn_reservation "ir_sb1_fpload_32bitfp" 1
   (and (eq_attr "cpu" "sb1,sb1a")
        (and (eq_attr "type" "fpload")
-            (eq (symbol_ref "TARGET_FLOAT64")
-                (const_int 0))))
+	    (eq (symbol_ref "TARGET_FLOAT64")
+		(const_int 0))))
   "sb1_ls0 | sb1_ls1")
 
 ;; Indexed loads can only execute on LS1 pipe.
@@ -148,15 +148,15 @@
 (define_insn_reservation "ir_sb1_fpidxload" 0
   (and (eq_attr "cpu" "sb1,sb1a")
        (and (eq_attr "type" "fpidxload")
-            (ne (symbol_ref "TARGET_FLOAT64")
-                (const_int 0))))
+	    (ne (symbol_ref "TARGET_FLOAT64")
+		(const_int 0))))
   "sb1_ls1")
 
 (define_insn_reservation "ir_sb1_fpidxload_32bitfp" 1
   (and (eq_attr "cpu" "sb1,sb1a")
        (and (eq_attr "type" "fpidxload")
-            (eq (symbol_ref "TARGET_FLOAT64")
-                (const_int 0))))
+	    (eq (symbol_ref "TARGET_FLOAT64")
+		(const_int 0))))
   "sb1_ls1")
 
 ;; prefx can only execute on the ls1 pipe.
@@ -283,13 +283,13 @@
 (define_insn_reservation "ir_sb1_mfhi" 1
   (and (eq_attr "cpu" "sb1,sb1a")
        (and (eq_attr "type" "mfhilo")
-            (not (match_operand 1 "lo_operand"))))
+	    (not (match_operand 1 "lo_operand"))))
   "sb1_ex1")
 
 (define_insn_reservation "ir_sb1_mflo" 1
   (and (eq_attr "cpu" "sb1,sb1a")
        (and (eq_attr "type" "mfhilo")
-            (match_operand 1 "lo_operand")))
+	    (match_operand 1 "lo_operand")))
   "sb1_ex1")
 
 ;; mt{hi,lo} to mul/div is 4 cycles.
@@ -311,7 +311,7 @@
 (define_insn_reservation "ir_sb1_mulsi" 3
   (and (eq_attr "cpu" "sb1,sb1a")
        (and (eq_attr "type" "imul,imul3,imadd")
-            (eq_attr "mode" "SI")))
+	    (eq_attr "mode" "SI")))
   "sb1_ex1+sb1_mul")
 
 ;; muldi to mfhi is 4 cycles.
@@ -320,7 +320,7 @@
 (define_insn_reservation "ir_sb1_muldi" 4
   (and (eq_attr "cpu" "sb1,sb1a")
        (and (eq_attr "type" "imul,imul3")
-            (eq_attr "mode" "DI")))
+	    (eq_attr "mode" "DI")))
   "sb1_ex1+sb1_mul, sb1_mul")
 
 ;; muldi to mflo is 3 cycles.
@@ -356,37 +356,37 @@
 (define_insn_reservation "ir_sb1_divsi" 36
   (and (eq_attr "cpu" "sb1,sb1a")
        (and (eq_attr "type" "idiv")
-            (eq_attr "mode" "SI")))
+	    (eq_attr "mode" "SI")))
   "sb1_ex1, nothing*3, sb1_div*32")
 
 (define_insn_reservation "ir_sb1_divdi" 68
   (and (eq_attr "cpu" "sb1,sb1a")
        (and (eq_attr "type" "idiv")
-            (eq_attr "mode" "DI")))
+	    (eq_attr "mode" "DI")))
   "sb1_ex1, nothing*3, sb1_div*64")
 
 (define_insn_reservation "ir_sb1_fpu_2pipes" 4
   (and (eq_attr "cpu" "sb1,sb1a")
        (and (eq_attr "type" "fmove,fadd,fmul,fabs,fneg,fcvt,frdiv1,frsqrt1")
-            (eq_attr "sb1_fp_pipes" "two")))
+	    (eq_attr "sb1_fp_pipes" "two")))
   "sb1_fp1 | sb1_fp0")
 
 (define_insn_reservation "ir_sb1_fpu_1pipe" 4
   (and (eq_attr "cpu" "sb1,sb1a")
        (and (eq_attr "type" "fmove,fadd,fmul,fabs,fneg,fcvt,frdiv1,frsqrt1")
-            (eq_attr "sb1_fp_pipes" "one")))
+	    (eq_attr "sb1_fp_pipes" "one")))
   "sb1_fp1")
 
 (define_insn_reservation "ir_sb1_fpu_step2_2pipes" 8
   (and (eq_attr "cpu" "sb1,sb1a")
        (and (eq_attr "type" "frdiv2,frsqrt2")
-            (eq_attr "sb1_fp_pipes" "two")))
+	    (eq_attr "sb1_fp_pipes" "two")))
   "sb1_fp1 | sb1_fp0")
 
 (define_insn_reservation "ir_sb1_fpu_step2_1pipe" 8
   (and (eq_attr "cpu" "sb1,sb1a")
        (and (eq_attr "type" "frdiv2,frsqrt2")
-            (eq_attr "sb1_fp_pipes" "one")))
+	    (eq_attr "sb1_fp_pipes" "one")))
   "sb1_fp1")
 
 ;; ??? madd/msub 4-cycle latency to itself (same fr?), but 8 cycle latency
@@ -397,13 +397,13 @@
 (define_insn_reservation "ir_sb1_fmadd_2pipes" 8
   (and (eq_attr "cpu" "sb1,sb1a")
        (and (eq_attr "type" "fmadd")
-            (eq_attr "sb1_fp_pipes" "two")))
+	    (eq_attr "sb1_fp_pipes" "two")))
   "sb1_fp1 | sb1_fp0")
 
 (define_insn_reservation "ir_sb1_fmadd_1pipe" 8
   (and (eq_attr "cpu" "sb1,sb1a")
        (and (eq_attr "type" "fmadd")
-            (eq_attr "sb1_fp_pipes" "one")))
+	    (eq_attr "sb1_fp_pipes" "one")))
   "sb1_fp1")
 
 (define_insn_reservation "ir_sb1_fcmp" 4
@@ -416,7 +416,7 @@
 (define_insn_reservation "ir_sb1_mtxfer" 5
   (and (eq_attr "cpu" "sb1,sb1a")
        (and (eq_attr "type" "xfer")
-            (match_operand 0 "fpr_operand")))
+	    (match_operand 0 "fpr_operand")))
   "sb1_fp0")
 
 ;; mfc1 latency 1 cycle.  
@@ -424,7 +424,7 @@
 (define_insn_reservation "ir_sb1_mfxfer" 1
   (and (eq_attr "cpu" "sb1,sb1a")
        (and (eq_attr "type" "xfer")
-            (not (match_operand 0 "fpr_operand"))))
+	    (not (match_operand 0 "fpr_operand"))))
   "sb1_fp0")
 
 ;; ??? Can deliver at most 1 result per every 6 cycles because of issue
@@ -433,15 +433,15 @@
 (define_insn_reservation "ir_sb1_divsf_2pipes" 24
   (and (eq_attr "cpu" "sb1,sb1a")
        (and (eq_attr "type" "fdiv")
-            (and (eq_attr "mode" "SF")
-                 (eq_attr "sb1_fp_pipes" "two"))))
+	    (and (eq_attr "mode" "SF")
+		 (eq_attr "sb1_fp_pipes" "two"))))
   "sb1_fp1 | sb1_fp0")
 
 (define_insn_reservation "ir_sb1_divsf_1pipe" 24
   (and (eq_attr "cpu" "sb1,sb1a")
        (and (eq_attr "type" "fdiv")
-            (and (eq_attr "mode" "SF")
-                 (eq_attr "sb1_fp_pipes" "one"))))
+	    (and (eq_attr "mode" "SF")
+		 (eq_attr "sb1_fp_pipes" "one"))))
   "sb1_fp1")
 
 ;; ??? Can deliver at most 1 result per every 8 cycles because of issue
@@ -450,15 +450,15 @@
 (define_insn_reservation "ir_sb1_divdf_2pipes" 32
   (and (eq_attr "cpu" "sb1,sb1a")
        (and (eq_attr "type" "fdiv")
-            (and (eq_attr "mode" "DF")
-                 (eq_attr "sb1_fp_pipes" "two"))))
+	    (and (eq_attr "mode" "DF")
+		 (eq_attr "sb1_fp_pipes" "two"))))
   "sb1_fp1 | sb1_fp0")
 
 (define_insn_reservation "ir_sb1_divdf_1pipe" 32
   (and (eq_attr "cpu" "sb1,sb1a")
        (and (eq_attr "type" "fdiv")
-            (and (eq_attr "mode" "DF")
-                 (eq_attr "sb1_fp_pipes" "one"))))
+	    (and (eq_attr "mode" "DF")
+		 (eq_attr "sb1_fp_pipes" "one"))))
   "sb1_fp1")
 
 ;; ??? Can deliver at most 1 result per every 3 cycles because of issue
@@ -467,15 +467,15 @@
 (define_insn_reservation "ir_sb1_recipsf_2pipes" 12
   (and (eq_attr "cpu" "sb1,sb1a")
        (and (eq_attr "type" "frdiv")
-            (and (eq_attr "mode" "SF")
-                 (eq_attr "sb1_fp_pipes" "two"))))
+	    (and (eq_attr "mode" "SF")
+		 (eq_attr "sb1_fp_pipes" "two"))))
   "sb1_fp1 | sb1_fp0")
 
 (define_insn_reservation "ir_sb1_recipsf_1pipe" 12
   (and (eq_attr "cpu" "sb1,sb1a")
        (and (eq_attr "type" "frdiv")
-            (and (eq_attr "mode" "SF")
-                 (eq_attr "sb1_fp_pipes" "one"))))
+	    (and (eq_attr "mode" "SF")
+		 (eq_attr "sb1_fp_pipes" "one"))))
   "sb1_fp1")
 
 ;; ??? Can deliver at most 1 result per every 5 cycles because of issue
@@ -484,15 +484,15 @@
 (define_insn_reservation "ir_sb1_recipdf_2pipes" 20
   (and (eq_attr "cpu" "sb1,sb1a")
        (and (eq_attr "type" "frdiv")
-            (and (eq_attr "mode" "DF")
-                 (eq_attr "sb1_fp_pipes" "two"))))
+	    (and (eq_attr "mode" "DF")
+		 (eq_attr "sb1_fp_pipes" "two"))))
   "sb1_fp1 | sb1_fp0")
 
 (define_insn_reservation "ir_sb1_recipdf_1pipe" 20
   (and (eq_attr "cpu" "sb1,sb1a")
        (and (eq_attr "type" "frdiv")
-            (and (eq_attr "mode" "DF")
-                 (eq_attr "sb1_fp_pipes" "one"))))
+	    (and (eq_attr "mode" "DF")
+		 (eq_attr "sb1_fp_pipes" "one"))))
   "sb1_fp1")
 
 ;; ??? Can deliver at most 1 result per every 7 cycles because of issue
@@ -501,15 +501,15 @@
 (define_insn_reservation "ir_sb1_sqrtsf_2pipes" 28
   (and (eq_attr "cpu" "sb1,sb1a")
        (and (eq_attr "type" "fsqrt")
-            (and (eq_attr "mode" "SF")
-                 (eq_attr "sb1_fp_pipes" "two"))))
+	    (and (eq_attr "mode" "SF")
+		 (eq_attr "sb1_fp_pipes" "two"))))
   "sb1_fp1 | sb1_fp0")
 
 (define_insn_reservation "ir_sb1_sqrtsf_1pipe" 28
   (and (eq_attr "cpu" "sb1,sb1a")
        (and (eq_attr "type" "fsqrt")
-            (and (eq_attr "mode" "SF")
-                 (eq_attr "sb1_fp_pipes" "one"))))
+	    (and (eq_attr "mode" "SF")
+		 (eq_attr "sb1_fp_pipes" "one"))))
   "sb1_fp1")
 
 ;; ??? Can deliver at most 1 result per every 10 cycles because of issue
@@ -518,15 +518,15 @@
 (define_insn_reservation "ir_sb1_sqrtdf_2pipes" 40
   (and (eq_attr "cpu" "sb1,sb1a")
        (and (eq_attr "type" "fsqrt")
-            (and (eq_attr "mode" "DF")
-                 (eq_attr "sb1_fp_pipes" "two"))))
+	    (and (eq_attr "mode" "DF")
+		 (eq_attr "sb1_fp_pipes" "two"))))
   "sb1_fp1 | sb1_fp0")
 
 (define_insn_reservation "ir_sb1_sqrtdf_1pipe" 40
   (and (eq_attr "cpu" "sb1,sb1a")
        (and (eq_attr "type" "fsqrt")
-            (and (eq_attr "mode" "DF")
-                 (eq_attr "sb1_fp_pipes" "one"))))
+	    (and (eq_attr "mode" "DF")
+		 (eq_attr "sb1_fp_pipes" "one"))))
   "sb1_fp1")
 
 ;; ??? Can deliver at most 1 result per every 4 cycles because of issue
@@ -535,15 +535,15 @@
 (define_insn_reservation "ir_sb1_rsqrtsf_2pipes" 16
   (and (eq_attr "cpu" "sb1,sb1a")
        (and (eq_attr "type" "frsqrt")
-            (and (eq_attr "mode" "SF")
-                 (eq_attr "sb1_fp_pipes" "two"))))
+	    (and (eq_attr "mode" "SF")
+		 (eq_attr "sb1_fp_pipes" "two"))))
   "sb1_fp1 | sb1_fp0")
 
 (define_insn_reservation "ir_sb1_rsqrtsf_1pipe" 16
   (and (eq_attr "cpu" "sb1,sb1a")
        (and (eq_attr "type" "frsqrt")
-            (and (eq_attr "mode" "SF")
-                 (eq_attr "sb1_fp_pipes" "one"))))
+	    (and (eq_attr "mode" "SF")
+		 (eq_attr "sb1_fp_pipes" "one"))))
   "sb1_fp1")
 
 ;; ??? Can deliver at most 1 result per every 7 cycles because of issue
@@ -552,13 +552,13 @@
 (define_insn_reservation "ir_sb1_rsqrtdf_2pipes" 28
   (and (eq_attr "cpu" "sb1,sb1a")
        (and (eq_attr "type" "frsqrt")
-            (and (eq_attr "mode" "DF")
-                 (eq_attr "sb1_fp_pipes" "two"))))
+	    (and (eq_attr "mode" "DF")
+		 (eq_attr "sb1_fp_pipes" "two"))))
   "sb1_fp1 | sb1_fp0")
 
 (define_insn_reservation "ir_sb1_rsqrtdf_1pipe" 28
   (and (eq_attr "cpu" "sb1,sb1a")
        (and (eq_attr "type" "frsqrt")
-            (and (eq_attr "mode" "DF")
-                 (eq_attr "sb1_fp_pipes" "one"))))
+	    (and (eq_attr "mode" "DF")
+		 (eq_attr "sb1_fp_pipes" "one"))))
   "sb1_fp1")

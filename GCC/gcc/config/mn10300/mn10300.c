@@ -61,11 +61,11 @@ enum processor_type mn10300_processor = PROCESSOR_DEFAULT;
    on entry since it costs us nothing in code size.  It does cost us from a
    speed standpoint, so we want to optimize this sooner or later.  */
 #define REG_SAVE_BYTES (4 * regs_ever_live[2] \
-                        + 4 * regs_ever_live[3] \
-                        + 4 * regs_ever_live[6] \
-                        + 4 * regs_ever_live[7] \
-                        + 16 * (regs_ever_live[14] || regs_ever_live[15] \
-                                || regs_ever_live[16] || regs_ever_live[17]))
+			+ 4 * regs_ever_live[3] \
+		        + 4 * regs_ever_live[6] \
+			+ 4 * regs_ever_live[7] \
+			+ 16 * (regs_ever_live[14] || regs_ever_live[15] \
+				|| regs_ever_live[16] || regs_ever_live[17]))
 
 
 static bool mn10300_handle_option (size_t, const char *, int);
@@ -76,9 +76,9 @@ static void mn10300_file_start (void);
 static bool mn10300_return_in_memory (tree, tree);
 static rtx mn10300_builtin_saveregs (void);
 static bool mn10300_pass_by_reference (CUMULATIVE_ARGS *, enum machine_mode,
-                                       tree, bool);
+				       tree, bool);
 static int mn10300_arg_partial_bytes (CUMULATIVE_ARGS *, enum machine_mode,
-                                      tree, bool);
+				      tree, bool);
 
 /* Initialize the GCC target structure.  */
 #undef TARGET_ASM_ALIGNED_HI_OP
@@ -123,8 +123,8 @@ struct gcc_target targetm = TARGET_INITIALIZER;
 
 static bool
 mn10300_handle_option (size_t code,
-                       const char *arg ATTRIBUTE_UNUSED,
-                       int value)
+		       const char *arg ATTRIBUTE_UNUSED,
+		       int value)
 {
   switch (code)
     {
@@ -133,8 +133,8 @@ mn10300_handle_option (size_t code,
       return true;
     case OPT_mam33_2:
       mn10300_processor = (value
-                           ? PROCESSOR_AM33_2
-                           : MIN (PROCESSOR_AM33, PROCESSOR_DEFAULT));
+			   ? PROCESSOR_AM33_2
+			   : MIN (PROCESSOR_AM33, PROCESSOR_DEFAULT));
       return true;
     default:
       return true;
@@ -172,319 +172,319 @@ print_operand (FILE *file, rtx x, int code)
     {
       case 'b':
       case 'B':
-        if (cc_status.mdep.fpCC)
-          {
-            switch (code == 'b' ? GET_CODE (x)
-                    : reverse_condition_maybe_unordered (GET_CODE (x)))
-              {
-              case NE:
-                fprintf (file, "ne");
-                break;
-              case EQ:
-                fprintf (file, "eq");
-                break;
-              case GE:
-                fprintf (file, "ge");
-                break;
-              case GT:
-                fprintf (file, "gt");
-                break;
-              case LE:
-                fprintf (file, "le");
-                break;
-              case LT:
-                fprintf (file, "lt");
-                break;
-              case ORDERED:
-                fprintf (file, "lge");
-                break;
-              case UNORDERED:
-                fprintf (file, "uo");
-                break;
-              case LTGT:
-                fprintf (file, "lg");
-                break;
-              case UNEQ:
-                fprintf (file, "ue");
-                break;
-              case UNGE:
-                fprintf (file, "uge");
-                break;
-              case UNGT:
-                fprintf (file, "ug");
-                break;
-              case UNLE:
-                fprintf (file, "ule");
-                break;
-              case UNLT:
-                fprintf (file, "ul");
-                break;
-              default:
-                gcc_unreachable ();
-              }
-            break;
-          }
-        /* These are normal and reversed branches.  */
-        switch (code == 'b' ? GET_CODE (x) : reverse_condition (GET_CODE (x)))
-          {
-          case NE:
-            fprintf (file, "ne");
-            break;
-          case EQ:
-            fprintf (file, "eq");
-            break;
-          case GE:
-            fprintf (file, "ge");
-            break;
-          case GT:
-            fprintf (file, "gt");
-            break;
-          case LE:
-            fprintf (file, "le");
-            break;
-          case LT:
-            fprintf (file, "lt");
-            break;
-          case GEU:
-            fprintf (file, "cc");
-            break;
-          case GTU:
-            fprintf (file, "hi");
-            break;
-          case LEU:
-            fprintf (file, "ls");
-            break;
-          case LTU:
-            fprintf (file, "cs");
-            break;
-          default:
-            gcc_unreachable ();
-          }
-        break;
+	if (cc_status.mdep.fpCC)
+	  {
+	    switch (code == 'b' ? GET_CODE (x)
+		    : reverse_condition_maybe_unordered (GET_CODE (x)))
+	      {
+	      case NE:
+		fprintf (file, "ne");
+		break;
+	      case EQ:
+		fprintf (file, "eq");
+		break;
+	      case GE:
+		fprintf (file, "ge");
+		break;
+	      case GT:
+		fprintf (file, "gt");
+		break;
+	      case LE:
+		fprintf (file, "le");
+		break;
+	      case LT:
+		fprintf (file, "lt");
+		break;
+	      case ORDERED:
+		fprintf (file, "lge");
+		break;
+	      case UNORDERED:
+		fprintf (file, "uo");
+		break;
+	      case LTGT:
+		fprintf (file, "lg");
+		break;
+	      case UNEQ:
+		fprintf (file, "ue");
+		break;
+	      case UNGE:
+		fprintf (file, "uge");
+		break;
+	      case UNGT:
+		fprintf (file, "ug");
+		break;
+	      case UNLE:
+		fprintf (file, "ule");
+		break;
+	      case UNLT:
+		fprintf (file, "ul");
+		break;
+	      default:
+		gcc_unreachable ();
+	      }
+	    break;
+	  }
+	/* These are normal and reversed branches.  */
+	switch (code == 'b' ? GET_CODE (x) : reverse_condition (GET_CODE (x)))
+	  {
+	  case NE:
+	    fprintf (file, "ne");
+	    break;
+	  case EQ:
+	    fprintf (file, "eq");
+	    break;
+	  case GE:
+	    fprintf (file, "ge");
+	    break;
+	  case GT:
+	    fprintf (file, "gt");
+	    break;
+	  case LE:
+	    fprintf (file, "le");
+	    break;
+	  case LT:
+	    fprintf (file, "lt");
+	    break;
+	  case GEU:
+	    fprintf (file, "cc");
+	    break;
+	  case GTU:
+	    fprintf (file, "hi");
+	    break;
+	  case LEU:
+	    fprintf (file, "ls");
+	    break;
+	  case LTU:
+	    fprintf (file, "cs");
+	    break;
+	  default:
+	    gcc_unreachable ();
+	  }
+	break;
       case 'C':
-        /* This is used for the operand to a call instruction;
-           if it's a REG, enclose it in parens, else output
-           the operand normally.  */
-        if (GET_CODE (x) == REG)
-          {
-            fputc ('(', file);
-            print_operand (file, x, 0);
-            fputc (')', file);
-          }
-        else
-          print_operand (file, x, 0);
-        break;
+	/* This is used for the operand to a call instruction;
+	   if it's a REG, enclose it in parens, else output
+	   the operand normally.  */
+	if (GET_CODE (x) == REG)
+	  {
+	    fputc ('(', file);
+	    print_operand (file, x, 0);
+	    fputc (')', file);
+	  }
+	else
+	  print_operand (file, x, 0);
+	break;
      
       case 'D':
-        switch (GET_CODE (x))
-          {
-          case MEM:
-            fputc ('(', file);
-            output_address (XEXP (x, 0));
-            fputc (')', file);
-            break;
+	switch (GET_CODE (x))
+	  {
+	  case MEM:
+	    fputc ('(', file);
+	    output_address (XEXP (x, 0));
+	    fputc (')', file);
+	    break;
 
-          case REG:
-            fprintf (file, "fd%d", REGNO (x) - 18);
-            break;
+	  case REG:
+	    fprintf (file, "fd%d", REGNO (x) - 18);
+	    break;
 
-          default:
-            gcc_unreachable ();
-          }
-        break;
+	  default:
+	    gcc_unreachable ();
+	  }
+	break;
 
       /* These are the least significant word in a 64bit value.  */
       case 'L':
-        switch (GET_CODE (x))
-          {
-          case MEM:
-            fputc ('(', file);
-            output_address (XEXP (x, 0));
-            fputc (')', file);
-            break;
+	switch (GET_CODE (x))
+	  {
+	  case MEM:
+	    fputc ('(', file);
+	    output_address (XEXP (x, 0));
+	    fputc (')', file);
+	    break;
 
-          case REG:
-            fprintf (file, "%s", reg_names[REGNO (x)]);
-            break;
+	  case REG:
+	    fprintf (file, "%s", reg_names[REGNO (x)]);
+	    break;
 
-          case SUBREG:
-            fprintf (file, "%s", reg_names[subreg_regno (x)]);
-            break;
+	  case SUBREG:
+	    fprintf (file, "%s", reg_names[subreg_regno (x)]);
+	    break;
 
-          case CONST_DOUBLE:
-              {
-                long val[2];
-                REAL_VALUE_TYPE rv;
+	  case CONST_DOUBLE:
+	      {
+		long val[2];
+		REAL_VALUE_TYPE rv;
 
-                switch (GET_MODE (x))
-                  {
-                    case DFmode:
-                      REAL_VALUE_FROM_CONST_DOUBLE (rv, x);
-                      REAL_VALUE_TO_TARGET_DOUBLE (rv, val);
-                      fprintf (file, "0x%lx", val[0]);
-                      break;;
-                    case SFmode:
-                      REAL_VALUE_FROM_CONST_DOUBLE (rv, x);
-                      REAL_VALUE_TO_TARGET_SINGLE (rv, val[0]);
-                      fprintf (file, "0x%lx", val[0]);
-                      break;;
-                    case VOIDmode:
-                    case DImode:
-                      print_operand_address (file,
-                                             GEN_INT (CONST_DOUBLE_LOW (x)));
-                      break;
-                    default:
-                      break;
-                  }
-                break;
-              }
+		switch (GET_MODE (x))
+		  {
+		    case DFmode:
+		      REAL_VALUE_FROM_CONST_DOUBLE (rv, x);
+		      REAL_VALUE_TO_TARGET_DOUBLE (rv, val);
+		      fprintf (file, "0x%lx", val[0]);
+		      break;;
+		    case SFmode:
+		      REAL_VALUE_FROM_CONST_DOUBLE (rv, x);
+		      REAL_VALUE_TO_TARGET_SINGLE (rv, val[0]);
+		      fprintf (file, "0x%lx", val[0]);
+		      break;;
+		    case VOIDmode:
+		    case DImode:
+		      print_operand_address (file,
+					     GEN_INT (CONST_DOUBLE_LOW (x)));
+		      break;
+		    default:
+		      break;
+		  }
+		break;
+	      }
 
-          case CONST_INT:
-            {
-              rtx low, high;
-              split_double (x, &low, &high);
-              fprintf (file, "%ld", (long)INTVAL (low));
-              break;
-            }
+	  case CONST_INT:
+	    {
+	      rtx low, high;
+	      split_double (x, &low, &high);
+	      fprintf (file, "%ld", (long)INTVAL (low));
+	      break;
+	    }
 
-          default:
-            gcc_unreachable ();
-          }
-        break;
+	  default:
+	    gcc_unreachable ();
+	  }
+	break;
 
       /* Similarly, but for the most significant word.  */
       case 'H':
-        switch (GET_CODE (x))
-          {
-          case MEM:
-            fputc ('(', file);
-            x = adjust_address (x, SImode, 4);
-            output_address (XEXP (x, 0));
-            fputc (')', file);
-            break;
+	switch (GET_CODE (x))
+	  {
+	  case MEM:
+	    fputc ('(', file);
+	    x = adjust_address (x, SImode, 4);
+	    output_address (XEXP (x, 0));
+	    fputc (')', file);
+	    break;
 
-          case REG:
-            fprintf (file, "%s", reg_names[REGNO (x) + 1]);
-            break;
+	  case REG:
+	    fprintf (file, "%s", reg_names[REGNO (x) + 1]);
+	    break;
 
-          case SUBREG:
-            fprintf (file, "%s", reg_names[subreg_regno (x) + 1]);
-            break;
+	  case SUBREG:
+	    fprintf (file, "%s", reg_names[subreg_regno (x) + 1]);
+	    break;
 
-          case CONST_DOUBLE:
-              {
-                long val[2];
-                REAL_VALUE_TYPE rv;
+	  case CONST_DOUBLE:
+	      {
+		long val[2];
+		REAL_VALUE_TYPE rv;
 
-                switch (GET_MODE (x))
-                  {
-                    case DFmode:
-                      REAL_VALUE_FROM_CONST_DOUBLE (rv, x);
-                      REAL_VALUE_TO_TARGET_DOUBLE (rv, val);
-                      fprintf (file, "0x%lx", val[1]);
-                      break;;
-                    case SFmode:
-                      gcc_unreachable ();
-                    case VOIDmode:
-                    case DImode:
-                      print_operand_address (file, 
-                                             GEN_INT (CONST_DOUBLE_HIGH (x)));
-                      break;
-                    default:
-                      break;
-                  }
-                break;
-              }
+		switch (GET_MODE (x))
+		  {
+		    case DFmode:
+		      REAL_VALUE_FROM_CONST_DOUBLE (rv, x);
+		      REAL_VALUE_TO_TARGET_DOUBLE (rv, val);
+		      fprintf (file, "0x%lx", val[1]);
+		      break;;
+		    case SFmode:
+		      gcc_unreachable ();
+		    case VOIDmode:
+		    case DImode:
+		      print_operand_address (file, 
+					     GEN_INT (CONST_DOUBLE_HIGH (x)));
+		      break;
+		    default:
+		      break;
+		  }
+		break;
+	      }
 
-          case CONST_INT:
-            {
-              rtx low, high;
-              split_double (x, &low, &high);
-              fprintf (file, "%ld", (long)INTVAL (high));
-              break;
-            }
+	  case CONST_INT:
+	    {
+	      rtx low, high;
+	      split_double (x, &low, &high);
+	      fprintf (file, "%ld", (long)INTVAL (high));
+	      break;
+	    }
 
-          default:
-            gcc_unreachable ();
-          }
-        break;
+	  default:
+	    gcc_unreachable ();
+	  }
+	break;
 
       case 'A':
-        fputc ('(', file);
-        if (GET_CODE (XEXP (x, 0)) == REG)
-          output_address (gen_rtx_PLUS (SImode, XEXP (x, 0), const0_rtx));
-        else
-          output_address (XEXP (x, 0));
-        fputc (')', file);
-        break;
+	fputc ('(', file);
+	if (GET_CODE (XEXP (x, 0)) == REG)
+	  output_address (gen_rtx_PLUS (SImode, XEXP (x, 0), const0_rtx));
+	else
+	  output_address (XEXP (x, 0));
+	fputc (')', file);
+	break;
 
       case 'N':
-        gcc_assert (INTVAL (x) >= -128 && INTVAL (x) <= 255);
-        fprintf (file, "%d", (int)((~INTVAL (x)) & 0xff));
-        break;
+	gcc_assert (INTVAL (x) >= -128 && INTVAL (x) <= 255);
+	fprintf (file, "%d", (int)((~INTVAL (x)) & 0xff));
+	break;
 
       case 'U':
-        gcc_assert (INTVAL (x) >= -128 && INTVAL (x) <= 255);
-        fprintf (file, "%d", (int)(INTVAL (x) & 0xff));
-        break;
+	gcc_assert (INTVAL (x) >= -128 && INTVAL (x) <= 255);
+	fprintf (file, "%d", (int)(INTVAL (x) & 0xff));
+	break;
 
       /* For shift counts.  The hardware ignores the upper bits of
-         any immediate, but the assembler will flag an out of range
-         shift count as an error.  So we mask off the high bits
-         of the immediate here.  */
+	 any immediate, but the assembler will flag an out of range
+	 shift count as an error.  So we mask off the high bits
+	 of the immediate here.  */
       case 'S':
-        if (GET_CODE (x) == CONST_INT)
-          {
-            fprintf (file, "%d", (int)(INTVAL (x) & 0x1f));
-            break;
-          }
-        /* FALL THROUGH */
+	if (GET_CODE (x) == CONST_INT)
+	  {
+	    fprintf (file, "%d", (int)(INTVAL (x) & 0x1f));
+	    break;
+	  }
+	/* FALL THROUGH */
 
       default:
-        switch (GET_CODE (x))
-          {
-          case MEM:
-            fputc ('(', file);
-            output_address (XEXP (x, 0));
-            fputc (')', file);
-            break;
+	switch (GET_CODE (x))
+	  {
+	  case MEM:
+	    fputc ('(', file);
+	    output_address (XEXP (x, 0));
+	    fputc (')', file);
+	    break;
 
-          case PLUS:
-            output_address (x);
-            break;
+	  case PLUS:
+	    output_address (x);
+	    break;
 
-          case REG:
-            fprintf (file, "%s", reg_names[REGNO (x)]);
-            break;
+	  case REG:
+	    fprintf (file, "%s", reg_names[REGNO (x)]);
+	    break;
 
-          case SUBREG:
-            fprintf (file, "%s", reg_names[subreg_regno (x)]);
-            break;
+	  case SUBREG:
+	    fprintf (file, "%s", reg_names[subreg_regno (x)]);
+	    break;
 
-          /* This will only be single precision....  */
-          case CONST_DOUBLE:
-            {
-              unsigned long val;
-              REAL_VALUE_TYPE rv;
+	  /* This will only be single precision....  */
+	  case CONST_DOUBLE:
+	    {
+	      unsigned long val;
+	      REAL_VALUE_TYPE rv;
 
-              REAL_VALUE_FROM_CONST_DOUBLE (rv, x);
-              REAL_VALUE_TO_TARGET_SINGLE (rv, val);
-              fprintf (file, "0x%lx", val);
-              break;
-            }
+	      REAL_VALUE_FROM_CONST_DOUBLE (rv, x);
+	      REAL_VALUE_TO_TARGET_SINGLE (rv, val);
+	      fprintf (file, "0x%lx", val);
+	      break;
+	    }
 
-          case CONST_INT:
-          case SYMBOL_REF:
-          case CONST:
-          case LABEL_REF:
-          case CODE_LABEL:
-          case UNSPEC:
-            print_operand_address (file, x);
-            break;
-          default:
-            gcc_unreachable ();
-          }
-        break;
+	  case CONST_INT:
+	  case SYMBOL_REF:
+	  case CONST:
+	  case LABEL_REF:
+	  case CODE_LABEL:
+	  case UNSPEC:
+	    print_operand_address (file, x);
+	    break;
+	  default:
+	    gcc_unreachable ();
+	  }
+	break;
    }
 }
 
@@ -504,19 +504,19 @@ print_operand_address (FILE *file, rtx addr)
       break;
     case PLUS:
       {
-        rtx base, index;
-        if (REG_P (XEXP (addr, 0))
-            && REG_OK_FOR_BASE_P (XEXP (addr, 0)))
-          base = XEXP (addr, 0), index = XEXP (addr, 1);
-        else if (REG_P (XEXP (addr, 1))
-            && REG_OK_FOR_BASE_P (XEXP (addr, 1)))
-          base = XEXP (addr, 1), index = XEXP (addr, 0);
-              else
-          gcc_unreachable ();
-        print_operand (file, index, 0);
-        fputc (',', file);
-        print_operand (file, base, 0);;
-        break;
+	rtx base, index;
+	if (REG_P (XEXP (addr, 0))
+	    && REG_OK_FOR_BASE_P (XEXP (addr, 0)))
+	  base = XEXP (addr, 0), index = XEXP (addr, 1);
+	else if (REG_P (XEXP (addr, 1))
+	    && REG_OK_FOR_BASE_P (XEXP (addr, 1)))
+	  base = XEXP (addr, 1), index = XEXP (addr, 0);
+      	else
+	  gcc_unreachable ();
+	print_operand (file, index, 0);
+	fputc (',', file);
+	print_operand (file, base, 0);;
+	break;
       }
     case SYMBOL_REF:
       output_addr_const (file, addr);
@@ -561,17 +561,17 @@ mn10300_print_reg_list (FILE *file, int mask)
   for (i = 0; i < FIRST_EXTENDED_REGNUM; i++)
     if ((mask & (1 << i)) != 0)
       {
-        if (need_comma)
-          fputc (',', file);
-        fputs (reg_names [i], file);
-        need_comma = 1;
+	if (need_comma)
+	  fputc (',', file);
+	fputs (reg_names [i], file);
+	need_comma = 1;
       }
 
   if ((mask & 0x3c000) != 0)
     {
       gcc_assert ((mask & 0x3c000) == 0x3c000);
       if (need_comma)
-        fputc (',', file);
+	fputc (',', file);
       fputs ("exreg1", file);
       need_comma = 1;
     }
@@ -589,17 +589,17 @@ can_use_return_insn (void)
   size += current_function_outgoing_args_size ? 4 : 0;
 
   return (reload_completed
-          && size == 0
-          && !regs_ever_live[2]
-          && !regs_ever_live[3]
-          && !regs_ever_live[6]
-          && !regs_ever_live[7]
-          && !regs_ever_live[14]
-          && !regs_ever_live[15]
-          && !regs_ever_live[16]
-          && !regs_ever_live[17]
-          && fp_regs_to_save () == 0
-          && !frame_pointer_needed);
+	  && size == 0
+	  && !regs_ever_live[2]
+	  && !regs_ever_live[3]
+	  && !regs_ever_live[6]
+	  && !regs_ever_live[7]
+	  && !regs_ever_live[14]
+	  && !regs_ever_live[15]
+	  && !regs_ever_live[16]
+	  && !regs_ever_live[17]
+	  && fp_regs_to_save () == 0
+	  && !frame_pointer_needed);
 }
 
 /* Returns the set of live, callee-saved registers as a bitmask.  The
@@ -633,13 +633,13 @@ mn10300_get_live_callee_saved_regs (void)
 
        (parallel
          (set (reg:SI 9) (plus:SI (reg:SI 9) (const_int -N*4)))
-         (set (mem:SI (plus:SI (reg:SI 9)
-                               (const_int -1*4)))
-              (reg:SI RN))
-         ...
-         (set (mem:SI (plus:SI (reg:SI 9)
-                               (const_int -N*4)))
-              (reg:SI R1))) */
+	 (set (mem:SI (plus:SI (reg:SI 9)
+	                       (const_int -1*4)))
+	      (reg:SI RN))
+	 ...
+	 (set (mem:SI (plus:SI (reg:SI 9)
+	                       (const_int -N*4)))
+	      (reg:SI R1))) */
 
 void
 mn10300_gen_multiple_store (int mask)
@@ -654,35 +654,35 @@ mn10300_gen_multiple_store (int mask)
       /* Count how many registers need to be saved.  */
       count = 0;
       for (i = 0; i <= LAST_EXTENDED_REGNUM; i++)
-        if ((mask & (1 << i)) != 0)
-          count += 1;
+	if ((mask & (1 << i)) != 0)
+	  count += 1;
 
       /* We need one PARALLEL element to update the stack pointer and
-         an additional element for each register that is stored.  */
+	 an additional element for each register that is stored.  */
       par = gen_rtx_PARALLEL (VOIDmode, rtvec_alloc (count + 1));
 
       /* Create the instruction that updates the stack pointer.  */
       XVECEXP (par, 0, 0)
-        = gen_rtx_SET (SImode,
-                       stack_pointer_rtx,
-                       gen_rtx_PLUS (SImode,
-                                     stack_pointer_rtx,
-                                     GEN_INT (-count * 4)));
+	= gen_rtx_SET (SImode,
+		       stack_pointer_rtx,
+		       gen_rtx_PLUS (SImode,
+				     stack_pointer_rtx,
+				     GEN_INT (-count * 4)));
 
       /* Create each store.  */
       pari = 1;
       for (i = LAST_EXTENDED_REGNUM; i >= 0; i--)
-        if ((mask & (1 << i)) != 0)
-          {
-            rtx address = gen_rtx_PLUS (SImode,
-                                        stack_pointer_rtx,
-                                        GEN_INT (-pari * 4));
-            XVECEXP(par, 0, pari)
-              = gen_rtx_SET (VOIDmode,
-                             gen_rtx_MEM (SImode, address),
-                             gen_rtx_REG (SImode, i));
-            pari += 1;
-          }
+	if ((mask & (1 << i)) != 0)
+	  {
+	    rtx address = gen_rtx_PLUS (SImode,
+					stack_pointer_rtx,
+					GEN_INT (-pari * 4));
+	    XVECEXP(par, 0, pari)
+	      = gen_rtx_SET (VOIDmode,
+			     gen_rtx_MEM (SImode, address),
+			     gen_rtx_REG (SImode, i));
+	    pari += 1;
+	  }
 
       par = emit_insn (par);
       RTX_FRAME_RELATED_P (par) = 1;
@@ -706,57 +706,57 @@ expand_prologue (void)
       int num_regs_to_save = fp_regs_to_save (), i;
       HOST_WIDE_INT xsize;
       enum { save_sp_merge,
-             save_sp_no_merge,
-             save_sp_partial_merge,
-             save_a0_merge,
-             save_a0_no_merge } strategy;
+	     save_sp_no_merge,
+	     save_sp_partial_merge,
+	     save_a0_merge,
+	     save_a0_no_merge } strategy;
       unsigned int strategy_size = (unsigned)-1, this_strategy_size;
       rtx reg;
       rtx insn;
 
       /* We have several different strategies to save FP registers.
-         We can store them using SP offsets, which is beneficial if
-         there are just a few registers to save, or we can use `a0' in
-         post-increment mode (`a0' is the only call-clobbered address
-         register that is never used to pass information to a
-         function).  Furthermore, if we don't need a frame pointer, we
-         can merge the two SP adds into a single one, but this isn't
-         always beneficial; sometimes we can just split the two adds
-         so that we don't exceed a 16-bit constant size.  The code
-         below will select which strategy to use, so as to generate
-         smallest code.  Ties are broken in favor or shorter sequences
-         (in terms of number of instructions).  */
+	 We can store them using SP offsets, which is beneficial if
+	 there are just a few registers to save, or we can use `a0' in
+	 post-increment mode (`a0' is the only call-clobbered address
+	 register that is never used to pass information to a
+	 function).  Furthermore, if we don't need a frame pointer, we
+	 can merge the two SP adds into a single one, but this isn't
+	 always beneficial; sometimes we can just split the two adds
+	 so that we don't exceed a 16-bit constant size.  The code
+	 below will select which strategy to use, so as to generate
+	 smallest code.  Ties are broken in favor or shorter sequences
+	 (in terms of number of instructions).  */
 
 #define SIZE_ADD_AX(S) ((((S) >= (1 << 15)) || ((S) < -(1 << 15))) ? 6 \
-                        : (((S) >= (1 << 7)) || ((S) < -(1 << 7))) ? 4 : 2)
+			: (((S) >= (1 << 7)) || ((S) < -(1 << 7))) ? 4 : 2)
 #define SIZE_ADD_SP(S) ((((S) >= (1 << 15)) || ((S) < -(1 << 15))) ? 6 \
-                        : (((S) >= (1 << 7)) || ((S) < -(1 << 7))) ? 4 : 3)
+			: (((S) >= (1 << 7)) || ((S) < -(1 << 7))) ? 4 : 3)
 #define SIZE_FMOV_LIMIT(S,N,L,SIZE1,SIZE2,ELSE) \
   (((S) >= (L)) ? (SIZE1) * (N) \
    : ((S) + 4 * (N) >= (L)) ? (((L) - (S)) / 4 * (SIZE2) \
-                               + ((S) + 4 * (N) - (L)) / 4 * (SIZE1)) \
+			       + ((S) + 4 * (N) - (L)) / 4 * (SIZE1)) \
    : (ELSE))
 #define SIZE_FMOV_SP_(S,N) \
   (SIZE_FMOV_LIMIT ((S), (N), (1 << 24), 7, 6, \
                    SIZE_FMOV_LIMIT ((S), (N), (1 << 8), 6, 4, \
-                                    (S) ? 4 * (N) : 3 + 4 * ((N) - 1))))
+				    (S) ? 4 * (N) : 3 + 4 * ((N) - 1))))
 #define SIZE_FMOV_SP(S,N) (SIZE_FMOV_SP_ ((unsigned HOST_WIDE_INT)(S), (N)))
 
       /* Consider alternative save_sp_merge only if we don't need the
-         frame pointer and size is nonzero.  */
+	 frame pointer and size is nonzero.  */
       if (! frame_pointer_needed && size)
-        {
-          /* Insn: add -(size + 4 * num_regs_to_save), sp.  */
-          this_strategy_size = SIZE_ADD_SP (-(size + 4 * num_regs_to_save));
-          /* Insn: fmov fs#, (##, sp), for each fs# to be saved.  */
-          this_strategy_size += SIZE_FMOV_SP (size, num_regs_to_save);
+	{
+	  /* Insn: add -(size + 4 * num_regs_to_save), sp.  */
+	  this_strategy_size = SIZE_ADD_SP (-(size + 4 * num_regs_to_save));
+	  /* Insn: fmov fs#, (##, sp), for each fs# to be saved.  */
+	  this_strategy_size += SIZE_FMOV_SP (size, num_regs_to_save);
 
-          if (this_strategy_size < strategy_size)
-            {
-              strategy = save_sp_merge;
-              strategy_size = this_strategy_size;
-            }
-        }
+	  if (this_strategy_size < strategy_size)
+	    {
+	      strategy = save_sp_merge;
+	      strategy_size = this_strategy_size;
+	    }
+	}
 
       /* Consider alternative save_sp_no_merge unconditionally.  */
       /* Insn: add -4 * num_regs_to_save, sp.  */
@@ -764,175 +764,175 @@ expand_prologue (void)
       /* Insn: fmov fs#, (##, sp), for each fs# to be saved.  */
       this_strategy_size += SIZE_FMOV_SP (0, num_regs_to_save);
       if (size)
-        {
-          /* Insn: add -size, sp.  */
-          this_strategy_size += SIZE_ADD_SP (-size);
-        }
+	{
+	  /* Insn: add -size, sp.  */
+	  this_strategy_size += SIZE_ADD_SP (-size);
+	}
 
       if (this_strategy_size < strategy_size)
-        {
-          strategy = save_sp_no_merge;
-          strategy_size = this_strategy_size;
-        }
+	{
+	  strategy = save_sp_no_merge;
+	  strategy_size = this_strategy_size;
+	}
 
       /* Consider alternative save_sp_partial_merge only if we don't
-         need a frame pointer and size is reasonably large.  */
+	 need a frame pointer and size is reasonably large.  */
       if (! frame_pointer_needed && size + 4 * num_regs_to_save > 128)
-        {
-          /* Insn: add -128, sp.  */
-          this_strategy_size = SIZE_ADD_SP (-128);
-          /* Insn: fmov fs#, (##, sp), for each fs# to be saved.  */
-          this_strategy_size += SIZE_FMOV_SP (128 - 4 * num_regs_to_save,
-                                              num_regs_to_save);
-          if (size)
-            {
-              /* Insn: add 128-size, sp.  */
-              this_strategy_size += SIZE_ADD_SP (128 - size);
-            }
+	{
+	  /* Insn: add -128, sp.  */
+	  this_strategy_size = SIZE_ADD_SP (-128);
+	  /* Insn: fmov fs#, (##, sp), for each fs# to be saved.  */
+	  this_strategy_size += SIZE_FMOV_SP (128 - 4 * num_regs_to_save,
+					      num_regs_to_save);
+	  if (size)
+	    {
+	      /* Insn: add 128-size, sp.  */
+	      this_strategy_size += SIZE_ADD_SP (128 - size);
+	    }
 
-          if (this_strategy_size < strategy_size)
-            {
-              strategy = save_sp_partial_merge;
-              strategy_size = this_strategy_size;
-            }
-        }
+	  if (this_strategy_size < strategy_size)
+	    {
+	      strategy = save_sp_partial_merge;
+	      strategy_size = this_strategy_size;
+	    }
+	}
 
       /* Consider alternative save_a0_merge only if we don't need a
-         frame pointer, size is nonzero and the user hasn't
-         changed the calling conventions of a0.  */
+	 frame pointer, size is nonzero and the user hasn't
+	 changed the calling conventions of a0.  */
       if (! frame_pointer_needed && size
-          && call_used_regs[FIRST_ADDRESS_REGNUM]
-          && ! fixed_regs[FIRST_ADDRESS_REGNUM])
-        {
-          /* Insn: add -(size + 4 * num_regs_to_save), sp.  */
-          this_strategy_size = SIZE_ADD_SP (-(size + 4 * num_regs_to_save));
-          /* Insn: mov sp, a0.  */
-          this_strategy_size++;
-          if (size)
-            {
-              /* Insn: add size, a0.  */
-              this_strategy_size += SIZE_ADD_AX (size);
-            }
-          /* Insn: fmov fs#, (a0+), for each fs# to be saved.  */
-          this_strategy_size += 3 * num_regs_to_save;
+	  && call_used_regs[FIRST_ADDRESS_REGNUM]
+	  && ! fixed_regs[FIRST_ADDRESS_REGNUM])
+	{
+	  /* Insn: add -(size + 4 * num_regs_to_save), sp.  */
+	  this_strategy_size = SIZE_ADD_SP (-(size + 4 * num_regs_to_save));
+	  /* Insn: mov sp, a0.  */
+	  this_strategy_size++;
+	  if (size)
+	    {
+	      /* Insn: add size, a0.  */
+	      this_strategy_size += SIZE_ADD_AX (size);
+	    }
+	  /* Insn: fmov fs#, (a0+), for each fs# to be saved.  */
+	  this_strategy_size += 3 * num_regs_to_save;
 
-          if (this_strategy_size < strategy_size)
-            {
-              strategy = save_a0_merge;
-              strategy_size = this_strategy_size;
-            }
-        }
+	  if (this_strategy_size < strategy_size)
+	    {
+	      strategy = save_a0_merge;
+	      strategy_size = this_strategy_size;
+	    }
+	}
 
       /* Consider alternative save_a0_no_merge if the user hasn't
-         changed the calling conventions of a0.  */
+	 changed the calling conventions of a0.  */
       if (call_used_regs[FIRST_ADDRESS_REGNUM]
-          && ! fixed_regs[FIRST_ADDRESS_REGNUM])
-        {
-          /* Insn: add -4 * num_regs_to_save, sp.  */
-          this_strategy_size = SIZE_ADD_SP (-4 * num_regs_to_save);
-          /* Insn: mov sp, a0.  */
-          this_strategy_size++;
-          /* Insn: fmov fs#, (a0+), for each fs# to be saved.  */
-          this_strategy_size += 3 * num_regs_to_save;
-          if (size)
-            {
-              /* Insn: add -size, sp.  */
-              this_strategy_size += SIZE_ADD_SP (-size);
-            }
+	  && ! fixed_regs[FIRST_ADDRESS_REGNUM])
+	{
+	  /* Insn: add -4 * num_regs_to_save, sp.  */
+	  this_strategy_size = SIZE_ADD_SP (-4 * num_regs_to_save);
+	  /* Insn: mov sp, a0.  */
+	  this_strategy_size++;
+	  /* Insn: fmov fs#, (a0+), for each fs# to be saved.  */
+	  this_strategy_size += 3 * num_regs_to_save;
+	  if (size)
+	    {
+	      /* Insn: add -size, sp.  */
+	      this_strategy_size += SIZE_ADD_SP (-size);
+	    }
 
-          if (this_strategy_size < strategy_size)
-            {
-              strategy = save_a0_no_merge;
-              strategy_size = this_strategy_size;
-            }
-        }
+	  if (this_strategy_size < strategy_size)
+	    {
+	      strategy = save_a0_no_merge;
+	      strategy_size = this_strategy_size;
+	    }
+	}
 
       /* Emit the initial SP add, common to all strategies.  */
       switch (strategy)
-        {
-        case save_sp_no_merge:
-        case save_a0_no_merge:
-          emit_insn (gen_addsi3 (stack_pointer_rtx,
-                                 stack_pointer_rtx,
-                                 GEN_INT (-4 * num_regs_to_save)));
-          xsize = 0;
-          break;
+	{
+	case save_sp_no_merge:
+	case save_a0_no_merge:
+	  emit_insn (gen_addsi3 (stack_pointer_rtx,
+				 stack_pointer_rtx,
+				 GEN_INT (-4 * num_regs_to_save)));
+	  xsize = 0;
+	  break;
 
-        case save_sp_partial_merge:
-          emit_insn (gen_addsi3 (stack_pointer_rtx,
-                                 stack_pointer_rtx,
-                                 GEN_INT (-128)));
-          xsize = 128 - 4 * num_regs_to_save;
-          size -= xsize;
-          break;
+	case save_sp_partial_merge:
+	  emit_insn (gen_addsi3 (stack_pointer_rtx,
+				 stack_pointer_rtx,
+				 GEN_INT (-128)));
+	  xsize = 128 - 4 * num_regs_to_save;
+	  size -= xsize;
+	  break;
 
-        case save_sp_merge:
-        case save_a0_merge:
-          emit_insn (gen_addsi3 (stack_pointer_rtx,
-                                 stack_pointer_rtx,
-                                 GEN_INT (-(size + 4 * num_regs_to_save))));
-          /* We'll have to adjust FP register saves according to the
-             frame size.  */
-          xsize = size;
-          /* Since we've already created the stack frame, don't do it
-             again at the end of the function.  */
-          size = 0;
-          break;
+	case save_sp_merge:
+	case save_a0_merge:
+	  emit_insn (gen_addsi3 (stack_pointer_rtx,
+				 stack_pointer_rtx,
+				 GEN_INT (-(size + 4 * num_regs_to_save))));
+	  /* We'll have to adjust FP register saves according to the
+	     frame size.  */
+	  xsize = size;
+	  /* Since we've already created the stack frame, don't do it
+	     again at the end of the function.  */
+	  size = 0;
+	  break;
 
-        default:
-          gcc_unreachable ();
-        }
-          
+	default:
+	  gcc_unreachable ();
+	}
+	  
       /* Now prepare register a0, if we have decided to use it.  */
       switch (strategy)
-        {
-        case save_sp_merge:
-        case save_sp_no_merge:
-        case save_sp_partial_merge:
-          reg = 0;
-          break;
+	{
+	case save_sp_merge:
+	case save_sp_no_merge:
+	case save_sp_partial_merge:
+	  reg = 0;
+	  break;
 
-        case save_a0_merge:
-        case save_a0_no_merge:
-          reg = gen_rtx_REG (SImode, FIRST_ADDRESS_REGNUM);
-          emit_insn (gen_movsi (reg, stack_pointer_rtx));
-          if (xsize)
-            emit_insn (gen_addsi3 (reg, reg, GEN_INT (xsize)));
-          reg = gen_rtx_POST_INC (SImode, reg);
-          break;
-          
-        default:
-          gcc_unreachable ();
-        }
+	case save_a0_merge:
+	case save_a0_no_merge:
+	  reg = gen_rtx_REG (SImode, FIRST_ADDRESS_REGNUM);
+	  emit_insn (gen_movsi (reg, stack_pointer_rtx));
+	  if (xsize)
+	    emit_insn (gen_addsi3 (reg, reg, GEN_INT (xsize)));
+	  reg = gen_rtx_POST_INC (SImode, reg);
+	  break;
+	  
+	default:
+	  gcc_unreachable ();
+	}
       
       /* Now actually save the FP registers.  */
       for (i = FIRST_FP_REGNUM; i <= LAST_FP_REGNUM; ++i)
-        if (regs_ever_live[i] && ! call_used_regs[i])
-          {
-            rtx addr;
+	if (regs_ever_live[i] && ! call_used_regs[i])
+	  {
+	    rtx addr;
 
-            if (reg)
-              addr = reg;
-            else
-              {
-                /* If we aren't using `a0', use an SP offset.  */
-                if (xsize)
-                  {
-                    addr = gen_rtx_PLUS (SImode,
-                                         stack_pointer_rtx,
-                                         GEN_INT (xsize));
-                  }
-                else
-                  addr = stack_pointer_rtx;
-                
-                xsize += 4;
-              }
+	    if (reg)
+	      addr = reg;
+	    else
+	      {
+		/* If we aren't using `a0', use an SP offset.  */
+		if (xsize)
+		  {
+		    addr = gen_rtx_PLUS (SImode,
+					 stack_pointer_rtx,
+					 GEN_INT (xsize));
+		  }
+		else
+		  addr = stack_pointer_rtx;
+		
+		xsize += 4;
+	      }
 
-            insn = emit_insn (gen_movsi (gen_rtx_MEM (SImode, addr),
-                                         gen_rtx_REG (SImode, i)));
+	    insn = emit_insn (gen_movsi (gen_rtx_MEM (SImode, addr),
+					 gen_rtx_REG (SImode, i)));
 
-            RTX_FRAME_RELATED_P (insn) = 1;
-          }
+	    RTX_FRAME_RELATED_P (insn) = 1;
+	  }
     }
 
   /* Now put the frame pointer into the frame pointer register.  */
@@ -942,24 +942,24 @@ expand_prologue (void)
   /* Allocate stack for this frame.  */
   if (size)
     emit_insn (gen_addsi3 (stack_pointer_rtx,
-                           stack_pointer_rtx,
-                           GEN_INT (-size)));
+			   stack_pointer_rtx,
+			   GEN_INT (-size)));
   if (flag_pic && regs_ever_live[PIC_OFFSET_TABLE_REGNUM])
     {
       rtx insn = get_last_insn ();
       rtx last = emit_insn (gen_GOTaddr2picreg ());
 
       /* Mark these insns as possibly dead.  Sometimes, flow2 may
-         delete all uses of the PIC register.  In this case, let it
-         delete the initialization too.  */
+	 delete all uses of the PIC register.  In this case, let it
+	 delete the initialization too.  */
       do
-        {
-          insn = NEXT_INSN (insn);
+	{
+	  insn = NEXT_INSN (insn);
 
-          REG_NOTES (insn) = gen_rtx_EXPR_LIST (REG_MAYBE_DEAD,
-                                                const0_rtx,
-                                                REG_NOTES (insn));
-        }
+	  REG_NOTES (insn) = gen_rtx_EXPR_LIST (REG_MAYBE_DEAD,
+						const0_rtx,
+						REG_NOTES (insn));
+	}
       while (insn != last);
     }
 }
@@ -979,185 +979,185 @@ expand_epilogue (void)
       rtx reg = 0;
 
       /* We have several options to restore FP registers.  We could
-         load them from SP offsets, but, if there are enough FP
-         registers to restore, we win if we use a post-increment
-         addressing mode.  */
+	 load them from SP offsets, but, if there are enough FP
+	 registers to restore, we win if we use a post-increment
+	 addressing mode.  */
 
       /* If we have a frame pointer, it's the best option, because we
-         already know it has the value we want.  */
+	 already know it has the value we want.  */
       if (frame_pointer_needed)
-        reg = gen_rtx_REG (SImode, FRAME_POINTER_REGNUM);
+	reg = gen_rtx_REG (SImode, FRAME_POINTER_REGNUM);
       /* Otherwise, we may use `a1', since it's call-clobbered and
-         it's never used for return values.  But only do so if it's
-         smaller than using SP offsets.  */
+	 it's never used for return values.  But only do so if it's
+	 smaller than using SP offsets.  */
       else
-        {
-          enum { restore_sp_post_adjust,
-                 restore_sp_pre_adjust,
-                 restore_sp_partial_adjust,
-                 restore_a1 } strategy;
-          unsigned int this_strategy_size, strategy_size = (unsigned)-1;
+	{
+	  enum { restore_sp_post_adjust,
+		 restore_sp_pre_adjust,
+		 restore_sp_partial_adjust,
+		 restore_a1 } strategy;
+	  unsigned int this_strategy_size, strategy_size = (unsigned)-1;
 
-          /* Consider using sp offsets before adjusting sp.  */
-          /* Insn: fmov (##,sp),fs#, for each fs# to be restored.  */
-          this_strategy_size = SIZE_FMOV_SP (size, num_regs_to_save);
-          /* If size is too large, we'll have to adjust SP with an
-                 add.  */
-          if (size + 4 * num_regs_to_save + REG_SAVE_BYTES > 255)
-            {
-              /* Insn: add size + 4 * num_regs_to_save, sp.  */
-              this_strategy_size += SIZE_ADD_SP (size + 4 * num_regs_to_save);
-            }
-          /* If we don't have to restore any non-FP registers,
-                 we'll be able to save one byte by using rets.  */
-          if (! REG_SAVE_BYTES)
-            this_strategy_size--;
+	  /* Consider using sp offsets before adjusting sp.  */
+	  /* Insn: fmov (##,sp),fs#, for each fs# to be restored.  */
+	  this_strategy_size = SIZE_FMOV_SP (size, num_regs_to_save);
+	  /* If size is too large, we'll have to adjust SP with an
+		 add.  */
+	  if (size + 4 * num_regs_to_save + REG_SAVE_BYTES > 255)
+	    {
+	      /* Insn: add size + 4 * num_regs_to_save, sp.  */
+	      this_strategy_size += SIZE_ADD_SP (size + 4 * num_regs_to_save);
+	    }
+	  /* If we don't have to restore any non-FP registers,
+		 we'll be able to save one byte by using rets.  */
+	  if (! REG_SAVE_BYTES)
+	    this_strategy_size--;
 
-          if (this_strategy_size < strategy_size)
-            {
-              strategy = restore_sp_post_adjust;
-              strategy_size = this_strategy_size;
-            }
+	  if (this_strategy_size < strategy_size)
+	    {
+	      strategy = restore_sp_post_adjust;
+	      strategy_size = this_strategy_size;
+	    }
 
-          /* Consider using sp offsets after adjusting sp.  */
-          /* Insn: add size, sp.  */
-          this_strategy_size = SIZE_ADD_SP (size);
-          /* Insn: fmov (##,sp),fs#, for each fs# to be restored.  */
-          this_strategy_size += SIZE_FMOV_SP (0, num_regs_to_save);
-          /* We're going to use ret to release the FP registers
-                 save area, so, no savings.  */
+	  /* Consider using sp offsets after adjusting sp.  */
+	  /* Insn: add size, sp.  */
+	  this_strategy_size = SIZE_ADD_SP (size);
+	  /* Insn: fmov (##,sp),fs#, for each fs# to be restored.  */
+	  this_strategy_size += SIZE_FMOV_SP (0, num_regs_to_save);
+	  /* We're going to use ret to release the FP registers
+		 save area, so, no savings.  */
 
-          if (this_strategy_size < strategy_size)
-            {
-              strategy = restore_sp_pre_adjust;
-              strategy_size = this_strategy_size;
-            }
+	  if (this_strategy_size < strategy_size)
+	    {
+	      strategy = restore_sp_pre_adjust;
+	      strategy_size = this_strategy_size;
+	    }
 
-          /* Consider using sp offsets after partially adjusting sp.
-             When size is close to 32Kb, we may be able to adjust SP
-             with an imm16 add instruction while still using fmov
-             (d8,sp).  */
-          if (size + 4 * num_regs_to_save + REG_SAVE_BYTES > 255)
-            {
-              /* Insn: add size + 4 * num_regs_to_save
-                                + REG_SAVE_BYTES - 252,sp.  */
-              this_strategy_size = SIZE_ADD_SP (size + 4 * num_regs_to_save
-                                                + REG_SAVE_BYTES - 252);
-              /* Insn: fmov (##,sp),fs#, fo each fs# to be restored.  */
-              this_strategy_size += SIZE_FMOV_SP (252 - REG_SAVE_BYTES
-                                                  - 4 * num_regs_to_save,
-                                                  num_regs_to_save);
-              /* We're going to use ret to release the FP registers
-                 save area, so, no savings.  */
+	  /* Consider using sp offsets after partially adjusting sp.
+	     When size is close to 32Kb, we may be able to adjust SP
+	     with an imm16 add instruction while still using fmov
+	     (d8,sp).  */
+	  if (size + 4 * num_regs_to_save + REG_SAVE_BYTES > 255)
+	    {
+	      /* Insn: add size + 4 * num_regs_to_save
+				+ REG_SAVE_BYTES - 252,sp.  */
+	      this_strategy_size = SIZE_ADD_SP (size + 4 * num_regs_to_save
+						+ REG_SAVE_BYTES - 252);
+	      /* Insn: fmov (##,sp),fs#, fo each fs# to be restored.  */
+	      this_strategy_size += SIZE_FMOV_SP (252 - REG_SAVE_BYTES
+						  - 4 * num_regs_to_save,
+						  num_regs_to_save);
+	      /* We're going to use ret to release the FP registers
+		 save area, so, no savings.  */
 
-              if (this_strategy_size < strategy_size)
-                {
-                  strategy = restore_sp_partial_adjust;
-                  strategy_size = this_strategy_size;
-                }
-            }
+	      if (this_strategy_size < strategy_size)
+		{
+		  strategy = restore_sp_partial_adjust;
+		  strategy_size = this_strategy_size;
+		}
+	    }
 
-          /* Consider using a1 in post-increment mode, as long as the
-             user hasn't changed the calling conventions of a1.  */
-          if (call_used_regs[FIRST_ADDRESS_REGNUM+1]
-              && ! fixed_regs[FIRST_ADDRESS_REGNUM+1])
-            {
-              /* Insn: mov sp,a1.  */
-              this_strategy_size = 1;
-              if (size)
-                {
-                  /* Insn: add size,a1.  */
-                  this_strategy_size += SIZE_ADD_AX (size);
-                }
-              /* Insn: fmov (a1+),fs#, for each fs# to be restored.  */
-              this_strategy_size += 3 * num_regs_to_save;
-              /* If size is large enough, we may be able to save a
-                 couple of bytes.  */
-              if (size + 4 * num_regs_to_save + REG_SAVE_BYTES > 255)
-                {
-                  /* Insn: mov a1,sp.  */
-                  this_strategy_size += 2;
-                }
-              /* If we don't have to restore any non-FP registers,
-                 we'll be able to save one byte by using rets.  */
-              if (! REG_SAVE_BYTES)
-                this_strategy_size--;
+	  /* Consider using a1 in post-increment mode, as long as the
+	     user hasn't changed the calling conventions of a1.  */
+	  if (call_used_regs[FIRST_ADDRESS_REGNUM+1]
+	      && ! fixed_regs[FIRST_ADDRESS_REGNUM+1])
+	    {
+	      /* Insn: mov sp,a1.  */
+	      this_strategy_size = 1;
+	      if (size)
+		{
+		  /* Insn: add size,a1.  */
+		  this_strategy_size += SIZE_ADD_AX (size);
+		}
+	      /* Insn: fmov (a1+),fs#, for each fs# to be restored.  */
+	      this_strategy_size += 3 * num_regs_to_save;
+	      /* If size is large enough, we may be able to save a
+		 couple of bytes.  */
+	      if (size + 4 * num_regs_to_save + REG_SAVE_BYTES > 255)
+		{
+		  /* Insn: mov a1,sp.  */
+		  this_strategy_size += 2;
+		}
+	      /* If we don't have to restore any non-FP registers,
+		 we'll be able to save one byte by using rets.  */
+	      if (! REG_SAVE_BYTES)
+		this_strategy_size--;
 
-              if (this_strategy_size < strategy_size)
-                {
-                  strategy = restore_a1;
-                  strategy_size = this_strategy_size;
-                }
-            }
+	      if (this_strategy_size < strategy_size)
+		{
+		  strategy = restore_a1;
+		  strategy_size = this_strategy_size;
+		}
+	    }
 
-          switch (strategy)
-            {
-            case restore_sp_post_adjust:
-              break;
+	  switch (strategy)
+	    {
+	    case restore_sp_post_adjust:
+	      break;
 
-            case restore_sp_pre_adjust:
-              emit_insn (gen_addsi3 (stack_pointer_rtx,
-                                     stack_pointer_rtx,
-                                     GEN_INT (size)));
-              size = 0;
-              break;
+	    case restore_sp_pre_adjust:
+	      emit_insn (gen_addsi3 (stack_pointer_rtx,
+				     stack_pointer_rtx,
+				     GEN_INT (size)));
+	      size = 0;
+	      break;
 
-            case restore_sp_partial_adjust:
-              emit_insn (gen_addsi3 (stack_pointer_rtx,
-                                     stack_pointer_rtx,
-                                     GEN_INT (size + 4 * num_regs_to_save
-                                              + REG_SAVE_BYTES - 252)));
-              size = 252 - REG_SAVE_BYTES - 4 * num_regs_to_save;
-              break;
-              
-            case restore_a1:
-              reg = gen_rtx_REG (SImode, FIRST_ADDRESS_REGNUM + 1);
-              emit_insn (gen_movsi (reg, stack_pointer_rtx));
-              if (size)
-                emit_insn (gen_addsi3 (reg, reg, GEN_INT (size)));
-              break;
+	    case restore_sp_partial_adjust:
+	      emit_insn (gen_addsi3 (stack_pointer_rtx,
+				     stack_pointer_rtx,
+				     GEN_INT (size + 4 * num_regs_to_save
+					      + REG_SAVE_BYTES - 252)));
+	      size = 252 - REG_SAVE_BYTES - 4 * num_regs_to_save;
+	      break;
+	      
+	    case restore_a1:
+	      reg = gen_rtx_REG (SImode, FIRST_ADDRESS_REGNUM + 1);
+	      emit_insn (gen_movsi (reg, stack_pointer_rtx));
+	      if (size)
+		emit_insn (gen_addsi3 (reg, reg, GEN_INT (size)));
+	      break;
 
-            default:
-              gcc_unreachable ();
-            }
-        }
+	    default:
+	      gcc_unreachable ();
+	    }
+	}
 
       /* Adjust the selected register, if any, for post-increment.  */
       if (reg)
-        reg = gen_rtx_POST_INC (SImode, reg);
+	reg = gen_rtx_POST_INC (SImode, reg);
 
       for (i = FIRST_FP_REGNUM; i <= LAST_FP_REGNUM; ++i)
-        if (regs_ever_live[i] && ! call_used_regs[i])
-          {
-            rtx addr;
-            
-            if (reg)
-              addr = reg;
-            else if (size)
-              {
-                /* If we aren't using a post-increment register, use an
-                   SP offset.  */
-                addr = gen_rtx_PLUS (SImode,
-                                     stack_pointer_rtx,
-                                     GEN_INT (size));
-              }
-            else
-              addr = stack_pointer_rtx;
+	if (regs_ever_live[i] && ! call_used_regs[i])
+	  {
+	    rtx addr;
+	    
+	    if (reg)
+	      addr = reg;
+	    else if (size)
+	      {
+		/* If we aren't using a post-increment register, use an
+		   SP offset.  */
+		addr = gen_rtx_PLUS (SImode,
+				     stack_pointer_rtx,
+				     GEN_INT (size));
+	      }
+	    else
+	      addr = stack_pointer_rtx;
 
-            size += 4;
+	    size += 4;
 
-            emit_insn (gen_movsi (gen_rtx_REG (SImode, i),
-                                  gen_rtx_MEM (SImode, addr)));
-          }
+	    emit_insn (gen_movsi (gen_rtx_REG (SImode, i),
+				  gen_rtx_MEM (SImode, addr)));
+	  }
 
       /* If we were using the restore_a1 strategy and the number of
-         bytes to be released won't fit in the `ret' byte, copy `a1'
-         to `sp', to avoid having to use `add' to adjust it.  */
+	 bytes to be released won't fit in the `ret' byte, copy `a1'
+	 to `sp', to avoid having to use `add' to adjust it.  */
       if (! frame_pointer_needed && reg && size + REG_SAVE_BYTES > 255)
-        {
-          emit_move_insn (stack_pointer_rtx, XEXP (reg, 0));
-          size = 0;
-        }
+	{
+	  emit_move_insn (stack_pointer_rtx, XEXP (reg, 0));
+	  size = 0;
+	}
     }
 
   /* Maybe cut back the stack, except for the register save area.
@@ -1183,8 +1183,8 @@ expand_epilogue (void)
   else if (size + REG_SAVE_BYTES > 255)
     {
       emit_insn (gen_addsi3 (stack_pointer_rtx,
-                             stack_pointer_rtx,
-                             GEN_INT (size)));
+			     stack_pointer_rtx,
+			     GEN_INT (size)));
       size = 0;
     }
 
@@ -1195,7 +1195,7 @@ expand_epilogue (void)
       || regs_ever_live[16] || regs_ever_live[17]
       || frame_pointer_needed)
     emit_jump_insn (gen_return_internal_regs
-                    (GEN_INT (size + REG_SAVE_BYTES)));
+		    (GEN_INT (size + REG_SAVE_BYTES)));
   else
     emit_jump_insn (gen_return_internal ());
 }
@@ -1214,13 +1214,13 @@ notice_update_cc (rtx body, rtx insn)
     case CC_NONE_0HIT:
       /* Insn does not change CC, but the 0'th operand has been changed.  */
       if (cc_status.value1 != 0
-          && reg_overlap_mentioned_p (recog_data.operand[0], cc_status.value1))
-        cc_status.value1 = 0;
+	  && reg_overlap_mentioned_p (recog_data.operand[0], cc_status.value1))
+	cc_status.value1 = 0;
       break;
 
     case CC_SET_ZN:
       /* Insn sets the Z,N flags of CC to recog_data.operand[0].
-         V,C are unusable.  */
+	 V,C are unusable.  */
       CC_STATUS_INIT;
       cc_status.flags |= CC_NO_CARRY | CC_OVERFLOW_UNUSABLE;
       cc_status.value1 = recog_data.operand[0];
@@ -1228,7 +1228,7 @@ notice_update_cc (rtx body, rtx insn)
 
     case CC_SET_ZNV:
       /* Insn sets the Z,N,V flags of CC to recog_data.operand[0].
-         C is unusable.  */
+	 C is unusable.  */
       CC_STATUS_INIT;
       cc_status.flags |= CC_NO_CARRY;
       cc_status.value1 = recog_data.operand[0];
@@ -1239,8 +1239,8 @@ notice_update_cc (rtx body, rtx insn)
       CC_STATUS_INIT;
       cc_status.value1 = SET_SRC (body);
       if (GET_CODE (cc_status.value1) == COMPARE
-          && GET_MODE (XEXP (cc_status.value1, 0)) == SFmode)
-        cc_status.mdep.fpCC = 1;
+	  && GET_MODE (XEXP (cc_status.value1, 0)) == SFmode)
+	cc_status.mdep.fpCC = 1;
       break;
 
     case CC_CLOBBER:
@@ -1304,24 +1304,24 @@ store_multiple_operation (rtx op, enum machine_mode mode ATTRIBUTE_UNUSED)
       /* Check that element i is a (set (mem M) R) and that R is valid.  */
       elt = XVECEXP (op, 0, i);
       if (GET_CODE (elt) != SET
-          || GET_CODE (SET_DEST (elt)) != MEM
-          || GET_CODE (SET_SRC (elt)) != REG
-          || REGNO (SET_SRC (elt)) >= last)
-        return 0;
+	  || GET_CODE (SET_DEST (elt)) != MEM
+	  || GET_CODE (SET_SRC (elt)) != REG
+	  || REGNO (SET_SRC (elt)) >= last)
+	return 0;
 
       /* R was OK, so provisionally add it to MASK.  We return 0 in any
-         case if the rest of the instruction has a flaw.  */
+	 case if the rest of the instruction has a flaw.  */
       last = REGNO (SET_SRC (elt));
       mask |= (1 << last);
 
       /* Check that M has the form (plus (sp) (const_int -I*4)) */
       elt = XEXP (SET_DEST (elt), 0);
       if (GET_CODE (elt) != PLUS
-          || GET_CODE (XEXP (elt, 0)) != REG
-          || REGNO (XEXP (elt, 0)) != STACK_POINTER_REGNUM
-          || GET_CODE (XEXP (elt, 1)) != CONST_INT
-          || INTVAL (XEXP (elt, 1)) != -i * 4)
-        return 0;
+	  || GET_CODE (XEXP (elt, 0)) != REG
+	  || REGNO (XEXP (elt, 0)) != STACK_POINTER_REGNUM
+	  || GET_CODE (XEXP (elt, 1)) != CONST_INT
+	  || INTVAL (XEXP (elt, 1)) != -i * 4)
+	return 0;
     }
 
   /* All or none of the callee-saved extended registers must be in the set.  */
@@ -1338,23 +1338,23 @@ store_multiple_operation (rtx op, enum machine_mode mode ATTRIBUTE_UNUSED)
    We might be able to simplify this.  */
 enum reg_class
 mn10300_secondary_reload_class (enum reg_class class, enum machine_mode mode,
-                                rtx in)
+				rtx in)
 {
   /* Memory loads less than a full word wide can't have an
      address or stack pointer destination.  They must use
      a data register as an intermediate register.  */
   if ((GET_CODE (in) == MEM
        || (GET_CODE (in) == REG
-           && REGNO (in) >= FIRST_PSEUDO_REGISTER)
+	   && REGNO (in) >= FIRST_PSEUDO_REGISTER)
        || (GET_CODE (in) == SUBREG
-           && GET_CODE (SUBREG_REG (in)) == REG
-           && REGNO (SUBREG_REG (in)) >= FIRST_PSEUDO_REGISTER))
+	   && GET_CODE (SUBREG_REG (in)) == REG
+	   && REGNO (SUBREG_REG (in)) >= FIRST_PSEUDO_REGISTER))
       && (mode == QImode || mode == HImode)
       && (class == ADDRESS_REGS || class == SP_REGS
-          || class == SP_OR_ADDRESS_REGS))
+	  || class == SP_OR_ADDRESS_REGS))
     {
       if (TARGET_AM33)
-        return DATA_OR_EXTENDED_REGS;
+	return DATA_OR_EXTENDED_REGS;
       return DATA_REGS;
     }
 
@@ -1367,17 +1367,17 @@ mn10300_secondary_reload_class (enum reg_class class, enum machine_mode mode,
       && class != ADDRESS_OR_EXTENDED_REGS
       && class != SP_OR_ADDRESS_OR_EXTENDED_REGS
       && (in == stack_pointer_rtx
-          || (GET_CODE (in) == PLUS
-              && (XEXP (in, 0) == stack_pointer_rtx
-                  || XEXP (in, 1) == stack_pointer_rtx))))
+	  || (GET_CODE (in) == PLUS
+	      && (XEXP (in, 0) == stack_pointer_rtx
+		  || XEXP (in, 1) == stack_pointer_rtx))))
     return ADDRESS_REGS;
 
   if (GET_CODE (in) == PLUS
       && (XEXP (in, 0) == stack_pointer_rtx
-          || XEXP (in, 1) == stack_pointer_rtx))
+	  || XEXP (in, 1) == stack_pointer_rtx))
     {
       if (TARGET_AM33)
-        return DATA_OR_EXTENDED_REGS;
+	return DATA_OR_EXTENDED_REGS;
       return DATA_REGS;
     }
  
@@ -1385,7 +1385,7 @@ mn10300_secondary_reload_class (enum reg_class class, enum machine_mode mode,
       && GET_CODE (in) == MEM && ! OK_FOR_Q (in))
     {
       if (TARGET_AM33)
-        return DATA_OR_EXTENDED_REGS;
+	return DATA_OR_EXTENDED_REGS;
       return DATA_REGS;
     }
 
@@ -1401,15 +1401,15 @@ initial_offset (int from, int to)
   if (from == ARG_POINTER_REGNUM && to == FRAME_POINTER_REGNUM)
     {
       if (regs_ever_live[2] || regs_ever_live[3]
-          || regs_ever_live[6] || regs_ever_live[7]
-          || regs_ever_live[14] || regs_ever_live[15]
-          || regs_ever_live[16] || regs_ever_live[17]
-          || fp_regs_to_save ()
-          || frame_pointer_needed)
-        return REG_SAVE_BYTES
-          + 4 * fp_regs_to_save ();
+	  || regs_ever_live[6] || regs_ever_live[7]
+	  || regs_ever_live[14] || regs_ever_live[15]
+	  || regs_ever_live[16] || regs_ever_live[17]
+	  || fp_regs_to_save ()
+	  || frame_pointer_needed)
+	return REG_SAVE_BYTES
+	  + 4 * fp_regs_to_save ();
       else
-        return 0;
+	return 0;
     }
 
   /* The difference between the argument pointer and the stack pointer is
@@ -1418,19 +1418,19 @@ initial_offset (int from, int to)
   if (from == ARG_POINTER_REGNUM && to == STACK_POINTER_REGNUM)
     {
       if (regs_ever_live[2] || regs_ever_live[3]
-          || regs_ever_live[6] || regs_ever_live[7]
-          || regs_ever_live[14] || regs_ever_live[15]
-          || regs_ever_live[16] || regs_ever_live[17]
-          || fp_regs_to_save ()
-          || frame_pointer_needed)
-        return (get_frame_size () + REG_SAVE_BYTES
-                + 4 * fp_regs_to_save ()
-                + (current_function_outgoing_args_size
-                   ? current_function_outgoing_args_size + 4 : 0)); 
+	  || regs_ever_live[6] || regs_ever_live[7]
+	  || regs_ever_live[14] || regs_ever_live[15]
+	  || regs_ever_live[16] || regs_ever_live[17]
+	  || fp_regs_to_save ()
+	  || frame_pointer_needed)
+	return (get_frame_size () + REG_SAVE_BYTES
+		+ 4 * fp_regs_to_save ()
+		+ (current_function_outgoing_args_size
+		   ? current_function_outgoing_args_size + 4 : 0)); 
       else
-        return (get_frame_size ()
-                + (current_function_outgoing_args_size
-                   ? current_function_outgoing_args_size + 4 : 0)); 
+	return (get_frame_size ()
+		+ (current_function_outgoing_args_size
+		   ? current_function_outgoing_args_size + 4 : 0)); 
     }
 
   /* The difference between the frame pointer and stack pointer is the sum
@@ -1438,8 +1438,8 @@ initial_offset (int from, int to)
      for function calls (if any).  */
   if (from == FRAME_POINTER_REGNUM && to == STACK_POINTER_REGNUM)
     return (get_frame_size ()
-            + (current_function_outgoing_args_size
-               ? current_function_outgoing_args_size + 4 : 0)); 
+	    + (current_function_outgoing_args_size
+	       ? current_function_outgoing_args_size + 4 : 0)); 
 
   gcc_unreachable ();
 }
@@ -1451,8 +1451,8 @@ mn10300_return_in_memory (tree type, tree fntype ATTRIBUTE_UNUSED)
 {
   /* Return values > 8 bytes in length in memory.  */
   return (int_size_in_bytes (type) > 8
-          || int_size_in_bytes (type) == 0
-          || TYPE_MODE (type) == BLKmode);
+	  || int_size_in_bytes (type) == 0
+	  || TYPE_MODE (type) == BLKmode);
 }
 
 /* Flush the argument registers to the stack for a stdarg function;
@@ -1478,13 +1478,13 @@ mn10300_builtin_saveregs (void)
   emit_move_insn (mem, gen_rtx_REG (SImode, 0));
 
   mem = gen_rtx_MEM (SImode,
-                     plus_constant (current_function_internal_arg_pointer, 4));
+		     plus_constant (current_function_internal_arg_pointer, 4));
   set_mem_alias_set (mem, set);
   emit_move_insn (mem, gen_rtx_REG (SImode, 1));
 
   return copy_to_reg (expand_binop (Pmode, add_optab,
-                                    current_function_internal_arg_pointer,
-                                    offset, 0, 0, OPTAB_LIB_WIDEN));
+				    current_function_internal_arg_pointer,
+				    offset, 0, 0, OPTAB_LIB_WIDEN));
 }
 
 void
@@ -1498,8 +1498,8 @@ mn10300_va_start (tree valist, rtx nextarg)
 
 static bool
 mn10300_pass_by_reference (CUMULATIVE_ARGS *cum ATTRIBUTE_UNUSED,
-                           enum machine_mode mode, tree type,
-                           bool named ATTRIBUTE_UNUSED)
+			   enum machine_mode mode, tree type,
+			   bool named ATTRIBUTE_UNUSED)
 {
   unsigned HOST_WIDE_INT size;
 
@@ -1516,7 +1516,7 @@ mn10300_pass_by_reference (CUMULATIVE_ARGS *cum ATTRIBUTE_UNUSED,
 
 rtx
 function_arg (CUMULATIVE_ARGS *cum, enum machine_mode mode,
-              tree type, int named ATTRIBUTE_UNUSED)
+	      tree type, int named ATTRIBUTE_UNUSED)
 {
   rtx result = 0;
   int size, align;
@@ -1566,7 +1566,7 @@ function_arg (CUMULATIVE_ARGS *cum, enum machine_mode mode,
 
 static int
 mn10300_arg_partial_bytes (CUMULATIVE_ARGS *cum, enum machine_mode mode,
-                           tree type, bool named ATTRIBUTE_UNUSED)
+			   tree type, bool named ATTRIBUTE_UNUSED)
 {
   int size, align;
 
@@ -1616,19 +1616,19 @@ mn10300_function_value (tree valtype, tree func, int outgoing)
   if (! POINTER_TYPE_P (valtype))
     return gen_rtx_REG (mode, FIRST_DATA_REGNUM);
   else if (! TARGET_PTR_A0D0 || ! outgoing
-           || current_function_returns_struct)
+	   || current_function_returns_struct)
     return gen_rtx_REG (mode, FIRST_ADDRESS_REGNUM);
 
   rv = gen_rtx_PARALLEL (mode, rtvec_alloc (2));
   XVECEXP (rv, 0, 0)
     = gen_rtx_EXPR_LIST (VOIDmode,
-                         gen_rtx_REG (mode, FIRST_ADDRESS_REGNUM),
-                         GEN_INT (0));
+			 gen_rtx_REG (mode, FIRST_ADDRESS_REGNUM),
+			 GEN_INT (0));
   
   XVECEXP (rv, 0, 1)
     = gen_rtx_EXPR_LIST (VOIDmode,
-                         gen_rtx_REG (mode, FIRST_DATA_REGNUM),
-                         GEN_INT (0));
+			 gen_rtx_REG (mode, FIRST_DATA_REGNUM),
+			 GEN_INT (0));
   return rv;
 }
 
@@ -1647,76 +1647,76 @@ output_tst (rtx operand, rtx insn)
       rtx set;
 
       /* We allow the search to go through call insns.  We record
-         the fact that we've past a CALL_INSN and reject matches which
-         use call clobbered registers.  */
+	 the fact that we've past a CALL_INSN and reject matches which
+	 use call clobbered registers.  */
       if (GET_CODE (temp) == CODE_LABEL
-          || GET_CODE (temp) == JUMP_INSN
-          || GET_CODE (temp) == BARRIER)
-        break;
+	  || GET_CODE (temp) == JUMP_INSN
+	  || GET_CODE (temp) == BARRIER)
+	break;
 
       if (GET_CODE (temp) == CALL_INSN)
-        past_call = 1;
+	past_call = 1;
 
       if (GET_CODE (temp) == NOTE)
-        {
-          temp = PREV_INSN (temp);
-          continue;
-        }
+	{
+	  temp = PREV_INSN (temp);
+	  continue;
+	}
 
       /* It must be an insn, see if it is a simple set.  */
       set = single_set (temp);
       if (!set)
-        {
-          temp = PREV_INSN (temp);
-          continue;
-        }
+	{
+	  temp = PREV_INSN (temp);
+	  continue;
+	}
 
       /* Are we setting a data register to zero (this does not win for
-         address registers)? 
+	 address registers)? 
 
-         If it's a call clobbered register, have we past a call?
+	 If it's a call clobbered register, have we past a call?
 
-         Make sure the register we find isn't the same as ourself;
-         the mn10300 can't encode that.
+	 Make sure the register we find isn't the same as ourself;
+	 the mn10300 can't encode that.
 
-         ??? reg_set_between_p return nonzero anytime we pass a CALL_INSN
-         so the code to detect calls here isn't doing anything useful.  */
+	 ??? reg_set_between_p return nonzero anytime we pass a CALL_INSN
+	 so the code to detect calls here isn't doing anything useful.  */
       if (REG_P (SET_DEST (set))
-          && SET_SRC (set) == CONST0_RTX (GET_MODE (SET_DEST (set)))
-          && !reg_set_between_p (SET_DEST (set), temp, insn)
-          && (REGNO_REG_CLASS (REGNO (SET_DEST (set)))
-              == REGNO_REG_CLASS (REGNO (operand)))
-          && REGNO_REG_CLASS (REGNO (SET_DEST (set))) != EXTENDED_REGS
-          && REGNO (SET_DEST (set)) != REGNO (operand)
-          && (!past_call 
-              || !call_used_regs[REGNO (SET_DEST (set))]))
-        {
-          rtx xoperands[2];
-          xoperands[0] = operand;
-          xoperands[1] = SET_DEST (set);
+	  && SET_SRC (set) == CONST0_RTX (GET_MODE (SET_DEST (set)))
+	  && !reg_set_between_p (SET_DEST (set), temp, insn)
+	  && (REGNO_REG_CLASS (REGNO (SET_DEST (set)))
+	      == REGNO_REG_CLASS (REGNO (operand)))
+	  && REGNO_REG_CLASS (REGNO (SET_DEST (set))) != EXTENDED_REGS
+	  && REGNO (SET_DEST (set)) != REGNO (operand)
+	  && (!past_call 
+	      || !call_used_regs[REGNO (SET_DEST (set))]))
+	{
+	  rtx xoperands[2];
+	  xoperands[0] = operand;
+	  xoperands[1] = SET_DEST (set);
 
-          output_asm_insn ("cmp %1,%0", xoperands);
-          return "";
-        }
+	  output_asm_insn ("cmp %1,%0", xoperands);
+	  return "";
+	}
 
       if (REGNO_REG_CLASS (REGNO (operand)) == EXTENDED_REGS
-          && REG_P (SET_DEST (set))
-          && SET_SRC (set) == CONST0_RTX (GET_MODE (SET_DEST (set)))
-          && !reg_set_between_p (SET_DEST (set), temp, insn)
-          && (REGNO_REG_CLASS (REGNO (SET_DEST (set)))
-              != REGNO_REG_CLASS (REGNO (operand)))
-          && REGNO_REG_CLASS (REGNO (SET_DEST (set))) == EXTENDED_REGS
-          && REGNO (SET_DEST (set)) != REGNO (operand)
-          && (!past_call 
-              || !call_used_regs[REGNO (SET_DEST (set))]))
-        {
-          rtx xoperands[2];
-          xoperands[0] = operand;
-          xoperands[1] = SET_DEST (set);
+	  && REG_P (SET_DEST (set))
+	  && SET_SRC (set) == CONST0_RTX (GET_MODE (SET_DEST (set)))
+	  && !reg_set_between_p (SET_DEST (set), temp, insn)
+	  && (REGNO_REG_CLASS (REGNO (SET_DEST (set)))
+	      != REGNO_REG_CLASS (REGNO (operand)))
+	  && REGNO_REG_CLASS (REGNO (SET_DEST (set))) == EXTENDED_REGS
+	  && REGNO (SET_DEST (set)) != REGNO (operand)
+	  && (!past_call 
+	      || !call_used_regs[REGNO (SET_DEST (set))]))
+	{
+	  rtx xoperands[2];
+	  xoperands[0] = operand;
+	  xoperands[1] = SET_DEST (set);
 
-          output_asm_insn ("cmp %1,%0", xoperands);
-          return "";
-        }
+	  output_asm_insn ("cmp %1,%0", xoperands);
+	  return "";
+	}
       temp = PREV_INSN (temp);
     }
   return "cmp 0,%0";
@@ -1751,9 +1751,9 @@ mask_ok_for_mem_btst (int len, int bit)
 
   /* MASK must bit into an 8bit value.  */
   return (((mask & 0xff) == mask)
-          || ((mask & 0xff00) == mask)
-          || ((mask & 0xff0000) == mask)
-          || ((mask & 0xff000000) == mask));
+	  || ((mask & 0xff00) == mask)
+	  || ((mask & 0xff0000) == mask)
+	  || ((mask & 0xff000000) == mask));
 }
 
 /* Return 1 if X contains a symbolic expression.  We know these
@@ -1794,7 +1794,7 @@ symbolic_operand (register rtx op, enum machine_mode mode ATTRIBUTE_UNUSED)
    (mn10300, hppa) it is used to rewrite certain problematical addresses.  */
 rtx
 legitimize_address (rtx x, rtx oldx ATTRIBUTE_UNUSED,
-                    enum machine_mode mode ATTRIBUTE_UNUSED)
+		    enum machine_mode mode ATTRIBUTE_UNUSED)
 {
   if (flag_pic && ! legitimate_pic_operand_p (x))
     x = legitimize_pic_address (oldx, NULL_RTX);
@@ -1817,14 +1817,14 @@ legitimize_address (rtx x, rtx oldx ATTRIBUTE_UNUSED,
         y = XEXP (y, 0);
 
       if (GET_CODE (y) == PLUS || GET_CODE (y) == MINUS)
-        {
-          regx1 = force_reg (Pmode, force_operand (XEXP (x, 0), 0));
-          regy1 = force_reg (Pmode, force_operand (XEXP (y, 0), 0));
-          regy2 = force_reg (Pmode, force_operand (XEXP (y, 1), 0));
-          regx1 = force_reg (Pmode,
-                             gen_rtx_fmt_ee (GET_CODE (y), Pmode, regx1, regy2));
-          return force_reg (Pmode, gen_rtx_PLUS (Pmode, regx1, regy1));
-        }
+	{
+	  regx1 = force_reg (Pmode, force_operand (XEXP (x, 0), 0));
+	  regy1 = force_reg (Pmode, force_operand (XEXP (y, 0), 0));
+	  regy2 = force_reg (Pmode, force_operand (XEXP (y, 1), 0));
+	  regx1 = force_reg (Pmode,
+			     gen_rtx_fmt_ee (GET_CODE (y), Pmode, regx1, regy2));
+	  return force_reg (Pmode, gen_rtx_PLUS (Pmode, regx1, regy1));
+	}
     }
   return x;
 }
@@ -1836,11 +1836,11 @@ legitimize_pic_address (rtx orig, rtx reg)
 {
   if (GET_CODE (orig) == LABEL_REF
       || (GET_CODE (orig) == SYMBOL_REF
-          && (CONSTANT_POOL_ADDRESS_P (orig)
-              || ! MN10300_GLOBAL_P (orig))))
+	  && (CONSTANT_POOL_ADDRESS_P (orig)
+	      || ! MN10300_GLOBAL_P (orig))))
     {
       if (reg == 0)
-        reg = gen_reg_rtx (Pmode);
+	reg = gen_reg_rtx (Pmode);
 
       emit_insn (gen_symGOTOFF2reg (reg, orig));
       return reg;
@@ -1848,7 +1848,7 @@ legitimize_pic_address (rtx orig, rtx reg)
   else if (GET_CODE (orig) == SYMBOL_REF)
     {
       if (reg == 0)
-        reg = gen_reg_rtx (Pmode);
+	reg = gen_reg_rtx (Pmode);
 
       emit_insn (gen_symGOT2reg (reg, orig));
       return reg;
@@ -1869,24 +1869,24 @@ legitimate_pic_operand_p (rtx x)
 
   if (GET_CODE (x) == UNSPEC
       && (XINT (x, 1) == UNSPEC_PIC
-          || XINT (x, 1) == UNSPEC_GOT
-          || XINT (x, 1) == UNSPEC_GOTOFF
-          || XINT (x, 1) == UNSPEC_PLT))
+	  || XINT (x, 1) == UNSPEC_GOT
+	  || XINT (x, 1) == UNSPEC_GOTOFF
+	  || XINT (x, 1) == UNSPEC_PLT))
       return 1;
 
   fmt = GET_RTX_FORMAT (GET_CODE (x));
   for (i = GET_RTX_LENGTH (GET_CODE (x)) - 1; i >= 0; i--)
     {
       if (fmt[i] == 'E')
-        {
-          register int j;
+	{
+	  register int j;
 
-          for (j = XVECLEN (x, i) - 1; j >= 0; j--)
-            if (! legitimate_pic_operand_p (XVECEXP (x, i, j)))
-              return 0;
-        }
+	  for (j = XVECLEN (x, i) - 1; j >= 0; j--)
+	    if (! legitimate_pic_operand_p (XVECEXP (x, i, j)))
+	      return 0;
+	}
       else if (fmt[i] == 'e' && ! legitimate_pic_operand_p (XEXP (x, i)))
-        return 0;
+	return 0;
     }
 
   return 1;
@@ -1915,29 +1915,29 @@ legitimate_address_p (enum machine_mode mode, rtx x, int strict)
       rtx base = 0, index = 0;
 
       if (REG_P (XEXP (x, 0))
-          && REGNO_STRICT_OK_FOR_BASE_P (REGNO (XEXP (x, 0)), strict))
-        {
-          base = XEXP (x, 0);
-          index = XEXP (x, 1);
-        }
+	  && REGNO_STRICT_OK_FOR_BASE_P (REGNO (XEXP (x, 0)), strict))
+	{
+	  base = XEXP (x, 0);
+	  index = XEXP (x, 1);
+	}
 
       if (REG_P (XEXP (x, 1))
-          && REGNO_STRICT_OK_FOR_BASE_P (REGNO (XEXP (x, 1)), strict))
-        {
-          base = XEXP (x, 1);
-          index = XEXP (x, 0);
-        }
+	  && REGNO_STRICT_OK_FOR_BASE_P (REGNO (XEXP (x, 1)), strict))
+	{
+	  base = XEXP (x, 1);
+	  index = XEXP (x, 0);
+	}
 
       if (base != 0 && index != 0)
-        {
-          if (GET_CODE (index) == CONST_INT)
-            return TRUE;
-          if (GET_CODE (index) == CONST
-              && GET_CODE (XEXP (index, 0)) != PLUS
-              && (! flag_pic
-                   || legitimate_pic_operand_p (index)))
-            return TRUE;
-        }
+	{
+	  if (GET_CODE (index) == CONST_INT)
+	    return TRUE;
+	  if (GET_CODE (index) == CONST
+	      && GET_CODE (XEXP (index, 0)) != PLUS
+	      && (! flag_pic
+ 		  || legitimate_pic_operand_p (index)))
+	    return TRUE;
+	}
     }
 
   return FALSE;
@@ -1950,25 +1950,25 @@ mn10300_address_cost_1 (rtx x, int *unsig)
     {
     case REG:
       switch (REGNO_REG_CLASS (REGNO (x)))
-        {
-        case SP_REGS:
-          *unsig = 1;
-          return 0;
+	{
+	case SP_REGS:
+	  *unsig = 1;
+	  return 0;
 
-        case ADDRESS_REGS:
-          return 1;
+	case ADDRESS_REGS:
+	  return 1;
 
-        case DATA_REGS:
-        case EXTENDED_REGS:
-        case FP_REGS:
-          return 3;
+	case DATA_REGS:
+	case EXTENDED_REGS:
+	case FP_REGS:
+	  return 3;
 
-        case NO_REGS:
-          return 5;
+	case NO_REGS:
+	  return 5;
 
-        default:
-          gcc_unreachable ();
-        }
+	default:
+	  gcc_unreachable ();
+	}
 
     case PLUS:
     case MINUS:
@@ -1976,7 +1976,7 @@ mn10300_address_cost_1 (rtx x, int *unsig)
     case AND:
     case IOR:
       return (mn10300_address_cost_1 (XEXP (x, 0), unsig)
-              + mn10300_address_cost_1 (XEXP (x, 1), unsig));
+	      + mn10300_address_cost_1 (XEXP (x, 1), unsig));
 
     case EXPR_LIST:
     case SUBREG:
@@ -1989,13 +1989,13 @@ mn10300_address_cost_1 (rtx x, int *unsig)
 
     case CONST_INT:
       if (INTVAL (x) == 0)
-        return 0;
+	return 0;
       if (INTVAL (x) + (*unsig ? 0 : 0x80) < 0x100)
-        return 1;
+	return 1;
       if (INTVAL (x) + (*unsig ? 0 : 0x8000) < 0x10000)
-        return 3;
+	return 3;
       if (INTVAL (x) + (*unsig ? 0 : 0x800000) < 0x1000000)
-        return 5;
+	return 5;
       return 7;
 
     case CONST:
@@ -2024,31 +2024,31 @@ mn10300_rtx_costs (rtx x, int code, int outer_code, int *total)
     case CONST_INT:
       /* Zeros are extremely cheap.  */
       if (INTVAL (x) == 0 && outer_code == SET)
-        *total = 0;
+	*total = 0;
       /* If it fits in 8 bits, then it's still relatively cheap.  */
       else if (INT_8_BITS (INTVAL (x)))
-        *total = 1;
+	*total = 1;
       /* This is the "base" cost, includes constants where either the
-         upper or lower 16bits are all zeros.  */
+	 upper or lower 16bits are all zeros.  */
       else if (INT_16_BITS (INTVAL (x))
-               || (INTVAL (x) & 0xffff) == 0
-               || (INTVAL (x) & 0xffff0000) == 0)
-        *total = 2;
+	       || (INTVAL (x) & 0xffff) == 0
+	       || (INTVAL (x) & 0xffff0000) == 0)
+	*total = 2;
       else
-        *total = 4;
+	*total = 4;
       return true;
 
     case CONST:
     case LABEL_REF:
     case SYMBOL_REF:
       /* These are more costly than a CONST_INT, but we can relax them,
-         so they're less costly than a CONST_DOUBLE.  */
+	 so they're less costly than a CONST_DOUBLE.  */
       *total = 6;
       return true;
 
     case CONST_DOUBLE:
       /* We don't optimize CONST_DOUBLEs well nor do we relax them well,
-         so their cost is very high.  */
+	 so their cost is very high.  */
       *total = 8;
       return true;
 
@@ -2081,27 +2081,27 @@ mn10300_wide_const_load_uses_clr (rtx operands[2])
     {
     case CONST_INT:
       {
-        rtx low, high;
-        split_double (operands[1], &low, &high);
-        val[0] = INTVAL (low);
-        val[1] = INTVAL (high);
+	rtx low, high;
+	split_double (operands[1], &low, &high);
+	val[0] = INTVAL (low);
+	val[1] = INTVAL (high);
       }
       break;
       
     case CONST_DOUBLE:
       if (GET_MODE (operands[1]) == DFmode)
-        {
-          REAL_VALUE_TYPE rv;
+	{
+	  REAL_VALUE_TYPE rv;
 
-          REAL_VALUE_FROM_CONST_DOUBLE (rv, operands[1]);
-          REAL_VALUE_TO_TARGET_DOUBLE (rv, val);
-        }
+	  REAL_VALUE_FROM_CONST_DOUBLE (rv, operands[1]);
+	  REAL_VALUE_TO_TARGET_DOUBLE (rv, val);
+	}
       else if (GET_MODE (operands[1]) == VOIDmode
-               || GET_MODE (operands[1]) == DImode)
-        {
-          val[0] = CONST_DOUBLE_LOW (operands[1]);
-          val[1] = CONST_DOUBLE_HIGH (operands[1]);
-        }
+	       || GET_MODE (operands[1]) == DImode)
+	{
+	  val[0] = CONST_DOUBLE_LOW (operands[1]);
+	  val[1] = CONST_DOUBLE_HIGH (operands[1]);
+	}
       break;
       
     default:

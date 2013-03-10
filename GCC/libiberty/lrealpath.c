@@ -115,15 +115,15 @@ lrealpath (const char *filename)
     long path_max = pathconf ("/", _PC_PATH_MAX);
     if (path_max > 0)
       {
-        /* PATH_MAX is bounded.  */
-        char *buf, *rp, *ret;
-        buf = (char *) malloc (path_max);
-        if (buf == NULL)
-          return NULL;
-        rp = realpath (filename, buf);
-        ret = strdup (rp ? rp : filename);
-        free (buf);
-        return ret;
+	/* PATH_MAX is bounded.  */
+	char *buf, *rp, *ret;
+	buf = (char *) malloc (path_max);
+	if (buf == NULL)
+	  return NULL;
+	rp = realpath (filename, buf);
+	ret = strdup (rp ? rp : filename);
+	free (buf);
+	return ret;
       }
   }
 #endif
@@ -143,9 +143,9 @@ lrealpath (const char *filename)
       return strdup (filename);
     else
       {
-        /* The file system is case-preserving but case-insensitive,
-           Canonicalize to lowercase, using the codepage associated
-           with the process locale.  */
+	/* The file system is case-preserving but case-insensitive,
+	   Canonicalize to lowercase, using the codepage associated
+	   with the process locale.  */
         CharLowerBuff (buf, len);
         return strdup (buf);
       }

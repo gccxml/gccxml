@@ -39,7 +39,7 @@
 
   return GET_CODE (op) == REG
     && (REGNO (op) >= FIRST_PSEUDO_REGISTER
-        || REGNO (op) == HARD_D_REGNUM
+	|| REGNO (op) == HARD_D_REGNUM
         || (mode == QImode && REGNO (op) == HARD_B_REGNUM));
 })
 
@@ -56,8 +56,8 @@
 
   return GET_CODE (op) == REG
     && (REGNO (op) == HARD_X_REGNUM
-        || REGNO (op) == HARD_Y_REGNUM
-        || REGNO (op) == HARD_Z_REGNUM);
+	|| REGNO (op) == HARD_Y_REGNUM
+	|| REGNO (op) == HARD_Z_REGNUM);
 })
 
 ;; TODO: Add a comment here.
@@ -73,7 +73,7 @@
 
   return GET_CODE (op) == REG
     && (REGNO (op) >= FIRST_PSEUDO_REGISTER
-        || H_REGNO_P (REGNO (op)));
+	|| H_REGNO_P (REGNO (op)));
 })
 
 ;; TODO: Add a comment here.
@@ -176,10 +176,10 @@
       int addr_mode;
 
       if (symbolic_memory_operand (op0, mode))
-        return 1;
+	return 1;
 
       if (IS_STACK_PUSH (op))
-        return 1;
+	return 1;
 
       if (GET_CODE (op) == REG && reload_in_progress
           && REGNO (op) >= FIRST_PSEUDO_REGISTER
@@ -209,7 +209,7 @@
     {
       rtx addr = XEXP (op, 0);
       if (m68hc11_auto_inc_p (addr))
-        return 0;
+	return 0;
     }
   return nonimmediate_operand (op, mode);
 })
@@ -223,7 +223,7 @@
     {
       rtx addr = XEXP (op, 0);
       if (m68hc11_auto_inc_p (addr))
-        return 0;
+	return 0;
     }
   return general_operand (op, mode);
 })

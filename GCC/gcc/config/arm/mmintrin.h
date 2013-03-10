@@ -1044,13 +1044,13 @@ _mm_set_pi16 (short __w3, short __w2, short __w1, short __w0)
   unsigned int __i1 = (unsigned short)__w3 << 16 | (unsigned short)__w2;
   unsigned int __i0 = (unsigned short)__w1 << 16 | (unsigned short)__w0;
   return _mm_set_pi32 (__i1, __i0);
-                       
+		       
 }
 
 /* Creates a vector of eight 8-bit values; B0 is least significant.  */
 static __inline __m64
 _mm_set_pi8 (char __b7, char __b6, char __b5, char __b4,
-             char __b3, char __b2, char __b1, char __b0)
+	     char __b3, char __b2, char __b1, char __b0)
 {
   unsigned int __i1, __i0;
 
@@ -1082,7 +1082,7 @@ _mm_setr_pi16 (short __w0, short __w1, short __w2, short __w3)
 
 static __inline __m64
 _mm_setr_pi8 (char __b0, char __b1, char __b2, char __b3,
-              char __b4, char __b5, char __b6, char __b7)
+	      char __b4, char __b5, char __b6, char __b7)
 {
   return _mm_set_pi8 (__b7, __b6, __b5, __b4, __b3, __b2, __b1, __b0);
 }

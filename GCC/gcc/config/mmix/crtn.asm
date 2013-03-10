@@ -77,16 +77,16 @@ gnu_parm_reg_1 GREG
 % of the current stack frame, if they're cut out from a "real" function
 % like in gcc/crtstuff.c.
 
-        .section .init,"ax",@progbits
-        GETA        $255,0F
-        PUT        rJ,$255
-        POP        0,0
-0H        PUT        rJ,$0
-        POP        0,0
-        
-        .section .fini,"ax",@progbits
-        GETA        $255,0F
-        PUT        rJ,$255
-        POP        0,0
-0H        PUT        rJ,$0
-        POP        0,0
+	.section .init,"ax",@progbits
+	GETA	$255,0F
+	PUT	rJ,$255
+	POP	0,0
+0H	PUT	rJ,$0
+	POP	0,0
+	
+	.section .fini,"ax",@progbits
+	GETA	$255,0F
+	PUT	rJ,$255
+	POP	0,0
+0H	PUT	rJ,$0
+	POP	0,0

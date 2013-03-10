@@ -69,15 +69,15 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
    compiler, but does not correspond to a function in the standard
    library.  */
 #undef DEF_GCC_BUILTIN
-#define DEF_GCC_BUILTIN(ENUM, NAME, TYPE, ATTRS)                \
-  DEF_BUILTIN (ENUM, "__builtin_" NAME, BUILT_IN_NORMAL, TYPE, BT_LAST,        \
-               false, false, false, ATTRS, true, true)
+#define DEF_GCC_BUILTIN(ENUM, NAME, TYPE, ATTRS)		\
+  DEF_BUILTIN (ENUM, "__builtin_" NAME, BUILT_IN_NORMAL, TYPE, BT_LAST,	\
+	       false, false, false, ATTRS, true, true)
 
 /* Like DEF_GCC_BUILTIN, except we don't prepend "__builtin_".  */
 #undef DEF_SYNC_BUILTIN
-#define DEF_SYNC_BUILTIN(ENUM, NAME, TYPE, ATTRS)                \
-  DEF_BUILTIN (ENUM, NAME, BUILT_IN_NORMAL, TYPE, BT_LAST,        \
-               false, false, false, ATTRS, true, true)
+#define DEF_SYNC_BUILTIN(ENUM, NAME, TYPE, ATTRS)		\
+  DEF_BUILTIN (ENUM, NAME, BUILT_IN_NORMAL, TYPE, BT_LAST,	\
+	       false, false, false, ATTRS, true, true)
 
 /* A library builtin (like __builtin_strchr) is a builtin equivalent
    of an ANSI/ISO standard library function.  In addition to the
@@ -86,54 +86,54 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
    builtin function, we will fall back to the standard library
    version.  */
 #undef DEF_LIB_BUILTIN
-#define DEF_LIB_BUILTIN(ENUM, NAME, TYPE, ATTRS)        \
-  DEF_BUILTIN (ENUM, "__builtin_" NAME, BUILT_IN_NORMAL, TYPE, TYPE,        \
-               true, true, false, ATTRS, true, true)
+#define DEF_LIB_BUILTIN(ENUM, NAME, TYPE, ATTRS)	\
+  DEF_BUILTIN (ENUM, "__builtin_" NAME, BUILT_IN_NORMAL, TYPE, TYPE,	\
+	       true, true, false, ATTRS, true, true)
 
 /* Like DEF_LIB_BUILTIN, except that the function is not one that is
    specified by ANSI/ISO C.  So, when we're being fully conformant we
    ignore the version of these builtins that does not begin with
    __builtin.  */
 #undef DEF_EXT_LIB_BUILTIN
-#define DEF_EXT_LIB_BUILTIN(ENUM, NAME, TYPE, ATTRS)        \
-  DEF_BUILTIN (ENUM, "__builtin_" NAME, BUILT_IN_NORMAL, TYPE, TYPE,        \
-               true, true, true, ATTRS, false, true)
+#define DEF_EXT_LIB_BUILTIN(ENUM, NAME, TYPE, ATTRS)	\
+  DEF_BUILTIN (ENUM, "__builtin_" NAME, BUILT_IN_NORMAL, TYPE, TYPE,	\
+	       true, true, true, ATTRS, false, true)
 
 /* Like DEF_LIB_BUILTIN, except that the function is only a part of
    the standard in C94 or above.  */
 #undef DEF_C94_BUILTIN
-#define DEF_C94_BUILTIN(ENUM, NAME, TYPE, ATTRS)        \
-  DEF_BUILTIN (ENUM, "__builtin_" NAME, BUILT_IN_NORMAL, TYPE, TYPE,        \
-               true, true, !flag_isoc94, ATTRS, TARGET_C99_FUNCTIONS, true)
+#define DEF_C94_BUILTIN(ENUM, NAME, TYPE, ATTRS)	\
+  DEF_BUILTIN (ENUM, "__builtin_" NAME, BUILT_IN_NORMAL, TYPE, TYPE,	\
+	       true, true, !flag_isoc94, ATTRS, TARGET_C99_FUNCTIONS, true)
 
 /* Like DEF_LIB_BUILTIN, except that the function is only a part of
    the standard in C99 or above.  */
 #undef DEF_C99_BUILTIN
-#define DEF_C99_BUILTIN(ENUM, NAME, TYPE, ATTRS)        \
-  DEF_BUILTIN (ENUM, "__builtin_" NAME, BUILT_IN_NORMAL, TYPE, TYPE,        \
-               true, true, !flag_isoc99, ATTRS, TARGET_C99_FUNCTIONS, true)
+#define DEF_C99_BUILTIN(ENUM, NAME, TYPE, ATTRS)	\
+  DEF_BUILTIN (ENUM, "__builtin_" NAME, BUILT_IN_NORMAL, TYPE, TYPE,	\
+	       true, true, !flag_isoc99, ATTRS, TARGET_C99_FUNCTIONS, true)
 
 /* Builtin that is specified by C99 and C90 reserve the name for future use.
    We can still recognize the builtin in C90 mode but we can't produce it
    implicitly.  */
 #undef DEF_C99_C90RES_BUILTIN
-#define DEF_C99_C90RES_BUILTIN(ENUM, NAME, TYPE, ATTRS)        \
-  DEF_BUILTIN (ENUM, "__builtin_" NAME, BUILT_IN_NORMAL, TYPE, TYPE,        \
-               true, true, !flag_isoc99, ATTRS, TARGET_C99_FUNCTIONS, true)
+#define DEF_C99_C90RES_BUILTIN(ENUM, NAME, TYPE, ATTRS)	\
+  DEF_BUILTIN (ENUM, "__builtin_" NAME, BUILT_IN_NORMAL, TYPE, TYPE,	\
+	       true, true, !flag_isoc99, ATTRS, TARGET_C99_FUNCTIONS, true)
 
 /* Builtin that C99 reserve the name for future use. We can still recognize
    the builtin in C99 mode but we can't produce it implicitly.  */
 #undef DEF_EXT_C99RES_BUILTIN
 #define DEF_EXT_C99RES_BUILTIN(ENUM, NAME, TYPE, ATTRS)        \
   DEF_BUILTIN (ENUM, "__builtin_" NAME, BUILT_IN_NORMAL, TYPE, TYPE,   \
-              true, true, true, ATTRS, false, true)
+	      true, true, true, ATTRS, false, true)
 
 /* Allocate the enum and the name for a builtin, but do not actually
    define it here at all.  */
 #undef DEF_BUILTIN_STUB
 #define DEF_BUILTIN_STUB(ENUM, NAME) \
   DEF_BUILTIN (ENUM, NAME, BUILT_IN_NORMAL, 0, 0, false, false, \
-               false, 0, false, false)
+	       false, 0, false, false)
 
 /* Builtin used by the implementation of GNU OpenMP.  None of these are
    actually implemented in the compiler; they're all in libgomp.  */
@@ -147,7 +147,7 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
    `errno'.  If !flag_errno_math they are instead "const".  */
 #undef ATTR_MATHFN_ERRNO
 #define ATTR_MATHFN_ERRNO (flag_errno_math ? \
-        ATTR_NOTHROW_LIST : ATTR_CONST_NOTHROW_LIST)
+	ATTR_NOTHROW_LIST : ATTR_CONST_NOTHROW_LIST)
 
 /* Define an attribute list for math functions that are normally
    "pure" but if flag_unsafe_math_optimizations is set they are
@@ -156,7 +156,7 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
    global memory.  In "unsafe" mode we can be less careful.  */
 #undef ATTR_MATHFN_FPROUNDING
 #define ATTR_MATHFN_FPROUNDING (flag_unsafe_math_optimizations ? \
-        ATTR_CONST_NOTHROW_LIST : ATTR_PURE_NOTHROW_NOVOPS_LIST)
+	ATTR_CONST_NOTHROW_LIST : ATTR_PURE_NOTHROW_NOVOPS_LIST)
 
 /* Define an attribute list for math functions that are normally
    "impure" because some of them may write into global memory for
@@ -164,7 +164,7 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
    "const" depending on whether we care about FP rounding.  */
 #undef ATTR_MATHFN_FPROUNDING_ERRNO
 #define ATTR_MATHFN_FPROUNDING_ERRNO (flag_errno_math ? \
-        ATTR_NOTHROW_LIST : ATTR_MATHFN_FPROUNDING)
+	ATTR_NOTHROW_LIST : ATTR_MATHFN_FPROUNDING)
 
 /* Define an attribute list for math functions that need to mind FP
    rounding, but because they store into memory they are never "const"
@@ -270,7 +270,7 @@ DEF_C99_BUILTIN        (BUILT_IN_ILOGBL, "ilogbl", BT_FN_INT_LONGDOUBLE, ATTR_MA
 DEF_GCC_BUILTIN        (BUILT_IN_INF, "inf", BT_FN_DOUBLE, ATTR_CONST_NOTHROW_LIST)
 DEF_GCC_BUILTIN        (BUILT_IN_INFF, "inff", BT_FN_FLOAT, ATTR_CONST_NOTHROW_LIST)
 DEF_GCC_BUILTIN        (BUILT_IN_INFL, "infl", BT_FN_LONGDOUBLE, ATTR_CONST_NOTHROW_LIST)
-DEF_GCC_BUILTIN               (BUILT_IN_INFD32, "infd32", BT_FN_DFLOAT32, ATTR_CONST_NOTHROW_LIST)
+DEF_GCC_BUILTIN	       (BUILT_IN_INFD32, "infd32", BT_FN_DFLOAT32, ATTR_CONST_NOTHROW_LIST)
 DEF_GCC_BUILTIN        (BUILT_IN_INFD64, "infd64", BT_FN_DFLOAT64, ATTR_CONST_NOTHROW_LIST)
 DEF_GCC_BUILTIN        (BUILT_IN_INFD128, "infd128", BT_FN_DFLOAT128, ATTR_CONST_NOTHROW_LIST)
 DEF_EXT_LIB_BUILTIN    (BUILT_IN_J0, "j0", BT_FN_DOUBLE_DOUBLE, ATTR_MATHFN_FPROUNDING_ERRNO)
@@ -700,7 +700,7 @@ DEF_BUILTIN_STUB (BUILT_IN_STACK_SAVE, "__builtin_stack_save")
 DEF_BUILTIN_STUB (BUILT_IN_STACK_RESTORE, "__builtin_stack_restore")
 
 /* Object size checking builtins.  */
-DEF_GCC_BUILTIN               (BUILT_IN_OBJECT_SIZE, "object_size", BT_FN_SIZE_CONST_PTR_INT, ATTR_PURE_NOTHROW_LIST)
+DEF_GCC_BUILTIN	       (BUILT_IN_OBJECT_SIZE, "object_size", BT_FN_SIZE_CONST_PTR_INT, ATTR_PURE_NOTHROW_LIST)
 DEF_EXT_LIB_BUILTIN    (BUILT_IN_MEMCPY_CHK, "__memcpy_chk", BT_FN_PTR_PTR_CONST_PTR_SIZE_SIZE, ATTR_NOTHROW_NONNULL)
 DEF_EXT_LIB_BUILTIN    (BUILT_IN_MEMMOVE_CHK, "__memmove_chk", BT_FN_PTR_PTR_CONST_PTR_SIZE_SIZE, ATTR_NOTHROW_NONNULL)
 DEF_EXT_LIB_BUILTIN    (BUILT_IN_MEMPCPY_CHK, "__mempcpy_chk", BT_FN_PTR_PTR_CONST_PTR_SIZE_SIZE, ATTR_NOTHROW_NONNULL)

@@ -26,42 +26,42 @@ Boston, MA 02110-1301, USA.  */
 #undef  CPP_SPEC
 #define CPP_SPEC "%{posix:-D_POSIX_SOURCE} %{pthread:-D_REENTRANT}"
 
-#undef        LIB_SPEC
+#undef	LIB_SPEC
 #define LIB_SPEC ""
 
 /* Kinda useless, but what the hell */
-#undef        LINK_SPEC
+#undef	LINK_SPEC
 #define LINK_SPEC "%{h*} %{V} %{v:%{!V:-V}} \
-                   %{b} \
-                   %{Qy:} %{!Qn:-Qy}"
+		   %{b} \
+		   %{Qy:} %{!Qn:-Qy}"
 
-#undef        STARTFILE_SPEC
+#undef	STARTFILE_SPEC
 #define STARTFILE_SPEC ""
 
-#undef        ENDFILE_SPEC
+#undef	ENDFILE_SPEC
 #define ENDFILE_SPEC ""
 
-#undef        RELATIVE_PREFIX_NOT_LINKDIR
-#undef        LIBGCC_SPEC
+#undef	RELATIVE_PREFIX_NOT_LINKDIR
+#undef	LIBGCC_SPEC
 
-#define TARGET_OS_CPP_BUILTINS()                                        \
-  do                                                                        \
-    {                                                                        \
-        builtin_define_std ("IAPX386");                                        \
-        builtin_define ("_M_IX86=300");                                        \
-        builtin_define ("__netware__");                                        \
-        builtin_assert ("system=netware");                                \
-        builtin_define ("__ELF__");                                        \
-        builtin_define ("__cdecl=__attribute__((__cdecl__))");                \
-        builtin_define ("__stdcall=__attribute__((__stdcall__))");        \
-        builtin_define ("__fastcall=__attribute__((__fastcall__))");        \
-        if (!flag_iso)                                                        \
-          {                                                                \
-            builtin_define ("_cdecl=__attribute__((__cdecl__))");        \
-            builtin_define ("_stdcall=__attribute__((__stdcall__))");        \
-            builtin_define ("_fastcall=__attribute__((__fastcall__))");        \
-          }                                                                \
-    }                                                                        \
+#define TARGET_OS_CPP_BUILTINS()					\
+  do									\
+    {									\
+	builtin_define_std ("IAPX386");					\
+	builtin_define ("_M_IX86=300");					\
+	builtin_define ("__netware__");					\
+	builtin_assert ("system=netware");				\
+	builtin_define ("__ELF__");					\
+	builtin_define ("__cdecl=__attribute__((__cdecl__))");		\
+	builtin_define ("__stdcall=__attribute__((__stdcall__))");	\
+	builtin_define ("__fastcall=__attribute__((__fastcall__))");	\
+	if (!flag_iso)							\
+	  {								\
+	    builtin_define ("_cdecl=__attribute__((__cdecl__))");	\
+	    builtin_define ("_stdcall=__attribute__((__stdcall__))");	\
+	    builtin_define ("_fastcall=__attribute__((__fastcall__))");	\
+	  }								\
+    }									\
   while (0)
 
 #undef TARGET_CPU_DEFAULT
@@ -71,7 +71,7 @@ Boston, MA 02110-1301, USA.  */
    returns float values in the 387, and uses MSVC bit field layout. */
 #undef TARGET_SUBTARGET_DEFAULT
 #define TARGET_SUBTARGET_DEFAULT (MASK_80387 | MASK_IEEE_FP | \
-        MASK_FLOAT_RETURNS | MASK_ALIGN_DOUBLE | MASK_MS_BITFIELD_LAYOUT)
+	MASK_FLOAT_RETURNS | MASK_ALIGN_DOUBLE | MASK_MS_BITFIELD_LAYOUT)
 
 #undef MATH_LIBRARY
 #define MATH_LIBRARY ""
@@ -117,14 +117,14 @@ Boston, MA 02110-1301, USA.  */
 /* Handle special EH pointer encodings.  Absolute, pc-relative, and
    indirect are handled automatically.  */
 #define ASM_MAYBE_OUTPUT_ENCODED_ADDR_RTX(FILE, ENCODING, SIZE, ADDR, DONE) \
-  do {                                                                        \
-    if ((SIZE) == 4 && ((ENCODING) & 0x70) == DW_EH_PE_datarel)                \
-      {                                                                        \
-        fputs (ASM_LONG, FILE);                        \
-        assemble_name (FILE, XSTR (ADDR, 0));                                \
-        fputs (((ENCODING) & DW_EH_PE_indirect ? "@GOT" : "@GOTOFF"), FILE); \
-        goto DONE;                                                        \
-      }                                                                        \
+  do {									\
+    if ((SIZE) == 4 && ((ENCODING) & 0x70) == DW_EH_PE_datarel)		\
+      {									\
+        fputs (ASM_LONG, FILE);			\
+        assemble_name (FILE, XSTR (ADDR, 0));				\
+	fputs (((ENCODING) & DW_EH_PE_indirect ? "@GOT" : "@GOTOFF"), FILE); \
+        goto DONE;							\
+      }									\
   } while (0)
 
 /* there is no TLS support in NLMs/on NetWare */

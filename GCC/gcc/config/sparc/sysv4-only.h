@@ -22,13 +22,13 @@ Boston, MA 02110-1301, USA.  */
 /* Provide a set of pre-definitions and pre-assertions appropriate for
    the SPARC running svr4.  __svr4__ is our extension.  */
 
-/* Target OS builtins.  */                        \
-#define TARGET_OS_CPP_BUILTINS()                \
-  do                                                \
-    {                                                \
-        builtin_define_std ("unix");                \
-        builtin_define ("__svr4__");                \
-        builtin_assert ("system=unix");                \
-        builtin_assert ("system=svr4");                \
-    }                                                \
+/* Target OS builtins.  */			\
+#define TARGET_OS_CPP_BUILTINS()		\
+  do						\
+    {						\
+	builtin_define_std ("unix");		\
+	builtin_define ("__svr4__");		\
+	builtin_assert ("system=unix");		\
+	builtin_assert ("system=svr4");		\
+    }						\
   while (0)

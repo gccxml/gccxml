@@ -27,40 +27,40 @@ Boston, MA 02110-1301, USA.  */
 #undef  ASM_SPEC
 #define ASM_SPEC "%{v:-v} %{Qy:} %{n} %{T} %{Ym,*} %{Yd,*} %{Wa,*:%*}"
 
-#define VXWORKS_CPU_DEFINE()                                \
-  do                                                        \
-    {                                                        \
-      if (TARGET_386)                                        \
-        builtin_define ("CPU=I80386");                        \
-      else if (TARGET_486)                                \
-        builtin_define ("CPU=I80486");                        \
-      else if (TARGET_PENTIUM)                                \
-        {                                                \
-          builtin_define ("CPU=PENTIUM");                \
-          builtin_define ("CPU_VARIANT=PENTIUM");        \
-        }                                                \
-      else if (TARGET_PENTIUMPRO)                        \
-        {                                                \
-          builtin_define ("CPU=PENTIUM2");                \
-          builtin_define ("CPU_VARIANT=PENTIUMPRO");        \
-        }                                                \
-      else if (TARGET_PENTIUM4)                                \
-        {                                                \
-          builtin_define ("CPU=PENTIUM4");                \
-          builtin_define ("CPU_VARIANT=PENTIUM4");        \
-        }                                                \
-    }                                                          \
+#define VXWORKS_CPU_DEFINE()				\
+  do							\
+    {							\
+      if (TARGET_386)					\
+        builtin_define ("CPU=I80386");			\
+      else if (TARGET_486)				\
+        builtin_define ("CPU=I80486");			\
+      else if (TARGET_PENTIUM)				\
+        {						\
+          builtin_define ("CPU=PENTIUM");		\
+          builtin_define ("CPU_VARIANT=PENTIUM");	\
+        }						\
+      else if (TARGET_PENTIUMPRO)			\
+        {						\
+          builtin_define ("CPU=PENTIUM2");		\
+          builtin_define ("CPU_VARIANT=PENTIUMPRO");	\
+        }						\
+      else if (TARGET_PENTIUM4)				\
+        {						\
+          builtin_define ("CPU=PENTIUM4");		\
+          builtin_define ("CPU_VARIANT=PENTIUM4");	\
+        }						\
+    }  							\
   while (0)
 
-#define TARGET_OS_CPP_BUILTINS()                \
-  do                                                \
-    {                                                \
-      builtin_define ("__vxworks");                \
-      builtin_define ("__VXWORKS__");                \
-      builtin_assert ("system=unix");                \
-                                                \
-      VXWORKS_CPU_DEFINE();                        \
-    }                                                \
+#define TARGET_OS_CPP_BUILTINS()		\
+  do						\
+    {						\
+      builtin_define ("__vxworks");		\
+      builtin_define ("__VXWORKS__");		\
+      builtin_assert ("system=unix");		\
+						\
+      VXWORKS_CPU_DEFINE();			\
+    }						\
   while (0)
 
 #undef  CPP_SPEC

@@ -32,7 +32,7 @@ Boston, MA 02110-1301, USA.  */
    uninitialized global data will be output in the data section if
    `-fno-common' is passed, otherwise `ASM_OUTPUT_COMMON' will be
    used.  */
-#define BSS_SECTION_ASM_OP        "\t.section\t.bss"
+#define BSS_SECTION_ASM_OP	"\t.section\t.bss"
 
 #define ASM_OUTPUT_ALIGNED_BSS mips_output_aligned_bss
 
@@ -53,40 +53,40 @@ Boston, MA 02110-1301, USA.  */
 #undef TARGET_DEFAULT
 #define TARGET_DEFAULT MASK_ABICALLS
 
-#define TARGET_OS_CPP_BUILTINS()                                \
-  do {                                                                \
-    LINUX_TARGET_OS_CPP_BUILTINS();                                \
-    /* The GNU C++ standard library requires this.  */                \
-    if (c_dialect_cxx ())                                        \
-      builtin_define ("_GNU_SOURCE");                                \
-                                                                    \
-    if (mips_abi == ABI_N32)                                        \
-      {                                                                \
-        builtin_define ("_ABIN32=2");                                \
-        builtin_define ("_MIPS_SIM=_ABIN32");                        \
-        builtin_define ("_MIPS_SZLONG=32");                        \
-        builtin_define ("_MIPS_SZPTR=32");                        \
-      }                                                                \
-    else if (mips_abi == ABI_64)                                \
-      {                                                                \
-        builtin_define ("_ABI64=3");                                \
-        builtin_define ("_MIPS_SIM=_ABI64");                        \
-        builtin_define ("_MIPS_SZLONG=64");                        \
-        builtin_define ("_MIPS_SZPTR=64");                        \
-      }                                                                \
-    else                                                        \
-      {                                                                \
-        builtin_define ("_ABIO32=1");                                \
-        builtin_define ("_MIPS_SIM=_ABIO32");                        \
-        builtin_define ("_MIPS_SZLONG=32");                        \
-        builtin_define ("_MIPS_SZPTR=32");                        \
-      }                                                                \
-    if (TARGET_FLOAT64)                                                \
-      builtin_define ("_MIPS_FPSET=32");                        \
-    else                                                        \
-      builtin_define ("_MIPS_FPSET=16");                        \
-                                                                    \
-    builtin_define ("_MIPS_SZINT=32");                                \
+#define TARGET_OS_CPP_BUILTINS()				\
+  do {								\
+    LINUX_TARGET_OS_CPP_BUILTINS();				\
+    /* The GNU C++ standard library requires this.  */		\
+    if (c_dialect_cxx ())					\
+      builtin_define ("_GNU_SOURCE");				\
+    								\
+    if (mips_abi == ABI_N32)					\
+      {								\
+        builtin_define ("_ABIN32=2");				\
+        builtin_define ("_MIPS_SIM=_ABIN32");			\
+        builtin_define ("_MIPS_SZLONG=32");			\
+        builtin_define ("_MIPS_SZPTR=32");			\
+      }								\
+    else if (mips_abi == ABI_64)				\
+      {								\
+        builtin_define ("_ABI64=3");				\
+        builtin_define ("_MIPS_SIM=_ABI64");			\
+        builtin_define ("_MIPS_SZLONG=64");			\
+        builtin_define ("_MIPS_SZPTR=64");			\
+      }								\
+    else							\
+      {								\
+	builtin_define ("_ABIO32=1");				\
+	builtin_define ("_MIPS_SIM=_ABIO32");			\
+        builtin_define ("_MIPS_SZLONG=32");			\
+        builtin_define ("_MIPS_SZPTR=32");			\
+      }								\
+    if (TARGET_FLOAT64)						\
+      builtin_define ("_MIPS_FPSET=32");			\
+    else							\
+      builtin_define ("_MIPS_FPSET=16");			\
+    								\
+    builtin_define ("_MIPS_SZINT=32");				\
   } while (0)
 
 #undef SUBTARGET_CPP_SPEC
@@ -127,38 +127,38 @@ Boston, MA 02110-1301, USA.  */
 #define SET_ASM_OP "\t.dummy\t"
 
 #undef ASM_OUTPUT_DEF
-#define ASM_OUTPUT_DEF(FILE,LABEL1,LABEL2)                                \
- do {                                                                        \
-        fputc ( '\t', FILE);                                                \
-        assemble_name (FILE, LABEL1);                                        \
-        fputs ( " = ", FILE);                                                \
-        assemble_name (FILE, LABEL2);                                        \
-        fputc ( '\n', FILE);                                                \
+#define ASM_OUTPUT_DEF(FILE,LABEL1,LABEL2)				\
+ do {									\
+	fputc ( '\t', FILE);						\
+	assemble_name (FILE, LABEL1);					\
+	fputs ( " = ", FILE);						\
+	assemble_name (FILE, LABEL2);					\
+	fputc ( '\n', FILE);						\
  } while (0)
 
 #undef ASM_DECLARE_FUNCTION_NAME
-#define ASM_DECLARE_FUNCTION_NAME(STREAM, NAME, DECL)                        \
-  do {                                                                        \
-    if (!flag_inhibit_size_directive)                                        \
-      {                                                                        \
-        fputs ("\t.ent\t", STREAM);                                        \
-        assemble_name (STREAM, NAME);                                        \
-        putc ('\n', STREAM);                                                \
-      }                                                                        \
-    ASM_OUTPUT_TYPE_DIRECTIVE (STREAM, NAME, "function");                \
-    assemble_name (STREAM, NAME);                                        \
-    fputs (":\n", STREAM);                                                \
+#define ASM_DECLARE_FUNCTION_NAME(STREAM, NAME, DECL)			\
+  do {									\
+    if (!flag_inhibit_size_directive)					\
+      {									\
+	fputs ("\t.ent\t", STREAM);					\
+	assemble_name (STREAM, NAME);					\
+	putc ('\n', STREAM);						\
+      }									\
+    ASM_OUTPUT_TYPE_DIRECTIVE (STREAM, NAME, "function");		\
+    assemble_name (STREAM, NAME);					\
+    fputs (":\n", STREAM);						\
   } while (0)
 
 #undef ASM_DECLARE_FUNCTION_SIZE
-#define ASM_DECLARE_FUNCTION_SIZE(STREAM, NAME, DECL)                        \
-  do {                                                                        \
-    if (!flag_inhibit_size_directive)                                        \
-      {                                                                        \
-        fputs ("\t.end\t", STREAM);                                        \
-        assemble_name (STREAM, NAME);                                        \
-        putc ('\n', STREAM);                                                \
-      }                                                                        \
+#define ASM_DECLARE_FUNCTION_SIZE(STREAM, NAME, DECL)			\
+  do {									\
+    if (!flag_inhibit_size_directive)					\
+      {									\
+	fputs ("\t.end\t", STREAM);					\
+	assemble_name (STREAM, NAME);					\
+	putc ('\n', STREAM);						\
+      }									\
   } while (0)
 
 /* Tell function_prologue in mips.c that we have already output the .ent/.end

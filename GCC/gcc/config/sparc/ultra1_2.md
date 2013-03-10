@@ -61,11 +61,11 @@
 ;; If we have to schedule an ieu1 specific instruction and we want
 ;; to reserve the ieu0 unit as well, we must reserve it first.  So for
 ;; example we could not schedule this sequence:
-;;        COMPARE                IEU1
-;;        IALU                IEU0
+;;	COMPARE		IEU1
+;;	IALU		IEU0
 ;; but we could schedule them together like this:
-;;        IALU                IEU0
-;;        COMPARE                IEU1
+;;	IALU		IEU0
+;;	COMPARE		IEU1
 ;; This basically requires that ieu0 is reserved before ieu1 when
 ;; it is required that both be reserved.
 (absence_set "us1_ieu0" "us1_ieu1")

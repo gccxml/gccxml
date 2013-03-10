@@ -57,21 +57,21 @@
       function SSA_PROP_VISIT_STMT.  This evaluation may produce 3
       results:
 
-              SSA_PROP_NOT_INTERESTING: Statement S produces nothing of
-            interest and does not affect any of the work lists.
+      	SSA_PROP_NOT_INTERESTING: Statement S produces nothing of
+	    interest and does not affect any of the work lists.
 
-        SSA_PROP_VARYING: The value produced by S cannot be determined
-            at compile time.  Further simulation of S is not required.
-            If S is a conditional jump, all the outgoing edges for the
-            block are considered executable and added to the work
-            list.
+	SSA_PROP_VARYING: The value produced by S cannot be determined
+	    at compile time.  Further simulation of S is not required.
+	    If S is a conditional jump, all the outgoing edges for the
+	    block are considered executable and added to the work
+	    list.
 
-        SSA_PROP_INTERESTING: S produces a value that can be computed
-            at compile time.  Its result can be propagated into the
-            statements that feed from S.  Furthermore, if S is a
-            conditional jump, only the edge known to be taken is added
-            to the work list.  Edges that are known not to execute are
-            never simulated.
+	SSA_PROP_INTERESTING: S produces a value that can be computed
+	    at compile time.  Its result can be propagated into the
+	    statements that feed from S.  Furthermore, if S is a
+	    conditional jump, only the edge known to be taken is added
+	    to the work list.  Edges that are known not to execute are
+	    never simulated.
 
    3- PHI nodes are simulated with a call to SSA_PROP_VISIT_PHI.  The
       return value from SSA_PROP_VISIT_PHI has the same semantics as
@@ -81,17 +81,17 @@
       lists if they produce one of SSA_PROP_INTERESTING or
       SSA_PROP_VARYING.
 
-           CFG_BLOCKS contains the list of blocks to be simulated.
-            Blocks are added to this list if their incoming edges are
-            found executable.
+   	CFG_BLOCKS contains the list of blocks to be simulated.
+	    Blocks are added to this list if their incoming edges are
+	    found executable.
 
-        VARYING_SSA_EDGES contains the list of statements that feed
-            from statements that produce an SSA_PROP_VARYING result.
-            These are simulated first to speed up processing.
+	VARYING_SSA_EDGES contains the list of statements that feed
+	    from statements that produce an SSA_PROP_VARYING result.
+	    These are simulated first to speed up processing.
 
-        INTERESTING_SSA_EDGES contains the list of statements that
-            feed from statements that produce an SSA_PROP_INTERESTING
-            result.
+	INTERESTING_SSA_EDGES contains the list of statements that
+	    feed from statements that produce an SSA_PROP_INTERESTING
+	    result.
 
    5- Simulation terminates when all three work lists are drained.
 
@@ -109,10 +109,10 @@
          Wegman and Zadeck, ACM TOPLAS 13(2):181-210.
 
      [2] Building an Optimizing Compiler,
-         Robert Morgan, Butterworth-Heinemann, 1998, Section 8.9.
+	 Robert Morgan, Butterworth-Heinemann, 1998, Section 8.9.
 
      [3] Advanced Compiler Design and Implementation,
-         Steven Muchnick, Morgan Kaufmann, 1997, Section 12.6  */
+	 Steven Muchnick, Morgan Kaufmann, 1997, Section 12.6  */
 
 /* Function pointers used to parameterize the propagation engine.  */
 static ssa_prop_visit_stmt_fn ssa_prop_visit_stmt;
@@ -124,7 +124,7 @@ static ssa_prop_visit_phi_fn ssa_prop_visit_phi;
    worklist.  If while simulating a basic block, we find a statement with
    STMT_IN_SSA_EDGE_WORKLIST set, we clear it to prevent SSA edge
    processing from visiting it again.  */
-#define STMT_IN_SSA_EDGE_WORKLIST(T)        TREE_DEPRECATED (T)
+#define STMT_IN_SSA_EDGE_WORKLIST(T)	TREE_DEPRECATED (T)
 
 /* A bitmap to keep track of executable blocks in the CFG.  */
 static sbitmap executable_blocks;
@@ -188,19 +188,19 @@ cfg_blocks_add (basic_block bb)
     {
       cfg_blocks_num++;
       if (cfg_blocks_num > VEC_length (basic_block, cfg_blocks))
-        {
-          /* We have to grow the array now.  Adjust to queue to occupy
-             the full space of the original array.  We do not need to
-             initialize the newly allocated portion of the array
-             because we keep track of CFG_BLOCKS_HEAD and
-             CFG_BLOCKS_HEAD.  */
-          cfg_blocks_tail = VEC_length (basic_block, cfg_blocks);
-          cfg_blocks_head = 0;
-          VEC_safe_grow (basic_block, heap, cfg_blocks, 2 * cfg_blocks_tail);
-        }
+	{
+	  /* We have to grow the array now.  Adjust to queue to occupy
+	     the full space of the original array.  We do not need to
+	     initialize the newly allocated portion of the array
+	     because we keep track of CFG_BLOCKS_HEAD and
+	     CFG_BLOCKS_HEAD.  */
+	  cfg_blocks_tail = VEC_length (basic_block, cfg_blocks);
+	  cfg_blocks_head = 0;
+	  VEC_safe_grow (basic_block, heap, cfg_blocks, 2 * cfg_blocks_tail);
+	}
       else
-        cfg_blocks_tail = ((cfg_blocks_tail + 1)
-                           % VEC_length (basic_block, cfg_blocks));
+	cfg_blocks_tail = ((cfg_blocks_tail + 1)
+			   % VEC_length (basic_block, cfg_blocks));
     }
 
   VEC_replace (basic_block, cfg_blocks, cfg_blocks_tail, bb);
@@ -221,7 +221,7 @@ cfg_blocks_get (void)
   gcc_assert (bb);
 
   cfg_blocks_head = ((cfg_blocks_head + 1)
-                     % VEC_length (basic_block, cfg_blocks));
+		     % VEC_length (basic_block, cfg_blocks));
   --cfg_blocks_num;
   RESET_BIT (bb_in_list, bb->index);
 
@@ -244,14 +244,14 @@ add_ssa_edge (tree var, bool is_varying)
       tree use_stmt = USE_STMT (use_p);
 
       if (!DONT_SIMULATE_AGAIN (use_stmt)
-          && !STMT_IN_SSA_EDGE_WORKLIST (use_stmt))
-        {
-          STMT_IN_SSA_EDGE_WORKLIST (use_stmt) = 1;
-          if (is_varying)
-            VEC_safe_push (tree, gc, varying_ssa_edges, use_stmt);
-          else
-            VEC_safe_push (tree, gc, interesting_ssa_edges, use_stmt);
-        }
+	  && !STMT_IN_SSA_EDGE_WORKLIST (use_stmt))
+	{
+	  STMT_IN_SSA_EDGE_WORKLIST (use_stmt) = 1;
+	  if (is_varying)
+	    VEC_safe_push (tree, gc, varying_ssa_edges, use_stmt);
+	  else
+	    VEC_safe_push (tree, gc, interesting_ssa_edges, use_stmt);
+	}
     }
 }
 
@@ -279,7 +279,7 @@ add_control_edge (edge e)
 
   if (dump_file && (dump_flags & TDF_DETAILS))
     fprintf (dump_file, "Adding Destination of edge (%d -> %d) to worklist\n\n",
-        e->src->index, e->dest->index);
+	e->src->index, e->dest->index);
 }
 
 
@@ -310,32 +310,32 @@ simulate_stmt (tree stmt)
       DONT_SIMULATE_AGAIN (stmt) = 1;
 
       /* If the statement produced a new varying value, add the SSA
-         edges coming out of OUTPUT_NAME.  */
+	 edges coming out of OUTPUT_NAME.  */
       if (output_name)
-        add_ssa_edge (output_name, true);
+	add_ssa_edge (output_name, true);
 
       /* If STMT transfers control out of its basic block, add
-         all outgoing edges to the work list.  */
+	 all outgoing edges to the work list.  */
       if (stmt_ends_bb_p (stmt))
-        {
-          edge e;
-          edge_iterator ei;
-          basic_block bb = bb_for_stmt (stmt);
-          FOR_EACH_EDGE (e, ei, bb->succs)
-            add_control_edge (e);
-        }
+	{
+	  edge e;
+	  edge_iterator ei;
+	  basic_block bb = bb_for_stmt (stmt);
+	  FOR_EACH_EDGE (e, ei, bb->succs)
+	    add_control_edge (e);
+	}
     }
   else if (val == SSA_PROP_INTERESTING)
     {
       /* If the statement produced new value, add the SSA edges coming
-         out of OUTPUT_NAME.  */
+	 out of OUTPUT_NAME.  */
       if (output_name)
-        add_ssa_edge (output_name, false);
+	add_ssa_edge (output_name, false);
 
       /* If we know which edge is going to be taken out of this block,
-         add it to the CFG work list.  */
+	 add it to the CFG work list.  */
       if (taken_edge)
-        add_control_edge (taken_edge);
+	add_control_edge (taken_edge);
     }
 }
 
@@ -357,27 +357,27 @@ process_ssa_edge_worklist (VEC(tree,gc) **worklist)
       tree stmt = VEC_pop (tree, *worklist);
 
       /* If this statement was already visited by simulate_block, then
-         we don't need to visit it again here.  */
+	 we don't need to visit it again here.  */
       if (!STMT_IN_SSA_EDGE_WORKLIST (stmt))
-        continue;
+	continue;
 
       /* STMT is no longer in a worklist.  */
       STMT_IN_SSA_EDGE_WORKLIST (stmt) = 0;
 
       if (dump_file && (dump_flags & TDF_DETAILS))
-        {
-          fprintf (dump_file, "\nSimulating statement (from ssa_edges): ");
-          print_generic_stmt (dump_file, stmt, dump_flags);
-        }
+	{
+	  fprintf (dump_file, "\nSimulating statement (from ssa_edges): ");
+	  print_generic_stmt (dump_file, stmt, dump_flags);
+	}
 
       bb = bb_for_stmt (stmt);
 
       /* PHI nodes are always visited, regardless of whether or not
-         the destination block is executable.  Otherwise, visit the
-         statement only if its block is marked executable.  */
+	 the destination block is executable.  Otherwise, visit the
+	 statement only if its block is marked executable.  */
       if (TREE_CODE (stmt) == PHI_NODE
-          || TEST_BIT (executable_blocks, bb->index))
-        simulate_stmt (stmt);
+	  || TEST_BIT (executable_blocks, bb->index))
+	simulate_stmt (stmt);
     }
 }
 
@@ -415,42 +415,42 @@ simulate_block (basic_block block)
       SET_BIT (executable_blocks, block->index);
 
       for (j = bsi_start (block); !bsi_end_p (j); bsi_next (&j))
-        {
-          tree stmt = bsi_stmt (j);
+	{
+	  tree stmt = bsi_stmt (j);
 
-          /* If this statement is already in the worklist then
-             "cancel" it.  The reevaluation implied by the worklist
-             entry will produce the same value we generate here and
-             thus reevaluating it again from the worklist is
-             pointless.  */
-          if (STMT_IN_SSA_EDGE_WORKLIST (stmt))
-            STMT_IN_SSA_EDGE_WORKLIST (stmt) = 0;
+	  /* If this statement is already in the worklist then
+	     "cancel" it.  The reevaluation implied by the worklist
+	     entry will produce the same value we generate here and
+	     thus reevaluating it again from the worklist is
+	     pointless.  */
+	  if (STMT_IN_SSA_EDGE_WORKLIST (stmt))
+	    STMT_IN_SSA_EDGE_WORKLIST (stmt) = 0;
 
-          simulate_stmt (stmt);
-        }
+	  simulate_stmt (stmt);
+	}
 
       /* We can not predict when abnormal edges will be executed, so
-         once a block is considered executable, we consider any
-         outgoing abnormal edges as executable.
+	 once a block is considered executable, we consider any
+	 outgoing abnormal edges as executable.
 
-         At the same time, if this block has only one successor that is
-         reached by non-abnormal edges, then add that successor to the
-         worklist.  */
+	 At the same time, if this block has only one successor that is
+	 reached by non-abnormal edges, then add that successor to the
+	 worklist.  */
       normal_edge_count = 0;
       normal_edge = NULL;
       FOR_EACH_EDGE (e, ei, block->succs)
-        {
-          if (e->flags & EDGE_ABNORMAL)
-            add_control_edge (e);
-          else
-            {
-              normal_edge_count++;
-              normal_edge = e;
-            }
-        }
+	{
+	  if (e->flags & EDGE_ABNORMAL)
+	    add_control_edge (e);
+	  else
+	    {
+	      normal_edge_count++;
+	      normal_edge = e;
+	    }
+	}
 
       if (normal_edge_count == 1)
-        add_control_edge (normal_edge);
+	add_control_edge (normal_edge);
     }
 }
 
@@ -493,10 +493,10 @@ ssa_prop_init (void)
       block_stmt_iterator si;
 
       for (si = bsi_start (bb); !bsi_end_p (si); bsi_next (&si))
-        STMT_IN_SSA_EDGE_WORKLIST (bsi_stmt (si)) = 0;
+	STMT_IN_SSA_EDGE_WORKLIST (bsi_stmt (si)) = 0;
 
       FOR_EACH_EDGE (e, ei, bb->succs)
-        e->flags &= ~EDGE_EXECUTABLE;
+	e->flags &= ~EDGE_EXECUTABLE;
     }
 
   /* Seed the algorithm by adding the successors of the entry block to the
@@ -532,15 +532,15 @@ get_rhs (tree stmt)
     case RETURN_EXPR:
       stmt = TREE_OPERAND (stmt, 0);
       if (!stmt || TREE_CODE (stmt) != MODIFY_EXPR)
-        return stmt;
+	return stmt;
       /* FALLTHRU */
 
     case MODIFY_EXPR:
       stmt = TREE_OPERAND (stmt, 1);
       if (TREE_CODE (stmt) == WITH_SIZE_EXPR)
-        return TREE_OPERAND (stmt, 0);
+	return TREE_OPERAND (stmt, 0);
       else
-        return stmt;
+	return stmt;
 
     case COND_EXPR:
       return COND_EXPR_COND (stmt);
@@ -574,22 +574,22 @@ set_rhs (tree *stmt_p, tree expr)
   if (TREE_CODE_CLASS (code) == tcc_binary)
     {
       if (!is_gimple_val (TREE_OPERAND (expr, 0))
-          || !is_gimple_val (TREE_OPERAND (expr, 1)))
-        return false;
+	  || !is_gimple_val (TREE_OPERAND (expr, 1)))
+	return false;
     }
   else if (TREE_CODE_CLASS (code) == tcc_unary)
     {
       if (!is_gimple_val (TREE_OPERAND (expr, 0)))
-        return false;
+	return false;
     }
   else if (code == ADDR_EXPR)
     {
       if (TREE_CODE (TREE_OPERAND (expr, 0)) == ARRAY_REF
-          && !is_gimple_val (TREE_OPERAND (TREE_OPERAND (expr, 0), 1)))
-        return false;
+	  && !is_gimple_val (TREE_OPERAND (TREE_OPERAND (expr, 0), 1)))
+	return false;
     }
   else if (code == COMPOUND_EXPR
-           || code == MODIFY_EXPR)
+	   || code == MODIFY_EXPR)
     return false;
 
   if (EXPR_HAS_LOCATION (stmt)
@@ -604,17 +604,17 @@ set_rhs (tree *stmt_p, tree expr)
     case RETURN_EXPR:
       op = TREE_OPERAND (stmt, 0);
       if (TREE_CODE (op) != MODIFY_EXPR)
-        {
-          TREE_OPERAND (stmt, 0) = expr;
-          break;
-        }
+	{
+	  TREE_OPERAND (stmt, 0) = expr;
+	  break;
+	}
       stmt = op;
       /* FALLTHRU */
 
     case MODIFY_EXPR:
       op = TREE_OPERAND (stmt, 1);
       if (TREE_CODE (op) == WITH_SIZE_EXPR)
-        stmt = op;
+	stmt = op;
       TREE_OPERAND (stmt, 1) = expr;
       break;
 
@@ -635,22 +635,22 @@ set_rhs (tree *stmt_p, tree expr)
 
     default:
       /* Replace the whole statement with EXPR.  If EXPR has no side
-         effects, then replace *STMT_P with an empty statement.  */
+	 effects, then replace *STMT_P with an empty statement.  */
       ann = stmt_ann (stmt);
       *stmt_p = TREE_SIDE_EFFECTS (expr) ? expr : build_empty_stmt ();
       (*stmt_p)->common.ann = (tree_ann_t) ann;
 
       if (in_ssa_p
-          && TREE_SIDE_EFFECTS (expr))
-        {
-          /* Fix all the SSA_NAMEs created by *STMT_P to point to its new
-             replacement.  */
-          FOR_EACH_SSA_TREE_OPERAND (var, stmt, iter, SSA_OP_ALL_DEFS)
-            {
-              if (TREE_CODE (var) == SSA_NAME)
-                SSA_NAME_DEF_STMT (var) = *stmt_p;
-            }
-        }
+	  && TREE_SIDE_EFFECTS (expr))
+	{
+	  /* Fix all the SSA_NAMEs created by *STMT_P to point to its new
+	     replacement.  */
+	  FOR_EACH_SSA_TREE_OPERAND (var, stmt, iter, SSA_OP_ALL_DEFS)
+	    {
+	      if (TREE_CODE (var) == SSA_NAME)
+		SSA_NAME_DEF_STMT (var) = *stmt_p;
+	    }
+	}
       break;
     }
 
@@ -665,7 +665,7 @@ set_rhs (tree *stmt_p, tree expr)
 
 void
 ssa_propagate (ssa_prop_visit_stmt_fn visit_stmt,
-               ssa_prop_visit_phi_fn visit_phi)
+	       ssa_prop_visit_phi_fn visit_phi)
 {
   ssa_prop_visit_stmt = visit_stmt;
   ssa_prop_visit_phi = visit_phi;
@@ -674,18 +674,18 @@ ssa_propagate (ssa_prop_visit_stmt_fn visit_stmt,
 
   /* Iterate until the worklists are empty.  */
   while (!cfg_blocks_empty_p () 
-         || VEC_length (tree, interesting_ssa_edges) > 0
-         || VEC_length (tree, varying_ssa_edges) > 0)
+	 || VEC_length (tree, interesting_ssa_edges) > 0
+	 || VEC_length (tree, varying_ssa_edges) > 0)
     {
       if (!cfg_blocks_empty_p ())
-        {
-          /* Pull the next block to simulate off the worklist.  */
-          basic_block dest_block = cfg_blocks_get ();
-          simulate_block (dest_block);
-        }
+	{
+	  /* Pull the next block to simulate off the worklist.  */
+	  basic_block dest_block = cfg_blocks_get ();
+	  simulate_block (dest_block);
+	}
 
       /* In order to move things to varying as quickly as
-         possible,process the VARYING_SSA_EDGES worklist first.  */
+	 possible,process the VARYING_SSA_EDGES worklist first.  */
       process_ssa_edge_worklist (&varying_ssa_edges);
 
       /* Now process the INTERESTING_SSA_EDGES worklist.  */
@@ -732,8 +732,8 @@ stmt_makes_single_load (tree stmt)
   STRIP_NOPS (rhs);
 
   return (!TREE_THIS_VOLATILE (rhs)
-          && (DECL_P (rhs)
-              || REFERENCE_CLASS_P (rhs)));
+	  && (DECL_P (rhs)
+	      || REFERENCE_CLASS_P (rhs)));
 }
 
 
@@ -758,7 +758,7 @@ stmt_makes_single_store (tree stmt)
 
   return (!TREE_THIS_VOLATILE (lhs)
           && (DECL_P (lhs)
-              || REFERENCE_CLASS_P (lhs)));
+	      || REFERENCE_CLASS_P (lhs)));
 }
 
 
@@ -778,7 +778,7 @@ get_value_loaded_by (tree stmt, prop_value_t *values)
     {
       val = &values[SSA_NAME_VERSION (vuse)];
       if (prev_val && prev_val->value != val->value)
-        return NULL;
+	return NULL;
       prev_val = val;
     }
 
@@ -803,7 +803,7 @@ static struct prop_stats_d prop_stats;
 
 bool
 replace_uses_in (tree stmt, bool *replaced_addresses_p,
-                 prop_value_t *prop_value)
+		 prop_value_t *prop_value)
 {
   bool replaced = false;
   use_operand_p use;
@@ -815,25 +815,25 @@ replace_uses_in (tree stmt, bool *replaced_addresses_p,
       tree val = prop_value[SSA_NAME_VERSION (tuse)].value;
 
       if (val == tuse || val == NULL_TREE)
-        continue;
+	continue;
 
       if (TREE_CODE (stmt) == ASM_EXPR
-          && !may_propagate_copy_into_asm (tuse))
-        continue;
+	  && !may_propagate_copy_into_asm (tuse))
+	continue;
 
       if (!may_propagate_copy (tuse, val))
-        continue;
+	continue;
 
       if (TREE_CODE (val) != SSA_NAME)
-        prop_stats.num_const_prop++;
+	prop_stats.num_const_prop++;
       else
-        prop_stats.num_copy_prop++;
+	prop_stats.num_copy_prop++;
 
       propagate_value (use, val);
 
       replaced = true;
       if (POINTER_TYPE_P (TREE_TYPE (tuse)) && replaced_addresses_p)
-        *replaced_addresses_p = true;
+	*replaced_addresses_p = true;
     }
 
   return replaced;
@@ -853,23 +853,23 @@ replace_uses_in (tree stmt, bool *replaced_addresses_p,
       GIMPLE register, then we are making a copy/constant propagation
       from a memory store.  For instance,
 
-              # a_3 = V_MAY_DEF <a_2>
-        a.b = x_1;
-        ...
-         # VUSE <a_3>
-        y_4 = a.b;
+      	# a_3 = V_MAY_DEF <a_2>
+	a.b = x_1;
+	...
+ 	# VUSE <a_3>
+	y_4 = a.b;
 
       This replacement is only possible iff STMT is an assignment
       whose RHS is identical to the LHS of the statement that created
       the VUSE(s) that we are replacing.  Otherwise, we may do the
       wrong replacement:
 
-              # a_3 = V_MAY_DEF <a_2>
-        # b_5 = V_MAY_DEF <b_4>
-        *p = 10;
-        ...
-        # VUSE <b_5>
-        x_8 = b;
+      	# a_3 = V_MAY_DEF <a_2>
+	# b_5 = V_MAY_DEF <b_4>
+	*p = 10;
+	...
+	# VUSE <b_5>
+	x_8 = b;
 
       Even though 'b_5' acquires the value '10' during propagation,
       there is no way for the propagator to tell whether the
@@ -884,13 +884,13 @@ replace_uses_in (tree stmt, bool *replaced_addresses_p,
       propagators need to take care not to merge the same values
       stored in different locations:
 
-                     if (...)
-                  # a_3 = V_MAY_DEF <a_2>
-                  a.b = 3;
-                else
-                  # a_4 = V_MAY_DEF <a_2>
-                  a.c = 3;
-                # a_5 = PHI <a_3, a_4>
+     		if (...)
+		  # a_3 = V_MAY_DEF <a_2>
+		  a.b = 3;
+		else
+		  # a_4 = V_MAY_DEF <a_2>
+		  a.c = 3;
+		# a_5 = PHI <a_3, a_4>
 
       It would be wrong to propagate '3' into 'a_5' because that
       operation merges two stores to different memory locations.
@@ -912,43 +912,43 @@ replace_vuses_in (tree stmt, bool *replaced_addresses_p,
   if (stmt_makes_single_load (stmt))
     {
       /* If STMT is an assignment whose RHS is a single memory load,
-         see if we are trying to propagate a constant or a GIMPLE
-         register (case #1 above).  */
+	 see if we are trying to propagate a constant or a GIMPLE
+	 register (case #1 above).  */
       prop_value_t *val = get_value_loaded_by (stmt, prop_value);
       tree rhs = TREE_OPERAND (stmt, 1);
 
       if (val
-          && val->value
-          && (is_gimple_reg (val->value)
-              || is_gimple_min_invariant (val->value))
-          && simple_cst_equal (rhs, val->mem_ref) == 1)
+	  && val->value
+	  && (is_gimple_reg (val->value)
+	      || is_gimple_min_invariant (val->value))
+	  && simple_cst_equal (rhs, val->mem_ref) == 1)
 
-        {
-          /* If we are replacing a constant address, inform our
-             caller.  */
-          if (TREE_CODE (val->value) != SSA_NAME
-              && POINTER_TYPE_P (TREE_TYPE (TREE_OPERAND (stmt, 1)))
-              && replaced_addresses_p)
-            *replaced_addresses_p = true;
+	{
+	  /* If we are replacing a constant address, inform our
+	     caller.  */
+	  if (TREE_CODE (val->value) != SSA_NAME
+	      && POINTER_TYPE_P (TREE_TYPE (TREE_OPERAND (stmt, 1)))
+	      && replaced_addresses_p)
+	    *replaced_addresses_p = true;
 
-          /* We can only perform the substitution if the load is done
-             from the same memory location as the original store.
-             Since we already know that there are no intervening
-             stores between DEF_STMT and STMT, we only need to check
-             that the RHS of STMT is the same as the memory reference
-             propagated together with the value.  */
-          TREE_OPERAND (stmt, 1) = val->value;
+	  /* We can only perform the substitution if the load is done
+	     from the same memory location as the original store.
+	     Since we already know that there are no intervening
+	     stores between DEF_STMT and STMT, we only need to check
+	     that the RHS of STMT is the same as the memory reference
+	     propagated together with the value.  */
+	  TREE_OPERAND (stmt, 1) = val->value;
 
-          if (TREE_CODE (val->value) != SSA_NAME)
-            prop_stats.num_const_prop++;
-          else
-            prop_stats.num_copy_prop++;
+	  if (TREE_CODE (val->value) != SSA_NAME)
+	    prop_stats.num_const_prop++;
+	  else
+	    prop_stats.num_copy_prop++;
 
-          /* Since we have replaced the whole RHS of STMT, there
-             is no point in checking the other VUSEs, as they will
-             all have the same value.  */
-          return true;
-        }
+	  /* Since we have replaced the whole RHS of STMT, there
+	     is no point in checking the other VUSEs, as they will
+	     all have the same value.  */
+	  return true;
+	}
     }
 
   /* Otherwise, the values for every VUSE operand must be other
@@ -959,13 +959,13 @@ replace_vuses_in (tree stmt, bool *replaced_addresses_p,
       tree val = prop_value[SSA_NAME_VERSION (var)].value;
 
       if (val == NULL_TREE || var == val)
-        continue;
+	continue;
 
       /* Constants and copies propagated between real and virtual
-         operands are only possible in the cases handled above.  They
-         should be ignored in any other context.  */
+	 operands are only possible in the cases handled above.  They
+	 should be ignored in any other context.  */
       if (is_gimple_min_invariant (val) || is_gimple_reg (val))
-        continue;
+	continue;
 
       propagate_value (vuse, val);
       prop_stats.num_copy_prop++;
@@ -994,27 +994,27 @@ replace_phi_args_in (tree phi, prop_value_t *prop_value)
       tree arg = PHI_ARG_DEF (phi, i);
 
       if (TREE_CODE (arg) == SSA_NAME)
-        {
-          tree val = prop_value[SSA_NAME_VERSION (arg)].value;
+	{
+	  tree val = prop_value[SSA_NAME_VERSION (arg)].value;
 
-          if (val && val != arg && may_propagate_copy (arg, val))
-            {
-              if (TREE_CODE (val) != SSA_NAME)
-                prop_stats.num_const_prop++;
-              else
-                prop_stats.num_copy_prop++;
+	  if (val && val != arg && may_propagate_copy (arg, val))
+	    {
+	      if (TREE_CODE (val) != SSA_NAME)
+		prop_stats.num_const_prop++;
+	      else
+		prop_stats.num_copy_prop++;
 
-              propagate_value (PHI_ARG_DEF_PTR (phi, i), val);
-              replaced = true;
+	      propagate_value (PHI_ARG_DEF_PTR (phi, i), val);
+	      replaced = true;
 
-              /* If we propagated a copy and this argument flows
-                 through an abnormal edge, update the replacement
-                 accordingly.  */
-              if (TREE_CODE (val) == SSA_NAME
-                  && PHI_ARG_EDGE (phi, i)->flags & EDGE_ABNORMAL)
-                SSA_NAME_OCCURS_IN_ABNORMAL_PHI (val) = 1;
-            }
-        }
+	      /* If we propagated a copy and this argument flows
+		 through an abnormal edge, update the replacement
+		 accordingly.  */
+	      if (TREE_CODE (val) == SSA_NAME
+		  && PHI_ARG_EDGE (phi, i)->flags & EDGE_ABNORMAL)
+		SSA_NAME_OCCURS_IN_ABNORMAL_PHI (val) = 1;
+	    }
+	}
     }
   
   if (replaced && dump_file && (dump_flags & TDF_DETAILS))
@@ -1057,13 +1057,13 @@ fold_predicate_in (tree stmt)
         val = fold_convert (TREE_TYPE (*pred_p), val);
       
       if (dump_file)
-        {
-          fprintf (dump_file, "Folding predicate ");
-          print_generic_expr (dump_file, *pred_p, 0);
-          fprintf (dump_file, " to ");
-          print_generic_expr (dump_file, val, 0);
-          fprintf (dump_file, "\n");
-        }
+	{
+	  fprintf (dump_file, "Folding predicate ");
+	  print_generic_expr (dump_file, *pred_p, 0);
+	  fprintf (dump_file, " to ");
+	  print_generic_expr (dump_file, val, 0);
+	  fprintf (dump_file, "\n");
+	}
 
       prop_stats.num_pred_folded++;
       *pred_p = val;
@@ -1107,100 +1107,100 @@ substitute_and_fold (prop_value_t *prop_value, bool use_ranges_p)
 
       /* Propagate known values into PHI nodes.  */
       if (prop_value)
-        for (phi = phi_nodes (bb); phi; phi = PHI_CHAIN (phi))
-          replace_phi_args_in (phi, prop_value);
+	for (phi = phi_nodes (bb); phi; phi = PHI_CHAIN (phi))
+	  replace_phi_args_in (phi, prop_value);
 
       for (i = bsi_start (bb); !bsi_end_p (i); bsi_next (&i))
-        {
+	{
           bool replaced_address, did_replace;
-          tree prev_stmt = NULL;
-          tree stmt = bsi_stmt (i);
+	  tree prev_stmt = NULL;
+	  tree stmt = bsi_stmt (i);
 
-          /* Ignore ASSERT_EXPRs.  They are used by VRP to generate
-             range information for names and they are discarded
-             afterwards.  */
-          if (TREE_CODE (stmt) == MODIFY_EXPR
-              && TREE_CODE (TREE_OPERAND (stmt, 1)) == ASSERT_EXPR)
-            continue;
+	  /* Ignore ASSERT_EXPRs.  They are used by VRP to generate
+	     range information for names and they are discarded
+	     afterwards.  */
+	  if (TREE_CODE (stmt) == MODIFY_EXPR
+	      && TREE_CODE (TREE_OPERAND (stmt, 1)) == ASSERT_EXPR)
+	    continue;
 
-          /* Replace the statement with its folded version and mark it
-             folded.  */
-          did_replace = false;
-          replaced_address = false;
-          if (dump_file && (dump_flags & TDF_DETAILS))
-            prev_stmt = unshare_expr (stmt);
+	  /* Replace the statement with its folded version and mark it
+	     folded.  */
+	  did_replace = false;
+	  replaced_address = false;
+	  if (dump_file && (dump_flags & TDF_DETAILS))
+	    prev_stmt = unshare_expr (stmt);
 
-          /* If we have range information, see if we can fold
-             predicate expressions.  */
-          if (use_ranges_p)
-            did_replace = fold_predicate_in (stmt);
+	  /* If we have range information, see if we can fold
+	     predicate expressions.  */
+	  if (use_ranges_p)
+	    did_replace = fold_predicate_in (stmt);
 
-          if (prop_value)
-            {
-              /* Only replace real uses if we couldn't fold the
-                 statement using value range information (value range
-                 information is not collected on virtuals, so we only
-                 need to check this for real uses).  */
-              if (!did_replace)
-                did_replace |= replace_uses_in (stmt, &replaced_address,
-                                                prop_value);
+	  if (prop_value)
+	    {
+	      /* Only replace real uses if we couldn't fold the
+		 statement using value range information (value range
+		 information is not collected on virtuals, so we only
+		 need to check this for real uses).  */
+	      if (!did_replace)
+		did_replace |= replace_uses_in (stmt, &replaced_address,
+		                                prop_value);
 
-              did_replace |= replace_vuses_in (stmt, &replaced_address,
-                                               prop_value);
-            }
+	      did_replace |= replace_vuses_in (stmt, &replaced_address,
+		                               prop_value);
+	    }
 
-          /* If we made a replacement, fold and cleanup the statement.  */
-          if (did_replace)
-            {
-              tree old_stmt = stmt;
-              tree rhs;
+	  /* If we made a replacement, fold and cleanup the statement.  */
+	  if (did_replace)
+	    {
+	      tree old_stmt = stmt;
+	      tree rhs;
 
-              fold_stmt (bsi_stmt_ptr (i));
-              stmt = bsi_stmt (i);
+	      fold_stmt (bsi_stmt_ptr (i));
+	      stmt = bsi_stmt (i);
 
-              /* If we folded a builtin function, we'll likely
-                 need to rename VDEFs.  */
-              mark_new_vars_to_rename (stmt);
+	      /* If we folded a builtin function, we'll likely
+		 need to rename VDEFs.  */
+	      mark_new_vars_to_rename (stmt);
 
               /* If we cleaned up EH information from the statement,
                  remove EH edges.  */
-              if (maybe_clean_or_replace_eh_stmt (old_stmt, stmt))
-                tree_purge_dead_eh_edges (bb);
+	      if (maybe_clean_or_replace_eh_stmt (old_stmt, stmt))
+		tree_purge_dead_eh_edges (bb);
 
-              rhs = get_rhs (stmt);
-              if (TREE_CODE (rhs) == ADDR_EXPR)
-                recompute_tree_invariant_for_addr_expr (rhs);
+	      rhs = get_rhs (stmt);
+	      if (TREE_CODE (rhs) == ADDR_EXPR)
+		recompute_tree_invariant_for_addr_expr (rhs);
 
-              if (dump_file && (dump_flags & TDF_DETAILS))
-                {
-                  fprintf (dump_file, "Folded statement: ");
-                  print_generic_stmt (dump_file, prev_stmt, TDF_SLIM);
-                  fprintf (dump_file, "            into: ");
-                  print_generic_stmt (dump_file, stmt, TDF_SLIM);
-                  fprintf (dump_file, "\n");
-                }
-            }
+	      if (dump_file && (dump_flags & TDF_DETAILS))
+		{
+		  fprintf (dump_file, "Folded statement: ");
+		  print_generic_stmt (dump_file, prev_stmt, TDF_SLIM);
+		  fprintf (dump_file, "            into: ");
+		  print_generic_stmt (dump_file, stmt, TDF_SLIM);
+		  fprintf (dump_file, "\n");
+		}
+	    }
 
-          /* Some statements may be simplified using ranges.  For
-             example, division may be replaced by shifts, modulo
-             replaced with bitwise and, etc.   Do this after 
-             substituting constants, folding, etc so that we're
-             presented with a fully propagated, canonicalized
-             statement.  */
-          if (use_ranges_p)
-            simplify_stmt_using_ranges (stmt);
+	  /* Some statements may be simplified using ranges.  For
+	     example, division may be replaced by shifts, modulo
+	     replaced with bitwise and, etc.   Do this after 
+	     substituting constants, folding, etc so that we're
+	     presented with a fully propagated, canonicalized
+	     statement.  */
+	  if (use_ranges_p)
+	    simplify_stmt_using_ranges (stmt);
 
-        }
+	}
     }
 
   if (dump_file && (dump_flags & TDF_STATS))
     {
       fprintf (dump_file, "Constants propagated: %6ld\n",
-               prop_stats.num_const_prop);
+	       prop_stats.num_const_prop);
       fprintf (dump_file, "Copies propagated:    %6ld\n",
-               prop_stats.num_copy_prop);
+	       prop_stats.num_copy_prop);
       fprintf (dump_file, "Predicates folded:    %6ld\n",
-               prop_stats.num_pred_folded);
+	       prop_stats.num_pred_folded);
     }
 }
 

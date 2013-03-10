@@ -23,12 +23,12 @@
 /* On EABI GNU/Linux, we want both the BPABI builtins and the
    GNU/Linux builtins.  */
 #undef TARGET_OS_CPP_BUILTINS
-#define TARGET_OS_CPP_BUILTINS()                 \
-  do                                                 \
-    {                                                \
-      TARGET_BPABI_CPP_BUILTINS();                \
-      LINUX_TARGET_OS_CPP_BUILTINS();                \
-    }                                                \
+#define TARGET_OS_CPP_BUILTINS() 		\
+  do 						\
+    {						\
+      TARGET_BPABI_CPP_BUILTINS();		\
+      LINUX_TARGET_OS_CPP_BUILTINS();		\
+    }						\
   while (false)
 
 /* We default to a soft-float ABI so that binaries can run on all
@@ -73,13 +73,13 @@
    inline system call to SYS_cacheflush.  It is modified to work with
    both the original and EABI-only syscall interfaces.  */
 #undef CLEAR_INSN_CACHE
-#define CLEAR_INSN_CACHE(BEG, END)                                        \
-{                                                                        \
-  register unsigned long _beg __asm ("a1") = (unsigned long) (BEG);        \
-  register unsigned long _end __asm ("a2") = (unsigned long) (END);        \
-  register unsigned long _flg __asm ("a3") = 0;                                \
-  register unsigned long _scno __asm ("r7") = 0xf0002;                        \
-  __asm __volatile ("swi 0x9f0002                @ sys_cacheflush"        \
-                    : "=r" (_beg)                                        \
-                    : "0" (_beg), "r" (_end), "r" (_flg), "r" (_scno));        \
+#define CLEAR_INSN_CACHE(BEG, END)					\
+{									\
+  register unsigned long _beg __asm ("a1") = (unsigned long) (BEG);	\
+  register unsigned long _end __asm ("a2") = (unsigned long) (END);	\
+  register unsigned long _flg __asm ("a3") = 0;				\
+  register unsigned long _scno __asm ("r7") = 0xf0002;			\
+  __asm __volatile ("swi 0x9f0002		@ sys_cacheflush"	\
+		    : "=r" (_beg)					\
+		    : "0" (_beg), "r" (_end), "r" (_flg), "r" (_scno));	\
 }

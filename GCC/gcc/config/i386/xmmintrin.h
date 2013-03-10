@@ -261,20 +261,20 @@ static __inline __m128 __attribute__((__always_inline__))
 _mm_cmpgt_ss (__m128 __A, __m128 __B)
 {
   return (__m128) __builtin_ia32_movss ((__v4sf) __A,
-                                        (__v4sf)
-                                        __builtin_ia32_cmpltss ((__v4sf) __B,
-                                                                (__v4sf)
-                                                                __A));
+					(__v4sf)
+					__builtin_ia32_cmpltss ((__v4sf) __B,
+								(__v4sf)
+								__A));
 }
 
 static __inline __m128 __attribute__((__always_inline__))
 _mm_cmpge_ss (__m128 __A, __m128 __B)
 {
   return (__m128) __builtin_ia32_movss ((__v4sf) __A,
-                                        (__v4sf)
-                                        __builtin_ia32_cmpless ((__v4sf) __B,
-                                                                (__v4sf)
-                                                                __A));
+					(__v4sf)
+					__builtin_ia32_cmpless ((__v4sf) __B,
+								(__v4sf)
+								__A));
 }
 
 static __inline __m128 __attribute__((__always_inline__))
@@ -299,20 +299,20 @@ static __inline __m128 __attribute__((__always_inline__))
 _mm_cmpngt_ss (__m128 __A, __m128 __B)
 {
   return (__m128) __builtin_ia32_movss ((__v4sf) __A,
-                                        (__v4sf)
-                                        __builtin_ia32_cmpnltss ((__v4sf) __B,
-                                                                 (__v4sf)
-                                                                 __A));
+					(__v4sf)
+					__builtin_ia32_cmpnltss ((__v4sf) __B,
+								 (__v4sf)
+								 __A));
 }
 
 static __inline __m128 __attribute__((__always_inline__))
 _mm_cmpnge_ss (__m128 __A, __m128 __B)
 {
   return (__m128) __builtin_ia32_movss ((__v4sf) __A,
-                                        (__v4sf)
-                                        __builtin_ia32_cmpnless ((__v4sf) __B,
-                                                                 (__v4sf)
-                                                                 __A));
+					(__v4sf)
+					__builtin_ia32_cmpnless ((__v4sf) __B,
+								 (__v4sf)
+								 __A));
 }
 
 static __inline __m128 __attribute__((__always_inline__))
@@ -1005,8 +1005,8 @@ _m_pextrw (__m64 const __A, int const __N)
   return _mm_extract_pi16 (__A, __N);
 }
 #else
-#define _mm_extract_pi16(A, N)        __builtin_ia32_vec_ext_v4hi ((__v4hi)(A), (N))
-#define _m_pextrw(A, N)                _mm_extract_pi16((A), (N))
+#define _mm_extract_pi16(A, N)	__builtin_ia32_vec_ext_v4hi ((__v4hi)(A), (N))
+#define _m_pextrw(A, N)		_mm_extract_pi16((A), (N))
 #endif
 
 /* Inserts word D into one of four words of A.  The selector N must be
@@ -1026,7 +1026,7 @@ _m_pinsrw (__m64 const __A, int const __D, int const __N)
 #else
 #define _mm_insert_pi16(A, D, N) \
   ((__m64) __builtin_ia32_vec_set_v4hi ((__v4hi)(A), (D), (N)))
-#define _m_pinsrw(A, D, N)         _mm_insert_pi16((A), (D), (N))
+#define _m_pinsrw(A, D, N)	 _mm_insert_pi16((A), (D), (N))
 #endif
 
 /* Compute the element-wise maximum of signed 16-bit values.  */
@@ -1125,7 +1125,7 @@ _m_pshufw (__m64 __A, int __N)
 #else
 #define _mm_shuffle_pi16(A, N) \
   ((__m64) __builtin_ia32_pshufw ((__v4hi)(A), (N)))
-#define _m_pshufw(A, N)                _mm_shuffle_pi16 ((A), (N))
+#define _m_pshufw(A, N)		_mm_shuffle_pi16 ((A), (N))
 #endif
 
 /* Conditionally store byte elements of A into P.  The high bit of each
@@ -1229,17 +1229,17 @@ _mm_pause (void)
 }
 
 /* Transpose the 4x4 matrix composed of row[0-3].  */
-#define _MM_TRANSPOSE4_PS(row0, row1, row2, row3)                        \
-do {                                                                        \
-  __v4sf __r0 = (row0), __r1 = (row1), __r2 = (row2), __r3 = (row3);        \
-  __v4sf __t0 = __builtin_ia32_unpcklps (__r0, __r1);                        \
-  __v4sf __t1 = __builtin_ia32_unpcklps (__r2, __r3);                        \
-  __v4sf __t2 = __builtin_ia32_unpckhps (__r0, __r1);                        \
-  __v4sf __t3 = __builtin_ia32_unpckhps (__r2, __r3);                        \
-  (row0) = __builtin_ia32_movlhps (__t0, __t1);                                \
-  (row1) = __builtin_ia32_movhlps (__t1, __t0);                                \
-  (row2) = __builtin_ia32_movlhps (__t2, __t3);                                \
-  (row3) = __builtin_ia32_movhlps (__t3, __t2);                                \
+#define _MM_TRANSPOSE4_PS(row0, row1, row2, row3)			\
+do {									\
+  __v4sf __r0 = (row0), __r1 = (row1), __r2 = (row2), __r3 = (row3);	\
+  __v4sf __t0 = __builtin_ia32_unpcklps (__r0, __r1);			\
+  __v4sf __t1 = __builtin_ia32_unpcklps (__r2, __r3);			\
+  __v4sf __t2 = __builtin_ia32_unpckhps (__r0, __r1);			\
+  __v4sf __t3 = __builtin_ia32_unpckhps (__r2, __r3);			\
+  (row0) = __builtin_ia32_movlhps (__t0, __t1);				\
+  (row1) = __builtin_ia32_movhlps (__t1, __t0);				\
+  (row2) = __builtin_ia32_movlhps (__t2, __t3);				\
+  (row3) = __builtin_ia32_movhlps (__t3, __t2);				\
 } while (0)
 
 /* For backward source compatibility.  */

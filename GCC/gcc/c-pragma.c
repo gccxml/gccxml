@@ -46,8 +46,8 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
 
 typedef struct align_stack GTY(())
 {
-  int                       alignment;
-  tree                       id;
+  int		       alignment;
+  tree		       id;
   struct align_stack * prev;
 } align_stack;
 
@@ -64,8 +64,8 @@ static void handle_pragma_pack (cpp_reader *);
    maximum_field_alignment.  Value is in bits.  */
 static int default_alignment;
 #define SET_GLOBAL_ALIGNMENT(ALIGN) (maximum_field_alignment = *(alignment_stack == NULL \
-        ? &default_alignment \
-        : &alignment_stack->alignment) = (ALIGN))
+	? &default_alignment \
+	: &alignment_stack->alignment) = (ALIGN))
 
 static void push_alignment (int, tree);
 static void pop_alignment (tree);
@@ -79,8 +79,8 @@ push_alignment (int alignment, tree id)
   entry = GGC_NEW (align_stack);
 
   entry->alignment  = alignment;
-  entry->id            = id;
-  entry->prev            = alignment_stack;
+  entry->id	    = id;
+  entry->prev	    = alignment_stack;
 
   /* The current value of maximum_field_alignment is not necessarily
      0 since there may be a #pragma pack(<n>) in effect; remember it
@@ -107,15 +107,15 @@ pop_alignment (tree id)
   if (id)
     {
       for (entry = alignment_stack; entry; entry = entry->prev)
-        if (entry->id == id)
-          {
-            alignment_stack = entry;
-            break;
-          }
+	if (entry->id == id)
+	  {
+	    alignment_stack = entry;
+	    break;
+	  }
       if (entry == NULL)
-        warning (OPT_Wpragmas, "\
+	warning (OPT_Wpragmas, "\
 #pragma pack(pop, %s) encountered without matching #pragma pack(push, %s)"
-                 , IDENTIFIER_POINTER (id), IDENTIFIER_POINTER (id));
+		 , IDENTIFIER_POINTER (id), IDENTIFIER_POINTER (id));
     }
 
   entry = alignment_stack->prev;
@@ -161,49 +161,49 @@ handle_pragma_pack (cpp_reader * ARG_UNUSED (dummy))
   else if (token == CPP_NUMBER)
     {
       if (TREE_CODE (x) != INTEGER_CST)
-        GCC_BAD ("invalid constant in %<#pragma pack%> - ignored");
+	GCC_BAD ("invalid constant in %<#pragma pack%> - ignored");
       align = TREE_INT_CST_LOW (x);
       action = set;
       if (pragma_lex (&x) != CPP_CLOSE_PAREN)
-        GCC_BAD ("malformed %<#pragma pack%> - ignored");
+	GCC_BAD ("malformed %<#pragma pack%> - ignored");
     }
   else if (token == CPP_NAME)
     {
 #define GCC_BAD_ACTION do { if (action != pop) \
-          GCC_BAD ("malformed %<#pragma pack(push[, id][, <n>])%> - ignored"); \
-        else \
-          GCC_BAD ("malformed %<#pragma pack(pop[, id])%> - ignored"); \
-        } while (0)
+	  GCC_BAD ("malformed %<#pragma pack(push[, id][, <n>])%> - ignored"); \
+	else \
+	  GCC_BAD ("malformed %<#pragma pack(pop[, id])%> - ignored"); \
+	} while (0)
 
       const char *op = IDENTIFIER_POINTER (x);
       if (!strcmp (op, "push"))
-        action = push;
+	action = push;
       else if (!strcmp (op, "pop"))
-        action = pop;
+	action = pop;
       else
-        GCC_BAD2 ("unknown action %qs for %<#pragma pack%> - ignored", op);
+	GCC_BAD2 ("unknown action %qs for %<#pragma pack%> - ignored", op);
 
       while ((token = pragma_lex (&x)) == CPP_COMMA)
-        {
-          token = pragma_lex (&x);
-          if (token == CPP_NAME && id == 0)
-            {
-              id = x;
-            }
-          else if (token == CPP_NUMBER && action == push && align == -1)
-            {
-              if (TREE_CODE (x) != INTEGER_CST)
-                GCC_BAD ("invalid constant in %<#pragma pack%> - ignored");
-              align = TREE_INT_CST_LOW (x);
-              if (align == -1)
-                action = set;
-            }
-          else
-            GCC_BAD_ACTION;
-        }
+	{
+	  token = pragma_lex (&x);
+	  if (token == CPP_NAME && id == 0)
+	    {
+	      id = x;
+	    }
+	  else if (token == CPP_NUMBER && action == push && align == -1)
+	    {
+	      if (TREE_CODE (x) != INTEGER_CST)
+		GCC_BAD ("invalid constant in %<#pragma pack%> - ignored");
+	      align = TREE_INT_CST_LOW (x);
+	      if (align == -1)
+		action = set;
+	    }
+	  else
+	    GCC_BAD_ACTION;
+	}
 
       if (token != CPP_CLOSE_PAREN)
-        GCC_BAD_ACTION;
+	GCC_BAD_ACTION;
 #undef GCC_BAD_ACTION
     }
   else
@@ -224,23 +224,23 @@ handle_pragma_pack (cpp_reader * ARG_UNUSED (dummy))
       case 4:
       case 8:
       case 16:
-        align *= BITS_PER_UNIT;
-        break;
+	align *= BITS_PER_UNIT;
+	break;
       case -1:
-        if (action == push)
-          {
-            align = maximum_field_alignment;
-            break;
-          }
+	if (action == push)
+	  {
+	    align = maximum_field_alignment;
+	    break;
+	  }
       default:
-        GCC_BAD2 ("alignment must be a small power of two, not %d", align);
+	GCC_BAD2 ("alignment must be a small power of two, not %d", align);
       }
 
   switch (action)
     {
     case set:   SET_GLOBAL_ALIGNMENT (align);  break;
     case push:  push_alignment (align, id);    break;
-    case pop:   pop_alignment (id);               break;
+    case pop:   pop_alignment (id);	       break;
     }
 }
 #endif  /* HANDLE_PRAGMA_PACK */
@@ -257,17 +257,17 @@ apply_pragma_weak (tree decl, tree value)
   if (value)
     {
       value = build_string (IDENTIFIER_LENGTH (value),
-                            IDENTIFIER_POINTER (value));
+			    IDENTIFIER_POINTER (value));
       decl_attributes (&decl, build_tree_list (get_identifier ("alias"),
-                                               build_tree_list (NULL, value)),
-                       0);
+					       build_tree_list (NULL, value)),
+		       0);
     }
 
   if (SUPPORTS_WEAK && DECL_EXTERNAL (decl) && TREE_USED (decl)
       && !DECL_WEAK (decl) /* Don't complain about a redundant #pragma.  */
       && TREE_SYMBOL_REFERENCED (DECL_ASSEMBLER_NAME (decl)))
     warning (OPT_Wpragmas, "applying #pragma weak %q+D after first use "
-             "results in unspecified behavior", decl);
+	     "results in unspecified behavior", decl);
 
   declare_weak (decl);
 }
@@ -297,9 +297,9 @@ maybe_apply_pragma_weak (tree decl)
   for (p = &pending_weaks; (t = *p) ; p = &TREE_CHAIN (t))
     if (id == TREE_PURPOSE (t))
       {
-        apply_pragma_weak (decl, TREE_VALUE (t));
-        *p = TREE_CHAIN (t);
-        break;
+	apply_pragma_weak (decl, TREE_VALUE (t));
+	*p = TREE_CHAIN (t);
+	break;
       }
 }
 
@@ -317,7 +317,7 @@ maybe_apply_pending_pragma_weaks (void)
       id = TREE_VALUE (t);
 
       if (TREE_VALUE (t) == NULL)
-        continue;
+	continue;
 
       decl = build_decl (FUNCTION_DECL, alias_id, default_function_type);
 
@@ -345,7 +345,7 @@ handle_pragma_weak (cpp_reader * ARG_UNUSED (dummy))
   if (t == CPP_EQ)
     {
       if (pragma_lex (&value) != CPP_NAME)
-        GCC_BAD ("malformed #pragma weak, ignored");
+	GCC_BAD ("malformed #pragma weak, ignored");
       t = pragma_lex (&x);
     }
   if (t != CPP_EOF)
@@ -356,7 +356,7 @@ handle_pragma_weak (cpp_reader * ARG_UNUSED (dummy))
     {
       apply_pragma_weak (decl, value);
       if (value)
-        assemble_alias (decl, value);
+	assemble_alias (decl, value);
     }
   else
     pending_weaks = tree_cons (name, value, pending_weaks);
@@ -427,8 +427,8 @@ handle_pragma_redefine_extname (cpp_reader * ARG_UNUSED (dummy))
   if (!flag_mudflap && !targetm.handle_pragma_redefine_extname)
     {
       if (warn_unknown_pragmas > in_system_header)
-        warning (OPT_Wunknown_pragmas,
-                 "#pragma redefine_extname not supported on this target");
+	warning (OPT_Wunknown_pragmas,
+		 "#pragma redefine_extname not supported on this target");
       return;
     }
 
@@ -436,20 +436,20 @@ handle_pragma_redefine_extname (cpp_reader * ARG_UNUSED (dummy))
   if (decl
       && (TREE_PUBLIC (decl) || DECL_EXTERNAL (decl))
       && (TREE_CODE (decl) == FUNCTION_DECL
-          || TREE_CODE (decl) == VAR_DECL)
+	  || TREE_CODE (decl) == VAR_DECL)
       && has_c_linkage (decl))
     {
       if (DECL_ASSEMBLER_NAME_SET_P (decl))
-        {
-          const char *name = IDENTIFIER_POINTER (DECL_ASSEMBLER_NAME (decl));
-          name = targetm.strip_name_encoding (name);
+	{
+	  const char *name = IDENTIFIER_POINTER (DECL_ASSEMBLER_NAME (decl));
+	  name = targetm.strip_name_encoding (name);
 
-          if (strcmp (name, IDENTIFIER_POINTER (newname)))
-            warning (OPT_Wpragmas, "#pragma redefine_extname ignored due to "
-                     "conflict with previous rename");
-        }
+	  if (strcmp (name, IDENTIFIER_POINTER (newname)))
+	    warning (OPT_Wpragmas, "#pragma redefine_extname ignored due to "
+		     "conflict with previous rename");
+	}
       else
-        change_decl_assembler_name (decl, newname);
+	change_decl_assembler_name (decl, newname);
     }
   else
     /* We have to add this to the rename list even if there's already
@@ -468,8 +468,8 @@ add_to_renaming_pragma_list (tree oldname, tree newname)
   if (previous)
     {
       if (TREE_VALUE (previous) != newname)
-        warning (OPT_Wpragmas, "#pragma redefine_extname ignored due to "
-                 "conflict with previous #pragma redefine_extname");
+	warning (OPT_Wpragmas, "#pragma redefine_extname ignored due to "
+		 "conflict with previous #pragma redefine_extname");
       return;
     }
 
@@ -497,7 +497,7 @@ handle_pragma_extern_prefix (cpp_reader * ARG_UNUSED (dummy))
     pragma_extern_prefix = (TREE_STRING_LENGTH (prefix) > 1 ? prefix : NULL);
   else if (warn_unknown_pragmas > in_system_header)
     warning (OPT_Wunknown_pragmas,
-             "#pragma extern_prefix not supported on this target");
+	     "#pragma extern_prefix not supported on this target");
 }
 
 /* Hook from the front ends to apply the results of one of the preceding
@@ -523,21 +523,21 @@ maybe_apply_renaming_pragma (tree decl, tree asmname)
       oldname = targetm.strip_name_encoding (oldname);
 
       if (asmname && strcmp (TREE_STRING_POINTER (asmname), oldname))
-          warning (OPT_Wpragmas, "asm declaration ignored due to "
-                   "conflict with previous rename");
+	  warning (OPT_Wpragmas, "asm declaration ignored due to "
+		   "conflict with previous rename");
 
       /* Take any pending redefine_extname off the list.  */
       for (p = &pending_redefine_extname; (t = *p); p = &TREE_CHAIN (t))
-        if (DECL_NAME (decl) == TREE_PURPOSE (t))
-          {
-            /* Only warn if there is a conflict.  */
-            if (strcmp (IDENTIFIER_POINTER (TREE_VALUE (t)), oldname))
-              warning (OPT_Wpragmas, "#pragma redefine_extname ignored due to "
-                       "conflict with previous rename");
+	if (DECL_NAME (decl) == TREE_PURPOSE (t))
+	  {
+	    /* Only warn if there is a conflict.  */
+	    if (strcmp (IDENTIFIER_POINTER (TREE_VALUE (t)), oldname))
+	      warning (OPT_Wpragmas, "#pragma redefine_extname ignored due to "
+		       "conflict with previous rename");
 
-            *p = TREE_CHAIN (t);
-            break;
-          }
+	    *p = TREE_CHAIN (t);
+	    break;
+	  }
       return 0;
     }
 
@@ -545,24 +545,24 @@ maybe_apply_renaming_pragma (tree decl, tree asmname)
   for (p = &pending_redefine_extname; (t = *p); p = &TREE_CHAIN (t))
     if (DECL_NAME (decl) == TREE_PURPOSE (t))
       {
-        tree newname = TREE_VALUE (t);
-        *p = TREE_CHAIN (t);
+	tree newname = TREE_VALUE (t);
+	*p = TREE_CHAIN (t);
 
-        /* If we already have an asmname, #pragma redefine_extname is
-           ignored (with a warning if it conflicts).  */
-        if (asmname)
-          {
-            if (strcmp (TREE_STRING_POINTER (asmname),
-                        IDENTIFIER_POINTER (newname)) != 0)
-              warning (OPT_Wpragmas, "#pragma redefine_extname ignored due to "
-                       "conflict with __asm__ declaration");
-            return asmname;
-          }
+	/* If we already have an asmname, #pragma redefine_extname is
+	   ignored (with a warning if it conflicts).  */
+	if (asmname)
+	  {
+	    if (strcmp (TREE_STRING_POINTER (asmname),
+			IDENTIFIER_POINTER (newname)) != 0)
+	      warning (OPT_Wpragmas, "#pragma redefine_extname ignored due to "
+		       "conflict with __asm__ declaration");
+	    return asmname;
+	  }
 
-        /* Otherwise we use what we've got; #pragma extern_prefix is
-           silently ignored.  */
-        return build_string (IDENTIFIER_LENGTH (newname),
-                             IDENTIFIER_POINTER (newname));
+	/* Otherwise we use what we've got; #pragma extern_prefix is
+	   silently ignored.  */
+	return build_string (IDENTIFIER_LENGTH (newname),
+			     IDENTIFIER_POINTER (newname));
       }
 
   /* If we've got an asmname, #pragma extern_prefix is silently ignored.  */
@@ -606,7 +606,7 @@ void
 push_visibility (const char *str)
 {
   VEC_safe_push (visibility, heap, visstack,
-                 default_visibility);
+		 default_visibility);
   if (!strcmp (str, "default"))
     default_visibility = VISIBILITY_DEFAULT;
   else if (!strcmp (str, "internal"))
@@ -646,33 +646,33 @@ handle_pragma_visibility (cpp_reader *dummy ATTRIBUTE_UNUSED)
     {
       const char *op = IDENTIFIER_POINTER (x);
       if (!strcmp (op, "push"))
-        action = push;
+	action = push;
       else if (!strcmp (op, "pop"))
-        action = pop;
+	action = pop;
     }
   if (bad == action)
     GCC_BAD ("#pragma GCC visibility must be followed by push or pop");
   else
     {
       if (pop == action)
-        {
-          if (!VEC_length (visibility, visstack))
-            GCC_BAD ("no matching push for %<#pragma GCC visibility pop%>");
-          else
-            pop_visibility ();
-        }
+	{
+	  if (!VEC_length (visibility, visstack))
+	    GCC_BAD ("no matching push for %<#pragma GCC visibility pop%>");
+	  else
+	    pop_visibility ();
+	}
       else
-        {
-          if (pragma_lex (&x) != CPP_OPEN_PAREN)
-            GCC_BAD ("missing %<(%> after %<#pragma GCC visibility push%> - ignored");
-          token = pragma_lex (&x);
-          if (token != CPP_NAME)
-            GCC_BAD ("malformed #pragma GCC visibility push");
-          else
-            push_visibility (IDENTIFIER_POINTER (x));
-          if (pragma_lex (&x) != CPP_CLOSE_PAREN)
-            GCC_BAD ("missing %<(%> after %<#pragma GCC visibility push%> - ignored");
-        }
+	{
+	  if (pragma_lex (&x) != CPP_OPEN_PAREN)
+	    GCC_BAD ("missing %<(%> after %<#pragma GCC visibility push%> - ignored");
+	  token = pragma_lex (&x);
+	  if (token != CPP_NAME)
+	    GCC_BAD ("malformed #pragma GCC visibility push");
+	  else
+	    push_visibility (IDENTIFIER_POINTER (x));
+	  if (pragma_lex (&x) != CPP_CLOSE_PAREN)
+	    GCC_BAD ("missing %<(%> after %<#pragma GCC visibility push%> - ignored");
+	}
     }
   if (pragma_lex (&x) != CPP_EOF)
     warning (OPT_Wpragmas, "junk at end of %<#pragma GCC visibility%>");
@@ -715,14 +715,14 @@ handle_pragma_diagnostic(cpp_reader *ARG_UNUSED(dummy))
   for (option_index = 0; option_index < cl_options_count; option_index++)
     if (strcmp (cl_options[option_index].opt_text, option_string) == 0)
       {
-        /* This overrides -Werror, for example.  */
-        diagnostic_classify_diagnostic (global_dc, option_index, kind);
-        /* This makes sure the option is enabled, like -Wfoo would do.  */
-        if (cl_options[option_index].var_type == CLVC_BOOLEAN
-            && cl_options[option_index].flag_var
-            && kind != DK_IGNORED)
-            *(int *) cl_options[option_index].flag_var = 1;
-        return;
+	/* This overrides -Werror, for example.  */
+	diagnostic_classify_diagnostic (global_dc, option_index, kind);
+	/* This makes sure the option is enabled, like -Wfoo would do.  */
+	if (cl_options[option_index].var_type == CLVC_BOOLEAN
+	    && cl_options[option_index].flag_var
+	    && kind != DK_IGNORED)
+	    *(int *) cl_options[option_index].flag_var = 1;
+	return;
       }
   GCC_BAD ("unknown option after %<#pragma GCC diagnostic%> kind");
 }
@@ -739,7 +739,7 @@ static VEC(pragma_handler, heap) *registered_pragmas;
 
 static void
 c_register_pragma_1 (const char *space, const char *name,
-                     pragma_handler handler, bool allow_expansion)
+		     pragma_handler handler, bool allow_expansion)
 {
   unsigned id;
 
@@ -752,7 +752,7 @@ c_register_pragma_1 (const char *space, const char *name,
   gcc_assert (id < 64);
 
   cpp_register_deferred_pragma (parse_in, space, name, id,
-                                allow_expansion, false);
+				allow_expansion, false);
 }
 
 void
@@ -763,7 +763,7 @@ c_register_pragma (const char *space, const char *name, pragma_handler handler)
 
 void
 c_register_pragma_with_expansion (const char *space, const char *name,
-                                  pragma_handler handler)
+				  pragma_handler handler)
 {
   c_register_pragma_1 (space, name, handler, true);
 }
@@ -787,30 +787,30 @@ init_pragma (void)
     {
       struct omp_pragma_def { const char *name; unsigned int id; };
       static const struct omp_pragma_def omp_pragmas[] = {
-        { "atomic", PRAGMA_OMP_ATOMIC },
-        { "barrier", PRAGMA_OMP_BARRIER },
-        { "critical", PRAGMA_OMP_CRITICAL },
-        { "flush", PRAGMA_OMP_FLUSH },
-        { "for", PRAGMA_OMP_FOR },
-        { "master", PRAGMA_OMP_MASTER },
-        { "ordered", PRAGMA_OMP_ORDERED },
-        { "parallel", PRAGMA_OMP_PARALLEL },
-        { "section", PRAGMA_OMP_SECTION },
-        { "sections", PRAGMA_OMP_SECTIONS },
-        { "single", PRAGMA_OMP_SINGLE },
-        { "threadprivate", PRAGMA_OMP_THREADPRIVATE }
+	{ "atomic", PRAGMA_OMP_ATOMIC },
+	{ "barrier", PRAGMA_OMP_BARRIER },
+	{ "critical", PRAGMA_OMP_CRITICAL },
+	{ "flush", PRAGMA_OMP_FLUSH },
+	{ "for", PRAGMA_OMP_FOR },
+	{ "master", PRAGMA_OMP_MASTER },
+	{ "ordered", PRAGMA_OMP_ORDERED },
+	{ "parallel", PRAGMA_OMP_PARALLEL },
+	{ "section", PRAGMA_OMP_SECTION },
+	{ "sections", PRAGMA_OMP_SECTIONS },
+	{ "single", PRAGMA_OMP_SINGLE },
+	{ "threadprivate", PRAGMA_OMP_THREADPRIVATE }
       };
 
       const int n_omp_pragmas = sizeof (omp_pragmas) / sizeof (*omp_pragmas);
       int i;
 
       for (i = 0; i < n_omp_pragmas; ++i)
-        cpp_register_deferred_pragma (parse_in, "omp", omp_pragmas[i].name,
-                                      omp_pragmas[i].id, true, true);
+	cpp_register_deferred_pragma (parse_in, "omp", omp_pragmas[i].name,
+				      omp_pragmas[i].id, true, true);
     }
 
   cpp_register_deferred_pragma (parse_in, "GCC", "pch_preprocess",
-                                PRAGMA_GCC_PCH_PREPROCESS, false, false);
+				PRAGMA_GCC_PCH_PREPROCESS, false, false);
 
 #ifdef HANDLE_PRAGMA_PACK
 #ifdef HANDLE_PRAGMA_PACK_WITH_EXPANSION

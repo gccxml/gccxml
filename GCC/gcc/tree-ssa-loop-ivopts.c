@@ -35,21 +35,21 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
 
       -- old induction variables
       -- the variables defined by expressions derived from the "interesting
-         uses" above
+	 uses" above
 
    3) The optimal (w.r. to a cost function) set of variables is chosen.  The
       cost function assigns a cost to sets of induction variables and consists
       of three parts:
 
       -- The use costs.  Each of the interesting uses chooses the best induction
-         variable in the set and adds its cost to the sum.  The cost reflects
-         the time spent on modifying the induction variables value to be usable
-         for the given purpose (adding base and offset for arrays, etc.).
+	 variable in the set and adds its cost to the sum.  The cost reflects
+	 the time spent on modifying the induction variables value to be usable
+	 for the given purpose (adding base and offset for arrays, etc.).
       -- The variable costs.  Each of the variables has a cost assigned that
-         reflects the costs associated with incrementing the value of the
-         variable.  The original variables are somewhat preferred.
+	 reflects the costs associated with incrementing the value of the
+	 variable.  The original variables are somewhat preferred.
       -- The set cost.  Depending on the size of the set, extra cost may be
-         added to reflect register pressure.
+	 added to reflect register pressure.
 
       All the costs are defined in a machine-specific way, using the target
       hooks and machine descriptions to determine them.
@@ -101,91 +101,91 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
 /* Representation of the induction variable.  */
 struct iv
 {
-  tree base;                /* Initial value of the iv.  */
-  tree base_object;        /* A memory object to that the induction variable points.  */
-  tree step;                /* Step of the iv (constant only).  */
-  tree ssa_name;        /* The ssa name with the value.  */
-  bool biv_p;                /* Is it a biv?  */
-  bool have_use_for;        /* Do we already have a use for it?  */
-  unsigned use_id;        /* The identifier in the use if it is the case.  */
+  tree base;		/* Initial value of the iv.  */
+  tree base_object;	/* A memory object to that the induction variable points.  */
+  tree step;		/* Step of the iv (constant only).  */
+  tree ssa_name;	/* The ssa name with the value.  */
+  bool biv_p;		/* Is it a biv?  */
+  bool have_use_for;	/* Do we already have a use for it?  */
+  unsigned use_id;	/* The identifier in the use if it is the case.  */
 };
 
 /* Per-ssa version information (induction variable descriptions, etc.).  */
 struct version_info
 {
-  tree name;                /* The ssa name.  */
-  struct iv *iv;        /* Induction variable description.  */
-  bool has_nonlin_use;        /* For a loop-level invariant, whether it is used in
-                           an expression that is not an induction variable.  */
-  unsigned inv_id;        /* Id of an invariant.  */
-  bool preserve_biv;        /* For the original biv, whether to preserve it.  */
+  tree name;		/* The ssa name.  */
+  struct iv *iv;	/* Induction variable description.  */
+  bool has_nonlin_use;	/* For a loop-level invariant, whether it is used in
+			   an expression that is not an induction variable.  */
+  unsigned inv_id;	/* Id of an invariant.  */
+  bool preserve_biv;	/* For the original biv, whether to preserve it.  */
 };
 
 /* Types of uses.  */
 enum use_type
 {
-  USE_NONLINEAR_EXPR,        /* Use in a nonlinear expression.  */
-  USE_ADDRESS,                /* Use in an address.  */
-  USE_COMPARE                /* Use is a compare.  */
+  USE_NONLINEAR_EXPR,	/* Use in a nonlinear expression.  */
+  USE_ADDRESS,		/* Use in an address.  */
+  USE_COMPARE		/* Use is a compare.  */
 };
 
 /* The candidate - cost pair.  */
 struct cost_pair
 {
-  struct iv_cand *cand;        /* The candidate.  */
-  unsigned cost;        /* The cost.  */
-  bitmap depends_on;        /* The list of invariants that have to be
-                           preserved.  */
-  tree value;                /* For final value elimination, the expression for
-                           the final value of the iv.  For iv elimination,
-                           the new bound to compare with.  */
+  struct iv_cand *cand;	/* The candidate.  */
+  unsigned cost;	/* The cost.  */
+  bitmap depends_on;	/* The list of invariants that have to be
+			   preserved.  */
+  tree value;		/* For final value elimination, the expression for
+			   the final value of the iv.  For iv elimination,
+			   the new bound to compare with.  */
 };
 
 /* Use.  */
 struct iv_use
 {
-  unsigned id;                /* The id of the use.  */
-  enum use_type type;        /* Type of the use.  */
-  struct iv *iv;        /* The induction variable it is based on.  */
-  tree stmt;                /* Statement in that it occurs.  */
-  tree *op_p;                /* The place where it occurs.  */
-  bitmap related_cands;        /* The set of "related" iv candidates, plus the common
-                           important ones.  */
+  unsigned id;		/* The id of the use.  */
+  enum use_type type;	/* Type of the use.  */
+  struct iv *iv;	/* The induction variable it is based on.  */
+  tree stmt;		/* Statement in that it occurs.  */
+  tree *op_p;		/* The place where it occurs.  */
+  bitmap related_cands;	/* The set of "related" iv candidates, plus the common
+			   important ones.  */
 
   unsigned n_map_members; /* Number of candidates in the cost_map list.  */
   struct cost_pair *cost_map;
-                        /* The costs wrto the iv candidates.  */
+			/* The costs wrto the iv candidates.  */
 
   struct iv_cand *selected;
-                        /* The selected candidate.  */
+			/* The selected candidate.  */
 };
 
 /* The position where the iv is computed.  */
 enum iv_position
 {
-  IP_NORMAL,                /* At the end, just before the exit condition.  */
-  IP_END,                /* At the end of the latch block.  */
-  IP_ORIGINAL                /* The original biv.  */
+  IP_NORMAL,		/* At the end, just before the exit condition.  */
+  IP_END,		/* At the end of the latch block.  */
+  IP_ORIGINAL		/* The original biv.  */
 };
 
 /* The induction variable candidate.  */
 struct iv_cand
 {
-  unsigned id;                /* The number of the candidate.  */
-  bool important;        /* Whether this is an "important" candidate, i.e. such
-                           that it should be considered by all uses.  */
-  enum iv_position pos;        /* Where it is computed.  */
-  tree incremented_at;        /* For original biv, the statement where it is
-                           incremented.  */
-  tree var_before;        /* The variable used for it before increment.  */
-  tree var_after;        /* The variable used for it after increment.  */
-  struct iv *iv;        /* The value of the candidate.  NULL for
-                           "pseudocandidate" used to indicate the possibility
-                           to replace the final value of an iv by direct
-                           computation of the value.  */
-  unsigned cost;        /* Cost of the candidate.  */
-  bitmap depends_on;        /* The list of invariants that are used in step of the
-                           biv.  */
+  unsigned id;		/* The number of the candidate.  */
+  bool important;	/* Whether this is an "important" candidate, i.e. such
+			   that it should be considered by all uses.  */
+  enum iv_position pos;	/* Where it is computed.  */
+  tree incremented_at;	/* For original biv, the statement where it is
+			   incremented.  */
+  tree var_before;	/* The variable used for it before increment.  */
+  tree var_after;	/* The variable used for it after increment.  */
+  struct iv *iv;	/* The value of the candidate.  NULL for
+			   "pseudocandidate" used to indicate the possibility
+			   to replace the final value of an iv by direct
+			   computation of the value.  */
+  unsigned cost;	/* Cost of the candidate.  */
+  bitmap depends_on;	/* The list of invariants that are used in step of the
+			   biv.  */
 };
 
 /* The data used by the induction variable optimizations.  */
@@ -476,7 +476,7 @@ dump_cand (FILE *file, struct iv_cand *cand)
   struct iv *iv = cand->iv;
 
   fprintf (file, "candidate %d%s\n",
-           cand->id, cand->important ? " (important)" : "");
+	   cand->id, cand->important ? " (important)" : "");
 
   if (cand->depends_on)
     {
@@ -529,7 +529,7 @@ name_info (struct ivopts_data *data, tree name)
 
 static bool
 divide (unsigned bits, unsigned HOST_WIDE_INT a, unsigned HOST_WIDE_INT b,
-        HOST_WIDE_INT *x)
+	HOST_WIDE_INT *x)
 {
   unsigned HOST_WIDE_INT mask = ~(~(unsigned HOST_WIDE_INT) 0 << (bits - 1) << 1);
   unsigned HOST_WIDE_INT inv, ex, val;
@@ -615,9 +615,9 @@ stmt_after_ip_original_pos (struct iv_cand *cand, tree stmt)
   for (bsi = bsi_last (stmt_bb); ; bsi_prev (&bsi))
     {
       if (bsi_stmt (bsi) == cand->incremented_at)
-        return false;
+	return false;
       if (bsi_stmt (bsi) == stmt)
-        return true;
+	return true;
     }
 }
 
@@ -662,14 +662,14 @@ abnormal_ssa_name_p (tree exp)
 
 static bool
 idx_contains_abnormal_ssa_name_p (tree base, tree *index,
-                                  void *data ATTRIBUTE_UNUSED)
+				  void *data ATTRIBUTE_UNUSED)
 {
   if (TREE_CODE (base) == ARRAY_REF)
     {
       if (abnormal_ssa_name_p (TREE_OPERAND (base, 2)))
-        return false;
+	return false;
       if (abnormal_ssa_name_p (TREE_OPERAND (base, 3)))
-        return false;
+	return false;
     }
 
   return !abnormal_ssa_name_p (*index);
@@ -699,20 +699,20 @@ contains_abnormal_ssa_name_p (tree expr)
 
   if (code == ADDR_EXPR)
     return !for_each_index (&TREE_OPERAND (expr, 0),
-                            idx_contains_abnormal_ssa_name_p,
-                            NULL);
+			    idx_contains_abnormal_ssa_name_p,
+			    NULL);
 
   switch (class)
     {
     case tcc_binary:
     case tcc_comparison:
       if (contains_abnormal_ssa_name_p (TREE_OPERAND (expr, 1)))
-        return true;
+	return true;
 
       /* Fallthru.  */
     case tcc_unary:
       if (contains_abnormal_ssa_name_p (TREE_OPERAND (expr, 0)))
-        return true;
+	return true;
 
       break;
 
@@ -767,8 +767,8 @@ niter_for_exit (struct ivopts_data *data, edge exit)
   PTR *slot;
 
   slot = htab_find_slot_with_hash (data->niters, exit,
-                                   htab_hash_pointer (exit),
-                                   INSERT);
+				   htab_hash_pointer (exit),
+				   INSERT);
 
   if (!*slot)
     {
@@ -776,17 +776,17 @@ niter_for_exit (struct ivopts_data *data, edge exit)
       nfe_desc->exit = exit;
 
       /* Try to determine number of iterations.  We must know it
-         unconditionally (i.e., without possibility of # of iterations
-         being zero).  Also, we cannot safely work with ssa names that
-         appear in phi nodes on abnormal edges, so that we do not create
-         overlapping life ranges for them (PR 27283).  */
+	 unconditionally (i.e., without possibility of # of iterations
+	 being zero).  Also, we cannot safely work with ssa names that
+	 appear in phi nodes on abnormal edges, so that we do not create
+	 overlapping life ranges for them (PR 27283).  */
       if (number_of_iterations_exit (data->current_loop,
-                                     exit, &desc, true)
-          && zero_p (desc.may_be_zero)
-               && !contains_abnormal_ssa_name_p (desc.niter))
-        nfe_desc->niter = desc.niter;
+				     exit, &desc, true)
+	  && zero_p (desc.may_be_zero)
+     	  && !contains_abnormal_ssa_name_p (desc.niter))
+	nfe_desc->niter = desc.niter;
       else
-        nfe_desc->niter = NULL_TREE;
+	nfe_desc->niter = NULL_TREE;
     }
   else
     nfe_desc = *slot;
@@ -855,13 +855,13 @@ determine_base_object (tree expr)
       base = get_base_address (obj);
 
       if (!base)
-        return expr;
+	return expr;
 
       if (TREE_CODE (base) == INDIRECT_REF)
-        return determine_base_object (TREE_OPERAND (base, 0));
+	return determine_base_object (TREE_OPERAND (base, 0));
 
       return fold_convert (ptr_type_node,
-                           build_fold_addr_expr (base));
+		           build_fold_addr_expr (base));
 
     case PLUS_EXPR:
     case MINUS_EXPR:
@@ -869,12 +869,12 @@ determine_base_object (tree expr)
       op1 = determine_base_object (TREE_OPERAND (expr, 1));
       
       if (!op1)
-        return op0;
+	return op0;
 
       if (!op0)
-        return (code == PLUS_EXPR
-                ? op1
-                : fold_build1 (NEGATE_EXPR, ptr_type_node, op1));
+	return (code == PLUS_EXPR
+		? op1
+		: fold_build1 (NEGATE_EXPR, ptr_type_node, op1));
 
       return fold_build2 (code, ptr_type_node, op0, op1);
 
@@ -931,8 +931,8 @@ get_iv (struct ivopts_data *data, tree var)
       bb = bb_for_stmt (SSA_NAME_DEF_STMT (var));
 
       if (!bb
-          || !flow_bb_inside_loop_p (data->current_loop, bb))
-        set_iv (data, var, var, NULL_TREE);
+	  || !flow_bb_inside_loop_p (data->current_loop, bb))
+	set_iv (data, var, var, NULL_TREE);
     }
 
   return name_info (data, var)->iv;
@@ -969,22 +969,22 @@ find_bivs (struct ivopts_data *data)
   for (phi = phi_nodes (loop->header); phi; phi = PHI_CHAIN (phi))
     {
       if (SSA_NAME_OCCURS_IN_ABNORMAL_PHI (PHI_RESULT (phi)))
-        continue;
+	continue;
 
       step = determine_biv_step (phi);
       if (!step)
-        continue;
+	continue;
 
       base = PHI_ARG_DEF_FROM_EDGE (phi, loop_preheader_edge (loop));
       base = expand_simple_operations (base);
       if (contains_abnormal_ssa_name_p (base)
-          || contains_abnormal_ssa_name_p (step))
-        continue;
+	  || contains_abnormal_ssa_name_p (step))
+	continue;
 
       type = TREE_TYPE (PHI_RESULT (phi));
       base = fold_convert (type, base);
       if (step)
-        step = fold_convert (type, step);
+	step = fold_convert (type, step);
 
       set_iv (data, PHI_RESULT (phi), base, step);
       found = true;
@@ -1007,18 +1007,18 @@ mark_bivs (struct ivopts_data *data)
     {
       iv = get_iv (data, PHI_RESULT (phi));
       if (!iv)
-        continue;
+	continue;
 
       var = PHI_ARG_DEF_FROM_EDGE (phi, loop_latch_edge (loop));
       incr_iv = get_iv (data, var);
       if (!incr_iv)
-        continue;
+	continue;
 
       /* If the increment is in the subloop, ignore it.  */
       incr_bb = bb_for_stmt (SSA_NAME_DEF_STMT (var));
       if (incr_bb->loop_father != data->current_loop
-          || (incr_bb->flags & BB_IRREDUCIBLE_LOOP))
-        continue;
+	  || (incr_bb->flags & BB_IRREDUCIBLE_LOOP))
+	continue;
 
       iv->biv_p = true;
       incr_iv->biv_p = true;
@@ -1113,19 +1113,19 @@ find_induction_variables (struct ivopts_data *data)
       tree niter = niter_for_single_dom_exit (data);
 
       if (niter)
-        {
-          fprintf (dump_file, "  number of iterations ");
-          print_generic_expr (dump_file, niter, TDF_SLIM);
-          fprintf (dump_file, "\n\n");
-            };
+	{
+	  fprintf (dump_file, "  number of iterations ");
+	  print_generic_expr (dump_file, niter, TDF_SLIM);
+	  fprintf (dump_file, "\n\n");
+    	};
  
       fprintf (dump_file, "Induction variables:\n\n");
 
       EXECUTE_IF_SET_IN_BITMAP (data->relevant, 0, i, bi)
-        {
-          if (ver_info (data, i)->iv)
-            dump_iv (dump_file, ver_info (data, i)->iv);
-        }
+	{
+	  if (ver_info (data, i)->iv)
+	    dump_iv (dump_file, ver_info (data, i)->iv);
+	}
     }
 
   return true;
@@ -1135,7 +1135,7 @@ find_induction_variables (struct ivopts_data *data)
 
 static struct iv_use *
 record_use (struct ivopts_data *data, tree *use_p, struct iv *iv,
-            tree stmt, enum use_type use_type)
+	    tree stmt, enum use_type use_type)
 {
   struct iv_use *use = XCNEW (struct iv_use);
 
@@ -1222,7 +1222,7 @@ find_interesting_uses_op (struct ivopts_data *data, tree op)
 
   stmt = SSA_NAME_DEF_STMT (op);
   gcc_assert (TREE_CODE (stmt) == PHI_NODE
-              || TREE_CODE (stmt) == MODIFY_EXPR);
+	      || TREE_CODE (stmt) == MODIFY_EXPR);
 
   use = record_use (data, NULL, civ, stmt, USE_NONLINEAR_EXPR);
   iv->use_id = use->id;
@@ -1270,10 +1270,10 @@ find_interesting_uses_cond (struct ivopts_data *data, tree stmt, tree *cond_p)
     iv1 = &const_iv;
 
   if (/* When comparing with non-invariant value, we may not do any senseful
-         induction variable elimination.  */
+	 induction variable elimination.  */
       (!iv0 || !iv1)
       /* Eliminating condition based on two ivs would be nontrivial.
-         ??? TODO -- it is not really important to handle this case.  */
+	 ??? TODO -- it is not really important to handle this case.  */
       || (!zero_p (iv0->step) && !zero_p (iv1->step)))
     {
       find_interesting_uses_op (data, *op0_p);
@@ -1308,8 +1308,8 @@ expr_invariant_in_loop_p (struct loop *loop, tree expr)
     {
       def_bb = bb_for_stmt (SSA_NAME_DEF_STMT (expr));
       if (def_bb
-          && flow_bb_inside_loop_p (loop, def_bb))
-        return false;
+	  && flow_bb_inside_loop_p (loop, def_bb))
+	return false;
 
       return true;
     }
@@ -1366,8 +1366,8 @@ idx_find_step (tree base, tree *idx, void *data)
       lbound = array_ref_low_bound (base);
 
       if (!expr_invariant_in_loop_p (loop, step)
-          || !expr_invariant_in_loop_p (loop, lbound))
-        return false;
+	  || !expr_invariant_in_loop_p (loop, lbound))
+	return false;
     }
 
   if (TREE_CODE (*idx) != SSA_NAME)
@@ -1378,8 +1378,8 @@ idx_find_step (tree base, tree *idx, void *data)
     return false;
 
   /* XXX  We produce for a base of *D42 with iv->base being &x[0]
-          *&x[0], which is not folded and does not trigger the
-          ARRAY_REF path below.  */
+	  *&x[0], which is not folded and does not trigger the
+	  ARRAY_REF path below.  */
   *idx = iv->base;
 
   if (!iv->step)
@@ -1391,7 +1391,7 @@ idx_find_step (tree base, tree *idx, void *data)
 
       /* We only handle addresses whose step is an integer constant.  */
       if (TREE_CODE (step) != INTEGER_CST)
-        return false;
+	return false;
     }
   else
     /* The step for pointer arithmetics already is 1 byte.  */
@@ -1400,8 +1400,8 @@ idx_find_step (tree base, tree *idx, void *data)
   iv_base = iv->base;
   iv_step = iv->step;
   if (!convert_affine_scev (dta->ivopts_data->current_loop,
-                            sizetype, &iv_base, &iv_step, dta->stmt,
-                            false))
+			    sizetype, &iv_base, &iv_step, dta->stmt,
+			    false))
     {
       /* The index might wrap.  */
       return false;
@@ -1422,7 +1422,7 @@ idx_find_step (tree base, tree *idx, void *data)
 
 static bool
 idx_record_use (tree base, tree *idx,
-                void *data)
+		void *data)
 {
   find_interesting_uses_op (data, *idx);
   if (TREE_CODE (base) == ARRAY_REF)
@@ -1456,14 +1456,14 @@ may_be_unaligned_p (tree ref)
      does to check whether the object must be loaded by parts when
      STRICT_ALIGNMENT is true.  */
   base = get_inner_reference (ref, &bitsize, &bitpos, &toffset, &mode,
-                              &unsignedp, &volatilep, true);
+			      &unsignedp, &volatilep, true);
   base_type = TREE_TYPE (base);
   base_align = TYPE_ALIGN (base_type);
 
   if (mode != BLKmode
       && (base_align < GET_MODE_ALIGNMENT (mode)
-          || bitpos % GET_MODE_ALIGNMENT (mode) != 0
-          || bitpos % BITS_PER_UNIT != 0))
+	  || bitpos % GET_MODE_ALIGNMENT (mode) != 0
+	  || bitpos % BITS_PER_UNIT != 0))
     return true;
 
   return false;
@@ -1478,7 +1478,7 @@ may_be_nonaddressable_p (tree expr)
     {
     case COMPONENT_REF:
       return DECL_NONADDRESSABLE_P (TREE_OPERAND (expr, 1))
-             || may_be_nonaddressable_p (TREE_OPERAND (expr, 0));
+	     || may_be_nonaddressable_p (TREE_OPERAND (expr, 0));
 
     case ARRAY_REF:
     case ARRAY_RANGE_REF:
@@ -1486,11 +1486,11 @@ may_be_nonaddressable_p (tree expr)
 
     case VIEW_CONVERT_EXPR:
       /* This kind of view-conversions may wrap non-addressable objects
-         and make them look addressable.  After some processing the
-         non-addressability may be uncovered again, causing ADDR_EXPRs
-         of inappropriate objects to be built.  */
+	 and make them look addressable.  After some processing the
+	 non-addressability may be uncovered again, causing ADDR_EXPRs
+	 of inappropriate objects to be built.  */
       return AGGREGATE_TYPE_P (TREE_TYPE (expr))
-             && !AGGREGATE_TYPE_P (TREE_TYPE (TREE_OPERAND (expr, 0)));
+	     && !AGGREGATE_TYPE_P (TREE_TYPE (TREE_OPERAND (expr, 0)));
 
     default:
       break;
@@ -1533,39 +1533,39 @@ find_interesting_uses_address (struct ivopts_data *data, tree stmt, tree *op_p)
       tree astep;
 
       if (TMR_BASE (base)
-          && TREE_CODE (TMR_BASE (base)) == SSA_NAME)
-        {
-          civ = get_iv (data, TMR_BASE (base));
-          if (!civ)
-            goto fail;
+	  && TREE_CODE (TMR_BASE (base)) == SSA_NAME)
+	{
+	  civ = get_iv (data, TMR_BASE (base));
+	  if (!civ)
+	    goto fail;
 
-          TMR_BASE (base) = civ->base;
-          step = civ->step;
-        }
+	  TMR_BASE (base) = civ->base;
+	  step = civ->step;
+	}
       if (TMR_INDEX (base)
-          && TREE_CODE (TMR_INDEX (base)) == SSA_NAME)
-        {
-          civ = get_iv (data, TMR_INDEX (base));
-          if (!civ)
-            goto fail;
+	  && TREE_CODE (TMR_INDEX (base)) == SSA_NAME)
+	{
+	  civ = get_iv (data, TMR_INDEX (base));
+	  if (!civ)
+	    goto fail;
 
-          TMR_INDEX (base) = civ->base;
-          astep = civ->step;
+	  TMR_INDEX (base) = civ->base;
+	  astep = civ->step;
 
-          if (astep)
-            {
-              if (TMR_STEP (base))
-                astep = fold_build2 (MULT_EXPR, type, TMR_STEP (base), astep);
+	  if (astep)
+	    {
+	      if (TMR_STEP (base))
+		astep = fold_build2 (MULT_EXPR, type, TMR_STEP (base), astep);
 
-              if (step)
-                step = fold_build2 (PLUS_EXPR, type, step, astep);
-              else
-                step = astep;
-            }
-        }
+	      if (step)
+		step = fold_build2 (PLUS_EXPR, type, step, astep);
+	      else
+		step = astep;
+	    }
+	}
 
       if (zero_p (step))
-        goto fail;
+	goto fail;
       base = tree_mem_ref_addr (type, base);
     }
   else
@@ -1574,8 +1574,8 @@ find_interesting_uses_address (struct ivopts_data *data, tree stmt, tree *op_p)
       ifs_ivopts_data.stmt = stmt;
       ifs_ivopts_data.step_p = &step;
       if (!for_each_index (&base, idx_find_step, &ifs_ivopts_data)
-          || zero_p (step))
-        goto fail;
+	  || zero_p (step))
+	goto fail;
 
       gcc_assert (TREE_CODE (base) != ALIGN_INDIRECT_REF);
       gcc_assert (TREE_CODE (base) != MISALIGNED_INDIRECT_REF);
@@ -1583,15 +1583,15 @@ find_interesting_uses_address (struct ivopts_data *data, tree stmt, tree *op_p)
       base = build_fold_addr_expr (base);
 
       /* Substituting bases of IVs into the base expression might
-         have caused folding opportunities.  */
+	 have caused folding opportunities.  */
       if (TREE_CODE (base) == ADDR_EXPR)
-        {
-          tree *ref = &TREE_OPERAND (base, 0);
-          while (handled_component_p (*ref))
-            ref = &TREE_OPERAND (*ref, 0);
-          if (TREE_CODE (*ref) == INDIRECT_REF)
-            *ref = fold_indirect_ref (*ref);
-        }
+	{
+	  tree *ref = &TREE_OPERAND (base, 0);
+	  while (handled_component_p (*ref))
+	    ref = &TREE_OPERAND (*ref, 0);
+	  if (TREE_CODE (*ref) == INDIRECT_REF)
+	    *ref = fold_indirect_ref (*ref);
+	}
     }
 
   civ = alloc_iv (base, step);
@@ -1642,46 +1642,46 @@ find_interesting_uses_stmt (struct ivopts_data *data, tree stmt)
       rhs = TREE_OPERAND (stmt, 1);
 
       if (TREE_CODE (lhs) == SSA_NAME)
-        {
-          /* If the statement defines an induction variable, the uses are not
-             interesting by themselves.  */
+	{
+	  /* If the statement defines an induction variable, the uses are not
+	     interesting by themselves.  */
 
-          iv = get_iv (data, lhs);
+	  iv = get_iv (data, lhs);
 
-          if (iv && !zero_p (iv->step))
-            return;
-        }
+	  if (iv && !zero_p (iv->step))
+	    return;
+	}
 
       switch (TREE_CODE_CLASS (TREE_CODE (rhs)))
-        {
-        case tcc_comparison:
-          find_interesting_uses_cond (data, stmt, &TREE_OPERAND (stmt, 1));
-          return;
+	{
+	case tcc_comparison:
+	  find_interesting_uses_cond (data, stmt, &TREE_OPERAND (stmt, 1));
+	  return;
 
-        case tcc_reference:
-          find_interesting_uses_address (data, stmt, &TREE_OPERAND (stmt, 1));
-          if (REFERENCE_CLASS_P (lhs))
-            find_interesting_uses_address (data, stmt, &TREE_OPERAND (stmt, 0));
-          return;
+	case tcc_reference:
+	  find_interesting_uses_address (data, stmt, &TREE_OPERAND (stmt, 1));
+	  if (REFERENCE_CLASS_P (lhs))
+	    find_interesting_uses_address (data, stmt, &TREE_OPERAND (stmt, 0));
+	  return;
 
-        default: ;
-        }
+	default: ;
+	}
 
       if (REFERENCE_CLASS_P (lhs)
-          && is_gimple_val (rhs))
-        {
-          find_interesting_uses_address (data, stmt, &TREE_OPERAND (stmt, 0));
-          find_interesting_uses_op (data, rhs);
-          return;
-        }
+	  && is_gimple_val (rhs))
+	{
+	  find_interesting_uses_address (data, stmt, &TREE_OPERAND (stmt, 0));
+	  find_interesting_uses_op (data, rhs);
+	  return;
+	}
 
       /* TODO -- we should also handle address uses of type
 
-         memory = call (whatever);
+	 memory = call (whatever);
 
-         and
+	 and
 
-         call (memory).  */
+	 call (memory).  */
     }
 
   if (TREE_CODE (stmt) == PHI_NODE
@@ -1691,7 +1691,7 @@ find_interesting_uses_stmt (struct ivopts_data *data, tree stmt)
       iv = get_iv (data, lhs);
 
       if (iv && !zero_p (iv->step))
-        return;
+	return;
     }
 
   FOR_EACH_PHI_OR_STMT_USE (use_p, stmt, iter, SSA_OP_USE)
@@ -1699,11 +1699,11 @@ find_interesting_uses_stmt (struct ivopts_data *data, tree stmt)
       op = USE_FROM_PTR (use_p);
 
       if (TREE_CODE (op) != SSA_NAME)
-        continue;
+	continue;
 
       iv = get_iv (data, op);
       if (!iv)
-        continue;
+	continue;
 
       find_interesting_uses_op (data, op);
     }
@@ -1746,14 +1746,14 @@ find_interesting_uses (struct ivopts_data *data)
       bb = body[i];
 
       FOR_EACH_EDGE (e, ei, bb->succs)
-        if (e->dest != EXIT_BLOCK_PTR
-            && !flow_bb_inside_loop_p (data->current_loop, e->dest))
-          find_interesting_uses_outside (data, e);
+	if (e->dest != EXIT_BLOCK_PTR
+	    && !flow_bb_inside_loop_p (data->current_loop, e->dest))
+	  find_interesting_uses_outside (data, e);
 
       for (phi = phi_nodes (bb); phi; phi = PHI_CHAIN (phi))
-        find_interesting_uses_stmt (data, phi);
+	find_interesting_uses_stmt (data, phi);
       for (bsi = bsi_start (bb); !bsi_end_p (bsi); bsi_next (&bsi))
-        find_interesting_uses_stmt (data, bsi_stmt (bsi));
+	find_interesting_uses_stmt (data, bsi_stmt (bsi));
     }
 
   if (dump_file && (dump_flags & TDF_DETAILS))
@@ -1763,16 +1763,16 @@ find_interesting_uses (struct ivopts_data *data)
       fprintf (dump_file, "\n");
 
       EXECUTE_IF_SET_IN_BITMAP (data->relevant, 0, i, bi)
-        {
-          info = ver_info (data, i);
-          if (info->inv_id)
-            {
-              fprintf (dump_file, "  ");
-              print_generic_expr (dump_file, info->name, TDF_SLIM);
-              fprintf (dump_file, " is invariant (%d)%s\n",
-                       info->inv_id, info->has_nonlin_use ? "" : ", eliminable");
-            }
-        }
+	{
+	  info = ver_info (data, i);
+	  if (info->inv_id)
+	    {
+	      fprintf (dump_file, "  ");
+	      print_generic_expr (dump_file, info->name, TDF_SLIM);
+	      fprintf (dump_file, " is invariant (%d)%s\n",
+		       info->inv_id, info->has_nonlin_use ? "" : ", eliminable");
+	    }
+	}
 
       fprintf (dump_file, "\n");
     }
@@ -1786,7 +1786,7 @@ find_interesting_uses (struct ivopts_data *data)
 
 static tree
 strip_offset_1 (tree expr, bool inside_addr, bool top_compref,
-                unsigned HOST_WIDE_INT *offset)
+		unsigned HOST_WIDE_INT *offset)
 {
   tree op0 = NULL_TREE, op1 = NULL_TREE, tmp, step;
   enum tree_code code;
@@ -1804,8 +1804,8 @@ strip_offset_1 (tree expr, bool inside_addr, bool top_compref,
     {
     case INTEGER_CST:
       if (!cst_and_fits_in_hwi (expr)
-          || zero_p (expr))
-        return orig_expr;
+	  || zero_p (expr))
+	return orig_expr;
 
       *offset = int_cst_value (expr);
       return build_int_cst (orig_type, 0);
@@ -1820,30 +1820,30 @@ strip_offset_1 (tree expr, bool inside_addr, bool top_compref,
 
       *offset = (code == PLUS_EXPR ? off0 + off1 : off0 - off1);
       if (op0 == TREE_OPERAND (expr, 0)
-          && op1 == TREE_OPERAND (expr, 1))
-        return orig_expr;
+	  && op1 == TREE_OPERAND (expr, 1))
+	return orig_expr;
 
       if (zero_p (op1))
-        expr = op0;
+	expr = op0;
       else if (zero_p (op0))
-        {
-          if (code == PLUS_EXPR)
-            expr = op1;
-          else
-            expr = fold_build1 (NEGATE_EXPR, type, op1);
-        }
+	{
+	  if (code == PLUS_EXPR)
+	    expr = op1;
+	  else
+	    expr = fold_build1 (NEGATE_EXPR, type, op1);
+	}
       else
-        expr = fold_build2 (code, type, op0, op1);
+	expr = fold_build2 (code, type, op0, op1);
 
       return fold_convert (orig_type, expr);
 
     case ARRAY_REF:
       if (!inside_addr)
-        return orig_expr;
+	return orig_expr;
 
       step = array_ref_element_size (expr);
       if (!cst_and_fits_in_hwi (step))
-        break;
+	break;
 
       st = int_cst_value (step);
       op1 = TREE_OPERAND (expr, 1);
@@ -1851,30 +1851,30 @@ strip_offset_1 (tree expr, bool inside_addr, bool top_compref,
       *offset = off1 * st;
 
       if (top_compref
-          && zero_p (op1))
-        {
-          /* Strip the component reference completely.  */
-          op0 = TREE_OPERAND (expr, 0);
-          op0 = strip_offset_1 (op0, inside_addr, top_compref, &off0);
-          *offset += off0;
-          return op0;
-        }
+	  && zero_p (op1))
+	{
+	  /* Strip the component reference completely.  */
+	  op0 = TREE_OPERAND (expr, 0);
+	  op0 = strip_offset_1 (op0, inside_addr, top_compref, &off0);
+	  *offset += off0;
+	  return op0;
+	}
       break;
 
     case COMPONENT_REF:
       if (!inside_addr)
-        return orig_expr;
+	return orig_expr;
 
       tmp = component_ref_field_offset (expr);
       if (top_compref
-          && cst_and_fits_in_hwi (tmp))
-        {
-          /* Strip the component reference completely.  */
-          op0 = TREE_OPERAND (expr, 0);
-          op0 = strip_offset_1 (op0, inside_addr, top_compref, &off0);
-          *offset = off0 + int_cst_value (tmp);
-          return op0;
-        }
+	  && cst_and_fits_in_hwi (tmp))
+	{
+	  /* Strip the component reference completely.  */
+	  op0 = TREE_OPERAND (expr, 0);
+	  op0 = strip_offset_1 (op0, inside_addr, top_compref, &off0);
+	  *offset = off0 + int_cst_value (tmp);
+	  return op0;
+	}
       break;
 
     case ADDR_EXPR:
@@ -1883,7 +1883,7 @@ strip_offset_1 (tree expr, bool inside_addr, bool top_compref,
       *offset += off0;
 
       if (op0 == TREE_OPERAND (expr, 0))
-        return orig_expr;
+	return orig_expr;
 
       expr = build_fold_addr_expr (op0);
       return fold_convert (orig_type, expr);
@@ -1974,8 +1974,8 @@ find_depends (tree *expr_p, int *ws ATTRIBUTE_UNUSED, void *data)
 
 static struct iv_cand *
 add_candidate_1 (struct ivopts_data *data,
-                 tree base, tree step, bool important, enum iv_position pos,
-                 struct iv_use *use, tree incremented_at)
+		 tree base, tree step, bool important, enum iv_position pos,
+		 struct iv_use *use, tree incremented_at)
 {
   unsigned i;
   struct iv_cand *cand = NULL;
@@ -1986,11 +1986,11 @@ add_candidate_1 (struct ivopts_data *data,
       orig_type = TREE_TYPE (base);
       type = generic_type_for (orig_type);
       if (type != orig_type)
-        {
-          base = fold_convert (type, base);
-          if (step)
-            step = fold_convert (type, step);
-        }
+	{
+	  base = fold_convert (type, base);
+	  if (step)
+	    step = fold_convert (type, step);
+	}
     }
 
   for (i = 0; i < n_iv_cands (data); i++)
@@ -1998,35 +1998,35 @@ add_candidate_1 (struct ivopts_data *data,
       cand = iv_cand (data, i);
 
       if (cand->pos != pos)
-        continue;
+	continue;
 
       if (cand->incremented_at != incremented_at)
-        continue;
+	continue;
 
       if (!cand->iv)
-        {
-          if (!base && !step)
-            break;
+	{
+	  if (!base && !step)
+	    break;
 
-          continue;
-        }
+	  continue;
+	}
 
       if (!base && !step)
-        continue;
+	continue;
 
       if (!operand_equal_p (base, cand->iv->base, 0))
-        continue;
+	continue;
 
       if (zero_p (cand->iv->step))
-        {
-          if (zero_p (step))
-            break;
-        }
+	{
+	  if (zero_p (step))
+	    break;
+	}
       else
-        {
-          if (step && operand_equal_p (step, cand->iv->step, 0))
-            break;
-        }
+	{
+	  if (step && operand_equal_p (step, cand->iv->step, 0))
+	    break;
+	}
     }
 
   if (i == n_iv_cands (data))
@@ -2035,44 +2035,44 @@ add_candidate_1 (struct ivopts_data *data,
       cand->id = i;
 
       if (!base && !step)
-        cand->iv = NULL;
+	cand->iv = NULL;
       else
-        cand->iv = alloc_iv (base, step);
+	cand->iv = alloc_iv (base, step);
 
       cand->pos = pos;
       if (pos != IP_ORIGINAL && cand->iv)
-        {
-          cand->var_before = create_tmp_var_raw (TREE_TYPE (base), "ivtmp");
-          cand->var_after = cand->var_before;
-        }
+	{
+	  cand->var_before = create_tmp_var_raw (TREE_TYPE (base), "ivtmp");
+	  cand->var_after = cand->var_before;
+	}
       cand->important = important;
       cand->incremented_at = incremented_at;
       VEC_safe_push (iv_cand_p, heap, data->iv_candidates, cand);
 
       if (step
-          && TREE_CODE (step) != INTEGER_CST)
-        {
-          fd_ivopts_data = data;
-          walk_tree (&step, find_depends, &cand->depends_on, NULL);
-        }
+	  && TREE_CODE (step) != INTEGER_CST)
+	{
+	  fd_ivopts_data = data;
+	  walk_tree (&step, find_depends, &cand->depends_on, NULL);
+	}
 
       if (dump_file && (dump_flags & TDF_DETAILS))
-        dump_cand (dump_file, cand);
+	dump_cand (dump_file, cand);
     }
 
   if (important && !cand->important)
     {
       cand->important = true;
       if (dump_file && (dump_flags & TDF_DETAILS))
-        fprintf (dump_file, "Candidate %d is important\n", cand->id);
+	fprintf (dump_file, "Candidate %d is important\n", cand->id);
     }
 
   if (use)
     {
       bitmap_set_bit (use->related_cands, i);
       if (dump_file && (dump_flags & TDF_DETAILS))
-        fprintf (dump_file, "Candidate %d is related to use %d\n",
-                 cand->id, use->id);
+	fprintf (dump_file, "Candidate %d is related to use %d\n",
+		 cand->id, use->id);
     }
 
   return cand;
@@ -2105,7 +2105,7 @@ allow_ip_end_pos_p (struct loop *loop)
 
 static void
 add_candidate (struct ivopts_data *data, 
-               tree base, tree step, bool important, struct iv_use *use)
+	       tree base, tree step, bool important, struct iv_use *use)
 {
   if (ip_normal_pos (data->current_loop))
     add_candidate_1 (data, base, step, important, IP_NORMAL, use, NULL_TREE);
@@ -2119,11 +2119,11 @@ add_candidate (struct ivopts_data *data,
 
 static void
 add_standard_iv_candidates_for_size (struct ivopts_data *data,
-                                     unsigned int size)
+				     unsigned int size)
 {
   tree type = lang_hooks.types.type_for_size (size, true);
   add_candidate (data, build_int_cst (type, 0), build_int_cst (type, 1),
-                 true, NULL);
+		 true, NULL);
 }
 
 /* Adds standard iv candidates.  */
@@ -2151,18 +2151,18 @@ add_old_iv_candidates (struct ivopts_data *data, struct iv *iv)
 
   /* The same, but with initial value zero.  */
   add_candidate (data,
-                 build_int_cst (TREE_TYPE (iv->base), 0),
-                 iv->step, true, NULL);
+		 build_int_cst (TREE_TYPE (iv->base), 0),
+		 iv->step, true, NULL);
 
   phi = SSA_NAME_DEF_STMT (iv->ssa_name);
   if (TREE_CODE (phi) == PHI_NODE)
     {
       /* Additionally record the possibility of leaving the original iv
-         untouched.  */
+	 untouched.  */
       def = PHI_ARG_DEF_FROM_EDGE (phi, loop_latch_edge (data->current_loop));
       cand = add_candidate_1 (data,
-                              iv->base, iv->step, true, IP_ORIGINAL, NULL,
-                              SSA_NAME_DEF_STMT (def));
+			      iv->base, iv->step, true, IP_ORIGINAL, NULL,
+			      SSA_NAME_DEF_STMT (def));
       cand->var_before = iv->ssa_name;
       cand->var_after = def;
     }
@@ -2181,7 +2181,7 @@ add_old_ivs_candidates (struct ivopts_data *data)
     {
       iv = ver_info (data, i)->iv;
       if (iv && iv->biv_p && !zero_p (iv->step))
-        add_old_iv_candidates (data, iv);
+	add_old_iv_candidates (data, iv);
     }
 }
 
@@ -2189,7 +2189,7 @@ add_old_ivs_candidates (struct ivopts_data *data)
 
 static void
 add_iv_value_candidates (struct ivopts_data *data,
-                         struct iv *iv, struct iv_use *use)
+			 struct iv *iv, struct iv_use *use)
 {
   unsigned HOST_WIDE_INT offset;
   tree base;
@@ -2200,7 +2200,7 @@ add_iv_value_candidates (struct ivopts_data *data,
      since it is generic enough so that possibly many uses may be based
      on it.  */
   add_candidate (data, build_int_cst (TREE_TYPE (iv->base), 0),
-                 iv->step, true, use);
+		 iv->step, true, use);
 
   /* Third, try removing the constant offset.  */
   base = strip_offset (iv->base, &offset);
@@ -2220,20 +2220,20 @@ add_derived_ivs_candidates (struct ivopts_data *data)
       struct iv_use *use = iv_use (data, i);
 
       if (!use)
-        continue;
+	continue;
 
       switch (use->type)
-        {
-        case USE_NONLINEAR_EXPR:
-        case USE_COMPARE:
-        case USE_ADDRESS:
-          /* Just add the ivs based on the value of the iv used here.  */
-          add_iv_value_candidates (data, use->iv, use);
-          break;
+	{
+	case USE_NONLINEAR_EXPR:
+	case USE_COMPARE:
+	case USE_ADDRESS:
+	  /* Just add the ivs based on the value of the iv used here.  */
+	  add_iv_value_candidates (data, use->iv, use);
+	  break;
 
-        default:
-          gcc_unreachable ();
-        }
+	default:
+	  gcc_unreachable ();
+	}
     }
 }
 
@@ -2251,28 +2251,28 @@ record_important_candidates (struct ivopts_data *data)
       struct iv_cand *cand = iv_cand (data, i);
 
       if (cand->important)
-        bitmap_set_bit (data->important_candidates, i);
+	bitmap_set_bit (data->important_candidates, i);
     }
 
   data->consider_all_candidates = (n_iv_cands (data)
-                                   <= CONSIDER_ALL_CANDIDATES_BOUND);
+				   <= CONSIDER_ALL_CANDIDATES_BOUND);
 
   if (data->consider_all_candidates)
     {
       /* We will not need "related_cands" bitmaps in this case,
-         so release them to decrease peak memory consumption.  */
+	 so release them to decrease peak memory consumption.  */
       for (i = 0; i < n_iv_uses (data); i++)
-        {
-          use = iv_use (data, i);
-          BITMAP_FREE (use->related_cands);
-        }
+	{
+	  use = iv_use (data, i);
+	  BITMAP_FREE (use->related_cands);
+	}
     }
   else
     {
       /* Add important candidates to the related_cands bitmaps.  */
       for (i = 0; i < n_iv_uses (data); i++)
-        bitmap_ior_into (iv_use (data, i)->related_cands,
-                         data->important_candidates);
+	bitmap_ior_into (iv_use (data, i)->related_cands,
+			 data->important_candidates);
     }
 }
 
@@ -2309,19 +2309,19 @@ alloc_use_cost_map (struct ivopts_data *data)
       bitmap_iterator bi;
 
       if (data->consider_all_candidates)
-        size = n_iv_cands (data);
+	size = n_iv_cands (data);
       else
-        {
-          s = 0;
-          EXECUTE_IF_SET_IN_BITMAP (use->related_cands, 0, j, bi)
-            {
-              s++;
-            }
+	{
+	  s = 0;
+	  EXECUTE_IF_SET_IN_BITMAP (use->related_cands, 0, j, bi)
+	    {
+	      s++;
+	    }
 
-          /* Round up to the power of two, so that moduling by it is fast.  */
-          for (size = 1; size < s; size <<= 1)
-            continue;
-        }
+	  /* Round up to the power of two, so that moduling by it is fast.  */
+	  for (size = 1; size < s; size <<= 1)
+	    continue;
+	}
 
       use->n_map_members = size;
       use->cost_map = XCNEWVEC (struct cost_pair, size);
@@ -2334,8 +2334,8 @@ alloc_use_cost_map (struct ivopts_data *data)
 
 static void
 set_use_iv_cost (struct ivopts_data *data,
-                 struct iv_use *use, struct iv_cand *cand, unsigned cost,
-                 bitmap depends_on, tree value)
+		 struct iv_use *use, struct iv_cand *cand, unsigned cost,
+		 bitmap depends_on, tree value)
 {
   unsigned i, s;
 
@@ -2376,7 +2376,7 @@ found:
 
 static struct cost_pair *
 get_use_iv_cost (struct ivopts_data *data, struct iv_use *use,
-                 struct iv_cand *cand)
+		 struct iv_cand *cand)
 {
   unsigned i, s;
   struct cost_pair *ret;
@@ -2388,7 +2388,7 @@ get_use_iv_cost (struct ivopts_data *data, struct iv_use *use,
     {
       ret = use->cost_map + cand->id;
       if (!ret->cand)
-        return NULL;
+	return NULL;
 
       return ret;
     }
@@ -2418,9 +2418,9 @@ seq_cost (rtx seq)
     {
       set = single_set (seq);
       if (set)
-        cost += rtx_cost (set, SET);
+	cost += rtx_cost (set, SET);
       else
-        cost++;
+	cost++;
     }
 
   return cost;
@@ -2458,9 +2458,9 @@ prepare_decl_rtl (tree *expr_p, int *ws, void *data)
     {
     case ADDR_EXPR:
       for (expr_p = &TREE_OPERAND (*expr_p, 0);
-           handled_component_p (*expr_p);
-           expr_p = &TREE_OPERAND (*expr_p, 0))
-        continue;
+	   handled_component_p (*expr_p);
+	   expr_p = &TREE_OPERAND (*expr_p, 0))
+	continue;
       obj = *expr_p;
       if (DECL_P (obj) && !DECL_RTL_SET_P (obj))
         x = produce_memory_decl_rtl (obj, regno);
@@ -2470,7 +2470,7 @@ prepare_decl_rtl (tree *expr_p, int *ws, void *data)
       *ws = 0;
       obj = SSA_NAME_VAR (*expr_p);
       if (!DECL_RTL_SET_P (obj))
-        x = gen_raw_REG (DECL_MODE (obj), (*regno)++);
+	x = gen_raw_REG (DECL_MODE (obj), (*regno)++);
       break;
 
     case VAR_DECL:
@@ -2480,12 +2480,12 @@ prepare_decl_rtl (tree *expr_p, int *ws, void *data)
       obj = *expr_p;
 
       if (DECL_RTL_SET_P (obj))
-        break;
+	break;
 
       if (DECL_MODE (obj) == BLKmode)
-        x = produce_memory_decl_rtl (obj, regno);
+	x = produce_memory_decl_rtl (obj, regno);
       else
-        x = gen_raw_REG (DECL_MODE (obj), (*regno)++);
+	x = gen_raw_REG (DECL_MODE (obj), (*regno)++);
 
       break;
 
@@ -2585,36 +2585,36 @@ constant_multiple_of (tree top, tree bot, double_int *mul)
     case MULT_EXPR:
       mby = TREE_OPERAND (top, 1);
       if (TREE_CODE (mby) != INTEGER_CST)
-        return false;
+	return false;
 
       if (!constant_multiple_of (TREE_OPERAND (top, 0), bot, &res))
-        return false;
+	return false;
 
       *mul = double_int_sext (double_int_mul (res, tree_to_double_int (mby)),
-                              precision);
+			      precision);
       return true;
 
     case PLUS_EXPR:
     case MINUS_EXPR:
       if (!constant_multiple_of (TREE_OPERAND (top, 0), bot, &p0)
-          || !constant_multiple_of (TREE_OPERAND (top, 1), bot, &p1))
-        return false;
+	  || !constant_multiple_of (TREE_OPERAND (top, 1), bot, &p1))
+	return false;
 
       if (code == MINUS_EXPR)
-        p1 = double_int_neg (p1);
+	p1 = double_int_neg (p1);
       *mul = double_int_sext (double_int_add (p0, p1), precision);
       return true;
 
     case INTEGER_CST:
       if (TREE_CODE (bot) != INTEGER_CST)
-        return false;
+	return false;
 
       p0 = double_int_sext (tree_to_double_int (bot), precision);
       p1 = double_int_sext (tree_to_double_int (top), precision);
       if (double_int_zero_p (p1))
-        return false;
+	return false;
       *mul = double_int_sext (double_int_sdivmod (p0, p1, FLOOR_DIV_EXPR, &res),
-                              precision);
+			      precision);
       return double_int_zero_p (res);
 
     default:
@@ -2626,7 +2626,7 @@ constant_multiple_of (tree top, tree bot, double_int *mul)
 
 static void
 aff_combination_const (struct affine_tree_combination *comb, tree type,
-                       unsigned HOST_WIDE_INT cst)
+		       unsigned HOST_WIDE_INT cst)
 {
   unsigned prec = TYPE_PRECISION (type);
 
@@ -2659,7 +2659,7 @@ aff_combination_elt (struct affine_tree_combination *comb, tree type, tree elt)
 
 static void
 aff_combination_scale (struct affine_tree_combination *comb,
-                       unsigned HOST_WIDE_INT scale)
+		       unsigned HOST_WIDE_INT scale)
 {
   unsigned i, j;
 
@@ -2678,22 +2678,22 @@ aff_combination_scale (struct affine_tree_combination *comb,
       comb->coefs[j] = (scale * comb->coefs[i]) & comb->mask;
       comb->elts[j] = comb->elts[i];
       if (comb->coefs[j] != 0)
-        j++;
+	j++;
     }
   comb->n = j;
 
   if (comb->rest)
     {
       if (comb->n < MAX_AFF_ELTS)
-        {
-          comb->coefs[comb->n] = scale;
-          comb->elts[comb->n] = comb->rest;
-          comb->rest = NULL_TREE;
-          comb->n++;
-        }
+	{
+	  comb->coefs[comb->n] = scale;
+	  comb->elts[comb->n] = comb->rest;
+	  comb->rest = NULL_TREE;
+	  comb->n++;
+	}
       else
-        comb->rest = fold_build2 (MULT_EXPR, comb->type, comb->rest,
-                                  build_int_cst_type (comb->type, scale));
+	comb->rest = fold_build2 (MULT_EXPR, comb->type, comb->rest,
+				  build_int_cst_type (comb->type, scale));
     }
 }
 
@@ -2701,7 +2701,7 @@ aff_combination_scale (struct affine_tree_combination *comb,
 
 static void
 aff_combination_add_elt (struct affine_tree_combination *comb, tree elt,
-                         unsigned HOST_WIDE_INT scale)
+			 unsigned HOST_WIDE_INT scale)
 {
   unsigned i;
 
@@ -2711,23 +2711,23 @@ aff_combination_add_elt (struct affine_tree_combination *comb, tree elt,
   for (i = 0; i < comb->n; i++)
     if (operand_equal_p (comb->elts[i], elt, 0))
       {
-        comb->coefs[i] = (comb->coefs[i] + scale) & comb->mask;
-        if (comb->coefs[i])
-          return;
+	comb->coefs[i] = (comb->coefs[i] + scale) & comb->mask;
+	if (comb->coefs[i])
+	  return;
 
-        comb->n--;
-        comb->coefs[i] = comb->coefs[comb->n];
-        comb->elts[i] = comb->elts[comb->n];
+	comb->n--;
+	comb->coefs[i] = comb->coefs[comb->n];
+	comb->elts[i] = comb->elts[comb->n];
 
-        if (comb->rest)
-          {
-            gcc_assert (comb->n == MAX_AFF_ELTS - 1);
-            comb->coefs[comb->n] = 1;
-            comb->elts[comb->n] = comb->rest;
-            comb->rest = NULL_TREE;
-            comb->n++;
-          }
-        return;
+	if (comb->rest)
+	  {
+	    gcc_assert (comb->n == MAX_AFF_ELTS - 1);
+	    comb->coefs[comb->n] = 1;
+	    comb->elts[comb->n] = comb->rest;
+	    comb->rest = NULL_TREE;
+	    comb->n++;
+	  }
+	return;
       }
   if (comb->n < MAX_AFF_ELTS)
     {
@@ -2741,8 +2741,8 @@ aff_combination_add_elt (struct affine_tree_combination *comb, tree elt,
     elt = fold_convert (comb->type, elt);
   else
     elt = fold_build2 (MULT_EXPR, comb->type,
-                       fold_convert (comb->type, elt),
-                       build_int_cst_type (comb->type, scale)); 
+		       fold_convert (comb->type, elt),
+		       build_int_cst_type (comb->type, scale)); 
 
   if (comb->rest)
     comb->rest = fold_build2 (PLUS_EXPR, comb->type, comb->rest, elt);
@@ -2754,7 +2754,7 @@ aff_combination_add_elt (struct affine_tree_combination *comb, tree elt,
 
 static void
 aff_combination_add (struct affine_tree_combination *comb1,
-                     struct affine_tree_combination *comb2)
+		     struct affine_tree_combination *comb2)
 {
   unsigned i;
 
@@ -2800,7 +2800,7 @@ aff_combination_convert (tree type, struct affine_tree_combination *comb)
 
 static void
 tree_to_aff_combination (tree expr, tree type,
-                         struct affine_tree_combination *comb)
+			 struct affine_tree_combination *comb)
 {
   struct affine_tree_combination tmp;
   enum tree_code code;
@@ -2823,14 +2823,14 @@ tree_to_aff_combination (tree expr, tree type,
       tree_to_aff_combination (TREE_OPERAND (expr, 0), type, comb);
       tree_to_aff_combination (TREE_OPERAND (expr, 1), type, &tmp);
       if (code == MINUS_EXPR)
-        aff_combination_scale (&tmp, -1);
+	aff_combination_scale (&tmp, -1);
       aff_combination_add (comb, &tmp);
       return;
 
     case MULT_EXPR:
       cst = TREE_OPERAND (expr, 1);
       if (TREE_CODE (cst) != INTEGER_CST)
-        break;
+	break;
       tree_to_aff_combination (TREE_OPERAND (expr, 0), type, comb);
       aff_combination_scale (comb, int_cst_value (cst));
       return;
@@ -2842,24 +2842,24 @@ tree_to_aff_combination (tree expr, tree type,
 
     case ADDR_EXPR:
       core = get_inner_reference (TREE_OPERAND (expr, 0), &bitsize, &bitpos,
-                                  &toffset, &mode, &unsignedp, &volatilep,
-                                  false);
+				  &toffset, &mode, &unsignedp, &volatilep,
+				  false);
       if (bitpos % BITS_PER_UNIT != 0)
-        break;
+	break;
       aff_combination_const (comb, type, bitpos / BITS_PER_UNIT);
       core = build_fold_addr_expr (core);
       if (TREE_CODE (core) == ADDR_EXPR)
-        aff_combination_add_elt (comb, core, 1);
+	aff_combination_add_elt (comb, core, 1);
       else
-        {
-          tree_to_aff_combination (core, type, &tmp);
-          aff_combination_add (comb, &tmp);
-        }
+	{
+	  tree_to_aff_combination (core, type, &tmp);
+	  aff_combination_add (comb, &tmp);
+	}
       if (toffset)
-        {
-          tree_to_aff_combination (toffset, type, &tmp);
-          aff_combination_add (comb, &tmp);
-        }
+	{
+	  tree_to_aff_combination (toffset, type, &tmp);
+	  aff_combination_add (comb, &tmp);
+	}
       return;
 
     default:
@@ -2873,7 +2873,7 @@ tree_to_aff_combination (tree expr, tree type,
 
 static tree
 add_elt_to_tree (tree expr, tree type, tree elt, unsigned HOST_WIDE_INT scale,
-                 unsigned HOST_WIDE_INT mask)
+		 unsigned HOST_WIDE_INT mask)
 {
   enum tree_code code;
 
@@ -2883,7 +2883,7 @@ add_elt_to_tree (tree expr, tree type, tree elt, unsigned HOST_WIDE_INT scale,
   if (scale == 1)
     {
       if (!expr)
-        return elt;
+	return elt;
 
       return fold_build2 (PLUS_EXPR, type, expr, elt);
     }
@@ -2891,14 +2891,14 @@ add_elt_to_tree (tree expr, tree type, tree elt, unsigned HOST_WIDE_INT scale,
   if (scale == mask)
     {
       if (!expr)
-        return fold_build1 (NEGATE_EXPR, type, elt);
+	return fold_build1 (NEGATE_EXPR, type, elt);
 
       return fold_build2 (MINUS_EXPR, type, expr, elt);
     }
 
   if (!expr)
     return fold_build2 (MULT_EXPR, type, elt,
-                        build_int_cst_type (type, scale));
+			build_int_cst_type (type, scale));
 
   if ((scale | (mask >> 1)) == mask)
     {
@@ -2910,7 +2910,7 @@ add_elt_to_tree (tree expr, tree type, tree elt, unsigned HOST_WIDE_INT scale,
     code = PLUS_EXPR;
 
   elt = fold_build2 (MULT_EXPR, type, elt,
-                     build_int_cst_type (type, scale));
+		     build_int_cst_type (type, scale));
   return fold_build2 (code, type, expr, elt);
 }
 
@@ -2940,20 +2940,20 @@ aff_combination_to_tree (struct affine_tree_combination *comb)
   if (comb->n == 0 && comb->offset == 0)
     {
       if (expr)
-        {
-          /* Handle the special case produced by get_computation_aff when
-             the type does not fit in HOST_WIDE_INT.  */
-          return fold_convert (type, expr);
-        }
+	{
+	  /* Handle the special case produced by get_computation_aff when
+	     the type does not fit in HOST_WIDE_INT.  */
+	  return fold_convert (type, expr);
+	}
       else
-        return build_int_cst (type, 0);
+	return build_int_cst (type, 0);
     }
 
   gcc_assert (comb->n == MAX_AFF_ELTS || comb->rest == NULL_TREE);
 
   for (i = 0; i < comb->n; i++)
     expr = add_elt_to_tree (expr, type, comb->elts[i], comb->coefs[i],
-                            comb->mask);
+			    comb->mask);
 
   if ((comb->offset | (comb->mask >> 1)) == comb->mask)
     {
@@ -2967,7 +2967,7 @@ aff_combination_to_tree (struct affine_tree_combination *comb)
       sgn = 1;
     }
   return add_elt_to_tree (expr, type, build_int_cst_type (type, off), sgn,
-                          comb->mask);
+			  comb->mask);
 }
 
 /* Folds EXPR using the affine expressions framework.  */
@@ -3003,7 +3003,7 @@ determine_common_wider_type (tree *a, tree *b)
       suba = TREE_OPERAND (*a, 0);
       wider_type = TREE_TYPE (suba);
       if (TYPE_PRECISION (wider_type) < TYPE_PRECISION (atype))
-        return atype;
+	return atype;
     }
   else
     return atype;
@@ -3013,7 +3013,7 @@ determine_common_wider_type (tree *a, tree *b)
     {
       subb = TREE_OPERAND (*b, 0);
       if (TYPE_PRECISION (wider_type) != TYPE_PRECISION (TREE_TYPE (subb)))
-        return atype;
+	return atype;
     }
   else
     return atype;
@@ -3029,8 +3029,8 @@ determine_common_wider_type (tree *a, tree *b)
 
 static bool
 get_computation_aff (struct loop *loop,
-                     struct iv_use *use, struct iv_cand *cand, tree at,
-                     struct affine_tree_combination *aff)
+		     struct iv_use *use, struct iv_cand *cand, tree at,
+		     struct affine_tree_combination *aff)
 {
   tree ubase = use->iv->base;
   tree ustep = use->iv->step;
@@ -3077,9 +3077,9 @@ get_computation_aff (struct loop *loop,
       cstep = fold_convert (uutype, cstep);
 
       /* If the conversion is not noop, we must take it into account when
-         considering the value of the step.  */
+	 considering the value of the step.  */
       if (TYPE_PRECISION (utype) < TYPE_PRECISION (ctype))
-        cstep_orig = cstep;
+	cstep_orig = cstep;
     }
 
   if (cst_and_fits_in_hwi (cstep_orig)
@@ -3089,28 +3089,28 @@ get_computation_aff (struct loop *loop,
       cstepi = int_cst_value (cstep_orig);
 
       if (!divide (TYPE_PRECISION (uutype), ustepi, cstepi, &ratioi))
-        {
-          /* TODO maybe consider case when ustep divides cstep and the ratio is
-             a power of 2 (so that the division is fast to execute)?  We would
-             need to be much more careful with overflows etc. then.  */
-          return false;
-        }
+	{
+	  /* TODO maybe consider case when ustep divides cstep and the ratio is
+	     a power of 2 (so that the division is fast to execute)?  We would
+	     need to be much more careful with overflows etc. then.  */
+	  return false;
+	}
 
       ratio = build_int_cst_type (uutype, ratioi);
     }
   else
     {
       if (!constant_multiple_of (ustep_orig, cstep_orig, &rat))
-        return false;
+	return false;
       ratio = double_int_to_tree (uutype, rat);
 
       /* Ratioi is only used to detect special cases when the multiplicative
-         factor is 1 or -1, so if rat does not fit to HOST_WIDE_INT, we may
-         set it to 0.  */
+	 factor is 1 or -1, so if rat does not fit to HOST_WIDE_INT, we may
+	 set it to 0.  */
       if (double_int_fits_in_shwi_p (rat))
-        ratioi = double_int_to_shwi (rat);
+	ratioi = double_int_to_shwi (rat);
       else
-        ratioi = 0;
+	ratioi = 0;
     }
 
   /* In case both UBASE and CBASE are shortened to UUTYPE from some common
@@ -3124,7 +3124,7 @@ get_computation_aff (struct loop *loop,
   if (stmt_after_increment (loop, cand, at))
     {
       if (uutype != common_type)
-        cstep = fold_convert (common_type, cstep);
+	cstep = fold_convert (common_type, cstep);
       cbase = fold_build2 (PLUS_EXPR, common_type, cbase, cstep);
     }
 
@@ -3139,32 +3139,32 @@ get_computation_aff (struct loop *loop,
   if (TYPE_PRECISION (common_type) > HOST_BITS_PER_WIDE_INT)
     {
       /* Let's compute in trees and just return the result in AFF.  This case
-         should not be very common, and fold itself is not that bad either,
-         so making the aff. functions more complicated to handle this case
-         is not that urgent.  */
+	 should not be very common, and fold itself is not that bad either,
+	 so making the aff. functions more complicated to handle this case
+	 is not that urgent.  */
       if (ratioi == 1)
-        {
-          delta = fold_build2 (MINUS_EXPR, common_type, ubase, cbase);
-          if (uutype != common_type)
-            delta = fold_convert (uutype, delta);
-          expr = fold_build2 (PLUS_EXPR, uutype, expr, delta);
-        }
+	{
+	  delta = fold_build2 (MINUS_EXPR, common_type, ubase, cbase);
+	  if (uutype != common_type)
+	    delta = fold_convert (uutype, delta);
+	  expr = fold_build2 (PLUS_EXPR, uutype, expr, delta);
+	}
       else if (ratioi == -1)
-        {
-          delta = fold_build2 (PLUS_EXPR, common_type, ubase, cbase);
-          if (uutype != common_type)
-            delta = fold_convert (uutype, delta);
-          expr = fold_build2 (MINUS_EXPR, uutype, delta, expr);
-        }
+	{
+	  delta = fold_build2 (PLUS_EXPR, common_type, ubase, cbase);
+	  if (uutype != common_type)
+	    delta = fold_convert (uutype, delta);
+	  expr = fold_build2 (MINUS_EXPR, uutype, delta, expr);
+	}
       else
-        {
-          delta = fold_build2 (MULT_EXPR, common_type, cbase, ratio);
-          delta = fold_build2 (MINUS_EXPR, common_type, ubase, delta);
-          if (uutype != common_type)
-            delta = fold_convert (uutype, delta);
-          expr = fold_build2 (MULT_EXPR, uutype, ratio, expr);
-          expr = fold_build2 (PLUS_EXPR, uutype, delta, expr);
-        }
+	{
+	  delta = fold_build2 (MULT_EXPR, common_type, cbase, ratio);
+	  delta = fold_build2 (MINUS_EXPR, common_type, ubase, delta);
+	  if (uutype != common_type)
+	    delta = fold_convert (uutype, delta);
+	  expr = fold_build2 (MULT_EXPR, uutype, ratio, expr);
+	  expr = fold_build2 (PLUS_EXPR, uutype, delta, expr);
+	}
 
       aff->type = uutype;
       aff->n = 0;
@@ -3196,7 +3196,7 @@ get_computation_aff (struct loop *loop,
 
 static tree
 get_computation_at (struct loop *loop,
-                    struct iv_use *use, struct iv_cand *cand, tree at)
+		    struct iv_use *use, struct iv_cand *cand, tree at)
 {
   struct affine_tree_combination aff;
   tree type = TREE_TYPE (use->iv->base);
@@ -3230,9 +3230,9 @@ add_cost (enum machine_mode mode)
 
   start_sequence ();
   force_operand (gen_rtx_fmt_ee (PLUS, mode,
-                                 gen_raw_REG (mode, LAST_VIRTUAL_REGISTER + 1),
-                                 gen_raw_REG (mode, LAST_VIRTUAL_REGISTER + 2)),
-                 NULL_RTX);
+				 gen_raw_REG (mode, LAST_VIRTUAL_REGISTER + 1),
+				 gen_raw_REG (mode, LAST_VIRTUAL_REGISTER + 2)),
+		 NULL_RTX);
   seq = get_insns ();
   end_sequence ();
 
@@ -3244,16 +3244,16 @@ add_cost (enum machine_mode mode)
       
   if (dump_file && (dump_flags & TDF_DETAILS))
     fprintf (dump_file, "Addition in %s costs %d\n",
-             GET_MODE_NAME (mode), cost);
+	     GET_MODE_NAME (mode), cost);
   return cost;
 }
 
 /* Entry in a hashtable of already known costs for multiplication.  */
 struct mbc_entry
 {
-  HOST_WIDE_INT cst;                /* The constant to multiply by.  */
-  enum machine_mode mode;        /* In mode.  */
-  unsigned cost;                /* The cost.  */
+  HOST_WIDE_INT cst;		/* The constant to multiply by.  */
+  enum machine_mode mode;	/* In mode.  */
+  unsigned cost;		/* The cost.  */
 };
 
 /* Counts hash value for the ENTRY.  */
@@ -3275,7 +3275,7 @@ mbc_entry_eq (const void *entry1, const void *entry2)
   const struct mbc_entry *e2 = entry2;
 
   return (e1->mode == e2->mode
-          && e1->cst == e2->cst);
+	  && e1->cst == e2->cst);
 }
 
 /* Returns cost of multiplication by constant CST in MODE.  */
@@ -3303,7 +3303,7 @@ multiply_by_cost (HOST_WIDE_INT cst, enum machine_mode mode)
 
   start_sequence ();
   expand_mult (mode, gen_raw_REG (mode, LAST_VIRTUAL_REGISTER + 1),
-               gen_int_mode (cst, mode), NULL_RTX, 0);
+	       gen_int_mode (cst, mode), NULL_RTX, 0);
   seq = get_insns ();
   end_sequence ();
   
@@ -3311,7 +3311,7 @@ multiply_by_cost (HOST_WIDE_INT cst, enum machine_mode mode)
 
   if (dump_file && (dump_flags & TDF_DETAILS))
     fprintf (dump_file, "Multiplication by %d in %s costs %d\n",
-             (int) cst, GET_MODE_NAME (mode), cost);
+	     (int) cst, GET_MODE_NAME (mode), cost);
 
   (*cached)->cost = cost;
 
@@ -3336,21 +3336,21 @@ multiplier_allowed_in_address_p (HOST_WIDE_INT ratio)
       sbitmap_zero (valid_mult);
       addr = gen_rtx_fmt_ee (MULT, Pmode, reg1, NULL_RTX);
       for (i = -MAX_RATIO; i <= MAX_RATIO; i++)
-        {
-          XEXP (addr, 1) = gen_int_mode (i, Pmode);
-          if (memory_address_p (Pmode, addr))
-            SET_BIT (valid_mult, i + MAX_RATIO);
-        }
+	{
+	  XEXP (addr, 1) = gen_int_mode (i, Pmode);
+	  if (memory_address_p (Pmode, addr))
+	    SET_BIT (valid_mult, i + MAX_RATIO);
+	}
 
       if (dump_file && (dump_flags & TDF_DETAILS))
-        {
-          fprintf (dump_file, "  allowed multipliers:");
-          for (i = -MAX_RATIO; i <= MAX_RATIO; i++)
-            if (TEST_BIT (valid_mult, i + MAX_RATIO))
-              fprintf (dump_file, " %d", (int) i);
-          fprintf (dump_file, "\n");
-          fprintf (dump_file, "\n");
-        }
+	{
+	  fprintf (dump_file, "  allowed multipliers:");
+	  for (i = -MAX_RATIO; i <= MAX_RATIO; i++)
+	    if (TEST_BIT (valid_mult, i + MAX_RATIO))
+	      fprintf (dump_file, " %d", (int) i);
+	  fprintf (dump_file, "\n");
+	  fprintf (dump_file, "\n");
+	}
     }
 
   if (ratio > MAX_RATIO || ratio < -MAX_RATIO)
@@ -3367,7 +3367,7 @@ multiplier_allowed_in_address_p (HOST_WIDE_INT ratio)
 
 static unsigned
 get_address_cost (bool symbol_present, bool var_present,
-                  unsigned HOST_WIDE_INT offset, HOST_WIDE_INT ratio)
+		  unsigned HOST_WIDE_INT offset, HOST_WIDE_INT ratio)
 {
   static bool initialized = false;
   static HOST_WIDE_INT rat, off;
@@ -3393,36 +3393,36 @@ get_address_cost (bool symbol_present, bool var_present,
 
       addr = gen_rtx_fmt_ee (PLUS, Pmode, reg1, NULL_RTX);
       for (i = 1; i <= 1 << 20; i <<= 1)
-        {
-          XEXP (addr, 1) = gen_int_mode (i, Pmode);
-          if (!memory_address_p (Pmode, addr))
-            break;
-        }
+	{
+	  XEXP (addr, 1) = gen_int_mode (i, Pmode);
+	  if (!memory_address_p (Pmode, addr))
+	    break;
+	}
       max_offset = i >> 1;
       off = max_offset;
 
       for (i = 1; i <= 1 << 20; i <<= 1)
-        {
-          XEXP (addr, 1) = gen_int_mode (-i, Pmode);
-          if (!memory_address_p (Pmode, addr))
-            break;
-        }
+	{
+	  XEXP (addr, 1) = gen_int_mode (-i, Pmode);
+	  if (!memory_address_p (Pmode, addr))
+	    break;
+	}
       min_offset = -(i >> 1);
 
       if (dump_file && (dump_flags & TDF_DETAILS))
-        {
-          fprintf (dump_file, "get_address_cost:\n");
-          fprintf (dump_file, "  min offset %d\n", (int) min_offset);
-          fprintf (dump_file, "  max offset %d\n", (int) max_offset);
-        }
+	{
+	  fprintf (dump_file, "get_address_cost:\n");
+	  fprintf (dump_file, "  min offset %d\n", (int) min_offset);
+	  fprintf (dump_file, "  max offset %d\n", (int) max_offset);
+	}
 
       rat = 1;
       for (i = 2; i <= MAX_RATIO; i++)
-        if (multiplier_allowed_in_address_p (i))
-          {
-            rat = i;
-            break;
-          }
+	if (multiplier_allowed_in_address_p (i))
+	  {
+	    rat = i;
+	    break;
+	  }
 
       /* Compute the cost of various addressing modes.  */
       acost = 0;
@@ -3430,107 +3430,107 @@ get_address_cost (bool symbol_present, bool var_present,
       reg1 = gen_raw_REG (Pmode, LAST_VIRTUAL_REGISTER + 2);
 
       for (i = 0; i < 16; i++)
-        {
-          sym_p = i & 1;
-          var_p = (i >> 1) & 1;
-          off_p = (i >> 2) & 1;
-          rat_p = (i >> 3) & 1;
+	{
+	  sym_p = i & 1;
+	  var_p = (i >> 1) & 1;
+	  off_p = (i >> 2) & 1;
+	  rat_p = (i >> 3) & 1;
 
-          addr = reg0;
-          if (rat_p)
-            addr = gen_rtx_fmt_ee (MULT, Pmode, addr, gen_int_mode (rat, Pmode));
+	  addr = reg0;
+	  if (rat_p)
+	    addr = gen_rtx_fmt_ee (MULT, Pmode, addr, gen_int_mode (rat, Pmode));
 
-          if (var_p)
-            addr = gen_rtx_fmt_ee (PLUS, Pmode, addr, reg1);
+	  if (var_p)
+	    addr = gen_rtx_fmt_ee (PLUS, Pmode, addr, reg1);
 
-          if (sym_p)
-            {
-              base = gen_rtx_SYMBOL_REF (Pmode, ggc_strdup (""));
-              if (off_p)
-                base = gen_rtx_fmt_e (CONST, Pmode,
-                                      gen_rtx_fmt_ee (PLUS, Pmode,
-                                                      base,
-                                                      gen_int_mode (off, Pmode)));
-            }
-          else if (off_p)
-            base = gen_int_mode (off, Pmode);
-          else
-            base = NULL_RTX;
+	  if (sym_p)
+	    {
+	      base = gen_rtx_SYMBOL_REF (Pmode, ggc_strdup (""));
+	      if (off_p)
+		base = gen_rtx_fmt_e (CONST, Pmode,
+				      gen_rtx_fmt_ee (PLUS, Pmode,
+						      base,
+						      gen_int_mode (off, Pmode)));
+	    }
+	  else if (off_p)
+	    base = gen_int_mode (off, Pmode);
+	  else
+	    base = NULL_RTX;
     
-          if (base)
-            addr = gen_rtx_fmt_ee (PLUS, Pmode, addr, base);
+	  if (base)
+	    addr = gen_rtx_fmt_ee (PLUS, Pmode, addr, base);
   
-          start_sequence ();
-          /* To avoid splitting addressing modes, pretend that no cse will
-             follow.  */
-          old_cse_not_expected = cse_not_expected;
-          cse_not_expected = true;
-          addr = memory_address (Pmode, addr);
-          cse_not_expected = old_cse_not_expected;
-          seq = get_insns ();
-          end_sequence ();
+	  start_sequence ();
+	  /* To avoid splitting addressing modes, pretend that no cse will
+	     follow.  */
+	  old_cse_not_expected = cse_not_expected;
+	  cse_not_expected = true;
+	  addr = memory_address (Pmode, addr);
+	  cse_not_expected = old_cse_not_expected;
+	  seq = get_insns ();
+	  end_sequence ();
 
-          acost = seq_cost (seq);
-          acost += address_cost (addr, Pmode);
+	  acost = seq_cost (seq);
+	  acost += address_cost (addr, Pmode);
 
-          if (!acost)
-            acost = 1;
-          costs[sym_p][var_p][off_p][rat_p] = acost;
-        }
+	  if (!acost)
+	    acost = 1;
+	  costs[sym_p][var_p][off_p][rat_p] = acost;
+	}
 
       /* On some targets, it is quite expensive to load symbol to a register,
-         which makes addresses that contain symbols look much more expensive.
-         However, the symbol will have to be loaded in any case before the
-         loop (and quite likely we have it in register already), so it does not
-         make much sense to penalize them too heavily.  So make some final
+	 which makes addresses that contain symbols look much more expensive.
+	 However, the symbol will have to be loaded in any case before the
+	 loop (and quite likely we have it in register already), so it does not
+	 make much sense to penalize them too heavily.  So make some final
          tweaks for the SYMBOL_PRESENT modes:
 
          If VAR_PRESENT is false, and the mode obtained by changing symbol to
-         var is cheaper, use this mode with small penalty.
-         If VAR_PRESENT is true, try whether the mode with
-         SYMBOL_PRESENT = false is cheaper even with cost of addition, and
-         if this is the case, use it.  */
+	 var is cheaper, use this mode with small penalty.
+	 If VAR_PRESENT is true, try whether the mode with
+	 SYMBOL_PRESENT = false is cheaper even with cost of addition, and
+	 if this is the case, use it.  */
       add_c = add_cost (Pmode);
       for (i = 0; i < 8; i++)
-        {
-          var_p = i & 1;
-          off_p = (i >> 1) & 1;
-          rat_p = (i >> 2) & 1;
+	{
+	  var_p = i & 1;
+	  off_p = (i >> 1) & 1;
+	  rat_p = (i >> 2) & 1;
 
-          acost = costs[0][1][off_p][rat_p] + 1;
-          if (var_p)
-            acost += add_c;
+	  acost = costs[0][1][off_p][rat_p] + 1;
+	  if (var_p)
+	    acost += add_c;
 
-          if (acost < costs[1][var_p][off_p][rat_p])
-            costs[1][var_p][off_p][rat_p] = acost;
-        }
+	  if (acost < costs[1][var_p][off_p][rat_p])
+	    costs[1][var_p][off_p][rat_p] = acost;
+	}
   
       if (dump_file && (dump_flags & TDF_DETAILS))
-        {
-          fprintf (dump_file, "Address costs:\n");
+	{
+	  fprintf (dump_file, "Address costs:\n");
       
-          for (i = 0; i < 16; i++)
-            {
-              sym_p = i & 1;
-              var_p = (i >> 1) & 1;
-              off_p = (i >> 2) & 1;
-              rat_p = (i >> 3) & 1;
+	  for (i = 0; i < 16; i++)
+	    {
+	      sym_p = i & 1;
+	      var_p = (i >> 1) & 1;
+	      off_p = (i >> 2) & 1;
+	      rat_p = (i >> 3) & 1;
 
-              fprintf (dump_file, "  ");
-              if (sym_p)
-                fprintf (dump_file, "sym + ");
-              if (var_p)
-                fprintf (dump_file, "var + ");
-              if (off_p)
-                fprintf (dump_file, "cst + ");
-              if (rat_p)
-                fprintf (dump_file, "rat * ");
+	      fprintf (dump_file, "  ");
+	      if (sym_p)
+		fprintf (dump_file, "sym + ");
+	      if (var_p)
+		fprintf (dump_file, "var + ");
+	      if (off_p)
+		fprintf (dump_file, "cst + ");
+	      if (rat_p)
+		fprintf (dump_file, "rat * ");
 
-              acost = costs[sym_p][var_p][off_p][rat_p];
-              fprintf (dump_file, "index costs %d\n", acost);
-            }
-          fprintf (dump_file, "\n");
-        }
+	      acost = costs[sym_p][var_p][off_p][rat_p];
+	      fprintf (dump_file, "index costs %d\n", acost);
+	    }
+	  fprintf (dump_file, "\n");
+	}
     }
 
   bits = GET_MODE_BITSIZE (Pmode);
@@ -3542,9 +3542,9 @@ get_address_cost (bool symbol_present, bool var_present,
 
   cost = 0;
   offset_p = (s_offset != 0
-              && min_offset <= s_offset && s_offset <= max_offset);
+	      && min_offset <= s_offset && s_offset <= max_offset);
   ratio_p = (ratio != 1
-             && multiplier_allowed_in_address_p (ratio));
+	     && multiplier_allowed_in_address_p (ratio));
 
   if (ratio != 1 && !ratio_p)
     cost += multiply_by_cost (ratio, Pmode);
@@ -3576,12 +3576,12 @@ force_expr_to_var_cost (tree expr)
     {
       tree var = create_tmp_var_raw (integer_type_node, "test_var");
       rtx x = gen_rtx_MEM (DECL_MODE (var),
-                           gen_rtx_SYMBOL_REF (Pmode, "test_var"));
+			   gen_rtx_SYMBOL_REF (Pmode, "test_var"));
       tree addr;
       tree type = build_pointer_type (integer_type_node);
 
       integer_cost = computation_cost (build_int_cst (integer_type_node,
-                                                      2000));
+						      2000));
 
       SET_DECL_RTL (var, x);
       TREE_STATIC (var) = 1;
@@ -3589,18 +3589,18 @@ force_expr_to_var_cost (tree expr)
       symbol_cost = computation_cost (addr) + 1;
 
       address_cost
-        = computation_cost (build2 (PLUS_EXPR, type,
-                                    addr,
-                                    build_int_cst (type, 2000))) + 1;
+	= computation_cost (build2 (PLUS_EXPR, type,
+				    addr,
+				    build_int_cst (type, 2000))) + 1;
       if (dump_file && (dump_flags & TDF_DETAILS))
-        {
-          fprintf (dump_file, "force_expr_to_var_cost:\n");
-          fprintf (dump_file, "  integer %d\n", (int) integer_cost);
-          fprintf (dump_file, "  symbol %d\n", (int) symbol_cost);
-          fprintf (dump_file, "  address %d\n", (int) address_cost);
-          fprintf (dump_file, "  other %d\n", (int) target_spill_cost);
-          fprintf (dump_file, "\n");
-        }
+	{
+	  fprintf (dump_file, "force_expr_to_var_cost:\n");
+	  fprintf (dump_file, "  integer %d\n", (int) integer_cost);
+	  fprintf (dump_file, "  symbol %d\n", (int) symbol_cost);
+	  fprintf (dump_file, "  address %d\n", (int) address_cost);
+	  fprintf (dump_file, "  other %d\n", (int) target_spill_cost);
+	  fprintf (dump_file, "\n");
+	}
 
       costs_initialized = true;
     }
@@ -3613,17 +3613,17 @@ force_expr_to_var_cost (tree expr)
   if (TREE_INVARIANT (expr))
     {
       if (TREE_CODE (expr) == INTEGER_CST)
-        return integer_cost;
+	return integer_cost;
 
       if (TREE_CODE (expr) == ADDR_EXPR)
-        {
-          tree obj = TREE_OPERAND (expr, 0);
+	{
+	  tree obj = TREE_OPERAND (expr, 0);
 
-          if (TREE_CODE (obj) == VAR_DECL
-              || TREE_CODE (obj) == PARM_DECL
-              || TREE_CODE (obj) == RESULT_DECL)
-            return symbol_cost;
-        }
+	  if (TREE_CODE (obj) == VAR_DECL
+	      || TREE_CODE (obj) == PARM_DECL
+	      || TREE_CODE (obj) == RESULT_DECL)
+	    return symbol_cost;
+	}
 
       return address_cost;
     }
@@ -3639,14 +3639,14 @@ force_expr_to_var_cost (tree expr)
       STRIP_NOPS (op1);
 
       if (is_gimple_val (op0))
-        cost0 = 0;
+	cost0 = 0;
       else
-        cost0 = force_expr_to_var_cost (op0);
+	cost0 = force_expr_to_var_cost (op0);
 
       if (is_gimple_val (op1))
-        cost1 = 0;
+	cost1 = 0;
       else
-        cost1 = force_expr_to_var_cost (op1);
+	cost1 = force_expr_to_var_cost (op1);
 
       break;
 
@@ -3665,11 +3665,11 @@ force_expr_to_var_cost (tree expr)
 
     case MULT_EXPR:
       if (cst_and_fits_in_hwi (op0))
-        cost = multiply_by_cost (int_cst_value (op0), mode);
+	cost = multiply_by_cost (int_cst_value (op0), mode);
       else if (cst_and_fits_in_hwi (op1))
-        cost = multiply_by_cost (int_cst_value (op1), mode);
+	cost = multiply_by_cost (int_cst_value (op1), mode);
       else
-        return target_spill_cost;
+	return target_spill_cost;
       break;
 
     default:
@@ -3691,7 +3691,7 @@ force_expr_to_var_cost (tree expr)
 
 static unsigned
 force_var_cost (struct ivopts_data *data,
-                tree expr, bitmap *depends_on)
+		tree expr, bitmap *depends_on)
 {
   if (depends_on)
     {
@@ -3709,8 +3709,8 @@ force_var_cost (struct ivopts_data *data,
 
 static unsigned
 split_address_cost (struct ivopts_data *data,
-                    tree addr, bool *symbol_present, bool *var_present,
-                    unsigned HOST_WIDE_INT *offset, bitmap *depends_on)
+		    tree addr, bool *symbol_present, bool *var_present,
+		    unsigned HOST_WIDE_INT *offset, bitmap *depends_on)
 {
   tree core;
   HOST_WIDE_INT bitsize;
@@ -3720,7 +3720,7 @@ split_address_cost (struct ivopts_data *data,
   int unsignedp, volatilep;
   
   core = get_inner_reference (addr, &bitsize, &bitpos, &toffset, &mode,
-                              &unsignedp, &volatilep, false);
+			      &unsignedp, &volatilep, false);
 
   if (toffset != 0
       || bitpos % BITS_PER_UNIT != 0
@@ -3755,8 +3755,8 @@ split_address_cost (struct ivopts_data *data,
 
 static unsigned
 ptr_difference_cost (struct ivopts_data *data,
-                     tree e1, tree e2, bool *symbol_present, bool *var_present,
-                     unsigned HOST_WIDE_INT *offset, bitmap *depends_on)
+		     tree e1, tree e2, bool *symbol_present, bool *var_present,
+		     unsigned HOST_WIDE_INT *offset, bitmap *depends_on)
 {
   HOST_WIDE_INT diff = 0;
   unsigned cost;
@@ -3773,7 +3773,7 @@ ptr_difference_cost (struct ivopts_data *data,
 
   if (e2 == integer_zero_node)
     return split_address_cost (data, TREE_OPERAND (e1, 0),
-                               symbol_present, var_present, offset, depends_on);
+			       symbol_present, var_present, offset, depends_on);
 
   *symbol_present = false;
   *var_present = true;
@@ -3793,8 +3793,8 @@ ptr_difference_cost (struct ivopts_data *data,
 
 static unsigned
 difference_cost (struct ivopts_data *data,
-                 tree e1, tree e2, bool *symbol_present, bool *var_present,
-                 unsigned HOST_WIDE_INT *offset, bitmap *depends_on)
+		 tree e1, tree e2, bool *symbol_present, bool *var_present,
+		 unsigned HOST_WIDE_INT *offset, bitmap *depends_on)
 {
   unsigned cost;
   enum machine_mode mode = TYPE_MODE (TREE_TYPE (e1));
@@ -3809,7 +3809,7 @@ difference_cost (struct ivopts_data *data,
 
   if (TREE_CODE (e1) == ADDR_EXPR)
     return ptr_difference_cost (data, e1, e2, symbol_present, var_present, offset,
-                                depends_on);
+				depends_on);
   *symbol_present = false;
 
   if (operand_equal_p (e1, e2, 0))
@@ -3844,8 +3844,8 @@ difference_cost (struct ivopts_data *data,
 
 static unsigned
 get_computation_cost_at (struct ivopts_data *data,
-                         struct iv_use *use, struct iv_cand *cand,
-                         bool address_p, bitmap *depends_on, tree at)
+			 struct iv_use *use, struct iv_cand *cand,
+			 bool address_p, bitmap *depends_on, tree at)
 {
   tree ubase = use->iv->base, ustep = use->iv->step;
   tree cbase, cstep;
@@ -3874,14 +3874,14 @@ get_computation_cost_at (struct ivopts_data *data,
   if (address_p)
     {
       /* Do not try to express address of an object with computation based
-         on address of a different object.  This may cause problems in rtl
-         level alias analysis (that does not expect this to be happening,
-         as this is illegal in C), and would be unlikely to be useful
-         anyway.  */
+	 on address of a different object.  This may cause problems in rtl
+	 level alias analysis (that does not expect this to be happening,
+	 as this is illegal in C), and would be unlikely to be useful
+	 anyway.  */
       if (use->iv->base_object
-          && cand->iv->base_object
-          && !operand_equal_p (use->iv->base_object, cand->iv->base_object, 0))
-        return INFTY;
+	  && cand->iv->base_object
+	  && !operand_equal_p (use->iv->base_object, cand->iv->base_object, 0))
+	return INFTY;
     }
 
   if (TYPE_PRECISION (utype) != TYPE_PRECISION (ctype))
@@ -3907,19 +3907,19 @@ get_computation_cost_at (struct ivopts_data *data,
       ustepi = int_cst_value (ustep);
 
       if (!divide (TYPE_PRECISION (utype), ustepi, cstepi, &ratio))
-        return INFTY;
+	return INFTY;
     }
   else
     {
       double_int rat;
       
       if (!constant_multiple_of (ustep, cstep, &rat))
-        return INFTY;
+	return INFTY;
     
       if (double_int_fits_in_shwi_p (rat))
-        ratio = double_int_to_shwi (rat);
+	ratio = double_int_to_shwi (rat);
       else
-        return INFTY;
+	return INFTY;
     }
 
   /* use = ubase + ratio * (var - cbase).  If either cbase is a constant
@@ -3933,25 +3933,25 @@ get_computation_cost_at (struct ivopts_data *data,
     {
       offset = - ratio * int_cst_value (cbase); 
       cost += difference_cost (data,
-                               ubase, integer_zero_node,
-                               &symbol_present, &var_present, &offset,
-                               depends_on);
+			       ubase, integer_zero_node,
+			       &symbol_present, &var_present, &offset,
+			       depends_on);
     }
   else if (ratio == 1)
     {
       cost += difference_cost (data,
-                               ubase, cbase,
-                               &symbol_present, &var_present, &offset,
-                               depends_on);
+			       ubase, cbase,
+			       &symbol_present, &var_present, &offset,
+			       depends_on);
     }
   else
     {
       cost += force_var_cost (data, cbase, depends_on);
       cost += add_cost (TYPE_MODE (ctype));
       cost += difference_cost (data,
-                               ubase, integer_zero_node,
-                               &symbol_present, &var_present, &offset,
-                               depends_on);
+			       ubase, integer_zero_node,
+			       &symbol_present, &var_present, &offset,
+			       depends_on);
     }
 
   /* If we are after the increment, the value of the candidate is higher by
@@ -3970,7 +3970,7 @@ get_computation_cost_at (struct ivopts_data *data,
   if (!symbol_present && !var_present && !offset)
     {
       if (ratio != 1)
-        cost += multiply_by_cost (ratio, TYPE_MODE (ctype));
+	cost += multiply_by_cost (ratio, TYPE_MODE (ctype));
 
       return cost;
     }
@@ -4009,11 +4009,11 @@ fallback:
 
 static unsigned
 get_computation_cost (struct ivopts_data *data,
-                      struct iv_use *use, struct iv_cand *cand,
-                      bool address_p, bitmap *depends_on)
+		      struct iv_use *use, struct iv_cand *cand,
+		      bool address_p, bitmap *depends_on)
 {
   return get_computation_cost_at (data,
-                                  use, cand, address_p, depends_on, use->stmt);
+				  use, cand, address_p, depends_on, use->stmt);
 }
 
 /* Determines cost of basing replacement of USE on CAND in a generic
@@ -4021,7 +4021,7 @@ get_computation_cost (struct ivopts_data *data,
 
 static bool
 determine_use_iv_cost_generic (struct ivopts_data *data,
-                               struct iv_use *use, struct iv_cand *cand)
+			       struct iv_use *use, struct iv_cand *cand)
 {
   bitmap depends_on;
   unsigned cost;
@@ -4047,7 +4047,7 @@ determine_use_iv_cost_generic (struct ivopts_data *data,
 
 static bool
 determine_use_iv_cost_address (struct ivopts_data *data,
-                               struct iv_use *use, struct iv_cand *cand)
+			       struct iv_use *use, struct iv_cand *cand)
 {
   bitmap depends_on;
   unsigned cost = get_computation_cost (data, use, cand, true, &depends_on);
@@ -4102,8 +4102,8 @@ iv_period (struct iv *iv)
   type = unsigned_type_for (TREE_TYPE (step));
 
   period = build_low_bits_mask (type,
-                                (TYPE_PRECISION (type)
-                                 - tree_low_cst (pow2div, 1)));
+				(TYPE_PRECISION (type)
+				 - tree_low_cst (pow2div, 1)));
 
   return period;
 }
@@ -4130,7 +4130,7 @@ iv_elimination_compare (struct ivopts_data *data, struct iv_use *use)
 
 static bool
 may_eliminate_iv (struct ivopts_data *data,
-                  struct iv_use *use, struct iv_cand *cand, tree *bound)
+		  struct iv_use *use, struct iv_cand *cand, tree *bound)
 {
   basic_block ex_bb;
   edge exit;
@@ -4177,8 +4177,8 @@ may_eliminate_iv (struct ivopts_data *data,
     wider_type = nit_type;
 
   if (!integer_nonzerop (fold_build2 (GE_EXPR, boolean_type_node,
-                                      fold_convert (wider_type, period),
-                                      fold_convert (wider_type, nit))))
+				      fold_convert (wider_type, period),
+				      fold_convert (wider_type, nit))))
     return false;
 
   *bound = fold_affine_expr (cand_value_at (loop, cand, use->stmt, nit));
@@ -4189,7 +4189,7 @@ may_eliminate_iv (struct ivopts_data *data,
 
 static bool
 determine_use_iv_cost_condition (struct ivopts_data *data,
-                                 struct iv_use *use, struct iv_cand *cand)
+				 struct iv_use *use, struct iv_cand *cand)
 {
   tree bound = NULL_TREE, op, cond;
   bitmap depends_on = NULL;
@@ -4220,13 +4220,13 @@ determine_use_iv_cost_condition (struct ivopts_data *data,
     {
       op = TREE_OPERAND (cond, 0);
       if (TREE_CODE (op) == SSA_NAME && !zero_p (get_iv (data, op)->step))
-        op = TREE_OPERAND (cond, 1);
+	op = TREE_OPERAND (cond, 1);
       if (TREE_CODE (op) == SSA_NAME)
-        {
-          op = get_iv (data, op)->base;
-          fd_ivopts_data = data;
-          walk_tree (&op, find_depends, &depends_on, NULL);
-        }
+	{
+	  op = get_iv (data, op)->base;
+	  fd_ivopts_data = data;
+	  walk_tree (&op, find_depends, &depends_on, NULL);
+	}
     }
 
   set_use_iv_cost (data, use, cand, cost, depends_on, NULL);
@@ -4238,7 +4238,7 @@ determine_use_iv_cost_condition (struct ivopts_data *data,
 
 static bool
 determine_use_iv_cost (struct ivopts_data *data,
-                       struct iv_use *use, struct iv_cand *cand)
+		       struct iv_use *use, struct iv_cand *cand)
 {
   switch (use->type)
     {
@@ -4273,29 +4273,29 @@ determine_use_iv_costs (struct ivopts_data *data)
       use = iv_use (data, i);
 
       if (data->consider_all_candidates)
-        {
-          for (j = 0; j < n_iv_cands (data); j++)
-            {
-              cand = iv_cand (data, j);
-              determine_use_iv_cost (data, use, cand);
-            }
-        }
+	{
+	  for (j = 0; j < n_iv_cands (data); j++)
+	    {
+	      cand = iv_cand (data, j);
+	      determine_use_iv_cost (data, use, cand);
+	    }
+	}
       else
-        {
-          bitmap_iterator bi;
+	{
+	  bitmap_iterator bi;
 
-          EXECUTE_IF_SET_IN_BITMAP (use->related_cands, 0, j, bi)
-            {
-              cand = iv_cand (data, j);
-              if (!determine_use_iv_cost (data, use, cand))
-                bitmap_set_bit (to_clear, j);
-            }
+	  EXECUTE_IF_SET_IN_BITMAP (use->related_cands, 0, j, bi)
+	    {
+	      cand = iv_cand (data, j);
+	      if (!determine_use_iv_cost (data, use, cand))
+		bitmap_set_bit (to_clear, j);
+	    }
 
-          /* Remove the candidates for that the cost is infinite from
-             the list of related candidates.  */
-          bitmap_and_compl_into (use->related_cands, to_clear);
-          bitmap_clear (to_clear);
-        }
+	  /* Remove the candidates for that the cost is infinite from
+	     the list of related candidates.  */
+	  bitmap_and_compl_into (use->related_cands, to_clear);
+	  bitmap_clear (to_clear);
+	}
     }
 
   BITMAP_FREE (to_clear);
@@ -4305,28 +4305,28 @@ determine_use_iv_costs (struct ivopts_data *data)
       fprintf (dump_file, "Use-candidate costs:\n");
 
       for (i = 0; i < n_iv_uses (data); i++)
-        {
-          use = iv_use (data, i);
+	{
+	  use = iv_use (data, i);
 
-          fprintf (dump_file, "Use %d:\n", i);
-          fprintf (dump_file, "  cand\tcost\tdepends on\n");
-          for (j = 0; j < use->n_map_members; j++)
-            {
-              if (!use->cost_map[j].cand
-                  || use->cost_map[j].cost == INFTY)
-                continue;
+	  fprintf (dump_file, "Use %d:\n", i);
+	  fprintf (dump_file, "  cand\tcost\tdepends on\n");
+	  for (j = 0; j < use->n_map_members; j++)
+	    {
+	      if (!use->cost_map[j].cand
+		  || use->cost_map[j].cost == INFTY)
+		continue;
 
-              fprintf (dump_file, "  %d\t%d\t",
-                       use->cost_map[j].cand->id,
-                       use->cost_map[j].cost);
-              if (use->cost_map[j].depends_on)
-                bitmap_print (dump_file,
-                              use->cost_map[j].depends_on, "","");
-              fprintf (dump_file, "\n");
-            }
+	      fprintf (dump_file, "  %d\t%d\t",
+		       use->cost_map[j].cand->id,
+		       use->cost_map[j].cost);
+	      if (use->cost_map[j].depends_on)
+		bitmap_print (dump_file,
+			      use->cost_map[j].depends_on, "","");
+	      fprintf (dump_file, "\n");
+	    }
 
-          fprintf (dump_file, "\n");
-        }
+	  fprintf (dump_file, "\n");
+	}
       fprintf (dump_file, "\n");
     }
 }
@@ -4389,7 +4389,7 @@ determine_iv_costs (struct ivopts_data *data)
       determine_iv_cost (data, cand);
 
       if (dump_file && (dump_flags & TDF_DETAILS))
-        fprintf (dump_file, "  %d\t%d\n", i, cand->cost);
+	fprintf (dump_file, "  %d\t%d\n", i, cand->cost);
     }
   
 if (dump_file && (dump_flags & TDF_DETAILS))
@@ -4429,7 +4429,7 @@ determine_set_costs (struct ivopts_data *data)
      Let I be the number of induction variables.
      
      -- if U + I + R <= A, the cost is I * SMALL_COST (just not to encourage
-        make a lot of ivs without a reason).
+	make a lot of ivs without a reason).
      -- if A - R < U + I <= A, the cost is I * PRES_COST
      -- if U + I > A, the cost is I * PRES_COST and
         number of uses * SPILL_COST * (U + I - A) / (U + I) is added.  */
@@ -4449,10 +4449,10 @@ determine_set_costs (struct ivopts_data *data)
       op = PHI_RESULT (phi);
 
       if (!is_gimple_reg (op))
-        continue;
+	continue;
 
       if (get_iv (data, op))
-        continue;
+	continue;
 
       n++;
     }
@@ -4462,7 +4462,7 @@ determine_set_costs (struct ivopts_data *data)
       struct version_info *info = ver_info (data, j);
 
       if (info->inv_id && info->has_nonlin_use)
-        n++;
+	n++;
     }
 
   data->regs_used = n;
@@ -4474,8 +4474,8 @@ determine_set_costs (struct ivopts_data *data)
       fprintf (dump_file, "  cost for size:\n");
       fprintf (dump_file, "  ivs\tcost\n");
       for (j = 0; j <= 2 * target_avail_regs; j++)
-        fprintf (dump_file, "  %d\t%d\n", j,
-                 ivopts_global_cost_for_size (data, j));
+	fprintf (dump_file, "  %d\t%d\n", j,
+		 ivopts_global_cost_for_size (data, j));
       fprintf (dump_file, "\n");
     }
 }
@@ -4533,7 +4533,7 @@ iv_ca_set_remove_invariants (struct iv_ca *ivs, bitmap invs)
     {
       ivs->n_invariant_uses[iid]--;
       if (ivs->n_invariant_uses[iid] == 0)
-        ivs->n_regs--;
+	ivs->n_regs--;
     }
 }
 
@@ -4541,7 +4541,7 @@ iv_ca_set_remove_invariants (struct iv_ca *ivs, bitmap invs)
 
 static void
 iv_ca_set_no_cp (struct ivopts_data *data, struct iv_ca *ivs,
-                 struct iv_use *use)
+		 struct iv_use *use)
 {
   unsigned uid = use->id, cid;
   struct cost_pair *cp;
@@ -4560,7 +4560,7 @@ iv_ca_set_no_cp (struct ivopts_data *data, struct iv_ca *ivs,
       bitmap_clear_bit (ivs->cands, cid);
       /* Do not count the pseudocandidates.  */
       if (cp->cand->iv)
-        ivs->n_regs--;
+	ivs->n_regs--;
       ivs->n_cands--;
       ivs->cand_cost -= cp->cand->cost;
 
@@ -4588,7 +4588,7 @@ iv_ca_set_add_invariants (struct iv_ca *ivs, bitmap invs)
     {
       ivs->n_invariant_uses[iid]++;
       if (ivs->n_invariant_uses[iid] == 1)
-        ivs->n_regs++;
+	ivs->n_regs++;
     }
 }
 
@@ -4596,7 +4596,7 @@ iv_ca_set_add_invariants (struct iv_ca *ivs, bitmap invs)
 
 static void
 iv_ca_set_cp (struct ivopts_data *data, struct iv_ca *ivs,
-              struct iv_use *use, struct cost_pair *cp)
+	      struct iv_use *use, struct cost_pair *cp)
 {
   unsigned uid = use->id, cid;
 
@@ -4614,16 +4614,16 @@ iv_ca_set_cp (struct ivopts_data *data, struct iv_ca *ivs,
       ivs->cand_for_use[uid] = cp;
       ivs->n_cand_uses[cid]++;
       if (ivs->n_cand_uses[cid] == 1)
-        {
-          bitmap_set_bit (ivs->cands, cid);
-          /* Do not count the pseudocandidates.  */
-          if (cp->cand->iv)
-            ivs->n_regs++;
-          ivs->n_cands++;
-          ivs->cand_cost += cp->cand->cost;
+	{
+	  bitmap_set_bit (ivs->cands, cid);
+	  /* Do not count the pseudocandidates.  */
+	  if (cp->cand->iv)
+	    ivs->n_regs++;
+	  ivs->n_cands++;
+	  ivs->cand_cost += cp->cand->cost;
 
-          iv_ca_set_add_invariants (ivs, cp->cand->depends_on);
-        }
+	  iv_ca_set_add_invariants (ivs, cp->cand->depends_on);
+	}
 
       ivs->cand_use_cost += cp->cost;
       iv_ca_set_add_invariants (ivs, cp->depends_on);
@@ -4636,7 +4636,7 @@ iv_ca_set_cp (struct ivopts_data *data, struct iv_ca *ivs,
 
 static void
 iv_ca_add_use (struct ivopts_data *data, struct iv_ca *ivs,
-               struct iv_use *use)
+	       struct iv_use *use)
 {
   struct cost_pair *best_cp = NULL, *cp;
   bitmap_iterator bi;
@@ -4655,7 +4655,7 @@ iv_ca_add_use (struct ivopts_data *data, struct iv_ca *ivs,
       cp = get_use_iv_cost (data, use, iv_cand (data, i));
 
       if (cheaper_cost_pair (cp, best_cp))
-        best_cp = cp;
+	best_cp = cp;
     }
 
   iv_ca_set_cp (data, ivs, use, best_cp);
@@ -4683,7 +4683,7 @@ iv_ca_has_deps (struct iv_ca *ivs, struct cost_pair *cp)
   EXECUTE_IF_SET_IN_BITMAP (cp->depends_on, 0, i, bi)
     {
       if (ivs->n_invariant_uses[i] == 0)
-        return false;
+	return false;
     }
 
   return true;
@@ -4694,7 +4694,7 @@ iv_ca_has_deps (struct iv_ca *ivs, struct cost_pair *cp)
 
 static struct iv_ca_delta *
 iv_ca_delta_add (struct iv_use *use, struct cost_pair *old_cp,
-                 struct cost_pair *new_cp, struct iv_ca_delta *next_change)
+		 struct cost_pair *new_cp, struct iv_ca_delta *next_change)
 {
   struct iv_ca_delta *change = XNEW (struct iv_ca_delta);
 
@@ -4762,7 +4762,7 @@ iv_ca_delta_reverse (struct iv_ca_delta *delta)
 
 static void
 iv_ca_delta_commit (struct ivopts_data *data, struct iv_ca *ivs,
-                    struct iv_ca_delta *delta, bool forward)
+		    struct iv_ca_delta *delta, bool forward)
 {
   struct cost_pair *from, *to;
   struct iv_ca_delta *act;
@@ -4863,8 +4863,8 @@ iv_ca_dump (struct ivopts_data *data, FILE *file, struct iv_ca *ivs)
   for (i = 1; i <= data->max_inv_id; i++)
     if (ivs->n_invariant_uses[i])
       {
-        fprintf (file, "%s%d", pref, i);
-        pref = ", ";
+	fprintf (file, "%s%d", pref, i);
+	pref = ", ";
       }
   fprintf (file, "\n");
 }
@@ -4875,8 +4875,8 @@ iv_ca_dump (struct ivopts_data *data, FILE *file, struct iv_ca *ivs)
 
 static unsigned
 iv_ca_extend (struct ivopts_data *data, struct iv_ca *ivs,
-              struct iv_cand *cand, struct iv_ca_delta **delta,
-              unsigned *n_ivs)
+	      struct iv_cand *cand, struct iv_ca_delta **delta,
+	      unsigned *n_ivs)
 {
   unsigned i, cost;
   struct iv_use *use;
@@ -4889,18 +4889,18 @@ iv_ca_extend (struct ivopts_data *data, struct iv_ca *ivs,
       old_cp = iv_ca_cand_for_use (ivs, use);
 
       if (old_cp
-          && old_cp->cand == cand)
-        continue;
+	  && old_cp->cand == cand)
+	continue;
 
       new_cp = get_use_iv_cost (data, use, cand);
       if (!new_cp)
-        continue;
+	continue;
 
       if (!iv_ca_has_deps (ivs, new_cp))
-        continue;
+	continue;
       
       if (!cheaper_cost_pair (new_cp, old_cp))
-        continue;
+	continue;
 
       *delta = iv_ca_delta_add (use, old_cp, new_cp, *delta);
     }
@@ -4919,7 +4919,7 @@ iv_ca_extend (struct ivopts_data *data, struct iv_ca *ivs,
 
 static unsigned
 iv_ca_narrow (struct ivopts_data *data, struct iv_ca *ivs,
-              struct iv_cand *cand, struct iv_ca_delta **delta)
+	      struct iv_cand *cand, struct iv_ca_delta **delta)
 {
   unsigned i, ci;
   struct iv_use *use;
@@ -4935,58 +4935,58 @@ iv_ca_narrow (struct ivopts_data *data, struct iv_ca *ivs,
 
       old_cp = iv_ca_cand_for_use (ivs, use);
       if (old_cp->cand != cand)
-        continue;
+	continue;
 
       new_cp = NULL;
 
       if (data->consider_all_candidates)
-        {
-          EXECUTE_IF_SET_IN_BITMAP (ivs->cands, 0, ci, bi)
-            {
-              if (ci == cand->id)
-                continue;
+	{
+	  EXECUTE_IF_SET_IN_BITMAP (ivs->cands, 0, ci, bi)
+	    {
+	      if (ci == cand->id)
+		continue;
 
-              cnd = iv_cand (data, ci);
+	      cnd = iv_cand (data, ci);
 
-              cp = get_use_iv_cost (data, use, cnd);
-              if (!cp)
-                continue;
-              if (!iv_ca_has_deps (ivs, cp))
-                continue;
+	      cp = get_use_iv_cost (data, use, cnd);
+	      if (!cp)
+		continue;
+	      if (!iv_ca_has_deps (ivs, cp))
+		continue;
       
-              if (!cheaper_cost_pair (cp, new_cp))
-                continue;
+	      if (!cheaper_cost_pair (cp, new_cp))
+		continue;
 
-              new_cp = cp;
-            }
-        }
+	      new_cp = cp;
+	    }
+	}
       else
-        {
-          EXECUTE_IF_AND_IN_BITMAP (use->related_cands, ivs->cands, 0, ci, bi)
-            {
-              if (ci == cand->id)
-                continue;
+	{
+	  EXECUTE_IF_AND_IN_BITMAP (use->related_cands, ivs->cands, 0, ci, bi)
+	    {
+	      if (ci == cand->id)
+		continue;
 
-              cnd = iv_cand (data, ci);
+	      cnd = iv_cand (data, ci);
 
-              cp = get_use_iv_cost (data, use, cnd);
-              if (!cp)
-                continue;
-              if (!iv_ca_has_deps (ivs, cp))
-                continue;
+	      cp = get_use_iv_cost (data, use, cnd);
+	      if (!cp)
+		continue;
+	      if (!iv_ca_has_deps (ivs, cp))
+		continue;
       
-              if (!cheaper_cost_pair (cp, new_cp))
-                continue;
+	      if (!cheaper_cost_pair (cp, new_cp))
+		continue;
 
-              new_cp = cp;
-            }
-        }
+	      new_cp = cp;
+	    }
+	}
 
       if (!new_cp)
-        {
-          iv_ca_delta_free (delta);
-          return INFTY;
-        }
+	{
+	  iv_ca_delta_free (delta);
+	  return INFTY;
+	}
 
       *delta = iv_ca_delta_add (use, old_cp, new_cp, *delta);
     }
@@ -5004,7 +5004,7 @@ iv_ca_narrow (struct ivopts_data *data, struct iv_ca *ivs,
 
 static unsigned
 iv_ca_prune (struct ivopts_data *data, struct iv_ca *ivs,
-             struct iv_cand *except_cand, struct iv_ca_delta **delta)
+	     struct iv_cand *except_cand, struct iv_ca_delta **delta)
 {
   bitmap_iterator bi;
   struct iv_ca_delta *act_delta, *best_delta;
@@ -5019,18 +5019,18 @@ iv_ca_prune (struct ivopts_data *data, struct iv_ca *ivs,
       cand = iv_cand (data, i);
 
       if (cand == except_cand)
-        continue;
+	continue;
 
       acost = iv_ca_narrow (data, ivs, cand, &act_delta);
 
       if (acost < best_cost)
-        {
-          best_cost = acost;
-          iv_ca_delta_free (&best_delta);
-          best_delta = act_delta;
-        }
+	{
+	  best_cost = acost;
+	  iv_ca_delta_free (&best_delta);
+	  best_delta = act_delta;
+	}
       else
-        iv_ca_delta_free (&act_delta);
+	iv_ca_delta_free (&act_delta);
     }
 
   if (!best_delta)
@@ -5052,7 +5052,7 @@ iv_ca_prune (struct ivopts_data *data, struct iv_ca *ivs,
 
 static bool
 try_add_cand_for (struct ivopts_data *data, struct iv_ca *ivs,
-                  struct iv_use *use)
+		  struct iv_use *use)
 {
   unsigned best_cost, act_cost;
   unsigned i;
@@ -5084,11 +5084,11 @@ try_add_cand_for (struct ivopts_data *data, struct iv_ca *ivs,
       cand = iv_cand (data, i);
 
       if (iv_ca_cand_used_p (ivs, cand))
-        continue;
+	continue;
 
       cp = get_use_iv_cost (data, use, cand);
       if (!cp)
-        continue;
+	continue;
 
       iv_ca_set_cp (data, ivs, use, cp);
       act_cost = iv_ca_extend (data, ivs, cand, &act_delta, NULL);
@@ -5096,50 +5096,50 @@ try_add_cand_for (struct ivopts_data *data, struct iv_ca *ivs,
       act_delta = iv_ca_delta_add (use, NULL, cp, act_delta);
 
       if (act_cost < best_cost)
-        {
-          best_cost = act_cost;
+	{
+	  best_cost = act_cost;
 
-          iv_ca_delta_free (&best_delta);
-          best_delta = act_delta;
-        }
+	  iv_ca_delta_free (&best_delta);
+	  best_delta = act_delta;
+	}
       else
-        iv_ca_delta_free (&act_delta);
+	iv_ca_delta_free (&act_delta);
     }
 
   if (best_cost == INFTY)
     {
       for (i = 0; i < use->n_map_members; i++)
-        {
-          cp = use->cost_map + i;
-          cand = cp->cand;
-          if (!cand)
-            continue;
+	{
+	  cp = use->cost_map + i;
+	  cand = cp->cand;
+	  if (!cand)
+	    continue;
 
-          /* Already tried this.  */
-          if (cand->important)
-            continue;
+	  /* Already tried this.  */
+	  if (cand->important)
+	    continue;
       
-          if (iv_ca_cand_used_p (ivs, cand))
-            continue;
+	  if (iv_ca_cand_used_p (ivs, cand))
+	    continue;
 
-          act_delta = NULL;
-          iv_ca_set_cp (data, ivs, use, cp);
-          act_cost = iv_ca_extend (data, ivs, cand, &act_delta, NULL);
-          iv_ca_set_no_cp (data, ivs, use);
-          act_delta = iv_ca_delta_add (use, iv_ca_cand_for_use (ivs, use),
-                                       cp, act_delta);
+	  act_delta = NULL;
+	  iv_ca_set_cp (data, ivs, use, cp);
+	  act_cost = iv_ca_extend (data, ivs, cand, &act_delta, NULL);
+	  iv_ca_set_no_cp (data, ivs, use);
+	  act_delta = iv_ca_delta_add (use, iv_ca_cand_for_use (ivs, use),
+				       cp, act_delta);
 
-          if (act_cost < best_cost)
-            {
-              best_cost = act_cost;
+	  if (act_cost < best_cost)
+	    {
+	      best_cost = act_cost;
 
-              if (best_delta)
-                iv_ca_delta_free (&best_delta);
-              best_delta = act_delta;
-            }
-          else
-            iv_ca_delta_free (&act_delta);
-        }
+	      if (best_delta)
+		iv_ca_delta_free (&best_delta);
+	      best_delta = act_delta;
+	    }
+	  else
+	    iv_ca_delta_free (&act_delta);
+	}
     }
 
   iv_ca_delta_commit (data, ivs, best_delta, true);
@@ -5159,8 +5159,8 @@ get_initial_solution (struct ivopts_data *data)
   for (i = 0; i < n_iv_uses (data); i++)
     if (!try_add_cand_for (data, ivs, iv_use (data, i)))
       {
-        iv_ca_free (&ivs);
-        return NULL;
+	iv_ca_free (&ivs);
+	return NULL;
       }
 
   return ivs;
@@ -5181,30 +5181,30 @@ try_improve_iv_set (struct ivopts_data *data, struct iv_ca *ivs)
       cand = iv_cand (data, i);
       
       if (iv_ca_cand_used_p (ivs, cand))
-        continue;
+	continue;
 
       acost = iv_ca_extend (data, ivs, cand, &act_delta, &n_ivs);
       if (!act_delta)
-        continue;
+	continue;
 
       /* If we successfully added the candidate and the set is small enough,
-         try optimizing it by removing other candidates.  */
+	 try optimizing it by removing other candidates.  */
       if (n_ivs <= ALWAYS_PRUNE_CAND_SET_BOUND)
-              {
-          iv_ca_delta_commit (data, ivs, act_delta, true);
-          acost = iv_ca_prune (data, ivs, cand, &tmp_delta);
-          iv_ca_delta_commit (data, ivs, act_delta, false);
-          act_delta = iv_ca_delta_join (act_delta, tmp_delta);
-        }
+      	{
+	  iv_ca_delta_commit (data, ivs, act_delta, true);
+	  acost = iv_ca_prune (data, ivs, cand, &tmp_delta);
+	  iv_ca_delta_commit (data, ivs, act_delta, false);
+	  act_delta = iv_ca_delta_join (act_delta, tmp_delta);
+	}
 
       if (acost < best_cost)
-        {
-          best_cost = acost;
-          iv_ca_delta_free (&best_delta);
-          best_delta = act_delta;
-        }
+	{
+	  best_cost = acost;
+	  iv_ca_delta_free (&best_delta);
+	  best_delta = act_delta;
+	}
       else
-        iv_ca_delta_free (&act_delta);
+	iv_ca_delta_free (&act_delta);
     }
 
   if (!best_delta)
@@ -5214,7 +5214,7 @@ try_improve_iv_set (struct ivopts_data *data, struct iv_ca *ivs)
 
       /* Nothing more we can do.  */
       if (!best_delta)
-        return false;
+	return false;
     }
 
   iv_ca_delta_commit (data, ivs, best_delta, true);
@@ -5239,7 +5239,7 @@ find_optimal_iv_set (struct ivopts_data *data)
   if (!set)
     {
       if (dump_file && (dump_flags & TDF_DETAILS))
-        fprintf (dump_file, "Unable to substitute for ivs, failed.\n");
+	fprintf (dump_file, "Unable to substitute for ivs, failed.\n");
       return NULL;
     }
 
@@ -5252,10 +5252,10 @@ find_optimal_iv_set (struct ivopts_data *data)
   while (try_improve_iv_set (data, set))
     {
       if (dump_file && (dump_flags & TDF_DETAILS))
-        {
-          fprintf (dump_file, "Improved to:\n");
-          iv_ca_dump (data, dump_file, set);
-        }
+	{
+	  fprintf (dump_file, "Improved to:\n");
+	  iv_ca_dump (data, dump_file, set);
+	}
     }
 
   if (dump_file && (dump_flags & TDF_DETAILS))
@@ -5310,8 +5310,8 @@ create_new_iv (struct ivopts_data *data, struct iv_cand *cand)
   base = unshare_expr (cand->iv->base);
 
   create_iv (base, unshare_expr (cand->iv->step),
-             cand->var_before, data->current_loop,
-             &incr_pos, after, &cand->var_before, &cand->var_after);
+	     cand->var_before, data->current_loop,
+	     &incr_pos, after, &cand->var_before, &cand->var_after);
 }
 
 /* Creates new induction variables described in SET.  */
@@ -5339,10 +5339,10 @@ remove_statement (tree stmt, bool including_defined_name)
   if (TREE_CODE (stmt) == PHI_NODE)
     {
       if (!including_defined_name)
-        {
-          /* Prevent the ssa name defined by the statement from being removed.  */
-          SET_PHI_RESULT (stmt, NULL);
-        }
+	{
+	  /* Prevent the ssa name defined by the statement from being removed.  */
+	  SET_PHI_RESULT (stmt, NULL);
+	}
       remove_phi_node (stmt, NULL_TREE);
     }
   else
@@ -5358,7 +5358,7 @@ remove_statement (tree stmt, bool including_defined_name)
 
 static void
 rewrite_use_nonlinear_expr (struct ivopts_data *data,
-                            struct iv_use *use, struct iv_cand *cand)
+			    struct iv_use *use, struct iv_cand *cand)
 {
   tree comp;
   tree op, stmts, tgt, ass;
@@ -5381,42 +5381,42 @@ rewrite_use_nonlinear_expr (struct ivopts_data *data,
       ctype = TREE_TYPE (step);
       utype = TREE_TYPE (cand->var_after);
       if (TREE_CODE (step) == NEGATE_EXPR)
-        {
-          incr_code = MINUS_EXPR;
-          step = TREE_OPERAND (step, 0);
-        }
+	{
+	  incr_code = MINUS_EXPR;
+	  step = TREE_OPERAND (step, 0);
+	}
 
       /* Check whether we may leave the computation unchanged.
-         This is the case only if it does not rely on other
-         computations in the loop -- otherwise, the computation
-         we rely upon may be removed in remove_unused_ivs,
-         thus leading to ICE.  */
+	 This is the case only if it does not rely on other
+	 computations in the loop -- otherwise, the computation
+	 we rely upon may be removed in remove_unused_ivs,
+	 thus leading to ICE.  */
       op = TREE_OPERAND (use->stmt, 1);
       if (TREE_CODE (op) == PLUS_EXPR
-          || TREE_CODE (op) == MINUS_EXPR)
-        {
-          if (TREE_OPERAND (op, 0) == cand->var_before)
-            op = TREE_OPERAND (op, 1);
-          else if (TREE_CODE (op) == PLUS_EXPR
-                   && TREE_OPERAND (op, 1) == cand->var_before)
-            op = TREE_OPERAND (op, 0);
-          else
-            op = NULL_TREE;
-        }
+	  || TREE_CODE (op) == MINUS_EXPR)
+	{
+	  if (TREE_OPERAND (op, 0) == cand->var_before)
+	    op = TREE_OPERAND (op, 1);
+	  else if (TREE_CODE (op) == PLUS_EXPR
+		   && TREE_OPERAND (op, 1) == cand->var_before)
+	    op = TREE_OPERAND (op, 0);
+	  else
+	    op = NULL_TREE;
+	}
       else
-        op = NULL_TREE;
+	op = NULL_TREE;
 
       if (op
-          && (TREE_CODE (op) == INTEGER_CST
-              || operand_equal_p (op, step, 0)))
-        return;
+	  && (TREE_CODE (op) == INTEGER_CST
+	      || operand_equal_p (op, step, 0)))
+	return;
 
       /* Otherwise, add the necessary computations to express
-         the iv.  */
+	 the iv.  */
       op = fold_convert (ctype, cand->var_before);
       comp = fold_convert (utype,
-                           build2 (incr_code, ctype, op,
-                                   unshare_expr (step)));
+			   build2 (incr_code, ctype, op,
+				   unshare_expr (step)));
     }
   else
     comp = get_computation (data->current_loop, use, cand);
@@ -5428,15 +5428,15 @@ rewrite_use_nonlinear_expr (struct ivopts_data *data,
 
       /* If we should keep the biv, do not replace it.  */
       if (name_info (data, tgt)->preserve_biv)
-        return;
+	return;
 
       pbsi = bsi = bsi_start (bb_for_stmt (use->stmt));
       while (!bsi_end_p (pbsi)
-             && TREE_CODE (bsi_stmt (pbsi)) == LABEL_EXPR)
-        {
-          bsi = pbsi;
-          bsi_next (&pbsi);
-        }
+	     && TREE_CODE (bsi_stmt (pbsi)) == LABEL_EXPR)
+	{
+	  bsi = pbsi;
+	  bsi_next (&pbsi);
+	}
       break;
 
     case MODIFY_EXPR:
@@ -5453,7 +5453,7 @@ rewrite_use_nonlinear_expr (struct ivopts_data *data,
   if (TREE_CODE (use->stmt) == PHI_NODE)
     {
       if (stmts)
-        bsi_insert_after (&bsi, stmts, BSI_CONTINUE_LINKING);
+	bsi_insert_after (&bsi, stmts, BSI_CONTINUE_LINKING);
       ass = build2 (MODIFY_EXPR, TREE_TYPE (tgt), tgt, op);
       bsi_insert_after (&bsi, ass, BSI_NEW_STMT);
       remove_statement (use->stmt, false);
@@ -5462,7 +5462,7 @@ rewrite_use_nonlinear_expr (struct ivopts_data *data,
   else
     {
       if (stmts)
-        bsi_insert_before (&bsi, stmts, BSI_SAME_STMT);
+	bsi_insert_before (&bsi, stmts, BSI_SAME_STMT);
       TREE_OPERAND (use->stmt, 1) = op;
     }
 }
@@ -5472,7 +5472,7 @@ rewrite_use_nonlinear_expr (struct ivopts_data *data,
 
 static bool
 idx_remove_ssa_names (tree base, tree *idx,
-                      void *data ATTRIBUTE_UNUSED)
+		      void *data ATTRIBUTE_UNUSED)
 {
   tree *op;
 
@@ -5483,12 +5483,12 @@ idx_remove_ssa_names (tree base, tree *idx,
     {
       op = &TREE_OPERAND (base, 2);
       if (*op
-          && TREE_CODE (*op) == SSA_NAME)
-        *op = SSA_NAME_VAR (*op);
+	  && TREE_CODE (*op) == SSA_NAME)
+	*op = SSA_NAME_VAR (*op);
       op = &TREE_OPERAND (base, 3);
       if (*op
-          && TREE_CODE (*op) == SSA_NAME)
-        *op = SSA_NAME_VAR (*op);
+	  && TREE_CODE (*op) == SSA_NAME)
+	*op = SSA_NAME_VAR (*op);
     }
 
   return true;
@@ -5523,7 +5523,7 @@ get_ref_tag (tree ref, tree orig)
     {
       aref = get_ref_base_and_extent (sv, &offset, &size, &maxsize);
       if (ref)
-        break;
+	break;
     }
 
   if (aref && SSA_VAR_P (aref) && get_subvars_for_var (aref))
@@ -5535,17 +5535,17 @@ get_ref_tag (tree ref, tree orig)
   if (TREE_CODE (var) == INDIRECT_REF)
     {
       /* If the base is a dereference of a pointer, first check its name memory
-         tag.  If it does not have one, use its symbol memory tag.  */
+	 tag.  If it does not have one, use its symbol memory tag.  */
       var = TREE_OPERAND (var, 0);
       if (TREE_CODE (var) != SSA_NAME)
-        return NULL_TREE;
+	return NULL_TREE;
 
       if (SSA_NAME_PTR_INFO (var))
-        {
-          tag = SSA_NAME_PTR_INFO (var)->name_mem_tag;
-          if (tag)
-            return tag;
-        }
+	{
+	  tag = SSA_NAME_PTR_INFO (var)->name_mem_tag;
+	  if (tag)
+	    return tag;
+	}
  
       var = SSA_NAME_VAR (var);
       tag = var_ann (var)->symbol_mem_tag;
@@ -5555,11 +5555,11 @@ get_ref_tag (tree ref, tree orig)
   else
     { 
       if (!DECL_P (var))
-        return NULL_TREE;
+	return NULL_TREE;
 
       tag = var_ann (var)->symbol_mem_tag;
       if (tag)
-        return tag;
+	return tag;
 
       return var;
     }
@@ -5583,7 +5583,7 @@ copy_ref_info (tree new_ref, tree old_ref)
 
 static void
 rewrite_use_address (struct ivopts_data *data,
-                     struct iv_use *use, struct iv_cand *cand)
+		     struct iv_use *use, struct iv_cand *cand)
 {
   struct affine_tree_combination aff;
   block_stmt_iterator bsi = bsi_for_stmt (use->stmt);
@@ -5602,7 +5602,7 @@ rewrite_use_address (struct ivopts_data *data,
 
 static void
 rewrite_use_compare (struct ivopts_data *data,
-                     struct iv_use *use, struct iv_cand *cand)
+		     struct iv_use *use, struct iv_cand *cand)
 {
   tree comp;
   tree *op_p, cond, op, stmts, bound;
@@ -5619,10 +5619,10 @@ rewrite_use_compare (struct ivopts_data *data,
       compare = iv_elimination_compare (data, use);
       bound = fold_convert (var_type, bound);
       op = force_gimple_operand (unshare_expr (bound), &stmts,
-                                 true, NULL_TREE);
+				 true, NULL_TREE);
 
       if (stmts)
-        bsi_insert_before (&bsi, stmts, BSI_SAME_STMT);
+	bsi_insert_before (&bsi, stmts, BSI_SAME_STMT);
 
       *use->op_p = build2 (compare, boolean_type_node, var, op);
       update_stmt (use->stmt);
@@ -5650,24 +5650,24 @@ rewrite_use_compare (struct ivopts_data *data,
 
 static void
 rewrite_use (struct ivopts_data *data,
-             struct iv_use *use, struct iv_cand *cand)
+	     struct iv_use *use, struct iv_cand *cand)
 {
   switch (use->type)
     {
       case USE_NONLINEAR_EXPR:
-        rewrite_use_nonlinear_expr (data, use, cand);
-        break;
+	rewrite_use_nonlinear_expr (data, use, cand);
+	break;
 
       case USE_ADDRESS:
-        rewrite_use_address (data, use, cand);
-        break;
+	rewrite_use_address (data, use, cand);
+	break;
 
       case USE_COMPARE:
-        rewrite_use_compare (data, use, cand);
-        break;
+	rewrite_use_compare (data, use, cand);
+	break;
 
       default:
-        gcc_unreachable ();
+	gcc_unreachable ();
     }
   mark_new_vars_to_rename (use->stmt);
 }
@@ -5705,11 +5705,11 @@ remove_unused_ivs (struct ivopts_data *data)
 
       info = ver_info (data, j);
       if (info->iv
-          && !zero_p (info->iv->step)
-          && !info->inv_id
-          && !info->iv->have_use_for
-          && !info->preserve_biv)
-        remove_statement (SSA_NAME_DEF_STMT (info->iv->ssa_name), true);
+	  && !zero_p (info->iv->step)
+	  && !info->inv_id
+	  && !info->iv->have_use_for
+	  && !info->preserve_biv)
+	remove_statement (SSA_NAME_DEF_STMT (info->iv->ssa_name), true);
     }
 }
 
@@ -5730,7 +5730,7 @@ free_loop_data (struct ivopts_data *data)
 
       info = ver_info (data, i);
       if (info->iv)
-        free (info->iv);
+	free (info->iv);
       info->iv = NULL;
       info->has_nonlin_use = false;
       info->preserve_biv = false;
@@ -5746,8 +5746,8 @@ free_loop_data (struct ivopts_data *data)
       free (use->iv);
       BITMAP_FREE (use->related_cands);
       for (j = 0; j < use->n_map_members; j++)
-        if (use->cost_map[j].depends_on)
-          BITMAP_FREE (use->cost_map[j].depends_on);
+	if (use->cost_map[j].depends_on)
+	  BITMAP_FREE (use->cost_map[j].depends_on);
       free (use->cost_map);
       free (use);
     }
@@ -5758,9 +5758,9 @@ free_loop_data (struct ivopts_data *data)
       struct iv_cand *cand = iv_cand (data, i);
 
       if (cand->iv)
-        free (cand->iv);
+	free (cand->iv);
       if (cand->depends_on)
-        BITMAP_FREE (cand->depends_on);
+	BITMAP_FREE (cand->depends_on);
       free (cand);
     }
   VEC_truncate (iv_cand_p, data->iv_candidates, 0);
@@ -5814,12 +5814,12 @@ tree_ssa_iv_optimize_loop (struct ivopts_data *data, struct loop *loop)
       
       exit = single_dom_exit (loop);
       if (exit)
-        {
-          fprintf (dump_file, "  single exit %d -> %d, exit condition ",
-                   exit->src->index, exit->dest->index);
-          print_generic_expr (dump_file, last_stmt (exit->src), TDF_SLIM);
-          fprintf (dump_file, "\n");
-        }
+	{
+	  fprintf (dump_file, "  single exit %d -> %d, exit condition ",
+		   exit->src->index, exit->dest->index);
+	  print_generic_expr (dump_file, last_stmt (exit->src), TDF_SLIM);
+	  fprintf (dump_file, "\n");
+	}
 
       fprintf (dump_file, "\n");
     }
@@ -5888,18 +5888,18 @@ tree_ssa_iv_optimize (struct loops *loops)
   while (loop != loops->tree_root)
     {
       if (dump_file && (dump_flags & TDF_DETAILS))
-        flow_loop_dump (loop, dump_file, NULL, 1);
+	flow_loop_dump (loop, dump_file, NULL, 1);
 
       tree_ssa_iv_optimize_loop (&data, loop);
 
       if (loop->next)
-        {
-          loop = loop->next;
-          while (loop->inner)
-            loop = loop->inner;
-        }
+	{
+	  loop = loop->next;
+	  while (loop->inner)
+	    loop = loop->inner;
+	}
       else
-        loop = loop->outer;
+	loop = loop->outer;
     }
 
   tree_ssa_iv_optimize_finalize (&data);

@@ -31,7 +31,7 @@ Boston, MA 02110-1301, USA.  */
 /* Linking with this file forces the Dwarf2 EH section to be
    individually loaded by the VMS linker an the unwinder to read it.  */
 
-.section        .eh_frame,NOWRT
-                .align 0
-                .global __EH_FRAME_BEGIN__
+.section	.eh_frame,NOWRT
+		.align 0
+		.global __EH_FRAME_BEGIN__
 __EH_FRAME_BEGIN__:

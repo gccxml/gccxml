@@ -33,15 +33,15 @@ Boston, MA 02110-1301, USA.  */
 
 /* How to output an ASCII string constant.  */
 
-#define ASM_OUTPUT_ASCII(FILE, PTR, SIZE)                        \
-do                                                                \
-{ size_t i = 0, limit = (SIZE);                                 \
-  while (i < limit)                                                \
-    { if (i%10 == 0) { if (i!=0) fprintf ((FILE), "\n");        \
-                       fputs ("\t.byte\t", (FILE)); }                \
-      else fprintf ((FILE), ",");                                \
-        fprintf ((FILE), "0x%x", ((PTR)[i++] & 0377)) ;}        \
-      fprintf ((FILE), "\n");                                        \
+#define ASM_OUTPUT_ASCII(FILE, PTR, SIZE)			\
+do								\
+{ size_t i = 0, limit = (SIZE); 				\
+  while (i < limit)						\
+    { if (i%10 == 0) { if (i!=0) fprintf ((FILE), "\n");	\
+		       fputs ("\t.byte\t", (FILE)); }		\
+      else fprintf ((FILE), ",");				\
+	fprintf ((FILE), "0x%x", ((PTR)[i++] & 0377)) ;}	\
+      fprintf ((FILE), "\n");					\
 } while (0)
 
 /* Output at beginning of assembler file.  */
@@ -51,7 +51,7 @@ do                                                                \
    that says to advance the location counter
    to a multiple of 2**LOG bytes.  */
 
-#define ASM_OUTPUT_ALIGN(FILE,LOG)        \
+#define ASM_OUTPUT_ALIGN(FILE,LOG)	\
     if ((LOG)!=0) fprintf ((FILE), "\t.align %d\n", 1<<(LOG))
 
 /* This is how to output an assembler line
@@ -76,7 +76,7 @@ do                                                                \
    This is suitable for output with `assemble_name'.  */
 
 #undef ASM_GENERATE_INTERNAL_LABEL
-#define ASM_GENERATE_INTERNAL_LABEL(BUF,PREFIX,NUMBER)        \
+#define ASM_GENERATE_INTERNAL_LABEL(BUF,PREFIX,NUMBER)	\
   sprintf ((BUF), "%s%s%ld", LOCAL_LABEL_PREFIX, (PREFIX), (long)(NUMBER))
 
 /* The prefix to add to user-visible assembler symbols.  */

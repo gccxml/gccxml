@@ -20,7 +20,7 @@
 
 /* Run-time Target Specification.  */
 #undef  TARGET_VERSION
-#define TARGET_VERSION        fputs (" (ARM/ELF Ecos)", stderr);
+#define TARGET_VERSION	fputs (" (ARM/ELF Ecos)", stderr);
 
 #define HAS_INIT_SECTION
 

@@ -83,10 +83,10 @@ tsi_link_before (tree_stmt_iterator *i, tree t, enum tsi_iterator_update mode)
 
       /* Empty statement lists need no work.  */
       if (!head || !tail)
-        {
-          gcc_assert (head == tail);
-          return;
-        }
+	{
+	  gcc_assert (head == tail);
+	  return;
+	}
     }
   else
     {
@@ -106,9 +106,9 @@ tsi_link_before (tree_stmt_iterator *i, tree t, enum tsi_iterator_update mode)
     {
       head->prev = cur->prev;
       if (head->prev)
-        head->prev->next = head;
+	head->prev->next = head;
       else
-        STATEMENT_LIST_HEAD (i->container) = head;
+	STATEMENT_LIST_HEAD (i->container) = head;
       tail->next = cur;
       cur->prev = tail;
     }
@@ -159,10 +159,10 @@ tsi_link_after (tree_stmt_iterator *i, tree t, enum tsi_iterator_update mode)
 
       /* Empty statement lists need no work.  */
       if (!head || !tail)
-        {
-          gcc_assert (head == tail);
-          return;
-        }
+	{
+	  gcc_assert (head == tail);
+	  return;
+	}
     }
   else
     {
@@ -182,9 +182,9 @@ tsi_link_after (tree_stmt_iterator *i, tree t, enum tsi_iterator_update mode)
     {
       tail->next = cur->next;
       if (tail->next)
-        tail->next->prev = tail;
+	tail->next->prev = tail;
       else
-        STATEMENT_LIST_TAIL (i->container) = tail;
+	STATEMENT_LIST_TAIL (i->container) = tail;
       head->prev = cur;
       cur->next = head;
     }
@@ -349,9 +349,9 @@ expr_only (tree expr)
     {
       struct tree_statement_list_node *n = STATEMENT_LIST_TAIL (expr);
       if (n && STATEMENT_LIST_HEAD (expr) == n)
-        return n->stmt;
+	return n->stmt;
       else
-        return NULL_TREE;
+	return NULL_TREE;
     }
 
   if (TREE_CODE (expr) == COMPOUND_EXPR)

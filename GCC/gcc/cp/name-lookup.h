@@ -40,11 +40,11 @@ struct binding_entry_s GTY(())
 };
 
 /* These macros indicate the initial chains count for binding_table.  */
-#define SCOPE_DEFAULT_HT_SIZE                (1 << 3)
-#define CLASS_SCOPE_HT_SIZE                (1 << 3)
-#define NAMESPACE_ORDINARY_HT_SIZE        (1 << 5)
-#define NAMESPACE_STD_HT_SIZE                (1 << 8)
-#define GLOBAL_SCOPE_HT_SIZE                (1 << 8)
+#define SCOPE_DEFAULT_HT_SIZE		(1 << 3)
+#define CLASS_SCOPE_HT_SIZE		(1 << 3)
+#define NAMESPACE_ORDINARY_HT_SIZE	(1 << 5)
+#define NAMESPACE_STD_HT_SIZE		(1 << 8)
+#define GLOBAL_SCOPE_HT_SIZE		(1 << 8)
 
 extern void binding_table_foreach (binding_table, bt_foreach_proc, void *);
 extern binding_entry binding_table_find (binding_table, tree);
@@ -101,43 +101,43 @@ extern bool constructor_name_p (tree, tree);
 /* The kinds of scopes we recognize.  */
 typedef enum scope_kind {
   sk_block = 0,      /* An ordinary block scope.  This enumerator must
-                        have the value zero because "cp_binding_level"
-                        is initialized by using "memset" to set the
-                        contents to zero, and the default scope kind
-                        is "sk_block".  */
-  sk_cleanup,             /* A scope for (pseudo-)scope for cleanup.  It is
-                        pseudo in that it is transparent to name lookup
-                        activities.  */
-  sk_try,             /* A try-block.  */
-  sk_catch,             /* A catch-block.  */
-  sk_for,             /* The scope of the variable declared in a
-                        for-init-statement.  */
+			have the value zero because "cp_binding_level"
+			is initialized by using "memset" to set the
+			contents to zero, and the default scope kind
+			is "sk_block".  */
+  sk_cleanup,	     /* A scope for (pseudo-)scope for cleanup.  It is
+			pseudo in that it is transparent to name lookup
+			activities.  */
+  sk_try,	     /* A try-block.  */
+  sk_catch,	     /* A catch-block.  */
+  sk_for,	     /* The scope of the variable declared in a
+			for-init-statement.  */
   sk_function_parms, /* The scope containing function parameters.  */
-  sk_class,             /* The scope containing the members of a class.  */
-  sk_namespace,             /* The scope containing the members of a
-                        namespace, including the global scope.  */
+  sk_class,	     /* The scope containing the members of a class.  */
+  sk_namespace,	     /* The scope containing the members of a
+			namespace, including the global scope.  */
   sk_template_parms, /* A scope for template parameters.  */
   sk_template_spec,  /* Like sk_template_parms, but for an explicit
-                        specialization.  Since, by definition, an
-                        explicit specialization is introduced by
-                        "template <>", this scope is always empty.  */
-  sk_omp             /* An OpenMP structured block.  */
+			specialization.  Since, by definition, an
+			explicit specialization is introduced by
+			"template <>", this scope is always empty.  */
+  sk_omp	     /* An OpenMP structured block.  */
 } scope_kind;
 
 /* The scope where the class/struct/union/enum tag applies.  */
 typedef enum tag_scope {
-  ts_current = 0,        /* Current scope only.  This is for the
-                             class-key identifier;
-                           case mentioned in [basic.lookup.elab]/2,
-                           or the class/enum definition
-                             class-key identifier { ... };  */
-  ts_global = 1,        /* All scopes.  This is the 3.4.1
-                           [basic.lookup.unqual] lookup mentioned
-                           in [basic.lookup.elab]/2.  */
-  ts_within_enclosing_non_class = 2        /* Search within enclosing non-class
-                                           only, for friend class lookup
-                                           according to [namespace.memdef]/3
-                                           and [class.friend]/9.  */
+  ts_current = 0,	/* Current scope only.  This is for the
+			     class-key identifier;
+			   case mentioned in [basic.lookup.elab]/2,
+			   or the class/enum definition
+			     class-key identifier { ... };  */
+  ts_global = 1,	/* All scopes.  This is the 3.4.1
+			   [basic.lookup.unqual] lookup mentioned
+			   in [basic.lookup.elab]/2.  */
+  ts_within_enclosing_non_class = 2	/* Search within enclosing non-class
+					   only, for friend class lookup
+					   according to [namespace.memdef]/3
+					   and [class.friend]/9.  */
 } tag_scope;
 
 typedef struct cp_class_binding GTY(())
@@ -273,9 +273,9 @@ struct cp_binding_level GTY(())
 
 /* The binding level currently in effect.  */
 
-#define current_binding_level                        \
-  (*(cfun && cp_function_chain->bindings        \
-   ? &cp_function_chain->bindings                \
+#define current_binding_level			\
+  (*(cfun && cp_function_chain->bindings	\
+   ? &cp_function_chain->bindings		\
    : &scope_chain->bindings))
 
 /* The binding level of the current class, if any.  */
@@ -298,12 +298,12 @@ extern GTY(()) tree global_type_node;
 extern cxx_scope *leave_scope (void);
 extern bool kept_level_p (void);
 extern int global_bindings_p (void);
-extern bool toplevel_bindings_p        (void);
+extern bool toplevel_bindings_p	(void);
 extern bool namespace_bindings_p (void);
 extern bool template_parm_scope_p (void);
 extern scope_kind innermost_scope_kind (void);
 extern cxx_scope *begin_scope (scope_kind, tree);
-extern void print_binding_stack        (void);
+extern void print_binding_stack	(void);
 extern void push_to_top_level (void);
 extern void pop_from_top_level (void);
 extern void pop_everything (void);

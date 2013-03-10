@@ -33,7 +33,7 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
 
 static _Unwind_Reason_Code
 s390_fallback_frame_state (struct _Unwind_Context *context,
-                           _Unwind_FrameState *fs)
+			   _Unwind_FrameState *fs)
 {
   unsigned char *pc = context->ra;
   long new_cfa;
@@ -81,10 +81,10 @@ s390_fallback_frame_state (struct _Unwind_Context *context,
     {
       struct ucontext_
       {
-        unsigned long     uc_flags;
-        struct ucontext_ *uc_link;
-        unsigned long     uc_stack[3];
-        sigregs_          uc_mcontext;
+	unsigned long     uc_flags;
+	struct ucontext_ *uc_link;
+	unsigned long     uc_stack[3];
+	sigregs_          uc_mcontext;
       } *uc = context->cfa + 8 + 128;
 
       regs = &uc->uc_mcontext;
@@ -110,13 +110,13 @@ s390_fallback_frame_state (struct _Unwind_Context *context,
     {
       fs->regs.reg[i].how = REG_SAVED_OFFSET;
       fs->regs.reg[i].loc.offset =
-        (long)&regs->gprs[i] - new_cfa;
+	(long)&regs->gprs[i] - new_cfa;
     }
   for (i = 0; i < 16; i++)
     {
       fs->regs.reg[16+i].how = REG_SAVED_OFFSET;
       fs->regs.reg[16+i].loc.offset =
-        (long)&regs->fprs[i] - new_cfa;
+	(long)&regs->fprs[i] - new_cfa;
     }
 
   /* Load return addr from PSW into dummy register 32.  */

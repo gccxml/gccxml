@@ -31,10 +31,10 @@
 #undef  ENDFILE_DEFAULT_SPEC
 #define ENDFILE_DEFAULT_SPEC "%(endfile_windiss)"
 
-#undef        LINK_START_DEFAULT_SPEC
+#undef	LINK_START_DEFAULT_SPEC
 #define LINK_START_DEFAULT_SPEC "%(link_start_windiss)"
 
-#undef        LINK_OS_DEFAULT_SPEC
+#undef	LINK_OS_DEFAULT_SPEC
 #define LINK_OS_DEFAULT_SPEC "%(link_os_windiss)"
 
 #undef  CRTSAVRES_DEFAULT_SPEC

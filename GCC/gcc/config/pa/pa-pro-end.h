@@ -26,17 +26,17 @@ Boston, MA 02110-1301, USA.  */
 #define PTRDIFF_TYPE "int"
 
 #undef TARGET_OS_CPP_BUILTINS
-#define TARGET_OS_CPP_BUILTINS()                \
-  do                                                \
-    {                                                \
-        if (!c_dialect_cxx () && !flag_iso)        \
-          {                                        \
-            builtin_define ("hppa");                \
-            builtin_define_std ("PWB");                \
-          }                                        \
-        builtin_define ("__pro__");                \
-        builtin_assert ("system=pro");                \
-    }                                                \
+#define TARGET_OS_CPP_BUILTINS()		\
+  do						\
+    {						\
+	if (!c_dialect_cxx () && !flag_iso)	\
+	  {					\
+	    builtin_define ("hppa");		\
+	    builtin_define_std ("PWB");		\
+	  }					\
+	builtin_define ("__pro__");		\
+	builtin_assert ("system=pro");		\
+    }						\
   while (0)
 
 /* Like the default, except no -lg.  */

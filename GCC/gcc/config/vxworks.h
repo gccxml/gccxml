@@ -32,40 +32,40 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
 /* Since we provide a default -isystem, expand -isystem on the command
    line early.  */
 #undef VXWORKS_ADDITIONAL_CPP_SPEC
-#define VXWORKS_ADDITIONAL_CPP_SPEC "                                         \
- %{!nostdinc:%{isystem*}}                                                \
- %{mrtp: -D__RTP__=1                                                        \
-         %{!nostdinc:-isystem " VXWORKS_TARGET_DIR "/usr/h}}                \
- %{!mrtp:-D_WRS_KERNEL=1                                                \
-         %{!nostdinc:-isystem " VXWORKS_TARGET_DIR "/h}}"
+#define VXWORKS_ADDITIONAL_CPP_SPEC " 					\
+ %{!nostdinc:%{isystem*}}						\
+ %{mrtp: -D__RTP__=1							\
+	 %{!nostdinc:-isystem " VXWORKS_TARGET_DIR "/usr/h}}		\
+ %{!mrtp:-D_WRS_KERNEL=1						\
+	 %{!nostdinc:-isystem " VXWORKS_TARGET_DIR "/h}}"
 
 /* The references to __init and __fini will be satisfied by
    libc_internal.a.  */
 #undef VXWORKS_LIB_SPEC
-#define        VXWORKS_LIB_SPEC                                                \
+#define	VXWORKS_LIB_SPEC						\
 "%{mrtp:%{shared:-u " USER_LABEL_PREFIX "__init -u " USER_LABEL_PREFIX "__fini} \
-        %{!shared:%{non-static:-u " USER_LABEL_PREFIX "_STI__6__rtld -ldl} \
-                  --start-group -lc -lgcc -lc_internal -lnet -ldsi        \
-                  --end-group}}"
+	%{!shared:%{non-static:-u " USER_LABEL_PREFIX "_STI__6__rtld -ldl} \
+		  --start-group -lc -lgcc -lc_internal -lnet -ldsi	\
+		  --end-group}}"
 
 /* The no-op spec for "-shared" below is present because otherwise GCC
    will treat it as an unrecognized option.  */
 #undef VXWORKS_LINK_SPEC
-#define VXWORKS_LINK_SPEC                                \
-"%{!mrtp:-r}                                                \
- %{!shared:                                                \
-   %{mrtp:-q %{h*}                                        \
-          %{R*} %{!Wl,-T*: %{!T*: %(link_start) }}        \
-          %(link_target) %(link_os)}}                        \
- %{v:-V}                                                \
- %{shared:-shared}                                        \
- %{Bstatic:-Bstatic}                                        \
- %{Bdynamic:-Bdynamic}                                        \
- %{!Xbind-lazy:-z now}                                        \
- %{Xbind-now:%{Xbind-lazy:                                \
-   %e-Xbind-now and -Xbind-lazy are incompatible}}        \
- %{mrtp:%{!shared:%{!non-static:-static}                \
-                   %{non-static:--force-dynamic --export-dynamic}}}"
+#define VXWORKS_LINK_SPEC				\
+"%{!mrtp:-r}						\
+ %{!shared:						\
+   %{mrtp:-q %{h*}					\
+          %{R*} %{!Wl,-T*: %{!T*: %(link_start) }}	\
+          %(link_target) %(link_os)}}			\
+ %{v:-V}						\
+ %{shared:-shared}					\
+ %{Bstatic:-Bstatic}					\
+ %{Bdynamic:-Bdynamic}					\
+ %{!Xbind-lazy:-z now}					\
+ %{Xbind-now:%{Xbind-lazy:				\
+   %e-Xbind-now and -Xbind-lazy are incompatible}}	\
+ %{mrtp:%{!shared:%{!non-static:-static}		\
+ 		  %{non-static:--force-dynamic --export-dynamic}}}"
 
 /* For VxWorks, the system provides libc_internal.a.  This is a superset
    of libgcc.a; we want to use it.  Make sure not to dynamically export
@@ -76,7 +76,7 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
   "-lgcc %{mrtp:--exclude-libs=libc_internal,libgcc -lc_internal}"
 
 #undef VXWORKS_STARTFILE_SPEC
-#define        VXWORKS_STARTFILE_SPEC "%{mrtp:%{!shared:crt0.o%s}}"
+#define	VXWORKS_STARTFILE_SPEC "%{mrtp:%{!shared:crt0.o%s}}"
 #define VXWORKS_ENDFILE_SPEC ""
 
 /* We can use .ctors/.dtors sections only in RTP mode.

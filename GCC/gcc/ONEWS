@@ -262,10 +262,10 @@ Major changes have been made in code to support Windows NT.
 
 The following new targets are supported:
 
-        2.9 BSD on PDP-11
-        Linux on m68k
-        HP/UX version 10 on HP PA RISC (treated like version 9)
-        DEC Alpha running Windows NT
+	2.9 BSD on PDP-11
+	Linux on m68k
+	HP/UX version 10 on HP PA RISC (treated like version 9)
+	DEC Alpha running Windows NT
 
 When parsing C, GCC now recognizes C++ style `//' comments unless you
 specify `-ansi' or `-traditional'.
@@ -327,7 +327,7 @@ New options for supported targets:
 Additional support for x86 (i386, i486, and Pentium):
 
     Work with old and new linkers for Linux-based GNU systems,
-        supporting both a.out and ELF.
+	supporting both a.out and ELF.
     FreeBSD on x86.
     Stdcall convention.
     -malign-double, -mregparm=, -malign-loops= and -malign-jumps=  switches.
@@ -391,9 +391,9 @@ As a result:
     in national variants of ISO 646.
 
     The following digraph tokens are supported:
-        <:        :>        <%        %>        %:        %:%:
+	<:	:>	<%	%>	%:	%:%:
     These behave like the following, respectively:
-        [        ]        {        }        #        ##
+	[	]	{	}	#	##
 
     Digraph tokens are supported unless you specify the `-traditional'
     option; you do not need to specify `-ansi' or `-trigraphs'.  Except
@@ -528,15 +528,15 @@ Numerous (mostly minor) bugs have been fixed.
 
 The following new configurations are supported:
 
-        GNU on x86 (instead of treating it like MACH)
-        NetBSD on Sparc and Motorola 68k
-        AIX 4.1 on RS/6000 and PowerPC systems
-        Sequent DYNIX/ptx 1.x and 2.x.
-        Both COFF and ELF configurations on AViiON without using /bin/gcc
-        Windows/NT on x86 architecture; preliminary
-        AT&T DSP1610 digital signal processor chips
-        i960 systems on bare boards using COFF
-        PDP11; target only and not extensively tested
+	GNU on x86 (instead of treating it like MACH)
+	NetBSD on Sparc and Motorola 68k
+	AIX 4.1 on RS/6000 and PowerPC systems
+	Sequent DYNIX/ptx 1.x and 2.x.
+	Both COFF and ELF configurations on AViiON without using /bin/gcc
+	Windows/NT on x86 architecture; preliminary
+	AT&T DSP1610 digital signal processor chips
+	i960 systems on bare boards using COFF
+	PDP11; target only and not extensively tested
 
 The -pg option is now supported for Alpha under OSF/1 V3.0 or later.
 
@@ -569,13 +569,13 @@ to a separate TAR file.
 The G++ team has been tracking the development of the ANSI standard for C++.
 Here are some new features added from the latest working paper:
 
-        * built-in boolean type 'bool', with constants 'true' and 'false'.
-        * array new and delete (operator new [] and delete []).
-        * WP-conforming lifetime of temporaries.
-        * explicit instantiation of templates (template class A<int>;),
+	* built-in boolean type 'bool', with constants 'true' and 'false'.
+	* array new and delete (operator new [] and delete []).
+	* WP-conforming lifetime of temporaries.
+	* explicit instantiation of templates (template class A<int>;),
           along with an option (-fno-implicit-templates) to disable emission
           of implicitly instantiated templates, obsoletes -fexternal-templates.
-        * static member constants (static const int foo = 4; within the
+	* static member constants (static const int foo = 4; within the
           class declaration).
 
 Many error messages have been improved to tell the user more about the
@@ -659,7 +659,7 @@ machine-specific files.
 - GCC can now convert division by integer constants into the equivalent
   multiplication and shift operations when that is faster than the
   division.
-        
+	
 - Two new warning options, -Wbad-function-cast and
   -Wmissing-declarations have been added.
 
@@ -949,38 +949,38 @@ accepts either ++obj or obj++, unless -pedantic is used.
 Newly documented compiler options:
 
 -fnostartfiles
-        Omit the standard system startup files when linking.
+	Omit the standard system startup files when linking.
 
 -fvolatile-global
-        Consider memory references to extern and global data items to
-        be volatile.
+	Consider memory references to extern and global data items to
+	be volatile.
 
 -idirafter DIR
-        Add DIR to the second include path.
+	Add DIR to the second include path.
 
 -iprefix PREFIX
-        Specify PREFIX for later -iwithprefix options.
+	Specify PREFIX for later -iwithprefix options.
 
 -iwithprefix DIR
-        Add PREFIX/DIR to the second include path.
+	Add PREFIX/DIR to the second include path.
 
 -mv8
-        Emit Sparc v8 code (with integer multiply and divide).
+	Emit Sparc v8 code (with integer multiply and divide).
 -msparclite
-        Emit Sparclite code (roughly v7.5).
+	Emit Sparclite code (roughly v7.5).
 
 -print-libgcc-file-name
-        Search for the libgcc.a file, print its absolute file name, and exit.
+	Search for the libgcc.a file, print its absolute file name, and exit.
 
 -Woverloaded-virtual
-        Warn when a derived class function declaration may be an error
-        in defining a C++ virtual function. 
+	Warn when a derived class function declaration may be an error
+	in defining a C++ virtual function. 
 
 -Wtemplate-debugging
-        When using templates in a C++ program, warn if debugging is
-        not yet fully available.
+	When using templates in a C++ program, warn if debugging is
+	not yet fully available.
 
 +eN
-        Control how C++ virtual function definitions are used
-        (like cfront 1.x).
+	Control how C++ virtual function definitions are used
+	(like cfront 1.x).
 

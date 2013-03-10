@@ -45,47 +45,47 @@
     case CONST:
       op = XEXP (op, 0);
       if (GET_CODE (op) != PLUS
-          || GET_CODE (XEXP (op, 0)) != SYMBOL_REF
-          || GET_CODE (XEXP (op, 1)) != CONST_INT)
-        return false;
+	  || GET_CODE (XEXP (op, 0)) != SYMBOL_REF
+	  || GET_CODE (XEXP (op, 1)) != CONST_INT)
+	return false;
       offset = INTVAL (XEXP (op, 1));
       op = XEXP (op, 0);
       /* FALLTHRU */
 
     case SYMBOL_REF:
       if (CONSTANT_POOL_ADDRESS_P (op))
-        {
-          size = GET_MODE_SIZE (get_pool_mode (op));
-          if (size > ia64_section_threshold)
-            return false;
-        }
+	{
+	  size = GET_MODE_SIZE (get_pool_mode (op));
+	  if (size > ia64_section_threshold)
+	    return false;
+	}
       else
-        {
-          tree t;
+	{
+	  tree t;
 
-          if (!SYMBOL_REF_LOCAL_P (op) || !SYMBOL_REF_SMALL_P (op))
-            return false;
+	  if (!SYMBOL_REF_LOCAL_P (op) || !SYMBOL_REF_SMALL_P (op))
+	    return false;
 
-          /* Note that in addition to DECLs, we can get various forms
-             of constants here.  */
-          t = SYMBOL_REF_DECL (op);
-          if (DECL_P (t))
-            t = DECL_SIZE_UNIT (t);
-          else
-            t = TYPE_SIZE_UNIT (TREE_TYPE (t));
-          if (t && host_integerp (t, 0))
-            {
-              size = tree_low_cst (t, 0);
-              if (size < 0)
-                size = 0;
-            }
-        }
+	  /* Note that in addition to DECLs, we can get various forms
+	     of constants here.  */
+	  t = SYMBOL_REF_DECL (op);
+	  if (DECL_P (t))
+	    t = DECL_SIZE_UNIT (t);
+	  else
+	    t = TYPE_SIZE_UNIT (TREE_TYPE (t));
+	  if (t && host_integerp (t, 0))
+	    {
+	      size = tree_low_cst (t, 0);
+	      if (size < 0)
+		size = 0;
+	    }
+	}
 
       /* Deny the stupid user trick of addressing outside the object.  Such
-         things quickly result in GPREL22 relocation overflows.  Of course,
-         they're also highly undefined.  From a pure pedant's point of view
-         they deserve a slap on the wrist (such as provided by a relocation
-         overflow), but that just leads to bugzilla noise.  */
+	 things quickly result in GPREL22 relocation overflows.  Of course,
+	 they're also highly undefined.  From a pure pedant's point of view
+	 they deserve a slap on the wrist (such as provided by a relocation
+	 overflow), but that just leads to bugzilla noise.  */
       return (offset >= 0 && offset <= size);
 
     default:
@@ -102,9 +102,9 @@
     case CONST:
       op = XEXP (op, 0);
       if (GET_CODE (op) != PLUS
-          || GET_CODE (XEXP (op, 0)) != SYMBOL_REF
-          || GET_CODE (XEXP (op, 1)) != CONST_INT)
-        return false;
+	  || GET_CODE (XEXP (op, 0)) != SYMBOL_REF
+	  || GET_CODE (XEXP (op, 1)) != CONST_INT)
+	return false;
       op = XEXP (op, 0);
       /* FALLTHRU */
 
@@ -153,7 +153,7 @@
       /* Accept only (plus (symbol_ref) (const_int)).  */
       op = XEXP (op, 0);
       if (GET_CODE (op) != PLUS
-          || GET_CODE (XEXP (op, 0)) != SYMBOL_REF
+	  || GET_CODE (XEXP (op, 0)) != SYMBOL_REF
           || GET_CODE (XEXP (op, 1)) != CONST_INT)
         return false;
 
@@ -164,18 +164,18 @@
     case SYMBOL_REF:
       /* These symbols shouldn't be used with got loads.  */
       if (SYMBOL_REF_SMALL_ADDR_P (op))
-        return false;
+	return false;
       if (SYMBOL_REF_TLS_MODEL (op) != 0)
-        return false;
+	return false;
 
       if (any_offset_symbol_operand (op, mode))
-        return true;
+	return true;
 
       /* The low 14 bits of the constant have been forced to zero
-         so that we do not use up so many GOT entries.  Prevent cse
-         from undoing this.  */
+	 so that we do not use up so many GOT entries.  Prevent cse
+	 from undoing this.  */
       if (aligned_offset_symbol_operand (op, mode))
-        return (addend & 0x3fff) == 0;
+	return (addend & 0x3fff) == 0;
 
       return addend == 0;
 
@@ -196,26 +196,26 @@
     case CONST:
       op = XEXP (op, 0);
       if (GET_CODE (op) != PLUS
-          || GET_CODE (XEXP (op, 0)) != SYMBOL_REF
-          || GET_CODE (XEXP (op, 1)) != CONST_INT)
-        return false;
+	  || GET_CODE (XEXP (op, 0)) != SYMBOL_REF
+	  || GET_CODE (XEXP (op, 1)) != CONST_INT)
+	return false;
 
       /* We only allow certain offsets for certain tls models.  */
       switch (SYMBOL_REF_TLS_MODEL (XEXP (op, 0)))
-        {
-        case TLS_MODEL_GLOBAL_DYNAMIC:
-        case TLS_MODEL_LOCAL_DYNAMIC:
-          return false;
+	{
+	case TLS_MODEL_GLOBAL_DYNAMIC:
+	case TLS_MODEL_LOCAL_DYNAMIC:
+	  return false;
 
-        case TLS_MODEL_INITIAL_EXEC:
-          return (INTVAL (XEXP (op, 1)) & 0x3fff) == 0;
+	case TLS_MODEL_INITIAL_EXEC:
+	  return (INTVAL (XEXP (op, 1)) & 0x3fff) == 0;
 
-        case TLS_MODEL_LOCAL_EXEC:
-          return true;
+	case TLS_MODEL_LOCAL_EXEC:
+	  return true;
 
-        default:
-          return false;
-        }
+	default:
+	  return false;
+	}
 
     default:
       gcc_unreachable ();
@@ -236,10 +236,10 @@
     case CONST:
       op = XEXP (op, 0);
       if (GET_CODE (op) != PLUS
-          || GET_CODE (XEXP (op, 0)) != SYMBOL_REF
-          || GET_CODE (XEXP (op, 1)) != CONST_INT
-          || (INTVAL (XEXP (op, 1)) & 0x3fff) != 0)
-        return false;
+	  || GET_CODE (XEXP (op, 0)) != SYMBOL_REF
+	  || GET_CODE (XEXP (op, 1)) != CONST_INT
+	  || (INTVAL (XEXP (op, 1)) & 0x3fff) != 0)
+	return false;
       op = XEXP (op, 0);
       /* FALLTHRU */
 
@@ -279,8 +279,8 @@
 (define_predicate "destination_operand"
   (and (match_operand 0 "nonimmediate_operand")
        (match_test "GET_CODE (op) != MEM
-                    || GET_CODE (XEXP (op, 0)) != POST_MODIFY
-                    || GET_CODE (XEXP (XEXP (XEXP (op, 0), 1), 1)) != REG")))
+		    || GET_CODE (XEXP (op, 0)) != POST_MODIFY
+		    || GET_CODE (XEXP (XEXP (XEXP (op, 0), 1), 1)) != REG")))
 
 ;; Like memory_operand, but don't allow post-increments.
 (define_predicate "not_postinc_memory_operand"
@@ -295,37 +295,37 @@
     {
     case CONST:
       {
-        HOST_WIDE_INT addend;
+	HOST_WIDE_INT addend;
 
-        /* Accept only (plus (symbol_ref) (const_int)).  */
-        op = XEXP (op, 0);
-        if (GET_CODE (op) != PLUS
-            || GET_CODE (XEXP (op, 0)) != SYMBOL_REF
+	/* Accept only (plus (symbol_ref) (const_int)).  */
+	op = XEXP (op, 0);
+	if (GET_CODE (op) != PLUS
+	    || GET_CODE (XEXP (op, 0)) != SYMBOL_REF
             || GET_CODE (XEXP (op, 1)) != CONST_INT)
-          return false;
+	  return false;
 
-        addend = INTVAL (XEXP (op, 1));
-        op = XEXP (op, 0);
+	addend = INTVAL (XEXP (op, 1));
+	op = XEXP (op, 0);
 
-        /* After reload, we want to allow any offset whatsoever.  This
-           allows reload the opportunity to avoid spilling addresses to
-           the stack, and instead simply substitute in the value from a
-           REG_EQUIV.  We'll split this up again when splitting the insn.  */
-        if (reload_in_progress || reload_completed)
-          return true;
+	/* After reload, we want to allow any offset whatsoever.  This
+	   allows reload the opportunity to avoid spilling addresses to
+	   the stack, and instead simply substitute in the value from a
+	   REG_EQUIV.  We'll split this up again when splitting the insn.  */
+	if (reload_in_progress || reload_completed)
+	  return true;
 
-        /* Some symbol types we allow to use with any offset.  */
-        if (any_offset_symbol_operand (op, mode))
-          return true;
+	/* Some symbol types we allow to use with any offset.  */
+	if (any_offset_symbol_operand (op, mode))
+	  return true;
 
-        /* Some symbol types we allow offsets with the low 14 bits of the
-           constant forced to zero so that we do not use up so many GOT
-           entries.  We want to prevent cse from undoing this.  */
-        if (aligned_offset_symbol_operand (op, mode))
-          return (addend & 0x3fff) == 0;
+	/* Some symbol types we allow offsets with the low 14 bits of the
+	   constant forced to zero so that we do not use up so many GOT
+	   entries.  We want to prevent cse from undoing this.  */
+	if (aligned_offset_symbol_operand (op, mode))
+	  return (addend & 0x3fff) == 0;
 
-        /* The remaining symbol types may never be used with an offset.  */
-        return false;
+	/* The remaining symbol types may never be used with an offset.  */
+	return false;
       }
 
     default:
@@ -367,8 +367,8 @@
 
   regno = REGNO (op);
   return (regno >= FIRST_PSEUDO_REGISTER
-          || GENERAL_REGNO_P (regno)
-          || FR_REGNO_P (regno));
+	  || GENERAL_REGNO_P (regno)
+	  || FR_REGNO_P (regno));
 })
 
 ;; True if OP is a nonimmediate operand that is (or could be) a GR reg.
@@ -414,45 +414,45 @@
 
   regno = REGNO (op);
   return (regno >= FIRST_PSEUDO_REGISTER
-          || GENERAL_REGNO_P (regno)
-          || FR_REGNO_P (regno));
+	  || GENERAL_REGNO_P (regno)
+	  || FR_REGNO_P (regno));
 })
 
 ;; True if OP is a GR register operand, or zero.
 (define_predicate "gr_reg_or_0_operand"
   (ior (match_operand 0 "gr_register_operand")
        (and (match_code "const_int,const_double,const_vector")
-            (match_test "op == CONST0_RTX (GET_MODE (op))"))))
+	    (match_test "op == CONST0_RTX (GET_MODE (op))"))))
 
 ;; True if OP is a GR register operand, or a 5 bit immediate operand.
 (define_predicate "gr_reg_or_5bit_operand"
   (ior (match_operand 0 "gr_register_operand")
        (and (match_code "const_int")
-            (match_test "INTVAL (op) >= 0 && INTVAL (op) < 32"))))
+	    (match_test "INTVAL (op) >= 0 && INTVAL (op) < 32"))))
 
 ;; True if OP is a GR register operand, or a 6 bit immediate operand.
 (define_predicate "gr_reg_or_6bit_operand"
   (ior (match_operand 0 "gr_register_operand")
        (and (match_code "const_int")
-            (match_test "CONST_OK_FOR_M (INTVAL (op))"))))
+	    (match_test "CONST_OK_FOR_M (INTVAL (op))"))))
 
 ;; True if OP is a GR register operand, or an 8 bit immediate operand.
 (define_predicate "gr_reg_or_8bit_operand"
   (ior (match_operand 0 "gr_register_operand")
        (and (match_code "const_int")
-            (match_test "CONST_OK_FOR_K (INTVAL (op))"))))
+	    (match_test "CONST_OK_FOR_K (INTVAL (op))"))))
 
 ;; True if OP is a GR/FR register operand, or an 8 bit immediate operand.
 (define_predicate "grfr_reg_or_8bit_operand"
   (ior (match_operand 0 "grfr_register_operand")
        (and (match_code "const_int")
-            (match_test "CONST_OK_FOR_K (INTVAL (op))"))))
+	    (match_test "CONST_OK_FOR_K (INTVAL (op))"))))
 
 ;; True if OP is a register operand, or an 8 bit adjusted immediate operand.
 (define_predicate "gr_reg_or_8bit_adjusted_operand"
   (ior (match_operand 0 "gr_register_operand")
        (and (match_code "const_int")
-            (match_test "CONST_OK_FOR_L (INTVAL (op))"))))
+	    (match_test "CONST_OK_FOR_L (INTVAL (op))"))))
 
 ;; True if OP is a register operand, or is valid for both an 8 bit
 ;; immediate and an 8 bit adjusted immediate operand.  This is necessary
@@ -461,20 +461,20 @@
 (define_predicate "gr_reg_or_8bit_and_adjusted_operand"
   (ior (match_operand 0 "gr_register_operand")
        (and (match_code "const_int")
-            (match_test "CONST_OK_FOR_K (INTVAL (op))
+	    (match_test "CONST_OK_FOR_K (INTVAL (op))
                          && CONST_OK_FOR_L (INTVAL (op))"))))
 
 ;; True if OP is a register operand, or a 14 bit immediate operand.
 (define_predicate "gr_reg_or_14bit_operand"
   (ior (match_operand 0 "gr_register_operand")
        (and (match_code "const_int")
-            (match_test "CONST_OK_FOR_I (INTVAL (op))"))))
+	    (match_test "CONST_OK_FOR_I (INTVAL (op))"))))
 
 ;;  True if OP is a register operand, or a 22 bit immediate operand.
 (define_predicate "gr_reg_or_22bit_operand"
   (ior (match_operand 0 "gr_register_operand")
        (and (match_code "const_int")
-            (match_test "CONST_OK_FOR_J (INTVAL (op))"))))
+	    (match_test "CONST_OK_FOR_J (INTVAL (op))"))))
 
 ;; True if OP is a 7 bit immediate operand.
 (define_predicate "dshift_count_operand"
@@ -500,7 +500,7 @@
 (define_predicate "shladd_operand"
   (and (match_code "const_int")
        (match_test "INTVAL (op) == 2 || INTVAL (op) == 4 ||
-                    INTVAL (op) == 8 || INTVAL (op) == 16")))
+	            INTVAL (op) == 8 || INTVAL (op) == 16")))
 
 ;; True if OP is one of the immediate values 1, 2, 3, or 4.
 (define_predicate "shladd_log2_operand"
@@ -524,7 +524,7 @@
 (define_predicate "fr_reg_or_fp01_operand"
   (ior (match_operand 0 "fr_register_operand")
        (and (match_code "const_double")
-            (match_test "CONST_DOUBLE_OK_FOR_G (op)"))))
+	    (match_test "CONST_DOUBLE_OK_FOR_G (op)"))))
 
 ;; Like fr_reg_or_fp01_operand, but don't allow any SUBREGs.
 (define_predicate "xfreg_or_fp01_operand"
@@ -535,7 +535,7 @@
 (define_predicate "fr_reg_or_0_operand"
   (ior (match_operand 0 "fr_register_operand")
        (and (match_code "const_double,const_vector")
-            (match_test "op == CONST0_RTX (GET_MODE (op))"))))
+	    (match_test "op == CONST0_RTX (GET_MODE (op))"))))
 
 ;; True if this is a comparison operator, which accepts a normal 8-bit
 ;; signed immediate operand.

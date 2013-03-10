@@ -36,22 +36,22 @@
 #define UNDERSCORE ""
 #endif
 
-#define FINI_SECTION_ZERO(SECTION, FLAGS, NAME)                                \
-__asm__ (".section " SECTION "," FLAGS "\n\t"                                \
-         ".globl   " UNDERSCORE NAME "\n\t"                                \
-         ".type    " UNDERSCORE NAME ",@object\n\t"                        \
-         ".p2align  2\n"                                                \
-         UNDERSCORE NAME ":\n\t"                                        \
-         ".word     0\n\t"                                                \
-         ".previous")
+#define FINI_SECTION_ZERO(SECTION, FLAGS, NAME)				\
+__asm__ (".section " SECTION "," FLAGS "\n\t"				\
+	 ".globl   " UNDERSCORE NAME "\n\t"				\
+	 ".type    " UNDERSCORE NAME ",@object\n\t"			\
+	 ".p2align  2\n"						\
+	 UNDERSCORE NAME ":\n\t"					\
+	 ".word     0\n\t"						\
+	 ".previous")
 
-#define FINI_SECTION(SECTION, FLAGS, NAME)                                \
-__asm__ (".section " SECTION "," FLAGS "\n\t"                                \
-         ".globl   " UNDERSCORE NAME "\n\t"                                \
-         ".type    " UNDERSCORE NAME ",@object\n\t"                        \
-         ".p2align  2\n"                                                \
-         UNDERSCORE NAME ":\n\t"                                        \
-         ".previous")
+#define FINI_SECTION(SECTION, FLAGS, NAME)				\
+__asm__ (".section " SECTION "," FLAGS "\n\t"				\
+	 ".globl   " UNDERSCORE NAME "\n\t"				\
+	 ".type    " UNDERSCORE NAME ",@object\n\t"			\
+	 ".p2align  2\n"						\
+	 UNDERSCORE NAME ":\n\t"					\
+	 ".previous")
 
 /* End of .ctor/.dtor sections that provides a list of constructors and
    destructors to run.  */

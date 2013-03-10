@@ -35,7 +35,7 @@ strstr (const char *s1, const char *s2)
   for (; (p = strchr (p, *s2)) != 0; p++)
     {
       if (strncmp (p, s2, len) == 0)
-        return (char *)p;
+	return (char *)p;
     }
   return (0);
 }

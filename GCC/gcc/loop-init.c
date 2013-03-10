@@ -134,20 +134,20 @@ static bool
 gate_handle_loop2 (void)
 {
   return (optimize > 0
-            && (flag_move_loop_invariants
+  	  && (flag_move_loop_invariants
               || flag_unswitch_loops
               || flag_peel_loops
               || flag_unroll_loops
 #ifdef HAVE_doloop_end
-              || (flag_branch_on_count_reg && HAVE_doloop_end)
+	      || (flag_branch_on_count_reg && HAVE_doloop_end)
 #endif
-              ));
+	      ));
 }
 
 struct tree_opt_pass pass_loop2 =
 {
   "loop2",                              /* name */
-  gate_handle_loop2,                         /* gate */
+  gate_handle_loop2, 		        /* gate */
   NULL,                                 /* execute */
   NULL,                                 /* sub */
   NULL,                                 /* next */
@@ -321,11 +321,11 @@ rtl_unroll_and_peel_loops (void)
       int flags = 0;
 
       if (flag_peel_loops)
-        flags |= UAP_PEEL;
+	flags |= UAP_PEEL;
       if (flag_unroll_loops)
-        flags |= UAP_UNROLL;
+	flags |= UAP_UNROLL;
       if (flag_unroll_all_loops)
-        flags |= UAP_UNROLL_ALL;
+	flags |= UAP_UNROLL_ALL;
 
       unroll_and_peel_loops (current_loops, flags);
     }

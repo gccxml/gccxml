@@ -21,16 +21,16 @@ Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA. 
 
    ANSI C is assumed if __STDC__ is #defined.
 
-   Macro                ANSI C definition        Traditional C definition
-   -----                ---- - ----------        ----------- - ----------
-   ANSI_PROTOTYPES        1                        not defined
-   PTR                        `void *'                `char *'
-   PTRCONST                `void *const'                `char *'
-   LONG_DOUBLE                `long double'                `double'
-   const                not defined                `'
-   volatile                not defined                `'
-   signed                not defined                `'
-   VA_START(ap, var)        va_start(ap, var)        va_start(ap)
+   Macro		ANSI C definition	Traditional C definition
+   -----		---- - ----------	----------- - ----------
+   ANSI_PROTOTYPES	1			not defined
+   PTR			`void *'		`char *'
+   PTRCONST		`void *const'		`char *'
+   LONG_DOUBLE		`long double'		`double'
+   const		not defined		`'
+   volatile		not defined		`'
+   signed		not defined		`'
+   VA_START(ap, var)	va_start(ap, var)	va_start(ap)
 
    Note that it is safe to write "void foo();" indicating a function
    with no return value, in all K+R compilers we have been able to test.
@@ -42,26 +42,26 @@ Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA. 
    when declaring the function.  When defining the function, write a
    K+R style argument list.  For example:
 
-        char *strcpy PARAMS ((char *dest, char *source));
-        ...
-        char *
-        strcpy (dest, source)
-             char *dest;
-             char *source;
-        { ... }
+	char *strcpy PARAMS ((char *dest, char *source));
+	...
+	char *
+	strcpy (dest, source)
+	     char *dest;
+	     char *source;
+	{ ... }
 
 
    VPARAMS ((prototype, ...))
    -- for functions which take a variable number of arguments.  Use
    PARAMS to declare the function, VPARAMS to define it.  For example:
 
-        int printf PARAMS ((const char *format, ...));
-        ...
-        int
-        printf VPARAMS ((const char *format, ...))
-        {
-           ...
-        }
+	int printf PARAMS ((const char *format, ...));
+	...
+	int
+	printf VPARAMS ((const char *format, ...))
+	{
+	   ...
+	}
 
    For writing functions which take variable numbers of arguments, we
    also provide the VA_OPEN, VA_CLOSE, and VA_FIXEDARG macros.  These
@@ -77,19 +77,19 @@ Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA. 
 
    Here is a complete example:
 
-        int
-        printf VPARAMS ((const char *format, ...))
-        {
-           int result;
+	int
+	printf VPARAMS ((const char *format, ...))
+	{
+	   int result;
 
-           VA_OPEN (ap, format);
-           VA_FIXEDARG (ap, const char *, format);
+	   VA_OPEN (ap, format);
+	   VA_FIXEDARG (ap, const char *, format);
 
-           result = vfprintf (stdout, format, ap);
-           VA_CLOSE (ap);
+	   result = vfprintf (stdout, format, ap);
+	   VA_CLOSE (ap);
 
-           return result;
-        }
+	   return result;
+	}
 
 
    You can declare variables either before or after the VA_OPEN,
@@ -111,8 +111,8 @@ Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA. 
    CONST, VOLATILE, SIGNED, PROTO, EXFUN, DEFUN, DEFUN_VOID,
    AND, DOTS, NOARGS.  Don't use them.  */
 
-#ifndef        _ANSIDECL_H
-#define _ANSIDECL_H        1
+#ifndef	_ANSIDECL_H
+#define _ANSIDECL_H	1
 
 /* Every source file includes this file,
    so they will all get the switch for lint.  */
@@ -144,27 +144,27 @@ So instead we use the macro below and test it against specific values.  */
    C++ compilers, does not define __STDC__, though it acts as if this
    was so. (Verified versions: 5.7, 6.2, 6.3, 6.5) */
 
-#define ANSI_PROTOTYPES        1
-#define PTR                void *
-#define PTRCONST        void *const
-#define LONG_DOUBLE        long double
+#define ANSI_PROTOTYPES	1
+#define PTR		void *
+#define PTRCONST	void *const
+#define LONG_DOUBLE	long double
 
 /* PARAMS is often defined elsewhere (e.g. by libintl.h), so wrap it in
    a #ifndef.  */
 #ifndef PARAMS
-#define PARAMS(ARGS)                ARGS
+#define PARAMS(ARGS)		ARGS
 #endif
 
-#define VPARAMS(ARGS)                ARGS
-#define VA_START(VA_LIST, VAR)        va_start(VA_LIST, VAR)
+#define VPARAMS(ARGS)		ARGS
+#define VA_START(VA_LIST, VAR)	va_start(VA_LIST, VAR)
 
 /* variadic function helper macros */
 /* "struct Qdmy" swallows the semicolon after VA_OPEN/VA_FIXEDARG's
    use without inhibiting further decls and without declaring an
    actual variable.  */
-#define VA_OPEN(AP, VAR)        { va_list AP; va_start(AP, VAR); { struct Qdmy
-#define VA_CLOSE(AP)                } va_end(AP); }
-#define VA_FIXEDARG(AP, T, N)        struct Qdmy
+#define VA_OPEN(AP, VAR)	{ va_list AP; va_start(AP, VAR); { struct Qdmy
+#define VA_CLOSE(AP)		} va_end(AP); }
+#define VA_FIXEDARG(AP, T, N)	struct Qdmy
  
 #undef const
 #undef volatile
@@ -185,33 +185,33 @@ So instead we use the macro below and test it against specific values.  */
 
 /* These are obsolete.  Do not use.  */
 #ifndef IN_GCC
-#define CONST                const
-#define VOLATILE        volatile
-#define SIGNED                signed
+#define CONST		const
+#define VOLATILE	volatile
+#define SIGNED		signed
 
-#define PROTO(type, name, arglist)        type name arglist
-#define EXFUN(name, proto)                name proto
-#define DEFUN(name, arglist, args)        name(args)
-#define DEFUN_VOID(name)                name(void)
-#define AND                ,
-#define DOTS                , ...
-#define NOARGS                void
+#define PROTO(type, name, arglist)	type name arglist
+#define EXFUN(name, proto)		name proto
+#define DEFUN(name, arglist, args)	name(args)
+#define DEFUN_VOID(name)		name(void)
+#define AND		,
+#define DOTS		, ...
+#define NOARGS		void
 #endif /* ! IN_GCC */
 
-#else        /* Not ANSI C.  */
+#else	/* Not ANSI C.  */
 
 #undef  ANSI_PROTOTYPES
-#define PTR                char *
-#define PTRCONST        PTR
-#define LONG_DOUBLE        double
+#define PTR		char *
+#define PTRCONST	PTR
+#define LONG_DOUBLE	double
 
-#define PARAMS(args)                ()
-#define VPARAMS(args)                (va_alist) va_dcl
-#define VA_START(va_list, var)        va_start(va_list)
+#define PARAMS(args)		()
+#define VPARAMS(args)		(va_alist) va_dcl
+#define VA_START(va_list, var)	va_start(va_list)
 
-#define VA_OPEN(AP, VAR)                { va_list AP; va_start(AP); { struct Qdmy
-#define VA_CLOSE(AP)                        } va_end(AP); }
-#define VA_FIXEDARG(AP, TYPE, NAME)        TYPE NAME = va_arg(AP, TYPE)
+#define VA_OPEN(AP, VAR)		{ va_list AP; va_start(AP); { struct Qdmy
+#define VA_CLOSE(AP)			} va_end(AP); }
+#define VA_FIXEDARG(AP, TYPE, NAME)	TYPE NAME = va_arg(AP, TYPE)
 
 /* some systems define these in header files for non-ansi mode */
 #undef const
@@ -228,16 +228,16 @@ So instead we use the macro below and test it against specific values.  */
 #define VOLATILE
 #define SIGNED
 
-#define PROTO(type, name, arglist)        type name ()
-#define EXFUN(name, proto)                name()
-#define DEFUN(name, arglist, args)        name arglist args;
-#define DEFUN_VOID(name)                name()
-#define AND                ;
+#define PROTO(type, name, arglist)	type name ()
+#define EXFUN(name, proto)		name()
+#define DEFUN(name, arglist, args)	name arglist args;
+#define DEFUN_VOID(name)		name()
+#define AND		;
 #define DOTS
 #define NOARGS
 #endif /* ! IN_GCC */
 
-#endif        /* ANSI C.  */
+#endif	/* ANSI C.  */
 
 /* Define macros for some gcc attributes.  This permits us to use the
    macros freely, and know that they will come into play for the
@@ -368,4 +368,4 @@ So instead we use the macro below and test it against specific values.  */
 #define __extension__
 #endif
 
-#endif        /* ansidecl.h        */
+#endif	/* ansidecl.h	*/

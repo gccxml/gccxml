@@ -67,7 +67,7 @@ typedef struct partition_def
 extern partition partition_new (int);
 extern void partition_delete (partition);
 extern int partition_union (partition, int, int);
-extern void partition_print (partition,        FILE*);
+extern void partition_print (partition,	FILE*);
 
 /* Returns the canonical element corresponding to the class containing
    ELEMENT__ in PARTITION__.  */

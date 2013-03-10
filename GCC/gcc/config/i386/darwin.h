@@ -47,7 +47,7 @@ Boston, MA 02110-1301, USA.  */
   do                                            \
     {                                           \
       builtin_define ("__LITTLE_ENDIAN__");     \
-      darwin_cpp_builtins (pfile);                \
+      darwin_cpp_builtins (pfile);		\
     }                                           \
   while (0)
 
@@ -119,7 +119,7 @@ extern void darwin_x86_file_end (void);
 /* For now, disable dynamic-no-pic.  We'll need to go through i386.c
    with a fine-tooth comb looking for refs to flag_pic!  */
 #define MASK_MACHO_DYNAMIC_NO_PIC 0
-#define TARGET_DYNAMIC_NO_PIC          (target_flags & MASK_MACHO_DYNAMIC_NO_PIC)
+#define TARGET_DYNAMIC_NO_PIC	  (target_flags & MASK_MACHO_DYNAMIC_NO_PIC)
 
 #undef GOT_SYMBOL_NAME
 #define GOT_SYMBOL_NAME (machopic_function_base_name ())
@@ -143,48 +143,48 @@ extern void darwin_x86_file_end (void);
 #define SUBTARGET_ENCODE_SECTION_INFO  darwin_encode_section_info
 
 #undef ASM_OUTPUT_ALIGN
-#define ASM_OUTPUT_ALIGN(FILE,LOG)        \
- do { if ((LOG) != 0)                        \
-        {                                \
+#define ASM_OUTPUT_ALIGN(FILE,LOG)	\
+ do { if ((LOG) != 0)			\
+        {				\
           if (in_section == text_section) \
             fprintf (FILE, "\t%s %d,0x90\n", ALIGN_ASM_OP, (LOG)); \
-          else                                \
+          else				\
             fprintf (FILE, "\t%s %d\n", ALIGN_ASM_OP, (LOG)); \
-        }                                \
+        }				\
     } while (0)
 
 /* This says how to output an assembler line
    to define a global common symbol.  */
 
 #define ASM_OUTPUT_COMMON(FILE, NAME, SIZE, ROUNDED)  \
-( fputs (".comm ", (FILE)),                        \
-  assemble_name ((FILE), (NAME)),                \
+( fputs (".comm ", (FILE)),			\
+  assemble_name ((FILE), (NAME)),		\
   fprintf ((FILE), ",%lu\n", (unsigned long)(ROUNDED)))
 
 /* This says how to output an assembler line
    to define a local common symbol.  */
 
 #define ASM_OUTPUT_LOCAL(FILE, NAME, SIZE, ROUNDED)  \
-( fputs (".lcomm ", (FILE)),                        \
-  assemble_name ((FILE), (NAME)),                \
+( fputs (".lcomm ", (FILE)),			\
+  assemble_name ((FILE), (NAME)),		\
   fprintf ((FILE), ","HOST_WIDE_INT_PRINT_UNSIGNED"\n", (ROUNDED)))
 
 /* Darwin profiling -- call mcount.  */
 #undef FUNCTION_PROFILER
-#define FUNCTION_PROFILER(FILE, LABELNO)                                \
-    do {                                                                \
-      if (MACHOPIC_INDIRECT && !TARGET_64BIT)                                \
-        {                                                                \
-          const char *name = machopic_mcount_stub_name ();                \
-          fprintf (FILE, "\tcall %s\n", name+1);  /*  skip '&'  */        \
-          machopic_validate_stub_or_non_lazy_ptr (name);                \
-        }                                                                \
-      else fprintf (FILE, "\tcall mcount\n");                                \
+#define FUNCTION_PROFILER(FILE, LABELNO)				\
+    do {								\
+      if (MACHOPIC_INDIRECT && !TARGET_64BIT)				\
+	{								\
+	  const char *name = machopic_mcount_stub_name ();		\
+	  fprintf (FILE, "\tcall %s\n", name+1);  /*  skip '&'  */	\
+	  machopic_validate_stub_or_non_lazy_ptr (name);		\
+	}								\
+      else fprintf (FILE, "\tcall mcount\n");				\
     } while (0)
 
-#define C_COMMON_OVERRIDE_OPTIONS                                        \
-  do {                                                                        \
-    SUBTARGET_C_COMMON_OVERRIDE_OPTIONS;                                \
+#define C_COMMON_OVERRIDE_OPTIONS					\
+  do {									\
+    SUBTARGET_C_COMMON_OVERRIDE_OPTIONS;				\
   } while (0)
 
 /* Darwin on x86_64 uses dwarf-2 by default.  */
@@ -195,18 +195,18 @@ extern void darwin_x86_file_end (void);
    register numbers for STABS.  Fortunately for 64-bit code the
    default and the standard are the same.  */
 #undef DBX_REGISTER_NUMBER
-#define DBX_REGISTER_NUMBER(n)                                         \
-  (TARGET_64BIT ? dbx64_register_map[n]                                \
-   : write_symbols == DWARF2_DEBUG ? svr4_dbx_register_map[n]        \
+#define DBX_REGISTER_NUMBER(n) 					\
+  (TARGET_64BIT ? dbx64_register_map[n]				\
+   : write_symbols == DWARF2_DEBUG ? svr4_dbx_register_map[n]	\
    : dbx_register_map[n])
 
 /* Unfortunately, the 32-bit EH information also doesn't use the standard
    DWARF register numbers.  */
-#define DWARF2_FRAME_REG_OUT(n, for_eh)                                        \
-  (! (for_eh) || write_symbols != DWARF2_DEBUG || TARGET_64BIT ? (n)        \
-   : (n) == 5 ? 4                                                        \
-   : (n) == 4 ? 5                                                        \
-   : (n) >= 11 && (n) <= 18 ? (n) + 1                                        \
+#define DWARF2_FRAME_REG_OUT(n, for_eh)					\
+  (! (for_eh) || write_symbols != DWARF2_DEBUG || TARGET_64BIT ? (n)	\
+   : (n) == 5 ? 4							\
+   : (n) == 4 ? 5							\
+   : (n) >= 11 && (n) <= 18 ? (n) + 1					\
    : (n))
 
 #undef REGISTER_TARGET_PRAGMAS
@@ -219,23 +219,23 @@ extern void darwin_x86_file_end (void);
    end of the instruction, but without the 4 we'd only have the right
    address for the start of the instruction.  */
 #undef ASM_MAYBE_OUTPUT_ENCODED_ADDR_RTX
-#define ASM_MAYBE_OUTPUT_ENCODED_ADDR_RTX(FILE, ENCODING, SIZE, ADDR, DONE)        \
-  if (TARGET_64BIT)                                                                \
+#define ASM_MAYBE_OUTPUT_ENCODED_ADDR_RTX(FILE, ENCODING, SIZE, ADDR, DONE)	\
+  if (TARGET_64BIT)				                                \
     {                                                                           \
-      if ((SIZE) == 4 && ((ENCODING) & 0x70) == DW_EH_PE_pcrel)                        \
+      if ((SIZE) == 4 && ((ENCODING) & 0x70) == DW_EH_PE_pcrel)			\
         {                                                                       \
-           fputs (ASM_LONG, FILE);                                              \
-           assemble_name (FILE, XSTR (ADDR, 0));                                \
-           fputs ("+4@GOTPCREL", FILE);                                         \
-           goto DONE;                                                           \
-        }                                                                        \
-    }                                                                                \
+	   fputs (ASM_LONG, FILE);                                              \
+	   assemble_name (FILE, XSTR (ADDR, 0));				\
+	   fputs ("+4@GOTPCREL", FILE);                                         \
+	   goto DONE;                                                           \
+        }									\
+    }										\
   else                                                                          \
-    {                                                                                \
+    {										\
       if (ENCODING == ASM_PREFERRED_EH_DATA_FORMAT (2, 1))                      \
         {                                                                       \
           darwin_non_lazy_pcrel (FILE, ADDR);                                   \
-          goto DONE;                                                                \
+          goto DONE;								\
         }                                                                       \
     }
 

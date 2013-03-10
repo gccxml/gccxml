@@ -156,8 +156,8 @@
   "ID_and")
 
 ;; Other MT  group instructions(1 step operations)
-;; Group:        MT
-;; Latency:         1
+;; Group:	MT
+;; Latency: 	1
 (define_insn_reservation "sh4a_mt" 1
   (and (eq_attr "cpu" "sh4a")
        (eq_attr "type" "mt_group"))
@@ -173,8 +173,8 @@
 
 ;; Single precision floating point computation FCMP/EQ,
 ;; FCMP/GT, FADD, FLOAT, FMAC, FMUL, FSUB, FTRC, FRVHG, FSCHG
-;; Group:        FE
-;; Latency:         3
+;; Group:	FE
+;; Latency: 	3
 (define_insn_reservation "sh4a_fp_arith"  3
   (and (eq_attr "cpu" "sh4a")
        (eq_attr "type" "fp"))
@@ -195,24 +195,24 @@
 
 ;; Double Precision floating point computation
 ;; (FCNVDS, FCNVSD, FLOAT, FTRC)
-;; Group:        FE
-;; Latency:         3
+;; Group:	FE
+;; Latency: 	3
 (define_insn_reservation "sh4a_dp_float" 3
   (and (eq_attr "cpu" "sh4a")
        (eq_attr "type" "dfp_conv"))
   "ID_or,sh4a_fex")
 
 ;; Double-precision floating-point (FADD,FMUL,FSUB)
-;; Group:        FE
-;; Latency:         5
+;; Group:	FE
+;; Latency: 	5
 (define_insn_reservation "sh4a_fp_double_arith" 5
   (and (eq_attr "cpu" "sh4a")
        (eq_attr "type" "dfp_arith"))
   "ID_or,sh4a_fex*3")
 
 ;; Double precision FDIV/SQRT
-;; Group:        FE
-;; Latency:         36
+;; Group:	FE
+;; Latency: 	36
 (define_insn_reservation "sh4a_dp_div" 36
   (and (eq_attr "cpu" "sh4a")
        (eq_attr "type" "dfdiv"))

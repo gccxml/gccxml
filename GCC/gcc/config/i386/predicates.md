@@ -97,116 +97,116 @@
     case CONST_INT:
       /* CONST_DOUBLES never match, since HOST_BITS_PER_WIDE_INT is known
          to be at least 32 and this all acceptable constants are
-         represented as CONST_INT.  */
+	 represented as CONST_INT.  */
       if (HOST_BITS_PER_WIDE_INT == 32)
-        return 1;
+	return 1;
       else
-        {
-          HOST_WIDE_INT val = trunc_int_for_mode (INTVAL (op), DImode);
-          return trunc_int_for_mode (val, SImode) == val;
-        }
+	{
+	  HOST_WIDE_INT val = trunc_int_for_mode (INTVAL (op), DImode);
+	  return trunc_int_for_mode (val, SImode) == val;
+	}
       break;
 
     case SYMBOL_REF:
       /* For certain code models, the symbolic references are known to fit.
-         in CM_SMALL_PIC model we know it fits if it is local to the shared
-         library.  Don't count TLS SYMBOL_REFs here, since they should fit
-         only if inside of UNSPEC handled below.  */
+	 in CM_SMALL_PIC model we know it fits if it is local to the shared
+	 library.  Don't count TLS SYMBOL_REFs here, since they should fit
+	 only if inside of UNSPEC handled below.  */
       /* TLS symbols are not constant.  */
       if (SYMBOL_REF_TLS_MODEL (op))
-        return false;
+	return false;
       return (ix86_cmodel == CM_SMALL || ix86_cmodel == CM_KERNEL
-              || (ix86_cmodel == CM_MEDIUM && !SYMBOL_REF_FAR_ADDR_P (op)));
+	      || (ix86_cmodel == CM_MEDIUM && !SYMBOL_REF_FAR_ADDR_P (op)));
 
     case LABEL_REF:
       /* For certain code models, the code is near as well.  */
       return (ix86_cmodel == CM_SMALL || ix86_cmodel == CM_MEDIUM
-              || ix86_cmodel == CM_KERNEL);
+	      || ix86_cmodel == CM_KERNEL);
 
     case CONST:
       /* We also may accept the offsetted memory references in certain
-         special cases.  */
+	 special cases.  */
       if (GET_CODE (XEXP (op, 0)) == UNSPEC)
-        switch (XINT (XEXP (op, 0), 1))
-          {
-          case UNSPEC_GOTPCREL:
-          case UNSPEC_DTPOFF:
-          case UNSPEC_GOTNTPOFF:
-          case UNSPEC_NTPOFF:
-            return 1;
-          default:
-            break;
-          }
+	switch (XINT (XEXP (op, 0), 1))
+	  {
+	  case UNSPEC_GOTPCREL:
+	  case UNSPEC_DTPOFF:
+	  case UNSPEC_GOTNTPOFF:
+	  case UNSPEC_NTPOFF:
+	    return 1;
+	  default:
+	    break;
+	  }
 
       if (GET_CODE (XEXP (op, 0)) == PLUS)
-        {
-          rtx op1 = XEXP (XEXP (op, 0), 0);
-          rtx op2 = XEXP (XEXP (op, 0), 1);
-          HOST_WIDE_INT offset;
+	{
+	  rtx op1 = XEXP (XEXP (op, 0), 0);
+	  rtx op2 = XEXP (XEXP (op, 0), 1);
+	  HOST_WIDE_INT offset;
 
-          if (ix86_cmodel == CM_LARGE)
-            return 0;
-          if (GET_CODE (op2) != CONST_INT)
-            return 0;
-          offset = trunc_int_for_mode (INTVAL (op2), DImode);
-          switch (GET_CODE (op1))
-            {
-            case SYMBOL_REF:
-              /* TLS symbols are not constant.  */
-              if (SYMBOL_REF_TLS_MODEL (op1))
-                return 0;
-              /* For CM_SMALL assume that latest object is 16MB before
-                 end of 31bits boundary.  We may also accept pretty
-                 large negative constants knowing that all objects are
-                 in the positive half of address space.  */
-              if ((ix86_cmodel == CM_SMALL
-                   || (ix86_cmodel == CM_MEDIUM
-                       && !SYMBOL_REF_FAR_ADDR_P (op1)))
-                  && offset < 16*1024*1024
-                  && trunc_int_for_mode (offset, SImode) == offset)
-                return 1;
-              /* For CM_KERNEL we know that all object resist in the
-                 negative half of 32bits address space.  We may not
-                 accept negative offsets, since they may be just off
-                 and we may accept pretty large positive ones.  */
-              if (ix86_cmodel == CM_KERNEL
-                  && offset > 0
-                  && trunc_int_for_mode (offset, SImode) == offset)
-                return 1;
-              break;
+	  if (ix86_cmodel == CM_LARGE)
+	    return 0;
+	  if (GET_CODE (op2) != CONST_INT)
+	    return 0;
+	  offset = trunc_int_for_mode (INTVAL (op2), DImode);
+	  switch (GET_CODE (op1))
+	    {
+	    case SYMBOL_REF:
+	      /* TLS symbols are not constant.  */
+	      if (SYMBOL_REF_TLS_MODEL (op1))
+		return 0;
+	      /* For CM_SMALL assume that latest object is 16MB before
+		 end of 31bits boundary.  We may also accept pretty
+		 large negative constants knowing that all objects are
+		 in the positive half of address space.  */
+	      if ((ix86_cmodel == CM_SMALL
+		   || (ix86_cmodel == CM_MEDIUM
+		       && !SYMBOL_REF_FAR_ADDR_P (op1)))
+		  && offset < 16*1024*1024
+		  && trunc_int_for_mode (offset, SImode) == offset)
+		return 1;
+	      /* For CM_KERNEL we know that all object resist in the
+		 negative half of 32bits address space.  We may not
+		 accept negative offsets, since they may be just off
+		 and we may accept pretty large positive ones.  */
+	      if (ix86_cmodel == CM_KERNEL
+		  && offset > 0
+		  && trunc_int_for_mode (offset, SImode) == offset)
+		return 1;
+	      break;
 
-            case LABEL_REF:
-              /* These conditions are similar to SYMBOL_REF ones, just the
-                 constraints for code models differ.  */
-              if ((ix86_cmodel == CM_SMALL || ix86_cmodel == CM_MEDIUM)
-                  && offset < 16*1024*1024
-                  && trunc_int_for_mode (offset, SImode) == offset)
-                return 1;
-              if (ix86_cmodel == CM_KERNEL
-                  && offset > 0
-                  && trunc_int_for_mode (offset, SImode) == offset)
-                return 1;
-              break;
+	    case LABEL_REF:
+	      /* These conditions are similar to SYMBOL_REF ones, just the
+		 constraints for code models differ.  */
+	      if ((ix86_cmodel == CM_SMALL || ix86_cmodel == CM_MEDIUM)
+		  && offset < 16*1024*1024
+		  && trunc_int_for_mode (offset, SImode) == offset)
+		return 1;
+	      if (ix86_cmodel == CM_KERNEL
+		  && offset > 0
+		  && trunc_int_for_mode (offset, SImode) == offset)
+		return 1;
+	      break;
 
-            case UNSPEC:
-              switch (XINT (op1, 1))
-                {
-                case UNSPEC_DTPOFF:
-                case UNSPEC_NTPOFF:
-                  if (offset > 0
-                      && trunc_int_for_mode (offset, SImode) == offset)
-                    return 1;
-                }
-              break;
+	    case UNSPEC:
+	      switch (XINT (op1, 1))
+		{
+		case UNSPEC_DTPOFF:
+		case UNSPEC_NTPOFF:
+		  if (offset > 0
+		      && trunc_int_for_mode (offset, SImode) == offset)
+		    return 1;
+		}
+	      break;
 
-            default:
-              break;
-            }
-        }
+	    default:
+	      break;
+	    }
+	}
       break;
 
       default:
-        gcc_unreachable ();
+	gcc_unreachable ();
     }
 
   return 0;
@@ -220,24 +220,24 @@
     {
     case CONST_DOUBLE:
       if (HOST_BITS_PER_WIDE_INT == 32)
-        return (GET_MODE (op) == VOIDmode && !CONST_DOUBLE_HIGH (op));
+	return (GET_MODE (op) == VOIDmode && !CONST_DOUBLE_HIGH (op));
       else
-        return 0;
+	return 0;
 
     case CONST_INT:
       if (HOST_BITS_PER_WIDE_INT == 32)
-        return INTVAL (op) >= 0;
+	return INTVAL (op) >= 0;
       else
-        return !(INTVAL (op) & ~(HOST_WIDE_INT) 0xffffffff);
+	return !(INTVAL (op) & ~(HOST_WIDE_INT) 0xffffffff);
 
     case SYMBOL_REF:
       /* For certain code models, the symbolic references are known to fit.  */
       /* TLS symbols are not constant.  */
       if (SYMBOL_REF_TLS_MODEL (op))
-        return false;
+	return false;
       return (ix86_cmodel == CM_SMALL
-              || (ix86_cmodel == CM_MEDIUM
-                  && !SYMBOL_REF_FAR_ADDR_P (op)));
+	      || (ix86_cmodel == CM_MEDIUM
+		  && !SYMBOL_REF_FAR_ADDR_P (op)));
 
     case LABEL_REF:
       /* For certain code models, the code is near as well.  */
@@ -245,51 +245,51 @@
 
     case CONST:
       /* We also may accept the offsetted memory references in certain
-         special cases.  */
+	 special cases.  */
       if (GET_CODE (XEXP (op, 0)) == PLUS)
-        {
-          rtx op1 = XEXP (XEXP (op, 0), 0);
-          rtx op2 = XEXP (XEXP (op, 0), 1);
+	{
+	  rtx op1 = XEXP (XEXP (op, 0), 0);
+	  rtx op2 = XEXP (XEXP (op, 0), 1);
 
-          if (ix86_cmodel == CM_LARGE)
-            return 0;
-          switch (GET_CODE (op1))
-            {
-            case SYMBOL_REF:
-              /* TLS symbols are not constant.  */
-              if (SYMBOL_REF_TLS_MODEL (op1))
-                return 0;
-              /* For small code model we may accept pretty large positive
-                 offsets, since one bit is available for free.  Negative
-                 offsets are limited by the size of NULL pointer area
-                 specified by the ABI.  */
-              if ((ix86_cmodel == CM_SMALL
-                   || (ix86_cmodel == CM_MEDIUM
-                       && !SYMBOL_REF_FAR_ADDR_P (op1)))
-                  && GET_CODE (op2) == CONST_INT
-                  && trunc_int_for_mode (INTVAL (op2), DImode) > -0x10000
-                  && trunc_int_for_mode (INTVAL (op2), SImode) == INTVAL (op2))
-                return 1;
-              /* ??? For the kernel, we may accept adjustment of
-                 -0x10000000, since we know that it will just convert
-                 negative address space to positive, but perhaps this
-                 is not worthwhile.  */
-              break;
+	  if (ix86_cmodel == CM_LARGE)
+	    return 0;
+	  switch (GET_CODE (op1))
+	    {
+	    case SYMBOL_REF:
+	      /* TLS symbols are not constant.  */
+	      if (SYMBOL_REF_TLS_MODEL (op1))
+		return 0;
+	      /* For small code model we may accept pretty large positive
+		 offsets, since one bit is available for free.  Negative
+		 offsets are limited by the size of NULL pointer area
+		 specified by the ABI.  */
+	      if ((ix86_cmodel == CM_SMALL
+		   || (ix86_cmodel == CM_MEDIUM
+		       && !SYMBOL_REF_FAR_ADDR_P (op1)))
+		  && GET_CODE (op2) == CONST_INT
+		  && trunc_int_for_mode (INTVAL (op2), DImode) > -0x10000
+		  && trunc_int_for_mode (INTVAL (op2), SImode) == INTVAL (op2))
+		return 1;
+	      /* ??? For the kernel, we may accept adjustment of
+		 -0x10000000, since we know that it will just convert
+		 negative address space to positive, but perhaps this
+		 is not worthwhile.  */
+	      break;
 
-            case LABEL_REF:
-              /* These conditions are similar to SYMBOL_REF ones, just the
-                 constraints for code models differ.  */
-              if ((ix86_cmodel == CM_SMALL || ix86_cmodel == CM_MEDIUM)
-                  && GET_CODE (op2) == CONST_INT
-                  && trunc_int_for_mode (INTVAL (op2), DImode) > -0x10000
-                  && trunc_int_for_mode (INTVAL (op2), SImode) == INTVAL (op2))
-                return 1;
-              break;
+	    case LABEL_REF:
+	      /* These conditions are similar to SYMBOL_REF ones, just the
+		 constraints for code models differ.  */
+	      if ((ix86_cmodel == CM_SMALL || ix86_cmodel == CM_MEDIUM)
+		  && GET_CODE (op2) == CONST_INT
+		  && trunc_int_for_mode (INTVAL (op2), DImode) > -0x10000
+		  && trunc_int_for_mode (INTVAL (op2), SImode) == INTVAL (op2))
+		return 1;
+	      break;
 
-            default:
-              return 0;
-            }
-        }
+	    default:
+	      return 0;
+	    }
+	}
       break;
 
     default:
@@ -302,7 +302,7 @@
 (define_predicate "x86_64_general_operand"
   (if_then_else (match_test "TARGET_64BIT")
     (ior (match_operand 0 "nonimmediate_operand")
-         (match_operand 0 "x86_64_immediate_operand"))
+	 (match_operand 0 "x86_64_immediate_operand"))
     (match_operand 0 "general_operand")))
 
 ;; Return nonzero if OP is general operand representable on x86_64
@@ -310,23 +310,23 @@
 (define_predicate "x86_64_szext_general_operand"
   (if_then_else (match_test "TARGET_64BIT")
     (ior (match_operand 0 "nonimmediate_operand")
-         (ior (match_operand 0 "x86_64_immediate_operand")
-              (match_operand 0 "x86_64_zext_immediate_operand")))
+	 (ior (match_operand 0 "x86_64_immediate_operand")
+	      (match_operand 0 "x86_64_zext_immediate_operand")))
     (match_operand 0 "general_operand")))
 
 ;; Return nonzero if OP is nonmemory operand representable on x86_64.
 (define_predicate "x86_64_nonmemory_operand"
   (if_then_else (match_test "TARGET_64BIT")
     (ior (match_operand 0 "register_operand")
-         (match_operand 0 "x86_64_immediate_operand"))
+	 (match_operand 0 "x86_64_immediate_operand"))
     (match_operand 0 "nonmemory_operand")))
 
 ;; Return nonzero if OP is nonmemory operand representable on x86_64.
 (define_predicate "x86_64_szext_nonmemory_operand"
   (if_then_else (match_test "TARGET_64BIT")
     (ior (match_operand 0 "register_operand")
-         (ior (match_operand 0 "x86_64_immediate_operand")
-              (match_operand 0 "x86_64_zext_immediate_operand")))
+	 (ior (match_operand 0 "x86_64_immediate_operand")
+	      (match_operand 0 "x86_64_zext_immediate_operand")))
     (match_operand 0 "nonmemory_operand")))
 
 ;; Return true when operand is PIC expression that can be computed by lea
@@ -341,11 +341,11 @@
     {
       op = XEXP (op, 0);
       if (GET_CODE (op) == PLUS && GET_CODE (XEXP (op, 1)) == CONST_INT)
-        op = XEXP (op, 0);
+	op = XEXP (op, 0);
       if (GET_CODE (op) == UNSPEC
-          && (XINT (op, 1) == UNSPEC_GOTOFF
-              || XINT (op, 1) == UNSPEC_GOT))
-        return 0;
+	  && (XINT (op, 1) == UNSPEC_GOTOFF
+	      || XINT (op, 1) == UNSPEC_GOT))
+	return 0;
     }
   return symbolic_operand (op, mode);
 })
@@ -356,8 +356,8 @@
   (if_then_else (match_test "!TARGET_64BIT || !flag_pic")
     (match_operand 0 "nonmemory_operand")
     (ior (match_operand 0 "register_operand")
-         (and (match_operand 0 "const_double_operand")
-              (match_test "GET_MODE_SIZE (mode) <= 8")))))
+	 (and (match_operand 0 "const_double_operand")
+	      (match_test "GET_MODE_SIZE (mode) <= 8")))))
 
 ;; Returns nonzero if OP is either a symbol reference or a sum of a symbol
 ;; reference and a constant.
@@ -373,29 +373,29 @@
     case CONST:
       op = XEXP (op, 0);
       if (GET_CODE (op) == SYMBOL_REF
-          || GET_CODE (op) == LABEL_REF
-          || (GET_CODE (op) == UNSPEC
-              && (XINT (op, 1) == UNSPEC_GOT
-                  || XINT (op, 1) == UNSPEC_GOTOFF
-                  || XINT (op, 1) == UNSPEC_GOTPCREL)))
-        return 1;
+	  || GET_CODE (op) == LABEL_REF
+	  || (GET_CODE (op) == UNSPEC
+	      && (XINT (op, 1) == UNSPEC_GOT
+		  || XINT (op, 1) == UNSPEC_GOTOFF
+		  || XINT (op, 1) == UNSPEC_GOTPCREL)))
+	return 1;
       if (GET_CODE (op) != PLUS
-          || GET_CODE (XEXP (op, 1)) != CONST_INT)
-        return 0;
+	  || GET_CODE (XEXP (op, 1)) != CONST_INT)
+	return 0;
 
       op = XEXP (op, 0);
       if (GET_CODE (op) == SYMBOL_REF
-          || GET_CODE (op) == LABEL_REF)
-        return 1;
+	  || GET_CODE (op) == LABEL_REF)
+	return 1;
       /* Only @GOTOFF gets offsets.  */
       if (GET_CODE (op) != UNSPEC
-          || XINT (op, 1) != UNSPEC_GOTOFF)
-        return 0;
+	  || XINT (op, 1) != UNSPEC_GOTOFF)
+	return 0;
 
       op = XVECEXP (op, 0, 0);
       if (GET_CODE (op) == SYMBOL_REF
-          || GET_CODE (op) == LABEL_REF)
-        return 1;
+	  || GET_CODE (op) == LABEL_REF)
+	return 1;
       return 0;
 
     default:
@@ -411,23 +411,23 @@
   if (TARGET_64BIT)
     {
       if (GET_CODE (op) == UNSPEC
-          && XINT (op, 1) == UNSPEC_GOTPCREL)
-        return 1;
+	  && XINT (op, 1) == UNSPEC_GOTPCREL)
+	return 1;
       if (GET_CODE (op) == PLUS
-          && GET_CODE (XEXP (op, 0)) == UNSPEC
-          && XINT (XEXP (op, 0), 1) == UNSPEC_GOTPCREL)
-        return 1;
+	  && GET_CODE (XEXP (op, 0)) == UNSPEC
+	  && XINT (XEXP (op, 0), 1) == UNSPEC_GOTPCREL)
+	return 1;
     }
   else
     {
       if (GET_CODE (op) == UNSPEC)
-        return 1;
+	return 1;
       if (GET_CODE (op) != PLUS
-          || GET_CODE (XEXP (op, 1)) != CONST_INT)
-        return 0;
+	  || GET_CODE (XEXP (op, 1)) != CONST_INT)
+	return 0;
       op = XEXP (op, 0);
       if (GET_CODE (op) == UNSPEC)
-        return 1;
+	return 1;
     }
   return 0;
 })
@@ -459,7 +459,7 @@
   /* ??? This is a hack.  Should update the body of the compiler to
      always create a DECL an invoke targetm.encode_section_info.  */
   if (strncmp (XSTR (op, 0), internal_label_prefix,
-               internal_label_prefix_len) == 0)
+	       internal_label_prefix_len) == 0)
     return 1;
 
   return 0;
@@ -477,7 +477,7 @@
 (define_predicate "tp_or_register_operand"
   (ior (match_operand 0 "register_operand")
        (and (match_code "unspec")
-            (match_test "XINT (op, 1) == UNSPEC_TP"))))
+	    (match_test "XINT (op, 1) == UNSPEC_TP"))))
 
 ;; Test for a pc-relative call operand
 (define_predicate "constant_call_address_operand"
@@ -492,9 +492,9 @@
   if (GET_CODE (op) == SUBREG)
     op = SUBREG_REG (op);
   return !(op == arg_pointer_rtx
-           || op == frame_pointer_rtx
-           || (REGNO (op) >= FIRST_PSEUDO_REGISTER
-               && REGNO (op) <= LAST_VIRTUAL_REGISTER));
+	   || op == frame_pointer_rtx
+	   || (REGNO (op) >= FIRST_PSEUDO_REGISTER
+	       && REGNO (op) <= LAST_VIRTUAL_REGISTER));
 })
 
 ;; Similarly, but include the stack pointer.  This is used to prevent esp
@@ -526,7 +526,7 @@
 (define_predicate "call_insn_operand"
   (ior (match_operand 0 "constant_call_address_operand")
        (ior (match_operand 0 "register_no_elim_operand")
-            (match_operand 0 "memory_operand"))))
+	    (match_operand 0 "memory_operand"))))
 
 ;; Similarly, but for tail calls, in which we cannot allow memory references.
 (define_predicate "sibcall_insn_operand"
@@ -645,7 +645,7 @@
 (define_predicate "reg_or_pm1_operand"
   (ior (match_operand 0 "register_operand")
        (and (match_code "const_int")
-            (match_test "op == const1_rtx || op == constm1_rtx"))))
+	    (match_test "op == const1_rtx || op == constm1_rtx"))))
 
 ;; True if OP is acceptable as operand of DImode shift expander.
 (define_predicate "shiftdi_operand"
@@ -676,7 +676,7 @@
     {
       rtx elt = CONST_VECTOR_ELT (op, n_elts);
       if (elt != CONST0_RTX (GET_MODE_INNER (GET_MODE (op))))
-        return 0;
+	return 0;
     }
   return 1;
 })
@@ -775,18 +775,18 @@
   if (parts.index)
     {
       if (REGNO_POINTER_ALIGN (REGNO (parts.index)) * parts.scale < 32)
-        return 0;
+	return 0;
     }
   if (parts.base)
     {
       if (REGNO_POINTER_ALIGN (REGNO (parts.base)) < 32)
-        return 0;
+	return 0;
     }
   if (parts.disp)
     {
       if (GET_CODE (parts.disp) != CONST_INT
-          || (INTVAL (parts.disp) & 3) != 0)
-        return 0;
+	  || (INTVAL (parts.disp) & 3) != 0)
+	return 0;
     }
 
   /* Didn't find one -- this must be an aligned address.  */
@@ -839,7 +839,7 @@
       enum rtx_code second_code, bypass_code;
       ix86_fp_comparison_codes (code, &bypass_code, &code, &second_code);
       if (bypass_code != UNKNOWN || second_code != UNKNOWN)
-        return 0;
+	return 0;
       code = ix86_fp_compare_code_to_integer (code);
     }
   /* i387 supports just limited amount of conditional codes.  */
@@ -847,7 +847,7 @@
     {
     case LTU: case GTU: case LEU: case GEU:
       if (inmode == CCmode || inmode == CCFPmode || inmode == CCFPUmode)
-        return 1;
+	return 1;
       return 0;
     case ORDERED: case UNORDERED:
     case EQ: case NE:
@@ -888,16 +888,16 @@
       return 1;
     case LT: case GE:
       if (inmode == CCmode || inmode == CCGCmode
-          || inmode == CCGOCmode || inmode == CCNOmode)
-        return 1;
+	  || inmode == CCGOCmode || inmode == CCNOmode)
+	return 1;
       return 0;
     case LTU: case GTU: case LEU: case ORDERED: case UNORDERED: case GEU:
       if (inmode == CCmode)
-        return 1;
+	return 1;
       return 0;
     case GT: case LE:
       if (inmode == CCmode || inmode == CCGCmode || inmode == CCNOmode)
-        return 1;
+	return 1;
       return 0;
     default:
       return 0;
@@ -921,7 +921,7 @@
       enum rtx_code second_code, bypass_code;
       ix86_fp_comparison_codes (code, &bypass_code, &code, &second_code);
       if (bypass_code != UNKNOWN || second_code != UNKNOWN)
-        return 0;
+	return 0;
       code = ix86_fp_compare_code_to_integer (code);
     }
   else if (inmode != CCmode)
@@ -956,7 +956,7 @@
 ;; Return true for ARITHMETIC_P.
 (define_predicate "arith_or_logical_operator"
   (match_code "plus,mult,and,ior,xor,smin,smax,umin,umax,compare,minus,div,
-               mod,udiv,umod,ashift,rotate,ashiftrt,lshiftrt,rotatert"))
+	       mod,udiv,umod,ashift,rotate,ashiftrt,lshiftrt,rotatert"))
 
 ;; Return 1 if OP is a binary operator that can be promoted to wider mode.
 ;; Modern CPUs have same latency for HImode and SImode multiply,
@@ -964,7 +964,7 @@
 (define_predicate "promotable_binary_operator"
   (ior (match_code "plus,and,ior,xor,ashift")
        (and (match_code "mult")
-            (match_test "ix86_tune > PROCESSOR_I486"))))
+	    (match_test "ix86_tune > PROCESSOR_I486"))))
 
 ;; To avoid problems when jump re-emits comparisons like testqi_ext_ccno_0,
 ;; re-recognize the operand to avoid a copy_to_mode_reg that will fail.
@@ -975,12 +975,12 @@
 (define_predicate "cmpsi_operand"
   (ior (match_operand 0 "nonimmediate_operand")
        (and (match_code "and")
-            (match_code "zero_extract" "0")
-            (match_code "const_int"    "1")
-            (match_code "const_int"    "01")
-            (match_code "const_int"    "02")
-            (match_test "INTVAL (XEXP (XEXP (op, 0), 1)) == 8")
-            (match_test "INTVAL (XEXP (XEXP (op, 0), 2)) == 8")
+	    (match_code "zero_extract" "0")
+	    (match_code "const_int"    "1")
+	    (match_code "const_int"    "01")
+	    (match_code "const_int"    "02")
+	    (match_test "INTVAL (XEXP (XEXP (op, 0), 1)) == 8")
+	    (match_test "INTVAL (XEXP (XEXP (op, 0), 2)) == 8")
        )))
 
 (define_predicate "compare_operator"

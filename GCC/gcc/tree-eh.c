@@ -106,8 +106,8 @@ add_stmt_to_eh_region_fn (struct function *ifun, tree t, int num)
 
   if (!get_eh_throw_stmt_table (ifun))
     set_eh_throw_stmt_table (ifun, htab_create_ggc (31, struct_ptr_hash,
-                                                    struct_ptr_eq,
-                                                    ggc_free));
+						    struct_ptr_eq,
+						    ggc_free));
 
   slot = htab_find_slot (get_eh_throw_stmt_table (ifun), n, INSERT);
   gcc_assert (!*slot);
@@ -142,11 +142,11 @@ remove_stmt_from_eh_region_fn (struct function *ifun, tree t)
     {
       htab_clear_slot (get_eh_throw_stmt_table (ifun), slot);
       /* ??? For the benefit of calls.c, converting all this to rtl,
-         we need to record the call expression, not just the outer
-         modify statement.  */
+	 we need to record the call expression, not just the outer
+	 modify statement.  */
       if (TREE_CODE (t) == MODIFY_EXPR
-          && (t = get_call_expr_in (t)))
-        remove_stmt_from_eh_region_fn (ifun, t);
+	  && (t = get_call_expr_in (t)))
+	remove_stmt_from_eh_region_fn (ifun, t);
       return true;
     }
   else
@@ -243,15 +243,15 @@ collect_finally_tree (tree t, tree region)
 
     case STATEMENT_LIST:
       {
-        tree_stmt_iterator i;
-        for (i = tsi_start (t); !tsi_end_p (i); tsi_next (&i))
-          collect_finally_tree (tsi_stmt (i), region);
+	tree_stmt_iterator i;
+	for (i = tsi_start (t); !tsi_end_p (i); tsi_next (&i))
+	  collect_finally_tree (tsi_stmt (i), region);
       }
       break;
 
     default:
       /* A type, a decl, or some kind of statement that we're not
-         interested in.  Don't walk them.  */
+	 interested in.  Don't walk them.  */
       break;
     }
 }
@@ -269,7 +269,7 @@ outside_finally_tree (tree start, tree target)
       n.child = start;
       p = (struct finally_tree_node *) htab_find (finally_tree, &n);
       if (!p)
-        return true;
+	return true;
       start = p->parent;
     }
   while (start != target);
@@ -372,7 +372,7 @@ find_goto_replacement (struct leh_tf_state *tf, tree stmt)
   tmp.stmt = stmt;
   ret = (struct goto_queue_node *)
      bsearch (&tmp, tf->goto_queue, tf->goto_queue_active,
-                 sizeof (struct goto_queue_node), goto_queue_cmp);
+		 sizeof (struct goto_queue_node), goto_queue_cmp);
   return (ret ? ret->repl_stmt : NULL);
 }
 
@@ -383,7 +383,7 @@ find_goto_replacement (struct leh_tf_state *tf, tree stmt)
 
 static void
 replace_goto_queue_cond_clause (tree *tp, struct leh_tf_state *tf,
-                                tree_stmt_iterator *tsi)
+				tree_stmt_iterator *tsi)
 {
   tree new, one, label;
 
@@ -419,11 +419,11 @@ replace_goto_queue_1 (tree t, struct leh_tf_state *tf, tree_stmt_iterator *tsi)
     case RETURN_EXPR:
       t = find_goto_replacement (tf, t);
       if (t)
-        {
-          tsi_link_before (tsi, t, TSI_SAME_STMT);
-          tsi_delink (tsi);
-          return;
-        }
+	{
+	  tsi_link_before (tsi, t, TSI_SAME_STMT);
+	  tsi_delink (tsi);
+	  return;
+	}
       break;
 
     case COND_EXPR:
@@ -493,33 +493,33 @@ maybe_record_in_goto_queue (struct leh_state *state, tree stmt)
     {
     case GOTO_EXPR:
       {
-        tree lab = GOTO_DESTINATION (stmt);
+	tree lab = GOTO_DESTINATION (stmt);
 
-        /* Computed and non-local gotos do not get processed.  Given
-           their nature we can neither tell whether we've escaped the
-           finally block nor redirect them if we knew.  */
-        if (TREE_CODE (lab) != LABEL_DECL)
-          return;
+	/* Computed and non-local gotos do not get processed.  Given
+	   their nature we can neither tell whether we've escaped the
+	   finally block nor redirect them if we knew.  */
+	if (TREE_CODE (lab) != LABEL_DECL)
+	  return;
 
-        /* No need to record gotos that don't leave the try block.  */
-        if (! outside_finally_tree (lab, tf->try_finally_expr))
-          return;
+	/* No need to record gotos that don't leave the try block.  */
+	if (! outside_finally_tree (lab, tf->try_finally_expr))
+	  return;
 
-        if (! tf->dest_array)
-          {
-            tf->dest_array = VEC_alloc (tree, heap, 10);
-            VEC_quick_push (tree, tf->dest_array, lab);
-            index = 0;
-          }
-        else
-          {
-            int n = VEC_length (tree, tf->dest_array);
-            for (index = 0; index < n; ++index)
-              if (VEC_index (tree, tf->dest_array, index) == lab)
-                break;
-            if (index == n)
-              VEC_safe_push (tree, heap, tf->dest_array, lab);
-          }
+	if (! tf->dest_array)
+	  {
+	    tf->dest_array = VEC_alloc (tree, heap, 10);
+	    VEC_quick_push (tree, tf->dest_array, lab);
+	    index = 0;
+	  }
+	else
+	  {
+	    int n = VEC_length (tree, tf->dest_array);
+	    for (index = 0; index < n; ++index)
+	      if (VEC_index (tree, tf->dest_array, index) == lab)
+		break;
+	    if (index == n)
+	      VEC_safe_push (tree, heap, tf->dest_array, lab);
+	  }
       }
       break;
 
@@ -585,7 +585,7 @@ verify_norecord_switch_expr (struct leh_state *state, tree switch_expr)
 
 static void
 do_return_redirection (struct goto_queue_node *q, tree finlab, tree mod,
-                       tree *return_value_p)
+		       tree *return_value_p)
 {
   tree ret_expr = TREE_OPERAND (q->stmt, 0);
   tree x;
@@ -593,72 +593,72 @@ do_return_redirection (struct goto_queue_node *q, tree finlab, tree mod,
   if (ret_expr)
     {
       /* The nasty part about redirecting the return value is that the
-         return value itself is to be computed before the FINALLY block
-         is executed.  e.g.
+	 return value itself is to be computed before the FINALLY block
+	 is executed.  e.g.
 
-                int x;
-                int foo (void)
-                {
-                  x = 0;
-                  try {
-                    return x;
-                  } finally {
-                    x++;
-                  }
-                }
+		int x;
+		int foo (void)
+		{
+		  x = 0;
+		  try {
+		    return x;
+		  } finally {
+		    x++;
+		  }
+		}
 
-          should return 0, not 1.  Arrange for this to happen by copying
-          computed the return value into a local temporary.  This also
-          allows us to redirect multiple return statements through the
-          same destination block; whether this is a net win or not really
-          depends, I guess, but it does make generation of the switch in
-          lower_try_finally_switch easier.  */
+	  should return 0, not 1.  Arrange for this to happen by copying
+	  computed the return value into a local temporary.  This also
+	  allows us to redirect multiple return statements through the
+	  same destination block; whether this is a net win or not really
+	  depends, I guess, but it does make generation of the switch in
+	  lower_try_finally_switch easier.  */
 
       switch (TREE_CODE (ret_expr))
-        {
-        case RESULT_DECL:
-          if (!*return_value_p)
-            *return_value_p = ret_expr;
-          else
-            gcc_assert (*return_value_p == ret_expr);
-          q->cont_stmt = q->stmt;
-          break;
+	{
+	case RESULT_DECL:
+	  if (!*return_value_p)
+	    *return_value_p = ret_expr;
+	  else
+	    gcc_assert (*return_value_p == ret_expr);
+	  q->cont_stmt = q->stmt;
+	  break;
 
-        case MODIFY_EXPR:
-          {
-            tree result = TREE_OPERAND (ret_expr, 0);
-            tree new, old = TREE_OPERAND (ret_expr, 1);
+	case MODIFY_EXPR:
+	  {
+	    tree result = TREE_OPERAND (ret_expr, 0);
+	    tree new, old = TREE_OPERAND (ret_expr, 1);
 
-            if (!*return_value_p)
-              {
-                if (aggregate_value_p (TREE_TYPE (result),
-                                      TREE_TYPE (current_function_decl)))
-                  /* If this function returns in memory, copy the argument
-                    into the return slot now.  Otherwise, we might need to
-                    worry about magic return semantics, so we need to use a
-                    temporary to hold the value until we're actually ready
-                    to return.  */
-                  new = result;
-                else
-                  new = create_tmp_var (TREE_TYPE (old), "rettmp");
-                *return_value_p = new;
-              }
-            else
-              new = *return_value_p;
+	    if (!*return_value_p)
+	      {
+		if (aggregate_value_p (TREE_TYPE (result),
+				      TREE_TYPE (current_function_decl)))
+		  /* If this function returns in memory, copy the argument
+		    into the return slot now.  Otherwise, we might need to
+		    worry about magic return semantics, so we need to use a
+		    temporary to hold the value until we're actually ready
+		    to return.  */
+		  new = result;
+		else
+		  new = create_tmp_var (TREE_TYPE (old), "rettmp");
+		*return_value_p = new;
+	      }
+	    else
+	      new = *return_value_p;
 
-            x = build2 (MODIFY_EXPR, TREE_TYPE (new), new, old);
-            append_to_statement_list (x, &q->repl_stmt);
+	    x = build2 (MODIFY_EXPR, TREE_TYPE (new), new, old);
+	    append_to_statement_list (x, &q->repl_stmt);
 
-            if (new == result)
-              x = result;
-            else
-              x = build2 (MODIFY_EXPR, TREE_TYPE (result), result, new);
-            q->cont_stmt = build1 (RETURN_EXPR, void_type_node, x);
-          }
+	    if (new == result)
+	      x = result;
+	    else
+	      x = build2 (MODIFY_EXPR, TREE_TYPE (result), result, new);
+	    q->cont_stmt = build1 (RETURN_EXPR, void_type_node, x);
+	  }
 
-        default:
-          gcc_unreachable ();
-        }
+	default:
+	  gcc_unreachable ();
+	}
     }
   else
     {
@@ -689,9 +689,9 @@ do_goto_redirection (struct goto_queue_node *q, tree finlab, tree mod)
 }
 
 /* We want to transform
-        try { body; } catch { stuff; }
+	try { body; } catch { stuff; }
    to
-        body; goto over; lab: stuff; over:
+	body; goto over; lab: stuff; over:
 
    T is a TRY_FINALLY or TRY_CATCH node.  LAB is the label that
    should be placed before the second operand, or NULL.  OVER is
@@ -708,7 +708,7 @@ frob_into_branch_around (tree *tp, tree lab, tree over)
   if (block_may_fallthru (*tp))
     {
       if (!over)
-        over = create_artificial_label ();
+	over = create_artificial_label ();
       x = build1 (GOTO_EXPR, void_type_node, over);
       append_to_statement_list (x, tp);
     }
@@ -770,12 +770,12 @@ lower_try_finally_fallthru_label (struct leh_tf_state *tf)
    First we can duplicate the finally block and wrap it in a must_not_throw
    region.  Second, we can generate code like
 
-        try {
-          finally_block;
-        } catch {
-          if (fintmp == eh_edge)
-            protect_cleanup_actions;
-        }
+	try {
+	  finally_block;
+	} catch {
+	  if (fintmp == eh_edge)
+	    protect_cleanup_actions;
+	}
 
    where "fintmp" is the temporary used in the switch statement generation
    alternative considered below.  For the nonce, we always choose the first
@@ -785,8 +785,8 @@ lower_try_finally_fallthru_label (struct leh_tf_state *tf)
 
 static void
 honor_protect_cleanup_actions (struct leh_state *outer_state,
-                               struct leh_state *this_state,
-                               struct leh_tf_state *tf)
+			       struct leh_state *this_state,
+			       struct leh_tf_state *tf)
 {
   tree protect_cleanup_actions, finally, x;
   tree_stmt_iterator i;
@@ -802,18 +802,18 @@ honor_protect_cleanup_actions (struct leh_state *outer_state,
 
   /* If the EH case of the finally block can fall through, this may be a
      structure of the form
-        try {
-          try {
-            throw ...;
-          } cleanup {
-            try {
-              throw ...;
-            } catch (...) {
-            }
-          }
-        } catch (...) {
-          yyy;
-        }
+	try {
+	  try {
+	    throw ...;
+	  } cleanup {
+	    try {
+	      throw ...;
+	    } catch (...) {
+	    }
+	  }
+	} catch (...) {
+	  yyy;
+	}
     E.g. with an inline destructor with an embedded try block.  In this
     case we must save the runtime EH data around the nested exception.
 
@@ -973,7 +973,7 @@ lower_try_finally_onedest (struct leh_state *state, struct leh_tf_state *tf)
   if (tf->may_fallthru)
     {
       /* Only reachable via the fallthru edge.  Do nothing but let
-         the two blocks run together; we'll fall out the bottom.  */
+	 the two blocks run together; we'll fall out the bottom.  */
       append_to_statement_list (finally, tf->top_p);
       return;
     }
@@ -992,24 +992,24 @@ lower_try_finally_onedest (struct leh_state *state, struct leh_tf_state *tf)
       /* Reachable by return expressions only.  Redirect them.  */
       tree return_val = NULL;
       for (; q < qe; ++q)
-        do_return_redirection (q, finally_label, NULL, &return_val);
+	do_return_redirection (q, finally_label, NULL, &return_val);
       replace_goto_queue (tf);
     }
   else
     {
       /* Reachable by goto expressions only.  Redirect them.  */
       for (; q < qe; ++q)
-        do_goto_redirection (q, finally_label, NULL);
+	do_goto_redirection (q, finally_label, NULL);
       replace_goto_queue (tf);
 
       if (VEC_index (tree, tf->dest_array, 0) == tf->fallthru_label)
-        {
-          /* Reachable by goto to fallthru label only.  Redirect it
-             to the new label (already created, sadly), and do not
-             emit the final branch out, or the fallthru label.  */
-          tf->fallthru_label = NULL;
-          return;
-        }
+	{
+	  /* Reachable by goto to fallthru label only.  Redirect it
+	     to the new label (already created, sadly), and do not
+	     emit the final branch out, or the fallthru label.  */
+	  tf->fallthru_label = NULL;
+	  return;
+	}
     }
 
   append_to_statement_list (tf->goto_queue[0].cont_stmt, tf->top_p);
@@ -1062,8 +1062,8 @@ lower_try_finally_copy (struct leh_state *state, struct leh_tf_state *tf)
       int return_index, index;
       struct labels_s
       {
-        struct goto_queue_node *q;
-        tree label;
+	struct goto_queue_node *q;
+	tree label;
       } *labels;
 
       return_index = VEC_length (tree, tf->dest_array);
@@ -1072,56 +1072,56 @@ lower_try_finally_copy (struct leh_state *state, struct leh_tf_state *tf)
       q = tf->goto_queue;
       qe = q + tf->goto_queue_active;
       for (; q < qe; q++)
-        {
-          index = q->index < 0 ? return_index : q->index;
+	{
+	  index = q->index < 0 ? return_index : q->index;
 
-          if (!labels[index].q)
-            labels[index].q = q;
-        }
+	  if (!labels[index].q)
+	    labels[index].q = q;
+	}
 
       for (index = 0; index < return_index + 1; index++)
-        {
-          tree lab;
+	{
+	  tree lab;
 
-          q = labels[index].q;
-          if (! q)
-            continue;
+	  q = labels[index].q;
+	  if (! q)
+	    continue;
 
-          lab = labels[index].label = create_artificial_label ();
+	  lab = labels[index].label = create_artificial_label ();
 
-          if (index == return_index)
-            do_return_redirection (q, lab, NULL, &return_val);
-          else
-            do_goto_redirection (q, lab, NULL);
+	  if (index == return_index)
+	    do_return_redirection (q, lab, NULL, &return_val);
+	  else
+	    do_goto_redirection (q, lab, NULL);
 
-          x = build1 (LABEL_EXPR, void_type_node, lab);
-          append_to_statement_list (x, &new_stmt);
+	  x = build1 (LABEL_EXPR, void_type_node, lab);
+	  append_to_statement_list (x, &new_stmt);
 
-          x = lower_try_finally_dup_block (finally, state);
-          lower_eh_constructs_1 (state, &x);
-          append_to_statement_list (x, &new_stmt);
+	  x = lower_try_finally_dup_block (finally, state);
+	  lower_eh_constructs_1 (state, &x);
+	  append_to_statement_list (x, &new_stmt);
 
-          append_to_statement_list (q->cont_stmt, &new_stmt);
-          maybe_record_in_goto_queue (state, q->cont_stmt);
-        }
+	  append_to_statement_list (q->cont_stmt, &new_stmt);
+	  maybe_record_in_goto_queue (state, q->cont_stmt);
+	}
 
       for (q = tf->goto_queue; q < qe; q++)
-        {
-          tree lab;
+	{
+	  tree lab;
 
-          index = q->index < 0 ? return_index : q->index;
+	  index = q->index < 0 ? return_index : q->index;
 
-          if (labels[index].q == q)
-            continue;
+	  if (labels[index].q == q)
+	    continue;
 
-          lab = labels[index].label;
+	  lab = labels[index].label;
 
-          if (index == return_index)
-            do_return_redirection (q, lab, NULL, &return_val);
-          else
-            do_goto_redirection (q, lab, NULL);
-        }
-        
+	  if (index == return_index)
+	    do_return_redirection (q, lab, NULL, &return_val);
+	  else
+	    do_goto_redirection (q, lab, NULL);
+	}
+	
       replace_goto_queue (tf);
       free (labels);
     }
@@ -1166,7 +1166,7 @@ lower_try_finally_switch (struct leh_state *state, struct leh_tf_state *tf)
 
   case_label_vec = make_tree_vec (ndests);
   switch_stmt = build3 (SWITCH_EXPR, integer_type_node, finally_tmp,
-                        NULL_TREE, case_label_vec);
+		        NULL_TREE, case_label_vec);
   switch_body = NULL;
   last_case = NULL;
   last_case_index = 0;
@@ -1178,19 +1178,19 @@ lower_try_finally_switch (struct leh_state *state, struct leh_tf_state *tf)
   if (tf->may_fallthru)
     {
       x = build2 (MODIFY_EXPR, void_type_node, finally_tmp,
-                  build_int_cst (NULL_TREE, fallthru_index));
+		  build_int_cst (NULL_TREE, fallthru_index));
       append_to_statement_list (x, tf->top_p);
 
       if (tf->may_throw)
-        {
-          x = build1 (GOTO_EXPR, void_type_node, finally_label);
-          append_to_statement_list (x, tf->top_p);
-        }
+	{
+	  x = build1 (GOTO_EXPR, void_type_node, finally_label);
+	  append_to_statement_list (x, tf->top_p);
+	}
 
 
       last_case = build3 (CASE_LABEL_EXPR, void_type_node,
-                          build_int_cst (NULL_TREE, fallthru_index), NULL,
-                          create_artificial_label ());
+			  build_int_cst (NULL_TREE, fallthru_index), NULL,
+			  create_artificial_label ());
       TREE_VEC_ELT (case_label_vec, last_case_index) = last_case;
       last_case_index++;
 
@@ -1208,12 +1208,12 @@ lower_try_finally_switch (struct leh_state *state, struct leh_tf_state *tf)
       append_to_statement_list (x, tf->top_p);
 
       x = build2 (MODIFY_EXPR, void_type_node, finally_tmp,
-                  build_int_cst (NULL_TREE, eh_index));
+		  build_int_cst (NULL_TREE, eh_index));
       append_to_statement_list (x, tf->top_p);
 
       last_case = build3 (CASE_LABEL_EXPR, void_type_node,
-                          build_int_cst (NULL_TREE, eh_index), NULL,
-                          create_artificial_label ());
+			  build_int_cst (NULL_TREE, eh_index), NULL,
+			  create_artificial_label ());
       TREE_VEC_ELT (case_label_vec, last_case_index) = last_case;
       last_case_index++;
 
@@ -1238,32 +1238,32 @@ lower_try_finally_switch (struct leh_state *state, struct leh_tf_state *tf)
       int switch_id, case_index;
 
       if (q->index < 0)
-        {
-          mod = build2 (MODIFY_EXPR, void_type_node, finally_tmp,
-                        build_int_cst (NULL_TREE, return_index));
-          do_return_redirection (q, finally_label, mod, &return_val);
-          switch_id = return_index;
-        }
+	{
+	  mod = build2 (MODIFY_EXPR, void_type_node, finally_tmp,
+		        build_int_cst (NULL_TREE, return_index));
+	  do_return_redirection (q, finally_label, mod, &return_val);
+	  switch_id = return_index;
+	}
       else
-        {
-          mod = build2 (MODIFY_EXPR, void_type_node, finally_tmp,
-                        build_int_cst (NULL_TREE, q->index));
-          do_goto_redirection (q, finally_label, mod);
-          switch_id = q->index;
-        }
+	{
+	  mod = build2 (MODIFY_EXPR, void_type_node, finally_tmp,
+		        build_int_cst (NULL_TREE, q->index));
+	  do_goto_redirection (q, finally_label, mod);
+	  switch_id = q->index;
+	}
 
       case_index = j + q->index;
       if (!TREE_VEC_ELT (case_label_vec, case_index))
-        TREE_VEC_ELT (case_label_vec, case_index)
-          = build3 (CASE_LABEL_EXPR, void_type_node,
-                    build_int_cst (NULL_TREE, switch_id), NULL,
-                    /* We store the cont_stmt in the
-                       CASE_LABEL, so that we can recover it
-                       in the loop below.  We don't create
-                       the new label while walking the
-                       goto_queue because pointers don't
-                       offer a stable order.  */
-                    q->cont_stmt);
+	TREE_VEC_ELT (case_label_vec, case_index)
+	  = build3 (CASE_LABEL_EXPR, void_type_node,
+		    build_int_cst (NULL_TREE, switch_id), NULL,
+		    /* We store the cont_stmt in the
+		       CASE_LABEL, so that we can recover it
+		       in the loop below.  We don't create
+		       the new label while walking the
+		       goto_queue because pointers don't
+		       offer a stable order.  */
+		    q->cont_stmt);
     }
   for (j = last_case_index; j < last_case_index + nlabels; j++)
     {
@@ -1383,7 +1383,7 @@ lower_try_finally (struct leh_state *state, tree *tp)
   /* Sort the goto queue for efficient searching later.  */
   if (this_tf.goto_queue_active > 1)
     qsort (this_tf.goto_queue, this_tf.goto_queue_active,
-           sizeof (struct goto_queue_node), goto_queue_cmp);
+	   sizeof (struct goto_queue_node), goto_queue_cmp);
 
   /* Determine how many edges (still) reach the finally block.  Or rather,
      how many destinations are reached by the finally block.  Use this to
@@ -1471,13 +1471,13 @@ lower_catch (struct leh_state *state, tree *tp)
       tsi_link_before (&i, x, TSI_SAME_STMT);
 
       if (block_may_fallthru (CATCH_BODY (catch)))
-        {
-          if (!out_label)
-            out_label = create_artificial_label ();
+	{
+	  if (!out_label)
+	    out_label = create_artificial_label ();
 
-          x = build1 (GOTO_EXPR, void_type_node, out_label);
-          append_to_statement_list (x, &CATCH_BODY (catch));
-        }
+	  x = build1 (GOTO_EXPR, void_type_node, out_label);
+	  append_to_statement_list (x, &CATCH_BODY (catch));
+	}
 
       tsi_link_before (&i, CATCH_BODY (catch), TSI_SAME_STMT);
       tsi_delink (&i);
@@ -1502,7 +1502,7 @@ lower_eh_filter (struct leh_state *state, tree *tp)
     this_region = gen_eh_region_must_not_throw (state->cur_region);
   else
     this_region = gen_eh_region_allowed (state->cur_region,
-                                         EH_FILTER_TYPES (inner));
+					 EH_FILTER_TYPES (inner));
   this_state = *state;
   this_state.cur_region = this_region;
   /* For must not throw regions any cleanup regions inside it
@@ -1574,21 +1574,21 @@ lower_cleanup (struct leh_state *state, tree *tp)
   if (fake_tf.may_throw)
     {
       /* In this case honor_protect_cleanup_actions had nothing to do,
-         and we should process this normally.  */
+	 and we should process this normally.  */
       lower_eh_constructs_1 (state, &TREE_OPERAND (*tp, 1));
       frob_into_branch_around (tp, fake_tf.eh_label, fake_tf.fallthru_label);
     }
   else
     {
       /* In this case honor_protect_cleanup_actions did nearly all of
-         the work.  All we have left is to append the fallthru_label.  */
+	 the work.  All we have left is to append the fallthru_label.  */
 
       *tp = TREE_OPERAND (*tp, 0);
       if (fake_tf.fallthru_label)
-        {
-          tree x = build1 (LABEL_EXPR, void_type_node, fake_tf.fallthru_label);
-          append_to_statement_list (x, tp);
-        }
+	{
+	  tree x = build1 (LABEL_EXPR, void_type_node, fake_tf.fallthru_label);
+	  append_to_statement_list (x, tp);
+	}
     }
 }
 
@@ -1610,19 +1610,19 @@ lower_eh_constructs_1 (struct leh_state *state, tree *tp)
     case CALL_EXPR:
       /* Look for things that can throw exceptions, and record them.  */
       if (state->cur_region && tree_could_throw_p (t))
-        {
-          record_stmt_eh_region (state->cur_region, t);
-          note_eh_region_may_contain_throw (state->cur_region);
-        }
+	{
+	  record_stmt_eh_region (state->cur_region, t);
+	  note_eh_region_may_contain_throw (state->cur_region);
+	}
       break;
 
     case MODIFY_EXPR:
       /* Look for things that can throw exceptions, and record them.  */
       if (state->cur_region && tree_could_throw_p (t))
-        {
-          record_stmt_eh_region (state->cur_region, t);
-          note_eh_region_may_contain_throw (state->cur_region);
-        }
+	{
+	  record_stmt_eh_region (state->cur_region, t);
+	  note_eh_region_may_contain_throw (state->cur_region);
+	}
       break;
 
     case GOTO_EXPR:
@@ -1640,37 +1640,37 @@ lower_eh_constructs_1 (struct leh_state *state, tree *tp)
     case TRY_CATCH_EXPR:
       i = tsi_start (TREE_OPERAND (t, 1));
       switch (TREE_CODE (tsi_stmt (i)))
-        {
-        case CATCH_EXPR:
-          lower_catch (state, tp);
-          break;
-        case EH_FILTER_EXPR:
-          lower_eh_filter (state, tp);
-          break;
-        default:
-          lower_cleanup (state, tp);
-          break;
-        }
+	{
+	case CATCH_EXPR:
+	  lower_catch (state, tp);
+	  break;
+	case EH_FILTER_EXPR:
+	  lower_eh_filter (state, tp);
+	  break;
+	default:
+	  lower_cleanup (state, tp);
+	  break;
+	}
       break;
 
     case STATEMENT_LIST:
       for (i = tsi_start (t); !tsi_end_p (i); )
-        {
-          lower_eh_constructs_1 (state, tsi_stmt_ptr (i));
-          t = tsi_stmt (i);
-          if (TREE_CODE (t) == STATEMENT_LIST)
-            {
-              tsi_link_before (&i, t, TSI_SAME_STMT);
-              tsi_delink (&i);
-            }
-          else
-            tsi_next (&i);
-        }
+	{
+	  lower_eh_constructs_1 (state, tsi_stmt_ptr (i));
+	  t = tsi_stmt (i);
+	  if (TREE_CODE (t) == STATEMENT_LIST)
+	    {
+	      tsi_link_before (&i, t, TSI_SAME_STMT);
+	      tsi_delink (&i);
+	    }
+	  else
+	    tsi_next (&i);
+	}
       break;
 
     default:
       /* A type, a decl, or some kind of statement that we're not
-         interested in.  Don't walk them.  */
+	 interested in.  Don't walk them.  */
       break;
     }
 }
@@ -1696,19 +1696,19 @@ lower_eh_constructs (void)
 
 struct tree_opt_pass pass_lower_eh =
 {
-  "eh",                                        /* name */
-  NULL,                                        /* gate */
-  lower_eh_constructs,                        /* execute */
-  NULL,                                        /* sub */
-  NULL,                                        /* next */
-  0,                                        /* static_pass_number */
-  TV_TREE_EH,                                /* tv_id */
-  PROP_gimple_lcf,                        /* properties_required */
-  PROP_gimple_leh,                        /* properties_provided */
-  0,                                        /* properties_destroyed */
-  0,                                        /* todo_flags_start */
-  TODO_dump_func,                        /* todo_flags_finish */
-  0                                        /* letter */
+  "eh",					/* name */
+  NULL,					/* gate */
+  lower_eh_constructs,			/* execute */
+  NULL,					/* sub */
+  NULL,					/* next */
+  0,					/* static_pass_number */
+  TV_TREE_EH,				/* tv_id */
+  PROP_gimple_lcf,			/* properties_required */
+  PROP_gimple_leh,			/* properties_provided */
+  0,					/* properties_destroyed */
+  0,					/* todo_flags_start */
+  TODO_dump_func,			/* todo_flags_finish */
+  0					/* letter */
 };
 
 
@@ -1744,7 +1744,7 @@ make_eh_edges (tree stmt)
     {
       region_nr = lookup_stmt_eh_region (stmt);
       if (region_nr < 0)
-        return;
+	return;
       is_resx = false;
     }
 
@@ -1812,20 +1812,20 @@ verify_eh_edges (tree stmt)
     {
       region_nr = lookup_stmt_eh_region (stmt);
       if (region_nr < 0)
-        {
-          FOR_EACH_EDGE (e, ei, bb->succs)
-            if (e->flags & EDGE_EH)
-              {
-                error ("BB %i can not throw but has EH edges", bb->index);
-                return true;
-              }
-           return false;
-        }
+	{
+	  FOR_EACH_EDGE (e, ei, bb->succs)
+	    if (e->flags & EDGE_EH)
+	      {
+		error ("BB %i can not throw but has EH edges", bb->index);
+		return true;
+	      }
+	   return false;
+	}
       if (!tree_could_throw_p (stmt))
-        {
-          error ("BB %i last statement has incorrectly set region", bb->index);
-          return true;
-        }
+	{
+	  error ("BB %i last statement has incorrectly set region", bb->index);
+	  return true;
+	}
       is_resx = false;
     }
 
@@ -1833,11 +1833,11 @@ verify_eh_edges (tree stmt)
   FOR_EACH_EDGE (e, ei, bb->succs)
     {
       if ((e->flags & EDGE_EH) && !e->aux)
-        {
-          error ("unnecessary EH edge %i->%i", bb->index, e->dest->index);
-          mark_eh_edge_found_error = true;
-          return true;
-        }
+	{
+	  error ("unnecessary EH edge %i->%i", bb->index, e->dest->index);
+	  mark_eh_edge_found_error = true;
+	  return true;
+	}
       e->aux = NULL;
     }
   return mark_eh_edge_found_error;
@@ -1865,12 +1865,12 @@ tree_could_trap_p (tree expr)
       t = TREE_TYPE (expr);
       fp_operation = FLOAT_TYPE_P (t);
       if (fp_operation)
-        {
-          honor_nans = flag_trapping_math && !flag_finite_math_only;
-          honor_snans = flag_signaling_nans != 0;
-        }
+	{
+	  honor_nans = flag_trapping_math && !flag_finite_math_only;
+	  honor_snans = flag_signaling_nans != 0;
+	}
       else if (INTEGRAL_TYPE_P (t) && TYPE_OVERFLOW_TRAPS (t))
-        honor_trapv = true;
+	honor_trapv = true;
     }
 
  restart:
@@ -1878,7 +1878,7 @@ tree_could_trap_p (tree expr)
     {
     case TARGET_MEM_REF:
       /* For TARGET_MEM_REFs use the information based on the original
-         reference.  */
+	 reference.  */
       expr = TMR_ORIGINAL (expr);
       code = TREE_CODE (expr);
       goto restart;
@@ -1896,20 +1896,20 @@ tree_could_trap_p (tree expr)
     case ARRAY_RANGE_REF:
       base = TREE_OPERAND (expr, 0);
       if (tree_could_trap_p (base))
-        return true;
+	return true;
 
       if (TREE_THIS_NOTRAP (expr))
-        return false;
+	return false;
 
       return !range_in_array_bounds_p (expr);
 
     case ARRAY_REF:
       base = TREE_OPERAND (expr, 0);
       if (tree_could_trap_p (base))
-        return true;
+	return true;
 
       if (TREE_THIS_NOTRAP (expr))
-        return false;
+	return false;
 
       return !in_array_bounds_p (expr);
 
@@ -1932,9 +1932,9 @@ tree_could_trap_p (tree expr)
     case TRUNC_MOD_EXPR:
     case RDIV_EXPR:
       if (honor_snans || honor_trapv)
-        return true;
+	return true;
       if (fp_operation)
-        return flag_trapping_math;
+	return flag_trapping_math;
       t = TREE_OPERAND (expr, 1);
       if (!TREE_CONSTANT (t) || integer_zerop (t))
         return true;
@@ -1972,7 +1972,7 @@ tree_could_trap_p (tree expr)
     case CONJ_EXPR:
       /* These operations don't trap with floating point.  */
       if (honor_trapv)
-        return true;
+	return true;
       return false;
 
     case PLUS_EXPR:
@@ -1980,22 +1980,22 @@ tree_could_trap_p (tree expr)
     case MULT_EXPR:
       /* Any floating arithmetic may trap.  */
       if (fp_operation && flag_trapping_math)
-        return true;
+	return true;
       if (honor_trapv)
-        return true;
+	return true;
       return false;
 
     case CALL_EXPR:
       t = get_callee_fndecl (expr);
       /* Assume that calls to weak functions may trap.  */
       if (!t || !DECL_P (t) || DECL_WEAK (t))
-        return true;
+	return true;
       return false;
 
     default:
       /* Any floating arithmetic may trap.  */
       if (fp_operation && flag_trapping_math)
-        return true;
+	return true;
       return false;
     }
 }
@@ -2008,8 +2008,8 @@ tree_could_throw_p (tree t)
   if (TREE_CODE (t) == MODIFY_EXPR)
     {
       if (flag_non_call_exceptions
-          && tree_could_trap_p (TREE_OPERAND (t, 0)))
-        return true;
+	  && tree_could_trap_p (TREE_OPERAND (t, 0)))
+	return true;
       t = TREE_OPERAND (t, 1);
     }
 
@@ -2068,16 +2068,16 @@ maybe_clean_or_replace_eh_stmt (tree old_stmt, tree new_stmt)
       bool new_stmt_could_throw = tree_could_throw_p (new_stmt);
 
       if (new_stmt == old_stmt && new_stmt_could_throw)
-        return false;
+	return false;
 
       remove_stmt_from_eh_region (old_stmt);
       if (new_stmt_could_throw)
-        {
-          add_stmt_to_eh_region (new_stmt, region_nr);
-          return false;
-        }
+	{
+	  add_stmt_to_eh_region (new_stmt, region_nr);
+	  return false;
+	}
       else
-        return true;
+	return true;
     }
 
   return false;
@@ -2099,8 +2099,8 @@ verify_eh_throw_table_statements (void)
   if (!get_eh_throw_stmt_table (cfun))
     return;
   htab_traverse (get_eh_throw_stmt_table (cfun),
-                 verify_eh_throw_stmt_node,
-                 NULL);
+		 verify_eh_throw_stmt_node,
+		 NULL);
 }
 
 #endif

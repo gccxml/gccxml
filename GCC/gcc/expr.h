@@ -51,8 +51,8 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
    EXPAND_MEMORY means we are interested in a memory result, even if
     the memory is constant and we could have propagated a constant value.  */
 enum expand_modifier {EXPAND_NORMAL = 0, EXPAND_STACK_PARM, EXPAND_SUM,
-                      EXPAND_CONST_ADDRESS, EXPAND_INITIALIZER, EXPAND_WRITE,
-                      EXPAND_MEMORY};
+		      EXPAND_CONST_ADDRESS, EXPAND_INITIALIZER, EXPAND_WRITE,
+		      EXPAND_MEMORY};
 
 /* Prevent the compiler from deferring stack pops.  See
    inhibit_defer_pop for more information.  */
@@ -123,58 +123,58 @@ struct locate_and_pad_arg_data
 
 /* Add the value of the tree INC to the `struct args_size' TO.  */
 
-#define ADD_PARM_SIZE(TO, INC)                                        \
-do {                                                                \
-  tree inc = (INC);                                                \
-  if (host_integerp (inc, 0))                                        \
-    (TO).constant += tree_low_cst (inc, 0);                        \
-  else if ((TO).var == 0)                                        \
-    (TO).var = fold_convert (ssizetype, inc);                        \
-  else                                                                \
-    (TO).var = size_binop (PLUS_EXPR, (TO).var,                        \
-                           fold_convert (ssizetype, inc));        \
+#define ADD_PARM_SIZE(TO, INC)					\
+do {								\
+  tree inc = (INC);						\
+  if (host_integerp (inc, 0))					\
+    (TO).constant += tree_low_cst (inc, 0);			\
+  else if ((TO).var == 0)					\
+    (TO).var = fold_convert (ssizetype, inc);			\
+  else								\
+    (TO).var = size_binop (PLUS_EXPR, (TO).var,			\
+			   fold_convert (ssizetype, inc));	\
 } while (0)
 
-#define SUB_PARM_SIZE(TO, DEC)                                        \
-do {                                                                \
-  tree dec = (DEC);                                                \
-  if (host_integerp (dec, 0))                                        \
-    (TO).constant -= tree_low_cst (dec, 0);                        \
-  else if ((TO).var == 0)                                        \
-    (TO).var = size_binop (MINUS_EXPR, ssize_int (0),                \
-                           fold_convert (ssizetype, dec));        \
-  else                                                                \
-    (TO).var = size_binop (MINUS_EXPR, (TO).var,                \
-                           fold_convert (ssizetype, dec));        \
+#define SUB_PARM_SIZE(TO, DEC)					\
+do {								\
+  tree dec = (DEC);						\
+  if (host_integerp (dec, 0))					\
+    (TO).constant -= tree_low_cst (dec, 0);			\
+  else if ((TO).var == 0)					\
+    (TO).var = size_binop (MINUS_EXPR, ssize_int (0),		\
+			   fold_convert (ssizetype, dec));	\
+  else								\
+    (TO).var = size_binop (MINUS_EXPR, (TO).var,		\
+			   fold_convert (ssizetype, dec));	\
 } while (0)
 
 /* Convert the implicit sum in a `struct args_size' into a tree
    of type ssizetype.  */
-#define ARGS_SIZE_TREE(SIZE)                                        \
-((SIZE).var == 0 ? ssize_int ((SIZE).constant)                        \
- : size_binop (PLUS_EXPR, fold_convert (ssizetype, (SIZE).var),        \
-               ssize_int ((SIZE).constant)))
+#define ARGS_SIZE_TREE(SIZE)					\
+((SIZE).var == 0 ? ssize_int ((SIZE).constant)			\
+ : size_binop (PLUS_EXPR, fold_convert (ssizetype, (SIZE).var),	\
+	       ssize_int ((SIZE).constant)))
 
 /* Convert the implicit sum in a `struct args_size' into an rtx.  */
-#define ARGS_SIZE_RTX(SIZE)                                        \
-((SIZE).var == 0 ? GEN_INT ((SIZE).constant)                        \
+#define ARGS_SIZE_RTX(SIZE)					\
+((SIZE).var == 0 ? GEN_INT ((SIZE).constant)			\
  : expand_normal (ARGS_SIZE_TREE (SIZE)))
 
 /* Supply a default definition for FUNCTION_ARG_PADDING:
    usually pad upward, but pad short args downward on
    big-endian machines.  */
 
-#define DEFAULT_FUNCTION_ARG_PADDING(MODE, TYPE)                        \
-  (! BYTES_BIG_ENDIAN                                                        \
-   ? upward                                                                \
-   : (((MODE) == BLKmode                                                \
-       ? ((TYPE) && TREE_CODE (TYPE_SIZE (TYPE)) == INTEGER_CST                \
-          && int_size_in_bytes (TYPE) < (PARM_BOUNDARY / BITS_PER_UNIT)) \
-       : GET_MODE_BITSIZE (MODE) < PARM_BOUNDARY)                        \
+#define DEFAULT_FUNCTION_ARG_PADDING(MODE, TYPE)			\
+  (! BYTES_BIG_ENDIAN							\
+   ? upward								\
+   : (((MODE) == BLKmode						\
+       ? ((TYPE) && TREE_CODE (TYPE_SIZE (TYPE)) == INTEGER_CST		\
+	  && int_size_in_bytes (TYPE) < (PARM_BOUNDARY / BITS_PER_UNIT)) \
+       : GET_MODE_BITSIZE (MODE) < PARM_BOUNDARY)			\
       ? downward : upward))
 
 #ifndef FUNCTION_ARG_PADDING
-#define FUNCTION_ARG_PADDING(MODE, TYPE)        \
+#define FUNCTION_ARG_PADDING(MODE, TYPE)	\
   DEFAULT_FUNCTION_ARG_PADDING ((MODE), (TYPE))
 #endif
 
@@ -183,7 +183,7 @@ do {                                                                \
    alignment.  */
 
 #ifndef FUNCTION_ARG_BOUNDARY
-#define FUNCTION_ARG_BOUNDARY(MODE, TYPE)        PARM_BOUNDARY
+#define FUNCTION_ARG_BOUNDARY(MODE, TYPE)	PARM_BOUNDARY
 #endif
 
 /* Supply a default definition of STACK_SAVEAREA_MODE for emit_stack_save.
@@ -263,9 +263,9 @@ enum optab_methods
    this case means "can be unambiguously described by a (mode, code)
    pair and mapped to a single optab."  */
 extern rtx expand_simple_binop (enum machine_mode, enum rtx_code, rtx,
-                                rtx, rtx, int, enum optab_methods);
+				rtx, rtx, int, enum optab_methods);
 extern rtx expand_simple_unop (enum machine_mode, enum rtx_code, rtx, rtx,
-                               int);
+			       int);
 
 /* Report whether the machine description contains an insn which can
    perform the operation described by CODE and MODE.  */
@@ -288,7 +288,7 @@ extern int have_sub2_insn (rtx, rtx);
 /* Emit a pair of rtl insns to compare two rtx's and to jump
    to a label if the comparison is true.  */
 extern void emit_cmp_and_jump_insns (rtx, rtx, enum rtx_code, rtx,
-                                     enum machine_mode, int, rtx);
+				     enum machine_mode, int, rtx);
 
 /* Generate code to indirectly jump to a location given in the rtx LOC.  */
 extern void emit_indirect_jump (rtx);
@@ -301,14 +301,14 @@ extern rtx gen_cond_trap (enum rtx_code, rtx, rtx, rtx);
 #ifdef HAVE_conditional_move
 /* Emit a conditional move operation.  */
 rtx emit_conditional_move (rtx, enum rtx_code, rtx, rtx, enum machine_mode,
-                           rtx, rtx, enum machine_mode, int);
+			   rtx, rtx, enum machine_mode, int);
 
 /* Return nonzero if the conditional move is supported.  */
 int can_conditionally_move_p (enum machine_mode mode);
 
 #endif
 rtx emit_conditional_add (rtx, enum rtx_code, rtx, rtx, enum machine_mode,
-                          rtx, rtx, enum machine_mode, int);
+			  rtx, rtx, enum machine_mode, int);
 
 rtx expand_val_compare_and_swap (rtx, rtx, rtx, rtx);
 rtx expand_bool_compare_and_swap (rtx, rtx, rtx, rtx);
@@ -327,11 +327,11 @@ extern rtx expand_and (enum machine_mode, rtx, rtx, rtx);
 
 /* Emit a store-flag operation.  */
 extern rtx emit_store_flag (rtx, enum rtx_code, rtx, rtx, enum machine_mode,
-                            int, int);
+			    int, int);
 
 /* Like emit_store_flag, but always succeeds.  */
 extern rtx emit_store_flag_force (rtx, enum rtx_code, rtx, rtx,
-                                  enum machine_mode, int, int);
+				  enum machine_mode, int, int);
 
 /* Functions from builtins.c:  */
 extern rtx expand_builtin (tree, rtx, rtx, enum machine_mode, int);
@@ -438,9 +438,9 @@ extern int can_move_by_pieces (unsigned HOST_WIDE_INT, unsigned int);
    in every CONSTFUN call.
    ALIGN is maximum alignment we can assume.  */
 extern int can_store_by_pieces (unsigned HOST_WIDE_INT,
-                                rtx (*) (void *, HOST_WIDE_INT,
-                                         enum machine_mode),
-                                void *, unsigned int);
+				rtx (*) (void *, HOST_WIDE_INT,
+					 enum machine_mode),
+				void *, unsigned int);
 
 /* Generate several move instructions to store LEN bytes generated by
    CONSTFUN to block TO.  (A MEM rtx with BLKmode).  CONSTFUNDATA is a
@@ -448,8 +448,8 @@ extern int can_store_by_pieces (unsigned HOST_WIDE_INT,
    ALIGN is maximum alignment we can assume.
    Returns TO + LEN.  */
 extern rtx store_by_pieces (rtx, unsigned HOST_WIDE_INT,
-                            rtx (*) (void *, HOST_WIDE_INT, enum machine_mode),
-                            void *, unsigned int, int);
+			    rtx (*) (void *, HOST_WIDE_INT, enum machine_mode),
+			    void *, unsigned int, int);
 
 /* Emit insns to set X from Y.  */
 extern rtx emit_move_insn (rtx, rtx);
@@ -463,7 +463,7 @@ extern rtx push_block (rtx, int, int);
 
 /* Generate code to push something onto the stack, given its mode and type.  */
 extern void emit_push_insn (rtx, enum machine_mode, tree, rtx, unsigned int,
-                            int, rtx, int, rtx, rtx, int, rtx);
+			    int, rtx, int, rtx, rtx, int, rtx);
 
 /* Expand an assignment that stores the value of FROM into TO.  */
 extern void expand_assignment (tree, tree);
@@ -481,14 +481,14 @@ extern rtx force_operand (rtx, rtx);
 
 /* Work horse for expand_expr.  */
 extern rtx expand_expr_real (tree, rtx, enum machine_mode, 
-                             enum expand_modifier, rtx *);
+			     enum expand_modifier, rtx *);
 
 /* Generate code for computing expression EXP.
    An rtx for the computed value is returned.  The value is never null.
    In the case of a void EXP, const0_rtx is returned.  */
 static inline rtx
 expand_expr (tree exp, rtx target, enum machine_mode mode,
-             enum expand_modifier modifier)
+	     enum expand_modifier modifier)
 {
   return expand_expr_real (exp, target, mode, modifier, NULL);
 }
@@ -531,9 +531,9 @@ extern void do_jump (tree, rtx, rtx);
 
 /* Generate rtl to compare two rtx's, will call emit_cmp_insn.  */
 extern rtx compare_from_rtx (rtx, rtx, enum rtx_code, int, enum machine_mode,
-                             rtx);
+			     rtx);
 extern void do_compare_rtx_and_jump (rtx, rtx, enum rtx_code, int,
-                                     enum machine_mode, rtx, rtx, rtx);
+				     enum machine_mode, rtx, rtx, rtx);
 
 /* Two different ways of generating switch statements.  */
 extern int try_casesi (tree, tree, tree, tree, rtx, rtx);
@@ -569,14 +569,14 @@ extern void fixup_tail_calls (void);
 
 #ifdef TREE_CODE
 extern rtx expand_shift (enum tree_code, enum machine_mode, rtx, tree, rtx,
-                         int);
+			 int);
 extern rtx expand_divmod (int, enum tree_code, enum machine_mode, rtx, rtx,
-                          rtx, int);
+			  rtx, int);
 #endif
 
 extern void locate_and_pad_parm (enum machine_mode, tree, int, int, tree,
-                                 struct args_size *,
-                                 struct locate_and_pad_arg_data *);
+				 struct args_size *,
+				 struct locate_and_pad_arg_data *);
 
 /* Return the CODE_LABEL rtx for a LABEL_DECL, creating it if necessary.  */
 extern rtx label_rtx (tree);
@@ -628,7 +628,7 @@ extern rtx change_address (rtx, enum machine_mode, rtx);
 
 extern rtx adjust_address_1 (rtx, enum machine_mode, HOST_WIDE_INT, int, int);
 extern rtx adjust_automodify_address_1 (rtx, enum machine_mode, rtx,
-                                        HOST_WIDE_INT, int);
+					HOST_WIDE_INT, int);
 
 /* Return a memory reference like MEMREF, but whose address is changed by
    adding OFFSET, an RTX, to it.  POW2 is the highest power of two factor
@@ -725,10 +725,10 @@ extern enum machine_mode
 mode_for_extraction (enum extraction_pattern, int);
 
 extern rtx store_bit_field (rtx, unsigned HOST_WIDE_INT,
-                            unsigned HOST_WIDE_INT, enum machine_mode, rtx);
+			    unsigned HOST_WIDE_INT, enum machine_mode, rtx);
 extern rtx extract_bit_field (rtx, unsigned HOST_WIDE_INT,
-                              unsigned HOST_WIDE_INT, int, rtx,
-                              enum machine_mode, enum machine_mode);
+			      unsigned HOST_WIDE_INT, int, rtx,
+			      enum machine_mode, enum machine_mode);
 extern rtx expand_mult (enum machine_mode, rtx, rtx, rtx, int);
 extern rtx expand_mult_highpart_adjust (enum machine_mode, rtx, rtx, rtx, rtx, int);
 

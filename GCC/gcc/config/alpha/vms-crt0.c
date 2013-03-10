@@ -64,7 +64,7 @@ __main (arg1, arg2, arg3, image_file_desc, arg5, arg6)
   lib$establish (handler);
 
   decc$main(arg1, arg2, arg3, image_file_desc, arg5, arg6,
-            &argc, &argv, &envp);
+	    &argc, &argv, &envp);
 
   return main (argc, argv, envp);
 }

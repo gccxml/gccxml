@@ -27,8 +27,8 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
 /* Filter argc and argv before processing by the gcc driver proper.  */
 void
 lang_specific_driver (int *in_argc ATTRIBUTE_UNUSED,
-                      const char *const **in_argv ATTRIBUTE_UNUSED,
-                      int *in_added_libraries ATTRIBUTE_UNUSED)
+		      const char *const **in_argv ATTRIBUTE_UNUSED,
+		      int *in_added_libraries ATTRIBUTE_UNUSED)
 {
   /* Systems which use the NeXT runtime by default should arrange
      for the shared libgcc to be used when -fgnu-runtime is passed
@@ -54,23 +54,23 @@ lang_specific_driver (int *in_argc ATTRIBUTE_UNUSED,
   for (i = 1; i < argc; i++)
     {
       if (argv[i][0] == '-')
-        {
-          if (strcmp (argv[i], "-static-libgcc") == 0
-              || strcmp (argv[i], "-static") == 0)
-            return;
-        }
+	{
+	  if (strcmp (argv[i], "-static-libgcc") == 0
+	      || strcmp (argv[i], "-static") == 0)
+	    return;
+	}
       else
-        {
-          int len;
+	{
+	  int len;
 
-          /* If the filename ends in .m or .mi, we are compiling ObjC
-             and want to pass -shared-libgcc.  */
-          len = strlen (argv[i]);
-          if ((len > 2 && argv[i][len - 2] == '.' && argv[i][len - 1] == 'm')
-              ||  (len > 3 && argv[i][len - 3] == '.' && argv[i][len - 2] == 'm'
-                   && argv[i][len - 1] == 'i'))
-            shared_libgcc = 1;
-        }
+	  /* If the filename ends in .m or .mi, we are compiling ObjC
+	     and want to pass -shared-libgcc.  */
+	  len = strlen (argv[i]);
+	  if ((len > 2 && argv[i][len - 2] == '.' && argv[i][len - 1] == 'm')
+	      ||  (len > 3 && argv[i][len - 3] == '.' && argv[i][len - 2] == 'm'
+		   && argv[i][len - 1] == 'i'))
+	    shared_libgcc = 1;
+	}
     }
 
   if  (shared_libgcc)
@@ -80,10 +80,10 @@ lang_specific_driver (int *in_argc ATTRIBUTE_UNUSED,
 
       i = 0;
       do
-        {
-          arglist[i] = argv[i];
-          i++;
-        }
+	{
+	  arglist[i] = argv[i];
+	  i++;
+	}
       while (i < argc);
 
       arglist[i++] = "-shared-libgcc";

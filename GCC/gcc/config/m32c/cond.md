@@ -48,28 +48,28 @@
 
 (define_insn_and_split "cbranch<mode>4"
   [(set (pc) (if_then_else
-              (match_operator 0 "m32c_cmp_operator"
-                              [(match_operand:QHPSI 1 "mra_operand" "RraSd")
-                               (match_operand:QHPSI 2 "mrai_operand" "iRraSd")])
+	      (match_operator 0 "m32c_cmp_operator"
+			      [(match_operand:QHPSI 1 "mra_operand" "RraSd")
+			       (match_operand:QHPSI 2 "mrai_operand" "iRraSd")])
               (label_ref (match_operand 3 "" ""))
-              (pc)))]
+	      (pc)))]
   ""
   "#"
   "reload_completed"
   [(set (reg:CC FLG_REGNO)
-        (compare (match_dup 1)
-                 (match_dup 2)))
+	(compare (match_dup 1)
+		 (match_dup 2)))
    (set (pc) (if_then_else (match_dup 4)
-                           (label_ref (match_dup 3))
-                           (pc)))]
+			   (label_ref (match_dup 3))
+			   (pc)))]
   "operands[4] = m32c_cmp_flg_0 (operands[0]);"
   )
 
 (define_insn "stzx_16"
   [(set (match_operand:QI 0 "mrai_operand" "=R0w,R0w,R0w")
-        (if_then_else:QI (eq (reg:CC FLG_REGNO) (const_int 0))
-                         (match_operand:QI 1 "const_int_operand" "i,i,0")
-                         (match_operand:QI 2 "const_int_operand" "i,0,i")))]
+	(if_then_else:QI (eq (reg:CC FLG_REGNO) (const_int 0))
+			 (match_operand:QI 1 "const_int_operand" "i,i,0")
+			 (match_operand:QI 2 "const_int_operand" "i,0,i")))]
   "TARGET_A16 && reload_completed"
   "@
    stzx\t%1,%2,%0
@@ -80,9 +80,9 @@
 
 (define_insn "stzx_24_<mode>"
   [(set (match_operand:QHI 0 "mrai_operand" "=RraSd,RraSd,RraSd")
-        (if_then_else:QHI (eq (reg:CC FLG_REGNO) (const_int 0))
-                         (match_operand:QHI 1 "const_int_operand" "i,i,0")
-                         (match_operand:QHI 2 "const_int_operand" "i,0,i")))]
+	(if_then_else:QHI (eq (reg:CC FLG_REGNO) (const_int 0))
+			 (match_operand:QHI 1 "const_int_operand" "i,i,0")
+			 (match_operand:QHI 2 "const_int_operand" "i,0,i")))]
   "TARGET_A24 && reload_completed"
   "@
    stzx.<bwl>\t%1,%2,%0
@@ -92,39 +92,39 @@
 
 (define_insn_and_split "stzx_reversed_<mode>"
   [(set (match_operand:QHI 0 "m32c_r0_operand" "")
-        (if_then_else:QHI (ne (reg:CC FLG_REGNO) (const_int 0))
-                         (match_operand:QHI 1 "const_int_operand" "")
-                         (match_operand:QHI 2 "const_int_operand" "")))]
+	(if_then_else:QHI (ne (reg:CC FLG_REGNO) (const_int 0))
+			 (match_operand:QHI 1 "const_int_operand" "")
+			 (match_operand:QHI 2 "const_int_operand" "")))]
   "(TARGET_A24 || GET_MODE (operands[0]) == QImode) && reload_completed"
   "#"
   ""
   [(set (match_dup 0)
-        (if_then_else:QHI (eq (reg:CC FLG_REGNO) (const_int 0))
-                      (match_dup 2)
-                      (match_dup 1)))]
+	(if_then_else:QHI (eq (reg:CC FLG_REGNO) (const_int 0))
+		      (match_dup 2)
+		      (match_dup 1)))]
   ""
   )
 
 
 (define_insn "cmp<mode>_op"
   [(set (reg:CC FLG_REGNO)
-        (compare (match_operand:QHPSI 0 "mra_operand" "RraSd")
-                 (match_operand:QHPSI 1 "mrai_operand" "RraSdi")))]
+	(compare (match_operand:QHPSI 0 "mra_operand" "RraSd")
+		 (match_operand:QHPSI 1 "mrai_operand" "RraSdi")))]
   ""
   "* return m32c_output_compare(insn, operands); "
   [(set_attr "flags" "oszc")])
 
 (define_expand "cmp<mode>"
   [(set (reg:CC FLG_REGNO)
-        (compare (match_operand:QHPSI 0 "mra_operand" "RraSd")
-                 (match_operand:QHPSI 1 "mrai_operand" "RraSdi")))]
+	(compare (match_operand:QHPSI 0 "mra_operand" "RraSd")
+		 (match_operand:QHPSI 1 "mrai_operand" "RraSdi")))]
   ""
   "m32c_pend_compare (operands); DONE;")
 
 (define_insn "b<code>_op"
   [(set (pc)
         (if_then_else (any_cond (reg:CC FLG_REGNO)
-                                (const_int 0))
+				(const_int 0))
                       (label_ref (match_operand 0 ""))
                       (pc)))]
   ""
@@ -135,7 +135,7 @@
 (define_expand "b<code>"
   [(set (pc)
         (if_then_else (any_cond (reg:CC FLG_REGNO)
-                                (const_int 0))
+				(const_int 0))
                       (label_ref (match_operand 0 ""))
                       (pc)))]
   ""
@@ -154,13 +154,13 @@
 
 (define_insn "s<code>_op"
   [(set (match_operand:QI 0 "register_operand" "=Rqi")
-        (any_cond:QI (reg:CC FLG_REGNO) (const_int 0)))]
+	(any_cond:QI (reg:CC FLG_REGNO) (const_int 0)))]
   "TARGET_A16 && reload_completed"
   "* return m32c_scc_pattern(operands, <CODE>);")
 
 (define_insn "s<code>_24_op"
   [(set (match_operand:HI 0 "mra_operand" "=RhiSd")
-        (any_cond:HI (reg:CC FLG_REGNO) (const_int 0)))]
+	(any_cond:HI (reg:CC FLG_REGNO) (const_int 0)))]
   "TARGET_A24 && reload_completed"
   "sc<code>\t%0"
   [(set_attr "flags" "n")]
@@ -171,32 +171,32 @@
 
 (define_insn_and_split "s<code>_<mode>"
   [(set (match_operand:QI 0 "register_operand" "=Rqi")
-        (any_cond:QI (match_operand:QHPSI 1 "mra_operand" "RraSd")
-                     (match_operand:QHPSI 2 "mrai_operand" "RraSdi")))]
+	(any_cond:QI (match_operand:QHPSI 1 "mra_operand" "RraSd")
+		     (match_operand:QHPSI 2 "mrai_operand" "RraSdi")))]
   "TARGET_A16"
   "#"
   "reload_completed"
   [(set (reg:CC FLG_REGNO)
-        (compare (match_dup 1)
-                 (match_dup 2)))
+	(compare (match_dup 1)
+		 (match_dup 2)))
    (set (match_dup 0)
-        (any_cond:QI (reg:CC FLG_REGNO) (const_int 0)))]
+	(any_cond:QI (reg:CC FLG_REGNO) (const_int 0)))]
   ""
   [(set_attr "flags" "x")]
 )
 
 (define_insn_and_split "s<code>_<mode>_24"
   [(set (match_operand:HI 0 "mra_nopp_operand" "=RhiSd")
-        (any_cond:HI (match_operand:QHPSI 1 "mra_operand" "RraSd")
-                     (match_operand:QHPSI 2 "mrai_operand" "RraSdi")))]
+	(any_cond:HI (match_operand:QHPSI 1 "mra_operand" "RraSd")
+		     (match_operand:QHPSI 2 "mrai_operand" "RraSdi")))]
   "TARGET_A24"
   "#"
   "reload_completed"
   [(set (reg:CC FLG_REGNO)
-        (compare (match_dup 1)
-                 (match_dup 2)))
+	(compare (match_dup 1)
+		 (match_dup 2)))
    (set (match_dup 0)
-        (any_cond:HI (reg:CC FLG_REGNO) (const_int 0)))]
+	(any_cond:HI (reg:CC FLG_REGNO) (const_int 0)))]
   ""
   [(set_attr "flags" "x")]
 )
@@ -204,19 +204,19 @@
 (define_insn_and_split "movqicc_<code>_<mode>"
   [(set (match_operand:QI 0 "register_operand" "")
         (if_then_else:QI (eqne_cond:QI (match_operand:QHPSI 1 "mra_operand" "RraSd")
-                                       (match_operand:QHPSI 2 "mrai_operand" "RraSdi"))
-                          (match_operand:QI 3 "const_int_operand" "")
-                          (match_operand:QI 4 "const_int_operand" "")))]
+				       (match_operand:QHPSI 2 "mrai_operand" "RraSdi"))
+			  (match_operand:QI 3 "const_int_operand" "")
+			  (match_operand:QI 4 "const_int_operand" "")))]
   ""
   "#"
   "reload_completed"
   [(set (reg:CC FLG_REGNO)
-        (compare (match_dup 1)
-                 (match_dup 2)))
+	(compare (match_dup 1)
+		 (match_dup 2)))
    (set (match_dup 0)
         (if_then_else:QI (eqne_cond:QI (reg:CC FLG_REGNO) (const_int 0))
-                         (match_dup 3)
-                         (match_dup 4)))]
+			 (match_dup 3)
+			 (match_dup 4)))]
   ""
   [(set_attr "flags" "x")]
   )
@@ -224,19 +224,19 @@
 (define_insn_and_split "movhicc_<code>_<mode>"
   [(set (match_operand:HI 0 "register_operand" "")
         (if_then_else:HI (eqne_cond:HI (match_operand:QHPSI 1 "mra_operand" "RraSd")
-                                       (match_operand:QHPSI 2 "mrai_operand" "RraSdi"))
-                          (match_operand:QI 3 "const_int_operand" "")
-                          (match_operand:QI 4 "const_int_operand" "")))]
+				       (match_operand:QHPSI 2 "mrai_operand" "RraSdi"))
+			  (match_operand:QI 3 "const_int_operand" "")
+			  (match_operand:QI 4 "const_int_operand" "")))]
   "TARGET_A24"
   "#"
   "reload_completed"
   [(set (reg:CC FLG_REGNO)
-        (compare (match_dup 1)
-                 (match_dup 2)))
+	(compare (match_dup 1)
+		 (match_dup 2)))
    (set (match_dup 0)
         (if_then_else:HI (eqne_cond:HI (reg:CC FLG_REGNO) (const_int 0))
-                         (match_dup 3)
-                         (match_dup 4)))]
+			 (match_dup 3)
+			 (match_dup 4)))]
   ""
   [(set_attr "flags" "x")]
   )
@@ -246,13 +246,13 @@
 
 (define_expand "s<code>"
   [(set (match_operand:QI 0 "register_operand" "=Rqi")
-        (any_cond:QI (reg:CC FLG_REGNO) (const_int 0)))]
+	(any_cond:QI (reg:CC FLG_REGNO) (const_int 0)))]
   "TARGET_A16"
   "m32c_expand_scc (<CODE>, operands); DONE;")
 
 (define_expand "s<code>_24"
   [(set (match_operand:HI 0 "mra_nopp_operand" "=RhiSd")
-        (any_cond:HI (reg:CC FLG_REGNO) (const_int 0)))]
+	(any_cond:HI (reg:CC FLG_REGNO) (const_int 0)))]
   "TARGET_A24"
   "m32c_expand_scc (<CODE>, operands); DONE;")
 
@@ -291,11 +291,11 @@
 
 (define_insn "cond_to_int"
   [(set (match_operand:HI 0 "mra_qi_operand" "=Rqi")
-        (if_then_else:HI (lt (reg:CC FLG_REGNO) (const_int 0))
-                         (const_int -1)
-                         (if_then_else:HI (eq (reg:CC FLG_REGNO) (const_int 0))
-                                          (const_int 0)
-                                          (const_int -1))))]
+	(if_then_else:HI (lt (reg:CC FLG_REGNO) (const_int 0))
+			 (const_int -1)
+			 (if_then_else:HI (eq (reg:CC FLG_REGNO) (const_int 0))
+					  (const_int 0)
+					  (const_int -1))))]
   "TARGET_A24"
   "sceq\t%0\n\tbmgt\t1,%h0\n\tdec.w\t%0"
   [(set_attr "flags" "x")]
@@ -305,14 +305,14 @@
 
 (define_peephole2
   [(set (match_operand:HI 0 "mra_qi_operand" "")
-        (if_then_else:HI (lt (reg:CC FLG_REGNO) (const_int 0))
-                         (const_int -1)
-                         (if_then_else:HI (eq (reg:CC FLG_REGNO) (const_int 0))
-                                          (const_int 0)
-                                          (const_int -1))))
+	(if_then_else:HI (lt (reg:CC FLG_REGNO) (const_int 0))
+			 (const_int -1)
+			 (if_then_else:HI (eq (reg:CC FLG_REGNO) (const_int 0))
+					  (const_int 0)
+					  (const_int -1))))
    (set (reg:CC FLG_REGNO)
-        (compare (match_operand:HI 1 "mra_qi_operand" "")
-                 (const_int 0)))
+	(compare (match_operand:HI 1 "mra_qi_operand" "")
+		 (const_int 0)))
    ]
   "rtx_equal_p(operands[0], operands[1])"
   [(const_int 1)]

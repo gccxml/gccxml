@@ -36,21 +36,21 @@
 # fact return.  Users may put any desired instructions in those sections.
 # This file is the last thing linked into any executable.
 
-        .file                "crtn.asm"
+	.file		"crtn.asm"
 
-        .section        ".init"
-        .align                4
-        ldw        r14, sp, #0
-        addi        sp, sp, #4
-        nop
-        jal        r0, r14
-        or        r0, r0, r0
-        
-        .section        ".fini"
-        .align                4
+	.section	".init"
+	.align		4
+	ldw	r14, sp, #0
+	addi	sp, sp, #4
+	nop
+	jal	r0, r14
+	or	r0, r0, r0
+	
+	.section	".fini"
+	.align		4
 
-        ldw        r14, sp, #0
-        addi        sp, sp, #4
-        nop
-        jal        r0, r14
-        or        r0, r0, r0
+	ldw	r14, sp, #0
+	addi	sp, sp, #4
+	nop
+	jal	r0, r14
+	or	r0, r0, r0

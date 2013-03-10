@@ -35,9 +35,9 @@
 #include <emmintrin.h>
 
 /* Additional bits in the MXCSR.  */
-#define _MM_DENORMALS_ZERO_MASK                0x0040
-#define _MM_DENORMALS_ZERO_ON                0x0040
-#define _MM_DENORMALS_ZERO_OFF                0x0000
+#define _MM_DENORMALS_ZERO_MASK		0x0040
+#define _MM_DENORMALS_ZERO_ON		0x0040
+#define _MM_DENORMALS_ZERO_OFF		0x0000
 
 #define _MM_SET_DENORMALS_ZERO_MODE(mode) \
   _mm_setcsr ((_mm_getcsr () & ~_MM_DENORMALS_ZERO_MASK) | (mode))

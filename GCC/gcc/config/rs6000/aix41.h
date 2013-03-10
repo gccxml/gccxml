@@ -25,7 +25,7 @@
 #undef ASM_SPEC
 #define ASM_SPEC "-u %(asm_cpu)"
 
-#undef        ASM_DEFAULT_SPEC
+#undef	ASM_DEFAULT_SPEC
 #define ASM_DEFAULT_SPEC "-mcom"
 
 #undef TARGET_OS_CPP_BUILTINS
@@ -57,8 +57,8 @@
    the target makefile fragment or if none of the options listed in
    `MULTILIB_OPTIONS' are set by default.  *Note Target Fragment::.  */
 
-#undef        MULTILIB_DEFAULTS
-#define        MULTILIB_DEFAULTS { "mcpu=common" }
+#undef	MULTILIB_DEFAULTS
+#define	MULTILIB_DEFAULTS { "mcpu=common" }
 
 #undef LIB_SPEC
 #define LIB_SPEC "%{pg:-L/lib/profiled -L/usr/lib/profiled}\

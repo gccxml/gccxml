@@ -103,13 +103,13 @@ struct type {
   } u;
 };
 
-#define UNION_P(x)                                        \
- ((x)->kind == TYPE_UNION ||                                 \
-  ((x)->kind == TYPE_LANG_STRUCT                         \
+#define UNION_P(x)					\
+ ((x)->kind == TYPE_UNION || 				\
+  ((x)->kind == TYPE_LANG_STRUCT 			\
    && (x)->u.s.lang_struct->kind == TYPE_UNION))
-#define UNION_OR_STRUCT_P(x)                        \
- ((x)->kind == TYPE_UNION                         \
-  || (x)->kind == TYPE_STRUCT                         \
+#define UNION_OR_STRUCT_P(x)			\
+ ((x)->kind == TYPE_UNION 			\
+  || (x)->kind == TYPE_STRUCT 			\
   || (x)->kind == TYPE_LANG_STRUCT)
 
 /* The one and only TYPE_STRING.  */
@@ -134,8 +134,8 @@ extern char * xasprintf (const char *, ...)
 extern void do_typedef (const char *s, type_p t, struct fileloc *pos);
 extern type_p resolve_typedef (const char *s, struct fileloc *pos);
 extern type_p new_structure (const char *name, int isunion,
-                             struct fileloc *pos, pair_p fields,
-                             options_p o);
+			     struct fileloc *pos, pair_p fields,
+			     options_p o);
 extern type_p find_structure (const char *s, int isunion);
 extern type_p create_scalar_type (const char *name, size_t name_len);
 extern type_p create_pointer (type_p t);
@@ -143,9 +143,9 @@ extern type_p create_array (type_p t, const char *len);
 extern options_p create_option (options_p, const char *name, const void *info);
 extern type_p adjust_field_type (type_p, options_p);
 extern void note_variable (const char *s, type_p t, options_p o,
-                           struct fileloc *pos);
+			   struct fileloc *pos);
 extern void note_yacc_type (options_p o, pair_p fields,
-                            pair_p typeinfo, struct fileloc *pos);
+			    pair_p typeinfo, struct fileloc *pos);
 
 /* Lexer and parser routines, most automatically generated.  */
 extern int yylex (void);

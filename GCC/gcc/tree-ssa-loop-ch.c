@@ -49,7 +49,7 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
 
 static bool
 should_duplicate_loop_header_p (basic_block header, struct loop *loop,
-                                int *limit)
+				int *limit)
 {
   block_stmt_iterator bsi;
   tree last;
@@ -82,14 +82,14 @@ should_duplicate_loop_header_p (basic_block header, struct loop *loop,
       last = bsi_stmt (bsi);
 
       if (TREE_CODE (last) == LABEL_EXPR)
-        continue;
+	continue;
 
       if (get_call_expr_in (last))
-        return false;
+	return false;
 
       *limit -= estimate_num_insns (last);
       if (*limit < 0)
-        return false;
+	return false;
     }
 
   return true;
@@ -133,7 +133,7 @@ copy_loop_headers (void)
   unsigned bbs_size;
 
   loops = loop_optimizer_init (LOOPS_HAVE_PREHEADERS
-                               | LOOPS_HAVE_SIMPLE_LATCHES);
+			       | LOOPS_HAVE_SIMPLE_LATCHES);
   if (!loops)
     return 0;
 
@@ -152,81 +152,81 @@ copy_loop_headers (void)
 
       loop = loops->parray[i];
       if (!loop)
-        continue;
+	continue;
       header = loop->header;
 
       /* If the loop is already a do-while style one (either because it was
-         written as such, or because jump threading transformed it into one),
-         we might be in fact peeling the first iteration of the loop.  This
-         in general is not a good idea.  */
+	 written as such, or because jump threading transformed it into one),
+	 we might be in fact peeling the first iteration of the loop.  This
+	 in general is not a good idea.  */
       if (do_while_loop_p (loop))
-        continue;
+	continue;
 
       /* Iterate the header copying up to limit; this takes care of the cases
-         like while (a && b) {...}, where we want to have both of the conditions
-         copied.  TODO -- handle while (a || b) - like cases, by not requiring
-         the header to have just a single successor and copying up to
-         postdominator.  */
+	 like while (a && b) {...}, where we want to have both of the conditions
+	 copied.  TODO -- handle while (a || b) - like cases, by not requiring
+	 the header to have just a single successor and copying up to
+	 postdominator.  */
 
       exit = NULL;
       n_bbs = 0;
       while (should_duplicate_loop_header_p (header, loop, &limit))
-        {
-          /* Find a successor of header that is inside a loop; i.e. the new
-             header after the condition is copied.  */
-          if (flow_bb_inside_loop_p (loop, EDGE_SUCC (header, 0)->dest))
-            exit = EDGE_SUCC (header, 0);
-          else
-            exit = EDGE_SUCC (header, 1);
-          bbs[n_bbs++] = header;
-          gcc_assert (bbs_size > n_bbs);
-          header = exit->dest;
-        }
+	{
+	  /* Find a successor of header that is inside a loop; i.e. the new
+	     header after the condition is copied.  */
+	  if (flow_bb_inside_loop_p (loop, EDGE_SUCC (header, 0)->dest))
+	    exit = EDGE_SUCC (header, 0);
+	  else
+	    exit = EDGE_SUCC (header, 1);
+	  bbs[n_bbs++] = header;
+	  gcc_assert (bbs_size > n_bbs);
+	  header = exit->dest;
+	}
 
       if (!exit)
-        continue;
+	continue;
 
       if (dump_file && (dump_flags & TDF_DETAILS))
-        fprintf (dump_file,
-                 "Duplicating header of the loop %d up to edge %d->%d.\n",
-                 loop->num, exit->src->index, exit->dest->index);
+	fprintf (dump_file,
+		 "Duplicating header of the loop %d up to edge %d->%d.\n",
+		 loop->num, exit->src->index, exit->dest->index);
 
       /* Ensure that the header will have just the latch as a predecessor
-         inside the loop.  */
+	 inside the loop.  */
       if (!single_pred_p (exit->dest))
-        exit = single_pred_edge (loop_split_edge_with (exit, NULL));
+	exit = single_pred_edge (loop_split_edge_with (exit, NULL));
 
       entry = loop_preheader_edge (loop);
 
       if (!tree_duplicate_sese_region (entry, exit, bbs, n_bbs, copied_bbs))
-        {
-          fprintf (dump_file, "Duplication failed.\n");
-          continue;
-        }
+	{
+	  fprintf (dump_file, "Duplication failed.\n");
+	  continue;
+	}
 
       /* If the loop has the form "for (i = j; i < j + 10; i++)" then
-         this copying can introduce a case where we rely on undefined
-         signed overflow to eliminate the preheader condition, because
-         we assume that "j < j + 10" is true.  We don't want to warn
-         about that case for -Wstrict-overflow, because in general we
-         don't warn about overflow involving loops.  Prevent the
-         warning by setting TREE_NO_WARNING.  */
+	 this copying can introduce a case where we rely on undefined
+	 signed overflow to eliminate the preheader condition, because
+	 we assume that "j < j + 10" is true.  We don't want to warn
+	 about that case for -Wstrict-overflow, because in general we
+	 don't warn about overflow involving loops.  Prevent the
+	 warning by setting TREE_NO_WARNING.  */
       if (warn_strict_overflow > 0)
-        {
-          unsigned int i;
+	{
+	  unsigned int i;
 
-          for (i = 0; i < n_bbs; ++i)
-            {
-              tree last;
+	  for (i = 0; i < n_bbs; ++i)
+	    {
+	      tree last;
 
-              last = last_stmt (copied_bbs[i]);
-              if (TREE_CODE (last) == COND_EXPR)
-                TREE_NO_WARNING (last) = 1;
-            }
-        }
+	      last = last_stmt (copied_bbs[i]);
+	      if (TREE_CODE (last) == COND_EXPR)
+		TREE_NO_WARNING (last) = 1;
+	    }
+	}
 
       /* Ensure that the latch and the preheader is simple (we know that they
-         are not now, since there was the loop exit condition.  */
+	 are not now, since there was the loop exit condition.  */
       loop_split_edge_with (loop_preheader_edge (loop), NULL);
       loop_split_edge_with (loop_latch_edge (loop), NULL);
     }
@@ -246,18 +246,18 @@ gate_ch (void)
 
 struct tree_opt_pass pass_ch = 
 {
-  "ch",                                        /* name */
-  gate_ch,                                /* gate */
-  copy_loop_headers,                        /* execute */
-  NULL,                                        /* sub */
-  NULL,                                        /* next */
-  0,                                        /* static_pass_number */
-  TV_TREE_CH,                                /* tv_id */
-  PROP_cfg | PROP_ssa,                        /* properties_required */
-  0,                                        /* properties_provided */
-  0,                                        /* properties_destroyed */
-  0,                                        /* todo_flags_start */
+  "ch",					/* name */
+  gate_ch,				/* gate */
+  copy_loop_headers,			/* execute */
+  NULL,					/* sub */
+  NULL,					/* next */
+  0,					/* static_pass_number */
+  TV_TREE_CH,				/* tv_id */
+  PROP_cfg | PROP_ssa,			/* properties_required */
+  0,					/* properties_provided */
+  0,					/* properties_destroyed */
+  0,					/* todo_flags_start */
   TODO_cleanup_cfg | TODO_dump_func 
-  | TODO_verify_ssa,                        /* todo_flags_finish */
-  0                                        /* letter */
+  | TODO_verify_ssa,			/* todo_flags_finish */
+  0					/* letter */
 };

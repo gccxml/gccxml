@@ -21,15 +21,15 @@ the Free Software Foundation, 51 Franklin Street, Fifth Floor,
 Boston, MA 02110-1301, USA.  */
 
 #undef EXTRA_OS_CPP_BUILTINS
-#define EXTRA_OS_CPP_BUILTINS()                                        \
-  do                                                                \
-    {                                                                \
-      builtin_define ("__CRTDLL__");                                \
-      builtin_define ("__MINGW32__");                                   \
-      builtin_define ("_WIN32");                                \
-      builtin_define_std ("WIN32");                                \
-      builtin_define_std ("WINNT");                                \
-    }                                                                \
+#define EXTRA_OS_CPP_BUILTINS()					\
+  do								\
+    {								\
+      builtin_define ("__CRTDLL__");				\
+      builtin_define ("__MINGW32__");			   	\
+      builtin_define ("_WIN32");				\
+      builtin_define_std ("WIN32");				\
+      builtin_define_std ("WINNT");				\
+    }								\
   while (0)
 
 #undef LIBGCC_SPEC

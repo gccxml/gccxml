@@ -60,8 +60,8 @@ ht_create (unsigned int order)
 
   /* Strings need no alignment.  */
   _obstack_begin (&table->stack, 0, 0,
-                  (void *(*) (long)) xmalloc,
-                  (void (*) (void *)) free);
+		  (void *(*) (long)) xmalloc,
+		  (void (*) (void *)) free);
 
   obstack_alignment_mask (&table->stack) = 0;
 
@@ -92,16 +92,16 @@ ht_destroy (hash_table *table)
    obstack.  */
 hashnode
 ht_lookup (hash_table *table, const unsigned char *str, size_t len,
-           enum ht_lookup_option insert)
+	   enum ht_lookup_option insert)
 {
   return ht_lookup_with_hash (table, str, len, calc_hash (str, len),
-                              insert);
+			      insert);
 }
 
 hashnode
 ht_lookup_with_hash (hash_table *table, const unsigned char *str,
-                     size_t len, unsigned int hash,
-                     enum ht_lookup_option insert)
+		     size_t len, unsigned int hash,
+		     enum ht_lookup_option insert)
 {
   unsigned int hash2;
   unsigned int index;
@@ -117,39 +117,39 @@ ht_lookup_with_hash (hash_table *table, const unsigned char *str,
   if (node != NULL)
     {
       if (node->hash_value == hash
-          && HT_LEN (node) == (unsigned int) len
-          && !memcmp (HT_STR (node), str, len))
-        {
-          if (insert == HT_ALLOCED)
-            /* The string we search for was placed at the end of the
-               obstack.  Release it.  */
-            obstack_free (&table->stack, (void *) str);
-          return node;
-        }
+	  && HT_LEN (node) == (unsigned int) len
+	  && !memcmp (HT_STR (node), str, len))
+	{
+	  if (insert == HT_ALLOCED)
+	    /* The string we search for was placed at the end of the
+	       obstack.  Release it.  */
+	    obstack_free (&table->stack, (void *) str);
+	  return node;
+	}
 
       /* hash2 must be odd, so we're guaranteed to visit every possible
-         location in the table during rehashing.  */
+	 location in the table during rehashing.  */
       hash2 = ((hash * 17) & sizemask) | 1;
 
       for (;;)
-        {
-          table->collisions++;
-          index = (index + hash2) & sizemask;
-          node = table->entries[index];
-          if (node == NULL)
-            break;
+	{
+	  table->collisions++;
+	  index = (index + hash2) & sizemask;
+	  node = table->entries[index];
+	  if (node == NULL)
+	    break;
 
-          if (node->hash_value == hash
-              && HT_LEN (node) == (unsigned int) len
-              && !memcmp (HT_STR (node), str, len))
-            {
-              if (insert == HT_ALLOCED)
-              /* The string we search for was placed at the end of the
-                 obstack.  Release it.  */
-                obstack_free (&table->stack, (void *) str);
-              return node;
-            }
-        }
+	  if (node->hash_value == hash
+	      && HT_LEN (node) == (unsigned int) len
+	      && !memcmp (HT_STR (node), str, len))
+	    {
+	      if (insert == HT_ALLOCED)
+	      /* The string we search for was placed at the end of the
+		 obstack.  Release it.  */
+		obstack_free (&table->stack, (void *) str);
+	      return node;
+	    }
+	}
     }
 
   if (insert == HT_NO_INSERT)
@@ -190,21 +190,21 @@ ht_expand (hash_table *table)
   do
     if (*p)
       {
-        unsigned int index, hash, hash2;
+	unsigned int index, hash, hash2;
 
-        hash = (*p)->hash_value;
-        index = hash & sizemask;
+	hash = (*p)->hash_value;
+	index = hash & sizemask;
 
-        if (nentries[index])
-          {
-            hash2 = ((hash * 17) & sizemask) | 1;
-            do
-              {
-                index = (index + hash2) & sizemask;
-              }
-            while (nentries[index]);
-          }
-        nentries[index] = *p;
+	if (nentries[index])
+	  {
+	    hash2 = ((hash * 17) & sizemask) | 1;
+	    do
+	      {
+		index = (index + hash2) & sizemask;
+	      }
+	    while (nentries[index]);
+	  }
+	nentries[index] = *p;
       }
   while (++p < limit);
 
@@ -227,8 +227,8 @@ ht_forall (hash_table *table, ht_cb cb, const void *v)
   do
     if (*p)
       {
-        if ((*cb) (table->pfile, *p, v) == 0)
-          break;
+	if ((*cb) (table->pfile, *p, v) == 0)
+	  break;
       }
   while (++p < limit);
 }
@@ -236,8 +236,8 @@ ht_forall (hash_table *table, ht_cb cb, const void *v)
 /* Restore the hash table.  */
 void
 ht_load (hash_table *ht, hashnode *entries,
-         unsigned int nslots, unsigned int nelements,
-         bool own)
+	 unsigned int nslots, unsigned int nelements,
+	 bool own)
 {
   if (ht->entries_owned)
     free (ht->entries);
@@ -258,10 +258,10 @@ ht_dump_statistics (hash_table *table)
   hashnode *p, *limit;
 
 #define SCALE(x) ((unsigned long) ((x) < 1024*10 \
-                  ? (x) \
-                  : ((x) < 1024*1024*10 \
-                     ? (x) / 1024 \
-                     : (x) / (1024*1024))))
+		  ? (x) \
+		  : ((x) < 1024*1024*10 \
+		     ? (x) / 1024 \
+		     : (x) / (1024*1024))))
 #define LABEL(x) ((x) < 1024*10 ? ' ' : ((x) < 1024*1024*10 ? 'k' : 'M'))
 
   total_bytes = longest = sum_of_squares = nids = 0;
@@ -270,13 +270,13 @@ ht_dump_statistics (hash_table *table)
   do
     if (*p)
       {
-        size_t n = HT_LEN (*p);
+	size_t n = HT_LEN (*p);
 
-        total_bytes += n;
-        sum_of_squares += (double) n * n;
-        if (n > longest)
-          longest = n;
-        nids++;
+	total_bytes += n;
+	sum_of_squares += (double) n * n;
+	if (n > longest)
+	  longest = n;
+	nids++;
       }
   while (++p < limit);
 
@@ -285,29 +285,29 @@ ht_dump_statistics (hash_table *table)
   headers = table->nslots * sizeof (hashnode);
 
   fprintf (stderr, "\nString pool\nentries\t\t%lu\n",
-           (unsigned long) nelts);
+	   (unsigned long) nelts);
   fprintf (stderr, "identifiers\t%lu (%.2f%%)\n",
-           (unsigned long) nids, nids * 100.0 / nelts);
+	   (unsigned long) nids, nids * 100.0 / nelts);
   fprintf (stderr, "slots\t\t%lu\n",
-           (unsigned long) table->nslots);
+	   (unsigned long) table->nslots);
   fprintf (stderr, "bytes\t\t%lu%c (%lu%c overhead)\n",
-           SCALE (total_bytes), LABEL (total_bytes),
-           SCALE (overhead), LABEL (overhead));
+	   SCALE (total_bytes), LABEL (total_bytes),
+	   SCALE (overhead), LABEL (overhead));
   fprintf (stderr, "table size\t%lu%c\n",
-           SCALE (headers), LABEL (headers));
+	   SCALE (headers), LABEL (headers));
 
   exp_len = (double)total_bytes / (double)nelts;
   exp2_len = exp_len * exp_len;
   exp_len2 = (double) sum_of_squares / (double) nelts;
 
   fprintf (stderr, "coll/search\t%.4f\n",
-           (double) table->collisions / (double) table->searches);
+	   (double) table->collisions / (double) table->searches);
   fprintf (stderr, "ins/search\t%.4f\n",
-           (double) nelts / (double) table->searches);
+	   (double) nelts / (double) table->searches);
   fprintf (stderr, "avg. entry\t%.2f bytes (+/- %.2f)\n",
-           exp_len, approx_sqrt (exp_len2 - exp2_len));
+	   exp_len, approx_sqrt (exp_len2 - exp2_len));
   fprintf (stderr, "longest entry\t%lu\n",
-           (unsigned long) longest);
+	   (unsigned long) longest);
 #undef SCALE
 #undef LABEL
 }

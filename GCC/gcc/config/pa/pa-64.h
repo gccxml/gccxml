@@ -24,18 +24,18 @@ Boston, MA 02110-1301, USA.  */
 
    In PA64, basic types have the following sizes
 
-     char        1 byte
-     short        2 bytes
-     int        4 bytes
-     long        8 bytes
-     long long        8 bytes
-     pointer        8 bytes
-     float        4 bytes
-     double        8 bytes
+     char	1 byte
+     short	2 bytes
+     int	4 bytes
+     long	8 bytes
+     long long	8 bytes
+     pointer	8 bytes
+     float	4 bytes
+     double	8 bytes
      long double 16 bytes
-     size_t        8 bytes
-     ptrdiff_t        8 bytes
-     wchar        4 bytes
+     size_t	8 bytes
+     ptrdiff_t	8 bytes
+     wchar	4 bytes
      
   Make GCC agree with types.h.  */
 #undef SIZE_TYPE

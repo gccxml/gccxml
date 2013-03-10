@@ -31,13 +31,13 @@ Boston, MA 02110-1301, USA.  */
  * It is linked in after all other files.
  */
 
-        .file   "crtn.o"
-        .ident  "GNU C crtn.o"
+	.file   "crtn.o"
+	.ident  "GNU C crtn.o"
 
-        .section .init
-        unlk %fp
-        rts
+	.section .init
+	unlk %fp
+	rts
 
-        .section .fini
-        unlk %fp
-        rts
+	.section .fini
+	unlk %fp
+	rts

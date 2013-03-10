@@ -10,7 +10,7 @@ __floatunsisf (USItype u)
   if (s < 0)
     {
       /* As in expand_float, compute (u & 1) | (u >> 1) to ensure
-         correct rounding if a nonzero bit is shifted out.  */
+	 correct rounding if a nonzero bit is shifted out.  */
       return (SFtype) 2.0 * (SFtype) (SItype) ((u & 1) | (u >> 1));
     }
   else

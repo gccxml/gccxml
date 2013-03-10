@@ -30,9 +30,9 @@
 
 #if !defined(DECIMAL128)
 #define DECIMAL128
-#define DEC128NAME     "decimal128"        /* Short name */
-#define DEC128FULLNAME "Decimal 128-bit Number"        /* Verbose name */
-#define DEC128AUTHOR   "Mike Cowlishaw"        /* Who to blame */
+#define DEC128NAME     "decimal128"	/* Short name */
+#define DEC128FULLNAME "Decimal 128-bit Number"	/* Verbose name */
+#define DEC128AUTHOR   "Mike Cowlishaw"	/* Who to blame */
 
 #if defined(DECIMAL32)
 #error decimal128.h must precede decimal32.h for correct DECNUMDIGITS
@@ -43,34 +43,34 @@
 #endif
 
   /* parameters for decimal128s */
-#define DECIMAL128_Bytes  16        /* length */
-#define DECIMAL128_Pmax   34        /* maximum precision (digits) */
-#define DECIMAL128_Emax   6144        /* maximum adjusted exponent */
-#define DECIMAL128_Emin  -6143        /* minimum adjusted exponent */
-#define DECIMAL128_Bias   6176        /* bias for the exponent */
-#define DECIMAL128_String 43        /* maximum string length, +1 */
+#define DECIMAL128_Bytes  16	/* length */
+#define DECIMAL128_Pmax   34	/* maximum precision (digits) */
+#define DECIMAL128_Emax   6144	/* maximum adjusted exponent */
+#define DECIMAL128_Emin  -6143	/* minimum adjusted exponent */
+#define DECIMAL128_Bias   6176	/* bias for the exponent */
+#define DECIMAL128_String 43	/* maximum string length, +1 */
   /* highest biased exponent (Elimit-1) */
 #define DECIMAL128_Ehigh  (DECIMAL128_Emax+DECIMAL128_Bias-DECIMAL128_Pmax+1)
 
 #ifndef DECNUMDIGITS
-#define DECNUMDIGITS DECIMAL128_Pmax        /* size if not already defined */
+#define DECNUMDIGITS DECIMAL128_Pmax	/* size if not already defined */
 #endif
 #ifndef DECNUMBER
-#include "decNumber.h"                /* context and number library */
+#include "decNumber.h"		/* context and number library */
 #endif
 
   /* Decimal 128-bit type, accessible by bytes */
 typedef struct
 {
-  uint8_t bytes[DECIMAL128_Bytes];        /* decimal128: 1, 5, 12, 110 bits */
+  uint8_t bytes[DECIMAL128_Bytes];	/* decimal128: 1, 5, 12, 110 bits */
 } decimal128;
 
   /* special values [top byte excluding sign bit; last two bits are
      don't-care for Infinity on input, last bit don't-care for NaN] */
 #if !defined(DECIMAL_NaN)
-#define DECIMAL_NaN     0x7c        /* 0 11111 00 NaN */
-#define DECIMAL_sNaN    0x7e        /* 0 11111 10 sNaN */
-#define DECIMAL_Inf     0x78        /* 0 11110 00 Infinity */
+#define DECIMAL_NaN     0x7c	/* 0 11111 00 NaN */
+#define DECIMAL_sNaN    0x7e	/* 0 11111 10 sNaN */
+#define DECIMAL_Inf     0x78	/* 0 11110 00 Infinity */
 #endif
 
   /* Macros for accessing decimal128 fields.  These assume the argument

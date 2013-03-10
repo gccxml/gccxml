@@ -78,27 +78,27 @@ may_propagate_copy (tree dest, tree orig)
      This was showing up in libjava/java/util/zip/ZipFile.java with code
      like:
 
-             struct java.io.BufferedInputStream *T.660;
-        struct java.io.BufferedInputStream *T.647;
-        struct java.io.InputStream *is;
-        struct java.io.InputStream *is.662;
-        [ ... ]
-        T.660 = T.647;
-        is = T.660;        <-- This ought to be type-casted
-        is.662 = is;
+     	struct java.io.BufferedInputStream *T.660;
+	struct java.io.BufferedInputStream *T.647;
+	struct java.io.InputStream *is;
+	struct java.io.InputStream *is.662;
+	[ ... ]
+	T.660 = T.647;
+	is = T.660;	<-- This ought to be type-casted
+	is.662 = is;
 
      Also, f/name.c exposed a similar problem with a COND_EXPR predicate
      that was causing DOM to generate and equivalence with two pointers of
      alias-incompatible types:
 
-             struct _ffename_space *n;
-        struct _ffename *ns;
-        [ ... ]
-        if (n == ns)
-          goto lab;
-        ...
-        lab:
-        return n;
+     	struct _ffename_space *n;
+	struct _ffename *ns;
+	[ ... ]
+	if (n == ns)
+	  goto lab;
+	...
+	lab:
+	return n;
 
      I think that GIMPLE should emit the appropriate type-casts.  For the
      time being, blocking copy-propagation in these cases is the safe thing
@@ -111,27 +111,27 @@ may_propagate_copy (tree dest, tree orig)
       tree mt_dest = var_ann (SSA_NAME_VAR (dest))->symbol_mem_tag;
       tree mt_orig = var_ann (SSA_NAME_VAR (orig))->symbol_mem_tag;
       if (mt_dest && mt_orig && mt_dest != mt_orig)
-        return false;
+	return false;
       else if (!lang_hooks.types_compatible_p (type_d, type_o))
-        return false;
+	return false;
       else if (get_alias_set (TREE_TYPE (type_d)) != 
-               get_alias_set (TREE_TYPE (type_o)))
-        return false;
+	       get_alias_set (TREE_TYPE (type_o)))
+	return false;
 
       /* Also verify flow-sensitive information is compatible.  */
       if (SSA_NAME_PTR_INFO (orig) && SSA_NAME_PTR_INFO (dest))
-        {
-          struct ptr_info_def *orig_ptr_info = SSA_NAME_PTR_INFO (orig);
-          struct ptr_info_def *dest_ptr_info = SSA_NAME_PTR_INFO (dest);
+	{
+	  struct ptr_info_def *orig_ptr_info = SSA_NAME_PTR_INFO (orig);
+	  struct ptr_info_def *dest_ptr_info = SSA_NAME_PTR_INFO (dest);
 
-          if (orig_ptr_info->name_mem_tag
-              && dest_ptr_info->name_mem_tag
-              && orig_ptr_info->pt_vars
-              && dest_ptr_info->pt_vars
-              && !bitmap_intersect_p (dest_ptr_info->pt_vars,
-                                      orig_ptr_info->pt_vars))
-            return false;
-        }
+	  if (orig_ptr_info->name_mem_tag
+	      && dest_ptr_info->name_mem_tag
+	      && orig_ptr_info->pt_vars
+	      && dest_ptr_info->pt_vars
+	      && !bitmap_intersect_p (dest_ptr_info->pt_vars,
+				      orig_ptr_info->pt_vars))
+	    return false;
+	}
     }
 
   /* If the destination is a SSA_NAME for a virtual operand, then we have
@@ -139,13 +139,13 @@ may_propagate_copy (tree dest, tree orig)
   if (TREE_CODE (dest) == SSA_NAME && !is_gimple_reg (dest))
     {
       /* If both operands are SSA_NAMEs referring to virtual operands, then
-         we can always propagate.  */
+	 we can always propagate.  */
       if (TREE_CODE (orig) == SSA_NAME
-          && !is_gimple_reg (orig))
-        return true;
+	  && !is_gimple_reg (orig))
+	return true;
 
       /* We have a "copy" from something like a constant into a virtual
-         operand.  Reject these.  */
+	 operand.  Reject these.  */
       return false;
     }
 
@@ -171,8 +171,8 @@ may_propagate_copy_into_asm (tree dest)
 {
   /* Hard register operands of asms are special.  Do not bypass.  */
   return !(TREE_CODE (dest) == SSA_NAME
-           && TREE_CODE (SSA_NAME_VAR (dest)) == VAR_DECL
-           && DECL_HARD_REGISTER (SSA_NAME_VAR (dest)));
+	   && TREE_CODE (SSA_NAME_VAR (dest)) == VAR_DECL
+	   && DECL_HARD_REGISTER (SSA_NAME_VAR (dest)));
 }
 
 
@@ -193,13 +193,13 @@ merge_alias_info (tree orig, tree new)
 
 #if defined ENABLE_CHECKING
   gcc_assert (lang_hooks.types_compatible_p (TREE_TYPE (orig),
-                                             TREE_TYPE (new)));
+					     TREE_TYPE (new)));
 
   /* If the pointed-to alias sets are different, these two pointers
      would never have the same memory tag.  In this case, NEW should
      not have been propagated into ORIG.  */
   gcc_assert (get_alias_set (TREE_TYPE (TREE_TYPE (new_sym)))
-              == get_alias_set (TREE_TYPE (TREE_TYPE (orig_sym))));
+	      == get_alias_set (TREE_TYPE (TREE_TYPE (orig_sym))));
 #endif
 
   /* Synchronize the symbol tags.  If both pointers had a tag and they
@@ -235,19 +235,19 @@ merge_alias_info (tree orig, tree new)
       struct ptr_info_def *new_ptr_info = SSA_NAME_PTR_INFO (new);
 
       /* Note that pointer NEW and ORIG may actually have different
-         pointed-to variables (e.g., PR 18291 represented in
-         testsuite/gcc.c-torture/compile/pr18291.c).  However, since
-         NEW is being copy-propagated into ORIG, it must always be
-         true that the pointed-to set for pointer NEW is the same, or
-         a subset, of the pointed-to set for pointer ORIG.  If this
-         isn't the case, we shouldn't have been able to do the
-         propagation of NEW into ORIG.  */
+	 pointed-to variables (e.g., PR 18291 represented in
+	 testsuite/gcc.c-torture/compile/pr18291.c).  However, since
+	 NEW is being copy-propagated into ORIG, it must always be
+	 true that the pointed-to set for pointer NEW is the same, or
+	 a subset, of the pointed-to set for pointer ORIG.  If this
+	 isn't the case, we shouldn't have been able to do the
+	 propagation of NEW into ORIG.  */
       if (orig_ptr_info->name_mem_tag
-          && new_ptr_info->name_mem_tag
-          && orig_ptr_info->pt_vars
-          && new_ptr_info->pt_vars)
-        gcc_assert (bitmap_intersect_p (new_ptr_info->pt_vars,
-                                        orig_ptr_info->pt_vars));
+	  && new_ptr_info->name_mem_tag
+	  && orig_ptr_info->pt_vars
+	  && new_ptr_info->pt_vars)
+	gcc_assert (bitmap_intersect_p (new_ptr_info->pt_vars,
+					orig_ptr_info->pt_vars));
     }
 }   
 
@@ -259,21 +259,21 @@ merge_alias_info (tree orig, tree new)
 
 static void
 replace_exp_1 (use_operand_p op_p, tree val,
-               bool for_propagation ATTRIBUTE_UNUSED)
+	       bool for_propagation ATTRIBUTE_UNUSED)
 {
   tree op = USE_FROM_PTR (op_p);
 
 #if defined ENABLE_CHECKING
   gcc_assert (!(for_propagation
-                && TREE_CODE (op) == SSA_NAME
-                && TREE_CODE (val) == SSA_NAME
-                && !may_propagate_copy (op, val)));
+		&& TREE_CODE (op) == SSA_NAME
+		&& TREE_CODE (val) == SSA_NAME
+		&& !may_propagate_copy (op, val)));
 #endif
 
   if (TREE_CODE (val) == SSA_NAME)
     {
       if (TREE_CODE (op) == SSA_NAME && POINTER_TYPE_P (TREE_TYPE (op)))
-        merge_alias_info (op, val);
+	merge_alias_info (op, val);
       SET_USE (op_p, val);
     }
   else
@@ -307,14 +307,14 @@ propagate_tree_value (tree *op_p, tree val)
 {
 #if defined ENABLE_CHECKING
   gcc_assert (!(TREE_CODE (val) == SSA_NAME
-                && TREE_CODE (*op_p) == SSA_NAME
-                && !may_propagate_copy (*op_p, val)));
+		&& TREE_CODE (*op_p) == SSA_NAME
+		&& !may_propagate_copy (*op_p, val)));
 #endif
 
   if (TREE_CODE (val) == SSA_NAME)
     {
       if (TREE_CODE (*op_p) == SSA_NAME && POINTER_TYPE_P (TREE_TYPE (*op_p)))
-        merge_alias_info (*op_p, val);
+	merge_alias_info (*op_p, val);
       *op_p = val;
     }
   else
@@ -336,15 +336,15 @@ replace_exp (use_operand_p op_p, tree val)
 
 
 /*---------------------------------------------------------------------------
-                                Copy propagation
+				Copy propagation
 ---------------------------------------------------------------------------*/
 /* During propagation, we keep chains of variables that are copies of
    one another.  If variable X_i is a copy of X_j and X_j is a copy of
    X_k, COPY_OF will contain:
 
-           COPY_OF[i].VALUE = X_j
-        COPY_OF[j].VALUE = X_k
-        COPY_OF[k].VALUE = X_k
+   	COPY_OF[i].VALUE = X_j
+	COPY_OF[j].VALUE = X_k
+	COPY_OF[k].VALUE = X_k
 
    After propagation, the copy-of value for each variable X_i is
    converted into the final value by walking the copy-of chains and
@@ -392,9 +392,9 @@ stmt_may_generate_copy (tree stmt)
      assignments whose RHS is just an SSA name that doesn't flow
      through abnormal edges.  */
   return (do_store_copy_prop
-          && TREE_CODE (lhs) == SSA_NAME)
-         || (TREE_CODE (rhs) == SSA_NAME
-             && !SSA_NAME_OCCURS_IN_ABNORMAL_PHI (rhs));
+	  && TREE_CODE (lhs) == SSA_NAME)
+	 || (TREE_CODE (rhs) == SSA_NAME
+	     && !SSA_NAME_OCCURS_IN_ABNORMAL_PHI (rhs));
 }
 
 
@@ -409,7 +409,7 @@ get_copy_of_val (tree var)
       && !stmt_may_generate_copy (SSA_NAME_DEF_STMT (var)))
     {
       /* If the variable will never generate a useful copy relation,
-         make it its own copy.  */
+	 make it its own copy.  */
       val->value = var;
       val->mem_ref = NULL_TREE;
     }
@@ -437,14 +437,14 @@ get_last_copy_of (tree var)
      The value 5 was taken from a compiler and runtime library
      bootstrap and a mixture of C and C++ code from various sources.
      More than 82% of all copy-of chains were shorter than 5 links.  */
-#define LIMIT        5
+#define LIMIT	5
 
   last = var;
   for (i = 0; i < LIMIT; i++)
     {
       tree copy = copy_of[SSA_NAME_VERSION (last)].value;
       if (copy == NULL_TREE || copy == last)
-        break;
+	break;
       last = copy;
     }
 
@@ -564,26 +564,26 @@ copy_prop_visit_assignment (tree stmt, tree *result_p)
   if (TREE_CODE (lhs) == SSA_NAME)
     {
       /* Straight copy between two SSA names.  First, make sure that
-         we can propagate the RHS into uses of LHS.  */
+	 we can propagate the RHS into uses of LHS.  */
       if (!may_propagate_copy (lhs, rhs))
-        return SSA_PROP_VARYING;
+	return SSA_PROP_VARYING;
 
       /* Notice that in the case of assignments, we make the LHS be a
-         copy of RHS's value, not of RHS itself.  This avoids keeping
-         unnecessary copy-of chains (assignments cannot be in a cycle
-         like PHI nodes), speeding up the propagation process.
-         This is different from what we do in copy_prop_visit_phi_node. 
-         In those cases, we are interested in the copy-of chains.  */
+	 copy of RHS's value, not of RHS itself.  This avoids keeping
+	 unnecessary copy-of chains (assignments cannot be in a cycle
+	 like PHI nodes), speeding up the propagation process.
+	 This is different from what we do in copy_prop_visit_phi_node. 
+	 In those cases, we are interested in the copy-of chains.  */
       *result_p = lhs;
       if (set_copy_of_val (*result_p, rhs_val->value, rhs_val->mem_ref))
-        return SSA_PROP_INTERESTING;
+	return SSA_PROP_INTERESTING;
       else
-        return SSA_PROP_NOT_INTERESTING;
+	return SSA_PROP_NOT_INTERESTING;
     }
   else if (stmt_makes_single_store (stmt))
     {
       /* Otherwise, set the names in V_MAY_DEF/V_MUST_DEF operands
-         to be a copy of RHS.  */
+	 to be a copy of RHS.  */
       ssa_op_iter i;
       tree vdef;
       bool changed;
@@ -594,19 +594,19 @@ copy_prop_visit_assignment (tree stmt, tree *result_p)
       /* Set the value of every VDEF to RHS_VAL.  */
       changed = false;
       FOR_EACH_SSA_TREE_OPERAND (vdef, stmt, i, SSA_OP_VIRTUAL_DEFS)
-        changed |= set_copy_of_val (vdef, rhs_val->value, lhs);
+	changed |= set_copy_of_val (vdef, rhs_val->value, lhs);
       
       /* Note that for propagation purposes, we are only interested in
-         visiting statements that load the exact same memory reference
-         stored here.  Those statements will have the exact same list
-         of virtual uses, so it is enough to set the output of this
-         statement to be its first virtual definition.  */
+	 visiting statements that load the exact same memory reference
+	 stored here.  Those statements will have the exact same list
+	 of virtual uses, so it is enough to set the output of this
+	 statement to be its first virtual definition.  */
       *result_p = first_vdef (stmt);
 
       if (changed)
-        return SSA_PROP_INTERESTING;
+	return SSA_PROP_INTERESTING;
       else
-        return SSA_PROP_NOT_INTERESTING;
+	return SSA_PROP_NOT_INTERESTING;
     }
 
 
@@ -638,31 +638,31 @@ copy_prop_visit_cond_stmt (tree stmt, edge *taken_edge_p)
 
       /* See if we can determine the predicate's value.  */
       if (dump_file && (dump_flags & TDF_DETAILS))
-        {
-          fprintf (dump_file, "Trying to determine truth value of ");
-          fprintf (dump_file, "predicate ");
-          print_generic_stmt (dump_file, cond, 0);
-        }
+	{
+	  fprintf (dump_file, "Trying to determine truth value of ");
+	  fprintf (dump_file, "predicate ");
+	  print_generic_stmt (dump_file, cond, 0);
+	}
 
       /* We can fold COND and get a useful result only when we have
-         the same SSA_NAME on both sides of a comparison operator.  */
+	 the same SSA_NAME on both sides of a comparison operator.  */
       if (op0 == op1)
-        {
-          tree folded_cond = fold_binary (TREE_CODE (cond), boolean_type_node,
-                                          op0, op1);
-          if (folded_cond)
-            {
-              basic_block bb = bb_for_stmt (stmt);
-              *taken_edge_p = find_taken_edge (bb, folded_cond);
-              if (*taken_edge_p)
-                retval = SSA_PROP_INTERESTING;
-            }
-        }
+	{
+	  tree folded_cond = fold_binary (TREE_CODE (cond), boolean_type_node,
+					  op0, op1);
+	  if (folded_cond)
+	    {
+	      basic_block bb = bb_for_stmt (stmt);
+	      *taken_edge_p = find_taken_edge (bb, folded_cond);
+	      if (*taken_edge_p)
+		retval = SSA_PROP_INTERESTING;
+	    }
+	}
     }
 
   if (dump_file && (dump_flags & TDF_DETAILS) && *taken_edge_p)
     fprintf (dump_file, "\nConditional will always take edge %d->%d\n",
-             (*taken_edge_p)->src->index, (*taken_edge_p)->dest->index);
+	     (*taken_edge_p)->src->index, (*taken_edge_p)->dest->index);
 
   return retval;
 }
@@ -693,44 +693,44 @@ copy_prop_visit_stmt (tree stmt, edge *taken_edge_p, tree *result_p)
   if (TREE_CODE (stmt) == MODIFY_EXPR
       && TREE_CODE (TREE_OPERAND (stmt, 1)) == SSA_NAME
       && (do_store_copy_prop
-          || TREE_CODE (TREE_OPERAND (stmt, 0)) == SSA_NAME))
+	  || TREE_CODE (TREE_OPERAND (stmt, 0)) == SSA_NAME))
     {
       /* If the statement is a copy assignment, evaluate its RHS to
-         see if the lattice value of its output has changed.  */
+	 see if the lattice value of its output has changed.  */
       retval = copy_prop_visit_assignment (stmt, result_p);
     }
   else if (TREE_CODE (stmt) == MODIFY_EXPR
-           && TREE_CODE (TREE_OPERAND (stmt, 0)) == SSA_NAME
-           && do_store_copy_prop
-           && stmt_makes_single_load (stmt))
+	   && TREE_CODE (TREE_OPERAND (stmt, 0)) == SSA_NAME
+	   && do_store_copy_prop
+	   && stmt_makes_single_load (stmt))
     {
       /* If the statement is a copy assignment with a memory load
-         on the RHS, see if we know the value of this load and
-         update the lattice accordingly.  */
+	 on the RHS, see if we know the value of this load and
+	 update the lattice accordingly.  */
       prop_value_t *val = get_value_loaded_by (stmt, copy_of);
       if (val
-          && val->mem_ref
-          && is_gimple_reg (val->value)
-          && operand_equal_p (val->mem_ref, TREE_OPERAND (stmt, 1), 0))
+	  && val->mem_ref
+	  && is_gimple_reg (val->value)
+	  && operand_equal_p (val->mem_ref, TREE_OPERAND (stmt, 1), 0))
         {
-          bool changed;
-          changed = set_copy_of_val (TREE_OPERAND (stmt, 0),
-                                     val->value, val->mem_ref);
-          if (changed)
-            {
-              *result_p = TREE_OPERAND (stmt, 0);
-              retval = SSA_PROP_INTERESTING;
-            }
-          else
-            retval = SSA_PROP_NOT_INTERESTING;
-        }
+	  bool changed;
+	  changed = set_copy_of_val (TREE_OPERAND (stmt, 0),
+				     val->value, val->mem_ref);
+	  if (changed)
+	    {
+	      *result_p = TREE_OPERAND (stmt, 0);
+	      retval = SSA_PROP_INTERESTING;
+	    }
+	  else
+	    retval = SSA_PROP_NOT_INTERESTING;
+	}
       else
         retval = SSA_PROP_VARYING;
     }
   else if (TREE_CODE (stmt) == COND_EXPR)
     {
       /* See if we can determine which edge goes out of a conditional
-         jump.  */
+	 jump.  */
       retval = copy_prop_visit_cond_stmt (stmt, taken_edge_p);
     }
   else
@@ -742,15 +742,15 @@ copy_prop_visit_stmt (tree stmt, edge *taken_edge_p, tree *result_p)
       ssa_op_iter i;
 
       /* Any other kind of statement is not interesting for constant
-         propagation and, therefore, not worth simulating.  */
+	 propagation and, therefore, not worth simulating.  */
       if (dump_file && (dump_flags & TDF_DETAILS))
-        fprintf (dump_file, "No interesting values produced.\n");
+	fprintf (dump_file, "No interesting values produced.\n");
 
       /* The assignment is not a copy operation.  Don't visit this
-         statement again and mark all the definitions in the statement
-         to be copies of nothing.  */
+	 statement again and mark all the definitions in the statement
+	 to be copies of nothing.  */
       FOR_EACH_SSA_TREE_OPERAND (def, stmt, i, SSA_OP_ALL_DEFS)
-        set_copy_of_val (def, def, NULL_TREE);
+	set_copy_of_val (def, def, NULL_TREE);
     }
 
   return retval;
@@ -784,70 +784,70 @@ copy_prop_visit_phi_node (tree phi)
       edge e = PHI_ARG_EDGE (phi, i);
 
       /* We don't care about values flowing through non-executable
-         edges.  */
+	 edges.  */
       if (!(e->flags & EDGE_EXECUTABLE))
-        continue;
+	continue;
 
       /* Constants in the argument list never generate a useful copy.
-         Similarly, names that flow through abnormal edges cannot be
-         used to derive copies.  */
+	 Similarly, names that flow through abnormal edges cannot be
+	 used to derive copies.  */
       if (TREE_CODE (arg) != SSA_NAME || SSA_NAME_OCCURS_IN_ABNORMAL_PHI (arg))
-        {
-          phi_val.value = lhs;
-          break;
-        }
+	{
+	  phi_val.value = lhs;
+	  break;
+	}
 
       /* Avoid copy propagation from an inner into an outer loop.
-         Otherwise, this may move loop variant variables outside of
-         their loops and prevent coalescing opportunities.  If the
-         value was loop invariant, it will be hoisted by LICM and
-         exposed for copy propagation.  */
+	 Otherwise, this may move loop variant variables outside of
+	 their loops and prevent coalescing opportunities.  If the
+	 value was loop invariant, it will be hoisted by LICM and
+	 exposed for copy propagation.  */
       if (loop_depth_of_name (arg) > loop_depth_of_name (lhs))
-        {
-          phi_val.value = lhs;
-          break;
-        }
+	{
+	  phi_val.value = lhs;
+	  break;
+	}
 
       /* If the LHS appears in the argument list, ignore it.  It is
-         irrelevant as a copy.  */
+	 irrelevant as a copy.  */
       if (arg == lhs || get_last_copy_of (arg) == lhs)
-        continue;
+	continue;
 
       if (dump_file && (dump_flags & TDF_DETAILS))
-        {
-          fprintf (dump_file, "\tArgument #%d: ", i);
-          dump_copy_of (dump_file, arg);
-          fprintf (dump_file, "\n");
-        }
+	{
+	  fprintf (dump_file, "\tArgument #%d: ", i);
+	  dump_copy_of (dump_file, arg);
+	  fprintf (dump_file, "\n");
+	}
 
       arg_val = get_copy_of_val (arg);
 
       /* If the LHS didn't have a value yet, make it a copy of the
-         first argument we find.  Notice that while we make the LHS be
-         a copy of the argument itself, we take the memory reference
-         from the argument's value so that we can compare it to the
-         memory reference of all the other arguments.  */
+	 first argument we find.  Notice that while we make the LHS be
+	 a copy of the argument itself, we take the memory reference
+	 from the argument's value so that we can compare it to the
+	 memory reference of all the other arguments.  */
       if (phi_val.value == NULL_TREE)
-        {
-          phi_val.value = arg;
-          phi_val.mem_ref = arg_val->mem_ref;
-          continue;
-        }
+	{
+	  phi_val.value = arg;
+	  phi_val.mem_ref = arg_val->mem_ref;
+	  continue;
+	}
 
       /* If PHI_VAL and ARG don't have a common copy-of chain, then
-         this PHI node cannot be a copy operation.  Also, if we are
-         copy propagating stores and these two arguments came from
-         different memory references, they cannot be considered
-         copies.  */
+	 this PHI node cannot be a copy operation.  Also, if we are
+	 copy propagating stores and these two arguments came from
+	 different memory references, they cannot be considered
+	 copies.  */
       if (get_last_copy_of (phi_val.value) != get_last_copy_of (arg)
-          || (do_store_copy_prop
-              && phi_val.mem_ref
-              && arg_val->mem_ref
-              && simple_cst_equal (phi_val.mem_ref, arg_val->mem_ref) != 1))
-        {
-          phi_val.value = lhs;
-          break;
-        }
+	  || (do_store_copy_prop
+	      && phi_val.mem_ref
+	      && arg_val->mem_ref
+	      && simple_cst_equal (phi_val.mem_ref, arg_val->mem_ref) != 1))
+	{
+	  phi_val.value = lhs;
+	  break;
+	}
     }
 
   if (phi_val.value && set_copy_of_val (lhs, phi_val.value, phi_val.mem_ref))
@@ -861,11 +861,11 @@ copy_prop_visit_phi_node (tree phi)
       dump_copy_of (dump_file, lhs);
       fprintf (dump_file, "\nTelling the propagator to ");
       if (retval == SSA_PROP_INTERESTING)
-        fprintf (dump_file, "add SSA edges out of this PHI and continue.");
+	fprintf (dump_file, "add SSA edges out of this PHI and continue.");
       else if (retval == SSA_PROP_VARYING)
-        fprintf (dump_file, "add SSA edges out of this PHI and never visit again.");
+	fprintf (dump_file, "add SSA edges out of this PHI and never visit again.");
       else
-        fprintf (dump_file, "do nothing with SSA edges and keep iterating.");
+	fprintf (dump_file, "do nothing with SSA edges and keep iterating.");
       fprintf (dump_file, "\n\n");
     }
 
@@ -895,50 +895,50 @@ init_copy_prop (void)
       int depth = bb->loop_depth;
 
       for (si = bsi_start (bb); !bsi_end_p (si); bsi_next (&si))
-        {
-          tree stmt = bsi_stmt (si);
-          ssa_op_iter iter;
+	{
+	  tree stmt = bsi_stmt (si);
+	  ssa_op_iter iter;
 
-          /* The only statements that we care about are those that may
-             generate useful copies.  We also need to mark conditional
-             jumps so that their outgoing edges are added to the work
-             lists of the propagator.
+	  /* The only statements that we care about are those that may
+	     generate useful copies.  We also need to mark conditional
+	     jumps so that their outgoing edges are added to the work
+	     lists of the propagator.
 
-             Avoid copy propagation from an inner into an outer loop.
-             Otherwise, this may move loop variant variables outside of
-             their loops and prevent coalescing opportunities.  If the
-             value was loop invariant, it will be hoisted by LICM and
-             exposed for copy propagation.  */
-          if (stmt_ends_bb_p (stmt))
-            DONT_SIMULATE_AGAIN (stmt) = false;
-          else if (stmt_may_generate_copy (stmt)
-                   && loop_depth_of_name (TREE_OPERAND (stmt, 1)) <= depth)
-            DONT_SIMULATE_AGAIN (stmt) = false;
-          else
-            DONT_SIMULATE_AGAIN (stmt) = true;
+	     Avoid copy propagation from an inner into an outer loop.
+	     Otherwise, this may move loop variant variables outside of
+	     their loops and prevent coalescing opportunities.  If the
+	     value was loop invariant, it will be hoisted by LICM and
+	     exposed for copy propagation.  */
+	  if (stmt_ends_bb_p (stmt))
+	    DONT_SIMULATE_AGAIN (stmt) = false;
+	  else if (stmt_may_generate_copy (stmt)
+		   && loop_depth_of_name (TREE_OPERAND (stmt, 1)) <= depth)
+	    DONT_SIMULATE_AGAIN (stmt) = false;
+	  else
+	    DONT_SIMULATE_AGAIN (stmt) = true;
 
-          /* Mark all the outputs of this statement as not being
-             the copy of anything.  */
-          FOR_EACH_SSA_TREE_OPERAND (def, stmt, iter, SSA_OP_ALL_DEFS)
-            if (DONT_SIMULATE_AGAIN (stmt))
-              set_copy_of_val (def, def, NULL_TREE);
-            else
-              cached_last_copy_of[SSA_NAME_VERSION (def)] = def;
-        }
+	  /* Mark all the outputs of this statement as not being
+	     the copy of anything.  */
+	  FOR_EACH_SSA_TREE_OPERAND (def, stmt, iter, SSA_OP_ALL_DEFS)
+	    if (DONT_SIMULATE_AGAIN (stmt))
+	      set_copy_of_val (def, def, NULL_TREE);
+	    else
+	      cached_last_copy_of[SSA_NAME_VERSION (def)] = def;
+	}
 
       for (phi = phi_nodes (bb); phi; phi = PHI_CHAIN (phi))
-        {
-          def = PHI_RESULT (phi);
-          if (!do_store_copy_prop && !is_gimple_reg (def))
-            DONT_SIMULATE_AGAIN (phi) = true;
-          else
-            DONT_SIMULATE_AGAIN (phi) = false;
+	{
+	  def = PHI_RESULT (phi);
+	  if (!do_store_copy_prop && !is_gimple_reg (def))
+	    DONT_SIMULATE_AGAIN (phi) = true;
+	  else
+	    DONT_SIMULATE_AGAIN (phi) = false;
 
-          if (DONT_SIMULATE_AGAIN (phi))
-            set_copy_of_val (def, def, NULL_TREE);
-          else
-            cached_last_copy_of[SSA_NAME_VERSION (def)] = def;
-        }
+	  if (DONT_SIMULATE_AGAIN (phi))
+	    set_copy_of_val (def, def, NULL_TREE);
+	  else
+	    cached_last_copy_of[SSA_NAME_VERSION (def)] = def;
+	}
     }
 }
 
@@ -960,7 +960,7 @@ fini_copy_prop (void)
     {
       tree var = ssa_name (i);
       if (var && copy_of[i].value && copy_of[i].value != var)
-        tmp[i].value = get_last_copy_of (var);
+	tmp[i].value = get_last_copy_of (var);
     }
 
   substitute_and_fold (tmp, false);
@@ -981,10 +981,10 @@ fini_copy_prop (void)
    from.  The following example shows how the algorithm proceeds at a
    high level:
 
-            1        a_24 = x_1
-            2        a_2 = PHI <a_24, x_1>
-            3        a_5 = PHI <a_2>
-            4        x_1 = PHI <x_298, a_5, a_2>
+	    1	a_24 = x_1
+	    2	a_2 = PHI <a_24, x_1>
+	    3	a_5 = PHI <a_2>
+	    4	x_1 = PHI <x_298, a_5, a_2>
 
    The end result should be that a_2, a_5, a_24 and x_1 are a copy of
    x_298.  Propagation proceeds as follows.
@@ -1008,10 +1008,10 @@ fini_copy_prop (void)
    relations in PHI cycles.  Instead of propagating copy-of
    values, we actually propagate copy-of chains.  For instance:
 
-                   A_3 = B_1;
-                C_9 = A_3;
-                D_4 = C_9;
-                X_i = D_4;
+   		A_3 = B_1;
+		C_9 = A_3;
+		D_4 = C_9;
+		X_i = D_4;
 
    In this code fragment, COPY-OF (X_i) = { D_4, C_9, A_3, B_1 }.
    Obviously, we are only really interested in the last value of the
@@ -1023,25 +1023,25 @@ fini_copy_prop (void)
    If variable X_i is a copy of X_j, which in turn is a copy of X_k,
    the array will contain:
 
-                COPY_CHAINS[i] = X_j
-                COPY_CHAINS[j] = X_k
-                COPY_CHAINS[k] = X_k
+		COPY_CHAINS[i] = X_j
+		COPY_CHAINS[j] = X_k
+		COPY_CHAINS[k] = X_k
 
    Keeping copy-of chains instead of copy-of values directly becomes
    important when visiting PHI nodes.  Suppose that we had the
    following PHI cycle, such that x_52 is already considered a copy of
    x_53:
 
-            1        x_54 = PHI <x_53, x_52>
-            2        x_53 = PHI <x_898, x_54>
+	    1	x_54 = PHI <x_53, x_52>
+	    2	x_53 = PHI <x_898, x_54>
    
    Visit #1: x_54 is copy-of x_53 (because x_52 is copy-of x_53)
    Visit #2: x_53 is copy-of x_898 (because x_54 is a copy of x_53,
-                                    so it is considered irrelevant
-                                    as a copy).
+				    so it is considered irrelevant
+				    as a copy).
    Visit #1: x_54 is copy-of nothing (x_53 is a copy-of x_898 and
-                                      x_52 is a copy of x_53, so
-                                      they don't match)
+				      x_52 is a copy of x_53, so
+				      they don't match)
    Visit #2: x_53 is copy-of nothing
 
    This problem is avoided by keeping a chain of copies, instead of
@@ -1056,24 +1056,24 @@ fini_copy_prop (void)
    means that a is a copy-of b):
 
    Visit #1: x_54 = PHI <x_53, x_52>
-                x_53 -> x_53
-                x_52 -> x_53
-                Result: x_54 -> x_53.  Value changed.  Add SSA edges.
+		x_53 -> x_53
+		x_52 -> x_53
+		Result: x_54 -> x_53.  Value changed.  Add SSA edges.
 
    Visit #1: x_53 = PHI <x_898, x_54>
-                   x_898 -> x_898
-                x_54 -> x_53
-                Result: x_53 -> x_898.  Value changed.  Add SSA edges.
+   		x_898 -> x_898
+		x_54 -> x_53
+		Result: x_53 -> x_898.  Value changed.  Add SSA edges.
 
    Visit #2: x_54 = PHI <x_53, x_52>
-                   x_53 -> x_898
-                x_52 -> x_53 -> x_898
-                Result: x_54 -> x_898.  Value changed.  Add SSA edges.
+   		x_53 -> x_898
+		x_52 -> x_53 -> x_898
+		Result: x_54 -> x_898.  Value changed.  Add SSA edges.
 
    Visit #2: x_53 = PHI <x_898, x_54>
-                   x_898 -> x_898
-                x_54 -> x_898
-                Result: x_53 -> x_898.  Value didn't change.  Stable state
+   		x_898 -> x_898
+		x_54 -> x_898
+		Result: x_53 -> x_898.  Value didn't change.  Stable state
 
    Once the propagator stabilizes, we end up with the desired result
    x_53 and x_54 are both copies of x_898.  */
@@ -1103,23 +1103,23 @@ do_copy_prop (void)
 
 struct tree_opt_pass pass_copy_prop =
 {
-  "copyprop",                                /* name */
-  gate_copy_prop,                        /* gate */
-  do_copy_prop,                                /* execute */
-  NULL,                                        /* sub */
-  NULL,                                        /* next */
-  0,                                        /* static_pass_number */
-  TV_TREE_COPY_PROP,                        /* tv_id */
-  PROP_ssa | PROP_alias | PROP_cfg,        /* properties_required */
-  0,                                        /* properties_provided */
-  0,                                        /* properties_destroyed */
-  0,                                        /* todo_flags_start */
+  "copyprop",				/* name */
+  gate_copy_prop,			/* gate */
+  do_copy_prop,				/* execute */
+  NULL,					/* sub */
+  NULL,					/* next */
+  0,					/* static_pass_number */
+  TV_TREE_COPY_PROP,			/* tv_id */
+  PROP_ssa | PROP_alias | PROP_cfg,	/* properties_required */
+  0,					/* properties_provided */
+  0,					/* properties_destroyed */
+  0,					/* todo_flags_start */
   TODO_cleanup_cfg
     | TODO_dump_func
     | TODO_ggc_collect
     | TODO_verify_ssa
-    | TODO_update_ssa,                        /* todo_flags_finish */
-  0                                        /* letter */
+    | TODO_update_ssa,			/* todo_flags_finish */
+  0					/* letter */
 };
 
 static bool
@@ -1142,21 +1142,21 @@ store_copy_prop (void)
 
 struct tree_opt_pass pass_store_copy_prop =
 {
-  "store_copyprop",                        /* name */
-  gate_store_copy_prop,                        /* gate */
-  store_copy_prop,                        /* execute */
-  NULL,                                        /* sub */
-  NULL,                                        /* next */
-  0,                                        /* static_pass_number */
-  TV_TREE_STORE_COPY_PROP,                /* tv_id */
-  PROP_ssa | PROP_alias | PROP_cfg,        /* properties_required */
-  0,                                        /* properties_provided */
-  0,                                        /* properties_destroyed */
-  0,                                        /* todo_flags_start */
+  "store_copyprop",			/* name */
+  gate_store_copy_prop,			/* gate */
+  store_copy_prop,			/* execute */
+  NULL,					/* sub */
+  NULL,					/* next */
+  0,					/* static_pass_number */
+  TV_TREE_STORE_COPY_PROP,		/* tv_id */
+  PROP_ssa | PROP_alias | PROP_cfg,	/* properties_required */
+  0,					/* properties_provided */
+  0,					/* properties_destroyed */
+  0,					/* todo_flags_start */
   TODO_dump_func
     | TODO_cleanup_cfg
     | TODO_ggc_collect
     | TODO_verify_ssa
-    | TODO_update_ssa,                        /* todo_flags_finish */
-  0                                        /* letter */
+    | TODO_update_ssa,			/* todo_flags_finish */
+  0					/* letter */
 };

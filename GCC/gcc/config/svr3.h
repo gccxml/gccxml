@@ -40,8 +40,8 @@ Boston, MA 02110-1301, USA. */
 
 #undef ASM_OUTPUT_COMMON
 #define ASM_OUTPUT_COMMON(FILE, NAME, SIZE, ROUNDED)  \
-( fputs (".comm ", (FILE)),                        \
-  assemble_name ((FILE), (NAME)),                \
+( fputs (".comm ", (FILE)),			\
+  assemble_name ((FILE), (NAME)),		\
   fprintf ((FILE), ",%lu\n", (unsigned long)(SIZE)))
 
 /* This says how to output an assembler line
@@ -50,14 +50,14 @@ Boston, MA 02110-1301, USA. */
 /* Note that using bss_section here caused errors
    in building shared libraries on system V.3.  */
 #undef ASM_OUTPUT_LOCAL
-#define ASM_OUTPUT_LOCAL(FILE, NAME, SIZE, ROUNDED)        \
-  do {                                                        \
-    int align = exact_log2 (ROUNDED);                        \
-    if (align > 2) align = 2;                                \
-    switch_to_section (data_section);                        \
-    ASM_OUTPUT_ALIGN ((FILE), align == -1 ? 2 : align);        \
-    ASM_OUTPUT_LABEL ((FILE), (NAME));                        \
-    fprintf ((FILE), "\t.set .,.+%u\n", (int)(ROUNDED));        \
+#define ASM_OUTPUT_LOCAL(FILE, NAME, SIZE, ROUNDED)	\
+  do {							\
+    int align = exact_log2 (ROUNDED);			\
+    if (align > 2) align = 2;				\
+    switch_to_section (data_section);			\
+    ASM_OUTPUT_ALIGN ((FILE), align == -1 ? 2 : align);	\
+    ASM_OUTPUT_LABEL ((FILE), (NAME));			\
+    fprintf ((FILE), "\t.set .,.+%u\n", (int)(ROUNDED));	\
   } while (0)
 
 /* Output #ident as a .ident.  */
@@ -110,7 +110,7 @@ Boston, MA 02110-1301, USA. */
    with a period is not put into the linker symbol table by the assembler.  */
 
 #undef ASM_GENERATE_INTERNAL_LABEL
-#define ASM_GENERATE_INTERNAL_LABEL(LABEL,PREFIX,NUM)        \
+#define ASM_GENERATE_INTERNAL_LABEL(LABEL,PREFIX,NUM)	\
   sprintf (LABEL, "*%s%s%ld", LOCAL_LABEL_PREFIX, PREFIX, (long)(NUM))
 
 /* We want local labels to start with period if made with asm_fprintf.  */
@@ -139,23 +139,23 @@ Boston, MA 02110-1301, USA. */
 
 /* Constructor list on stack is in reverse order.  Go to the end of the
    list and go backwards to call constructors in the right order.  */
-#define DO_GLOBAL_CTORS_BODY                                        \
-do {                                                                \
-  func_ptr *p, *beg = alloca (0);                                \
-  for (p = beg; *p; p++)                                        \
-    ;                                                                \
-  while (p != beg)                                                \
-    (*--p) ();                                                        \
+#define DO_GLOBAL_CTORS_BODY					\
+do {								\
+  func_ptr *p, *beg = alloca (0);				\
+  for (p = beg; *p; p++)					\
+    ;								\
+  while (p != beg)						\
+    (*--p) ();							\
 } while (0)
 
 #else
 
 /* Constructor list on stack is in correct order.  Just call them.  */
-#define DO_GLOBAL_CTORS_BODY                                        \
-do {                                                                \
-  func_ptr *p, *beg = alloca (0);                                \
-  for (p = beg; *p; )                                                \
-    (*p++) ();                                                        \
+#define DO_GLOBAL_CTORS_BODY					\
+do {								\
+  func_ptr *p, *beg = alloca (0);				\
+  for (p = beg; *p; )						\
+    (*p++) ();							\
 } while (0)
 
 #endif /* STACK_GROWS_DOWNWARD */

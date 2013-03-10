@@ -25,7 +25,7 @@ Boston, MA 02110-1301, USA.  */
    loading of crt0.o by gcc's default linker spec.  For embedded targets crt0
    now comes from the linker script.  */
 
-#undef        STARTFILE_SPEC
+#undef	STARTFILE_SPEC
 #define STARTFILE_SPEC "crtbegin.o%s"
 
 #define LIB_SPEC "-lc"

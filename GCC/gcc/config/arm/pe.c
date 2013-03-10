@@ -196,8 +196,8 @@ arm_mark_dllimport (decl)
   idp = get_identifier (newname);
 
   newrtl = gen_rtx_MEM (Pmode,
-                        gen_rtx_SYMBOL_REF (Pmode,
-                                            IDENTIFIER_POINTER (idp)));
+			gen_rtx_SYMBOL_REF (Pmode,
+					    IDENTIFIER_POINTER (idp)));
   XEXP (DECL_RTL (decl), 0) = newrtl;
 }
 
@@ -221,12 +221,12 @@ arm_pe_encode_section_info (decl, rtl, first)
      subsequent definition nullified that.  The attribute is gone but
      DECL_RTL still has @i.__imp_foo.  We need to remove that.  */
   else if ((TREE_CODE (decl) == FUNCTION_DECL
-            || TREE_CODE (decl) == VAR_DECL)
-           && DECL_RTL (decl) != NULL_RTX
-           && GET_CODE (DECL_RTL (decl)) == MEM
-           && GET_CODE (XEXP (DECL_RTL (decl), 0)) == MEM
-           && GET_CODE (XEXP (XEXP (DECL_RTL (decl), 0), 0)) == SYMBOL_REF
-           && arm_dllimport_name_p (XSTR (XEXP (XEXP (DECL_RTL (decl), 0), 0), 0)))
+	    || TREE_CODE (decl) == VAR_DECL)
+	   && DECL_RTL (decl) != NULL_RTX
+	   && GET_CODE (DECL_RTL (decl)) == MEM
+	   && GET_CODE (XEXP (DECL_RTL (decl), 0)) == MEM
+	   && GET_CODE (XEXP (XEXP (DECL_RTL (decl), 0), 0)) == SYMBOL_REF
+	   && arm_dllimport_name_p (XSTR (XEXP (XEXP (DECL_RTL (decl), 0), 0), 0)))
     {
       const char *oldname = XSTR (XEXP (XEXP (DECL_RTL (decl), 0), 0), 0);
       tree idp = get_identifier (oldname + 9);
@@ -235,7 +235,7 @@ arm_pe_encode_section_info (decl, rtl, first)
       XEXP (DECL_RTL (decl), 0) = newrtl;
 
       /* We previously set TREE_PUBLIC and DECL_EXTERNAL.
-         ??? We leave these alone for now.  */
+	 ??? We leave these alone for now.  */
     }
 }
 

@@ -43,7 +43,7 @@ extern int h8300_expand_movsi (rtx[]);
 extern void notice_update_cc (rtx, rtx);
 extern const char *output_logical_op (enum machine_mode, rtx *);
 extern unsigned int compute_logical_op_length (enum machine_mode,
-                                               rtx *);
+					       rtx *);
 extern int compute_logical_op_cc (enum machine_mode, rtx *);
 extern void h8300_expand_branch (enum rtx_code, rtx);
 extern bool expand_a_shift (enum machine_mode, int, rtx[]);
@@ -68,16 +68,16 @@ extern rtx h8300_return_addr_rtx (int, rtx);
 /* Classifies an h8sx shift operation.
 
    H8SX_SHIFT_NONE
-        The shift cannot be done in a single instruction.
+	The shift cannot be done in a single instruction.
 
    H8SX_SHIFT_UNARY
-        The shift is effectively a unary operation.  The instruction will
-        allow any sort of destination operand and have a format similar
-        to neg and not.  This is true of certain power-of-2 shifts.
+	The shift is effectively a unary operation.  The instruction will
+	allow any sort of destination operand and have a format similar
+	to neg and not.  This is true of certain power-of-2 shifts.
 
    H8SX_SHIFT_BINARY
-        The shift is a binary operation.  The destination must be a
-        register and the source can be a register or a constant.  */
+	The shift is a binary operation.  The destination must be a
+	register and the source can be a register or a constant.  */
 enum h8sx_shift_type {
   H8SX_SHIFT_NONE,
   H8SX_SHIFT_UNARY,
@@ -90,7 +90,7 @@ extern int h8300_ldm_stm_parallel (rtvec, int, int);
 
 #ifdef TREE_CODE
 extern struct rtx_def *function_arg (CUMULATIVE_ARGS *,
-                                     enum machine_mode, tree, int);
+				     enum machine_mode, tree, int);
 extern int h8300_funcvec_function_p (tree);
 extern int h8300_eightbit_data_p (tree);
 extern int h8300_tiny_data_p (tree);

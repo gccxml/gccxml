@@ -22,18 +22,18 @@
 
 
 ; Cirrus types for invalid insn combinations
-; not                Not a cirrus insn
-; normal        Any Cirrus insn not covered by the special cases below
-; double        cfldrd, cfldr64, cfstrd, cfstr64
-; compare        cfcmps, cfcmpd, cfcmp32, cfcmp64
-; move                cfmvdlr, cfmvdhr, cfmvsr, cfmv64lr, cfmv64hr
+; not		Not a cirrus insn
+; normal	Any Cirrus insn not covered by the special cases below
+; double	cfldrd, cfldr64, cfstrd, cfstr64
+; compare	cfcmps, cfcmpd, cfcmp32, cfcmp64
+; move		cfmvdlr, cfmvdhr, cfmvsr, cfmv64lr, cfmv64hr
 (define_attr "cirrus" "not,normal,double,compare,move" (const_string "not"))
 
 
 (define_insn "cirrus_adddi3"
   [(set (match_operand:DI          0 "cirrus_fp_register" "=v")
-        (plus:DI (match_operand:DI 1 "cirrus_fp_register"  "v")
-                 (match_operand:DI 2 "cirrus_fp_register"  "v")))]
+	(plus:DI (match_operand:DI 1 "cirrus_fp_register"  "v")
+		 (match_operand:DI 2 "cirrus_fp_register"  "v")))]
   "TARGET_ARM && TARGET_HARD_FLOAT && TARGET_MAVERICK"
   "cfadd64%?\\t%V0, %V1, %V2"
   [(set_attr "type" "mav_farith")
@@ -42,8 +42,8 @@
 
 (define_insn "*cirrus_addsi3"
   [(set (match_operand:SI          0 "cirrus_fp_register" "=v")
-        (plus:SI (match_operand:SI 1 "cirrus_fp_register" "v")
-                 (match_operand:SI 2 "cirrus_fp_register" "v")))]
+	(plus:SI (match_operand:SI 1 "cirrus_fp_register" "v")
+		 (match_operand:SI 2 "cirrus_fp_register" "v")))]
   "TARGET_ARM && TARGET_HARD_FLOAT && TARGET_MAVERICK && 0"
   "cfadd32%?\\t%V0, %V1, %V2"
   [(set_attr "type" "mav_farith")
@@ -52,8 +52,8 @@
 
 (define_insn "*cirrus_addsf3"
   [(set (match_operand:SF          0 "cirrus_fp_register" "=v")
-        (plus:SF (match_operand:SF 1 "cirrus_fp_register" "v")
-                 (match_operand:SF 2 "cirrus_fp_register" "v")))]
+	(plus:SF (match_operand:SF 1 "cirrus_fp_register" "v")
+		 (match_operand:SF 2 "cirrus_fp_register" "v")))]
   "TARGET_ARM && TARGET_HARD_FLOAT && TARGET_MAVERICK"
   "cfadds%?\\t%V0, %V1, %V2"
   [(set_attr "type" "mav_farith")
@@ -62,8 +62,8 @@
 
 (define_insn "*cirrus_adddf3"
   [(set (match_operand:DF          0 "cirrus_fp_register" "=v")
-        (plus:DF (match_operand:DF 1 "cirrus_fp_register" "v")
-                 (match_operand:DF 2 "cirrus_fp_register" "v")))]
+	(plus:DF (match_operand:DF 1 "cirrus_fp_register" "v")
+		 (match_operand:DF 2 "cirrus_fp_register" "v")))]
   "TARGET_ARM && TARGET_HARD_FLOAT && TARGET_MAVERICK"
   "cfaddd%?\\t%V0, %V1, %V2"
   [(set_attr "type" "mav_farith")
@@ -72,8 +72,8 @@
 
 (define_insn "cirrus_subdi3"
   [(set (match_operand:DI           0 "cirrus_fp_register" "=v")
-        (minus:DI (match_operand:DI 1 "cirrus_fp_register"  "v")
-                  (match_operand:DI 2 "cirrus_fp_register"  "v")))]
+	(minus:DI (match_operand:DI 1 "cirrus_fp_register"  "v")
+		  (match_operand:DI 2 "cirrus_fp_register"  "v")))]
   "TARGET_ARM && TARGET_HARD_FLOAT && TARGET_MAVERICK"
   "cfsub64%?\\t%V0, %V1, %V2"
   [(set_attr "type" "mav_farith")
@@ -82,8 +82,8 @@
 
 (define_insn "*cirrus_subsi3_insn"
   [(set (match_operand:SI           0 "cirrus_fp_register" "=v")
-        (minus:SI (match_operand:SI 1 "cirrus_fp_register" "v")
-                  (match_operand:SI 2 "cirrus_fp_register" "v")))]
+	(minus:SI (match_operand:SI 1 "cirrus_fp_register" "v")
+		  (match_operand:SI 2 "cirrus_fp_register" "v")))]
   "TARGET_ARM && TARGET_HARD_FLOAT && TARGET_MAVERICK && 0"
   "cfsub32%?\\t%V0, %V1, %V2"
   [(set_attr "type" "mav_farith")
@@ -92,8 +92,8 @@
 
 (define_insn "*cirrus_subsf3"
   [(set (match_operand:SF           0 "cirrus_fp_register" "=v")
-        (minus:SF (match_operand:SF 1 "cirrus_fp_register"  "v")
-                  (match_operand:SF 2 "cirrus_fp_register"  "v")))]
+	(minus:SF (match_operand:SF 1 "cirrus_fp_register"  "v")
+		  (match_operand:SF 2 "cirrus_fp_register"  "v")))]
   "TARGET_ARM && TARGET_HARD_FLOAT && TARGET_MAVERICK"
   "cfsubs%?\\t%V0, %V1, %V2"
   [(set_attr "type" "mav_farith")
@@ -102,8 +102,8 @@
 
 (define_insn "*cirrus_subdf3"
   [(set (match_operand:DF           0 "cirrus_fp_register" "=v")
-        (minus:DF (match_operand:DF 1 "cirrus_fp_register" "v")
-                  (match_operand:DF 2 "cirrus_fp_register" "v")))]
+	(minus:DF (match_operand:DF 1 "cirrus_fp_register" "v")
+		  (match_operand:DF 2 "cirrus_fp_register" "v")))]
   "TARGET_ARM && TARGET_HARD_FLOAT && TARGET_MAVERICK"
   "cfsubd%?\\t%V0, %V1, %V2"
   [(set_attr "type" "mav_farith")
@@ -112,8 +112,8 @@
 
 (define_insn "*cirrus_mulsi3"
   [(set (match_operand:SI          0 "cirrus_fp_register" "=v")
-        (mult:SI (match_operand:SI 2 "cirrus_fp_register"  "v")
-                 (match_operand:SI 1 "cirrus_fp_register"  "v")))]
+	(mult:SI (match_operand:SI 2 "cirrus_fp_register"  "v")
+		 (match_operand:SI 1 "cirrus_fp_register"  "v")))]
   "TARGET_ARM && TARGET_HARD_FLOAT && TARGET_MAVERICK && 0"
   "cfmul32%?\\t%V0, %V1, %V2"
   [(set_attr "type" "mav_farith")
@@ -122,8 +122,8 @@
 
 (define_insn "muldi3"
   [(set (match_operand:DI          0 "cirrus_fp_register" "=v")
-        (mult:DI (match_operand:DI 2 "cirrus_fp_register"  "v")
-                 (match_operand:DI 1 "cirrus_fp_register"  "v")))]
+	(mult:DI (match_operand:DI 2 "cirrus_fp_register"  "v")
+		 (match_operand:DI 1 "cirrus_fp_register"  "v")))]
   "TARGET_ARM && TARGET_HARD_FLOAT && TARGET_MAVERICK"
   "cfmul64%?\\t%V0, %V1, %V2"
   [(set_attr "type" "mav_dmult")
@@ -132,10 +132,10 @@
 
 (define_insn "*cirrus_mulsi3addsi"
   [(set (match_operand:SI            0 "cirrus_fp_register" "=v")
-        (plus:SI
-          (mult:SI (match_operand:SI 1 "cirrus_fp_register"  "v")
-                   (match_operand:SI 2 "cirrus_fp_register"  "v"))
-          (match_operand:SI          3 "cirrus_fp_register"  "0")))]
+	(plus:SI
+	  (mult:SI (match_operand:SI 1 "cirrus_fp_register"  "v")
+		   (match_operand:SI 2 "cirrus_fp_register"  "v"))
+	  (match_operand:SI          3 "cirrus_fp_register"  "0")))]
   "TARGET_ARM && TARGET_HARD_FLOAT && TARGET_MAVERICK && 0"
   "cfmac32%?\\t%V0, %V1, %V2"
   [(set_attr "type" "mav_farith")
@@ -145,10 +145,10 @@
 ;; Cirrus SI multiply-subtract
 (define_insn "*cirrus_mulsi3subsi"
   [(set (match_operand:SI            0 "cirrus_fp_register" "=v")
-        (minus:SI
-          (match_operand:SI          1 "cirrus_fp_register"  "0")
-          (mult:SI (match_operand:SI 2 "cirrus_fp_register"  "v")
-                   (match_operand:SI 3 "cirrus_fp_register"  "v"))))]
+	(minus:SI
+	  (match_operand:SI          1 "cirrus_fp_register"  "0")
+	  (mult:SI (match_operand:SI 2 "cirrus_fp_register"  "v")
+		   (match_operand:SI 3 "cirrus_fp_register"  "v"))))]
   "0 && TARGET_ARM && TARGET_HARD_FLOAT && TARGET_MAVERICK"
   "cfmsc32%?\\t%V0, %V2, %V3"
   [(set_attr "type" "mav_farith")
@@ -157,8 +157,8 @@
 
 (define_insn "*cirrus_mulsf3"
   [(set (match_operand:SF          0 "cirrus_fp_register" "=v")
-        (mult:SF (match_operand:SF 1 "cirrus_fp_register"  "v")
-                 (match_operand:SF 2 "cirrus_fp_register"  "v")))]
+	(mult:SF (match_operand:SF 1 "cirrus_fp_register"  "v")
+		 (match_operand:SF 2 "cirrus_fp_register"  "v")))]
   "TARGET_ARM && TARGET_HARD_FLOAT && TARGET_MAVERICK"
   "cfmuls%?\\t%V0, %V1, %V2"
   [(set_attr "type" "mav_farith")
@@ -167,8 +167,8 @@
 
 (define_insn "*cirrus_muldf3"
   [(set (match_operand:DF          0 "cirrus_fp_register" "=v")
-        (mult:DF (match_operand:DF 1 "cirrus_fp_register"  "v")
-                 (match_operand:DF 2 "cirrus_fp_register"  "v")))]
+	(mult:DF (match_operand:DF 1 "cirrus_fp_register"  "v")
+		 (match_operand:DF 2 "cirrus_fp_register"  "v")))]
   "TARGET_ARM && TARGET_HARD_FLOAT && TARGET_MAVERICK"
   "cfmuld%?\\t%V0, %V1, %V2"
   [(set_attr "type" "mav_dmult")
@@ -177,17 +177,17 @@
 
 (define_insn "cirrus_ashl_const"
   [(set (match_operand:SI            0 "cirrus_fp_register" "=v")
-        (ashift:SI (match_operand:SI 1 "cirrus_fp_register"  "v")
-                   (match_operand:SI 2 "cirrus_shift_const"  "")))]
+	(ashift:SI (match_operand:SI 1 "cirrus_fp_register"  "v")
+		   (match_operand:SI 2 "cirrus_shift_const"  "")))]
   "TARGET_ARM && TARGET_HARD_FLOAT && TARGET_MAVERICK && 0"
   "cfsh32%?\\t%V0, %V1, #%s2"
   [(set_attr "cirrus" "normal")]
 )
 
 (define_insn "cirrus_ashiftrt_const"
-  [(set (match_operand:SI               0 "cirrus_fp_register" "=v")
-        (ashiftrt:SI (match_operand:SI 1 "cirrus_fp_register"  "v")
-                     (match_operand:SI 2 "cirrus_shift_const"  "")))]
+  [(set (match_operand:SI	       0 "cirrus_fp_register" "=v")
+	(ashiftrt:SI (match_operand:SI 1 "cirrus_fp_register"  "v")
+		     (match_operand:SI 2 "cirrus_shift_const"  "")))]
   "TARGET_ARM && TARGET_HARD_FLOAT && TARGET_MAVERICK && 0"
   "cfsh32%?\\t%V0, %V1, #-%s2"
   [(set_attr "cirrus" "normal")]
@@ -195,8 +195,8 @@
 
 (define_insn "cirrus_ashlsi3"
   [(set (match_operand:SI            0 "cirrus_fp_register" "=v")
-        (ashift:SI (match_operand:SI 1 "cirrus_fp_register"  "v")
-                   (match_operand:SI 2 "register_operand"    "r")))]
+	(ashift:SI (match_operand:SI 1 "cirrus_fp_register"  "v")
+		   (match_operand:SI 2 "register_operand"    "r")))]
   "TARGET_ARM && TARGET_HARD_FLOAT && TARGET_MAVERICK && 0"
   "cfrshl32%?\\t%V1, %V0, %s2"
   [(set_attr "cirrus" "normal")]
@@ -204,8 +204,8 @@
 
 (define_insn "ashldi3_cirrus"
   [(set (match_operand:DI            0 "cirrus_fp_register" "=v")
-        (ashift:DI (match_operand:DI 1 "cirrus_fp_register"  "v")
-                   (match_operand:SI 2 "register_operand"    "r")))]
+	(ashift:DI (match_operand:DI 1 "cirrus_fp_register"  "v")
+		   (match_operand:SI 2 "register_operand"    "r")))]
   "TARGET_ARM && TARGET_HARD_FLOAT && TARGET_MAVERICK"
   "cfrshl64%?\\t%V1, %V0, %s2"
   [(set_attr "cirrus" "normal")]
@@ -213,8 +213,8 @@
 
 (define_insn "cirrus_ashldi_const"
   [(set (match_operand:DI            0 "cirrus_fp_register" "=v")
-        (ashift:DI (match_operand:DI 1 "cirrus_fp_register"  "v")
-                   (match_operand:SI 2 "cirrus_shift_const"  "")))]
+	(ashift:DI (match_operand:DI 1 "cirrus_fp_register"  "v")
+		   (match_operand:SI 2 "cirrus_shift_const"  "")))]
   "TARGET_ARM && TARGET_HARD_FLOAT && TARGET_MAVERICK"
   "cfsh64%?\\t%V0, %V1, #%s2"
   [(set_attr "cirrus" "normal")]
@@ -222,8 +222,8 @@
 
 (define_insn "cirrus_ashiftrtdi_const"
   [(set (match_operand:DI            0 "cirrus_fp_register" "=v")
-        (ashiftrt:DI (match_operand:DI 1 "cirrus_fp_register"  "v")
-                     (match_operand:SI 2 "cirrus_shift_const"  "")))]
+	(ashiftrt:DI (match_operand:DI 1 "cirrus_fp_register"  "v")
+		     (match_operand:SI 2 "cirrus_shift_const"  "")))]
   "TARGET_ARM && TARGET_HARD_FLOAT && TARGET_MAVERICK"
   "cfsh64%?\\t%V0, %V1, #-%s2"
   [(set_attr "cirrus" "normal")]
@@ -231,7 +231,7 @@
 
 (define_insn "*cirrus_absdi2"
   [(set (match_operand:DI         0 "cirrus_fp_register" "=v")
-        (abs:DI (match_operand:DI 1 "cirrus_fp_register"  "v")))]
+	(abs:DI (match_operand:DI 1 "cirrus_fp_register"  "v")))]
   "TARGET_ARM && TARGET_HARD_FLOAT && TARGET_MAVERICK"
   "cfabs64%?\\t%V0, %V1"
   [(set_attr "cirrus" "normal")]
@@ -240,7 +240,7 @@
 ;; This doesn't really clobber ``cc''.  Fixme: aldyh.  
 (define_insn "*cirrus_negdi2"
   [(set (match_operand:DI         0 "cirrus_fp_register" "=v")
-        (neg:DI (match_operand:DI 1 "cirrus_fp_register"  "v")))
+	(neg:DI (match_operand:DI 1 "cirrus_fp_register"  "v")))
    (clobber (reg:CC CC_REGNUM))]
   "TARGET_ARM && TARGET_HARD_FLOAT && TARGET_MAVERICK"
   "cfneg64%?\\t%V0, %V1"
@@ -249,7 +249,7 @@
 
 (define_insn "*cirrus_negsi2"
   [(set (match_operand:SI         0 "cirrus_fp_register" "=v")
-        (neg:SI (match_operand:SI 1 "cirrus_fp_register"  "v")))]
+	(neg:SI (match_operand:SI 1 "cirrus_fp_register"  "v")))]
   "TARGET_ARM && TARGET_HARD_FLOAT && TARGET_MAVERICK && 0"
   "cfneg32%?\\t%V0, %V1"
   [(set_attr "cirrus" "normal")]
@@ -257,7 +257,7 @@
 
 (define_insn "*cirrus_negsf2"
   [(set (match_operand:SF         0 "cirrus_fp_register" "=v")
-        (neg:SF (match_operand:SF 1 "cirrus_fp_register"  "v")))]
+	(neg:SF (match_operand:SF 1 "cirrus_fp_register"  "v")))]
   "TARGET_ARM && TARGET_HARD_FLOAT && TARGET_MAVERICK"
   "cfnegs%?\\t%V0, %V1"
   [(set_attr "cirrus" "normal")]
@@ -265,7 +265,7 @@
 
 (define_insn "*cirrus_negdf2"
   [(set (match_operand:DF         0 "cirrus_fp_register" "=v")
-        (neg:DF (match_operand:DF 1 "cirrus_fp_register"  "v")))]
+	(neg:DF (match_operand:DF 1 "cirrus_fp_register"  "v")))]
   "TARGET_ARM && TARGET_HARD_FLOAT && TARGET_MAVERICK"
   "cfnegd%?\\t%V0, %V1"
   [(set_attr "cirrus" "normal")]
@@ -300,7 +300,7 @@
 ;; Convert Cirrus-SI to Cirrus-SF
 (define_insn "cirrus_floatsisf2"
   [(set (match_operand:SF           0 "cirrus_fp_register" "=v")
-         (float:SF (match_operand:SI 1 "s_register_operand"  "r")))
+ 	(float:SF (match_operand:SI 1 "s_register_operand"  "r")))
    (clobber (match_scratch:DF 2 "=v"))]
   "TARGET_ARM && TARGET_HARD_FLOAT && TARGET_MAVERICK"
   "cfmv64lr%?\\t%Z2, %1\;cfcvt32s%?\\t%V0, %Y2"
@@ -310,7 +310,7 @@
 
 (define_insn "cirrus_floatsidf2"
   [(set (match_operand:DF           0 "cirrus_fp_register" "=v")
-        (float:DF (match_operand:SI 1 "s_register_operand" "r")))
+	(float:DF (match_operand:SI 1 "s_register_operand" "r")))
    (clobber (match_scratch:DF 2 "=v"))]
   "TARGET_ARM && TARGET_HARD_FLOAT && TARGET_MAVERICK"
   "cfmv64lr%?\\t%Z2, %1\;cfcvt32d%?\\t%V0, %Y2"
@@ -320,21 +320,21 @@
 
 (define_insn "floatdisf2"
   [(set (match_operand:SF           0 "cirrus_fp_register" "=v")
-        (float:SF (match_operand:DI 1 "cirrus_fp_register" "v")))]
+	(float:SF (match_operand:DI 1 "cirrus_fp_register" "v")))]
   "TARGET_ARM && TARGET_HARD_FLOAT && TARGET_MAVERICK"
   "cfcvt64s%?\\t%V0, %V1"
   [(set_attr "cirrus" "normal")])
 
 (define_insn "floatdidf2"
   [(set (match_operand:DF 0 "cirrus_fp_register" "=v")
-        (float:DF (match_operand:DI 1 "cirrus_fp_register" "v")))]
+	(float:DF (match_operand:DI 1 "cirrus_fp_register" "v")))]
   "TARGET_ARM && TARGET_HARD_FLOAT && TARGET_MAVERICK"
   "cfcvt64d%?\\t%V0, %V1"
   [(set_attr "cirrus" "normal")])
 
 (define_insn "cirrus_truncsfsi2"
   [(set (match_operand:SI         0 "s_register_operand" "=r")
-        (fix:SI (fix:SF (match_operand:SF 1 "cirrus_fp_register"  "v"))))
+	(fix:SI (fix:SF (match_operand:SF 1 "cirrus_fp_register"  "v"))))
    (clobber (match_scratch:DF     2                      "=v"))]
   "TARGET_ARM && TARGET_HARD_FLOAT && TARGET_MAVERICK"
   "cftruncs32%?\\t%Y2, %V1\;cfmvr64l%?\\t%0, %Z2"
@@ -344,7 +344,7 @@
 
 (define_insn "cirrus_truncdfsi2"
   [(set (match_operand:SI         0 "s_register_operand" "=r")
-        (fix:SI (fix:DF (match_operand:DF 1 "cirrus_fp_register"  "v"))))
+	(fix:SI (fix:DF (match_operand:DF 1 "cirrus_fp_register"  "v"))))
    (clobber (match_scratch:DF     2                      "=v"))]
   "TARGET_ARM && TARGET_HARD_FLOAT && TARGET_MAVERICK"
   "cftruncd32%?\\t%Y2, %V1\;cfmvr64l%?\\t%0, %Z2"
@@ -370,7 +370,7 @@
 
 (define_insn "*cirrus_arm_movdi"
   [(set (match_operand:DI 0 "nonimmediate_di_operand" "=r,r,o<>,v,r,v,m,v")
-        (match_operand:DI 1 "di_operand"              "rIK,mi,r,r,v,mi,v,v"))]
+	(match_operand:DI 1 "di_operand"              "rIK,mi,r,r,v,mi,v,v"))]
   "TARGET_ARM && TARGET_HARD_FLOAT && TARGET_MAVERICK"
   "*
   {
@@ -428,7 +428,7 @@
 
 (define_insn "*cirrus_movdf_hard_insn"
   [(set (match_operand:DF 0 "nonimmediate_operand" "=r,Q,r,m,r,v,v,v,r,m")
-        (match_operand:DF 1 "general_operand"       "Q,r,r,r,mF,v,mF,r,v,v"))]
+	(match_operand:DF 1 "general_operand"       "Q,r,r,r,mF,v,mF,r,v,v"))]
   "TARGET_ARM
    && TARGET_HARD_FLOAT && TARGET_MAVERICK
    && (GET_CODE (operands[0]) != MEM

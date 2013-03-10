@@ -49,42 +49,42 @@ really-check: check-cplus-dem check-pexecute check-expandargv
 
 # Run some tests of the demangler.
 check-cplus-dem: test-demangle $(srcdir)/demangle-expected
-        ./test-demangle < $(srcdir)/demangle-expected
+	./test-demangle < $(srcdir)/demangle-expected
 
 # Check the pexecute code.
 check-pexecute: test-pexecute
-        ./test-pexecute
+	./test-pexecute
 
 # Check the expandargv functionality
 check-expandargv: test-expandargv
-        ./test-expandargv
+	./test-expandargv
 
 TEST_COMPILE = $(CC) @DEFS@ $(LIBCFLAGS) -I.. -I$(INCDIR) $(HDEFINES)
 test-demangle: $(srcdir)/test-demangle.c ../libiberty.a
-        $(TEST_COMPILE) -o test-demangle \
-                $(srcdir)/test-demangle.c ../libiberty.a
+	$(TEST_COMPILE) -o test-demangle \
+		$(srcdir)/test-demangle.c ../libiberty.a
 
 test-pexecute: $(srcdir)/test-pexecute.c ../libiberty.a
-        $(TEST_COMPILE) -DHAVE_CONFIG_H -I.. -o test-pexecute \
-                $(srcdir)/test-pexecute.c ../libiberty.a
-                
+	$(TEST_COMPILE) -DHAVE_CONFIG_H -I.. -o test-pexecute \
+		$(srcdir)/test-pexecute.c ../libiberty.a
+		
 test-expandargv: $(srcdir)/test-expandargv.c ../libiberty.a
-        $(TEST_COMPILE) -DHAVE_CONFIG_H -I.. -o test-expandargv \
-                $(srcdir)/test-expandargv.c ../libiberty.a
+	$(TEST_COMPILE) -DHAVE_CONFIG_H -I.. -o test-expandargv \
+		$(srcdir)/test-expandargv.c ../libiberty.a
 
 # Standard (either GNU or Cygnus) rules we don't use.
 html install-html info install-info clean-info dvi pdf install etags tags installcheck:
 
 # The standard clean rules.
 mostlyclean:
-        rm -f test-demangle
-        rm -f test-pexecute
-        rm -f test-expandargv
+	rm -f test-demangle
+	rm -f test-pexecute
+	rm -f test-expandargv
 clean: mostlyclean
 distclean: clean
-        rm -f Makefile
+	rm -f Makefile
 maintainer-clean realclean: distclean
 
 Makefile: $(srcdir)/Makefile.in ../config.status
-        CONFIG_FILES=testsuite/Makefile CONFIG_HEADERS= \
-          cd .. && $(SHELL) ./config.status
+	CONFIG_FILES=testsuite/Makefile CONFIG_HEADERS= \
+	  cd .. && $(SHELL) ./config.status

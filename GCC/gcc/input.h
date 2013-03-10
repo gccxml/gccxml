@@ -100,6 +100,6 @@ extern struct file_stack *input_file_stack;
 extern int input_file_stack_tick;
 
 /* The number of bits available for input_file_stack_tick.  */
-#define INPUT_FILE_STACK_BITS        31
+#define INPUT_FILE_STACK_BITS	31
 
 #endif

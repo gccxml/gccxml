@@ -26,17 +26,17 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
 
 
 /* Misc. commands.  */
-DEFTBCODE (TB_EXIT,                "x",        "Exits tree-browser.")
+DEFTBCODE (TB_EXIT,		"x",	"Exits tree-browser.")
 DEFTBCODE (TB_QUIT,             "q",    "Exits tree-browser.")
-DEFTBCODE (TB_HELP,                "h",        "Prints this help message.")
+DEFTBCODE (TB_HELP,		"h",	"Prints this help message.")
 DEFTBCODE (TB_UPDATE_UP,        "update", "Update information about parent expressions.")
 DEFTBCODE (TB_VERBOSE,          "verbose", "Sets/unsets verbose mode (default is on).")
 
 /* Walking commands.  */
-DEFTBCODE (TB_FUN,                "fun",        "Go to the current function declaration.")
-DEFTBCODE (TB_NEXT,                "nx",        "Go to the next expression in a BIND_EXPR.")
-DEFTBCODE (TB_PREV,                "pr",   "Go to the previous expression in a BIND_EXPR.")
-DEFTBCODE (TB_UP,                "up",        "Go to the parent tree node.")
+DEFTBCODE (TB_FUN,		"fun",	"Go to the current function declaration.")
+DEFTBCODE (TB_NEXT,		"nx",	"Go to the next expression in a BIND_EXPR.")
+DEFTBCODE (TB_PREV,		"pr",   "Go to the previous expression in a BIND_EXPR.")
+DEFTBCODE (TB_UP,		"up",	"Go to the parent tree node.")
 DEFTBCODE (TB_LAST,             "last", "Go to the last expression in a BIND_EXPR.")
 DEFTBCODE (TB_FIRST,            "first","Go to the first expression in a BIND_EXPR.")
 DEFTBCODE (TB_HPREV,            "hpr",  "Go to the previous visited node (history previous).")
@@ -83,8 +83,8 @@ DEFTBCODE (TB_MIN,              "min", "Field accessor.")
 DEFTBCODE (TB_MAX,              "max", "Field accessor.")
 
 /* Searching commands.  */
-DEFTBCODE (TB_SEARCH_CODE,        "sc",        "Search a node having a TREE_CODE given as a parameter.") 
-DEFTBCODE (TB_SEARCH_NAME,        "sn",        "Search an identifier having a name given as a parameter.")
+DEFTBCODE (TB_SEARCH_CODE,	"sc",	"Search a node having a TREE_CODE given as a parameter.") 
+DEFTBCODE (TB_SEARCH_NAME,	"sn",	"Search an identifier having a name given as a parameter.")
 
 /* Printing commands.  */
 DEFTBCODE (TB_PRETTY_PRINT,     "pp",   "Pretty print current node.") 

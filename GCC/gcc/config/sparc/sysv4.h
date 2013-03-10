@@ -46,7 +46,7 @@ Boston, MA 02110-1301, USA.  */
 #undef STRING_ASM_OP
 #undef COMMON_ASM_OP
 #undef SKIP_ASM_OP
-#undef SET_ASM_OP        /* Has no equivalent.  See ASM_OUTPUT_DEF below.  */
+#undef SET_ASM_OP	/* Has no equivalent.  See ASM_OUTPUT_DEF below.  */
 
 /* The native assembler can't compute differences between symbols in different
    sections when generating pic code, so we must put jump tables in the
@@ -67,11 +67,11 @@ Boston, MA 02110-1301, USA.  */
    to keep the SPARC/svr4 assembler somewhat compatible with the SPARC/SunOS
    assembler.  */
 
-#define STRING_ASM_OP                "\t.asciz\t"
-#define COMMON_ASM_OP                "\t.common\t"
-#define SKIP_ASM_OP                "\t.skip\t"
-#define PUSHSECTION_ASM_OP        "\t.pushsection\t"
-#define POPSECTION_ASM_OP        "\t.popsection"
+#define STRING_ASM_OP		"\t.asciz\t"
+#define COMMON_ASM_OP		"\t.common\t"
+#define SKIP_ASM_OP		"\t.skip\t"
+#define PUSHSECTION_ASM_OP	"\t.pushsection\t"
+#define POPSECTION_ASM_OP	"\t.popsection"
 
 /* This is the format used to print the second operand of a .type pseudo-op
    for the SPARC/svr4 assembler.  */
@@ -81,24 +81,24 @@ Boston, MA 02110-1301, USA.  */
 /* This is the format used to print a .pushsection pseudo-op (and its operand)
    for the SPARC/svr4 assembler.  */
 
-#define PUSHSECTION_FORMAT        "%s\"%s\"\n"
+#define PUSHSECTION_FORMAT	"%s\"%s\"\n"
 
 #undef ASM_OUTPUT_CASE_LABEL
-#define ASM_OUTPUT_CASE_LABEL(FILE, PREFIX, NUM, JUMPTABLE)                \
-do { ASM_OUTPUT_ALIGN ((FILE), Pmode == SImode ? 2 : 3);                \
-     (*targetm.asm_out.internal_label) ((FILE), PREFIX, NUM);                \
+#define ASM_OUTPUT_CASE_LABEL(FILE, PREFIX, NUM, JUMPTABLE)		\
+do { ASM_OUTPUT_ALIGN ((FILE), Pmode == SImode ? 2 : 3);		\
+     (*targetm.asm_out.internal_label) ((FILE), PREFIX, NUM);		\
    } while (0)
 
 /* This is how to equate one symbol to another symbol.  The syntax used is
    `SYM1=SYM2'.  Note that this is different from the way equates are done
    with most svr4 assemblers, where the syntax is `.set SYM1,SYM2'.  */
 
-#define ASM_OUTPUT_DEF(FILE,LABEL1,LABEL2)                                \
- do {        fprintf ((FILE), "\t");                                                \
-        assemble_name (FILE, LABEL1);                                        \
-        fprintf (FILE, " = ");                                                \
-        assemble_name (FILE, LABEL2);                                        \
-        fprintf (FILE, "\n");                                                \
+#define ASM_OUTPUT_DEF(FILE,LABEL1,LABEL2)				\
+ do {	fprintf ((FILE), "\t");						\
+	assemble_name (FILE, LABEL1);					\
+	fprintf (FILE, " = ");						\
+	assemble_name (FILE, LABEL2);					\
+	fprintf (FILE, "\n");						\
   } while (0)
 
 /* Define how the SPARC registers should be numbered for Dwarf output.
@@ -106,13 +106,13 @@ do { ASM_OUTPUT_ALIGN ((FILE), Pmode == SImode ? 2 : 3);                \
    svr4 SDB debugger in the SPARC/svr4 reference port.  The numbering
    is as follows:
 
-   Assembly name        gcc internal regno        Dwarf regno
+   Assembly name	gcc internal regno	Dwarf regno
    ----------------------------------------------------------
-   g0-g7                0-7                        0-7
-   o0-o7                8-15                        8-15
-   l0-l7                16-23                        16-23
-   i0-i7                24-31                        24-31
-   f0-f31                32-63                        40-71
+   g0-g7		0-7			0-7
+   o0-o7		8-15			8-15
+   l0-l7		16-23			16-23
+   i0-i7		24-31			24-31
+   f0-f31		32-63			40-71
 */
 
 #define DBX_REGISTER_NUMBER(REGNO) ((REGNO) < 32 ? (REGNO) : (REGNO) + 8)
@@ -123,12 +123,12 @@ do { ASM_OUTPUT_ALIGN ((FILE), Pmode == SImode ? 2 : 3);                \
    *not* to push the previous section name onto the assembler's
    section names stack (as we do often in dwarfout.c).  */
 
-#define TEXT_SECTION_ASM_OP        "\t.section\t\".text\""
-#define DATA_SECTION_ASM_OP        "\t.section\t\".data\""
-#define BSS_SECTION_ASM_OP        "\t.section\t\".bss\""
+#define TEXT_SECTION_ASM_OP	"\t.section\t\".text\""
+#define DATA_SECTION_ASM_OP	"\t.section\t\".data\""
+#define BSS_SECTION_ASM_OP	"\t.section\t\".bss\""
 #define READONLY_DATA_SECTION_ASM_OP "\t.section\t\".rodata\""
-#define INIT_SECTION_ASM_OP        "\t.section\t\".init\""
-#define FINI_SECTION_ASM_OP        "\t.section\t\".fini\""
+#define INIT_SECTION_ASM_OP	"\t.section\t\".init\""
+#define FINI_SECTION_ASM_OP	"\t.section\t\".fini\""
 
 /* Define the pseudo-ops used to switch to the .ctors and .dtors sections.
  

@@ -25,7 +25,7 @@ Boston, MA 02110-1301, USA.  */
 
 /* Use the TREE_VISITED bitflag to mark statements and PHI nodes that
    have been deemed varying and should not be simulated again.  */
-#define DONT_SIMULATE_AGAIN(T)        TREE_VISITED (T)
+#define DONT_SIMULATE_AGAIN(T)	TREE_VISITED (T)
 
 /* Lattice values used for propagation purposes.  Specific instances
    of a propagation engine must return these values from the statement
@@ -87,14 +87,14 @@ struct value_range_d
   /* Minimum and maximum values represented by this range.  These
      values should be interpreted as follows:
 
-        - If TYPE is VR_UNDEFINED or VR_VARYING then MIN and MAX must
-          be NULL.
+	- If TYPE is VR_UNDEFINED or VR_VARYING then MIN and MAX must
+	  be NULL.
 
-        - If TYPE == VR_RANGE then MIN holds the minimum value and
-          MAX holds the maximum value of the range [MIN, MAX].
+	- If TYPE == VR_RANGE then MIN holds the minimum value and
+	  MAX holds the maximum value of the range [MIN, MAX].
 
-        - If TYPE == ANTI_RANGE the variable is known to NOT
-          take any values in the range [MIN, MAX].  */
+	- If TYPE == ANTI_RANGE the variable is known to NOT
+	  take any values in the range [MIN, MAX].  */
   tree min;
   tree max;
 

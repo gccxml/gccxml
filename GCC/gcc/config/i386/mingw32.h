@@ -24,15 +24,15 @@ Boston, MA 02110-1301, USA.  */
 #define TARGET_VERSION fprintf (stderr, " (x86 MinGW)"); 
 
 /* See i386/crtdll.h for an alternative definition.  */
-#define EXTRA_OS_CPP_BUILTINS()                                        \
-  do                                                                \
-    {                                                                \
-      builtin_define ("__MSVCRT__");                                \
-      builtin_define ("__MINGW32__");                                   \
-      builtin_define ("_WIN32");                                \
-      builtin_define_std ("WIN32");                                \
-      builtin_define_std ("WINNT");                                \
-    }                                                                \
+#define EXTRA_OS_CPP_BUILTINS()					\
+  do								\
+    {								\
+      builtin_define ("__MSVCRT__");				\
+      builtin_define ("__MINGW32__");			   	\
+      builtin_define ("_WIN32");				\
+      builtin_define_std ("WIN32");				\
+      builtin_define_std ("WINNT");				\
+    }								\
   while (0)
 
 /* Override the standard choice of /usr/include as the default prefix
@@ -82,27 +82,27 @@ Boston, MA 02110-1301, USA.  */
    forward slashes.  */
 #undef OUTPUT_QUOTED_STRING
 #define OUTPUT_QUOTED_STRING(FILE, STRING)               \
-do {                                                         \
-  char c;                                                 \
-                                                         \
-  putc ('\"', asm_file);                                 \
-                                                         \
-  while ((c = *string++) != 0)                                 \
-    {                                                         \
-      if (c == '\\')                                         \
-        c = '/';                                         \
-                                                         \
+do {						         \
+  char c;					         \
+						         \
+  putc ('\"', asm_file);			         \
+						         \
+  while ((c = *string++) != 0)			         \
+    {						         \
+      if (c == '\\')				         \
+	c = '/';				         \
+						         \
       if (ISPRINT (c))                                   \
         {                                                \
-          if (c == '\"')                                 \
-            putc ('\\', asm_file);                         \
-          putc (c, asm_file);                                 \
+          if (c == '\"')			         \
+	    putc ('\\', asm_file);		         \
+          putc (c, asm_file);			         \
         }                                                \
       else                                               \
         fprintf (asm_file, "\\%03o", (unsigned char) c); \
-    }                                                         \
-                                                         \
-  putc ('\"', asm_file);                                 \
+    }						         \
+						         \
+  putc ('\"', asm_file);			         \
 } while (0)
 
 /* Define as short unsigned for compatibility with MS runtime.  */

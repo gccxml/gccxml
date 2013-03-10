@@ -49,10 +49,10 @@ main ()
     exit (1);
   
   p = (char *) mmap (0, MAP_LEN, PROT_READ|PROT_WRITE,
-                     MAP_ANON|MAP_PRIVATE, dev_zero, 0);
+		     MAP_ANON|MAP_PRIVATE, dev_zero, 0);
   if (p == (char *)-1)
     p = (char *) mmap (0, MAP_LEN, PROT_READ|PROT_WRITE,
-                       MAP_ANON|MAP_PRIVATE, -1, 0);
+		       MAP_ANON|MAP_PRIVATE, -1, 0);
   if (p == (char *)-1)
     exit (2);
   else

@@ -40,12 +40,12 @@
 
 /* Some defines for CPP.
    arm32 is the NetBSD port name, so we always define arm32 and __arm32__.  */
-#define TARGET_OS_CPP_BUILTINS()                \
-    do {                                        \
-        NETBSD_OS_CPP_BUILTINS_AOUT();                \
-        builtin_define_std ("arm32");                \
-        builtin_define_std ("unix");                \
-        builtin_define_std ("riscbsd");                \
+#define TARGET_OS_CPP_BUILTINS()		\
+    do {					\
+	NETBSD_OS_CPP_BUILTINS_AOUT();		\
+	builtin_define_std ("arm32");		\
+	builtin_define_std ("unix");		\
+	builtin_define_std ("riscbsd");		\
     } while (0)
 
 #undef SUBTARGET_EXTRA_SPECS
@@ -84,10 +84,10 @@
    compatibility below a little more won't hurt.  */
 
 #undef  ARM_FUNCTION_PROFILER
-#define ARM_FUNCTION_PROFILER(STREAM,LABELNO)                                      \
-{                                                                            \
+#define ARM_FUNCTION_PROFILER(STREAM,LABELNO)  				    \
+{									    \
   fprintf(STREAM, "\tmov\t%sip, %slr\n", REGISTER_PREFIX, REGISTER_PREFIX); \
-  fprintf(STREAM, "\tbl\tmcount\n");                                            \
+  fprintf(STREAM, "\tbl\tmcount\n");					    \
 }
 
 /* On the ARM `@' introduces a comment, so we must use something else

@@ -64,7 +64,7 @@ lambda_trans_matrix_inverse (lambda_trans_matrix mat)
   
   inverse = lambda_trans_matrix_new (LTM_ROWSIZE (mat), LTM_COLSIZE (mat));
   determinant = lambda_matrix_inverse (LTM_MATRIX (mat), LTM_MATRIX (inverse), 
-                                       LTM_ROWSIZE (mat));
+				       LTM_ROWSIZE (mat));
   LTM_DENOMINATOR (inverse) = determinant;
   return inverse;
 }
@@ -76,5 +76,5 @@ void
 print_lambda_trans_matrix (FILE *outfile, lambda_trans_matrix mat)
 {
   print_lambda_matrix (outfile, LTM_MATRIX (mat), LTM_ROWSIZE (mat), 
-                       LTM_COLSIZE (mat));
+		       LTM_COLSIZE (mat));
 }

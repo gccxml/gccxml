@@ -21,30 +21,30 @@ the Free Software Foundation, 51 Franklin Street, Fifth Floor,
 Boston, MA 02110-1301, USA.  */
 
 
-#define TARGET_OS_CPP_BUILTINS()        \
-  do {                                        \
-    builtin_define ("__vxworks");        \
-    builtin_define ("CPU=SH7000");                \
+#define TARGET_OS_CPP_BUILTINS()	\
+  do {					\
+    builtin_define ("__vxworks");	\
+    builtin_define ("CPU=SH7000");		\
   } while (0)
 
 /* VxWorks does all the library stuff itself.  */
 #undef  LIB_SPEC
-#define LIB_SPEC         ""
+#define LIB_SPEC 	""
 
 /* VxWorks uses object files, not loadable images.  Make the linker just
    combine objects.  */
 #undef  LINK_SPEC
-#define LINK_SPEC         "-r"
+#define LINK_SPEC 	"-r"
 
 /* VxWorks provides the functionality of crt0.o and friends itself.  */
 #undef  STARTFILE_SPEC
-#define STARTFILE_SPEC         ""
+#define STARTFILE_SPEC 	""
 
 #undef  ENDFILE_SPEC
-#define ENDFILE_SPEC         ""
+#define ENDFILE_SPEC 	""
 
 #undef  TARGET_VERSION
-#define TARGET_VERSION        fputs (" (SH/VxWorks)", stderr);
+#define TARGET_VERSION	fputs (" (SH/VxWorks)", stderr);
 
 /* There is no default multilib.  */
 #undef MULTILIB_DEFAULTS

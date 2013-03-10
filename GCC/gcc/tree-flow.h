@@ -53,11 +53,11 @@ typedef struct
    storing each element in RESULT, which is of type TYPE.  */
 #define FOR_EACH_HTAB_ELEMENT(HTAB, RESULT, TYPE, ITER) \
   for (RESULT = (TYPE) first_htab_element (&(ITER), (HTAB)); \
-        !end_htab_p (&(ITER)); \
-        RESULT = (TYPE) next_htab_element (&(ITER)))
+	!end_htab_p (&(ITER)); \
+	RESULT = (TYPE) next_htab_element (&(ITER)))
 
 /*---------------------------------------------------------------------------
-                      Attributes for SSA_NAMEs.
+		      Attributes for SSA_NAMEs.
   
   NOTE: These structures are stored in struct tree_ssa_name
   but are only used by the tree optimizers, so it makes better sense
@@ -99,7 +99,7 @@ struct ptr_info_def GTY(())
 
 
 /*---------------------------------------------------------------------------
-                   Tree annotations stored in tree_common.ann
+		   Tree annotations stored in tree_common.ann
 ---------------------------------------------------------------------------*/
 enum tree_ann_type { TREE_ANN_COMMON, VAR_ANN, FUNCTION_ANN, STMT_ANN };
 
@@ -240,25 +240,25 @@ typedef struct immediate_use_iterator_d
 /* Use this iterator when simply looking at stmts.  Adding, deleting or
    modifying stmts will cause this iterator to malfunction.  */
 
-#define FOR_EACH_IMM_USE_FAST(DEST, ITER, SSAVAR)                        \
-  for ((DEST) = first_readonly_imm_use (&(ITER), (SSAVAR));        \
-       !end_readonly_imm_use_p (&(ITER));                        \
+#define FOR_EACH_IMM_USE_FAST(DEST, ITER, SSAVAR)			\
+  for ((DEST) = first_readonly_imm_use (&(ITER), (SSAVAR));	\
+       !end_readonly_imm_use_p (&(ITER));			\
        (DEST) = next_readonly_imm_use (&(ITER)))
   
 /* Use this iterator to visit each stmt which has a use of SSAVAR.  */
 
-#define FOR_EACH_IMM_USE_STMT(STMT, ITER, SSAVAR)                \
-  for ((STMT) = first_imm_use_stmt (&(ITER), (SSAVAR));                \
-       !end_imm_use_stmt_p (&(ITER));                                \
+#define FOR_EACH_IMM_USE_STMT(STMT, ITER, SSAVAR)		\
+  for ((STMT) = first_imm_use_stmt (&(ITER), (SSAVAR));		\
+       !end_imm_use_stmt_p (&(ITER));				\
        (STMT) = next_imm_use_stmt (&(ITER)))
 
 /* Use this to terminate the FOR_EACH_IMM_USE_STMT loop early.  Failure to 
    do so will result in leaving a iterator marker node in the immediate
    use list, and nothing good will come from that.   */
-#define BREAK_FROM_IMM_USE_STMT(ITER)                                \
-   {                                                                \
-     end_imm_use_stmt_traverse (&(ITER));                        \
-     break;                                                        \
+#define BREAK_FROM_IMM_USE_STMT(ITER)				\
+   {								\
+     end_imm_use_stmt_traverse (&(ITER));			\
+     break;							\
    }
 
 
@@ -269,15 +269,15 @@ typedef struct immediate_use_iterator_d
      FOR_EACH_IMM_USE_STMT (stmt, iter, var)
        {
          FOR_EACH_IMM_USE_ON_STMT (use_p, iter)
-           {
-             SET_USE (use_p) = blah;
-           }
-         update_stmt (stmt);
-       }                                                         */
+	   {
+	     SET_USE (use_p) = blah;
+	   }
+	 update_stmt (stmt);
+       }							 */
 
-#define FOR_EACH_IMM_USE_ON_STMT(DEST, ITER)                        \
-  for ((DEST) = first_imm_use_on_stmt (&(ITER));                \
-       !end_imm_use_on_stmt_p (&(ITER));                        \
+#define FOR_EACH_IMM_USE_ON_STMT(DEST, ITER)			\
+  for ((DEST) = first_imm_use_on_stmt (&(ITER));		\
+       !end_imm_use_on_stmt_p (&(ITER));			\
        (DEST) = next_imm_use_on_stmt (&(ITER)))
 
 
@@ -371,7 +371,7 @@ static inline tree phi_nodes (basic_block);
 static inline void set_phi_nodes (basic_block, tree);
 
 /*---------------------------------------------------------------------------
-                              Global declarations
+			      Global declarations
 ---------------------------------------------------------------------------*/
 struct int_tree_map GTY(())
 {
@@ -454,18 +454,18 @@ extern bitmap addressable_vars;
 extern bool aliases_computed_p;
 
 /* Macros for showing usage statistics.  */
-#define SCALE(x) ((unsigned long) ((x) < 1024*10        \
-                  ? (x)                                        \
-                  : ((x) < 1024*1024*10                        \
-                     ? (x) / 1024                        \
-                     : (x) / (1024*1024))))
+#define SCALE(x) ((unsigned long) ((x) < 1024*10	\
+		  ? (x)					\
+		  : ((x) < 1024*1024*10			\
+		     ? (x) / 1024			\
+		     : (x) / (1024*1024))))
 
 #define LABEL(x) ((x) < 1024*10 ? 'b' : ((x) < 1024*1024*10 ? 'k' : 'M'))
 
 #define PERCENT(x,y) ((float)(x) * 100.0 / (float)(y))
 
 /*---------------------------------------------------------------------------
-                              Block iterators
+			      Block iterators
 ---------------------------------------------------------------------------*/
 
 typedef struct {
@@ -500,14 +500,14 @@ enum bsi_iterator_update
 };
 
 extern void bsi_insert_before (block_stmt_iterator *, tree,
-                               enum bsi_iterator_update);
+			       enum bsi_iterator_update);
 extern void bsi_insert_after (block_stmt_iterator *, tree,
-                              enum bsi_iterator_update);
+			      enum bsi_iterator_update);
 
 extern void bsi_replace (const block_stmt_iterator *, tree, bool);
 
 /*---------------------------------------------------------------------------
-                              OpenMP Region Tree
+			      OpenMP Region Tree
 ---------------------------------------------------------------------------*/
 
 /* Parallel region information.  Every parallel and workshare
@@ -551,16 +551,16 @@ struct omp_region
 
 extern struct omp_region *root_omp_region;
 extern struct omp_region *new_omp_region (basic_block, enum tree_code,
-                                          struct omp_region *);
+					  struct omp_region *);
 extern void free_omp_regions (void);
 
 /*---------------------------------------------------------------------------
-                              Function prototypes
+			      Function prototypes
 ---------------------------------------------------------------------------*/
 /* In tree-cfg.c  */
 
 /* Location to track pending stmt for edge insertion.  */
-#define PENDING_STMT(e)        ((e)->insns.t)
+#define PENDING_STMT(e)	((e)->insns.t)
 
 extern void delete_tree_cfg_annotations (void);
 extern void disband_implicit_edges (void);
@@ -599,7 +599,7 @@ extern void verify_stmts (void);
 extern tree tree_block_label (basic_block);
 extern void extract_true_false_edges_from_block (basic_block, edge *, edge *);
 extern bool tree_duplicate_sese_region (edge, edge, basic_block *, unsigned,
-                                        basic_block *);
+					basic_block *);
 extern void add_phi_args_after_copy_bb (basic_block);
 extern void add_phi_args_after_copy (basic_block *, unsigned);
 extern bool tree_purge_dead_abnormal_call_edges (basic_block);
@@ -607,11 +607,11 @@ extern bool tree_purge_dead_eh_edges (basic_block);
 extern bool tree_purge_all_dead_eh_edges (bitmap);
 extern tree gimplify_val (block_stmt_iterator *, tree, tree);
 extern tree gimplify_build1 (block_stmt_iterator *, enum tree_code,
-                             tree, tree);
+			     tree, tree);
 extern tree gimplify_build2 (block_stmt_iterator *, enum tree_code,
-                             tree, tree, tree);
+			     tree, tree, tree);
 extern tree gimplify_build3 (block_stmt_iterator *, enum tree_code,
-                             tree, tree, tree, tree);
+			     tree, tree, tree, tree);
 extern void init_empty_tree_cfg (void);
 extern void fold_cond_expr_cond (void);
 extern void make_abnormal_goto_edges (basic_block, bool);
@@ -619,7 +619,7 @@ extern void replace_uses_by (tree, tree);
 extern void start_recording_case_labels (void);
 extern void end_recording_case_labels (void);
 extern basic_block move_sese_region_to_fn (struct function *, basic_block,
-                                           basic_block);
+				           basic_block);
 
 /* In tree-cfgcleanup.c  */
 extern bool cleanup_tree_cfg (void);
@@ -684,11 +684,11 @@ static inline tree get_subvar_at (tree, unsigned HOST_WIDE_INT);
 static inline bool ref_contains_array_ref (tree);
 static inline bool array_ref_contains_indirect_ref (tree);
 extern tree get_ref_base_and_extent (tree, HOST_WIDE_INT *,
-                                     HOST_WIDE_INT *, HOST_WIDE_INT *);
+				     HOST_WIDE_INT *, HOST_WIDE_INT *);
 static inline bool var_can_have_subvars (tree);
 static inline bool overlap_subvar (unsigned HOST_WIDE_INT,
-                                   unsigned HOST_WIDE_INT,
-                                   tree, bool *);
+				   unsigned HOST_WIDE_INT,
+				   tree, bool *);
 
 /* Call-back function for walk_use_def_chains().  At each reaching
    definition, a function with this prototype is called.  */
@@ -762,30 +762,30 @@ typedef struct
 
 struct tree_niter_desc
 {
-  tree assumptions;        /* The boolean expression.  If this expression evaluates
-                           to false, then the other fields in this structure
-                           should not be used; there is no guarantee that they
-                           will be correct.  */
-  tree may_be_zero;        /* The boolean expression.  If it evaluates to true,
-                           the loop will exit in the first iteration (i.e.
-                           its latch will not be executed), even if the niter
-                           field says otherwise.  */
-  tree niter;                /* The expression giving the number of iterations of
-                           a loop (provided that assumptions == true and
-                           may_be_zero == false), more precisely the number
-                           of executions of the latch of the loop.  */
-  tree additional_info;        /* The boolean expression.  Sometimes we use additional
-                           knowledge to simplify the other expressions
-                           contained in this structure (for example the
-                           knowledge about value ranges of operands on entry to
-                           the loop).  If this is a case, conjunction of such
-                           condition is stored in this field, so that we do not
-                           lose the information: for example if may_be_zero
-                           is (n <= 0) and niter is (unsigned) n, we know
-                           that the number of iterations is at most
-                           MAX_SIGNED_INT.  However if the (n <= 0) assumption
-                           is eliminated (by looking at the guard on entry of
-                           the loop), then the information would be lost.  */
+  tree assumptions;	/* The boolean expression.  If this expression evaluates
+			   to false, then the other fields in this structure
+			   should not be used; there is no guarantee that they
+			   will be correct.  */
+  tree may_be_zero;	/* The boolean expression.  If it evaluates to true,
+			   the loop will exit in the first iteration (i.e.
+			   its latch will not be executed), even if the niter
+			   field says otherwise.  */
+  tree niter;		/* The expression giving the number of iterations of
+			   a loop (provided that assumptions == true and
+			   may_be_zero == false), more precisely the number
+			   of executions of the latch of the loop.  */
+  tree additional_info;	/* The boolean expression.  Sometimes we use additional
+			   knowledge to simplify the other expressions
+			   contained in this structure (for example the
+			   knowledge about value ranges of operands on entry to
+			   the loop).  If this is a case, conjunction of such
+			   condition is stored in this field, so that we do not
+			   lose the information: for example if may_be_zero
+			   is (n <= 0) and niter is (unsigned) n, we know
+			   that the number of iterations is at most
+			   MAX_SIGNED_INT.  However if the (n <= 0) assumption
+			   is eliminated (by looking at the guard on entry of
+			   the loop), then the information would be lost.  */
 
   /* The simplified shape of the exit condition.  The loop exits if
      CONTROL CMP BOUND is false, where CMP is one of NE_EXPR,
@@ -816,7 +816,7 @@ unsigned int remove_empty_loops (struct loops *);
 void tree_ssa_iv_optimize (struct loops *);
 
 bool number_of_iterations_exit (struct loop *, edge,
-                                struct tree_niter_desc *niter, bool);
+				struct tree_niter_desc *niter, bool);
 tree find_loop_niter (struct loop *, edge *);
 tree loop_niter_by_eval (struct loop *, edge);
 tree find_loop_niter_by_eval (struct loop *, edge *);
@@ -835,43 +835,43 @@ void verify_loop_closed_ssa (void);
 void loop_commit_inserts (void);
 bool for_each_index (tree *, bool (*) (tree, tree *, void *), void *);
 void create_iv (tree, tree, tree, struct loop *, block_stmt_iterator *, bool,
-                tree *, tree *);
+		tree *, tree *);
 void split_loop_exit_edge (edge);
 unsigned force_expr_to_var_cost (tree);
 basic_block bsi_insert_on_edge_immediate_loop (edge, tree);
 void standard_iv_increment_position (struct loop *, block_stmt_iterator *,
-                                     bool *);
+				     bool *);
 basic_block ip_end_pos (struct loop *);
 basic_block ip_normal_pos (struct loop *);
 bool tree_duplicate_loop_to_header_edge (struct loop *, edge, struct loops *,
-                                         unsigned int, sbitmap,
-                                         edge, edge *,
-                                         unsigned int *, int);
+					 unsigned int, sbitmap,
+					 edge, edge *,
+					 unsigned int *, int);
 struct loop *tree_ssa_loop_version (struct loops *, struct loop *, tree,
-                                    basic_block *);
+				    basic_block *);
 tree expand_simple_operations (tree);
 void substitute_in_loop_info (struct loop *, tree, tree);
 edge single_dom_exit (struct loop *);
 bool can_unroll_loop_p (struct loop *loop, unsigned factor,
-                        struct tree_niter_desc *niter);
+			struct tree_niter_desc *niter);
 void tree_unroll_loop (struct loops *, struct loop *, unsigned,
-                       edge, struct tree_niter_desc *);
+		       edge, struct tree_niter_desc *);
 bool contains_abnormal_ssa_name_p (tree);
 
 /* In tree-ssa-threadedge.c */
 extern bool potentially_threadable_block (basic_block);
 extern void thread_across_edge (tree, edge, bool,
-                                VEC(tree, heap) **, tree (*) (tree, tree));
+				VEC(tree, heap) **, tree (*) (tree, tree));
 
 /* In tree-ssa-loop-im.c  */
 /* The possibilities of statement movement.  */
 
 enum move_pos
   {
-    MOVE_IMPOSSIBLE,                /* No movement -- side effect expression.  */
-    MOVE_PRESERVE_EXECUTION,        /* Must not cause the non-executed statement
-                                   become executed -- memory accesses, ... */
-    MOVE_POSSIBLE                /* Unlimited movement.  */
+    MOVE_IMPOSSIBLE,		/* No movement -- side effect expression.  */
+    MOVE_PRESERVE_EXECUTION,	/* Must not cause the non-executed statement
+				   become executed -- memory accesses, ... */
+    MOVE_POSSIBLE		/* Unlimited movement.  */
   };
 extern enum move_pos movement_possibility (tree);
 
@@ -881,16 +881,16 @@ enum escape_type
     NO_ESCAPE = 0, /* Doesn't escape.  */
     ESCAPE_STORED_IN_GLOBAL = 1 << 1,
     ESCAPE_TO_ASM = 1 << 2,  /* Passed by address to an assembly
-                                statement.  */
+				statement.  */
     ESCAPE_TO_CALL = 1 << 3,  /* Escapes to a function call.  */
     ESCAPE_BAD_CAST = 1 << 4, /* Cast from pointer to integer */
     ESCAPE_TO_RETURN = 1 << 5, /* Returned from function.  */
     ESCAPE_TO_PURE_CONST = 1 << 6, /* Escapes to a pure or constant
-                                      function call.  */
+				      function call.  */
     ESCAPE_IS_GLOBAL = 1 << 7,  /* Is a global variable.  */
     ESCAPE_IS_PARM = 1 << 8, /* Is an incoming function parameter.  */
     ESCAPE_UNKNOWN = 1 << 9 /* We believe it escapes for some reason
-                               not enumerated above.  */
+			       not enumerated above.  */
   };
 
 /* In tree-flow-inline.h  */
@@ -999,7 +999,7 @@ struct mem_address
 };
 
 tree create_mem_ref (block_stmt_iterator *, tree, 
-                     struct affine_tree_combination *);
+		     struct affine_tree_combination *);
 rtx addr_for_mem_ref (struct mem_address *, bool);
 void get_address_description (tree, struct mem_address *);
 tree maybe_fold_tmr (tree);
@@ -1021,7 +1021,7 @@ typedef struct fieldoff fieldoff_s;
 DEF_VEC_O(fieldoff_s);
 DEF_VEC_ALLOC_O(fieldoff_s,heap);
 int push_fields_onto_fieldstack (tree, VEC(fieldoff_s,heap) **,
-                                 HOST_WIDE_INT, bool *);
+				 HOST_WIDE_INT, bool *);
 void sort_fieldstack (VEC(fieldoff_s,heap) *);
 
 void init_alias_heapvars (void);

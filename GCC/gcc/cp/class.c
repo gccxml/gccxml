@@ -177,12 +177,12 @@ static void dump_thunk (FILE *, int, tree);
 static tree build_vtable (tree, tree, tree);
 static void initialize_vtable (tree, tree);
 static void layout_nonempty_base_or_field (record_layout_info,
-                                           tree, tree, splay_tree);
+					   tree, tree, splay_tree);
 static tree end_of_class (tree, int);
 static bool layout_empty_base (tree, tree, splay_tree);
 static void accumulate_vtbl_inits (tree, tree, tree, tree, tree);
 static tree dfs_accumulate_vtbl_inits (tree, tree, tree, tree,
-                                               tree);
+					       tree);
 static void build_rtti_vtbl_entries (tree, vtbl_init_data *);
 static void build_vcall_and_vbase_vtbl_entries (tree, vtbl_init_data *);
 static void clone_constructors_and_destructors (tree);
@@ -197,11 +197,11 @@ static tree dfs_fixup_binfo_vtbls (tree, void *);
 static int record_subobject_offset (tree, tree, splay_tree);
 static int check_subobject_offset (tree, tree, splay_tree);
 static int walk_subobject_offsets (tree, subobject_offset_fn,
-                                   tree, splay_tree, tree, int);
+				   tree, splay_tree, tree, int);
 static void record_subobject_offsets (tree, tree, splay_tree, bool);
 static int layout_conflict_p (tree, tree, splay_tree, int);
 static int splay_tree_compare_integer_csts (splay_tree_key k1,
-                                            splay_tree_key k2);
+					    splay_tree_key k2);
 static void warn_about_ambiguous_bases (tree);
 static bool type_requires_array_cookie (tree);
 static bool contains_empty_class_p (tree);
@@ -234,9 +234,9 @@ int n_inner_fields_searched = 0;
 
 tree
 build_base_path (enum tree_code code,
-                 tree expr,
-                 tree binfo,
-                 int nonnull)
+		 tree expr,
+		 tree binfo,
+		 int nonnull)
 {
   tree v_binfo = NULL_TREE;
   tree d_binfo = NULL_TREE;
@@ -257,9 +257,9 @@ build_base_path (enum tree_code code,
     {
       d_binfo = probe;
       if (is_empty_class (BINFO_TYPE (probe)))
-        has_empty = true;
+	has_empty = true;
       if (!v_binfo && BINFO_VIRTUAL_P (probe))
-        v_binfo = probe;
+	v_binfo = probe;
     }
 
   probe = TYPE_MAIN_VARIANT (TREE_TYPE (expr));
@@ -267,9 +267,9 @@ build_base_path (enum tree_code code,
     probe = TYPE_MAIN_VARIANT (TREE_TYPE (probe));
 
   gcc_assert ((code == MINUS_EXPR
-               && SAME_BINFO_TYPE_P (BINFO_TYPE (binfo), probe))
-              || (code == PLUS_EXPR
-                  && SAME_BINFO_TYPE_P (BINFO_TYPE (d_binfo), probe)));
+	       && SAME_BINFO_TYPE_P (BINFO_TYPE (binfo), probe))
+	      || (code == PLUS_EXPR
+		  && SAME_BINFO_TYPE_P (BINFO_TYPE (d_binfo), probe)));
 
   if (binfo == d_binfo)
     /* Nothing to do.  */
@@ -278,7 +278,7 @@ build_base_path (enum tree_code code,
   if (code == MINUS_EXPR && v_binfo)
     {
       error ("cannot convert from base %qT to derived type %qT via virtual base %qT",
-             BINFO_TYPE (binfo), BINFO_TYPE (d_binfo), BINFO_TYPE (v_binfo));
+	     BINFO_TYPE (binfo), BINFO_TYPE (d_binfo), BINFO_TYPE (v_binfo));
       return error_mark_node;
     }
 
@@ -297,23 +297,23 @@ build_base_path (enum tree_code code,
   if (want_pointer && !nonnull)
     {
       /* If we know the conversion will not actually change the value
-         of EXPR, then we can avoid testing the expression for NULL.
-         We have to avoid generating a COMPONENT_REF for a base class
-         field, because other parts of the compiler know that such
-         expressions are always non-NULL.  */
+	 of EXPR, then we can avoid testing the expression for NULL.
+	 We have to avoid generating a COMPONENT_REF for a base class
+	 field, because other parts of the compiler know that such
+	 expressions are always non-NULL.  */
       if (!virtual_access && integer_zerop (offset))
-        {
-          tree class_type;
-          /* TARGET_TYPE has been extracted from BINFO, and, is
-             therefore always cv-unqualified.  Extract the
-             cv-qualifiers from EXPR so that the expression returned
-             matches the input.  */
-          class_type = TREE_TYPE (TREE_TYPE (expr));
-          target_type
-            = cp_build_qualified_type (target_type,
-                                       cp_type_quals (class_type));
-          return build_nop (build_pointer_type (target_type), expr);
-        }
+	{
+	  tree class_type;
+	  /* TARGET_TYPE has been extracted from BINFO, and, is
+	     therefore always cv-unqualified.  Extract the
+	     cv-qualifiers from EXPR so that the expression returned
+	     matches the input.  */
+	  class_type = TREE_TYPE (TREE_TYPE (expr));
+	  target_type
+	    = cp_build_qualified_type (target_type,
+				       cp_type_quals (class_type));
+	  return build_nop (build_pointer_type (target_type), expr);
+	}
       null_test = error_mark_node;
     }
 
@@ -326,19 +326,19 @@ build_base_path (enum tree_code code,
     {
       tree zero = cp_convert (TREE_TYPE (expr), integer_zero_node);
       null_test = fold_build2 (NE_EXPR, boolean_type_node,
-                               expr, zero);
+			       expr, zero);
     }
 
   /* If this is a simple base reference, express it as a COMPONENT_REF.  */
   if (code == PLUS_EXPR && !virtual_access
       /* We don't build base fields for empty bases, and they aren't very
-         interesting to the optimizers anyway.  */
+	 interesting to the optimizers anyway.  */
       && !has_empty)
     {
       expr = build_indirect_ref (expr, NULL);
       expr = build_simple_base_path (expr, binfo);
       if (want_pointer)
-        expr = build_address (expr);
+	expr = build_address (expr);
       target_type = TREE_TYPE (expr);
       goto out;
     }
@@ -346,54 +346,54 @@ build_base_path (enum tree_code code,
   if (virtual_access)
     {
       /* Going via virtual base V_BINFO.  We need the static offset
-         from V_BINFO to BINFO, and the dynamic offset from D_BINFO to
-         V_BINFO.  That offset is an entry in D_BINFO's vtable.  */
+	 from V_BINFO to BINFO, and the dynamic offset from D_BINFO to
+	 V_BINFO.  That offset is an entry in D_BINFO's vtable.  */
       tree v_offset;
 
       if (fixed_type_p < 0 && in_base_initializer)
-        {
-          /* In a base member initializer, we cannot rely on the
-             vtable being set up.  We have to indirect via the
-             vtt_parm.  */
-          tree t;
+	{
+	  /* In a base member initializer, we cannot rely on the
+	     vtable being set up.  We have to indirect via the
+	     vtt_parm.  */
+	  tree t;
 
-          t = TREE_TYPE (TYPE_VFIELD (current_class_type));
-          t = build_pointer_type (t);
-          v_offset = convert (t, current_vtt_parm);
-          v_offset = build_indirect_ref (v_offset, NULL);
-        }
+	  t = TREE_TYPE (TYPE_VFIELD (current_class_type));
+	  t = build_pointer_type (t);
+	  v_offset = convert (t, current_vtt_parm);
+	  v_offset = build_indirect_ref (v_offset, NULL);
+	}
       else
-        v_offset = build_vfield_ref (build_indirect_ref (expr, NULL),
-                                     TREE_TYPE (TREE_TYPE (expr)));
+	v_offset = build_vfield_ref (build_indirect_ref (expr, NULL),
+				     TREE_TYPE (TREE_TYPE (expr)));
 
       v_offset = build2 (PLUS_EXPR, TREE_TYPE (v_offset),
-                         v_offset,  BINFO_VPTR_FIELD (v_binfo));
+			 v_offset,  BINFO_VPTR_FIELD (v_binfo));
       v_offset = build1 (NOP_EXPR,
-                         build_pointer_type (ptrdiff_type_node),
-                         v_offset);
+			 build_pointer_type (ptrdiff_type_node),
+			 v_offset);
       v_offset = build_indirect_ref (v_offset, NULL);
       TREE_CONSTANT (v_offset) = 1;
       TREE_INVARIANT (v_offset) = 1;
 
       offset = convert_to_integer (ptrdiff_type_node,
-                                   size_diffop (offset,
-                                                BINFO_OFFSET (v_binfo)));
+				   size_diffop (offset,
+						BINFO_OFFSET (v_binfo)));
 
       if (!integer_zerop (offset))
-        v_offset = build2 (code, ptrdiff_type_node, v_offset, offset);
+	v_offset = build2 (code, ptrdiff_type_node, v_offset, offset);
 
       if (fixed_type_p < 0)
-        /* Negative fixed_type_p means this is a constructor or destructor;
-           virtual base layout is fixed in in-charge [cd]tors, but not in
-           base [cd]tors.  */
-        offset = build3 (COND_EXPR, ptrdiff_type_node,
-                         build2 (EQ_EXPR, boolean_type_node,
-                                 current_in_charge_parm, integer_zero_node),
-                         v_offset,
-                         convert_to_integer (ptrdiff_type_node,
-                                             BINFO_OFFSET (binfo)));
+	/* Negative fixed_type_p means this is a constructor or destructor;
+	   virtual base layout is fixed in in-charge [cd]tors, but not in
+	   base [cd]tors.  */
+	offset = build3 (COND_EXPR, ptrdiff_type_node,
+			 build2 (EQ_EXPR, boolean_type_node,
+				 current_in_charge_parm, integer_zero_node),
+			 v_offset,
+			 convert_to_integer (ptrdiff_type_node,
+					     BINFO_OFFSET (binfo)));
       else
-        offset = v_offset;
+	offset = v_offset;
     }
 
   target_type = cp_build_qualified_type
@@ -415,8 +415,8 @@ build_base_path (enum tree_code code,
  out:
   if (null_test)
     expr = fold_build3 (COND_EXPR, target_type, null_test, expr,
-                        fold_build1 (NOP_EXPR, target_type,
-                                     integer_zero_node));
+			fold_build1 (NOP_EXPR, target_type,
+				     integer_zero_node));
 
   return expr;
 }
@@ -439,12 +439,12 @@ build_simple_base_path (tree expr, tree binfo)
       gcc_assert (TYPE_MAIN_VARIANT (TREE_TYPE (expr)) == type);
 
       /* Transform `(a, b).x' into `(*(a, &b)).x', `(a ? b : c).x'
-         into `(*(a ?  &b : &c)).x', and so on.  A COND_EXPR is only
-         an lvalue in the frontend; only _DECLs and _REFs are lvalues
-         in the backend.  */
+	 into `(*(a ?  &b : &c)).x', and so on.  A COND_EXPR is only
+	 an lvalue in the frontend; only _DECLs and _REFs are lvalues
+	 in the backend.  */
       temp = unary_complex_lvalue (ADDR_EXPR, expr);
       if (temp)
-        expr = build_indirect_ref (temp, NULL);
+	expr = build_indirect_ref (temp, NULL);
 
       return expr;
     }
@@ -456,28 +456,28 @@ build_simple_base_path (tree expr, tree binfo)
        field; field = TREE_CHAIN (field))
     /* Is this the base field created by build_base_field?  */
     if (TREE_CODE (field) == FIELD_DECL
-        && DECL_FIELD_IS_BASE (field)
-        && TREE_TYPE (field) == type)
+	&& DECL_FIELD_IS_BASE (field)
+	&& TREE_TYPE (field) == type)
       {
-        /* We don't use build_class_member_access_expr here, as that
-           has unnecessary checks, and more importantly results in
-           recursive calls to dfs_walk_once.  */
-        int type_quals = cp_type_quals (TREE_TYPE (expr));
+	/* We don't use build_class_member_access_expr here, as that
+	   has unnecessary checks, and more importantly results in
+	   recursive calls to dfs_walk_once.  */
+	int type_quals = cp_type_quals (TREE_TYPE (expr));
 
-        expr = build3 (COMPONENT_REF,
-                       cp_build_qualified_type (type, type_quals),
-                       expr, field, NULL_TREE);
-        expr = fold_if_not_in_template (expr);
+	expr = build3 (COMPONENT_REF,
+		       cp_build_qualified_type (type, type_quals),
+		       expr, field, NULL_TREE);
+	expr = fold_if_not_in_template (expr);
 
-        /* Mark the expression const or volatile, as appropriate.
-           Even though we've dealt with the type above, we still have
-           to mark the expression itself.  */
-        if (type_quals & TYPE_QUAL_CONST)
-          TREE_READONLY (expr) = 1;
-        if (type_quals & TYPE_QUAL_VOLATILE)
-          TREE_THIS_VOLATILE (expr) = 1;
+	/* Mark the expression const or volatile, as appropriate.
+	   Even though we've dealt with the type above, we still have
+	   to mark the expression itself.  */
+	if (type_quals & TYPE_QUAL_CONST)
+	  TREE_READONLY (expr) = 1;
+	if (type_quals & TYPE_QUAL_VOLATILE)
+	  TREE_THIS_VOLATILE (expr) = 1;
 
-        return expr;
+	return expr;
       }
 
   /* Didn't find the base field?!?  */
@@ -506,8 +506,8 @@ convert_to_base (tree object, tree type, bool check_access, bool nonnull)
     object_type = TREE_TYPE (object);
 
   binfo = lookup_base (object_type, type,
-                       check_access ? ba_check : ba_unique,
-                       NULL);
+		       check_access ? ba_check : ba_unique,
+		       NULL);
   if (!binfo || binfo == error_mark_node)
     return error_mark_node;
 
@@ -532,8 +532,8 @@ convert_to_base_statically (tree expr, tree base)
       pointer_type = build_pointer_type (expr_type);
       expr = build_unary_op (ADDR_EXPR, expr, /*noconvert=*/1);
       if (!integer_zerop (BINFO_OFFSET (base)))
-          expr = build2 (PLUS_EXPR, pointer_type, expr,
-                         build_nop (pointer_type, BINFO_OFFSET (base)));
+	  expr = build2 (PLUS_EXPR, pointer_type, expr,
+			 build_nop (pointer_type, BINFO_OFFSET (base)));
       expr = build_nop (build_pointer_type (BINFO_TYPE (base)), expr);
       expr = build1 (INDIRECT_REF, BINFO_TYPE (base), expr);
     }
@@ -553,7 +553,7 @@ build_vfield_ref (tree datum, tree type)
   /* First, convert to the requested type.  */
   if (!same_type_ignoring_top_level_qualifiers_p (TREE_TYPE (datum), type))
     datum = convert_to_base (datum, type, /*check_access=*/false,
-                             /*nonnull=*/true);
+			     /*nonnull=*/true);
 
   /* Second, the requested type may not be the owner of its own vptr.
      If not, convert to the base class that owns it.  We cannot use
@@ -594,9 +594,9 @@ build_vtbl_ref_1 (tree instance, tree idx)
   if (fixed_type && !cdtorp)
     {
       tree binfo = lookup_base (fixed_type, basetype,
-                                ba_unique | ba_quiet, NULL);
+				ba_unique | ba_quiet, NULL);
       if (binfo)
-        vtbl = unshare_expr (BINFO_VTABLE (binfo));
+	vtbl = unshare_expr (BINFO_VTABLE (binfo));
     }
 
   if (!vtbl)
@@ -633,7 +633,7 @@ build_vfn_ref (tree instance_ptr, tree idx)
      vtable entry is treated as a function pointer.  */
   if (TARGET_VTABLE_USES_DESCRIPTORS)
     aref = build1 (NOP_EXPR, TREE_TYPE (aref),
-                   build_unary_op (ADDR_EXPR, aref, /*noconvert=*/1));
+		   build_unary_op (ADDR_EXPR, aref, /*noconvert=*/1));
 
   /* Remember this as a method reference, for later devirtualization.  */
   aref = build3 (OBJ_TYPE_REF, TREE_TYPE (aref), aref, instance_ptr, idx);
@@ -699,7 +699,7 @@ build_vtable (tree class_type, tree name, tree vtable_type)
   /* At one time the vtable info was grabbed 2 words at a time.  This
      fails on sparc unless you have 8-byte alignment.  (tiemann) */
   DECL_ALIGN (decl) = MAX (TYPE_ALIGN (double_type_node),
-                           DECL_ALIGN (decl));
+			   DECL_ALIGN (decl));
   set_linkage_according_to_type (class_type, decl);
   /* The vtable has not been defined -- yet.  */
   DECL_EXTERNAL (decl) = 1;
@@ -773,9 +773,9 @@ build_primary_vtable (tree binfo, tree type)
   if (binfo)
     {
       if (BINFO_NEW_VTABLE_MARKED (binfo))
-        /* We have already created a vtable for this base, so there's
-           no need to do it again.  */
-        return 0;
+	/* We have already created a vtable for this base, so there's
+	   no need to do it again.  */
+	return 0;
 
       virtuals = copy_list (BINFO_VIRTUALS (binfo));
       TREE_TYPE (decl) = TREE_TYPE (get_vtbl_decl_for_binfo (binfo));
@@ -863,10 +863,10 @@ make_new_vtable (tree t, tree binfo)
 
 static void
 modify_vtable_entry (tree t,
-                     tree binfo,
-                     tree fndecl,
-                     tree delta,
-                     tree *virtuals)
+		     tree binfo,
+		     tree fndecl,
+		     tree delta,
+		     tree *virtuals)
 {
   tree v;
 
@@ -877,15 +877,15 @@ modify_vtable_entry (tree t,
     {
       /* We need a new vtable for BINFO.  */
       if (make_new_vtable (t, binfo))
-        {
-          /* If we really did make a new vtable, we also made a copy
-             of the BINFO_VIRTUALS list.  Now, we have to find the
-             corresponding entry in that list.  */
-          *virtuals = BINFO_VIRTUALS (binfo);
-          while (BV_FN (*virtuals) != BV_FN (v))
-            *virtuals = TREE_CHAIN (*virtuals);
-          v = *virtuals;
-        }
+	{
+	  /* If we really did make a new vtable, we also made a copy
+	     of the BINFO_VIRTUALS list.  Now, we have to find the
+	     corresponding entry in that list.  */
+	  *virtuals = BINFO_VIRTUALS (binfo);
+	  while (BV_FN (*virtuals) != BV_FN (v))
+	    *virtuals = TREE_CHAIN (*virtuals);
+	  v = *virtuals;
+	}
 
       BV_DELTA (v) = delta;
       BV_VCALL_INDEX (v) = NULL_TREE;
@@ -917,15 +917,15 @@ add_method (tree type, tree method, tree using_decl)
   conv_p = DECL_CONV_FN_P (method);
   if (conv_p)
     template_conv_p = (TREE_CODE (method) == TEMPLATE_DECL
-                       && DECL_TEMPLATE_CONV_FN_P (method));
+		       && DECL_TEMPLATE_CONV_FN_P (method));
 
   method_vec = CLASSTYPE_METHOD_VEC (type);
   if (!method_vec)
     {
       /* Make a new method vector.  We start with 8 entries.  We must
-         allocate at least two (for constructors and destructors), and
-         we're going to end up with an assignment operator at some
-         point as well.  */
+	 allocate at least two (for constructors and destructors), and
+	 we're going to end up with an assignment operator at some
+	 point as well.  */
       method_vec = VEC_alloc (tree, gc, 8);
       /* Create slots for constructors and destructors.  */
       VEC_quick_push (tree, method_vec, NULL_TREE);
@@ -944,14 +944,14 @@ add_method (tree type, tree method, tree using_decl)
       slot = CLASSTYPE_DESTRUCTOR_SLOT;
 
       if (TYPE_FOR_JAVA (type))
-        {
-          if (!DECL_ARTIFICIAL (method))
-            error ("Java class %qT cannot have a destructor", type);
-          else if (TYPE_HAS_NONTRIVIAL_DESTRUCTOR (type))
-            error ("Java class %qT cannot have an implicit non-trivial "
-                   "destructor",
-                   type);
-        }
+	{
+	  if (!DECL_ARTIFICIAL (method))
+	    error ("Java class %qT cannot have a destructor", type);
+	  else if (TYPE_HAS_NONTRIVIAL_DESTRUCTOR (type))
+	    error ("Java class %qT cannot have an implicit non-trivial "
+		   "destructor",
+		   type);
+	}
     }
   else
     {
@@ -960,29 +960,29 @@ add_method (tree type, tree method, tree using_decl)
       insert_p = true;
       /* See if we already have an entry with this name.  */
       for (slot = CLASSTYPE_FIRST_CONVERSION_SLOT;
-           VEC_iterate (tree, method_vec, slot, m);
-           ++slot)
-        {
-          m = OVL_CURRENT (m);
-          if (template_conv_p)
-            {
-              if (TREE_CODE (m) == TEMPLATE_DECL
-                  && DECL_TEMPLATE_CONV_FN_P (m))
-                insert_p = false;
-              break;
-            }
-          if (conv_p && !DECL_CONV_FN_P (m))
-            break;
-          if (DECL_NAME (m) == DECL_NAME (method))
-            {
-              insert_p = false;
-              break;
-            }
-          if (complete_p
-              && !DECL_CONV_FN_P (m)
-              && DECL_NAME (m) > DECL_NAME (method))
-            break;
-        }
+	   VEC_iterate (tree, method_vec, slot, m);
+	   ++slot)
+	{
+	  m = OVL_CURRENT (m);
+	  if (template_conv_p)
+	    {
+	      if (TREE_CODE (m) == TEMPLATE_DECL
+		  && DECL_TEMPLATE_CONV_FN_P (m))
+		insert_p = false;
+	      break;
+	    }
+	  if (conv_p && !DECL_CONV_FN_P (m))
+	    break;
+	  if (DECL_NAME (m) == DECL_NAME (method))
+	    {
+	      insert_p = false;
+	      break;
+	    }
+	  if (complete_p
+	      && !DECL_CONV_FN_P (m)
+	      && DECL_NAME (m) > DECL_NAME (method))
+	    break;
+	}
     }
   current_fns = insert_p ? NULL_TREE : VEC_index (tree, method_vec, slot);
 
@@ -996,83 +996,83 @@ add_method (tree type, tree method, tree using_decl)
 
       /* Check to see if we've already got this method.  */
       for (fns = current_fns; fns; fns = OVL_NEXT (fns))
-        {
-          tree fn = OVL_CURRENT (fns);
-          tree fn_type;
-          tree method_type;
-          tree parms1;
-          tree parms2;
+	{
+	  tree fn = OVL_CURRENT (fns);
+	  tree fn_type;
+	  tree method_type;
+	  tree parms1;
+	  tree parms2;
 
-          if (TREE_CODE (fn) != TREE_CODE (method))
-            continue;
+	  if (TREE_CODE (fn) != TREE_CODE (method))
+	    continue;
 
-          /* [over.load] Member function declarations with the
-             same name and the same parameter types cannot be
-             overloaded if any of them is a static member
-             function declaration.
+	  /* [over.load] Member function declarations with the
+	     same name and the same parameter types cannot be
+	     overloaded if any of them is a static member
+	     function declaration.
 
-             [namespace.udecl] When a using-declaration brings names
-             from a base class into a derived class scope, member
-             functions in the derived class override and/or hide member
-             functions with the same name and parameter types in a base
-             class (rather than conflicting).  */
-          fn_type = TREE_TYPE (fn);
-          method_type = TREE_TYPE (method);
-          parms1 = TYPE_ARG_TYPES (fn_type);
-          parms2 = TYPE_ARG_TYPES (method_type);
+	     [namespace.udecl] When a using-declaration brings names
+	     from a base class into a derived class scope, member
+	     functions in the derived class override and/or hide member
+	     functions with the same name and parameter types in a base
+	     class (rather than conflicting).  */
+	  fn_type = TREE_TYPE (fn);
+	  method_type = TREE_TYPE (method);
+	  parms1 = TYPE_ARG_TYPES (fn_type);
+	  parms2 = TYPE_ARG_TYPES (method_type);
 
-          /* Compare the quals on the 'this' parm.  Don't compare
-             the whole types, as used functions are treated as
-             coming from the using class in overload resolution.  */
-          if (! DECL_STATIC_FUNCTION_P (fn)
-              && ! DECL_STATIC_FUNCTION_P (method)
-              && (TYPE_QUALS (TREE_TYPE (TREE_VALUE (parms1)))
-                  != TYPE_QUALS (TREE_TYPE (TREE_VALUE (parms2)))))
-            continue;
+	  /* Compare the quals on the 'this' parm.  Don't compare
+	     the whole types, as used functions are treated as
+	     coming from the using class in overload resolution.  */
+	  if (! DECL_STATIC_FUNCTION_P (fn)
+	      && ! DECL_STATIC_FUNCTION_P (method)
+	      && (TYPE_QUALS (TREE_TYPE (TREE_VALUE (parms1)))
+		  != TYPE_QUALS (TREE_TYPE (TREE_VALUE (parms2)))))
+	    continue;
 
-          /* For templates, the return type and template parameters
-             must be identical.  */
-          if (TREE_CODE (fn) == TEMPLATE_DECL
-              && (!same_type_p (TREE_TYPE (fn_type),
-                                TREE_TYPE (method_type))
-                  || !comp_template_parms (DECL_TEMPLATE_PARMS (fn),
-                                           DECL_TEMPLATE_PARMS (method))))
-            continue;
+	  /* For templates, the return type and template parameters
+	     must be identical.  */
+	  if (TREE_CODE (fn) == TEMPLATE_DECL
+	      && (!same_type_p (TREE_TYPE (fn_type),
+				TREE_TYPE (method_type))
+		  || !comp_template_parms (DECL_TEMPLATE_PARMS (fn),
+					   DECL_TEMPLATE_PARMS (method))))
+	    continue;
 
-          if (! DECL_STATIC_FUNCTION_P (fn))
-            parms1 = TREE_CHAIN (parms1);
-          if (! DECL_STATIC_FUNCTION_P (method))
-            parms2 = TREE_CHAIN (parms2);
+	  if (! DECL_STATIC_FUNCTION_P (fn))
+	    parms1 = TREE_CHAIN (parms1);
+	  if (! DECL_STATIC_FUNCTION_P (method))
+	    parms2 = TREE_CHAIN (parms2);
 
-          if (compparms (parms1, parms2)
-              && (!DECL_CONV_FN_P (fn)
-                  || same_type_p (TREE_TYPE (fn_type),
-                                  TREE_TYPE (method_type))))
-            {
-              if (using_decl)
-                {
-                  if (DECL_CONTEXT (fn) == type)
-                    /* Defer to the local function.  */
-                    return false;
-                  if (DECL_CONTEXT (fn) == DECL_CONTEXT (method))
-                    error ("repeated using declaration %q+D", using_decl);
-                  else
-                    error ("using declaration %q+D conflicts with a previous using declaration",
-                           using_decl);
-                }
-              else
-                {
-                  error ("%q+#D cannot be overloaded", method);
-                  error ("with %q+#D", fn);
-                }
+	  if (compparms (parms1, parms2)
+	      && (!DECL_CONV_FN_P (fn)
+		  || same_type_p (TREE_TYPE (fn_type),
+				  TREE_TYPE (method_type))))
+	    {
+	      if (using_decl)
+		{
+		  if (DECL_CONTEXT (fn) == type)
+		    /* Defer to the local function.  */
+		    return false;
+		  if (DECL_CONTEXT (fn) == DECL_CONTEXT (method))
+		    error ("repeated using declaration %q+D", using_decl);
+		  else
+		    error ("using declaration %q+D conflicts with a previous using declaration",
+			   using_decl);
+		}
+	      else
+		{
+		  error ("%q+#D cannot be overloaded", method);
+		  error ("with %q+#D", fn);
+		}
 
-              /* We don't call duplicate_decls here to merge the
-                 declarations because that will confuse things if the
-                 methods have inline definitions.  In particular, we
-                 will crash while processing the definitions.  */
-              return false;
-            }
-        }
+	      /* We don't call duplicate_decls here to merge the
+		 declarations because that will confuse things if the
+		 methods have inline definitions.  In particular, we
+		 will crash while processing the definitions.  */
+	      return false;
+	    }
+	}
     }
 
   /* A class should never have more than one destructor.  */
@@ -1092,17 +1092,17 @@ add_method (tree type, tree method, tree using_decl)
       bool reallocated;
 
       /* We only expect to add few methods in the COMPLETE_P case, so
-         just make room for one more method in that case.  */
+	 just make room for one more method in that case.  */
       if (complete_p)
-        reallocated = VEC_reserve_exact (tree, gc, method_vec, 1);
+	reallocated = VEC_reserve_exact (tree, gc, method_vec, 1);
       else
-        reallocated = VEC_reserve (tree, gc, method_vec, 1);
+	reallocated = VEC_reserve (tree, gc, method_vec, 1);
       if (reallocated)
-        CLASSTYPE_METHOD_VEC (type) = method_vec;
+	CLASSTYPE_METHOD_VEC (type) = method_vec;
       if (slot == VEC_length (tree, method_vec))
-        VEC_quick_push (tree, method_vec, overload);
+	VEC_quick_push (tree, method_vec, overload);
       else
-        VEC_quick_insert (tree, method_vec, slot, overload);
+	VEC_quick_insert (tree, method_vec, slot, overload);
     }
   else
     /* Replace the current slot.  */
@@ -1129,20 +1129,20 @@ alter_access (tree t, tree fdecl, tree access)
   if (elem)
     {
       if (TREE_VALUE (elem) != access)
-        {
-          if (TREE_CODE (TREE_TYPE (fdecl)) == FUNCTION_DECL)
-            error ("conflicting access specifications for method"
-                   " %q+D, ignored", TREE_TYPE (fdecl));
-          else
-            error ("conflicting access specifications for field %qE, ignored",
-                   DECL_NAME (fdecl));
-        }
+	{
+	  if (TREE_CODE (TREE_TYPE (fdecl)) == FUNCTION_DECL)
+	    error ("conflicting access specifications for method"
+		   " %q+D, ignored", TREE_TYPE (fdecl));
+	  else
+	    error ("conflicting access specifications for field %qE, ignored",
+		   DECL_NAME (fdecl));
+	}
       else
-        {
-          /* They're changing the access to the same thing they changed
-             it to before.  That's OK.  */
-          ;
-        }
+	{
+	  /* They're changing the access to the same thing they changed
+	     it to before.  That's OK.  */
+	  ;
+	}
     }
   else
     {
@@ -1173,12 +1173,12 @@ handle_using_decl (tree using_decl, tree t)
   if (old_value)
     {
       if (is_overloaded_fn (old_value))
-        old_value = OVL_CURRENT (old_value);
+	old_value = OVL_CURRENT (old_value);
 
       if (DECL_P (old_value) && DECL_CONTEXT (old_value) == t)
-        /* OK */;
+	/* OK */;
       else
-        old_value = NULL_TREE;
+	old_value = NULL_TREE;
     }
 
   cp_emit_debug_info_for_using (decl, USING_DECL_SCOPE (using_decl));
@@ -1191,15 +1191,15 @@ handle_using_decl (tree using_decl, tree t)
   else if (is_overloaded_fn (old_value))
     {
       if (flist)
-        /* It's OK to use functions from a base when there are functions with
-           the same name already present in the current class.  */;
+	/* It's OK to use functions from a base when there are functions with
+	   the same name already present in the current class.  */;
       else
-        {
-          error ("%q+D invalid in %q#T", using_decl, t);
-          error ("  because of local method %q+#D with same name",
-                 OVL_CURRENT (old_value));
-          return;
-        }
+	{
+	  error ("%q+D invalid in %q#T", using_decl, t);
+	  error ("  because of local method %q+#D with same name",
+		 OVL_CURRENT (old_value));
+	  return;
+	}
     }
   else if (!DECL_ARTIFICIAL (old_value))
     {
@@ -1212,8 +1212,8 @@ handle_using_decl (tree using_decl, tree t)
   if (flist)
     for (; flist; flist = OVL_NEXT (flist))
       {
-        add_method (t, OVL_CURRENT (flist), using_decl);
-        alter_access (t, OVL_CURRENT (flist), access);
+	add_method (t, OVL_CURRENT (flist), using_decl);
+	alter_access (t, OVL_CURRENT (flist), access);
       }
   else
     alter_access (t, decl, access);
@@ -1225,8 +1225,8 @@ handle_using_decl (tree using_decl, tree t)
 
 static void
 check_bases (tree t,
-             int* cant_have_const_ctor_p,
-             int* no_const_asn_ref_p)
+	     int* cant_have_const_ctor_p,
+	     int* no_const_asn_ref_p)
 {
   int i;
   int seen_non_virtual_nearly_empty_base_p;
@@ -1243,51 +1243,51 @@ check_bases (tree t,
       gcc_assert (COMPLETE_TYPE_P (basetype));
 
       /* Effective C++ rule 14.  We only need to check TYPE_POLYMORPHIC_P
-         here because the case of virtual functions but non-virtual
-         dtor is handled in finish_struct_1.  */
+	 here because the case of virtual functions but non-virtual
+	 dtor is handled in finish_struct_1.  */
       if (!TYPE_POLYMORPHIC_P (basetype))
-        warning (OPT_Weffc__,
-                 "base class %q#T has a non-virtual destructor", basetype);
+	warning (OPT_Weffc__,
+		 "base class %q#T has a non-virtual destructor", basetype);
 
       /* If the base class doesn't have copy constructors or
-         assignment operators that take const references, then the
-         derived class cannot have such a member automatically
-         generated.  */
+	 assignment operators that take const references, then the
+	 derived class cannot have such a member automatically
+	 generated.  */
       if (! TYPE_HAS_CONST_INIT_REF (basetype))
-        *cant_have_const_ctor_p = 1;
+	*cant_have_const_ctor_p = 1;
       if (TYPE_HAS_ASSIGN_REF (basetype)
-          && !TYPE_HAS_CONST_ASSIGN_REF (basetype))
-        *no_const_asn_ref_p = 1;
+	  && !TYPE_HAS_CONST_ASSIGN_REF (basetype))
+	*no_const_asn_ref_p = 1;
 
       if (BINFO_VIRTUAL_P (base_binfo))
-        /* A virtual base does not effect nearly emptiness.  */
-        ;
+	/* A virtual base does not effect nearly emptiness.  */
+	;
       else if (CLASSTYPE_NEARLY_EMPTY_P (basetype))
-        {
-          if (seen_non_virtual_nearly_empty_base_p)
-            /* And if there is more than one nearly empty base, then the
-               derived class is not nearly empty either.  */
-            CLASSTYPE_NEARLY_EMPTY_P (t) = 0;
-          else
-            /* Remember we've seen one.  */
-            seen_non_virtual_nearly_empty_base_p = 1;
-        }
+	{
+	  if (seen_non_virtual_nearly_empty_base_p)
+	    /* And if there is more than one nearly empty base, then the
+	       derived class is not nearly empty either.  */
+	    CLASSTYPE_NEARLY_EMPTY_P (t) = 0;
+	  else
+	    /* Remember we've seen one.  */
+	    seen_non_virtual_nearly_empty_base_p = 1;
+	}
       else if (!is_empty_class (basetype))
-        /* If the base class is not empty or nearly empty, then this
-           class cannot be nearly empty.  */
-        CLASSTYPE_NEARLY_EMPTY_P (t) = 0;
+	/* If the base class is not empty or nearly empty, then this
+	   class cannot be nearly empty.  */
+	CLASSTYPE_NEARLY_EMPTY_P (t) = 0;
 
       /* A lot of properties from the bases also apply to the derived
-         class.  */
+	 class.  */
       TYPE_NEEDS_CONSTRUCTING (t) |= TYPE_NEEDS_CONSTRUCTING (basetype);
       TYPE_HAS_NONTRIVIAL_DESTRUCTOR (t)
-        |= TYPE_HAS_NONTRIVIAL_DESTRUCTOR (basetype);
+	|= TYPE_HAS_NONTRIVIAL_DESTRUCTOR (basetype);
       TYPE_HAS_COMPLEX_ASSIGN_REF (t)
-        |= TYPE_HAS_COMPLEX_ASSIGN_REF (basetype);
+	|= TYPE_HAS_COMPLEX_ASSIGN_REF (basetype);
       TYPE_HAS_COMPLEX_INIT_REF (t) |= TYPE_HAS_COMPLEX_INIT_REF (basetype);
       TYPE_POLYMORPHIC_P (t) |= TYPE_POLYMORPHIC_P (basetype);
       CLASSTYPE_CONTAINS_EMPTY_CLASS_P (t)
-        |= CLASSTYPE_CONTAINS_EMPTY_CLASS_P (basetype);
+	|= CLASSTYPE_CONTAINS_EMPTY_CLASS_P (basetype);
     }
 }
 
@@ -1312,45 +1312,45 @@ determine_primary_bases (tree t)
       tree primary = CLASSTYPE_PRIMARY_BINFO (BINFO_TYPE (base_binfo));
 
       /* See if we're the non-virtual primary of our inheritance
-         chain.  */
+	 chain.  */
       if (!BINFO_VIRTUAL_P (base_binfo))
-        {
-          tree parent = BINFO_INHERITANCE_CHAIN (base_binfo);
-          tree parent_primary = CLASSTYPE_PRIMARY_BINFO (BINFO_TYPE (parent));
+	{
+	  tree parent = BINFO_INHERITANCE_CHAIN (base_binfo);
+	  tree parent_primary = CLASSTYPE_PRIMARY_BINFO (BINFO_TYPE (parent));
 
-          if (parent_primary
-              && SAME_BINFO_TYPE_P (BINFO_TYPE (base_binfo),
-                                    BINFO_TYPE (parent_primary)))
-            /* We are the primary binfo.  */
-            BINFO_PRIMARY_P (base_binfo) = 1;
-        }
+	  if (parent_primary
+	      && SAME_BINFO_TYPE_P (BINFO_TYPE (base_binfo),
+				    BINFO_TYPE (parent_primary)))
+	    /* We are the primary binfo.  */
+	    BINFO_PRIMARY_P (base_binfo) = 1;
+	}
       /* Determine if we have a virtual primary base, and mark it so.
        */
       if (primary && BINFO_VIRTUAL_P (primary))
-        {
-          tree this_primary = copied_binfo (primary, base_binfo);
+	{
+	  tree this_primary = copied_binfo (primary, base_binfo);
 
-          if (BINFO_PRIMARY_P (this_primary))
-            /* Someone already claimed this base.  */
-            BINFO_LOST_PRIMARY_P (base_binfo) = 1;
-          else
-            {
-              tree delta;
+	  if (BINFO_PRIMARY_P (this_primary))
+	    /* Someone already claimed this base.  */
+	    BINFO_LOST_PRIMARY_P (base_binfo) = 1;
+	  else
+	    {
+	      tree delta;
 
-              BINFO_PRIMARY_P (this_primary) = 1;
-              BINFO_INHERITANCE_CHAIN (this_primary) = base_binfo;
+	      BINFO_PRIMARY_P (this_primary) = 1;
+	      BINFO_INHERITANCE_CHAIN (this_primary) = base_binfo;
 
-              /* A virtual binfo might have been copied from within
-                 another hierarchy. As we're about to use it as a
-                 primary base, make sure the offsets match.  */
-              delta = size_diffop (convert (ssizetype,
-                                            BINFO_OFFSET (base_binfo)),
-                                   convert (ssizetype,
-                                            BINFO_OFFSET (this_primary)));
+	      /* A virtual binfo might have been copied from within
+		 another hierarchy. As we're about to use it as a
+		 primary base, make sure the offsets match.  */
+	      delta = size_diffop (convert (ssizetype,
+					    BINFO_OFFSET (base_binfo)),
+				   convert (ssizetype,
+					    BINFO_OFFSET (this_primary)));
 
-              propagate_binfo_offsets (this_primary, delta);
-            }
-        }
+	      propagate_binfo_offsets (this_primary, delta);
+	    }
+	}
     }
 
   /* First look for a dynamic direct non-virtual base.  */
@@ -1359,10 +1359,10 @@ determine_primary_bases (tree t)
       tree basetype = BINFO_TYPE (base_binfo);
 
       if (TYPE_CONTAINS_VPTR_P (basetype) && !BINFO_VIRTUAL_P (base_binfo))
-        {
-          primary = base_binfo;
-          goto found;
-        }
+	{
+	  primary = base_binfo;
+	  goto found;
+	}
     }
 
   /* A "nearly-empty" virtual base class can be the primary base
@@ -1374,17 +1374,17 @@ determine_primary_bases (tree t)
   for (base_binfo = TREE_CHAIN (type_binfo); base_binfo;
        base_binfo = TREE_CHAIN (base_binfo))
     if (BINFO_VIRTUAL_P (base_binfo)
-        && CLASSTYPE_NEARLY_EMPTY_P (BINFO_TYPE (base_binfo)))
+	&& CLASSTYPE_NEARLY_EMPTY_P (BINFO_TYPE (base_binfo)))
       {
-        if (!BINFO_PRIMARY_P (base_binfo))
-          {
-            /* Found one that is not primary.  */
-            primary = base_binfo;
-            goto found;
-          }
-        else if (!primary)
-          /* Remember the first candidate.  */
-          primary = base_binfo;
+	if (!BINFO_PRIMARY_P (base_binfo))
+	  {
+	    /* Found one that is not primary.  */
+	    primary = base_binfo;
+	    goto found;
+	  }
+	else if (!primary)
+	  /* Remember the first candidate.  */
+	  primary = base_binfo;
       }
 
  found:
@@ -1395,22 +1395,22 @@ determine_primary_bases (tree t)
 
       CLASSTYPE_PRIMARY_BINFO (t) = primary;
       if (BINFO_PRIMARY_P (primary))
-        /* We are stealing a primary base.  */
-        BINFO_LOST_PRIMARY_P (BINFO_INHERITANCE_CHAIN (primary)) = 1;
+	/* We are stealing a primary base.  */
+	BINFO_LOST_PRIMARY_P (BINFO_INHERITANCE_CHAIN (primary)) = 1;
       BINFO_PRIMARY_P (primary) = 1;
       if (BINFO_VIRTUAL_P (primary))
-        {
-          tree delta;
+	{
+	  tree delta;
 
-          BINFO_INHERITANCE_CHAIN (primary) = type_binfo;
-          /* A virtual binfo might have been copied from within
-             another hierarchy. As we're about to use it as a primary
-             base, make sure the offsets match.  */
-          delta = size_diffop (ssize_int (0),
-                               convert (ssizetype, BINFO_OFFSET (primary)));
+	  BINFO_INHERITANCE_CHAIN (primary) = type_binfo;
+	  /* A virtual binfo might have been copied from within
+	     another hierarchy. As we're about to use it as a primary
+	     base, make sure the offsets match.  */
+	  delta = size_diffop (ssize_int (0),
+			       convert (ssizetype, BINFO_OFFSET (primary)));
 
-          propagate_binfo_offsets (primary, delta);
-        }
+	  propagate_binfo_offsets (primary, delta);
+	}
 
       primary = TYPE_BINFO (basetype);
 
@@ -1434,11 +1434,11 @@ finish_struct_bits (tree t)
        variants = TYPE_NEXT_VARIANT (variants))
     {
       /* These fields are in the _TYPE part of the node, not in
-         the TYPE_LANG_SPECIFIC component, so they are not shared.  */
+	 the TYPE_LANG_SPECIFIC component, so they are not shared.  */
       TYPE_HAS_CONSTRUCTOR (variants) = TYPE_HAS_CONSTRUCTOR (t);
       TYPE_NEEDS_CONSTRUCTING (variants) = TYPE_NEEDS_CONSTRUCTING (t);
       TYPE_HAS_NONTRIVIAL_DESTRUCTOR (variants)
-        = TYPE_HAS_NONTRIVIAL_DESTRUCTOR (t);
+	= TYPE_HAS_NONTRIVIAL_DESTRUCTOR (t);
 
       TYPE_POLYMORPHIC_P (variants) = TYPE_POLYMORPHIC_P (t);
 
@@ -1470,10 +1470,10 @@ finish_struct_bits (tree t)
       tree variants;
       DECL_MODE (TYPE_MAIN_DECL (t)) = BLKmode;
       for (variants = t; variants; variants = TYPE_NEXT_VARIANT (variants))
-        {
-          TYPE_MODE (variants) = BLKmode;
-          TREE_ADDRESSABLE (variants) = 1;
-        }
+	{
+	  TYPE_MODE (variants) = BLKmode;
+	  TREE_ADDRESSABLE (variants) = 1;
+	}
     }
 }
 
@@ -1493,11 +1493,11 @@ maybe_warn_about_overly_private_class (tree t)
 
   if (!warn_ctor_dtor_privacy
       /* If the class has friends, those entities might create and
-         access instances, so we should not warn.  */
+	 access instances, so we should not warn.  */
       || (CLASSTYPE_FRIEND_CLASSES (t)
-          || DECL_FRIENDLIST (TYPE_MAIN_DECL (t)))
+	  || DECL_FRIENDLIST (TYPE_MAIN_DECL (t)))
       /* We will have warned when the template was declared; there's
-         no need to warn on every instantiation.  */
+	 no need to warn on every instantiation.  */
       || CLASSTYPE_TEMPLATE_INSTANTIATION (t))
     /* There's no reason to even consider warning about this
        class.  */
@@ -1524,45 +1524,45 @@ maybe_warn_about_overly_private_class (tree t)
        provide any way to call private members.  */
     if (!DECL_ARTIFICIAL (fn))
       {
-        if (!TREE_PRIVATE (fn))
-          {
-            if (DECL_STATIC_FUNCTION_P (fn))
-              /* A non-private static member function is just like a
-                 friend; it can create and invoke private member
-                 functions, and be accessed without a class
-                 instance.  */
-              return;
+	if (!TREE_PRIVATE (fn))
+	  {
+	    if (DECL_STATIC_FUNCTION_P (fn))
+	      /* A non-private static member function is just like a
+		 friend; it can create and invoke private member
+		 functions, and be accessed without a class
+		 instance.  */
+	      return;
 
-            has_nonprivate_method = 1;
-            /* Keep searching for a static member function.  */
-          }
-        else if (!DECL_CONSTRUCTOR_P (fn) && !DECL_DESTRUCTOR_P (fn))
-          has_member_fn = 1;
+	    has_nonprivate_method = 1;
+	    /* Keep searching for a static member function.  */
+	  }
+	else if (!DECL_CONSTRUCTOR_P (fn) && !DECL_DESTRUCTOR_P (fn))
+	  has_member_fn = 1;
       }
 
   if (!has_nonprivate_method && has_member_fn)
     {
       /* There are no non-private methods, and there's at least one
-         private member function that isn't a constructor or
-         destructor.  (If all the private members are
-         constructors/destructors we want to use the code below that
-         issues error messages specifically referring to
-         constructors/destructors.)  */
+	 private member function that isn't a constructor or
+	 destructor.  (If all the private members are
+	 constructors/destructors we want to use the code below that
+	 issues error messages specifically referring to
+	 constructors/destructors.)  */
       unsigned i;
       tree binfo = TYPE_BINFO (t);
 
       for (i = 0; i != BINFO_N_BASE_BINFOS (binfo); i++)
-        if (BINFO_BASE_ACCESS (binfo, i) != access_private_node)
-          {
-            has_nonprivate_method = 1;
-            break;
-          }
+	if (BINFO_BASE_ACCESS (binfo, i) != access_private_node)
+	  {
+	    has_nonprivate_method = 1;
+	    break;
+	  }
       if (!has_nonprivate_method)
-        {
-          warning (OPT_Wctor_dtor_privacy,
-                   "all member functions in class %qT are private", t);
-          return;
-        }
+	{
+	  warning (OPT_Wctor_dtor_privacy,
+		   "all member functions in class %qT are private", t);
+	  return;
+	}
     }
 
   /* Even if some of the member functions are non-private, the class
@@ -1572,54 +1572,54 @@ maybe_warn_about_overly_private_class (tree t)
   if (fn && TREE_PRIVATE (fn))
     {
       warning (OPT_Wctor_dtor_privacy,
-               "%q#T only defines a private destructor and has no friends",
-               t);
+	       "%q#T only defines a private destructor and has no friends",
+	       t);
       return;
     }
 
   if (TYPE_HAS_CONSTRUCTOR (t)
       /* Implicitly generated constructors are always public.  */
       && (!CLASSTYPE_LAZY_DEFAULT_CTOR (t)
-          || !CLASSTYPE_LAZY_COPY_CTOR (t)))
+	  || !CLASSTYPE_LAZY_COPY_CTOR (t)))
     {
       int nonprivate_ctor = 0;
 
       /* If a non-template class does not define a copy
-         constructor, one is defined for it, enabling it to avoid
-         this warning.  For a template class, this does not
-         happen, and so we would normally get a warning on:
+	 constructor, one is defined for it, enabling it to avoid
+	 this warning.  For a template class, this does not
+	 happen, and so we would normally get a warning on:
 
-           template <class T> class C { private: C(); };
+	   template <class T> class C { private: C(); };
 
-         To avoid this asymmetry, we check TYPE_HAS_INIT_REF.  All
-         complete non-template or fully instantiated classes have this
-         flag set.  */
+	 To avoid this asymmetry, we check TYPE_HAS_INIT_REF.  All
+	 complete non-template or fully instantiated classes have this
+	 flag set.  */
       if (!TYPE_HAS_INIT_REF (t))
-        nonprivate_ctor = 1;
+	nonprivate_ctor = 1;
       else
-        for (fn = CLASSTYPE_CONSTRUCTORS (t); fn; fn = OVL_NEXT (fn))
-          {
-            tree ctor = OVL_CURRENT (fn);
-            /* Ideally, we wouldn't count copy constructors (or, in
-               fact, any constructor that takes an argument of the
-               class type as a parameter) because such things cannot
-               be used to construct an instance of the class unless
-               you already have one.  But, for now at least, we're
-               more generous.  */
-            if (! TREE_PRIVATE (ctor))
-              {
-                nonprivate_ctor = 1;
-                break;
-              }
-          }
+	for (fn = CLASSTYPE_CONSTRUCTORS (t); fn; fn = OVL_NEXT (fn))
+	  {
+	    tree ctor = OVL_CURRENT (fn);
+	    /* Ideally, we wouldn't count copy constructors (or, in
+	       fact, any constructor that takes an argument of the
+	       class type as a parameter) because such things cannot
+	       be used to construct an instance of the class unless
+	       you already have one.  But, for now at least, we're
+	       more generous.  */
+	    if (! TREE_PRIVATE (ctor))
+	      {
+		nonprivate_ctor = 1;
+		break;
+	      }
+	  }
 
       if (nonprivate_ctor == 0)
-        {
-          warning (OPT_Wctor_dtor_privacy,
-                   "%q#T only defines private constructors and has no friends",
-                   t);
-          return;
-        }
+	{
+	  warning (OPT_Wctor_dtor_privacy,
+		   "%q#T only defines private constructors and has no friends",
+		   t);
+	  return;
+	}
     }
 }
 
@@ -1676,9 +1676,9 @@ resort_method_name_cmp (const void* m1_p, const void* m2_p)
 
 void
 resort_type_method_vec (void* obj,
-                        void* orig_obj ATTRIBUTE_UNUSED ,
-                        gt_pointer_operator new_value,
-                        void* cookie)
+			void* orig_obj ATTRIBUTE_UNUSED ,
+			gt_pointer_operator new_value,
+			void* cookie)
 {
   VEC(tree,gc) *method_vec = (VEC(tree,gc) *) obj;
   int len = VEC_length (tree, method_vec);
@@ -1698,7 +1698,7 @@ resort_type_method_vec (void* obj,
       resort_data.new_value = new_value;
       resort_data.cookie = cookie;
       qsort (VEC_address (tree, method_vec) + slot, len - slot, sizeof (tree),
-             resort_method_name_cmp);
+	     resort_method_name_cmp);
     }
 }
 
@@ -1739,7 +1739,7 @@ finish_struct_methods (tree t)
       break;
   if (len - slot > 1)
     qsort (VEC_address (tree, method_vec) + slot,
-           len-slot, sizeof (tree), method_name_cmp);
+	   len-slot, sizeof (tree), method_name_cmp);
 }
 
 /* Make BINFO's vtable have N entries, including RTTI entries,
@@ -1753,7 +1753,7 @@ layout_vtable_decl (tree binfo, int n)
   tree vtable;
 
   atype = build_cplus_array_type (vtable_entry_type,
-                                  build_index_type (size_int (n - 1)));
+				  build_index_type (size_int (n - 1)));
   layout_type (atype);
 
   /* We may have to grow the vtable.  */
@@ -1786,17 +1786,17 @@ same_signature_p (tree fndecl, tree base_fndecl)
 
   if (DECL_NAME (fndecl) == DECL_NAME (base_fndecl)
       || (DECL_CONV_FN_P (fndecl)
-          && DECL_CONV_FN_P (base_fndecl)
-          && same_type_p (DECL_CONV_FN_TYPE (fndecl),
-                          DECL_CONV_FN_TYPE (base_fndecl))))
+	  && DECL_CONV_FN_P (base_fndecl)
+	  && same_type_p (DECL_CONV_FN_TYPE (fndecl),
+			  DECL_CONV_FN_TYPE (base_fndecl))))
     {
       tree types, base_types;
       types = TYPE_ARG_TYPES (TREE_TYPE (fndecl));
       base_types = TYPE_ARG_TYPES (TREE_TYPE (base_fndecl));
       if ((TYPE_QUALS (TREE_TYPE (TREE_VALUE (base_types)))
-           == TYPE_QUALS (TREE_TYPE (TREE_VALUE (types))))
-          && compparms (TREE_CHAIN (base_types), TREE_CHAIN (types)))
-        return 1;
+	   == TYPE_QUALS (TREE_TYPE (TREE_VALUE (types))))
+	  && compparms (TREE_CHAIN (base_types), TREE_CHAIN (types)))
+	return 1;
     }
   return 0;
 }
@@ -1812,13 +1812,13 @@ base_derived_from (tree derived, tree base)
   for (probe = base; probe; probe = BINFO_INHERITANCE_CHAIN (probe))
     {
       if (probe == derived)
-        return true;
+	return true;
       else if (BINFO_VIRTUAL_P (probe))
-        /* If we meet a virtual base, we can't follow the inheritance
-           any more.  See if the complete type of DERIVED contains
-           such a virtual base.  */
-        return (binfo_for_vbase (BINFO_TYPE (probe), BINFO_TYPE (derived))
-                != NULL_TREE);
+	/* If we meet a virtual base, we can't follow the inheritance
+	   any more.  See if the complete type of DERIVED contains
+	   such a virtual base.  */
+	return (binfo_for_vbase (BINFO_TYPE (probe), BINFO_TYPE (derived))
+		!= NULL_TREE);
     }
   return false;
 }
@@ -1839,8 +1839,8 @@ typedef struct find_final_overrider_data_s {
 
 static bool
 dfs_find_final_overrider_1 (tree binfo,
-                            find_final_overrider_data *ffod,
-                            unsigned depth)
+			    find_final_overrider_data *ffod,
+			    unsigned depth)
 {
   tree method;
 
@@ -1850,8 +1850,8 @@ dfs_find_final_overrider_1 (tree binfo,
     {
       depth--;
       if (dfs_find_final_overrider_1
-          (VEC_index (tree, ffod->path, depth), ffod, depth))
-        return true;
+	  (VEC_index (tree, ffod->path, depth), ffod, depth))
+	return true;
     }
 
   method = look_for_overrides_here (BINFO_TYPE (binfo), ffod->fn);
@@ -1861,17 +1861,17 @@ dfs_find_final_overrider_1 (tree binfo,
 
       /* Remove any candidates overridden by this new function.  */
       while (*candidate)
-        {
-          /* If *CANDIDATE overrides METHOD, then METHOD
-             cannot override anything else on the list.  */
-          if (base_derived_from (TREE_VALUE (*candidate), binfo))
-            return true;
-          /* If METHOD overrides *CANDIDATE, remove *CANDIDATE.  */
-          if (base_derived_from (binfo, TREE_VALUE (*candidate)))
-            *candidate = TREE_CHAIN (*candidate);
-          else
-            candidate = &TREE_CHAIN (*candidate);
-        }
+	{
+	  /* If *CANDIDATE overrides METHOD, then METHOD
+	     cannot override anything else on the list.  */
+	  if (base_derived_from (TREE_VALUE (*candidate), binfo))
+	    return true;
+	  /* If METHOD overrides *CANDIDATE, remove *CANDIDATE.  */
+	  if (base_derived_from (binfo, TREE_VALUE (*candidate)))
+	    *candidate = TREE_CHAIN (*candidate);
+	  else
+	    candidate = &TREE_CHAIN (*candidate);
+	}
 
       /* Add the new function.  */
       ffod->candidates = tree_cons (method, binfo, ffod->candidates);
@@ -1942,7 +1942,7 @@ find_final_overrider (tree derived, tree binfo, tree fn)
   ffod.path = VEC_alloc (tree, heap, 30);
 
   dfs_walk_all (derived, dfs_find_final_overrider_pre,
-                dfs_find_final_overrider_post, &ffod);
+		dfs_find_final_overrider_post, &ffod);
 
   VEC_free (tree, heap, ffod.path);
 
@@ -1965,7 +1965,7 @@ get_vcall_index (tree fn, tree type)
 
   for (ix = 0; VEC_iterate (tree_pair_s, indices, ix, p); ix++)
     if ((DECL_DESTRUCTOR_P (fn) && DECL_DESTRUCTOR_P (p->purpose))
-        || same_signature_p (fn, p->purpose))
+	|| same_signature_p (fn, p->purpose))
       return p->value;
 
   /* There should always be an appropriate index.  */
@@ -1978,7 +1978,7 @@ get_vcall_index (tree fn, tree type)
 
 static void
 update_vtable_entry_for_fn (tree t, tree binfo, tree fn, tree* virtuals,
-                            unsigned ix)
+			    unsigned ix)
 {
   tree b;
   tree overrider;
@@ -1997,11 +1997,11 @@ update_vtable_entry_for_fn (tree t, tree binfo, tree fn, tree* virtuals,
     {
       gcc_assert (b);
       if (look_for_overrides_here (BINFO_TYPE (b), target_fn))
-        break;
+	break;
 
       /* The nearest definition is from a lost primary.  */
       if (BINFO_LOST_PRIMARY_P (b))
-        lost = true;
+	lost = true;
     }
   first_defn = b;
 
@@ -2026,93 +2026,93 @@ update_vtable_entry_for_fn (tree t, tree binfo, tree fn, tree* virtuals,
       && !DECL_INVALID_OVERRIDER_P (overrider_target))
     {
       /* If FN is a covariant thunk, we must figure out the adjustment
-         to the final base FN was converting to. As OVERRIDER_TARGET might
-         also be converting to the return type of FN, we have to
-         combine the two conversions here.  */
+	 to the final base FN was converting to. As OVERRIDER_TARGET might
+	 also be converting to the return type of FN, we have to
+	 combine the two conversions here.  */
       tree fixed_offset, virtual_offset;
 
       over_return = TREE_TYPE (over_return);
       base_return = TREE_TYPE (base_return);
 
       if (DECL_THUNK_P (fn))
-        {
-          gcc_assert (DECL_RESULT_THUNK_P (fn));
-          fixed_offset = ssize_int (THUNK_FIXED_OFFSET (fn));
-          virtual_offset = THUNK_VIRTUAL_OFFSET (fn);
-        }
+	{
+	  gcc_assert (DECL_RESULT_THUNK_P (fn));
+	  fixed_offset = ssize_int (THUNK_FIXED_OFFSET (fn));
+	  virtual_offset = THUNK_VIRTUAL_OFFSET (fn);
+	}
       else
-        fixed_offset = virtual_offset = NULL_TREE;
+	fixed_offset = virtual_offset = NULL_TREE;
 
       if (virtual_offset)
-        /* Find the equivalent binfo within the return type of the
-           overriding function. We will want the vbase offset from
-           there.  */
-        virtual_offset = binfo_for_vbase (BINFO_TYPE (virtual_offset),
-                                          over_return);
+	/* Find the equivalent binfo within the return type of the
+	   overriding function. We will want the vbase offset from
+	   there.  */
+	virtual_offset = binfo_for_vbase (BINFO_TYPE (virtual_offset),
+					  over_return);
       else if (!same_type_ignoring_top_level_qualifiers_p
-               (over_return, base_return))
-        {
-          /* There was no existing virtual thunk (which takes
-             precedence).  So find the binfo of the base function's
-             return type within the overriding function's return type.
-             We cannot call lookup base here, because we're inside a
-             dfs_walk, and will therefore clobber the BINFO_MARKED
-             flags.  Fortunately we know the covariancy is valid (it
-             has already been checked), so we can just iterate along
-             the binfos, which have been chained in inheritance graph
-             order.  Of course it is lame that we have to repeat the
-             search here anyway -- we should really be caching pieces
-             of the vtable and avoiding this repeated work.  */
-          tree thunk_binfo, base_binfo;
+	       (over_return, base_return))
+	{
+	  /* There was no existing virtual thunk (which takes
+	     precedence).  So find the binfo of the base function's
+	     return type within the overriding function's return type.
+	     We cannot call lookup base here, because we're inside a
+	     dfs_walk, and will therefore clobber the BINFO_MARKED
+	     flags.  Fortunately we know the covariancy is valid (it
+	     has already been checked), so we can just iterate along
+	     the binfos, which have been chained in inheritance graph
+	     order.  Of course it is lame that we have to repeat the
+	     search here anyway -- we should really be caching pieces
+	     of the vtable and avoiding this repeated work.  */
+	  tree thunk_binfo, base_binfo;
 
-          /* Find the base binfo within the overriding function's
-             return type.  We will always find a thunk_binfo, except
-             when the covariancy is invalid (which we will have
-             already diagnosed).  */
-          for (base_binfo = TYPE_BINFO (base_return),
-               thunk_binfo = TYPE_BINFO (over_return);
-               thunk_binfo;
-               thunk_binfo = TREE_CHAIN (thunk_binfo))
-            if (SAME_BINFO_TYPE_P (BINFO_TYPE (thunk_binfo),
-                                   BINFO_TYPE (base_binfo)))
-              break;
+	  /* Find the base binfo within the overriding function's
+	     return type.  We will always find a thunk_binfo, except
+	     when the covariancy is invalid (which we will have
+	     already diagnosed).  */
+	  for (base_binfo = TYPE_BINFO (base_return),
+	       thunk_binfo = TYPE_BINFO (over_return);
+	       thunk_binfo;
+	       thunk_binfo = TREE_CHAIN (thunk_binfo))
+	    if (SAME_BINFO_TYPE_P (BINFO_TYPE (thunk_binfo),
+				   BINFO_TYPE (base_binfo)))
+	      break;
 
-          /* See if virtual inheritance is involved.  */
-          for (virtual_offset = thunk_binfo;
-               virtual_offset;
-               virtual_offset = BINFO_INHERITANCE_CHAIN (virtual_offset))
-            if (BINFO_VIRTUAL_P (virtual_offset))
-              break;
+	  /* See if virtual inheritance is involved.  */
+	  for (virtual_offset = thunk_binfo;
+	       virtual_offset;
+	       virtual_offset = BINFO_INHERITANCE_CHAIN (virtual_offset))
+	    if (BINFO_VIRTUAL_P (virtual_offset))
+	      break;
 
-          if (virtual_offset
-              || (thunk_binfo && !BINFO_OFFSET_ZEROP (thunk_binfo)))
-            {
-              tree offset = convert (ssizetype, BINFO_OFFSET (thunk_binfo));
+	  if (virtual_offset
+	      || (thunk_binfo && !BINFO_OFFSET_ZEROP (thunk_binfo)))
+	    {
+	      tree offset = convert (ssizetype, BINFO_OFFSET (thunk_binfo));
 
-              if (virtual_offset)
-                {
-                  /* We convert via virtual base.  Adjust the fixed
-                     offset to be from there.  */
-                  offset = size_diffop
-                    (offset, convert
-                     (ssizetype, BINFO_OFFSET (virtual_offset)));
-                }
-              if (fixed_offset)
-                /* There was an existing fixed offset, this must be
-                   from the base just converted to, and the base the
-                   FN was thunking to.  */
-                fixed_offset = size_binop (PLUS_EXPR, fixed_offset, offset);
-              else
-                fixed_offset = offset;
-            }
-        }
+	      if (virtual_offset)
+		{
+		  /* We convert via virtual base.  Adjust the fixed
+		     offset to be from there.  */
+		  offset = size_diffop
+		    (offset, convert
+		     (ssizetype, BINFO_OFFSET (virtual_offset)));
+		}
+	      if (fixed_offset)
+		/* There was an existing fixed offset, this must be
+		   from the base just converted to, and the base the
+		   FN was thunking to.  */
+		fixed_offset = size_binop (PLUS_EXPR, fixed_offset, offset);
+	      else
+		fixed_offset = offset;
+	    }
+	}
 
       if (fixed_offset || virtual_offset)
-        /* Replace the overriding function with a covariant thunk.  We
-           will emit the overriding function in its own slot as
-           well.  */
-        overrider_fn = make_thunk (overrider_target, /*this_adjusting=*/0,
-                                   fixed_offset, virtual_offset);
+	/* Replace the overriding function with a covariant thunk.  We
+	   will emit the overriding function in its own slot as
+	   well.  */
+	overrider_fn = make_thunk (overrider_target, /*this_adjusting=*/0,
+				   fixed_offset, virtual_offset);
     }
   else
     gcc_assert (!DECL_THUNK_P (fn));
@@ -2126,49 +2126,49 @@ update_vtable_entry_for_fn (tree t, tree binfo, tree fn, tree* virtuals,
   for (; b; b = BINFO_INHERITANCE_CHAIN (b))
     {
       /* If we find the final overrider, then we can stop
-         walking.  */
+	 walking.  */
       if (SAME_BINFO_TYPE_P (BINFO_TYPE (b),
-                             BINFO_TYPE (TREE_VALUE (overrider))))
-        break;
+			     BINFO_TYPE (TREE_VALUE (overrider))))
+	break;
 
       /* If we find a virtual base, and we haven't yet found the
-         overrider, then there is a virtual base between the
-         declaring base (first_defn) and the final overrider.  */
+	 overrider, then there is a virtual base between the
+	 declaring base (first_defn) and the final overrider.  */
       if (BINFO_VIRTUAL_P (b))
-        {
-          virtual_base = b;
-          break;
-        }
+	{
+	  virtual_base = b;
+	  break;
+	}
     }
 
   if (overrider_fn != overrider_target && !virtual_base)
     {
       /* The ABI specifies that a covariant thunk includes a mangling
-         for a this pointer adjustment.  This-adjusting thunks that
-         override a function from a virtual base have a vcall
-         adjustment.  When the virtual base in question is a primary
-         virtual base, we know the adjustments are zero, (and in the
-         non-covariant case, we would not use the thunk).
-         Unfortunately we didn't notice this could happen, when
-         designing the ABI and so never mandated that such a covariant
-         thunk should be emitted.  Because we must use the ABI mandated
-         name, we must continue searching from the binfo where we
-         found the most recent definition of the function, towards the
-         primary binfo which first introduced the function into the
-         vtable.  If that enters a virtual base, we must use a vcall
-         this-adjusting thunk.  Bleah! */
+	 for a this pointer adjustment.  This-adjusting thunks that
+	 override a function from a virtual base have a vcall
+	 adjustment.  When the virtual base in question is a primary
+	 virtual base, we know the adjustments are zero, (and in the
+	 non-covariant case, we would not use the thunk).
+	 Unfortunately we didn't notice this could happen, when
+	 designing the ABI and so never mandated that such a covariant
+	 thunk should be emitted.  Because we must use the ABI mandated
+	 name, we must continue searching from the binfo where we
+	 found the most recent definition of the function, towards the
+	 primary binfo which first introduced the function into the
+	 vtable.  If that enters a virtual base, we must use a vcall
+	 this-adjusting thunk.  Bleah! */
       tree probe = first_defn;
 
       while ((probe = get_primary_binfo (probe))
-             && (unsigned) list_length (BINFO_VIRTUALS (probe)) > ix)
-        if (BINFO_VIRTUAL_P (probe))
-          virtual_base = probe;
+	     && (unsigned) list_length (BINFO_VIRTUALS (probe)) > ix)
+	if (BINFO_VIRTUAL_P (probe))
+	  virtual_base = probe;
 
       if (virtual_base)
-        /* Even if we find a virtual base, the correct delta is
-           between the overrider and the binfo we're building a vtable
-           for.  */
-        goto virtual_covariant;
+	/* Even if we find a virtual base, the correct delta is
+	   between the overrider and the binfo we're building a vtable
+	   for.  */
+	goto virtual_covariant;
     }
 
   /* Compute the constant adjustment to the `this' pointer.  The
@@ -2178,7 +2178,7 @@ update_vtable_entry_for_fn (tree t, tree binfo, tree fn, tree* virtuals,
     /* The `this' pointer needs to be adjusted from the declaration to
        the nearest virtual base.  */
     delta = size_diffop (convert (ssizetype, BINFO_OFFSET (virtual_base)),
-                         convert (ssizetype, BINFO_OFFSET (first_defn)));
+			 convert (ssizetype, BINFO_OFFSET (first_defn)));
   else if (lost)
     /* If the nearest definition is in a lost primary, we don't need an
        entry in our vtable.  Except possibly in a constructor vtable,
@@ -2191,8 +2191,8 @@ update_vtable_entry_for_fn (tree t, tree binfo, tree fn, tree* virtuals,
        appears.  */
     virtual_covariant:
     delta = size_diffop (convert (ssizetype,
-                                  BINFO_OFFSET (TREE_VALUE (overrider))),
-                         convert (ssizetype, BINFO_OFFSET (binfo)));
+				  BINFO_OFFSET (TREE_VALUE (overrider))),
+			 convert (ssizetype, BINFO_OFFSET (binfo)));
 
   modify_vtable_entry (t, binfo, overrider_fn, delta, virtuals);
 
@@ -2236,14 +2236,14 @@ dfs_modify_vtables (tree binfo, void* data)
      function table for BINFO.  Find the final overrider, and update
      the BINFO_VIRTUALS list appropriately.  */
   for (ix = 0, virtuals = BINFO_VIRTUALS (binfo),
-         old_virtuals = BINFO_VIRTUALS (TYPE_BINFO (BINFO_TYPE (binfo)));
+	 old_virtuals = BINFO_VIRTUALS (TYPE_BINFO (BINFO_TYPE (binfo)));
        virtuals;
        ix++, virtuals = TREE_CHAIN (virtuals),
-         old_virtuals = TREE_CHAIN (old_virtuals))
+	 old_virtuals = TREE_CHAIN (old_virtuals))
     update_vtable_entry_for_fn (t,
-                                binfo,
-                                BV_FN (old_virtuals),
-                                &virtuals, ix);
+				binfo,
+				BV_FN (old_virtuals),
+				&virtuals, ix);
 
   return NULL_TREE;
 }
@@ -2275,19 +2275,19 @@ modify_all_vtables (tree t, tree virtuals)
       tree fn = TREE_VALUE (*fnsp);
 
       if (!value_member (fn, BINFO_VIRTUALS (binfo))
-          || DECL_VINDEX (fn) == error_mark_node)
-        {
-          /* We don't need to adjust the `this' pointer when
-             calling this function.  */
-          BV_DELTA (*fnsp) = integer_zero_node;
-          BV_VCALL_INDEX (*fnsp) = NULL_TREE;
+	  || DECL_VINDEX (fn) == error_mark_node)
+	{
+	  /* We don't need to adjust the `this' pointer when
+	     calling this function.  */
+	  BV_DELTA (*fnsp) = integer_zero_node;
+	  BV_VCALL_INDEX (*fnsp) = NULL_TREE;
 
-          /* This is a function not already in our vtable.  Keep it.  */
-          fnsp = &TREE_CHAIN (*fnsp);
-        }
+	  /* This is a function not already in our vtable.  Keep it.  */
+	  fnsp = &TREE_CHAIN (*fnsp);
+	}
       else
-        /* We've already got an entry for this function.  Skip it.  */
-        *fnsp = TREE_CHAIN (*fnsp);
+	/* We've already got an entry for this function.  Skip it.  */
+	*fnsp = TREE_CHAIN (*fnsp);
     }
 
   return virtuals;
@@ -2308,14 +2308,14 @@ get_basefndecls (tree name, tree t)
   i = lookup_fnfields_1 (t, name);
   if (i != -1)
     for (methods = VEC_index (tree, CLASSTYPE_METHOD_VEC (t), i);
-         methods;
-         methods = OVL_NEXT (methods))
+	 methods;
+	 methods = OVL_NEXT (methods))
       {
-        tree method = OVL_CURRENT (methods);
+	tree method = OVL_CURRENT (methods);
 
-        if (TREE_CODE (method) == FUNCTION_DECL
-            && DECL_VINDEX (method))
-          base_fndecls = tree_cons (NULL_TREE, method, base_fndecls);
+	if (TREE_CODE (method) == FUNCTION_DECL
+	    && DECL_VINDEX (method))
+	  base_fndecls = tree_cons (NULL_TREE, method, base_fndecls);
       }
 
   if (base_fndecls)
@@ -2325,7 +2325,7 @@ get_basefndecls (tree name, tree t)
     {
       tree basetype = BINFO_TYPE (BINFO_BASE_BINFO (TYPE_BINFO (t), i));
       base_fndecls = chainon (get_basefndecls (name, basetype),
-                              base_fndecls);
+			      base_fndecls);
     }
 
   return base_fndecls;
@@ -2341,8 +2341,8 @@ check_for_override (tree decl, tree ctype)
   if (TREE_CODE (decl) == TEMPLATE_DECL)
     /* In [temp.mem] we have:
 
-         A specialization of a member function template does not
-         override a virtual function from a base class.  */
+	 A specialization of a member function template does not
+	 override a virtual function from a base class.  */
     return;
   if ((DECL_DESTRUCTOR_P (decl)
        || IDENTIFIER_VIRTUAL_P (DECL_NAME (decl))
@@ -2357,18 +2357,18 @@ check_for_override (tree decl, tree ctype)
   if (DECL_VIRTUAL_P (decl))
     {
       if (!DECL_VINDEX (decl))
-        DECL_VINDEX (decl) = error_mark_node;
+	DECL_VINDEX (decl) = error_mark_node;
       IDENTIFIER_VIRTUAL_P (DECL_NAME (decl)) = 1;
       if (DECL_DLLIMPORT_P (decl))
-        {
-          /* When we handled the dllimport attribute we may not have known
-             that this function is virtual   We can't use dllimport
-             semantics for a virtual method because we need to initialize
-             the vtable entry with a constant address.  */
-          DECL_DLLIMPORT_P (decl) = 0;
-          DECL_ATTRIBUTES (decl)
-            = remove_attribute ("dllimport", DECL_ATTRIBUTES (decl));
-        }
+	{
+	  /* When we handled the dllimport attribute we may not have known
+	     that this function is virtual   We can't use dllimport
+	     semantics for a virtual method because we need to initialize
+	     the vtable entry with a constant address.  */
+	  DECL_DLLIMPORT_P (decl) = 0;
+	  DECL_ATTRIBUTES (decl)
+	    = remove_attribute ("dllimport", DECL_ATTRIBUTES (decl));
+	}
     }
 }
 
@@ -2396,52 +2396,52 @@ warn_hidden (tree t)
       int j;
 
       /* All functions in this slot in the CLASSTYPE_METHOD_VEC will
-         have the same name.  Figure out what name that is.  */
+	 have the same name.  Figure out what name that is.  */
       name = DECL_NAME (OVL_CURRENT (fns));
       /* There are no possibly hidden functions yet.  */
       base_fndecls = NULL_TREE;
       /* Iterate through all of the base classes looking for possibly
-         hidden functions.  */
+	 hidden functions.  */
       for (binfo = TYPE_BINFO (t), j = 0;
-           BINFO_BASE_ITERATE (binfo, j, base_binfo); j++)
-        {
-          tree basetype = BINFO_TYPE (base_binfo);
-          base_fndecls = chainon (get_basefndecls (name, basetype),
-                                  base_fndecls);
-        }
+	   BINFO_BASE_ITERATE (binfo, j, base_binfo); j++)
+	{
+	  tree basetype = BINFO_TYPE (base_binfo);
+	  base_fndecls = chainon (get_basefndecls (name, basetype),
+				  base_fndecls);
+	}
 
       /* If there are no functions to hide, continue.  */
       if (!base_fndecls)
-        continue;
+	continue;
 
       /* Remove any overridden functions.  */
       for (fn = fns; fn; fn = OVL_NEXT (fn))
-        {
-          fndecl = OVL_CURRENT (fn);
-          if (DECL_VINDEX (fndecl))
-            {
-              tree *prev = &base_fndecls;
+	{
+	  fndecl = OVL_CURRENT (fn);
+	  if (DECL_VINDEX (fndecl))
+	    {
+	      tree *prev = &base_fndecls;
 
-              while (*prev)
-                /* If the method from the base class has the same
-                   signature as the method from the derived class, it
-                   has been overridden.  */
-                if (same_signature_p (fndecl, TREE_VALUE (*prev)))
-                  *prev = TREE_CHAIN (*prev);
-                else
-                  prev = &TREE_CHAIN (*prev);
-            }
-        }
+	      while (*prev)
+		/* If the method from the base class has the same
+		   signature as the method from the derived class, it
+		   has been overridden.  */
+		if (same_signature_p (fndecl, TREE_VALUE (*prev)))
+		  *prev = TREE_CHAIN (*prev);
+		else
+		  prev = &TREE_CHAIN (*prev);
+	    }
+	}
 
       /* Now give a warning for all base functions without overriders,
-         as they are hidden.  */
+	 as they are hidden.  */
       while (base_fndecls)
-        {
-          /* Here we know it is a hider, and no overrider exists.  */
-          warning (0, "%q+D was hidden", TREE_VALUE (base_fndecls));
-          warning (0, "  by %q+D", fns);
-          base_fndecls = TREE_CHAIN (base_fndecls);
-        }
+	{
+	  /* Here we know it is a hider, and no overrider exists.  */
+	  warning (0, "%q+D was hidden", TREE_VALUE (base_fndecls));
+	  warning (0, "  by %q+D", fns);
+	  base_fndecls = TREE_CHAIN (base_fndecls);
+	}
     }
 }
 
@@ -2456,44 +2456,44 @@ finish_struct_anon (tree t)
   for (field = TYPE_FIELDS (t); field; field = TREE_CHAIN (field))
     {
       if (TREE_STATIC (field))
-        continue;
+	continue;
       if (TREE_CODE (field) != FIELD_DECL)
-        continue;
+	continue;
 
       if (DECL_NAME (field) == NULL_TREE
-          && ANON_AGGR_TYPE_P (TREE_TYPE (field)))
-        {
-          tree elt = TYPE_FIELDS (TREE_TYPE (field));
-          for (; elt; elt = TREE_CHAIN (elt))
-            {
-              /* We're generally only interested in entities the user
-                 declared, but we also find nested classes by noticing
-                 the TYPE_DECL that we create implicitly.  You're
-                 allowed to put one anonymous union inside another,
-                 though, so we explicitly tolerate that.  We use
-                 TYPE_ANONYMOUS_P rather than ANON_AGGR_TYPE_P so that
-                 we also allow unnamed types used for defining fields.  */
-              if (DECL_ARTIFICIAL (elt)
-                  && (!DECL_IMPLICIT_TYPEDEF_P (elt)
-                      || TYPE_ANONYMOUS_P (TREE_TYPE (elt))))
-                continue;
+	  && ANON_AGGR_TYPE_P (TREE_TYPE (field)))
+	{
+	  tree elt = TYPE_FIELDS (TREE_TYPE (field));
+	  for (; elt; elt = TREE_CHAIN (elt))
+	    {
+	      /* We're generally only interested in entities the user
+		 declared, but we also find nested classes by noticing
+		 the TYPE_DECL that we create implicitly.  You're
+		 allowed to put one anonymous union inside another,
+		 though, so we explicitly tolerate that.  We use
+		 TYPE_ANONYMOUS_P rather than ANON_AGGR_TYPE_P so that
+		 we also allow unnamed types used for defining fields.  */
+	      if (DECL_ARTIFICIAL (elt)
+		  && (!DECL_IMPLICIT_TYPEDEF_P (elt)
+		      || TYPE_ANONYMOUS_P (TREE_TYPE (elt))))
+		continue;
 
-              if (TREE_CODE (elt) != FIELD_DECL)
-                {
-                  pedwarn ("%q+#D invalid; an anonymous union can "
-                           "only have non-static data members", elt);
-                  continue;
-                }
+	      if (TREE_CODE (elt) != FIELD_DECL)
+		{
+		  pedwarn ("%q+#D invalid; an anonymous union can "
+			   "only have non-static data members", elt);
+		  continue;
+		}
 
-              if (TREE_PRIVATE (elt))
-                pedwarn ("private member %q+#D in anonymous union", elt);
-              else if (TREE_PROTECTED (elt))
-                pedwarn ("protected member %q+#D in anonymous union", elt);
+	      if (TREE_PRIVATE (elt))
+		pedwarn ("private member %q+#D in anonymous union", elt);
+	      else if (TREE_PROTECTED (elt))
+		pedwarn ("protected member %q+#D in anonymous union", elt);
 
-              TREE_PRIVATE (elt) = TREE_PRIVATE (field);
-              TREE_PROTECTED (elt) = TREE_PROTECTED (field);
-            }
-        }
+	      TREE_PRIVATE (elt) = TREE_PRIVATE (field);
+	      TREE_PROTECTED (elt) = TREE_PROTECTED (field);
+	    }
+	}
     }
 }
 
@@ -2514,7 +2514,7 @@ maybe_add_class_template_decl_list (tree type, tree t, int friend_p)
   if (CLASSTYPE_TEMPLATE_INFO (type))
     CLASSTYPE_DECL_LIST (type)
       = tree_cons (friend_p ? NULL_TREE : type,
-                   t, CLASSTYPE_DECL_LIST (type));
+		   t, CLASSTYPE_DECL_LIST (type));
 }
 
 /* Create default constructors, assignment operators, and so forth for
@@ -2526,8 +2526,8 @@ maybe_add_class_template_decl_list (tree type, tree t, int friend_p)
 
 static void
 add_implicitly_declared_members (tree t,
-                                 int cant_have_const_cctor,
-                                 int cant_have_const_assignment)
+				 int cant_have_const_cctor,
+				 int cant_have_const_assignment)
 {
   /* Destructor.  */
   if (!CLASSTYPE_DESTRUCTORS (t))
@@ -2535,46 +2535,46 @@ add_implicitly_declared_members (tree t,
       /* In general, we create destructors lazily.  */
       CLASSTYPE_LAZY_DESTRUCTOR (t) = 1;
       /* However, if the implicit destructor is non-trivial
-         destructor, we sometimes have to create it at this point.  */
+	 destructor, we sometimes have to create it at this point.  */
       if (TYPE_HAS_NONTRIVIAL_DESTRUCTOR (t))
-        {
-          bool lazy_p = true;
+	{
+	  bool lazy_p = true;
 
-          if (TYPE_FOR_JAVA (t))
-            /* If this a Java class, any non-trivial destructor is
-               invalid, even if compiler-generated.  Therefore, if the
-               destructor is non-trivial we create it now.  */
-            lazy_p = false;
-          else
-            {
-              tree binfo;
-              tree base_binfo;
-              int ix;
+	  if (TYPE_FOR_JAVA (t))
+	    /* If this a Java class, any non-trivial destructor is
+	       invalid, even if compiler-generated.  Therefore, if the
+	       destructor is non-trivial we create it now.  */
+	    lazy_p = false;
+	  else
+	    {
+	      tree binfo;
+	      tree base_binfo;
+	      int ix;
 
-              /* If the implicit destructor will be virtual, then we must
-                 generate it now because (unfortunately) we do not
-                 generate virtual tables lazily.  */
-              binfo = TYPE_BINFO (t);
-              for (ix = 0; BINFO_BASE_ITERATE (binfo, ix, base_binfo); ix++)
-                {
-                  tree base_type;
-                  tree dtor;
+	      /* If the implicit destructor will be virtual, then we must
+		 generate it now because (unfortunately) we do not
+		 generate virtual tables lazily.  */
+	      binfo = TYPE_BINFO (t);
+	      for (ix = 0; BINFO_BASE_ITERATE (binfo, ix, base_binfo); ix++)
+		{
+		  tree base_type;
+		  tree dtor;
 
-                  base_type = BINFO_TYPE (base_binfo);
-                  dtor = CLASSTYPE_DESTRUCTORS (base_type);
-                  if (dtor && DECL_VIRTUAL_P (dtor))
-                    {
-                      lazy_p = false;
-                      break;
-                    }
-                }
-            }
+		  base_type = BINFO_TYPE (base_binfo);
+		  dtor = CLASSTYPE_DESTRUCTORS (base_type);
+		  if (dtor && DECL_VIRTUAL_P (dtor))
+		    {
+		      lazy_p = false;
+		      break;
+		    }
+		}
+	    }
 
-          /* If we can't get away with being lazy, generate the destructor
-             now.  */
-          if (!lazy_p)
-            lazily_declare_fn (sfk_destructor, t);
-        }
+	  /* If we can't get away with being lazy, generate the destructor
+	     now.  */
+	  if (!lazy_p)
+	    lazily_declare_fn (sfk_destructor, t);
+	}
     }
 
   /* Default constructor.  */
@@ -2637,9 +2637,9 @@ count_fields (tree fields)
   for (x = fields; x; x = TREE_CHAIN (x))
     {
       if (TREE_CODE (x) == FIELD_DECL && ANON_AGGR_TYPE_P (TREE_TYPE (x)))
-        n_fields += count_fields (TYPE_FIELDS (TREE_TYPE (x)));
+	n_fields += count_fields (TYPE_FIELDS (TREE_TYPE (x)));
       else
-        n_fields += 1;
+	n_fields += 1;
     }
   return n_fields;
 }
@@ -2654,9 +2654,9 @@ add_fields_to_record_type (tree fields, struct sorted_fields_type *field_vec, in
   for (x = fields; x; x = TREE_CHAIN (x))
     {
       if (TREE_CODE (x) == FIELD_DECL && ANON_AGGR_TYPE_P (TREE_TYPE (x)))
-        idx = add_fields_to_record_type (TYPE_FIELDS (TREE_TYPE (x)), field_vec, idx);
+	idx = add_fields_to_record_type (TYPE_FIELDS (TREE_TYPE (x)), field_vec, idx);
       else
-        field_vec->elts[idx++] = x;
+	field_vec->elts[idx++] = x;
     }
   return idx;
 }
@@ -2695,33 +2695,33 @@ check_bitfield_decl (tree field)
       w = integral_constant_value (w);
 
       if (TREE_CODE (w) != INTEGER_CST)
-        {
-          error ("bit-field %q+D width not an integer constant", field);
-          w = error_mark_node;
-        }
+	{
+	  error ("bit-field %q+D width not an integer constant", field);
+	  w = error_mark_node;
+	}
       else if (tree_int_cst_sgn (w) < 0)
-        {
-          error ("negative width in bit-field %q+D", field);
-          w = error_mark_node;
-        }
+	{
+	  error ("negative width in bit-field %q+D", field);
+	  w = error_mark_node;
+	}
       else if (integer_zerop (w) && DECL_NAME (field) != 0)
-        {
-          error ("zero width for bit-field %q+D", field);
-          w = error_mark_node;
-        }
+	{
+	  error ("zero width for bit-field %q+D", field);
+	  w = error_mark_node;
+	}
       else if (compare_tree_int (w, TYPE_PRECISION (type)) > 0
-               && TREE_CODE (type) != ENUMERAL_TYPE
-               && TREE_CODE (type) != BOOLEAN_TYPE)
-        warning (0, "width of %q+D exceeds its type", field);
+	       && TREE_CODE (type) != ENUMERAL_TYPE
+	       && TREE_CODE (type) != BOOLEAN_TYPE)
+	warning (0, "width of %q+D exceeds its type", field);
       else if (TREE_CODE (type) == ENUMERAL_TYPE
-               && (0 > compare_tree_int (w,
-                                         min_precision (TYPE_MIN_VALUE (type),
-                                                        TYPE_UNSIGNED (type)))
-                   ||  0 > compare_tree_int (w,
-                                             min_precision
-                                             (TYPE_MAX_VALUE (type),
-                                              TYPE_UNSIGNED (type)))))
-        warning (0, "%q+D is too small to hold all values of %q#T", field, type);
+	       && (0 > compare_tree_int (w,
+					 min_precision (TYPE_MIN_VALUE (type),
+							TYPE_UNSIGNED (type)))
+		   ||  0 > compare_tree_int (w,
+					     min_precision
+					     (TYPE_MAX_VALUE (type),
+					      TYPE_UNSIGNED (type)))))
+	warning (0, "%q+D is too small to hold all values of %q#T", field, type);
     }
 
   if (w != error_mark_node)
@@ -2743,10 +2743,10 @@ check_bitfield_decl (tree field)
 
 static void
 check_field_decl (tree field,
-                  tree t,
-                  int* cant_have_const_ctor,
-                  int* no_const_asn_ref,
-                  int* any_default_members)
+		  tree t,
+		  int* cant_have_const_ctor,
+		  int* no_const_asn_ref,
+		  int* any_default_members)
 {
   tree type = strip_array_types (TREE_TYPE (field));
 
@@ -2761,50 +2761,50 @@ check_field_decl (tree field,
       tree fields;
 
       for (fields = TYPE_FIELDS (type); fields; fields = TREE_CHAIN (fields))
-        if (TREE_CODE (fields) == FIELD_DECL && !DECL_C_BIT_FIELD (field))
-          check_field_decl (fields, t, cant_have_const_ctor,
-                            no_const_asn_ref, any_default_members);
+	if (TREE_CODE (fields) == FIELD_DECL && !DECL_C_BIT_FIELD (field))
+	  check_field_decl (fields, t, cant_have_const_ctor,
+			    no_const_asn_ref, any_default_members);
     }
   /* Check members with class type for constructors, destructors,
      etc.  */
   else if (CLASS_TYPE_P (type))
     {
       /* Never let anything with uninheritable virtuals
-         make it through without complaint.  */
+	 make it through without complaint.  */
       abstract_virtuals_error (field, type);
 
       if (TREE_CODE (t) == UNION_TYPE)
-        {
-          if (TYPE_NEEDS_CONSTRUCTING (type))
-            error ("member %q+#D with constructor not allowed in union",
-                   field);
-          if (TYPE_HAS_NONTRIVIAL_DESTRUCTOR (type))
-            error ("member %q+#D with destructor not allowed in union", field);
-          if (TYPE_HAS_COMPLEX_ASSIGN_REF (type))
-            error ("member %q+#D with copy assignment operator not allowed in union",
-                   field);
-        }
+	{
+	  if (TYPE_NEEDS_CONSTRUCTING (type))
+	    error ("member %q+#D with constructor not allowed in union",
+		   field);
+	  if (TYPE_HAS_NONTRIVIAL_DESTRUCTOR (type))
+	    error ("member %q+#D with destructor not allowed in union", field);
+	  if (TYPE_HAS_COMPLEX_ASSIGN_REF (type))
+	    error ("member %q+#D with copy assignment operator not allowed in union",
+		   field);
+	}
       else
-        {
-          TYPE_NEEDS_CONSTRUCTING (t) |= TYPE_NEEDS_CONSTRUCTING (type);
-          TYPE_HAS_NONTRIVIAL_DESTRUCTOR (t)
-            |= TYPE_HAS_NONTRIVIAL_DESTRUCTOR (type);
-          TYPE_HAS_COMPLEX_ASSIGN_REF (t) |= TYPE_HAS_COMPLEX_ASSIGN_REF (type);
-          TYPE_HAS_COMPLEX_INIT_REF (t) |= TYPE_HAS_COMPLEX_INIT_REF (type);
-        }
+	{
+	  TYPE_NEEDS_CONSTRUCTING (t) |= TYPE_NEEDS_CONSTRUCTING (type);
+	  TYPE_HAS_NONTRIVIAL_DESTRUCTOR (t)
+	    |= TYPE_HAS_NONTRIVIAL_DESTRUCTOR (type);
+	  TYPE_HAS_COMPLEX_ASSIGN_REF (t) |= TYPE_HAS_COMPLEX_ASSIGN_REF (type);
+	  TYPE_HAS_COMPLEX_INIT_REF (t) |= TYPE_HAS_COMPLEX_INIT_REF (type);
+	}
 
       if (!TYPE_HAS_CONST_INIT_REF (type))
-        *cant_have_const_ctor = 1;
+	*cant_have_const_ctor = 1;
 
       if (!TYPE_HAS_CONST_ASSIGN_REF (type))
-        *no_const_asn_ref = 1;
+	*no_const_asn_ref = 1;
     }
   if (DECL_INITIAL (field) != NULL_TREE)
     {
       /* `build_class_init_list' does not recognize
-         non-FIELD_DECLs.  */
+	 non-FIELD_DECLs.  */
       if (TREE_CODE (t) == UNION_TYPE && any_default_members != 0)
-        error ("multiple fields in union %qT initialized", t);
+	error ("multiple fields in union %qT initialized", t);
       *any_default_members = 1;
     }
 }
@@ -2836,8 +2836,8 @@ check_field_decl (tree field,
 
 static void
 check_field_decls (tree t, tree *access_decls,
-                   int *cant_have_const_ctor_p,
-                   int *no_const_asn_ref_p)
+		   int *cant_have_const_ctor_p,
+		   int *no_const_asn_ref_p)
 {
   tree *field;
   tree *next;
@@ -2861,196 +2861,196 @@ check_field_decls (tree t, tree *access_decls,
       next = &TREE_CHAIN (x);
 
       if (TREE_CODE (x) == USING_DECL)
-        {
-          /* Prune the access declaration from the list of fields.  */
-          *field = TREE_CHAIN (x);
+	{
+	  /* Prune the access declaration from the list of fields.  */
+	  *field = TREE_CHAIN (x);
 
-          /* Save the access declarations for our caller.  */
-          *access_decls = tree_cons (NULL_TREE, x, *access_decls);
+	  /* Save the access declarations for our caller.  */
+	  *access_decls = tree_cons (NULL_TREE, x, *access_decls);
 
-          /* Since we've reset *FIELD there's no reason to skip to the
-             next field.  */
-          next = field;
-          continue;
-        }
+	  /* Since we've reset *FIELD there's no reason to skip to the
+	     next field.  */
+	  next = field;
+	  continue;
+	}
 
       if (TREE_CODE (x) == TYPE_DECL
-          || TREE_CODE (x) == TEMPLATE_DECL)
-        continue;
+	  || TREE_CODE (x) == TEMPLATE_DECL)
+	continue;
 
       /* If we've gotten this far, it's a data member, possibly static,
-         or an enumerator.  */
+	 or an enumerator.  */
       DECL_CONTEXT (x) = t;
 
       /* When this goes into scope, it will be a non-local reference.  */
       DECL_NONLOCAL (x) = 1;
 
       if (TREE_CODE (t) == UNION_TYPE)
-        {
-          /* [class.union]
+	{
+	  /* [class.union]
 
-             If a union contains a static data member, or a member of
-             reference type, the program is ill-formed.  */
-          if (TREE_CODE (x) == VAR_DECL)
-            {
-              error ("%q+D may not be static because it is a member of a union", x);
-              continue;
-            }
-          if (TREE_CODE (type) == REFERENCE_TYPE)
-            {
-              error ("%q+D may not have reference type %qT because"
-                     " it is a member of a union",
-                     x, type);
-              continue;
-            }
-        }
+	     If a union contains a static data member, or a member of
+	     reference type, the program is ill-formed.  */
+	  if (TREE_CODE (x) == VAR_DECL)
+	    {
+	      error ("%q+D may not be static because it is a member of a union", x);
+	      continue;
+	    }
+	  if (TREE_CODE (type) == REFERENCE_TYPE)
+	    {
+	      error ("%q+D may not have reference type %qT because"
+		     " it is a member of a union",
+		     x, type);
+	      continue;
+	    }
+	}
 
       /* Perform error checking that did not get done in
-         grokdeclarator.  */
+	 grokdeclarator.  */
       if (TREE_CODE (type) == FUNCTION_TYPE)
-        {
-          error ("field %q+D invalidly declared function type", x);
-          type = build_pointer_type (type);
-          TREE_TYPE (x) = type;
-        }
+	{
+	  error ("field %q+D invalidly declared function type", x);
+	  type = build_pointer_type (type);
+	  TREE_TYPE (x) = type;
+	}
       else if (TREE_CODE (type) == METHOD_TYPE)
-        {
-          error ("field %q+D invalidly declared method type", x);
-          type = build_pointer_type (type);
-          TREE_TYPE (x) = type;
-        }
+	{
+	  error ("field %q+D invalidly declared method type", x);
+	  type = build_pointer_type (type);
+	  TREE_TYPE (x) = type;
+	}
 
       if (type == error_mark_node)
-        continue;
+	continue;
 
       if (TREE_CODE (x) == CONST_DECL || TREE_CODE (x) == VAR_DECL)
-        continue;
+	continue;
 
       /* Now it can only be a FIELD_DECL.  */
 
       if (TREE_PRIVATE (x) || TREE_PROTECTED (x))
-        CLASSTYPE_NON_AGGREGATE (t) = 1;
+	CLASSTYPE_NON_AGGREGATE (t) = 1;
 
       /* If this is of reference type, check if it needs an init.
-         Also do a little ANSI jig if necessary.  */
+	 Also do a little ANSI jig if necessary.  */
       if (TREE_CODE (type) == REFERENCE_TYPE)
-        {
-          CLASSTYPE_NON_POD_P (t) = 1;
-          if (DECL_INITIAL (x) == NULL_TREE)
-            SET_CLASSTYPE_REF_FIELDS_NEED_INIT (t, 1);
+	{
+	  CLASSTYPE_NON_POD_P (t) = 1;
+	  if (DECL_INITIAL (x) == NULL_TREE)
+	    SET_CLASSTYPE_REF_FIELDS_NEED_INIT (t, 1);
 
-          /* ARM $12.6.2: [A member initializer list] (or, for an
-             aggregate, initialization by a brace-enclosed list) is the
-             only way to initialize nonstatic const and reference
-             members.  */
-          TYPE_HAS_COMPLEX_ASSIGN_REF (t) = 1;
+	  /* ARM $12.6.2: [A member initializer list] (or, for an
+	     aggregate, initialization by a brace-enclosed list) is the
+	     only way to initialize nonstatic const and reference
+	     members.  */
+	  TYPE_HAS_COMPLEX_ASSIGN_REF (t) = 1;
 
-          if (! TYPE_HAS_CONSTRUCTOR (t) && CLASSTYPE_NON_AGGREGATE (t)
-              && extra_warnings)
-            warning (OPT_Wextra, "non-static reference %q+#D in class without a constructor", x);
-        }
+	  if (! TYPE_HAS_CONSTRUCTOR (t) && CLASSTYPE_NON_AGGREGATE (t)
+	      && extra_warnings)
+	    warning (OPT_Wextra, "non-static reference %q+#D in class without a constructor", x);
+	}
 
       type = strip_array_types (type);
 
       if (TYPE_PACKED (t))
-        {
-          if (!pod_type_p (type) && !TYPE_PACKED (type))
-            {
-              warning
-                (0,
-                 "ignoring packed attribute because of unpacked non-POD field %q+#D",
-                 x);
-              cant_pack = 1;
-            }
-          else if (TYPE_ALIGN (TREE_TYPE (x)) > BITS_PER_UNIT)
-            DECL_PACKED (x) = 1;
-        }
+	{
+	  if (!pod_type_p (type) && !TYPE_PACKED (type))
+	    {
+	      warning
+		(0,
+		 "ignoring packed attribute because of unpacked non-POD field %q+#D",
+		 x);
+	      cant_pack = 1;
+	    }
+	  else if (TYPE_ALIGN (TREE_TYPE (x)) > BITS_PER_UNIT)
+	    DECL_PACKED (x) = 1;
+	}
 
       if (DECL_C_BIT_FIELD (x) && integer_zerop (DECL_INITIAL (x)))
-        /* We don't treat zero-width bitfields as making a class
-           non-empty.  */
-        ;
+	/* We don't treat zero-width bitfields as making a class
+	   non-empty.  */
+	;
       else
-        {
-          /* The class is non-empty.  */
-          CLASSTYPE_EMPTY_P (t) = 0;
-          /* The class is not even nearly empty.  */
-          CLASSTYPE_NEARLY_EMPTY_P (t) = 0;
-          /* If one of the data members contains an empty class,
-             so does T.  */
-          if (CLASS_TYPE_P (type)
-              && CLASSTYPE_CONTAINS_EMPTY_CLASS_P (type))
-            CLASSTYPE_CONTAINS_EMPTY_CLASS_P (t) = 1;
-        }
+	{
+	  /* The class is non-empty.  */
+	  CLASSTYPE_EMPTY_P (t) = 0;
+	  /* The class is not even nearly empty.  */
+	  CLASSTYPE_NEARLY_EMPTY_P (t) = 0;
+	  /* If one of the data members contains an empty class,
+	     so does T.  */
+	  if (CLASS_TYPE_P (type)
+	      && CLASSTYPE_CONTAINS_EMPTY_CLASS_P (type))
+	    CLASSTYPE_CONTAINS_EMPTY_CLASS_P (t) = 1;
+	}
 
       /* This is used by -Weffc++ (see below). Warn only for pointers
-         to members which might hold dynamic memory. So do not warn
-         for pointers to functions or pointers to members.  */
+	 to members which might hold dynamic memory. So do not warn
+	 for pointers to functions or pointers to members.  */
       if (TYPE_PTR_P (type)
-          && !TYPE_PTRFN_P (type)
-          && !TYPE_PTR_TO_MEMBER_P (type))
-        has_pointers = true;
+	  && !TYPE_PTRFN_P (type)
+	  && !TYPE_PTR_TO_MEMBER_P (type))
+	has_pointers = true;
 
       if (CLASS_TYPE_P (type))
-        {
-          if (CLASSTYPE_REF_FIELDS_NEED_INIT (type))
-            SET_CLASSTYPE_REF_FIELDS_NEED_INIT (t, 1);
-          if (CLASSTYPE_READONLY_FIELDS_NEED_INIT (type))
-            SET_CLASSTYPE_READONLY_FIELDS_NEED_INIT (t, 1);
-        }
+	{
+	  if (CLASSTYPE_REF_FIELDS_NEED_INIT (type))
+	    SET_CLASSTYPE_REF_FIELDS_NEED_INIT (t, 1);
+	  if (CLASSTYPE_READONLY_FIELDS_NEED_INIT (type))
+	    SET_CLASSTYPE_READONLY_FIELDS_NEED_INIT (t, 1);
+	}
 
       if (DECL_MUTABLE_P (x) || TYPE_HAS_MUTABLE_P (type))
-        CLASSTYPE_HAS_MUTABLE (t) = 1;
+	CLASSTYPE_HAS_MUTABLE (t) = 1;
 
       if (! pod_type_p (type))
-        /* DR 148 now allows pointers to members (which are POD themselves),
-           to be allowed in POD structs.  */
-        CLASSTYPE_NON_POD_P (t) = 1;
+	/* DR 148 now allows pointers to members (which are POD themselves),
+	   to be allowed in POD structs.  */
+	CLASSTYPE_NON_POD_P (t) = 1;
 
       if (! zero_init_p (type))
-        CLASSTYPE_NON_ZERO_INIT_P (t) = 1;
+	CLASSTYPE_NON_ZERO_INIT_P (t) = 1;
 
       /* If any field is const, the structure type is pseudo-const.  */
       if (CP_TYPE_CONST_P (type))
-        {
-          C_TYPE_FIELDS_READONLY (t) = 1;
-          if (DECL_INITIAL (x) == NULL_TREE)
-            SET_CLASSTYPE_READONLY_FIELDS_NEED_INIT (t, 1);
+	{
+	  C_TYPE_FIELDS_READONLY (t) = 1;
+	  if (DECL_INITIAL (x) == NULL_TREE)
+	    SET_CLASSTYPE_READONLY_FIELDS_NEED_INIT (t, 1);
 
-          /* ARM $12.6.2: [A member initializer list] (or, for an
-             aggregate, initialization by a brace-enclosed list) is the
-             only way to initialize nonstatic const and reference
-             members.  */
-          TYPE_HAS_COMPLEX_ASSIGN_REF (t) = 1;
+	  /* ARM $12.6.2: [A member initializer list] (or, for an
+	     aggregate, initialization by a brace-enclosed list) is the
+	     only way to initialize nonstatic const and reference
+	     members.  */
+	  TYPE_HAS_COMPLEX_ASSIGN_REF (t) = 1;
 
-          if (! TYPE_HAS_CONSTRUCTOR (t) && CLASSTYPE_NON_AGGREGATE (t)
-              && extra_warnings)
-            warning (OPT_Wextra, "non-static const member %q+#D in class without a constructor", x);
-        }
+	  if (! TYPE_HAS_CONSTRUCTOR (t) && CLASSTYPE_NON_AGGREGATE (t)
+	      && extra_warnings)
+	    warning (OPT_Wextra, "non-static const member %q+#D in class without a constructor", x);
+	}
       /* A field that is pseudo-const makes the structure likewise.  */
       else if (CLASS_TYPE_P (type))
-        {
-          C_TYPE_FIELDS_READONLY (t) |= C_TYPE_FIELDS_READONLY (type);
-          SET_CLASSTYPE_READONLY_FIELDS_NEED_INIT (t,
-            CLASSTYPE_READONLY_FIELDS_NEED_INIT (t)
-            | CLASSTYPE_READONLY_FIELDS_NEED_INIT (type));
-        }
+	{
+	  C_TYPE_FIELDS_READONLY (t) |= C_TYPE_FIELDS_READONLY (type);
+	  SET_CLASSTYPE_READONLY_FIELDS_NEED_INIT (t,
+	    CLASSTYPE_READONLY_FIELDS_NEED_INIT (t)
+	    | CLASSTYPE_READONLY_FIELDS_NEED_INIT (type));
+	}
 
       /* Core issue 80: A nonstatic data member is required to have a
-         different name from the class iff the class has a
-         user-defined constructor.  */
+	 different name from the class iff the class has a
+	 user-defined constructor.  */
       if (constructor_name_p (DECL_NAME (x), t) && TYPE_HAS_CONSTRUCTOR (t))
-        pedwarn ("field %q+#D with same name as class", x);
+	pedwarn ("field %q+#D with same name as class", x);
 
       /* We set DECL_C_BIT_FIELD in grokbitfield.
-         If the type and width are valid, we'll also set DECL_BIT_FIELD.  */
+	 If the type and width are valid, we'll also set DECL_BIT_FIELD.  */
       if (DECL_C_BIT_FIELD (x))
-        check_bitfield_decl (x);
+	check_bitfield_decl (x);
       else
-        check_field_decl (x, t,
-                          cant_have_const_ctor_p,
-                          no_const_asn_ref_p,
-                          &any_default_members);
+	check_field_decl (x, t,
+			  cant_have_const_ctor_p,
+			  no_const_asn_ref_p,
+			  &any_default_members);
     }
 
   /* Effective C++ rule 11: if a class has dynamic memory held by pointers,
@@ -3061,10 +3061,10 @@ check_field_decls (tree t, tree *access_decls,
 
      -- Warn only if there are members which are pointers
      -- Warn only if there is a non-trivial constructor (otherwise,
-        there cannot be memory allocated).
+	there cannot be memory allocated).
      -- Warn only if there is a non-trivial destructor. We assume that the
-        user at least implemented the cleanup correctly, and a destructor
-        is needed to free dynamic memory.
+	user at least implemented the cleanup correctly, and a destructor
+	is needed to free dynamic memory.
 
      This seems enough for practical purposes.  */
   if (warn_ecpp
@@ -3076,15 +3076,15 @@ check_field_decls (tree t, tree *access_decls,
       warning (OPT_Weffc__, "%q#T has pointer data members", t);
 
       if (! TYPE_HAS_INIT_REF (t))
-        {
-          warning (OPT_Weffc__,
-                   "  but does not override %<%T(const %T&)%>", t, t);
-          if (!TYPE_HAS_ASSIGN_REF (t))
-            warning (OPT_Weffc__, "  or %<operator=(const %T&)%>", t);
-        }
+	{
+	  warning (OPT_Weffc__,
+		   "  but does not override %<%T(const %T&)%>", t, t);
+	  if (!TYPE_HAS_ASSIGN_REF (t))
+	    warning (OPT_Weffc__, "  or %<operator=(const %T&)%>", t);
+	}
       else if (! TYPE_HAS_ASSIGN_REF (t))
-        warning (OPT_Weffc__,
-                 "  but does not override %<operator=(const %T&)%>", t);
+	warning (OPT_Weffc__,
+		 "  but does not override %<operator=(const %T&)%>", t);
     }
 
   /* If any of the fields couldn't be packed, unset TYPE_PACKED.  */
@@ -3114,12 +3114,12 @@ record_subobject_offset (tree type, tree offset, splay_tree offsets)
   n = splay_tree_lookup (offsets, (splay_tree_key) offset);
   if (!n)
     n = splay_tree_insert (offsets,
-                           (splay_tree_key) offset,
-                           (splay_tree_value) NULL_TREE);
+			   (splay_tree_key) offset,
+			   (splay_tree_value) NULL_TREE);
   n->value = ((splay_tree_value)
-              tree_cons (NULL_TREE,
-                         type,
-                         (tree) n->value));
+	      tree_cons (NULL_TREE,
+			 type,
+			 (tree) n->value));
 
   return 0;
 }
@@ -3161,11 +3161,11 @@ check_subobject_offset (tree type, tree offset, splay_tree offsets)
 
 static int
 walk_subobject_offsets (tree type,
-                        subobject_offset_fn f,
-                        tree offset,
-                        splay_tree offsets,
-                        tree max_offset,
-                        int vbases_p)
+			subobject_offset_fn f,
+			tree offset,
+			splay_tree offsets,
+			tree max_offset,
+			int vbases_p)
 {
   int r = 0;
   tree type_binfo = NULL_TREE;
@@ -3181,7 +3181,7 @@ walk_subobject_offsets (tree type,
   if (!TYPE_P (type))
     {
       if (abi_version_at_least (2))
-        type_binfo = type;
+	type_binfo = type;
       type = BINFO_TYPE (type);
     }
 
@@ -3193,124 +3193,124 @@ walk_subobject_offsets (tree type,
 
       /* Avoid recursing into objects that are not interesting.  */
       if (!CLASSTYPE_CONTAINS_EMPTY_CLASS_P (type))
-        return 0;
+	return 0;
 
       /* Record the location of TYPE.  */
       r = (*f) (type, offset, offsets);
       if (r)
-        return r;
+	return r;
 
       /* Iterate through the direct base classes of TYPE.  */
       if (!type_binfo)
-        type_binfo = TYPE_BINFO (type);
+	type_binfo = TYPE_BINFO (type);
       for (i = 0; BINFO_BASE_ITERATE (type_binfo, i, binfo); i++)
-        {
-          tree binfo_offset;
+	{
+	  tree binfo_offset;
 
-          if (abi_version_at_least (2)
-              && BINFO_VIRTUAL_P (binfo))
-            continue;
+	  if (abi_version_at_least (2)
+	      && BINFO_VIRTUAL_P (binfo))
+	    continue;
 
-          if (!vbases_p
-              && BINFO_VIRTUAL_P (binfo)
-              && !BINFO_PRIMARY_P (binfo))
-            continue;
+	  if (!vbases_p
+	      && BINFO_VIRTUAL_P (binfo)
+	      && !BINFO_PRIMARY_P (binfo))
+	    continue;
 
-          if (!abi_version_at_least (2))
-            binfo_offset = size_binop (PLUS_EXPR,
-                                       offset,
-                                       BINFO_OFFSET (binfo));
-          else
-            {
-              tree orig_binfo;
-              /* We cannot rely on BINFO_OFFSET being set for the base
-                 class yet, but the offsets for direct non-virtual
-                 bases can be calculated by going back to the TYPE.  */
-              orig_binfo = BINFO_BASE_BINFO (TYPE_BINFO (type), i);
-              binfo_offset = size_binop (PLUS_EXPR,
-                                         offset,
-                                         BINFO_OFFSET (orig_binfo));
-            }
+	  if (!abi_version_at_least (2))
+	    binfo_offset = size_binop (PLUS_EXPR,
+				       offset,
+				       BINFO_OFFSET (binfo));
+	  else
+	    {
+	      tree orig_binfo;
+	      /* We cannot rely on BINFO_OFFSET being set for the base
+		 class yet, but the offsets for direct non-virtual
+		 bases can be calculated by going back to the TYPE.  */
+	      orig_binfo = BINFO_BASE_BINFO (TYPE_BINFO (type), i);
+	      binfo_offset = size_binop (PLUS_EXPR,
+					 offset,
+					 BINFO_OFFSET (orig_binfo));
+	    }
 
-          r = walk_subobject_offsets (binfo,
-                                      f,
-                                      binfo_offset,
-                                      offsets,
-                                      max_offset,
-                                      (abi_version_at_least (2)
-                                       ? /*vbases_p=*/0 : vbases_p));
-          if (r)
-            return r;
-        }
+	  r = walk_subobject_offsets (binfo,
+				      f,
+				      binfo_offset,
+				      offsets,
+				      max_offset,
+				      (abi_version_at_least (2)
+				       ? /*vbases_p=*/0 : vbases_p));
+	  if (r)
+	    return r;
+	}
 
       if (abi_version_at_least (2) && CLASSTYPE_VBASECLASSES (type))
-        {
-          unsigned ix;
-          VEC(tree,gc) *vbases;
+	{
+	  unsigned ix;
+	  VEC(tree,gc) *vbases;
 
-          /* Iterate through the virtual base classes of TYPE.  In G++
-             3.2, we included virtual bases in the direct base class
-             loop above, which results in incorrect results; the
-             correct offsets for virtual bases are only known when
-             working with the most derived type.  */
-          if (vbases_p)
-            for (vbases = CLASSTYPE_VBASECLASSES (type), ix = 0;
-                 VEC_iterate (tree, vbases, ix, binfo); ix++)
-              {
-                r = walk_subobject_offsets (binfo,
-                                            f,
-                                            size_binop (PLUS_EXPR,
-                                                        offset,
-                                                        BINFO_OFFSET (binfo)),
-                                            offsets,
-                                            max_offset,
-                                            /*vbases_p=*/0);
-                if (r)
-                  return r;
-              }
-          else
-            {
-              /* We still have to walk the primary base, if it is
-                 virtual.  (If it is non-virtual, then it was walked
-                 above.)  */
-              tree vbase = get_primary_binfo (type_binfo);
+	  /* Iterate through the virtual base classes of TYPE.  In G++
+	     3.2, we included virtual bases in the direct base class
+	     loop above, which results in incorrect results; the
+	     correct offsets for virtual bases are only known when
+	     working with the most derived type.  */
+	  if (vbases_p)
+	    for (vbases = CLASSTYPE_VBASECLASSES (type), ix = 0;
+		 VEC_iterate (tree, vbases, ix, binfo); ix++)
+	      {
+		r = walk_subobject_offsets (binfo,
+					    f,
+					    size_binop (PLUS_EXPR,
+							offset,
+							BINFO_OFFSET (binfo)),
+					    offsets,
+					    max_offset,
+					    /*vbases_p=*/0);
+		if (r)
+		  return r;
+	      }
+	  else
+	    {
+	      /* We still have to walk the primary base, if it is
+		 virtual.  (If it is non-virtual, then it was walked
+		 above.)  */
+	      tree vbase = get_primary_binfo (type_binfo);
 
-              if (vbase && BINFO_VIRTUAL_P (vbase)
-                  && BINFO_PRIMARY_P (vbase)
-                  && BINFO_INHERITANCE_CHAIN (vbase) == type_binfo)
-                {
-                  r = (walk_subobject_offsets
-                       (vbase, f, offset,
-                        offsets, max_offset, /*vbases_p=*/0));
-                  if (r)
-                    return r;
-                }
-            }
-        }
+	      if (vbase && BINFO_VIRTUAL_P (vbase)
+		  && BINFO_PRIMARY_P (vbase)
+		  && BINFO_INHERITANCE_CHAIN (vbase) == type_binfo)
+		{
+		  r = (walk_subobject_offsets
+		       (vbase, f, offset,
+			offsets, max_offset, /*vbases_p=*/0));
+		  if (r)
+		    return r;
+		}
+	    }
+	}
 
       /* Iterate through the fields of TYPE.  */
       for (field = TYPE_FIELDS (type); field; field = TREE_CHAIN (field))
-        if (TREE_CODE (field) == FIELD_DECL && !DECL_ARTIFICIAL (field))
-          {
-            tree field_offset;
+	if (TREE_CODE (field) == FIELD_DECL && !DECL_ARTIFICIAL (field))
+	  {
+	    tree field_offset;
 
-            if (abi_version_at_least (2))
-              field_offset = byte_position (field);
-            else
-              /* In G++ 3.2, DECL_FIELD_OFFSET was used.  */
-              field_offset = DECL_FIELD_OFFSET (field);
+	    if (abi_version_at_least (2))
+	      field_offset = byte_position (field);
+	    else
+	      /* In G++ 3.2, DECL_FIELD_OFFSET was used.  */
+	      field_offset = DECL_FIELD_OFFSET (field);
 
-            r = walk_subobject_offsets (TREE_TYPE (field),
-                                        f,
-                                        size_binop (PLUS_EXPR,
-                                                    offset,
-                                                    field_offset),
-                                        offsets,
-                                        max_offset,
-                                        /*vbases_p=*/1);
-            if (r)
-              return r;
-          }
+	    r = walk_subobject_offsets (TREE_TYPE (field),
+					f,
+					size_binop (PLUS_EXPR,
+						    offset,
+						    field_offset),
+					offsets,
+					max_offset,
+					/*vbases_p=*/1);
+	    if (r)
+	      return r;
+	  }
     }
   else if (TREE_CODE (type) == ARRAY_TYPE)
     {
@@ -3320,33 +3320,33 @@ walk_subobject_offsets (tree type,
 
       /* Avoid recursing into objects that are not interesting.  */
       if (!CLASS_TYPE_P (element_type)
-          || !CLASSTYPE_CONTAINS_EMPTY_CLASS_P (element_type))
-        return 0;
+	  || !CLASSTYPE_CONTAINS_EMPTY_CLASS_P (element_type))
+	return 0;
 
       /* Step through each of the elements in the array.  */
       for (index = size_zero_node;
-           /* G++ 3.2 had an off-by-one error here.  */
-           (abi_version_at_least (2)
-            ? !INT_CST_LT (TYPE_MAX_VALUE (domain), index)
-            : INT_CST_LT (index, TYPE_MAX_VALUE (domain)));
-           index = size_binop (PLUS_EXPR, index, size_one_node))
-        {
-          r = walk_subobject_offsets (TREE_TYPE (type),
-                                      f,
-                                      offset,
-                                      offsets,
-                                      max_offset,
-                                      /*vbases_p=*/1);
-          if (r)
-            return r;
-          offset = size_binop (PLUS_EXPR, offset,
-                               TYPE_SIZE_UNIT (TREE_TYPE (type)));
-          /* If this new OFFSET is bigger than the MAX_OFFSET, then
-             there's no point in iterating through the remaining
-             elements of the array.  */
-          if (max_offset && INT_CST_LT (max_offset, offset))
-            break;
-        }
+	   /* G++ 3.2 had an off-by-one error here.  */
+	   (abi_version_at_least (2)
+	    ? !INT_CST_LT (TYPE_MAX_VALUE (domain), index)
+	    : INT_CST_LT (index, TYPE_MAX_VALUE (domain)));
+	   index = size_binop (PLUS_EXPR, index, size_one_node))
+	{
+	  r = walk_subobject_offsets (TREE_TYPE (type),
+				      f,
+				      offset,
+				      offsets,
+				      max_offset,
+				      /*vbases_p=*/1);
+	  if (r)
+	    return r;
+	  offset = size_binop (PLUS_EXPR, offset,
+			       TYPE_SIZE_UNIT (TREE_TYPE (type)));
+	  /* If this new OFFSET is bigger than the MAX_OFFSET, then
+	     there's no point in iterating through the remaining
+	     elements of the array.  */
+	  if (max_offset && INT_CST_LT (max_offset, offset))
+	    break;
+	}
     }
 
   return 0;
@@ -3359,9 +3359,9 @@ walk_subobject_offsets (tree type,
 
 static void
 record_subobject_offsets (tree type,
-                          tree offset,
-                          splay_tree offsets,
-                          bool is_data_member)
+			  tree offset,
+			  splay_tree offsets,
+			  bool is_data_member)
 {
   tree max_offset;
   /* If recording subobjects for a non-static data member or a
@@ -3383,7 +3383,7 @@ record_subobject_offsets (tree type,
   else
     max_offset = NULL_TREE;
   walk_subobject_offsets (type, record_subobject_offset, offset,
-                          offsets, max_offset, is_data_member);
+			  offsets, max_offset, is_data_member);
 }
 
 /* Returns nonzero if any of the empty subobjects of TYPE (located at
@@ -3392,9 +3392,9 @@ record_subobject_offsets (tree type,
 
 static int
 layout_conflict_p (tree type,
-                   tree offset,
-                   splay_tree offsets,
-                   int vbases_p)
+		   tree offset,
+		   splay_tree offsets,
+		   int vbases_p)
 {
   splay_tree_node max_node;
 
@@ -3407,8 +3407,8 @@ layout_conflict_p (tree type,
     return 0;
 
   return walk_subobject_offsets (type, check_subobject_offset, offset,
-                                 offsets, (tree) (max_node->key),
-                                 vbases_p);
+				 offsets, (tree) (max_node->key),
+				 vbases_p);
 }
 
 /* DECL is a FIELD_DECL corresponding either to a base subobject of a
@@ -3419,9 +3419,9 @@ layout_conflict_p (tree type,
 
 static void
 layout_nonempty_base_or_field (record_layout_info rli,
-                               tree decl,
-                               tree binfo,
-                               splay_tree offsets)
+			       tree decl,
+			       tree binfo,
+			       splay_tree offsets)
 {
   tree offset = NULL_TREE;
   bool field_p;
@@ -3430,9 +3430,9 @@ layout_nonempty_base_or_field (record_layout_info rli,
   if (binfo)
     {
       /* For the purposes of determining layout conflicts, we want to
-         use the class type of BINFO; TREE_TYPE (DECL) will be the
-         CLASSTYPE_AS_BASE version, which does not contain entries for
-         zero-sized bases.  */
+	 use the class type of BINFO; TREE_TYPE (DECL) will be the
+	 CLASSTYPE_AS_BASE version, which does not contain entries for
+	 zero-sized bases.  */
       type = TREE_TYPE (binfo);
       field_p = false;
     }
@@ -3454,47 +3454,47 @@ layout_nonempty_base_or_field (record_layout_info rli,
       offset = byte_position (decl);
 
       /* We have to check to see whether or not there is already
-         something of the same type at the offset we're about to use.
-         For example, consider:
+	 something of the same type at the offset we're about to use.
+	 For example, consider:
 
-           struct S {};
-           struct T : public S { int i; };
-           struct U : public S, public T {};
+	   struct S {};
+	   struct T : public S { int i; };
+	   struct U : public S, public T {};
 
-         Here, we put S at offset zero in U.  Then, we can't put T at
-         offset zero -- its S component would be at the same address
-         as the S we already allocated.  So, we have to skip ahead.
-         Since all data members, including those whose type is an
-         empty class, have nonzero size, any overlap can happen only
-         with a direct or indirect base-class -- it can't happen with
-         a data member.  */
+	 Here, we put S at offset zero in U.  Then, we can't put T at
+	 offset zero -- its S component would be at the same address
+	 as the S we already allocated.  So, we have to skip ahead.
+	 Since all data members, including those whose type is an
+	 empty class, have nonzero size, any overlap can happen only
+	 with a direct or indirect base-class -- it can't happen with
+	 a data member.  */
       /* In a union, overlap is permitted; all members are placed at
-         offset zero.  */
+	 offset zero.  */
       if (TREE_CODE (rli->t) == UNION_TYPE)
-        break;
+	break;
       /* G++ 3.2 did not check for overlaps when placing a non-empty
-         virtual base.  */
+	 virtual base.  */
       if (!abi_version_at_least (2) && binfo && BINFO_VIRTUAL_P (binfo))
-        break;
+	break;
       if (layout_conflict_p (field_p ? type : binfo, offset,
-                             offsets, field_p))
-        {
-          /* Strip off the size allocated to this field.  That puts us
-             at the first place we could have put the field with
-             proper alignment.  */
-          *rli = old_rli;
+			     offsets, field_p))
+	{
+	  /* Strip off the size allocated to this field.  That puts us
+	     at the first place we could have put the field with
+	     proper alignment.  */
+	  *rli = old_rli;
 
-          /* Bump up by the alignment required for the type.  */
-          rli->bitpos
-            = size_binop (PLUS_EXPR, rli->bitpos,
-                          bitsize_int (binfo
-                                       ? CLASSTYPE_ALIGN (type)
-                                       : TYPE_ALIGN (type)));
-          normalize_rli (rli);
-        }
+	  /* Bump up by the alignment required for the type.  */
+	  rli->bitpos
+	    = size_binop (PLUS_EXPR, rli->bitpos,
+			  bitsize_int (binfo
+				       ? CLASSTYPE_ALIGN (type)
+				       : TYPE_ALIGN (type)));
+	  normalize_rli (rli);
+	}
       else
-        /* There was no conflict.  We're done laying out this field.  */
-        break;
+	/* There was no conflict.  We're done laying out this field.  */
+	break;
     }
 
   /* Now that we know where it will be placed, update its
@@ -3505,17 +3505,17 @@ layout_nonempty_base_or_field (record_layout_info rli,
        hierarchy.  Therefore, we may not need to add the entire
        OFFSET.  */
     propagate_binfo_offsets (binfo,
-                             size_diffop (convert (ssizetype, offset),
-                                          convert (ssizetype,
-                                                   BINFO_OFFSET (binfo))));
+			     size_diffop (convert (ssizetype, offset),
+					  convert (ssizetype,
+						   BINFO_OFFSET (binfo))));
 }
 
 /* Returns true if TYPE is empty and OFFSET is nonzero.  */
 
 static int
 empty_base_at_nonzero_offset_p (tree type,
-                                tree offset,
-                                splay_tree offsets ATTRIBUTE_UNUSED)
+				tree offset,
+				splay_tree offsets ATTRIBUTE_UNUSED)
 {
   return is_empty_class (type) && !integer_zerop (offset);
 }
@@ -3540,38 +3540,38 @@ layout_empty_base (tree binfo, tree eoc, splay_tree offsets)
   if (!integer_zerop (BINFO_OFFSET (binfo)))
     {
       if (abi_version_at_least (2))
-        propagate_binfo_offsets
-          (binfo, size_diffop (size_zero_node, BINFO_OFFSET (binfo)));
+	propagate_binfo_offsets
+	  (binfo, size_diffop (size_zero_node, BINFO_OFFSET (binfo)));
       else
-        warning (OPT_Wabi,
-                 "offset of empty base %qT may not be ABI-compliant and may"
-                 "change in a future version of GCC",
-                 BINFO_TYPE (binfo));
+	warning (OPT_Wabi,
+		 "offset of empty base %qT may not be ABI-compliant and may"
+		 "change in a future version of GCC",
+		 BINFO_TYPE (binfo));
     }
 
   /* This is an empty base class.  We first try to put it at offset
      zero.  */
   if (layout_conflict_p (binfo,
-                         BINFO_OFFSET (binfo),
-                         offsets,
-                         /*vbases_p=*/0))
+			 BINFO_OFFSET (binfo),
+			 offsets,
+			 /*vbases_p=*/0))
     {
       /* That didn't work.  Now, we move forward from the next
-         available spot in the class.  */
+	 available spot in the class.  */
       atend = true;
       propagate_binfo_offsets (binfo, convert (ssizetype, eoc));
       while (1)
-        {
-          if (!layout_conflict_p (binfo,
-                                  BINFO_OFFSET (binfo),
-                                  offsets,
-                                  /*vbases_p=*/0))
-            /* We finally found a spot where there's no overlap.  */
-            break;
+	{
+	  if (!layout_conflict_p (binfo,
+				  BINFO_OFFSET (binfo),
+				  offsets,
+				  /*vbases_p=*/0))
+	    /* We finally found a spot where there's no overlap.  */
+	    break;
 
-          /* There's overlap here, too.  Bump along to the next spot.  */
-          propagate_binfo_offsets (binfo, alignment);
-        }
+	  /* There's overlap here, too.  Bump along to the next spot.  */
+	  propagate_binfo_offsets (binfo, alignment);
+	}
     }
   return atend;
 }
@@ -3587,7 +3587,7 @@ layout_empty_base (tree binfo, tree eoc, splay_tree offsets)
 
 static tree *
 build_base_field (record_layout_info rli, tree binfo,
-                  splay_tree offsets, tree *next_field)
+		  splay_tree offsets, tree *next_field)
 {
   tree t = rli->t;
   tree basetype = BINFO_TYPE (binfo);
@@ -3603,7 +3603,7 @@ build_base_field (record_layout_info rli, tree binfo,
       tree decl;
 
       /* The containing class is non-empty because it has a non-empty
-         base class.  */
+	 base class.  */
       CLASSTYPE_EMPTY_P (t) = 0;
 
       /* Create the FIELD_DECL.  */
@@ -3619,8 +3619,8 @@ build_base_field (record_layout_info rli, tree binfo,
       DECL_FIELD_IS_BASE (decl) = 1;
 
       /* Try to place the field.  It may take more than one try if we
-         have a hard time placing the field without putting two
-         objects of the same type at the same address.  */
+	 have a hard time placing the field without putting two
+	 objects of the same type at the same address.  */
       layout_nonempty_base_or_field (rli, decl, binfo, offsets);
       /* Add the new FIELD_DECL to the list of fields for T.  */
       TREE_CHAIN (decl) = *next_field;
@@ -3633,52 +3633,52 @@ build_base_field (record_layout_info rli, tree binfo,
       bool atend;
 
       /* On some platforms (ARM), even empty classes will not be
-         byte-aligned.  */
+	 byte-aligned.  */
       eoc = round_up (rli_size_unit_so_far (rli),
-                      CLASSTYPE_ALIGN_UNIT (basetype));
+		      CLASSTYPE_ALIGN_UNIT (basetype));
       atend = layout_empty_base (binfo, eoc, offsets);
       /* A nearly-empty class "has no proper base class that is empty,
-         not morally virtual, and at an offset other than zero."  */
+	 not morally virtual, and at an offset other than zero."  */
       if (!BINFO_VIRTUAL_P (binfo) && CLASSTYPE_NEARLY_EMPTY_P (t))
-        {
-          if (atend)
-            CLASSTYPE_NEARLY_EMPTY_P (t) = 0;
-          /* The check above (used in G++ 3.2) is insufficient because
-             an empty class placed at offset zero might itself have an
-             empty base at a nonzero offset.  */
-          else if (walk_subobject_offsets (basetype,
-                                           empty_base_at_nonzero_offset_p,
-                                           size_zero_node,
-                                           /*offsets=*/NULL,
-                                           /*max_offset=*/NULL_TREE,
-                                           /*vbases_p=*/true))
-            {
-              if (abi_version_at_least (2))
-                CLASSTYPE_NEARLY_EMPTY_P (t) = 0;
-              else
-                warning (OPT_Wabi,
-                         "class %qT will be considered nearly empty in a "
-                         "future version of GCC", t);
-            }
-        }
+	{
+	  if (atend)
+	    CLASSTYPE_NEARLY_EMPTY_P (t) = 0;
+	  /* The check above (used in G++ 3.2) is insufficient because
+	     an empty class placed at offset zero might itself have an
+	     empty base at a nonzero offset.  */
+	  else if (walk_subobject_offsets (basetype,
+					   empty_base_at_nonzero_offset_p,
+					   size_zero_node,
+					   /*offsets=*/NULL,
+					   /*max_offset=*/NULL_TREE,
+					   /*vbases_p=*/true))
+	    {
+	      if (abi_version_at_least (2))
+		CLASSTYPE_NEARLY_EMPTY_P (t) = 0;
+	      else
+		warning (OPT_Wabi,
+			 "class %qT will be considered nearly empty in a "
+			 "future version of GCC", t);
+	    }
+	}
 
       /* We do not create a FIELD_DECL for empty base classes because
-         it might overlap some other field.  We want to be able to
-         create CONSTRUCTORs for the class by iterating over the
-         FIELD_DECLs, and the back end does not handle overlapping
-         FIELD_DECLs.  */
+	 it might overlap some other field.  We want to be able to
+	 create CONSTRUCTORs for the class by iterating over the
+	 FIELD_DECLs, and the back end does not handle overlapping
+	 FIELD_DECLs.  */
 
       /* An empty virtual base causes a class to be non-empty
-         -- but in that case we do not need to clear CLASSTYPE_EMPTY_P
-         here because that was already done when the virtual table
-         pointer was created.  */
+	 -- but in that case we do not need to clear CLASSTYPE_EMPTY_P
+	 here because that was already done when the virtual table
+	 pointer was created.  */
     }
 
   /* Record the offsets of BINFO and its base subobjects.  */
   record_subobject_offsets (binfo,
-                            BINFO_OFFSET (binfo),
-                            offsets,
-                            /*is_data_member=*/false);
+			    BINFO_OFFSET (binfo),
+			    offsets,
+			    /*is_data_member=*/false);
 
   return next_field;
 }
@@ -3691,7 +3691,7 @@ build_base_field (record_layout_info rli, tree binfo,
 
 static void
 build_base_fields (record_layout_info rli,
-                   splay_tree offsets, tree *next_field)
+		   splay_tree offsets, tree *next_field)
 {
   /* Chain to hold all the new FIELD_DECLs which stand in for base class
      subobjects.  */
@@ -3702,7 +3702,7 @@ build_base_fields (record_layout_info rli,
   /* The primary base class is always allocated first.  */
   if (CLASSTYPE_HAS_PRIMARY_BASE_P (t))
     next_field = build_base_field (rli, CLASSTYPE_PRIMARY_BINFO (t),
-                                   offsets, next_field);
+				   offsets, next_field);
 
   /* Now allocate the rest of the bases.  */
   for (i = 0; i < n_baseclasses; ++i)
@@ -3712,17 +3712,17 @@ build_base_fields (record_layout_info rli,
       base_binfo = BINFO_BASE_BINFO (TYPE_BINFO (t), i);
 
       /* The primary base was already allocated above, so we don't
-         need to allocate it again here.  */
+	 need to allocate it again here.  */
       if (base_binfo == CLASSTYPE_PRIMARY_BINFO (t))
-        continue;
+	continue;
 
       /* Virtual bases are added at the end (a primary virtual base
-         will have already been added).  */
+	 will have already been added).  */
       if (BINFO_VIRTUAL_P (base_binfo))
-        continue;
+	continue;
 
       next_field = build_base_field (rli, base_binfo,
-                                     offsets, next_field);
+				     offsets, next_field);
     }
 }
 
@@ -3739,18 +3739,18 @@ check_methods (tree t)
     {
       check_for_override (x, t);
       if (DECL_PURE_VIRTUAL_P (x) && ! DECL_VINDEX (x))
-        error ("initializer specified for non-virtual method %q+D", x);
+	error ("initializer specified for non-virtual method %q+D", x);
       /* The name of the field is the original field name
-         Save this in auxiliary field for later overloading.  */
+	 Save this in auxiliary field for later overloading.  */
       if (DECL_VINDEX (x))
-        {
-          TYPE_POLYMORPHIC_P (t) = 1;
-          if (DECL_PURE_VIRTUAL_P (x))
-            VEC_safe_push (tree, gc, CLASSTYPE_PURE_VIRTUALS (t), x);
-        }
+	{
+	  TYPE_POLYMORPHIC_P (t) = 1;
+	  if (DECL_PURE_VIRTUAL_P (x))
+	    VEC_safe_push (tree, gc, CLASSTYPE_PURE_VIRTUALS (t), x);
+	}
       /* All user-declared destructors are non-trivial.  */
       if (DECL_DESTRUCTOR_P (x))
-        TYPE_HAS_NONTRIVIAL_DESTRUCTOR (t) = 1;
+	TYPE_HAS_NONTRIVIAL_DESTRUCTOR (t) = 1;
     }
 }
 
@@ -3783,7 +3783,7 @@ build_clone (tree fn, tree name)
     {
       DECL_VIRTUAL_P (clone) = 0;
       if (TREE_CODE (clone) != TEMPLATE_DECL)
-        DECL_VINDEX (clone) = NULL_TREE;
+	DECL_VINDEX (clone) = NULL_TREE;
     }
 
   /* If there was an in-charge parameter, drop it from the function
@@ -3803,20 +3803,20 @@ build_clone (tree fn, tree name)
       parmtypes = TREE_CHAIN (parmtypes);
       /* And the VTT parm, in a complete [cd]tor.  */
       if (DECL_HAS_VTT_PARM_P (fn)
-          && ! DECL_NEEDS_VTT_PARM_P (clone))
-        parmtypes = TREE_CHAIN (parmtypes);
+	  && ! DECL_NEEDS_VTT_PARM_P (clone))
+	parmtypes = TREE_CHAIN (parmtypes);
        /* If this is subobject constructor or destructor, add the vtt
-         parameter.  */
+	 parameter.  */
       TREE_TYPE (clone)
-        = build_method_type_directly (basetype,
-                                      TREE_TYPE (TREE_TYPE (clone)),
-                                      parmtypes);
+	= build_method_type_directly (basetype,
+				      TREE_TYPE (TREE_TYPE (clone)),
+				      parmtypes);
       if (exceptions)
-        TREE_TYPE (clone) = build_exception_variant (TREE_TYPE (clone),
-                                                     exceptions);
+	TREE_TYPE (clone) = build_exception_variant (TREE_TYPE (clone),
+						     exceptions);
       TREE_TYPE (clone)
-        = cp_build_type_attribute_variant (TREE_TYPE (clone),
-                                           TYPE_ATTRIBUTES (TREE_TYPE (fn)));
+	= cp_build_type_attribute_variant (TREE_TYPE (clone),
+					   TYPE_ATTRIBUTES (TREE_TYPE (fn)));
     }
 
   /* Copy the function parameters.  But, DECL_ARGUMENTS on a TEMPLATE_DECL
@@ -3826,29 +3826,29 @@ build_clone (tree fn, tree name)
       DECL_ARGUMENTS (clone) = copy_list (DECL_ARGUMENTS (clone));
       /* Remove the in-charge parameter.  */
       if (DECL_HAS_IN_CHARGE_PARM_P (clone))
-        {
-          TREE_CHAIN (DECL_ARGUMENTS (clone))
-            = TREE_CHAIN (TREE_CHAIN (DECL_ARGUMENTS (clone)));
-          DECL_HAS_IN_CHARGE_PARM_P (clone) = 0;
-        }
+	{
+	  TREE_CHAIN (DECL_ARGUMENTS (clone))
+	    = TREE_CHAIN (TREE_CHAIN (DECL_ARGUMENTS (clone)));
+	  DECL_HAS_IN_CHARGE_PARM_P (clone) = 0;
+	}
       /* And the VTT parm, in a complete [cd]tor.  */
       if (DECL_HAS_VTT_PARM_P (fn))
-        {
-          if (DECL_NEEDS_VTT_PARM_P (clone))
-            DECL_HAS_VTT_PARM_P (clone) = 1;
-          else
-            {
-              TREE_CHAIN (DECL_ARGUMENTS (clone))
-                = TREE_CHAIN (TREE_CHAIN (DECL_ARGUMENTS (clone)));
-              DECL_HAS_VTT_PARM_P (clone) = 0;
-            }
-        }
+	{
+	  if (DECL_NEEDS_VTT_PARM_P (clone))
+	    DECL_HAS_VTT_PARM_P (clone) = 1;
+	  else
+	    {
+	      TREE_CHAIN (DECL_ARGUMENTS (clone))
+		= TREE_CHAIN (TREE_CHAIN (DECL_ARGUMENTS (clone)));
+	      DECL_HAS_VTT_PARM_P (clone) = 0;
+	    }
+	}
 
       for (parms = DECL_ARGUMENTS (clone); parms; parms = TREE_CHAIN (parms))
-        {
-          DECL_CONTEXT (parms) = clone;
-          cxx_dup_lang_specific_decl (parms);
-        }
+	{
+	  DECL_CONTEXT (parms) = clone;
+	  cxx_dup_lang_specific_decl (parms);
+	}
     }
 
   /* Create the RTL for this function.  */
@@ -3865,7 +3865,7 @@ build_clone (tree fn, tree name)
       tree result;
 
       DECL_TEMPLATE_RESULT (clone)
-        = build_clone (DECL_TEMPLATE_RESULT (clone), name);
+	= build_clone (DECL_TEMPLATE_RESULT (clone), name);
       result = DECL_TEMPLATE_RESULT (clone);
       DECL_TEMPLATE_INFO (result) = copy_node (DECL_TEMPLATE_INFO (result));
       DECL_TI_TEMPLATE (result) = clone;
@@ -3893,39 +3893,39 @@ clone_function_decl (tree fn, int update_method_vec_p)
   if (DECL_MAYBE_IN_CHARGE_CONSTRUCTOR_P (fn))
     {
       /* For each constructor, we need two variants: an in-charge version
-         and a not-in-charge version.  */
+	 and a not-in-charge version.  */
       clone = build_clone (fn, complete_ctor_identifier);
       if (update_method_vec_p)
-        add_method (DECL_CONTEXT (clone), clone, NULL_TREE);
+	add_method (DECL_CONTEXT (clone), clone, NULL_TREE);
       clone = build_clone (fn, base_ctor_identifier);
       if (update_method_vec_p)
-        add_method (DECL_CONTEXT (clone), clone, NULL_TREE);
+	add_method (DECL_CONTEXT (clone), clone, NULL_TREE);
     }
   else
     {
       gcc_assert (DECL_MAYBE_IN_CHARGE_DESTRUCTOR_P (fn));
 
       /* For each destructor, we need three variants: an in-charge
-         version, a not-in-charge version, and an in-charge deleting
-         version.  We clone the deleting version first because that
-         means it will go second on the TYPE_METHODS list -- and that
-         corresponds to the correct layout order in the virtual
-         function table.
+	 version, a not-in-charge version, and an in-charge deleting
+	 version.  We clone the deleting version first because that
+	 means it will go second on the TYPE_METHODS list -- and that
+	 corresponds to the correct layout order in the virtual
+	 function table.
 
-         For a non-virtual destructor, we do not build a deleting
-         destructor.  */
+	 For a non-virtual destructor, we do not build a deleting
+	 destructor.  */
       if (DECL_VIRTUAL_P (fn))
-        {
-          clone = build_clone (fn, deleting_dtor_identifier);
-          if (update_method_vec_p)
-            add_method (DECL_CONTEXT (clone), clone, NULL_TREE);
-        }
+	{
+	  clone = build_clone (fn, deleting_dtor_identifier);
+	  if (update_method_vec_p)
+	    add_method (DECL_CONTEXT (clone), clone, NULL_TREE);
+	}
       clone = build_clone (fn, complete_dtor_identifier);
       if (update_method_vec_p)
-        add_method (DECL_CONTEXT (clone), clone, NULL_TREE);
+	add_method (DECL_CONTEXT (clone), clone, NULL_TREE);
       clone = build_clone (fn, base_dtor_identifier);
       if (update_method_vec_p)
-        add_method (DECL_CONTEXT (clone), clone, NULL_TREE);
+	add_method (DECL_CONTEXT (clone), clone, NULL_TREE);
     }
 
   /* Note that this is an abstract function that is never emitted.  */
@@ -3958,49 +3958,49 @@ adjust_clone_args (tree decl)
       orig_decl_parms = TREE_CHAIN (orig_decl_parms);
 
       if (DECL_HAS_IN_CHARGE_PARM_P (decl))
-        orig_decl_parms = TREE_CHAIN (orig_decl_parms);
+	orig_decl_parms = TREE_CHAIN (orig_decl_parms);
       if (DECL_HAS_VTT_PARM_P (decl))
-        orig_decl_parms = TREE_CHAIN (orig_decl_parms);
+	orig_decl_parms = TREE_CHAIN (orig_decl_parms);
 
       clone_parms = orig_clone_parms;
       if (DECL_HAS_VTT_PARM_P (clone))
-        clone_parms = TREE_CHAIN (clone_parms);
+	clone_parms = TREE_CHAIN (clone_parms);
 
       for (decl_parms = orig_decl_parms; decl_parms;
-           decl_parms = TREE_CHAIN (decl_parms),
-             clone_parms = TREE_CHAIN (clone_parms))
-        {
-          gcc_assert (same_type_p (TREE_TYPE (decl_parms),
-                                   TREE_TYPE (clone_parms)));
+	   decl_parms = TREE_CHAIN (decl_parms),
+	     clone_parms = TREE_CHAIN (clone_parms))
+	{
+	  gcc_assert (same_type_p (TREE_TYPE (decl_parms),
+				   TREE_TYPE (clone_parms)));
 
-          if (TREE_PURPOSE (decl_parms) && !TREE_PURPOSE (clone_parms))
-            {
-              /* A default parameter has been added. Adjust the
-                 clone's parameters.  */
-              tree exceptions = TYPE_RAISES_EXCEPTIONS (TREE_TYPE (clone));
-              tree basetype = TYPE_METHOD_BASETYPE (TREE_TYPE (clone));
-              tree type;
+	  if (TREE_PURPOSE (decl_parms) && !TREE_PURPOSE (clone_parms))
+	    {
+	      /* A default parameter has been added. Adjust the
+		 clone's parameters.  */
+	      tree exceptions = TYPE_RAISES_EXCEPTIONS (TREE_TYPE (clone));
+	      tree basetype = TYPE_METHOD_BASETYPE (TREE_TYPE (clone));
+	      tree type;
 
-              clone_parms = orig_decl_parms;
+	      clone_parms = orig_decl_parms;
 
-              if (DECL_HAS_VTT_PARM_P (clone))
-                {
-                  clone_parms = tree_cons (TREE_PURPOSE (orig_clone_parms),
-                                           TREE_VALUE (orig_clone_parms),
-                                           clone_parms);
-                  TREE_TYPE (clone_parms) = TREE_TYPE (orig_clone_parms);
-                }
-              type = build_method_type_directly (basetype,
-                                                 TREE_TYPE (TREE_TYPE (clone)),
-                                                 clone_parms);
-              if (exceptions)
-                type = build_exception_variant (type, exceptions);
-              TREE_TYPE (clone) = type;
+	      if (DECL_HAS_VTT_PARM_P (clone))
+		{
+		  clone_parms = tree_cons (TREE_PURPOSE (orig_clone_parms),
+					   TREE_VALUE (orig_clone_parms),
+					   clone_parms);
+		  TREE_TYPE (clone_parms) = TREE_TYPE (orig_clone_parms);
+		}
+	      type = build_method_type_directly (basetype,
+						 TREE_TYPE (TREE_TYPE (clone)),
+						 clone_parms);
+	      if (exceptions)
+		type = build_exception_variant (type, exceptions);
+	      TREE_TYPE (clone) = type;
 
-              clone_parms = NULL_TREE;
-              break;
-            }
-        }
+	      clone_parms = NULL_TREE;
+	      break;
+	    }
+	}
       gcc_assert (!clone_parms);
     }
 }
@@ -4035,11 +4035,11 @@ remove_zero_width_bit_fields (tree t)
   while (*fieldsp)
     {
       if (TREE_CODE (*fieldsp) == FIELD_DECL
-          && DECL_C_BIT_FIELD (*fieldsp)
-          && DECL_INITIAL (*fieldsp))
-        *fieldsp = TREE_CHAIN (*fieldsp);
+	  && DECL_C_BIT_FIELD (*fieldsp)
+	  && DECL_INITIAL (*fieldsp))
+	*fieldsp = TREE_CHAIN (*fieldsp);
       else
-        fieldsp = &TREE_CHAIN (*fieldsp);
+	fieldsp = &TREE_CHAIN (*fieldsp);
     }
 }
 
@@ -4065,8 +4065,8 @@ type_requires_array_cookie (tree type)
      the array to the deallocation function, so we will need to store
      a cookie.  */
   fns = lookup_fnfields (TYPE_BINFO (type),
-                         ansi_opname (VEC_DELETE_EXPR),
-                         /*protect=*/0);
+			 ansi_opname (VEC_DELETE_EXPR),
+			 /*protect=*/0);
   /* If there are no `operator []' members, or the lookup is
      ambiguous, then we don't need a cookie.  */
   if (!fns || fns == error_mark_node)
@@ -4080,16 +4080,16 @@ type_requires_array_cookie (tree type)
       /* Select the current function.  */
       fn = OVL_CURRENT (fns);
       /* See if this function is a one-argument delete function.  If
-         it is, then it will be the usual deallocation function.  */
+	 it is, then it will be the usual deallocation function.  */
       second_parm = TREE_CHAIN (TYPE_ARG_TYPES (TREE_TYPE (fn)));
       if (second_parm == void_list_node)
-        return false;
+	return false;
       /* Otherwise, if we have a two-argument function and the second
-         argument is `size_t', it will be the usual deallocation
-         function -- unless there is one-argument function, too.  */
+	 argument is `size_t', it will be the usual deallocation
+	 function -- unless there is one-argument function, too.  */
       if (TREE_CHAIN (second_parm) == void_list_node
-          && same_type_p (TREE_VALUE (second_parm), sizetype))
-        has_two_argument_delete_p = true;
+	  && same_type_p (TREE_VALUE (second_parm), sizetype))
+	has_two_argument_delete_p = true;
     }
 
   return has_two_argument_delete_p;
@@ -4119,7 +4119,7 @@ check_bases_and_members (tree t)
 
   /* Check all the base-classes.  */
   check_bases (t, &cant_have_const_ctor,
-               &no_const_asn_ref);
+	       &no_const_asn_ref);
 
   /* Check all the method declarations.  */
   check_methods (t);
@@ -4129,8 +4129,8 @@ check_bases_and_members (tree t)
      as check_field_decls depends on TYPE_HAS_NONTRIVIAL_DESTRUCTOR
      being set appropriately.  */
   check_field_decls (t, &access_decls,
-                     &cant_have_const_ctor,
-                     &no_const_asn_ref);
+		     &cant_have_const_ctor,
+		     &no_const_asn_ref);
 
   /* A nearly-empty class has to be vptr-containing; a nearly empty
      class contains just a vptr.  */
@@ -4147,15 +4147,15 @@ check_bases_and_members (tree t)
     |= (TYPE_HAS_CONSTRUCTOR (t) || TYPE_POLYMORPHIC_P (t));
   CLASSTYPE_NON_POD_P (t)
     |= (CLASSTYPE_NON_AGGREGATE (t)
-        || TYPE_HAS_NONTRIVIAL_DESTRUCTOR (t)
-        || TYPE_HAS_ASSIGN_REF (t));
+	|| TYPE_HAS_NONTRIVIAL_DESTRUCTOR (t)
+	|| TYPE_HAS_ASSIGN_REF (t));
   TYPE_HAS_COMPLEX_ASSIGN_REF (t)
     |= TYPE_HAS_ASSIGN_REF (t) || TYPE_CONTAINS_VPTR_P (t);
 
   /* Synthesize any needed methods.  */
   add_implicitly_declared_members (t,
-                                   cant_have_const_ctor,
-                                   no_const_asn_ref);
+				   cant_have_const_ctor,
+				   no_const_asn_ref);
 
   /* Create the in-charge and not-in-charge variants of constructors
      and destructors.  */
@@ -4189,16 +4189,16 @@ create_vtable_ptr (tree t, tree* virtuals_p)
   /* Collect the virtual functions declared in T.  */
   for (fn = TYPE_METHODS (t); fn; fn = TREE_CHAIN (fn))
     if (DECL_VINDEX (fn) && !DECL_MAYBE_IN_CHARGE_DESTRUCTOR_P (fn)
-        && TREE_CODE (DECL_VINDEX (fn)) != INTEGER_CST)
+	&& TREE_CODE (DECL_VINDEX (fn)) != INTEGER_CST)
       {
-        tree new_virtual = make_node (TREE_LIST);
+	tree new_virtual = make_node (TREE_LIST);
 
-        BV_FN (new_virtual) = fn;
-        BV_DELTA (new_virtual) = integer_zero_node;
-        BV_VCALL_INDEX (new_virtual) = NULL_TREE;
+	BV_FN (new_virtual) = fn;
+	BV_DELTA (new_virtual) = integer_zero_node;
+	BV_VCALL_INDEX (new_virtual) = NULL_TREE;
 
-        TREE_CHAIN (new_virtual) = *virtuals_p;
-        *virtuals_p = new_virtual;
+	TREE_CHAIN (new_virtual) = *virtuals_p;
+	*virtuals_p = new_virtual;
       }
 
   /* If we couldn't find an appropriate base class, create a new field
@@ -4208,24 +4208,24 @@ create_vtable_ptr (tree t, tree* virtuals_p)
   if (!TYPE_VFIELD (t) && (*virtuals_p || TYPE_CONTAINS_VPTR_P (t)))
     {
       /* We build this decl with vtbl_ptr_type_node, which is a
-         `vtable_entry_type*'.  It might seem more precise to use
-         `vtable_entry_type (*)[N]' where N is the number of virtual
-         functions.  However, that would require the vtable pointer in
-         base classes to have a different type than the vtable pointer
-         in derived classes.  We could make that happen, but that
-         still wouldn't solve all the problems.  In particular, the
-         type-based alias analysis code would decide that assignments
-         to the base class vtable pointer can't alias assignments to
-         the derived class vtable pointer, since they have different
-         types.  Thus, in a derived class destructor, where the base
-         class constructor was inlined, we could generate bad code for
-         setting up the vtable pointer.
+	 `vtable_entry_type*'.  It might seem more precise to use
+	 `vtable_entry_type (*)[N]' where N is the number of virtual
+	 functions.  However, that would require the vtable pointer in
+	 base classes to have a different type than the vtable pointer
+	 in derived classes.  We could make that happen, but that
+	 still wouldn't solve all the problems.  In particular, the
+	 type-based alias analysis code would decide that assignments
+	 to the base class vtable pointer can't alias assignments to
+	 the derived class vtable pointer, since they have different
+	 types.  Thus, in a derived class destructor, where the base
+	 class constructor was inlined, we could generate bad code for
+	 setting up the vtable pointer.
 
-         Therefore, we use one type for all vtable pointers.  We still
-         use a type-correct type; it's just doesn't indicate the array
-         bounds.  That's better than using `void*' or some such; it's
-         cleaner, and it let's the alias analysis code know that these
-         stores cannot alias stores to void*!  */
+	 Therefore, we use one type for all vtable pointers.  We still
+	 use a type-correct type; it's just doesn't indicate the array
+	 bounds.  That's better than using `void*' or some such; it's
+	 cleaner, and it let's the alias analysis code know that these
+	 stores cannot alias stores to void*!  */
       tree field;
 
       field = build_decl (FIELD_DECL, get_vfield_name (t), vtbl_ptr_type_node);
@@ -4255,10 +4255,10 @@ fixup_pending_inline (tree fn)
     {
       tree args = DECL_ARGUMENTS (fn);
       while (args)
-        {
-          DECL_CONTEXT (args) = fn;
-          args = TREE_CHAIN (args);
-        }
+	{
+	  DECL_CONTEXT (args) = fn;
+	  args = TREE_CHAIN (args);
+	}
     }
 }
 
@@ -4275,11 +4275,11 @@ fixup_inline_methods (tree type)
   if (method && TREE_CODE (method) == TREE_VEC)
     {
       if (TREE_VEC_ELT (method, 1))
-        method = TREE_VEC_ELT (method, 1);
+	method = TREE_VEC_ELT (method, 1);
       else if (TREE_VEC_ELT (method, 0))
-        method = TREE_VEC_ELT (method, 0);
+	method = TREE_VEC_ELT (method, 0);
       else
-        method = TREE_VEC_ELT (method, 2);
+	method = TREE_VEC_ELT (method, 2);
     }
 
   /* Do inline member functions.  */
@@ -4308,9 +4308,9 @@ propagate_binfo_offsets (tree binfo, tree offset)
   /* Update BINFO's offset.  */
   BINFO_OFFSET (binfo)
     = convert (sizetype,
-               size_binop (PLUS_EXPR,
-                           convert (ssizetype, BINFO_OFFSET (binfo)),
-                           offset));
+	       size_binop (PLUS_EXPR,
+			   convert (ssizetype, BINFO_OFFSET (binfo)),
+			   offset));
 
   /* Find the primary base class.  */
   primary_binfo = get_primary_binfo (binfo);
@@ -4324,10 +4324,10 @@ propagate_binfo_offsets (tree binfo, tree offset)
     {
       /* Don't do the primary base twice.  */
       if (base_binfo == primary_binfo)
-        continue;
+	continue;
 
       if (BINFO_VIRTUAL_P (base_binfo))
-        continue;
+	continue;
 
       propagate_binfo_offsets (base_binfo, offset);
     }
@@ -4351,12 +4351,12 @@ layout_virtual_bases (record_layout_info rli, splay_tree offsets)
   if (!abi_version_at_least(2))
     {
       /* In G++ 3.2, we incorrectly rounded the size before laying out
-         the virtual bases.  */
+	 the virtual bases.  */
       finish_record_layout (rli, /*free_p=*/false);
 #ifdef STRUCTURE_SIZE_BOUNDARY
       /* Packed structures don't need to have minimum size.  */
       if (! TYPE_PACKED (t))
-        TYPE_ALIGN (t) = MAX (TYPE_ALIGN (t), (unsigned) STRUCTURE_SIZE_BOUNDARY);
+	TYPE_ALIGN (t) = MAX (TYPE_ALIGN (t), (unsigned) STRUCTURE_SIZE_BOUNDARY);
 #endif
       rli->offset = TYPE_SIZE_UNIT (t);
       rli->bitpos = bitsize_zero_node;
@@ -4375,39 +4375,39 @@ layout_virtual_bases (record_layout_info rli, splay_tree offsets)
   for (vbase = TYPE_BINFO (t); vbase; vbase = TREE_CHAIN (vbase))
     {
       if (!BINFO_VIRTUAL_P (vbase))
-        continue;
+	continue;
 
       if (!BINFO_PRIMARY_P (vbase))
-        {
-          tree basetype = TREE_TYPE (vbase);
+	{
+	  tree basetype = TREE_TYPE (vbase);
 
-          /* This virtual base is not a primary base of any class in the
-             hierarchy, so we have to add space for it.  */
-          next_field = build_base_field (rli, vbase,
-                                         offsets, next_field);
+	  /* This virtual base is not a primary base of any class in the
+	     hierarchy, so we have to add space for it.  */
+	  next_field = build_base_field (rli, vbase,
+					 offsets, next_field);
 
-          /* If the first virtual base might have been placed at a
-             lower address, had we started from CLASSTYPE_SIZE, rather
-             than TYPE_SIZE, issue a warning.  There can be both false
-             positives and false negatives from this warning in rare
-             cases; to deal with all the possibilities would probably
-             require performing both layout algorithms and comparing
-             the results which is not particularly tractable.  */
-          if (warn_abi
-              && first_vbase
-              && (tree_int_cst_lt
-                  (size_binop (CEIL_DIV_EXPR,
-                               round_up (CLASSTYPE_SIZE (t),
-                                         CLASSTYPE_ALIGN (basetype)),
-                               bitsize_unit_node),
-                   BINFO_OFFSET (vbase))))
-            warning (OPT_Wabi,
-                     "offset of virtual base %qT is not ABI-compliant and "
-                     "may change in a future version of GCC",
-                     basetype);
+	  /* If the first virtual base might have been placed at a
+	     lower address, had we started from CLASSTYPE_SIZE, rather
+	     than TYPE_SIZE, issue a warning.  There can be both false
+	     positives and false negatives from this warning in rare
+	     cases; to deal with all the possibilities would probably
+	     require performing both layout algorithms and comparing
+	     the results which is not particularly tractable.  */
+	  if (warn_abi
+	      && first_vbase
+	      && (tree_int_cst_lt
+		  (size_binop (CEIL_DIV_EXPR,
+			       round_up (CLASSTYPE_SIZE (t),
+					 CLASSTYPE_ALIGN (basetype)),
+			       bitsize_unit_node),
+		   BINFO_OFFSET (vbase))))
+	    warning (OPT_Wabi,
+		     "offset of virtual base %qT is not ABI-compliant and "
+		     "may change in a future version of GCC",
+		     basetype);
 
-          first_vbase = false;
-        }
+	  first_vbase = false;
+	}
     }
 }
 
@@ -4448,24 +4448,24 @@ end_of_class (tree t, int include_virtuals_p)
        BINFO_BASE_ITERATE (binfo, i, base_binfo); ++i)
     {
       if (!include_virtuals_p
-          && BINFO_VIRTUAL_P (base_binfo)
-          && (!BINFO_PRIMARY_P (base_binfo)
-              || BINFO_INHERITANCE_CHAIN (base_binfo) != TYPE_BINFO (t)))
-        continue;
+	  && BINFO_VIRTUAL_P (base_binfo)
+	  && (!BINFO_PRIMARY_P (base_binfo)
+	      || BINFO_INHERITANCE_CHAIN (base_binfo) != TYPE_BINFO (t)))
+	continue;
 
       offset = end_of_base (base_binfo);
       if (INT_CST_LT_UNSIGNED (result, offset))
-        result = offset;
+	result = offset;
     }
 
   /* G++ 3.2 did not check indirect virtual bases.  */
   if (abi_version_at_least (2) && include_virtuals_p)
     for (vbases = CLASSTYPE_VBASECLASSES (t), i = 0;
-         VEC_iterate (tree, vbases, i, base_binfo); i++)
+	 VEC_iterate (tree, vbases, i, base_binfo); i++)
       {
-        offset = end_of_base (base_binfo);
-        if (INT_CST_LT_UNSIGNED (result, offset))
-          result = offset;
+	offset = end_of_base (base_binfo);
+	if (INT_CST_LT_UNSIGNED (result, offset))
+	  result = offset;
       }
 
   return result;
@@ -4501,20 +4501,20 @@ warn_about_ambiguous_bases (tree t)
       basetype = BINFO_TYPE (base_binfo);
 
       if (!lookup_base (t, basetype, ba_unique | ba_quiet, NULL))
-        warning (0, "direct base %qT inaccessible in %qT due to ambiguity",
-                 basetype, t);
+	warning (0, "direct base %qT inaccessible in %qT due to ambiguity",
+		 basetype, t);
     }
 
   /* Check for ambiguous virtual bases.  */
   if (extra_warnings)
     for (vbases = CLASSTYPE_VBASECLASSES (t), i = 0;
-         VEC_iterate (tree, vbases, i, binfo); i++)
+	 VEC_iterate (tree, vbases, i, binfo); i++)
       {
-        basetype = BINFO_TYPE (binfo);
+	basetype = BINFO_TYPE (binfo);
 
-        if (!lookup_base (t, basetype, ba_unique | ba_quiet, NULL))
-          warning (OPT_Wextra, "virtual base %qT inaccessible in %qT due to ambiguity",
-                   basetype, t);
+	if (!lookup_base (t, basetype, ba_unique | ba_quiet, NULL))
+	  warning (OPT_Wextra, "virtual base %qT inaccessible in %qT due to ambiguity",
+		   basetype, t);
       }
 }
 
@@ -4541,30 +4541,30 @@ include_empty_classes (record_layout_info rli)
      offset.  However, now we need to make sure that RLI is big enough
      to reflect the entire class.  */
   eoc = end_of_class (rli->t,
-                      CLASSTYPE_AS_BASE (rli->t) != NULL_TREE);
+		      CLASSTYPE_AS_BASE (rli->t) != NULL_TREE);
   rli_size = rli_size_unit_so_far (rli);
   if (TREE_CODE (rli_size) == INTEGER_CST
       && INT_CST_LT_UNSIGNED (rli_size, eoc))
     {
       if (!abi_version_at_least (2))
-        /* In version 1 of the ABI, the size of a class that ends with
-           a bitfield was not rounded up to a whole multiple of a
-           byte.  Because rli_size_unit_so_far returns only the number
-           of fully allocated bytes, any extra bits were not included
-           in the size.  */
-        rli->bitpos = round_down (rli->bitpos, BITS_PER_UNIT);
+	/* In version 1 of the ABI, the size of a class that ends with
+	   a bitfield was not rounded up to a whole multiple of a
+	   byte.  Because rli_size_unit_so_far returns only the number
+	   of fully allocated bytes, any extra bits were not included
+	   in the size.  */
+	rli->bitpos = round_down (rli->bitpos, BITS_PER_UNIT);
       else
-        /* The size should have been rounded to a whole byte.  */
-        gcc_assert (tree_int_cst_equal
-                    (rli->bitpos, round_down (rli->bitpos, BITS_PER_UNIT)));
+	/* The size should have been rounded to a whole byte.  */
+	gcc_assert (tree_int_cst_equal
+		    (rli->bitpos, round_down (rli->bitpos, BITS_PER_UNIT)));
       rli->bitpos
-        = size_binop (PLUS_EXPR,
-                      rli->bitpos,
-                      size_binop (MULT_EXPR,
-                                  convert (bitsizetype,
-                                           size_binop (MINUS_EXPR,
-                                                       eoc, rli_size)),
-                                  bitsize_int (BITS_PER_UNIT)));
+	= size_binop (PLUS_EXPR,
+		      rli->bitpos,
+		      size_binop (MULT_EXPR,
+				  convert (bitsizetype,
+					   size_binop (MINUS_EXPR,
+						       eoc, rli_size)),
+				  bitsize_int (BITS_PER_UNIT)));
       normalize_rli (rli);
     }
 }
@@ -4615,7 +4615,7 @@ layout_class_type (tree t, tree *virtuals_p)
 
   /* Build FIELD_DECLs for all of the non-virtual base-types.  */
   empty_base_offsets = splay_tree_new (splay_tree_compare_integer_csts,
-                                       NULL, NULL);
+				       NULL, NULL);
   build_base_fields (rli, empty_base_offsets, next_field);
 
   /* Layout the non-static data members.  */
@@ -4625,195 +4625,195 @@ layout_class_type (tree t, tree *virtuals_p)
       tree padding;
 
       /* We still pass things that aren't non-static data members to
-         the back-end, in case it wants to do something with them.  */
+	 the back-end, in case it wants to do something with them.  */
       if (TREE_CODE (field) != FIELD_DECL)
-        {
-          place_field (rli, field);
-          /* If the static data member has incomplete type, keep track
-             of it so that it can be completed later.  (The handling
-             of pending statics in finish_record_layout is
-             insufficient; consider:
+	{
+	  place_field (rli, field);
+	  /* If the static data member has incomplete type, keep track
+	     of it so that it can be completed later.  (The handling
+	     of pending statics in finish_record_layout is
+	     insufficient; consider:
 
-               struct S1;
-               struct S2 { static S1 s1; };
+	       struct S1;
+	       struct S2 { static S1 s1; };
 
-             At this point, finish_record_layout will be called, but
-             S1 is still incomplete.)  */
-          if (TREE_CODE (field) == VAR_DECL)
-            {
-              maybe_register_incomplete_var (field);
-              /* The visibility of static data members is determined
-                 at their point of declaration, not their point of
-                 definition.  */
-              determine_visibility (field);
-            }
-          continue;
-        }
+	     At this point, finish_record_layout will be called, but
+	     S1 is still incomplete.)  */
+	  if (TREE_CODE (field) == VAR_DECL)
+	    {
+	      maybe_register_incomplete_var (field);
+	      /* The visibility of static data members is determined
+		 at their point of declaration, not their point of
+		 definition.  */
+	      determine_visibility (field);
+	    }
+	  continue;
+	}
 
       type = TREE_TYPE (field);
       if (type == error_mark_node)
-        continue;
+	continue;
 
       padding = NULL_TREE;
 
       /* If this field is a bit-field whose width is greater than its
-         type, then there are some special rules for allocating
-         it.  */
+	 type, then there are some special rules for allocating
+	 it.  */
       if (DECL_C_BIT_FIELD (field)
-          && INT_CST_LT (TYPE_SIZE (type), DECL_SIZE (field)))
-        {
-          integer_type_kind itk;
-          tree integer_type;
-          bool was_unnamed_p = false;
-          /* We must allocate the bits as if suitably aligned for the
-             longest integer type that fits in this many bits.  type
-             of the field.  Then, we are supposed to use the left over
-             bits as additional padding.  */
-          for (itk = itk_char; itk != itk_none; ++itk)
-            if (INT_CST_LT (DECL_SIZE (field),
-                            TYPE_SIZE (integer_types[itk])))
-              break;
+	  && INT_CST_LT (TYPE_SIZE (type), DECL_SIZE (field)))
+	{
+	  integer_type_kind itk;
+	  tree integer_type;
+	  bool was_unnamed_p = false;
+	  /* We must allocate the bits as if suitably aligned for the
+	     longest integer type that fits in this many bits.  type
+	     of the field.  Then, we are supposed to use the left over
+	     bits as additional padding.  */
+	  for (itk = itk_char; itk != itk_none; ++itk)
+	    if (INT_CST_LT (DECL_SIZE (field),
+			    TYPE_SIZE (integer_types[itk])))
+	      break;
 
-          /* ITK now indicates a type that is too large for the
-             field.  We have to back up by one to find the largest
-             type that fits.  */
-          integer_type = integer_types[itk - 1];
+	  /* ITK now indicates a type that is too large for the
+	     field.  We have to back up by one to find the largest
+	     type that fits.  */
+	  integer_type = integer_types[itk - 1];
 
-          /* Figure out how much additional padding is required.  GCC
-             3.2 always created a padding field, even if it had zero
-             width.  */
-          if (!abi_version_at_least (2)
-              || INT_CST_LT (TYPE_SIZE (integer_type), DECL_SIZE (field)))
-            {
-              if (abi_version_at_least (2) && TREE_CODE (t) == UNION_TYPE)
-                /* In a union, the padding field must have the full width
-                   of the bit-field; all fields start at offset zero.  */
-                padding = DECL_SIZE (field);
-              else
-                {
-                  if (TREE_CODE (t) == UNION_TYPE)
-                    warning (OPT_Wabi, "size assigned to %qT may not be "
-                             "ABI-compliant and may change in a future "
-                             "version of GCC",
-                             t);
-                  padding = size_binop (MINUS_EXPR, DECL_SIZE (field),
-                                        TYPE_SIZE (integer_type));
-                }
-            }
+	  /* Figure out how much additional padding is required.  GCC
+	     3.2 always created a padding field, even if it had zero
+	     width.  */
+	  if (!abi_version_at_least (2)
+	      || INT_CST_LT (TYPE_SIZE (integer_type), DECL_SIZE (field)))
+	    {
+	      if (abi_version_at_least (2) && TREE_CODE (t) == UNION_TYPE)
+		/* In a union, the padding field must have the full width
+		   of the bit-field; all fields start at offset zero.  */
+		padding = DECL_SIZE (field);
+	      else
+		{
+		  if (TREE_CODE (t) == UNION_TYPE)
+		    warning (OPT_Wabi, "size assigned to %qT may not be "
+			     "ABI-compliant and may change in a future "
+			     "version of GCC",
+			     t);
+		  padding = size_binop (MINUS_EXPR, DECL_SIZE (field),
+					TYPE_SIZE (integer_type));
+		}
+	    }
 #ifdef PCC_BITFIELD_TYPE_MATTERS
-          /* An unnamed bitfield does not normally affect the
-             alignment of the containing class on a target where
-             PCC_BITFIELD_TYPE_MATTERS.  But, the C++ ABI does not
-             make any exceptions for unnamed bitfields when the
-             bitfields are longer than their types.  Therefore, we
-             temporarily give the field a name.  */
-          if (PCC_BITFIELD_TYPE_MATTERS && !DECL_NAME (field))
-            {
-              was_unnamed_p = true;
-              DECL_NAME (field) = make_anon_name ();
-            }
+	  /* An unnamed bitfield does not normally affect the
+	     alignment of the containing class on a target where
+	     PCC_BITFIELD_TYPE_MATTERS.  But, the C++ ABI does not
+	     make any exceptions for unnamed bitfields when the
+	     bitfields are longer than their types.  Therefore, we
+	     temporarily give the field a name.  */
+	  if (PCC_BITFIELD_TYPE_MATTERS && !DECL_NAME (field))
+	    {
+	      was_unnamed_p = true;
+	      DECL_NAME (field) = make_anon_name ();
+	    }
 #endif
-          DECL_SIZE (field) = TYPE_SIZE (integer_type);
-          DECL_ALIGN (field) = TYPE_ALIGN (integer_type);
-          DECL_USER_ALIGN (field) = TYPE_USER_ALIGN (integer_type);
-          layout_nonempty_base_or_field (rli, field, NULL_TREE,
-                                         empty_base_offsets);
-          if (was_unnamed_p)
-            DECL_NAME (field) = NULL_TREE;
-          /* Now that layout has been performed, set the size of the
-             field to the size of its declared type; the rest of the
-             field is effectively invisible.  */
-          DECL_SIZE (field) = TYPE_SIZE (type);
-          /* We must also reset the DECL_MODE of the field.  */
-          if (abi_version_at_least (2))
-            DECL_MODE (field) = TYPE_MODE (type);
-          else if (warn_abi
-                   && DECL_MODE (field) != TYPE_MODE (type))
-            /* Versions of G++ before G++ 3.4 did not reset the
-               DECL_MODE.  */
-            warning (OPT_Wabi,
-                     "the offset of %qD may not be ABI-compliant and may "
-                     "change in a future version of GCC", field);
-        }
+	  DECL_SIZE (field) = TYPE_SIZE (integer_type);
+	  DECL_ALIGN (field) = TYPE_ALIGN (integer_type);
+	  DECL_USER_ALIGN (field) = TYPE_USER_ALIGN (integer_type);
+	  layout_nonempty_base_or_field (rli, field, NULL_TREE,
+					 empty_base_offsets);
+	  if (was_unnamed_p)
+	    DECL_NAME (field) = NULL_TREE;
+	  /* Now that layout has been performed, set the size of the
+	     field to the size of its declared type; the rest of the
+	     field is effectively invisible.  */
+	  DECL_SIZE (field) = TYPE_SIZE (type);
+	  /* We must also reset the DECL_MODE of the field.  */
+	  if (abi_version_at_least (2))
+	    DECL_MODE (field) = TYPE_MODE (type);
+	  else if (warn_abi
+		   && DECL_MODE (field) != TYPE_MODE (type))
+	    /* Versions of G++ before G++ 3.4 did not reset the
+	       DECL_MODE.  */
+	    warning (OPT_Wabi,
+		     "the offset of %qD may not be ABI-compliant and may "
+		     "change in a future version of GCC", field);
+	}
       else
-        layout_nonempty_base_or_field (rli, field, NULL_TREE,
-                                       empty_base_offsets);
+	layout_nonempty_base_or_field (rli, field, NULL_TREE,
+				       empty_base_offsets);
 
       /* Remember the location of any empty classes in FIELD.  */
       if (abi_version_at_least (2))
-        record_subobject_offsets (TREE_TYPE (field),
-                                  byte_position(field),
-                                  empty_base_offsets,
-                                  /*is_data_member=*/true);
+	record_subobject_offsets (TREE_TYPE (field),
+				  byte_position(field),
+				  empty_base_offsets,
+				  /*is_data_member=*/true);
 
       /* If a bit-field does not immediately follow another bit-field,
-         and yet it starts in the middle of a byte, we have failed to
-         comply with the ABI.  */
+	 and yet it starts in the middle of a byte, we have failed to
+	 comply with the ABI.  */
       if (warn_abi
-          && DECL_C_BIT_FIELD (field)
-          /* The TREE_NO_WARNING flag gets set by Objective-C when
-             laying out an Objective-C class.  The ObjC ABI differs
-             from the C++ ABI, and so we do not want a warning
-             here.  */
-          && !TREE_NO_WARNING (field)
-          && !last_field_was_bitfield
-          && !integer_zerop (size_binop (TRUNC_MOD_EXPR,
-                                         DECL_FIELD_BIT_OFFSET (field),
-                                         bitsize_unit_node)))
-        warning (OPT_Wabi, "offset of %q+D is not ABI-compliant and may "
-                 "change in a future version of GCC", field);
+	  && DECL_C_BIT_FIELD (field)
+	  /* The TREE_NO_WARNING flag gets set by Objective-C when
+	     laying out an Objective-C class.  The ObjC ABI differs
+	     from the C++ ABI, and so we do not want a warning
+	     here.  */
+	  && !TREE_NO_WARNING (field)
+	  && !last_field_was_bitfield
+	  && !integer_zerop (size_binop (TRUNC_MOD_EXPR,
+					 DECL_FIELD_BIT_OFFSET (field),
+					 bitsize_unit_node)))
+	warning (OPT_Wabi, "offset of %q+D is not ABI-compliant and may "
+		 "change in a future version of GCC", field);
 
       /* G++ used to use DECL_FIELD_OFFSET as if it were the byte
-         offset of the field.  */
+	 offset of the field.  */
       if (warn_abi
-          && !tree_int_cst_equal (DECL_FIELD_OFFSET (field),
-                                  byte_position (field))
-          && contains_empty_class_p (TREE_TYPE (field)))
-        warning (OPT_Wabi, "%q+D contains empty classes which may cause base "
-                 "classes to be placed at different locations in a "
-                 "future version of GCC", field);
+	  && !tree_int_cst_equal (DECL_FIELD_OFFSET (field),
+				  byte_position (field))
+	  && contains_empty_class_p (TREE_TYPE (field)))
+	warning (OPT_Wabi, "%q+D contains empty classes which may cause base "
+		 "classes to be placed at different locations in a "
+		 "future version of GCC", field);
 
       /* The middle end uses the type of expressions to determine the
-         possible range of expression values.  In order to optimize
-         "x.i > 7" to "false" for a 2-bit bitfield "i", the middle end
-         must be made aware of the width of "i", via its type.
+	 possible range of expression values.  In order to optimize
+	 "x.i > 7" to "false" for a 2-bit bitfield "i", the middle end
+	 must be made aware of the width of "i", via its type.
 
-         Because C++ does not have integer types of arbitrary width,
-         we must (for the purposes of the front end) convert from the
-         type assigned here to the declared type of the bitfield
-         whenever a bitfield expression is used as an rvalue.
-         Similarly, when assigning a value to a bitfield, the value
-         must be converted to the type given the bitfield here.  */
+	 Because C++ does not have integer types of arbitrary width,
+	 we must (for the purposes of the front end) convert from the
+	 type assigned here to the declared type of the bitfield
+	 whenever a bitfield expression is used as an rvalue.
+	 Similarly, when assigning a value to a bitfield, the value
+	 must be converted to the type given the bitfield here.  */
       if (DECL_C_BIT_FIELD (field))
-        {
-          tree ftype;
-          unsigned HOST_WIDE_INT width;
-          ftype = TREE_TYPE (field);
-          width = tree_low_cst (DECL_SIZE (field), /*unsignedp=*/1);
-          if (width != TYPE_PRECISION (ftype))
-            TREE_TYPE (field)
-              = c_build_bitfield_integer_type (width,
-                                               TYPE_UNSIGNED (ftype));
-        }
+	{
+	  tree ftype;
+	  unsigned HOST_WIDE_INT width;
+	  ftype = TREE_TYPE (field);
+	  width = tree_low_cst (DECL_SIZE (field), /*unsignedp=*/1);
+	  if (width != TYPE_PRECISION (ftype))
+	    TREE_TYPE (field)
+	      = c_build_bitfield_integer_type (width,
+					       TYPE_UNSIGNED (ftype));
+	}
 
       /* If we needed additional padding after this field, add it
-         now.  */
+	 now.  */
       if (padding)
-        {
-          tree padding_field;
+	{
+	  tree padding_field;
 
-          padding_field = build_decl (FIELD_DECL,
-                                      NULL_TREE,
-                                      char_type_node);
-          DECL_BIT_FIELD (padding_field) = 1;
-          DECL_SIZE (padding_field) = padding;
-          DECL_CONTEXT (padding_field) = t;
-          DECL_ARTIFICIAL (padding_field) = 1;
-          DECL_IGNORED_P (padding_field) = 1;
-          layout_nonempty_base_or_field (rli, padding_field,
-                                         NULL_TREE,
-                                         empty_base_offsets);
-        }
+	  padding_field = build_decl (FIELD_DECL,
+				      NULL_TREE,
+				      char_type_node);
+	  DECL_BIT_FIELD (padding_field) = 1;
+	  DECL_SIZE (padding_field) = padding;
+	  DECL_CONTEXT (padding_field) = t;
+	  DECL_ARTIFICIAL (padding_field) = 1;
+	  DECL_IGNORED_P (padding_field) = 1;
+	  layout_nonempty_base_or_field (rli, padding_field,
+					 NULL_TREE,
+					 empty_base_offsets);
+	}
 
       last_field_was_bitfield = DECL_C_BIT_FIELD (field);
     }
@@ -4821,8 +4821,8 @@ layout_class_type (tree t, tree *virtuals_p)
   if (abi_version_at_least (2) && !integer_zerop (rli->bitpos))
     {
       /* Make sure that we are on a byte boundary so that the size of
-         the class without virtual bases will always be a round number
-         of bytes.  */
+	 the class without virtual bases will always be a round number
+	 of bytes.  */
       rli->bitpos = round_up (rli->bitpos, BITS_PER_UNIT);
       normalize_rli (rli);
     }
@@ -4844,63 +4844,63 @@ layout_class_type (tree t, tree *virtuals_p)
       base_t = make_node (TREE_CODE (t));
 
       /* Set the size and alignment for the new type.  In G++ 3.2, all
-         empty classes were considered to have size zero when used as
-         base classes.  */
+	 empty classes were considered to have size zero when used as
+	 base classes.  */
       if (!abi_version_at_least (2) && CLASSTYPE_EMPTY_P (t))
-        {
-          TYPE_SIZE (base_t) = bitsize_zero_node;
-          TYPE_SIZE_UNIT (base_t) = size_zero_node;
-          if (warn_abi && !integer_zerop (rli_size_unit_so_far (rli)))
-            warning (OPT_Wabi,
-                     "layout of classes derived from empty class %qT "
-                     "may change in a future version of GCC",
-                     t);
-        }
+	{
+	  TYPE_SIZE (base_t) = bitsize_zero_node;
+	  TYPE_SIZE_UNIT (base_t) = size_zero_node;
+	  if (warn_abi && !integer_zerop (rli_size_unit_so_far (rli)))
+	    warning (OPT_Wabi,
+		     "layout of classes derived from empty class %qT "
+		     "may change in a future version of GCC",
+		     t);
+	}
       else
-        {
-          tree eoc;
+	{
+	  tree eoc;
 
-          /* If the ABI version is not at least two, and the last
-             field was a bit-field, RLI may not be on a byte
-             boundary.  In particular, rli_size_unit_so_far might
-             indicate the last complete byte, while rli_size_so_far
-             indicates the total number of bits used.  Therefore,
-             rli_size_so_far, rather than rli_size_unit_so_far, is
-             used to compute TYPE_SIZE_UNIT.  */
-          eoc = end_of_class (t, /*include_virtuals_p=*/0);
-          TYPE_SIZE_UNIT (base_t)
-            = size_binop (MAX_EXPR,
-                          convert (sizetype,
-                                   size_binop (CEIL_DIV_EXPR,
-                                               rli_size_so_far (rli),
-                                               bitsize_int (BITS_PER_UNIT))),
-                          eoc);
-          TYPE_SIZE (base_t)
-            = size_binop (MAX_EXPR,
-                          rli_size_so_far (rli),
-                          size_binop (MULT_EXPR,
-                                      convert (bitsizetype, eoc),
-                                      bitsize_int (BITS_PER_UNIT)));
-        }
+	  /* If the ABI version is not at least two, and the last
+	     field was a bit-field, RLI may not be on a byte
+	     boundary.  In particular, rli_size_unit_so_far might
+	     indicate the last complete byte, while rli_size_so_far
+	     indicates the total number of bits used.  Therefore,
+	     rli_size_so_far, rather than rli_size_unit_so_far, is
+	     used to compute TYPE_SIZE_UNIT.  */
+	  eoc = end_of_class (t, /*include_virtuals_p=*/0);
+	  TYPE_SIZE_UNIT (base_t)
+	    = size_binop (MAX_EXPR,
+			  convert (sizetype,
+				   size_binop (CEIL_DIV_EXPR,
+					       rli_size_so_far (rli),
+					       bitsize_int (BITS_PER_UNIT))),
+			  eoc);
+	  TYPE_SIZE (base_t)
+	    = size_binop (MAX_EXPR,
+			  rli_size_so_far (rli),
+			  size_binop (MULT_EXPR,
+				      convert (bitsizetype, eoc),
+				      bitsize_int (BITS_PER_UNIT)));
+	}
       TYPE_ALIGN (base_t) = rli->record_align;
       TYPE_USER_ALIGN (base_t) = TYPE_USER_ALIGN (t);
 
       /* Copy the fields from T.  */
       next_field = &TYPE_FIELDS (base_t);
       for (field = TYPE_FIELDS (t); field; field = TREE_CHAIN (field))
-        if (TREE_CODE (field) == FIELD_DECL)
-          {
-            *next_field = build_decl (FIELD_DECL,
-                                      DECL_NAME (field),
-                                      TREE_TYPE (field));
-            DECL_CONTEXT (*next_field) = base_t;
-            DECL_FIELD_OFFSET (*next_field) = DECL_FIELD_OFFSET (field);
-            DECL_FIELD_BIT_OFFSET (*next_field)
-              = DECL_FIELD_BIT_OFFSET (field);
-            DECL_SIZE (*next_field) = DECL_SIZE (field);
-            DECL_MODE (*next_field) = DECL_MODE (field);
-            next_field = &TREE_CHAIN (*next_field);
-          }
+	if (TREE_CODE (field) == FIELD_DECL)
+	  {
+	    *next_field = build_decl (FIELD_DECL,
+				      DECL_NAME (field),
+				      TREE_TYPE (field));
+	    DECL_CONTEXT (*next_field) = base_t;
+	    DECL_FIELD_OFFSET (*next_field) = DECL_FIELD_OFFSET (field);
+	    DECL_FIELD_BIT_OFFSET (*next_field)
+	      = DECL_FIELD_BIT_OFFSET (field);
+	    DECL_SIZE (*next_field) = DECL_SIZE (field);
+	    DECL_MODE (*next_field) = DECL_MODE (field);
+	    next_field = &TREE_CHAIN (*next_field);
+	  }
 
       /* Record the base version of the type.  */
       CLASSTYPE_AS_BASE (t) = base_t;
@@ -4931,7 +4931,7 @@ layout_class_type (tree t, tree *virtuals_p)
   /* Make sure not to create any structures with zero size.  */
   if (integer_zerop (rli_size_unit_so_far (rli)) && CLASSTYPE_EMPTY_P (t))
     place_field (rli,
-                 build_decl (FIELD_DECL, NULL_TREE, char_type_node));
+		 build_decl (FIELD_DECL, NULL_TREE, char_type_node));
 
   /* Let the back-end lay out the type.  */
   finish_record_layout (rli, /*free_p=*/true);
@@ -4949,7 +4949,7 @@ layout_class_type (tree t, tree *virtuals_p)
 
   if (CLASSTYPE_EMPTY_P (t)
       && tree_int_cst_lt (sizeof_biggest_empty_class,
-                          TYPE_SIZE_UNIT (t)))
+			  TYPE_SIZE_UNIT (t)))
     sizeof_biggest_empty_class = TYPE_SIZE_UNIT (t);
 }
 
@@ -4974,11 +4974,11 @@ determine_key_method (tree type)
   for (method = TYPE_METHODS (type); method != NULL_TREE;
        method = TREE_CHAIN (method))
     if (DECL_VINDEX (method) != NULL_TREE
-        && ! DECL_DECLARED_INLINE_P (method)
-        && ! DECL_PURE_VIRTUAL_P (method))
+	&& ! DECL_DECLARED_INLINE_P (method)
+	&& ! DECL_PURE_VIRTUAL_P (method))
       {
-        CLASSTYPE_KEY_METHOD (type) = method;
-        break;
+	CLASSTYPE_KEY_METHOD (type) = method;
+	break;
       }
 
   return;
@@ -5024,20 +5024,20 @@ finish_struct_1 (tree t)
   if (TYPE_CONTAINS_VPTR_P (t))
     {
       /* The Itanium C++ ABI permits the key method to be chosen when
-         the class is defined -- even though the key method so
-         selected may later turn out to be an inline function.  On
-         some systems (such as ARM Symbian OS) the key method cannot
-         be determined until the end of the translation unit.  On such
-         systems, we leave CLASSTYPE_KEY_METHOD set to NULL, which
-         will cause the class to be added to KEYED_CLASSES.  Then, in
-         finish_file we will determine the key method.  */
+	 the class is defined -- even though the key method so
+	 selected may later turn out to be an inline function.  On
+	 some systems (such as ARM Symbian OS) the key method cannot
+	 be determined until the end of the translation unit.  On such
+	 systems, we leave CLASSTYPE_KEY_METHOD set to NULL, which
+	 will cause the class to be added to KEYED_CLASSES.  Then, in
+	 finish_file we will determine the key method.  */
       if (targetm.cxx.key_method_may_be_inline ())
-        determine_key_method (t);
+	determine_key_method (t);
 
       /* If a polymorphic class has no key method, we may emit the vtable
-         in every translation unit where the class definition appears.  */
+	 in every translation unit where the class definition appears.  */
       if (CLASSTYPE_KEY_METHOD (t) == NULL_TREE)
-        keyed_classes = tree_cons (NULL_TREE, t, keyed_classes);
+	keyed_classes = tree_cons (NULL_TREE, t, keyed_classes);
     }
 
   /* Layout the class itself.  */
@@ -5054,11 +5054,11 @@ finish_struct_1 (tree t)
     {
       /* We must enter these virtuals into the table.  */
       if (!CLASSTYPE_HAS_PRIMARY_BASE_P (t))
-        build_primary_vtable (NULL_TREE, t);
+	build_primary_vtable (NULL_TREE, t);
       else if (! BINFO_NEW_VTABLE_MARKED (TYPE_BINFO (t)))
-        /* Here we know enough to change the type of our virtual
-           function table, but we will wait until later this function.  */
-        build_primary_vtable (CLASSTYPE_PRIMARY_BINFO (t), t);
+	/* Here we know enough to change the type of our virtual
+	   function table, but we will wait until later this function.  */
+	build_primary_vtable (CLASSTYPE_PRIMARY_BINFO (t), t);
     }
 
   if (TYPE_CONTAINS_VPTR_P (t))
@@ -5067,31 +5067,31 @@ finish_struct_1 (tree t)
       tree fn;
 
       if (BINFO_VTABLE (TYPE_BINFO (t)))
-        gcc_assert (DECL_VIRTUAL_P (BINFO_VTABLE (TYPE_BINFO (t))));
+	gcc_assert (DECL_VIRTUAL_P (BINFO_VTABLE (TYPE_BINFO (t))));
       if (!CLASSTYPE_HAS_PRIMARY_BASE_P (t))
-        gcc_assert (BINFO_VIRTUALS (TYPE_BINFO (t)) == NULL_TREE);
+	gcc_assert (BINFO_VIRTUALS (TYPE_BINFO (t)) == NULL_TREE);
 
       /* Add entries for virtual functions introduced by this class.  */
       BINFO_VIRTUALS (TYPE_BINFO (t))
-        = chainon (BINFO_VIRTUALS (TYPE_BINFO (t)), virtuals);
+	= chainon (BINFO_VIRTUALS (TYPE_BINFO (t)), virtuals);
 
       /* Set DECL_VINDEX for all functions declared in this class.  */
       for (vindex = 0, fn = BINFO_VIRTUALS (TYPE_BINFO (t));
-           fn;
-           fn = TREE_CHAIN (fn),
-             vindex += (TARGET_VTABLE_USES_DESCRIPTORS
-                        ? TARGET_VTABLE_USES_DESCRIPTORS : 1))
-        {
-          tree fndecl = BV_FN (fn);
+	   fn;
+	   fn = TREE_CHAIN (fn),
+	     vindex += (TARGET_VTABLE_USES_DESCRIPTORS
+			? TARGET_VTABLE_USES_DESCRIPTORS : 1))
+	{
+	  tree fndecl = BV_FN (fn);
 
-          if (DECL_THUNK_P (fndecl))
-            /* A thunk. We should never be calling this entry directly
-               from this vtable -- we'd use the entry for the non
-               thunk base function.  */
-            DECL_VINDEX (fndecl) = NULL_TREE;
-          else if (TREE_CODE (DECL_VINDEX (fndecl)) != INTEGER_CST)
-            DECL_VINDEX (fndecl) = build_int_cst (NULL_TREE, vindex);
-        }
+	  if (DECL_THUNK_P (fndecl))
+	    /* A thunk. We should never be calling this entry directly
+	       from this vtable -- we'd use the entry for the non
+	       thunk base function.  */
+	    DECL_VINDEX (fndecl) = NULL_TREE;
+	  else if (TREE_CODE (DECL_VINDEX (fndecl)) != INTEGER_CST)
+	    DECL_VINDEX (fndecl) = build_int_cst (NULL_TREE, vindex);
+	}
     }
 
   finish_struct_bits (t);
@@ -5101,7 +5101,7 @@ finish_struct_1 (tree t)
   for (x = TYPE_FIELDS (t); x; x = TREE_CHAIN (x))
     if (TREE_CODE (x) == VAR_DECL && TREE_STATIC (x)
         && TREE_TYPE (x) != error_mark_node
-        && same_type_p (TYPE_MAIN_VARIANT (TREE_TYPE (x)), t))
+	&& same_type_p (TYPE_MAIN_VARIANT (TREE_TYPE (x)), t))
       DECL_MODE (x) = TYPE_MODE (t);
 
   /* Done with FIELDS...now decide whether to sort these for
@@ -5115,14 +5115,14 @@ finish_struct_1 (tree t)
   if (n_fields > 7)
     {
       struct sorted_fields_type *field_vec = GGC_NEWVAR
-         (struct sorted_fields_type,
-          sizeof (struct sorted_fields_type) + n_fields * sizeof (tree));
+	 (struct sorted_fields_type,
+	  sizeof (struct sorted_fields_type) + n_fields * sizeof (tree));
       field_vec->len = n_fields;
       add_fields_to_record_type (TYPE_FIELDS (t), field_vec, 0);
       qsort (field_vec->elts, n_fields, sizeof (tree),
-             field_decl_cmp);
+	     field_decl_cmp);
       if (! DECL_LANG_SPECIFIC (TYPE_MAIN_DECL (t)))
-        retrofit_lang_decl (TYPE_MAIN_DECL (t));
+	retrofit_lang_decl (TYPE_MAIN_DECL (t));
       DECL_SORTED_FIELDS (TYPE_MAIN_DECL (t)) = field_vec;
     }
 
@@ -5144,16 +5144,16 @@ finish_struct_1 (tree t)
 
       dtor = CLASSTYPE_DESTRUCTORS (t);
       /* Warn only if the dtor is non-private or the class has
-         friends.  */
+	 friends.  */
       if (/* An implicitly declared destructor is always public.  And,
-             if it were virtual, we would have created it by now.  */
-          !dtor
-          || (!DECL_VINDEX (dtor)
-              && (!TREE_PRIVATE (dtor)
-                  || CLASSTYPE_FRIEND_CLASSES (t)
-                  || DECL_FRIENDLIST (TYPE_MAIN_DECL (t)))))
-        warning (0, "%q#T has virtual functions but non-virtual destructor",
-                 t);
+	     if it were virtual, we would have created it by now.  */
+	  !dtor
+	  || (!DECL_VINDEX (dtor)
+	      && (!TREE_PRIVATE (dtor)
+		  || CLASSTYPE_FRIEND_CLASSES (t)
+		  || DECL_FRIENDLIST (TYPE_MAIN_DECL (t)))))
+	warning (0, "%q#T has virtual functions but non-virtual destructor",
+		 t);
     }
 
   complete_vars (t);
@@ -5204,7 +5204,7 @@ unreverse_member_declarations (tree t)
     {
       TREE_CHAIN (TYPE_FIELDS (t)) = x;
       if (prev)
-        TYPE_FIELDS (t) = prev;
+	TYPE_FIELDS (t) = prev;
     }
 }
 
@@ -5232,16 +5232,16 @@ finish_struct (tree t, tree attributes)
       TYPE_SIZE_UNIT (t) = size_zero_node;
 
       /* We need to emit an error message if this type was used as a parameter
-         and it is an abstract type, even if it is a template. We construct
-         a simple CLASSTYPE_PURE_VIRTUALS list without taking bases into
-         account and we call complete_vars with this type, which will check
-         the PARM_DECLS. Note that while the type is being defined,
-         CLASSTYPE_PURE_VIRTUALS contains the list of the inline friends
-         (see CLASSTYPE_INLINE_FRIENDS) so we need to clear it.  */
+	 and it is an abstract type, even if it is a template. We construct
+	 a simple CLASSTYPE_PURE_VIRTUALS list without taking bases into
+	 account and we call complete_vars with this type, which will check
+	 the PARM_DECLS. Note that while the type is being defined,
+	 CLASSTYPE_PURE_VIRTUALS contains the list of the inline friends
+	 (see CLASSTYPE_INLINE_FRIENDS) so we need to clear it.  */
       CLASSTYPE_PURE_VIRTUALS (t) = NULL;
       for (x = TYPE_METHODS (t); x; x = TREE_CHAIN (x))
-        if (DECL_PURE_VIRTUAL_P (x))
-          VEC_safe_push (tree, gc, CLASSTYPE_PURE_VIRTUALS (t), x);
+	if (DECL_PURE_VIRTUAL_P (x))
+	  VEC_safe_push (tree, gc, CLASSTYPE_PURE_VIRTUALS (t), x);
       complete_vars (t);
     }
   else
@@ -5277,38 +5277,38 @@ fixed_type_or_null (tree instance, int* nonnull, int* cdtorp)
     {
     case INDIRECT_REF:
       if (POINTER_TYPE_P (TREE_TYPE (instance)))
-        return NULL_TREE;
+	return NULL_TREE;
       else
-        return fixed_type_or_null (TREE_OPERAND (instance, 0),
-                                   nonnull, cdtorp);
+	return fixed_type_or_null (TREE_OPERAND (instance, 0),
+				   nonnull, cdtorp);
 
     case CALL_EXPR:
       /* This is a call to a constructor, hence it's never zero.  */
       if (TREE_HAS_CONSTRUCTOR (instance))
-        {
-          if (nonnull)
-            *nonnull = 1;
-          return TREE_TYPE (instance);
-        }
+	{
+	  if (nonnull)
+	    *nonnull = 1;
+	  return TREE_TYPE (instance);
+	}
       return NULL_TREE;
 
     case SAVE_EXPR:
       /* This is a call to a constructor, hence it's never zero.  */
       if (TREE_HAS_CONSTRUCTOR (instance))
-        {
-          if (nonnull)
-            *nonnull = 1;
-          return TREE_TYPE (instance);
-        }
+	{
+	  if (nonnull)
+	    *nonnull = 1;
+	  return TREE_TYPE (instance);
+	}
       return fixed_type_or_null (TREE_OPERAND (instance, 0), nonnull, cdtorp);
 
     case PLUS_EXPR:
     case MINUS_EXPR:
       if (TREE_CODE (TREE_OPERAND (instance, 0)) == ADDR_EXPR)
-        return fixed_type_or_null (TREE_OPERAND (instance, 0), nonnull, cdtorp);
+	return fixed_type_or_null (TREE_OPERAND (instance, 0), nonnull, cdtorp);
       if (TREE_CODE (TREE_OPERAND (instance, 1)) == INTEGER_CST)
-        /* Propagate nonnull.  */
-        return fixed_type_or_null (TREE_OPERAND (instance, 0), nonnull, cdtorp);
+	/* Propagate nonnull.  */
+	return fixed_type_or_null (TREE_OPERAND (instance, 0), nonnull, cdtorp);
       return NULL_TREE;
 
     case NOP_EXPR:
@@ -5318,90 +5318,90 @@ fixed_type_or_null (tree instance, int* nonnull, int* cdtorp)
     case ADDR_EXPR:
       instance = TREE_OPERAND (instance, 0);
       if (nonnull)
-        {
-          /* Just because we see an ADDR_EXPR doesn't mean we're dealing
-             with a real object -- given &p->f, p can still be null.  */
-          tree t = get_base_address (instance);
-          /* ??? Probably should check DECL_WEAK here.  */
-          if (t && DECL_P (t))
-            *nonnull = 1;
-        }
+	{
+	  /* Just because we see an ADDR_EXPR doesn't mean we're dealing
+	     with a real object -- given &p->f, p can still be null.  */
+	  tree t = get_base_address (instance);
+	  /* ??? Probably should check DECL_WEAK here.  */
+	  if (t && DECL_P (t))
+	    *nonnull = 1;
+	}
       return fixed_type_or_null (instance, nonnull, cdtorp);
 
     case COMPONENT_REF:
       /* If this component is really a base class reference, then the field
-         itself isn't definitive.  */
+	 itself isn't definitive.  */
       if (DECL_FIELD_IS_BASE (TREE_OPERAND (instance, 1)))
-        return fixed_type_or_null (TREE_OPERAND (instance, 0), nonnull, cdtorp);
+	return fixed_type_or_null (TREE_OPERAND (instance, 0), nonnull, cdtorp);
       return fixed_type_or_null (TREE_OPERAND (instance, 1), nonnull, cdtorp);
 
     case VAR_DECL:
     case FIELD_DECL:
       if (TREE_CODE (TREE_TYPE (instance)) == ARRAY_TYPE
-          && IS_AGGR_TYPE (TREE_TYPE (TREE_TYPE (instance))))
-        {
-          if (nonnull)
-            *nonnull = 1;
-          return TREE_TYPE (TREE_TYPE (instance));
-        }
+	  && IS_AGGR_TYPE (TREE_TYPE (TREE_TYPE (instance))))
+	{
+	  if (nonnull)
+	    *nonnull = 1;
+	  return TREE_TYPE (TREE_TYPE (instance));
+	}
       /* fall through...  */
     case TARGET_EXPR:
     case PARM_DECL:
     case RESULT_DECL:
       if (IS_AGGR_TYPE (TREE_TYPE (instance)))
-        {
-          if (nonnull)
-            *nonnull = 1;
-          return TREE_TYPE (instance);
-        }
+	{
+	  if (nonnull)
+	    *nonnull = 1;
+	  return TREE_TYPE (instance);
+	}
       else if (instance == current_class_ptr)
-        {
-          if (nonnull)
-            *nonnull = 1;
+	{
+	  if (nonnull)
+	    *nonnull = 1;
 
-          /* if we're in a ctor or dtor, we know our type.  */
-          if (DECL_LANG_SPECIFIC (current_function_decl)
-              && (DECL_CONSTRUCTOR_P (current_function_decl)
-                  || DECL_DESTRUCTOR_P (current_function_decl)))
-            {
-              if (cdtorp)
-                *cdtorp = 1;
-              return TREE_TYPE (TREE_TYPE (instance));
-            }
-        }
+	  /* if we're in a ctor or dtor, we know our type.  */
+	  if (DECL_LANG_SPECIFIC (current_function_decl)
+	      && (DECL_CONSTRUCTOR_P (current_function_decl)
+		  || DECL_DESTRUCTOR_P (current_function_decl)))
+	    {
+	      if (cdtorp)
+		*cdtorp = 1;
+	      return TREE_TYPE (TREE_TYPE (instance));
+	    }
+	}
       else if (TREE_CODE (TREE_TYPE (instance)) == REFERENCE_TYPE)
-        {
-          /* We only need one hash table because it is always left empty.  */
-          static htab_t ht;
-          if (!ht)
-            ht = htab_create (37, 
-                              htab_hash_pointer,
-                              htab_eq_pointer,
-                              /*htab_del=*/NULL);
+	{
+	  /* We only need one hash table because it is always left empty.  */
+	  static htab_t ht;
+	  if (!ht)
+	    ht = htab_create (37, 
+			      htab_hash_pointer,
+			      htab_eq_pointer,
+			      /*htab_del=*/NULL);
 
-          /* Reference variables should be references to objects.  */
-          if (nonnull)
-            *nonnull = 1;
+	  /* Reference variables should be references to objects.  */
+	  if (nonnull)
+	    *nonnull = 1;
 
-          /* Enter the INSTANCE in a table to prevent recursion; a
-             variable's initializer may refer to the variable
-             itself.  */
-          if (TREE_CODE (instance) == VAR_DECL
-              && DECL_INITIAL (instance)
-              && !htab_find (ht, instance))
-            {
-              tree type;
-              void **slot;
+	  /* Enter the INSTANCE in a table to prevent recursion; a
+	     variable's initializer may refer to the variable
+	     itself.  */
+	  if (TREE_CODE (instance) == VAR_DECL
+	      && DECL_INITIAL (instance)
+	      && !htab_find (ht, instance))
+	    {
+	      tree type;
+	      void **slot;
 
-              slot = htab_find_slot (ht, instance, INSERT);
-              *slot = instance;
-              type = fixed_type_or_null (DECL_INITIAL (instance),
-                                         nonnull, cdtorp);
-              htab_remove_elt (ht, instance);
+	      slot = htab_find_slot (ht, instance, INSERT);
+	      *slot = instance;
+	      type = fixed_type_or_null (DECL_INITIAL (instance),
+					 nonnull, cdtorp);
+	      htab_remove_elt (ht, instance);
 
-              return type;
-            }
-        }
+	      return type;
+	    }
+	}
       return NULL_TREE;
 
     default:
@@ -5496,8 +5496,8 @@ pushclass (tree type)
     {
       current_class_stack_size *= 2;
       current_class_stack
-        = XRESIZEVEC (struct class_stack_node, current_class_stack,
-                      current_class_stack_size);
+	= XRESIZEVEC (struct class_stack_node, current_class_stack,
+		      current_class_stack_size);
     }
 
   /* Insert a new entry on the class stack.  */
@@ -5518,8 +5518,8 @@ pushclass (tree type)
   /* By default, things in classes are private, while things in
      structures or unions are public.  */
   current_access_specifier = (CLASSTYPE_DECLARED_CLASS (type)
-                              ? access_private_node
-                              : access_public_node);
+			      ? access_private_node
+			      : access_public_node);
 
   if (previous_class_level
       && type != previous_class_level->this_entity
@@ -5595,17 +5595,17 @@ currently_open_class (tree t)
     {
       tree c;
       if (i == current_class_depth)
-        c = current_class_type;
+	c = current_class_type;
       else
-        {
-          if (current_class_stack[i].hidden)
-            break;
-          c = current_class_stack[i].type;
-        }
+	{
+	  if (current_class_stack[i].hidden)
+	    break;
+	  c = current_class_stack[i].type;
+	}
       if (!c)
-        continue;
+	continue;
       if (same_type_p (c, t))
-        return true;
+	return true;
     }
   return false;
 }
@@ -5632,9 +5632,9 @@ currently_open_derived_class (tree t)
   for (i = current_class_depth - 1; i > 0; --i)
     {
       if (current_class_stack[i].hidden)
-        break;
+	break;
       if (DERIVED_FROM_P (t, current_class_stack[i].type))
-        return current_class_stack[i].type;
+	return current_class_stack[i].type;
     }
 
   return NULL_TREE;
@@ -5703,9 +5703,9 @@ push_lang_context (tree name)
     {
       current_lang_name = name;
       /* DECL_IGNORED_P is initially set for these types, to avoid clutter.
-         (See record_builtin_java_type in decl.c.)  However, that causes
-         incorrect debug entries if these types are actually used.
-         So we re-enable debug output after extern "Java".  */
+	 (See record_builtin_java_type in decl.c.)  However, that causes
+	 incorrect debug entries if these types are actually used.
+	 So we re-enable debug output after extern "Java".  */
       DECL_IGNORED_P (TYPE_NAME (java_byte_type_node)) = 0;
       DECL_IGNORED_P (TYPE_NAME (java_short_type_node)) = 0;
       DECL_IGNORED_P (TYPE_NAME (java_int_type_node)) = 0;
@@ -5745,11 +5745,11 @@ pop_lang_context (void)
 
 static tree
 resolve_address_of_overloaded_function (tree target_type,
-                                        tree overload,
-                                        tsubst_flags_t flags,
-                                        bool template_only,
-                                        tree explicit_targs,
-                                        tree access_path)
+					tree overload,
+					tsubst_flags_t flags,
+					bool template_only,
+					tree explicit_targs,
+					tree access_path)
 {
   /* Here's what the standard says:
 
@@ -5789,7 +5789,7 @@ resolve_address_of_overloaded_function (tree target_type,
      pointer-to-member types, not the internal POINTER_TYPE to
      METHOD_TYPE representation.  */
   gcc_assert (TREE_CODE (target_type) != POINTER_TYPE
-              || TREE_CODE (TREE_TYPE (target_type)) != METHOD_TYPE);
+	      || TREE_CODE (TREE_TYPE (target_type)) != METHOD_TYPE);
 
   gcc_assert (is_overloaded_fn (overload));
 
@@ -5802,16 +5802,16 @@ resolve_address_of_overloaded_function (tree target_type,
   else if (TREE_CODE (target_type) == FUNCTION_TYPE)
     {
       /* This is OK, too.  This comes from a conversion to reference
-         type.  */
+	 type.  */
       target_type = build_reference_type (target_type);
       is_reference = 1;
     }
   else
     {
       if (flags & tf_error)
-        error ("cannot resolve overloaded function %qD based on"
-               " conversion to type %qT",
-               DECL_NAME (OVL_FUNCTION (overload)), target_type);
+	error ("cannot resolve overloaded function %qD based on"
+	       " conversion to type %qT",
+	       DECL_NAME (OVL_FUNCTION (overload)), target_type);
       return error_mark_node;
     }
 
@@ -5824,35 +5824,35 @@ resolve_address_of_overloaded_function (tree target_type,
       tree fns;
 
       for (fns = overload; fns; fns = OVL_NEXT (fns))
-        {
-          tree fn = OVL_CURRENT (fns);
-          tree fntype;
+	{
+	  tree fn = OVL_CURRENT (fns);
+	  tree fntype;
 
-          if (TREE_CODE (fn) == TEMPLATE_DECL)
-            /* We're not looking for templates just yet.  */
-            continue;
+	  if (TREE_CODE (fn) == TEMPLATE_DECL)
+	    /* We're not looking for templates just yet.  */
+	    continue;
 
-          if ((TREE_CODE (TREE_TYPE (fn)) == METHOD_TYPE)
-              != is_ptrmem)
-            /* We're looking for a non-static member, and this isn't
-               one, or vice versa.  */
-            continue;
+	  if ((TREE_CODE (TREE_TYPE (fn)) == METHOD_TYPE)
+	      != is_ptrmem)
+	    /* We're looking for a non-static member, and this isn't
+	       one, or vice versa.  */
+	    continue;
 
-          /* Ignore functions which haven't been explicitly
-             declared.  */
-          if (DECL_ANTICIPATED (fn))
-            continue;
+	  /* Ignore functions which haven't been explicitly
+	     declared.  */
+	  if (DECL_ANTICIPATED (fn))
+	    continue;
 
-          /* See if there's a match.  */
-          fntype = TREE_TYPE (fn);
-          if (is_ptrmem)
-            fntype = build_ptrmemfunc_type (build_pointer_type (fntype));
-          else if (!is_reference)
-            fntype = build_pointer_type (fntype);
+	  /* See if there's a match.  */
+	  fntype = TREE_TYPE (fn);
+	  if (is_ptrmem)
+	    fntype = build_ptrmemfunc_type (build_pointer_type (fntype));
+	  else if (!is_reference)
+	    fntype = build_pointer_type (fntype);
 
-          if (can_convert_arg (target_type, fntype, fn, LOOKUP_NORMAL))
-            matches = tree_cons (fn, NULL_TREE, matches);
-        }
+	  if (can_convert_arg (target_type, fntype, fn, LOOKUP_NORMAL))
+	    matches = tree_cons (fn, NULL_TREE, matches);
+	}
     }
 
   /* Now, if we've already got a match (or matches), there's no need
@@ -5866,70 +5866,70 @@ resolve_address_of_overloaded_function (tree target_type,
       tree fns;
 
       if (is_ptrmem)
-        target_fn_type
-          = TREE_TYPE (TYPE_PTRMEMFUNC_FN_TYPE (target_type));
+	target_fn_type
+	  = TREE_TYPE (TYPE_PTRMEMFUNC_FN_TYPE (target_type));
       else
-        target_fn_type = TREE_TYPE (target_type);
+	target_fn_type = TREE_TYPE (target_type);
       target_arg_types = TYPE_ARG_TYPES (target_fn_type);
       target_ret_type = TREE_TYPE (target_fn_type);
 
       /* Never do unification on the 'this' parameter.  */
       if (TREE_CODE (target_fn_type) == METHOD_TYPE)
-        target_arg_types = TREE_CHAIN (target_arg_types);
+	target_arg_types = TREE_CHAIN (target_arg_types);
 
       for (fns = overload; fns; fns = OVL_NEXT (fns))
-        {
-          tree fn = OVL_CURRENT (fns);
-          tree instantiation;
-          tree instantiation_type;
-          tree targs;
+	{
+	  tree fn = OVL_CURRENT (fns);
+	  tree instantiation;
+	  tree instantiation_type;
+	  tree targs;
 
-          if (TREE_CODE (fn) != TEMPLATE_DECL)
-            /* We're only looking for templates.  */
-            continue;
+	  if (TREE_CODE (fn) != TEMPLATE_DECL)
+	    /* We're only looking for templates.  */
+	    continue;
 
-          if ((TREE_CODE (TREE_TYPE (fn)) == METHOD_TYPE)
-              != is_ptrmem)
-            /* We're not looking for a non-static member, and this is
-               one, or vice versa.  */
-            continue;
+	  if ((TREE_CODE (TREE_TYPE (fn)) == METHOD_TYPE)
+	      != is_ptrmem)
+	    /* We're not looking for a non-static member, and this is
+	       one, or vice versa.  */
+	    continue;
 
-          /* Try to do argument deduction.  */
-          targs = make_tree_vec (DECL_NTPARMS (fn));
-          if (fn_type_unification (fn, explicit_targs, targs,
-                                   target_arg_types, target_ret_type,
-                                   DEDUCE_EXACT, LOOKUP_NORMAL))
-            /* Argument deduction failed.  */
-            continue;
+	  /* Try to do argument deduction.  */
+	  targs = make_tree_vec (DECL_NTPARMS (fn));
+	  if (fn_type_unification (fn, explicit_targs, targs,
+				   target_arg_types, target_ret_type,
+				   DEDUCE_EXACT, LOOKUP_NORMAL))
+	    /* Argument deduction failed.  */
+	    continue;
 
-          /* Instantiate the template.  */
-          instantiation = instantiate_template (fn, targs, flags);
-          if (instantiation == error_mark_node)
-            /* Instantiation failed.  */
-            continue;
+	  /* Instantiate the template.  */
+	  instantiation = instantiate_template (fn, targs, flags);
+	  if (instantiation == error_mark_node)
+	    /* Instantiation failed.  */
+	    continue;
 
-          /* See if there's a match.  */
-          instantiation_type = TREE_TYPE (instantiation);
-          if (is_ptrmem)
-            instantiation_type =
-              build_ptrmemfunc_type (build_pointer_type (instantiation_type));
-          else if (!is_reference)
-            instantiation_type = build_pointer_type (instantiation_type);
-          if (can_convert_arg (target_type, instantiation_type, instantiation,
-                               LOOKUP_NORMAL))
-            matches = tree_cons (instantiation, fn, matches);
-        }
+	  /* See if there's a match.  */
+	  instantiation_type = TREE_TYPE (instantiation);
+	  if (is_ptrmem)
+	    instantiation_type =
+	      build_ptrmemfunc_type (build_pointer_type (instantiation_type));
+	  else if (!is_reference)
+	    instantiation_type = build_pointer_type (instantiation_type);
+	  if (can_convert_arg (target_type, instantiation_type, instantiation,
+			       LOOKUP_NORMAL))
+	    matches = tree_cons (instantiation, fn, matches);
+	}
 
       /* Now, remove all but the most specialized of the matches.  */
       if (matches)
-        {
-          tree match = most_specialized_instantiation (matches);
+	{
+	  tree match = most_specialized_instantiation (matches);
 
-          if (match != error_mark_node)
-            matches = tree_cons (TREE_PURPOSE (match),
-                                 NULL_TREE,
-                                 NULL_TREE);
-        }
+	  if (match != error_mark_node)
+	    matches = tree_cons (TREE_PURPOSE (match),
+				 NULL_TREE,
+				 NULL_TREE);
+	}
     }
 
   /* Now we should have exactly one function in MATCHES.  */
@@ -5937,20 +5937,20 @@ resolve_address_of_overloaded_function (tree target_type,
     {
       /* There were *no* matches.  */
       if (flags & tf_error)
-        {
-          error ("no matches converting function %qD to type %q#T",
-                 DECL_NAME (OVL_FUNCTION (overload)),
-                 target_type);
+	{
+	  error ("no matches converting function %qD to type %q#T",
+		 DECL_NAME (OVL_FUNCTION (overload)),
+		 target_type);
 
-          /* print_candidates expects a chain with the functions in
-             TREE_VALUE slots, so we cons one up here (we're losing anyway,
-             so why be clever?).  */
-          for (; overload; overload = OVL_NEXT (overload))
-            matches = tree_cons (NULL_TREE, OVL_CURRENT (overload),
-                                 matches);
+	  /* print_candidates expects a chain with the functions in
+	     TREE_VALUE slots, so we cons one up here (we're losing anyway,
+	     so why be clever?).  */
+	  for (; overload; overload = OVL_NEXT (overload))
+	    matches = tree_cons (NULL_TREE, OVL_CURRENT (overload),
+				 matches);
 
-          print_candidates (matches);
-        }
+	  print_candidates (matches);
+	}
       return error_mark_node;
     }
   else if (TREE_CHAIN (matches))
@@ -5958,20 +5958,20 @@ resolve_address_of_overloaded_function (tree target_type,
       /* There were too many matches.  */
 
       if (flags & tf_error)
-        {
-          tree match;
+	{
+	  tree match;
 
-          error ("converting overloaded function %qD to type %q#T is ambiguous",
-                    DECL_NAME (OVL_FUNCTION (overload)),
-                    target_type);
+	  error ("converting overloaded function %qD to type %q#T is ambiguous",
+		    DECL_NAME (OVL_FUNCTION (overload)),
+		    target_type);
 
-          /* Since print_candidates expects the functions in the
-             TREE_VALUE slot, we flip them here.  */
-          for (match = matches; match; match = TREE_CHAIN (match))
-            TREE_VALUE (match) = TREE_PURPOSE (match);
+	  /* Since print_candidates expects the functions in the
+	     TREE_VALUE slot, we flip them here.  */
+	  for (match = matches; match; match = TREE_CHAIN (match))
+	    TREE_VALUE (match) = TREE_PURPOSE (match);
 
-          print_candidates (matches);
-        }
+	  print_candidates (matches);
+	}
 
       return error_mark_node;
     }
@@ -5985,14 +5985,14 @@ resolve_address_of_overloaded_function (tree target_type,
       static int explained;
 
       if (!(flags & tf_error))
-        return error_mark_node;
+	return error_mark_node;
 
       pedwarn ("assuming pointer to member %qD", fn);
       if (!explained)
-        {
-          pedwarn ("(a pointer to member can only be formed with %<&%E%>)", fn);
-          explained = 1;
-        }
+	{
+	  pedwarn ("(a pointer to member can only be formed with %<&%E%>)", fn);
+	  explained = 1;
+	}
     }
 
   /* If we're doing overload resolution purely for the purpose of
@@ -6003,13 +6003,13 @@ resolve_address_of_overloaded_function (tree target_type,
     {
       mark_used (fn);
       /* We could not check access when this expression was originally
-         created since we did not know at that time to which function
-         the expression referred.  */
+	 created since we did not know at that time to which function
+	 the expression referred.  */
       if (DECL_FUNCTION_MEMBER_P (fn))
-        {
-          gcc_assert (access_path);
-          perform_or_defer_access_check (access_path, fn, fn);
-        }
+	{
+	  gcc_assert (access_path);
+	  perform_or_defer_access_check (access_path, fn, fn);
+	}
     }
 
   if (TYPE_PTRFN_P (target_type) || TYPE_PTRMEMFUNC_P (target_type))
@@ -6017,8 +6017,8 @@ resolve_address_of_overloaded_function (tree target_type,
   else
     {
       /* The target must be a REFERENCE_TYPE.  Above, build_unary_op
-         will mark the function as addressed, but here we must do it
-         explicitly.  */
+	 will mark the function as addressed, but here we must do it
+	 explicitly.  */
       cxx_mark_addressable (fn);
 
       return fn;
@@ -6046,27 +6046,27 @@ instantiate_type (tree lhstype, tree rhs, tsubst_flags_t flags)
   if (TREE_CODE (lhstype) == UNKNOWN_TYPE)
     {
       if (flags & tf_error)
-        error ("not enough type information");
+	error ("not enough type information");
       return error_mark_node;
     }
 
   if (TREE_TYPE (rhs) != NULL_TREE && ! (type_unknown_p (rhs)))
     {
       if (same_type_p (lhstype, TREE_TYPE (rhs)))
-        return rhs;
+	return rhs;
       if (flag_ms_extensions
-          && TYPE_PTRMEMFUNC_P (lhstype)
-          && !TYPE_PTRMEMFUNC_P (TREE_TYPE (rhs)))
-        /* Microsoft allows `A::f' to be resolved to a
-           pointer-to-member.  */
-        ;
+	  && TYPE_PTRMEMFUNC_P (lhstype)
+	  && !TYPE_PTRMEMFUNC_P (TREE_TYPE (rhs)))
+	/* Microsoft allows `A::f' to be resolved to a
+	   pointer-to-member.  */
+	;
       else
-        {
-          if (flags & tf_error)
-            error ("argument of type %qT does not match %qT",
-                   TREE_TYPE (rhs), lhstype);
-          return error_mark_node;
-        }
+	{
+	  if (flags & tf_error)
+	    error ("argument of type %qT does not match %qT",
+		   TREE_TYPE (rhs), lhstype);
+	  return error_mark_node;
+	}
     }
 
   if (TREE_CODE (rhs) == BASELINK)
@@ -6080,16 +6080,16 @@ instantiate_type (tree lhstype, tree rhs, tsubst_flags_t flags)
   if (TREE_CODE (rhs) == NON_DEPENDENT_EXPR)
     {
       if (flags & tf_error)
-        error ("not enough type information");
+	error ("not enough type information");
       return error_mark_node;
     }
 
   /* There only a few kinds of expressions that may have a type
      dependent on overload resolution.  */
   gcc_assert (TREE_CODE (rhs) == ADDR_EXPR
-              || TREE_CODE (rhs) == COMPONENT_REF
-              || TREE_CODE (rhs) == COMPOUND_EXPR
-              || really_overloaded_fn (rhs));
+	      || TREE_CODE (rhs) == COMPONENT_REF
+	      || TREE_CODE (rhs) == COMPOUND_EXPR
+	      || really_overloaded_fn (rhs));
 
   /* We don't overwrite rhs if it is an overloaded function.
      Copying it would destroy the tree link.  */
@@ -6105,56 +6105,56 @@ instantiate_type (tree lhstype, tree rhs, tsubst_flags_t flags)
     {
     case COMPONENT_REF:
       {
-        tree member = TREE_OPERAND (rhs, 1);
+	tree member = TREE_OPERAND (rhs, 1);
 
-        member = instantiate_type (lhstype, member, flags);
-        if (member != error_mark_node
-            && TREE_SIDE_EFFECTS (TREE_OPERAND (rhs, 0)))
-          /* Do not lose object's side effects.  */
-          return build2 (COMPOUND_EXPR, TREE_TYPE (member),
-                         TREE_OPERAND (rhs, 0), member);
-        return member;
+	member = instantiate_type (lhstype, member, flags);
+	if (member != error_mark_node
+	    && TREE_SIDE_EFFECTS (TREE_OPERAND (rhs, 0)))
+	  /* Do not lose object's side effects.  */
+	  return build2 (COMPOUND_EXPR, TREE_TYPE (member),
+			 TREE_OPERAND (rhs, 0), member);
+	return member;
       }
 
     case OFFSET_REF:
       rhs = TREE_OPERAND (rhs, 1);
       if (BASELINK_P (rhs))
-        return instantiate_type (lhstype, rhs, flags_in);
+	return instantiate_type (lhstype, rhs, flags_in);
 
       /* This can happen if we are forming a pointer-to-member for a
-         member template.  */
+	 member template.  */
       gcc_assert (TREE_CODE (rhs) == TEMPLATE_ID_EXPR);
 
       /* Fall through.  */
 
     case TEMPLATE_ID_EXPR:
       {
-        tree fns = TREE_OPERAND (rhs, 0);
-        tree args = TREE_OPERAND (rhs, 1);
+	tree fns = TREE_OPERAND (rhs, 0);
+	tree args = TREE_OPERAND (rhs, 1);
 
-        return
-          resolve_address_of_overloaded_function (lhstype, fns, flags_in,
-                                                  /*template_only=*/true,
-                                                  args, access_path);
+	return
+	  resolve_address_of_overloaded_function (lhstype, fns, flags_in,
+						  /*template_only=*/true,
+						  args, access_path);
       }
 
     case OVERLOAD:
     case FUNCTION_DECL:
       return
-        resolve_address_of_overloaded_function (lhstype, rhs, flags_in,
-                                                /*template_only=*/false,
-                                                /*explicit_targs=*/NULL_TREE,
-                                                access_path);
+	resolve_address_of_overloaded_function (lhstype, rhs, flags_in,
+						/*template_only=*/false,
+						/*explicit_targs=*/NULL_TREE,
+						access_path);
 
     case COMPOUND_EXPR:
       TREE_OPERAND (rhs, 0)
-        = instantiate_type (lhstype, TREE_OPERAND (rhs, 0), flags);
+	= instantiate_type (lhstype, TREE_OPERAND (rhs, 0), flags);
       if (TREE_OPERAND (rhs, 0) == error_mark_node)
-        return error_mark_node;
+	return error_mark_node;
       TREE_OPERAND (rhs, 1)
-        = instantiate_type (lhstype, TREE_OPERAND (rhs, 1), flags);
+	= instantiate_type (lhstype, TREE_OPERAND (rhs, 1), flags);
       if (TREE_OPERAND (rhs, 1) == error_mark_node)
-        return error_mark_node;
+	return error_mark_node;
 
       TREE_TYPE (rhs) = lhstype;
       return rhs;
@@ -6162,7 +6162,7 @@ instantiate_type (tree lhstype, tree rhs, tsubst_flags_t flags)
     case ADDR_EXPR:
     {
       if (PTRMEM_OK_P (rhs))
-        flags |= tf_ptrmem_ok;
+	flags |= tf_ptrmem_ok;
 
       return instantiate_type (lhstype, TREE_OPERAND (rhs, 0), flags);
     }
@@ -6195,15 +6195,15 @@ get_vfield_name (tree type)
       base_binfo = BINFO_BASE_BINFO (binfo, 0);
 
       if (BINFO_VIRTUAL_P (base_binfo)
-          || !TYPE_CONTAINS_VPTR_P (BINFO_TYPE (base_binfo)))
-        break;
+	  || !TYPE_CONTAINS_VPTR_P (BINFO_TYPE (base_binfo)))
+	break;
     }
 
   type = BINFO_TYPE (binfo);
   buf = (char *) alloca (sizeof (VFIELD_NAME_FORMAT)
-                         + TYPE_NAME_LENGTH (type) + 2);
+			 + TYPE_NAME_LENGTH (type) + 2);
   sprintf (buf, VFIELD_NAME_FORMAT,
-           IDENTIFIER_POINTER (constructor_name (type)));
+	   IDENTIFIER_POINTER (constructor_name (type)));
   return get_identifier (buf);
 }
 
@@ -6216,16 +6216,16 @@ print_class_statistics (void)
   if (n_vtables)
     {
       fprintf (stderr, "vtables = %d; vtable searches = %d\n",
-               n_vtables, n_vtable_searches);
+	       n_vtables, n_vtable_searches);
       fprintf (stderr, "vtable entries = %d; vtable elems = %d\n",
-               n_vtable_entries, n_vtable_elems);
+	       n_vtable_entries, n_vtable_elems);
     }
 #endif
 }
 
 /* Build a dummy reference to ourselves so Derived::Base (and A::A) works,
    according to [class]:
-                                          The class-name is also inserted
+					  The class-name is also inserted
    into  the scope of the class itself.  For purposes of access checking,
    the inserted class name is treated as if it were a public member name.  */
 
@@ -6284,14 +6284,14 @@ contains_empty_class_p (tree type)
       int i;
 
       for (binfo = TYPE_BINFO (type), i = 0;
-           BINFO_BASE_ITERATE (binfo, i, base_binfo); ++i)
-        if (contains_empty_class_p (BINFO_TYPE (base_binfo)))
-          return true;
+	   BINFO_BASE_ITERATE (binfo, i, base_binfo); ++i)
+	if (contains_empty_class_p (BINFO_TYPE (base_binfo)))
+	  return true;
       for (field = TYPE_FIELDS (type); field; field = TREE_CHAIN (field))
-        if (TREE_CODE (field) == FIELD_DECL
-            && !DECL_ARTIFICIAL (field)
-            && is_empty_class (TREE_TYPE (field)))
-          return true;
+	if (TREE_CODE (field) == FIELD_DECL
+	    && !DECL_ARTIFICIAL (field)
+	    && is_empty_class (TREE_TYPE (field)))
+	  return true;
     }
   else if (TREE_CODE (type) == ARRAY_TYPE)
     return contains_empty_class_p (TREE_TYPE (type));
@@ -6308,13 +6308,13 @@ maybe_note_name_used_in_class (tree name, tree decl)
 
   /* If we're not defining a class, there's nothing to do.  */
   if (!(innermost_scope_kind() == sk_class
-        && TYPE_BEING_DEFINED (current_class_type)))
+	&& TYPE_BEING_DEFINED (current_class_type)))
     return;
 
   /* If there's already a binding for this NAME, then we don't have
      anything to worry about.  */
   if (lookup_member (current_class_type, name,
-                     /*protect=*/0, /*want_type=*/false))
+		     /*protect=*/0, /*want_type=*/false))
     return;
 
   if (!current_class_stack[current_class_depth - 1].names_used)
@@ -6323,8 +6323,8 @@ maybe_note_name_used_in_class (tree name, tree decl)
   names_used = current_class_stack[current_class_depth - 1].names_used;
 
   splay_tree_insert (names_used,
-                     (splay_tree_key) name,
-                     (splay_tree_value) decl);
+		     (splay_tree_key) name,
+		     (splay_tree_value) decl);
 }
 
 /* Note that NAME was declared (as DECL) in the current class.  Check
@@ -6347,12 +6347,12 @@ note_name_declared_in_class (tree name, tree decl)
     {
       /* [basic.scope.class]
 
-         A name N used in a class S shall refer to the same declaration
-         in its context and when re-evaluated in the completed scope of
-         S.  */
+	 A name N used in a class S shall refer to the same declaration
+	 in its context and when re-evaluated in the completed scope of
+	 S.  */
       error ("declaration of %q#D", decl);
       error ("changes meaning of %qD from %q+#D",
-             DECL_NAME (OVL_CURRENT (decl)), (tree) n->value);
+	     DECL_NAME (OVL_CURRENT (decl)), (tree) n->value);
     }
 }
 
@@ -6412,10 +6412,10 @@ maybe_indent_hierarchy (FILE * stream, int indent, int indented_p)
 
 static tree
 dump_class_hierarchy_r (FILE *stream,
-                        int flags,
-                        tree binfo,
-                        tree igo,
-                        int indent)
+			int flags,
+			tree binfo,
+			tree igo,
+			int indent)
 {
   int indented = 0;
   tree base_binfo;
@@ -6423,8 +6423,8 @@ dump_class_hierarchy_r (FILE *stream,
 
   indented = maybe_indent_hierarchy (stream, indent, 0);
   fprintf (stream, "%s (0x%lx) ",
-           type_as_string (BINFO_TYPE (binfo), TFF_PLAIN_IDENTIFIER),
-           (unsigned long) binfo);
+	   type_as_string (BINFO_TYPE (binfo), TFF_PLAIN_IDENTIFIER),
+	   (unsigned long) binfo);
   if (binfo != igo)
     {
       fprintf (stream, "alternative-path\n");
@@ -6433,7 +6433,7 @@ dump_class_hierarchy_r (FILE *stream,
   igo = TREE_CHAIN (binfo);
 
   fprintf (stream, HOST_WIDE_INT_PRINT_DEC,
-           tree_low_cst (BINFO_OFFSET (binfo), 0));
+	   tree_low_cst (BINFO_OFFSET (binfo), 0));
   if (is_empty_class (BINFO_TYPE (binfo)))
     fprintf (stream, " empty");
   else if (CLASSTYPE_NEARLY_EMPTY_P (BINFO_TYPE (binfo)))
@@ -6447,9 +6447,9 @@ dump_class_hierarchy_r (FILE *stream,
     {
       indented = maybe_indent_hierarchy (stream, indent + 3, indented);
       fprintf (stream, " primary-for %s (0x%lx)",
-               type_as_string (BINFO_TYPE (BINFO_INHERITANCE_CHAIN (binfo)),
-                               TFF_PLAIN_IDENTIFIER),
-               (unsigned long)BINFO_INHERITANCE_CHAIN (binfo));
+	       type_as_string (BINFO_TYPE (BINFO_INHERITANCE_CHAIN (binfo)),
+			       TFF_PLAIN_IDENTIFIER),
+	       (unsigned long)BINFO_INHERITANCE_CHAIN (binfo));
     }
   if (BINFO_LOST_PRIMARY_P (binfo))
     {
@@ -6464,36 +6464,36 @@ dump_class_hierarchy_r (FILE *stream,
       int indented = 0;
 
       if (BINFO_SUBVTT_INDEX (binfo))
-        {
-          indented = maybe_indent_hierarchy (stream, indent + 3, indented);
-          fprintf (stream, " subvttidx=%s",
-                   expr_as_string (BINFO_SUBVTT_INDEX (binfo),
-                                   TFF_PLAIN_IDENTIFIER));
-        }
+	{
+	  indented = maybe_indent_hierarchy (stream, indent + 3, indented);
+	  fprintf (stream, " subvttidx=%s",
+		   expr_as_string (BINFO_SUBVTT_INDEX (binfo),
+				   TFF_PLAIN_IDENTIFIER));
+	}
       if (BINFO_VPTR_INDEX (binfo))
-        {
-          indented = maybe_indent_hierarchy (stream, indent + 3, indented);
-          fprintf (stream, " vptridx=%s",
-                   expr_as_string (BINFO_VPTR_INDEX (binfo),
-                                   TFF_PLAIN_IDENTIFIER));
-        }
+	{
+	  indented = maybe_indent_hierarchy (stream, indent + 3, indented);
+	  fprintf (stream, " vptridx=%s",
+		   expr_as_string (BINFO_VPTR_INDEX (binfo),
+				   TFF_PLAIN_IDENTIFIER));
+	}
       if (BINFO_VPTR_FIELD (binfo))
-        {
-          indented = maybe_indent_hierarchy (stream, indent + 3, indented);
-          fprintf (stream, " vbaseoffset=%s",
-                   expr_as_string (BINFO_VPTR_FIELD (binfo),
-                                   TFF_PLAIN_IDENTIFIER));
-        }
+	{
+	  indented = maybe_indent_hierarchy (stream, indent + 3, indented);
+	  fprintf (stream, " vbaseoffset=%s",
+		   expr_as_string (BINFO_VPTR_FIELD (binfo),
+				   TFF_PLAIN_IDENTIFIER));
+	}
       if (BINFO_VTABLE (binfo))
-        {
-          indented = maybe_indent_hierarchy (stream, indent + 3, indented);
-          fprintf (stream, " vptr=%s",
-                   expr_as_string (BINFO_VTABLE (binfo),
-                                   TFF_PLAIN_IDENTIFIER));
-        }
+	{
+	  indented = maybe_indent_hierarchy (stream, indent + 3, indented);
+	  fprintf (stream, " vptr=%s",
+		   expr_as_string (BINFO_VTABLE (binfo),
+				   TFF_PLAIN_IDENTIFIER));
+	}
 
       if (indented)
-        fprintf (stream, "\n");
+	fprintf (stream, "\n");
     }
 
   for (i = 0; BINFO_BASE_ITERATE (binfo, i, base_binfo); i++)
@@ -6509,13 +6509,13 @@ dump_class_hierarchy_1 (FILE *stream, int flags, tree t)
 {
   fprintf (stream, "Class %s\n", type_as_string (t, TFF_PLAIN_IDENTIFIER));
   fprintf (stream, "   size=%lu align=%lu\n",
-           (unsigned long)(tree_low_cst (TYPE_SIZE (t), 0) / BITS_PER_UNIT),
-           (unsigned long)(TYPE_ALIGN (t) / BITS_PER_UNIT));
+	   (unsigned long)(tree_low_cst (TYPE_SIZE (t), 0) / BITS_PER_UNIT),
+	   (unsigned long)(TYPE_ALIGN (t) / BITS_PER_UNIT));
   fprintf (stream, "   base size=%lu base align=%lu\n",
-           (unsigned long)(tree_low_cst (TYPE_SIZE (CLASSTYPE_AS_BASE (t)), 0)
-                           / BITS_PER_UNIT),
-           (unsigned long)(TYPE_ALIGN (CLASSTYPE_AS_BASE (t))
-                           / BITS_PER_UNIT));
+	   (unsigned long)(tree_low_cst (TYPE_SIZE (CLASSTYPE_AS_BASE (t)), 0)
+			   / BITS_PER_UNIT),
+	   (unsigned long)(TYPE_ALIGN (CLASSTYPE_AS_BASE (t))
+			   / BITS_PER_UNIT));
   dump_class_hierarchy_r (stream, flags, TYPE_BINFO (t), TYPE_BINFO (t), 0);
   fprintf (stream, "\n");
 }
@@ -6550,17 +6550,17 @@ dump_array (FILE * stream, tree decl)
   tree size = TYPE_MAX_VALUE (TYPE_DOMAIN (TREE_TYPE (decl)));
 
   elt = (tree_low_cst (TYPE_SIZE (TREE_TYPE (TREE_TYPE (decl))), 0)
-         / BITS_PER_UNIT);
+	 / BITS_PER_UNIT);
   fprintf (stream, "%s:", decl_as_string (decl, TFF_PLAIN_IDENTIFIER));
   fprintf (stream, " %s entries",
-           expr_as_string (size_binop (PLUS_EXPR, size, size_one_node),
-                           TFF_PLAIN_IDENTIFIER));
+	   expr_as_string (size_binop (PLUS_EXPR, size, size_one_node),
+			   TFF_PLAIN_IDENTIFIER));
   fprintf (stream, "\n");
 
   FOR_EACH_CONSTRUCTOR_VALUE (CONSTRUCTOR_ELTS (DECL_INITIAL (decl)),
-                              ix, value)
+			      ix, value)
     fprintf (stream, "%-4ld  %s\n", (long)(ix * elt),
-             expr_as_string (value, TFF_PLAIN_IDENTIFIER));
+	     expr_as_string (value, TFF_PLAIN_IDENTIFIER));
 }
 
 static void
@@ -6577,14 +6577,14 @@ dump_vtable (tree t, tree binfo, tree vtable)
       int ctor_vtbl_p = TYPE_BINFO (t) != binfo;
 
       fprintf (stream, "%s for %s",
-               ctor_vtbl_p ? "Construction vtable" : "Vtable",
-               type_as_string (BINFO_TYPE (binfo), TFF_PLAIN_IDENTIFIER));
+	       ctor_vtbl_p ? "Construction vtable" : "Vtable",
+	       type_as_string (BINFO_TYPE (binfo), TFF_PLAIN_IDENTIFIER));
       if (ctor_vtbl_p)
-        {
-          if (!BINFO_VIRTUAL_P (binfo))
-            fprintf (stream, " (0x%lx instance)", (unsigned long)binfo);
-          fprintf (stream, " in %s", type_as_string (t, TFF_PLAIN_IDENTIFIER));
-        }
+	{
+	  if (!BINFO_VIRTUAL_P (binfo))
+	    fprintf (stream, " (0x%lx instance)", (unsigned long)binfo);
+	  fprintf (stream, " in %s", type_as_string (t, TFF_PLAIN_IDENTIFIER));
+	}
       fprintf (stream, "\n");
       dump_array (stream, vtable);
       fprintf (stream, "\n");
@@ -6605,7 +6605,7 @@ dump_vtt (tree t, tree vtt)
   if (!(flags & TDF_SLIM))
     {
       fprintf (stream, "VTT for %s\n",
-               type_as_string (t, TFF_PLAIN_IDENTIFIER));
+	       type_as_string (t, TFF_PLAIN_IDENTIFIER));
       dump_array (stream, vtt);
       fprintf (stream, "\n");
     }
@@ -6623,10 +6623,10 @@ dump_thunk (FILE *stream, int indent, tree thunk)
   tree thunks;
 
   fprintf (stream, "%.*s%p %s %s", indent, spaces,
-           (void *)thunk,
-           !DECL_THUNK_P (thunk) ? "function"
-           : DECL_THIS_THUNK_P (thunk) ? "this-thunk" : "covariant-thunk",
-           name ? IDENTIFIER_POINTER (name) : "<unset>");
+	   (void *)thunk,
+	   !DECL_THUNK_P (thunk) ? "function"
+	   : DECL_THIS_THUNK_P (thunk) ? "this-thunk" : "covariant-thunk",
+	   name ? IDENTIFIER_POINTER (name) : "<unset>");
   if (DECL_THUNK_P (thunk))
     {
       HOST_WIDE_INT fixed_adjust = THUNK_FIXED_OFFSET (thunk);
@@ -6634,16 +6634,16 @@ dump_thunk (FILE *stream, int indent, tree thunk)
 
       fprintf (stream, " fixed=" HOST_WIDE_INT_PRINT_DEC, fixed_adjust);
       if (!virtual_adjust)
-        /*NOP*/;
+	/*NOP*/;
       else if (DECL_THIS_THUNK_P (thunk))
-        fprintf (stream, " vcall="  HOST_WIDE_INT_PRINT_DEC,
-                 tree_low_cst (virtual_adjust, 0));
+	fprintf (stream, " vcall="  HOST_WIDE_INT_PRINT_DEC,
+		 tree_low_cst (virtual_adjust, 0));
       else
-        fprintf (stream, " vbase=" HOST_WIDE_INT_PRINT_DEC "(%s)",
-                 tree_low_cst (BINFO_VPTR_FIELD (virtual_adjust), 0),
-                 type_as_string (BINFO_TYPE (virtual_adjust), TFF_SCOPE));
+	fprintf (stream, " vbase=" HOST_WIDE_INT_PRINT_DEC "(%s)",
+		 tree_low_cst (BINFO_VPTR_FIELD (virtual_adjust), 0),
+		 type_as_string (BINFO_TYPE (virtual_adjust), TFF_SCOPE));
       if (THUNK_ALIAS (thunk))
-        fprintf (stream, " alias to %p", (void *)THUNK_ALIAS (thunk));
+	fprintf (stream, " alias to %p", (void *)THUNK_ALIAS (thunk));
     }
   fprintf (stream, "\n");
   for (thunks = DECL_THUNKS (thunk); thunks; thunks = TREE_CHAIN (thunks))
@@ -6673,13 +6673,13 @@ finish_vtbls (tree t)
      secondary vtables in inheritance graph order.  */
   list = build_tree_list (BINFO_VTABLE (TYPE_BINFO (t)), NULL_TREE);
   accumulate_vtbl_inits (TYPE_BINFO (t), TYPE_BINFO (t),
-                         TYPE_BINFO (t), t, list);
+			 TYPE_BINFO (t), t, list);
 
   /* Then come the virtual bases, also in inheritance graph order.  */
   for (vbase = TYPE_BINFO (t); vbase; vbase = TREE_CHAIN (vbase))
     {
       if (!BINFO_VIRTUAL_P (vbase))
-        continue;
+	continue;
       accumulate_vtbl_inits (vbase, vbase, TYPE_BINFO (t), t, list);
     }
 
@@ -6758,11 +6758,11 @@ binfo_ctor_vtable (tree binfo)
     {
       vt = BINFO_VTABLE (binfo);
       if (TREE_CODE (vt) == TREE_LIST)
-        vt = TREE_VALUE (vt);
+	vt = TREE_VALUE (vt);
       if (TREE_CODE (vt) == TREE_BINFO)
-        binfo = vt;
+	binfo = vt;
       else
-        break;
+	break;
     }
 
   return vt;
@@ -6860,10 +6860,10 @@ build_vtt_inits (tree binfo, tree t, tree *inits, tree *index)
        order.  */
     for (b = TYPE_BINFO (BINFO_TYPE (binfo)); b; b = TREE_CHAIN (b))
       {
-        if (!BINFO_VIRTUAL_P (b))
-          continue;
+	if (!BINFO_VIRTUAL_P (b))
+	  continue;
 
-        inits = build_vtt_inits (b, t, inits, index);
+	inits = build_vtt_inits (b, t, inits, index);
       }
   else
     /* Remove the ctor vtables we created.  */
@@ -6892,7 +6892,7 @@ dfs_build_secondary_vptr_vtt_inits (tree binfo, void *data_)
   /* We're only interested in bases with virtual bases or reachable
      via a virtual path from the type being constructed.  */
   if (!(CLASSTYPE_VBASECLASSES (BINFO_TYPE (binfo))
-        || binfo_via_virtual (binfo, data->type_being_constructed)))
+	|| binfo_via_virtual (binfo, data->type_being_constructed)))
     return dfs_skip_bases;
 
   /* We're not interested in non-virtual primary bases.  */
@@ -6906,14 +6906,14 @@ dfs_build_secondary_vptr_vtt_inits (tree binfo, void *data_)
       BINFO_VPTR_INDEX (binfo) = data->index;
 
       if (BINFO_VIRTUAL_P (binfo))
-        {
-          /* It's a primary virtual base, and this is not a
-             construction vtable.  Find the base this is primary of in
-             the inheritance graph, and use that base's vtable
-             now.  */
-          while (BINFO_PRIMARY_P (binfo))
-            binfo = BINFO_INHERITANCE_CHAIN (binfo);
-        }
+	{
+	  /* It's a primary virtual base, and this is not a
+	     construction vtable.  Find the base this is primary of in
+	     the inheritance graph, and use that base's vtable
+	     now.  */
+	  while (BINFO_PRIMARY_P (binfo))
+	    binfo = BINFO_INHERITANCE_CHAIN (binfo);
+	}
     }
 
   /* Add the initializer for the secondary vptr itself.  */
@@ -6921,7 +6921,7 @@ dfs_build_secondary_vptr_vtt_inits (tree binfo, void *data_)
 
   /* Advance the vtt index.  */
   data->index = size_binop (PLUS_EXPR, data->index,
-                            TYPE_SIZE_UNIT (ptr_type_node));
+			    TYPE_SIZE_UNIT (ptr_type_node));
 
   return NULL_TREE;
 }
@@ -6980,7 +6980,7 @@ build_ctor_vtbl_group (tree binfo, tree t)
   DECL_CONSTRUCTION_VTABLE_P (vtbl) = 1;
   list = build_tree_list (vtbl, NULL_TREE);
   accumulate_vtbl_inits (binfo, TYPE_BINFO (TREE_TYPE (binfo)),
-                         binfo, t, list);
+			 binfo, t, list);
 
   /* Add the vtables for each of our virtual bases using the vbase in T
      binfo.  */
@@ -6991,7 +6991,7 @@ build_ctor_vtbl_group (tree binfo, tree t)
       tree b;
 
       if (!BINFO_VIRTUAL_P (vbase))
-        continue;
+	continue;
       b = copied_binfo (vbase, binfo);
 
       accumulate_vtbl_inits (b, vbase, binfo, t, list);
@@ -7021,10 +7021,10 @@ build_ctor_vtbl_group (tree binfo, tree t)
 
 static void
 accumulate_vtbl_inits (tree binfo,
-                       tree orig_binfo,
-                       tree rtti_binfo,
-                       tree t,
-                       tree inits)
+		       tree orig_binfo,
+		       tree rtti_binfo,
+		       tree t,
+		       tree inits)
 {
   int i;
   tree base_binfo;
@@ -7046,8 +7046,8 @@ accumulate_vtbl_inits (tree binfo,
   /* Build the initializers for the BINFO-in-T vtable.  */
   TREE_VALUE (inits)
     = chainon (TREE_VALUE (inits),
-               dfs_accumulate_vtbl_inits (binfo, orig_binfo,
-                                          rtti_binfo, t, inits));
+	       dfs_accumulate_vtbl_inits (binfo, orig_binfo,
+					  rtti_binfo, t, inits));
 
   /* Walk the BINFO and its bases.  We walk in preorder so that as we
      initialize each vtable we can figure out at what offset the
@@ -7058,11 +7058,11 @@ accumulate_vtbl_inits (tree binfo,
     {
       /* Skip virtual bases.  */
       if (BINFO_VIRTUAL_P (base_binfo))
-        continue;
+	continue;
       accumulate_vtbl_inits (base_binfo,
-                             BINFO_BASE_BINFO (orig_binfo, i),
-                             rtti_binfo, t,
-                             inits);
+			     BINFO_BASE_BINFO (orig_binfo, i),
+			     rtti_binfo, t,
+			     inits);
     }
 }
 
@@ -7071,10 +7071,10 @@ accumulate_vtbl_inits (tree binfo,
 
 static tree
 dfs_accumulate_vtbl_inits (tree binfo,
-                           tree orig_binfo,
-                           tree rtti_binfo,
-                           tree t,
-                           tree l)
+			   tree orig_binfo,
+			   tree rtti_binfo,
+			   tree t,
+			   tree l)
 {
   tree inits = NULL_TREE;
   tree vtbl = NULL_TREE;
@@ -7084,50 +7084,50 @@ dfs_accumulate_vtbl_inits (tree binfo,
       && BINFO_VIRTUAL_P (orig_binfo) && BINFO_PRIMARY_P (orig_binfo))
     {
       /* In the hierarchy of BINFO_TYPE (RTTI_BINFO), this is a
-         primary virtual base.  If it is not the same primary in
-         the hierarchy of T, we'll need to generate a ctor vtable
-         for it, to place at its location in T.  If it is the same
-         primary, we still need a VTT entry for the vtable, but it
-         should point to the ctor vtable for the base it is a
-         primary for within the sub-hierarchy of RTTI_BINFO.
+	 primary virtual base.  If it is not the same primary in
+	 the hierarchy of T, we'll need to generate a ctor vtable
+	 for it, to place at its location in T.  If it is the same
+	 primary, we still need a VTT entry for the vtable, but it
+	 should point to the ctor vtable for the base it is a
+	 primary for within the sub-hierarchy of RTTI_BINFO.
 
-         There are three possible cases:
+	 There are three possible cases:
 
-         1) We are in the same place.
-         2) We are a primary base within a lost primary virtual base of
-         RTTI_BINFO.
-         3) We are primary to something not a base of RTTI_BINFO.  */
+	 1) We are in the same place.
+	 2) We are a primary base within a lost primary virtual base of
+	 RTTI_BINFO.
+	 3) We are primary to something not a base of RTTI_BINFO.  */
 
       tree b;
       tree last = NULL_TREE;
 
       /* First, look through the bases we are primary to for RTTI_BINFO
-         or a virtual base.  */
+	 or a virtual base.  */
       b = binfo;
       while (BINFO_PRIMARY_P (b))
-        {
-          b = BINFO_INHERITANCE_CHAIN (b);
-          last = b;
-          if (BINFO_VIRTUAL_P (b) || b == rtti_binfo)
-            goto found;
-        }
+	{
+	  b = BINFO_INHERITANCE_CHAIN (b);
+	  last = b;
+	  if (BINFO_VIRTUAL_P (b) || b == rtti_binfo)
+	    goto found;
+	}
       /* If we run out of primary links, keep looking down our
-         inheritance chain; we might be an indirect primary.  */
+	 inheritance chain; we might be an indirect primary.  */
       for (b = last; b; b = BINFO_INHERITANCE_CHAIN (b))
-        if (BINFO_VIRTUAL_P (b) || b == rtti_binfo)
-          break;
+	if (BINFO_VIRTUAL_P (b) || b == rtti_binfo)
+	  break;
     found:
 
       /* If we found RTTI_BINFO, this is case 1.  If we found a virtual
-         base B and it is a base of RTTI_BINFO, this is case 2.  In
-         either case, we share our vtable with LAST, i.e. the
-         derived-most base within B of which we are a primary.  */
+	 base B and it is a base of RTTI_BINFO, this is case 2.  In
+	 either case, we share our vtable with LAST, i.e. the
+	 derived-most base within B of which we are a primary.  */
       if (b == rtti_binfo
-          || (b && binfo_for_vbase (BINFO_TYPE (b), BINFO_TYPE (rtti_binfo))))
-        /* Just set our BINFO_VTABLE to point to LAST, as we may not have
-           set LAST's BINFO_VTABLE yet.  We'll extract the actual vptr in
-           binfo_ctor_vtable after everything's been set up.  */
-        vtbl = last;
+	  || (b && binfo_for_vbase (BINFO_TYPE (b), BINFO_TYPE (rtti_binfo))))
+	/* Just set our BINFO_VTABLE to point to LAST, as we may not have
+	   set LAST's BINFO_VTABLE yet.  We'll extract the actual vptr in
+	   binfo_ctor_vtable after everything's been set up.  */
+	vtbl = last;
 
       /* Otherwise, this is case 3 and we get our own.  */
     }
@@ -7141,23 +7141,23 @@ dfs_accumulate_vtbl_inits (tree binfo,
 
       /* Compute the initializer for this vtable.  */
       inits = build_vtbl_initializer (binfo, orig_binfo, t, rtti_binfo,
-                                      &non_fn_entries);
+				      &non_fn_entries);
 
       /* Figure out the position to which the VPTR should point.  */
       vtbl = TREE_PURPOSE (l);
       vtbl = build_address (vtbl);
       /* ??? We should call fold_convert to convert the address to
-         vtbl_ptr_type_node, which is the type of elements in the
-         vtable.  However, the resulting NOP_EXPRs confuse other parts
-         of the C++ front end.  */
+	 vtbl_ptr_type_node, which is the type of elements in the
+	 vtable.  However, the resulting NOP_EXPRs confuse other parts
+	 of the C++ front end.  */
       gcc_assert (TREE_CODE (vtbl) == ADDR_EXPR);
       TREE_TYPE (vtbl) = vtbl_ptr_type_node;
       index = size_binop (PLUS_EXPR,
-                          size_int (non_fn_entries),
-                          size_int (list_length (TREE_VALUE (l))));
+			  size_int (non_fn_entries),
+			  size_int (list_length (TREE_VALUE (l))));
       index = size_binop (MULT_EXPR,
-                          TYPE_SIZE_UNIT (vtable_entry_type),
-                          index);
+			  TYPE_SIZE_UNIT (vtable_entry_type),
+			  index);
       vtbl = build2 (PLUS_EXPR, TREE_TYPE (vtbl), vtbl, index);
     }
 
@@ -7202,10 +7202,10 @@ static GTY(()) tree abort_fndecl_addr;
 
 static tree
 build_vtbl_initializer (tree binfo,
-                        tree orig_binfo,
-                        tree t,
-                        tree rtti_binfo,
-                        int* non_fn_entries_p)
+			tree orig_binfo,
+			tree t,
+			tree rtti_binfo,
+			int* non_fn_entries_p)
 {
   tree v, b;
   tree vfun_inits;
@@ -7248,17 +7248,17 @@ build_vtbl_initializer (tree binfo,
       tree cur, *prev;
 
       for (prev = &vid.inits; (cur = *prev); prev = &TREE_CHAIN (cur))
-        {
-          tree add = cur;
-          int i;
+	{
+	  tree add = cur;
+	  int i;
 
-          for (i = 1; i < TARGET_VTABLE_DATA_ENTRY_DISTANCE; ++i)
-            add = tree_cons (NULL_TREE,
-                             build1 (NOP_EXPR, vtable_entry_type,
-                                     null_pointer_node),
-                             add);
-          *prev = add;
-        }
+	  for (i = 1; i < TARGET_VTABLE_DATA_ENTRY_DISTANCE; ++i)
+	    add = tree_cons (NULL_TREE,
+			     build1 (NOP_EXPR, vtable_entry_type,
+				     null_pointer_node),
+			     add);
+	  *prev = add;
+	}
     }
 
   if (non_fn_entries_p)
@@ -7277,96 +7277,96 @@ build_vtbl_initializer (tree binfo,
       fn = BV_FN (v);
       fn_original = fn;
       if (DECL_THUNK_P (fn))
-        {
-          if (!DECL_NAME (fn))
-            finish_thunk (fn);
-          if (THUNK_ALIAS (fn))
-            {
-              fn = THUNK_ALIAS (fn);
-              BV_FN (v) = fn;
-            }
-          fn_original = THUNK_TARGET (fn);
-        }
+	{
+	  if (!DECL_NAME (fn))
+	    finish_thunk (fn);
+	  if (THUNK_ALIAS (fn))
+	    {
+	      fn = THUNK_ALIAS (fn);
+	      BV_FN (v) = fn;
+	    }
+	  fn_original = THUNK_TARGET (fn);
+	}
 
       /* If the only definition of this function signature along our
-         primary base chain is from a lost primary, this vtable slot will
-         never be used, so just zero it out.  This is important to avoid
-         requiring extra thunks which cannot be generated with the function.
+	 primary base chain is from a lost primary, this vtable slot will
+	 never be used, so just zero it out.  This is important to avoid
+	 requiring extra thunks which cannot be generated with the function.
 
-         We first check this in update_vtable_entry_for_fn, so we handle
-         restored primary bases properly; we also need to do it here so we
-         zero out unused slots in ctor vtables, rather than filling themff
-         with erroneous values (though harmless, apart from relocation
-         costs).  */
+	 We first check this in update_vtable_entry_for_fn, so we handle
+	 restored primary bases properly; we also need to do it here so we
+	 zero out unused slots in ctor vtables, rather than filling themff
+	 with erroneous values (though harmless, apart from relocation
+	 costs).  */
       for (b = binfo; ; b = get_primary_binfo (b))
-        {
-          /* We found a defn before a lost primary; go ahead as normal.  */
-          if (look_for_overrides_here (BINFO_TYPE (b), fn_original))
-            break;
+	{
+	  /* We found a defn before a lost primary; go ahead as normal.  */
+	  if (look_for_overrides_here (BINFO_TYPE (b), fn_original))
+	    break;
 
-          /* The nearest definition is from a lost primary; clear the
-             slot.  */
-          if (BINFO_LOST_PRIMARY_P (b))
-            {
-              init = size_zero_node;
-              break;
-            }
-        }
+	  /* The nearest definition is from a lost primary; clear the
+	     slot.  */
+	  if (BINFO_LOST_PRIMARY_P (b))
+	    {
+	      init = size_zero_node;
+	      break;
+	    }
+	}
 
       if (! init)
-        {
-          /* Pull the offset for `this', and the function to call, out of
-             the list.  */
-          delta = BV_DELTA (v);
-          vcall_index = BV_VCALL_INDEX (v);
+	{
+	  /* Pull the offset for `this', and the function to call, out of
+	     the list.  */
+	  delta = BV_DELTA (v);
+	  vcall_index = BV_VCALL_INDEX (v);
 
-          gcc_assert (TREE_CODE (delta) == INTEGER_CST);
-          gcc_assert (TREE_CODE (fn) == FUNCTION_DECL);
+	  gcc_assert (TREE_CODE (delta) == INTEGER_CST);
+	  gcc_assert (TREE_CODE (fn) == FUNCTION_DECL);
 
-          /* You can't call an abstract virtual function; it's abstract.
-             So, we replace these functions with __pure_virtual.  */
-          if (DECL_PURE_VIRTUAL_P (fn_original))
-            {
-              fn = abort_fndecl;
-              if (abort_fndecl_addr == NULL)
-                abort_fndecl_addr = build1 (ADDR_EXPR, vfunc_ptr_type_node, fn);
-              init = abort_fndecl_addr;
-            }
-          else
-            {
-              if (!integer_zerop (delta) || vcall_index)
-                {
-                  fn = make_thunk (fn, /*this_adjusting=*/1, delta, vcall_index);
-                  if (!DECL_NAME (fn))
-                    finish_thunk (fn);
-                }
-              /* Take the address of the function, considering it to be of an
-                 appropriate generic type.  */
-              init = build1 (ADDR_EXPR, vfunc_ptr_type_node, fn);
-            }
-        }
+	  /* You can't call an abstract virtual function; it's abstract.
+	     So, we replace these functions with __pure_virtual.  */
+	  if (DECL_PURE_VIRTUAL_P (fn_original))
+	    {
+	      fn = abort_fndecl;
+	      if (abort_fndecl_addr == NULL)
+		abort_fndecl_addr = build1 (ADDR_EXPR, vfunc_ptr_type_node, fn);
+	      init = abort_fndecl_addr;
+	    }
+	  else
+	    {
+	      if (!integer_zerop (delta) || vcall_index)
+		{
+		  fn = make_thunk (fn, /*this_adjusting=*/1, delta, vcall_index);
+		  if (!DECL_NAME (fn))
+		    finish_thunk (fn);
+		}
+	      /* Take the address of the function, considering it to be of an
+		 appropriate generic type.  */
+	      init = build1 (ADDR_EXPR, vfunc_ptr_type_node, fn);
+	    }
+	}
 
       /* And add it to the chain of initializers.  */
       if (TARGET_VTABLE_USES_DESCRIPTORS)
-        {
-          int i;
-          if (init == size_zero_node)
-            for (i = 0; i < TARGET_VTABLE_USES_DESCRIPTORS; ++i)
-              vfun_inits = tree_cons (NULL_TREE, init, vfun_inits);
-          else
-            for (i = 0; i < TARGET_VTABLE_USES_DESCRIPTORS; ++i)
-              {
-                tree fdesc = build2 (FDESC_EXPR, vfunc_ptr_type_node,
-                                     TREE_OPERAND (init, 0),
-                                     build_int_cst (NULL_TREE, i));
-                TREE_CONSTANT (fdesc) = 1;
-                TREE_INVARIANT (fdesc) = 1;
+	{
+	  int i;
+	  if (init == size_zero_node)
+	    for (i = 0; i < TARGET_VTABLE_USES_DESCRIPTORS; ++i)
+	      vfun_inits = tree_cons (NULL_TREE, init, vfun_inits);
+	  else
+	    for (i = 0; i < TARGET_VTABLE_USES_DESCRIPTORS; ++i)
+	      {
+		tree fdesc = build2 (FDESC_EXPR, vfunc_ptr_type_node,
+				     TREE_OPERAND (init, 0),
+				     build_int_cst (NULL_TREE, i));
+		TREE_CONSTANT (fdesc) = 1;
+		TREE_INVARIANT (fdesc) = 1;
 
-                vfun_inits = tree_cons (NULL_TREE, fdesc, vfun_inits);
-              }
-        }
+		vfun_inits = tree_cons (NULL_TREE, fdesc, vfun_inits);
+	      }
+	}
       else
-        vfun_inits = tree_cons (NULL_TREE, init, vfun_inits);
+	vfun_inits = tree_cons (NULL_TREE, init, vfun_inits);
     }
 
   /* The initializers for virtual functions were built up in reverse
@@ -7428,18 +7428,18 @@ build_vbase_offset_vtbl_entries (tree binfo, vtbl_init_data* vid)
       tree b;
 
       /* If we have reached a virtual base, then it must be a primary
-         base (possibly multi-level) of vid->binfo, or we wouldn't
-         have called build_vcall_and_vbase_vtbl_entries for it.  But it
-         might be a lost primary, so just skip down to vid->binfo.  */
+	 base (possibly multi-level) of vid->binfo, or we wouldn't
+	 have called build_vcall_and_vbase_vtbl_entries for it.  But it
+	 might be a lost primary, so just skip down to vid->binfo.  */
       if (BINFO_VIRTUAL_P (non_primary_binfo))
-        {
-          non_primary_binfo = vid->binfo;
-          break;
-        }
+	{
+	  non_primary_binfo = vid->binfo;
+	  break;
+	}
 
       b = BINFO_INHERITANCE_CHAIN (non_primary_binfo);
       if (get_primary_binfo (b) != non_primary_binfo)
-        break;
+	break;
       non_primary_binfo = b;
     }
 
@@ -7452,45 +7452,45 @@ build_vbase_offset_vtbl_entries (tree binfo, vtbl_init_data* vid)
       tree delta;
 
       if (!BINFO_VIRTUAL_P (vbase))
-        continue;
+	continue;
 
       /* Find the instance of this virtual base in the complete
-         object.  */
+	 object.  */
       b = copied_binfo (vbase, binfo);
 
       /* If we've already got an offset for this virtual base, we
-         don't need another one.  */
+	 don't need another one.  */
       if (BINFO_VTABLE_PATH_MARKED (b))
-        continue;
+	continue;
       BINFO_VTABLE_PATH_MARKED (b) = 1;
 
       /* Figure out where we can find this vbase offset.  */
       delta = size_binop (MULT_EXPR,
-                          vid->index,
-                          convert (ssizetype,
-                                   TYPE_SIZE_UNIT (vtable_entry_type)));
+			  vid->index,
+			  convert (ssizetype,
+				   TYPE_SIZE_UNIT (vtable_entry_type)));
       if (vid->primary_vtbl_p)
-        BINFO_VPTR_FIELD (b) = delta;
+	BINFO_VPTR_FIELD (b) = delta;
 
       if (binfo != TYPE_BINFO (t))
-        /* The vbase offset had better be the same.  */
-        gcc_assert (tree_int_cst_equal (delta, BINFO_VPTR_FIELD (vbase)));
+	/* The vbase offset had better be the same.  */
+	gcc_assert (tree_int_cst_equal (delta, BINFO_VPTR_FIELD (vbase)));
 
       /* The next vbase will come at a more negative offset.  */
       vid->index = size_binop (MINUS_EXPR, vid->index,
-                               ssize_int (TARGET_VTABLE_DATA_ENTRY_DISTANCE));
+			       ssize_int (TARGET_VTABLE_DATA_ENTRY_DISTANCE));
 
       /* The initializer is the delta from BINFO to this virtual base.
-         The vbase offsets go in reverse inheritance-graph order, and
-         we are walking in inheritance graph order so these end up in
-         the right order.  */
+	 The vbase offsets go in reverse inheritance-graph order, and
+	 we are walking in inheritance graph order so these end up in
+	 the right order.  */
       delta = size_diffop (BINFO_OFFSET (b), BINFO_OFFSET (non_primary_binfo));
 
       *vid->last_init
-        = build_tree_list (NULL_TREE,
-                           fold_build1 (NOP_EXPR,
-                                        vtable_entry_type,
-                                        delta));
+	= build_tree_list (NULL_TREE,
+			   fold_build1 (NOP_EXPR,
+					vtable_entry_type,
+					delta));
       vid->last_init = &TREE_CHAIN (*vid->last_init);
     }
 }
@@ -7508,28 +7508,28 @@ build_vcall_offset_vtbl_entries (tree binfo, vtbl_init_data* vid)
   if (BINFO_VIRTUAL_P (binfo) || binfo == TYPE_BINFO (vid->derived))
     {
       /* We need a vcall offset for each of the virtual functions in this
-         vtable.  For example:
+	 vtable.  For example:
 
-           class A { virtual void f (); };
-           class B1 : virtual public A { virtual void f (); };
-           class B2 : virtual public A { virtual void f (); };
-           class C: public B1, public B2 { virtual void f (); };
+	   class A { virtual void f (); };
+	   class B1 : virtual public A { virtual void f (); };
+	   class B2 : virtual public A { virtual void f (); };
+	   class C: public B1, public B2 { virtual void f (); };
 
-         A C object has a primary base of B1, which has a primary base of A.  A
-         C also has a secondary base of B2, which no longer has a primary base
-         of A.  So the B2-in-C construction vtable needs a secondary vtable for
-         A, which will adjust the A* to a B2* to call f.  We have no way of
-         knowing what (or even whether) this offset will be when we define B2,
-         so we store this "vcall offset" in the A sub-vtable and look it up in
-         a "virtual thunk" for B2::f.
+	 A C object has a primary base of B1, which has a primary base of A.  A
+	 C also has a secondary base of B2, which no longer has a primary base
+	 of A.  So the B2-in-C construction vtable needs a secondary vtable for
+	 A, which will adjust the A* to a B2* to call f.  We have no way of
+	 knowing what (or even whether) this offset will be when we define B2,
+	 so we store this "vcall offset" in the A sub-vtable and look it up in
+	 a "virtual thunk" for B2::f.
 
-         We need entries for all the functions in our primary vtable and
-         in our non-virtual bases' secondary vtables.  */
+	 We need entries for all the functions in our primary vtable and
+	 in our non-virtual bases' secondary vtables.  */
       vid->vbase = binfo;
       /* If we are just computing the vcall indices -- but do not need
-         the actual entries -- not that.  */
+	 the actual entries -- not that.  */
       if (!BINFO_VIRTUAL_P (binfo))
-        vid->generate_vcall_entries = false;
+	vid->generate_vcall_entries = false;
       /* Now, walk through the non-virtual bases, adding vcall offsets.  */
       add_vcall_offset_vtbl_entries_r (binfo, vid);
     }
@@ -7576,12 +7576,12 @@ add_vcall_offset_vtbl_entries_1 (tree binfo, vtbl_init_data* vid)
       tree orig_fn;
 
       /* The ABI requires that the methods be processed in declaration
-         order.  G++ 3.2 used the order in the vtable.  */
+	 order.  G++ 3.2 used the order in the vtable.  */
       for (orig_fn = TYPE_METHODS (BINFO_TYPE (binfo));
-           orig_fn;
-           orig_fn = TREE_CHAIN (orig_fn))
-        if (DECL_VINDEX (orig_fn))
-          add_vcall_offset (orig_fn, binfo, vid);
+	   orig_fn;
+	   orig_fn = TREE_CHAIN (orig_fn))
+	if (DECL_VINDEX (orig_fn))
+	  add_vcall_offset (orig_fn, binfo, vid);
     }
   else
     {
@@ -7589,64 +7589,64 @@ add_vcall_offset_vtbl_entries_1 (tree binfo, vtbl_init_data* vid)
       tree base_virtuals;
       tree orig_virtuals;
       /* If BINFO is a primary base, the most derived class which has
-         BINFO as a primary base; otherwise, just BINFO.  */
+	 BINFO as a primary base; otherwise, just BINFO.  */
       tree non_primary_binfo;
 
       /* We might be a primary base class.  Go up the inheritance hierarchy
-         until we find the most derived class of which we are a primary base:
-         it is the BINFO_VIRTUALS there that we need to consider.  */
+	 until we find the most derived class of which we are a primary base:
+	 it is the BINFO_VIRTUALS there that we need to consider.  */
       non_primary_binfo = binfo;
       while (BINFO_INHERITANCE_CHAIN (non_primary_binfo))
-        {
-          tree b;
+	{
+	  tree b;
 
-          /* If we have reached a virtual base, then it must be vid->vbase,
-             because we ignore other virtual bases in
-             add_vcall_offset_vtbl_entries_r.  In turn, it must be a primary
-             base (possibly multi-level) of vid->binfo, or we wouldn't
-             have called build_vcall_and_vbase_vtbl_entries for it.  But it
-             might be a lost primary, so just skip down to vid->binfo.  */
-          if (BINFO_VIRTUAL_P (non_primary_binfo))
-            {
-              gcc_assert (non_primary_binfo == vid->vbase);
-              non_primary_binfo = vid->binfo;
-              break;
-            }
+	  /* If we have reached a virtual base, then it must be vid->vbase,
+	     because we ignore other virtual bases in
+	     add_vcall_offset_vtbl_entries_r.  In turn, it must be a primary
+	     base (possibly multi-level) of vid->binfo, or we wouldn't
+	     have called build_vcall_and_vbase_vtbl_entries for it.  But it
+	     might be a lost primary, so just skip down to vid->binfo.  */
+	  if (BINFO_VIRTUAL_P (non_primary_binfo))
+	    {
+	      gcc_assert (non_primary_binfo == vid->vbase);
+	      non_primary_binfo = vid->binfo;
+	      break;
+	    }
 
-          b = BINFO_INHERITANCE_CHAIN (non_primary_binfo);
-          if (get_primary_binfo (b) != non_primary_binfo)
-            break;
-          non_primary_binfo = b;
-        }
+	  b = BINFO_INHERITANCE_CHAIN (non_primary_binfo);
+	  if (get_primary_binfo (b) != non_primary_binfo)
+	    break;
+	  non_primary_binfo = b;
+	}
 
       if (vid->ctor_vtbl_p)
-        /* For a ctor vtable we need the equivalent binfo within the hierarchy
-           where rtti_binfo is the most derived type.  */
-        non_primary_binfo
-          = original_binfo (non_primary_binfo, vid->rtti_binfo);
+	/* For a ctor vtable we need the equivalent binfo within the hierarchy
+	   where rtti_binfo is the most derived type.  */
+	non_primary_binfo
+	  = original_binfo (non_primary_binfo, vid->rtti_binfo);
 
       for (base_virtuals = BINFO_VIRTUALS (binfo),
-             derived_virtuals = BINFO_VIRTUALS (non_primary_binfo),
-             orig_virtuals = BINFO_VIRTUALS (TYPE_BINFO (BINFO_TYPE (binfo)));
-           base_virtuals;
-           base_virtuals = TREE_CHAIN (base_virtuals),
-             derived_virtuals = TREE_CHAIN (derived_virtuals),
-             orig_virtuals = TREE_CHAIN (orig_virtuals))
-        {
-          tree orig_fn;
+	     derived_virtuals = BINFO_VIRTUALS (non_primary_binfo),
+	     orig_virtuals = BINFO_VIRTUALS (TYPE_BINFO (BINFO_TYPE (binfo)));
+	   base_virtuals;
+	   base_virtuals = TREE_CHAIN (base_virtuals),
+	     derived_virtuals = TREE_CHAIN (derived_virtuals),
+	     orig_virtuals = TREE_CHAIN (orig_virtuals))
+	{
+	  tree orig_fn;
 
-          /* Find the declaration that originally caused this function to
-             be present in BINFO_TYPE (binfo).  */
-          orig_fn = BV_FN (orig_virtuals);
+	  /* Find the declaration that originally caused this function to
+	     be present in BINFO_TYPE (binfo).  */
+	  orig_fn = BV_FN (orig_virtuals);
 
-          /* When processing BINFO, we only want to generate vcall slots for
-             function slots introduced in BINFO.  So don't try to generate
-             one if the function isn't even defined in BINFO.  */
-          if (!SAME_BINFO_TYPE_P (BINFO_TYPE (binfo), DECL_CONTEXT (orig_fn)))
-            continue;
+	  /* When processing BINFO, we only want to generate vcall slots for
+	     function slots introduced in BINFO.  So don't try to generate
+	     one if the function isn't even defined in BINFO.  */
+	  if (!SAME_BINFO_TYPE_P (BINFO_TYPE (binfo), DECL_CONTEXT (orig_fn)))
+	    continue;
 
-          add_vcall_offset (orig_fn, binfo, vid);
-        }
+	  add_vcall_offset (orig_fn, binfo, vid);
+	}
     }
 }
 
@@ -7666,11 +7666,11 @@ add_vcall_offset (tree orig_fn, tree binfo, vtbl_init_data *vid)
   for (i = 0; VEC_iterate (tree, vid->fns, i, derived_entry); ++i)
     {
       if (same_signature_p (derived_entry, orig_fn)
-          /* We only use one vcall offset for virtual destructors,
-             even though there are two virtual table entries.  */
-          || (DECL_DESTRUCTOR_P (derived_entry)
-              && DECL_DESTRUCTOR_P (orig_fn)))
-        return;
+	  /* We only use one vcall offset for virtual destructors,
+	     even though there are two virtual table entries.  */
+	  || (DECL_DESTRUCTOR_P (derived_entry)
+	      && DECL_DESTRUCTOR_P (orig_fn)))
+	return;
     }
 
   /* If we are building these vcall offsets as part of building
@@ -7679,8 +7679,8 @@ add_vcall_offset (tree orig_fn, tree binfo, vtbl_init_data *vid)
   if (vid->binfo == TYPE_BINFO (vid->derived))
     {
       tree_pair_p elt = VEC_safe_push (tree_pair_s, gc,
-                                       CLASSTYPE_VCALL_INDICES (vid->derived),
-                                       NULL);
+				       CLASSTYPE_VCALL_INDICES (vid->derived),
+				       NULL);
       elt->purpose = orig_fn;
       elt->value = vid->index;
     }
@@ -7688,7 +7688,7 @@ add_vcall_offset (tree orig_fn, tree binfo, vtbl_init_data *vid)
   /* The next vcall offset will be found at a more negative
      offset.  */
   vid->index = size_binop (MINUS_EXPR, vid->index,
-                           ssize_int (TARGET_VTABLE_DATA_ENTRY_DISTANCE));
+			   ssize_int (TARGET_VTABLE_DATA_ENTRY_DISTANCE));
 
   /* Keep track of this function.  */
   VEC_safe_push (tree, gc, vid->fns, orig_fn);
@@ -7701,21 +7701,21 @@ add_vcall_offset (tree orig_fn, tree binfo, vtbl_init_data *vid)
       /* Find the overriding function.  */
       fn = find_final_overrider (vid->rtti_binfo, binfo, orig_fn);
       if (fn == error_mark_node)
-        vcall_offset = build1 (NOP_EXPR, vtable_entry_type,
-                               integer_zero_node);
+	vcall_offset = build1 (NOP_EXPR, vtable_entry_type,
+			       integer_zero_node);
       else
-        {
-          base = TREE_VALUE (fn);
+	{
+	  base = TREE_VALUE (fn);
 
-          /* The vbase we're working on is a primary base of
-             vid->binfo.  But it might be a lost primary, so its
-             BINFO_OFFSET might be wrong, so we just use the
-             BINFO_OFFSET from vid->binfo.  */
-          vcall_offset = size_diffop (BINFO_OFFSET (base),
-                                      BINFO_OFFSET (vid->binfo));
-          vcall_offset = fold_build1 (NOP_EXPR, vtable_entry_type,
-                                      vcall_offset);
-        }
+	  /* The vbase we're working on is a primary base of
+	     vid->binfo.  But it might be a lost primary, so its
+	     BINFO_OFFSET might be wrong, so we just use the
+	     BINFO_OFFSET from vid->binfo.  */
+	  vcall_offset = size_diffop (BINFO_OFFSET (base),
+				      BINFO_OFFSET (vid->binfo));
+	  vcall_offset = fold_build1 (NOP_EXPR, vtable_entry_type,
+				      vcall_offset);
+	}
       /* Add the initializer to the vtable.  */
       *vid->last_init = build_tree_list (NULL_TREE, vcall_offset);
       vid->last_init = &TREE_CHAIN (*vid->last_init);
@@ -7743,13 +7743,13 @@ build_rtti_vtbl_entries (tree binfo, vtbl_init_data* vid)
      primary base, and then add the offset in the vtbl to that value.  */
   b = binfo;
   while (CLASSTYPE_HAS_PRIMARY_BASE_P (BINFO_TYPE (b))
-         && !BINFO_LOST_PRIMARY_P (b))
+	 && !BINFO_LOST_PRIMARY_P (b))
     {
       tree primary_base;
 
       primary_base = get_primary_binfo (b);
       gcc_assert (BINFO_PRIMARY_P (primary_base)
-                  && BINFO_INHERITANCE_CHAIN (primary_base) == b);
+		  && BINFO_INHERITANCE_CHAIN (primary_base) == b);
       b = primary_base;
     }
   offset = size_diffop (BINFO_OFFSET (vid->rtti_binfo), BINFO_OFFSET (b));
@@ -7788,7 +7788,7 @@ cp_fold_obj_type_ref (tree ref, tree known_type)
   while (i != index)
     {
       i += (TARGET_VTABLE_USES_DESCRIPTORS
-            ? TARGET_VTABLE_USES_DESCRIPTORS : 1);
+	    ? TARGET_VTABLE_USES_DESCRIPTORS : 1);
       v = TREE_CHAIN (v);
     }
 
@@ -7796,7 +7796,7 @@ cp_fold_obj_type_ref (tree ref, tree known_type)
 
 #ifdef ENABLE_CHECKING
   gcc_assert (tree_int_cst_equal (OBJ_TYPE_REF_TOKEN (ref),
-                                  DECL_VINDEX (fndecl)));
+				  DECL_VINDEX (fndecl)));
 #endif
 
   cgraph_node (fndecl)->local.vtable_method = true;

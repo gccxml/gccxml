@@ -71,7 +71,7 @@ void erase_test (int);
 
 const char *test_data[] = {
   /* Test 0 - Check for expansion with \r\n */
-  "a\r\nb",        /* Test 0 data */
+  "a\r\nb",	/* Test 0 data */
   ARGV0,
   "@test-expandargv-0.lst",
   0, /* End of argv[] before expansion */
@@ -81,7 +81,7 @@ const char *test_data[] = {
   0, /* End of argv[] after expansion */
 
   /* Test 1 - Check for expansion with \n */
-  "a\nb",        /* Test 1 data */
+  "a\nb",	/* Test 1 data */
   ARGV0,
   "@test-expandargv-1.lst",
   0,
@@ -91,7 +91,7 @@ const char *test_data[] = {
   0,
 
   /* Test 2 - Check for expansion with \0 */
-  "a\bb",        /* Test 2 data */
+  "a\bb",	/* Test 2 data */
   ARGV0,
   "@test-expandargv-2.lst",
   0,
@@ -100,7 +100,7 @@ const char *test_data[] = {
   0,
 
   /* Test 3 - Check for expansion with only \0 */
-  "\b",                /* Test 3 data */
+  "\b",		/* Test 3 data */
   ARGV0,
   "@test-expandargv-3.lst",
   0,
@@ -241,7 +241,7 @@ run_tests (const char **test_data)
       if (argc_before != argc_after)
         {
           printf ("FAIL: test-expandargv-%d. Number of arguments don't match.\n", i);
-          failed++;
+	  failed++;
         }
       /* Compare each of the argv's ... */
       else

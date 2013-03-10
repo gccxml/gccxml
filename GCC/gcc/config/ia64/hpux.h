@@ -37,26 +37,26 @@ Boston, MA 02110-1301, USA.  */
 #define WCHAR_TYPE_SIZE 32
 
 /* Target OS builtins.  */
-#define TARGET_OS_CPP_BUILTINS()                        \
-do {                                                        \
-        builtin_assert("system=hpux");                        \
-        builtin_assert("system=posix");                        \
-        builtin_assert("system=unix");                        \
-        builtin_define_std("hpux");                        \
-        builtin_define_std("unix");                        \
-        builtin_define("__IA64__");                        \
-        builtin_define("_LONGLONG");                        \
-        builtin_define("_INCLUDE_LONGLONG");                \
-        builtin_define("_UINT128_T");                        \
-        if (c_dialect_cxx () || !flag_iso)                \
-          {                                                \
-            builtin_define("_HPUX_SOURCE");                \
-            builtin_define("__STDC_EXT__");                \
-            builtin_define("__STDCPP__");                \
-            builtin_define("_INCLUDE__STDC_A1_SOURCE");        \
-          }                                                \
-        if (TARGET_ILP32)                                \
-          builtin_define("_ILP32");                        \
+#define TARGET_OS_CPP_BUILTINS()			\
+do {							\
+	builtin_assert("system=hpux");			\
+	builtin_assert("system=posix");			\
+	builtin_assert("system=unix");			\
+	builtin_define_std("hpux");			\
+	builtin_define_std("unix");			\
+	builtin_define("__IA64__");			\
+	builtin_define("_LONGLONG");			\
+	builtin_define("_INCLUDE_LONGLONG");		\
+	builtin_define("_UINT128_T");			\
+	if (c_dialect_cxx () || !flag_iso)		\
+	  {						\
+	    builtin_define("_HPUX_SOURCE");		\
+	    builtin_define("__STDC_EXT__");		\
+	    builtin_define("__STDCPP__");		\
+	    builtin_define("_INCLUDE__STDC_A1_SOURCE");	\
+	  }						\
+	if (TARGET_ILP32)				\
+	  builtin_define("_ILP32");			\
 } while (0)
 
 #undef CPP_SPEC
@@ -73,8 +73,8 @@ do {                                                        \
 
 #undef STARTFILE_SPEC
 #define STARTFILE_SPEC "%{!shared:%{static:crt0%O%s} \
-                          %{mlp64:/usr/lib/hpux64/unix98%O%s} \
-                          %{!mlp64:/usr/lib/hpux32/unix98%O%s}}"
+			  %{mlp64:/usr/lib/hpux64/unix98%O%s} \
+			  %{!mlp64:/usr/lib/hpux32/unix98%O%s}}"
 
 #undef LINK_SPEC
 #define LINK_SPEC \
@@ -89,9 +89,9 @@ do {                                                        \
   "%{!shared: \
      %{mt|pthread:-lpthread} \
      %{p:%{!mlp64:-L/usr/lib/hpux32/libp} \
-         %{mlp64:-L/usr/lib/hpux64/libp} -lprof} \
+	 %{mlp64:-L/usr/lib/hpux64/libp} -lprof} \
      %{pg:%{!mlp64:-L/usr/lib/hpux32/libp} \
-          %{mlp64:-L/usr/lib/hpux64/libp} -lgprof} \
+	  %{mlp64:-L/usr/lib/hpux64/libp} -lgprof} \
      %{!symbolic:-lc}}"
 
 #define MULTILIB_DEFAULTS { "milp32" }
@@ -117,15 +117,15 @@ do {                                                        \
    shared library problems.  */
 
 #undef ASM_OUTPUT_EXTERNAL_LIBCALL
-#define ASM_OUTPUT_EXTERNAL_LIBCALL(FILE, FUN)                        \
-do {                                                                \
-  (*targetm.asm_out.globalize_label) (FILE, XSTR (FUN, 0));        \
-  ASM_OUTPUT_TYPE_DIRECTIVE (FILE, XSTR (FUN, 0), "function");        \
+#define ASM_OUTPUT_EXTERNAL_LIBCALL(FILE, FUN)			\
+do {								\
+  (*targetm.asm_out.globalize_label) (FILE, XSTR (FUN, 0));	\
+  ASM_OUTPUT_TYPE_DIRECTIVE (FILE, XSTR (FUN, 0), "function");	\
 } while (0)
 
 #undef FUNCTION_ARG_PADDING
 #define FUNCTION_ARG_PADDING(MODE, TYPE) \
-        ia64_hpux_function_arg_padding ((MODE), (TYPE))
+	ia64_hpux_function_arg_padding ((MODE), (TYPE))
 
 #undef PAD_VARARGS_DOWN
 #define PAD_VARARGS_DOWN (!AGGREGATE_TYPE_P (type))
@@ -138,7 +138,7 @@ do {                                                                \
    which are never used (and may not be defined).  */
 
 #undef TARGET_HPUX_LD
-#define TARGET_HPUX_LD        1
+#define TARGET_HPUX_LD	1
 
 /* The HPUX dynamic linker objects to weak symbols with no
    definitions, so do not use them in gthr-posix.h.  */

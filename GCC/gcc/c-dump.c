@@ -51,7 +51,7 @@ c_dump_tree (void *dump_info, tree t)
     {
     case FIELD_DECL:
       if (DECL_C_BIT_FIELD (t))
-        dump_string (di, "bitfield");
+	dump_string (di, "bitfield");
       break;
 
     default:

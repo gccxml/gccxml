@@ -47,15 +47,15 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
 static char *build_message_string (const char *, ...) ATTRIBUTE_PRINTF_1;
 
 static void default_diagnostic_starter (diagnostic_context *,
-                                        diagnostic_info *);
+					diagnostic_info *);
 static void default_diagnostic_finalizer (diagnostic_context *,
-                                          diagnostic_info *);
+					  diagnostic_info *);
 
 static void error_recursion (diagnostic_context *) ATTRIBUTE_NORETURN;
 static bool diagnostic_count_diagnostic (diagnostic_context *,
-                                         diagnostic_info *);
+					 diagnostic_info *);
 static void diagnostic_action_after_output (diagnostic_context *,
-                                            diagnostic_info *);
+					    diagnostic_info *);
 static void real_abort (void) ATTRIBUTE_NORETURN;
 
 /* A diagnostic_context surrogate for stderr.  */
@@ -104,7 +104,7 @@ diagnostic_initialize (diagnostic_context *context)
   context->issue_warnings_are_errors_message = true;
   context->warning_as_error_requested = false;
   memset (context->classify_diagnostic, DK_UNSPECIFIED,
-          sizeof context->classify_diagnostic);
+	  sizeof context->classify_diagnostic);
   context->show_option_requested = false;
   context->abort_on_error = false;
   context->internal_error = NULL;
@@ -119,8 +119,8 @@ diagnostic_initialize (diagnostic_context *context)
    translated.  */
 void
 diagnostic_set_info_translated (diagnostic_info *diagnostic, const char *msg,
-                                va_list *args, location_t location,
-                                diagnostic_t kind)
+				va_list *args, location_t location,
+				diagnostic_t kind)
 {
   diagnostic->message.err_no = errno;
   diagnostic->message.args_ptr = args;
@@ -134,8 +134,8 @@ diagnostic_set_info_translated (diagnostic_info *diagnostic, const char *msg,
    translated.  */
 void
 diagnostic_set_info (diagnostic_info *diagnostic, const char *gmsgid,
-                     va_list *args, location_t location,
-                     diagnostic_t kind)
+		     va_list *args, location_t location,
+		     diagnostic_t kind)
 {
   diagnostic_set_info_translated (diagnostic, _(gmsgid), args, location, kind);
 }
@@ -187,7 +187,7 @@ bool diagnostic_get_xml_synthesize_test()
 /* Count a diagnostic.  Return true if the message should be printed.  */
 static bool
 diagnostic_count_diagnostic (diagnostic_context *context,
-                             diagnostic_info *diagnostic)
+			     diagnostic_info *diagnostic)
 {
   diagnostic_t kind = diagnostic->kind;
   switch (kind)
@@ -198,21 +198,21 @@ diagnostic_count_diagnostic (diagnostic_context *context,
     case DK_ICE:
 #ifndef ENABLE_CHECKING
       /* When not checking, ICEs are converted to fatal errors when an
-         error has already occurred.  This is counteracted by
-         abort_on_error.  */
+	 error has already occurred.  This is counteracted by
+	 abort_on_error.  */
       if ((diagnostic_kind_count (context, DK_ERROR) > 0
-           || diagnostic_kind_count (context, DK_SORRY) > 0)
-          && !context->abort_on_error)
-        {
-          expanded_location s = expand_location (diagnostic->location);
-          fnotice (stderr, "%s:%d: confused by earlier errors, bailing out\n",
-                   s.file, s.line);
-          exit (ICE_EXIT_CODE);
-        }
+	   || diagnostic_kind_count (context, DK_SORRY) > 0)
+	  && !context->abort_on_error)
+	{
+	  expanded_location s = expand_location (diagnostic->location);
+	  fnotice (stderr, "%s:%d: confused by earlier errors, bailing out\n",
+		   s.file, s.line);
+	  exit (ICE_EXIT_CODE);
+	}
 #endif
       if (context->internal_error)
-        (*context->internal_error) (diagnostic->message.format_spec,
-                                    diagnostic->message.args_ptr);
+	(*context->internal_error) (diagnostic->message.format_spec,
+				    diagnostic->message.args_ptr);
       /* Fall through.  */
 
     case DK_FATAL: case DK_SORRY:
@@ -225,18 +225,18 @@ diagnostic_count_diagnostic (diagnostic_context *context,
         return false;
 
       /* -Werror can reclassify warnings as errors, but
-         classify_diagnostic can reclassify it back to a warning.  The
-         second part of this test detects that case.  */
+	 classify_diagnostic can reclassify it back to a warning.  The
+	 second part of this test detects that case.  */
       if (!context->warning_as_error_requested
-          || (context->classify_diagnostic[diagnostic->option_index]
-              == DK_WARNING))
+	  || (context->classify_diagnostic[diagnostic->option_index]
+	      == DK_WARNING))
         {
           ++diagnostic_kind_count (context, DK_WARNING);
           break;
         }
       else if (context->issue_warnings_are_errors_message)
         {
-          pp_verbatim (context->printer,
+	  pp_verbatim (context->printer,
                        "%s: warnings being treated as errors\n", progname);
           context->issue_warnings_are_errors_message = false;
         }
@@ -257,7 +257,7 @@ diagnostic_count_diagnostic (diagnostic_context *context,
    is written out.  This function does not always return.  */
 static void
 diagnostic_action_after_output (diagnostic_context *context,
-                                diagnostic_info *diagnostic)
+				diagnostic_info *diagnostic)
 {
   switch (diagnostic->kind)
     {
@@ -270,26 +270,26 @@ diagnostic_action_after_output (diagnostic_context *context,
     case DK_ERROR:
     case DK_SORRY:
       if (context->abort_on_error)
-        real_abort ();
+	real_abort ();
       if (flag_fatal_errors)
-        {
-          fnotice (stderr, "compilation terminated due to -Wfatal-errors.\n");
-          exit (FATAL_EXIT_CODE);
-        }
+	{
+	  fnotice (stderr, "compilation terminated due to -Wfatal-errors.\n");
+	  exit (FATAL_EXIT_CODE);
+	}
       break;
 
     case DK_ICE:
       if (context->abort_on_error)
-        real_abort ();
+	real_abort ();
 
       fnotice (stderr, "Please submit a full bug report,\n"
-               "with preprocessed source if appropriate.\n"
-               "See %s for instructions.\n", bug_report_url);
+	       "with preprocessed source if appropriate.\n"
+	       "See %s for instructions.\n", bug_report_url);
       exit (ICE_EXIT_CODE);
 
     case DK_FATAL:
       if (context->abort_on_error)
-        real_abort ();
+	real_abort ();
 
       fnotice (stderr, "compilation terminated.\n");
       exit (FATAL_EXIT_CODE);
@@ -325,14 +325,14 @@ diagnostic_report_current_module (diagnostic_context *context)
       expanded_location xloc = expand_location (p->location);
       pp_verbatim (context->printer,
                    "In file included from %s:%d",
-                   xloc.file, xloc.line);
+		   xloc.file, xloc.line);
       while ((p = p->next) != NULL)
-        {
-          xloc = expand_location (p->location);
-          pp_verbatim (context->printer,
-                       ",\n                 from %s:%d",
-                       xloc.file, xloc.line);
-        }
+	{
+	  xloc = expand_location (p->location);
+	  pp_verbatim (context->printer,
+		       ",\n                 from %s:%d",
+		       xloc.file, xloc.line);
+	}
       pp_verbatim (context->printer, ":");
       diagnostic_set_last_module (context);
       pp_newline (context->printer);
@@ -341,7 +341,7 @@ diagnostic_report_current_module (diagnostic_context *context)
 
 static void
 default_diagnostic_starter (diagnostic_context *context,
-                            diagnostic_info *diagnostic)
+			    diagnostic_info *diagnostic)
 {
   diagnostic_report_current_function (context);
   pp_set_prefix (context->printer, diagnostic_build_prefix (diagnostic));
@@ -349,7 +349,7 @@ default_diagnostic_starter (diagnostic_context *context,
 
 static void
 default_diagnostic_finalizer (diagnostic_context *context,
-                              diagnostic_info *diagnostic ATTRIBUTE_UNUSED)
+			      diagnostic_info *diagnostic ATTRIBUTE_UNUSED)
 {
   pp_destroy_prefix (context->printer);
 }
@@ -359,8 +359,8 @@ default_diagnostic_finalizer (diagnostic_context *context,
    range.  */
 diagnostic_t
 diagnostic_classify_diagnostic (diagnostic_context *context,
-                                int option_index,
-                                diagnostic_t new_kind)
+				int option_index,
+				diagnostic_t new_kind)
 {
   diagnostic_t old_kind;
 
@@ -382,33 +382,33 @@ diagnostic_classify_diagnostic (diagnostic_context *context,
 
 void
 diagnostic_report_diagnostic (diagnostic_context *context,
-                              diagnostic_info *diagnostic)
+			      diagnostic_info *diagnostic)
 {
   if (context->lock > 0)
     {
       /* If we're reporting an ICE in the middle of some other error,
-         try to flush out the previous error, then let this one
-         through.  Don't do this more than once.  */
+	 try to flush out the previous error, then let this one
+	 through.  Don't do this more than once.  */
       if (diagnostic->kind == DK_ICE && context->lock == 1)
-        pp_flush (context->printer);
+	pp_flush (context->printer);
       else
-        error_recursion (context);
+	error_recursion (context);
     }
 
   if (diagnostic->option_index)
     {
       /* This tests if the user provided the appropriate -Wfoo or
-         -Wno-foo option.  */
+	 -Wno-foo option.  */
       if (! option_enabled (diagnostic->option_index))
-        return;
+	return;
       /* This tests if the user provided the appropriate -Werror=foo
-         option.  */
+	 option.  */
       if (context->classify_diagnostic[diagnostic->option_index] != DK_UNSPECIFIED)
-        diagnostic->kind = context->classify_diagnostic[diagnostic->option_index];
+	diagnostic->kind = context->classify_diagnostic[diagnostic->option_index];
       /* This allows for future extensions, like temporarily disabling
-         warnings for ranges of source code.  */
+	 warnings for ranges of source code.  */
       if (diagnostic->kind == DK_IGNORED)
-        return;
+	return;
     }
 
   context->lock++;
@@ -418,9 +418,9 @@ diagnostic_report_diagnostic (diagnostic_context *context,
       const char *saved_format_spec = diagnostic->message.format_spec;
 
       if (context->show_option_requested && diagnostic->option_index)
-        diagnostic->message.format_spec
-          = ACONCAT ((diagnostic->message.format_spec,
-                      " [", cl_options[diagnostic->option_index].opt_text, "]", NULL));
+	diagnostic->message.format_spec
+	  = ACONCAT ((diagnostic->message.format_spec,
+		      " [", cl_options[diagnostic->option_index].opt_text, "]", NULL));
 
       diagnostic->message.locus = &diagnostic->location;
       pp_format (context->printer, &diagnostic->message);
@@ -544,7 +544,7 @@ pedwarn (const char *gmsgid, ...)
 
   va_start (ap, gmsgid);
   diagnostic_set_info (&diagnostic, gmsgid, &ap, input_location,
-                       pedantic_error_kind ());
+		       pedantic_error_kind ());
   report_diagnostic (&diagnostic);
   va_end (ap);
 }
@@ -642,7 +642,7 @@ error_recursion (diagnostic_context *context)
     pp_flush (context->printer);
 
   fnotice (stderr,
-           "Internal compiler error: Error reporting routines re-entered.\n");
+	   "Internal compiler error: Error reporting routines re-entered.\n");
 
   /* Call diagnostic_action_after_output to get the "please submit a bug
      report" message.  It only looks at the kind field of diagnostic_info.  */

@@ -35,7 +35,7 @@
 
 (define_expand "memory_barrier"
   [(set (mem:BLK (match_dup 0))
-        (unspec:BLK [(mem:BLK (match_dup 0))] UNSPEC_SYNC))]
+	(unspec:BLK [(mem:BLK (match_dup 0))] UNSPEC_SYNC))]
   ""
 {
   operands[0] = gen_rtx_MEM (BLKmode, gen_rtx_SCRATCH (Pmode));
@@ -44,36 +44,36 @@
 
 (define_insn "*sync_internal"
   [(set (match_operand:BLK 0 "" "")
-        (unspec:BLK [(match_operand:BLK 1 "" "")] UNSPEC_SYNC))]
+	(unspec:BLK [(match_operand:BLK 1 "" "")] UNSPEC_SYNC))]
   ""
   "{dcs|sync}"
   [(set_attr "type" "sync")])
 
 (define_insn "load_locked_<mode>"
   [(set (match_operand:GPR 0 "gpc_reg_operand" "=r")
-        (unspec_volatile:GPR
-          [(match_operand:GPR 1 "memory_operand" "Z")] UNSPECV_LL))]
+	(unspec_volatile:GPR
+	  [(match_operand:GPR 1 "memory_operand" "Z")] UNSPECV_LL))]
   "TARGET_POWERPC"
   "<larx> %0,%y1"
   [(set_attr "type" "load_l")])
 
 (define_insn "store_conditional_<mode>"
   [(set (match_operand:CC 0 "cc_reg_operand" "=x")
-        (unspec_volatile:CC [(const_int 0)] UNSPECV_SC))
+	(unspec_volatile:CC [(const_int 0)] UNSPECV_SC))
    (set (match_operand:GPR 1 "memory_operand" "=Z")
-        (match_operand:GPR 2 "gpc_reg_operand" "r"))]
+	(match_operand:GPR 2 "gpc_reg_operand" "r"))]
   "TARGET_POWERPC"
   "<stcx> %2,%y1"
   [(set_attr "type" "store_c")])
 
 (define_insn_and_split "sync_compare_and_swap<mode>"
   [(set (match_operand:GPR 0 "gpc_reg_operand" "=&r")
-        (match_operand:GPR 1 "memory_operand" "+Z"))
+	(match_operand:GPR 1 "memory_operand" "+Z"))
    (set (match_dup 1)
-        (unspec:GPR
-          [(match_operand:GPR 2 "reg_or_short_operand" "rI")
-           (match_operand:GPR 3 "gpc_reg_operand" "r")]
-          UNSPEC_CMPXCHG))
+	(unspec:GPR
+	  [(match_operand:GPR 2 "reg_or_short_operand" "rI")
+	   (match_operand:GPR 3 "gpc_reg_operand" "r")]
+	  UNSPEC_CMPXCHG))
    (clobber (match_scratch:GPR 4 "=&r"))
    (clobber (match_scratch:CC 5 "=&x"))]
   "TARGET_POWERPC"
@@ -82,7 +82,7 @@
   [(const_int 0)]
 {
   rs6000_split_compare_and_swap (operands[0], operands[1], operands[2],
-                                 operands[3], operands[4]);
+				 operands[3], operands[4]);
   DONE;
 })
 
@@ -94,7 +94,7 @@
   "TARGET_POWERPC"
 {
   rs6000_expand_compare_and_swapqhi (operands[0], operands[1],
-                                     operands[2], operands[3]);
+				     operands[2], operands[3]);
   DONE;
 })
 
@@ -106,13 +106,13 @@
   "TARGET_POWERPC"
 {
   rs6000_expand_compare_and_swapqhi (operands[0], operands[1],
-                                     operands[2], operands[3]);
+				     operands[2], operands[3]);
   DONE;
 })
 
 (define_insn_and_split "sync_compare_and_swapqhi_internal"
   [(set (match_operand:SI 0 "gpc_reg_operand" "=&r")
-        (match_operand:SI 4 "memory_operand" "+Z"))
+	(match_operand:SI 4 "memory_operand" "+Z"))
    (set (match_dup 4)
         (unspec:SI
           [(match_operand:SI 1 "gpc_reg_operand" "r")
@@ -127,18 +127,18 @@
   [(const_int 0)]
 {
   rs6000_split_compare_and_swapqhi (operands[0], operands[1],
-                                    operands[2], operands[3], operands[4],
-                                    operands[5]);
+				    operands[2], operands[3], operands[4],
+				    operands[5]);
   DONE;
 })
 
 (define_insn_and_split "sync_lock_test_and_set<mode>"
   [(set (match_operand:GPR 0 "gpc_reg_operand" "=&r")
-        (match_operand:GPR 1 "memory_operand" "+Z"))
+	(match_operand:GPR 1 "memory_operand" "+Z"))
    (set (match_dup 1)
-        (unspec:GPR
-          [(match_operand:GPR 2 "reg_or_short_operand" "rL")]
-          UNSPEC_XCHG))
+	(unspec:GPR
+	  [(match_operand:GPR 2 "reg_or_short_operand" "rL")]
+	  UNSPEC_XCHG))
    (clobber (match_scratch:GPR 3 "=&r"))
    (clobber (match_scratch:CC 4 "=&x"))]
   "TARGET_POWERPC"
@@ -147,37 +147,37 @@
   [(const_int 0)]
 {
   rs6000_split_lock_test_and_set (operands[0], operands[1], operands[2],
-                                  operands[3]);
+				  operands[3]);
   DONE;
 })
 
 (define_expand "sync_<fetchop_name><mode>"
   [(parallel [(set (match_operand:INT1 0 "memory_operand" "")
-                   (unspec:INT1
-                     [(FETCHOP:INT1 (match_dup 0)
-                        (match_operand:INT1 1 "<fetchop_pred>" ""))]
-                     UNSPEC_ATOMIC))
-              (clobber (scratch:INT1))
-              (clobber (scratch:CC))])]
+		   (unspec:INT1
+		     [(FETCHOP:INT1 (match_dup 0)
+			(match_operand:INT1 1 "<fetchop_pred>" ""))]
+		     UNSPEC_ATOMIC))
+	      (clobber (scratch:INT1))
+	      (clobber (scratch:CC))])]
   "TARGET_POWERPC"
   "
 {
   if (<MODE>mode != SImode && <MODE>mode != DImode)
     {
       if (PPC405_ERRATUM77)
-        FAIL;
+	FAIL;
       rs6000_emit_sync (<CODE>, <MODE>mode, operands[0], operands[1],
-                        NULL_RTX, NULL_RTX, true);
+			NULL_RTX, NULL_RTX, true);
       DONE;
     }
 }")
 
 (define_insn_and_split "*sync_<fetchop_name>si_internal"
   [(set (match_operand:SI 0 "memory_operand" "+Z")
-        (unspec:SI
-          [(FETCHOP:SI (match_dup 0)
-             (match_operand:SI 1 "<fetchop_pred>" "<fetchopsi_constr>"))]
-          UNSPEC_ATOMIC))
+	(unspec:SI
+	  [(FETCHOP:SI (match_dup 0)
+	     (match_operand:SI 1 "<fetchop_pred>" "<fetchopsi_constr>"))]
+	  UNSPEC_ATOMIC))
    (clobber (match_scratch:SI 2 "=&b"))
    (clobber (match_scratch:CC 3 "=&x"))]
   "TARGET_POWERPC"
@@ -186,16 +186,16 @@
   [(const_int 0)]
 {
   rs6000_split_atomic_op (<CODE>, operands[0], operands[1],
-                          NULL_RTX, NULL_RTX, operands[2]);
+			  NULL_RTX, NULL_RTX, operands[2]);
   DONE;
 })
 
 (define_insn_and_split "*sync_<fetchop_name>di_internal"
   [(set (match_operand:DI 0 "memory_operand" "+Z")
-        (unspec:DI
-          [(FETCHOP:DI (match_dup 0)
-             (match_operand:DI 1 "<fetchop_pred>" "<fetchopdi_constr>"))]
-          UNSPEC_ATOMIC))
+	(unspec:DI
+	  [(FETCHOP:DI (match_dup 0)
+	     (match_operand:DI 1 "<fetchop_pred>" "<fetchopdi_constr>"))]
+	  UNSPEC_ATOMIC))
    (clobber (match_scratch:DI 2 "=&b"))
    (clobber (match_scratch:CC 3 "=&x"))]
   "TARGET_POWERPC"
@@ -204,39 +204,39 @@
   [(const_int 0)]
 {
   rs6000_split_atomic_op (<CODE>, operands[0], operands[1],
-                          NULL_RTX, NULL_RTX, operands[2]);
+			  NULL_RTX, NULL_RTX, operands[2]);
   DONE;
 })
 
 (define_expand "sync_nand<mode>"
   [(parallel [(set (match_operand:INT1 0 "memory_operand" "")
-              (unspec:INT1
-                [(and:INT1 (not:INT1 (match_dup 0))
-                   (match_operand:INT1 1 "gpc_reg_operand" ""))]
-                UNSPEC_ATOMIC))
-              (clobber (scratch:INT1))
-              (clobber (scratch:CC))])]
+	      (unspec:INT1
+		[(and:INT1 (not:INT1 (match_dup 0))
+		   (match_operand:INT1 1 "gpc_reg_operand" ""))]
+		UNSPEC_ATOMIC))
+	      (clobber (scratch:INT1))
+	      (clobber (scratch:CC))])]
   "TARGET_POWERPC"
   "
 {
   if (<MODE>mode != SImode && <MODE>mode != DImode)
     {
       if (PPC405_ERRATUM77)
-        FAIL;
+	FAIL;
       rs6000_emit_sync (AND, <MODE>mode,
-                        gen_rtx_NOT (<MODE>mode, operands[0]),
-                        operands[1],
-                        NULL_RTX, NULL_RTX, true);
+			gen_rtx_NOT (<MODE>mode, operands[0]),
+			operands[1],
+			NULL_RTX, NULL_RTX, true);
       DONE;
     }
 }")
 
 (define_insn_and_split "*sync_nand<mode>_internal"
   [(set (match_operand:GPR 0 "memory_operand" "+Z")
-        (unspec:GPR
-          [(and:GPR (not:GPR (match_dup 0))
-             (match_operand:GPR 1 "gpc_reg_operand" "r"))]
-          UNSPEC_ATOMIC))
+	(unspec:GPR
+	  [(and:GPR (not:GPR (match_dup 0))
+	     (match_operand:GPR 1 "gpc_reg_operand" "r"))]
+	  UNSPEC_ATOMIC))
    (clobber (match_scratch:GPR 2 "=&r"))
    (clobber (match_scratch:CC 3 "=&x"))]
   "TARGET_POWERPC"
@@ -245,41 +245,41 @@
   [(const_int 0)]
 {
   rs6000_split_atomic_op (NOT, operands[0], operands[1],
-                          NULL_RTX, NULL_RTX, operands[2]);
+			  NULL_RTX, NULL_RTX, operands[2]);
   DONE;
 })
 
 (define_expand "sync_old_<fetchop_name><mode>"
   [(parallel [(set (match_operand:INT1 0 "gpc_reg_operand" "")
-                   (match_operand:INT1 1 "memory_operand" ""))
-              (set (match_dup 1)
-                   (unspec:INT1
-                     [(FETCHOP:INT1 (match_dup 1)
-                        (match_operand:INT1 2 "<fetchop_pred>" ""))]
-                     UNSPEC_ATOMIC))
-              (clobber (scratch:INT1))
-              (clobber (scratch:CC))])]
+		   (match_operand:INT1 1 "memory_operand" ""))
+	      (set (match_dup 1)
+		   (unspec:INT1
+		     [(FETCHOP:INT1 (match_dup 1)
+			(match_operand:INT1 2 "<fetchop_pred>" ""))]
+		     UNSPEC_ATOMIC))
+	      (clobber (scratch:INT1))
+	      (clobber (scratch:CC))])]
   "TARGET_POWERPC"
   "
 { 
   if (<MODE>mode != SImode && <MODE>mode != DImode)
     {
       if (PPC405_ERRATUM77)
-        FAIL;
+	FAIL;
       rs6000_emit_sync (<CODE>, <MODE>mode, operands[1], operands[2],
-                        operands[0], NULL_RTX, true);
+			operands[0], NULL_RTX, true);
       DONE;
     }
 }")
 
 (define_insn_and_split "*sync_old_<fetchop_name>si_internal"
   [(set (match_operand:SI 0 "gpc_reg_operand" "=&r")
-        (match_operand:SI 1 "memory_operand" "+Z"))
+	(match_operand:SI 1 "memory_operand" "+Z"))
    (set (match_dup 1)
-        (unspec:SI
-          [(FETCHOP:SI (match_dup 1)
-             (match_operand:SI 2 "<fetchop_pred>" "<fetchopsi_constr>"))]
-          UNSPEC_ATOMIC))
+	(unspec:SI
+	  [(FETCHOP:SI (match_dup 1)
+	     (match_operand:SI 2 "<fetchop_pred>" "<fetchopsi_constr>"))]
+	  UNSPEC_ATOMIC))
    (clobber (match_scratch:SI 3 "=&b"))
    (clobber (match_scratch:CC 4 "=&x"))]
   "TARGET_POWERPC"
@@ -288,18 +288,18 @@
   [(const_int 0)]
 {
   rs6000_split_atomic_op (<CODE>, operands[1], operands[2],
-                          operands[0], NULL_RTX, operands[3]);
+			  operands[0], NULL_RTX, operands[3]);
   DONE;
 })
 
 (define_insn_and_split "*sync_old_<fetchop_name>di_internal"
   [(set (match_operand:DI 0 "gpc_reg_operand" "=&r")
-        (match_operand:DI 1 "memory_operand" "+Z"))
+	(match_operand:DI 1 "memory_operand" "+Z"))
    (set (match_dup 1)
-        (unspec:DI
-          [(FETCHOP:DI (match_dup 1)
-             (match_operand:DI 2 "<fetchop_pred>" "<fetchopdi_constr>"))]
-          UNSPEC_ATOMIC))
+	(unspec:DI
+	  [(FETCHOP:DI (match_dup 1)
+	     (match_operand:DI 2 "<fetchop_pred>" "<fetchopdi_constr>"))]
+	  UNSPEC_ATOMIC))
    (clobber (match_scratch:DI 3 "=&b"))
    (clobber (match_scratch:CC 4 "=&x"))]
   "TARGET_POWERPC"
@@ -308,43 +308,43 @@
   [(const_int 0)]
 {
   rs6000_split_atomic_op (<CODE>, operands[1], operands[2],
-                          operands[0], NULL_RTX, operands[3]);
+			  operands[0], NULL_RTX, operands[3]);
   DONE;
 })
 
 (define_expand "sync_old_nand<mode>"
   [(parallel [(set (match_operand:INT1 0 "gpc_reg_operand" "")
-                   (match_operand:INT1 1 "memory_operand" ""))
-              (set (match_dup 1)
-                   (unspec:INT1
-                     [(and:INT1 (not:INT1 (match_dup 1))
-                        (match_operand:INT1 2 "gpc_reg_operand" ""))]
-                     UNSPEC_ATOMIC))
-              (clobber (scratch:INT1))
-              (clobber (scratch:CC))])]
+		   (match_operand:INT1 1 "memory_operand" ""))
+	      (set (match_dup 1)
+		   (unspec:INT1
+		     [(and:INT1 (not:INT1 (match_dup 1))
+			(match_operand:INT1 2 "gpc_reg_operand" ""))]
+		     UNSPEC_ATOMIC))
+	      (clobber (scratch:INT1))
+	      (clobber (scratch:CC))])]
   "TARGET_POWERPC"
   "
 {
   if (<MODE>mode != SImode && <MODE>mode != DImode)
     {
       if (PPC405_ERRATUM77)
-        FAIL;
+	FAIL;
       rs6000_emit_sync (AND, <MODE>mode,
-                        gen_rtx_NOT (<MODE>mode, operands[1]),
-                        operands[2],
-                        operands[0], NULL_RTX, true);
+			gen_rtx_NOT (<MODE>mode, operands[1]),
+			operands[2],
+			operands[0], NULL_RTX, true);
       DONE;
     }
 }")
 
 (define_insn_and_split "*sync_old_nand<mode>_internal"
   [(set (match_operand:GPR 0 "gpc_reg_operand" "=&r")
-        (match_operand:GPR 1 "memory_operand" "+Z"))
+	(match_operand:GPR 1 "memory_operand" "+Z"))
    (set (match_dup 1)
-        (unspec:GPR
-          [(and:GPR (not:GPR (match_dup 1))
-             (match_operand:GPR 2 "gpc_reg_operand" "r"))]
-          UNSPEC_ATOMIC))
+	(unspec:GPR
+	  [(and:GPR (not:GPR (match_dup 1))
+	     (match_operand:GPR 2 "gpc_reg_operand" "r"))]
+	  UNSPEC_ATOMIC))
    (clobber (match_scratch:GPR 3 "=&r"))
    (clobber (match_scratch:CC 4 "=&x"))]
   "TARGET_POWERPC"
@@ -353,43 +353,43 @@
   [(const_int 0)]
 {
   rs6000_split_atomic_op (NOT, operands[1], operands[2],
-                          operands[0], NULL_RTX, operands[3]);
+			  operands[0], NULL_RTX, operands[3]);
   DONE;
 })
 
 (define_expand "sync_new_<fetchop_name><mode>"
   [(parallel [(set (match_operand:INT1 0 "gpc_reg_operand" "")
-                   (FETCHOP:INT1
-                     (match_operand:INT1 1 "memory_operand" "")
-                     (match_operand:INT1 2 "<fetchop_pred>" "")))
-              (set (match_dup 1)
-                   (unspec:INT1
-                     [(FETCHOP:INT1 (match_dup 1) (match_dup 2))]
-                     UNSPEC_ATOMIC))
-              (clobber (scratch:INT1))
-              (clobber (scratch:CC))])]
+		   (FETCHOP:INT1
+		     (match_operand:INT1 1 "memory_operand" "")
+		     (match_operand:INT1 2 "<fetchop_pred>" "")))
+	      (set (match_dup 1)
+		   (unspec:INT1
+		     [(FETCHOP:INT1 (match_dup 1) (match_dup 2))]
+		     UNSPEC_ATOMIC))
+	      (clobber (scratch:INT1))
+	      (clobber (scratch:CC))])]
   "TARGET_POWERPC"
   "
 {
   if (<MODE>mode != SImode && <MODE>mode != DImode)
     {
       if (PPC405_ERRATUM77)
-        FAIL;
+	FAIL;
       rs6000_emit_sync (<CODE>, <MODE>mode, operands[1], operands[2],
-                        NULL_RTX, operands[0], true);
+			NULL_RTX, operands[0], true);
       DONE;
     }
 }")
 
 (define_insn_and_split "*sync_new_<fetchop_name>si_internal"
   [(set (match_operand:SI 0 "gpc_reg_operand" "=&r")
-        (FETCHOP:SI
-          (match_operand:SI 1 "memory_operand" "+Z")
-          (match_operand:SI 2 "<fetchop_pred>" "<fetchopsi_constr>")))
+	(FETCHOP:SI
+	  (match_operand:SI 1 "memory_operand" "+Z")
+	  (match_operand:SI 2 "<fetchop_pred>" "<fetchopsi_constr>")))
    (set (match_dup 1)
-        (unspec:SI
-          [(FETCHOP:SI (match_dup 1) (match_dup 2))]
-          UNSPEC_ATOMIC))
+	(unspec:SI
+	  [(FETCHOP:SI (match_dup 1) (match_dup 2))]
+	  UNSPEC_ATOMIC))
    (clobber (match_scratch:SI 3 "=&b"))
    (clobber (match_scratch:CC 4 "=&x"))]
   "TARGET_POWERPC"
@@ -398,19 +398,19 @@
   [(const_int 0)]
 {
   rs6000_split_atomic_op (<CODE>, operands[1], operands[2],
-                          NULL_RTX, operands[0], operands[3]);
+			  NULL_RTX, operands[0], operands[3]);
   DONE;
 })
 
 (define_insn_and_split "*sync_new_<fetchop_name>di_internal"
   [(set (match_operand:DI 0 "gpc_reg_operand" "=&r")
-        (FETCHOP:DI
-          (match_operand:DI 1 "memory_operand" "+Z")
-          (match_operand:DI 2 "<fetchop_pred>" "<fetchopdi_constr>")))
+	(FETCHOP:DI
+	  (match_operand:DI 1 "memory_operand" "+Z")
+	  (match_operand:DI 2 "<fetchop_pred>" "<fetchopdi_constr>")))
    (set (match_dup 1)
-        (unspec:DI
-          [(FETCHOP:DI (match_dup 1) (match_dup 2))]
-          UNSPEC_ATOMIC))
+	(unspec:DI
+	  [(FETCHOP:DI (match_dup 1) (match_dup 2))]
+	  UNSPEC_ATOMIC))
    (clobber (match_scratch:DI 3 "=&b"))
    (clobber (match_scratch:CC 4 "=&x"))]
   "TARGET_POWERPC"
@@ -419,45 +419,45 @@
   [(const_int 0)]
 {
   rs6000_split_atomic_op (<CODE>, operands[1], operands[2],
-                          NULL_RTX, operands[0], operands[3]);
+			  NULL_RTX, operands[0], operands[3]);
   DONE;
 })
 
 (define_expand "sync_new_nand<mode>"
   [(parallel [(set (match_operand:INT1 0 "gpc_reg_operand" "")
-                   (and:INT1
-                     (not:INT1 (match_operand:INT1 1 "memory_operand" ""))
-                     (match_operand:INT1 2 "gpc_reg_operand" "")))
-              (set (match_dup 1)
-                   (unspec:INT1
-                     [(and:INT1 (not:INT1 (match_dup 1)) (match_dup 2))]
-                     UNSPEC_ATOMIC))
-              (clobber (scratch:INT1))
-              (clobber (scratch:CC))])]
+		   (and:INT1
+		     (not:INT1 (match_operand:INT1 1 "memory_operand" ""))
+		     (match_operand:INT1 2 "gpc_reg_operand" "")))
+	      (set (match_dup 1)
+		   (unspec:INT1
+		     [(and:INT1 (not:INT1 (match_dup 1)) (match_dup 2))]
+		     UNSPEC_ATOMIC))
+	      (clobber (scratch:INT1))
+	      (clobber (scratch:CC))])]
   "TARGET_POWERPC"
   "
 {
   if (<MODE>mode != SImode && <MODE>mode != DImode)
     {
       if (PPC405_ERRATUM77)
-        FAIL;
+	FAIL;
       rs6000_emit_sync (AND, <MODE>mode,
-                        gen_rtx_NOT (<MODE>mode, operands[1]),
-                        operands[2],
-                        NULL_RTX, operands[0], true);
+			gen_rtx_NOT (<MODE>mode, operands[1]),
+			operands[2],
+			NULL_RTX, operands[0], true);
       DONE;
     }
 }")
 
 (define_insn_and_split "*sync_new_nand<mode>_internal"
   [(set (match_operand:GPR 0 "gpc_reg_operand" "=&r")
-        (and:GPR
-          (not:GPR (match_operand:GPR 1 "memory_operand" "+Z"))
-          (match_operand:GPR 2 "gpc_reg_operand" "r")))
+	(and:GPR
+	  (not:GPR (match_operand:GPR 1 "memory_operand" "+Z"))
+	  (match_operand:GPR 2 "gpc_reg_operand" "r")))
    (set (match_dup 1)
-        (unspec:GPR
-          [(and:GPR (not:GPR (match_dup 1)) (match_dup 2))]
-          UNSPEC_ATOMIC))
+	(unspec:GPR
+	  [(and:GPR (not:GPR (match_dup 1)) (match_dup 2))]
+	  UNSPEC_ATOMIC))
    (clobber (match_scratch:GPR 3 "=&r"))
    (clobber (match_scratch:CC 4 "=&x"))]
   "TARGET_POWERPC"
@@ -466,7 +466,7 @@
   [(const_int 0)]
 {
   rs6000_split_atomic_op (NOT, operands[1], operands[2],
-                          NULL_RTX, operands[0], operands[3]);
+			  NULL_RTX, operands[0], operands[3]);
   DONE;
 })
 
@@ -475,9 +475,9 @@
 ; cr0 already clobbered by larx/stcx.
 (define_insn "*atomic_andsi"
   [(set (match_operand:SI 0 "gpc_reg_operand" "=r,r,r,r")
-        (unspec:SI [(match_operand:SI 1 "gpc_reg_operand" "%r,r,r,r")
-                    (match_operand:SI 2 "and_operand" "?r,T,K,L")]
-                    UNSPEC_AND))]
+	(unspec:SI [(match_operand:SI 1 "gpc_reg_operand" "%r,r,r,r")
+		    (match_operand:SI 2 "and_operand" "?r,T,K,L")]
+		    UNSPEC_AND))]
   ""
   "@
    and %0,%1,%2
@@ -488,9 +488,9 @@
 
 (define_insn "*atomic_anddi"
   [(set (match_operand:DI 0 "gpc_reg_operand" "=r,r,r,r,r")
-        (unspec:DI [(match_operand:DI 1 "gpc_reg_operand" "%r,r,r,r,r")
-                    (match_operand:DI 2 "and_operand" "?r,S,T,K,J")]
-                    UNSPEC_AND))]
+	(unspec:DI [(match_operand:DI 1 "gpc_reg_operand" "%r,r,r,r,r")
+		    (match_operand:DI 2 "and_operand" "?r,S,T,K,J")]
+		    UNSPEC_AND))]
   "TARGET_POWERPC64"
   "@
    and %0,%1,%2
@@ -509,16 +509,16 @@
 
 (define_insn "*sync_addshort_internal"
   [(set (match_operand:SI 2 "gpc_reg_operand" "=&r")
-        (ior:SI (and:SI (plus:SI (match_operand:SI 0 "memory_operand" "+Z")
-                                 (match_operand:SI 1 "add_operand" "rI"))
-                        (match_operand:SI 4 "gpc_reg_operand" "r"))
-                (and:SI (not:SI (match_dup 4)) (match_dup 0))))
+	(ior:SI (and:SI (plus:SI (match_operand:SI 0 "memory_operand" "+Z")
+				 (match_operand:SI 1 "add_operand" "rI"))
+			(match_operand:SI 4 "gpc_reg_operand" "r"))
+		(and:SI (not:SI (match_dup 4)) (match_dup 0))))
    (set (match_operand:SI 3 "gpc_reg_operand" "=&b") (match_dup 0))
    (set (match_dup 0)
-        (unspec:SI [(ior:SI (and:SI (plus:SI (match_dup 0) (match_dup 1))
-                                    (match_dup 4))
-                            (and:SI (not:SI (match_dup 4)) (match_dup 0)))]
-                   UNSPEC_SYNC_OP))
+	(unspec:SI [(ior:SI (and:SI (plus:SI (match_dup 0) (match_dup 1))
+				    (match_dup 4))
+			    (and:SI (not:SI (match_dup 4)) (match_dup 0)))]
+		   UNSPEC_SYNC_OP))
    (clobber (match_scratch:CC 5 "=&x"))
    (clobber (match_scratch:SI 6 "=&r"))]
   "TARGET_POWERPC && !PPC405_ERRATUM77"
@@ -527,16 +527,16 @@
 
 (define_insn "*sync_subshort_internal"
   [(set (match_operand:SI 2 "gpc_reg_operand" "=&r")
-        (ior:SI (and:SI (minus:SI (match_operand:SI 0 "memory_operand" "+Z")
-                                  (match_operand:SI 1 "add_operand" "rI"))
-                        (match_operand:SI 4 "gpc_reg_operand" "r"))
-                (and:SI (not:SI (match_dup 4)) (match_dup 0))))
+	(ior:SI (and:SI (minus:SI (match_operand:SI 0 "memory_operand" "+Z")
+				  (match_operand:SI 1 "add_operand" "rI"))
+			(match_operand:SI 4 "gpc_reg_operand" "r"))
+		(and:SI (not:SI (match_dup 4)) (match_dup 0))))
    (set (match_operand:SI 3 "gpc_reg_operand" "=&b") (match_dup 0))
    (set (match_dup 0)
-        (unspec:SI [(ior:SI (and:SI (minus:SI (match_dup 0) (match_dup 1))
-                                    (match_dup 4))
-                            (and:SI (not:SI (match_dup 4)) (match_dup 0)))]
-                   UNSPEC_SYNC_OP))
+	(unspec:SI [(ior:SI (and:SI (minus:SI (match_dup 0) (match_dup 1))
+				    (match_dup 4))
+			    (and:SI (not:SI (match_dup 4)) (match_dup 0)))]
+		   UNSPEC_SYNC_OP))
    (clobber (match_scratch:CC 5 "=&x"))
    (clobber (match_scratch:SI 6 "=&r"))]
   "TARGET_POWERPC && !PPC405_ERRATUM77"
@@ -545,12 +545,12 @@
 
 (define_insn "*sync_andsi_internal"
   [(set (match_operand:SI 2 "gpc_reg_operand" "=&r,&r,&r,&r")
-        (and:SI (match_operand:SI 0 "memory_operand" "+Z,Z,Z,Z")
-                (match_operand:SI 1 "and_operand" "r,T,K,L")))
+	(and:SI (match_operand:SI 0 "memory_operand" "+Z,Z,Z,Z")
+		(match_operand:SI 1 "and_operand" "r,T,K,L")))
    (set (match_operand:SI 3 "gpc_reg_operand" "=&b,&b,&b,&b") (match_dup 0))
    (set (match_dup 0)
-        (unspec:SI [(and:SI (match_dup 0) (match_dup 1))]
-                   UNSPEC_SYNC_OP))
+	(unspec:SI [(and:SI (match_dup 0) (match_dup 1))]
+		   UNSPEC_SYNC_OP))
    (clobber (match_scratch:CC 4 "=&x,&x,&x,&x"))]
   "TARGET_POWERPC && !PPC405_ERRATUM77"
   "@
@@ -562,9 +562,9 @@
 
 (define_insn "*sync_boolsi_internal"
   [(set (match_operand:SI 2 "gpc_reg_operand" "=&r,&r,&r")
-        (match_operator:SI 4 "boolean_or_operator"
-         [(match_operand:SI 0 "memory_operand" "+Z,Z,Z")
-          (match_operand:SI 1 "logical_operand" "r,K,L")]))
+	(match_operator:SI 4 "boolean_or_operator"
+	 [(match_operand:SI 0 "memory_operand" "+Z,Z,Z")
+	  (match_operand:SI 1 "logical_operand" "r,K,L")]))
    (set (match_operand:SI 3 "gpc_reg_operand" "=&b,&b,&b") (match_dup 0))
    (set (match_dup 0) (unspec:SI [(match_dup 4)] UNSPEC_SYNC_OP))
    (clobber (match_scratch:CC 5 "=&x,&x,&x"))]
@@ -581,10 +581,10 @@
 ; Likewise, operand 5 is in practice either <= 2^16 or it is a register.
 (define_insn "*sync_boolcshort_internal"
   [(set (match_operand:SI 2 "gpc_reg_operand" "=&r")
-        (match_operator:SI 4 "boolean_operator"
-         [(xor:SI (match_operand:SI 0 "memory_operand" "+Z")
-                  (match_operand:SI 5 "logical_operand" "rK"))
-          (match_operand:SI 1 "gpc_reg_operand" "r")]))
+	(match_operator:SI 4 "boolean_operator"
+	 [(xor:SI (match_operand:SI 0 "memory_operand" "+Z")
+		  (match_operand:SI 5 "logical_operand" "rK"))
+	  (match_operand:SI 1 "gpc_reg_operand" "r")]))
    (set (match_operand:SI 3 "gpc_reg_operand" "=&b") (match_dup 0))
    (set (match_dup 0) (unspec:SI [(match_dup 4)] UNSPEC_SYNC_OP))
    (clobber (match_scratch:CC 6 "=&x"))]
@@ -594,14 +594,14 @@
 
 (define_insn "isync"
   [(set (mem:BLK (match_scratch 0 "X"))
-        (unspec_volatile:BLK [(mem:BLK (match_scratch 1 "X"))] UNSPEC_ISYNC))]
+	(unspec_volatile:BLK [(mem:BLK (match_scratch 1 "X"))] UNSPEC_ISYNC))]
   ""
   "{ics|isync}"
   [(set_attr "type" "isync")])
 
 (define_expand "sync_lock_release<mode>"
   [(set (match_operand:INT 0 "memory_operand")
-        (match_operand:INT 1 "any_operand"))]
+	(match_operand:INT 1 "any_operand"))]
   ""
   "
 {
@@ -613,7 +613,7 @@
 ; Some AIX assemblers don't accept lwsync, so we use a .long.
 (define_insn "lwsync"
   [(set (mem:BLK (match_scratch 0 "X"))
-        (unspec_volatile:BLK [(mem:BLK (match_scratch 1 "X"))] UNSPEC_LWSYNC))]
+	(unspec_volatile:BLK [(mem:BLK (match_scratch 1 "X"))] UNSPEC_LWSYNC))]
   ""
 {
   if (TARGET_NO_LWSYNC)

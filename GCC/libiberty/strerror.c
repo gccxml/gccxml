@@ -66,17 +66,17 @@ static void init_error_tables (void);
 
 struct error_info
 {
-  const int value;                /* The numeric value from <errno.h> */
-  const char *const name;        /* The equivalent symbolic value */
+  const int value;		/* The numeric value from <errno.h> */
+  const char *const name;	/* The equivalent symbolic value */
 #ifndef HAVE_SYS_ERRLIST
-  const char *const msg;        /* Short message about this value */
+  const char *const msg;	/* Short message about this value */
 #endif
 };
 
 #ifndef HAVE_SYS_ERRLIST
-#   define ENTRY(value, name, msg)        {value, name, msg}
+#   define ENTRY(value, name, msg)	{value, name, msg}
 #else
-#   define ENTRY(value, name, msg)        {value, name}
+#   define ENTRY(value, name, msg)	{value, name}
 #endif
 
 static const struct error_info error_table[] =
@@ -111,7 +111,7 @@ static const struct error_info error_table[] =
 #if defined (ECHILD)
   ENTRY(ECHILD, "ECHILD", "No child processes"),
 #endif
-#if defined (EWOULDBLOCK)        /* Put before EAGAIN, sometimes aliased */
+#if defined (EWOULDBLOCK)	/* Put before EAGAIN, sometimes aliased */
   ENTRY(EWOULDBLOCK, "EWOULDBLOCK", "Operation would block"),
 #endif
 #if defined (EAGAIN)
@@ -486,27 +486,27 @@ extern char *sys_errlist[];
 
 NAME
 
-        init_error_tables -- initialize the name and message tables
+	init_error_tables -- initialize the name and message tables
 
 SYNOPSIS
 
-        static void init_error_tables ();
+	static void init_error_tables ();
 
 DESCRIPTION
 
-        Using the error_table, which is initialized at compile time, generate
-        the error_names and the sys_errlist (if needed) tables, which are
-        indexed at runtime by a specific errno value.
+	Using the error_table, which is initialized at compile time, generate
+	the error_names and the sys_errlist (if needed) tables, which are
+	indexed at runtime by a specific errno value.
 
 BUGS
 
-        The initialization of the tables may fail under low memory conditions,
-        in which case we don't do anything particularly useful, but we don't
-        bomb either.  Who knows, it might succeed at a later point if we free
-        some memory in the meantime.  In any case, the other routines know
-        how to deal with lack of a table after trying to initialize it.  This
-        may or may not be considered to be a bug, that we don't specifically
-        warn about this particular failure mode.
+	The initialization of the tables may fail under low memory conditions,
+	in which case we don't do anything particularly useful, but we don't
+	bomb either.  Who knows, it might succeed at a later point if we free
+	some memory in the meantime.  In any case, the other routines know
+	how to deal with lack of a table after trying to initialize it.  This
+	may or may not be considered to be a bug, that we don't specifically
+	warn about this particular failure mode.
 
 */
 
@@ -522,12 +522,12 @@ init_error_tables (void)
   if (num_error_names == 0)
     {
       for (eip = error_table; eip -> name != NULL; eip++)
-        {
-          if (eip -> value >= num_error_names)
-            {
-              num_error_names = eip -> value + 1;
-            }
-        }
+	{
+	  if (eip -> value >= num_error_names)
+	    {
+	      num_error_names = eip -> value + 1;
+	    }
+	}
     }
 
   /* Now attempt to allocate the error_names table, zero it out, and then
@@ -537,13 +537,13 @@ init_error_tables (void)
     {
       nbytes = num_error_names * sizeof (char *);
       if ((error_names = (const char **) malloc (nbytes)) != NULL)
-        {
-          memset (error_names, 0, nbytes);
-          for (eip = error_table; eip -> name != NULL; eip++)
-            {
-              error_names[eip -> value] = eip -> name;
-            }
-        }
+	{
+	  memset (error_names, 0, nbytes);
+	  for (eip = error_table; eip -> name != NULL; eip++)
+	    {
+	      error_names[eip -> value] = eip -> name;
+	    }
+	}
     }
 
 #ifndef HAVE_SYS_ERRLIST
@@ -555,14 +555,14 @@ init_error_tables (void)
     {
       nbytes = num_error_names * sizeof (char *);
       if ((sys_errlist = (const char **) malloc (nbytes)) != NULL)
-        {
-          memset (sys_errlist, 0, nbytes);
-          sys_nerr = num_error_names;
-          for (eip = error_table; eip -> name != NULL; eip++)
-            {
-              sys_errlist[eip -> value] = eip -> msg;
-            }
-        }
+	{
+	  memset (sys_errlist, 0, nbytes);
+	  sys_nerr = num_error_names;
+	  for (eip = error_table; eip -> name != NULL; eip++)
+	    {
+	      sys_errlist[eip -> value] = eip -> msg;
+	    }
+	}
     }
 
 #endif
@@ -649,7 +649,7 @@ strerror (int errnoval)
     {
 #ifdef EVMSERR
       if (errnoval == evmserr.value)
-        msg = evmserr.msg;
+	msg = evmserr.msg;
       else
 #endif
       /* Out of range, just return NULL */
@@ -670,7 +670,7 @@ strerror (int errnoval)
   return (msg);
 }
 
-#endif        /* ! HAVE_STRERROR */
+#endif	/* ! HAVE_STRERROR */
 
 
 /*
@@ -711,7 +711,7 @@ strerrno (int errnoval)
     {
 #ifdef EVMSERR
       if (errnoval == evmserr.value)
-        name = evmserr.name;
+	name = evmserr.name;
       else
 #endif
       /* Out of range, just return NULL */
@@ -751,26 +751,26 @@ strtoerrno (const char *name)
   if (name != NULL)
     {
       if (error_names == NULL)
-        {
-          init_error_tables ();
-        }
+	{
+	  init_error_tables ();
+	}
       for (errnoval = 0; errnoval < num_error_names; errnoval++)
-        {
-          if ((error_names[errnoval] != NULL) &&
-              (strcmp (name, error_names[errnoval]) == 0))
-            {
-              break;
-            }
-        }
+	{
+	  if ((error_names[errnoval] != NULL) &&
+	      (strcmp (name, error_names[errnoval]) == 0))
+	    {
+	      break;
+	    }
+	}
       if (errnoval == num_error_names)
-        {
+	{
 #ifdef EVMSERR
-          if (strcmp (name, evmserr.name) == 0)
-            errnoval = evmserr.value;
-          else
+	  if (strcmp (name, evmserr.name) == 0)
+	    errnoval = evmserr.value;
+	  else
 #endif
-          errnoval = 0;
-        }
+	  errnoval = 0;
+	}
     }
   return (errnoval);
 }

@@ -65,27 +65,27 @@ Boston, MA 02110-1301, USA.  */
 /* config/m68k.md has an explicit reference to the program counter,
    prefix this by the register prefix.  */
 
-#define ASM_RETURN_CASE_JUMP                                \
-  do {                                                        \
-    if (TARGET_COLDFIRE)                                \
-      {                                                        \
-        if (ADDRESS_REG_P (operands[0]))                \
-          return "jmp %%pc@(2,%0:l)";                        \
-        else                                                \
-          return "ext%.l %0\n\tjmp %%pc@(2,%0:l)";        \
-      }                                                        \
-    else                                                \
-      return "jmp %%pc@(2,%0:w)";                        \
+#define ASM_RETURN_CASE_JUMP				\
+  do {							\
+    if (TARGET_COLDFIRE)				\
+      {							\
+	if (ADDRESS_REG_P (operands[0]))		\
+	  return "jmp %%pc@(2,%0:l)";			\
+	else						\
+	  return "ext%.l %0\n\tjmp %%pc@(2,%0:l)";	\
+      }							\
+    else						\
+      return "jmp %%pc@(2,%0:w)";			\
   } while (0)
 
 /* This is how to output an assembler line that says to advance the
    location counter to a multiple of 2**LOG bytes.  */
 
 #undef ASM_OUTPUT_ALIGN
-#define ASM_OUTPUT_ALIGN(FILE,LOG)                                \
-do {                                                                \
-  if ((LOG) > 0)                                                \
-    fprintf ((FILE), "%s%u\n", ALIGN_ASM_OP, 1 << (LOG));        \
+#define ASM_OUTPUT_ALIGN(FILE,LOG)				\
+do {								\
+  if ((LOG) > 0)						\
+    fprintf ((FILE), "%s%u\n", ALIGN_ASM_OP, 1 << (LOG));	\
 } while (0)
 
 /* Use proper assembler syntax for these macros.  */
@@ -119,7 +119,7 @@ do {                                                                \
    than ".bss", so override the definition in svr4.h */
 
 #undef BSS_ASM_OP
-#define BSS_ASM_OP        "\t.lcomm\t"
+#define BSS_ASM_OP	"\t.lcomm\t"
 
 /* Register in which address to store a structure value is passed to a
    function.  The default in m68k.h is a1.  For m68k/SVR4 it is a0.  */
@@ -160,45 +160,45 @@ do {                                                                \
    escape char (i.e., `\') right. Use normal way to output ASCII bytes
    seems to be safer.  */
 #undef ASM_OUTPUT_ASCII
-#define ASM_OUTPUT_ASCII(FILE,PTR,LEN)                                \
-do {                                                                \
-  register int sp = 0, ch;                                        \
-  fputs (integer_asm_op (1, TRUE), (FILE));                        \
-  do {                                                                \
-    ch = (PTR)[sp];                                                \
-    if (ch > ' ' && ! (ch & 0x80) && ch != '\\')                \
-      {                                                                \
-        fprintf ((FILE), "'%c", ch);                                \
-      }                                                                \
-    else                                                        \
-      {                                                                \
-        fprintf ((FILE), "0x%x", ch);                                \
-      }                                                                \
-    if (++sp < (LEN))                                                \
-      {                                                                \
-        if ((sp % 10) == 0)                                        \
-          {                                                        \
-            fprintf ((FILE), "\n%s", integer_asm_op (1, TRUE));        \
-          }                                                        \
-        else                                                        \
-          {                                                        \
-            putc (',', (FILE));                                        \
-          }                                                        \
-      }                                                                \
-  } while (sp < (LEN));                                                \
-  putc ('\n', (FILE));                                                \
+#define ASM_OUTPUT_ASCII(FILE,PTR,LEN)				\
+do {								\
+  register int sp = 0, ch;					\
+  fputs (integer_asm_op (1, TRUE), (FILE));			\
+  do {								\
+    ch = (PTR)[sp];						\
+    if (ch > ' ' && ! (ch & 0x80) && ch != '\\')		\
+      {								\
+	fprintf ((FILE), "'%c", ch);				\
+      }								\
+    else							\
+      {								\
+	fprintf ((FILE), "0x%x", ch);				\
+      }								\
+    if (++sp < (LEN))						\
+      {								\
+	if ((sp % 10) == 0)					\
+	  {							\
+	    fprintf ((FILE), "\n%s", integer_asm_op (1, TRUE));	\
+	  }							\
+	else							\
+	  {							\
+	    putc (',', (FILE));					\
+	  }							\
+      }								\
+  } while (sp < (LEN));						\
+  putc ('\n', (FILE));						\
 } while (0)
 
 #undef ASM_OUTPUT_COMMON
 #undef ASM_OUTPUT_LOCAL
 #define ASM_OUTPUT_COMMON(FILE, NAME, SIZE, ROUNDED)  \
-( fputs (".comm ", (FILE)),                        \
-  assemble_name ((FILE), (NAME)),                \
+( fputs (".comm ", (FILE)),			\
+  assemble_name ((FILE), (NAME)),		\
   fprintf ((FILE), ",%u\n", (int)(SIZE)))
 
 #define ASM_OUTPUT_LOCAL(FILE, NAME, SIZE, ROUNDED)  \
-( fputs (".lcomm ", (FILE)),                        \
-  assemble_name ((FILE), (NAME)),                \
+( fputs (".lcomm ", (FILE)),			\
+  assemble_name ((FILE), (NAME)),		\
   fprintf ((FILE), ",%u\n", (int)(SIZE)))
 
 /* Currently, JUMP_TABLES_IN_TEXT_SECTION must be defined in order to
@@ -209,14 +209,14 @@ do {                                                                \
 /* Override the definition in svr4.h. In m68k svr4, using swbeg is the 
    standard way to do switch table.  */
 #undef ASM_OUTPUT_BEFORE_CASE_LABEL
-#define ASM_OUTPUT_BEFORE_CASE_LABEL(FILE,PREFIX,NUM,TABLE)                \
+#define ASM_OUTPUT_BEFORE_CASE_LABEL(FILE,PREFIX,NUM,TABLE)		\
   fprintf ((FILE), "%s&%d\n", SWBEG_ASM_OP, XVECLEN (PATTERN (TABLE), 1));
 /* end of stuff from m68kv4.h */
 
 #undef ENDFILE_SPEC
 #define ENDFILE_SPEC "crtend.o%s"
 
-#undef        STARTFILE_SPEC
+#undef	STARTFILE_SPEC
 #define STARTFILE_SPEC "crtbegin.o%s"
 
 /* If defined, a C expression whose value is a string containing the
@@ -227,7 +227,7 @@ do {                                                                \
    `-fno-common' is passed, otherwise `ASM_OUTPUT_COMMON' will be
    used.  */
 #ifndef BSS_SECTION_ASM_OP
-#define BSS_SECTION_ASM_OP        "\t.section\t.bss"
+#define BSS_SECTION_ASM_OP	"\t.section\t.bss"
 #endif
 
 /* Like `ASM_OUTPUT_BSS' except takes the required alignment as a

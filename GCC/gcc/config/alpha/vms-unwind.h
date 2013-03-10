@@ -24,7 +24,7 @@ Boston, MA 02110-1301, USA.  */
 
 static _Unwind_Reason_Code
 alpha_fallback_frame_state (struct _Unwind_Context *context,
-                            _Unwind_FrameState *fs)
+			    _Unwind_FrameState *fs)
 {
   PDSCDEF *pv = *((PDSCDEF **) context->reg [29]);
 
@@ -42,16 +42,16 @@ alpha_fallback_frame_state (struct _Unwind_Context *context,
       fs->regs.reg[27].loc.offset = -pv->pdsc$l_size;
       fs->regs.reg[27].how = REG_SAVED_OFFSET;
       fs->regs.reg[26].loc.offset
-        = -(pv->pdsc$l_size - pv->pdsc$w_rsa_offset);
+	= -(pv->pdsc$l_size - pv->pdsc$w_rsa_offset);
       fs->regs.reg[26].how = REG_SAVED_OFFSET;
 
       for (i = 0, j = 0; i < 32; i++)
-        if (1<<i & pv->pdsc$l_ireg_mask)
-          {
-            fs->regs.reg[i].loc.offset
-              = -(pv->pdsc$l_size - pv->pdsc$w_rsa_offset - 8 * ++j);
-            fs->regs.reg[i].how = REG_SAVED_OFFSET;
-          }
+	if (1<<i & pv->pdsc$l_ireg_mask)
+	  {
+	    fs->regs.reg[i].loc.offset
+	      = -(pv->pdsc$l_size - pv->pdsc$w_rsa_offset - 8 * ++j);
+	    fs->regs.reg[i].how = REG_SAVED_OFFSET;
+	  }
 
       return _URC_NO_REASON;
     }

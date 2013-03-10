@@ -53,37 +53,37 @@ write_macdef (cpp_reader *pfile, cpp_hashnode *hn, void *file_p)
     {
     case NT_VOID:
       if (! (hn->flags & NODE_POISONED))
-        return 1;
+	return 1;
       
     case NT_MACRO:
       if ((hn->flags & NODE_BUILTIN))
-        return 1;
+	return 1;
 
       {
-        struct macrodef_struct s;
-        const unsigned char *defn;
+	struct macrodef_struct s;
+	const unsigned char *defn;
 
-        s.name_length = NODE_LEN (hn);
-        s.flags = hn->flags & NODE_POISONED;
+	s.name_length = NODE_LEN (hn);
+	s.flags = hn->flags & NODE_POISONED;
 
-        if (hn->type == NT_MACRO)
-          {
-            defn = cpp_macro_definition (pfile, hn);
-            s.definition_length = ustrlen (defn);
-          }
-        else
-          {
-            defn = NODE_NAME (hn);
-            s.definition_length = s.name_length;
-          }
-        
-        if (fwrite (&s, sizeof (s), 1, f) != 1
-            || fwrite (defn, 1, s.definition_length, f) != s.definition_length)
-          {
-            cpp_errno (pfile, CPP_DL_ERROR,
-                       "while writing precompiled header");
-            return 0;
-          }
+	if (hn->type == NT_MACRO)
+	  {
+	    defn = cpp_macro_definition (pfile, hn);
+	    s.definition_length = ustrlen (defn);
+	  }
+	else
+	  {
+	    defn = NODE_NAME (hn);
+	    s.definition_length = s.name_length;
+	  }
+	
+	if (fwrite (&s, sizeof (s), 1, f) != 1
+	    || fwrite (defn, 1, s.definition_length, f) != s.definition_length)
+	  {
+	    cpp_errno (pfile, CPP_DL_ERROR,
+		       "while writing precompiled header");
+	    return 0;
+	  }
       }
       return 1;
       
@@ -133,17 +133,17 @@ save_idents (cpp_reader *pfile ATTRIBUTE_UNUSED, cpp_hashnode *hn, void *ss_p)
       news.text= NODE_NAME (hn);
       slot = htab_find_slot (ss->definedhash, &news, INSERT);
       if (*slot == NULL)
-        {
-          struct cpp_string *sp;
-          unsigned char *text;
-          
-          sp = XNEW (struct cpp_string);
-          *slot = sp;
+	{
+	  struct cpp_string *sp;
+	  unsigned char *text;
+	  
+	  sp = XNEW (struct cpp_string);
+	  *slot = sp;
 
-          sp->len = NODE_LEN (hn);
-          sp->text = text = XNEWVEC (unsigned char, NODE_LEN (hn));
-          memcpy (text, NODE_NAME (hn), NODE_LEN (hn));
-        }
+	  sp->len = NODE_LEN (hn);
+	  sp->text = text = XNEWVEC (unsigned char, NODE_LEN (hn));
+	  memcpy (text, NODE_NAME (hn), NODE_LEN (hn));
+	}
     }
 
   return 1;
@@ -181,7 +181,7 @@ cpp_string_eq (const void *a_p, const void *b_p)
   const struct cpp_string *a = (const struct cpp_string *) a_p;
   const struct cpp_string *b = (const struct cpp_string *) b_p;
   return (a->len == b->len
-          && memcmp (a->text, b->text, a->len) == 0);
+	  && memcmp (a->text, b->text, a->len) == 0);
 }
 
 /* Save the current definitions of the cpp_reader for dependency
@@ -195,7 +195,7 @@ cpp_save_state (cpp_reader *r, FILE *f)
   /* Save the list of non-void identifiers for the dependency checking.  */
   r->savedstate = XNEW (struct cpp_savedstate);
   r->savedstate->definedhash = htab_create (100, cpp_string_hash, 
-                                            cpp_string_eq, NULL);
+					    cpp_string_eq, NULL);
   cpp_forall_identifiers (r, save_idents, r->savedstate);
   
   /* Write out the list of defined identifiers.  */
@@ -215,23 +215,23 @@ count_defs (cpp_reader *pfile ATTRIBUTE_UNUSED, cpp_hashnode *hn, void *ss_p)
     {
     case NT_MACRO:
       if (hn->flags & NODE_BUILTIN)
-        return 1;
+	return 1;
       
       /* else fall through.  */
 
     case NT_VOID:
       {
-        struct cpp_string news;
-        void **slot;
-        
-        news.len = NODE_LEN (hn);
-        news.text = NODE_NAME (hn);
-        slot = (void **) htab_find (ss->definedhash, &news);
-        if (slot == NULL)
-          {
-            ss->hashsize += NODE_LEN (hn) + 1;
-            ss->n_defs += 1;
-          }
+	struct cpp_string news;
+	void **slot;
+	
+	news.len = NODE_LEN (hn);
+	news.text = NODE_NAME (hn);
+	slot = (void **) htab_find (ss->definedhash, &news);
+	if (slot == NULL)
+	  {
+	    ss->hashsize += NODE_LEN (hn) + 1;
+	    ss->n_defs += 1;
+	  }
       }
       return 1;
 
@@ -254,23 +254,23 @@ write_defs (cpp_reader *pfile ATTRIBUTE_UNUSED, cpp_hashnode *hn, void *ss_p)
     {
     case NT_MACRO:
       if (hn->flags & NODE_BUILTIN)
-        return 1;
+	return 1;
       
       /* else fall through.  */
 
     case NT_VOID:
       {
-        struct cpp_string news;
-        void **slot;
-        
-        news.len = NODE_LEN (hn);
-        news.text = NODE_NAME (hn);
-        slot = (void **) htab_find (ss->definedhash, &news);
-        if (slot == NULL)
-          {
-            ss->defs[ss->n_defs] = hn;
-            ss->n_defs += 1;
-          }
+	struct cpp_string news;
+	void **slot;
+	
+	news.len = NODE_LEN (hn);
+	news.text = NODE_NAME (hn);
+	slot = (void **) htab_find (ss->definedhash, &news);
+	if (slot == NULL)
+	  {
+	    ss->defs[ss->n_defs] = hn;
+	    ss->n_defs += 1;
+	  }
       }
       return 1;
 
@@ -381,7 +381,7 @@ struct ht_node_list
 
 static int
 collect_ht_nodes (cpp_reader *pfile ATTRIBUTE_UNUSED, cpp_hashnode *hn,
-                  void *nl_p)
+		  void *nl_p)
 {
   struct ht_node_list *const nl = (struct ht_node_list *)nl_p;
 
@@ -432,56 +432,56 @@ cpp_valid_state (cpp_reader *r, const char *name, int fd)
       const unsigned char *newdefn;
       
       if (read (fd, &m, sizeof (m)) != sizeof (m))
-        goto error;
+	goto error;
       
       if (m.name_length == 0)
-        break;
+	break;
 
       /* If this file is already preprocessed, there won't be any
-         macros defined, and that's OK.  */
+	 macros defined, and that's OK.  */
       if (CPP_OPTION (r, preprocessed))
-        {
-          if (lseek (fd, m.definition_length, SEEK_CUR) == -1)
-            goto error;
-          continue;
-        }
+	{
+	  if (lseek (fd, m.definition_length, SEEK_CUR) == -1)
+	    goto error;
+	  continue;
+	}
 
       if (m.definition_length > namebufsz)
-        {
-          free (namebuf);
-          namebufsz = m.definition_length + 256;
-          namebuf = XNEWVEC (unsigned char, namebufsz);
-        }
+	{
+	  free (namebuf);
+	  namebufsz = m.definition_length + 256;
+	  namebuf = XNEWVEC (unsigned char, namebufsz);
+	}
 
       if ((size_t)read (fd, namebuf, m.definition_length) 
-          != m.definition_length)
-        goto error;
+	  != m.definition_length)
+	goto error;
       
       h = cpp_lookup (r, namebuf, m.name_length);
       if (m.flags & NODE_POISONED
-          || h->type != NT_MACRO
-          || h->flags & NODE_POISONED)
-        {
-          if (CPP_OPTION (r, warn_invalid_pch))
-            cpp_error (r, CPP_DL_WARNING_SYSHDR,
-                       "%s: not used because `%.*s' not defined",
-                       name, m.name_length, namebuf);
-          goto fail;
-        }
+	  || h->type != NT_MACRO
+	  || h->flags & NODE_POISONED)
+	{
+	  if (CPP_OPTION (r, warn_invalid_pch))
+	    cpp_error (r, CPP_DL_WARNING_SYSHDR,
+		       "%s: not used because `%.*s' not defined",
+		       name, m.name_length, namebuf);
+	  goto fail;
+	}
 
       newdefn = cpp_macro_definition (r, h);
       
       if (m.definition_length != ustrlen (newdefn)
-          || memcmp (namebuf, newdefn, m.definition_length) != 0)
-        {
-          if (CPP_OPTION (r, warn_invalid_pch))
-            cpp_error (r, CPP_DL_WARNING_SYSHDR,
-               "%s: not used because `%.*s' defined as `%s' not `%.*s'",
-                       name, m.name_length, namebuf, newdefn + m.name_length,
-                       m.definition_length - m.name_length,
-                       namebuf +  m.name_length);
-          goto fail;
-        }
+	  || memcmp (namebuf, newdefn, m.definition_length) != 0)
+	{
+	  if (CPP_OPTION (r, warn_invalid_pch))
+	    cpp_error (r, CPP_DL_WARNING_SYSHDR,
+	       "%s: not used because `%.*s' defined as `%s' not `%.*s'",
+		       name, m.name_length, namebuf, newdefn + m.name_length,
+		       m.definition_length - m.name_length,
+		       namebuf +  m.name_length);
+	  goto fail;
+	}
     }
   free (namebuf);
   namebuf = NULL;
@@ -510,17 +510,17 @@ cpp_valid_state (cpp_reader *r, const char *name, int fd)
       int cmp = ustrcmp (first, NODE_NAME (nl.defs[i]));
  
       if (cmp < 0)
-         first += ustrlen (first) + 1;
+ 	first += ustrlen (first) + 1;
       else if (cmp > 0)
-         ++i;
+ 	++i;
       else
-        {
-          if (CPP_OPTION (r, warn_invalid_pch))
-            cpp_error (r, CPP_DL_WARNING_SYSHDR, 
-                       "%s: not used because `%s' is defined",
-                       name, first);
-          goto fail;
-        }
+	{
+	  if (CPP_OPTION (r, warn_invalid_pch))
+	    cpp_error (r, CPP_DL_WARNING_SYSHDR, 
+		       "%s: not used because `%s' is defined",
+		       name, first);
+	  goto fail;
+	}
     }
    
   free(nl.defs);
@@ -575,31 +575,31 @@ save_macros (cpp_reader *r, cpp_hashnode *h, void *data_p)
       && (h->flags & NODE_BUILTIN) == 0)
     {
       if (data->count == data->array_size)
-        {
-          data->array_size *= 2;
-          data->defns = XRESIZEVEC (uchar *, data->defns, (data->array_size)); 
-        }
+	{
+	  data->array_size *= 2;
+	  data->defns = XRESIZEVEC (uchar *, data->defns, (data->array_size)); 
+	}
       
       switch (h->type)
-        {
-        case NT_ASSERTION:
-          /* Not currently implemented.  */
-          return 1;
+	{
+	case NT_ASSERTION:
+	  /* Not currently implemented.  */
+	  return 1;
 
-        case NT_MACRO:
-          {
-            const uchar * defn = cpp_macro_definition (r, h);
-            size_t defnlen = ustrlen (defn);
+	case NT_MACRO:
+	  {
+	    const uchar * defn = cpp_macro_definition (r, h);
+	    size_t defnlen = ustrlen (defn);
 
-            data->defns[data->count] = (uchar *) xmemdup (defn, defnlen,
+	    data->defns[data->count] = (uchar *) xmemdup (defn, defnlen,
                                                           defnlen + 2);
-            data->defns[data->count][defnlen] = '\n';
-          }
-          break;
-          
-        default:
-          abort ();
-        }
+	    data->defns[data->count][defnlen] = '\n';
+	  }
+	  break;
+	  
+	default:
+	  abort ();
+	}
       data->count++;
     }
   return 1;
@@ -627,7 +627,7 @@ cpp_prepare_state (cpp_reader *r, struct save_macro_data **data)
 
 int
 cpp_read_state (cpp_reader *r, const char *name, FILE *f,
-                struct save_macro_data *data)
+		struct save_macro_data *data)
 {
   size_t i;
   struct lexer_state old_state;
@@ -636,9 +636,9 @@ cpp_read_state (cpp_reader *r, const char *name, FILE *f,
      hashtable entries and so will now be invalid.  */
   {
     struct spec_nodes *s = &r->spec_nodes;
-    s->n_defined        = cpp_lookup (r, DSC("defined"));
-    s->n_true                = cpp_lookup (r, DSC("true"));
-    s->n_false                = cpp_lookup (r, DSC("false"));
+    s->n_defined	= cpp_lookup (r, DSC("defined"));
+    s->n_true		= cpp_lookup (r, DSC("true"));
+    s->n_false		= cpp_lookup (r, DSC("false"));
     s->n__VA_ARGS__     = cpp_lookup (r, DSC("__VA_ARGS__"));
   }
 
@@ -659,21 +659,21 @@ cpp_read_state (cpp_reader *r, const char *name, FILE *f,
       defn = data->defns[i] + namelen;
 
       /* The PCH file is valid, so we know that if there is a definition
-         from the PCH file it must be the same as the one we had
-         originally, and so do not need to restore it.  */
+	 from the PCH file it must be the same as the one we had
+	 originally, and so do not need to restore it.  */
       if (h->type == NT_VOID)
-        {
-          if (cpp_push_buffer (r, defn, ustrchr (defn, '\n') - defn, true)
-              != NULL)
-            {
-              _cpp_clean_line (r);
-              if (!_cpp_create_definition (r, h))
-                abort ();
-              _cpp_pop_buffer (r);
-            }
-          else
-            abort ();
-        }
+	{
+	  if (cpp_push_buffer (r, defn, ustrchr (defn, '\n') - defn, true)
+	      != NULL)
+	    {
+	      _cpp_clean_line (r);
+	      if (!_cpp_create_definition (r, h))
+		abort ();
+	      _cpp_pop_buffer (r);
+	    }
+	  else
+	    abort ();
+	}
 
       free (data->defns[i]);
     }

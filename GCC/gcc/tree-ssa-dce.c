@@ -108,9 +108,9 @@ static bool cfg_altered;
 /* Execute code that follows the macro for each edge (given number
    EDGE_NUMBER within the CODE) for which the block with index N is
    control dependent.  */
-#define EXECUTE_IF_CONTROL_DEPENDENT(BI, N, EDGE_NUMBER)        \
-  EXECUTE_IF_SET_IN_BITMAP (control_dependence_map[(N)], 0,        \
-                            (EDGE_NUMBER), (BI))
+#define EXECUTE_IF_CONTROL_DEPENDENT(BI, N, EDGE_NUMBER)	\
+  EXECUTE_IF_SET_IN_BITMAP (control_dependence_map[(N)], 0,	\
+			    (EDGE_NUMBER), (BI))
 
 /* Local function prototypes.  */
 static inline void set_control_dependence_map_bit (basic_block, int);
@@ -188,10 +188,10 @@ find_control_dependence (struct edge_list *el, int edge_index)
       edge e = INDEX_EDGE (el, edge_index);
 
       /* For abnormal edges, we don't make current_block control
-         dependent because instructions that throw are always necessary
-         anyway.  */
+	 dependent because instructions that throw are always necessary
+	 anyway.  */
       if (e->flags & EDGE_ABNORMAL)
-        continue;
+	continue;
 
       set_control_dependence_map_bit (current_block, edge_index);
     }
@@ -211,12 +211,12 @@ find_pdom (basic_block block)
     {
       basic_block bb = get_immediate_dominator (CDI_POST_DOMINATORS, block);
       if (! bb)
-        return EXIT_BLOCK_PTR;
+	return EXIT_BLOCK_PTR;
       return bb;
     }
 }
 
-#define NECESSARY(stmt)                stmt->common.asm_written_flag
+#define NECESSARY(stmt)		stmt->common.asm_written_flag
 
 /* If STMT is not already marked necessary, mark it, and add it to the
    worklist if ADD_TO_WORKLIST is true.  */
@@ -312,29 +312,29 @@ mark_stmt_if_obviously_necessary (tree stmt, bool aggressive)
 
     case CALL_EXPR:
       /* Most, but not all function calls are required.  Function calls that
-         produce no result and have no side effects (i.e. const pure
-         functions) are unnecessary.  */
+	 produce no result and have no side effects (i.e. const pure
+	 functions) are unnecessary.  */
       if (TREE_SIDE_EFFECTS (stmt))
-        mark_stmt_necessary (stmt, true);
+	mark_stmt_necessary (stmt, true);
       return;
 
     case MODIFY_EXPR:
       op = get_call_expr_in (stmt);
       if (op && TREE_SIDE_EFFECTS (op))
-        {
-          mark_stmt_necessary (stmt, true);
-          return;
-        }
+	{
+	  mark_stmt_necessary (stmt, true);
+	  return;
+	}
 
       /* These values are mildly magic bits of the EH runtime.  We can't
-         see the entire lifetime of these values until landing pads are
-         generated.  */
+	 see the entire lifetime of these values until landing pads are
+	 generated.  */
       if (TREE_CODE (TREE_OPERAND (stmt, 0)) == EXC_PTR_EXPR
-          || TREE_CODE (TREE_OPERAND (stmt, 0)) == FILTER_EXPR)
-        {
-          mark_stmt_necessary (stmt, true);
-          return;
-        }
+	  || TREE_CODE (TREE_OPERAND (stmt, 0)) == FILTER_EXPR)
+	{
+	  mark_stmt_necessary (stmt, true);
+	  return;
+	}
       break;
 
     case GOTO_EXPR:
@@ -348,7 +348,7 @@ mark_stmt_if_obviously_necessary (tree stmt, bool aggressive)
 
     case SWITCH_EXPR:
       if (! aggressive)
-        mark_stmt_necessary (stmt, true);
+	mark_stmt_necessary (stmt, true);
       break;
 
     default:
@@ -395,40 +395,40 @@ find_obviously_necessary_stmts (struct edge_list *el)
 
       /* Check any PHI nodes in the block.  */
       for (phi = phi_nodes (bb); phi; phi = PHI_CHAIN (phi))
-        {
-          NECESSARY (phi) = 0;
+	{
+	  NECESSARY (phi) = 0;
 
-          /* PHIs for virtual variables do not directly affect code
-             generation and need not be considered inherently necessary
-             regardless of the bits set in their decl.
+	  /* PHIs for virtual variables do not directly affect code
+	     generation and need not be considered inherently necessary
+	     regardless of the bits set in their decl.
 
-             Thus, we only need to mark PHIs for real variables which
-             need their result preserved as being inherently necessary.  */
-          if (is_gimple_reg (PHI_RESULT (phi))
-              && is_global_var (SSA_NAME_VAR (PHI_RESULT (phi))))
-            mark_stmt_necessary (phi, true);
+	     Thus, we only need to mark PHIs for real variables which
+	     need their result preserved as being inherently necessary.  */
+	  if (is_gimple_reg (PHI_RESULT (phi))
+	      && is_global_var (SSA_NAME_VAR (PHI_RESULT (phi))))
+	    mark_stmt_necessary (phi, true);
         }
 
       /* Check all statements in the block.  */
       for (i = bsi_start (bb); ! bsi_end_p (i); bsi_next (&i))
-        {
-          tree stmt = bsi_stmt (i);
-          NECESSARY (stmt) = 0;
-          mark_stmt_if_obviously_necessary (stmt, el != NULL);
-        }
+	{
+	  tree stmt = bsi_stmt (i);
+	  NECESSARY (stmt) = 0;
+	  mark_stmt_if_obviously_necessary (stmt, el != NULL);
+	}
     }
 
   if (el)
     {
       /* Prevent the loops from being removed.  We must keep the infinite loops,
-         and we currently do not have a means to recognize the finite ones.  */
+	 and we currently do not have a means to recognize the finite ones.  */
       FOR_EACH_BB (bb)
-        {
-          edge_iterator ei;
-          FOR_EACH_EDGE (e, ei, bb->succs)
-            if (e->flags & EDGE_DFS_BACK)
-              mark_control_dependent_edges_necessary (e->dest, el);
-        }
+	{
+	  edge_iterator ei;
+	  FOR_EACH_EDGE (e, ei, bb->succs)
+	    if (e->flags & EDGE_DFS_BACK)
+	      mark_control_dependent_edges_necessary (e->dest, el);
+	}
     }
 }
 
@@ -452,12 +452,12 @@ mark_control_dependent_edges_necessary (basic_block bb, struct edge_list *el)
       basic_block cd_bb = INDEX_EDGE_PRED_BB (el, edge_number);
 
       if (TEST_BIT (last_stmt_necessary, cd_bb->index))
-        continue;
+	continue;
       SET_BIT (last_stmt_necessary, cd_bb->index);
 
       t = last_stmt (cd_bb);
       if (t && is_ctrl_stmt (t))
-        mark_stmt_necessary (t, true);
+	mark_stmt_necessary (t, true);
     }
 }
 
@@ -482,72 +482,72 @@ propagate_necessity (struct edge_list *el)
       i = VEC_pop (tree, worklist);
 
       if (dump_file && (dump_flags & TDF_DETAILS))
-        {
-          fprintf (dump_file, "processing: ");
-          print_generic_stmt (dump_file, i, TDF_SLIM);
-          fprintf (dump_file, "\n");
-        }
+	{
+	  fprintf (dump_file, "processing: ");
+	  print_generic_stmt (dump_file, i, TDF_SLIM);
+	  fprintf (dump_file, "\n");
+	}
 
       if (aggressive)
-        {
-          /* Mark the last statements of the basic blocks that the block
-             containing `i' is control dependent on, but only if we haven't
-             already done so.  */
-          basic_block bb = bb_for_stmt (i);
-          if (bb != ENTRY_BLOCK_PTR
-              && ! TEST_BIT (visited_control_parents, bb->index))
-            {
-              SET_BIT (visited_control_parents, bb->index);
-              mark_control_dependent_edges_necessary (bb, el);
-            }
-        }
+	{
+	  /* Mark the last statements of the basic blocks that the block
+	     containing `i' is control dependent on, but only if we haven't
+	     already done so.  */
+	  basic_block bb = bb_for_stmt (i);
+	  if (bb != ENTRY_BLOCK_PTR
+	      && ! TEST_BIT (visited_control_parents, bb->index))
+	    {
+	      SET_BIT (visited_control_parents, bb->index);
+	      mark_control_dependent_edges_necessary (bb, el);
+	    }
+	}
 
       if (TREE_CODE (i) == PHI_NODE)
-        {
-          /* PHI nodes are somewhat special in that each PHI alternative has
-             data and control dependencies.  All the statements feeding the
-             PHI node's arguments are always necessary.  In aggressive mode,
-             we also consider the control dependent edges leading to the
-             predecessor block associated with each PHI alternative as
-             necessary.  */
-          int k;
-          for (k = 0; k < PHI_NUM_ARGS (i); k++)
+	{
+	  /* PHI nodes are somewhat special in that each PHI alternative has
+	     data and control dependencies.  All the statements feeding the
+	     PHI node's arguments are always necessary.  In aggressive mode,
+	     we also consider the control dependent edges leading to the
+	     predecessor block associated with each PHI alternative as
+	     necessary.  */
+	  int k;
+	  for (k = 0; k < PHI_NUM_ARGS (i); k++)
             {
-              tree arg = PHI_ARG_DEF (i, k);
-              if (TREE_CODE (arg) == SSA_NAME)
-                mark_operand_necessary (arg, false);
-            }
+	      tree arg = PHI_ARG_DEF (i, k);
+	      if (TREE_CODE (arg) == SSA_NAME)
+		mark_operand_necessary (arg, false);
+	    }
 
-          if (aggressive)
-            {
-              for (k = 0; k < PHI_NUM_ARGS (i); k++)
-                {
-                  basic_block arg_bb = PHI_ARG_EDGE (i, k)->src;
-                  if (arg_bb != ENTRY_BLOCK_PTR
-                      && ! TEST_BIT (visited_control_parents, arg_bb->index))
-                    {
-                      SET_BIT (visited_control_parents, arg_bb->index);
-                      mark_control_dependent_edges_necessary (arg_bb, el);
-                    }
-                }
-            }
-        }
+	  if (aggressive)
+	    {
+	      for (k = 0; k < PHI_NUM_ARGS (i); k++)
+		{
+		  basic_block arg_bb = PHI_ARG_EDGE (i, k)->src;
+		  if (arg_bb != ENTRY_BLOCK_PTR
+		      && ! TEST_BIT (visited_control_parents, arg_bb->index))
+		    {
+		      SET_BIT (visited_control_parents, arg_bb->index);
+		      mark_control_dependent_edges_necessary (arg_bb, el);
+		    }
+		}
+	    }
+	}
       else
-        {
-          /* Propagate through the operands.  Examine all the USE, VUSE and
-             V_MAY_DEF operands in this statement.  Mark all the statements 
-             which feed this statement's uses as necessary.  */
-          ssa_op_iter iter;
-          tree use;
+	{
+	  /* Propagate through the operands.  Examine all the USE, VUSE and
+	     V_MAY_DEF operands in this statement.  Mark all the statements 
+	     which feed this statement's uses as necessary.  */
+	  ssa_op_iter iter;
+	  tree use;
 
-          /* The operands of V_MAY_DEF expressions are also needed as they
-             represent potential definitions that may reach this
-             statement (V_MAY_DEF operands allow us to follow def-def 
-             links).  */
+	  /* The operands of V_MAY_DEF expressions are also needed as they
+	     represent potential definitions that may reach this
+	     statement (V_MAY_DEF operands allow us to follow def-def 
+	     links).  */
 
-          FOR_EACH_SSA_TREE_OPERAND (use, i, iter, SSA_OP_ALL_USES)
-            mark_operand_necessary (use, false);
-        }
+	  FOR_EACH_SSA_TREE_OPERAND (use, i, iter, SSA_OP_ALL_USES)
+	    mark_operand_necessary (use, false);
+	}
     }
 }
 
@@ -578,30 +578,30 @@ mark_really_necessary_kill_operand_phis (void)
       tree phi;
       
       for (phi = phi_nodes (bb); phi; phi = PHI_CHAIN (phi))
-        {
-          if (!is_gimple_reg (PHI_RESULT (phi)) && NECESSARY (phi))
-            {
-              for (i = 0; i < PHI_NUM_ARGS (phi); i++)
-                mark_operand_necessary (PHI_ARG_DEF (phi, i), true);
-            }
-        }
+	{
+	  if (!is_gimple_reg (PHI_RESULT (phi)) && NECESSARY (phi))
+	    {
+	      for (i = 0; i < PHI_NUM_ARGS (phi); i++)
+		mark_operand_necessary (PHI_ARG_DEF (phi, i), true);
+	    }
+	}
       
       for (bsi = bsi_last (bb); !bsi_end_p (bsi); bsi_prev (&bsi))
-        {
-          tree stmt = bsi_stmt (bsi);
-        
-          if (NECESSARY (stmt))
-            {
-              use_operand_p use_p;
-              ssa_op_iter iter;
-              FOR_EACH_SSA_USE_OPERAND (use_p, stmt, iter,
-                                        SSA_OP_VIRTUAL_USES | SSA_OP_VIRTUAL_KILLS)
-                {
-                  tree use = USE_FROM_PTR (use_p);
-                  mark_operand_necessary (use, true);
-                }
-            }
-        }
+	{
+	  tree stmt = bsi_stmt (bsi);
+	
+	  if (NECESSARY (stmt))
+	    {
+	      use_operand_p use_p;
+	      ssa_op_iter iter;
+	      FOR_EACH_SSA_USE_OPERAND (use_p, stmt, iter,
+					SSA_OP_VIRTUAL_USES | SSA_OP_VIRTUAL_KILLS)
+		{
+		  tree use = USE_FROM_PTR (use_p);
+		  mark_operand_necessary (use, true);
+		}
+	    }
+	}
     }
   
   /* Mark all virtual phis still in use as necessary, and all of their
@@ -611,7 +611,7 @@ mark_really_necessary_kill_operand_phis (void)
       tree use = VEC_pop (tree, worklist);
       
       for (i = 0; i < PHI_NUM_ARGS (use); i++)
-        mark_operand_necessary (PHI_ARG_DEF (use, i), true);
+	mark_operand_necessary (PHI_ARG_DEF (use, i), true);
     }
 }
 
@@ -641,7 +641,7 @@ eliminate_unnecessary_stmts (void)
     {
       /* Remove dead statements.  */
       for (i = bsi_start (bb); ! bsi_end_p (i) ; )
-        {
+	{
          tree t = bsi_stmt (i);
 
          stats.total++;
@@ -656,7 +656,7 @@ eliminate_unnecessary_stmts (void)
                notice_special_calls (call);
              bsi_next (&i);
            }
-        }
+	}
     }
  }
 
@@ -674,25 +674,25 @@ remove_dead_phis (basic_block bb)
       stats.total_phis++;
 
       if (! NECESSARY (phi))
-        {
-          tree next = PHI_CHAIN (phi);
+	{
+	  tree next = PHI_CHAIN (phi);
 
-          if (dump_file && (dump_flags & TDF_DETAILS))
-            {
-              fprintf (dump_file, "Deleting : ");
-              print_generic_stmt (dump_file, phi, TDF_SLIM);
-              fprintf (dump_file, "\n");
-            }
+	  if (dump_file && (dump_flags & TDF_DETAILS))
+	    {
+	      fprintf (dump_file, "Deleting : ");
+	      print_generic_stmt (dump_file, phi, TDF_SLIM);
+	      fprintf (dump_file, "\n");
+	    }
 
-          remove_phi_node (phi, prev);
-          stats.removed_phis++;
-          phi = next;
-        }
+	  remove_phi_node (phi, prev);
+	  stats.removed_phis++;
+	  phi = next;
+	}
       else
-        {
-          prev = phi;
-          phi = PHI_CHAIN (phi);
-        }
+	{
+	  prev = phi;
+	  phi = PHI_CHAIN (phi);
+	}
     }
 }
 
@@ -733,35 +733,35 @@ remove_dead_stmt (block_stmt_iterator *i, basic_block bb)
 
       /* There are three particularly problematical cases.
 
-         1. Blocks that do not have an immediate post dominator.  This
-            can happen with infinite loops.
+	 1. Blocks that do not have an immediate post dominator.  This
+	    can happen with infinite loops.
 
-         2. Blocks that are only post dominated by the exit block.  These
-            can also happen for infinite loops as we create fake edges
-            in the dominator tree.
+	 2. Blocks that are only post dominated by the exit block.  These
+	    can also happen for infinite loops as we create fake edges
+	    in the dominator tree.
 
-         3. If the post dominator has PHI nodes we may be able to compute
-            the right PHI args for them.
+	 3. If the post dominator has PHI nodes we may be able to compute
+	    the right PHI args for them.
 
 
-         In each of these cases we must remove the control statement
-         as it may reference SSA_NAMEs which are going to be removed and
-         we remove all but one outgoing edge from the block.  */
+	 In each of these cases we must remove the control statement
+	 as it may reference SSA_NAMEs which are going to be removed and
+	 we remove all but one outgoing edge from the block.  */
       if (! post_dom_bb
-          || post_dom_bb == EXIT_BLOCK_PTR
-          || phi_nodes (post_dom_bb))
-        ;
+	  || post_dom_bb == EXIT_BLOCK_PTR
+	  || phi_nodes (post_dom_bb))
+	;
       else
-        {
-          /* Redirect the first edge out of BB to reach POST_DOM_BB.  */
-          redirect_edge_and_branch (EDGE_SUCC (bb, 0), post_dom_bb);
-          PENDING_STMT (EDGE_SUCC (bb, 0)) = NULL;
-        }
+	{
+	  /* Redirect the first edge out of BB to reach POST_DOM_BB.  */
+	  redirect_edge_and_branch (EDGE_SUCC (bb, 0), post_dom_bb);
+	  PENDING_STMT (EDGE_SUCC (bb, 0)) = NULL;
+	}
       EDGE_SUCC (bb, 0)->probability = REG_BR_PROB_BASE;
       EDGE_SUCC (bb, 0)->count = bb->count;
 
       /* The edge is no longer associated with a conditional, so it does
-         not have TRUE/FALSE flags.  */
+	 not have TRUE/FALSE flags.  */
       EDGE_SUCC (bb, 0)->flags &= ~(EDGE_TRUE_VALUE | EDGE_FALSE_VALUE);
 
       /* The lone outgoing edge from BB will be a fallthru edge.  */
@@ -769,15 +769,15 @@ remove_dead_stmt (block_stmt_iterator *i, basic_block bb)
 
       /* Remove the remaining the outgoing edges.  */
       while (!single_succ_p (bb))
-        {
-          /* FIXME.  When we remove the edge, we modify the CFG, which
-             in turn modifies the dominator and post-dominator tree.
-             Is it safe to postpone recomputing the dominator and
-             post-dominator tree until the end of this pass given that
-             the post-dominators are used above?  */
-          cfg_altered = true;
+	{
+	  /* FIXME.  When we remove the edge, we modify the CFG, which
+	     in turn modifies the dominator and post-dominator tree.
+	     Is it safe to postpone recomputing the dominator and
+	     post-dominator tree until the end of this pass given that
+	     the post-dominators are used above?  */
+	  cfg_altered = true;
           remove_edge (EDGE_SUCC (bb, 1));
-        }
+	}
     }
   
   FOR_EACH_SSA_DEF_OPERAND (def_p, t, iter, SSA_OP_VIRTUAL_DEFS)
@@ -800,15 +800,15 @@ print_stats (void)
 
       percg = ((float) stats.removed / (float) stats.total) * 100;
       fprintf (dump_file, "Removed %d of %d statements (%d%%)\n",
-               stats.removed, stats.total, (int) percg);
+	       stats.removed, stats.total, (int) percg);
 
       if (stats.total_phis == 0)
-        percg = 0;
+	percg = 0;
       else
-        percg = ((float) stats.removed_phis / (float) stats.total_phis) * 100;
+	percg = ((float) stats.removed_phis / (float) stats.total_phis) * 100;
 
       fprintf (dump_file, "Removed %d of %d PHI nodes (%d%%)\n",
-               stats.removed_phis, stats.total_phis, (int) percg);
+	       stats.removed_phis, stats.total_phis, (int) percg);
     }
 }
 
@@ -825,7 +825,7 @@ tree_dce_init (bool aggressive)
 
       control_dependence_map = XNEWVEC (bitmap, last_basic_block);
       for (i = 0; i < last_basic_block; ++i)
-        control_dependence_map[i] = BITMAP_ALLOC (NULL);
+	control_dependence_map[i] = BITMAP_ALLOC (NULL);
 
       last_stmt_necessary = sbitmap_alloc (last_basic_block);
       sbitmap_zero (last_stmt_necessary);
@@ -848,7 +848,7 @@ tree_dce_done (bool aggressive)
       int i;
 
       for (i = 0; i < last_basic_block; ++i)
-        BITMAP_FREE (control_dependence_map[i]);
+	BITMAP_FREE (control_dependence_map[i]);
       free (control_dependence_map);
 
       sbitmap_free (visited_control_parents);
@@ -869,10 +869,10 @@ tree_dce_done (bool aggressive)
    results in more dead code elimination, but at the cost of some time.
 
    FIXME: Aggressive mode before PRE doesn't work currently because
-          the dominance info is not invalidated after DCE1.  This is
-          not an issue right now because we only run aggressive DCE
-          as the last tree SSA pass, but keep this in mind when you
-          start experimenting with pass ordering.  */
+	  the dominance info is not invalidated after DCE1.  This is
+	  not an issue right now because we only run aggressive DCE
+	  as the last tree SSA pass, but keep this in mind when you
+	  start experimenting with pass ordering.  */
 
 static void
 perform_tree_ssa_dce (bool aggressive)
@@ -953,64 +953,64 @@ gate_dce (void)
 
 struct tree_opt_pass pass_dce =
 {
-  "dce",                                /* name */
-  gate_dce,                                /* gate */
-  tree_ssa_dce,                                /* execute */
-  NULL,                                        /* sub */
-  NULL,                                        /* next */
-  0,                                        /* static_pass_number */
-  TV_TREE_DCE,                                /* tv_id */
-  PROP_cfg | PROP_ssa | PROP_alias,        /* properties_required */
-  0,                                        /* properties_provided */
-  0,                                        /* properties_destroyed */
-  0,                                        /* todo_flags_start */
+  "dce",				/* name */
+  gate_dce,				/* gate */
+  tree_ssa_dce,				/* execute */
+  NULL,					/* sub */
+  NULL,					/* next */
+  0,					/* static_pass_number */
+  TV_TREE_DCE,				/* tv_id */
+  PROP_cfg | PROP_ssa | PROP_alias,	/* properties_required */
+  0,					/* properties_provided */
+  0,					/* properties_destroyed */
+  0,					/* todo_flags_start */
   TODO_dump_func 
     | TODO_update_ssa
     | TODO_cleanup_cfg
     | TODO_ggc_collect
     | TODO_verify_ssa
-    | TODO_remove_unused_locals,        /* todo_flags_finish */
-  0                                        /* letter */
+    | TODO_remove_unused_locals,	/* todo_flags_finish */
+  0					/* letter */
 };
 
 struct tree_opt_pass pass_dce_loop =
 {
-  "dceloop",                                /* name */
-  gate_dce,                                /* gate */
-  tree_ssa_dce_loop,                        /* execute */
-  NULL,                                        /* sub */
-  NULL,                                        /* next */
-  0,                                        /* static_pass_number */
-  TV_TREE_DCE,                                /* tv_id */
-  PROP_cfg | PROP_ssa | PROP_alias,        /* properties_required */
-  0,                                        /* properties_provided */
-  0,                                        /* properties_destroyed */
-  0,                                        /* todo_flags_start */
+  "dceloop",				/* name */
+  gate_dce,				/* gate */
+  tree_ssa_dce_loop,			/* execute */
+  NULL,					/* sub */
+  NULL,					/* next */
+  0,					/* static_pass_number */
+  TV_TREE_DCE,				/* tv_id */
+  PROP_cfg | PROP_ssa | PROP_alias,	/* properties_required */
+  0,					/* properties_provided */
+  0,					/* properties_destroyed */
+  0,					/* todo_flags_start */
   TODO_dump_func 
     | TODO_update_ssa
     | TODO_cleanup_cfg
-    | TODO_verify_ssa,                        /* todo_flags_finish */
-  0                                        /* letter */
+    | TODO_verify_ssa,			/* todo_flags_finish */
+  0					/* letter */
 };
 
 struct tree_opt_pass pass_cd_dce =
 {
-  "cddce",                                /* name */
-  gate_dce,                                /* gate */
-  tree_ssa_cd_dce,                        /* execute */
-  NULL,                                        /* sub */
-  NULL,                                        /* next */
-  0,                                        /* static_pass_number */
-  TV_TREE_CD_DCE,                        /* tv_id */
-  PROP_cfg | PROP_ssa | PROP_alias,        /* properties_required */
-  0,                                        /* properties_provided */
-  0,                                        /* properties_destroyed */
-  0,                                        /* todo_flags_start */
+  "cddce",				/* name */
+  gate_dce,				/* gate */
+  tree_ssa_cd_dce,			/* execute */
+  NULL,					/* sub */
+  NULL,					/* next */
+  0,					/* static_pass_number */
+  TV_TREE_CD_DCE,			/* tv_id */
+  PROP_cfg | PROP_ssa | PROP_alias,	/* properties_required */
+  0,					/* properties_provided */
+  0,					/* properties_destroyed */
+  0,					/* todo_flags_start */
   TODO_dump_func
     | TODO_update_ssa
     | TODO_cleanup_cfg
     | TODO_ggc_collect
     | TODO_verify_ssa
-    | TODO_verify_flow,                        /* todo_flags_finish */
-  0                                        /* letter */
+    | TODO_verify_flow,			/* todo_flags_finish */
+  0					/* letter */
 };

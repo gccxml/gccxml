@@ -1,8 +1,8 @@
-#define TARGET_OS_CPP_BUILTINS()                \
-  do                                                \
-    {                                                \
-      NETBSD_OS_CPP_BUILTINS_AOUT();                \
-    }                                                \
+#define TARGET_OS_CPP_BUILTINS()		\
+  do						\
+    {						\
+      NETBSD_OS_CPP_BUILTINS_AOUT();		\
+    }						\
   while (0)
 
 #define TARGET_VERSION fprintf (stderr, " (NetBSD/i386 a.out)");
@@ -13,7 +13,7 @@
   (MASK_80387 | MASK_IEEE_FP | MASK_FLOAT_RETURNS | MASK_NO_FANCY_MATH_387)
 
 #undef SUBTARGET_EXTRA_SPECS
-#define SUBTARGET_EXTRA_SPECS                        \
+#define SUBTARGET_EXTRA_SPECS			\
   { "netbsd_cpp_spec", NETBSD_CPP_SPEC },
 
 #undef CPP_SPEC
@@ -48,15 +48,15 @@
 /* Redefine this to use %eax instead of %edx.  */
 #undef FUNCTION_PROFILER
 #define FUNCTION_PROFILER(FILE, LABELNO)  \
-{                                                                        \
-  if (flag_pic)                                                                \
-    {                                                                        \
-      fprintf (FILE, "\tcall mcount@PLT\n");                                \
-    }                                                                        \
-  else                                                                        \
-    {                                                                        \
-      fprintf (FILE, "\tcall mcount\n");                                \
-    }                                                                        \
+{									\
+  if (flag_pic)								\
+    {									\
+      fprintf (FILE, "\tcall mcount@PLT\n");				\
+    }									\
+  else									\
+    {									\
+      fprintf (FILE, "\tcall mcount\n");				\
+    }									\
 }
 
 /* Until they use ELF or something that handles dwarf2 unwinds

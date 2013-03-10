@@ -84,13 +84,13 @@ long double __gcc_qdiv (double, double, double, double);
    not needed, the assembler will remove the aliases from the symbol
    table.  */
 __asm__ (".symver __gcc_qadd,_xlqadd@GCC_3.4\n\t"
-         ".symver __gcc_qsub,_xlqsub@GCC_3.4\n\t"
-         ".symver __gcc_qmul,_xlqmul@GCC_3.4\n\t"
-         ".symver __gcc_qdiv,_xlqdiv@GCC_3.4\n\t"
-         ".symver .__gcc_qadd,._xlqadd@GCC_3.4\n\t"
-         ".symver .__gcc_qsub,._xlqsub@GCC_3.4\n\t"
-         ".symver .__gcc_qmul,._xlqmul@GCC_3.4\n\t"
-         ".symver .__gcc_qdiv,._xlqdiv@GCC_3.4");
+	 ".symver __gcc_qsub,_xlqsub@GCC_3.4\n\t"
+	 ".symver __gcc_qmul,_xlqmul@GCC_3.4\n\t"
+	 ".symver __gcc_qdiv,_xlqdiv@GCC_3.4\n\t"
+	 ".symver .__gcc_qadd,._xlqadd@GCC_3.4\n\t"
+	 ".symver .__gcc_qsub,._xlqsub@GCC_3.4\n\t"
+	 ".symver .__gcc_qmul,._xlqmul@GCC_3.4\n\t"
+	 ".symver .__gcc_qdiv,._xlqdiv@GCC_3.4");
 #endif
 
 typedef union
@@ -99,7 +99,7 @@ typedef union
   double dval[2];
 } longDblUnion;
 
-/* Add two 'long double' values and return the result.        */
+/* Add two 'long double' values and return the result.	*/
 long double
 __gcc_qadd (double a, double aa, double c, double cc)
 {
@@ -112,13 +112,13 @@ __gcc_qadd (double a, double aa, double c, double cc)
     {
       z = cc + aa + c + a;
       if (nonfinite (z))
-        return z;
+	return z;
       x.dval[0] = z;  /* Will always be DBL_MAX.  */
       zz = aa + cc;
       if (fabs(a) > fabs(c))
-        x.dval[1] = a - z + c + zz;
+	x.dval[1] = a - z + c + zz;
       else
-        x.dval[1] = c - z + a + zz;
+	x.dval[1] = c - z + a + zz;
     }
   else
     {
@@ -127,11 +127,11 @@ __gcc_qadd (double a, double aa, double c, double cc)
 
       /* Keep -0 result.  */
       if (zz == 0.0)
-        return z;
+	return z;
 
       xh = z + zz;
       if (nonfinite (xh))
-        return xh;
+	return xh;
 
       x.dval[0] = xh;
       x.dval[1] = z - xh + zz;
@@ -155,9 +155,9 @@ __gcc_qmul (double a, double b, double c, double d)
   longDblUnion z;
   double t, tau, u, v, w;
   
-  t = a * c;                        /* Highest order double term.  */
+  t = a * c;			/* Highest order double term.  */
 
-  if (unlikely (t == 0)                /* Preserve -0.  */
+  if (unlikely (t == 0)		/* Preserve -0.  */
       || nonfinite (t))
     return t;
 
@@ -171,7 +171,7 @@ __gcc_qmul (double a, double b, double c, double d)
 #endif
   v = a*d;
   w = b*c;
-  tau += v + w;            /* Add in other second-order terms.         */
+  tau += v + w;	    /* Add in other second-order terms.	 */
   u = t + tau;
 
   /* Construct long double result.  */
@@ -190,17 +190,17 @@ __gcc_qdiv (double a, double b, double c, double d)
   
   t = a / c;                    /* highest order double term */
   
-  if (unlikely (t == 0)                /* Preserve -0.  */
+  if (unlikely (t == 0)		/* Preserve -0.  */
       || nonfinite (t))
     return t;
 
   /* Finite nonzero result requires corrections to the highest order term.  */
 
   s = c * t;                    /* (s,sigma) = c*t exactly.  */
-  w = -(-b + d * t);        /* Written to get fnmsub for speed, but not
-                           numerically necessary.  */
+  w = -(-b + d * t);	/* Written to get fnmsub for speed, but not
+			   numerically necessary.  */
   
-  /* Use fused multiply-add to get low part of c * t.         */
+  /* Use fused multiply-add to get low part of c * t.	 */
 #ifndef _SOFT_FLOAT
   asm ("fmsub %0,%1,%2,%3" : "=f"(sigma) : "f"(c), "f"(t), "f"(s));
 #else
@@ -241,7 +241,7 @@ extern int __ledf2 (double, double);
 extern int __gedf2 (double, double);
 extern int __unorddf2 (double, double);
 
-/* Negate 'long double' value and return the result.        */
+/* Negate 'long double' value and return the result.	*/
 long double
 __gcc_qneg (double a, double aa)
 {

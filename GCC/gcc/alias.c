@@ -109,11 +109,11 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
    `double'.  (However, a store to an `int' cannot alias a `double'
    and vice versa.)  We indicate this via a tree structure that looks
    like:
-           struct S
-            /   \
-           /     \
-         |/_     _\|
-         int    double
+	   struct S
+	    /   \
+	   /     \
+	 |/_     _\|
+	 int    double
 
    (The arrows are directed and point downwards.)
     In this situation we say the alias set for `struct S' is the
@@ -153,14 +153,14 @@ static rtx find_symbolic_term (rtx);
 static int memrefs_conflict_p (int, rtx, int, rtx, HOST_WIDE_INT);
 static void record_set (rtx, rtx, void *);
 static int base_alias_check (rtx, rtx, enum machine_mode,
-                             enum machine_mode);
+			     enum machine_mode);
 static rtx find_base_value (rtx);
 static int mems_in_disjoint_alias_sets_p (rtx, rtx);
 static int insert_subset_children (splay_tree_node, void*);
 static tree find_base_decl (tree);
 static alias_set_entry get_alias_set_entry (HOST_WIDE_INT);
 static rtx fixed_scalar_and_varying_struct_p (rtx, rtx, rtx, rtx,
-                                              int (*) (rtx, int));
+					      int (*) (rtx, int));
 static int aliases_everything_p (rtx);
 static bool nonoverlapping_component_refs_p (tree, tree);
 static tree decl_for_component_ref (tree);
@@ -180,7 +180,7 @@ static void record_alias_subset (HOST_WIDE_INT, HOST_WIDE_INT);
    different alias sets.  We ignore alias sets in functions making use
    of variable arguments because the va_arg macros on some systems are
    not legal ANSI C.  */
-#define DIFFERENT_ALIAS_SETS_P(MEM1, MEM2)                        \
+#define DIFFERENT_ALIAS_SETS_P(MEM1, MEM2)			\
   mems_in_disjoint_alias_sets_p (MEM1, MEM2)
 
 /* Cap the number of passes we make over the insns propagating alias
@@ -218,8 +218,8 @@ static GTY((deletable)) VEC(rtx,gc) *old_reg_base_value;
    once per function to avoid unnecessary RTL allocations.  */
 static GTY (()) rtx static_reg_base_value[FIRST_PSEUDO_REGISTER];
 
-#define REG_BASE_VALUE(X)                                \
-  (REGNO (X) < VEC_length (rtx, reg_base_value)                \
+#define REG_BASE_VALUE(X)				\
+  (REGNO (X) < VEC_length (rtx, reg_base_value)		\
    ? VEC_index (rtx, reg_base_value, REGNO (X)) : 0)
 
 /* Vector indexed by N giving the initial (unchanging) value known for
@@ -277,7 +277,7 @@ mems_in_disjoint_alias_sets_p (rtx mem1, rtx mem2)
    use alias sets to indicate that spilled registers cannot alias each
    other, we might need to remove this check.  */
   gcc_assert (flag_strict_aliasing
-              || (!MEM_ALIAS_SET (mem1) && !MEM_ALIAS_SET (mem2)));
+	      || (!MEM_ALIAS_SET (mem1) && !MEM_ALIAS_SET (mem2)));
 
   return ! alias_sets_conflict_p (MEM_ALIAS_SET (mem1), MEM_ALIAS_SET (mem2));
 }
@@ -311,16 +311,16 @@ alias_sets_conflict_p (HOST_WIDE_INT set1, HOST_WIDE_INT set2)
   ase = get_alias_set_entry (set1);
   if (ase != 0
       && (ase->has_zero_child
-          || splay_tree_lookup (ase->children,
-                                (splay_tree_key) set2)))
+	  || splay_tree_lookup (ase->children,
+				(splay_tree_key) set2)))
     return 1;
 
   /* Now do the same, but with the alias sets reversed.  */
   ase = get_alias_set_entry (set2);
   if (ase != 0
       && (ase->has_zero_child
-          || splay_tree_lookup (ase->children,
-                                (splay_tree_key) set1)))
+	  || splay_tree_lookup (ase->children,
+				(splay_tree_key) set1)))
     return 1;
 
   /* The two alias sets are distinct and neither one is the
@@ -392,7 +392,7 @@ find_base_decl (tree t)
   if (DECL_P (t))
     {
       if (TREE_CODE (t) == VAR_DECL && DECL_BASED_ON_RESTRICT_P (t))
-        t = DECL_GET_RESTRICT_BASE (t);
+	t = DECL_GET_RESTRICT_BASE (t);
       return t;
     }
 
@@ -409,13 +409,13 @@ find_base_decl (tree t)
       d0 = find_base_decl (TREE_OPERAND (t, 0));
       d1 = find_base_decl (TREE_OPERAND (t, 1));
       if (d0 == d1)
-        return d0;
+	return d0;
       else if (d0 == 0)
-        return d1;
+	return d1;
       else if (d1 == 0)
-        return d0;
+	return d0;
       else
-        return 0;
+	return 0;
 
     default:
       return 0;
@@ -439,33 +439,33 @@ component_uses_parent_alias_set (tree t)
     {
       /* If we're at the end, it vacuously uses its own alias set.  */
       if (!handled_component_p (t))
-        return false;
+	return false;
 
       switch (TREE_CODE (t))
-        {
-        case COMPONENT_REF:
-          if (DECL_NONADDRESSABLE_P (TREE_OPERAND (t, 1)))
-            return true;
-          break;
+	{
+	case COMPONENT_REF:
+	  if (DECL_NONADDRESSABLE_P (TREE_OPERAND (t, 1)))
+	    return true;
+	  break;
 
-        case ARRAY_REF:
-        case ARRAY_RANGE_REF:
-          if (TYPE_NONALIASED_COMPONENT (TREE_TYPE (TREE_OPERAND (t, 0))))
-            return true;
-          break;
+	case ARRAY_REF:
+	case ARRAY_RANGE_REF:
+	  if (TYPE_NONALIASED_COMPONENT (TREE_TYPE (TREE_OPERAND (t, 0))))
+	    return true;
+	  break;
 
-        case REALPART_EXPR:
-        case IMAGPART_EXPR:
-          break;
+	case REALPART_EXPR:
+	case IMAGPART_EXPR:
+	  break;
 
-        default:
-          /* Bitfields and casts are never addressable.  */
-          return true;
-        }
+	default:
+	  /* Bitfields and casts are never addressable.  */
+	  return true;
+	}
 
       t = TREE_OPERAND (t, 0);
       if (get_alias_set (TREE_TYPE (t)) == 0)
-        return true;
+	return true;
     }
 }
 
@@ -482,7 +482,7 @@ get_alias_set (tree t)
      an error.  */
   if (! flag_strict_aliasing || t == error_mark_node
       || (! TYPE_P (t)
-          && (TREE_TYPE (t) == 0 || TREE_TYPE (t) == error_mark_node)))
+	  && (TREE_TYPE (t) == 0 || TREE_TYPE (t) == error_mark_node)))
     return 0;
 
   /* We can be passed either an expression or a type.  This and the
@@ -495,91 +495,91 @@ get_alias_set (tree t)
       tree inner = t;
 
       /* Remove any nops, then give the language a chance to do
-         something with this tree before we look at it.  */
+	 something with this tree before we look at it.  */
       STRIP_NOPS (t);
       set = lang_hooks.get_alias_set (t);
       if (set != -1)
-        return set;
+	return set;
 
       /* First see if the actual object referenced is an INDIRECT_REF from a
-         restrict-qualified pointer or a "void *".  */
+	 restrict-qualified pointer or a "void *".  */
       while (handled_component_p (inner))
-        {
-          inner = TREE_OPERAND (inner, 0);
-          STRIP_NOPS (inner);
-        }
+	{
+	  inner = TREE_OPERAND (inner, 0);
+	  STRIP_NOPS (inner);
+	}
 
       /* Check for accesses through restrict-qualified pointers.  */
       if (INDIRECT_REF_P (inner))
-        {
-          tree decl = find_base_decl (TREE_OPERAND (inner, 0));
+	{
+	  tree decl = find_base_decl (TREE_OPERAND (inner, 0));
 
-          if (decl && DECL_POINTER_ALIAS_SET_KNOWN_P (decl))
-            {
-              /* If we haven't computed the actual alias set, do it now.  */
-              if (DECL_POINTER_ALIAS_SET (decl) == -2)
-                {
-                  tree pointed_to_type = TREE_TYPE (TREE_TYPE (decl));
+	  if (decl && DECL_POINTER_ALIAS_SET_KNOWN_P (decl))
+	    {
+	      /* If we haven't computed the actual alias set, do it now.  */
+	      if (DECL_POINTER_ALIAS_SET (decl) == -2)
+		{
+		  tree pointed_to_type = TREE_TYPE (TREE_TYPE (decl));
 
-                  /* No two restricted pointers can point at the same thing.
-                     However, a restricted pointer can point at the same thing
-                     as an unrestricted pointer, if that unrestricted pointer
-                     is based on the restricted pointer.  So, we make the
-                     alias set for the restricted pointer a subset of the
-                     alias set for the type pointed to by the type of the
-                     decl.  */
-                  HOST_WIDE_INT pointed_to_alias_set
-                    = get_alias_set (pointed_to_type);
+		  /* No two restricted pointers can point at the same thing.
+		     However, a restricted pointer can point at the same thing
+		     as an unrestricted pointer, if that unrestricted pointer
+		     is based on the restricted pointer.  So, we make the
+		     alias set for the restricted pointer a subset of the
+		     alias set for the type pointed to by the type of the
+		     decl.  */
+		  HOST_WIDE_INT pointed_to_alias_set
+		    = get_alias_set (pointed_to_type);
 
-                  if (pointed_to_alias_set == 0)
-                    /* It's not legal to make a subset of alias set zero.  */
-                    DECL_POINTER_ALIAS_SET (decl) = 0;
-                  else if (AGGREGATE_TYPE_P (pointed_to_type))
-                    /* For an aggregate, we must treat the restricted
-                       pointer the same as an ordinary pointer.  If we
-                       were to make the type pointed to by the
-                       restricted pointer a subset of the pointed-to
-                       type, then we would believe that other subsets
-                       of the pointed-to type (such as fields of that
-                       type) do not conflict with the type pointed to
-                       by the restricted pointer.  */
-                    DECL_POINTER_ALIAS_SET (decl)
-                      = pointed_to_alias_set;
-                  else
-                    {
-                      DECL_POINTER_ALIAS_SET (decl) = new_alias_set ();
-                      record_alias_subset (pointed_to_alias_set,
-                                           DECL_POINTER_ALIAS_SET (decl));
-                    }
-                }
+		  if (pointed_to_alias_set == 0)
+		    /* It's not legal to make a subset of alias set zero.  */
+		    DECL_POINTER_ALIAS_SET (decl) = 0;
+		  else if (AGGREGATE_TYPE_P (pointed_to_type))
+		    /* For an aggregate, we must treat the restricted
+		       pointer the same as an ordinary pointer.  If we
+		       were to make the type pointed to by the
+		       restricted pointer a subset of the pointed-to
+		       type, then we would believe that other subsets
+		       of the pointed-to type (such as fields of that
+		       type) do not conflict with the type pointed to
+		       by the restricted pointer.  */
+		    DECL_POINTER_ALIAS_SET (decl)
+		      = pointed_to_alias_set;
+		  else
+		    {
+		      DECL_POINTER_ALIAS_SET (decl) = new_alias_set ();
+		      record_alias_subset (pointed_to_alias_set,
+					   DECL_POINTER_ALIAS_SET (decl));
+		    }
+		}
 
-              /* We use the alias set indicated in the declaration.  */
-              return DECL_POINTER_ALIAS_SET (decl);
-            }
+	      /* We use the alias set indicated in the declaration.  */
+	      return DECL_POINTER_ALIAS_SET (decl);
+	    }
 
-          /* If we have an INDIRECT_REF via a void pointer, we don't
-             know anything about what that might alias.  Likewise if the
-             pointer is marked that way.  */
-          else if (TREE_CODE (TREE_TYPE (inner)) == VOID_TYPE
-                   || (TYPE_REF_CAN_ALIAS_ALL
-                       (TREE_TYPE (TREE_OPERAND (inner, 0)))))
-            return 0;
-        }
+	  /* If we have an INDIRECT_REF via a void pointer, we don't
+	     know anything about what that might alias.  Likewise if the
+	     pointer is marked that way.  */
+	  else if (TREE_CODE (TREE_TYPE (inner)) == VOID_TYPE
+		   || (TYPE_REF_CAN_ALIAS_ALL
+		       (TREE_TYPE (TREE_OPERAND (inner, 0)))))
+	    return 0;
+	}
 
       /* Otherwise, pick up the outermost object that we could have a pointer
-         to, processing conversions as above.  */
+	 to, processing conversions as above.  */
       while (component_uses_parent_alias_set (t))
-        {
-          t = TREE_OPERAND (t, 0);
-          STRIP_NOPS (t);
-        }
+	{
+	  t = TREE_OPERAND (t, 0);
+	  STRIP_NOPS (t);
+	}
 
       /* If we've already determined the alias set for a decl, just return
-         it.  This is necessary for C++ anonymous unions, whose component
-         variables don't look like union members (boo!).  */
+	 it.  This is necessary for C++ anonymous unions, whose component
+	 variables don't look like union members (boo!).  */
       if (TREE_CODE (t) == VAR_DECL
-          && DECL_RTL_SET_P (t) && MEM_P (DECL_RTL (t)))
-        return MEM_ALIAS_SET (DECL_RTL (t));
+	  && DECL_RTL_SET_P (t) && MEM_P (DECL_RTL (t)))
+	return MEM_ALIAS_SET (DECL_RTL (t));
 
       /* Now all we care about is the type.  */
       t = TREE_TYPE (t);
@@ -631,7 +631,7 @@ new_alias_set (void)
   if (flag_strict_aliasing)
     {
       if (alias_sets == 0)
-        VEC_safe_push (alias_set_entry, gc, alias_sets, 0);
+	VEC_safe_push (alias_set_entry, gc, alias_sets, 0);
       VEC_safe_push (alias_set_entry, gc, alias_sets, 0);
       return VEC_length (alias_set_entry, alias_sets) - 1;
     }
@@ -669,11 +669,11 @@ record_alias_subset (HOST_WIDE_INT superset, HOST_WIDE_INT subset)
   if (superset_entry == 0)
     {
       /* Create an entry for the SUPERSET, so that we have a place to
-         attach the SUBSET.  */
+	 attach the SUBSET.  */
       superset_entry = ggc_alloc (sizeof (struct alias_set_entry));
       superset_entry->alias_set = superset;
       superset_entry->children
-        = splay_tree_new_ggc (splay_tree_compare_ints);
+	= splay_tree_new_ggc (splay_tree_compare_ints);
       superset_entry->has_zero_child = 0;
       VEC_replace (alias_set_entry, alias_sets, superset, superset_entry);
     }
@@ -684,19 +684,19 @@ record_alias_subset (HOST_WIDE_INT superset, HOST_WIDE_INT subset)
     {
       subset_entry = get_alias_set_entry (subset);
       /* If there is an entry for the subset, enter all of its children
-         (if they are not already present) as children of the SUPERSET.  */
+	 (if they are not already present) as children of the SUPERSET.  */
       if (subset_entry)
-        {
-          if (subset_entry->has_zero_child)
-            superset_entry->has_zero_child = 1;
+	{
+	  if (subset_entry->has_zero_child)
+	    superset_entry->has_zero_child = 1;
 
-          splay_tree_foreach (subset_entry->children, insert_subset_children,
-                              superset_entry->children);
-        }
+	  splay_tree_foreach (subset_entry->children, insert_subset_children,
+			      superset_entry->children);
+	}
 
       /* Enter the SUBSET itself as a child of the SUPERSET.  */
       splay_tree_insert (superset_entry->children,
-                         (splay_tree_key) subset, 0);
+			 (splay_tree_key) subset, 0);
     }
 }
 
@@ -719,7 +719,7 @@ record_component_aliases (tree type)
     {
     case ARRAY_TYPE:
       if (! TYPE_NONALIASED_COMPONENT (type))
-        record_alias_subset (superset, get_alias_set (TREE_TYPE (type)));
+	record_alias_subset (superset, get_alias_set (TREE_TYPE (type)));
       break;
 
     case RECORD_TYPE:
@@ -727,18 +727,18 @@ record_component_aliases (tree type)
     case QUAL_UNION_TYPE:
       /* Recursively record aliases for the base classes, if there are any.  */
       if (TYPE_BINFO (type))
-        {
-          int i;
-          tree binfo, base_binfo;
+	{
+	  int i;
+	  tree binfo, base_binfo;
 
-          for (binfo = TYPE_BINFO (type), i = 0;
-               BINFO_BASE_ITERATE (binfo, i, base_binfo); i++)
-            record_alias_subset (superset,
-                                 get_alias_set (BINFO_TYPE (base_binfo)));
-        }
+	  for (binfo = TYPE_BINFO (type), i = 0;
+	       BINFO_BASE_ITERATE (binfo, i, base_binfo); i++)
+	    record_alias_subset (superset,
+				 get_alias_set (BINFO_TYPE (base_binfo)));
+	}
       for (field = TYPE_FIELDS (type); field != 0; field = TREE_CHAIN (field))
-        if (TREE_CODE (field) == FIELD_DECL && ! DECL_NONADDRESSABLE_P (field))
-          record_alias_subset (superset, get_alias_set (TREE_TYPE (field)));
+	if (TREE_CODE (field) == FIELD_DECL && ! DECL_NONADDRESSABLE_P (field))
+	  record_alias_subset (superset, get_alias_set (TREE_TYPE (field)));
       break;
 
     case COMPLEX_TYPE:
@@ -802,122 +802,122 @@ find_base_value (rtx src)
     case REG:
       regno = REGNO (src);
       /* At the start of a function, argument registers have known base
-         values which may be lost later.  Returning an ADDRESS
-         expression here allows optimization based on argument values
-         even when the argument registers are used for other purposes.  */
+	 values which may be lost later.  Returning an ADDRESS
+	 expression here allows optimization based on argument values
+	 even when the argument registers are used for other purposes.  */
       if (regno < FIRST_PSEUDO_REGISTER && copying_arguments)
-        return new_reg_base_value[regno];
+	return new_reg_base_value[regno];
 
       /* If a pseudo has a known base value, return it.  Do not do this
-         for non-fixed hard regs since it can result in a circular
-         dependency chain for registers which have values at function entry.
+	 for non-fixed hard regs since it can result in a circular
+	 dependency chain for registers which have values at function entry.
 
-         The test above is not sufficient because the scheduler may move
-         a copy out of an arg reg past the NOTE_INSN_FUNCTION_BEGIN.  */
+	 The test above is not sufficient because the scheduler may move
+	 a copy out of an arg reg past the NOTE_INSN_FUNCTION_BEGIN.  */
       if ((regno >= FIRST_PSEUDO_REGISTER || fixed_regs[regno])
-          && regno < VEC_length (rtx, reg_base_value))
-        {
-          /* If we're inside init_alias_analysis, use new_reg_base_value
-             to reduce the number of relaxation iterations.  */
-          if (new_reg_base_value && new_reg_base_value[regno]
-              && REG_N_SETS (regno) == 1)
-            return new_reg_base_value[regno];
+	  && regno < VEC_length (rtx, reg_base_value))
+	{
+	  /* If we're inside init_alias_analysis, use new_reg_base_value
+	     to reduce the number of relaxation iterations.  */
+	  if (new_reg_base_value && new_reg_base_value[regno]
+	      && REG_N_SETS (regno) == 1)
+	    return new_reg_base_value[regno];
 
-          if (VEC_index (rtx, reg_base_value, regno))
-            return VEC_index (rtx, reg_base_value, regno);
-        }
+	  if (VEC_index (rtx, reg_base_value, regno))
+	    return VEC_index (rtx, reg_base_value, regno);
+	}
 
       return 0;
 
     case MEM:
       /* Check for an argument passed in memory.  Only record in the
-         copying-arguments block; it is too hard to track changes
-         otherwise.  */
+	 copying-arguments block; it is too hard to track changes
+	 otherwise.  */
       if (copying_arguments
-          && (XEXP (src, 0) == arg_pointer_rtx
-              || (GET_CODE (XEXP (src, 0)) == PLUS
-                  && XEXP (XEXP (src, 0), 0) == arg_pointer_rtx)))
-        return gen_rtx_ADDRESS (VOIDmode, src);
+	  && (XEXP (src, 0) == arg_pointer_rtx
+	      || (GET_CODE (XEXP (src, 0)) == PLUS
+		  && XEXP (XEXP (src, 0), 0) == arg_pointer_rtx)))
+	return gen_rtx_ADDRESS (VOIDmode, src);
       return 0;
 
     case CONST:
       src = XEXP (src, 0);
       if (GET_CODE (src) != PLUS && GET_CODE (src) != MINUS)
-        break;
+	break;
 
       /* ... fall through ...  */
 
     case PLUS:
     case MINUS:
       {
-        rtx temp, src_0 = XEXP (src, 0), src_1 = XEXP (src, 1);
+	rtx temp, src_0 = XEXP (src, 0), src_1 = XEXP (src, 1);
 
-        /* If either operand is a REG that is a known pointer, then it
-           is the base.  */
-        if (REG_P (src_0) && REG_POINTER (src_0))
-          return find_base_value (src_0);
-        if (REG_P (src_1) && REG_POINTER (src_1))
-          return find_base_value (src_1);
+	/* If either operand is a REG that is a known pointer, then it
+	   is the base.  */
+	if (REG_P (src_0) && REG_POINTER (src_0))
+	  return find_base_value (src_0);
+	if (REG_P (src_1) && REG_POINTER (src_1))
+	  return find_base_value (src_1);
 
-        /* If either operand is a REG, then see if we already have
-           a known value for it.  */
-        if (REG_P (src_0))
-          {
-            temp = find_base_value (src_0);
-            if (temp != 0)
-              src_0 = temp;
-          }
+	/* If either operand is a REG, then see if we already have
+	   a known value for it.  */
+	if (REG_P (src_0))
+	  {
+	    temp = find_base_value (src_0);
+	    if (temp != 0)
+	      src_0 = temp;
+	  }
 
-        if (REG_P (src_1))
-          {
-            temp = find_base_value (src_1);
-            if (temp!= 0)
-              src_1 = temp;
-          }
+	if (REG_P (src_1))
+	  {
+	    temp = find_base_value (src_1);
+	    if (temp!= 0)
+	      src_1 = temp;
+	  }
 
-        /* If either base is named object or a special address
-           (like an argument or stack reference), then use it for the
-           base term.  */
-        if (src_0 != 0
-            && (GET_CODE (src_0) == SYMBOL_REF
-                || GET_CODE (src_0) == LABEL_REF
-                || (GET_CODE (src_0) == ADDRESS
-                    && GET_MODE (src_0) != VOIDmode)))
-          return src_0;
+	/* If either base is named object or a special address
+	   (like an argument or stack reference), then use it for the
+	   base term.  */
+	if (src_0 != 0
+	    && (GET_CODE (src_0) == SYMBOL_REF
+		|| GET_CODE (src_0) == LABEL_REF
+		|| (GET_CODE (src_0) == ADDRESS
+		    && GET_MODE (src_0) != VOIDmode)))
+	  return src_0;
 
-        if (src_1 != 0
-            && (GET_CODE (src_1) == SYMBOL_REF
-                || GET_CODE (src_1) == LABEL_REF
-                || (GET_CODE (src_1) == ADDRESS
-                    && GET_MODE (src_1) != VOIDmode)))
-          return src_1;
+	if (src_1 != 0
+	    && (GET_CODE (src_1) == SYMBOL_REF
+		|| GET_CODE (src_1) == LABEL_REF
+		|| (GET_CODE (src_1) == ADDRESS
+		    && GET_MODE (src_1) != VOIDmode)))
+	  return src_1;
 
-        /* Guess which operand is the base address:
-           If either operand is a symbol, then it is the base.  If
-           either operand is a CONST_INT, then the other is the base.  */
-        if (GET_CODE (src_1) == CONST_INT || CONSTANT_P (src_0))
-          return find_base_value (src_0);
-        else if (GET_CODE (src_0) == CONST_INT || CONSTANT_P (src_1))
-          return find_base_value (src_1);
+	/* Guess which operand is the base address:
+	   If either operand is a symbol, then it is the base.  If
+	   either operand is a CONST_INT, then the other is the base.  */
+	if (GET_CODE (src_1) == CONST_INT || CONSTANT_P (src_0))
+	  return find_base_value (src_0);
+	else if (GET_CODE (src_0) == CONST_INT || CONSTANT_P (src_1))
+	  return find_base_value (src_1);
 
-        return 0;
+	return 0;
       }
 
     case LO_SUM:
       /* The standard form is (lo_sum reg sym) so look only at the
-         second operand.  */
+	 second operand.  */
       return find_base_value (XEXP (src, 1));
 
     case AND:
       /* If the second operand is constant set the base
-         address to the first operand.  */
+	 address to the first operand.  */
       if (GET_CODE (XEXP (src, 1)) == CONST_INT && INTVAL (XEXP (src, 1)) != 0)
-        return find_base_value (XEXP (src, 0));
+	return find_base_value (XEXP (src, 0));
       return 0;
 
     case TRUNCATE:
       if (GET_MODE_SIZE (GET_MODE (src)) < GET_MODE_SIZE (Pmode))
-        break;
+	break;
       /* Fall through.  */
     case HIGH:
     case PRE_INC:
@@ -929,14 +929,14 @@ find_base_value (rtx src)
       return find_base_value (XEXP (src, 0));
 
     case ZERO_EXTEND:
-    case SIGN_EXTEND:        /* used for NT/Alpha pointers */
+    case SIGN_EXTEND:	/* used for NT/Alpha pointers */
       {
-        rtx temp = find_base_value (XEXP (src, 0));
+	rtx temp = find_base_value (XEXP (src, 0));
 
-        if (temp != 0 && CONSTANT_P (temp))
-          temp = convert_memory_address (Pmode, temp);
+	if (temp != 0 && CONSTANT_P (temp))
+	  temp = convert_memory_address (Pmode, temp);
 
-        return temp;
+	return temp;
       }
 
     default:
@@ -979,51 +979,51 @@ record_set (rtx dest, rtx set, void *data ATTRIBUTE_UNUSED)
   if (n != 1)
     {
       while (--n >= 0)
-        {
-          reg_seen[regno + n] = 1;
-          new_reg_base_value[regno + n] = 0;
-        }
+	{
+	  reg_seen[regno + n] = 1;
+	  new_reg_base_value[regno + n] = 0;
+	}
       return;
     }
 
   if (set)
     {
       /* A CLOBBER wipes out any old value but does not prevent a previously
-         unset register from acquiring a base address (i.e. reg_seen is not
-         set).  */
+	 unset register from acquiring a base address (i.e. reg_seen is not
+	 set).  */
       if (GET_CODE (set) == CLOBBER)
-        {
-          new_reg_base_value[regno] = 0;
-          return;
-        }
+	{
+	  new_reg_base_value[regno] = 0;
+	  return;
+	}
       src = SET_SRC (set);
     }
   else
     {
       if (reg_seen[regno])
-        {
-          new_reg_base_value[regno] = 0;
-          return;
-        }
+	{
+	  new_reg_base_value[regno] = 0;
+	  return;
+	}
       reg_seen[regno] = 1;
       new_reg_base_value[regno] = gen_rtx_ADDRESS (Pmode,
-                                                   GEN_INT (unique_id++));
+						   GEN_INT (unique_id++));
       return;
     }
 
   /* If this is not the first set of REGNO, see whether the new value
      is related to the old one.  There are two cases of interest:
 
-        (1) The register might be assigned an entirely new value
-            that has the same base term as the original set.
+	(1) The register might be assigned an entirely new value
+	    that has the same base term as the original set.
 
-        (2) The set might be a simple self-modification that
-            cannot change REGNO's base value.
+	(2) The set might be a simple self-modification that
+	    cannot change REGNO's base value.
 
      If neither case holds, reject the original base value as invalid.
      Note that the following situation is not detected:
 
-         extern int x, y;  int *p = &x; p += (&y-&x);
+	 extern int x, y;  int *p = &x; p += (&y-&x);
 
      ANSI C does not allow computing the difference of addresses
      of distinct top level objects.  */
@@ -1033,36 +1033,36 @@ record_set (rtx dest, rtx set, void *data ATTRIBUTE_UNUSED)
       {
       case LO_SUM:
       case MINUS:
-        if (XEXP (src, 0) != dest && XEXP (src, 1) != dest)
-          new_reg_base_value[regno] = 0;
-        break;
+	if (XEXP (src, 0) != dest && XEXP (src, 1) != dest)
+	  new_reg_base_value[regno] = 0;
+	break;
       case PLUS:
-        /* If the value we add in the PLUS is also a valid base value,
-           this might be the actual base value, and the original value
-           an index.  */
-        {
-          rtx other = NULL_RTX;
+	/* If the value we add in the PLUS is also a valid base value,
+	   this might be the actual base value, and the original value
+	   an index.  */
+	{
+	  rtx other = NULL_RTX;
 
-          if (XEXP (src, 0) == dest)
-            other = XEXP (src, 1);
-          else if (XEXP (src, 1) == dest)
-            other = XEXP (src, 0);
+	  if (XEXP (src, 0) == dest)
+	    other = XEXP (src, 1);
+	  else if (XEXP (src, 1) == dest)
+	    other = XEXP (src, 0);
 
-          if (! other || find_base_value (other))
-            new_reg_base_value[regno] = 0;
-          break;
-        }
+	  if (! other || find_base_value (other))
+	    new_reg_base_value[regno] = 0;
+	  break;
+	}
       case AND:
-        if (XEXP (src, 0) != dest || GET_CODE (XEXP (src, 1)) != CONST_INT)
-          new_reg_base_value[regno] = 0;
-        break;
+	if (XEXP (src, 0) != dest || GET_CODE (XEXP (src, 1)) != CONST_INT)
+	  new_reg_base_value[regno] = 0;
+	break;
       default:
-        new_reg_base_value[regno] = 0;
-        break;
+	new_reg_base_value[regno] = 0;
+	break;
       }
   /* If this is the first set of a register, record the value.  */
   else if ((regno >= FIRST_PSEUDO_REGISTER || ! fixed_regs[regno])
-           && ! reg_seen[regno] && new_reg_base_value[regno] == 0)
+	   && ! reg_seen[regno] && new_reg_base_value[regno] == 0)
     new_reg_base_value[regno] = find_base_value (src);
 
   reg_seen[regno] = 1;
@@ -1082,10 +1082,10 @@ clear_reg_alias_info (rtx reg)
     {
       regno -= FIRST_PSEUDO_REGISTER;
       if (regno < reg_known_value_size)
-        {
-          reg_known_value[regno] = reg;
-          reg_known_equiv_p[regno] = false;
-        }
+	{
+	  reg_known_value[regno] = reg;
+	  reg_known_equiv_p[regno] = false;
+	}
     }
 }
 
@@ -1098,7 +1098,7 @@ get_reg_known_value (unsigned int regno)
     {
       regno -= FIRST_PSEUDO_REGISTER;
       if (regno < reg_known_value_size)
-        return reg_known_value[regno];
+	return reg_known_value[regno];
     }
   return NULL;
 }
@@ -1112,7 +1112,7 @@ set_reg_known_value (unsigned int regno, rtx val)
     {
       regno -= FIRST_PSEUDO_REGISTER;
       if (regno < reg_known_value_size)
-        reg_known_value[regno] = val;
+	reg_known_value[regno] = val;
     }
 }
 
@@ -1125,7 +1125,7 @@ get_reg_known_equiv_p (unsigned int regno)
     {
       regno -= FIRST_PSEUDO_REGISTER;
       if (regno < reg_known_value_size)
-        return reg_known_equiv_p[regno];
+	return reg_known_equiv_p[regno];
     }
   return false;
 }
@@ -1137,7 +1137,7 @@ set_reg_known_equiv_p (unsigned int regno, bool val)
     {
       regno -= FIRST_PSEUDO_REGISTER;
       if (regno < reg_known_value_size)
-        reg_known_equiv_p[regno] = val;
+	reg_known_equiv_p[regno] = val;
     }
 }
 
@@ -1155,9 +1155,9 @@ canon_rtx (rtx x)
     {
       rtx t = get_reg_known_value (REGNO (x));
       if (t == x)
-        return x;
+	return x;
       if (t)
-        return canon_rtx (t);
+	return canon_rtx (t);
     }
 
   if (GET_CODE (x) == PLUS)
@@ -1166,13 +1166,13 @@ canon_rtx (rtx x)
       rtx x1 = canon_rtx (XEXP (x, 1));
 
       if (x0 != XEXP (x, 0) || x1 != XEXP (x, 1))
-        {
-          if (GET_CODE (x0) == CONST_INT)
-            return plus_constant (x1, INTVAL (x0));
-          else if (GET_CODE (x1) == CONST_INT)
-            return plus_constant (x0, INTVAL (x1));
-          return gen_rtx_PLUS (GET_MODE (x), x0, x1);
-        }
+	{
+	  if (GET_CODE (x0) == CONST_INT)
+	    return plus_constant (x1, INTVAL (x0));
+	  else if (GET_CODE (x1) == CONST_INT)
+	    return plus_constant (x0, INTVAL (x1));
+	  return gen_rtx_PLUS (GET_MODE (x), x0, x1);
+	}
     }
 
   /* This gives us much better alias analysis when called from
@@ -1234,8 +1234,8 @@ rtx_equal_for_memref_p (rtx x, rtx y)
     case CONST_INT:
     case CONST_DOUBLE:
       /* There's no need to compare the contents of CONST_DOUBLEs or
-         CONST_INTs because pointer equality is a good enough
-         comparison for these nodes.  */
+	 CONST_INTs because pointer equality is a good enough
+	 comparison for these nodes.  */
       return 0;
 
     default:
@@ -1245,9 +1245,9 @@ rtx_equal_for_memref_p (rtx x, rtx y)
   /* canon_rtx knows how to handle plus.  No need to canonicalize.  */
   if (code == PLUS)
     return ((rtx_equal_for_memref_p (XEXP (x, 0), XEXP (y, 0))
-             && rtx_equal_for_memref_p (XEXP (x, 1), XEXP (y, 1)))
-            || (rtx_equal_for_memref_p (XEXP (x, 0), XEXP (y, 1))
-                && rtx_equal_for_memref_p (XEXP (x, 1), XEXP (y, 0))));
+	     && rtx_equal_for_memref_p (XEXP (x, 1), XEXP (y, 1)))
+	    || (rtx_equal_for_memref_p (XEXP (x, 0), XEXP (y, 1))
+		&& rtx_equal_for_memref_p (XEXP (x, 1), XEXP (y, 0))));
   /* For commutative operations, the RTX match if the operand match in any
      order.  Also handle the simple binary and unary cases without a loop.  */
   if (COMMUTATIVE_P (x))
@@ -1257,20 +1257,20 @@ rtx_equal_for_memref_p (rtx x, rtx y)
       rtx yop1 = canon_rtx (XEXP (y, 1));
 
       return ((rtx_equal_for_memref_p (xop0, yop0)
-               && rtx_equal_for_memref_p (canon_rtx (XEXP (x, 1)), yop1))
-              || (rtx_equal_for_memref_p (xop0, yop1)
-                  && rtx_equal_for_memref_p (canon_rtx (XEXP (x, 1)), yop0)));
+	       && rtx_equal_for_memref_p (canon_rtx (XEXP (x, 1)), yop1))
+	      || (rtx_equal_for_memref_p (xop0, yop1)
+		  && rtx_equal_for_memref_p (canon_rtx (XEXP (x, 1)), yop0)));
     }
   else if (NON_COMMUTATIVE_P (x))
     {
       return (rtx_equal_for_memref_p (canon_rtx (XEXP (x, 0)),
-                                      canon_rtx (XEXP (y, 0)))
-              && rtx_equal_for_memref_p (canon_rtx (XEXP (x, 1)),
-                                         canon_rtx (XEXP (y, 1))));
+				      canon_rtx (XEXP (y, 0)))
+	      && rtx_equal_for_memref_p (canon_rtx (XEXP (x, 1)),
+					 canon_rtx (XEXP (y, 1))));
     }
   else if (UNARY_P (x))
     return rtx_equal_for_memref_p (canon_rtx (XEXP (x, 0)),
-                                   canon_rtx (XEXP (y, 0)));
+				   canon_rtx (XEXP (y, 0)));
 
   /* Compare the elements.  If any pair of corresponding elements
      fail to match, return 0 for the whole things.
@@ -1281,46 +1281,46 @@ rtx_equal_for_memref_p (rtx x, rtx y)
   for (i = GET_RTX_LENGTH (code) - 1; i >= 0; i--)
     {
       switch (fmt[i])
-        {
-        case 'i':
-          if (XINT (x, i) != XINT (y, i))
-            return 0;
-          break;
+	{
+	case 'i':
+	  if (XINT (x, i) != XINT (y, i))
+	    return 0;
+	  break;
 
-        case 'E':
-          /* Two vectors must have the same length.  */
-          if (XVECLEN (x, i) != XVECLEN (y, i))
-            return 0;
+	case 'E':
+	  /* Two vectors must have the same length.  */
+	  if (XVECLEN (x, i) != XVECLEN (y, i))
+	    return 0;
 
-          /* And the corresponding elements must match.  */
-          for (j = 0; j < XVECLEN (x, i); j++)
-            if (rtx_equal_for_memref_p (canon_rtx (XVECEXP (x, i, j)),
-                                        canon_rtx (XVECEXP (y, i, j))) == 0)
-              return 0;
-          break;
+	  /* And the corresponding elements must match.  */
+	  for (j = 0; j < XVECLEN (x, i); j++)
+	    if (rtx_equal_for_memref_p (canon_rtx (XVECEXP (x, i, j)),
+					canon_rtx (XVECEXP (y, i, j))) == 0)
+	      return 0;
+	  break;
 
-        case 'e':
-          if (rtx_equal_for_memref_p (canon_rtx (XEXP (x, i)),
-                                      canon_rtx (XEXP (y, i))) == 0)
-            return 0;
-          break;
+	case 'e':
+	  if (rtx_equal_for_memref_p (canon_rtx (XEXP (x, i)),
+				      canon_rtx (XEXP (y, i))) == 0)
+	    return 0;
+	  break;
 
-          /* This can happen for asm operands.  */
-        case 's':
-          if (strcmp (XSTR (x, i), XSTR (y, i)))
-            return 0;
-          break;
+	  /* This can happen for asm operands.  */
+	case 's':
+	  if (strcmp (XSTR (x, i), XSTR (y, i)))
+	    return 0;
+	  break;
 
-        /* This can happen for an asm which clobbers memory.  */
-        case '0':
-          break;
+	/* This can happen for an asm which clobbers memory.  */
+	case '0':
+	  break;
 
-          /* It is believed that rtx's at this level will never
-             contain anything but integers and other rtx's,
-             except for within LABEL_REFs and SYMBOL_REFs.  */
-        default:
-          gcc_unreachable ();
-        }
+	  /* It is believed that rtx's at this level will never
+	     contain anything but integers and other rtx's,
+	     except for within LABEL_REFs and SYMBOL_REFs.  */
+	default:
+	  gcc_unreachable ();
+	}
     }
   return 1;
 }
@@ -1347,13 +1347,13 @@ find_symbolic_term (rtx x)
       rtx t;
 
       if (fmt[i] == 'e')
-        {
-          t = find_symbolic_term (XEXP (x, i));
-          if (t != 0)
-            return t;
-        }
+	{
+	  t = find_symbolic_term (XEXP (x, i));
+	  if (t != 0)
+	    return t;
+	}
       else if (fmt[i] == 'E')
-        break;
+	break;
     }
   return 0;
 }
@@ -1376,7 +1376,7 @@ find_base_term (rtx x)
 
     case TRUNCATE:
       if (GET_MODE_SIZE (GET_MODE (x)) < GET_MODE_SIZE (Pmode))
-        return 0;
+	return 0;
       /* Fall through.  */
     case HIGH:
     case PRE_INC:
@@ -1388,91 +1388,91 @@ find_base_term (rtx x)
       return find_base_term (XEXP (x, 0));
 
     case ZERO_EXTEND:
-    case SIGN_EXTEND:        /* Used for Alpha/NT pointers */
+    case SIGN_EXTEND:	/* Used for Alpha/NT pointers */
       {
-        rtx temp = find_base_term (XEXP (x, 0));
+	rtx temp = find_base_term (XEXP (x, 0));
 
-        if (temp != 0 && CONSTANT_P (temp))
-          temp = convert_memory_address (Pmode, temp);
+	if (temp != 0 && CONSTANT_P (temp))
+	  temp = convert_memory_address (Pmode, temp);
 
-        return temp;
+	return temp;
       }
 
     case VALUE:
       val = CSELIB_VAL_PTR (x);
       if (!val)
-        return 0;
+	return 0;
       for (l = val->locs; l; l = l->next)
-        if ((x = find_base_term (l->loc)) != 0)
-          return x;
+	if ((x = find_base_term (l->loc)) != 0)
+	  return x;
       return 0;
 
     case CONST:
       x = XEXP (x, 0);
       if (GET_CODE (x) != PLUS && GET_CODE (x) != MINUS)
-        return 0;
+	return 0;
       /* Fall through.  */
     case LO_SUM:
     case PLUS:
     case MINUS:
       {
-        rtx tmp1 = XEXP (x, 0);
-        rtx tmp2 = XEXP (x, 1);
+	rtx tmp1 = XEXP (x, 0);
+	rtx tmp2 = XEXP (x, 1);
 
-        /* This is a little bit tricky since we have to determine which of
-           the two operands represents the real base address.  Otherwise this
-           routine may return the index register instead of the base register.
+	/* This is a little bit tricky since we have to determine which of
+	   the two operands represents the real base address.  Otherwise this
+	   routine may return the index register instead of the base register.
 
-           That may cause us to believe no aliasing was possible, when in
-           fact aliasing is possible.
+	   That may cause us to believe no aliasing was possible, when in
+	   fact aliasing is possible.
 
-           We use a few simple tests to guess the base register.  Additional
-           tests can certainly be added.  For example, if one of the operands
-           is a shift or multiply, then it must be the index register and the
-           other operand is the base register.  */
+	   We use a few simple tests to guess the base register.  Additional
+	   tests can certainly be added.  For example, if one of the operands
+	   is a shift or multiply, then it must be the index register and the
+	   other operand is the base register.  */
 
-        if (tmp1 == pic_offset_table_rtx && CONSTANT_P (tmp2))
-          return find_base_term (tmp2);
+	if (tmp1 == pic_offset_table_rtx && CONSTANT_P (tmp2))
+	  return find_base_term (tmp2);
 
-        /* If either operand is known to be a pointer, then use it
-           to determine the base term.  */
-        if (REG_P (tmp1) && REG_POINTER (tmp1))
-          return find_base_term (tmp1);
+	/* If either operand is known to be a pointer, then use it
+	   to determine the base term.  */
+	if (REG_P (tmp1) && REG_POINTER (tmp1))
+	  return find_base_term (tmp1);
 
-        if (REG_P (tmp2) && REG_POINTER (tmp2))
-          return find_base_term (tmp2);
+	if (REG_P (tmp2) && REG_POINTER (tmp2))
+	  return find_base_term (tmp2);
 
-        /* Neither operand was known to be a pointer.  Go ahead and find the
-           base term for both operands.  */
-        tmp1 = find_base_term (tmp1);
-        tmp2 = find_base_term (tmp2);
+	/* Neither operand was known to be a pointer.  Go ahead and find the
+	   base term for both operands.  */
+	tmp1 = find_base_term (tmp1);
+	tmp2 = find_base_term (tmp2);
 
-        /* If either base term is named object or a special address
-           (like an argument or stack reference), then use it for the
-           base term.  */
-        if (tmp1 != 0
-            && (GET_CODE (tmp1) == SYMBOL_REF
-                || GET_CODE (tmp1) == LABEL_REF
-                || (GET_CODE (tmp1) == ADDRESS
-                    && GET_MODE (tmp1) != VOIDmode)))
-          return tmp1;
+	/* If either base term is named object or a special address
+	   (like an argument or stack reference), then use it for the
+	   base term.  */
+	if (tmp1 != 0
+	    && (GET_CODE (tmp1) == SYMBOL_REF
+		|| GET_CODE (tmp1) == LABEL_REF
+		|| (GET_CODE (tmp1) == ADDRESS
+		    && GET_MODE (tmp1) != VOIDmode)))
+	  return tmp1;
 
-        if (tmp2 != 0
-            && (GET_CODE (tmp2) == SYMBOL_REF
-                || GET_CODE (tmp2) == LABEL_REF
-                || (GET_CODE (tmp2) == ADDRESS
-                    && GET_MODE (tmp2) != VOIDmode)))
-          return tmp2;
+	if (tmp2 != 0
+	    && (GET_CODE (tmp2) == SYMBOL_REF
+		|| GET_CODE (tmp2) == LABEL_REF
+		|| (GET_CODE (tmp2) == ADDRESS
+		    && GET_MODE (tmp2) != VOIDmode)))
+	  return tmp2;
 
-        /* We could not determine which of the two operands was the
-           base register and which was the index.  So we can determine
-           nothing from the base alias check.  */
-        return 0;
+	/* We could not determine which of the two operands was the
+	   base register and which was the index.  So we can determine
+	   nothing from the base alias check.  */
+	return 0;
       }
 
     case AND:
       if (GET_CODE (XEXP (x, 1)) == CONST_INT && INTVAL (XEXP (x, 1)) != 0)
-        return find_base_term (XEXP (x, 0));
+	return find_base_term (XEXP (x, 0));
       return 0;
 
     case SYMBOL_REF:
@@ -1489,7 +1489,7 @@ find_base_term (rtx x)
 
 static int
 base_alias_check (rtx x, rtx y, enum machine_mode x_mode,
-                  enum machine_mode y_mode)
+		  enum machine_mode y_mode)
 {
   rtx x_base = find_base_term (x);
   rtx y_base = find_base_term (y);
@@ -1502,22 +1502,22 @@ base_alias_check (rtx x, rtx y, enum machine_mode x_mode,
       rtx x_c;
 
       if (! flag_expensive_optimizations || (x_c = canon_rtx (x)) == x)
-        return 1;
+	return 1;
 
       x_base = find_base_term (x_c);
       if (x_base == 0)
-        return 1;
+	return 1;
     }
 
   if (y_base == 0)
     {
       rtx y_c;
       if (! flag_expensive_optimizations || (y_c = canon_rtx (y)) == y)
-        return 1;
+	return 1;
 
       y_base = find_base_term (y_c);
       if (y_base == 0)
-        return 1;
+	return 1;
     }
 
   /* If the base addresses are equal nothing is known about aliasing.  */
@@ -1532,15 +1532,15 @@ base_alias_check (rtx x, rtx y, enum machine_mode x_mode,
   if (GET_CODE (x_base) != ADDRESS && GET_CODE (y_base) != ADDRESS)
     {
       if (GET_CODE (x) == AND && GET_CODE (y) == AND)
-        return 1;
+	return 1;
       if (GET_CODE (x) == AND
-          && (GET_CODE (XEXP (x, 1)) != CONST_INT
-              || (int) GET_MODE_UNIT_SIZE (y_mode) < -INTVAL (XEXP (x, 1))))
-        return 1;
+	  && (GET_CODE (XEXP (x, 1)) != CONST_INT
+	      || (int) GET_MODE_UNIT_SIZE (y_mode) < -INTVAL (XEXP (x, 1))))
+	return 1;
       if (GET_CODE (y) == AND
-          && (GET_CODE (XEXP (y, 1)) != CONST_INT
-              || (int) GET_MODE_UNIT_SIZE (x_mode) < -INTVAL (XEXP (y, 1))))
-        return 1;
+	  && (GET_CODE (XEXP (y, 1)) != CONST_INT
+	      || (int) GET_MODE_UNIT_SIZE (x_mode) < -INTVAL (XEXP (y, 1))))
+	return 1;
       /* Differing symbols never alias.  */
       return 0;
     }
@@ -1579,13 +1579,13 @@ get_addr (rtx x)
   if (v)
     {
       for (l = v->locs; l; l = l->next)
-        if (CONSTANT_P (l->loc))
-          return l->loc;
+	if (CONSTANT_P (l->loc))
+	  return l->loc;
       for (l = v->locs; l; l = l->next)
-        if (!REG_P (l->loc) && !MEM_P (l->loc))
-          return l->loc;
+	if (!REG_P (l->loc) && !MEM_P (l->loc))
+	  return l->loc;
       if (v->locs)
-        return v->locs->loc;
+	return v->locs->loc;
     }
   return x;
 }
@@ -1620,7 +1620,7 @@ addr_side_effect_eval (rtx addr, int size, int n_refs)
 
   if (offset)
     addr = gen_rtx_PLUS (GET_MODE (addr), XEXP (addr, 0),
-                         GEN_INT (offset));
+			 GEN_INT (offset));
   else
     addr = XEXP (addr, 0);
   addr = canon_rtx (addr);
@@ -1669,11 +1669,11 @@ memrefs_conflict_p (int xsize, rtx x, int ysize, rtx y, HOST_WIDE_INT c)
   if (rtx_equal_for_memref_p (x, y))
     {
       if (xsize <= 0 || ysize <= 0)
-        return 1;
+	return 1;
       if (c >= 0 && xsize > c)
-        return 1;
+	return 1;
       if (c < 0 && ysize+c > 0)
-        return 1;
+	return 1;
       return 0;
     }
 
@@ -1683,81 +1683,81 @@ memrefs_conflict_p (int xsize, rtx x, int ysize, rtx y, HOST_WIDE_INT c)
   if (GET_CODE (x) == PLUS)
     {
       /* The fact that X is canonicalized means that this
-         PLUS rtx is canonicalized.  */
+	 PLUS rtx is canonicalized.  */
       rtx x0 = XEXP (x, 0);
       rtx x1 = XEXP (x, 1);
 
       if (GET_CODE (y) == PLUS)
-        {
-          /* The fact that Y is canonicalized means that this
-             PLUS rtx is canonicalized.  */
-          rtx y0 = XEXP (y, 0);
-          rtx y1 = XEXP (y, 1);
+	{
+	  /* The fact that Y is canonicalized means that this
+	     PLUS rtx is canonicalized.  */
+	  rtx y0 = XEXP (y, 0);
+	  rtx y1 = XEXP (y, 1);
 
-          if (rtx_equal_for_memref_p (x1, y1))
-            return memrefs_conflict_p (xsize, x0, ysize, y0, c);
-          if (rtx_equal_for_memref_p (x0, y0))
-            return memrefs_conflict_p (xsize, x1, ysize, y1, c);
-          if (GET_CODE (x1) == CONST_INT)
-            {
-              if (GET_CODE (y1) == CONST_INT)
-                return memrefs_conflict_p (xsize, x0, ysize, y0,
-                                           c - INTVAL (x1) + INTVAL (y1));
-              else
-                return memrefs_conflict_p (xsize, x0, ysize, y,
-                                           c - INTVAL (x1));
-            }
-          else if (GET_CODE (y1) == CONST_INT)
-            return memrefs_conflict_p (xsize, x, ysize, y0, c + INTVAL (y1));
+	  if (rtx_equal_for_memref_p (x1, y1))
+	    return memrefs_conflict_p (xsize, x0, ysize, y0, c);
+	  if (rtx_equal_for_memref_p (x0, y0))
+	    return memrefs_conflict_p (xsize, x1, ysize, y1, c);
+	  if (GET_CODE (x1) == CONST_INT)
+	    {
+	      if (GET_CODE (y1) == CONST_INT)
+		return memrefs_conflict_p (xsize, x0, ysize, y0,
+					   c - INTVAL (x1) + INTVAL (y1));
+	      else
+		return memrefs_conflict_p (xsize, x0, ysize, y,
+					   c - INTVAL (x1));
+	    }
+	  else if (GET_CODE (y1) == CONST_INT)
+	    return memrefs_conflict_p (xsize, x, ysize, y0, c + INTVAL (y1));
 
-          return 1;
-        }
+	  return 1;
+	}
       else if (GET_CODE (x1) == CONST_INT)
-        return memrefs_conflict_p (xsize, x0, ysize, y, c - INTVAL (x1));
+	return memrefs_conflict_p (xsize, x0, ysize, y, c - INTVAL (x1));
     }
   else if (GET_CODE (y) == PLUS)
     {
       /* The fact that Y is canonicalized means that this
-         PLUS rtx is canonicalized.  */
+	 PLUS rtx is canonicalized.  */
       rtx y0 = XEXP (y, 0);
       rtx y1 = XEXP (y, 1);
 
       if (GET_CODE (y1) == CONST_INT)
-        return memrefs_conflict_p (xsize, x, ysize, y0, c + INTVAL (y1));
+	return memrefs_conflict_p (xsize, x, ysize, y0, c + INTVAL (y1));
       else
-        return 1;
+	return 1;
     }
 
   if (GET_CODE (x) == GET_CODE (y))
     switch (GET_CODE (x))
       {
       case MULT:
-        {
-          /* Handle cases where we expect the second operands to be the
-             same, and check only whether the first operand would conflict
-             or not.  */
-          rtx x0, y0;
-          rtx x1 = canon_rtx (XEXP (x, 1));
-          rtx y1 = canon_rtx (XEXP (y, 1));
-          if (! rtx_equal_for_memref_p (x1, y1))
-            return 1;
-          x0 = canon_rtx (XEXP (x, 0));
-          y0 = canon_rtx (XEXP (y, 0));
-          if (rtx_equal_for_memref_p (x0, y0))
-            return (xsize == 0 || ysize == 0
-                    || (c >= 0 && xsize > c) || (c < 0 && ysize+c > 0));
+	{
+	  /* Handle cases where we expect the second operands to be the
+	     same, and check only whether the first operand would conflict
+	     or not.  */
+	  rtx x0, y0;
+	  rtx x1 = canon_rtx (XEXP (x, 1));
+	  rtx y1 = canon_rtx (XEXP (y, 1));
+	  if (! rtx_equal_for_memref_p (x1, y1))
+	    return 1;
+	  x0 = canon_rtx (XEXP (x, 0));
+	  y0 = canon_rtx (XEXP (y, 0));
+	  if (rtx_equal_for_memref_p (x0, y0))
+	    return (xsize == 0 || ysize == 0
+		    || (c >= 0 && xsize > c) || (c < 0 && ysize+c > 0));
 
-          /* Can't properly adjust our sizes.  */
-          if (GET_CODE (x1) != CONST_INT)
-            return 1;
-          xsize /= INTVAL (x1);
-          ysize /= INTVAL (x1);
-          c /= INTVAL (x1);
-          return memrefs_conflict_p (xsize, x0, ysize, y0, c);
-        }
+	  /* Can't properly adjust our sizes.  */
+	  if (GET_CODE (x1) != CONST_INT)
+	    return 1;
+	  xsize /= INTVAL (x1);
+	  ysize /= INTVAL (x1);
+	  c /= INTVAL (x1);
+	  return memrefs_conflict_p (xsize, x0, ysize, y0, c);
+	}
 
       default:
-        break;
+	break;
       }
 
   /* Treat an access through an AND (e.g. a subword access on an Alpha)
@@ -1767,46 +1767,46 @@ memrefs_conflict_p (int xsize, rtx x, int ysize, rtx y, HOST_WIDE_INT c)
   if (GET_CODE (x) == AND && GET_CODE (XEXP (x, 1)) == CONST_INT)
     {
       if (GET_CODE (y) == AND || ysize < -INTVAL (XEXP (x, 1)))
-        xsize = -1;
+	xsize = -1;
       return memrefs_conflict_p (xsize, canon_rtx (XEXP (x, 0)), ysize, y, c);
     }
   if (GET_CODE (y) == AND && GET_CODE (XEXP (y, 1)) == CONST_INT)
     {
       /* ??? If we are indexing far enough into the array/structure, we
-         may yet be able to determine that we can not overlap.  But we
-         also need to that we are far enough from the end not to overlap
-         a following reference, so we do nothing with that for now.  */
+	 may yet be able to determine that we can not overlap.  But we
+	 also need to that we are far enough from the end not to overlap
+	 a following reference, so we do nothing with that for now.  */
       if (GET_CODE (x) == AND || xsize < -INTVAL (XEXP (y, 1)))
-        ysize = -1;
+	ysize = -1;
       return memrefs_conflict_p (xsize, x, ysize, canon_rtx (XEXP (y, 0)), c);
     }
 
   if (CONSTANT_P (x))
     {
       if (GET_CODE (x) == CONST_INT && GET_CODE (y) == CONST_INT)
-        {
-          c += (INTVAL (y) - INTVAL (x));
-          return (xsize <= 0 || ysize <= 0
-                  || (c >= 0 && xsize > c) || (c < 0 && ysize+c > 0));
-        }
+	{
+	  c += (INTVAL (y) - INTVAL (x));
+	  return (xsize <= 0 || ysize <= 0
+		  || (c >= 0 && xsize > c) || (c < 0 && ysize+c > 0));
+	}
 
       if (GET_CODE (x) == CONST)
-        {
-          if (GET_CODE (y) == CONST)
-            return memrefs_conflict_p (xsize, canon_rtx (XEXP (x, 0)),
-                                       ysize, canon_rtx (XEXP (y, 0)), c);
-          else
-            return memrefs_conflict_p (xsize, canon_rtx (XEXP (x, 0)),
-                                       ysize, y, c);
-        }
+	{
+	  if (GET_CODE (y) == CONST)
+	    return memrefs_conflict_p (xsize, canon_rtx (XEXP (x, 0)),
+				       ysize, canon_rtx (XEXP (y, 0)), c);
+	  else
+	    return memrefs_conflict_p (xsize, canon_rtx (XEXP (x, 0)),
+				       ysize, y, c);
+	}
       if (GET_CODE (y) == CONST)
-        return memrefs_conflict_p (xsize, x, ysize,
-                                   canon_rtx (XEXP (y, 0)), c);
+	return memrefs_conflict_p (xsize, x, ysize,
+				   canon_rtx (XEXP (y, 0)), c);
 
       if (CONSTANT_P (y))
-        return (xsize <= 0 || ysize <= 0
-                || (rtx_equal_for_memref_p (x, y)
-                    && ((c >= 0 && xsize > c) || (c < 0 && ysize+c > 0))));
+	return (xsize <= 0 || ysize <= 0
+		|| (rtx_equal_for_memref_p (x, y)
+		    && ((c >= 0 && xsize > c) || (c < 0 && ysize+c > 0))));
 
       return 1;
     }
@@ -1851,8 +1851,8 @@ read_dependence (rtx mem, rtx x)
 
 static rtx
 fixed_scalar_and_varying_struct_p (rtx mem1, rtx mem2, rtx mem1_addr,
-                                   rtx mem2_addr,
-                                   int (*varies_p) (rtx, int))
+				   rtx mem2_addr,
+				   int (*varies_p) (rtx, int))
 {
   if (! flag_strict_aliasing)
     return NULL_RTX;
@@ -1897,47 +1897,47 @@ nonoverlapping_component_refs_p (tree x, tree y)
   do
     {
       /* The comparison has to be done at a common type, since we don't
-         know how the inheritance hierarchy works.  */
+	 know how the inheritance hierarchy works.  */
       orig_y = y;
       do
-        {
-          fieldx = TREE_OPERAND (x, 1);
-          typex = TYPE_MAIN_VARIANT (DECL_FIELD_CONTEXT (fieldx));
+	{
+	  fieldx = TREE_OPERAND (x, 1);
+	  typex = TYPE_MAIN_VARIANT (DECL_FIELD_CONTEXT (fieldx));
 
-          y = orig_y;
-          do
-            {
-              fieldy = TREE_OPERAND (y, 1);
-              typey = TYPE_MAIN_VARIANT (DECL_FIELD_CONTEXT (fieldy));
+	  y = orig_y;
+	  do
+	    {
+	      fieldy = TREE_OPERAND (y, 1);
+	      typey = TYPE_MAIN_VARIANT (DECL_FIELD_CONTEXT (fieldy));
 
-              if (typex == typey)
-                goto found;
+	      if (typex == typey)
+		goto found;
 
-              y = TREE_OPERAND (y, 0);
-            }
-          while (y && TREE_CODE (y) == COMPONENT_REF);
+	      y = TREE_OPERAND (y, 0);
+	    }
+	  while (y && TREE_CODE (y) == COMPONENT_REF);
 
-          x = TREE_OPERAND (x, 0);
-        }
+	  x = TREE_OPERAND (x, 0);
+	}
       while (x && TREE_CODE (x) == COMPONENT_REF);
       /* Never found a common type.  */
       return false;
 
     found:
       /* If we're left with accessing different fields of a structure,
-         then no overlap.  */
+	 then no overlap.  */
       if (TREE_CODE (typex) == RECORD_TYPE
-          && fieldx != fieldy)
-        return true;
+	  && fieldx != fieldy)
+	return true;
 
       /* The comparison on the current field failed.  If we're accessing
-         a very nested structure, look at the next outer level.  */
+	 a very nested structure, look at the next outer level.  */
       x = TREE_OPERAND (x, 0);
       y = TREE_OPERAND (y, 0);
     }
   while (x && y
-         && TREE_CODE (x) == COMPONENT_REF
-         && TREE_CODE (y) == COMPONENT_REF);
+	 && TREE_CODE (x) == COMPONENT_REF
+	 && TREE_CODE (y) == COMPONENT_REF);
 
   return false;
 }
@@ -1974,10 +1974,10 @@ adjust_offset_for_component_ref (tree x, rtx offset)
       tree field = TREE_OPERAND (x, 1);
 
       if (! host_integerp (offset, 1))
-        return NULL_RTX;
+	return NULL_RTX;
       ioffset += (tree_low_cst (offset, 1)
-                  + (tree_low_cst (DECL_FIELD_BIT_OFFSET (field), 1)
-                     / BITS_PER_UNIT));
+		  + (tree_low_cst (DECL_FIELD_BIT_OFFSET (field), 1)
+		     / BITS_PER_UNIT));
 
       x = TREE_OPERAND (x, 0);
     }
@@ -2014,56 +2014,56 @@ nonoverlapping_memrefs_p (rtx x, rtx y)
   if (TREE_CODE (exprx) == COMPONENT_REF)
     {
       if (TREE_CODE (expry) == VAR_DECL
-          && POINTER_TYPE_P (TREE_TYPE (expry)))
-        {
-         tree field = TREE_OPERAND (exprx, 1);
-         tree fieldcontext = DECL_FIELD_CONTEXT (field);
-         if (ipa_type_escape_field_does_not_clobber_p (fieldcontext,
-                                                       TREE_TYPE (field)))
-           return 1;
-        }
+	  && POINTER_TYPE_P (TREE_TYPE (expry)))
+	{
+	 tree field = TREE_OPERAND (exprx, 1);
+	 tree fieldcontext = DECL_FIELD_CONTEXT (field);
+	 if (ipa_type_escape_field_does_not_clobber_p (fieldcontext,
+						       TREE_TYPE (field)))
+	   return 1;
+	}
       {
-        tree t = decl_for_component_ref (exprx);
-        if (! t)
-          return 0;
-        moffsetx = adjust_offset_for_component_ref (exprx, moffsetx);
-        exprx = t;
+	tree t = decl_for_component_ref (exprx);
+	if (! t)
+	  return 0;
+	moffsetx = adjust_offset_for_component_ref (exprx, moffsetx);
+	exprx = t;
       }
     }
   else if (INDIRECT_REF_P (exprx))
     {
       exprx = TREE_OPERAND (exprx, 0);
       if (flag_argument_noalias < 2
-          || TREE_CODE (exprx) != PARM_DECL)
-        return 0;
+	  || TREE_CODE (exprx) != PARM_DECL)
+	return 0;
     }
 
   moffsety = MEM_OFFSET (y);
   if (TREE_CODE (expry) == COMPONENT_REF)
     {
       if (TREE_CODE (exprx) == VAR_DECL
-          && POINTER_TYPE_P (TREE_TYPE (exprx)))
-        {
-         tree field = TREE_OPERAND (expry, 1);
-         tree fieldcontext = DECL_FIELD_CONTEXT (field);
-         if (ipa_type_escape_field_does_not_clobber_p (fieldcontext,
-                                                       TREE_TYPE (field)))
-           return 1;
-        }
+	  && POINTER_TYPE_P (TREE_TYPE (exprx)))
+	{
+	 tree field = TREE_OPERAND (expry, 1);
+	 tree fieldcontext = DECL_FIELD_CONTEXT (field);
+	 if (ipa_type_escape_field_does_not_clobber_p (fieldcontext,
+						       TREE_TYPE (field)))
+	   return 1;
+	}
       {
-        tree t = decl_for_component_ref (expry);
-        if (! t)
-          return 0;
-        moffsety = adjust_offset_for_component_ref (expry, moffsety);
-        expry = t;
+	tree t = decl_for_component_ref (expry);
+	if (! t)
+	  return 0;
+	moffsety = adjust_offset_for_component_ref (expry, moffsety);
+	expry = t;
       }
     }
   else if (INDIRECT_REF_P (expry))
     {
       expry = TREE_OPERAND (expry, 0);
       if (flag_argument_noalias < 2
-          || TREE_CODE (expry) != PARM_DECL)
-        return 0;
+	  || TREE_CODE (expry) != PARM_DECL)
+	return 0;
     }
 
   if (! DECL_P (exprx) || ! DECL_P (expry))
@@ -2097,17 +2097,17 @@ nonoverlapping_memrefs_p (rtx x, rtx y)
      overlap or not.  */
   if (! rtx_equal_p (basex, basey))
     return ((CONSTANT_P (basex) && CONSTANT_P (basey))
-            || (CONSTANT_P (basex) && REG_P (basey)
-                && REGNO_PTR_FRAME_P (REGNO (basey)))
-            || (CONSTANT_P (basey) && REG_P (basex)
-                && REGNO_PTR_FRAME_P (REGNO (basex))));
+	    || (CONSTANT_P (basex) && REG_P (basey)
+		&& REGNO_PTR_FRAME_P (REGNO (basey)))
+	    || (CONSTANT_P (basey) && REG_P (basex)
+		&& REGNO_PTR_FRAME_P (REGNO (basex))));
 
   sizex = (!MEM_P (rtlx) ? (int) GET_MODE_SIZE (GET_MODE (rtlx))
-           : MEM_SIZE (rtlx) ? INTVAL (MEM_SIZE (rtlx))
-           : -1);
+	   : MEM_SIZE (rtlx) ? INTVAL (MEM_SIZE (rtlx))
+	   : -1);
   sizey = (!MEM_P (rtly) ? (int) GET_MODE_SIZE (GET_MODE (rtly))
-           : MEM_SIZE (rtly) ? INTVAL (MEM_SIZE (rtly)) :
-           -1);
+	   : MEM_SIZE (rtly) ? INTVAL (MEM_SIZE (rtly)) :
+	   -1);
 
   /* If we have an offset for either memref, it can update the values computed
      above.  */
@@ -2140,7 +2140,7 @@ nonoverlapping_memrefs_p (rtx x, rtx y)
 
 int
 true_dependence (rtx mem, enum machine_mode mem_mode, rtx x,
-                 int (*varies) (rtx, int))
+		 int (*varies) (rtx, int))
 {
   rtx x_addr, mem_addr;
   rtx base;
@@ -2178,8 +2178,8 @@ true_dependence (rtx mem, enum machine_mode mem_mode, rtx x,
 
   base = find_base_term (x_addr);
   if (base && (GET_CODE (base) == LABEL_REF
-               || (GET_CODE (base) == SYMBOL_REF
-                   && CONSTANT_POOL_ADDRESS_P (base))))
+	       || (GET_CODE (base) == SYMBOL_REF
+		   && CONSTANT_POOL_ADDRESS_P (base))))
     return 0;
 
   if (! base_alias_check (x_addr, mem_addr, GET_MODE (x), mem_mode))
@@ -2189,7 +2189,7 @@ true_dependence (rtx mem, enum machine_mode mem_mode, rtx x,
   mem_addr = canon_rtx (mem_addr);
 
   if (! memrefs_conflict_p (GET_MODE_SIZE (mem_mode), mem_addr,
-                            SIZE_FOR_MODE (x), x_addr, 0))
+			    SIZE_FOR_MODE (x), x_addr, 0))
     return 0;
 
   if (aliases_everything_p (x))
@@ -2206,7 +2206,7 @@ true_dependence (rtx mem, enum machine_mode mem_mode, rtx x,
     return 1;
 
   return ! fixed_scalar_and_varying_struct_p (mem, x, mem_addr, x_addr,
-                                              varies);
+					      varies);
 }
 
 /* Canonical true dependence: X is read after store in MEM takes place.
@@ -2217,7 +2217,7 @@ true_dependence (rtx mem, enum machine_mode mem_mode, rtx x,
 
 int
 canon_true_dependence (rtx mem, enum machine_mode mem_mode, rtx mem_addr,
-                       rtx x, int (*varies) (rtx, int))
+		       rtx x, int (*varies) (rtx, int))
 {
   rtx x_addr;
 
@@ -2253,7 +2253,7 @@ canon_true_dependence (rtx mem, enum machine_mode mem_mode, rtx mem_addr,
 
   x_addr = canon_rtx (x_addr);
   if (! memrefs_conflict_p (GET_MODE_SIZE (mem_mode), mem_addr,
-                            SIZE_FOR_MODE (x), x_addr, 0))
+			    SIZE_FOR_MODE (x), x_addr, 0))
     return 0;
 
   if (aliases_everything_p (x))
@@ -2270,7 +2270,7 @@ canon_true_dependence (rtx mem, enum machine_mode mem_mode, rtx mem_addr,
     return 1;
 
   return ! fixed_scalar_and_varying_struct_p (mem, x, mem_addr, x_addr,
-                                              varies);
+					      varies);
 }
 
 /* Returns nonzero if a write to X might alias a previous read from
@@ -2313,28 +2313,28 @@ write_dependence_p (rtx mem, rtx x, int writep)
     {
       base = find_base_term (mem_addr);
       if (base && (GET_CODE (base) == LABEL_REF
-                   || (GET_CODE (base) == SYMBOL_REF
-                       && CONSTANT_POOL_ADDRESS_P (base))))
-        return 0;
+		   || (GET_CODE (base) == SYMBOL_REF
+		       && CONSTANT_POOL_ADDRESS_P (base))))
+	return 0;
     }
 
   if (! base_alias_check (x_addr, mem_addr, GET_MODE (x),
-                          GET_MODE (mem)))
+			  GET_MODE (mem)))
     return 0;
 
   x_addr = canon_rtx (x_addr);
   mem_addr = canon_rtx (mem_addr);
 
   if (!memrefs_conflict_p (SIZE_FOR_MODE (mem), mem_addr,
-                           SIZE_FOR_MODE (x), x_addr, 0))
+			   SIZE_FOR_MODE (x), x_addr, 0))
     return 0;
 
   fixed_scalar
     = fixed_scalar_and_varying_struct_p (mem, x, mem_addr, x_addr,
-                                         rtx_addr_varies_p);
+					 rtx_addr_varies_p);
 
   return (!(fixed_scalar == mem && !aliases_everything_p (x))
-          && !(fixed_scalar == x && !aliases_everything_p (mem)));
+	  && !(fixed_scalar == x && !aliases_everything_p (mem)));
 }
 
 /* Anti dependence: X is written after read in MEM takes place.  */
@@ -2364,9 +2364,9 @@ init_alias_once (void)
        argument.  FUNCTION_ARG_REGNO_P tests outgoing register
        numbers, so translate if necessary due to register windows.  */
     if (FUNCTION_ARG_REGNO_P (OUTGOING_REGNO (i))
-        && HARD_REGNO_MODE_OK (i, Pmode))
+	&& HARD_REGNO_MODE_OK (i, Pmode))
       static_reg_base_value[i]
-        = gen_rtx_ADDRESS (VOIDmode, gen_rtx_REG (Pmode, i));
+	= gen_rtx_ADDRESS (VOIDmode, gen_rtx_REG (Pmode, i));
 
   static_reg_base_value[STACK_POINTER_REGNUM]
     = gen_rtx_ADDRESS (Pmode, stack_pointer_rtx);
@@ -2389,7 +2389,7 @@ memory_modified_1 (rtx x, rtx pat ATTRIBUTE_UNUSED, void *data)
   if (MEM_P (x))
     {
       if (anti_dependence (x, (rtx)data) || output_dependence (x, (rtx)data))
-        memory_modified = true;
+	memory_modified = true;
     }
 }
 
@@ -2433,7 +2433,7 @@ init_alias_analysis (void)
 
   VEC_safe_grow (rtx, gc, reg_base_value, maxreg);
   memset (VEC_address (rtx, reg_base_value), 0,
-          sizeof (rtx) * VEC_length (rtx, reg_base_value));
+	  sizeof (rtx) * VEC_length (rtx, reg_base_value));
 
   new_reg_base_value = XNEWVEC (rtx, maxreg);
   reg_seen = XNEWVEC (char, maxreg);
@@ -2464,11 +2464,11 @@ init_alias_analysis (void)
       changed = 0;
 
       /* We want to assign the same IDs each iteration of this loop, so
-         start counting from zero each iteration of the loop.  */
+	 start counting from zero each iteration of the loop.  */
       unique_id = 0;
 
       /* We're at the start of the function each iteration through the
-         loop, so we're copying arguments.  */
+	 loop, so we're copying arguments.  */
       copying_arguments = true;
 
       /* Wipe the potential alias information clean for this pass.  */
@@ -2478,104 +2478,104 @@ init_alias_analysis (void)
       memset (reg_seen, 0, maxreg);
 
       /* Mark all hard registers which may contain an address.
-         The stack, frame and argument pointers may contain an address.
-         An argument register which can hold a Pmode value may contain
-         an address even if it is not in BASE_REGS.
+	 The stack, frame and argument pointers may contain an address.
+	 An argument register which can hold a Pmode value may contain
+	 an address even if it is not in BASE_REGS.
 
-         The address expression is VOIDmode for an argument and
-         Pmode for other registers.  */
+	 The address expression is VOIDmode for an argument and
+	 Pmode for other registers.  */
 
       memcpy (new_reg_base_value, static_reg_base_value,
-              FIRST_PSEUDO_REGISTER * sizeof (rtx));
+	      FIRST_PSEUDO_REGISTER * sizeof (rtx));
 
       /* Walk the insns adding values to the new_reg_base_value array.  */
       for (insn = get_insns (); insn; insn = NEXT_INSN (insn))
-        {
-          if (INSN_P (insn))
-            {
-              rtx note, set;
+	{
+	  if (INSN_P (insn))
+	    {
+	      rtx note, set;
 
 #if defined (HAVE_prologue) || defined (HAVE_epilogue)
-              /* The prologue/epilogue insns are not threaded onto the
-                 insn chain until after reload has completed.  Thus,
-                 there is no sense wasting time checking if INSN is in
-                 the prologue/epilogue until after reload has completed.  */
-              if (reload_completed
-                  && prologue_epilogue_contains (insn))
-                continue;
+	      /* The prologue/epilogue insns are not threaded onto the
+		 insn chain until after reload has completed.  Thus,
+		 there is no sense wasting time checking if INSN is in
+		 the prologue/epilogue until after reload has completed.  */
+	      if (reload_completed
+		  && prologue_epilogue_contains (insn))
+		continue;
 #endif
 
-              /* If this insn has a noalias note, process it,  Otherwise,
-                 scan for sets.  A simple set will have no side effects
-                 which could change the base value of any other register.  */
+	      /* If this insn has a noalias note, process it,  Otherwise,
+		 scan for sets.  A simple set will have no side effects
+		 which could change the base value of any other register.  */
 
-              if (GET_CODE (PATTERN (insn)) == SET
-                  && REG_NOTES (insn) != 0
-                  && find_reg_note (insn, REG_NOALIAS, NULL_RTX))
-                record_set (SET_DEST (PATTERN (insn)), NULL_RTX, NULL);
-              else
-                note_stores (PATTERN (insn), record_set, NULL);
+	      if (GET_CODE (PATTERN (insn)) == SET
+		  && REG_NOTES (insn) != 0
+		  && find_reg_note (insn, REG_NOALIAS, NULL_RTX))
+		record_set (SET_DEST (PATTERN (insn)), NULL_RTX, NULL);
+	      else
+		note_stores (PATTERN (insn), record_set, NULL);
 
-              set = single_set (insn);
+	      set = single_set (insn);
 
-              if (set != 0
-                  && REG_P (SET_DEST (set))
-                  && REGNO (SET_DEST (set)) >= FIRST_PSEUDO_REGISTER)
-                {
-                  unsigned int regno = REGNO (SET_DEST (set));
-                  rtx src = SET_SRC (set);
-                  rtx t;
+	      if (set != 0
+		  && REG_P (SET_DEST (set))
+		  && REGNO (SET_DEST (set)) >= FIRST_PSEUDO_REGISTER)
+		{
+		  unsigned int regno = REGNO (SET_DEST (set));
+		  rtx src = SET_SRC (set);
+		  rtx t;
 
-                  if (REG_NOTES (insn) != 0
-                      && (((note = find_reg_note (insn, REG_EQUAL, 0)) != 0
-                           && REG_N_SETS (regno) == 1)
-                          || (note = find_reg_note (insn, REG_EQUIV, NULL_RTX)) != 0)
-                      && GET_CODE (XEXP (note, 0)) != EXPR_LIST
-                      && ! rtx_varies_p (XEXP (note, 0), 1)
-                      && ! reg_overlap_mentioned_p (SET_DEST (set),
-                                                    XEXP (note, 0)))
-                    {
-                      set_reg_known_value (regno, XEXP (note, 0));
-                      set_reg_known_equiv_p (regno,
-                        REG_NOTE_KIND (note) == REG_EQUIV);
-                    }
-                  else if (REG_N_SETS (regno) == 1
-                           && GET_CODE (src) == PLUS
-                           && REG_P (XEXP (src, 0))
-                           && (t = get_reg_known_value (REGNO (XEXP (src, 0))))
-                           && GET_CODE (XEXP (src, 1)) == CONST_INT)
-                    {
-                      t = plus_constant (t, INTVAL (XEXP (src, 1)));
-                      set_reg_known_value (regno, t);
-                      set_reg_known_equiv_p (regno, 0);
-                    }
-                  else if (REG_N_SETS (regno) == 1
-                           && ! rtx_varies_p (src, 1))
-                    {
-                      set_reg_known_value (regno, src);
-                      set_reg_known_equiv_p (regno, 0);
-                    }
-                }
-            }
-          else if (NOTE_P (insn)
-                   && NOTE_LINE_NUMBER (insn) == NOTE_INSN_FUNCTION_BEG)
-            copying_arguments = false;
-        }
+		  if (REG_NOTES (insn) != 0
+		      && (((note = find_reg_note (insn, REG_EQUAL, 0)) != 0
+			   && REG_N_SETS (regno) == 1)
+			  || (note = find_reg_note (insn, REG_EQUIV, NULL_RTX)) != 0)
+		      && GET_CODE (XEXP (note, 0)) != EXPR_LIST
+		      && ! rtx_varies_p (XEXP (note, 0), 1)
+		      && ! reg_overlap_mentioned_p (SET_DEST (set),
+						    XEXP (note, 0)))
+		    {
+		      set_reg_known_value (regno, XEXP (note, 0));
+		      set_reg_known_equiv_p (regno,
+			REG_NOTE_KIND (note) == REG_EQUIV);
+		    }
+		  else if (REG_N_SETS (regno) == 1
+			   && GET_CODE (src) == PLUS
+			   && REG_P (XEXP (src, 0))
+			   && (t = get_reg_known_value (REGNO (XEXP (src, 0))))
+			   && GET_CODE (XEXP (src, 1)) == CONST_INT)
+		    {
+		      t = plus_constant (t, INTVAL (XEXP (src, 1)));
+		      set_reg_known_value (regno, t);
+		      set_reg_known_equiv_p (regno, 0);
+		    }
+		  else if (REG_N_SETS (regno) == 1
+			   && ! rtx_varies_p (src, 1))
+		    {
+		      set_reg_known_value (regno, src);
+		      set_reg_known_equiv_p (regno, 0);
+		    }
+		}
+	    }
+	  else if (NOTE_P (insn)
+		   && NOTE_LINE_NUMBER (insn) == NOTE_INSN_FUNCTION_BEG)
+	    copying_arguments = false;
+	}
 
       /* Now propagate values from new_reg_base_value to reg_base_value.  */
       gcc_assert (maxreg == (unsigned int) max_reg_num());
 
       for (ui = 0; ui < maxreg; ui++)
-        {
-          if (new_reg_base_value[ui]
-              && new_reg_base_value[ui] != VEC_index (rtx, reg_base_value, ui)
-              && ! rtx_equal_p (new_reg_base_value[ui],
-                                VEC_index (rtx, reg_base_value, ui)))
-            {
-              VEC_replace (rtx, reg_base_value, ui, new_reg_base_value[ui]);
-              changed = 1;
-            }
-        }
+	{
+	  if (new_reg_base_value[ui]
+	      && new_reg_base_value[ui] != VEC_index (rtx, reg_base_value, ui)
+	      && ! rtx_equal_p (new_reg_base_value[ui],
+				VEC_index (rtx, reg_base_value, ui)))
+	    {
+	      VEC_replace (rtx, reg_base_value, ui, new_reg_base_value[ui]);
+	      changed = 1;
+	    }
+	}
     }
   while (changed && ++pass < MAX_ALIAS_LOOP_PASSES);
 
@@ -2600,19 +2600,19 @@ init_alias_analysis (void)
       changed = 0;
       pass++;
       for (ui = 0; ui < maxreg; ui++)
-        {
-          rtx base = VEC_index (rtx, reg_base_value, ui);
-          if (base && REG_P (base))
-            {
-              unsigned int base_regno = REGNO (base);
-              if (base_regno == ui)                /* register set from itself */
-                VEC_replace (rtx, reg_base_value, ui, 0);
-              else
-                VEC_replace (rtx, reg_base_value, ui,
-                             VEC_index (rtx, reg_base_value, base_regno));
-              changed = 1;
-            }
-        }
+	{
+	  rtx base = VEC_index (rtx, reg_base_value, ui);
+	  if (base && REG_P (base))
+	    {
+	      unsigned int base_regno = REGNO (base);
+	      if (base_regno == ui)		/* register set from itself */
+		VEC_replace (rtx, reg_base_value, ui, 0);
+	      else
+		VEC_replace (rtx, reg_base_value, ui,
+			     VEC_index (rtx, reg_base_value, base_regno));
+	      changed = 1;
+	    }
+	}
     }
   while (changed && pass < MAX_ALIAS_LOOP_PASSES);
 

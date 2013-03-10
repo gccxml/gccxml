@@ -71,8 +71,8 @@ varray_descriptor (const char *name)
 
   slot = (struct varray_descriptor **)
     htab_find_slot_with_hash (varray_hash, name,
-                                  htab_hash_pointer (name),
-                              1);
+		    	      htab_hash_pointer (name),
+			      1);
   if (*slot)
     return *slot;
   *slot = xcalloc (sizeof (**slot), 1);
@@ -116,7 +116,7 @@ static const struct {
    ELEMENT_SIZE bytes long, named NAME.  Array elements are zeroed.  */
 varray_type
 varray_init (size_t num_elements, enum varray_data_enum element_kind,
-             const char *name)
+	     const char *name)
 {
   size_t data_size = num_elements * element[element_kind].size;
   varray_type ptr;
@@ -160,12 +160,12 @@ varray_grow (varray_type va, size_t n)
 
 
       if (element[va->type].uses_ggc)
-        va = ggc_realloc (va, VARRAY_HDR_SIZE + data_size);
+	va = ggc_realloc (va, VARRAY_HDR_SIZE + data_size);
       else
-        va = xrealloc (va, VARRAY_HDR_SIZE + data_size);
+	va = xrealloc (va, VARRAY_HDR_SIZE + data_size);
       va->num_elements = n;
       if (n > old_elements)
-        memset (&va->data.vdt_c[old_data_size], 0, data_size - old_data_size);
+	memset (&va->data.vdt_c[old_data_size], 0, data_size - old_data_size);
 #ifdef GATHER_STATISTICS
       if (oldva != va)
         desc->copied++;
@@ -191,20 +191,20 @@ varray_clear (varray_type va)
 
 void
 varray_check_failed (varray_type va, size_t n, const char *file, int line,
-                     const char *function)
+		     const char *function)
 {
   internal_error ("virtual array %s[%lu]: element %lu out of bounds "
-                  "in %s, at %s:%d",
-                  va->name, (unsigned long) va->num_elements, (unsigned long) n,
-                  function, trim_filename (file), line);
+		  "in %s, at %s:%d",
+		  va->name, (unsigned long) va->num_elements, (unsigned long) n,
+		  function, trim_filename (file), line);
 }
 
 void
 varray_underflow (varray_type va, const char *file, int line,
-                  const char *function)
+		  const char *function)
 {
   internal_error ("underflowed virtual array %s in %s, at %s:%d",
-                  va->name, function, trim_filename (file), line);
+		  va->name, function, trim_filename (file), line);
 }
 
 #endif
@@ -231,7 +231,7 @@ print_statistics (void **slot, void *b)
   if (d->allocated)
     {
       fprintf (stderr, "%-21s %6d %10d %7d %7d\n", d->name,
-               d->created, d->allocated, d->resized, d->copied);
+	       d->created, d->allocated, d->resized, d->copied);
       i->size += d->allocated;
       i->count += d->created;
     }
@@ -253,7 +253,7 @@ dump_varray_statistics (void)
   htab_traverse (varray_hash, print_statistics, &info);
   fprintf (stderr, "-------------------------------------------------------\n");
   fprintf (stderr, "%-20s %7d %10d\n",
-           "Total", info.count, info.size);
+	   "Total", info.count, info.size);
   fprintf (stderr, "-------------------------------------------------------\n");
 #endif
 }

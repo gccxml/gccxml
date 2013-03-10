@@ -66,10 +66,10 @@ rtx arch_compare_op1;
    reg number.  */
 const int regno_reg_class[FIRST_PSEUDO_REGISTER] =
 {
-  GENERAL_REGS,        ONLYR1_REGS,  LRW_REGS,            LRW_REGS,
-  LRW_REGS,        LRW_REGS,     LRW_REGS,            LRW_REGS,
-  LRW_REGS,        LRW_REGS,     LRW_REGS,            LRW_REGS,
-  LRW_REGS,        LRW_REGS,     LRW_REGS,            GENERAL_REGS,
+  GENERAL_REGS,	ONLYR1_REGS,  LRW_REGS,	    LRW_REGS,
+  LRW_REGS,	LRW_REGS,     LRW_REGS,	    LRW_REGS,
+  LRW_REGS,	LRW_REGS,     LRW_REGS,	    LRW_REGS,
+  LRW_REGS,	LRW_REGS,     LRW_REGS,	    GENERAL_REGS,
   GENERAL_REGS, C_REGS,       NO_REGS,      NO_REGS,
 };
 
@@ -88,16 +88,16 @@ const enum reg_class reg_class_from_letter[] =
 
 struct mcore_frame
 {
-  int arg_size;                        /* Stdarg spills (bytes).  */
-  int reg_size;                        /* Non-volatile reg saves (bytes).  */
-  int reg_mask;                        /* Non-volatile reg saves.  */
-  int local_size;                /* Locals.  */
-  int outbound_size;                /* Arg overflow on calls out.  */
+  int arg_size;			/* Stdarg spills (bytes).  */
+  int reg_size;			/* Non-volatile reg saves (bytes).  */
+  int reg_mask;			/* Non-volatile reg saves.  */
+  int local_size;		/* Locals.  */
+  int outbound_size;		/* Arg overflow on calls out.  */
   int pad_outbound;
   int pad_local;
   int pad_reg;
   /* Describe the steps we'll use to grow it.  */
-#define        MAX_STACK_GROWS        4        /* Gives us some spare space.  */
+#define	MAX_STACK_GROWS	4	/* Gives us some spare space.  */
   int growth[MAX_STACK_GROWS];
   int arg_offset;
   int reg_offset;
@@ -121,7 +121,7 @@ static int        calc_live_regs                (int *);
 static int        try_constant_tricks           (long, int *, int *);
 static const char *     output_inline_const     (enum machine_mode, rtx *);
 static void       layout_mcore_frame            (struct mcore_frame *);
-static void       mcore_setup_incoming_varargs        (CUMULATIVE_ARGS *, enum machine_mode, tree, int *, int);
+static void       mcore_setup_incoming_varargs	(CUMULATIVE_ARGS *, enum machine_mode, tree, int *, int);
 static cond_type  is_cond_candidate             (rtx);
 static rtx        emit_new_cond_insn            (rtx, int);
 static rtx        conditionalize_block          (rtx);
@@ -135,30 +135,30 @@ static int        mcore_dllimport_p             (tree);
 const struct attribute_spec mcore_attribute_table[];
 static tree       mcore_handle_naked_attribute  (tree *, tree, tree, int, bool *);
 #ifdef OBJECT_FORMAT_ELF
-static void          mcore_asm_named_section       (const char *,
-                                                 unsigned int, tree);
+static void	  mcore_asm_named_section       (const char *,
+						 unsigned int, tree);
 #endif
-static void       mcore_unique_section                (tree, int);
-static void mcore_encode_section_info                (tree, rtx, int);
-static const char *mcore_strip_name_encoding        (const char *);
-static int        mcore_const_costs                    (rtx, RTX_CODE);
-static int        mcore_and_cost                       (rtx);
-static int        mcore_ior_cost                       (rtx);
-static bool       mcore_rtx_costs                (rtx, int, int, int *);
-static void       mcore_external_libcall        (rtx);
-static bool       mcore_return_in_memory        (tree, tree);
+static void       mcore_unique_section	        (tree, int);
+static void mcore_encode_section_info		(tree, rtx, int);
+static const char *mcore_strip_name_encoding	(const char *);
+static int        mcore_const_costs            	(rtx, RTX_CODE);
+static int        mcore_and_cost               	(rtx);
+static int        mcore_ior_cost               	(rtx);
+static bool       mcore_rtx_costs		(rtx, int, int, int *);
+static void       mcore_external_libcall	(rtx);
+static bool       mcore_return_in_memory	(tree, tree);
 static int        mcore_arg_partial_bytes       (CUMULATIVE_ARGS *,
-                                                 enum machine_mode,
-                                                 tree, bool);
+						 enum machine_mode,
+						 tree, bool);
 
 
 /* Initialize the GCC target structure.  */
 #undef  TARGET_ASM_EXTERNAL_LIBCALL
-#define TARGET_ASM_EXTERNAL_LIBCALL        mcore_external_libcall
+#define TARGET_ASM_EXTERNAL_LIBCALL	mcore_external_libcall
 
 #if TARGET_DLLIMPORT_DECL_ATTRIBUTES
 #undef  TARGET_MERGE_DECL_ATTRIBUTES
-#define TARGET_MERGE_DECL_ATTRIBUTES        merge_dllimport_decl_attributes
+#define TARGET_MERGE_DECL_ATTRIBUTES	merge_dllimport_decl_attributes
 #endif
 
 #ifdef OBJECT_FORMAT_ELF
@@ -169,42 +169,42 @@ static int        mcore_arg_partial_bytes       (CUMULATIVE_ARGS *,
 #endif
 
 #undef  TARGET_ATTRIBUTE_TABLE
-#define TARGET_ATTRIBUTE_TABLE                 mcore_attribute_table
+#define TARGET_ATTRIBUTE_TABLE 		mcore_attribute_table
 #undef  TARGET_ASM_UNIQUE_SECTION
-#define TARGET_ASM_UNIQUE_SECTION         mcore_unique_section
+#define TARGET_ASM_UNIQUE_SECTION 	mcore_unique_section
 #undef  TARGET_ASM_FUNCTION_RODATA_SECTION
 #define TARGET_ASM_FUNCTION_RODATA_SECTION default_no_function_rodata_section
 #undef  TARGET_DEFAULT_TARGET_FLAGS
-#define TARGET_DEFAULT_TARGET_FLAGS        TARGET_DEFAULT
+#define TARGET_DEFAULT_TARGET_FLAGS	TARGET_DEFAULT
 #undef  TARGET_ENCODE_SECTION_INFO
-#define TARGET_ENCODE_SECTION_INFO         mcore_encode_section_info
+#define TARGET_ENCODE_SECTION_INFO 	mcore_encode_section_info
 #undef  TARGET_STRIP_NAME_ENCODING
-#define TARGET_STRIP_NAME_ENCODING        mcore_strip_name_encoding
+#define TARGET_STRIP_NAME_ENCODING	mcore_strip_name_encoding
 #undef  TARGET_RTX_COSTS
-#define TARGET_RTX_COSTS                 mcore_rtx_costs
+#define TARGET_RTX_COSTS 		mcore_rtx_costs
 #undef  TARGET_ADDRESS_COST
-#define TARGET_ADDRESS_COST                 hook_int_rtx_0
+#define TARGET_ADDRESS_COST 		hook_int_rtx_0
 #undef  TARGET_MACHINE_DEPENDENT_REORG
-#define TARGET_MACHINE_DEPENDENT_REORG        mcore_reorg
+#define TARGET_MACHINE_DEPENDENT_REORG	mcore_reorg
 
 #undef  TARGET_PROMOTE_FUNCTION_ARGS
-#define TARGET_PROMOTE_FUNCTION_ARGS        hook_bool_tree_true
+#define TARGET_PROMOTE_FUNCTION_ARGS	hook_bool_tree_true
 #undef  TARGET_PROMOTE_FUNCTION_RETURN
-#define TARGET_PROMOTE_FUNCTION_RETURN        hook_bool_tree_true
+#define TARGET_PROMOTE_FUNCTION_RETURN	hook_bool_tree_true
 #undef  TARGET_PROMOTE_PROTOTYPES
-#define TARGET_PROMOTE_PROTOTYPES        hook_bool_tree_true
+#define TARGET_PROMOTE_PROTOTYPES	hook_bool_tree_true
 
 #undef  TARGET_RETURN_IN_MEMORY
-#define TARGET_RETURN_IN_MEMORY                mcore_return_in_memory
+#define TARGET_RETURN_IN_MEMORY		mcore_return_in_memory
 #undef  TARGET_MUST_PASS_IN_STACK
-#define TARGET_MUST_PASS_IN_STACK        must_pass_in_stack_var_size
+#define TARGET_MUST_PASS_IN_STACK	must_pass_in_stack_var_size
 #undef  TARGET_PASS_BY_REFERENCE
 #define TARGET_PASS_BY_REFERENCE  hook_pass_by_reference_must_pass_in_stack
 #undef  TARGET_ARG_PARTIAL_BYTES
-#define TARGET_ARG_PARTIAL_BYTES        mcore_arg_partial_bytes
+#define TARGET_ARG_PARTIAL_BYTES	mcore_arg_partial_bytes
 
 #undef  TARGET_SETUP_INCOMING_VARARGS
-#define TARGET_SETUP_INCOMING_VARARGS        mcore_setup_incoming_varargs
+#define TARGET_SETUP_INCOMING_VARARGS	mcore_setup_incoming_varargs
 
 struct gcc_target targetm = TARGET_INITIALIZER;
 
@@ -220,17 +220,17 @@ output_stack_adjust (int direction, int size)
 
       emit_insn (gen_movsi (tmp, GEN_INT (mcore_stack_increment)));
       do
-        {
-          emit_insn (gen_subsi3 (stack_pointer_rtx, stack_pointer_rtx, tmp));
-          memref = gen_rtx_MEM (SImode, stack_pointer_rtx);
-          MEM_VOLATILE_P (memref) = 1;
-          emit_insn (gen_movsi (memref, stack_pointer_rtx));
-          size -= mcore_stack_increment;
-        }
+	{
+	  emit_insn (gen_subsi3 (stack_pointer_rtx, stack_pointer_rtx, tmp));
+	  memref = gen_rtx_MEM (SImode, stack_pointer_rtx);
+	  MEM_VOLATILE_P (memref) = 1;
+	  emit_insn (gen_movsi (memref, stack_pointer_rtx));
+	  size -= mcore_stack_increment;
+	}
       while (size > mcore_stack_increment);
 
       /* SIZE is now the residual for the last adjustment,
-         which doesn't require a probe.  */
+	 which doesn't require a probe.  */
     }
 
   if (size)
@@ -239,16 +239,16 @@ output_stack_adjust (int direction, int size)
       rtx val = GEN_INT (size);
 
       if (size > 32)
-        {
-          rtx nval = gen_rtx_REG (SImode, 1);
-          emit_insn (gen_movsi (nval, val));
-          val = nval;
-        }
+	{
+	  rtx nval = gen_rtx_REG (SImode, 1);
+	  emit_insn (gen_movsi (nval, val));
+	  val = nval;
+	}
       
       if (direction > 0)
-        insn = gen_addsi3 (stack_pointer_rtx, stack_pointer_rtx, val);
+	insn = gen_addsi3 (stack_pointer_rtx, stack_pointer_rtx, val);
       else
-        insn = gen_subsi3 (stack_pointer_rtx, stack_pointer_rtx, val);
+	insn = gen_subsi3 (stack_pointer_rtx, stack_pointer_rtx, val);
       
       emit_insn (insn);
     }
@@ -268,10 +268,10 @@ calc_live_regs (int * count)
   for (reg = 0; reg < FIRST_PSEUDO_REGISTER; reg++)
     {
       if (regs_ever_live[reg] && !call_used_regs[reg])
-        {
-          (*count)++;
-          live_regs_mask |= (1 << reg);
-        }
+	{
+	  (*count)++;
+	  live_regs_mask |= (1 << reg);
+	}
     }
 
   return live_regs_mask;
@@ -290,27 +290,27 @@ mcore_print_operand_address (FILE * stream, rtx x)
       
     case PLUS:
       {
-        rtx base = XEXP (x, 0);
-        rtx index = XEXP (x, 1);
+	rtx base = XEXP (x, 0);
+	rtx index = XEXP (x, 1);
 
-        if (GET_CODE (base) != REG)
-          {
-            /* Ensure that BASE is a register (one of them must be).  */
-            rtx temp = base;
-            base = index;
-            index = temp;
-          }
+	if (GET_CODE (base) != REG)
+	  {
+	    /* Ensure that BASE is a register (one of them must be).  */
+	    rtx temp = base;
+	    base = index;
+	    index = temp;
+	  }
 
-        switch (GET_CODE (index))
-          {
-          case CONST_INT:
-            fprintf (stream, "(%s," HOST_WIDE_INT_PRINT_DEC ")",
-                     reg_names[REGNO(base)], INTVAL (index));
-            break;
+	switch (GET_CODE (index))
+	  {
+	  case CONST_INT:
+	    fprintf (stream, "(%s," HOST_WIDE_INT_PRINT_DEC ")",
+		     reg_names[REGNO(base)], INTVAL (index));
+	    break;
 
-          default:
-            gcc_unreachable ();
-          }
+	  default:
+	    gcc_unreachable ();
+	  }
       }
 
       break;
@@ -340,9 +340,9 @@ mcore_print_operand (FILE * stream, rtx x, int code)
     {
     case 'N':
       if (INTVAL(x) == -1)
-        fprintf (asm_out_file, "32");
+	fprintf (asm_out_file, "32");
       else
-        fprintf (asm_out_file, "%d", exact_log2 (INTVAL (x) + 1));
+	fprintf (asm_out_file, "%d", exact_log2 (INTVAL (x) + 1));
       break;
     case 'P':
       fprintf (asm_out_file, "%d", exact_log2 (INTVAL (x)));
@@ -359,21 +359,21 @@ mcore_print_operand (FILE * stream, rtx x, int code)
     case 'R':
       /* Next location along in memory or register.  */
       switch (GET_CODE (x))
-        {
-        case REG:
-          fputs (reg_names[REGNO (x) + 1], (stream));
-          break;
-        case MEM:
-          mcore_print_operand_address
-            (stream, XEXP (adjust_address (x, SImode, 4), 0));
-          break;
-        default:
-          gcc_unreachable ();
-        }
+	{
+	case REG:
+	  fputs (reg_names[REGNO (x) + 1], (stream));
+	  break;
+	case MEM:
+	  mcore_print_operand_address
+	    (stream, XEXP (adjust_address (x, SImode, 4), 0));
+	  break;
+	default:
+	  gcc_unreachable ();
+	}
       break;
     case 'U':
       fprintf (asm_out_file, "%s-%s", reg_names[REGNO (x)],
-               reg_names[REGNO (x) + 3]);
+	       reg_names[REGNO (x) + 3]);
       break;
     case 'x':
       fprintf (asm_out_file, HOST_WIDE_INT_PRINT_HEX, INTVAL (x));
@@ -384,17 +384,17 @@ mcore_print_operand (FILE * stream, rtx x, int code)
 
     default:
       switch (GET_CODE (x))
-        {
-        case REG:
-          fputs (reg_names[REGNO (x)], (stream));
-          break;
-        case MEM:
-          output_address (XEXP (x, 0));
-          break;
-        default:
-          output_addr_const (stream, x);
-          break;
-        }
+	{
+	case REG:
+	  fputs (reg_names[REGNO (x)], (stream));
+	  break;
+	case MEM:
+	  output_address (XEXP (x, 0));
+	  break;
+	default:
+	  output_addr_const (stream, x);
+	  break;
+	}
       break;
     }
 }
@@ -407,22 +407,22 @@ mcore_const_costs (rtx exp, enum rtx_code code)
   int val = INTVAL (exp);
 
   /* Easy constants.  */
-  if (   CONST_OK_FOR_I (val)        
-      || CONST_OK_FOR_M (val)        
-      || CONST_OK_FOR_N (val)        
+  if (   CONST_OK_FOR_I (val)	
+      || CONST_OK_FOR_M (val)	
+      || CONST_OK_FOR_N (val)	
       || (code == PLUS && CONST_OK_FOR_L (val)))
-    return 1;                                        
+    return 1;					
   else if (code == AND
-           && (   CONST_OK_FOR_M (~val)
-               || CONST_OK_FOR_N (~val)))
+	   && (   CONST_OK_FOR_M (~val)
+	       || CONST_OK_FOR_N (~val)))
     return 2;
-  else if (code == PLUS                        
-           && (   CONST_OK_FOR_I (-val)        
-               || CONST_OK_FOR_M (-val)        
-               || CONST_OK_FOR_N (-val)))        
-    return 2;                                                
+  else if (code == PLUS			
+	   && (   CONST_OK_FOR_I (-val)	
+	       || CONST_OK_FOR_M (-val)	
+	       || CONST_OK_FOR_N (-val)))	
+    return 2;						
 
-  return 5;                                        
+  return 5;					
 }
 
 /* What does an and instruction cost - we do this b/c immediates may 
@@ -532,18 +532,18 @@ mcore_modify_comparison (enum rtx_code code)
       int val = INTVAL (op1);
       
       switch (code)
-        {
-        case LE:
-          if (CONST_OK_FOR_J (val + 1))
-            {
-              arch_compare_op1 = GEN_INT (val + 1);
-              return 1;
-            }
-          break;
-          
-        default:
-          break;
-        }
+	{
+	case LE:
+	  if (CONST_OK_FOR_J (val + 1))
+	    {
+	      arch_compare_op1 = GEN_INT (val + 1);
+	      return 1;
+	    }
+	  break;
+	  
+	default:
+	  break;
+	}
     }
   
   return 0;
@@ -565,58 +565,58 @@ mcore_gen_compare_reg (enum rtx_code code)
      cmplti: 1-32 (J immediate, 0 using btsti x,31).  */
   switch (code)
     {
-    case EQ:        /* Use inverted condition, cmpne.  */
+    case EQ:	/* Use inverted condition, cmpne.  */
       code = NE;
       /* Drop through.  */
       
-    case NE:        /* Use normal condition, cmpne.  */
+    case NE:	/* Use normal condition, cmpne.  */
       if (GET_CODE (op1) == CONST_INT && ! CONST_OK_FOR_K (INTVAL (op1)))
-        op1 = force_reg (SImode, op1);
+	op1 = force_reg (SImode, op1);
       break;
 
-    case LE:        /* Use inverted condition, reversed cmplt.  */
+    case LE:	/* Use inverted condition, reversed cmplt.  */
       code = GT;
       /* Drop through.  */
       
-    case GT:        /* Use normal condition, reversed cmplt.  */
+    case GT:	/* Use normal condition, reversed cmplt.  */
       if (GET_CODE (op1) == CONST_INT)
-        op1 = force_reg (SImode, op1);
+	op1 = force_reg (SImode, op1);
       break;
 
-    case GE:        /* Use inverted condition, cmplt.  */
+    case GE:	/* Use inverted condition, cmplt.  */
       code = LT;
       /* Drop through.  */
       
-    case LT:        /* Use normal condition, cmplt.  */
+    case LT:	/* Use normal condition, cmplt.  */
       if (GET_CODE (op1) == CONST_INT && 
-          /* covered by btsti x,31.  */
-          INTVAL (op1) != 0 &&
-          ! CONST_OK_FOR_J (INTVAL (op1)))
-        op1 = force_reg (SImode, op1);
+	  /* covered by btsti x,31.  */
+	  INTVAL (op1) != 0 &&
+	  ! CONST_OK_FOR_J (INTVAL (op1)))
+	op1 = force_reg (SImode, op1);
       break;
 
-    case GTU:        /* Use inverted condition, cmple.  */
+    case GTU:	/* Use inverted condition, cmple.  */
       /* Unsigned > 0 is the same as != 0, but we need to invert the
-         condition, so we want to set code = EQ.  This cannot be done
-         however, as the mcore does not support such a test.  Instead
-         we cope with this case in the "bgtu" pattern itself so we
-         should never reach this point.  */
+	 condition, so we want to set code = EQ.  This cannot be done
+	 however, as the mcore does not support such a test.  Instead
+	 we cope with this case in the "bgtu" pattern itself so we
+	 should never reach this point.  */
       gcc_assert (GET_CODE (op1) != CONST_INT || INTVAL (op1) != 0);
       code = LEU;
       /* Drop through.  */
       
-    case LEU:        /* Use normal condition, reversed cmphs.  */
+    case LEU:	/* Use normal condition, reversed cmphs.  */
       if (GET_CODE (op1) == CONST_INT && INTVAL (op1) != 0)
-        op1 = force_reg (SImode, op1);
+	op1 = force_reg (SImode, op1);
       break;
 
-    case LTU:        /* Use inverted condition, cmphs.  */
+    case LTU:	/* Use inverted condition, cmphs.  */
       code = GEU;
       /* Drop through.  */
       
-    case GEU:        /* Use normal condition, cmphs.  */
+    case GEU:	/* Use normal condition, cmphs.  */
       if (GET_CODE (op1) == CONST_INT && INTVAL (op1) != 0)
-        op1 = force_reg (SImode, op1);
+	op1 = force_reg (SImode, op1);
       break;
 
     default:
@@ -639,8 +639,8 @@ mcore_symbolic_address_p (rtx x)
     case CONST:
       x = XEXP (x, 0);
       return (   (GET_CODE (XEXP (x, 0)) == SYMBOL_REF
-               || GET_CODE (XEXP (x, 0)) == LABEL_REF)
-              && GET_CODE (XEXP (x, 1)) == CONST_INT);
+	       || GET_CODE (XEXP (x, 0)) == LABEL_REF)
+	      && GET_CODE (XEXP (x, 1)) == CONST_INT);
     default:
       return 0;
     }
@@ -657,25 +657,25 @@ mcore_output_call (rtx operands[], int index)
   if (REG_P (addr))
     {
       if (TARGET_CG_DATA)
-        {
-          gcc_assert (mcore_current_function_name);
-          
-          ASM_OUTPUT_CG_EDGE (asm_out_file, mcore_current_function_name,
-                              "unknown", 1);
-        }
+	{
+	  gcc_assert (mcore_current_function_name);
+	  
+	  ASM_OUTPUT_CG_EDGE (asm_out_file, mcore_current_function_name,
+			      "unknown", 1);
+	}
 
       sprintf (buffer, "jsr\t%%%d", index);
     }
   else
     {
       if (TARGET_CG_DATA)
-        {
-          gcc_assert (mcore_current_function_name);
-          gcc_assert (GET_CODE (addr) == SYMBOL_REF);
-          
-          ASM_OUTPUT_CG_EDGE (asm_out_file, mcore_current_function_name,
-                              XSTR (addr, 0), 0);
-        }
+	{
+	  gcc_assert (mcore_current_function_name);
+	  gcc_assert (GET_CODE (addr) == SYMBOL_REF);
+	  
+	  ASM_OUTPUT_CG_EDGE (asm_out_file, mcore_current_function_name,
+			      XSTR (addr, 0), 0);
+	}
       
       sprintf (buffer, "jbsr\t%%%d", index);
     }
@@ -745,114 +745,114 @@ try_constant_tricks (long value, int * x, int * y)
   unsigned bit, shf, rot;
 
   if (const_ok_for_mcore (value))
-    return 1;        /* Do the usual thing.  */
+    return 1;	/* Do the usual thing.  */
   
   if (TARGET_HARDLIT) 
     {
       if (const_ok_for_mcore (~value))
-        {
-          *x = ~value;
-          return 2;
-        }
+	{
+	  *x = ~value;
+	  return 2;
+	}
       
       for (i = 1; i <= 32; i++)
-        {
-          if (const_ok_for_mcore (value - i))
-            {
-              *x = value - i;
-              *y = i;
-              
-              return 3;
-            }
-          
-          if (const_ok_for_mcore (value + i))
-            {
-              *x = value + i;
-              *y = i;
-              
-              return 4;
-            }
-        }
+	{
+	  if (const_ok_for_mcore (value - i))
+	    {
+	      *x = value - i;
+	      *y = i;
+	      
+	      return 3;
+	    }
+	  
+	  if (const_ok_for_mcore (value + i))
+	    {
+	      *x = value + i;
+	      *y = i;
+	      
+	      return 4;
+	    }
+	}
       
       bit = 0x80000000L;
       
       for (i = 0; i <= 31; i++)
-        {
-          if (const_ok_for_mcore (i - value))
-            {
-              *x = i - value;
-              *y = i;
-              
-              return 5;
-            }
-          
-          if (const_ok_for_mcore (value & ~bit))
-            {
-              *y = bit;
-              *x = value & ~bit;
-              
-              return 6;
-            }
-          
-          if (const_ok_for_mcore (value | bit))
-            {
-              *y = ~bit;
-              *x = value | bit;
-              
-              return 7;
-            }
-          
-          bit >>= 1;
-        }
+	{
+	  if (const_ok_for_mcore (i - value))
+	    {
+	      *x = i - value;
+	      *y = i;
+	      
+	      return 5;
+	    }
+	  
+	  if (const_ok_for_mcore (value & ~bit))
+	    {
+	      *y = bit;
+	      *x = value & ~bit;
+	      
+	      return 6;
+	    }
+	  
+	  if (const_ok_for_mcore (value | bit))
+	    {
+	      *y = ~bit;
+	      *x = value | bit;
+	      
+	      return 7;
+	    }
+	  
+	  bit >>= 1;
+	}
       
       shf = value;
       rot = value;
       
       for (i = 1; i < 31; i++)
-        {
-          int c;
-          
-          /* MCore has rotate left.  */
-          c = rot << 31;
-          rot >>= 1;
-          rot &= 0x7FFFFFFF;
-          rot |= c;   /* Simulate rotate.  */
-          
-          if (const_ok_for_mcore (rot))
-            {
-              *y = i;
-              *x = rot;
-              
-              return 8;
-            }
-          
-          if (shf & 1)
-            shf = 0;        /* Can't use logical shift, low order bit is one.  */
-          
-          shf >>= 1;
-          
-          if (shf != 0 && const_ok_for_mcore (shf))
-            {
-              *y = i;
-              *x = shf;
-              
-              return 9;
-            }
-        }
+	{
+	  int c;
+	  
+	  /* MCore has rotate left.  */
+	  c = rot << 31;
+	  rot >>= 1;
+	  rot &= 0x7FFFFFFF;
+	  rot |= c;   /* Simulate rotate.  */
+	  
+	  if (const_ok_for_mcore (rot))
+	    {
+	      *y = i;
+	      *x = rot;
+	      
+	      return 8;
+	    }
+	  
+	  if (shf & 1)
+	    shf = 0;	/* Can't use logical shift, low order bit is one.  */
+	  
+	  shf >>= 1;
+	  
+	  if (shf != 0 && const_ok_for_mcore (shf))
+	    {
+	      *y = i;
+	      *x = shf;
+	      
+	      return 9;
+	    }
+	}
       
       if ((value % 3) == 0 && const_ok_for_mcore (value / 3))
-        {
-          *x = value / 3;
-          
-          return 10;
-        }
+	{
+	  *x = value / 3;
+	  
+	  return 10;
+	}
       
       if ((value % 5) == 0 && const_ok_for_mcore (value / 5))
-        {
-          *x = value / 5;
-          
-          return 11;
-        }
+	{
+	  *x = value / 5;
+	  
+	  return 11;
+	}
     }
   
   return 0;
@@ -882,24 +882,24 @@ mcore_is_dead (rtx first, rtx reg)
   for (insn = NEXT_INSN (first); insn; insn = NEXT_INSN (insn))
     {
       if (GET_CODE (insn) == JUMP_INSN)
-        return 0;        /* We lose track, assume it is alive.  */
+	return 0;	/* We lose track, assume it is alive.  */
 
       else if (GET_CODE(insn) == CALL_INSN)
-        {
-          /* Call's might use it for target or register parms.  */
-          if (reg_referenced_p (reg, PATTERN (insn))
-              || find_reg_fusage (insn, USE, reg))
-            return 0;
-          else if (dead_or_set_p (insn, reg))
+	{
+	  /* Call's might use it for target or register parms.  */
+	  if (reg_referenced_p (reg, PATTERN (insn))
+	      || find_reg_fusage (insn, USE, reg))
+	    return 0;
+	  else if (dead_or_set_p (insn, reg))
             return 1;
-        }
+	}
       else if (GET_CODE (insn) == INSN)
-        {
-          if (reg_referenced_p (reg, PATTERN (insn)))
+	{
+	  if (reg_referenced_p (reg, PATTERN (insn)))
             return 0;
-          else if (dead_or_set_p (insn, reg))
+	  else if (dead_or_set_p (insn, reg))
             return 1;
-        }
+	}
     }
 
   /* No conclusive evidence either way, we cannot take the chance
@@ -972,11 +972,11 @@ mcore_output_bseti (rtx dst, int mask)
   for (bit = 0; bit < 32; bit++)
     {
       if ((mask & 0x1) == 0x1)
-        {
-          out_operands[1] = GEN_INT (bit);
-          
-          output_asm_insn ("bseti\t%0,%1", out_operands);
-        }
+	{
+	  out_operands[1] = GEN_INT (bit);
+	  
+	  output_asm_insn ("bseti\t%0,%1", out_operands);
+	}
       mask >>= 1;
     }  
 
@@ -996,11 +996,11 @@ mcore_output_bclri (rtx dst, int mask)
   for (bit = 0; bit < 32; bit++)
     {
       if ((mask & 0x1) == 0x0)
-        {
-          out_operands[1] = GEN_INT (bit);
-          
-          output_asm_insn ("bclri\t%0,%1", out_operands);
-        }
+	{
+	  out_operands[1] = GEN_INT (bit);
+	  
+	  output_asm_insn ("bclri\t%0,%1", out_operands);
+	}
       
       mask >>= 1;
     }  
@@ -1058,16 +1058,16 @@ mcore_output_cmov (rtx operands[], int cmp_t, const char * test)
   if (load_value > adjust_value)
     {
       if (cmp_t)
-        output_asm_insn ("decf\t%0", out_operands);
+	output_asm_insn ("decf\t%0", out_operands);
       else
-        output_asm_insn ("dect\t%0", out_operands);
+	output_asm_insn ("dect\t%0", out_operands);
     }
   else
     {
       if (cmp_t)
-        output_asm_insn ("incf\t%0", out_operands);
+	output_asm_insn ("incf\t%0", out_operands);
       else
-        output_asm_insn ("inct\t%0", out_operands);
+	output_asm_insn ("inct\t%0", out_operands);
     }
 
   return "";
@@ -1212,7 +1212,7 @@ output_inline_const (enum machine_mode mode, rtx operands[])
 
 const char *
 mcore_output_move (rtx insn ATTRIBUTE_UNUSED, rtx operands[],
-                   enum machine_mode mode ATTRIBUTE_UNUSED)
+		   enum machine_mode mode ATTRIBUTE_UNUSED)
 {
   rtx dst = operands[0];
   rtx src = operands[1];
@@ -1220,58 +1220,58 @@ mcore_output_move (rtx insn ATTRIBUTE_UNUSED, rtx operands[],
   if (GET_CODE (dst) == REG)
     {
       if (GET_CODE (src) == REG)
-        {               
-          if (REGNO (src) == CC_REG)            /* r-c */
+	{               
+	  if (REGNO (src) == CC_REG)            /* r-c */
             return "mvc\t%0"; 
-          else 
+	  else 
             return "mov\t%0,%1";                /* r-r*/
-        }
+	}
       else if (GET_CODE (src) == MEM)
-        {
-          if (GET_CODE (XEXP (src, 0)) == LABEL_REF) 
+	{
+	  if (GET_CODE (XEXP (src, 0)) == LABEL_REF) 
             return "lrw\t%0,[%1]";              /* a-R */
-          else
-            switch (GET_MODE (src))                /* r-m */
-              {
-              case SImode:
-                return "ldw\t%0,%1";
-              case HImode:
-                return "ld.h\t%0,%1";
-              case QImode:
-                return "ld.b\t%0,%1";
-              default:
-                gcc_unreachable ();
-              }
-        }
+	  else
+	    switch (GET_MODE (src))		/* r-m */
+	      {
+	      case SImode:
+		return "ldw\t%0,%1";
+	      case HImode:
+		return "ld.h\t%0,%1";
+	      case QImode:
+		return "ld.b\t%0,%1";
+	      default:
+		gcc_unreachable ();
+	      }
+	}
       else if (GET_CODE (src) == CONST_INT)
-        {
-          int x, y;
-          
-          if (CONST_OK_FOR_I (INTVAL (src)))       /* r-I */
+	{
+	  int x, y;
+	  
+	  if (CONST_OK_FOR_I (INTVAL (src)))       /* r-I */
             return "movi\t%0,%1";
-          else if (CONST_OK_FOR_M (INTVAL (src)))  /* r-M */
+	  else if (CONST_OK_FOR_M (INTVAL (src)))  /* r-M */
             return "bgeni\t%0,%P1\t// %1 %x1";
-          else if (CONST_OK_FOR_N (INTVAL (src)))  /* r-N */
+	  else if (CONST_OK_FOR_N (INTVAL (src)))  /* r-N */
             return "bmaski\t%0,%N1\t// %1 %x1";
-          else if (try_constant_tricks (INTVAL (src), &x, &y))     /* R-P */
+	  else if (try_constant_tricks (INTVAL (src), &x, &y))     /* R-P */
             return output_inline_const (SImode, operands);  /* 1-2 insns */
-          else 
-            return "lrw\t%0,%x1\t// %1";        /* Get it from literal pool.  */
-        }
+	  else 
+            return "lrw\t%0,%x1\t// %1";	/* Get it from literal pool.  */
+	}
       else
-        return "lrw\t%0, %1";                /* Into the literal pool.  */
+	return "lrw\t%0, %1";                /* Into the literal pool.  */
     }
   else if (GET_CODE (dst) == MEM)               /* m-r */
     switch (GET_MODE (dst))
       {
       case SImode:
-        return "stw\t%1,%0";
+	return "stw\t%1,%0";
       case HImode:
-        return "st.h\t%1,%0";
+	return "st.h\t%1,%0";
       case QImode:
-        return "st.b\t%1,%0";
+	return "st.b\t%1,%0";
       default:
-        gcc_unreachable ();
+	gcc_unreachable ();
       }
 
   gcc_unreachable ();
@@ -1290,91 +1290,91 @@ mcore_output_movedouble (rtx operands[], enum machine_mode mode ATTRIBUTE_UNUSED
   if (GET_CODE (dst) == REG)
     {
       if (GET_CODE (src) == REG)
-        {
-          int dstreg = REGNO (dst);
-          int srcreg = REGNO (src);
-          
-          /* Ensure the second source not overwritten.  */
-          if (srcreg + 1 == dstreg)
-            return "mov        %R0,%R1\n\tmov        %0,%1";
-          else
-            return "mov        %0,%1\n\tmov        %R0,%R1";
-        }
+	{
+	  int dstreg = REGNO (dst);
+	  int srcreg = REGNO (src);
+	  
+	  /* Ensure the second source not overwritten.  */
+	  if (srcreg + 1 == dstreg)
+	    return "mov	%R0,%R1\n\tmov	%0,%1";
+	  else
+	    return "mov	%0,%1\n\tmov	%R0,%R1";
+	}
       else if (GET_CODE (src) == MEM)
-        {
-          rtx memexp = memexp = XEXP (src, 0);
-          int dstreg = REGNO (dst);
-          int basereg = -1;
-          
-          if (GET_CODE (memexp) == LABEL_REF)
-            return "lrw\t%0,[%1]\n\tlrw\t%R0,[%R1]";
-          else if (GET_CODE (memexp) == REG) 
-            basereg = REGNO (memexp);
-          else if (GET_CODE (memexp) == PLUS)
-            {
-              if (GET_CODE (XEXP (memexp, 0)) == REG)
-                basereg = REGNO (XEXP (memexp, 0));
-              else if (GET_CODE (XEXP (memexp, 1)) == REG)
-                basereg = REGNO (XEXP (memexp, 1));
-              else
-                gcc_unreachable ();
-            }
-          else
-            gcc_unreachable ();
+	{
+	  rtx memexp = memexp = XEXP (src, 0);
+	  int dstreg = REGNO (dst);
+	  int basereg = -1;
+	  
+	  if (GET_CODE (memexp) == LABEL_REF)
+	    return "lrw\t%0,[%1]\n\tlrw\t%R0,[%R1]";
+	  else if (GET_CODE (memexp) == REG) 
+	    basereg = REGNO (memexp);
+	  else if (GET_CODE (memexp) == PLUS)
+	    {
+	      if (GET_CODE (XEXP (memexp, 0)) == REG)
+		basereg = REGNO (XEXP (memexp, 0));
+	      else if (GET_CODE (XEXP (memexp, 1)) == REG)
+		basereg = REGNO (XEXP (memexp, 1));
+	      else
+		gcc_unreachable ();
+	    }
+	  else
+	    gcc_unreachable ();
 
           /* ??? length attribute is wrong here.  */
-          if (dstreg == basereg)
-            {
-              /* Just load them in reverse order.  */
-              return "ldw\t%R0,%R1\n\tldw\t%0,%1";
-              
-              /* XXX: alternative: move basereg to basereg+1
-                 and then fall through.  */
-            }
-          else
-            return "ldw\t%0,%1\n\tldw\t%R0,%R1";
-        }
+	  if (dstreg == basereg)
+	    {
+	      /* Just load them in reverse order.  */
+	      return "ldw\t%R0,%R1\n\tldw\t%0,%1";
+	      
+	      /* XXX: alternative: move basereg to basereg+1
+	         and then fall through.  */
+	    }
+	  else
+	    return "ldw\t%0,%1\n\tldw\t%R0,%R1";
+	}
       else if (GET_CODE (src) == CONST_INT)
-        {
-          if (TARGET_LITTLE_END)
-            {
-              if (CONST_OK_FOR_I (INTVAL (src)))
-                output_asm_insn ("movi        %0,%1", operands);
-              else if (CONST_OK_FOR_M (INTVAL (src)))
-                output_asm_insn ("bgeni        %0,%P1", operands);
-              else if (INTVAL (src) == -1)
-                output_asm_insn ("bmaski        %0,32", operands);
-              else if (CONST_OK_FOR_N (INTVAL (src)))
-                output_asm_insn ("bmaski        %0,%N1", operands);
-              else
-                gcc_unreachable ();
+	{
+	  if (TARGET_LITTLE_END)
+	    {
+	      if (CONST_OK_FOR_I (INTVAL (src)))
+		output_asm_insn ("movi	%0,%1", operands);
+	      else if (CONST_OK_FOR_M (INTVAL (src)))
+		output_asm_insn ("bgeni	%0,%P1", operands);
+	      else if (INTVAL (src) == -1)
+		output_asm_insn ("bmaski	%0,32", operands);
+	      else if (CONST_OK_FOR_N (INTVAL (src)))
+		output_asm_insn ("bmaski	%0,%N1", operands);
+	      else
+		gcc_unreachable ();
 
-              if (INTVAL (src) < 0)
-                return "bmaski        %R0,32";
-              else
-                return "movi        %R0,0";
-            }
-          else
-            {
-              if (CONST_OK_FOR_I (INTVAL (src)))
-                output_asm_insn ("movi        %R0,%1", operands);
-              else if (CONST_OK_FOR_M (INTVAL (src)))
-                output_asm_insn ("bgeni        %R0,%P1", operands);
-              else if (INTVAL (src) == -1)
-                output_asm_insn ("bmaski        %R0,32", operands);
-              else if (CONST_OK_FOR_N (INTVAL (src)))
-                output_asm_insn ("bmaski        %R0,%N1", operands);
-              else
-                gcc_unreachable ();
-              
-              if (INTVAL (src) < 0)
-                return "bmaski        %0,32";
-              else
-                return "movi        %0,0";
-            }
-        }
+	      if (INTVAL (src) < 0)
+		return "bmaski	%R0,32";
+	      else
+		return "movi	%R0,0";
+	    }
+	  else
+	    {
+	      if (CONST_OK_FOR_I (INTVAL (src)))
+		output_asm_insn ("movi	%R0,%1", operands);
+	      else if (CONST_OK_FOR_M (INTVAL (src)))
+		output_asm_insn ("bgeni	%R0,%P1", operands);
+	      else if (INTVAL (src) == -1)
+		output_asm_insn ("bmaski	%R0,32", operands);
+	      else if (CONST_OK_FOR_N (INTVAL (src)))
+		output_asm_insn ("bmaski	%R0,%N1", operands);
+	      else
+		gcc_unreachable ();
+	      
+	      if (INTVAL (src) < 0)
+		return "bmaski	%0,32";
+	      else
+		return "movi	%0,0";
+	    }
+	}
       else
-        gcc_unreachable ();
+	gcc_unreachable ();
     }
   else if (GET_CODE (dst) == MEM && GET_CODE (src) == REG)
     return "stw\t%1,%0\n\tstw\t%R1,%R0";
@@ -1411,17 +1411,17 @@ mcore_expand_insv (rtx operands[])
       /* Do directly with bseti or bclri.  */
       /* RBE: 2/97 consider only low bit of constant.  */
       if ((INTVAL(operands[3])&1) == 0)
-        {
-          mask = ~(1 << posn);
-          emit_insn (gen_rtx_SET (SImode, operands[0],
-                              gen_rtx_AND (SImode, operands[0], GEN_INT (mask))));
-        }
+	{
+	  mask = ~(1 << posn);
+	  emit_insn (gen_rtx_SET (SImode, operands[0],
+			      gen_rtx_AND (SImode, operands[0], GEN_INT (mask))));
+	}
       else
-        {
-          mask = 1 << posn;
-          emit_insn (gen_rtx_SET (SImode, operands[0],
-                            gen_rtx_IOR (SImode, operands[0], GEN_INT (mask))));
-        }
+	{
+	  mask = 1 << posn;
+	  emit_insn (gen_rtx_SET (SImode, operands[0],
+			    gen_rtx_IOR (SImode, operands[0], GEN_INT (mask))));
+	}
       
       return 1;
     }
@@ -1429,7 +1429,7 @@ mcore_expand_insv (rtx operands[])
   /* Look at some bit-field placements that we aren't interested
      in handling ourselves, unless specifically directed to do so.  */
   if (! TARGET_W_FIELD)
-    return 0;                /* Generally, give up about now.  */
+    return 0;		/* Generally, give up about now.  */
 
   if (width == 8 && posn % 8 == 0)
     /* Byte sized and aligned; let caller break it up.  */
@@ -1459,7 +1459,7 @@ mcore_expand_insv (rtx operands[])
 
   /* Clear the field, to overlay it later with the source.  */
   emit_insn (gen_rtx_SET (SImode, operands[0], 
-                      gen_rtx_AND (SImode, operands[0], mreg)));
+		      gen_rtx_AND (SImode, operands[0], mreg)));
 
   /* If the source is constant 0, we've nothing to add back.  */
   if (GET_CODE (operands[3]) == CONST_INT && INTVAL (operands[3]) == 0)
@@ -1485,10 +1485,10 @@ mcore_expand_insv (rtx operands[])
   /* Insert source value in dest.  */
   if (posn != 0)
     emit_insn (gen_rtx_SET (SImode, sreg,
-                        gen_rtx_ASHIFT (SImode, sreg, GEN_INT (posn))));
+		        gen_rtx_ASHIFT (SImode, sreg, GEN_INT (posn))));
   
   emit_insn (gen_rtx_SET (SImode, operands[0],
-                      gen_rtx_IOR (SImode, operands[0], sreg)));
+		      gen_rtx_IOR (SImode, operands[0], sreg)));
 
   return 1;
 }
@@ -1548,33 +1548,33 @@ block_move_sequence (rtx dst_mem, rtx src_mem, int size, int align)
       phase ^= 1;
 
       if (size > 0)
-        {
-          int next_amount;
+	{
+	  int next_amount;
 
-          next_amount = (size >= 4 ? 4 : (size >= 2 ? 2 : 1));
-          next_amount = MIN (next_amount, align);
+	  next_amount = (size >= 4 ? 4 : (size >= 2 ? 2 : 1));
+	  next_amount = MIN (next_amount, align);
 
-          amount[next] = next_amount;
-          mode[next] = mode_from_align[next_amount];
-          temp[next] = gen_reg_rtx (mode[next]);
+	  amount[next] = next_amount;
+	  mode[next] = mode_from_align[next_amount];
+	  temp[next] = gen_reg_rtx (mode[next]);
 
-          x = adjust_address (src_mem, mode[next], offset_ld);
-          emit_insn (gen_rtx_SET (VOIDmode, temp[next], x));
+	  x = adjust_address (src_mem, mode[next], offset_ld);
+	  emit_insn (gen_rtx_SET (VOIDmode, temp[next], x));
 
-          offset_ld += next_amount;
-          size -= next_amount;
-          active[next] = true;
-        }
+	  offset_ld += next_amount;
+	  size -= next_amount;
+	  active[next] = true;
+	}
 
       if (active[phase])
-        {
-          active[phase] = false;
-          
-          x = adjust_address (dst_mem, mode[phase], offset_st);
-          emit_insn (gen_rtx_SET (VOIDmode, x, temp[phase]));
+	{
+	  active[phase] = false;
+	  
+	  x = adjust_address (dst_mem, mode[phase], offset_st);
+	  emit_insn (gen_rtx_SET (VOIDmode, x, temp[phase]));
 
-          offset_st += amount[phase];
-        }
+	  offset_st += amount[phase];
+	}
     }
   while (active[next]);
 }
@@ -1599,11 +1599,11 @@ mcore_expand_block_move (rtx *operands)
     {
     case 4:
       if (bytes & 1)
-        max = 4*4;
+	max = 4*4;
       else if (bytes & 3)
-        max = 8*4;
+	max = 8*4;
       else
-        max = 16*4;
+	max = 16*4;
       break;
     case 2:
       max = 4*2;
@@ -1632,9 +1632,9 @@ static int number_of_regs_before_varargs;
    for a varargs function.  */
 static int current_function_anonymous_args;
 
-#define        STACK_BYTES (STACK_BOUNDARY/BITS_PER_UNIT)
-#define        STORE_REACH (64)        /* Maximum displace of word store + 4.  */
-#define        ADDI_REACH (32)                /* Maximum addi operand.  */
+#define	STACK_BYTES (STACK_BOUNDARY/BITS_PER_UNIT)
+#define	STORE_REACH (64)	/* Maximum displace of word store + 4.  */
+#define	ADDI_REACH (32)		/* Maximum addi operand.  */
 
 static void
 layout_mcore_frame (struct mcore_frame * infp)
@@ -1702,17 +1702,17 @@ layout_mcore_frame (struct mcore_frame * infp)
     {
       /* Make sure we'll be aligned.  */
       if (localregarg % STACK_BYTES)
-        infp->pad_reg = STACK_BYTES - (localregarg % STACK_BYTES);
+	infp->pad_reg = STACK_BYTES - (localregarg % STACK_BYTES);
 
       step = localregarg + infp->pad_reg;
       infp->reg_offset = infp->local_size;
       
       if (outbounds + step <= ADDI_REACH && !frame_pointer_needed)
-        {
-          step += outbounds;
-          infp->reg_offset += outbounds;
-          outbounds = 0;
-        }
+	{
+	  step += outbounds;
+	  infp->reg_offset += outbounds;
+	  outbounds = 0;
+	}
       
       infp->arg_offset = step - 4;
       infp->growth[growths++] = step;
@@ -1721,7 +1721,7 @@ layout_mcore_frame (struct mcore_frame * infp)
       
       /* If we haven't already folded it in.  */
       if (outbounds)
-        infp->growth[growths++] = outbounds;
+	infp->growth[growths++] = outbounds;
       
       goto finish;
     }
@@ -1738,12 +1738,12 @@ layout_mcore_frame (struct mcore_frame * infp)
 
       /* Make sure we'll be aligned; use either pad_reg or pad_local.  */
       if (localregarg % STACK_BYTES)
-        infp->pad_reg = STACK_BYTES - (localregarg % STACK_BYTES);
+	infp->pad_reg = STACK_BYTES - (localregarg % STACK_BYTES);
 
       all = localregarg + infp->pad_reg + infp->pad_local;
-      step = ADDI_REACH;        /* As much up front as we can.  */
+      step = ADDI_REACH;	/* As much up front as we can.  */
       if (step > all)
-        step = all;
+	step = all;
       
       /* XXX: Consider whether step will still be aligned; we believe so.  */
       infp->arg_offset = step - 4;
@@ -1754,10 +1754,10 @@ layout_mcore_frame (struct mcore_frame * infp)
 
       /* Can we fold in any space required for outbounds?  */
       if (outbounds + all <= ADDI_REACH && !frame_pointer_needed)
-        {
-          all += outbounds;
-          outbounds = 0;
-        }
+	{
+	  all += outbounds;
+	  outbounds = 0;
+	}
 
       /* Get the rest of the locals in place.  */
       step = all;
@@ -1769,7 +1769,7 @@ layout_mcore_frame (struct mcore_frame * infp)
 
       /* Finish off if we need to do so.  */
       if (outbounds)
-        infp->growth[growths++] = outbounds;
+	infp->growth[growths++] = outbounds;
       
       goto finish;
     }
@@ -1785,30 +1785,30 @@ layout_mcore_frame (struct mcore_frame * infp)
       infp->reg_offset = 0;
 
       if (infp->local_size % STACK_BYTES)
-        infp->pad_local = STACK_BYTES - (infp->local_size % STACK_BYTES);
+	infp->pad_local = STACK_BYTES - (infp->local_size % STACK_BYTES);
       
       step = infp->local_size + infp->pad_local;
       
       if (!frame_pointer_needed)
-        {
-          step += outbounds;
-          outbounds = 0;
-        }
+	{
+	  step += outbounds;
+	  outbounds = 0;
+	}
       
       infp->growth[growths++] = step;
       infp->local_growth = growths;
 
       /* If there's any left to be done.  */
       if (outbounds)
-        infp->growth[growths++] = outbounds;
+	infp->growth[growths++] = outbounds;
       
       goto finish;
     }
 
   /* XXX: optimizations that we'll want to play with....
      -- regarg is not aligned, but it's a small number of registers;
-            use some of localsize so that regarg is aligned and then 
-            save the registers.  */
+    	use some of localsize so that regarg is aligned and then 
+    	save the registers.  */
 
   /* Simple encoding; plods down the stack buying the pieces as it goes.
      -- does not optimize space consumption.
@@ -1825,7 +1825,7 @@ layout_mcore_frame (struct mcore_frame * infp)
   if (frame_pointer_needed)
     {
       if (infp->local_size % STACK_BYTES != 0)
-        infp->pad_local = STACK_BYTES - (infp->local_size % STACK_BYTES);
+	infp->pad_local = STACK_BYTES - (infp->local_size % STACK_BYTES);
       
       infp->growth[growths++] = infp->local_size + infp->pad_local;
       infp->local_growth = growths;
@@ -1835,7 +1835,7 @@ layout_mcore_frame (struct mcore_frame * infp)
   else
     {
       if ((infp->local_size + outbounds) % STACK_BYTES != 0)
-        infp->pad_local = STACK_BYTES - ((infp->local_size + outbounds) % STACK_BYTES);
+	infp->pad_local = STACK_BYTES - ((infp->local_size + outbounds) % STACK_BYTES);
       
       infp->growth[growths++] = infp->local_size + infp->pad_local + outbounds;
       infp->local_growth = growths;
@@ -1883,9 +1883,9 @@ mcore_initial_elimination_offset (int from, int to)
 
 static void
 mcore_setup_incoming_varargs (CUMULATIVE_ARGS *args_so_far,
-                              enum machine_mode mode, tree type,
-                              int * ptr_pretend_size ATTRIBUTE_UNUSED,
-                              int second_time ATTRIBUTE_UNUSED)
+			      enum machine_mode mode, tree type,
+			      int * ptr_pretend_size ATTRIBUTE_UNUSED,
+			      int second_time ATTRIBUTE_UNUSED)
 {
   current_function_anonymous_args = 1;
 
@@ -1932,32 +1932,32 @@ mcore_expand_prolog (void)
       gcc_assert (GET_CODE (x) == SYMBOL_REF);
       
       if (mcore_current_function_name)
-        free (mcore_current_function_name);
+	free (mcore_current_function_name);
       
       mcore_current_function_name = xstrdup (XSTR (x, 0));
       
       ASM_OUTPUT_CG_NODE (asm_out_file, mcore_current_function_name, space_allocated);
 
       if (current_function_calls_alloca)
-        ASM_OUTPUT_CG_EDGE (asm_out_file, mcore_current_function_name, "alloca", 1);
+	ASM_OUTPUT_CG_EDGE (asm_out_file, mcore_current_function_name, "alloca", 1);
 
       /* 970425: RBE:
          We're looking at how the 8byte alignment affects stack layout
          and where we had to pad things. This emits information we can
          extract which tells us about frame sizes and the like.  */
       fprintf (asm_out_file,
-               "\t.equ\t__$frame$info$_%s_$_%d_%d_x%x_%d_%d_%d,0\n",
-               mcore_current_function_name,
-               fi.arg_size, fi.reg_size, fi.reg_mask,
-               fi.local_size, fi.outbound_size,
-               frame_pointer_needed);
+	       "\t.equ\t__$frame$info$_%s_$_%d_%d_x%x_%d_%d_%d,0\n",
+	       mcore_current_function_name,
+	       fi.arg_size, fi.reg_size, fi.reg_mask,
+	       fi.local_size, fi.outbound_size,
+	       frame_pointer_needed);
     }
 
   if (mcore_naked_function_p ())
     return;
   
   /* Handle stdarg+regsaves in one shot: can't be more than 64 bytes.  */
-  output_stack_adjust (-1, fi.growth[growth++]);        /* Grows it.  */
+  output_stack_adjust (-1, fi.growth[growth++]);	/* Grows it.  */
 
   /* If we have a parameter passed partially in regs and partially in memory,
      the registers will have been stored to memory already in function.c.  So
@@ -1979,7 +1979,7 @@ mcore_expand_prolog (void)
 
   /* Do we need another stack adjustment before we do the register saves?  */
   if (growth < fi.reg_growth)
-    output_stack_adjust (-1, fi.growth[growth++]);                /* Grows it.  */
+    output_stack_adjust (-1, fi.growth[growth++]);		/* Grows it.  */
 
   if (fi.reg_size != 0)
     {
@@ -1989,28 +1989,28 @@ mcore_expand_prolog (void)
       for (i = 15; i >= 0; i--)
         {
           if (offs == 0 && i == 15 && ((fi.reg_mask & 0xc000) == 0xc000))
-            {
-              int first_reg = 15;
+	    {
+	      int first_reg = 15;
 
-              while (fi.reg_mask & (1 << first_reg))
-                first_reg--;
-              first_reg++;
+	      while (fi.reg_mask & (1 << first_reg))
+	        first_reg--;
+	      first_reg++;
 
-              emit_insn (gen_store_multiple (gen_rtx_MEM (SImode, stack_pointer_rtx),
-                                             gen_rtx_REG (SImode, first_reg),
-                                             GEN_INT (16 - first_reg)));
+	      emit_insn (gen_store_multiple (gen_rtx_MEM (SImode, stack_pointer_rtx),
+					     gen_rtx_REG (SImode, first_reg),
+					     GEN_INT (16 - first_reg)));
 
-              i -= (15 - first_reg);
-              offs += (16 - first_reg) * 4;
-            }
+	      i -= (15 - first_reg);
+	      offs += (16 - first_reg) * 4;
+	    }
           else if (fi.reg_mask & (1 << i))
-            {
-              emit_insn (gen_movsi
-                         (gen_rtx_MEM (SImode,
-                                   plus_constant (stack_pointer_rtx, offs)),
-                          gen_rtx_REG (SImode, i)));
-              offs += 4;
-            }
+	    {
+	      emit_insn (gen_movsi
+		         (gen_rtx_MEM (SImode,
+			           plus_constant (stack_pointer_rtx, offs)),
+		          gen_rtx_REG (SImode, i)));
+	      offs += 4;
+	    }
         }
     }
 
@@ -2019,7 +2019,7 @@ mcore_expand_prolog (void)
     {
       /* If we haven't already purchased to 'fp'.  */
       if (growth < fi.local_growth)
-        output_stack_adjust (-1, fi.growth[growth++]);                /* Grows it.  */
+        output_stack_adjust (-1, fi.growth[growth++]);		/* Grows it.  */
       
       emit_insn (gen_movsi (frame_pointer_rtx, stack_pointer_rtx));
 
@@ -2030,7 +2030,7 @@ mcore_expand_prolog (void)
   else
     {
       if (growth < fi.local_growth)
-        output_stack_adjust (-1, fi.growth[growth++]);                /* Grows it.  */
+        output_stack_adjust (-1, fi.growth[growth++]);		/* Grows it.  */
       if (fi.growth[growth])
         output_stack_adjust (-1, fi.growth[growth++]);
     }
@@ -2064,7 +2064,7 @@ mcore_expand_epilog (void)
         {
           if (fi.growth[growth] != 0)
             output_stack_adjust (1, fi.growth[growth]);
-          growth--;
+	  growth--;
         }
     }
 
@@ -2079,32 +2079,32 @@ mcore_expand_epilog (void)
   for (i = 15; i >= 0; i--)
     {
       if (offs == 0 && i == 15 && ((fi.reg_mask & 0xc000) == 0xc000))
-        {
-          int first_reg;
+	{
+	  int first_reg;
 
-          /* Find the starting register.  */
-          first_reg = 15;
-          
-          while (fi.reg_mask & (1 << first_reg))
-            first_reg--;
-          
-          first_reg++;
+	  /* Find the starting register.  */
+	  first_reg = 15;
+	  
+	  while (fi.reg_mask & (1 << first_reg))
+	    first_reg--;
+	  
+	  first_reg++;
 
-          emit_insn (gen_load_multiple (gen_rtx_REG (SImode, first_reg),
-                                        gen_rtx_MEM (SImode, stack_pointer_rtx),
-                                        GEN_INT (16 - first_reg)));
+	  emit_insn (gen_load_multiple (gen_rtx_REG (SImode, first_reg),
+					gen_rtx_MEM (SImode, stack_pointer_rtx),
+					GEN_INT (16 - first_reg)));
 
-          i -= (15 - first_reg);
-          offs += (16 - first_reg) * 4;
-        }
+	  i -= (15 - first_reg);
+	  offs += (16 - first_reg) * 4;
+	}
       else if (fi.reg_mask & (1 << i))
-        {
-          emit_insn (gen_movsi
-                     (gen_rtx_REG (SImode, i),
-                      gen_rtx_MEM (SImode,
-                               plus_constant (stack_pointer_rtx, offs))));
-          offs += 4;
-        }
+	{
+	  emit_insn (gen_movsi
+		     (gen_rtx_REG (SImode, i),
+		      gen_rtx_MEM (SImode,
+			       plus_constant (stack_pointer_rtx, offs))));
+	  offs += 4;
+	}
     }
 
   /* Give back anything else.  */
@@ -2167,8 +2167,8 @@ mcore_expand_epilog (void)
 
 typedef struct
 {
-  rtx value;                        /* Value in table.  */
-  rtx label;                        /* Label of value.  */
+  rtx value;			/* Value in table.  */
+  rtx label;			/* Label of value.  */
 } pool_node;
 
 /* The maximum number of constants that can fit into one pool, since
@@ -2194,13 +2194,13 @@ mcore_output_jump_label_table (void)
       fprintf (asm_out_file, "\t.align 2\n");
       
       for (i = 0; i < pool_size; i++)
-        {
-          pool_node * p = pool_vector + i;
+	{
+	  pool_node * p = pool_vector + i;
 
-          (*targetm.asm_out.internal_label) (asm_out_file, "L", CODE_LABEL_NUMBER (p->label));
-          
-          output_asm_insn (".long        %0", &p->value);
-        }
+	  (*targetm.asm_out.internal_label) (asm_out_file, "L", CODE_LABEL_NUMBER (p->label));
+	  
+	  output_asm_insn (".long	%0", &p->value);
+	}
       
       pool_size = 0;
     }
@@ -2223,25 +2223,25 @@ is_cond_candidate (rtx insn)
       rtx src, dst;
 
       if (GET_CODE (pat) != SET)
-        return COND_NO;
+	return COND_NO;
 
       dst = XEXP (pat, 0);
 
       if ((GET_CODE (dst) != REG &&
            GET_CODE (dst) != SUBREG) ||
-          GET_MODE (dst) != SImode)
-        return COND_NO;
+	  GET_MODE (dst) != SImode)
+	return COND_NO;
   
       src = XEXP (pat, 1);
 
       if ((GET_CODE (src) == REG ||
            (GET_CODE (src) == SUBREG &&
-            GET_CODE (SUBREG_REG (src)) == REG)) &&
-          GET_MODE (src) == SImode)
-        return COND_MOV_INSN;
+	    GET_CODE (SUBREG_REG (src)) == REG)) &&
+	  GET_MODE (src) == SImode)
+	return COND_MOV_INSN;
       else if (GET_CODE (src) == CONST_INT && 
                INTVAL (src) == 0)
-        return COND_CLR_INSN;
+	return COND_CLR_INSN;
       else if (GET_CODE (src) == PLUS &&
                (GET_CODE (XEXP (src, 0)) == REG ||
                 (GET_CODE (XEXP (src, 0)) == SUBREG &&
@@ -2249,28 +2249,28 @@ is_cond_candidate (rtx insn)
                GET_MODE (XEXP (src, 0)) == SImode &&
                GET_CODE (XEXP (src, 1)) == CONST_INT &&
                INTVAL (XEXP (src, 1)) == 1)
-        return COND_INC_INSN;
+	return COND_INC_INSN;
       else if (((GET_CODE (src) == MINUS &&
-                 GET_CODE (XEXP (src, 1)) == CONST_INT &&
-                 INTVAL( XEXP (src, 1)) == 1) ||
+		 GET_CODE (XEXP (src, 1)) == CONST_INT &&
+		 INTVAL( XEXP (src, 1)) == 1) ||
                 (GET_CODE (src) == PLUS &&
-                 GET_CODE (XEXP (src, 1)) == CONST_INT &&
-                 INTVAL (XEXP (src, 1)) == -1)) &&
+		 GET_CODE (XEXP (src, 1)) == CONST_INT &&
+		 INTVAL (XEXP (src, 1)) == -1)) &&
                (GET_CODE (XEXP (src, 0)) == REG ||
-                (GET_CODE (XEXP (src, 0)) == SUBREG &&
-                 GET_CODE (SUBREG_REG (XEXP (src, 0))) == REG)) &&
+		(GET_CODE (XEXP (src, 0)) == SUBREG &&
+		 GET_CODE (SUBREG_REG (XEXP (src, 0))) == REG)) &&
                GET_MODE (XEXP (src, 0)) == SImode)
-        return COND_DEC_INSN;
+	return COND_DEC_INSN;
 
       /* Some insns that we don't bother with:
-         (set (rx:DI) (ry:DI))
-         (set (rx:DI) (const_int 0))
+	 (set (rx:DI) (ry:DI))
+	 (set (rx:DI) (const_int 0))
       */            
 
     }
   else if (GET_CODE (insn) == JUMP_INSN &&
-           GET_CODE (PATTERN (insn)) == SET &&
-           GET_CODE (XEXP (PATTERN (insn), 1)) == LABEL_REF)
+	   GET_CODE (PATTERN (insn)) == SET &&
+	   GET_CODE (XEXP (PATTERN (insn), 1)) == LABEL_REF)
     return COND_BRANCH_INSN;
 
   return COND_NO;
@@ -2307,30 +2307,30 @@ emit_new_cond_insn (rtx insn, int cond)
     case COND_MOV_INSN: 
     case COND_CLR_INSN:
       if (cond)
-        c_insn = gen_movt0 (dst, src, dst);
+	c_insn = gen_movt0 (dst, src, dst);
       else
-        c_insn = gen_movt0 (dst, dst, src);
+	c_insn = gen_movt0 (dst, dst, src);
       break;
 
     case COND_INC_INSN:
       if (cond)
-        c_insn = gen_incscc (dst, dst);
+	c_insn = gen_incscc (dst, dst);
       else
-        c_insn = gen_incscc_false (dst, dst);
+	c_insn = gen_incscc_false (dst, dst);
       break;
   
     case COND_DEC_INSN:
       if (cond)
-        c_insn = gen_decscc (dst, dst);
+	c_insn = gen_decscc (dst, dst);
       else
-        c_insn = gen_decscc_false (dst, dst);
+	c_insn = gen_decscc_false (dst, dst);
       break;
 
     case COND_BRANCH_INSN:
       if (cond)
-        c_insn = gen_branch_true (dst);
+	c_insn = gen_branch_true (dst);
       else
-        c_insn = gen_branch_false (dst);
+	c_insn = gen_branch_false (dst);
       break;
 
     default:
@@ -2341,9 +2341,9 @@ emit_new_cond_insn (rtx insn, int cond)
   if (rtx_length [GET_CODE (c_insn)] >= 7 && rtx_length [GET_CODE (insn)] >= 7)
     {
       /* We really don't need to bother with the notes and links at this
-         point, but go ahead and save the notes.  This will help is_dead()
-         when applying peepholes (links don't matter since they are not
-         used any more beyond this point for the mcore).  */
+	 point, but go ahead and save the notes.  This will help is_dead()
+	 when applying peepholes (links don't matter since they are not
+	 used any more beyond this point for the mcore).  */
       REG_NOTES (c_insn) = REG_NOTES (insn);
     }
   
@@ -2352,7 +2352,7 @@ emit_new_cond_insn (rtx insn, int cond)
       /* For jumps, we need to be a little bit careful and emit the new jump
          before the old one and to update the use count for the target label.
          This way, the barrier following the old (uncond) jump will get
-         deleted, but the label won't.  */
+	 deleted, but the label won't.  */
       c_insn = emit_jump_insn_before (c_insn, insn);
       
       ++ LABEL_NUSES (dst);
@@ -2377,21 +2377,21 @@ emit_new_cond_insn (rtx insn, int cond)
 
    e.g., change:   
 
-                bt        L2             <-- end of block 1 (delete)
-                mov        r7,r8          
-                addu        r7,1           
-                br        L3             <-- end of block 2
+		bt	L2             <-- end of block 1 (delete)
+		mov	r7,r8          
+		addu	r7,1           
+		br	L3             <-- end of block 2
 
-        L2:        ...                    <-- start of block 3 (NUSES==1)
-        L3:        ...
+	L2:	...                    <-- start of block 3 (NUSES==1)
+	L3:	...
 
    to:
 
-                movf        r7,r8
-                incf        r7
-                bf        L3
+		movf	r7,r8
+		incf	r7
+		bf	L3
 
-        L3:        ...
+	L3:	...
 
    we can delete the L2 label if NUSES==1 and re-apply the optimization
    starting at the last instruction of block 2.  This may allow an entire
@@ -2433,7 +2433,7 @@ conditionalize_block (rtx first)
   else
     {
       /* An inverse branch, so extract the label out of the 2nd arm
-         and complement the condition.  */
+	 and complement the condition.  */
       cond = (cond == 0);
       br_lab_num = CODE_LABEL_NUMBER (XEXP (XEXP (XEXP (br_pat, 1), 2), 0));
     }
@@ -2451,20 +2451,20 @@ conditionalize_block (rtx first)
 
       /* Look for the label at the start of block 3.  */
       if (code == CODE_LABEL && CODE_LABEL_NUMBER (insn) == br_lab_num)
-        break;
+	break;
 
       /* Skip barriers, notes, and conditionalizable insns.  If the
          insn is not conditionalizable or makes this optimization fail,
          just return the next insn so we can start over from that point.  */
       if (code != BARRIER && code != NOTE && !is_cond_candidate (insn))
-        return NEXT_INSN (insn);
+	return NEXT_INSN (insn);
      
       /* Remember the last real insn before the label (i.e. end of block 2).  */
       if (code == JUMP_INSN || code == INSN)
-        {
-          blk_size ++;
-          end_blk_2_insn = insn;
-        }
+	{
+	  blk_size ++;
+	  end_blk_2_insn = insn;
+	}
     }
 
   if (!insn)
@@ -2495,16 +2495,16 @@ conditionalize_block (rtx first)
       rtx newinsn;
 
       if (INSN_DELETED_P (insn))
-        continue;
+	continue;
       
       /* Try to form a conditional variant of the instruction and emit it.  */
       if ((newinsn = emit_new_cond_insn (insn, cond)))
-        {
-          if (end_blk_2_insn == insn)
+	{
+	  if (end_blk_2_insn == insn)
             end_blk_2_insn = newinsn;
 
-          insn = newinsn;
-        }
+	  insn = newinsn;
+	}
     }
 
   /* Note whether we will delete the label starting blk 3 when the jump
@@ -2561,15 +2561,15 @@ mcore_reorg (void)
   if (saved_warn_return_type != -1)
     {
       /* Only restore the value if we have reached another function.
-         The test of warn_return_type occurs in final_function () in
-         c-decl.c a long time after the code for the function is generated,
-         so we need a counter to tell us when we have finished parsing that
-         function and can restore the flag.  */
+	 The test of warn_return_type occurs in final_function () in
+	 c-decl.c a long time after the code for the function is generated,
+	 so we need a counter to tell us when we have finished parsing that
+	 function and can restore the flag.  */
       if (--saved_warn_return_type_count == 0)
-        {
-          warn_return_type = saved_warn_return_type;
-          saved_warn_return_type = -1;
-        }
+	{
+	  warn_return_type = saved_warn_return_type;
+	  saved_warn_return_type = -1;
+	}
     }
   
   if (optimize == 0)
@@ -2607,7 +2607,7 @@ mcore_r15_operand_p (rtx x)
 
 enum reg_class
 mcore_secondary_reload_class (enum reg_class class,
-                              enum machine_mode mode ATTRIBUTE_UNUSED, rtx x)
+			      enum machine_mode mode ATTRIBUTE_UNUSED, rtx x)
 {
   if (TEST_HARD_REG_BIT (reg_class_contents[class], 15)
       && !mcore_r15_operand_p (x))
@@ -2700,19 +2700,19 @@ handle_structs_in_regs (enum machine_mode mode, tree type, int reg)
       int    nregs;
       rtx    result;
       rtvec  rtvec;
-                     
+		     
       for (nregs = 0; size > 0; size -= UNITS_PER_WORD)
         {
           arg_regs [nregs] =
-            gen_rtx_EXPR_LIST (SImode, gen_rtx_REG (SImode, reg ++),
-                                 GEN_INT (nregs * UNITS_PER_WORD));
-          nregs ++;
+	    gen_rtx_EXPR_LIST (SImode, gen_rtx_REG (SImode, reg ++),
+		  	       GEN_INT (nregs * UNITS_PER_WORD));
+	  nregs ++;
         }
 
       /* We assume here that NPARM_REGS == 6.  The assert checks this.  */
       assert (ARRAY_SIZE (arg_regs) == 6);
       rtvec = gen_rtvec (nregs, arg_regs[0], arg_regs[1], arg_regs[2],
-                          arg_regs[3], arg_regs[4], arg_regs[5]);
+			  arg_regs[3], arg_regs[4], arg_regs[5]);
       
       result = gen_rtx_PARALLEL (mode, rtvec);
       return result;
@@ -2754,7 +2754,7 @@ mcore_function_value (tree valtype, tree func ATTRIBUTE_UNUSED)
 
 rtx
 mcore_function_arg (CUMULATIVE_ARGS cum, enum machine_mode mode,
-                    tree type, int named)
+		    tree type, int named)
 {
   int arg_reg;
   
@@ -2781,7 +2781,7 @@ mcore_function_arg (CUMULATIVE_ARGS cum, enum machine_mode mode,
 
 static int
 mcore_arg_partial_bytes (CUMULATIVE_ARGS *cum, enum machine_mode mode,
-                         tree type, bool named)
+			 tree type, bool named)
 {
   int reg = ROUND_REG (*cum, mode);
 
@@ -2920,8 +2920,8 @@ mcore_mark_dllimport (tree decl)
   idp = get_identifier (newname);
 
   newrtl = gen_rtx_MEM (Pmode,
-                    gen_rtx_SYMBOL_REF (Pmode,
-                             IDENTIFIER_POINTER (idp)));
+		    gen_rtx_SYMBOL_REF (Pmode,
+			     IDENTIFIER_POINTER (idp)));
   XEXP (DECL_RTL (decl), 0) = newrtl;
 }
 
@@ -2962,12 +2962,12 @@ mcore_encode_section_info (tree decl, rtx rtl ATTRIBUTE_UNUSED, int first ATTRIB
      a subsequent definition nullified that.  The attribute is gone
      but DECL_RTL still has @i.__imp_foo.  We need to remove that.  */
   else if ((TREE_CODE (decl) == FUNCTION_DECL
-            || TREE_CODE (decl) == VAR_DECL)
-           && DECL_RTL (decl) != NULL_RTX
-           && GET_CODE (DECL_RTL (decl)) == MEM
-           && GET_CODE (XEXP (DECL_RTL (decl), 0)) == MEM
-           && GET_CODE (XEXP (XEXP (DECL_RTL (decl), 0), 0)) == SYMBOL_REF
-           && mcore_dllimport_name_p (XSTR (XEXP (XEXP (DECL_RTL (decl), 0), 0), 0)))
+	    || TREE_CODE (decl) == VAR_DECL)
+	   && DECL_RTL (decl) != NULL_RTX
+	   && GET_CODE (DECL_RTL (decl)) == MEM
+	   && GET_CODE (XEXP (DECL_RTL (decl), 0)) == MEM
+	   && GET_CODE (XEXP (XEXP (DECL_RTL (decl), 0), 0)) == SYMBOL_REF
+	   && mcore_dllimport_name_p (XSTR (XEXP (XEXP (DECL_RTL (decl), 0), 0), 0)))
     {
       const char * oldname = XSTR (XEXP (XEXP (DECL_RTL (decl), 0), 0), 0);
       tree idp = get_identifier (oldname + 9);
@@ -2976,7 +2976,7 @@ mcore_encode_section_info (tree decl, rtx rtl ATTRIBUTE_UNUSED, int first ATTRIB
       XEXP (DECL_RTL (decl), 0) = newrtl;
 
       /* We previously set TREE_PUBLIC and DECL_EXTERNAL.
-         ??? We leave these alone for now.  */
+	 ??? We leave these alone for now.  */
     }
 }
 
@@ -3007,30 +3007,30 @@ const struct attribute_spec mcore_attribute_table[] =
 
 static tree
 mcore_handle_naked_attribute (tree * node, tree name, tree args ATTRIBUTE_UNUSED,
-                              int flags ATTRIBUTE_UNUSED, bool * no_add_attrs)
+			      int flags ATTRIBUTE_UNUSED, bool * no_add_attrs)
 {
   if (TREE_CODE (*node) == FUNCTION_DECL)
     {
       /* PR14310 - don't complain about lack of return statement
-         in naked functions.  The solution here is a gross hack
-         but this is the only way to solve the problem without
-         adding a new feature to GCC.  I did try submitting a patch
-         that would add such a new feature, but it was (rightfully)
-         rejected on the grounds that it was creeping featurism,
-         so hence this code.  */
+	 in naked functions.  The solution here is a gross hack
+	 but this is the only way to solve the problem without
+	 adding a new feature to GCC.  I did try submitting a patch
+	 that would add such a new feature, but it was (rightfully)
+	 rejected on the grounds that it was creeping featurism,
+	 so hence this code.  */
       if (warn_return_type)
-        {
-          saved_warn_return_type = warn_return_type;
-          warn_return_type = 0;
-          saved_warn_return_type_count = 2;
-        }
+	{
+	  saved_warn_return_type = warn_return_type;
+	  warn_return_type = 0;
+	  saved_warn_return_type_count = 2;
+	}
       else if (saved_warn_return_type_count)
-        saved_warn_return_type_count = 2;
+	saved_warn_return_type_count = 2;
     }
   else
     {
       warning (OPT_Wattributes, "%qs attribute only applies to functions",
-               IDENTIFIER_POINTER (name));
+	       IDENTIFIER_POINTER (name));
       *no_add_attrs = true;
     }
 
@@ -3082,8 +3082,8 @@ mcore_naked_function_p (void)
 #ifdef OBJECT_FORMAT_ELF
 static void
 mcore_asm_named_section (const char *name, 
-                         unsigned int flags ATTRIBUTE_UNUSED,
-                         tree decl ATTRIBUTE_UNUSED)
+			 unsigned int flags ATTRIBUTE_UNUSED,
+			 tree decl ATTRIBUTE_UNUSED)
 {
   fprintf (asm_out_file, "\t.section %s\n", name);
 }

@@ -27,7 +27,7 @@ memcmp (const PTR str1, const PTR str2, size_t count)
   while (count-- > 0)
     {
       if (*s1++ != *s2++)
-          return s1[-1] < s2[-1] ? -1 : 1;
+	  return s1[-1] < s2[-1] ? -1 : 1;
     }
   return 0;
 }

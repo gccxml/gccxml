@@ -20,10 +20,10 @@
    the Free Software Foundation, 51 Franklin Street, Fifth Floor,
    Boston, MA 02110-1301, USA.  */
 
-#define TARGET_OS_CPP_BUILTINS()                \
-    do {                                        \
-        builtin_define_std ("arm");                \
-        builtin_define_std ("semi");                \
+#define TARGET_OS_CPP_BUILTINS()		\
+    do {					\
+	builtin_define_std ("arm");		\
+	builtin_define_std ("semi");		\
     } while (0)
 
 #define ASM_SPEC "%{g -g} -arch 4 -apcs 3/32bit"

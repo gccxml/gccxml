@@ -50,10 +50,10 @@
 #include "basic-block.h"
 
 /* Frame pointer register mask.  */
-#define FP_MASK                          (1 << (GPR_FP))
+#define FP_MASK		 	 (1 << (GPR_FP))
 
 /* Link register mask.  */
-#define LINK_MASK                  (1 << (GPR_LINK))
+#define LINK_MASK	 	 (1 << (GPR_LINK))
 
 /* Given a SIZE in bytes, advance to the next word.  */
 #define ROUND_ADVANCE(SIZE) (((SIZE) + UNITS_PER_WORD - 1) / UNITS_PER_WORD)
@@ -88,7 +88,7 @@ static int mt_flag_delayed_branch;
 
 static rtx
 mt_struct_value_rtx (tree fndecl ATTRIBUTE_UNUSED,
-                         int incoming ATTRIBUTE_UNUSED)
+			 int incoming ATTRIBUTE_UNUSED)
 {
   return gen_rtx_REG (Pmode, RETVAL_REGNUM);
 }
@@ -115,7 +115,7 @@ mt_asm_output_opcode (FILE *f ATTRIBUTE_UNUSED, const char *ptr)
 {
   if (mt_nops_required)
     fprintf (f, ";# need %d nops because of %s\n\t",
-             mt_nops_required, mt_nop_reasons);
+	     mt_nops_required, mt_nop_reasons);
   
   while (mt_nops_required)
     {
@@ -208,8 +208,8 @@ insn_true_dependent_p (rtx x, rtx y)
 
 void
 mt_final_prescan_insn (rtx   insn,
-                        rtx * opvec ATTRIBUTE_UNUSED,
-                        int   noperands ATTRIBUTE_UNUSED)
+			rtx * opvec ATTRIBUTE_UNUSED,
+			int   noperands ATTRIBUTE_UNUSED)
 {
   rtx prev_i;
   enum attr_type prev_attr;
@@ -228,14 +228,14 @@ mt_final_prescan_insn (rtx   insn,
   /* Find the previous real instructions.  */
   for (prev_i = PREV_INSN (insn);
        prev_i != NULL
-         && (! INSN_P (prev_i)
-             || GET_CODE (PATTERN (prev_i)) == USE
-             || GET_CODE (PATTERN (prev_i)) == CLOBBER);
+	 && (! INSN_P (prev_i)
+	     || GET_CODE (PATTERN (prev_i)) == USE
+	     || GET_CODE (PATTERN (prev_i)) == CLOBBER);
        prev_i = PREV_INSN (prev_i))
     {
       /* If we meet a barrier, there is no flow through here.  */
       if (BARRIER_P (prev_i))
-        return;
+	return;
     }
   
   /* If there isn't one then there is nothing that we need do.  */
@@ -254,46 +254,46 @@ mt_final_prescan_insn (rtx   insn,
     case TYPE_STORE:
       /* Avoid consecutive memory operation.  */
       if  ((prev_attr == TYPE_LOAD || prev_attr == TYPE_STORE)
-           && TARGET_MS1_64_001)
-        {
-          mt_nops_required = 1;
-          mt_nop_reasons = "consecutive mem ops";
-        }
+	   && TARGET_MS1_64_001)
+	{
+	  mt_nops_required = 1;
+	  mt_nop_reasons = "consecutive mem ops";
+	}
       /* Drop through.  */
 
     case TYPE_ARITH:
     case TYPE_COMPLEX:
       /* One cycle of delay is required between load
-         and the dependent arithmetic instruction.  */
+	 and the dependent arithmetic instruction.  */
       if (prev_attr == TYPE_LOAD
-          && insn_true_dependent_p (prev_i, insn))
-        {
-          mt_nops_required = 1;
-          mt_nop_reasons = "load->arith dependency delay";
-        }
+	  && insn_true_dependent_p (prev_i, insn))
+	{
+	  mt_nops_required = 1;
+	  mt_nop_reasons = "load->arith dependency delay";
+	}
       break;
 
     case TYPE_BRANCH:
       if (insn_dependent_p (prev_i, insn))
-        {
-          if (prev_attr == TYPE_ARITH && TARGET_MS1_64_001)
-            {
-              /* One cycle of delay between arith
-                 instructions and branch dependent on arith.  */
-              mt_nops_required = 1;
-              mt_nop_reasons = "arith->branch dependency delay";
-            }
-          else if (prev_attr == TYPE_LOAD)
-            {
-              /* Two cycles of delay are required
-                 between load and dependent branch.  */
-              if (TARGET_MS1_64_001)
-                mt_nops_required = 2;
-              else
-                mt_nops_required = 1;
-              mt_nop_reasons = "load->branch dependency delay";
-            }
-        }
+	{
+	  if (prev_attr == TYPE_ARITH && TARGET_MS1_64_001)
+	    {
+	      /* One cycle of delay between arith
+		 instructions and branch dependent on arith.  */
+	      mt_nops_required = 1;
+	      mt_nop_reasons = "arith->branch dependency delay";
+	    }
+	  else if (prev_attr == TYPE_LOAD)
+	    {
+	      /* Two cycles of delay are required
+		 between load and dependent branch.  */
+	      if (TARGET_MS1_64_001)
+		mt_nops_required = 2;
+	      else
+		mt_nops_required = 1;
+	      mt_nop_reasons = "load->branch dependency delay";
+	    }
+	}
       break;
 
     default:
@@ -315,9 +315,9 @@ mt_debug_stack (struct mt_frame_info * info)
     }
 
   fprintf (stderr, "\nStack information for function %s:\n",
-           ((current_function_decl && DECL_NAME (current_function_decl))
-            ? IDENTIFIER_POINTER (DECL_NAME (current_function_decl))
-            : "<unknown>"));
+	   ((current_function_decl && DECL_NAME (current_function_decl))
+	    ? IDENTIFIER_POINTER (DECL_NAME (current_function_decl))
+	    : "<unknown>"));
 
   fprintf (stderr, "\ttotal_size       = %d\n", info->total_size);
   fprintf (stderr, "\tpretend_size     = %d\n", info->pretend_size);
@@ -353,47 +353,47 @@ mt_print_operand_simple_address (FILE * file, rtx addr)
     switch (GET_CODE (addr))
       {
       case REG:
-        fprintf (file, "%s, #0", reg_names [REGNO (addr)]);
-        break;
-        
+	fprintf (file, "%s, #0", reg_names [REGNO (addr)]);
+	break;
+	
       case PLUS:
-        {
-          rtx reg = 0;
-          rtx offset = 0;
-          rtx arg0 = XEXP (addr, 0);
-          rtx arg1 = XEXP (addr, 1);
+	{
+	  rtx reg = 0;
+	  rtx offset = 0;
+	  rtx arg0 = XEXP (addr, 0);
+	  rtx arg1 = XEXP (addr, 1);
 
-          if (GET_CODE (arg0) == REG)
-            {
-              reg = arg0;
-              offset = arg1;
-              if (GET_CODE (offset) == REG)
-                fatal_insn ("PRINT_OPERAND_ADDRESS, 2 regs", addr);
-            }
+	  if (GET_CODE (arg0) == REG)
+	    {
+	      reg = arg0;
+	      offset = arg1;
+	      if (GET_CODE (offset) == REG)
+		fatal_insn ("PRINT_OPERAND_ADDRESS, 2 regs", addr);
+	    }
 
-          else if (GET_CODE (arg1) == REG)
-              reg = arg1, offset = arg0;
-          else if (CONSTANT_P (arg0) && CONSTANT_P (arg1))
-            {
-              fprintf (file, "%s, #", reg_names [GPR_R0]);
-              output_addr_const (file, addr);
-              break;
-            }
-          fprintf (file, "%s, #", reg_names [REGNO (reg)]);
-          output_addr_const (file, offset);
-          break;
-        }
+	  else if (GET_CODE (arg1) == REG)
+	      reg = arg1, offset = arg0;
+	  else if (CONSTANT_P (arg0) && CONSTANT_P (arg1))
+	    {
+	      fprintf (file, "%s, #", reg_names [GPR_R0]);
+	      output_addr_const (file, addr);
+	      break;
+	    }
+	  fprintf (file, "%s, #", reg_names [REGNO (reg)]);
+	  output_addr_const (file, offset);
+	  break;
+	}
 
       case LABEL_REF:
       case SYMBOL_REF:
       case CONST_INT:
       case CONST:
-        output_addr_const (file, addr);
-        break;
+	output_addr_const (file, addr);
+	break;
 
       default:
-        fatal_insn ("PRINT_OPERAND_ADDRESS, invalid insn #1", addr);
-        break;
+	fatal_insn ("PRINT_OPERAND_ADDRESS, invalid insn #1", addr);
+	break;
       }
 }
 
@@ -418,7 +418,7 @@ mt_print_operand (FILE * file, rtx x, int code)
     case '#':
       /* Output a nop if there's nothing for the delay slot.  */
       if (dbr_sequence_length () == 0)
-        fputs ("\n\tnop", file);
+	fputs ("\n\tnop", file);
       return;
       
     case 'H': 
@@ -439,10 +439,10 @@ mt_print_operand (FILE * file, rtx x, int code)
 
     case 'z':
       if (GET_CODE (x) == CONST_INT && INTVAL (x) == 0)
-        {
-          fputs (reg_names[GPR_R0], file);
-          return;
-        }
+	{
+	  fputs (reg_names[GPR_R0], file);
+	  return;
+	}
 
     case 0:
       /* Handled below.  */
@@ -485,7 +485,7 @@ mt_print_operand (FILE * file, rtx x, int code)
 /* Implement INIT_CUMULATIVE_ARGS.  */
 void
 mt_init_cumulative_args (CUMULATIVE_ARGS * cum, tree fntype, rtx libname,
-                         tree fndecl ATTRIBUTE_UNUSED, int incoming)
+			 tree fndecl ATTRIBUTE_UNUSED, int incoming)
 {
   *cum = 0;
 
@@ -494,20 +494,20 @@ mt_init_cumulative_args (CUMULATIVE_ARGS * cum, tree fntype, rtx libname,
       fprintf (stderr, "\nmt_init_cumulative_args:");
 
       if (incoming)
-        fputs (" incoming", stderr);
+	fputs (" incoming", stderr);
 
       if (fntype)
-        {
-          tree ret_type = TREE_TYPE (fntype);
-          fprintf (stderr, " return = %s,",
-                   tree_code_name[ (int)TREE_CODE (ret_type) ]);
-        }
+	{
+	  tree ret_type = TREE_TYPE (fntype);
+	  fprintf (stderr, " return = %s,",
+		   tree_code_name[ (int)TREE_CODE (ret_type) ]);
+	}
 
       if (libname && GET_CODE (libname) == SYMBOL_REF)
-        fprintf (stderr, " libname = %s", XSTR (libname, 0));
+	fprintf (stderr, " libname = %s", XSTR (libname, 0));
 
       if (cfun->returns_struct)
-        fprintf (stderr, " return-struct");
+	fprintf (stderr, " return-struct");
 
       putc ('\n', stderr);
     }
@@ -529,11 +529,11 @@ mt_init_cumulative_args (CUMULATIVE_ARGS * cum, tree fntype, rtx libname,
 
 static int
 mt_function_arg_slotno (const CUMULATIVE_ARGS * cum,
-                        enum machine_mode mode,
-                        tree type,
-                        int named ATTRIBUTE_UNUSED,
-                        int incoming_p ATTRIBUTE_UNUSED,
-                        int * pregno)
+			enum machine_mode mode,
+			tree type,
+			int named ATTRIBUTE_UNUSED,
+			int incoming_p ATTRIBUTE_UNUSED,
+			int * pregno)
 {
   int regbase = FIRST_ARG_REGNUM;
   int slotno  = * cum;
@@ -552,10 +552,10 @@ mt_function_arg_slotno (const CUMULATIVE_ARGS * cum,
 /* Implement FUNCTION_ARG.  */
 rtx
 mt_function_arg (const CUMULATIVE_ARGS * cum,
-                 enum machine_mode mode,
-                 tree type,
-                 int named,
-                 int incoming_p)
+		 enum machine_mode mode,
+		 tree type,
+		 int named,
+		 int incoming_p)
 {
   int slotno, regno;
   rtx reg;
@@ -573,9 +573,9 @@ mt_function_arg (const CUMULATIVE_ARGS * cum,
 /* Implement FUNCTION_ARG_ADVANCE.  */
 void
 mt_function_arg_advance (CUMULATIVE_ARGS * cum,
-                         enum machine_mode mode,
-                         tree type ATTRIBUTE_UNUSED,
-                         int named)
+			 enum machine_mode mode,
+			 tree type ATTRIBUTE_UNUSED,
+			 int named)
 {
   int slotno, regno;
 
@@ -583,14 +583,14 @@ mt_function_arg_advance (CUMULATIVE_ARGS * cum,
   slotno = mt_function_arg_slotno (cum, mode, type, named, 0, &regno);
 
   * cum += (mode != BLKmode
-            ? ROUND_ADVANCE (GET_MODE_SIZE (mode))
-            : ROUND_ADVANCE (int_size_in_bytes (type)));
+	    ? ROUND_ADVANCE (GET_MODE_SIZE (mode))
+	    : ROUND_ADVANCE (int_size_in_bytes (type)));
 
   if (TARGET_DEBUG_ARG)
     fprintf (stderr,
-             "mt_function_arg_advance: words = %2d, mode = %4s, named = %d, size = %3d\n",
-             *cum, GET_MODE_NAME (mode), named, 
-             (*cum) * UNITS_PER_WORD);
+	     "mt_function_arg_advance: words = %2d, mode = %4s, named = %d, size = %3d\n",
+	     *cum, GET_MODE_NAME (mode), named, 
+	     (*cum) * UNITS_PER_WORD);
 }
 
 /* Implement hook TARGET_ARG_PARTIAL_BYTES.
@@ -601,16 +601,16 @@ mt_function_arg_advance (CUMULATIVE_ARGS * cum,
    on the stack.  */
 static int
 mt_arg_partial_bytes (CUMULATIVE_ARGS * pcum,
-                       enum machine_mode mode,
-                       tree type,
-                       bool named ATTRIBUTE_UNUSED)
+		       enum machine_mode mode,
+		       tree type,
+		       bool named ATTRIBUTE_UNUSED)
 {
   int cum = * pcum;
   int words;
 
   if (mode == BLKmode)
     words = ((int_size_in_bytes (type) + UNITS_PER_WORD - 1)
-             / UNITS_PER_WORD);
+	     / UNITS_PER_WORD);
   else
     words = (GET_MODE_SIZE (mode) + UNITS_PER_WORD - 1) / UNITS_PER_WORD;
 
@@ -621,7 +621,7 @@ mt_arg_partial_bytes (CUMULATIVE_ARGS * pcum,
       int bytes = (MT_NUM_ARG_REGS - cum) * UNITS_PER_WORD; 
 
       if (TARGET_DEBUG)
-        fprintf (stderr, "function_arg_partial_nregs = %d\n", bytes);
+	fprintf (stderr, "function_arg_partial_nregs = %d\n", bytes);
       return bytes;
     }
 
@@ -632,9 +632,9 @@ mt_arg_partial_bytes (CUMULATIVE_ARGS * pcum,
 /* Implement TARGET_PASS_BY_REFERENCE hook.  */
 static bool
 mt_pass_by_reference (CUMULATIVE_ARGS * cum ATTRIBUTE_UNUSED,
-                       enum machine_mode mode ATTRIBUTE_UNUSED,
-                       tree type,
-                       bool named ATTRIBUTE_UNUSED)
+		       enum machine_mode mode ATTRIBUTE_UNUSED,
+		       tree type,
+		       bool named ATTRIBUTE_UNUSED)
 {
   return (type && int_size_in_bytes (type) > 4 * UNITS_PER_WORD);
 }
@@ -642,7 +642,7 @@ mt_pass_by_reference (CUMULATIVE_ARGS * cum ATTRIBUTE_UNUSED,
 /* Implement FUNCTION_ARG_BOUNDARY.  */
 int
 mt_function_arg_boundary (enum machine_mode mode ATTRIBUTE_UNUSED,
-                           tree type ATTRIBUTE_UNUSED)
+			   tree type ATTRIBUTE_UNUSED)
 {
   return BITS_PER_WORD;
 }
@@ -660,12 +660,12 @@ mt_reg_ok_for_base_p (rtx x, int strict)
    is a simple address, otherwise false.  */
 static bool
 mt_legitimate_simple_address_p (enum machine_mode mode ATTRIBUTE_UNUSED,
-                                rtx xinsn, int strict)
+				rtx xinsn, int strict)
 {
-  if (TARGET_DEBUG)                                                
-    {                                                                        
+  if (TARGET_DEBUG)						
+    {									
       fprintf (stderr, "\n========== GO_IF_LEGITIMATE_ADDRESS, %sstrict\n",
-               strict ? "" : "not ");
+	       strict ? "" : "not ");
       debug_rtx (xinsn);
     }
 
@@ -794,15 +794,15 @@ mt_override_options (void)
   if (mt_cpu_string != NULL)
     {
       if (!strcmp (mt_cpu_string, "ms1-64-001"))
-        mt_cpu = PROCESSOR_MS1_64_001;
+	mt_cpu = PROCESSOR_MS1_64_001;
       else if (!strcmp (mt_cpu_string, "ms1-16-002"))
-        mt_cpu = PROCESSOR_MS1_16_002;
+	mt_cpu = PROCESSOR_MS1_16_002;
       else if  (!strcmp (mt_cpu_string, "ms1-16-003"))
-        mt_cpu = PROCESSOR_MS1_16_003;
+	mt_cpu = PROCESSOR_MS1_16_003;
       else if (!strcmp (mt_cpu_string, "ms2"))
-        mt_cpu = PROCESSOR_MS2;
+	mt_cpu = PROCESSOR_MS2;
       else
-        error ("bad value (%s) for -march= switch", mt_cpu_string);
+	error ("bad value (%s) for -march= switch", mt_cpu_string);
     }
   else
     mt_cpu = PROCESSOR_MS1_16_002;
@@ -826,9 +826,9 @@ mt_override_options (void)
 
 static void
 mt_setup_incoming_varargs (CUMULATIVE_ARGS *cum,
-                           enum machine_mode mode ATTRIBUTE_UNUSED,
-                           tree type ATTRIBUTE_UNUSED,
-                           int *pretend_size, int no_rtl)
+			   enum machine_mode mode ATTRIBUTE_UNUSED,
+			   tree type ATTRIBUTE_UNUSED,
+			   int *pretend_size, int no_rtl)
 {
   int regno;
   int regs = MT_NUM_ARG_REGS - *cum;
@@ -842,8 +842,8 @@ mt_setup_incoming_varargs (CUMULATIVE_ARGS *cum,
     {
       rtx reg = gen_rtx_REG (SImode, FIRST_ARG_REGNUM + regno);
       rtx slot = gen_rtx_PLUS (Pmode,
-                               gen_rtx_REG (SImode, ARG_POINTER_REGNUM),
-                               GEN_INT (UNITS_PER_WORD * regno));
+			       gen_rtx_REG (SImode, ARG_POINTER_REGNUM),
+			       GEN_INT (UNITS_PER_WORD * regno));
       
       emit_move_insn (gen_rtx_MEM (SImode, slot), reg);
     }
@@ -872,7 +872,7 @@ mt_compute_frame_size (int size)
   extra_size    = FIRST_PARM_OFFSET (0);
   total_size    = extra_size + pretend_size + args_size + var_size;
   reg_size      = 0;
-  reg_mask        = 0;
+  reg_mask	= 0;
 
   /* Calculate space needed for registers.  */
   for (regno = GPR_R0; regno <= GPR_LAST; regno++)
@@ -885,11 +885,11 @@ mt_compute_frame_size (int size)
     }
 
   current_frame_info.save_fp = (regs_ever_live [GPR_FP]
-                                || frame_pointer_needed
-                                || interrupt_handler);
+				|| frame_pointer_needed
+				|| interrupt_handler);
   current_frame_info.save_lr = (regs_ever_live [GPR_LINK]
-                                || profile_flag
-                                || interrupt_handler);
+				|| profile_flag
+				|| interrupt_handler);
  
   reg_size += (current_frame_info.save_fp + current_frame_info.save_lr)
                * UNITS_PER_WORD;
@@ -917,7 +917,7 @@ mt_compute_frame_size (int size)
    This function sets the REG_FRAME_RELATED_EXPR note accordingly.  */
 static void
 mt_emit_save_restore (enum save_direction direction,
-                      rtx reg, rtx mem, int stack_offset)
+		      rtx reg, rtx mem, int stack_offset)
 {
   if (direction == FROM_PROCESSOR_TO_MEM)
     {
@@ -926,15 +926,15 @@ mt_emit_save_restore (enum save_direction direction,
       insn = emit_move_insn (mem, reg);
       RTX_FRAME_RELATED_P (insn) = 1;
       REG_NOTES (insn)
-        = gen_rtx_EXPR_LIST
-        (REG_FRAME_RELATED_EXPR,
-         gen_rtx_SET (VOIDmode,
-                      gen_rtx_MEM (SImode,
-                                   gen_rtx_PLUS (SImode,
-                                                 stack_pointer_rtx,
-                                                 GEN_INT (stack_offset))),
-                      reg),
-         REG_NOTES (insn));
+	= gen_rtx_EXPR_LIST
+	(REG_FRAME_RELATED_EXPR,
+	 gen_rtx_SET (VOIDmode,
+		      gen_rtx_MEM (SImode,
+				   gen_rtx_PLUS (SImode,
+						 stack_pointer_rtx,
+						 GEN_INT (stack_offset))),
+		      reg),
+	 REG_NOTES (insn));
     }
   else
     emit_move_insn (reg, mem);
@@ -946,7 +946,7 @@ mt_emit_save_restore (enum save_direction direction,
 
 static void
 mt_emit_save_fp (enum save_direction direction,
-                  struct mt_frame_info info)
+		  struct mt_frame_info info)
 {
   rtx base_reg;
   int reg_mask = info.reg_mask  & ~(FP_MASK | LINK_MASK);
@@ -973,10 +973,10 @@ mt_emit_save_fp (enum save_direction direction,
       offset -= UNITS_PER_WORD;
       stack_offset -= UNITS_PER_WORD;
       mt_emit_save_restore
-        (direction, gen_rtx_REG (SImode, GPR_FP),
-         gen_rtx_MEM (SImode,
-                      gen_rtx_PLUS (SImode, base_reg, GEN_INT (offset))),
-         stack_offset);
+	(direction, gen_rtx_REG (SImode, GPR_FP),
+	 gen_rtx_MEM (SImode,
+		      gen_rtx_PLUS (SImode, base_reg, GEN_INT (offset))),
+	 stack_offset);
     }
 }
 
@@ -985,7 +985,7 @@ mt_emit_save_fp (enum save_direction direction,
 
 static void
 mt_emit_save_regs (enum save_direction direction,
-                    struct mt_frame_info info)
+		    struct mt_frame_info info)
 {
   rtx base_reg;
   int regno;
@@ -1011,7 +1011,7 @@ mt_emit_save_regs (enum save_direction direction,
   if (info.save_fp)
     {
       /* This just records the space for it, the actual move generated in
-         mt_emit_save_fp ().  */
+	 mt_emit_save_fp ().  */
       offset -= UNITS_PER_WORD;
       stack_offset -= UNITS_PER_WORD;
     }
@@ -1021,25 +1021,25 @@ mt_emit_save_regs (enum save_direction direction,
       offset -= UNITS_PER_WORD;
       stack_offset -= UNITS_PER_WORD;
       mt_emit_save_restore
-        (direction, gen_rtx_REG (SImode, GPR_LINK), 
-         gen_rtx_MEM (SImode,
-                      gen_rtx_PLUS (SImode, base_reg, GEN_INT (offset))),
-         stack_offset);
+	(direction, gen_rtx_REG (SImode, GPR_LINK), 
+	 gen_rtx_MEM (SImode,
+		      gen_rtx_PLUS (SImode, base_reg, GEN_INT (offset))),
+	 stack_offset);
     }
 
   /* Save any needed call-saved regs.  */
   for (regno = GPR_R0; regno <= GPR_LAST; regno++)
     {
       if ((reg_mask & (1 << regno)) != 0)
-        {
-          offset -= UNITS_PER_WORD;
-          stack_offset -= UNITS_PER_WORD;
-          mt_emit_save_restore
-            (direction, gen_rtx_REG (SImode, regno),
-             gen_rtx_MEM (SImode,
-                          gen_rtx_PLUS (SImode, base_reg, GEN_INT (offset))),
-             stack_offset);
-        }
+	{
+	  offset -= UNITS_PER_WORD;
+	  stack_offset -= UNITS_PER_WORD;
+	  mt_emit_save_restore
+	    (direction, gen_rtx_REG (SImode, regno),
+	     gen_rtx_MEM (SImode,
+			  gen_rtx_PLUS (SImode, base_reg, GEN_INT (offset))),
+	     stack_offset);
+	}
     }
 }
 
@@ -1067,7 +1067,7 @@ mt_expand_prologue (void)
     {
       interrupt_handler = 1;
       if (cfun->machine)
-        cfun->machine->interrupt_handler = 1;
+	cfun->machine->interrupt_handler = 1;
     }
 
   mt_compute_frame_size (get_frame_size ());
@@ -1090,7 +1090,7 @@ mt_expand_prologue (void)
       size_rtx = gen_rtx_REG (SImode, GPR_R9);
       insn = emit_move_insn (size_rtx, GEN_INT (frame_size & 0xffff0000));
       insn = emit_insn (gen_iorsi3 (size_rtx, size_rtx,
-                                    GEN_INT (frame_size & 0x0000ffff)));
+				    GEN_INT (frame_size & 0x0000ffff)));
     }
 
   /* Allocate stack for this frame.  */
@@ -1099,17 +1099,17 @@ mt_expand_prologue (void)
   if (frame_size)
     {
       insn = emit_insn (gen_subsi3 (stack_pointer_rtx,
-                                 stack_pointer_rtx,
-                                 size_rtx));
+				 stack_pointer_rtx,
+				 size_rtx));
       RTX_FRAME_RELATED_P (insn) = 1;
       REG_NOTES (insn)
-        = gen_rtx_EXPR_LIST (REG_FRAME_RELATED_EXPR,
-                             gen_rtx_SET (VOIDmode,
-                                          stack_pointer_rtx,
-                                          gen_rtx_MINUS (SImode,
-                                                        stack_pointer_rtx,
-                                                        GEN_INT (frame_size))),
-                             REG_NOTES (insn));
+	= gen_rtx_EXPR_LIST (REG_FRAME_RELATED_EXPR,
+			     gen_rtx_SET (VOIDmode,
+					  stack_pointer_rtx,
+					  gen_rtx_MINUS (SImode,
+							stack_pointer_rtx,
+							GEN_INT (frame_size))),
+			     REG_NOTES (insn));
     }
 
   /* Set R9 to point to old sp if required for access to register save
@@ -1175,9 +1175,9 @@ mt_expand_epilogue (enum epilogue_type eh_mode)
       size_rtx = gen_rtx_REG (SImode, GPR_R9);
       insn = emit_move_insn (size_rtx, GEN_INT (frame_size & 0xffff0000));
       insn = emit_insn (gen_iorsi3 (size_rtx, size_rtx,
-                                    GEN_INT (frame_size & 0x0000ffff)));
+				    GEN_INT (frame_size & 0x0000ffff)));
       /* Set R9 to point to old sp if required for access to register
-         save area.  */
+	 save area.  */
       emit_insn (gen_addsi3 (size_rtx, size_rtx, stack_pointer_rtx));
     }
 
@@ -1194,30 +1194,30 @@ mt_expand_epilogue (enum epilogue_type eh_mode)
   if (frame_size)
     {
       if (CONST_OK_FOR_LETTER_P(frame_size, 'O'))
-        /* Can handle this with simple add.  */
-        insn = emit_insn (gen_addsi3 (stack_pointer_rtx,
-                                      stack_pointer_rtx,
-                                      size_rtx));
+	/* Can handle this with simple add.  */
+	insn = emit_insn (gen_addsi3 (stack_pointer_rtx,
+				      stack_pointer_rtx,
+				      size_rtx));
       else
-        /* Scratch reg R9 has the old sp value.  */
-        insn = emit_move_insn (stack_pointer_rtx, 
-                               gen_rtx_REG (SImode, GPR_R9));
+	/* Scratch reg R9 has the old sp value.  */
+	insn = emit_move_insn (stack_pointer_rtx, 
+			       gen_rtx_REG (SImode, GPR_R9));
 
       REG_NOTES (insn)
-        = gen_rtx_EXPR_LIST (REG_FRAME_RELATED_EXPR,
-                             gen_rtx_SET (VOIDmode,
-                                          stack_pointer_rtx,
-                                          gen_rtx_PLUS (SImode,
-                                                        stack_pointer_rtx,
-                                                        GEN_INT (frame_size))),
-                             REG_NOTES (insn));
+	= gen_rtx_EXPR_LIST (REG_FRAME_RELATED_EXPR,
+			     gen_rtx_SET (VOIDmode,
+					  stack_pointer_rtx,
+					  gen_rtx_PLUS (SImode,
+							stack_pointer_rtx,
+							GEN_INT (frame_size))),
+			     REG_NOTES (insn));
     }
 
   if (cfun->machine && cfun->machine->eh_stack_adjust != NULL_RTX)
     /* Perform the additional bump for __throw.  */
     emit_insn (gen_addsi3 (stack_pointer_rtx,
-                           stack_pointer_rtx,
-                           cfun->machine->eh_stack_adjust));
+			   stack_pointer_rtx,
+			   cfun->machine->eh_stack_adjust));
 
   /* Generate the appropriate return.  */
   if (eh_mode == EH_EPILOGUE)
@@ -1265,16 +1265,16 @@ mt_emit_eh_epilogue (rtx * operands ATTRIBUTE_UNUSED)
 /* Handle an "interrupt" attribute.  */
 static tree
 mt_handle_interrupt_attribute (tree * node,
-                          tree   name,
-                          tree   args  ATTRIBUTE_UNUSED,
-                          int    flags ATTRIBUTE_UNUSED,
-                          bool * no_add_attrs)
+			  tree   name,
+			  tree   args  ATTRIBUTE_UNUSED,
+			  int    flags ATTRIBUTE_UNUSED,
+			  bool * no_add_attrs)
 {
   if (TREE_CODE (*node) != FUNCTION_DECL)
     {
       warning (OPT_Wattributes,
-               "%qs attribute only applies to functions",
-               IDENTIFIER_POINTER (name));
+	       "%qs attribute only applies to functions",
+	       IDENTIFIER_POINTER (name));
       *no_add_attrs = true;
     }
 
@@ -1371,8 +1371,8 @@ mt_emit_cbranch (enum rtx_code code, rtx loc, rtx op0, rtx op1)
   condition_rtx = mt_generate_compare (code, op0, op1);
   loc_ref = gen_rtx_LABEL_REF (VOIDmode, loc);
   emit_jump_insn (gen_rtx_SET (VOIDmode, pc_rtx,
-                               gen_rtx_IF_THEN_ELSE (VOIDmode, condition_rtx,
-                                                     loc_ref, pc_rtx)));
+			       gen_rtx_IF_THEN_ELSE (VOIDmode, condition_rtx,
+						     loc_ref, pc_rtx)));
 }
 
 /* Subfunction of the following function.  Update the flags of any MEM
@@ -1388,7 +1388,7 @@ mt_set_memflags_1 (rtx x, int in_struct_p, int volatile_p)
     case SEQUENCE:
     case PARALLEL:
       for (i = XVECLEN (x, 0) - 1; i >= 0; i--)
-        mt_set_memflags_1 (XVECEXP (x, 0, i), in_struct_p, volatile_p);
+	mt_set_memflags_1 (XVECEXP (x, 0, i), in_struct_p, volatile_p);
       break;
 
     case INSN:
@@ -1404,10 +1404,10 @@ mt_set_memflags_1 (rtx x, int in_struct_p, int volatile_p)
       MEM_IN_STRUCT_P (x) = in_struct_p;
       MEM_VOLATILE_P (x) = volatile_p;
       /* Sadly, we cannot use alias sets because the extra aliasing
-         produced by the AND interferes.  Given that two-byte quantities
-         are the only thing we would be able to differentiate anyway,
-         there does not seem to be any point in convoluting the early
-         out of the alias check.  */
+	 produced by the AND interferes.  Given that two-byte quantities
+	 are the only thing we would be able to differentiate anyway,
+	 there does not seem to be any point in convoluting the early
+	 out of the alias check.  */
       /* set_mem_alias_set (x, alias_set); */
       break;
 
@@ -1445,18 +1445,18 @@ mt_set_memflags (rtx ref)
 /* Implement SECONDARY_RELOAD_CLASS.  */
 enum reg_class
 mt_secondary_reload_class (enum reg_class class ATTRIBUTE_UNUSED,
-                            enum machine_mode mode,
-                            rtx x)
+			    enum machine_mode mode,
+			    rtx x)
 {
   if ((mode == QImode && (!TARGET_BYTE_ACCESS)) || mode == HImode)
     {
       if (GET_CODE (x) == MEM
-          || (GET_CODE (x) == REG && true_regnum (x) == -1)
-          || (GET_CODE (x) == SUBREG
-              && (GET_CODE (SUBREG_REG (x)) == MEM
-                  || (GET_CODE (SUBREG_REG (x)) == REG
-                      && true_regnum (SUBREG_REG (x)) == -1))))
-        return GENERAL_REGS;
+	  || (GET_CODE (x) == REG && true_regnum (x) == -1)
+	  || (GET_CODE (x) == SUBREG
+	      && (GET_CODE (SUBREG_REG (x)) == MEM
+		  || (GET_CODE (SUBREG_REG (x)) == REG
+		      && true_regnum (SUBREG_REG (x)) == -1))))
+	return GENERAL_REGS;
     }
 
   return NO_REGS;
@@ -1484,53 +1484,53 @@ mt_function_value (tree valtype, enum machine_mode mode, tree func_decl ATTRIBUT
 
 void
 mt_split_words (enum machine_mode nmode,
-                 enum machine_mode omode,
-                 rtx *operands)
+		 enum machine_mode omode,
+		 rtx *operands)
 {
-  rtx dl,dh;        /* src/dest pieces.  */
+  rtx dl,dh;	/* src/dest pieces.  */
   rtx sl,sh;
-  int        move_high_first = 0;        /* Assume no overlap.  */
+  int	move_high_first = 0;	/* Assume no overlap.  */
 
   switch (GET_CODE (operands[0])) /* Dest.  */
     {
     case SUBREG:
     case REG:
       if ((GET_CODE (operands[1]) == REG
-           || GET_CODE (operands[1]) == SUBREG)
-          && true_regnum (operands[0]) <= true_regnum (operands[1]))
-        move_high_first = 1;
+	   || GET_CODE (operands[1]) == SUBREG)
+	  && true_regnum (operands[0]) <= true_regnum (operands[1]))
+	move_high_first = 1;
 
       if (GET_CODE (operands[0]) == SUBREG)
-        {
-          dl = gen_rtx_SUBREG (nmode, SUBREG_REG (operands[0]),
-                               SUBREG_BYTE (operands[0]) + GET_MODE_SIZE (nmode));
-          dh = gen_rtx_SUBREG (nmode, SUBREG_REG (operands[0]), SUBREG_BYTE (operands[0]));
-        }
+	{
+	  dl = gen_rtx_SUBREG (nmode, SUBREG_REG (operands[0]),
+			       SUBREG_BYTE (operands[0]) + GET_MODE_SIZE (nmode));
+	  dh = gen_rtx_SUBREG (nmode, SUBREG_REG (operands[0]), SUBREG_BYTE (operands[0]));
+	}
       else if (GET_CODE (operands[0]) == REG && ! IS_PSEUDO_P (operands[0]))
-        {
-          int        r = REGNO (operands[0]);
-          dh = gen_rtx_REG (nmode, r);
-          dl = gen_rtx_REG (nmode, r + HARD_REGNO_NREGS (r, nmode));
-        }
+	{
+	  int	r = REGNO (operands[0]);
+	  dh = gen_rtx_REG (nmode, r);
+	  dl = gen_rtx_REG (nmode, r + HARD_REGNO_NREGS (r, nmode));
+	}
       else
-        {
-          dh = gen_rtx_SUBREG (nmode, operands[0], 0);
-          dl = gen_rtx_SUBREG (nmode, operands[0], GET_MODE_SIZE (nmode));
-        }
+	{
+	  dh = gen_rtx_SUBREG (nmode, operands[0], 0);
+	  dl = gen_rtx_SUBREG (nmode, operands[0], GET_MODE_SIZE (nmode));
+	}
       break;
 
     case MEM:
       switch (GET_CODE (XEXP (operands[0], 0)))
-        {
-        case POST_INC:
-        case POST_DEC:
-          gcc_unreachable ();
-        default:
-          dl = operand_subword (operands[0],
-                                GET_MODE_SIZE (nmode)/UNITS_PER_WORD,
-                                0, omode);
-          dh = operand_subword (operands[0], 0, 0, omode);
-        }
+	{
+	case POST_INC:
+	case POST_DEC:
+	  gcc_unreachable ();
+	default:
+	  dl = operand_subword (operands[0],
+				GET_MODE_SIZE (nmode)/UNITS_PER_WORD,
+				0, omode);
+	  dh = operand_subword (operands[0], 0, 0, omode);
+	}
       break;
     default:
       gcc_unreachable ();
@@ -1540,74 +1540,74 @@ mt_split_words (enum machine_mode nmode,
     {
     case REG:
       if (! IS_PSEUDO_P (operands[1]))
-        {
-          int r = REGNO (operands[1]);
+	{
+	  int r = REGNO (operands[1]);
 
-          sh = gen_rtx_REG (nmode, r);
-          sl = gen_rtx_REG (nmode, r + HARD_REGNO_NREGS (r, nmode));
-        }
+	  sh = gen_rtx_REG (nmode, r);
+	  sl = gen_rtx_REG (nmode, r + HARD_REGNO_NREGS (r, nmode));
+	}
       else
-        {
-          sh = gen_rtx_SUBREG (nmode, operands[1], 0);
-          sl = gen_rtx_SUBREG (nmode, operands[1], GET_MODE_SIZE (nmode));
-        }
+	{
+	  sh = gen_rtx_SUBREG (nmode, operands[1], 0);
+	  sl = gen_rtx_SUBREG (nmode, operands[1], GET_MODE_SIZE (nmode));
+	}
       break;
 
     case CONST_DOUBLE:
       if (operands[1] == const0_rtx)
-        sh = sl = const0_rtx;
+	sh = sl = const0_rtx;
       else
-        split_double (operands[1], & sh, & sl);
+	split_double (operands[1], & sh, & sl);
       break;
 
     case CONST_INT:
       if (operands[1] == const0_rtx)
-        sh = sl = const0_rtx;
+	sh = sl = const0_rtx;
       else
-        {
-          int vl, vh;
+	{
+	  int vl, vh;
 
-          switch (nmode)
-            {
-            default:
-              gcc_unreachable ();
-            }
-            
-          sl = GEN_INT (vl);
-          sh = GEN_INT (vh);
-        }
+	  switch (nmode)
+	    {
+	    default:
+	      gcc_unreachable ();
+	    }
+	    
+	  sl = GEN_INT (vl);
+	  sh = GEN_INT (vh);
+	}
       break;
 
     case SUBREG:
       sl = gen_rtx_SUBREG (nmode,
-                           SUBREG_REG (operands[1]),
-                           SUBREG_BYTE (operands[1]) + GET_MODE_SIZE (nmode));
+			   SUBREG_REG (operands[1]),
+			   SUBREG_BYTE (operands[1]) + GET_MODE_SIZE (nmode));
       sh = gen_rtx_SUBREG (nmode,
-                           SUBREG_REG (operands[1]),
-                           SUBREG_BYTE (operands[1]));
+			   SUBREG_REG (operands[1]),
+			   SUBREG_BYTE (operands[1]));
       break;
 
     case MEM:
       switch (GET_CODE (XEXP (operands[1], 0)))
-        {
-        case POST_DEC:
-        case POST_INC:
-          gcc_unreachable ();
-          break;
-        default:
-          sl = operand_subword (operands[1], 
-                                GET_MODE_SIZE (nmode)/UNITS_PER_WORD,
-                                0, omode);
-          sh = operand_subword (operands[1], 0, 0, omode);
-          
-          /* Check if the DF load is going to clobber the register
+	{
+	case POST_DEC:
+	case POST_INC:
+	  gcc_unreachable ();
+	  break;
+	default:
+	  sl = operand_subword (operands[1], 
+				GET_MODE_SIZE (nmode)/UNITS_PER_WORD,
+				0, omode);
+	  sh = operand_subword (operands[1], 0, 0, omode);
+	  
+	  /* Check if the DF load is going to clobber the register
              used for the address, and if so make sure that is going
              to be the second move.  */
-          if (GET_CODE (dl) == REG
-              && true_regnum (dl)
-              == true_regnum (XEXP (XEXP (sl, 0 ), 0)))
-            move_high_first = 1;
-        }
+	  if (GET_CODE (dl) == REG
+	      && true_regnum (dl)
+	      == true_regnum (XEXP (XEXP (sl, 0 ), 0)))
+	    move_high_first = 1;
+	}
       break;
     default:
       gcc_unreachable ();
@@ -1635,8 +1635,8 @@ static bool
 mt_pass_in_stack (enum machine_mode mode ATTRIBUTE_UNUSED, tree type)
 {
   return (((type) != 0
-           && (TREE_CODE (TYPE_SIZE (type)) != INTEGER_CST
-               || TREE_ADDRESSABLE (type))));
+	   && (TREE_CODE (TYPE_SIZE (type)) != INTEGER_CST
+	       || TREE_ADDRESSABLE (type))));
 }
 
 /* Increment the counter for the number of loop instructions in the
@@ -1741,48 +1741,48 @@ mt_loop_nesting (loop_info loop)
     {
       /* Make sure we only have one entry point.  */
       if (EDGE_COUNT (loop->head->preds) == 2)
-        {
-          loop->predecessor = EDGE_PRED (loop->head, 0)->src;
-          if (loop->predecessor == loop->tail)
-            /* We wanted the other predecessor.  */
-            loop->predecessor = EDGE_PRED (loop->head, 1)->src;
-          
-          /* We can only place a loop insn on a fall through edge of a
-             single exit block.  */
-          if (EDGE_COUNT (loop->predecessor->succs) != 1
-              || !(EDGE_SUCC (loop->predecessor, 0)->flags & EDGE_FALLTHRU))
-            loop->predecessor = NULL;
-        }
+	{
+	  loop->predecessor = EDGE_PRED (loop->head, 0)->src;
+	  if (loop->predecessor == loop->tail)
+	    /* We wanted the other predecessor.  */
+	    loop->predecessor = EDGE_PRED (loop->head, 1)->src;
+	  
+	  /* We can only place a loop insn on a fall through edge of a
+	     single exit block.  */
+	  if (EDGE_COUNT (loop->predecessor->succs) != 1
+	      || !(EDGE_SUCC (loop->predecessor, 0)->flags & EDGE_FALLTHRU))
+	    loop->predecessor = NULL;
+	}
 
       /* Mark this loop as bad for now.  */
       loop->depth = -1;
       if (loop->predecessor)
-        {
-          for (ix = 0; VEC_iterate (loop_info, loop->loops, ix++, inner);)
-            {
-              if (!inner->depth)
-                mt_loop_nesting (inner);
-              
-              if (inner->depth < 0)
-                {
-                  inner_depth = -1;
-                  break;
-                }
-              
-              if (inner_depth < inner->depth)
-                inner_depth = inner->depth;
-              loop->length += inner->length;
-            }
-          
-          /* Set the proper loop depth, if it was good. */
-          if (inner_depth >= 0)
-            loop->depth = inner_depth + 1;
-        }
+	{
+	  for (ix = 0; VEC_iterate (loop_info, loop->loops, ix++, inner);)
+	    {
+	      if (!inner->depth)
+		mt_loop_nesting (inner);
+	      
+	      if (inner->depth < 0)
+		{
+		  inner_depth = -1;
+		  break;
+		}
+	      
+	      if (inner_depth < inner->depth)
+		inner_depth = inner->depth;
+	      loop->length += inner->length;
+	    }
+	  
+	  /* Set the proper loop depth, if it was good. */
+	  if (inner_depth >= 0)
+	    loop->depth = inner_depth + 1;
+	}
     }
   return (loop->depth > 0
-          && loop->predecessor
-          && loop->depth < MAX_LOOP_DEPTH
-          && loop->length < MAX_LOOP_LENGTH);
+	  && loop->predecessor
+	  && loop->depth < MAX_LOOP_DEPTH
+	  && loop->length < MAX_LOOP_LENGTH);
 }
 
 /* Determine the length of block BB.  */
@@ -1798,13 +1798,13 @@ mt_block_length (basic_block bb)
        insn = NEXT_INSN (insn))
     {
       if (!INSN_P (insn))
-        continue;
+	continue;
       if (CALL_P (insn))
-        {
-          /* Calls are not allowed in loops.  */
-          length = MAX_LOOP_LENGTH + 1;
-          break;
-        }
+	{
+	  /* Calls are not allowed in loops.  */
+	  length = MAX_LOOP_LENGTH + 1;
+	  break;
+	}
       
       length += get_attr_length (insn);
     }
@@ -1827,16 +1827,16 @@ mt_scan_loop (loop_info loop, rtx reg, rtx dbnz)
       rtx insn;
 
       for (insn = BB_HEAD (bb);
-           insn != NEXT_INSN (BB_END (bb));
-           insn = NEXT_INSN (insn))
-        {
-          if (!INSN_P (insn))
-            continue;
-          if (insn == dbnz)
-            continue;
-          if (reg_mentioned_p (reg, PATTERN (insn)))
-            return true;
-        }
+	   insn != NEXT_INSN (BB_END (bb));
+	   insn = NEXT_INSN (insn))
+	{
+	  if (!INSN_P (insn))
+	    continue;
+	  if (insn == dbnz)
+	    continue;
+	  if (reg_mentioned_p (reg, PATTERN (insn)))
+	    return true;
+	}
     }
   for (ix = 0; VEC_iterate (loop_info, loop->loops, ix, inner); ix++)
     if (mt_scan_loop (inner, reg, NULL_RTX))
@@ -1900,44 +1900,44 @@ mt_reorg_loops (FILE *dump_file)
       rtx tail = BB_END (bb);
 
       while (GET_CODE (tail) == NOTE)
-        tail = PREV_INSN (tail);
+	tail = PREV_INSN (tail);
       
       bb->aux = NULL;
       if (recog_memoized (tail) == CODE_FOR_decrement_and_branch_until_zero)
-        {
-          /* A possible loop end */
+	{
+	  /* A possible loop end */
 
-          loop = XNEW (struct loop_info);
-          loop->next = loops;
-          loops = loop;
-          loop->tail = bb;
-          loop->head = BRANCH_EDGE (bb)->dest;
-          loop->successor = FALLTHRU_EDGE (bb)->dest;
-          loop->predecessor = NULL;
-          loop->dbnz = tail;
-          loop->depth = 0;
-          loop->length = mt_block_length (bb);
-          loop->blocks = VEC_alloc (basic_block, heap, 20);
-          VEC_quick_push (basic_block, loop->blocks, bb);
-          loop->loops = NULL;
-          loop->loop_no = nloops++;
-          
-          loop->init = loop->end_label = NULL_RTX;
-          loop->loop_init = loop->loop_end = NULL_RTX;
-          
-          work = VEC_safe_push (loop_work, heap, works, NULL);
-          work->block = loop->head;
-          work->loop = loop;
+	  loop = XNEW (struct loop_info);
+	  loop->next = loops;
+	  loops = loop;
+	  loop->tail = bb;
+	  loop->head = BRANCH_EDGE (bb)->dest;
+	  loop->successor = FALLTHRU_EDGE (bb)->dest;
+	  loop->predecessor = NULL;
+	  loop->dbnz = tail;
+	  loop->depth = 0;
+	  loop->length = mt_block_length (bb);
+	  loop->blocks = VEC_alloc (basic_block, heap, 20);
+	  VEC_quick_push (basic_block, loop->blocks, bb);
+	  loop->loops = NULL;
+	  loop->loop_no = nloops++;
+	  
+	  loop->init = loop->end_label = NULL_RTX;
+	  loop->loop_init = loop->loop_end = NULL_RTX;
+	  
+	  work = VEC_safe_push (loop_work, heap, works, NULL);
+	  work->block = loop->head;
+	  work->loop = loop;
 
-          bb->aux = loop;
+	  bb->aux = loop;
 
-          if (dump_file)
-            {
-              fprintf (dump_file, ";; potential loop %d ending at\n",
-                       loop->loop_no);
-              print_rtl_single (dump_file, tail);
-            }
-        }
+	  if (dump_file)
+	    {
+	      fprintf (dump_file, ";; potential loop %d ending at\n",
+		       loop->loop_no);
+	      print_rtl_single (dump_file, tail);
+	    }
+	}
     }
 
   /*  Now find all the closed loops.
@@ -1945,65 +1945,65 @@ mt_reorg_loops (FILE *dump_file)
        if block's auxptr is set
          if != loop slot
            if block's loop's start != block
-             mark loop as bad
-           else
+	     mark loop as bad
+	   else
              append block's loop's fallthrough block to worklist
-             increment this loop's depth
+	     increment this loop's depth
        else if block is exit block
          mark loop as bad
        else
-               set auxptr
-          for each target of block
-                 add to worklist */
+     	  set auxptr
+	  for each target of block
+     	    add to worklist */
   while (VEC_iterate (loop_work, works, dwork++, work))
     {
       loop = work->loop;
       bb = work->block;
       if (bb == EXIT_BLOCK_PTR)
-        /* We've reached the exit block.  The loop must be bad. */
-        loop->depth = -1;
+	/* We've reached the exit block.  The loop must be bad. */
+	loop->depth = -1;
       else if (!bb->aux)
-        {
-          /* We've not seen this block before.  Add it to the loop's
-             list and then add each successor to the work list.  */
-          bb->aux = loop;
-          loop->length += mt_block_length (bb);
-          VEC_safe_push (basic_block, heap, loop->blocks, bb);
-          FOR_EACH_EDGE (e, ei, bb->succs)
-            {
-              if (!VEC_space (loop_work, works, 1))
-                {
-                  if (dwork)
-                    {
-                      VEC_block_remove (loop_work, works, 0, dwork);
-                      dwork = 0;
-                    }
-                  else
-                    VEC_reserve (loop_work, heap, works, 1);
-                }
-              work = VEC_quick_push (loop_work, works, NULL);
-              work->block = EDGE_SUCC (bb, ei.index)->dest;
-              work->loop = loop;
-            }
-        }
+	{
+	  /* We've not seen this block before.  Add it to the loop's
+	     list and then add each successor to the work list.  */
+	  bb->aux = loop;
+	  loop->length += mt_block_length (bb);
+	  VEC_safe_push (basic_block, heap, loop->blocks, bb);
+	  FOR_EACH_EDGE (e, ei, bb->succs)
+	    {
+	      if (!VEC_space (loop_work, works, 1))
+		{
+		  if (dwork)
+		    {
+		      VEC_block_remove (loop_work, works, 0, dwork);
+		      dwork = 0;
+		    }
+		  else
+		    VEC_reserve (loop_work, heap, works, 1);
+		}
+	      work = VEC_quick_push (loop_work, works, NULL);
+	      work->block = EDGE_SUCC (bb, ei.index)->dest;
+	      work->loop = loop;
+	    }
+	}
       else if (bb->aux != loop)
-        {
-          /* We've seen this block in a different loop.  If it's not
-             the other loop's head, then this loop must be bad.
-             Otherwise, the other loop might be a nested loop, so
-             continue from that loop's successor.  */
-          loop_info other = bb->aux;
-          
-          if (other->head != bb)
-            loop->depth = -1;
-          else
-            {
-              VEC_safe_push (loop_info, heap, loop->loops, other);
-              work = VEC_safe_push (loop_work, heap, works, NULL);
-              work->loop = loop;
-              work->block = other->successor;
-            }
-        }
+	{
+	  /* We've seen this block in a different loop.  If it's not
+	     the other loop's head, then this loop must be bad.
+	     Otherwise, the other loop might be a nested loop, so
+	     continue from that loop's successor.  */
+	  loop_info other = bb->aux;
+	  
+	  if (other->head != bb)
+	    loop->depth = -1;
+	  else
+	    {
+	      VEC_safe_push (loop_info, heap, loop->loops, other);
+	      work = VEC_safe_push (loop_work, heap, works, NULL);
+	      work->loop = loop;
+	      work->block = other->successor;
+	    }
+	}
     }
   VEC_free (loop_work, heap, works);
 
@@ -2014,75 +2014,75 @@ mt_reorg_loops (FILE *dump_file)
       rtx init_val, loop_end, loop_init, end_label, head_label;
 
       if (!mt_loop_nesting (loop))
-        {
-          if (dump_file)
-            fprintf (dump_file, ";; loop %d is bad\n", loop->loop_no);
-          continue;
-        }
+	{
+	  if (dump_file)
+	    fprintf (dump_file, ";; loop %d is bad\n", loop->loop_no);
+	  continue;
+	}
 
       /* Get the loop iteration register.  */
       iter_reg = SET_DEST (XVECEXP (PATTERN (loop->dbnz), 0, 1));
       
       if (!REG_P (iter_reg))
-        {
-          /* Spilled */
-          if (dump_file)
-            fprintf (dump_file, ";; loop %d has spilled iteration count\n",
-                     loop->loop_no);
-          continue;
-        }
+	{
+	  /* Spilled */
+	  if (dump_file)
+	    fprintf (dump_file, ";; loop %d has spilled iteration count\n",
+		     loop->loop_no);
+	  continue;
+	}
 
       /* Look for the initializing insn */
       init_insn = NULL_RTX;
       for (insn = BB_END (loop->predecessor);
-           insn != PREV_INSN (BB_HEAD (loop->predecessor));
-           insn = PREV_INSN (insn))
-        {
-          if (!INSN_P (insn))
-            continue;
-          if (reg_mentioned_p (iter_reg, PATTERN (insn)))
-            {
-              rtx set = single_set (insn);
+	   insn != PREV_INSN (BB_HEAD (loop->predecessor));
+	   insn = PREV_INSN (insn))
+	{
+	  if (!INSN_P (insn))
+	    continue;
+	  if (reg_mentioned_p (iter_reg, PATTERN (insn)))
+	    {
+	      rtx set = single_set (insn);
 
-              if (set && rtx_equal_p (iter_reg, SET_DEST (set)))
-                init_insn = insn;
-              break;
-            }
-        }
+	      if (set && rtx_equal_p (iter_reg, SET_DEST (set)))
+		init_insn = insn;
+	      break;
+	    }
+	}
 
       if (!init_insn)
-        {
-          if (dump_file)
-            fprintf (dump_file, ";; loop %d has no initializer\n",
-                     loop->loop_no);
-          continue;
-        }
+	{
+	  if (dump_file)
+	    fprintf (dump_file, ";; loop %d has no initializer\n",
+		     loop->loop_no);
+	  continue;
+	}
       if (dump_file)
-        {
-          fprintf (dump_file, ";; loop %d initialized by\n",
-                   loop->loop_no);
-          print_rtl_single (dump_file, init_insn);
-        }
+	{
+	  fprintf (dump_file, ";; loop %d initialized by\n",
+		   loop->loop_no);
+	  print_rtl_single (dump_file, init_insn);
+	}
 
       init_val = PATTERN (init_insn);
       if (GET_CODE (init_val) == SET)
-        init_val = SET_SRC (init_val);
+	init_val = SET_SRC (init_val);
       if (GET_CODE (init_val) != CONST_INT || INTVAL (init_val) >= 65535)
-        {
-          if (dump_file)
-            fprintf (dump_file, ";; loop %d has complex initializer\n",
-                     loop->loop_no);
-          continue;
-        }
+	{
+	  if (dump_file)
+	    fprintf (dump_file, ";; loop %d has complex initializer\n",
+		     loop->loop_no);
+	  continue;
+	}
       
       /* Scan all the blocks to make sure they don't use iter_reg.  */
       if (mt_scan_loop (loop, iter_reg, loop->dbnz))
-        {
-          if (dump_file)
-            fprintf (dump_file, ";; loop %d uses iterator\n",
-                     loop->loop_no);
-          continue;
-        }
+	{
+	  if (dump_file)
+	    fprintf (dump_file, ";; loop %d uses iterator\n",
+		     loop->loop_no);
+	  continue;
+	}
 
       /* The loop is good for replacement.  */
       
@@ -2101,14 +2101,14 @@ mt_reorg_loops (FILE *dump_file)
       replaced = true;
       
       if (dump_file)
-        {
-          fprintf (dump_file, ";; replacing loop %d initializer with\n",
-                   loop->loop_no);
-          print_rtl_single (dump_file, loop->loop_init);
-          fprintf (dump_file, ";; replacing loop %d terminator with\n",
-                   loop->loop_no);
-          print_rtl_single (dump_file, loop->loop_end);
-        }
+	{
+	  fprintf (dump_file, ";; replacing loop %d initializer with\n",
+		   loop->loop_no);
+	  print_rtl_single (dump_file, loop->loop_init);
+	  fprintf (dump_file, ";; replacing loop %d terminator with\n",
+		   loop->loop_no);
+	  print_rtl_single (dump_file, loop->loop_end);
+	}
     }
 
   /* Now apply the optimizations.  Do it this way so we don't mess up
@@ -2116,11 +2116,11 @@ mt_reorg_loops (FILE *dump_file)
   for (loop = loops; loop; loop = loop->next)
     if (loop->loop_init)
       {
-        emit_jump_insn_after (loop->loop_init, BB_END (loop->predecessor));
-        delete_insn (loop->init);
-        emit_label_before (loop->end_label, loop->dbnz);
-        emit_jump_insn_before (loop->loop_end, loop->dbnz);
-        delete_insn (loop->dbnz);
+	emit_jump_insn_after (loop->loop_init, BB_END (loop->predecessor));
+	delete_insn (loop->init);
+	emit_label_before (loop->end_label, loop->dbnz);
+	emit_jump_insn_before (loop->loop_end, loop->dbnz);
+	delete_insn (loop->dbnz);
       }
 
   /* Free up the loop structures */
@@ -2171,18 +2171,18 @@ mt_add_branches (rtx *x, void *insn)
       label_info *info;
 
       for (info = mt_labels; info; info = info->next)
-        if (info->label == label)
-          break;
+	if (info->label == label)
+	  break;
 
       if (!info)
-        {
-          info = xmalloc (sizeof (*info));
-          info->next = mt_labels;
-          mt_labels = info;
-          
-          info->label = label;
-          info->branches = NULL;
-        }
+	{
+	  info = xmalloc (sizeof (*info));
+	  info->next = mt_labels;
+	  mt_labels = info;
+	  
+	  info->label = label;
+	  info->branches = NULL;
+	}
 
       branch->next = info->branches;
       info->branches = branch;
@@ -2264,22 +2264,22 @@ mt_reorg_hazard (void)
       rtx jmp;
 
       if (!INSN_P (insn))
-        continue;
+	continue;
 
       jmp = PATTERN (insn);
       
       if (GET_CODE (jmp) != SEQUENCE)
-        /* If it's not got a filled delay slot, then it can't
-           conflict.  */
-        continue;
+	/* If it's not got a filled delay slot, then it can't
+	   conflict.  */
+	continue;
       
       jmp = XVECEXP (jmp, 0, 0);
 
       if (recog_memoized (jmp) == CODE_FOR_tablejump)
-        for (jmp = XEXP (XEXP (XVECEXP (PATTERN (jmp), 0, 1), 0), 0);
-             !JUMP_TABLE_DATA_P (jmp);
-             jmp = NEXT_INSN (jmp))
-          continue;
+	for (jmp = XEXP (XEXP (XVECEXP (PATTERN (jmp), 0, 1), 0), 0);
+	     !JUMP_TABLE_DATA_P (jmp);
+	     jmp = NEXT_INSN (jmp))
+	  continue;
 
       for_each_rtx (&PATTERN (jmp), mt_add_branches, insn);
     }
@@ -2299,131 +2299,131 @@ mt_reorg_hazard (void)
       
       gcc_assert (INSN_P (insn) && !INSN_DELETED_P (insn));
       for (next = NEXT_INSN (insn);
-           next;
-           next = NEXT_INSN (next))
-        {
-          if (!INSN_P (next))
-            continue;
-          if (GET_CODE (PATTERN (next)) != USE)
-            break;
-        }
+	   next;
+	   next = NEXT_INSN (next))
+	{
+	  if (!INSN_P (next))
+	    continue;
+	  if (GET_CODE (PATTERN (next)) != USE)
+	    break;
+	}
 
       jmp = insn;
       if (GET_CODE (PATTERN (insn)) == SEQUENCE)
-        jmp = XVECEXP (PATTERN (insn), 0, 0);
+	jmp = XVECEXP (PATTERN (insn), 0, 0);
       
       attr = recog_memoized (jmp) >= 0 ? get_attr_type (jmp) : TYPE_UNKNOWN;
       
       if (next && attr == TYPE_LOAD)
-        {
-          /* A load.  See if NEXT is dependent, and if so insert a
-             nop.  */
-          
-          tmp = PATTERN (next);
-          if (GET_CODE (tmp) == SEQUENCE)
-            tmp = PATTERN (XVECEXP (tmp, 0, 0));
-          note_stores (PATTERN (insn), insn_dependent_p_1, &tmp);
-          if (!tmp)
-            emit_insn_after (gen_nop (), insn);
-        }
+	{
+	  /* A load.  See if NEXT is dependent, and if so insert a
+	     nop.  */
+	  
+	  tmp = PATTERN (next);
+	  if (GET_CODE (tmp) == SEQUENCE)
+	    tmp = PATTERN (XVECEXP (tmp, 0, 0));
+	  note_stores (PATTERN (insn), insn_dependent_p_1, &tmp);
+	  if (!tmp)
+	    emit_insn_after (gen_nop (), insn);
+	}
       
       if (attr == TYPE_CALL)
-        {
-          /* A call.  Make sure we're not dependent on either of the
-             previous two dynamic instructions.  */
-          int nops = 0;
-          int count;
-          rtx prev = insn;
-          rtx rescan = NULL_RTX;
+	{
+	  /* A call.  Make sure we're not dependent on either of the
+	     previous two dynamic instructions.  */
+	  int nops = 0;
+	  int count;
+	  rtx prev = insn;
+	  rtx rescan = NULL_RTX;
 
-          for (count = 2; count && !nops;)
-            {
-              int type;
-              
-              prev = PREV_INSN (prev);
-              if (!prev)
-                {
-                  /* If we reach the start of the function, we must
-                     presume the caller set the address in the delay
-                     slot of the call instruction.  */
-                  nops = count;
-                  break;
-                }
-              
-              if (BARRIER_P (prev))
-                break;
-              if (LABEL_P (prev))
-                {
-                  /* Look at branches to this label.  */
-                  label_info *label;
-                  branch_info *branch;
+	  for (count = 2; count && !nops;)
+	    {
+	      int type;
+	      
+	      prev = PREV_INSN (prev);
+	      if (!prev)
+		{
+		  /* If we reach the start of the function, we must
+		     presume the caller set the address in the delay
+		     slot of the call instruction.  */
+		  nops = count;
+		  break;
+		}
+	      
+	      if (BARRIER_P (prev))
+		break;
+	      if (LABEL_P (prev))
+		{
+		  /* Look at branches to this label.  */
+		  label_info *label;
+		  branch_info *branch;
 
-                  for (label = mt_labels;
-                       label;
-                       label = label->next)
-                    if (label->label == prev)
-                      {
-                        for (branch = label->branches;
-                             branch;
-                             branch = branch->next)
-                          {
-                            tmp = mt_check_delay_slot (branch->insn, jmp);
+		  for (label = mt_labels;
+		       label;
+		       label = label->next)
+		    if (label->label == prev)
+		      {
+			for (branch = label->branches;
+			     branch;
+			     branch = branch->next)
+			  {
+			    tmp = mt_check_delay_slot (branch->insn, jmp);
 
-                            if (tmp == branch->insn)
-                              {
-                                nops = count;
-                                break;
-                              }
-                            
-                            if (tmp && branch->insn == next)
-                              rescan = tmp;
-                          }
-                        break;
-                      }
-                  continue;
-                }
-              if (!INSN_P (prev) || GET_CODE (PATTERN (prev)) == USE)
-                continue;
-              
-              if (GET_CODE (PATTERN (prev)) == SEQUENCE)
-                {
-                  /* Look at the delay slot.  */
-                  tmp = mt_check_delay_slot (prev, jmp);
-                  if (tmp == prev)
-                    nops = count;
-                  break;
-                }
-              
-              type = (INSN_CODE (prev) >= 0 ? get_attr_type (prev)
-                      : TYPE_COMPLEX);
-              if (type == TYPE_CALL || type == TYPE_BRANCH)
-                break;
-              
-              if (type == TYPE_LOAD
-                  || type == TYPE_ARITH
-                  || type == TYPE_COMPLEX)
-                {
-                  tmp = PATTERN (jmp);
-                  note_stores (PATTERN (prev), insn_dependent_p_1, &tmp);
-                  if (!tmp)
-                    {
-                      nops = count;
-                      break;
-                    }
-                }
+			    if (tmp == branch->insn)
+			      {
+				nops = count;
+				break;
+			      }
+			    
+			    if (tmp && branch->insn == next)
+			      rescan = tmp;
+			  }
+			break;
+		      }
+		  continue;
+		}
+	      if (!INSN_P (prev) || GET_CODE (PATTERN (prev)) == USE)
+		continue;
+	      
+	      if (GET_CODE (PATTERN (prev)) == SEQUENCE)
+		{
+		  /* Look at the delay slot.  */
+		  tmp = mt_check_delay_slot (prev, jmp);
+		  if (tmp == prev)
+		    nops = count;
+		  break;
+		}
+	      
+	      type = (INSN_CODE (prev) >= 0 ? get_attr_type (prev)
+		      : TYPE_COMPLEX);
+	      if (type == TYPE_CALL || type == TYPE_BRANCH)
+		break;
+	      
+	      if (type == TYPE_LOAD
+		  || type == TYPE_ARITH
+		  || type == TYPE_COMPLEX)
+		{
+		  tmp = PATTERN (jmp);
+		  note_stores (PATTERN (prev), insn_dependent_p_1, &tmp);
+		  if (!tmp)
+		    {
+		      nops = count;
+		      break;
+		    }
+		}
 
-              if (INSN_CODE (prev) >= 0)
-                count--;
-            }
+	      if (INSN_CODE (prev) >= 0)
+		count--;
+	    }
 
-          if (rescan)
-            for (next = NEXT_INSN (rescan);
-                 next && !INSN_P (next);
-                 next = NEXT_INSN (next))
-              continue;
-          while (nops--)
-            emit_insn_before (gen_nop (), insn);
-        }
+	  if (rescan)
+	    for (next = NEXT_INSN (rescan);
+		 next && !INSN_P (next);
+		 next = NEXT_INSN (next))
+	      continue;
+	  while (nops--)
+	    emit_insn_before (gen_nop (), insn);
+	}
     }
 
   /* Free the data structures.  */
@@ -2434,10 +2434,10 @@ mt_reorg_hazard (void)
       
       mt_labels = label->next;
       for (branch = label->branches; branch; branch = next)
-        {
-          next = branch->next;
-          free (branch);
-        }
+	{
+	  next = branch->next;
+	  free (branch);
+	}
       free (label);
     }
 }
@@ -2466,19 +2466,19 @@ mt_machine_reorg (void)
 const struct attribute_spec mt_attribute_table[];
 
 #undef  TARGET_ATTRIBUTE_TABLE
-#define TARGET_ATTRIBUTE_TABLE                 mt_attribute_table
+#define TARGET_ATTRIBUTE_TABLE 		mt_attribute_table
 #undef  TARGET_STRUCT_VALUE_RTX
-#define TARGET_STRUCT_VALUE_RTX                mt_struct_value_rtx
+#define TARGET_STRUCT_VALUE_RTX		mt_struct_value_rtx
 #undef  TARGET_PROMOTE_PROTOTYPES
-#define TARGET_PROMOTE_PROTOTYPES        hook_bool_tree_true
+#define TARGET_PROMOTE_PROTOTYPES	hook_bool_tree_true
 #undef  TARGET_PASS_BY_REFERENCE
-#define TARGET_PASS_BY_REFERENCE        mt_pass_by_reference
+#define TARGET_PASS_BY_REFERENCE	mt_pass_by_reference
 #undef  TARGET_MUST_PASS_IN_STACK
 #define TARGET_MUST_PASS_IN_STACK       mt_pass_in_stack
 #undef  TARGET_ARG_PARTIAL_BYTES
-#define TARGET_ARG_PARTIAL_BYTES        mt_arg_partial_bytes
+#define TARGET_ARG_PARTIAL_BYTES	mt_arg_partial_bytes
 #undef  TARGET_SETUP_INCOMING_VARARGS
-#define TARGET_SETUP_INCOMING_VARARGS         mt_setup_incoming_varargs
+#define TARGET_SETUP_INCOMING_VARARGS 	mt_setup_incoming_varargs
 #undef  TARGET_MACHINE_DEPENDENT_REORG
 #define TARGET_MACHINE_DEPENDENT_REORG  mt_machine_reorg
 

@@ -19,14 +19,14 @@ the Free Software Foundation, 51 Franklin Street, Fifth Floor,
 Boston, MA 02110-1301, USA.  */
 
 /* Target OS builtins.  */
-#define TARGET_OS_CPP_BUILTINS()                \
-  do                                                \
-    {                                                \
-        builtin_define ("__unix__");                \
-        builtin_define ("__OpenBSD__");                \
-        builtin_assert ("system=unix");                \
-        builtin_assert ("system=OpenBSD");        \
-   }                                                \
+#define TARGET_OS_CPP_BUILTINS()		\
+  do						\
+    {						\
+	builtin_define ("__unix__");		\
+	builtin_define ("__OpenBSD__");		\
+	builtin_assert ("system=unix");		\
+	builtin_assert ("system=OpenBSD");	\
+   }						\
   while (0)
 
 /* Define __HAVE_68881__ in preprocessor, unless -msoft-float is specified.

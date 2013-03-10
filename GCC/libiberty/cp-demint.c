@@ -111,7 +111,7 @@ cplus_demangle_fill_component (struct demangle_component *p,
     case DEMANGLE_COMPONENT_VENDOR_TYPE:
     case DEMANGLE_COMPONENT_CAST:
       if (right != NULL)
-        return 0;
+	return 0;
       break;
 
     default:
@@ -141,12 +141,12 @@ cplus_demangle_fill_builtin_type (struct demangle_component *p,
   for (i = 0; i < D_BUILTIN_TYPE_COUNT; ++i)
     {
       if (len == cplus_demangle_builtin_types[i].len
-          && strcmp (type_name, cplus_demangle_builtin_types[i].name) == 0)
-        {
-          p->type = DEMANGLE_COMPONENT_BUILTIN_TYPE;
-          p->u.s_builtin.type = &cplus_demangle_builtin_types[i];
-          return 1;
-        }
+	  && strcmp (type_name, cplus_demangle_builtin_types[i].name) == 0)
+	{
+	  p->type = DEMANGLE_COMPONENT_BUILTIN_TYPE;
+	  p->u.s_builtin.type = &cplus_demangle_builtin_types[i];
+	  return 1;
+	}
     }
   return 0;
 }
@@ -166,13 +166,13 @@ cplus_demangle_fill_operator (struct demangle_component *p,
   for (i = 0; cplus_demangle_operators[i].name != NULL; ++i)
     {
       if (len == cplus_demangle_operators[i].len
-          && args == cplus_demangle_operators[i].args
-          && strcmp (opname, cplus_demangle_operators[i].name) == 0)
-        {
-          p->type = DEMANGLE_COMPONENT_OPERATOR;
-          p->u.s_operator.op = &cplus_demangle_operators[i];
-          return 1;
-        }
+	  && args == cplus_demangle_operators[i].args
+	  && strcmp (opname, cplus_demangle_operators[i].name) == 0)
+	{
+	  p->type = DEMANGLE_COMPONENT_OPERATOR;
+	  p->u.s_operator.op = &cplus_demangle_operators[i];
+	  return 1;
+	}
     }
   return 0;
 }
@@ -194,22 +194,22 @@ cplus_demangle_v3_components (const char *mangled, int options, void **mem)
   else
     {
       if ((options & DMGL_TYPES) == 0)
-        return NULL;
+	return NULL;
       type = 1;
     }
 
   cplus_demangle_init_info (mangled, options, len, &di);
 
   di.comps = ((struct demangle_component *)
-              malloc (di.num_comps * sizeof (struct demangle_component)));
+	      malloc (di.num_comps * sizeof (struct demangle_component)));
   di.subs = ((struct demangle_component **)
-             malloc (di.num_subs * sizeof (struct demangle_component *)));
+	     malloc (di.num_subs * sizeof (struct demangle_component *)));
   if (di.comps == NULL || di.subs == NULL)
     {
       if (di.comps != NULL)
-        free (di.comps);
+	free (di.comps);
       if (di.subs != NULL)
-        free (di.subs);
+	free (di.subs);
       return NULL;
     }
 

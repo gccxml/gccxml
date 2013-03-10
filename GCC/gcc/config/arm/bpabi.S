@@ -37,59 +37,59 @@
 #define xxl r0
 #define yyh r3
 #define yyl r2
-#endif        
-        
+#endif	
+	
 #ifdef L_aeabi_lcmp
 
 ARM_FUNC_START aeabi_lcmp
-        subs        ip, xxl, yyl
-        sbcs        ip, xxh, yyh
-        subeqs  ip, xxl, yyl
-        mov        r0, ip
-        RET
-        FUNC_END aeabi_lcmp
+	subs	ip, xxl, yyl
+	sbcs	ip, xxh, yyh
+	subeqs  ip, xxl, yyl
+	mov	r0, ip
+	RET
+	FUNC_END aeabi_lcmp
 
 #endif /* L_aeabi_lcmp */
-        
+	
 #ifdef L_aeabi_ulcmp
 
 ARM_FUNC_START aeabi_ulcmp
-        cmp        xxh, yyh
-        movlo        r0, #-1
-        movhi        r0, #1
-        RETc(ne)
-        cmp        xxl, yyl
-        movlo        r0, #-1
-        movhi        r0, #1
-        moveq        r0, #0
-        RET
-        FUNC_END aeabi_ulcmp
+	cmp	xxh, yyh
+	movlo	r0, #-1
+	movhi	r0, #1
+	RETc(ne)
+	cmp	xxl, yyl
+	movlo	r0, #-1
+	movhi	r0, #1
+	moveq	r0, #0
+	RET
+	FUNC_END aeabi_ulcmp
 
 #endif /* L_aeabi_ulcmp */
 
 #ifdef L_aeabi_ldivmod
 
 ARM_FUNC_START aeabi_ldivmod
-        sub sp, sp, #8
-        stmfd sp!, {sp, lr}
-        bl SYM(__gnu_ldivmod_helper) __PLT__
-        ldr lr, [sp, #4]
-        add sp, sp, #8
-        ldmfd sp!, {r2, r3}
-        RET
-        
+	sub sp, sp, #8
+	stmfd sp!, {sp, lr}
+	bl SYM(__gnu_ldivmod_helper) __PLT__
+	ldr lr, [sp, #4]
+	add sp, sp, #8
+	ldmfd sp!, {r2, r3}
+	RET
+	
 #endif /* L_aeabi_ldivmod */
 
 #ifdef L_aeabi_uldivmod
 
 ARM_FUNC_START aeabi_uldivmod
-        sub sp, sp, #8
-        stmfd sp!, {sp, lr}
-        bl SYM(__gnu_uldivmod_helper) __PLT__
-        ldr lr, [sp, #4]
-        add sp, sp, #8
-        ldmfd sp!, {r2, r3}
-        RET
-        
+	sub sp, sp, #8
+	stmfd sp!, {sp, lr}
+	bl SYM(__gnu_uldivmod_helper) __PLT__
+	ldr lr, [sp, #4]
+	add sp, sp, #8
+	ldmfd sp!, {r2, r3}
+	RET
+	
 #endif /* L_aeabi_divmod */
-        
+	

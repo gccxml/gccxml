@@ -71,12 +71,12 @@ vsnprintf (char *s, size_t n, const char *format, va_list ap)
   if (n > 0)
     {
       if ((long) n > result)
-        memcpy (s, buf, result+1);
+	memcpy (s, buf, result+1);
       else
         {
-          memcpy (s, buf, n-1);
-          s[n - 1] = 0;
-        }
+	  memcpy (s, buf, n-1);
+	  s[n - 1] = 0;
+	}
     }
   free (buf);
   return result;

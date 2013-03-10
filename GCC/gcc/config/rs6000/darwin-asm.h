@@ -57,5 +57,5 @@
 #define GPR_BYTES       MODE_CHOICE(4,8)        /* size of a GPR in bytes */
 #define LOG2_GPR_BYTES  MODE_CHOICE(2,3)        /* log2(GPR_BYTES) */
 
-#define SAVED_LR_OFFSET MODE_CHOICE(8,16)        /* position of saved
-                                                   LR in frame */
+#define SAVED_LR_OFFSET MODE_CHOICE(8,16)	/* position of saved
+						   LR in frame */

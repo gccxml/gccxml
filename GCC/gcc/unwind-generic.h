@@ -83,7 +83,7 @@ typedef enum
 struct _Unwind_Exception;
 
 typedef void (*_Unwind_Exception_Cleanup_Fn) (_Unwind_Reason_Code,
-                                              struct _Unwind_Exception *);
+					      struct _Unwind_Exception *);
 
 struct _Unwind_Exception
 {
@@ -102,11 +102,11 @@ struct _Unwind_Exception
    or more of the following constants.  */
 typedef int _Unwind_Action;
 
-#define _UA_SEARCH_PHASE        1
-#define _UA_CLEANUP_PHASE        2
-#define _UA_HANDLER_FRAME        4
-#define _UA_FORCE_UNWIND        8
-#define _UA_END_OF_STACK        16
+#define _UA_SEARCH_PHASE	1
+#define _UA_CLEANUP_PHASE	2
+#define _UA_HANDLER_FRAME	4
+#define _UA_FORCE_UNWIND	8
+#define _UA_END_OF_STACK	16
 
 /* This is an opaque type used to refer to a system-specific data
    structure used by the system unwinder. This context is created and
@@ -124,8 +124,8 @@ typedef _Unwind_Reason_Code (*_Unwind_Stop_Fn)
       struct _Unwind_Exception *, struct _Unwind_Context *, void *);
 
 extern _Unwind_Reason_Code _Unwind_ForcedUnwind (struct _Unwind_Exception *,
-                                                 _Unwind_Stop_Fn,
-                                                 void *);
+						 _Unwind_Stop_Fn,
+						 void *);
 
 /* Helper to invoke the exception_cleanup routine.  */
 extern void _Unwind_DeleteException (struct _Unwind_Exception *);

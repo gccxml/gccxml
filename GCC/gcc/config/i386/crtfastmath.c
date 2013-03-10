@@ -31,11 +31,11 @@
  *    the executable file might be covered by the GNU General Public License.
  */
 
-#define MXCSR_DAZ (1 << 6)        /* Enable denormals are zero mode */
-#define MXCSR_FTZ (1 << 15)        /* Enable flush to zero mode */
+#define MXCSR_DAZ (1 << 6)	/* Enable denormals are zero mode */
+#define MXCSR_FTZ (1 << 15)	/* Enable flush to zero mode */
 
-#define FXSAVE        (1 << 24)
-#define SSE        (1 << 25)
+#define FXSAVE	(1 << 24)
+#define SSE	(1 << 25)
 
 static void __attribute__((constructor))
 #ifndef __x86_64__
@@ -53,24 +53,24 @@ set_fast_math (void)
 
   /* See if we can use cpuid.  */
   asm volatile ("pushfl; pushfl; popl %0; movl %0,%1; xorl %2,%0;"
-                "pushl %0; popfl; pushfl; popl %0; popfl"
-                : "=&r" (eax), "=&r" (ebx)
-                : "i" (0x00200000));
+		"pushl %0; popfl; pushfl; popl %0; popfl"
+		: "=&r" (eax), "=&r" (ebx)
+		: "i" (0x00200000));
 
   if (((eax ^ ebx) & 0x00200000) == 0)
     return;
 
   /* Check the highest input value for eax.  */
   asm volatile ("xchgl %%ebx, %1; cpuid; xchgl %%ebx, %1"
-                : "=a" (eax), "=r" (ebx), "=c" (ecx), "=d" (edx)
-                : "0" (0));
+		: "=a" (eax), "=r" (ebx), "=c" (ecx), "=d" (edx)
+		: "0" (0));
 
   if (eax == 0)
     return;
 
   asm volatile ("xchgl %%ebx, %1; cpuid; xchgl %%ebx, %1"
-                : "=a" (eax), "=r" (ebx), "=c" (ecx), "=d" (edx)
-                : "0" (1));
+		: "=a" (eax), "=r" (ebx), "=c" (ecx), "=d" (edx)
+		: "0" (1));
 
   if (edx & SSE)
     {
@@ -79,32 +79,32 @@ set_fast_math (void)
       mxcsr |= MXCSR_FTZ;
 
       if (edx & FXSAVE)
-        {
-          /* Check if DAZ is available.  */
-          struct
-            {
-              unsigned short int cwd;
-              unsigned short int swd;
-              unsigned short int twd;
-              unsigned short int fop;
-              long int fip;
-              long int fcs;
-              long int foo;
-              long int fos;
-              long int mxcsr;
-              long int mxcsr_mask;
-              long int st_space[32];
-              long int xmm_space[32];
-              long int padding[56];
-            } __attribute__ ((aligned (16))) fxsave;
+	{
+	  /* Check if DAZ is available.  */
+	  struct
+	    {
+	      unsigned short int cwd;
+	      unsigned short int swd;
+	      unsigned short int twd;
+	      unsigned short int fop;
+	      long int fip;
+	      long int fcs;
+	      long int foo;
+	      long int fos;
+	      long int mxcsr;
+	      long int mxcsr_mask;
+	      long int st_space[32];
+	      long int xmm_space[32];
+	      long int padding[56];
+	    } __attribute__ ((aligned (16))) fxsave;
 
-          __builtin_memset (&fxsave, 0, sizeof (fxsave));
+	  __builtin_memset (&fxsave, 0, sizeof (fxsave));
 
-          asm volatile ("fxsave %0" : "=m" (fxsave) : "m" (fxsave));
+	  asm volatile ("fxsave %0" : "=m" (fxsave) : "m" (fxsave));
 
-          if (fxsave.mxcsr_mask & MXCSR_DAZ)
-            mxcsr |= MXCSR_DAZ;
-        }
+	  if (fxsave.mxcsr_mask & MXCSR_DAZ)
+	    mxcsr |= MXCSR_DAZ;
+	}
 
       __builtin_ia32_ldmxcsr (mxcsr);
     }

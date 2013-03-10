@@ -139,7 +139,7 @@ static bitmap blocks_with_phis_to_rewrite;
    create new names on the fly.  FIXME.  Currently set to 1/3 to avoid
    frequent reallocations but still need to find a reasonable growth
    strategy.  */
-#define NAME_SETS_GROWTH_FACTOR        (MAX (3, num_ssa_names / 3))
+#define NAME_SETS_GROWTH_FACTOR	(MAX (3, num_ssa_names / 3))
 
 /* Tuple used to represent replacement mappings.  */
 struct repl_map_d
@@ -239,7 +239,7 @@ enum rewrite_mode {
 /* Use TREE_VISITED to keep track of which statements we want to
    rename.  When renaming a subset of the variables, not all
    statements will be processed.  This is decided in mark_def_sites.  */
-#define REWRITE_THIS_STMT(T)        TREE_VISITED (T)
+#define REWRITE_THIS_STMT(T)	TREE_VISITED (T)
 
 /* Use the unsigned flag to keep track of which statements we want to
    visit when marking new definition sites.  This is slightly
@@ -248,7 +248,7 @@ enum rewrite_mode {
    processed from those that only need to have their defs processed.
    Statements that define new SSA names only need to have their defs
    registered, but they don't need to have their uses renamed.  */
-#define REGISTER_DEFS_IN_THIS_STMT(T)        (T)->common.unsigned_flag
+#define REGISTER_DEFS_IN_THIS_STMT(T)	(T)->common.unsigned_flag
 
 
 /* Prototypes for debugging functions.  */
@@ -277,11 +277,11 @@ get_ssa_name_ann (tree name)
 
       VEC_reserve (ssa_name_info_p, heap, info_for_ssa_name, new_len);
       while (len++ < new_len)
-        {
-          struct ssa_name_info *info = XCNEW (struct ssa_name_info);
-          info->age = current_info_for_ssa_name_age;
-          VEC_quick_push (ssa_name_info_p, info_for_ssa_name, info);
-        }
+	{
+	  struct ssa_name_info *info = XCNEW (struct ssa_name_info);
+	  info->age = current_info_for_ssa_name_age;
+	  VEC_quick_push (ssa_name_info_p, info_for_ssa_name, info);
+	}
     }
 
   info = VEC_index (ssa_name_info_p, info_for_ssa_name, ver);
@@ -385,19 +385,19 @@ compute_global_livein (bitmap livein, bitmap def_blocks)
 
       /* For each predecessor block.  */
       FOR_EACH_EDGE (e, ei, bb->preds)
-        {
-          basic_block pred = e->src;
-          int pred_index = pred->index;
+	{
+	  basic_block pred = e->src;
+	  int pred_index = pred->index;
 
-          /* None of this is necessary for the entry block.  */
-          if (pred != ENTRY_BLOCK_PTR
-              && ! bitmap_bit_p (livein, pred_index)
-              && ! bitmap_bit_p (def_blocks, pred_index))
-            {
-              *tos++ = pred;
-              bitmap_set_bit (livein, pred_index);
-            }
-        }
+	  /* None of this is necessary for the entry block.  */
+	  if (pred != ENTRY_BLOCK_PTR
+	      && ! bitmap_bit_p (livein, pred_index)
+	      && ! bitmap_bit_p (def_blocks, pred_index))
+	    {
+	      *tos++ = pred;
+	      bitmap_set_bit (livein, pred_index);
+	    }
+	}
     }
 
   free (worklist);
@@ -423,8 +423,8 @@ initialize_flags_in_bb (basic_block bb)
     {
       stmt = bsi_stmt (bsi);
       /* We are going to use the operand cache API, such as
-         SET_USE, SET_DEF, and FOR_EACH_IMM_USE_FAST.  The operand
-         cache for each statement should be up-to-date.  */
+	 SET_USE, SET_DEF, and FOR_EACH_IMM_USE_FAST.  The operand
+	 cache for each statement should be up-to-date.  */
       gcc_assert (!stmt_modified_p (stmt));
       REWRITE_THIS_STMT (stmt) = 0;
       REGISTER_DEFS_IN_THIS_STMT (stmt) = 0;
@@ -531,9 +531,9 @@ set_livein_block (tree var, basic_block bb)
       int def_block_index = bitmap_first_set_bit (db_p->def_blocks);
 
       if (def_block_index == -1
-          || ! dominated_by_p (CDI_DOMINATORS, bb,
-                               BASIC_BLOCK (def_block_index)))
-        set_phi_state (var, NEED_PHI_STATE_MAYBE);
+	  || ! dominated_by_p (CDI_DOMINATORS, bb,
+	                       BASIC_BLOCK (def_block_index)))
+	set_phi_state (var, NEED_PHI_STATE_MAYBE);
     }
   else
     set_phi_state (var, NEED_PHI_STATE_MAYBE);
@@ -582,7 +582,7 @@ static int
 repl_map_eq (const void *p1, const void *p2)
 {
   return ((const struct repl_map_d *)p1)->name
-         == ((const struct repl_map_d *)p2)->name;
+	 == ((const struct repl_map_d *)p2)->name;
 }
 
 static void
@@ -668,19 +668,19 @@ add_new_name_mapping (tree new, tree old)
       need_to_update_vops_p = true;
 
       /* Keep counts of virtual mappings and symbols to use in the
-         virtual mapping heuristic.  If we have large numbers of
-         virtual mappings for a relatively low number of symbols, it
-         will make more sense to rename the symbols from scratch.
-         Otherwise, the insertion of PHI nodes for each of the old
-         names in these mappings will be very slow.  */
+	 virtual mapping heuristic.  If we have large numbers of
+	 virtual mappings for a relatively low number of symbols, it
+	 will make more sense to rename the symbols from scratch.
+	 Otherwise, the insertion of PHI nodes for each of the old
+	 names in these mappings will be very slow.  */
       sym = SSA_NAME_VAR (new);
       uid = DECL_UID (sym);
       update_ssa_stats.num_virtual_mappings++;
       if (!bitmap_bit_p (update_ssa_stats.virtual_symbols, uid))
-        {
-          bitmap_set_bit (update_ssa_stats.virtual_symbols, uid);
-          update_ssa_stats.num_virtual_symbols++;
-        }
+	{
+	  bitmap_set_bit (update_ssa_stats.virtual_symbols, uid);
+	  update_ssa_stats.num_virtual_symbols++;
+	}
     }
 
   /* Update the REPL_TBL table.  */
@@ -719,8 +719,8 @@ add_new_name_mapping (tree new, tree old)
 
 static void
 mark_def_sites (struct dom_walk_data *walk_data,
-                basic_block bb,
-                block_stmt_iterator bsi)
+		basic_block bb,
+		block_stmt_iterator bsi)
 {
   struct mark_def_sites_global_data *gd =
      (struct mark_def_sites_global_data *) walk_data->global_data;
@@ -740,12 +740,12 @@ mark_def_sites (struct dom_walk_data *walk_data,
   /* If a variable is used before being set, then the variable is live
      across a block boundary, so mark it live-on-entry to BB.  */
   FOR_EACH_SSA_USE_OPERAND (use_p, stmt, iter,
-                            SSA_OP_USE | SSA_OP_VUSE | SSA_OP_VMUSTKILL)
+			    SSA_OP_USE | SSA_OP_VUSE | SSA_OP_VMUSTKILL)
     {
       tree sym = USE_FROM_PTR (use_p);
       gcc_assert (DECL_P (sym));
       if (!bitmap_bit_p (kills, DECL_UID (sym)))
-        set_livein_block (sym, bb);
+	set_livein_block (sym, bb);
       REWRITE_THIS_STMT (stmt) = 1;
     }
   
@@ -815,9 +815,9 @@ find_dfsnum_interval (struct dom_dfsnum *defs, unsigned n, unsigned s)
     {
       m = (f + t) / 2;
       if (defs[m].dfs_num <= s)
-        f = m;
+	f = m;
       else
-        t = m;
+	t = m;
     }
 
   return defs[f].bb_index;
@@ -909,30 +909,30 @@ prune_unused_phi_nodes (bitmap phis, bitmap kills, bitmap uses)
     {
       b = defs[i].bb_index;
       if (b == top)
-        {
-          /* This is a closing element.  Interval corresponding to the top
-             of the stack after removing it follows.  */
-          VEC_pop (int, worklist);
-          top = VEC_index (int, worklist, VEC_length (int, worklist) - 1);
-          defs[n_defs].bb_index = top;
-          defs[n_defs].dfs_num = defs[i].dfs_num + 1;
-        }
+	{
+	  /* This is a closing element.  Interval corresponding to the top
+	     of the stack after removing it follows.  */
+	  VEC_pop (int, worklist);
+	  top = VEC_index (int, worklist, VEC_length (int, worklist) - 1);
+	  defs[n_defs].bb_index = top;
+	  defs[n_defs].dfs_num = defs[i].dfs_num + 1;
+	}
       else
-        {
-          /* Opening element.  Nothing to do, just push it to the stack and move
-             it to the correct position.  */
-          defs[n_defs].bb_index = defs[i].bb_index;
-          defs[n_defs].dfs_num = defs[i].dfs_num;
-          VEC_quick_push (int, worklist, b);
-          top = b;
-        }
+	{
+	  /* Opening element.  Nothing to do, just push it to the stack and move
+	     it to the correct position.  */
+	  defs[n_defs].bb_index = defs[i].bb_index;
+	  defs[n_defs].dfs_num = defs[i].dfs_num;
+	  VEC_quick_push (int, worklist, b);
+	  top = b;
+	}
 
       /* If this interval starts at the same point as the previous one, cancel
-         the previous one.  */
+	 the previous one.  */
       if (defs[n_defs].dfs_num == defs[n_defs - 1].dfs_num)
-        defs[n_defs - 1].bb_index = defs[n_defs].bb_index;
+	defs[n_defs - 1].bb_index = defs[n_defs].bb_index;
       else
-        n_defs++;
+	n_defs++;
     }
   VEC_pop (int, worklist);
   gcc_assert (VEC_empty (int, worklist));
@@ -948,45 +948,45 @@ prune_unused_phi_nodes (bitmap phis, bitmap kills, bitmap uses)
     {
       b = VEC_pop (int, worklist);
       if (b == ENTRY_BLOCK)
-        continue;
+	continue;
 
       /* If there is a phi node in USE_BB, it is made live.  Otherwise,
-         find the def that dominates the immediate dominator of USE_BB
-         (the kill in USE_BB does not dominate the use).  */
+	 find the def that dominates the immediate dominator of USE_BB
+	 (the kill in USE_BB does not dominate the use).  */
       if (bitmap_bit_p (phis, b))
-        p = b;
+	p = b;
       else
-        {
-          use_bb = get_immediate_dominator (CDI_DOMINATORS, BASIC_BLOCK (b));
-          p = find_dfsnum_interval (defs, n_defs,
-                                    bb_dom_dfs_in (CDI_DOMINATORS, use_bb));
-          if (!bitmap_bit_p (phis, p))
-            continue;
-        }
+	{
+	  use_bb = get_immediate_dominator (CDI_DOMINATORS, BASIC_BLOCK (b));
+	  p = find_dfsnum_interval (defs, n_defs,
+				    bb_dom_dfs_in (CDI_DOMINATORS, use_bb));
+	  if (!bitmap_bit_p (phis, p))
+	    continue;
+	}
 
       /* If the phi node is already live, there is nothing to do.  */
       if (bitmap_bit_p (live_phis, p))
-        continue;
+	continue;
 
       /* Mark the phi as live, and add the new uses to the worklist.  */
       bitmap_set_bit (live_phis, p);
       def_bb = BASIC_BLOCK (p);
       FOR_EACH_EDGE (e, ei, def_bb->preds)
-        {
-          u = e->src->index;
-          if (bitmap_bit_p (uses, u))
-            continue;
+	{
+	  u = e->src->index;
+	  if (bitmap_bit_p (uses, u))
+	    continue;
 
-          /* In case there is a kill directly in the use block, do not record
-             the use (this is also necessary for correctness, as we assume that
-             uses dominated by a def directly in their block have been filtered
-             out before).  */
-          if (bitmap_bit_p (kills, u))
-            continue;
+	  /* In case there is a kill directly in the use block, do not record
+	     the use (this is also necessary for correctness, as we assume that
+	     uses dominated by a def directly in their block have been filtered
+	     out before).  */
+	  if (bitmap_bit_p (kills, u))
+	    continue;
 
-          bitmap_set_bit (uses, u);
-          VEC_safe_push (int, heap, worklist, u);
-        }
+	  bitmap_set_bit (uses, u);
+	  VEC_safe_push (int, heap, worklist, u);
+	}
     }
 
   VEC_free (int, heap, worklist);
@@ -1033,21 +1033,21 @@ find_idf (bitmap def_blocks, bitmap *dfs)
       bb_index = VEC_pop (int, work_stack);
 
       /* Since the registration of NEW -> OLD name mappings is done
-         separately from the call to update_ssa, when updating the SSA
-         form, the basic blocks where new and/or old names are defined
-         may have disappeared by CFG cleanup calls.  In this case,
-         we may pull a non-existing block from the work stack.  */
+	 separately from the call to update_ssa, when updating the SSA
+	 form, the basic blocks where new and/or old names are defined
+	 may have disappeared by CFG cleanup calls.  In this case,
+	 we may pull a non-existing block from the work stack.  */
       gcc_assert (bb_index < (unsigned) last_basic_block);
 
       EXECUTE_IF_AND_COMPL_IN_BITMAP (dfs[bb_index], phi_insertion_points,
-                                      0, bb_index, bi)
-        {
-          /* Use a safe push because if there is a definition of VAR
-             in every basic block, then WORK_STACK may eventually have
-             more than N_BASIC_BLOCK entries.  */
-          VEC_safe_push (int, heap, work_stack, bb_index);
-          bitmap_set_bit (phi_insertion_points, bb_index);
-        }
+	                              0, bb_index, bi)
+	{
+	  /* Use a safe push because if there is a definition of VAR
+	     in every basic block, then WORK_STACK may eventually have
+	     more than N_BASIC_BLOCK entries.  */
+	  VEC_safe_push (int, heap, work_stack, bb_index);
+	  bitmap_set_bit (phi_insertion_points, bb_index);
+	}
     }
 
   VEC_free (int, heap, work_stack);
@@ -1143,43 +1143,43 @@ insert_phi_nodes_for (tree var, bitmap phi_insertion_points, bool update_p)
 
   /* Remove obviously useless phi nodes.  */
   prune_unused_phi_nodes (phi_insertion_points, def_map->def_blocks,
-                          def_map->livein_blocks);
+			  def_map->livein_blocks);
 
   /* And insert the PHI nodes.  */
   EXECUTE_IF_SET_IN_BITMAP (phi_insertion_points, 0, bb_index, bi)
     {
       bb = BASIC_BLOCK (bb_index);
       if (update_p)
-        mark_block_for_update (bb);
+	mark_block_for_update (bb);
 
       if (update_p && TREE_CODE (var) == SSA_NAME)
-        {
-          /* If we are rewriting SSA names, create the LHS of the PHI
-             node by duplicating VAR.  This is useful in the case of
-             pointers, to also duplicate pointer attributes (alias
-             information, in particular).  */
-          edge_iterator ei;
-          tree new_lhs;
+	{
+	  /* If we are rewriting SSA names, create the LHS of the PHI
+	     node by duplicating VAR.  This is useful in the case of
+	     pointers, to also duplicate pointer attributes (alias
+	     information, in particular).  */
+	  edge_iterator ei;
+	  tree new_lhs;
 
-          phi = create_phi_node (var, bb);
-          new_lhs = duplicate_ssa_name (var, phi);
-          SET_PHI_RESULT (phi, new_lhs);
-          add_new_name_mapping (new_lhs, var);
+	  phi = create_phi_node (var, bb);
+	  new_lhs = duplicate_ssa_name (var, phi);
+	  SET_PHI_RESULT (phi, new_lhs);
+	  add_new_name_mapping (new_lhs, var);
 
-          /* Add VAR to every argument slot of PHI.  We need VAR in
-             every argument so that rewrite_update_phi_arguments knows
-             which name is this PHI node replacing.  If VAR is a
-             symbol marked for renaming, this is not necessary, the
-             renamer will use the symbol on the LHS to get its
-             reaching definition.  */
-          FOR_EACH_EDGE (e, ei, bb->preds)
-            add_phi_arg (phi, var, e);
-        }
+	  /* Add VAR to every argument slot of PHI.  We need VAR in
+	     every argument so that rewrite_update_phi_arguments knows
+	     which name is this PHI node replacing.  If VAR is a
+	     symbol marked for renaming, this is not necessary, the
+	     renamer will use the symbol on the LHS to get its
+	     reaching definition.  */
+	  FOR_EACH_EDGE (e, ei, bb->preds)
+	    add_phi_arg (phi, var, e);
+	}
       else
-        {
-          tree sym = DECL_P (var) ? var : SSA_NAME_VAR (var);
-          phi = create_phi_node (sym, bb);
-        }
+	{
+	  tree sym = DECL_P (var) ? var : SSA_NAME_VAR (var);
+	  phi = create_phi_node (sym, bb);
+	}
 
       /* Mark this PHI node as interesting for update_ssa.  */
       REGISTER_DEFS_IN_THIS_STMT (phi) = 1;
@@ -1210,14 +1210,14 @@ insert_phi_nodes (bitmap *dfs)
 
       def_map = find_def_blocks_for (var);
       if (def_map == NULL)
-        continue;
+	continue;
 
       if (get_phi_state (var) != NEED_PHI_STATE_NO)
-        {
-          idf = find_idf (def_map->def_blocks, dfs);
-          insert_phi_nodes_for (var, idf, false);
-          BITMAP_FREE (idf);
-        }
+	{
+	  idf = find_idf (def_map->def_blocks, dfs);
+	  insert_phi_nodes_for (var, idf, false);
+	  BITMAP_FREE (idf);
+	}
     }
 
   timevar_pop (TV_TREE_INSERT_PHI_NODES);
@@ -1292,7 +1292,7 @@ register_new_def (tree def, VEC(tree,heap) **block_defs_p)
 
 static void
 rewrite_initialize_block (struct dom_walk_data *walk_data ATTRIBUTE_UNUSED,
-                          basic_block bb)
+			  basic_block bb)
 {
   tree phi;
 
@@ -1348,8 +1348,8 @@ get_reaching_def (tree var)
 
 static void
 rewrite_stmt (struct dom_walk_data *walk_data ATTRIBUTE_UNUSED,
-              basic_block bb ATTRIBUTE_UNUSED,
-              block_stmt_iterator si)
+	      basic_block bb ATTRIBUTE_UNUSED,
+	      block_stmt_iterator si)
 {
   tree stmt;
   use_operand_p use_p;
@@ -1374,21 +1374,21 @@ rewrite_stmt (struct dom_walk_data *walk_data ATTRIBUTE_UNUSED,
   /* Step 1.  Rewrite USES and VUSES in the statement.  */
   if (REWRITE_THIS_STMT (stmt))
     FOR_EACH_SSA_USE_OPERAND (use_p, stmt, iter,
-                              SSA_OP_ALL_USES|SSA_OP_ALL_KILLS)
+	                      SSA_OP_ALL_USES|SSA_OP_ALL_KILLS)
       {
-        tree var = USE_FROM_PTR (use_p);
-        gcc_assert (DECL_P (var));
-        SET_USE (use_p, get_reaching_def (var));
+	tree var = USE_FROM_PTR (use_p);
+	gcc_assert (DECL_P (var));
+	SET_USE (use_p, get_reaching_def (var));
       }
 
   /* Step 2.  Register the statement's DEF and VDEF operands.  */
   if (REGISTER_DEFS_IN_THIS_STMT (stmt))
     FOR_EACH_SSA_DEF_OPERAND (def_p, stmt, iter, SSA_OP_ALL_DEFS)
       {
-        tree var = DEF_FROM_PTR (def_p);
-        gcc_assert (DECL_P (var));
-        SET_DEF (def_p, make_ssa_name (var, stmt));
-        register_new_def (DEF_FROM_PTR (def_p), &block_defs_stack);
+	tree var = DEF_FROM_PTR (def_p);
+	gcc_assert (DECL_P (var));
+	SET_DEF (def_p, make_ssa_name (var, stmt));
+	register_new_def (DEF_FROM_PTR (def_p), &block_defs_stack);
       }
 }
 
@@ -1400,7 +1400,7 @@ rewrite_stmt (struct dom_walk_data *walk_data ATTRIBUTE_UNUSED,
 
 static void
 rewrite_add_phi_arguments (struct dom_walk_data *walk_data ATTRIBUTE_UNUSED,
-                           basic_block bb)
+			   basic_block bb)
 {
   edge e;
   edge_iterator ei;
@@ -1410,11 +1410,11 @@ rewrite_add_phi_arguments (struct dom_walk_data *walk_data ATTRIBUTE_UNUSED,
       tree phi;
 
       for (phi = phi_nodes (e->dest); phi; phi = PHI_CHAIN (phi))
-        {
-          tree currdef;
-          currdef = get_reaching_def (SSA_NAME_VAR (PHI_RESULT (phi)));
-          add_phi_arg (phi, currdef, e);
-        }
+	{
+	  tree currdef;
+	  currdef = get_reaching_def (SSA_NAME_VAR (PHI_RESULT (phi)));
+	  add_phi_arg (phi, currdef, e);
+	}
     }
 }
 
@@ -1424,7 +1424,7 @@ rewrite_add_phi_arguments (struct dom_walk_data *walk_data ATTRIBUTE_UNUSED,
 
 static void
 rewrite_finalize_block (struct dom_walk_data *walk_data ATTRIBUTE_UNUSED,
-                        basic_block bb ATTRIBUTE_UNUSED)
+			basic_block bb ATTRIBUTE_UNUSED)
 {
   /* Restore CURRDEFS to its original state.  */
   while (VEC_length (tree, block_defs_stack) > 0)
@@ -1433,22 +1433,22 @@ rewrite_finalize_block (struct dom_walk_data *walk_data ATTRIBUTE_UNUSED,
       tree saved_def, var;
 
       if (tmp == NULL_TREE)
-        break;
+	break;
 
       /* If we recorded an SSA_NAME, then make the SSA_NAME the current
-         definition of its underlying variable.  If we recorded anything
-         else, it must have been an _DECL node and its current reaching
-         definition must have been NULL.  */
+	 definition of its underlying variable.  If we recorded anything
+	 else, it must have been an _DECL node and its current reaching
+	 definition must have been NULL.  */
       if (TREE_CODE (tmp) == SSA_NAME)
-        {
-          saved_def = tmp;
-          var = SSA_NAME_VAR (saved_def);
-        }
+	{
+	  saved_def = tmp;
+	  var = SSA_NAME_VAR (saved_def);
+	}
       else
-        {
-          saved_def = NULL;
-          var = tmp;
-        }
+	{
+	  saved_def = NULL;
+	  var = tmp;
+	}
                                                                                 
       set_current_def (var, saved_def);
     }
@@ -1491,9 +1491,9 @@ static void
 htab_statistics (FILE *file, htab_t htab)
 {
   fprintf (file, "size %ld, %ld elements, %f collision/search ratio\n",
-           (long) htab_size (htab),
-           (long) htab_elements (htab),
-           htab_collisions (htab));
+	   (long) htab_size (htab),
+	   (long) htab_elements (htab),
+	   htab_collisions (htab));
 }
 
 
@@ -1526,14 +1526,14 @@ static hashval_t
 def_blocks_hash (const void *p)
 {
   return htab_hash_pointer
-        ((const void *)((const struct def_blocks_d *)p)->var);
+	((const void *)((const struct def_blocks_d *)p)->var);
 }
 
 static int
 def_blocks_eq (const void *p1, const void *p2)
 {
   return ((const struct def_blocks_d *)p1)->var
-         == ((const struct def_blocks_d *)p2)->var;
+	 == ((const struct def_blocks_d *)p2)->var;
 }
 
 
@@ -1619,7 +1619,7 @@ register_new_update_set (tree new_name, bitmap old_names)
 
 static void
 rewrite_update_init_block (struct dom_walk_data *walk_data ATTRIBUTE_UNUSED,
-                           basic_block bb)
+		           basic_block bb)
 {
   edge e;
   edge_iterator ei;
@@ -1628,7 +1628,7 @@ rewrite_update_init_block (struct dom_walk_data *walk_data ATTRIBUTE_UNUSED,
 
   if (dump_file && (dump_flags & TDF_DETAILS))
     fprintf (dump_file, "\n\nRegistering new PHI nodes in block #%d\n\n",
-             bb->index);
+	     bb->index);
 
   /* Mark the unwind point for this block.  */
   VEC_safe_push (tree, heap, block_defs_stack, NULL_TREE);
@@ -1642,8 +1642,8 @@ rewrite_update_init_block (struct dom_walk_data *walk_data ATTRIBUTE_UNUSED,
   FOR_EACH_EDGE (e, ei, bb->preds)
     if (e->flags & EDGE_ABNORMAL)
       {
-        is_abnormal_phi = true;
-        break;
+	is_abnormal_phi = true;
+	break;
       }
 
   /* If any of the PHI nodes is a replacement for a name in
@@ -1657,28 +1657,28 @@ rewrite_update_init_block (struct dom_walk_data *walk_data ATTRIBUTE_UNUSED,
       tree lhs, lhs_sym;
 
       if (!REGISTER_DEFS_IN_THIS_STMT (phi))
-        continue;
+	continue;
       
       lhs = PHI_RESULT (phi);
       lhs_sym = SSA_NAME_VAR (lhs);
 
       if (symbol_marked_for_renaming (lhs_sym))
-        register_new_update_single (lhs, lhs_sym);
+	register_new_update_single (lhs, lhs_sym);
       else
-        {
-          /* If LHS is a new name, register a new definition for all
-             the names replaced by LHS.  */
-          if (is_new_name (lhs))
-            register_new_update_set (lhs, names_replaced_by (lhs));
-          
-          /* If LHS is an OLD name, register it as a new definition
-             for itself.  */
-          if (is_old_name (lhs))
-            register_new_update_single (lhs, lhs);
-        }
+	{
+	  /* If LHS is a new name, register a new definition for all
+	     the names replaced by LHS.  */
+	  if (is_new_name (lhs))
+	    register_new_update_set (lhs, names_replaced_by (lhs));
+	  
+	  /* If LHS is an OLD name, register it as a new definition
+	     for itself.  */
+	  if (is_old_name (lhs))
+	    register_new_update_single (lhs, lhs);
+	}
 
       if (is_abnormal_phi)
-        SSA_NAME_OCCURS_IN_ABNORMAL_PHI (lhs) = 1;
+	SSA_NAME_OCCURS_IN_ABNORMAL_PHI (lhs) = 1;
     }
 }
 
@@ -1691,7 +1691,7 @@ rewrite_update_init_block (struct dom_walk_data *walk_data ATTRIBUTE_UNUSED,
 
 static void
 rewrite_update_fini_block (struct dom_walk_data *walk_data ATTRIBUTE_UNUSED,
-                           basic_block bb ATTRIBUTE_UNUSED)
+			   basic_block bb ATTRIBUTE_UNUSED)
 {
   while (VEC_length (tree, block_defs_stack) > 0)
     {
@@ -1699,9 +1699,9 @@ rewrite_update_fini_block (struct dom_walk_data *walk_data ATTRIBUTE_UNUSED,
       tree saved_def;
       
       /* NULL indicates the unwind stop point for this block (see
-         rewrite_update_init_block).  */
+	 rewrite_update_init_block).  */
       if (var == NULL)
-        return;
+	return;
 
       saved_def = VEC_pop (tree, block_defs_stack);
       set_current_def (var, saved_def);
@@ -1746,24 +1746,24 @@ maybe_register_def (def_operand_p def_p, tree stmt)
   if (symbol_marked_for_renaming (sym))
     {
       if (DECL_P (def))
-        {
-          def = make_ssa_name (def, stmt);
-          SET_DEF (def_p, def);
-        }
+	{
+	  def = make_ssa_name (def, stmt);
+	  SET_DEF (def_p, def);
+	}
 
       register_new_update_single (def, sym);
     }
   else
     {
       /* If DEF is a new name, register it as a new definition
-         for all the names replaced by DEF.  */
+	 for all the names replaced by DEF.  */
       if (is_new_name (def))
-        register_new_update_set (def, names_replaced_by (def));
+	register_new_update_set (def, names_replaced_by (def));
 
       /* If DEF is an old name, register DEF as a new
-         definition for itself.  */
+	 definition for itself.  */
       if (is_old_name (def))
-        register_new_update_single (def, def);
+	register_new_update_single (def, def);
     }
 }
 
@@ -1777,8 +1777,8 @@ maybe_register_def (def_operand_p def_p, tree stmt)
 
 static void
 rewrite_update_stmt (struct dom_walk_data *walk_data ATTRIBUTE_UNUSED,
-                     basic_block bb ATTRIBUTE_UNUSED,
-                     block_stmt_iterator si)
+		     basic_block bb ATTRIBUTE_UNUSED,
+		     block_stmt_iterator si)
 {
   stmt_ann_t ann;
   tree stmt;
@@ -1807,12 +1807,12 @@ rewrite_update_stmt (struct dom_walk_data *walk_data ATTRIBUTE_UNUSED,
   if (REWRITE_THIS_STMT (stmt))
     {
       FOR_EACH_SSA_USE_OPERAND (use_p, stmt, iter, SSA_OP_USE)
-        maybe_replace_use (use_p);
+	maybe_replace_use (use_p);
 
       if (need_to_update_vops_p)
-        FOR_EACH_SSA_USE_OPERAND (use_p, stmt, iter,
-                                  SSA_OP_VIRTUAL_USES | SSA_OP_VIRTUAL_KILLS)
-          maybe_replace_use (use_p);
+	FOR_EACH_SSA_USE_OPERAND (use_p, stmt, iter,
+				  SSA_OP_VIRTUAL_USES | SSA_OP_VIRTUAL_KILLS)
+	  maybe_replace_use (use_p);
     }
 
   /* Register definitions of names in NEW_SSA_NAMES and OLD_SSA_NAMES.
@@ -1821,11 +1821,11 @@ rewrite_update_stmt (struct dom_walk_data *walk_data ATTRIBUTE_UNUSED,
   if (REGISTER_DEFS_IN_THIS_STMT (stmt))
     {
       FOR_EACH_SSA_DEF_OPERAND (def_p, stmt, iter, SSA_OP_DEF)
-        maybe_register_def (def_p, stmt);
+	maybe_register_def (def_p, stmt);
 
       if (need_to_update_vops_p)
-        FOR_EACH_SSA_DEF_OPERAND (def_p, stmt, iter, SSA_OP_VIRTUAL_DEFS)
-          maybe_register_def (def_p, stmt);
+	FOR_EACH_SSA_DEF_OPERAND (def_p, stmt, iter, SSA_OP_VIRTUAL_DEFS)
+	  maybe_register_def (def_p, stmt);
     }
 }
 
@@ -1849,7 +1849,7 @@ replace_use (use_operand_p use_p, tree use)
 
 static void
 rewrite_update_phi_arguments (struct dom_walk_data *walk_data ATTRIBUTE_UNUSED,
-                              basic_block bb)
+			      basic_block bb)
 {
   edge e;
   edge_iterator ei;
@@ -1861,42 +1861,42 @@ rewrite_update_phi_arguments (struct dom_walk_data *walk_data ATTRIBUTE_UNUSED,
       tree_vec phis;
 
       if (!bitmap_bit_p (blocks_with_phis_to_rewrite, e->dest->index))
-        continue;
+	continue;
      
       phis = VEC_index (tree_vec, phis_to_rewrite, e->dest->index);
       for (i = 0; VEC_iterate (tree, phis, i, phi); i++)
-        {
-          tree arg;
-          use_operand_p arg_p;
+	{
+	  tree arg;
+	  use_operand_p arg_p;
 
-            gcc_assert (REWRITE_THIS_STMT (phi));
+  	  gcc_assert (REWRITE_THIS_STMT (phi));
 
-          arg_p = PHI_ARG_DEF_PTR_FROM_EDGE (phi, e);
-          arg = USE_FROM_PTR (arg_p);
+	  arg_p = PHI_ARG_DEF_PTR_FROM_EDGE (phi, e);
+	  arg = USE_FROM_PTR (arg_p);
 
-          if (arg && !DECL_P (arg) && TREE_CODE (arg) != SSA_NAME)
-            continue;
+	  if (arg && !DECL_P (arg) && TREE_CODE (arg) != SSA_NAME)
+	    continue;
 
-          if (arg == NULL_TREE)
-            {
-              /* When updating a PHI node for a recently introduced
-                 symbol we may find NULL arguments.  That's why we
-                 take the symbol from the LHS of the PHI node.  */
-              replace_use (arg_p, SSA_NAME_VAR (PHI_RESULT (phi)));
-            }
-          else
-            {
-              tree sym = DECL_P (arg) ? arg : SSA_NAME_VAR (arg);
+	  if (arg == NULL_TREE)
+	    {
+	      /* When updating a PHI node for a recently introduced
+		 symbol we may find NULL arguments.  That's why we
+		 take the symbol from the LHS of the PHI node.  */
+	      replace_use (arg_p, SSA_NAME_VAR (PHI_RESULT (phi)));
+	    }
+	  else
+	    {
+	      tree sym = DECL_P (arg) ? arg : SSA_NAME_VAR (arg);
 
-              if (symbol_marked_for_renaming (sym))
-                replace_use (arg_p, sym);
-              else if (is_old_name (arg))
-                replace_use (arg_p, arg);
-            }
+	      if (symbol_marked_for_renaming (sym))
+		replace_use (arg_p, sym);
+	      else if (is_old_name (arg))
+		replace_use (arg_p, arg);
+	    }
 
-          if (e->flags & EDGE_ABNORMAL)
-            SSA_NAME_OCCURS_IN_ABNORMAL_PHI (USE_FROM_PTR (arg_p)) = 1;
-        }
+	  if (e->flags & EDGE_ABNORMAL)
+	    SSA_NAME_OCCURS_IN_ABNORMAL_PHI (USE_FROM_PTR (arg_p)) = 1;
+	}
     }
 }
 
@@ -1972,7 +1972,7 @@ rewrite_blocks (basic_block entry, enum rewrite_mode what, sbitmap blocks)
     {
       dump_dfa_stats (dump_file);
       if (def_blocks)
-        dump_tree_ssa_stats (dump_file);
+	dump_tree_ssa_stats (dump_file);
     }
 
   if (def_blocks)
@@ -1992,7 +1992,7 @@ rewrite_blocks (basic_block entry, enum rewrite_mode what, sbitmap blocks)
 
 static void
 mark_def_sites_initialize_block (struct dom_walk_data *walk_data,
-                                 basic_block bb ATTRIBUTE_UNUSED)
+				 basic_block bb ATTRIBUTE_UNUSED)
 {
   struct mark_def_sites_global_data *gd =
      (struct mark_def_sites_global_data *) walk_data->global_data;
@@ -2018,7 +2018,7 @@ mark_def_site_blocks (sbitmap interesting_blocks)
 
   /* Allocate memory for the DEF_BLOCKS hash table.  */
   def_blocks = htab_create (num_referenced_vars,
-                            def_blocks_hash, def_blocks_eq, def_blocks_free);
+			    def_blocks_hash, def_blocks_eq, def_blocks_free);
   FOR_EACH_REFERENCED_VAR(var, rvi)
     set_current_def (var, NULL_TREE);
 
@@ -2129,21 +2129,21 @@ rewrite_into_ssa (void)
 
 struct tree_opt_pass pass_build_ssa = 
 {
-  "ssa",                                /* name */
-  NULL,                                        /* gate */
-  rewrite_into_ssa,                        /* execute */
-  NULL,                                        /* sub */
-  NULL,                                        /* next */
-  0,                                        /* static_pass_number */
-  0,                                        /* tv_id */
-  PROP_cfg | PROP_referenced_vars,        /* properties_required */
-  PROP_ssa,                                /* properties_provided */
-  0,                                        /* properties_destroyed */
-  0,                                        /* todo_flags_start */
+  "ssa",				/* name */
+  NULL,					/* gate */
+  rewrite_into_ssa,			/* execute */
+  NULL,					/* sub */
+  NULL,					/* next */
+  0,					/* static_pass_number */
+  0,					/* tv_id */
+  PROP_cfg | PROP_referenced_vars,	/* properties_required */
+  PROP_ssa,				/* properties_provided */
+  0,					/* properties_destroyed */
+  0,					/* todo_flags_start */
   TODO_dump_func
     | TODO_verify_ssa
-    | TODO_remove_unused_locals,        /* todo_flags_finish */
-  0                                        /* letter */
+    | TODO_remove_unused_locals,	/* todo_flags_finish */
+  0					/* letter */
 };
 
 
@@ -2163,16 +2163,16 @@ mark_def_interesting (tree var, tree stmt, basic_block bb, bool insert_phi_p)
       set_def_block (var, bb, is_phi_p);
 
       /* If VAR is an SSA name in NEW_SSA_NAMES, this is a definition
-         site for both itself and all the old names replaced by it.  */
+	 site for both itself and all the old names replaced by it.  */
       if (TREE_CODE (var) == SSA_NAME && is_new_name (var))
-        {
-          bitmap_iterator bi;
-          unsigned i;
-          bitmap set = names_replaced_by (var);
-          if (set)
-            EXECUTE_IF_SET_IN_BITMAP (set, 0, i, bi)
-              set_def_block (ssa_name (i), bb, is_phi_p);
-        }
+	{
+	  bitmap_iterator bi;
+	  unsigned i;
+	  bitmap set = names_replaced_by (var);
+	  if (set)
+	    EXECUTE_IF_SET_IN_BITMAP (set, 0, i, bi)
+	      set_def_block (ssa_name (i), bb, is_phi_p);
+	}
     }
 }
 
@@ -2203,7 +2203,7 @@ mark_use_interesting (tree var, tree stmt, basic_block bb, bool insert_phi_p)
     {
       struct def_blocks_d *db_p = get_def_blocks_for (var);
       if (!bitmap_bit_p (db_p->def_blocks, bb->index))
-        set_livein_block (var, bb);
+	set_livein_block (var, bb);
     }
 }
 
@@ -2237,20 +2237,20 @@ prepare_block_for_update (basic_block bb, bool insert_phi_p)
       lhs_sym = DECL_P (lhs) ? lhs : SSA_NAME_VAR (lhs);
 
       if (!symbol_marked_for_renaming (lhs_sym))
-        continue;
+	continue;
       mark_def_interesting (lhs_sym, phi, bb, insert_phi_p);
 
       /* Mark the uses in phi nodes as interesting.  It would be more correct
-         to process the arguments of the phi nodes of the successor edges of
-         BB at the end of prepare_block_for_update, however, that turns out
-         to be significantly more expensive.  Doing it here is conservatively
-         correct -- it may only cause us to believe a value to be live in a
-         block that also contains its definition, and thus insert a few more
-         phi nodes for it.  */
+	 to process the arguments of the phi nodes of the successor edges of
+	 BB at the end of prepare_block_for_update, however, that turns out
+	 to be significantly more expensive.  Doing it here is conservatively
+	 correct -- it may only cause us to believe a value to be live in a
+	 block that also contains its definition, and thus insert a few more
+	 phi nodes for it.  */
       FOR_EACH_EDGE (e, ei, bb->preds)
-        {
-          mark_use_interesting (lhs_sym, phi, e->src, insert_phi_p);
-        }
+	{
+	  mark_use_interesting (lhs_sym, phi, e->src, insert_phi_p);
+	}
     }
 
   /* Process the statements.  */
@@ -2264,42 +2264,42 @@ prepare_block_for_update (basic_block bb, bool insert_phi_p)
       stmt = bsi_stmt (si);
 
       FOR_EACH_SSA_USE_OPERAND (use_p, stmt, i, SSA_OP_USE)
-        {
-          tree use = USE_FROM_PTR (use_p);
-          tree sym = DECL_P (use) ? use : SSA_NAME_VAR (use);
-          if (symbol_marked_for_renaming (sym))
-            mark_use_interesting (use, stmt, bb, insert_phi_p);
-        }
+	{
+	  tree use = USE_FROM_PTR (use_p);
+	  tree sym = DECL_P (use) ? use : SSA_NAME_VAR (use);
+	  if (symbol_marked_for_renaming (sym))
+	    mark_use_interesting (use, stmt, bb, insert_phi_p);
+	}
 
       FOR_EACH_SSA_DEF_OPERAND (def_p, stmt, i, SSA_OP_DEF)
-        {
-          tree def = DEF_FROM_PTR (def_p);
-          tree sym = DECL_P (def) ? def : SSA_NAME_VAR (def);
+	{
+	  tree def = DEF_FROM_PTR (def_p);
+	  tree sym = DECL_P (def) ? def : SSA_NAME_VAR (def);
 
-          if (symbol_marked_for_renaming (sym))
-            mark_def_interesting (def, stmt, bb, insert_phi_p);
-        }
+	  if (symbol_marked_for_renaming (sym))
+	    mark_def_interesting (def, stmt, bb, insert_phi_p);
+	}
 
       FOR_EACH_SSA_DEF_OPERAND (def_p, stmt, i, SSA_OP_VIRTUAL_DEFS)
-        {
-          tree def = DEF_FROM_PTR (def_p);
-          tree sym = DECL_P (def) ? def : SSA_NAME_VAR (def);
+	{
+	  tree def = DEF_FROM_PTR (def_p);
+	  tree sym = DECL_P (def) ? def : SSA_NAME_VAR (def);
 
-          if (symbol_marked_for_renaming (sym))
-            {
-              mark_use_interesting (sym, stmt, bb, insert_phi_p);
-              mark_def_interesting (sym, stmt, bb, insert_phi_p);
-            }
-        }
+	  if (symbol_marked_for_renaming (sym))
+	    {
+	      mark_use_interesting (sym, stmt, bb, insert_phi_p);
+	      mark_def_interesting (sym, stmt, bb, insert_phi_p);
+	    }
+	}
 
       FOR_EACH_SSA_USE_OPERAND (use_p, stmt, i, SSA_OP_VUSE)
-        {
-          tree use = USE_FROM_PTR (use_p);
-          tree sym = DECL_P (use) ? use : SSA_NAME_VAR (use);
+	{
+	  tree use = USE_FROM_PTR (use_p);
+	  tree sym = DECL_P (use) ? use : SSA_NAME_VAR (use);
 
-          if (symbol_marked_for_renaming (sym))
-            mark_use_interesting (sym, stmt, bb, insert_phi_p);
-        }
+	  if (symbol_marked_for_renaming (sym))
+	    mark_use_interesting (sym, stmt, bb, insert_phi_p);
+	}
     }
 
   /* Now visit all the blocks dominated by BB.  */
@@ -2326,17 +2326,17 @@ prepare_use_sites_for (tree name, bool insert_phi_p)
       basic_block bb = bb_for_stmt (stmt);
 
       if (TREE_CODE (stmt) == PHI_NODE)
-        {
-          int ix = PHI_ARG_INDEX_FROM_USE (use_p);
-          edge e = PHI_ARG_EDGE (stmt, ix);
-          mark_use_interesting (name, stmt, e->src, insert_phi_p);
-        }
+	{
+	  int ix = PHI_ARG_INDEX_FROM_USE (use_p);
+	  edge e = PHI_ARG_EDGE (stmt, ix);
+	  mark_use_interesting (name, stmt, e->src, insert_phi_p);
+	}
       else
-        {
-          /* For regular statements, mark this as an interesting use
-             for NAME.  */
-          mark_use_interesting (name, stmt, bb, insert_phi_p);
-        }
+	{
+	  /* For regular statements, mark this as an interesting use
+	     for NAME.  */
+	  mark_use_interesting (name, stmt, bb, insert_phi_p);
+	}
     }
 }
 
@@ -2352,7 +2352,7 @@ prepare_def_site_for (tree name, bool insert_phi_p)
   basic_block bb;
 
   gcc_assert (names_to_release == NULL
-              || !bitmap_bit_p (names_to_release, SSA_NAME_VERSION (name)));
+	      || !bitmap_bit_p (names_to_release, SSA_NAME_VERSION (name)));
 
   stmt = SSA_NAME_DEF_STMT (name);
   bb = bb_for_stmt (stmt);
@@ -2396,7 +2396,7 @@ prepare_names_to_update (bool insert_phi_p)
   EXECUTE_IF_SET_IN_SBITMAP (old_ssa_names, 0, i, sbi)
     {
       if (names_to_release == NULL || !bitmap_bit_p (names_to_release, i))
-        prepare_def_site_for (ssa_name (i), insert_phi_p);
+	prepare_def_site_for (ssa_name (i), insert_phi_p);
       prepare_use_sites_for (ssa_name (i), insert_phi_p);
     }
 }
@@ -2451,42 +2451,42 @@ dump_update_ssa (FILE *file)
 
       fprintf (file, "\nSSA replacement table\n");
       fprintf (file, "N_i -> { O_1 ... O_j } means that N_i replaces "
-                     "O_1, ..., O_j\n\n");
+	             "O_1, ..., O_j\n\n");
 
       EXECUTE_IF_SET_IN_SBITMAP (new_ssa_names, 0, i, sbi)
-        dump_names_replaced_by (file, ssa_name (i));
+	dump_names_replaced_by (file, ssa_name (i));
 
       fprintf (file, "\n");
       fprintf (file, "Number of virtual NEW -> OLD mappings: %7u\n",
-               update_ssa_stats.num_virtual_mappings);
+	       update_ssa_stats.num_virtual_mappings);
       fprintf (file, "Number of real NEW -> OLD mappings:    %7u\n",
-               update_ssa_stats.num_total_mappings
-               - update_ssa_stats.num_virtual_mappings);
+	       update_ssa_stats.num_total_mappings
+	       - update_ssa_stats.num_virtual_mappings);
       fprintf (file, "Number of total NEW -> OLD mappings:   %7u\n",
-               update_ssa_stats.num_total_mappings);
+	       update_ssa_stats.num_total_mappings);
 
       fprintf (file, "\nNumber of virtual symbols: %u\n",
-               update_ssa_stats.num_virtual_symbols);
+	       update_ssa_stats.num_virtual_symbols);
     }
 
   if (syms_to_rename && !bitmap_empty_p (syms_to_rename))
     {
       fprintf (file, "\n\nSymbols to be put in SSA form\n\n");
       EXECUTE_IF_SET_IN_BITMAP (syms_to_rename, 0, i, bi)
-        {
-          print_generic_expr (file, referenced_var (i), 0);
-          fprintf (file, " ");
-        }
+	{
+	  print_generic_expr (file, referenced_var (i), 0);
+	  fprintf (file, " ");
+	}
     }
 
   if (names_to_release && !bitmap_empty_p (names_to_release))
     {
       fprintf (file, "\n\nSSA names to release after updating the SSA web\n\n");
       EXECUTE_IF_SET_IN_BITMAP (names_to_release, 0, i, bi)
-        {
-          print_generic_expr (file, ssa_name (i), 0);
-          fprintf (file, " ");
-        }
+	{
+	  print_generic_expr (file, ssa_name (i), 0);
+	  fprintf (file, " ");
+	}
     }
 
   fprintf (file, "\n\n");
@@ -2551,7 +2551,7 @@ delete_update_ssa (void)
   if (names_to_release)
     {
       EXECUTE_IF_SET_IN_BITMAP (names_to_release, 0, i, bi)
-        release_ssa_name (ssa_name (i));
+	release_ssa_name (ssa_name (i));
       BITMAP_FREE (names_to_release);
     }
 
@@ -2579,11 +2579,11 @@ create_new_def_for (tree old_name, tree stmt, def_operand_p def)
 
       /* If needed, mark NEW_NAME as occurring in an abnormal PHI node. */
       FOR_EACH_EDGE (e, ei, bb->preds)
-        if (e->flags & EDGE_ABNORMAL)
-          {
-            SSA_NAME_OCCURS_IN_ABNORMAL_PHI (new_name) = 1;
-            break;
-          }
+	if (e->flags & EDGE_ABNORMAL)
+	  {
+	    SSA_NAME_OCCURS_IN_ABNORMAL_PHI (new_name) = 1;
+	    break;
+	  }
     }
 
   register_new_name_mapping (new_name, old_name);
@@ -2645,8 +2645,8 @@ mark_set_for_renaming (bitmap set)
   EXECUTE_IF_SET_IN_BITMAP (set, 0, i, bi)
     if (!is_gimple_reg (referenced_var (i)))
       {
-        need_to_update_vops_p = true;
-        break;
+	need_to_update_vops_p = true;
+	break;
       }
 }
 
@@ -2670,7 +2670,7 @@ name_registered_for_update_p (tree n)
 
   return is_new_name (n)
          || is_old_name (n)
-         || symbol_marked_for_renaming (SSA_NAME_VAR (n));
+	 || symbol_marked_for_renaming (SSA_NAME_VAR (n));
 }
 
 
@@ -2759,51 +2759,51 @@ insert_updated_phi_nodes_for (tree var, bitmap *dfs, bitmap blocks,
   if (TREE_CODE (var) == SSA_NAME)
     {
       if (update_flags == TODO_update_ssa)
-        {
-          /* If doing regular SSA updates for GIMPLE registers, we are
-             only interested in IDF blocks dominated by the nearest
-             common dominator of all the definition blocks.  */
-          entry = nearest_common_dominator_for_set (CDI_DOMINATORS,
-                                                    db->def_blocks);
+	{
+	  /* If doing regular SSA updates for GIMPLE registers, we are
+	     only interested in IDF blocks dominated by the nearest
+	     common dominator of all the definition blocks.  */
+	  entry = nearest_common_dominator_for_set (CDI_DOMINATORS,
+						    db->def_blocks);
 
-          if (entry != ENTRY_BLOCK_PTR)
-            EXECUTE_IF_SET_IN_BITMAP (idf, 0, i, bi)
-              if (BASIC_BLOCK (i) != entry
-                  && dominated_by_p (CDI_DOMINATORS, BASIC_BLOCK (i), entry))
-                bitmap_set_bit (pruned_idf, i);
-        }
+	  if (entry != ENTRY_BLOCK_PTR)
+	    EXECUTE_IF_SET_IN_BITMAP (idf, 0, i, bi)
+	      if (BASIC_BLOCK (i) != entry
+		  && dominated_by_p (CDI_DOMINATORS, BASIC_BLOCK (i), entry))
+		bitmap_set_bit (pruned_idf, i);
+	}
       else
-        {
-          /* Otherwise, do not prune the IDF for VAR.  */
-          gcc_assert (update_flags == TODO_update_ssa_full_phi);
-          bitmap_copy (pruned_idf, idf);
-        }
+	{
+	  /* Otherwise, do not prune the IDF for VAR.  */
+	  gcc_assert (update_flags == TODO_update_ssa_full_phi);
+	  bitmap_copy (pruned_idf, idf);
+	}
     }
   else
     {
       /* Otherwise, VAR is a symbol that needs to be put into SSA form
-         for the first time, so we need to compute the full IDF for
-         it.  */
+	 for the first time, so we need to compute the full IDF for
+	 it.  */
       bitmap_copy (pruned_idf, idf);
     }
 
   if (!bitmap_empty_p (pruned_idf))
     {
       /* Make sure that PRUNED_IDF blocks and all their feeding blocks
-         are included in the region to be updated.  The feeding blocks
-         are important to guarantee that the PHI arguments are renamed
-         properly.  */
+	 are included in the region to be updated.  The feeding blocks
+	 are important to guarantee that the PHI arguments are renamed
+	 properly.  */
       bitmap_ior_into (blocks, pruned_idf);
       EXECUTE_IF_SET_IN_BITMAP (pruned_idf, 0, i, bi)
-        {
-          edge e;
-          edge_iterator ei;
-          basic_block bb = BASIC_BLOCK (i);
+	{
+	  edge e;
+	  edge_iterator ei;
+	  basic_block bb = BASIC_BLOCK (i);
 
-          FOR_EACH_EDGE (e, ei, bb->preds)
-            if (e->src->index >= 0)
-              bitmap_set_bit (blocks, e->src->index);
-        }
+	  FOR_EACH_EDGE (e, ei, bb->preds)
+	    if (e->src->index >= 0)
+	      bitmap_set_bit (blocks, e->src->index);
+	}
 
       insert_phi_nodes_for (var, pruned_idf, true);
     }
@@ -2822,8 +2822,8 @@ insert_updated_phi_nodes_for (tree var, bitmap *dfs, bitmap blocks,
 
    Currently the heuristic takes these stats into account:
 
-           - Number of mappings for virtual SSA names.
-        - Number of distinct virtual symbols involved in those mappings.
+   	- Number of mappings for virtual SSA names.
+	- Number of distinct virtual symbols involved in those mappings.
 
    If the number of virtual mappings is much larger than the number of
    virtual symbols, then it will be faster to compute PHI insertion
@@ -2858,11 +2858,11 @@ switch_virtuals_to_full_rewrite (void)
     {
       fprintf (dump_file, "\nEnabled virtual name mapping heuristic.\n");
       fprintf (dump_file, "\tNumber of virtual mappings:       %7u\n",
-               update_ssa_stats.num_virtual_mappings);
+	       update_ssa_stats.num_virtual_mappings);
       fprintf (dump_file, "\tNumber of unique virtual symbols: %7u\n",
-               update_ssa_stats.num_virtual_symbols);
+	       update_ssa_stats.num_virtual_symbols);
       fprintf (dump_file, "Updating FUD-chains from top of CFG will be "
-                          "faster than processing\nthe name mappings.\n\n");
+	                  "faster than processing\nthe name mappings.\n\n");
     }
 
   /* Remove all virtual names from NEW_SSA_NAMES and OLD_SSA_NAMES.
@@ -2901,33 +2901,33 @@ switch_virtuals_to_full_rewrite (void)
 
    For instance, given the following code:
 
-     1        L0:
-     2        x_1 = PHI (0, x_5)
-     3        if (x_1 < 10)
-     4          if (x_1 > 7)
-     5            y_2 = 0
-     6          else
-     7            y_3 = x_1 + x_7
-     8          endif
-     9          x_5 = x_1 + 1
+     1	L0:
+     2	x_1 = PHI (0, x_5)
+     3	if (x_1 < 10)
+     4	  if (x_1 > 7)
+     5	    y_2 = 0
+     6	  else
+     7	    y_3 = x_1 + x_7
+     8	  endif
+     9	  x_5 = x_1 + 1
      10   goto L0;
-     11        endif
+     11	endif
 
    Suppose that we insert new names x_10 and x_11 (lines 4 and 8).
 
-     1        L0:
-     2        x_1 = PHI (0, x_5)
-     3        if (x_1 < 10)
-     4          x_10 = ...
-     5          if (x_1 > 7)
-     6            y_2 = 0
-     7          else
-     8            x_11 = ...
-     9            y_3 = x_1 + x_7
-     10          endif
-     11          x_5 = x_1 + 1
-     12          goto L0;
-     13        endif
+     1	L0:
+     2	x_1 = PHI (0, x_5)
+     3	if (x_1 < 10)
+     4	  x_10 = ...
+     5	  if (x_1 > 7)
+     6	    y_2 = 0
+     7	  else
+     8	    x_11 = ...
+     9	    y_3 = x_1 + x_7
+     10	  endif
+     11	  x_5 = x_1 + 1
+     12	  goto L0;
+     13	endif
 
    We want to replace all the uses of x_1 with the new definitions of
    x_10 and x_11.  Note that the only uses that should be replaced are
@@ -2970,8 +2970,8 @@ update_ssa (unsigned update_flags)
   /* Only one update flag should be set.  */
   gcc_assert (update_flags == TODO_update_ssa
               || update_flags == TODO_update_ssa_no_phi
-              || update_flags == TODO_update_ssa_full_phi
-              || update_flags == TODO_update_ssa_only_virtuals);
+	      || update_flags == TODO_update_ssa_full_phi
+	      || update_flags == TODO_update_ssa_only_virtuals);
 
   /* If we only need to update virtuals, remove all the mappings for
      real names before proceeding.  The caller is responsible for
@@ -2988,14 +2988,14 @@ update_ssa (unsigned update_flags)
   if (insert_phi_p)
     {
       /* If the caller requested PHI nodes to be added, initialize
-         live-in information data structures (DEF_BLOCKS).  */
+	 live-in information data structures (DEF_BLOCKS).  */
 
       /* For each SSA name N, the DEF_BLOCKS table describes where the
-         name is defined, which blocks have PHI nodes for N, and which
-         blocks have uses of N (i.e., N is live-on-entry in those
-         blocks).  */
+	 name is defined, which blocks have PHI nodes for N, and which
+	 blocks have uses of N (i.e., N is live-on-entry in those
+	 blocks).  */
       def_blocks = htab_create (num_ssa_names, def_blocks_hash,
-                                def_blocks_eq, def_blocks_free);
+				def_blocks_eq, def_blocks_free);
     }
   else
     {
@@ -3015,35 +3015,35 @@ update_ssa (unsigned update_flags)
       prepare_names_to_update (insert_phi_p);
 
       /* If all the names in NEW_SSA_NAMES had been marked for
-         removal, and there are no symbols to rename, then there's
-         nothing else to do.  */
+	 removal, and there are no symbols to rename, then there's
+	 nothing else to do.  */
       if (sbitmap_first_set_bit (new_ssa_names) < 0
-          && bitmap_empty_p (syms_to_rename))
-        goto done;
+	  && bitmap_empty_p (syms_to_rename))
+	goto done;
     }
 
   /* Next, determine the block at which to start the renaming process.  */
   if (!bitmap_empty_p (syms_to_rename))
     {
       /* If we have to rename some symbols from scratch, we need to
-         start the process at the root of the CFG.  FIXME, it should
-         be possible to determine the nearest block that had a
-         definition for each of the symbols that are marked for
-         updating.  For now this seems more work than it's worth.  */
+	 start the process at the root of the CFG.  FIXME, it should
+	 be possible to determine the nearest block that had a
+	 definition for each of the symbols that are marked for
+	 updating.  For now this seems more work than it's worth.  */
       start_bb = ENTRY_BLOCK_PTR;
 
       /* Traverse the CFG looking for definitions and uses of symbols
-         in SYMS_TO_RENAME.  Mark interesting blocks and statements
-         and set local live-in information for the PHI placement
-         heuristics.  */
+	 in SYMS_TO_RENAME.  Mark interesting blocks and statements
+	 and set local live-in information for the PHI placement
+	 heuristics.  */
       prepare_block_for_update (start_bb, insert_phi_p);
     }
   else
     {
       /* Otherwise, the entry block to the region is the nearest
-         common dominator for the blocks in BLOCKS.  */
+	 common dominator for the blocks in BLOCKS.  */
       start_bb = nearest_common_dominator_for_set (CDI_DOMINATORS,
-                                                   blocks_to_update);
+						   blocks_to_update);
     }
 
   /* If requested, insert PHI nodes at the iterated dominance frontier
@@ -3054,43 +3054,43 @@ update_ssa (unsigned update_flags)
       bitmap *dfs;
 
       /* If the caller requested PHI nodes to be added, compute
-         dominance frontiers.  */
+	 dominance frontiers.  */
       dfs = XNEWVEC (bitmap, last_basic_block);
       FOR_EACH_BB (bb)
-        dfs[bb->index] = BITMAP_ALLOC (NULL);
+	dfs[bb->index] = BITMAP_ALLOC (NULL);
       compute_dominance_frontiers (dfs);
 
       if (sbitmap_first_set_bit (old_ssa_names) >= 0)
-        {
-          sbitmap_iterator sbi;
+	{
+	  sbitmap_iterator sbi;
 
-          /* insert_update_phi_nodes_for will call add_new_name_mapping
-             when inserting new PHI nodes, so the set OLD_SSA_NAMES
-             will grow while we are traversing it (but it will not
-             gain any new members).  Copy OLD_SSA_NAMES to a temporary
-             for traversal.  */
-          sbitmap tmp = sbitmap_alloc (old_ssa_names->n_bits);
-          sbitmap_copy (tmp, old_ssa_names);
-          EXECUTE_IF_SET_IN_SBITMAP (tmp, 0, i, sbi)
-            insert_updated_phi_nodes_for (ssa_name (i), dfs, blocks_to_update,
-                                          update_flags);
-          sbitmap_free (tmp);
-        }
+	  /* insert_update_phi_nodes_for will call add_new_name_mapping
+	     when inserting new PHI nodes, so the set OLD_SSA_NAMES
+	     will grow while we are traversing it (but it will not
+	     gain any new members).  Copy OLD_SSA_NAMES to a temporary
+	     for traversal.  */
+	  sbitmap tmp = sbitmap_alloc (old_ssa_names->n_bits);
+	  sbitmap_copy (tmp, old_ssa_names);
+	  EXECUTE_IF_SET_IN_SBITMAP (tmp, 0, i, sbi)
+	    insert_updated_phi_nodes_for (ssa_name (i), dfs, blocks_to_update,
+	                                  update_flags);
+	  sbitmap_free (tmp);
+	}
 
       EXECUTE_IF_SET_IN_BITMAP (syms_to_rename, 0, i, bi)
-        insert_updated_phi_nodes_for (referenced_var (i), dfs,
-                                      blocks_to_update, update_flags);
+	insert_updated_phi_nodes_for (referenced_var (i), dfs,
+				      blocks_to_update, update_flags);
 
       FOR_EACH_BB (bb)
-        BITMAP_FREE (dfs[bb->index]);
+	BITMAP_FREE (dfs[bb->index]);
       free (dfs);
 
       /* Insertion of PHI nodes may have added blocks to the region.
-         We need to re-compute START_BB to include the newly added
-         blocks.  */
+	 We need to re-compute START_BB to include the newly added
+	 blocks.  */
       if (start_bb != ENTRY_BLOCK_PTR)
-        start_bb = nearest_common_dominator_for_set (CDI_DOMINATORS,
-                                                     blocks_to_update);
+	start_bb = nearest_common_dominator_for_set (CDI_DOMINATORS,
+						     blocks_to_update);
     }
 
   /* Reset the current definition for name and symbol before renaming
@@ -3120,22 +3120,22 @@ update_ssa (unsigned update_flags)
       dump_update_ssa (dump_file);
 
       fprintf (dump_file, "Incremental SSA update started at block: %d\n\n",
-               start_bb->index);
+	       start_bb->index);
 
       c = 0;
       EXECUTE_IF_SET_IN_BITMAP (blocks_to_update, 0, i, bi)
-        c++;
+	c++;
       fprintf (dump_file, "Number of blocks in CFG: %d\n", last_basic_block);
       fprintf (dump_file, "Number of blocks to update: %d (%3.0f%%)\n\n",
-               c, PERCENT (c, last_basic_block));
+	       c, PERCENT (c, last_basic_block));
 
       if (dump_flags & TDF_DETAILS)
-        {
-          fprintf (dump_file, "Affected blocks: ");
-          EXECUTE_IF_SET_IN_BITMAP (blocks_to_update, 0, i, bi)
-            fprintf (dump_file, "%u ", i);
-          fprintf (dump_file, "\n");
-        }
+	{
+	  fprintf (dump_file, "Affected blocks: ");
+	  EXECUTE_IF_SET_IN_BITMAP (blocks_to_update, 0, i, bi)
+	    fprintf (dump_file, "%u ", i);
+	  fprintf (dump_file, "\n");
+	}
 
       fprintf (dump_file, "\n\n");
     }

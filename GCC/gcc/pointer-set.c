@@ -32,7 +32,7 @@ Boston, MA 02110-1301, USA.  */
 struct pointer_set_t
 {
   size_t log_slots;
-  size_t n_slots;                /* n_slots = 2^log_slots */
+  size_t n_slots;		/* n_slots = 2^log_slots */
   size_t n_elements;
 
   void **slots;
@@ -122,13 +122,13 @@ insert_aux (void *p, void **slots, size_t n_slots, size_t log_slots)
   while (true)
     {
       if (slots[n] == p || slots[n] == 0)
-        return n;
+	return n;
       else
-        {
-          ++n;
-          if (n == n_slots)
-            n = 0;
-        }
+	{
+	  ++n;
+	  if (n == n_slots)
+	    n = 0;
+	}
     }
 }
 
@@ -150,10 +150,10 @@ pointer_set_insert (struct pointer_set_t *pset, void *p)
 
       for (i = 0; i < pset->n_slots; ++i)
         {
-          void *value = pset->slots[i];
-          n = insert_aux (value, new_slots, new_n_slots, new_log_slots);
-          new_slots[n] = value;
-        }
+	  void *value = pset->slots[i];
+	  n = insert_aux (value, new_slots, new_n_slots, new_log_slots);
+	  new_slots[n] = value;
+	}
 
       XDELETEVEC (pset->slots);
       pset->n_slots = new_n_slots;
@@ -174,7 +174,7 @@ pointer_set_insert (struct pointer_set_t *pset, void *p)
    parameter DATA.  If FN returns false, the iteration stops.  */
 
 void pointer_set_traverse (struct pointer_set_t *pset,
-                           bool (*fn) (void *, void *), void *data)
+			   bool (*fn) (void *, void *), void *data)
 {
   size_t i;
   for (i = 0; i < pset->n_slots; ++i)
@@ -192,7 +192,7 @@ void pointer_set_traverse (struct pointer_set_t *pset,
 struct pointer_map_t
 {
   size_t log_slots;
-  size_t n_slots;                /* n_slots = 2^log_slots */
+  size_t n_slots;		/* n_slots = 2^log_slots */
   size_t n_elements;
 
   void **keys;
@@ -234,9 +234,9 @@ pointer_map_contains (struct pointer_map_t *pmap, void *p)
   while (true)
     {
       if (pmap->keys[n] == p)
-        return &pmap->values[n];
+	return &pmap->values[n];
       else if (pmap->keys[n] == 0)
-        return NULL;
+	return NULL;
       else
        {
          ++n;
@@ -264,13 +264,13 @@ pointer_map_insert (struct pointer_map_t *pmap, void *p)
       size_t i;
 
       for (i = 0; i < pmap->n_slots; ++i)
-        if (pmap->keys[i])
-          {
-            void *key = pmap->keys[i];
-            n = insert_aux (key, new_keys, new_n_slots, new_log_slots);
-            new_keys[n] = key;
-            new_values[n] = pmap->values[i];
-          }
+	if (pmap->keys[i])
+	  {
+	    void *key = pmap->keys[i];
+	    n = insert_aux (key, new_keys, new_n_slots, new_log_slots);
+	    new_keys[n] = key;
+	    new_values[n] = pmap->values[i];
+	  }
 
       XDELETEVEC (pmap->keys);
       XDELETEVEC (pmap->values);
@@ -295,7 +295,7 @@ pointer_map_insert (struct pointer_map_t *pmap, void *p)
    iteration stops.  */
 
 void pointer_map_traverse (struct pointer_map_t *pmap,
-                           bool (*fn) (void *, void **, void *), void *data)
+			   bool (*fn) (void *, void **, void *), void *data)
 {
   size_t i;
   for (i = 0; i < pmap->n_slots; ++i)

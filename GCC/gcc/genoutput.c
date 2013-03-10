@@ -75,7 +75,7 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
 
     (define_insn "clrdf"
       [(set (match_operand:DF 0 "general_operand" "")
-            (const_int 0))]
+	    (const_int 0))]
       ""
       "clrd %0")
 
@@ -97,8 +97,8 @@ Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA
 
 #define MAX_MAX_OPERANDS 40
 
-static int n_occurrences                (int, const char *);
-static const char *strip_whitespace        (const char *);
+static int n_occurrences		(int, const char *);
+static const char *strip_whitespace	(const char *);
 
 /* insns in the machine description are assigned sequential code numbers
    that are used by insn-recog.c (produced by genrecog) to communicate
@@ -160,11 +160,11 @@ struct data
   int index_number;
   const char *filename;
   int lineno;
-  int n_operands;                /* Number of operands this insn recognizes */
-  int n_dups;                        /* Number times match_dup appears in pattern */
-  int n_alternatives;                /* Number of alternatives in each constraint */
-  int operand_number;                /* Operand index in the big array.  */
-  int output_format;                /* INSN_OUTPUT_FORMAT_*.  */
+  int n_operands;		/* Number of operands this insn recognizes */
+  int n_dups;			/* Number times match_dup appears in pattern */
+  int n_alternatives;		/* Number of alternatives in each constraint */
+  int operand_number;		/* Operand index in the big array.  */
+  int output_format;		/* INSN_OUTPUT_FORMAT_*.  */
   struct operand_data operand[MAX_MAX_OPERANDS];
 };
 
@@ -178,7 +178,7 @@ static void output_insn_data (void);
 static void output_get_insn_name (void);
 static void scan_operands (struct data *, rtx, int, int);
 static int compare_operands (struct operand_data *,
-                             struct operand_data *);
+			     struct operand_data *);
 static void place_operands (struct data *);
 static void process_template (struct data *, const char *);
 static void validate_insn_alternatives (struct data *);
@@ -259,7 +259,7 @@ output_operand_data (void)
       printf ("  {\n");
 
       printf ("    %s,\n",
-              d->predicate && d->predicate[0] ? d->predicate : "0");
+	      d->predicate && d->predicate[0] ? d->predicate : "0");
 
       printf ("    \"%s\",\n", d->constraint ? d->constraint : "");
 
@@ -287,8 +287,8 @@ output_insn_data (void)
   for (n = idata, next_name_offset = 1; n; n = n->next, next_name_offset++)
     if (n->name)
       {
-        next_name = n->name;
-        break;
+	next_name = n->name;
+	break;
       }
 
   printf ("#if GCC_VERSION >= 2007\n__extension__\n#endif\n");
@@ -300,96 +300,96 @@ output_insn_data (void)
       printf ("  {\n");
 
       if (d->name)
-        {
-          printf ("    \"%s\",\n", d->name);
-          name_offset = 0;
-          last_name = d->name;
-          next_name = 0;
-          for (n = d->next, next_name_offset = 1; n;
-               n = n->next, next_name_offset++)
-            {
-              if (n->name)
-                {
-                  next_name = n->name;
-                  break;
-                }
-            }
-        }
+	{
+	  printf ("    \"%s\",\n", d->name);
+	  name_offset = 0;
+	  last_name = d->name;
+	  next_name = 0;
+	  for (n = d->next, next_name_offset = 1; n;
+	       n = n->next, next_name_offset++)
+	    {
+	      if (n->name)
+		{
+		  next_name = n->name;
+		  break;
+		}
+	    }
+	}
       else
-        {
-          name_offset++;
-          if (next_name && (last_name == 0
-                            || name_offset > next_name_offset / 2))
-            printf ("    \"%s-%d\",\n", next_name,
-                    next_name_offset - name_offset);
-          else
-            printf ("    \"%s+%d\",\n", last_name, name_offset);
-        }
+	{
+	  name_offset++;
+	  if (next_name && (last_name == 0
+			    || name_offset > next_name_offset / 2))
+	    printf ("    \"%s-%d\",\n", next_name,
+		    next_name_offset - name_offset);
+	  else
+	    printf ("    \"%s+%d\",\n", last_name, name_offset);
+	}
 
       switch (d->output_format)
-        {
-        case INSN_OUTPUT_FORMAT_NONE:
-          printf ("#if HAVE_DESIGNATED_INITIALIZERS\n");
-          printf ("    { 0 },\n");
-          printf ("#else\n");
-          printf ("    { 0, 0, 0 },\n");
-          printf ("#endif\n");
-          break;
-        case INSN_OUTPUT_FORMAT_SINGLE:
-          {
-            const char *p = d->template;
-            char prev = 0;
+	{
+	case INSN_OUTPUT_FORMAT_NONE:
+	  printf ("#if HAVE_DESIGNATED_INITIALIZERS\n");
+	  printf ("    { 0 },\n");
+	  printf ("#else\n");
+	  printf ("    { 0, 0, 0 },\n");
+	  printf ("#endif\n");
+	  break;
+	case INSN_OUTPUT_FORMAT_SINGLE:
+	  {
+	    const char *p = d->template;
+	    char prev = 0;
 
-            printf ("#if HAVE_DESIGNATED_INITIALIZERS\n");
-            printf ("    { .single =\n");
-            printf ("#else\n");
-            printf ("    {\n");
-            printf ("#endif\n");
-            printf ("    \"");
-            while (*p)
-              {
-                if (IS_VSPACE (*p) && prev != '\\')
-                  {
-                    /* Preserve two consecutive \n's or \r's, but treat \r\n
-                       as a single newline.  */
-                    if (*p == '\n' && prev != '\r')
-                      printf ("\\n\\\n");
-                  }
-                else
-                  putchar (*p);
-                prev = *p;
-                ++p;
-              }
-            printf ("\",\n");
-            printf ("#if HAVE_DESIGNATED_INITIALIZERS\n");
-            printf ("    },\n");
-            printf ("#else\n");
-            printf ("    0, 0 },\n");
-            printf ("#endif\n");
-          }
-          break;
-        case INSN_OUTPUT_FORMAT_MULTI:
-          printf ("#if HAVE_DESIGNATED_INITIALIZERS\n");
-          printf ("    { .multi = output_%d },\n", d->code_number);
-          printf ("#else\n");
-          printf ("    { 0, output_%d, 0 },\n", d->code_number);
-          printf ("#endif\n");
-          break;
-        case INSN_OUTPUT_FORMAT_FUNCTION:
-          printf ("#if HAVE_DESIGNATED_INITIALIZERS\n");
-          printf ("    { .function = output_%d },\n", d->code_number);
-          printf ("#else\n");
-          printf ("    { 0, 0, output_%d },\n", d->code_number);
-          printf ("#endif\n");
-          break;
-        default:
-          gcc_unreachable ();
-        }
+	    printf ("#if HAVE_DESIGNATED_INITIALIZERS\n");
+	    printf ("    { .single =\n");
+	    printf ("#else\n");
+	    printf ("    {\n");
+	    printf ("#endif\n");
+	    printf ("    \"");
+	    while (*p)
+	      {
+		if (IS_VSPACE (*p) && prev != '\\')
+		  {
+		    /* Preserve two consecutive \n's or \r's, but treat \r\n
+		       as a single newline.  */
+		    if (*p == '\n' && prev != '\r')
+		      printf ("\\n\\\n");
+		  }
+		else
+		  putchar (*p);
+		prev = *p;
+		++p;
+	      }
+	    printf ("\",\n");
+	    printf ("#if HAVE_DESIGNATED_INITIALIZERS\n");
+	    printf ("    },\n");
+	    printf ("#else\n");
+	    printf ("    0, 0 },\n");
+	    printf ("#endif\n");
+	  }
+	  break;
+	case INSN_OUTPUT_FORMAT_MULTI:
+	  printf ("#if HAVE_DESIGNATED_INITIALIZERS\n");
+	  printf ("    { .multi = output_%d },\n", d->code_number);
+	  printf ("#else\n");
+	  printf ("    { 0, output_%d, 0 },\n", d->code_number);
+	  printf ("#endif\n");
+	  break;
+	case INSN_OUTPUT_FORMAT_FUNCTION:
+	  printf ("#if HAVE_DESIGNATED_INITIALIZERS\n");
+	  printf ("    { .function = output_%d },\n", d->code_number);
+	  printf ("#else\n");
+	  printf ("    { 0, 0, output_%d },\n", d->code_number);
+	  printf ("#endif\n");
+	  break;
+	default:
+	  gcc_unreachable ();
+	}
 
       if (d->name && d->name[0] != '*')
-        printf ("    (insn_gen_fn) gen_%s,\n", d->name);
+	printf ("    (insn_gen_fn) gen_%s,\n", d->name);
       else
-        printf ("    0,\n");
+	printf ("    0,\n");
 
       printf ("    &operand_data[%d],\n", d->operand_number);
       printf ("    %d,\n", d->n_operands);
@@ -428,7 +428,7 @@ static int num_dups;
 
 static void
 scan_operands (struct data *d, rtx part, int this_address_p,
-               int this_strict_low)
+	       int this_strict_low)
 {
   int i, j;
   const char *format_ptr;
@@ -442,20 +442,20 @@ scan_operands (struct data *d, rtx part, int this_address_p,
     case MATCH_OPERAND:
       opno = XINT (part, 0);
       if (opno > max_opno)
-        max_opno = opno;
+	max_opno = opno;
       if (max_opno >= MAX_MAX_OPERANDS)
-        {
-          message_with_line (d->lineno,
-                             "maximum number of operands exceeded");
-          have_error = 1;
-          return;
-        }
+	{
+	  message_with_line (d->lineno,
+			     "maximum number of operands exceeded");
+	  have_error = 1;
+	  return;
+	}
       if (d->operand[opno].seen)
-        {
-          message_with_line (d->lineno,
-                             "repeated operand number %d\n", opno);
-          have_error = 1;
-        }
+	{
+	  message_with_line (d->lineno,
+			     "repeated operand number %d\n", opno);
+	  have_error = 1;
+	}
 
       d->operand[opno].seen = 1;
       d->operand[opno].mode = GET_MODE (part);
@@ -463,7 +463,7 @@ scan_operands (struct data *d, rtx part, int this_address_p,
       d->operand[opno].predicate = XSTR (part, 1);
       d->operand[opno].constraint = strip_whitespace (XSTR (part, 2));
       d->operand[opno].n_alternatives
-        = n_occurrences (',', d->operand[opno].constraint) + 1;
+	= n_occurrences (',', d->operand[opno].constraint) + 1;
       d->operand[opno].address_p = this_address_p;
       d->operand[opno].eliminable = 1;
       return;
@@ -471,20 +471,20 @@ scan_operands (struct data *d, rtx part, int this_address_p,
     case MATCH_SCRATCH:
       opno = XINT (part, 0);
       if (opno > max_opno)
-        max_opno = opno;
+	max_opno = opno;
       if (max_opno >= MAX_MAX_OPERANDS)
-        {
-          message_with_line (d->lineno,
-                             "maximum number of operands exceeded");
-          have_error = 1;
-          return;
-        }
+	{
+	  message_with_line (d->lineno,
+			     "maximum number of operands exceeded");
+	  have_error = 1;
+	  return;
+	}
       if (d->operand[opno].seen)
-        {
-          message_with_line (d->lineno,
-                             "repeated operand number %d\n", opno);
-          have_error = 1;
-        }
+	{
+	  message_with_line (d->lineno,
+			     "repeated operand number %d\n", opno);
+	  have_error = 1;
+	}
 
       d->operand[opno].seen = 1;
       d->operand[opno].mode = GET_MODE (part);
@@ -492,7 +492,7 @@ scan_operands (struct data *d, rtx part, int this_address_p,
       d->operand[opno].predicate = "scratch_operand";
       d->operand[opno].constraint = strip_whitespace (XSTR (part, 1));
       d->operand[opno].n_alternatives
-        = n_occurrences (',', d->operand[opno].constraint) + 1;
+	= n_occurrences (',', d->operand[opno].constraint) + 1;
       d->operand[opno].address_p = 0;
       d->operand[opno].eliminable = 0;
       return;
@@ -501,20 +501,20 @@ scan_operands (struct data *d, rtx part, int this_address_p,
     case MATCH_PARALLEL:
       opno = XINT (part, 0);
       if (opno > max_opno)
-        max_opno = opno;
+	max_opno = opno;
       if (max_opno >= MAX_MAX_OPERANDS)
-        {
-          message_with_line (d->lineno,
-                             "maximum number of operands exceeded");
-          have_error = 1;
-          return;
-        }
+	{
+	  message_with_line (d->lineno,
+			     "maximum number of operands exceeded");
+	  have_error = 1;
+	  return;
+	}
       if (d->operand[opno].seen)
-        {
-          message_with_line (d->lineno,
-                             "repeated operand number %d\n", opno);
-          have_error = 1;
-        }
+	{
+	  message_with_line (d->lineno,
+			     "repeated operand number %d\n", opno);
+	  have_error = 1;
+	}
 
       d->operand[opno].seen = 1;
       d->operand[opno].mode = GET_MODE (part);
@@ -524,7 +524,7 @@ scan_operands (struct data *d, rtx part, int this_address_p,
       d->operand[opno].address_p = 0;
       d->operand[opno].eliminable = 0;
       for (i = 0; i < XVECLEN (part, 2); i++)
-        scan_operands (d, XVECEXP (part, 2, i), 0, 0);
+	scan_operands (d, XVECEXP (part, 2, i), 0, 0);
       return;
 
     case MATCH_DUP:
@@ -552,13 +552,13 @@ scan_operands (struct data *d, rtx part, int this_address_p,
       {
       case 'e':
       case 'u':
-        scan_operands (d, XEXP (part, i), 0, 0);
-        break;
+	scan_operands (d, XEXP (part, i), 0, 0);
+	break;
       case 'E':
-        if (XVEC (part, i) != NULL)
-          for (j = 0; j < XVECLEN (part, i); j++)
-            scan_operands (d, XVECEXP (part, i, j), 0, 0);
-        break;
+	if (XVEC (part, i) != NULL)
+	  for (j = 0; j < XVECLEN (part, i); j++)
+	    scan_operands (d, XVECEXP (part, i, j), 0, 0);
+	break;
       }
 }
 
@@ -618,18 +618,18 @@ place_operands (struct data *d)
   for (od = odata, i = 0; od; od = od->next, i = 0)
     if (compare_operands (od, &d->operand[0]))
       {
-        od2 = od->next;
-        i = 1;
-        while (1)
-          {
-            if (i == d->n_operands)
-              goto full_match;
-            if (od2 == NULL)
-              goto partial_match;
-            if (! compare_operands (od2, &d->operand[i]))
-              break;
-            ++i, od2 = od2->next;
-          }
+	od2 = od->next;
+	i = 1;
+	while (1)
+	  {
+	    if (i == d->n_operands)
+	      goto full_match;
+	    if (od2 == NULL)
+	      goto partial_match;
+	    if (! compare_operands (od2, &d->operand[i]))
+	      break;
+	    ++i, od2 = od2->next;
+	  }
       }
 
   /* Either partial match at the end of the list, or no match.  In either
@@ -670,7 +670,7 @@ process_template (struct data *d, const char *template)
 
       puts ("\nstatic const char *");
       printf ("output_%d (rtx *operands ATTRIBUTE_UNUSED, rtx insn ATTRIBUTE_UNUSED)\n",
-              d->code_number);
+	      d->code_number);
       puts ("{");
       print_rtx_ptr_loc (template);
       puts (template + 1);
@@ -687,40 +687,40 @@ process_template (struct data *d, const char *template)
       printf ("\nstatic const char * const output_%d[] = {\n", d->code_number);
 
       for (i = 0, cp = &template[1]; *cp; )
-        {
-          const char *ep, *sp;
+	{
+	  const char *ep, *sp;
 
-          while (ISSPACE (*cp))
-            cp++;
+	  while (ISSPACE (*cp))
+	    cp++;
 
-          printf ("  \"");
+	  printf ("  \"");
 
-          for (ep = sp = cp; !IS_VSPACE (*ep) && *ep != '\0'; ++ep)
-            if (!ISSPACE (*ep))
-              sp = ep + 1;
+	  for (ep = sp = cp; !IS_VSPACE (*ep) && *ep != '\0'; ++ep)
+	    if (!ISSPACE (*ep))
+	      sp = ep + 1;
 
-          if (sp != ep)
-            message_with_line (d->lineno,
-                               "trailing whitespace in output template");
+	  if (sp != ep)
+	    message_with_line (d->lineno,
+			       "trailing whitespace in output template");
 
-          while (cp < sp)
-            {
-              putchar (*cp);
-              cp++;
-            }
+	  while (cp < sp)
+	    {
+	      putchar (*cp);
+	      cp++;
+	    }
 
-          printf ("\",\n");
-          i++;
-        }
+	  printf ("\",\n");
+	  i++;
+	}
       if (i == 1)
-        message_with_line (d->lineno,
-                           "'@' is redundant for output template with single alternative");
+	message_with_line (d->lineno,
+			   "'@' is redundant for output template with single alternative");
       if (i != d->n_alternatives)
-        {
-          message_with_line (d->lineno,
-                             "wrong number of alternatives in the output template");
-          have_error = 1;
-        }
+	{
+	  message_with_line (d->lineno,
+			     "wrong number of alternatives in the output template");
+	  have_error = 1;
+	}
 
       printf ("};\n");
     }
@@ -743,74 +743,74 @@ validate_insn_alternatives (struct data *d)
   for (start = 0; start < d->n_operands; start++)
     if (d->operand[start].n_alternatives > 0)
       {
-        int len, i;
-        const char *p;
-        char c;
-        int which_alternative = 0;
-        int alternative_count_unsure = 0;
+	int len, i;
+	const char *p;
+	char c;
+	int which_alternative = 0;
+	int alternative_count_unsure = 0;
 
-        for (p = d->operand[start].constraint; (c = *p); p += len)
-          {
+	for (p = d->operand[start].constraint; (c = *p); p += len)
+	  {
 #ifdef USE_MD_CONSTRAINTS
-            if (ISSPACE (c) || strchr (indep_constraints, c))
-              len = 1;
-            else if (ISDIGIT (c))
-              {
-                const char *q = p;
-                do
-                  q++;
-                while (ISDIGIT (*q));
-                len = q - p;
-              }
-            else
-              len = mdep_constraint_len (p, d->lineno, start);
+	    if (ISSPACE (c) || strchr (indep_constraints, c))
+	      len = 1;
+	    else if (ISDIGIT (c))
+	      {
+		const char *q = p;
+		do
+		  q++;
+		while (ISDIGIT (*q));
+		len = q - p;
+	      }
+	    else
+	      len = mdep_constraint_len (p, d->lineno, start);
 #else
-            len = CONSTRAINT_LEN (c, p);
+	    len = CONSTRAINT_LEN (c, p);
 
-            if (len < 1 || (len > 1 && strchr (",#*+=&%!0123456789", c)))
-              {
-                message_with_line (d->lineno,
-                                   "invalid length %d for char '%c' in alternative %d of operand %d",
-                                    len, c, which_alternative, start);
-                len = 1;
-                have_error = 1;
-              }
+	    if (len < 1 || (len > 1 && strchr (",#*+=&%!0123456789", c)))
+	      {
+		message_with_line (d->lineno,
+				   "invalid length %d for char '%c' in alternative %d of operand %d",
+				    len, c, which_alternative, start);
+		len = 1;
+		have_error = 1;
+	      }
 #endif
 
-            if (c == ',')
-              {
-                which_alternative++;
-                continue;
-              }
+	    if (c == ',')
+	      {
+	        which_alternative++;
+		continue;
+	      }
 
-            for (i = 1; i < len; i++)
-              if (p[i] == '\0')
-                {
-                  message_with_line (d->lineno,
-                                     "NUL in alternative %d of operand %d",
-                                     which_alternative, start);
-                  alternative_count_unsure = 1;
-                  break;
-                }
-              else if (strchr (",#*", p[i]))
-                {
-                  message_with_line (d->lineno,
-                                     "'%c' in alternative %d of operand %d",
-                                     p[i], which_alternative, start);
-                  alternative_count_unsure = 1;
-                }
-          }
-        if (alternative_count_unsure)
-          have_error = 1;
-        else if (n == 0)
-          n = d->operand[start].n_alternatives;
-        else if (n != d->operand[start].n_alternatives)
-          {
-            message_with_line (d->lineno,
-                               "wrong number of alternatives in operand %d",
-                               start);
-            have_error = 1;
-          }
+	    for (i = 1; i < len; i++)
+	      if (p[i] == '\0')
+		{
+		  message_with_line (d->lineno,
+				     "NUL in alternative %d of operand %d",
+				     which_alternative, start);
+		  alternative_count_unsure = 1;
+		  break;
+		}
+	      else if (strchr (",#*", p[i]))
+		{
+		  message_with_line (d->lineno,
+				     "'%c' in alternative %d of operand %d",
+				     p[i], which_alternative, start);
+		  alternative_count_unsure = 1;
+		}
+	  }
+	if (alternative_count_unsure)
+	  have_error = 1;
+	else if (n == 0)
+	  n = d->operand[start].n_alternatives;
+	else if (n != d->operand[start].n_alternatives)
+	  {
+	    message_with_line (d->lineno,
+			       "wrong number of alternatives in operand %d",
+			       start);
+	    have_error = 1;
+	  }
       }
 
   /* Record the insn's overall number of alternatives.  */
@@ -827,8 +827,8 @@ validate_insn_operands (struct data *d)
   for (i = 0; i < d->n_operands; ++i)
     if (d->operand[i].seen == 0)
       {
-        message_with_line (d->lineno, "missing operand %d", i);
-        have_error = 1;
+	message_with_line (d->lineno, "missing operand %d", i);
+	have_error = 1;
       }
 }
 
@@ -1028,39 +1028,39 @@ main (int argc, char **argv)
 
       desc = read_md_rtx (&line_no, &next_code_number);
       if (desc == NULL)
-        break;
+	break;
 
       switch (GET_CODE (desc))
-        {
-        case DEFINE_INSN:
-          gen_insn (desc, line_no);
-          break;
+	{
+	case DEFINE_INSN:
+	  gen_insn (desc, line_no);
+	  break;
 
-        case DEFINE_PEEPHOLE:
-          gen_peephole (desc, line_no);
-          break;
+	case DEFINE_PEEPHOLE:
+	  gen_peephole (desc, line_no);
+	  break;
 
-        case DEFINE_EXPAND:
-          gen_expand (desc, line_no);
-          break;
+	case DEFINE_EXPAND:
+	  gen_expand (desc, line_no);
+	  break;
 
-        case DEFINE_SPLIT:
-        case DEFINE_PEEPHOLE2:
-          gen_split (desc, line_no);
-          break;
+	case DEFINE_SPLIT:
+	case DEFINE_PEEPHOLE2:
+	  gen_split (desc, line_no);
+	  break;
 
 #ifdef USE_MD_CONSTRAINTS
-        case DEFINE_CONSTRAINT:
-        case DEFINE_REGISTER_CONSTRAINT:
-        case DEFINE_ADDRESS_CONSTRAINT:
-        case DEFINE_MEMORY_CONSTRAINT:
-          note_constraint (desc, line_no);
-          break;
+	case DEFINE_CONSTRAINT:
+	case DEFINE_REGISTER_CONSTRAINT:
+	case DEFINE_ADDRESS_CONSTRAINT:
+	case DEFINE_MEMORY_CONSTRAINT:
+	  note_constraint (desc, line_no);
+	  break;
 #endif
 
-        default:
-          break;
-        }
+	default:
+	  break;
+	}
       next_index_number++;
     }
 
@@ -1071,7 +1071,7 @@ main (int argc, char **argv)
 
   fflush (stdout);
   return (ferror (stdout) != 0 || have_error
-        ? FATAL_EXIT_CODE : SUCCESS_EXIT_CODE);
+	? FATAL_EXIT_CODE : SUCCESS_EXIT_CODE);
 }
 
 /* Return the number of occurrences of character C in string S or
@@ -1130,12 +1130,12 @@ note_constraint (rtx exp, int lineno)
   if (strchr (indep_constraints, name[0]))
     {
       if (name[1] == '\0')
-        message_with_line (lineno, "constraint letter '%s' cannot be "
-                           "redefined by the machine description", name);
+	message_with_line (lineno, "constraint letter '%s' cannot be "
+			   "redefined by the machine description", name);
       else
-        message_with_line (lineno, "constraint name '%s' cannot be defined by "
-                           "the machine description, as it begins with '%c'",
-                           name, name[0]);
+	message_with_line (lineno, "constraint name '%s' cannot be defined by "
+			   "the machine description, as it begins with '%c'",
+			   name, name[0]);
       have_error = 1;
       return;
     }
@@ -1144,36 +1144,36 @@ note_constraint (rtx exp, int lineno)
   for (iter = slot; *iter; iter = &(*iter)->next_this_letter)
     {
       /* This causes slot to end up pointing to the
-         next_this_letter field of the last constraint with a name
-         of equal or greater length than the new constraint; hence
-         the new constraint will be inserted after all previous
-         constraints with names of the same length.  */
+	 next_this_letter field of the last constraint with a name
+	 of equal or greater length than the new constraint; hence
+	 the new constraint will be inserted after all previous
+	 constraints with names of the same length.  */
       if ((*iter)->namelen >= namelen)
-        slot = iter;
+	slot = iter;
 
       if (!strcmp ((*iter)->name, name))
-        {
-          message_with_line (lineno, "redefinition of constraint '%s'", name);
-          message_with_line ((*iter)->lineno, "previous definition is here");
-          have_error = 1;
-          return;
-        }
+	{
+	  message_with_line (lineno, "redefinition of constraint '%s'", name);
+	  message_with_line ((*iter)->lineno, "previous definition is here");
+	  have_error = 1;
+	  return;
+	}
       else if (!strncmp ((*iter)->name, name, (*iter)->namelen))
-        {
-          message_with_line (lineno, "defining constraint '%s' here", name);
-          message_with_line ((*iter)->lineno, "renders constraint '%s' "
-                             "(defined here) a prefix", (*iter)->name);
-          have_error = 1;
-          return;
-        }
+	{
+	  message_with_line (lineno, "defining constraint '%s' here", name);
+	  message_with_line ((*iter)->lineno, "renders constraint '%s' "
+			     "(defined here) a prefix", (*iter)->name);
+	  have_error = 1;
+	  return;
+	}
       else if (!strncmp ((*iter)->name, name, namelen))
-        {
-          message_with_line (lineno, "constraint '%s' is a prefix", name);
-          message_with_line ((*iter)->lineno, "of constraint '%s' "
-                             "(defined here)", (*iter)->name);
-          have_error = 1;
-          return;
-        }
+	{
+	  message_with_line (lineno, "constraint '%s' is a prefix", name);
+	  message_with_line ((*iter)->lineno, "of constraint '%s' "
+			     "(defined here)", (*iter)->name);
+	  have_error = 1;
+	  return;
+	}
     }
   new = xmalloc (sizeof (struct constraint_data) + namelen);
   strcpy ((char *)new + offsetof(struct constraint_data, name), name);
@@ -1197,11 +1197,11 @@ mdep_constraint_len (const char *s, int lineno, int opno)
   if (p)
     for (; p; p = p->next_this_letter)
       if (!strncmp (s, p->name, p->namelen))
-        return p->namelen;
+	return p->namelen;
 
   message_with_line (lineno,
-                     "error: undefined machine-specific constraint "
-                     "at this point: \"%s\"", s);
+		     "error: undefined machine-specific constraint "
+		     "at this point: \"%s\"", s);
   message_with_line (lineno, "note:  in operand %d", opno);
   have_error = 1;
   return 1; /* safe */

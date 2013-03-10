@@ -56,7 +56,7 @@ enum floatformat_intbit { floatformat_intbit_yes, floatformat_intbit_no };
 struct floatformat
 {
   enum floatformat_byteorders byteorder;
-  unsigned int totalsize;        /* Total size of number in bits */
+  unsigned int totalsize;	/* Total size of number in bits */
 
   /* Sign bit is always one bit long.  1 means negative, 0 means positive.  */
   unsigned int sign_start;
@@ -137,4 +137,4 @@ floatformat_from_double (const struct floatformat *, const double *, void *);
 extern int
 floatformat_is_valid (const struct floatformat *fmt, const void *from);
 
-#endif        /* defined (FLOATFORMAT_H) */
+#endif	/* defined (FLOATFORMAT_H) */

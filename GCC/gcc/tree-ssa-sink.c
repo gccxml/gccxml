@@ -91,10 +91,10 @@ find_bb_for_arg (tree phi, tree def)
   for (i = 0; i < PHI_NUM_ARGS (phi); i++)
     if (PHI_ARG_DEF (phi, i) == def)
       {
-        if (foundone)
-          return NULL;
-        foundone = true;
-        result = PHI_ARG_EDGE (phi, i)->src;
+	if (foundone)
+	  return NULL;
+	foundone = true;
+	result = PHI_ARG_EDGE (phi, i)->src;
       }
   return result;
 }
@@ -120,12 +120,12 @@ all_immediate_uses_same_place (tree stmt)
     {
       FOR_EACH_IMM_USE_FAST (use_p, imm_iter, var)
         {
-          if (firstuse == NULL_TREE)
-            firstuse = USE_STMT (use_p);
-          else
-            if (firstuse != USE_STMT (use_p))
-              return false;
-        }
+	  if (firstuse == NULL_TREE)
+	    firstuse = USE_STMT (use_p);
+	  else
+	    if (firstuse != USE_STMT (use_p))
+	      return false;
+	}
     }
 
   return true;
@@ -147,65 +147,65 @@ is_hidden_global_store (tree stmt)
       gcc_assert (TREE_CODE (stmt) == MODIFY_EXPR);
 
       /* Note that we must not check the individual virtual operands
-         here.  In particular, if this is an aliased store, we could
-         end up with something like the following (SSA notation
-         redacted for brevity):
+	 here.  In particular, if this is an aliased store, we could
+	 end up with something like the following (SSA notation
+	 redacted for brevity):
 
-                 foo (int *p, int i)
-                {
-                  int x;
-                  p_1 = (i_2 > 3) ? &x : p;
+	 	foo (int *p, int i)
+		{
+		  int x;
+		  p_1 = (i_2 > 3) ? &x : p;
 
-                  # x_4 = V_MAY_DEF <x_3>
-                  *p_1 = 5;
+		  # x_4 = V_MAY_DEF <x_3>
+		  *p_1 = 5;
 
-                  return 2;
-                }
+		  return 2;
+		}
 
-         Notice that the store to '*p_1' should be preserved, if we
-         were to check the virtual definitions in that store, we would
-         not mark it needed.  This is because 'x' is not a global
-         variable.
+	 Notice that the store to '*p_1' should be preserved, if we
+	 were to check the virtual definitions in that store, we would
+	 not mark it needed.  This is because 'x' is not a global
+	 variable.
 
-         Therefore, we check the base address of the LHS.  If the
-         address is a pointer, we check if its name tag or symbol tag is
-         a global variable.  Otherwise, we check if the base variable
-         is a global.  */
+	 Therefore, we check the base address of the LHS.  If the
+	 address is a pointer, we check if its name tag or symbol tag is
+	 a global variable.  Otherwise, we check if the base variable
+	 is a global.  */
       lhs = TREE_OPERAND (stmt, 0);
       if (REFERENCE_CLASS_P (lhs))
-        lhs = get_base_address (lhs);
+	lhs = get_base_address (lhs);
 
       if (lhs == NULL_TREE)
-        {
-          /* If LHS is NULL, it means that we couldn't get the base
-             address of the reference.  In which case, we should not
-             move this store.  */
-          return true;
-        }
+	{
+	  /* If LHS is NULL, it means that we couldn't get the base
+	     address of the reference.  In which case, we should not
+	     move this store.  */
+	  return true;
+	}
       else if (DECL_P (lhs))
-        {
-          /* If the store is to a global symbol, we need to keep it.  */
-          if (is_global_var (lhs))
-            return true;
+	{
+	  /* If the store is to a global symbol, we need to keep it.  */
+	  if (is_global_var (lhs))
+	    return true;
 
-        }
+	}
       else if (INDIRECT_REF_P (lhs))
-        {
-          tree ptr = TREE_OPERAND (lhs, 0);
-          struct ptr_info_def *pi = SSA_NAME_PTR_INFO (ptr);
-          tree nmt = (pi) ? pi->name_mem_tag : NULL_TREE;
-          tree smt = var_ann (SSA_NAME_VAR (ptr))->symbol_mem_tag;
+	{
+	  tree ptr = TREE_OPERAND (lhs, 0);
+	  struct ptr_info_def *pi = SSA_NAME_PTR_INFO (ptr);
+	  tree nmt = (pi) ? pi->name_mem_tag : NULL_TREE;
+	  tree smt = var_ann (SSA_NAME_VAR (ptr))->symbol_mem_tag;
 
-          /* If either the name tag or the symbol tag for PTR is a
-             global variable, then the store is necessary.  */
-          if ((nmt && is_global_var (nmt))
-              || (smt && is_global_var (smt)))
-            {
-              return true;
-            }
-        }
+	  /* If either the name tag or the symbol tag for PTR is a
+	     global variable, then the store is necessary.  */
+	  if ((nmt && is_global_var (nmt))
+	      || (smt && is_global_var (smt)))
+	    {
+	      return true;
+	    }
+	}
       else
-        gcc_unreachable ();
+	gcc_unreachable ();
     }
   return false;
 }
@@ -229,33 +229,33 @@ nearest_common_dominator_of_uses (tree stmt)
     {
       FOR_EACH_IMM_USE_FAST (use_p, imm_iter, var)
         {
-          tree usestmt = USE_STMT (use_p);
-          basic_block useblock;
+	  tree usestmt = USE_STMT (use_p);
+	  basic_block useblock;
 
-          if (TREE_CODE (usestmt) == PHI_NODE)
-            {
-              int idx = PHI_ARG_INDEX_FROM_USE (use_p);
+	  if (TREE_CODE (usestmt) == PHI_NODE)
+	    {
+	      int idx = PHI_ARG_INDEX_FROM_USE (use_p);
 
-              useblock = PHI_ARG_EDGE (usestmt, idx)->src;
-            }
-          else
-            {
-              useblock = bb_for_stmt (usestmt);
-            }
+	      useblock = PHI_ARG_EDGE (usestmt, idx)->src;
+	    }
+	  else
+	    {
+	      useblock = bb_for_stmt (usestmt);
+	    }
 
-          /* Short circuit. Nothing dominates the entry block.  */
-          if (useblock == ENTRY_BLOCK_PTR)
-            {
-              BITMAP_FREE (blocks);
-              return NULL;
-            }
-          bitmap_set_bit (blocks, useblock->index);
-        }
+	  /* Short circuit. Nothing dominates the entry block.  */
+	  if (useblock == ENTRY_BLOCK_PTR)
+	    {
+	      BITMAP_FREE (blocks);
+	      return NULL;
+	    }
+	  bitmap_set_bit (blocks, useblock->index);
+	}
     }
   commondom = BASIC_BLOCK (bitmap_first_set_bit (blocks));
   EXECUTE_IF_SET_IN_BITMAP (blocks, 0, j, bi)
     commondom = nearest_common_dominator (CDI_DOMINATORS, commondom, 
-                                          BASIC_BLOCK (j));
+					  BASIC_BLOCK (j));
   BITMAP_FREE (blocks);
   return commondom;
 }
@@ -281,9 +281,9 @@ statement_sink_location (tree stmt, basic_block frombb)
   FOR_EACH_SSA_TREE_OPERAND (def, stmt, iter, SSA_OP_ALL_DEFS)
     {
       FOR_EACH_IMM_USE_FAST (one_use, imm_iter, def)
-        {
-          break;
-        }
+	{
+	  break;
+	}
       if (one_use != NULL_USE_OPERAND_P)
         break;
     }
@@ -330,15 +330,15 @@ statement_sink_location (tree stmt, basic_block frombb)
     {
       tree def = DEF_FROM_PTR (def_p);
       if (is_global_var (SSA_NAME_VAR (def))
-          || SSA_NAME_OCCURS_IN_ABNORMAL_PHI (def))
-        return NULL;
+	  || SSA_NAME_OCCURS_IN_ABNORMAL_PHI (def))
+	return NULL;
     }
     
   FOR_EACH_SSA_USE_OPERAND (use_p, stmt, iter, SSA_OP_ALL_USES)
     {
       tree use = USE_FROM_PTR (use_p);
       if (SSA_NAME_OCCURS_IN_ABNORMAL_PHI (use))
-        return NULL;
+	return NULL;
     }
   
   /* If all the immediate uses are not in the same place, find the nearest
@@ -350,32 +350,32 @@ statement_sink_location (tree stmt, basic_block frombb)
       basic_block commondom = nearest_common_dominator_of_uses (stmt);
      
       if (commondom == frombb)
-        return NULL;
+	return NULL;
 
       /* Our common dominator has to be dominated by frombb in order to be a
-         trivially safe place to put this statement, since it has multiple
-         uses.  */     
+	 trivially safe place to put this statement, since it has multiple
+	 uses.  */     
       if (!dominated_by_p (CDI_DOMINATORS, commondom, frombb))
-        return NULL;
+	return NULL;
       
       /* It doesn't make sense to move to a dominator that post-dominates
-         frombb, because it means we've just moved it into a path that always
-         executes if frombb executes, instead of reducing the number of
-         executions .  */
+	 frombb, because it means we've just moved it into a path that always
+	 executes if frombb executes, instead of reducing the number of
+	 executions .  */
       if (dominated_by_p (CDI_POST_DOMINATORS, frombb, commondom))
-        {
-          if (dump_file && (dump_flags & TDF_DETAILS))
-            fprintf (dump_file, "Not moving store, common dominator post-dominates from block.\n");
-          return NULL;
-        }
+	{
+	  if (dump_file && (dump_flags & TDF_DETAILS))
+	    fprintf (dump_file, "Not moving store, common dominator post-dominates from block.\n");
+	  return NULL;
+	}
 
       if (commondom == frombb || commondom->loop_depth > frombb->loop_depth)
-        return NULL;
+	return NULL;
       if (dump_file && (dump_flags & TDF_DETAILS))
-        {
-          fprintf (dump_file, "Common dominator of all uses is %d\n",
-                   commondom->index);
-        }
+	{
+	  fprintf (dump_file, "Common dominator of all uses is %d\n",
+		   commondom->index);
+	}
       return first_stmt (commondom);
     }
 
@@ -384,8 +384,8 @@ statement_sink_location (tree stmt, basic_block frombb)
     {
       sinkbb = bb_for_stmt (use);
       if (sinkbb == frombb || sinkbb->loop_depth > frombb->loop_depth
-          || sinkbb->loop_father != frombb->loop_father)
-        return NULL;      
+	  || sinkbb->loop_father != frombb->loop_father)
+	return NULL;      
       return use;
     }
 
@@ -438,24 +438,24 @@ sink_code_in_bb (basic_block bb)
 
   for (bsi = bsi_last (bb); !bsi_end_p (bsi);)
     {
-      tree stmt = bsi_stmt (bsi);        
+      tree stmt = bsi_stmt (bsi);	
       block_stmt_iterator tobsi;
       tree sinkstmt;
       
       sinkstmt = statement_sink_location (stmt, bb);
       if (!sinkstmt)
-        {
-          if (!bsi_end_p (bsi))
-            bsi_prev (&bsi);
-          continue;
-        }      
+	{
+	  if (!bsi_end_p (bsi))
+	    bsi_prev (&bsi);
+	  continue;
+	}      
       if (dump_file)
-        {
-          fprintf (dump_file, "Sinking ");
-          print_generic_expr (dump_file, stmt, TDF_VOPS);
-          fprintf (dump_file, " from bb %d to bb %d\n",
-                   bb->index, bb_for_stmt (sinkstmt)->index);
-        }
+	{
+	  fprintf (dump_file, "Sinking ");
+	  print_generic_expr (dump_file, stmt, TDF_VOPS);
+	  fprintf (dump_file, " from bb %d to bb %d\n",
+		   bb->index, bb_for_stmt (sinkstmt)->index);
+	}
       tobsi = bsi_for_stmt (sinkstmt);
       /* Find the first non-label.  */
       while (!bsi_end_p (tobsi)
@@ -465,13 +465,13 @@ sink_code_in_bb (basic_block bb)
       /* If this is the end of the basic block, we need to insert at the end
          of the basic block.  */
       if (bsi_end_p (tobsi))
-        bsi_move_to_bb_end (&bsi, bb_for_stmt (sinkstmt));
+	bsi_move_to_bb_end (&bsi, bb_for_stmt (sinkstmt));
       else
-        bsi_move_before (&bsi, &tobsi);
+	bsi_move_before (&bsi, &tobsi);
 
       sink_stats.sunk++;
       if (!bsi_end_p (bsi))
-        bsi_prev (&bsi);
+	bsi_prev (&bsi);
       
     }
  earlyout:
@@ -552,21 +552,21 @@ gate_sink (void)
 
 struct tree_opt_pass pass_sink_code =
 {
-  "sink",                                /* name */
-  gate_sink,                                /* gate */
-  do_sink,                                /* execute */
-  NULL,                                        /* sub */
-  NULL,                                        /* next */
-  0,                                        /* static_pass_number */
-  TV_TREE_SINK,                                /* tv_id */
+  "sink",				/* name */
+  gate_sink,				/* gate */
+  do_sink,				/* execute */
+  NULL,					/* sub */
+  NULL,					/* next */
+  0,					/* static_pass_number */
+  TV_TREE_SINK,				/* tv_id */
   PROP_no_crit_edges | PROP_cfg
-    | PROP_ssa | PROP_alias,                /* properties_required */
-  0,                                        /* properties_provided */
-  0,                                        /* properties_destroyed */
-  0,                                        /* todo_flags_start */
+    | PROP_ssa | PROP_alias,		/* properties_required */
+  0,					/* properties_provided */
+  0,					/* properties_destroyed */
+  0,					/* todo_flags_start */
   TODO_update_ssa 
     | TODO_dump_func
     | TODO_ggc_collect
-    | TODO_verify_ssa,                        /* todo_flags_finish */
-  0                                        /* letter */
+    | TODO_verify_ssa,			/* todo_flags_finish */
+  0					/* letter */
 };

@@ -153,18 +153,18 @@ struct file_hash_entry
 
 static bool open_file (_cpp_file *file);
 static bool pch_open_file (cpp_reader *pfile, _cpp_file *file,
-                           bool *invalid_pch);
+			   bool *invalid_pch);
 static bool find_file_in_dir (cpp_reader *pfile, _cpp_file *file,
-                              bool *invalid_pch);
+			      bool *invalid_pch);
 static bool read_file_guts (cpp_reader *pfile, _cpp_file *file);
 static bool read_file (cpp_reader *pfile, _cpp_file *file);
 static bool should_stack_file (cpp_reader *, _cpp_file *file, bool import);
 static struct cpp_dir *search_path_head (cpp_reader *, const char *fname,
-                                 int angle_brackets, enum include_type);
+				 int angle_brackets, enum include_type);
 static const char *dir_name_of_file (_cpp_file *file);
 static void open_file_failed (cpp_reader *pfile, _cpp_file *file, int);
 static struct file_hash_entry *search_cache (struct file_hash_entry *head,
-                                             const cpp_dir *start_dir);
+					     const cpp_dir *start_dir);
 static _cpp_file *make_cpp_file (cpp_reader *, cpp_dir *, const char *fname);
 static void destroy_cpp_file (_cpp_file *);
 static cpp_dir *make_cpp_dir (cpp_reader *, const char *dir_name, int sysp);
@@ -215,17 +215,17 @@ open_file (_cpp_file *file)
   if (file->fd != -1)
     {
       if (fstat (file->fd, &file->st) == 0)
-        {
-          if (!S_ISDIR (file->st.st_mode))
-            {
-              file->err_no = 0;
-              return true;
-            }
+	{
+	  if (!S_ISDIR (file->st.st_mode))
+	    {
+	      file->err_no = 0;
+	      return true;
+	    }
 
-          /* Ignore a directory and continue the search.  The file we're
-             looking for may be elsewhere in the search path.  */
-          errno = ENOENT;
-        }
+	  /* Ignore a directory and continue the search.  The file we're
+	     looking for may be elsewhere in the search path.  */
+	  errno = ENOENT;
+	}
 
       close (file->fd);
       file->fd = -1;
@@ -270,32 +270,32 @@ pch_open_file (cpp_reader *pfile, _cpp_file *file, bool *invalid_pch)
       size_t dlen, plen = len;
 
       if (!S_ISDIR (st.st_mode))
-        valid = validate_pch (pfile, file, pchname);
+	valid = validate_pch (pfile, file, pchname);
       else if ((pchdir = opendir (pchname)) != NULL)
-        {
-          pchname[plen - 1] = '/';
-          while ((d = readdir (pchdir)) != NULL)
-            {
-              dlen = strlen (d->d_name) + 1;
-              if ((strcmp (d->d_name, ".") == 0)
-                  || (strcmp (d->d_name, "..") == 0))
-                continue;
-              if (dlen + plen > len)
-                {
-                  len += dlen + 64;
-                  pchname = XRESIZEVEC (char, pchname, len);
-                }
-              memcpy (pchname + plen, d->d_name, dlen);
-              valid = validate_pch (pfile, file, pchname);
-              if (valid)
-                break;
-            }
-          closedir (pchdir);
-        }
+	{
+	  pchname[plen - 1] = '/';
+	  while ((d = readdir (pchdir)) != NULL)
+	    {
+	      dlen = strlen (d->d_name) + 1;
+	      if ((strcmp (d->d_name, ".") == 0)
+		  || (strcmp (d->d_name, "..") == 0))
+		continue;
+	      if (dlen + plen > len)
+		{
+		  len += dlen + 64;
+		  pchname = XRESIZEVEC (char, pchname, len);
+		}
+	      memcpy (pchname + plen, d->d_name, dlen);
+	      valid = validate_pch (pfile, file, pchname);
+	      if (valid)
+		break;
+	    }
+	  closedir (pchdir);
+	}
       if (valid)
-        file->pch = true;
+	file->pch = true;
       else
-        *invalid_pch = true;
+	*invalid_pch = true;
     }
 
   if (valid)
@@ -328,16 +328,16 @@ find_file_in_dir (cpp_reader *pfile, _cpp_file *file, bool *invalid_pch)
     {
       file->path = path;
       if (pch_open_file (pfile, file, invalid_pch))
-        return true;
+	return true;
 
       if (open_file (file))
-        return true;
+	return true;
 
       if (file->err_no != ENOENT)
-        {
-          open_file_failed (pfile, file, 0);
-          return true;
-        }
+	{
+	  open_file_failed (pfile, file, 0);
+	  return true;
+	}
 
       free (path);
       file->path = file->name;
@@ -363,11 +363,11 @@ search_path_exhausted (cpp_reader *pfile, const char *header, _cpp_file *file)
       && file->dir == NULL)
     {
       if ((file->path = func (pfile, header, &file->dir)) != NULL)
-        {
-          if (open_file (file))
-            return true;
-          free ((void *)file->path);
-        }
+	{
+	  if (open_file (file))
+	    return true;
+	  free ((void *)file->path);
+	}
       file->path = file->name;
     }
 
@@ -416,8 +416,8 @@ _cpp_find_file (cpp_reader *pfile, const char *fname, cpp_dir *start_dir, bool f
 #ifndef GCCXML_DISABLE_INCLUDE_CACHE
   hash_slot = (struct file_hash_entry **)
     htab_find_slot_with_hash (pfile->file_hash, fname,
-                              htab_hash_string (fname),
-                              INSERT);
+			      htab_hash_string (fname),
+			      INSERT);
 
   /* First check the cache before we resort to memory allocation.  */
   entry = search_cache (*hash_slot, start_dir);
@@ -431,45 +431,45 @@ _cpp_find_file (cpp_reader *pfile, const char *fname, cpp_dir *start_dir, bool f
   for (; !fake ;)
     {
       if (find_file_in_dir (pfile, file, &invalid_pch))
-        break;
+	break;
 
       file->dir = file->dir->next;
       if (file->dir == NULL)
-        {
-          if (search_path_exhausted (pfile, fname, file))
-            {
-              /* Although this file must not go in the cache, because
-                 the file found might depend on things (like the current file)
-                 that aren't represented in the cache, it still has to go in
-                 the list of all files so that #import works.  */
-              file->next_file = pfile->all_files;
-              pfile->all_files = file;
-              return file;
-            }
+	{
+	  if (search_path_exhausted (pfile, fname, file))
+	    {
+	      /* Although this file must not go in the cache, because
+		 the file found might depend on things (like the current file)
+		 that aren't represented in the cache, it still has to go in
+		 the list of all files so that #import works.  */
+	      file->next_file = pfile->all_files;
+	      pfile->all_files = file;
+	      return file;
+	    }
 
-          open_file_failed (pfile, file, angle_brackets);
-          if (invalid_pch)
-            {
-              cpp_error (pfile, CPP_DL_ERROR,
-               "one or more PCH files were found, but they were invalid");
-              if (!cpp_get_options (pfile)->warn_invalid_pch)
-                cpp_error (pfile, CPP_DL_ERROR,
-                           "use -Winvalid-pch for more information");
-            }
-          break;
-        }
+	  open_file_failed (pfile, file, angle_brackets);
+	  if (invalid_pch)
+	    {
+	      cpp_error (pfile, CPP_DL_ERROR,
+	       "one or more PCH files were found, but they were invalid");
+	      if (!cpp_get_options (pfile)->warn_invalid_pch)
+		cpp_error (pfile, CPP_DL_ERROR,
+			   "use -Winvalid-pch for more information");
+	    }
+	  break;
+	}
 
 #ifndef GCCXML_DISABLE_INCLUDE_CACHE
       /* Only check the cache for the starting location (done above)
-         and the quote and bracket chain heads because there are no
-         other possible starting points for searches.  */
+	 and the quote and bracket chain heads because there are no
+	 other possible starting points for searches.  */
       if (file->dir != pfile->bracket_include
-          && file->dir != pfile->quote_include)
-        continue;
+	  && file->dir != pfile->quote_include)
+	continue;
 
       entry = search_cache (*hash_slot, file->dir);
       if (entry)
-        break;
+	break;
 #endif
     }
 
@@ -526,18 +526,18 @@ read_file_guts (cpp_reader *pfile, _cpp_file *file)
   if (regular)
     {
       /* off_t might have a wider range than ssize_t - in other words,
-         the max size of a file might be bigger than the address
-         space.  We can't handle a file that large.  (Anyone with
-         a single source file bigger than 2GB needs to rethink
-         their coding style.)  Some systems (e.g. AIX 4.1) define
-         SSIZE_MAX to be much smaller than the actual range of the
-         type.  Use INTTYPE_MAXIMUM unconditionally to ensure this
-         does not bite us.  */
+	 the max size of a file might be bigger than the address
+	 space.  We can't handle a file that large.  (Anyone with
+	 a single source file bigger than 2GB needs to rethink
+	 their coding style.)  Some systems (e.g. AIX 4.1) define
+	 SSIZE_MAX to be much smaller than the actual range of the
+	 type.  Use INTTYPE_MAXIMUM unconditionally to ensure this
+	 does not bite us.  */
       if (file->st.st_size > INTTYPE_MAXIMUM (ssize_t))
-        {
-          cpp_error (pfile, CPP_DL_ERROR, "%s is too large", file->path);
-          return false;
-        }
+	{
+	  cpp_error (pfile, CPP_DL_ERROR, "%s is too large", file->path);
+	  return false;
+	}
 
       size = file->st.st_size;
     }
@@ -554,12 +554,12 @@ read_file_guts (cpp_reader *pfile, _cpp_file *file)
       total += count;
 
       if (total == size)
-        {
-          if (regular)
-            break;
-          size *= 2;
-          buf = XRESIZEVEC (uchar, buf, size + 1);
-        }
+	{
+	  if (regular)
+	    break;
+	  size *= 2;
+	  buf = XRESIZEVEC (uchar, buf, size + 1);
+	}
     }
 
   if (count < 0)
@@ -570,10 +570,10 @@ read_file_guts (cpp_reader *pfile, _cpp_file *file)
 
   if (regular && total != size && STAT_SIZE_RELIABLE (file->st))
     cpp_error (pfile, CPP_DL_WARNING,
-               "%s is shorter than expected", file->path);
+	       "%s is shorter than expected", file->path);
 
   file->buffer = _cpp_convert_input (pfile, CPP_OPTION (pfile, input_charset),
-                                     buf, size, total, &file->st.st_size);
+				     buf, size, total, &file->st.st_size);
   file->buffer_valid = true;
 
   return true;
@@ -626,7 +626,7 @@ should_stack_file (cpp_reader *pfile, _cpp_file *file, bool import)
 
       /* Don't stack files that have been stacked before.  */
       if (file->stack_count)
-        return false;
+	return false;
     }
 
   /* Skip if the file had a header guard and the macro is defined.
@@ -652,10 +652,10 @@ should_stack_file (cpp_reader *pfile, _cpp_file *file, bool import)
   if (check_file_against_entries (pfile, file, import))
     {
       /* If this isn't a #import, but yet we can't include the file,
-         that means that it was #import-ed in the PCH file,
-         so we can never include it again.  */
+	 that means that it was #import-ed in the PCH file,
+	 so we can never include it again.  */
       if (! import)
-        _cpp_mark_file_once_only (pfile, file);
+	_cpp_mark_file_once_only (pfile, file);
       return false;
     }
 
@@ -669,43 +669,43 @@ should_stack_file (cpp_reader *pfile, _cpp_file *file, bool import)
   for (f = pfile->all_files; f; f = f->next_file)
     {
       if (f == file)
-        continue;
+	continue;
 
       if ((import || f->once_only)
-          && f->err_no == 0
-          && f->st.st_mtime == file->st.st_mtime
-          && f->st.st_size == file->st.st_size)
-        {
-          _cpp_file *ref_file;
-          bool same_file_p = false;
+	  && f->err_no == 0
+	  && f->st.st_mtime == file->st.st_mtime
+	  && f->st.st_size == file->st.st_size)
+	{
+	  _cpp_file *ref_file;
+	  bool same_file_p = false;
 
-          if (f->buffer && !f->buffer_valid)
-            {
-              /* We already have a buffer but it is not valid, because
-                 the file is still stacked.  Make a new one.  */
-              ref_file = make_cpp_file (pfile, f->dir, f->name);
-              ref_file->path = f->path;
-            }
-          else
-            /* The file is not stacked anymore.  We can reuse it.  */
-            ref_file = f;
+	  if (f->buffer && !f->buffer_valid)
+	    {
+	      /* We already have a buffer but it is not valid, because
+		 the file is still stacked.  Make a new one.  */
+	      ref_file = make_cpp_file (pfile, f->dir, f->name);
+	      ref_file->path = f->path;
+	    }
+	  else
+	    /* The file is not stacked anymore.  We can reuse it.  */
+	    ref_file = f;
 
-          same_file_p = read_file (pfile, ref_file)
-                        /* Size might have changed in read_file().  */
-                        && ref_file->st.st_size == file->st.st_size
-                        && !memcmp (ref_file->buffer,
-                                    file->buffer,
-                                    file->st.st_size);
+	  same_file_p = read_file (pfile, ref_file)
+			/* Size might have changed in read_file().  */
+			&& ref_file->st.st_size == file->st.st_size
+			&& !memcmp (ref_file->buffer,
+				    file->buffer,
+				    file->st.st_size);
 
-          if (f->buffer && !f->buffer_valid)
-            {
-              ref_file->path = 0;
-              destroy_cpp_file (ref_file);
-            }
+	  if (f->buffer && !f->buffer_valid)
+	    {
+	      ref_file->path = 0;
+	      destroy_cpp_file (ref_file);
+	    }
 
-          if (same_file_p)
-            break;
-        }
+	  if (same_file_p)
+	    break;
+	}
     }
 
   return f == NULL;
@@ -733,7 +733,7 @@ _cpp_stack_file (cpp_reader *pfile, _cpp_file *file, bool import)
   if (CPP_OPTION (pfile, deps.style) > !!sysp && !file->stack_count)
     {
       if (!file->main_file || !CPP_OPTION (pfile, deps.ignore_main_file))
-        deps_add_dep (pfile->deps, file->path);
+	deps_add_dep (pfile->deps, file->path);
     }
 
   /* Clear buffer_valid since _cpp_clean_line messes it up.  */
@@ -742,7 +742,7 @@ _cpp_stack_file (cpp_reader *pfile, _cpp_file *file, bool import)
 
   /* Stack the buffer.  */
   buffer = cpp_push_buffer (pfile, file->buffer, file->st.st_size,
-                            CPP_OPTION (pfile, preprocessed));
+			    CPP_OPTION (pfile, preprocessed));
   buffer->file = file;
   buffer->sysp = sysp;
 
@@ -769,7 +769,7 @@ _cpp_mark_file_once_only (cpp_reader *pfile, _cpp_file *file)
    nothing left in the path, returns NULL.  */
 static struct cpp_dir *
 search_path_head (cpp_reader *pfile, const char *fname, int angle_brackets,
-                  enum include_type type)
+		  enum include_type type)
 {
   cpp_dir *dir;
   _cpp_file *file;
@@ -795,11 +795,11 @@ search_path_head (cpp_reader *pfile, const char *fname, int angle_brackets,
     dir = pfile->quote_include;
   else
     return make_cpp_dir (pfile, dir_name_of_file (file),
-                         pfile->buffer ? pfile->buffer->sysp : 0);
+			 pfile->buffer ? pfile->buffer->sysp : 0);
 
   if (dir == NULL)
     cpp_error (pfile, CPP_DL_ERROR,
-               "no include path in which to search for %s", fname);
+	       "no include path in which to search for %s", fname);
 
   return dir;
 }
@@ -828,7 +828,7 @@ dir_name_of_file (_cpp_file *file)
    Returns true if a buffer was stacked.  */
 bool
 _cpp_stack_include (cpp_reader *pfile, const char *fname, int angle_brackets,
-                    enum include_type type)
+		    enum include_type type)
 {
   struct cpp_dir *dir;
   _cpp_file *file;
@@ -849,21 +849,21 @@ _cpp_stack_include (cpp_reader *pfile, const char *fname, int angle_brackets,
     struct cpp_dir *wrapper_dir;
     pfile->wrapper_include_last->next = dir;
     file = _cpp_find_file (pfile, fname,
-                           pfile->wrapper_include, false,
-                           angle_brackets);
+			   pfile->wrapper_include, false,
+			   angle_brackets);
     pfile->wrapper_include_last->next = 0;
     for(wrapper_dir = pfile->wrapper_include; wrapper_dir;
-        wrapper_dir = wrapper_dir->next)
+	wrapper_dir = wrapper_dir->next)
       {
       if(file->dir == wrapper_dir)
-        {
-        /* This is a header wrapper.  Hack include_next to look
-           through the original search path.  */
-        file->dir = &file->wrapper_dir;
-        memcpy(&file->wrapper_dir, wrapper_dir, sizeof(*wrapper_dir));
-        file->wrapper_dir.next = dir;
-        break;
-        }
+	{
+	/* This is a header wrapper.  Hack include_next to look
+	   through the original search path.  */
+	file->dir = &file->wrapper_dir;
+	memcpy(&file->wrapper_dir, wrapper_dir, sizeof(*wrapper_dir));
+	file->wrapper_dir.next = dir;
+	break;
+	}
       }
     }
   else
@@ -898,11 +898,11 @@ open_file_failed (cpp_reader *pfile, _cpp_file *file, int angle_brackets)
   else
     {
       /* If we are outputting dependencies but not for this file then
-         don't error because we can still produce correct output.  */
+	 don't error because we can still produce correct output.  */
       if (CPP_OPTION (pfile, deps.style) && ! print_dep)
-        cpp_errno (pfile, CPP_DL_WARNING, file->path);
+	cpp_errno (pfile, CPP_DL_WARNING, file->path);
       else
-        cpp_errno (pfile, CPP_DL_ERROR, file->path);
+	cpp_errno (pfile, CPP_DL_ERROR, file->path);
     }
 }
 
@@ -957,8 +957,8 @@ make_cpp_dir (cpp_reader *pfile, const char *dir_name, int sysp)
 
   hash_slot = (struct file_hash_entry **)
     htab_find_slot_with_hash (pfile->dir_hash, dir_name,
-                              htab_hash_string (dir_name),
-                              INSERT);
+			      htab_hash_string (dir_name),
+			      INSERT);
 
   /* Have we already hashed this directory?  */
   for (entry = *hash_slot; entry; entry = entry->next)
@@ -1055,9 +1055,9 @@ void
 _cpp_init_files (cpp_reader *pfile)
 {
   pfile->file_hash = htab_create_alloc (127, file_hash_hash, file_hash_eq,
-                                        NULL, xcalloc, free);
+					NULL, xcalloc, free);
   pfile->dir_hash = htab_create_alloc (127, file_hash_hash, file_hash_eq,
-                                        NULL, xcalloc, free);
+					NULL, xcalloc, free);
   allocate_file_hash_entries (pfile);
 }
 
@@ -1091,7 +1091,7 @@ cpp_make_system_header (cpp_reader *pfile, int syshdr, int externc)
     flags = 1 + (externc != 0);
   pfile->buffer->sysp = flags;
   _cpp_do_file_change (pfile, LC_RENAME, map->to_file,
-                       SOURCE_LINE (map, pfile->line_table->highest_line), flags);
+		       SOURCE_LINE (map, pfile->line_table->highest_line), flags);
 }
 
 /* Allow the client to change the current file.  Used by the front end
@@ -1099,7 +1099,7 @@ cpp_make_system_header (cpp_reader *pfile, int syshdr, int externc)
    If REASON is LC_LEAVE, then NEW_NAME must be NULL.  */
 void
 cpp_change_file (cpp_reader *pfile, enum lc_reason reason,
-                 const char *new_name)
+		 const char *new_name)
 {
   _cpp_do_file_change (pfile, reason, new_name, 1, 0);
 }
@@ -1118,17 +1118,17 @@ report_missing_guard (void **slot, void *b)
 
       /* We don't want MI guard advice for the main file.  */
       if (file->cmacro == NULL && file->stack_count == 1 && !file->main_file)
-        {
-          if (*bannerp == 0)
-            {
-              fputs (_("Multiple include guards may be useful for:\n"),
-                     stderr);
-              *bannerp = 1;
-            }
+	{
+	  if (*bannerp == 0)
+	    {
+	      fputs (_("Multiple include guards may be useful for:\n"),
+		     stderr);
+	      *bannerp = 1;
+	    }
 
-          fputs (entry->u.file->path, stderr);
-          putc ('\n', stderr);
-        }
+	  fputs (entry->u.file->path, stderr);
+	  putc ('\n', stderr);
+	}
     }
 
   return 0;
@@ -1149,7 +1149,7 @@ _cpp_report_missing_guards (cpp_reader *pfile)
    newer, return 1, otherwise 0.  */
 int
 _cpp_compare_file_date (cpp_reader *pfile, const char *fname,
-                        int angle_brackets)
+			int angle_brackets)
 {
   _cpp_file *file;
   struct cpp_dir *dir;
@@ -1215,9 +1215,9 @@ _cpp_get_file_stat (_cpp_file *file)
 void
 cpp_set_include_chains (cpp_reader *pfile, cpp_dir *quote, cpp_dir *bracket,
 /* BEGIN GCC-XML MODIFICATIONS (2009/09/01 13:48:58) */
-                        cpp_dir *wrapper,
+			cpp_dir *wrapper,
 /* END GCC-XML MODIFICATIONS (2009/09/01 13:48:58) */
-                        int quote_ignores_source_dir)
+			int quote_ignores_source_dir)
 {
   pfile->quote_include = quote;
   pfile->bracket_include = quote;
@@ -1238,7 +1238,7 @@ cpp_set_include_chains (cpp_reader *pfile, cpp_dir *quote, cpp_dir *bracket,
       quote->name_map = NULL;
       quote->len = strlen (quote->name);
       if (quote == bracket)
-        pfile->bracket_include = bracket;
+	pfile->bracket_include = bracket;
     }
 }
 
@@ -1275,15 +1275,15 @@ read_filename_string (int ch, FILE *f)
     {
       *set++ = ch;
       while ((ch = getc (f)) != EOF && ! is_space (ch))
-        {
-          if (set - alloc == len)
-            {
-              len *= 2;
-              alloc = XRESIZEVEC (char, alloc, len + 1);
-              set = alloc + len / 2;
-            }
-          *set++ = ch;
-        }
+	{
+	  if (set - alloc == len)
+	    {
+	      len *= 2;
+	      alloc = XRESIZEVEC (char, alloc, len + 1);
+	      set = alloc + len / 2;
+	    }
+	  *set++ = ch;
+	}
     }
   *set = '\0';
   ungetc (ch, f);
@@ -1315,36 +1315,36 @@ read_name_map (cpp_dir *dir)
       int ch;
 
       while ((ch = getc (f)) != EOF)
-        {
-          char *to;
+	{
+	  char *to;
 
-          if (is_space (ch))
-            continue;
+	  if (is_space (ch))
+	    continue;
 
-          if (count + 2 > room)
-            {
-              room += 8;
-              dir->name_map = XRESIZEVEC (const char *, dir->name_map, room);
-            }
+	  if (count + 2 > room)
+	    {
+	      room += 8;
+	      dir->name_map = XRESIZEVEC (const char *, dir->name_map, room);
+	    }
 
-          dir->name_map[count] = read_filename_string (ch, f);
-          while ((ch = getc (f)) != EOF && is_hspace (ch))
-            ;
+	  dir->name_map[count] = read_filename_string (ch, f);
+	  while ((ch = getc (f)) != EOF && is_hspace (ch))
+	    ;
 
-          to = read_filename_string (ch, f);
-          if (IS_ABSOLUTE_PATH (to))
-            dir->name_map[count + 1] = to;
-          else
-            {
-              dir->name_map[count + 1] = append_file_to_dir (to, dir);
-              free (to);
-            }
+	  to = read_filename_string (ch, f);
+	  if (IS_ABSOLUTE_PATH (to))
+	    dir->name_map[count + 1] = to;
+	  else
+	    {
+	      dir->name_map[count + 1] = append_file_to_dir (to, dir);
+	      free (to);
+	    }
 
-          count += 2;
-          while ((ch = getc (f)) != '\n')
-            if (ch == EOF)
-              break;
-        }
+	  count += 2;
+	  while ((ch = getc (f)) != '\n')
+	    if (ch == EOF)
+	      break;
+	}
 
       fclose (f);
     }
@@ -1370,15 +1370,15 @@ remap_filename (cpp_reader *pfile, _cpp_file *file)
   for (;;)
     {
       if (!dir->name_map)
-        read_name_map (dir);
+	read_name_map (dir);
 
       for (index = 0; dir->name_map[index]; index += 2)
-        if (!strcmp (dir->name_map[index], fname))
-            return xstrdup (dir->name_map[index + 1]);
+	if (!strcmp (dir->name_map[index], fname))
+	    return xstrdup (dir->name_map[index + 1]);
 
       p = strchr (fname, '/');
       if (!p || p == fname)
-        return NULL;
+	return NULL;
 
       len = dir->len + (p - fname + 1);
       new_dir = XNEWVEC (char, len + 1);
@@ -1404,19 +1404,19 @@ validate_pch (cpp_reader *pfile, _cpp_file *file, const char *pchname)
       valid = 1 & pfile->cb.valid_pch (pfile, pchname, file->fd);
 
       if (!valid)
-        {
-          close (file->fd);
-          file->fd = -1;
-        }
+	{
+	  close (file->fd);
+	  file->fd = -1;
+	}
 
       if (CPP_OPTION (pfile, print_include_names))
-        {
-          unsigned int i;
-          for (i = 1; i < pfile->line_table->depth; i++)
-            putc ('.', stderr);
-          fprintf (stderr, "%c %s\n",
-                   valid ? '!' : 'x', pchname);
-        }
+	{
+	  unsigned int i;
+	  for (i = 1; i < pfile->line_table->depth; i++)
+	    putc ('.', stderr);
+	  fprintf (stderr, "%c %s\n",
+		   valid ? '!' : 'x', pchname);
+	}
     }
 
   file->path = saved_path;
@@ -1520,7 +1520,7 @@ _cpp_save_file_entries (cpp_reader *pfile, FILE *fp)
     ++count;
 
   result_size = (sizeof (struct pchf_data)
-                 + sizeof (struct pchf_entry) * (count - 1));
+		 + sizeof (struct pchf_entry) * (count - 1));
   result = XCNEWVAR (struct pchf_data, result_size);
 
   result->count = 0;
@@ -1531,12 +1531,12 @@ _cpp_save_file_entries (cpp_reader *pfile, FILE *fp)
       size_t count;
 
       /* This should probably never happen, since if a read error occurred
-         the PCH file shouldn't be written...  */
+	 the PCH file shouldn't be written...  */
       if (f->dont_read || f->err_no)
-        continue;
+	continue;
 
       if (f->stack_count == 0)
-        continue;
+	continue;
 
       count = result->count++;
 
@@ -1544,23 +1544,23 @@ _cpp_save_file_entries (cpp_reader *pfile, FILE *fp)
       /* |= is avoided in the next line because of an HP C compiler bug */
       result->have_once_only = result->have_once_only | f->once_only;
       if (f->buffer_valid)
-        md5_buffer ((const char *)f->buffer,
-                    f->st.st_size, result->entries[count].sum);
+	md5_buffer ((const char *)f->buffer,
+		    f->st.st_size, result->entries[count].sum);
       else
-        {
-          FILE *ff;
-          int oldfd = f->fd;
+	{
+	  FILE *ff;
+	  int oldfd = f->fd;
 
-          if (!open_file (f))
-            {
-              open_file_failed (pfile, f, 0);
-              return false;
-            }
-          ff = fdopen (f->fd, "rb");
-          md5_stream (ff, result->entries[count].sum);
-          fclose (ff);
-          f->fd = oldfd;
-        }
+	  if (!open_file (f))
+	    {
+	      open_file_failed (pfile, f, 0);
+	      return false;
+	    }
+	  ff = fdopen (f->fd, "rb");
+	  md5_stream (ff, result->entries[count].sum);
+	  fclose (ff);
+	  f->fd = oldfd;
+	}
       result->entries[count].size = f->st.st_size;
     }
 
@@ -1568,7 +1568,7 @@ _cpp_save_file_entries (cpp_reader *pfile, FILE *fp)
                  + sizeof (struct pchf_entry) * (result->count - 1));
 
   qsort (result->entries, result->count, sizeof (struct pchf_entry),
-         pchf_save_compare);
+	 pchf_save_compare);
 
   return fwrite (result, result_size, 1, fp) == 1;
 }
@@ -1585,7 +1585,7 @@ _cpp_read_file_entries (cpp_reader *pfile ATTRIBUTE_UNUSED, FILE *f)
     return false;
 
   pchf = XNEWVAR (struct pchf_data, sizeof (struct pchf_data)
-                  + sizeof (struct pchf_entry) * (d.count - 1));
+		  + sizeof (struct pchf_entry) * (d.count - 1));
   memcpy (pchf, &d, sizeof (struct pchf_data) - sizeof (struct pchf_entry));
   if (fread (pchf->entries, sizeof (struct pchf_entry), d.count, f)
       != d.count)
@@ -1650,8 +1650,8 @@ pchf_compare (const void *d_p, const void *e_p)
 
 static bool
 check_file_against_entries (cpp_reader *pfile ATTRIBUTE_UNUSED,
-                            _cpp_file *f,
-                            bool check_included)
+			    _cpp_file *f,
+			    bool check_included)
 {
   struct pchf_compare_data d;
 
@@ -1664,5 +1664,5 @@ check_file_against_entries (cpp_reader *pfile ATTRIBUTE_UNUSED,
   d.f = f;
   d.check_included = check_included;
   return bsearch (&d, pchf->entries, pchf->count, sizeof (struct pchf_entry),
-                  pchf_compare) != NULL;
+		  pchf_compare) != NULL;
 }

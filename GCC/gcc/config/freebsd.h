@@ -65,7 +65,7 @@ Boston, MA 02110-1301, USA.  */
 
 /* Don't assume anything about the header files.  */
 #undef  NO_IMPLICIT_EXTERN_C
-#define NO_IMPLICIT_EXTERN_C        1
+#define NO_IMPLICIT_EXTERN_C	1
 
 /* Make gcc agree with FreeBSD's standard headers (<machine/ansi.h>, etc...)  */
 

@@ -784,10 +784,10 @@ DEF_RTL_EXPR(DEFINE_PEEPHOLE, "define_peephole", "EsTV", RTX_EXTRA)
    2nd operand: C expression that must be true
    3rd operand: vector of insn patterns to place into a SEQUENCE
    4th operand: optionally, some C code to execute before generating the
-        insns.  This might, for example, create some RTX's and store them in
-        elements of `recog_data.operand' for use by the vector of
-        insn-patterns.
-        (`operands' is an alias here for `recog_data.operand').  */
+	insns.  This might, for example, create some RTX's and store them in
+	elements of `recog_data.operand' for use by the vector of
+	insn-patterns.
+	(`operands' is an alias here for `recog_data.operand').  */
 DEF_RTL_EXPR(DEFINE_SPLIT, "define_split", "EsES", RTX_EXTRA)
 
 /* Definition of an insn and associated split.
@@ -811,10 +811,10 @@ DEF_RTL_EXPR(DEFINE_SPLIT, "define_split", "EsES", RTX_EXTRA)
       condition and what follows the "&&" of this operand.
    5: vector of insn patterns to place into a SEQUENCE
    6: optionally, some C code to execute before generating the
-        insns.  This might, for example, create some RTX's and store them in
-        elements of `recog_data.operand' for use by the vector of
-        insn-patterns.
-        (`operands' is an alias here for `recog_data.operand').  
+	insns.  This might, for example, create some RTX's and store them in
+	elements of `recog_data.operand' for use by the vector of
+	insn-patterns.
+	(`operands' is an alias here for `recog_data.operand').  
    7: optionally, a vector of attributes for this insn.  */
 DEF_RTL_EXPR(DEFINE_INSN_AND_SPLIT, "define_insn_and_split", "sEsTsESV", RTX_EXTRA)
 
@@ -825,27 +825,27 @@ DEF_RTL_EXPR(DEFINE_PEEPHOLE2, "define_peephole2", "EsES", RTX_EXTRA)
 /* Define how to generate multiple insns for a standard insn name.
    1st operand: the insn name.
    2nd operand: vector of insn-patterns.
-        Use match_operand to substitute an element of `recog_data.operand'.
+	Use match_operand to substitute an element of `recog_data.operand'.
    3rd operand: C expression that must be true for this to be available.
-        This may not test any operands.
+	This may not test any operands.
    4th operand: Extra C code to execute before generating the insns.
-        This might, for example, create some RTX's and store them in
-        elements of `recog_data.operand' for use by the vector of
-        insn-patterns.
-        (`operands' is an alias here for `recog_data.operand').  */
+	This might, for example, create some RTX's and store them in
+	elements of `recog_data.operand' for use by the vector of
+	insn-patterns.
+	(`operands' is an alias here for `recog_data.operand').  */
 DEF_RTL_EXPR(DEFINE_EXPAND, "define_expand", "sEss", RTX_EXTRA)
    
 /* Define a requirement for delay slots.
    1st operand: Condition involving insn attributes that, if true,
-                indicates that the insn requires the number of delay slots
-                shown.
+	        indicates that the insn requires the number of delay slots
+		shown.
    2nd operand: Vector whose length is the three times the number of delay
-                slots required.
-                Each entry gives three conditions, each involving attributes.
-                The first must be true for an insn to occupy that delay slot
-                location.  The second is true for all insns that can be
-                annulled if the branch is true and the third is true for all
-                insns that can be annulled if the branch is false. 
+		slots required.
+	        Each entry gives three conditions, each involving attributes.
+		The first must be true for an insn to occupy that delay slot
+		location.  The second is true for all insns that can be
+		annulled if the branch is true and the third is true for all
+		insns that can be annulled if the branch is false. 
 
    Multiple DEFINE_DELAYs may be present.  They indicate differing
    requirements for delay slots.  */
@@ -927,7 +927,7 @@ DEF_RTL_EXPR(DEFINE_REGISTER_CONSTRAINT, "define_register_constraint", "sss", RT
       these variables:
         `op'    - the RTL object defining the operand.
         `mode'  - the mode of `op'.
-        `ival'  - INTVAL(op), if op is a CONST_INT.
+	`ival'  - INTVAL(op), if op is a CONST_INT.
         `hval'  - CONST_DOUBLE_HIGH(op), if op is an integer CONST_DOUBLE.
         `lval'  - CONST_DOUBLE_LOW(op), if op is an integer CONST_DOUBLE.
         `rval'  - CONST_DOUBLE_REAL_VALUE(op), if op is a floating-point
@@ -1164,10 +1164,10 @@ DEF_RTL_EXPR(SET_ATTR, "set_attr", "ss", RTX_EXTRA)
    The following three expressions are equivalent:
 
    (set (attr "att") (cond [(eq_attrq "alternative" "1") (const_string "a1")
-                            (eq_attrq "alternative" "2") (const_string "a2")]
-                           (const_string "a3")))
+			    (eq_attrq "alternative" "2") (const_string "a2")]
+			   (const_string "a3")))
    (set_attr_alternative "att" [(const_string "a1") (const_string "a2")
-                                 (const_string "a3")])
+				 (const_string "a3")])
    (set_attr "att" "a1,a2,a3")
  */
 DEF_RTL_EXPR(SET_ATTR_ALTERNATIVE, "set_attr_alternative", "sE", RTX_EXTRA)

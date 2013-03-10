@@ -60,14 +60,14 @@ extern void   v850_output_local             (FILE *, tree, const char *, int, in
 extern v850_data_area v850_get_data_area    (tree);
 #endif
 
-extern void ghs_pragma_section                    (struct cpp_reader *);
-extern void ghs_pragma_interrupt            (struct cpp_reader *);
-extern void ghs_pragma_starttda                    (struct cpp_reader *);
-extern void ghs_pragma_startsda                    (struct cpp_reader *);
-extern void ghs_pragma_startzda                    (struct cpp_reader *);
-extern void ghs_pragma_endtda                    (struct cpp_reader *);
-extern void ghs_pragma_endsda                    (struct cpp_reader *);
-extern void ghs_pragma_endzda                    (struct cpp_reader *);
+extern void ghs_pragma_section		    (struct cpp_reader *);
+extern void ghs_pragma_interrupt	    (struct cpp_reader *);
+extern void ghs_pragma_starttda		    (struct cpp_reader *);
+extern void ghs_pragma_startsda		    (struct cpp_reader *);
+extern void ghs_pragma_startzda		    (struct cpp_reader *);
+extern void ghs_pragma_endtda		    (struct cpp_reader *);
+extern void ghs_pragma_endsda		    (struct cpp_reader *);
+extern void ghs_pragma_endzda		    (struct cpp_reader *);
 
 #undef  Mmode
 
