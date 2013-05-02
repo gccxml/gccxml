@@ -61,7 +61,7 @@ _GLIBCXX_BEGIN_NAMESPACE_VERSION
   */
   inline _Resetiosflags 
   resetiosflags(ios_base::fmtflags __mask)
-  { return { __mask }; }
+  { _Resetiosflags r = { __mask }; return r; }
 
   template<typename _CharT, typename _Traits>
     inline basic_istream<_CharT, _Traits>& 
@@ -91,7 +91,7 @@ _GLIBCXX_BEGIN_NAMESPACE_VERSION
   */
   inline _Setiosflags 
   setiosflags(ios_base::fmtflags __mask)
-  { return { __mask }; }
+  { _Setiosflags s = { __mask }; return s; }
 
   template<typename _CharT, typename _Traits>
     inline basic_istream<_CharT, _Traits>& 
@@ -122,7 +122,7 @@ _GLIBCXX_BEGIN_NAMESPACE_VERSION
   */
   inline _Setbase 
   setbase(int __base)
-  { return { __base }; }
+  { _Setbase s = { __base }; return s; }
 
   template<typename _CharT, typename _Traits>
     inline basic_istream<_CharT, _Traits>& 
@@ -160,7 +160,7 @@ _GLIBCXX_BEGIN_NAMESPACE_VERSION
   template<typename _CharT>
     inline _Setfill<_CharT>
     setfill(_CharT __c)
-    { return { __c }; }
+    { _Setfill<_CharT> s = { __c }; return s; }
 
   template<typename _CharT, typename _Traits>
     inline basic_istream<_CharT, _Traits>& 
@@ -190,7 +190,7 @@ _GLIBCXX_BEGIN_NAMESPACE_VERSION
   */
   inline _Setprecision 
   setprecision(int __n)
-  { return { __n }; }
+  { _Setprecision s = { __n }; return s; }
 
   template<typename _CharT, typename _Traits>
     inline basic_istream<_CharT, _Traits>& 
@@ -220,7 +220,7 @@ _GLIBCXX_BEGIN_NAMESPACE_VERSION
   */
   inline _Setw 
   setw(int __n)
-  { return { __n }; }
+  { _Setw s = {__n} ; return s; }
 
   template<typename _CharT, typename _Traits>
     inline basic_istream<_CharT, _Traits>& 
@@ -254,7 +254,7 @@ _GLIBCXX_BEGIN_NAMESPACE_VERSION
   template<typename _MoneyT>
     inline _Get_money<_MoneyT>
     get_money(_MoneyT& __mon, bool __intl = false)
-    { return { __mon, __intl }; }
+    { _Get_money<_MoneyT> r = { __mon, __intl }; return r; }
 
   template<typename _CharT, typename _Traits, typename _MoneyT>
     basic_istream<_CharT, _Traits>&
@@ -301,7 +301,7 @@ _GLIBCXX_BEGIN_NAMESPACE_VERSION
   template<typename _MoneyT>
     inline _Put_money<_MoneyT>
     put_money(const _MoneyT& __mon, bool __intl = false)
-    { return { __mon, __intl }; }
+    { _Put_money<_MoneyT> r = { __mon, __intl }; return r; }
 
   template<typename _CharT, typename _Traits, typename _MoneyT>
     basic_ostream<_CharT, _Traits>& 
