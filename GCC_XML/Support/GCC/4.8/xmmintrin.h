@@ -1212,7 +1212,7 @@ _mm_sfence (void)
 extern __inline void __attribute__((__gnu_inline__, __always_inline__, __artificial__))
 _mm_pause (void)
 {
-  __builtin_ia32_pause ();
+    __asm__ __volatile__ ("rep; nop" : : );
 }
 
 /* Transpose the 4x4 matrix composed of row[0-3].  */
