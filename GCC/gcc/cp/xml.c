@@ -3131,6 +3131,7 @@ xml_find_template_parm (tree t)
     case COMPONENT_REF: return xml_find_template_parm (TREE_TYPE (t));
     case POINTER_TYPE: return xml_find_template_parm (TREE_TYPE (t));
     case ARRAY_TYPE: return xml_find_template_parm (TREE_TYPE (t));
+    case VECTOR_TYPE: return xml_find_template_parm (TREE_TYPE (t));
     case OFFSET_TYPE:
       {
       return (xml_find_template_parm(TYPE_OFFSET_BASETYPE (t)) ||
