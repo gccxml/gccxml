@@ -29,7 +29,8 @@ ENABLE_TESTING()
 SET(GCCXML_ADD_TESTS 1)
 
 # Build GCC and GCC_XML.
-SUBDIRS(GCC GCC_XML)
+ADD_SUBDIRECTORY(GCC)
+ADD_SUBDIRECTORY(GCC_XML)
 
 # Use CPack to build a redistributable installer
 INCLUDE("${CMAKE_CURRENT_SOURCE_DIR}/gccxmlCPack.cmake")
