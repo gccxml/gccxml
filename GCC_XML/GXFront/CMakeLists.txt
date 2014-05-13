@@ -9,7 +9,9 @@ ADD_EXECUTABLE(gccxml
 
 TARGET_LINK_LIBRARIES(gccxml gxsys)
 
-ADD_DEPENDENCIES(gccxml vcInstallPatch)
+IF(TARGET vcInstallPatch)
+  ADD_DEPENDENCIES(gccxml vcInstallPatch)
+ENDIF()
 
 # If we are inside a project that is building gccxml_cc1plus for us,
 # add the dependency to build it first.
