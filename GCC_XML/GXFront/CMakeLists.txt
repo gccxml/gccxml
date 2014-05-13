@@ -19,8 +19,6 @@ ENDIF(GCCXML_NATIVE_CC1PLUS)
 
 #-----------------------------------------------------------------------------
 # Generate documentation.
-GET_TARGET_PROPERTY(GCCXML_EXE gccxml LOCATION)
-
 MAKE_DIRECTORY(${GCCXML_BINARY_DIR}/doc)
 
 ADD_CUSTOM_TARGET(documentation ALL DEPENDS
@@ -31,22 +29,22 @@ ADD_CUSTOM_TARGET(documentation ALL DEPENDS
 ADD_DEPENDENCIES(documentation gccxml)
 
 ADD_CUSTOM_COMMAND(OUTPUT ${GCCXML_BINARY_DIR}/doc/gccxml.1
-  COMMAND ${GCCXML_EXE} --man > ${GCCXML_BINARY_DIR}/doc/gccxml.1
+  COMMAND gccxml --man > ${GCCXML_BINARY_DIR}/doc/gccxml.1
   DEPENDS gccxml
   )
 
 ADD_CUSTOM_COMMAND(OUTPUT ${GCCXML_BINARY_DIR}/doc/gccxml.txt
-  COMMAND ${GCCXML_EXE} --help > ${GCCXML_BINARY_DIR}/doc/gccxml.txt
+  COMMAND gccxml --help > ${GCCXML_BINARY_DIR}/doc/gccxml.txt
   DEPENDS gccxml
   )
 
 ADD_CUSTOM_COMMAND(OUTPUT ${GCCXML_BINARY_DIR}/doc/gccxml.html
-  COMMAND ${GCCXML_EXE} --help-html > ${GCCXML_BINARY_DIR}/doc/gccxml.html
+  COMMAND gccxml --help-html > ${GCCXML_BINARY_DIR}/doc/gccxml.html
   DEPENDS gccxml
   )
 
 ADD_CUSTOM_COMMAND(OUTPUT ${GCCXML_BINARY_DIR}/doc/Copyright.txt
-  COMMAND ${GCCXML_EXE} --copyright > ${GCCXML_BINARY_DIR}/doc/Copyright.txt
+  COMMAND gccxml --copyright > ${GCCXML_BINARY_DIR}/doc/Copyright.txt
   DEPENDS gccxml
   )
 
